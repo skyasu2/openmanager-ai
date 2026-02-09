@@ -89,6 +89,7 @@ export const AIAssistantButton = memo(function AIAssistantButton({
           >
             <Bot className="h-5 w-5" />
           </div>
+          <span className="text-xs font-medium sm:hidden">AI</span>
           <span className="hidden text-sm font-medium sm:inline">
             AI 어시스턴트
           </span>

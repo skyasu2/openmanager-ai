@@ -544,13 +544,18 @@ function SystemOverviewSection({ servers }: { servers: Server[] }) {
               return (
                 <div
                   key={alert.id}
-                  className={`flex items-center justify-between px-2 py-2 ${
+                  className={`flex min-w-0 items-center justify-between gap-2 px-2 py-2 ${
                     idx < topAlerts.length - 1 ? 'border-b border-gray-100' : ''
                   }`}
                 >
-                  <span className="text-sm text-slate-700">{alert.name}</span>
                   <span
-                    className={`rounded px-2 py-0.5 text-xs font-medium ${
+                    className="truncate text-sm text-slate-700"
+                    title={alert.name}
+                  >
+                    {alert.name}
+                  </span>
+                  <span
+                    className={`shrink-0 rounded px-2 py-0.5 text-xs font-medium ${
                       isCritical
                         ? 'bg-red-50 text-red-700'
                         : isWarning

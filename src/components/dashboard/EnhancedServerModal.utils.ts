@@ -14,6 +14,7 @@ import { formatUptime as formatUptimeCompact } from '@/utils/serverUtils';
 import type {
   MetricColorResult,
   ServerData,
+  ServerService,
   StatusTheme,
 } from './EnhancedServerModal.types';
 
@@ -247,13 +248,14 @@ export function normalizeServerData(
         : Array.isArray(server.alerts)
           ? server.alerts.length
           : 0,
-    services: Array.isArray(server.services)
-      ? server.services.map((s) => ({
-          name: s?.name || 'unknown',
-          status: s?.status || 'unknown',
-          port: s?.port || 80,
-        }))
-      : [],
+    services:
+      Array.isArray(server.services) && server.services.length > 0
+        ? server.services.map((s) => ({
+            name: s?.name || 'unknown',
+            status: s?.status || 'unknown',
+            port: s?.port || 80,
+          }))
+        : getDefaultServicesByType(server.type, server.name),
     specs: server.specs || { cpu_cores: 4, memory_gb: 8, disk_gb: 100 },
     os: server.os || 'Unknown OS',
     ip: server.ip || '0.0.0.0',
@@ -271,4 +273,61 @@ export function normalizeServerData(
       warning: 0,
     },
   };
+}
+
+/**
+ * 서버 타입/이름 기반 기본 서비스 목록 생성
+ * hourly-data에 services 필드가 없을 때 사용
+ */
+function getDefaultServicesByType(
+  type?: string,
+  name?: string
+): ServerService[] {
+  const t = type?.toLowerCase() || '';
+  const n = name?.toLowerCase() || '';
+
+  if (t === 'loadbalancer' || n.includes('haproxy') || n.includes('lb')) {
+    return [
+      { name: 'HAProxy', status: 'running', port: 80 },
+      { name: 'Keepalived', status: 'running', port: 112 },
+    ];
+  }
+  if (t === 'webserver' || n.includes('nginx') || n.includes('web')) {
+    return [
+      { name: 'Nginx', status: 'running', port: 80 },
+      { name: 'Nginx SSL', status: 'running', port: 443 },
+    ];
+  }
+  if (t === 'database' || n.includes('mysql') || n.includes('db')) {
+    return [
+      { name: 'MySQL', status: 'running', port: 3306 },
+      { name: 'MySQL Exporter', status: 'running', port: 9104 },
+    ];
+  }
+  if (t === 'cache' || n.includes('redis') || n.includes('cache')) {
+    return [
+      { name: 'Redis', status: 'running', port: 6379 },
+      { name: 'Redis Sentinel', status: 'running', port: 26379 },
+    ];
+  }
+  if (t === 'storage' || n.includes('nfs') || n.includes('storage')) {
+    return [
+      { name: 'NFS Server', status: 'running', port: 2049 },
+      { name: 'Node Exporter', status: 'running', port: 9100 },
+    ];
+  }
+  if (t === 'monitoring' || n.includes('monitor') || n.includes('prometheus')) {
+    return [
+      { name: 'Prometheus', status: 'running', port: 9090 },
+      { name: 'Grafana', status: 'running', port: 3000 },
+    ];
+  }
+  if (n.includes('api') || n.includes('was')) {
+    return [
+      { name: 'Node.js App', status: 'running', port: 3000 },
+      { name: 'PM2 Daemon', status: 'running', port: 9615 },
+    ];
+  }
+  // 기본값: node exporter만
+  return [{ name: 'Node Exporter', status: 'running', port: 9100 }];
 }
