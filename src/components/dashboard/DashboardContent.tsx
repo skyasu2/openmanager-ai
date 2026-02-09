@@ -43,6 +43,8 @@ interface DashboardContentProps {
   showSequentialGeneration: boolean;
   /** 페이지네이션된 서버 목록 */
   servers: Server[];
+  /** 전체 서버 목록 (통계 계산용) */
+  allServers?: Server[];
   /** 전체 서버 수 (페이지네이션 계산용) */
   totalServers: number;
   /** 현재 페이지 */
@@ -87,6 +89,7 @@ const ServerDashboardDynamic = dynamic(() => import('./ServerDashboard'), {
 export default function DashboardContent({
   showSequentialGeneration,
   servers,
+  allServers,
   totalServers,
   currentPage,
   totalPages,
@@ -123,8 +126,11 @@ export default function DashboardContent({
   // 🛡️ currentTime 제거: 미사용 상태에서 불필요한 interval 실행 (v5.83.13)
 
   // 폴백 통계 계산 (v5.83.13: critical 상태 분리)
+  // allServers(전체 서버)가 있으면 전체 기반으로 계산, 없으면 페이지네이션된 servers 사용
+  const statsSource =
+    allServers && allServers.length > 0 ? allServers : servers;
   const calculateFallbackStats = useCallback((): DashboardStats => {
-    if (!servers || servers.length === 0) {
+    if (!statsSource || statsSource.length === 0) {
       return {
         total: 0,
         online: 0,
@@ -135,7 +141,7 @@ export default function DashboardContent({
       };
     }
 
-    const stats = servers.reduce(
+    const stats = statsSource.reduce(
       (acc, server) => {
         acc.total += 1;
         const normalizedStatus = server.status?.toLowerCase() || 'unknown';
@@ -189,7 +195,7 @@ export default function DashboardContent({
     );
 
     return stats;
-  }, [servers]);
+  }, [statsSource]);
 
   // 최종 서버 통계 (서버 데이터에서 직접 계산)
   const serverStats = useMemo(() => {

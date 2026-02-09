@@ -497,6 +497,7 @@ function DashboardPageContent({
             <DashboardContent
               showSequentialGeneration={false}
               servers={statusFilter ? filteredServers : realServers}
+              allServers={allServers}
               totalServers={
                 statusFilter ? filteredServers.length : allServers.length
               }
