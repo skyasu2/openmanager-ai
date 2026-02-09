@@ -32,12 +32,15 @@ const SERVER_PATTERNS = {
 const SPECIFIC_CONDITION_PATTERNS = {
   // 숫자 조건: "92%", "3개", "TOP 5" (퍼센트 단독으로도 구체적 조건으로 인정)
   numericCondition: /\d+%|top\s*\d+|\d+개|상위\s*\d+|하위\s*\d+/i,
-  // 상태 조건: "경고 상태인", "정상인", "오프라인"
+  // 상태 조건: "경고 상태인", "정상인", "오프라인", "다운된"
   statusCondition:
-    /경고\s*(상태)?인|정상인|오프라인|critical|warning|online|offline/i,
-  // 비교 조건: "가장 높은", "가장 낮은", "최대", "최소"
+    /경고\s*(상태)?인|정상인|오프라인|다운|critical|warning|online|offline|down/i,
+  // 비교 조건: "가장 높은", "제일 높은", "높아", "높으면", "최대", "최소"
   comparisonCondition:
-    /가장\s*(높|낮|많|적)|최대|최소|highest|lowest|most|least/i,
+    /(?:가장|제일)\s*(높|낮|많|적)|높[은아으]|낮[은아으]|많[은아으]|적[은어으]|최대|최소|highest|lowest|most|least/i,
+  // 필터 의도: "CPU 높은 서버 찾아줘", "메모리 많이 쓰는 서버 보여줘"
+  filterIntent:
+    /(?:cpu|메모리|디스크|memory|disk).+(?:찾아|알려|보여|목록)|(?:찾아|알려|보여).+(?:cpu|메모리|디스크|memory|disk)/i,
   // 명확화 선택으로 생성된 쿼리 접미사 (재명확화 방지)
   clarifiedSuffix:
     /\(전체 서버\)|\(web-server 그룹\)|\(db-server 그룹\)|\(loadbalancer 그룹\)|\(cache 그룹\)|\(최근 \d+시간\)|\(최근 24시간\)|\(지난 7일\)/i,
@@ -67,6 +70,7 @@ function hasSpecificConditions(query: string): boolean {
     SPECIFIC_CONDITION_PATTERNS.numericCondition.test(query) ||
     SPECIFIC_CONDITION_PATTERNS.statusCondition.test(query) ||
     SPECIFIC_CONDITION_PATTERNS.comparisonCondition.test(query) ||
+    SPECIFIC_CONDITION_PATTERNS.filterIntent.test(query) ||
     SPECIFIC_CONDITION_PATTERNS.clarifiedSuffix.test(query) ||
     SPECIFIC_CONDITION_PATTERNS.explicitScope.test(query)
   );

@@ -81,6 +81,15 @@ export class QueryClassifier {
       confidence += 15;
     }
 
+    // 비교/필터 키워드 → 구체적 의도가 있으므로 신뢰도 상승
+    if (
+      /높[은아으]|낮[은아으]|많[은아으]|적[은어으]|이상|이하|초과|미만/i.test(
+        query
+      )
+    ) {
+      confidence += 15;
+    }
+
     // 의도 명확 ("요약", "현황" 등) → 신뢰도 상승
     if (/요약|summary|현황|개요|overview/i.test(query)) {
       confidence += 10;

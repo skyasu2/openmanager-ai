@@ -79,6 +79,74 @@ describe('generateClarification', () => {
         generateClarification('전체 서버 상태 확인', lowConfidence)
       ).toBeNull();
     });
+
+    it('"CPU 높은 서버 찾아줘" → clarification 스킵', () => {
+      expect(
+        generateClarification('CPU 높은 서버 찾아줘', lowConfidence)
+      ).toBeNull();
+    });
+
+    it('"메모리 낮은 서버" → clarification 스킵', () => {
+      expect(
+        generateClarification('메모리 낮은 서버', lowConfidence)
+      ).toBeNull();
+    });
+
+    it('"디스크 많이 쓰는 서버 찾아줘" → clarification 스킵 (filterIntent)', () => {
+      expect(
+        generateClarification('디스크 많이 쓰는 서버 찾아줘', lowConfidence)
+      ).toBeNull();
+    });
+
+    // 한국어 활용형 테스트
+    it('"CPU 높아?" → clarification 스킵 (comparisonCondition 활용형)', () => {
+      expect(generateClarification('CPU 높아?', lowConfidence)).toBeNull();
+    });
+
+    it('"제일 높은 CPU 서버" → clarification 스킵 (제일 + 높은)', () => {
+      expect(
+        generateClarification('제일 높은 CPU 서버', lowConfidence)
+      ).toBeNull();
+    });
+
+    it('"메모리 많으면 알려줘" → clarification 스킵 (많으 활용형)', () => {
+      expect(
+        generateClarification('메모리 많으면 알려줘', lowConfidence)
+      ).toBeNull();
+    });
+
+    // 오프라인/상태 쿼리 테스트
+    it('"오프라인 서버 있어?" → clarification 스킵 (statusCondition)', () => {
+      expect(
+        generateClarification('오프라인 서버 있어?', lowConfidence)
+      ).toBeNull();
+    });
+
+    it('"다운된 서버" → clarification 스킵 (statusCondition)', () => {
+      expect(generateClarification('다운된 서버', lowConfidence)).toBeNull();
+    });
+
+    // 혼합 언어
+    it('"DB server CPU 높은 거" → clarification 스킵 (혼합 언어)', () => {
+      expect(
+        generateClarification('DB server CPU 높은 거', lowConfidence)
+      ).toBeNull();
+    });
+
+    // 구두점
+    it('"서버 상태 알려줘!!" → clarification 정상 동작 (구두점 무시)', () => {
+      const result = generateClarification('서버 상태 알려줘!!', lowConfidence);
+      // 서버 + 상태 키워드 → 서버 clarification 또는 null (패턴 매칭에 따라)
+      // 중요한 것은 에러 없이 동작하는 것
+      expect(result === null || result.options.length > 0).toBe(true);
+    });
+  });
+
+  describe('모호한 쿼리', () => {
+    it('"서버" 한 단어 → clarification 트리거', () => {
+      const result = generateClarification('서버', lowConfidence);
+      expect(result).not.toBeNull();
+    });
   });
 
   describe('SERVER_PATTERNS', () => {

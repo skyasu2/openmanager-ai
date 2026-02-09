@@ -101,6 +101,7 @@ export interface SystemSummary {
   onlineServers: number;
   warningServers: number;
   criticalServers: number;
+  offlineServers: number;
   averageCpu: number;
   averageMemory: number;
   averageDisk: number;
@@ -565,22 +566,24 @@ export class MetricsProvider {
       { online: 0, warning: 0, critical: 0, offline: 0 }
     );
 
-    // allMetrics에서 직접 평균 계산 (데이터 소스 일관성 보장)
-    const count = allMetrics.length || 1;
+    // offline 서버(metrics=0)를 평균 계산에서 제외하여 왜곡 방지
+    const onlineMetrics = allMetrics.filter((m) => m.status !== 'offline');
+    const count = onlineMetrics.length || 1;
     const avgCpu =
-      Math.round((allMetrics.reduce((sum, m) => sum + m.cpu, 0) / count) * 10) /
-      10;
+      Math.round(
+        (onlineMetrics.reduce((sum, m) => sum + m.cpu, 0) / count) * 10
+      ) / 10;
     const avgMemory =
       Math.round(
-        (allMetrics.reduce((sum, m) => sum + m.memory, 0) / count) * 10
+        (onlineMetrics.reduce((sum, m) => sum + m.memory, 0) / count) * 10
       ) / 10;
     const avgDisk =
       Math.round(
-        (allMetrics.reduce((sum, m) => sum + m.disk, 0) / count) * 10
+        (onlineMetrics.reduce((sum, m) => sum + m.disk, 0) / count) * 10
       ) / 10;
     const avgNetwork =
       Math.round(
-        (allMetrics.reduce((sum, m) => sum + m.network, 0) / count) * 10
+        (onlineMetrics.reduce((sum, m) => sum + m.network, 0) / count) * 10
       ) / 10;
 
     return {
@@ -590,6 +593,7 @@ export class MetricsProvider {
       onlineServers: statusCounts.online,
       warningServers: statusCounts.warning,
       criticalServers: statusCounts.critical,
+      offlineServers: statusCounts.offline,
       averageCpu: avgCpu,
       averageMemory: avgMemory,
       averageDisk: avgDisk,
@@ -609,7 +613,12 @@ export class MetricsProvider {
   }> {
     const allMetrics = this.getAllServerMetrics();
     return allMetrics
-      .filter((s) => s.status === 'warning' || s.status === 'critical')
+      .filter(
+        (s) =>
+          s.status === 'warning' ||
+          s.status === 'critical' ||
+          s.status === 'offline'
+      )
       .map((s) => ({
         serverId: s.serverId,
         cpu: s.cpu,

@@ -86,9 +86,9 @@ export const getServerMetrics = tool({
       const trendSummaries = get24hTrendSummaries();
       const trendMap = new Map(trendSummaries.map((t) => [t.serverId, t]));
 
-      // Build alertServers: warning/critical 서버에 trend 정보 포함
+      // Build alertServers: warning/critical/offline 서버에 trend 정보 포함
       const alertServersList = servers
-        .filter((s) => s.status === 'warning' || s.status === 'critical')
+        .filter((s) => s.status === 'warning' || s.status === 'critical' || s.status === 'offline')
         .map((s) => {
           const trend = trendMap.get(s.id);
           const cpuTrend = trend
@@ -406,6 +406,15 @@ export const filterServers = tool({
 3. 디스크 50% 미만:
    { "field": "disk", "operator": "<", "value": 50 }
 
+4. 네트워크 70% 초과:
+   { "field": "network", "operator": ">", "value": 70 }
+
+5. 오프라인 서버 목록:
+   { "field": "status", "operator": "==", "value": "offline" }
+
+6. 온라인 서버만:
+   { "field": "status", "operator": "==", "value": "online" }
+
 ## 출력 형식 (Output Schema)
 {
   "success": true,
@@ -419,15 +428,17 @@ export const filterServers = tool({
 
 ## 사용 시나리오
 - "CPU 80% 이상 서버" → field="cpu", operator=">", value=80
-- "메모리 90% 넘는 서버 3개" → field="memory", operator=">", value=90, limit=3`,
+- "메모리 90% 넘는 서버 3개" → field="memory", operator=">", value=90, limit=3
+- "오프라인 서버" → field="status", operator="==", value="offline"
+- "네트워크 높은 서버" → field="network", operator=">", value=70`,
   inputSchema: z.object({
     field: z
-      .enum(['cpu', 'memory', 'disk'])
-      .describe('필터링할 메트릭. cpu=CPU 사용률, memory=메모리 사용률, disk=디스크 사용률'),
+      .enum(['cpu', 'memory', 'disk', 'network', 'status'])
+      .describe('필터링할 메트릭. cpu/memory/disk/network=사용률(%), status=서버 상태(online/warning/critical/offline)'),
     operator: z
-      .enum(['>', '<', '>=', '<='])
-      .describe('비교 연산자. >: 초과, <: 미만, >=: 이상, <=: 이하'),
-    value: z.number().describe('비교할 임계값 (퍼센트). 예: 80이면 80% 의미'),
+      .enum(['>', '<', '>=', '<=', '==', '!='])
+      .describe('비교 연산자. 숫자: >/</>=/<= | 상태: ==(같음), !=(다름)'),
+    value: z.union([z.number(), z.string()]).describe('비교할 값. 숫자 필드: 퍼센트(80=80%). status 필드: "online"/"warning"/"critical"/"offline"'),
     limit: z.number().default(10).describe('반환할 최대 서버 수 (기본값: 10). TOP N 결과'),
   }),
   execute: async ({
@@ -436,9 +447,9 @@ export const filterServers = tool({
     value,
     limit,
   }: {
-    field: 'cpu' | 'memory' | 'disk';
-    operator: '>' | '<' | '>=' | '<=';
-    value: number;
+    field: 'cpu' | 'memory' | 'disk' | 'network' | 'status';
+    operator: '>' | '<' | '>=' | '<=' | '==' | '!=';
+    value: number | string;
     limit: number;
   }) => {
     const cache = getDataCache();
@@ -449,31 +460,73 @@ export const filterServers = tool({
     const state = getCurrentState();
 
     const filtered = state.servers.filter((server) => {
+      // status 필드: 문자열 비교
+      if (field === 'status') {
+        const strValue = String(value).toLowerCase();
+        switch (operator) {
+          case '==':
+            return server.status === strValue;
+          case '!=':
+            return server.status !== strValue;
+          default:
+            return false;
+        }
+      }
+      // 숫자 필드: cpu, memory, disk, network
       const serverValue = server[field] as number;
+      const numValue = Number(value);
       switch (operator) {
         case '>':
-          return serverValue > value;
+          return serverValue > numValue;
         case '<':
-          return serverValue < value;
+          return serverValue < numValue;
         case '>=':
-          return serverValue >= value;
+          return serverValue >= numValue;
         case '<=':
-          return serverValue <= value;
+          return serverValue <= numValue;
+        case '==':
+          return serverValue === numValue;
+        case '!=':
+          return serverValue !== numValue;
         default:
           return false;
       }
     });
 
     // Sort by the filtered field (descending for >, ascending for <)
-    const sortedResults = filtered.sort((a, b) =>
-      operator.includes('>') ? b[field] - a[field] : a[field] - b[field]
-    );
+    // status 필드는 이름순 정렬
+    const sortedResults = field === 'status'
+      ? filtered.sort((a, b) => a.name.localeCompare(b.name))
+      : filtered.sort((a, b) =>
+        operator.includes('>') ? (b[field] as number) - (a[field] as number) : (a[field] as number) - (b[field] as number)
+      );
 
     const limitedResults = sortedResults.slice(0, limit);
 
+    // Empty result hint: 조건에 맞는 서버가 없으면 상위 N개 서버 정보 제공
+    let emptyResultHint: {
+      topServers: Array<{ id: string; name: string; status: string; value: number }>;
+      suggestion: string;
+    } | undefined;
+
+    if (filtered.length === 0 && field !== 'status') {
+      const allSorted = [...state.servers].sort((a, b) =>
+        operator.includes('>') ? (b[field] as number) - (a[field] as number) : (a[field] as number) - (b[field] as number)
+      );
+      emptyResultHint = {
+        topServers: allSorted.slice(0, 3).map((s) => ({
+          id: s.id,
+          name: s.name,
+          status: s.status,
+          value: s[field] as number,
+        })),
+        suggestion: `조건(${field} ${operator} ${value}%)에 맞는 서버가 없습니다. 현재 ${field} 상위 3대를 참고하세요.`,
+      };
+    }
+
     return {
       success: true,
-      condition: `${field} ${operator} ${value}%`,
+      condition: field === 'status' ? `${field} ${operator} ${value}` : `${field} ${operator} ${value}%`,
       servers: limitedResults.map((s) => ({
         id: s.id,
         name: s.name,
@@ -485,6 +538,7 @@ export const filterServers = tool({
         returned: limitedResults.length,
         total: state.servers.length,
       },
+      ...(emptyResultHint && { emptyResultHint }),
       timestamp: new Date().toISOString(),
     };
     }); // End of cache.getOrCompute wrapper
@@ -554,6 +608,7 @@ ${SERVER_GROUP_DESCRIPTION_LIST}
         online: filteredServers.filter((s) => s.status === 'online').length,
         warning: filteredServers.filter((s) => s.status === 'warning').length,
         critical: filteredServers.filter((s) => s.status === 'critical').length,
+        offline: filteredServers.filter((s) => s.status === 'offline').length,
       };
 
       return {
@@ -611,7 +666,7 @@ ${SERVER_GROUP_DESCRIPTION_LIST}
       cpuMax: z.number().min(0).max(100).optional().describe('최대 CPU 사용률'),
       memoryMin: z.number().min(0).max(100).optional().describe('최소 메모리 사용률'),
       memoryMax: z.number().min(0).max(100).optional().describe('최대 메모리 사용률'),
-      status: z.enum(['online', 'warning', 'critical']).optional().describe('서버 상태'),
+      status: z.enum(['online', 'warning', 'critical', 'offline']).optional().describe('서버 상태'),
     }).optional().describe('필터 조건'),
     sort: z.object({
       by: z.enum(['cpu', 'memory', 'disk', 'network', 'name']).describe('정렬 기준'),
@@ -631,7 +686,7 @@ ${SERVER_GROUP_DESCRIPTION_LIST}
       cpuMax?: number;
       memoryMin?: number;
       memoryMax?: number;
-      status?: 'online' | 'warning' | 'critical';
+      status?: 'online' | 'warning' | 'critical' | 'offline';
     };
     sort?: {
       by: 'cpu' | 'memory' | 'disk' | 'network' | 'name';
@@ -729,6 +784,7 @@ ${SERVER_GROUP_DESCRIPTION_LIST}
         online: filteredServers.filter((s) => s.status === 'online').length,
         warning: filteredServers.filter((s) => s.status === 'warning').length,
         critical: filteredServers.filter((s) => s.status === 'critical').length,
+        offline: filteredServers.filter((s) => s.status === 'offline').length,
       };
 
       // Step 4: Apply limit

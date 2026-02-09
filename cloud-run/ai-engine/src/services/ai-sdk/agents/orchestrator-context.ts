@@ -250,6 +250,11 @@ const SERVER_KEYWORDS = [
   '사례', '이력', '과거', '유사', '인시던트', 'incident',
   '스크린샷', 'screenshot', '이미지', 'image', '대시보드', 'dashboard',
   '로그 분석', '대용량', '최신 문서', 'grafana', 'cloudwatch',
+  '높은', '낮은', '상승', '하강', '급증', '급감',
+  '오프라인', '온라인', '다운', 'down', 'offline', 'online',
+  '부하', 'load', '사용량', 'usage',
+  '응답시간', 'response', 'latency', '대역폭', 'bandwidth',
+  '장비',
 ];
 
 /**
