@@ -12,7 +12,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import type { Tool } from 'ai';
 
 // Mock model-provider before imports
-vi.mock('../../model-provider', () => ({
+vi.mock('../model-provider', () => ({
   checkProviderStatus: vi.fn(() => ({
     cerebras: true,
     groq: true,

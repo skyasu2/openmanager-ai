@@ -33,9 +33,8 @@ const VERCEL_ENVIRONMENTS = {
     process.env.NODE_ENV === 'development',
 } as const;
 
-// 🔐 시크릿 키 검증 (환경변수에서 관리)
-const TEST_SECRET_KEY =
-  process.env.TEST_SECRET_KEY || 'test-secret-key-please-change-in-env';
+// 🔐 시크릿 키 검증 (환경변수에서 관리 — fallback 없음)
+const TEST_SECRET_KEY = process.env.TEST_SECRET_KEY ?? '';
 
 // 🧪 테스트 모드 종류 (게스트 모드 전용)
 type TestMode = 'guest' | 'full_access';
@@ -68,7 +67,7 @@ interface TestAuthResponse {
  * - 타이밍 공격 방지 유지
  */
 function verifySecret(providedSecret: string | undefined): boolean {
-  if (!providedSecret) return false;
+  if (!providedSecret || !TEST_SECRET_KEY) return false;
   if (providedSecret.length !== TEST_SECRET_KEY.length) return false;
 
   try {
@@ -196,6 +195,21 @@ export const POST = developmentOnly(async function POST(request: NextRequest) {
             'Retry-After': retryAfter.toString(),
           },
         }
+      );
+    }
+
+    // 🛡️ 프로덕션 환경에서 게스트 전체 접근 차단
+    if (VERCEL_ENVIRONMENTS.PRODUCTION && isGuestFullAccess) {
+      logger.error(
+        '🚨 [Vercel Test Auth] 프로덕션에서 guest full_access 모드 감지 — 차단'
+      );
+      return NextResponse.json(
+        {
+          success: false,
+          message: 'Guest full access is not allowed in production.',
+          error: 'PRODUCTION_GUARD',
+        } as TestAuthResponse,
+        { status: 403 }
       );
     }
 

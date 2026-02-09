@@ -132,10 +132,8 @@ export async function proxy(request: NextRequest) {
 
     // GitHub 로그인 사용자만 허용 (게스트는 제외)
     if (!hasSession || isGuest) {
-      console.log(
-        `🚫 [Proxy] 보호 경로 접근 거부: ${pathname}`,
-        `hasSession: ${hasSession}`,
-        `isGuest: ${isGuest}`
+      console.warn(
+        `[Proxy] Access denied: ${pathname} (hasSession: ${hasSession}, isGuest: ${isGuest})`
       );
 
       // 로그인 페이지로 리다이렉트 (원래 URL 저장)
