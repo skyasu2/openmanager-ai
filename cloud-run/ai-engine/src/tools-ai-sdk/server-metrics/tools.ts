@@ -86,6 +86,38 @@ export const getServerMetrics = tool({
       const trendSummaries = get24hTrendSummaries();
       const trendMap = new Map(trendSummaries.map((t) => [t.serverId, t]));
 
+      // Build alertServers: warning/critical 서버에 trend 정보 포함
+      const alertServersList = servers
+        .filter((s) => s.status === 'warning' || s.status === 'critical')
+        .map((s) => {
+          const trend = trendMap.get(s.id);
+          const cpuTrend = trend
+            ? s.cpu > trend.cpu.avg * 1.1 ? 'rising' as const
+              : s.cpu < trend.cpu.avg * 0.9 ? 'falling' as const
+              : 'stable' as const
+            : 'stable' as const;
+          const memoryTrend = trend
+            ? s.memory > trend.memory.avg * 1.1 ? 'rising' as const
+              : s.memory < trend.memory.avg * 0.9 ? 'falling' as const
+              : 'stable' as const
+            : 'stable' as const;
+          return {
+            id: s.id,
+            status: s.status,
+            cpu: s.cpu,
+            memory: s.memory,
+            disk: s.disk,
+            cpuTrend,
+            memoryTrend,
+            ...(trend && {
+              dailyAvg: {
+                cpu: trend.cpu.avg,
+                memory: trend.memory.avg,
+              },
+            }),
+          };
+        });
+
       return {
         success: true,
         servers: servers.map((s) => {
@@ -108,10 +140,9 @@ export const getServerMetrics = tool({
         }),
         summary: {
           total: servers.length,
-          alertCount: servers.filter(
-            (s) => s.status === 'warning' || s.status === 'critical'
-          ).length,
+          alertCount: alertServersList.length,
         },
+        alertServers: alertServersList.length > 0 ? alertServersList : undefined,
         timestamp: new Date().toISOString(),
         _cached: false,
       };

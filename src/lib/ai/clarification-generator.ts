@@ -41,6 +41,9 @@ const SPECIFIC_CONDITION_PATTERNS = {
   // 명확화 선택으로 생성된 쿼리 접미사 (재명확화 방지)
   clarifiedSuffix:
     /\(전체 서버\)|\(web-server 그룹\)|\(db-server 그룹\)|\(loadbalancer 그룹\)|\(cache 그룹\)|\(최근 \d+시간\)|\(최근 24시간\)|\(지난 7일\)/i,
+  // 명시적 스코프: "모든 서버", "전체 서버" 등 스코프가 명확한 쿼리
+  explicitScope:
+    /모든\s*(서버|server)|전체\s*(서버|server)|전부|all\s*(서버|server)/i,
 };
 
 // 시간 관련 명확화 패턴
@@ -64,7 +67,8 @@ function hasSpecificConditions(query: string): boolean {
     SPECIFIC_CONDITION_PATTERNS.numericCondition.test(query) ||
     SPECIFIC_CONDITION_PATTERNS.statusCondition.test(query) ||
     SPECIFIC_CONDITION_PATTERNS.comparisonCondition.test(query) ||
-    SPECIFIC_CONDITION_PATTERNS.clarifiedSuffix.test(query)
+    SPECIFIC_CONDITION_PATTERNS.clarifiedSuffix.test(query) ||
+    SPECIFIC_CONDITION_PATTERNS.explicitScope.test(query)
   );
 }
 

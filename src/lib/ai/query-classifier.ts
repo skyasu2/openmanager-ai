@@ -76,6 +76,16 @@ export class QueryClassifier {
       confidence += 10;
     }
 
+    // 스코프 명시 ("모든 서버", "전체 서버" 등) → 신뢰도 상승
+    if (/모든|전체|전부|all\s*(서버|server)|전원/i.test(query)) {
+      confidence += 15;
+    }
+
+    // 의도 명확 ("요약", "현황" 등) → 신뢰도 상승
+    if (/요약|summary|현황|개요|overview/i.test(query)) {
+      confidence += 10;
+    }
+
     // Coding/Analysis -> High complexity
     if (
       q.includes('code') ||

@@ -67,6 +67,18 @@ describe('generateClarification', () => {
         generateClarification('가장 높은 CPU 서버', lowConfidence)
       ).toBeNull();
     });
+
+    it('"모든 서버" 스코프 명시 → clarification 스킵', () => {
+      expect(
+        generateClarification('현재 모든 서버의 상태를 요약해줘', lowConfidence)
+      ).toBeNull();
+    });
+
+    it('"전체 서버" 스코프 명시 → clarification 스킵', () => {
+      expect(
+        generateClarification('전체 서버 상태 확인', lowConfidence)
+      ).toBeNull();
+    });
   });
 
   describe('SERVER_PATTERNS', () => {
