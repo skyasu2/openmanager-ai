@@ -759,7 +759,7 @@ a {
   contain: layout paint; /* 레이아웃 격리로 리페인트 최소화 */
 }
 
-.bg-ai-card-gradient:hover,
+.group:hover .bg-ai-card-gradient,
 .bg-ai-card-gradient:focus-within {
   animation-play-state: running;
   will-change: background-position; /* hover 시에만 GPU 레이어 생성 */
@@ -773,7 +773,7 @@ a {
   contain: layout paint; /* 레이아웃 격리로 리페인트 최소화 */
 }
 
-.bg-vibe-card-gradient:hover,
+.group:hover .bg-vibe-card-gradient,
 .bg-vibe-card-gradient:focus-within {
   animation-play-state: running;
   will-change: background-position; /* hover 시에만 GPU 레이어 생성 */
