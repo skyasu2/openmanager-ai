@@ -111,7 +111,7 @@ export default function VirtualizedServerList({
                   d="M19 9l-7 7-7-7"
                 />
               </svg>
-              더보기 ({remainingCount}개 더 보기)
+              {remainingCount}개 더 보기
             </span>
           </button>
         </div>

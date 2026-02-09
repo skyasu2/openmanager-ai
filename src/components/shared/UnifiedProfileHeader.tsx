@@ -249,7 +249,7 @@ export default function UnifiedProfileHeader({
                   ? '게스트 로그인'
                   : status === 'loading'
                     ? '확인 중...'
-                    : '알 수 없음'}
+                    : '로그인 필요'}
             {status === 'loading' && (
               <div className="animate-pulse h-2 w-2 rounded-full bg-gray-400" />
             )}

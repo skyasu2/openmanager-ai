@@ -59,34 +59,13 @@ const getMetricConfig = (
       status: '주의',
     };
   } else {
-    const base = baseColors[type];
+    // 정상 상태: severity 기반 색상 (카드 MetricItem과 통일)
     return {
-      color: base.color,
-      gradient: base.gradient,
-      textColor:
-        type === 'cpu'
-          ? 'text-red-700'
-          : type === 'memory'
-            ? 'text-blue-700'
-            : type === 'disk'
-              ? 'text-purple-700'
-              : 'text-green-700',
-      bgColor:
-        type === 'cpu'
-          ? 'bg-red-100'
-          : type === 'memory'
-            ? 'bg-blue-100'
-            : type === 'disk'
-              ? 'bg-purple-100'
-              : 'bg-green-100',
-      borderColor:
-        type === 'cpu'
-          ? 'border-red-300'
-          : type === 'memory'
-            ? 'border-blue-300'
-            : type === 'disk'
-              ? 'border-purple-300'
-              : 'border-green-300',
+      color: '#10b981',
+      gradient: 'from-emerald-500 to-emerald-600',
+      textColor: 'text-emerald-700',
+      bgColor: 'bg-emerald-100',
+      borderColor: 'border-emerald-300',
       status: '정상',
     };
   }

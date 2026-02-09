@@ -203,10 +203,13 @@ export const OverviewTab: FC<OverviewTabProps> = ({ server, statusTheme }) => {
                   ))
                 ) : (
                   <div className="py-8 text-center">
-                    <div className="mb-2 text-4xl">📭</div>
+                    <div className="mb-2 text-4xl">📋</div>
                     <div className="font-medium text-gray-500">
-                      서비스 정보가 없습니다
+                      등록된 서비스가 없습니다
                     </div>
+                    <p className="mt-1 text-xs text-gray-400">
+                      이 서버에 모니터링 대상 서비스가 구성되지 않았습니다
+                    </p>
                   </div>
                 )}
               </div>

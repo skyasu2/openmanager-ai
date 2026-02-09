@@ -459,15 +459,14 @@ const MetricItem = ({
         </span>
       </div>
       {/* Primary: Line Chart - 높이 증가 */}
-      <div className="w-full h-12 flex items-center justify-center overflow-visible">
+      <div className="w-full h-12 flex items-center justify-center">
         <MiniLineChart
           data={history && history.length > 1 ? history : [value, value]}
-          width={60}
-          height={36}
+          width={72}
+          height={40}
           color={metricColor}
           fill
           strokeWidth={1.5}
-          showLabels
         />
       </div>
     </div>
