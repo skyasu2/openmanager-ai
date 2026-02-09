@@ -61,18 +61,6 @@ vi.mock('@/services/ai/postgres-vector-db', () => {
   };
 });
 
-// CloudContextLoader Mock
-vi.mock('@/services/mcp/CloudContextLoader', () => ({
-  CloudContextLoader: {
-    getInstance: vi.fn(() => ({
-      queryMCPContextForRAG: vi.fn().mockResolvedValue({
-        files: [],
-        systemContext: {},
-      }),
-    })),
-  },
-}));
-
 // UnifiedServerDataSource Mock - 테스트용 서버 데이터 포함
 const mockServerData = {
   id: 'server-1',

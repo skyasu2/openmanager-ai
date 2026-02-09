@@ -31,17 +31,6 @@ vi.mock('@/services/data/UnifiedServerDataSource', () => {
   };
 });
 
-vi.mock('@/lib/api/errorHandler', () => ({
-  createSuccessResponse: vi.fn((data) => ({ success: true, data })),
-  createErrorResponse: vi.fn((message, code, metadata) => ({
-    success: false,
-    error: message,
-    code,
-    metadata,
-  })),
-  withErrorHandler: vi.fn((handler) => handler),
-}));
-
 import { UnifiedServerDataSource } from '@/services/data/UnifiedServerDataSource';
 
 // Mock 서버 데이터 생성 헬퍼

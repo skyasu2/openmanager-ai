@@ -320,21 +320,6 @@ describe.skipIf(!shouldRunIntegration)(
             } as Response);
           }
 
-          // Auth test endpoint
-          if (url.includes('/api/auth/test')) {
-            return Promise.resolve({
-              ok: false,
-              status: 500,
-              statusText: 'Internal Server Error',
-              headers: new Headers({ 'Content-Type': 'application/json' }),
-              json: () =>
-                Promise.resolve({
-                  success: false,
-                  error: 'window.location.assign is not a function',
-                }),
-            } as Response);
-          }
-
           // AI Supervisor endpoint (LangGraph Multi-Agent)
           if (url.includes('/api/ai/supervisor') && method === 'POST') {
             return Promise.resolve({
@@ -445,13 +430,6 @@ describe.skipIf(!shouldRunIntegration)(
 
         expect(result.responseTime).toBeLessThan(2000); // 2초 미만
       });
-
-      it('GET /api/servers/cached - 캐시된 서버 목록 성능 테스트', async () => {
-        const result = await testApiEndpoint('/api/servers/cached', 200);
-
-        // 캐시된 응답은 더 빨라야 함
-        expect(result.responseTime).toBeLessThan(1000); // 1초 미만
-      });
     });
 
     describe('📈 대시보드 API', () => {
@@ -468,25 +446,9 @@ describe.skipIf(!shouldRunIntegration)(
         expect(result.data.data.data.stats.totalServers).toBeGreaterThan(0);
         expect(result.responseTime).toBeLessThan(2000); // 2초 미만
       });
-
-      it('GET /api/dashboard-optimized - 최적화된 대시보드 성능 테스트', async () => {
-        const result = await testApiEndpoint('/api/dashboard-optimized', 200);
-
-        // 최적화된 버전은 더 빨라야 함
-        expect(result.responseTime).toBeLessThan(1500); // 1.5초 미만
-      });
     });
 
     describe('🔐 인증 & 보안 API', () => {
-      it('GET /api/auth/test - 인증 테스트 API (브라우저 환경 오류 확인)', async () => {
-        const result = await testApiEndpoint('/api/auth/test', 500);
-
-        expect(result.data.success).toBe(false);
-        expect(result.data.error).toContain(
-          'window.location.assign is not a function'
-        );
-      });
-
       it('POST /api/ai/supervisor - 인증 필요 API (미인증 상태)', async () => {
         const result = await testApiEndpoint(
           '/api/ai/supervisor',
