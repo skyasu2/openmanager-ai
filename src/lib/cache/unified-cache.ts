@@ -181,6 +181,12 @@ export class UnifiedCacheService {
   static getInstance(): UnifiedCacheService {
     if (!UnifiedCacheService.instance) {
       UnifiedCacheService.instance = new UnifiedCacheService();
+
+      if (typeof process !== 'undefined' && process.on) {
+        const cleanup = () => UnifiedCacheService.instance?.destroy();
+        process.on('beforeExit', cleanup);
+        process.on('SIGTERM', cleanup);
+      }
     }
     return UnifiedCacheService.instance;
   }

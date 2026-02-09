@@ -290,12 +290,7 @@ export async function getQuotaStatus(
  * 모든 Provider Quota 상태 조회
  */
 export async function getAllQuotaStatus(): Promise<QuotaStatus[]> {
-  const providers: ProviderName[] = [
-    'cerebras',
-    'groq',
-    'mistral',
-    'openrouter',
-  ];
+  const providers = Object.keys(PROVIDER_QUOTAS) as ProviderName[];
   return Promise.all(providers.map(getQuotaStatus));
 }
 

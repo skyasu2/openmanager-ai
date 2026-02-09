@@ -181,6 +181,11 @@ class CircuitBreakerEventEmitter {
 
   /**
    * 이벤트 리스너 등록
+   * @returns unsubscribe 함수 — 반드시 호출하여 리스너 누수 방지
+   * @example
+   * const unsubscribe = circuitBreakerEvents.subscribe(handleEvent);
+   * // cleanup 시:
+   * unsubscribe();
    */
   subscribe(listener: CircuitBreakerEventListener): () => void {
     this.listeners.push(listener);

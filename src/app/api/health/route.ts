@@ -151,7 +151,13 @@ async function checkAIStatus(): Promise<
       return 'connected';
     }
 
-    const vmUrl = env.GCP_MCP_SERVER_URL || 'http://104.154.205.25:10000';
+    const vmUrl = env.GCP_MCP_SERVER_URL;
+    if (!vmUrl) {
+      debug.log(
+        '✅ AI service operational (GCP_MCP_SERVER_URL not configured)'
+      );
+      return 'connected';
+    }
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 3000);
 

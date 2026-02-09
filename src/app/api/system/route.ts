@@ -27,6 +27,7 @@ export const runtime = 'nodejs';
 
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
+import { withAuth } from '@/lib/auth/api-auth';
 import { ProcessManager } from '@/lib/core/system/ProcessManager';
 import {
   getProcessConfigs,
@@ -244,7 +245,7 @@ export async function GET(request: NextRequest) {
 // POST Handler
 // ============================================================================
 
-export async function POST(request: NextRequest) {
+export const POST = withAuth(async (request: NextRequest) => {
   try {
     const body = await request.json();
     const { action, options } = body;
@@ -426,4 +427,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});
