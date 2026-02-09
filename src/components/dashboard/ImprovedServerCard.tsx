@@ -46,6 +46,40 @@ export interface ImprovedServerCardProps {
   enableProgressiveDisclosure?: boolean;
 }
 
+// 상태별 그라데이션 (모듈 레벨 상수 — 매 렌더시 재생성 방지)
+const statusGradients = {
+  critical: {
+    gradient: 'from-red-500 via-rose-500 to-red-600',
+    shadow: 'shadow-red-500/30',
+    glow: 'rgba(239, 68, 68, 0.4)',
+  },
+  warning: {
+    gradient: 'from-amber-500 via-orange-500 to-amber-600',
+    shadow: 'shadow-amber-500/30',
+    glow: 'rgba(245, 158, 11, 0.4)',
+  },
+  online: {
+    gradient: 'from-emerald-500 via-green-500 to-emerald-600',
+    shadow: 'shadow-emerald-500/30',
+    glow: 'rgba(16, 185, 129, 0.3)',
+  },
+  offline: {
+    gradient: 'from-gray-500 via-slate-500 to-gray-600',
+    shadow: 'shadow-gray-500/20',
+    glow: 'rgba(107, 114, 128, 0.3)',
+  },
+  maintenance: {
+    gradient: 'from-blue-500 via-indigo-500 to-blue-600',
+    shadow: 'shadow-blue-500/30',
+    glow: 'rgba(59, 130, 246, 0.3)',
+  },
+  unknown: {
+    gradient: 'from-purple-500 via-violet-500 to-purple-600',
+    shadow: 'shadow-purple-500/20',
+    glow: 'rgba(139, 92, 246, 0.3)',
+  },
+};
+
 const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
   ({
     server,
@@ -60,39 +94,6 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
     // 🎨 White Mode with Glassmorphism + Status Colors
     const statusTheme = getServerStatusTheme(safeServer.status);
 
-    // 🎨 상태별 그라데이션 설정 (랜딩 카드 스타일)
-    const statusGradients = {
-      critical: {
-        gradient: 'from-red-500 via-rose-500 to-red-600',
-        shadow: 'shadow-red-500/30',
-        glow: 'rgba(239, 68, 68, 0.4)',
-      },
-      warning: {
-        gradient: 'from-amber-500 via-orange-500 to-amber-600',
-        shadow: 'shadow-amber-500/30',
-        glow: 'rgba(245, 158, 11, 0.4)',
-      },
-      online: {
-        gradient: 'from-emerald-500 via-green-500 to-emerald-600',
-        shadow: 'shadow-emerald-500/30',
-        glow: 'rgba(16, 185, 129, 0.3)',
-      },
-      offline: {
-        gradient: 'from-gray-500 via-slate-500 to-gray-600',
-        shadow: 'shadow-gray-500/20',
-        glow: 'rgba(107, 114, 128, 0.3)',
-      },
-      maintenance: {
-        gradient: 'from-blue-500 via-indigo-500 to-blue-600',
-        shadow: 'shadow-blue-500/30',
-        glow: 'rgba(59, 130, 246, 0.3)',
-      },
-      unknown: {
-        gradient: 'from-purple-500 via-violet-500 to-purple-600',
-        shadow: 'shadow-purple-500/20',
-        glow: 'rgba(139, 92, 246, 0.3)',
-      },
-    };
     const currentGradient =
       statusGradients[safeServer.status] || statusGradients.online;
 
@@ -121,17 +122,13 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
       [currentMetrics, safeServer]
     );
 
-    // 📊 메트릭별 히스토리 배열 캐싱 (매 렌더 재생성 방지)
-    const cpuHistory = useMemo(
-      () => historyData?.map((h) => h.cpu),
-      [historyData]
-    );
-    const memoryHistory = useMemo(
-      () => historyData?.map((h) => h.memory),
-      [historyData]
-    );
-    const diskHistory = useMemo(
-      () => historyData?.map((h) => h.disk),
+    // 📊 메트릭별 히스토리 배열 캐싱 (단일 useMemo로 통합)
+    const { cpuHistory, memoryHistory, diskHistory } = useMemo(
+      () => ({
+        cpuHistory: historyData?.map((h) => h.cpu),
+        memoryHistory: historyData?.map((h) => h.memory),
+        diskHistory: historyData?.map((h) => h.disk),
+      }),
       [historyData]
     );
 
@@ -161,14 +158,13 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
     }, [variant]);
 
     // Interactions - Progressive Disclosure Toggle
-    const toggleExpansion = useCallback(
-      (e: React.MouseEvent) => {
-        e.stopPropagation();
-        setShowTertiaryInfo((prev) => !prev);
-        if (!showTertiaryInfo) setShowSecondaryInfo(true);
-      },
-      [showTertiaryInfo]
-    );
+    const toggleExpansion = useCallback((e: React.MouseEvent) => {
+      e.stopPropagation();
+      setShowTertiaryInfo((prev) => {
+        if (!prev) setShowSecondaryInfo(true);
+        return !prev;
+      });
+    }, []);
 
     // 카드 클릭 핸들러 (키보드 지원)
     const handleCardClick = useCallback(() => {

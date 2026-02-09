@@ -141,7 +141,10 @@ export function useAutoLogout({
     ];
 
     const handleActivity = () => {
-      updateActivity();
+      const now = Date.now();
+      if (now - lastActivityRef.current > 1000) {
+        updateActivity();
+      }
     };
 
     // 이벤트 리스너 등록

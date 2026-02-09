@@ -2,7 +2,14 @@
 
 import { CheckCircle2 } from 'lucide-react';
 import dynamic from 'next/dynamic';
-import { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
+import {
+  Suspense,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import {
   ARCHITECTURE_DIAGRAMS,
   type ArchitectureDiagram,
@@ -18,10 +25,6 @@ import { DashboardSummary } from './DashboardSummary';
 import type { DashboardStats } from './types/dashboard.types';
 
 // framer-motion 제거됨
-
-// 🛡️ 렌더링 로그 스팸 방지 (한 번만 로그)
-let hasLoggedRenderOnce = false;
-let hasLoggedModeOnce = false;
 
 interface DashboardStatus {
   isRunning?: boolean;
@@ -97,9 +100,13 @@ export default function DashboardContent({
   statusFilter,
   onStatusFilterChange,
 }: DashboardContentProps) {
+  // 🛡️ 렌더링 로그 스팸 방지 (useRef로 HMR/테스트 시 안전)
+  const hasLoggedRenderRef = useRef(false);
+  const hasLoggedModeRef = useRef(false);
+
   // 🚀 디버깅 로그 (한 번만 출력 - 리렌더링 스팸 방지)
-  if (!hasLoggedRenderOnce) {
-    hasLoggedRenderOnce = true;
+  if (!hasLoggedRenderRef.current) {
+    hasLoggedRenderRef.current = true;
     debug.log('🔍 DashboardContent 초기 렌더링:', {
       showSequentialGeneration,
       serversCount: servers?.length,
@@ -334,8 +341,8 @@ export default function DashboardContent({
     }
 
     // 일반 대시보드 모드 - 반응형 그리드 레이아웃 (로그 한 번만)
-    if (!hasLoggedModeOnce) {
-      hasLoggedModeOnce = true;
+    if (!hasLoggedModeRef.current) {
+      hasLoggedModeRef.current = true;
       debug.log('📊 일반 대시보드 모드 렌더링');
     }
     return (

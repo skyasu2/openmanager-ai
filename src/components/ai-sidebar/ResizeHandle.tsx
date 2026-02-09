@@ -48,23 +48,21 @@ export const ResizeHandle = memo(function ResizeHandle({
   if (disabled) return null;
 
   return (
-    // biome-ignore lint/a11y/noStaticElementInteractions: interactive resize handle
+    // biome-ignore lint/a11y/useSemanticElements: resize handle requires custom drag interaction
+    // biome-ignore lint/a11y/useFocusableInteractive: focused via parent sidebar
     <div
+      role="separator"
+      aria-valuenow={0}
+      aria-label="사이드바 너비 조절"
+      aria-orientation="vertical"
       title="드래그하여 너비 조절"
       className={cn(
-        // 위치 및 크기
         'absolute left-0 top-0 z-10 h-full w-1.5',
-        // 커서
         'cursor-col-resize',
-        // 기본 스타일
         'bg-transparent',
-        // hover 효과
         'hover:bg-blue-400/30',
-        // active/resizing 효과
         isResizing && 'bg-blue-500/50',
-        // 터치 영역 확대 (모바일)
         'touch-none',
-        // 전환 효과
         'transition-colors duration-150',
         className
       )}

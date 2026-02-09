@@ -217,32 +217,33 @@ const TimeSeriesChartInner = memo(function TimeSeriesChartInner({
   const effectiveThresholds =
     thresholds ?? THRESHOLD_DEFAULTS[metric] ?? THRESHOLD_DEFAULTS.cpu;
 
-  // Merge actual + prediction data
+  // Merge actual + prediction data (Map 기반 O(n+m))
   const combinedData = useMemo(() => {
-    const merged: CombinedDataPoint[] = data.map((d) => ({
-      timestamp: d.timestamp,
-      value: d.value,
-    }));
+    const mergedMap = new Map<string, CombinedDataPoint>();
+
+    for (const d of data) {
+      mergedMap.set(d.timestamp, { timestamp: d.timestamp, value: d.value });
+    }
 
     if (predictions && showPrediction) {
-      predictions.forEach((p) => {
-        const existing = merged.find((d) => d.timestamp === p.timestamp);
+      for (const p of predictions) {
+        const existing = mergedMap.get(p.timestamp);
         if (existing) {
           existing.predicted = p.predicted;
           existing.upper = p.upper;
           existing.lower = p.lower;
         } else {
-          merged.push({
+          mergedMap.set(p.timestamp, {
             timestamp: p.timestamp,
             predicted: p.predicted,
             upper: p.upper,
             lower: p.lower,
           });
         }
-      });
+      }
     }
 
-    return merged.sort(
+    return Array.from(mergedMap.values()).sort(
       (a, b) =>
         new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
     );

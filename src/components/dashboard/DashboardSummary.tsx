@@ -8,6 +8,7 @@ import {
   XCircle,
 } from 'lucide-react';
 import type React from 'react';
+import { cn } from '@/lib/utils';
 
 interface DashboardStats {
   total: number;
@@ -63,22 +64,104 @@ const statusGradients = {
   },
 };
 
+// 링 색상 매핑
+const ringColors: Record<string, string> = {
+  online: 'ring-emerald-500',
+  warning: 'ring-amber-500',
+  critical: 'ring-rose-500',
+  offline: 'ring-slate-500',
+};
+
+// 상태 카드 컴포넌트 (4개 반복 패턴 추출)
+function StatusCard({
+  status,
+  count,
+  label,
+  icon,
+  activeFilter,
+  onFilterChange,
+  pulse,
+  countColorClass,
+}: {
+  status: string;
+  count: number;
+  label: string;
+  icon: React.ReactNode;
+  activeFilter?: string | null;
+  onFilterChange?: (filter: string | null) => void;
+  pulse?: 'ping' | 'pulse' | false;
+  countColorClass?: string;
+}) {
+  const gradient =
+    statusGradients[status as keyof typeof statusGradients] ??
+    statusGradients.online;
+
+  const handleClick = () => {
+    if (!onFilterChange) return;
+    onFilterChange(activeFilter === status ? null : status);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      handleClick();
+    }
+  };
+
+  return (
+    <div
+      {...(onFilterChange
+        ? {
+            role: 'button' as const,
+            tabIndex: 0,
+            onClick: handleClick,
+            onKeyDown: handleKeyDown,
+          }
+        : {})}
+      className={cn(
+        'group relative overflow-hidden rounded-2xl bg-white/60 backdrop-blur-md p-4',
+        'transition-all duration-300 hover:shadow-lg hover:scale-[1.02]',
+        gradient.border,
+        gradient.glow,
+        onFilterChange && 'cursor-pointer active:scale-[0.98]',
+        activeFilter === status &&
+          `ring-2 ${ringColors[status] ?? 'ring-blue-500'} ring-offset-1`
+      )}
+    >
+      <div
+        className={`absolute inset-0 bg-linear-to-br ${gradient.gradient} opacity-0 group-hover:opacity-[0.08] transition-opacity duration-500`}
+      />
+      {pulse === 'pulse' && count > 0 && (
+        <div className="absolute top-2 right-2 h-2 w-2 rounded-full bg-amber-500 animate-pulse" />
+      )}
+      {pulse === 'ping' && count > 0 && (
+        <>
+          <div className="absolute top-2 right-2 h-2.5 w-2.5 rounded-full bg-rose-500 animate-ping" />
+          <div className="absolute top-2 right-2 h-2.5 w-2.5 rounded-full bg-rose-500" />
+        </>
+      )}
+      <div className="relative z-10 flex flex-col">
+        <span className="flex items-center gap-1.5 text-xs font-semibold text-gray-600/80">
+          {icon} {label}
+        </span>
+        <span
+          className={cn(
+            'mt-2 text-2xl font-bold tracking-tight',
+            countColorClass && count > 0 ? countColorClass : 'text-gray-800'
+          )}
+        >
+          {count}
+        </span>
+      </div>
+    </div>
+  );
+}
+
 export const DashboardSummary: React.FC<DashboardSummaryProps> = ({
   stats,
   activeFilter,
   onFilterChange,
 }) => {
-  const handleFilterClick = (filter: string) => {
-    if (!onFilterChange) return;
-    onFilterChange(activeFilter === filter ? null : filter);
-  };
-
-  const handleFilterKeyDown = (e: React.KeyboardEvent, filter: string) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      handleFilterClick(filter);
-    }
-  };
   // Null-safe 처리
   const safeStats = {
     total: stats?.total ?? 0,
@@ -129,126 +212,44 @@ export const DashboardSummary: React.FC<DashboardSummaryProps> = ({
         </div>
       </div>
 
-      {/* 2. Status Cards - 애니메이션 및 그라데이션 강화 */}
+      {/* 2. Status Cards */}
       <div className="grid grid-cols-4 gap-3 lg:col-span-5">
-        {/* 온라인 카드 */}
-        <div
-          {...(onFilterChange
-            ? {
-                role: 'button' as const,
-                tabIndex: 0,
-                onClick: () => handleFilterClick('online'),
-                onKeyDown: (e: React.KeyboardEvent) =>
-                  handleFilterKeyDown(e, 'online'),
-              }
-            : {})}
-          className={`group relative overflow-hidden rounded-2xl ${statusGradients.online.border} bg-white/60 backdrop-blur-md p-4 transition-all duration-300 hover:shadow-lg hover:scale-[1.02] ${statusGradients.online.glow} ${onFilterChange ? 'cursor-pointer active:scale-[0.98]' : ''} ${activeFilter === 'online' ? 'ring-2 ring-emerald-500 ring-offset-1' : ''}`}
-        >
-          <div
-            className={`absolute inset-0 bg-linear-to-br ${statusGradients.online.gradient} opacity-0 group-hover:opacity-[0.08] transition-opacity duration-500`}
-          />
-          <div className="relative z-10 flex flex-col">
-            <span className="flex items-center gap-1.5 text-xs font-semibold text-gray-600/80">
-              <CheckCircle2 size={13} className="text-emerald-500" /> 온라인
-            </span>
-            <span className="mt-2 text-2xl font-bold text-gray-800 tracking-tight">
-              {safeStats.online}
-            </span>
-          </div>
-        </div>
-
-        {/* 경고 카드 */}
-        <div
-          {...(onFilterChange
-            ? {
-                role: 'button' as const,
-                tabIndex: 0,
-                onClick: () => handleFilterClick('warning'),
-                onKeyDown: (e: React.KeyboardEvent) =>
-                  handleFilterKeyDown(e, 'warning'),
-              }
-            : {})}
-          className={`group relative overflow-hidden rounded-2xl ${statusGradients.warning.border} bg-white/60 backdrop-blur-md p-4 transition-all duration-300 hover:shadow-lg hover:scale-[1.02] ${statusGradients.warning.glow} ${onFilterChange ? 'cursor-pointer active:scale-[0.98]' : ''} ${activeFilter === 'warning' ? 'ring-2 ring-amber-500 ring-offset-1' : ''}`}
-        >
-          <div
-            className={`absolute inset-0 bg-linear-to-br ${statusGradients.warning.gradient} opacity-0 group-hover:opacity-[0.08] transition-opacity duration-500`}
-          />
-          {/* 경고 펄스 효과 */}
-          {safeStats.warning > 0 && (
-            <div className="absolute top-2 right-2 h-2 w-2 rounded-full bg-amber-500 animate-pulse" />
-          )}
-          <div className="relative z-10 flex flex-col">
-            <span className="flex items-center gap-1.5 text-xs font-semibold text-gray-600/80">
-              <AlertTriangle size={13} className="text-amber-500" /> 경고
-            </span>
-            <span
-              className={`mt-2 text-2xl font-bold tracking-tight ${safeStats.warning > 0 ? 'text-amber-600' : 'text-gray-800'}`}
-            >
-              {safeStats.warning}
-            </span>
-          </div>
-        </div>
-
-        {/* 위험 카드 */}
-        <div
-          {...(onFilterChange
-            ? {
-                role: 'button' as const,
-                tabIndex: 0,
-                onClick: () => handleFilterClick('critical'),
-                onKeyDown: (e: React.KeyboardEvent) =>
-                  handleFilterKeyDown(e, 'critical'),
-              }
-            : {})}
-          className={`group relative overflow-hidden rounded-2xl ${statusGradients.critical.border} bg-white/60 backdrop-blur-md p-4 transition-all duration-300 hover:shadow-lg hover:scale-[1.02] ${statusGradients.critical.glow} ${onFilterChange ? 'cursor-pointer active:scale-[0.98]' : ''} ${activeFilter === 'critical' ? 'ring-2 ring-rose-500 ring-offset-1' : ''}`}
-        >
-          <div
-            className={`absolute inset-0 bg-linear-to-br ${statusGradients.critical.gradient} opacity-0 group-hover:opacity-[0.08] transition-opacity duration-500`}
-          />
-          {/* 위험 펄스 효과 - 더 강조 */}
-          {safeStats.critical > 0 && (
-            <>
-              <div className="absolute top-2 right-2 h-2.5 w-2.5 rounded-full bg-rose-500 animate-ping" />
-              <div className="absolute top-2 right-2 h-2.5 w-2.5 rounded-full bg-rose-500" />
-            </>
-          )}
-          <div className="relative z-10 flex flex-col">
-            <span className="flex items-center gap-1.5 text-xs font-semibold text-gray-600/80">
-              <AlertOctagon size={13} className="text-rose-500" /> 위험
-            </span>
-            <span
-              className={`mt-2 text-2xl font-bold tracking-tight ${safeStats.critical > 0 ? 'text-rose-600' : 'text-gray-800'}`}
-            >
-              {safeStats.critical}
-            </span>
-          </div>
-        </div>
-
-        {/* 오프라인 카드 */}
-        <div
-          {...(onFilterChange
-            ? {
-                role: 'button' as const,
-                tabIndex: 0,
-                onClick: () => handleFilterClick('offline'),
-                onKeyDown: (e: React.KeyboardEvent) =>
-                  handleFilterKeyDown(e, 'offline'),
-              }
-            : {})}
-          className={`group relative overflow-hidden rounded-2xl ${statusGradients.offline.border} bg-white/60 backdrop-blur-md p-4 transition-all duration-300 hover:shadow-lg hover:scale-[1.02] ${statusGradients.offline.glow} ${onFilterChange ? 'cursor-pointer active:scale-[0.98]' : ''} ${activeFilter === 'offline' ? 'ring-2 ring-slate-500 ring-offset-1' : ''}`}
-        >
-          <div
-            className={`absolute inset-0 bg-linear-to-br ${statusGradients.offline.gradient} opacity-0 group-hover:opacity-[0.08] transition-opacity duration-500`}
-          />
-          <div className="relative z-10 flex flex-col">
-            <span className="flex items-center gap-1.5 text-xs font-semibold text-gray-500">
-              <XCircle size={13} className="text-slate-400" /> 오프라인
-            </span>
-            <span className="mt-2 text-2xl font-bold text-slate-700 tracking-tight">
-              {safeStats.offline}
-            </span>
-          </div>
-        </div>
+        <StatusCard
+          status="online"
+          count={safeStats.online}
+          label="온라인"
+          icon={<CheckCircle2 size={13} className="text-emerald-500" />}
+          activeFilter={activeFilter}
+          onFilterChange={onFilterChange}
+        />
+        <StatusCard
+          status="warning"
+          count={safeStats.warning}
+          label="경고"
+          icon={<AlertTriangle size={13} className="text-amber-500" />}
+          activeFilter={activeFilter}
+          onFilterChange={onFilterChange}
+          pulse="pulse"
+          countColorClass="text-amber-600"
+        />
+        <StatusCard
+          status="critical"
+          count={safeStats.critical}
+          label="위험"
+          icon={<AlertOctagon size={13} className="text-rose-500" />}
+          activeFilter={activeFilter}
+          onFilterChange={onFilterChange}
+          pulse="ping"
+          countColorClass="text-rose-600"
+        />
+        <StatusCard
+          status="offline"
+          count={safeStats.offline}
+          label="오프라인"
+          icon={<XCircle size={13} className="text-slate-400" />}
+          activeFilter={activeFilter}
+          onFilterChange={onFilterChange}
+        />
       </div>
 
       {/* 3. 시스템 상태 - 동적 그라데이션 */}
