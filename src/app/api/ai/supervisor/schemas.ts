@@ -98,7 +98,9 @@ const partSchema = z.union([
   z.object({ type: z.literal('step-start') }).passthrough(),
   z.object({ type: z.literal('step-finish') }).passthrough(),
   // Fallback: 알 수 없는 타입도 허용 (AI SDK 업데이트 대응)
-  z.object({ type: z.string() }).passthrough(),
+  z
+    .object({ type: z.string() })
+    .passthrough(),
 ]);
 
 // 하이브리드 메시지 스키마: AI SDK v5 (parts) + 레거시 (content) 모두 지원
