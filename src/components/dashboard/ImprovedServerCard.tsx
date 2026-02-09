@@ -23,6 +23,7 @@ import type {
   Server as ServerType,
   Service,
 } from '../../types/server';
+import { formatUptime } from '../../utils/serverUtils';
 import ServerCardErrorBoundary from '../error/ServerCardErrorBoundary';
 import { AIInsightBadge } from '../shared/AIInsightBadge';
 import { MiniLineChart } from '../shared/MiniLineChart';
@@ -374,7 +375,7 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
               <DetailRow
                 icon={<Clock className="h-3 w-3" />}
                 label="Uptime"
-                value={safeServer.uptime}
+                value={formatUptime(safeServer.uptime)}
               />
               <DetailRow
                 icon={<Zap className="h-3 w-3" />}
