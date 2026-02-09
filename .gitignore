@@ -27,6 +27,7 @@ venv/
 openmanager-*.png
 playwright-*.png
 step*.png
+qa-*.png
 test-output/
 screenshots/
 docs/screenshots/
