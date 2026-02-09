@@ -124,11 +124,11 @@ const FeatureCardItem = memo(
 
           {/* 모든 카드들의 통일된 컨텐츠 */}
           <div className="relative z-10">
-            <h3
+            <h2
               className={`mb-2 text-lg font-semibold leading-snug transition-colors ${cardStyles.title}`}
             >
               {renderAIGradientWithAnimation(card.title)}
-            </h3>
+            </h2>
             <p
               className={`text-sm leading-relaxed transition-colors ${cardStyles.description}`}
             >
