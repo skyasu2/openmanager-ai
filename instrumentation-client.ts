@@ -8,6 +8,7 @@
  */
 
 import * as Sentry from '@sentry/nextjs';
+import { makeFetchTransport } from '@sentry/nextjs';
 
 // Sentry DSN (Public Key - 전송만 가능, 읽기 불가)
 const SENTRY_DSN =
@@ -19,6 +20,12 @@ Sentry.init({
 
   // 🎯 Tunnel 경로 (ad-blocker 우회, 수동 API route)
   tunnel: '/api/sentry-tunnel',
+
+  // 🎯 페이지 전환 시 abort 방지: keepalive fetch
+  transport: makeFetchTransport,
+  transportOptions: {
+    fetchOptions: { keepalive: true },
+  },
 
   // 🎯 무료 티어 최적화: Replay 비활성화 (이벤트 절약)
   integrations: [],

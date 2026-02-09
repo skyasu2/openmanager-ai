@@ -268,9 +268,9 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
             </div>
             <div className="min-w-0 flex-1">
               <div className="mb-0.5 flex items-center gap-1.5">
-                <h3 className="truncate text-sm font-semibold text-gray-900">
+                <h2 className="truncate text-sm font-semibold text-gray-900">
                   {safeServer.name}
-                </h3>
+                </h2>
               </div>
               {/* 서버 타입 + OS 정보 표시 (WCAG AA Color Contrast) */}
               <div className="flex items-center gap-2 text-xs">

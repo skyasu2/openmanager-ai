@@ -353,7 +353,7 @@ export default function DashboardContent({
     }
     return (
       <div className="animate-fade-in h-full w-full">
-        <div className="mx-auto h-full max-w-none space-y-4 overflow-y-auto px-4 sm:px-6 lg:px-8 2xl:max-w-[1800px]">
+        <div className="mx-auto h-full max-w-none space-y-4 overflow-y-auto overscroll-contain scroll-smooth px-4 pb-6 sm:px-6 lg:px-8 2xl:max-w-[1800px]">
           {/* 🎯 메인 컨텐츠 영역 */}
           {servers && servers.length > 0 ? (
             <>

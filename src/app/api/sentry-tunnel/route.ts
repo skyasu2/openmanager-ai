@@ -46,6 +46,7 @@ export async function POST(request: Request) {
     const response = await fetch(sentryUrl, {
       method: 'POST',
       body,
+      keepalive: true,
       headers: {
         'Content-Type': 'application/x-sentry-envelope',
       },
