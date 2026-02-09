@@ -53,9 +53,9 @@ export const AISidebarHeader: FC<AISidebarHeaderProps> = ({
 
         {/* 제목 및 설명 - 시맨틱 구조 */}
         <div className="min-w-0 flex-1">
-          <h1 className="truncate text-base font-bold text-gray-800 sm:text-lg">
+          <h2 className="truncate text-base font-bold text-gray-800 sm:text-lg">
             <BasicTyping text="AI 어시스턴트" speed="fast" showCursor={false} />
-          </h1>
+          </h2>
           <p className="truncate text-xs text-gray-600 sm:text-sm">
             AI Chat으로 시스템 질의
           </p>

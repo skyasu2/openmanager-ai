@@ -369,10 +369,12 @@ export default function DashboardContent({
                 <button
                   type="button"
                   onClick={() => setShowTopology((prev) => !prev)}
+                  aria-expanded={showTopology}
                   className="flex w-full items-center justify-between px-5 py-3 text-left text-sm font-medium text-gray-300 transition-colors hover:text-white"
                 >
                   <span>Infrastructure Topology (15 Servers)</span>
                   <span
+                    aria-hidden="true"
                     className={`transition-transform duration-200 ${showTopology ? 'rotate-180' : ''}`}
                   >
                     &#9660;

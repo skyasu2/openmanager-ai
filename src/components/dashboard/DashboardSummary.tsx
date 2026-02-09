@@ -114,6 +114,8 @@ function StatusCard({
         ? {
             role: 'button' as const,
             tabIndex: 0,
+            'aria-label': `${label} ${count}대 필터`,
+            'aria-pressed': activeFilter === status,
             onClick: handleClick,
             onKeyDown: handleKeyDown,
           }
