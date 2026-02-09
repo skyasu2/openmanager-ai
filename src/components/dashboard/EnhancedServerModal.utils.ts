@@ -10,6 +10,7 @@
 import { getThreshold } from '@/config/rules';
 import type { Server } from '@/types/server';
 import type { ServerStatus } from '@/types/server-enums';
+import { formatUptime as formatUptimeCompact } from '@/utils/serverUtils';
 import type {
   MetricColorResult,
   ServerData,
@@ -238,10 +239,7 @@ export function normalizeServerData(
     network:
       currentMetrics?.network ??
       (typeof server.network === 'number' ? server.network : 0),
-    uptime:
-      typeof server.uptime === 'number'
-        ? `${Math.floor(server.uptime / 3600)}h ${Math.floor((server.uptime % 3600) / 60)}m`
-        : server.uptime || '0h 0m',
+    uptime: formatUptimeCompact(server.uptime),
     lastUpdate: server.lastUpdate || new Date(),
     alerts:
       typeof server.alerts === 'number'
