@@ -5,7 +5,7 @@
     "evaluationInterval": "10m",
     "source": "node-exporter"
   },
-  "_scenario": "1시 정상 운영 (DB 자동 백업 중 디스크 I/O 과부하 전조 감지)",
+  "_scenario": "야간 정상 운영 — NFS 디스크 사용량 서서히 증가 (전조)",
   "dataPoints": [
     {
       "timestampMs": 1770134400000,
@@ -1568,9 +1568,9 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 64,
+            "node_cpu_usage_percent": 60,
             "node_memory_usage_percent": 72,
-            "node_filesystem_usage_percent": 63,
+            "node_filesystem_usage_percent": 55,
             "node_network_transmit_bytes_rate": 43,
             "node_load1": 11.24,
             "node_load5": 9.67,
@@ -1718,9 +1718,9 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 25,
+            "node_cpu_usage_percent": 28,
             "node_memory_usage_percent": 39,
-            "node_filesystem_usage_percent": 63,
+            "node_filesystem_usage_percent": 66,
             "node_network_transmit_bytes_rate": 50,
             "node_load1": 1.02,
             "node_load5": 0.8,
@@ -1733,7 +1733,7 @@
             "memory_total_bytes": 17179869184,
             "disk_total_bytes": 5368709120000
           },
-          "logs": []
+          "logs": ["[INFO] Log rotation filling /data — disk at 66%"]
         },
         "storage-s3gw-pus-01:9100": {
           "instance": "storage-s3gw-pus-01:9100",
@@ -2023,9 +2023,9 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 68,
+            "node_cpu_usage_percent": 63,
             "node_memory_usage_percent": 75,
-            "node_filesystem_usage_percent": 62,
+            "node_filesystem_usage_percent": 58,
             "node_network_transmit_bytes_rate": 41,
             "node_load1": 10.63,
             "node_load5": 8.27,
@@ -2038,7 +2038,7 @@
             "memory_total_bytes": 68719476736,
             "disk_total_bytes": 1073741824000
           },
-          "logs": []
+          "logs": ["[INFO] Nightly backup started — binary log growing"]
         },
         "db-mysql-icn-replica:9100": {
           "instance": "db-mysql-icn-replica:9100",
@@ -2173,9 +2173,9 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 28,
+            "node_cpu_usage_percent": 30,
             "node_memory_usage_percent": 42,
-            "node_filesystem_usage_percent": 63,
+            "node_filesystem_usage_percent": 70,
             "node_network_transmit_bytes_rate": 45,
             "node_load1": 0.91,
             "node_load5": 0.86,
@@ -2188,7 +2188,7 @@
             "memory_total_bytes": 17179869184,
             "disk_total_bytes": 5368709120000
           },
-          "logs": []
+          "logs": ["[INFO] Log rotation filling /data — disk at 70%"]
         },
         "storage-s3gw-pus-01:9100": {
           "instance": "storage-s3gw-pus-01:9100",
@@ -2478,9 +2478,9 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 69,
+            "node_cpu_usage_percent": 66,
             "node_memory_usage_percent": 71,
-            "node_filesystem_usage_percent": 62,
+            "node_filesystem_usage_percent": 61,
             "node_network_transmit_bytes_rate": 43,
             "node_load1": 12.69,
             "node_load5": 11.56,
@@ -2493,7 +2493,7 @@
             "memory_total_bytes": 68719476736,
             "disk_total_bytes": 1073741824000
           },
-          "logs": []
+          "logs": ["[INFO] Nightly backup started — binary log growing"]
         },
         "db-mysql-icn-replica:9100": {
           "instance": "db-mysql-icn-replica:9100",
@@ -2628,9 +2628,9 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 27,
+            "node_cpu_usage_percent": 32,
             "node_memory_usage_percent": 36,
-            "node_filesystem_usage_percent": 64,
+            "node_filesystem_usage_percent": 74,
             "node_network_transmit_bytes_rate": 51,
             "node_load1": 1.23,
             "node_load5": 0.97,
@@ -2643,7 +2643,7 @@
             "memory_total_bytes": 17179869184,
             "disk_total_bytes": 5368709120000
           },
-          "logs": []
+          "logs": ["[INFO] Log rotation filling /data — disk at 74%"]
         },
         "storage-s3gw-pus-01:9100": {
           "instance": "storage-s3gw-pus-01:9100",

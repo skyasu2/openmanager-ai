@@ -5,7 +5,7 @@
     "evaluationInterval": "10m",
     "source": "node-exporter"
   },
-  "_scenario": "DB 슬로우 쿼리 누적 - 성능 저하",
+  "_scenario": "DB Primary OOM → 서버 다운 (db-primary up=0, db-replica critical, api-01 warning)",
   "dataPoints": [
     {
       "timestampMs": 1770141600000,
@@ -23,15 +23,15 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 38,
-            "node_memory_usage_percent": 44,
-            "node_filesystem_usage_percent": 31,
-            "node_network_transmit_bytes_rate": 64,
-            "node_load1": 1.77,
-            "node_load5": 1.43,
-            "node_boot_time_seconds": 1736004454,
-            "node_procs_running": 104,
-            "node_http_request_duration_milliseconds": 347
+            "node_cpu_usage_percent": 31,
+            "node_memory_usage_percent": 43,
+            "node_filesystem_usage_percent": 28,
+            "node_network_transmit_bytes_rate": 56,
+            "node_load1": 1.2,
+            "node_load5": 1,
+            "node_boot_time_seconds": 1735963004,
+            "node_procs_running": 120,
+            "node_http_request_duration_milliseconds": 200
           },
           "nodeInfo": {
             "cpu_cores": 4,
@@ -53,15 +53,15 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 27,
-            "node_memory_usage_percent": 40,
+            "node_cpu_usage_percent": 30,
+            "node_memory_usage_percent": 42,
             "node_filesystem_usage_percent": 28,
-            "node_network_transmit_bytes_rate": 54,
-            "node_load1": 1.28,
-            "node_load5": 1.21,
-            "node_boot_time_seconds": 1735941071,
-            "node_procs_running": 130,
-            "node_http_request_duration_milliseconds": 359
+            "node_network_transmit_bytes_rate": 56,
+            "node_load1": 1.2,
+            "node_load5": 1,
+            "node_boot_time_seconds": 1735963004,
+            "node_procs_running": 120,
+            "node_http_request_duration_milliseconds": 200
           },
           "nodeInfo": {
             "cpu_cores": 4,
@@ -83,15 +83,15 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 22,
-            "node_memory_usage_percent": 37,
-            "node_filesystem_usage_percent": 23,
-            "node_network_transmit_bytes_rate": 44,
-            "node_load1": 0.89,
-            "node_load5": 0.77,
-            "node_boot_time_seconds": 1735982451,
-            "node_procs_running": 128,
-            "node_http_request_duration_milliseconds": 389
+            "node_cpu_usage_percent": 29,
+            "node_memory_usage_percent": 42,
+            "node_filesystem_usage_percent": 28,
+            "node_network_transmit_bytes_rate": 55,
+            "node_load1": 1.2,
+            "node_load5": 1,
+            "node_boot_time_seconds": 1735963004,
+            "node_procs_running": 120,
+            "node_http_request_duration_milliseconds": 200
           },
           "nodeInfo": {
             "cpu_cores": 4,
@@ -113,15 +113,15 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 62,
-            "node_memory_usage_percent": 65,
-            "node_filesystem_usage_percent": 34,
-            "node_network_transmit_bytes_rate": 50,
-            "node_load1": 4.31,
-            "node_load5": 3.79,
-            "node_boot_time_seconds": 1735984235,
-            "node_procs_running": 105,
-            "node_http_request_duration_milliseconds": 272
+            "node_cpu_usage_percent": 48,
+            "node_memory_usage_percent": 55,
+            "node_filesystem_usage_percent": 36,
+            "node_network_transmit_bytes_rate": 55,
+            "node_load1": 4,
+            "node_load5": 3.5,
+            "node_boot_time_seconds": 1735964094,
+            "node_procs_running": 130,
+            "node_http_request_duration_milliseconds": 200
           },
           "nodeInfo": {
             "cpu_cores": 8,
@@ -143,15 +143,15 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 38,
-            "node_memory_usage_percent": 48,
-            "node_filesystem_usage_percent": 35,
-            "node_network_transmit_bytes_rate": 49,
-            "node_load1": 2.49,
-            "node_load5": 2.28,
-            "node_boot_time_seconds": 1735936867,
-            "node_procs_running": 124,
-            "node_http_request_duration_milliseconds": 270
+            "node_cpu_usage_percent": 44,
+            "node_memory_usage_percent": 52,
+            "node_filesystem_usage_percent": 31,
+            "node_network_transmit_bytes_rate": 50,
+            "node_load1": 3.8,
+            "node_load5": 3.4,
+            "node_boot_time_seconds": 1736015664,
+            "node_procs_running": 133,
+            "node_http_request_duration_milliseconds": 190
           },
           "nodeInfo": {
             "cpu_cores": 8,
@@ -173,15 +173,15 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 23,
-            "node_memory_usage_percent": 39,
-            "node_filesystem_usage_percent": 26,
-            "node_network_transmit_bytes_rate": 34,
-            "node_load1": 1.58,
-            "node_load5": 1.42,
-            "node_boot_time_seconds": 1735938695,
-            "node_procs_running": 112,
-            "node_http_request_duration_milliseconds": 359
+            "node_cpu_usage_percent": 40,
+            "node_memory_usage_percent": 50,
+            "node_filesystem_usage_percent": 32,
+            "node_network_transmit_bytes_rate": 49,
+            "node_load1": 3,
+            "node_load5": 2.8,
+            "node_boot_time_seconds": 1735964094,
+            "node_procs_running": 125,
+            "node_http_request_duration_milliseconds": 180
           },
           "nodeInfo": {
             "cpu_cores": 8,
@@ -203,25 +203,22 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 80,
-            "node_memory_usage_percent": 84,
-            "node_filesystem_usage_percent": 62,
-            "node_network_transmit_bytes_rate": 36,
-            "node_load1": 10.31,
-            "node_load5": 8.16,
-            "node_boot_time_seconds": 1735953202,
-            "node_procs_running": 115,
-            "node_http_request_duration_milliseconds": 136
+            "node_cpu_usage_percent": 72,
+            "node_memory_usage_percent": 88,
+            "node_filesystem_usage_percent": 88,
+            "node_network_transmit_bytes_rate": 50,
+            "node_load1": 12,
+            "node_load5": 9,
+            "node_boot_time_seconds": 1735968472,
+            "node_procs_running": 140,
+            "node_http_request_duration_milliseconds": 80
           },
           "nodeInfo": {
             "cpu_cores": 16,
             "memory_total_bytes": 68719476736,
             "disk_total_bytes": 1073741824000
           },
-          "logs": [
-            "[INFO] mysqld: Memory pressure detected, freeing cache",
-            "[WARN] mysqld: CPU spike detected during query execution"
-          ]
+          "logs": []
         },
         "db-mysql-icn-replica:9100": {
           "instance": "db-mysql-icn-replica:9100",
@@ -236,15 +233,15 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 35,
-            "node_memory_usage_percent": 59,
-            "node_filesystem_usage_percent": 40,
-            "node_network_transmit_bytes_rate": 37,
-            "node_load1": 4.55,
-            "node_load5": 3.87,
-            "node_boot_time_seconds": 1736000378,
-            "node_procs_running": 120,
-            "node_http_request_duration_milliseconds": 101
+            "node_cpu_usage_percent": 40,
+            "node_memory_usage_percent": 62,
+            "node_filesystem_usage_percent": 44,
+            "node_network_transmit_bytes_rate": 45,
+            "node_load1": 6,
+            "node_load5": 5,
+            "node_boot_time_seconds": 1736004342,
+            "node_procs_running": 115,
+            "node_http_request_duration_milliseconds": 70
           },
           "nodeInfo": {
             "cpu_cores": 16,
@@ -266,15 +263,15 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 19,
-            "node_memory_usage_percent": 48,
-            "node_filesystem_usage_percent": 40,
-            "node_network_transmit_bytes_rate": 21,
-            "node_load1": 2.7,
-            "node_load5": 2.38,
-            "node_boot_time_seconds": 1735968033,
-            "node_procs_running": 120,
-            "node_http_request_duration_milliseconds": 110
+            "node_cpu_usage_percent": 20,
+            "node_memory_usage_percent": 50,
+            "node_filesystem_usage_percent": 42,
+            "node_network_transmit_bytes_rate": 32,
+            "node_load1": 3.5,
+            "node_load5": 3,
+            "node_boot_time_seconds": 1735987809,
+            "node_procs_running": 116,
+            "node_http_request_duration_milliseconds": 55
           },
           "nodeInfo": {
             "cpu_cores": 16,
@@ -296,15 +293,15 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 21,
-            "node_memory_usage_percent": 72,
-            "node_filesystem_usage_percent": 21,
-            "node_network_transmit_bytes_rate": 49,
-            "node_load1": 0.97,
-            "node_load5": 0.82,
-            "node_boot_time_seconds": 1735969887,
-            "node_procs_running": 123,
-            "node_http_request_duration_milliseconds": 41
+            "node_cpu_usage_percent": 24,
+            "node_memory_usage_percent": 71,
+            "node_filesystem_usage_percent": 19,
+            "node_network_transmit_bytes_rate": 44,
+            "node_load1": 0.9,
+            "node_load5": 0.7,
+            "node_boot_time_seconds": 1735951919,
+            "node_procs_running": 103,
+            "node_http_request_duration_milliseconds": 22
           },
           "nodeInfo": {
             "cpu_cores": 4,
@@ -326,15 +323,15 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 25,
-            "node_memory_usage_percent": 74,
-            "node_filesystem_usage_percent": 18,
-            "node_network_transmit_bytes_rate": 39,
-            "node_load1": 0.8,
-            "node_load5": 0.68,
-            "node_boot_time_seconds": 1735951767,
-            "node_procs_running": 104,
-            "node_http_request_duration_milliseconds": 38
+            "node_cpu_usage_percent": 26,
+            "node_memory_usage_percent": 73,
+            "node_filesystem_usage_percent": 19,
+            "node_network_transmit_bytes_rate": 44,
+            "node_load1": 0.9,
+            "node_load5": 0.7,
+            "node_boot_time_seconds": 1735951919,
+            "node_procs_running": 103,
+            "node_http_request_duration_milliseconds": 22
           },
           "nodeInfo": {
             "cpu_cores": 4,
@@ -356,22 +353,24 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 27,
-            "node_memory_usage_percent": 36,
-            "node_filesystem_usage_percent": 63,
-            "node_network_transmit_bytes_rate": 54,
-            "node_load1": 1.29,
-            "node_load5": 1.05,
-            "node_boot_time_seconds": 1735979003,
-            "node_procs_running": 125,
-            "node_http_request_duration_milliseconds": 339
+            "node_cpu_usage_percent": 35,
+            "node_memory_usage_percent": 50,
+            "node_filesystem_usage_percent": 95,
+            "node_network_transmit_bytes_rate": 55,
+            "node_load1": 1.8,
+            "node_load5": 1.5,
+            "node_boot_time_seconds": 1735975801,
+            "node_procs_running": 138,
+            "node_http_request_duration_milliseconds": 180
           },
           "nodeInfo": {
             "cpu_cores": 4,
             "memory_total_bytes": 17179869184,
             "disk_total_bytes": 5368709120000
           },
-          "logs": []
+          "logs": [
+            "[WARNING] Filesystem /data still at 95% — cleanup pending"
+          ]
         },
         "storage-s3gw-pus-01:9100": {
           "instance": "storage-s3gw-pus-01:9100",
@@ -386,15 +385,15 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 19,
-            "node_memory_usage_percent": 35,
+            "node_cpu_usage_percent": 18,
+            "node_memory_usage_percent": 34,
             "node_filesystem_usage_percent": 52,
-            "node_network_transmit_bytes_rate": 59,
-            "node_load1": 0.45,
-            "node_load5": 0.41,
-            "node_boot_time_seconds": 1735943409,
-            "node_procs_running": 124,
-            "node_http_request_duration_milliseconds": 387
+            "node_network_transmit_bytes_rate": 57,
+            "node_load1": 0.3,
+            "node_load5": 0.3,
+            "node_boot_time_seconds": 1735961740,
+            "node_procs_running": 140,
+            "node_http_request_duration_milliseconds": 150
           },
           "nodeInfo": {
             "cpu_cores": 2,
@@ -416,15 +415,15 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 40,
-            "node_memory_usage_percent": 36,
-            "node_filesystem_usage_percent": 13,
-            "node_network_transmit_bytes_rate": 66,
-            "node_load1": 1.68,
-            "node_load5": 1.52,
-            "node_boot_time_seconds": 1735946302,
-            "node_procs_running": 100,
-            "node_http_request_duration_milliseconds": 346
+            "node_cpu_usage_percent": 38,
+            "node_memory_usage_percent": 37,
+            "node_filesystem_usage_percent": 17,
+            "node_network_transmit_bytes_rate": 74,
+            "node_load1": 1.5,
+            "node_load5": 1.3,
+            "node_boot_time_seconds": 1735936266,
+            "node_procs_running": 132,
+            "node_http_request_duration_milliseconds": 165
           },
           "nodeInfo": {
             "cpu_cores": 4,
@@ -448,13 +447,13 @@
             "up": 1,
             "node_cpu_usage_percent": 34,
             "node_memory_usage_percent": 34,
-            "node_filesystem_usage_percent": 14,
-            "node_network_transmit_bytes_rate": 70,
-            "node_load1": 1.33,
-            "node_load5": 1.15,
-            "node_boot_time_seconds": 1735954340,
-            "node_procs_running": 133,
-            "node_http_request_duration_milliseconds": 306
+            "node_filesystem_usage_percent": 16,
+            "node_network_transmit_bytes_rate": 71,
+            "node_load1": 1.4,
+            "node_load5": 1.2,
+            "node_boot_time_seconds": 1735936266,
+            "node_procs_running": 130,
+            "node_http_request_duration_milliseconds": 160
           },
           "nodeInfo": {
             "cpu_cores": 4,
@@ -481,15 +480,15 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 39,
-            "node_memory_usage_percent": 44,
-            "node_filesystem_usage_percent": 31,
-            "node_network_transmit_bytes_rate": 61,
-            "node_load1": 1.36,
-            "node_load5": 1.28,
-            "node_boot_time_seconds": 1735963218,
-            "node_procs_running": 128,
-            "node_http_request_duration_milliseconds": 286
+            "node_cpu_usage_percent": 31,
+            "node_memory_usage_percent": 42,
+            "node_filesystem_usage_percent": 28,
+            "node_network_transmit_bytes_rate": 56,
+            "node_load1": 1.2,
+            "node_load5": 1,
+            "node_boot_time_seconds": 1735963004,
+            "node_procs_running": 120,
+            "node_http_request_duration_milliseconds": 200
           },
           "nodeInfo": {
             "cpu_cores": 4,
@@ -511,15 +510,15 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 30,
-            "node_memory_usage_percent": 44,
-            "node_filesystem_usage_percent": 26,
-            "node_network_transmit_bytes_rate": 58,
-            "node_load1": 1.4,
-            "node_load5": 1.1,
-            "node_boot_time_seconds": 1735992882,
-            "node_procs_running": 118,
-            "node_http_request_duration_milliseconds": 394
+            "node_cpu_usage_percent": 31,
+            "node_memory_usage_percent": 41,
+            "node_filesystem_usage_percent": 28,
+            "node_network_transmit_bytes_rate": 55,
+            "node_load1": 1.2,
+            "node_load5": 1,
+            "node_boot_time_seconds": 1735963004,
+            "node_procs_running": 120,
+            "node_http_request_duration_milliseconds": 200
           },
           "nodeInfo": {
             "cpu_cores": 4,
@@ -541,15 +540,15 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 20,
-            "node_memory_usage_percent": 37,
-            "node_filesystem_usage_percent": 25,
-            "node_network_transmit_bytes_rate": 44,
-            "node_load1": 0.81,
-            "node_load5": 0.65,
-            "node_boot_time_seconds": 1735970990,
-            "node_procs_running": 135,
-            "node_http_request_duration_milliseconds": 304
+            "node_cpu_usage_percent": 31,
+            "node_memory_usage_percent": 41,
+            "node_filesystem_usage_percent": 28,
+            "node_network_transmit_bytes_rate": 53,
+            "node_load1": 1.2,
+            "node_load5": 1,
+            "node_boot_time_seconds": 1735963004,
+            "node_procs_running": 120,
+            "node_http_request_duration_milliseconds": 200
           },
           "nodeInfo": {
             "cpu_cores": 4,
@@ -571,15 +570,15 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 61,
-            "node_memory_usage_percent": 64,
-            "node_filesystem_usage_percent": 37,
-            "node_network_transmit_bytes_rate": 48,
-            "node_load1": 4.93,
-            "node_load5": 4.53,
-            "node_boot_time_seconds": 1735973325,
+            "node_cpu_usage_percent": 51,
+            "node_memory_usage_percent": 58,
+            "node_filesystem_usage_percent": 36,
+            "node_network_transmit_bytes_rate": 59,
+            "node_load1": 5,
+            "node_load5": 4.2,
+            "node_boot_time_seconds": 1735964094,
             "node_procs_running": 135,
-            "node_http_request_duration_milliseconds": 325
+            "node_http_request_duration_milliseconds": 250
           },
           "nodeInfo": {
             "cpu_cores": 8,
@@ -601,15 +600,15 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 41,
-            "node_memory_usage_percent": 51,
-            "node_filesystem_usage_percent": 35,
-            "node_network_transmit_bytes_rate": 49,
-            "node_load1": 2.95,
-            "node_load5": 2.6,
-            "node_boot_time_seconds": 1736017373,
-            "node_procs_running": 114,
-            "node_http_request_duration_milliseconds": 389
+            "node_cpu_usage_percent": 47,
+            "node_memory_usage_percent": 54,
+            "node_filesystem_usage_percent": 31,
+            "node_network_transmit_bytes_rate": 53,
+            "node_load1": 4.3,
+            "node_load5": 3.7,
+            "node_boot_time_seconds": 1736015664,
+            "node_procs_running": 136,
+            "node_http_request_duration_milliseconds": 220
           },
           "nodeInfo": {
             "cpu_cores": 8,
@@ -631,15 +630,15 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 21,
-            "node_memory_usage_percent": 37,
-            "node_filesystem_usage_percent": 28,
-            "node_network_transmit_bytes_rate": 30,
-            "node_load1": 1.8,
-            "node_load5": 1.42,
-            "node_boot_time_seconds": 1735991871,
-            "node_procs_running": 147,
-            "node_http_request_duration_milliseconds": 346
+            "node_cpu_usage_percent": 39,
+            "node_memory_usage_percent": 50,
+            "node_filesystem_usage_percent": 32,
+            "node_network_transmit_bytes_rate": 47,
+            "node_load1": 3,
+            "node_load5": 2.8,
+            "node_boot_time_seconds": 1735964094,
+            "node_procs_running": 125,
+            "node_http_request_duration_milliseconds": 180
           },
           "nodeInfo": {
             "cpu_cores": 8,
@@ -661,15 +660,15 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 79,
-            "node_memory_usage_percent": 84,
-            "node_filesystem_usage_percent": 60,
-            "node_network_transmit_bytes_rate": 36,
-            "node_load1": 10.97,
-            "node_load5": 10.25,
-            "node_boot_time_seconds": 1736013540,
-            "node_procs_running": 123,
-            "node_http_request_duration_milliseconds": 161
+            "node_cpu_usage_percent": 78,
+            "node_memory_usage_percent": 92,
+            "node_filesystem_usage_percent": 88,
+            "node_network_transmit_bytes_rate": 55,
+            "node_load1": 14,
+            "node_load5": 10.5,
+            "node_boot_time_seconds": 1735968472,
+            "node_procs_running": 150,
+            "node_http_request_duration_milliseconds": 110
           },
           "nodeInfo": {
             "cpu_cores": 16,
@@ -677,8 +676,8 @@
             "disk_total_bytes": 1073741824000
           },
           "logs": [
-            "[WARN] InnoDB: Buffer pool usage above 85%",
-            "[WARN] mysqld: CPU spike detected during query execution"
+            "[WARNING] Memory usage critical: 92%",
+            "[WARNING] InnoDB buffer pool exhausted, swapping detected"
           ]
         },
         "db-mysql-icn-replica:9100": {
@@ -694,22 +693,24 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 37,
-            "node_memory_usage_percent": 58,
-            "node_filesystem_usage_percent": 41,
-            "node_network_transmit_bytes_rate": 35,
-            "node_load1": 6.11,
-            "node_load5": 4.68,
-            "node_boot_time_seconds": 1735977819,
-            "node_procs_running": 105,
-            "node_http_request_duration_milliseconds": 131
+            "node_cpu_usage_percent": 42,
+            "node_memory_usage_percent": 64,
+            "node_filesystem_usage_percent": 45,
+            "node_network_transmit_bytes_rate": 50,
+            "node_load1": 7.5,
+            "node_load5": 6,
+            "node_boot_time_seconds": 1736004342,
+            "node_procs_running": 120,
+            "node_http_request_duration_milliseconds": 85
           },
           "nodeInfo": {
             "cpu_cores": 16,
             "memory_total_bytes": 68719476736,
             "disk_total_bytes": 1073741824000
           },
-          "logs": []
+          "logs": [
+            "[WARNING] Replication lag: 3s"
+          ]
         },
         "db-mysql-pus-dr:9100": {
           "instance": "db-mysql-pus-dr:9100",
@@ -724,15 +725,15 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 24,
-            "node_memory_usage_percent": 47,
-            "node_filesystem_usage_percent": 39,
-            "node_network_transmit_bytes_rate": 27,
-            "node_load1": 3.56,
-            "node_load5": 3.25,
-            "node_boot_time_seconds": 1735944611,
-            "node_procs_running": 112,
-            "node_http_request_duration_milliseconds": 119
+            "node_cpu_usage_percent": 23,
+            "node_memory_usage_percent": 52,
+            "node_filesystem_usage_percent": 42,
+            "node_network_transmit_bytes_rate": 35,
+            "node_load1": 4,
+            "node_load5": 3.3,
+            "node_boot_time_seconds": 1735987809,
+            "node_procs_running": 116,
+            "node_http_request_duration_milliseconds": 55
           },
           "nodeInfo": {
             "cpu_cores": 16,
@@ -754,15 +755,15 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 28,
-            "node_memory_usage_percent": 77,
-            "node_filesystem_usage_percent": 20,
-            "node_network_transmit_bytes_rate": 49,
-            "node_load1": 1.16,
-            "node_load5": 1.08,
-            "node_boot_time_seconds": 1735962752,
-            "node_procs_running": 125,
-            "node_http_request_duration_milliseconds": 51
+            "node_cpu_usage_percent": 27,
+            "node_memory_usage_percent": 72,
+            "node_filesystem_usage_percent": 19,
+            "node_network_transmit_bytes_rate": 44,
+            "node_load1": 0.9,
+            "node_load5": 0.7,
+            "node_boot_time_seconds": 1735951919,
+            "node_procs_running": 103,
+            "node_http_request_duration_milliseconds": 22
           },
           "nodeInfo": {
             "cpu_cores": 4,
@@ -784,15 +785,15 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 22,
-            "node_memory_usage_percent": 68,
-            "node_filesystem_usage_percent": 17,
-            "node_network_transmit_bytes_rate": 45,
-            "node_load1": 0.91,
-            "node_load5": 0.81,
-            "node_boot_time_seconds": 1735966947,
-            "node_procs_running": 143,
-            "node_http_request_duration_milliseconds": 45
+            "node_cpu_usage_percent": 26,
+            "node_memory_usage_percent": 71,
+            "node_filesystem_usage_percent": 19,
+            "node_network_transmit_bytes_rate": 46,
+            "node_load1": 0.9,
+            "node_load5": 0.7,
+            "node_boot_time_seconds": 1735951919,
+            "node_procs_running": 103,
+            "node_http_request_duration_milliseconds": 22
           },
           "nodeInfo": {
             "cpu_cores": 4,
@@ -814,22 +815,24 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 28,
-            "node_memory_usage_percent": 42,
-            "node_filesystem_usage_percent": 65,
-            "node_network_transmit_bytes_rate": 47,
-            "node_load1": 1.31,
-            "node_load5": 1.12,
-            "node_boot_time_seconds": 1735961009,
-            "node_procs_running": 127,
-            "node_http_request_duration_milliseconds": 357
+            "node_cpu_usage_percent": 33,
+            "node_memory_usage_percent": 48,
+            "node_filesystem_usage_percent": 95,
+            "node_network_transmit_bytes_rate": 52,
+            "node_load1": 1.7,
+            "node_load5": 1.4,
+            "node_boot_time_seconds": 1735975801,
+            "node_procs_running": 138,
+            "node_http_request_duration_milliseconds": 180
           },
           "nodeInfo": {
             "cpu_cores": 4,
             "memory_total_bytes": 17179869184,
             "disk_total_bytes": 5368709120000
           },
-          "logs": []
+          "logs": [
+            "[WARNING] Filesystem /data still at 95% — cleanup pending"
+          ]
         },
         "storage-s3gw-pus-01:9100": {
           "instance": "storage-s3gw-pus-01:9100",
@@ -844,15 +847,15 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 23,
-            "node_memory_usage_percent": 35,
-            "node_filesystem_usage_percent": 56,
-            "node_network_transmit_bytes_rate": 62,
-            "node_load1": 0.53,
-            "node_load5": 0.46,
-            "node_boot_time_seconds": 1735968714,
-            "node_procs_running": 118,
-            "node_http_request_duration_milliseconds": 270
+            "node_cpu_usage_percent": 15,
+            "node_memory_usage_percent": 34,
+            "node_filesystem_usage_percent": 52,
+            "node_network_transmit_bytes_rate": 58,
+            "node_load1": 0.3,
+            "node_load5": 0.3,
+            "node_boot_time_seconds": 1735961740,
+            "node_procs_running": 140,
+            "node_http_request_duration_milliseconds": 150
           },
           "nodeInfo": {
             "cpu_cores": 2,
@@ -874,15 +877,15 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 44,
-            "node_memory_usage_percent": 35,
-            "node_filesystem_usage_percent": 14,
-            "node_network_transmit_bytes_rate": 66,
-            "node_load1": 1.57,
-            "node_load5": 1.18,
-            "node_boot_time_seconds": 1736008408,
-            "node_procs_running": 149,
-            "node_http_request_duration_milliseconds": 362
+            "node_cpu_usage_percent": 40,
+            "node_memory_usage_percent": 38,
+            "node_filesystem_usage_percent": 17,
+            "node_network_transmit_bytes_rate": 76,
+            "node_load1": 1.7,
+            "node_load5": 1.4,
+            "node_boot_time_seconds": 1735936266,
+            "node_procs_running": 132,
+            "node_http_request_duration_milliseconds": 175
           },
           "nodeInfo": {
             "cpu_cores": 4,
@@ -904,15 +907,15 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 42,
-            "node_memory_usage_percent": 31,
-            "node_filesystem_usage_percent": 15,
-            "node_network_transmit_bytes_rate": 68,
-            "node_load1": 1.56,
-            "node_load5": 1.17,
-            "node_boot_time_seconds": 1736016625,
-            "node_procs_running": 110,
-            "node_http_request_duration_milliseconds": 324
+            "node_cpu_usage_percent": 34,
+            "node_memory_usage_percent": 37,
+            "node_filesystem_usage_percent": 16,
+            "node_network_transmit_bytes_rate": 70,
+            "node_load1": 1.4,
+            "node_load5": 1.2,
+            "node_boot_time_seconds": 1735936266,
+            "node_procs_running": 130,
+            "node_http_request_duration_milliseconds": 160
           },
           "nodeInfo": {
             "cpu_cores": 4,
@@ -939,15 +942,15 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 31,
-            "node_memory_usage_percent": 47,
+            "node_cpu_usage_percent": 29,
+            "node_memory_usage_percent": 41,
             "node_filesystem_usage_percent": 28,
-            "node_network_transmit_bytes_rate": 55,
-            "node_load1": 1.13,
-            "node_load5": 0.93,
-            "node_boot_time_seconds": 1736010006,
-            "node_procs_running": 112,
-            "node_http_request_duration_milliseconds": 387
+            "node_network_transmit_bytes_rate": 54,
+            "node_load1": 1.2,
+            "node_load5": 1,
+            "node_boot_time_seconds": 1735963004,
+            "node_procs_running": 120,
+            "node_http_request_duration_milliseconds": 200
           },
           "nodeInfo": {
             "cpu_cores": 4,
@@ -969,15 +972,15 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 36,
+            "node_cpu_usage_percent": 30,
             "node_memory_usage_percent": 44,
-            "node_filesystem_usage_percent": 26,
-            "node_network_transmit_bytes_rate": 57,
-            "node_load1": 1.35,
-            "node_load5": 1.23,
-            "node_boot_time_seconds": 1735935564,
+            "node_filesystem_usage_percent": 28,
+            "node_network_transmit_bytes_rate": 56,
+            "node_load1": 1.2,
+            "node_load5": 1,
+            "node_boot_time_seconds": 1735963004,
             "node_procs_running": 120,
-            "node_http_request_duration_milliseconds": 265
+            "node_http_request_duration_milliseconds": 200
           },
           "nodeInfo": {
             "cpu_cores": 4,
@@ -999,15 +1002,15 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 20,
-            "node_memory_usage_percent": 34,
-            "node_filesystem_usage_percent": 27,
-            "node_network_transmit_bytes_rate": 37,
-            "node_load1": 0.94,
-            "node_load5": 0.75,
-            "node_boot_time_seconds": 1735976046,
-            "node_procs_running": 107,
-            "node_http_request_duration_milliseconds": 294
+            "node_cpu_usage_percent": 30,
+            "node_memory_usage_percent": 41,
+            "node_filesystem_usage_percent": 28,
+            "node_network_transmit_bytes_rate": 53,
+            "node_load1": 1.2,
+            "node_load5": 1,
+            "node_boot_time_seconds": 1735963004,
+            "node_procs_running": 120,
+            "node_http_request_duration_milliseconds": 200
           },
           "nodeInfo": {
             "cpu_cores": 4,
@@ -1029,22 +1032,24 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 62,
-            "node_memory_usage_percent": 62,
+            "node_cpu_usage_percent": 54,
+            "node_memory_usage_percent": 61,
             "node_filesystem_usage_percent": 36,
-            "node_network_transmit_bytes_rate": 51,
-            "node_load1": 4.59,
-            "node_load5": 4.29,
-            "node_boot_time_seconds": 1735935005,
-            "node_procs_running": 128,
-            "node_http_request_duration_milliseconds": 328
+            "node_network_transmit_bytes_rate": 63,
+            "node_load1": 6,
+            "node_load5": 4.9,
+            "node_boot_time_seconds": 1735964094,
+            "node_procs_running": 140,
+            "node_http_request_duration_milliseconds": 300
           },
           "nodeInfo": {
             "cpu_cores": 8,
             "memory_total_bytes": 17179869184,
             "disk_total_bytes": 214748364800
           },
-          "logs": []
+          "logs": [
+            "[WARNING] Slow query timeout increasing"
+          ]
         },
         "api-was-icn-02:9100": {
           "instance": "api-was-icn-02:9100",
@@ -1059,15 +1064,15 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 44,
-            "node_memory_usage_percent": 53,
-            "node_filesystem_usage_percent": 34,
-            "node_network_transmit_bytes_rate": 43,
-            "node_load1": 3.65,
-            "node_load5": 3.06,
-            "node_boot_time_seconds": 1735953579,
-            "node_procs_running": 103,
-            "node_http_request_duration_milliseconds": 335
+            "node_cpu_usage_percent": 50,
+            "node_memory_usage_percent": 56,
+            "node_filesystem_usage_percent": 31,
+            "node_network_transmit_bytes_rate": 56,
+            "node_load1": 4.8,
+            "node_load5": 4,
+            "node_boot_time_seconds": 1736015664,
+            "node_procs_running": 139,
+            "node_http_request_duration_milliseconds": 250
           },
           "nodeInfo": {
             "cpu_cores": 8,
@@ -1089,15 +1094,15 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 23,
-            "node_memory_usage_percent": 40,
-            "node_filesystem_usage_percent": 27,
-            "node_network_transmit_bytes_rate": 33,
-            "node_load1": 1.58,
-            "node_load5": 1.26,
-            "node_boot_time_seconds": 1735985856,
-            "node_procs_running": 133,
-            "node_http_request_duration_milliseconds": 359
+            "node_cpu_usage_percent": 39,
+            "node_memory_usage_percent": 50,
+            "node_filesystem_usage_percent": 32,
+            "node_network_transmit_bytes_rate": 46,
+            "node_load1": 3,
+            "node_load5": 2.8,
+            "node_boot_time_seconds": 1735964094,
+            "node_procs_running": 125,
+            "node_http_request_duration_milliseconds": 180
           },
           "nodeInfo": {
             "cpu_cores": 8,
@@ -1119,15 +1124,15 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 79,
-            "node_memory_usage_percent": 83,
-            "node_filesystem_usage_percent": 60,
-            "node_network_transmit_bytes_rate": 42,
-            "node_load1": 13.19,
-            "node_load5": 11.66,
-            "node_boot_time_seconds": 1735945538,
-            "node_procs_running": 140,
-            "node_http_request_duration_milliseconds": 150
+            "node_cpu_usage_percent": 84,
+            "node_memory_usage_percent": 96,
+            "node_filesystem_usage_percent": 88,
+            "node_network_transmit_bytes_rate": 60,
+            "node_load1": 16,
+            "node_load5": 12,
+            "node_boot_time_seconds": 1735968472,
+            "node_procs_running": 160,
+            "node_http_request_duration_milliseconds": 140
           },
           "nodeInfo": {
             "cpu_cores": 16,
@@ -1135,8 +1140,8 @@
             "disk_total_bytes": 1073741824000
           },
           "logs": [
-            "[INFO] mysqld: Memory pressure detected, freeing cache",
-            "[WARN] mysqld: CPU spike detected during query execution"
+            "[WARNING] Memory usage critical: 96%",
+            "[WARNING] InnoDB buffer pool exhausted, swapping detected"
           ]
         },
         "db-mysql-icn-replica:9100": {
@@ -1152,22 +1157,24 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 38,
-            "node_memory_usage_percent": 56,
-            "node_filesystem_usage_percent": 42,
-            "node_network_transmit_bytes_rate": 31,
-            "node_load1": 6.37,
-            "node_load5": 5.42,
-            "node_boot_time_seconds": 1735990114,
-            "node_procs_running": 147,
-            "node_http_request_duration_milliseconds": 107
+            "node_cpu_usage_percent": 44,
+            "node_memory_usage_percent": 66,
+            "node_filesystem_usage_percent": 46,
+            "node_network_transmit_bytes_rate": 55,
+            "node_load1": 9,
+            "node_load5": 7,
+            "node_boot_time_seconds": 1736004342,
+            "node_procs_running": 125,
+            "node_http_request_duration_milliseconds": 100
           },
           "nodeInfo": {
             "cpu_cores": 16,
             "memory_total_bytes": 68719476736,
             "disk_total_bytes": 1073741824000
           },
-          "logs": []
+          "logs": [
+            "[WARNING] Replication lag: 6s"
+          ]
         },
         "db-mysql-pus-dr:9100": {
           "instance": "db-mysql-pus-dr:9100",
@@ -1182,15 +1189,15 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 15,
-            "node_memory_usage_percent": 44,
-            "node_filesystem_usage_percent": 38,
-            "node_network_transmit_bytes_rate": 22,
-            "node_load1": 2.65,
-            "node_load5": 2.23,
-            "node_boot_time_seconds": 1735932979,
-            "node_procs_running": 115,
-            "node_http_request_duration_milliseconds": 97
+            "node_cpu_usage_percent": 26,
+            "node_memory_usage_percent": 54,
+            "node_filesystem_usage_percent": 42,
+            "node_network_transmit_bytes_rate": 38,
+            "node_load1": 4.5,
+            "node_load5": 3.6,
+            "node_boot_time_seconds": 1735987809,
+            "node_procs_running": 116,
+            "node_http_request_duration_milliseconds": 55
           },
           "nodeInfo": {
             "cpu_cores": 16,
@@ -1212,15 +1219,15 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 29,
-            "node_memory_usage_percent": 71,
-            "node_filesystem_usage_percent": 20,
-            "node_network_transmit_bytes_rate": 48,
-            "node_load1": 1.33,
-            "node_load5": 1.05,
-            "node_boot_time_seconds": 1735965092,
-            "node_procs_running": 140,
-            "node_http_request_duration_milliseconds": 44
+            "node_cpu_usage_percent": 27,
+            "node_memory_usage_percent": 72,
+            "node_filesystem_usage_percent": 19,
+            "node_network_transmit_bytes_rate": 45,
+            "node_load1": 0.9,
+            "node_load5": 0.7,
+            "node_boot_time_seconds": 1735951919,
+            "node_procs_running": 103,
+            "node_http_request_duration_milliseconds": 22
           },
           "nodeInfo": {
             "cpu_cores": 4,
@@ -1242,15 +1249,15 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 24,
-            "node_memory_usage_percent": 69,
-            "node_filesystem_usage_percent": 17,
-            "node_network_transmit_bytes_rate": 37,
-            "node_load1": 1.02,
-            "node_load5": 0.94,
-            "node_boot_time_seconds": 1735964959,
-            "node_procs_running": 140,
-            "node_http_request_duration_milliseconds": 45
+            "node_cpu_usage_percent": 25,
+            "node_memory_usage_percent": 72,
+            "node_filesystem_usage_percent": 19,
+            "node_network_transmit_bytes_rate": 46,
+            "node_load1": 0.9,
+            "node_load5": 0.7,
+            "node_boot_time_seconds": 1735951919,
+            "node_procs_running": 103,
+            "node_http_request_duration_milliseconds": 22
           },
           "nodeInfo": {
             "cpu_cores": 4,
@@ -1273,21 +1280,23 @@
           "metrics": {
             "up": 1,
             "node_cpu_usage_percent": 31,
-            "node_memory_usage_percent": 38,
-            "node_filesystem_usage_percent": 66,
-            "node_network_transmit_bytes_rate": 52,
-            "node_load1": 1.33,
-            "node_load5": 1.18,
-            "node_boot_time_seconds": 1735980986,
-            "node_procs_running": 132,
-            "node_http_request_duration_milliseconds": 334
+            "node_memory_usage_percent": 46,
+            "node_filesystem_usage_percent": 95,
+            "node_network_transmit_bytes_rate": 49,
+            "node_load1": 1.6,
+            "node_load5": 1.3,
+            "node_boot_time_seconds": 1735975801,
+            "node_procs_running": 138,
+            "node_http_request_duration_milliseconds": 180
           },
           "nodeInfo": {
             "cpu_cores": 4,
             "memory_total_bytes": 17179869184,
             "disk_total_bytes": 5368709120000
           },
-          "logs": []
+          "logs": [
+            "[WARNING] Filesystem /data still at 95% — cleanup pending"
+          ]
         },
         "storage-s3gw-pus-01:9100": {
           "instance": "storage-s3gw-pus-01:9100",
@@ -1303,14 +1312,14 @@
           "metrics": {
             "up": 1,
             "node_cpu_usage_percent": 17,
-            "node_memory_usage_percent": 37,
-            "node_filesystem_usage_percent": 54,
-            "node_network_transmit_bytes_rate": 62,
+            "node_memory_usage_percent": 32,
+            "node_filesystem_usage_percent": 52,
+            "node_network_transmit_bytes_rate": 55,
             "node_load1": 0.3,
-            "node_load5": 0.26,
-            "node_boot_time_seconds": 1735986295,
-            "node_procs_running": 107,
-            "node_http_request_duration_milliseconds": 382
+            "node_load5": 0.3,
+            "node_boot_time_seconds": 1735961740,
+            "node_procs_running": 140,
+            "node_http_request_duration_milliseconds": 150
           },
           "nodeInfo": {
             "cpu_cores": 2,
@@ -1332,15 +1341,15 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 38,
-            "node_memory_usage_percent": 35,
-            "node_filesystem_usage_percent": 12,
-            "node_network_transmit_bytes_rate": 68,
-            "node_load1": 1.36,
-            "node_load5": 1.19,
-            "node_boot_time_seconds": 1735956983,
-            "node_procs_running": 131,
-            "node_http_request_duration_milliseconds": 314
+            "node_cpu_usage_percent": 42,
+            "node_memory_usage_percent": 39,
+            "node_filesystem_usage_percent": 17,
+            "node_network_transmit_bytes_rate": 78,
+            "node_load1": 1.9,
+            "node_load5": 1.5,
+            "node_boot_time_seconds": 1735936266,
+            "node_procs_running": 132,
+            "node_http_request_duration_milliseconds": 185
           },
           "nodeInfo": {
             "cpu_cores": 4,
@@ -1362,15 +1371,15 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 33,
-            "node_memory_usage_percent": 31,
-            "node_filesystem_usage_percent": 13,
-            "node_network_transmit_bytes_rate": 66,
-            "node_load1": 1.36,
-            "node_load5": 1.09,
-            "node_boot_time_seconds": 1736011194,
-            "node_procs_running": 133,
-            "node_http_request_duration_milliseconds": 279
+            "node_cpu_usage_percent": 35,
+            "node_memory_usage_percent": 37,
+            "node_filesystem_usage_percent": 16,
+            "node_network_transmit_bytes_rate": 73,
+            "node_load1": 1.4,
+            "node_load5": 1.2,
+            "node_boot_time_seconds": 1735936266,
+            "node_procs_running": 130,
+            "node_http_request_duration_milliseconds": 160
           },
           "nodeInfo": {
             "cpu_cores": 4,
@@ -1397,15 +1406,15 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 37,
-            "node_memory_usage_percent": 48,
-            "node_filesystem_usage_percent": 29,
-            "node_network_transmit_bytes_rate": 64,
-            "node_load1": 1.48,
-            "node_load5": 1.38,
-            "node_boot_time_seconds": 1735981519,
-            "node_procs_running": 116,
-            "node_http_request_duration_milliseconds": 484
+            "node_cpu_usage_percent": 30,
+            "node_memory_usage_percent": 43,
+            "node_filesystem_usage_percent": 28,
+            "node_network_transmit_bytes_rate": 53,
+            "node_load1": 1.2,
+            "node_load5": 1,
+            "node_boot_time_seconds": 1735963004,
+            "node_procs_running": 120,
+            "node_http_request_duration_milliseconds": 200
           },
           "nodeInfo": {
             "cpu_cores": 4,
@@ -1427,15 +1436,15 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 27,
-            "node_memory_usage_percent": 40,
-            "node_filesystem_usage_percent": 26,
-            "node_network_transmit_bytes_rate": 59,
-            "node_load1": 1.08,
-            "node_load5": 0.82,
-            "node_boot_time_seconds": 1735951643,
-            "node_procs_running": 128,
-            "node_http_request_duration_milliseconds": 450
+            "node_cpu_usage_percent": 31,
+            "node_memory_usage_percent": 43,
+            "node_filesystem_usage_percent": 28,
+            "node_network_transmit_bytes_rate": 56,
+            "node_load1": 1.2,
+            "node_load5": 1,
+            "node_boot_time_seconds": 1735963004,
+            "node_procs_running": 120,
+            "node_http_request_duration_milliseconds": 200
           },
           "nodeInfo": {
             "cpu_cores": 4,
@@ -1457,15 +1466,15 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 19,
-            "node_memory_usage_percent": 33,
-            "node_filesystem_usage_percent": 24,
-            "node_network_transmit_bytes_rate": 43,
-            "node_load1": 0.7,
-            "node_load5": 0.55,
-            "node_boot_time_seconds": 1735970550,
-            "node_procs_running": 107,
-            "node_http_request_duration_milliseconds": 500
+            "node_cpu_usage_percent": 32,
+            "node_memory_usage_percent": 44,
+            "node_filesystem_usage_percent": 28,
+            "node_network_transmit_bytes_rate": 55,
+            "node_load1": 1.2,
+            "node_load5": 1,
+            "node_boot_time_seconds": 1735963004,
+            "node_procs_running": 120,
+            "node_http_request_duration_milliseconds": 200
           },
           "nodeInfo": {
             "cpu_cores": 4,
@@ -1487,15 +1496,15 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 75,
-            "node_memory_usage_percent": 70,
+            "node_cpu_usage_percent": 72,
+            "node_memory_usage_percent": 64,
             "node_filesystem_usage_percent": 36,
-            "node_network_transmit_bytes_rate": 49,
-            "node_load1": 5.91,
-            "node_load5": 5.22,
-            "node_boot_time_seconds": 1735956011,
-            "node_procs_running": 104,
-            "node_http_request_duration_milliseconds": 526
+            "node_network_transmit_bytes_rate": 67,
+            "node_load1": 7,
+            "node_load5": 5.6,
+            "node_boot_time_seconds": 1735964094,
+            "node_procs_running": 145,
+            "node_http_request_duration_milliseconds": 2000
           },
           "nodeInfo": {
             "cpu_cores": 8,
@@ -1503,7 +1512,8 @@
             "disk_total_bytes": 214748364800
           },
           "logs": [
-            "[INFO] CPU throttling detected - scaling recommended"
+            "[WARNING] Database connection pool exhausted — retrying on replica",
+            "[WARNING] Response time degraded: 2000ms avg"
           ]
         },
         "api-was-icn-02:9100": {
@@ -1519,22 +1529,24 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 44,
-            "node_memory_usage_percent": 48,
-            "node_filesystem_usage_percent": 34,
-            "node_network_transmit_bytes_rate": 47,
-            "node_load1": 3.26,
-            "node_load5": 2.92,
-            "node_boot_time_seconds": 1735991442,
-            "node_procs_running": 135,
-            "node_http_request_duration_milliseconds": 402
+            "node_cpu_usage_percent": 53,
+            "node_memory_usage_percent": 58,
+            "node_filesystem_usage_percent": 31,
+            "node_network_transmit_bytes_rate": 59,
+            "node_load1": 5.3,
+            "node_load5": 4.3,
+            "node_boot_time_seconds": 1736015664,
+            "node_procs_running": 142,
+            "node_http_request_duration_milliseconds": 280
           },
           "nodeInfo": {
             "cpu_cores": 8,
             "memory_total_bytes": 17179869184,
             "disk_total_bytes": 214748364800
           },
-          "logs": []
+          "logs": [
+            "[WARNING] Connection pool failover to replica initiated"
+          ]
         },
         "api-was-pus-01:9100": {
           "instance": "api-was-pus-01:9100",
@@ -1549,15 +1561,15 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 20,
-            "node_memory_usage_percent": 42,
-            "node_filesystem_usage_percent": 28,
-            "node_network_transmit_bytes_rate": 36,
-            "node_load1": 1.54,
-            "node_load5": 1.37,
-            "node_boot_time_seconds": 1735971835,
-            "node_procs_running": 137,
-            "node_http_request_duration_milliseconds": 460
+            "node_cpu_usage_percent": 40,
+            "node_memory_usage_percent": 51,
+            "node_filesystem_usage_percent": 32,
+            "node_network_transmit_bytes_rate": 47,
+            "node_load1": 3,
+            "node_load5": 2.8,
+            "node_boot_time_seconds": 1735964094,
+            "node_procs_running": 125,
+            "node_http_request_duration_milliseconds": 180
           },
           "nodeInfo": {
             "cpu_cores": 8,
@@ -1578,16 +1590,16 @@
             "os_version": "22.04"
           },
           "metrics": {
-            "up": 1,
-            "node_cpu_usage_percent": 95,
-            "node_memory_usage_percent": 92,
-            "node_filesystem_usage_percent": 72,
-            "node_network_transmit_bytes_rate": 35,
-            "node_load1": 12.42,
-            "node_load5": 11.37,
-            "node_boot_time_seconds": 1736006904,
-            "node_procs_running": 123,
-            "node_http_request_duration_milliseconds": 988
+            "up": 0,
+            "node_cpu_usage_percent": 0,
+            "node_memory_usage_percent": 0,
+            "node_filesystem_usage_percent": 0,
+            "node_network_transmit_bytes_rate": 0,
+            "node_load1": 0,
+            "node_load5": 0,
+            "node_boot_time_seconds": 1735968472,
+            "node_procs_running": 0,
+            "node_http_request_duration_milliseconds": 0
           },
           "nodeInfo": {
             "cpu_cores": 16,
@@ -1595,8 +1607,9 @@
             "disk_total_bytes": 1073741824000
           },
           "logs": [
-            "[ERROR] InnoDB: Buffer pool contention detected - high CPU wait",
-            "[ERROR] mysqld: Out of memory (Needed 2048 bytes)"
+            "[CRITICAL] Server DOWN — OOM Killer invoked (pid 2847: mysqld)",
+            "[ERROR] Connection refused on port 3306",
+            "[CRITICAL] Process mysqld terminated with signal 9 (SIGKILL)"
           ]
         },
         "db-mysql-icn-replica:9100": {
@@ -1612,22 +1625,26 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 35,
-            "node_memory_usage_percent": 58,
-            "node_filesystem_usage_percent": 41,
-            "node_network_transmit_bytes_rate": 36,
-            "node_load1": 5.71,
-            "node_load5": 4.72,
-            "node_boot_time_seconds": 1735956279,
-            "node_procs_running": 126,
-            "node_http_request_duration_milliseconds": 158
+            "node_cpu_usage_percent": 82,
+            "node_memory_usage_percent": 78,
+            "node_filesystem_usage_percent": 47,
+            "node_network_transmit_bytes_rate": 60,
+            "node_load1": 10.5,
+            "node_load5": 8,
+            "node_boot_time_seconds": 1736004342,
+            "node_procs_running": 130,
+            "node_http_request_duration_milliseconds": 115
           },
           "nodeInfo": {
             "cpu_cores": 16,
             "memory_total_bytes": 68719476736,
             "disk_total_bytes": 1073741824000
           },
-          "logs": []
+          "logs": [
+            "[CRITICAL] Replication broken — primary unreachable",
+            "[WARNING] Failover mode activated, serving read/write traffic",
+            "[WARNING] CPU spike due to sudden traffic redirect"
+          ]
         },
         "db-mysql-pus-dr:9100": {
           "instance": "db-mysql-pus-dr:9100",
@@ -1642,22 +1659,24 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 17,
-            "node_memory_usage_percent": 45,
-            "node_filesystem_usage_percent": 40,
-            "node_network_transmit_bytes_rate": 25,
-            "node_load1": 3.22,
-            "node_load5": 2.71,
-            "node_boot_time_seconds": 1735997946,
-            "node_procs_running": 140,
-            "node_http_request_duration_milliseconds": 130
+            "node_cpu_usage_percent": 29,
+            "node_memory_usage_percent": 56,
+            "node_filesystem_usage_percent": 42,
+            "node_network_transmit_bytes_rate": 41,
+            "node_load1": 5,
+            "node_load5": 3.9,
+            "node_boot_time_seconds": 1735987809,
+            "node_procs_running": 116,
+            "node_http_request_duration_milliseconds": 55
           },
           "nodeInfo": {
             "cpu_cores": 16,
             "memory_total_bytes": 68719476736,
             "disk_total_bytes": 1073741824000
           },
-          "logs": []
+          "logs": [
+            "[WARNING] DR replication lag growing: source=replica"
+          ]
         },
         "cache-redis-icn-01:9100": {
           "instance": "cache-redis-icn-01:9100",
@@ -1672,15 +1691,15 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 23,
-            "node_memory_usage_percent": 73,
-            "node_filesystem_usage_percent": 21,
-            "node_network_transmit_bytes_rate": 49,
-            "node_load1": 0.91,
-            "node_load5": 0.81,
-            "node_boot_time_seconds": 1735936946,
-            "node_procs_running": 106,
-            "node_http_request_duration_milliseconds": 64
+            "node_cpu_usage_percent": 26,
+            "node_memory_usage_percent": 71,
+            "node_filesystem_usage_percent": 19,
+            "node_network_transmit_bytes_rate": 43,
+            "node_load1": 0.9,
+            "node_load5": 0.7,
+            "node_boot_time_seconds": 1735951919,
+            "node_procs_running": 103,
+            "node_http_request_duration_milliseconds": 22
           },
           "nodeInfo": {
             "cpu_cores": 4,
@@ -1702,15 +1721,15 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 24,
-            "node_memory_usage_percent": 70,
-            "node_filesystem_usage_percent": 17,
-            "node_network_transmit_bytes_rate": 38,
-            "node_load1": 0.93,
-            "node_load5": 0.8,
-            "node_boot_time_seconds": 1735978278,
-            "node_procs_running": 120,
-            "node_http_request_duration_milliseconds": 61
+            "node_cpu_usage_percent": 27,
+            "node_memory_usage_percent": 73,
+            "node_filesystem_usage_percent": 19,
+            "node_network_transmit_bytes_rate": 44,
+            "node_load1": 0.9,
+            "node_load5": 0.7,
+            "node_boot_time_seconds": 1735951919,
+            "node_procs_running": 103,
+            "node_http_request_duration_milliseconds": 22
           },
           "nodeInfo": {
             "cpu_cores": 4,
@@ -1732,22 +1751,24 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 33,
-            "node_memory_usage_percent": 37,
-            "node_filesystem_usage_percent": 64,
-            "node_network_transmit_bytes_rate": 51,
-            "node_load1": 1.55,
-            "node_load5": 1.47,
-            "node_boot_time_seconds": 1735959899,
-            "node_procs_running": 134,
-            "node_http_request_duration_milliseconds": 442
+            "node_cpu_usage_percent": 29,
+            "node_memory_usage_percent": 44,
+            "node_filesystem_usage_percent": 95,
+            "node_network_transmit_bytes_rate": 46,
+            "node_load1": 1.5,
+            "node_load5": 1.2,
+            "node_boot_time_seconds": 1735975801,
+            "node_procs_running": 138,
+            "node_http_request_duration_milliseconds": 180
           },
           "nodeInfo": {
             "cpu_cores": 4,
             "memory_total_bytes": 17179869184,
             "disk_total_bytes": 5368709120000
           },
-          "logs": []
+          "logs": [
+            "[WARNING] Filesystem /data still at 95% — cleanup pending"
+          ]
         },
         "storage-s3gw-pus-01:9100": {
           "instance": "storage-s3gw-pus-01:9100",
@@ -1763,14 +1784,14 @@
           "metrics": {
             "up": 1,
             "node_cpu_usage_percent": 16,
-            "node_memory_usage_percent": 34,
-            "node_filesystem_usage_percent": 54,
-            "node_network_transmit_bytes_rate": 59,
+            "node_memory_usage_percent": 35,
+            "node_filesystem_usage_percent": 52,
+            "node_network_transmit_bytes_rate": 56,
             "node_load1": 0.3,
-            "node_load5": 0.27,
-            "node_boot_time_seconds": 1736005696,
-            "node_procs_running": 139,
-            "node_http_request_duration_milliseconds": 395
+            "node_load5": 0.3,
+            "node_boot_time_seconds": 1735961740,
+            "node_procs_running": 140,
+            "node_http_request_duration_milliseconds": 150
           },
           "nodeInfo": {
             "cpu_cores": 2,
@@ -1793,21 +1814,23 @@
           "metrics": {
             "up": 1,
             "node_cpu_usage_percent": 44,
-            "node_memory_usage_percent": 38,
-            "node_filesystem_usage_percent": 13,
-            "node_network_transmit_bytes_rate": 67,
-            "node_load1": 1.87,
-            "node_load5": 1.5,
-            "node_boot_time_seconds": 1735938233,
-            "node_procs_running": 122,
-            "node_http_request_duration_milliseconds": 486
+            "node_memory_usage_percent": 40,
+            "node_filesystem_usage_percent": 17,
+            "node_network_transmit_bytes_rate": 80,
+            "node_load1": 2.1,
+            "node_load5": 1.6,
+            "node_boot_time_seconds": 1735936266,
+            "node_procs_running": 132,
+            "node_http_request_duration_milliseconds": 195
           },
           "nodeInfo": {
             "cpu_cores": 4,
             "memory_total_bytes": 8589934592,
             "disk_total_bytes": 53687091200
           },
-          "logs": []
+          "logs": [
+            "[WARNING] Backend api-was-icn-01 health check degraded"
+          ]
         },
         "lb-haproxy-pus-01:9100": {
           "instance": "lb-haproxy-pus-01:9100",
@@ -1822,15 +1845,15 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 35,
-            "node_memory_usage_percent": 33,
-            "node_filesystem_usage_percent": 11,
-            "node_network_transmit_bytes_rate": 68,
-            "node_load1": 1.64,
-            "node_load5": 1.33,
-            "node_boot_time_seconds": 1735990490,
-            "node_procs_running": 115,
-            "node_http_request_duration_milliseconds": 462
+            "node_cpu_usage_percent": 34,
+            "node_memory_usage_percent": 36,
+            "node_filesystem_usage_percent": 16,
+            "node_network_transmit_bytes_rate": 73,
+            "node_load1": 1.4,
+            "node_load5": 1.2,
+            "node_boot_time_seconds": 1735936266,
+            "node_procs_running": 130,
+            "node_http_request_duration_milliseconds": 160
           },
           "nodeInfo": {
             "cpu_cores": 4,
@@ -1857,15 +1880,15 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 36,
-            "node_memory_usage_percent": 47,
+            "node_cpu_usage_percent": 32,
+            "node_memory_usage_percent": 44,
             "node_filesystem_usage_percent": 28,
-            "node_network_transmit_bytes_rate": 58,
-            "node_load1": 1.36,
-            "node_load5": 1.26,
-            "node_boot_time_seconds": 1735940498,
-            "node_procs_running": 114,
-            "node_http_request_duration_milliseconds": 467
+            "node_network_transmit_bytes_rate": 57,
+            "node_load1": 1.2,
+            "node_load5": 1,
+            "node_boot_time_seconds": 1735963004,
+            "node_procs_running": 120,
+            "node_http_request_duration_milliseconds": 200
           },
           "nodeInfo": {
             "cpu_cores": 4,
@@ -1887,15 +1910,15 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 33,
-            "node_memory_usage_percent": 43,
-            "node_filesystem_usage_percent": 25,
-            "node_network_transmit_bytes_rate": 58,
-            "node_load1": 1.53,
-            "node_load5": 1.34,
-            "node_boot_time_seconds": 1735971419,
-            "node_procs_running": 117,
-            "node_http_request_duration_milliseconds": 388
+            "node_cpu_usage_percent": 31,
+            "node_memory_usage_percent": 40,
+            "node_filesystem_usage_percent": 28,
+            "node_network_transmit_bytes_rate": 57,
+            "node_load1": 1.2,
+            "node_load5": 1,
+            "node_boot_time_seconds": 1735963004,
+            "node_procs_running": 120,
+            "node_http_request_duration_milliseconds": 200
           },
           "nodeInfo": {
             "cpu_cores": 4,
@@ -1917,15 +1940,15 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 17,
-            "node_memory_usage_percent": 34,
-            "node_filesystem_usage_percent": 26,
-            "node_network_transmit_bytes_rate": 41,
-            "node_load1": 0.58,
-            "node_load5": 0.44,
-            "node_boot_time_seconds": 1736012191,
-            "node_procs_running": 102,
-            "node_http_request_duration_milliseconds": 367
+            "node_cpu_usage_percent": 31,
+            "node_memory_usage_percent": 44,
+            "node_filesystem_usage_percent": 28,
+            "node_network_transmit_bytes_rate": 57,
+            "node_load1": 1.2,
+            "node_load5": 1,
+            "node_boot_time_seconds": 1735963004,
+            "node_procs_running": 120,
+            "node_http_request_duration_milliseconds": 200
           },
           "nodeInfo": {
             "cpu_cores": 4,
@@ -1947,15 +1970,15 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 71,
-            "node_memory_usage_percent": 68,
-            "node_filesystem_usage_percent": 35,
-            "node_network_transmit_bytes_rate": 45,
-            "node_load1": 6.55,
-            "node_load5": 6.13,
-            "node_boot_time_seconds": 1736009715,
-            "node_procs_running": 134,
-            "node_http_request_duration_milliseconds": 424
+            "node_cpu_usage_percent": 77,
+            "node_memory_usage_percent": 67,
+            "node_filesystem_usage_percent": 36,
+            "node_network_transmit_bytes_rate": 71,
+            "node_load1": 8,
+            "node_load5": 6.3,
+            "node_boot_time_seconds": 1735964094,
+            "node_procs_running": 150,
+            "node_http_request_duration_milliseconds": 2800
           },
           "nodeInfo": {
             "cpu_cores": 8,
@@ -1963,7 +1986,8 @@
             "disk_total_bytes": 214748364800
           },
           "logs": [
-            "[WARN] JVM: Minor GC frequency increased (>10/min)"
+            "[WARNING] Database connection pool exhausted — retrying on replica",
+            "[WARNING] Response time degraded: 2800ms avg"
           ]
         },
         "api-was-icn-02:9100": {
@@ -1979,22 +2003,24 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 38,
-            "node_memory_usage_percent": 53,
-            "node_filesystem_usage_percent": 35,
-            "node_network_transmit_bytes_rate": 50,
-            "node_load1": 2.47,
-            "node_load5": 1.98,
-            "node_boot_time_seconds": 1735946267,
-            "node_procs_running": 134,
-            "node_http_request_duration_milliseconds": 327
+            "node_cpu_usage_percent": 56,
+            "node_memory_usage_percent": 60,
+            "node_filesystem_usage_percent": 31,
+            "node_network_transmit_bytes_rate": 62,
+            "node_load1": 5.8,
+            "node_load5": 4.6,
+            "node_boot_time_seconds": 1736015664,
+            "node_procs_running": 145,
+            "node_http_request_duration_milliseconds": 310
           },
           "nodeInfo": {
             "cpu_cores": 8,
             "memory_total_bytes": 17179869184,
             "disk_total_bytes": 214748364800
           },
-          "logs": []
+          "logs": [
+            "[WARNING] Connection pool failover to replica initiated"
+          ]
         },
         "api-was-pus-01:9100": {
           "instance": "api-was-pus-01:9100",
@@ -2009,15 +2035,15 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 28,
-            "node_memory_usage_percent": 39,
-            "node_filesystem_usage_percent": 27,
-            "node_network_transmit_bytes_rate": 30,
-            "node_load1": 1.87,
-            "node_load5": 1.65,
-            "node_boot_time_seconds": 1735944497,
-            "node_procs_running": 101,
-            "node_http_request_duration_milliseconds": 389
+            "node_cpu_usage_percent": 38,
+            "node_memory_usage_percent": 52,
+            "node_filesystem_usage_percent": 32,
+            "node_network_transmit_bytes_rate": 48,
+            "node_load1": 3,
+            "node_load5": 2.8,
+            "node_boot_time_seconds": 1735964094,
+            "node_procs_running": 125,
+            "node_http_request_duration_milliseconds": 180
           },
           "nodeInfo": {
             "cpu_cores": 8,
@@ -2038,16 +2064,16 @@
             "os_version": "22.04"
           },
           "metrics": {
-            "up": 1,
-            "node_cpu_usage_percent": 89,
-            "node_memory_usage_percent": 88,
-            "node_filesystem_usage_percent": 68,
-            "node_network_transmit_bytes_rate": 43,
-            "node_load1": 16.24,
-            "node_load5": 14.39,
-            "node_boot_time_seconds": 1736003347,
-            "node_procs_running": 101,
-            "node_http_request_duration_milliseconds": 1183
+            "up": 0,
+            "node_cpu_usage_percent": 0,
+            "node_memory_usage_percent": 0,
+            "node_filesystem_usage_percent": 0,
+            "node_network_transmit_bytes_rate": 0,
+            "node_load1": 0,
+            "node_load5": 0,
+            "node_boot_time_seconds": 1735968472,
+            "node_procs_running": 0,
+            "node_http_request_duration_milliseconds": 0
           },
           "nodeInfo": {
             "cpu_cores": 16,
@@ -2055,8 +2081,9 @@
             "disk_total_bytes": 1073741824000
           },
           "logs": [
-            "[ERROR] mysqld: CPU utilization exceeded 95% - query processing delayed",
-            "[ERROR] mysqld: Out of memory (Needed 2048 bytes)"
+            "[CRITICAL] Server DOWN — OOM Killer invoked (pid 2847: mysqld)",
+            "[ERROR] Connection refused on port 3306",
+            "[CRITICAL] Process mysqld terminated with signal 9 (SIGKILL)"
           ]
         },
         "db-mysql-icn-replica:9100": {
@@ -2072,22 +2099,26 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 43,
-            "node_memory_usage_percent": 56,
-            "node_filesystem_usage_percent": 43,
-            "node_network_transmit_bytes_rate": 34,
-            "node_load1": 7.63,
-            "node_load5": 7.2,
-            "node_boot_time_seconds": 1735988024,
-            "node_procs_running": 116,
-            "node_http_request_duration_milliseconds": 147
+            "node_cpu_usage_percent": 86,
+            "node_memory_usage_percent": 81,
+            "node_filesystem_usage_percent": 48,
+            "node_network_transmit_bytes_rate": 65,
+            "node_load1": 12,
+            "node_load5": 9,
+            "node_boot_time_seconds": 1736004342,
+            "node_procs_running": 135,
+            "node_http_request_duration_milliseconds": 130
           },
           "nodeInfo": {
             "cpu_cores": 16,
             "memory_total_bytes": 68719476736,
             "disk_total_bytes": 1073741824000
           },
-          "logs": []
+          "logs": [
+            "[CRITICAL] Replication broken — primary unreachable",
+            "[WARNING] Failover mode activated, serving read/write traffic",
+            "[WARNING] CPU spike due to sudden traffic redirect"
+          ]
         },
         "db-mysql-pus-dr:9100": {
           "instance": "db-mysql-pus-dr:9100",
@@ -2102,22 +2133,24 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 22,
-            "node_memory_usage_percent": 44,
-            "node_filesystem_usage_percent": 41,
-            "node_network_transmit_bytes_rate": 26,
-            "node_load1": 3.81,
-            "node_load5": 3.2,
-            "node_boot_time_seconds": 1735994771,
-            "node_procs_running": 112,
-            "node_http_request_duration_milliseconds": 160
+            "node_cpu_usage_percent": 32,
+            "node_memory_usage_percent": 58,
+            "node_filesystem_usage_percent": 42,
+            "node_network_transmit_bytes_rate": 44,
+            "node_load1": 5.5,
+            "node_load5": 4.2,
+            "node_boot_time_seconds": 1735987809,
+            "node_procs_running": 116,
+            "node_http_request_duration_milliseconds": 55
           },
           "nodeInfo": {
             "cpu_cores": 16,
             "memory_total_bytes": 68719476736,
             "disk_total_bytes": 1073741824000
           },
-          "logs": []
+          "logs": [
+            "[WARNING] DR replication lag growing: source=replica"
+          ]
         },
         "cache-redis-icn-01:9100": {
           "instance": "cache-redis-icn-01:9100",
@@ -2133,14 +2166,14 @@
           "metrics": {
             "up": 1,
             "node_cpu_usage_percent": 25,
-            "node_memory_usage_percent": 77,
-            "node_filesystem_usage_percent": 21,
-            "node_network_transmit_bytes_rate": 41,
-            "node_load1": 1.09,
-            "node_load5": 0.95,
-            "node_boot_time_seconds": 1735966970,
-            "node_procs_running": 118,
-            "node_http_request_duration_milliseconds": 64
+            "node_memory_usage_percent": 72,
+            "node_filesystem_usage_percent": 19,
+            "node_network_transmit_bytes_rate": 45,
+            "node_load1": 0.9,
+            "node_load5": 0.7,
+            "node_boot_time_seconds": 1735951919,
+            "node_procs_running": 103,
+            "node_http_request_duration_milliseconds": 22
           },
           "nodeInfo": {
             "cpu_cores": 4,
@@ -2162,15 +2195,15 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 20,
-            "node_memory_usage_percent": 74,
-            "node_filesystem_usage_percent": 18,
-            "node_network_transmit_bytes_rate": 43,
-            "node_load1": 0.7,
-            "node_load5": 0.61,
-            "node_boot_time_seconds": 1736003201,
-            "node_procs_running": 127,
-            "node_http_request_duration_milliseconds": 54
+            "node_cpu_usage_percent": 26,
+            "node_memory_usage_percent": 72,
+            "node_filesystem_usage_percent": 19,
+            "node_network_transmit_bytes_rate": 45,
+            "node_load1": 0.9,
+            "node_load5": 0.7,
+            "node_boot_time_seconds": 1735951919,
+            "node_procs_running": 103,
+            "node_http_request_duration_milliseconds": 22
           },
           "nodeInfo": {
             "cpu_cores": 4,
@@ -2192,22 +2225,24 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 31,
-            "node_memory_usage_percent": 36,
-            "node_filesystem_usage_percent": 65,
-            "node_network_transmit_bytes_rate": 45,
-            "node_load1": 1.34,
-            "node_load5": 1.23,
-            "node_boot_time_seconds": 1735941814,
-            "node_procs_running": 117,
-            "node_http_request_duration_milliseconds": 384
+            "node_cpu_usage_percent": 27,
+            "node_memory_usage_percent": 42,
+            "node_filesystem_usage_percent": 95,
+            "node_network_transmit_bytes_rate": 43,
+            "node_load1": 1.4,
+            "node_load5": 1.1,
+            "node_boot_time_seconds": 1735975801,
+            "node_procs_running": 138,
+            "node_http_request_duration_milliseconds": 180
           },
           "nodeInfo": {
             "cpu_cores": 4,
             "memory_total_bytes": 17179869184,
             "disk_total_bytes": 5368709120000
           },
-          "logs": []
+          "logs": [
+            "[WARNING] Filesystem /data still at 95% — cleanup pending"
+          ]
         },
         "storage-s3gw-pus-01:9100": {
           "instance": "storage-s3gw-pus-01:9100",
@@ -2222,15 +2257,15 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 17,
-            "node_memory_usage_percent": 31,
-            "node_filesystem_usage_percent": 56,
-            "node_network_transmit_bytes_rate": 61,
-            "node_load1": 0.33,
-            "node_load5": 0.27,
-            "node_boot_time_seconds": 1736010270,
-            "node_procs_running": 148,
-            "node_http_request_duration_milliseconds": 342
+            "node_cpu_usage_percent": 15,
+            "node_memory_usage_percent": 36,
+            "node_filesystem_usage_percent": 52,
+            "node_network_transmit_bytes_rate": 55,
+            "node_load1": 0.3,
+            "node_load5": 0.3,
+            "node_boot_time_seconds": 1735961740,
+            "node_procs_running": 140,
+            "node_http_request_duration_milliseconds": 150
           },
           "nodeInfo": {
             "cpu_cores": 2,
@@ -2252,22 +2287,24 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 39,
-            "node_memory_usage_percent": 35,
-            "node_filesystem_usage_percent": 14,
-            "node_network_transmit_bytes_rate": 68,
-            "node_load1": 1.46,
-            "node_load5": 1.27,
-            "node_boot_time_seconds": 1735975785,
-            "node_procs_running": 128,
-            "node_http_request_duration_milliseconds": 373
+            "node_cpu_usage_percent": 46,
+            "node_memory_usage_percent": 41,
+            "node_filesystem_usage_percent": 17,
+            "node_network_transmit_bytes_rate": 82,
+            "node_load1": 2.3,
+            "node_load5": 1.7,
+            "node_boot_time_seconds": 1735936266,
+            "node_procs_running": 132,
+            "node_http_request_duration_milliseconds": 205
           },
           "nodeInfo": {
             "cpu_cores": 4,
             "memory_total_bytes": 8589934592,
             "disk_total_bytes": 53687091200
           },
-          "logs": []
+          "logs": [
+            "[WARNING] Backend api-was-icn-01 health check degraded"
+          ]
         },
         "lb-haproxy-pus-01:9100": {
           "instance": "lb-haproxy-pus-01:9100",
@@ -2282,15 +2319,15 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 39,
-            "node_memory_usage_percent": 31,
-            "node_filesystem_usage_percent": 14,
+            "node_cpu_usage_percent": 33,
+            "node_memory_usage_percent": 33,
+            "node_filesystem_usage_percent": 16,
             "node_network_transmit_bytes_rate": 71,
-            "node_load1": 1.75,
-            "node_load5": 1.66,
-            "node_boot_time_seconds": 1735958662,
-            "node_procs_running": 100,
-            "node_http_request_duration_milliseconds": 344
+            "node_load1": 1.4,
+            "node_load5": 1.2,
+            "node_boot_time_seconds": 1735936266,
+            "node_procs_running": 130,
+            "node_http_request_duration_milliseconds": 160
           },
           "nodeInfo": {
             "cpu_cores": 4,
@@ -2317,15 +2354,15 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 36,
-            "node_memory_usage_percent": 48,
+            "node_cpu_usage_percent": 31,
+            "node_memory_usage_percent": 44,
             "node_filesystem_usage_percent": 28,
             "node_network_transmit_bytes_rate": 55,
-            "node_load1": 1.49,
-            "node_load5": 1.17,
-            "node_boot_time_seconds": 1735972282,
-            "node_procs_running": 142,
-            "node_http_request_duration_milliseconds": 416
+            "node_load1": 1.2,
+            "node_load5": 1,
+            "node_boot_time_seconds": 1735963004,
+            "node_procs_running": 120,
+            "node_http_request_duration_milliseconds": 200
           },
           "nodeInfo": {
             "cpu_cores": 4,
@@ -2347,15 +2384,15 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 34,
-            "node_memory_usage_percent": 39,
+            "node_cpu_usage_percent": 31,
+            "node_memory_usage_percent": 41,
             "node_filesystem_usage_percent": 28,
-            "node_network_transmit_bytes_rate": 51,
-            "node_load1": 1.43,
-            "node_load5": 1.13,
-            "node_boot_time_seconds": 1736013123,
-            "node_procs_running": 113,
-            "node_http_request_duration_milliseconds": 336
+            "node_network_transmit_bytes_rate": 57,
+            "node_load1": 1.2,
+            "node_load5": 1,
+            "node_boot_time_seconds": 1735963004,
+            "node_procs_running": 120,
+            "node_http_request_duration_milliseconds": 200
           },
           "nodeInfo": {
             "cpu_cores": 4,
@@ -2377,15 +2414,15 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 19,
-            "node_memory_usage_percent": 35,
-            "node_filesystem_usage_percent": 27,
-            "node_network_transmit_bytes_rate": 41,
-            "node_load1": 0.84,
-            "node_load5": 0.71,
-            "node_boot_time_seconds": 1736018152,
-            "node_procs_running": 131,
-            "node_http_request_duration_milliseconds": 357
+            "node_cpu_usage_percent": 31,
+            "node_memory_usage_percent": 44,
+            "node_filesystem_usage_percent": 28,
+            "node_network_transmit_bytes_rate": 55,
+            "node_load1": 1.2,
+            "node_load5": 1,
+            "node_boot_time_seconds": 1735963004,
+            "node_procs_running": 120,
+            "node_http_request_duration_milliseconds": 200
           },
           "nodeInfo": {
             "cpu_cores": 4,
@@ -2407,15 +2444,15 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 71,
-            "node_memory_usage_percent": 67,
-            "node_filesystem_usage_percent": 32,
-            "node_network_transmit_bytes_rate": 50,
-            "node_load1": 4.87,
-            "node_load5": 3.98,
-            "node_boot_time_seconds": 1735975696,
-            "node_procs_running": 137,
-            "node_http_request_duration_milliseconds": 420
+            "node_cpu_usage_percent": 82,
+            "node_memory_usage_percent": 70,
+            "node_filesystem_usage_percent": 36,
+            "node_network_transmit_bytes_rate": 75,
+            "node_load1": 9,
+            "node_load5": 7,
+            "node_boot_time_seconds": 1735964094,
+            "node_procs_running": 155,
+            "node_http_request_duration_milliseconds": 3600
           },
           "nodeInfo": {
             "cpu_cores": 8,
@@ -2423,7 +2460,8 @@
             "disk_total_bytes": 214748364800
           },
           "logs": [
-            "[INFO] CPU throttling detected - scaling recommended"
+            "[WARNING] Database connection pool exhausted — retrying on replica",
+            "[WARNING] Response time degraded: 3600ms avg"
           ]
         },
         "api-was-icn-02:9100": {
@@ -2439,22 +2477,24 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 38,
-            "node_memory_usage_percent": 49,
-            "node_filesystem_usage_percent": 34,
-            "node_network_transmit_bytes_rate": 48,
-            "node_load1": 3.17,
-            "node_load5": 2.7,
-            "node_boot_time_seconds": 1735965569,
-            "node_procs_running": 127,
-            "node_http_request_duration_milliseconds": 417
+            "node_cpu_usage_percent": 59,
+            "node_memory_usage_percent": 62,
+            "node_filesystem_usage_percent": 31,
+            "node_network_transmit_bytes_rate": 65,
+            "node_load1": 6.3,
+            "node_load5": 4.9,
+            "node_boot_time_seconds": 1736015664,
+            "node_procs_running": 148,
+            "node_http_request_duration_milliseconds": 340
           },
           "nodeInfo": {
             "cpu_cores": 8,
             "memory_total_bytes": 17179869184,
             "disk_total_bytes": 214748364800
           },
-          "logs": []
+          "logs": [
+            "[WARNING] Connection pool failover to replica initiated"
+          ]
         },
         "api-was-pus-01:9100": {
           "instance": "api-was-pus-01:9100",
@@ -2469,15 +2509,15 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 26,
-            "node_memory_usage_percent": 39,
-            "node_filesystem_usage_percent": 28,
-            "node_network_transmit_bytes_rate": 37,
-            "node_load1": 1.88,
-            "node_load5": 1.44,
-            "node_boot_time_seconds": 1735955086,
-            "node_procs_running": 137,
-            "node_http_request_duration_milliseconds": 344
+            "node_cpu_usage_percent": 42,
+            "node_memory_usage_percent": 51,
+            "node_filesystem_usage_percent": 32,
+            "node_network_transmit_bytes_rate": 50,
+            "node_load1": 3,
+            "node_load5": 2.8,
+            "node_boot_time_seconds": 1735964094,
+            "node_procs_running": 125,
+            "node_http_request_duration_milliseconds": 180
           },
           "nodeInfo": {
             "cpu_cores": 8,
@@ -2498,16 +2538,16 @@
             "os_version": "22.04"
           },
           "metrics": {
-            "up": 1,
-            "node_cpu_usage_percent": 89,
-            "node_memory_usage_percent": 89,
-            "node_filesystem_usage_percent": 68,
-            "node_network_transmit_bytes_rate": 42,
-            "node_load1": 16.58,
-            "node_load5": 13.9,
-            "node_boot_time_seconds": 1736009953,
-            "node_procs_running": 138,
-            "node_http_request_duration_milliseconds": 1132
+            "up": 0,
+            "node_cpu_usage_percent": 0,
+            "node_memory_usage_percent": 0,
+            "node_filesystem_usage_percent": 0,
+            "node_network_transmit_bytes_rate": 0,
+            "node_load1": 0,
+            "node_load5": 0,
+            "node_boot_time_seconds": 1735968472,
+            "node_procs_running": 0,
+            "node_http_request_duration_milliseconds": 0
           },
           "nodeInfo": {
             "cpu_cores": 16,
@@ -2515,8 +2555,9 @@
             "disk_total_bytes": 1073741824000
           },
           "logs": [
-            "[WARN] Slow query: SELECT * FROM orders took 12.5s (rows_examined: 2.5M)",
-            "[ERROR] mysqld: Out of memory (Needed 2048 bytes)"
+            "[CRITICAL] Server DOWN — OOM Killer invoked (pid 2847: mysqld)",
+            "[ERROR] Connection refused on port 3306",
+            "[CRITICAL] Process mysqld terminated with signal 9 (SIGKILL)"
           ]
         },
         "db-mysql-icn-replica:9100": {
@@ -2532,22 +2573,26 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 38,
-            "node_memory_usage_percent": 61,
-            "node_filesystem_usage_percent": 44,
-            "node_network_transmit_bytes_rate": 36,
-            "node_load1": 5.8,
-            "node_load5": 5.11,
-            "node_boot_time_seconds": 1736004607,
-            "node_procs_running": 106,
-            "node_http_request_duration_milliseconds": 152
+            "node_cpu_usage_percent": 90,
+            "node_memory_usage_percent": 84,
+            "node_filesystem_usage_percent": 49,
+            "node_network_transmit_bytes_rate": 70,
+            "node_load1": 13.5,
+            "node_load5": 10,
+            "node_boot_time_seconds": 1736004342,
+            "node_procs_running": 140,
+            "node_http_request_duration_milliseconds": 145
           },
           "nodeInfo": {
             "cpu_cores": 16,
             "memory_total_bytes": 68719476736,
             "disk_total_bytes": 1073741824000
           },
-          "logs": []
+          "logs": [
+            "[CRITICAL] Replication broken — primary unreachable",
+            "[WARNING] Failover mode activated, serving read/write traffic",
+            "[WARNING] CPU spike due to sudden traffic redirect"
+          ]
         },
         "db-mysql-pus-dr:9100": {
           "instance": "db-mysql-pus-dr:9100",
@@ -2562,22 +2607,24 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 18,
-            "node_memory_usage_percent": 48,
-            "node_filesystem_usage_percent": 39,
-            "node_network_transmit_bytes_rate": 24,
-            "node_load1": 3.32,
-            "node_load5": 3.03,
-            "node_boot_time_seconds": 1735992024,
+            "node_cpu_usage_percent": 35,
+            "node_memory_usage_percent": 60,
+            "node_filesystem_usage_percent": 42,
+            "node_network_transmit_bytes_rate": 47,
+            "node_load1": 6,
+            "node_load5": 4.5,
+            "node_boot_time_seconds": 1735987809,
             "node_procs_running": 116,
-            "node_http_request_duration_milliseconds": 113
+            "node_http_request_duration_milliseconds": 55
           },
           "nodeInfo": {
             "cpu_cores": 16,
             "memory_total_bytes": 68719476736,
             "disk_total_bytes": 1073741824000
           },
-          "logs": []
+          "logs": [
+            "[WARNING] DR replication lag growing: source=replica"
+          ]
         },
         "cache-redis-icn-01:9100": {
           "instance": "cache-redis-icn-01:9100",
@@ -2592,15 +2639,15 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 21,
+            "node_cpu_usage_percent": 27,
             "node_memory_usage_percent": 71,
-            "node_filesystem_usage_percent": 17,
-            "node_network_transmit_bytes_rate": 49,
-            "node_load1": 0.83,
-            "node_load5": 0.63,
-            "node_boot_time_seconds": 1735994376,
-            "node_procs_running": 145,
-            "node_http_request_duration_milliseconds": 49
+            "node_filesystem_usage_percent": 19,
+            "node_network_transmit_bytes_rate": 45,
+            "node_load1": 0.9,
+            "node_load5": 0.7,
+            "node_boot_time_seconds": 1735951919,
+            "node_procs_running": 103,
+            "node_http_request_duration_milliseconds": 22
           },
           "nodeInfo": {
             "cpu_cores": 4,
@@ -2622,15 +2669,15 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 26,
-            "node_memory_usage_percent": 74,
-            "node_filesystem_usage_percent": 18,
-            "node_network_transmit_bytes_rate": 39,
-            "node_load1": 0.84,
-            "node_load5": 0.69,
-            "node_boot_time_seconds": 1735999948,
-            "node_procs_running": 110,
-            "node_http_request_duration_milliseconds": 46
+            "node_cpu_usage_percent": 27,
+            "node_memory_usage_percent": 72,
+            "node_filesystem_usage_percent": 19,
+            "node_network_transmit_bytes_rate": 43,
+            "node_load1": 0.9,
+            "node_load5": 0.7,
+            "node_boot_time_seconds": 1735951919,
+            "node_procs_running": 103,
+            "node_http_request_duration_milliseconds": 22
           },
           "nodeInfo": {
             "cpu_cores": 4,
@@ -2652,22 +2699,24 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 32,
-            "node_memory_usage_percent": 37,
-            "node_filesystem_usage_percent": 65,
-            "node_network_transmit_bytes_rate": 51,
-            "node_load1": 1.36,
-            "node_load5": 1.17,
-            "node_boot_time_seconds": 1735997272,
-            "node_procs_running": 102,
-            "node_http_request_duration_milliseconds": 458
+            "node_cpu_usage_percent": 25,
+            "node_memory_usage_percent": 40,
+            "node_filesystem_usage_percent": 95,
+            "node_network_transmit_bytes_rate": 40,
+            "node_load1": 1.3,
+            "node_load5": 1,
+            "node_boot_time_seconds": 1735975801,
+            "node_procs_running": 138,
+            "node_http_request_duration_milliseconds": 180
           },
           "nodeInfo": {
             "cpu_cores": 4,
             "memory_total_bytes": 17179869184,
             "disk_total_bytes": 5368709120000
           },
-          "logs": []
+          "logs": [
+            "[WARNING] Filesystem /data still at 95% — cleanup pending"
+          ]
         },
         "storage-s3gw-pus-01:9100": {
           "instance": "storage-s3gw-pus-01:9100",
@@ -2682,15 +2731,15 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 17,
-            "node_memory_usage_percent": 35,
+            "node_cpu_usage_percent": 16,
+            "node_memory_usage_percent": 36,
             "node_filesystem_usage_percent": 52,
-            "node_network_transmit_bytes_rate": 64,
-            "node_load1": 0.28,
-            "node_load5": 0.23,
-            "node_boot_time_seconds": 1735941993,
-            "node_procs_running": 147,
-            "node_http_request_duration_milliseconds": 379
+            "node_network_transmit_bytes_rate": 55,
+            "node_load1": 0.3,
+            "node_load5": 0.3,
+            "node_boot_time_seconds": 1735961740,
+            "node_procs_running": 140,
+            "node_http_request_duration_milliseconds": 150
           },
           "nodeInfo": {
             "cpu_cores": 2,
@@ -2712,22 +2761,24 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 37,
-            "node_memory_usage_percent": 35,
-            "node_filesystem_usage_percent": 15,
-            "node_network_transmit_bytes_rate": 69,
-            "node_load1": 1.52,
-            "node_load5": 1.42,
-            "node_boot_time_seconds": 1736017672,
-            "node_procs_running": 121,
-            "node_http_request_duration_milliseconds": 454
+            "node_cpu_usage_percent": 48,
+            "node_memory_usage_percent": 42,
+            "node_filesystem_usage_percent": 17,
+            "node_network_transmit_bytes_rate": 84,
+            "node_load1": 2.5,
+            "node_load5": 1.8,
+            "node_boot_time_seconds": 1735936266,
+            "node_procs_running": 132,
+            "node_http_request_duration_milliseconds": 215
           },
           "nodeInfo": {
             "cpu_cores": 4,
             "memory_total_bytes": 8589934592,
             "disk_total_bytes": 53687091200
           },
-          "logs": []
+          "logs": [
+            "[WARNING] Backend api-was-icn-01 health check degraded"
+          ]
         },
         "lb-haproxy-pus-01:9100": {
           "instance": "lb-haproxy-pus-01:9100",
@@ -2742,15 +2793,15 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 37,
-            "node_memory_usage_percent": 35,
-            "node_filesystem_usage_percent": 13,
-            "node_network_transmit_bytes_rate": 71,
-            "node_load1": 1.61,
-            "node_load5": 1.26,
-            "node_boot_time_seconds": 1735962005,
-            "node_procs_running": 108,
-            "node_http_request_duration_milliseconds": 377
+            "node_cpu_usage_percent": 33,
+            "node_memory_usage_percent": 36,
+            "node_filesystem_usage_percent": 16,
+            "node_network_transmit_bytes_rate": 74,
+            "node_load1": 1.4,
+            "node_load5": 1.2,
+            "node_boot_time_seconds": 1735936266,
+            "node_procs_running": 130,
+            "node_http_request_duration_milliseconds": 160
           },
           "nodeInfo": {
             "cpu_cores": 4,
@@ -2768,8 +2819,13 @@
     "totalDataPoints": 6,
     "intervalMinutes": 10,
     "serverCount": 15,
-    "affectedServers": 2,
-    "hasPreFailureSymptoms": false,
-    "hasRecoveryPhase": true
+    "affectedServers": 6,
+    "hasPreFailureSymptoms": true,
+    "hasRecoveryPhase": false,
+    "peakSeverity": "offline",
+    "failureType": "oom-crash",
+    "offlineServers": [
+      "db-mysql-icn-primary"
+    ]
   }
 }

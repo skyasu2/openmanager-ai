@@ -19,7 +19,7 @@ import { logger } from '../lib/logger';
 // ============================================================================
 
 /** 서버 상태 (JSON SSOT와 동일한 용어 사용) */
-export type ServerStatus = 'online' | 'warning' | 'critical';
+export type ServerStatus = 'online' | 'warning' | 'critical' | 'offline';
 
 /** 트렌드 방향 */
 export type TrendDirection = 'up' | 'down' | 'stable';
@@ -73,6 +73,7 @@ export interface PrecomputedSlot {
     healthy: number;
     warning: number;
     critical: number;
+    offline: number;
   };
 
   // 알림 목록 (warning/critical만)
@@ -291,6 +292,11 @@ function targetToRawServer(target: PrometheusTargetData): RawServerData {
 
 /** 서버 상태 결정 (JSON SSOT와 동일한 용어 사용) */
 function determineStatus(server: RawServerData): ServerStatus {
+  // up=0 (Prometheus scrape 실패) → offline
+  if (server.status === 'offline') {
+    return 'offline';
+  }
+
   const { cpu, memory, disk, network } = server;
 
   // Critical 체크
@@ -452,6 +458,7 @@ export function buildPrecomputedStates(): PrecomputedSlot[] {
         healthy: servers.filter((s) => s.status === 'online').length, // 'online' 상태 카운트
         warning: servers.filter((s) => s.status === 'warning').length,
         critical: servers.filter((s) => s.status === 'critical').length,
+        offline: servers.filter((s) => s.status === 'offline').length,
       };
 
       // 알림 생성
@@ -612,7 +619,7 @@ export function getCompactContext(): CompactContext {
     date: state.dateLabel,
     time: state.timeLabel,
     timestamp: state.fullTimestamp,
-    summary: `${state.summary.total}서버: ${state.summary.healthy} healthy, ${state.summary.warning} warning, ${state.summary.critical} critical`,
+    summary: `${state.summary.total}서버: ${state.summary.healthy} healthy, ${state.summary.warning} warning, ${state.summary.critical} critical${state.summary.offline ? `, ${state.summary.offline} offline` : ''}`,
     critical,
     warning,
     patterns,
@@ -839,21 +846,22 @@ export function getLLMContext(): string {
 
   // 헤더 (날짜 포함)
   let context = `## 현재 서버 상태 [${dateLabel} ${timeLabel} KST]\n`;
-  context += `총 ${summary.total}대: ✓${summary.healthy}정상 ⚠${summary.warning}경고 ✗${summary.critical}위험\n`;
+  context += `총 ${summary.total}대: ✓${summary.healthy}정상 ⚠${summary.warning}경고 ✗${summary.critical}위험${summary.offline ? ` ⛔${summary.offline}오프라인` : ''}\n`;
   context += `임계값: CPU ${THRESHOLDS.cpu.warning}%/${THRESHOLDS.cpu.critical}%, Memory ${THRESHOLDS.memory.warning}%/${THRESHOLDS.memory.critical}%, Disk ${THRESHOLDS.disk.warning}%/${THRESHOLDS.disk.critical}%\n\n`;
 
   // 서버 역할별 현황
-  const typeGroups = new Map<string, { total: number; warning: number; critical: number }>();
+  const typeGroups = new Map<string, { total: number; warning: number; critical: number; offline: number }>();
   for (const server of state.servers) {
-    const group = typeGroups.get(server.type) ?? { total: 0, warning: 0, critical: 0 };
+    const group = typeGroups.get(server.type) ?? { total: 0, warning: 0, critical: 0, offline: 0 };
     group.total++;
     if (server.status === 'warning') group.warning++;
     if (server.status === 'critical') group.critical++;
+    if (server.status === 'offline') group.offline++;
     typeGroups.set(server.type, group);
   }
   context += `### 서버 역할별 현황\n`;
   for (const [type, group] of typeGroups) {
-    const statusNote = group.critical > 0 ? ` (✗${group.critical})` : group.warning > 0 ? ` (⚠${group.warning})` : '';
+    const statusNote = group.offline > 0 ? ` (⛔${group.offline})` : group.critical > 0 ? ` (✗${group.critical})` : group.warning > 0 ? ` (⚠${group.warning})` : '';
     context += `- ${type}: ${group.total}대${statusNote}\n`;
   }
   context += '\n';
