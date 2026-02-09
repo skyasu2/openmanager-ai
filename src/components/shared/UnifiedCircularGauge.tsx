@@ -31,15 +31,7 @@ const getMetricConfig = (
   const isCritical = value >= threshold.critical;
   const isWarning = value >= threshold.warning;
 
-  // 기본 색상 설정
-  const baseColors = {
-    cpu: { color: '#ef4444', gradient: 'from-red-500 to-red-600' },
-    memory: { color: '#3b82f6', gradient: 'from-blue-500 to-blue-600' },
-    disk: { color: '#8b5cf6', gradient: 'from-purple-500 to-purple-600' },
-    network: { color: '#22c55e', gradient: 'from-green-500 to-green-600' },
-  };
-
-  // 상태에 따른 색상 오버라이드
+  // 상태에 따른 색상 (severity 기반 — 카드 MetricItem과 통일)
   if (isCritical) {
     return {
       color: '#ef4444',
