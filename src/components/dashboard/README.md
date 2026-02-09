@@ -65,7 +65,6 @@ src/components/dashboard/
 **사용처**:
 
 - `ServerDashboard.tsx` (검색 및 필터 기능)
-- `ServerDashboardServers.tsx` (서버 목록 필터링)
 - 향후 서버 검색 관련 컴포넌트들
 
 **핵심 기능**:
@@ -114,8 +113,6 @@ graph TD
     F --> C
     F --> D
 
-    G[ServerDashboardServers.tsx] --> C
-    H[ServerDashboardTabs.tsx] --> E
 ```
 
 ## ⚠️ **중요한 호환성 정보**

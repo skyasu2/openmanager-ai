@@ -149,14 +149,6 @@ export const api = {
       }
       return response.json();
     },
-
-    getEngineStatus: async (): Promise<unknown> => {
-      const response = await fetch('/api/ai-agent/integrated');
-      if (!response.ok) {
-        throw new Error(`AI 엔진 상태 조회 실패: ${response.status}`);
-      }
-      return response.json();
-    },
   },
 
   // 데이터 생성기 API (dashboard 기반으로 변경)

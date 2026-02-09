@@ -198,13 +198,7 @@
       ]
     }
   ],
-  "redirects": [
-    {
-      "source": "/admin/((?!ai-agent).*)",
-      "destination": "/admin/ai-agent",
-      "permanent": false
-    }
-  ],
+  "redirects": [],
   "rewrites": [
     {
       "source": "/health",

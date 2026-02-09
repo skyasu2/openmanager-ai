@@ -225,12 +225,6 @@ export default function ServerDashboard({
 
   return (
     <div>
-      {/* <ServerDashboardTabs
-        activeTab={activeTab}
-        setActiveTab={setActiveTab}
-        stats={serverStats}
-      /> */}
-
       <div>
         {activeTab === 'servers' && (
           <div className="space-y-4">

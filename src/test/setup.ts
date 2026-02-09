@@ -73,13 +73,6 @@ vi.mock('@/services/mcp/CloudContextLoader', () => ({
   },
 }));
 
-// Embedding Service Mock
-vi.mock('@/services/ai/embedding-service', () => ({
-  embeddingService: {
-    createEmbedding: vi.fn().mockResolvedValue(new Array(384).fill(0.1)),
-  },
-}));
-
 // UnifiedServerDataSource Mock - 테스트용 서버 데이터 포함
 const mockServerData = {
   id: 'server-1',
