@@ -6,7 +6,13 @@
  * 브라우저 크기에 맞게 자동 배치, 첫 줄만 표시하고 나머지는 펼치기
  */
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import {
+  type CSSProperties,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import ImprovedServerCard from '@/components/dashboard/ImprovedServerCard';
 import ServerCardErrorBoundary from '@/components/error/ServerCardErrorBoundary';
 import type { Server } from '@/types/server';
@@ -15,6 +21,10 @@ interface VirtualizedServerListProps {
   servers: Server[];
   handleServerSelect: (server: Server) => void;
 }
+
+const GRID_STYLE: CSSProperties = {
+  gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 240px))',
+};
 
 export default function VirtualizedServerList({
   servers,
@@ -81,12 +91,7 @@ export default function VirtualizedServerList({
   return (
     <div className="w-full">
       {/* 반응형 그리드 - 카드 너비 고정 (min 200px, max 240px) */}
-      <div
-        className="grid gap-3 justify-center"
-        style={{
-          gridTemplateColumns: `repeat(auto-fit, minmax(200px, 240px))`,
-        }}
-      >
+      <div className="grid gap-3 justify-center" style={GRID_STYLE}>
         {servers
           .slice(0, visibleCount)
           .map((server, index) => renderServer(server, index))}

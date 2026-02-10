@@ -8,7 +8,7 @@
  */
 
 import { Clock } from 'lucide-react';
-import { memo, useEffect, useState } from 'react';
+import { memo, useEffect, useRef, useState } from 'react';
 
 interface RealtimeClockProps {
   format?: '12h' | '24h';
@@ -25,33 +25,28 @@ export const RealtimeClock = memo(function RealtimeClock({
 }: RealtimeClockProps) {
   // 🔒 Hydration 불일치 방지: 초기값 null, 마운트 후 시간 설정
   const [currentTime, setCurrentTime] = useState<Date | null>(null);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
-    // 초기 시간 설정
     setCurrentTime(new Date());
 
     // 다음 초가 시작될 때까지의 시간 계산 (정확한 초 단위 업데이트)
     const now = new Date();
     const msUntilNextSecond = 1000 - now.getMilliseconds();
 
-    // 첫 업데이트를 다음 초 시작 시점에 맞춤
     const firstTimeout = setTimeout(() => {
       setCurrentTime(new Date());
 
-      // 이후 정확히 1초마다 업데이트
-      const interval = setInterval(() => {
+      intervalRef.current = setInterval(() => {
         setCurrentTime(new Date());
       }, 1000);
-
-      // 정리 함수에서 interval 정리
-      return () => clearInterval(interval);
     }, msUntilNextSecond);
 
-    // 정리 함수
     return () => {
       clearTimeout(firstTimeout);
+      if (intervalRef.current) clearInterval(intervalRef.current);
     };
-  }, []); // 빈 의존성 배열 - 컴포넌트 마운트 시 한 번만 실행
+  }, []);
 
   const formatTime = () => {
     if (!currentTime) return '--:--:--';
