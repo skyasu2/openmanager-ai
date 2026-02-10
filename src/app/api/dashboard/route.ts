@@ -1,5 +1,6 @@
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
+import { withAuth } from '@/lib/auth/api-auth';
 import { getSystemConfig } from '@/config/SystemConfiguration';
 import { createApiRoute } from '@/lib/api/zod-middleware';
 import { logger } from '@/lib/logging';
@@ -280,7 +281,7 @@ const getHandler = createApiRoute()
  *
  * Supabase에서 실시간 대시보드 데이터 가져오기
  */
-export async function GET(request: NextRequest): Promise<NextResponse> {
+async function handleDashboardGET(request: NextRequest): Promise<NextResponse> {
   const startTime = Date.now();
 
   // 🧪 테스트 모드 확인 및 우회
@@ -519,9 +520,13 @@ const postHandler = createApiRoute()
  *
  * 대시보드 액션 처리 (새로고침 등)
  */
-export async function POST(request: NextRequest): Promise<NextResponse> {
+export const GET = withAuth(handleDashboardGET);
+
+async function handleDashboardPOST(
+  request: NextRequest
+): Promise<NextResponse> {
   try {
-    return await postHandler(request);
+    return (await postHandler(request)) as NextResponse;
   } catch (error) {
     debug.error('❌ 대시보드 POST 오류:', error);
     return NextResponse.json(
@@ -534,3 +539,5 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     );
   }
 }
+
+export const POST = withAuth(handleDashboardPOST);

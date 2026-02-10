@@ -2,6 +2,7 @@ import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 import { getCorsHeaders } from '@/lib/api/cors';
 import { createApiRoute } from '@/lib/api/zod-middleware';
+import { withAuth } from '@/lib/auth/api-auth';
 import {
   type PaginatedServer,
   ServerBatchRequestSchema,
@@ -143,7 +144,7 @@ const getHandler = createApiRoute()
  * 🖥️ 서버 Next API
  * 다음 서버 정보 또는 서버 페이지네이션을 처리하는 엔드포인트
  */
-export async function GET(request: NextRequest) {
+async function handleGET(request: NextRequest) {
   try {
     return await getHandler(request);
   } catch (error) {
@@ -158,6 +159,8 @@ export async function GET(request: NextRequest) {
     );
   }
 }
+
+export const GET = withAuth(handleGET);
 
 // POST 핸들러
 const postHandler = createApiRoute()
@@ -243,7 +246,7 @@ const postHandler = createApiRoute()
 /**
  * POST 요청으로 서버 배치 작업 수행
  */
-export async function POST(request: NextRequest) {
+async function handlePOST(request: NextRequest) {
   try {
     return await postHandler(request);
   } catch (error) {
@@ -258,6 +261,8 @@ export async function POST(request: NextRequest) {
     );
   }
 }
+
+export const POST = withAuth(handlePOST);
 
 /**
  * OPTIONS - CORS 지원

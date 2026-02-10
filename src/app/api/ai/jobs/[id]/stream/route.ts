@@ -19,6 +19,7 @@
 export const maxDuration = 60; // Vercel Pro Tier
 
 import type { NextRequest } from 'next/server';
+import { checkAPIAuth } from '@/lib/auth/api-auth';
 import { logger } from '@/lib/logging';
 import { getRedisClient, redisGet } from '@/lib/redis';
 
@@ -66,6 +67,10 @@ export async function GET(
   _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  // Auth check (SSE는 withAuth 래퍼 대신 직접 체크 — Response 타입 호환)
+  const authError = await checkAPIAuth(_request);
+  if (authError) return authError;
+
   const { id: jobId } = await params;
 
   if (!jobId) {

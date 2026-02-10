@@ -9,6 +9,8 @@
 | Resume Stream 재활성화 (`resume: true`) | P1 | Blocked (AI SDK parts 처리 버그 대기) |
 
 ### Completed (2026-02-10)
+- [x] P3: AI SDK `ai@6.0.77 → 6.0.78` 업그레이드 + `@ts-expect-error` 2건 제거
+- [x] P3: Dead code 1,465줄 제거 (5 미사용 파일 삭제)
 - [x] P2: 대형 파일 리팩토링 완료 (MetricsProvider 682→435, security 596→295, ProcessManager 794→766)
 - [x] P2: AsyncLocalStorage 도입 (traceId 자동 전파, 15+ 수동 interpolation 제거)
 - [x] P2: `ai-proxy.config.ts` 분할 (634 → 482줄, dead code 100줄 제거)

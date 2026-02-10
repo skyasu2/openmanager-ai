@@ -8,6 +8,7 @@
  */
 
 import { type NextRequest, NextResponse } from 'next/server';
+import { withAuth } from '@/lib/auth/api-auth';
 import { logger } from '@/lib/logging';
 import { redisDel, redisGet, redisSet } from '@/lib/redis';
 import type { JobStatus, JobStatusResponse, JobType } from '@/types/ai-jobs';
@@ -47,7 +48,7 @@ interface JobProgress {
 // GET /api/ai/jobs/:id - Job 상태 조회
 // ============================================
 
-export async function GET(
+export const GET = withAuth(async function GET(
   _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
@@ -104,13 +105,13 @@ export async function GET(
       { status: 500 }
     );
   }
-}
+});
 
 // ============================================
 // DELETE /api/ai/jobs/:id - Job 취소
 // ============================================
 
-export async function DELETE(
+export const DELETE = withAuth(async function DELETE(
   _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
@@ -173,4 +174,4 @@ export async function DELETE(
       { status: 500 }
     );
   }
-}
+});

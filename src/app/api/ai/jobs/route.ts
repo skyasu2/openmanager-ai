@@ -16,6 +16,7 @@ import {
   analyzeJobQueryComplexity,
   inferJobType,
 } from '@/lib/ai/utils/query-complexity';
+import { withAuth } from '@/lib/auth/api-auth';
 import { logger } from '@/lib/logging';
 import { getRedisClient, redisGet, redisMGet, redisSet } from '@/lib/redis';
 import { rateLimiters, withRateLimit } from '@/lib/security/rate-limiter';
@@ -193,8 +194,11 @@ async function handlePOST(request: NextRequest) {
   }
 }
 
-// Rate Limiting 적용
-export const POST = withRateLimit(rateLimiters.aiAnalysis, handlePOST);
+// Auth + Rate Limiting 적용
+export const POST = withRateLimit(
+  rateLimiters.aiAnalysis,
+  withAuth(handlePOST)
+);
 
 // ============================================
 // GET /api/ai/jobs - Job 목록 조회 (Rate Limited)
@@ -243,8 +247,8 @@ async function handleGET(request: NextRequest) {
   }
 }
 
-// Rate Limiting 적용
-export const GET = withRateLimit(rateLimiters.default, handleGET);
+// Auth + Rate Limiting 적용
+export const GET = withRateLimit(rateLimiters.default, withAuth(handleGET));
 
 // ============================================
 // 헬퍼 함수

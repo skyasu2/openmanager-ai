@@ -11,7 +11,7 @@
 'use client';
 
 import { AlertTriangle, CheckCircle, Info, X } from 'lucide-react';
-import { type FC, useCallback, useEffect, useState } from 'react';
+import { type FC, useCallback, useEffect, useRef, useState } from 'react';
 import { useUnifiedAdminStore } from '@/stores/useUnifiedAdminStore';
 
 interface DisplayNotification {
@@ -27,6 +27,9 @@ interface DisplayNotification {
 export const NotificationToast: FC = () => {
   const [notifications, setNotifications] = useState<DisplayNotification[]>([]);
   const { isSystemStarted: _isSystemStarted } = useUnifiedAdminStore();
+  const autoRemoveTimers = useRef<Set<ReturnType<typeof setTimeout>>>(
+    new Set()
+  );
 
   const maxNotifications = 3; // 5개→3개로 축소
 
@@ -83,9 +86,11 @@ export const NotificationToast: FC = () => {
 
       // 자동 제거 (Critical: 10초, Warning: 5초)
       const autoRemoveTime = level === 'critical' ? 10000 : 5000;
-      setTimeout(() => {
+      const timerId = setTimeout(() => {
+        autoRemoveTimers.current.delete(timerId);
         removeNotification(notification.id);
       }, autoRemoveTime);
+      autoRemoveTimers.current.add(timerId);
     };
 
     window.addEventListener('system-event', handleSystemEvent as EventListener);
@@ -94,6 +99,11 @@ export const NotificationToast: FC = () => {
         'system-event',
         handleSystemEvent as EventListener
       );
+      // 미완료 자동제거 타이머 정리
+      for (const timerId of autoRemoveTimers.current) {
+        clearTimeout(timerId);
+      }
+      autoRemoveTimers.current.clear();
     };
   }, [getNotificationTitle, removeNotification]);
 
