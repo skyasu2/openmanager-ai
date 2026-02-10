@@ -7,12 +7,12 @@
 | Task | Priority | Status |
 |------|----------|--------|
 | Resume Stream 재활성화 (`resume: true`) | P1 | Blocked (AI SDK parts 처리 버그 대기) |
-| `useHybridAIQuery.ts` 분할 (852줄) | P2 | Backlog |
 | 대형 파일 리팩토링 (500줄+ 8개) | P2 | Backlog |
-| W3C Trace Context (`traceparent`) 표준화 | P2 | Backlog |
 | AsyncLocalStorage 도입 | P2 | Backlog |
 
 ### Completed (2026-02-10)
+- [x] P2: `useHybridAIQuery.ts` 분할 (876 → ~540줄, sub-hooks 추출)
+- [x] P2: W3C Trace Context (`traceparent`) end-to-end 전파
 - [x] P0: Dev bypass auth 기본값 `true` → `false` (프로덕션 인증 우회 방지)
 - [x] P1: Redis 자동 복구 타이머 추가 (60초 후 재연결)
 - [x] P1: Cache key 정규화 통일 (`normalizeQueryForCache`)
