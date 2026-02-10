@@ -9,6 +9,7 @@ import { type NextRequest, NextResponse } from 'next/server';
 import { SECURITY } from '@/config/constants';
 import { isGuestFullAccessEnabledServer } from '@/config/guestMode.server';
 import { logger } from '@/lib/logging';
+import { createClient } from '@/lib/supabase/server';
 import { securityLogger } from '../security/security-logger';
 
 /**
@@ -118,20 +119,32 @@ export async function checkAPIAuth(request: NextRequest) {
     }
   }
 
-  // 세션 쿠키 확인 (NextAuth 사용)
-  const cookieHeader = request.headers.get('cookie');
-  const hasAuthSession =
-    cookieHeader?.includes('next-auth.session-token') ||
-    cookieHeader?.includes('__Secure-next-auth.session-token');
+  // Supabase 세션 검증 (JWT 서명 확인)
+  try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+      error,
+    } = await supabase.auth.getUser();
 
-  if (!hasAuthSession) {
-    return NextResponse.json(
-      { error: 'Unauthorized - Please login first' },
-      { status: 401 }
+    if (!error && user) {
+      return null; // Supabase 인증 통과
+    }
+
+    logger.warn(
+      `[API Auth] Supabase session invalid: ${error?.message || 'No user'}`
+    );
+  } catch (supabaseError) {
+    logger.warn(
+      '[API Auth] Supabase validation unavailable:',
+      supabaseError instanceof Error ? supabaseError.message : supabaseError
     );
   }
 
-  return null; // 인증 통과
+  return NextResponse.json(
+    { error: 'Unauthorized - Please login first' },
+    { status: 401 }
+  );
 }
 
 /**

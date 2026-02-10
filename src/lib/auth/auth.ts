@@ -8,7 +8,12 @@
  * - 보안 로깅
  */
 
+import { createHmac, randomUUID } from 'crypto';
 import { logger } from '@/lib/logging';
+
+/** HMAC 서명용 서버 비밀키 (환경변수에서 로드) */
+const TOKEN_SECRET =
+  process.env.AUTH_TOKEN_SECRET || process.env.CLOUD_RUN_API_SECRET || '';
 export interface AuthSession {
   sessionId: string;
   userId: string;
@@ -199,7 +204,7 @@ export class AuthManager {
   }
 
   /**
-   * 브라우저 기반 인증 토큰 생성 (기존 시스템과 호환)
+   * 브라우저 기반 인증 토큰 생성 (HMAC 서명)
    */
   generateBrowserToken(sessionId: string): string {
     const session = this.validateSession(sessionId);
@@ -213,15 +218,40 @@ export class AuthManager {
       timestamp: Date.now(),
     };
 
-    return btoa(JSON.stringify(tokenData));
+    const payloadB64 = Buffer.from(JSON.stringify(tokenData)).toString(
+      'base64url'
+    );
+    const signature = createHmac('sha256', TOKEN_SECRET)
+      .update(payloadB64)
+      .digest('base64url');
+
+    return `${payloadB64}.${signature}`;
   }
 
   /**
-   * 브라우저 토큰 검증
+   * 브라우저 토큰 검증 (HMAC 서명 확인)
    */
   validateBrowserToken(token: string): AuthSession | null {
     try {
-      const tokenData = JSON.parse(atob(token));
+      const dotIndex = token.indexOf('.');
+      if (dotIndex === -1) return null;
+
+      const payloadB64 = token.substring(0, dotIndex);
+      const signature = token.substring(dotIndex + 1);
+
+      // HMAC 서명 검증
+      const expectedSignature = createHmac('sha256', TOKEN_SECRET)
+        .update(payloadB64)
+        .digest('base64url');
+
+      if (signature !== expectedSignature) {
+        logger.warn('[Auth] Browser token signature mismatch');
+        return null;
+      }
+
+      const tokenData = JSON.parse(
+        Buffer.from(payloadB64, 'base64url').toString()
+      );
       return this.validateSession(tokenData.sessionId);
     } catch {
       return null;
@@ -243,7 +273,7 @@ export class AuthManager {
   }
 
   private generateSessionId(): string {
-    return `session_${Date.now()}_${Math.random().toString(36).substr(2, 12)}`;
+    return `session_${randomUUID()}`;
   }
 
   /**

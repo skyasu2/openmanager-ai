@@ -18,6 +18,7 @@
 
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
+import { withAdminAuth, withAuth } from '@/lib/auth/api-auth';
 import {
   getCacheStats,
   invalidateCache,
@@ -42,7 +43,7 @@ export const dynamic = 'force-dynamic';
 // GET Handler - Cache Stats
 // ============================================================================
 
-export function GET(_request: NextRequest) {
+async function handleGET(_request: NextRequest) {
   try {
     const rawStats = getCacheStats();
 
@@ -94,7 +95,7 @@ export function GET(_request: NextRequest) {
 // POST Handler - Cache Actions
 // ============================================================================
 
-export async function POST(request: NextRequest) {
+async function handlePOST(request: NextRequest) {
   try {
     const { action, options } = await request.json();
 
@@ -336,3 +337,7 @@ async function handleResetStats(): Promise<CacheResetStatsResponse> {
     newStats,
   };
 }
+
+// 인증 래핑: GET은 일반 인증, POST(무효화/리셋)는 관리자 인증
+export const GET = withAuth(handleGET);
+export const POST = withAdminAuth(handlePOST);

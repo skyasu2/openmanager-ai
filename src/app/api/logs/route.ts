@@ -10,8 +10,9 @@
 
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
+import { withAdminAuth, withAuth } from '@/lib/auth/api-auth';
 import { logger } from '@/lib/logging';
+import { createClient } from '@/lib/supabase/server';
 
 // 타입 정의
 type LogLevel = 'info' | 'warn' | 'error';
@@ -35,7 +36,7 @@ interface LogEntry {
  * - limit: 조회 개수 (기본 50)
  * - offset: 페이지네이션 오프셋
  */
-export async function GET(request: NextRequest) {
+async function handleGET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const serverId = searchParams.get('server_id');
@@ -115,7 +116,7 @@ export async function GET(request: NextRequest) {
  * - source: 로그 소스 (기본: 'system')
  * - context: 추가 컨텍스트 (선택)
  */
-export async function POST(request: NextRequest) {
+async function handlePOST(request: NextRequest) {
   try {
     const body = await request.json();
     const {
@@ -207,7 +208,7 @@ export async function POST(request: NextRequest) {
  * Query params:
  * - keepDays: 보관 기간 (기본: 7일)
  */
-export async function DELETE(request: NextRequest) {
+async function handleDELETE(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const keepDays = parseInt(searchParams.get('keepDays') || '7');
@@ -254,3 +255,8 @@ export async function DELETE(request: NextRequest) {
     );
   }
 }
+
+// 인증 래핑: GET/POST는 일반 인증, DELETE는 관리자 인증
+export const GET = withAuth(handleGET);
+export const POST = withAuth(handlePOST);
+export const DELETE = withAdminAuth(handleDELETE);

@@ -6,15 +6,15 @@
  */
 
 import * as Sentry from '@sentry/nextjs';
+import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
+import { withAuth } from '@/lib/auth/api-auth';
 
 export const dynamic = 'force-dynamic';
 
-// Sentry DSN (fallback 포함)
+// Sentry DSN (환경변수에서만 로드 — 하드코딩 금지)
 const SENTRY_DSN =
-  process.env.SENTRY_DSN ||
-  process.env.NEXT_PUBLIC_SENTRY_DSN ||
-  'https://c4cfe13cdda790d1d9a6c3f92c593f39@o4509732473667584.ingest.de.sentry.io/4510731369119824';
+  process.env.SENTRY_DSN || process.env.NEXT_PUBLIC_SENTRY_DSN || '';
 
 // Sentry 초기화 (serverless 환경에서 필요)
 function ensureSentryInitialized() {
@@ -28,7 +28,7 @@ function ensureSentryInitialized() {
   }
 }
 
-export async function GET(request: Request) {
+async function handleGET(request: NextRequest) {
   // Sentry 초기화 확인
   ensureSentryInitialized();
 
@@ -108,3 +108,5 @@ export async function GET(request: Request) {
 
   return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
 }
+
+export const GET = withAuth(handleGET);
