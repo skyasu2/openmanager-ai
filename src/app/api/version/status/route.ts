@@ -9,51 +9,7 @@
 
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
-import {
-  AI_ENGINE_VERSIONS,
-  DATA_GENERATOR_VERSIONS,
-  VersionManager as ImportedVersionManager,
-} from '@/config/versions';
 import debug from '@/utils/debug';
-
-// 🔒 타입 안전성을 위한 인터페이스 정의
-interface AIEngineVersions {
-  [key: string]: string | number | unknown;
-}
-
-interface DataGeneratorVersions {
-  [key: string]: string | number | unknown;
-}
-
-interface VersionManager {
-  [key: string]: unknown;
-}
-
-interface MasterAIEngine {
-  [key: string]: unknown;
-}
-
-// 안전한 import 처리
-const _AI_ENGINE_VERSIONS: AIEngineVersions | null = AI_ENGINE_VERSIONS;
-const _DATA_GENERATOR_VERSIONS: DataGeneratorVersions | null =
-  DATA_GENERATOR_VERSIONS;
-// @ts-expect-error - VersionManager type mismatch
-const _VersionManager: VersionManager | null = ImportedVersionManager;
-let _masterAIEngine: MasterAIEngine | null = null;
-
-// SimplifiedQueryEngine은 GCP Functions로 이관됨
-try {
-  // const simplifiedQueryEngineModule = require('@/services/ai/SimplifiedQueryEngine');
-  // masterAIEngine = simplifiedQueryEngineModule.simplifiedQueryEngine;
-  _masterAIEngine = null; // GCP Functions로 이관됨
-} catch (error) {
-  debug.warn(
-    'SimplifiedQueryEngine import 실패 (GCP Functions로 이관됨):',
-    (error as Error).message
-  );
-}
-
-// OptimizedDataGenerator는 Mock System으로 대체됨
 
 export function GET(_request: NextRequest) {
   try {

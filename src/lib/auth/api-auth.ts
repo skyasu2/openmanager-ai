@@ -155,17 +155,17 @@ export async function checkAPIAuth(request: NextRequest) {
  *
  * Note: Response 타입도 지원하여 스트리밍 엔드포인트에서 사용 가능
  */
-export function withAuth<T = undefined>(
-  handler: T extends undefined
-    ? (request: NextRequest) => Promise<NextResponse | Response>
-    : (request: NextRequest, context: T) => Promise<NextResponse | Response>
+export function withAuth<T extends unknown[] = []>(
+  handler: (
+    request: NextRequest,
+    ...args: T
+  ) => Promise<NextResponse | Response>
 ) {
-  return async (request: NextRequest, context?: T) => {
+  return async (request: NextRequest, ...args: T) => {
     const authError = await checkAPIAuth(request);
     if (authError) return authError;
 
-    // @ts-expect-error - TypeScript cannot infer the correct overload
-    return handler(request, context);
+    return handler(request, ...args);
   };
 }
 
