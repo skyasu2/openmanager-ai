@@ -411,6 +411,8 @@ export interface TraceMetadata {
   userId?: string;
   mode?: 'single' | 'multi' | 'auto';
   query: string;
+  /** Upstream trace ID from Vercel API (W3C traceparent). Links Cloud Run trace to client trace. */
+  upstreamTraceId?: string;
 }
 
 export interface GenerationParams {
@@ -458,6 +460,9 @@ export function createSupervisorTrace(metadata: TraceMetadata): LangfuseTrace {
       mode: metadata.mode,
       queryLength: metadata.query.length,
       sampled: true, // 샘플링된 트레이스임을 표시
+      ...(metadata.upstreamTraceId && {
+        upstreamTraceId: metadata.upstreamTraceId,
+      }),
     },
     input: metadata.query,
   });

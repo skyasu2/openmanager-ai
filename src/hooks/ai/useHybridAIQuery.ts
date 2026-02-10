@@ -32,7 +32,9 @@ import { DefaultChatTransport } from 'ai';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { flushSync } from 'react-dom';
 import {
+  TRACEPARENT_HEADER,
   calculateRetryDelay,
+  generateTraceparent,
   generateTraceId,
   getComplexityThreshold,
   getObservabilityConfig,
@@ -202,6 +204,12 @@ export function useHybridAIQuery(
     () =>
       new DefaultChatTransport({
         api: apiEndpoint,
+        // W3C Trace Context: 매 요청마다 새 traceparent 생성하여 end-to-end 추적
+        // traceIdRef의 UUID를 trace-id로 사용, 요청마다 새 parent-id 생성
+        headers: () => ({
+          [TRACEPARENT_HEADER]: generateTraceparent(traceIdRef.current),
+          [observabilityConfig.traceIdHeader]: traceIdRef.current,
+        }),
         // Resolvable<object> 함수: sendMessages() 호출 시점에 최신 webSearchEnabled 반환
         // ChatStore.transport가 readonly이므로 정적 값 대신 함수로 전달해야
         // 토글 변경이 실시간 반영됨
@@ -211,7 +219,7 @@ export function useHybridAIQuery(
           api: `${apiEndpoint}?sessionId=${id}`,
         }),
       }),
-    [apiEndpoint]
+    [apiEndpoint, observabilityConfig.traceIdHeader]
   );
 
   const {

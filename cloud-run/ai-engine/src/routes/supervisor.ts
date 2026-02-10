@@ -69,6 +69,32 @@ const streamRequestSchema = z.object({
   enableWebSearch: z.union([z.boolean(), z.literal('auto')]).optional(),
 });
 
+// ============================================================================
+// 🎯 W3C Trace Context Helper
+// ============================================================================
+
+/**
+ * traceparent 또는 X-Trace-Id에서 trace ID 추출
+ * @param traceparent - W3C traceparent 헤더 (format: 00-{trace-id}-{parent-id}-{flags})
+ * @param legacyTraceId - 레거시 X-Trace-Id 헤더 (UUID 또는 커스텀 형식)
+ * @returns trace ID 문자열 또는 undefined
+ */
+function extractTraceId(
+  traceparent: string | undefined,
+  legacyTraceId: string | undefined,
+): string | undefined {
+  if (traceparent) {
+    const match = traceparent.match(
+      /^00-([0-9a-f]{32})-[0-9a-f]{16}-[0-9a-f]{2}$/,
+    );
+    if (match) {
+      const hex = match[1];
+      return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
+    }
+  }
+  return legacyTraceId || undefined;
+}
+
 export const supervisorRouter = new Hono();
 
 /**
@@ -81,6 +107,11 @@ export const supervisorRouter = new Hono();
 supervisorRouter.post('/', async (c: Context) => {
   try {
     const { messages, sessionId, enableWebSearch } = await c.req.json();
+
+    // 🎯 W3C Trace Context: traceparent 헤더에서 trace-id 추출
+    const traceparent = c.req.header('traceparent');
+    const legacyTraceId = c.req.header('x-trace-id');
+    const upstreamTraceId = extractTraceId(traceparent, legacyTraceId);
 
     // Validate input
     const lastMessage = messages?.[messages.length - 1];
@@ -97,7 +128,7 @@ supervisorRouter.post('/', async (c: Context) => {
       return c.json({ success: false, error: 'Security: blocked input', code: 'PROMPT_INJECTION' }, 400);
     }
 
-    logger.info({ sessionId }, 'Supervisor processing request');
+    logger.info({ sessionId, traceId: upstreamTraceId }, 'Supervisor processing request');
     logProviderStatus();
 
     // Extract images/files from the last user message for multimodal support
@@ -121,6 +152,7 @@ supervisorRouter.post('/', async (c: Context) => {
       enableWebSearch,
       images,
       files,
+      traceId: upstreamTraceId,
     });
 
     if (!result.success) {
@@ -172,6 +204,11 @@ supervisorRouter.post('/', async (c: Context) => {
  */
 supervisorRouter.post('/stream', async (c: Context) => {
   try {
+    // 🎯 W3C Trace Context
+    const streamTraceparent = c.req.header('traceparent');
+    const streamLegacyTraceId = c.req.header('x-trace-id');
+    const streamUpstreamTraceId = extractTraceId(streamTraceparent, streamLegacyTraceId);
+
     // 1. Parse and validate request with Zod schema
     const body = await c.req.json();
     const parseResult = streamRequestSchema.safeParse(body);
@@ -197,7 +234,7 @@ supervisorRouter.post('/stream', async (c: Context) => {
       return handleValidationError(c, 'Security: blocked input');
     }
 
-    logger.info({ sessionId: sessionId || 'default', query: query.slice(0, 50) }, 'SupervisorStream starting');
+    logger.info({ sessionId: sessionId || 'default', query: query.slice(0, 50), traceId: streamUpstreamTraceId }, 'SupervisorStream starting');
     logProviderStatus();
 
     // 3. Extract images/files from the last user message for multimodal support
@@ -226,6 +263,7 @@ supervisorRouter.post('/stream', async (c: Context) => {
           enableWebSearch,
           images,
           files,
+          traceId: streamUpstreamTraceId,
         };
 
         for await (const event of executeSupervisorStream(request)) {
@@ -282,6 +320,11 @@ supervisorRouter.post('/stream', async (c: Context) => {
  */
 supervisorRouter.post('/stream/v2', async (c: Context) => {
   try {
+    // 🎯 W3C Trace Context
+    const v2Traceparent = c.req.header('traceparent');
+    const v2LegacyTraceId = c.req.header('x-trace-id');
+    const v2UpstreamTraceId = extractTraceId(v2Traceparent, v2LegacyTraceId);
+
     // 1. Parse and validate request with Zod schema
     const body = await c.req.json();
     const parseResult = streamRequestSchema.safeParse(body);
@@ -308,7 +351,7 @@ supervisorRouter.post('/stream/v2', async (c: Context) => {
     }
 
     logger.info(
-      { sessionId: sessionId || 'default', query: query.slice(0, 50) },
+      { sessionId: sessionId || 'default', query: query.slice(0, 50), traceId: v2UpstreamTraceId },
       'SupervisorStreamV2 starting (UIMessageStream)'
     );
     logProviderStatus();
@@ -335,6 +378,7 @@ supervisorRouter.post('/stream/v2', async (c: Context) => {
       enableWebSearch,
       images,
       files,
+      traceId: v2UpstreamTraceId,
     });
 
     logger.info('SupervisorStreamV2 response created');

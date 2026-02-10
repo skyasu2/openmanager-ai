@@ -41,6 +41,8 @@ export interface SupervisorRequest {
    * - 'auto': Auto-detect based on query keywords (default)
    */
   enableWebSearch?: boolean | 'auto';
+  /** Upstream trace ID (W3C traceparent에서 추출). Langfuse 연동에 사용. */
+  traceId?: string;
 }
 
 export interface SupervisorResponse {

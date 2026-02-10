@@ -191,6 +191,7 @@ async function executeSupervisorAttempt(
     sessionId: request.sessionId,
     mode: 'single',
     query: lastUserMessage?.content || '',
+    upstreamTraceId: request.traceId,
   });
 
   let provider: ProviderName;
@@ -538,6 +539,7 @@ async function* streamSingleAgent(
       sessionId: request.sessionId,
       mode: 'single',
       query: queryText,
+      upstreamTraceId: request.traceId,
     });
 
     // Build multimodal messages

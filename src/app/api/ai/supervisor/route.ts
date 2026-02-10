@@ -19,10 +19,13 @@
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 import {
+  TRACEPARENT_HEADER,
   generateTraceId,
   getMaxTimeout,
   getMinTimeout,
   getObservabilityConfig,
+  parseTraceparentTraceId,
+  traceIdToUUID,
 } from '@/config/ai-proxy.config';
 import { type AIEndpoint, getAICache } from '@/lib/ai/cache/ai-response-cache';
 import { createFallbackResponse } from '@/lib/ai/fallback/ai-fallback-handler';
@@ -95,10 +98,16 @@ export const maxDuration = 60; // 🔧 현재: Pro tier
 export const POST = withRateLimit(
   rateLimiters.aiAnalysis,
   withAuth(async (req: NextRequest) => {
-    // 🎯 P0: Trace ID Upstream 추출 - 클라이언트 헤더에서 추출 또는 신규 생성
+    // 🎯 W3C Trace Context: traceparent 헤더 우선, X-Trace-Id 폴백
     const observabilityConfig = getObservabilityConfig();
-    const upstreamTraceId = req.headers.get(observabilityConfig.traceIdHeader);
-    const traceId = upstreamTraceId || generateTraceId();
+    const traceparent = req.headers.get(TRACEPARENT_HEADER);
+    const upstreamTraceId = traceparent
+      ? parseTraceparentTraceId(traceparent)
+      : null;
+    const legacyTraceId = req.headers.get(observabilityConfig.traceIdHeader);
+    const traceId = upstreamTraceId
+      ? traceIdToUUID(upstreamTraceId)
+      : legacyTraceId || generateTraceId();
 
     if (observabilityConfig.verboseLogging) {
       logger.info(

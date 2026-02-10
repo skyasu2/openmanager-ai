@@ -11,6 +11,8 @@
 
 import { NextResponse } from 'next/server';
 import {
+  TRACEPARENT_HEADER,
+  generateTraceparent,
   generateTraceId,
   getObservabilityConfig,
 } from '@/config/ai-proxy.config';
@@ -52,14 +54,18 @@ export async function handleCloudRunStream(
     traceId: providedTraceId,
   } = params;
 
-  // 🎯 P1: Observability - Generate or use provided trace ID
+  // 🎯 W3C Trace Context: traceparent + 레거시 X-Trace-Id 동시 전파
   const observability = getObservabilityConfig();
   const traceId = providedTraceId || generateTraceId();
+  const traceparentValue = generateTraceparent(traceId);
 
   const baseHeaders: Record<string, string> = {
     ...(securityWarning ? { 'X-Security-Warning': securityWarning } : {}),
     ...(observability.enableTraceId
-      ? { [observability.traceIdHeader]: traceId }
+      ? {
+          [TRACEPARENT_HEADER]: traceparentValue,
+          [observability.traceIdHeader]: traceId,
+        }
       : {}),
   };
 
@@ -77,7 +83,10 @@ export async function handleCloudRunStream(
         body: { messages: messagesToSend, sessionId, traceId },
         timeout: dynamicTimeout,
         headers: observability.enableTraceId
-          ? { [observability.traceIdHeader]: traceId }
+          ? {
+              [TRACEPARENT_HEADER]: traceparentValue,
+              [observability.traceIdHeader]: traceId,
+            }
           : undefined,
       });
 
@@ -180,14 +189,18 @@ export async function handleCloudRunJson(
     traceId: providedTraceId,
   } = params;
 
-  // 🎯 P1: Observability - Generate or use provided trace ID
+  // 🎯 W3C Trace Context: traceparent + 레거시 X-Trace-Id 동시 전파
   const observability = getObservabilityConfig();
   const traceId = providedTraceId || generateTraceId();
+  const traceparentValue = generateTraceparent(traceId);
 
   const baseHeaders: Record<string, string> = {
     ...(securityWarning ? { 'X-Security-Warning': securityWarning } : {}),
     ...(observability.enableTraceId
-      ? { [observability.traceIdHeader]: traceId }
+      ? {
+          [TRACEPARENT_HEADER]: traceparentValue,
+          [observability.traceIdHeader]: traceId,
+        }
       : {}),
   };
 
@@ -205,7 +218,10 @@ export async function handleCloudRunJson(
         body: { messages: messagesToSend, sessionId, traceId },
         timeout: dynamicTimeout,
         headers: observability.enableTraceId
-          ? { [observability.traceIdHeader]: traceId }
+          ? {
+              [TRACEPARENT_HEADER]: traceparentValue,
+              [observability.traceIdHeader]: traceId,
+            }
           : undefined,
       });
 
