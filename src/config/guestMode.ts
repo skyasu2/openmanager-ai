@@ -17,7 +17,6 @@
  * // Vercel 환경 변수 (프로덕션)
  * NEXT_PUBLIC_GUEST_FULL_ACCESS=false
  *
- * 📝 Build timestamp: 2025-10-21T13:05:00Z - Force rebuild for guest mode toggle
  */
 
 import { logger } from '@/lib/logging';
@@ -29,12 +28,6 @@ export const GUEST_MODE = {
 } as const;
 
 export type GuestModeType = (typeof GUEST_MODE)[keyof typeof GUEST_MODE];
-
-/**
- * 빌드 타임스탬프 (캐시 우회용)
- * @internal
- */
-export const BUILD_TIMESTAMP = '2025-10-21T13:05:00Z';
 
 const TRUTHY_VALUES = new Set(['1', 'true', 'yes', 'on', 'full_access']);
 const FALSY_VALUES = new Set(['0', 'false', 'no', 'off', 'restricted']);
@@ -76,8 +69,7 @@ export function normalizeGuestModeValue(
  * 현재 게스트 모드 설정을 반환합니다.
  *
  * @returns 'full_access' | 'restricted'
- * @default 'full_access' (개발 중 - 환경 변수 미설정 시)
- * @todo 개발 완료 후 기본값을 GUEST_MODE.RESTRICTED로 변경
+ * @default 'restricted' (환경 변수 미설정 시 보안 우선)
  */
 export function getGuestMode(): GuestModeType {
   const booleanOverride = parseGuestBooleanFlag(
@@ -87,16 +79,14 @@ export function getGuestMode(): GuestModeType {
     return booleanOverride ? GUEST_MODE.FULL_ACCESS : GUEST_MODE.RESTRICTED;
   }
 
-  // 🎯 개발 중: 기본값을 full_access로 변경 (개발 완료 후 RESTRICTED로 복원)
   const mode =
     normalizeGuestModeValue(process.env.NEXT_PUBLIC_GUEST_MODE) ||
-    GUEST_MODE.FULL_ACCESS;
+    GUEST_MODE.RESTRICTED;
 
   // 디버그: 환경 변수 값 확인 (클라이언트, 한 번만)
   if (typeof window !== 'undefined' && !hasLoggedOnce) {
     hasLoggedOnce = true;
     logger.info('🎛️ [GuestMode] Init', {
-      build: BUILD_TIMESTAMP,
       envBoolean: process.env.NEXT_PUBLIC_GUEST_FULL_ACCESS ?? null,
       envMode: process.env.NEXT_PUBLIC_GUEST_MODE ?? null,
       resolvedMode: mode,
