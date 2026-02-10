@@ -272,6 +272,9 @@ export function useAsyncAIQuery(options: UseAsyncAIQueryOptions = {}) {
           addTrackedListener('result', ((event: MessageEvent) => {
             try {
               const resultData = JSON.parse(event.data);
+              if (!resultData || typeof resultData !== 'object') {
+                throw new Error('Invalid result data structure');
+              }
 
               // 🎯 응답 내용에서 스트림 에러 패턴 확인 (일관성 유지)
               const errorInResponse = extractStreamError(

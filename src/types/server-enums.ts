@@ -78,21 +78,24 @@ export function isValidServerEnvironment(
   return ['production', 'staging', 'development', 'testing'].includes(env);
 }
 
+const VALID_ROLES = new Set<string>([
+  'web',
+  'api',
+  'database',
+  'cache',
+  'monitoring',
+  'security',
+  'backup',
+  'load-balancer',
+  'queue',
+  'storage',
+  'log',
+  'app',
+  'fallback',
+]);
+
 export function isValidServerRole(role: string): role is ServerRole {
-  return [
-    'web',
-    'api',
-    'database',
-    'cache',
-    'monitoring',
-    'security',
-    'backup',
-    'load-balancer',
-    'queue',
-    'storage',
-    'app',
-    'fallback',
-  ].includes(role);
+  return VALID_ROLES.has(role);
 }
 
 // 기본값 제공 함수들
@@ -129,6 +132,7 @@ export const SERVER_ROLES: ServerRole[] = [
   'load-balancer',
   'queue',
   'storage',
+  'log',
   'app',
   'fallback',
 ];

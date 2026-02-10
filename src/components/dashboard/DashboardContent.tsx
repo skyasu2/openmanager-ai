@@ -4,6 +4,7 @@ import { CheckCircle2 } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import {
   Suspense,
+  memo,
   useCallback,
   useEffect,
   useMemo,
@@ -86,7 +87,7 @@ const ServerDashboardDynamic = dynamic(() => import('./ServerDashboard'), {
   ),
 });
 
-export default function DashboardContent({
+export default memo(function DashboardContent({
   showSequentialGeneration,
   servers,
   allServers,
@@ -457,7 +458,7 @@ export default function DashboardContent({
       </div>
     );
   }
-}
+});
 
 // ======== System Overview Section (Stitch Screen A 기반) ========
 // 화이트 테마, indigo monochromatic 게이지 + amber 경고 배지

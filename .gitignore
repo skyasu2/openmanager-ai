@@ -28,6 +28,7 @@ openmanager-*.png
 playwright-*.png
 step*.png
 qa*.png
+gradient-verify-*.png
 test-output/
 screenshots/
 docs/screenshots/

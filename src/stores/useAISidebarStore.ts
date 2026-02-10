@@ -14,6 +14,7 @@
 import { useCallback, useState } from 'react';
 import { create } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
+import { useShallow } from 'zustand/react/shallow';
 
 // AI Thinking Step 타입 import (ai-sidebar에서 제공)
 import type { AIThinkingStep } from '../types/ai-sidebar';
@@ -208,14 +209,16 @@ export const useAIThinking = () => {
  * @see src/hooks/ai-sidebar/ - 상태 동기화
  */
 export const useAIChat = () => {
-  const messages = useAISidebarStore((state) => state.messages);
-  const addMessage = useAISidebarStore((state) => state.addMessage);
-  const clearMessages = useAISidebarStore((state) => state.clearMessages);
+  const storeState = useAISidebarStore(
+    useShallow((state) => ({
+      messages: state.messages,
+      addMessage: state.addMessage,
+      clearMessages: state.clearMessages,
+    }))
+  );
 
   return {
-    messages,
-    addMessage,
-    clearMessages,
+    ...storeState,
     /** @deprecated useChat from AISidebarV4.tsx instead */
     isLoading: false,
   };
@@ -443,8 +446,8 @@ export const useAISidebarStore = create<AISidebarState>()(
           webSearchEnabled: state.webSearchEnabled,
           functionTab: state.functionTab,
           selectedContext: state.selectedContext,
-          // 🔥 대화 기록 영속화 추가
-          messages: state.messages,
+          // 🔥 대화 기록 영속화 (최근 20개만 - localStorage 5MB 초과 방지)
+          messages: state.messages.slice(-20),
           // currentEngine 제거 - v4.0: localStorage 마이그레이션으로 자동 정리됨
           sessionId: state.sessionId,
         }),
@@ -463,43 +466,31 @@ export const useAISidebarStore = create<AISidebarState>()(
   )
 );
 
-// 🎛️ 선택적 훅들 (성능 최적화)
+// 🎛️ 선택적 훅들 (성능 최적화 - useShallow로 불필요한 리렌더링 방지)
 export const useAISidebarUI = () => {
-  const isOpen = useAISidebarStore((state) => state.isOpen);
-  const isMinimized = useAISidebarStore((state) => state.isMinimized);
-  const activeTab = useAISidebarStore((state) => state.activeTab);
-  const functionTab = useAISidebarStore((state) => state.functionTab);
-  const sidebarWidth = useAISidebarStore((state) => state.sidebarWidth);
-  const setOpen = useAISidebarStore((state) => state.setOpen);
-  const setMinimized = useAISidebarStore((state) => state.setMinimized);
-  const setActiveTab = useAISidebarStore((state) => state.setActiveTab);
-  const setFunctionTab = useAISidebarStore((state) => state.setFunctionTab);
-  const setSidebarWidth = useAISidebarStore((state) => state.setSidebarWidth);
-
-  return {
-    isOpen,
-    isMinimized,
-    activeTab,
-    functionTab,
-    sidebarWidth,
-    setOpen,
-    setMinimized,
-    setActiveTab,
-    setFunctionTab,
-    setSidebarWidth,
-  };
+  return useAISidebarStore(
+    useShallow((state) => ({
+      isOpen: state.isOpen,
+      isMinimized: state.isMinimized,
+      activeTab: state.activeTab,
+      functionTab: state.functionTab,
+      sidebarWidth: state.sidebarWidth,
+      setOpen: state.setOpen,
+      setMinimized: state.setMinimized,
+      setActiveTab: state.setActiveTab,
+      setFunctionTab: state.setFunctionTab,
+      setSidebarWidth: state.setSidebarWidth,
+    }))
+  );
 };
 
 export const useAIContext = () => {
-  const selectedContext = useAISidebarStore((state) => state.selectedContext);
-  const setSelectedContext = useAISidebarStore(
-    (state) => state.setSelectedContext
+  return useAISidebarStore(
+    useShallow((state) => ({
+      selectedContext: state.selectedContext,
+      setSelectedContext: state.setSelectedContext,
+    }))
   );
-
-  return {
-    selectedContext,
-    setSelectedContext,
-  };
 };
 
 // 🔍 선택자 함수들 (메모화)
