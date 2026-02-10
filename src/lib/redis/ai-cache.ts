@@ -10,9 +10,9 @@
  */
 
 import type { Redis } from '@upstash/redis';
+import { normalizeQueryForCache } from '@/lib/cache/cache-helpers';
 import { logger } from '@/lib/logging';
 import { getRedisClient, isRedisDisabled, isRedisEnabled } from './client';
-import { normalizeQueryForCache } from '@/lib/cache/cache-helpers';
 
 // ==============================================
 // 🎯 타입 정의
