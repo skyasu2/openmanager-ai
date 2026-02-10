@@ -1,6 +1,5 @@
 'use client';
 
-// framer-motion 제거 - CSS 애니메이션 사용
 import { Bot, X, Zap } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import React, { useEffect, useRef } from 'react';

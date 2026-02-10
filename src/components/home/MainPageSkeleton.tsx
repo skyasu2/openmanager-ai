@@ -1,7 +1,5 @@
 'use client';
 
-// framer-motion 제거 - CSS 애니메이션 사용
-
 export default function MainPageSkeleton() {
   return (
     <div className="min-h-screen bg-linear-to-br from-gray-900 via-blue-900 to-purple-900">

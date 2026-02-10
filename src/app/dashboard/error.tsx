@@ -1,13 +1,10 @@
 'use client';
 
-// React import 제거 - Next.js 15 자동 JSX Transform 사용
 import { AlertTriangle, Bug, Home, RefreshCw, Settings } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { logger } from '@/lib/logging';
-
-// framer-motion 제거 - CSS 애니메이션 사용
 
 interface DashboardErrorProps {
   error: Error & { digest?: string };

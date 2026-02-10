@@ -28,11 +28,11 @@ import { EnhancedAIChat } from '@/components/ai-sidebar/EnhancedAIChat';
 import { AIErrorBoundary } from '@/components/error/AIErrorBoundary';
 import { useAIChatCore } from '@/hooks/ai/useAIChatCore';
 import { formatTime } from '@/lib/format-date';
-import type { AIThinkingStep } from '@/types/ai-sidebar/ai-sidebar-types';
 import {
   type EnhancedChatMessage,
   useAISidebarStore,
 } from '@/stores/useAISidebarStore';
+import type { AIThinkingStep } from '@/types/ai-sidebar/ai-sidebar-types';
 import { RealTimeDisplay } from '../dashboard/RealTimeDisplay';
 import { OpenManagerLogo } from '../shared/OpenManagerLogo';
 import UnifiedProfileHeader from '../shared/UnifiedProfileHeader';

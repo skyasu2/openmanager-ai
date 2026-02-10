@@ -7,7 +7,6 @@
  * - 자연스러운 애니메이션과 진행률 표시
  */
 
-// React import 제거 - Next.js 15 자동 JSX Transform 사용
 import type { FC } from 'react';
 import { cn } from '@/lib/utils';
 

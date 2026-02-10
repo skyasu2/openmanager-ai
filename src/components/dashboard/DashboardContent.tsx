@@ -15,14 +15,11 @@ import {
   ARCHITECTURE_DIAGRAMS,
   type ArchitectureDiagram,
 } from '@/data/architecture-diagrams.data';
-// framer-motion 제거 - CSS 애니메이션 사용
-import debug from '@/utils/debug';
 import type { Server } from '@/types/server';
+import debug from '@/utils/debug';
 import { safeConsoleError, safeErrorMessage } from '@/utils/utils-functions';
 import { DashboardSummary } from './DashboardSummary';
 import type { DashboardStats } from './types/dashboard.types';
-
-// framer-motion 제거됨
 
 interface DashboardStatus {
   isRunning?: boolean;

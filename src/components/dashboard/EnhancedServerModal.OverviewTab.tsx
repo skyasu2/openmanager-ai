@@ -13,8 +13,6 @@ import { ServerModal3DGauge } from '../shared/UnifiedCircularGauge';
 import { StatusLED } from './EnhancedServerModal.components';
 import type { ServerData, StatusTheme } from './EnhancedServerModal.types';
 
-// framer-motion을 동적 import로 처리
-
 /**
  * Overview Tab Props
  */

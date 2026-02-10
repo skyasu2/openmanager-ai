@@ -23,7 +23,6 @@ import {
   Monitor,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-// framer-motion 제거 - CSS 애니메이션 사용
 import { type ComponentType, memo, useCallback } from 'react';
 
 export type AIAssistantFunction =

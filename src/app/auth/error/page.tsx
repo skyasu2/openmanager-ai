@@ -8,7 +8,6 @@
 
 'use client';
 
-// framer-motion 제거 - CSS 애니메이션 사용
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useEffect, useState } from 'react';
 

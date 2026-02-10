@@ -11,6 +11,8 @@ import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
 import { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import { AutoLogoutWarning } from '@/components/auth/AutoLogoutWarning';
+import DashboardContent from '@/components/dashboard/DashboardContent';
+import DashboardHeader from '@/components/dashboard/DashboardHeader';
 import AuthLoadingUI from '@/components/shared/AuthLoadingUI';
 import UnauthorizedAccessUI from '@/components/shared/UnauthorizedAccessUI';
 import { NotificationToast } from '@/components/system/NotificationToast';
@@ -28,8 +30,6 @@ import { useUnifiedAdminStore } from '@/stores/useUnifiedAdminStore';
 import type { Server } from '@/types/server';
 import { triggerAIWarmup } from '@/utils/ai-warmup';
 import debug from '@/utils/debug';
-import DashboardContent from '@/components/dashboard/DashboardContent';
-import DashboardHeader from '@/components/dashboard/DashboardHeader';
 
 /** Props for DashboardClient (Phase 2: SSR data) */
 type DashboardClientProps = {
@@ -480,7 +480,7 @@ function DashboardPageContent({
       data-hydration-complete={isMounted.toString()}
       data-check-test-mode-result={checkTestMode().toString()}
       className={cn(
-        'flex h-screen bg-[#F3F4F6]',
+        'flex h-screen bg-gray-100',
         isResizing && 'cursor-col-resize'
       )}
     >

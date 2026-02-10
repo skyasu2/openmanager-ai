@@ -1,6 +1,5 @@
 'use client';
 
-// framer-motion 제거 - CSS 애니메이션 사용
 import {
   Activity,
   AlertTriangle,

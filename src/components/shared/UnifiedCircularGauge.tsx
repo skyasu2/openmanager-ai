@@ -1,7 +1,6 @@
 'use client';
 
 import { formatPercentage } from '@/lib/utils';
-// framer-motion 제거 - CSS 애니메이션 사용
 
 export interface UnifiedCircularGaugeProps {
   value: number;

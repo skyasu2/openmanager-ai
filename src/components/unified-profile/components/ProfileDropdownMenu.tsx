@@ -2,7 +2,6 @@
 
 import { memo } from 'react';
 import type { ProfileDropdownMenuProps } from '../types/profile.types';
-// framer-motion 제거 - CSS 애니메이션 사용
 import { ProfileAvatar, UserTypeIcon } from './ProfileAvatar';
 import { ProfileMenuItem } from './ProfileMenuItem';
 

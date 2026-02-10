@@ -6,9 +6,7 @@
  */
 
 import { HelpCircle, Home, RefreshCw } from 'lucide-react';
-// React import 제거 - Next.js 15 자동 JSX Transform 사용
 import type { FC, ReactNode } from 'react';
-// framer-motion 제거 - CSS 애니메이션 사용
 
 export interface ErrorMessageProps {
   /** 에러 제목 */

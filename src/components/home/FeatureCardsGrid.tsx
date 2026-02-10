@@ -1,6 +1,5 @@
 'use client';
 
-// framer-motion 제거 - CSS 애니메이션 사용
 import {
   memo,
   type RefObject,
@@ -10,8 +9,8 @@ import {
   useRef,
   useState,
 } from 'react';
-import { logger } from '@/lib/logging';
 import { FEATURE_CARDS_DATA } from '@/data/feature-cards.data';
+import { logger } from '@/lib/logging';
 import { useUnifiedAdminStore } from '@/stores/useUnifiedAdminStore';
 import type { FeatureCard } from '@/types/feature-card.types';
 import { renderAIGradientWithAnimation } from '@/utils/text-rendering';

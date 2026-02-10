@@ -14,8 +14,6 @@ import { AILoginRequiredModal } from './AILoginRequiredModal';
 import { RealTimeDisplay } from './RealTimeDisplay';
 import { SessionCountdown } from './SessionCountdown';
 
-// framer-motion 제거 - CSS 애니메이션 사용
-
 /**
  * 대시보드 헤더 컴포넌트 Props
  */

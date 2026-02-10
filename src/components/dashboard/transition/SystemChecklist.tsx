@@ -11,7 +11,6 @@
 
 'use client';
 
-// framer-motion 제거 - CSS 애니메이션 사용
 import { useCallback, useEffect, useState } from 'react';
 import { useSystemChecklist } from '@/hooks/useSystemChecklist';
 import type {
