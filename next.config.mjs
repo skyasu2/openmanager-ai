@@ -52,7 +52,6 @@ const nextConfig = {
       '@ai-sdk/react',
       '@ai-sdk/ui-utils',
       'date-fns',
-      'lodash',
     ],
     // Vercel 무료 티어 최적화
     serverMinification: true,

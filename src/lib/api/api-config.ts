@@ -178,10 +178,8 @@ export function createApiRequestOptions(
   }
 
   if (options.timeout || config.timeout.default) {
-    const controller = new AbortController();
     const timeoutMs = options.timeout || config.timeout.default;
-    setTimeout(() => controller.abort(), timeoutMs);
-    requestOptions.signal = controller.signal;
+    requestOptions.signal = AbortSignal.timeout(timeoutMs);
   }
 
   return requestOptions;

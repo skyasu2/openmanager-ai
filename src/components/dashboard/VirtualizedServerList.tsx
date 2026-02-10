@@ -6,8 +6,7 @@
  * 브라우저 크기에 맞게 자동 배치, 첫 줄만 표시하고 나머지는 펼치기
  */
 
-import debounce from 'lodash-es/debounce';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import ImprovedServerCard from '@/components/dashboard/ImprovedServerCard';
 import ServerCardErrorBoundary from '@/components/error/ServerCardErrorBoundary';
 import type { Server } from '@/types/server';
@@ -24,6 +23,8 @@ export default function VirtualizedServerList({
   const [expanded, setExpanded] = useState(false);
   const [cardsPerRow, setCardsPerRow] = useState(4);
 
+  const resizeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   useEffect(() => {
     const calculateCardsPerRow = () => {
       const containerWidth = window.innerWidth - 64; // 좌우 패딩 제외
@@ -36,13 +37,16 @@ export default function VirtualizedServerList({
     // 초기 계산
     calculateCardsPerRow();
 
-    // 150ms debounce로 성능 최적화 (Gemini 교차검증 지적 반영)
-    const debouncedCalculate = debounce(calculateCardsPerRow, 150);
+    // 150ms debounce로 성능 최적화
+    const debouncedCalculate = () => {
+      if (resizeTimer.current) clearTimeout(resizeTimer.current);
+      resizeTimer.current = setTimeout(calculateCardsPerRow, 150);
+    };
     window.addEventListener('resize', debouncedCalculate);
 
     return () => {
       window.removeEventListener('resize', debouncedCalculate);
-      debouncedCalculate.cancel(); // 메모리 누수 방지
+      if (resizeTimer.current) clearTimeout(resizeTimer.current);
     };
   }, []);
 

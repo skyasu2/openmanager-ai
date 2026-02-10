@@ -1,6 +1,6 @@
 /**
  * 외부 모듈 타입 선언
- * ml-kmeans, lodash 등 타입 선언이 없는 모듈들을 위한 타입 정의
+ * ml-kmeans 등 타입 선언이 없는 모듈들을 위한 타입 정의
  */
 
 declare module 'ml-kmeans' {
@@ -27,11 +27,6 @@ declare module 'ml-kmeans' {
   }
 
   export default KMeans;
-}
-
-declare module 'lodash' {
-  const _: unknown;
-  export default _;
 }
 
 declare module 'whatwg-fetch';
