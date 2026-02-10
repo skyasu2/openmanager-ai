@@ -44,7 +44,10 @@ export const ProfileMenuItem = memo(function ProfileMenuItem({
   const handleKeyDown = (e: KeyboardEvent<HTMLButtonElement>) => {
     if ((e.key === 'Enter' || e.key === ' ') && !disabled) {
       e.preventDefault();
-      void handleClick(e as unknown as MouseEvent);
+      if (action) {
+        logger.info(`🔘 메뉴 클릭: ${label}`);
+        void action();
+      }
     }
   };
 

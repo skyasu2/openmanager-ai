@@ -14,6 +14,7 @@
  * @created 2025-12-30
  */
 
+import { hashString } from '@/lib/cache/cache-helpers';
 import {
   CacheNamespace,
   CacheTTL,
@@ -72,17 +73,6 @@ export type AIEndpoint = keyof typeof AI_CACHE_TTL;
 // ============================================================================
 // 캐시 키 생성
 // ============================================================================
-
-/**
- * 간단한 해시 함수 (djb2)
- */
-function hashString(str: string): string {
-  let hash = 5381;
-  for (let i = 0; i < str.length; i++) {
-    hash = (hash * 33) ^ str.charCodeAt(i);
-  }
-  return (hash >>> 0).toString(36);
-}
 
 /**
  * AI 응답 캐시 키 생성

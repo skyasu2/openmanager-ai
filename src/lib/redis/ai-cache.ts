@@ -10,7 +10,7 @@
  */
 
 import type { Redis } from '@upstash/redis';
-import { normalizeQueryForCache } from '@/lib/cache/cache-helpers';
+import { hashString, normalizeQueryForCache } from '@/lib/cache/cache-helpers';
 import { logger } from '@/lib/logging';
 import { getRedisClient, isRedisDisabled, isRedisEnabled } from './client';
 
@@ -57,21 +57,6 @@ const CACHE_CONFIG = {
 } as const;
 
 // ==============================================
-// 🔐 해시 함수
-// ==============================================
-
-/**
- * 문자열 해시 생성 (djb2 알고리즘)
- * 빠르고 충돌이 적은 해시
- */
-function hashString(str: string): string {
-  let hash = 5381;
-  for (let i = 0; i < str.length; i++) {
-    hash = (hash * 33) ^ str.charCodeAt(i);
-  }
-  return (hash >>> 0).toString(36);
-}
-
 /**
  * AI 쿼리 해시 생성
  * 세션 ID + 쿼리 내용 조합

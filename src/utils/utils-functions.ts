@@ -304,21 +304,6 @@ export async function retry<T>(
 }
 
 /**
- * Generate a hash from string (for cache keys)
- * @param str - String to hash
- * @returns Hash string
- */
-export async function hashString(str: string): Promise<string> {
-  const msgUint8 = new TextEncoder().encode(str);
-  const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  const hashHex = hashArray
-    .map((b) => b.toString(16).padStart(2, '0'))
-    .join('');
-  return hashHex;
-}
-
-/**
  * Check if code is running on server side
  * @returns Boolean indicating server environment
  */
