@@ -11,38 +11,11 @@ import { type NextRequest, NextResponse } from 'next/server';
 import { withAuth } from '@/lib/auth/api-auth';
 import { logger } from '@/lib/logging';
 import { redisDel, redisGet, redisSet } from '@/lib/redis';
-import type { JobStatus, JobStatusResponse, JobType } from '@/types/ai-jobs';
-
-// ============================================
-// Redis Job 타입 (route.ts와 동일)
-// ============================================
-
-interface RedisJob {
-  id: string;
-  type: JobType;
-  query: string;
-  status: JobStatus;
-  progress: number;
-  currentStep: string | null;
-  result: string | null;
-  error: string | null;
-  createdAt: string;
-  startedAt: string | null;
-  completedAt: string | null;
-  sessionId: string | null;
-  metadata: {
-    complexity: string;
-    estimatedTime: number;
-    factors: Record<string, unknown>;
-  };
-}
-
-interface JobProgress {
-  stage: string;
-  progress: number;
-  message?: string;
-  updatedAt: string;
-}
+import type {
+  AIJob,
+  JobStatusResponse,
+  RedisJobProgress,
+} from '@/types/ai-jobs';
 
 // ============================================
 // GET /api/ai/jobs/:id - Job 상태 조회
@@ -63,7 +36,7 @@ export const GET = withAuth(async function GET(
     }
 
     // Redis에서 Job 조회
-    const job = await redisGet<RedisJob>(`job:${jobId}`);
+    const job = await redisGet<AIJob>(`job:${jobId}`);
 
     if (!job) {
       return NextResponse.json(
@@ -73,9 +46,9 @@ export const GET = withAuth(async function GET(
     }
 
     // 진행 중인 경우 progress 정보도 조회
-    let progressInfo: JobProgress | null = null;
+    let progressInfo: RedisJobProgress | null = null;
     if (job.status === 'queued' || job.status === 'processing') {
-      progressInfo = await redisGet<JobProgress>(`job:progress:${jobId}`);
+      progressInfo = await redisGet<RedisJobProgress>(`job:progress:${jobId}`);
     }
 
     const response: JobStatusResponse = {
@@ -126,7 +99,7 @@ export const DELETE = withAuth(async function DELETE(
     }
 
     // Redis에서 Job 조회
-    const job = await redisGet<RedisJob>(`job:${jobId}`);
+    const job = await redisGet<AIJob>(`job:${jobId}`);
 
     if (!job) {
       return NextResponse.json(
@@ -152,7 +125,7 @@ export const DELETE = withAuth(async function DELETE(
     }
 
     // Job 취소 처리
-    const updatedJob: RedisJob = {
+    const updatedJob: AIJob = {
       ...job,
       status: 'cancelled',
       completedAt: new Date().toISOString(),

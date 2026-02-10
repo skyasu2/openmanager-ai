@@ -21,12 +21,12 @@ import { logger } from '@/lib/logging';
 import { getRedisClient, redisGet, redisMGet, redisSet } from '@/lib/redis';
 import { rateLimiters, withRateLimit } from '@/lib/security/rate-limiter';
 import type {
+  AIJob,
   CreateJobRequest,
   CreateJobResponse,
   JobListResponse,
   JobStatus,
   JobStatusResponse,
-  JobType,
   TriggerStatus,
 } from '@/types/ai-jobs';
 
@@ -45,30 +45,6 @@ const JOB_LIST_TTL_SECONDS = 3600;
 
 /** Progress TTL (10분) */
 const PROGRESS_TTL_SECONDS = 600;
-
-// ============================================
-// Redis Job 타입
-// ============================================
-
-interface RedisJob {
-  id: string;
-  type: JobType;
-  query: string;
-  status: JobStatus;
-  progress: number;
-  currentStep: string | null;
-  result: string | null;
-  error: string | null;
-  createdAt: string;
-  startedAt: string | null;
-  completedAt: string | null;
-  sessionId: string | null;
-  metadata: {
-    complexity: string;
-    estimatedTime: number;
-    factors: Record<string, unknown>;
-  };
-}
 
 // ============================================
 // POST /api/ai/jobs - Job 생성 (Rate Limited)
@@ -107,7 +83,7 @@ async function handlePOST(request: NextRequest) {
     const now = new Date().toISOString();
 
     // Redis에 Job 저장
-    const job: RedisJob = {
+    const job: AIJob = {
       id: jobId,
       type: jobType,
       query: query.trim(),
@@ -225,10 +201,10 @@ async function handleGET(request: NextRequest) {
     // 🔧 N+1 쿼리 방지: MGET으로 일괄 조회
     const limitedJobIds = jobIds.slice(0, limit);
     const jobKeys = limitedJobIds.map((id) => `job:${id}`);
-    const rawJobs = await redisMGet<RedisJob>(jobKeys);
+    const rawJobs = await redisMGet<AIJob>(jobKeys);
 
     const jobs: JobStatusResponse[] = rawJobs
-      .filter((job): job is RedisJob => job !== null)
+      .filter((job): job is AIJob => job !== null)
       .map(mapJobToResponse);
 
     const response: JobListResponse = {
@@ -257,7 +233,7 @@ export const GET = withRateLimit(rateLimiters.default, withAuth(handleGET));
 /**
  * Redis Job을 API 응답 형식으로 변환
  */
-function mapJobToResponse(job: RedisJob): JobStatusResponse {
+function mapJobToResponse(job: AIJob): JobStatusResponse {
   return {
     jobId: job.id,
     type: job.type,
@@ -386,7 +362,7 @@ async function logJobCreation(
 
       // Worker 연결 완전 실패 — 원본 Job을 failed로 마킹
       if (triggerStatus === 'failed') {
-        const existingJob = await redisGet<RedisJob>(`job:${jobId}`);
+        const existingJob = await redisGet<AIJob>(`job:${jobId}`);
         if (existingJob && existingJob.status === 'queued') {
           await redisSet(
             `job:${jobId}`,

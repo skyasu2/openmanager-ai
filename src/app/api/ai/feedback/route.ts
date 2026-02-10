@@ -32,6 +32,9 @@ interface FeedbackLog {
   userAgent?: string;
 }
 
+/** Cloud Run 피드백 프록시 타임아웃 (ms) */
+const FEEDBACK_PROXY_TIMEOUT_MS = 5000;
+
 // 메모리 내 피드백 저장소 (MVP - 추후 DB 연동)
 const feedbackStore: FeedbackLog[] = [];
 
@@ -90,7 +93,7 @@ async function handlePOST(request: NextRequest) {
               traceId: body.traceId,
               score: body.type,
             }),
-            signal: AbortSignal.timeout(5000),
+            signal: AbortSignal.timeout(FEEDBACK_PROXY_TIMEOUT_MS),
           }
         );
         langfuseStatus = res.ok ? 'success' : 'error';

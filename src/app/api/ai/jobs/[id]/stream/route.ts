@@ -22,6 +22,7 @@ import type { NextRequest } from 'next/server';
 import { checkAPIAuth } from '@/lib/auth/api-auth';
 import { logger } from '@/lib/logging';
 import { getRedisClient, redisGet } from '@/lib/redis';
+import type { RedisJobProgress } from '@/types/ai-jobs';
 
 // ============================================================================
 // Types
@@ -42,13 +43,6 @@ interface JobResult {
   startedAt: string;
   completedAt?: string;
   processingTimeMs?: number;
-}
-
-interface JobProgress {
-  stage: string;
-  progress: number;
-  message?: string;
-  updatedAt: string;
 }
 
 // ============================================================================
@@ -175,7 +169,7 @@ export async function GET(
               const now = Date.now();
               if (now - lastProgressUpdate >= PROGRESS_INTERVAL_MS) {
                 // 진행 상황 확인
-                const progress = await redisGet<JobProgress>(
+                const progress = await redisGet<RedisJobProgress>(
                   `job:progress:${jobId}`
                 );
 

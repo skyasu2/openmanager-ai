@@ -47,6 +47,7 @@ interface HealthCache {
 }
 
 const HEALTH_CACHE_TTL = 60000; // 60초
+const SERVICE_CHECK_TIMEOUT_MS = 3000; // DB/캐시 연결 타임아웃
 let healthCache: HealthCache = {
   data: null,
   timestamp: 0,
@@ -76,7 +77,10 @@ async function checkDatabaseStatus(): Promise<
     const startTime = Date.now();
     const supabase = await createClient();
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 3000);
+    const timeoutId = setTimeout(
+      () => controller.abort(),
+      SERVICE_CHECK_TIMEOUT_MS
+    );
 
     try {
       // 🔧 수정: Auth 세션 체크로 DB 연결 확인 (테이블/RPC 의존성 제거)
@@ -159,7 +163,10 @@ async function checkAIStatus(): Promise<
       return 'connected';
     }
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 3000);
+    const timeoutId = setTimeout(
+      () => controller.abort(),
+      SERVICE_CHECK_TIMEOUT_MS
+    );
 
     try {
       const response = await fetch(`${vmUrl}/health`, {

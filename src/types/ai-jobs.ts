@@ -131,6 +131,14 @@ export interface ComplexityAnalysis {
 // Worker 관련 타입
 // ============================================
 
+/** Redis에 저장되는 Job 진행 상태 */
+export interface RedisJobProgress {
+  stage: string;
+  progress: number;
+  message?: string;
+  updatedAt: string;
+}
+
 /** Worker에서 진행률 업데이트 */
 export interface JobProgressUpdate {
   jobId: string;
