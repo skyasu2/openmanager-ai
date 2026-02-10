@@ -155,7 +155,7 @@ export const features = {
     !!env.NEXT_PUBLIC_SUPABASE_URL && !!env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
   github: !!env.GITHUB_CLIENT_ID && !!env.GITHUB_CLIENT_SECRET,
   gcp: !!env.GCP_PROJECT_ID,
-  ai: !!env.CLOUD_RUN_AI_URL || env.CLOUD_RUN_ENABLED === true, // Cloud Run AI Engine
+  ai: !!env.CLOUD_RUN_AI_URL || !!env.CLOUD_RUN_ENABLED, // Cloud Run AI Engine
   search: !!env.TAVILY_API_KEY,
   cache: env.MEMORY_CACHE_ENABLED ?? true,
 } as const;

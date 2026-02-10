@@ -3,7 +3,7 @@ import { logger } from '@/lib/logging';
 
 export const runtime = 'edge';
 
-export async function POST() {
+export function POST() {
   const CLOUD_RUN_URL = process.env.CLOUD_RUN_AI_URL;
 
   if (!CLOUD_RUN_URL) {

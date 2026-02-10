@@ -107,7 +107,7 @@ export function requiredIf<T extends z.ZodTypeAny>(
   condition: (data: unknown) => boolean
 ) {
   return schema.superRefine((val, ctx) => {
-    if (condition(ctx) && (val === undefined || val === null)) {
+    if (condition(ctx) && val == null) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         message: 'This field is required',
