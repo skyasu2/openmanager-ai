@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import type React from 'react';
 import { useUnifiedAdminStore } from '@/stores/useUnifiedAdminStore';
+import { useShallow } from 'zustand/react/shallow';
 import { AI_GRADIENT_ANIMATED_STYLE } from '@/styles/design-constants';
 
 interface OpenManagerLogoProps {
@@ -33,7 +34,12 @@ export const OpenManagerLogo: React.FC<OpenManagerLogoProps> = ({
   className = '',
   href,
 }) => {
-  const { aiAgent, isSystemStarted } = useUnifiedAdminStore();
+  const { aiAgent, isSystemStarted } = useUnifiedAdminStore(
+    useShallow((s) => ({
+      aiAgent: s.aiAgent,
+      isSystemStarted: s.isSystemStarted,
+    }))
+  );
 
   // 배경 그라데이션 로직 (상태 반응형)
   const backgroundStyle = aiAgent.isEnabled

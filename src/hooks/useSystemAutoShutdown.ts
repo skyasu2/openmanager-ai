@@ -13,6 +13,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { SYSTEM_AUTO_SHUTDOWN_TIME } from '@/config/system-constants';
 import { logger } from '@/lib/logging';
 import { useUnifiedAdminStore } from '@/stores/useUnifiedAdminStore';
+import { useShallow } from 'zustand/react/shallow';
 
 interface UseSystemAutoShutdownOptions {
   /** 경고 시간 (분) */
@@ -29,7 +30,12 @@ export function useSystemAutoShutdown({
   onShutdown,
 }: UseSystemAutoShutdownOptions = {}) {
   // useUnifiedAdminStore에서 시스템 상태 가져오기
-  const { isSystemStarted, getSystemRemainingTime } = useUnifiedAdminStore();
+  const { isSystemStarted, getSystemRemainingTime } = useUnifiedAdminStore(
+    useShallow((s) => ({
+      isSystemStarted: s.isSystemStarted,
+      getSystemRemainingTime: s.getSystemRemainingTime,
+    }))
+  );
 
   // 상태 관리
   const [remainingTime, setRemainingTime] = useState(0);

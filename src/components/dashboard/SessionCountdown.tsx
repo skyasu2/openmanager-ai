@@ -3,6 +3,7 @@
 import { Clock, Timer } from 'lucide-react';
 import { memo, useEffect, useState } from 'react';
 import { useUnifiedAdminStore } from '@/stores/useUnifiedAdminStore';
+import { useShallow } from 'zustand/react/shallow';
 
 /**
  * 🕐 세션 카운트다운 컴포넌트
@@ -19,7 +20,12 @@ import { useUnifiedAdminStore } from '@/stores/useUnifiedAdminStore';
  * ```
  */
 export const SessionCountdown = memo(function SessionCountdown() {
-  const { isSystemStarted, getSystemRemainingTime } = useUnifiedAdminStore();
+  const { isSystemStarted, getSystemRemainingTime } = useUnifiedAdminStore(
+    useShallow((s) => ({
+      isSystemStarted: s.isSystemStarted,
+      getSystemRemainingTime: s.getSystemRemainingTime,
+    }))
+  );
   const [remainingTime, setRemainingTime] = useState(0);
   const [isMounted, setIsMounted] = useState(false);
 

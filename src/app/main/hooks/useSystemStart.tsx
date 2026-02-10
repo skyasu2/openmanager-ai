@@ -13,6 +13,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useSystemStatus } from '@/hooks/useSystemStatus';
 import { logger } from '@/lib/logging';
 import { useUnifiedAdminStore } from '@/stores/useUnifiedAdminStore';
+import { useShallow } from 'zustand/react/shallow';
 import { triggerAIWarmup } from '@/utils/ai-warmup';
 import debug from '@/utils/debug';
 import { debugWithEnv } from '@/utils/vercel-env-utils';
@@ -53,7 +54,12 @@ export function useSystemStart(options: UseSystemStartOptions) {
   const router = useRouter();
   const pathname = usePathname();
 
-  const { isSystemStarted, startSystem } = useUnifiedAdminStore();
+  const { isSystemStarted, startSystem } = useUnifiedAdminStore(
+    useShallow((s) => ({
+      isSystemStarted: s.isSystemStarted,
+      startSystem: s.startSystem,
+    }))
+  );
 
   const {
     status: multiUserStatus,
