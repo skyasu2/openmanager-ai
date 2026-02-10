@@ -217,7 +217,7 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
           ? { text: trimmedQuery, files: fileUIParts }
           : { text: trimmedQuery };
 
-        Promise.resolve(sendMessage(messagePayload)).catch((error) => {
+        void Promise.resolve(sendMessage(messagePayload)).catch((error) => {
           logger.error('[HybridAI] Streaming send failed:', error);
           setState((prev) => ({
             ...prev,

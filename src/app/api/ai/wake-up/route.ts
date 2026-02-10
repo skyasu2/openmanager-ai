@@ -18,7 +18,7 @@ export async function POST() {
     // Use a short timeout to avoid blocking Vercel function
     logger.info(`🚀 Sending wake-up signal to ${CLOUD_RUN_URL}/warmup`);
 
-    fetch(`${CLOUD_RUN_URL}/warmup`, {
+    void fetch(`${CLOUD_RUN_URL}/warmup`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',

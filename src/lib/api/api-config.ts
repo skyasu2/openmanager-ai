@@ -77,7 +77,7 @@ export function getApiConfig(): ApiEndpointConfig {
     base: `${siteUrl}/api`,
     supabase: env.NEXT_PUBLIC_SUPABASE_URL || '',
     gcpFunctions: env.GCP_FUNCTIONS_URL || '',
-    vmApi: env.VM_API_URL || 'http://104.154.205.25:10000',
+    vmApi: env.VM_API_URL || '',
     rateLimit: { maxRequests: 60, windowMs: 60000 },
     timeout: { default: 10000, long: 30000, stream: 120000 },
     cache: { enabled: true, ttl: 300 },
