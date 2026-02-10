@@ -136,9 +136,7 @@ export const POST = withRateLimit(
         headerSessionId || bodySessionId || querySessionId;
 
       // 3. 사용자 쿼리 추출 + 보안 검사
-      const rawQuery =
-        extractLastUserQuery(messages as HybridMessage[]) ||
-        'System status check';
+      const rawQuery = extractLastUserQuery(messages as HybridMessage[]);
 
       if (!rawQuery || rawQuery.trim() === '') {
         return NextResponse.json(

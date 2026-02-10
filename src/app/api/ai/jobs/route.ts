@@ -377,8 +377,25 @@ async function logJobCreation(
               ? 'Worker 연결 지연 - 잠시 후 자동 처리됩니다'
               : 'Worker 연결 실패 - 재시도 중입니다',
         },
-        60
+        triggerStatus === 'timeout' ? 300 : 60
       );
+
+      // Worker 연결 완전 실패 — 원본 Job을 failed로 마킹
+      if (triggerStatus === 'failed') {
+        const existingJob = await redisGet<RedisJob>(`job:${jobId}`);
+        if (existingJob && existingJob.status === 'queued') {
+          await redisSet(
+            `job:${jobId}`,
+            {
+              ...existingJob,
+              status: 'failed' as JobStatus,
+              error: 'Worker connection failed. Please retry.',
+              completedAt: new Date().toISOString(),
+            },
+            JOB_TTL_SECONDS
+          );
+        }
+      }
     }
   } catch (error) {
     logger.warn('[AI Jobs] Log failed:', error);

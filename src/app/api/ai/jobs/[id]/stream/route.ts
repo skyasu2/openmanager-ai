@@ -55,7 +55,7 @@ interface JobProgress {
 // ============================================================================
 
 const POLL_INTERVAL_MS = 100; // Redis 폴링 간격
-const MAX_WAIT_TIME_MS = 9_000; // 최대 대기 시간 (Vercel Hobby 10초 제한 대비)
+const MAX_WAIT_TIME_MS = 55_000; // 최대 대기 시간 (Pro Tier maxDuration=60에서 5초 마진)
 const PROGRESS_INTERVAL_MS = 2000; // 진행 상황 업데이트 간격
 
 // ============================================================================
@@ -85,6 +85,15 @@ export async function GET(
       }),
       { status: 503, headers: { 'Content-Type': 'application/json' } }
     );
+  }
+
+  // Job 존재 여부 확인 (SSE 연결 전)
+  const initialCheck = await redisGet<JobResult>(`job:${jobId}`);
+  if (!initialCheck) {
+    return new Response(JSON.stringify({ error: 'Job not found', jobId }), {
+      status: 404,
+      headers: { 'Content-Type': 'application/json' },
+    });
   }
 
   // SSE 스트림 생성
