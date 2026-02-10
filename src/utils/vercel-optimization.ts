@@ -12,7 +12,7 @@
  * Vercel 환경 정보
  */
 import { logger } from '@/lib/logging';
-export interface VercelEnvironment {
+interface VercelEnvironment {
   isVercel: boolean;
   region: string;
   environment: 'production' | 'preview' | 'development';
@@ -21,22 +21,9 @@ export interface VercelEnvironment {
 }
 
 /**
- * Performance API 확장 (메모리 정보)
- */
-interface PerformanceMemory {
-  usedJSHeapSize: number;
-  totalJSHeapSize: number;
-  jsHeapSizeLimit: number;
-}
-
-interface ExtendedPerformance extends Performance {
-  memory?: PerformanceMemory;
-}
-
-/**
  * Vercel 환경 감지 및 정보 수집
  */
-export function getVercelEnvironment(): VercelEnvironment {
+function getVercelEnvironment(): VercelEnvironment {
   // 서버 환경에서는 process.env 사용
   if (typeof window === 'undefined') {
     const vercelEnv = process.env.VERCEL_ENV;
@@ -176,135 +163,6 @@ export async function preloadCriticalResources(): Promise<void> {
   } finally {
     performanceTracker.end('preload-resources');
   }
-}
-
-/**
- * Vercel 환경별 최적화 설정
- */
-export function getOptimizationConfig() {
-  const env = getVercelEnvironment();
-
-  return {
-    // 캐싱 설정
-    cache: {
-      // 프로덕션에서는 더 긴 캐시
-      maxAge: env.environment === 'production' ? 3600 : 60,
-      // 프리뷰에서는 캐시 버스팅
-      bustCache: env.environment === 'preview',
-    },
-
-    // 네트워크 설정
-    network: {
-      // Vercel 환경에서는 더 긴 타임아웃
-      timeout: env.isVercel ? 10000 : 5000,
-      // 프로덕션에서는 재시도
-      retries: env.environment === 'production' ? 2 : 0,
-    },
-
-    // 로깅 설정
-    logging: {
-      // 프로덕션에서는 에러만
-      level: env.environment === 'production' ? 'error' : 'debug',
-      // Vercel Analytics 호환 포맷
-      format: env.isVercel ? 'structured' : 'simple',
-    },
-
-    // 성능 설정
-    performance: {
-      // 번들 분할 임계값
-      bundleThreshold: env.isVercel ? 200000 : 500000, // 200KB vs 500KB
-      // 이미지 최적화
-      imageOptimization: env.isVercel,
-    },
-  };
-}
-
-/**
- * Vercel 에지 런타임 호환성 체크
- */
-export function checkEdgeRuntimeCompatibility(): {
-  isCompatible: boolean;
-  issues: string[];
-} {
-  const issues: string[] = [];
-
-  // Node.js API 사용 체크 (Edge Runtime에서 제한됨)
-  if (typeof process !== 'undefined' && process.versions?.node) {
-    // fs, path 등 Node.js 전용 API 사용 여부 체크는 정적 분석이 필요
-    // 여기서는 기본적인 체크만 수행
-  }
-
-  // 메모리 사용량 체크 (Edge Runtime은 128MB 제한)
-  if (typeof performance !== 'undefined') {
-    const extendedPerf = performance as ExtendedPerformance;
-    if (extendedPerf.memory) {
-      const memory = extendedPerf.memory;
-      if (memory.usedJSHeapSize > 50 * 1024 * 1024) {
-        // 50MB 이상
-        issues.push('높은 메모리 사용량 감지 (Edge Runtime 제한 고려 필요)');
-      }
-    }
-  }
-
-  return {
-    isCompatible: issues.length === 0,
-    issues,
-  };
-}
-
-/**
- * Vercel 배포 최적화 체크리스트
- */
-export function getDeploymentChecklist(): {
-  category: string;
-  items: { name: string; status: 'pass' | 'warn' | 'fail' }[];
-}[] {
-  const env = getVercelEnvironment();
-  const optimization = getOptimizationConfig();
-  const edgeCompatibility = checkEdgeRuntimeCompatibility();
-
-  return [
-    {
-      category: '환경 설정',
-      items: [
-        {
-          name: 'Vercel 환경 감지',
-          status: env.isVercel ? 'pass' : 'warn',
-        },
-        {
-          name: '환경변수 설정',
-          status: process.env.NEXT_PUBLIC_SUPABASE_URL ? 'pass' : 'fail',
-        },
-      ],
-    },
-    {
-      category: '성능 최적화',
-      items: [
-        {
-          name: '번들 크기',
-          status:
-            optimization.performance.bundleThreshold < 300000 ? 'pass' : 'warn',
-        },
-        {
-          name: '이미지 최적화',
-          status: optimization.performance.imageOptimization ? 'pass' : 'warn',
-        },
-      ],
-    },
-    {
-      category: 'Edge Runtime 호환성',
-      items: [
-        {
-          name: 'API 호환성',
-          status: edgeCompatibility.isCompatible ? 'pass' : 'warn',
-        },
-        {
-          name: '메모리 사용량',
-          status: edgeCompatibility.issues.length === 0 ? 'pass' : 'warn',
-        },
-      ],
-    },
-  ];
 }
 
 // 초기화 로그 (빌드 중에는 스킵)
