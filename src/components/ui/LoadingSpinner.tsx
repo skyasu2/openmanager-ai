@@ -9,7 +9,7 @@
 
 // React import 제거 - Next.js 15 자동 JSX Transform 사용
 import type { FC } from 'react';
-import { cn } from '../../lib/utils';
+import { cn } from '@/lib/utils';
 
 interface LoadingSpinnerProps {
   size?: 'sm' | 'md' | 'lg' | 'xl';

@@ -1,4 +1,4 @@
-import type { ServerStatus } from '../../types/index';
+import type { ServerStatus } from '@/types/index';
 
 // 🏢 기업 통합 IDC 인프라 - 30개 서버 구성
 // 쿠버네티스 15대 + 온프레미스 15대

@@ -6,8 +6,8 @@
  */
 
 import { logger } from '@/lib/logging';
-import { isMockMode } from '../../config/mock-config';
-import type { Server } from '../../types/server';
+import { isMockMode } from '@/config/mock-config';
+import type { Server } from '@/types/server';
 import { UnifiedServerDataSource } from '../data/UnifiedServerDataSource';
 
 export interface MockContext {

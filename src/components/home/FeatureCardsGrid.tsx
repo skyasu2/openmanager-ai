@@ -11,10 +11,10 @@ import {
   useState,
 } from 'react';
 import { logger } from '@/lib/logging';
-import { FEATURE_CARDS_DATA } from '../../data/feature-cards.data';
-import { useUnifiedAdminStore } from '../../stores/useUnifiedAdminStore';
-import type { FeatureCard } from '../../types/feature-card.types';
-import { renderAIGradientWithAnimation } from '../../utils/text-rendering';
+import { FEATURE_CARDS_DATA } from '@/data/feature-cards.data';
+import { useUnifiedAdminStore } from '@/stores/useUnifiedAdminStore';
+import type { FeatureCard } from '@/types/feature-card.types';
+import { renderAIGradientWithAnimation } from '@/utils/text-rendering';
 import FeatureCardModal from '../shared/FeatureCardModal';
 
 // 개별 카드 컴포넌트를 메모이제이션

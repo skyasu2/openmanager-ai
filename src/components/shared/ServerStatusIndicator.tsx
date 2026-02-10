@@ -10,7 +10,7 @@
 
 import type React from 'react';
 import { memo } from 'react';
-import type { ServerStatus } from '../../types/server';
+import type { ServerStatus } from '@/types/server';
 
 interface ServerStatusIndicatorProps {
   status: ServerStatus;

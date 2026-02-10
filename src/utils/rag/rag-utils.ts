@@ -1,5 +1,5 @@
-import type { AIMetadata } from '../../types/ai-service-types';
-import type { DocumentMetadata } from '../../types/rag/rag-types';
+import type { AIMetadata } from '@/types/ai-service-types';
+import type { DocumentMetadata } from '@/types/rag/rag-types';
 
 // Helper function to convert DocumentMetadata to AIMetadata
 export function convertDocumentMetadataToAIMetadata(

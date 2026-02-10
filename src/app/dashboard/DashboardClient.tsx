@@ -28,8 +28,8 @@ import { useUnifiedAdminStore } from '@/stores/useUnifiedAdminStore';
 import type { Server } from '@/types/server';
 import { triggerAIWarmup } from '@/utils/ai-warmup';
 import debug from '@/utils/debug';
-import DashboardContent from '../../components/dashboard/DashboardContent';
-import DashboardHeader from '../../components/dashboard/DashboardHeader';
+import DashboardContent from '@/components/dashboard/DashboardContent';
+import DashboardHeader from '@/components/dashboard/DashboardHeader';
 
 /** Props for DashboardClient (Phase 2: SSR data) */
 type DashboardClientProps = {

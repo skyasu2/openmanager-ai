@@ -1,4 +1,4 @@
-import type { AIMetadata } from '../../types/ai-service-types';
+import type { AIMetadata } from '@/types/ai-service-types';
 
 export interface DocumentMetadata {
   category?: string;

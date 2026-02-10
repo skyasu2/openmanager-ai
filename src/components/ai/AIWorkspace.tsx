@@ -32,7 +32,7 @@ import type { AIThinkingStep } from '@/types/ai-sidebar/ai-sidebar-types';
 import {
   type EnhancedChatMessage,
   useAISidebarStore,
-} from '../../stores/useAISidebarStore';
+} from '@/stores/useAISidebarStore';
 import { RealTimeDisplay } from '../dashboard/RealTimeDisplay';
 import { OpenManagerLogo } from '../shared/OpenManagerLogo';
 import UnifiedProfileHeader from '../shared/UnifiedProfileHeader';

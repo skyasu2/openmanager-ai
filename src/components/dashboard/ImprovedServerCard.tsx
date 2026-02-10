@@ -15,15 +15,15 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { useFixed24hMetrics } from '../../hooks/useFixed24hMetrics';
-import { useSafeServer } from '../../hooks/useSafeServer';
-import { getServerStatusTheme } from '../../styles/design-constants';
+import { useFixed24hMetrics } from '@/hooks/useFixed24hMetrics';
+import { useSafeServer } from '@/hooks/useSafeServer';
+import { getServerStatusTheme } from '@/styles/design-constants';
 import type {
   ServerStatus,
   Server as ServerType,
   Service,
-} from '../../types/server';
-import { formatUptime } from '../../utils/serverUtils';
+} from '@/types/server';
+import { formatUptime } from '@/utils/serverUtils';
 import ServerCardErrorBoundary from '../error/ServerCardErrorBoundary';
 import { AIInsightBadge } from '../shared/AIInsightBadge';
 import { MiniLineChart } from '../shared/MiniLineChart';
