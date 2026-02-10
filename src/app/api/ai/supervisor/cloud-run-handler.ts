@@ -11,10 +11,10 @@
 
 import { NextResponse } from 'next/server';
 import {
-  TRACEPARENT_HEADER,
-  generateTraceparent,
   generateTraceId,
+  generateTraceparent,
   getObservabilityConfig,
+  TRACEPARENT_HEADER,
 } from '@/config/ai-proxy.config';
 import { type AIEndpoint, setAICache } from '@/lib/ai/cache/ai-response-cache';
 import { executeWithCircuitBreakerAndFallback } from '@/lib/ai/circuit-breaker';

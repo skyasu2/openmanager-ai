@@ -19,12 +19,12 @@
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 import {
-  TRACEPARENT_HEADER,
   generateTraceId,
   getMaxTimeout,
   getMinTimeout,
   getObservabilityConfig,
   parseTraceparentTraceId,
+  TRACEPARENT_HEADER,
   traceIdToUUID,
 } from '@/config/ai-proxy.config';
 import { type AIEndpoint, getAICache } from '@/lib/ai/cache/ai-response-cache';

@@ -32,14 +32,14 @@ import { DefaultChatTransport } from 'ai';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { flushSync } from 'react-dom';
 import {
-  TRACEPARENT_HEADER,
   calculateRetryDelay,
-  generateTraceparent,
   generateTraceId,
+  generateTraceparent,
   getComplexityThreshold,
   getObservabilityConfig,
   getStreamRetryConfig,
   isRetryableError,
+  TRACEPARENT_HEADER,
 } from '@/config/ai-proxy.config';
 import { generateClarification } from '@/lib/ai/clarification-generator';
 import { classifyQuery } from '@/lib/ai/query-classifier';
