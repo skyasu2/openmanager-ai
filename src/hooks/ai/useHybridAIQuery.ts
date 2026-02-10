@@ -182,6 +182,8 @@ export function useHybridAIQuery(
   // 🎯 AbortController for graceful request cancellation (Phase 2 개선)
   // Vercel 10s timeout 대응: 8초 내부 timeout + graceful abort
   const abortControllerRef = useRef<AbortController | null>(null);
+  // Retry setTimeout ID for cleanup on unmount
+  const retryTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // ============================================================================
   // useChat Hook (Streaming Mode) - AI SDK v6 베스트 프랙티스 적용
@@ -419,8 +421,9 @@ export function useHybridAIQuery(
           warning: `재연결 중... (${retryCountRef.current}/${streamRetryConfig.maxRetries})`,
         }));
 
-        // Wait and retry
-        setTimeout(() => {
+        // Wait and retry (with cleanup support)
+        retryTimeoutRef.current = setTimeout(() => {
+          retryTimeoutRef.current = null;
           errorHandledRef.current = false; // Reset for retry
           const query = currentQueryRef.current;
           const attachments = pendingAttachmentsRef.current;
@@ -763,6 +766,10 @@ export function useHybridAIQuery(
     // 🎯 Phase 2: AbortController cleanup on stop
     abortControllerRef.current?.abort();
     abortControllerRef.current = null;
+    if (retryTimeoutRef.current) {
+      clearTimeout(retryTimeoutRef.current);
+      retryTimeoutRef.current = null;
+    }
 
     if (state.mode === 'streaming') {
       stopChat();
@@ -783,6 +790,10 @@ export function useHybridAIQuery(
     // 🎯 Phase 2: AbortController cleanup on reset
     abortControllerRef.current?.abort();
     abortControllerRef.current = null;
+    if (retryTimeoutRef.current) {
+      clearTimeout(retryTimeoutRef.current);
+      retryTimeoutRef.current = null;
+    }
 
     // 🎯 P1: Reset retry count and generate new trace ID
     retryCountRef.current = 0;
@@ -821,6 +832,11 @@ export function useHybridAIQuery(
       // 🎯 AbortController cleanup on unmount
       abortControllerRef.current?.abort();
       abortControllerRef.current = null;
+      // 🎯 Retry timeout cleanup on unmount
+      if (retryTimeoutRef.current) {
+        clearTimeout(retryTimeoutRef.current);
+        retryTimeoutRef.current = null;
+      }
     };
   }, []);
 

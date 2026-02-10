@@ -137,7 +137,7 @@ export interface AgentStreamEvent {
 
 const DEFAULT_OPTIONS: Required<Omit<AgentRunOptions, 'sessionId' | 'images' | 'files'>> = {
   timeoutMs: 45_000,
-  maxSteps: 5,
+  maxSteps: 7,
   temperature: 0.4,
   maxOutputTokens: 2048,
   webSearchEnabled: true,

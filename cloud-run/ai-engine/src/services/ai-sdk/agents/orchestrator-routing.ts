@@ -285,7 +285,7 @@ export async function executeForcedRouting(
           { role: 'user', content: query },
         ],
         tools: filteredTools as Parameters<typeof generateText>[0]['tools'],
-        stopWhen: [hasToolCall('finalAnswer'), stepCountIs(5)],
+        stopWhen: [hasToolCall('finalAnswer'), stepCountIs(7)],
         temperature: 0.4,
         maxOutputTokens: 2048,
       },

@@ -1,10 +1,32 @@
 # TODO - OpenManager VIBE v5
 
-**Last Updated**: 2026-01-26 19:40 KST
+**Last Updated**: 2026-02-10 KST
 
 ## Active Tasks
 
-_(현재 활성 작업 없음 - 모든 코드 작업 완료)_
+| Task | Priority | Status |
+|------|----------|--------|
+| Resume Stream 재활성화 (`resume: true`) | P1 | Blocked (AI SDK parts 처리 버그 대기) |
+| `useHybridAIQuery.ts` 분할 (852줄) | P2 | Backlog |
+| 대형 파일 리팩토링 (500줄+ 8개) | P2 | Backlog |
+| W3C Trace Context (`traceparent`) 표준화 | P2 | Backlog |
+| AsyncLocalStorage 도입 | P2 | Backlog |
+
+### Completed (2026-02-10)
+- [x] P0: Dev bypass auth 기본값 `true` → `false` (프로덕션 인증 우회 방지)
+- [x] P1: Redis 자동 복구 타이머 추가 (60초 후 재연결)
+- [x] P1: Cache key 정규화 통일 (`normalizeQueryForCache`)
+- [x] P1: Redis KEYS → SCAN 변경 (Upstash O(N) 블로킹 방지)
+- [x] P1: `proxyStreamToCloudRun` AbortController 추가 (55초 timeout)
+- [x] P0: API 라우트 인증 취약점 해결 (3건)
+- [x] P1: Job Queue, Stream timeout, Supervisor validation 버그 수정
+- [x] P2: `console.*` → `logger` 마이그레이션 (프로덕션 잔존 0건)
+- [x] P3: Retry setTimeout 취소 누락 수정 (메모리 누수 방지)
+- [x] P2: `stepCountIs(5)` → 7 상향 (복잡 쿼리 대응)
+
+### Completed (2026-02-08)
+- [x] P2: Frontend QA — memo, useShallow, SSE validation
+- [x] P3: UI QA — services data, mobile AI button, top5 truncation
 
 ### Completed (2026-01-26)
 - [x] P1: useButtonType A11y 위반 해결 (142개 → 0개)
@@ -75,7 +97,8 @@ _(현재 활성 작업 없음 - 모든 코드 작업 완료)_
 
 | Task | Description | Status |
 |------|-------------|--------|
-| 게스트 모드 보안 복원 | 개발 bypass 비활성화 | 보류 (포트폴리오 시연용, 요청 시 진행) |
+| Semantic Caching | 해시 기반 → 임베딩 기반 유사 쿼리 캐시 매칭 | P3 |
+| flushSync 검토 | `useHybridAIQuery.ts:691` 성능 영향 재평가 | P3 |
 
 ## Completed Archive
 
