@@ -1,24 +1,12 @@
-// src/lib/utils.ts
 /**
  * OpenManager Vibe V5 - Utility Functions
  * Common helper functions used throughout the application
  */
 
-import { type ClassValue, clsx } from 'clsx';
-import { twMerge } from 'tailwind-merge';
-import { logger } from '@/lib/logging';
 import {
   safeErrorLog as coreErrorLog,
   safeErrorMessage as coreErrorMessage,
 } from '../lib/error-handler';
-
-/**
- * Combines class names with tailwind-merge to handle conflicts
- * Essential for shadcn/ui components
- */
-export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs));
-}
 
 /**
  * 🛡️ 완전히 안전한 에러 처리 - 새로운 error-handler 모듈 사용
@@ -39,67 +27,6 @@ export function safeConsoleError(prefix: string, error: unknown): void {
 }
 
 /**
- * 🔐 암호학적으로 안전한 세션 ID 생성 (보안 강화)
- * 기존의 Math.random() 대신 crypto.getRandomValues() 사용
- * 예측 불가능하고 충돌 가능성이 극히 낮은 ID 생성
- */
-export function generateSessionId(prefix?: string): string {
-  try {
-    // 암호학적으로 안전한 랜덤 바이트 생성
-    const array = new Uint8Array(16); // 128비트 = 16바이트
-
-    // 브라우저 환경에서는 crypto.getRandomValues 사용
-    if (typeof window !== 'undefined' && window.crypto) {
-      window.crypto.getRandomValues(array);
-    }
-    // Node.js 환경에서는 crypto 모듈 사용
-    else if (typeof globalThis !== 'undefined' && 'crypto' in globalThis) {
-      // Node.js 19+ has globalThis.crypto
-      globalThis.crypto.getRandomValues?.(array);
-    }
-    // 폴백: Math.random() (권장하지 않음)
-    else {
-      logger.warn(
-        '🔒 Cryptographically secure random not available, falling back to Math.random()'
-      );
-      for (let i = 0; i < array.length; i++) {
-        array[i] = Math.floor(Math.random() * 256);
-      }
-    }
-
-    // Base58 인코딩 (URL 안전, 혼동되기 쉬운 문자 제외)
-    const base58Chars =
-      '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
-    let result = '';
-
-    // 바이트 배열을 Base58로 변환
-    for (let i = 0; i < array.length; i++) {
-      const arrayValue = array[i];
-      if (arrayValue !== undefined) {
-        const charIndex = arrayValue % base58Chars.length;
-        const char = base58Chars[charIndex];
-        if (char !== undefined) {
-          result += char;
-        }
-      }
-    }
-
-    // 타임스탬프 추가 (충돌 방지 및 정렬 가능)
-    const timestamp = Date.now().toString(36);
-    const sessionId = `${timestamp}.${result}`;
-
-    return prefix ? `${prefix}_${sessionId}` : sessionId;
-  } catch (error) {
-    logger.error('🔐 Secure session ID generation failed:', error);
-    // 완전 폴백: 기존 방식
-    const timestamp = Date.now().toString(36);
-    const randomPart = Math.random().toString(36).substring(2, 15);
-    const sessionId = `${timestamp}-${randomPart}`;
-    return prefix ? `${prefix}_${sessionId}` : sessionId;
-  }
-}
-
-/**
  * 📏 바이트 포맷팅 (표준 구현)
  * 모든 formatBytes 함수들을 이것으로 대체
  */
@@ -113,13 +40,6 @@ export function formatBytes(bytes: number, decimals = 2): string {
   const i = Math.floor(Math.log(bytes) / Math.log(k));
 
   return `${parseFloat((bytes / k ** i).toFixed(dm))} ${sizes[i]}`;
-}
-
-/**
- * ⏱️ 타임스탬프 생성 (표준 구현)
- */
-export function generateTimestamp(): string {
-  return new Date().toISOString();
 }
 
 /**
@@ -397,21 +317,6 @@ export function clamp(num: number, min: number, max: number): number {
 }
 
 /**
- * Generate random ID
- * @param length - Length of ID
- * @returns Random ID string
- */
-export function generateId(length = 8): string {
-  const chars =
-    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  let result = '';
-  for (let i = 0; i < length; i++) {
-    result += chars.charAt(Math.floor(Math.random() * chars.length));
-  }
-  return result;
-}
-
-/**
  * Validate email format
  * @param email - Email to validate
  * @returns Boolean indicating valid email
@@ -514,16 +419,4 @@ export function slugify(str: string): string {
  */
 export function dateDiff(date1: Date, date2: Date): number {
   return Math.abs(date1.getTime() - date2.getTime());
-}
-
-/**
- * UUID v4를 생성합니다.
- * @returns UUID v4 문자열
- */
-export function generateUUID(): string {
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
-    const r = (Math.random() * 16) | 0;
-    const v = c === 'x' ? r : (r & 0x3) | 0x8;
-    return v.toString(16);
-  });
 }

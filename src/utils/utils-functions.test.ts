@@ -2,7 +2,6 @@ import { describe, expect, it } from 'vitest';
 import {
   dateDiff,
   formatPercentage,
-  generateUUID,
   isEmpty,
   slugify,
   truncate,
@@ -47,15 +46,6 @@ describe('Utility Functions', () => {
       const d1 = new Date('2023-01-01T00:00:00');
       const d2 = new Date('2023-01-01T00:00:01');
       expect(dateDiff(d1, d2)).toBe(1000);
-    });
-  });
-
-  describe('generateUUID', () => {
-    it('generates valid UUID format', () => {
-      const uuid = generateUUID();
-      expect(uuid).toMatch(
-        /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/
-      );
     });
   });
 

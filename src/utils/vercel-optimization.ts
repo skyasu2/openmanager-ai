@@ -12,6 +12,7 @@
  * Vercel 환경 정보
  */
 import { logger } from '@/lib/logging';
+
 interface VercelEnvironment {
   isVercel: boolean;
   region: string;
