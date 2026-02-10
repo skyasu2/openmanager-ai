@@ -118,7 +118,7 @@ function parseEnv(): Env {
         logger.warn(
           '개발/빌드 환경: 필수 환경변수 누락 시 일부 기능이 제한될 수 있습니다.'
         );
-        return result.error.flatten().fieldErrors as unknown as Env;
+        return {} as Env;
       }
 
       throw new Error(`환경변수 검증 실패: ${result.error.message}`);

@@ -1,8 +1,8 @@
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
-import { withAuth } from '@/lib/auth/api-auth';
 import { getSystemConfig } from '@/config/SystemConfiguration';
 import { createApiRoute } from '@/lib/api/zod-middleware';
+import { withAuth } from '@/lib/auth/api-auth';
 import { logger } from '@/lib/logging';
 import {
   DashboardActionRequestSchema,

@@ -98,18 +98,16 @@ interface RateLimitRecord {
 
 const rateLimitStore = new Map<string, RateLimitRecord>();
 
-// 🧹 주기적 정리 (5분마다)
-setInterval(
-  () => {
-    const now = Date.now();
-    for (const [ip, record] of rateLimitStore.entries()) {
-      if (now > record.resetTime) {
-        rateLimitStore.delete(ip);
-      }
+// 🧹 Lazy cleanup: checkRateLimit 호출 시 만료 엔트리 정리 (setInterval 불필요)
+function cleanupExpiredEntries(): void {
+  if (rateLimitStore.size < 50) return; // 소규모일 땐 스킵
+  const now = Date.now();
+  for (const [ip, record] of rateLimitStore.entries()) {
+    if (now > record.resetTime) {
+      rateLimitStore.delete(ip);
     }
-  },
-  5 * 60 * 1000
-);
+  }
+}
 
 /**
  * 🛡️ Rate Limiting 체크 (실제 구현)
@@ -127,6 +125,7 @@ function checkRateLimit(ip: string): {
   remaining: number;
   resetTime: number;
 } {
+  cleanupExpiredEntries();
   const now = Date.now();
   const windowMs = 60 * 1000; // 1분
   const maxRequests = 30;
