@@ -114,7 +114,11 @@ async function loadPureRawMetrics(): Promise<RawServerMetric[]> {
       await fs.access(filePath);
       const content = await fs.readFile(filePath, 'utf8');
       hourlyData = JSON.parse(content);
-    } catch {
+    } catch (error) {
+      logger.warn(
+        `Hourly data not available (${filePath}), using fallback:`,
+        error
+      );
       const fallbackPath = path.join(
         process.cwd(),
         'public',
