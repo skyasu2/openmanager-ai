@@ -331,33 +331,6 @@ export async function authMiddleware(
 }
 
 /**
- * Rate Limiting 미들웨어
- */
-export async function rateLimitMiddleware(
-  _limit = 100,
-  _window = 3600 // 1시간
-) {
-  return async (request: NextRequest): Promise<NextRequest | NextResponse> => {
-    const ip =
-      request.headers.get('x-forwarded-for')?.split(',')[0] ||
-      request.headers.get('x-real-ip') ||
-      'unknown';
-    const _key = `rate_limit:${ip}:${request.url}`;
-
-    // Rate limiting 로직 (Redis 등 사용)
-    // const count = await redis.incr(key);
-    // if (count === 1) {
-    //   await redis.expire(key, window);
-    // }
-    // if (count > limit) {
-    //   return rate limit exceeded response
-    // }
-
-    return request;
-  };
-}
-
-/**
  * CORS 미들웨어
  */
 export async function corsMiddleware(

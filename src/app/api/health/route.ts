@@ -264,7 +264,7 @@ const healthCheckHandler = createApiRoute()
         env.APP_VERSION ||
         process.env.NEXT_PUBLIC_APP_VERSION ||
         process.env.npm_package_version ||
-        '5.83.14',
+        'unknown',
       timestamp: new Date().toISOString(),
     };
 

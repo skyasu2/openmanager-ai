@@ -10,6 +10,7 @@
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
 import { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 import { AutoLogoutWarning } from '@/components/auth/AutoLogoutWarning';
 import DashboardContent from '@/components/dashboard/DashboardContent';
 import DashboardHeader from '@/components/dashboard/DashboardHeader';
@@ -26,7 +27,6 @@ import type { DashboardStats } from '@/lib/dashboard/server-data';
 import { cn } from '@/lib/utils';
 import { systemInactivityService } from '@/services/system/SystemInactivityService';
 import { useAISidebarStore } from '@/stores/useAISidebarStore';
-import { useShallow } from 'zustand/react/shallow';
 import { useUnifiedAdminStore } from '@/stores/useUnifiedAdminStore';
 import type { Server } from '@/types/server';
 import { triggerAIWarmup } from '@/utils/ai-warmup';
