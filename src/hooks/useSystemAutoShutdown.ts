@@ -10,10 +10,10 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 import { SYSTEM_AUTO_SHUTDOWN_TIME } from '@/config/system-constants';
 import { logger } from '@/lib/logging';
 import { useUnifiedAdminStore } from '@/stores/useUnifiedAdminStore';
-import { useShallow } from 'zustand/react/shallow';
 
 interface UseSystemAutoShutdownOptions {
   /** 경고 시간 (분) */

@@ -17,6 +17,7 @@ import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 import { createMiddlewareClient } from '@/lib/supabase/middleware';
 import { createClient } from '@/lib/supabase/server';
+import { getErrorMessage } from '@/types/type-utils';
 import debug from '@/utils/debug';
 
 export const runtime = 'nodejs';
@@ -73,7 +74,7 @@ export async function GET(request: NextRequest) {
         : null;
       clientSessionError = error?.message || null;
     } catch (e) {
-      clientSessionError = e instanceof Error ? e.message : 'Unknown error';
+      clientSessionError = getErrorMessage(e);
     }
 
     // 2. 미들웨어 클라이언트로 세션 확인
@@ -100,7 +101,7 @@ export async function GET(request: NextRequest) {
         : null;
       middlewareSessionError = error?.message || null;
     } catch (e) {
-      middlewareSessionError = e instanceof Error ? e.message : 'Unknown error';
+      middlewareSessionError = getErrorMessage(e);
     }
 
     // 게스트 세션 확인
@@ -198,7 +199,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(
       {
         status: 'error',
-        error: error instanceof Error ? error.message : 'Unknown error',
+        error: getErrorMessage(error),
         timestamp: new Date().toISOString(),
       },
       { status: 500 }
@@ -253,7 +254,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error',
+        error: getErrorMessage(error),
       },
       { status: 500 }
     );

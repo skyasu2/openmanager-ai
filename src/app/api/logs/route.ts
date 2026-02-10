@@ -13,6 +13,7 @@ import { NextResponse } from 'next/server';
 import { withAdminAuth, withAuth } from '@/lib/auth/api-auth';
 import { logger } from '@/lib/logging';
 import { createClient } from '@/lib/supabase/server';
+import { getErrorMessage } from '@/types/type-utils';
 
 // 타입 정의
 type LogLevel = 'info' | 'warn' | 'error';
@@ -99,7 +100,7 @@ async function handleGET(request: NextRequest) {
       {
         success: false,
         error: '로그 조회 중 오류가 발생했습니다.',
-        details: error instanceof Error ? error.message : '알 수 없는 오류',
+        details: getErrorMessage(error),
       },
       { status: 500 }
     );
@@ -195,7 +196,7 @@ async function handlePOST(request: NextRequest) {
       {
         success: false,
         error: '로그 추가 중 오류가 발생했습니다.',
-        details: error instanceof Error ? error.message : '알 수 없는 오류',
+        details: getErrorMessage(error),
       },
       { status: 500 }
     );
@@ -249,7 +250,7 @@ async function handleDELETE(request: NextRequest) {
       {
         success: false,
         error: '로그 정리 중 오류가 발생했습니다.',
-        details: error instanceof Error ? error.message : '알 수 없는 오류',
+        details: getErrorMessage(error),
       },
       { status: 500 }
     );

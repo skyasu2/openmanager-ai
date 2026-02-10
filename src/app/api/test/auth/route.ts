@@ -16,6 +16,7 @@ import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 import { createApiRoute } from '@/lib/api/zod-middleware';
 import { createClient } from '@/lib/supabase/server';
+import { getErrorMessage } from '@/types/type-utils';
 import {
   type AuthDiagnostics,
   AuthDiagnosticsRequestSchema,
@@ -25,7 +26,6 @@ import {
   AuthTestResponseSchema,
   type AuthTestResult,
 } from '@/schemas/api.schema';
-import { getErrorMessage } from '@/types/type-utils';
 import debug from '@/utils/debug';
 
 // OAuth 데이터 타입 정의
@@ -90,7 +90,7 @@ const getHandler = createApiRoute()
       }
     } catch (error) {
       oauthError = {
-        message: `OAuth 테스트 실패: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        message: `OAuth 테스트 실패: ${getErrorMessage(error)}`,
       };
     }
 

@@ -11,6 +11,7 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import { getSystemConfig } from '@/config/SystemConfiguration';
 import { logger } from '@/lib/logging';
+import { getErrorMessage } from '@/types/type-utils';
 import { getUnifiedServerDataSource } from '@/services/data/UnifiedServerDataSource';
 import {
   fnv1aHash,
@@ -285,7 +286,7 @@ export async function GET(_request: NextRequest) {
       {
         success: false,
         error: 'Unified metrics API failed',
-        message: error instanceof Error ? error.message : 'Unknown error',
+        message: getErrorMessage(error),
         timestamp: Date.now(),
       },
       { status: 500 }

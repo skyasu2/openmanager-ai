@@ -34,6 +34,7 @@ import {
   validateProcessConfigs,
 } from '@/lib/core/system/process-configs';
 import { systemLogger } from '@/lib/logger';
+import { getErrorMessage } from '@/types/type-utils';
 import debug from '@/utils/debug';
 
 // ============================================================================
@@ -225,8 +226,7 @@ export async function GET(request: NextRequest) {
       }
     }
   } catch (error) {
-    const errorMessage =
-      error instanceof Error ? error.message : '알 수 없는 오류';
+    const errorMessage = getErrorMessage(error);
     systemLogger.error('System GET 오류:', error);
 
     return NextResponse.json(
@@ -413,8 +413,7 @@ export const POST = withAuth(async (request: NextRequest) => {
         );
     }
   } catch (error) {
-    const errorMessage =
-      error instanceof Error ? error.message : '알 수 없는 오류';
+    const errorMessage = getErrorMessage(error);
     systemLogger.error('System POST 오류:', error);
 
     return NextResponse.json(

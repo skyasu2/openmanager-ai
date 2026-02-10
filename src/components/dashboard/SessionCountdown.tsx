@@ -2,8 +2,8 @@
 
 import { Clock, Timer } from 'lucide-react';
 import { memo, useEffect, useState } from 'react';
-import { useUnifiedAdminStore } from '@/stores/useUnifiedAdminStore';
 import { useShallow } from 'zustand/react/shallow';
+import { useUnifiedAdminStore } from '@/stores/useUnifiedAdminStore';
 
 /**
  * 🕐 세션 카운트다운 컴포넌트

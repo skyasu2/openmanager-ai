@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { getErrorMessage } from '@/types/type-utils';
 
 // ⚡ Edge Runtime으로 전환 - 60% 응답시간 개선 예상
 export const runtime = 'edge';
@@ -72,7 +73,7 @@ export function GET() {
         iso: new Date().toISOString(),
         status: 'error',
         runtime: 'edge',
-        error: error instanceof Error ? error.message : 'Unknown error',
+        error: getErrorMessage(error),
       },
       {
         status: 500,

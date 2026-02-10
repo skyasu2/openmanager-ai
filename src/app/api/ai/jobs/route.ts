@@ -19,6 +19,7 @@ import {
 import { withAuth } from '@/lib/auth/api-auth';
 import { logger } from '@/lib/logging';
 import { getRedisClient, redisGet, redisMGet, redisSet } from '@/lib/redis';
+import { getErrorMessage } from '@/types/type-utils';
 import { rateLimiters, withRateLimit } from '@/lib/security/rate-limiter';
 import type {
   AIJob,
@@ -326,7 +327,7 @@ async function triggerWorker(
     return {
       status: 'failed',
       responseTime,
-      error: error instanceof Error ? error.message : 'Unknown error',
+      error: getErrorMessage(error),
     };
   }
 }

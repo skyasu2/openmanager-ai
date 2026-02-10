@@ -16,6 +16,7 @@ import { NextResponse } from 'next/server';
 import * as z from 'zod';
 import { createApiRoute } from '@/lib/api/zod-middleware';
 import { logger } from '@/lib/logging';
+import { getErrorMessage } from '@/types/type-utils';
 import { getUnifiedServerDataSource } from '@/services/data/UnifiedServerDataSource';
 import { metricsProvider } from '@/services/metrics/MetricsProvider';
 import type {
@@ -467,7 +468,7 @@ async function handleServersUnified(
     return {
       success: false,
       action,
-      error: error instanceof Error ? error.message : 'Unknown error',
+      error: getErrorMessage(error),
       fallback: true,
       data: [],
       timestamp: new Date().toISOString(),

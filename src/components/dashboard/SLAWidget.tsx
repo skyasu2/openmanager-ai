@@ -71,9 +71,8 @@ export const SLAWidget = memo(function SLAWidget({
       // 보고서 목록에서 SLA 메트릭 계산
       const dateRange =
         period === 'daily' ? '7d' : period === 'weekly' ? '30d' : '90d';
-      const response = await fetch(
-        `/api/ai/incident-report?dateRange=${dateRange}&limit=50`
-      );
+      const params = new URLSearchParams({ dateRange, limit: '50' });
+      const response = await fetch(`/api/ai/incident-report?${params}`);
 
       if (!response.ok) {
         throw new Error(`SLA 데이터 조회 실패 (HTTP ${response.status})`);

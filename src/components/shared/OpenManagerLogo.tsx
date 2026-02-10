@@ -2,8 +2,8 @@
 
 import Link from 'next/link';
 import type React from 'react';
-import { useUnifiedAdminStore } from '@/stores/useUnifiedAdminStore';
 import { useShallow } from 'zustand/react/shallow';
+import { useUnifiedAdminStore } from '@/stores/useUnifiedAdminStore';
 import { AI_GRADIENT_ANIMATED_STYLE } from '@/styles/design-constants';
 
 interface OpenManagerLogoProps {

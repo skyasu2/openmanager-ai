@@ -24,6 +24,7 @@ import debug from '@/utils/debug';
 import { ChecklistItem } from './ChecklistItem';
 import { CompletionOverlay } from './CompletionOverlay';
 import { DebugPanel } from './DebugPanel';
+import { useChecklistDebugTools } from './useChecklistDebugTools';
 
 export default function SystemChecklist({
   onComplete,
@@ -65,7 +66,7 @@ export default function SystemChecklist({
   });
 
   const [showDebugPanel, setShowDebugPanel] = useState(
-    process.env.NEXT_PUBLIC_NODE_ENV || process.env.NODE_ENV === 'development'
+    !!process.env.NEXT_PUBLIC_NODE_ENV || process.env.NODE_ENV === 'development'
   );
 
   // 🔍 네트워크 요청 모니터링
@@ -214,194 +215,20 @@ export default function SystemChecklist({
   }, [showDebugPanel]);
 
   // 🛠️ 강화된 전역 개발자 도구 등록
-  useEffect(() => {
-    const advancedDebugTools = {
-      // 기본 상태 정보
-      getState: () => ({
-        components,
-        debugInfo,
-        isCompleted,
-        canSkip,
-        showCompleted,
-        shouldProceed,
-        totalProgress,
-      }),
-
-      // 컴포넌트별 상세 분석
-      analyzeComponent: (componentId: string) => {
-        const component = componentDefinitions.find(
-          (c) => c.id === componentId
-        );
-        const status = components[componentId];
-
-        debug.group(`🔍 컴포넌트 분석: ${component?.name || componentId}`);
-        debug.log('컴포넌트 정의:', component);
-        debug.log('현재 상태:', status);
-        debug.log(
-          '에러 히스토리:',
-          debugInfo.errors.filter((e) => e.component === componentId)
-        );
-        debug.log(
-          '네트워크 요청:',
-          debugInfo.networkRequests.filter((r) => r.url.includes(componentId))
-        );
-        debug.groupEnd();
-
-        return {
-          component,
-          status,
-          errors: debugInfo.errors.filter((e) => e.component === componentId),
-        };
-      },
-
-      // 실패한 컴포넌트만 재시도
-      retryFailedComponents: () => {
-        const failedComponents = Object.entries(components)
-          .filter(([_, status]) => status.status === 'failed')
-          .map(([id]) => id);
-
-        debug.log('🔄 실패한 컴포넌트 재시도:', failedComponents);
-
-        if (failedComponents.length === 0) {
-          debug.log('✅ 실패한 컴포넌트 없음');
-          return;
-        }
-
-        window.location.reload();
-      },
-
-      // 네트워크 진단
-      diagnoseNetwork: () => {
-        const networkStats = {
-          totalRequests: debugInfo.networkRequests.length,
-          successRate:
-            debugInfo.networkRequests.filter((r) => r.success).length /
-            debugInfo.networkRequests.length,
-          averageResponseTime:
-            debugInfo.networkRequests.reduce(
-              (sum, r) => sum + r.responseTime,
-              0
-            ) / debugInfo.networkRequests.length,
-          slowestRequest: debugInfo.networkRequests.reduce(
-            (slowest, current) =>
-              current.responseTime > (slowest?.responseTime ?? 0)
-                ? current
-                : slowest,
-            debugInfo.networkRequests[0]
-          ),
-          failedRequests: debugInfo.networkRequests.filter((r) => !r.success),
-        };
-
-        debug.group('🌐 네트워크 진단');
-        debug.log('통계:', networkStats);
-        debug.log('모든 요청:', debugInfo.networkRequests);
-        debug.groupEnd();
-
-        return networkStats;
-      },
-
-      // 성능 분석
-      analyzePerformance: () => {
-        debug.group('⚡ 성능 분석');
-        debug.log(
-          '체크리스트 총 시간:',
-          `${debugInfo.performance.checklistDuration}ms`
-        );
-        debug.log(
-          '가장 느린 컴포넌트:',
-          debugInfo.performance.slowestComponent
-        );
-        debug.log(
-          '가장 빠른 컴포넌트:',
-          debugInfo.performance.fastestComponent
-        );
-        debug.log(
-          '평균 응답 시간:',
-          `${debugInfo.performance.averageResponseTime}ms`
-        );
-        debug.groupEnd();
-
-        return debugInfo.performance;
-      },
-
-      // 디버그 정보 내보내기
-      exportDebugInfo: () => {
-        const exportData = {
-          ...debugInfo,
-          timestamp: new Date().toISOString(),
-          components,
-          isCompleted,
-          totalProgress,
-        };
-
-        debug.log('📤 디버그 정보 내보내기:', exportData);
-
-        // 클립보드에 복사 (브라우저에서만)
-        if (typeof navigator !== 'undefined' && navigator.clipboard) {
-          navigator.clipboard
-            .writeText(JSON.stringify(exportData, null, 2))
-            .then(() => debug.log('📋 클립보드에 복사 완료'))
-            .catch((err) => debug.error('📋 클립보드 복사 실패:', err));
-        }
-
-        return exportData;
-      },
-
-      // 강제 완료 (안전 장치)
-      forceComplete: () => {
-        debug.log('🚨 SystemChecklist 강제 완료 실행');
-        setShouldProceed(true);
-        onComplete();
-      },
-
-      // 디버그 패널 토글
-      toggleDebugPanel: () => {
-        setShowDebugPanel(!showDebugPanel);
-        return !showDebugPanel;
-      },
-    };
-
-    // 전역 등록
-    (window as unknown as WindowWithDebug).debugSystemChecklistAdvanced =
-      advancedDebugTools;
-    (window as unknown as WindowWithDebug).systemChecklistDebug =
-      advancedDebugTools; // 짧은 별칭
-
-    // 기존 함수들도 유지
-    (window as unknown as WindowWithDebug).debugSystemChecklist = {
-      components,
-      componentDefinitions,
-      isCompleted,
-      canSkip,
-      totalProgress,
-      debugInfo,
-    };
-
-    (window as unknown as WindowWithDebug).emergencyCompleteChecklist =
-      advancedDebugTools.forceComplete;
-
-    // 개발 환경에서만 디버그 정보 출력
-    debug.group('🛠️ SystemChecklist 개발자 도구 사용 가능');
-    debug.log('기본 정보:', 'debugSystemChecklist');
-    debug.log('고급 도구:', 'systemChecklistDebug.*');
-    debug.log('강제 완료:', 'emergencyCompleteChecklist()');
-    debug.log(
-      '디버그 패널:',
-      'D키 또는 systemChecklistDebug.toggleDebugPanel()'
-    );
-    debug.groupEnd();
-  }, [
+  useChecklistDebugTools({
     components,
     componentDefinitions,
+    debugInfo,
     isCompleted,
     canSkip,
-    totalProgress,
-    debugInfo,
     showCompleted,
     shouldProceed,
-    onComplete,
+    totalProgress,
     showDebugPanel,
-  ]);
+    onComplete,
+    setShouldProceed,
+    setShowDebugPanel,
+  });
 
   // 스킵된 경우 즉시 완료 처리
   if (isCompleted && skipCondition) {

@@ -14,6 +14,7 @@ import type { AuthenticatedRequest } from '@/lib/api/auth-middleware';
 import { withAdminAuth } from '@/lib/api/auth-middleware';
 import { developmentOnly } from '@/lib/api/development-only';
 import { logger } from '@/lib/logging';
+import { getErrorMessage } from '@/types/type-utils';
 
 async function handler(request: AuthenticatedRequest): Promise<Response> {
   try {
@@ -101,7 +102,7 @@ async function handler(request: AuthenticatedRequest): Promise<Response> {
       {
         success: false,
         error: 'Environment diagnostics failed',
-        message: error instanceof Error ? error.message : 'Unknown error',
+        message: getErrorMessage(error),
         timestamp: new Date().toISOString(),
       },
       {

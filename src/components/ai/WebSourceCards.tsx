@@ -44,7 +44,7 @@ export const WebSourceCards: FC<{ sources: WebSource[] }> = ({ sources }) => {
         <div className="px-3 pb-2.5 space-y-1">
           {sources.map((source, i) => (
             <a
-              key={`${source.url}-${i}`}
+              key={source.url}
               href={source.url}
               target="_blank"
               rel="noopener noreferrer"

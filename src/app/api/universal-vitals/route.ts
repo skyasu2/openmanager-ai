@@ -9,6 +9,7 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import { getCorsHeaders } from '@/lib/api/cors';
 import { logger } from '@/lib/logging';
+import { getErrorMessage } from '@/types/type-utils';
 import {
   UNIVERSAL_THRESHOLDS,
   type UniversalVital,
@@ -352,7 +353,7 @@ export async function POST(request: NextRequest) {
       {
         success: false,
         error: 'Universal Vitals processing failed',
-        message: error instanceof Error ? error.message : 'Unknown error',
+        message: getErrorMessage(error),
         timestamp: Date.now(),
       } as UniversalVitalsResponse,
       { status: 500 }

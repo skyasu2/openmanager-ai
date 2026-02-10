@@ -18,6 +18,7 @@ import {
 import { parseJsonBody } from '@/lib/api/parse-json-body';
 import { withAdminAuth } from '@/lib/auth/api-auth';
 import { logger } from '@/lib/logging';
+import { getErrorMessage } from '@/types/type-utils';
 
 // Node.js 런타임 사용 (인메모리 상태 유지)
 export const runtime = 'nodejs';
@@ -62,7 +63,7 @@ export const GET = withAdminAuth(async (request: NextRequest) => {
     return NextResponse.json(
       {
         error: 'Failed to get AI status',
-        details: error instanceof Error ? error.message : String(error),
+        details: getErrorMessage(error),
       },
       { status: 500 }
     );
@@ -125,7 +126,7 @@ export const POST = withAdminAuth(async (request: NextRequest) => {
     return NextResponse.json(
       {
         error: 'Failed to process request',
-        details: error instanceof Error ? error.message : String(error),
+        details: getErrorMessage(error),
       },
       { status: 500 }
     );

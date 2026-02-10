@@ -18,6 +18,7 @@ import { executeWithCircuitBreakerAndFallback } from '@/lib/ai/circuit-breaker';
 import { createFallbackResponse } from '@/lib/ai/fallback/ai-fallback-handler';
 import { isCloudRunEnabled, proxyToCloudRun } from '@/lib/ai-proxy/proxy';
 import { withAuth } from '@/lib/auth/api-auth';
+import { getErrorMessage } from '@/types/type-utils';
 import debug from '@/utils/debug';
 
 export const runtime = 'nodejs';
@@ -140,7 +141,7 @@ async function postHandler(request: NextRequest) {
     return NextResponse.json(fallback, {
       headers: {
         'X-Fallback-Response': 'true',
-        'X-Error': error instanceof Error ? error.message : 'Unknown error',
+        'X-Error': getErrorMessage(error),
       },
     });
   }

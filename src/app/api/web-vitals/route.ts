@@ -14,6 +14,7 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import { getCorsHeaders } from '@/lib/api/cors';
 import { logger } from '@/lib/logging';
+import { getErrorMessage } from '@/types/type-utils';
 
 // ⚡ Edge Runtime으로 전환 - 무료 티어 친화적 최적화
 export const runtime = 'edge';
@@ -211,7 +212,7 @@ export async function POST(request: NextRequest) {
       {
         success: false,
         error: 'Web Vitals processing failed',
-        message: error instanceof Error ? error.message : 'Unknown error',
+        message: getErrorMessage(error),
         timestamp: Date.now(),
       },
       { status: 500 }

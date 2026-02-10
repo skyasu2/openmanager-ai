@@ -8,6 +8,7 @@ import { NextResponse } from 'next/server';
 import { developmentOnly } from '@/lib/api/development-only';
 import { logger } from '@/lib/logging';
 import { MockContextLoader } from '@/services/ai/MockContextLoader';
+import { getErrorMessage } from '@/types/type-utils';
 
 // Helper to get current simulated hour (KST)
 function getCurrentSimulatedHour(): number {
@@ -66,7 +67,7 @@ export const GET = developmentOnly(function GET() {
     return NextResponse.json(
       {
         success: false,
-        error: error instanceof Error ? error.message : '알 수 없는 오류',
+        error: getErrorMessage(error),
         timestamp: new Date().toISOString(),
       },
       { status: 500 }

@@ -1,6 +1,7 @@
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 import { logger } from '@/lib/logging';
+import { getErrorMessage } from '@/types/type-utils';
 
 // 간단한 하이브리드 메트릭 응답
 interface HybridAnalysis {
@@ -54,7 +55,7 @@ export function GET(request: NextRequest) {
       {
         success: false,
         error: '분석 중 오류가 발생했습니다.',
-        details: error instanceof Error ? error.message : '알 수 없는 오류',
+        details: getErrorMessage(error),
       },
       { status: 500 }
     );
@@ -89,7 +90,7 @@ export async function POST(request: NextRequest) {
       {
         success: false,
         error: '처리 중 오류가 발생했습니다.',
-        details: error instanceof Error ? error.message : '알 수 없는 오류',
+        details: getErrorMessage(error),
       },
       { status: 500 }
     );
