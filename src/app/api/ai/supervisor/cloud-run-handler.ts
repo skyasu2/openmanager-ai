@@ -22,6 +22,7 @@ import { createFallbackResponse } from '@/lib/ai/fallback/ai-fallback-handler';
 import type { NormalizedMessage } from '@/lib/ai/utils/message-normalizer';
 import { proxyToCloudRun } from '@/lib/ai-proxy/proxy';
 import { logger } from '@/lib/logging';
+import { getTraceId } from '@/lib/tracing/async-context';
 import { cloudRunResponseSchema } from './schemas';
 
 interface CloudRunHandlerParams {
@@ -32,8 +33,6 @@ interface CloudRunHandlerParams {
   skipCache: boolean;
   cacheEndpoint: AIEndpoint;
   securityWarning?: string;
-  /** 🎯 P1: Trace ID for observability */
-  traceId?: string;
 }
 
 /**
@@ -51,12 +50,11 @@ export async function handleCloudRunStream(
     skipCache,
     cacheEndpoint,
     securityWarning,
-    traceId: providedTraceId,
   } = params;
 
-  // 🎯 W3C Trace Context: traceparent + 레거시 X-Trace-Id 동시 전파
+  // 🎯 W3C Trace Context: traceId from AsyncLocalStorage + traceparent 생성
   const observability = getObservabilityConfig();
-  const traceId = providedTraceId || generateTraceId();
+  const traceId = getTraceId() || generateTraceId();
   const traceparentValue = generateTraceparent(traceId);
 
   const baseHeaders: Record<string, string> = {
@@ -70,7 +68,7 @@ export async function handleCloudRunStream(
   };
 
   if (observability.verboseLogging) {
-    logger.info(`[CloudRun/Stream] Starting request (trace: ${traceId})`);
+    logger.info(`[CloudRun/Stream] Starting request`);
   }
 
   const result = await executeWithCircuitBreakerAndFallback<
@@ -125,9 +123,7 @@ export async function handleCloudRunStream(
         });
       } else if (data.error) {
         const errorMessage = `⚠️ AI 오류: ${data.error}`;
-        logger.warn(
-          `[CloudRun/Stream] Error response (trace: ${traceId}): ${data.error}`
-        );
+        logger.warn(`[CloudRun/Stream] Error response: ${data.error}`);
         return new NextResponse(errorMessage, {
           headers: {
             'Content-Type': 'text/plain; charset=utf-8',
@@ -146,7 +142,7 @@ export async function handleCloudRunStream(
       });
       const fallbackText = fallback.data?.response ?? fallback.message;
 
-      logger.info(`⚠️ [CloudRun/Stream] Fallback triggered (trace: ${traceId})`);
+      logger.info(`⚠️ [CloudRun/Stream] Fallback triggered`);
 
       return new NextResponse(fallbackText, {
         headers: {
@@ -186,12 +182,11 @@ export async function handleCloudRunJson(
     skipCache,
     cacheEndpoint,
     securityWarning,
-    traceId: providedTraceId,
   } = params;
 
-  // 🎯 W3C Trace Context: traceparent + 레거시 X-Trace-Id 동시 전파
+  // 🎯 W3C Trace Context: traceId from AsyncLocalStorage + traceparent 생성
   const observability = getObservabilityConfig();
-  const traceId = providedTraceId || generateTraceId();
+  const traceId = getTraceId() || generateTraceId();
   const traceparentValue = generateTraceparent(traceId);
 
   const baseHeaders: Record<string, string> = {
@@ -205,7 +200,7 @@ export async function handleCloudRunJson(
   };
 
   if (observability.verboseLogging) {
-    logger.info(`[CloudRun/JSON] Starting request (trace: ${traceId})`);
+    logger.info(`[CloudRun/JSON] Starting request`);
   }
 
   const result = await executeWithCircuitBreakerAndFallback<
@@ -236,7 +231,7 @@ export async function handleCloudRunJson(
       };
     },
     () => {
-      logger.info(`⚠️ [CloudRun/JSON] Fallback triggered (trace: ${traceId})`);
+      logger.info(`⚠️ [CloudRun/JSON] Fallback triggered`);
       return {
         ...createFallbackResponse('supervisor', { query: userQuery }),
         sessionId,
@@ -272,9 +267,7 @@ export async function handleCloudRunJson(
         userQuery,
         { success: true, response: responseData.response, source: 'cloud-run' },
         cacheEndpoint
-      ).catch((err) =>
-        logger.warn(`[Supervisor] Cache set failed (trace: ${traceId}):`, err)
-      );
+      ).catch((err) => logger.warn(`[Supervisor] Cache set failed:`, err));
     }
   }
 

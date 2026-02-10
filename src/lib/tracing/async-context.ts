@@ -1,0 +1,48 @@
+/**
+ * Async Context for Request-Scoped Tracing
+ *
+ * @description AsyncLocalStorage 기반 요청별 traceId 자동 전파
+ * - Logger에서 자동으로 traceId를 포함
+ * - 함수 시그니처에 traceId 전달 불필요
+ * - Node.js (서버 사이드) 전용
+ *
+ * @example
+ * ```typescript
+ * import { runWithTraceId, getTraceId } from '@/lib/tracing/async-context';
+ *
+ * // API route handler에서 컨텍스트 설정
+ * await runWithTraceId(traceId, async () => {
+ *   // 이 블록 내 모든 코드에서 getTraceId() 사용 가능
+ *   logger.info('This log automatically includes traceId');
+ * });
+ * ```
+ *
+ * @created 2026-02-10
+ */
+
+import { AsyncLocalStorage } from 'node:async_hooks';
+
+interface TraceContext {
+  traceId: string;
+}
+
+const asyncLocalStorage = new AsyncLocalStorage<TraceContext>();
+
+/**
+ * 현재 요청의 traceId 조회
+ * AsyncLocalStorage 컨텍스트 밖에서 호출하면 undefined 반환
+ */
+export function getTraceId(): string | undefined {
+  return asyncLocalStorage.getStore()?.traceId;
+}
+
+/**
+ * traceId 컨텍스트 내에서 함수 실행
+ * 이 블록 내에서 호출되는 모든 비동기 코드에서 getTraceId() 사용 가능
+ */
+export function runWithTraceId<T>(
+  traceId: string,
+  fn: () => T | Promise<T>
+): T | Promise<T> {
+  return asyncLocalStorage.run({ traceId }, fn);
+}

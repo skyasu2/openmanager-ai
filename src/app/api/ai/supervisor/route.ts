@@ -46,6 +46,7 @@ import { isCloudRunEnabled } from '@/lib/ai-proxy/proxy';
 import { withAuth } from '@/lib/auth/api-auth';
 import { logger } from '@/lib/logging';
 import { rateLimiters, withRateLimit } from '@/lib/security/rate-limiter';
+import { runWithTraceId } from '@/lib/tracing/async-context';
 import { isStatusQuery, shouldSkipCache } from './cache-utils';
 import { handleCloudRunJson, handleCloudRunStream } from './cloud-run-handler';
 import { handleSupervisorError } from './error-handler';
@@ -109,255 +110,251 @@ export const POST = withRateLimit(
       ? traceIdToUUID(upstreamTraceId)
       : legacyTraceId || generateTraceId();
 
-    if (observabilityConfig.verboseLogging) {
-      logger.info(
-        `[Supervisor] Request started (trace: ${traceId}, upstream: ${upstreamTraceId ? 'yes' : 'no'})`
-      );
-    }
-
-    try {
-      // 1. Zod 스키마 검증
-      const body = await req.json();
-      const parseResult = requestSchema.safeParse(body);
-
-      if (!parseResult.success) {
-        logger.warn(
-          '⚠️ [Supervisor] Invalid payload:',
-          parseResult.error.issues
-        );
-        return NextResponse.json(
-          {
-            success: false,
-            error: 'Invalid request payload',
-            details: parseResult.error.issues.map((i) => i.message).join(', '),
-          },
-          { status: 400 }
-        );
-      }
-
-      const { messages, sessionId: bodySessionId } = parseResult.data;
-
-      // 2. sessionId 추출 (Header > Body > Query Param)
-      const url = new URL(req.url);
-      const headerSessionId = req.headers.get('X-Session-Id');
-      const querySessionId = url.searchParams.get('sessionId');
-      const clientSessionId =
-        headerSessionId || bodySessionId || querySessionId;
-
-      // 3. 사용자 쿼리 추출 + 보안 검사
-      const rawQuery = extractLastUserQuery(messages as HybridMessage[]);
-
-      if (!rawQuery || rawQuery.trim() === '') {
-        return NextResponse.json(
-          {
-            success: false,
-            error: 'Empty query',
-            message: '쿼리를 입력해주세요.',
-          },
-          { status: 400 }
-        );
-      }
-
-      const {
-        sanitizedInput,
-        shouldBlock,
-        inputCheck,
-        warning: securityWarning,
-      } = securityCheck(rawQuery);
-      if (shouldBlock) {
-        logger.warn(
-          `🛡️ [Supervisor] Blocked injection attempt (trace: ${traceId}): ${inputCheck.patterns.join(', ')}`
-        );
-        return NextResponse.json(
-          {
-            success: false,
-            error: 'Security: blocked input',
-            message: '보안 정책에 의해 차단된 요청입니다.',
-            traceId,
-          },
-          {
-            status: 400,
-            headers: { [observabilityConfig.traceIdHeader]: traceId },
-          }
-        );
-      }
-      if (securityWarning) {
-        logger.warn(
-          `🛡️ [Supervisor] Security warning (trace: ${traceId}): ${securityWarning}`
-        );
-      }
-      const userQuery = sanitizedInput;
-
-      // C4: userId를 sessionId에 결합하여 사용자 간 캐시 충돌 방지
-      const userId = getUserId(req);
-      const sessionId = `${userId}_${clientSessionId || `session_${Date.now()}`}`;
-
-      // 4. 동적 타임아웃 계산
-      const dynamicTimeout = calculateDynamicTimeout(userQuery, {
-        messageCount: messages.length,
-        minTimeout: getMinTimeout('supervisor'),
-        maxTimeout: getMaxTimeout('supervisor'),
-      });
-
-      logger.info(
-        `🚀 [Supervisor] Query: "${userQuery.slice(0, 50)}..." (trace: ${traceId})`
-      );
-      logger.info(`📡 [Supervisor] Session: ${sessionId}, Trace: ${traceId}`);
-      logger.info(`⏱️ [Supervisor] Dynamic timeout: ${dynamicTimeout}ms`);
-
-      // 5. 복잡도 기반 Job Queue 리다이렉트
-      const complexity = analyzeQueryComplexity(userQuery);
-      const shouldUseJobQueue =
-        complexity.level === 'very_complex' ||
-        (complexity.level === 'complex' &&
-          /보고서|리포트|근본.*원인|장애.*분석/i.test(userQuery));
-
-      if (shouldUseJobQueue) {
+    // 🎯 AsyncLocalStorage: traceId를 요청 컨텍스트에 저장 → logger 자동 주입
+    return runWithTraceId(traceId, async () => {
+      if (observabilityConfig.verboseLogging) {
         logger.info(
-          `🔀 [Supervisor] Redirecting to Job Queue (complexity: ${complexity.level}, trace: ${traceId})`
-        );
-        return NextResponse.json(
-          {
-            success: true,
-            redirect: 'job-queue',
-            complexity: complexity.level,
-            estimatedTime: Math.round(complexity.recommendedTimeout / 1000),
-            message: '복잡한 분석 요청입니다. 비동기 처리로 전환합니다.',
-            traceId,
-          },
-          {
-            status: 202,
-            headers: {
-              'X-Session-Id': sessionId,
-              'X-Redirect-Mode': 'job-queue',
-              [observabilityConfig.traceIdHeader]: traceId,
-            },
-          }
+          `[Supervisor] Request started (upstream: ${upstreamTraceId ? 'yes' : 'no'})`
         );
       }
 
-      // 6. 캐시 조회
-      const skipCache = shouldSkipCache(userQuery, messages.length);
-      const cacheEndpoint: AIEndpoint = isStatusQuery(userQuery)
-        ? 'supervisor-status'
-        : 'supervisor';
+      try {
+        // 1. Zod 스키마 검증
+        const body = await req.json();
+        const parseResult = requestSchema.safeParse(body);
 
-      if (!skipCache) {
-        const cacheResult = await getAICache(
-          sessionId,
-          userQuery,
-          cacheEndpoint
-        );
-        if (cacheResult.hit && cacheResult.data?.response) {
-          logger.info(
-            `📦 [Supervisor] Cache HIT (${cacheResult.source}, ${cacheResult.latencyMs}ms, trace: ${traceId})`
+        if (!parseResult.success) {
+          logger.warn(
+            '⚠️ [Supervisor] Invalid payload:',
+            parseResult.error.issues
           );
-          const acceptHeader = req.headers.get('accept') || '';
-          const wantsJsonOnly = acceptHeader === 'application/json';
+          return NextResponse.json(
+            {
+              success: false,
+              error: 'Invalid request payload',
+              details: parseResult.error.issues
+                .map((i) => i.message)
+                .join(', '),
+            },
+            { status: 400 }
+          );
+        }
 
-          if (wantsJsonOnly) {
-            return NextResponse.json(
-              { ...cacheResult.data, _cached: true, traceId },
-              {
-                headers: {
-                  'X-Session-Id': sessionId,
-                  'X-Cache': 'HIT',
-                  [observabilityConfig.traceIdHeader]: traceId,
-                },
-              }
+        const { messages, sessionId: bodySessionId } = parseResult.data;
+
+        // 2. sessionId 추출 (Header > Body > Query Param)
+        const url = new URL(req.url);
+        const headerSessionId = req.headers.get('X-Session-Id');
+        const querySessionId = url.searchParams.get('sessionId');
+        const clientSessionId =
+          headerSessionId || bodySessionId || querySessionId;
+
+        // 3. 사용자 쿼리 추출 + 보안 검사
+        const rawQuery = extractLastUserQuery(messages as HybridMessage[]);
+
+        if (!rawQuery || rawQuery.trim() === '') {
+          return NextResponse.json(
+            {
+              success: false,
+              error: 'Empty query',
+              message: '쿼리를 입력해주세요.',
+            },
+            { status: 400 }
+          );
+        }
+
+        const {
+          sanitizedInput,
+          shouldBlock,
+          inputCheck,
+          warning: securityWarning,
+        } = securityCheck(rawQuery);
+        if (shouldBlock) {
+          logger.warn(
+            `🛡️ [Supervisor] Blocked injection attempt: ${inputCheck.patterns.join(', ')}`
+          );
+          return NextResponse.json(
+            {
+              success: false,
+              error: 'Security: blocked input',
+              message: '보안 정책에 의해 차단된 요청입니다.',
+              traceId,
+            },
+            {
+              status: 400,
+              headers: { [observabilityConfig.traceIdHeader]: traceId },
+            }
+          );
+        }
+        if (securityWarning) {
+          logger.warn(`🛡️ [Supervisor] Security warning: ${securityWarning}`);
+        }
+        const userQuery = sanitizedInput;
+
+        // C4: userId를 sessionId에 결합하여 사용자 간 캐시 충돌 방지
+        const userId = getUserId(req);
+        const sessionId = `${userId}_${clientSessionId || `session_${Date.now()}`}`;
+
+        // 4. 동적 타임아웃 계산
+        const dynamicTimeout = calculateDynamicTimeout(userQuery, {
+          messageCount: messages.length,
+          minTimeout: getMinTimeout('supervisor'),
+          maxTimeout: getMaxTimeout('supervisor'),
+        });
+
+        logger.info(`🚀 [Supervisor] Query: "${userQuery.slice(0, 50)}..."`);
+        logger.info(`📡 [Supervisor] Session: ${sessionId}`);
+        logger.info(`⏱️ [Supervisor] Dynamic timeout: ${dynamicTimeout}ms`);
+
+        // 5. 복잡도 기반 Job Queue 리다이렉트
+        const complexity = analyzeQueryComplexity(userQuery);
+        const shouldUseJobQueue =
+          complexity.level === 'very_complex' ||
+          (complexity.level === 'complex' &&
+            /보고서|리포트|근본.*원인|장애.*분석/i.test(userQuery));
+
+        if (shouldUseJobQueue) {
+          logger.info(
+            `🔀 [Supervisor] Redirecting to Job Queue (complexity: ${complexity.level})`
+          );
+          return NextResponse.json(
+            {
+              success: true,
+              redirect: 'job-queue',
+              complexity: complexity.level,
+              estimatedTime: Math.round(complexity.recommendedTimeout / 1000),
+              message: '복잡한 분석 요청입니다. 비동기 처리로 전환합니다.',
+              traceId,
+            },
+            {
+              status: 202,
+              headers: {
+                'X-Session-Id': sessionId,
+                'X-Redirect-Mode': 'job-queue',
+                [observabilityConfig.traceIdHeader]: traceId,
+              },
+            }
+          );
+        }
+
+        // 6. 캐시 조회
+        const skipCache = shouldSkipCache(userQuery, messages.length);
+        const cacheEndpoint: AIEndpoint = isStatusQuery(userQuery)
+          ? 'supervisor-status'
+          : 'supervisor';
+
+        if (!skipCache) {
+          const cacheResult = await getAICache(
+            sessionId,
+            userQuery,
+            cacheEndpoint
+          );
+          if (cacheResult.hit && cacheResult.data?.response) {
+            logger.info(
+              `📦 [Supervisor] Cache HIT (${cacheResult.source}, ${cacheResult.latencyMs}ms)`
+            );
+            const acceptHeader = req.headers.get('accept') || '';
+            const wantsJsonOnly = acceptHeader === 'application/json';
+
+            if (wantsJsonOnly) {
+              return NextResponse.json(
+                { ...cacheResult.data, _cached: true, traceId },
+                {
+                  headers: {
+                    'X-Session-Id': sessionId,
+                    'X-Cache': 'HIT',
+                    [observabilityConfig.traceIdHeader]: traceId,
+                  },
+                }
+              );
+            }
+            return new NextResponse(cacheResult.data.response, {
+              headers: {
+                'Content-Type': 'text/plain; charset=utf-8',
+                'Cache-Control': 'no-cache',
+                'X-Session-Id': sessionId,
+                'X-Cache': 'HIT',
+                'X-Backend': 'cache',
+                [observabilityConfig.traceIdHeader]: traceId,
+              },
+            });
+          }
+          logger.info(`📦 [Supervisor] Cache MISS`);
+        } else {
+          logger.info(`📦 [Supervisor] Cache SKIP (context or realtime query)`);
+        }
+
+        // 7. Accept 헤더 → stream/json 분기
+        const acceptHeaderFinal = req.headers.get('accept') || '';
+        const wantsStream = acceptHeaderFinal !== 'application/json';
+
+        // 8. Cloud Run 프록시
+        if (isCloudRunEnabled()) {
+          logger.info('☁️ [Supervisor] Using Cloud Run backend');
+
+          const normalizedMessages = normalizeMessagesForCloudRun(messages);
+
+          // 서버 메트릭 컨텍스트 주입 (alert 서버만, ~100-200 토큰)
+          const contextMessage = buildServerContextMessage();
+          const messagesWithContext = contextMessage
+            ? [contextMessage, ...normalizedMessages]
+            : normalizedMessages;
+
+          let messagesToSend = messagesWithContext;
+          if (shouldCompress(normalizedMessages.length, 4)) {
+            const compression = compressContext(normalizedMessages, {
+              keepRecentCount: 3,
+              maxTotalMessages: 6,
+              maxCharsPerMessage: 800,
+            });
+            messagesToSend = contextMessage
+              ? [contextMessage, ...compression.messages]
+              : compression.messages;
+            logger.info(
+              `🗜️ [Supervisor] Context compressed: ${compression.originalCount} → ${compression.compressedCount} messages (${compression.compressionRatio}% saved)`
             );
           }
-          return new NextResponse(cacheResult.data.response, {
+
+          logger.info(
+            `📝 [Supervisor] Normalized ${messages.length} messages → ${messagesToSend.length} for Cloud Run`
+          );
+
+          const handlerParams = {
+            messagesToSend,
+            sessionId,
+            userQuery,
+            dynamicTimeout,
+            skipCache,
+            cacheEndpoint,
+            securityWarning,
+          };
+
+          return wantsStream
+            ? handleCloudRunStream(handlerParams)
+            : handleCloudRunJson(handlerParams);
+        }
+
+        // 9. Fallback: Cloud Run 비활성화
+        logger.warn(`⚠️ [Supervisor] Cloud Run disabled, returning fallback`);
+        const fallback = createFallbackResponse('supervisor', {
+          query: userQuery,
+        });
+
+        return NextResponse.json(
+          { ...fallback, sessionId, _backend: 'fallback', traceId },
+          {
             headers: {
-              'Content-Type': 'text/plain; charset=utf-8',
-              'Cache-Control': 'no-cache',
+              'Cache-Control': 'no-store, no-cache, must-revalidate',
               'X-Session-Id': sessionId,
-              'X-Cache': 'HIT',
-              'X-Backend': 'cache',
+              'Retry-After': '30',
               [observabilityConfig.traceIdHeader]: traceId,
             },
-          });
-        }
-        logger.info(`📦 [Supervisor] Cache MISS (trace: ${traceId})`);
-      } else {
-        logger.info(
-          `📦 [Supervisor] Cache SKIP (context or realtime query, trace: ${traceId})`
+          }
         );
+      } catch (error) {
+        return handleSupervisorError(error);
       }
-
-      // 7. Accept 헤더 → stream/json 분기
-      const acceptHeaderFinal = req.headers.get('accept') || '';
-      const wantsStream = acceptHeaderFinal !== 'application/json';
-
-      // 8. Cloud Run 프록시
-      if (isCloudRunEnabled()) {
-        logger.info('☁️ [Supervisor] Using Cloud Run backend');
-
-        const normalizedMessages = normalizeMessagesForCloudRun(messages);
-
-        // 서버 메트릭 컨텍스트 주입 (alert 서버만, ~100-200 토큰)
-        const contextMessage = buildServerContextMessage();
-        const messagesWithContext = contextMessage
-          ? [contextMessage, ...normalizedMessages]
-          : normalizedMessages;
-
-        let messagesToSend = messagesWithContext;
-        if (shouldCompress(normalizedMessages.length, 4)) {
-          const compression = compressContext(normalizedMessages, {
-            keepRecentCount: 3,
-            maxTotalMessages: 6,
-            maxCharsPerMessage: 800,
-          });
-          messagesToSend = contextMessage
-            ? [contextMessage, ...compression.messages]
-            : compression.messages;
-          logger.info(
-            `🗜️ [Supervisor] Context compressed: ${compression.originalCount} → ${compression.compressedCount} messages (${compression.compressionRatio}% saved)`
-          );
-        }
-
-        logger.info(
-          `📝 [Supervisor] Normalized ${messages.length} messages → ${messagesToSend.length} for Cloud Run`
-        );
-
-        const handlerParams = {
-          messagesToSend,
-          sessionId,
-          userQuery,
-          dynamicTimeout,
-          skipCache,
-          cacheEndpoint,
-          securityWarning,
-          traceId, // 🎯 P0: Pass trace ID to Cloud Run handler
-        };
-
-        return wantsStream
-          ? handleCloudRunStream(handlerParams)
-          : handleCloudRunJson(handlerParams);
-      }
-
-      // 9. Fallback: Cloud Run 비활성화
-      logger.warn(
-        `⚠️ [Supervisor] Cloud Run disabled, returning fallback (trace: ${traceId})`
-      );
-      const fallback = createFallbackResponse('supervisor', {
-        query: userQuery,
-      });
-
-      return NextResponse.json(
-        { ...fallback, sessionId, _backend: 'fallback', traceId },
-        {
-          headers: {
-            'Cache-Control': 'no-store, no-cache, must-revalidate',
-            'X-Session-Id': sessionId,
-            'Retry-After': '30',
-            [observabilityConfig.traceIdHeader]: traceId,
-          },
-        }
-      );
-    } catch (error) {
-      return handleSupervisorError(error, traceId);
-    }
+    }); // runWithTraceId
   })
 );
 

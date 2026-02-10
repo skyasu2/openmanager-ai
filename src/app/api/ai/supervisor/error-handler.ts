@@ -4,28 +4,24 @@
  * supervisor/route.ts에서 분리된 에러 분류 및 응답 로직
  *
  * @created 2026-02-01 (route.ts SRP 분리)
- * @updated 2026-02-03 (P1: traceId 파라미터 추가)
+ * @updated 2026-02-10 (AsyncLocalStorage: traceId 자동 주입)
  */
 
 import * as Sentry from '@sentry/nextjs';
 import { NextResponse } from 'next/server';
 import { getObservabilityConfig } from '@/config/ai-proxy.config';
 import { logger } from '@/lib/logging';
+import { getTraceId } from '@/lib/tracing/async-context';
 
 /**
  * Supervisor 에러를 분류하고 적절한 HTTP 응답 생성
- *
- * @param error - 발생한 에러
- * @param traceId - 요청 추적 ID (선택적)
+ * traceId는 AsyncLocalStorage에서 자동 조회
  */
-export function handleSupervisorError(
-  error: unknown,
-  traceId?: string
-): NextResponse {
+export function handleSupervisorError(error: unknown): NextResponse {
   const observabilityConfig = getObservabilityConfig();
-  const traceInfo = traceId ? ` (trace: ${traceId})` : '';
+  const traceId = getTraceId();
 
-  logger.error(`❌ AI 스트리밍 처리 실패${traceInfo}:`, error);
+  logger.error('❌ AI 스트리밍 처리 실패:', error);
 
   // Sentry에 AI context와 함께 에러 전송
   Sentry.withScope((scope) => {
@@ -59,7 +55,6 @@ export function handleSupervisorError(
       name: error.name,
       message: error.message,
       stack: error.stack?.slice(0, 500),
-      traceId,
     });
 
     // Circuit Breaker Open

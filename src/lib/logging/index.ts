@@ -22,6 +22,7 @@
  * ```
  */
 
+import { getTraceId } from '@/lib/tracing/async-context';
 import { type BrowserLogger, browserLogger } from './browser';
 import { createChildLogger, type ServerLogger, serverLogger } from './server';
 
@@ -48,19 +49,27 @@ const isServer = typeof window === 'undefined';
  * Convert multiple arguments to a single log entry for Pino
  */
 function formatForPino(args: unknown[]): { msg: string; context?: object } {
+  // Auto-inject traceId from AsyncLocalStorage (server-side only)
+  const traceId = isServer ? getTraceId() : undefined;
+
   if (args.length === 0) {
-    return { msg: '' };
+    return traceId ? { msg: '', context: { traceId } } : { msg: '' };
   }
 
   if (args.length === 1) {
     const first = args[0];
     if (typeof first === 'string') {
-      return { msg: first };
+      return traceId ? { msg: first, context: { traceId } } : { msg: first };
     }
     if (typeof first === 'object' && first !== null) {
-      return { msg: JSON.stringify(first), context: first as object };
+      const ctx = traceId
+        ? { ...(first as object), traceId }
+        : (first as object);
+      return { msg: JSON.stringify(first), context: ctx };
     }
-    return { msg: String(first) };
+    return traceId
+      ? { msg: String(first), context: { traceId } }
+      : { msg: String(first) };
   }
 
   // Multiple arguments - combine into message string
@@ -79,6 +88,11 @@ function formatForPino(args: unknown[]): { msg: string; context?: object } {
     } else {
       msgParts.push(String(arg));
     }
+  }
+
+  // Merge traceId into context
+  if (traceId) {
+    context = context ? { ...context, traceId } : { traceId };
   }
 
   return { msg: msgParts.join(' '), context };
