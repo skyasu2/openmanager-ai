@@ -69,17 +69,14 @@ function isProtectedPath(pathname: string): boolean {
 /**
  * 개발 모드 바이패스 확인
  *
- * 🎯 개발 중: 기본값 true (모든 접근 허용)
- * @todo 개발 완료 후 기본값을 false로 변경
+ * 기본값 false (프로덕션 안전). 명시적 opt-in만 허용.
  */
 function isDevBypassEnabled(): boolean {
-  // 환경 변수가 명시적으로 'false'인 경우만 비활성화
   const envValue = process.env.NEXT_PUBLIC_DEV_BYPASS_AUTH;
-  if (envValue === 'false' || envValue === '0') {
-    return false;
+  if (envValue === 'true' || envValue === '1') {
+    return true;
   }
-  // 🎯 개발 중: 기본값 true (모든 접근 허용)
-  return true;
+  return false;
 }
 
 /**

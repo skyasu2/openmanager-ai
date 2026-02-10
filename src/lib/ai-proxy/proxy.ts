@@ -209,11 +209,15 @@ export async function proxyStreamToCloudRun(
 
   if (!isCloudRunEnabled()) {
     const errorMsg = 'Cloud Run configuration is missing or disabled.';
-    logger.error(`❌ [Proxy] ${errorMsg}`);
-    throw new Error(errorMsg); // Fail Loudly
+    logger.error(`[Proxy] ${errorMsg}`);
+    throw new Error(errorMsg);
   }
 
   const url = `${config.url}${options.path}`;
+  const timeout = Math.min(options.timeout || 55000, 55000);
+
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeout);
 
   try {
     const response = await fetch(url, {
@@ -225,17 +229,25 @@ export async function proxyStreamToCloudRun(
         ...options.headers,
       },
       body: options.body ? JSON.stringify(options.body) : undefined,
+      signal: controller.signal,
     });
 
+    clearTimeout(timeoutId);
+
     if (!response.ok) {
-      logger.error(`❌ Cloud Run stream error: ${response.status}`);
+      logger.error(`Cloud Run stream error: ${response.status}`);
       return null;
     }
 
     return response.body;
   } catch (error) {
-    logger.error('❌ Cloud Run stream proxy failed:', error);
-    throw error; // Fail Loudly
+    clearTimeout(timeoutId);
+    if (error instanceof Error && error.name === 'AbortError') {
+      logger.error(`Cloud Run stream timeout (>${timeout}ms)`);
+      return null;
+    }
+    logger.error('Cloud Run stream proxy failed:', error);
+    throw error;
   }
 }
 

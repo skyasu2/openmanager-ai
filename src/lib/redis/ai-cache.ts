@@ -9,8 +9,10 @@
  * @module redis/ai-cache
  */
 
+import type { Redis } from '@upstash/redis';
 import { logger } from '@/lib/logging';
 import { getRedisClient, isRedisDisabled, isRedisEnabled } from './client';
+import { normalizeQueryForCache } from '@/lib/cache/cache-helpers';
 
 // ==============================================
 // 🎯 타입 정의
@@ -75,8 +77,29 @@ function hashString(str: string): string {
  * 세션 ID + 쿼리 내용 조합
  */
 export function generateQueryHash(sessionId: string, query: string): string {
-  const normalized = query.toLowerCase().trim();
+  const normalized = normalizeQueryForCache(query);
   return `${hashString(sessionId)}:${hashString(normalized)}`;
+}
+
+// ==============================================
+// 🔍 SCAN 유틸리티 (KEYS 대체)
+// ==============================================
+
+/**
+ * SCAN으로 키 패턴 조회 (Upstash O(N) KEYS 블로킹 방지)
+ */
+async function scanKeys(client: Redis, pattern: string): Promise<string[]> {
+  const keys: string[] = [];
+  let cursor = 0;
+  do {
+    const [nextCursor, batch] = await client.scan(cursor, {
+      match: pattern,
+      count: 100,
+    });
+    cursor = Number(nextCursor);
+    keys.push(...batch);
+  } while (cursor !== 0);
+  return keys;
 }
 
 // ==============================================
@@ -191,9 +214,9 @@ export async function invalidateSessionCache(
   }
 
   try {
-    // 세션 관련 키 패턴 조회
+    // 세션 관련 키 패턴 조회 (SCAN으로 O(N) 블로킹 방지)
     const pattern = `${CACHE_CONFIG.PREFIX.AI_RESPONSE}:${hashString(sessionId)}:*`;
-    const keys = await client.keys(pattern);
+    const keys = await scanKeys(client, pattern);
 
     if (keys.length === 0) {
       return 0;
@@ -306,8 +329,14 @@ export async function getCacheStats(): Promise<CacheStats> {
   }
 
   try {
-    const aiKeys = await client.keys(`${CACHE_CONFIG.PREFIX.AI_RESPONSE}:*`);
-    const healthKeys = await client.keys(`${CACHE_CONFIG.PREFIX.AI_HEALTH}:*`);
+    const aiKeys = await scanKeys(
+      client,
+      `${CACHE_CONFIG.PREFIX.AI_RESPONSE}:*`
+    );
+    const healthKeys = await scanKeys(
+      client,
+      `${CACHE_CONFIG.PREFIX.AI_HEALTH}:*`
+    );
 
     return {
       enabled: true,

@@ -17,6 +17,10 @@ let isRedisAvailable = true;
 let lastHealthCheck = 0;
 const HEALTH_CHECK_INTERVAL = 60_000; // 1분
 
+// 자동 복구 관련
+let recoveryScheduled = false;
+const RECOVERY_DELAY_MS = 60_000; // 1분 후 복구 시도
+
 /**
  * Redis 연결 상태
  */
@@ -154,8 +158,29 @@ export async function safeRedisOp<T>(
     logger.error('[Redis] Operation failed:', error);
     // 연속 실패 시 Redis 비활성화 (Circuit Breaker 역할)
     isRedisAvailable = false;
+    scheduleRecovery();
     return fallback;
   }
+}
+
+/**
+ * Redis 자동 복구 스케줄러
+ * safeRedisOp 실패 시 호출, 중복 스케줄 방지
+ */
+function scheduleRecovery(): void {
+  if (recoveryScheduled) return;
+  recoveryScheduled = true;
+  setTimeout(async () => {
+    recoveryScheduled = false;
+    const status = await checkRedisHealth(true);
+    if (status.available) {
+      logger.info('[Redis] Auto-recovery succeeded');
+    } else {
+      logger.warn(
+        '[Redis] Auto-recovery failed, will retry on next operation failure'
+      );
+    }
+  }, RECOVERY_DELAY_MS);
 }
 
 /**
