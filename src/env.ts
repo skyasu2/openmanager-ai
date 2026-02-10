@@ -14,6 +14,7 @@
 
 import 'server-only';
 import * as z from 'zod';
+import { logger } from '@/lib/logging';
 
 // 환경변수 스키마 정의
 const envSchema = z.object({
@@ -106,7 +107,7 @@ function parseEnv(): Env {
     const result = envSchema.safeParse(currentEnv);
 
     if (!result.success) {
-      console.error('❌ 환경변수 검증 실패:', result.error.format());
+      logger.error('환경변수 검증 실패:', result.error.format());
 
       const nodeEnv =
         (currentEnv as Record<string, string | undefined>).NODE_ENV ||
@@ -114,8 +115,8 @@ function parseEnv(): Env {
       const isBuild = process.env.NEXT_PHASE === 'phase-production-build';
 
       if (nodeEnv === 'development' || isBuild) {
-        console.warn(
-          '⚠️ 개발/빌드 환경: 필수 환경변수 누락 시 일부 기능이 제한될 수 있습니다.'
+        logger.warn(
+          '개발/빌드 환경: 필수 환경변수 누락 시 일부 기능이 제한될 수 있습니다.'
         );
         return result.error.flatten().fieldErrors as unknown as Env;
       }
@@ -125,7 +126,7 @@ function parseEnv(): Env {
 
     return result.data;
   } catch (error) {
-    console.error('❌ 환경변수 파싱 오류:', error);
+    logger.error('환경변수 파싱 오류:', error);
     const isBuild = process.env.NEXT_PHASE === 'phase-production-build';
     if (
       typeof process !== 'undefined' &&
@@ -165,6 +166,6 @@ if (isDevelopment) {
     typeof process !== 'undefined' &&
     process.env.NODE_ENV === 'development'
   ) {
-    console.log('🔧 환경변수 기능 상태:', features);
+    logger.info('환경변수 기능 상태:', features);
   }
 }

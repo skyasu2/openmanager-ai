@@ -6,6 +6,8 @@
  * - Fire-and-forget 패턴 (실패해도 사용자 경험 미영향)
  */
 
+import { logger } from '@/lib/logging';
+
 const WARMUP_COOLDOWN_MS = 5 * 60 * 1000; // 5분 쿨다운 (Cloud Run 무료 티어 최적화)
 const WARMUP_STORAGE_KEY = 'ai_warmup_timestamp';
 
@@ -71,11 +73,9 @@ function needsWarmup(): boolean {
 export async function triggerAIWarmup(source?: string): Promise<boolean> {
   // 쿨다운 체크
   if (!needsWarmup()) {
-    if (process.env.NODE_ENV === 'development') {
-      console.debug(
-        `[AI Warmup] Skipped (cooldown) - source: ${source || 'unknown'}`
-      );
-    }
+    logger.debug(
+      `[AI Warmup] Skipped (cooldown) - source: ${source || 'unknown'}`
+    );
     return false;
   }
 
@@ -84,9 +84,7 @@ export async function triggerAIWarmup(source?: string): Promise<boolean> {
 
   try {
     await fetch('/api/ai/wake-up', { method: 'POST' });
-    if (process.env.NODE_ENV === 'development') {
-      console.debug(`[AI Warmup] Triggered - source: ${source || 'unknown'}`);
-    }
+    logger.debug(`[AI Warmup] Triggered - source: ${source || 'unknown'}`);
     return true;
   } catch {
     // Fire-and-forget: 실패해도 무시

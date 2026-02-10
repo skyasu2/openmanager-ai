@@ -12,6 +12,7 @@ import type { Edge, Node } from '@xyflow/react';
 import { MarkerType } from '@xyflow/react';
 
 import type { ArchitectureDiagram } from '@/data/architecture-diagrams.data';
+import { logger } from '@/lib/logging';
 
 import {
   LABEL_AREA_WIDTH,
@@ -81,9 +82,7 @@ export function convertToReactFlow(diagram: ArchitectureDiagram): {
     diagram.connections.forEach((conn, index) => {
       // 유효성 검사
       if (!validNodeIds.has(conn.from) || !validNodeIds.has(conn.to)) {
-        if (process.env.NODE_ENV !== 'production') {
-          console.warn('[ReactFlowDiagram] Invalid connection skipped:', conn);
-        }
+        logger.warn('[ReactFlowDiagram] Invalid connection skipped:', conn);
         return;
       }
 

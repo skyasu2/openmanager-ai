@@ -388,7 +388,7 @@ if (process.env.NODE_ENV === 'development' && typeof window === 'undefined') {
         logger.info('✅ 데이터베이스 설정 검증 통과');
       }
     })
-    .catch(console.error);
+    .catch((error: unknown) => logger.error('데이터베이스 설정 검증 실패:', error));
 }
 
 export default validateDatabaseConfig;
