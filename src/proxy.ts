@@ -16,8 +16,8 @@
  */
 
 import { type NextRequest, NextResponse } from 'next/server';
-import { updateSession } from '@/utils/supabase/middleware';
 import { logger } from '@/lib/logging';
+import { updateSession } from '@/utils/supabase/middleware';
 
 // ============================================================================
 // 접근 권한 설정
