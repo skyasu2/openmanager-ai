@@ -216,16 +216,6 @@ export interface DashboardData {
 // 🛡️ 타입 가드용 브랜드 타입
 // ============================================
 
-/**
- * 검증된 서버 ID
- */
-export type ValidatedServerId = string & { readonly brand: unique symbol };
-
-/**
- * 검증된 타임스탬프
- */
-export type ValidatedTimestamp = string & { readonly brand: unique symbol };
-
 // ============================================
 // 📊 차트/시각화 타입
 // ============================================

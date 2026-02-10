@@ -714,30 +714,3 @@ export const ENTERPRISE_SERVERS: ServerStatus[] = [
     },
   },
 ];
-
-// 서버 상태 통계
-export const SERVER_STATS = {
-  total: 30,
-  critical: 3, // 10%
-  warning: 6, // 20%
-  healthy: 21, // 70%
-  kubernetes: 15,
-  onpremise: 15,
-};
-
-// IDC 위치별 분류
-export const IDC_LOCATIONS = {
-  'IDC-A': ['k8s-master-01', 'k8s-master-02', 'k8s-master-03'],
-  'IDC-B': ['k8s-worker-01', 'k8s-worker-02', 'k8s-worker-03', 'k8s-worker-04'],
-  'IDC-C': ['k8s-worker-05', 'k8s-worker-06', 'k8s-worker-07', 'k8s-worker-08'],
-  'IDC-D': ['k8s-worker-09', 'k8s-worker-10', 'k8s-worker-11', 'k8s-worker-12'],
-  'IDC-E': ['web-lb-01', 'web-lb-02', 'web-app-01', 'web-app-02'],
-  'IDC-F': ['db-master-01', 'db-slave-01', 'db-slave-02', 'db-cache-01'],
-  'IDC-G': ['file-server-01', 'backup-server-01', 'storage-server-01'],
-  'IDC-H': [
-    'monitor-server-01',
-    'log-server-01',
-    'proxy-server-01',
-    'dns-server-01',
-  ],
-};
