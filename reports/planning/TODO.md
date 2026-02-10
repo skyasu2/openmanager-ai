@@ -7,10 +7,12 @@
 | Task | Priority | Status |
 |------|----------|--------|
 | Resume Stream 재활성화 (`resume: true`) | P1 | Blocked (AI SDK parts 처리 버그 대기) |
-| 대형 파일 리팩토링 (500줄+ 8개) | P2 | Backlog |
-| AsyncLocalStorage 도입 | P2 | Backlog |
 
 ### Completed (2026-02-10)
+- [x] P2: 대형 파일 리팩토링 완료 (MetricsProvider 682→435, security 596→295, ProcessManager 794→766)
+- [x] P2: AsyncLocalStorage 도입 (traceId 자동 전파, 15+ 수동 interpolation 제거)
+- [x] P2: `ai-proxy.config.ts` 분할 (634 → 482줄, dead code 100줄 제거)
+- [x] P2: `circuit-breaker.ts` 분할 (704 → 394줄, state-store + events 모듈 추출)
 - [x] P2: `useHybridAIQuery.ts` 분할 (876 → ~540줄, sub-hooks 추출)
 - [x] P2: W3C Trace Context (`traceparent`) end-to-end 전파
 - [x] P0: Dev bypass auth 기본값 `true` → `false` (프로덕션 인증 우회 방지)
