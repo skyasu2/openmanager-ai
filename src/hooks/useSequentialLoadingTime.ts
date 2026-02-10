@@ -157,19 +157,24 @@ export const useSequentialLoadingTime = ({
 
   // 클릭으로 스킵 (2초 후 활성화)
   useEffect(() => {
+    let clickHandler: (() => void) | null = null;
+
     const enableSkipTimer = setTimeout(() => {
-      const handleClick = () => {
+      clickHandler = () => {
         if (!isCompleted) {
           logger.info('👆 클릭으로 순차 로딩 스킵');
           handleComplete();
         }
       };
-
-      document.addEventListener('click', handleClick);
-      return () => document.removeEventListener('click', handleClick);
+      document.addEventListener('click', clickHandler);
     }, 2000);
 
-    return () => clearTimeout(enableSkipTimer);
+    return () => {
+      clearTimeout(enableSkipTimer);
+      if (clickHandler) {
+        document.removeEventListener('click', clickHandler);
+      }
+    };
   }, [handleComplete, isCompleted]);
 
   return {

@@ -89,9 +89,10 @@ export const DateTimeClock = memo(function DateTimeClock({
   useEffect(() => {
     setCurrentTime(new Date());
 
+    // 날짜 표시용이므로 분 단위 갱신으로 충분 (시간은 RealtimeClock이 담당)
     const interval = setInterval(() => {
       setCurrentTime(new Date());
-    }, 1000);
+    }, 60_000);
 
     return () => clearInterval(interval);
   }, []);

@@ -132,7 +132,7 @@ export function useIncidentHistory() {
           signal,
         });
         if (!response.ok) {
-          throw new Error('보고서 조회 실패');
+          throw new Error(`보고서 조회 실패 (HTTP ${response.status})`);
         }
 
         const data = await response.json();
