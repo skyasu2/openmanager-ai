@@ -9,7 +9,7 @@
 import { getServerStatus as getRulesServerStatus } from '@/config/rules/loader';
 import { FIXED_24H_DATASETS, getDataAtMinute } from '@/data/fixed-24h-metrics';
 import { calculateRelativeDateTime } from './kst-time';
-import type { ServerMetrics, TimeComparisonResult } from './types';
+import type { ApiServerMetrics, TimeComparisonResult } from './types';
 
 /**
  * 상대 시간 기준 메트릭 조회 (날짜 포함)
@@ -19,7 +19,7 @@ import type { ServerMetrics, TimeComparisonResult } from './types';
 export function getMetricsAtRelativeTime(
   serverId: string,
   minutesAgo: number = 0
-): (ServerMetrics & { dateLabel: string; isYesterday: boolean }) | null {
+): (ApiServerMetrics & { dateLabel: string; isYesterday: boolean }) | null {
   const { date, slotIndex, timestamp, isYesterday } =
     calculateRelativeDateTime(minutesAgo);
   const minuteOfDay = slotIndex * 10;

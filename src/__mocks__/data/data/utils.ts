@@ -199,5 +199,5 @@ export function getServerStatus(metrics: ScenarioPoint): ServerStatus {
     return 'warning';
   }
 
-  return 'normal';
+  return 'online';
 }

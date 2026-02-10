@@ -240,8 +240,7 @@ export const IncidentTimeline = memo(function IncidentTimeline({
             >
               {/* Timeline dot */}
               <div
-                className={`absolute left-2 flex h-5 w-5 items-center justify-center rounded-full border-2 bg-white ${colors.border}`}
-                style={{ top: '2px' }}
+                className={`absolute left-2 top-0.5 flex h-5 w-5 items-center justify-center rounded-full border-2 bg-white ${colors.border}`}
               >
                 {getEventIcon(event)}
               </div>

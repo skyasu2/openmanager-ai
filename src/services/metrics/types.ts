@@ -4,8 +4,9 @@
 
 /**
  * 서버 메트릭 (API 응답용)
+ * MetricsProvider에서 Prometheus 데이터를 변환한 결과 타입
  */
-export interface ServerMetrics {
+export interface ApiServerMetrics {
   serverId: string;
   serverType: string;
   location: string;
@@ -36,6 +37,9 @@ export interface ServerMetrics {
   responseTimeMs?: number;
 }
 
+/** Backward-compatible alias */
+export type ServerMetrics = ApiServerMetrics;
+
 /**
  * 전체 시스템 요약
  */
@@ -60,12 +64,12 @@ export interface TimeComparisonResult {
   current: {
     timestamp: string;
     date: string;
-    metrics: ServerMetrics;
+    metrics: ApiServerMetrics;
   };
   past: {
     timestamp: string;
     date: string;
-    metrics: ServerMetrics;
+    metrics: ApiServerMetrics;
   };
   delta: {
     cpu: number;

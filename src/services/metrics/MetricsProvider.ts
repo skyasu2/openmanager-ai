@@ -27,7 +27,7 @@ import {
 } from '@/data/hourly-data';
 import { logger } from '@/lib/logging';
 import { getKSTMinuteOfDay, getKSTTimestamp } from './kst-time';
-import type { ServerMetrics, SystemSummary } from './types';
+import type { ApiServerMetrics, SystemSummary } from './types';
 
 export {
   calculateRelativeDateTime,
@@ -41,7 +41,8 @@ export {
 } from './time-comparison';
 // Re-export for backward compatibility
 export type {
-  ServerMetrics,
+  ApiServerMetrics,
+  ApiServerMetrics as ServerMetrics,
   SystemSummary,
   TimeComparisonResult,
 } from './types';
@@ -86,7 +87,7 @@ function targetToServerMetrics(
   target: PrometheusTarget,
   timestamp: string,
   minuteOfDay: number
-): ServerMetrics {
+): ApiServerMetrics {
   const serverId = extractServerId(target.instance);
   const cpu = target.metrics.node_cpu_usage_percent;
   const memory = target.metrics.node_memory_usage_percent;
@@ -94,7 +95,7 @@ function targetToServerMetrics(
   const network = target.metrics.node_network_transmit_bytes_rate;
 
   const metricsStatus = determineStatus(cpu, memory, disk, network);
-  let status: ServerMetrics['status'];
+  let status: ApiServerMetrics['status'];
   if (target.metrics.up === 0) {
     status = metricsStatus === 'critical' ? 'critical' : 'offline';
     if (metricsStatus === 'critical' || metricsStatus === 'warning') {
@@ -181,7 +182,7 @@ export class MetricsProvider {
   /**
    * 현재 시간 기준 단일 서버 메트릭 조회
    */
-  public getServerMetrics(serverId: string): ServerMetrics | null {
+  public getServerMetrics(serverId: string): ApiServerMetrics | null {
     const minuteOfDay = getKSTMinuteOfDay();
     const timestamp = getKSTTimestamp();
     const hour = Math.floor(minuteOfDay / 60);
@@ -237,7 +238,7 @@ export class MetricsProvider {
   /**
    * 현재 시간 기준 모든 서버 메트릭 조회
    */
-  public getAllServerMetrics(): ServerMetrics[] {
+  public getAllServerMetrics(): ApiServerMetrics[] {
     const minuteOfDay = getKSTMinuteOfDay();
     const timestamp = getKSTTimestamp();
     const hour = Math.floor(minuteOfDay / 60);

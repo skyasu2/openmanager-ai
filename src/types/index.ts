@@ -5,17 +5,20 @@
  */
 
 // 🖥️ 서버 관련 타입
-export interface ServerStatus {
+// Note: ServerStatus (union type) is defined in server-enums.ts
+// This interface represents a server status *object* with full details
+export interface ServerStatusInfo {
   readonly id: string;
   readonly name: string;
   readonly status: 'online' | 'offline' | 'warning' | 'error';
   readonly lastUpdate: string;
   readonly location: string;
   readonly uptime: number;
-  readonly metrics: ServerMetrics;
+  readonly metrics: LegacyServerMetrics;
 }
 
-export interface ServerMetrics {
+/** @deprecated Use ServerMetrics from '@/types/server-metrics' (SSOT) or ApiServerMetrics from '@/services/metrics/types' */
+export interface LegacyServerMetrics {
   readonly cpu: number; // 0-100 percentage
   readonly memory: number; // 0-100 percentage
   readonly disk: number; // 0-100 percentage
@@ -93,7 +96,7 @@ export type AlertType =
 
 // 📊 대시보드 관련 타입
 export interface DashboardData {
-  readonly servers: readonly ServerStatus[];
+  readonly servers: readonly ServerStatusInfo[];
   readonly alerts: readonly MonitoringAlert[];
   readonly systemOverview: SystemOverview;
   readonly recentQueries: readonly MCPQuery[];

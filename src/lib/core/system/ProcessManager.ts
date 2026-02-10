@@ -1,10 +1,15 @@
 /**
- * 🔧 통합 프로세스 관리 시스템 (리팩토링 버전)
+ * 통합 프로세스 관리 시스템 (리팩토링 버전)
  *
  * 순환 의존성 제거를 위해 이벤트 버스 패턴 적용
  * SystemWatchdog와의 직접 의존성을 제거하고 이벤트 기반 통신 사용
  *
- * @updated 2026-02-10 - SRP 분리 (타입 → process-types.ts)
+ * SRP 분리:
+ * - 타입 정의 -> process-types.ts
+ * - 헬스체크 -> HealthCheckManager.ts
+ * - 안정성 모니터링 -> SystemStabilityMonitor.ts
+ *
+ * @updated 2026-02-11 - SRP 분리 (HealthCheck, StabilityMonitor)
  */
 
 import { EventEmitter } from 'events';
@@ -16,6 +21,8 @@ import {
   SystemEventType,
   type SystemStatusPayload,
 } from '../interfaces/SystemEventBus';
+import { HealthCheckManager } from './HealthCheckManager';
+import { SystemStabilityMonitor } from './SystemStabilityMonitor';
 import type {
   ProcessConfig,
   ProcessState,
@@ -29,6 +36,16 @@ export type {
   SystemMetrics,
 } from './process-types';
 
+// Re-export split modules for barrel access
+export {
+  HealthCheckManager,
+  type HealthCheckContext,
+} from './HealthCheckManager';
+export {
+  SystemStabilityMonitor,
+  type StabilityContext,
+} from './SystemStabilityMonitor';
+
 /**
  * 리팩토링된 ProcessManager
  * 이벤트 버스를 통해 SystemWatchdog와 통신
@@ -39,18 +56,25 @@ export class ProcessManager
 {
   private processes = new Map<string, ProcessConfig>();
   private states = new Map<string, ProcessState>();
-  private healthCheckInterval?: NodeJS.Timeout;
-  private eventBus?: ISystemEventBus; // SystemWatchdog 대신 이벤트 버스 사용
+  private eventBus?: ISystemEventBus;
   private isSystemRunning = false;
   private systemStartTime?: Date;
-  private stabilityTimeout?: NodeJS.Timeout;
-  // 🔧 헬스체크 간격 최적화: 웜업 3단계 이후에만 동작, 5분 간격
-  // 웜업 단계: 1) 시스템 시작 2) 대시보드 진입 3) AI 어시스턴트 클릭
-  private readonly healthCheckIntervalMs = 300000; // 5분 (Vercel 사용량 최적화)
+
+  // 위임 모듈
+  private readonly healthCheckManager: HealthCheckManager;
+  private readonly stabilityMonitor: SystemStabilityMonitor;
+
+  // 헬스체크 간격 최적화: 웜업 3단계 이후에만 동작, 5분 간격
+  private readonly healthCheckIntervalMs = 300000; // 5분
   private readonly stabilityTimeoutMs = 30 * 60 * 1000; // 30분
 
   constructor(eventBus?: ISystemEventBus) {
     super();
+    this.healthCheckManager = new HealthCheckManager(
+      this.healthCheckIntervalMs
+    );
+    this.stabilityMonitor = new SystemStabilityMonitor(this.stabilityTimeoutMs);
+
     if (eventBus) {
       this.setEventBus(eventBus);
     }
@@ -62,7 +86,6 @@ export class ProcessManager
    */
   setEventBus(eventBus: ISystemEventBus): void {
     this.eventBus = eventBus;
-    // SystemWatchdog 시작 이벤트 발행
     this.eventBus.emit({
       type: SystemEventType.SYSTEM_HEALTHY,
       timestamp: Date.now(),
@@ -103,12 +126,12 @@ export class ProcessManager
       healthScore: 100,
     });
 
-    systemLogger.system(`✅ 프로세스 등록: ${config.name} (${config.id})`);
+    systemLogger.system(`\u2705 프로세스 등록: ${config.name} (${config.id})`);
     this.emit('process:registered', { processId: config.id, config });
   }
 
   /**
-   * 🚀 시스템 전체 시작 - 30분 모니터링 포함
+   * 시스템 전체 시작 - 30분 모니터링 포함
    */
   async startSystem(options?: {
     mode?: 'fast' | 'full';
@@ -132,13 +155,15 @@ export class ProcessManager
     }
 
     try {
-      systemLogger.system('🚀 통합 프로세스 관리 시스템 시작...');
+      systemLogger.system('\ud83d\ude80 통합 프로세스 관리 시스템 시작...');
       this.isSystemRunning = true;
       this.systemStartTime = new Date();
 
       // 1단계: 의존성 순서로 프로세스 시작
       const startOrder = this.calculateStartupOrder();
-      systemLogger.system(`📋 시작 순서: ${startOrder.join(' → ')}`);
+      systemLogger.system(
+        `\ud83d\udccb 시작 순서: ${startOrder.join(' \u2192 ')}`
+      );
 
       for (const processId of startOrder) {
         const success = await this.startProcess(processId);
@@ -169,7 +194,9 @@ export class ProcessManager
       }
 
       // 2단계: 헬스체크 시스템 시작
-      this.startHealthChecks();
+      this.healthCheckManager.startHealthChecks(
+        this.createHealthCheckContext()
+      );
 
       // 3단계: 이벤트 버스를 통해 Watchdog 시작 요청
       if (this.eventBus) {
@@ -191,7 +218,9 @@ export class ProcessManager
 
       // 4단계: 30분 안정성 모니터링 설정
       if (!options?.skipStabilityCheck) {
-        this.setupStabilityMonitoring();
+        this.stabilityMonitor.setupStabilityMonitoring(
+          this.createStabilityContext()
+        );
       }
 
       const runningCount = Array.from(this.states.values()).filter(
@@ -199,7 +228,7 @@ export class ProcessManager
       ).length;
 
       systemLogger.system(
-        `✅ 시스템 시작 완료 (${runningCount}/${this.processes.size} 프로세스 실행 중)`
+        `\u2705 시스템 시작 완료 (${runningCount}/${this.processes.size} 프로세스 실행 중)`
       );
       this.emit('system:started', {
         runningCount,
@@ -243,7 +272,7 @@ export class ProcessManager
     }
 
     try {
-      systemLogger.system(`🔄 ${config.name} 시작 중...`);
+      systemLogger.system(`\ud83d\udd04 ${config.name} 시작 중...`);
       state.status = 'starting';
       state.startedAt = new Date();
 
@@ -261,22 +290,11 @@ export class ProcessManager
       await config.startCommand();
 
       state.status = 'running';
-      state.errors = []; // 성공 시 오류 기록 초기화
+      state.errors = [];
 
-      // 초기 헬스체크 (3회 시도)
-      let isHealthy = false;
-      for (let i = 0; i < 3; i++) {
-        try {
-          isHealthy = await config.healthCheck();
-          if (isHealthy) break;
-          await this.delay(1000); // 1초 대기 후 재시도
-        } catch (error) {
-          systemLogger.warn(
-            `${config.name} 헬스체크 시도 ${i + 1} 실패:`,
-            error
-          );
-        }
-      }
+      // 초기 헬스체크 (3회 시도) - HealthCheckManager에 위임
+      const isHealthy =
+        await this.healthCheckManager.performInitialHealthCheck(config);
 
       if (!isHealthy) {
         throw new Error('초기 헬스체크 실패');
@@ -285,7 +303,7 @@ export class ProcessManager
       state.healthScore = 100;
       state.lastHealthCheck = new Date();
 
-      systemLogger.system(`✅ ${config.name} 시작 완료`);
+      systemLogger.system(`\u2705 ${config.name} 시작 완료`);
 
       // 이벤트 버스를 통해 프로세스 시작 알림
       if (this.eventBus) {
@@ -344,70 +362,6 @@ export class ProcessManager
   }
 
   /**
-   * 헬스체크 수행
-   * 🛡️ 시스템이 실행 중이 아니면 헬스 체크를 건너뜀 (과도한 동작 방지)
-   */
-  private async performHealthCheck(processId: string): Promise<void> {
-    // 시스템 실행 상태 확인 - 시스템이 멈춘 경우 헬스체크 건너뜀
-    if (!this.isSystemRunning) {
-      return;
-    }
-
-    const config = this.processes.get(processId);
-    const state = this.states.get(processId);
-
-    if (!config || !state || state.status !== 'running') {
-      return;
-    }
-
-    try {
-      const isHealthy = await config.healthCheck();
-      state.lastHealthCheck = new Date();
-
-      if (isHealthy) {
-        state.healthScore = Math.min(100, state.healthScore + 5);
-      } else {
-        state.healthScore = Math.max(0, state.healthScore - 20);
-
-        if (state.healthScore < 50) {
-          systemLogger.warn(
-            `⚠️ ${config.name} 건강도 낮음: ${state.healthScore}%`
-          );
-
-          // 이벤트 버스를 통해 헬스체크 결과 알림
-          if (this.eventBus) {
-            const memoryUsage = process.memoryUsage();
-            const cpuUsage = process.cpuUsage();
-
-            this.eventBus.emit<ProcessEventPayload>({
-              type: SystemEventType.PROCESS_HEALTH_CHECK,
-              timestamp: Date.now(),
-              source: 'ProcessManager',
-              payload: {
-                processId: config.id,
-                processName: config.name,
-                status: 'running',
-                resources: {
-                  cpu: cpuUsage.user / 1000000, // microseconds to seconds
-                  memory: (memoryUsage.heapUsed / memoryUsage.heapTotal) * 100,
-                },
-              },
-            });
-          }
-
-          this.emit('process:unhealthy', {
-            processId,
-            healthScore: state.healthScore,
-          });
-        }
-      }
-    } catch (error) {
-      state.healthScore = Math.max(0, state.healthScore - 30);
-      systemLogger.error(`${config.name} 헬스체크 오류:`, error);
-    }
-  }
-
-  /**
    * 시스템 정지
    */
   async stopSystem(): Promise<{
@@ -426,16 +380,13 @@ export class ProcessManager
     }
 
     try {
-      systemLogger.system('🛑 시스템 정지 시작...');
+      systemLogger.system('\ud83d\uded1 시스템 정지 시작...');
 
       // 1단계: 안정성 모니터링 중지
-      if (this.stabilityTimeout) {
-        clearTimeout(this.stabilityTimeout);
-        this.stabilityTimeout = undefined;
-      }
+      this.stabilityMonitor.clearStabilityTimeout();
 
       // 2단계: 헬스체크 중지
-      this.stopHealthChecks();
+      this.healthCheckManager.stopHealthChecks();
 
       // 3단계: 이벤트 버스를 통해 시스템 정지 알림
       if (this.eventBus) {
@@ -471,7 +422,7 @@ export class ProcessManager
       ).length;
 
       systemLogger.system(
-        `✅ 시스템 정지 완료 (${stoppedCount}/${this.processes.size} 프로세스 정지)`
+        `\u2705 시스템 정지 완료 (${stoppedCount}/${this.processes.size} 프로세스 정지)`
       );
 
       this.emit('system:stopped', {
@@ -517,7 +468,7 @@ export class ProcessManager
     }
 
     systemLogger.system(
-      `🔄 ${config.name} 재시작 중... (시도 ${state.restartCount}/${config.maxRestarts})`
+      `\ud83d\udd04 ${config.name} 재시작 중... (시도 ${state.restartCount}/${config.maxRestarts})`
     );
 
     this.emit('process:restarting', {
@@ -528,7 +479,7 @@ export class ProcessManager
 
     // 정지 후 재시작
     await this.stopProcess(processId);
-    await this.delay(2000); // 2초 대기
+    await this.delay(2000);
     return await this.startProcess(processId);
   }
 
@@ -567,10 +518,9 @@ export class ProcessManager
   }
 
   /**
-   * 기타 기존 메서드들...
+   * 의존성 기반 시작 순서 계산
    */
   private calculateStartupOrder(): string[] {
-    // 의존성 순서 계산 로직
     const visited = new Set<string>();
     const order: string[] = [];
 
@@ -618,7 +568,7 @@ export class ProcessManager
         state.uptime = state.stoppedAt.getTime() - state.startedAt.getTime();
       }
 
-      systemLogger.system(`✅ ${config.name} 정지 완료`);
+      systemLogger.system(`\u2705 ${config.name} 정지 완료`);
       this.emit('process:stopped', { processId, config, state });
       return true;
     } catch (error) {
@@ -627,73 +577,11 @@ export class ProcessManager
     }
   }
 
-  /**
-   * 헬스체크 시작
-   * 🛡️ 시스템이 실행 중일 때만 interval 시작
-   */
-  private startHealthChecks(): void {
-    // 이미 존재하는 interval 정리
-    if (this.healthCheckInterval) {
-      clearInterval(this.healthCheckInterval);
-      this.healthCheckInterval = undefined;
-    }
-
-    // 시스템이 실행 중이 아니면 interval 시작하지 않음
-    if (!this.isSystemRunning) {
-      systemLogger.warn(
-        '⚠️ 시스템이 실행 중이 아니므로 헬스체크 시작을 건너뜁니다'
-      );
-      return;
-    }
-
-    this.healthCheckInterval = setInterval(() => {
-      void (async () => {
-        // interval 콜백 내부에서도 시스템 상태 재확인
-        if (!this.isSystemRunning) {
-          this.stopHealthChecks();
-          return;
-        }
-
-        for (const processId of Array.from(this.processes.keys())) {
-          await this.performHealthCheck(processId);
-        }
-      })();
-    }, this.healthCheckIntervalMs);
-
-    systemLogger.system(
-      `🏥 헬스체크 시작 (간격: ${this.healthCheckIntervalMs / 1000}초)`
-    );
-  }
-
-  /**
-   * 헬스체크 중지
-   * 🛡️ 시스템 종료 시 모든 헬스체크 동작을 0으로 만듦
-   */
-  private stopHealthChecks(): void {
-    if (this.healthCheckInterval) {
-      clearInterval(this.healthCheckInterval);
-      this.healthCheckInterval = undefined;
-      systemLogger.system('🛑 헬스체크 중지됨 - 모든 헬스체크 동작 0');
-    }
-  }
-
-  private setupStabilityMonitoring(): void {
-    this.stabilityTimeout = setTimeout(() => {
-      void (async () => {
-        const metrics = this.getSystemMetrics();
-        if (metrics.healthyProcesses === metrics.totalProcesses) {
-          systemLogger.system('🏆 시스템 30분 안정성 달성!');
-          this.emit('system:stable', { metrics, duration: 30 });
-        }
-      })();
-    }, this.stabilityTimeoutMs);
-  }
-
   private async emergencyShutdown(): Promise<void> {
-    systemLogger.error('🚨 긴급 시스템 종료 시작...');
+    systemLogger.error('\ud83d\udea8 긴급 시스템 종료 시작...');
     this.isSystemRunning = false;
 
-    this.stopHealthChecks();
+    this.healthCheckManager.stopHealthChecks();
 
     const stopPromises = Array.from(this.processes.keys()).map((id) =>
       this.stopProcess(id).catch((error) =>
@@ -707,7 +595,9 @@ export class ProcessManager
 
   private setupGracefulShutdown(): void {
     const shutdownHandler = async (signal: string) => {
-      systemLogger.system(`📥 ${signal} 신호 수신, Graceful shutdown 시작...`);
+      systemLogger.system(
+        `\ud83d\udce5 ${signal} 신호 수신, Graceful shutdown 시작...`
+      );
       await this.stopSystem();
       process.exit(0);
     };
@@ -761,6 +651,34 @@ export class ProcessManager
       averageHealthScore,
       totalRestarts,
       lastStabilityCheck: new Date(),
+    };
+  }
+
+  // -- Context factories for delegated modules --
+
+  /**
+   * HealthCheckManager용 컨텍스트 생성
+   */
+  private createHealthCheckContext() {
+    return {
+      isRunning: () => this.isSystemRunning,
+      getProcessIds: () => Array.from(this.processes.keys()),
+      getProcess: (id: string) => this.processes.get(id),
+      getState: (id: string) => this.states.get(id),
+      getEventBus: () => this.eventBus,
+      emitEvent: (event: string, payload: Record<string, unknown>) =>
+        this.emit(event, payload),
+    };
+  }
+
+  /**
+   * SystemStabilityMonitor용 컨텍스트 생성
+   */
+  private createStabilityContext() {
+    return {
+      getSystemMetrics: () => this.getSystemMetrics(),
+      emitEvent: (event: string, payload: Record<string, unknown>) =>
+        this.emit(event, payload),
     };
   }
 }

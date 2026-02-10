@@ -9,8 +9,14 @@ export type {
   ProcessState,
   SystemMetrics,
 } from './ProcessManager';
-// ProcessManager
-export { ProcessManager } from './ProcessManager';
+// ProcessManager + split modules (re-exported via ProcessManager barrel)
+export {
+  HealthCheckManager,
+  type HealthCheckContext,
+  ProcessManager,
+  SystemStabilityMonitor,
+  type StabilityContext,
+} from './ProcessManager';
 // Process 설정
 export * from './process-configs';
 // SystemBootstrapper

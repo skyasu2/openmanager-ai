@@ -302,10 +302,7 @@ export default function SystemBootClient() {
 
                     {/* 연결선 */}
                     {index < 5 && (
-                      <div
-                        className="absolute -right-3 top-1/2 h-0.5 w-6 bg-linear-to-r from-white/30 to-transparent"
-                        style={{ transformOrigin: 'left' }}
-                      />
+                      <div className="absolute -right-3 top-1/2 h-0.5 w-6 origin-left bg-linear-to-r from-white/30 to-transparent" />
                     )}
                   </div>
                 );

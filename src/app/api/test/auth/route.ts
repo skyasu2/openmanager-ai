@@ -16,7 +16,6 @@ import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 import { createApiRoute } from '@/lib/api/zod-middleware';
 import { createClient } from '@/lib/supabase/server';
-import { getErrorMessage } from '@/types/type-utils';
 import {
   type AuthDiagnostics,
   AuthDiagnosticsRequestSchema,
@@ -26,6 +25,7 @@ import {
   AuthTestResponseSchema,
   type AuthTestResult,
 } from '@/schemas/api.schema';
+import { getErrorMessage } from '@/types/type-utils';
 import debug from '@/utils/debug';
 
 // OAuth 데이터 타입 정의

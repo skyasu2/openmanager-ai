@@ -1,4 +1,5 @@
 import type { Service } from './server';
+import type { ServerStatus } from './server-enums';
 
 /**
  * Server Metrics Type Definitions
@@ -32,25 +33,10 @@ export interface RawServerData {
 
   // ===== Status (Required) =====
   /**
-   * 서버 상태
-   * - online: 정상 작동
-   * - warning: 주의 필요
-   * - critical: 위험 상태
-   * - running: 실행 중 (legacy)
-   * - error: 오류 발생 (legacy)
-   * - stopped: 중지됨
-   * - maintenance: 유지보수 중
-   * - unknown: 알 수 없음
+   * 서버 상태 - canonical type from server-enums.ts
+   * @see src/types/server-enums.ts (Single Source of Truth)
    */
-  status:
-    | 'online'
-    | 'warning'
-    | 'critical'
-    | 'running'
-    | 'error'
-    | 'stopped'
-    | 'maintenance'
-    | 'unknown';
+  status: ServerStatus;
 
   // ===== Core Metrics (Required) =====
   cpu: number; // 0-100 percentage
@@ -114,7 +100,7 @@ export interface ServerMetrics {
   disk: number;
   network?: number;
   uptime: number;
-  status: 'online' | 'offline' | 'warning' | 'critical';
+  status: ServerStatus;
 }
 
 /**

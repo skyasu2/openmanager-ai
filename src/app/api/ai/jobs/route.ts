@@ -19,7 +19,6 @@ import {
 import { withAuth } from '@/lib/auth/api-auth';
 import { logger } from '@/lib/logging';
 import { getRedisClient, redisGet, redisMGet, redisSet } from '@/lib/redis';
-import { getErrorMessage } from '@/types/type-utils';
 import { rateLimiters, withRateLimit } from '@/lib/security/rate-limiter';
 import type {
   AIJob,
@@ -30,6 +29,7 @@ import type {
   JobStatusResponse,
   TriggerStatus,
 } from '@/types/ai-jobs';
+import { getErrorMessage } from '@/types/type-utils';
 
 // ============================================
 // 상수 정의

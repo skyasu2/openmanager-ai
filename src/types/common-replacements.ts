@@ -76,7 +76,7 @@ export interface ServerMetadata {
   [key: string]: string | number | boolean | undefined;
 }
 
-export interface ServerMetrics {
+export interface GenericServerMetrics {
   cpu?: number;
   memory?: number;
   disk?: number;
@@ -86,6 +86,9 @@ export interface ServerMetrics {
   };
   [key: string]: unknown;
 }
+
+/** @deprecated Use GenericServerMetrics */
+export type ServerMetrics = GenericServerMetrics;
 
 export interface ServerEvent {
   type: string;

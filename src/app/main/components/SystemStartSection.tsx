@@ -48,10 +48,7 @@ export function SystemStartSection({
         >
           {/* 카운트다운 오버레이 */}
           {systemStartCountdown > 0 && (
-            <div
-              className="absolute inset-0 overflow-hidden rounded-xl"
-              style={{ transformOrigin: 'left' }}
-            >
+            <div className="absolute inset-0 origin-left overflow-hidden rounded-xl">
               <div className="h-full bg-linear-to-r from-red-600/40 via-red-500/40 to-red-400/40" />
               <div className="absolute inset-0 h-full w-full bg-linear-to-r from-transparent via-white/10 to-transparent" />
             </div>

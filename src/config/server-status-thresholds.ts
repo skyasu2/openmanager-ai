@@ -64,7 +64,7 @@ export const SERVER_STATUS_THRESHOLDS: ServerStatusThresholds = {
  * @param metrics 서버 메트릭
  * @returns 서버 상태 ('online' | 'warning' | 'critical') - JSON SSOT 통일
  */
-export interface ServerMetrics {
+export interface ThresholdMetrics {
   cpu: number;
   memory: number;
   disk?: number;
@@ -73,7 +73,7 @@ export interface ServerMetrics {
 }
 
 export function determineServerStatus(
-  metrics: ServerMetrics
+  metrics: ThresholdMetrics
 ): 'online' | 'warning' | 'critical' {
   const {
     cpu,

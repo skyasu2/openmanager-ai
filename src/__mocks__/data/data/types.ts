@@ -1,3 +1,6 @@
+import type { ServerStatus } from '@/types/server-enums';
+export type { ServerStatus };
+
 export interface ScenarioPoint {
   cpu: number;
   memory: number;
@@ -22,8 +25,6 @@ export type ServerType =
   | 'api'
   | 'log'
   | 'monitoring';
-
-export type ServerStatus = 'normal' | 'warning' | 'critical';
 
 export interface Server {
   id: string;

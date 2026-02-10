@@ -12,11 +12,11 @@
 import type { ServerStatus } from '@/types/common';
 
 /**
- * 통합 서버 메트릭 인터페이스
- * - 기본형과 상세형을 모두 지원
+ * 유연한 서버 메트릭 인터페이스
+ * - 기본형(number)과 상세형(object)을 모두 지원하는 유니온 타입
  * - 하위 호환성 유지
  */
-export interface ServerMetrics {
+export interface FlexibleServerMetrics {
   // CPU 메트릭 (간단한 숫자 또는 상세 객체)
   cpu:
     | number
@@ -118,7 +118,9 @@ export interface SimpleServerMetrics {
  * 상세 서버 메트릭
  */
 export interface DetailedServerMetrics
-  extends Required<Omit<ServerMetrics, 'cpu' | 'memory' | 'disk' | 'network'>> {
+  extends Required<
+    Omit<FlexibleServerMetrics, 'cpu' | 'memory' | 'disk' | 'network'>
+  > {
   cpu: {
     usage: number;
     cores: number;
@@ -152,7 +154,7 @@ export interface DetailedServerMetrics
  */
 export interface ServerMetricsHistory {
   serverId: string;
-  metrics: ServerMetrics[];
+  metrics: FlexibleServerMetrics[];
   period: {
     start: string;
     end: string;
@@ -163,7 +165,7 @@ export interface ServerMetricsHistory {
 /**
  * 트렌드가 포함된 확장 서버 메트릭
  */
-export interface EnhancedServerMetrics extends ServerMetrics {
+export interface EnhancedServerMetrics extends FlexibleServerMetrics {
   trends?: {
     cpu: 'increasing' | 'decreasing' | 'stable';
     memory: 'increasing' | 'decreasing' | 'stable';
@@ -180,7 +182,7 @@ export interface Server {
   name: string;
   type: 'web' | 'database' | 'api' | 'cache' | 'storage' | 'other';
   status: ServerStatus;
-  metrics?: ServerMetrics;
+  metrics?: FlexibleServerMetrics;
 
   // 연결 정보
   host?: string;
@@ -220,7 +222,7 @@ export interface ServerGroup {
  * 타입 가드: SimpleServerMetrics 체크
  */
 export function isSimpleMetrics(
-  metrics: ServerMetrics
+  metrics: FlexibleServerMetrics
 ): metrics is SimpleServerMetrics {
   return (
     typeof metrics.cpu === 'number' &&
@@ -234,7 +236,7 @@ export function isSimpleMetrics(
  * 타입 가드: DetailedServerMetrics 체크
  */
 export function isDetailedMetrics(
-  metrics: ServerMetrics
+  metrics: FlexibleServerMetrics
 ): metrics is DetailedServerMetrics {
   return (
     typeof metrics.cpu === 'object' &&
@@ -279,8 +281,8 @@ export function toDetailedMetrics(
  * 헬퍼: 메트릭 정규화 (어떤 형태든 받아서 일관된 형태로 변환)
  */
 export function normalizeMetrics(
-  metrics: Partial<ServerMetrics>
-): ServerMetrics {
+  metrics: Partial<FlexibleServerMetrics>
+): FlexibleServerMetrics {
   return {
     cpu: metrics.cpu ?? 0,
     memory: metrics.memory ?? 0,
@@ -289,6 +291,9 @@ export function normalizeMetrics(
     ...metrics,
   };
 }
+
+// Backward-compatible alias
+export type { FlexibleServerMetrics as ServerMetrics };
 
 // Re-export 관련 타입들
 export type { ServerStatus } from '@/types/common';

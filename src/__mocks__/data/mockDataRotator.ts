@@ -133,8 +133,7 @@ export class MockDataRotator {
       const metrics = this.getCurrentMetrics(server.id);
 
       // 메트릭 기반 상태 결정 (AI-blind)
-      const rawStatus = getMetricBasedStatus(metrics);
-      const status = rawStatus === 'normal' ? 'online' : rawStatus;
+      const status = getMetricBasedStatus(metrics);
 
       return {
         ...server,

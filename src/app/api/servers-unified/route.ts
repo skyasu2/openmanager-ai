@@ -16,7 +16,6 @@ import { NextResponse } from 'next/server';
 import * as z from 'zod';
 import { createApiRoute } from '@/lib/api/zod-middleware';
 import { logger } from '@/lib/logging';
-import { getErrorMessage } from '@/types/type-utils';
 import { getUnifiedServerDataSource } from '@/services/data/UnifiedServerDataSource';
 import { metricsProvider } from '@/services/metrics/MetricsProvider';
 import type {
@@ -24,6 +23,7 @@ import type {
   ServerEnvironment,
   ServerRole,
 } from '@/types/server';
+import { getErrorMessage } from '@/types/type-utils';
 import debug from '@/utils/debug';
 import { mapServerToEnhanced } from '@/utils/serverUtils';
 

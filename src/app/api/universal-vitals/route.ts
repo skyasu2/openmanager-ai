@@ -9,12 +9,12 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import { getCorsHeaders } from '@/lib/api/cors';
 import { logger } from '@/lib/logging';
-import { getErrorMessage } from '@/types/type-utils';
 import {
   UNIVERSAL_THRESHOLDS,
   type UniversalVital,
   type VitalCategory,
 } from '@/lib/testing/universal-vitals';
+import { getErrorMessage } from '@/types/type-utils';
 
 // ⚡ Edge Runtime으로 전환 - 빠른 메트릭 처리
 export const runtime = 'edge';

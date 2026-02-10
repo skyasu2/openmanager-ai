@@ -12,6 +12,7 @@ import {
 export type { ScenarioPoint };
 
 import type { Server } from '@/types/server';
+import type { ServerStatus } from '@/types/server-enums';
 
 export interface TimeSeriesData {
   timestamp: number;
@@ -40,7 +41,7 @@ export interface MockServerData {
 function createServerFromMetrics(
   serverId: string,
   currentMetrics: ScenarioPoint,
-  status: 'online' | 'warning' | 'critical'
+  status: ServerStatus
 ): Server {
   const server = SERVERS.find((s) => s.id === serverId);
 
@@ -99,11 +100,8 @@ function createServerFromMetrics(
  * 메트릭 기반 서버 상태 결정 (AI-blind)
  * mockScenarios의 getServerStatus를 활용
  */
-function determineServerStatus(
-  metrics: ScenarioPoint
-): 'online' | 'warning' | 'critical' {
-  const status = getMetricBasedStatus(metrics);
-  return status === 'normal' ? 'online' : status;
+function determineServerStatus(metrics: ScenarioPoint): ServerStatus {
+  return getMetricBasedStatus(metrics);
 }
 
 /**

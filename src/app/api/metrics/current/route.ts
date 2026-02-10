@@ -11,7 +11,6 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import { getSystemConfig } from '@/config/SystemConfiguration';
 import { logger } from '@/lib/logging';
-import { getErrorMessage } from '@/types/type-utils';
 import { getUnifiedServerDataSource } from '@/services/data/UnifiedServerDataSource';
 import {
   fnv1aHash,
@@ -24,6 +23,7 @@ import {
   normalizeTimestamp,
 } from '@/services/metrics/cycle-engine';
 import type { EnhancedServerMetrics, ServerRole } from '@/types/server';
+import { getErrorMessage } from '@/types/type-utils';
 
 // 🚀 통합 서버 메트릭 생성 (6개 사이클 기반)
 async function generateUnifiedServerMetrics(
