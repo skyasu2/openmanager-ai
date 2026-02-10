@@ -26,6 +26,7 @@ import type { DashboardStats } from '@/lib/dashboard/server-data';
 import { cn } from '@/lib/utils';
 import { systemInactivityService } from '@/services/system/SystemInactivityService';
 import { useAISidebarStore } from '@/stores/useAISidebarStore';
+import { useShallow } from 'zustand/react/shallow';
 import { useUnifiedAdminStore } from '@/stores/useUnifiedAdminStore';
 import type { Server } from '@/types/server';
 import { triggerAIWarmup } from '@/utils/ai-warmup';
@@ -184,7 +185,9 @@ function DashboardPageContent({
   const permissions = useUserPermissions();
 
   // 🎯 AI 사이드바 상태 (중앙 관리)
-  const { isOpen: isAgentOpen, setOpen: setIsAgentOpen } = useAISidebarStore();
+  const { isOpen: isAgentOpen, setOpen: setIsAgentOpen } = useAISidebarStore(
+    useShallow((state) => ({ isOpen: state.isOpen, setOpen: state.setOpen }))
+  );
   const [authLoading, setAuthLoading] = useState(() => {
     if (checkTestMode()) {
       return false;

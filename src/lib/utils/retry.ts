@@ -325,14 +325,6 @@ export async function fetchWithRetry(
   }, retryOptions);
 }
 
-/**
- * Create a retry wrapper with preset options
- */
-export function createRetryWrapper(defaultOptions: Partial<RetryOptions>) {
-  return <T>(fn: () => Promise<T>, options?: Partial<RetryOptions>) =>
-    withRetry(fn, { ...defaultOptions, ...options });
-}
-
 // ============================================================================
 // Preset Configurations
 // ============================================================================

@@ -4,47 +4,35 @@
 import {
   Activity,
   AlertCircle,
-  // 상태 관련
   AlertTriangle,
   ArrowDown,
   ArrowLeft,
   ArrowRight,
-  // 화살표
   ArrowUp,
   Bot,
   Brain,
-  // 툴팁/UI
   Check,
   CheckCircle,
   ChevronDown,
   ChevronLeft,
   ChevronRight,
-  // UI/UX 관련
   ChevronUp,
   Circle,
   Database,
   Eye,
   HelpCircle,
-  // 기타
   History,
   Info,
   Lightbulb,
   Loader,
   type LucideIcon,
   PenTool,
-  Play,
-  RotateCcw,
   Search,
   Send,
-  // 시스템 관련
   Settings,
-  Square,
-  Timer,
   X,
-  // 프로세스 관련
   Zap,
 } from 'lucide-react';
-import { createElement, type ReactElement } from 'react';
 
 // Font Awesome → Lucide React 매핑 테이블
 export const iconMapping: Record<string, LucideIcon> = {
@@ -90,60 +78,7 @@ export const iconMapping: Record<string, LucideIcon> = {
   'fas fa-pen': PenTool,
 };
 
-// 아이콘 타입별 매핑
-export const getIconByType = (type: string): LucideIcon => {
-  const typeMapping: Record<string, LucideIcon> = {
-    analysis: Search,
-    reasoning: Brain,
-    data_processing: Database,
-    pattern_matching: Activity,
-    response_generation: PenTool,
-    question: HelpCircle,
-    function: Settings,
-    history: History,
-  };
-
-  return typeMapping[type] || Circle;
-};
-
-// 심각도별 아이콘 매핑
-export const getSeverityIcon = (severity: string): LucideIcon => {
-  const severityMapping: Record<string, LucideIcon> = {
-    critical: AlertTriangle,
-    warning: AlertCircle,
-    success: CheckCircle,
-    info: Lightbulb,
-  };
-
-  return severityMapping[severity] || Info;
-};
-
-// 동적 아이콘 렌더링 유틸리티
-export const renderIcon = (
-  iconName: string,
-  className?: string
-): ReactElement => {
-  const IconComponent = iconMapping[iconName] || Circle;
-  return createElement(IconComponent, { className });
-};
-
 // Font Awesome 클래스명에서 Lucide 아이콘 추출
 export const getLucideIcon = (faClass: string): LucideIcon => {
   return iconMapping[faClass] || Circle;
-};
-
-// === 확장 가능한 아이콘 매핑 ===
-// 새로운 아이콘이 필요할 때 여기에 추가
-export const extendedIconMapping: Record<string, LucideIcon> = {
-  // 추가 매핑들...
-  'fas fa-play': Play,
-  'fas fa-stop': Square,
-  'fas fa-refresh': RotateCcw,
-  'fas fa-clock': Timer,
-};
-
-// 전체 아이콘 매핑 (기본 + 확장)
-export const allIconMapping = {
-  ...iconMapping,
-  ...extendedIconMapping,
 };
