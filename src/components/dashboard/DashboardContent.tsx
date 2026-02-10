@@ -3,8 +3,8 @@
 import { CheckCircle2 } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import {
-  Suspense,
   memo,
+  Suspense,
   useCallback,
   useEffect,
   useMemo,
