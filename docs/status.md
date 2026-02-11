@@ -1,10 +1,18 @@
 # 프로젝트 현재 상태
 
-**마지막 업데이트**: 2026-02-08
+**마지막 업데이트**: 2026-02-11
 
 ---
 
-## 🔄 Recent Changes (v7.1.4)
+## 🔄 Recent Changes (v7.1.5)
+
+- **v7.1.5** (2026-02-11)
+  - refactor(data): public/hourly-data/ 이중 복사 제거 — src/data/hourly-data/가 단일 SSOT
+  - refactor(data): Dead Code 제거 (server-data-cache.ts, loadHourlyServerData, precompute-metrics.ts)
+  - fix(api): /api/dashboard 이중 호출 정리 (getServerMetricsFromUnifiedSource 제거)
+  - perf(otel): OTel 파이프라인 최적화 — hostname index, conversion cache, JSON diet
+  - docs(data): 데이터 아키텍처 3-Tier Priority 구조로 갱신 (OTel > Prometheus > Fixed)
+
 
 - **v7.1.4** (2026-02-08)
   - feat(data): server-services-map 추가 (자동 서비스 추론)

@@ -18,7 +18,8 @@ AI/ML 서비스가 단순히 API를 호출하는 비효율적인 구조를 탈�
 
 | Service | Data Source | Access Method |
 |---------|-------------|---------------|
-| **Dashboard UI** | `src/data/fixed-24h-metrics.ts` | Direct Import |
+| **OTel Processor** | `src/data/otel-processed/*.json` | Primary Load |
+| **Dashboard UI** | `src/data/fixed-24h-metrics.ts` | Fallback Import |
 | **AI Engine** | `cloud-run/ai-engine/data/hourly-data/*.json` | File Load |
 | **RAG System** | Supabase `server_logs` | DB Query |
 
@@ -26,39 +27,36 @@ AI/ML 서비스가 단순히 API를 호출하는 비효율적인 구조를 탈�
 
 ## 🏛️ SSOT (Single Source of Truth) 아키텍처
 
-### 데이터 흐름
+### 데이터 흐름 (3-Tier Priority)
 
 ```
 ┌─────────────────────────────────┐
-│  fixed-24h-metrics.ts (SSOT)    │  ← 원본 데이터 정의
+│  src/data/otel-processed/       │  ← 1. Primary (OTel Semantic Conv.)
+│  (OpenTelemetry Processed Data) │
 └─────────────────────────────────┘
               │
-              │ npm run data:sync
               ▼
 ┌─────────────────────────────────┐
-│  sync-hourly-data.ts            │  ← Seeded Random 생성
-│  (Mulberry32 PRNG)              │
+│  src/data/hourly-data/          │  ← 2. Fallback (Prometheus Format)
+│  (Bundle-included JSON)         │
 └─────────────────────────────────┘
               │
-       ┌──────┴──────┐
-       ▼             ▼
-┌────────────┐  ┌────────────────────────┐
-│ Dashboard  │  │ AI Engine (Cloud Run)  │
-│ public/    │  │ cloud-run/ai-engine/   │
-│ hourly-    │  │ data/hourly-data/      │
-│ data/      │  │                        │
-└────────────┘  └────────────────────────┘
+              ▼
+┌─────────────────────────────────┐
+│  fixed-24h-metrics.ts           │  ← 3. Last Resort (Code-level)
+│  (Baseline Fallback)            │
+└─────────────────────────────────┘
 ```
 
 ### 동기화 명령어
 
 ```bash
-# SSOT에서 hourly-data JSON 생성 (결정론적)
+# SSOT에서 hourly-data 및 OTel 처리 데이터 동기화
 npm run data:sync
 
 # 출력:
-#   - public/hourly-data/hour-XX.json (24개)
-#   - cloud-run/ai-engine/data/hourly-data/hour-XX.json (24개)
+#   - src/data/hourly-data/hour-XX.json (24개, SSOT 번들)
+#   - src/data/otel-processed/hourly/hour-XX.json (24개, OTel 변환)
 ```
 
 ---
@@ -118,9 +116,10 @@ npm run data:sync
 
 | 파일 경로 | 용도 | 수정 가능 |
 |-----------|------|----------|
-| `src/data/fixed-24h-metrics.ts` | **SSOT (24시간 고정 데이터)** | ✅ 핵심 로직 |
+| `src/data/otel-processed/*.json` | **Primary (OTel Data)** | ❌ 자동 생성 (data:otel) |
+| `src/data/hourly-data/*.json` | **Secondary (Prometheus)** | ❌ 자동 생성 (data:sync) |
+| `src/data/fixed-24h-metrics.ts` | **Tertiary (Fallback)** | ✅ 핵심 로직 |
 | `scripts/data/sync-hourly-data.ts` | JSON 데이터 생성 스크립트 | ✅ 수정 가능 |
-| `public/hourly-data/*.json` | Dashboard용 24시간 데이터 | ❌ 자동 생성 |
 | `cloud-run/ai-engine/data/hourly-data/*.json` | AI Engine용 데이터 | ❌ 자동 생성 |
 
 ### 파일 크기
