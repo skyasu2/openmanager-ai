@@ -24,6 +24,7 @@ import type {
   ServerAnalysisResult,
   SystemAnalysisSummary,
 } from '@/types/intelligent-monitoring.types';
+import type { EnhancedServerMetrics } from '@/types/server';
 
 export default function IntelligentMonitoringPage() {
   // 서버 데이터 (React Query)
@@ -49,7 +50,7 @@ export default function IntelligentMonitoringPage() {
     async (
       serverId: string,
       serverName: string,
-      serverData?: Record<string, unknown>
+      serverData?: EnhancedServerMetrics
     ): Promise<ServerAnalysisResult | null> => {
       try {
         // Prepare current metrics for AI Engine
@@ -60,10 +61,10 @@ export default function IntelligentMonitoringPage() {
               disk: serverData.disk,
               network: serverData.network,
               load1: serverData.systemInfo?.loadAverage?.split(',')[0]
-                ? parseFloat(serverData.systemInfo.loadAverage.split(',')[0])
+                ? parseFloat(serverData.systemInfo.loadAverage.split(',')[0]!)
                 : undefined,
               load5: serverData.systemInfo?.loadAverage?.split(',')[1]
-                ? parseFloat(serverData.systemInfo.loadAverage.split(',')[1])
+                ? parseFloat(serverData.systemInfo.loadAverage.split(',')[1]!)
                 : undefined,
               cpuCores: serverData.specs?.cpu_cores,
             }
@@ -244,7 +245,7 @@ export default function IntelligentMonitoringPage() {
           const serverResult = await analyzeSingleServer(
             server.id,
             server.name,
-            server // Pass server info
+            'hostname' in server ? server : undefined
           );
           if (serverResult) {
             serverResults.push(serverResult);
