@@ -394,7 +394,7 @@
 | Metric | Status | Detail |
 |:---:|:---:|---|
 | **Build** | ✅ Passing | `npm run build` (Next.js 16.1.3) 성공 |
-| **Test** | ✅ 100% | 1536/1536 Tests Passing (75 test files) |
+| **Test** | ✅ 100% | 1558/1558 Tests Passing (78 test files) |
 | **Lint** | ✅ Clean | Biome Check Pass (No Errors) |
 | **E2E** | ✅ 100% | 30/30 Scenarios Passing (Playwright) |
 | **MCP** | ✅ 9/9 | 모든 MCP 서버 정상 연결 |

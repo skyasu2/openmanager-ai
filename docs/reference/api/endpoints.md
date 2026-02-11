@@ -4,14 +4,14 @@
 
 ## Overview
 
-OpenManager Vibe v5 현재 **75개의 API 엔드포인트**를 제공합니다.
+OpenManager Vibe v5 현재 **74개의 API 엔드포인트**를 제공합니다.
 
 ### 분류
 
 - **AI/ML**: 16개 (AI 어시스턴트, ML 분석, RAG)
 - **서버 관리**: 9개 (서버 메트릭, 상태 조회)
 - **시스템**: 7개 (시스템 초기화, 최적화)
-- **모니터링**: 6개 (성능, 메트릭, 알림)
+- **모니터링**: 5개 (성능, 메트릭, 알림)
 - **인증**: 4개 (Auth, CSRF)
 - **데이터베이스**: 3개 (상태, 리셋, Read-only)
 - **기타**: 33개 (테스트, 디버그, 캐시 등)
@@ -93,16 +93,15 @@ OpenManager Vibe v5 현재 **75개의 API 엔드포인트**를 제공합니다.
 
 ---
 
-## 📊 Monitoring APIs (6개)
+## 📊 Monitoring APIs (5개)
 
-| Endpoint                     | Method | Description              | Auth | Interval  |
-| ---------------------------- | ------ | ------------------------ | ---- | --------- |
-| `/api/metrics`               | GET    | 시스템 메트릭 조회       | ❌   | 5s        |
-| `/api/metrics/current`       | GET    | 현재 메트릭 스냅샷       | ❌   | Real-time |
-| `/api/metrics/hybrid-bridge` | GET    | 하이브리드 메트릭 브릿지 | ❌   | -         |
-| `/api/performance/metrics`   | GET    | 성능 메트릭              | ❌   | -         |
-| `/api/performance/history`   | GET    | 성능 히스토리            | ❌   | -         |
-| `/api/alerts/stream`         | GET    | 알림 스트리밍 (SSE)      | ❌   | Real-time |
+| Endpoint                   | Method | Description              | Auth | Interval  |
+| -------------------------- | ------ | ------------------------ | ---- | --------- |
+| `/api/metrics`             | GET    | 시스템 메트릭 조회       | ❌   | 5s        |
+| `/api/metrics/current`     | GET    | 현재 메트릭 스냅샷       | ❌   | Real-time |
+| `/api/performance/metrics` | GET    | 성능 메트릭              | ❌   | -         |
+| `/api/performance/history` | GET    | 성능 히스토리            | ❌   | -         |
+| `/api/alerts/stream`       | GET    | 알림 스트리밍 (SSE)      | ❌   | Real-time |
 
 ---
 
@@ -229,7 +228,7 @@ OpenManager Vibe v5 현재 **75개의 API 엔드포인트**를 제공합니다.
 ---
 
 **Last Updated**: 2026-02-03
-**Total Endpoints**: 75+
+**Total Endpoints**: 74+
 **Framework**: Next.js 16.1.1 App Router
 
 ## API 아키텍처
