@@ -15,15 +15,15 @@ import {
 } from '@/services/server-data/server-data-transformer';
 import type { EnhancedServerMetrics } from '@/services/server-data/server-data-types';
 
-export { clearJsonCache } from '@/services/server-data/server-data-cache';
-export { generateServerLogs } from '@/services/server-data/server-data-logs';
+export type { ServerContext } from '@/services/server-data/loki-log-generator';
 export {
   buildLogQL,
   buildLokiPushPayload,
   generateLokiLogs,
   groupIntoStreams,
 } from '@/services/server-data/loki-log-generator';
-export type { ServerContext } from '@/services/server-data/loki-log-generator';
+export { clearJsonCache } from '@/services/server-data/server-data-cache';
+export { generateServerLogs } from '@/services/server-data/server-data-logs';
 // ── Re-exports (public API) ────────────────────────────────────────
 export type {
   EnhancedServerMetrics,

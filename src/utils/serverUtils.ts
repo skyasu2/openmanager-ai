@@ -8,6 +8,7 @@
  * - 상태 매핑
  */
 
+import { deriveNetworkSplit } from '@/services/server-data/server-data-transformer';
 import type {
   EnhancedServerMetrics,
   Server,
@@ -17,7 +18,6 @@ import type {
   Service,
 } from '@/types/server';
 import type { ServerStatus } from '@/types/server-enums'; // 🔧 추가: Single Source of Truth
-import { deriveNetworkSplit } from '@/services/server-data/server-data-transformer';
 
 /**
  * 서버 타입 가드 함수들

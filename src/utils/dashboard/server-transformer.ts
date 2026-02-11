@@ -1,9 +1,9 @@
-import type { EnhancedServerData } from '@/types/dashboard/server-dashboard.types';
 import {
   deriveNetworkErrors,
   deriveNetworkSplit,
   deriveZombieProcesses,
 } from '@/services/server-data/server-data-transformer';
+import type { EnhancedServerData } from '@/types/dashboard/server-dashboard.types';
 import type {
   Server,
   ServerEnvironment,

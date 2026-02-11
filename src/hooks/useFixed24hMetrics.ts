@@ -1,7 +1,7 @@
 /**
  * 🎯 24시간 고정 데이터 훅 (v3.2 - Vercel 최적화)
  *
- * ✅ Single Source of Truth: scenario-loader 기반 통합 데이터
+ * ✅ Single Source of Truth: server-data-loader 기반 통합 데이터
  * ✅ 10분 간격 데이터 갱신 (JSON 데이터 주기와 일치)
  * ✅ 한국 시간(KST) 동기화
  * ✅ UnifiedServerDataSource 10분 TTL 캐시 활용

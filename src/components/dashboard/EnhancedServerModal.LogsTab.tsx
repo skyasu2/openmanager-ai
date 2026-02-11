@@ -2,6 +2,7 @@
 
 import type { FC } from 'react';
 import { useEffect, useMemo, useState } from 'react';
+import type { ServerContext } from '@/services/server-data/loki-log-generator';
 /**
  * Enhanced Server Modal Logs Tab (v4.0 - PLG Stack Compatible)
  *
@@ -13,11 +14,10 @@ import { useEffect, useMemo, useState } from 'react';
 import {
   buildLogQL,
   generateLokiLogs,
-  getCurrentScenario,
   generateServerLogs,
+  getCurrentScenario,
   groupIntoStreams,
 } from '@/services/server-data/server-data-loader';
-import type { ServerContext } from '@/services/server-data/loki-log-generator';
 import type { LokiLogEntry, LokiStreamLabels } from '@/types/loki';
 import type {
   LogEntry,
@@ -147,8 +147,7 @@ export const LogsTab: FC<LogsTabProps> = ({
     loadScenario();
     const interval = setInterval(loadScenario, 60000);
     return () => clearInterval(interval);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [serverId, serverMetrics]);
+  }, [serverId, serverMetrics, ctx]);
 
   // Filtered Loki entries
   const filteredLokiLogs = useMemo(() => {

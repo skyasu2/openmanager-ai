@@ -11,7 +11,6 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import { getSystemConfig } from '@/config/SystemConfiguration';
 import { logger } from '@/lib/logging';
-import { deriveNetworkSplit } from '@/services/server-data/server-data-transformer';
 import { getUnifiedServerDataSource } from '@/services/data/UnifiedServerDataSource';
 import {
   fnv1aHash,
@@ -23,6 +22,7 @@ import {
   interpolate1MinVariation,
   normalizeTimestamp,
 } from '@/services/metrics/cycle-engine';
+import { deriveNetworkSplit } from '@/services/server-data/server-data-transformer';
 import type { EnhancedServerMetrics, ServerRole } from '@/types/server';
 import { getErrorMessage } from '@/types/type-utils';
 
