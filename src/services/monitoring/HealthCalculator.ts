@@ -24,6 +24,8 @@ export type HealthReport = {
     criticalAlerts: number;
     warningAlerts: number;
     highCpuAvg: number;
+    highMemoryAvg: number;
+    highDiskAvg: number;
     longFiringAlerts: number;
   };
 };
@@ -56,6 +58,18 @@ export class HealthCalculator {
     const avgCpuPenalty =
       aggregated.avgCpu >= 70 ? Math.round((aggregated.avgCpu - 70) * 0.5) : 0;
 
+    // penalty: 평균 Memory가 80 이상이면 추가 감점
+    const avgMemoryPenalty =
+      aggregated.avgMemory >= 80
+        ? Math.round((aggregated.avgMemory - 80) * 0.4)
+        : 0;
+
+    // penalty: 평균 Disk가 85 이상이면 추가 감점
+    const avgDiskPenalty =
+      aggregated.avgDisk >= 85
+        ? Math.round((aggregated.avgDisk - 85) * 0.3)
+        : 0;
+
     // penalty: 5분 이상 firing 중인 alert에 추가 감점
     const longFiringCount = firingAlerts.filter((a) => a.duration > 300).length;
     const longFiringPenalty = longFiringCount * 3;
@@ -68,6 +82,8 @@ export class HealthCalculator {
           criticalPenalty -
           warningPenalty -
           avgCpuPenalty -
+          avgMemoryPenalty -
+          avgDiskPenalty -
           longFiringPenalty
       )
     );
@@ -79,6 +95,8 @@ export class HealthCalculator {
         criticalAlerts: criticalPenalty,
         warningAlerts: warningPenalty,
         highCpuAvg: avgCpuPenalty,
+        highMemoryAvg: avgMemoryPenalty,
+        highDiskAvg: avgDiskPenalty,
         longFiringAlerts: longFiringPenalty,
       },
     };

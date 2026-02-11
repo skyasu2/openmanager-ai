@@ -207,11 +207,11 @@ export class ServerMonitoringService {
       network: p.network,
       uptime: p.uptimeSeconds,
       responseTime: p.responseTimeMs,
-      lastUpdate: new Date(),
+      lastUpdate: new Date(p.timestamp),
       location: p.location,
       environment: p.environment,
       logs: p.logs.map((msg) => ({
-        timestamp: new Date().toISOString(),
+        timestamp: p.timestamp,
         level:
           msg.includes('[CRITICAL]') || msg.includes('[ERROR]')
             ? ('ERROR' as const)
@@ -234,7 +234,7 @@ export class ServerMonitoringService {
         processes: p.procsRunning ?? 0,
         zombieProcesses: 0,
         loadAverage: `${p.loadAvg1.toFixed(2)}, ${p.loadAvg5.toFixed(2)}, ${p.loadAvg15.toFixed(2)}`,
-        lastUpdate: new Date().toISOString(),
+        lastUpdate: p.timestamp,
       },
       networkInfo: {
         interface: 'eth0',

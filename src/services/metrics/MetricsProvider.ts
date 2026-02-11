@@ -366,9 +366,7 @@ export class MetricsProvider {
         }
         const found = allMetrics.find((m) => m.serverId === serverId);
         if (found) {
-          found.timestamp = timestamp;
-          found.minuteOfDay = minuteOfDay;
-          return found;
+          return { ...found, timestamp, minuteOfDay };
         }
       }
     }
@@ -440,11 +438,11 @@ export class MetricsProvider {
           cachedOTelConversion?.hour === hour &&
           cachedOTelConversion.slotIndex === slotIndex
         ) {
-          for (const m of cachedOTelConversion.metrics) {
-            m.timestamp = timestamp;
-            m.minuteOfDay = minuteOfDay;
-          }
-          return cachedOTelConversion.metrics;
+          return cachedOTelConversion.metrics.map((m) => ({
+            ...m,
+            timestamp,
+            minuteOfDay,
+          }));
         }
         const metrics = otelSlotToServerMetrics(slot, timestamp, minuteOfDay);
         if (metrics.length > 0) {
