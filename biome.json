@@ -28,7 +28,8 @@
       "!**/*.min.js",
       "!**/*.d.ts",
       "!**/*.css",
-      "!**/cloud-run"
+      "!**/cloud-run",
+      "!src/data/otel-processed/**/*.json"
     ]
   },
   "formatter": {

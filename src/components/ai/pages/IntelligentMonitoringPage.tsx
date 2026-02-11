@@ -48,9 +48,27 @@ export default function IntelligentMonitoringPage() {
   const analyzeSingleServer = useCallback(
     async (
       serverId: string,
-      serverName: string
+      serverName: string,
+      serverData?: Record<string, unknown>
     ): Promise<ServerAnalysisResult | null> => {
       try {
+        // Prepare current metrics for AI Engine
+        const currentMetrics = serverData
+          ? {
+              cpu: serverData.cpu,
+              memory: serverData.memory,
+              disk: serverData.disk,
+              network: serverData.network,
+              load1: serverData.systemInfo?.loadAverage?.split(',')[0]
+                ? parseFloat(serverData.systemInfo.loadAverage.split(',')[0])
+                : undefined,
+              load5: serverData.systemInfo?.loadAverage?.split(',')[1]
+                ? parseFloat(serverData.systemInfo.loadAverage.split(',')[1])
+                : undefined,
+              cpuCores: serverData.specs?.cpu_cores,
+            }
+          : undefined;
+
         const response = await fetch('/api/ai/intelligent-monitoring', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -58,6 +76,7 @@ export default function IntelligentMonitoringPage() {
             action: 'analyze_server',
             serverId,
             analysisType: 'full',
+            currentMetrics, // Pass real-time metrics
           }),
         });
 
@@ -190,7 +209,8 @@ export default function IntelligentMonitoringPage() {
         const serverInfo = servers.find((s) => s.id === selectedServer);
         const serverResult = await analyzeSingleServer(
           selectedServer,
-          serverInfo?.name || selectedServer
+          serverInfo?.name || selectedServer,
+          serverInfo // Pass server info
         );
 
         if (!serverResult) {
@@ -223,7 +243,8 @@ export default function IntelligentMonitoringPage() {
 
           const serverResult = await analyzeSingleServer(
             server.id,
-            server.name
+            server.name,
+            server // Pass server info
           );
           if (serverResult) {
             serverResults.push(serverResult);

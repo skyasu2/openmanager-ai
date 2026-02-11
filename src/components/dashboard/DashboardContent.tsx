@@ -1,5 +1,6 @@
 'use client';
 
+import { AlertTriangle } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import {
   memo,
@@ -14,12 +15,79 @@ import {
   ARCHITECTURE_DIAGRAMS,
   type ArchitectureDiagram,
 } from '@/data/architecture-diagrams.data';
+import { useMonitoringReport } from '@/hooks/dashboard/useMonitoringReport';
+import type { Alert } from '@/services/monitoring/AlertManager';
 import type { Server } from '@/types/server';
 import debug from '@/utils/debug';
 import { safeConsoleError, safeErrorMessage } from '@/utils/utils-functions';
 import { DashboardSummary } from './DashboardSummary';
 import { SystemOverviewSection } from './SystemOverviewSection';
 import type { DashboardStats } from './types/dashboard.types';
+
+const severityBadge: Record<string, string> = {
+  critical: 'bg-red-100 text-red-700 border-red-200',
+  warning: 'bg-amber-100 text-amber-700 border-amber-200',
+};
+
+function ActiveAlertsSection({ alerts }: { alerts: Alert[] }) {
+  const [expanded, setExpanded] = useState(true);
+  const sorted = [...alerts].sort((a, b) => {
+    if (a.severity === 'critical' && b.severity !== 'critical') return -1;
+    if (a.severity !== 'critical' && b.severity === 'critical') return 1;
+    return b.value - a.value;
+  });
+
+  return (
+    <div className="rounded-xl border border-rose-200/40 bg-white/60 backdrop-blur-md overflow-hidden">
+      <button
+        type="button"
+        onClick={() => setExpanded((prev) => !prev)}
+        aria-expanded={expanded}
+        className="flex w-full items-center justify-between px-5 py-3 text-left text-sm font-medium text-gray-700 transition-colors hover:bg-rose-50/30"
+      >
+        <span className="flex items-center gap-2">
+          <AlertTriangle size={14} className="text-rose-500" />
+          Active Alerts ({alerts.length})
+        </span>
+        <span
+          aria-hidden="true"
+          className={`transition-transform duration-200 text-gray-400 ${expanded ? 'rotate-180' : ''}`}
+        >
+          &#9660;
+        </span>
+      </button>
+      {expanded && (
+        <div className="border-t border-rose-100/50 px-5 py-3 space-y-2">
+          {sorted.map((alert) => (
+            <div
+              key={alert.id}
+              className="flex items-center justify-between rounded-lg bg-white/80 px-3 py-2 text-sm"
+            >
+              <div className="flex items-center gap-3">
+                <span
+                  className={`inline-flex rounded-md border px-1.5 py-0.5 text-[10px] font-bold uppercase ${severityBadge[alert.severity] ?? ''}`}
+                >
+                  {alert.severity}
+                </span>
+                <span className="font-medium text-gray-800">
+                  {alert.instance}
+                </span>
+                <span className="text-gray-500">
+                  {alert.metric} = {alert.value}%
+                </span>
+              </div>
+              <span className="text-xs text-gray-400">
+                {alert.duration > 0
+                  ? `${Math.round(alert.duration / 60)}분 경과`
+                  : 'just now'}
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
 
 interface DashboardStatus {
   isRunning?: boolean;
@@ -113,6 +181,9 @@ export default memo(function DashboardContent({
       timestamp: new Date().toISOString(),
     });
   }
+
+  // MonitoringContext Health Score
+  const { data: monitoringReport } = useMonitoringReport();
 
   // 🎯 서버 데이터에서 직접 통계 계산 (중복 API 호출 제거)
   const [statsLoading, _setStatsLoading] = useState(false);
@@ -357,7 +428,15 @@ export default memo(function DashboardContent({
                 stats={serverStats}
                 activeFilter={statusFilter}
                 onFilterChange={onStatusFilterChange}
+                healthScore={monitoringReport?.health?.score}
+                healthGrade={monitoringReport?.health?.grade}
               />
+
+              {/* Active Alerts (접이식, 0건일 때 숨김) */}
+              {monitoringReport?.firingAlerts &&
+                monitoringReport.firingAlerts.length > 0 && (
+                  <ActiveAlertsSection alerts={monitoringReport.firingAlerts} />
+                )}
 
               {/* Infrastructure Topology (Collapsible) */}
               <div className="rounded-xl border border-white/10 bg-white/5 backdrop-blur-md">

@@ -690,6 +690,93 @@ describe('executePromQL - Edge Cases', () => {
 });
 
 // ============================================================================
+// Tests: OTel Metric Name Aliases
+// ============================================================================
+
+describe('executePromQL - OTel Metric Name Aliases', () => {
+  it('OTel 이름 system.cpu.utilization → Prometheus node_cpu_usage_percent 조회', () => {
+    const result = executePromQL('system.cpu.utilization', TEST_HOURLY_DATA);
+    expect(result.result).toHaveLength(4);
+    // web-01: 75, web-02: 85, db-01: 45, cache-01: 0
+    expect(result.result[0]!.value).toBe(75);
+  });
+
+  it('OTel 이름 + 라벨 필터', () => {
+    const result = executePromQL(
+      'system.cpu.utilization{server_type="web"}',
+      TEST_HOURLY_DATA
+    );
+    expect(result.result).toHaveLength(2);
+  });
+
+  it('OTel 이름 + aggregate', () => {
+    const result = executePromQL(
+      'avg(system.cpu.utilization)',
+      TEST_HOURLY_DATA
+    );
+    expect(result.result).toHaveLength(1);
+    expect(result.result[0]!.value).toBe(51.25);
+  });
+
+  it('OTel 이름 + aggregate + by', () => {
+    const result = executePromQL(
+      'avg(system.cpu.utilization) by (server_type)',
+      TEST_HOURLY_DATA
+    );
+    expect(result.result).toHaveLength(3);
+    const webGroup = result.result.find((s) => s.labels.server_type === 'web');
+    expect(webGroup?.value).toBe(80);
+  });
+
+  it('OTel 이름 + comparison', () => {
+    const result = executePromQL(
+      'system.cpu.utilization > 80',
+      TEST_HOURLY_DATA
+    );
+    expect(result.result).toHaveLength(1);
+    expect(result.result[0]!.value).toBe(85);
+  });
+
+  it('system.status == 0 (up == 0 동등)', () => {
+    const result = executePromQL('system.status == 0', TEST_HOURLY_DATA);
+    expect(result.result).toHaveLength(1);
+    expect(result.result[0]!.labels.instance).toBe('192.168.1.20:9100');
+  });
+
+  it('system.memory.utilization 조회', () => {
+    const result = executePromQL('system.memory.utilization', TEST_HOURLY_DATA);
+    expect(result.result).toHaveLength(4);
+  });
+
+  it('http.server.request.duration 조회', () => {
+    const result = executePromQL(
+      'http.server.request.duration',
+      TEST_HOURLY_DATA
+    );
+    expect(result.result).toHaveLength(4);
+    // 모든 서버의 기본값: 120ms
+    expect(result.result[0]!.value).toBe(120);
+  });
+
+  it('OTel 이름 파서 검증 (debugParsePromQL)', () => {
+    const result = debugParsePromQL(
+      'system.cpu.utilization{server_type="web"}'
+    );
+    expect(result).not.toBeNull();
+    expect(result!.type).toBe('instant');
+    expect(result!.metricName).toBe('system.cpu.utilization');
+    expect(result!.matchers).toHaveLength(1);
+  });
+
+  it('OTel 이름 rate 쿼리 파싱', () => {
+    const result = debugParsePromQL('rate(system.cpu.utilization[1h])');
+    expect(result).not.toBeNull();
+    expect(result!.type).toBe('rate');
+    expect(result!.metricName).toBe('system.cpu.utilization');
+  });
+});
+
+// ============================================================================
 // Tests: Query Validation
 // ============================================================================
 

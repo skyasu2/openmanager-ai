@@ -4,7 +4,6 @@
  * 서버 메트릭, 알림, 히스토리 관련 타입
  */
 
-import type { AlertSeverity } from '../common';
 import type { ServerSpecs } from '../server-common';
 import type { ProcessInfo, ServerAlert } from './base';
 import type { NetworkInfo, Service, SystemInfo } from './entities';
@@ -103,23 +102,6 @@ export interface EnhancedServerMetrics {
     timeSlot?: number;
     hour?: number;
     minute?: number;
-    cycleInfo?: {
-      scenario?: {
-        affectedServers: string[];
-        name: string;
-      };
-      intensity: number;
-    };
-    scenarios?: Array<{
-      type: ServerRole;
-      severity: AlertSeverity;
-      description: string;
-    }>;
-    baseline?: {
-      cpu: number;
-      memory: number;
-      network: number;
-    };
     timeInfo?: {
       normalized: number;
       actual: number;
@@ -128,7 +110,6 @@ export interface EnhancedServerMetrics {
       hour: number;
       validUntil: number;
     };
-    isAffectedByCurrentCycle?: boolean;
     [key: string]: unknown;
   };
 

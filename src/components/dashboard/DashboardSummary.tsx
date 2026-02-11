@@ -23,6 +23,8 @@ interface DashboardSummaryProps {
   stats: DashboardStats;
   activeFilter?: string | null;
   onFilterChange?: (filter: string | null) => void;
+  healthScore?: number;
+  healthGrade?: string;
 }
 
 // 🎨 상태별 그라데이션 설정 (ImprovedServerCard와 통일)
@@ -159,10 +161,34 @@ function StatusCard({
   );
 }
 
+// 등급별 색상 매핑
+const gradeColors: Record<string, { bg: string; text: string; ring: string }> =
+  {
+    A: {
+      bg: 'bg-emerald-100',
+      text: 'text-emerald-700',
+      ring: 'ring-emerald-300',
+    },
+    B: { bg: 'bg-blue-100', text: 'text-blue-700', ring: 'ring-blue-300' },
+    C: {
+      bg: 'bg-yellow-100',
+      text: 'text-yellow-700',
+      ring: 'ring-yellow-300',
+    },
+    D: {
+      bg: 'bg-orange-100',
+      text: 'text-orange-700',
+      ring: 'ring-orange-300',
+    },
+    F: { bg: 'bg-red-100', text: 'text-red-700', ring: 'ring-red-300' },
+  };
+
 export const DashboardSummary: React.FC<DashboardSummaryProps> = ({
   stats,
   activeFilter,
   onFilterChange,
+  healthScore,
+  healthGrade,
 }) => {
   // Null-safe 처리
   const safeStats = {
@@ -298,7 +324,27 @@ export const DashboardSummary: React.FC<DashboardSummaryProps> = ({
             </div>
           </div>
 
-          <div className="flex gap-6 text-center pr-2">
+          <div className="flex gap-6 text-center pr-2 items-center">
+            {healthGrade != null && healthScore != null && (
+              <>
+                <div className="flex flex-col items-center">
+                  <div
+                    className={cn(
+                      'flex h-10 w-10 items-center justify-center rounded-xl text-lg font-black ring-2',
+                      gradeColors[healthGrade]?.bg ?? 'bg-gray-100',
+                      gradeColors[healthGrade]?.text ?? 'text-gray-700',
+                      gradeColors[healthGrade]?.ring ?? 'ring-gray-300'
+                    )}
+                  >
+                    {healthGrade}
+                  </div>
+                  <div className="text-[9px] font-semibold text-gray-400 uppercase mt-1">
+                    {healthScore}점
+                  </div>
+                </div>
+                <div className="w-px h-8 bg-gray-200" />
+              </>
+            )}
             <div>
               <div
                 className={`text-2xl font-bold leading-none ${safeStats.critical > 0 ? 'text-rose-500' : 'text-gray-400'}`}

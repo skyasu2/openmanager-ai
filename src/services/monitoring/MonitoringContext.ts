@@ -9,6 +9,7 @@
  */
 
 import { getHourlyData, type HourlyData } from '@/data/hourly-data';
+import { getOTelResourceCatalog } from '@/data/otel-processed';
 import { executePromQL } from '@/lib/promql/promql-engine';
 import {
   getKSTMinuteOfDay,
@@ -178,7 +179,48 @@ export class MonitoringContext {
       ctx += '\n';
     }
 
+    // OTel Resource Context
+    ctx += this.buildOTelResourceContext();
+
     return ctx;
+  }
+
+  /**
+   * OTel Resource 메타데이터 컨텍스트 생성
+   */
+  private buildOTelResourceContext(): string {
+    try {
+      const catalog = getOTelResourceCatalog();
+      const resources = Object.values(catalog.resources);
+      if (resources.length === 0) return '';
+
+      // 서버 타입별 집계
+      const typeCounts = new Map<string, number>();
+      const zones = new Set<string>();
+      for (const r of resources) {
+        const type = r['host.type'];
+        typeCounts.set(type, (typeCounts.get(type) || 0) + 1);
+        zones.add(r['cloud.availability_zone']);
+      }
+
+      let ctx = '\n[OTel Resource Context]\n';
+      ctx += `Schema: OpenTelemetry Semantic Conventions v1.27\n`;
+      ctx += `Hosts: ${resources.length} (${Array.from(typeCounts.entries())
+        .map(([t, c]) => `${t}:${c}`)
+        .join(', ')})\n`;
+      ctx += `Zones: ${Array.from(zones).join(', ')}\n`;
+      ctx += `Metric Schema (OTel → PromQL alias):\n`;
+      ctx += `  system.cpu.utilization (alias: node_cpu_usage_percent), ratio 0-1\n`;
+      ctx += `  system.memory.utilization (alias: node_memory_usage_percent), ratio 0-1\n`;
+      ctx += `  system.filesystem.utilization (alias: node_filesystem_usage_percent), ratio 0-1\n`;
+      ctx += `  system.network.io (alias: node_network_transmit_bytes_rate), By/s\n`;
+      ctx += `  system.status (alias: up), 1=up/0=down\n`;
+      ctx += `Query: Both OTel and Prometheus names accepted in queryMetric()\n`;
+
+      return ctx;
+    } catch {
+      return '';
+    }
   }
 
   /**

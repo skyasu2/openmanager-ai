@@ -88,6 +88,19 @@ const METRIC_FIELD_MAP: Record<string, keyof PrometheusTarget['metrics']> = {
   up: 'up',
 };
 
+// OTel Semantic Convention 이름 → Prometheus 이름 별칭 맵
+const OTEL_ALIAS_MAP: Record<string, string> = {
+  'system.cpu.utilization': 'node_cpu_usage_percent',
+  'system.memory.utilization': 'node_memory_usage_percent',
+  'system.filesystem.utilization': 'node_filesystem_usage_percent',
+  'system.network.io': 'node_network_transmit_bytes_rate',
+  'system.cpu.load_average.1m': 'node_load1',
+  'system.cpu.load_average.5m': 'node_load5',
+  'system.processes.count': 'node_procs_running',
+  'http.server.request.duration': 'node_http_request_duration_milliseconds',
+  'system.status': 'up',
+};
+
 // ============================================================================
 // Query Validation
 // ============================================================================
@@ -127,9 +140,9 @@ function parseLabelMatchers(matcherStr: string): LabelMatcher[] {
 function parsePromQL(query: string): ParsedQuery {
   const trimmed = query.trim();
 
-  // rate(metric[window])
+  // rate(metric[window]) — [\w.]+ allows OTel dotted names
   const rateMatch = trimmed.match(
-    /^rate\(\s*(\w+)(?:\{([^}]*)\})?\s*\[(\w+)\]\s*\)$/
+    /^rate\(\s*([\w.]+)(?:\{([^}]*)\})?\s*\[(\w+)\]\s*\)$/
   );
   if (rateMatch) {
     return {
@@ -140,9 +153,9 @@ function parsePromQL(query: string): ParsedQuery {
     };
   }
 
-  // aggregate(metric{labels}) by (groupLabels)
+  // aggregate(metric{labels}) by (groupLabels) — [\w.]+ allows OTel dotted names
   const aggMatch = trimmed.match(
-    /^(avg|max|min|sum|count)\(\s*(\w+)(?:\{([^}]*)\})?\s*\)(?:\s+by\s+\(([^)]+)\))?$/
+    /^(avg|max|min|sum|count)\(\s*([\w.]+)(?:\{([^}]*)\})?\s*\)(?:\s+by\s+\(([^)]+)\))?$/
   );
   if (aggMatch) {
     const groupBy = aggMatch[4]
@@ -157,9 +170,9 @@ function parsePromQL(query: string): ParsedQuery {
     };
   }
 
-  // metric{labels} op value (comparison)
+  // metric{labels} op value (comparison) — [\w.]+ allows OTel dotted names
   const compMatch = trimmed.match(
-    /^(\w+)(?:\{([^}]*)\})?\s*(==|!=|>=|<=|>|<)\s*(\d+(?:\.\d+)?)$/
+    /^([\w.]+)(?:\{([^}]*)\})?\s*(==|!=|>=|<=|>|<)\s*(\d+(?:\.\d+)?)$/
   );
   if (compMatch) {
     return {
@@ -171,8 +184,8 @@ function parsePromQL(query: string): ParsedQuery {
     };
   }
 
-  // Simple metric selector: metric or metric{labels}
-  const simpleMatch = trimmed.match(/^(\w+)(?:\{([^}]*)\})?$/);
+  // Simple metric selector: metric or metric{labels} — [\w.]+ allows OTel dotted names
+  const simpleMatch = trimmed.match(/^([\w.]+)(?:\{([^}]*)\})?$/);
   if (simpleMatch) {
     return {
       type: 'instant',
@@ -239,7 +252,9 @@ function extractSamples(
     hourlyData.dataPoints[slotIndex ?? 0] ?? hourlyData.dataPoints[0];
   if (!dataPoint) return [];
 
-  const fieldKey = METRIC_FIELD_MAP[parsed.metricName];
+  // OTel 이름 → Prometheus 이름 정규화 (e.g. system.cpu.utilization → node_cpu_usage_percent)
+  const normalizedName = OTEL_ALIAS_MAP[parsed.metricName] ?? parsed.metricName;
+  const fieldKey = METRIC_FIELD_MAP[normalizedName];
   if (!fieldKey) {
     logger.debug(`[PromQL] Unknown metric name: "${parsed.metricName}"`);
     return [];

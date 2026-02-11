@@ -42,7 +42,7 @@ export const analyticsRouter = new Hono();
  */
 analyticsRouter.post('/analyze-server', async (c: Context) => {
   try {
-    const { serverId, analysisType = 'full', options = {} } = await c.req.json();
+    const { serverId, analysisType = 'full', options = {}, currentMetrics } = await c.req.json();
 
     logger.info(`[Analyze Server] serverId=${serverId}, type=${analysisType}`);
 
@@ -72,6 +72,7 @@ analyticsRouter.post('/analyze-server', async (c: Context) => {
       results.anomalyDetection = await detectAnomalies.execute!({
         serverId: serverId || undefined,
         metricType,
+        currentMetrics,
       }, { toolCallId: 'analyze-server-anomaly', messages: [] });
     }
 

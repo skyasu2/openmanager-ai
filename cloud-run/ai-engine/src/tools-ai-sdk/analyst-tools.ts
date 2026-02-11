@@ -156,9 +156,23 @@ const PATTERN_INSIGHTS: Record<string, string> = {
  *
  * Dashboard 일관성: 임계값 초과 시 무조건 이상으로 판정
  */
+// ============================================================================
+// 3.1 Statistical + Threshold Anomaly Detection (Dashboard Compatible)
+// ============================================================================
+
+/**
+ * Detect Anomalies Tool v2.1
+ *
+ * Hybrid approach combining:
+ * 1. Fixed thresholds (Dashboard compatible) - Primary
+ * 2. Statistical (6-hour moving average + 2σ) - Secondary
+ * 3. Enhanced Metrics (Load Avg, Network) - Tertiary (Aligned with Docs)
+ *
+ * Dashboard 일관성: 임계값 초과 시 무조건 이상으로 판정
+ */
 export const detectAnomalies = tool({
   description:
-    '서버 메트릭의 이상치를 탐지합니다. Dashboard와 동일한 임계값 + 통계적 분석을 결합합니다.',
+    '서버 메트릭의 이상치를 탐지합니다. Dashboard와 동일한 임계값 + 통계적 분석을 결합합니다. Load Average 및 Network 상태도 분석합니다.',
   inputSchema: z.object({
     serverId: z
       .string()
@@ -168,20 +182,42 @@ export const detectAnomalies = tool({
       .enum(['cpu', 'memory', 'disk', 'all'])
       .default('all')
       .describe('분석할 메트릭 타입'),
+    currentMetrics: z
+      .object({
+        cpu: z.number().optional(),
+        memory: z.number().optional(),
+        disk: z.number().optional(),
+        network: z.number().optional(),
+        load1: z.number().optional(),
+        load5: z.number().optional(),
+        cpuCores: z.number().optional(),
+      })
+      .optional()
+      .describe('현재 서버 메트릭 (실시간 데이터 주입용)'),
   }),
   execute: async ({
     serverId,
     metricType,
+    currentMetrics,
   }: {
     serverId?: string;
     metricType: 'cpu' | 'memory' | 'disk' | 'all';
+    currentMetrics?: {
+      cpu?: number;
+      memory?: number;
+      disk?: number;
+      network?: number;
+      load1?: number;
+      load5?: number;
+      cpuCores?: number;
+    };
   }) => {
     try {
       const cache = getDataCache();
 
       return await cache.getAnalysis(
         'anomaly',
-        { serverId: serverId || 'first', metricType },
+        { serverId: serverId || 'first', metricType, currentMetrics },
         async () => {
           const state = getCurrentState();
           const server: ServerSnapshot | undefined = serverId
@@ -195,6 +231,10 @@ export const detectAnomalies = tool({
             };
           }
 
+          // Merge currentMetrics with server snapshot if provided
+          const analyzedServer = { ...server, ...currentMetrics };
+
+          // Basic metrics to scan
           const metrics = ['cpu', 'memory', 'disk'] as const;
           const targetMetrics =
             metricType === 'all'
@@ -204,22 +244,22 @@ export const detectAnomalies = tool({
           const results: Record<string, AnomalyResultItem & { thresholdExceeded?: boolean }> = {};
           const detector = getAnomalyDetector();
 
+          // 1. Basic Metrics Analysis (CPU, Memory, Disk)
           for (const metric of targetMetrics) {
-            const currentValue = server[metric as keyof typeof server] as number;
-            const history = getHistoryForMetric(server.id, metric, currentValue);
+            const currentValue = analyzedServer[metric as keyof typeof analyzedServer] as number;
+            const history = getHistoryForMetric(analyzedServer.id, metric, currentValue);
 
-            // 1. Statistical detection (existing)
+            // Statistical detection
             const detection = detector.detectAnomaly(currentValue, history);
 
-            // 2. Fixed threshold check (Dashboard compatible)
+            // Fixed threshold check
             const threshold = STATUS_THRESHOLDS[metric as keyof typeof STATUS_THRESHOLDS];
             const thresholdExceeded = currentValue >= threshold.warning;
             const isCritical = currentValue >= threshold.critical;
 
-            // 3. Combine: Threshold exceeded = anomaly (Dashboard consistency)
+            // Combine
             const isAnomaly = thresholdExceeded || detection.isAnomaly;
 
-            // 4. Determine severity
             let severity = detection.severity;
             if (isCritical) {
               severity = 'high';
@@ -238,6 +278,55 @@ export const detectAnomalies = tool({
               },
               thresholdExceeded,
             };
+          }
+
+          // 2. Enhanced Metrics Analysis (Network, Load Avg) - if in 'all' mode
+          if (metricType === 'all') {
+            // Network Analysis (using threshold)
+            if (typeof analyzedServer.network === 'number') {
+              const netValue = analyzedServer.network;
+              const netThreshold = STATUS_THRESHOLDS.network;
+              const netExceeded = netValue >= netThreshold.warning;
+              
+              if (netExceeded) {
+                const isNetCritical = netValue >= netThreshold.critical;
+                results['network'] = {
+                  isAnomaly: true,
+                  severity: isNetCritical ? 'high' : 'medium',
+                  confidence: 0.9,
+                  currentValue: netValue,
+                  threshold: { upper: netThreshold.warning, lower: 0 },
+                  thresholdExceeded: true
+                };
+              }
+            }
+
+            // Load Average Analysis
+            if (
+              analyzedServer.load1 !== undefined &&
+              analyzedServer.cpuCores !== undefined &&
+              analyzedServer.cpuCores > 0
+            ) {
+              const load1 = analyzedServer.load1;
+              const cores = analyzedServer.cpuCores;
+              
+              // Rule: Load > Cores (Warning), Load > Cores * 1.5 (Critical)
+              // Note: Adjusted rule for demo sensitivity
+              const loadWarning = cores * 1.0; 
+              const loadCritical = cores * 1.5;
+
+              if (load1 >= loadWarning) {
+                const isLoadCritical = load1 >= loadCritical;
+                 results['load_average'] = {
+                  isAnomaly: true,
+                  severity: isLoadCritical ? 'high' : 'medium',
+                  confidence: 0.85,
+                  currentValue: load1,
+                  threshold: { upper: loadWarning, lower: 0 },
+                  thresholdExceeded: true
+                };
+              }
+            }
           }
 
           const anomalyCount = Object.values(results).filter(
@@ -282,18 +371,27 @@ export const detectAnomalies = tool({
             }
           }
 
+          // Format details string for included enhanced metrics
+          let details = `${analyzedServer.name}: ${anomalyCount}개 메트릭에서 이상 감지 (${overallStatus})`;
+          if (results['load_average']?.isAnomaly) {
+            details += ` | Load Avg high (${results['load_average'].currentValue})`;
+          }
+          if (results['network']?.isAnomaly) {
+            details += ` | Network high (${results['network'].currentValue}%)`;
+          }
+
           return {
             success: true,
-            serverId: server.id,
-            serverName: server.name,
+            serverId: analyzedServer.id,
+            serverName: analyzedServer.name,
             status: overallStatus,
             anomalyCount,
             hasAnomalies: anomalyCount > 0,
             results,
             // v2.1: Return both message and structured summary
             summaryMessage: anomalyCount > 0
-              ? `${server.name}: ${anomalyCount}개 메트릭에서 이상 감지 (${overallStatus})`
-              : `${server.name}: 정상 (이상 없음)`,
+              ? details
+              : `${analyzedServer.name}: 정상 (이상 없음)`,
             summary: {
               totalServers: allServers.length,
               healthyCount,
@@ -301,7 +399,7 @@ export const detectAnomalies = tool({
               criticalCount,
             },
             timestamp: new Date().toISOString(),
-            _algorithm: 'Threshold + Statistical (Dashboard Compatible)',
+            _algorithm: 'Threshold + Statistical + Enhanced Metrics',
           };
         }
       );
