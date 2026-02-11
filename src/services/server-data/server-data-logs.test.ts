@@ -28,13 +28,6 @@ function hasLogMatching(
   return logs.some((l) => pattern.test(l.message));
 }
 
-function hasLogLevel(
-  logs: ReturnType<typeof generateServerLogs>,
-  level: 'error' | 'warn' | 'info'
-): boolean {
-  return logs.some((l) => l.level === level);
-}
-
 // ── Tests ────────────────────────────────────────────────────────────────────
 
 describe('generateServerLogs', () => {
