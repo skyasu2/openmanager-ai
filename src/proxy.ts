@@ -6,7 +6,7 @@
  *
  * 📌 접근 권한 정책:
  * - 공개 페이지: `/`, `/main`, `/login`, `/auth/*`, `/api/*`
- * - 보호 페이지: `/dashboard/*`, `/system-boot/*` (GitHub 로그인 필요)
+ * - 보호 페이지: `/dashboard/*`, `/system-boot/*` (GitHub 또는 게스트 로그인 필요)
  *
  * ⚠️ 개발 모드 (NEXT_PUBLIC_DEV_BYPASS_AUTH=true):
  * - 모든 페이지 접근 허용 (게스트/비로그인 포함)
@@ -128,8 +128,8 @@ export async function proxy(request: NextRequest) {
     const hasSession = hasSupabaseAuthCookie(request);
     const isGuest = isGuestAuth(request);
 
-    // GitHub 로그인 사용자만 허용 (게스트는 제외)
-    if (!hasSession || isGuest) {
+    // 인증된 사용자만 허용 (GitHub OAuth 또는 게스트 세션)
+    if (!hasSession && !isGuest) {
       logger.warn(
         `[Proxy] Access denied: ${pathname} (hasSession: ${hasSession}, isGuest: ${isGuest})`
       );
