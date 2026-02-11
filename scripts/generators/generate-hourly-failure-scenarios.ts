@@ -1465,7 +1465,7 @@ function generate5MinuteDataPoints(hour: number): any[] {
  * 24시간 JSON 파일 생성
  */
 function generateHourlyJSONFiles() {
-  const outputDir = path.join(__dirname, '../public/hourly-data');
+  const outputDir = path.join(__dirname, '../src/data/hourly-data');
 
   // 디렉토리 생성
   if (!fs.existsSync(outputDir)) {

@@ -105,7 +105,6 @@ export class UnifiedServerDataSource {
    * import { getServersFromUnifiedSource } from '@/services/data/UnifiedServerDataSource';
    * const servers = await getServersFromUnifiedSource();
    *
-   * @see {@link loadHourlyServerData} 실제 데이터 소스
    * @see {@link docs/core/architecture/data/data-architecture.md} 아키텍처 가이드
    */
   public async getServers(): Promise<Server[]> {

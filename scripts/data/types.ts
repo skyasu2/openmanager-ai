@@ -26,6 +26,4 @@ export type { HealthReport, HealthGrade } from '../../src/services/monitoring/He
 // Pre-computed Output 타입
 export type {
   PrecomputedTimeSeries,
-  PrecomputedHourly,
-  MetricsMetadata,
 } from '../../src/types/processed-metrics';

@@ -2,10 +2,10 @@
  * MonitoringContext - 모니터링 파이프라인 통합
  *
  * AlertManager + MetricsAggregator + HealthCalculator → AI/Dashboard 출력
- * Pre-computed 데이터 우선 로드, fallback으로 런타임 계산
+ * 런타임 계산 (15서버 집계 <1ms, Edge Runtime 호환)
  *
  * @created 2026-02-04
- * @updated 2026-02-04 - Pre-computed 데이터 캐시 + PromQL queryMetric()
+ * @updated 2026-02-11 - Pre-computed fs.readFileSync 제거, 런타임 전용
  */
 
 import { getHourlyData, type HourlyData } from '@/data/hourly-data';
@@ -16,10 +16,7 @@ import {
   getKSTTimestamp,
   MetricsProvider,
 } from '@/services/metrics/MetricsProvider';
-import type {
-  PrecomputedHourly,
-  PromQLResult,
-} from '@/types/processed-metrics';
+import type { PromQLResult } from '@/types/processed-metrics';
 import { type Alert, AlertManager } from './AlertManager';
 import { HealthCalculator, type HealthReport } from './HealthCalculator';
 import { type AggregatedMetrics, MetricsAggregator } from './MetricsAggregator';
@@ -30,43 +27,6 @@ export type MonitoringReport = {
   aggregated: AggregatedMetrics;
   firingAlerts: Alert[];
 };
-
-// Pre-computed hourly data cache
-let precomputedCache: { hour: number; data: PrecomputedHourly } | null = null;
-
-function loadPrecomputed(hour: number): PrecomputedHourly | null {
-  if (precomputedCache?.hour === hour) {
-    return precomputedCache.data;
-  }
-
-  // Server-side: try dynamic import from public/processed-metrics
-  // In Next.js server context, use fetch-based loading
-  try {
-    // For server-side, we attempt to load from the bundled data
-    // This will be populated by the precompute pipeline
-    if (typeof globalThis !== 'undefined' && typeof window === 'undefined') {
-      // Server-side: use fs to load pre-computed data
-      const fs = require('node:fs');
-      const path = require('node:path');
-      const filePath = path.join(
-        process.cwd(),
-        'public/processed-metrics/hourly',
-        `hour-${hour.toString().padStart(2, '0')}.json`
-      );
-
-      if (fs.existsSync(filePath)) {
-        const raw = fs.readFileSync(filePath, 'utf-8');
-        const data = JSON.parse(raw) as PrecomputedHourly;
-        precomputedCache = { hour, data };
-        return data;
-      }
-    }
-  } catch {
-    // Pre-computed data not available, fallback to runtime
-  }
-
-  return null;
-}
 
 export class MonitoringContext {
   private alertManager = new AlertManager();
@@ -85,25 +45,10 @@ export class MonitoringContext {
   }
 
   /**
-   * 분석 실행: pre-computed 우선, fallback으로 런타임 계산
+   * 분석 실행: 런타임 계산 (15서버 집계 <1ms)
    */
   analyze(): MonitoringReport {
-    const minuteOfDay = getKSTMinuteOfDay();
-    const currentHour = Math.floor(minuteOfDay / 60);
     const timestamp = getKSTTimestamp();
-
-    // Pre-computed 데이터 우선 시도
-    const cached = loadPrecomputed(currentHour);
-    if (cached) {
-      return {
-        timestamp,
-        health: cached.health,
-        aggregated: cached.aggregated,
-        firingAlerts: cached.alerts,
-      };
-    }
-
-    // Fallback: 런타임 계산 (기존 로직)
     const provider = MetricsProvider.getInstance();
     const allMetrics = provider.getAllServerMetrics();
 
@@ -121,19 +66,8 @@ export class MonitoringContext {
 
   /**
    * AI용 LLM 컨텍스트 (~100 토큰)
-   * Pre-computed aiContext 우선 사용
    */
   getLLMContext(): string {
-    const minuteOfDay = getKSTMinuteOfDay();
-    const currentHour = Math.floor(minuteOfDay / 60);
-
-    // Pre-computed AI context 우선
-    const cached = loadPrecomputed(currentHour);
-    if (cached?.aiContext) {
-      return cached.aiContext;
-    }
-
-    // Fallback: 런타임 생성
     const report = this.analyze();
     const { health, aggregated, firingAlerts, timestamp } = report;
 

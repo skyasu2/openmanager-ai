@@ -11,9 +11,8 @@
  *   npx tsx scripts/data/sync-hourly-data.ts
  *
  * 출력:
- *   - public/hourly-data/hour-XX.json (24개 파일)
+ *   - src/data/hourly-data/hour-XX.json (24개 파일, SSOT 번들)
  *   - cloud-run/ai-engine/data/hourly-data/hour-XX.json (24개 파일)
- *   - src/data/hourly-data/hour-XX.json (24개 파일)
  */
 
 import fs from 'fs';
@@ -869,11 +868,10 @@ function main() {
     console.log('🔄 SSOT 데이터 동기화 시작 (Prometheus 포맷)...\n');
     console.log('📋 SSOT: Prometheus/node_exporter 스타일 (한국 DC 서버 15개)\n');
 
-    // 출력 디렉토리들 (3곳 동기화)
+    // 출력 디렉토리들 (2곳 동기화)
     const outputDirs = [
-      path.join(process.cwd(), 'public/hourly-data'),
-      path.join(process.cwd(), 'cloud-run/ai-engine/data/hourly-data'),
       path.join(process.cwd(), 'src/data/hourly-data'),
+      path.join(process.cwd(), 'cloud-run/ai-engine/data/hourly-data'),
     ];
 
     // 디렉토리 생성

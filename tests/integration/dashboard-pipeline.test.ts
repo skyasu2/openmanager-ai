@@ -16,7 +16,6 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Mock dependencies
 vi.mock('@/services/data/UnifiedServerDataSource', () => ({
-  getServerMetricsFromUnifiedSource: vi.fn(),
   getUnifiedServerDataSource: vi.fn(() => ({
     getServers: vi.fn(),
   })),
@@ -58,10 +57,7 @@ vi.mock('@/lib/api/zod-middleware', () => ({
 
 import { GET, POST } from '@/app/api/dashboard/route';
 // Import after mocks
-import {
-  getServerMetricsFromUnifiedSource,
-  getUnifiedServerDataSource,
-} from '@/services/data/UnifiedServerDataSource';
+import { getUnifiedServerDataSource } from '@/services/data/UnifiedServerDataSource';
 
 // Mock server data
 const mockServers = [
@@ -107,18 +103,9 @@ const mockServers = [
   },
 ];
 
-const mockMetrics = {
-  totalServers: 4,
-  onlineServers: 2,
-  warningServers: 1,
-  criticalServers: 1,
-};
-
 describe('/api/dashboard Integration', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-
-    vi.mocked(getServerMetricsFromUnifiedSource).mockResolvedValue(mockMetrics);
 
     const mockDataSource = getUnifiedServerDataSource();
     vi.mocked(mockDataSource.getServers).mockResolvedValue(mockServers);
@@ -272,10 +259,6 @@ describe('/api/dashboard Integration', () => {
       vi.mocked(mockDataSource.getServers).mockRejectedValue(
         new Error('Database connection failed')
       );
-      vi.mocked(getServerMetricsFromUnifiedSource).mockRejectedValue(
-        new Error('Metrics unavailable')
-      );
-
       // 테스트 모드가 아닌 경우를 시뮬레이션 (실제 핸들러 호출)
       // 하지만 테스트 모드에서는 에러가 발생하지 않으므로 다른 방식으로 테스트
       const request = new NextRequest('http://localhost:3000/api/dashboard', {

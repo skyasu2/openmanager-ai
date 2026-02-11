@@ -13,7 +13,7 @@ import {
   type DashboardServer,
   type DashboardStats,
 } from '@/schemas/api.schema';
-import { getServerMetricsFromUnifiedSource } from '@/services/data/UnifiedServerDataSource';
+import { getUnifiedServerDataSource } from '@/services/data/UnifiedServerDataSource';
 import type { Server } from '@/types/server';
 import { getErrorMessage } from '@/types/type-utils';
 import debug from '@/utils/debug';
@@ -96,20 +96,12 @@ const getHandler = createApiRoute()
     let serverList: SupabaseServer[] = [];
 
     try {
-      // 🎯 통합 서버 메트릭 조회 (중앙집중식 설정)
-      const metrics = await getServerMetricsFromUnifiedSource();
-      const config = getSystemConfig();
-
-      debug.log(
-        `🎯 통합 데이터 소스에서 ${metrics.totalServers}개 서버 로드 완료`
-      );
-
-      // 실제 서버 리스트 가져오기
-      const { getUnifiedServerDataSource } = await import(
-        '@/services/data/UnifiedServerDataSource'
-      );
+      // 🎯 통합 서버 데이터 조회 (단일 호출)
       const dataSource = getUnifiedServerDataSource();
       const servers = await dataSource.getServers();
+      const config = getSystemConfig();
+
+      debug.log(`🎯 통합 데이터 소스에서 ${servers.length}개 서버 로드 완료`);
 
       // 서버 데이터를 SupabaseServer 형태로 변환 (기존 호환성 유지)
       serverList = servers.map(

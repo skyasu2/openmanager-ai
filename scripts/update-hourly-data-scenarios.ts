@@ -177,7 +177,7 @@ function generateServices(scenario: ScenarioUpdate, serverType: string): Service
 }
 
 // hourly-data 디렉토리 경로
-const HOURLY_DATA_DIR = path.join(__dirname, '../public/hourly-data');
+const HOURLY_DATA_DIR = path.join(__dirname, '../src/data/hourly-data');
 
 // 시나리오를 적용할 시간대 찾기
 function getScenariosForHour(hour: number): ScenarioUpdate[] {

@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "generatedAt": "2026-02-11T07:56:16.821Z",
+  "generatedAt": "2026-02-11T10:54:40.214Z",
   "resources": {
     "web-nginx-icn-01": {
       "service.name": "openmanager-vibe",

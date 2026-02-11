@@ -15,7 +15,7 @@
  *
  * @see src/services/data/UnifiedServerDataSource.ts - 통합 데이터 소스 (10분 TTL)
  * @see src/services/server-data/server-data-loader.ts - 서버 데이터 로더
- * @see public/hourly-data/hour-XX.json - 시간별 JSON 데이터
+ * @see src/data/hourly-data/hour-XX.json - 시간별 JSON 데이터
  */
 
 import { useCallback, useEffect, useRef, useState } from 'react';

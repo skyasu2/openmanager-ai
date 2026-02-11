@@ -12,7 +12,6 @@
  *
  * 사용법:
  *   npx tsx scripts/data/otel-precompute.ts
- *   npx tsx scripts/data/otel-precompute.ts --verify
  *
  * @created 2026-02-11
  */
@@ -33,10 +32,8 @@ import { processServerLogs } from './otel/otel-log-processor';
 import { buildResourceCatalog } from './otel/otel-resource-builder';
 import type {
   HourlyData,
-  OTelHourlyFile,
   OTelHourlySlot,
   OTelMetric,
-  OTelResourceCatalog,
   OTelTimeSeries,
   PrometheusTarget,
 } from './otel/types';
@@ -98,16 +95,14 @@ function targetsToOTelMetrics(
 // ============================================================================
 
 function main(): void {
-  const verifyMode = process.argv.includes('--verify');
   const projectRoot = path.resolve(__dirname, '../..');
-  const hourlyDataDir = path.join(projectRoot, 'public/hourly-data');
+  const hourlyDataDir = path.join(projectRoot, 'src/data/hourly-data');
   const outputDir = path.join(projectRoot, 'src/data/otel-processed');
   const hourlyOutputDir = path.join(outputDir, 'hourly');
 
   console.log('=== OTel Pre-compute Pipeline ===\n');
-  console.log(`  Mode: ${verifyMode ? 'VERIFY' : 'GENERATE'}`);
-  console.log(`  Input: public/hourly-data/*.json`);
-  console.log(`  Output: src/data/otel-processed/\n`);
+  console.log(`  Input: src/data/hourly-data/*.json`);
+  console.log(`  Output: src/data/otel-processed/ + public/processed-metrics/timeseries.json\n`);
 
   // Output directories
   fs.mkdirSync(outputDir, { recursive: true });
@@ -189,19 +184,7 @@ function main(): void {
     const health = calculateHealth(aggregated, alerts);
     const aiContext = buildAIContext(hour, scenario, health, aggregated, alerts);
 
-    const hourlyFile: OTelHourlyFile = {
-      schemaVersion: SCHEMA_VERSION,
-      hour,
-      scope: { name: SCOPE_NAME, version: SCOPE_VERSION },
-      slots,
-      aggregated,
-      alerts,
-      health,
-      aiContext,
-    };
-
     // Slim 출력: 런타임에서 미사용 필드 제거 (aggregated/alerts/health/aiContext)
-    // 이 데이터는 public/processed-metrics/ 에 이미 존재
     // 또한 dataPoint에서 timeUnixNano, metric에서 description/unit 제거
     const slimHourlyFile = {
       schemaVersion: SCHEMA_VERSION,
@@ -314,55 +297,30 @@ function main(): void {
   console.log(`  -> OTel metrics: ${Object.keys(otelSeriesMap).length}, Legacy metrics: ${Object.keys(legacySeriesMap).length}\n`);
 
   // ====================================================================
-  // Step 4: Verify (optional)
+  // Step 3b: Output legacy timeseries to public/processed-metrics/
+  // (Replaces precompute-metrics.ts timeseries output)
   // ====================================================================
-  if (verifyMode) {
-    console.log('[4/4] Verifying against existing processed-metrics...');
-    const existingDir = path.join(projectRoot, 'public/processed-metrics/hourly');
+  console.log('[3b/4] Writing legacy timeseries to public/processed-metrics/...');
 
-    let matchCount = 0;
-    let mismatchCount = 0;
+  const legacyTimeseries = {
+    serverIds,
+    timestamps,
+    metrics: {
+      cpu: legacySeriesMap['cpu'],
+      memory: legacySeriesMap['memory'],
+      disk: legacySeriesMap['disk'],
+      network: legacySeriesMap['network'],
+      up: legacySeriesMap['up'],
+    },
+  };
+  const legacyTsDir = path.join(projectRoot, 'public/processed-metrics');
+  fs.mkdirSync(legacyTsDir, { recursive: true });
+  const legacyTsPath = path.join(legacyTsDir, 'timeseries.json');
+  fs.writeFileSync(legacyTsPath, JSON.stringify(legacyTimeseries));
+  const legacyTsSize = (fs.statSync(legacyTsPath).size / 1024).toFixed(1);
+  console.log(`  -> public/processed-metrics/timeseries.json (${legacyTsSize}KB)\n`);
 
-    for (let h = 0; h < 24; h++) {
-      const filename = `hour-${h.toString().padStart(2, '0')}.json`;
-      const existingPath = path.join(existingDir, filename);
-      const otelPath = path.join(hourlyOutputDir, filename);
-
-      if (!fs.existsSync(existingPath)) {
-        console.log(`  SKIP: ${filename} (no existing processed-metrics)`);
-        continue;
-      }
-
-      const existing = JSON.parse(fs.readFileSync(existingPath, 'utf-8'));
-      const otel = JSON.parse(fs.readFileSync(otelPath, 'utf-8')) as OTelHourlyFile;
-
-      // Compare aggregated fields
-      const aMatch = existing.aggregated.avgCpu === otel.aggregated.avgCpu
-        && existing.aggregated.avgMemory === otel.aggregated.avgMemory
-        && existing.aggregated.statusCounts.total === otel.aggregated.statusCounts.total;
-
-      // Compare health score
-      const hMatch = existing.health.score === otel.health.score
-        && existing.health.grade === otel.health.grade;
-
-      // Compare alert count
-      const alertMatch = existing.alerts.length === otel.alerts.length;
-
-      if (aMatch && hMatch && alertMatch) {
-        matchCount++;
-      } else {
-        mismatchCount++;
-        console.log(`  MISMATCH hour-${h.toString().padStart(2, '0')}:`);
-        if (!aMatch) console.log(`    aggregated: existing=${existing.aggregated.avgCpu}/${existing.aggregated.avgMemory} vs otel=${otel.aggregated.avgCpu}/${otel.aggregated.avgMemory}`);
-        if (!hMatch) console.log(`    health: existing=${existing.health.score}/${existing.health.grade} vs otel=${otel.health.score}/${otel.health.grade}`);
-        if (!alertMatch) console.log(`    alerts: existing=${existing.alerts.length} vs otel=${otel.alerts.length}`);
-      }
-    }
-
-    console.log(`\n  Verify result: ${matchCount} match, ${mismatchCount} mismatch\n`);
-  } else {
-    console.log('[4/4] Skipping verify (use --verify flag)\n');
-  }
+  // (Step 4: Verify was removed — legacy processed-metrics/hourly/ no longer exists)
 
   // ====================================================================
   // Summary
@@ -372,11 +330,12 @@ function main(): void {
     const hourPath = path.join(hourlyOutputDir, `hour-${h.toString().padStart(2, '0')}.json`);
     totalSize += fs.statSync(hourPath).size;
   }
+  const legacySize = fs.statSync(legacyTsPath).size;
 
   console.log('=== Summary ===');
-  console.log(`  Output: src/data/otel-processed/`);
-  console.log(`  Files: 1 resource-catalog + 24 hourly + 1 timeseries = 26 files`);
-  console.log(`  Total: ${(totalSize / 1024).toFixed(1)}KB`);
+  console.log(`  Output: src/data/otel-processed/ + public/processed-metrics/timeseries.json`);
+  console.log(`  Files: 1 resource-catalog + 24 hourly + 1 timeseries (OTel) + 1 timeseries (legacy) = 27 files`);
+  console.log(`  Total: ${((totalSize + legacySize) / 1024).toFixed(1)}KB`);
   console.log(`  Servers: ${serverCount}`);
   console.log(`  Data points: ${totalDataPoints}`);
   console.log(`  Time points: ${timestamps.length} (${timestamps.length / 6}h x 6 slots)`);

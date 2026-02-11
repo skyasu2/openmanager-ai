@@ -1,18 +1,12 @@
 /**
  * Pre-computed Metrics Type Definitions
  *
- * hourly-data (Prometheus format) -> precompute pipeline -> processed-metrics
+ * hourly-data (Prometheus format) -> otel-precompute pipeline -> processed-metrics
  * - Dashboard (uPlot): PrecomputedTimeSeries
- * - AI + Dashboard: PrecomputedHourly
- * - Metadata: MetricsMetadata
  *
  * @created 2026-02-04
+ * @updated 2026-02-11 - PrecomputedHourly, MetricsMetadata 제거 (레거시 파이프라인 삭제)
  */
-
-import type { PrometheusLabels } from '@/data/hourly-data';
-import type { Alert } from '@/services/monitoring/AlertManager';
-import type { HealthReport } from '@/services/monitoring/HealthCalculator';
-import type { AggregatedMetrics } from '@/services/monitoring/MetricsAggregator';
 
 // ============================================================================
 // uPlot Time Series (24h full timeline)
@@ -34,39 +28,6 @@ export type PrecomputedTimeSeries = {
     network: number[][];
     up: (0 | 1)[][];
   };
-};
-
-// ============================================================================
-// Hourly Pre-computed Data (Dashboard + AI)
-// ============================================================================
-
-/**
- * 시간대별 가공 데이터
- *
- * 기존 MonitoringContext.analyze() 결과를 빌드 타임에 미리 계산
- */
-export type PrecomputedHourly = {
-  hour: number;
-  scenario: string;
-  aggregated: AggregatedMetrics;
-  alerts: Alert[];
-  health: HealthReport;
-  aiContext: string;
-};
-
-// ============================================================================
-// Metadata
-// ============================================================================
-
-/**
- * 서버 메타데이터 + 시나리오 요약
- */
-export type MetricsMetadata = {
-  serverIds: string[];
-  serverLabels: Record<string, PrometheusLabels>;
-  scenarios: Array<{ hour: number; description: string }>;
-  availableMetrics: string[];
-  scrapeConfig: { interval: string; source: string };
 };
 
 // ============================================================================

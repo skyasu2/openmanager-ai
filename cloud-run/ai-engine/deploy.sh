@@ -92,7 +92,7 @@ echo "   ✅ system-rules.json synced to config/"
 
 # Hourly-data files (24h metrics SSOT)
 mkdir -p data/hourly-data
-cp ../../public/hourly-data/*.json ./data/hourly-data/
+cp ../../src/data/hourly-data/*.json ./data/hourly-data/
 echo "   ✅ hourly-data synced ($(ls -1 data/hourly-data/*.json | wc -l) files)"
 
 # 1. Build Container Image (Cloud Build with BuildKit)

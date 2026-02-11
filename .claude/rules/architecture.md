@@ -81,11 +81,11 @@ Cloud Run 측: cloud-run/ai-engine/src/{agents|tools}/
 
 ## Data Source (SSOT)
 
-**Single Source of Truth**: `public/hourly-data/hour-XX.json`
+**Single Source of Truth**: `src/data/hourly-data/hour-XX.json`
 
 | 컴포넌트 | 파일 | 역할 |
 |---------|------|------|
-| 데이터 원본 | `public/hourly-data/*.json` | 24시간 시나리오 |
+| 데이터 원본 | `src/data/hourly-data/*.json` | 24시간 시나리오 (번들 포함) |
 | Vercel 소비 | `src/services/data/UnifiedServerDataSource.ts` | API 제공 |
 | AI 소비 | `cloud-run/ai-engine/src/data/precomputed-state.ts` | AI 컨텍스트 |
 

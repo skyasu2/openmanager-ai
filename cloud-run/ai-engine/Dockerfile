@@ -124,7 +124,7 @@ COPY --from=builder /app/dist ./dist
 
 # Copy data files (SSOT)
 # - precomputed-states.json: O(1) lookup for AI context
-# - hourly-data/: Synced with Vercel public/hourly-data/
+# - hourly-data/: Synced with src/data/hourly-data/
 COPY data/precomputed-states.json ./data/
 COPY data/hourly-data/ ./data/hourly-data/
 

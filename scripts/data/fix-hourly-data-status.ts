@@ -87,10 +87,9 @@ function computeStatus(metrics: {
 // ============================================================================
 
 async function main() {
-  // 3곳 모두 동기화 (sync-hourly-data.ts와 동일 구조)
+  // 2곳 동기화 (sync-hourly-data.ts와 동일 구조)
   const dataDirs = [
-    path.join(process.cwd(), 'public/hourly-data'),           // SSOT
-    path.join(process.cwd(), 'src/data/hourly-data'),         // Vercel 번들
+    path.join(process.cwd(), 'src/data/hourly-data'),         // SSOT 번들
     path.join(process.cwd(), 'cloud-run/ai-engine/data/hourly-data'), // Cloud Run
   ].filter(dir => fs.existsSync(dir));
 
