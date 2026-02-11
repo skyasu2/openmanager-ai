@@ -22,28 +22,27 @@ import {
   type SystemStatusPayload,
 } from '../interfaces/SystemEventBus';
 import { HealthCheckManager } from './HealthCheckManager';
-import { SystemStabilityMonitor } from './SystemStabilityMonitor';
 import type {
   ProcessConfig,
   ProcessState,
   SystemMetrics,
 } from './process-types';
+import { SystemStabilityMonitor } from './SystemStabilityMonitor';
 
+// Re-export split modules for barrel access
+export {
+  type HealthCheckContext,
+  HealthCheckManager,
+} from './HealthCheckManager';
 // Re-export types for backward compatibility
 export type {
   ProcessConfig,
   ProcessState,
   SystemMetrics,
 } from './process-types';
-
-// Re-export split modules for barrel access
 export {
-  HealthCheckManager,
-  type HealthCheckContext,
-} from './HealthCheckManager';
-export {
-  SystemStabilityMonitor,
   type StabilityContext,
+  SystemStabilityMonitor,
 } from './SystemStabilityMonitor';
 
 /**

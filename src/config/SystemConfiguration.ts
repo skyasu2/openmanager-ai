@@ -35,7 +35,7 @@ export const ServerConfigSchema = z.object({
   // Mock 시스템 설정
   mockSystem: z.object({
     enabled: z.boolean().default(true),
-    dataSource: z.enum(['basic', 'expanded', 'custom']).default('custom'), // 🎯 scenario-loader 사용
+    dataSource: z.enum(['basic', 'expanded', 'custom']).default('custom'), // 🎯 server-data-loader 사용
     autoRotation: z.boolean().default(false),
     updateInterval: z.number().min(1000).default(600000), // 10분 (JSON 데이터 10분 간격에 맞춤)
   }),

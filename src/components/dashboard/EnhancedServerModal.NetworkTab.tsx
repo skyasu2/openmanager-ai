@@ -39,35 +39,15 @@ interface NetworkTabProps {
 const getNetworkStatusInfo = (status?: NetworkStatus) => {
   switch (status) {
     case 'excellent':
-      return {
-        color: 'bg-green-400 shadow-green-400/50',
-        text: '최상',
-        textColor: 'text-green-300',
-      };
+      return { color: 'bg-green-400 shadow-green-400/50', text: '최상' };
     case 'good':
-      return {
-        color: 'bg-yellow-400 shadow-yellow-400/50',
-        text: '양호',
-        textColor: 'text-yellow-300',
-      };
+      return { color: 'bg-yellow-400 shadow-yellow-400/50', text: '양호' };
     case 'poor':
-      return {
-        color: 'bg-red-400 shadow-red-400/50',
-        text: '부족',
-        textColor: 'text-red-300',
-      };
+      return { color: 'bg-red-400 shadow-red-400/50', text: '부족' };
     case 'offline':
-      return {
-        color: 'bg-blue-400 shadow-blue-400/50',
-        text: '오프라인',
-        textColor: 'text-blue-300',
-      };
+      return { color: 'bg-blue-400 shadow-blue-400/50', text: '오프라인' };
     default:
-      return {
-        color: 'bg-gray-400 shadow-gray-400/50',
-        text: '알수없음',
-        textColor: 'text-gray-300',
-      };
+      return { color: 'bg-gray-400 shadow-gray-400/50', text: '알 수 없음' };
   }
 };
 
@@ -193,8 +173,36 @@ export const NetworkTab: FC<NetworkTabProps> = ({
           <h4 className="bg-linear-to-r from-slate-700 to-gray-900 bg-clip-text text-xl font-bold text-transparent">
             🔗 연결 정보
           </h4>
-          <div className="rounded-full bg-linear-to-r from-green-100 to-emerald-100 px-3 py-1">
-            <span className="text-xs font-medium text-green-700">연결됨</span>
+          <div
+            className={`rounded-full px-3 py-1 ${
+              server.status === 'online'
+                ? 'bg-linear-to-r from-green-100 to-emerald-100'
+                : server.status === 'warning'
+                  ? 'bg-linear-to-r from-yellow-100 to-amber-100'
+                  : server.status === 'critical'
+                    ? 'bg-linear-to-r from-red-100 to-rose-100'
+                    : 'bg-linear-to-r from-gray-100 to-slate-100'
+            }`}
+          >
+            <span
+              className={`text-xs font-medium ${
+                server.status === 'online'
+                  ? 'text-green-700'
+                  : server.status === 'warning'
+                    ? 'text-yellow-700'
+                    : server.status === 'critical'
+                      ? 'text-red-700'
+                      : 'text-gray-700'
+              }`}
+            >
+              {server.status === 'online'
+                ? '연결됨'
+                : server.status === 'warning'
+                  ? '불안정'
+                  : server.status === 'critical'
+                    ? '장애'
+                    : '오프라인'}
+            </span>
           </div>
         </div>
 
@@ -206,7 +214,7 @@ export const NetworkTab: FC<NetworkTabProps> = ({
                 <span>🌐</span> IP 주소
               </span>
               <span className="font-mono font-bold text-gray-900">
-                {server.ip || '192.168.1.100'}
+                {server.ip || '-'}
               </span>
             </div>
             <div className="flex items-center justify-between rounded-lg bg-white p-3 shadow-xs transition-shadow hover:shadow-md">

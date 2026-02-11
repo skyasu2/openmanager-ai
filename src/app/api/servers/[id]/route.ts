@@ -1,17 +1,12 @@
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 import { withAuth } from '@/lib/auth/api-auth';
-// server-details.schema에서 직접 import (올바른 구조를 위해)
-import type {
-  ServerHistory,
-  ServerHistoryDataPoint,
-  ServerService,
-  ServerSpecs,
-} from '@/schemas/server-schemas/server-details.schema';
+import type { ServerHistory } from '@/schemas/server-schemas/server-details.schema';
 import {
   metricsProvider,
   type ServerMetrics,
 } from '@/services/metrics/MetricsProvider';
+import { getServerMonitoringService } from '@/services/monitoring';
 import debug from '@/utils/debug';
 
 /**
@@ -73,13 +68,13 @@ export const GET = withAuth(
         `✅ 서버 [${id}] 발견: ${metric.hostname ?? metric.serverId} (${metric.environment ?? 'unknown'}/${metric.serverType})`
       );
 
-      // MetricsProvider에서 가져온 specs 계산
-      const specs = getSpecsFromMetric(metric);
-      const ip = generateIP(metric.serverId);
-      const uptimeSeconds =
-        metric.bootTimeSeconds && metric.bootTimeSeconds > 0
-          ? Math.floor(Date.now() / 1000 - metric.bootTimeSeconds)
-          : 86400 + metric.minuteOfDay * 60;
+      // ServerMonitoringService를 통한 가공된 데이터
+      const service = getServerMonitoringService();
+      const processed = service.getProcessedServer(metric.serverId);
+      const specs = processed?.specs
+        ? { ...processed.specs, os: processed.osLabel }
+        : undefined;
+      const uptimeSeconds = processed?.uptimeSeconds ?? 0;
 
       // 3. 응답 형식에 따른 처리
       if (format === 'prometheus') {
@@ -97,6 +92,7 @@ export const GET = withAuth(
         const legacyServer = {
           id: metric.serverId,
           hostname: metric.hostname ?? metric.serverId,
+          ip: processed?.ip,
           name: `OpenManager-${metric.serverId}`,
           type: metric.serverType,
           environment: metric.environment ?? 'onpremise',
@@ -109,17 +105,16 @@ export const GET = withAuth(
           uptime: formatUptime(uptimeSeconds),
           lastUpdate: new Date(metric.timestamp),
           alerts: 0,
-          services: generateServices(metric.serverType),
+          services: processed?.services ?? [],
           specs,
-          os: specs.os,
-          ip,
+          os: specs?.os ?? processed?.osLabel ?? 'Unknown',
           metrics: {
             cpu: Math.round(metric.cpu),
             memory: Math.round(metric.memory),
             disk: Math.round(metric.disk),
-            network_in: Math.round(metric.network * 0.6),
-            network_out: Math.round(metric.network * 0.4),
-            response_time: metric.responseTimeMs ?? 50,
+            network_in: processed?.networkIn ?? 0,
+            network_out: processed?.networkOut ?? 0,
+            response_time: processed?.responseTimeMs ?? 0,
           },
         };
 
@@ -165,29 +160,29 @@ export const GET = withAuth(
             last_updated: metric.timestamp,
           },
 
-          // 현재 메트릭 (Prometheus 데이터 기반)
+          // 현재 메트릭 (ServerMonitoringService 기반)
           current_metrics: {
             cpu_usage: metric.cpu,
             memory_usage: metric.memory,
             disk_usage: metric.disk,
-            network_in: metric.network * 0.6,
-            network_out: metric.network * 0.4,
-            response_time: metric.responseTimeMs ?? 50,
+            network_in: processed?.networkIn ?? 0,
+            network_out: processed?.networkOut ?? 0,
+            response_time: processed?.responseTimeMs ?? 0,
           },
 
           // 리소스 정보 (MetricsProvider nodeInfo 기반)
           resources: specs,
           network: {
-            ip,
             hostname: metric.hostname ?? metric.serverId,
+            ip: processed?.ip,
             interface: 'eth0',
           },
 
           // 알람 정보
-          alerts: [],
+          alerts: processed?.alerts ?? [],
 
           // 서비스 정보
-          services: generateServices(metric.serverType),
+          services: processed?.services ?? [],
         };
 
         // 패턴 정보 포함 (요청시)
@@ -293,100 +288,6 @@ function getProviderByEnvironment(environment: string): string {
 }
 
 /**
- * 🔧 역할별 서비스 생성
- */
-function generateServices(role: string): ServerService[] {
-  const serviceMap: Record<string, Array<{ name: string; port: number }>> = {
-    web: [
-      { name: 'nginx', port: 80 },
-      { name: 'nodejs', port: 3000 },
-      { name: 'pm2', port: 0 },
-    ],
-    database: [
-      { name: 'postgresql', port: 5432 },
-      { name: 'redis', port: 6379 },
-      { name: 'pgbouncer', port: 6432 },
-    ],
-    api: [
-      { name: 'api-server', port: 8080 },
-      { name: 'auth-service', port: 8081 },
-      { name: 'rate-limiter', port: 8082 },
-    ],
-    cache: [
-      { name: 'redis', port: 6379 },
-      { name: 'memcached', port: 11211 },
-      { name: 'redis-sentinel', port: 26379 },
-    ],
-    worker: [
-      { name: 'background-process', port: 9000 },
-      { name: 'queue-manager', port: 9001 },
-      { name: 'scheduler', port: 9002 },
-    ],
-    gateway: [
-      { name: 'nginx', port: 80 },
-      { name: 'envoy', port: 8000 },
-      { name: 'consul', port: 8500 },
-    ],
-    storage: [
-      { name: 'minio', port: 9000 },
-      { name: 'nfs-server', port: 2049 },
-      { name: 'rsync', port: 873 },
-    ],
-    monitoring: [
-      { name: 'prometheus', port: 9090 },
-      { name: 'grafana', port: 3000 },
-      { name: 'alertmanager', port: 9093 },
-    ],
-  };
-
-  const services = serviceMap[role] || [
-    { name: 'unknown-service', port: 8080 },
-  ];
-  return services.map((service) => ({
-    ...service,
-    status: Math.random() > 0.05 ? ('running' as const) : ('stopped' as const),
-  }));
-}
-
-/**
- * 🌐 서버 ID로 IP 생성 (MetricsProvider에 IP 없을 때 fallback)
- */
-function generateIP(serverId: string): string {
-  const hash = serverId.split('').reduce((a, b) => {
-    a = (a << 5) - a + b.charCodeAt(0);
-    return a & a;
-  }, 0);
-
-  const subnet = (Math.abs(hash) % 254) + 1;
-  const host = (Math.abs(hash >> 8) % 254) + 1;
-
-  return `192.168.${subnet}.${host}`;
-}
-
-/**
- * 💻 MetricsProvider의 nodeInfo로 스펙 추출
- */
-function getSpecsFromMetric(metric: ServerMetrics): ServerSpecs {
-  const GiB = 1024 ** 3;
-
-  const osLabel =
-    metric.os && metric.osVersion
-      ? `${metric.os.charAt(0).toUpperCase() + metric.os.slice(1)} ${metric.osVersion}`
-      : 'Ubuntu 22.04 LTS';
-
-  return {
-    cpu_cores: metric.nodeInfo?.cpuCores ?? 4,
-    memory_gb: metric.nodeInfo
-      ? Math.round(metric.nodeInfo.memoryTotalBytes / GiB)
-      : 16,
-    disk_gb: metric.nodeInfo
-      ? Math.round(metric.nodeInfo.diskTotalBytes / GiB)
-      : 500,
-    os: osLabel,
-  };
-}
-
-/**
  * ⏰ 업타임 포맷팅
  */
 function formatUptime(uptimeSeconds: number): string {
@@ -398,87 +299,33 @@ function formatUptime(uptimeSeconds: number): string {
 }
 
 /**
- * 📈 서버 히스토리 생성 (MetricsProvider 데이터 기반)
+ * 📈 서버 히스토리 (현재 스냅샷만 반환)
+ * 실제 시계열 데이터가 없으므로 현재 메트릭을 단일 데이터 포인트로 반환.
+ * Math.random/Math.sin 기반 fabrication 제거됨.
  */
 function generateServerHistory(
   metric: ServerMetrics,
   range: string
 ): ServerHistory {
-  const timeRangeMs = parseTimeRange(range);
-  const endTime = Date.now();
-  const startTime = endTime - timeRangeMs;
-  const intervalMs = timeRangeMs / 100; // 100개 데이터 포인트
+  const now = new Date().toISOString();
 
-  const data_points: ServerHistoryDataPoint[] = [];
-
-  // 히스토리 데이터 포인트 생성
-  for (let time = startTime; time <= endTime; time += intervalMs) {
-    const timeOfDay = new Date(time).getHours();
-    const variation = Math.sin((timeOfDay / 24) * 2 * Math.PI) * 0.3; // 일일 패턴
-
-    const baseCpu = metric.cpu;
-    const baseMemory = metric.memory;
-    const baseDisk = metric.disk;
-    const baseNetwork = metric.network;
-
-    data_points.push({
-      timestamp: new Date(time).toISOString(),
-      metrics: {
-        cpu_usage: Math.max(
-          0,
-          Math.min(100, baseCpu + variation * 20 + (Math.random() - 0.5) * 10)
-        ),
-        memory_usage: Math.max(
-          0,
-          Math.min(100, baseMemory + variation * 15 + (Math.random() - 0.5) * 8)
-        ),
-        disk_usage: Math.max(
-          0,
-          Math.min(100, baseDisk + (Math.random() - 0.5) * 2)
-        ),
-        network_in: Math.max(
-          0,
-          baseNetwork + variation * 50 + (Math.random() - 0.5) * 30
-        ),
-        network_out: Math.max(
-          0,
-          baseNetwork + variation * 40 + (Math.random() - 0.5) * 25
-        ),
-        response_time: Math.max(
-          0,
-          (metric.responseTimeMs ?? 50) +
-            variation * 100 +
-            (Math.random() - 0.5) * 50
-        ),
-      },
-    });
-  }
-
-  // ServerHistory 스키마와 일치하는 구조 반환
   return {
     time_range: range,
-    start_time: new Date(startTime).toISOString(),
-    end_time: new Date(endTime).toISOString(),
-    interval_ms: intervalMs,
-    data_points,
+    start_time: now,
+    end_time: now,
+    interval_ms: 0,
+    data_points: [
+      {
+        timestamp: now,
+        metrics: {
+          cpu_usage: metric.cpu,
+          memory_usage: metric.memory,
+          disk_usage: metric.disk,
+          network_in: metric.network,
+          network_out: metric.network,
+          response_time: metric.responseTimeMs ?? 0,
+        },
+      },
+    ],
   };
-}
-
-/**
- * ⏰ 시간 범위 파싱
- */
-function parseTimeRange(timeRange: string): number {
-  const unit = timeRange.slice(-1);
-  const value = parseInt(timeRange.slice(0, -1), 10);
-
-  switch (unit) {
-    case 'm':
-      return value * 60 * 1000; // 분
-    case 'h':
-      return value * 60 * 60 * 1000; // 시간
-    case 'd':
-      return value * 24 * 60 * 60 * 1000; // 일
-    default:
-      return 24 * 60 * 60 * 1000; // 기본 24시간
-  }
 }

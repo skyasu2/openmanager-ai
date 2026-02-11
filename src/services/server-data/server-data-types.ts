@@ -1,7 +1,7 @@
 /**
- * Type definitions and interfaces for the scenario data system.
+ * Type definitions and interfaces for the server data system.
  *
- * @see scenario-loader.ts - Main orchestration facade
+ * @see server-data-loader.ts - Main orchestration facade
  */
 
 // Enhanced Server Metrics 인터페이스 (route.ts와 동기화 필요)
@@ -147,10 +147,14 @@ export interface RawServerData {
   };
   services: string[];
   processes: number;
+  /** node_load1 from Prometheus (1-min load average) */
+  load1: number;
+  /** node_load5 from Prometheus (5-min load average) */
+  load5: number;
 }
 
-/** Log entry returned by generateScenarioLogs */
-export type ScenarioLogEntry = {
+/** Log entry returned by generateServerLogs */
+export type ServerLogEntry = {
   timestamp: string;
   level: 'info' | 'warn' | 'error';
   message: string;

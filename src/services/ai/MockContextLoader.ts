@@ -100,7 +100,7 @@ export class MockContextLoader {
       if (process.env.NODE_ENV === 'development') {
         logger.info('🔄 UnifiedServerDataSource 동기 컨텍스트 조회 시도...');
       }
-      // 🚀 베르셀 최적화: UnifiedServerDataSource를 통해 정적 JSON 데이터 사용 (scenario-loader)
+      // 🚀 베르셀 최적화: UnifiedServerDataSource를 통해 정적 JSON 데이터 사용 (server-data-loader)
       const result = this.getStaticContextSync();
 
       // 캐시 업데이트
@@ -215,11 +215,11 @@ export class MockContextLoader {
 
   /**
    * 🚀 베르셀 최적화: UnifiedServerDataSource 기반 컨텍스트 생성
-   * Single Source of Truth: scenario-loader 통합
+   * Single Source of Truth: server-data-loader 통합
    *
    * ✅ UnifiedServerDataSource 마이그레이션 완료 (2025-11-23)
    * - 5분 간격 고정 데이터 (12 data points/hour)
-   * - scenario-loader 기반 EnhancedServerMetrics
+   * - server-data-loader 기반 EnhancedServerMetrics
    * - KST 타임존 동기화
    */
   private getStaticContextSync(): MockContext | null {
@@ -230,7 +230,7 @@ export class MockContextLoader {
         );
       }
 
-      // 🎯 Single Source of Truth: UnifiedServerDataSource → scenario-loader
+      // 🎯 Single Source of Truth: UnifiedServerDataSource → server-data-loader
       const dataSource = UnifiedServerDataSource.getInstance();
       const servers = dataSource.getCachedServersSync();
 
@@ -310,7 +310,7 @@ export class MockContextLoader {
               : criticalServers.length === 0
                 ? 'decreasing'
                 : 'stable',
-          scenario: { name: 'scenario-loader' }, // scenario-loader 사용 명시
+          scenario: { name: 'server-data-loader' }, // server-data-loader 사용 명시
         },
       };
     } catch (error) {

@@ -55,6 +55,14 @@ export async function register() {
         process.exit(1);
       }
     }
+
+    // OpenTelemetry (disabled by default, ENABLE_OPENTELEMETRY=true to activate)
+    try {
+      const { initMonitoring } = await import('./src/lib/otel/otel-sdk');
+      await initMonitoring();
+    } catch (error) {
+      console.warn('⚠️ OTel module load failed (non-fatal):', error);
+    }
   }
 
   // Edge 런타임

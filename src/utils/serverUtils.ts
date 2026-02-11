@@ -17,6 +17,7 @@ import type {
   Service,
 } from '@/types/server';
 import type { ServerStatus } from '@/types/server-enums'; // 🔧 추가: Single Source of Truth
+import { deriveNetworkSplit } from '@/services/server-data/server-data-transformer';
 
 /**
  * 서버 타입 가드 함수들
@@ -312,8 +313,10 @@ export function mapServerToEnhanced(server: Server): EnhancedServerMetrics {
     cpu_usage: server.cpu,
     memory_usage: server.memory,
     disk_usage: server.disk,
-    network_in: (server.network ?? 0) / 2,
-    network_out: (server.network ?? 0) / 2,
+    network_in: deriveNetworkSplit(server.network ?? 0, server.role ?? 'web')
+      .networkIn,
+    network_out: deriveNetworkSplit(server.network ?? 0, server.role ?? 'web')
+      .networkOut,
     alerts: [],
 
     // 성능 정보

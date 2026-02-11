@@ -16,16 +16,10 @@ import { NextResponse } from 'next/server';
 import * as z from 'zod';
 import { createApiRoute } from '@/lib/api/zod-middleware';
 import { logger } from '@/lib/logging';
-import { getUnifiedServerDataSource } from '@/services/data/UnifiedServerDataSource';
-import { metricsProvider } from '@/services/metrics/MetricsProvider';
-import type {
-  EnhancedServerMetrics,
-  ServerEnvironment,
-  ServerRole,
-} from '@/types/server';
+import { getServerMonitoringService } from '@/services/monitoring';
+import type { EnhancedServerMetrics } from '@/types/server';
 import { getErrorMessage } from '@/types/type-utils';
 import debug from '@/utils/debug';
-import { mapServerToEnhanced } from '@/utils/serverUtils';
 
 // 📝 통합 요청 스키마
 const serversUnifiedRequestSchema = z.object({
@@ -49,7 +43,6 @@ const serversUnifiedRequestSchema = z.object({
   sortOrder: z.enum(['asc', 'desc']).default('asc'),
 
   // 실시간 특화 옵션
-  enableRealtime: z.boolean().default(false),
   includeProcesses: z.boolean().default(false),
   includeMetrics: z.boolean().default(true),
 });
@@ -57,149 +50,26 @@ const serversUnifiedRequestSchema = z.object({
 type ServersUnifiedRequest = z.infer<typeof serversUnifiedRequestSchema>;
 
 /**
- * 🎯 실시간 서버 데이터 (MetricsProvider 기반 고정 데이터)
- * 아키텍처: KST 시간 기준 fixed-24h-metrics 데이터 활용
+ * 🎯 실시간 서버 데이터 (ServerMonitoringService 기반)
  */
-async function getRealtimeServers(): Promise<EnhancedServerMetrics[]> {
-  try {
-    // 🎯 MetricsProvider를 통한 고정 데이터 (KST 시간 기준)
-    const allMetrics = metricsProvider.getAllServerMetrics();
-
-    return allMetrics.map((metric): EnhancedServerMetrics => {
-      // uptime: bootTimeSeconds로부터 계산, fallback 1일+현재시간
-      const uptimeSeconds =
-        metric.bootTimeSeconds && metric.bootTimeSeconds > 0
-          ? Math.floor(Date.now() / 1000 - metric.bootTimeSeconds)
-          : 86400 + metric.minuteOfDay * 60;
-
-      // os: Prometheus labels에서 조합, fallback 'Ubuntu 22.04 LTS'
-      const osLabel =
-        metric.os && metric.osVersion
-          ? `${metric.os.charAt(0).toUpperCase() + metric.os.slice(1)} ${metric.osVersion}`
-          : 'Ubuntu 22.04 LTS';
-
-      // specs: nodeInfo에서 추출, fallback serverType 기반
-      const specs = metric.nodeInfo
-        ? {
-            cpu_cores: metric.nodeInfo.cpuCores,
-            memory_gb: Math.round(metric.nodeInfo.memoryTotalBytes / 1024 ** 3),
-            disk_gb: Math.round(metric.nodeInfo.diskTotalBytes / 1024 ** 3),
-            network_speed: '1Gbps',
-          }
-        : {
-            cpu_cores: metric.serverType === 'database' ? 8 : 4,
-            memory_gb: metric.serverType === 'database' ? 32 : 16,
-            disk_gb: metric.serverType === 'storage' ? 1000 : 200,
-            network_speed: '1Gbps',
-          };
-
-      // ip: hostname 기반 결정적 생성
-      const ip = metric.hostname
-        ? `10.0.${metric.hostname.charCodeAt(0) % 256}.${metric.hostname.charCodeAt(4) % 256 || 1}`
-        : `10.0.${metric.serverId.charCodeAt(0) % 256}.${metric.serverId.charCodeAt(4) % 256 || 1}`;
-
-      return {
-        id: metric.serverId,
-        name: metric.serverId,
-        hostname:
-          metric.hostname ||
-          `${metric.serverId.toLowerCase()}.openmanager.local`,
-        status: metric.status,
-        cpu: metric.cpu,
-        cpu_usage: metric.cpu,
-        memory: metric.memory,
-        memory_usage: metric.memory,
-        disk: metric.disk,
-        disk_usage: metric.disk,
-        network: metric.network,
-        network_in: metric.network * 0.6,
-        network_out: metric.network * 0.4,
-        uptime: uptimeSeconds,
-        responseTime: metric.responseTimeMs ?? 50 + metric.cpu * 2,
-        last_updated: metric.timestamp,
-        location: metric.location,
-        alerts: metric.logs
-          .filter((log) => log.includes('[WARN]') || log.includes('[CRITICAL]'))
-          .map((log, idx) => ({
-            id: `${metric.serverId}-${metric.minuteOfDay}-${idx}`,
-            server_id: metric.serverId,
-            type: log.includes('CPU')
-              ? ('cpu' as const)
-              : log.includes('memory') || log.includes('MEM')
-                ? ('memory' as const)
-                : log.includes('Disk') || log.includes('disk')
-                  ? ('disk' as const)
-                  : log.includes('Network') || log.includes('NET')
-                    ? ('network' as const)
-                    : ('custom' as const),
-            message: log,
-            severity: log.includes('[CRITICAL]')
-              ? ('critical' as const)
-              : ('warning' as const),
-            timestamp: metric.timestamp,
-            resolved: false,
-          })),
-        ip,
-        os: osLabel,
-        role: metric.serverType as ServerRole,
-        environment: (metric.environment ||
-          (metric.location.includes('Seoul')
-            ? 'production'
-            : 'staging')) as ServerEnvironment,
-        provider: 'openmanager',
-        specs,
-        lastUpdate: metric.timestamp,
-        services: [],
-        systemInfo: {
-          os: osLabel,
-          uptime: `${Math.floor(uptimeSeconds / 3600)}h`,
-          processes: metric.procsRunning ?? 100 + Math.floor(metric.cpu),
-          zombieProcesses: 0,
-          loadAverage:
-            metric.loadAvg1 != null
-              ? metric.loadAvg1.toFixed(2)
-              : (metric.cpu / 25).toFixed(2),
-          lastUpdate: metric.timestamp,
-        },
-        networkInfo: {
-          interface: 'eth0',
-          receivedBytes: `${(metric.network * 0.6).toFixed(1)} MB`,
-          sentBytes: `${(metric.network * 0.4).toFixed(1)} MB`,
-          receivedErrors: 0,
-          sentErrors: 0,
-          status: metric.status === 'offline' ? 'offline' : 'online',
-        },
-      };
-    });
-  } catch (error) {
-    logger.error('❌ MetricsProvider 오류, Fallback 사용:', error);
-    // Fallback to UnifiedServerDataSource
-    const dataSource = getUnifiedServerDataSource();
-    const rawServers = await dataSource.getServers();
-    return rawServers.map(mapServerToEnhanced);
-  }
+function getRealtimeServers(): EnhancedServerMetrics[] {
+  const service = getServerMonitoringService();
+  return service.getAllAsEnhancedMetrics();
 }
 
 /**
  * 🔍 특정 서버 상세 정보
  */
-/**
- * 🔍 특정 서버 상세 정보
- */
-async function getServerDetail(
-  serverId: string
-): Promise<EnhancedServerMetrics | null> {
-  const dataSource = getUnifiedServerDataSource();
-  const rawServers = await dataSource.getServers();
-  const servers = rawServers.map(mapServerToEnhanced);
-  return servers.find((server) => server.id === serverId) || null;
+function getServerDetail(serverId: string): EnhancedServerMetrics | null {
+  const service = getServerMonitoringService();
+  return service.getServerAsEnhanced(serverId);
 }
 
 /**
  * ⚙️ 서버 프로세스 목록
  */
-async function getServerProcesses(serverId: string) {
-  const server = await getServerDetail(serverId);
+function getServerProcesses(serverId: string) {
+  const server = getServerDetail(serverId);
   if (!server) return null;
 
   // 현실적인 프로세스 목록 생성
@@ -293,7 +163,6 @@ async function handleServersUnified(
       search?: string;
       sortBy?: ServersUnifiedRequest['sortBy'];
       sortOrder?: ServersUnifiedRequest['sortOrder'];
-      enableRealtime?: boolean;
       includeProcesses?: boolean;
       includeMetrics?: boolean;
     };
@@ -309,7 +178,6 @@ async function handleServersUnified(
     search,
     sortBy = 'name',
     sortOrder = 'asc',
-    enableRealtime = false,
   } = context.body;
 
   try {
@@ -321,46 +189,34 @@ async function handleServersUnified(
     // 액션별 데이터 처리
     switch (action) {
       case 'list':
-        if (enableRealtime) {
-          servers = await getRealtimeServers();
-        } else {
-          const dataSource = getUnifiedServerDataSource();
-          const rawServers = await dataSource.getServers();
-          servers = rawServers.map(mapServerToEnhanced);
-        }
+        servers = getRealtimeServers();
         break;
 
       case 'cached': {
-        // UnifiedServerDataSource handles caching internally
-        const cachedDataSource = getUnifiedServerDataSource();
-        const rawCachedServers = await cachedDataSource.getServers();
-        servers = rawCachedServers.map(mapServerToEnhanced);
+        servers = getRealtimeServers();
         additionalData.cacheInfo = {
           cached: true,
           cacheTime: new Date().toISOString(),
-          source: 'unified-data-source',
+          source: 'server-monitoring-service',
         };
         break;
       }
 
       case 'mock': {
-        // Mock data is also served by UnifiedServerDataSource (configured as 'custom' or 'basic')
-        const mockDataSource = getUnifiedServerDataSource();
-        const rawMockServers = await mockDataSource.getServers();
-        servers = rawMockServers.map(mapServerToEnhanced);
+        servers = getRealtimeServers();
         additionalData.mockInfo = {
           generated: true,
           serverCount: servers.length,
-          source: 'unified-data-source',
+          source: 'server-monitoring-service',
         };
         break;
       }
 
       case 'realtime':
-        servers = await getRealtimeServers();
+        servers = getRealtimeServers();
         additionalData.realtimeInfo = {
           realtime: true,
-          source: 'supabase-realtime',
+          source: 'server-monitoring-service',
           updateFrequency: '30s',
         };
         break;
@@ -372,7 +228,7 @@ async function handleServersUnified(
             error: 'serverId required for detail action',
           };
         }
-        const serverDetail = await getServerDetail(serverId);
+        const serverDetail = getServerDetail(serverId);
         if (!serverDetail) {
           return { success: false, error: 'Server not found' };
         }
@@ -391,7 +247,7 @@ async function handleServersUnified(
             error: 'serverId required for processes action',
           };
         }
-        const processData = await getServerProcesses(serverId);
+        const processData = getServerProcesses(serverId);
         if (!processData) {
           return { success: false, error: 'Server not found' };
         }
@@ -456,7 +312,7 @@ async function handleServersUnified(
         serverId,
         serverCount: paginatedServers.length,
         totalServers: total,
-        dataSource: enableRealtime ? 'supabase-realtime' : 'hourly-scenarios',
+        dataSource: 'server-monitoring-service',
         unifiedApi: true,
         systemVersion: 'servers-unified-v1.0',
       },
@@ -499,7 +355,6 @@ export async function GET(request: NextRequest) {
     sortOrder:
       (searchParams.get('sortOrder') as ServersUnifiedRequest['sortOrder']) ||
       'asc',
-    enableRealtime: searchParams.get('realtime') === 'true',
     includeProcesses: false,
     includeMetrics: true,
   };

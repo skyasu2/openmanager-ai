@@ -445,6 +445,12 @@ export default function EnhancedServerModal({
                         currentMetrics?.network ?? safeServer.network ?? 0,
                     }}
                     realtimeData={realtimeData}
+                    serverContext={{
+                      hostname: safeServer.hostname || safeServer.id,
+                      environment: safeServer.environment || 'production',
+                      datacenter: safeServer.location || 'Seoul-ICN-AZ1',
+                      serverType: safeServer.type || 'web',
+                    }}
                   />
                 </div>
 

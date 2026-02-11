@@ -13,6 +13,17 @@ import { ServerModal3DGauge } from '../shared/UnifiedCircularGauge';
 import { StatusLED } from './EnhancedServerModal.components';
 import type { ServerData, StatusTheme } from './EnhancedServerModal.types';
 
+/** Date → 상대 시간 문자열 변환 */
+function formatRelativeTime(date: Date): string {
+  const diffMs = Date.now() - new Date(date).getTime();
+  if (diffMs < 0 || Number.isNaN(diffMs)) return '-';
+  const diffMin = Math.floor(diffMs / 60_000);
+  if (diffMin < 1) return '방금 전';
+  if (diffMin < 60) return `${diffMin}분 전`;
+  const diffHour = Math.floor(diffMin / 60);
+  return `${diffHour}시간 전`;
+}
+
 /**
  * Overview Tab Props
  */
@@ -108,7 +119,7 @@ export const OverviewTab: FC<OverviewTabProps> = ({ server, statusTheme }) => {
                   },
                   {
                     label: 'IP 주소',
-                    value: server.ip || '192.168.1.100',
+                    value: server.ip || '-',
                     icon: '🌐',
                   },
                   {
@@ -118,7 +129,7 @@ export const OverviewTab: FC<OverviewTabProps> = ({ server, statusTheme }) => {
                   },
                   {
                     label: '마지막 업데이트',
-                    value: '방금 전',
+                    value: formatRelativeTime(server.lastUpdate),
                     icon: '🔄',
                   },
                 ].map((item, idx) => (

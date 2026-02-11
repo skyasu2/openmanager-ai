@@ -258,7 +258,7 @@ export function normalizeServerData(
         : getDefaultServicesByType(server.type, server.name),
     specs: server.specs || { cpu_cores: 4, memory_gb: 8, disk_gb: 100 },
     os: server.os || 'Unknown OS',
-    ip: server.ip || '0.0.0.0',
+    ip: server.ip || '-',
     networkStatus: (() => {
       if (server.status === 'offline') return 'offline';
       if (server.status === 'critical') return 'poor';

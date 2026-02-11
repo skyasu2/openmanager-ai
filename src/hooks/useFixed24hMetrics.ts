@@ -14,7 +14,7 @@
  *   - 총 144개 데이터 포인트 / 24시간
  *
  * @see src/services/data/UnifiedServerDataSource.ts - 통합 데이터 소스 (10분 TTL)
- * @see src/services/scenario/scenario-loader.ts - 시나리오 기반 데이터
+ * @see src/services/server-data/server-data-loader.ts - 서버 데이터 로더
  * @see public/hourly-data/hour-XX.json - 시간별 JSON 데이터
  */
 
@@ -26,7 +26,7 @@ import type { Server } from '@/types/server';
 /**
  * 히스토리 데이터 포인트 (차트용)
  */
-export interface HistoryDataPoint {
+interface HistoryDataPoint {
   time: string; // "HH:MM"
   cpu: number;
   memory: number;
@@ -263,181 +263,4 @@ export function useFixed24hMetrics(
     error,
     refreshMetrics: updateMetrics,
   };
-}
-
-/**
- * 여러 서버의 메트릭을 동시에 가져오는 훅
- *
- * @param serverIds 서버 ID 배열 (예: ["web-prod-01", "api-prod-01", "db-prod-01"])
- * @param updateInterval 업데이트 주기 (밀리초, 기본 600000 = 10분)
- * @returns 서버별 실시간 메트릭 맵
- *
- * @example
- * ```tsx
- * const { metricsMap, isLoading, error } = useMultipleFixed24hMetrics([
- *   'web-prod-01',
- *   'api-prod-01',
- *   'db-prod-01'
- * ]);
- *
- * const webMetric = metricsMap.get('web-prod-01');
- * ```
- */
-export function useMultipleFixed24hMetrics(
-  serverIds: string[],
-  updateInterval: number = 600000 // 10분 (JSON 데이터 10분 간격에 맞춤)
-) {
-  const [metricsMap, setMetricsMap] = useState<Map<string, Server>>(new Map());
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const isMountedRef = useRef(true);
-
-  // 메트릭 업데이트 함수
-  const updateAllMetrics = useCallback(async () => {
-    if (!isMountedRef.current) return;
-
-    try {
-      // 🎯 Single Source of Truth: UnifiedServerDataSource
-      const dataSource = UnifiedServerDataSource.getInstance();
-      const servers = await dataSource.getServers();
-
-      // 요청된 서버 ID만 필터링하여 Map 생성
-      const newMap = new Map<string, Server>();
-      for (const serverId of serverIds) {
-        const server = servers.find((s) => s.id === serverId);
-        if (server) {
-          newMap.set(serverId, server);
-        }
-      }
-
-      setMetricsMap(newMap);
-      setError(null);
-      setIsLoading(false);
-    } catch (err) {
-      logger.error('다중 메트릭 업데이트 실패:', err);
-      setError(err instanceof Error ? err.message : '알 수 없는 오류');
-      setIsLoading(false);
-    }
-  }, [serverIds]);
-
-  useEffect(() => {
-    isMountedRef.current = true;
-
-    // 초기 로드
-    void updateAllMetrics();
-
-    // 자동 업데이트
-    const intervalId = setInterval(() => {
-      void updateAllMetrics();
-    }, updateInterval);
-
-    return () => {
-      isMountedRef.current = false;
-      clearInterval(intervalId);
-    };
-  }, [updateInterval, updateAllMetrics]);
-
-  return {
-    metricsMap,
-    isLoading,
-    error,
-    getMetric: (serverId: string) => metricsMap.get(serverId),
-    refreshMetrics: updateAllMetrics,
-  };
-}
-
-/**
- * 특정 메트릭 타입만 가져오는 훅
- *
- * @param serverId 서버 ID
- * @param metricType 메트릭 타입
- * @param updateInterval 업데이트 주기 (밀리초, 기본 600000 = 10분)
- * @returns 단일 메트릭 값
- *
- * @example
- * ```tsx
- * const cpuValue = useSingleMetric('web-prod-01', 'cpu');
- * ```
- */
-export function useSingleMetric(
-  serverId: string,
-  metricType: 'cpu' | 'memory' | 'disk' | 'network',
-  updateInterval: number = 600000 // 10분 (JSON 데이터 10분 간격에 맞춤)
-) {
-  const [value, setValue] = useState<number | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const isMountedRef = useRef(true);
-
-  const updateMetric = useCallback(async () => {
-    if (!isMountedRef.current) return;
-
-    try {
-      // 🎯 Single Source of Truth: UnifiedServerDataSource
-      const dataSource = UnifiedServerDataSource.getInstance();
-      const servers = await dataSource.getServers();
-
-      const server = servers.find((s) => s.id === serverId);
-
-      if (server) {
-        const value = server[metricType] ?? 0;
-        setValue(Math.round(value * 10) / 10);
-        setError(null);
-        setIsLoading(false);
-      } else {
-        setError(`서버 "${serverId}" 데이터를 찾을 수 없습니다.`);
-        setIsLoading(false);
-      }
-    } catch (err) {
-      logger.error('단일 메트릭 업데이트 실패:', err);
-      setError(err instanceof Error ? err.message : '알 수 없는 오류');
-      setIsLoading(false);
-    }
-  }, [serverId, metricType]);
-
-  useEffect(() => {
-    isMountedRef.current = true;
-
-    // 초기 로드
-    void updateMetric();
-
-    // 자동 업데이트
-    const intervalId = setInterval(() => {
-      void updateMetric();
-    }, updateInterval);
-
-    return () => {
-      isMountedRef.current = false;
-      clearInterval(intervalId);
-    };
-  }, [updateInterval, updateMetric]);
-
-  return { value, isLoading, error };
-}
-
-/**
- * 현재 시간의 서버 메트릭 가져오기 (훅 외부에서 사용)
- *
- * @param serverId 서버 ID
- * @returns 현재 메트릭 또는 null
- *
- * @example
- * ```tsx
- * const metric = await getFixedMetricNow('web-prod-01');
- * logger.info(metric?.cpu);
- * ```
- */
-export async function getFixedMetricNow(
-  serverId: string
-): Promise<Server | null> {
-  try {
-    // 🎯 Single Source of Truth: UnifiedServerDataSource
-    const dataSource = UnifiedServerDataSource.getInstance();
-    const servers = await dataSource.getServers();
-
-    return servers.find((s) => s.id === serverId) || null;
-  } catch (error) {
-    logger.error('현재 메트릭 가져오기 실패:', error);
-    return null;
-  }
 }

@@ -225,7 +225,7 @@ const ref = PROMETHEUS_METRIC_REFERENCE['node_cpu_usage_percent'];
 | `src/config/rules/types.ts` | `ServerStatusRule` 타입 (for 필드 포함) |
 | `src/config/rules/loader.ts` | 상태 판정 로직 + AI 요약 생성 |
 | `src/services/data/UnifiedServerDataSource.ts` | Server 타입 변환 |
-| `src/services/scenario/scenario-loader.ts` | Scenario 데이터 로더 |
+| `src/services/server-data/server-data-loader.ts` | Scenario 데이터 로더 |
 
 ## 관련 문서
 

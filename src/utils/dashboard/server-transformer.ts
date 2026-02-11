@@ -1,4 +1,9 @@
 import type { EnhancedServerData } from '@/types/dashboard/server-dashboard.types';
+import {
+  deriveNetworkErrors,
+  deriveNetworkSplit,
+  deriveZombieProcesses,
+} from '@/services/server-data/server-data-transformer';
 import type {
   Server,
   ServerEnvironment,
@@ -46,7 +51,7 @@ export function transformServerData(
           : Array.isArray(s.alerts)
             ? s.alerts.length
             : 0,
-      ip: s.ip || '192.168.1.1',
+      ip: s.ip || '-',
       os: s.os || 'Ubuntu 22.04 LTS',
       role: (s.type || s.role || 'worker') as ServerRole,
       environment: (s.environment || 'production') as ServerEnvironment,
@@ -74,9 +79,9 @@ export function transformServerData(
           typeof s.uptime === 'string'
             ? s.uptime
             : `${Math.floor((s.uptime || 0) / 3600)}h`,
-        processes: Math.floor(Math.random() * 200) + 50,
-        zombieProcesses: Math.floor(Math.random() * 5),
-        loadAverage: '1.23, 1.45, 1.67',
+        processes: 120,
+        zombieProcesses: deriveZombieProcesses(s.id, 120),
+        loadAverage: '0.50, 0.45, 0.40',
         lastUpdate:
           typeof s.lastUpdate === 'string'
             ? s.lastUpdate
@@ -84,19 +89,29 @@ export function transformServerData(
               ? s.lastUpdate.toISOString()
               : new Date().toISOString(),
       },
-      networkInfo: s.networkInfo || {
-        interface: 'eth0',
-        receivedBytes: `${Math.floor(s.network_in || 0)} MB`,
-        sentBytes: `${Math.floor(s.network_out || 0)} MB`,
-        receivedErrors: Math.floor(Math.random() * 10),
-        sentErrors: Math.floor(Math.random() * 10),
-        status:
-          s.status === 'online'
-            ? 'online'
-            : s.status === 'warning'
-              ? 'warning'
-              : 'critical',
-      },
+      networkInfo:
+        s.networkInfo ||
+        (() => {
+          const serverType = s.type || 'web';
+          const { networkIn, networkOut } = deriveNetworkSplit(
+            network,
+            serverType
+          );
+          const errors = deriveNetworkErrors(network, s.id);
+          return {
+            interface: 'eth0',
+            receivedBytes: `${networkIn} MB`,
+            sentBytes: `${networkOut} MB`,
+            receivedErrors: errors.receivedErrors,
+            sentErrors: errors.sentErrors,
+            status:
+              s.status === 'online'
+                ? ('online' as const)
+                : s.status === 'warning'
+                  ? ('warning' as const)
+                  : ('critical' as const),
+          };
+        })(),
     };
   });
 }

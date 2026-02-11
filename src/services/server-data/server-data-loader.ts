@@ -1,36 +1,43 @@
 /**
- * 🎯 **Single Source of Truth** - 24시간 시나리오 데이터 로더
+ * Single Source of Truth - 24시간 서버 데이터 로더
  *
  * Public API facade that re-exports from focused submodules.
- *
- * **v5.85.0 개선**: Dashboard/AI Engine 데이터 동기화
- * - ✅ JSON 파일 기반 (10분 간격)
- * - ✅ Dashboard와 AI Engine 동일 데이터 사용
- * - ✅ 변형은 sync 스크립트에서 미리 적용
  *
  * @see scripts/data/sync-hourly-data.ts - JSON 생성 스크립트
  * @see docs/reference/architecture/data/data-architecture.md - 아키텍처 문서
  */
 
 import { logger } from '@/lib/logging';
-import { loadHourlyJsonFile } from '@/services/scenario/scenario-cache';
+import { loadHourlyJsonFile } from '@/services/server-data/server-data-cache';
 import {
   convertToEnhancedMetrics,
   targetToRawServerData,
-} from '@/services/scenario/scenario-transformer';
-import type { EnhancedServerMetrics } from '@/services/scenario/scenario-types';
+} from '@/services/server-data/server-data-transformer';
+import type { EnhancedServerMetrics } from '@/services/server-data/server-data-types';
 
+export { clearJsonCache } from '@/services/server-data/server-data-cache';
+export { generateServerLogs } from '@/services/server-data/server-data-logs';
+export {
+  buildLogQL,
+  buildLokiPushPayload,
+  generateLokiLogs,
+  groupIntoStreams,
+} from '@/services/server-data/loki-log-generator';
+export type { ServerContext } from '@/services/server-data/loki-log-generator';
 // ── Re-exports (public API) ────────────────────────────────────────
 export type {
   EnhancedServerMetrics,
   HourlyJsonData,
   PrometheusTargetData,
   RawServerData,
-  ScenarioLogEntry,
-} from '@/services/scenario/scenario-types';
-
-export { clearJsonCache } from '@/services/scenario/scenario-cache';
-export { generateScenarioLogs } from '@/services/scenario/scenario-logs';
+  ServerLogEntry,
+} from '@/services/server-data/server-data-types';
+export type {
+  LokiLogEntry,
+  LokiPushPayload,
+  LokiStream,
+  LokiStreamLabels,
+} from '@/types/loki';
 
 // ── Main orchestration functions ───────────────────────────────────
 
@@ -44,9 +51,7 @@ export { generateScenarioLogs } from '@/services/scenario/scenario-logs';
  *
  * @returns {Promise<EnhancedServerMetrics[]>} 15개 서버 메트릭스
  */
-export async function loadHourlyScenarioData(): Promise<
-  EnhancedServerMetrics[]
-> {
+export async function loadHourlyServerData(): Promise<EnhancedServerMetrics[]> {
   try {
     // 🇰🇷 KST (Asia/Seoul) 기준 시간 사용
     const koreaTime = new Date().toLocaleString('en-US', {
@@ -60,7 +65,7 @@ export async function loadHourlyScenarioData(): Promise<
     // JSON 파일 로드
     const hourlyData = await loadHourlyJsonFile(currentHour);
     if (!hourlyData) {
-      logger.error(`[ScenarioLoader] hour-${currentHour} 데이터 없음`);
+      logger.error(`[ServerDataLoader] hour-${currentHour} 데이터 없음`);
       return [];
     }
 
@@ -73,7 +78,7 @@ export async function loadHourlyScenarioData(): Promise<
     const dataPoint = hourlyData.dataPoints[clampedIndex];
 
     if (!dataPoint?.targets) {
-      logger.error(`[ScenarioLoader] dataPoint[${clampedIndex}] 없음`);
+      logger.error(`[ServerDataLoader] dataPoint[${clampedIndex}] 없음`);
       return [];
     }
 
@@ -82,7 +87,7 @@ export async function loadHourlyScenarioData(): Promise<
       convertToEnhancedMetrics(targetToRawServerData(target), currentHour)
     );
   } catch (error) {
-    logger.error('[ScenarioLoader] 데이터 로드 오류:', error);
+    logger.error('[ServerDataLoader] 데이터 로드 오류:', error);
     return [];
   }
 }

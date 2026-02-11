@@ -11,6 +11,7 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import { getSystemConfig } from '@/config/SystemConfiguration';
 import { logger } from '@/lib/logging';
+import { deriveNetworkSplit } from '@/services/server-data/server-data-transformer';
 import { getUnifiedServerDataSource } from '@/services/data/UnifiedServerDataSource';
 import {
   fnv1aHash,
@@ -141,8 +142,8 @@ async function generateUnifiedServerMetrics(
       cpu_usage: Math.round(cpu * 10) / 10,
       memory_usage: Math.round(memory * 10) / 10,
       disk_usage: Math.round(disk * 10) / 10,
-      network_in: Math.round(network * 10) / 10,
-      network_out: Math.round(network * 10) / 10,
+      network_in: deriveNetworkSplit(network, serverRole).networkIn,
+      network_out: deriveNetworkSplit(network, serverRole).networkOut,
       responseTime: Math.round(responseTime),
       uptime: 99.95,
       last_updated: new Date(normalizedTimestamp).toISOString(),

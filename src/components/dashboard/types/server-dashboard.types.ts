@@ -121,7 +121,7 @@ export function toExtendedServer(server: Server): ExtendedServer {
         ? server.network
         : 25,
     uptime: server.uptime || 'N/A',
-    ip: server.ip || '192.168.1.100',
+    ip: server.ip || '-',
     os: server.os || 'Ubuntu 22.04',
     type: (server.type || 'api') as ServerRole,
     environment: (server.environment || 'production') as ServerEnvironment,

@@ -11,11 +11,11 @@ export type {
 } from './ProcessManager';
 // ProcessManager + split modules (re-exported via ProcessManager barrel)
 export {
-  HealthCheckManager,
   type HealthCheckContext,
+  HealthCheckManager,
   ProcessManager,
-  SystemStabilityMonitor,
   type StabilityContext,
+  SystemStabilityMonitor,
 } from './ProcessManager';
 // Process 설정
 export * from './process-configs';

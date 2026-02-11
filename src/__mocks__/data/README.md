@@ -6,9 +6,9 @@
 
 ## 🎯 현재 활성 시스템
 
-**Scenario-based Metrics System** (`src/services/scenario/scenario-loader.ts`)
+**Scenario-based Metrics System** (`src/services/server-data/server-data-loader.ts`)
 
-- **위치**: `src/services/scenario/scenario-loader.ts`
+- **위치**: `src/services/server-data/server-data-loader.ts`
 - **데이터 소스**: `public/hourly-data/hour-*.json` (24시간 × 15개 서버)
 - **생성 스크립트**: `scripts/generate-static-metrics.ts`
 - **클라이언트 Hook**: `src/hooks/useFixed24hMetrics.ts`
@@ -29,7 +29,7 @@
 
 ```typescript
 mockSystem: {
-  dataSource: 'custom', // scenario-loader 사용
+  dataSource: 'custom', // server-data-loader 사용
 }
 ```
 
@@ -37,8 +37,8 @@ mockSystem: {
 
 ```typescript
 private async loadFromCustomSource(): Promise<Server[]> {
-  // scenario-loader에서 장애 시나리오 데이터 로드
-  const scenarioMetrics = await loadHourlyScenarioData();
+  // server-data-loader에서 서버 데이터 로드
+  const serverMetrics = await loadHourlyServerData();
   // ...
 }
 ```
@@ -74,11 +74,11 @@ private async loadFromCustomSource(): Promise<Server[]> {
 
 ### 프로덕션 데이터 소스
 
-**프로덕션 환경에서는 scenario-loader (24시간 고정 데이터)를 사용**:
+**프로덕션 환경에서는 server-data-loader (24시간 고정 데이터)를 사용**:
 
-- `/api/servers` - UnifiedServerDataSource → scenario-loader
-- `/api/servers/all` - UnifiedServerDataSource → scenario-loader
-- 클라이언트 Hook (`useFixed24hMetrics`) - 직접 scenario-loader 호출
+- `/api/servers` - UnifiedServerDataSource → server-data-loader
+- `/api/servers/all` - UnifiedServerDataSource → server-data-loader
+- 클라이언트 Hook (`useFixed24hMetrics`) - 직접 server-data-loader 호출
 
 ### 왜 유지하나요?
 
@@ -105,7 +105,7 @@ scripts/generate-static-metrics.ts (Gemini 구현)
   ↓
 public/hourly-data/hour-*.json (24시간 × 15개 서버)
   ↓
-src/services/scenario/scenario-loader.ts (KST 회전)
+src/services/server-data/server-data-loader.ts (KST 회전)
   ↓
 UnifiedServerDataSource.ts (loadFromCustomSource)
   ↓
@@ -144,7 +144,7 @@ npm run type-check
 ```typescript
 // src/config/SystemConfiguration.ts 확인
 mockSystem: {
-  dataSource: 'custom', // ← 'custom'이면 scenario-loader 사용
+  dataSource: 'custom', // ← 'custom'이면 server-data-loader 사용
 }
 ```
 
@@ -154,14 +154,14 @@ mockSystem: {
 curl http://localhost:3000/api/servers
 ```
 
-**예상 응답**: scenario-loader에서 생성된 15개 서버 데이터
+**예상 응답**: server-data-loader에서 생성된 15개 서버 데이터
 
 ---
 
 ## 📚 상세 문서
 
 - **Gemini 구현 분석**: `archive/deprecated/metrics-generation-systems/DEPRECATION_NOTICE.md`
-- **시나리오 로더**: `src/services/scenario/scenario-loader.ts`
+- **시나리오 로더**: `src/services/server-data/server-data-loader.ts`
 - **생성 스크립트**: `scripts/generate-static-metrics.ts`
 - **클라이언트 Hook**: `src/hooks/useFixed24hMetrics.ts`
 
@@ -169,18 +169,18 @@ curl http://localhost:3000/api/servers
 
 ## 💡 FAQ
 
-### Q: 레거시 Mock 시스템과 scenario-loader의 차이는?
+### Q: 레거시 Mock 시스템과 server-data-loader의 차이는?
 
 A:
 
-- **scenario-loader** (프로덕션): 24시간 고정 데이터, 5분 단위 회전, Gemini 구현 (5/5 품질)
+- **server-data-loader** (프로덕션): 24시간 고정 데이터, 5분 단위 회전, Gemini 구현 (5/5 품질)
 - **레거시 Mock**: 실시간 로테이션 (30초), 테스트/데모 전용, 단순 패턴
 
 ### Q: 어느 시스템을 사용해야 하나요?
 
 A:
 
-- **프로덕션 대시보드**: scenario-loader (UnifiedServerDataSource)
+- **프로덕션 대시보드**: server-data-loader (UnifiedServerDataSource)
 - **테스트/데모**: 레거시 Mock (getMockSystem)
 - **실시간 시뮬레이션**: 레거시 Mock (/api/servers/realtime)
 
@@ -190,13 +190,13 @@ A: **없습니다**. 테스트 및 데모 목적으로 영구 유지됩니다. �
 
 ### Q: 새로운 프로덕션 데이터를 추가하려면?
 
-A: `scripts/generate-static-metrics.ts` 스크립트를 실행하여 24시간 JSON 파일을 재생성하세요. scenario-loader가 자동으로 로드합니다.
+A: `scripts/generate-static-metrics.ts` 스크립트를 실행하여 24시간 JSON 파일을 재생성하세요. server-data-loader가 자동으로 로드합니다.
 
 ### Q: 실시간 데이터 회전은 어떻게 작동하나요?
 
 A:
 
-- **scenario-loader**: KST 기준 현재 시간(0-23시) 자동 회전, 5분 단위
+- **server-data-loader**: KST 기준 현재 시간(0-23시) 자동 회전, 5분 단위
 - **레거시 Mock**: autoRotate 기능, 30초 간격, 수동 시간 점프 가능
 
 ---

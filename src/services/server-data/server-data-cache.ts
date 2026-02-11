@@ -1,13 +1,13 @@
 /**
- * JSON loading and caching for hourly scenario data files.
+ * JSON loading and caching for hourly server data files.
  *
  * Fetches `/hourly-data/hour-XX.json` with a 1-minute in-memory cache.
  *
- * @see scenario-loader.ts - Main orchestration facade
+ * @see server-data-loader.ts - Main orchestration facade
  */
 
 import { logger } from '@/lib/logging';
-import type { HourlyJsonData } from '@/services/scenario/scenario-types';
+import type { HourlyJsonData } from '@/services/server-data/server-data-types';
 
 // JSON 캐시 (메모리 최적화)
 const jsonCache: Map<number, { data: HourlyJsonData; timestamp: number }> =
@@ -32,7 +32,7 @@ export async function loadHourlyJsonFile(
     // 브라우저/서버 모두 fetch 사용
     const response = await fetch(`/hourly-data/hour-${paddedHour}.json`);
     if (!response.ok) {
-      logger.error(`[ScenarioLoader] JSON 로드 실패: ${response.status}`);
+      logger.error(`[ServerDataLoader] JSON 로드 실패: ${response.status}`);
       return null;
     }
 
@@ -43,7 +43,7 @@ export async function loadHourlyJsonFile(
 
     return data;
   } catch (error) {
-    logger.error('[ScenarioLoader] JSON 파싱 오류:', error);
+    logger.error('[ServerDataLoader] JSON 파싱 오류:', error);
     return null;
   }
 }

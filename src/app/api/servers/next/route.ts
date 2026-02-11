@@ -12,7 +12,7 @@ import {
   ServerPaginatedResponseSchema,
   ServerPaginationQuerySchema,
 } from '@/schemas/api.schema';
-import { metricsProvider } from '@/services/metrics/MetricsProvider';
+import { getServerMonitoringService } from '@/services/monitoring';
 import { getErrorMessage } from '@/types/type-utils';
 import debug from '@/utils/debug';
 
@@ -50,47 +50,18 @@ const getHandler = createApiRoute()
       status,
     } = context.query;
 
-    // MetricsProvider에서 서버 데이터 가져오기
-    const allMetrics = metricsProvider.getAllServerMetrics();
+    // ServerMonitoringService에서 서버 데이터 가져오기
+    const service = getServerMonitoringService();
+    const processed = service.getAllProcessedServers();
 
-    debug.log(`📊 MetricsProvider에서 ${allMetrics.length}개 서버 로드됨`);
+    debug.log(
+      `📊 ServerMonitoringService에서 ${processed.length}개 서버 로드됨`
+    );
 
-    // MetricsProvider 데이터를 PaginatedServer 형식으로 변환
-    const allServers: PaginatedServer[] = allMetrics.map((metric) => ({
-      id: metric.serverId,
-      name: metric.hostname ?? metric.serverId,
-      status: metric.status,
-      location: metric.location || 'Unknown',
-      uptime:
-        metric.bootTimeSeconds && metric.bootTimeSeconds > 0
-          ? Math.floor(Date.now() / 1000 - metric.bootTimeSeconds)
-          : 86400,
-      lastUpdate: metric.timestamp,
-      metrics: {
-        cpu: Math.round(metric.cpu),
-        memory: Math.round(metric.memory),
-        disk: Math.round(metric.disk),
-        network: {
-          bytesIn: Math.round(metric.network),
-          bytesOut: Math.round(metric.network),
-          packetsIn: 0,
-          packetsOut: 0,
-          latency: 0,
-          connections: 0,
-        },
-        processes: 50,
-        loadAverage: [metric.loadAvg1 ?? 0.5, metric.loadAvg5 ?? 0.3, 0.2] as [
-          number,
-          number,
-          number,
-        ],
-      },
-      tags: [],
-      metadata: {
-        type: metric.serverType || 'unknown',
-        environment: metric.environment || 'production',
-      },
-    }));
+    // ProcessedServerData를 PaginatedServer 형식으로 변환
+    const allServers: PaginatedServer[] = processed.map((p) =>
+      service.toPaginatedServer(p)
+    );
 
     // 상태 필터링
     let filteredServers = allServers;
@@ -146,7 +117,14 @@ const getHandler = createApiRoute()
  */
 async function handleGET(request: NextRequest) {
   try {
-    return await getHandler(request);
+    const response = await getHandler(request);
+    response.headers.set(
+      'Cache-Control',
+      'public, s-maxage=30, stale-while-revalidate=60'
+    );
+    response.headers.set('CDN-Cache-Control', 'public, s-maxage=30');
+    response.headers.set('Vercel-CDN-Cache-Control', 'public, s-maxage=30');
+    return response;
   } catch (error) {
     debug.error('❌ 서버 Next API 오류:', error);
     return NextResponse.json(

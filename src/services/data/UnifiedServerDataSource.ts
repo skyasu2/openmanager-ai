@@ -10,7 +10,6 @@
  */
 
 import { SystemConfigurationManager } from '@/config/SystemConfiguration';
-import { getServicesForServer } from '@/config/server-services-map';
 import { logger } from '@/lib/logging';
 import type { Server } from '@/types/server';
 
@@ -106,7 +105,7 @@ export class UnifiedServerDataSource {
    * import { getServersFromUnifiedSource } from '@/services/data/UnifiedServerDataSource';
    * const servers = await getServersFromUnifiedSource();
    *
-   * @see {@link loadHourlyScenarioData} 실제 데이터 소스
+   * @see {@link loadHourlyServerData} 실제 데이터 소스
    * @see {@link docs/core/architecture/data/data-architecture.md} 아키텍처 가이드
    */
   public async getServers(): Promise<Server[]> {
@@ -217,125 +216,27 @@ export class UnifiedServerDataSource {
   }
 
   /**
-   * 🔄 서버 데이터 로드 (MetricsProvider 사용)
+   * 🔄 서버 데이터 로드 (ServerMonitoringService 사용)
    *
    * @description
-   * MetricsProvider를 통해 hourly-data JSON 로드 (Cloud Run AI와 동일 소스)
+   * ServerMonitoringService를 통해 가공된 서버 데이터를 Server 타입으로 변환
    * - Dashboard와 AI 응답 데이터 일관성 보장
-   * - Single Source of Truth: public/hourly-data/*.json
+   * - Single Source of Truth: hourly-data/*.json → MetricsProvider → ServerMonitoringService
    *
-   * @updated 2026-01-04 - MetricsProvider 통합 (AI와 데이터 동기화)
+   * @updated 2026-02-11 - ServerMonitoringService 통합
    */
   private async loadServersFromSource(): Promise<Server[]> {
-    const { metricsProvider } = await import(
-      '@/services/metrics/MetricsProvider'
+    const { getServerMonitoringService } = await import(
+      '@/services/monitoring'
     );
-
-    // 🎯 Single Source of Truth: MetricsProvider → hourly-data JSON
-    const allMetrics = metricsProvider.getAllServerMetrics();
+    const service = getServerMonitoringService();
+    const servers = service.getAllAsServers();
 
     if (process.env.NODE_ENV !== 'production') {
       logger.info(
-        `🔄 Loading servers from MetricsProvider: ${allMetrics.length} servers`
+        `🔄 Loading servers from ServerMonitoringService: ${servers.length} servers`
       );
     }
-
-    // ServerMetrics를 Server 타입으로 변환
-    // 🎯 MetricsProvider의 status 직접 사용 (JSON SSOT 보장)
-    // 🎯 Prometheus 데이터 우선 사용, fallback으로 하드코딩 유지
-    const servers: Server[] = allMetrics.map((metric) => {
-      // uptime: bootTimeSeconds로부터 계산, fallback 30일
-      const uptime =
-        metric.bootTimeSeconds && metric.bootTimeSeconds > 0
-          ? Math.floor(Date.now() / 1000 - metric.bootTimeSeconds)
-          : 86400 * 30;
-
-      // os: Prometheus labels에서 조합, fallback 'Ubuntu 22.04 LTS'
-      const os =
-        metric.os && metric.osVersion
-          ? `${metric.os.charAt(0).toUpperCase() + metric.os.slice(1)} ${metric.osVersion}`
-          : 'Ubuntu 22.04 LTS';
-
-      // specs: nodeInfo에서 추출, fallback 하드코딩
-      const specs = metric.nodeInfo
-        ? {
-            cpu_cores: metric.nodeInfo.cpuCores,
-            memory_gb: Math.round(metric.nodeInfo.memoryTotalBytes / 1024 ** 3),
-            disk_gb: Math.round(metric.nodeInfo.diskTotalBytes / 1024 ** 3),
-            network_speed: '1Gbps',
-          }
-        : {
-            cpu_cores: 8,
-            memory_gb: 32,
-            disk_gb: 512,
-            network_speed: '1Gbps',
-          };
-
-      // ip: hostname 기반 결정적 생성, fallback 랜덤
-      const ip = metric.hostname
-        ? `10.0.${metric.hostname.charCodeAt(0) % 256}.${metric.hostname.charCodeAt(4) % 256 || 1}`
-        : `10.0.1.${Math.floor(Math.random() * 255)}`;
-
-      return {
-        id: metric.serverId,
-        name: metric.serverId,
-        hostname:
-          metric.hostname || `${metric.serverId.toLowerCase()}.internal`,
-        type: metric.serverType,
-        status: metric.status,
-        cpu: metric.cpu,
-        memory: metric.memory,
-        disk: metric.disk,
-        network: metric.network,
-        uptime,
-        // responseTimeMs (MetricsProvider, 단위 명시) → responseTime (Server 타입, 하위호환)
-        // Fallback 공식: 기본 50ms + CPU 부하 반영 (CPU 50% → 150ms, CPU 100% → 250ms)
-        responseTime: metric.responseTimeMs ?? 50 + metric.cpu * 2,
-        lastUpdate: new Date(),
-        location: metric.location,
-        provider: 'On-Premise',
-        environment: metric.environment || 'production',
-        logs: metric.logs.map((msg) => ({
-          timestamp: new Date().toISOString(),
-          level:
-            msg.includes('[CRITICAL]') || msg.includes('[ERROR]')
-              ? 'ERROR'
-              : msg.includes('[WARN]')
-                ? 'WARN'
-                : 'INFO',
-          message: msg,
-        })),
-        services: getServicesForServer(
-          metric.hostname || metric.serverId,
-          metric.serverType,
-          { cpu: metric.cpu, memory: metric.memory, status: metric.status }
-        ),
-        alerts: [],
-        specs,
-        role: metric.serverType,
-        ip,
-        os,
-        systemInfo: {
-          os,
-          uptime: `${Math.floor(uptime / 3600)}h`,
-          processes: metric.procsRunning ?? 100 + Math.floor(metric.cpu),
-          zombieProcesses: 0,
-          loadAverage:
-            metric.loadAvg1 != null
-              ? metric.loadAvg1.toFixed(2)
-              : (metric.cpu / 25).toFixed(2),
-          lastUpdate: new Date().toISOString(),
-        },
-        networkInfo: {
-          interface: 'eth0',
-          receivedBytes: `${((metric.network ?? 0) * 0.6).toFixed(1)} MB`,
-          sentBytes: `${((metric.network ?? 0) * 0.4).toFixed(1)} MB`,
-          receivedErrors: 0,
-          sentErrors: 0,
-          status: metric.status === 'offline' ? 'offline' : 'online',
-        },
-      } as unknown as Server;
-    });
 
     return servers;
   }
