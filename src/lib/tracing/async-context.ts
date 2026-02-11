@@ -5,6 +5,7 @@
  * - Logger에서 자동으로 traceId를 포함
  * - 함수 시그니처에 traceId 전달 불필요
  * - Node.js (서버 사이드) 전용
+ * - 클라이언트: Turbopack resolveAlias로 empty-module 대체 → noop
  *
  * @example
  * ```typescript
@@ -18,6 +19,7 @@
  * ```
  *
  * @created 2026-02-10
+ * @updated 2026-02-11 - 클라이언트 번들 호환 (Turbopack empty-module 대응)
  */
 
 import { AsyncLocalStorage } from 'node:async_hooks';
@@ -26,14 +28,18 @@ interface TraceContext {
   traceId: string;
 }
 
-const asyncLocalStorage = new AsyncLocalStorage<TraceContext>();
+// AsyncLocalStorage is undefined when resolved to empty-module (client/Turbopack)
+const asyncLocalStorage =
+  typeof AsyncLocalStorage === 'function'
+    ? new AsyncLocalStorage<TraceContext>()
+    : null;
 
 /**
  * 현재 요청의 traceId 조회
  * AsyncLocalStorage 컨텍스트 밖에서 호출하면 undefined 반환
  */
 export function getTraceId(): string | undefined {
-  return asyncLocalStorage.getStore()?.traceId;
+  return asyncLocalStorage?.getStore()?.traceId;
 }
 
 /**
@@ -44,5 +50,6 @@ export function runWithTraceId<T>(
   traceId: string,
   fn: () => T | Promise<T>
 ): T | Promise<T> {
+  if (!asyncLocalStorage) return fn();
   return asyncLocalStorage.run({ traceId }, fn);
 }

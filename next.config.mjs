@@ -122,6 +122,8 @@ const nextConfig = {
       net: { browser: './src/lib/empty-module.js' },
       tls: { browser: './src/lib/empty-module.js' },
       crypto: { browser: './src/lib/empty-module.js' },
+      'node:async_hooks': { browser: './src/lib/empty-module.js' },
+      async_hooks: { browser: './src/lib/empty-module.js' },
     },
     // .node 네이티브 모듈은 serverExternalPackages로 외부화되어 별도 처리 불필요
   },
@@ -394,6 +396,8 @@ const nextConfig = {
         net: false,
         tls: false,
         crypto: false,
+        'node:async_hooks': false,
+        async_hooks: false,
       };
 
       // 강화된 React 모듈 해결 설정
