@@ -9,8 +9,8 @@
  */
 
 import { expect, test } from '@playwright/test';
-import { guestLogin } from './helpers/guest';
 import { TIMEOUTS } from './helpers/timeouts';
+import { navigateToDashboard } from './helpers/ui-flow';
 
 // Server cards don't have data-testid; they are clickable cards with server name headings
 // v5.87.0: 서버 이름이 "Nginx Web Server 01", "WAS API Server 01" 등으로 변경됨 (APP- 접두사 제거)
@@ -19,31 +19,9 @@ const SERVER_NAME_HEADING_SELECTOR = 'h3';
 
 test.describe('대시보드 서버 카드 테스트', () => {
   test.beforeEach(async ({ page }) => {
-    // 게스트 로그인 → / (메인 페이지)
-    await guestLogin(page);
+    await navigateToDashboard(page);
 
-    // 메인 페이지에서 "🚀 시스템 시작" 버튼 클릭하여 /dashboard로 이동
-    await page.waitForLoadState('networkidle');
-
-    const startButton = page
-      .locator(
-        'button:has-text("🚀 시스템 시작"), button:has-text("시스템 시작")'
-      )
-      .first();
-    await startButton.waitFor({
-      state: 'visible',
-      timeout: TIMEOUTS.MODAL_DISPLAY,
-    });
-    await startButton.click();
-
-    // 대시보드로 이동 대기 (시스템 부트 포함)
-    await page.waitForURL('**/dashboard', {
-      timeout: TIMEOUTS.NETWORK_REQUEST,
-    });
-    await page.waitForLoadState('networkidle');
-
-    // Fix: UI 안정화 대기 - 서버 카드가 로드될 때까지 충분히 대기
-    // v5.87.0: 서버 이름 패턴이 변경되어 "Nginx" 또는 "WAS" 키워드로 검색
+    // 서버 카드 로드 대기
     await expect(
       page
         .locator(`${SERVER_NAME_HEADING_SELECTOR}:has-text("Nginx")`)

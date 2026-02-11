@@ -8,34 +8,15 @@
  */
 
 import { expect, test } from '@playwright/test';
-import { guestLogin, openAiSidebar } from './helpers/guest';
+import { openAiSidebar } from './helpers/guest';
 import { TIMEOUTS } from './helpers/timeouts';
+import { navigateToDashboard } from './helpers/ui-flow';
 
 test.describe('대시보드 AI 사이드바 테스트', () => {
   test.beforeEach(async ({ page }) => {
-    await guestLogin(page);
+    await navigateToDashboard(page);
 
-    // 메인 페이지(/)에서 "🚀 시스템 시작" 버튼 클릭하여 /dashboard로 이동
-    await page.waitForLoadState('networkidle');
-
-    const startButton = page
-      .locator(
-        'button:has-text("🚀 시스템 시작"), button:has-text("시스템 시작")'
-      )
-      .first();
-    await startButton.waitFor({
-      state: 'visible',
-      timeout: TIMEOUTS.MODAL_DISPLAY,
-    });
-    await startButton.click();
-
-    // 대시보드로 이동 대기 (시스템 부트 포함)
-    await page.waitForURL('**/dashboard', {
-      timeout: TIMEOUTS.NETWORK_REQUEST,
-    });
-    await page.waitForLoadState('networkidle');
-
-    // AI 버튼이 렌더링될 때까지 명시적으로 기다림
+    // AI 버튼 렌더링 대기
     await page
       .locator('button:has-text("AI 어시스턴트")')
       .first()

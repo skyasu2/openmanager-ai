@@ -11,6 +11,7 @@
  */
 
 import { expect, type Page } from '@playwright/test';
+import { isLocalEnvironment } from './config';
 import { guestLogin } from './guest';
 import { skipIfSecurityCheckpoint } from './security';
 import { TIMEOUTS } from './timeouts';
@@ -203,23 +204,31 @@ export async function navigateToDashboard(
 
       await page.waitForLoadState('networkidle', { timeout: 15000 });
 
-      // 시스템 시작 버튼 시도
-      const startButton = page
-        .locator(
-          'button:has-text("🚀 시스템 시작"), button:has-text("시스템 시작")'
-        )
-        .first();
-      const hasStartButton = await startButton
-        .isVisible({ timeout: 5000 })
-        .catch(() => false);
+      if (isLocalEnvironment()) {
+        // 로컬: 시스템 시작 버튼 → system-boot → dashboard 흐름
+        const startButton = page
+          .locator(
+            'button:has-text("🚀 시스템 시작"), button:has-text("시스템 시작")'
+          )
+          .first();
+        const hasStartButton = await startButton
+          .isVisible({ timeout: 5000 })
+          .catch(() => false);
 
-      if (hasStartButton) {
-        await startButton.click();
-        await page.waitForURL('**/dashboard', {
-          timeout: TIMEOUTS.NETWORK_REQUEST,
-        });
+        if (hasStartButton) {
+          await startButton.click();
+          await page.waitForURL('**/dashboard', {
+            timeout: TIMEOUTS.DASHBOARD_LOAD,
+          });
+        } else {
+          await page.goto('/dashboard', {
+            waitUntil: 'domcontentloaded',
+            timeout: 30000,
+          });
+          await skipIfSecurityCheckpoint(page);
+        }
       } else {
-        // 시스템 시작 버튼이 없으면 직접 대시보드로 이동
+        // Vercel: 직접 대시보드 이동 (system-start 리다이렉트 불안정)
         await page.goto('/dashboard', {
           waitUntil: 'domcontentloaded',
           timeout: 30000,

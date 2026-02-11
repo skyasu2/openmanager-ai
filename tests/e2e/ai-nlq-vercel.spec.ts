@@ -13,8 +13,9 @@
 import type { Page } from '@playwright/test';
 import { expect, test } from '@playwright/test';
 
-import { guestLogin, openAiSidebar } from './helpers/guest';
+import { openAiSidebar } from './helpers/guest';
 import { TIMEOUTS } from './helpers/timeouts';
+import { navigateToDashboard } from './helpers/ui-flow';
 
 /**
  * AI 사이드바에서 메시지를 입력하고 전송합니다.
@@ -118,29 +119,7 @@ async function handleClarificationIfPresent(page: Page) {
 test.describe('자연어 질의 E2E (Vercel)', () => {
   test.beforeEach(async ({ page }) => {
     test.setTimeout(TIMEOUTS.AI_QUERY);
-    await guestLogin(page);
-    await page.waitForLoadState('networkidle');
-
-    // 시스템 시작 버튼 클릭 → 대시보드 이동
-    const startButton = page
-      .locator(
-        'button:has-text("🚀 시스템 시작"), button:has-text("시스템 시작")'
-      )
-      .first();
-    const hasStartButton = await startButton
-      .isVisible({ timeout: TIMEOUTS.MODAL_DISPLAY })
-      .catch(() => false);
-
-    if (hasStartButton) {
-      await startButton.click();
-      await page.waitForURL('**/dashboard**', {
-        timeout: TIMEOUTS.NETWORK_REQUEST,
-      });
-    } else {
-      await page.goto('/dashboard', { waitUntil: 'domcontentloaded' });
-    }
-
-    await page.waitForLoadState('networkidle');
+    await navigateToDashboard(page);
     await openAiSidebar(page);
   });
 
