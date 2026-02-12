@@ -149,7 +149,6 @@ function main(): void {
 
   for (const hourlyData of allHourlyData) {
     const hour = hourlyData.hour;
-    const scenario = (hourlyData as HourlyData & { _scenario?: string })._scenario || `${hour}시 정상 운영`;
 
     const slots: OTelHourlySlot[] = [];
 
@@ -182,7 +181,7 @@ function main(): void {
     const simpleMetrics = targetsToSimpleMetrics(repDataPoint.targets);
     const aggregated = aggregateMetrics(simpleMetrics);
     const health = calculateHealth(aggregated, alerts);
-    const aiContext = buildAIContext(hour, scenario, health, aggregated, alerts);
+    const aiContext = buildAIContext(hour, health, aggregated, alerts);
 
     // Slim 출력: 런타임에서 미사용 필드 제거 (aggregated/alerts/health/aiContext)
     // 또한 dataPoint에서 timeUnixNano, metric에서 description/unit 제거
