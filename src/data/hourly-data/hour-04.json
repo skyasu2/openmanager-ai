@@ -5,10 +5,9 @@
     "evaluationInterval": "10m",
     "source": "node-exporter"
   },
-  "_scenario": "DB Primary 복구 완료 — 시스템 안정화 중",
   "dataPoints": [
     {
-      "timestampMs": 1770145200000,
+      "timestampMs": 1770836400000,
       "targets": {
         "web-nginx-icn-01:9100": {
           "instance": "web-nginx-icn-01:9100",
@@ -203,13 +202,13 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 55,
-            "node_memory_usage_percent": 72,
-            "node_filesystem_usage_percent": 65,
+            "node_cpu_usage_percent": 68,
+            "node_memory_usage_percent": 76,
+            "node_filesystem_usage_percent": 51,
             "node_network_transmit_bytes_rate": 38,
             "node_load1": 12.4,
             "node_load5": 11.07,
-            "node_boot_time_seconds": 1770147600,
+            "node_boot_time_seconds": 1735995449,
             "node_procs_running": 126,
             "node_http_request_duration_milliseconds": 81
           },
@@ -218,10 +217,7 @@
             "memory_total_bytes": 68719476736,
             "disk_total_bytes": 1073741824000
           },
-          "logs": [
-            "[INFO] mysqld restarted — InnoDB crash recovery completed",
-            "[INFO] New boot time: 2026-02-03T19:40:00.000Z"
-          ]
+          "logs": []
         },
         "db-mysql-icn-replica:9100": {
           "instance": "db-mysql-icn-replica:9100",
@@ -236,8 +232,8 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 60,
-            "node_memory_usage_percent": 70,
+            "node_cpu_usage_percent": 43,
+            "node_memory_usage_percent": 62,
             "node_filesystem_usage_percent": 42,
             "node_network_transmit_bytes_rate": 36,
             "node_load1": 5.83,
@@ -251,7 +247,7 @@
             "memory_total_bytes": 68719476736,
             "disk_total_bytes": 1073741824000
           },
-          "logs": ["[INFO] Replication re-established with primary"]
+          "logs": []
         },
         "db-mysql-pus-dr:9100": {
           "instance": "db-mysql-pus-dr:9100",
@@ -358,7 +354,7 @@
             "up": 1,
             "node_cpu_usage_percent": 27,
             "node_memory_usage_percent": 41,
-            "node_filesystem_usage_percent": 92,
+            "node_filesystem_usage_percent": 66,
             "node_network_transmit_bytes_rate": 45,
             "node_load1": 0.89,
             "node_load5": 0.81,
@@ -371,7 +367,7 @@
             "memory_total_bytes": 17179869184,
             "disk_total_bytes": 5368709120000
           },
-          "logs": ["[INFO] Log cleanup in progress — disk at 92%"]
+          "logs": []
         },
         "storage-s3gw-pus-01:9100": {
           "instance": "storage-s3gw-pus-01:9100",
@@ -466,7 +462,7 @@
       }
     },
     {
-      "timestampMs": 1770145800000,
+      "timestampMs": 1770837000000,
       "targets": {
         "web-nginx-icn-01:9100": {
           "instance": "web-nginx-icn-01:9100",
@@ -661,13 +657,13 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 51,
-            "node_memory_usage_percent": 69,
-            "node_filesystem_usage_percent": 62,
+            "node_cpu_usage_percent": 65,
+            "node_memory_usage_percent": 75,
+            "node_filesystem_usage_percent": 54,
             "node_network_transmit_bytes_rate": 43,
             "node_load1": 11.27,
             "node_load5": 9.91,
-            "node_boot_time_seconds": 1770147600,
+            "node_boot_time_seconds": 1735986977,
             "node_procs_running": 139,
             "node_http_request_duration_milliseconds": 73
           },
@@ -676,7 +672,7 @@
             "memory_total_bytes": 68719476736,
             "disk_total_bytes": 1073741824000
           },
-          "logs": ["[INFO] System stabilizing — CPU: 51%, Memory: 69%"]
+          "logs": []
         },
         "db-mysql-icn-replica:9100": {
           "instance": "db-mysql-icn-replica:9100",
@@ -691,8 +687,8 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 55,
-            "node_memory_usage_percent": 68,
+            "node_cpu_usage_percent": 39,
+            "node_memory_usage_percent": 59,
             "node_filesystem_usage_percent": 42,
             "node_network_transmit_bytes_rate": 37,
             "node_load1": 6.52,
@@ -706,7 +702,7 @@
             "memory_total_bytes": 68719476736,
             "disk_total_bytes": 1073741824000
           },
-          "logs": ["[INFO] Replication re-established with primary"]
+          "logs": []
         },
         "db-mysql-pus-dr:9100": {
           "instance": "db-mysql-pus-dr:9100",
@@ -813,7 +809,7 @@
             "up": 1,
             "node_cpu_usage_percent": 32,
             "node_memory_usage_percent": 36,
-            "node_filesystem_usage_percent": 88,
+            "node_filesystem_usage_percent": 65,
             "node_network_transmit_bytes_rate": 53,
             "node_load1": 1.16,
             "node_load5": 0.96,
@@ -826,7 +822,7 @@
             "memory_total_bytes": 17179869184,
             "disk_total_bytes": 5368709120000
           },
-          "logs": ["[INFO] Log cleanup in progress — disk at 88%"]
+          "logs": []
         },
         "storage-s3gw-pus-01:9100": {
           "instance": "storage-s3gw-pus-01:9100",
@@ -921,7 +917,7 @@
       }
     },
     {
-      "timestampMs": 1770146400000,
+      "timestampMs": 1770837600000,
       "targets": {
         "web-nginx-icn-01:9100": {
           "instance": "web-nginx-icn-01:9100",
@@ -1116,13 +1112,13 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 47,
-            "node_memory_usage_percent": 66,
-            "node_filesystem_usage_percent": 59,
+            "node_cpu_usage_percent": 69,
+            "node_memory_usage_percent": 77,
+            "node_filesystem_usage_percent": 53,
             "node_network_transmit_bytes_rate": 38,
             "node_load1": 12.26,
             "node_load5": 9.9,
-            "node_boot_time_seconds": 1770147600,
+            "node_boot_time_seconds": 1735960168,
             "node_procs_running": 132,
             "node_http_request_duration_milliseconds": 72
           },
@@ -1131,7 +1127,7 @@
             "memory_total_bytes": 68719476736,
             "disk_total_bytes": 1073741824000
           },
-          "logs": ["[INFO] System stabilizing — CPU: 47%, Memory: 66%"]
+          "logs": []
         },
         "db-mysql-icn-replica:9100": {
           "instance": "db-mysql-icn-replica:9100",
@@ -1146,8 +1142,8 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 50,
-            "node_memory_usage_percent": 66,
+            "node_cpu_usage_percent": 37,
+            "node_memory_usage_percent": 58,
             "node_filesystem_usage_percent": 40,
             "node_network_transmit_bytes_rate": 30,
             "node_load1": 5.89,
@@ -1268,7 +1264,7 @@
             "up": 1,
             "node_cpu_usage_percent": 29,
             "node_memory_usage_percent": 38,
-            "node_filesystem_usage_percent": 84,
+            "node_filesystem_usage_percent": 62,
             "node_network_transmit_bytes_rate": 48,
             "node_load1": 1.11,
             "node_load5": 0.95,
@@ -1281,7 +1277,7 @@
             "memory_total_bytes": 17179869184,
             "disk_total_bytes": 5368709120000
           },
-          "logs": ["[INFO] Log cleanup in progress — disk at 84%"]
+          "logs": []
         },
         "storage-s3gw-pus-01:9100": {
           "instance": "storage-s3gw-pus-01:9100",
@@ -1376,7 +1372,7 @@
       }
     },
     {
-      "timestampMs": 1770147000000,
+      "timestampMs": 1770838200000,
       "targets": {
         "web-nginx-icn-01:9100": {
           "instance": "web-nginx-icn-01:9100",
@@ -1571,13 +1567,13 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 43,
-            "node_memory_usage_percent": 63,
-            "node_filesystem_usage_percent": 56,
+            "node_cpu_usage_percent": 66,
+            "node_memory_usage_percent": 79,
+            "node_filesystem_usage_percent": 52,
             "node_network_transmit_bytes_rate": 35,
             "node_load1": 11.09,
             "node_load5": 9.55,
-            "node_boot_time_seconds": 1770147600,
+            "node_boot_time_seconds": 1735992233,
             "node_procs_running": 136,
             "node_http_request_duration_milliseconds": 81
           },
@@ -1601,8 +1597,8 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 45,
-            "node_memory_usage_percent": 64,
+            "node_cpu_usage_percent": 44,
+            "node_memory_usage_percent": 56,
             "node_filesystem_usage_percent": 40,
             "node_network_transmit_bytes_rate": 38,
             "node_load1": 7.2,
@@ -1723,7 +1719,7 @@
             "up": 1,
             "node_cpu_usage_percent": 30,
             "node_memory_usage_percent": 38,
-            "node_filesystem_usage_percent": 80,
+            "node_filesystem_usage_percent": 63,
             "node_network_transmit_bytes_rate": 45,
             "node_load1": 1.24,
             "node_load5": 1.13,
@@ -1831,7 +1827,7 @@
       }
     },
     {
-      "timestampMs": 1770147600000,
+      "timestampMs": 1770838800000,
       "targets": {
         "web-nginx-icn-01:9100": {
           "instance": "web-nginx-icn-01:9100",
@@ -2026,13 +2022,13 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 39,
-            "node_memory_usage_percent": 60,
-            "node_filesystem_usage_percent": 53,
+            "node_cpu_usage_percent": 58,
+            "node_memory_usage_percent": 66,
+            "node_filesystem_usage_percent": 42,
             "node_network_transmit_bytes_rate": 43,
             "node_load1": 8.08,
             "node_load5": 7.21,
-            "node_boot_time_seconds": 1770147600,
+            "node_boot_time_seconds": 1735959921,
             "node_procs_running": 131,
             "node_http_request_duration_milliseconds": 44
           },
@@ -2057,7 +2053,7 @@
           "metrics": {
             "up": 1,
             "node_cpu_usage_percent": 40,
-            "node_memory_usage_percent": 62,
+            "node_memory_usage_percent": 58,
             "node_filesystem_usage_percent": 41,
             "node_network_transmit_bytes_rate": 38,
             "node_load1": 5.49,
@@ -2178,7 +2174,7 @@
             "up": 1,
             "node_cpu_usage_percent": 30,
             "node_memory_usage_percent": 36,
-            "node_filesystem_usage_percent": 76,
+            "node_filesystem_usage_percent": 64,
             "node_network_transmit_bytes_rate": 46,
             "node_load1": 1.22,
             "node_load5": 0.99,
@@ -2286,7 +2282,7 @@
       }
     },
     {
-      "timestampMs": 1770148200000,
+      "timestampMs": 1770839400000,
       "targets": {
         "web-nginx-icn-01:9100": {
           "instance": "web-nginx-icn-01:9100",
@@ -2481,13 +2477,13 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 35,
-            "node_memory_usage_percent": 57,
-            "node_filesystem_usage_percent": 50,
+            "node_cpu_usage_percent": 54,
+            "node_memory_usage_percent": 67,
+            "node_filesystem_usage_percent": 45,
             "node_network_transmit_bytes_rate": 35,
             "node_load1": 7.73,
             "node_load5": 6.17,
-            "node_boot_time_seconds": 1770147600,
+            "node_boot_time_seconds": 1735977283,
             "node_procs_running": 114,
             "node_http_request_duration_milliseconds": 55
           },
@@ -2511,8 +2507,8 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 36,
-            "node_memory_usage_percent": 60,
+            "node_cpu_usage_percent": 37,
+            "node_memory_usage_percent": 63,
             "node_filesystem_usage_percent": 41,
             "node_network_transmit_bytes_rate": 37,
             "node_load1": 5.66,
@@ -2633,7 +2629,7 @@
             "up": 1,
             "node_cpu_usage_percent": 29,
             "node_memory_usage_percent": 40,
-            "node_filesystem_usage_percent": 72,
+            "node_filesystem_usage_percent": 65,
             "node_network_transmit_bytes_rate": 47,
             "node_load1": 1.16,
             "node_load5": 0.95,
