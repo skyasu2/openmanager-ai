@@ -5,10 +5,9 @@
     "evaluationInterval": "10m",
     "source": "node-exporter"
   },
-  "_scenario": "Redis OOM — 캐시 다운 + 앱 cascade (redis-01 up=0, redis-02 critical, api-01 cpu 92%)",
   "dataPoints": [
     {
-      "timestampMs": 1770174000000,
+      "timestampMs": 1770865200000,
       "targets": {
         "web-nginx-icn-01:9100": {
           "instance": "web-nginx-icn-01:9100",
@@ -24,14 +23,14 @@
           "metrics": {
             "up": 1,
             "node_cpu_usage_percent": 34,
-            "node_memory_usage_percent": 44,
-            "node_filesystem_usage_percent": 29,
+            "node_memory_usage_percent": 48,
+            "node_filesystem_usage_percent": 32,
             "node_network_transmit_bytes_rate": 57,
-            "node_load1": 1.3,
-            "node_load5": 1.1,
-            "node_boot_time_seconds": 1735963004,
-            "node_procs_running": 125,
-            "node_http_request_duration_milliseconds": 210
+            "node_load1": 1.28,
+            "node_load5": 0.96,
+            "node_boot_time_seconds": 1736009021,
+            "node_procs_running": 123,
+            "node_http_request_duration_milliseconds": 355
           },
           "nodeInfo": {
             "cpu_cores": 4,
@@ -46,954 +45,6 @@
           "labels": {
             "hostname": "web-nginx-icn-02.openmanager.kr",
             "datacenter": "Seoul-ICN-AZ2",
-            "environment": "production",
-            "server_type": "web",
-            "os": "ubuntu",
-            "os_version": "22.04"
-          },
-          "metrics": {
-            "up": 1,
-            "node_cpu_usage_percent": 28,
-            "node_memory_usage_percent": 42,
-            "node_filesystem_usage_percent": 28,
-            "node_network_transmit_bytes_rate": 56,
-            "node_load1": 1.2,
-            "node_load5": 1,
-            "node_boot_time_seconds": 1735963004,
-            "node_procs_running": 120,
-            "node_http_request_duration_milliseconds": 200
-          },
-          "nodeInfo": {
-            "cpu_cores": 4,
-            "memory_total_bytes": 8589934592,
-            "disk_total_bytes": 107374182400
-          },
-          "logs": []
-        },
-        "web-nginx-pus-01:9100": {
-          "instance": "web-nginx-pus-01:9100",
-          "job": "node-exporter",
-          "labels": {
-            "hostname": "web-nginx-pus-01.openmanager.kr",
-            "datacenter": "Busan-PUS-AZ1",
-            "environment": "production",
-            "server_type": "web",
-            "os": "ubuntu",
-            "os_version": "22.04"
-          },
-          "metrics": {
-            "up": 1,
-            "node_cpu_usage_percent": 28,
-            "node_memory_usage_percent": 40,
-            "node_filesystem_usage_percent": 28,
-            "node_network_transmit_bytes_rate": 55,
-            "node_load1": 1.2,
-            "node_load5": 1,
-            "node_boot_time_seconds": 1735963004,
-            "node_procs_running": 120,
-            "node_http_request_duration_milliseconds": 200
-          },
-          "nodeInfo": {
-            "cpu_cores": 4,
-            "memory_total_bytes": 8589934592,
-            "disk_total_bytes": 107374182400
-          },
-          "logs": []
-        },
-        "api-was-icn-01:9100": {
-          "instance": "api-was-icn-01:9100",
-          "job": "node-exporter",
-          "labels": {
-            "hostname": "api-was-icn-01.openmanager.kr",
-            "datacenter": "Seoul-ICN-AZ1",
-            "environment": "production",
-            "server_type": "application",
-            "os": "ubuntu",
-            "os_version": "22.04"
-          },
-          "metrics": {
-            "up": 1,
-            "node_cpu_usage_percent": 50,
-            "node_memory_usage_percent": 54,
-            "node_filesystem_usage_percent": 37,
-            "node_network_transmit_bytes_rate": 52,
-            "node_load1": 3.5,
-            "node_load5": 3.2,
-            "node_boot_time_seconds": 1735964094,
-            "node_procs_running": 135,
-            "node_http_request_duration_milliseconds": 200
-          },
-          "nodeInfo": {
-            "cpu_cores": 8,
-            "memory_total_bytes": 17179869184,
-            "disk_total_bytes": 214748364800
-          },
-          "logs": []
-        },
-        "api-was-icn-02:9100": {
-          "instance": "api-was-icn-02:9100",
-          "job": "node-exporter",
-          "labels": {
-            "hostname": "api-was-icn-02.openmanager.kr",
-            "datacenter": "Seoul-ICN-AZ2",
-            "environment": "production",
-            "server_type": "application",
-            "os": "ubuntu",
-            "os_version": "22.04"
-          },
-          "metrics": {
-            "up": 1,
-            "node_cpu_usage_percent": 46,
-            "node_memory_usage_percent": 52,
-            "node_filesystem_usage_percent": 32,
-            "node_network_transmit_bytes_rate": 50,
-            "node_load1": 3.8,
-            "node_load5": 3.5,
-            "node_boot_time_seconds": 1736015664,
-            "node_procs_running": 132,
-            "node_http_request_duration_milliseconds": 195
-          },
-          "nodeInfo": {
-            "cpu_cores": 8,
-            "memory_total_bytes": 17179869184,
-            "disk_total_bytes": 214748364800
-          },
-          "logs": []
-        },
-        "api-was-pus-01:9100": {
-          "instance": "api-was-pus-01:9100",
-          "job": "node-exporter",
-          "labels": {
-            "hostname": "api-was-pus-01.openmanager.kr",
-            "datacenter": "Busan-PUS-AZ1",
-            "environment": "production",
-            "server_type": "application",
-            "os": "ubuntu",
-            "os_version": "22.04"
-          },
-          "metrics": {
-            "up": 1,
-            "node_cpu_usage_percent": 42,
-            "node_memory_usage_percent": 50,
-            "node_filesystem_usage_percent": 32,
-            "node_network_transmit_bytes_rate": 46,
-            "node_load1": 3,
-            "node_load5": 2.8,
-            "node_boot_time_seconds": 1735964094,
-            "node_procs_running": 125,
-            "node_http_request_duration_milliseconds": 180
-          },
-          "nodeInfo": {
-            "cpu_cores": 8,
-            "memory_total_bytes": 17179869184,
-            "disk_total_bytes": 214748364800
-          },
-          "logs": []
-        },
-        "db-mysql-icn-primary:9100": {
-          "instance": "db-mysql-icn-primary:9100",
-          "job": "node-exporter",
-          "labels": {
-            "hostname": "db-mysql-icn-primary.openmanager.kr",
-            "datacenter": "Seoul-ICN-AZ1",
-            "environment": "production",
-            "server_type": "database",
-            "os": "ubuntu",
-            "os_version": "22.04"
-          },
-          "metrics": {
-            "up": 1,
-            "node_cpu_usage_percent": 48,
-            "node_memory_usage_percent": 65,
-            "node_filesystem_usage_percent": 44,
-            "node_network_transmit_bytes_rate": 38,
-            "node_load1": 7,
-            "node_load5": 6,
-            "node_boot_time_seconds": 1770147600000,
-            "node_procs_running": 120,
-            "node_http_request_duration_milliseconds": 55
-          },
-          "nodeInfo": {
-            "cpu_cores": 16,
-            "memory_total_bytes": 68719476736,
-            "disk_total_bytes": 1073741824000
-          },
-          "logs": []
-        },
-        "db-mysql-icn-replica:9100": {
-          "instance": "db-mysql-icn-replica:9100",
-          "job": "node-exporter",
-          "labels": {
-            "hostname": "db-mysql-icn-replica.openmanager.kr",
-            "datacenter": "Seoul-ICN-AZ2",
-            "environment": "production",
-            "server_type": "database",
-            "os": "ubuntu",
-            "os_version": "22.04"
-          },
-          "metrics": {
-            "up": 1,
-            "node_cpu_usage_percent": 40,
-            "node_memory_usage_percent": 60,
-            "node_filesystem_usage_percent": 43,
-            "node_network_transmit_bytes_rate": 36,
-            "node_load1": 5.5,
-            "node_load5": 4.5,
-            "node_boot_time_seconds": 1736004342,
-            "node_procs_running": 115,
-            "node_http_request_duration_milliseconds": 60
-          },
-          "nodeInfo": {
-            "cpu_cores": 16,
-            "memory_total_bytes": 68719476736,
-            "disk_total_bytes": 1073741824000
-          },
-          "logs": []
-        },
-        "db-mysql-pus-dr:9100": {
-          "instance": "db-mysql-pus-dr:9100",
-          "job": "node-exporter",
-          "labels": {
-            "hostname": "db-mysql-pus-dr.openmanager.kr",
-            "datacenter": "Busan-PUS-AZ1",
-            "environment": "production",
-            "server_type": "database",
-            "os": "ubuntu",
-            "os_version": "22.04"
-          },
-          "metrics": {
-            "up": 1,
-            "node_cpu_usage_percent": 45,
-            "node_memory_usage_percent": 64,
-            "node_filesystem_usage_percent": 42,
-            "node_network_transmit_bytes_rate": 33,
-            "node_load1": 6,
-            "node_load5": 5,
-            "node_boot_time_seconds": 1735968472,
-            "node_procs_running": 118,
-            "node_http_request_duration_milliseconds": 50
-          },
-          "nodeInfo": {
-            "cpu_cores": 16,
-            "memory_total_bytes": 68719476736,
-            "disk_total_bytes": 1073741824000
-          },
-          "logs": []
-        },
-        "cache-redis-icn-01:9100": {
-          "instance": "cache-redis-icn-01:9100",
-          "job": "node-exporter",
-          "labels": {
-            "hostname": "cache-redis-icn-01.openmanager.kr",
-            "datacenter": "Seoul-ICN-AZ1",
-            "environment": "production",
-            "server_type": "cache",
-            "os": "ubuntu",
-            "os_version": "22.04"
-          },
-          "metrics": {
-            "up": 1,
-            "node_cpu_usage_percent": 35,
-            "node_memory_usage_percent": 85,
-            "node_filesystem_usage_percent": 22,
-            "node_network_transmit_bytes_rate": 55,
-            "node_load1": 1.5,
-            "node_load5": 1,
-            "node_boot_time_seconds": 1735951919,
-            "node_procs_running": 110,
-            "node_http_request_duration_milliseconds": 25
-          },
-          "nodeInfo": {
-            "cpu_cores": 4,
-            "memory_total_bytes": 34359738368,
-            "disk_total_bytes": 53687091200
-          },
-          "logs": [
-            "[WARNING] Memory at 85% — maxmemory-policy: allkeys-lru active",
-            "[WARNING] Eviction rate: 100 keys/s"
-          ]
-        },
-        "cache-redis-icn-02:9100": {
-          "instance": "cache-redis-icn-02:9100",
-          "job": "node-exporter",
-          "labels": {
-            "hostname": "cache-redis-icn-02.openmanager.kr",
-            "datacenter": "Seoul-ICN-AZ2",
-            "environment": "production",
-            "server_type": "cache",
-            "os": "ubuntu",
-            "os_version": "22.04"
-          },
-          "metrics": {
-            "up": 1,
-            "node_cpu_usage_percent": 28,
-            "node_memory_usage_percent": 76,
-            "node_filesystem_usage_percent": 20,
-            "node_network_transmit_bytes_rate": 48,
-            "node_load1": 0.9,
-            "node_load5": 0.7,
-            "node_boot_time_seconds": 1735958680,
-            "node_procs_running": 108,
-            "node_http_request_duration_milliseconds": 24
-          },
-          "nodeInfo": {
-            "cpu_cores": 4,
-            "memory_total_bytes": 34359738368,
-            "disk_total_bytes": 53687091200
-          },
-          "logs": []
-        },
-        "storage-nfs-icn-01:9100": {
-          "instance": "storage-nfs-icn-01:9100",
-          "job": "node-exporter",
-          "labels": {
-            "hostname": "storage-nfs-icn-01.openmanager.kr",
-            "datacenter": "Seoul-ICN-AZ1",
-            "environment": "production",
-            "server_type": "storage",
-            "os": "ubuntu",
-            "os_version": "22.04"
-          },
-          "metrics": {
-            "up": 1,
-            "node_cpu_usage_percent": 30,
-            "node_memory_usage_percent": 38,
-            "node_filesystem_usage_percent": 66,
-            "node_network_transmit_bytes_rate": 44,
-            "node_load1": 1.2,
-            "node_load5": 1.1,
-            "node_boot_time_seconds": 1735975801,
-            "node_procs_running": 135,
-            "node_http_request_duration_milliseconds": 170
-          },
-          "nodeInfo": {
-            "cpu_cores": 4,
-            "memory_total_bytes": 17179869184,
-            "disk_total_bytes": 5368709120000
-          },
-          "logs": []
-        },
-        "storage-s3gw-pus-01:9100": {
-          "instance": "storage-s3gw-pus-01:9100",
-          "job": "node-exporter",
-          "labels": {
-            "hostname": "storage-s3gw-pus-01.openmanager.kr",
-            "datacenter": "Busan-PUS-DR",
-            "environment": "production",
-            "server_type": "storage",
-            "os": "ubuntu",
-            "os_version": "22.04"
-          },
-          "metrics": {
-            "up": 1,
-            "node_cpu_usage_percent": 15,
-            "node_memory_usage_percent": 34,
-            "node_filesystem_usage_percent": 52,
-            "node_network_transmit_bytes_rate": 58,
-            "node_load1": 0.3,
-            "node_load5": 0.3,
-            "node_boot_time_seconds": 1735961740,
-            "node_procs_running": 140,
-            "node_http_request_duration_milliseconds": 150
-          },
-          "nodeInfo": {
-            "cpu_cores": 2,
-            "memory_total_bytes": 8589934592,
-            "disk_total_bytes": 214748364800
-          },
-          "logs": []
-        },
-        "lb-haproxy-icn-01:9100": {
-          "instance": "lb-haproxy-icn-01:9100",
-          "job": "node-exporter",
-          "labels": {
-            "hostname": "lb-haproxy-icn-01.openmanager.kr",
-            "datacenter": "Seoul-ICN-AZ1",
-            "environment": "production",
-            "server_type": "loadbalancer",
-            "os": "ubuntu",
-            "os_version": "22.04"
-          },
-          "metrics": {
-            "up": 1,
-            "node_cpu_usage_percent": 34,
-            "node_memory_usage_percent": 34,
-            "node_filesystem_usage_percent": 16,
-            "node_network_transmit_bytes_rate": 71,
-            "node_load1": 1.4,
-            "node_load5": 1.2,
-            "node_boot_time_seconds": 1735936266,
-            "node_procs_running": 130,
-            "node_http_request_duration_milliseconds": 160
-          },
-          "nodeInfo": {
-            "cpu_cores": 4,
-            "memory_total_bytes": 8589934592,
-            "disk_total_bytes": 53687091200
-          },
-          "logs": []
-        },
-        "lb-haproxy-pus-01:9100": {
-          "instance": "lb-haproxy-pus-01:9100",
-          "job": "node-exporter",
-          "labels": {
-            "hostname": "lb-haproxy-pus-01.openmanager.kr",
-            "datacenter": "Busan-PUS-DR",
-            "environment": "production",
-            "server_type": "loadbalancer",
-            "os": "ubuntu",
-            "os_version": "22.04"
-          },
-          "metrics": {
-            "up": 1,
-            "node_cpu_usage_percent": 35,
-            "node_memory_usage_percent": 34,
-            "node_filesystem_usage_percent": 16,
-            "node_network_transmit_bytes_rate": 72,
-            "node_load1": 1.4,
-            "node_load5": 1.2,
-            "node_boot_time_seconds": 1735936266,
-            "node_procs_running": 130,
-            "node_http_request_duration_milliseconds": 160
-          },
-          "nodeInfo": {
-            "cpu_cores": 4,
-            "memory_total_bytes": 8589934592,
-            "disk_total_bytes": 53687091200
-          },
-          "logs": []
-        }
-      }
-    },
-    {
-      "timestampMs": 1770174600000,
-      "targets": {
-        "web-nginx-icn-01:9100": {
-          "instance": "web-nginx-icn-01:9100",
-          "job": "node-exporter",
-          "labels": {
-            "hostname": "web-nginx-icn-01.openmanager.kr",
-            "datacenter": "Seoul-ICN-AZ1",
-            "environment": "production",
-            "server_type": "web",
-            "os": "ubuntu",
-            "os_version": "22.04"
-          },
-          "metrics": {
-            "up": 1,
-            "node_cpu_usage_percent": 34,
-            "node_memory_usage_percent": 44,
-            "node_filesystem_usage_percent": 29,
-            "node_network_transmit_bytes_rate": 57,
-            "node_load1": 1.3,
-            "node_load5": 1.1,
-            "node_boot_time_seconds": 1735963004,
-            "node_procs_running": 125,
-            "node_http_request_duration_milliseconds": 210
-          },
-          "nodeInfo": {
-            "cpu_cores": 4,
-            "memory_total_bytes": 8589934592,
-            "disk_total_bytes": 107374182400
-          },
-          "logs": []
-        },
-        "web-nginx-icn-02:9100": {
-          "instance": "web-nginx-icn-02:9100",
-          "job": "node-exporter",
-          "labels": {
-            "hostname": "web-nginx-icn-02.openmanager.kr",
-            "datacenter": "Seoul-ICN-AZ2",
-            "environment": "production",
-            "server_type": "web",
-            "os": "ubuntu",
-            "os_version": "22.04"
-          },
-          "metrics": {
-            "up": 1,
-            "node_cpu_usage_percent": 29,
-            "node_memory_usage_percent": 42,
-            "node_filesystem_usage_percent": 28,
-            "node_network_transmit_bytes_rate": 57,
-            "node_load1": 1.2,
-            "node_load5": 1,
-            "node_boot_time_seconds": 1735963004,
-            "node_procs_running": 120,
-            "node_http_request_duration_milliseconds": 200
-          },
-          "nodeInfo": {
-            "cpu_cores": 4,
-            "memory_total_bytes": 8589934592,
-            "disk_total_bytes": 107374182400
-          },
-          "logs": []
-        },
-        "web-nginx-pus-01:9100": {
-          "instance": "web-nginx-pus-01:9100",
-          "job": "node-exporter",
-          "labels": {
-            "hostname": "web-nginx-pus-01.openmanager.kr",
-            "datacenter": "Busan-PUS-AZ1",
-            "environment": "production",
-            "server_type": "web",
-            "os": "ubuntu",
-            "os_version": "22.04"
-          },
-          "metrics": {
-            "up": 1,
-            "node_cpu_usage_percent": 31,
-            "node_memory_usage_percent": 44,
-            "node_filesystem_usage_percent": 28,
-            "node_network_transmit_bytes_rate": 53,
-            "node_load1": 1.2,
-            "node_load5": 1,
-            "node_boot_time_seconds": 1735963004,
-            "node_procs_running": 120,
-            "node_http_request_duration_milliseconds": 200
-          },
-          "nodeInfo": {
-            "cpu_cores": 4,
-            "memory_total_bytes": 8589934592,
-            "disk_total_bytes": 107374182400
-          },
-          "logs": []
-        },
-        "api-was-icn-01:9100": {
-          "instance": "api-was-icn-01:9100",
-          "job": "node-exporter",
-          "labels": {
-            "hostname": "api-was-icn-01.openmanager.kr",
-            "datacenter": "Seoul-ICN-AZ1",
-            "environment": "production",
-            "server_type": "application",
-            "os": "ubuntu",
-            "os_version": "22.04"
-          },
-          "metrics": {
-            "up": 1,
-            "node_cpu_usage_percent": 54,
-            "node_memory_usage_percent": 56,
-            "node_filesystem_usage_percent": 37,
-            "node_network_transmit_bytes_rate": 55,
-            "node_load1": 4,
-            "node_load5": 3.5,
-            "node_boot_time_seconds": 1735964094,
-            "node_procs_running": 140,
-            "node_http_request_duration_milliseconds": 240
-          },
-          "nodeInfo": {
-            "cpu_cores": 8,
-            "memory_total_bytes": 17179869184,
-            "disk_total_bytes": 214748364800
-          },
-          "logs": ["[WARNING] Cache response time increasing: 240ms"]
-        },
-        "api-was-icn-02:9100": {
-          "instance": "api-was-icn-02:9100",
-          "job": "node-exporter",
-          "labels": {
-            "hostname": "api-was-icn-02.openmanager.kr",
-            "datacenter": "Seoul-ICN-AZ2",
-            "environment": "production",
-            "server_type": "application",
-            "os": "ubuntu",
-            "os_version": "22.04"
-          },
-          "metrics": {
-            "up": 1,
-            "node_cpu_usage_percent": 49,
-            "node_memory_usage_percent": 54,
-            "node_filesystem_usage_percent": 32,
-            "node_network_transmit_bytes_rate": 52,
-            "node_load1": 4.1,
-            "node_load5": 3.7,
-            "node_boot_time_seconds": 1736015664,
-            "node_procs_running": 135,
-            "node_http_request_duration_milliseconds": 225
-          },
-          "nodeInfo": {
-            "cpu_cores": 8,
-            "memory_total_bytes": 17179869184,
-            "disk_total_bytes": 214748364800
-          },
-          "logs": []
-        },
-        "api-was-pus-01:9100": {
-          "instance": "api-was-pus-01:9100",
-          "job": "node-exporter",
-          "labels": {
-            "hostname": "api-was-pus-01.openmanager.kr",
-            "datacenter": "Busan-PUS-AZ1",
-            "environment": "production",
-            "server_type": "application",
-            "os": "ubuntu",
-            "os_version": "22.04"
-          },
-          "metrics": {
-            "up": 1,
-            "node_cpu_usage_percent": 41,
-            "node_memory_usage_percent": 50,
-            "node_filesystem_usage_percent": 32,
-            "node_network_transmit_bytes_rate": 49,
-            "node_load1": 3,
-            "node_load5": 2.8,
-            "node_boot_time_seconds": 1735964094,
-            "node_procs_running": 125,
-            "node_http_request_duration_milliseconds": 180
-          },
-          "nodeInfo": {
-            "cpu_cores": 8,
-            "memory_total_bytes": 17179869184,
-            "disk_total_bytes": 214748364800
-          },
-          "logs": []
-        },
-        "db-mysql-icn-primary:9100": {
-          "instance": "db-mysql-icn-primary:9100",
-          "job": "node-exporter",
-          "labels": {
-            "hostname": "db-mysql-icn-primary.openmanager.kr",
-            "datacenter": "Seoul-ICN-AZ1",
-            "environment": "production",
-            "server_type": "database",
-            "os": "ubuntu",
-            "os_version": "22.04"
-          },
-          "metrics": {
-            "up": 1,
-            "node_cpu_usage_percent": 50,
-            "node_memory_usage_percent": 67,
-            "node_filesystem_usage_percent": 44,
-            "node_network_transmit_bytes_rate": 40,
-            "node_load1": 7.5,
-            "node_load5": 6.3,
-            "node_boot_time_seconds": 1770147600000,
-            "node_procs_running": 125,
-            "node_http_request_duration_milliseconds": 60
-          },
-          "nodeInfo": {
-            "cpu_cores": 16,
-            "memory_total_bytes": 68719476736,
-            "disk_total_bytes": 1073741824000
-          },
-          "logs": []
-        },
-        "db-mysql-icn-replica:9100": {
-          "instance": "db-mysql-icn-replica:9100",
-          "job": "node-exporter",
-          "labels": {
-            "hostname": "db-mysql-icn-replica.openmanager.kr",
-            "datacenter": "Seoul-ICN-AZ2",
-            "environment": "production",
-            "server_type": "database",
-            "os": "ubuntu",
-            "os_version": "22.04"
-          },
-          "metrics": {
-            "up": 1,
-            "node_cpu_usage_percent": 41,
-            "node_memory_usage_percent": 61,
-            "node_filesystem_usage_percent": 43,
-            "node_network_transmit_bytes_rate": 36,
-            "node_load1": 5.5,
-            "node_load5": 4.5,
-            "node_boot_time_seconds": 1736004342,
-            "node_procs_running": 115,
-            "node_http_request_duration_milliseconds": 60
-          },
-          "nodeInfo": {
-            "cpu_cores": 16,
-            "memory_total_bytes": 68719476736,
-            "disk_total_bytes": 1073741824000
-          },
-          "logs": []
-        },
-        "db-mysql-pus-dr:9100": {
-          "instance": "db-mysql-pus-dr:9100",
-          "job": "node-exporter",
-          "labels": {
-            "hostname": "db-mysql-pus-dr.openmanager.kr",
-            "datacenter": "Busan-PUS-AZ1",
-            "environment": "production",
-            "server_type": "database",
-            "os": "ubuntu",
-            "os_version": "22.04"
-          },
-          "metrics": {
-            "up": 1,
-            "node_cpu_usage_percent": 45,
-            "node_memory_usage_percent": 61,
-            "node_filesystem_usage_percent": 42,
-            "node_network_transmit_bytes_rate": 34,
-            "node_load1": 6,
-            "node_load5": 5,
-            "node_boot_time_seconds": 1735968472,
-            "node_procs_running": 118,
-            "node_http_request_duration_milliseconds": 50
-          },
-          "nodeInfo": {
-            "cpu_cores": 16,
-            "memory_total_bytes": 68719476736,
-            "disk_total_bytes": 1073741824000
-          },
-          "logs": []
-        },
-        "cache-redis-icn-01:9100": {
-          "instance": "cache-redis-icn-01:9100",
-          "job": "node-exporter",
-          "labels": {
-            "hostname": "cache-redis-icn-01.openmanager.kr",
-            "datacenter": "Seoul-ICN-AZ1",
-            "environment": "production",
-            "server_type": "cache",
-            "os": "ubuntu",
-            "os_version": "22.04"
-          },
-          "metrics": {
-            "up": 1,
-            "node_cpu_usage_percent": 45,
-            "node_memory_usage_percent": 92,
-            "node_filesystem_usage_percent": 22,
-            "node_network_transmit_bytes_rate": 63,
-            "node_load1": 2.3,
-            "node_load5": 1.5,
-            "node_boot_time_seconds": 1735951919,
-            "node_procs_running": 118,
-            "node_http_request_duration_milliseconds": 30
-          },
-          "nodeInfo": {
-            "cpu_cores": 4,
-            "memory_total_bytes": 34359738368,
-            "disk_total_bytes": 53687091200
-          },
-          "logs": [
-            "[WARNING] Memory at 92% — maxmemory-policy: allkeys-lru active",
-            "[WARNING] Eviction rate: 300 keys/s"
-          ]
-        },
-        "cache-redis-icn-02:9100": {
-          "instance": "cache-redis-icn-02:9100",
-          "job": "node-exporter",
-          "labels": {
-            "hostname": "cache-redis-icn-02.openmanager.kr",
-            "datacenter": "Seoul-ICN-AZ2",
-            "environment": "production",
-            "server_type": "cache",
-            "os": "ubuntu",
-            "os_version": "22.04"
-          },
-          "metrics": {
-            "up": 1,
-            "node_cpu_usage_percent": 31,
-            "node_memory_usage_percent": 78,
-            "node_filesystem_usage_percent": 20,
-            "node_network_transmit_bytes_rate": 51,
-            "node_load1": 1.1,
-            "node_load5": 0.8,
-            "node_boot_time_seconds": 1735958680,
-            "node_procs_running": 113,
-            "node_http_request_duration_milliseconds": 24
-          },
-          "nodeInfo": {
-            "cpu_cores": 4,
-            "memory_total_bytes": 34359738368,
-            "disk_total_bytes": 53687091200
-          },
-          "logs": [
-            "[WARNING] Replication buffer growing — primary memory pressure"
-          ]
-        },
-        "storage-nfs-icn-01:9100": {
-          "instance": "storage-nfs-icn-01:9100",
-          "job": "node-exporter",
-          "labels": {
-            "hostname": "storage-nfs-icn-01.openmanager.kr",
-            "datacenter": "Seoul-ICN-AZ1",
-            "environment": "production",
-            "server_type": "storage",
-            "os": "ubuntu",
-            "os_version": "22.04"
-          },
-          "metrics": {
-            "up": 1,
-            "node_cpu_usage_percent": 29,
-            "node_memory_usage_percent": 40,
-            "node_filesystem_usage_percent": 66,
-            "node_network_transmit_bytes_rate": 44,
-            "node_load1": 1.2,
-            "node_load5": 1.1,
-            "node_boot_time_seconds": 1735975801,
-            "node_procs_running": 135,
-            "node_http_request_duration_milliseconds": 170
-          },
-          "nodeInfo": {
-            "cpu_cores": 4,
-            "memory_total_bytes": 17179869184,
-            "disk_total_bytes": 5368709120000
-          },
-          "logs": []
-        },
-        "storage-s3gw-pus-01:9100": {
-          "instance": "storage-s3gw-pus-01:9100",
-          "job": "node-exporter",
-          "labels": {
-            "hostname": "storage-s3gw-pus-01.openmanager.kr",
-            "datacenter": "Busan-PUS-DR",
-            "environment": "production",
-            "server_type": "storage",
-            "os": "ubuntu",
-            "os_version": "22.04"
-          },
-          "metrics": {
-            "up": 1,
-            "node_cpu_usage_percent": 16,
-            "node_memory_usage_percent": 36,
-            "node_filesystem_usage_percent": 52,
-            "node_network_transmit_bytes_rate": 55,
-            "node_load1": 0.3,
-            "node_load5": 0.3,
-            "node_boot_time_seconds": 1735961740,
-            "node_procs_running": 140,
-            "node_http_request_duration_milliseconds": 150
-          },
-          "nodeInfo": {
-            "cpu_cores": 2,
-            "memory_total_bytes": 8589934592,
-            "disk_total_bytes": 214748364800
-          },
-          "logs": []
-        },
-        "lb-haproxy-icn-01:9100": {
-          "instance": "lb-haproxy-icn-01:9100",
-          "job": "node-exporter",
-          "labels": {
-            "hostname": "lb-haproxy-icn-01.openmanager.kr",
-            "datacenter": "Seoul-ICN-AZ1",
-            "environment": "production",
-            "server_type": "loadbalancer",
-            "os": "ubuntu",
-            "os_version": "22.04"
-          },
-          "metrics": {
-            "up": 1,
-            "node_cpu_usage_percent": 34,
-            "node_memory_usage_percent": 36,
-            "node_filesystem_usage_percent": 16,
-            "node_network_transmit_bytes_rate": 70,
-            "node_load1": 1.4,
-            "node_load5": 1.2,
-            "node_boot_time_seconds": 1735936266,
-            "node_procs_running": 130,
-            "node_http_request_duration_milliseconds": 160
-          },
-          "nodeInfo": {
-            "cpu_cores": 4,
-            "memory_total_bytes": 8589934592,
-            "disk_total_bytes": 53687091200
-          },
-          "logs": []
-        },
-        "lb-haproxy-pus-01:9100": {
-          "instance": "lb-haproxy-pus-01:9100",
-          "job": "node-exporter",
-          "labels": {
-            "hostname": "lb-haproxy-pus-01.openmanager.kr",
-            "datacenter": "Busan-PUS-DR",
-            "environment": "production",
-            "server_type": "loadbalancer",
-            "os": "ubuntu",
-            "os_version": "22.04"
-          },
-          "metrics": {
-            "up": 1,
-            "node_cpu_usage_percent": 37,
-            "node_memory_usage_percent": 33,
-            "node_filesystem_usage_percent": 16,
-            "node_network_transmit_bytes_rate": 72,
-            "node_load1": 1.4,
-            "node_load5": 1.2,
-            "node_boot_time_seconds": 1735936266,
-            "node_procs_running": 130,
-            "node_http_request_duration_milliseconds": 160
-          },
-          "nodeInfo": {
-            "cpu_cores": 4,
-            "memory_total_bytes": 8589934592,
-            "disk_total_bytes": 53687091200
-          },
-          "logs": []
-        }
-      }
-    },
-    {
-      "timestampMs": 1770175200000,
-      "targets": {
-        "web-nginx-icn-01:9100": {
-          "instance": "web-nginx-icn-01:9100",
-          "job": "node-exporter",
-          "labels": {
-            "hostname": "web-nginx-icn-01.openmanager.kr",
-            "datacenter": "Seoul-ICN-AZ1",
-            "environment": "production",
-            "server_type": "web",
-            "os": "ubuntu",
-            "os_version": "22.04"
-          },
-          "metrics": {
-            "up": 1,
-            "node_cpu_usage_percent": 48,
-            "node_memory_usage_percent": 50,
-            "node_filesystem_usage_percent": 29,
-            "node_network_transmit_bytes_rate": 65,
-            "node_load1": 2.2,
-            "node_load5": 1.8,
-            "node_boot_time_seconds": 1735963004,
-            "node_procs_running": 125,
-            "node_http_request_duration_milliseconds": 400
-          },
-          "nodeInfo": {
-            "cpu_cores": 4,
-            "memory_total_bytes": 8589934592,
-            "disk_total_bytes": 107374182400
-          },
-          "logs": ["[WARNING] Page load time degraded: 2s"]
-        },
-        "web-nginx-icn-02:9100": {
-          "instance": "web-nginx-icn-02:9100",
-          "job": "node-exporter",
-          "labels": {
-            "hostname": "web-nginx-icn-02.openmanager.kr",
-            "datacenter": "Seoul-ICN-AZ2",
-            "environment": "production",
-            "server_type": "web",
-            "os": "ubuntu",
-            "os_version": "22.04"
-          },
-          "metrics": {
-            "up": 1,
-            "node_cpu_usage_percent": 31,
-            "node_memory_usage_percent": 42,
-            "node_filesystem_usage_percent": 28,
-            "node_network_transmit_bytes_rate": 54,
-            "node_load1": 1.2,
-            "node_load5": 1,
-            "node_boot_time_seconds": 1735963004,
-            "node_procs_running": 120,
-            "node_http_request_duration_milliseconds": 200
-          },
-          "nodeInfo": {
-            "cpu_cores": 4,
-            "memory_total_bytes": 8589934592,
-            "disk_total_bytes": 107374182400
-          },
-          "logs": []
-        },
-        "web-nginx-pus-01:9100": {
-          "instance": "web-nginx-pus-01:9100",
-          "job": "node-exporter",
-          "labels": {
-            "hostname": "web-nginx-pus-01.openmanager.kr",
-            "datacenter": "Busan-PUS-AZ1",
             "environment": "production",
             "server_type": "web",
             "os": "ubuntu",
@@ -1002,458 +53,14 @@
           "metrics": {
             "up": 1,
             "node_cpu_usage_percent": 32,
-            "node_memory_usage_percent": 41,
-            "node_filesystem_usage_percent": 28,
+            "node_memory_usage_percent": 44,
+            "node_filesystem_usage_percent": 26,
             "node_network_transmit_bytes_rate": 57,
-            "node_load1": 1.2,
-            "node_load5": 1,
-            "node_boot_time_seconds": 1735963004,
-            "node_procs_running": 120,
-            "node_http_request_duration_milliseconds": 200
-          },
-          "nodeInfo": {
-            "cpu_cores": 4,
-            "memory_total_bytes": 8589934592,
-            "disk_total_bytes": 107374182400
-          },
-          "logs": []
-        },
-        "api-was-icn-01:9100": {
-          "instance": "api-was-icn-01:9100",
-          "job": "node-exporter",
-          "labels": {
-            "hostname": "api-was-icn-01.openmanager.kr",
-            "datacenter": "Seoul-ICN-AZ1",
-            "environment": "production",
-            "server_type": "application",
-            "os": "ubuntu",
-            "os_version": "22.04"
-          },
-          "metrics": {
-            "up": 1,
-            "node_cpu_usage_percent": 72,
-            "node_memory_usage_percent": 65,
-            "node_filesystem_usage_percent": 37,
-            "node_network_transmit_bytes_rate": 68,
-            "node_load1": 6,
-            "node_load5": 5,
-            "node_boot_time_seconds": 1735964094,
-            "node_procs_running": 145,
-            "node_http_request_duration_milliseconds": 800
-          },
-          "nodeInfo": {
-            "cpu_cores": 8,
-            "memory_total_bytes": 17179869184,
-            "disk_total_bytes": 214748364800
-          },
-          "logs": [
-            "[CRITICAL] Cache miss storm — DB direct queries surging",
-            "[WARNING] CPU at 72% — thread pool near exhaustion",
-            "[WARNING] Response time: 800ms"
-          ]
-        },
-        "api-was-icn-02:9100": {
-          "instance": "api-was-icn-02:9100",
-          "job": "node-exporter",
-          "labels": {
-            "hostname": "api-was-icn-02.openmanager.kr",
-            "datacenter": "Seoul-ICN-AZ2",
-            "environment": "production",
-            "server_type": "application",
-            "os": "ubuntu",
-            "os_version": "22.04"
-          },
-          "metrics": {
-            "up": 1,
-            "node_cpu_usage_percent": 65,
-            "node_memory_usage_percent": 60,
-            "node_filesystem_usage_percent": 32,
-            "node_network_transmit_bytes_rate": 62,
-            "node_load1": 5,
-            "node_load5": 4.2,
-            "node_boot_time_seconds": 1736015664,
-            "node_procs_running": 138,
-            "node_http_request_duration_milliseconds": 600
-          },
-          "nodeInfo": {
-            "cpu_cores": 8,
-            "memory_total_bytes": 17179869184,
-            "disk_total_bytes": 214748364800
-          },
-          "logs": [
-            "[WARNING] Cache miss rate: 40%",
-            "[WARNING] DB connection pool usage: 70%"
-          ]
-        },
-        "api-was-pus-01:9100": {
-          "instance": "api-was-pus-01:9100",
-          "job": "node-exporter",
-          "labels": {
-            "hostname": "api-was-pus-01.openmanager.kr",
-            "datacenter": "Busan-PUS-AZ1",
-            "environment": "production",
-            "server_type": "application",
-            "os": "ubuntu",
-            "os_version": "22.04"
-          },
-          "metrics": {
-            "up": 1,
-            "node_cpu_usage_percent": 40,
-            "node_memory_usage_percent": 51,
-            "node_filesystem_usage_percent": 32,
-            "node_network_transmit_bytes_rate": 47,
-            "node_load1": 3,
-            "node_load5": 2.8,
-            "node_boot_time_seconds": 1735964094,
-            "node_procs_running": 125,
-            "node_http_request_duration_milliseconds": 180
-          },
-          "nodeInfo": {
-            "cpu_cores": 8,
-            "memory_total_bytes": 17179869184,
-            "disk_total_bytes": 214748364800
-          },
-          "logs": []
-        },
-        "db-mysql-icn-primary:9100": {
-          "instance": "db-mysql-icn-primary:9100",
-          "job": "node-exporter",
-          "labels": {
-            "hostname": "db-mysql-icn-primary.openmanager.kr",
-            "datacenter": "Seoul-ICN-AZ1",
-            "environment": "production",
-            "server_type": "database",
-            "os": "ubuntu",
-            "os_version": "22.04"
-          },
-          "metrics": {
-            "up": 1,
-            "node_cpu_usage_percent": 65,
-            "node_memory_usage_percent": 75,
-            "node_filesystem_usage_percent": 44,
-            "node_network_transmit_bytes_rate": 50,
-            "node_load1": 10,
-            "node_load5": 8,
-            "node_boot_time_seconds": 1770147600000,
-            "node_procs_running": 130,
-            "node_http_request_duration_milliseconds": 100
-          },
-          "nodeInfo": {
-            "cpu_cores": 16,
-            "memory_total_bytes": 68719476736,
-            "disk_total_bytes": 1073741824000
-          },
-          "logs": [
-            "[CRITICAL] Query rate surge — cache bypass detected",
-            "[WARNING] Active connections: 200 (max: 500)",
-            "[WARNING] Slow query count: 20/min"
-          ]
-        },
-        "db-mysql-icn-replica:9100": {
-          "instance": "db-mysql-icn-replica:9100",
-          "job": "node-exporter",
-          "labels": {
-            "hostname": "db-mysql-icn-replica.openmanager.kr",
-            "datacenter": "Seoul-ICN-AZ2",
-            "environment": "production",
-            "server_type": "database",
-            "os": "ubuntu",
-            "os_version": "22.04"
-          },
-          "metrics": {
-            "up": 1,
-            "node_cpu_usage_percent": 55,
-            "node_memory_usage_percent": 65,
-            "node_filesystem_usage_percent": 43,
-            "node_network_transmit_bytes_rate": 45,
-            "node_load1": 7,
-            "node_load5": 6,
-            "node_boot_time_seconds": 1736004342,
-            "node_procs_running": 115,
-            "node_http_request_duration_milliseconds": 60
-          },
-          "nodeInfo": {
-            "cpu_cores": 16,
-            "memory_total_bytes": 68719476736,
-            "disk_total_bytes": 1073741824000
-          },
-          "logs": ["[WARNING] Read query surge from cache-miss fallback"]
-        },
-        "db-mysql-pus-dr:9100": {
-          "instance": "db-mysql-pus-dr:9100",
-          "job": "node-exporter",
-          "labels": {
-            "hostname": "db-mysql-pus-dr.openmanager.kr",
-            "datacenter": "Busan-PUS-AZ1",
-            "environment": "production",
-            "server_type": "database",
-            "os": "ubuntu",
-            "os_version": "22.04"
-          },
-          "metrics": {
-            "up": 1,
-            "node_cpu_usage_percent": 44,
-            "node_memory_usage_percent": 63,
-            "node_filesystem_usage_percent": 42,
-            "node_network_transmit_bytes_rate": 33,
-            "node_load1": 6,
-            "node_load5": 5,
-            "node_boot_time_seconds": 1735968472,
-            "node_procs_running": 118,
-            "node_http_request_duration_milliseconds": 50
-          },
-          "nodeInfo": {
-            "cpu_cores": 16,
-            "memory_total_bytes": 68719476736,
-            "disk_total_bytes": 1073741824000
-          },
-          "logs": []
-        },
-        "cache-redis-icn-01:9100": {
-          "instance": "cache-redis-icn-01:9100",
-          "job": "node-exporter",
-          "labels": {
-            "hostname": "cache-redis-icn-01.openmanager.kr",
-            "datacenter": "Seoul-ICN-AZ1",
-            "environment": "production",
-            "server_type": "cache",
-            "os": "ubuntu",
-            "os_version": "22.04"
-          },
-          "metrics": {
-            "up": 0,
-            "node_cpu_usage_percent": 0,
-            "node_memory_usage_percent": 0,
-            "node_filesystem_usage_percent": 0,
-            "node_network_transmit_bytes_rate": 0,
-            "node_load1": 0,
-            "node_load5": 0,
-            "node_boot_time_seconds": 1735951919,
-            "node_procs_running": 0,
-            "node_http_request_duration_milliseconds": 0
-          },
-          "nodeInfo": {
-            "cpu_cores": 4,
-            "memory_total_bytes": 34359738368,
-            "disk_total_bytes": 53687091200
-          },
-          "logs": [
-            "[CRITICAL] Server DOWN — Redis OOM: Can't allocate memory",
-            "[ERROR] All client connections terminated",
-            "[CRITICAL] Sentinel triggered failover to cache-redis-icn-02"
-          ]
-        },
-        "cache-redis-icn-02:9100": {
-          "instance": "cache-redis-icn-02:9100",
-          "job": "node-exporter",
-          "labels": {
-            "hostname": "cache-redis-icn-02.openmanager.kr",
-            "datacenter": "Seoul-ICN-AZ2",
-            "environment": "production",
-            "server_type": "cache",
-            "os": "ubuntu",
-            "os_version": "22.04"
-          },
-          "metrics": {
-            "up": 1,
-            "node_cpu_usage_percent": 50,
-            "node_memory_usage_percent": 82,
-            "node_filesystem_usage_percent": 20,
-            "node_network_transmit_bytes_rate": 65,
-            "node_load1": 2.5,
-            "node_load5": 2,
-            "node_boot_time_seconds": 1735958680,
-            "node_procs_running": 118,
-            "node_http_request_duration_milliseconds": 30
-          },
-          "nodeInfo": {
-            "cpu_cores": 4,
-            "memory_total_bytes": 34359738368,
-            "disk_total_bytes": 53687091200
-          },
-          "logs": [
-            "[CRITICAL] Promoted to primary — handling all cache traffic",
-            "[WARNING] Memory usage at 82% — approaching limit",
-            "[WARNING] Hit rate dropped to 65%"
-          ]
-        },
-        "storage-nfs-icn-01:9100": {
-          "instance": "storage-nfs-icn-01:9100",
-          "job": "node-exporter",
-          "labels": {
-            "hostname": "storage-nfs-icn-01.openmanager.kr",
-            "datacenter": "Seoul-ICN-AZ1",
-            "environment": "production",
-            "server_type": "storage",
-            "os": "ubuntu",
-            "os_version": "22.04"
-          },
-          "metrics": {
-            "up": 1,
-            "node_cpu_usage_percent": 31,
-            "node_memory_usage_percent": 41,
-            "node_filesystem_usage_percent": 66,
-            "node_network_transmit_bytes_rate": 44,
-            "node_load1": 1.2,
-            "node_load5": 1.1,
-            "node_boot_time_seconds": 1735975801,
-            "node_procs_running": 135,
-            "node_http_request_duration_milliseconds": 170
-          },
-          "nodeInfo": {
-            "cpu_cores": 4,
-            "memory_total_bytes": 17179869184,
-            "disk_total_bytes": 5368709120000
-          },
-          "logs": []
-        },
-        "storage-s3gw-pus-01:9100": {
-          "instance": "storage-s3gw-pus-01:9100",
-          "job": "node-exporter",
-          "labels": {
-            "hostname": "storage-s3gw-pus-01.openmanager.kr",
-            "datacenter": "Busan-PUS-DR",
-            "environment": "production",
-            "server_type": "storage",
-            "os": "ubuntu",
-            "os_version": "22.04"
-          },
-          "metrics": {
-            "up": 1,
-            "node_cpu_usage_percent": 18,
-            "node_memory_usage_percent": 34,
-            "node_filesystem_usage_percent": 52,
-            "node_network_transmit_bytes_rate": 56,
-            "node_load1": 0.3,
-            "node_load5": 0.3,
-            "node_boot_time_seconds": 1735961740,
-            "node_procs_running": 140,
-            "node_http_request_duration_milliseconds": 150
-          },
-          "nodeInfo": {
-            "cpu_cores": 2,
-            "memory_total_bytes": 8589934592,
-            "disk_total_bytes": 214748364800
-          },
-          "logs": []
-        },
-        "lb-haproxy-icn-01:9100": {
-          "instance": "lb-haproxy-icn-01:9100",
-          "job": "node-exporter",
-          "labels": {
-            "hostname": "lb-haproxy-icn-01.openmanager.kr",
-            "datacenter": "Seoul-ICN-AZ1",
-            "environment": "production",
-            "server_type": "loadbalancer",
-            "os": "ubuntu",
-            "os_version": "22.04"
-          },
-          "metrics": {
-            "up": 1,
-            "node_cpu_usage_percent": 37,
-            "node_memory_usage_percent": 36,
-            "node_filesystem_usage_percent": 16,
-            "node_network_transmit_bytes_rate": 71,
-            "node_load1": 1.4,
-            "node_load5": 1.2,
-            "node_boot_time_seconds": 1735936266,
-            "node_procs_running": 130,
-            "node_http_request_duration_milliseconds": 160
-          },
-          "nodeInfo": {
-            "cpu_cores": 4,
-            "memory_total_bytes": 8589934592,
-            "disk_total_bytes": 53687091200
-          },
-          "logs": []
-        },
-        "lb-haproxy-pus-01:9100": {
-          "instance": "lb-haproxy-pus-01:9100",
-          "job": "node-exporter",
-          "labels": {
-            "hostname": "lb-haproxy-pus-01.openmanager.kr",
-            "datacenter": "Busan-PUS-DR",
-            "environment": "production",
-            "server_type": "loadbalancer",
-            "os": "ubuntu",
-            "os_version": "22.04"
-          },
-          "metrics": {
-            "up": 1,
-            "node_cpu_usage_percent": 36,
-            "node_memory_usage_percent": 36,
-            "node_filesystem_usage_percent": 16,
-            "node_network_transmit_bytes_rate": 74,
-            "node_load1": 1.4,
-            "node_load5": 1.2,
-            "node_boot_time_seconds": 1735936266,
-            "node_procs_running": 130,
-            "node_http_request_duration_milliseconds": 160
-          },
-          "nodeInfo": {
-            "cpu_cores": 4,
-            "memory_total_bytes": 8589934592,
-            "disk_total_bytes": 53687091200
-          },
-          "logs": []
-        }
-      }
-    },
-    {
-      "timestampMs": 1770175800000,
-      "targets": {
-        "web-nginx-icn-01:9100": {
-          "instance": "web-nginx-icn-01:9100",
-          "job": "node-exporter",
-          "labels": {
-            "hostname": "web-nginx-icn-01.openmanager.kr",
-            "datacenter": "Seoul-ICN-AZ1",
-            "environment": "production",
-            "server_type": "web",
-            "os": "ubuntu",
-            "os_version": "22.04"
-          },
-          "metrics": {
-            "up": 1,
-            "node_cpu_usage_percent": 53,
-            "node_memory_usage_percent": 52,
-            "node_filesystem_usage_percent": 29,
-            "node_network_transmit_bytes_rate": 68,
-            "node_load1": 2.2,
-            "node_load5": 1.8,
-            "node_boot_time_seconds": 1735963004,
-            "node_procs_running": 125,
-            "node_http_request_duration_milliseconds": 500
-          },
-          "nodeInfo": {
-            "cpu_cores": 4,
-            "memory_total_bytes": 8589934592,
-            "disk_total_bytes": 107374182400
-          },
-          "logs": ["[WARNING] Page load time degraded: 2.5s"]
-        },
-        "web-nginx-icn-02:9100": {
-          "instance": "web-nginx-icn-02:9100",
-          "job": "node-exporter",
-          "labels": {
-            "hostname": "web-nginx-icn-02.openmanager.kr",
-            "datacenter": "Seoul-ICN-AZ2",
-            "environment": "production",
-            "server_type": "web",
-            "os": "ubuntu",
-            "os_version": "22.04"
-          },
-          "metrics": {
-            "up": 1,
-            "node_cpu_usage_percent": 28,
-            "node_memory_usage_percent": 41,
-            "node_filesystem_usage_percent": 28,
-            "node_network_transmit_bytes_rate": 56,
-            "node_load1": 1.2,
-            "node_load5": 1,
-            "node_boot_time_seconds": 1735963004,
-            "node_procs_running": 120,
-            "node_http_request_duration_milliseconds": 200
+            "node_load1": 1.14,
+            "node_load5": 1.07,
+            "node_boot_time_seconds": 1735969567,
+            "node_procs_running": 141,
+            "node_http_request_duration_milliseconds": 370
           },
           "nodeInfo": {
             "cpu_cores": 4,
@@ -1475,15 +82,15 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 29,
-            "node_memory_usage_percent": 43,
-            "node_filesystem_usage_percent": 28,
-            "node_network_transmit_bytes_rate": 54,
-            "node_load1": 1.2,
-            "node_load5": 1,
-            "node_boot_time_seconds": 1735963004,
-            "node_procs_running": 120,
-            "node_http_request_duration_milliseconds": 200
+            "node_cpu_usage_percent": 18,
+            "node_memory_usage_percent": 37,
+            "node_filesystem_usage_percent": 23,
+            "node_network_transmit_bytes_rate": 44,
+            "node_load1": 0.66,
+            "node_load5": 0.5,
+            "node_boot_time_seconds": 1736007606,
+            "node_procs_running": 117,
+            "node_http_request_duration_milliseconds": 304
           },
           "nodeInfo": {
             "cpu_cores": 4,
@@ -1505,26 +112,22 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 77,
+            "node_cpu_usage_percent": 57,
             "node_memory_usage_percent": 69,
-            "node_filesystem_usage_percent": 37,
-            "node_network_transmit_bytes_rate": 73,
-            "node_load1": 7.5,
-            "node_load5": 6,
-            "node_boot_time_seconds": 1735964094,
-            "node_procs_running": 150,
-            "node_http_request_duration_milliseconds": 1400
+            "node_filesystem_usage_percent": 34,
+            "node_network_transmit_bytes_rate": 51,
+            "node_load1": 4.83,
+            "node_load5": 4.06,
+            "node_boot_time_seconds": 1735959878,
+            "node_procs_running": 112,
+            "node_http_request_duration_milliseconds": 387
           },
           "nodeInfo": {
             "cpu_cores": 8,
             "memory_total_bytes": 17179869184,
             "disk_total_bytes": 214748364800
           },
-          "logs": [
-            "[CRITICAL] Cache miss storm — DB direct queries surging",
-            "[WARNING] CPU at 77% — thread pool near exhaustion",
-            "[WARNING] Response time: 1400ms"
-          ]
+          "logs": []
         },
         "api-was-icn-02:9100": {
           "instance": "api-was-icn-02:9100",
@@ -1539,25 +142,22 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 69,
-            "node_memory_usage_percent": 63,
+            "node_cpu_usage_percent": 39,
+            "node_memory_usage_percent": 52,
             "node_filesystem_usage_percent": 32,
-            "node_network_transmit_bytes_rate": 66,
-            "node_load1": 6,
-            "node_load5": 4.9,
-            "node_boot_time_seconds": 1736015664,
-            "node_procs_running": 141,
-            "node_http_request_duration_milliseconds": 1000
+            "node_network_transmit_bytes_rate": 49,
+            "node_load1": 3.26,
+            "node_load5": 3.04,
+            "node_boot_time_seconds": 1735975326,
+            "node_procs_running": 140,
+            "node_http_request_duration_milliseconds": 374
           },
           "nodeInfo": {
             "cpu_cores": 8,
             "memory_total_bytes": 17179869184,
             "disk_total_bytes": 214748364800
           },
-          "logs": [
-            "[WARNING] Cache miss rate: 50%",
-            "[WARNING] DB connection pool usage: 78%"
-          ]
+          "logs": []
         },
         "api-was-pus-01:9100": {
           "instance": "api-was-pus-01:9100",
@@ -1572,15 +172,15 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 38,
-            "node_memory_usage_percent": 50,
-            "node_filesystem_usage_percent": 32,
-            "node_network_transmit_bytes_rate": 49,
-            "node_load1": 3,
-            "node_load5": 2.8,
-            "node_boot_time_seconds": 1735964094,
-            "node_procs_running": 125,
-            "node_http_request_duration_milliseconds": 180
+            "node_cpu_usage_percent": 26,
+            "node_memory_usage_percent": 36,
+            "node_filesystem_usage_percent": 28,
+            "node_network_transmit_bytes_rate": 39,
+            "node_load1": 2.19,
+            "node_load5": 1.8,
+            "node_boot_time_seconds": 1736017626,
+            "node_procs_running": 106,
+            "node_http_request_duration_milliseconds": 313
           },
           "nodeInfo": {
             "cpu_cores": 8,
@@ -1595,40 +195,6 @@
           "labels": {
             "hostname": "db-mysql-icn-primary.openmanager.kr",
             "datacenter": "Seoul-ICN-AZ1",
-            "environment": "production",
-            "server_type": "database",
-            "os": "ubuntu",
-            "os_version": "22.04"
-          },
-          "metrics": {
-            "up": 1,
-            "node_cpu_usage_percent": 70,
-            "node_memory_usage_percent": 78,
-            "node_filesystem_usage_percent": 44,
-            "node_network_transmit_bytes_rate": 55,
-            "node_load1": 12,
-            "node_load5": 9.5,
-            "node_boot_time_seconds": 1770147600000,
-            "node_procs_running": 135,
-            "node_http_request_duration_milliseconds": 140
-          },
-          "nodeInfo": {
-            "cpu_cores": 16,
-            "memory_total_bytes": 68719476736,
-            "disk_total_bytes": 1073741824000
-          },
-          "logs": [
-            "[CRITICAL] Query rate surge — cache bypass detected",
-            "[WARNING] Active connections: 250 (max: 500)",
-            "[WARNING] Slow query count: 35/min"
-          ]
-        },
-        "db-mysql-icn-replica:9100": {
-          "instance": "db-mysql-icn-replica:9100",
-          "job": "node-exporter",
-          "labels": {
-            "hostname": "db-mysql-icn-replica.openmanager.kr",
-            "datacenter": "Seoul-ICN-AZ2",
             "environment": "production",
             "server_type": "database",
             "os": "ubuntu",
@@ -1637,21 +203,51 @@
           "metrics": {
             "up": 1,
             "node_cpu_usage_percent": 59,
-            "node_memory_usage_percent": 68,
-            "node_filesystem_usage_percent": 43,
-            "node_network_transmit_bytes_rate": 49,
-            "node_load1": 8,
-            "node_load5": 6.7,
-            "node_boot_time_seconds": 1736004342,
-            "node_procs_running": 115,
-            "node_http_request_duration_milliseconds": 60
+            "node_memory_usage_percent": 69,
+            "node_filesystem_usage_percent": 45,
+            "node_network_transmit_bytes_rate": 35,
+            "node_load1": 7.87,
+            "node_load5": 5.99,
+            "node_boot_time_seconds": 1735999466,
+            "node_procs_running": 102,
+            "node_http_request_duration_milliseconds": 128
           },
           "nodeInfo": {
             "cpu_cores": 16,
             "memory_total_bytes": 68719476736,
             "disk_total_bytes": 1073741824000
           },
-          "logs": ["[WARNING] Read query surge from cache-miss fallback"]
+          "logs": []
+        },
+        "db-mysql-icn-replica:9100": {
+          "instance": "db-mysql-icn-replica:9100",
+          "job": "node-exporter",
+          "labels": {
+            "hostname": "db-mysql-icn-replica.openmanager.kr",
+            "datacenter": "Seoul-ICN-AZ2",
+            "environment": "production",
+            "server_type": "database",
+            "os": "ubuntu",
+            "os_version": "22.04"
+          },
+          "metrics": {
+            "up": 1,
+            "node_cpu_usage_percent": 38,
+            "node_memory_usage_percent": 63,
+            "node_filesystem_usage_percent": 40,
+            "node_network_transmit_bytes_rate": 37,
+            "node_load1": 6.37,
+            "node_load5": 5.77,
+            "node_boot_time_seconds": 1736009065,
+            "node_procs_running": 121,
+            "node_http_request_duration_milliseconds": 115
+          },
+          "nodeInfo": {
+            "cpu_cores": 16,
+            "memory_total_bytes": 68719476736,
+            "disk_total_bytes": 1073741824000
+          },
+          "logs": []
         },
         "db-mysql-pus-dr:9100": {
           "instance": "db-mysql-pus-dr:9100",
@@ -1666,15 +262,15 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 43,
-            "node_memory_usage_percent": 63,
-            "node_filesystem_usage_percent": 42,
-            "node_network_transmit_bytes_rate": 34,
-            "node_load1": 6,
-            "node_load5": 5,
-            "node_boot_time_seconds": 1735968472,
-            "node_procs_running": 118,
-            "node_http_request_duration_milliseconds": 50
+            "node_cpu_usage_percent": 16,
+            "node_memory_usage_percent": 48,
+            "node_filesystem_usage_percent": 39,
+            "node_network_transmit_bytes_rate": 28,
+            "node_load1": 2.6,
+            "node_load5": 2.44,
+            "node_boot_time_seconds": 1735934727,
+            "node_procs_running": 105,
+            "node_http_request_duration_milliseconds": 88
           },
           "nodeInfo": {
             "cpu_cores": 16,
@@ -1695,27 +291,23 @@
             "os_version": "22.04"
           },
           "metrics": {
-            "up": 0,
-            "node_cpu_usage_percent": 0,
-            "node_memory_usage_percent": 0,
-            "node_filesystem_usage_percent": 0,
-            "node_network_transmit_bytes_rate": 0,
-            "node_load1": 0,
-            "node_load5": 0,
-            "node_boot_time_seconds": 1735951919,
-            "node_procs_running": 0,
-            "node_http_request_duration_milliseconds": 0
+            "up": 1,
+            "node_cpu_usage_percent": 49,
+            "node_memory_usage_percent": 86,
+            "node_filesystem_usage_percent": 20,
+            "node_network_transmit_bytes_rate": 40,
+            "node_load1": 2.29,
+            "node_load5": 2.15,
+            "node_boot_time_seconds": 1735933887,
+            "node_procs_running": 107,
+            "node_http_request_duration_milliseconds": 67
           },
           "nodeInfo": {
             "cpu_cores": 4,
             "memory_total_bytes": 34359738368,
             "disk_total_bytes": 53687091200
           },
-          "logs": [
-            "[CRITICAL] Server DOWN — Redis OOM: Can't allocate memory",
-            "[ERROR] All client connections terminated",
-            "[CRITICAL] Sentinel triggered failover to cache-redis-icn-02"
-          ]
+          "logs": ["[WARN] redis: Memory usage above 85% threshold"]
         },
         "cache-redis-icn-02:9100": {
           "instance": "cache-redis-icn-02:9100",
@@ -1730,26 +322,22 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 58,
-            "node_memory_usage_percent": 86,
+            "node_cpu_usage_percent": 43,
+            "node_memory_usage_percent": 82,
             "node_filesystem_usage_percent": 20,
-            "node_network_transmit_bytes_rate": 70,
-            "node_load1": 3,
-            "node_load5": 2.3,
-            "node_boot_time_seconds": 1735958680,
-            "node_procs_running": 123,
-            "node_http_request_duration_milliseconds": 38
+            "node_network_transmit_bytes_rate": 39,
+            "node_load1": 1.88,
+            "node_load5": 1.46,
+            "node_boot_time_seconds": 1735936424,
+            "node_procs_running": 106,
+            "node_http_request_duration_milliseconds": 40
           },
           "nodeInfo": {
             "cpu_cores": 4,
             "memory_total_bytes": 34359738368,
             "disk_total_bytes": 53687091200
           },
-          "logs": [
-            "[CRITICAL] Promoted to primary — handling all cache traffic",
-            "[WARNING] Memory usage at 86% — approaching limit",
-            "[WARNING] Hit rate dropped to 60%"
-          ]
+          "logs": []
         },
         "storage-nfs-icn-01:9100": {
           "instance": "storage-nfs-icn-01:9100",
@@ -1765,14 +353,14 @@
           "metrics": {
             "up": 1,
             "node_cpu_usage_percent": 32,
-            "node_memory_usage_percent": 42,
-            "node_filesystem_usage_percent": 66,
-            "node_network_transmit_bytes_rate": 44,
-            "node_load1": 1.2,
-            "node_load5": 1.1,
-            "node_boot_time_seconds": 1735975801,
-            "node_procs_running": 135,
-            "node_http_request_duration_milliseconds": 170
+            "node_memory_usage_percent": 40,
+            "node_filesystem_usage_percent": 64,
+            "node_network_transmit_bytes_rate": 46,
+            "node_load1": 1.03,
+            "node_load5": 0.78,
+            "node_boot_time_seconds": 1736012066,
+            "node_procs_running": 109,
+            "node_http_request_duration_milliseconds": 335
           },
           "nodeInfo": {
             "cpu_cores": 4,
@@ -1794,15 +382,15 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 15,
-            "node_memory_usage_percent": 34,
-            "node_filesystem_usage_percent": 52,
-            "node_network_transmit_bytes_rate": 55,
-            "node_load1": 0.3,
-            "node_load5": 0.3,
-            "node_boot_time_seconds": 1735961740,
-            "node_procs_running": 140,
-            "node_http_request_duration_milliseconds": 150
+            "node_cpu_usage_percent": 24,
+            "node_memory_usage_percent": 38,
+            "node_filesystem_usage_percent": 57,
+            "node_network_transmit_bytes_rate": 60,
+            "node_load1": 0.45,
+            "node_load5": 0.37,
+            "node_boot_time_seconds": 1736006150,
+            "node_procs_running": 123,
+            "node_http_request_duration_milliseconds": 381
           },
           "nodeInfo": {
             "cpu_cores": 2,
@@ -1824,15 +412,15 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 33,
-            "node_memory_usage_percent": 33,
-            "node_filesystem_usage_percent": 16,
-            "node_network_transmit_bytes_rate": 72,
-            "node_load1": 1.4,
-            "node_load5": 1.2,
-            "node_boot_time_seconds": 1735936266,
-            "node_procs_running": 130,
-            "node_http_request_duration_milliseconds": 160
+            "node_cpu_usage_percent": 43,
+            "node_memory_usage_percent": 35,
+            "node_filesystem_usage_percent": 15,
+            "node_network_transmit_bytes_rate": 65,
+            "node_load1": 1.57,
+            "node_load5": 1.27,
+            "node_boot_time_seconds": 1735988150,
+            "node_procs_running": 142,
+            "node_http_request_duration_milliseconds": 309
           },
           "nodeInfo": {
             "cpu_cores": 4,
@@ -1854,15 +442,15 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 34,
-            "node_memory_usage_percent": 34,
+            "node_cpu_usage_percent": 36,
+            "node_memory_usage_percent": 31,
             "node_filesystem_usage_percent": 16,
-            "node_network_transmit_bytes_rate": 72,
-            "node_load1": 1.4,
-            "node_load5": 1.2,
-            "node_boot_time_seconds": 1735936266,
-            "node_procs_running": 130,
-            "node_http_request_duration_milliseconds": 160
+            "node_network_transmit_bytes_rate": 69,
+            "node_load1": 1.42,
+            "node_load5": 1.3,
+            "node_boot_time_seconds": 1735994603,
+            "node_procs_running": 135,
+            "node_http_request_duration_milliseconds": 343
           },
           "nodeInfo": {
             "cpu_cores": 4,
@@ -1874,7 +462,7 @@
       }
     },
     {
-      "timestampMs": 1770176400000,
+      "timestampMs": 1770865800000,
       "targets": {
         "web-nginx-icn-01:9100": {
           "instance": "web-nginx-icn-01:9100",
@@ -1889,22 +477,22 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 58,
-            "node_memory_usage_percent": 54,
-            "node_filesystem_usage_percent": 29,
-            "node_network_transmit_bytes_rate": 71,
-            "node_load1": 2.2,
-            "node_load5": 1.8,
-            "node_boot_time_seconds": 1735963004,
-            "node_procs_running": 125,
-            "node_http_request_duration_milliseconds": 600
+            "node_cpu_usage_percent": 33,
+            "node_memory_usage_percent": 41,
+            "node_filesystem_usage_percent": 31,
+            "node_network_transmit_bytes_rate": 58,
+            "node_load1": 1.39,
+            "node_load5": 1.31,
+            "node_boot_time_seconds": 1735936575,
+            "node_procs_running": 137,
+            "node_http_request_duration_milliseconds": 319
           },
           "nodeInfo": {
             "cpu_cores": 4,
             "memory_total_bytes": 8589934592,
             "disk_total_bytes": 107374182400
           },
-          "logs": ["[WARNING] Page load time degraded: 3s"]
+          "logs": []
         },
         "web-nginx-icn-02:9100": {
           "instance": "web-nginx-icn-02:9100",
@@ -1919,15 +507,15 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 28,
-            "node_memory_usage_percent": 42,
-            "node_filesystem_usage_percent": 28,
+            "node_cpu_usage_percent": 36,
+            "node_memory_usage_percent": 41,
+            "node_filesystem_usage_percent": 30,
             "node_network_transmit_bytes_rate": 55,
-            "node_load1": 1.2,
-            "node_load5": 1,
-            "node_boot_time_seconds": 1735963004,
-            "node_procs_running": 120,
-            "node_http_request_duration_milliseconds": 200
+            "node_load1": 1.46,
+            "node_load5": 1.11,
+            "node_boot_time_seconds": 1736005957,
+            "node_procs_running": 117,
+            "node_http_request_duration_milliseconds": 330
           },
           "nodeInfo": {
             "cpu_cores": 4,
@@ -1949,15 +537,15 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 32,
-            "node_memory_usage_percent": 43,
-            "node_filesystem_usage_percent": 28,
-            "node_network_transmit_bytes_rate": 56,
-            "node_load1": 1.2,
-            "node_load5": 1,
-            "node_boot_time_seconds": 1735963004,
-            "node_procs_running": 120,
-            "node_http_request_duration_milliseconds": 200
+            "node_cpu_usage_percent": 20,
+            "node_memory_usage_percent": 38,
+            "node_filesystem_usage_percent": 23,
+            "node_network_transmit_bytes_rate": 36,
+            "node_load1": 0.75,
+            "node_load5": 0.63,
+            "node_boot_time_seconds": 1736018625,
+            "node_procs_running": 121,
+            "node_http_request_duration_milliseconds": 302
           },
           "nodeInfo": {
             "cpu_cores": 4,
@@ -1979,26 +567,22 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 82,
-            "node_memory_usage_percent": 73,
-            "node_filesystem_usage_percent": 37,
-            "node_network_transmit_bytes_rate": 78,
-            "node_load1": 9,
-            "node_load5": 7,
-            "node_boot_time_seconds": 1735964094,
-            "node_procs_running": 155,
-            "node_http_request_duration_milliseconds": 2000
+            "node_cpu_usage_percent": 59,
+            "node_memory_usage_percent": 67,
+            "node_filesystem_usage_percent": 32,
+            "node_network_transmit_bytes_rate": 51,
+            "node_load1": 4.66,
+            "node_load5": 3.88,
+            "node_boot_time_seconds": 1736000794,
+            "node_procs_running": 127,
+            "node_http_request_duration_milliseconds": 323
           },
           "nodeInfo": {
             "cpu_cores": 8,
             "memory_total_bytes": 17179869184,
             "disk_total_bytes": 214748364800
           },
-          "logs": [
-            "[CRITICAL] Cache miss storm — DB direct queries surging",
-            "[WARNING] CPU at 82% — thread pool near exhaustion",
-            "[WARNING] Response time: 2000ms"
-          ]
+          "logs": []
         },
         "api-was-icn-02:9100": {
           "instance": "api-was-icn-02:9100",
@@ -2013,25 +597,22 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 73,
-            "node_memory_usage_percent": 66,
-            "node_filesystem_usage_percent": 32,
-            "node_network_transmit_bytes_rate": 70,
-            "node_load1": 7,
-            "node_load5": 5.6,
-            "node_boot_time_seconds": 1736015664,
-            "node_procs_running": 144,
-            "node_http_request_duration_milliseconds": 1400
+            "node_cpu_usage_percent": 39,
+            "node_memory_usage_percent": 50,
+            "node_filesystem_usage_percent": 33,
+            "node_network_transmit_bytes_rate": 43,
+            "node_load1": 2.77,
+            "node_load5": 2.27,
+            "node_boot_time_seconds": 1735972391,
+            "node_procs_running": 105,
+            "node_http_request_duration_milliseconds": 305
           },
           "nodeInfo": {
             "cpu_cores": 8,
             "memory_total_bytes": 17179869184,
             "disk_total_bytes": 214748364800
           },
-          "logs": [
-            "[WARNING] Cache miss rate: 60%",
-            "[WARNING] DB connection pool usage: 86%"
-          ]
+          "logs": []
         },
         "api-was-pus-01:9100": {
           "instance": "api-was-pus-01:9100",
@@ -2046,15 +627,15 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 40,
-            "node_memory_usage_percent": 51,
-            "node_filesystem_usage_percent": 32,
-            "node_network_transmit_bytes_rate": 48,
-            "node_load1": 3,
-            "node_load5": 2.8,
-            "node_boot_time_seconds": 1735964094,
-            "node_procs_running": 125,
-            "node_http_request_duration_milliseconds": 180
+            "node_cpu_usage_percent": 23,
+            "node_memory_usage_percent": 40,
+            "node_filesystem_usage_percent": 26,
+            "node_network_transmit_bytes_rate": 36,
+            "node_load1": 2.09,
+            "node_load5": 1.88,
+            "node_boot_time_seconds": 1735996530,
+            "node_procs_running": 134,
+            "node_http_request_duration_milliseconds": 304
           },
           "nodeInfo": {
             "cpu_cores": 8,
@@ -2076,26 +657,22 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 75,
-            "node_memory_usage_percent": 81,
-            "node_filesystem_usage_percent": 44,
-            "node_network_transmit_bytes_rate": 60,
-            "node_load1": 14,
-            "node_load5": 11,
-            "node_boot_time_seconds": 1770147600000,
+            "node_cpu_usage_percent": 54,
+            "node_memory_usage_percent": 66,
+            "node_filesystem_usage_percent": 42,
+            "node_network_transmit_bytes_rate": 35,
+            "node_load1": 10.19,
+            "node_load5": 9.65,
+            "node_boot_time_seconds": 1735987096,
             "node_procs_running": 140,
-            "node_http_request_duration_milliseconds": 180
+            "node_http_request_duration_milliseconds": 103
           },
           "nodeInfo": {
             "cpu_cores": 16,
             "memory_total_bytes": 68719476736,
             "disk_total_bytes": 1073741824000
           },
-          "logs": [
-            "[CRITICAL] Query rate surge — cache bypass detected",
-            "[WARNING] Active connections: 300 (max: 500)",
-            "[WARNING] Slow query count: 50/min"
-          ]
+          "logs": []
         },
         "db-mysql-icn-replica:9100": {
           "instance": "db-mysql-icn-replica:9100",
@@ -2110,22 +687,22 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 63,
-            "node_memory_usage_percent": 71,
-            "node_filesystem_usage_percent": 43,
-            "node_network_transmit_bytes_rate": 53,
-            "node_load1": 9,
-            "node_load5": 7.4,
-            "node_boot_time_seconds": 1736004342,
-            "node_procs_running": 115,
-            "node_http_request_duration_milliseconds": 60
+            "node_cpu_usage_percent": 37,
+            "node_memory_usage_percent": 56,
+            "node_filesystem_usage_percent": 40,
+            "node_network_transmit_bytes_rate": 38,
+            "node_load1": 5.16,
+            "node_load5": 4.64,
+            "node_boot_time_seconds": 1735971195,
+            "node_procs_running": 110,
+            "node_http_request_duration_milliseconds": 129
           },
           "nodeInfo": {
             "cpu_cores": 16,
             "memory_total_bytes": 68719476736,
             "disk_total_bytes": 1073741824000
           },
-          "logs": ["[WARNING] Read query surge from cache-miss fallback"]
+          "logs": []
         },
         "db-mysql-pus-dr:9100": {
           "instance": "db-mysql-pus-dr:9100",
@@ -2140,15 +717,15 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 43,
-            "node_memory_usage_percent": 63,
-            "node_filesystem_usage_percent": 42,
-            "node_network_transmit_bytes_rate": 35,
-            "node_load1": 6,
-            "node_load5": 5,
-            "node_boot_time_seconds": 1735968472,
-            "node_procs_running": 118,
-            "node_http_request_duration_milliseconds": 50
+            "node_cpu_usage_percent": 22,
+            "node_memory_usage_percent": 45,
+            "node_filesystem_usage_percent": 41,
+            "node_network_transmit_bytes_rate": 26,
+            "node_load1": 3.12,
+            "node_load5": 2.84,
+            "node_boot_time_seconds": 1735993018,
+            "node_procs_running": 147,
+            "node_http_request_duration_milliseconds": 115
           },
           "nodeInfo": {
             "cpu_cores": 16,
@@ -2169,27 +746,23 @@
             "os_version": "22.04"
           },
           "metrics": {
-            "up": 0,
-            "node_cpu_usage_percent": 0,
-            "node_memory_usage_percent": 0,
-            "node_filesystem_usage_percent": 0,
-            "node_network_transmit_bytes_rate": 0,
-            "node_load1": 0,
-            "node_load5": 0,
-            "node_boot_time_seconds": 1735951919,
-            "node_procs_running": 0,
-            "node_http_request_duration_milliseconds": 0
+            "up": 1,
+            "node_cpu_usage_percent": 51,
+            "node_memory_usage_percent": 85,
+            "node_filesystem_usage_percent": 20,
+            "node_network_transmit_bytes_rate": 49,
+            "node_load1": 1.89,
+            "node_load5": 1.64,
+            "node_boot_time_seconds": 1735989763,
+            "node_procs_running": 118,
+            "node_http_request_duration_milliseconds": 67
           },
           "nodeInfo": {
             "cpu_cores": 4,
             "memory_total_bytes": 34359738368,
             "disk_total_bytes": 53687091200
           },
-          "logs": [
-            "[CRITICAL] Server DOWN — Redis OOM: Can't allocate memory",
-            "[ERROR] All client connections terminated",
-            "[CRITICAL] Sentinel triggered failover to cache-redis-icn-02"
-          ]
+          "logs": ["[WARN] redis: Memory usage above 85% threshold"]
         },
         "cache-redis-icn-02:9100": {
           "instance": "cache-redis-icn-02:9100",
@@ -2204,26 +777,22 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 66,
-            "node_memory_usage_percent": 90,
-            "node_filesystem_usage_percent": 20,
-            "node_network_transmit_bytes_rate": 75,
-            "node_load1": 3.5,
-            "node_load5": 2.6,
-            "node_boot_time_seconds": 1735958680,
-            "node_procs_running": 128,
-            "node_http_request_duration_milliseconds": 46
+            "node_cpu_usage_percent": 40,
+            "node_memory_usage_percent": 82,
+            "node_filesystem_usage_percent": 19,
+            "node_network_transmit_bytes_rate": 42,
+            "node_load1": 1.54,
+            "node_load5": 1.2,
+            "node_boot_time_seconds": 1735968557,
+            "node_procs_running": 141,
+            "node_http_request_duration_milliseconds": 36
           },
           "nodeInfo": {
             "cpu_cores": 4,
             "memory_total_bytes": 34359738368,
             "disk_total_bytes": 53687091200
           },
-          "logs": [
-            "[CRITICAL] Promoted to primary — handling all cache traffic",
-            "[WARNING] Memory usage at 90% — approaching limit",
-            "[WARNING] Hit rate dropped to 55%"
-          ]
+          "logs": []
         },
         "storage-nfs-icn-01:9100": {
           "instance": "storage-nfs-icn-01:9100",
@@ -2238,15 +807,470 @@
           },
           "metrics": {
             "up": 1,
-            "node_cpu_usage_percent": 29,
+            "node_cpu_usage_percent": 28,
             "node_memory_usage_percent": 41,
-            "node_filesystem_usage_percent": 66,
+            "node_filesystem_usage_percent": 64,
+            "node_network_transmit_bytes_rate": 51,
+            "node_load1": 1.12,
+            "node_load5": 0.93,
+            "node_boot_time_seconds": 1735944509,
+            "node_procs_running": 141,
+            "node_http_request_duration_milliseconds": 381
+          },
+          "nodeInfo": {
+            "cpu_cores": 4,
+            "memory_total_bytes": 17179869184,
+            "disk_total_bytes": 5368709120000
+          },
+          "logs": []
+        },
+        "storage-s3gw-pus-01:9100": {
+          "instance": "storage-s3gw-pus-01:9100",
+          "job": "node-exporter",
+          "labels": {
+            "hostname": "storage-s3gw-pus-01.openmanager.kr",
+            "datacenter": "Busan-PUS-DR",
+            "environment": "production",
+            "server_type": "storage",
+            "os": "ubuntu",
+            "os_version": "22.04"
+          },
+          "metrics": {
+            "up": 1,
+            "node_cpu_usage_percent": 17,
+            "node_memory_usage_percent": 33,
+            "node_filesystem_usage_percent": 53,
+            "node_network_transmit_bytes_rate": 56,
+            "node_load1": 0.28,
+            "node_load5": 0.26,
+            "node_boot_time_seconds": 1735985560,
+            "node_procs_running": 113,
+            "node_http_request_duration_milliseconds": 282
+          },
+          "nodeInfo": {
+            "cpu_cores": 2,
+            "memory_total_bytes": 8589934592,
+            "disk_total_bytes": 214748364800
+          },
+          "logs": []
+        },
+        "lb-haproxy-icn-01:9100": {
+          "instance": "lb-haproxy-icn-01:9100",
+          "job": "node-exporter",
+          "labels": {
+            "hostname": "lb-haproxy-icn-01.openmanager.kr",
+            "datacenter": "Seoul-ICN-AZ1",
+            "environment": "production",
+            "server_type": "loadbalancer",
+            "os": "ubuntu",
+            "os_version": "22.04"
+          },
+          "metrics": {
+            "up": 1,
+            "node_cpu_usage_percent": 38,
+            "node_memory_usage_percent": 37,
+            "node_filesystem_usage_percent": 16,
+            "node_network_transmit_bytes_rate": 66,
+            "node_load1": 1.71,
+            "node_load5": 1.43,
+            "node_boot_time_seconds": 1735970793,
+            "node_procs_running": 146,
+            "node_http_request_duration_milliseconds": 396
+          },
+          "nodeInfo": {
+            "cpu_cores": 4,
+            "memory_total_bytes": 8589934592,
+            "disk_total_bytes": 53687091200
+          },
+          "logs": []
+        },
+        "lb-haproxy-pus-01:9100": {
+          "instance": "lb-haproxy-pus-01:9100",
+          "job": "node-exporter",
+          "labels": {
+            "hostname": "lb-haproxy-pus-01.openmanager.kr",
+            "datacenter": "Busan-PUS-DR",
+            "environment": "production",
+            "server_type": "loadbalancer",
+            "os": "ubuntu",
+            "os_version": "22.04"
+          },
+          "metrics": {
+            "up": 1,
+            "node_cpu_usage_percent": 40,
+            "node_memory_usage_percent": 31,
+            "node_filesystem_usage_percent": 12,
+            "node_network_transmit_bytes_rate": 70,
+            "node_load1": 1.66,
+            "node_load5": 1.34,
+            "node_boot_time_seconds": 1736006068,
+            "node_procs_running": 143,
+            "node_http_request_duration_milliseconds": 392
+          },
+          "nodeInfo": {
+            "cpu_cores": 4,
+            "memory_total_bytes": 8589934592,
+            "disk_total_bytes": 53687091200
+          },
+          "logs": []
+        }
+      }
+    },
+    {
+      "timestampMs": 1770866400000,
+      "targets": {
+        "web-nginx-icn-01:9100": {
+          "instance": "web-nginx-icn-01:9100",
+          "job": "node-exporter",
+          "labels": {
+            "hostname": "web-nginx-icn-01.openmanager.kr",
+            "datacenter": "Seoul-ICN-AZ1",
+            "environment": "production",
+            "server_type": "web",
+            "os": "ubuntu",
+            "os_version": "22.04"
+          },
+          "metrics": {
+            "up": 1,
+            "node_cpu_usage_percent": 36,
+            "node_memory_usage_percent": 48,
+            "node_filesystem_usage_percent": 32,
+            "node_network_transmit_bytes_rate": 58,
+            "node_load1": 1.62,
+            "node_load5": 1.51,
+            "node_boot_time_seconds": 1735941625,
+            "node_procs_running": 133,
+            "node_http_request_duration_milliseconds": 375
+          },
+          "nodeInfo": {
+            "cpu_cores": 4,
+            "memory_total_bytes": 8589934592,
+            "disk_total_bytes": 107374182400
+          },
+          "logs": []
+        },
+        "web-nginx-icn-02:9100": {
+          "instance": "web-nginx-icn-02:9100",
+          "job": "node-exporter",
+          "labels": {
+            "hostname": "web-nginx-icn-02.openmanager.kr",
+            "datacenter": "Seoul-ICN-AZ2",
+            "environment": "production",
+            "server_type": "web",
+            "os": "ubuntu",
+            "os_version": "22.04"
+          },
+          "metrics": {
+            "up": 1,
+            "node_cpu_usage_percent": 28,
+            "node_memory_usage_percent": 45,
+            "node_filesystem_usage_percent": 26,
+            "node_network_transmit_bytes_rate": 55,
+            "node_load1": 1.22,
+            "node_load5": 1.11,
+            "node_boot_time_seconds": 1735977642,
+            "node_procs_running": 121,
+            "node_http_request_duration_milliseconds": 313
+          },
+          "nodeInfo": {
+            "cpu_cores": 4,
+            "memory_total_bytes": 8589934592,
+            "disk_total_bytes": 107374182400
+          },
+          "logs": []
+        },
+        "web-nginx-pus-01:9100": {
+          "instance": "web-nginx-pus-01:9100",
+          "job": "node-exporter",
+          "labels": {
+            "hostname": "web-nginx-pus-01.openmanager.kr",
+            "datacenter": "Busan-PUS-AZ1",
+            "environment": "production",
+            "server_type": "web",
+            "os": "ubuntu",
+            "os_version": "22.04"
+          },
+          "metrics": {
+            "up": 1,
+            "node_cpu_usage_percent": 24,
+            "node_memory_usage_percent": 36,
+            "node_filesystem_usage_percent": 26,
+            "node_network_transmit_bytes_rate": 42,
+            "node_load1": 1.11,
+            "node_load5": 0.89,
+            "node_boot_time_seconds": 1735955687,
+            "node_procs_running": 140,
+            "node_http_request_duration_milliseconds": 370
+          },
+          "nodeInfo": {
+            "cpu_cores": 4,
+            "memory_total_bytes": 8589934592,
+            "disk_total_bytes": 107374182400
+          },
+          "logs": []
+        },
+        "api-was-icn-01:9100": {
+          "instance": "api-was-icn-01:9100",
+          "job": "node-exporter",
+          "labels": {
+            "hostname": "api-was-icn-01.openmanager.kr",
+            "datacenter": "Seoul-ICN-AZ1",
+            "environment": "production",
+            "server_type": "application",
+            "os": "ubuntu",
+            "os_version": "22.04"
+          },
+          "metrics": {
+            "up": 1,
+            "node_cpu_usage_percent": 60,
+            "node_memory_usage_percent": 70,
+            "node_filesystem_usage_percent": 34,
+            "node_network_transmit_bytes_rate": 50,
+            "node_load1": 4.7,
+            "node_load5": 4.41,
+            "node_boot_time_seconds": 1736013587,
+            "node_procs_running": 147,
+            "node_http_request_duration_milliseconds": 388
+          },
+          "nodeInfo": {
+            "cpu_cores": 8,
+            "memory_total_bytes": 17179869184,
+            "disk_total_bytes": 214748364800
+          },
+          "logs": []
+        },
+        "api-was-icn-02:9100": {
+          "instance": "api-was-icn-02:9100",
+          "job": "node-exporter",
+          "labels": {
+            "hostname": "api-was-icn-02.openmanager.kr",
+            "datacenter": "Seoul-ICN-AZ2",
+            "environment": "production",
+            "server_type": "application",
+            "os": "ubuntu",
+            "os_version": "22.04"
+          },
+          "metrics": {
+            "up": 1,
+            "node_cpu_usage_percent": 43,
+            "node_memory_usage_percent": 54,
+            "node_filesystem_usage_percent": 30,
             "node_network_transmit_bytes_rate": 45,
-            "node_load1": 1.2,
-            "node_load5": 1.1,
-            "node_boot_time_seconds": 1735975801,
+            "node_load1": 3.81,
+            "node_load5": 3.29,
+            "node_boot_time_seconds": 1735990102,
+            "node_procs_running": 144,
+            "node_http_request_duration_milliseconds": 298
+          },
+          "nodeInfo": {
+            "cpu_cores": 8,
+            "memory_total_bytes": 17179869184,
+            "disk_total_bytes": 214748364800
+          },
+          "logs": []
+        },
+        "api-was-pus-01:9100": {
+          "instance": "api-was-pus-01:9100",
+          "job": "node-exporter",
+          "labels": {
+            "hostname": "api-was-pus-01.openmanager.kr",
+            "datacenter": "Busan-PUS-AZ1",
+            "environment": "production",
+            "server_type": "application",
+            "os": "ubuntu",
+            "os_version": "22.04"
+          },
+          "metrics": {
+            "up": 1,
+            "node_cpu_usage_percent": 27,
+            "node_memory_usage_percent": 36,
+            "node_filesystem_usage_percent": 29,
+            "node_network_transmit_bytes_rate": 39,
+            "node_load1": 2.1,
+            "node_load5": 1.73,
+            "node_boot_time_seconds": 1735959131,
+            "node_procs_running": 123,
+            "node_http_request_duration_milliseconds": 359
+          },
+          "nodeInfo": {
+            "cpu_cores": 8,
+            "memory_total_bytes": 17179869184,
+            "disk_total_bytes": 214748364800
+          },
+          "logs": []
+        },
+        "db-mysql-icn-primary:9100": {
+          "instance": "db-mysql-icn-primary:9100",
+          "job": "node-exporter",
+          "labels": {
+            "hostname": "db-mysql-icn-primary.openmanager.kr",
+            "datacenter": "Seoul-ICN-AZ1",
+            "environment": "production",
+            "server_type": "database",
+            "os": "ubuntu",
+            "os_version": "22.04"
+          },
+          "metrics": {
+            "up": 1,
+            "node_cpu_usage_percent": 55,
+            "node_memory_usage_percent": 67,
+            "node_filesystem_usage_percent": 43,
+            "node_network_transmit_bytes_rate": 41,
+            "node_load1": 8.89,
+            "node_load5": 7.53,
+            "node_boot_time_seconds": 1735963396,
+            "node_procs_running": 119,
+            "node_http_request_duration_milliseconds": 96
+          },
+          "nodeInfo": {
+            "cpu_cores": 16,
+            "memory_total_bytes": 68719476736,
+            "disk_total_bytes": 1073741824000
+          },
+          "logs": []
+        },
+        "db-mysql-icn-replica:9100": {
+          "instance": "db-mysql-icn-replica:9100",
+          "job": "node-exporter",
+          "labels": {
+            "hostname": "db-mysql-icn-replica.openmanager.kr",
+            "datacenter": "Seoul-ICN-AZ2",
+            "environment": "production",
+            "server_type": "database",
+            "os": "ubuntu",
+            "os_version": "22.04"
+          },
+          "metrics": {
+            "up": 1,
+            "node_cpu_usage_percent": 43,
+            "node_memory_usage_percent": 57,
+            "node_filesystem_usage_percent": 42,
+            "node_network_transmit_bytes_rate": 34,
+            "node_load1": 7.77,
+            "node_load5": 6.34,
+            "node_boot_time_seconds": 1735933929,
+            "node_procs_running": 124,
+            "node_http_request_duration_milliseconds": 100
+          },
+          "nodeInfo": {
+            "cpu_cores": 16,
+            "memory_total_bytes": 68719476736,
+            "disk_total_bytes": 1073741824000
+          },
+          "logs": []
+        },
+        "db-mysql-pus-dr:9100": {
+          "instance": "db-mysql-pus-dr:9100",
+          "job": "node-exporter",
+          "labels": {
+            "hostname": "db-mysql-pus-dr.openmanager.kr",
+            "datacenter": "Busan-PUS-AZ1",
+            "environment": "production",
+            "server_type": "database",
+            "os": "ubuntu",
+            "os_version": "22.04"
+          },
+          "metrics": {
+            "up": 1,
+            "node_cpu_usage_percent": 17,
+            "node_memory_usage_percent": 43,
+            "node_filesystem_usage_percent": 39,
+            "node_network_transmit_bytes_rate": 26,
+            "node_load1": 2.9,
+            "node_load5": 2.75,
+            "node_boot_time_seconds": 1735972951,
             "node_procs_running": 135,
-            "node_http_request_duration_milliseconds": 170
+            "node_http_request_duration_milliseconds": 124
+          },
+          "nodeInfo": {
+            "cpu_cores": 16,
+            "memory_total_bytes": 68719476736,
+            "disk_total_bytes": 1073741824000
+          },
+          "logs": []
+        },
+        "cache-redis-icn-01:9100": {
+          "instance": "cache-redis-icn-01:9100",
+          "job": "node-exporter",
+          "labels": {
+            "hostname": "cache-redis-icn-01.openmanager.kr",
+            "datacenter": "Seoul-ICN-AZ1",
+            "environment": "production",
+            "server_type": "cache",
+            "os": "ubuntu",
+            "os_version": "22.04"
+          },
+          "metrics": {
+            "up": 1,
+            "node_cpu_usage_percent": 49,
+            "node_memory_usage_percent": 85,
+            "node_filesystem_usage_percent": 17,
+            "node_network_transmit_bytes_rate": 43,
+            "node_load1": 2.15,
+            "node_load5": 1.66,
+            "node_boot_time_seconds": 1736010730,
+            "node_procs_running": 138,
+            "node_http_request_duration_milliseconds": 65
+          },
+          "nodeInfo": {
+            "cpu_cores": 4,
+            "memory_total_bytes": 34359738368,
+            "disk_total_bytes": 53687091200
+          },
+          "logs": ["[WARN] redis: Memory usage above 85% threshold"]
+        },
+        "cache-redis-icn-02:9100": {
+          "instance": "cache-redis-icn-02:9100",
+          "job": "node-exporter",
+          "labels": {
+            "hostname": "cache-redis-icn-02.openmanager.kr",
+            "datacenter": "Seoul-ICN-AZ2",
+            "environment": "production",
+            "server_type": "cache",
+            "os": "ubuntu",
+            "os_version": "22.04"
+          },
+          "metrics": {
+            "up": 1,
+            "node_cpu_usage_percent": 40,
+            "node_memory_usage_percent": 81,
+            "node_filesystem_usage_percent": 16,
+            "node_network_transmit_bytes_rate": 43,
+            "node_load1": 1.54,
+            "node_load5": 1.3,
+            "node_boot_time_seconds": 1735989534,
+            "node_procs_running": 109,
+            "node_http_request_duration_milliseconds": 46
+          },
+          "nodeInfo": {
+            "cpu_cores": 4,
+            "memory_total_bytes": 34359738368,
+            "disk_total_bytes": 53687091200
+          },
+          "logs": []
+        },
+        "storage-nfs-icn-01:9100": {
+          "instance": "storage-nfs-icn-01:9100",
+          "job": "node-exporter",
+          "labels": {
+            "hostname": "storage-nfs-icn-01.openmanager.kr",
+            "datacenter": "Seoul-ICN-AZ1",
+            "environment": "production",
+            "server_type": "storage",
+            "os": "ubuntu",
+            "os_version": "22.04"
+          },
+          "metrics": {
+            "up": 1,
+            "node_cpu_usage_percent": 31,
+            "node_memory_usage_percent": 36,
+            "node_filesystem_usage_percent": 64,
+            "node_network_transmit_bytes_rate": 45,
+            "node_load1": 1.45,
+            "node_load5": 1.19,
+            "node_boot_time_seconds": 1735996107,
+            "node_procs_running": 141,
+            "node_http_request_duration_milliseconds": 336
           },
           "nodeInfo": {
             "cpu_cores": 4,
@@ -2269,488 +1293,14 @@
           "metrics": {
             "up": 1,
             "node_cpu_usage_percent": 18,
-            "node_memory_usage_percent": 33,
-            "node_filesystem_usage_percent": 52,
-            "node_network_transmit_bytes_rate": 55,
-            "node_load1": 0.3,
-            "node_load5": 0.3,
-            "node_boot_time_seconds": 1735961740,
-            "node_procs_running": 140,
-            "node_http_request_duration_milliseconds": 150
-          },
-          "nodeInfo": {
-            "cpu_cores": 2,
-            "memory_total_bytes": 8589934592,
-            "disk_total_bytes": 214748364800
-          },
-          "logs": []
-        },
-        "lb-haproxy-icn-01:9100": {
-          "instance": "lb-haproxy-icn-01:9100",
-          "job": "node-exporter",
-          "labels": {
-            "hostname": "lb-haproxy-icn-01.openmanager.kr",
-            "datacenter": "Seoul-ICN-AZ1",
-            "environment": "production",
-            "server_type": "loadbalancer",
-            "os": "ubuntu",
-            "os_version": "22.04"
-          },
-          "metrics": {
-            "up": 1,
-            "node_cpu_usage_percent": 36,
-            "node_memory_usage_percent": 36,
-            "node_filesystem_usage_percent": 16,
-            "node_network_transmit_bytes_rate": 72,
-            "node_load1": 1.4,
-            "node_load5": 1.2,
-            "node_boot_time_seconds": 1735936266,
-            "node_procs_running": 130,
-            "node_http_request_duration_milliseconds": 160
-          },
-          "nodeInfo": {
-            "cpu_cores": 4,
-            "memory_total_bytes": 8589934592,
-            "disk_total_bytes": 53687091200
-          },
-          "logs": []
-        },
-        "lb-haproxy-pus-01:9100": {
-          "instance": "lb-haproxy-pus-01:9100",
-          "job": "node-exporter",
-          "labels": {
-            "hostname": "lb-haproxy-pus-01.openmanager.kr",
-            "datacenter": "Busan-PUS-DR",
-            "environment": "production",
-            "server_type": "loadbalancer",
-            "os": "ubuntu",
-            "os_version": "22.04"
-          },
-          "metrics": {
-            "up": 1,
-            "node_cpu_usage_percent": 37,
-            "node_memory_usage_percent": 37,
-            "node_filesystem_usage_percent": 16,
-            "node_network_transmit_bytes_rate": 70,
-            "node_load1": 1.4,
-            "node_load5": 1.2,
-            "node_boot_time_seconds": 1735936266,
-            "node_procs_running": 130,
-            "node_http_request_duration_milliseconds": 160
-          },
-          "nodeInfo": {
-            "cpu_cores": 4,
-            "memory_total_bytes": 8589934592,
-            "disk_total_bytes": 53687091200
-          },
-          "logs": []
-        }
-      }
-    },
-    {
-      "timestampMs": 1770177000000,
-      "targets": {
-        "web-nginx-icn-01:9100": {
-          "instance": "web-nginx-icn-01:9100",
-          "job": "node-exporter",
-          "labels": {
-            "hostname": "web-nginx-icn-01.openmanager.kr",
-            "datacenter": "Seoul-ICN-AZ1",
-            "environment": "production",
-            "server_type": "web",
-            "os": "ubuntu",
-            "os_version": "22.04"
-          },
-          "metrics": {
-            "up": 1,
-            "node_cpu_usage_percent": 63,
-            "node_memory_usage_percent": 56,
-            "node_filesystem_usage_percent": 29,
-            "node_network_transmit_bytes_rate": 74,
-            "node_load1": 2.2,
-            "node_load5": 1.8,
-            "node_boot_time_seconds": 1735963004,
-            "node_procs_running": 125,
-            "node_http_request_duration_milliseconds": 700
-          },
-          "nodeInfo": {
-            "cpu_cores": 4,
-            "memory_total_bytes": 8589934592,
-            "disk_total_bytes": 107374182400
-          },
-          "logs": ["[WARNING] Page load time degraded: 3.5s"]
-        },
-        "web-nginx-icn-02:9100": {
-          "instance": "web-nginx-icn-02:9100",
-          "job": "node-exporter",
-          "labels": {
-            "hostname": "web-nginx-icn-02.openmanager.kr",
-            "datacenter": "Seoul-ICN-AZ2",
-            "environment": "production",
-            "server_type": "web",
-            "os": "ubuntu",
-            "os_version": "22.04"
-          },
-          "metrics": {
-            "up": 1,
-            "node_cpu_usage_percent": 30,
-            "node_memory_usage_percent": 43,
-            "node_filesystem_usage_percent": 28,
-            "node_network_transmit_bytes_rate": 54,
-            "node_load1": 1.2,
-            "node_load5": 1,
-            "node_boot_time_seconds": 1735963004,
-            "node_procs_running": 120,
-            "node_http_request_duration_milliseconds": 200
-          },
-          "nodeInfo": {
-            "cpu_cores": 4,
-            "memory_total_bytes": 8589934592,
-            "disk_total_bytes": 107374182400
-          },
-          "logs": []
-        },
-        "web-nginx-pus-01:9100": {
-          "instance": "web-nginx-pus-01:9100",
-          "job": "node-exporter",
-          "labels": {
-            "hostname": "web-nginx-pus-01.openmanager.kr",
-            "datacenter": "Busan-PUS-AZ1",
-            "environment": "production",
-            "server_type": "web",
-            "os": "ubuntu",
-            "os_version": "22.04"
-          },
-          "metrics": {
-            "up": 1,
-            "node_cpu_usage_percent": 31,
-            "node_memory_usage_percent": 43,
-            "node_filesystem_usage_percent": 28,
-            "node_network_transmit_bytes_rate": 55,
-            "node_load1": 1.2,
-            "node_load5": 1,
-            "node_boot_time_seconds": 1735963004,
-            "node_procs_running": 120,
-            "node_http_request_duration_milliseconds": 200
-          },
-          "nodeInfo": {
-            "cpu_cores": 4,
-            "memory_total_bytes": 8589934592,
-            "disk_total_bytes": 107374182400
-          },
-          "logs": []
-        },
-        "api-was-icn-01:9100": {
-          "instance": "api-was-icn-01:9100",
-          "job": "node-exporter",
-          "labels": {
-            "hostname": "api-was-icn-01.openmanager.kr",
-            "datacenter": "Seoul-ICN-AZ1",
-            "environment": "production",
-            "server_type": "application",
-            "os": "ubuntu",
-            "os_version": "22.04"
-          },
-          "metrics": {
-            "up": 1,
-            "node_cpu_usage_percent": 87,
-            "node_memory_usage_percent": 77,
-            "node_filesystem_usage_percent": 37,
-            "node_network_transmit_bytes_rate": 83,
-            "node_load1": 10.5,
-            "node_load5": 8,
-            "node_boot_time_seconds": 1735964094,
-            "node_procs_running": 160,
-            "node_http_request_duration_milliseconds": 2600
-          },
-          "nodeInfo": {
-            "cpu_cores": 8,
-            "memory_total_bytes": 17179869184,
-            "disk_total_bytes": 214748364800
-          },
-          "logs": [
-            "[CRITICAL] Cache miss storm — DB direct queries surging",
-            "[WARNING] CPU at 87% — thread pool near exhaustion",
-            "[WARNING] Response time: 2600ms"
-          ]
-        },
-        "api-was-icn-02:9100": {
-          "instance": "api-was-icn-02:9100",
-          "job": "node-exporter",
-          "labels": {
-            "hostname": "api-was-icn-02.openmanager.kr",
-            "datacenter": "Seoul-ICN-AZ2",
-            "environment": "production",
-            "server_type": "application",
-            "os": "ubuntu",
-            "os_version": "22.04"
-          },
-          "metrics": {
-            "up": 1,
-            "node_cpu_usage_percent": 77,
-            "node_memory_usage_percent": 69,
-            "node_filesystem_usage_percent": 32,
-            "node_network_transmit_bytes_rate": 74,
-            "node_load1": 8,
-            "node_load5": 6.3,
-            "node_boot_time_seconds": 1736015664,
-            "node_procs_running": 147,
-            "node_http_request_duration_milliseconds": 1800
-          },
-          "nodeInfo": {
-            "cpu_cores": 8,
-            "memory_total_bytes": 17179869184,
-            "disk_total_bytes": 214748364800
-          },
-          "logs": [
-            "[WARNING] Cache miss rate: 70%",
-            "[WARNING] DB connection pool usage: 94%"
-          ]
-        },
-        "api-was-pus-01:9100": {
-          "instance": "api-was-pus-01:9100",
-          "job": "node-exporter",
-          "labels": {
-            "hostname": "api-was-pus-01.openmanager.kr",
-            "datacenter": "Busan-PUS-AZ1",
-            "environment": "production",
-            "server_type": "application",
-            "os": "ubuntu",
-            "os_version": "22.04"
-          },
-          "metrics": {
-            "up": 1,
-            "node_cpu_usage_percent": 41,
-            "node_memory_usage_percent": 48,
-            "node_filesystem_usage_percent": 32,
-            "node_network_transmit_bytes_rate": 48,
-            "node_load1": 3,
-            "node_load5": 2.8,
-            "node_boot_time_seconds": 1735964094,
-            "node_procs_running": 125,
-            "node_http_request_duration_milliseconds": 180
-          },
-          "nodeInfo": {
-            "cpu_cores": 8,
-            "memory_total_bytes": 17179869184,
-            "disk_total_bytes": 214748364800
-          },
-          "logs": []
-        },
-        "db-mysql-icn-primary:9100": {
-          "instance": "db-mysql-icn-primary:9100",
-          "job": "node-exporter",
-          "labels": {
-            "hostname": "db-mysql-icn-primary.openmanager.kr",
-            "datacenter": "Seoul-ICN-AZ1",
-            "environment": "production",
-            "server_type": "database",
-            "os": "ubuntu",
-            "os_version": "22.04"
-          },
-          "metrics": {
-            "up": 1,
-            "node_cpu_usage_percent": 80,
-            "node_memory_usage_percent": 84,
-            "node_filesystem_usage_percent": 44,
-            "node_network_transmit_bytes_rate": 65,
-            "node_load1": 16,
-            "node_load5": 12.5,
-            "node_boot_time_seconds": 1770147600000,
-            "node_procs_running": 145,
-            "node_http_request_duration_milliseconds": 220
-          },
-          "nodeInfo": {
-            "cpu_cores": 16,
-            "memory_total_bytes": 68719476736,
-            "disk_total_bytes": 1073741824000
-          },
-          "logs": [
-            "[CRITICAL] Query rate surge — cache bypass detected",
-            "[WARNING] Active connections: 350 (max: 500)",
-            "[WARNING] Slow query count: 65/min"
-          ]
-        },
-        "db-mysql-icn-replica:9100": {
-          "instance": "db-mysql-icn-replica:9100",
-          "job": "node-exporter",
-          "labels": {
-            "hostname": "db-mysql-icn-replica.openmanager.kr",
-            "datacenter": "Seoul-ICN-AZ2",
-            "environment": "production",
-            "server_type": "database",
-            "os": "ubuntu",
-            "os_version": "22.04"
-          },
-          "metrics": {
-            "up": 1,
-            "node_cpu_usage_percent": 67,
-            "node_memory_usage_percent": 74,
-            "node_filesystem_usage_percent": 43,
-            "node_network_transmit_bytes_rate": 57,
-            "node_load1": 10,
-            "node_load5": 8.1,
-            "node_boot_time_seconds": 1736004342,
-            "node_procs_running": 115,
-            "node_http_request_duration_milliseconds": 60
-          },
-          "nodeInfo": {
-            "cpu_cores": 16,
-            "memory_total_bytes": 68719476736,
-            "disk_total_bytes": 1073741824000
-          },
-          "logs": ["[WARNING] Read query surge from cache-miss fallback"]
-        },
-        "db-mysql-pus-dr:9100": {
-          "instance": "db-mysql-pus-dr:9100",
-          "job": "node-exporter",
-          "labels": {
-            "hostname": "db-mysql-pus-dr.openmanager.kr",
-            "datacenter": "Busan-PUS-AZ1",
-            "environment": "production",
-            "server_type": "database",
-            "os": "ubuntu",
-            "os_version": "22.04"
-          },
-          "metrics": {
-            "up": 1,
-            "node_cpu_usage_percent": 46,
-            "node_memory_usage_percent": 60,
-            "node_filesystem_usage_percent": 42,
-            "node_network_transmit_bytes_rate": 36,
-            "node_load1": 6,
-            "node_load5": 5,
-            "node_boot_time_seconds": 1735968472,
-            "node_procs_running": 118,
-            "node_http_request_duration_milliseconds": 50
-          },
-          "nodeInfo": {
-            "cpu_cores": 16,
-            "memory_total_bytes": 68719476736,
-            "disk_total_bytes": 1073741824000
-          },
-          "logs": []
-        },
-        "cache-redis-icn-01:9100": {
-          "instance": "cache-redis-icn-01:9100",
-          "job": "node-exporter",
-          "labels": {
-            "hostname": "cache-redis-icn-01.openmanager.kr",
-            "datacenter": "Seoul-ICN-AZ1",
-            "environment": "production",
-            "server_type": "cache",
-            "os": "ubuntu",
-            "os_version": "22.04"
-          },
-          "metrics": {
-            "up": 0,
-            "node_cpu_usage_percent": 0,
-            "node_memory_usage_percent": 0,
-            "node_filesystem_usage_percent": 0,
-            "node_network_transmit_bytes_rate": 0,
-            "node_load1": 0,
-            "node_load5": 0,
-            "node_boot_time_seconds": 1735951919,
-            "node_procs_running": 0,
-            "node_http_request_duration_milliseconds": 0
-          },
-          "nodeInfo": {
-            "cpu_cores": 4,
-            "memory_total_bytes": 34359738368,
-            "disk_total_bytes": 53687091200
-          },
-          "logs": [
-            "[CRITICAL] Server DOWN — Redis OOM: Can't allocate memory",
-            "[ERROR] All client connections terminated",
-            "[CRITICAL] Sentinel triggered failover to cache-redis-icn-02"
-          ]
-        },
-        "cache-redis-icn-02:9100": {
-          "instance": "cache-redis-icn-02:9100",
-          "job": "node-exporter",
-          "labels": {
-            "hostname": "cache-redis-icn-02.openmanager.kr",
-            "datacenter": "Seoul-ICN-AZ2",
-            "environment": "production",
-            "server_type": "cache",
-            "os": "ubuntu",
-            "os_version": "22.04"
-          },
-          "metrics": {
-            "up": 1,
-            "node_cpu_usage_percent": 74,
-            "node_memory_usage_percent": 94,
-            "node_filesystem_usage_percent": 20,
-            "node_network_transmit_bytes_rate": 80,
-            "node_load1": 4,
-            "node_load5": 2.9,
-            "node_boot_time_seconds": 1735958680,
-            "node_procs_running": 133,
-            "node_http_request_duration_milliseconds": 54
-          },
-          "nodeInfo": {
-            "cpu_cores": 4,
-            "memory_total_bytes": 34359738368,
-            "disk_total_bytes": 53687091200
-          },
-          "logs": [
-            "[CRITICAL] Promoted to primary — handling all cache traffic",
-            "[WARNING] Memory usage at 94% — approaching limit",
-            "[WARNING] Hit rate dropped to 50%"
-          ]
-        },
-        "storage-nfs-icn-01:9100": {
-          "instance": "storage-nfs-icn-01:9100",
-          "job": "node-exporter",
-          "labels": {
-            "hostname": "storage-nfs-icn-01.openmanager.kr",
-            "datacenter": "Seoul-ICN-AZ1",
-            "environment": "production",
-            "server_type": "storage",
-            "os": "ubuntu",
-            "os_version": "22.04"
-          },
-          "metrics": {
-            "up": 1,
-            "node_cpu_usage_percent": 28,
-            "node_memory_usage_percent": 39,
-            "node_filesystem_usage_percent": 66,
-            "node_network_transmit_bytes_rate": 46,
-            "node_load1": 1.2,
-            "node_load5": 1.1,
-            "node_boot_time_seconds": 1735975801,
-            "node_procs_running": 135,
-            "node_http_request_duration_milliseconds": 170
-          },
-          "nodeInfo": {
-            "cpu_cores": 4,
-            "memory_total_bytes": 17179869184,
-            "disk_total_bytes": 5368709120000
-          },
-          "logs": []
-        },
-        "storage-s3gw-pus-01:9100": {
-          "instance": "storage-s3gw-pus-01:9100",
-          "job": "node-exporter",
-          "labels": {
-            "hostname": "storage-s3gw-pus-01.openmanager.kr",
-            "datacenter": "Busan-PUS-DR",
-            "environment": "production",
-            "server_type": "storage",
-            "os": "ubuntu",
-            "os_version": "22.04"
-          },
-          "metrics": {
-            "up": 1,
-            "node_cpu_usage_percent": 16,
             "node_memory_usage_percent": 32,
-            "node_filesystem_usage_percent": 52,
-            "node_network_transmit_bytes_rate": 56,
-            "node_load1": 0.3,
-            "node_load5": 0.3,
-            "node_boot_time_seconds": 1735961740,
+            "node_filesystem_usage_percent": 54,
+            "node_network_transmit_bytes_rate": 63,
+            "node_load1": 0.4,
+            "node_load5": 0.36,
+            "node_boot_time_seconds": 1735954052,
             "node_procs_running": 140,
-            "node_http_request_duration_milliseconds": 150
+            "node_http_request_duration_milliseconds": 271
           },
           "nodeInfo": {
             "cpu_cores": 2,
@@ -2773,14 +1323,471 @@
           "metrics": {
             "up": 1,
             "node_cpu_usage_percent": 35,
-            "node_memory_usage_percent": 35,
+            "node_memory_usage_percent": 37,
+            "node_filesystem_usage_percent": 13,
+            "node_network_transmit_bytes_rate": 65,
+            "node_load1": 1.34,
+            "node_load5": 1.17,
+            "node_boot_time_seconds": 1735943534,
+            "node_procs_running": 139,
+            "node_http_request_duration_milliseconds": 341
+          },
+          "nodeInfo": {
+            "cpu_cores": 4,
+            "memory_total_bytes": 8589934592,
+            "disk_total_bytes": 53687091200
+          },
+          "logs": []
+        },
+        "lb-haproxy-pus-01:9100": {
+          "instance": "lb-haproxy-pus-01:9100",
+          "job": "node-exporter",
+          "labels": {
+            "hostname": "lb-haproxy-pus-01.openmanager.kr",
+            "datacenter": "Busan-PUS-DR",
+            "environment": "production",
+            "server_type": "loadbalancer",
+            "os": "ubuntu",
+            "os_version": "22.04"
+          },
+          "metrics": {
+            "up": 1,
+            "node_cpu_usage_percent": 40,
+            "node_memory_usage_percent": 34,
+            "node_filesystem_usage_percent": 15,
+            "node_network_transmit_bytes_rate": 69,
+            "node_load1": 1.74,
+            "node_load5": 1.39,
+            "node_boot_time_seconds": 1735965277,
+            "node_procs_running": 106,
+            "node_http_request_duration_milliseconds": 333
+          },
+          "nodeInfo": {
+            "cpu_cores": 4,
+            "memory_total_bytes": 8589934592,
+            "disk_total_bytes": 53687091200
+          },
+          "logs": []
+        }
+      }
+    },
+    {
+      "timestampMs": 1770867000000,
+      "targets": {
+        "web-nginx-icn-01:9100": {
+          "instance": "web-nginx-icn-01:9100",
+          "job": "node-exporter",
+          "labels": {
+            "hostname": "web-nginx-icn-01.openmanager.kr",
+            "datacenter": "Seoul-ICN-AZ1",
+            "environment": "production",
+            "server_type": "web",
+            "os": "ubuntu",
+            "os_version": "22.04"
+          },
+          "metrics": {
+            "up": 1,
+            "node_cpu_usage_percent": 34,
+            "node_memory_usage_percent": 44,
+            "node_filesystem_usage_percent": 28,
+            "node_network_transmit_bytes_rate": 61,
+            "node_load1": 1.63,
+            "node_load5": 1.52,
+            "node_boot_time_seconds": 1736000728,
+            "node_procs_running": 114,
+            "node_http_request_duration_milliseconds": 428
+          },
+          "nodeInfo": {
+            "cpu_cores": 4,
+            "memory_total_bytes": 8589934592,
+            "disk_total_bytes": 107374182400
+          },
+          "logs": []
+        },
+        "web-nginx-icn-02:9100": {
+          "instance": "web-nginx-icn-02:9100",
+          "job": "node-exporter",
+          "labels": {
+            "hostname": "web-nginx-icn-02.openmanager.kr",
+            "datacenter": "Seoul-ICN-AZ2",
+            "environment": "production",
+            "server_type": "web",
+            "os": "ubuntu",
+            "os_version": "22.04"
+          },
+          "metrics": {
+            "up": 1,
+            "node_cpu_usage_percent": 33,
+            "node_memory_usage_percent": 39,
+            "node_filesystem_usage_percent": 27,
+            "node_network_transmit_bytes_rate": 52,
+            "node_load1": 1.27,
+            "node_load5": 0.99,
+            "node_boot_time_seconds": 1735983138,
+            "node_procs_running": 118,
+            "node_http_request_duration_milliseconds": 476
+          },
+          "nodeInfo": {
+            "cpu_cores": 4,
+            "memory_total_bytes": 8589934592,
+            "disk_total_bytes": 107374182400
+          },
+          "logs": []
+        },
+        "web-nginx-pus-01:9100": {
+          "instance": "web-nginx-pus-01:9100",
+          "job": "node-exporter",
+          "labels": {
+            "hostname": "web-nginx-pus-01.openmanager.kr",
+            "datacenter": "Busan-PUS-AZ1",
+            "environment": "production",
+            "server_type": "web",
+            "os": "ubuntu",
+            "os_version": "22.04"
+          },
+          "metrics": {
+            "up": 1,
+            "node_cpu_usage_percent": 21,
+            "node_memory_usage_percent": 38,
+            "node_filesystem_usage_percent": 23,
+            "node_network_transmit_bytes_rate": 35,
+            "node_load1": 0.68,
+            "node_load5": 0.52,
+            "node_boot_time_seconds": 1735952391,
+            "node_procs_running": 122,
+            "node_http_request_duration_milliseconds": 534
+          },
+          "nodeInfo": {
+            "cpu_cores": 4,
+            "memory_total_bytes": 8589934592,
+            "disk_total_bytes": 107374182400
+          },
+          "logs": []
+        },
+        "api-was-icn-01:9100": {
+          "instance": "api-was-icn-01:9100",
+          "job": "node-exporter",
+          "labels": {
+            "hostname": "api-was-icn-01.openmanager.kr",
+            "datacenter": "Seoul-ICN-AZ1",
+            "environment": "production",
+            "server_type": "application",
+            "os": "ubuntu",
+            "os_version": "22.04"
+          },
+          "metrics": {
+            "up": 1,
+            "node_cpu_usage_percent": 68,
+            "node_memory_usage_percent": 78,
+            "node_filesystem_usage_percent": 37,
+            "node_network_transmit_bytes_rate": 51,
+            "node_load1": 4.89,
+            "node_load5": 4.55,
+            "node_boot_time_seconds": 1736013508,
+            "node_procs_running": 120,
+            "node_http_request_duration_milliseconds": 389
+          },
+          "nodeInfo": {
+            "cpu_cores": 8,
+            "memory_total_bytes": 17179869184,
+            "disk_total_bytes": 214748364800
+          },
+          "logs": ["[INFO] GC pause time: 2.5s (threshold: 1s)"]
+        },
+        "api-was-icn-02:9100": {
+          "instance": "api-was-icn-02:9100",
+          "job": "node-exporter",
+          "labels": {
+            "hostname": "api-was-icn-02.openmanager.kr",
+            "datacenter": "Seoul-ICN-AZ2",
+            "environment": "production",
+            "server_type": "application",
+            "os": "ubuntu",
+            "os_version": "22.04"
+          },
+          "metrics": {
+            "up": 1,
+            "node_cpu_usage_percent": 43,
+            "node_memory_usage_percent": 54,
+            "node_filesystem_usage_percent": 33,
+            "node_network_transmit_bytes_rate": 48,
+            "node_load1": 3.14,
+            "node_load5": 2.73,
+            "node_boot_time_seconds": 1735984575,
+            "node_procs_running": 131,
+            "node_http_request_duration_milliseconds": 491
+          },
+          "nodeInfo": {
+            "cpu_cores": 8,
+            "memory_total_bytes": 17179869184,
+            "disk_total_bytes": 214748364800
+          },
+          "logs": []
+        },
+        "api-was-pus-01:9100": {
+          "instance": "api-was-pus-01:9100",
+          "job": "node-exporter",
+          "labels": {
+            "hostname": "api-was-pus-01.openmanager.kr",
+            "datacenter": "Busan-PUS-AZ1",
+            "environment": "production",
+            "server_type": "application",
+            "os": "ubuntu",
+            "os_version": "22.04"
+          },
+          "metrics": {
+            "up": 1,
+            "node_cpu_usage_percent": 23,
+            "node_memory_usage_percent": 36,
+            "node_filesystem_usage_percent": 29,
+            "node_network_transmit_bytes_rate": 30,
+            "node_load1": 2.1,
+            "node_load5": 1.92,
+            "node_boot_time_seconds": 1735938519,
+            "node_procs_running": 148,
+            "node_http_request_duration_milliseconds": 486
+          },
+          "nodeInfo": {
+            "cpu_cores": 8,
+            "memory_total_bytes": 17179869184,
+            "disk_total_bytes": 214748364800
+          },
+          "logs": []
+        },
+        "db-mysql-icn-primary:9100": {
+          "instance": "db-mysql-icn-primary:9100",
+          "job": "node-exporter",
+          "labels": {
+            "hostname": "db-mysql-icn-primary.openmanager.kr",
+            "datacenter": "Seoul-ICN-AZ1",
+            "environment": "production",
+            "server_type": "database",
+            "os": "ubuntu",
+            "os_version": "22.04"
+          },
+          "metrics": {
+            "up": 1,
+            "node_cpu_usage_percent": 54,
+            "node_memory_usage_percent": 67,
+            "node_filesystem_usage_percent": 45,
+            "node_network_transmit_bytes_rate": 35,
+            "node_load1": 7.84,
+            "node_load5": 6.15,
+            "node_boot_time_seconds": 1735992971,
+            "node_procs_running": 110,
+            "node_http_request_duration_milliseconds": 149
+          },
+          "nodeInfo": {
+            "cpu_cores": 16,
+            "memory_total_bytes": 68719476736,
+            "disk_total_bytes": 1073741824000
+          },
+          "logs": []
+        },
+        "db-mysql-icn-replica:9100": {
+          "instance": "db-mysql-icn-replica:9100",
+          "job": "node-exporter",
+          "labels": {
+            "hostname": "db-mysql-icn-replica.openmanager.kr",
+            "datacenter": "Seoul-ICN-AZ2",
+            "environment": "production",
+            "server_type": "database",
+            "os": "ubuntu",
+            "os_version": "22.04"
+          },
+          "metrics": {
+            "up": 1,
+            "node_cpu_usage_percent": 37,
+            "node_memory_usage_percent": 61,
+            "node_filesystem_usage_percent": 42,
+            "node_network_transmit_bytes_rate": 30,
+            "node_load1": 5.59,
+            "node_load5": 4.32,
+            "node_boot_time_seconds": 1735957191,
+            "node_procs_running": 104,
+            "node_http_request_duration_milliseconds": 162
+          },
+          "nodeInfo": {
+            "cpu_cores": 16,
+            "memory_total_bytes": 68719476736,
+            "disk_total_bytes": 1073741824000
+          },
+          "logs": []
+        },
+        "db-mysql-pus-dr:9100": {
+          "instance": "db-mysql-pus-dr:9100",
+          "job": "node-exporter",
+          "labels": {
+            "hostname": "db-mysql-pus-dr.openmanager.kr",
+            "datacenter": "Busan-PUS-AZ1",
+            "environment": "production",
+            "server_type": "database",
+            "os": "ubuntu",
+            "os_version": "22.04"
+          },
+          "metrics": {
+            "up": 1,
+            "node_cpu_usage_percent": 23,
+            "node_memory_usage_percent": 42,
+            "node_filesystem_usage_percent": 42,
+            "node_network_transmit_bytes_rate": 27,
+            "node_load1": 3.53,
+            "node_load5": 2.73,
+            "node_boot_time_seconds": 1735956066,
+            "node_procs_running": 141,
+            "node_http_request_duration_milliseconds": 142
+          },
+          "nodeInfo": {
+            "cpu_cores": 16,
+            "memory_total_bytes": 68719476736,
+            "disk_total_bytes": 1073741824000
+          },
+          "logs": []
+        },
+        "cache-redis-icn-01:9100": {
+          "instance": "cache-redis-icn-01:9100",
+          "job": "node-exporter",
+          "labels": {
+            "hostname": "cache-redis-icn-01.openmanager.kr",
+            "datacenter": "Seoul-ICN-AZ1",
+            "environment": "production",
+            "server_type": "cache",
+            "os": "ubuntu",
+            "os_version": "22.04"
+          },
+          "metrics": {
+            "up": 1,
+            "node_cpu_usage_percent": 65,
+            "node_memory_usage_percent": 95,
+            "node_filesystem_usage_percent": 21,
+            "node_network_transmit_bytes_rate": 45,
+            "node_load1": 2.33,
+            "node_load5": 1.83,
+            "node_boot_time_seconds": 1735945870,
+            "node_procs_running": 141,
+            "node_http_request_duration_milliseconds": 348
+          },
+          "nodeInfo": {
+            "cpu_cores": 4,
+            "memory_total_bytes": 34359738368,
+            "disk_total_bytes": 53687091200
+          },
+          "logs": [
+            "[ERROR] redis: OOM command not allowed - used_memory > maxmemory"
+          ]
+        },
+        "cache-redis-icn-02:9100": {
+          "instance": "cache-redis-icn-02:9100",
+          "job": "node-exporter",
+          "labels": {
+            "hostname": "cache-redis-icn-02.openmanager.kr",
+            "datacenter": "Seoul-ICN-AZ2",
+            "environment": "production",
+            "server_type": "cache",
+            "os": "ubuntu",
+            "os_version": "22.04"
+          },
+          "metrics": {
+            "up": 1,
+            "node_cpu_usage_percent": 55,
+            "node_memory_usage_percent": 89,
             "node_filesystem_usage_percent": 16,
+            "node_network_transmit_bytes_rate": 40,
+            "node_load1": 2.59,
+            "node_load5": 2.04,
+            "node_boot_time_seconds": 1736012943,
+            "node_procs_running": 138,
+            "node_http_request_duration_milliseconds": 48
+          },
+          "nodeInfo": {
+            "cpu_cores": 4,
+            "memory_total_bytes": 34359738368,
+            "disk_total_bytes": 53687091200
+          },
+          "logs": ["[INFO] redis: Evicting keys using volatile-lru policy"]
+        },
+        "storage-nfs-icn-01:9100": {
+          "instance": "storage-nfs-icn-01:9100",
+          "job": "node-exporter",
+          "labels": {
+            "hostname": "storage-nfs-icn-01.openmanager.kr",
+            "datacenter": "Seoul-ICN-AZ1",
+            "environment": "production",
+            "server_type": "storage",
+            "os": "ubuntu",
+            "os_version": "22.04"
+          },
+          "metrics": {
+            "up": 1,
+            "node_cpu_usage_percent": 26,
+            "node_memory_usage_percent": 43,
+            "node_filesystem_usage_percent": 65,
+            "node_network_transmit_bytes_rate": 53,
+            "node_load1": 1.08,
+            "node_load5": 0.87,
+            "node_boot_time_seconds": 1735986712,
+            "node_procs_running": 111,
+            "node_http_request_duration_milliseconds": 514
+          },
+          "nodeInfo": {
+            "cpu_cores": 4,
+            "memory_total_bytes": 17179869184,
+            "disk_total_bytes": 5368709120000
+          },
+          "logs": []
+        },
+        "storage-s3gw-pus-01:9100": {
+          "instance": "storage-s3gw-pus-01:9100",
+          "job": "node-exporter",
+          "labels": {
+            "hostname": "storage-s3gw-pus-01.openmanager.kr",
+            "datacenter": "Busan-PUS-DR",
+            "environment": "production",
+            "server_type": "storage",
+            "os": "ubuntu",
+            "os_version": "22.04"
+          },
+          "metrics": {
+            "up": 1,
+            "node_cpu_usage_percent": 24,
+            "node_memory_usage_percent": 37,
+            "node_filesystem_usage_percent": 55,
+            "node_network_transmit_bytes_rate": 64,
+            "node_load1": 0.41,
+            "node_load5": 0.39,
+            "node_boot_time_seconds": 1735986512,
+            "node_procs_running": 139,
+            "node_http_request_duration_milliseconds": 437
+          },
+          "nodeInfo": {
+            "cpu_cores": 2,
+            "memory_total_bytes": 8589934592,
+            "disk_total_bytes": 214748364800
+          },
+          "logs": []
+        },
+        "lb-haproxy-icn-01:9100": {
+          "instance": "lb-haproxy-icn-01:9100",
+          "job": "node-exporter",
+          "labels": {
+            "hostname": "lb-haproxy-icn-01.openmanager.kr",
+            "datacenter": "Seoul-ICN-AZ1",
+            "environment": "production",
+            "server_type": "loadbalancer",
+            "os": "ubuntu",
+            "os_version": "22.04"
+          },
+          "metrics": {
+            "up": 1,
+            "node_cpu_usage_percent": 40,
+            "node_memory_usage_percent": 38,
+            "node_filesystem_usage_percent": 14,
             "node_network_transmit_bytes_rate": 74,
-            "node_load1": 1.4,
-            "node_load5": 1.2,
-            "node_boot_time_seconds": 1735936266,
-            "node_procs_running": 130,
-            "node_http_request_duration_milliseconds": 160
+            "node_load1": 1.47,
+            "node_load5": 1.37,
+            "node_boot_time_seconds": 1735999595,
+            "node_procs_running": 107,
+            "node_http_request_duration_milliseconds": 449
           },
           "nodeInfo": {
             "cpu_cores": 4,
@@ -2803,14 +1810,926 @@
           "metrics": {
             "up": 1,
             "node_cpu_usage_percent": 33,
-            "node_memory_usage_percent": 37,
-            "node_filesystem_usage_percent": 16,
-            "node_network_transmit_bytes_rate": 71,
-            "node_load1": 1.4,
-            "node_load5": 1.2,
-            "node_boot_time_seconds": 1735936266,
+            "node_memory_usage_percent": 29,
+            "node_filesystem_usage_percent": 11,
+            "node_network_transmit_bytes_rate": 66,
+            "node_load1": 1.32,
+            "node_load5": 1.19,
+            "node_boot_time_seconds": 1735974947,
+            "node_procs_running": 140,
+            "node_http_request_duration_milliseconds": 389
+          },
+          "nodeInfo": {
+            "cpu_cores": 4,
+            "memory_total_bytes": 8589934592,
+            "disk_total_bytes": 53687091200
+          },
+          "logs": []
+        }
+      }
+    },
+    {
+      "timestampMs": 1770867600000,
+      "targets": {
+        "web-nginx-icn-01:9100": {
+          "instance": "web-nginx-icn-01:9100",
+          "job": "node-exporter",
+          "labels": {
+            "hostname": "web-nginx-icn-01.openmanager.kr",
+            "datacenter": "Seoul-ICN-AZ1",
+            "environment": "production",
+            "server_type": "web",
+            "os": "ubuntu",
+            "os_version": "22.04"
+          },
+          "metrics": {
+            "up": 1,
+            "node_cpu_usage_percent": 32,
+            "node_memory_usage_percent": 43,
+            "node_filesystem_usage_percent": 28,
+            "node_network_transmit_bytes_rate": 58,
+            "node_load1": 1.1,
+            "node_load5": 1.02,
+            "node_boot_time_seconds": 1735995592,
+            "node_procs_running": 105,
+            "node_http_request_duration_milliseconds": 457
+          },
+          "nodeInfo": {
+            "cpu_cores": 4,
+            "memory_total_bytes": 8589934592,
+            "disk_total_bytes": 107374182400
+          },
+          "logs": []
+        },
+        "web-nginx-icn-02:9100": {
+          "instance": "web-nginx-icn-02:9100",
+          "job": "node-exporter",
+          "labels": {
+            "hostname": "web-nginx-icn-02.openmanager.kr",
+            "datacenter": "Seoul-ICN-AZ2",
+            "environment": "production",
+            "server_type": "web",
+            "os": "ubuntu",
+            "os_version": "22.04"
+          },
+          "metrics": {
+            "up": 1,
+            "node_cpu_usage_percent": 33,
+            "node_memory_usage_percent": 43,
+            "node_filesystem_usage_percent": 27,
+            "node_network_transmit_bytes_rate": 56,
+            "node_load1": 1.58,
+            "node_load5": 1.25,
+            "node_boot_time_seconds": 1736003776,
+            "node_procs_running": 132,
+            "node_http_request_duration_milliseconds": 378
+          },
+          "nodeInfo": {
+            "cpu_cores": 4,
+            "memory_total_bytes": 8589934592,
+            "disk_total_bytes": 107374182400
+          },
+          "logs": []
+        },
+        "web-nginx-pus-01:9100": {
+          "instance": "web-nginx-pus-01:9100",
+          "job": "node-exporter",
+          "labels": {
+            "hostname": "web-nginx-pus-01.openmanager.kr",
+            "datacenter": "Busan-PUS-AZ1",
+            "environment": "production",
+            "server_type": "web",
+            "os": "ubuntu",
+            "os_version": "22.04"
+          },
+          "metrics": {
+            "up": 1,
+            "node_cpu_usage_percent": 19,
+            "node_memory_usage_percent": 31,
+            "node_filesystem_usage_percent": 23,
+            "node_network_transmit_bytes_rate": 43,
+            "node_load1": 0.79,
+            "node_load5": 0.73,
+            "node_boot_time_seconds": 1735999410,
+            "node_procs_running": 123,
+            "node_http_request_duration_milliseconds": 461
+          },
+          "nodeInfo": {
+            "cpu_cores": 4,
+            "memory_total_bytes": 8589934592,
+            "disk_total_bytes": 107374182400
+          },
+          "logs": []
+        },
+        "api-was-icn-01:9100": {
+          "instance": "api-was-icn-01:9100",
+          "job": "node-exporter",
+          "labels": {
+            "hostname": "api-was-icn-01.openmanager.kr",
+            "datacenter": "Seoul-ICN-AZ1",
+            "environment": "production",
+            "server_type": "application",
+            "os": "ubuntu",
+            "os_version": "22.04"
+          },
+          "metrics": {
+            "up": 1,
+            "node_cpu_usage_percent": 65,
+            "node_memory_usage_percent": 75,
+            "node_filesystem_usage_percent": 35,
+            "node_network_transmit_bytes_rate": 48,
+            "node_load1": 4.74,
+            "node_load5": 3.83,
+            "node_boot_time_seconds": 1736012335,
+            "node_procs_running": 129,
+            "node_http_request_duration_milliseconds": 402
+          },
+          "nodeInfo": {
+            "cpu_cores": 8,
+            "memory_total_bytes": 17179869184,
+            "disk_total_bytes": 214748364800
+          },
+          "logs": ["[WARN] JVM: Heap usage above 85%"]
+        },
+        "api-was-icn-02:9100": {
+          "instance": "api-was-icn-02:9100",
+          "job": "node-exporter",
+          "labels": {
+            "hostname": "api-was-icn-02.openmanager.kr",
+            "datacenter": "Seoul-ICN-AZ2",
+            "environment": "production",
+            "server_type": "application",
+            "os": "ubuntu",
+            "os_version": "22.04"
+          },
+          "metrics": {
+            "up": 1,
+            "node_cpu_usage_percent": 44,
+            "node_memory_usage_percent": 51,
+            "node_filesystem_usage_percent": 33,
+            "node_network_transmit_bytes_rate": 45,
+            "node_load1": 3.23,
+            "node_load5": 2.96,
+            "node_boot_time_seconds": 1735975860,
+            "node_procs_running": 101,
+            "node_http_request_duration_milliseconds": 448
+          },
+          "nodeInfo": {
+            "cpu_cores": 8,
+            "memory_total_bytes": 17179869184,
+            "disk_total_bytes": 214748364800
+          },
+          "logs": []
+        },
+        "api-was-pus-01:9100": {
+          "instance": "api-was-pus-01:9100",
+          "job": "node-exporter",
+          "labels": {
+            "hostname": "api-was-pus-01.openmanager.kr",
+            "datacenter": "Busan-PUS-AZ1",
+            "environment": "production",
+            "server_type": "application",
+            "os": "ubuntu",
+            "os_version": "22.04"
+          },
+          "metrics": {
+            "up": 1,
+            "node_cpu_usage_percent": 20,
+            "node_memory_usage_percent": 39,
+            "node_filesystem_usage_percent": 28,
+            "node_network_transmit_bytes_rate": 32,
+            "node_load1": 1.56,
+            "node_load5": 1.39,
+            "node_boot_time_seconds": 1735952909,
+            "node_procs_running": 112,
+            "node_http_request_duration_milliseconds": 370
+          },
+          "nodeInfo": {
+            "cpu_cores": 8,
+            "memory_total_bytes": 17179869184,
+            "disk_total_bytes": 214748364800
+          },
+          "logs": []
+        },
+        "db-mysql-icn-primary:9100": {
+          "instance": "db-mysql-icn-primary:9100",
+          "job": "node-exporter",
+          "labels": {
+            "hostname": "db-mysql-icn-primary.openmanager.kr",
+            "datacenter": "Seoul-ICN-AZ1",
+            "environment": "production",
+            "server_type": "database",
+            "os": "ubuntu",
+            "os_version": "22.04"
+          },
+          "metrics": {
+            "up": 1,
+            "node_cpu_usage_percent": 57,
+            "node_memory_usage_percent": 68,
+            "node_filesystem_usage_percent": 46,
+            "node_network_transmit_bytes_rate": 35,
+            "node_load1": 7.92,
+            "node_load5": 7.15,
+            "node_boot_time_seconds": 1735944396,
+            "node_procs_running": 137,
+            "node_http_request_duration_milliseconds": 127
+          },
+          "nodeInfo": {
+            "cpu_cores": 16,
+            "memory_total_bytes": 68719476736,
+            "disk_total_bytes": 1073741824000
+          },
+          "logs": []
+        },
+        "db-mysql-icn-replica:9100": {
+          "instance": "db-mysql-icn-replica:9100",
+          "job": "node-exporter",
+          "labels": {
+            "hostname": "db-mysql-icn-replica.openmanager.kr",
+            "datacenter": "Seoul-ICN-AZ2",
+            "environment": "production",
+            "server_type": "database",
+            "os": "ubuntu",
+            "os_version": "22.04"
+          },
+          "metrics": {
+            "up": 1,
+            "node_cpu_usage_percent": 44,
+            "node_memory_usage_percent": 62,
+            "node_filesystem_usage_percent": 39,
+            "node_network_transmit_bytes_rate": 37,
+            "node_load1": 6.76,
+            "node_load5": 5.11,
+            "node_boot_time_seconds": 1735950623,
+            "node_procs_running": 144,
+            "node_http_request_duration_milliseconds": 121
+          },
+          "nodeInfo": {
+            "cpu_cores": 16,
+            "memory_total_bytes": 68719476736,
+            "disk_total_bytes": 1073741824000
+          },
+          "logs": []
+        },
+        "db-mysql-pus-dr:9100": {
+          "instance": "db-mysql-pus-dr:9100",
+          "job": "node-exporter",
+          "labels": {
+            "hostname": "db-mysql-pus-dr.openmanager.kr",
+            "datacenter": "Busan-PUS-AZ1",
+            "environment": "production",
+            "server_type": "database",
+            "os": "ubuntu",
+            "os_version": "22.04"
+          },
+          "metrics": {
+            "up": 1,
+            "node_cpu_usage_percent": 17,
+            "node_memory_usage_percent": 42,
+            "node_filesystem_usage_percent": 41,
+            "node_network_transmit_bytes_rate": 27,
+            "node_load1": 2.23,
+            "node_load5": 1.87,
+            "node_boot_time_seconds": 1735973574,
             "node_procs_running": 130,
-            "node_http_request_duration_milliseconds": 160
+            "node_http_request_duration_milliseconds": 153
+          },
+          "nodeInfo": {
+            "cpu_cores": 16,
+            "memory_total_bytes": 68719476736,
+            "disk_total_bytes": 1073741824000
+          },
+          "logs": []
+        },
+        "cache-redis-icn-01:9100": {
+          "instance": "cache-redis-icn-01:9100",
+          "job": "node-exporter",
+          "labels": {
+            "hostname": "cache-redis-icn-01.openmanager.kr",
+            "datacenter": "Seoul-ICN-AZ1",
+            "environment": "production",
+            "server_type": "cache",
+            "os": "ubuntu",
+            "os_version": "22.04"
+          },
+          "metrics": {
+            "up": 1,
+            "node_cpu_usage_percent": 60,
+            "node_memory_usage_percent": 92,
+            "node_filesystem_usage_percent": 21,
+            "node_network_transmit_bytes_rate": 43,
+            "node_load1": 2,
+            "node_load5": 1.52,
+            "node_boot_time_seconds": 1735996761,
+            "node_procs_running": 118,
+            "node_http_request_duration_milliseconds": 416
+          },
+          "nodeInfo": {
+            "cpu_cores": 4,
+            "memory_total_bytes": 34359738368,
+            "disk_total_bytes": 53687091200
+          },
+          "logs": [
+            "[ERROR] redis: OOM command not allowed - used_memory > maxmemory"
+          ]
+        },
+        "cache-redis-icn-02:9100": {
+          "instance": "cache-redis-icn-02:9100",
+          "job": "node-exporter",
+          "labels": {
+            "hostname": "cache-redis-icn-02.openmanager.kr",
+            "datacenter": "Seoul-ICN-AZ2",
+            "environment": "production",
+            "server_type": "cache",
+            "os": "ubuntu",
+            "os_version": "22.04"
+          },
+          "metrics": {
+            "up": 1,
+            "node_cpu_usage_percent": 50,
+            "node_memory_usage_percent": 87,
+            "node_filesystem_usage_percent": 19,
+            "node_network_transmit_bytes_rate": 42,
+            "node_load1": 1.95,
+            "node_load5": 1.6,
+            "node_boot_time_seconds": 1735933031,
+            "node_procs_running": 145,
+            "node_http_request_duration_milliseconds": 51
+          },
+          "nodeInfo": {
+            "cpu_cores": 4,
+            "memory_total_bytes": 34359738368,
+            "disk_total_bytes": 53687091200
+          },
+          "logs": ["[INFO] redis: Evicting keys using volatile-lru policy"]
+        },
+        "storage-nfs-icn-01:9100": {
+          "instance": "storage-nfs-icn-01:9100",
+          "job": "node-exporter",
+          "labels": {
+            "hostname": "storage-nfs-icn-01.openmanager.kr",
+            "datacenter": "Seoul-ICN-AZ1",
+            "environment": "production",
+            "server_type": "storage",
+            "os": "ubuntu",
+            "os_version": "22.04"
+          },
+          "metrics": {
+            "up": 1,
+            "node_cpu_usage_percent": 32,
+            "node_memory_usage_percent": 37,
+            "node_filesystem_usage_percent": 64,
+            "node_network_transmit_bytes_rate": 45,
+            "node_load1": 1.08,
+            "node_load5": 0.82,
+            "node_boot_time_seconds": 1736000590,
+            "node_procs_running": 148,
+            "node_http_request_duration_milliseconds": 427
+          },
+          "nodeInfo": {
+            "cpu_cores": 4,
+            "memory_total_bytes": 17179869184,
+            "disk_total_bytes": 5368709120000
+          },
+          "logs": []
+        },
+        "storage-s3gw-pus-01:9100": {
+          "instance": "storage-s3gw-pus-01:9100",
+          "job": "node-exporter",
+          "labels": {
+            "hostname": "storage-s3gw-pus-01.openmanager.kr",
+            "datacenter": "Busan-PUS-DR",
+            "environment": "production",
+            "server_type": "storage",
+            "os": "ubuntu",
+            "os_version": "22.04"
+          },
+          "metrics": {
+            "up": 1,
+            "node_cpu_usage_percent": 24,
+            "node_memory_usage_percent": 34,
+            "node_filesystem_usage_percent": 56,
+            "node_network_transmit_bytes_rate": 63,
+            "node_load1": 0.44,
+            "node_load5": 0.4,
+            "node_boot_time_seconds": 1735995611,
+            "node_procs_running": 107,
+            "node_http_request_duration_milliseconds": 426
+          },
+          "nodeInfo": {
+            "cpu_cores": 2,
+            "memory_total_bytes": 8589934592,
+            "disk_total_bytes": 214748364800
+          },
+          "logs": []
+        },
+        "lb-haproxy-icn-01:9100": {
+          "instance": "lb-haproxy-icn-01:9100",
+          "job": "node-exporter",
+          "labels": {
+            "hostname": "lb-haproxy-icn-01.openmanager.kr",
+            "datacenter": "Seoul-ICN-AZ1",
+            "environment": "production",
+            "server_type": "loadbalancer",
+            "os": "ubuntu",
+            "os_version": "22.04"
+          },
+          "metrics": {
+            "up": 1,
+            "node_cpu_usage_percent": 35,
+            "node_memory_usage_percent": 36,
+            "node_filesystem_usage_percent": 16,
+            "node_network_transmit_bytes_rate": 65,
+            "node_load1": 1.36,
+            "node_load5": 1.21,
+            "node_boot_time_seconds": 1735951354,
+            "node_procs_running": 101,
+            "node_http_request_duration_milliseconds": 324
+          },
+          "nodeInfo": {
+            "cpu_cores": 4,
+            "memory_total_bytes": 8589934592,
+            "disk_total_bytes": 53687091200
+          },
+          "logs": []
+        },
+        "lb-haproxy-pus-01:9100": {
+          "instance": "lb-haproxy-pus-01:9100",
+          "job": "node-exporter",
+          "labels": {
+            "hostname": "lb-haproxy-pus-01.openmanager.kr",
+            "datacenter": "Busan-PUS-DR",
+            "environment": "production",
+            "server_type": "loadbalancer",
+            "os": "ubuntu",
+            "os_version": "22.04"
+          },
+          "metrics": {
+            "up": 1,
+            "node_cpu_usage_percent": 41,
+            "node_memory_usage_percent": 30,
+            "node_filesystem_usage_percent": 12,
+            "node_network_transmit_bytes_rate": 70,
+            "node_load1": 1.67,
+            "node_load5": 1.46,
+            "node_boot_time_seconds": 1735984137,
+            "node_procs_running": 131,
+            "node_http_request_duration_milliseconds": 427
+          },
+          "nodeInfo": {
+            "cpu_cores": 4,
+            "memory_total_bytes": 8589934592,
+            "disk_total_bytes": 53687091200
+          },
+          "logs": []
+        }
+      }
+    },
+    {
+      "timestampMs": 1770868200000,
+      "targets": {
+        "web-nginx-icn-01:9100": {
+          "instance": "web-nginx-icn-01:9100",
+          "job": "node-exporter",
+          "labels": {
+            "hostname": "web-nginx-icn-01.openmanager.kr",
+            "datacenter": "Seoul-ICN-AZ1",
+            "environment": "production",
+            "server_type": "web",
+            "os": "ubuntu",
+            "os_version": "22.04"
+          },
+          "metrics": {
+            "up": 1,
+            "node_cpu_usage_percent": 35,
+            "node_memory_usage_percent": 43,
+            "node_filesystem_usage_percent": 32,
+            "node_network_transmit_bytes_rate": 57,
+            "node_load1": 1.15,
+            "node_load5": 1.04,
+            "node_boot_time_seconds": 1735981054,
+            "node_procs_running": 140,
+            "node_http_request_duration_milliseconds": 361
+          },
+          "nodeInfo": {
+            "cpu_cores": 4,
+            "memory_total_bytes": 8589934592,
+            "disk_total_bytes": 107374182400
+          },
+          "logs": []
+        },
+        "web-nginx-icn-02:9100": {
+          "instance": "web-nginx-icn-02:9100",
+          "job": "node-exporter",
+          "labels": {
+            "hostname": "web-nginx-icn-02.openmanager.kr",
+            "datacenter": "Seoul-ICN-AZ2",
+            "environment": "production",
+            "server_type": "web",
+            "os": "ubuntu",
+            "os_version": "22.04"
+          },
+          "metrics": {
+            "up": 1,
+            "node_cpu_usage_percent": 34,
+            "node_memory_usage_percent": 43,
+            "node_filesystem_usage_percent": 27,
+            "node_network_transmit_bytes_rate": 51,
+            "node_load1": 1.59,
+            "node_load5": 1.41,
+            "node_boot_time_seconds": 1735952564,
+            "node_procs_running": 114,
+            "node_http_request_duration_milliseconds": 333
+          },
+          "nodeInfo": {
+            "cpu_cores": 4,
+            "memory_total_bytes": 8589934592,
+            "disk_total_bytes": 107374182400
+          },
+          "logs": []
+        },
+        "web-nginx-pus-01:9100": {
+          "instance": "web-nginx-pus-01:9100",
+          "job": "node-exporter",
+          "labels": {
+            "hostname": "web-nginx-pus-01.openmanager.kr",
+            "datacenter": "Busan-PUS-AZ1",
+            "environment": "production",
+            "server_type": "web",
+            "os": "ubuntu",
+            "os_version": "22.04"
+          },
+          "metrics": {
+            "up": 1,
+            "node_cpu_usage_percent": 18,
+            "node_memory_usage_percent": 38,
+            "node_filesystem_usage_percent": 26,
+            "node_network_transmit_bytes_rate": 42,
+            "node_load1": 0.78,
+            "node_load5": 0.7,
+            "node_boot_time_seconds": 1735964515,
+            "node_procs_running": 139,
+            "node_http_request_duration_milliseconds": 483
+          },
+          "nodeInfo": {
+            "cpu_cores": 4,
+            "memory_total_bytes": 8589934592,
+            "disk_total_bytes": 107374182400
+          },
+          "logs": []
+        },
+        "api-was-icn-01:9100": {
+          "instance": "api-was-icn-01:9100",
+          "job": "node-exporter",
+          "labels": {
+            "hostname": "api-was-icn-01.openmanager.kr",
+            "datacenter": "Seoul-ICN-AZ1",
+            "environment": "production",
+            "server_type": "application",
+            "os": "ubuntu",
+            "os_version": "22.04"
+          },
+          "metrics": {
+            "up": 1,
+            "node_cpu_usage_percent": 65,
+            "node_memory_usage_percent": 75,
+            "node_filesystem_usage_percent": 35,
+            "node_network_transmit_bytes_rate": 54,
+            "node_load1": 5.47,
+            "node_load5": 5.17,
+            "node_boot_time_seconds": 1735948463,
+            "node_procs_running": 126,
+            "node_http_request_duration_milliseconds": 494
+          },
+          "nodeInfo": {
+            "cpu_cores": 8,
+            "memory_total_bytes": 17179869184,
+            "disk_total_bytes": 214748364800
+          },
+          "logs": ["[WARN] JVM: Heap usage above 85%"]
+        },
+        "api-was-icn-02:9100": {
+          "instance": "api-was-icn-02:9100",
+          "job": "node-exporter",
+          "labels": {
+            "hostname": "api-was-icn-02.openmanager.kr",
+            "datacenter": "Seoul-ICN-AZ2",
+            "environment": "production",
+            "server_type": "application",
+            "os": "ubuntu",
+            "os_version": "22.04"
+          },
+          "metrics": {
+            "up": 1,
+            "node_cpu_usage_percent": 46,
+            "node_memory_usage_percent": 50,
+            "node_filesystem_usage_percent": 32,
+            "node_network_transmit_bytes_rate": 44,
+            "node_load1": 3.29,
+            "node_load5": 2.56,
+            "node_boot_time_seconds": 1735949945,
+            "node_procs_running": 125,
+            "node_http_request_duration_milliseconds": 426
+          },
+          "nodeInfo": {
+            "cpu_cores": 8,
+            "memory_total_bytes": 17179869184,
+            "disk_total_bytes": 214748364800
+          },
+          "logs": []
+        },
+        "api-was-pus-01:9100": {
+          "instance": "api-was-pus-01:9100",
+          "job": "node-exporter",
+          "labels": {
+            "hostname": "api-was-pus-01.openmanager.kr",
+            "datacenter": "Busan-PUS-AZ1",
+            "environment": "production",
+            "server_type": "application",
+            "os": "ubuntu",
+            "os_version": "22.04"
+          },
+          "metrics": {
+            "up": 1,
+            "node_cpu_usage_percent": 29,
+            "node_memory_usage_percent": 38,
+            "node_filesystem_usage_percent": 25,
+            "node_network_transmit_bytes_rate": 30,
+            "node_load1": 2.16,
+            "node_load5": 1.7,
+            "node_boot_time_seconds": 1735948619,
+            "node_procs_running": 142,
+            "node_http_request_duration_milliseconds": 396
+          },
+          "nodeInfo": {
+            "cpu_cores": 8,
+            "memory_total_bytes": 17179869184,
+            "disk_total_bytes": 214748364800
+          },
+          "logs": []
+        },
+        "db-mysql-icn-primary:9100": {
+          "instance": "db-mysql-icn-primary:9100",
+          "job": "node-exporter",
+          "labels": {
+            "hostname": "db-mysql-icn-primary.openmanager.kr",
+            "datacenter": "Seoul-ICN-AZ1",
+            "environment": "production",
+            "server_type": "database",
+            "os": "ubuntu",
+            "os_version": "22.04"
+          },
+          "metrics": {
+            "up": 1,
+            "node_cpu_usage_percent": 59,
+            "node_memory_usage_percent": 72,
+            "node_filesystem_usage_percent": 47,
+            "node_network_transmit_bytes_rate": 42,
+            "node_load1": 8.71,
+            "node_load5": 8.15,
+            "node_boot_time_seconds": 1735948061,
+            "node_procs_running": 118,
+            "node_http_request_duration_milliseconds": 112
+          },
+          "nodeInfo": {
+            "cpu_cores": 16,
+            "memory_total_bytes": 68719476736,
+            "disk_total_bytes": 1073741824000
+          },
+          "logs": []
+        },
+        "db-mysql-icn-replica:9100": {
+          "instance": "db-mysql-icn-replica:9100",
+          "job": "node-exporter",
+          "labels": {
+            "hostname": "db-mysql-icn-replica.openmanager.kr",
+            "datacenter": "Seoul-ICN-AZ2",
+            "environment": "production",
+            "server_type": "database",
+            "os": "ubuntu",
+            "os_version": "22.04"
+          },
+          "metrics": {
+            "up": 1,
+            "node_cpu_usage_percent": 38,
+            "node_memory_usage_percent": 61,
+            "node_filesystem_usage_percent": 42,
+            "node_network_transmit_bytes_rate": 38,
+            "node_load1": 7.17,
+            "node_load5": 6.33,
+            "node_boot_time_seconds": 1735936976,
+            "node_procs_running": 148,
+            "node_http_request_duration_milliseconds": 151
+          },
+          "nodeInfo": {
+            "cpu_cores": 16,
+            "memory_total_bytes": 68719476736,
+            "disk_total_bytes": 1073741824000
+          },
+          "logs": []
+        },
+        "db-mysql-pus-dr:9100": {
+          "instance": "db-mysql-pus-dr:9100",
+          "job": "node-exporter",
+          "labels": {
+            "hostname": "db-mysql-pus-dr.openmanager.kr",
+            "datacenter": "Busan-PUS-AZ1",
+            "environment": "production",
+            "server_type": "database",
+            "os": "ubuntu",
+            "os_version": "22.04"
+          },
+          "metrics": {
+            "up": 1,
+            "node_cpu_usage_percent": 20,
+            "node_memory_usage_percent": 43,
+            "node_filesystem_usage_percent": 40,
+            "node_network_transmit_bytes_rate": 26,
+            "node_load1": 3.08,
+            "node_load5": 2.51,
+            "node_boot_time_seconds": 1735990550,
+            "node_procs_running": 121,
+            "node_http_request_duration_milliseconds": 141
+          },
+          "nodeInfo": {
+            "cpu_cores": 16,
+            "memory_total_bytes": 68719476736,
+            "disk_total_bytes": 1073741824000
+          },
+          "logs": []
+        },
+        "cache-redis-icn-01:9100": {
+          "instance": "cache-redis-icn-01:9100",
+          "job": "node-exporter",
+          "labels": {
+            "hostname": "cache-redis-icn-01.openmanager.kr",
+            "datacenter": "Seoul-ICN-AZ1",
+            "environment": "production",
+            "server_type": "cache",
+            "os": "ubuntu",
+            "os_version": "22.04"
+          },
+          "metrics": {
+            "up": 1,
+            "node_cpu_usage_percent": 60,
+            "node_memory_usage_percent": 92,
+            "node_filesystem_usage_percent": 18,
+            "node_network_transmit_bytes_rate": 45,
+            "node_load1": 2.3,
+            "node_load5": 1.95,
+            "node_boot_time_seconds": 1736007616,
+            "node_procs_running": 142,
+            "node_http_request_duration_milliseconds": 339
+          },
+          "nodeInfo": {
+            "cpu_cores": 4,
+            "memory_total_bytes": 34359738368,
+            "disk_total_bytes": 53687091200
+          },
+          "logs": ["[WARN] redis: Memory fragmentation ratio: 2.5"]
+        },
+        "cache-redis-icn-02:9100": {
+          "instance": "cache-redis-icn-02:9100",
+          "job": "node-exporter",
+          "labels": {
+            "hostname": "cache-redis-icn-02.openmanager.kr",
+            "datacenter": "Seoul-ICN-AZ2",
+            "environment": "production",
+            "server_type": "cache",
+            "os": "ubuntu",
+            "os_version": "22.04"
+          },
+          "metrics": {
+            "up": 1,
+            "node_cpu_usage_percent": 50,
+            "node_memory_usage_percent": 86,
+            "node_filesystem_usage_percent": 15,
+            "node_network_transmit_bytes_rate": 41,
+            "node_load1": 2.14,
+            "node_load5": 1.78,
+            "node_boot_time_seconds": 1736011276,
+            "node_procs_running": 137,
+            "node_http_request_duration_milliseconds": 62
+          },
+          "nodeInfo": {
+            "cpu_cores": 4,
+            "memory_total_bytes": 34359738368,
+            "disk_total_bytes": 53687091200
+          },
+          "logs": ["[INFO] redis: Evicting keys using volatile-lru policy"]
+        },
+        "storage-nfs-icn-01:9100": {
+          "instance": "storage-nfs-icn-01:9100",
+          "job": "node-exporter",
+          "labels": {
+            "hostname": "storage-nfs-icn-01.openmanager.kr",
+            "datacenter": "Seoul-ICN-AZ1",
+            "environment": "production",
+            "server_type": "storage",
+            "os": "ubuntu",
+            "os_version": "22.04"
+          },
+          "metrics": {
+            "up": 1,
+            "node_cpu_usage_percent": 33,
+            "node_memory_usage_percent": 36,
+            "node_filesystem_usage_percent": 66,
+            "node_network_transmit_bytes_rate": 48,
+            "node_load1": 1.42,
+            "node_load5": 1.19,
+            "node_boot_time_seconds": 1735948616,
+            "node_procs_running": 113,
+            "node_http_request_duration_milliseconds": 428
+          },
+          "nodeInfo": {
+            "cpu_cores": 4,
+            "memory_total_bytes": 17179869184,
+            "disk_total_bytes": 5368709120000
+          },
+          "logs": []
+        },
+        "storage-s3gw-pus-01:9100": {
+          "instance": "storage-s3gw-pus-01:9100",
+          "job": "node-exporter",
+          "labels": {
+            "hostname": "storage-s3gw-pus-01.openmanager.kr",
+            "datacenter": "Busan-PUS-DR",
+            "environment": "production",
+            "server_type": "storage",
+            "os": "ubuntu",
+            "os_version": "22.04"
+          },
+          "metrics": {
+            "up": 1,
+            "node_cpu_usage_percent": 22,
+            "node_memory_usage_percent": 38,
+            "node_filesystem_usage_percent": 54,
+            "node_network_transmit_bytes_rate": 62,
+            "node_load1": 0.38,
+            "node_load5": 0.3,
+            "node_boot_time_seconds": 1735981793,
+            "node_procs_running": 109,
+            "node_http_request_duration_milliseconds": 484
+          },
+          "nodeInfo": {
+            "cpu_cores": 2,
+            "memory_total_bytes": 8589934592,
+            "disk_total_bytes": 214748364800
+          },
+          "logs": []
+        },
+        "lb-haproxy-icn-01:9100": {
+          "instance": "lb-haproxy-icn-01:9100",
+          "job": "node-exporter",
+          "labels": {
+            "hostname": "lb-haproxy-icn-01.openmanager.kr",
+            "datacenter": "Seoul-ICN-AZ1",
+            "environment": "production",
+            "server_type": "loadbalancer",
+            "os": "ubuntu",
+            "os_version": "22.04"
+          },
+          "metrics": {
+            "up": 1,
+            "node_cpu_usage_percent": 37,
+            "node_memory_usage_percent": 32,
+            "node_filesystem_usage_percent": 16,
+            "node_network_transmit_bytes_rate": 66,
+            "node_load1": 1.76,
+            "node_load5": 1.51,
+            "node_boot_time_seconds": 1735967271,
+            "node_procs_running": 144,
+            "node_http_request_duration_milliseconds": 336
+          },
+          "nodeInfo": {
+            "cpu_cores": 4,
+            "memory_total_bytes": 8589934592,
+            "disk_total_bytes": 53687091200
+          },
+          "logs": []
+        },
+        "lb-haproxy-pus-01:9100": {
+          "instance": "lb-haproxy-pus-01:9100",
+          "job": "node-exporter",
+          "labels": {
+            "hostname": "lb-haproxy-pus-01.openmanager.kr",
+            "datacenter": "Busan-PUS-DR",
+            "environment": "production",
+            "server_type": "loadbalancer",
+            "os": "ubuntu",
+            "os_version": "22.04"
+          },
+          "metrics": {
+            "up": 1,
+            "node_cpu_usage_percent": 38,
+            "node_memory_usage_percent": 34,
+            "node_filesystem_usage_percent": 15,
+            "node_network_transmit_bytes_rate": 63,
+            "node_load1": 1.33,
+            "node_load5": 1.04,
+            "node_boot_time_seconds": 1736003064,
+            "node_procs_running": 135,
+            "node_http_request_duration_milliseconds": 367
           },
           "nodeInfo": {
             "cpu_cores": 4,
@@ -2828,11 +2747,8 @@
     "totalDataPoints": 6,
     "intervalMinutes": 10,
     "serverCount": 15,
-    "affectedServers": 7,
-    "hasPreFailureSymptoms": true,
-    "hasRecoveryPhase": false,
-    "peakSeverity": "offline",
-    "failureType": "cache-oom-cascade",
-    "offlineServers": ["cache-redis-icn-01"]
+    "affectedServers": 3,
+    "hasPreFailureSymptoms": false,
+    "hasRecoveryPhase": false
   }
 }
