@@ -5,10 +5,9 @@
     "evaluationInterval": "10m",
     "source": "node-exporter"
   },
-  "_scenario": "10시 정상 운영",
   "dataPoints": [
     {
-      "timestampMs": 1770166800000,
+      "timestampMs": 1770858000000,
       "targets": {
         "web-nginx-icn-01:9100": {
           "instance": "web-nginx-icn-01:9100",
@@ -463,7 +462,7 @@
       }
     },
     {
-      "timestampMs": 1770167400000,
+      "timestampMs": 1770858600000,
       "targets": {
         "web-nginx-icn-01:9100": {
           "instance": "web-nginx-icn-01:9100",
@@ -918,7 +917,7 @@
       }
     },
     {
-      "timestampMs": 1770168000000,
+      "timestampMs": 1770859200000,
       "targets": {
         "web-nginx-icn-01:9100": {
           "instance": "web-nginx-icn-01:9100",
@@ -1373,7 +1372,7 @@
       }
     },
     {
-      "timestampMs": 1770168600000,
+      "timestampMs": 1770859800000,
       "targets": {
         "web-nginx-icn-01:9100": {
           "instance": "web-nginx-icn-01:9100",
@@ -1828,7 +1827,7 @@
       }
     },
     {
-      "timestampMs": 1770169200000,
+      "timestampMs": 1770860400000,
       "targets": {
         "web-nginx-icn-01:9100": {
           "instance": "web-nginx-icn-01:9100",
@@ -2283,7 +2282,7 @@
       }
     },
     {
-      "timestampMs": 1770169800000,
+      "timestampMs": 1770861000000,
       "targets": {
         "web-nginx-icn-01:9100": {
           "instance": "web-nginx-icn-01:9100",
