@@ -1,58 +1,15 @@
+'use client';
+
 /**
  * 📊 Enhanced Server Modal Shared Components
  *
  * Reusable components for the server modal system:
- * - RealtimeChart: Real-time data visualization component
+ * - RealtimeChart: uPlot Canvas 기반 실시간 차트
  * - Common UI elements and visualizations
  */
 
 import type { FC } from 'react';
-import { logger } from '@/lib/logging';
-
-// 🎯 Bundle-Safe Inline 매크로 - getSafe 함수들 (압축 방지)
-const getSafeArrayLength = (arr: unknown): number => {
-  try {
-    if (arr === null || arr === undefined) return 0;
-    const arrType = typeof arr;
-    if (arrType !== 'object') return 0;
-    if (arr === null || arr === undefined) return 0;
-    const isArrayResult = Array.isArray(arr);
-    if (!isArrayResult) return 0;
-    if (!arr || !Array.isArray(arr)) return 0;
-    if (!Object.hasOwn(arr, 'length')) return 0;
-
-    const lengthValue = (() => {
-      try {
-        const tempArr = arr as unknown[];
-        if (!tempArr || !Array.isArray(tempArr)) return 0;
-        const tempLength = tempArr.length;
-        if (typeof tempLength !== 'number') return 0;
-        return tempLength;
-      } catch {
-        return 0;
-      }
-    })();
-
-    if (Number.isNaN(lengthValue) || lengthValue < 0) return 0;
-    return Math.floor(lengthValue);
-  } catch (error) {
-    logger.error('🛡️ getSafeArrayLength Bundle-Safe error:', error);
-    return 0;
-  }
-};
-
-const getSafeLastArrayItem = <T,>(arr: unknown, fallback: T): T => {
-  try {
-    if (!arr || !Array.isArray(arr) || arr.length === 0) {
-      return fallback;
-    }
-    const lastItem = arr[arr.length - 1];
-    return lastItem !== undefined && lastItem !== null ? lastItem : fallback;
-  } catch (error) {
-    logger.error('🛡️ getSafeLastArrayItem Bundle-Safe error:', error);
-    return fallback;
-  }
-};
+import { UPlotTimeSeries } from '@/components/charts/uplot/UPlotTimeSeries';
 
 /**
  * 📈 실시간 차트 컴포넌트 Props
@@ -69,22 +26,12 @@ interface RealtimeChartProps {
 }
 
 /**
- * SVG ID에 사용할 수 있도록 특수문자/공백 제거
- */
-const sanitizeIdForSvg = (str: string): string =>
-  str.replace(/[^a-zA-Z0-9]/g, '_');
-
-/**
  * 📊 실시간 차트 컴포넌트
  *
- * SVG 기반의 실시간 데이터 시각화 컴포넌트
- * - 시간순 데이터를 선형 그래프로 표시
- * - 그라데이션 영역 효과 적용
- * - 최신 데이터 포인트 강조
- * - 격자 및 Y축 라벨 표시
- *
- * @param props RealtimeChartProps
- * @returns JSX.Element
+ * uPlot Canvas 기반 실시간 데이터 시각화 컴포넌트
+ * - number[] → uPlot AlignedData [timestamps[], values[]] 변환
+ * - 10초 간격 타임스탬프 자동 생성
+ * - 기존 Props 인터페이스 100% 유지 (소비자 변경 불필요)
  */
 export const RealtimeChart: FC<RealtimeChartProps> = ({
   data,
@@ -92,100 +39,37 @@ export const RealtimeChart: FC<RealtimeChartProps> = ({
   label,
   height = 100,
 }) => {
-  // 🛡️ 베르셀 안전 데이터 길이 확인
-  const safeDataLength = getSafeArrayLength(data);
+  if (data.length === 0) {
+    return (
+      <div
+        style={{ height }}
+        className="flex items-center justify-center rounded-lg border border-white/10 bg-white/5 p-4 text-sm text-white/40"
+      >
+        데이터 대기중...
+      </div>
+    );
+  }
 
-  // 데이터 포인트를 SVG 좌표로 변환 - 베르셀 안전 방식
-  const points = data
-    .map((value, index) => {
-      const x = (index / Math.max(safeDataLength - 1, 1)) * 100;
-      const y = 100 - Math.max(0, Math.min(100, value));
-      return `${x},${y}`;
-    })
-    .join(' ');
-
-  // 🛡️ 베르셀 안전 마지막 값 추출
-  const lastValue = getSafeLastArrayItem(data, 0);
-
-  // 🎯 SVG ID 안전화: 한글/공백/특수문자 제거
-  const safeId = sanitizeIdForSvg(label || 'default');
-  const gradientId = `area-gradient-${safeId}`;
+  const now = Math.floor(Date.now() / 1000);
+  const interval = 10;
+  const timestamps = data.map((_, i) => now - (data.length - 1 - i) * interval);
+  const uplotData = [timestamps, data];
+  const lastValue = data[data.length - 1] ?? 0;
 
   return (
-    <div className="rounded-lg border bg-white/5 border-white/10 p-4 shadow-xs">
-      {/* 차트 영역 */}
-      <div className="relative" style={{ height }}>
-        <svg
-          className="h-full w-full"
-          viewBox="0 0 100 100"
-          preserveAspectRatio="none"
-          role="img"
-          aria-label={`${label} 차트: 현재 ${typeof lastValue === 'number' ? lastValue.toFixed(1) : 0}%`}
-        >
-          <title>{`${label}: ${typeof lastValue === 'number' ? lastValue.toFixed(1) : 0}%`}</title>
-          {/* 그라데이션 정의 */}
-          <defs>
-            <linearGradient id={gradientId} x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor={color} stopOpacity="0.4" />
-              <stop offset="100%" stopColor={color} stopOpacity="0.1" />
-            </linearGradient>
-          </defs>
-
-          {/* 배경 격자 */}
-          {[20, 40, 60, 80].map((y) => (
-            <line
-              key={y}
-              x1="0"
-              y1={y}
-              x2="100"
-              y2={y}
-              stroke="rgba(255,255,255,0.1)"
-              strokeWidth="0.5"
-            />
-          ))}
-
-          {/* 데이터 영역 (그라데이션) */}
-          <polygon
-            fill={`url(#${gradientId})`}
-            points={`0,100 ${points} 100,100`}
-          />
-
-          {/* 데이터 선 */}
-          <polyline
-            fill="none"
-            stroke={color}
-            strokeWidth="3"
-            points={points}
-            vectorEffect="non-scaling-stroke"
-            className="drop-shadow-xs"
-          />
-
-          {/* 최신 값 포인트 강조 - 🛡️ 베르셀 완전 안전 수정 */}
-          {safeDataLength > 0 && (
-            <circle
-              cx={
-                ((safeDataLength - 1) / Math.max(safeDataLength - 1, 1)) * 100
-              }
-              cy={100 - Math.max(0, Math.min(100, lastValue))}
-              r="2"
-              fill={color}
-              className="drop-shadow-xs"
-            />
-          )}
-        </svg>
-
-        {/* Y축 라벨 */}
-        <div className="absolute left-0 top-0 flex h-full flex-col justify-between pr-2 text-xs text-white/40">
-          <span>100</span>
-          <span>50</span>
-          <span>0</span>
-        </div>
+    <div className="rounded-lg border border-white/10 bg-white/5 p-4 shadow-xs">
+      <div style={{ height: `${height}px` }}>
+        <UPlotTimeSeries
+          data={uplotData}
+          seriesLabels={[label]}
+          seriesColors={[color]}
+          height="h-full"
+          yRange={[0, 100]}
+        />
       </div>
-
-      {/* 현재 값 표시 - 🛡️ 베르셀 완전 안전 수정 */}
       <div className="mt-1 text-right">
         <span className="text-sm font-bold" style={{ color }}>
-          {typeof lastValue === 'number' ? lastValue.toFixed(1) : '0'}%
+          {lastValue.toFixed(1)}%
         </span>
       </div>
     </div>
