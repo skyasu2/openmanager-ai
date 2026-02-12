@@ -267,28 +267,6 @@ export function createSupabaseMock(builder?: SupabaseMockBuilder) {
 }
 
 /**
- * PostgresVectorDB용 전용 Mock
- */
-export function createPostgresVectorDBMock() {
-  return {
-    getStats: vi.fn().mockResolvedValue({
-      total_documents: 10,
-      total_categories: 3,
-    }),
-    search: vi.fn().mockResolvedValue([
-      {
-        id: '1',
-        content: 'Test content',
-        similarity: 0.85,
-        metadata: { category: 'test' },
-      },
-    ]),
-    addDocument: vi.fn().mockResolvedValue({ success: true }),
-    clearCollection: vi.fn().mockResolvedValue({ success: true }),
-  };
-}
-
-/**
  * 테스트용 유틸리티 함수들
  */
 export const TestUtils = {

@@ -29,7 +29,7 @@ Automate Cloud Run AI Engine deployment with free tier optimized configuration, 
 
 ## Context
 
-- **Project**: OpenManager AI v5.85.0
+- **Project**: OpenManager AI v8.0.0
 - **Region**: asia-northeast1 (Seoul)
 - **Service**: ai-engine
 - **Tier**: FREE TIER OPTIMIZED
