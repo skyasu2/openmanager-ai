@@ -7,6 +7,7 @@
  * - Cloud Run AI와 동일한 데이터 소스 사용 (데이터 일관성 보장)
  * - 모든 API와 컴포넌트가 이 서비스를 통해 일관된 데이터 접근
  *
+ * @updated 2026-02-12 - OTLP Standard Format 적용
  * @updated 2026-02-10 - SRP 분리 (kst-time, types, time-comparison)
  * @updated 2026-02-04 - Prometheus 포맷 전환
  * @updated 2026-01-19 - Vercel 호환성: 번들 기반 loader로 변경 (fs 제거)
@@ -15,11 +16,6 @@
 
 import { getServerStatus as getRulesServerStatus } from '@/config/rules/loader';
 import {
-  FIXED_24H_DATASETS,
-  type Fixed10MinMetric,
-  getDataAtMinute,
-} from '@/data/fixed-24h-metrics';
-import {
   extractServerId,
   getHourlyData as getBundledHourlyData,
   type HourlyData,
@@ -27,10 +23,10 @@ import {
 } from '@/data/hourly-data';
 import {
   getOTelHourlyData,
-  getOTelResourceCatalog,
-} from '@/data/otel-processed';
+} from '@/data/otel-metrics';
 import { logger } from '@/lib/logging';
-import type { OTelHourlyFile, OTelHourlySlot } from '@/types/otel-metrics';
+import type { OTelResourceAttributes } from '@/types/otel-metrics';
+import type { ExportMetricsServiceRequest } from '@/types/otel-standard';
 import { getKSTMinuteOfDay, getKSTTimestamp } from './kst-time';
 import type { ApiServerMetrics, SystemSummary } from './types';
 
@@ -56,25 +52,12 @@ export type {
 // OTel Data Cache & Loader (Primary - 번들 기반)
 // ============================================================================
 
-let cachedOTelData: { hour: number; data: OTelHourlyFile } | null = null;
+let cachedOTelData: { hour: number; data: ExportMetricsServiceRequest } | null = null;
 
-// hostname → serverId 역색인 캐시 (O(n) 순회 → O(1) lookup)
-let hostnameIndex: Map<string, string> | null = null;
-
-function getHostnameIndex(): Map<string, string> {
-  if (hostnameIndex) return hostnameIndex;
-  const catalog = getOTelResourceCatalog();
-  hostnameIndex = new Map();
-  for (const [serverId, r] of Object.entries(catalog.resources)) {
-    hostnameIndex.set(r['host.name'], serverId);
-  }
-  return hostnameIndex;
-}
-
-// OTel→ServerMetrics 변환 캐시 (동일 hour+slotIndex 내 재변환 방지)
+// OTel→ServerMetrics 변환 캐시 (동일 hour+minute 내 재변환 방지)
 let cachedOTelConversion: {
   hour: number;
-  slotIndex: number;
+  minute: number;
   metrics: ApiServerMetrics[];
 } | null = null;
 
@@ -82,7 +65,7 @@ let cachedOTelConversion: {
  * OTel 사전 계산 데이터 로드 (Primary)
  * @description 빌드 타임에 OTel SDK로 처리된 데이터 우선 사용
  */
-function loadOTelData(hour: number): OTelHourlyFile | null {
+function loadOTelData(hour: number): ExportMetricsServiceRequest | null {
   if (cachedOTelData?.hour === hour) {
     return cachedOTelData.data;
   }
@@ -91,7 +74,7 @@ function loadOTelData(hour: number): OTelHourlyFile | null {
   if (data) {
     cachedOTelData = { hour, data };
     logger.info(
-      `[MetricsProvider] OTel 데이터 로드: hour-${hour.toString().padStart(2, '0')} (${data.slots.length}개 slot)`
+      `[MetricsProvider] OTel 데이터 로드: hour-${hour.toString().padStart(2, '0')} (${data.resourceMetrics.length}개 Resources)`
     );
     return data;
   }
@@ -100,94 +83,111 @@ function loadOTelData(hour: number): OTelHourlyFile | null {
 }
 
 /**
- * OTel slot → ApiServerMetrics[] 변환
- * OTel 메트릭 이름에서 값을 추출하여 기존 API 인터페이스로 변환
+ * OTel Standard Data → ApiServerMetrics[] 변환
+ * 특정 분(minute)에 해당하는 데이터 포인트를 추출하여 변환
  */
-function otelSlotToServerMetrics(
-  slot: OTelHourlySlot,
+function extractMetricsFromStandard(
+  data: ExportMetricsServiceRequest,
   timestamp: string,
   minuteOfDay: number
 ): ApiServerMetrics[] {
-  const catalog = getOTelResourceCatalog();
-  const index = getHostnameIndex();
   const serverMap = new Map<string, ApiServerMetrics>();
+  const targetMinute = minuteOfDay % 60; // 0~59
 
-  // OTel metric data points에서 서버별 메트릭 수집
-  for (const metric of slot.metrics) {
-    for (const dp of metric.dataPoints) {
-      const hostname = dp.attributes['host.name'];
-      // hostname → serverId 찾기 (역색인 O(1))
-      const serverId = index.get(hostname);
-      if (!serverId) continue;
+  // ResourceMetrics(Host) 단위 순회
+  for (const resMetric of data.resourceMetrics) {
+    // 1. Hostname 식별 & ServerID 추출
+    const hostnameAttr = resMetric.resource.attributes.find(
+      (a) => a.key === 'host.name'
+    );
+    const hostname = hostnameAttr?.value.stringValue;
+    if (!hostname) continue;
 
-      if (!serverMap.has(serverId)) {
-        const resource = catalog.resources[serverId];
-        serverMap.set(serverId, {
-          serverId,
-          serverType: resource?.['host.type'] ?? 'unknown',
-          location: resource?.['cloud.availability_zone'] ?? 'unknown',
-          timestamp,
-          minuteOfDay,
-          cpu: 0,
-          memory: 0,
-          disk: 0,
-          network: 0,
-          logs: [],
-          status: 'online',
-          hostname: resource?.['host.name'],
-          environment: resource?.['deployment.environment'],
-          os: resource?.['os.type'],
-          otelResource: resource,
-        });
-      }
+    // Server ID 규칙: 도메인 제거 (web-nginx-icn-01.openmanager.kr -> web-nginx-icn-01)
+    const serverId = hostname.split('.')[0];
+    if (!serverId) continue;
 
-      const server = serverMap.get(serverId)!;
+    // 2. 서버 객체 초기화 (없으면 생성)
+    if (!serverMap.has(serverId)) {
+      // Resource Attributes에서 메타데이터 추출
+      const getAttr = (k: string) =>
+        resMetric.resource.attributes.find((a) => a.key === k)?.value.stringValue;
 
-      // OTel ratio (0-1) → percent (0-100) 역변환
-      switch (metric.name) {
-        case 'system.cpu.utilization':
-          server.cpu = Math.round(dp.asDouble * 100 * 10) / 10;
-          break;
-        case 'system.memory.utilization':
-          server.memory = Math.round(dp.asDouble * 100 * 10) / 10;
-          break;
-        case 'system.filesystem.utilization':
-          server.disk = Math.round(dp.asDouble * 100 * 10) / 10;
-          break;
-        case 'system.network.io':
-          server.network = dp.asDouble;
-          break;
-        case 'system.status':
-          if (dp.asDouble === 0) server.status = 'offline';
-          break;
-        case 'system.cpu.load_average.1m':
-          server.loadAvg1 = dp.asDouble;
-          break;
-        case 'system.cpu.load_average.5m':
-          server.loadAvg5 = dp.asDouble;
-          break;
-        case 'http.server.request.duration':
-          server.responseTimeMs = dp.asDouble * 1000; // s → ms
-          break;
-        case 'system.processes.count':
-          server.procsRunning = dp.asDouble;
-          break;
+      serverMap.set(serverId, {
+        serverId,
+        serverType: getAttr('host.type') ?? 'unknown',
+        location: getAttr('cloud.availability_zone') ?? 'unknown',
+        timestamp,
+        minuteOfDay,
+        cpu: 0,
+        memory: 0,
+        disk: 0,
+        network: 0,
+        logs: [],
+        status: 'online',
+        hostname: hostname,
+        environment: getAttr('deployment.environment'),
+        os: getAttr('os.type'),
+        otelResource: Object.fromEntries(
+          resMetric.resource.attributes.map(a => [a.key, a.value.stringValue])
+        ) as unknown as OTelResourceAttributes,
+      });
+    }
+
+    const server = serverMap.get(serverId)!;
+
+    // 3. Metrics 순회 (CPU, Memory, etc.)
+    for (const scopeMetric of resMetric.scopeMetrics) {
+      for (const metric of scopeMetric.metrics) {
+        // 해당 분(minute)의 DataPoint 찾기
+        // VIBE 데이터 생성 규칙상 DataPoints는 0~59분 순서대로 생성됨
+        // 안전을 위해 배열 길이 체크
+        let dp = null;
+        if (metric.gauge) {
+          dp = metric.gauge.dataPoints[targetMinute] || metric.gauge.dataPoints[metric.gauge.dataPoints.length - 1];
+        } else if (metric.sum) {
+          dp = metric.sum.dataPoints[targetMinute] || metric.sum.dataPoints[metric.sum.dataPoints.length - 1];
+        }
+
+        if (!dp || dp.asDouble === undefined) continue;
+        const value = dp.asDouble;
+
+        // Metric Name 매핑
+        switch (metric.name) {
+          case 'system.cpu.utilization':
+            server.cpu = Math.round(value * 100 * 10) / 10;
+            break;
+          case 'system.memory.utilization':
+            server.memory = Math.round(value * 100 * 10) / 10;
+            break;
+          case 'system.filesystem.utilization':
+            server.disk = Math.round(value * 100 * 10) / 10;
+            break;
+          case 'system.network.io':
+            server.network = value;
+            break;
+          case 'system.status':
+            if (value === 0) server.status = 'offline';
+            break;
+          case 'system.cpu.load_average.1m':
+            server.loadAvg1 = value;
+            break;
+          case 'system.cpu.load_average.5m':
+            server.loadAvg5 = value;
+            break;
+          case 'http.server.request.duration':
+            server.responseTimeMs = value * 1000; // s → ms
+            break;
+          case 'system.processes.count':
+            server.procsRunning = value;
+            break;
+        }
       }
     }
   }
 
-  // 로그 매핑
-  for (const log of slot.logs) {
-    const server = serverMap.get(log.resource);
-    if (server) {
-      server.logs.push(`[${log.severityText}] ${log.body}`);
-      if (!server.structuredLogs) server.structuredLogs = [];
-      server.structuredLogs.push(log);
-    }
-  }
-
-  // 상태 결정 (offline이 아닌 경우 메트릭 기반 판별)
-  for (const server of serverMap.values()) {
+  // 4. 상태 결정 및 후처리
+  return Array.from(serverMap.values()).map((server) => {
     if (server.status !== 'offline') {
       server.status = determineStatus(
         server.cpu,
@@ -196,9 +196,8 @@ function otelSlotToServerMetrics(
         server.network
       );
     }
-  }
-
-  return Array.from(serverMap.values());
+    return server;
+  });
 }
 
 // ============================================================================
@@ -328,46 +327,41 @@ export class MetricsProvider {
   /** 테스트 격리용: 싱글톤 인스턴스 및 캐시 리셋 */
   static resetForTesting(): void {
     if (process.env.NODE_ENV !== 'test') return;
-    // @ts-expect-error -- 테스트 격리를 위한 의도적 리셋
-    MetricsProvider.instance = undefined;
+    MetricsProvider.instance = undefined as unknown as MetricsProvider;
     cachedHourlyData = null;
     cachedOTelData = null;
-    hostnameIndex = null;
     cachedOTelConversion = null;
   }
 
   /**
    * 현재 시간 기준 단일 서버 메트릭 조회
-   * Priority: OTel → Prometheus hourly-data → fixed-24h fallback
+   * Priority: OTel → Prometheus hourly-data
    */
   public getServerMetrics(serverId: string): ApiServerMetrics | null {
     const minuteOfDay = getKSTMinuteOfDay();
     const timestamp = getKSTTimestamp();
     const hour = Math.floor(minuteOfDay / 60);
     const minute = minuteOfDay % 60;
-    const slotIndex = Math.floor(minute / 10);
+    const slotIndex = Math.floor(minute / 10); // for Fallback
 
     // 1. OTel 데이터 (Primary) — 변환 캐시 사용
     const otelData = loadOTelData(hour);
     if (otelData) {
-      const slot = otelData.slots[slotIndex];
-      if (slot) {
-        let allMetrics: ApiServerMetrics[];
-        if (
-          cachedOTelConversion?.hour === hour &&
-          cachedOTelConversion.slotIndex === slotIndex
-        ) {
-          allMetrics = cachedOTelConversion.metrics;
-        } else {
-          allMetrics = otelSlotToServerMetrics(slot, timestamp, minuteOfDay);
-          if (allMetrics.length > 0) {
-            cachedOTelConversion = { hour, slotIndex, metrics: allMetrics };
-          }
+      let allMetrics: ApiServerMetrics[];
+      if (
+        cachedOTelConversion?.hour === hour &&
+        cachedOTelConversion.minute === minute
+      ) {
+        allMetrics = cachedOTelConversion.metrics;
+      } else {
+        allMetrics = extractMetricsFromStandard(otelData, timestamp, minuteOfDay);
+        if (allMetrics.length > 0) {
+          cachedOTelConversion = { hour, minute, metrics: allMetrics };
         }
-        const found = allMetrics.find((m) => m.serverId === serverId);
-        if (found) {
-          return { ...found, timestamp, minuteOfDay };
-        }
+      }
+      const found = allMetrics.find((m) => m.serverId === serverId);
+      if (found) {
+        return found;
       }
     }
 
@@ -383,44 +377,28 @@ export class MetricsProvider {
       }
 
       if (dataPoint?.targets) {
+        // Fallback 데이터에서도 찾기
         const instanceKey = `${serverId}:9100`;
         const target = dataPoint.targets[instanceKey];
         if (target) {
           return targetToServerMetrics(target, timestamp, minuteOfDay);
         }
+        
+        // serverId만으로 찾기 시도 (instanceKey가 다를 경우)
+        const foundKey = Object.keys(dataPoint.targets).find(k => k.startsWith(serverId));
+        const foundTarget = foundKey ? dataPoint.targets[foundKey] : undefined;
+        if (foundTarget) {
+            return targetToServerMetrics(foundTarget, timestamp, minuteOfDay);
+        }
       }
     }
 
-    // 3. Fixed data (Last resort)
-    const dataset = FIXED_24H_DATASETS.find((d) => d.serverId === serverId);
-    if (!dataset) return null;
-
-    const dataPoint = getDataAtMinute(dataset, minuteOfDay);
-    if (!dataPoint) return null;
-
-    return {
-      serverId: dataset.serverId,
-      serverType: dataset.serverType,
-      location: dataset.location,
-      timestamp,
-      minuteOfDay,
-      cpu: dataPoint.cpu,
-      memory: dataPoint.memory,
-      disk: dataPoint.disk,
-      network: dataPoint.network,
-      logs: dataPoint.logs,
-      status: determineStatus(
-        dataPoint.cpu,
-        dataPoint.memory,
-        dataPoint.disk,
-        dataPoint.network
-      ),
-    };
+    return null;
   }
 
   /**
    * 현재 시간 기준 모든 서버 메트릭 조회
-   * Priority: OTel → Prometheus hourly-data → fixed-24h fallback
+   * Priority: OTel → Prometheus hourly-data
    */
   public getAllServerMetrics(): ApiServerMetrics[] {
     const minuteOfDay = getKSTMinuteOfDay();
@@ -432,23 +410,16 @@ export class MetricsProvider {
     // 1. OTel 데이터 (Primary) — 변환 캐시 사용
     const otelData = loadOTelData(hour);
     if (otelData) {
-      const slot = otelData.slots[slotIndex];
-      if (slot) {
-        if (
-          cachedOTelConversion?.hour === hour &&
-          cachedOTelConversion.slotIndex === slotIndex
-        ) {
-          return cachedOTelConversion.metrics.map((m) => ({
-            ...m,
-            timestamp,
-            minuteOfDay,
-          }));
-        }
-        const metrics = otelSlotToServerMetrics(slot, timestamp, minuteOfDay);
-        if (metrics.length > 0) {
-          cachedOTelConversion = { hour, slotIndex, metrics };
-          return metrics;
-        }
+      if (
+        cachedOTelConversion?.hour === hour &&
+        cachedOTelConversion.minute === minute
+      ) {
+        return cachedOTelConversion.metrics;
+      }
+      const metrics = extractMetricsFromStandard(otelData, timestamp, minuteOfDay);
+      if (metrics.length > 0) {
+        cachedOTelConversion = { hour, minute, metrics };
+        return metrics;
       }
     }
 
@@ -456,13 +427,6 @@ export class MetricsProvider {
     const hourlyData = loadHourlyData(hour);
     if (hourlyData) {
       const dataPoint = hourlyData.dataPoints[slotIndex];
-
-      if (!dataPoint) {
-        logger.warn(
-          `[MetricsProvider] slot ${slotIndex} not found for hour-${hour} in getAllServerMetrics, using fallback`
-        );
-      }
-
       if (dataPoint?.targets) {
         return Object.values(dataPoint.targets).map((target) =>
           targetToServerMetrics(target, timestamp, minuteOfDay)
@@ -470,47 +434,10 @@ export class MetricsProvider {
       }
     }
 
-    // 3. Fixed data (Last resort)
     logger.warn(
-      '[MetricsProvider] hourly-data 로드 실패, fallback to fixed data'
+      '[MetricsProvider] OTel + hourly-data 모두 로드 실패, 빈 배열 반환'
     );
-    return FIXED_24H_DATASETS.map((dataset) => {
-      const dataPoint = getDataAtMinute(dataset, minuteOfDay);
-      if (!dataPoint) {
-        return {
-          serverId: dataset.serverId,
-          serverType: dataset.serverType,
-          location: dataset.location,
-          timestamp,
-          minuteOfDay,
-          cpu: dataset.baseline.cpu,
-          memory: dataset.baseline.memory,
-          disk: dataset.baseline.disk,
-          network: dataset.baseline.network,
-          logs: [],
-          status: 'online' as const,
-        };
-      }
-
-      return {
-        serverId: dataset.serverId,
-        serverType: dataset.serverType,
-        location: dataset.location,
-        timestamp,
-        minuteOfDay,
-        cpu: dataPoint.cpu,
-        memory: dataPoint.memory,
-        disk: dataPoint.disk,
-        network: dataPoint.network,
-        logs: dataPoint.logs,
-        status: determineStatus(
-          dataPoint.cpu,
-          dataPoint.memory,
-          dataPoint.disk,
-          dataPoint.network
-        ),
-      };
-    });
+    return [];
   }
 
   /**
@@ -592,30 +519,83 @@ export class MetricsProvider {
 
   /**
    * 특정 시간대 메트릭 조회 (히스토리용)
+   * Priority: OTel → hourly-data
    */
   public getMetricsAtTime(
     serverId: string,
     minuteOfDay: number
-  ): Fixed10MinMetric | null {
-    const dataset = FIXED_24H_DATASETS.find((d) => d.serverId === serverId);
-    if (!dataset) return null;
+  ): ApiServerMetrics | null {
+    if (minuteOfDay < 0 || minuteOfDay >= 1440) {
+      return null;
+    }
 
-    return getDataAtMinute(dataset, minuteOfDay) || null;
+    const hour = Math.floor(minuteOfDay / 60);
+    const minute = minuteOfDay % 60;
+    const slotIndex = Math.floor(minute / 10);
+    const timestamp = getKSTTimestamp();
+
+    // 1. OTel (Primary)
+    const otelData = loadOTelData(hour);
+    if (otelData) {
+        const metrics = extractMetricsFromStandard(otelData, timestamp, minuteOfDay);
+        const found = metrics.find((m) => m.serverId === serverId);
+        if (found) return found;
+    }
+
+    // 2. hourly-data (Fallback)
+    const hourlyData = loadHourlyData(hour);
+    const dataPoint = hourlyData?.dataPoints[slotIndex];
+    if (dataPoint?.targets) {
+        const instanceKey = `${serverId}:9100`;
+        const target = dataPoint.targets[instanceKey];
+        if (target) return targetToServerMetrics(target, timestamp, minuteOfDay);
+        
+        const foundKey = Object.keys(dataPoint.targets).find(k => k.startsWith(serverId));
+        const foundTarget = foundKey ? dataPoint.targets[foundKey] : undefined;
+        if (foundTarget) {
+            return targetToServerMetrics(foundTarget, timestamp, minuteOfDay);
+        }
+    }
+
+    return null;
   }
 
   /**
-   * 서버 목록 조회
+   * 서버 목록 조회 (OTel Standard Resource 기반)
    */
   public getServerList(): Array<{
     serverId: string;
     serverType: string;
     location: string;
   }> {
-    return FIXED_24H_DATASETS.map((d) => ({
-      serverId: d.serverId,
-      serverType: d.serverType,
-      location: d.location,
-    }));
+    // 0시 데이터를 로드하여 리소스 목록 추출 (가장 확실한 방법)
+    const data = loadOTelData(0);
+    if (!data) return [];
+
+    const servers: Array<{
+        serverId: string;
+        serverType: string;
+        location: string;
+      }> = [];
+
+    for (const resMetric of data.resourceMetrics) {
+        const getAttr = (k: string) =>
+            resMetric.resource.attributes.find((a) => a.key === k)?.value.stringValue;
+        
+        const hostname = getAttr('host.name');
+        if (!hostname) continue;
+
+        const serverId = hostname.split('.')[0];
+        if (!serverId) continue;
+
+        servers.push({
+            serverId,
+            serverType: getAttr('host.type') ?? 'unknown',
+            location: getAttr('cloud.availability_zone') ?? 'unknown'
+        });
+    }
+
+    return servers;
   }
 
   /**
@@ -634,7 +614,7 @@ export class MetricsProvider {
     return {
       kstTime: getKSTTimestamp(),
       minuteOfDay,
-      slotIndex: minuteOfDay / 10,
+      slotIndex: Math.floor(minutes / 10),
       humanReadable: `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')} KST`,
     };
   }
