@@ -77,6 +77,11 @@ export {
 } from './incident-evaluation-tools';
 
 // ============================================================================
+// Server Logs Tool
+// ============================================================================
+export { getServerLogs } from './server-logs';
+
+// ============================================================================
 // Final Answer Tool (AI SDK v6 Best Practice)
 // ============================================================================
 export { finalAnswer, type FinalAnswerResult } from './final-answer';
@@ -109,6 +114,7 @@ import { detectAnomalies, detectAnomaliesAllServers, predictTrends, analyzePatte
 import { searchKnowledgeBase, recommendCommands, searchWeb } from './reporter-tools';
 import { evaluateIncidentReport, validateReportStructure, scoreRootCauseConfidence, refineRootCauseAnalysis, enhanceSuggestedActions, extendServerCorrelation } from './incident-evaluation-tools';
 import { finalAnswer } from './final-answer';
+import { getServerLogs } from './server-logs';
 import { analyzeScreenshot, analyzeLargeLog, searchWithGrounding, analyzeUrlContent } from './vision-tools';
 import { logger } from '../lib/logger';
 
@@ -147,6 +153,9 @@ export const allTools = {
   enhanceSuggestedActions,
   extendServerCorrelation,
 
+  // Server Logs
+  getServerLogs,
+
   // Final Answer (AI SDK v6 Best Practice - terminates tool loop)
   finalAnswer,
 
@@ -167,6 +176,7 @@ export const toolCategories = {
     filterServers,
     getServerByGroup,
     getServerByGroupAdvanced,
+    getServerLogs,
   },
   rca: {
     buildIncidentTimeline,
@@ -212,6 +222,7 @@ export const toolDescriptions = {
   filterServers: '조건에 맞는 서버 필터링',
   getServerByGroup: '서버 그룹/타입 조회 (db, lb, web, cache 등)',
   getServerByGroupAdvanced: '서버 그룹 복합 조회 (필터링, 정렬, 제한)',
+  getServerLogs: '서버 로그 조회 (에러, 경고, 시스템 로그)',
   buildIncidentTimeline: '장애 타임라인 구성',
   correlateMetrics: '메트릭 간 상관관계 분석',
   findRootCause: '근본 원인 분석 (RCA)',

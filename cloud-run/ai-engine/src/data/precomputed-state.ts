@@ -11,8 +11,13 @@
 
 import { readFileSync, existsSync, writeFileSync } from 'fs';
 import { join } from 'path';
-import { get24hTrendLLMContext } from './fixed-24h-metrics';
 import { logger } from '../lib/logger';
+import type {
+  OTelHourlyFile,
+  OTelHourlySlot,
+  OTelResourceCatalog,
+} from '../types/otel-metrics';
+import { generateLogs, type GeneratedLog } from './log-generator';
 
 // ============================================================================
 // Types
@@ -84,6 +89,9 @@ export interface PrecomputedSlot {
 
   // 전체 서버 스냅샷 (상세 조회용)
   servers: ServerSnapshot[];
+
+  /** 서버별 주요 로그 (AI 컨텍스트용, 서버당 최대 5개) */
+  serverLogs: Record<string, GeneratedLog[]>;
 }
 
 /** LLM용 압축 컨텍스트 */
@@ -179,7 +187,123 @@ const THRESHOLDS: SystemRulesThresholds = loadThresholdsFromSystemRules() ?? {
 };
 
 // ============================================================================
-// State Builder
+// OTel Data Loader (PRIMARY — Tiered Data Access)
+// ============================================================================
+
+/** OTel resource-catalog.json 캐시 */
+let _resourceCatalog: OTelResourceCatalog | null = null;
+
+function getOTelResourceCatalog(): OTelResourceCatalog | null {
+  if (_resourceCatalog) return _resourceCatalog;
+  const paths = [
+    join(__dirname, '../../data/otel-processed/resource-catalog.json'),
+    join(process.cwd(), 'data/otel-processed/resource-catalog.json'),
+  ];
+  for (const p of paths) {
+    if (existsSync(p)) {
+      try {
+        _resourceCatalog = JSON.parse(readFileSync(p, 'utf-8'));
+        logger.info(`[PrecomputedState] OTel resource-catalog 로드: ${p}`);
+        return _resourceCatalog;
+      } catch {
+        /* 다음 경로 시도 */
+      }
+    }
+  }
+  return null;
+}
+
+/** OTel hourly JSON 경로 후보 */
+function getOTelPaths(hour: number): string[] {
+  const paddedHour = hour.toString().padStart(2, '0');
+  return [
+    join(__dirname, '../../data/otel-processed/hourly', `hour-${paddedHour}.json`),
+    join(process.cwd(), 'data/otel-processed/hourly', `hour-${paddedHour}.json`),
+  ];
+}
+
+/** OTel hourly JSON 로드 (PRIMARY) */
+function loadOTelHourly(hour: number): OTelHourlyFile | null {
+  for (const filePath of getOTelPaths(hour)) {
+    if (existsSync(filePath)) {
+      try {
+        return JSON.parse(readFileSync(filePath, 'utf-8'));
+      } catch {
+        /* 다음 경로 시도 */
+      }
+    }
+  }
+  return null;
+}
+
+/**
+ * OTel slot → RawServerData[] 변환
+ * OTel ratio (0-1) → percent (0-100) 변환 포함
+ *
+ * @see docs/reference/architecture/data/otel-pipeline-audit.md §6 매핑 테이블
+ */
+function otelSlotToRawServers(slot: OTelHourlySlot): Record<string, RawServerData> {
+  const catalog = getOTelResourceCatalog();
+  const serverMap: Record<string, RawServerData> = {};
+
+  for (const metric of slot.metrics) {
+    for (const dp of metric.dataPoints) {
+      const hostname = dp.attributes['host.name'];
+      const serverId = hostname?.replace('.openmanager.kr', '') ?? '';
+      if (!serverId) continue;
+
+      if (!serverMap[serverId]) {
+        const resource = catalog?.resources[serverId];
+        serverMap[serverId] = {
+          id: serverId,
+          name: serverId,
+          type: resource?.['host.type'] ?? 'unknown',
+          cpu: 0,
+          memory: 0,
+          disk: 0,
+          network: 0,
+          cpuCores: resource?.['host.cpu.count'],
+        };
+      }
+
+      const server = serverMap[serverId];
+      switch (metric.name) {
+        case 'system.cpu.utilization':
+          server.cpu = Math.round(dp.asDouble * 1000) / 10;
+          break;
+        case 'system.memory.utilization':
+          server.memory = Math.round(dp.asDouble * 1000) / 10;
+          break;
+        case 'system.filesystem.utilization':
+          server.disk = Math.round(dp.asDouble * 1000) / 10;
+          break;
+        case 'system.network.io':
+          server.network = dp.asDouble;
+          break;
+        case 'system.status':
+          if (dp.asDouble === 0) server.status = 'offline';
+          break;
+        case 'system.cpu.load_average.1m':
+          server.load1 = dp.asDouble;
+          break;
+        case 'system.cpu.load_average.5m':
+          server.load5 = dp.asDouble;
+          break;
+        case 'http.server.request.duration':
+          server.responseTimeMs = dp.asDouble * 1000;
+          break;
+        case 'system.uptime':
+          server.bootTimeSeconds = Math.floor(Date.now() / 1000 - dp.asDouble);
+          break;
+      }
+    }
+  }
+
+  return serverMap;
+}
+
+// ============================================================================
+// Prometheus Data Loader (FALLBACK)
 // ============================================================================
 
 /** JSON 파일 경로 후보 */
@@ -209,6 +333,7 @@ function loadHourlyJson(hour: number): HourlyJsonData | null {
 
 interface HourlyJsonData {
   hour: number;
+  _scenario?: string;
   scrapeConfig: {
     scrapeInterval: string;
     evaluationInterval: string;
@@ -400,26 +525,120 @@ function detectPatterns(servers: ServerSnapshot[]): ActivePattern[] {
   return patterns;
 }
 
-/** 144개 슬롯 빌드 */
+/**
+ * RawServerData → PrecomputedSlot 빌드 헬퍼
+ * OTel path와 Prometheus path 양쪽에서 재사용
+ */
+function buildSlot(
+  rawServers: Record<string, RawServerData>,
+  previousServers: Record<string, RawServerData>,
+  slotIndex: number,
+  hour: number,
+  slotInHour: number,
+  scenario: string = '',
+): PrecomputedSlot {
+  const minuteOfDay = slotIndex * 10;
+  const timeLabel = `${hour.toString().padStart(2, '0')}:${(slotInHour * 10).toString().padStart(2, '0')}`;
+
+  // 서버 스냅샷 생성 (확장 메트릭 포함)
+  const servers: ServerSnapshot[] = Object.values(rawServers).map((s) => ({
+    id: s.id,
+    name: s.name,
+    type: s.type,
+    status: determineStatus(s),
+    cpu: s.cpu,
+    memory: s.memory,
+    disk: s.disk,
+    network: s.network,
+    load1: s.load1,
+    load5: s.load5,
+    bootTimeSeconds: s.bootTimeSeconds,
+    responseTimeMs: s.responseTimeMs,
+    cpuCores: s.cpuCores,
+  }));
+
+  // 요약 통계 (healthy 필드명 유지, 값은 online 서버 수)
+  const summary = {
+    total: servers.length,
+    healthy: servers.filter((s) => s.status === 'online').length,
+    warning: servers.filter((s) => s.status === 'warning').length,
+    critical: servers.filter((s) => s.status === 'critical').length,
+    offline: servers.filter((s) => s.status === 'offline').length,
+  };
+
+  // 알림 생성
+  const alerts: ServerAlert[] = [];
+  for (const rawServer of Object.values(rawServers)) {
+    const prevServer = previousServers[rawServer.id];
+    alerts.push(...generateAlerts(rawServer, prevServer));
+  }
+
+  // 패턴 감지
+  const activePatterns = detectPatterns(servers);
+
+  // 서버별 로그 생성 (error 우선, 서버당 최대 5개)
+  const serverLogs: Record<string, GeneratedLog[]> = {};
+  for (const raw of Object.values(rawServers)) {
+    const logs = generateLogs(
+      { cpu: raw.cpu, memory: raw.memory, disk: raw.disk, network: raw.network },
+      raw.id,
+      raw.type,
+      scenario,
+    );
+    // error 우선 정렬 후 최대 5개
+    const priorityOrder: Record<string, number> = { error: 0, warn: 1, info: 2 };
+    logs.sort((a, b) => (priorityOrder[a.level] ?? 2) - (priorityOrder[b.level] ?? 2));
+    serverLogs[raw.id] = logs.slice(0, 5);
+  }
+
+  return {
+    slotIndex,
+    timeLabel,
+    minuteOfDay,
+    summary,
+    alerts,
+    activePatterns,
+    servers,
+    serverLogs,
+  };
+}
+
+/** 144개 슬롯 빌드 — OTel 우선, Prometheus 폴백 (Tiered Data Access) */
 export function buildPrecomputedStates(): PrecomputedSlot[] {
   const slots: PrecomputedSlot[] = [];
   let previousServers: Record<string, RawServerData> = {};
+  let otelCount = 0;
+  let promCount = 0;
 
   // 24시간 순회 (0-23)
   for (let hour = 0; hour < 24; hour++) {
-    const hourlyData = loadHourlyJson(hour);
-    if (!hourlyData) {
-      logger.warn(`[PrecomputedState] hour-${hour} 데이터 없음, 스킵`);
+    // Tier 1: OTel processed data (PRIMARY)
+    const otelData = loadOTelHourly(hour);
+
+    if (otelData) {
+      otelCount++;
+      for (let slotInHour = 0; slotInHour < 6; slotInHour++) {
+        const slotIndex = hour * 6 + slotInHour;
+        const slot = otelData.slots[Math.min(slotInHour, otelData.slots.length - 1)];
+        if (!slot) continue;
+
+        const rawServers = otelSlotToRawServers(slot);
+        slots.push(buildSlot(rawServers, previousServers, slotIndex, hour, slotInHour));
+        previousServers = rawServers;
+      }
       continue;
     }
 
-    // 각 시간당 6개 슬롯 (10분 간격, dataPoints는 5분 간격이므로 2개씩)
+    // Tier 2: Prometheus hourly-data (FALLBACK)
+    const hourlyData = loadHourlyJson(hour);
+    if (!hourlyData) {
+      logger.warn(`[PrecomputedState] hour-${hour} 데이터 없음 (OTel/Prometheus 모두), 스킵`);
+      continue;
+    }
+
+    promCount++;
     for (let slotInHour = 0; slotInHour < 6; slotInHour++) {
       const slotIndex = hour * 6 + slotInHour;
-      const minuteOfDay = slotIndex * 10;
-      const timeLabel = `${hour.toString().padStart(2, '0')}:${(slotInHour * 10).toString().padStart(2, '0')}`;
-
-      // 10분 간격 dataPoint에서 해당 슬롯 데이터 가져오기
       const dataPoint = hourlyData.dataPoints[Math.min(slotInHour, hourlyData.dataPoints.length - 1)];
 
       if (!dataPoint?.targets) {
@@ -427,66 +646,20 @@ export function buildPrecomputedStates(): PrecomputedSlot[] {
         continue;
       }
 
-      // Prometheus targets → RawServerData 변환 후 스냅샷 생성
       const rawServers: Record<string, RawServerData> = {};
       for (const target of Object.values(dataPoint.targets)) {
         const raw = targetToRawServer(target);
         rawServers[raw.id] = raw;
       }
 
-      // 서버 스냅샷 생성 (확장 메트릭 포함)
-      const servers: ServerSnapshot[] = Object.values(rawServers).map((s) => ({
-        id: s.id,
-        name: s.name,
-        type: s.type,
-        status: determineStatus(s),
-        cpu: s.cpu,
-        memory: s.memory,
-        disk: s.disk,
-        network: s.network,
-        // 확장 메트릭
-        load1: s.load1,
-        load5: s.load5,
-        bootTimeSeconds: s.bootTimeSeconds,
-        responseTimeMs: s.responseTimeMs,
-        cpuCores: s.cpuCores,
-      }));
-
-      // 요약 통계 (healthy 필드명 유지, 값은 online 서버 수)
-      const summary = {
-        total: servers.length,
-        healthy: servers.filter((s) => s.status === 'online').length, // 'online' 상태 카운트
-        warning: servers.filter((s) => s.status === 'warning').length,
-        critical: servers.filter((s) => s.status === 'critical').length,
-        offline: servers.filter((s) => s.status === 'offline').length,
-      };
-
-      // 알림 생성
-      const alerts: ServerAlert[] = [];
-      for (const rawServer of Object.values(rawServers)) {
-        const prevServer = previousServers[rawServer.id];
-        alerts.push(...generateAlerts(rawServer, prevServer));
-      }
-
-      // 패턴 감지
-      const activePatterns = detectPatterns(servers);
-
-      slots.push({
-        slotIndex,
-        timeLabel,
-        minuteOfDay,
-        summary,
-        alerts,
-        activePatterns,
-        servers,
-      });
-
-      // 다음 슬롯을 위해 현재 서버 저장
+      slots.push(buildSlot(rawServers, previousServers, slotIndex, hour, slotInHour, hourlyData._scenario ?? ''));
       previousServers = rawServers;
     }
   }
 
-  console.log(`[PrecomputedState] ${slots.length}개 슬롯 빌드 완료`);
+  logger.info(
+    `[PrecomputedState] ${slots.length}개 슬롯 빌드 완료 (OTel=${otelCount}h, Prometheus=${promCount}h)`
+  );
   return slots;
 }
 
@@ -523,7 +696,7 @@ function loadPrebuiltStates(): PrecomputedSlot[] | null {
 }
 
 /** 슬롯 캐시 로드 (Lazy) - Pre-built 우선, 없으면 빌드 */
-function getSlots(): PrecomputedSlot[] {
+export function getSlots(): PrecomputedSlot[] {
   if (!_cachedSlots) {
     // 1. Pre-built JSON 시도 (빠른 cold start)
     _cachedSlots = loadPrebuiltStates();
@@ -532,6 +705,25 @@ function getSlots(): PrecomputedSlot[] {
     if (!_cachedSlots) {
       console.log('[PrecomputedState] Pre-built 없음, 런타임 빌드 시작...');
       _cachedSlots = buildPrecomputedStates();
+    }
+
+    // 3. Pre-built JSON에 serverLogs 없으면 런타임 보충
+    if (_cachedSlots.length > 0 && !_cachedSlots[0].serverLogs) {
+      logger.info('[PrecomputedState] serverLogs 없음, 런타임 보충 생성...');
+      for (const slot of _cachedSlots) {
+        const serverLogs: Record<string, GeneratedLog[]> = {};
+        for (const server of slot.servers) {
+          const logs = generateLogs(
+            { cpu: server.cpu, memory: server.memory, disk: server.disk, network: server.network },
+            server.id,
+            server.type,
+          );
+          const priorityOrder: Record<string, number> = { error: 0, warn: 1, info: 2 };
+          logs.sort((a, b) => (priorityOrder[a.level] ?? 2) - (priorityOrder[b.level] ?? 2));
+          serverLogs[server.id] = logs.slice(0, 5);
+        }
+        slot.serverLogs = serverLogs;
+      }
     }
   }
   return _cachedSlots;
@@ -835,6 +1027,35 @@ export function compareWithPast(minutesAgo: number): {
 // ============================================================================
 
 /**
+ * precomputed slots에서 24시간 트렌드 요약 생성 (자체 구현)
+ */
+function buildTrendLLMContext(slots: PrecomputedSlot[]): string {
+  if (slots.length === 0) return '';
+
+  const serverTrends = new Map<string, { type: string; cpu: number[]; memory: number[]; disk: number[] }>();
+  for (const slot of slots) {
+    for (const server of slot.servers) {
+      if (!serverTrends.has(server.id)) {
+        serverTrends.set(server.id, { type: server.type, cpu: [], memory: [], disk: [] });
+      }
+      const t = serverTrends.get(server.id)!;
+      t.cpu.push(server.cpu);
+      t.memory.push(server.memory);
+      t.disk.push(server.disk);
+    }
+  }
+
+  const avg = (arr: number[]) => arr.length ? Math.round(arr.reduce((a, b) => a + b, 0) / arr.length * 10) / 10 : 0;
+  const max = (arr: number[]) => arr.length ? Math.round(Math.max(...arr) * 10) / 10 : 0;
+
+  let context = '## 24시간 서버 트렌드 요약\n';
+  for (const [serverId, metrics] of serverTrends) {
+    context += `- ${serverId} (${metrics.type}): CPU avg ${avg(metrics.cpu)}%/max ${max(metrics.cpu)}%, Mem avg ${avg(metrics.memory)}%/max ${max(metrics.memory)}%, Disk avg ${avg(metrics.disk)}%/max ${max(metrics.disk)}%\n`;
+  }
+  return context;
+}
+
+/**
  * 🎯 LLM 시스템 프롬프트용 서버 상태 컨텍스트
  * 기존 loadHourlyScenarioData() 대신 사용 권장
  *
@@ -884,6 +1105,26 @@ export function getLLMContext(): string {
     for (const alert of warningAlerts.slice(0, 5)) {
       context += `- ${alert.serverId}: ${alert.metric.toUpperCase()} ${alert.value}%\n`;
     }
+    context += '\n';
+  }
+
+  // 🆕 에러 로그 요약 (전체 서버)
+  if (state.serverLogs) {
+    const errorLogs: Array<{ serverId: string; log: GeneratedLog }> = [];
+    for (const [sid, logs] of Object.entries(state.serverLogs)) {
+      for (const log of logs) {
+        if (log.level === 'error') {
+          errorLogs.push({ serverId: sid, log });
+        }
+      }
+    }
+    if (errorLogs.length > 0) {
+      context += `### 에러 로그 (상위 ${Math.min(errorLogs.length, 5)}건)\n`;
+      for (const entry of errorLogs.slice(0, 5)) {
+        context += `- ${entry.serverId} [${entry.log.source}]: ${entry.log.message}\n`;
+      }
+      context += '\n';
+    }
   }
 
   // 🆕 Load Average 현황 (높은 부하 서버만)
@@ -924,8 +1165,8 @@ export function getLLMContext(): string {
     }
   }
 
-  // 24시간 트렌드 요약 추가
-  context += '\n' + get24hTrendLLMContext();
+  // 24시간 트렌드 요약 추가 (precomputed slots에서 직접 계산)
+  context += '\n' + buildTrendLLMContext(getSlots());
 
   return context;
 }
@@ -967,6 +1208,18 @@ export function getServerLLMContext(serverId: string): string {
     for (const alert of alerts) {
       const trend = alert.trend === 'up' ? '↑' : alert.trend === 'down' ? '↓' : '';
       context += `- ${alert.metric.toUpperCase()} ${alert.value}%${trend} (임계: ${alert.threshold}%)\n`;
+    }
+  }
+
+  // 최근 로그 요약
+  const logs = state.serverLogs?.[serverId];
+  if (logs && logs.length > 0) {
+    const errorCount = logs.filter((l) => l.level === 'error').length;
+    const warnCount = logs.filter((l) => l.level === 'warn').length;
+    context += `\n### 최근 로그\n`;
+    context += `에러: ${errorCount}건, 경고: ${warnCount}건\n`;
+    for (const log of logs.slice(0, 3)) {
+      context += `- [${log.level.toUpperCase()}] ${log.source}: ${log.message}\n`;
     }
   }
 

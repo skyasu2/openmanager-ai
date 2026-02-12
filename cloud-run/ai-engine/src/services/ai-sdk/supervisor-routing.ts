@@ -40,6 +40,12 @@ export const SYSTEM_PROMPT = `당신은 서버 모니터링 AI 어시스턴트�
   - 예: { timeRange: "last6h", metric: "cpu", aggregation: "avg" }
 - filterServers: 조건에 맞는 서버 필터링 (예: CPU 80% 이상)
 
+### 서버 로그 조회
+- getServerLogs: 서버 시스템 로그 조회 (에러, 경고, 정보 레벨별 필터링)
+  - "로그 보여줘" → getServerLogs(serverId, level: "all")
+  - "에러 로그" → getServerLogs(serverId, level: "error")
+  - "nginx 로그" → getServerLogs(serverId, source: "nginx")
+
 ### 장애 분석 (RCA)
 - buildIncidentTimeline: 장애 타임라인 구성
 - correlateMetrics: 메트릭 간 상관관계 분석
@@ -89,6 +95,8 @@ getServerMetricsAdvanced 결과에 globalSummary가 있으면 **반드시 해당
 - "장애 원인 분석해줘" → findRootCause() + buildIncidentTimeline()
 - "메모리 부족 해결 방법" → searchKnowledgeBase(query: "메모리 부족")
 - "디스크 정리 명령어" → recommendCommands(keywords: ["디스크", "정리"])
+- "서버 로그 보여줘" → getServerLogs(serverId: "...", level: "all")
+- "에러 로그 분석해줘" → getServerLogs(serverId: "...", level: "error")
 
 ## 보고서 작성 품질 규칙
 
@@ -186,7 +194,7 @@ export function selectExecutionMode(query: string): SupervisorMode {
 // Intent Classification & prepareStep (SSOT)
 // ============================================================================
 
-export type IntentCategory = 'anomaly' | 'prediction' | 'rca' | 'advisor' | 'serverGroup' | 'metrics' | 'general';
+export type IntentCategory = 'anomaly' | 'prediction' | 'rca' | 'advisor' | 'serverGroup' | 'logs' | 'metrics' | 'general';
 
 const TOOL_ROUTING_PATTERNS = {
   anomaly: /이상|급증|급감|스파이크|anomal|탐지|감지|비정상/i,
@@ -194,6 +202,7 @@ const TOOL_ROUTING_PATTERNS = {
   rca: /장애|rca|타임라인|상관관계|원인|왜|근본|incident/i,
   advisor: /해결|방법|명령어|가이드|이력|과거|사례|검색|보안|강화|백업|최적화|best.?practice|권장|추천/i,
   serverGroup: /(db|web|cache|lb|api|storage|로드\s*밸런서|캐시|스토리지)\s*(서버)?/i,
+  logs: /로그(?!인)|(?<![a-z])logs?(?![a-z])|에러\s*로그|syslog|journalctl|dmesg|시스템\s*로그/i,
   metrics: /cpu|메모리|디스크|서버|상태|memory|disk/i,
 } as const;
 
@@ -204,6 +213,7 @@ export function getIntentCategory(query: string): IntentCategory {
   if (TOOL_ROUTING_PATTERNS.prediction.test(q)) return 'prediction';
   if (TOOL_ROUTING_PATTERNS.rca.test(q)) return 'rca';
   if (TOOL_ROUTING_PATTERNS.advisor.test(q)) return 'advisor';
+  if (TOOL_ROUTING_PATTERNS.logs.test(q)) return 'logs';
   if (TOOL_ROUTING_PATTERNS.serverGroup.test(q)) return 'serverGroup';
   if (TOOL_ROUTING_PATTERNS.metrics.test(q)) return 'metrics';
   return 'general';
@@ -256,6 +266,13 @@ export function createPrepareStep(query: string, options?: { enableWebSearch?: b
     if (TOOL_ROUTING_PATTERNS.advisor.test(q)) {
       return {
         activeTools: ['searchKnowledgeBase', 'recommendCommands', 'searchWeb', 'finalAnswer'] as ToolName[],
+        toolChoice: 'required' as const,
+      };
+    }
+
+    if (TOOL_ROUTING_PATTERNS.logs.test(q)) {
+      return {
+        activeTools: ['getServerLogs', 'getServerMetrics', 'filterServers', 'finalAnswer'] as ToolName[],
         toolChoice: 'required' as const,
       };
     }
