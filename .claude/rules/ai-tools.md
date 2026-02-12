@@ -14,12 +14,13 @@
 | `github` | 저장소/PR 관리 | 중간 |
 | `tavily` | 심층 리서치, 팩트체크 | 낮음 |
 
-## Skills (4개)
+## Skills (5개)
 
 | Skill | 설명 |
 |-------|------|
 | `commit-commands` | Git 커밋 워크플로우 (commit, commit-push-pr, clean_gone) |
 | `lint-smoke` | Lint + 테스트 스모크 체크 |
+| `github-deploy` | GitHub MCP 기반 push/PR (`gh auth` 불필요) |
 | `cloud-run-deploy` | Cloud Run AI Engine 배포 |
 | `gcp-cost-check` | GCP 비용 조회, Free Tier 사용량 분석 |
 
