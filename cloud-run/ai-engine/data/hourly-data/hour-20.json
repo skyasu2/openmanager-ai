@@ -5,10 +5,9 @@
     "evaluationInterval": "10m",
     "source": "node-exporter"
   },
-  "_scenario": "20시 정상 운영 (API 요청 폭증 - CPU 과부하 전조 감지)",
   "dataPoints": [
     {
-      "timestampMs": 1770202800000,
+      "timestampMs": 1770894000000,
       "targets": {
         "web-nginx-icn-01:9100": {
           "instance": "web-nginx-icn-01:9100",
@@ -463,7 +462,7 @@
       }
     },
     {
-      "timestampMs": 1770203400000,
+      "timestampMs": 1770894600000,
       "targets": {
         "web-nginx-icn-01:9100": {
           "instance": "web-nginx-icn-01:9100",
@@ -918,7 +917,7 @@
       }
     },
     {
-      "timestampMs": 1770204000000,
+      "timestampMs": 1770895200000,
       "targets": {
         "web-nginx-icn-01:9100": {
           "instance": "web-nginx-icn-01:9100",
@@ -1373,7 +1372,7 @@
       }
     },
     {
-      "timestampMs": 1770204600000,
+      "timestampMs": 1770895800000,
       "targets": {
         "web-nginx-icn-01:9100": {
           "instance": "web-nginx-icn-01:9100",
@@ -1828,7 +1827,7 @@
       }
     },
     {
-      "timestampMs": 1770205200000,
+      "timestampMs": 1770896400000,
       "targets": {
         "web-nginx-icn-01:9100": {
           "instance": "web-nginx-icn-01:9100",
@@ -2283,7 +2282,7 @@
       }
     },
     {
-      "timestampMs": 1770205800000,
+      "timestampMs": 1770897000000,
       "targets": {
         "web-nginx-icn-01:9100": {
           "instance": "web-nginx-icn-01:9100",
