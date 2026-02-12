@@ -1,6 +1,6 @@
 /**
  * 🧪 Vitest Test Setup Configuration
- * OpenManager Vibe v5 - 기본 테스트 환경 설정
+ * OpenManager AI - 기본 테스트 환경 설정
  */
 
 import '@testing-library/jest-dom';
@@ -43,8 +43,8 @@ const testEnvVars: Record<string, string> = {
   // Cloud Run AI uses GCP IAM auth, no API key needed
   UPSTASH_REDIS_REST_URL: 'https://test-redis.upstash.io',
   UPSTASH_REDIS_REST_TOKEN: 'test-token',
-  NEXT_PUBLIC_APP_NAME: 'OpenManager Vibe v5',
-  NEXT_PUBLIC_APP_VERSION: '5.44.0',
+  NEXT_PUBLIC_APP_NAME: 'OpenManager AI',
+  NEXT_PUBLIC_APP_VERSION: '8.0.0',
   VITEST: 'true',
   FORCE_MOCK_REDIS: 'true',
   FORCE_MOCK_CLOUD_RUN_AI: 'true',
