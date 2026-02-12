@@ -1,4 +1,3 @@
-
 /**
  * Prometheus HTTP API Data Format
  * @see https://prometheus.io/docs/prometheus/latest/querying/api/#expression-query-result-formats
