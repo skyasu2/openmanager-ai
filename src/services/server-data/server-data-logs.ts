@@ -1,9 +1,10 @@
 /**
  * Metrics-correlated log generation in syslog format.
  *
- * Generates realistic logs based on actual server metrics (primary)
- * with scenario hints as secondary context. This ensures metric ↔ log
- * bidirectional consistency.
+ * Generates realistic logs based on actual server metrics and server role
+ * (inferred from serverId). No scenario labels — just like real monitoring
+ * systems (Datadog, Grafana, New Relic) where engineers diagnose issues
+ * from metrics + logs, not pre-attached descriptions.
  *
  * Consistency rules:
  * - cpu > 90%  → kernel throttle, GC overhead (MUST appear)
@@ -19,6 +20,20 @@ import type { ServerLogEntry } from '@/services/server-data/server-data-types';
 
 /** Server type determines which log sources are realistic */
 type ServerType = 'web' | 'database' | 'cache' | 'application' | 'loadbalancer';
+
+/** Sources that belong to the application layer and legitimately produce OTel traces.
+ *  Kernel/system-level sources (kernel, systemd, cron, sshd, rsync) do NOT generate
+ *  traceId/spanId in real environments. */
+const APP_LAYER_SOURCES = new Set([
+  'java',
+  'nginx',
+  'haproxy',
+  'redis',
+  'mysql',
+  'postgres',
+  'docker',
+  'node',
+]);
 
 /** Log source availability per server type */
 const SERVER_TYPE_SOURCES: Record<ServerType, Set<string>> = {
@@ -74,17 +89,15 @@ type LogGeneratorOptions = {
  * Generate realistic syslog-format logs based on server metrics.
  *
  * 1st pass: Metric thresholds (unconditional — these MUST appear)
- * 2nd pass: Metric + scenario hint (detailed context logs)
+ * 2nd pass: Metric + server role (contextual detail, inferred from serverId)
  * 3rd pass: Healthy state (only normal operational logs)
  *
- * @param scenario - Current scenario description (secondary hint)
  * @param serverMetrics - Server metrics (primary driver)
- * @param serverId - Server ID (used as hostname)
+ * @param serverId - Server ID (used as hostname and role inference)
  * @param options - Optional: stripHostname, serverType, peerStatus
  * @returns Sorted log entries (newest first)
  */
 export function generateServerLogs(
-  scenario: string,
   serverMetrics: {
     cpu: number;
     memory: number;
@@ -100,21 +113,30 @@ export function generateServerLogs(
   const { cpu, memory, disk, network } = serverMetrics;
   const rawHostname = serverId.split('.')[0] || serverId;
   const hostPrefix = options?.stripHostname ? '' : `${rawHostname} `;
-  const scenarioHint = scenario.toLowerCase();
+  const serverRole = serverId.toLowerCase();
 
   // Infer server type from serverId if not provided
   const serverType = inferServerType(options?.serverType || '', serverId);
   const allowedSources = SERVER_TYPE_SOURCES[serverType];
 
-  // Helper: only push log if source is valid for this server type
+  // Helper: only push log if source is valid for this server type.
+  // Strip traceId/spanId from non-app-layer sources (kernel, systemd, cron, etc.)
+  // since those components don't produce OTel traces in real systems.
   const push = (entry: ServerLogEntry) => {
     if (allowedSources.has(entry.source)) {
+      if (!APP_LAYER_SOURCES.has(entry.source)) {
+        delete entry.traceId;
+        delete entry.spanId;
+      }
       logs.push(entry);
     }
   };
 
   const pid = (base: number) => base + Math.floor(Math.random() * 1000);
-  const ago = (ms: number) => new Date(now.getTime() - ms).toISOString();
+  // Add ±5s jitter to mimic real syslog/rsyslog timestamp variance
+  const jitter = () => Math.floor((Math.random() - 0.5) * 10000);
+  const ago = (ms: number) =>
+    new Date(now.getTime() - ms + jitter()).toISOString();
 
   // OTel Trace ID/Span ID helpers (Hex strings)
   const genTraceId = () =>
@@ -273,10 +295,10 @@ export function generateServerLogs(
     });
   }
 
-  // ─── 2nd Pass: Metric + scenario hint (contextual detail) ──────
+  // ─── 2nd Pass: Metric + server role (contextual detail) ─────────
 
-  // CPU high + API/과부하 scenario → upstream timeout
-  if (cpu > 80 && hasHint(scenarioHint, ['api', '과부하', 'cpu'])) {
+  // CPU high + API/web role → upstream timeout
+  if (cpu > 80 && matchRole(serverRole, ['api', 'was', 'web', 'nginx'])) {
     const traceId = genTraceId();
     push({
       timestamp: ago(28000),
@@ -297,11 +319,8 @@ export function generateServerLogs(
     });
   }
 
-  // Memory high + cache/redis scenario → eviction details
-  if (
-    memory > 70 &&
-    hasHint(scenarioHint, ['캐시', 'redis', 'memory', '메모리'])
-  ) {
+  // Memory high + cache/redis role → eviction details
+  if (memory > 70 && matchRole(serverRole, ['cache', 'redis', 'memcache'])) {
     const traceId = genTraceId();
     push({
       timestamp: ago(55000),
@@ -313,10 +332,10 @@ export function generateServerLogs(
     });
   }
 
-  // Disk high + backup scenario → backup failure
+  // Disk high + storage/db role → backup failure
   if (
     disk > 70 &&
-    hasHint(scenarioHint, ['백업', 'backup', '디스크', 'disk', 'i/o'])
+    matchRole(serverRole, ['storage', 'nfs', 'db', 'mysql', 'postgres'])
   ) {
     const traceId = genTraceId();
     push({
@@ -327,20 +346,31 @@ export function generateServerLogs(
       traceId,
       spanId: genSpanId(),
     });
-    push({
-      timestamp: ago(120000),
-      level: 'info',
-      message: `${hostPrefix}pg_dump[${pid(18000)}]: pg_dump: archiving data for table "public.logs" (${Math.floor(disk * 10)}MB)`,
-      source: 'postgres',
-      traceId,
-      spanId: genSpanId(),
-    });
+    if (matchRole(serverRole, ['mysql'])) {
+      push({
+        timestamp: ago(120000),
+        level: 'info',
+        message: `${hostPrefix}mysqldump[${pid(18000)}]: -- Dumping data for table \`logs\` (${Math.floor(disk * 10)}MB)`,
+        source: 'mysql',
+        traceId,
+        spanId: genSpanId(),
+      });
+    } else {
+      push({
+        timestamp: ago(120000),
+        level: 'info',
+        message: `${hostPrefix}pg_dump[${pid(18000)}]: pg_dump: archiving data for table "public.logs" (${Math.floor(disk * 10)}MB)`,
+        source: 'postgres',
+        traceId,
+        spanId: genSpanId(),
+      });
+    }
   }
 
-  // Network high + LB/네트워크 scenario → connection errors
+  // Network high + LB role → connection errors
   if (
     network > 60 &&
-    hasHint(scenarioHint, ['네트워크', 'network', '패킷', 'lb', '로드밸런서'])
+    matchRole(serverRole, ['lb', 'haproxy', 'loadbalancer'])
   ) {
     const traceId = genTraceId();
     push({
@@ -448,9 +478,9 @@ export function generateServerLogs(
 
 // ── Helpers ─────────────────────────────────────────────────────────
 
-/** Check if scenario hint contains any of the keywords */
-function hasHint(hint: string, keywords: string[]): boolean {
-  return keywords.some((kw) => hint.includes(kw));
+/** Check if serverId contains any of the role keywords */
+function matchRole(serverId: string, keywords: string[]): boolean {
+  return keywords.some((kw) => serverId.includes(kw));
 }
 
 /** Infer ServerType from explicit type or serverId naming convention */

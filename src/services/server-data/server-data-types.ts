@@ -78,7 +78,6 @@ export interface HourlyJsonData {
     evaluationInterval: string;
     source: string;
   };
-  _scenario?: string;
   dataPoints: Array<{
     timestampMs: number;
     targets: Record<string, PrometheusTargetData>;
