@@ -32,10 +32,10 @@ Automated lint + test workflow for quick code quality verification without manua
 ## Context
 
 - **Project**: OpenManager AI v8.0.0
-- **Test Framework**: Vitest v4.0.15
+- **Test Framework**: Vitest v4.0.18
 - **Linter**: Biome v2.3.8 (lint + format)
-- **Current Pass Rate**: 98.2% (134/134 tests)
-- **Fast Test Target**: < 25초 (current: ~21초)
+- **Current Pass Rate**: 100% (206/206 tests)
+- **Fast Test Target**: < 25초 (current: ~10초)
 
 ## Workflow
 
@@ -109,8 +109,8 @@ npm run test:quick
 
 **Expected Metrics**:
 
-- Duration: < 25초 (current: ~21초)
-- Pass Rate: ≥ 98% (134/134)
+- Duration: < 25초 (current: ~10초)
+- Pass Rate: ≥ 98% (206/206)
 - Failed Tests: < 5개
 
 ### 3. Analyze Results
@@ -129,7 +129,7 @@ npm run test:quick
 
 **If Tests Fail**:
 
-- 📊 Check failure count vs baseline (80 failed)
+- 📊 Check failure count vs baseline (0 failed)
 - ⚠️ New failures: Investigate immediately
 - ✅ Same failures: Known issues, can proceed
 
@@ -140,7 +140,7 @@ npm run test:quick
 ```
 🧪 Smoke Check Results
 ├─ Lint: ✅ Pass / ❌ Fail (N errors)
-├─ Tests: ✅ 134/134 (98.2%) / ⚠️ X/134 (Y%)
+├─ Tests: ✅ 206/206 (100%) / ⚠️ X/206 (Y%)
 ├─ Duration: Xs (target: <25s)
 └─ Status: ✅ Ready / ⚠️ Review / ❌ Fix Required
 ```
@@ -187,7 +187,7 @@ Tokens: ~114 (62% reduction)
 **Case 3: All Tests Fail**
 
 - Critical environment issue
-- Check: Node.js version (v22.21.1)
+- Check: Node.js version (v24.x)
 - Check: Dependencies installed (`npm ci`)
 
 ## Success Criteria

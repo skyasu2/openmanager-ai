@@ -114,7 +114,7 @@ curl -s https://ai-engine-490817238363.asia-northeast1.run.app/monitoring | jq '
 ```json
 {
   "status": "healthy",
-  "version": "5.84.x",
+  "version": "8.0.x",
   "agents": {
     "active": 4,
     "available": ["NLQ", "Analyst", "Reporter", "Advisor"]

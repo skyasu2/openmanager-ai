@@ -42,7 +42,7 @@ Analyze staged changes and generate a conventional commit message:
 git commit -m "$(cat <<'EOF'
 <commit message>
 
-Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>
+Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>
 EOF
 )"
 ```
