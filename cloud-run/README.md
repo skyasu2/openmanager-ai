@@ -1,6 +1,6 @@
 # Cloud Run Deployment Guide
 
-This directory contains the AI Engine microservice for OpenManager VIBE.
+This directory contains the AI Engine microservice for OpenManager AI.
 
 ## Services
 

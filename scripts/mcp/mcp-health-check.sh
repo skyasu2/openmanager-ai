@@ -30,7 +30,7 @@ echo ""
 echo -e "${YELLOW}🔍 Checking PROJECT_ROOT environment variable...${NC}"
 if [ -z "${PROJECT_ROOT:-}" ]; then
   echo -e "${RED}❌ PROJECT_ROOT is not set in .env.local${NC}"
-  echo -e "${YELLOW}💡 Fix: Add PROJECT_ROOT=/mnt/d/cursor/openmanager-vibe-v5 to .env.local${NC}"
+  echo -e "${YELLOW}💡 Fix: Add PROJECT_ROOT=/mnt/d/cursor/openmanager-ai to .env.local${NC}"
   echo "PROJECT_ROOT: ❌ NOT SET" >> "$LOG_FILE"
 elif [ ! -d "$PROJECT_ROOT" ]; then
   echo -e "${RED}❌ PROJECT_ROOT points to non-existent directory: $PROJECT_ROOT${NC}"

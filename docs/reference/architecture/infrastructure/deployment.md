@@ -18,7 +18,7 @@ const deploymentFlow = {
   build: 'npm run build',
   output: '.next (standalone)',
   deploy: 'Edge Network',
-  domain: 'openmanager-vibe-v5.vercel.app'
+  domain: 'openmanager-ai.vercel.app'
 };
 
 // vercel.json 최적화

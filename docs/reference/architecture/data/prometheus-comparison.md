@@ -1,7 +1,7 @@
-# Prometheus Best Practice vs OpenManager VIBE 비교 분석
+# Prometheus Best Practice vs OpenManager AI 비교 분석
 
 > **작성일**: 2026-02-06
-> **대상 버전**: OpenManager VIBE v7.1.0
+> **대상 버전**: OpenManager AI v7.1.0
 > **목적**: VIBE의 Prometheus 스타일 데이터 모델이 실제 베스트 프랙티스와 얼마나 유사한지 평가
 
 ---
@@ -204,7 +204,7 @@ const ref = PROMETHEUS_METRIC_REFERENCE['node_cpu_usage_percent'];
 
 ## 9. 결론
 
-**OpenManager VIBE는 Prometheus의 "외형(naming, label, structure)"을 충실히 모방하되, "내부 동작(counter→rate, TSDB, PromQL)"은 의도적으로 생략한 교육용/데모용 아키텍처.**
+**OpenManager AI는 Prometheus의 "외형(naming, label, structure)"을 충실히 모방하되, "내부 동작(counter→rate, TSDB, PromQL)"은 의도적으로 생략한 교육용/데모용 아키텍처.**
 
 | 관점 | 평가 |
 |------|------|

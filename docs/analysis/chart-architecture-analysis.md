@@ -1,6 +1,6 @@
 # Chart & Graph Architecture Analysis
 
-> OpenManager VIBE v7.1 차트/그래프 현황 분석 문서
+> OpenManager AI v7.1 차트/그래프 현황 분석 문서
 > Last Updated: 2026-02-06
 
 ---

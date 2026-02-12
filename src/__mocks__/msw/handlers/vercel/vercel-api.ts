@@ -31,8 +31,8 @@ export const vercelHandlers = [
         deployments: [
           {
             uid: 'mock-deployment-1',
-            name: 'openmanager-vibe-v5',
-            url: 'openmanager-vibe-v5-mock.vercel.app',
+            name: 'openmanager-ai',
+            url: 'openmanager-ai-mock.vercel.app',
             created: Date.now(),
             state: 'READY',
             type: 'LAMBDAS',
@@ -63,7 +63,7 @@ export const vercelHandlers = [
         projects: [
           {
             id: 'mock-project-1',
-            name: 'openmanager-vibe-v5',
+            name: 'openmanager-ai',
             accountId: 'mock-account',
             framework: 'nextjs',
             devCommand: 'npm run dev',

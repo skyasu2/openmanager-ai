@@ -1,7 +1,7 @@
 # Real-World Readiness Assessment (실 운영 환경 적합성 평가)
 
 > **작성일**: 2026-02-12
-> **대상**: OpenManager VIBE v7.1.5 Data Architecture
+> **대상**: OpenManager AI v7.1.5 Data Architecture
 > **작성자**: Principal Software Architect
 
 ---

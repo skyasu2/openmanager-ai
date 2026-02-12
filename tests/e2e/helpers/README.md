@@ -531,4 +531,4 @@ npx playwright test tests/e2e/ai-sidebar-vercel-validation.spec.ts --project=chr
 ---
 
 **마지막 업데이트**: 2025-12-20 (v5.83.7 - 관리자 모드 폐기 반영)
-**작성자**: OpenManager VIBE Team
+**작성자**: OpenManager AI Team

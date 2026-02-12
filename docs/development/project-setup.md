@@ -6,12 +6,12 @@
 
 ```bash
 # SSH (권장)
-git clone git@github.com:skyasu2/openmanager-vibe-v5.git
+git clone git@github.com:skyasu2/openmanager-ai.git
 
 # HTTPS
-git clone https://github.com/skyasu2/openmanager-vibe-v5.git
+git clone https://github.com/skyasu2/openmanager-ai.git
 
-cd openmanager-vibe-v5
+cd openmanager-ai
 ```
 
 ## 의존성 설치
@@ -125,7 +125,7 @@ npm run build       # 빌드
 ## 폴더 구조
 
 ```
-openmanager-vibe-v5/
+openmanager-ai/
 ├── src/
 │   ├── app/              # Next.js App Router
 │   ├── components/       # React 컴포넌트

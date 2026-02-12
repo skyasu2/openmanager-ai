@@ -20,7 +20,7 @@ git push --follow-tags      # 태그 푸시 → 배포 트리거
 |------|-----|
 | Trigger | `git push` 자동 배포 |
 | Branch | `main` → Production |
-| URL | `openmanager-vibe-v5.vercel.app` |
+| URL | `openmanager-ai.vercel.app` |
 | Plan | Pro ($20/mo, 비용 최소화) |
 
 #### Pro 플랜 설정 (v7.1.0)
@@ -87,7 +87,7 @@ AI가 인프라/배포 설정을 변경할 때 반드시 준수:
 
 ```bash
 # Vercel 상태 확인
-curl https://openmanager-vibe-v5.vercel.app/api/health
+curl https://openmanager-ai.vercel.app/api/health
 
 # Cloud Run AI 상태 확인
 curl https://ai-engine-*.run.app/health

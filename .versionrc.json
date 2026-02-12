@@ -13,6 +13,6 @@
       "type": "json"
     }
   ],
-  "commitUrlFormat": "https://github.com/skyasu2/openmanager-vibe-v5/commit/{{hash}}",
-  "compareUrlFormat": "https://github.com/skyasu2/openmanager-vibe-v5/compare/{{previousTag}}...{{currentTag}}"
+  "commitUrlFormat": "https://github.com/skyasu2/openmanager-ai/commit/{{hash}}",
+  "compareUrlFormat": "https://github.com/skyasu2/openmanager-ai/compare/{{previousTag}}...{{currentTag}}"
 }

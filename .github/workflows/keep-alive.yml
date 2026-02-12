@@ -46,7 +46,7 @@ jobs:
 
       - name: Ping Vercel App Health
         run: |
-          response=$(curl -s "https://openmanager-vibe-v5.vercel.app/api/health")
+          response=$(curl -s "https://openmanager-ai.vercel.app/api/health")
           status=$(echo $response | jq -r '.data.status // .status // "unknown"')
 
           if [ "$status" = "healthy" ]; then

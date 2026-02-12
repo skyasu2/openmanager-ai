@@ -20,7 +20,7 @@ allowed-tools: Bash, Read, Grep
 
 ## Context
 
-- **Project**: OpenManager VIBE v5.85.0
+- **Project**: OpenManager AI v5.85.0
 - **Relevant Config**: {config files or settings}
 - **Dependencies**: {required tools or services}
 

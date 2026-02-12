@@ -12,7 +12,7 @@
 
 ### 1.1 목적
 
-OpenManager VIBE 서버 모니터링 플랫폼에 **Vision Agent**를 추가하여 다음 기능을 제공:
+OpenManager AI 서버 모니터링 플랫폼에 **Vision Agent**를 추가하여 다음 기능을 제공:
 
 | 기능 | 설명 | 현재 Gap |
 |------|------|----------|

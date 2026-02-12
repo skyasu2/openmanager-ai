@@ -30,7 +30,7 @@ Generate PNG/SVG architecture diagrams from Mermaid source files (.mmd) using mm
 
 ## Context
 
-- **Project**: OpenManager VIBE v5.85.0
+- **Project**: OpenManager AI v5.85.0
 - **mmdc Version**: v11.12.0 (@mermaid-js/mermaid-cli)
 - **mmdc Path**: `/home/sky-note/.npm-global/bin/mmdc`
 - **Theme**: Dark with transparent background

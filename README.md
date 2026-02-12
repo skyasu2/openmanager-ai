@@ -1,4 +1,4 @@
-# OpenManager VIBE v5
+# OpenManager AI v8
 
 > **AI-Native Server Monitoring Platform**
 > 자연어로 대화하며 서버를 모니터링하는 차세대 운영 플랫폼
@@ -14,7 +14,7 @@
 
 ## Overview
 
-OpenManager VIBE는 **AI 어시스턴트**가 내장된 서버 모니터링 플랫폼입니다.
+OpenManager AI는 **AI 어시스턴트**가 내장된 서버 모니터링 플랫폼입니다.
 
 기존 대시보드에서 그래프를 읽고 해석하는 대신, **"서버 상태 어때?"** 라고 물어보면 AI가 분석하고 답변합니다.
 
@@ -151,7 +151,7 @@ Supervisor (Intent Classification & Routing)
 
 ## Demo
 
-**Live**: [openmanager-vibe-v5.vercel.app](https://openmanager-vibe-v5.vercel.app)
+**Live**: [openmanager-ai.vercel.app](https://openmanager-ai.vercel.app)
 
 ### Sample Queries
 

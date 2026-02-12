@@ -97,8 +97,8 @@ export function validateRedirectUrl(url: string): boolean {
 
     // 🔧 Vercel 패턴 매칭 개선
     const isVercelDeploy =
-      hostname === 'openmanager-vibe-v5.vercel.app' || // 프로덕션
-      (hostname.startsWith('openmanager-vibe-v5-') &&
+      hostname === 'openmanager-ai.vercel.app' || // 프로덕션
+      (hostname.startsWith('openmanager-ai-') &&
         hostname.endsWith('.vercel.app')) || // 프리뷰 배포
       hostname.includes('-skyasus-projects.vercel.app'); // 사용자별 배포
 

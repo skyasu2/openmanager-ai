@@ -1,6 +1,6 @@
 /**
  * AI-Ready Code Snippets: Authentication Complete Implementation
- * Usage: Copy-paste for immediate use in OpenManager VIBE v5
+ * Usage: Copy-paste for immediate use in OpenManager AI v5
  * Dependencies: @supabase/auth-helpers-nextjs, @supabase/supabase-js
  */
 

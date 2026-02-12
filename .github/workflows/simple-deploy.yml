@@ -70,7 +70,7 @@ jobs:
           NODE_ENV: production
           NEXT_TELEMETRY_DISABLED: 1
           SKIP_ENV_VALIDATION: true
-          NEXT_PUBLIC_APP_URL: https://openmanager-vibe-v5.vercel.app
+          NEXT_PUBLIC_APP_URL: https://openmanager-ai.vercel.app
 
           # 🗄️ Supabase 환경변수 (GitHub Secrets에서 설정 필요)
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co' }}

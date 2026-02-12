@@ -190,7 +190,7 @@ function generateEnvExample(): void {
   }
 
   const lines: string[] = [
-    '# OpenManager VIBE - Environment Variables Template',
+    '# OpenManager AI - Environment Variables Template',
     '# Copy this file to .env.local and fill in the values',
     '',
   ];

@@ -58,10 +58,10 @@ export const runtime = 'nodejs';
 ### 수동 테스트만 허용
 ```bash
 # 개발 중 간단한 연결 확인
-curl https://openmanager-vibe-v5.vercel.app/api/ping
+curl https://openmanager-ai.vercel.app/api/ping
 
 # 상세 상태 확인
-curl https://openmanager-vibe-v5.vercel.app/api/health
+curl https://openmanager-ai.vercel.app/api/health
 ```
 
 ### 시스템 모니터링

@@ -2,7 +2,7 @@
 
 **날짜**: 2025-11-11  
 **작성자**: Claude Code (Sonnet 4.5)  
-**프로젝트**: OpenManager VIBE v5.80.0
+**프로젝트**: OpenManager AI v5.80.0
 
 ---
 

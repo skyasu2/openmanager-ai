@@ -1,7 +1,7 @@
 # OpenTelemetry (OTel) 데이터 vs 레거시 데이터 비교 분석
 
 > **작성일**: 2026-02-12
-> **대상**: OpenManager VIBE v7.1.5 Data Architecture
+> **대상**: OpenManager AI v7.1.5 Data Architecture
 > **목적**: OTel 데이터 도입에 따른 데이터 구조 변화 및 장점 분석
 
 ---

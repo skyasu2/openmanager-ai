@@ -55,7 +55,7 @@ const app = new Hono();
 
 app.use('*', honoLogger());
 app.use('*', cors({
-  origin: process.env.ALLOWED_ORIGINS?.split(',') || ['https://openmanager-vibe-v5.vercel.app'],
+  origin: process.env.ALLOWED_ORIGINS?.split(',') || ['https://openmanager-ai.vercel.app'],
 }));
 
 // Security Middleware (Skip for health/warmup) — fail-closed

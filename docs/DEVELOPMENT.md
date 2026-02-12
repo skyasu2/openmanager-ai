@@ -30,8 +30,8 @@
 
 ```bash
 # 1. WSL에서 클론
-git clone https://github.com/skyasu2/openmanager-vibe-v5.git
-cd openmanager-vibe-v5
+git clone https://github.com/skyasu2/openmanager-ai.git
+cd openmanager-ai
 
 # 2. 의존성 설치
 npm install

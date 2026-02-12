@@ -13,7 +13,7 @@ vercel env ls production | grep "VAR_NAME"
 vercel env add VAR_NAME production --force
 
 # 3. 검증
-curl https://openmanager-vibe-v5.vercel.app/api/health
+curl https://openmanager-ai.vercel.app/api/health
 ```
 
 ### 2. Cloud Run 관련 변수 (Critical)
@@ -38,7 +38,7 @@ echo "VALUE" | vercel env add VAR_NAME production --force
 
 ```bash
 # AI health check (503 방지)
-curl https://openmanager-vibe-v5.vercel.app/api/health?service=ai
+curl https://openmanager-ai.vercel.app/api/health?service=ai
 ```
 
 ## AI SDK 업그레이드 체크리스트

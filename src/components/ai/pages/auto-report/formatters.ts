@@ -149,12 +149,12 @@ ${systemSummarySection}${timelineSection}${anomaliesSection}${patternSection}${r
 
 ## 📎 부록
 
-- **보고서 생성 도구**: OpenManager VIBE AI Engine
+- **보고서 생성 도구**: OpenManager AI AI Engine
 - **분석 기준**: 실시간 메트릭 + AI 패턴 분석
 - **문서 형식**: ITIL Major Incident Report Template 준수
 
 ---
-*자동 생성된 장애 보고서 - OpenManager VIBE v5*
+*자동 생성된 장애 보고서 - OpenManager AI v5*
 *Generated at: ${timestamp}*
 `;
 }
@@ -239,7 +239,7 @@ ${report.affectedServers.length > 0 ? report.affectedServers.join(', ') : '없�
 ${systemSummaryTxt}${timelineTxt}${anomaliesTxt}${patternTxt}
 ${recommendationsTxt}
 ---
-자동 생성된 장애 보고서 - OpenManager VIBE v5
+자동 생성된 장애 보고서 - OpenManager AI v5
 문서 형식: ITIL Major Incident Report Template
 `;
 }

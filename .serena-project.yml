@@ -1,6 +1,6 @@
 # Serena Project Configuration
-project_name: openmanager-vibe-v5
-project_root: /mnt/d/cursor/openmanager-vibe-v5
+project_name: openmanager-ai
+project_root: /mnt/d/cursor/openmanager-ai
 
 # Exclude large directories from parsing
 exclude_paths:

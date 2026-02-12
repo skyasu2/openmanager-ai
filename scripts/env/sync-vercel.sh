@@ -55,7 +55,7 @@ echo "🔍 검증 중..."
 # Health check (배포 후에만 의미 있음)
 if [ "$ENV" = "production" ]; then
   sleep 2
-  HEALTH=$(curl -s "https://openmanager-vibe-v5.vercel.app/api/health?service=ai" 2>&1)
+  HEALTH=$(curl -s "https://openmanager-ai.vercel.app/api/health?service=ai" 2>&1)
 
   if echo "$HEALTH" | grep -q '"status":"ok"'; then
     echo -e "${GREEN}✅ AI Health Check 통과${NC}"

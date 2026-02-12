@@ -1,4 +1,4 @@
-# TODO - OpenManager VIBE v5
+# TODO - OpenManager AI v5
 
 **Last Updated**: 2026-02-10 KST
 

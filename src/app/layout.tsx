@@ -28,14 +28,14 @@ const notoSansKR = Noto_Sans_KR({
 });
 
 // 🌐 SEO Configuration
-const SITE_URL = 'https://openmanager-vibe-v5.vercel.app';
-const SITE_NAME = 'OpenManager VIBE';
+const SITE_URL = 'https://openmanager-ai.vercel.app';
+const SITE_NAME = 'OpenManager AI';
 
 export const metadata: Metadata = {
   // 📌 기본 메타데이터
   title: {
-    default: 'OpenManager VIBE - AI Native Server Monitoring',
-    template: '%s | OpenManager VIBE',
+    default: 'OpenManager AI - AI Native Server Monitoring',
+    template: '%s | OpenManager AI',
   },
   description:
     'Next.js 16 + React 19 + Vercel AI SDK 기반 AI Native 서버 모니터링 플랫폼. 3개 AI 프로바이더와 5-Agent 시스템으로 실시간 장애 분석.',
@@ -52,7 +52,7 @@ export const metadata: Metadata = {
     'Infrastructure Monitoring',
   ],
   authors: [{ name: 'OpenManager Team' }],
-  creator: 'OpenManager VIBE',
+  creator: 'OpenManager AI',
   publisher: 'OpenManager',
 
   // 🔗 Canonical & Base URL
@@ -78,7 +78,7 @@ export const metadata: Metadata = {
     locale: 'ko_KR',
     url: SITE_URL,
     siteName: SITE_NAME,
-    title: 'OpenManager VIBE - AI Native Server Monitoring',
+    title: 'OpenManager AI - AI Native Server Monitoring',
     description:
       'Next.js 16 + React 19 기반 AI Native 서버 모니터링. 3개 AI 프로바이더 + 5-Agent 멀티 에이전트 시스템.',
     images: [
@@ -86,7 +86,7 @@ export const metadata: Metadata = {
         url: '/api/og',
         width: 1200,
         height: 630,
-        alt: 'OpenManager VIBE - AI Server Monitoring Platform',
+        alt: 'OpenManager AI - AI Server Monitoring Platform',
       },
     ],
   },
@@ -94,7 +94,7 @@ export const metadata: Metadata = {
   // 🐦 Twitter Card
   twitter: {
     card: 'summary_large_image',
-    title: 'OpenManager VIBE - AI Native Server Monitoring',
+    title: 'OpenManager AI - AI Native Server Monitoring',
     description: 'Next.js 16 + React 19 기반 AI Native 서버 모니터링 플랫폼',
     images: ['/api/og'],
     creator: '@openmanager',

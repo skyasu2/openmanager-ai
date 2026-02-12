@@ -4,14 +4,14 @@
  */
 
 const ALLOWED_ORIGINS = [
-  'https://openmanager-vibe-v5.vercel.app',
+  'https://openmanager-ai.vercel.app',
   'http://localhost:3000',
   'http://localhost:3001',
 ];
 
-/** Vercel Preview URL 패턴: openmanager-vibe-v5-*.vercel.app */
+/** Vercel Preview URL 패턴: openmanager-ai-*.vercel.app */
 const VERCEL_PREVIEW_PATTERN =
-  /^https:\/\/openmanager-vibe-v5-[a-z0-9-]+\.vercel\.app$/;
+  /^https:\/\/openmanager-ai-[a-z0-9-]+\.vercel\.app$/;
 
 /**
  * 요청 origin이 허용된 origin인지 확인
@@ -31,7 +31,7 @@ function resolveOrigin(requestOrigin?: string | null): string {
     return requestOrigin;
   }
 
-  return appUrl || 'https://openmanager-vibe-v5.vercel.app';
+  return appUrl || 'https://openmanager-ai.vercel.app';
 }
 
 /**

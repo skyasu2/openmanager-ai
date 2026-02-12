@@ -1,4 +1,4 @@
-# OpenManager VIBE E2E 테스트 가이드
+# OpenManager AI E2E 테스트 가이드
 
 > **Updated**: 2026-01-18
 
@@ -8,7 +8,7 @@
 
 ## 📋 개요
 
-OpenManager VIBE 프론트엔드의 종합적인 End-to-End 테스트 시스템입니다. 사용자 플로우부터 AI 어시스턴트 기능까지 전체 애플리케이션의 품질을 보장합니다.
+OpenManager AI 프론트엔드의 종합적인 End-to-End 테스트 시스템입니다. 사용자 플로우부터 AI 어시스턴트 기능까지 전체 애플리케이션의 품질을 보장합니다.
 
 > ⚠️ **2025-11 업데이트**  
 > v5.80.0에서 관리자 모드 및 /admin 페이지가 완전히 제거되었습니다.  
@@ -166,7 +166,7 @@ export default defineConfig({
 ```typescript
 test('베르셀 프로덕션 성능 측정', async ({ page }) => {
   // 베르셀 환경 접속
-  await page.goto('https://openmanager-vibe-v5.vercel.app');
+  await page.goto('https://openmanager-ai.vercel.app');
 
   // 페이지 로드 시간 측정
   const loadTime = await page.evaluate(() => {
@@ -182,7 +182,7 @@ test('베르셀 프로덕션 성능 측정', async ({ page }) => {
 ```typescript
 test('베르셀 CDN 캐싱 성능', async ({ page }) => {
   // 첫 방문
-  const firstLoad = await page.goto('https://openmanager-vibe-v5.vercel.app');
+  const firstLoad = await page.goto('https://openmanager-ai.vercel.app');
   const firstTime = await firstLoad.request().timing();
 
   // 페이지 새로고침 (캐시 활용)

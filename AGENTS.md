@@ -42,4 +42,4 @@ Codex는 호출 맥락에 따라 다음과 같이 유연하게 동작해야 합�
 
 ---
 
-_Codex Agent Configuration for OpenManager VIBE v5_
+_Codex Agent Configuration for OpenManager AI v5_

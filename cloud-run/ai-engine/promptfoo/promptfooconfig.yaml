@@ -1,8 +1,8 @@
 # yaml-language-server: $schema=https://promptfoo.dev/config-schema.json
-# OpenManager VIBE AI Engine - Promptfoo Configuration
+# OpenManager AI AI Engine - Promptfoo Configuration
 # v1.0.0 - 2024-12-24
 
-description: OpenManager VIBE AI Engine 프롬프트 평가
+description: OpenManager AI AI Engine 프롬프트 평가
 
 # =============================================================================
 # Prompts (에이전트별)

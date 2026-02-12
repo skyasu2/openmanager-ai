@@ -1,5 +1,5 @@
 /**
- * 🔧 OpenManager Vibe v5 - 통합 환경설정 시스템
+ * 🔧 OpenManager AI - 통합 환경설정 시스템
  *
  * 기능:
  * - 환경변수 검증 및 파싱
@@ -167,7 +167,7 @@ const createConfig = (): EnvironmentConfig => {
         baseUrl:
           process.env.NEXT_PUBLIC_API_URL ||
           (isProduction
-            ? 'https://openmanager-vibe-v5.vercel.app'
+            ? 'https://openmanager-ai.vercel.app'
             : 'http://localhost:3000'),
       },
 
@@ -280,7 +280,7 @@ export const printConfig = (config: EnvironmentConfig) => {
   if (!config.development.verboseLogging || isBuildTime()) return;
 
   logger.info(`
-🔧 OpenManager Vibe v5 - 환경 설정
+🔧 OpenManager AI - 환경 설정
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🌍 환경: ${config.nodeEnv}${config.isVercel ? ' (Vercel)' : ' (로컬)'}
 🗄️ Supabase: ${config.supabase.url ? '✅ 연결됨' : '❌ 비활성화'}

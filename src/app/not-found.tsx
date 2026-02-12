@@ -81,7 +81,7 @@ export default function NotFound() {
 
         {/* 시스템 정보 */}
         <div className="border-t border-gray-700 pt-4 text-xs text-gray-600">
-          <p>OpenManager VIBE v5</p>
+          <p>OpenManager AI v8</p>
           <p>Error ID: NOT_FOUND_404</p>
         </div>
       </div>

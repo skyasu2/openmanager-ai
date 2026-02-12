@@ -249,4 +249,4 @@ const improvement = benchmark.improvement; // 예상: 77%
 4. **예측적 로딩**: 사용자 패턴 학습 및 활용
 5. **Edge Runtime**: Vercel 플랫폼 최적화
 
-이러한 최적화를 통해 OpenManager VIBE v5는 **엔터프라이즈급 성능**을 **무료 티어 아키텍처**로 달성하게 됩니다.
+이러한 최적화를 통해 OpenManager AI v5는 **엔터프라이즈급 성능**을 **무료 티어 아키텍처**로 달성하게 됩니다.

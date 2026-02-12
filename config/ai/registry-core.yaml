@@ -4,7 +4,7 @@
 
 version: "3.0.0"  # registry-core 버전 (v3.0.0: MCP 정리 및 버전 동기화)
 last_updated: "2026-01-18"
-project: "OpenManager VIBE v5.87.0"
+project: "OpenManager AI v8.0.0"
 
 # ============================================================================
 # 0. AI Architecture Overview (v6.0 - AI SDK Multi-Agent)

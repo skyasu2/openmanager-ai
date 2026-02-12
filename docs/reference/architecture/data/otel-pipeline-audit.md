@@ -1,7 +1,7 @@
 # OTel 데이터 파이프라인 점검 보고서
 
 **작성일**: 2026-02-12
-**대상 버전**: OpenManager VIBE v7.1.4
+**대상 버전**: OpenManager AI v7.1.4
 
 ---
 

@@ -1,4 +1,4 @@
-# OpenManager VIBE Documentation
+# OpenManager AI Documentation
 
 > **프로젝트 버전**: v7.1.4 | **Updated**: 2026-02-08
 
@@ -125,7 +125,7 @@ docs/
 
 ## External Resources
 
-- [GitHub Repository](https://github.com/skyasu2/openmanager-vibe-v5)
+- [GitHub Repository](https://github.com/skyasu2/openmanager-ai)
 - [Vercel Dashboard](https://vercel.com)
 - [Supabase Dashboard](https://supabase.com)
 - [Claude Code Docs](https://docs.anthropic.com/claude-code)

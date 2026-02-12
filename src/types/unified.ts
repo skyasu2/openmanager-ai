@@ -1,5 +1,5 @@
 /**
- * 🎯 OpenManager VIBE v5 - 통합 타입 정의
+ * 🎯 OpenManager AI - 통합 타입 정의
  *
  * 모든 타입을 중앙 집중화하여 일관성과 재사용성 확보
  * TypeScript strict 모드 완전 준수

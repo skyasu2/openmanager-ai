@@ -1,6 +1,6 @@
 # AI Engine - Cloud Run Service
 
-Vercel AI SDK Multi-Agent Supervisor for OpenManager VIBE v7.1.0
+Vercel AI SDK Multi-Agent Supervisor for OpenManager AI v7.1.0
 
 ## Quick Start
 

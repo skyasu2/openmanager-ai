@@ -17,10 +17,10 @@ export const runtime = 'edge';
 
 // 기본값 상수
 const DEFAULTS = {
-  title: 'OpenManager VIBE',
+  title: 'OpenManager AI',
   description: 'AI Native Server Monitoring Platform',
   tags: ['Next.js 16', 'React 19', 'Vercel AI SDK', '5-Agent System'],
-  url: 'openmanager-vibe-v5.vercel.app',
+  url: 'openmanager-ai.vercel.app',
 } as const;
 
 export async function GET(request: NextRequest) {
@@ -185,7 +185,7 @@ export async function GET(request: NextRequest) {
       >
         <span style={{ fontSize: '48px', marginBottom: '16px' }}>🚀</span>
         <h1 style={{ color: '#60a5fa', fontSize: '48px', margin: 0 }}>
-          OpenManager VIBE
+          OpenManager AI
         </h1>
         <p style={{ color: '#94a3b8', fontSize: '24px' }}>
           AI Native Server Monitoring

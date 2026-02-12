@@ -1,5 +1,5 @@
 /**
- * 🧪 OpenManager VIBE v5 - 핵심 API 엔드포인트 통합 테스트
+ * 🧪 OpenManager AI - 핵심 API 엔드포인트 통합 테스트
  *
  * @description 주요 API 엔드포인트들의 기능, 성능, 스키마 검증
  * @author Claude Code (Test Automation Specialist)
@@ -149,7 +149,7 @@ const shouldRunIntegration =
 const realFetch = globalThis.fetch;
 
 describe.skipIf(!shouldRunIntegration)(
-  '🚀 OpenManager VIBE v5 - 핵심 API 엔드포인트 테스트',
+  '🚀 OpenManager AI - 핵심 API 엔드포인트 테스트',
   () => {
     beforeAll(async () => {
       // 서버 실행 상태 확인 (원본 fetch로 체크)

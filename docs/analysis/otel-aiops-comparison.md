@@ -1,14 +1,14 @@
 # OpenTelemetry & AIOps 아키텍처 비교 분석
 
 > **작성일**: 2026-02-12
-> **대상 버전**: OpenManager VIBE v7.1.5
+> **대상 버전**: OpenManager AI v7.1.5
 > **목적**: VIBE의 OTel 기반 모니터링/AI 시스템과 상용 관제 솔루션(Datadog, Dynatrace) 비교
 
 ---
 
 ## 1. Executive Summary
 
-OpenManager VIBE는 **"시뮬레이션 환경"**이라는 제약 속에서도 **OpenTelemetry(OTel) 표준**을 준수하고, 최신 **GenAI 트렌드(Copilot, RAG)**를 반영하여 **상용 솔루션과 매우 유사한 아키텍처**를 구현하고 있습니다.
+OpenManager AI는 **"시뮬레이션 환경"**이라는 제약 속에서도 **OpenTelemetry(OTel) 표준**을 준수하고, 최신 **GenAI 트렌드(Copilot, RAG)**를 반영하여 **상용 솔루션과 매우 유사한 아키텍처**를 구현하고 있습니다.
 
 특히 **"데이터 수집(OTel) → 통합 저장소(SSOT) → AI 에이전트 분석"**으로 이어지는 파이프라인은 상용 솔루션의 **Advanced AIOps** 구조와 일치합니다. 단, 실제 TSDB(Time Series Database) 대신 파일 시스템(JSON)을 사용하는 점이 교육용 시뮬레이터로서의 유일한 차이점입니다.
 
@@ -16,7 +16,7 @@ OpenManager VIBE는 **"시뮬레이션 환경"**이라는 제약 속에서도 **
 
 ## 2. 아키텍처 비교 (Architecture Matrix)
 
-| 구분 | **OpenManager VIBE** | **Datadog / Dynatrace** (Industry Standard) | **적합도** |
+| 구분 | **OpenManager AI** | **Datadog / Dynatrace** (Industry Standard) | **적합도** |
 |------|---------------------|--------------------------------------------|:--------:|
 | **데이터 수집** | **OTel Semantic Conventions**<br>(`system.cpu.utilization` 등) | **OpenTelemetry Collector**<br>(OTLP Standard) | ⭐5/5 (완벽 일치) |
 | **데이터 모델** | **3-Tier Fallback**<br>(OTel > Prometheus > Fixed) | **Hybrid Ingestion**<br>(OTel + Proprietary Agents) | ⭐4/5 (개념적 유사) |

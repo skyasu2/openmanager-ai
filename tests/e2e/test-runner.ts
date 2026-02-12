@@ -94,7 +94,7 @@ export class E2ETestRunner {
    * 🚀 테스트 실행 메인 함수
    */
   async runTests(): Promise<TestResult[]> {
-    console.log('🧪 OpenManager VIBE E2E 테스트 시작');
+    console.log('🧪 OpenManager AI E2E 테스트 시작');
     console.log('📊 테스트 설정:', this.config);
 
     try {
@@ -448,7 +448,7 @@ export class E2ETestRunner {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OpenManager VIBE E2E 테스트 리포트</title>
+    <title>OpenManager AI E2E 테스트 리포트</title>
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; margin: 20px; }
         .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 8px; }
@@ -467,7 +467,7 @@ export class E2ETestRunner {
 </head>
 <body>
     <div class="header">
-        <h1>🤖 OpenManager VIBE E2E 테스트 리포트</h1>
+        <h1>🤖 OpenManager AI E2E 테스트 리포트</h1>
         <p>생성 시간: ${data.timestamp}</p>
         <p>테스트 설정: ${data.config.category} / ${data.config.browser} / Workers: ${data.config.workers}</p>
     </div>
@@ -555,7 +555,7 @@ export class E2ETestRunner {
     const emoji = summary.failed > 0 ? '❌' : '✅';
 
     const githubSummary = `
-## ${emoji} OpenManager VIBE E2E 테스트 결과
+## ${emoji} OpenManager AI E2E 테스트 결과
 
 ### 📊 요약
 - **전체 테스트**: ${summary.totalTests}개

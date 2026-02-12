@@ -7,7 +7,7 @@
 
 ## Overview
 
-OpenManager VIBE의 테스트 전략은 **클라우드 네이티브 우선** 원칙을 따릅니다.
+OpenManager AI의 테스트 전략은 **클라우드 네이티브 우선** 원칙을 따릅니다.
 
 > **핵심 철학**: "실제 Vercel/GCP/Supabase 환경 테스트가 Mock보다 더 유효하다"
 

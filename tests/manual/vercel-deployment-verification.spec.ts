@@ -11,7 +11,7 @@ import { expect, test } from '@playwright/test';
  * 4. 종합 결과 리포트 생성
  */
 
-const VERCEL_URL = 'https://openmanager-vibe-v5.vercel.app';
+const VERCEL_URL = 'https://openmanager-ai.vercel.app';
 const SCREENSHOT_DIR = path.join(process.cwd(), 'tests/manual/screenshots');
 
 test.describe('Vercel 배포 검증 및 E2E 테스트 분석', () => {

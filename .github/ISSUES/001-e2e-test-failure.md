@@ -124,7 +124,7 @@ await enableVercelTestMode(page, { mode: 'guest', bypass: false });
 **수정 3**: `PLAYWRIGHT_BASE_URL` 환경변수 추가
 ```json
 // package.json:41
-"test:vercel:e2e": "PLAYWRIGHT_BASE_URL=\"https://openmanager-vibe-v5.vercel.app\" ..."
+"test:vercel:e2e": "PLAYWRIGHT_BASE_URL=\"https://openmanager-ai.vercel.app\" ..."
 ```
 
 **수정 4**: Playwright request API 사용
@@ -379,7 +379,7 @@ middleware 버그가 수정되었으므로 더 이상 필요하지 않을 수 �
 ### Vercel 프로덕션 환경 E2E 테스트
 
 **실행 환경**:
-- URL: https://openmanager-vibe-v5.vercel.app
+- URL: https://openmanager-ai.vercel.app
 - 커밋: 77cbb173 (사이드 이펙트 수정 포함)
 - 날짜: 2025-10-03 00:23
 

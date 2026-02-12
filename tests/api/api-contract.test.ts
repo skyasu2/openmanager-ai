@@ -1,5 +1,5 @@
 /**
- * 🧪 OpenManager VIBE v5 - API Contract Tests
+ * 🧪 OpenManager AI - API Contract Tests
  *
  * @description 핵심 API 엔드포인트의 Contract(스키마/응답형식) 검증
  * @author Claude Code (Test Automation Specialist)

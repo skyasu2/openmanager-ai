@@ -57,7 +57,7 @@ describe('isVercelEnvironment', () => {
     // Given
     // @ts-expect-error - 테스트를 위한 window 모킹
     global.window = {
-      location: { hostname: 'openmanager-vibe-v5.vercel.app' },
+      location: { hostname: 'openmanager-ai.vercel.app' },
     };
 
     // When & Then
@@ -243,13 +243,13 @@ describe('validateRedirectUrl', () => {
 
   it('프로덕션 도메인 허용', () => {
     expect(
-      validateRedirectUrl('https://openmanager-vibe-v5.vercel.app/dashboard')
+      validateRedirectUrl('https://openmanager-ai.vercel.app/dashboard')
     ).toBe(true);
   });
 
   it('프리뷰 배포 도메인 허용', () => {
     expect(
-      validateRedirectUrl('https://openmanager-vibe-v5-abc123.vercel.app/page')
+      validateRedirectUrl('https://openmanager-ai-abc123.vercel.app/page')
     ).toBe(true);
   });
 

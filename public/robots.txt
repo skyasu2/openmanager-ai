@@ -1,4 +1,4 @@
-# OpenManager VIBE v5 - Robots.txt
+# OpenManager AI - Robots.txt
 # API 엔드포인트 크롤링 차단으로 Edge request 절약
 
 User-agent: *
@@ -35,4 +35,4 @@ User-agent: *
 Crawl-delay: 600
 
 # 사이트맵 (Next.js 자동 생성)
-Sitemap: https://openmanager-vibe-v5.vercel.app/sitemap.xml
+Sitemap: https://openmanager-ai.vercel.app/sitemap.xml

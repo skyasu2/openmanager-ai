@@ -1,4 +1,4 @@
-# OpenManager VIBE 빠른 시작 가이드
+# OpenManager AI 빠른 시작 가이드
 
 > **v7.1.4** | Updated 2026-02-08
 
@@ -17,8 +17,8 @@
 ### 1. 프로젝트 복제 및 설치
 
 ```bash
-git clone https://github.com/your-username/openmanager-vibe-v5.git
-cd openmanager-vibe-v5
+git clone https://github.com/your-username/openmanager-ai.git
+cd openmanager-ai
 npm install
 ```
 

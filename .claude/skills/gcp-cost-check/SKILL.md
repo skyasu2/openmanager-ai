@@ -20,7 +20,7 @@ GCP Cloud Build / Cloud Run 사용량과 예상 비용을 CLI로 조회하여 Fr
 
 ## Context
 
-- **Project**: OpenManager VIBE (GCP Project: `openmanager-free-tier`)
+- **Project**: OpenManager AI (GCP Project: `openmanager-free-tier`)
 - **Billing Account**: `01D9C2-7A24CC-D7CD22` (KRW)
 - **Dependencies**: `gcloud` CLI (authenticated)
 

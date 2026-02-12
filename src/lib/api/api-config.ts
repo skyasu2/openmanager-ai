@@ -14,7 +14,7 @@ function getSiteUrl(): string {
     return `https://${env.NEXT_PUBLIC_VERCEL_URL}`;
   }
   if (isProduction) {
-    return env.NEXT_PUBLIC_PROD_URL || 'https://openmanager-vibe-v5.vercel.app';
+    return env.NEXT_PUBLIC_PROD_URL || 'https://openmanager-ai.vercel.app';
   }
   if (isTest) {
     return env.NEXT_PUBLIC_TEST_URL || 'https://openmanager-test.vercel.app';

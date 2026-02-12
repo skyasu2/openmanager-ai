@@ -4,7 +4,7 @@
 
 ## 개요
 
-이 가이드를 따라하면 **완전히 새로운 Windows 11 PC**에서 OpenManager VIBE 프로젝트를 개발할 수 있습니다.
+이 가이드를 따라하면 **완전히 새로운 Windows 11 PC**에서 OpenManager AI 프로젝트를 개발할 수 있습니다.
 
 ### 예상 소요 시간
 - 전체: 약 1-2시간
@@ -426,12 +426,12 @@ cd ~/projects
 
 ```bash
 # SSH로 클론
-git clone git@github.com:skyasu2/openmanager-vibe-v5.git
+git clone git@github.com:skyasu2/openmanager-ai.git
 
 # 또는 HTTPS
-git clone https://github.com/skyasu2/openmanager-vibe-v5.git
+git clone https://github.com/skyasu2/openmanager-ai.git
 
-cd openmanager-vibe-v5
+cd openmanager-ai
 ```
 
 ### 6.3 Node.js 버전 확인

@@ -1,5 +1,5 @@
 /**
- * @fileoverview AI-Friendly Test Template for OpenManager VIBE
+ * @fileoverview AI-Friendly Test Template for OpenManager AI
  * @description Standardized test template optimized for AI parsing and understanding
  * @author Claude AI Assistant
  * @since 2025-09-24

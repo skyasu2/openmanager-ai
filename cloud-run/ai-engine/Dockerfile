@@ -82,8 +82,8 @@ ARG GIT_SHA
 # OCI Image Labels (standard)
 LABEL org.opencontainers.image.title="AI Engine"
 LABEL org.opencontainers.image.version="${APP_VERSION}"
-LABEL org.opencontainers.image.description="Multi-Agent AI Supervisor for OpenManager VIBE"
-LABEL org.opencontainers.image.source="https://github.com/skyasu2/openmanager-vibe-v5"
+LABEL org.opencontainers.image.description="Multi-Agent AI Supervisor for OpenManager AI"
+LABEL org.opencontainers.image.source="https://github.com/skyasu2/openmanager-ai"
 LABEL org.opencontainers.image.created="${BUILD_DATE}"
 LABEL org.opencontainers.image.revision="${GIT_SHA}"
 LABEL org.opencontainers.image.base.name="node:22-alpine3.21"

@@ -16,7 +16,7 @@ echo -e "${CYAN}📊 AI 교차검증 활용 통계 (최근 30일)${NC}"
 echo ""
 
 # Decision Logs 분석
-DECISION_LOGS_DIR="/mnt/d/cursor/openmanager-vibe-v5/logs/ai-decisions"
+DECISION_LOGS_DIR="/mnt/d/cursor/openmanager-ai/logs/ai-decisions"
 
 if [ ! -d "$DECISION_LOGS_DIR" ]; then
     echo -e "${YELLOW}⚠️  Decision Logs 디렉터리 없음${NC}"
@@ -27,7 +27,7 @@ fi
 echo -e "${GREEN}=== AI 교차검증 활용 빈도 (Decision Logs 기준) ===${NC}"
 echo ""
 
-for agent_file in /mnt/d/cursor/openmanager-vibe-v5/.claude/agents/*.md; do
+for agent_file in /mnt/d/cursor/openmanager-ai/.claude/agents/*.md; do
     if [ -f "$agent_file" ]; then
         agent_name=$(basename "$agent_file" .md)
         count=$(grep -l "$agent_name" "$DECISION_LOGS_DIR"/*.md 2>/dev/null | wc -l)

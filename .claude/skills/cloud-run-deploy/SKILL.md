@@ -29,7 +29,7 @@ Automate Cloud Run AI Engine deployment with free tier optimized configuration, 
 
 ## Context
 
-- **Project**: OpenManager VIBE v5.85.0
+- **Project**: OpenManager AI v5.85.0
 - **Region**: asia-northeast1 (Seoul)
 - **Service**: ai-engine
 - **Tier**: FREE TIER OPTIMIZED
@@ -63,7 +63,7 @@ Automate Cloud Run AI Engine deployment with free tier optimized configuration, 
 
 ```bash
 # Check current working directory
-cd /mnt/d/cursor/openmanager-vibe-v5/cloud-run/ai-engine
+cd /mnt/d/cursor/openmanager-ai/cloud-run/ai-engine
 
 # Verify GCP project
 gcloud config get-value project
@@ -80,7 +80,7 @@ git status --short
 
 ```bash
 # Verify TypeScript compiles
-npm run build --prefix /mnt/d/cursor/openmanager-vibe-v5/cloud-run/ai-engine
+npm run build --prefix /mnt/d/cursor/openmanager-ai/cloud-run/ai-engine
 ```
 
 **Expected**:
@@ -91,7 +91,7 @@ npm run build --prefix /mnt/d/cursor/openmanager-vibe-v5/cloud-run/ai-engine
 
 ```bash
 # Run deployment script
-cd /mnt/d/cursor/openmanager-vibe-v5/cloud-run/ai-engine && bash deploy.sh
+cd /mnt/d/cursor/openmanager-ai/cloud-run/ai-engine && bash deploy.sh
 ```
 
 **Deployment Steps** (automated by script):

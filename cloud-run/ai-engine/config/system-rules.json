@@ -138,7 +138,7 @@
     }
   ],
   "metadata": {
-    "description": "OpenManager VIBE v5 시스템 모니터링 규칙 설정",
+    "description": "OpenManager AI 시스템 모니터링 규칙 설정",
     "maintainer": "OpenManager Team",
     "aiInstructions": "이 규칙 파일은 서버 모니터링의 Single Source of Truth입니다. 임계값 관련 질문 시 이 설정을 참조하여 정확한 수치로 답변하세요. 예: 'CPU 85% 이상이면 심각(critical) 상태입니다.'"
   }
