@@ -22,6 +22,7 @@ import {
   type PrometheusTarget,
 } from '@/data/hourly-data';
 import { getOTelHourlyData } from '@/data/otel-metrics';
+import { getOTelResourceCatalog } from '@/data/otel-processed';
 import { logger } from '@/lib/logging';
 import type { OTelResourceAttributes } from '@/types/otel-metrics';
 import type { ExportMetricsServiceRequest } from '@/types/otel-standard';
@@ -113,10 +114,18 @@ function extractMetricsFromStandard(
         resMetric.resource.attributes.find((a) => a.key === k)?.value
           .stringValue;
 
+      // Resource Catalog에서 전체 메타데이터 보강
+      const catalog = getOTelResourceCatalog();
+      const catalogEntry = catalog.resources[serverId];
+
       serverMap.set(serverId, {
         serverId,
-        serverType: getAttr('host.type') ?? 'unknown',
-        location: getAttr('cloud.availability_zone') ?? 'unknown',
+        serverType:
+          getAttr('host.type') ?? catalogEntry?.['host.type'] ?? 'unknown',
+        location:
+          getAttr('cloud.availability_zone') ??
+          catalogEntry?.['cloud.availability_zone'] ??
+          'unknown',
         timestamp,
         minuteOfDay,
         cpu: 0,
@@ -126,11 +135,18 @@ function extractMetricsFromStandard(
         logs: [],
         status: 'online',
         hostname: hostname,
-        environment: getAttr('deployment.environment'),
-        os: getAttr('os.type'),
-        otelResource: Object.fromEntries(
-          resMetric.resource.attributes.map((a) => [a.key, a.value.stringValue])
-        ) as unknown as OTelResourceAttributes,
+        environment:
+          getAttr('deployment.environment') ??
+          catalogEntry?.['deployment.environment'],
+        os: getAttr('os.type') ?? catalogEntry?.['os.type'],
+        otelResource:
+          catalogEntry ??
+          (Object.fromEntries(
+            resMetric.resource.attributes.map((a) => [
+              a.key,
+              a.value.stringValue,
+            ])
+          ) as unknown as OTelResourceAttributes),
       });
     }
 
@@ -184,6 +200,9 @@ function extractMetricsFromStandard(
             break;
           case 'system.processes.count':
             server.procsRunning = value;
+            break;
+          case 'system.uptime':
+            server.bootTimeSeconds = Math.floor(Date.now() / 1000) - value;
             break;
         }
       }
