@@ -43,30 +43,6 @@ vi.mock('../data/precomputed-state', () => ({
   })),
 }));
 
-// Mock fixed-24h-metrics
-vi.mock('../data/fixed-24h-metrics', () => ({
-  FIXED_24H_DATASETS: [
-    {
-      serverId: 'web-server-01',
-      data: [
-        { timestamp: '2026-01-18T10:00:00Z', cpu: 80, memory: 70, disk: 44 },
-        { timestamp: '2026-01-18T10:10:00Z', cpu: 82, memory: 71, disk: 44 },
-        { timestamp: '2026-01-18T10:20:00Z', cpu: 84, memory: 72, disk: 45 },
-        { timestamp: '2026-01-18T10:30:00Z', cpu: 86, memory: 73, disk: 45 },
-        { timestamp: '2026-01-18T10:40:00Z', cpu: 88, memory: 74, disk: 45 },
-        { timestamp: '2026-01-18T10:50:00Z', cpu: 90, memory: 75, disk: 45 },
-      ],
-    },
-    {
-      serverId: 'db-server-01',
-      data: [
-        { timestamp: '2026-01-18T10:00:00Z', cpu: 88, memory: 85, disk: 76 },
-        { timestamp: '2026-01-18T10:10:00Z', cpu: 89, memory: 86, disk: 77 },
-        { timestamp: '2026-01-18T10:20:00Z', cpu: 92, memory: 87, disk: 77 },
-      ],
-    },
-  ],
-}));
 
 import {
   evaluateIncidentReport,

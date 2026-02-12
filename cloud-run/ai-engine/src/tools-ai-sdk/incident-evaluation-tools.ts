@@ -13,8 +13,7 @@ import { tool } from 'ai';
 import { z } from 'zod';
 
 // Data sources
-import { getCurrentState } from '../data/precomputed-state';
-import { FIXED_24H_DATASETS } from '../data/fixed-24h-metrics';
+import { getCurrentState, getRecentHistory } from '../data/precomputed-state';
 
 // Note: We define our own types to avoid coupling with incident-report-tools
 // This allows for more flexible input validation
@@ -503,7 +502,6 @@ export const refineRootCauseAnalysis = tool({
 
     const state = getCurrentState();
     const server = state.servers.find(s => s.id === serverId);
-    const dataset = FIXED_24H_DATASETS.find(d => d.serverId === serverId);
 
     if (!server) {
       return {
@@ -536,23 +534,27 @@ export const refineRootCauseAnalysis = tool({
       confidenceBoost += 0.1;
     }
 
-    // Analyze historical trend
-    if (dataset && dataset.data.length > 0) {
-      const recentData = dataset.data.slice(-6);
-      const cpuTrend = recentData.map(d => d.cpu);
-      const avgCpu = cpuTrend.reduce((a, b) => a + b, 0) / cpuTrend.length;
+    // Analyze historical trend from precomputed-state
+    const history = getRecentHistory(6);
+    if (history.length > 0) {
+      const cpuTrend = history
+        .map((h) => h.servers.find((s) => s.id === serverId)?.cpu)
+        .filter((v): v is number => v !== undefined);
 
-      if (avgCpu > 85) {
-        additionalEvidence.push(`최근 1시간 평균 CPU ${avgCpu.toFixed(1)}% (지속적 고부하)`);
-        confidenceBoost += 0.05;
-      }
+      if (cpuTrend.length > 0) {
+        const avgCpu = cpuTrend.reduce((a, b) => a + b, 0) / cpuTrend.length;
+        if (avgCpu > 85) {
+          additionalEvidence.push(`최근 1시간 평균 CPU ${avgCpu.toFixed(1)}% (지속적 고부하)`);
+          confidenceBoost += 0.05;
+        }
 
-      // Check for spike pattern
-      const maxCpu = Math.max(...cpuTrend);
-      const minCpu = Math.min(...cpuTrend);
-      if (maxCpu - minCpu > 30) {
-        additionalEvidence.push(`CPU 변동폭 ${(maxCpu - minCpu).toFixed(1)}% (불안정 패턴 감지)`);
-        confidenceBoost += 0.05;
+        // Check for spike pattern
+        const maxCpu = Math.max(...cpuTrend);
+        const minCpu = Math.min(...cpuTrend);
+        if (maxCpu - minCpu > 30) {
+          additionalEvidence.push(`CPU 변동폭 ${(maxCpu - minCpu).toFixed(1)}% (불안정 패턴 감지)`);
+          confidenceBoost += 0.05;
+        }
       }
     }
 

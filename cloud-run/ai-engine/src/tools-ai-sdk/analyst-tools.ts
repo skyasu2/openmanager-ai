@@ -14,12 +14,9 @@ import { z } from 'zod';
 // Data sources
 import {
   getCurrentState,
+  getStateBySlot,
   type ServerSnapshot,
 } from '../data/precomputed-state';
-import {
-  FIXED_24H_DATASETS,
-  getRecentData,
-} from '../data/fixed-24h-metrics';
 
 // AI/ML modules
 import {
@@ -91,29 +88,37 @@ function getHistoryForMetric(
   metric: string,
   currentValue: number
 ): MetricDataPoint[] {
-  const dataset = FIXED_24H_DATASETS.find((d) => d.serverId === serverId);
-  const currentMinute = getCurrentMinuteOfDay();
-
-  if (dataset) {
-    const recentData = getRecentData(dataset, currentMinute, 36);
-    const now = Date.now();
-    const baseTime = now - (now % (10 * 60 * 1000));
-    return recentData.map((d, i) => ({
-      timestamp: baseTime - (recentData.length - 1 - i) * 600000,
-      value: d[metric as keyof typeof d] as number ?? 0,
-    }));
-  }
-
-  // Fallback: generate 36 points with current value
+  const currentSlot = getCurrentSlotIndex();
   const now = Date.now();
-  const history: MetricDataPoint[] = [];
-  for (let i = 0; i < 36; i++) {
-    history.push({
-      timestamp: now - i * 600000,
-      value: currentValue,
-    });
+  const baseTime = now - (now % (10 * 60 * 1000));
+  const points: MetricDataPoint[] = [];
+
+  for (let i = 35; i >= 0; i--) {
+    const slotIdx = ((currentSlot - i) % 144 + 144) % 144;
+    const slot = getStateBySlot(slotIdx);
+    const server = slot?.servers.find((s) => s.id === serverId);
+    if (server) {
+      points.push({
+        timestamp: baseTime - i * 600000,
+        value: (server[metric as keyof typeof server] as number) ?? 0,
+      });
+    } else {
+      points.push({
+        timestamp: baseTime - i * 600000,
+        value: currentValue,
+      });
+    }
   }
-  return history;
+
+  return points;
+}
+
+function getCurrentSlotIndex(): number {
+  const now = new Date();
+  const kstOffset = 9 * 60;
+  const utcMinutes = now.getUTCHours() * 60 + now.getUTCMinutes();
+  const kstMinutes = (utcMinutes + kstOffset) % 1440;
+  return Math.floor(kstMinutes / 10);
 }
 
 // Pattern analysis constants

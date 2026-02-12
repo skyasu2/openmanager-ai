@@ -14,7 +14,7 @@ import {
   calculateAggregation,
   getTimeRangeData,
   getCurrentState,
-  FIXED_24H_DATASETS,
+  getAllServerEntries,
   get24hTrendSummaries,
   getDataCache,
   SERVER_GROUP_INPUT_DESCRIPTION,
@@ -233,12 +233,13 @@ export const getServerMetricsAdvanced = tool({
     return cache.getOrCompute('metrics', cacheKey, async () => {
     console.log(`📊 [getServerMetricsAdvanced] Computing for ${cacheKey} (cache miss)`);
     try {
-      // 1. Get target datasets
-      const targetDatasets = serverId
-        ? FIXED_24H_DATASETS.filter((d) => d.serverId === serverId)
-        : FIXED_24H_DATASETS;
+      // 1. Get target server entries from precomputed slots
+      const allEntries = getAllServerEntries();
+      const targetEntries = serverId
+        ? allEntries.filter((e) => e.serverId === serverId)
+        : allEntries;
 
-      if (targetDatasets.length === 0) {
+      if (targetEntries.length === 0) {
         return { success: false, error: `Server not found: ${serverId}` };
       }
 
@@ -252,8 +253,8 @@ export const getServerMetricsAdvanced = tool({
         dataPoints?: number;
       }> = [];
 
-      for (const dataset of targetDatasets) {
-        const dataPoints = getTimeRangeData(dataset, timeRange);
+      for (const entry of targetEntries) {
+        const dataPoints = getTimeRangeData(entry.serverId, timeRange);
         if (dataPoints.length === 0) continue;
 
         let metrics: Record<string, number>;
@@ -273,10 +274,10 @@ export const getServerMetricsAdvanced = tool({
         }
 
         serverResults.push({
-          id: dataset.serverId,
-          name: dataset.serverId,
-          type: dataset.serverType,
-          location: dataset.location,
+          id: entry.serverId,
+          name: entry.serverId,
+          type: entry.serverType,
+          location: entry.location,
           metrics,
           dataPoints: dataPoints.length,
         });

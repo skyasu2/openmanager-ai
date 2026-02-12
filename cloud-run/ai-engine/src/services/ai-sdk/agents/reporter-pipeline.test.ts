@@ -55,42 +55,6 @@ vi.mock('../../../data/precomputed-state', () => ({
   })),
 }));
 
-// Mock fixed-24h-metrics
-vi.mock('../../../data/fixed-24h-metrics', () => ({
-  FIXED_24H_DATASETS: [
-    {
-      serverId: 'web-server-01',
-      serverType: 'web',
-      location: 'Seoul',
-      data: [
-        { timestamp: '2026-01-18T10:00:00Z', cpu: 80, memory: 70, disk: 44, network: 100 },
-        { timestamp: '2026-01-18T10:10:00Z', cpu: 82, memory: 71, disk: 44, network: 105 },
-        { timestamp: '2026-01-18T10:20:00Z', cpu: 84, memory: 72, disk: 45, network: 110 },
-        { timestamp: '2026-01-18T10:30:00Z', cpu: 86, memory: 73, disk: 45, network: 115 },
-        { timestamp: '2026-01-18T10:40:00Z', cpu: 88, memory: 74, disk: 45, network: 118 },
-        { timestamp: '2026-01-18T10:50:00Z', cpu: 90, memory: 75, disk: 45, network: 120 },
-      ],
-    },
-    {
-      serverId: 'db-server-01',
-      serverType: 'database',
-      location: 'Seoul',
-      data: [
-        { timestamp: '2026-01-18T10:00:00Z', cpu: 88, memory: 85, disk: 76, network: 180 },
-        { timestamp: '2026-01-18T10:10:00Z', cpu: 89, memory: 86, disk: 77, network: 185 },
-        { timestamp: '2026-01-18T10:20:00Z', cpu: 90, memory: 87, disk: 77, network: 190 },
-        { timestamp: '2026-01-18T10:30:00Z', cpu: 91, memory: 87, disk: 78, network: 195 },
-        { timestamp: '2026-01-18T10:40:00Z', cpu: 92, memory: 88, disk: 78, network: 198 },
-        { timestamp: '2026-01-18T10:50:00Z', cpu: 93, memory: 88, disk: 78, network: 200 },
-      ],
-    },
-  ],
-  getDataAtMinute: vi.fn(() => ({ cpu: 85, memory: 72, disk: 45, network: 120 })),
-  getRecentData: vi.fn(() => [
-    { cpu: 80, memory: 70, disk: 44, network: 100 },
-    { cpu: 85, memory: 72, disk: 45, network: 120 },
-  ]),
-}));
 
 import {
   executeReporterPipeline,

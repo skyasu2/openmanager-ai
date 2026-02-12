@@ -11,8 +11,7 @@
  */
 
 // Data sources for direct tool execution
-import { getCurrentState } from '../../../data/precomputed-state';
-import { FIXED_24H_DATASETS } from '../../../data/fixed-24h-metrics';
+import { getCurrentState, getRecentHistory } from '../../../data/precomputed-state';
 import { logger } from '../../../lib/logger';
 
 // ============================================================================
@@ -397,17 +396,23 @@ function optimizeReport(
     report.affectedServers.length > 0
   ) {
     const serverId = report.affectedServers[0].id;
-    const dataset = FIXED_24H_DATASETS.find(d => d.serverId === serverId);
 
     const additionalEvidence: string[] = [];
     let confidenceBoost = 0;
 
-    if (dataset && dataset.data.length > 0) {
-      const recentData = dataset.data.slice(-6);
-      const avgCpu = recentData.reduce((sum, d) => sum + d.cpu, 0) / recentData.length;
-      if (avgCpu > 85) {
-        additionalEvidence.push(`최근 1시간 평균 CPU ${avgCpu.toFixed(1)}%`);
-        confidenceBoost += 0.1;
+    // precomputed-state에서 최근 6슬롯(1시간) 히스토리 조회
+    const history = getRecentHistory(6);
+    if (history.length > 0) {
+      const serverCpuValues = history
+        .map((h) => h.servers.find((s) => s.id === serverId)?.cpu)
+        .filter((v): v is number => v !== undefined);
+
+      if (serverCpuValues.length > 0) {
+        const avgCpu = serverCpuValues.reduce((sum, v) => sum + v, 0) / serverCpuValues.length;
+        if (avgCpu > 85) {
+          additionalEvidence.push(`최근 1시간 평균 CPU ${avgCpu.toFixed(1)}%`);
+          confidenceBoost += 0.1;
+        }
       }
     }
 

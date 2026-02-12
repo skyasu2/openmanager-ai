@@ -11,10 +11,11 @@
 import { tool } from 'ai';
 import { z } from 'zod';
 
-// Data sources - 순수 메트릭 기반 분석 (시나리오 정보 제거)
+// Data sources - precomputed-state 기반 분석
 import {
-  FIXED_24H_DATASETS,
-} from '../data/fixed-24h-metrics';
+  getStateBySlot,
+  getRecentHistory,
+} from '../data/precomputed-state';
 
 // ============================================================================
 // 1. Types
@@ -87,37 +88,36 @@ export const buildIncidentTimeline = tool({
     try {
       const events: TimelineEvent[] = [];
       const now = new Date();
+      const slotsNeeded = Math.min(144, timeRangeHours * 6);
 
-      // 순수 메트릭 기반 분석 - 임계값 초과 감지
-      const dataset = FIXED_24H_DATASETS.find((d) => d.serverId === serverId);
-      if (dataset) {
-        const thresholds: Record<string, number> = {
-          cpu: 80,
-          memory: 85,
-          disk: 90,
-          network: 85,
-        };
+      // precomputed-state 기반 분석 - 임계값 초과 감지
+      const history = getRecentHistory(slotsNeeded);
+      const thresholds: Record<string, number> = {
+        cpu: 80,
+        memory: 85,
+        disk: 90,
+        network: 85,
+      };
 
-        for (const [metric, threshold] of Object.entries(thresholds)) {
-          const dataLength = Math.min(dataset.data.length, timeRangeHours * 6);
-          for (let i = 0; i < dataLength; i++) {
-            const point = dataset.data[i];
-            const value = point[metric as keyof typeof point] as number;
+      for (const [metric, threshold] of Object.entries(thresholds)) {
+        for (let i = 0; i < history.length; i++) {
+          const server = history[i].servers.find((s) => s.id === serverId);
+          if (!server) continue;
 
-            if (value >= threshold) {
-              const eventTime = new Date(now);
-              eventTime.setMinutes(eventTime.getMinutes() - i * 10);
+          const value = server[metric as keyof typeof server] as number;
+          if (value >= threshold) {
+            const eventTime = new Date(now);
+            eventTime.setMinutes(eventTime.getMinutes() - i * 10);
 
-              events.push({
-                timestamp: eventTime.toISOString(),
-                eventType: 'threshold_breach',
-                metric,
-                value,
-                severity: value >= 90 ? 'critical' : 'warning',
-                description: `${metric.toUpperCase()} breached ${threshold}%: ${value.toFixed(1)}%`,
-              });
-              break; // Only first breach per metric
-            }
+            events.push({
+              timestamp: eventTime.toISOString(),
+              eventType: 'threshold_breach',
+              metric,
+              value,
+              severity: value >= 90 ? 'critical' : 'warning',
+              description: `${metric.toUpperCase()} breached ${threshold}%: ${value.toFixed(1)}%`,
+            });
+            break; // Only first breach per metric
           }
         }
       }
@@ -173,26 +173,24 @@ export const correlateMetrics = tool({
     targetMetric: 'cpu' | 'memory' | 'disk' | 'network';
   }) => {
     try {
-      const dataset = FIXED_24H_DATASETS.find((d) => d.serverId === serverId);
+      // 최근 2시간(12슬롯) 히스토리에서 상관관계 분석
+      const history = getRecentHistory(12);
+      const allMetrics = ['cpu', 'memory', 'disk', 'network'] as const;
+      const otherMetrics = allMetrics.filter((m) => m !== targetMetric);
 
-      if (!dataset) {
+      // Extract values from precomputed slots
+      const targetValues = history
+        .map((h) => h.servers.find((s) => s.id === serverId)?.[targetMetric])
+        .filter((v): v is number => v !== undefined);
+
+      if (targetValues.length === 0) {
         return { success: false, error: `Server not found: ${serverId}` };
       }
 
-      const allMetrics = ['cpu', 'memory', 'disk', 'network'] as const;
-      type MetricType = (typeof allMetrics)[number];
-      const otherMetrics = allMetrics.filter((m) => m !== targetMetric);
-
-      // Extract values (last 2 hours = 12 points)
-      const dataPoints = dataset.data.slice(-12);
-      const targetValues = dataPoints.map(
-        (p) => p[targetMetric as keyof typeof p] as number
-      );
-
       const correlations = otherMetrics.map((metric) => {
-        const metricValues = dataPoints.map(
-          (p) => p[metric as keyof typeof p] as number
-        );
+        const metricValues = history
+          .map((h) => h.servers.find((s) => s.id === serverId)?.[metric])
+          .filter((v): v is number => v !== undefined);
         const coefficient = calculateCorrelation(targetValues, metricValues);
 
         return {
@@ -260,15 +258,18 @@ export const findRootCause = tool({
       const hypotheses: RootCauseHypothesis[] = [];
       const symptomLower = symptom.toLowerCase();
 
-      // 순수 메트릭 기반 분석 - 현재 메트릭 값 조회
-      const dataset = FIXED_24H_DATASETS.find((d) => d.serverId === serverId);
-      if (dataset) {
-        const recentData = dataset.data.slice(-6); // 최근 1시간 데이터
+      // precomputed-state 기반 분석 - 최근 1시간 메트릭 조회
+      const recentHistory = getRecentHistory(6);
+      const serverMetrics = recentHistory
+        .map((h) => h.servers.find((s) => s.id === serverId))
+        .filter((s): s is NonNullable<typeof s> => s !== undefined);
+
+      if (serverMetrics.length > 0) {
         const avgMetrics = {
-          cpu: recentData.reduce((sum, d) => sum + d.cpu, 0) / recentData.length,
-          memory: recentData.reduce((sum, d) => sum + d.memory, 0) / recentData.length,
-          disk: recentData.reduce((sum, d) => sum + d.disk, 0) / recentData.length,
-          network: recentData.reduce((sum, d) => sum + d.network, 0) / recentData.length,
+          cpu: serverMetrics.reduce((sum, s) => sum + s.cpu, 0) / serverMetrics.length,
+          memory: serverMetrics.reduce((sum, s) => sum + s.memory, 0) / serverMetrics.length,
+          disk: serverMetrics.reduce((sum, s) => sum + s.disk, 0) / serverMetrics.length,
+          network: serverMetrics.reduce((sum, s) => sum + s.network, 0) / serverMetrics.length,
         };
 
         // 메트릭 임계값 기반 가설 생성

@@ -122,13 +122,6 @@ vi.mock('../lib/cache-layer', () => ({
   })),
 }));
 
-// Mock fixed-24h-metrics
-vi.mock('../data/fixed-24h-metrics', () => ({
-  FIXED_24H_DATASETS: [],
-  getDataAtMinute: vi.fn(() => ({ cpu: 50, memory: 60, disk: 40, network: 100 })),
-  getRecentData: vi.fn(() => []),
-}));
-
 import { getServerByGroup, getServerByGroupAdvanced, getServerMetrics, filterServers } from './server-metrics';
 
 // ============================================================================

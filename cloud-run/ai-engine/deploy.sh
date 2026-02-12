@@ -95,6 +95,12 @@ mkdir -p data/hourly-data
 cp ../../src/data/hourly-data/*.json ./data/hourly-data/
 echo "   ✅ hourly-data synced ($(ls -1 data/hourly-data/*.json | wc -l) files)"
 
+# OTel processed data (PRIMARY data source — pre-aggregated by build-time pipeline)
+mkdir -p data/otel-processed/hourly
+cp ../../src/data/otel-processed/resource-catalog.json ./data/otel-processed/
+cp ../../src/data/otel-processed/hourly/*.json ./data/otel-processed/hourly/
+echo "   ✅ otel-processed synced (resource-catalog + $(ls -1 data/otel-processed/hourly/*.json | wc -l) hourly files)"
+
 # 1. Build Container Image (Cloud Build with BuildKit)
 echo ""
 echo "📦 Building Container Image..."
