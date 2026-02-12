@@ -63,10 +63,15 @@ export function toLokiLogEntry(
   const pidMatch = line.match(/\[(\d+)\]/);
 
   const structuredMetadata: LokiStructuredMetadata = {
-    trace_id: generateTraceId(),
+    trace_id: entry.traceId || generateTraceId(),
+    ...(entry.spanId ? { span_id: entry.spanId } : {}),
     ...(pidMatch ? { pid: pidMatch[1] } : {}),
     ...(scenario ? { scenario } : {}),
     instance: `${ctx.hostname}:9100`,
+    // Flatten structuredData into metadata for LogQL filtering
+    ...(entry.structuredData
+      ? flattenStructuredData(entry.structuredData)
+      : {}),
   };
 
   return {
@@ -172,4 +177,19 @@ function generateTraceId(): string {
       .padStart(2, '0');
   }
   return bytes.join('');
+}
+
+/** Flatten nested objects into single-level string map for Loki metadata */
+function flattenStructuredData(
+  data: Record<string, unknown>
+): Record<string, string> {
+  const result: Record<string, string> = {};
+  for (const [key, value] of Object.entries(data)) {
+    if (typeof value === 'object' && value !== null) {
+      result[key] = JSON.stringify(value);
+    } else {
+      result[key] = String(value);
+    }
+  }
+  return result;
 }

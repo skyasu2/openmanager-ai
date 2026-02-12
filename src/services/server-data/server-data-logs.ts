@@ -116,53 +116,89 @@ export function generateServerLogs(
   const pid = (base: number) => base + Math.floor(Math.random() * 1000);
   const ago = (ms: number) => new Date(now.getTime() - ms).toISOString();
 
+  // OTel Trace ID/Span ID helpers (Hex strings)
+  const genTraceId = () =>
+    Array.from({ length: 32 }, () =>
+      Math.floor(Math.random() * 16).toString(16)
+    ).join('');
+  const genSpanId = () =>
+    Array.from({ length: 16 }, () =>
+      Math.floor(Math.random() * 16).toString(16)
+    ).join('');
+
   // ─── 1st Pass: Metric-driven mandatory logs ─────────────────────
 
   // CPU critical (> 90%)
   if (cpu > 90) {
+    const traceId = genTraceId(); // Correlation: Kernel throttle -> GC overhead
     push({
       timestamp: ago(15000),
       level: 'error',
       message: `${hostPrefix}kernel: [${pid(50000)}.${pid(100)}] CPU${Math.floor(Math.random() * 8)}: Package temperature above threshold, cpu clock throttled`,
       source: 'kernel',
+      traceId,
+      spanId: genSpanId(),
+      structuredData: { temperature: 95, threshold: 90, cpu_id: 2 },
     });
     push({
       timestamp: ago(30000),
       level: 'warn',
       message: `${hostPrefix}java[${pid(5000)}]: GC overhead limit exceeded - heap usage at ${cpu.toFixed(0)}%`,
       source: 'java',
+      traceId,
+      spanId: genSpanId(),
+      structuredData: { heap_usage: cpu, gc_duration_ms: 2500 },
     });
   }
 
   // CPU warning (> 80%)
   if (cpu > 80 && cpu <= 90) {
+    const traceId = genTraceId();
     push({
       timestamp: ago(20000),
       level: 'warn',
       message: `${hostPrefix}systemd[1]: node-exporter.service: Watchdog timeout (limit 30s)!`,
       source: 'systemd',
+      traceId,
+      spanId: genSpanId(),
     });
   }
 
   // Memory critical (> 85%)
   if (memory > 85) {
+    const traceId = genTraceId(); // Correlation: OOM Kill -> Redis Warning -> Docker Kill
     push({
       timestamp: ago(10000),
       level: 'error',
       message: `${hostPrefix}kernel: Out of memory: Killed process ${pid(10000)} (java) total-vm:${Math.floor(memory * 100)}kB, anon-rss:${Math.floor(memory * 80)}kB`,
       source: 'kernel',
+      traceId,
+      spanId: genSpanId(),
+      structuredData: {
+        process: 'java',
+        memory_kb: Math.floor(memory * 100),
+        reason: 'OOM',
+      },
     });
     push({
       timestamp: ago(25000),
       level: 'error',
       message: `${hostPrefix}redis-server[${pid(3000)}]: # WARNING: Memory usage ${memory.toFixed(0)}% of max. Consider increasing maxmemory.`,
       source: 'redis',
+      traceId,
+      spanId: genSpanId(),
     });
     push({
       timestamp: ago(40000),
       level: 'warn',
       message: `${hostPrefix}dockerd[${pid(800)}]: container ${serverId.substring(0, 12)} OOMKilled=true (memory limit: 2GiB)`,
       source: 'docker',
+      traceId,
+      spanId: genSpanId(),
+      structuredData: {
+        container_id: serverId.substring(0, 12),
+        event: 'OOMKilled',
+      },
     });
   }
 
@@ -178,45 +214,62 @@ export function generateServerLogs(
 
   // Disk critical (> 80%)
   if (disk > 80) {
+    const traceId = genTraceId(); // Correlation: FS Warning -> MySQL Fail -> Rsync Fail
     push({
       timestamp: ago(20000),
       level: 'error',
       message: `${hostPrefix}kernel: [${pid(80000)}.${pid(100)}] EXT4-fs warning (device sda1): ext4_dx_add_entry:2461: Directory (ino: ${pid(100000)}) index full, reach max htree level :2`,
       source: 'kernel',
+      traceId,
+      spanId: genSpanId(),
     });
     push({
       timestamp: ago(35000),
       level: 'error',
       message: `${hostPrefix}mysqld[${pid(4000)}]: [ERROR] InnoDB: Write to file ./ib_logfile0 failed at offset ${pid(1000000)}. ${disk.toFixed(0)}% disk used.`,
       source: 'mysql',
+      traceId,
+      spanId: genSpanId(),
+      structuredData: { error_code: 'INNODB_WRITE_FAIL', disk_usage: disk },
     });
     push({
       timestamp: ago(50000),
       level: 'warn',
       message: `${hostPrefix}rsync[${pid(15000)}]: rsync: write failed on "/backup/db-${rawHostname}.sql": No space left on device (28)`,
       source: 'rsync',
+      traceId,
+      spanId: genSpanId(),
     });
   }
 
   // Network critical (> 70%)
   if (network > 70) {
+    const traceId = genTraceId(); // Correlation: Conntrack full -> HAProxy timeout -> SYN flood
     push({
       timestamp: ago(12000),
       level: 'error',
       message: `${hostPrefix}kernel: [${pid(90000)}.${pid(100)}] nf_conntrack: nf_conntrack: table full, dropping packet`,
       source: 'kernel',
+      traceId,
+      spanId: genSpanId(),
+      structuredData: { event: 'conntrack_full', action: 'drop_packet' },
     });
     push({
       timestamp: ago(42000),
       level: 'warn',
       message: `${hostPrefix}haproxy[${pid(2000)}]: Server api_backend/server1 is DOWN, reason: Layer4 timeout, check duration: 5001ms`,
       source: 'haproxy',
+      traceId,
+      spanId: genSpanId(),
     });
     push({
       timestamp: ago(65000),
       level: 'warn',
       message: `${hostPrefix}kernel: [${pid(90000)}.${pid(100)}] TCP: request_sock_TCP: Possible SYN flooding on port 80. Sending cookies.`,
       source: 'kernel',
+      traceId,
+      spanId: genSpanId(),
+      structuredData: { event: 'syn_flood', port: 80 },
     });
   }
 
@@ -224,17 +277,23 @@ export function generateServerLogs(
 
   // CPU high + API/과부하 scenario → upstream timeout
   if (cpu > 80 && hasHint(scenarioHint, ['api', '과부하', 'cpu'])) {
+    const traceId = genTraceId();
     push({
       timestamp: ago(28000),
       level: 'error',
       message: `${hostPrefix}nginx[${pid(1000)}]: upstream timed out (110: Connection timed out) while reading response header from upstream`,
       source: 'nginx',
+      traceId,
+      spanId: genSpanId(),
+      structuredData: { error_code: 110, upstream: 'unknown' },
     });
     push({
       timestamp: ago(45000),
       level: 'warn',
       message: `${hostPrefix}haproxy[${pid(2000)}]: backend api_servers has no server available! (qcur=${Math.floor(cpu * 2)})`,
       source: 'haproxy',
+      traceId,
+      spanId: genSpanId(),
     });
   }
 
@@ -243,11 +302,14 @@ export function generateServerLogs(
     memory > 70 &&
     hasHint(scenarioHint, ['캐시', 'redis', 'memory', '메모리'])
   ) {
+    const traceId = genTraceId();
     push({
       timestamp: ago(55000),
       level: 'warn',
       message: `${hostPrefix}java[${pid(5000)}]: java.lang.OutOfMemoryError: GC overhead limit exceeded`,
       source: 'java',
+      traceId,
+      spanId: genSpanId(),
     });
   }
 
@@ -256,17 +318,22 @@ export function generateServerLogs(
     disk > 70 &&
     hasHint(scenarioHint, ['백업', 'backup', '디스크', 'disk', 'i/o'])
   ) {
+    const traceId = genTraceId();
     push({
       timestamp: ago(70000),
       level: 'info',
       message: `${hostPrefix}systemd[1]: Starting Daily Backup Service...`,
       source: 'systemd',
+      traceId,
+      spanId: genSpanId(),
     });
     push({
       timestamp: ago(120000),
       level: 'info',
       message: `${hostPrefix}pg_dump[${pid(18000)}]: pg_dump: archiving data for table "public.logs" (${Math.floor(disk * 10)}MB)`,
       source: 'postgres',
+      traceId,
+      spanId: genSpanId(),
     });
   }
 
@@ -275,17 +342,22 @@ export function generateServerLogs(
     network > 60 &&
     hasHint(scenarioHint, ['네트워크', 'network', '패킷', 'lb', '로드밸런서'])
   ) {
+    const traceId = genTraceId();
     push({
       timestamp: ago(28000),
       level: 'error',
       message: `${hostPrefix}nginx[${pid(1000)}]: connect() failed (111: Connection refused) while connecting to upstream`,
       source: 'nginx',
+      traceId,
+      spanId: genSpanId(),
     });
     push({
       timestamp: ago(95000),
       level: 'info',
       message: `${hostPrefix}sshd[${pid(22000)}]: Received disconnect from 10.0.0.${Math.floor(network / 10)} port ${pid(40000)}: 11: disconnected by user`,
       source: 'sshd',
+      traceId,
+      spanId: genSpanId(),
     });
   }
 
@@ -296,21 +368,27 @@ export function generateServerLogs(
 
     // My upstream is unhealthy → I see timeouts/errors
     if (!upstreamHealthy) {
+      const traceId = genTraceId();
       push({
         timestamp: ago(18000),
         level: 'error',
         message: `${hostPrefix}nginx[${pid(1000)}]: upstream timed out (110: Connection timed out) while reading response header from upstream, client: 10.0.0.${Math.floor(Math.random() * 254) + 1}`,
         source: 'nginx',
+        traceId,
+        spanId: genSpanId(),
       });
     }
 
     // My downstream is unhealthy → I get connection refused
     if (!downstreamHealthy) {
+      const traceId = genTraceId();
       push({
         timestamp: ago(22000),
         level: 'error',
         message: `${hostPrefix}haproxy[${pid(2000)}]: backend app_pool/server${Math.floor(Math.random() * 4) + 1} is DOWN, reason: Layer4 connection problem, info: "Connection refused"`,
         source: 'haproxy',
+        traceId,
+        spanId: genSpanId(),
       });
     }
   }
@@ -320,29 +398,45 @@ export function generateServerLogs(
   const isHealthy = cpu < 60 && memory < 60 && disk < 60 && network < 50;
 
   if (isHealthy || logs.length === 0) {
+    const traceId = genTraceId();
     push({
       timestamp: ago(30000),
       level: 'info',
       message: `${hostPrefix}systemd[1]: Started Daily apt download activities.`,
       source: 'systemd',
+      traceId,
+      spanId: genSpanId(),
     });
     push({
       timestamp: ago(45000),
       level: 'info',
       message: `${hostPrefix}CRON[${pid(20000)}]: (root) CMD (/usr/lib/apt/apt.systemd.daily install)`,
       source: 'cron',
+      traceId, // Same activity group
+      spanId: genSpanId(),
     });
     push({
       timestamp: ago(60000),
       level: 'info',
       message: `${hostPrefix}nginx[${pid(1000)}]: 10.0.0.1 - - "GET /health HTTP/1.1" 200 15 "-" "kube-probe/1.28"`,
       source: 'nginx',
+      traceId: genTraceId(), // Independent request
+      spanId: genSpanId(),
+      structuredData: {
+        method: 'GET',
+        path: '/health',
+        status: 200,
+        user_agent: 'kube-probe/1.28',
+      },
     });
     push({
       timestamp: ago(90000),
       level: 'info',
       message: `${hostPrefix}dockerd[${pid(800)}]: time="2026-01-03T10:00:00.000000000Z" level=info msg="Container health status: healthy"`,
       source: 'docker',
+      traceId: genTraceId(),
+      spanId: genSpanId(),
+      structuredData: { container_status: 'healthy' },
     });
   }
 

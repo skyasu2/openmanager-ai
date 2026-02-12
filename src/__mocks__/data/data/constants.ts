@@ -8,7 +8,7 @@ import type { ScenarioPoint, Server, ServerType } from './types';
  * - PUS: 부산 (DR 데이터센터)
  *
  * @see src/__mocks__/data/mockServerConfig.ts (SSOT)
- * @see src/data/fixed-24h-metrics.ts (24시간 메트릭)
+ * @see src/data/otel-processed/ (OTel 24시간 메트릭)
  */
 export const SERVERS: Server[] = [
   // 웹서버 (Nginx) - 3대
@@ -111,7 +111,7 @@ export const SERVERS: Server[] = [
 
 /**
  * 정상 메트릭 (기본값) - 서버 타입별 baseline
- * @see src/data/fixed-24h-metrics.ts (실제 데이터)
+ * @see src/data/otel-processed/ (실제 데이터)
  */
 export const normalMetrics: Record<ServerType, ScenarioPoint> = {
   // 웹서버 (Nginx)

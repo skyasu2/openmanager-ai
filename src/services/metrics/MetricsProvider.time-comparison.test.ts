@@ -67,8 +67,7 @@ describe('MetricsProvider Time Comparison', () => {
       vi.useFakeTimers();
       vi.setSystemTime(new Date('2026-01-15T03:00:00.000Z')); // KST 12:00
 
-      // fixed-24h-metrics의 첫 번째 서버 ID를 사용
-      // FIXED_24H_DATASETS에서 서버 목록 가져오기
+      // OTel resource-catalog에서 서버 목록 가져오기
       const serverList = metricsProvider.getServerList();
       if (serverList.length === 0) return;
 

@@ -12,7 +12,7 @@ import debug from '@/utils/debug';
 /**
  * 📊 MetricsProvider 기반 개별 서버 정보 조회 API
  * GET /api/servers/[id]
- * 특정 서버의 상세 정보 및 히스토리를 반환합니다 (hourly-data + fixed-24h-metrics fallback)
+ * 특정 서버의 상세 정보 및 히스토리를 반환합니다 (OTel + hourly-data 2-tier)
  */
 export const GET = withAuth(
   async (

@@ -147,40 +147,7 @@ describe('useFixed24hMetrics', () => {
       );
     });
 
-    it('초기 히스토리가 12개 포인트로 10분 간격으로 생성된다', async () => {
-      // fixed-24h-metrics 모듈 mock
-      const mockDataset = {
-        serverId: 'server-1',
-        data: Array.from({ length: 144 }, (_, i) => ({
-          minute: i * 10,
-          cpu: 40 + Math.floor(i % 20),
-          memory: 50 + Math.floor(i % 15),
-          disk: 30,
-          network: 20,
-        })),
-      };
-
-      const mockGetDataAtMinute = vi.fn(
-        (dataset: typeof mockDataset, minute: number) => {
-          // 10분 단위로 정규화
-          const normalizedMinute = Math.floor(minute / 10) * 10;
-          return (
-            dataset.data.find((d) => d.minute === normalizedMinute) || {
-              cpu: 50,
-              memory: 60,
-              disk: 30,
-              network: 20,
-            }
-          );
-        }
-      );
-
-      // 동적 import mock
-      vi.doMock('@/data/fixed-24h-metrics', () => ({
-        FIXED_24H_DATASETS: [mockDataset],
-        getDataAtMinute: mockGetDataAtMinute,
-      }));
-
+    it('초기 히스토리가 UnifiedServerDataSource에서 1개 포인트로 시작한다', async () => {
       const mockServer = createMockServer({
         id: 'server-1',
         cpu: 50,
@@ -200,35 +167,9 @@ describe('useFixed24hMetrics', () => {
         { timeout: 2000 }
       );
 
-      // 초기 히스토리 생성 확인 (fixed-24h-metrics가 있으면 12개, 없으면 1개)
-      // 실제 구현에서는 동적 import 성공 시 12개 포인트 생성
+      // fixed-24h pre-fill 제거 후, 초기에 updateMetrics에서 1개 포인트 생성
       const historyLength = result.current.historyData.length;
       expect(historyLength).toBeGreaterThanOrEqual(1);
-
-      // 히스토리가 12개라면 시간 간격 검증
-      if (historyLength === 12) {
-        const times = result.current.historyData.map((d) => d.time);
-        // 각 포인트가 시간 형식(HH:MM)을 가지는지 확인
-        times.forEach((time) => {
-          expect(time).toMatch(/^\d{2}:\d{2}$/);
-        });
-
-        // 10분 간격 검증 (연속된 두 포인트 간 차이)
-        for (let i = 1; i < times.length; i++) {
-          const [prevH, prevM] = times[i - 1].split(':').map(Number);
-          const [currH, currM] = times[i].split(':').map(Number);
-          const prevTotal = prevH * 60 + prevM;
-          const currTotal = currH * 60 + currM;
-          // 자정 넘어가는 경우 고려
-          const diff =
-            currTotal >= prevTotal
-              ? currTotal - prevTotal
-              : 1440 - prevTotal + currTotal;
-          expect(diff).toBe(10); // 10분 간격
-        }
-      }
-
-      vi.doUnmock('@/data/fixed-24h-metrics');
     });
   });
 

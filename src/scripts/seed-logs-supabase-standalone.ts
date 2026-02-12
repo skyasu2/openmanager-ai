@@ -6,7 +6,7 @@ import path from 'path';
 // Load Env
 dotenv.config({ path: path.resolve(process.cwd(), '.env.local') });
 
-// Embed fixed-24h-metrics.ts logic directly to avoid module resolution issues in script
+// Embed metric generation logic directly to avoid module resolution issues in script
 // This is a self-contained script to avoid 'module not found' errors with tsx
 // ==========================================
 

@@ -20,7 +20,7 @@ import debug from '@/utils/debug';
  * 🚀 서버 페이지네이션 API v2.1
  *
  * 목적: 서버 목록을 페이지 단위로 가져오는 최적화된 API
- * 데이터 소스: MetricsProvider (hourly-data + fixed-24h-metrics fallback)
+ * 데이터 소스: MetricsProvider (OTel + hourly-data 2-tier)
  *
  * 주요 기능:
  * - 페이지 기반 서버 목록 조회

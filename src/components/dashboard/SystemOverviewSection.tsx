@@ -1,6 +1,11 @@
 import { CheckCircle2 } from 'lucide-react';
-import { useMemo } from 'react';
+import dynamic from 'next/dynamic';
+import { useCallback, useMemo, useState } from 'react';
 import type { Server } from '@/types/server';
+
+const EnhancedServerModal = dynamic(() => import('./EnhancedServerModal'), {
+  ssr: false,
+});
 
 const GAUGE_COLORS = {
   cpu: '#6366f1',
@@ -9,6 +14,20 @@ const GAUGE_COLORS = {
 } as const;
 
 export function SystemOverviewSection({ servers }: { servers: Server[] }) {
+  const [selectedServer, setSelectedServer] = useState<Server | null>(null);
+
+  const handleAlertClick = useCallback(
+    (serverId: string) => {
+      const server = servers.find((s) => (s.id ?? s.name) === serverId);
+      if (server) setSelectedServer(server);
+    },
+    [servers]
+  );
+
+  const handleModalClose = useCallback(() => {
+    setSelectedServer(null);
+  }, []);
+
   const averages = useMemo(() => {
     if (!servers || servers.length === 0) {
       return { cpu: 0, memory: 0, disk: 0 };
@@ -32,12 +51,21 @@ export function SystemOverviewSection({ servers }: { servers: Server[] }) {
   const topAlerts = useMemo(() => {
     if (!servers || servers.length === 0) return [];
     return [...servers]
-      .map((s) => ({
-        id: s.id ?? s.name,
-        name: s.name,
-        maxUsage: Math.max(s.cpu ?? 0, s.memory ?? 0, s.disk ?? 0),
-        status: s.status,
-      }))
+      .map((s) => {
+        const metrics = [
+          { label: 'CPU', value: s.cpu ?? 0 },
+          { label: 'MEM', value: s.memory ?? 0 },
+          { label: 'DISK', value: s.disk ?? 0 },
+        ];
+        const top = metrics.reduce((a, b) => (b.value > a.value ? b : a));
+        return {
+          id: s.id ?? s.name,
+          name: s.name,
+          maxUsage: top.value,
+          maxMetric: top.label,
+          status: s.status,
+        };
+      })
       .sort((a, b) => b.maxUsage - a.maxUsage)
       .slice(0, 5);
   }, [servers]);
@@ -75,16 +103,18 @@ export function SystemOverviewSection({ servers }: { servers: Server[] }) {
         {/* 우: 주요 경고 Top 5 */}
         <div>
           <p className="mb-3 text-xs font-medium uppercase tracking-wider text-slate-400">
-            주요 경고 (Top 5)
+            리소스 경고 (Top 5)
           </p>
           <div className="space-y-0">
             {topAlerts.map((alert, idx) => {
               const isWarning = alert.maxUsage >= 70;
               const isCritical = alert.maxUsage >= 85;
               return (
-                <div
+                <button
+                  type="button"
                   key={alert.id}
-                  className={`flex min-w-0 items-center justify-between gap-2 px-2 py-2 ${
+                  onClick={() => handleAlertClick(alert.id)}
+                  className={`flex w-full min-w-0 cursor-pointer items-center justify-between gap-2 px-2 py-2 transition-colors hover:bg-slate-50 ${
                     idx < topAlerts.length - 1 ? 'border-b border-gray-100' : ''
                   }`}
                 >
@@ -103,9 +133,9 @@ export function SystemOverviewSection({ servers }: { servers: Server[] }) {
                           : 'bg-slate-100 text-slate-600'
                     }`}
                   >
-                    {alert.maxUsage}%
+                    {alert.maxMetric} {alert.maxUsage}%
                   </span>
-                </div>
+                </button>
               );
             })}
             {topAlerts.length === 0 && (
@@ -117,6 +147,13 @@ export function SystemOverviewSection({ servers }: { servers: Server[] }) {
           </div>
         </div>
       </div>
+
+      {selectedServer && (
+        <EnhancedServerModal
+          server={selectedServer}
+          onClose={handleModalClose}
+        />
+      )}
     </div>
   );
 }

@@ -1,26 +1,33 @@
-
-import type { ApiServerMetrics } from './types';
 import type {
-  VectorData,
   MatrixData,
   MetricSample,
   MetricSeries,
-  PrometheusResponse
+  PrometheusResponse,
+  VectorData,
 } from '@/types/prometheus-standard';
 import { PROMETHEUS_METRIC_NAMES } from '@/types/prometheus-standard';
+import type { ApiServerMetrics } from './types';
 
 /**
  * Prometheus Transformer Functions
  * VIBE 내부 포맷(ApiServerMetrics)을 Prometheus API 응답 규격으로 변환
  */
 
-function extractValue(server: ApiServerMetrics, metricName: string): number | null {
+function extractValue(
+  server: ApiServerMetrics,
+  metricName: string
+): number | null {
   switch (metricName) {
-    case 'cpu': return server.cpu;
-    case 'memory': return server.memory;
-    case 'disk': return server.disk;
-    case 'network': return server.network;
-    case 'up': return server.status === 'offline' ? 0 : 1;
+    case 'cpu':
+      return server.cpu;
+    case 'memory':
+      return server.memory;
+    case 'disk':
+      return server.disk;
+    case 'network':
+      return server.network;
+    case 'up':
+      return server.status === 'offline' ? 0 : 1;
   }
 
   if (metricName === PROMETHEUS_METRIC_NAMES.CPU_USAGE) {
@@ -61,9 +68,9 @@ export function transformToVector(
         instance: `${server.hostname}:9100`,
         job: 'node-exporter',
         cluster: server.location,
-        env: server.environment || 'production'
+        env: server.environment || 'production',
       },
-      value: [timestamp, value.toString()]
+      value: [timestamp, value.toString()],
     });
   }
 
@@ -71,8 +78,8 @@ export function transformToVector(
     status: 'success',
     data: {
       resultType: 'vector',
-      result
-    }
+      result,
+    },
   };
 }
 
@@ -99,9 +106,9 @@ export function transformToMatrix(
             instance,
             job: 'node-exporter',
             cluster: server.location,
-            env: server.environment || 'production'
+            env: server.environment || 'production',
           },
-          values: []
+          values: [],
         });
       }
 
@@ -113,7 +120,7 @@ export function transformToMatrix(
     status: 'success',
     data: {
       resultType: 'matrix',
-      result: Array.from(seriesMap.values())
-    }
+      result: Array.from(seriesMap.values()),
+    },
   };
 }

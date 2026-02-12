@@ -159,4 +159,7 @@ export type ServerLogEntry = {
   level: 'info' | 'warn' | 'error';
   message: string;
   source: string;
+  traceId?: string;
+  spanId?: string;
+  structuredData?: Record<string, unknown>;
 };

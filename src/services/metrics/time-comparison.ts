@@ -2,13 +2,14 @@
  * Time Comparison Utilities
  *
  * 서버 메트릭의 시간대별 비교 기능
+ * OTel → hourly-data 2-tier 체계 사용 (MetricsProvider 경유)
  *
  * @created 2026-02-10 (MetricsProvider.ts SRP 분리)
+ * @updated 2026-02-12 (fixed-24h-metrics 제거, OTel 단일 소스 통합)
  */
 
-import { getServerStatus as getRulesServerStatus } from '@/config/rules/loader';
-import { FIXED_24H_DATASETS, getDataAtMinute } from '@/data/fixed-24h-metrics';
 import { calculateRelativeDateTime } from './kst-time';
+import { MetricsProvider } from './MetricsProvider';
 import type { ApiServerMetrics, TimeComparisonResult } from './types';
 
 /**
@@ -24,31 +25,14 @@ export function getMetricsAtRelativeTime(
     calculateRelativeDateTime(minutesAgo);
   const minuteOfDay = slotIndex * 10;
 
-  const dataset = FIXED_24H_DATASETS.find((d) => d.serverId === serverId);
-  if (!dataset) return null;
-
-  const dataPoint = getDataAtMinute(dataset, minuteOfDay);
-  if (!dataPoint) return null;
-
-  const status = getRulesServerStatus({
-    cpu: dataPoint.cpu,
-    memory: dataPoint.memory,
-    disk: dataPoint.disk,
-    network: dataPoint.network,
-  });
+  const provider = MetricsProvider.getInstance();
+  const metrics = provider.getMetricsAtTime(serverId, minuteOfDay);
+  if (!metrics) return null;
 
   return {
-    serverId: dataset.serverId,
-    serverType: dataset.serverType,
-    location: dataset.location,
+    ...metrics,
     timestamp,
     minuteOfDay,
-    cpu: dataPoint.cpu,
-    memory: dataPoint.memory,
-    disk: dataPoint.disk,
-    network: dataPoint.network,
-    logs: dataPoint.logs,
-    status,
     dateLabel: isYesterday ? `${date} (어제)` : date,
     isYesterday,
   };

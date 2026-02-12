@@ -21,9 +21,7 @@ import {
   type HourlyData,
   type PrometheusTarget,
 } from '@/data/hourly-data';
-import {
-  getOTelHourlyData,
-} from '@/data/otel-metrics';
+import { getOTelHourlyData } from '@/data/otel-metrics';
 import { logger } from '@/lib/logging';
 import type { OTelResourceAttributes } from '@/types/otel-metrics';
 import type { ExportMetricsServiceRequest } from '@/types/otel-standard';
@@ -52,7 +50,8 @@ export type {
 // OTel Data Cache & Loader (Primary - 번들 기반)
 // ============================================================================
 
-let cachedOTelData: { hour: number; data: ExportMetricsServiceRequest } | null = null;
+let cachedOTelData: { hour: number; data: ExportMetricsServiceRequest } | null =
+  null;
 
 // OTel→ServerMetrics 변환 캐시 (동일 hour+minute 내 재변환 방지)
 let cachedOTelConversion: {
@@ -111,7 +110,8 @@ function extractMetricsFromStandard(
     if (!serverMap.has(serverId)) {
       // Resource Attributes에서 메타데이터 추출
       const getAttr = (k: string) =>
-        resMetric.resource.attributes.find((a) => a.key === k)?.value.stringValue;
+        resMetric.resource.attributes.find((a) => a.key === k)?.value
+          .stringValue;
 
       serverMap.set(serverId, {
         serverId,
@@ -129,7 +129,7 @@ function extractMetricsFromStandard(
         environment: getAttr('deployment.environment'),
         os: getAttr('os.type'),
         otelResource: Object.fromEntries(
-          resMetric.resource.attributes.map(a => [a.key, a.value.stringValue])
+          resMetric.resource.attributes.map((a) => [a.key, a.value.stringValue])
         ) as unknown as OTelResourceAttributes,
       });
     }
@@ -144,9 +144,13 @@ function extractMetricsFromStandard(
         // 안전을 위해 배열 길이 체크
         let dp = null;
         if (metric.gauge) {
-          dp = metric.gauge.dataPoints[targetMinute] || metric.gauge.dataPoints[metric.gauge.dataPoints.length - 1];
+          dp =
+            metric.gauge.dataPoints[targetMinute] ||
+            metric.gauge.dataPoints[metric.gauge.dataPoints.length - 1];
         } else if (metric.sum) {
-          dp = metric.sum.dataPoints[targetMinute] || metric.sum.dataPoints[metric.sum.dataPoints.length - 1];
+          dp =
+            metric.sum.dataPoints[targetMinute] ||
+            metric.sum.dataPoints[metric.sum.dataPoints.length - 1];
         }
 
         if (!dp || dp.asDouble === undefined) continue;
@@ -354,7 +358,11 @@ export class MetricsProvider {
       ) {
         allMetrics = cachedOTelConversion.metrics;
       } else {
-        allMetrics = extractMetricsFromStandard(otelData, timestamp, minuteOfDay);
+        allMetrics = extractMetricsFromStandard(
+          otelData,
+          timestamp,
+          minuteOfDay
+        );
         if (allMetrics.length > 0) {
           cachedOTelConversion = { hour, minute, metrics: allMetrics };
         }
@@ -383,12 +391,14 @@ export class MetricsProvider {
         if (target) {
           return targetToServerMetrics(target, timestamp, minuteOfDay);
         }
-        
+
         // serverId만으로 찾기 시도 (instanceKey가 다를 경우)
-        const foundKey = Object.keys(dataPoint.targets).find(k => k.startsWith(serverId));
+        const foundKey = Object.keys(dataPoint.targets).find((k) =>
+          k.startsWith(serverId)
+        );
         const foundTarget = foundKey ? dataPoint.targets[foundKey] : undefined;
         if (foundTarget) {
-            return targetToServerMetrics(foundTarget, timestamp, minuteOfDay);
+          return targetToServerMetrics(foundTarget, timestamp, minuteOfDay);
         }
       }
     }
@@ -416,7 +426,11 @@ export class MetricsProvider {
       ) {
         return cachedOTelConversion.metrics;
       }
-      const metrics = extractMetricsFromStandard(otelData, timestamp, minuteOfDay);
+      const metrics = extractMetricsFromStandard(
+        otelData,
+        timestamp,
+        minuteOfDay
+      );
       if (metrics.length > 0) {
         cachedOTelConversion = { hour, minute, metrics };
         return metrics;
@@ -537,24 +551,30 @@ export class MetricsProvider {
     // 1. OTel (Primary)
     const otelData = loadOTelData(hour);
     if (otelData) {
-        const metrics = extractMetricsFromStandard(otelData, timestamp, minuteOfDay);
-        const found = metrics.find((m) => m.serverId === serverId);
-        if (found) return found;
+      const metrics = extractMetricsFromStandard(
+        otelData,
+        timestamp,
+        minuteOfDay
+      );
+      const found = metrics.find((m) => m.serverId === serverId);
+      if (found) return found;
     }
 
     // 2. hourly-data (Fallback)
     const hourlyData = loadHourlyData(hour);
     const dataPoint = hourlyData?.dataPoints[slotIndex];
     if (dataPoint?.targets) {
-        const instanceKey = `${serverId}:9100`;
-        const target = dataPoint.targets[instanceKey];
-        if (target) return targetToServerMetrics(target, timestamp, minuteOfDay);
-        
-        const foundKey = Object.keys(dataPoint.targets).find(k => k.startsWith(serverId));
-        const foundTarget = foundKey ? dataPoint.targets[foundKey] : undefined;
-        if (foundTarget) {
-            return targetToServerMetrics(foundTarget, timestamp, minuteOfDay);
-        }
+      const instanceKey = `${serverId}:9100`;
+      const target = dataPoint.targets[instanceKey];
+      if (target) return targetToServerMetrics(target, timestamp, minuteOfDay);
+
+      const foundKey = Object.keys(dataPoint.targets).find((k) =>
+        k.startsWith(serverId)
+      );
+      const foundTarget = foundKey ? dataPoint.targets[foundKey] : undefined;
+      if (foundTarget) {
+        return targetToServerMetrics(foundTarget, timestamp, minuteOfDay);
+      }
     }
 
     return null;
@@ -573,26 +593,27 @@ export class MetricsProvider {
     if (!data) return [];
 
     const servers: Array<{
-        serverId: string;
-        serverType: string;
-        location: string;
-      }> = [];
+      serverId: string;
+      serverType: string;
+      location: string;
+    }> = [];
 
     for (const resMetric of data.resourceMetrics) {
-        const getAttr = (k: string) =>
-            resMetric.resource.attributes.find((a) => a.key === k)?.value.stringValue;
-        
-        const hostname = getAttr('host.name');
-        if (!hostname) continue;
+      const getAttr = (k: string) =>
+        resMetric.resource.attributes.find((a) => a.key === k)?.value
+          .stringValue;
 
-        const serverId = hostname.split('.')[0];
-        if (!serverId) continue;
+      const hostname = getAttr('host.name');
+      if (!hostname) continue;
 
-        servers.push({
-            serverId,
-            serverType: getAttr('host.type') ?? 'unknown',
-            location: getAttr('cloud.availability_zone') ?? 'unknown'
-        });
+      const serverId = hostname.split('.')[0];
+      if (!serverId) continue;
+
+      servers.push({
+        serverId,
+        serverType: getAttr('host.type') ?? 'unknown',
+        location: getAttr('cloud.availability_zone') ?? 'unknown',
+      });
     }
 
     return servers;
