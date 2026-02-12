@@ -597,7 +597,7 @@ export class MetricsProvider {
     location: string;
   }> {
     if (MetricsProvider.cachedServerList) {
-        return MetricsProvider.cachedServerList;
+      return MetricsProvider.cachedServerList;
     }
 
     // 0시 데이터를 로드하여 리소스 목록 추출 (가장 확실한 방법)
