@@ -30,6 +30,8 @@ Push all unpushed local commits to the remote repository.
    # Read PAT from .env.local
    PAT=$(grep GITHUB_TOKEN .env.local | head -1 | cut -d= -f2)
    git push https://skyasu2:${PAT}@github.com/skyasu2/openmanager-ai.git $GIT_BRANCH
+   # Sync tracking ref (inline URL doesn't auto-update origin/main)
+   git fetch origin
    ```
    This method handles all git operations including file deletions.
 
