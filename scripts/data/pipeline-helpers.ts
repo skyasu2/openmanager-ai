@@ -266,7 +266,6 @@ export function calculateHealth(aggregated: AggregatedMetrics, firingAlerts: Ale
 
 export function buildAIContext(
   hour: number,
-  scenario: string,
   health: HealthReport,
   aggregated: AggregatedMetrics,
   firingAlerts: Alert[]
@@ -274,7 +273,6 @@ export function buildAIContext(
   const timeStr = `${hour.toString().padStart(2, '0')}:00 KST`;
 
   let ctx = `[Monitoring Report - ${timeStr}]\n`;
-  ctx += `Scenario: ${scenario}\n`;
   ctx += `System Health: ${health.score}/100 (${health.grade})\n`;
   ctx += `Scrape: node-exporter | ${aggregated.statusCounts.total} targets, ${aggregated.statusCounts.online} UP\n\n`;
 

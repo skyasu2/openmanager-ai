@@ -825,18 +825,6 @@ function generateHourlyData(hour: number) {
     dataPoints.push({ timestampMs, targets });
   }
 
-  // 시나리오 텍스트 결정 (scrapeConfig의 내부 메타데이터)
-  let scenarioText: string;
-  if (scenario) {
-    scenarioText = scenario.incident;
-  } else if (prevScenario) {
-    scenarioText = `${prevScenario.incident} - 회복 중`;
-  } else if (nextScenario) {
-    scenarioText = `${hour}시 정상 운영 (${nextScenario.incident} 전조 감지)`;
-  } else {
-    scenarioText = `${hour}시 정상 운영`;
-  }
-
   return {
     hour,
     scrapeConfig: {
@@ -844,7 +832,6 @@ function generateHourlyData(hour: number) {
       evaluationInterval: '10m',
       source: 'node-exporter',
     },
-    _scenario: scenarioText,
     dataPoints,
     metadata: {
       version: '3.0.0',
@@ -905,7 +892,8 @@ function main() {
           ? '🟡'
           : '🟢';
 
-      console.log(`${icon} ${filename} - ${data._scenario} (${(fileSize / 1024).toFixed(1)}KB)`);
+      const label = scenario ? scenario.incident : `${hour}시 정상 운영`;
+      console.log(`${icon} ${filename} - ${label} (${(fileSize / 1024).toFixed(1)}KB)`);
     }
 
     console.log(`\n📦 총 크기: ${(totalSize / 1024).toFixed(1)}KB (파일당 평균 ${(totalSize / 24 / 1024).toFixed(1)}KB)`);

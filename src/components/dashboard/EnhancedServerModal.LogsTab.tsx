@@ -7,7 +7,7 @@ import type { ServerContext } from '@/services/server-data/loki-log-generator';
  * Enhanced Server Modal Logs Tab (v4.0 - PLG Stack Compatible)
  *
  * Three view modes:
- * - Scenario: syslog-style logs from scenario generator
+ * - Syslog: metrics-correlated syslog entries
  * - Alerts: metric threshold-based system alerts
  * - Streams: Loki-compatible stream view with label filters and LogQL
  */
@@ -15,7 +15,6 @@ import {
   buildLogQL,
   generateLokiLogs,
   generateServerLogs,
-  getCurrentScenario,
   groupIntoStreams,
 } from '@/services/server-data/server-data-loader';
 import type { LokiLogEntry, LokiStreamLabels } from '@/types/loki';
@@ -25,7 +24,7 @@ import type {
   RealtimeData,
 } from './EnhancedServerModal.types';
 
-type ViewMode = 'scenario' | 'alerts' | 'streams';
+type ViewMode = 'syslog' | 'alerts' | 'streams';
 
 interface LogsTabProps {
   serverId: string;
@@ -103,8 +102,7 @@ export const LogsTab: FC<LogsTabProps> = ({
   realtimeData,
   serverContext,
 }) => {
-  const [activeView, setActiveView] = useState<ViewMode>('scenario');
-  const [currentScenario, setCurrentScenario] = useState<string>('');
+  const [activeView, setActiveView] = useState<ViewMode>('syslog');
   const [scenarioLogs, setScenarioLogs] = useState<LogEntry[]>([]);
   const [lokiLogs, setLokiLogs] = useState<LokiLogEntry[]>([]);
   const [labelFilters, setLabelFilters] = useState<Partial<LokiStreamLabels>>(
@@ -121,31 +119,18 @@ export const LogsTab: FC<LogsTabProps> = ({
     serverType: 'web',
   };
 
-  // Load scenario and generate logs
+  // Generate logs from metrics + server role
   useEffect(() => {
-    const loadScenario = async () => {
-      const scenario = await getCurrentScenario();
-      if (scenario) {
-        setCurrentScenario(scenario.scenario);
-        const logs = generateServerLogs(
-          scenario.scenario,
-          serverMetrics,
-          serverId
-        );
-        setScenarioLogs(logs);
+    const logs = generateServerLogs(serverMetrics, serverId);
+    setScenarioLogs(logs);
 
-        const loki = generateLokiLogs(
-          scenario.scenario,
-          serverMetrics,
-          serverId,
-          ctx
-        );
-        setLokiLogs(loki);
-      }
-    };
+    const loki = generateLokiLogs(serverMetrics, serverId, ctx);
+    setLokiLogs(loki);
 
-    loadScenario();
-    const interval = setInterval(loadScenario, 60000);
+    const interval = setInterval(() => {
+      setScenarioLogs(generateServerLogs(serverMetrics, serverId));
+      setLokiLogs(generateLokiLogs(serverMetrics, serverId, ctx));
+    }, 60000);
     return () => clearInterval(interval);
   }, [serverId, serverMetrics, ctx]);
 
@@ -208,7 +193,7 @@ export const LogsTab: FC<LogsTabProps> = ({
 
   // Display logs for legacy views
   const displayLogs =
-    activeView === 'scenario' ? scenarioLogs : realtimeData.logs;
+    activeView === 'syslog' ? scenarioLogs : realtimeData.logs;
 
   return (
     <div className="space-y-6">
@@ -222,8 +207,8 @@ export const LogsTab: FC<LogsTabProps> = ({
             {/* View switcher */}
             <div className="flex gap-1 rounded-lg bg-gray-100 p-1">
               <ViewButton
-                active={activeView === 'scenario'}
-                onClick={() => setActiveView('scenario')}
+                active={activeView === 'syslog'}
+                onClick={() => setActiveView('syslog')}
                 label="Syslog"
               />
               <ViewButton
@@ -257,7 +242,6 @@ export const LogsTab: FC<LogsTabProps> = ({
             streams={streams}
             expandedStreams={expandedStreams}
             toggleStream={toggleStream}
-            currentScenario={currentScenario}
             ctx={ctx}
           />
         ) : (
@@ -323,7 +307,7 @@ function LegacyLogView({
   activeView,
   displayLogs,
 }: {
-  activeView: 'scenario' | 'alerts';
+  activeView: 'syslog' | 'alerts';
   displayLogs: LogEntry[];
 }) {
   return (
@@ -362,12 +346,12 @@ function LegacyLogView({
           })
         ) : (
           <EmptyState
-            icon={activeView === 'scenario' ? 'log' : 'check'}
+            icon={activeView === 'syslog' ? 'log' : 'check'}
             title={
-              activeView === 'scenario' ? 'Loading logs...' : 'No system alerts'
+              activeView === 'syslog' ? 'Loading logs...' : 'No system alerts'
             }
             description={
-              activeView === 'scenario'
+              activeView === 'syslog'
                 ? 'Fetching logs matching current server state'
                 : 'All system metrics are within normal range'
             }
@@ -387,7 +371,6 @@ function StreamsView({
   streams,
   expandedStreams,
   toggleStream,
-  currentScenario,
   ctx,
 }: {
   logqlQuery: string;
@@ -397,7 +380,6 @@ function StreamsView({
   streams: ReturnType<typeof groupIntoStreams>;
   expandedStreams: Set<string>;
   toggleStream: (key: string) => void;
-  currentScenario: string;
   ctx: ServerContext;
 }) {
   return (
@@ -438,7 +420,7 @@ function StreamsView({
         ))}
       </div>
 
-      {/* Scenario + context badges */}
+      {/* Context badges */}
       <div className="flex flex-wrap items-center gap-2 text-xs">
         <span className="rounded bg-blue-100 px-2 py-0.5 text-blue-700">
           {ctx.hostname}
@@ -449,11 +431,6 @@ function StreamsView({
         <span className="rounded bg-amber-100 px-2 py-0.5 text-amber-700">
           {ctx.datacenter}
         </span>
-        {currentScenario && (
-          <span className="rounded bg-gray-100 px-2 py-0.5 text-gray-600">
-            scenario: {currentScenario}
-          </span>
-        )}
       </div>
 
       {/* Stream groups */}
@@ -585,7 +562,7 @@ function LogStats({
       style={{ animationDelay: '0.3s' }}
     >
       <StatCard
-        label={activeView === 'scenario' ? 'Total Logs' : 'Total Alerts'}
+        label={activeView === 'syslog' ? 'Total Logs' : 'Total Alerts'}
         value={logs.length}
         color="text-gray-800"
         bgColor="bg-gray-100"

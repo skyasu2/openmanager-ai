@@ -40,8 +40,7 @@ export type ServerContext = {
  */
 export function toLokiLogEntry(
   entry: ServerLogEntry,
-  ctx: ServerContext,
-  scenario?: string
+  ctx: ServerContext
 ): LokiLogEntry {
   const labels: LokiStreamLabels = {
     job: entry.source,
@@ -66,7 +65,6 @@ export function toLokiLogEntry(
     trace_id: entry.traceId || generateTraceId(),
     ...(entry.spanId ? { span_id: entry.spanId } : {}),
     ...(pidMatch ? { pid: pidMatch[1] } : {}),
-    ...(scenario ? { scenario } : {}),
     instance: `${ctx.hostname}:9100`,
     // Flatten structuredData into metadata for LogQL filtering
     ...(entry.structuredData
@@ -86,21 +84,20 @@ export function toLokiLogEntry(
 /**
  * Generate Loki-formatted logs for a server.
  *
- * Uses the existing scenario log generator internally, then converts
+ * Uses the metrics-driven log generator internally, then converts
  * each entry to Loki format with proper labels and timestamps.
  */
 export function generateLokiLogs(
-  scenario: string,
   metrics: { cpu: number; memory: number; disk: number; network: number },
   serverId: string,
   ctx: ServerContext
 ): LokiLogEntry[] {
-  const rawLogs = generateServerLogs(scenario, metrics, serverId, {
+  const rawLogs = generateServerLogs(metrics, serverId, {
     stripHostname: true,
     serverType: ctx.serverType,
   });
 
-  return rawLogs.map((entry) => toLokiLogEntry(entry, ctx, scenario));
+  return rawLogs.map((entry) => toLokiLogEntry(entry, ctx));
 }
 
 /**
