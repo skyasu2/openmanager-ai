@@ -16,10 +16,6 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 // Mock 설정 (static - 모듈 재로드 없음)
 // ============================================================================
 
-vi.mock('@/lib/logging', () => ({
-  logger: { info: vi.fn(), error: vi.fn(), warn: vi.fn(), debug: vi.fn() },
-}));
-
 // localStorage Mock
 const localStorageMock = (() => {
   let store: Record<string, string> = {};

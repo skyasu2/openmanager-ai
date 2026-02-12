@@ -1,5 +1,6 @@
 import { defineConfig } from 'vitest/config';
 import path from 'path';
+import { testAliases } from './shared-aliases';
 
 export default defineConfig({
   test: {
@@ -119,18 +120,7 @@ export default defineConfig({
       // lucide-react: 3800+ icon files → Proxy stub, recharts: D3 transitive deps → noop stubs
       'lucide-react': path.resolve(__dirname, '../../__mocks__/lucide-react.ts'),
       recharts: path.resolve(__dirname, '../../__mocks__/recharts.tsx'),
-      '@': path.resolve(__dirname, '../../src'),
-      '@/components': path.resolve(__dirname, '../../src/components'),
-      '@/lib': path.resolve(__dirname, '../../src/lib'),
-      '@/services': path.resolve(__dirname, '../../src/services'),
-      '@/utils': path.resolve(__dirname, '../../src/utils'),
-      '@/types': path.resolve(__dirname, '../../src/types'),
-      '@/app': path.resolve(__dirname, '../../src/app'),
-      '@/hooks': path.resolve(__dirname, '../../src/hooks'),
-      '@/domains': path.resolve(__dirname, '../../src/domains'),
-      '@/schemas': path.resolve(__dirname, '../../src/schemas'),
-      '@/config': path.resolve(__dirname, '../../src/config'),
-      '@/stores': path.resolve(__dirname, '../../src/stores'),
+      ...testAliases,
     },
   },
   esbuild: {

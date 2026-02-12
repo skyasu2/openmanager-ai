@@ -12,10 +12,6 @@ import { getServerStatus } from '@/config/rules/loader';
 import { getAllServerIds } from '@/data/hourly-data';
 import { metricsProvider } from '@/services/metrics/MetricsProvider';
 
-vi.mock('@/lib/logging', () => ({
-  logger: { info: vi.fn(), error: vi.fn(), warn: vi.fn(), debug: vi.fn() },
-}));
-
 describe('Metrics Provider Pipeline (통합)', () => {
   afterEach(() => {
     vi.useRealTimers();

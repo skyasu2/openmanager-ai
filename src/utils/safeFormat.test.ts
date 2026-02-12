@@ -9,15 +9,6 @@
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-// logger mock
-vi.mock('@/lib/logging', () => ({
-  logger: {
-    warn: vi.fn(),
-    info: vi.fn(),
-    error: vi.fn(),
-  },
-}));
-
 import {
   extractDaysFromUptime,
   isValidString,

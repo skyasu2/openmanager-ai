@@ -23,16 +23,6 @@ import {
 // Mock fetch - 각 테스트에서 재설정됨
 const mockFetch = vi.fn();
 
-// Mock logger
-vi.mock('@/lib/logging', () => ({
-  logger: {
-    error: vi.fn(),
-    info: vi.fn(),
-    warn: vi.fn(),
-    debug: vi.fn(),
-  },
-}));
-
 // Mock 응답 데이터 생성
 function createMockTimeSeriesData(
   overrides?: Partial<TimeSeriesData>

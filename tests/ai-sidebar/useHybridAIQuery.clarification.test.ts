@@ -52,15 +52,6 @@ vi.mock('@/lib/ai/utils/query-complexity', () => ({
   shouldForceJobQueue: vi.fn(() => ({ force: false })),
 }));
 
-vi.mock('@/lib/logging', () => ({
-  logger: {
-    info: vi.fn(),
-    warn: vi.fn(),
-    error: vi.fn(),
-    debug: vi.fn(),
-  },
-}));
-
 vi.mock('@/hooks/ai/useAsyncAIQuery', () => ({
   useAsyncAIQuery: vi.fn(() => ({
     sendQuery: vi.fn().mockResolvedValue({ jobId: 'test-job' }),

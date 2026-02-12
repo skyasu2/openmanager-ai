@@ -9,10 +9,6 @@ import { describe, expect, it, vi } from 'vitest';
 import type { HourlyData, PrometheusTarget } from '@/data/hourly-data';
 import { debugParsePromQL, executePromQL } from './promql-engine';
 
-vi.mock('@/lib/logging', () => ({
-  logger: { info: vi.fn(), error: vi.fn(), warn: vi.fn(), debug: vi.fn() },
-}));
-
 // ============================================================================
 // Test Fixtures
 // ============================================================================

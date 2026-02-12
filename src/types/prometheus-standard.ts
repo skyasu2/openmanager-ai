@@ -44,7 +44,7 @@ export interface MetricSeries {
 }
 
 /**
- * VIBE에서 지원할 주요 메트릭 이름 매핑
+ * OpenManager AI에서 지원할 주요 메트릭 이름 매핑
  */
 export const PROMETHEUS_METRIC_NAMES = {
   CPU_USAGE: 'node_cpu_seconds_total', // 흉내내기

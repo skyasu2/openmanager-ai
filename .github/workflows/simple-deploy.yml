@@ -102,7 +102,7 @@ jobs:
         timeout-minutes: 3
         run: |
           echo "🧪 배포 전 빠른 테스트 실행..."
-          if npm run test:ci:fast; then
+          if npm run test:quick; then
             echo "✅ 핵심 테스트 통과!"
           else
             echo "❌ 핵심 테스트 실패 - 배포 중단"

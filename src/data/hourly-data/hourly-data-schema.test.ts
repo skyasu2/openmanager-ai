@@ -11,10 +11,6 @@ import {
   getTargetsAtTime,
 } from './index';
 
-vi.mock('@/lib/logging', () => ({
-  logger: { info: vi.fn(), error: vi.fn(), warn: vi.fn(), debug: vi.fn() },
-}));
-
 describe('hourly-data schema', () => {
   describe('전체 로드', () => {
     it('0~23시 모든 hourly data가 로드되어야 한다', () => {

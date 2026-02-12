@@ -16,10 +16,6 @@ import {
   metricsProvider,
 } from './MetricsProvider';
 
-vi.mock('@/lib/logging', () => ({
-  logger: { info: vi.fn(), error: vi.fn(), warn: vi.fn(), debug: vi.fn() },
-}));
-
 describe('MetricsProvider Time Comparison', () => {
   afterEach(() => {
     vi.useRealTimers();

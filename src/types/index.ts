@@ -1,5 +1,5 @@
 /**
- * OpenManager Vibe V5 - Core Types
+ * OpenManager AI - Core Types
  * 모든 타입은 readonly로 정의하여 불변성 보장
  * any 타입 절대 사용 금지
  */

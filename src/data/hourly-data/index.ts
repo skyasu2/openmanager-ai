@@ -58,8 +58,8 @@ export type PrometheusMetrics = {
 // ============================================================================
 // Prometheus 원본 메트릭 참조 (교육용)
 // ============================================================================
-// VIBE는 사전 계산된 값을 저장하지만, 실제 Prometheus에서는 원본 counter/gauge를
-// PromQL로 쿼리하여 산출합니다. 이 매핑은 각 VIBE 메트릭이 실제 환경에서
+// OpenManager AI는 사전 계산된 값을 저장하지만, 실제 Prometheus에서는 원본 counter/gauge를
+// PromQL로 쿼리하여 산출합니다. 이 매핑은 각 OpenManager AI 메트릭이 실제 환경에서
 // 어떤 원본 메트릭과 PromQL 식에서 유래하는지를 기록합니다.
 
 export type PrometheusMetricReference = {
@@ -72,7 +72,7 @@ export type PrometheusMetricReference = {
 };
 
 /**
- * VIBE 메트릭 → 실제 Prometheus/node_exporter 원본 매핑
+ * OpenManager AI 메트릭 → 실제 Prometheus/node_exporter 원본 매핑
  *
  * @example
  * ```ts
@@ -111,7 +111,7 @@ export const PROMETHEUS_METRIC_REFERENCE: Record<
     metricType: 'gauge',
     baseUnit: 'bytes',
     notes:
-      '실제는 MemAvailable/MemTotal bytes gauge. VIBE는 이미 계산된 퍼센트를 저장.',
+      '실제는 MemAvailable/MemTotal bytes gauge. OpenManager AI는 이미 계산된 퍼센트를 저장.',
   },
   node_filesystem_usage_percent: {
     vibeMetric: 'node_filesystem_usage_percent',
@@ -121,7 +121,7 @@ export const PROMETHEUS_METRIC_REFERENCE: Record<
     metricType: 'gauge',
     baseUnit: 'bytes',
     notes:
-      '실제는 mountpoint/fstype별 avail_bytes gauge. VIBE는 루트 파티션 사용률만 사전 계산.',
+      '실제는 mountpoint/fstype별 avail_bytes gauge. OpenManager AI는 루트 파티션 사용률만 사전 계산.',
   },
   node_network_transmit_bytes_rate: {
     vibeMetric: 'node_network_transmit_bytes_rate',

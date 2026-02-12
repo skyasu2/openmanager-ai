@@ -13,16 +13,6 @@ import {
   validateEnvironmentVariables,
 } from './env-validation';
 
-// logger 모킹
-vi.mock('@/lib/logging', () => ({
-  logger: {
-    info: vi.fn(),
-    error: vi.fn(),
-    warn: vi.fn(),
-    debug: vi.fn(),
-  },
-}));
-
 describe('validateTestApiKey', () => {
   const originalEnv = process.env;
 

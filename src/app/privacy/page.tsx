@@ -6,8 +6,8 @@
 import Link from 'next/link';
 
 export const metadata = {
-  title: '개인정보 처리방침 | OpenManager Vibe',
-  description: 'OpenManager Vibe 개인정보 처리방침',
+  title: '개인정보 처리방침 | OpenManager AI',
+  description: 'OpenManager AI 개인정보 처리방침',
 };
 
 export default function PrivacyPage() {
@@ -79,7 +79,7 @@ export default function PrivacyPage() {
         {/* Footer */}
         <div className="mt-12 pt-6 border-t border-white/10 text-center">
           <p className="text-xs text-white/40">
-            OpenManager Vibe v{process.env.NEXT_PUBLIC_APP_VERSION || '7.0.1'}
+            OpenManager AI v{process.env.NEXT_PUBLIC_APP_VERSION || '7.0.1'}
           </p>
         </div>
       </div>

@@ -1,7 +1,7 @@
 /**
  * 🔐 Auto Logout Hook
  *
- * OpenManager Vibe v5 자동 로그아웃 시스템 (Google OAuth 제거됨)
+ * OpenManager AI 자동 로그아웃 시스템 (Google OAuth 제거됨)
  */
 
 'use client';

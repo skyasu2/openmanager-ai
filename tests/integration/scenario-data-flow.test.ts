@@ -24,15 +24,6 @@ vi.mock('path', () => ({
   resolve: vi.fn((...args: string[]) => args.join('/')),
 }));
 
-vi.mock('@/lib/logging', () => ({
-  logger: {
-    info: vi.fn(),
-    error: vi.fn(),
-    warn: vi.fn(),
-    debug: vi.fn(),
-  },
-}));
-
 // Mock hourly data structure
 const mockHourlyData = {
   hour: 14,

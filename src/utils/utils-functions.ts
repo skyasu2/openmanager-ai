@@ -1,5 +1,5 @@
 /**
- * OpenManager Vibe V5 - Utility Functions
+ * OpenManager AI - Utility Functions
  * Common helper functions used throughout the application
  */
 

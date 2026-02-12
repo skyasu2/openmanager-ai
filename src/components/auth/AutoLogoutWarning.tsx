@@ -4,7 +4,7 @@ import { AlertTriangle, Clock, RotateCcw } from 'lucide-react';
 
 /**
  * 자동 로그아웃 경고 컴포넌트 v1.0
- * OpenManager Vibe v5 - 베르셀 사용량 최적화
+ * OpenManager AI - 베르셀 사용량 최적화
  */
 
 interface AutoLogoutWarningProps {
