@@ -1,7 +1,7 @@
 /**
  * 🔧 Client Providers
  *
- * OpenManager Vibe v5 클라이언트 프로바이더 통합 관리
+ * OpenManager AI 클라이언트 프로바이더 통합 관리
  * Supabase Auth + TanStack Query 사용
  */
 

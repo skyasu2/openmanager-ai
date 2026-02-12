@@ -182,7 +182,7 @@ function AuthErrorContent() {
           <div className="space-y-1 text-xs text-gray-500">
             <p>🔐 NextAuth 기반 GitHub OAuth</p>
             <p>🛠️ 문제가 계속되면 관리자에게 문의하세요</p>
-            <p>OpenManager Vibe v5.80.0</p>
+            <p>OpenManager AI v8.0.0</p>
           </div>
         </div>
       </div>

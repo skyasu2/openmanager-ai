@@ -1,7 +1,7 @@
 /**
  * 🔐 Login Client Component - OAuth & 게스트 로그인
  *
- * OpenManager Vibe v5 로그인 시스템
+ * OpenManager AI v5 로그인 시스템
  * - GitHub OAuth, Google OAuth, Guest Mode 지원
  * - Supabase Auth PKCE 기반 인증
  * - 모든 로그인 성공 시 루트 페이지(/)로 리다이렉트
@@ -478,7 +478,7 @@ export default function LoginClient() {
         {/* Footer */}
         <div className="mt-8 text-center">
           <p className="text-xs text-white/60">
-            OpenManager Vibe v{process.env.NEXT_PUBLIC_APP_VERSION || '5.83.3'}
+            OpenManager AI v{process.env.NEXT_PUBLIC_APP_VERSION || '5.83.3'}
           </p>
           <a
             href="/privacy"

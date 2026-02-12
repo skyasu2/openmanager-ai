@@ -10,10 +10,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { getKSTMinuteOfDay, metricsProvider } from './MetricsProvider';
 
-vi.mock('@/lib/logging', () => ({
-  logger: { info: vi.fn(), error: vi.fn(), warn: vi.fn(), debug: vi.fn() },
-}));
-
 describe('MetricsProvider Edge Cases', () => {
   afterEach(() => {
     vi.useRealTimers();

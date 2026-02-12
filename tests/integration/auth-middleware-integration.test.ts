@@ -27,15 +27,6 @@ vi.mock('@/config/guestMode.server', () => ({
   isGuestFullAccessEnabledServer: vi.fn(() => false),
 }));
 
-vi.mock('@/lib/logging', () => ({
-  logger: {
-    info: vi.fn(),
-    error: vi.fn(),
-    warn: vi.fn(),
-    debug: vi.fn(),
-  },
-}));
-
 vi.mock('@/lib/security/security-logger', () => ({
   securityLogger: {
     logSecurityEvent: vi.fn(),

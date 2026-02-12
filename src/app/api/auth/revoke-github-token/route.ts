@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
           Accept: 'application/vnd.github+json',
           Authorization: `Basic ${Buffer.from(`${clientId}:${clientSecret}`).toString('base64')}`,
           'X-GitHub-Api-Version': '2022-11-28',
-          'User-Agent': 'OpenManager-VIBE-v5',
+          'User-Agent': 'OpenManager-AI-v8',
         },
         body: JSON.stringify({
           access_token,

@@ -13,19 +13,6 @@ import {
   withErrorRecovery,
 } from './error-handler';
 
-// Mock logger to prevent "No logError export" error
-vi.mock('@/lib/logger', () => ({
-  logError: vi.fn(),
-  logWarningWithDetails: vi.fn(),
-  logPerformance: vi.fn(),
-  logAI: vi.fn(),
-  devLogger: {
-    info: vi.fn(),
-    warn: vi.fn(),
-    error: vi.fn(),
-  },
-}));
-
 describe('Error Handler', () => {
   beforeEach(() => {
     vi.mocked(logger.error).mockClear();

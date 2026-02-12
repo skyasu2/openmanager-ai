@@ -1,5 +1,5 @@
 import { defineConfig } from 'vitest/config';
-import path from 'path';
+import { testAliases } from './shared-aliases';
 
 /**
  * 🚀 최소 테스트 설정 - 22ms 초고속 실행
@@ -52,8 +52,6 @@ export default defineConfig({
     reporters: ['default'], // 간단한 리포터만 사용
   },
   resolve: {
-    alias: {
-      '@': path.resolve(__dirname, '../../src'),
-    },
+    alias: testAliases,
   },
 });

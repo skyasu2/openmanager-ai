@@ -28,15 +28,6 @@ vi.mock('@/config/SystemConfiguration', () => ({
   })),
 }));
 
-vi.mock('@/lib/logging', () => ({
-  logger: {
-    info: vi.fn(),
-    error: vi.fn(),
-    warn: vi.fn(),
-    debug: vi.fn(),
-  },
-}));
-
 vi.mock('@/utils/debug', () => ({
   default: {
     log: vi.fn(),

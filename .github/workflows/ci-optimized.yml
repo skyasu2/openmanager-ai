@@ -154,12 +154,12 @@ jobs:
             echo "✅ Rollup binary 확인됨"
 
             # 빠른 CI 테스트 실행 (핵심 유닛 테스트만)
-            if npm run test:ci:fast; then
+            if npm run test:quick; then
               echo "✅ 핵심 테스트 모두 통과!"
             else
               echo "❌ 핵심 테스트 실패 감지"
               echo "📋 실패한 테스트:"
-              npm run test:ci:fast 2>&1 | grep -E "(FAIL|Error|✗)" || echo "상세 로그를 확인하세요"
+              npm run test:quick 2>&1 | grep -E "(FAIL|Error|✗)" || echo "상세 로그를 확인하세요"
 
               # 브랜치별 차등 처리
               if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then

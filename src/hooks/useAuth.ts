@@ -1,7 +1,7 @@
 /**
  * 🔐 useAuth - 게스트 인증 훅
  *
- * OpenManager Vibe v5 게스트 인증 시스템 (Google OAuth 제거됨)
+ * OpenManager AI 게스트 인증 시스템 (Google OAuth 제거됨)
  */
 
 import { useCallback, useEffect, useState } from 'react';

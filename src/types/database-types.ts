@@ -1,6 +1,6 @@
 // src/types/database.ts
 /**
- * OpenManager Vibe V5 - Database Type Definitions
+ * OpenManager AI - Database Type Definitions
  * Supabase compatible database schema types
  */
 

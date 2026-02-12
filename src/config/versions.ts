@@ -1,5 +1,5 @@
 /**
- * 🔢 OpenManager Vibe v5 - 버전 관리 시스템
+ * 🔢 OpenManager AI - 버전 관리 시스템
  *
  * AI 엔진과 주요 컴포넌트의 버전을 중앙에서 관리
  * - 버전 변경 시 자동 로깅
@@ -236,7 +236,7 @@ export class VersionManager {
    */
   static printVersionInfo(): void {
     logger.info(`
-🔢 OpenManager Vibe v5 - 버전 정보
+🔢 OpenManager AI - 버전 정보
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🧠 AI 엔진 마스터: v${AI_ENGINE_VERSIONS.master}
 📊 데이터 생성기: v${DATA_GENERATOR_VERSIONS.optimized}

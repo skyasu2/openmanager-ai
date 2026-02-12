@@ -18,16 +18,6 @@ import {
   validateRedirectUrl,
 } from './secure-cookies';
 
-// logger 모킹
-vi.mock('@/lib/logging', () => ({
-  logger: {
-    info: vi.fn(),
-    error: vi.fn(),
-    warn: vi.fn(),
-    debug: vi.fn(),
-  },
-}));
-
 describe('isVercelEnvironment', () => {
   const originalWindow = global.window;
   const originalEnv = process.env;

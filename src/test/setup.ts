@@ -91,16 +91,6 @@ vi.mock('@/services/data/UnifiedServerDataSource', () => ({
   },
 }));
 
-// Logger Mock
-vi.mock('@/lib/logger', () => ({
-  logger: {
-    info: vi.fn(),
-    warn: vi.fn(),
-    error: vi.fn(),
-    debug: vi.fn(),
-  },
-}));
-
 // Logging Module Mock (unified logger)
 vi.mock('@/lib/logging', () => ({
   logger: {
