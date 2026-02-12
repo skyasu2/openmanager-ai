@@ -74,7 +74,7 @@ export function processLogLine(
     severityText,
     body,
     attributes: {
-      'log.source': 'openmanager-vibe',
+      'log.source': 'openmanager-ai',
     },
     resource: serverId,
   };

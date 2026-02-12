@@ -22,7 +22,7 @@ const SALT_LENGTH = 32;
 // 암호화 키 생성 (환경변수 또는 기본값 사용)
 const getEncryptionKey = () => {
   const masterKey =
-    process.env.ENCRYPTION_KEY || 'openmanager-vibe-v5-default-key-2025';
+    process.env.ENCRYPTION_KEY || 'openmanager-ai-default-key-2026';
   return crypto.scryptSync(masterKey, 'salt', KEY_LENGTH);
 };
 
@@ -133,7 +133,7 @@ async function gitPush(branch = 'main') {
 async function restoreGitRemote() {
   try {
     await execAsync(
-      'git remote set-url origin https://github.com/skyasu2/openmanager-vibe-v5.git'
+      'git remote set-url origin https://github.com/skyasu2/openmanager-ai.git'
     );
     console.log('✅ Git remote URL이 원래대로 복원되었습니다.');
   } catch (error) {

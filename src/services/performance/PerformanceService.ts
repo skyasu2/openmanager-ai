@@ -8,7 +8,7 @@ import type {
   Alert,
   PerformanceMetric,
   SystemHealth,
-} from '@/types/performance/performance';
+} from '@/types/performance/monitoring';
 
 export class PerformanceService {
   private static instance: PerformanceService;

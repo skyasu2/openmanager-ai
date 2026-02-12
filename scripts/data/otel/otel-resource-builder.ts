@@ -29,7 +29,7 @@ export function buildResourceAttributes(
   nodeInfo?: PrometheusNodeInfo
 ): OTelResourceAttributes {
   const attrs: OTelResourceAttributes = {
-    'service.name': 'openmanager-vibe',
+    'service.name': 'openmanager-ai',
     'host.name': labels.hostname,
     'host.id': serverId,
     'host.type': labels.server_type,

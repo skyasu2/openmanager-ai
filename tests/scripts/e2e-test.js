@@ -8,7 +8,7 @@ const { chromium } = require("playwright");
   const page = await browser.newPage();
   
   // OpenManager 베르셀 사이트 접속
-  await page.goto("https://openmanager-vibe-v5.vercel.app");
+  await page.goto("https://openmanager-ai.vercel.app");
   await page.waitForLoadState("networkidle");
   
   // 스크린샷 저장

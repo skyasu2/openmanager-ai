@@ -1,9 +1,9 @@
 # AI Model Policy (Cloud Run + Vercel AI SDK) - 2026.01
 
-이 문서는 OpenManager Vibe의 AI 아키텍처를 정리합니다.
+이 문서는 OpenManager AI의 AI 아키텍처를 정리합니다.
 현재 AI 처리는 **Cloud Run 기반 LLM 멀티 에이전트 시스템 (Vercel AI SDK v6 Native)** 으로 구성되어 있습니다.
 
-> **최종 업데이트**: 2026-02-08 (v7.1.4 버전 동기화)
+> **최종 업데이트**: 2026-02-12 (v8.0.0 버전 동기화)
 
 ---
 

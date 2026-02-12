@@ -1,6 +1,6 @@
-# OpenManager AI v5 - LLM Context
+# OpenManager AI v8 - LLM Context
 
-> **v7.1.4** | Updated 2026-02-08
+> **v8.0.0** | Updated 2026-02-12
 >
 > AI 어시스턴트가 프로젝트를 이해하는 데 필요한 핵심 정보
 

@@ -6,7 +6,7 @@ import path from 'node:path';
  * Cloud Run AI 설정을 포함한 완전한 환경변수 파일을 생성합니다.
  */
 function createEnvFile() {
-  const envContent = `# OpenManager Vibe v5 - Local Environment Variables
+  const envContent = `# OpenManager AI v8 - Local Environment Variables
 # 로컬 개발 및 테스트 환경용 설정
 
 # 🤖 Cloud Run AI 설정 (Mistral via Cloud Run)
@@ -28,7 +28,7 @@ UPSTASH_REDIS_REST_URL=https://your_redis_host_here
 UPSTASH_REDIS_REST_TOKEN=your_redis_token_here
 
 # 🛡️ Next.js 보안 설정
-NEXTAUTH_SECRET=openmanager-vibe-v5-auth-secret-key-2024
+NEXTAUTH_SECRET=openmanager-ai-auth-secret-key-2026
 NEXTAUTH_URL=http://localhost:3000
 
 # 🔧 개발 도구 설정

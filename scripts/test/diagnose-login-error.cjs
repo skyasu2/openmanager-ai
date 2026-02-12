@@ -11,7 +11,7 @@ console.log('📋 브라우저에서 확인할 사항:');
 console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
 
 console.log('1️⃣ 로그인 페이지 접속');
-console.log('   🔗 https://openmanager-vibe-v5.vercel.app/login');
+console.log('   🔗 https://openmanager-ai.vercel.app/login');
 console.log('   → 개발자 도구 열기 (F12)');
 console.log('   → Console 탭 확인\n');
 

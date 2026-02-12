@@ -1,6 +1,6 @@
 # 개발 환경 가이드
 
-> OpenManager AI v5 개발 환경 구축 및 설정 가이드
+> OpenManager AI v8 개발 환경 구축 및 설정 가이드
 
 ## 개요
 

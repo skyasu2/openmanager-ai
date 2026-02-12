@@ -10,7 +10,7 @@
 
 ## Overview
 
-OpenManager Vibe AI의 RAG(Retrieval-Augmented Generation) 시스템은 **Hybrid GraphSearch** 기술을 기반으로 내부 지식과 외부 정보를 결합하여 고정밀 답변을 생성합니다.
+OpenManager AI의 RAG(Retrieval-Augmented Generation) 시스템은 **Hybrid GraphSearch** 기술을 기반으로 내부 지식과 외부 정보를 결합하여 고정밀 답변을 생성합니다.
 
 ### Key Technologies
 

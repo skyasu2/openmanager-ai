@@ -16,7 +16,7 @@
     },
     "playwright": {
       "command": "node",
-      "args": ["/mnt/d/cursor/openmanager-vibe-v5/node_modules/@executeautomation/playwright-mcp-server/dist/index.js"],
+      "args": ["/mnt/d/cursor/openmanager-ai/node_modules/@executeautomation/playwright-mcp-server/dist/index.js"],
       "env": {
         "NODE_OPTIONS": "--max-old-space-size=2048",
         "PLAYWRIGHT_BROWSERS_PATH": "/home/sky-note/.cache/ms-playwright"
@@ -68,7 +68,7 @@
     "serena": {
       "command": "/home/sky-note/.local/bin/serena-mcp-server",
       "args": [
-        "--project", "/mnt/d/cursor/openmanager-vibe-v5",
+        "--project", "/mnt/d/cursor/openmanager-ai",
         "--log-level", "ERROR",
         "--tool-timeout", "180"
       ],

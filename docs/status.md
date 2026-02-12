@@ -4,7 +4,7 @@
 
 ---
 
-## 🔄 Recent Changes (v7.1.5)
+## 🔄 Recent Changes (v8.0.0)
 
 - **v7.1.5** (2026-02-11)
   - refactor(data): public/hourly-data/ 이중 복사 제거 — src/data/hourly-data/가 단일 SSOT
@@ -155,7 +155,7 @@
 
 ---
 
-## 🏗️ Technical Stack (v7.1.4)
+## 🏗️ Technical Stack (v8.0.0)
 
 **Core Frameworks** (2025 Standard)
 - **Next.js**: `v16.1.3` (App Router, Server Components)

@@ -23,7 +23,7 @@ git push --follow-tags      # 태그 푸시 → 배포 트리거
 | URL | `openmanager-ai.vercel.app` |
 | Plan | Pro ($20/mo, 비용 최소화) |
 
-#### Pro 플랜 설정 (v7.1.0)
+#### Pro 플랜 설정 (v8.0.0)
 
 | 항목 | 설정 | 비고 |
 |------|------|------|

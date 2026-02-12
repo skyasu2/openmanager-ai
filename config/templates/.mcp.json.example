@@ -2,7 +2,7 @@
   "mcpServers": {
     "filesystem": {
       "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-filesystem", "/mnt/d/cursor/openmanager-vibe-v5"]
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "/mnt/d/cursor/openmanager-ai"]
     },
     "memory": {
       "command": "npx",

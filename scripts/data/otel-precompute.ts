@@ -43,7 +43,7 @@ import type {
 // ============================================================================
 
 const SCHEMA_VERSION = '1.0.0';
-const SCOPE_NAME = 'openmanager-vibe-otel-pipeline';
+const SCOPE_NAME = 'openmanager-ai-otel-pipeline';
 const SCOPE_VERSION = '1.0.0';
 
 // ============================================================================

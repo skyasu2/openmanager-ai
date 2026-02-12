@@ -75,7 +75,7 @@ async function transformToStandard() {
               scopeMetrics: [
                 {
                   scope: {
-                    name: 'openmanager-vibe-otel-pipeline',
+                    name: 'openmanager-ai-otel-pipeline',
                     version: '1.0.0',
                   },
                   metrics: [],

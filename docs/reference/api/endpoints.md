@@ -4,7 +4,7 @@
 
 ## Overview
 
-OpenManager Vibe v5 현재 **76개의 API 엔드포인트**를 제공합니다.
+OpenManager AI v8 현재 **76개의 API 엔드포인트**를 제공합니다.
 
 ### 분류
 

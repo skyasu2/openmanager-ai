@@ -27,7 +27,7 @@ export async function initMonitoring(): Promise<void> {
       await import('@opentelemetry/sdk-metrics');
 
     const sdk = new NodeSDK({
-      serviceName: 'openmanager-vibe',
+      serviceName: 'openmanager-ai',
       metricReader: new PeriodicExportingMetricReader({
         exporter: new ConsoleMetricExporter(),
         exportIntervalMillis: 60_000,

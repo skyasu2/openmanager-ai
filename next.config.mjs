@@ -463,7 +463,7 @@ const nextConfig = {
 
   // 환경 변수 최소화
   env: {
-    CUSTOM_KEY: 'openmanager-vibe-v5',
+    CUSTOM_KEY: 'openmanager-ai',
     NEXT_PUBLIC_APP_VERSION: packageJson.version,
   },
 };

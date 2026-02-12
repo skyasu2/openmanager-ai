@@ -36,31 +36,6 @@ vi.mock('@/lib/supabase/client', () => {
   );
 });
 
-// PostgresVectorDB Mock - 초기화 및 캐시 객체 포함
-vi.mock('@/services/ai/postgres-vector-db', () => {
-  return {
-    PostgresVectorDB: vi.fn().mockImplementation(() => ({
-      getStats: vi.fn().mockResolvedValue({
-        total_documents: 10,
-        total_categories: 3,
-      }),
-      search: vi.fn().mockResolvedValue([
-        {
-          id: '1',
-          content: 'Test content',
-          similarity: 0.85,
-          metadata: { category: 'test' },
-        },
-      ]),
-      addDocument: vi.fn().mockResolvedValue({ success: true }),
-      clearCollection: vi.fn().mockResolvedValue({ success: true }),
-      // 초기화 관련 메서드
-      _initialize: vi.fn().mockResolvedValue(undefined),
-      isInitialized: true,
-    })),
-  };
-});
-
 // UnifiedServerDataSource Mock - 테스트용 서버 데이터 포함
 const mockServerData = {
   id: 'server-1',

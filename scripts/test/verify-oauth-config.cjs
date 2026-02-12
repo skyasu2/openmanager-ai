@@ -10,10 +10,10 @@ const https = require('https');
 console.log('🔍 OAuth 설정 검증 시작...\n');
 
 console.log('✅ Supabase Authentication URL 설정 확인됨:');
-console.log('   Site URL: https://openmanager-vibe-v5.vercel.app');
+console.log('   Site URL: https://openmanager-ai.vercel.app');
 console.log('   Redirect URLs:');
 console.log('   - http://localhost:3000/**');
-console.log('   - https://openmanager-vibe-v5.vercel.app/auth/callback\n');
+console.log('   - https://openmanager-ai.vercel.app/auth/callback\n');
 
 console.log('📋 남은 설정 체크리스트:');
 console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
@@ -38,7 +38,7 @@ console.log('\n🧪 실시간 테스트:');
 console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
 
 // 프로덕션 사이트 헬스체크
-https.get('https://openmanager-vibe-v5.vercel.app/api/health', (res) => {
+https.get('https://openmanager-ai.vercel.app/api/health', (res) => {
   let data = '';
   res.on('data', (chunk) => { data += chunk; });
   res.on('end', () => {
@@ -65,7 +65,7 @@ https.get('https://openmanager-vibe-v5.vercel.app/api/health', (res) => {
 console.log('\n💡 다음 단계:');
 console.log('1. 위 설정들이 모두 완료되었는지 확인');
 console.log('2. Vercel에서 재배포 (환경변수 설정 후 자동 트리거됨)');
-console.log('3. https://openmanager-vibe-v5.vercel.app 에서 로그인 테스트');
+console.log('3. https://openmanager-ai.vercel.app 에서 로그인 테스트');
 console.log('\n⚠️ 주의: GitHub OAuth App의 callback URL은 Supabase URL이어야 합니다!');
 console.log('   (Vercel 도메인이 아닌 Supabase 도메인으로 설정)');
 

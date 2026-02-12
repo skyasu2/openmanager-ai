@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [8.0.0](https://github.com/skyasu2/openmanager-ai/compare/v7.1.4...v8.0.0) (2026-02-12)
+
+
+### ⚠ BREAKING CHANGES
+
+* **project:** openmanager-vibe-v5 → openmanager-ai 리네이밍
+  - GitHub: skyasu2/openmanager-ai
+  - Vercel: openmanager-ai.vercel.app
+  - OTel service name: openmanager-ai
+
 ### [7.1.4](https://github.com/skyasu2/openmanager-ai/compare/v7.1.3...v7.1.4) (2026-02-06)
 
 
