@@ -10,7 +10,7 @@ import type { ApiServerMetrics } from './types';
 
 /**
  * Prometheus Transformer Functions
- * VIBE 내부 포맷(ApiServerMetrics)을 Prometheus API 응답 규격으로 변환
+ * OpenManager AI 내부 포맷(ApiServerMetrics)을 Prometheus API 응답 규격으로 변환
  */
 
 function extractValue(
@@ -31,8 +31,15 @@ function extractValue(
   }
 
   if (metricName === PROMETHEUS_METRIC_NAMES.CPU_USAGE) {
+    // Note: Standard node_cpu_seconds_total is a Counter. 
+    // OpenManager AI provides a Gauge (0-100%). We map it to a custom gauge for correctness.
     return server.cpu;
   }
+  if (metricName === 'node_cpu_seconds_total') {
+      // Warn: Trying to access Counter as Gauge
+      return null; 
+  }
+
   if (metricName === 'node_memory_MemTotal_bytes') {
     const total = server.nodeInfo?.memoryTotalBytes || 16 * 1024 * 1024 * 1024;
     return total;
@@ -40,6 +47,16 @@ function extractValue(
   if (metricName === 'node_memory_MemAvailable_bytes') {
     const total = server.nodeInfo?.memoryTotalBytes || 16 * 1024 * 1024 * 1024;
     return total * (1 - server.memory / 100);
+  }
+  
+  if (metricName === PROMETHEUS_METRIC_NAMES.DISK_USAGE) {
+      // node_filesystem_size_bytes
+      const total = server.nodeInfo?.diskTotalBytes || 100 * 1024 * 1024 * 1024;
+      return total;
+  }
+  if (metricName === 'node_filesystem_avail_bytes') {
+      const total = server.nodeInfo?.diskTotalBytes || 100 * 1024 * 1024 * 1024;
+      return total * (1 - server.disk / 100);
   }
 
   return null;

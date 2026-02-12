@@ -2,17 +2,17 @@
 
 > **작성일**: 2026-02-12 (Updated)
 > **대상**: Prometheus, Loki, OpenTelemetry (OTel) 데이터 포맷
-> **목적**: 실제 상용/오픈소스 표준 규격과 VIBE 데이터 포맷의 일치 여부 분석 및 표준화 완료 보고
+> **목적**: 실제 상용/오픈소스 표준 규격과 OpenManager AI 데이터 포맷의 일치 여부 분석 및 표준화 완료 보고
 
 ---
 
 ## 1. 개요 (Overview)
 
-사용자님의 요청에 따라, VIBE 시스템의 데이터 포맷을 **업계 표준(OTLP, Prometheus API)**과 일치시키는 작업을 완료했습니다. 이제 VIBE가 생성하고 사용하는 데이터는 **실제 도구(Prometheus, Loki, OTel Collector)가 사용하는 포맷과 동일**합니다.
+사용자님의 요청에 따라, OpenManager AI 시스템의 데이터 포맷을 **업계 표준(OTLP, Prometheus API)**과 일치시키는 작업을 완료했습니다. 이제 OpenManager AI가 생성하고 사용하는 데이터는 **실제 도구(Prometheus, Loki, OTel Collector)가 사용하는 포맷과 동일**합니다.
 
 ### 🕒 요약 (Compliance Matrix)
 
-| 데이터 종류 | 표준 규격 (Standard) | VIBE 구현 (Implementation) | 일치도 | 비고 |
+| 데이터 종류 | 표준 규격 (Standard) | OpenManager AI 구현 (Implementation) | 일치도 | 비고 |
 |---|---|---|:---:|---|
 | **Loki Logs** | **Loki Push API (v1)** | `streams` 기반 JSON 구조 | ⭐ 100% | 기존 완료 |
 | **OTel Metrics** | **OTLP JSON (v1)** | `ResourceMetrics` 계층 구조 | ⭐ 100% | **[완료]** Flattened → Hierarchical 변환 적용 |
@@ -39,11 +39,11 @@
 
 ### 2.2 Prometheus 데이터 (✅ Standardized)
 
-VIBE 내부 데이터를 **Prometheus HTTP API** 응답 규격으로 변환하는 계층(Layer)을 구현했습니다.
+OpenManager AI 내부 데이터를 **Prometheus HTTP API** 응답 규격으로 변환하는 계층(Layer)을 구현했습니다.
 
 *   **표준 타입 정의**: `src/types/prometheus-standard.ts`에 `Vector`, `Matrix`, `Scalar` 등 Prometheus API 응답 타입 정의
 *   **PrometheusTransformer**: 내부 `ApiServerMetrics`를 Prometheus Query API 포맷으로 즉시 변환하는 유틸리티 구현 (`src/services/metrics/PrometheusTransformer.ts`)
-*   이제 프론트엔드나 외부 도구가 VIBE를 **진짜 Prometheus 서버**처럼 취급하여 쿼리 가능
+*   이제 프론트엔드나 외부 도구가 OpenManager AI를 **진짜 Prometheus 서버**처럼 취급하여 쿼리 가능
 
 ### 2.3 Loki 로그 데이터 (✅ Maintained)
 
@@ -68,4 +68,4 @@ VIBE 내부 데이터를 **Prometheus HTTP API** 응답 규격으로 변환하�
 ## 4. 결론
 
 사용자님의 강력한 요청에 따라 **"흉내 내는 데이터"**에서 **"진짜 표준 데이터"**로의 전환을 완료했습니다.
-이제 VIBE는 **Real-world Data Architecture**를 갖춘 시뮬레이터로 거듭났습니다. 🚀
+이제 OpenManager AI는 **Real-world Data Architecture**를 갖춘 시뮬레이터로 거듭났습니다. 🚀

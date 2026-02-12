@@ -168,7 +168,7 @@ Supervisor (Intent Classification & Routing)
 ## Engineering Philosophy
 
 **"From Dashboard to Dialogue"**
-기존의 Ops 도구들이 "데이터를 보여주는 것"에 집중했다면, VIBE는 "데이터를 이해하고 설명하는 것"에 초점을 맞춥니다.
+기존의 Ops 도구들이 "데이터를 보여주는 것"에 집중했다면, OpenManager AI는 "데이터를 이해하고 설명하는 것"에 초점을 맞춥니다.
 
 1.  **Context-Aware**: 단순 메트릭 수치가 아닌, 서버의 과거 맥락과 연관성을 함께 분석합니다.
 2.  **Action-Oriented**: 문제 확인에서 그치지 않고, 구체적인 해결책(Shell Command, Config 수정안)을 제안합니다.

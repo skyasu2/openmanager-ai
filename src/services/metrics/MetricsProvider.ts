@@ -140,7 +140,7 @@ function extractMetricsFromStandard(
     for (const scopeMetric of resMetric.scopeMetrics) {
       for (const metric of scopeMetric.metrics) {
         // 해당 분(minute)의 DataPoint 찾기
-        // VIBE 데이터 생성 규칙상 DataPoints는 0~59분 순서대로 생성됨
+        // OpenManager AI 데이터 생성 규칙상 DataPoints는 0~59분 순서대로 생성됨
         // 안전을 위해 배열 길이 체크
         let dp = null;
         if (metric.gauge) {
@@ -335,6 +335,7 @@ export class MetricsProvider {
     cachedHourlyData = null;
     cachedOTelData = null;
     cachedOTelConversion = null;
+    MetricsProvider.cachedServerList = null;
   }
 
   /**
@@ -580,14 +581,25 @@ export class MetricsProvider {
     return null;
   }
 
+  // Server List 캐시
+  private static cachedServerList: Array<{
+    serverId: string;
+    serverType: string;
+    location: string;
+  }> | null = null;
   /**
    * 서버 목록 조회 (OTel Standard Resource 기반)
+   * 캐싱 적용으로 성능 최적화 (O(N) -> O(1))
    */
   public getServerList(): Array<{
     serverId: string;
     serverType: string;
     location: string;
   }> {
+    if (MetricsProvider.cachedServerList) {
+        return MetricsProvider.cachedServerList;
+    }
+
     // 0시 데이터를 로드하여 리소스 목록 추출 (가장 확실한 방법)
     const data = loadOTelData(0);
     if (!data) return [];
@@ -616,6 +628,7 @@ export class MetricsProvider {
       });
     }
 
+    MetricsProvider.cachedServerList = servers;
     return servers;
   }
 

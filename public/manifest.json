@@ -1,8 +1,8 @@
 {
-  "name": "OpenManager Vibe v5 - Fluid Compute Edition",
+  "name": "OpenManager AI v8 - AI Native Server Monitoring",
   "short_name": "OpenManager",
   "description": "AI-Powered Server Management with Fluid Compute Optimization",
-  "version": "5.87.0",
+  "version": "8.0.0",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0f172a",

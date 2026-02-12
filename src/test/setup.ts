@@ -26,7 +26,14 @@ vi.mock('@/lib/supabase/client', () => {
       .withData([])
       .withError(null)
       .withCustomResponse('rpc', {
-        data: [{ id: '1', content: 'Test content', similarity: 0.85, metadata: { category: 'test' } }],
+        data: [
+          {
+            id: '1',
+            content: 'Test content',
+            similarity: 0.85,
+            metadata: { category: 'test' },
+          },
+        ],
         error: null,
       })
   );
