@@ -1,12 +1,15 @@
 /**
- * OpenTelemetry SDK Skeleton
+ * OpenTelemetry SDK Skeleton (프로덕션 모니터링용 아님)
  *
- * Disabled by default. Set ENABLE_OPENTELEMETRY=true to activate.
- * When disabled: zero runtime cost (immediate return, no dynamic imports).
- * When enabled: initializes OTel SDK with console exporter for demonstration.
+ * 이 SDK는 향후 확장을 위한 스켈레톤 코드입니다.
+ * OTel 데이터는 빌드 타임 precompute(`npm run data:otel`)로만 생성/사용됩니다.
  *
- * This skeleton shows how OTel integration would work in production.
- * Replace ConsoleExporter with OTLPExporter for real observability backends.
+ * 런타임 상태:
+ * - ENABLE_OPENTELEMETRY 미설정 → 즉시 return (zero overhead)
+ * - ENABLE_OPENTELEMETRY=true 설정 시 → ConsoleExporter(stdout)만 동작
+ * - OTLP 백엔드 연결 없음, @opentelemetry/* 패키지는 devDependencies
+ *
+ * 관련 문서: docs/reference/architecture/data/otel-pipeline-audit.md
  */
 
 const IS_ENABLED = process.env.ENABLE_OPENTELEMETRY === 'true';
