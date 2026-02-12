@@ -25,14 +25,10 @@ vi.mock('@/lib/supabase/client', () => {
     new SupabaseMockBuilder()
       .withData([])
       .withError(null)
-      .withVectorSearchResults([
-        {
-          id: '1',
-          content: 'Test content',
-          similarity: 0.85,
-          metadata: { category: 'test' },
-        },
-      ])
+      .withCustomResponse('rpc', {
+        data: [{ id: '1', content: 'Test content', similarity: 0.85, metadata: { category: 'test' } }],
+        error: null,
+      })
   );
 });
 

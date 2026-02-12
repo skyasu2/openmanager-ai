@@ -11,8 +11,7 @@
  * - KST 기준 시간 슬롯 및 경과 시간 계산
  *
  * @architectural_note
- * 기존 `utils/koreanTime.ts`와 `utils/kst-time.ts`를 통합하고,
- * 프로젝트 종속적인 로직(`project-meta.ts`)을 분리하여 재사용성과 유지보수성을 향상시켰습니다.
+ * 기존 `utils/koreanTime.ts`와 `utils/kst-time.ts`를 통합하여 재사용성과 유지보수성을 향상시켰습니다.
  */
 
 import { logger } from '@/lib/logging';

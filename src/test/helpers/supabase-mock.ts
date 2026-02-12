@@ -85,16 +85,6 @@ export class SupabaseMockBuilder<T = unknown> {
   }
 
   /**
-   * 벡터 검색 결과 설정
-   */
-  withVectorSearchResults(results: unknown[]): this {
-    return this.withCustomResponse('rpc', {
-      data: results,
-      error: null,
-    });
-  }
-
-  /**
    * 테이블 스키마 정보 설정
    */
   withTableSchema(schema: unknown): this {
@@ -188,24 +178,6 @@ export class SupabaseMockBuilder<T = unknown> {
    */
   static createDefault(): MockQueryBuilder {
     return new SupabaseMockBuilder().withData([]).withError(null).build();
-  }
-
-  /**
-   * 벡터 DB용 Mock 생성
-   */
-  static createForVectorDB(): MockQueryBuilder {
-    return new SupabaseMockBuilder()
-      .withData([])
-      .withError(null)
-      .withVectorSearchResults([
-        {
-          id: '1',
-          content: 'Test content',
-          similarity: 0.85,
-          metadata: { category: 'test' },
-        },
-      ])
-      .build();
   }
 
   /**

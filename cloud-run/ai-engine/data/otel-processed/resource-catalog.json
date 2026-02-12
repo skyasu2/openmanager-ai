@@ -3,7 +3,7 @@
   "generatedAt": "2026-02-11T22:02:16.868Z",
   "resources": {
     "web-nginx-icn-01": {
-      "service.name": "openmanager-vibe",
+      "service.name": "openmanager-ai",
       "host.name": "web-nginx-icn-01.openmanager.kr",
       "host.id": "web-nginx-icn-01",
       "host.type": "web",
@@ -17,7 +17,7 @@
       "host.disk.size": 107374182400
     },
     "web-nginx-icn-02": {
-      "service.name": "openmanager-vibe",
+      "service.name": "openmanager-ai",
       "host.name": "web-nginx-icn-02.openmanager.kr",
       "host.id": "web-nginx-icn-02",
       "host.type": "web",
@@ -31,7 +31,7 @@
       "host.disk.size": 107374182400
     },
     "web-nginx-pus-01": {
-      "service.name": "openmanager-vibe",
+      "service.name": "openmanager-ai",
       "host.name": "web-nginx-pus-01.openmanager.kr",
       "host.id": "web-nginx-pus-01",
       "host.type": "web",
@@ -45,7 +45,7 @@
       "host.disk.size": 107374182400
     },
     "api-was-icn-01": {
-      "service.name": "openmanager-vibe",
+      "service.name": "openmanager-ai",
       "host.name": "api-was-icn-01.openmanager.kr",
       "host.id": "api-was-icn-01",
       "host.type": "application",
@@ -59,7 +59,7 @@
       "host.disk.size": 214748364800
     },
     "api-was-icn-02": {
-      "service.name": "openmanager-vibe",
+      "service.name": "openmanager-ai",
       "host.name": "api-was-icn-02.openmanager.kr",
       "host.id": "api-was-icn-02",
       "host.type": "application",
@@ -73,7 +73,7 @@
       "host.disk.size": 214748364800
     },
     "api-was-pus-01": {
-      "service.name": "openmanager-vibe",
+      "service.name": "openmanager-ai",
       "host.name": "api-was-pus-01.openmanager.kr",
       "host.id": "api-was-pus-01",
       "host.type": "application",
@@ -87,7 +87,7 @@
       "host.disk.size": 214748364800
     },
     "db-mysql-icn-primary": {
-      "service.name": "openmanager-vibe",
+      "service.name": "openmanager-ai",
       "host.name": "db-mysql-icn-primary.openmanager.kr",
       "host.id": "db-mysql-icn-primary",
       "host.type": "database",
@@ -101,7 +101,7 @@
       "host.disk.size": 1073741824000
     },
     "db-mysql-icn-replica": {
-      "service.name": "openmanager-vibe",
+      "service.name": "openmanager-ai",
       "host.name": "db-mysql-icn-replica.openmanager.kr",
       "host.id": "db-mysql-icn-replica",
       "host.type": "database",
@@ -115,7 +115,7 @@
       "host.disk.size": 1073741824000
     },
     "db-mysql-pus-dr": {
-      "service.name": "openmanager-vibe",
+      "service.name": "openmanager-ai",
       "host.name": "db-mysql-pus-dr.openmanager.kr",
       "host.id": "db-mysql-pus-dr",
       "host.type": "database",
@@ -129,7 +129,7 @@
       "host.disk.size": 1073741824000
     },
     "cache-redis-icn-01": {
-      "service.name": "openmanager-vibe",
+      "service.name": "openmanager-ai",
       "host.name": "cache-redis-icn-01.openmanager.kr",
       "host.id": "cache-redis-icn-01",
       "host.type": "cache",
@@ -143,7 +143,7 @@
       "host.disk.size": 53687091200
     },
     "cache-redis-icn-02": {
-      "service.name": "openmanager-vibe",
+      "service.name": "openmanager-ai",
       "host.name": "cache-redis-icn-02.openmanager.kr",
       "host.id": "cache-redis-icn-02",
       "host.type": "cache",
@@ -157,7 +157,7 @@
       "host.disk.size": 53687091200
     },
     "storage-nfs-icn-01": {
-      "service.name": "openmanager-vibe",
+      "service.name": "openmanager-ai",
       "host.name": "storage-nfs-icn-01.openmanager.kr",
       "host.id": "storage-nfs-icn-01",
       "host.type": "storage",
@@ -171,7 +171,7 @@
       "host.disk.size": 5368709120000
     },
     "storage-s3gw-pus-01": {
-      "service.name": "openmanager-vibe",
+      "service.name": "openmanager-ai",
       "host.name": "storage-s3gw-pus-01.openmanager.kr",
       "host.id": "storage-s3gw-pus-01",
       "host.type": "storage",
@@ -185,7 +185,7 @@
       "host.disk.size": 214748364800
     },
     "lb-haproxy-icn-01": {
-      "service.name": "openmanager-vibe",
+      "service.name": "openmanager-ai",
       "host.name": "lb-haproxy-icn-01.openmanager.kr",
       "host.id": "lb-haproxy-icn-01",
       "host.type": "loadbalancer",
@@ -199,7 +199,7 @@
       "host.disk.size": 53687091200
     },
     "lb-haproxy-pus-01": {
-      "service.name": "openmanager-vibe",
+      "service.name": "openmanager-ai",
       "host.name": "lb-haproxy-pus-01.openmanager.kr",
       "host.id": "lb-haproxy-pus-01",
       "host.type": "loadbalancer",

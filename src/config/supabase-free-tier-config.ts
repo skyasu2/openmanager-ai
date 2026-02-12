@@ -193,33 +193,6 @@ export function optimizeQuery(
 }
 
 /**
- * 벡터 검색 최적화
- */
-export function optimizeVectorSearch(
-  embedding: number[],
-  options?: {
-    maxResults?: number;
-    threshold?: number;
-  }
-) {
-  const { maxResults = 20, threshold = 0.7 } = options || {};
-
-  return {
-    embedding,
-    options: {
-      limit: Math.min(
-        maxResults,
-        SUPABASE_FREE_TIER_CONFIG.vector.searchLimits.maxResults
-      ),
-      threshold: Math.max(
-        threshold,
-        SUPABASE_FREE_TIER_CONFIG.vector.searchLimits.similarityThreshold
-      ),
-    },
-  };
-}
-
-/**
  * 사용량 체크
  */
 export function checkUsageThreshold(

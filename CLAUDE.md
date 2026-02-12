@@ -54,7 +54,7 @@ src/data/fixed-24h-metrics.ts  ← FALLBACK (hourly-data 불가 시)
 `.claude/rules/`에서 자동 로드:
 - `code-style.md` - TypeScript strict, Biome lint, React/Next.js 규칙
 - `architecture.md` - Hybrid Architecture, 디렉토리 구조
-- `ai-tools.md` - MCP 9개, Skills 10개, Agent Teams 3팀
+- `ai-tools.md` - MCP 9개, Skills 5개, Agent Teams 3팀
 - `testing.md` - Vitest + Playwright, 커버리지 10%+
 - `deployment.md` - Vercel Pro + Cloud Run Free Tier, **비용 가드레일**
 - `env-sync.md` - 환경변수 동기화
