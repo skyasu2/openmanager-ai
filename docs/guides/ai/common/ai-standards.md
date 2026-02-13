@@ -7,6 +7,12 @@
 
 ---
 
+## Policy SSOT
+
+- 멀티 에이전트 공통 운영 정책의 SSOT는 루트 `AGENTS.md`입니다.
+- 이 문서는 도구 사용 가이드/운영 팁에 집중합니다.
+- 공통 정책과 충돌 시 `AGENTS.md`를 우선 적용합니다.
+
 ## Quick Reference
 
 ```bash
@@ -66,8 +72,8 @@ Task gemini-wrapper "아키텍처 분석"
 | AI 도구 | 주 역할 | 특화 영역 | 호출 방법 |
 |---------|---------|-----------|-----------|
 | **Claude Code** | 메인 개발 | 아키텍처, 비즈니스 로직 | 직접 |
-| **Codex (GPT-5)** | 코드 리뷰 | 호환성, 실무 검증 | `Task codex-wrapper` |
-| **Gemini** | 범용 분석 | 시스템 아키텍처 | `Task gemini-wrapper` |
+| **Codex (GPT-5)** | 개발/개선 + 검증 | 구현, 리팩토링, 실무 검증 | `Task codex-wrapper` |
+| **Gemini** | 아키텍처/검증 | 시스템 설계, 표준화, 리스크 분석 | `Task gemini-wrapper` |
 
 ---
 
@@ -106,9 +112,9 @@ Task gemini-wrapper "아키텍처 분석"
 
 ## Related Documents
 
-- [AI CLI Guide](./ai-cli-guide.md) - 명령어 및 벤치마크
-- [AI Workflow](./ai-workflow.md) - 협업 워크플로우
-- [AI Wrappers Guide](./ai-wrappers-guide.md) - 래퍼 스크립트
+- [Vibe Coding README](../../../vibe-coding/README.md)
+- [Vibe Coding Workflows](../../../vibe-coding/workflows.md)
+- [AI Tools](../../../vibe-coding/ai-tools.md)
 
 ---
 

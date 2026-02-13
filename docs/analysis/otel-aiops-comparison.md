@@ -1,5 +1,9 @@
 # OpenTelemetry & AIOps 아키텍처 비교 분석
 
+> Status: Historical
+> Current canonical docs: `docs/README.md`, `docs/reference/README.md`
+> Note: 본 문서는 작성 시점 기준 분석/리뷰 기록입니다.
+
 > **작성일**: 2026-02-12
 > **대상 버전**: OpenManager AI v7.1.5
 > **목적**: VIBE의 OTel 기반 모니터링/AI 시스템과 상용 관제 솔루션(Datadog, Dynatrace) 비교
@@ -40,18 +44,18 @@ VIBE는 내부적으로 OpenTelemetry의 [Semantic Conventions](https://opentele
 ### 3.2 AI 도입 방식 (The "Copilot" Pattern)
 현재 상용 모니터링 시장의 핵심 화두는 **"Geneartive AI Copilot"**입니다. VIBE의 AI 구성은 상용 제품의 기능을 정확하게 미러링하고 있습니다.
 
-*   **VIBE Analyst Agent** = **Datadog Watchdog**
-    *   역할: 자동으로 이상 징후를 탐지하고 사용자에게 알림.
-    *   방식: 통계적 이상 탐지 (3-sigma rule 등).
-*   **VIBE Reporter Agent** = **Dynatrace Davis CoPilot**
-    *   역할: 복잡한 장애 상황을 자연어로 요약하고 보고서 작성.
-    *   방식: LLM(Gemini/Llama)을 이용한 문맥 분석.
+- **VIBE Analyst Agent** = **Datadog Watchdog**
+  - 역할: 자동으로 이상 징후를 탐지하고 사용자에게 알림.
+  - 방식: 통계적 이상 탐지 (3-sigma rule 등).
+- **VIBE Reporter Agent** = **Dynatrace Davis CoPilot**
+  - 역할: 복잡한 장애 상황을 자연어로 요약하고 보고서 작성.
+  - 방식: LLM(Gemini/Llama)을 이용한 문맥 분석.
 
 ### 3.3 Simulation vs Reality (Log Logic의 차이)
 VIBE가 상용 제품과 가장 다른(그리고 창의적인) 부분은 로그 처리입니다.
 
-*   **Real World**: 장애 발생(Disk Full) → **로그 기록**("No space left") → **메트릭 증가**(Disk Usage 99%)
-*   **VIBE Simulation**: **메트릭 증가**(Disk Usage 99%) → **로그 생성**("No space left" 가상 생성)
+- **Real World**: 장애 발생(Disk Full) → **로그 기록**("No space left") → **메트릭 증가**(Disk Usage 99%)
+- **VIBE Simulation**: **메트릭 증가**(Disk Usage 99%) → **로그 생성**("No space left" 가상 생성)
 
 이는 실제 서버 없이 장애 상황을 연출하기 위한 **"역방향 엔지니어링(Reverse Engineering)"** 기법입니다. 이 방식 덕분에 VIBE는 별도의 복잡한 로그 수집기 없이도 메트릭과 로그가 **완벽하게 정합(Consistent)**하는 학습 환경을 제공합니다.
 
@@ -60,15 +64,15 @@ VIBE가 상용 제품과 가장 다른(그리고 창의적인) 부분은 로그 
 ## 4. 제언 및 로드맵
 
 ### ✅ 잘하고 있는 점 (Keep)
-1.  **OTel 네이티브**: 독자적인 포맷이 아닌 표준 포맷(OTel)을 1순위 데이터 소스로 사용하는 결정은 매우 탁월합니다.
-2.  **SSOT 구조**: AI와 UI가 동일한 JSON 데이터를 바라보게 하여 "AI가 보는 것"과 "사용자가 보는 것"의 차이(Hallucination)를 원천 차단했습니다.
+1. **OTel 네이티브**: 독자적인 포맷이 아닌 표준 포맷(OTel)을 1순위 데이터 소스로 사용하는 결정은 매우 탁월합니다.
+2. **SSOT 구조**: AI와 UI가 동일한 JSON 데이터를 바라보게 하여 "AI가 보는 것"과 "사용자가 보는 것"의 차이(Hallucination)를 원천 차단했습니다.
 
 ### 🚀 개선 가능 영역 (Improvement)
-1.  **Trace Context 시뮬레이션 강화**:
-    *   현재 메트릭과 로그는 시간(Time) 기준으로만 연결됩니다.
-    *   가상의 `trace_id`를 생성하여 로그와 메트릭에 태깅한다면 **"Distributed Tracing"**의 개념까지 교육할 수 있습니다.
-2.  **TSDB 개념 도입**:
-    *   현재는 파일 로딩 방식이지만, `DuckDB` 또는 `SQLite`를 인메모리로 사용하여 쿼리(PromQL/SQL) 연습 기능을 추가할 수 있습니다.
+1. **Trace Context 시뮬레이션 강화**:
+    - 현재 메트릭과 로그는 시간(Time) 기준으로만 연결됩니다.
+    - 가상의 `trace_id`를 생성하여 로그와 메트릭에 태깅한다면 **"Distributed Tracing"**의 개념까지 교육할 수 있습니다.
+2. **TSDB 개념 도입**:
+    - 현재는 파일 로딩 방식이지만, `DuckDB` 또는 `SQLite`를 인메모리로 사용하여 쿼리(PromQL/SQL) 연습 기능을 추가할 수 있습니다.
 
 ---
 

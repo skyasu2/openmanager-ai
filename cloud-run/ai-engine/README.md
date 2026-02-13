@@ -1,6 +1,6 @@
 # AI Engine - Cloud Run Service
 
-Vercel AI SDK Multi-Agent Supervisor for OpenManager AI v7.1.0
+Vercel AI SDK Multi-Agent Supervisor for OpenManager AI v8.0.0
 
 ## Quick Start
 
@@ -24,7 +24,7 @@ npm run test
 gcloud run deploy ai-engine --source . --region asia-northeast1
 ```
 
-## Architecture (v7.1.0)
+## Architecture (v8.0.0)
 
 ```
 src/
@@ -52,7 +52,7 @@ src/
     └── redis-client.ts            # Upstash Redis cache
 ```
 
-## Agent Implementation Pattern (v7.1.0)
+## Agent Implementation Pattern (v8.0.0)
 
 ### BaseAgent Abstract Class
 
@@ -88,7 +88,7 @@ const status = AgentFactory.getAvailabilityStatus();
 // { nlq: true, analyst: true, vision: false, ... }
 ```
 
-### Vision Agent (NEW v7.1.0)
+### Vision Agent
 
 Gemini Flash-Lite 전용 에이전트 (No Fallback - Graceful Degradation):
 
@@ -262,7 +262,7 @@ docker run -p 8080:8080 --env-file .env ai-engine:local
 
 ## Version
 
-Current: `7.1.0`
+Current: `8.0.0`
 
 ## Changelog
 

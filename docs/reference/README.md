@@ -1,92 +1,54 @@
 # Reference
 
-> **최종 갱신**: 2026-01-16
-> 기술 레퍼런스 문서
+> Last verified against code: 2026-02-13
+> 기술 레퍼런스 문서 인덱스 (Active Canonical)
+> Doc type: Reference
 
----
+## Core References
 
-## System Overview
+- [API Endpoints](./api/endpoints.md)
+- [System Architecture](./architecture/system/system-architecture-current.md)
+- [AI Engine Architecture](./architecture/ai/ai-engine-architecture.md)
+- [Hybrid Split (Vercel vs Cloud Run)](./architecture/infrastructure/hybrid-split.md)
+- [Deployment](./architecture/infrastructure/deployment.md)
+- [Database](./architecture/infrastructure/database.md)
+- [Security](./architecture/infrastructure/security.md)
 
-```mermaid
-flowchart TB
-    subgraph Frontend["Vercel (Frontend)"]
-        Next["Next.js 16<br/>React 19"]
-        UI["Dashboard UI"]
-    end
+## Architecture Index
 
-    subgraph Backend["Cloud Run (AI Engine)"]
-        Hono["Hono Server"]
-        Supervisor["AI Supervisor"]
-        Agents["Multi-Agent<br/>NLQ | Analyst | Reporter | Advisor"]
-    end
+### AI
+- [AI Engine Architecture](./architecture/ai/ai-engine-architecture.md)
+- [AI Engine Internals](./architecture/ai/ai-engine-internals.md)
+- [Frontend/Backend Comparison](./architecture/ai/frontend-backend-comparison.md)
+- [Monitoring ML](./architecture/ai/monitoring-ml.md)
+- [RAG Knowledge Engine](./architecture/ai/rag-knowledge-engine.md)
 
-    subgraph Data["Supabase"]
-        PG["PostgreSQL"]
-        Vector["pgvector"]
-    end
+### Data
+- [Data Architecture](./architecture/data/data-architecture.md)
+- [Data Pipeline Analysis](./architecture/data/data-pipeline-analysis.md)
+- [Data Pipeline Comparison](./architecture/data/data-pipeline-comparison.md)
+- [OTel Pipeline Audit](./architecture/data/otel-pipeline-audit.md)
+- [Prometheus Comparison](./architecture/data/prometheus-comparison.md)
+- [Server Metadata Comparison](./architecture/data/server-metadata-comparison.md)
 
-    Next --> Supervisor
-    Supervisor --> Agents
-    Agents --> PG
-    Agents --> Vector
-```
+### Infrastructure
+- [Hybrid Split](./architecture/infrastructure/hybrid-split.md)
+- [Deployment](./architecture/infrastructure/deployment.md)
+- [Database](./architecture/infrastructure/database.md)
+- [Security](./architecture/infrastructure/security.md)
 
----
+### System and Design
+- [System Architecture (Current)](./architecture/system/system-architecture-current.md)
+- [Folder Structure](./architecture/folder-structure.md)
+- [Design Consistency](./architecture/design/consistency.md)
 
-## Quick Links
-
-| 카테고리 | 설명 | 바로가기 |
-|----------|------|----------|
-| **Architecture** | 시스템 아키텍처, AI 엔진 | [→ architecture/](./architecture/) |
-| **API** | API 엔드포인트 레퍼런스 | [→ api/](./api/) |
-| **Platforms** | 배포 플랫폼 (Vercel, GCP) | [→ platforms/](./platforms/) |
-| **Security** | 보안 정책, OAuth | [→ security/](./security/) |
-| **Performance** | 성능 최적화 | [→ performance/](./performance/) |
-
----
-
-## Key Documents
-
-### Architecture
-- [AI Engine Architecture](./architecture/ai/ai-engine-architecture.md) - AI 엔진 상세 명세
-- [System Architecture](./architecture/system/system-architecture-current.md) - 시스템 구조
-
-### API
-- [API Endpoints](./api/endpoints.md) - API 엔드포인트 목록
-
-### Platforms
-- [Vercel Deploy](./platforms/vercel/vercel.md) - Vercel 배포
-- [GCP Firewall](./platforms/gcp/firewall-setup.md) - GCP 방화벽
-
-### Security
-- [GitHub OAuth](./security/github-oauth.md) - OAuth 설정
-
----
-
-## Directory Structure
-
-```
-reference/
-├── architecture/        # 시스템 아키텍처
-│   ├── ai/              # AI 엔진 (6개)
-│   ├── system/          # 시스템 구조
-│   ├── db/              # 데이터베이스
-│   └── design/          # 설계 문서
-│
-├── api/                 # API 레퍼런스 (2개)
-├── platforms/           # 배포 플랫폼
-│   ├── vercel/          # Vercel 설정
-│   └── gcp/             # GCP 설정
-│
-├── performance/         # 성능 최적화 (6개)
-├── security/            # 보안 정책 (3개)
-└── rag/                 # RAG 마이그레이션
-```
-
----
+### Decisions (ADR)
+- [ADR-001](./architecture/decisions/adr-001-unified-ai-engine-cache-and-providers.md)
+- [ADR-002](./architecture/decisions/adr-002-server-card-rendering-strategy.md)
+- [ADR-003](./architecture/decisions/adr-003-promql-vs-js-array-filtering.md)
 
 ## Related
 
-- [Getting Started](../QUICK-START.md) - 시작 가이드
-- [Guides](../guides/) - How-to 가이드
-- [Troubleshooting](../troubleshooting/) - 문제 해결
+- [Docs Home](../README.md)
+- [Guides](../guides/README.md)
+- [Troubleshooting](../troubleshooting/README.md)

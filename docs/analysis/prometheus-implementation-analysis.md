@@ -1,5 +1,9 @@
 # Prometheus 형식 도입 전/후 분석 보고서
 
+> Status: Historical
+> Current canonical docs: `docs/README.md`, `docs/reference/README.md`
+> Note: 본 문서는 작성 시점 기준 분석/리뷰 기록입니다.
+
 > **분석 완료**: 2026-02-06
 > **결론**: Prometheus 도입 **완벽히 완료**, Frontend **동일 동작 보장**
 

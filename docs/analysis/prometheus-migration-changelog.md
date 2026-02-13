@@ -1,5 +1,9 @@
 # Prometheus 마이그레이션 Changelog
 
+> Status: Historical
+> Current canonical docs: `docs/README.md`, `docs/reference/README.md`
+> Note: 본 문서는 작성 시점 기준 분석/리뷰 기록입니다.
+
 > **작성일**: 2026-02-06
 > **범위**: 2026-02-04 ~ 2026-02-06 (3일간 마이그레이션)
 > **목적**: 파일 단위 변경 인벤토리 (추가/삭제/변경 목록)

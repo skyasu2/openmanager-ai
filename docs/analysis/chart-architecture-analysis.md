@@ -1,5 +1,9 @@
 # Chart & Graph Architecture Analysis
 
+> Status: Historical
+> Current canonical docs: `docs/README.md`, `docs/reference/README.md`
+> Note: 본 문서는 작성 시점 기준 분석/리뷰 기록입니다.
+
 > OpenManager AI v7.1 차트/그래프 현황 분석 문서
 > Last Updated: 2026-02-06
 

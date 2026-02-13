@@ -203,8 +203,8 @@ npm run test:vercel:full  # 전체 프로덕션 테스트
 ## Related Documents
 
 - [E2E Testing Guide](./e2e-testing-guide.md)
-- [MSW Guide](./msw-guide.md)
-- [Test Templates](./test-templates.md)
+- MSW 정책은 현재 test-strategy.md에 통합됨
+- 테스트 템플릿은 코드베이스 내 기존 테스트 파일을 참조
 
 ---
 

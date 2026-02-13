@@ -1,208 +1,90 @@
-# 📁 OpenManager AI v5 전체 폴더 구조
+# Folder Structure (Current v8)
 
-**문서 구조 최신화** - 2026-01-13
+> Last verified against code: 2026-02-13
+> Status: Active Canonical
+> Doc type: Reference
 
-## 🎯 핵심 원칙
+## Root
 
-- **🏛️ 아카이브**: 프로젝트 내부 (`archive/` 폴더) - Git 제외
-- **💾 백업**: 프로젝트 내부 (`.backup/` 폴더) - Git 제외
-- **🚀 활성**: Git 추적되는 실제 개발 파일들
-
----
-
-## 📂 프로젝트 루트 구조
-
-```
+```text
 openmanager-ai/
-├── 📄 README.md                    # 프로젝트 메인 문서
-├── 📄 CLAUDE.md                    # Claude Code 프로젝트 가이드 ⭐
-├── 📄 CHANGELOG.md                 # 변경 기록
-├── 📄 package.json                 # 프로젝트 설정
-├── 📄 next.config.mjs              # Next.js 설정
-├── 📄 tsconfig.json                # TypeScript 설정
-├── 📄 postcss.config.mjs           # PostCSS + Tailwind v4 설정
-├── 📄 .gitignore                   # Git 제외 파일
-├── 📄 .vercelignore                # Vercel 배포 제외 파일
-├── 📄 .env.local                   # 환경변수 (Git 제외)
-└── 📄 vitest.config.ts             # 테스트 설정
+├── AGENTS.md
+├── CLAUDE.md
+├── GEMINI.md
+├── docs/
+├── src/
+├── tests/
+├── cloud-run/
+├── scripts/
+├── supabase/
+├── config/
+├── package.json
+├── tsconfig.json
+└── next.config.mjs
 ```
 
----
+## Application (`src/`)
 
-## 🗂️ 메인 디렉토리 구조
-
-### 📚 **docs/** - 프로젝트 문서 (Git 추적)
-
-```
-docs/
-├── 📄 README.md                    # 문서 메인 인덱스
-├── 📄 QUICK-START.md               # 빠른 시작 가이드
-├── 📄 DEVELOPMENT.md               # 개발 환경 가이드
-├── 📄 status.md                    # 프로젝트 현재 상태 ⭐
-├── 📄 ai-model-policy.md           # AI 모델 정책
-├── 📄 llms.md                      # LLM 컨텍스트
-├── 📁 design/                      # 디자인 문서
-├── 📄 QUICK-START.md               # 시작 가이드
-├── 📁 guides/                      # 가이드 문서 ⭐
-│   ├── 📁 ai/                      # AI 협업 가이드
-│   │   ├── 📁 claude-code/         # Claude Code 워크플로우
-│   │   └── 📁 common/              # 공통 AI 가이드
-│   ├── 📁 environment/             # 환경 설정
-│   │   └── 📁 wsl/                 # WSL 가이드
-│   └── 📁 testing/                 # 테스트 가이드
-├── 📁 plans/                       # 계획 문서
-├── 📁 reference/                   # 참조 문서 ⭐
-│   └── 📁 architecture/            # 아키텍처 문서
-│       ├── 📁 ai/                  # AI 아키텍처
-│       ├── 📁 data/                # 데이터 아키텍처
-│       ├── 📁 design/              # 설계 패턴
-│       └── 📁 system/              # 시스템 아키텍처
-└── 📁 troubleshooting/             # 문제 해결 가이드
-```
-
-### 💻 **src/** - 소스 코드 (Git 추적)
-
-```
+```text
 src/
-├── 📁 __mocks__/                   # Mock 데이터 (Jest/Vitest)
-├── 📁 app/                         # Next.js App Router
-│   ├── 📁 api/                     # API 라우트
-│   └── 📁 dashboard/               # 대시보드 페이지
-├── 📁 components/                  # React 컴포넌트
-│   ├── 📁 ai-sidebar/              # AI 사이드바
-│   ├── 📁 dashboard/               # 대시보드 UI
-│   └── 📁 ui/                      # shadcn/ui 컴포넌트
-├── 📁 config/                      # 설정 파일
-├── 📁 constants/                   # 상수 정의
-├── 📁 context/                     # React Context
-├── 📁 data/                        # 정적 데이터 파일
-├── 📁 database/                    # 데이터베이스 유틸리티
-├── 📁 hooks/                       # 커스텀 훅
-│   ├── 📁 ai-sidebar/              # AI 사이드바 훅
-│   └── 📁 performance/             # 성능 모니터링 훅
-├── 📁 lib/                         # 유틸리티 라이브러리
-│   ├── 📁 core/                    # 핵심 시스템
-│   └── 📁 interfaces/              # 공통 인터페이스
-├── 📁 schemas/                     # 검증 스키마 (Zod)
-├── 📁 scripts/                     # 내부 스크립트
-├── 📁 services/                    # 비즈니스 서비스
-│   ├── 📁 ai/                      # AI 서비스
-│   ├── 📁 data/                    # 데이터 서비스
-│   ├── 📁 metrics/                 # 메트릭 서비스
-│   └── 📁 performance/             # 성능 서비스
-├── 📁 stores/                      # Zustand 상태 관리
-├── 📁 styles/                      # CSS 스타일
-├── 📁 test/                        # 테스트 유틸리티
-├── 📁 types/                       # TypeScript 타입 정의
-├── 📁 utils/                       # 유틸리티 함수
-└── 📁 validators/                  # 유효성 검사
+├── app/                # Next.js App Router pages and route handlers
+├── components/         # UI components
+├── hooks/              # custom hooks
+├── stores/             # Zustand stores
+├── services/           # domain/application services
+├── lib/                # shared utilities and infra helpers
+├── schemas/            # Zod schemas
+├── config/             # runtime config and rules loader
+├── data/               # bundled/mock/otel data
+└── types/              # shared TypeScript types
 ```
 
-### 🛠️ **scripts/** - 자동화 스크립트
+## API Layer
 
-```
-scripts/
-├── 📁 ai/                          # AI 관련 스크립트
-├── 📁 ai-wrappers/                 # AI CLI 래퍼
-├── 📁 code-review/                 # 코드 리뷰 자동화 ⭐
-│   ├── 📄 auto-ai-review.sh        # AI 리뷰 실행
-│   └── 📄 review-issue-tracker.sh  # 이슈 추적
-├── 📁 data/                        # 데이터 스크립트
-├── 📁 dev/                         # 개발 도구
-├── 📁 diagnostics/                 # 진단 스크립트
-├── 📁 docs/                        # 문서 스크립트
-├── 📁 env/                         # 환경 설정
-├── 📁 generators/                  # 코드 생성기
-├── 📁 hooks/                       # Git hooks
-├── 📁 indexing/                    # 인덱싱 스크립트
-├── 📁 lint/                        # 린트 스크립트
-├── 📁 mcp/                         # MCP 서버 스크립트
-├── 📁 optimization/                # 최적화 스크립트
-├── 📁 setup/                       # 초기 설정
-├── 📁 supabase/                    # Supabase 관리
-├── 📁 test/                        # 테스트 스크립트
-├── 📁 testing/                     # 테스트 유틸리티
-├── 📁 utils/                       # 유틸리티 스크립트
-├── 📁 validation/                  # 검증 스크립트
-└── 📁 wsl/                         # WSL 스크립트
+```text
+src/app/api/
+├── ai/
+├── servers/
+├── metrics/
+├── monitoring/
+├── debug/
+└── ... (총 48 route.ts/route.tsx)
 ```
 
-### ⚙️ **config/** - 설정 파일들
+상세 엔드포인트 목록은 [API Endpoints](../api/endpoints.md)를 참고합니다.
 
-```
-config/
-├── 📁 ai/                          # AI 설정 ⭐
-│   └── 📄 registry-core.yaml       # AI 레지스트리
-├── 📁 performance/                 # 성능 설정
-├── 📁 templates/                   # 템플릿 파일
-└── 📁 testing/                     # 테스트 설정
-    └── 📄 msw-setup.ts             # MSW 핸들러
-```
+## AI Engine (`cloud-run/ai-engine`)
 
-### ☁️ **cloud-run/** - AI Engine (Cloud Run)
-
-```
-cloud-run/
-└── 📁 ai-engine/                   # AI Engine 서비스 ⭐
-    ├── 📄 package.json             # 독립 의존성
-    ├── 📄 deploy.sh                # 배포 스크립트
-    └── 📁 src/                     # 소스 코드
-        ├── 📁 agents/              # Vercel AI SDK Agents
-        └── 📁 data/                # 데이터 로더
+```text
+cloud-run/ai-engine/
+├── src/
+│   ├── server.ts
+│   ├── routes/
+│   ├── services/
+│   │   └── ai-sdk/
+│   ├── tools-ai-sdk/
+│   ├── middleware/
+│   ├── config/
+│   └── data/
+├── package.json
+└── tsconfig.json
 ```
 
-### 📊 **logs/** - 로그 파일들 (Git 제외)
+## Documentation (`docs/`)
 
+```text
+docs/
+├── README.md
+├── development/
+├── vibe-coding/
+├── guides/
+├── reference/
+├── troubleshooting/
+├── analysis/     # Historical 성격 문서
+└── reviews/      # Historical 성격 문서
 ```
-logs/
-├── 📁 code-reviews/                # AI 코드 리뷰 결과
-├── 📁 lint-reports/                # ESLint 리포트
-├── 📁 typecheck-reports/           # TypeScript 리포트
-└── 📁 validation/                  # 검증 리포트
-```
 
----
+## Notes
 
-## 🚫 Git 제외 디렉토리 (.gitignore 적용)
-
-### 📁 **빌드/캐시**
-
-- `.next/` - Next.js 빌드 캐시
-- `node_modules/` - npm 패키지
-- `coverage/` - 테스트 커버리지
-- `playwright-report/` - E2E 테스트 리포트
-- `.npm-global/` - npm 글로벌 패키지
-
-### 📁 **로그/리포트**
-
-- `logs/` - 모든 로그 파일
-- `reports/` - 생성된 리포트
-
-### 📁 **개발 환경**
-
-- `.serena/` - Serena MCP 캐시
-
----
-
-## 🎯 핵심 특징
-
-### ✅ **Git 추적 파일들**
-
-- 활성 문서 (docs/)
-- 소스 코드 (src/)
-- 설정 파일 (config/, .claude/)
-- Cloud Run AI Engine
-
-### 🚫 **Git 제외 파일들**
-
-- 빌드/캐시 디렉토리
-- 로그 파일
-- 임시 파일
-
-### 🔄 **관리 원칙**
-
-- **Layer-First**: 기능별 디렉토리 분리 (components/, hooks/, services/)
-- **Feature Grouping**: 큰 기능은 하위 디렉토리로 그룹화 (ai-sidebar/)
-- **Colocation**: 테스트는 tests/ 디렉토리에 미러링
-
-**🎉 이 구조로 프론트엔드(Vercel)와 AI Engine(Cloud Run)이 체계적으로 분리 관리됩니다!**
+- 실제 코드 구조와 불일치 시, 코드 트리가 우선입니다.
+- 문서 정책 SSOT는 `AGENTS.md`입니다.

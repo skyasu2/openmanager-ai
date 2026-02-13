@@ -1,7 +1,7 @@
 # 개발용 AI 도구
 
-> **최종 갱신**: 2026-01-18
-> **Note**: Qwen 제거 (2026-01-07) - 2-AI 시스템으로 단순화
+> Last verified against code: 2026-02-13
+> 공통 정책 SSOT: `AGENTS.md`
 
 개발 시 사용하는 AI 도구 및 방법론
 
@@ -21,18 +21,18 @@ docs/guides/ai/
 | 도구 | 역할 | 가이드 |
 |------|------|--------|
 | Claude Code | Lead + MCP + 스킬 | [.claude/rules/ai-tools.md](../../../.claude/rules/ai-tools.md) |
-| Codex | 2-AI 순환 (Primary) | [ai-standards.md](./common/ai-standards.md) |
-| Gemini | 2-AI 순환 (Secondary) | [ai-standards.md](./common/ai-standards.md) |
+| Codex | 개발/개선 + 검증 | [ai-standards.md](./common/ai-standards.md) |
+| Gemini | 아키텍처/검증 | [ai-standards.md](./common/ai-standards.md) |
 
 ## 빠른 참조
 
 ```bash
 # Claude Code 스킬
-/review                   # AI 코드 리뷰 결과 확인
-Skill ai-code-review      # Multi-AI 리뷰 실행
+/review                   # 리뷰 결과 확인 (선택)
+Skill ai-code-review      # 리뷰 분석 + 개선 실행 (선택)
 
-# CLI 도구 (2-AI 순환)
-codex exec "코드 리뷰"
+# CLI 도구
+codex exec "기능 구현 또는 리팩토링"
 gemini "아키텍처 검토"
 ```
 

@@ -1,5 +1,9 @@
 # 대시보드 vs AI 데이터 흐름 비교 분석
 
+> Status: Historical
+> Current canonical docs: `docs/README.md`, `docs/reference/README.md`
+> Note: 본 문서는 작성 시점 기준 분석/리뷰 기록입니다.
+
 > **분석 일시**: 2026-02-06
 > **분석 유형**: 리서치/비교 분석 (코드 변경 없음)
 > **상태**: ✅ 분석 완료

@@ -1,5 +1,9 @@
 # Prometheus 형식 마이그레이션: 개선점 분석
 
+> Status: Historical
+> Current canonical docs: `docs/README.md`, `docs/reference/README.md`
+> Note: 본 문서는 작성 시점 기준 분석/리뷰 기록입니다.
+
 > **분석 일시**: 2026-02-06
 > **마이그레이션 일시**: 2026-02-04 (commit `f5f36454a`)
 > **분석 유형**: 비교 분석 (Before/After)

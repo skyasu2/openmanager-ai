@@ -1,5 +1,9 @@
 # OTel 기준 Loki 로그 운영 Best Practice 가이드
 
+> Status: Historical
+> Current canonical docs: `docs/README.md`, `docs/reference/README.md`
+> Note: 본 문서는 작성 시점 기준 분석/리뷰 기록입니다.
+
 > **작성일**: 2026-02-12
 > **주제**: OpenTelemetry 환경에서 Loki 로그 시스템 구축 및 운영 전략
 > **핵심**: **"OTel Collector를 사용하되, Loki의 Labeling 전략(Cardinality)을 준수하라"**
@@ -19,8 +23,8 @@ graph LR
     Loki --> Grafana[Grafana Dashboard]
 ```
 
-1.  **Unified Agent**: 서버에 `Promtail`, `Telegraf` 등을 따로 깔지 않고 **OTel Collector 하나만** 설치합니다.
-2.  **Processor 활용**: OTel의 강력한 Processor(k8s metadata 추가, 민감정보 마스킹, 샘플링)를 거친 후 Loki로 보냅니다.
+1. **Unified Agent**: 서버에 `Promtail`, `Telegraf` 등을 따로 깔지 않고 **OTel Collector 하나만** 설치합니다.
+2. **Processor 활용**: OTel의 강력한 Processor(k8s metadata 추가, 민감정보 마스킹, 샘플링)를 거친 후 Loki로 보냅니다.
 
 ---
 
@@ -57,8 +61,8 @@ exporters:
 **"Logs without Traces are just text."**
 OTel을 쓰는 가장 큰 이유입니다. 로그에 반드시 `TraceId`와 `SpanId`가 포함되어야 합니다.
 
-1.  **Auto-Injection**: Java, Python, Node.js 등 OTel SDK는 자동으로 로그에 현재 `TraceId`를 주입합니다.
-2.  **Loki의 역할**: Grafana에서 "Log"를 보다가 버튼 하나로 관련 "Trace"로 점프할 수 있게 해줍니다.
+1. **Auto-Injection**: Java, Python, Node.js 등 OTel SDK는 자동으로 로그에 현재 `TraceId`를 주입합니다.
+2. **Loki의 역할**: Grafana에서 "Log"를 보다가 버튼 하나로 관련 "Trace"로 점프할 수 있게 해줍니다.
 
 **이상적인 로그 포맷 (Json):**
 ```json
@@ -84,14 +88,14 @@ OTel은 **Structured Log(JSON)**를 기본으로 처리하며, Loki도 LogQL을 
 
 현재 VIBE는 `MetricsProvider`에서 로그를 시뮬레이션하고 있습니다. 이를 "OTel + Loki 운영" 관점에서 발전시키려면:
 
-1.  **로그 포맷 변경**:
-    *   현재: 텍스트 포맷 (`[INFO] nginx: worker started`)
-    *   제언: JSON 포맷으로 생성하고 `trace_id` 필드를 (가상으로라도) 추가.
+1. **로그 포맷 변경**:
+    * 현재: 텍스트 포맷 (`[INFO] nginx: worker started`)
+    * 제언: JSON 포맷으로 생성하고 `trace_id` 필드를 (가상으로라도) 추가.
 
-2.  **메타데이터 매핑**:
-    *   `src/data/hourly-data/*.json`의 `labels` 정보를 Loki Label로 간주.
-    *   `hostname`, `server_type`, `environment` -> **Loki Label** (Good)
-    *   `pid`, `error_code` -> **Log Content** (Good)
+2. **메타데이터 매핑**:
+    * `src/data/hourly-data/*.json`의 `labels` 정보를 Loki Label로 간주.
+    * `hostname`, `server_type`, `environment` -> **Loki Label** (Good)
+    * `pid`, `error_code` -> **Log Content** (Good)
 
 ---
 
@@ -99,6 +103,6 @@ OTel은 **Structured Log(JSON)**를 기본으로 처리하며, Loki도 LogQL을 
 
 OTel 환경에서 Loki 운영의 정석은 다음과 같습니다.
 
-1.  **수집**: **OTel Collector**를 단일 에이전트로 사용한다.
-2.  **전송**: OTel의 `resource attributes` 중 **로우 카디널리티(서비스명, 환경)**만 Loki Label로 매핑한다.
-3.  **연결**: 모든 로그에 **Trace ID**를 심어 메트릭-로그-트레이스 3각 편대를 완성한다.
+1. **수집**: **OTel Collector**를 단일 에이전트로 사용한다.
+2. **전송**: OTel의 `resource attributes` 중 **로우 카디널리티(서비스명, 환경)**만 Loki Label로 매핑한다.
+3. **연결**: 모든 로그에 **Trace ID**를 심어 메트릭-로그-트레이스 3각 편대를 완성한다.

@@ -719,5 +719,5 @@ interface ServerConfig {
 
 ---
 
-_Last Updated: 2026-02-12_
-_코드베이스 기준: v8.0.0, sync-hourly-data.ts (15 servers, PRNG-based)_
+*Last Updated: 2026-02-12*
+*코드베이스 기준: v8.0.0, sync-hourly-data.ts (15 servers, PRNG-based)*

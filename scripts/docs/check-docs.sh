@@ -2,11 +2,14 @@
 # 문서 품질 검증 스크립트
 # Usage: bash scripts/docs/check-docs.sh [--fix]
 
-set -e
+set -euo pipefail
 
 DOCS_DIR="docs"
 REPORTS_DIR="logs/docs-reports"
+ACTIVE_CONFIG="active.markdownlint-cli2.jsonc"
+HISTORICAL_CONFIG="historical.markdownlint-cli2.jsonc"
 FIX_MODE=false
+HAS_ERROR=0
 
 # 색상 정의
 RED='\033[0;31m'
@@ -16,7 +19,7 @@ BLUE='\033[0;34m'
 NC='\033[0m'
 
 # 인자 파싱
-if [[ "$1" == "--fix" ]]; then
+if [[ "${1:-}" == "--fix" ]]; then
   FIX_MODE=true
 fi
 
@@ -26,39 +29,57 @@ mkdir -p "$REPORTS_DIR"
 echo -e "${BLUE}📚 문서 품질 검증 시작${NC}"
 echo "========================================"
 
-# 1. Markdown Lint 검사
+# 1. Markdown Lint 검사 (Active / Historical 분리)
 echo -e "\n${YELLOW}[1/4] Markdown Lint 검사${NC}"
+
+echo "  - Active docs lint"
 if $FIX_MODE; then
-  npx markdownlint-cli2 "$DOCS_DIR/**/*.md" --fix 2>&1 | tee "$REPORTS_DIR/markdownlint.log" || true
-  echo -e "${GREEN}✅ Lint 자동 수정 완료${NC}"
+  npx markdownlint-cli2 --config "$ACTIVE_CONFIG" \
+    "$DOCS_DIR/**/*.md" \
+    "!$DOCS_DIR/analysis/**/*.md" \
+    "!$DOCS_DIR/reviews/**/*.md" \
+    --fix 2>&1 | tee "$REPORTS_DIR/markdownlint-active.log" || true
+  echo -e "    ${GREEN}✅ Active lint 자동 수정 완료${NC}"
 else
-  if npx markdownlint-cli2 "$DOCS_DIR/**/*.md" 2>&1 | tee "$REPORTS_DIR/markdownlint.log"; then
-    echo -e "${GREEN}✅ Markdown Lint 통과${NC}"
+  if npx markdownlint-cli2 --config "$ACTIVE_CONFIG" \
+    "$DOCS_DIR/**/*.md" \
+    "!$DOCS_DIR/analysis/**/*.md" \
+    "!$DOCS_DIR/reviews/**/*.md" \
+    "!$DOCS_DIR/status.md" \
+    2>&1 | tee "$REPORTS_DIR/markdownlint-active.log"; then
+    echo -e "    ${GREEN}✅ Active lint 통과${NC}"
   else
-    echo -e "${RED}❌ Lint 오류 발견 (--fix 로 자동 수정 가능)${NC}"
+    echo -e "    ${RED}❌ Active lint 실패${NC}"
+    HAS_ERROR=1
   fi
 fi
 
-# 2. 링크 유효성 검사 (샘플링)
-echo -e "\n${YELLOW}[2/4] 링크 유효성 검사 (주요 문서)${NC}"
-MAIN_DOCS=("docs/README.md" "docs/status.md" "docs/QUICK-START.md" "CLAUDE.md")
-LINK_ERRORS=0
-
-for doc in "${MAIN_DOCS[@]}"; do
-  if [[ -f "$doc" ]]; then
-    if npx markdown-link-check "$doc" --quiet 2>/dev/null; then
-      echo -e "  ${GREEN}✓${NC} $doc"
-    else
-      echo -e "  ${RED}✗${NC} $doc"
-      ((LINK_ERRORS++))
-    fi
-  fi
-done
-
-if [[ $LINK_ERRORS -eq 0 ]]; then
-  echo -e "${GREEN}✅ 링크 검사 통과${NC}"
+echo "  - Historical docs lint"
+if $FIX_MODE; then
+  npx markdownlint-cli2 --config "$HISTORICAL_CONFIG" \
+    "$DOCS_DIR/analysis/**/*.md" \
+    "$DOCS_DIR/reviews/**/*.md" \
+    --fix 2>&1 | tee "$REPORTS_DIR/markdownlint-historical.log" || true
+  echo -e "    ${GREEN}✅ Historical lint 자동 수정 완료${NC}"
 else
-  echo -e "${RED}❌ $LINK_ERRORS 개 파일에서 깨진 링크 발견${NC}"
+  if npx markdownlint-cli2 --config "$HISTORICAL_CONFIG" \
+    "$DOCS_DIR/analysis/**/*.md" \
+    "$DOCS_DIR/reviews/**/*.md" \
+    "$DOCS_DIR/status.md" \
+    2>&1 | tee "$REPORTS_DIR/markdownlint-historical.log"; then
+    echo -e "    ${GREEN}✅ Historical lint 통과${NC}"
+  else
+    echo -e "    ${YELLOW}⚠️  Historical lint 경고 (허용 규칙 외 이슈 존재)${NC}"
+  fi
+fi
+
+# 2. 내부 링크 유효성 검사 (docs 전체)
+echo -e "\n${YELLOW}[2/4] 내부 링크 유효성 검사 (docs 전체)${NC}"
+if node scripts/docs/check-internal-links.js "$DOCS_DIR" 2>&1 | tee "$REPORTS_DIR/internal-links.log"; then
+  echo -e "${GREEN}✅ 내부 링크 검사 통과${NC}"
+else
+  echo -e "${RED}❌ 내부 링크 검사 실패${NC}"
+  HAS_ERROR=1
 fi
 
 # 3. 오래된 문서 감지 (90일 이상)
@@ -85,6 +106,13 @@ echo -e "  📄 총 문서 수: ${GREEN}${TOTAL_DOCS}${NC}개"
 echo -e "  📝 총 라인 수: ${GREEN}${TOTAL_LINES}${NC}줄"
 echo -e "  📏 400줄 초과 문서: ${YELLOW}${LARGE_DOCS}${NC}개"
 
+node scripts/docs/generate-inventory.js >/dev/null
+echo -e "  📦 인벤토리 갱신: ${GREEN}docs/development/documentation-inventory.md${NC}"
+
 echo -e "\n========================================"
 echo -e "${BLUE}📚 문서 검증 완료${NC}"
 echo -e "리포트: ${REPORTS_DIR}/"
+
+if [[ $HAS_ERROR -ne 0 ]]; then
+  exit 1
+fi

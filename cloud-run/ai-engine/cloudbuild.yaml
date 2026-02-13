@@ -52,7 +52,7 @@ steps:
       - '--build-arg'
       - 'BUILDKIT_INLINE_CACHE=1'
       - '--build-arg'
-      - 'APP_VERSION=${TAG_NAME:-5.86.1}'
+      - 'APP_VERSION=${TAG_NAME:-8.0.0}'
       - '--build-arg'
       - 'BUILD_DATE=${_BUILD_DATE}'
       - '--build-arg'

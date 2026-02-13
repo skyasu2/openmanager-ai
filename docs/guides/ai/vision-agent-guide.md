@@ -219,9 +219,9 @@ Agent: Analyst (Groq/Mistral)
 
 ## 관련 문서
 
-- [AI 엔진 아키텍처](/docs/reference/architecture/ai/ai-engine-architecture.md)
-- [에이전트 팩토리 패턴](/docs/reference/architecture/ai/agent-factory-pattern.md)
-- [멀티모달 메시지 형식](/docs/reference/api/ai-sdk-message-format.md)
+- [AI 엔진 아키텍처](../../reference/architecture/ai/ai-engine-architecture.md)
+- [AI 엔진 내부 구조](../../reference/architecture/ai/ai-engine-internals.md)
+- [API 엔드포인트 레퍼런스](../../reference/api/endpoints.md)
 
 ---
 

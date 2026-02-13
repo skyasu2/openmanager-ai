@@ -20,7 +20,7 @@
 # v4.0 - 2026-01-06 (Docker & Cloud Run Optimization)
 #   - BuildKit enabled for cache mounts
 #   - Startup/Liveness probes optimized
-#   - Memory increased to 2Gi for multi-agent SSOT
+#   - Memory updated to 512Mi for Free Tier compliance
 #   - Added --service-min-instances for warm pool (optional)
 #   - Parallel image cleanup for faster deployment
 #

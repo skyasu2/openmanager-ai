@@ -1,5 +1,9 @@
 # OpenTelemetry (OTel) 생태계 위치 및 위상 분석
 
+> Status: Historical
+> Current canonical docs: `docs/README.md`, `docs/reference/README.md`
+> Note: 본 문서는 작성 시점 기준 분석/리뷰 기록입니다.
+
 > **작성일**: 2026-02-12
 > **주제**: 현대 서버 모니터링/Observability 시장에서의 OTel의 위상
 > **결론**: **"사실상의 표준 (De Facto Standard)"**이자 **"Observability의 리눅스(Linux)"**
@@ -10,9 +14,9 @@
 
 OpenTelemetry는 현재 모니터링 및 관측성(Observability) 분야에서 **압도적인 표준**으로 자리 잡았습니다.
 
-*   **CNCF 활동성 2위**: 쿠버네티스(Kubernetes) 다음으로 가장 활발한 CNCF(Cloud Native Computing Foundation) 프로젝트입니다.
-*   **만장일치 지지**: AWS, Google, Azure, Splunk, Datadog, New Relic, Dynatrace 등 **모든 주요 클라우드 및 모니터링 벤더**가 OTel을 공식 지원하거나 기여하고 있습니다.
-*   **레거시의 종말**: 과거 각 벤더가 독자적으로 사용하던 에이전트(Proprietary Agents) 방식은 점차 줄어들고, **"OTel Collector + Beneder Backend"** 구조가 표준 아키텍처가 되었습니다.
+* **CNCF 활동성 2위**: 쿠버네티스(Kubernetes) 다음으로 가장 활발한 CNCF(Cloud Native Computing Foundation) 프로젝트입니다.
+* **만장일치 지지**: AWS, Google, Azure, Splunk, Datadog, New Relic, Dynatrace 등 **모든 주요 클라우드 및 모니터링 벤더**가 OTel을 공식 지원하거나 기여하고 있습니다.
+* **레거시의 종말**: 과거 각 벤더가 독자적으로 사용하던 에이전트(Proprietary Agents) 방식은 점차 줄어들고, **"OTel Collector + Beneder Backend"** 구조가 표준 아키텍처가 되었습니다.
 
 ---
 
@@ -23,9 +27,9 @@ OpenTelemetry는 현재 모니터링 및 관측성(Observability) 분야에서 *
 하지만 OTel을 사용하면, **단 한 줄의 설정 변경**(`exporter` 설정)만으로 백엔드를 교체할 수 있습니다.
 
 ### 2.2 3대 데이터의 통합 (Unified Pipeline)
-*   **Metrics** (무엇이 문제인가?)
-*   **Logs** (왜 문제인가?)
-*   **Traces** (어디서 문제인가?)
+* **Metrics** (무엇이 문제인가?)
+* **Logs** (왜 문제인가?)
+* **Traces** (어디서 문제인가?)
 이 3가지 데이터를 **단일 프로토콜(OTLP)**로 수집하고 전송합니다. 이전에는 Telegraf(Metric) + Fluentd(Log) + Jaeger(Trace)를 각각 돌려야 했습니다.
 
 ### 2.3 클라우드 네이티브 (Cloud Native)
@@ -47,9 +51,9 @@ Kubernetes 환경에서 OTel은 선택이 아닌 필수입니다. 사이드카(S
 
 OpenManager AI가 OTel을 데이터 소스의 **1순위(Primary)**로 채택한 것은 단순한 기술 도입을 넘어 다음과 같은 의미가 있습니다.
 
-1.  **엔터프라이즈급 아키텍처**: "장난감 프로젝트"가 아닌, 실제 현업에서 즉시 통용되는 **엔터프라이즈 아키텍처**를 구현하고 잇습니다.
-2.  **미래 지향적(Future-proof)**: 앞으로 최소 5~10년은 OTel이 시장을 지배할 것입니다. 이를 학습하는 것은 가장 가치 있는 투자입니다.
-3.  **AIOps 준비 완료**: OTel의 표준화된 메타데이터(Resource Attributes)는 AI가 시스템 구조를 이해하는 데 결정적인 힌트를 제공합니다.
+1. **엔터프라이즈급 아키텍처**: "장난감 프로젝트"가 아닌, 실제 현업에서 즉시 통용되는 **엔터프라이즈 아키텍처**를 구현하고 잇습니다.
+2. **미래 지향적(Future-proof)**: 앞으로 최소 5~10년은 OTel이 시장을 지배할 것입니다. 이를 학습하는 것은 가장 가치 있는 투자입니다.
+3. **AIOps 준비 완료**: OTel의 표준화된 메타데이터(Resource Attributes)는 AI가 시스템 구조를 이해하는 데 결정적인 힌트를 제공합니다.
 
 ---
 

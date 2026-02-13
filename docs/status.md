@@ -13,7 +13,6 @@
   - perf(otel): OTel 파이프라인 최적화 — hostname index, conversion cache, JSON diet
   - docs(data): 데이터 아키텍처 3-Tier Priority 구조로 갱신 (OTel > Prometheus > Fixed)
 
-
 - **v7.1.4** (2026-02-08)
   - feat(data): server-services-map 추가 (자동 서비스 추론)
   - docs(data): Prometheus best practice 비교 및 PromQL 참조 매핑
@@ -424,7 +423,7 @@
 - 코드량 분포: Frontend ~137,000 lines → 역할 대비 적정 (집중 영역 3곳 모두 정상)
 - TypeScript strict: ✅ 양쪽 모두 PASS
 
-**상세 보고서**: [`reports/planning/static-analysis-2026-01-05.md`](../reports/planning/static-analysis-2026-01-05.md)
+**상세 보고서**: [`reports/planning/ai-codebase-improvement-plan.md`](../reports/planning/ai-codebase-improvement-plan.md)
 
 ---
 

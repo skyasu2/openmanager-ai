@@ -2,7 +2,7 @@
 # AI Engine - Local Development Docker Compose
 #
 # v4.0 - 2026-01-06 (SSOT Sync & Version Update)
-# - APP_VERSION sync with package.json (5.84.0)
+# - APP_VERSION sync with package.json
 # - hourly-data volume mount for development
 #
 # v3.0 - 2025-12-28 (AI SDK Migration Prep)
@@ -25,7 +25,7 @@ services:
       dockerfile: Dockerfile
       args:
         - NODE_VERSION=22
-        - APP_VERSION=5.84.0
+        - APP_VERSION=8.0.0
     image: ai-engine:local
     container_name: ai-engine-local
     ports:

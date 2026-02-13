@@ -1,56 +1,33 @@
 # Guides
 
-> **최종 갱신**: 2026-01-18
-> How-to 가이드 모음
+> Last verified against code: 2026-02-13
+> 실행 중심 How-to 문서 인덱스
+> Doc type: How-to
 
----
+## Categories
 
-## Quick Links
+- [AI](./ai/README.md)
+- [Testing](./testing/README.md)
+- [Standards](./standards/health-check-policy.md)
 
-| 카테고리 | 설명 | 바로가기 |
-|----------|------|----------|
-| **AI** | AI 도구 사용법, 협업 워크플로우 | [→ ai/](./ai/) |
-| **Testing** | 테스트 전략, E2E | [→ testing/](./testing/) |
-| **MCP** | MCP 서버 설정 | [→ mcp/](./mcp/) |
-| **Environment** | WSL 환경 설정 | [→ environment/](./environment/) |
-| **Standards** | 코딩 표준, 컨벤션 | [→ standards/](./standards/) |
-| **Database** | DB 설계 | [→ ../reference/architecture/infrastructure/database.md](../reference/architecture/infrastructure/database.md) |
+## Key Guides
 
----
-
-## Key Documents
-
-### AI Development
-- [AI Standards](./ai/common/ai-standards.md) - AI 도구 표준 (통합)
+### AI
+- [AI Guide Home](./ai/README.md)
+- [AI Standards](./ai/common/ai-standards.md)
+- [Vision Agent Guide](./ai/vision-agent-guide.md)
 
 ### Testing
-- [Test Strategy](./testing/test-strategy.md) - 테스트 전략 (통합)
-- [E2E Testing](./testing/e2e-testing-guide.md) - Playwright E2E
+- [Testing Guide Home](./testing/README.md)
+- [Test Strategy](./testing/test-strategy.md)
+- [E2E Testing Guide](./testing/e2e-testing-guide.md)
 
-### MCP
-- [MCP Setup](./mcp/setup-guide.md) - MCP 서버 설정
-
----
-
-## Directory Structure
-
-```
-guides/
-├── ai/                  # AI 도구 가이드
-│   └── common/          # 공통 AI 문서 (1개)
-│
-├── testing/             # 테스트 가이드
-├── mcp/                 # MCP 서버 설정
-├── environment/         # 환경 설정
-│   └── wsl/             # WSL 가이드
-│
-└── standards/           # 코딩 표준
-```
-
----
+### Standards
+- [TypeScript Rules](./standards/typescript-rules.md)
+- [Health Check Policy](./standards/health-check-policy.md)
 
 ## Related
 
-- [Reference](../reference/) - 기술 레퍼런스
-- [Troubleshooting](../troubleshooting/) - 문제 해결
-- [DEVELOPMENT.md](../DEVELOPMENT.md) - 개발 가이드
+- [Docs Home](../README.md)
+- [Development](../development/README.md)
+- [Reference](../reference/README.md)

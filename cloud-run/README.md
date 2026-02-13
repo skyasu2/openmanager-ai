@@ -23,8 +23,8 @@ gcloud run deploy ai-engine \
   --platform managed \
   --region asia-northeast1 \
   --allow-unauthenticated \
-  --memory 2Gi \
-  --cpu 2 \
+  --memory 512Mi \
+  --cpu 1 \
   --set-secrets="GOOGLE_API_KEY=GOOGLE_API_KEY:latest" \
   --set-secrets="GROQ_API_KEY=GROQ_API_KEY:latest" \
   --set-secrets="SUPABASE_URL=SUPABASE_URL:latest" \

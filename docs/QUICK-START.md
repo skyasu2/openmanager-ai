@@ -1,6 +1,7 @@
 # OpenManager AI 빠른 시작 가이드
 
 > **v8.0.0** | Updated 2026-02-12
+> Doc type: Tutorial
 
 **AI 기반 실시간 서버 모니터링 플랫폼** - 5분 만에 시작하기
 
@@ -51,7 +52,7 @@ npm run dev:stable
 npm run dev
 ```
 
-서버가 실행되면 http://localhost:3000 에서 확인하세요.
+서버가 실행되면 `http://localhost:3000` 에서 확인하세요.
 
 ## 🎯 주요 기능 체험
 
@@ -120,13 +121,13 @@ npm run validate:all
 ## 📚 더 자세한 정보
 
 - **[개발 환경 상세 가이드](./DEVELOPMENT.md)** - AI 도구, MCP 서버, WSL 설정
-- **[AI 협업 워크플로우](./guides/ai/common/ai-workflow.md)** - Claude Code + Codex + Gemini 2-AI 교차검증
+- **[AI 협업 워크플로우](./vibe-coding/workflows.md)** - Claude Code + Codex + Gemini 2-AI 교차검증
 - **[전체 프로젝트 문서](./README.md)** - 아키텍처, API, 설계 문서
 - **[시스템 아키텍처](./reference/architecture/system/)** - 기술 스택 및 구조
 
 ---
 
-💡 **5분 만에 시작**: 설치 → `.env.local` 설정 → `npm run dev:stable` → http://localhost:3000
+💡 **5분 만에 시작**: 설치 → `.env.local` 설정 → `npm run dev:stable` → `http://localhost:3000`
 
 🎯 **즉시 체험**: 게스트로 체험하기 버튼 클릭 → 실시간 대시보드 확인
 

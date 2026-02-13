@@ -1,5 +1,9 @@
 # OpenTelemetry (OTel) 데이터 vs 레거시 데이터 비교 분석
 
+> Status: Historical
+> Current canonical docs: `docs/README.md`, `docs/reference/README.md`
+> Note: 본 문서는 작성 시점 기준 분석/리뷰 기록입니다.
+
 > **작성일**: 2026-02-12
 > **대상**: OpenManager AI v7.1.5 Data Architecture
 > **목적**: OTel 데이터 도입에 따른 데이터 구조 변화 및 장점 분석
@@ -26,17 +30,17 @@
 
 - **Legacy**: `node_cpu_usage_percent` (Prometheus/NodeExporter 종속적)
 - **OTel**: `system.cpu.utilization` (표준 규약)
-    - 예: `uptime` -> `system.uptime`
-    - 예: `disk` -> `system.filesystem.utilization`
+  - 예: `uptime` -> `system.uptime`
+  - 예: `disk` -> `system.filesystem.utilization`
 
 ### 2.2 정밀도 (Precision) 및 단위
 OTel 데이터는 **원시 데이터(Raw Data)**에 더 가깝게 설계되었습니다.
 
 - **변화**: 퍼센트(%) 단위(0-100)에서 비율(Ratio) 단위(0.0-1.0)로 변경되었습니다.
 - **이점**:
-    - `0.32` (OTel) vs `32` (Legacy)
-    - 미세한 리소스 변화(예: 0.1% 단위)를 더 정확하게 표현 가능합니다.
-    - AI 분석 시 정규화(Normalization) 과정이 불필요합니다 (이미 0~1 범위).
+  - `0.32` (OTel) vs `32` (Legacy)
+  - 미세한 리소스 변화(예: 0.1% 단위)를 더 정확하게 표현 가능합니다.
+  - AI 분석 시 정규화(Normalization) 과정이 불필요합니다 (이미 0~1 범위).
 
 ### 2.3 데이터 구조 (Hierarchical Structure)
 OTel 포맷은 데이터를 **시간 슬롯(Slot)** 기반으로 구조화하여 대용량 처리에 최적화되었습니다.
@@ -75,9 +79,9 @@ OTel 포맷은 데이터를 **시간 슬롯(Slot)** 기반으로 구조화하여
 
 ## 3. 마이그레이션 이점 (Why OTel?)
 
-1.  **AI 모델 친화적**: 0.0~1.0의 Normalized된 데이터는 AI 모델 학습 및 추론에 더 적합합니다.
-2.  **표준 호환성**: 추후 실제 운영 환경(Production) 데이터를 가져올 때 변환 비용이 "0"에 수렴합니다.
-3.  **확장성**: 사용자 정의 메트릭이나 복잡한 계층(예: Pod > Container > Process) 구조를 표현하기 용이합니다.
+1. **AI 모델 친화적**: 0.0~1.0의 Normalized된 데이터는 AI 모델 학습 및 추론에 더 적합합니다.
+2. **표준 호환성**: 추후 실제 운영 환경(Production) 데이터를 가져올 때 변환 비용이 "0"에 수렴합니다.
+3. **확장성**: 사용자 정의 메트릭이나 복잡한 계층(예: Pod > Container > Process) 구조를 표현하기 용이합니다.
 
 ---
 

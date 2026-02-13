@@ -1,5 +1,9 @@
 # Real-World Readiness Assessment (실 운영 환경 적합성 평가)
 
+> Status: Historical
+> Current canonical docs: `docs/README.md`, `docs/reference/README.md`
+> Note: 본 문서는 작성 시점 기준 분석/리뷰 기록입니다.
+
 > **작성일**: 2026-02-12
 > **대상**: OpenManager AI v7.1.5 Data Architecture
 > **작성자**: Principal Software Architect
@@ -39,9 +43,9 @@
 이 부분이 가장 큰 차이점입니다.
 
 - **현재**: `Metric` (원인) → `Log` (결과, 가상 생성)
-    - 예: CPU가 높으니까 "High Load" 로그를 가짜로 만들자.
+  - 예: CPU가 높으니까 "High Load" 로그를 가짜로 만들자.
 - **실제**: `Events` (원인) → `Log` (기록) & `Metric` (지표)
-    - 예: 프로세스가 폭주해서 로그가 찍히고, 동시에 CPU 메트릭이 올라감.
+  - 예: 프로세스가 폭주해서 로그가 찍히고, 동시에 CPU 메트릭이 올라감.
 
 **제언**: 실제 도입 시 현재의 `server-data-logs.ts` 로직을 **"로그가 유실되었을 때 메트릭만으로 상황을 추론하는 AI 기능"**으로 활용하거나, 실제 `Loki/Fluentd` 수집 파이프라인으로 대체해야 합니다.
 
@@ -51,15 +55,15 @@
 
 만약 내일 당장 이 시스템을 실제 데이터센터에 설치한다면, 다음 3단계 작업만 수행하면 됩니다.
 
-1.  **Step 1: Metric Ingestion API 개설**
-    *   `POST /api/metrics/v1/receive` 엔드포인트 생성
-    *   OTel Collector의 `otlphttp` exporter가 쏘는 JSON을 받아 `MetricsProvider`의 메모리 캐시에 갱신.
+1. **Step 1: Metric Ingestion API 개설**
+    - `POST /api/metrics/v1/receive` 엔드포인트 생성
+    - OTel Collector의 `otlphttp` exporter가 쏘는 JSON을 받아 `MetricsProvider`의 메모리 캐시에 갱신.
 
-2.  **Step 2: Log Aggregator 연동**
-    *   `generateServerLogs()` 함수를 `queryLoki()` 또는 `queryElasticsearch()`로 교체.
+2. **Step 2: Log Aggregator 연동**
+    - `generateServerLogs()` 함수를 `queryLoki()` 또는 `queryElasticsearch()`로 교체.
 
-3.  **Step 3: AI 실시간 분석 활성화**
-    *   Analyst Agent가 정해진 주기(예: 1분)마다 메모리상의 최신 메트릭을 스캔하도록 스케줄링.
+3. **Step 3: AI 실시간 분석 활성화**
+    - Analyst Agent가 정해진 주기(예: 1분)마다 메모리상의 최신 메트릭을 스캔하도록 스케줄링.
 
 ---
 

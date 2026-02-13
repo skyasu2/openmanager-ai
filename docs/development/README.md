@@ -1,6 +1,7 @@
 # 개발 환경 가이드
 
 > OpenManager AI v8 개발 환경 구축 및 설정 가이드
+> Doc type: How-to
 
 ## 개요
 
@@ -15,6 +16,8 @@
 | [개발 도구](./dev-tools.md) | Node.js, npm, IDE 설정 |
 | [프로젝트 설정](./project-setup.md) | 프로젝트 초기화 및 환경변수 |
 | [코딩 표준](./coding-standards.md) | 개발 방법론 및 코드 스타일 |
+| [문서 관리](./documentation-management.md) | 문서 구조/정합성 관리 기준 |
+| [문서 인벤토리](./documentation-inventory.md) | docs 트리/수량 자동 리포트 |
 
 ## 기술 스택
 
