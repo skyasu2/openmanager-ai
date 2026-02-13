@@ -30,6 +30,7 @@ export interface LlamaIndexSearchResult {
   id: string;
   title: string;
   content: string;
+  category?: string;
   score: number;
   sourceType: 'vector' | 'knowledge_graph' | 'graph';
   hopDistance: number;
@@ -454,6 +455,7 @@ export async function hybridGraphSearch(
         id: r.id,
         title: r.title,
         content: r.content,
+        category: r.category,
         score: r.score,
         sourceType: r.sourceType === 'hybrid' ? 'vector' as const : 'graph' as const,
         hopDistance: r.hopDistance,
@@ -488,6 +490,7 @@ export async function hybridGraphSearch(
       id: String(row.id),
       title: String(row.title || ''),
       content: String(row.content || ''),
+      category: String(row.category || 'auto'),
       score: Number(row.similarity || 0),
       sourceType: 'vector' as const,
       hopDistance: 0,
@@ -534,7 +537,7 @@ export async function hybridGraphSearch(
     if (nodeIds.size > 0) {
       const { data: entries } = await client
         .from('knowledge_base')
-        .select('id, title, content, metadata')
+        .select('id, title, content, category, metadata')
         .in('id', Array.from(nodeIds));
 
       if (entries) {
@@ -544,6 +547,7 @@ export async function hybridGraphSearch(
             id: entry.id,
             title: entry.title,
             content: entry.content,
+            category: entry.category || 'auto',
             score: (meta?.pathWeight ?? 1) * 0.8,
             sourceType: 'graph',
             hopDistance: meta?.hopDistance ?? 1,

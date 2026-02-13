@@ -20,7 +20,6 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { logger } from '@/lib/logging';
-import { UnifiedServerDataSource } from '@/services/data/UnifiedServerDataSource';
 import type { Server } from '@/types/server';
 
 /**
@@ -90,9 +89,18 @@ export function useFixed24hMetrics(
     if (!isMountedRef.current) return;
 
     try {
-      // 🎯 Single Source of Truth: UnifiedServerDataSource
-      const dataSource = UnifiedServerDataSource.getInstance();
-      const servers = await dataSource.getServers();
+      // 🎯 Direct fetch from unified API (SSOT)
+      const response = await fetch('/api/servers-unified?limit=50');
+      if (!response.ok) {
+        throw new Error(`API Error: ${response.status}`);
+      }
+
+      const result = await response.json();
+      if (!result.success || !result.data) {
+        throw new Error(result.message || 'Failed to fetch data');
+      }
+
+      const servers = result.data as Server[];
 
       // 특정 서버 찾기 - Case-insensitive Matching
       const server = servers.find(
@@ -138,7 +146,7 @@ export function useFixed24hMetrics(
       } else {
         // Fallback: Mock Data for Dev/Demo if real ID not found
         // This ensures the UI doesn't look broken even if IDs mismatch
-        logger.warn(`Server "${serverId}" not found, using fallback.`);
+        logger.warn(`Server "${serverId}" not found in /api/servers-unified`);
         setIsLoading(false);
       }
     } catch (err) {

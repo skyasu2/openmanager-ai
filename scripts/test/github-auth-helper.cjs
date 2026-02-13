@@ -8,9 +8,10 @@
 const crypto = require('crypto');
 const fs = require('fs');
 const path = require('path');
-const { exec } = require('child_process');
+const { exec, execFile } = require('child_process');
 const { promisify } = require('util');
 const execAsync = promisify(exec);
+const execFileAsync = promisify(execFile);
 
 // 암호화 설정
 const ALGORITHM = 'aes-256-gcm';
@@ -100,10 +101,11 @@ async function updateGitRemote(pat) {
     const url = new URL(remoteUrl.trim());
 
     // HTTPS URL에 PAT 추가
-    url.username = 'skyasu2';
+    // URL에서 기존 사용자 정보 제거 후 PAT 추가
+    url.username = 'pat'; // Generic placeholder for PAT authentication
     url.password = pat;
 
-    await execAsync(`git remote set-url origin ${url.toString()}`);
+    await execFileAsync('git', ['remote', 'set-url', 'origin', url.toString()]);
     console.log('✅ Git remote URL이 업데이트되었습니다.');
   } catch (error) {
     console.error('❌ Git remote 업데이트 실패:', error.message);
@@ -115,8 +117,9 @@ async function updateGitRemote(pat) {
 async function gitPush(branch = 'main') {
   try {
     console.log('🚀 Git push 시작...');
-    const { stdout, stderr } = await execAsync(
-      `HUSKY=0 git push origin ${branch}`
+    const { stdout, stderr } = await execFileAsync(
+      'git', ['push', 'origin', branch],
+      { env: { ...process.env, HUSKY: '0' } }
     );
 
     if (stdout) console.log(stdout);
@@ -132,9 +135,13 @@ async function gitPush(branch = 'main') {
 // 원래 remote URL 복원
 async function restoreGitRemote() {
   try {
-    await execAsync(
-      'git remote set-url origin https://github.com/skyasu2/openmanager-ai.git'
-    );
+    // PAT가 제거된 원래의 HTTPS URL로 복원
+    const { stdout: remoteUrl } = await execAsync('git remote get-url origin');
+    const url = new URL(remoteUrl.trim());
+    url.username = '';
+    url.password = '';
+    
+    await execFileAsync('git', ['remote', 'set-url', 'origin', url.toString()]);
     console.log('✅ Git remote URL이 원래대로 복원되었습니다.');
   } catch (error) {
     console.error('⚠️  Git remote 복원 실패:', error.message);

@@ -52,6 +52,7 @@ const envSchema = z.object({
     .string()
     .transform((val) => val === 'true')
     .optional(),
+  CLOUD_RUN_API_SECRET: z.string().min(1).optional(),
 
   // GitHub
   GITHUB_CLIENT_ID: z.string().min(1).optional(),

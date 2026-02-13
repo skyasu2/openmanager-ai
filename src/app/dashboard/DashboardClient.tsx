@@ -9,7 +9,7 @@
 
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
-import { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
+import { Suspense, useCallback, useEffect, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 import { AutoLogoutWarning } from '@/components/auth/AutoLogoutWarning';
 import DashboardContent from '@/components/dashboard/DashboardContent';
@@ -322,10 +322,14 @@ function DashboardPageContent({
 
   // ✅ useSystemStatusStore 제거 - useUnifiedAdminStore로 직접 접근
 
+  // 🎯 상태 필터 (DashboardSummary 카드 클릭 연동)
+  const [statusFilter, setStatusFilter] = useState<string | null>(null);
+
   // 🎯 서버 데이터 (Phase 2: SSR 초기 데이터 지원, Phase 4: 전체 pagination 상태)
   const {
     paginatedServers: realServers,
     servers: allServers,
+    filteredTotal,
     currentPage,
     totalPages,
     pageSize,
@@ -333,32 +337,10 @@ function DashboardPageContent({
     changePageSize,
   } = useServerDashboard({
     initialServers,
+    statusFilter,
   });
 
-  // 🎯 상태 필터 (DashboardSummary 카드 클릭 연동)
-  const [statusFilter, setStatusFilter] = useState<string | null>(null);
-
-  const filteredServers = useMemo(() => {
-    if (!statusFilter) return realServers;
-    return allServers.filter((s) => {
-      const status = s.status?.toLowerCase() ?? '';
-      switch (statusFilter) {
-        case 'online':
-          return ['online', 'running', 'active'].includes(status);
-        case 'warning':
-          return ['warning', 'degraded', 'unstable'].includes(status);
-        case 'critical':
-          return ['critical', 'error', 'failed'].includes(status);
-        case 'offline':
-          return ['offline', 'down', 'disconnected'].includes(status);
-        default:
-          return true;
-      }
-    });
-  }, [statusFilter, realServers, allServers]);
-
-  // 🕐 Supabase에서 24시간 데이터를 직접 가져오므로 시간 회전 시스템 제거됨
-  // API가 30초마다 다른 시간대 데이터를 자동으로 반환
+  // 🕐 시계열 갱신은 각 훅의 polling 정책(useServerQuery/useMonitoringReport)으로 관리
 
   // 🚀 대시보드 초기화 - Supabase에서 직접 데이터 로드
   useEffect(() => {
@@ -504,11 +486,9 @@ function DashboardPageContent({
                 - 중복 fetch 제거 (useServerDashboard 호출 1회로 최적화) */}
             <DashboardContent
               showSequentialGeneration={false}
-              servers={statusFilter ? filteredServers : realServers}
+              servers={realServers}
               allServers={allServers}
-              totalServers={
-                statusFilter ? filteredServers.length : allServers.length
-              }
+              totalServers={filteredTotal}
               currentPage={currentPage}
               totalPages={totalPages}
               pageSize={pageSize}

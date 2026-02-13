@@ -1,3 +1,4 @@
+import './env-loader';
 import { logger } from './logger';
 /**
  * Secret Configuration Parser
@@ -93,7 +94,7 @@ function parseJsonSecret<T>(envVar: string, secretName: string): T | null {
 // =============================================================================
 
 function getSupabaseConfigLegacy(): SupabaseConfig | null {
-  const url = process.env.SUPABASE_URL;
+  const url = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
   const directUrl = process.env.SUPABASE_DIRECT_URL;
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 

@@ -23,6 +23,7 @@ import { handleApiError, handleValidationError, jsonSuccess } from '../lib/error
 import { sanitizeChineseCharacters } from '../lib/text-sanitizer';
 import { guardInput, filterMaliciousOutput } from '../lib/prompt-guard';
 import { logger } from '../lib/logger';
+import { flushLangfuse } from '../services/observability/langfuse';
 
 // ============================================================================
 // 📋 Stream Request Schema
@@ -96,6 +97,20 @@ function extractTraceId(
 }
 
 export const supervisorRouter = new Hono();
+
+async function flushLangfuseBestEffort(timeoutMs: number = 350): Promise<void> {
+  await Promise.race([
+    flushLangfuse(),
+    new Promise<void>((resolve) => {
+      setTimeout(resolve, timeoutMs);
+    }),
+  ]).catch((error) => {
+    logger.warn(
+      { error: error instanceof Error ? error.message : String(error) },
+      'Supervisor: Langfuse flush skipped'
+    );
+  });
+}
 
 /**
  * POST /supervisor - Main AI Supervisor Endpoint
@@ -176,6 +191,9 @@ supervisorRouter.post('/', async (c: Context) => {
         .join('\n');
       sanitizedResponse += `\n\n📎 **참고 출처**\n${citations}`;
     }
+
+    // Cloud Run cpu-throttling 환경에서 trace 누락을 줄이기 위해 응답 직전 짧게 flush.
+    await flushLangfuseBestEffort();
 
     return jsonSuccess(c, {
       response: sanitizedResponse,

@@ -22,6 +22,9 @@
 - [Test Strategy](./testing/test-strategy.md)
 - [E2E Testing Guide](./testing/e2e-testing-guide.md)
 
+### Observability
+- [Langfuse + Sentry 가이드](./observability.md) - LLM 트레이싱, 에러 모니터링 설정/점검
+
 ### Standards
 - [TypeScript Rules](./standards/typescript-rules.md)
 - [Health Check Policy](./standards/health-check-policy.md)

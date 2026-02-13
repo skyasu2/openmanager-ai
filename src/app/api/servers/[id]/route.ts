@@ -1,5 +1,6 @@
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
+import { getOTelTimeSeries } from '@/data/otel-processed';
 import { withAuth } from '@/lib/auth/api-auth';
 import type { ServerHistory } from '@/schemas/server-schemas/server-details.schema';
 import {
@@ -64,13 +65,15 @@ export const GET = withAuth(
         );
       }
 
+      const serverId = metric.serverId;
+
       debug.log(
-        `✅ 서버 [${id}] 발견: ${metric.hostname ?? metric.serverId} (${metric.environment ?? 'unknown'}/${metric.serverType})`
+        `✅ 서버 [${id}] 발견: ${metric.hostname ?? serverId} (${metric.environment ?? 'unknown'}/${metric.serverType})`
       );
 
       // ServerMonitoringService를 통한 가공된 데이터
       const service = getServerMonitoringService();
-      const processed = service.getProcessedServer(metric.serverId);
+      const processed = service.getProcessedServer(serverId);
       const specs = processed?.specs
         ? { ...processed.specs, os: processed.osLabel }
         : undefined;
@@ -83,17 +86,17 @@ export const GET = withAuth(
           {
             error: 'Prometheus format is no longer supported',
             message: 'Please use JSON format instead',
-            server_id: metric.serverId,
+            server_id: serverId,
           },
           { status: 410 } // Gone
         );
       } else if (format === 'legacy') {
         // 레거시 형식
         const legacyServer = {
-          id: metric.serverId,
-          hostname: metric.hostname ?? metric.serverId,
+          id: serverId,
+          hostname: metric.hostname ?? serverId,
           ip: processed?.ip,
-          name: `OpenManager-${metric.serverId}`,
+          name: `OpenManager-${serverId}`,
           type: metric.serverType,
           environment: metric.environment ?? 'onpremise',
           location: getLocationByEnvironment(metric.environment ?? 'onpremise'),
@@ -121,7 +124,7 @@ export const GET = withAuth(
         // 히스토리 데이터 생성 (요청시)
         let history = null;
         if (includeHistory) {
-          history = generateServerHistory(metric, range);
+          history = generateServerHistoryFromTimeSeries(serverId, range);
         }
 
         return NextResponse.json(
@@ -139,10 +142,9 @@ export const GET = withAuth(
           },
           {
             headers: {
-              // Legacy 형식도 30초 캐싱
-              'Cache-Control': 'public, s-maxage=30, stale-while-revalidate=60',
-              'CDN-Cache-Control': 'public, s-maxage=30',
-              'Vercel-CDN-Cache-Control': 'public, s-maxage=30',
+              // 인증 응답: 공유 캐시 금지
+              'Cache-Control': 'private, no-store, max-age=0',
+              Pragma: 'no-cache',
             },
           }
         );
@@ -151,8 +153,8 @@ export const GET = withAuth(
         const enhancedResponse = {
           // 기본 서버 정보
           server_info: {
-            id: metric.serverId,
-            hostname: metric.hostname ?? metric.serverId,
+            id: serverId,
+            hostname: metric.hostname ?? serverId,
             environment: metric.environment ?? 'unknown',
             role: metric.serverType,
             status: metric.status,
@@ -173,7 +175,7 @@ export const GET = withAuth(
           // 리소스 정보 (MetricsProvider nodeInfo 기반)
           resources: specs,
           network: {
-            hostname: metric.hostname ?? metric.serverId,
+            hostname: metric.hostname ?? serverId,
             ip: processed?.ip,
             interface: 'eth0',
           },
@@ -196,11 +198,12 @@ export const GET = withAuth(
         // 히스토리 데이터 (요청시)
         let history: ServerHistory | undefined;
         if (includeHistory) {
-          history = generateServerHistory(metric, range);
+          history = generateServerHistoryFromTimeSeries(serverId, range);
         }
 
         // 메타데이터
         const response = {
+          success: true,
           meta: {
             request_info: {
               server_id: id,
@@ -225,14 +228,13 @@ export const GET = withAuth(
 
         return NextResponse.json(response, {
           headers: {
-            'X-Server-Id': metric.serverId,
-            'X-Hostname': metric.hostname ?? metric.serverId,
+            'X-Server-Id': serverId,
+            'X-Hostname': metric.hostname ?? serverId,
             'X-Server-Status': metric.status,
             'X-Processing-Time-Ms': (Date.now() - startTime).toString(),
-            // 개별 서버 정보는 30초 캐싱
-            'Cache-Control': 'public, s-maxage=30, stale-while-revalidate=60',
-            'CDN-Cache-Control': 'public, s-maxage=30',
-            'Vercel-CDN-Cache-Control': 'public, s-maxage=30',
+            // 인증 응답: 공유 캐시 금지
+            'Cache-Control': 'private, no-store, max-age=0',
+            Pragma: 'no-cache',
           },
         });
       }
@@ -299,33 +301,55 @@ function formatUptime(uptimeSeconds: number): string {
 }
 
 /**
- * 📈 서버 히스토리 (현재 스냅샷만 반환)
- * 실제 시계열 데이터가 없으므로 현재 메트릭을 단일 데이터 포인트로 반환.
- * Math.random/Math.sin 기반 fabrication 제거됨.
+ * 📈 사전 계산된 TimeSeries 데이터에서 서버 히스토리 생성
  */
-function generateServerHistory(
-  metric: ServerMetrics,
+function generateServerHistoryFromTimeSeries(
+  serverId: string,
   range: string
 ): ServerHistory {
-  const now = new Date().toISOString();
+  const ts = getOTelTimeSeries();
+  const serverIndex = ts.serverIds.indexOf(serverId);
+
+  if (serverIndex === -1) {
+    // Fallback: 1 point only
+    const now = new Date().toISOString();
+    return {
+      time_range: range,
+      start_time: now,
+      end_time: now,
+      interval_ms: 0,
+      data_points: [],
+    };
+  }
+
+  const timestamps = ts.timestamps;
+  const cpuData = ts.metrics['cpu']?.[serverIndex] || [];
+  const memoryData = ts.metrics['memory']?.[serverIndex] || [];
+  const diskData = ts.metrics['disk']?.[serverIndex] || [];
+  const networkData = ts.metrics['network']?.[serverIndex] || [];
+
+  const data_points = timestamps.map((t: number, i: number) => ({
+    timestamp: new Date(t * 1000).toISOString(),
+    metrics: {
+      cpu_usage: cpuData[i] ?? 0,
+      memory_usage: memoryData[i] ?? 0,
+      disk_usage: diskData[i] ?? 0,
+      network_in: Math.round((networkData[i] ?? 0) * 0.6),
+      network_out: Math.round((networkData[i] ?? 0) * 0.4),
+      response_time: 100 + (cpuData[i] ?? 0) * 2, // Simple heuristic
+    },
+  }));
+
+  // 범위에 따른 필터링 (현재는 전체 24시간 반환)
+  // TODO: range 파라미터에 따라 데이터 슬라이싱
 
   return {
     time_range: range,
-    start_time: now,
-    end_time: now,
-    interval_ms: 0,
-    data_points: [
-      {
-        timestamp: now,
-        metrics: {
-          cpu_usage: metric.cpu,
-          memory_usage: metric.memory,
-          disk_usage: metric.disk,
-          network_in: metric.network,
-          network_out: metric.network,
-          response_time: metric.responseTimeMs ?? 0,
-        },
-      },
-    ],
+    start_time: data_points[0]?.timestamp || new Date().toISOString(),
+    end_time:
+      data_points[data_points.length - 1]?.timestamp ||
+      new Date().toISOString(),
+    interval_ms: 600000, // 10분
+    data_points,
   };
 }

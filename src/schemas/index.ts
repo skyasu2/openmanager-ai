@@ -8,6 +8,15 @@
 export * from './ai-schemas/ai-performance.schema';
 // API schemas - 중복 방지를 위해 필요한 것만 선택적 export
 export {
+  type MonitoringReportApiResponse,
+  MonitoringReportApiResponseSchema,
+  type MonitoringReportErrorCode,
+  type MonitoringReportErrorResponse,
+  MonitoringReportErrorResponseSchema,
+  type MonitoringReportResponse,
+  MonitoringReportResponseSchema,
+} from './api.monitoring-report.schema';
+export {
   type CachePerformance,
   CachePerformanceSchema,
   type CacheStats,

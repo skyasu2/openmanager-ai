@@ -209,6 +209,14 @@ export async function GET(request: NextRequest) {
 
 // 세션 새로고침 테스트
 export async function POST(request: NextRequest) {
+  // 🚫 개발 환경에서만 접근 허용
+  if (process.env.NODE_ENV === 'production') {
+    return NextResponse.json(
+      { error: 'Debug endpoints are not available in production' },
+      { status: 404 }
+    );
+  }
+
   try {
     const response = NextResponse.next();
     const middlewareSupabase = createMiddlewareClient(

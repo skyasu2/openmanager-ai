@@ -307,9 +307,7 @@
             "memory_total_bytes": 34359738368,
             "disk_total_bytes": 53687091200
           },
-          "logs": [
-            "[WARN] redis: Memory usage above 85% threshold"
-          ]
+          "logs": ["[WARN] redis: Memory usage above 85% threshold"]
         },
         "cache-redis-icn-02:9100": {
           "instance": "cache-redis-icn-02:9100",
@@ -764,9 +762,7 @@
             "memory_total_bytes": 34359738368,
             "disk_total_bytes": 53687091200
           },
-          "logs": [
-            "[WARN] redis: Memory usage above 85% threshold"
-          ]
+          "logs": ["[WARN] redis: Memory usage above 85% threshold"]
         },
         "cache-redis-icn-02:9100": {
           "instance": "cache-redis-icn-02:9100",
@@ -1221,9 +1217,7 @@
             "memory_total_bytes": 34359738368,
             "disk_total_bytes": 53687091200
           },
-          "logs": [
-            "[WARN] redis: Memory usage above 85% threshold"
-          ]
+          "logs": ["[WARN] redis: Memory usage above 85% threshold"]
         },
         "cache-redis-icn-02:9100": {
           "instance": "cache-redis-icn-02:9100",
@@ -1498,9 +1492,7 @@
             "memory_total_bytes": 17179869184,
             "disk_total_bytes": 214748364800
           },
-          "logs": [
-            "[INFO] GC pause time: 2.5s (threshold: 1s)"
-          ]
+          "logs": ["[INFO] GC pause time: 2.5s (threshold: 1s)"]
         },
         "api-was-icn-02:9100": {
           "instance": "api-was-icn-02:9100",
@@ -1712,9 +1704,7 @@
             "memory_total_bytes": 34359738368,
             "disk_total_bytes": 53687091200
           },
-          "logs": [
-            "[INFO] redis: Evicting keys using volatile-lru policy"
-          ]
+          "logs": ["[INFO] redis: Evicting keys using volatile-lru policy"]
         },
         "storage-nfs-icn-01:9100": {
           "instance": "storage-nfs-icn-01:9100",
@@ -1959,9 +1949,7 @@
             "memory_total_bytes": 17179869184,
             "disk_total_bytes": 214748364800
           },
-          "logs": [
-            "[WARN] JVM: Heap usage above 85%"
-          ]
+          "logs": ["[WARN] JVM: Heap usage above 85%"]
         },
         "api-was-icn-02:9100": {
           "instance": "api-was-icn-02:9100",
@@ -2173,9 +2161,7 @@
             "memory_total_bytes": 34359738368,
             "disk_total_bytes": 53687091200
           },
-          "logs": [
-            "[INFO] redis: Evicting keys using volatile-lru policy"
-          ]
+          "logs": ["[INFO] redis: Evicting keys using volatile-lru policy"]
         },
         "storage-nfs-icn-01:9100": {
           "instance": "storage-nfs-icn-01:9100",
@@ -2420,9 +2406,7 @@
             "memory_total_bytes": 17179869184,
             "disk_total_bytes": 214748364800
           },
-          "logs": [
-            "[WARN] JVM: Heap usage above 85%"
-          ]
+          "logs": ["[WARN] JVM: Heap usage above 85%"]
         },
         "api-was-icn-02:9100": {
           "instance": "api-was-icn-02:9100",
@@ -2602,9 +2586,7 @@
             "memory_total_bytes": 34359738368,
             "disk_total_bytes": 53687091200
           },
-          "logs": [
-            "[WARN] redis: Memory fragmentation ratio: 2.5"
-          ]
+          "logs": ["[WARN] redis: Memory fragmentation ratio: 2.5"]
         },
         "cache-redis-icn-02:9100": {
           "instance": "cache-redis-icn-02:9100",
@@ -2634,9 +2616,7 @@
             "memory_total_bytes": 34359738368,
             "disk_total_bytes": 53687091200
           },
-          "logs": [
-            "[INFO] redis: Evicting keys using volatile-lru policy"
-          ]
+          "logs": ["[INFO] redis: Evicting keys using volatile-lru policy"]
         },
         "storage-nfs-icn-01:9100": {
           "instance": "storage-nfs-icn-01:9100",

@@ -62,25 +62,51 @@ const REQUIRED_ENV_VARS: EnvConfig[] = [
     example: 'openssl rand -base64 32',
   },
 
-  // Google AI (Optional for AI features)
+  // Google AI (Optional - Cloud Run AI Engine uses these)
   {
-    name: 'GEMINI_API_KEY_PRIMARY',
+    name: 'GOOGLE_AI_API_KEY',
     required: false,
-    description: 'Primary Google AI API key',
+    description: 'Primary Google AI API key (Cloud Run AI Engine)',
     example: 'AIzaSy...',
   },
   {
-    name: 'GEMINI_API_KEY_SECONDARY',
+    name: 'GROQ_API_KEY',
+    required: false,
+    description: 'Groq AI API key for fast inference',
+    example: 'gsk_...',
+  },
+  {
+    name: 'MISTRAL_API_KEY',
+    required: false,
+    description: 'Mistral AI API key',
+    example: '...',
+  },
+  {
+    name: 'GOOGLE_AI_API_KEY_SECONDARY',
     required: false,
     description: 'Secondary Google AI API key (fallback)',
     example: 'AIzaSy...',
   },
 
+  // Cloud Run
+  {
+    name: 'CLOUD_RUN_API_SECRET',
+    required: false,
+    description: 'Cloud Run AI Engine API authentication secret',
+    example: 'openssl rand -hex 32',
+  },
+  {
+    name: 'CLOUD_RUN_AI_URL',
+    required: false,
+    description: 'Cloud Run AI Engine URL',
+    example: 'https://ai-engine-xxx.asia-northeast1.run.app',
+  },
+
   // Admin Authentication
   {
     name: 'TEST_SECRET_KEY',
-    required: true,
-    description: 'Admin API authentication secret',
+    required: false,
+    description: 'Test-only API authentication secret',
     example: 'openssl rand -hex 32',
   },
 ];

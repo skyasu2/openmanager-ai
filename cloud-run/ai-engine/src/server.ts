@@ -18,6 +18,7 @@ import { logAPIKeyStatus, validateAPIKeys } from './lib/model-config';
 import { getConfigStatus, getLangfuseConfig } from './lib/config-parser';
 import { isRedisAvailable } from './lib/redis-client';
 import { getCurrentState } from './data/precomputed-state';
+import { syncIncidentsToRAG } from './lib/incident-rag-injector';
 
 // Error handling
 import { handleUnauthorizedError, jsonSuccess } from './lib/error-handler';
@@ -26,7 +27,7 @@ import { handleUnauthorizedError, jsonSuccess } from './lib/error-handler';
 import { rateLimitMiddleware } from './middleware/rate-limiter';
 
 // Observability & Resilience
-import { flushLangfuse, shutdownLangfuse, getLangfuseUsageStatus, restoreUsageFromRedis } from './services/observability/langfuse';
+import { flushLangfuse, shutdownLangfuse, getLangfuseUsageStatus, restoreUsageFromRedis, initializeLangfuseClient } from './services/observability/langfuse';
 import { getAllCircuitStats, resetAllCircuitBreakers } from './services/resilience/circuit-breaker';
 import { getAvailableAgentsStatus, preFilterQuery, executeMultiAgent, type MultiAgentRequest } from './services/ai-sdk/agents';
 
@@ -128,6 +129,18 @@ app.get('/warmup', (c: Context) => {
       summary: state.summary,
     },
   });
+});
+
+// Monitoring endpoint authentication middleware (must be registered BEFORE route handlers)
+app.use('/monitoring/*', async (c: Context, next: Next) => {
+  if (process.env.NODE_ENV === 'production') {
+    const apiKey = c.req.header('X-API-Key');
+    const validKey = process.env.CLOUD_RUN_API_SECRET;
+    if (!validKey || apiKey !== validKey) {
+      return c.json({ error: 'Monitoring endpoints require authentication in production' }, 403);
+    }
+  }
+  await next();
 });
 
 /**
@@ -248,27 +261,7 @@ app.use('/debug/*', async (c: Context, next: Next) => {
   await next();
 });
 
-app.use('/monitoring/reset', async (c: Context, next: Next) => {
-  if (process.env.NODE_ENV === 'production') {
-    const apiKey = c.req.header('X-API-Key');
-    const validKey = process.env.CLOUD_RUN_API_SECRET;
-    if (!validKey || apiKey !== validKey) {
-      return c.json({ error: 'Admin endpoints require authentication in production' }, 403);
-    }
-  }
-  await next();
-});
-
-app.use('/monitoring/traces', async (c: Context, next: Next) => {
-  if (process.env.NODE_ENV === 'production') {
-    const apiKey = c.req.header('X-API-Key');
-    const validKey = process.env.CLOUD_RUN_API_SECRET;
-    if (!validKey || apiKey !== validKey) {
-      return c.json({ error: 'Admin endpoints require authentication in production' }, 403);
-    }
-  }
-  await next();
-});
+// NOTE: /monitoring/* auth middleware is registered above route handlers (before app.get('/monitoring', ...))
 
 /**
  * GET /debug/prefilter - Test preFilterQuery function
@@ -367,12 +360,78 @@ logAPIKeyStatus();
 const langfuseConfig = getLangfuseConfig();
 if (langfuseConfig) {
   logger.info({ baseUrl: langfuseConfig.baseUrl }, 'Langfuse initialized');
+  initializeLangfuseClient()
+    .then(() => {
+      logger.info('Langfuse client prewarmed');
+    })
+    .catch((error) => {
+      logger.warn(
+        { error: error instanceof Error ? error.message : String(error) },
+        'Langfuse prewarm failed (non-blocking)'
+      );
+    });
 } else {
   logger.warn('Langfuse not configured - observability disabled');
 }
 
 // Langfuse 사용량 Redis 복원 (fire-and-forget)
 restoreUsageFromRedis().catch(() => {});
+
+// Periodic incident -> RAG backfill (lightweight, free-tier conscious)
+const enableIncidentRagBackfill =
+  process.env.ENABLE_INCIDENT_RAG_BACKFILL !== 'false';
+const incidentRagBackfillMinutes = Math.max(
+  5,
+  Number.parseInt(process.env.INCIDENT_RAG_BACKFILL_MINUTES || '30', 10) || 30
+);
+
+if (enableIncidentRagBackfill) {
+  let backfillInFlight = false;
+
+  const runIncidentRagBackfill = async () => {
+    if (backfillInFlight) return;
+    backfillInFlight = true;
+
+    try {
+      const result = await syncIncidentsToRAG({ limit: 3, daysBack: 30 });
+      if (result.synced > 0 || result.failed > 0) {
+        logger.info(
+          {
+            synced: result.synced,
+            skipped: result.skipped,
+            failed: result.failed,
+            errors: result.errors.slice(0, 3),
+          },
+          'Incident RAG backfill run'
+        );
+      }
+    } catch (error) {
+      logger.warn({ error }, 'Incident RAG backfill failed');
+    } finally {
+      backfillInFlight = false;
+    }
+  };
+
+  const initialTimer = setTimeout(() => {
+    void runIncidentRagBackfill();
+  }, 15_000);
+  if (typeof (initialTimer as NodeJS.Timeout).unref === 'function') {
+    (initialTimer as NodeJS.Timeout).unref();
+  }
+
+  const intervalMs = incidentRagBackfillMinutes * 60 * 1000;
+  const intervalTimer = setInterval(() => {
+    void runIncidentRagBackfill();
+  }, intervalMs);
+  if (typeof (intervalTimer as NodeJS.Timeout).unref === 'function') {
+    (intervalTimer as NodeJS.Timeout).unref();
+  }
+
+  logger.info(
+    { incidentRagBackfillMinutes },
+    'Incident RAG periodic backfill enabled'
+  );
+}
 
 serve(
   {

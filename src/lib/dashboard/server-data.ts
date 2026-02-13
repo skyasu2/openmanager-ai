@@ -7,7 +7,7 @@
  * @created 2026-01-28
  */
 
-import { getServersFromUnifiedSource } from '@/services/data/UnifiedServerDataSource';
+import { getServerMonitoringService } from '@/services/monitoring';
 import type { Server } from '@/types/server';
 
 const STATUS_PRIORITY: Record<string, number> = {
@@ -36,7 +36,8 @@ export type DashboardInitialData = {
  * @returns Pre-sorted servers and calculated stats
  */
 export async function getDashboardData(): Promise<DashboardInitialData> {
-  const servers = await getServersFromUnifiedSource();
+  const service = getServerMonitoringService();
+  const servers = service.getAllAsServers();
 
   // Sort by status priority (critical/offline first)
   const sortedServers = [...servers].sort((a, b) => {

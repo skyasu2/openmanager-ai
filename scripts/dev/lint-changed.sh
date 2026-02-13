@@ -1,40 +1,35 @@
 #!/usr/bin/env bash
 # scripts/dev/lint-changed.sh
-# 변경된 파일만 Biome 검사 (타임아웃 방지)
+# 변경된 파일만 Biome을 사용하여 빠르게 검사 및 수정
 
 set -euo pipefail
 
 echo "🔍 Linting changed files only (Biome)..."
 
 # Git에서 변경된 파일 가져오기 (staged + unstaged)
-# Biome은 json, css도 지원하므로 확장자 추가
-CHANGED_FILES=$(git diff --name-only --diff-filter=ACM HEAD 2>/dev/null | grep -E '\.(ts|tsx|js|jsx|json|css)$' || true)
+# Biome 지원 확장자: ts, tsx, js, jsx, json, css
+EXT_PATTERN='\.(ts|tsx|js|jsx|json|css)$'
+CHANGED_FILES=$(git diff --name-only --diff-filter=ACM HEAD 2>/dev/null | grep -E "$EXT_PATTERN" || true)
+STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM 2>/dev/null | grep -E "$EXT_PATTERN" || true)
 
-# Staged 파일도 포함
-STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM 2>/dev/null | grep -E '\.(ts|tsx|js|jsx|json|css)$' || true)
-
-# 합치기
+# 합치기 및 중복 제거
 ALL_CHANGED=$(echo -e "$CHANGED_FILES\n$STAGED_FILES" | sort -u | grep -v '^$' || true)
 
 if [ -z "$ALL_CHANGED" ]; then
-  echo "✅ No supported files changed"
+  echo "✅ No supported files changed. Skipping lint."
   exit 0
 fi
 
-echo "📝 Changed files:"
-echo "$ALL_CHANGED" | sed 's/^/  - /'
-
-# 파일 개수 확인
 FILE_COUNT=$(echo "$ALL_CHANGED" | wc -l)
-echo ""
-echo "📊 Total: $FILE_COUNT file(s)"
+echo "📝 $FILE_COUNT file(s) modified. Running Biome check & write..."
 
-# Biome 실행 (변경된 파일만)
-echo ""
-echo "🔧 Running Biome..."
-# Biome은 파일 리스트를 인자로 받을 수 있음
-# xargs를 사용하여 파일 목록 전달
-echo "$ALL_CHANGED" | xargs npx @biomejs/biome check --write --no-errors-on-unmatched
+# Biome 실행
+# local node_modules의 biome 우선 사용, xargs -d '\n'으로 파일명 내 공백 안전 처리
+if [ -f "./node_modules/.bin/biome" ]; then
+  echo "$ALL_CHANGED" | xargs -d '\n' ./node_modules/.bin/biome check --write --no-errors-on-unmatched
+else
+  echo "$ALL_CHANGED" | xargs -d '\n' npx @biomejs/biome check --write --no-errors-on-unmatched
+fi
 
 echo ""
-echo "✅ Biome passed for changed files!"
+echo "✅ Biome linting completed successfully!"

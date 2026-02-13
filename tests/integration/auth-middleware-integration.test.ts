@@ -34,6 +34,17 @@ vi.mock('@/lib/security/security-logger', () => ({
   },
 }));
 
+vi.mock('@/lib/logging', () => ({
+  logger: { info: vi.fn(), error: vi.fn(), warn: vi.fn(), debug: vi.fn() },
+}));
+
+const mockGetUser = vi.fn();
+vi.mock('@/lib/supabase/server', () => ({
+  createClient: vi.fn(() => ({
+    auth: { getUser: mockGetUser },
+  })),
+}));
+
 // Import after mocks
 import { isGuestFullAccessEnabledServer } from '@/config/guestMode.server';
 import { checkAPIAuth, withAuth } from '@/lib/auth/api-auth';
@@ -195,15 +206,17 @@ describe('Auth Middleware Integration', () => {
       });
     });
 
-    describe('세션 쿠키 인증', () => {
-      it('next-auth.session-token 쿠키로 인증 성공', async () => {
+    describe('Supabase 세션 인증', () => {
+      it('유효한 Supabase 세션으로 인증 성공', async () => {
         // Given
         process.env.NODE_ENV = 'production';
         vi.mocked(isGuestFullAccessEnabledServer).mockReturnValue(false);
-
-        const request = new NextRequest('http://localhost:3000/api/test', {
-          headers: { Cookie: 'next-auth.session-token=valid-session-123' },
+        mockGetUser.mockResolvedValue({
+          data: { user: { id: 'user-123', email: 'test@example.com' } },
+          error: null,
         });
+
+        const request = new NextRequest('http://localhost:3000/api/test');
 
         // When
         const result = await checkAPIAuth(request);
@@ -212,28 +225,38 @@ describe('Auth Middleware Integration', () => {
         expect(result).toBeNull();
       });
 
-      it('__Secure-next-auth.session-token 쿠키로 인증 성공', async () => {
+      it('Supabase 세션 만료 시 401 반환', async () => {
         // Given
         process.env.NODE_ENV = 'production';
         vi.mocked(isGuestFullAccessEnabledServer).mockReturnValue(false);
-
-        const request = new NextRequest('http://localhost:3000/api/test', {
-          headers: {
-            Cookie: '__Secure-next-auth.session-token=secure-session-456',
-          },
+        mockGetUser.mockResolvedValue({
+          data: { user: null },
+          error: { message: 'Session expired' },
         });
+
+        const request = new NextRequest('http://localhost:3000/api/test');
 
         // When
         const result = await checkAPIAuth(request);
 
         // Then
-        expect(result).toBeNull();
+        expect(result).toBeInstanceOf(NextResponse);
+        if (result) {
+          expect(result.status).toBe(401);
+          const data = await result.json();
+          expect(data.error).toContain('Unauthorized');
+          expect(data.error).toContain('login');
+        }
       });
 
-      it('세션 쿠키 없으면 401 반환', async () => {
+      it('세션 없으면 401 반환', async () => {
         // Given
         process.env.NODE_ENV = 'production';
         vi.mocked(isGuestFullAccessEnabledServer).mockReturnValue(false);
+        mockGetUser.mockResolvedValue({
+          data: { user: null },
+          error: null,
+        });
 
         const request = new NextRequest('http://localhost:3000/api/test');
 
@@ -266,7 +289,7 @@ describe('Auth Middleware Integration', () => {
       const response = await wrappedHandler(request);
 
       // Then
-      expect(mockHandler).toHaveBeenCalledWith(request, undefined);
+      expect(mockHandler).toHaveBeenCalledWith(request);
       const data = await response.json();
       expect(data.success).toBe(true);
     });

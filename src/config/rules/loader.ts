@@ -404,6 +404,38 @@ class RulesLoader implements IRulesLoader {
   }
 
   /**
+   * 🔔 웹 알림 발송 조건 확인
+   *
+   * @param currentStatus 현재 상태
+   * @param previousStatus 이전 상태 (상태 변화 감지용)
+   * @returns 웹 알림 발송 여부
+   */
+  shouldSendWebNotification(
+    currentStatus: 'online' | 'warning' | 'critical' | 'offline',
+    previousStatus?: 'online' | 'warning' | 'critical' | 'offline'
+  ): boolean {
+    // Critical 또는 Offline 상태는 항상 알림
+    if (currentStatus === 'critical' || currentStatus === 'offline') {
+      return true;
+    }
+
+    // Online에서 Warning으로 변화한 경우 알림
+    if (currentStatus === 'warning' && previousStatus === 'online') {
+      return true;
+    }
+
+    // 복구 알림: Critical/Offline에서 Warning/Online으로 변화
+    if (
+      (previousStatus === 'critical' || previousStatus === 'offline') &&
+      (currentStatus === 'warning' || currentStatus === 'online')
+    ) {
+      return true;
+    }
+
+    return false;
+  }
+
+  /**
    * AI 친화적인 규칙 요약 생성
    */
   getSummaryForAI(): string {
@@ -462,6 +494,10 @@ export const getServerStatus = (metrics: {
   network?: number;
   responseTime?: number;
 }) => rulesLoader.getServerStatus(metrics);
+export const shouldSendWebNotification = (
+  currentStatus: 'online' | 'warning' | 'critical' | 'offline',
+  previousStatus?: 'online' | 'warning' | 'critical' | 'offline'
+) => rulesLoader.shouldSendWebNotification(currentStatus, previousStatus);
 export const getActiveAlertRules = () => rulesLoader.getActiveAlertRules();
 export const getAIInstructions = () => rulesLoader.getAIInstructions();
 export const getSummaryForAI = () => rulesLoader.getSummaryForAI();

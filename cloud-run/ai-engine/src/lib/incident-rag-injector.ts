@@ -5,7 +5,7 @@
  * for RAG search by Reporter Agent.
  *
  * Flow:
- * 1. Fetch approved incident_report entries from approval_history
+ * 1. Fetch source incidents from approval_history (preferred) or incident_reports (fallback)
  * 2. Skip already-synced entries (check source_ref)
  * 3. Generate embeddings using Mistral mistral-embed (1024d)
  * 4. Insert into knowledge_base with category='incident'
@@ -35,6 +35,20 @@ interface ApprovedIncident {
   decided_at: string;
 }
 
+interface IncidentReportRow {
+  id: string;
+  title: string | null;
+  severity: string | null;
+  pattern: string | null;
+  affected_servers: string[] | null;
+  root_cause_analysis: Record<string, unknown> | null;
+  recommendations: unknown[] | null;
+  timeline: unknown[] | null;
+  status: string | null;
+  created_at: string | null;
+  updated_at: string | null;
+}
+
 interface IncidentKnowledgeEntry {
   title: string;
   content: string;
@@ -44,7 +58,8 @@ interface IncidentKnowledgeEntry {
   severity: 'info' | 'warning' | 'critical';
   source: 'auto_generated';
   serverTypes: string[]; // Maps to related_server_types column
-  source_ref: string; // approval_history.session_id for dedup
+  sourceRef: string; // approval_history.session_id for dedup
+  sourceType: 'approval_history' | 'incident_reports';
 }
 
 interface SyncResult {
@@ -68,6 +83,43 @@ const SYNC_LIMITS = {
   DEFAULT_DAYS_BACK: 30,
   MIN_CONTENT_LENGTH: 20,
 } as const;
+
+function isMissingApprovalHistory(error: unknown): boolean {
+  if (!error || typeof error !== 'object') return false;
+
+  const maybeError = error as { message?: string; code?: string };
+  const message = String(maybeError.message || '');
+  return (
+    (message.includes('approval_history') && message.includes('does not exist')) ||
+    message.includes("Could not find the table 'public.approval_history'") ||
+    maybeError.code === 'PGRST205'
+  );
+}
+
+function mapIncidentReportToApprovedIncident(row: IncidentReportRow): ApprovedIncident {
+  const decidedAt = row.updated_at || row.created_at || new Date().toISOString();
+  const requestedAt = row.created_at || decidedAt;
+
+  return {
+    id: row.id,
+    session_id: `incident-report:${row.id}`,
+    description: row.title || '인시던트 보고서',
+    payload: {
+      title: row.title,
+      severity: row.severity,
+      pattern: row.pattern,
+      affected_servers: row.affected_servers || [],
+      root_cause_analysis: row.root_cause_analysis || {},
+      recommendations: row.recommendations || [],
+      timeline: row.timeline || [],
+      status: row.status,
+      source_table: 'incident_reports',
+      source_id: row.id,
+    },
+    requested_at: requestedAt,
+    decided_at: decidedAt,
+  };
+}
 
 // ============================================================================
 // Supabase Client
@@ -219,9 +271,27 @@ async function isAlreadySynced(
   supabase: SupabaseClient,
   sessionId: string
 ): Promise<boolean> {
-  // Check if knowledge_base has this session_id in source_ref
-  // We use tags to store source reference
+  // Prefer metadata.source_ref for dedup.
+  // Keep legacy tags-based fallback for backward compatibility.
   const { data, error } = await supabase
+    .from('knowledge_base')
+    .select('id')
+    .eq('category', 'incident')
+    .eq('source', 'auto_generated')
+    .filter('metadata->>source_ref', 'eq', sessionId)
+    .limit(1);
+
+  if (error) {
+    logger.warn('⚠️ [IncidentRAG] Dedup check failed, assuming already synced to prevent duplicates:', error);
+    return true;
+  }
+
+  if (Array.isArray(data) && data.length > 0) {
+    return true;
+  }
+
+  // Legacy fallback: old rows stored source ref in tags only.
+  const { data: legacyData, error: legacyError } = await supabase
     .from('knowledge_base')
     .select('id')
     .eq('category', 'incident')
@@ -229,12 +299,12 @@ async function isAlreadySynced(
     .contains('tags', [sessionId])
     .limit(1);
 
-  if (error) {
-    logger.warn('⚠️ [IncidentRAG] Dedup check failed:', error);
-    return false;
+  if (legacyError) {
+    logger.warn('⚠️ [IncidentRAG] Legacy dedup check failed, assuming already synced to prevent duplicates:', legacyError);
+    return true;
   }
 
-  return Array.isArray(data) && data.length > 0;
+  return Array.isArray(legacyData) && legacyData.length > 0;
 }
 
 /**
@@ -245,6 +315,13 @@ async function insertToKnowledgeBase(
   entry: IncidentKnowledgeEntry
 ): Promise<boolean> {
   try {
+    const metadata = {
+      source_ref: entry.sourceRef,
+      source_type: entry.sourceType,
+      injected_by: 'incident-rag-injector',
+      injected_at: new Date().toISOString(),
+    } as const;
+
     const { error } = await supabase.from('knowledge_base').insert({
       title: entry.title,
       content: entry.content,
@@ -254,6 +331,7 @@ async function insertToKnowledgeBase(
       severity: entry.severity,
       source: entry.source,
       related_server_types: entry.serverTypes || [],
+      metadata,
     });
 
     if (error) {
@@ -349,11 +427,13 @@ export async function syncIncidentsToRAG(
   }
 
   try {
-    // 1. Fetch approved incident reports from approval_history
+    // 1. Fetch source incidents:
+    //    priority) approval_history (HITL approved)
+    //    fallback) incident_reports (for deployments without approval_history)
     const sinceDate = new Date();
     sinceDate.setDate(sinceDate.getDate() - daysBack);
 
-    const { data: incidents, error: fetchError } = await supabase
+    const { data: approvalIncidents, error: fetchError } = await supabase
       .from('approval_history')
       .select('id, session_id, description, payload, requested_at, decided_at')
       .eq('action_type', 'incident_report')
@@ -362,21 +442,48 @@ export async function syncIncidentsToRAG(
       .order('decided_at', { ascending: false })
       .limit(limit);
 
+    let incidents: ApprovedIncident[] = [];
+
     if (fetchError) {
-      result.errors.push(`Fetch error: ${fetchError.message}`);
-      return result;
+      if (!isMissingApprovalHistory(fetchError)) {
+        result.errors.push(`Fetch error: ${fetchError.message}`);
+        return result;
+      }
+      logger.info('[IncidentRAG] approval_history missing, falling back to incident_reports');
+    } else if (approvalIncidents && approvalIncidents.length > 0) {
+      incidents = approvalIncidents as ApprovedIncident[];
     }
 
-    if (!incidents || incidents.length === 0) {
+    if (incidents.length === 0) {
+      const { data: reportRows, error: reportError } = await supabase
+        .from('incident_reports')
+        .select(
+          'id, title, severity, pattern, affected_servers, root_cause_analysis, recommendations, timeline, status, created_at, updated_at'
+        )
+        .gte('updated_at', sinceDate.toISOString())
+        .order('updated_at', { ascending: false })
+        .limit(limit);
+
+      if (reportError) {
+        result.errors.push(`Fallback fetch error: ${reportError.message}`);
+        return result;
+      }
+
+      incidents = (reportRows || []).map((row) =>
+        mapIncidentReportToApprovedIncident(row as IncidentReportRow)
+      );
+    }
+
+    if (incidents.length === 0) {
       console.log('✅ [IncidentRAG] No new incidents to sync');
       result.success = true;
       return result;
     }
 
-    console.log(`📋 [IncidentRAG] Found ${incidents.length} approved incidents`);
+    console.log(`📋 [IncidentRAG] Found ${incidents.length} source incidents`);
 
     // 2. Process each incident
-    for (const incident of incidents as ApprovedIncident[]) {
+    for (const incident of incidents) {
       try {
         // Check dedup
         if (await isAlreadySynced(supabase, incident.session_id)) {
@@ -409,7 +516,11 @@ export async function syncIncidentsToRAG(
           severity: extracted.severity,
           source: 'auto_generated',
           serverTypes: extracted.serverTypes,
-          source_ref: incident.session_id,
+          sourceRef: incident.session_id,
+          sourceType:
+            String(incident.payload.source_table || '') === 'incident_reports'
+              ? 'incident_reports'
+              : 'approval_history',
         };
 
         const inserted = await insertToKnowledgeBase(supabase, entry);
@@ -452,16 +563,35 @@ export async function getRAGInjectionStats(): Promise<{
   if (!supabase) return null;
 
   try {
-    // Count total approved incidents (last 30 days)
+    // Count source incidents (approval_history preferred, incident_reports fallback)
     const sinceDate = new Date();
     sinceDate.setDate(sinceDate.getDate() - 30);
 
-    const { count: totalCount } = await supabase
+    const { count: approvalCount, error: approvalCountError } = await supabase
       .from('approval_history')
       .select('*', { count: 'exact', head: true })
       .eq('action_type', 'incident_report')
       .eq('status', 'approved')
       .gte('decided_at', sinceDate.toISOString());
+
+    let totalCount = approvalCount || 0;
+
+    if (approvalCountError && isMissingApprovalHistory(approvalCountError)) {
+      const { count: reportCount, error: reportCountError } = await supabase
+        .from('incident_reports')
+        .select('*', { count: 'exact', head: true })
+        .gte('updated_at', sinceDate.toISOString());
+
+      if (reportCountError) {
+        logger.error('❌ [IncidentRAG] incident_reports count failed:', reportCountError);
+        return null;
+      }
+
+      totalCount = reportCount || 0;
+    } else if (approvalCountError) {
+      logger.error('❌ [IncidentRAG] approval_history count failed:', approvalCountError);
+      return null;
+    }
 
     // Count synced incidents in knowledge_base
     const { count: syncedCount } = await supabase
@@ -471,9 +601,9 @@ export async function getRAGInjectionStats(): Promise<{
       .eq('source', 'auto_generated');
 
     return {
-      totalIncidents: totalCount || 0,
+      totalIncidents: totalCount,
       syncedIncidents: syncedCount || 0,
-      pendingSync: Math.max(0, (totalCount || 0) - (syncedCount || 0)),
+      pendingSync: Math.max(0, totalCount - (syncedCount || 0)),
     };
   } catch (e) {
     logger.error('❌ [IncidentRAG] Stats error:', e);

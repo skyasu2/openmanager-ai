@@ -4,23 +4,36 @@ import type { EnhancedServerData } from '@/types/dashboard/server-dashboard.type
 /**
  * 🛡️ useServerDataCache Hook
  *
- * Race Condition 방어 및 데이터 캐싱
- * - AI 사이드바 오픈 시 빈 배열이 되는 문제 방지
- * - 이전 유효한 데이터를 유지하여 안정성 확보
+ * 데이터 캐싱 정책:
+ * - 성공 응답의 빈 배열은 실제 상태로 반영
+ * - 네트워크 오류 시에만 이전 캐시 유지 (옵션)
  */
-export function useServerDataCache(rawServers: EnhancedServerData[]) {
+export function useServerDataCache(
+  rawServers: EnhancedServerData[],
+  options?: { keepPreviousOnError?: boolean }
+) {
   const previousServersRef = useRef<EnhancedServerData[]>([]);
+  const keepPreviousOnError = options?.keepPreviousOnError ?? false;
 
   const cachedServers = useMemo(() => {
-    // 빈 배열이거나 유효하지 않은 데이터인 경우 이전 캐시 반환
-    if (!rawServers || !Array.isArray(rawServers) || rawServers.length === 0) {
+    // 유효하지 않은 데이터인 경우 이전 캐시 반환
+    if (!rawServers || !Array.isArray(rawServers)) {
       return previousServersRef.current;
+    }
+
+    // 성공 응답에서 빈 배열은 실제 상태로 간주하여 그대로 반영
+    if (rawServers.length === 0) {
+      if (keepPreviousOnError && previousServersRef.current.length > 0) {
+        return previousServersRef.current;
+      }
+      previousServersRef.current = [];
+      return [];
     }
 
     // 유효한 데이터인 경우 캐시 업데이트
     previousServersRef.current = rawServers;
     return rawServers;
-  }, [rawServers]);
+  }, [rawServers, keepPreviousOnError]);
 
   return { cachedServers };
 }

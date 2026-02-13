@@ -162,7 +162,9 @@ class CentralizedDataManager {
 
   /**
    * 서버 데이터 페치
-   * v5.87: /api/servers-unified 사용 (인증 불필요, 게스트 접근 가능)
+   * v5.87: /api/servers-unified 사용
+   * - 개발/테스트 환경: auth middleware bypass
+   * - 프로덕션: 인증 필요
    */
   private async fetchServers(): Promise<Server[]> {
     const response = await fetch('/api/servers-unified', {

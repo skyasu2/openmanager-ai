@@ -2,7 +2,9 @@ import {
   Activity,
   AlertOctagon,
   AlertTriangle,
+  Bell,
   CheckCircle2,
+  FileSearch,
   Server as ServerIcon,
   ShieldAlert,
   XCircle,
@@ -25,6 +27,8 @@ interface DashboardSummaryProps {
   onFilterChange?: (filter: string | null) => void;
   healthScore?: number;
   healthGrade?: string;
+  onOpenAlertHistory?: () => void;
+  onOpenLogExplorer?: () => void;
 }
 
 // 🎨 상태별 그라데이션 설정 (ImprovedServerCard와 통일)
@@ -189,6 +193,8 @@ export const DashboardSummary: React.FC<DashboardSummaryProps> = ({
   onFilterChange,
   healthScore,
   healthGrade,
+  onOpenAlertHistory,
+  onOpenLogExplorer,
 }) => {
   // Null-safe 처리
   const safeStats = {
@@ -321,6 +327,30 @@ export const DashboardSummary: React.FC<DashboardSummaryProps> = ({
                     ? '성능 경고'
                     : '모든 시스템 정상'}
               </div>
+            </div>
+
+            {/* Alert History / Log Explorer 버튼 */}
+            <div className="flex items-center gap-1.5 ml-2">
+              {onOpenAlertHistory && (
+                <button
+                  type="button"
+                  onClick={onOpenAlertHistory}
+                  aria-label="Alert History"
+                  className="flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 bg-white/80 text-gray-500 transition-colors hover:bg-amber-50 hover:text-amber-600 hover:border-amber-200"
+                >
+                  <Bell size={15} />
+                </button>
+              )}
+              {onOpenLogExplorer && (
+                <button
+                  type="button"
+                  onClick={onOpenLogExplorer}
+                  aria-label="Log Explorer"
+                  className="flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 bg-white/80 text-gray-500 transition-colors hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200"
+                >
+                  <FileSearch size={15} />
+                </button>
+              )}
             </div>
           </div>
 

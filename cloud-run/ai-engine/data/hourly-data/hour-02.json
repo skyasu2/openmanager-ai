@@ -2076,9 +2076,7 @@
             "memory_total_bytes": 68719476736,
             "disk_total_bytes": 1073741824000
           },
-          "logs": [
-            "[WARN] InnoDB: Tablespace approaching 90% capacity"
-          ]
+          "logs": ["[WARN] InnoDB: Tablespace approaching 90% capacity"]
         },
         "db-mysql-pus-dr:9100": {
           "instance": "db-mysql-pus-dr:9100",
@@ -2536,9 +2534,7 @@
             "memory_total_bytes": 68719476736,
             "disk_total_bytes": 1073741824000
           },
-          "logs": [
-            "[INFO] mysqld: Running disk cleanup on /var/lib/mysql"
-          ]
+          "logs": ["[INFO] mysqld: Running disk cleanup on /var/lib/mysql"]
         },
         "db-mysql-pus-dr:9100": {
           "instance": "db-mysql-pus-dr:9100",

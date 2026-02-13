@@ -15,6 +15,7 @@ import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 import * as z from 'zod';
 import { createApiRoute } from '@/lib/api/zod-middleware';
+import { withAuth } from '@/lib/auth/api-auth';
 import { logger } from '@/lib/logging';
 import { getServerMonitoringService } from '@/services/monitoring';
 import type { EnhancedServerMetrics } from '@/types/server';
@@ -333,7 +334,7 @@ async function handleServersUnified(
 }
 
 // 🚀 API 라우트 내보내기
-export const POST = createApiRoute()
+const postHandler = createApiRoute()
   .body(serversUnifiedRequestSchema)
   .configure({
     showDetailedErrors: process.env.NODE_ENV === 'development',
@@ -342,7 +343,7 @@ export const POST = createApiRoute()
   .build(handleServersUnified);
 
 // 호환성을 위한 GET 메서드 (기본 list 액션)
-export async function GET(request: NextRequest) {
+async function getHandler(request: NextRequest) {
   const { searchParams } = new URL(request.url);
 
   const defaultRequest: ServersUnifiedRequest = {
@@ -359,8 +360,6 @@ export async function GET(request: NextRequest) {
     includeMetrics: true,
   };
 
-  // 📊 DASHBOARD: 5분 TTL, SWR 비활성화 (서버 목록 최적화)
-  // 서버 목록은 5분 캐시로 충분, SWR 불필요
   return NextResponse.json(
     await handleServersUnified(request, {
       body: defaultRequest,
@@ -370,13 +369,14 @@ export async function GET(request: NextRequest) {
     {
       headers: {
         'Content-Type': 'application/json',
-        'Cache-Control':
-          'public, max-age=600, s-maxage=600, stale-while-revalidate=60',
-        'CDN-Cache-Control': 'public, s-maxage=600',
-        'Vercel-CDN-Cache-Control': 'public, s-maxage=600',
+        'Cache-Control': 'private, no-store, max-age=0',
+        Pragma: 'no-cache',
       },
     }
   );
 }
+
+export const POST = withAuth(postHandler);
+export const GET = withAuth(getHandler);
 
 export const dynamic = 'force-dynamic';

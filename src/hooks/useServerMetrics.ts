@@ -13,6 +13,57 @@ export interface MetricsStats {
   responseTimeMax: number;
 }
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return value !== null && typeof value === 'object';
+}
+
+function toSafeNumber(value: unknown): number {
+  return typeof value === 'number' && Number.isFinite(value) ? value : 0;
+}
+
+/**
+ * 서버 상세 응답에서 히스토리 메트릭을 추출한다.
+ * 표준 포맷: data.history.data_points
+ */
+export function parseMetricsHistoryFromResponse(
+  payload: unknown
+): MetricsHistory[] | null {
+  if (!isRecord(payload)) return null;
+
+  // 표준 포맷: data.history.data_points
+  const dataNode = payload.data;
+  if (isRecord(dataNode)) {
+    const historyNode = dataNode.history;
+    if (isRecord(historyNode) && Array.isArray(historyNode.data_points)) {
+      const mapped = historyNode.data_points
+        .map((point): MetricsHistory | null => {
+          if (!isRecord(point)) return null;
+          const timestamp = point.timestamp;
+          const metrics = point.metrics;
+          if (typeof timestamp !== 'string' || !isRecord(metrics)) return null;
+
+          const networkIn = toSafeNumber(metrics.network_in);
+          const networkOut = toSafeNumber(metrics.network_out);
+
+          return {
+            timestamp,
+            cpu: toSafeNumber(metrics.cpu_usage),
+            memory: toSafeNumber(metrics.memory_usage),
+            disk: toSafeNumber(metrics.disk_usage),
+            network: Math.round((networkIn + networkOut) / 2),
+            responseTime: toSafeNumber(metrics.response_time),
+            connections: 0,
+          };
+        })
+        .filter((item): item is MetricsHistory => item !== null);
+
+      return mapped.length > 0 ? mapped : null;
+    }
+  }
+
+  return null;
+}
+
 export function useServerMetrics() {
   const [metricsHistory, setMetricsHistory] = useState<MetricsHistory[]>([]);
   const [isLoadingHistory, setIsLoadingHistory] = useState(false);
@@ -68,10 +119,15 @@ export function useServerMetrics() {
         const response = await fetch(
           `/api/servers/${serverId}?history=true&range=${range}`
         );
-        const data = await response.json();
+        if (!response.ok) {
+          throw new Error(`히스토리 API 오류: ${response.status}`);
+        }
 
-        if (data.success && data.history) {
-          setMetricsHistory(data.history.metrics);
+        const data = await response.json();
+        const parsedHistory = parseMetricsHistoryFromResponse(data);
+
+        if (parsedHistory) {
+          setMetricsHistory(parsedHistory);
         } else {
           setMetricsHistory(generateSimulatedHistory(range));
         }

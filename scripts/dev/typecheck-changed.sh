@@ -1,37 +1,28 @@
 #!/usr/bin/env bash
 # scripts/dev/typecheck-changed.sh
-# 변경된 파일만 TypeScript 검사 (증분 컴파일)
+# TypeScript 증분 컴파일을 통한 빠른 검사
 
 set -euo pipefail
 
-echo "🔍 Type-checking changed files only..."
+echo "🔍 Checking TypeScript project status..."
 
-# Git에서 변경된 파일 가져오기
+# Git에서 변경된 파일 확인 (참고용)
 CHANGED_FILES=$(git diff --name-only --diff-filter=ACM HEAD 2>/dev/null | grep -E '\.(ts|tsx)$' || true)
 STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM 2>/dev/null | grep -E '\.(ts|tsx)$' || true)
 
-# 합치기
 ALL_CHANGED=$(echo -e "$CHANGED_FILES\n$STAGED_FILES" | sort -u | grep -v '^$' || true)
 
 if [ -z "$ALL_CHANGED" ]; then
-  echo "✅ No TypeScript files changed"
+  echo "✅ No TypeScript files changed. Skipping incremental check."
   exit 0
 fi
 
-echo "📝 Changed files:"
-echo "$ALL_CHANGED" | sed 's/^/  - /'
-
-# 파일 개수 확인
 FILE_COUNT=$(echo "$ALL_CHANGED" | wc -l)
-echo ""
-echo "📊 Total: $FILE_COUNT file(s)"
+echo "📝 $FILE_COUNT TypeScript file(s) modified. Running incremental type-check..."
 
-# TypeScript 증분 컴파일 (tsc --incremental)
-echo ""
-echo "🔧 Running TypeScript compiler (incremental mode)..."
-
-# tsconfig.json에 incremental 옵션 추가하여 빌드 캐시 활용
-npx tsc --noEmit --incremental --pretty
+# TypeScript 증분 컴파일 (tsconfig.json의 설정을 따름)
+# --incremental 옵션은 .tsbuildinfo 파일을 생성하여 변경된 부분만 검사합니다.
+npx tsc --noEmit --incremental --pretty --project tsconfig.json
 
 echo ""
-echo "✅ TypeScript check passed for changed files!"
+echo "✅ Incremental type-check passed!"

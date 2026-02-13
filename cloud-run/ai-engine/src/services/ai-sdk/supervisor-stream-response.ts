@@ -17,10 +17,25 @@ import type { SupervisorRequest, SupervisorMode } from './supervisor-types';
 import { selectExecutionMode } from './supervisor-routing';
 import { executeSupervisorStream } from './supervisor-single-agent';
 import { logger } from '../../lib/logger';
+import { flushLangfuse } from '../observability/langfuse';
 
 // ============================================================================
 // UIMessageStream Response
 // ============================================================================
+
+async function flushLangfuseBestEffort(timeoutMs: number = 350): Promise<void> {
+  await Promise.race([
+    flushLangfuse(),
+    new Promise<void>((resolve) => {
+      setTimeout(resolve, timeoutMs);
+    }),
+  ]).catch((error) => {
+    logger.warn(
+      { error: error instanceof Error ? error.message : String(error) },
+      'UIMessageStream: Langfuse flush skipped'
+    );
+  });
+}
 
 export function createSupervisorStreamResponse(
   request: SupervisorRequest
@@ -142,6 +157,9 @@ export function createSupervisorStreamResponse(
                   success,
                 },
               });
+
+              // Cloud Run cpu-throttling 환경에서 stream trace 지연 업로드를 완화.
+              await flushLangfuseBestEffort();
               break;
 
             case 'error':

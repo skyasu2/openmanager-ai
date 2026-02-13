@@ -294,7 +294,10 @@ describe('MetricsProvider', () => {
     it('should have correct slotIndex calculation', () => {
       const timeInfo = metricsProvider.getTimeInfo();
 
-      expect(timeInfo.slotIndex).toBe(timeInfo.minuteOfDay / 10);
+      // slotIndex = Math.floor((minuteOfDay % 60) / 10) — 10분 단위 슬롯 (0-5)
+      expect(timeInfo.slotIndex).toBe(
+        Math.floor((timeInfo.minuteOfDay % 60) / 10)
+      );
     });
 
     it('should have valid humanReadable format (HH:MM KST)', () => {

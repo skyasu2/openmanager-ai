@@ -17,6 +17,7 @@ LOG_FILE="$LOG_DIR/$(date +%Y-%m-%d)-codex.log"
 TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S')
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 CODEX_LOCAL_RUNNER="$REPO_ROOT/scripts/mcp/codex-local.sh"
+RUNTIME_ENV_RESOLVER="$REPO_ROOT/scripts/mcp/resolve-runtime-env.sh"
 
 EXPECTED_SERVERS=(
   "vercel"
@@ -47,6 +48,27 @@ if [ ! -x "$CODEX_LOCAL_RUNNER" ]; then
   echo "프로젝트 Codex 실행기 누락: $CODEX_LOCAL_RUNNER" >> "$LOG_FILE"
   exit 2
 fi
+
+if [ ! -f "$RUNTIME_ENV_RESOLVER" ]; then
+  echo -e "${RED}런타임 환경 해석기 누락: $RUNTIME_ENV_RESOLVER${NC}"
+  echo "런타임 환경 해석기 누락: $RUNTIME_ENV_RESOLVER" >> "$LOG_FILE"
+  exit 2
+fi
+
+# shellcheck source=/dev/null
+source "$RUNTIME_ENV_RESOLVER"
+
+echo -e "${BLUE}Runtime Paths${NC}"
+echo "  - CODEX_HOME: $CODEX_HOME (${OPENMANAGER_CODEX_HOME_SOURCE})"
+echo "  - CLOUDSDK_CONFIG: $CLOUDSDK_CONFIG (${OPENMANAGER_GCLOUD_CONFIG_SOURCE})"
+echo ""
+
+{
+  echo "Runtime Paths:"
+  echo "  - CODEX_HOME: $CODEX_HOME (${OPENMANAGER_CODEX_HOME_SOURCE})"
+  echo "  - CLOUDSDK_CONFIG: $CLOUDSDK_CONFIG (${OPENMANAGER_GCLOUD_CONFIG_SOURCE})"
+  echo ""
+} >> "$LOG_FILE"
 
 MCP_OUTPUT=$(timeout 15 "$CODEX_LOCAL_RUNNER" mcp list 2>&1)
 MCP_EXIT_CODE=$?

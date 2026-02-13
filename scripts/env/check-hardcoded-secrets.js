@@ -27,6 +27,12 @@ const criticalPatterns = [
   
   // Supabase 키
   { pattern: /sb-[a-zA-Z0-9]{40}-[a-zA-Z0-9]{20}/, name: 'Supabase Key' },
+
+  // Gemini API 키 (AIza로 시작하지만 패턴 구체화)
+  { pattern: /AIzaSy[a-zA-Z0-9-_]{33}/, name: 'Gemini API Key' },
+
+  // Groq API 키
+  { pattern: /gsk_[a-zA-Z0-9]{48}/, name: 'Groq API Key' },
   
   // 명시적인 하드코딩된 키 패턴
   { pattern: /(api_key|apikey|secret_key|secretkey)\s*[:=]\s*['"][^'"]{20,}['"]/, name: 'Hardcoded API Key' },

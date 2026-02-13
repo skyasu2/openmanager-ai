@@ -191,7 +191,7 @@ gcloud run services update-traffic ai-engine \
 - Build: Completed without errors
 - Deploy: Service updated successfully
 - Health: HTTP 200 from `/health`
-- Agents: All 5 agents active
+- Agents: All 7 agents active
 
 ## Related Skills
 

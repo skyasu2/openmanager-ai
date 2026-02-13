@@ -1,13 +1,9 @@
-import {
-  deriveNetworkErrors,
-  deriveNetworkSplit,
-  deriveZombieProcesses,
-} from '@/services/server-data/server-data-transformer';
 import type { EnhancedServerData } from '@/types/dashboard/server-dashboard.types';
 import type {
   Server,
   ServerEnvironment,
   ServerRole,
+  ServerStatus,
   Service,
 } from '@/types/server';
 
@@ -34,11 +30,21 @@ export function transformServerData(
       s.network || (s.network_in || 0) + (s.network_out || 0) || 0
     );
 
+    const normalizedStatus: ServerStatus =
+      s.status === 'online' ||
+      s.status === 'warning' ||
+      s.status === 'critical' ||
+      s.status === 'offline' ||
+      s.status === 'maintenance' ||
+      s.status === 'unknown'
+        ? s.status
+        : 'unknown';
+
     return {
       id: s.id,
       name: s.name || s.hostname || 'Unknown',
       hostname: s.hostname || s.name || 'Unknown',
-      status: s.status,
+      status: normalizedStatus,
       cpu: cpu,
       memory: memory,
       disk: disk,
@@ -56,62 +62,15 @@ export function transformServerData(
       role: (s.type || s.role || 'worker') as ServerRole,
       environment: (s.environment || 'production') as ServerEnvironment,
       provider: s.provider || 'On-Premise',
-      specs: s.specs || {
-        cpu_cores: 4,
-        memory_gb: 8,
-        disk_gb: 250,
-        network_speed: '1Gbps',
-      },
+      specs: s.specs,
       lastUpdate:
         typeof s.lastUpdate === 'string'
           ? new Date(s.lastUpdate)
           : s.lastUpdate || new Date(),
       services: Array.isArray(s.services) ? (s.services as Service[]) : [],
-      networkStatus:
-        s.status === 'online'
-          ? 'online'
-          : s.status === 'warning'
-            ? 'warning'
-            : 'critical',
-      systemInfo: s.systemInfo || {
-        os: s.os || 'Ubuntu 22.04 LTS',
-        uptime:
-          typeof s.uptime === 'string'
-            ? s.uptime
-            : `${Math.floor((s.uptime || 0) / 3600)}h`,
-        processes: 120,
-        zombieProcesses: deriveZombieProcesses(s.id, 120),
-        loadAverage: '0.50, 0.45, 0.40',
-        lastUpdate:
-          typeof s.lastUpdate === 'string'
-            ? s.lastUpdate
-            : s.lastUpdate instanceof Date
-              ? s.lastUpdate.toISOString()
-              : new Date().toISOString(),
-      },
-      networkInfo:
-        s.networkInfo ||
-        (() => {
-          const serverType = s.type || 'web';
-          const { networkIn, networkOut } = deriveNetworkSplit(
-            network,
-            serverType
-          );
-          const errors = deriveNetworkErrors(network, s.id);
-          return {
-            interface: 'eth0',
-            receivedBytes: `${networkIn} MB`,
-            sentBytes: `${networkOut} MB`,
-            receivedErrors: errors.receivedErrors,
-            sentErrors: errors.sentErrors,
-            status:
-              s.status === 'online'
-                ? ('online' as const)
-                : s.status === 'warning'
-                  ? ('warning' as const)
-                  : ('critical' as const),
-          };
-        })(),
+      networkStatus: normalizedStatus,
+      systemInfo: s.systemInfo,
+      networkInfo: s.networkInfo,
     };
   });
 }

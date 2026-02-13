@@ -18,9 +18,9 @@ import React, {
 import { useFixed24hMetrics } from '@/hooks/useFixed24hMetrics';
 import { useSafeServer } from '@/hooks/useSafeServer';
 import { useServerMetrics } from '@/hooks/useServerMetrics';
-import type { MetricsHistory } from '@/types/server';
 import { getServerStatusTheme } from '@/styles/design-constants';
 import type {
+  MetricsHistory,
   ServerStatus,
   Server as ServerType,
   Service,

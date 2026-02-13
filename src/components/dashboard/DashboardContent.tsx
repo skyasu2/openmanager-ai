@@ -16,20 +16,22 @@ import {
   type ArchitectureDiagram,
 } from '@/data/architecture-diagrams.data';
 import { useMonitoringReport } from '@/hooks/dashboard/useMonitoringReport';
-import type { Alert } from '@/services/monitoring/AlertManager';
+import type { MonitoringAlert } from '@/schemas/api.monitoring-report.schema';
 import type { Server } from '@/types/server';
 import debug from '@/utils/debug';
 import { safeConsoleError, safeErrorMessage } from '@/utils/utils-functions';
+import { AlertHistoryModal } from './alert-history/AlertHistoryModal';
 import { DashboardSummary } from './DashboardSummary';
+import { LogExplorerModal } from './log-explorer/LogExplorerModal';
 import { SystemOverviewSection } from './SystemOverviewSection';
 import type { DashboardStats } from './types/dashboard.types';
 
-const severityBadge: Record<string, string> = {
+const severityBadge: Record<MonitoringAlert['severity'], string> = {
   critical: 'bg-red-100 text-red-700 border-red-200',
   warning: 'bg-amber-100 text-amber-700 border-amber-200',
 };
 
-function ActiveAlertsSection({ alerts }: { alerts: Alert[] }) {
+function ActiveAlertsSection({ alerts }: { alerts: MonitoringAlert[] }) {
   const [expanded, setExpanded] = useState(true);
   const sorted = [...alerts].sort((a, b) => {
     if (a.severity === 'critical' && b.severity !== 'critical') return -1;
@@ -65,7 +67,7 @@ function ActiveAlertsSection({ alerts }: { alerts: Alert[] }) {
             >
               <div className="flex items-center gap-3">
                 <span
-                  className={`inline-flex rounded-md border px-1.5 py-0.5 text-[10px] font-bold uppercase ${severityBadge[alert.severity] ?? ''}`}
+                  className={`inline-flex rounded-md border px-1.5 py-0.5 text-[10px] font-bold uppercase ${severityBadge[alert.severity]}`}
                 >
                   {alert.severity}
                 </span>
@@ -183,7 +185,21 @@ export default memo(function DashboardContent({
   }
 
   // MonitoringContext Health Score
-  const { data: monitoringReport } = useMonitoringReport();
+  const {
+    data: monitoringReport,
+    error: monitoringError,
+    isError: isMonitoringError,
+  } = useMonitoringReport();
+  const monitoringErrorMessage = isMonitoringError
+    ? safeErrorMessage(
+        monitoringError,
+        '모니터링 리포트를 불러오지 못했습니다.'
+      )
+    : null;
+
+  // Alert History / Log Explorer 모달 상태
+  const [alertHistoryOpen, setAlertHistoryOpen] = useState(false);
+  const [logExplorerOpen, setLogExplorerOpen] = useState(false);
 
   // 🎯 서버 데이터에서 직접 통계 계산 (중복 API 호출 제거)
   const [statsLoading, _setStatsLoading] = useState(false);
@@ -424,12 +440,19 @@ export default memo(function DashboardContent({
           {servers && servers.length > 0 ? (
             <>
               {/* 인프라 전체 현황 (Simple Grid) */}
+              {monitoringErrorMessage && (
+                <div className="rounded-lg border border-amber-200/60 bg-amber-50/80 px-4 py-3 text-xs text-amber-800">
+                  모니터링 리포트 조회 실패: {monitoringErrorMessage}
+                </div>
+              )}
               <DashboardSummary
                 stats={serverStats}
                 activeFilter={statusFilter}
                 onFilterChange={onStatusFilterChange}
                 healthScore={monitoringReport?.health?.score}
                 healthGrade={monitoringReport?.health?.grade}
+                onOpenAlertHistory={() => setAlertHistoryOpen(true)}
+                onOpenLogExplorer={() => setLogExplorerOpen(true)}
               />
 
               {/* Active Alerts (접이식, 0건일 때 숨김) */}
@@ -502,6 +525,24 @@ export default memo(function DashboardContent({
                   onStatsUpdate={onStatsUpdate}
                 />
               </Suspense>
+
+              {/* Alert History Modal */}
+              {alertHistoryOpen && (
+                <AlertHistoryModal
+                  open={alertHistoryOpen}
+                  onClose={() => setAlertHistoryOpen(false)}
+                  serverIds={(statsSource ?? []).map((s) => s.id)}
+                />
+              )}
+
+              {/* Log Explorer Modal */}
+              {logExplorerOpen && (
+                <LogExplorerModal
+                  open={logExplorerOpen}
+                  onClose={() => setLogExplorerOpen(false)}
+                  servers={statsSource ?? []}
+                />
+              )}
             </>
           ) : (
             <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-lg">

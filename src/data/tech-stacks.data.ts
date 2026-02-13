@@ -84,7 +84,7 @@ export const TECH_STACKS_DATA: Record<string, TechItem[] | VibeCodeData> = {
       description:
         'Vercel이 개발한 AI 애플리케이션 프레임워크. streamText, generateObject 등 API로 스트리밍 응답, 도구 호출, 멀티 에이전트 오케스트레이션 지원',
       implementation:
-        '@ai-sdk-tools/agents 패키지로 5-Agent 멀티 에이전트 시스템 구축. Orchestrator-Worker Handoff 패턴 구현',
+        '@ai-sdk-tools/agents 패키지로 7-Agent 멀티 에이전트 시스템 구축. Orchestrator-Worker Handoff 패턴 구현',
       version: '6.0',
       status: 'active',
       icon: '▲',
@@ -98,7 +98,7 @@ export const TECH_STACKS_DATA: Record<string, TechItem[] | VibeCodeData> = {
       description:
         'Vercel AI SDK 확장 패키지. Agent 클래스로 전문 에이전트 정의, matchOn으로 패턴 매칭, handoffs로 에이전트 간 작업 위임 지원',
       implementation:
-        'Orchestrator + NLQ + Analyst + Reporter + Advisor + Vision 6개 에이전트 정의. 질문 유형별 자동 라우팅 구현',
+        'Orchestrator + NLQ + Analyst + Reporter + Advisor + Vision + Evaluator + Optimizer 7개 에이전트 (5 외부 라우팅 + 2 내부) 정의. 질문 유형별 자동 라우팅 구현',
       version: '1.2',
       status: 'active',
       icon: '🤖',
@@ -214,7 +214,7 @@ export const TECH_STACKS_DATA: Record<string, TechItem[] | VibeCodeData> = {
       description:
         'Google Cloud의 서버리스 컨테이너 플랫폼. 요청이 없으면 Scale to Zero로 비용 절감, 트래픽 증가 시 자동 확장',
       implementation:
-        'Node.js 22 + Hono 웹 프레임워크로 AI 엔진 컨테이너 운영. asia-northeast1(서울) 리전 배포',
+        'Node.js 24 + Hono 웹 프레임워크로 AI 엔진 컨테이너 운영. asia-northeast1(서울) 리전 배포',
       version: 'asia-northeast1',
       status: 'active',
       icon: '☁️',
@@ -254,7 +254,7 @@ export const TECH_STACKS_DATA: Record<string, TechItem[] | VibeCodeData> = {
       description:
         'Google Cloud 서버리스 컨테이너 플랫폼. Scale to Zero로 유휴 비용 제로, 트래픽 증가 시 자동 확장, 콜드 스타트 최소화',
       implementation:
-        '→ Node.js 22 + Hono AI Engine 운영. asia-northeast1(서울) 배포',
+        '→ Node.js 24 + Hono AI Engine 운영. asia-northeast1(서울) 배포',
       status: 'active',
       icon: '☁️',
       tags: ['CloudRun', 'Container', 'Serverless'],
@@ -372,32 +372,18 @@ export const TECH_STACKS_DATA: Record<string, TechItem[] | VibeCodeData> = {
       type: 'opensource',
     },
     {
-      name: 'Node.js 22 + Hono',
+      name: 'Node.js 24 + Hono',
       category: 'language',
       importance: 'critical',
       description:
         'Node.js: V8 기반 서버사이드 JS 런타임. Hono: Web Standards API 기반 초경량 웹 프레임워크로 Express 대비 10배 빠른 성능',
       implementation:
         '→ Cloud Run에서 AI Engine 백엔드로 운영. TypeScript 기반',
-      version: '22.x',
+      version: '24.x',
       status: 'active',
       icon: '🚀',
       tags: ['백엔드', 'TypeScript', 'Hono'],
       type: 'opensource',
-    },
-    {
-      name: 'Rust ML Engine',
-      category: 'ai',
-      importance: 'high',
-      description:
-        'Rust 언어로 구현한 네이티브 ML 엔진. 메모리 안전성과 제로 코스트 추상화로 C++ 수준 성능 제공. WASM 컴파일 지원',
-      implementation:
-        '→ Anomaly Detection, K-Means Clustering, Linear Regression 직접 구현',
-      version: '1.0.0',
-      status: 'active',
-      icon: '🦀',
-      tags: ['Rust', 'ML', 'Native', 'WASM'],
-      type: 'custom',
     },
     {
       name: 'Recharts 3.6',
@@ -430,15 +416,43 @@ export const TECH_STACKS_DATA: Record<string, TechItem[] | VibeCodeData> = {
     {
       name: 'Prometheus Format',
       category: 'framework',
-      importance: 'medium',
+      importance: 'high',
       description:
-        'CNCF 표준 모니터링 데이터 포맷. 라벨 기반 다차원 시계열 모델로 서버 메트릭(CPU, Memory, Disk, Network)을 구조화. 산업 표준 관측성(Observability) 포맷',
+        'CNCF 표준 모니터링 데이터 포맷. 라벨 기반 다차원 시계열 모델. hourly-data SSOT의 기본 네이밍으로, OTel Standard로 빌드 타임 변환되어 2-Tier 데이터 아키텍처 구성',
       implementation:
-        '→ hourly-data/hour-XX.json(24개, SSOT) → precompute-metrics.ts로 사전 계산 → Recharts/uPlot 이중 파이프라인으로 시각화',
+        '→ hourly-data/hour-XX.json(24개, SSOT) → otel-precompute.ts로 OTel Semantic Convention 변환 → MetricsProvider 2-Tier 우선순위(OTel Primary → Prometheus Fallback)',
       version: 'OpenMetrics',
       status: 'active',
       icon: '🔥',
-      tags: ['CNCF', '시계열', 'SSOT'],
+      tags: ['CNCF', '시계열', 'SSOT', 'Metrics'],
+      type: 'opensource',
+    },
+    {
+      name: 'OpenTelemetry',
+      category: 'framework',
+      importance: 'high',
+      description:
+        'CNCF 관측성 표준. Prometheus 메트릭을 OTel Semantic Convention으로 변환하여 시스템 전체 데이터 일관성 확보. Resource Catalog로 서버 메타데이터 표준화',
+      implementation:
+        '→ otel-precompute.ts가 빌드 타임에 Prometheus→OTel 변환 수행. MetricsProvider(Vercel)와 precomputed-state(Cloud Run) 모두 OTel 포맷 우선 소비. OTel SDK 스켈레톤(otel-sdk.ts)으로 향후 런타임 계측 확장 가능',
+      version: 'Semantic Conv. 1.x',
+      status: 'active',
+      icon: '🔭',
+      tags: ['CNCF', 'Observability', 'Semantic Convention', 'Metrics'],
+      type: 'opensource',
+    },
+    {
+      name: 'Loki Log Format',
+      category: 'framework',
+      importance: 'medium',
+      description:
+        'Grafana Loki Push API 호환 로그 구조. 라벨 기반 스트림 모델(job, hostname, level)로 구조화된 로그 생성. PLG 스택(Promtail+Loki+Grafana) 즉시 연동 가능',
+      implementation:
+        '→ loki-log-generator.ts가 서버별 로그를 Loki Stream 포맷으로 변환. 나노초 타임스탬프 + Structured Metadata(trace_id, scenario) 지원. LogsTab에서 라벨 필터링 UI 제공',
+      version: 'Loki 3.0+ API',
+      status: 'active',
+      icon: '📋',
+      tags: ['Grafana', 'Logs', 'PLG Stack', 'Structured'],
       type: 'opensource',
     },
     {
@@ -556,7 +570,7 @@ export const TECH_STACKS_DATA: Record<string, TechItem[] | VibeCodeData> = {
           'An agentic coding tool that lives in your terminal, understands your codebase (Anthropic)',
         implementation:
           'Helps you code faster by executing routine tasks, explaining complex code, and handling git workflows - all through natural language commands. MCP 서버로 외부 시스템 직접 제어',
-        version: 'claude-opus-4-5-20251101',
+        version: 'claude-opus-4-6',
         status: 'active',
         icon: '🤖',
         tags: ['Anthropic', 'Agentic', 'MCP'],

@@ -103,6 +103,150 @@ export function getDynamicThreshold(query: string, category?: string): number {
   return 0.4;
 }
 
+const COMMAND_INTENT_KEYWORDS = [
+  'command',
+  'cmd',
+  'cli',
+  'shell',
+  'terminal',
+  '명령어',
+  '터미널',
+  '쉘',
+  'kubectl',
+  'docker',
+  'systemctl',
+  'journalctl',
+  'ps ',
+  'top ',
+  'df ',
+  'free ',
+  'netstat',
+  'tail ',
+] as const;
+
+const INCIDENT_ANALYSIS_KEYWORDS = [
+  'incident',
+  '장애',
+  'error',
+  '에러',
+  '오류',
+  '원인',
+  '분석',
+  '대응',
+  '복구',
+  'timeout',
+  '지연',
+] as const;
+
+const DESTRUCTIVE_COMMAND_TITLES = [
+  'docker system prune',
+] as const;
+
+const DESTRUCTIVE_COMMAND_QUERY_ALLOWLIST = [
+  '정리',
+  'cleanup',
+  'clean up',
+  '디스크',
+  'disk',
+  '용량',
+  'space',
+  'prune',
+] as const;
+
+type ToolSeverityFilter = 'low' | 'medium' | 'high' | 'critical' | 'info' | 'warning';
+
+export function mapSeverityFilter(severity?: ToolSeverityFilter): 'info' | 'warning' | 'critical' | undefined {
+  if (!severity) return undefined;
+  if (severity === 'critical') return 'critical';
+  if (severity === 'warning' || severity === 'high' || severity === 'medium') return 'warning';
+  return 'info';
+}
+
+export function isCommandIntentQuery(query: string, category?: string): boolean {
+  if (category === 'command') return true;
+  const lowerQuery = query.toLowerCase();
+  return COMMAND_INTENT_KEYWORDS.some((keyword) => lowerQuery.includes(keyword));
+}
+
+function isIncidentAnalysisQuery(query: string, category?: string): boolean {
+  if (category === 'incident' || category === 'troubleshooting') return true;
+  const lowerQuery = query.toLowerCase();
+  return INCIDENT_ANALYSIS_KEYWORDS.some((keyword) => lowerQuery.includes(keyword));
+}
+
+function normalizeTitleForDedup(title: string): string {
+  return title.trim().toLowerCase().replace(/\s+/g, ' ');
+}
+
+function deduplicateRagResultsByTitle(results: RAGResultItem[]): RAGResultItem[] {
+  const bestByTitle = new Map<string, RAGResultItem>();
+  for (const result of results) {
+    const key = normalizeTitleForDedup(result.title);
+    const existing = bestByTitle.get(key);
+    if (!existing || result.similarity > existing.similarity) {
+      bestByTitle.set(key, result);
+    }
+  }
+  return Array.from(bestByTitle.values());
+}
+
+export function rebalanceRagResultsForMonitoring(
+  results: RAGResultItem[],
+  query: string,
+  category?: string,
+  maxResults?: number
+): RAGResultItem[] {
+  if (results.length === 0) return results;
+
+  const limit = maxResults && maxResults > 0 ? maxResults : results.length;
+  const lowerQuery = query.toLowerCase();
+  const allowDestructiveCommand = DESTRUCTIVE_COMMAND_QUERY_ALLOWLIST.some((keyword) =>
+    lowerQuery.includes(keyword)
+  );
+
+  const deduplicated = deduplicateRagResultsByTitle(results)
+    .filter((r) => {
+      const title = r.title.trim().toLowerCase();
+      if (!DESTRUCTIVE_COMMAND_TITLES.includes(title as typeof DESTRUCTIVE_COMMAND_TITLES[number])) {
+        return true;
+      }
+      return allowDestructiveCommand || isCommandIntentQuery(query, category);
+    })
+    .sort((a, b) => b.similarity - a.similarity);
+
+  if (isCommandIntentQuery(query, category)) {
+    return deduplicated.slice(0, limit);
+  }
+
+  const incidentAnalysis = isIncidentAnalysisQuery(query, category);
+  const rerankedForIntent = deduplicated
+    .map((r) => {
+      let adjustedScore = r.similarity;
+      if (incidentAnalysis) {
+        if (r.category === 'incident') adjustedScore += 0.08;
+        else if (r.category === 'troubleshooting') adjustedScore += 0.05;
+        else if (r.category === 'best_practice') adjustedScore += 0.03;
+      }
+      if (r.category === 'command') adjustedScore -= 0.04;
+      return { ...r, similarity: adjustedScore };
+    })
+    .sort((a, b) => b.similarity - a.similarity);
+
+  const nonCommand = rerankedForIntent.filter((r) => r.category !== 'command');
+  const command = rerankedForIntent.filter((r) => r.category === 'command');
+
+  // Monitoring/incident analysis query에서는 command 문서를 보조 맥락으로 최대 1개만 허용
+  // (완전 차단하지 않아 운영 커맨드 힌트는 유지)
+  if (nonCommand.length === 0) {
+    return deduplicated.slice(0, Math.min(limit, 2));
+  }
+
+  const commandCandidate = command.find((r) => r.similarity >= 0.45);
+  const merged = commandCandidate ? [...nonCommand, commandCandidate] : nonCommand;
+
+  return merged.sort((a, b) => b.similarity - a.similarity).slice(0, limit);
+}
+
 // ============================================================================
 // 3. AI SDK Tools
 // ============================================================================
@@ -118,11 +262,19 @@ export const searchKnowledgeBase = tool({
   inputSchema: z.object({
     query: z.string().describe('검색 쿼리'),
     category: z
-      .enum(['troubleshooting', 'security', 'performance', 'incident', 'best_practice'])
+      .enum([
+        'troubleshooting',
+        'security',
+        'performance',
+        'incident',
+        'best_practice',
+        'command',
+        'architecture',
+      ])
       .optional()
       .describe('카테고리 필터'),
     severity: z
-      .enum(['low', 'medium', 'high', 'critical'])
+      .enum(['low', 'medium', 'high', 'critical', 'info', 'warning'])
       .optional()
       .describe('심각도 필터'),
     useGraphRAG: z
@@ -147,8 +299,15 @@ export const searchKnowledgeBase = tool({
     includeWebSearch = false,
   }: {
     query: string;
-    category?: 'troubleshooting' | 'security' | 'performance' | 'incident' | 'best_practice';
-    severity?: 'low' | 'medium' | 'high' | 'critical';
+    category?:
+      | 'troubleshooting'
+      | 'security'
+      | 'performance'
+      | 'incident'
+      | 'best_practice'
+      | 'command'
+      | 'architecture';
+    severity?: ToolSeverityFilter;
     useGraphRAG?: boolean;
     fastMode?: boolean;
     includeWebSearch?: boolean;
@@ -217,6 +376,8 @@ export const searchKnowledgeBase = tool({
 
         // First attempt with dynamic threshold
         let hybridResults = await hybridGraphSearch(queryEmbedding, {
+          query,
+          useBM25: true,
           similarityThreshold: initialThreshold,
           maxVectorResults,
           maxGraphHops,
@@ -227,6 +388,8 @@ export const searchKnowledgeBase = tool({
         if (hybridResults.length === 0 && initialThreshold > 0.25) {
           console.log(`🔄 [Reporter Tools] No results, retrying with lower threshold (0.2)`);
           hybridResults = await hybridGraphSearch(queryEmbedding, {
+            query,
+            useBM25: true,
             similarityThreshold: 0.2,
             maxVectorResults,
             maxGraphHops,
@@ -239,7 +402,7 @@ export const searchKnowledgeBase = tool({
             id: r.id,
             title: r.title,
             content: r.content.substring(0, 1500),
-            category: category || 'auto',
+            category: r.category || category || 'auto',
             similarity: r.score,
             sourceType: r.sourceType as 'vector' | 'graph',
             hopDistance: r.hopDistance,
@@ -278,7 +441,7 @@ export const searchKnowledgeBase = tool({
                 id: r.id,
                 title: r.title,
                 content: r.content,
-                category: category || 'auto',
+                category: graphEnhanced.find((g) => g.id === r.id)?.category || category || 'auto',
                 similarity: r.rerankScore,
                 sourceType: graphEnhanced.find((g) => g.id === r.id)?.sourceType || 'vector',
                 hopDistance: graphEnhanced.find((g) => g.id === r.id)?.hopDistance || 0,
@@ -319,7 +482,10 @@ export const searchKnowledgeBase = tool({
                   id: r.id,
                   title: r.title,
                   content: r.content,
-                  category: category || 'auto',
+                  category:
+                    r.source === 'web'
+                      ? 'web-search'
+                      : (graphEnhanced.find((g) => g.id === r.id)?.category || category || 'auto'),
                   similarity: r.score,
                   sourceType: r.source === 'web' ? 'web' as const : (graphEnhanced.find((g) => g.id === r.id)?.sourceType || 'vector'),
                   hopDistance: r.source === 'web' ? 0 : (graphEnhanced.find((g) => g.id === r.id)?.hopDistance || 0),
@@ -333,10 +499,17 @@ export const searchKnowledgeBase = tool({
             }
           }
 
+          const balancedResults = rebalanceRagResultsForMonitoring(
+            finalResults,
+            query,
+            category,
+            maxTotalResults
+          );
+
           return {
             success: true,
-            results: finalResults,
-            totalFound: finalResults.length,
+            results: balancedResults,
+            totalFound: balancedResults.length,
             _source: webSearchTriggered
               ? 'GraphRAG Hybrid + Web'
               : reranked
@@ -356,21 +529,30 @@ export const searchKnowledgeBase = tool({
         similarityThreshold: initialThreshold,
         maxResults: 5,
         category: category || undefined,
-        severity: severity || undefined,
+        severity: mapSeverityFilter(severity),
       });
 
       if (!result.success) {
         throw new Error(result.error || 'RAG search failed');
       }
 
+      const vectorResults = result.results.map((r) => ({
+        ...r,
+        sourceType: 'vector' as const,
+        hopDistance: 0,
+      }));
+
+      const balancedVectorResults = rebalanceRagResultsForMonitoring(
+        vectorResults,
+        query,
+        category,
+        5
+      );
+
       return {
         success: true,
-        results: result.results.map((r) => ({
-          ...r,
-          sourceType: 'vector' as const,
-          hopDistance: 0,
-        })),
-        totalFound: result.results.length,
+        results: balancedVectorResults,
+        totalFound: balancedVectorResults.length,
         _source: 'Supabase pgvector (Vector Only)',
         hydeApplied,
       };

@@ -8,46 +8,75 @@
  */
 
 import { type NextRequest, NextResponse } from 'next/server';
+import { withAuth } from '@/lib/auth/api-auth';
 import { logger } from '@/lib/logging';
+import {
+  type MonitoringReportErrorCode,
+  MonitoringReportErrorResponseSchema,
+  MonitoringReportResponseSchema,
+} from '@/schemas/api.monitoring-report.schema';
 import { MonitoringContext } from '@/services/monitoring/MonitoringContext';
 import { getErrorMessage } from '@/types/type-utils';
 
-export async function GET(_request: NextRequest) {
+async function getHandler(_request: NextRequest) {
   const startTime = Date.now();
 
   try {
     const ctx = MonitoringContext.getInstance();
     const report = ctx.analyze();
+    const alertHistory = ctx.getAlertHistory();
     const processingTime = Date.now() - startTime;
-
-    return NextResponse.json(
-      {
-        success: true,
-        ...report,
-        metadata: {
-          dataSource: 'hourly-data',
-          processingTime,
-        },
+    const responsePayload = {
+      success: true as const,
+      ...report,
+      resolvedAlerts: alertHistory.resolved,
+      metadata: {
+        dataSource: 'hourly-data',
+        processingTime,
       },
-      {
-        headers: {
-          'Cache-Control':
-            'public, max-age=0, s-maxage=30, stale-while-revalidate=0',
-          'CDN-Cache-Control': 'public, s-maxage=30',
-          'Vercel-CDN-Cache-Control': 'public, s-maxage=30',
-        },
-      }
-    );
+    };
+    const validatedResponse =
+      MonitoringReportResponseSchema.parse(responsePayload);
+
+    return NextResponse.json(validatedResponse, {
+      headers: {
+        'Cache-Control': 'private, no-store, max-age=0',
+        Pragma: 'no-cache',
+      },
+    });
   } catch (error) {
     logger.error('Monitoring report API error:', error);
+    const message = getErrorMessage(error);
+    const lowerMessage = message.toLowerCase();
+    let code: MonitoringReportErrorCode = 'MONITORING_CONTEXT_ERROR';
 
-    return NextResponse.json(
-      {
-        success: false,
-        error: 'Monitoring report failed',
-        message: getErrorMessage(error),
-      },
-      { status: 500 }
-    );
+    if (lowerMessage.includes('timeout')) {
+      code = 'MONITORING_DATA_SOURCE_TIMEOUT';
+    } else if (
+      lowerMessage.includes('invalid') ||
+      lowerMessage.includes('schema')
+    ) {
+      code = 'MONITORING_RESPONSE_INVALID';
+    }
+
+    const errorResult = MonitoringReportErrorResponseSchema.safeParse({
+      success: false as const,
+      error: 'Monitoring report failed',
+      message,
+      code,
+    });
+
+    const errorPayload = errorResult.success
+      ? errorResult.data
+      : {
+          success: false as const,
+          error: 'Monitoring report failed',
+          message,
+          code,
+        };
+
+    return NextResponse.json(errorPayload, { status: 500 });
   }
 }
+
+export const GET = withAuth(getHandler);

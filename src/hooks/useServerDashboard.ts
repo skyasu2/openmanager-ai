@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import {
   calculateTwoRowsLayout,
@@ -29,14 +29,39 @@ import { transformServerData } from '@/utils/dashboard/server-transformer';
 import { formatUptime } from '@/utils/dashboard/server-utils';
 import { useServerMetrics } from './useServerMetrics';
 
+const ONLINE_ALIASES = new Set(['online', 'running', 'active']);
+const WARNING_ALIASES = new Set(['warning', 'degraded', 'unstable']);
+const CRITICAL_ALIASES = new Set(['critical', 'error', 'failed']);
+const OFFLINE_ALIASES = new Set(['offline', 'down', 'disconnected']);
+
+export function normalizeDashboardStatus(status?: string) {
+  const normalized = status?.toLowerCase() ?? 'unknown';
+
+  if (ONLINE_ALIASES.has(normalized)) return 'online' as const;
+  if (WARNING_ALIASES.has(normalized)) return 'warning' as const;
+  if (CRITICAL_ALIASES.has(normalized)) return 'critical' as const;
+  if (OFFLINE_ALIASES.has(normalized)) return 'offline' as const;
+
+  return 'unknown' as const;
+}
+
+export function matchesStatusFilter(
+  status: string | undefined,
+  statusFilter: string | null | undefined
+) {
+  if (!statusFilter) return true;
+  return normalizeDashboardStatus(status) === statusFilter;
+}
+
 // 🎯 기존 useServerDashboard 훅 (하위 호환성 유지 + 성능 최적화)
 export function useServerDashboard(options: UseServerDashboardOptions = {}) {
-  const { initialServers, onStatsUpdate } = options;
+  const { initialServers, onStatsUpdate, statusFilter = null } = options;
 
   // React Query로 데이터 가져오기 (Phase 2: SSR 초기 데이터 지원)
   const {
     data: rawServers = [],
     isLoading,
+    isError,
     error: queryError,
   } = useServerQuery({ initialData: initialServers });
 
@@ -44,7 +69,10 @@ export function useServerDashboard(options: UseServerDashboardOptions = {}) {
 
   // 🛡️ Race Condition 방어: 캐싱 훅 사용
   const { cachedServers } = useServerDataCache(
-    rawServers as unknown as EnhancedServerData[]
+    rawServers as unknown as EnhancedServerData[],
+    {
+      keepPreviousOnError: isError,
+    }
   );
 
   // 🚀 화면 크기에 따른 초기 페이지 크기 설정
@@ -69,6 +97,13 @@ export function useServerDashboard(options: UseServerDashboardOptions = {}) {
     return transformServerData(cachedServers);
   }, [cachedServers]);
 
+  // 상태 필터링 (페이지네이션 이전 단계에서 수행)
+  const filteredServers = useMemo(() => {
+    return actualServers.filter((server) =>
+      matchesStatusFilter(server.status, statusFilter)
+    );
+  }, [actualServers, statusFilter]);
+
   // 🏗️ Clean Architecture: 페이지네이션 훅 사용
   const {
     paginatedItems: paginatedServers,
@@ -76,12 +111,29 @@ export function useServerDashboard(options: UseServerDashboardOptions = {}) {
     currentPage,
     setCurrentPage,
     setPageSize: setHookPageSize,
-  } = useServerPagination(actualServers, ITEMS_PER_PAGE);
+  } = useServerPagination(filteredServers, ITEMS_PER_PAGE);
+  const previousStatusFilterRef = useRef<string | null>(statusFilter);
 
   // 페이지 크기 변경 시 훅의 상태도 업데이트
   useEffect(() => {
     setHookPageSize(ITEMS_PER_PAGE);
   }, [ITEMS_PER_PAGE, setHookPageSize]);
+
+  // 상태 필터 변경 시 첫 페이지로 리셋
+  useEffect(() => {
+    if (previousStatusFilterRef.current === statusFilter) {
+      return;
+    }
+    previousStatusFilterRef.current = statusFilter;
+    setCurrentPage(1);
+  }, [statusFilter, setCurrentPage]);
+
+  // 필터로 페이지 수가 줄어든 경우 현재 페이지 보정
+  useEffect(() => {
+    if (totalPages > 0 && currentPage > totalPages) {
+      setCurrentPage(totalPages);
+    }
+  }, [currentPage, totalPages, setCurrentPage]);
 
   const changePageSize = (newSize: number) => {
     setResponsivePageSize(newSize);
@@ -95,20 +147,22 @@ export function useServerDashboard(options: UseServerDashboardOptions = {}) {
   useEffect(() => {
     if (onStatsUpdate && stats.total > 0) {
       const timeoutId = setTimeout(() => {
-        const offlineCount = actualServers.filter(
-          (s) => s.status === 'offline'
-        ).length;
-        // 🚨 v5.83.13: critical 상태 별도 집계
-        const criticalCount = actualServers.filter(
-          (s) => s.status === 'critical'
-        ).length;
+        const statusCounts = actualServers.reduce(
+          (acc, server) => {
+            const normalized = normalizeDashboardStatus(server.status);
+            acc[normalized] += 1;
+            return acc;
+          },
+          { online: 0, warning: 0, critical: 0, offline: 0, unknown: 0 }
+        );
+
         onStatsUpdate({
           total: stats.total,
-          online: stats.online,
-          warning: stats.warning,
-          critical: criticalCount,
-          offline: offlineCount,
-          unknown: stats.unknown,
+          online: statusCounts.online,
+          warning: statusCounts.warning,
+          critical: statusCounts.critical,
+          offline: statusCounts.offline,
+          unknown: statusCounts.unknown,
         });
       }, 100);
 
@@ -147,7 +201,9 @@ export function useServerDashboard(options: UseServerDashboardOptions = {}) {
 
   return {
     servers: actualServers,
+    filteredServers,
     paginatedServers,
+    filteredTotal: filteredServers.length,
     isLoading: optimizedIsLoading,
     error,
     stats,

@@ -10,7 +10,7 @@
 
 'use client';
 
-import { shouldSendWebNotification } from '@/config/server-status-thresholds';
+import { shouldSendWebNotification } from '@/config/rules/loader';
 import { toast } from '@/hooks/use-toast';
 import { logger } from '@/lib/logging';
 

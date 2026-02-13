@@ -98,15 +98,23 @@ docs(readme): update installation guide
 
 ## Docker
 
-### 로컬 개발용
+> 상세 가이드: [Docker 개발 환경](./docker.md)
+
+Docker는 **AI Engine (Cloud Run) 전용**입니다. Frontend 개발에는 불필요합니다.
 
 ```bash
-# Supabase 로컬 실행
+# AI Engine 로컬 테스트 (Docker Compose)
+cd cloud-run
+docker compose up --build        # 빌드 + 실행
+docker compose logs -f ai-engine # 로그 확인
+docker compose down              # 종료
+
+# Supabase 로컬 실행 (내부적으로 Docker 사용)
 npx supabase start
 
-# AI Engine 로컬 빌드
+# 프로덕션 배포 (GCP Cloud Build, 로컬 Docker 불필요)
 cd cloud-run/ai-engine
-docker build -t ai-engine .
+./deploy.sh
 ```
 
 ## 버전 관리

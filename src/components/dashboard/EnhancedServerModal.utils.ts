@@ -197,20 +197,9 @@ export const formatUptime = (uptimeString: string): string => {
  * 방어적 타입 검증 + 기본값 설정을 서비스 레이어에서 처리하여
  * 컴포넌트는 이미 검증된 데이터만 수신하도록 분리
  */
-export function normalizeServerData(
-  server: Server,
-  currentMetrics?: {
-    cpu?: number;
-    memory?: number;
-    disk?: number;
-    network?: number;
-  } | null
-): ServerData {
-  const cpu =
-    currentMetrics?.cpu ?? (typeof server.cpu === 'number' ? server.cpu : 0);
-  const memory =
-    currentMetrics?.memory ??
-    (typeof server.memory === 'number' ? server.memory : 0);
+export function normalizeServerData(server: Server): ServerData {
+  const cpu = typeof server.cpu === 'number' ? server.cpu : 0;
+  const memory = typeof server.memory === 'number' ? server.memory : 0;
 
   return {
     id: server.id || 'unknown',
@@ -225,21 +214,11 @@ export function normalizeServerData(
     provider:
       server.provider ||
       (server.environment === 'production' ? 'Cloud Provider' : 'Local'),
-    status: currentMetrics
-      ? currentMetrics.cpu != null && currentMetrics.cpu > 80
-        ? 'critical'
-        : currentMetrics.cpu != null && currentMetrics.cpu > 60
-          ? 'warning'
-          : 'online'
-      : server.status || 'unknown',
+    status: server.status || 'unknown',
     cpu,
     memory,
-    disk:
-      currentMetrics?.disk ??
-      (typeof server.disk === 'number' ? server.disk : 0),
-    network:
-      currentMetrics?.network ??
-      (typeof server.network === 'number' ? server.network : 0),
+    disk: typeof server.disk === 'number' ? server.disk : 0,
+    network: typeof server.network === 'number' ? server.network : 0,
     uptime: formatUptimeCompact(server.uptime),
     lastUpdate: server.lastUpdate || new Date(),
     alerts:

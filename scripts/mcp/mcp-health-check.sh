@@ -18,6 +18,7 @@ LOG_DIR="logs/mcp-health"
 mkdir -p "$LOG_DIR"
 LOG_FILE="$LOG_DIR/$(date +%Y-%m-%d).log"
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+RUNTIME_ENV_RESOLVER="$REPO_ROOT/scripts/mcp/resolve-runtime-env.sh"
 
 # 현재 시간
 TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S')
@@ -27,17 +28,24 @@ echo -e "${BLUE}==================${NC}"
 echo "시작 시간: $TIMESTAMP"
 echo ""
 
-# 1. PROJECT_ROOT 환경변수 검증 (Codex AI Review 권장)
-echo -e "${YELLOW}🔍 Checking PROJECT_ROOT environment variable...${NC}"
+# resolve-runtime-env.sh 로드 (존재 시)
+if [ -f "$RUNTIME_ENV_RESOLVER" ]; then
+  # shellcheck source=/dev/null
+  source "$RUNTIME_ENV_RESOLVER" 2>/dev/null || true
+  if [ -n "${CODEX_HOME:-}" ]; then
+    echo -e "${GREEN}✅${NC} Runtime env resolved (CODEX_HOME: $CODEX_HOME)"
+  fi
+fi
+
+# PROJECT_ROOT 환경변수 검증
 if [ -z "${PROJECT_ROOT:-}" ]; then
-  echo -e "${RED}❌ PROJECT_ROOT is not set in .env.local${NC}"
-  echo -e "${YELLOW}💡 Fix: Add PROJECT_ROOT=${REPO_ROOT} to .env.local${NC}"
-  echo "PROJECT_ROOT: ❌ NOT SET" >> "$LOG_FILE"
+  echo -e "${YELLOW}⚠️${NC}  PROJECT_ROOT 미설정 (REPO_ROOT=$REPO_ROOT 사용)"
+  echo "PROJECT_ROOT: ⚠️ NOT SET (using REPO_ROOT)" >> "$LOG_FILE"
 elif [ ! -d "$PROJECT_ROOT" ]; then
-  echo -e "${RED}❌ PROJECT_ROOT points to non-existent directory: $PROJECT_ROOT${NC}"
+  echo -e "${RED}❌${NC} PROJECT_ROOT 경로 없음: $PROJECT_ROOT"
   echo "PROJECT_ROOT: ❌ INVALID PATH" >> "$LOG_FILE"
 else
-  echo -e "${GREEN}✅ PROJECT_ROOT is valid: $PROJECT_ROOT${NC}"
+  echo -e "${GREEN}✅${NC} PROJECT_ROOT: $PROJECT_ROOT"
   echo "PROJECT_ROOT: ✅ $PROJECT_ROOT" >> "$LOG_FILE"
 fi
 echo ""
@@ -68,25 +76,31 @@ echo -e "${BLUE}📊 MCP 서버 연결 상태:${NC}"
 echo "📊 MCP 서버 연결 상태:" >> "$LOG_FILE"
 echo "" >> "$LOG_FILE"
 
-# claude mcp list 실행 (타임아웃 20초)
-MCP_OUTPUT=$(timeout 20 claude mcp list 2>&1)
+# claude mcp list 실행 (타임아웃 15초)
+MCP_OUTPUT=$(timeout 15 claude mcp list 2>&1)
 MCP_EXIT_CODE=$?
 
 if [ "$MCP_EXIT_CODE" -ne 0 ]; then
   if [ "$MCP_EXIT_CODE" -eq 124 ]; then
-    echo -e "${RED}❌ claude mcp list 타임아웃 (20초)${NC}"
-    echo "❌ claude mcp list 타임아웃 (20초)" >> "$LOG_FILE"
+    echo -e "${RED}❌ claude mcp list 타임아웃 (15초)${NC}"
+    echo "❌ claude mcp list 타임아웃 (15초)" >> "$LOG_FILE"
   else
     echo -e "${RED}❌ claude mcp list 실행 실패 (exit: $MCP_EXIT_CODE)${NC}"
     echo "❌ claude mcp list 실행 실패 (exit: $MCP_EXIT_CODE)" >> "$LOG_FILE"
   fi
   echo "$MCP_OUTPUT" >> "$LOG_FILE"
-  echo -e "${YELLOW}💡 점검: claude mcp list를 로컬 쉘에서 직접 실행해 원본 오류를 확인하세요.${NC}"
+  echo -e "${YELLOW}💡 점검 방법:${NC}"
+  echo "  1. claude mcp list 를 로컬 쉘에서 직접 실행"
+  echo "  2. ~/.config/claude-code/settings.json MCP 설정 확인"
+  echo "  3. claude mcp restart 로 전체 재시작"
   exit 2
 fi
 
 PERMISSION_WARNING_PATTERN='failed to clean up stale arg0 temp dirs|could not update PATH: Permission denied|Permission denied \(os error 13\)'
 PERMISSION_WARNINGS=$(printf '%s\n' "$MCP_OUTPUT" | grep -E "$PERMISSION_WARNING_PATTERN" || true)
+
+# 테이블 파싱: 헤더 행 기반으로 서버 테이블 추출 (awk)
+MCP_TABLE=$(printf '%s\n' "$MCP_OUTPUT" | awk 'BEGIN { in_table=0 } /^[A-Za-z].*[[:space:]]/ { in_table=1 } in_table { print }')
 
 # 연결 성공 카운터
 SUCCESS_COUNT=0
@@ -100,9 +114,10 @@ if [ -n "$PERMISSION_WARNINGS" ]; then
   echo ""
 fi
 
-# 각 서버 상태 확인
+# 각 서버 상태 확인 (테이블/콜론 양식 모두 지원)
 for server in "${EXPECTED_SERVERS[@]}"; do
-  SERVER_ROW=$(printf '%s\n' "$MCP_OUTPUT" | grep -E "^${server}:" || true)
+  # "server:" 형식 또는 "server<tab/space>" 형식 모두 매칭
+  SERVER_ROW=$(printf '%s\n' "$MCP_OUTPUT" | grep -E "^${server}(:|[[:space:]])" || true)
 
   if [ -z "$SERVER_ROW" ]; then
     echo -e "${RED}❌${NC} $server: 목록에 없음"
@@ -116,7 +131,7 @@ for server in "${EXPECTED_SERVERS[@]}"; do
     echo "✅ $server: 연결 성공" >> "$LOG_FILE"
     SUCCESS_COUNT=$((SUCCESS_COUNT + 1))
   else
-    echo -e "${YELLOW}⚠️${NC} $server: 비활성/미연결"
+    echo -e "${YELLOW}⚠️${NC}  $server: 비활성/미연결"
     echo "⚠️ $server: 비활성/미연결" >> "$LOG_FILE"
     FAIL_COUNT=$((FAIL_COUNT + 1))
   fi

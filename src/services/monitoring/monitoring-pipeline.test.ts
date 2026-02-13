@@ -230,11 +230,11 @@ describe('AlertManager', () => {
     expect(warnings.every((a) => a.severity === 'warning')).toBe(true);
   });
 
-  it('history는 최대 50개', () => {
+  it('history는 최대 200개', () => {
     const alertManager = new AlertManager();
 
-    // 60번 반복하여 alert 생성 → 해소 → history 누적
-    for (let i = 0; i < 60; i++) {
+    // 210번 반복하여 alert 생성 → 해소 → history 누적
+    for (let i = 0; i < 210; i++) {
       const server = makeServerMetrics({
         serverId: `server-${i}`,
         cpu: 95,
@@ -250,7 +250,7 @@ describe('AlertManager', () => {
       );
     }
 
-    expect(alertManager.getRecentHistory().length).toBeLessThanOrEqual(50);
+    expect(alertManager.getRecentHistory().length).toBeLessThanOrEqual(200);
   });
 });
 

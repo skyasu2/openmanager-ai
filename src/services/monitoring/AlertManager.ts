@@ -4,7 +4,7 @@
  * 원본 메트릭 → threshold 비교 → 알림 생성/해소 추적
  * - Alert 상태: firing → resolved, 지속 시간 추적
  * - 임계값: system-rules.json SSOT
- * - 메모리 내 최근 50개 히스토리
+ * - 메모리 내 최근 200개 히스토리
  *
  * @created 2026-02-04
  */
@@ -43,7 +43,7 @@ function loadThresholds(): Record<
   };
 }
 
-const MAX_HISTORY = 50;
+const MAX_HISTORY = 200;
 
 export class AlertManager {
   private activeAlerts: Map<string, Alert> = new Map();
@@ -148,5 +148,12 @@ export class AlertManager {
 
   getRecentHistory(): Alert[] {
     return [...this.history];
+  }
+
+  getAllAlerts(): { firing: Alert[]; resolved: Alert[] } {
+    return {
+      firing: this.getFiringAlerts(),
+      resolved: [...this.history],
+    };
   }
 }

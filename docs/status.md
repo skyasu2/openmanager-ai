@@ -492,7 +492,7 @@
 |----------|----------|------|
 | Web UI | Next.js 16 + React 19 Dashboard | ✅ 완료 |
 | AI Assistant | useChat + DefaultChatTransport (resume: true) | ✅ 완료 |
-| Multi-Agent | 5-Agent Orchestration (Cloud Run) | ✅ 완료 |
+| Multi-Agent | 7-Agent Orchestration (Cloud Run) | ✅ 완료 |
 | Database | Supabase PostgreSQL + pgvector | ✅ 완료 |
 | Cache | Upstash Redis | ✅ 완료 |
 | Monitoring | Server Metrics + Real-time Updates | ✅ 완료 |

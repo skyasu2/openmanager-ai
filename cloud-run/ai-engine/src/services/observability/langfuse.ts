@@ -364,6 +364,22 @@ export function getLangfuse(): LangfuseClient {
   return langfuseClient;
 }
 
+/**
+ * Prewarm Langfuse client during server startup to reduce first-request trace miss.
+ */
+export async function initializeLangfuseClient(): Promise<void> {
+  if (langfuseClient) return;
+
+  if (!initPromise) {
+    initPromise = initLangfuse().then((client) => {
+      langfuseClient = client;
+      return client;
+    });
+  }
+
+  await initPromise;
+}
+
 // ============================================================================
 // 1.5. 테스트 모드 관리
 // ============================================================================

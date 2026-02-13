@@ -193,6 +193,13 @@ export class MonitoringContext {
   }
 
   /**
+   * Alert 이력 조회: firing + resolved
+   */
+  getAlertHistory(): { firing: Alert[]; resolved: Alert[] } {
+    return this.alertManager.getAllAlerts();
+  }
+
+  /**
    * Dashboard 요약
    */
   getDashboardSummary(): {

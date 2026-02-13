@@ -160,9 +160,7 @@
             "memory_total_bytes": 17179869184,
             "disk_total_bytes": 214748364800
           },
-          "logs": [
-            "[INFO] CPU throttling detected - scaling recommended"
-          ]
+          "logs": ["[INFO] CPU throttling detected - scaling recommended"]
         },
         "api-was-pus-01:9100": {
           "instance": "api-was-pus-01:9100",
@@ -620,9 +618,7 @@
             "memory_total_bytes": 17179869184,
             "disk_total_bytes": 214748364800
           },
-          "logs": [
-            "[WARN] JVM: Minor GC frequency increased (>10/min)"
-          ]
+          "logs": ["[WARN] JVM: Minor GC frequency increased (>10/min)"]
         },
         "api-was-pus-01:9100": {
           "instance": "api-was-pus-01:9100",
@@ -1080,9 +1076,7 @@
             "memory_total_bytes": 17179869184,
             "disk_total_bytes": 214748364800
           },
-          "logs": [
-            "[INFO] CPU throttling detected - scaling recommended"
-          ]
+          "logs": ["[INFO] CPU throttling detected - scaling recommended"]
         },
         "api-was-pus-01:9100": {
           "instance": "api-was-pus-01:9100",

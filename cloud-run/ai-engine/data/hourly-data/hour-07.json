@@ -1908,9 +1908,7 @@
             "memory_total_bytes": 8589934592,
             "disk_total_bytes": 107374182400
           },
-          "logs": [
-            "[WARN] nginx: Connection queue overflow"
-          ]
+          "logs": ["[WARN] nginx: Connection queue overflow"]
         },
         "web-nginx-pus-01:9100": {
           "instance": "web-nginx-pus-01:9100",
@@ -2371,9 +2369,7 @@
             "memory_total_bytes": 8589934592,
             "disk_total_bytes": 107374182400
           },
-          "logs": [
-            "[INFO] nginx: Active connections: 8500 (limit: 10000)"
-          ]
+          "logs": ["[INFO] nginx: Active connections: 8500 (limit: 10000)"]
         },
         "web-nginx-pus-01:9100": {
           "instance": "web-nginx-pus-01:9100",

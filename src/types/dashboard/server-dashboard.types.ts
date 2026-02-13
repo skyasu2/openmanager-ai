@@ -112,6 +112,8 @@ export type ViewMode = 'grid' | 'list';
 export interface UseServerDashboardOptions {
   /** Pre-fetched servers from Server Component (Phase 2: SSR) */
   initialServers?: Server[];
+  /** 상태 필터 (DashboardSummary 연동) */
+  statusFilter?: string | null;
   onStatsUpdate?: (stats: {
     total: number;
     online: number;

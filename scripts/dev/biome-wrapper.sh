@@ -47,15 +47,17 @@ find_working_biome() {
 }
 
 install_biome_globally() {
-    echo "🔧 Biome not found. Installing globally for WSL..."
+    # package.json에서 버전 추출
+    BIOME_VERSION=$(grep -oP '"@biomejs/biome":\s*"\^?\K[0-9.]+' "$PROJECT_ROOT/package.json" || echo "2.3.14")
+    echo "🔧 Biome not found. Installing version $BIOME_VERSION globally for WSL..."
 
     # WSL 전역 디렉토리 설정
     mkdir -p "$HOME/.npm-global/bin"
     npm config set prefix "$HOME/.npm-global" 2>/dev/null || true
 
     # 설치
-    if npm install -g @biomejs/biome@2.3.13 2>&1; then
-        echo "✅ Biome installed successfully"
+    if npm install -g "@biomejs/biome@$BIOME_VERSION" 2>&1; then
+        echo "✅ Biome $BIOME_VERSION installed successfully"
         return 0
     else
         echo "❌ Failed to install Biome"
