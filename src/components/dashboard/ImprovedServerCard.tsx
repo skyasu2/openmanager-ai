@@ -17,6 +17,8 @@ import React, {
 } from 'react';
 import { useFixed24hMetrics } from '@/hooks/useFixed24hMetrics';
 import { useSafeServer } from '@/hooks/useSafeServer';
+import { useServerMetrics } from '@/hooks/useServerMetrics';
+import type { MetricsHistory } from '@/types/server';
 import { getServerStatusTheme } from '@/styles/design-constants';
 import type {
   ServerStatus,
@@ -110,27 +112,33 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
       };
     }, []);
 
-    // Metric data
-    const { currentMetrics, historyData } = useFixed24hMetrics(safeServer.id);
+    // 📈 서버 메트릭 히스토리 로드 (OTel TimeSeries)
+    const { metricsHistory, loadMetricsHistory } = useServerMetrics();
 
+    useEffect(() => {
+      // 컴포넌트 마운트 시 24시간 히스토리 로드
+      loadMetricsHistory(safeServer.id, '24h');
+    }, [safeServer.id, loadMetricsHistory]);
+
+    // 실시간 메트릭 (Props 기반 SSOT)
     const realtimeMetrics = useMemo(
       () => ({
-        cpu: currentMetrics?.cpu ?? safeServer.cpu ?? 0,
-        memory: currentMetrics?.memory ?? safeServer.memory ?? 0,
-        disk: currentMetrics?.disk ?? safeServer.disk ?? 0,
-        network: currentMetrics?.network ?? safeServer.network ?? 0,
+        cpu: safeServer.cpu ?? 0,
+        memory: safeServer.memory ?? 0,
+        disk: safeServer.disk ?? 0,
+        network: safeServer.network ?? 0,
       }),
-      [currentMetrics, safeServer]
+      [safeServer]
     );
 
-    // 📊 메트릭별 히스토리 배열 캐싱 (단일 useMemo로 통합)
+    // 📊 메트릭별 히스토리 배열 (MiniLineChart용)
     const { cpuHistory, memoryHistory, diskHistory } = useMemo(
       () => ({
-        cpuHistory: historyData?.map((h) => h.cpu),
-        memoryHistory: historyData?.map((h) => h.memory),
-        diskHistory: historyData?.map((h) => h.disk),
+        cpuHistory: metricsHistory.map((h) => h.cpu),
+        memoryHistory: metricsHistory.map((h) => h.memory),
+        diskHistory: metricsHistory.map((h) => h.disk),
       }),
-      [historyData]
+      [metricsHistory]
     );
 
     // UI Variants - 높이 증가 (그래프 영역 확대)
@@ -331,7 +339,7 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
                 Live Metrics
               </span>
             </div>
-            <AIInsightBadge {...realtimeMetrics} historyData={historyData} />
+            <AIInsightBadge {...realtimeMetrics} historyData={metricsHistory} />
           </div>
 
           {/* 🎨 Core Metrics - 개선된 그리드 (CPU/Memory/Disk) */}

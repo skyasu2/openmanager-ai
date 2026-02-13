@@ -11,7 +11,7 @@
 
 import { Activity, BarChart3, Cpu, FileText, Network } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useFixed24hMetrics } from '@/hooks/useFixed24hMetrics';
+import { useServerMetrics } from '@/hooks/useServerMetrics';
 import { logger } from '@/lib/logging';
 
 import { LogsTab } from './EnhancedServerModal.LogsTab';
@@ -42,25 +42,20 @@ export default function EnhancedServerModal({
   const [isRealtime, setIsRealtime] = useState(true);
   const dialogRef = useRef<HTMLDialogElement>(null);
 
-  // 🕒 Fixed 24h Metrics Hook (Client & AI Synchronization)
-  // 정시 동기화 모드: 모달 열릴 때 즉시 로드 + 10분 정시(10,20,30,40,50,00분)에만 갱신
-  // hourly-data JSON이 10분 단위이므로 낭비 없는 최적화
-  const { currentMetrics, historyData } = useFixed24hMetrics(
-    server?.id || '',
-    'sync' // 정시 동기화 모드 (was: 30000ms)
-  );
+  // 🕒 OTel TimeSeries 기반 서버 메트릭 히스토리 훅
+  const { metricsHistory, loadMetricsHistory } = useServerMetrics();
 
-  // 📅 마지막 업데이트 시간 (메트릭 변경시에만 갱신 - flickering 방지)
-  const [lastUpdateTime, setLastUpdateTime] = useState<string>(
-    new Date().toLocaleTimeString('en-US', { hour12: false })
-  );
   useEffect(() => {
-    if (currentMetrics) {
-      setLastUpdateTime(
-        new Date().toLocaleTimeString('en-US', { hour12: false })
-      );
+    if (server?.id) {
+      // 모달 오픈 시 24시간 히스토리 로드
+      loadMetricsHistory(server.id, '24h');
     }
-  }, [currentMetrics]);
+  }, [server?.id, loadMetricsHistory]);
+
+  // 📅 마지막 업데이트 시간
+  const lastUpdateTime = useMemo(() => {
+    return new Date().toLocaleTimeString('en-US', { hour12: false });
+  }, [server]); // Props로 전달된 server 정보가 변경될 때 갱신
 
   // 🔧 P2: 핸들러 최적화 - useCallback으로 불필요한 리렌더 방지
   const handleToggleRealtime = useCallback(() => {
@@ -126,22 +121,25 @@ export default function EnhancedServerModal({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [onClose, getFocusableElements]);
 
-  // 🛡️ 서버 데이터 안전성 검증 및 기본값 설정 (검증 로직은 utils에 분리)
+  // 🛡️ 서버 데이터 안전성 검증 및 기본값 설정
   const safeServer = useMemo(
-    (): ServerData | null =>
-      server ? normalizeServerData(server, currentMetrics) : null,
-    [server, currentMetrics]
+    (): ServerData | null => (server ? normalizeServerData(server) : null),
+    [server]
   );
 
-  // 📅 로그 타임스탬프 메모이제이션 (flickering 방지)
-  // currentMetrics 변경시에만 새 타임스탬프 생성
-  // biome-ignore lint/correctness/useExhaustiveDependencies: intentional - update timestamp only when metrics change
-  const logTimestamp = useMemo(
-    () => new Date().toISOString(),
-    [currentMetrics?.cpu, currentMetrics?.memory, currentMetrics?.disk]
+  // 📅 로그 타임스탬프 메모이제이션
+  const logTimestamp = useMemo(() => new Date().toISOString(), [server]);
+
+  // 📈 최신 메트릭 (히스토리 마지막 항목, 없으면 undefined)
+  const currentMetrics = useMemo(
+    () =>
+      metricsHistory.length > 0
+        ? metricsHistory[metricsHistory.length - 1]
+        : undefined,
+    [metricsHistory]
   );
 
-  // RealtimeData 변환 (Hook 데이터 -> UI 포맷)
+  // RealtimeData 변환 (metricsHistory -> UI 포맷)
   const realtimeData: RealtimeData = useMemo(() => {
     if (!safeServer)
       return {
@@ -153,16 +151,15 @@ export default function EnhancedServerModal({
       };
 
     return {
-      cpu: historyData.map((h) => h.cpu),
-      memory: historyData.map((h) => h.memory),
-      disk: historyData.map((h) => h.disk),
+      cpu: metricsHistory.map((h) => h.cpu),
+      memory: metricsHistory.map((h) => h.memory),
+      disk: metricsHistory.map((h) => h.disk),
       // 📊 네트워크: In/Out 분리 데이터 없음 → NetworkTab에서 단일 사용률로 표시
-      network: historyData.map((h) => ({
-        in: h.network * 0.6,
-        out: h.network * 0.4,
-      })),
+      network: metricsHistory.map((h) => {
+        const net = typeof h.network === 'number' ? h.network : 0;
+        return { in: net * 0.6, out: net * 0.4 };
+      }),
       // 📋 시스템 알림: 메트릭 임계값 기반 자동 생성 (실제 서버 로그 아님)
-      // 타임스탬프는 메모이제이션된 값 사용 (flickering 방지)
       logs: (() => {
         const alerts: Array<{
           timestamp: string;
@@ -170,10 +167,10 @@ export default function EnhancedServerModal({
           message: string;
           source: string;
         }> = [];
-        const cpu = currentMetrics?.cpu || 0;
-        const memory = currentMetrics?.memory || 0;
-        const disk = currentMetrics?.disk || 0;
-        const network = currentMetrics?.network || 0;
+        const cpu = safeServer.cpu || 0;
+        const memory = safeServer.memory || 0;
+        const disk = safeServer.disk || 0;
+        const network = safeServer.network || 0;
 
         // CPU 경고
         if (cpu > 90) {
@@ -249,7 +246,7 @@ export default function EnhancedServerModal({
         return alerts;
       })(),
     };
-  }, [historyData, safeServer, currentMetrics, logTimestamp]);
+  }, [metricsHistory, safeServer, currentMetrics, logTimestamp]);
 
   // 📊 탭 구성 최적화
   const tabs: TabInfo[] = [
@@ -442,7 +439,11 @@ export default function EnhancedServerModal({
                       memory: currentMetrics?.memory ?? safeServer.memory,
                       disk: currentMetrics?.disk ?? safeServer.disk,
                       network:
-                        currentMetrics?.network ?? safeServer.network ?? 0,
+                        (typeof currentMetrics?.network === 'number'
+                          ? currentMetrics.network
+                          : null) ??
+                        safeServer.network ??
+                        0,
                     }}
                     realtimeData={realtimeData}
                     serverContext={{

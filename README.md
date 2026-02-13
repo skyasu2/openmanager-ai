@@ -3,6 +3,8 @@
 > **AI-Native Server Monitoring Platform**
 > 자연어로 대화하며 서버를 모니터링하는 차세대 운영 플랫폼
 
+![Docs Quality](https://github.com/skyasu2/openmanager-ai/actions/workflows/docs-quality.yml/badge.svg)
+
 ![Next.js](https://img.shields.io/badge/Next.js-black?style=for-the-badge&logo=next.js&logoColor=white)
 ![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
 ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
@@ -37,7 +39,7 @@ OpenManager AI는 **AI 어시스턴트**가 내장된 서버 모니터링 플랫
 
 ## AI Assistant
 
-5개의 전문 AI 에이전트가 협업하여 복잡한 질문도 처리합니다. **Vercel AI SDK v6**의 네이티브 멀티-에이전트 패턴으로 구현되었습니다.
+7개의 전문 AI 에이전트가 협업하여 복잡한 질문도 처리합니다. **Vercel AI SDK v6**의 네이티브 멀티-에이전트 패턴으로 구현되었습니다.
 
 ```
 💬 "서버 상태 어때?"
@@ -190,7 +192,7 @@ Supervisor (Intent Classification & Routing)
 | **Backend** | Google Cloud Run AI Engine |
 | **Database** | Supabase PostgreSQL + pgvector |
 | **Cache** | Upstash Redis |
-| **AI System** | 5-Agent Multi-Agent Orchestration |
+| **AI System** | 7-Agent Multi-Agent Orchestration |
 
 ### Development Approach
 

@@ -1,5 +1,5 @@
-// /api/servers/all과 동일한 핸들러 재사용 (308 redirect 제거 → round-trip 절감)
-// @deprecated /api/servers/all 직접 사용 권장
-export { GET } from './all/route';
+// /api/servers → /api/servers-unified?action=list 로 위임
+// @deprecated /api/servers-unified 직접 사용 권장
+export { GET } from '../servers-unified/route';
 
 export const dynamic = 'force-dynamic';

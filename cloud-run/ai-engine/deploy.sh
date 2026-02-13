@@ -3,6 +3,11 @@
 # ==============================================================================
 # Cloud Run Deployment Script (AI Engine)
 #
+# v7.1 - 2026-02-13 (Free Tier Guardrail Enforcement)
+#   - Added hard guard checks for free-tier runtime limits
+#   - Added forbidden option checks (machine-type/highcpu)
+#   - Added cloudbuild.yaml value consistency validation
+#
 # v7.0 - 2026-02-02 (Cloud Run ₩0 Cost Optimization)
 #   - Added --cpu-throttling (CPU only billed during requests)
 #   - Added --no-session-affinity (reduce instance stickiness)
@@ -42,23 +47,37 @@ SERVICE_NAME="ai-engine"
 # IMPORTANT: asia-northeast1 is the production region (used by Vercel)
 REGION="asia-northeast1"
 REPOSITORY="cloud-run"
-PROJECT_ID=$(gcloud config get-value project 2>/dev/null)
 
-if [ -z "$PROJECT_ID" ]; then
-  echo "❌ Error: No Google Cloud Project selected."
-  echo "Run 'gcloud config set project [PROJECT_ID]' first."
-  exit 1
+# Free-tier runtime limits (non-negotiable)
+FREE_TIER_MIN_INSTANCES="0"
+FREE_TIER_MAX_INSTANCES="1"
+FREE_TIER_CONCURRENCY="80"
+FREE_TIER_CPU="1"
+FREE_TIER_MEMORY="512Mi"
+FREE_TIER_TIMEOUT="300"
+
+if [ "${FREE_TIER_GUARD_ONLY:-false}" = "true" ]; then
+  PROJECT_ID="guard-only"
+else
+  PROJECT_ID=$(gcloud config get-value project 2>/dev/null)
+  if [ -z "$PROJECT_ID" ]; then
+    echo "❌ Error: No Google Cloud Project selected."
+    echo "Run 'gcloud config set project [PROJECT_ID]' first."
+    exit 1
+  fi
 fi
 
 # Check if Artifact Registry repository exists
-echo "📋 Checking Artifact Registry..."
-if ! gcloud artifacts repositories describe "$REPOSITORY" --location="$REGION" >/dev/null 2>&1; then
-  echo "⚠️  Repository '$REPOSITORY' not found. Creating..."
-  gcloud artifacts repositories create "$REPOSITORY" \
-    --repository-format=docker \
-    --location="$REGION" \
-    --description="Cloud Run container images"
-  echo "✅ Repository created."
+if [ "${FREE_TIER_GUARD_ONLY:-false}" != "true" ]; then
+  echo "📋 Checking Artifact Registry..."
+  if ! gcloud artifacts repositories describe "$REPOSITORY" --location="$REGION" >/dev/null 2>&1; then
+    echo "⚠️  Repository '$REPOSITORY' not found. Creating..."
+    gcloud artifacts repositories create "$REPOSITORY" \
+      --repository-format=docker \
+      --location="$REGION" \
+      --description="Cloud Run container images"
+    echo "✅ Repository created."
+  fi
 fi
 
 # Image Tagging (Timestamp + Short SHA)
@@ -80,6 +99,114 @@ echo "==========================================================================
 # Ensure script directory
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR"
+
+fail_free_tier_guard() {
+  echo "❌ [Free Tier Guard] $1"
+  exit 1
+}
+
+assert_no_forbidden_args() {
+  for arg in "$@"; do
+    local_arg="${arg,,}"
+    case "$local_arg" in
+      *--machine-type*|*e2_highcpu_8*|*n1_highcpu_8*|*e2-highcpu-8*|*n1-highcpu-8*)
+        fail_free_tier_guard "Forbidden option detected: $arg"
+        ;;
+    esac
+  done
+}
+
+extract_cloudbuild_flag_value() {
+  local flag="$1"
+  awk -v target="$flag" '
+    BEGIN { found = 0 }
+    {
+      line = $0
+      gsub(/\r$/, "", line)
+    }
+    found == 0 {
+      if (line ~ /^[[:space:]]*-[[:space:]]*'\''[^'\'']+'\''[[:space:]]*$/) {
+        candidate = line
+        sub(/^[[:space:]]*-[[:space:]]*'\''/, "", candidate)
+        sub(/'\''[[:space:]]*$/, "", candidate)
+        if (candidate == target) {
+          found = 1
+        }
+      }
+      next
+    }
+    found == 1 {
+      if (line ~ /^[[:space:]]*$/) next
+      if (line ~ /^[[:space:]]*#/) next
+      if (line ~ /^[[:space:]]*-[[:space:]]*'\''[^'\'']+'\''[[:space:]]*$/) {
+        value = line
+        sub(/^[[:space:]]*-[[:space:]]*'\''/, "", value)
+        sub(/'\''[[:space:]]*$/, "", value)
+        print value
+        exit
+      }
+      if (line ~ /^[[:space:]]*-[[:space:]]*[^[:space:]]+[[:space:]]*$/) {
+        value = line
+        sub(/^[[:space:]]*-[[:space:]]*/, "", value)
+        sub(/[[:space:]]*$/, "", value)
+        print value
+        exit
+      }
+      exit
+    }
+  ' "$SCRIPT_DIR/cloudbuild.yaml"
+}
+
+assert_cloudbuild_flag_value() {
+  local flag="$1"
+  local expected="$2"
+  local actual
+  actual=$(extract_cloudbuild_flag_value "$flag")
+  if [ -z "$actual" ]; then
+    fail_free_tier_guard "cloudbuild.yaml missing $flag"
+  fi
+  if [ "$actual" != "$expected" ]; then
+    fail_free_tier_guard "cloudbuild.yaml $flag must be $expected (current: $actual)"
+  fi
+}
+
+enforce_free_tier_guards() {
+  echo ""
+  echo "🛡️ Enforcing free-tier guardrails..."
+
+  if [ "$FREE_TIER_MIN_INSTANCES" != "0" ]; then
+    fail_free_tier_guard "FREE_TIER_MIN_INSTANCES must be 0"
+  fi
+  if [ "$FREE_TIER_MAX_INSTANCES" != "1" ]; then
+    fail_free_tier_guard "FREE_TIER_MAX_INSTANCES must be 1"
+  fi
+  if [ "$FREE_TIER_CPU" != "1" ]; then
+    fail_free_tier_guard "FREE_TIER_CPU must be 1"
+  fi
+  if [ "$FREE_TIER_MEMORY" != "512Mi" ]; then
+    fail_free_tier_guard "FREE_TIER_MEMORY must be 512Mi"
+  fi
+
+  if grep -Ev '^[[:space:]]*#' "$SCRIPT_DIR/cloudbuild.yaml" | grep -Eq 'machineType|--machine-type|E2_HIGHCPU_8|N1_HIGHCPU_8|e2-highcpu-8|n1-highcpu-8'; then
+    fail_free_tier_guard "cloudbuild.yaml contains forbidden machine-type/highcpu settings"
+  fi
+
+  assert_cloudbuild_flag_value "--min-instances" "$FREE_TIER_MIN_INSTANCES"
+  assert_cloudbuild_flag_value "--max-instances" "$FREE_TIER_MAX_INSTANCES"
+  assert_cloudbuild_flag_value "--concurrency" "$FREE_TIER_CONCURRENCY"
+  assert_cloudbuild_flag_value "--cpu" "$FREE_TIER_CPU"
+  assert_cloudbuild_flag_value "--memory" "$FREE_TIER_MEMORY"
+  assert_cloudbuild_flag_value "--timeout" "$FREE_TIER_TIMEOUT"
+
+  echo "   ✅ Free-tier guardrails passed"
+}
+
+enforce_free_tier_guards
+
+if [ "${FREE_TIER_GUARD_ONLY:-false}" = "true" ]; then
+  echo "ℹ️ FREE_TIER_GUARD_ONLY=true, skipping build/deploy."
+  exit 0
+fi
 
 # 0. Sync SSOT Config & Data Files
 echo ""
@@ -110,10 +237,14 @@ echo "   Target: Artifact Registry"
 # Use Cloud Build with BuildKit enabled
 # ⚠️ FREE TIER: Do NOT add --machine-type (default e2-medium = free 120 min/day)
 #    e2-highcpu-8 등 커스텀 머신은 무료 대상 아님!
-gcloud builds submit \
-  --tag "$IMAGE_URI" \
-  --timeout=600s \
+BUILD_CMD=(
+  gcloud builds submit
+  --tag "$IMAGE_URI"
+  --timeout=600s
   .
+)
+assert_no_forbidden_args "${BUILD_CMD[@]}"
+"${BUILD_CMD[@]}"
 
 if [ $? -ne 0 ]; then
   echo "❌ Build failed. Aborting."
@@ -131,24 +262,28 @@ echo "🚀 Deploying to Cloud Run..."
 # - vCPU: 180,000 sec = 50 hours of active time
 # - Memory: 360,000 / 0.5 = 720,000 sec = 200 hours
 # ============================================================================
-gcloud run deploy "$SERVICE_NAME" \
-  --image "$IMAGE_URI" \
-  --platform managed \
-  --region "$REGION" \
-  --execution-environment gen2 \
-  --allow-unauthenticated \
-  --min-instances 0 \
-  --max-instances 1 \
-  --concurrency 80 \
-  --cpu 1 \
-  --memory 512Mi \
-  --timeout 300 \
-  --cpu-boost \
-  --cpu-throttling \
-  --no-session-affinity \
-  --set-env-vars "NODE_ENV=production,BUILD_SHA=${SHORT_SHA}" \
-  --set-secrets "SUPABASE_CONFIG=supabase-config:latest,AI_PROVIDERS_CONFIG=ai-providers-config:latest,KV_CONFIG=kv-config:latest,CLOUD_RUN_API_SECRET=cloud-run-api-secret:latest,LANGFUSE_CONFIG=langfuse-config:latest" \
+DEPLOY_CMD=(
+  gcloud run deploy "$SERVICE_NAME"
+  --image "$IMAGE_URI"
+  --platform managed
+  --region "$REGION"
+  --execution-environment gen2
+  --allow-unauthenticated
+  --min-instances "$FREE_TIER_MIN_INSTANCES"
+  --max-instances "$FREE_TIER_MAX_INSTANCES"
+  --concurrency "$FREE_TIER_CONCURRENCY"
+  --cpu "$FREE_TIER_CPU"
+  --memory "$FREE_TIER_MEMORY"
+  --timeout "$FREE_TIER_TIMEOUT"
+  --cpu-boost
+  --cpu-throttling
+  --no-session-affinity
+  --set-env-vars "NODE_ENV=production,BUILD_SHA=${SHORT_SHA}"
+  --set-secrets "SUPABASE_CONFIG=supabase-config:latest,AI_PROVIDERS_CONFIG=ai-providers-config:latest,KV_CONFIG=kv-config:latest,CLOUD_RUN_API_SECRET=cloud-run-api-secret:latest,LANGFUSE_CONFIG=langfuse-config:latest"
   --update-labels "version=${SHORT_SHA},framework=ai-sdk-v6,tier=free,registry=artifact"
+)
+assert_no_forbidden_args "${DEPLOY_CMD[@]}"
+"${DEPLOY_CMD[@]}"
 
 if [ $? -eq 0 ]; then
     SERVICE_URL=$(gcloud run services describe $SERVICE_NAME --platform managed --region $REGION --format 'value(status.url)')
@@ -172,8 +307,8 @@ if [ $? -eq 0 ]; then
     echo ""
     echo "🧹 Cleaning up old resources (background)..."
 
-    # Cleanup old container images from Artifact Registry (keep latest 3)
-    KEEP_IMAGES=3
+    # Cleanup old container images from Artifact Registry (keep latest 2)
+    KEEP_IMAGES=2
     AR_IMAGE="${REGION}-docker.pkg.dev/${PROJECT_ID}/${REPOSITORY}/${SERVICE_NAME}"
     (
       OLD_DIGESTS=$(gcloud artifacts docker images list "$AR_IMAGE" \
@@ -230,9 +365,9 @@ if [ $? -eq 0 ]; then
     echo "   Version:    $SHORT_SHA"
     echo "   URL:        $SERVICE_URL"
     echo "   Registry:   Artifact Registry (${REGION})"
-    echo "   Memory:     512Mi (Free: ~200 hours/month)"
-    echo "   CPU:        1 vCPU (Free: ~50 hours/month)"
-    echo "   Max:        1 instance"
+    echo "   Memory:     ${FREE_TIER_MEMORY} (Free: ~200 hours/month)"
+    echo "   CPU:        ${FREE_TIER_CPU} vCPU (Free: ~50 hours/month)"
+    echo "   Max:        ${FREE_TIER_MAX_INSTANCES} instance"
     echo "   Features:   cpu-boost, cpu-throttling, no-session-affinity, gen2"
     echo "=============================================================================="
 else

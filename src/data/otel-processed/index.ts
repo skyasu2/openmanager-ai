@@ -34,6 +34,7 @@ import hour22 from './hourly/hour-22.json';
 import hour23 from './hourly/hour-23.json';
 // 정적 import: 빌드 시 번들에 포함
 import resourceCatalog from './resource-catalog.json';
+import timeseries from './timeseries.json';
 
 // ============================================================================
 // Hourly Data Map (0-23시)
@@ -84,6 +85,21 @@ export function getOTelHourlyData(hour: number): OTelHourlyFile | null {
  */
 export function getOTelResourceCatalog(): OTelResourceCatalog {
   return resourceCatalog as unknown as OTelResourceCatalog;
+}
+
+/**
+ * OTel TimeSeries 조회
+ */
+export interface OTelTimeSeries {
+  schemaVersion: string;
+  generatedAt: string;
+  serverIds: string[];
+  timestamps: string[];
+  metrics: Record<string, number[][]>;
+}
+
+export function getOTelTimeSeries(): OTelTimeSeries {
+  return timeseries as unknown as OTelTimeSeries;
 }
 
 /**

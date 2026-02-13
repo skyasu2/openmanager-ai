@@ -21,6 +21,8 @@ on:
       - 'CLAUDE.md'
       - 'GEMINI.md'
       - 'AGENTS.md'
+  schedule:
+    - cron: '0 9 * * 1'
 
 jobs:
   docs-quality:
@@ -41,9 +43,11 @@ jobs:
         run: npm run docs:check
 
       - name: Changed docs lint
+        if: github.event_name != 'schedule'
         run: npm run docs:lint:changed
 
       - name: Agent config version check
+        if: github.event_name != 'schedule'
         run: |
           PKG_VERSION=$(node -p "require('./package.json').version")
           echo "Package version: ${PKG_VERSION}"
@@ -54,3 +58,22 @@ jobs:
               fi
             fi
           done
+
+  external-links:
+    if: github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24.x'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check external links
+        continue-on-error: true
+        run: npm run docs:links:full
