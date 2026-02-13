@@ -1,7 +1,7 @@
-import { describe, expect, it, vi, beforeEach } from 'vitest';
-import { MetricsProvider, metricsProvider } from './MetricsProvider';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import * as OTelData from '@/data/otel-metrics';
 import type { ExportMetricsServiceRequest } from '@/types/otel-standard';
+import { MetricsProvider } from './MetricsProvider';
 
 // Mock the OTel data loader
 vi.mock('@/data/otel-metrics', () => ({

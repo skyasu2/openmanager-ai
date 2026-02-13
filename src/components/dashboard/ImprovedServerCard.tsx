@@ -15,12 +15,10 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { useFixed24hMetrics } from '@/hooks/useFixed24hMetrics';
 import { useSafeServer } from '@/hooks/useSafeServer';
 import { useServerMetrics } from '@/hooks/useServerMetrics';
 import { getServerStatusTheme } from '@/styles/design-constants';
 import type {
-  MetricsHistory,
   ServerStatus,
   Server as ServerType,
   Service,

@@ -55,7 +55,7 @@ export default function EnhancedServerModal({
   // 📅 마지막 업데이트 시간
   const lastUpdateTime = useMemo(() => {
     return new Date().toLocaleTimeString('en-US', { hour12: false });
-  }, [server]); // Props로 전달된 server 정보가 변경될 때 갱신
+  }, []); // Props로 전달된 server 정보가 변경될 때 갱신
 
   // 🔧 P2: 핸들러 최적화 - useCallback으로 불필요한 리렌더 방지
   const handleToggleRealtime = useCallback(() => {
@@ -128,7 +128,7 @@ export default function EnhancedServerModal({
   );
 
   // 📅 로그 타임스탬프 메모이제이션
-  const logTimestamp = useMemo(() => new Date().toISOString(), [server]);
+  const logTimestamp = useMemo(() => new Date().toISOString(), []);
 
   // 📈 최신 메트릭 (히스토리 마지막 항목, 없으면 undefined)
   const currentMetrics = useMemo(
@@ -246,7 +246,7 @@ export default function EnhancedServerModal({
         return alerts;
       })(),
     };
-  }, [metricsHistory, safeServer, currentMetrics, logTimestamp]);
+  }, [metricsHistory, safeServer, logTimestamp]);
 
   // 📊 탭 구성 최적화
   const tabs: TabInfo[] = [

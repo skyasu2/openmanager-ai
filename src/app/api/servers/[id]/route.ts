@@ -3,10 +3,7 @@ import { NextResponse } from 'next/server';
 import { getOTelTimeSeries } from '@/data/otel-processed';
 import { withAuth } from '@/lib/auth/api-auth';
 import type { ServerHistory } from '@/schemas/server-schemas/server-details.schema';
-import {
-  metricsProvider,
-  type ServerMetrics,
-} from '@/services/metrics/MetricsProvider';
+import { metricsProvider } from '@/services/metrics/MetricsProvider';
 import { getServerMonitoringService } from '@/services/monitoring';
 import debug from '@/utils/debug';
 
@@ -322,11 +319,11 @@ function generateServerHistoryFromTimeSeries(
     };
   }
 
-  const timestamps = ts.timestamps;
-  const cpuData = ts.metrics['cpu']?.[serverIndex] || [];
-  const memoryData = ts.metrics['memory']?.[serverIndex] || [];
-  const diskData = ts.metrics['disk']?.[serverIndex] || [];
-  const networkData = ts.metrics['network']?.[serverIndex] || [];
+  const timestamps: number[] = ts.timestamps;
+  const cpuData = ts.metrics.cpu?.[serverIndex] || [];
+  const memoryData = ts.metrics.memory?.[serverIndex] || [];
+  const diskData = ts.metrics.disk?.[serverIndex] || [];
+  const networkData = ts.metrics.network?.[serverIndex] || [];
 
   const data_points = timestamps.map((t: number, i: number) => ({
     timestamp: new Date(t * 1000).toISOString(),

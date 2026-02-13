@@ -94,7 +94,7 @@ export interface OTelTimeSeries {
   schemaVersion: string;
   generatedAt: string;
   serverIds: string[];
-  timestamps: string[];
+  timestamps: number[];
   metrics: Record<string, number[][]>;
 }
 
