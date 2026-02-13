@@ -120,12 +120,19 @@ notepad "$env:USERPROFILE\.wslconfig"
 ```ini
 [wsl2]
 memory=16GB
-processors=8
-swap=8GB
+processors=4
+swap=0
 networkingMode=mirrored
-dnsTunneling=true
-autoProxy=true
+localhostForwarding=true
+
+[experimental]
+autoMemoryReclaim=gradual
+sparseVhd=true
+dnsTunneling=false
+autoProxy=false
 ```
+
+실측 기준(2026-02-13): `nproc=4`, `free -h`에서 `Swap: 0B`
 
 WSL 재시작:
 ```powershell
@@ -180,7 +187,7 @@ source ~/.bashrc
 # nvm 확인
 nvm --version
 
-# Node.js 24 설치 (프로젝트 버전)
+# Node.js 24 설치 (프로젝트 버전, .nvmrc 참조)
 nvm install 24
 nvm use 24
 nvm alias default 24

@@ -18,31 +18,30 @@ if (Test-Path -Path $ConfigPath) {
 }
 
 # Define new configuration content
+# Values match actual running config (2026-02-13)
 $NewConfig = @'
 [wsl2]
-# Memory Settings
-memory=20GB              # Minimum 16GB, Recommended 20GB
-swap=10GB               # Swap memory
+# Memory: 50% of host RAM recommended
+memory=16GB
+swap=0
+# CPU: leave headroom for Windows/IDE/browser
+processors=4
 
-# CPU Settings
-processors=8            # Number of CPU cores
-
-# Networking (Required for MCP Servers)
-networkingMode=mirrored # Mirrored mode required
-dnsTunneling=true       # MCP DNS resolution required
-autoProxy=true          # MCP proxy connection required
-firewall=true           # Integrate with Windows firewall
-
-# GUI Support
-guiApplications=true      # Enable GUI applications
+# Networking
+networkingMode=mirrored
+localhostForwarding=true
 
 [experimental]
-# Performance Optimization
-autoMemoryReclaim=gradual  # Gradual memory reclamation
-sparseVhd=true            # Enable VHD disk space reclamation
+autoMemoryReclaim=gradual
+sparseVhd=true
+
+# LLM CLI stability: dnsTunneling/autoProxy OFF
+# MCP servers work fine without these (verified 2026-02-13)
+dnsTunneling=false
+autoProxy=false
 '@
 
 # Write new configuration
 Set-Content -Path $ConfigPath -Value $NewConfig -Encoding UTF8
-Write-Host "Successfully updated .wslconfig with optimized settings."
+Write-Host "Successfully updated .wslconfig with current settings."
 Write-Host "Please run 'wsl --shutdown' in a standard command prompt/PowerShell to apply changes."

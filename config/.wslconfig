@@ -1,30 +1,23 @@
 ###############################################
-# OpenManager VIBE v5 WSL2 설정 (2025-10-06) #
+# OpenManager AI v8 WSL2 설정 (2026-02-13)   #
 ###############################################
 # 경로: %USERPROFILE%\.wslconfig
-# 목적: 개발 환경 최적화 (MCP 10/10 연결, Node.js 빌드 개선)
+# 목적: 개발 환경 최적화 (MCP 9개, Claude Code + Codex 병행)
 # 적용: wsl --shutdown 후 재시작 시 반영
 
 [wsl2]
-# 메모리: 호스트 32GB 기준 62.5% 할당 (개발 환경 최적화)
-# 변경: 16GB -> 20GB (Node.js 빌드, MCP 서버 안정성 향상)
-memory=20GB
+# 메모리: 호스트 RAM의 50% 권장 (16GB 이하 시 8GB 최소)
+memory=16GB
 
-# CPU: 호스트 여유 4코어 확보 (Windows/IDE/브라우저)
-# 변경: 12 -> 14 (병렬 처리 효율 증가)
-processors=14
+# CPU: 호스트 여유 확보 (Windows/IDE/브라우저용)
+processors=4
 
-# 스왑: 메모리 증가로 4GB 유지 (디스크 I/O 최소화)
-swap=4GB
+# 스왑: 현재 런타임 기준 비활성화 (free -h: Swap 0B)
+swap=0
 
-# 스왑 파일 경로
-swapFile=D:\\wsl-swap.vhdx
-
-# 로컬호스트 포워딩 (필수)
+# 네트워크: mirrored 모드 (localhost 포워딩 자동 포함)
+networkingMode=mirrored
 localhostForwarding=true
-
-# 디버그 콘솔 비활성화
-debugConsole=false
 
 [experimental]
 # 점진적 메모리 회수 (백그라운드 최적화)
@@ -33,9 +26,10 @@ autoMemoryReclaim=gradual
 # 희소 VHD 활성화 (디스크 공간 절약)
 sparseVhd=true
 
-# DNS 최적화 (MCP 연결 안정성)
-dnsTunneling=true
-autoProxy=true
+# LLM CLI 안정화: dnsTunneling/autoProxy OFF
+# MCP 서버 연결은 OFF 상태에서도 정상 동작 확인됨 (2026-02-13)
+dnsTunneling=false
+autoProxy=false
 
 ###############################################
 # 적용 절차 (WSL 재시작 필요)
@@ -43,20 +37,15 @@ autoProxy=true
 # Windows PowerShell에서 실행:
 # 1) wsl --shutdown
 # 2) 새 WSL 터미널 열기
-# 3) 확인: free -h (메모리 20GB 확인)
-# 4) 확인: nproc (CPU 14코어 확인)
+# 3) 확인: free -h (메모리 16GB 확인)
+# 4) 확인: nproc (CPU 4코어 확인)
 
 ###############################################
-# 성능 모니터링
+# DNS 설정 (generateResolvConf=false 시)
 ###############################################
-# 메모리 사용량: free -h
-# CPU 코어 수: nproc
-# 스왑 사용량: swapon --show
-
-###############################################
-# 이전 설정 (참조용)
-###############################################
-# memory=16GB (50% 제한)
-# processors=12
-# swap=4GB
-# dnsTunneling/autoProxy 없음
+# /etc/wsl.conf:
+#   [network]
+#   generateResolvConf=false
+# /etc/resolv.conf:
+#   nameserver 8.8.8.8
+#   nameserver 1.1.1.1

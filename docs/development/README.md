@@ -5,7 +5,7 @@
 
 ## 개요
 
-이 프로젝트는 **WSL 2 + Claude Code** 기반의 AI-assisted 개발 환경을 사용합니다.
+이 프로젝트는 **WSL 2 + Claude Code + Codex** 기반의 AI-assisted 개발 환경을 사용합니다.
 
 ## 문서 목록
 
@@ -18,6 +18,7 @@
 | [코딩 표준](./coding-standards.md) | 개발 방법론 및 코드 스타일 |
 | [문서 관리](./documentation-management.md) | 문서 구조/정합성 관리 기준 |
 | [문서 인벤토리](./documentation-inventory.md) | docs 트리/수량 자동 리포트 |
+| [Codex 전환 가이드](./codex-main-transition-guide.md) | Claude Skill 참조 기반 Codex 메인 전환 전략 |
 | [Stitch 동기화 정책](./stitch-sync-policy.md) | UI 구현 vs Stitch 프로젝트 정합성 관리 |
 | [Stitch 개선 워크플로우](./stitch-improvement-workflow.md) | 완성형 프론트엔드의 증분 UI 개선 절차 |
 
@@ -45,6 +46,7 @@ AI:           Vercel AI SDK 6, Multi-Agent
 - Docker Desktop (선택)
 - Git
 - Claude Code CLI
+- Codex CLI
 
 ## 빠른 시작
 

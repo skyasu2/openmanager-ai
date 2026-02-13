@@ -1,38 +1,39 @@
 ###############################################
-# OpenManager VIBE v5 WSL2 설정 (8코어 최적화) #
+# OpenManager AI v8 WSL2 설정 (고사양 환경)  #
 ###############################################
 # 경로: %USERPROFILE%\.wslconfig
-# 목적: 8코어 환경 최적화
+# 목적: 8코어+ / 32GB+ 환경 최적화
+# 참고: 기본 런타임(현재 4코어/16GB/swap=0)과 다른 선택형 프로파일
+# 적용: wsl --shutdown 후 재시작 시 반영
 
 [wsl2]
-# 메모리: 20GB 유지 (개발 환경 최적화)
+# 메모리: 호스트 32GB 기준 62.5% 할당
 memory=20GB
 
-# CPU: 8코어 최적화 (실제 코어 수에 맞춤)
+# CPU: 8코어 할당 (호스트 여유 확보)
 processors=8
 
-# 스왑: 4GB 유지
+# 스왑: 메모리 충분하므로 최소화
 swap=4GB
-swapFile=D:\\wsl-swap.vhdx
+swapFile=D:\wsl-swap.vhdx
 
-# 네트워크 최적화
+# 네트워크: mirrored 모드
+networkingMode=mirrored
 localhostForwarding=true
-debugConsole=false
 
 [experimental]
 # 메모리 최적화
 autoMemoryReclaim=gradual
 sparseVhd=true
 
-# DNS 최적화
-dnsTunneling=true
-autoProxy=true
+# LLM CLI 안정화: dnsTunneling/autoProxy OFF
+dnsTunneling=false
+autoProxy=false
 
 ###############################################
-# 8코어 최적화 포인트
+# 고사양 최적화 포인트
 ###############################################
 # - Node.js 빌드: 8개 워커 프로세스
-# - Next.js 컴파일: 병렬 처리 최적화
-# - AI 도구: 동시 실행 가능
+# - Next.js 컴파일: Turbopack 병렬 처리
+# - AI 도구: Claude Code + Codex 동시 실행
 # - 메모리: 코어당 2.5GB 할당
-###############################################
