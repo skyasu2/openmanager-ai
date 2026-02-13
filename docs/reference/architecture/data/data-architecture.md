@@ -5,7 +5,7 @@
 > Doc type: Explanation
 
 **최종 업데이트**: 2026-02-08
-**프로젝트 버전**: v7.1.4
+**프로젝트 버전**: v8.0.0
 
 ---
 
@@ -23,15 +23,15 @@ AI/ML 서비스가 단순히 API를 호출하는 비효율적인 구조를 탈�
 | Service | Data Source | Access Method |
 |---------|-------------|---------------|
 | **OTel Processor** | `src/data/otel-processed/*.json` | Primary Load |
-| **Dashboard UI** | `src/data/fixed-24h-metrics.ts` | Fallback Import |
-| **AI Engine** | `cloud-run/ai-engine/data/hourly-data/*.json` | File Load |
+| **Dashboard UI** | `MetricsProvider` → otel-processed → hourly-data | Singleton Access |
+| **AI Engine** | `cloud-run/ai-engine/data/otel-processed/*.json` → hourly-data | File Load |
 | **RAG System** | Supabase `server_logs` | DB Query |
 
 ---
 
 ## 🏛️ SSOT (Single Source of Truth) 아키텍처
 
-### 데이터 흐름 (3-Tier Priority)
+### 데이터 흐름 (2-Tier Priority)
 
 ```
 ┌─────────────────────────────────┐
@@ -44,13 +44,9 @@ AI/ML 서비스가 단순히 API를 호출하는 비효율적인 구조를 탈�
 │  src/data/hourly-data/          │  ← 2. Fallback (Prometheus Format)
 │  (Bundle-included JSON)         │
 └─────────────────────────────────┘
-              │
-              ▼
-┌─────────────────────────────────┐
-│  fixed-24h-metrics.ts           │  ← 3. Last Resort (Code-level)
-│  (Baseline Fallback)            │
-└─────────────────────────────────┘
 ```
+
+> **Note**: 이전 3-Tier의 `fixed-24h-metrics.ts` (Last Resort)는 v8.0.0에서 제거되었습니다. `MetricsProvider` singleton이 2-Tier 우선순위를 자동 관리합니다.
 
 ### 데이터 경계 (중요)
 
@@ -132,7 +128,7 @@ npm run data:sync
 |-----------|------|----------|
 | `src/data/otel-processed/*.json` | **Primary (OTel Data)** | ❌ 자동 생성 (data:otel) |
 | `src/data/hourly-data/*.json` | **Secondary (Prometheus)** | ❌ 자동 생성 (data:sync) |
-| `src/data/fixed-24h-metrics.ts` | **Tertiary (Fallback)** | ✅ 핵심 로직 |
+| `src/services/metrics/MetricsProvider.ts` | **데이터 접근 Singleton** | ✅ 핵심 로직 |
 | `scripts/data/sync-hourly-data.ts` | JSON 데이터 생성 스크립트 | ✅ 수정 가능 |
 | `cloud-run/ai-engine/data/hourly-data/*.json` | AI Engine용 데이터 | ❌ 자동 생성 |
 
@@ -155,7 +151,7 @@ public/hourly-data/
 - [ ] **1단계**: `scripts/data/sync-hourly-data.ts`의 `KOREAN_DC_SERVERS` 배열 수정
 - [ ] **2단계**: `npm run data:sync` 실행
 - [ ] **3단계**: 생성된 JSON 파일 Git 커밋
-- [ ] **4단계**: `src/data/fixed-24h-metrics.ts` 동기화 확인
+- [ ] **4단계**: Dashboard에서 MetricsProvider를 통한 데이터 접근 확인
 
 ### 장애 시나리오 추가/수정 시
 
@@ -180,17 +176,21 @@ const randomMetric = Math.random() * 100;
 ### ✅ 올바른 방법
 
 ```typescript
-// ✅ Dashboard: SSOT에서 직접 import
-import { getDataAtMinute } from '@/data/fixed-24h-metrics';
+// ✅ Dashboard: MetricsProvider singleton 사용
+import { MetricsProvider } from '@/services/metrics/MetricsProvider';
+const provider = MetricsProvider.getInstance();
+const metrics = provider.getCurrentMetrics();
 
-// ✅ AI Engine: JSON 파일 로드
-const hourlyData = JSON.parse(fs.readFileSync('data/hourly-data/hour-12.json'));
+// ✅ AI Engine: JSON 파일 로드 (Tiered Access)
+// otel-processed (1순위) → hourly-data (2순위)
+const hourlyData = JSON.parse(fs.readFileSync('data/otel-processed/hourly/hour-12.json'));
 ```
 
 ---
 
 ## 📖 관련 문서
 
-- **SSOT 상세**: `src/data/fixed-24h-metrics.ts`
+- **데이터 접근 SSOT**: `src/services/metrics/MetricsProvider.ts`
 - **Sync 스크립트**: `scripts/data/sync-hourly-data.ts`
+- **OTel 파이프라인**: `docs/reference/architecture/data/otel-pipeline-audit.md`
 - **시뮬레이션 가이드**: `docs/guides/simulation.md`

@@ -71,7 +71,7 @@ The system follows a **Stateless Cloud Run** design where all persistent data li
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────┐
-│                           DATA FLOW (v5.88.x)                           │
+│                           DATA FLOW (v8.0.0)                             │
 └─────────────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────┐       ┌─────────────────────────────┐
@@ -82,7 +82,7 @@ The system follows a **Stateless Cloud Run** design where all persistent data li
 │  │  ├─ hour-01.json          │  │       │  ├───────────────────────┤  │
 │  │  └─ ... (24 files)        │  │       │  │  ai_conversations     │  │
 │  │                           │  │       │  │  (대화 이력)          │  │
-│  │  • 17 Servers             │  │       │  ├───────────────────────┤  │
+│  │  • 15 Servers             │  │       │  ├───────────────────────┤  │
 │  │  • 1440 Data Points/day   │  │       │  │  embeddings           │  │
 │  └───────────────────────────┘  │       │  │  (GraphRAG Vector)    │  │
 └─────────────────────────────────┘       │  └───────────────────────┘  │
@@ -119,7 +119,7 @@ The system follows a **Stateless Cloud Run** design where all persistent data li
 ```
 
 ### Key Principles
-- **Single Source of Truth (SSoT)**: `src/data/fixed-24h-metrics.ts` on Vercel
+- **Single Source of Truth (SSoT)**: `MetricsProvider` singleton → otel-processed (Primary) + hourly-data (Fallback)
 - **Database Layer**: Supabase PostgreSQL (15 servers, 360 metrics per 24h window)
 - **Stateless AI**: Cloud Run containers have **no local data files** - all data fetched from Supabase
 - **Data Sync**: Vercel seeds Supabase on deployment; Cloud Run reads from Supabase at runtime

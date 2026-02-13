@@ -1,6 +1,6 @@
 # Data Consistency Strategy
 
-> **프로젝트 버전**: v7.1.4 | **최종 업데이트**: 2026-02-08
+> **프로젝트 버전**: v8.0.0 | **최종 업데이트**: 2026-02-13
 
 **문제**: 모니터링과 AI가 서로 다른 메트릭을 표시하는 일관성 문제 해결
 
@@ -196,7 +196,7 @@ if (isNextMinute(cachedTime, currentTime)) {
 - ✅ `/api/metrics/current` 엔드포인트
 
 ### Phase 2: 시스템 통합 ✅ 완료
-- ✅ 모니터링 대시보드 SSOT 통합 (`fixed-24h-metrics.ts`)
+- ✅ 모니터링 대시보드 SSOT 통합 (`MetricsProvider` → otel-processed + hourly-data)
 - ✅ AI 어시스턴트 데이터 소스 통합 (`hourly-data/*.json`)
 - ✅ 클라이언트 캐싱 (30초 기반)
 

@@ -1,7 +1,7 @@
 # OTel 데이터 파이프라인 점검 보고서
 
 **작성일**: 2026-02-12
-**대상 버전**: OpenManager AI v7.1.4
+**대상 버전**: OpenManager AI v8.0.0
 
 ---
 
@@ -44,7 +44,7 @@
 │  precomputed-state.ts    │  │  (Vercel 런타임)         │
 │  1순위: otel-processed   │  │  1순위: otel-processed   │
 │  2순위: hourly-data      │  │  2순위: hourly-data      │
-│  (Tiered Data Access)    │  │  3순위: fixed-24h-metrics│
+│  (Tiered Data Access)    │  │  (2-Tier Priority)       │
 └──────────────┬───────────┘  └──────────────┬───────────┘
                │                             │
                ▼                   ┌─────────┼─────────┐
@@ -187,7 +187,7 @@ src/data/otel-processed/
 | `cloud-run/ai-engine/src/data/precomputed-state.ts` | OTel 우선, hourly-data 폴백 (Cloud Run) |
 | `cloud-run/ai-engine/src/types/otel-metrics.ts` | Cloud Run용 OTel 타입 정의 |
 | `src/lib/otel/otel-sdk.ts` | OTel SDK 스켈레톤 (기본 비활성화) |
-| `src/data/fixed-24h-metrics.ts` | 최후 폴백 데이터 |
+| `src/services/metrics/MetricsProvider.ts` | 데이터 접근 Singleton (2-Tier 관리) |
 
 ---
 
