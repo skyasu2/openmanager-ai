@@ -8,7 +8,7 @@
 - **Architecture**: Vercel (Frontend/Edge) + Cloud Run (AI Engine)
 - **AI Engine**: Multi-Agent Orchestrator (Cerebras primary, Groq NLQ, Mistral verifier)
 - **Data**: OTel Standard Format, `src/data/hourly-data/` SSOT (24h Prometheus)
-- **Codebase**: 701 TS/TSX files, 63 docs
+- **Codebase**: 693 TS/TSX files, 68 docs
 
 ## Quick Commands
 ```bash
@@ -32,11 +32,10 @@ npm run release:patch       # 버전 릴리스
 | 상태 관리 | `src/stores/useAISidebarStore.ts` |
 | 규칙 SSOT | `src/config/rules/system-rules.json` |
 
-## Data Architecture (3-Tier)
+## Data Architecture (2-Tier)
 ```
 src/data/hourly-data/*.json    ← PRIMARY (번들 포함, Prometheus format)
-src/data/otel-processed/       ← 전처리된 OTel 메트릭
-src/data/fixed-24h-metrics.ts  ← FALLBACK (hourly-data 불가 시)
+src/data/otel-processed/       ← SECONDARY (전처리된 OTel 메트릭)
 ```
 
 ## API Routes (주요)
@@ -61,9 +60,9 @@ src/data/fixed-24h-metrics.ts  ← FALLBACK (hourly-data 불가 시)
 
 ## 참조
 - **상태**: `docs/status.md`
-- **문서**: `docs/` (63개 파일)
+- **문서**: `docs/` (68개 파일)
 - **AI 설정**: `config/ai/registry-core.yaml`
 - **TODO**: `reports/planning/TODO.md`
 - **Production**: `https://openmanager-ai.vercel.app`
 
-_Last Updated: 2026-02-12_
+_Last Updated: 2026-02-13_
