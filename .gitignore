@@ -140,6 +140,7 @@ combined.log
 ai-combined.log
 # Codex CLI logs (do not commit)
 .codex/logs/
+.codex/config.toml
 # temporary files
 *~
 *.tmp

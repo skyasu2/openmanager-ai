@@ -7,6 +7,9 @@ on:
       - 'scripts/docs/**'
       - '*.markdownlint-cli2.jsonc'
       - 'package.json'
+      - 'CLAUDE.md'
+      - 'GEMINI.md'
+      - 'AGENTS.md'
   push:
     branches:
       - main
@@ -15,6 +18,9 @@ on:
       - 'scripts/docs/**'
       - '*.markdownlint-cli2.jsonc'
       - 'package.json'
+      - 'CLAUDE.md'
+      - 'GEMINI.md'
+      - 'AGENTS.md'
 
 jobs:
   docs-quality:
@@ -36,3 +42,15 @@ jobs:
 
       - name: Changed docs lint
         run: npm run docs:lint:changed
+
+      - name: Agent config version check
+        run: |
+          PKG_VERSION=$(node -p "require('./package.json').version")
+          echo "Package version: ${PKG_VERSION}"
+          for file in CLAUDE.md GEMINI.md; do
+            if [ -f "${file}" ]; then
+              if ! grep -q "${PKG_VERSION}" "${file}"; then
+                echo "::warning file=${file}::Version mismatch - ${file} may not reference v${PKG_VERSION}"
+              fi
+            fi
+          done

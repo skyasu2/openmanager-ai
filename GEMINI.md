@@ -1,6 +1,6 @@
 # GEMINI.md - Gemini Identity & Configuration
 
-<!-- Version: 5.0.0 | Role: Principal Software Architect -->
+<!-- Version: 8.0.0 | Role: Principal Software Architect -->
 **This file defines the core identity and principles for the Gemini Agent within the OpenManager AI project.**
 
 ## Document Scope
@@ -51,4 +51,4 @@ Gemini adapts its behavior based on the context:
 
 ---
 
-_Gemini Agent Configuration for OpenManager AI v7.1.5_
+_Gemini Agent Configuration for OpenManager AI v8.0.0_

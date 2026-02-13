@@ -1,10 +1,10 @@
 #!/bin/bash
 # MCP Health Check Script
-# 목적: MCP 서버 연결 상태 정기 점검 (현재 11개)
+# 목적: MCP 서버 연결 상태 정기 점검 (현재 9개)
 # 작성: 2025-10-16
-# 사용: ./scripts/mcp-health-check.sh
+# 사용: ./scripts/mcp/mcp-health-check.sh
 
-set -euo pipefail
+set -uo pipefail
 
 # 색상 정의
 RED='\033[0;31m'
@@ -17,6 +17,7 @@ NC='\033[0m' # No Color
 LOG_DIR="logs/mcp-health"
 mkdir -p "$LOG_DIR"
 LOG_FILE="$LOG_DIR/$(date +%Y-%m-%d).log"
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 
 # 현재 시간
 TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S')
@@ -30,7 +31,7 @@ echo ""
 echo -e "${YELLOW}🔍 Checking PROJECT_ROOT environment variable...${NC}"
 if [ -z "${PROJECT_ROOT:-}" ]; then
   echo -e "${RED}❌ PROJECT_ROOT is not set in .env.local${NC}"
-  echo -e "${YELLOW}💡 Fix: Add PROJECT_ROOT=/mnt/d/cursor/openmanager-ai to .env.local${NC}"
+  echo -e "${YELLOW}💡 Fix: Add PROJECT_ROOT=${REPO_ROOT} to .env.local${NC}"
   echo "PROJECT_ROOT: ❌ NOT SET" >> "$LOG_FILE"
 elif [ ! -d "$PROJECT_ROOT" ]; then
   echo -e "${RED}❌ PROJECT_ROOT points to non-existent directory: $PROJECT_ROOT${NC}"
@@ -49,19 +50,17 @@ echo ""
   echo ""
 } >> "$LOG_FILE"
 
-# MCP 서버 목록 (11개)
+# MCP 서버 목록 (9개)
 EXPECTED_SERVERS=(
   "vercel"
   "serena"
   "supabase"
   "context7"
   "playwright"
-  "memory"
-  "time"
-  "sequential-thinking"
-  "shadcn-ui"
-  "filesystem"
   "github"
+  "tavily"
+  "sequential-thinking"
+  "stitch"
 )
 
 # MCP 상태 확인
@@ -69,23 +68,57 @@ echo -e "${BLUE}📊 MCP 서버 연결 상태:${NC}"
 echo "📊 MCP 서버 연결 상태:" >> "$LOG_FILE"
 echo "" >> "$LOG_FILE"
 
-# claude mcp list 실행 (타임아웃 10초)
-MCP_OUTPUT=$(timeout 10 claude mcp list 2>&1 || echo "ERROR: claude mcp list 실행 실패")
+# claude mcp list 실행 (타임아웃 20초)
+MCP_OUTPUT=$(timeout 20 claude mcp list 2>&1)
+MCP_EXIT_CODE=$?
+
+if [ "$MCP_EXIT_CODE" -ne 0 ]; then
+  if [ "$MCP_EXIT_CODE" -eq 124 ]; then
+    echo -e "${RED}❌ claude mcp list 타임아웃 (20초)${NC}"
+    echo "❌ claude mcp list 타임아웃 (20초)" >> "$LOG_FILE"
+  else
+    echo -e "${RED}❌ claude mcp list 실행 실패 (exit: $MCP_EXIT_CODE)${NC}"
+    echo "❌ claude mcp list 실행 실패 (exit: $MCP_EXIT_CODE)" >> "$LOG_FILE"
+  fi
+  echo "$MCP_OUTPUT" >> "$LOG_FILE"
+  echo -e "${YELLOW}💡 점검: claude mcp list를 로컬 쉘에서 직접 실행해 원본 오류를 확인하세요.${NC}"
+  exit 2
+fi
+
+PERMISSION_WARNING_PATTERN='failed to clean up stale arg0 temp dirs|could not update PATH: Permission denied|Permission denied \(os error 13\)'
+PERMISSION_WARNINGS=$(printf '%s\n' "$MCP_OUTPUT" | grep -E "$PERMISSION_WARNING_PATTERN" || true)
 
 # 연결 성공 카운터
 SUCCESS_COUNT=0
 FAIL_COUNT=0
 
+if [ -n "$PERMISSION_WARNINGS" ]; then
+  echo -e "${YELLOW}⚠️  환경 경고:${NC} 권한 제한으로 일부 정리 작업이 실패했습니다."
+  echo "⚠️  환경 경고: 권한 제한으로 일부 정리 작업이 실패했습니다." >> "$LOG_FILE"
+  printf '%s\n' "$PERMISSION_WARNINGS" | sed 's/^/  - /'
+  printf '%s\n' "$PERMISSION_WARNINGS" | sed 's/^/  - /' >> "$LOG_FILE"
+  echo ""
+fi
+
 # 각 서버 상태 확인
 for server in "${EXPECTED_SERVERS[@]}"; do
-  if echo "$MCP_OUTPUT" | grep -q "$server"; then
+  SERVER_ROW=$(printf '%s\n' "$MCP_OUTPUT" | grep -E "^${server}:" || true)
+
+  if [ -z "$SERVER_ROW" ]; then
+    echo -e "${RED}❌${NC} $server: 목록에 없음"
+    echo "❌ $server: 목록에 없음" >> "$LOG_FILE"
+    FAIL_COUNT=$((FAIL_COUNT + 1))
+    continue
+  fi
+
+  if printf '%s\n' "$SERVER_ROW" | grep -Eq '✓ Connected| connected | enabled '; then
     echo -e "${GREEN}✅${NC} $server: 연결 성공"
     echo "✅ $server: 연결 성공" >> "$LOG_FILE"
-    ((SUCCESS_COUNT++))
+    SUCCESS_COUNT=$((SUCCESS_COUNT + 1))
   else
-    echo -e "${RED}❌${NC} $server: 연결 실패"
-    echo "❌ $server: 연결 실패" >> "$LOG_FILE"
-    ((FAIL_COUNT++))
+    echo -e "${YELLOW}⚠️${NC} $server: 비활성/미연결"
+    echo "⚠️ $server: 비활성/미연결" >> "$LOG_FILE"
+    FAIL_COUNT=$((FAIL_COUNT + 1))
   fi
 done
 
@@ -102,9 +135,15 @@ echo "📈 연결 요약:" >> "$LOG_FILE"
 echo -e "  - 연결 성공: ${GREEN}$SUCCESS_COUNT${NC}/$TOTAL_SERVERS"
 echo -e "  - 연결 실패: ${RED}$FAIL_COUNT${NC}/$TOTAL_SERVERS"
 echo -e "  - 성공률: ${GREEN}$SUCCESS_RATE%${NC}"
+if [ -n "$PERMISSION_WARNINGS" ]; then
+  echo -e "  - 환경 경고: ${YELLOW}1${NC} (권한 제한, 비치명)"
+fi
 echo "  - 연결 성공: $SUCCESS_COUNT/$TOTAL_SERVERS" >> "$LOG_FILE"
 echo "  - 연결 실패: $FAIL_COUNT/$TOTAL_SERVERS" >> "$LOG_FILE"
 echo "  - 성공률: $SUCCESS_RATE%" >> "$LOG_FILE"
+if [ -n "$PERMISSION_WARNINGS" ]; then
+  echo "  - 환경 경고: 1 (권한 제한, 비치명)" >> "$LOG_FILE"
+fi
 echo ""
 echo "" >> "$LOG_FILE"
 

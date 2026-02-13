@@ -15,6 +15,8 @@ LOG_DIR="logs/mcp-health"
 mkdir -p "$LOG_DIR"
 LOG_FILE="$LOG_DIR/$(date +%Y-%m-%d)-codex.log"
 TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S')
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+CODEX_LOCAL_RUNNER="$REPO_ROOT/scripts/mcp/codex-local.sh"
 
 EXPECTED_SERVERS=(
   "vercel"
@@ -40,12 +42,29 @@ echo ""
   echo ""
 } >> "$LOG_FILE"
 
-MCP_OUTPUT=$(timeout 15 codex mcp list 2>&1)
+if [ ! -x "$CODEX_LOCAL_RUNNER" ]; then
+  echo -e "${RED}프로젝트 Codex 실행기 누락: $CODEX_LOCAL_RUNNER${NC}"
+  echo "프로젝트 Codex 실행기 누락: $CODEX_LOCAL_RUNNER" >> "$LOG_FILE"
+  exit 2
+fi
+
+MCP_OUTPUT=$(timeout 15 "$CODEX_LOCAL_RUNNER" mcp list 2>&1)
 MCP_EXIT_CODE=$?
 
 if [ "$MCP_EXIT_CODE" -ne 0 ]; then
-  echo -e "${RED}codex mcp list 실행 실패 (exit: $MCP_EXIT_CODE)${NC}"
-  echo "codex mcp list 실행 실패 (exit: $MCP_EXIT_CODE)" >> "$LOG_FILE"
+  echo -e "${RED}project codex mcp list 실행 실패 (exit: $MCP_EXIT_CODE)${NC}"
+  echo "project codex mcp list 실행 실패 (exit: $MCP_EXIT_CODE)" >> "$LOG_FILE"
+  echo "$MCP_OUTPUT" >> "$LOG_FILE"
+  exit 2
+fi
+
+PERMISSION_WARNING_PATTERN='failed to clean up stale arg0 temp dirs|could not update PATH: Permission denied|Permission denied \(os error 13\)'
+PERMISSION_WARNINGS=$(printf '%s\n' "$MCP_OUTPUT" | grep -E "$PERMISSION_WARNING_PATTERN" || true)
+MCP_TABLE=$(printf '%s\n' "$MCP_OUTPUT" | awk 'BEGIN { in_table=0 } /^Name[[:space:]]+Command[[:space:]]+Args/ { in_table=1 } in_table { print }')
+
+if [ -z "$MCP_TABLE" ]; then
+  echo -e "${RED}project codex mcp list 출력 파싱 실패 (서버 테이블 없음)${NC}"
+  echo "project codex mcp list 출력 파싱 실패 (서버 테이블 없음)" >> "$LOG_FILE"
   echo "$MCP_OUTPUT" >> "$LOG_FILE"
   exit 2
 fi
@@ -53,12 +72,20 @@ fi
 SUCCESS_COUNT=0
 FAIL_COUNT=0
 
+if [ -n "$PERMISSION_WARNINGS" ]; then
+  echo -e "${YELLOW}환경 경고${NC}: 샌드박스 권한 제한으로 일부 정리 작업이 실패했습니다."
+  echo "환경 경고: 샌드박스 권한 제한으로 일부 정리 작업이 실패했습니다." >> "$LOG_FILE"
+  printf '%s\n' "$PERMISSION_WARNINGS" | sed 's/^/  - /'
+  printf '%s\n' "$PERMISSION_WARNINGS" | sed 's/^/  - /' >> "$LOG_FILE"
+  echo ""
+fi
+
 echo -e "${BLUE}MCP 서버 상태:${NC}"
 echo "MCP 서버 상태:" >> "$LOG_FILE"
 echo "" >> "$LOG_FILE"
 
 for server in "${EXPECTED_SERVERS[@]}"; do
-  SERVER_ROW=$(printf '%s\n' "$MCP_OUTPUT" | grep -E "^${server}[[:space:]]" || true)
+  SERVER_ROW=$(printf '%s\n' "$MCP_TABLE" | grep -E "^${server}[[:space:]]" || true)
 
   if [ -z "$SERVER_ROW" ]; then
     echo -e "${RED}FAIL${NC} $server: 목록에 없음"
@@ -86,6 +113,9 @@ echo -e "${BLUE}요약:${NC}"
 echo "  - 성공: ${SUCCESS_COUNT}/${TOTAL_SERVERS}"
 echo "  - 실패: ${FAIL_COUNT}/${TOTAL_SERVERS}"
 echo "  - 성공률: ${SUCCESS_RATE}%"
+if [ -n "$PERMISSION_WARNINGS" ]; then
+  echo "  - 환경 경고: 1 (권한 제한, 비치명)"
+fi
 
 {
   echo ""
@@ -93,6 +123,9 @@ echo "  - 성공률: ${SUCCESS_RATE}%"
   echo "  - 성공: ${SUCCESS_COUNT}/${TOTAL_SERVERS}"
   echo "  - 실패: ${FAIL_COUNT}/${TOTAL_SERVERS}"
   echo "  - 성공률: ${SUCCESS_RATE}%"
+  if [ -n "$PERMISSION_WARNINGS" ]; then
+    echo "  - 환경 경고: 1 (권한 제한, 비치명)"
+  fi
   echo ""
   echo "로그 파일: $LOG_FILE"
 } >> "$LOG_FILE"

@@ -137,19 +137,34 @@ claude --model opus
 
 ## Best Practices
 
+### Progressive Disclosure (문서 계층화)
+
+AI 도구의 context window를 효율적으로 사용하기 위해 4단계 계층으로 문서를 구성합니다:
+
+```
+L1: CLAUDE.md (~40줄)      ← 항상 로드, 핵심 포인터만
+L2: .claude/rules/ (6파일)  ← 자동 로드, 도메인별 규칙
+L3: docs/ (71파일)          ← 필요시 참조, 상세 가이드
+L4: Skills (11개)           ← 명시적 호출, 자동화 워크플로우
+```
+
+**Context Rot 방지**: LLM의 긴 context에서 attention이 불균일하게 저하됩니다. 문서를 짧게 유지하고, 상세 내용은 포인터로 연결하세요.
+
 ### DO
 
 - 작은 단위로 작업 (한 기능씩)
-- 명확한 요구사항 전달
-- AI 출력 항상 검토
-- 자주 커밋, 자주 검증
+- 명확한 요구사항 전달 (Spec Before Code)
+- AI 출력 항상 검토 (AI = Junior Developer)
+- 자주 커밋, 자주 검증 (Rapid Feedback Loop)
+- 에이전트별 파일 경계 명시 (Multi-Agent 충돌 방지)
 
 ### DON'T
 
 - "앱 전체 만들어줘" (Mega Prompt)
 - AI 출력 무검토 머지
-- 보안 관련 AI 맹신
+- 보안 관련 AI 맹신 (45% 보안 취약점 포함 연구 결과)
 - 한 번에 너무 많은 변경
+- Free Tier 한도 초과 리소스 설정
 
 ## 보안 주의사항
 
