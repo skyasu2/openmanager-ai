@@ -1,0 +1,53 @@
+{
+  "version": "1.0.0",
+  "updatedAt": "2026-02-13",
+  "sourceOfTruth": "code",
+  "usagePurpose": "incremental-ui-improvement-and-prototyping",
+  "activeProjectId": "9992716002442491853",
+  "rules": {
+    "recommendedActiveProjects": 1,
+    "requireMappedFilesForActive": true,
+    "allowedStatuses": ["active", "legacy", "archived"]
+  },
+  "projects": [
+    {
+      "id": "9992716002442491853",
+      "title": "System Overview Dashboard Section",
+      "status": "active",
+      "screenCount": 4,
+      "lastVerifiedAt": "2026-02-13",
+      "mappedFiles": [
+        "src/components/dashboard/SystemOverviewSection.tsx",
+        "src/components/dashboard/DashboardContent.tsx",
+        "src/components/ai/WelcomePromptCards.tsx",
+        "src/components/ai-sidebar/ChatMessageList.tsx",
+        "src/components/ai/AnalysisResultsCard.tsx",
+        "src/components/ai/pages/IntelligentMonitoringPage.tsx"
+      ],
+      "notes": "Primary design source for current dashboard + AI chat surfaces."
+    },
+    {
+      "id": "12614339337978422653",
+      "title": "Server Monitor Card - Online Status",
+      "status": "legacy",
+      "screenCount": 0,
+      "lastVerifiedAt": "2026-02-13",
+      "mappedFiles": [
+        "src/components/dashboard/DashboardSummary.tsx",
+        "src/components/dashboard/ImprovedServerCard.tsx"
+      ],
+      "notes": "Concept overlap exists, but no direct active screen linkage. Candidate for archive in Stitch UI."
+    },
+    {
+      "id": "12699378164150057173",
+      "title": "System Resource Average Dashboard Section",
+      "status": "legacy",
+      "screenCount": 0,
+      "lastVerifiedAt": "2026-02-13",
+      "mappedFiles": [
+        "src/components/dashboard/SystemOverviewSection.tsx"
+      ],
+      "notes": "Concept absorbed into active project flow. Candidate for archive in Stitch UI."
+    }
+  ]
+}

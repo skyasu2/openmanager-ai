@@ -20,6 +20,7 @@
     "mcp:status": "claude mcp list",
     "mcp:status:codex": "bash scripts/mcp/codex-local.sh mcp list",
     "mcp:health:codex": "bash scripts/mcp/mcp-health-check-codex.sh",
+    "stitch:check": "node scripts/stitch/validate-stitch-registry.js",
     "dev": "cross-env NODE_OPTIONS='--max-old-space-size=4096' next dev -p 3000",
     "dev:network": "cross-env NODE_OPTIONS='--max-old-space-size=4096' next dev -p 3000 --hostname 0.0.0.0",
     "dev:stable": "cross-env NEXT_DISABLE_DEVTOOLS=1 NODE_OPTIONS='--max-old-space-size=4096' next dev",
