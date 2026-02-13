@@ -25,6 +25,7 @@
 
 ### Data
 - [Data Architecture](./architecture/data/data-architecture.md)
+- [Observability Transition Readiness](./architecture/data/observability-transition-readiness.md)
 - [Data Pipeline Analysis](./architecture/data/data-pipeline-analysis.md)
 - [Data Pipeline Comparison](./architecture/data/data-pipeline-comparison.md)
 - [OTel Pipeline Audit](./architecture/data/otel-pipeline-audit.md)

@@ -228,3 +228,16 @@
 - 이 문서는 코드 스캔 결과를 기준으로 유지합니다.
 - 라우트 추가/삭제 후 이 문서를 함께 갱신해야 합니다.
 - 상세 동작/인증/캐시 정책은 각 라우트 파일 구현을 우선합니다.
+
+## Observability Behavior Notes
+
+- `/api/metrics`는 Prometheus scrape receiver가 아닙니다.
+  - 현재 동작: 요청 본문의 쿼리를 받아 내부 `MetricsProvider` 데이터에서 조회 후 Prometheus 유사 응답 반환
+  - 미구현: `/metrics` 노출, real scrape 수신, remote_write ingest
+  - 코드: `src/app/api/metrics/route.ts`
+- `/api/logs`는 Loki ingest/query API가 아닙니다.
+  - 현재 동작: Supabase `server_logs` 테이블 CRUD
+  - 미구현: `/loki/api/v1/push`, LogQL query API
+  - 코드: `src/app/api/logs/route.ts`
+- `/api/ai/raw-metrics`는 실서버 텔레메트리가 아니라 synthetic 데이터(`hourly-data`) 기반 조회 API입니다.
+  - 코드: `src/app/api/ai/raw-metrics/route.ts`

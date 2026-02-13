@@ -59,6 +59,7 @@ AI 추론은 Cloud Run에서 수행되고, Next.js는 UI/BFF/프록시 역할을
 ## Architecture Constraints
 
 - 실제 운영 서버 대신 시뮬레이션/사전 계산 데이터 중심으로 설계
+- OTel 데이터는 런타임 수집이 아니라 synthetic Prometheus 데이터의 빌드 타임 파생(derived) 포맷
 - 무료 티어 운영 비용을 고려한 캐시/프록시/폴백 전략 우선
 - Cloud Run 장애 시에도 UI는 degradable 상태를 유지
 
