@@ -20,7 +20,7 @@ describe('KoreanTimeUtil', () => {
     it('now() - 현재 한국시간을 올바른 형식으로 반환해야 함', () => {
       const result = KoreanTimeUtil.now();
       expect(result).toMatch(
-        /2025\. 07\. 01\. (오후 03:30:45|15:30:45) \(KST\)/
+        /2025\. 07\. 01\. ((오후|PM) 03:30:45|15:30:45) \(KST\)/
       );
     });
 
@@ -57,7 +57,7 @@ describe('KoreanTimeUtil', () => {
       const testDate = new Date('2025-06-15T10:00:00.000Z'); // UTC
       const result = KoreanTimeUtil.toKoreanTime(testDate);
       expect(result).toMatch(
-        /2025\. 06\. 15\. (오후 07:00:00|19:00:00) \(KST\)/
+        /2025\. 06\. 15\. ((오후|PM) 07:00:00|19:00:00) \(KST\)/
       );
     });
 

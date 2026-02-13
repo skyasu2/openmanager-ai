@@ -24,7 +24,7 @@ services:
       context: ./ai-engine
       dockerfile: Dockerfile
       args:
-        - NODE_VERSION=22
+        - NODE_VERSION=24
         - APP_VERSION=8.0.0
     image: ai-engine:local
     container_name: ai-engine-local

@@ -19,7 +19,7 @@ on:
   #   branches: [quality-check]
 
 env:
-  NODE_VERSION: '22.x'
+  NODE_VERSION: '24.x'
   FAIL_ON_TYPE_ERROR: true
 
 jobs:

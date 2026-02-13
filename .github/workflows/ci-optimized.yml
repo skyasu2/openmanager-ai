@@ -13,7 +13,7 @@ on:
     branches: [main]
 
 env:
-  NODE_VERSION: '22.15.1'  # .nvmrc와 일치
+  NODE_VERSION: '24'  # .nvmrc와 일치
   SKIP_ENV_VALIDATION: true # 환경변수 없이도 빌드 가능
   # Test environment variables
   NEXT_PUBLIC_SUPABASE_URL: https://test.supabase.co

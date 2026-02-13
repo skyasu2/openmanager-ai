@@ -9,7 +9,7 @@
 # - cpu-boost enabled for faster cold start
 #
 # v6.0 - 2026-01-06 (Docker & Build Optimization)
-# - Node.js 22.x LTS (latest stable)
+# - Node.js 24.x LTS (latest stable)
 # - npm ci for reproducible builds
 # - BuildKit cache mounts for faster rebuilds
 # - Optimized COPY order for better layer caching
@@ -25,7 +25,7 @@
 # ============================================================================
 
 # Build arguments - explicit versions for reproducibility
-ARG NODE_VERSION=22
+ARG NODE_VERSION=24
 ARG ALPINE_VERSION=3.21
 
 # ============================================================================
@@ -86,7 +86,7 @@ LABEL org.opencontainers.image.description="Multi-Agent AI Supervisor for OpenMa
 LABEL org.opencontainers.image.source="https://github.com/skyasu2/openmanager-ai"
 LABEL org.opencontainers.image.created="${BUILD_DATE}"
 LABEL org.opencontainers.image.revision="${GIT_SHA}"
-LABEL org.opencontainers.image.base.name="node:22-alpine3.21"
+LABEL org.opencontainers.image.base.name="node:24-alpine3.21"
 
 # Custom labels
 LABEL ai.framework="vercel-ai-sdk-v6"
