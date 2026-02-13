@@ -17,6 +17,7 @@
     "claude:launch": "bash scripts/ai/launch-claude-wsl.sh",
     "claude:sanitize": "node scripts/diagnostics/claude-json-sanitize.js --write",
     "mcp:status": "claude mcp list",
+    "mcp:health:codex": "bash scripts/mcp/mcp-health-check-codex.sh",
     "dev": "cross-env NODE_OPTIONS='--max-old-space-size=4096' next dev -p 3000",
     "dev:network": "cross-env NODE_OPTIONS='--max-old-space-size=4096' next dev -p 3000 --hostname 0.0.0.0",
     "dev:stable": "cross-env NEXT_DISABLE_DEVTOOLS=1 NODE_OPTIONS='--max-old-space-size=4096' next dev",
