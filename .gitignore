@@ -138,9 +138,8 @@ logs/ai-decisions/*
 dev.log
 combined.log
 ai-combined.log
-# Codex CLI logs (do not commit)
-.codex/logs/
-.codex/config.toml
+# Codex CLI runtime (secrets, sessions, snapshots, tmp)
+.codex/
 # temporary files
 *~
 *.tmp
