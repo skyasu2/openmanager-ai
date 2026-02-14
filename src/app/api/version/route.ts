@@ -9,18 +9,20 @@ export const runtime = 'edge';
  *
  * Edge Runtime 제약사항:
  * - fs 모듈 접근 불가 → package.json 동적 로드 불가
- * - 버전을 하드코딩해야 함
+ * - 빌드 주입 환경변수(NEXT_PUBLIC_APP_VERSION) 사용
  *
  * 자동 동기화:
- * - standard-version이 릴리스 시 자동 업데이트
- * - 설정: .versionrc.json → api-version-updater.js
- * - 명령어: npm run release:minor (7개 파일 동시 업데이트)
+ * - 버전 소스: next.config.mjs env.NEXT_PUBLIC_APP_VERSION
+ * - Next.js 버전: env.NEXT_PUBLIC_NEXTJS_VERSION
  */
+const APP_VERSION = process.env.NEXT_PUBLIC_APP_VERSION || '8.0.0';
+const NEXTJS_VERSION = process.env.NEXT_PUBLIC_NEXTJS_VERSION || '16.1.3';
+
 const VERSION_INFO = {
-  version: '8.0.0',
+  version: APP_VERSION,
   name: 'openmanager-ai',
   description: 'AI 기반 실시간 서버 모니터링 플랫폼',
-  nextjs_version: '16.0.10',
+  nextjs_version: NEXTJS_VERSION,
 } as const;
 
 /**

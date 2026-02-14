@@ -83,4 +83,4 @@ curl https://ai-engine-490817238363.asia-northeast1.run.app/health  # Health che
 ## Contact
 
 - Repository: github.com/skyasu2/openmanager-ai
-- Version: 7.1.4
+- Version: 8.0.0

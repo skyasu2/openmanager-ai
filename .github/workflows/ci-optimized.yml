@@ -43,6 +43,8 @@ jobs:
     if: ${{ github.event_name != 'push' || !contains(github.event.head_commit.message, '[skip ci]') }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -104,6 +106,15 @@ jobs:
           else
             echo "❌ CI 환경 의존성 설치 실패"
             exit 1
+          fi
+
+      - name: Release consistency check
+        run: |
+          echo "📦 릴리즈 정합성 검사..."
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            RELEASE_CHECK_TAG=warn npm run release:check
+          else
+            npm run release:check
           fi
 
       - name: Biome Check

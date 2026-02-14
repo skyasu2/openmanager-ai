@@ -128,10 +128,11 @@ cd cloud-run/ai-engine
 ### standard-version
 
 ```bash
-npm run release:patch  # 5.88.0 → 5.88.1
-npm run release:minor  # 5.88.0 → 5.89.0
-npm run release:major  # 5.88.0 → 6.0.0
+npm run release:patch   # 8.0.0 → 8.0.1
+npm run release:minor   # 8.0.0 → 8.1.0
+npm run release:major   # 8.0.0 → 9.0.0
 npm run release:dry-run # 미리보기
+npm run release:check   # 버전/태그/체인지로그 정합성 점검
 ```
 
 ### CHANGELOG
@@ -201,7 +202,5 @@ AI_ENGINE_URL=
 
 ## 관련 문서
 
-- [프로젝트 설정](./project-setup.md)
-- [전체 환경 구축(보관)](../archived/development/full-setup-guide.md)
 - [프로젝트 설정](./project-setup.md)
 - [Vibe Coding](../vibe-coding/README.md)

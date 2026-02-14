@@ -91,6 +91,7 @@
     "release:major": "standard-version --release-as major",
     "release:first": "standard-version --first-release",
     "release:dry-run": "standard-version --dry-run",
+    "release:check": "node scripts/release/check-release-consistency.js",
     "ci": "npm run validate:all",
     "bundle:analyze": "cross-env ANALYZE=true NODE_OPTIONS='--max-old-space-size=2048' next build --webpack",
     "git:pre-commit": "lint-staged",

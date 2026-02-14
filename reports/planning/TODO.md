@@ -40,9 +40,10 @@
 ### 활성 계획서 (Active Plans)
 | 파일 | 상태 | 비고 |
 |------|------|------|
-| `ai-codebase-improvement-plan.md` | ✅ 완료 | P0/P1/P2 모든 이슈 해결 (2026-01-27) |
 | `incident-report-and-anomaly-improvement-plan.md` | 참조 | 구현 가이드 |
-| `landing-card-diagrams.md` | 참조 | 다이어그램 데이터 |
+| `landing-card-diagrams-plan.md` | 참조 | 다이어그램 데이터 |
+| `vision-agent-implementation-plan.md` | 검토 대기 | Vision Agent 확장 구현 계획 |
+| `version-changelog-recovery-plan.md` | 계획 수립 | 버전/태그/체인지로그 운영 재정렬 |
 
 ### Completed (2026-01-22)
 - [x] 코드 단순화 리팩토링 (YAGNI 원칙 적용)
@@ -94,8 +95,8 @@
 
 | Domain | Location | Description |
 |--------|----------|-------------|
-| **AI Development** | `docs/guides/ai/TODO.md` | Multi-Agent, Prompt Optimization |
-| **Analysis Reports** | `reports/planning/analysis/` | 점검 리포트 |
+| **AI Development** | `reports/planning/TODO.md` | Multi-Agent, Prompt Optimization 작업 큐 |
+| **Analysis Reports** | `reports/planning/archive/` | 완료/참조용 분석 리포트 보관 |
 
 ## Low Priority (Backlog)
 

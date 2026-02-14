@@ -16,6 +16,9 @@ function safeOrigin(value, fallback) {
 const packageJson = JSON.parse(
   readFileSync(join(process.cwd(), 'package.json'), 'utf8')
 );
+const sanitizedNextVersion = String(
+  packageJson.dependencies?.next || ''
+).replace(/^[^\d]*/, '');
 
 // Bundle Analyzer 설정
 const withBundleAnalyzer = bundleAnalyzer({
@@ -465,6 +468,7 @@ const nextConfig = {
   env: {
     CUSTOM_KEY: 'openmanager-ai',
     NEXT_PUBLIC_APP_VERSION: packageJson.version,
+    NEXT_PUBLIC_NEXTJS_VERSION: sanitizedNextVersion || 'unknown',
   },
 };
 
