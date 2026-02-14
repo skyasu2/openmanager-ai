@@ -1,15 +1,40 @@
 # 프로젝트 설정
 
 > 프로젝트 초기화 및 환경 구성 가이드
+> Owner: dev-experience
+> Status: Active Canonical
+> Doc type: How-to
+> Last reviewed: 2026-02-14
+> Canonical: docs/development/project-setup.md
+> Tags: wsl,github-auth,project-setup
+
+## GitHub 인증 방식 비교 (WSL)
+
+| 방식 | 장점 | 단점 | 권장도 |
+|------|------|------|------|
+| HTTPS + `gh auth login` | WSL/Windows 혼합 환경에서 안정적, credential helper 연동 쉬움 | 최초 브라우저 인증 필요 | 권장 |
+| SSH 키 | 키 기반 인증, 토큰 불필요 | 초기 설정/키 관리 부담 | 선택 |
+| PAT 수동 입력/환경변수 | 즉시 사용 가능 | 토큰 노출/만료 관리 부담 | 비권장 |
+
+권장 절차:
+```bash
+gh auth login -h github.com -p https -w
+gh auth status -h github.com
+gh auth setup-git
+```
+
+비교 기준(공식 문서):
+- GitHub CLI 인증/credential helper: https://cli.github.com/manual/gh_auth_login, https://cli.github.com/manual/gh_auth_setup-git
+- 토큰 최소 권한 원칙(Fine-grained PAT): https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens
 
 ## 프로젝트 클론
 
 ```bash
-# SSH (권장)
-git clone git@github.com:skyasu2/openmanager-ai.git
-
-# HTTPS
+# 권장: HTTPS + gh auth
 git clone https://github.com/skyasu2/openmanager-ai.git
+
+# 선택: SSH
+# git clone git@github.com:skyasu2/openmanager-ai.git
 
 cd openmanager-ai
 ```

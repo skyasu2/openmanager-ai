@@ -1,6 +1,12 @@
 # MCP 서버 가이드
 
 > Model Context Protocol로 AI 능력 확장 - 설치, 설정, 사용법 통합 가이드
+> Owner: dev-experience
+> Status: Active Supporting
+> Doc type: Reference
+> Last reviewed: 2026-02-14
+> Canonical: docs/vibe-coding/mcp-servers.md
+> Tags: vibe-coding,mcp,configuration
 
 ## 개요
 
@@ -15,11 +21,10 @@
 
 ---
 
-## 현재 사용 중인 MCP 서버 (9개)
+## 현재 사용 중인 MCP 서버 (7개)
 
 | MCP | 용도 | 패키지 | 우선순위 |
 |-----|------|--------|:--------:|
-| **serena** | 코드 검색, 심볼 분석, 메모리 | `serena-mcp-server` (uvx) | 높음 |
 | **context7** | 라이브러리 공식 문서 | `@upstash/context7-mcp` | 높음 |
 | **sequential-thinking** | 복잡한 추론, 아키텍처 설계 | `@modelcontextprotocol/server-sequential-thinking` | 높음 |
 | **stitch** | Google Stitch AI UI 디자인 | `@_davideast/stitch-mcp` | 중간 |
@@ -27,7 +32,6 @@
 | **vercel** | 배포 상태 확인 | `vercel-mcp` | 중간 |
 | **playwright** | E2E 테스트, 브라우저 자동화 | `@playwright/mcp` | 중간 |
 | **github** | 저장소/PR 관리 | `@modelcontextprotocol/server-github` | 중간 |
-| **tavily** | 심층 웹 검색, 리서치 | `tavily-mcp` | 낮음 |
 
 ---
 
@@ -64,7 +68,7 @@
 
 ---
 
-## 현재 설정 백업 (2026-01-27 Updated)
+## 현재 설정 백업 (2026-02-14 Updated)
 
 ### .mcp.json 구조
 
@@ -74,24 +78,6 @@
     "vercel": {
       "command": "npx",
       "args": ["-y", "vercel-mcp", "VERCEL_API_KEY=<your-token>"]
-    },
-    "serena": {
-      "command": "/home/<user>/.local/bin/uvx",
-      "args": [
-        "--from", "git+https://github.com/oraios/serena",
-        "serena-mcp-server",
-        "--enable-web-dashboard", "false",
-        "--enable-gui-log-window", "false",
-        "--log-level", "ERROR",
-        "--tool-timeout", "30"
-      ],
-      "env": {
-        "PYTHONUNBUFFERED": "1",
-        "PYTHONDONTWRITEBYTECODE": "1",
-        "TERM": "dumb",
-        "NO_COLOR": "1",
-        "SERENA_LOG_LEVEL": "ERROR"
-      }
     },
     "supabase": {
       "command": "npx",
@@ -113,13 +99,6 @@
       "args": ["-y", "@modelcontextprotocol/server-github"],
       "env": {
         "GITHUB_PERSONAL_ACCESS_TOKEN": "<your-token>"
-      }
-    },
-    "tavily": {
-      "command": "npx",
-      "args": ["-y", "tavily-mcp"],
-      "env": {
-        "TAVILY_API_KEY": "<your-token>"
       }
     },
     "sequential-thinking": {
@@ -144,21 +123,19 @@
 {
   "permissions": {
     "allow": [
-      "mcp__serena__*",
       "mcp__context7__*",
       "mcp__supabase__*",
       "mcp__vercel__*",
       "mcp__playwright__*",
       "mcp__github__*",
-      "mcp__tavily__*",
       "mcp__sequential-thinking__*",
       "mcp__stitch__*"
     ]
   },
   "enableAllProjectMcpServers": true,
   "enabledMcpjsonServers": [
-    "vercel", "serena", "supabase", "context7",
-    "playwright", "github", "tavily", "sequential-thinking", "stitch"
+    "vercel", "supabase", "context7",
+    "playwright", "github", "sequential-thinking", "stitch"
   ]
 }
 ```
@@ -172,41 +149,10 @@
 | **Vercel** | https://vercel.com/account/tokens | - |
 | **Supabase** | https://supabase.com/dashboard/account/tokens | - |
 | **GitHub** | https://github.com/settings/tokens | `repo`, `read:org` |
-| **Tavily** | https://tavily.com | API Key |
 
 ---
 
 ## 각 서버별 상세
-
-### Serena (코드 분석) - 우선순위: 높음
-
-심볼 기반 코드 검색, 참조 추적, 프로젝트 메모리 기능.
-
-**설치 (uvx 필요)**:
-```bash
-pip3 install uvx
-```
-
-**주요 도구**:
-```bash
-mcp__serena__find_symbol("useServerStatus")      # 심볼 찾기
-mcp__serena__find_referencing_symbols("MetricData")  # 참조 찾기
-mcp__serena__get_symbols_overview("src/hooks/useMetrics.ts")  # 파일 개요
-mcp__serena__search_for_pattern("TODO|FIXME")    # 패턴 검색
-```
-
-**사용 예시**:
-```
-You: "useServerStatus 훅을 사용하는 곳 찾아줘"
-Claude: [serena로 참조 검색] → 5개 파일에서 사용 중
-```
-
-**WSL 최적화 옵션**:
-- `--enable-web-dashboard false` - 웹 대시보드 비활성화
-- `--log-level ERROR` - 로그 최소화
-- `--tool-timeout 30` - 타임아웃 설정
-
----
 
 ### Context7 (문서 검색) - 우선순위: 높음
 
@@ -323,31 +269,13 @@ mcp__github__get_file_contents("owner", "repo", "path")
 
 ---
 
-### Tavily (웹 검색) - 우선순위: 낮음
-
-심층 웹 검색, 콘텐츠 추출, 사이트 크롤링.
-
-**주요 도구**:
-```bash
-mcp__tavily__tavily-search("React 19 new features 2026")
-mcp__tavily__tavily-extract(["https://example.com"])
-```
-
----
-
 ## 신규 설정 가이드
 
-### 1. uvx 설치 (Serena용)
-
-```bash
-pip3 install uvx
-```
-
-### 2. .mcp.json 생성
+### 1. .mcp.json 생성
 
 프로젝트 루트에 `.mcp.json` 파일 생성 후 위의 설정 백업 내용을 복사하고 토큰 입력.
 
-### 3. .claude/settings.local.json 생성
+### 2. .claude/settings.local.json 생성
 
 ```bash
 mkdir -p .claude
@@ -355,27 +283,25 @@ cat > .claude/settings.local.json << 'EOF'
 {
   "permissions": {
     "allow": [
-      "mcp__serena__*",
       "mcp__context7__*",
       "mcp__supabase__*",
       "mcp__vercel__*",
       "mcp__playwright__*",
       "mcp__github__*",
-      "mcp__tavily__*",
       "mcp__sequential-thinking__*",
       "mcp__stitch__*"
     ]
   },
   "enableAllProjectMcpServers": true,
   "enabledMcpjsonServers": [
-    "vercel", "serena", "supabase", "context7",
-    "playwright", "github", "tavily", "sequential-thinking", "stitch"
+    "vercel", "supabase", "context7",
+    "playwright", "github", "sequential-thinking", "stitch"
   ]
 }
 EOF
 ```
 
-### 4. .gitignore 확인
+### 3. .gitignore 확인
 
 ```gitignore
 .mcp.json
@@ -383,12 +309,12 @@ EOF
 .claude/settings.local.json
 ```
 
-### 5. 확인
+### 4. 확인
 
 Claude Code 실행 후:
 ```
 You: "MCP 서버 상태 확인해줘"
-Claude: [serena, context7, supabase 등 사용 가능 여부 표시]
+Claude: [context7, supabase 등 사용 가능 여부 표시]
 ```
 
 ---
@@ -402,18 +328,8 @@ Claude: [serena, context7, supabase 등 사용 가능 여부 표시]
 해결:
 1. .mcp.json 파일 존재 및 JSON 구문 확인
 2. 토큰 값 확인
-3. 의존성 설치: npm install / pip3 install uvx
+3. 의존성 설치: npm install
 4. claude --debug로 로그 확인
-```
-
-### Serena 타임아웃
-
-```
-증상: 대규모 코드베이스에서 응답 없음
-해결:
-1. --tool-timeout 값 증가 (기본 30초)
-2. --log-level ERROR로 로그 최소화
-3. 쿼리 범위 축소
 ```
 
 ### WSL 환경변수 누락
@@ -432,7 +348,6 @@ Claude: [serena, context7, supabase 등 사용 가능 여부 표시]
 해결:
 1. 쿼리 범위 축소
 2. 불필요한 MCP 비활성화 (enabledMcpjsonServers 수정)
-3. Serena: --enable-web-dashboard false
 ```
 
 ---
@@ -446,4 +361,4 @@ Claude: [serena, context7, supabase 등 사용 가능 여부 표시]
 
 ---
 
-_Last Updated: 2026-01-27_
+_Last Updated: 2026-02-14_

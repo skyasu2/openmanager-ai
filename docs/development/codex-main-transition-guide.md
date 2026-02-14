@@ -2,6 +2,12 @@
 
 > 목적: 1개월 내 Codex 중심 개발 운영 전환 시, 기존 Claude Skills에서 재사용 가능한 항목을 선별 이식한다.
 > 기준일: 2026-02-13
+> Owner: dev-experience
+> Status: Active Supporting
+> Doc type: Explanation
+> Last reviewed: 2026-02-14
+> Canonical: docs/development/README.md
+> Tags: codex,skills,github-workflow
 
 ## 요약 결론
 
@@ -17,7 +23,7 @@
 | GCP 비용 점검 | `.claude/skills/gcp-cost-check` | 높음: 머신타입 과금 리스크 탐지에 직접적 | `openmanager-gcp-cost-check` (완료) |
 | Lint/Smoke | `.claude/skills/lint-smoke` | 높음: 품질 게이트 표준화 | `openmanager-lint-smoke` (기존 운영) |
 | Commit 워크플로우 | `.claude/skills/commit-commands` | 중간: 구조는 유용, Claude 전용 리뷰 결합은 분리 필요 | `openmanager-commit-workflow` (기존 운영) |
-| GitHub Deploy | `.claude/skills/github-deploy` | 중간: MCP 전략은 유용, 파괴적 git 패턴 제거 필요 | `openmanager-github-deploy-safe` (완료) |
+| GitHub Deploy | `.claude/skills/github-deploy` | 높음: MCP 우선 + WSL `gh auth` fallback 표준으로 갱신 | `openmanager-github-deploy-safe` (완료) |
 
 ## 적용 원칙
 

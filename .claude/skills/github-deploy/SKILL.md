@@ -1,14 +1,14 @@
 ---
 name: github-deploy
-description: GitHub push and PR workflow using GitHub MCP (no gh CLI auth needed). Triggers on push, PR creation, or deployment requests.
-version: v1.0.0
+description: GitHub push and PR workflow with MCP-first strategy and WSL-safe gh CLI fallback. Triggers on push, PR creation, or deployment requests.
+version: v1.1.0
 user-invocable: true
 allowed-tools: Bash, Read, Grep, mcp__github__push_files, mcp__github__create_branch, mcp__github__create_pull_request, mcp__github__get_pull_request, mcp__github__list_commits, mcp__github__get_pull_request_status, mcp__github__merge_pull_request
 ---
 
 # GitHub Deploy (MCP)
 
-GitHub MCP를 사용한 push/PR 워크플로우. `gh auth login` 없이 동작.
+GitHub MCP 우선 + WSL gh CLI fallback 워크플로우.
 
 ## Trigger Keywords
 
@@ -30,9 +30,20 @@ GitHub MCP를 사용한 push/PR 워크플로우. `gh auth login` 없이 동작.
 
 ## Workflow
 
-### Option A: Direct Push to main
+### 0) 사전 인증 점검 (WSL CLI 사용 시)
 
-로컬 커밋이 있고 main에 바로 push할 때:
+```bash
+gh auth status -h github.com
+gh auth setup-git
+```
+
+권장 인증 방식:
+- HTTPS + `gh auth login -h github.com -p https -w`
+- PAT는 임시 주입만 사용하고 `.bashrc` 상시 export는 피함
+
+### Option A: Direct Push to main (CLI)
+
+로컬 커밋을 원격에 그대로 push할 때:
 
 #### 1. 로컬 변경사항 확인
 
@@ -44,27 +55,20 @@ git log origin/main..HEAD --oneline
 git diff origin/main..HEAD --name-only
 ```
 
-#### 2. 변경 파일 수집
+#### 2. Push
 
-각 변경 파일의 내용을 읽어서 `mcp__github__push_files`로 일괄 push:
+```bash
+git push origin main
+```
 
-- `mcp__github__push_files` 사용
-  - owner: `skyasu2`
-  - repo: `openmanager-ai`
-  - branch: `main`
-  - files: 변경된 파일 배열 `[{path, content}]`
-  - message: 최신 커밋 메시지
-
-**제한사항**: 파일 수가 많으면 (>20개) 여러 번 나눠서 push.
-
-#### 3. 로컬 동기화
+#### 3. 동기화 확인 (비파괴)
 
 ```bash
 git fetch origin
-git reset --soft origin/main
+git status -sb
 ```
 
-### Option B: Branch + PR
+### Option B: Branch + PR (MCP 권장)
 
 feature branch에서 PR을 만들 때:
 
@@ -76,12 +80,12 @@ feature branch에서 PR을 만들 때:
 - branch: `feat/branch-name`
 - from_branch: `main`
 
-#### 2. 파일 Push
+#### 2. 파일 Push (MCP)
 
 `mcp__github__push_files`로 변경 파일 push:
 - branch: 새로 만든 branch명
 
-#### 3. PR 생성
+#### 3. PR 생성 (MCP)
 
 `mcp__github__create_pull_request` 사용:
 - owner: `skyasu2`
@@ -95,15 +99,20 @@ feature branch에서 PR을 만들 때:
 
 `mcp__github__get_pull_request`로 PR 상태 확인.
 
-### Option C: git push (CLI fallback)
+### Option C: MCP Direct Push (fallback)
 
-`gh auth` 또는 SSH가 설정되어 있으면 CLI가 더 빠름:
+CLI 인증이 막혔거나 자동화가 필요한 경우:
 
-```bash
-git push origin main
-```
+- `mcp__github__push_files` 사용
+  - owner: `skyasu2`
+  - repo: `openmanager-ai`
+  - branch: `main`
+  - files: 변경된 파일 배열 `[{path, content}]`
+  - message: 최신 커밋 메시지
 
-실패 시 → Option A로 fallback.
+**제한사항**:
+- 텍스트 파일 중심, 대량 변경은 배치로 분할
+- 삭제 파일 처리에는 CLI가 더 단순함
 
 ## Output Format
 
@@ -119,6 +128,10 @@ git push origin main
 
 ## Edge Cases
 
+**Case 0: WSL에서 브라우저 로그인 창이 안 뜰 때**
+- `https://github.com/login/device` 직접 접속 후 코드 입력
+- 필요 시 `wslu` 설치 후 `BROWSER=wslview` 설정
+
 **Case 1: 파일이 너무 많을 때 (>20개)**
 - 배치로 나눠서 push (20개씩)
 - 각 배치마다 별도 커밋 메시지
@@ -128,8 +141,8 @@ git push origin main
 - 바이너리(.png, .woff 등)는 CLI push 필요
 
 **Case 3: Conflict**
-- push_files가 실패하면 conflict 가능성
-- `git pull --rebase` 후 재시도
+- `git fetch origin` 후 충돌 원인 확인
+- 무단 `reset --hard`/force push 금지
 
 **Case 4: 삭제된 파일**
 - `push_files`는 파일 생성/수정만 지원
@@ -141,8 +154,14 @@ git push origin main
 - PR 생성 시 URL 반환
 - 로컬-원격 동기화 상태
 
+## Best-Practice Baseline
+
+- GitHub CLI 인증/credential helper: https://cli.github.com/manual/gh_auth_login, https://cli.github.com/manual/gh_auth_setup-git
+- PAT 최소 권한 원칙(Fine-grained): https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens
+
 ## Changelog
 
+- 2026-02-14: v1.1.0 - WSL GitHub auth 표준 반영 (gh auth + setup-git), 비파괴 동기화 규칙으로 개정
 - 2026-02-12: v1.0.0 - Initial implementation
   - GitHub MCP 기반 push/PR 워크플로우
   - CLI fallback 지원

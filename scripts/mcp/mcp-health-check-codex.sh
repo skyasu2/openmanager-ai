@@ -1,6 +1,6 @@
 #!/bin/bash
 # Codex MCP Health Check Script
-# 목적: Codex MCP 서버 설정 상태 점검 (현재 9개)
+# 목적: Codex MCP 서버 설정 상태 점검 (현재 8개)
 # 사용: ./scripts/mcp/mcp-health-check-codex.sh
 
 set -uo pipefail
@@ -18,6 +18,7 @@ TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S')
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 CODEX_LOCAL_RUNNER="$REPO_ROOT/scripts/mcp/codex-local.sh"
 RUNTIME_ENV_RESOLVER="$REPO_ROOT/scripts/mcp/resolve-runtime-env.sh"
+USAGE_COUNTER="$REPO_ROOT/scripts/mcp/count-codex-mcp-usage.sh"
 
 EXPECTED_SERVERS=(
   "vercel"
@@ -26,7 +27,6 @@ EXPECTED_SERVERS=(
   "context7"
   "playwright"
   "github"
-  "tavily"
   "sequential-thinking"
   "stitch"
 )
@@ -154,6 +154,20 @@ fi
 
 echo ""
 echo "로그 파일: $LOG_FILE"
+
+if [ -x "$USAGE_COUNTER" ]; then
+  TODAY=$(date +%Y-%m-%d)
+  USAGE_OUTPUT=$("$USAGE_COUNTER" --all-roots --day "$TODAY" --top 5 2>/dev/null || true)
+  TODAY_CALLS=$(printf '%s\n' "$USAGE_OUTPUT" | awk -F': ' '/^Total MCP calls:/ {print $2; exit}')
+  if [ -n "$TODAY_CALLS" ]; then
+    echo ""
+    echo -e "${BLUE}오늘 MCP 사용량:${NC} ${TODAY_CALLS} calls (${TODAY})"
+    {
+      echo ""
+      echo "오늘 MCP 사용량: ${TODAY_CALLS} calls (${TODAY})"
+    } >> "$LOG_FILE"
+  fi
+fi
 
 if [ "$FAIL_COUNT" -eq 0 ]; then
   exit 0

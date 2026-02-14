@@ -1,6 +1,12 @@
 # 전체 환경 구축 가이드 (제로베이스)
 
 > Windows 11에서 처음부터 Vibe Coding 환경 구축하기
+> Owner: dev-experience
+> Status: Active Canonical
+> Doc type: Tutorial
+> Last reviewed: 2026-02-14
+> Canonical: docs/development/full-setup-guide.md
+> Tags: wsl,github-auth,setup
 
 ## 개요
 
@@ -158,18 +164,42 @@ git config --global core.autocrlf input
 git config --global init.defaultBranch main
 ```
 
-### 3.2 SSH 키 생성 (GitHub용)
+### 3.2 GitHub 인증 설정 (WSL 권장: HTTPS + gh)
 
 ```bash
-# SSH 키 생성
-ssh-keygen -t ed25519 -C "your@email.com"
-# Enter 3번 (기본값 사용)
+# GitHub CLI 설치 확인
+gh --version
 
-# 공개키 복사
+# 브라우저 기반 로그인
+gh auth login -h github.com -p https -w
+
+# 인증 상태 확인
+gh auth status -h github.com
+
+# git credential helper 연동
+gh auth setup-git
+```
+
+브라우저 자동 실행이 안 되면:
+1. 터미널에 표시된 one-time code 확인
+2. Windows 브라우저에서 `https://github.com/login/device` 접속
+3. 코드 입력 후 승인
+
+```bash
+# 선택: 자동 브라우저 연동
+sudo apt install -y wslu
+echo 'export BROWSER=wslview' >> ~/.bashrc
+source ~/.bashrc
+```
+
+### 3.2.1 SSH 방식 (옵션)
+
+```bash
+ssh-keygen -t ed25519 -C "your@email.com"
 cat ~/.ssh/id_ed25519.pub
 ```
 
-GitHub 설정:
+GitHub SSH 설정:
 1. https://github.com/settings/keys
 2. "New SSH key" 클릭
 3. 복사한 키 붙여넣기
@@ -206,8 +236,6 @@ python3 --version  # 3.10+ 필요
 # pip 업그레이드
 pip3 install --upgrade pip
 
-# uvx 설치 (Serena MCP용)
-pip3 install uvx
 ```
 
 ---
@@ -291,8 +319,7 @@ gemini
 |--------|---------|
 | Supabase | https://supabase.com/dashboard/account/tokens |
 | Vercel | https://vercel.com/account/tokens |
-| GitHub | https://github.com/settings/tokens |
-| Tavily | https://tavily.com |
+| GitHub MCP (선택) | https://github.com/settings/tokens |
 
 ### 5.2 환경변수 설정
 
@@ -303,12 +330,21 @@ cat >> ~/.bashrc << 'EOF'
 # MCP Server Tokens
 export SUPABASE_ACCESS_TOKEN="sbp_your_token"
 export VERCEL_TOKEN="your_token"
-export GITHUB_TOKEN="ghp_your_token"
-export TAVILY_API_KEY="tvly-your_key"
+# GitHub MCP가 토큰을 직접 요구하는 경우에만 설정
+export GITHUB_MCP_TOKEN="ghp_or_github_pat"
 EOF
 
 source ~/.bashrc
 ```
+
+비교:
+- Git push/PR CLI 인증: `gh auth login` + `gh auth setup-git` (권장)
+- MCP GitHub 서버 인증: `GITHUB_MCP_TOKEN` (필요 시에만)
+- PAT는 최소 권한(Fine-grained PAT)으로 발급하고 장기 상시 export 대신 프로젝트 로컬(`.env.local`) 또는 세션 단위 주입을 우선
+
+공식 기준:
+- GitHub CLI 인증/credential helper: https://cli.github.com/manual/gh_auth_login, https://cli.github.com/manual/gh_auth_setup-git
+- PAT 관리 가이드: https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens
 
 ### 5.3 Claude Code MCP 설정
 
@@ -320,10 +356,6 @@ mkdir -p ~/.claude
 cat > ~/.claude/settings.json << 'EOF'
 {
   "mcpServers": {
-    "serena": {
-      "command": "uvx",
-      "args": ["serena-mcp"]
-    },
     "context7": {
       "command": "npx",
       "args": ["-y", "@context7/mcp-server"]
@@ -354,14 +386,7 @@ cat > ~/.claude/settings.json << 'EOF'
       "command": "npx",
       "args": ["-y", "@anthropic/github-mcp"],
       "env": {
-        "GITHUB_TOKEN": "${GITHUB_TOKEN}"
-      }
-    },
-    "tavily": {
-      "command": "npx",
-      "args": ["-y", "@tavily/mcp-server"],
-      "env": {
-        "TAVILY_API_KEY": "${TAVILY_API_KEY}"
+        "GITHUB_TOKEN": "${GITHUB_MCP_TOKEN}"
       }
     }
   }
@@ -410,7 +435,6 @@ Claude Code 최초 실행 시 권한 질문이 나타납니다. 허용할 패턴
 Bash(npm:*)          # npm 명령어
 Bash(git:*)          # git 명령어
 Bash(gh:*)           # GitHub CLI
-mcp__serena__*       # Serena MCP 전체
 mcp__supabase__*     # Supabase MCP 전체
 Skill(commit)        # 커밋 스킬
 ```
@@ -432,11 +456,11 @@ cd ~/projects
 ### 6.2 프로젝트 클론
 
 ```bash
-# SSH로 클론
-git clone git@github.com:skyasu2/openmanager-ai.git
-
-# 또는 HTTPS
+# 권장: HTTPS + gh auth
 git clone https://github.com/skyasu2/openmanager-ai.git
+
+# 옵션: SSH
+# git clone git@github.com:skyasu2/openmanager-ai.git
 
 cd openmanager-ai
 ```
@@ -516,7 +540,7 @@ You: "프로젝트 구조 설명해줘"
 
 MCP 서버 동작 확인:
 ```
-You: "serena로 useServerStatus 훅 찾아줘"
+You: "useServerStatus 훅을 사용하는 곳 찾아줘"
 ```
 
 ### 7.5 AI 리뷰 검증
@@ -542,7 +566,7 @@ git reset --hard HEAD~1
 [✓] Windows 11 WSL 2 설정
 [✓] Ubuntu 24.04 (또는 22.04) 설치 및 설정
 [✓] Node.js 24.x (nvm)
-[✓] Git + SSH 키 설정
+[✓] Git + gh auth 설정 (SSH 옵션)
 [✓] Claude Code 설치 + 로그인
 [✓] Codex 설치 + 로그인
 [✓] Gemini 설치 + 로그인
@@ -593,9 +617,10 @@ git reset --hard HEAD~1
 ```
 증상: "MCP server not available"
 해결:
-1. 환경변수 확인: echo $GITHUB_TOKEN
-2. settings.json 경로 확인: ~/.claude/settings.json
-3. claude --debug로 로그 확인
+1. GitHub CLI 인증 확인: gh auth status -h github.com
+2. GitHub MCP 토큰 확인(사용 시): echo $GITHUB_MCP_TOKEN
+3. settings.json 경로 확인: ~/.claude/settings.json
+4. claude --debug로 로그 확인
 ```
 
 ---
@@ -625,4 +650,4 @@ git reset --hard HEAD~1
 | React | 19 |
 | TypeScript | 5.9.3 |
 
-_Last Updated: 2026-01-27_
+_Last Updated: 2026-02-14_

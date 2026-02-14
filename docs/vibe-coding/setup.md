@@ -1,6 +1,12 @@
 # AI 도구 설치 가이드
 
 > Claude Code, Codex, Gemini 설치 가이드
+> Owner: dev-experience
+> Status: Active Supporting
+> Doc type: Tutorial
+> Last reviewed: 2026-02-14
+> Canonical: docs/vibe-coding/setup.md
+> Tags: vibe-coding,setup,mcp
 
 ## 개요
 
@@ -88,7 +94,7 @@ claude             # 대화형 모드 시작
 
 3. **권한 설정**: `.claude/settings.local.json` 생성
 
-### 현재 사용 중인 MCP 서버 (9개)
+### 현재 사용 중인 MCP 서버 (8개)
 
 | MCP | 용도 |
 |-----|------|
@@ -100,7 +106,6 @@ claude             # 대화형 모드 시작
 | vercel | 배포 상태 |
 | playwright | E2E 테스트 |
 | github | 저장소/PR 관리 |
-| tavily | 웹 검색 |
 
 ---
 

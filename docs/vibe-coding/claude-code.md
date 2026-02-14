@@ -1,6 +1,12 @@
 # Claude Code 마스터 가이드
 
 > Anthropic의 공식 AI 코딩 CLI 도구
+> Owner: dev-experience
+> Status: Active Supporting
+> Doc type: Reference
+> Last reviewed: 2026-02-14
+> Canonical: docs/vibe-coding/claude-code.md
+> Tags: vibe-coding,claude,mcp
 
 ## 개요
 
@@ -157,7 +163,7 @@ Claude: [Explore 에이전트로 탐색]
     "allow": [
       "Bash(npm:*)",
       "Bash(git:*)",
-      "mcp__serena__*",
+      "mcp__context7__*",
       "Skill(commit)"
     ],
     "deny": [
@@ -330,8 +336,8 @@ Claude Code는 도구 실행 전후에 자동 명령을 실행할 수 있습니�
       "Skill(ai-code-review)",
 
       // MCP 서버
-      "mcp__serena__*",
-      "mcp__supabase__*"
+      "mcp__supabase__*",
+      "mcp__context7__*"
     ],
     "deny": [
       "Bash(rm -rf:*)"
@@ -339,7 +345,6 @@ Claude Code는 도구 실행 전후에 자동 명령을 실행할 수 있습니�
   },
   "enableAllProjectMcpServers": true,
   "enabledMcpjsonServers": [
-    "serena",
     "supabase",
     "vercel",
     "github"
@@ -353,7 +358,7 @@ Claude Code는 도구 실행 전후에 자동 명령을 실행할 수 있습니�
 |------|------|------|
 | `Bash(cmd:*)` | 특정 명령어 허용 | `Bash(npm:*)` |
 | `Bash(ENV=val:*)` | 환경변수 포함 명령 | `Bash(NODE_ENV=test:*)` |
-| `mcp__server__*` | MCP 서버 전체 | `mcp__serena__*` |
+| `mcp__server__*` | MCP 서버 전체 | `mcp__context7__*` |
 | `mcp__server__tool` | 특정 도구만 | `mcp__github__list_issues` |
 | `Skill(name)` | 특정 스킬 | `Skill(commit)` |
 | `WebFetch(domain:*)` | 도메인 허용 | `WebFetch(domain:github.com)` |
@@ -389,13 +394,11 @@ AI 코드 리뷰 결과를 확인합니다.
 {
   "enableAllProjectMcpServers": true,
   "enabledMcpjsonServers": [
-    "serena",
     "context7",
     "supabase",
     "vercel",
     "playwright",
     "github",
-    "tavily",
     "sequential-thinking"
   ]
 }
@@ -406,10 +409,6 @@ AI 코드 리뷰 결과를 확인합니다.
 ```json
 {
   "mcpServers": {
-    "serena": {
-      "command": "uvx",
-      "args": ["serena-mcp"]
-    },
     "supabase": {
       "command": "npx",
       "args": ["-y", "@supabase/mcp-server"],

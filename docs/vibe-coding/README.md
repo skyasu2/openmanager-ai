@@ -1,6 +1,12 @@
 # Vibe Coding 가이드
 
 > AI와 함께하는 새로운 개발 패러다임
+> Owner: dev-experience
+> Status: Active Canonical
+> Doc type: Overview
+> Last reviewed: 2026-02-14
+> Canonical: docs/vibe-coding/README.md
+> Tags: vibe-coding,ai-workflow
 
 ## Vibe Coding이란?
 
@@ -25,7 +31,7 @@
 │  └─────────────┘  └─────────────┘  └─────────────┘     │
 │                          ↓                              │
 │  ┌──────────────────────────────────────────────────┐  │
-│  │              MCP Servers (9개)                    │  │
+│  │              MCP Servers (8개)                    │  │
 │  │  serena | context7 | supabase | playwright | ... │  │
 │  └──────────────────────────────────────────────────┘  │
 │                          ↓                              │
@@ -43,7 +49,7 @@
 | [설치 가이드](./setup.md) | AI 도구 설치 및 로그인 설정 |
 | [Claude Code](./claude-code.md) | 메인 AI 도구 마스터 가이드 |
 | [AI 도구들](./ai-tools.md) | 멀티 AI 활용 (Codex, Gemini) |
-| [MCP 서버](./mcp-servers.md) | 9개 MCP 서버 활용법 |
+| [MCP 서버](./mcp-servers.md) | 8개 MCP 서버 활용법 |
 | [Skills](./skills.md) | 11개 커스텀 스킬 레퍼런스 |
 | [워크플로우](./workflows.md) | 실전 개발 워크플로우 |
 
