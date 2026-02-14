@@ -1,8 +1,8 @@
 'use server';
 
+import { logger } from '@/lib/logging';
 import { getServerMonitoringService } from '@/services/monitoring';
 import type { EnhancedServerMetrics } from '@/types/server';
-import { logger } from '@/lib/logging';
 
 /**
  * Server Action for fetching server list
