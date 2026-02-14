@@ -1,5 +1,5 @@
-import { Bot, User } from 'lucide-react';
-import { memo } from 'react';
+import { Bot, Brain, ChevronDown, ChevronUp, User } from 'lucide-react';
+import { memo, useEffect, useState } from 'react';
 import { formatTime } from '@/lib/format-date';
 import type { EnhancedChatMessage } from '@/stores/useAISidebarStore';
 import type { AIThinkingStep } from '@/types/ai-sidebar/ai-sidebar-types';
@@ -9,6 +9,44 @@ import ThinkingProcessVisualizer from './ThinkingProcessVisualizer';
 import { TypewriterMarkdown } from './TypewriterMarkdown';
 
 const MemoizedThinkingProcessVisualizer = memo(ThinkingProcessVisualizer);
+
+const ThinkingToggle = memo<{
+  steps: AIThinkingStep[];
+  isStreaming: boolean;
+  defaultOpen: boolean;
+}>(({ steps, isStreaming, defaultOpen }) => {
+  const [isOpen, setIsOpen] = useState(defaultOpen);
+
+  useEffect(() => {
+    if (isStreaming) setIsOpen(true);
+  }, [isStreaming]);
+
+  return (
+    <div className="mt-3 border-t border-gray-100 pt-2">
+      <button
+        type="button"
+        onClick={() => setIsOpen((prev) => !prev)}
+        className="flex items-center gap-1.5 text-xs text-gray-500 hover:text-gray-700 transition-colors"
+      >
+        {isOpen ? (
+          <ChevronUp className="h-3 w-3" />
+        ) : (
+          <ChevronDown className="h-3 w-3" />
+        )}
+        <Brain className="h-3 w-3" />
+        <span>AI 처리 과정 ({steps.length}단계)</span>
+      </button>
+      {isOpen && (
+        <MemoizedThinkingProcessVisualizer
+          steps={steps}
+          isActive={isStreaming}
+          className="mt-2 rounded border border-gray-200 bg-gray-50"
+        />
+      )}
+    </div>
+  );
+});
+ThinkingToggle.displayName = 'ThinkingToggle';
 
 export const AIWorkspaceMessage = memo<{
   message: EnhancedChatMessage;
@@ -116,13 +154,11 @@ export const AIWorkspaceMessage = memo<{
           {message.role === 'assistant' &&
             message.thinkingSteps &&
             message.thinkingSteps.length > 0 && (
-              <div className="mt-3 border-t border-gray-100 pt-3">
-                <MemoizedThinkingProcessVisualizer
-                  steps={message.thinkingSteps}
-                  isActive={message.isStreaming || false}
-                  className="rounded border border-gray-200 bg-gray-50"
-                />
-              </div>
+              <ThinkingToggle
+                steps={message.thinkingSteps}
+                isStreaming={message.isStreaming || false}
+                defaultOpen={message.isStreaming || false}
+              />
             )}
         </div>
       </div>

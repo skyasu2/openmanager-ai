@@ -34,6 +34,7 @@ import {
   validateProcessConfigs,
 } from '@/lib/core/system/process-configs';
 import { systemLogger } from '@/lib/logger';
+import { getSystemRunningFlag, setSystemRunningFlag } from '@/lib/redis';
 import { getErrorMessage } from '@/types/type-utils';
 import debug from '@/utils/debug';
 
@@ -93,6 +94,18 @@ async function runInitialization(): Promise<string[]> {
     throw error;
   } finally {
     isInitializing = false;
+  }
+}
+
+async function syncSystemRunningFlag(
+  isRunning: boolean,
+  action: string
+): Promise<void> {
+  const synced = await setSystemRunningFlag(isRunning);
+  if (!synced) {
+    systemLogger.warn(
+      `[System] Redis system flag sync failed (action=${action}, isRunning=${isRunning})`
+    );
   }
 }
 
@@ -199,12 +212,25 @@ export async function GET(request: NextRequest) {
         // useSystemStatus 훅이 기대하는 형식으로 응답
         const status = manager.getSystemStatus();
         const { metrics } = status;
+        const redisSystemRunning = await getSystemRunningFlag();
 
         // 시스템 실행 상태 판단: 프로세스가 있고 running 프로세스가 50% 이상
-        const isSystemRunning =
+        const processBasedRunning =
           status.running ||
           (metrics.totalProcesses > 0 &&
             metrics.runningProcesses / metrics.totalProcesses >= 0.5);
+        // 실행 상태의 SSOT는 프로세스 매니저 상태를 우선한다.
+        // Redis는 보조 신호로만 사용하여 stale 플래그에 의한 오탐을 줄인다.
+        const isSystemRunning = processBasedRunning;
+        const redisStateMismatch =
+          redisSystemRunning !== null &&
+          redisSystemRunning !== processBasedRunning;
+
+        if (redisStateMismatch) {
+          systemLogger.warn(
+            `[System] Redis/system status mismatch (redis=${redisSystemRunning}, process=${processBasedRunning})`
+          );
+        }
 
         return NextResponse.json({
           isRunning: isSystemRunning,
@@ -219,6 +245,12 @@ export async function GET(request: NextRequest) {
             cache: true,
             ai: true,
           },
+          systemStateSource:
+            redisSystemRunning === null
+              ? 'process-manager'
+              : redisStateMismatch
+                ? 'process-manager(redis-mismatch)'
+                : 'process-manager+redis',
           // 기존 데이터도 함께 반환 (호환성)
           metrics,
           timestamp: new Date().toISOString(),
@@ -259,6 +291,9 @@ export const POST = withAuth(async (request: NextRequest) => {
       case 'start': {
         systemLogger.system('🚀 통합 시스템 시작 요청');
         const result = await manager.startSystem(options);
+        if (result.success) {
+          await syncSystemRunningFlag(true, 'start');
+        }
 
         return NextResponse.json({
           success: result.success,
@@ -273,6 +308,9 @@ export const POST = withAuth(async (request: NextRequest) => {
       case 'stop': {
         systemLogger.system('🛑 통합 시스템 중지 요청');
         const result = await manager.stopSystem();
+        if (result.success) {
+          await syncSystemRunningFlag(false, 'stop');
+        }
 
         return NextResponse.json({
           success: result.success,
@@ -299,9 +337,13 @@ export const POST = withAuth(async (request: NextRequest) => {
             { status: 500 }
           );
         }
+        await syncSystemRunningFlag(false, 'restart-stop');
 
         await new Promise((resolve) => setTimeout(resolve, 3000));
         const startResult = await manager.startSystem(options);
+        if (startResult.success) {
+          await syncSystemRunningFlag(true, 'restart-start');
+        }
 
         return NextResponse.json({
           success: startResult.success,

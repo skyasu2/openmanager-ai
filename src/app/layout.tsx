@@ -8,6 +8,7 @@ import { EmergencyBanner } from '@/components/emergency/EmergencyBanner';
 import { CSRFTokenProvider } from '@/components/security/CSRFTokenProvider';
 import { SystemBootstrap } from '@/components/system/SystemBootstrap';
 import { Toaster } from '@/components/ui/toaster';
+import { getSiteUrl } from '@/lib/site-url';
 
 // Vercel Analytics & Speed Insights (무료 티어 최적화 - 비활성화)
 // import { SpeedInsights } from '@vercel/speed-insights/next';
@@ -28,7 +29,7 @@ const notoSansKR = Noto_Sans_KR({
 });
 
 // 🌐 SEO Configuration
-const SITE_URL = 'https://openmanager-ai.vercel.app';
+const SITE_URL = getSiteUrl();
 const SITE_NAME = 'OpenManager AI';
 
 export const metadata: Metadata = {

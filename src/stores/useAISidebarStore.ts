@@ -11,7 +11,6 @@
 
 'use client';
 
-import { useCallback, useState } from 'react';
 import { create } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
 import { useShallow } from 'zustand/react/shallow';
@@ -90,114 +89,6 @@ export interface ChatHookOptions {
   autoScroll?: boolean;
   maxMessages?: number;
 }
-
-// 🧠 AI Thinking 관리 훅 (실제 구현)
-export const useAIThinking = () => {
-  // Thinking 상태를 위한 별도 상태 (persist 제외)
-  const [thinkingState, setThinkingState] = useState<{
-    steps: AIThinkingStep[];
-    isThinking: boolean;
-    currentStepIndex: number;
-    startTime?: Date;
-    sessionId?: string;
-  }>({
-    steps: [],
-    isThinking: false,
-    currentStepIndex: -1,
-  });
-
-  const addStep = useCallback((step: Omit<AIThinkingStep, 'timestamp'>) => {
-    const newStep: AIThinkingStep = {
-      ...step,
-      timestamp: new Date(),
-    };
-
-    setThinkingState((prev) => ({
-      ...prev,
-      steps: [...prev.steps, newStep],
-      isThinking: step.status !== 'completed',
-      currentStepIndex: prev.steps.length,
-    }));
-  }, []);
-
-  const updateStep = useCallback(
-    (stepId: string, updates: Partial<AIThinkingStep>) => {
-      setThinkingState((prev) => ({
-        ...prev,
-        steps: prev.steps.map((step) =>
-          step.id === stepId
-            ? { ...step, ...updates, timestamp: new Date() }
-            : step
-        ),
-        isThinking: updates.status
-          ? updates.status !== 'completed'
-          : prev.isThinking,
-      }));
-    },
-    []
-  );
-
-  const clearSteps = useCallback(() => {
-    setThinkingState((prev) => ({
-      ...prev,
-      steps: [],
-      isThinking: false,
-      currentStepIndex: -1,
-    }));
-  }, []);
-
-  const startThinking = useCallback(
-    (initialStep?: string, sessionId?: string) => {
-      const now = new Date();
-      setThinkingState({
-        steps: initialStep
-          ? [
-              {
-                id: crypto.randomUUID(),
-                step: initialStep,
-                status: 'processing',
-                timestamp: now,
-              },
-            ]
-          : [],
-        isThinking: true,
-        currentStepIndex: 0,
-        startTime: now,
-        sessionId,
-      });
-    },
-    []
-  );
-
-  const completeThinking = useCallback(() => {
-    setThinkingState((prev) => ({
-      ...prev,
-      isThinking: false,
-      steps: prev.steps.map((step) =>
-        step.status === 'processing'
-          ? { ...step, status: 'completed', timestamp: new Date() }
-          : step
-      ),
-    }));
-  }, []);
-
-  // 🚫 Simulation Logic Removed (Fail Loudly Policy)
-  // 실제 백엔드 연동이 실패하면 UI에서 명확히 에러를 보여주기 위함
-  // const simulateThinkingSteps = useCallback(...)
-
-  return {
-    steps: thinkingState.steps,
-    isThinking: thinkingState.isThinking,
-    currentStepIndex: thinkingState.currentStepIndex,
-    startTime: thinkingState.startTime,
-    sessionId: thinkingState.sessionId,
-    addStep,
-    updateStep,
-    clearSteps,
-    startThinking,
-    completeThinking,
-  };
-};
 
 // 🔧 타입 정의
 export interface PresetQuestion {
@@ -466,36 +357,6 @@ export const useAIContext = () => {
       setSelectedContext: state.setSelectedContext,
     }))
   );
-};
-
-// 🔍 선택자 함수들 (메모화)
-export const selectQuickQuestions = () => [
-  {
-    id: '1',
-    question: '현재 시스템 상태는?',
-    category: 'performance' as const,
-  },
-  { id: '2', question: '보안 위험 요소는?', category: 'security' as const },
-  { id: '3', question: '성능 예측 분석', category: 'prediction' as const },
-  { id: '4', question: '로그 패턴 분석', category: 'analysis' as const },
-];
-
-// 🎛️ 추가 훅들
-export const useAISettings = () => {
-  const selectedContext = useAISidebarStore((state) => state.selectedContext);
-  const setSelectedContext = useAISidebarStore(
-    (state) => state.setSelectedContext
-  );
-
-  return {
-    selectedContext,
-    setSelectedContext,
-    settings: {
-      autoThinking: true,
-      contextLevel: selectedContext,
-      responseFormat: 'detailed',
-    },
-  };
 };
 
 // 🚨 타입 정의 추가

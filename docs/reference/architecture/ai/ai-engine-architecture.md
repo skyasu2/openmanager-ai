@@ -80,7 +80,7 @@ cloud-run/ai-engine/src/services/ai-sdk/
 | **Analyst Agent** | Groq llama-3.3-70b-versatile | Cerebras → Mistral | 이상 탐지, 트렌드 예측 | `detectAnomalies`, `predictTrends`, `analyzePattern`, `correlateMetrics`, `findRootCause` |
 | **Reporter Agent** | Groq llama-3.3-70b-versatile | Cerebras → Mistral | 장애 보고서, 타임라인 | `buildIncidentTimeline`, `findRootCause`, `correlateMetrics`, `searchKnowledgeBase` |
 | **Advisor Agent** | Mistral mistral-small-2506 | Groq → Cerebras | 트러블슈팅, 지식 검색 | `searchKnowledgeBase` (GraphRAG), `recommendCommands` |
-| **Vision Agent** | Gemini 2.5-flash-lite | (No Fallback) | 스크린샷/로그 분석, Search Grounding | `analyzeScreenshot`, `analyzeLargeLog`, `searchWithGrounding` |
+| **Vision Agent** | Gemini 2.5-flash | OpenRouter (Qwen/Llama) | 스크린샷/로그 분석, Search Grounding | `analyzeScreenshot`, `analyzeLargeLog`, `searchWithGrounding` |
 | **Evaluator Agent** | Cerebras llama-3.3-70b | - | 보고서 품질 평가 (내부) | `evaluateIncidentReport`, `validateReportStructure` |
 | **Optimizer Agent** | Mistral mistral-small-2506 | - | 보고서 품질 개선 (내부) | `refineRootCauseAnalysis`, `enhanceSuggestedActions` |
 | **Verifier** | Mistral mistral-small-2506 | Cerebras llama-3.3-70b | 응답 검증 | N/A |
@@ -110,7 +110,8 @@ cloud-run/ai-engine/src/services/ai-sdk/
 | **Cerebras** | 24M tokens/day | Orchestrator, NLQ Agent | llama-3.3-70b |
 | **Groq** | 100K tokens/day | Analyst, Reporter Agent | llama-3.3-70b-versatile |
 | **Mistral** | 1M tokens/mo | Verifier, Advisor, Embedding | mistral-small-2506 |
-| **Gemini** | 1K RPD, 15 RPM, 250K TPM | Vision Agent | gemini-2.5-flash-lite |
+| **Gemini** | 250 RPD, 10 RPM, 250K TPM | Vision Agent | gemini-2.5-flash |
+| **OpenRouter** | ~50 RPD (Free Tier) | Vision Fallback | Qwen 2.5 VL / Llama 3.2 |
 
 > **주의**: OpenRouter 무료 모델은 일일 50회 제한으로 저사용량 시나리오에만 적합합니다.
 
@@ -306,18 +307,18 @@ Reporter Agent는 **Tavily API**를 통해 실시간 웹 검색 기능을 제공
 | **cacheTTL** | 5분 |
 | **API Key Failover** | `TAVILY_API_KEY` → `TAVILY_API_KEY_BACKUP` |
 
-### Vision Agent (Gemini Flash-Lite)
+### Vision Agent (Gemini Flash + OpenRouter)
 
-Vision Agent는 Gemini Flash-Lite 전용으로, 다른 프로바이더로 폴백하지 않습니다 (Graceful Degradation).
+Vision Agent는 Gemini Flash를 주력으로 사용하며, 무료 할당량(250 RPD) 소진 시 OpenRouter 무료 모델로 폴백합니다.
 
 | Feature | Capability |
 |---------|------------|
-| **Context Window** | 1M tokens |
+| **Context Window** | 1M tokens (Gemini) |
 | **Multimodal** | Image/PDF/Video/Audio |
-| **Google Search** | Grounding 지원 |
+| **Google Search** | Grounding 지원 (Gemini Only) |
 | **URL Context** | 웹 페이지 분석 |
 
-**Graceful Degradation**: Gemini 장애 시 Vision Agent는 비활성화되며, 기존 에이전트(NLQ/Analyst/Reporter/Advisor)는 100% 정상 동작합니다. OpenRouter 무료 모델은 PDF, Google Search Grounding, 1M Context를 미지원하여 핵심 기능 대체가 불가합니다.
+**Graceful Degradation**: Gemini/OpenRouter 모두 장애 시 Vision Agent는 비활성화되며, 기존 에이전트(NLQ/Analyst/Reporter/Advisor)는 100% 정상 동작합니다. OpenRouter 무료 모델은 PDF, Google Search Grounding, 1M Context를 미지원하여 일부 기능이 제한될 수 있습니다.
 
 ### Observability (Langfuse)
 
@@ -448,6 +449,52 @@ graph TD
 
     SingleAgent -->|UIMessageStream| User
     Verifier -->|UIMessageStream| User
+```
+
+### ASCII Fallback
+
+```
+┌──────────────────────────────────────────────────────────────────┐
+│  User Query                                                       │
+└─────────────────────────────┬────────────────────────────────────┘
+                              │ POST
+                              ▼
+┌──────────────────────────────────────────────────────────────────┐
+│  Vercel (Next.js)  →  /api/ai/supervisor  →  Proxy              │
+└─────────────────────────────┬────────────────────────────────────┘
+                              │ X-API-Key
+                              ▼
+┌──────────────────────────────────────────────────────────────────┐
+│  Google Cloud Run (AI Engine)                                     │
+│                                                                   │
+│  ┌────────────────────────────────────────────────────────────┐  │
+│  │  Mode Selection                                             │  │
+│  │  ┌─────────────────┐      ┌──────────────────────────┐    │  │
+│  │  │ Simple Query    │      │ Complex Query             │    │  │
+│  │  │ → Single Agent  │      │ → Orchestrator            │    │  │
+│  │  │   (Cerebras)    │      │   (Cerebras llama-3.3)    │    │  │
+│  │  └────────┬────────┘      └────────────┬─────────────┘    │  │
+│  │           │                   ┌────────┼────────┐          │  │
+│  │           │                   ▼        ▼        ▼          │  │
+│  │           │               ┌─────┐ ┌────────┐ ┌────────┐   │  │
+│  │           │               │ NLQ │ │Analyst │ │Reporter│   │  │
+│  │           │               └──┬──┘ └───┬────┘ └───┬────┘   │  │
+│  │           │                  │        │          │         │  │
+│  │           │               ┌────────┐ ┌────────┐           │  │
+│  │           │               │Advisor │ │ Vision │           │  │
+│  │           │               └───┬────┘ └───┬────┘           │  │
+│  │           │                   └─────┬────┘                │  │
+│  │           │                         ▼                     │  │
+│  │           │                  ┌────────────┐               │  │
+│  │           └──────────────────│  Verifier  │               │  │
+│  │                              └──────┬─────┘               │  │
+│  └─────────────────────────────────────┼─────────────────────┘  │
+└─────────────────────────────────────────┼────────────────────────┘
+                                          ▼
+┌─────────────┐     ┌──────────────┐     ┌──────────────────┐
+│ Server Data │     │ GraphRAG     │     │ Redis Cache      │
+│ hourly-data │     │ pgVector     │     │ Upstash          │
+└─────────────┘     └──────────────┘     └──────────────────┘
 ```
 
 ### Interactive Diagrams (FigJam)

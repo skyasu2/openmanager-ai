@@ -5,22 +5,9 @@
  */
 
 import 'server-only';
-import { env, isDevelopment, isProduction, isTest } from '@/env';
+import { env, isDevelopment } from '@/env';
 import { logger } from '@/lib/logging';
-
-// This logic is moved from the now-deleted env-config.ts
-function getSiteUrl(): string {
-  if (env.NEXT_PUBLIC_VERCEL_URL) {
-    return `https://${env.NEXT_PUBLIC_VERCEL_URL}`;
-  }
-  if (isProduction) {
-    return env.NEXT_PUBLIC_PROD_URL || 'https://openmanager-ai.vercel.app';
-  }
-  if (isTest) {
-    return env.NEXT_PUBLIC_TEST_URL || 'https://openmanager-test.vercel.app';
-  }
-  return env.NEXT_PUBLIC_DEV_URL || 'http://localhost:3000';
-}
+import { getSiteUrl } from '@/lib/site-url';
 
 /**
  * API 엔드포인트 설정

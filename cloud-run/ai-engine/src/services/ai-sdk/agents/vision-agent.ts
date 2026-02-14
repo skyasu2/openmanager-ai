@@ -7,14 +7,16 @@
  * - Google Search Grounding for up-to-date documentation
  * - URL content analysis
  *
- * Model: Gemini Flash-Lite (gemini-2.5-flash-lite) - NO FALLBACK
- * Reason: Unique features not available in other providers:
- *   - 1M token context window
- *   - Vision/PDF/Video/Audio multimodal
- *   - Google Search Grounding
- *   - URL Context
+ * Model: Gemini Flash (Primary) + OpenRouter (Fallback)
  *
- * Graceful Degradation: When Gemini unavailable, Vision features are disabled
+ * Primary: Gemini 2.5 Flash
+ * - 1M token context, Search Grounding
+ *
+ * Fallback: OpenRouter (Qwen 2.5 VL / Llama 3.2 Vision)
+ * - Used when Gemini quota exceeded (250 RPD)
+ * - Basic vision capabilities maintained
+ *
+ * Graceful Degradation: When both unavailable, Vision features are disabled
  * and queries are routed to Analyst Agent as fallback.
  *
  * @version 1.0.0

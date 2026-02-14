@@ -3,19 +3,21 @@ export const maxDuration = 10; // Vercel Pro Tier (경량 엔드포인트)
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
+import { withAuth } from '@/lib/auth/api-auth';
 import { aiLogger } from '@/lib/logger';
 import { rateLimiters, withRateLimit } from '@/lib/security/rate-limiter';
+import { supabaseAdmin } from '@/lib/supabase/admin';
 
 /**
  * AI 피드백 API 엔드포인트
  *
- * POST /api/ai/feedback
+ * POST /api/ai/feedback - 피드백 저장 (Supabase + Langfuse)
+ * GET /api/ai/feedback - 통계 조회
  *
- * 사용자 피드백 (👍/👎)을 수집하여 AI 품질 개선에 활용
- *
- * @version 1.1.0 - Rate Limiting 추가 (2026-01-03)
- * @version 1.2.0 - Zod 스키마 검증 추가
+ * @version 1.3.0 - Supabase 영속 저장 + withAuth (2026-02-14)
  */
+
+const FEEDBACK_TABLE = 'ai_feedback';
 
 const FeedbackRequestSchema = z.object({
   messageId: z.string().min(1),
@@ -25,18 +27,29 @@ const FeedbackRequestSchema = z.object({
   traceId: z.string().optional(),
 });
 
-interface FeedbackLog {
-  messageId: string;
-  type: 'positive' | 'negative';
-  timestamp: string;
-  userAgent?: string;
-}
-
 /** Cloud Run 피드백 프록시 타임아웃 (ms) */
 const FEEDBACK_PROXY_TIMEOUT_MS = 5000;
 
-// 메모리 내 피드백 저장소 (MVP - 추후 DB 연동)
-const feedbackStore: FeedbackLog[] = [];
+/** Supabase에 피드백 저장 (Graceful - 실패해도 API 응답에 영향 없음) */
+async function persistFeedback(feedback: {
+  message_id: string;
+  type: 'positive' | 'negative';
+  timestamp: string;
+  session_id?: string;
+  trace_id?: string;
+  user_agent?: string;
+}): Promise<boolean> {
+  try {
+    const { error } = await supabaseAdmin.from(FEEDBACK_TABLE).insert(feedback);
+    if (error) {
+      aiLogger.warn(`Supabase feedback insert failed: ${error.message}`);
+      return false;
+    }
+    return true;
+  } catch {
+    return false;
+  }
+}
 
 async function handlePOST(request: NextRequest) {
   try {
@@ -54,24 +67,24 @@ async function handlePOST(request: NextRequest) {
     }
 
     const body = parsed.data;
+    const timestamp = body.timestamp || new Date().toISOString();
+    const userAgent = request.headers.get('user-agent') || undefined;
 
-    const feedbackLog: FeedbackLog = {
+    // Supabase 영속 저장 (non-blocking)
+    const dbSaved = await persistFeedback({
+      message_id: body.messageId,
+      type: body.type,
+      timestamp,
+      session_id: body.sessionId,
+      trace_id: body.traceId,
+      user_agent: userAgent,
+    });
+
+    aiLogger.info('Feedback received', {
       messageId: body.messageId,
       type: body.type,
-      timestamp: body.timestamp || new Date().toISOString(),
-      userAgent: request.headers.get('user-agent') || undefined,
-    };
-
-    // 피드백 저장 (메모리)
-    feedbackStore.push(feedbackLog);
-
-    // 로그 출력 (개발/디버깅용)
-    aiLogger.info('Feedback received', feedbackLog);
-
-    // 최근 100개만 유지 (메모리 관리)
-    if (feedbackStore.length > 100) {
-      feedbackStore.shift();
-    }
+      dbSaved,
+    });
 
     // Forward to Cloud Run Langfuse if traceId is present
     let langfuseStatus: 'skipped' | 'success' | 'error' = 'skipped';
@@ -112,6 +125,7 @@ async function handlePOST(request: NextRequest) {
       success: true,
       message: 'Feedback recorded',
       feedbackId: `fb_${Date.now()}`,
+      stored: dbSaved ? 'database' : 'log_only',
       langfuseStatus,
     });
   } catch (error) {
@@ -123,20 +137,49 @@ async function handlePOST(request: NextRequest) {
   }
 }
 
-// Rate Limiting 적용 (분당 20회)
-export const POST = withRateLimit(rateLimiters.default, handlePOST);
+// 인증 + Rate Limiting 적용 (분당 20회)
+export const POST = withAuth((request: NextRequest) =>
+  withRateLimit(rateLimiters.default, handlePOST)(request)
+);
 
-// GET: 피드백 통계 조회 (관리자용)
+// GET: 피드백 통계 조회 (Supabase 기반)
 async function handleGET(_request: NextRequest) {
-  const stats = {
-    total: feedbackStore.length,
-    positive: feedbackStore.filter((f) => f.type === 'positive').length,
-    negative: feedbackStore.filter((f) => f.type === 'negative').length,
-    recentFeedback: feedbackStore.slice(-10),
-  };
+  try {
+    const { data, error } = await supabaseAdmin
+      .from(FEEDBACK_TABLE)
+      .select('type, timestamp, message_id')
+      .order('timestamp', { ascending: false })
+      .limit(100);
 
-  return NextResponse.json(stats);
+    if (error || !data) {
+      return NextResponse.json({
+        total: 0,
+        positive: 0,
+        negative: 0,
+        recentFeedback: [],
+        source: 'unavailable',
+      });
+    }
+
+    return NextResponse.json({
+      total: data.length,
+      positive: data.filter((f) => f.type === 'positive').length,
+      negative: data.filter((f) => f.type === 'negative').length,
+      recentFeedback: data.slice(0, 10),
+      source: 'database',
+    });
+  } catch {
+    return NextResponse.json({
+      total: 0,
+      positive: 0,
+      negative: 0,
+      recentFeedback: [],
+      source: 'error',
+    });
+  }
 }
 
-// Rate Limiting 적용
-export const GET = withRateLimit(rateLimiters.default, handleGET);
+// 인증 + Rate Limiting 적용
+export const GET = withAuth((request: NextRequest) =>
+  withRateLimit(rateLimiters.default, handleGET)(request)
+);

@@ -698,12 +698,44 @@ function loadPrebuiltStates(): PrecomputedSlot[] | null {
 /** 슬롯 캐시 로드 (Lazy) - Pre-built 우선, 없으면 빌드 */
 export function getSlots(): PrecomputedSlot[] {
   if (!_cachedSlots) {
-    // 1. Pre-built JSON 시도 (빠른 cold start)
-    _cachedSlots = loadPrebuiltStates();
+    // 기본 정책: 런타임 빌드 우선 (데이터 정합성 최우선)
+    // 필요 시 PRECOMPUTED_STATES_MODE=prebuilt 로 pre-built 우선 모드 활성화 가능
+    const mode = process.env.PRECOMPUTED_STATES_MODE ?? 'runtime';
+    const preferPrebuilt = mode === 'prebuilt';
 
-    // 2. 없으면 런타임 빌드 (fallback)
-    if (!_cachedSlots) {
-      console.log('[PrecomputedState] Pre-built 없음, 런타임 빌드 시작...');
+    if (preferPrebuilt) {
+      // 1) pre-built 로드 시도
+      const prebuilt = loadPrebuiltStates();
+
+      // 2) pre-built 검증 (기본 활성화)
+      // stale pre-built로 인한 Vercel/Cloud Run 데이터 불일치 방지
+      const shouldValidate = process.env.PRECOMPUTED_STATES_VALIDATE !== 'false';
+      if (prebuilt && shouldValidate) {
+        const runtimeBuilt = buildPrecomputedStates();
+        const currentIndex = getCurrentSlotIndex();
+        const prebuiltSummary = prebuilt[currentIndex]?.summary;
+        const runtimeSummary = runtimeBuilt[currentIndex]?.summary;
+        const isMatch =
+          JSON.stringify(prebuiltSummary) === JSON.stringify(runtimeSummary);
+
+        if (!isMatch) {
+          logger.warn(
+            '[PrecomputedState] stale pre-built 감지, 런타임 빌드 결과 사용',
+            { currentIndex, prebuiltSummary, runtimeSummary }
+          );
+          _cachedSlots = runtimeBuilt;
+        } else {
+          _cachedSlots = prebuilt;
+        }
+      } else if (prebuilt) {
+        _cachedSlots = prebuilt;
+      } else {
+        console.log('[PrecomputedState] Pre-built 없음, 런타임 빌드 시작...');
+        _cachedSlots = buildPrecomputedStates();
+      }
+    } else {
+      // 런타임 빌드 우선 (권장)
+      console.log('[PrecomputedState] 런타임 빌드 모드 사용');
       _cachedSlots = buildPrecomputedStates();
     }
 

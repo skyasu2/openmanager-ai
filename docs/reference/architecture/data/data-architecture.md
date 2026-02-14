@@ -36,6 +36,34 @@ AI/ML 서비스가 단순히 API를 호출하는 비효율적인 구조를 탈�
 
 ### 데이터 흐름 (2-Tier Priority)
 
+#### Mermaid Diagram
+
+```mermaid
+graph TD
+    subgraph BuildTime["Build-Time Pipeline"]
+        Script["scripts/data/otel-precompute.ts"]
+        Hourly["src/data/hourly-data/<br/>(Prometheus Format, SSOT)"]
+        OTel["src/data/otel-processed/<br/>(OTel Semantic Conv.)"]
+        Script -->|"npm run data:otel"| Hourly
+        Hourly -->|"변환"| OTel
+    end
+
+    subgraph Runtime["Runtime Consumers"]
+        MP["MetricsProvider<br/>(Singleton)"]
+        Dashboard["Dashboard UI"]
+        AIEngine["Cloud Run AI Engine"]
+        RAG["RAG System<br/>(Supabase)"]
+    end
+
+    OTel -->|"1. Primary"| MP
+    Hourly -->|"2. Fallback"| MP
+    MP --> Dashboard
+    OTel --> AIEngine
+    Hourly --> AIEngine
+```
+
+#### ASCII Fallback
+
 ```
 ┌─────────────────────────────────┐
 │  src/data/otel-processed/       │  ← 1. Primary (OTel Semantic Conv.)

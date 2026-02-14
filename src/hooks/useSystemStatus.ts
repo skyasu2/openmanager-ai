@@ -53,6 +53,9 @@ export interface UseSystemStatusReturn {
 }
 
 export function useSystemStatus(): UseSystemStatusReturn {
+  const RUNNING_POLL_INTERVAL_MS = 60_000;
+  const IDLE_POLL_INTERVAL_MS = 120_000;
+
   const [status, setStatus] = useState<SystemStatus | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -127,23 +130,28 @@ export function useSystemStatus(): UseSystemStatusReturn {
     }
   }, []); // fetchStatus 의존성 제거하여 React Error #310 해결
 
-  // 초기 로드 및 주기적 업데이트
+  const pollIntervalMs = status?.isRunning
+    ? RUNNING_POLL_INTERVAL_MS
+    : IDLE_POLL_INTERVAL_MS;
+
+  // 초기 로드 및 주기적 업데이트 (hidden 탭에서는 폴링 중지)
   useEffect(() => {
     const abortController = new AbortController();
 
     // 초기 로드
     void performFetch(abortController.signal);
 
-    // 30초마다 상태 업데이트
+    // 실행 중에는 60초, 유휴 상태는 120초 간격으로 체크
     const interval = setInterval(() => {
+      if (document.hidden) return;
       void performFetch(abortController.signal);
-    }, 30000);
+    }, pollIntervalMs);
 
     return () => {
       clearInterval(interval);
       abortController.abort();
     };
-  }, [performFetch]);
+  }, [performFetch, pollIntervalMs]);
 
   // 페이지 포커스 시 상태 새로고침 (2분 throttle)
   useEffect(() => {

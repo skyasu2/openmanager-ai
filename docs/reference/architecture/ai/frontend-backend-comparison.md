@@ -8,13 +8,40 @@
 > Canonical: docs/reference/architecture/ai/frontend-backend-comparison.md
 > Tags: ai,frontend,backend,comparison
 
-**분석 일시**: 2026-02-04 (Updated)
-**버전**: v7.1.2 + 4c302484e
+**분석 일시**: 2026-02-14 (Updated)
+**버전**: v8.0.0
 **아키텍처**: Vercel (Frontend) + Cloud Run (Backend AI Engine)
 
 ---
 
 ## 1. 아키텍처 개요
+
+### Mermaid Diagram
+
+```mermaid
+graph LR
+    User["사용자"] --> Vercel
+
+    subgraph Vercel["Vercel/Next.js Frontend"]
+        UI["AISidebarV4"]
+        Hook["useAIChatCore"]
+        Router["Hybrid Query Router"]
+        Security["Security (52패턴)"]
+        Stream["Resumable Stream"]
+    end
+
+    subgraph CloudRun["Cloud Run AI Engine"]
+        Supervisor["Supervisor (듀얼모드)"]
+        Orchestrator["Orchestrator (5모듈)"]
+        Agents["9 Agents + 26 Tools"]
+        Provider["Quad-Provider LLM"]
+        PreComp["Pre-computed 144슬롯"]
+    end
+
+    Vercel -->|"proxy (X-API-Key)"| CloudRun
+```
+
+### ASCII Fallback
 
 ```
 [사용자] → [Vercel/Next.js Frontend] ──proxy──→ [Cloud Run AI Engine]
@@ -22,7 +49,7 @@
          UI/UX Layer                            AI Processing Layer
          - AISidebarV4                          - Supervisor (듀얼모드)
          - useAIChatCore                        - Orchestrator (5모듈 분할)
-         - Hybrid Query Router                  - 7 Agents + 26 Tools
+         - Hybrid Query Router                  - 9 Agents + 26 Tools
          - Security (52패턴 방어)               - Quad-Provider LLM
          - Resumable Stream                     - Pre-computed 144슬롯
 ```

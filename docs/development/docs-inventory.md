@@ -11,9 +11,9 @@
 > Auto-generated: 2026-02-14
 > Source: `docs/`
 
-- Total files in docs: **63**
-- Total markdown docs: **49**
-- Total markdown lines: **11710**
+- Total files in docs: **64**
+- Total markdown docs: **50**
+- Total markdown lines: **12033**
 
 ## Markdown Distribution
 
@@ -23,10 +23,10 @@
 | development | 10 |
 | guides | 7 |
 | vibe-coding | 7 |
+| archived | 2 |
 | troubleshooting | 2 |
 | QUICK-START.md | 1 |
 | README.md | 1 |
-| archived | 1 |
 | llms.md | 1 |
 | status.md | 1 |
 

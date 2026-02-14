@@ -8,7 +8,16 @@
  * @created 2026-01-18
  */
 
-import { Bot, Cpu, FileText, HelpCircle, Loader2, Search } from 'lucide-react';
+import {
+  Bot,
+  Cpu,
+  Eye,
+  FileText,
+  HelpCircle,
+  Loader2,
+  Search,
+  Settings,
+} from 'lucide-react';
 import { memo } from 'react';
 
 export type AgentStatus = 'thinking' | 'processing' | 'completed' | 'idle';
@@ -30,6 +39,22 @@ const AGENT_ICONS: Record<string, typeof Bot> = {
   'Analyst Agent': Cpu,
   'Reporter Agent': FileText,
   'Advisor Agent': HelpCircle,
+  'Vision Agent': Eye,
+  Evaluator: Settings,
+  Optimizer: Settings,
+};
+
+// Agent Korean descriptions
+const AGENT_DESCRIPTIONS: Record<string, string> = {
+  Orchestrator: '최적 에이전트를 선택하고 있습니다',
+  'OpenManager Orchestrator': '최적 에이전트를 선택하고 있습니다',
+  'NLQ Agent': '서버 데이터를 조회하고 있습니다',
+  'Analyst Agent': '패턴을 분석하고 있습니다',
+  'Reporter Agent': '보고서를 작성하고 있습니다',
+  'Advisor Agent': '지식 베이스를 검색하고 있습니다',
+  'Vision Agent': '이미지를 분석하고 있습니다',
+  Evaluator: '결과를 평가하고 있습니다',
+  Optimizer: '응답을 최적화하고 있습니다',
 };
 
 // Status to color/animation mapping
@@ -99,17 +124,25 @@ export const AgentStatusIndicator = memo<AgentStatusIndicatorProps>(
     const style = STATUS_STYLES[status];
     const label = STATUS_LABELS[status];
 
+    const description = AGENT_DESCRIPTIONS[agent];
+
     if (compact) {
       return (
-        <span
-          className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium ${style.bg} ${style.text} ${style.animate || ''}`}
+        <div
+          className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1 text-xs font-medium ${style.bg} ${style.text} ${style.border} border ${style.animate || ''}`}
         >
           {(status === 'thinking' || status === 'processing') && (
             <Loader2 className="h-3 w-3 animate-spin" />
           )}
-          <Icon className="h-3 w-3" />
-          <span>{agent}</span>
-        </span>
+          <Icon className="h-3.5 w-3.5" />
+          <span className="font-semibold">{agent}</span>
+          {description && (
+            <>
+              <span className="opacity-50">·</span>
+              <span className="font-normal opacity-75">{description}</span>
+            </>
+          )}
+        </div>
       );
     }
 

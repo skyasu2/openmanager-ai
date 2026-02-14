@@ -10,14 +10,14 @@
 
 ## Categories
 
-- [AI](./ai/common/ai-standards.md)
+- [AI](./ai/ai-standards.md)
 - [Testing](./testing/test-strategy.md)
 - [Standards](./standards/health-check-policy.md)
 
 ## Key Guides
 
 ### AI
-- [AI Standards](./ai/common/ai-standards.md)
+- [AI Standards](./ai/ai-standards.md)
 - [Vision Agent Guide](./ai/vision-agent-guide.md)
 
 ### Testing

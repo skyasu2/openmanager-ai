@@ -10,6 +10,7 @@
 
 // 빌드 타임 감지 함수
 import { logger } from '@/lib/logging';
+import { getSiteUrl } from '@/lib/site-url';
 
 const isBuildTime = (): boolean => {
   return !!(
@@ -166,9 +167,7 @@ const createConfig = (): EnvironmentConfig => {
         maxRetries: isProduction ? 3 : 1,
         baseUrl:
           process.env.NEXT_PUBLIC_API_URL ||
-          (isProduction
-            ? 'https://openmanager-ai.vercel.app'
-            : 'http://localhost:3000'),
+          (isProduction ? getSiteUrl() : 'http://localhost:3000'),
       },
 
       // 개발 모드 설정

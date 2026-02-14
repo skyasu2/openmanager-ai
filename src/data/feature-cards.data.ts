@@ -21,7 +21,7 @@ export const FEATURE_CARDS_DATA: FeatureCard[] = [
         '🧠 Cerebras Inference: WSE-3 칩 기반 24M 토큰/일 초고속 추론 (llama-3.3-70b) — NLQ 에이전트 전용, 최저 지연 우선',
         '⚡ Groq Cloud: LPU 기반 500 Tokens/s 초고속 추론 (llama-3.3-70b-versatile) — Analyst/Reporter 기본 모델',
         '🛡️ Mistral AI: 24B SLM + mistral-embed 1024차원 벡터 임베딩 — Advisor 전용, RAG 검색 품질 최적',
-        '👁️ Gemini Flash-Lite: Vision Agent 전용, 스크린샷 분석, 1M 컨텍스트 — 대용량 로그/이미지 처리 유일 모델',
+        '👁️ Gemini Flash: Vision Agent 전용, 스크린샷 분석, 1M 컨텍스트 — 대용량 로그/이미지 처리 유일 모델',
         '▲ Vercel AI SDK 6.0: streamText, generateObject, embed 통합 API — 멀티 에이전트 스트리밍 응답 기반',
         '🤖 @ai-sdk-tools/agents: 7-Agent Orchestrator-Worker Handoff 패턴 — 역할별 전문화로 응답 품질 향상',
         '🌲 Isolation Forest: ML 기반 다변량 이상 탐지 + Adaptive Thresholds — 단일 메트릭 임계값의 한계 보완',
@@ -35,7 +35,7 @@ export const FEATURE_CARDS_DATA: FeatureCard[] = [
         'Cerebras Inference (Llama 3.3 70B)',
         'Groq Cloud (LPU)',
         'Mistral AI (SLM 24B + Embedding)',
-        'Gemini 2.5 Flash-Lite (Vision)',
+        'Gemini 2.5 Flash (Vision)',
         'Vercel AI SDK 6.0',
         '@ai-sdk-tools/agents v1.2',
         'LlamaIndex.TS (GraphRAG)',
@@ -120,7 +120,7 @@ export const FEATURE_CARDS_DATA: FeatureCard[] = [
     id: 'vibe-coding',
     title: '🔥 Vibe Coding',
     description:
-      '개발자와 도구가 하나가 되는 몰입형 코딩 환경. WSL + Claude Code 기반으로 자동 코드 리뷰와 멀티 에이전트 협업이 커밋마다 실행됩니다.',
+      'ChatGPT · Cursor · Claude Code · Antigravity 등 AI 도구를 활용해 프로젝트 전체를 구축. 4단계 진화를 거친 개인 AI 개발 워크플로우 기록.',
     icon: Zap,
     gradient: 'from-amber-600 via-orange-600 to-amber-700',
     detailedContent: {

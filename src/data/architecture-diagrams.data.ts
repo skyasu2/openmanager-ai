@@ -129,7 +129,7 @@ export const ARCHITECTURE_DIAGRAMS: Record<string, ArchitectureDiagram> = {
           {
             id: 'vision',
             label: 'Vision Agent',
-            sublabel: 'Gemini Flash-Lite',
+            sublabel: 'Gemini Flash',
             type: 'highlight',
             icon: '👁️',
           },

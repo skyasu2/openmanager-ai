@@ -5,7 +5,7 @@
 > Status: Active
 > Doc type: How-to
 > Last reviewed: 2026-02-14
-> Canonical: docs/guides/ai/common/ai-standards.md
+> Canonical: docs/guides/ai/ai-standards.md
 > Tags: ai,standards,tooling,policy
 >
 > **통합 문서**: ai-coding-standards.md + ai-usage-guidelines.md
@@ -120,9 +120,9 @@ bash scripts/ai/agent-bridge.sh --to claude --mode doc --save-auto "결과 문�
 
 ## Related Documents
 
-- [Vibe Coding README](../../../vibe-coding/README.md)
-- [Vibe Coding Workflows](../../../vibe-coding/workflows.md)
-- [AI Tools](../../../vibe-coding/multi-agent-tools.md)
+- [Vibe Coding README](../../vibe-coding/README.md)
+- [Vibe Coding Workflows](../../vibe-coding/workflows.md)
+- [AI Tools](../../vibe-coding/multi-agent-tools.md)
 
 ---
 

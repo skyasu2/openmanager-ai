@@ -148,13 +148,3 @@ export const useAuthStore = create<AuthState>()(
     }
   )
 );
-
-/**
- * 선택적 구독 유틸리티
- *
- * 예시:
- * const adminMode = useAdminMode(); // adminMode만 구독
- * const authType = useAuthType(); // authType만 구독
- */
-export const useAuthType = () => useAuthStore((s) => s.authType);
-export const useAuthUser = () => useAuthStore((s) => s.user);

@@ -3,11 +3,9 @@
  * API 라우트에서 사용하는 공통 CORS 헤더
  */
 
-const ALLOWED_ORIGINS = [
-  'https://openmanager-ai.vercel.app',
-  'http://localhost:3000',
-  'http://localhost:3001',
-];
+import { getSiteUrl } from '@/lib/site-url';
+
+const DEV_ORIGINS = ['http://localhost:3000', 'http://localhost:3001'];
 
 /** Vercel Preview URL 패턴: openmanager-ai-*.vercel.app */
 const VERCEL_PREVIEW_PATTERN =
@@ -17,9 +15,16 @@ const VERCEL_PREVIEW_PATTERN =
  * 요청 origin이 허용된 origin인지 확인
  */
 function resolveOrigin(requestOrigin?: string | null): string {
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL;
-  if (appUrl && !ALLOWED_ORIGINS.includes(appUrl)) {
-    ALLOWED_ORIGINS.push(appUrl);
+  const siteUrl = getSiteUrl();
+  const configuredOrigins = [
+    process.env.NEXT_PUBLIC_APP_URL,
+    process.env.NEXT_PUBLIC_SITE_URL,
+    process.env.NEXT_PUBLIC_PROD_URL,
+  ].filter((origin): origin is string => Boolean(origin));
+
+  const allowedOrigins = new Set<string>([siteUrl, ...DEV_ORIGINS]);
+  for (const origin of configuredOrigins) {
+    allowedOrigins.add(origin);
   }
 
   // Vercel Preview URL: 프로젝트 소유 프리뷰만 허용
@@ -27,11 +32,11 @@ function resolveOrigin(requestOrigin?: string | null): string {
     return requestOrigin;
   }
 
-  if (requestOrigin && ALLOWED_ORIGINS.includes(requestOrigin)) {
+  if (requestOrigin && allowedOrigins.has(requestOrigin)) {
     return requestOrigin;
   }
 
-  return appUrl || 'https://openmanager-ai.vercel.app';
+  return siteUrl;
 }
 
 /**

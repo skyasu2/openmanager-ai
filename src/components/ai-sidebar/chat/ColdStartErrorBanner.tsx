@@ -13,21 +13,9 @@
 
 import { AlertCircle, RefreshCw, X, Zap } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
+import { isColdStartRelatedError } from '@/lib/ai/constants/stream-errors';
 
 const AUTO_RETRY_SECONDS = 5;
-
-/**
- * Cold Start 에러인지 감지
- */
-export function isColdStartError(error: string): boolean {
-  return (
-    error.includes('timeout') ||
-    error.includes('Stream error') ||
-    error.includes('504') ||
-    error.includes('ECONNRESET') ||
-    error.includes('fetch failed')
-  );
-}
 
 export interface ColdStartErrorBannerProps {
   error: string;
@@ -43,7 +31,7 @@ export function ColdStartErrorBanner({
   onRetry,
   onClearError,
 }: ColdStartErrorBannerProps) {
-  const isColdStart = isColdStartError(error);
+  const isColdStart = isColdStartRelatedError(error);
   const [countdown, setCountdown] = useState(
     isColdStart ? AUTO_RETRY_SECONDS : 0
   );
@@ -82,11 +70,11 @@ export function ColdStartErrorBanner({
           </div>
           <div className="min-w-0 flex-1">
             <p className="text-sm font-semibold text-orange-800">
-              ⚡ AI 엔진 웜업 중 (Cold Start)
+              ⚡ AI 엔진이 준비 중입니다
             </p>
             <p className="mt-1 text-xs text-orange-700">
-              서버가 일시적으로 대기 상태였습니다. 잠시 후 자동으로
-              재시도됩니다.
+              Cloud Run AI 엔진이 대기 모드에서 깨어나고 있습니다. 일반적으로
+              5-10초 소요됩니다.
             </p>
             {isAutoRetrying && countdown > 0 && (
               <div className="mt-2 flex items-center gap-2">

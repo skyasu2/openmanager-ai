@@ -2,10 +2,10 @@
 
 > Prometheus 포맷 전환 전후 개선 효과를 기록한 분석 문서
 > Owner: platform-data
-> Status: Historical
+> Status: Archived
 > Doc type: Reference
 > Last reviewed: 2026-02-14
-> Canonical: docs/reference/architecture/data/prometheus-migration-improvements.md
+> Canonical: docs/archived/prometheus-migration-improvements.md
 > Tags: prometheus,migration,analysis,data
 > Current canonical docs: `docs/README.md`, `docs/reference/README.md`
 > Note: 본 문서는 작성 시점 기준 분석/리뷰 기록입니다.

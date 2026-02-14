@@ -51,6 +51,28 @@ cloud-run/ai-engine/src/lib/ai/monitoring/
 
 ### Data Flow
 
+#### Mermaid Diagram
+
+```mermaid
+graph TD
+    Metrics["Metrics Stream"] --> Engine
+
+    subgraph Engine["UnifiedAnomalyEngine"]
+        Stat["Statistical Detector<br/>(weight: 0.3)"]
+        IF["Isolation Forest<br/>(weight: 0.4)"]
+        Adapt["Adaptive Threshold<br/>(weight: 0.3)"]
+        Vote["Ensemble Vote<br/>(threshold: 0.5)"]
+
+        Stat --> Vote
+        IF --> Vote
+        Adapt --> Vote
+    end
+
+    Vote --> Result["Anomaly Detection Result<br/>+ Trend Prediction"]
+```
+
+#### ASCII Fallback
+
 ```
 Metrics Stream
      │

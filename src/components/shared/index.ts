@@ -18,13 +18,11 @@ export { ErrorBoundary, withErrorBoundary } from './ErrorBoundary';
 export { default as FeatureCardModal } from './FeatureCardModal';
 export { default as FullScreenLayout } from './FullScreenLayout';
 export { MiniLineChart } from './MiniLineChart';
-export { Modal } from './Modal';
 // Branding
 export { OpenManagerLogo } from './OpenManagerLogo';
 export { DateTimeClock, RealtimeClock } from './RealtimeClock';
 // Status & Indicators
 export { ServerStatusIndicator } from './ServerStatusIndicator';
-export { Sparkline } from './Sparkline';
 export { default as UnauthorizedAccessUI } from './UnauthorizedAccessUI';
 export {
   default as UnifiedCircularGauge,
