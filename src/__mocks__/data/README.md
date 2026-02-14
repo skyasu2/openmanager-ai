@@ -11,7 +11,6 @@
 - **위치**: `src/services/server-data/server-data-loader.ts`
 - **데이터 소스**: `public/hourly-data/hour-*.json` (24시간 × 15개 서버)
 - **생성 스크립트**: `scripts/generate-static-metrics.ts`
-- **클라이언트 Hook**: `src/hooks/useFixed24hMetrics.ts`
 - **품질**: ⭐⭐⭐⭐⭐ (5/5)
 
 ### 특징
@@ -78,7 +77,7 @@ private async loadFromCustomSource(): Promise<Server[]> {
 
 - `/api/servers` - UnifiedServerDataSource → server-data-loader
 - `/api/servers/all` - UnifiedServerDataSource → server-data-loader
-- 클라이언트 Hook (`useFixed24hMetrics`) - 직접 server-data-loader 호출
+- 클라이언트: 직접 server-data-loader 호출
 
 ### 왜 유지하나요?
 
@@ -163,8 +162,6 @@ curl http://localhost:3000/api/servers
 - **Gemini 구현 분석**: `archive/deprecated/metrics-generation-systems/DEPRECATION_NOTICE.md`
 - **시나리오 로더**: `src/services/server-data/server-data-loader.ts`
 - **생성 스크립트**: `scripts/generate-static-metrics.ts`
-- **클라이언트 Hook**: `src/hooks/useFixed24hMetrics.ts`
-
 ---
 
 ## 💡 FAQ
@@ -182,7 +179,7 @@ A:
 
 - **프로덕션 대시보드**: server-data-loader (UnifiedServerDataSource)
 - **테스트/데모**: 레거시 Mock (getMockSystem)
-- **실시간 시뮬레이션**: 레거시 Mock (/api/servers/realtime)
+- **실시간 시뮬레이션**: 레거시 Mock
 
 ### Q: 레거시 Mock 시스템을 제거할 계획인가요?
 

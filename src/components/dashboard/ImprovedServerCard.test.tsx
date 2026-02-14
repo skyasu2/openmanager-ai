@@ -83,22 +83,6 @@ vi.mock('../../styles/design-constants', () => ({
   SERVER_STATUS_COLORS: {},
 }));
 
-// Mock component dependencies using same paths as source
-vi.mock('../../hooks/useFixed24hMetrics', () => ({
-  useFixed24hMetrics: vi.fn(() => ({
-    currentMetrics: {
-      cpu: 45.2,
-      memory: 62.8,
-      disk: 73.5,
-      network: 28.9,
-    },
-    historyData: [
-      { cpu: 45, memory: 62, disk: 73, network: 28 },
-      { cpu: 46, memory: 63, disk: 74, network: 29 },
-    ],
-  })),
-}));
-
 vi.mock('../shared/ServerMetricsChart', () => ({
   ServerMetricsChart: vi.fn(() => (
     <div data-testid="mock-metrics-chart">Mock Chart</div>
