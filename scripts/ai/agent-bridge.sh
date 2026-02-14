@@ -7,7 +7,7 @@ Usage:
   bash scripts/ai/agent-bridge.sh --to <claude|codex|gemini> [options] [prompt...]
 
 Description:
-  One-shot bridge to call Claude Code or Codex CLI from the same WSL shell.
+  One-shot bridge to call Claude Code, Codex CLI, or Gemini CLI from the same WSL shell.
   Prevents recursive bridge loops by default.
 
 Options:
@@ -33,6 +33,19 @@ CWD="$(pwd)"
 MODEL=""
 ALLOW_RECURSION=false
 DRY_RUN=false
+
+is_dir_readable() {
+  local dir="$1"
+  ls -ld "$dir" >/dev/null 2>&1
+}
+
+has_gemini_api_key() {
+  [ -n "${GEMINI_API_KEY:-}" ] || [ -n "${GOOGLE_API_KEY:-}" ] || [ -n "${GOOGLE_AI_API_KEY:-}" ]
+}
+
+has_gemini_oauth_cache() {
+  [ -s "${HOME}/.gemini/oauth_creds.json" ]
+}
 
 while [ $# -gt 0 ]; do
   case "$1" in
@@ -83,6 +96,12 @@ fi
 
 if [ ! -d "$CWD" ]; then
   echo "ERROR: --cwd does not exist: $CWD" >&2
+  exit 2
+fi
+
+if ! is_dir_readable "$CWD"; then
+  echo "ERROR: --cwd is not readable from current WSL session: $CWD" >&2
+  echo "HINT: If this is under /mnt/d and you see ENODEV, remount drvfs (or restart WSL)." >&2
   exit 2
 fi
 
@@ -177,15 +196,55 @@ run_gemini() {
     exit 127
   fi
 
+  if ! is_dir_readable "$CWD"; then
+    echo "ERROR: gemini workspace is not readable: $CWD" >&2
+    echo "HINT: Recover /mnt/* mount first (ENODEV)." >&2
+    exit 2
+  fi
+
+  if ! has_gemini_api_key && ! has_gemini_oauth_cache; then
+    echo "ERROR: Gemini authentication is not ready." >&2
+    echo "HINT: Set GEMINI_API_KEY/GOOGLE_API_KEY or run interactive login once." >&2
+    echo "      Example: NO_BROWSER=true gemini -p \"auth check\"" >&2
+    exit 78
+  fi
+
+  if ! has_gemini_api_key && [ ! -t 1 ]; then
+    echo "ERROR: Non-interactive Gemini bridge requires an API key." >&2
+    echo "HINT: Export GEMINI_API_KEY (or GOOGLE_API_KEY / GOOGLE_AI_API_KEY)." >&2
+    echo "      OAuth consent prompts cannot be completed without a TTY/browser flow." >&2
+    exit 78
+  fi
+
+  if [ -z "${NO_BROWSER:-}" ]; then
+    export NO_BROWSER=true
+  fi
+
   local cmd=(gemini -p "$PROMPT" --output-format text)
   if [ -n "$MODEL" ]; then
     cmd=(gemini -p "$PROMPT" --output-format text --model "$MODEL")
   fi
 
-  (
+  local log_file
+  log_file="$(mktemp)"
+  trap 'rm -f "$log_file"' RETURN
+
+  if ! (
     cd "$CWD"
-    "${cmd[@]}"
-  )
+    "${cmd[@]}" >"$log_file" 2>&1
+  ); then
+    cat "$log_file" >&2
+    if grep -Eqi "Interactive consent could not be obtained|authorization code|FatalAuthenticationError" "$log_file"; then
+      cat >&2 <<'EOF'
+ERROR: Gemini OAuth flow requires one-time interactive consent in your current WSL session.
+HINT: Run this once in the same shell:
+      NO_BROWSER=true gemini -p "auth check"
+EOF
+    fi
+    return 1
+  fi
+
+  cat "$log_file"
 }
 
 case "$TARGET" in

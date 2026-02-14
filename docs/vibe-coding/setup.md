@@ -153,6 +153,18 @@ gemini
 
 **Note**: API 키가 아닌 **브라우저 로그인** 방식입니다.
 
+### 자동화/브리지 실행 권장 (WSL)
+
+```bash
+# 비대화형(스크립트/브리지) 호출은 API 키 권장
+export GEMINI_API_KEY=your_api_key
+
+# 예시: OpenManager 브리지 호출
+bash scripts/ai/agent-bridge.sh --to gemini "다른 설명 없이 HELLO_FROM_GEMINI 만 출력"
+```
+
+OAuth만 사용하는 경우 비대화형 호출에서 인증 프롬프트를 처리할 수 없어 실패할 수 있습니다.
+
 ### 확인
 
 ```bash
@@ -219,6 +231,7 @@ Claude: [context7, supabase, next-devtools 등 사용 가능 여부 표시]
 1. WSL에서는 Windows 브라우저 연동 확인
 2. BROWSER 환경변수 설정: export BROWSER=wslview
 3. 수동으로 URL 복사하여 브라우저에서 열기
+4. 수동 OAuth 코드 플로우: NO_BROWSER=true gemini -p "auth check"
 ```
 
 ### MCP 서버 시작 안 됨
