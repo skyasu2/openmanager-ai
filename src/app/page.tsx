@@ -234,8 +234,7 @@ function Home() {
         <div className="mb-12 text-center">
           <h1 className="mb-4 text-3xl font-bold md:text-5xl">
             <span className="text-white">OpenManager</span>{' '}
-            <span>{renderAIGradientWithAnimation('AI')}</span>{' '}
-            <span className="text-white">서버 모니터링</span>
+            <span>{renderAIGradientWithAnimation('AI')}</span>
           </h1>
           <p className="mx-auto max-w-3xl text-base leading-relaxed text-white/85 md:text-lg">
             <span className="block text-white/60">

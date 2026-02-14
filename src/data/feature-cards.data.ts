@@ -120,7 +120,7 @@ export const FEATURE_CARDS_DATA: FeatureCard[] = [
     id: 'vibe-coding',
     title: '🔥 Vibe Coding',
     description:
-      'AI 도구를 활용한 개발 환경. WSL + Claude Code 기반으로 Codex·Gemini 코드 리뷰가 커밋마다 자동 실행됩니다.',
+      '개발자와 도구가 하나가 되는 몰입형 코딩 환경. WSL + Claude Code 기반으로 자동 코드 리뷰와 멀티 에이전트 협업이 커밋마다 실행됩니다.',
     icon: Zap,
     gradient: 'from-amber-600 via-orange-600 to-amber-700',
     detailedContent: {
