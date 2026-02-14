@@ -18,6 +18,7 @@ import {
   groupIntoStreams,
 } from '@/services/server-data/server-data-loader';
 import type { LokiLogEntry, LokiStreamLabels } from '@/types/loki';
+import type { LogEntry as ServerLogEntry } from '@/types/server';
 import type {
   LogEntry,
   LogLevel,
@@ -41,6 +42,8 @@ interface LogsTabProps {
     datacenter: string;
     serverType: string;
   };
+  /** hourly-data 원본 로그 (Prometheus 파이프라인 경유, 대문자 레벨) */
+  serverLogs?: ServerLogEntry[];
 }
 
 const getLogLevelStyles = (level: LogLevel | string) => {
@@ -101,6 +104,7 @@ export const LogsTab: FC<LogsTabProps> = ({
   serverMetrics,
   realtimeData,
   serverContext,
+  serverLogs,
 }) => {
   const [activeView, setActiveView] = useState<ViewMode>('syslog');
   const [scenarioLogs, setScenarioLogs] = useState<LogEntry[]>([]);
@@ -119,20 +123,38 @@ export const LogsTab: FC<LogsTabProps> = ({
     serverType: 'web',
   };
 
-  // Generate logs from metrics + server role
+  // hourly-data 원본 로그 → 모달 LogEntry 변환 (대문자→소문자 레벨)
+  const normalizedLogs = useMemo((): LogEntry[] => {
+    if (!serverLogs || serverLogs.length === 0) return [];
+    return serverLogs.map((log) => ({
+      timestamp: log.timestamp,
+      level: log.level.toLowerCase() as LogLevel,
+      message: log.message,
+      source: 'syslog',
+    }));
+  }, [serverLogs]);
+
+  // Syslog: hourly-data 원본 로그 우선, 없으면 합성 로그 fallback
   useEffect(() => {
-    const logs = generateServerLogs(serverMetrics, serverId);
-    setScenarioLogs(logs);
+    if (normalizedLogs.length > 0) {
+      setScenarioLogs(normalizedLogs);
+    } else {
+      setScenarioLogs(generateServerLogs(serverMetrics, serverId));
+    }
 
     const loki = generateLokiLogs(serverMetrics, serverId, ctx);
     setLokiLogs(loki);
 
     const interval = setInterval(() => {
-      setScenarioLogs(generateServerLogs(serverMetrics, serverId));
+      if (normalizedLogs.length > 0) {
+        setScenarioLogs(normalizedLogs);
+      } else {
+        setScenarioLogs(generateServerLogs(serverMetrics, serverId));
+      }
       setLokiLogs(generateLokiLogs(serverMetrics, serverId, ctx));
     }, 60000);
     return () => clearInterval(interval);
-  }, [serverId, serverMetrics, ctx]);
+  }, [serverId, serverMetrics, normalizedLogs, ctx]);
 
   // Filtered Loki entries
   const filteredLokiLogs = useMemo(() => {

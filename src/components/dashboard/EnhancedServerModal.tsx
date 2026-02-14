@@ -159,94 +159,45 @@ export default function EnhancedServerModal({
         const net = typeof h.network === 'number' ? h.network : 0;
         return { in: net * 0.6, out: net * 0.4 };
       }),
-      // 📋 시스템 알림: 메트릭 임계값 기반 자동 생성 (실제 서버 로그 아님)
+      // 📋 시스템 알림: hourly-data 로그에서 WARN/ERROR 필터링
       logs: (() => {
-        const alerts: Array<{
-          timestamp: string;
-          level: 'info' | 'warn' | 'error';
-          message: string;
-          source: string;
-        }> = [];
-        const cpu = safeServer.cpu || 0;
-        const memory = safeServer.memory || 0;
-        const disk = safeServer.disk || 0;
-        const network = safeServer.network || 0;
+        const serverLogs = server?.logs;
+        if (serverLogs && serverLogs.length > 0) {
+          // hourly-data 원본 로그에서 WARN/ERROR 추출
+          const alerts = serverLogs
+            .filter((log) => log.level === 'WARN' || log.level === 'ERROR')
+            .map((log) => ({
+              timestamp: log.timestamp || logTimestamp,
+              level: log.level.toLowerCase() as 'warn' | 'error',
+              message: log.message,
+              source: 'syslog',
+            }));
 
-        // CPU 경고
-        if (cpu > 90) {
-          alerts.push({
-            timestamp: logTimestamp,
-            level: 'error',
-            message: `CPU 사용률 위험: ${cpu.toFixed(1)}% (임계값: 90%)`,
-            source: '시스템 모니터',
-          });
-        } else if (cpu > 80) {
-          alerts.push({
-            timestamp: logTimestamp,
-            level: 'warn',
-            message: `CPU 사용률 경고: ${cpu.toFixed(1)}% (임계값: 80%)`,
-            source: '시스템 모니터',
-          });
+          if (alerts.length === 0) {
+            return [
+              {
+                timestamp: logTimestamp,
+                level: 'info' as const,
+                message: '모든 시스템 지표가 정상 범위 내에 있습니다.',
+                source: 'syslog',
+              },
+            ];
+          }
+          return alerts;
         }
 
-        // 메모리 경고
-        if (memory > 90) {
-          alerts.push({
+        // fallback: 로그 데이터 없음
+        return [
+          {
             timestamp: logTimestamp,
-            level: 'error',
-            message: `메모리 사용률 위험: ${memory.toFixed(1)}% (여유: ${(100 - memory).toFixed(1)}%)`,
-            source: '시스템 모니터',
-          });
-        } else if (memory > 85) {
-          alerts.push({
-            timestamp: logTimestamp,
-            level: 'warn',
-            message: `메모리 사용률 경고: ${memory.toFixed(1)}%`,
-            source: '시스템 모니터',
-          });
-        }
-
-        // 디스크 경고
-        if (disk > 90) {
-          alerts.push({
-            timestamp: logTimestamp,
-            level: 'error',
-            message: `디스크 사용률 위험: ${disk.toFixed(1)}%`,
-            source: '시스템 모니터',
-          });
-        } else if (disk > 80) {
-          alerts.push({
-            timestamp: logTimestamp,
-            level: 'warn',
-            message: `디스크 사용률 주의: ${disk.toFixed(1)}%`,
-            source: '시스템 모니터',
-          });
-        }
-
-        // 네트워크 경고
-        if (network > 90) {
-          alerts.push({
-            timestamp: logTimestamp,
-            level: 'warn',
-            message: `네트워크 사용률 높음: ${network.toFixed(1)}%`,
-            source: '시스템 모니터',
-          });
-        }
-
-        // 정상 상태
-        if (alerts.length === 0) {
-          alerts.push({
-            timestamp: logTimestamp,
-            level: 'info',
-            message: '모든 시스템 지표가 정상 범위 내에 있습니다.',
-            source: '시스템 모니터',
-          });
-        }
-
-        return alerts;
+            level: 'info' as const,
+            message: '로그 데이터를 불러오는 중입니다.',
+            source: 'system',
+          },
+        ];
       })(),
     };
-  }, [metricsHistory, safeServer, logTimestamp]);
+  }, [metricsHistory, safeServer, logTimestamp, server?.logs]);
 
   // 📊 탭 구성 최적화
   const tabs: TabInfo[] = [
@@ -452,6 +403,7 @@ export default function EnhancedServerModal({
                       datacenter: safeServer.location || 'Seoul-ICN-AZ1',
                       serverType: safeServer.type || 'web',
                     }}
+                    serverLogs={server?.logs}
                   />
                 </div>
 
