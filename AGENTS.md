@@ -113,6 +113,39 @@
 - 예상치 못한 변경을 발견하면, 소유 주체(나 vs 타 에이전트)를 먼저 구분한 뒤 충돌 없이 작업합니다.
 - 최종 보고 시 Codex가 수행한 변경 범위를 명확히 분리해 설명합니다.
 
+## 🔀 Agent Bridge (역방향 호출)
+
+에이전트 간 직접 호출은 `scripts/ai/agent-bridge.sh`를 사용합니다.
+
+### 사용법
+```bash
+# Codex → Claude Code
+bash scripts/ai/agent-bridge.sh --to claude "현재 브랜치의 변경사항 요약해줘"
+
+# Codex → Gemini
+bash scripts/ai/agent-bridge.sh --to gemini "이 에러 원인 분석해줘"
+
+# Gemini → Claude Code
+bash scripts/ai/agent-bridge.sh --to claude "타입 에러 수정 방법 알려줘"
+
+# Gemini → Codex
+bash scripts/ai/agent-bridge.sh --to codex "테스트 실행하고 결과 알려줘"
+```
+
+### 주요 옵션
+| 옵션 | 설명 | 기본값 |
+|------|------|--------|
+| `--to <target>` | claude / codex / gemini | 필수 |
+| `--mode <type>` | query / analysis / doc | query |
+| `--timeout <sec>` | 타임아웃 (1~600) | 120 |
+| `--save-auto` | 결과를 `logs/ai-bridge/notes/`에 자동 저장 | off |
+| `--dry-run` | 실행 없이 설정 확인 | off |
+
+### 안전장치
+- **재귀 방지**: 환경변수 `AGENT_BRIDGE_ACTIVE=1`로 중첩 호출 차단 (`--allow-recursion`으로 해제)
+- **타임아웃**: 기본 120초, 최대 600초
+- **로깅**: `logs/ai-bridge/bridge.log`에 호출 기록 자동 저장
+
 ---
 
 _Codex Agent Configuration for OpenManager AI v8_

@@ -53,4 +53,40 @@ Gemini adapts its behavior based on the context:
 
 ---
 
+## 🔀 Agent Bridge (역방향 호출)
+
+다른 에이전트와 협업 시 `scripts/ai/agent-bridge.sh`를 사용합니다.
+
+```bash
+# Gemini → Claude Code
+bash scripts/ai/agent-bridge.sh --to claude "현재 브랜치의 변경사항 요약해줘"
+
+# Gemini → Codex
+bash scripts/ai/agent-bridge.sh --to codex "타입 에러 수정해줘"
+
+# 분석 모드 (한국어 강제, 근거/가정/결론 분리)
+bash scripts/ai/agent-bridge.sh --to claude --mode analysis "아키텍처 리뷰"
+
+# 결과 자동 저장
+bash scripts/ai/agent-bridge.sh --to codex --save-auto "테스트 실행"
+```
+
+### 안전장치
+- 재귀 방지: `AGENT_BRIDGE_ACTIVE=1` 환경변수로 중첩 호출 차단
+- 타임아웃: 기본 120초 (`--timeout` 으로 변경)
+- 로그: `logs/ai-bridge/bridge.log`
+
+## 📌 Project References
+
+| 용도 | 파일 |
+|------|------|
+| 공유 규칙 (SSOT) | `AGENTS.md` |
+| Claude 설정 | `CLAUDE.md` |
+| Codex 설정 | `.codex/config.toml` |
+| 브릿지 스크립트 | `scripts/ai/agent-bridge.sh` |
+| 데이터 원본 | `src/data/hourly-data/*.json` |
+| AI Engine | `cloud-run/ai-engine/src/server.ts` |
+
+---
+
 _Gemini Agent Configuration for OpenManager AI v8.0.0_
