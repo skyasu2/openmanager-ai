@@ -225,31 +225,32 @@ export const ENVIRONMENT = {
 // 🔌 MCP 서버 설정 (SSOT - registry-core.yaml 기준)
 // 참조: config/ai/registry-core.yaml mcp-servers.development
 export const MCP_SERVERS = {
-  // 활성화된 MCP 서버 목록 (9/9, 2026-01-27 동기화)
+  // 활성화된 MCP 서버 목록 (8/8, 2026-02-14 동기화)
   ACTIVE: [
     'vercel', // 배포 관리
     'supabase', // DB 관리
-    'serena', // 코드 검색/메모리
     'context7', // 라이브러리 문서
     'playwright', // E2E 테스트
+    'next-devtools', // Next.js 런타임 진단
     'github', // 저장소 관리
-    'tavily', // 웹 검색 - 심층 리서치
     'sequential-thinking', // 복잡한 추론
     'stitch', // Google Stitch AI UI Design (2026-01-27)
   ] as const,
 
-  // 제거된 MCP 서버 (2026-01-18)
+  // 제거된 MCP 서버 (2026-02-14 업데이트)
   REMOVED: [
     'filesystem', // Claude Code 내장 도구와 중복
-    'memory', // Serena로 대체
+    'memory', // Claude Code auto-memory로 대체
     'time', // 사용 빈도 낮음
     'shadcn-ui', // Context7로 대체
     'figma', // 미사용 (6회/월 Starter 제한)
-    'brave-search', // Tavily로 통합
+    'brave-search', // built-in WebSearch로 대체
+    'tavily', // built-in WebSearch로 대체
+    'serena', // Claude Code built-in 도구(Read/Edit/Grep/Glob)로 대체
   ] as const,
 
   // 서버 수
-  TOTAL_ACTIVE: 9,
+  TOTAL_ACTIVE: 8,
 } as const;
 
 // MCP 서버 목록 타입 (타입 안전성)

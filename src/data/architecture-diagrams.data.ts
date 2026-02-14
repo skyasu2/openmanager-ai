@@ -464,16 +464,9 @@ export const ARCHITECTURE_DIAGRAMS: Record<string, ArchitectureDiagram> = {
         ],
       },
       {
-        title: 'MCP Servers (9개)',
+        title: 'MCP Servers (8개)',
         color: 'from-cyan-500 to-teal-600',
         nodes: [
-          {
-            id: 'serena',
-            label: 'Serena',
-            sublabel: 'Code Intelligence',
-            type: 'secondary',
-            icon: '🧠',
-          },
           {
             id: 'context7',
             label: 'Context7',
@@ -510,11 +503,11 @@ export const ARCHITECTURE_DIAGRAMS: Record<string, ArchitectureDiagram> = {
             icon: '🐙',
           },
           {
-            id: 'tavily-mcp',
-            label: 'Tavily',
-            sublabel: 'Web Research',
+            id: 'next-devtools-mcp',
+            label: 'Next DevTools',
+            sublabel: 'Runtime Diagnostics',
             type: 'tertiary',
-            icon: '🌐',
+            icon: '🧭',
           },
           {
             id: 'seq-think',
@@ -537,14 +530,13 @@ export const ARCHITECTURE_DIAGRAMS: Record<string, ArchitectureDiagram> = {
       { from: 'antigravity', to: 'claude-code', label: 'Terminal' },
       { from: 'claude-code', to: 'codex', label: '2-AI Review' },
       { from: 'claude-code', to: 'gemini', label: '2-AI Review' },
-      // MCP Servers (9개 전체)
-      { from: 'claude-code', to: 'serena', label: 'MCP' },
+      // MCP Servers (8개)
       { from: 'claude-code', to: 'context7', label: 'MCP' },
       { from: 'claude-code', to: 'supabase-mcp', label: 'MCP' },
       { from: 'claude-code', to: 'vercel-mcp', label: 'MCP' },
       { from: 'claude-code', to: 'playwright-mcp', label: 'MCP' },
+      { from: 'claude-code', to: 'next-devtools-mcp', label: 'MCP' },
       { from: 'claude-code', to: 'github-mcp', label: 'MCP' },
-      { from: 'claude-code', to: 'tavily-mcp', label: 'MCP' },
       { from: 'claude-code', to: 'seq-think', label: 'MCP' },
       { from: 'claude-code', to: 'stitch-mcp', label: 'MCP' },
     ],

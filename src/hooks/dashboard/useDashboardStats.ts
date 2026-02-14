@@ -15,10 +15,6 @@ export function useDashboardStats(
   allServers?: Server[],
   isLoading: boolean = false
 ): DashboardStats {
-  // allServers(전체 서버)가 있으면 전체 기반으로 계산, 없으면 페이지네이션된 servers 사용
-  const statsSource =
-    allServers && allServers.length > 0 ? allServers : servers;
-
   const stats = useMemo(() => {
     if (isLoading) {
       return {
@@ -30,6 +26,10 @@ export function useDashboardStats(
         unknown: 0,
       };
     }
+
+    // allServers(전체 서버)가 있으면 전체 기반으로 계산, 없으면 페이지네이션된 servers 사용
+    const statsSource =
+      allServers && allServers.length > 0 ? allServers : servers;
 
     if (!statsSource || statsSource.length === 0) {
       return {
@@ -96,7 +96,7 @@ export function useDashboardStats(
 
     debug.log('📊 서버 통계 계산 (Hook):', calculatedStats);
     return calculatedStats;
-  }, [statsSource, isLoading]);
+  }, [allServers, servers, isLoading]);
 
   return stats;
 }

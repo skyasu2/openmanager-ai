@@ -159,10 +159,7 @@ function checkTestMode(): boolean {
   return false;
 }
 
-function DashboardPageContent({
-  initialServers,
-  initialStats: _initialStats, // Reserved for future SSR stats optimization
-}: DashboardClientProps) {
+function DashboardPageContent({ initialServers }: DashboardClientProps) {
   // 🔒 Hydration 불일치 방지를 위한 클라이언트 전용 상태
   const [isMounted, setIsMounted] = useState(false);
 
@@ -291,12 +288,7 @@ function DashboardPageContent({
   });
 
   // 🕐 20분 시스템 자동 종료 - 포트폴리오 최적화 (1초→5초 최적화 적용)
-  const {
-    // isSystemActive - useUnifiedAdminStore.isSystemStarted로 대체됨
-    remainingTime: systemRemainingTime,
-    formatTime,
-    // isWarning, restartSystem - 미사용 (showSystemWarning 상태로 대체됨)
-  } = useSystemAutoShutdown({
+  useSystemAutoShutdown({
     warningMinutes: 5, // 5분 전 경고
     onWarning: (remainingMinutes) => {
       setShowSystemWarning(true);
@@ -364,11 +356,6 @@ function DashboardPageContent({
       startSystem();
     }
   }, [isSystemStarted, startSystem]);
-
-  // 🕐 시간 포맷팅 (향후 사용을 위해 유지)
-  const _remainingTimeFormatted = formatTime
-    ? formatTime(systemRemainingTime)
-    : '00:00';
 
   const toggleAgent = useCallback(() => {
     // 🔒 AI 기능은 권한이 있는 사용자 또는 게스트 전체 접근 모드에서 사용 가능

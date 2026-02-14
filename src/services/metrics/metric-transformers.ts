@@ -46,7 +46,12 @@ export function extractMetricsFromStandard(
       (a) => a.key === 'host.name'
     );
     const hostname = hostnameAttr?.value.stringValue;
-    if (!hostname) continue;
+    if (!hostname) {
+      logger.debug(
+        '[metric-transformers] Skipping resource without host.name attribute'
+      );
+      continue;
+    }
 
     // Server ID 규칙: 도메인 제거 (web-nginx-icn-01.openmanager.kr -> web-nginx-icn-01)
     const serverId = hostname.split('.')[0];
@@ -91,7 +96,7 @@ export function extractMetricsFromStandard(
               a.key,
               a.value.stringValue,
             ])
-          ) as unknown as OTelResourceAttributes),
+          ) as Partial<OTelResourceAttributes>),
       });
     }
 
@@ -104,11 +109,11 @@ export function extractMetricsFromStandard(
         // OpenManager AI 데이터 생성 규칙상 DataPoints는 0~59분 순서대로 생성됨
         // 안전을 위해 배열 길이 체크
         let dp = null;
-        if (metric.gauge) {
+        if (metric.gauge && metric.gauge.dataPoints.length > 0) {
           dp =
             metric.gauge.dataPoints[targetMinute] ||
             metric.gauge.dataPoints[metric.gauge.dataPoints.length - 1];
-        } else if (metric.sum) {
+        } else if (metric.sum && metric.sum.dataPoints.length > 0) {
           dp =
             metric.sum.dataPoints[targetMinute] ||
             metric.sum.dataPoints[metric.sum.dataPoints.length - 1];
@@ -189,12 +194,7 @@ export function targetToServerMetrics(
   const metricsStatus = determineStatus(cpu, memory, disk, network);
   let status: ApiServerMetrics['status'];
   if (target.metrics.up === 0) {
-    status = metricsStatus === 'critical' ? 'critical' : 'offline';
-    if (metricsStatus === 'critical' || metricsStatus === 'warning') {
-      logger.warn(
-        `[MetricsProvider] ${serverId}: up=0 but metrics indicate ${metricsStatus} (cpu=${cpu}%, mem=${memory}%)`
-      );
-    }
+    status = 'offline';
   } else {
     status = metricsStatus;
   }

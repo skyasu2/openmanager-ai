@@ -42,7 +42,7 @@ export interface ApiServerMetrics {
   responseTimeMs?: number;
 
   // OTel 확장 필드 (optional - 사전 계산된 OTel 데이터 사용 시)
-  otelResource?: OTelResourceAttributes;
+  otelResource?: Partial<OTelResourceAttributes>;
   structuredLogs?: OTelLogRecord[];
 }
 

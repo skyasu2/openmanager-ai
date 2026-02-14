@@ -2,15 +2,7 @@
 
 import { AlertTriangle } from 'lucide-react';
 import dynamic from 'next/dynamic';
-import {
-  memo,
-  Suspense,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import { memo, Suspense, useEffect, useRef, useState } from 'react';
 import {
   ARCHITECTURE_DIAGRAMS,
   type ArchitectureDiagram,
@@ -207,11 +199,6 @@ export default memo(function DashboardContent({
   const [showTopology, setShowTopology] = useState(false);
 
   // 🛡️ currentTime 제거: 미사용 상태에서 불필요한 interval 실행 (v5.83.13)
-
-  // 폴백 통계 계산 (v5.83.13: critical 상태 분리)
-  // allServers(전체 서버)가 있으면 전체 기반으로 계산, 없으면 페이지네이션된 servers 사용
-  const statsSource =
-    allServers && allServers.length > 0 ? allServers : servers;
 
   // 🚀 리팩토링: Custom Hook으로 통계 계산 로직 분리
   const serverStats = useDashboardStats(servers, allServers, statsLoading);
@@ -449,7 +436,9 @@ export default memo(function DashboardContent({
                 <AlertHistoryModal
                   open={alertHistoryOpen}
                   onClose={() => setAlertHistoryOpen(false)}
-                  serverIds={(statsSource ?? []).map((s) => s.id)}
+                  serverIds={(allServers?.length ? allServers : servers).map(
+                    (s) => s.id
+                  )}
                 />
               )}
 
@@ -458,7 +447,7 @@ export default memo(function DashboardContent({
                 <LogExplorerModal
                   open={logExplorerOpen}
                   onClose={() => setLogExplorerOpen(false)}
-                  servers={statsSource ?? []}
+                  servers={allServers?.length ? allServers : servers}
                 />
               )}
             </>

@@ -1,17 +1,16 @@
 import { useQuery } from '@tanstack/react-query';
+import { getServersAction } from '@/actions/server-actions';
 import type { EnhancedServerMetrics, Server } from '@/types/server';
 import { mapServerToEnhanced } from '@/utils/serverUtils';
 
 const fetchServers = async (): Promise<EnhancedServerMetrics[]> => {
-  const response = await fetch('/api/servers-unified?limit=50');
-  if (!response.ok) {
-    throw new Error(`API Error: ${response.status} ${response.statusText}`);
+  const result = await getServersAction();
+
+  if (!result.success) {
+    throw new Error(result.error || 'Failed to fetch server data');
   }
-  const result = await response.json();
-  if (!result.success || !result.data) {
-    throw new Error(result.message || 'Failed to fetch data');
-  }
-  return result.data.map(mapServerToEnhanced);
+
+  return result.data;
 };
 
 type UseServerQueryOptions = {

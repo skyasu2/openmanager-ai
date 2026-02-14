@@ -45,19 +45,18 @@
 | `cloud-run-deploy` | v1.0.0 | Cloud Run AI Engine 배포 |
 | `commit-commands` | v1.0.0 | Git 커밋 워크플로우 (commit, commit-push-pr, clean_gone) |
 
-## 📊 MCP 서버 (9개)
+## 📊 MCP 서버 (8개)
 
 | MCP 서버 | 주요 기능 | 우선순위 |
 |----------|----------|---------|
-| **serena** | 코드 검색, 심볼 분석, 메모리 | 높음 |
 | **context7** | 라이브러리 공식 문서 | 높음 |
 | **sequential-thinking** | 복잡한 리팩토링, 아키텍처 설계 | 높음 |
 | **stitch** | Google Stitch AI UI 디자인 | 중간 |
 | **supabase** | PostgreSQL 관리 | 중간 |
 | **vercel** | 배포 관리 | 중간 |
 | **playwright** | E2E 테스트 | 중간 |
+| **next-devtools** | Next.js 런타임 진단 | 중간 |
 | **github** | 저장소 관리 | 중간 |
-| **tavily** | 웹 검색 (심층 리서치) | 낮음 |
 
 ## ⚡ Hooks 설정
 
@@ -107,7 +106,7 @@ claude mcp list
 `settings.local.json`은 와일드카드 패턴으로 최적화됨:
 - `Bash(npm:*)` - npm 명령어 전체
 - `Bash(git:*)` - git 명령어 전체
-- `mcp__serena__*` - MCP 서버별 와일드카드
+- `mcp__context7__*` - MCP 서버별 와일드카드
 - `Skill(commit)` - 스킬 권한
 - `WebFetch(domain:*.vercel.app)` - Vercel 도메인 전체
 

@@ -17,15 +17,12 @@
 import {
   getHourlyData as getBundledHourlyData,
   type HourlyData,
-  type PrometheusTarget,
 } from '@/data/hourly-data';
 import { getOTelHourlyData } from '@/data/otel-metrics';
 import { logger } from '@/lib/logging';
-import type { OTelResourceAttributes } from '@/types/otel-metrics';
 import type { ExportMetricsServiceRequest } from '@/types/otel-standard';
 import { getKSTMinuteOfDay, getKSTTimestamp } from './kst-time';
 import {
-  determineStatus,
   extractMetricsFromStandard,
   targetToServerMetrics,
 } from './metric-transformers';
@@ -48,6 +45,9 @@ export type {
   SystemSummary,
   TimeComparisonResult,
 } from './types';
+
+/** Prometheus fallback slot duration (minutes per data point) */
+const SLOT_DURATION_MINUTES = 10;
 
 // ============================================================================
 // OTel Data Cache & Loader (Primary - 번들 기반)
@@ -75,7 +75,7 @@ function loadOTelData(hour: number): ExportMetricsServiceRequest | null {
   const data = getOTelHourlyData(hour);
   if (data) {
     cachedOTelData = { hour, data };
-    logger.info(
+    logger.debug(
       `[MetricsProvider] OTel 데이터 로드: hour-${hour.toString().padStart(2, '0')} (${data.resourceMetrics.length}개 Resources)`
     );
     return data;
@@ -103,13 +103,13 @@ function loadHourlyData(hour: number): HourlyData | null {
   if (data) {
     cachedHourlyData = { hour, data };
     const targetCount = Object.keys(data.dataPoints[0]?.targets || {}).length;
-    logger.info(
+    logger.debug(
       `[MetricsProvider] hourly-data fallback 로드: hour-${hour.toString().padStart(2, '0')} (${targetCount}개 target)`
     );
     return data;
   }
 
-  logger.warn(`[MetricsProvider] hourly-data 없음: hour-${hour}`);
+  logger.error(`[MetricsProvider] hourly-data 없음: hour-${hour}`);
   return null;
 }
 
@@ -152,7 +152,7 @@ export class MetricsProvider {
     const timestamp = getKSTTimestamp();
     const hour = Math.floor(minuteOfDay / 60);
     const minute = minuteOfDay % 60;
-    const slotIndex = Math.floor(minute / 10); // for Fallback
+    const slotIndex = Math.floor(minute / SLOT_DURATION_MINUTES); // for Fallback
 
     // 1. OTel 데이터 (Primary) — 변환 캐시 사용
     const otelData = loadOTelData(hour);
@@ -169,9 +169,7 @@ export class MetricsProvider {
           timestamp,
           minuteOfDay
         );
-        if (allMetrics.length > 0) {
-          cachedOTelConversion = { hour, minute, metrics: allMetrics };
-        }
+        cachedOTelConversion = { hour, minute, metrics: allMetrics };
       }
       const found = allMetrics.find((m) => m.serverId === serverId);
       if (found) {
@@ -221,7 +219,7 @@ export class MetricsProvider {
     const timestamp = getKSTTimestamp();
     const hour = Math.floor(minuteOfDay / 60);
     const minute = minuteOfDay % 60;
-    const slotIndex = Math.floor(minute / 10);
+    const slotIndex = Math.floor(minute / SLOT_DURATION_MINUTES);
 
     // 1. OTel 데이터 (Primary) — 변환 캐시 사용
     const otelData = loadOTelData(hour);
@@ -237,10 +235,8 @@ export class MetricsProvider {
         timestamp,
         minuteOfDay
       );
-      if (metrics.length > 0) {
-        cachedOTelConversion = { hour, minute, metrics };
-        return metrics;
-      }
+      cachedOTelConversion = { hour, minute, metrics };
+      return metrics;
     }
 
     // 2. Prometheus hourly-data (Fallback)
@@ -254,7 +250,7 @@ export class MetricsProvider {
       }
     }
 
-    logger.warn(
+    logger.error(
       '[MetricsProvider] OTel + hourly-data 모두 로드 실패, 빈 배열 반환'
     );
     return [];
@@ -351,7 +347,7 @@ export class MetricsProvider {
 
     const hour = Math.floor(minuteOfDay / 60);
     const minute = minuteOfDay % 60;
-    const slotIndex = Math.floor(minute / 10);
+    const slotIndex = Math.floor(minute / SLOT_DURATION_MINUTES);
     const timestamp = getKSTTimestamp();
 
     // 1. OTel (Primary)
@@ -453,7 +449,7 @@ export class MetricsProvider {
     return {
       kstTime: getKSTTimestamp(),
       minuteOfDay,
-      slotIndex: Math.floor(minutes / 10),
+      slotIndex: Math.floor(minutes / SLOT_DURATION_MINUTES),
       humanReadable: `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')} KST`,
     };
   }
