@@ -21,12 +21,12 @@ import {
   deriveZombieProcesses,
   estimateLoad15,
 } from '@/services/server-data/server-data-transformer';
+import type { EnhancedServerMetrics } from '@/services/server-data/server-data-types';
 import type {
   OTelHourlySlot,
   OTelResourceAttributes,
   OTelResourceCatalog,
 } from '@/types/otel-metrics';
-import type { EnhancedServerMetrics } from '@/services/server-data/server-data-types';
 import type { MetricsHistory } from '@/types/server';
 
 import { determineStatus } from './metric-transformers';

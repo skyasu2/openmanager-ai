@@ -8,8 +8,8 @@
  * @updated 2026-02-15 - OTel direct consumption 추가
  */
 
-import { getServerMonitoringService } from '@/services/monitoring';
 import { loadCurrentOTelServers } from '@/services/metrics/otel-direct-transform';
+import { getServerMonitoringService } from '@/services/monitoring';
 import type { EnhancedServerMetrics } from '@/services/server-data/server-data-types';
 import type { Server } from '@/types/server';
 
