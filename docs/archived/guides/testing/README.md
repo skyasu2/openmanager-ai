@@ -1,12 +1,16 @@
 # Testing Documentation
 
-> Last verified against code: 2026-02-13
-> Status: Active Canonical
+> Owner: documentation
+> Status: Archived
+> Doc type: Reference
+> Last reviewed: 2026-02-14
+> Canonical: docs/guides/testing/test-strategy.md
+> Tags: testing,guides,archived
 
 ## Available Docs
 
-- [Test Strategy](./test-strategy.md)
-- [E2E Testing Guide](./e2e-testing-guide.md)
+- [Test Strategy](../../../guides/testing/test-strategy.md)
+- [E2E Testing Guide](../../../guides/testing/e2e-testing-guide.md)
 
 ## Test Locations
 
@@ -32,5 +36,5 @@ npm run test:e2e:critical
 
 ## Related
 
-- [Development Guide](../../development/README.md)
-- [Docs Home](../../README.md)
+- [Development Guide](../../../development/README.md)
+- [Docs Home](../../../README.md)

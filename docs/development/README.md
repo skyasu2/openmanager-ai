@@ -1,7 +1,12 @@
 # 개발 환경 가이드
 
 > OpenManager AI v8 개발 환경 구축 및 설정 가이드
+> Owner: dev-experience
+> Status: Active Canonical
 > Doc type: How-to
+> Last reviewed: 2026-02-14
+> Canonical: docs/development/README.md
+> Tags: development,setup,index
 
 ## 개요
 
@@ -11,11 +16,11 @@
 
 | 문서 | 설명 |
 |------|------|
-| [전체 환경 구축](./full-setup-guide.md) | 제로베이스에서 완전 구축 **(필독, WSL 포함)** |
+| [프로젝트 설정](./project-setup.md) | 현재 Canonical 설정 가이드 (WSL/환경변수/검증) |
+| [전체 환경 구축(보관)](../archived/development/full-setup-guide.md) | 제로베이스 Windows/WSL 초기 구축 참고 |
 | [Git Hooks 워크플로우](./git-hooks-workflow.md) | Pre-commit, Pre-push, CI/CD 최적화 |
 | [Docker 개발 환경](./docker.md) | Docker Desktop + WSL, AI Engine 로컬 테스트, 배포 |
 | [개발 도구](./dev-tools.md) | Node.js, npm, IDE 설정 |
-| [프로젝트 설정](./project-setup.md) | 프로젝트 초기화 및 환경변수 |
 | [코딩 표준](./coding-standards.md) | 개발 방법론 및 코드 스타일 |
 | [문서 관리](./documentation-management.md) | 문서 구조/정합성/인벤토리 관리 기준 |
 | [Codex 전환 가이드](./codex-main-transition-guide.md) | Claude Skill 참조 기반 Codex 메인 전환 전략 |

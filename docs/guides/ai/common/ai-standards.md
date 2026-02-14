@@ -1,5 +1,13 @@
 # AI 도구 표준 가이드
 
+> 멀티 에이전트 도구 사용 원칙과 협업 규칙 가이드
+> Owner: documentation
+> Status: Active
+> Doc type: How-to
+> Last reviewed: 2026-02-14
+> Canonical: docs/guides/ai/common/ai-standards.md
+> Tags: ai,standards,tooling,policy
+>
 > **통합 문서**: ai-coding-standards.md + ai-usage-guidelines.md
 > **최종 갱신**: 2026-02-13 (v8.0.0)
 >

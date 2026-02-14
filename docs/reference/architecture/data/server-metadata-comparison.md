@@ -1,5 +1,13 @@
 # 서버 등록 메타데이터 비교 분석: OpenManager AI vs 상용 모니터링 도구
 
+> 서버 등록 메타데이터 범위/깊이를 상용 도구와 비교한 분석 문서
+> Owner: platform-data
+> Status: Active
+> Doc type: Reference
+> Last reviewed: 2026-02-14
+> Canonical: docs/reference/architecture/data/server-metadata-comparison.md
+> Tags: server,metadata,comparison,data
+>
 > **작성일**: 2026-02-12
 > **대상 버전**: OpenManager AI v8.0.0
 > **목적**: 서버 등록/정의 시 수집하는 메타데이터가 상용 모니터링 도구 대비 어떤 수준인지 비교 분석

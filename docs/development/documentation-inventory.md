@@ -1,5 +1,13 @@
 # Documentation Inventory
 
+> 문서 현황(개수/분포/라인 수)을 요약한 인벤토리 리포트
+> Owner: docs-platform
+> Status: Active
+> Doc type: Reference
+> Last reviewed: 2026-02-14
+> Canonical: docs/development/documentation-inventory.md
+> Tags: docs,inventory,report
+>
 > Auto-generated: 2026-02-13
 > Source: `docs/`
 

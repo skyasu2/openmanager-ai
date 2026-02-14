@@ -1,5 +1,13 @@
 # 🏥 헬스체크 정책
 
+> 수동 테스트 전용 헬스체크 운영 원칙과 금지사항
+> Owner: documentation
+> Status: Active
+> Doc type: Policy
+> Last reviewed: 2026-02-14
+> Canonical: docs/guides/standards/health-check-policy.md
+> Tags: health-check,policy,operations
+>
 > **작성**: 2025-11-21 08:07 KST
 > **원칙**: 모든 헬스체크는 수동 테스트 전용, 자동 호출 금지
 

@@ -1,24 +1,26 @@
 # Guides
 
-> Last verified against code: 2026-02-13
 > 실행 중심 How-to 문서 인덱스
+> Owner: documentation
+> Status: Active Canonical
 > Doc type: How-to
+> Last reviewed: 2026-02-14
+> Canonical: docs/guides/README.md
+> Tags: guides,index,how-to
 
 ## Categories
 
-- [AI](./ai/README.md)
-- [Testing](./testing/README.md)
+- [AI](./ai/common/ai-standards.md)
+- [Testing](./testing/test-strategy.md)
 - [Standards](./standards/health-check-policy.md)
 
 ## Key Guides
 
 ### AI
-- [AI Guide Home](./ai/README.md)
 - [AI Standards](./ai/common/ai-standards.md)
 - [Vision Agent Guide](./ai/vision-agent-guide.md)
 
 ### Testing
-- [Testing Guide Home](./testing/README.md)
 - [Test Strategy](./testing/test-strategy.md)
 - [E2E Testing Guide](./testing/e2e-testing-guide.md)
 

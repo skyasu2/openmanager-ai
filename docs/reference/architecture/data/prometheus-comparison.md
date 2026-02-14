@@ -1,5 +1,13 @@
 # Prometheus Best Practice vs OpenManager AI 비교 분석
 
+> Prometheus 베스트 프랙티스 대비 데이터 모델 비교 분석 문서
+> Owner: platform-data
+> Status: Active
+> Doc type: Reference
+> Last reviewed: 2026-02-14
+> Canonical: docs/reference/architecture/data/prometheus-comparison.md
+> Tags: prometheus,data,comparison,metrics
+>
 > **작성일**: 2026-02-06
 > **대상 버전**: OpenManager AI v7.1.0
 > **목적**: VIBE의 Prometheus 스타일 데이터 모델이 실제 베스트 프랙티스와 얼마나 유사한지 평가

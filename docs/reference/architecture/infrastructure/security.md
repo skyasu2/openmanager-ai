@@ -1,5 +1,13 @@
 # 🛡️ 보안 아키텍처
 
+> 인증/권한/방어 계층을 정의한 보안 아키텍처 레퍼런스
+> Owner: platform-architecture
+> Status: Active
+> Doc type: Reference
+> Last reviewed: 2026-02-14
+> Canonical: docs/reference/architecture/infrastructure/security.md
+> Tags: security,architecture,zero-trust
+>
 > **프로젝트 버전**: v8.0.0 | **Updated**: 2026-02-12
 
 ## 🛡️ Zero Trust + Defense in Depth

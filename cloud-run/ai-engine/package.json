@@ -44,7 +44,7 @@
     "zod": "^3.24.1"
   },
   "devDependencies": {
-    "@types/node": "^22.10.2",
+    "@types/node": "^24.10.13",
     "@types/pg": "^8.11.10",
     "promptfoo": "^0.120.8",
     "tsx": "^4.19.2",

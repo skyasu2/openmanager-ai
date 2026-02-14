@@ -1,6 +1,12 @@
 # 개발 도구
 
 > 프로젝트에서 사용하는 개발 도구 및 설정
+> Owner: dev-experience
+> Status: Active
+> Doc type: Reference
+> Last reviewed: 2026-02-14
+> Canonical: docs/development/dev-tools.md
+> Tags: tooling,nodejs,biome
 
 ## 런타임 & 패키지
 
@@ -195,6 +201,7 @@ AI_ENGINE_URL=
 
 ## 관련 문서
 
-- [전체 환경 구축](./full-setup-guide.md)
+- [프로젝트 설정](./project-setup.md)
+- [전체 환경 구축(보관)](../archived/development/full-setup-guide.md)
 - [프로젝트 설정](./project-setup.md)
 - [Vibe Coding](../vibe-coding/README.md)

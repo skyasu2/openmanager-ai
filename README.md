@@ -142,6 +142,7 @@ Supervisor (Intent Classification & Routing)
 
 | Layer | Technology |
 |-------|------------|
+| **Runtime** | Node.js 24 |
 | **Frontend** | Next.js 16, React 19, TypeScript |
 | **UI** | Tailwind CSS, Radix UI, Lucide Icons |
 | **State** | Zustand, TanStack Query |
@@ -198,7 +199,7 @@ Supervisor (Intent Classification & Routing)
 
 - **Vibe Coding**: Claude Code를 활용한 대화형 개발
 - **Multi-LLM Review**: Codex + Gemini 2-AI 코드 리뷰 로테이션
-- **DevTools Integration**: 개발 생산성 향상을 위해 9개의 MCP 서버(Serena, Context7, Stitch 등)를 Claude Code 개발 환경에 연동하여 활용
+- **DevTools Integration**: 개발 생산성 향상을 위해 8개의 MCP 서버(Context7, Stitch, Supabase 등)를 Claude Code 개발 환경에 연동하여 활용
 - **Hybrid Architecture**: Vercel Edge + Cloud Run Heavy Lifting
 
 **결과**: 약 **170,000 Lines of Code** (Frontend 50K+ / Backend 18K+ / Config & Docs)
@@ -215,5 +216,5 @@ Copyright © 2026. All Rights Reserved.
 <div align="center">
   <sub>Built with Vibe Coding</sub>
   <br/>
-  <sub>v7.0.1</sub>
+  <sub>v8.0.0</sub>
 </div>

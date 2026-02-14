@@ -1,5 +1,13 @@
 # OpenManager AI v8 - LLM Context
 
+> AI 어시스턴트 컨텍스트 전달용 핵심 프로젝트 요약
+> Owner: documentation
+> Status: Active
+> Doc type: Reference
+> Last reviewed: 2026-02-14
+> Canonical: docs/llms.md
+> Tags: llm,context,ai
+>
 > **v8.0.0** | Updated 2026-02-12
 >
 > AI 어시스턴트가 프로젝트를 이해하는 데 필요한 핵심 정보

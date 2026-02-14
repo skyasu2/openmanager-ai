@@ -1,5 +1,13 @@
 # Stitch 관리 가이드
 
+> Stitch 증분 개선 워크플로우와 운영 정책 가이드
+> Owner: dev-experience
+> Status: Active
+> Doc type: How-to
+> Last reviewed: 2026-02-14
+> Canonical: docs/development/stitch-guide.md
+> Tags: stitch,ui,workflow
+>
 > stitch-improvement-workflow + stitch-sync-policy 병합
 > Last updated: 2026-02-14
 

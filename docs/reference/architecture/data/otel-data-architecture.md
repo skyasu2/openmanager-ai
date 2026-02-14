@@ -1,8 +1,15 @@
 # OTel 데이터 아키텍처
 
+> OTel 전환 파이프라인과 데이터 계약을 설명하는 기준 문서
+> Owner: platform-data
+> Status: Active Canonical
+> Doc type: Reference
+> Last reviewed: 2026-02-14
+> Canonical: docs/reference/architecture/data/otel-data-architecture.md
+> Tags: otel,data,architecture,pipeline
+>
 > **(otel-pipeline-audit + observability-transition-readiness 병합)**
 > Last verified: 2026-02-14
-> Status: Active Canonical
 
 ---
 

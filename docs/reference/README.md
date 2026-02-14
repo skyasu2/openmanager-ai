@@ -1,8 +1,12 @@
 # Reference
 
-> Last verified against code: 2026-02-13
-> 기술 레퍼런스 문서 인덱스 (Active Canonical)
+> 기술 레퍼런스 문서 인덱스
+> Owner: platform-architecture
+> Status: Active Canonical
 > Doc type: Reference
+> Last reviewed: 2026-02-14
+> Canonical: docs/reference/README.md
+> Tags: reference,index,architecture
 
 ## Core References
 
@@ -16,7 +20,7 @@
 
 ### AI
 - [AI Engine Architecture](./architecture/ai/ai-engine-architecture.md)
-- [AI Engine Internals](./architecture/ai/ai-engine-internals.md)
+- [AI Engine Internals (Archived)](../archived/reference/architecture/ai/ai-engine-internals.md)
 - [Frontend/Backend Comparison](./architecture/ai/frontend-backend-comparison.md)
 - [Monitoring ML](./architecture/ai/monitoring-ml.md)
 - [RAG Knowledge Engine](./architecture/ai/rag-knowledge-engine.md)
@@ -24,7 +28,7 @@
 ### Data
 - [Data Architecture](./architecture/data/data-architecture.md)
 - [OTel Data Architecture](./architecture/data/otel-data-architecture.md)
-- [Data Pipeline](./architecture/data/data-pipeline.md)
+- [Data Pipeline (Archived)](../archived/reference/architecture/data/data-pipeline.md)
 - [Prometheus Comparison](./architecture/data/prometheus-comparison.md)
 - [Server Metadata Comparison](./architecture/data/server-metadata-comparison.md)
 

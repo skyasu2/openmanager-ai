@@ -1,7 +1,14 @@
 # OpenManager AI 빠른 시작 가이드
 
-> **v8.0.0** | Updated 2026-02-12
+> 5분 내 로컬 개발 환경 구성과 실행을 위한 빠른 시작 문서
+> Owner: dev-experience
+> Status: Active
 > Doc type: Tutorial
+> Last reviewed: 2026-02-14
+> Canonical: docs/QUICK-START.md
+> Tags: quickstart,onboarding,setup
+>
+> **v8.0.0** | Updated 2026-02-12
 
 **AI 기반 실시간 서버 모니터링 플랫폼** - 5분 만에 시작하기
 

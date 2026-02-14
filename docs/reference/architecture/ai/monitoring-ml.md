@@ -1,5 +1,13 @@
 # Monitoring & ML Engine
 
+> OpenManager 이상탐지/예측 엔진의 설계와 구현 상세 레퍼런스
+> Owner: platform-architecture
+> Status: Active
+> Doc type: Reference
+> Last reviewed: 2026-02-14
+> Canonical: docs/reference/architecture/ai/monitoring-ml.md
+> Tags: ai,monitoring,ml,anomaly-detection
+>
 > **v1.0.0** | Created 2026-01-25
 >
 > 이상탐지, 트렌드 예측, 적응형 임계값 시스템 상세
@@ -479,5 +487,5 @@ ServerCard ────────────────────► "이�
 ## Related Documentation
 
 - **[AI Engine Architecture](./ai-engine-architecture.md)** - 전체 AI 엔진 아키텍처
-- **[AI Engine Internals](./ai-engine-internals.md)** - API, 데이터 계층, 환경변수
+- **[AI Engine Internals (Archived)](../../../archived/reference/architecture/ai/ai-engine-internals.md)** - API, 데이터 계층, 환경변수(보관)
 - **[Data Architecture](../data/data-architecture.md)** - 서버 데이터 아키텍처

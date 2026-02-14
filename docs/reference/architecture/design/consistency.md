@@ -1,5 +1,13 @@
 # Data Consistency Strategy
 
+> 대시보드/AI 응답 간 데이터 일관성 보장을 위한 설계 전략
+> Owner: platform-architecture
+> Status: Active
+> Doc type: Explanation
+> Last reviewed: 2026-02-14
+> Canonical: docs/reference/architecture/design/consistency.md
+> Tags: architecture,consistency,data,design
+>
 > **프로젝트 버전**: v8.0.0 | **최종 업데이트**: 2026-02-13
 
 **문제**: 모니터링과 AI가 서로 다른 메트릭을 표시하는 일관성 문제 해결

@@ -1,12 +1,18 @@
 # AI Engine Internals
 
-> **v7.1.4** | Updated 2026-02-08
+> Owner: platform-architecture
+> Status: Archived
+> Doc type: Reference
+> Last reviewed: 2026-02-14
+> Canonical: docs/reference/architecture/ai/ai-engine-architecture.md
+> Tags: ai-engine,internals,archived
 >
-> API, 데이터 계층, 환경변수, 파일 구조 상세
+> **v7.1.4 snapshot** | Updated 2026-02-08
+> API, 데이터 계층, 환경변수, 파일 구조 상세(보관본)
 
 **관련 문서**:
-- [AI Engine Architecture](./ai-engine-architecture.md) - 개요 및 아키텍처
-- [RAG & Knowledge Engine](./rag-knowledge-engine.md) - 검색 및 지식 그래프 상세
+- [AI Engine Architecture](../../../../reference/architecture/ai/ai-engine-architecture.md) - 개요 및 아키텍처
+- [RAG & Knowledge Engine](../../../../reference/architecture/ai/rag-knowledge-engine.md) - 검색 및 지식 그래프 상세
 
 ---
 

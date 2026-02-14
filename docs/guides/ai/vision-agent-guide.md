@@ -1,5 +1,13 @@
 # Vision Agent 사용 가이드
 
+> Vision Agent 멀티모달 분석 기능의 사용법/제약/운영 가이드
+> Owner: documentation
+> Status: Active
+> Doc type: How-to
+> Last reviewed: 2026-02-14
+> Canonical: docs/guides/ai/vision-agent-guide.md
+> Tags: ai,vision,guide
+>
 > **Version**: 1.1.0 | **Last Updated**: 2026-01-28
 
 ## 개요
@@ -220,7 +228,7 @@ Agent: Analyst (Groq/Mistral)
 ## 관련 문서
 
 - [AI 엔진 아키텍처](../../reference/architecture/ai/ai-engine-architecture.md)
-- [AI 엔진 내부 구조](../../reference/architecture/ai/ai-engine-internals.md)
+- [AI 엔진 내부 구조(보관)](../../archived/reference/architecture/ai/ai-engine-internals.md)
 - [API 엔드포인트 레퍼런스](../../reference/api/endpoints.md)
 
 ---

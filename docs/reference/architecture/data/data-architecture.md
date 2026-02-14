@@ -1,8 +1,11 @@
 # 서버 데이터 아키텍처 가이드
 
-> Last verified against code: 2026-02-13
+> Owner: platform-data
 > Status: Active Canonical
 > Doc type: Explanation
+> Last reviewed: 2026-02-14
+> Canonical: docs/reference/architecture/data/data-architecture.md
+> Tags: data,architecture,otel,prometheus
 
 **최종 업데이트**: 2026-02-08
 **프로젝트 버전**: v8.0.0
@@ -47,6 +50,12 @@ AI/ML 서비스가 단순히 API를 호출하는 비효율적인 구조를 탈�
 ```
 
 > **Note**: 이전 3-Tier의 `fixed-24h-metrics.ts` (Last Resort)는 v8.0.0에서 제거되었습니다. `MetricsProvider` singleton이 2-Tier 우선순위를 자동 관리합니다.
+
+### 통합 기준 (2026-02-14)
+
+기존 파이프라인 단독 문서의 운영 내용을 본 문서로 통합했습니다.
+
+- 통합 대상(보관): [`docs/archived/reference/architecture/data/data-pipeline.md`](../../../archived/reference/architecture/data/data-pipeline.md)
 
 ### 데이터 경계 (중요)
 

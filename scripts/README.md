@@ -1,139 +1,130 @@
-# 📜 Scripts 디렉토리 구조
+# Scripts 디렉토리
 
-**최종 업데이트**: 2025-08-20
+> Owner: team
+> Status: Active Canonical
+> Doc type: Reference
+> Last reviewed: 2026-02-14
 
-## 📊 정리 결과 (2025-08-20 추가 정리)
+프로젝트 자동화 및 유틸리티 스크립트 (53개 파일, 16개 디렉토리).
 
-### 개선 효과
-
-- **파일 수**: 218개 → 114개 (47.7% 감소)
-- **중복 제거**: MCP, 환경변수, 테스트 관련 중복 100개+ 제거
-- **보안 개선**: deprecated crypto 함수를 안전한 버전으로 수정
-- **구조화**: 8개 카테고리로 체계적 분류
-
-### 디렉토리 구조
+## 디렉토리 구조
 
 ```
 scripts/
-├── core/              # 핵심 통합 도구 (8개)
-├── utils/             # 재사용 유틸리티 (3개)
-├── emergency/         # 긴급 대응 스크립트 (3개)
-├── scheduled/         # 정기 실행 스크립트
-│   ├── daily/
-│   ├── weekly/
-│   └── monthly/
-├── mcp/               # MCP 관련 (6개)
-├── security/          # 보안 관련
-├── testing/           # 테스트 도구
-├── env/               # 환경 설정
-├── _archive/          # 레거시 보관
-└── [기타]             # 추가 정리 필요 (81개)
+├── ai/                # AI 에이전트 도구
+│   ├── agent-bridge.sh        # Claude ↔ Codex 브릿지
+│   └── health/                # AI 도구 상태 체크
+├── data/              # 데이터 파이프라인 & SQL
+│   ├── otel/                  # OpenTelemetry 변환
+│   ├── sync-hourly-data.ts    # hourly-data 동기화
+│   └── *.sql                  # Supabase 테이블/함수
+├── dev/               # 개발 도구
+│   ├── biome-wrapper.sh       # Biome 포맷터 래퍼
+│   ├── lint-changed.sh        # 변경 파일만 린트
+│   ├── tsc-wrapper.js         # TypeScript 체크 래퍼
+│   └── typecheck-changed.sh   # 변경 파일만 타입 체크
+├── diagnostics/       # 디버깅 도구
+│   └── claude-json-sanitize.js
+├── docs/              # 문서 품질 관리
+│   ├── check-docs.sh          # 문서 품질 점검
+│   ├── doc-budget-report.js   # 문서 예산 리포트
+│   ├── check-internal-links.js
+│   ├── generate-inventory.js
+│   └── lint-changed.sh
+├── env/               # 환경변수 & 보안
+│   ├── check-env.ts           # 환경변수 검증
+│   ├── check-hardcoded-secrets.js
+│   ├── precommit-check-secrets.cjs
+│   └── sync-vercel.sh         # Vercel 환경변수 동기화
+├── generators/        # 데이터 생성기
+│   ├── generate-hourly-failure-scenarios.ts
+│   └── generate-server-data.ts
+├── hooks/             # Git hooks
+│   ├── post-commit.js
+│   ├── pre-push.js
+│   └── validate-parallel.js   # 병렬 검증 (lint + type)
+├── mcp/               # MCP 서버 관련
+│   ├── codex-local.sh         # 프로젝트 스코프 Codex 래퍼
+│   ├── count-codex-mcp-usage.sh
+│   ├── mcp-health-check-codex.sh
+│   └── resolve-runtime-env.sh
+├── setup/             # 셸 환경 설정
+│   └── .bashrc_claude_additions
+├── stitch/            # Stitch MCP 검증
+│   └── validate-stitch-registry.js
+├── supabase/          # Supabase 유지보수
+│   └── cleanup-unused-tables.sql
+├── test/              # 테스트 헬퍼
+│   ├── diagnose-login-error.cjs
+│   ├── github-auth-helper.cjs
+│   ├── supabase-token-setup.cjs
+│   └── verify-oauth-config.cjs
+├── validation/        # 검증 도구
+│   └── create-summary.sh
+├── wsl/               # WSL 환경 설정
+│   └── fix-wsl-config.ps1
+├── generate-pwa-icons.mjs     # PWA 아이콘 생성
+└── update-hourly-data-scenarios.ts
 ```
 
-## 🚀 핵심 스크립트 사용법
+## 주요 스크립트
 
-### 1. 환경변수 관리
+### AI 에이전트 브릿지
 
 ```bash
-node scripts/core/env-manager.mjs --backup    # 환경변수 백업
-node scripts/core/env-manager.mjs --restore   # 환경변수 복원
-node scripts/core/env-manager.mjs --encrypt   # 환경변수 암호화
+# Claude → Codex 프롬프트 전달
+bash scripts/ai/agent-bridge.sh --to codex "프롬프트"
 ```
 
-### 2. 테스트 실행
+### 개발 워크플로우
 
 ```bash
-node scripts/core/test-runner.mjs --all       # 모든 테스트
-node scripts/core/test-runner.mjs --unit      # 단위 테스트
-node scripts/core/test-runner.mjs --e2e       # E2E 테스트
+# 변경 파일만 린트/타입체크 (빠른 피드백)
+bash scripts/dev/lint-changed.sh
+bash scripts/dev/typecheck-changed.sh
+
+# Biome 포맷팅
+bash scripts/dev/biome-wrapper.sh
 ```
 
-### 3. 모니터링
+### 문서 관리
 
 ```bash
-node scripts/core/monitor.mjs --system        # 시스템 모니터링
-node scripts/core/monitor.mjs --api           # API 상태
-node scripts/core/monitor.mjs --free-tier     # 무료 티어 사용량
+# 문서 품질 점검 + 예산 리포트
+bash scripts/docs/check-docs.sh
+node scripts/docs/doc-budget-report.js
 ```
 
-### 4. AI 도구
+### 환경변수
 
 ```bash
-node scripts/core/ai-tools.mjs --analyze      # 코드 분석
-node scripts/core/ai-tools.mjs --chat         # AI 채팅
-node scripts/core/ai-tools.mjs --optimize     # 코드 최적화
+# 환경변수 검증
+npx tsx scripts/env/check-env.ts
+
+# Vercel 동기화
+bash scripts/env/sync-vercel.sh
 ```
 
-### 5. 배포
+### MCP 도구
 
 ```bash
-bash scripts/core/deploy.sh production        # 프로덕션 배포
-bash scripts/core/deploy.sh staging           # 스테이징 배포
+# Codex MCP 래퍼 (프로젝트 스코프)
+bash scripts/mcp/codex-local.sh
+
+# MCP 상태 점검
+bash scripts/mcp/mcp-health-check-codex.sh
 ```
 
-## 🔧 유틸리티 사용법
-
-### 검증 도구
+### 데이터 파이프라인
 
 ```bash
-node scripts/utils/validator.js --config      # 설정 검증
-node scripts/utils/validator.js --types       # 타입 검증
+# hourly-data 동기화
+npx tsx scripts/data/sync-hourly-data.ts
+
+# 서버 데이터 생성
+npx tsx scripts/generators/generate-server-data.ts
 ```
-
-### Redis 연결 테스트
-
-```bash
-npx ts-node scripts/utils/redis-connection.ts
-```
-
-## 🚨 긴급 대응
-
-### 빠른 수정
-
-```bash
-bash scripts/emergency/quick-fix-oauth.sh     # OAuth 긴급 수정
-bash scripts/emergency/emergency-deploy.sh    # 긴급 배포
-bash scripts/emergency/vercel-emergency.sh    # Vercel 긴급 대응
-```
-
-## 📅 정기 실행 스크립트
-
-### 주간 정리
-
-```bash
-bash scripts/scheduled/weekly/weekly-cleanup.sh
-bash scripts/scheduled/weekly/weekly-review.sh
-```
-
-### 월간 검토
-
-```bash
-bash scripts/scheduled/monthly/monthly-review.sh
-```
-
-## 🔐 보안 도구
-
-```bash
-bash scripts/security/check-all-secrets.sh    # 모든 시크릿 검사
-bash scripts/security/check-hardcoded-secrets.sh  # 하드코딩 검사
-bash scripts/security/secure-env.sh           # 환경변수 보안 설정
-```
-
-## 📝 향후 개선 계획
-
-1. **추가 정리 필요**: 루트 디렉토리의 81개 파일 추가 분류
-2. **통합 강화**:
-   - `unified-auth-tools.js` 생성 필요
-   - `unified-performance-tools.js` 생성 필요
-3. **문서화**: 각 스크립트별 상세 사용 가이드 작성
-4. **자동화**: GitHub Actions 통합
-
-## ⚠️ 주의사항
-
-- **보안**: 환경변수 관련 스크립트 실행 시 권한 확인 필수
-- **백업**: 중요 작업 전 반드시 백업 실행
-- **테스트**: 프로덕션 배포 전 모든 테스트 통과 확인
 
 ---
 
-_Last updated: 2025-07-31_
+_Last reviewed: 2026-02-14_

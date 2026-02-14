@@ -1,6 +1,12 @@
 # 개발 방법론 & 코딩 표준
 
 > 프로젝트의 코드 스타일, 아키텍처 패턴, 개발 원칙 (typescript-rules.md 통합됨)
+> Owner: engineering
+> Status: Active
+> Doc type: Standard
+> Last reviewed: 2026-02-14
+> Canonical: docs/development/coding-standards.md
+> Tags: coding,standards,typescript
 
 ## 개요
 
@@ -409,6 +415,7 @@ import type { ServerConfig } from '@/types';
 ## 관련 문서
 
 - [개발 환경](./README.md)
-- [전체 환경 구축](./full-setup-guide.md)
+- [프로젝트 설정](./project-setup.md)
+- [전체 환경 구축(보관)](../archived/development/full-setup-guide.md)
 - [Vibe Coding](../vibe-coding/README.md)
 - [테스트 전략](../guides/testing/test-strategy.md)

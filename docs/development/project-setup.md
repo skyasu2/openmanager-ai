@@ -8,6 +8,19 @@
 > Canonical: docs/development/project-setup.md
 > Tags: wsl,github-auth,project-setup
 
+## 제로베이스 환경(Windows + WSL) 시작점
+
+새 머신에서 시작하는 경우 아래 순서로 최소 부트스트랩을 완료한 뒤 본 문서를 이어서 진행합니다.
+
+1. Windows 11 업데이트 + WSL 2 설치
+2. Ubuntu 초기 설정 (`apt update && apt upgrade`)
+3. Git/Node.js 24/nvm 설치
+4. `gh auth login` + `gh auth setup-git`
+
+상세 Phase 문서는 보관 문서에서 확인할 수 있습니다.
+
+- 보관 문서: [`docs/archived/development/full-setup-guide.md`](../archived/development/full-setup-guide.md)
+
 ## GitHub 인증 방식 비교 (WSL)
 
 | 방식 | 장점 | 단점 | 권장도 |

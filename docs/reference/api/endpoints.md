@@ -1,8 +1,15 @@
 # API Endpoints (Code-Synced)
 
+> 코드 기준 API 엔드포인트 동기화 레퍼런스
+> Owner: platform-architecture
+> Status: Active
+> Doc type: Reference
+> Last reviewed: 2026-02-14
+> Canonical: docs/reference/api/endpoints.md
+> Tags: api,endpoints,reference
+>
 > Last verified against code: 2026-02-13
 > Source of truth: `src/app/api/**/route.ts*`
-> Doc type: Reference
 
 총 엔드포인트: **48**
 

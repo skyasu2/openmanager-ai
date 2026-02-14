@@ -1,7 +1,12 @@
 # Observability 가이드 (Langfuse + Sentry)
 
 > LLM 트레이싱(Langfuse)과 에러 모니터링(Sentry) 설정, 점검, 트러블슈팅
-> Doc type: How-to / Reference
+> Owner: documentation
+> Status: Active
+> Doc type: How-to
+> Last reviewed: 2026-02-14
+> Canonical: docs/guides/observability.md
+> Tags: observability,langfuse,sentry,monitoring
 
 ## 개요
 

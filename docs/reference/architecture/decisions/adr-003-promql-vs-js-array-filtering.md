@@ -1,5 +1,13 @@
 # ADR-003: PromQL vs JS Array Filtering — 데이터 쿼리 전략
 
+> PromQL 엔진과 JS 필터링 병행 전략을 정리한 ADR
+> Owner: platform-architecture
+> Status: Active
+> Doc type: Decision
+> Last reviewed: 2026-02-14
+> Canonical: docs/reference/architecture/decisions/adr-003-promql-vs-js-array-filtering.md
+> Tags: adr,promql,query,metrics
+
 **Date**: 2026-02-07
 **Status**: Decided
 **Context**: 프로젝트에 "PromQL: `rate(http_requests[5m])` 같은 복잡한 쿼리 언어 vs 클라이언트 필터링: 단순한 자바스크립트 배열 필터링으로 처리"라는 비교가 문서에 존재. 현재 구현의 적합성을 분석한다.

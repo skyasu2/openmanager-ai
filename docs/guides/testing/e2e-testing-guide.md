@@ -1,5 +1,13 @@
 # OpenManager AI E2E 테스트 가이드
 
+> Playwright 기반 End-to-End 테스트 범위와 실행/운영 가이드
+> Owner: documentation
+> Status: Active
+> Doc type: How-to
+> Last reviewed: 2026-02-14
+> Canonical: docs/guides/testing/e2e-testing-guide.md
+> Tags: testing,e2e,playwright,cicd
+>
 > **Updated**: 2026-01-18
 
 **목차**: [개요](#-개요) | [테스트 범위](#-테스트-범위) | [실행 방법](#-테스트-실행-방법) | [결과 분석](#-테스트-결과-분석) | [설정](#-테스트-설정) | [환경별 전략](#-환경별-테스트-전략) | [디버깅](#-디버깅-가이드) | [CI/CD](#-cicd-통합)

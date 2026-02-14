@@ -1,5 +1,13 @@
 # Frontend vs Backend AI Assistant 비교 분석
 
+> 프론트엔드와 AI Engine 백엔드 역할/성숙도 비교 레퍼런스
+> Owner: platform-architecture
+> Status: Active
+> Doc type: Reference
+> Last reviewed: 2026-02-14
+> Canonical: docs/reference/architecture/ai/frontend-backend-comparison.md
+> Tags: ai,frontend,backend,comparison
+
 **분석 일시**: 2026-02-04 (Updated)
 **버전**: v7.1.2 + 4c302484e
 **아키텍처**: Vercel (Frontend) + Cloud Run (Backend AI Engine)

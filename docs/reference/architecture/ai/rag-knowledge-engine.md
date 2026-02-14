@@ -1,5 +1,13 @@
 # RAG & Knowledge Engine Architecture
 
+> OpenManager RAG 검색/재정렬/그래프 확장 아키텍처 레퍼런스
+> Owner: platform-architecture
+> Status: Active
+> Doc type: Reference
+> Last reviewed: 2026-02-14
+> Canonical: docs/reference/architecture/ai/rag-knowledge-engine.md
+> Tags: ai,rag,knowledge-engine,architecture
+>
 > **v1.1.0** | Updated 2026-01-26
 >
 > 검색 증강 생성(RAG) 및 지식 엔진 아키텍처 상세 문서입니다.

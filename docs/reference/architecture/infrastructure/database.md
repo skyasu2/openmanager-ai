@@ -1,5 +1,13 @@
 # 🐘 데이터베이스 설계
 
+> Supabase 중심 데이터베이스 스키마/운영 원칙 레퍼런스
+> Owner: platform-data
+> Status: Active
+> Doc type: Reference
+> Last reviewed: 2026-02-14
+> Canonical: docs/reference/architecture/infrastructure/database.md
+> Tags: database,supabase,schema,infrastructure
+>
 > **프로젝트 버전**: v7.1.4 | **Updated**: 2026-02-08
 
 ## 🐘 Supabase PostgreSQL 스키마

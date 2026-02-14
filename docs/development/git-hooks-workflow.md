@@ -1,5 +1,13 @@
 # Git Hooks 워크플로우 가이드
 
+> Git Hooks와 CI 검증 계층 운영 방법을 설명하는 개발 가이드
+> Owner: dev-experience
+> Status: Active
+> Doc type: How-to
+> Last reviewed: 2026-02-14
+> Canonical: docs/development/git-hooks-workflow.md
+> Tags: git,hooks,cicd,workflow
+>
 > Pre-commit, Pre-push, CI/CD 최적화 베스트 프랙티스 (2026년 기준)
 
 ## 개요

@@ -1,5 +1,13 @@
 # AI Engine Architecture
 
+> OpenManager AI Engine의 멀티 에이전트 아키텍처 기준 문서
+> Owner: platform-architecture
+> Status: Active Canonical
+> Doc type: Reference
+> Last reviewed: 2026-02-14
+> Canonical: docs/reference/architecture/ai/ai-engine-architecture.md
+> Tags: ai,architecture,multi-agent,cloud-run
+>
 > **v8.0.0** | Updated 2026-02-14
 > (ai-model-policy.md 내용 통합됨, 2026-02-14)
 
@@ -455,7 +463,7 @@ graph TD
 
 ## Related Documentation
 
-- **[AI Engine Internals](./ai-engine-internals.md)** - API 명세, 데이터 계층, 환경변수, 파일 구조
+- **[AI Engine Internals (Archived)](../../../archived/reference/architecture/ai/ai-engine-internals.md)** - API 명세, 데이터 계층, 환경변수, 파일 구조(보관)
 - **[Monitoring & ML Engine](./monitoring-ml.md)** - 이상탐지, 트렌드 예측, 적응형 임계값 시스템
 - **[RAG & Knowledge Engine](./rag-knowledge-engine.md)** - 검색 및 지식 그래프 아키텍처
 - **[Data Architecture](../data/data-architecture.md)** - 서버 데이터 아키텍처

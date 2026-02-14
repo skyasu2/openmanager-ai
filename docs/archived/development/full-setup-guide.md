@@ -2,10 +2,10 @@
 
 > Windows 11에서 처음부터 Vibe Coding 환경 구축하기
 > Owner: dev-experience
-> Status: Active Canonical
+> Status: Archived
 > Doc type: Tutorial
 > Last reviewed: 2026-02-14
-> Canonical: docs/development/full-setup-guide.md
+> Canonical: docs/development/project-setup.md
 > Tags: wsl,github-auth,setup
 
 ## 개요
@@ -629,10 +629,10 @@ git reset --hard HEAD~1
 
 환경 구축이 완료되었습니다:
 
-1. [Vibe Coding 가이드](../vibe-coding/README.md) - AI 도구 활용법
-2. [워크플로우](../vibe-coding/workflows.md) - 일일 개발 사이클
-3. [코딩 표준](./coding-standards.md) - 프로젝트 규칙
-4. [Git Hooks 워크플로우](./git-hooks-workflow.md) - Pre-commit/Pre-push 설정
+1. [Vibe Coding 가이드](../../vibe-coding/README.md) - AI 도구 활용법
+2. [워크플로우](../../vibe-coding/workflows.md) - 일일 개발 사이클
+3. [코딩 표준](../../development/coding-standards.md) - 프로젝트 규칙
+4. [Git Hooks 워크플로우](../../development/git-hooks-workflow.md) - Pre-commit/Pre-push 설정
 
 ---
 

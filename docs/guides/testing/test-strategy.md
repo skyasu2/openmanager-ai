@@ -1,5 +1,13 @@
 # Test Strategy Guide
 
+> OpenManager 테스트 전략과 우선순위를 정의한 가이드
+> Owner: documentation
+> Status: Active
+> Doc type: How-to
+> Last reviewed: 2026-02-14
+> Canonical: docs/guides/testing/test-strategy.md
+> Tags: testing,strategy,quality
+>
 > **통합 문서**: test-strategy-guide.md + testing-philosophy-detailed.md + vercel-first-strategy.md
 > **최종 갱신**: 2026-01-05
 

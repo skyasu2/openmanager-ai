@@ -1,8 +1,15 @@
 # OpenManager AI Documentation
 
+> OpenManager 문서 허브와 학습 경로를 제공하는 인덱스
+> Owner: documentation
+> Status: Active Canonical
+> Doc type: Explanation
+> Last reviewed: 2026-02-14
+> Canonical: docs/README.md
+> Tags: docs,index,navigation
+>
 > Project: OpenManager AI v8.0.0
 > Last verified against code: 2026-02-13
-> Doc type: Explanation
 
 ## Canonical Docs (Active)
 
