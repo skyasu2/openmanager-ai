@@ -69,9 +69,7 @@
             "memory_total_bytes": 8589934592,
             "disk_total_bytes": 107374182400
           },
-          "logs": [
-            "[INFO] systemd[1]: Started Daily apt download activities."
-          ]
+          "logs": ["[INFO] systemd[1]: Started Daily apt download activities."]
         },
         "web-nginx-pus-01:9100": {
           "instance": "web-nginx-pus-01:9100",
@@ -430,9 +428,7 @@
             "memory_total_bytes": 8589934592,
             "disk_total_bytes": 214748364800
           },
-          "logs": [
-            "[INFO] systemd[1]: Started NFS server and services."
-          ]
+          "logs": ["[INFO] systemd[1]: Started NFS server and services."]
         },
         "lb-haproxy-icn-01:9100": {
           "instance": "lb-haproxy-icn-01:9100",
@@ -495,9 +491,7 @@
             "memory_total_bytes": 8589934592,
             "disk_total_bytes": 53687091200
           },
-          "logs": [
-            "[INFO] haproxy[3481]: Proxy api_frontend started (FD 80)"
-          ]
+          "logs": ["[INFO] haproxy[3481]: Proxy api_frontend started (FD 80)"]
         }
       }
     },
@@ -631,9 +625,7 @@
             "memory_total_bytes": 17179869184,
             "disk_total_bytes": 214748364800
           },
-          "logs": [
-            "[INFO] systemd[1]: Started Application Service (api-was)."
-          ]
+          "logs": ["[INFO] systemd[1]: Started Application Service (api-was)."]
         },
         "api-was-icn-02:9100": {
           "instance": "api-was-icn-02:9100",
@@ -1719,9 +1711,7 @@
             "memory_total_bytes": 68719476736,
             "disk_total_bytes": 1073741824000
           },
-          "logs": [
-            "[INFO] systemd[1]: Started MySQL Community Server."
-          ]
+          "logs": ["[INFO] systemd[1]: Started MySQL Community Server."]
         },
         "db-mysql-icn-replica:9100": {
           "instance": "db-mysql-icn-replica:9100",
@@ -1949,9 +1939,7 @@
             "memory_total_bytes": 8589934592,
             "disk_total_bytes": 53687091200
           },
-          "logs": [
-            "[INFO] haproxy[6515]: Proxy api_frontend started (FD 49)"
-          ]
+          "logs": ["[INFO] haproxy[6515]: Proxy api_frontend started (FD 49)"]
         },
         "lb-haproxy-pus-01:9100": {
           "instance": "lb-haproxy-pus-01:9100",
@@ -2019,9 +2007,7 @@
             "memory_total_bytes": 8589934592,
             "disk_total_bytes": 107374182400
           },
-          "logs": [
-            "[INFO] systemd[1]: Started Daily apt download activities."
-          ]
+          "logs": ["[INFO] systemd[1]: Started Daily apt download activities."]
         },
         "web-nginx-icn-02:9100": {
           "instance": "web-nginx-icn-02:9100",
@@ -2581,9 +2567,7 @@
             "memory_total_bytes": 8589934592,
             "disk_total_bytes": 107374182400
           },
-          "logs": [
-            "[INFO] systemd[1]: Started Daily apt download activities."
-          ]
+          "logs": ["[INFO] systemd[1]: Started Daily apt download activities."]
         },
         "api-was-icn-01:9100": {
           "instance": "api-was-icn-01:9100",

@@ -103,9 +103,7 @@
             "memory_total_bytes": 8589934592,
             "disk_total_bytes": 107374182400
           },
-          "logs": [
-            "[INFO] systemd[1]: Started Daily apt download activities."
-          ]
+          "logs": ["[INFO] systemd[1]: Started Daily apt download activities."]
         },
         "api-was-icn-01:9100": {
           "instance": "api-was-icn-01:9100",
@@ -699,9 +697,7 @@
             "memory_total_bytes": 17179869184,
             "disk_total_bytes": 214748364800
           },
-          "logs": [
-            "[INFO] systemd[1]: Started Application Service (api-was)."
-          ]
+          "logs": ["[INFO] systemd[1]: Started Application Service (api-was)."]
         },
         "db-mysql-icn-primary:9100": {
           "instance": "db-mysql-icn-primary:9100",
@@ -1359,9 +1355,7 @@
             "memory_total_bytes": 34359738368,
             "disk_total_bytes": 53687091200
           },
-          "logs": [
-            "[INFO] redis-server[5709]: DB saved on disk (RDB snapshot)"
-          ]
+          "logs": ["[INFO] redis-server[5709]: DB saved on disk (RDB snapshot)"]
         },
         "storage-nfs-icn-01:9100": {
           "instance": "storage-nfs-icn-01:9100",
@@ -1593,9 +1587,7 @@
             "memory_total_bytes": 8589934592,
             "disk_total_bytes": 107374182400
           },
-          "logs": [
-            "[INFO] systemd[1]: Started Daily apt download activities."
-          ]
+          "logs": ["[INFO] systemd[1]: Started Daily apt download activities."]
         },
         "api-was-icn-01:9100": {
           "instance": "api-was-icn-01:9100",
@@ -2059,9 +2051,7 @@
             "memory_total_bytes": 8589934592,
             "disk_total_bytes": 107374182400
           },
-          "logs": [
-            "[INFO] systemd[1]: Started Daily apt download activities."
-          ]
+          "logs": ["[INFO] systemd[1]: Started Daily apt download activities."]
         },
         "web-nginx-pus-01:9100": {
           "instance": "web-nginx-pus-01:9100",
@@ -2687,9 +2677,7 @@
             "memory_total_bytes": 17179869184,
             "disk_total_bytes": 214748364800
           },
-          "logs": [
-            "[INFO] systemd[1]: Started Application Service (api-was)."
-          ]
+          "logs": ["[INFO] systemd[1]: Started Application Service (api-was)."]
         },
         "db-mysql-icn-primary:9100": {
           "instance": "db-mysql-icn-primary:9100",

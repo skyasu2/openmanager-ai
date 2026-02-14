@@ -16,7 +16,7 @@
 |------|-----|
 | 기간 | 2025-05-23 ~ 2026-02-14 (9개월) |
 | 커밋 | 5,676개 |
-| 코드량 | ~169,000 Lines (Frontend 50K+ / AI Engine 31K / Config & Tests) |
+| 코드량 | ~166,000 Lines (Frontend 47K+ / AI Engine 31K / Config & Tests) |
 | 목적 | 포트폴리오 & 바이브 코딩 학습 결과물 |
 
 ---
@@ -52,7 +52,7 @@
 ### Phase 4: 품질 & 최적화 (2026-01 ~ 2026-02)
 | 작업 | 상태 | 비고 |
 |------|:----:|------|
-| Dead Code 정리 (~4,265줄 제거) | 100% | 3차 정리 완료 |
+| Dead Code 정리 (~7,300줄 제거) | 100% | 4차 정리 완료 (770→747파일) |
 | 대형 파일 리팩토링 (800줄+ → 0개) | 100% | 분할 완료 |
 | any 타입 제거 (17→0) | 100% | TypeScript strict |
 | console.log → Pino Logger (92%) | 100% | 구조화 로깅 |
@@ -75,11 +75,11 @@
 
 | 영역 | 완성도 | 근거 |
 |------|:------:|------|
-| Dashboard 컴포넌트 (26파일) | 95% | Props 기반, Server+Client 조합, 모든 컴포넌트 활성 |
+| Dashboard 컴포넌트 (22파일) | 96% | transition/ 데드코드 삭제, 모든 컴포넌트 활성 |
 | AI Sidebar (15파일) | 95% | useChat → useHybridAIQuery, Streaming+Job Queue |
 | Landing Page | 90% | OAuth, 시스템 제어, 웜업, 애니메이션 |
-| 상태관리 (Zustand 4개) | 100% | persist, devtools, useShallow 최적화 |
-| 미사용 컴포넌트 | 0개 | 모든 컴포넌트 실제 렌더링 확인 |
+| 상태관리 (Zustand 4개) | 100% | persist, devtools, useShallow 최적화, 미사용 selector 정리 |
+| 미사용 컴포넌트 | 0개 | 4차 정리 검증 (SystemBootSequence, FloatingSystemControl, Sparkline, Modal 등 삭제) |
 
 ### 3.2 API Routes (91%)
 
@@ -176,6 +176,7 @@
 | AI Cache (다층) | 100% | 메모리 + Redis, TTL 정책 |
 | Config (SSOT) | 100% | 20파일, Zod 검증 |
 | Scripts (데이터 동기화) | 100% | sync-hourly-data + otel-precompute (로그 적재 완료) |
+| Utils/Lib 정리 | 100% | api-batcher, error-response, safeFormat, network-tracking, timeout-config 삭제 |
 | 테스트 인프라 | 80% | 52파일, 10,859줄, 커버리지 ~11% |
 
 ### 3.6 문서 (95%)
@@ -193,15 +194,15 @@
 
 | 도메인 | 가중치 | 완성도 | 가중 점수 |
 |--------|:------:|:------:|:---------:|
-| Frontend | 20% | 94% | 18.8 |
+| Frontend | 20% | 95% | 19.0 |
 | API Routes | 15% | 91% | 13.7 |
 | AI Engine | 20% | 92% | 18.4 |
 | Server Data | 15% | 100% | 15.0 |
-| Services/Lib | 20% | 90% | 18.0 |
+| Services/Lib | 20% | 92% | 18.4 |
 | 문서/테스트 | 10% | 95% | 9.5 |
-| **합계** | **100%** | | **93.4%** |
+| **합계** | **100%** | | **94.0%** |
 
-**결론: 실제 완성도 ~93%** (88% → 91%(P0 보안) → 93%(서버 데이터 + Vision 폴백 + UX 개선))
+**결론: 실제 완성도 ~94%** (88% → 91%(P0 보안) → 93%(서버 데이터) → 94%(데드코드 4차 정리))
 
 ---
 
@@ -252,4 +253,4 @@
 ---
 
 _분석 기준: 4개 병렬 탐색 에이전트로 src/, cloud-run/, scripts/ 전체 코드 분석_
-_최종 갱신: 2026-02-15 (서버 데이터 완성도 반영, Vision 폴백 완료, UX 5건 개선)_
+_최종 갱신: 2026-02-15 (데드코드 4차 정리: ~3,070줄 추가 제거, 770→747파일)_

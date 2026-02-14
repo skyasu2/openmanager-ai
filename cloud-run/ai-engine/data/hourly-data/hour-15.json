@@ -102,9 +102,7 @@
             "memory_total_bytes": 8589934592,
             "disk_total_bytes": 107374182400
           },
-          "logs": [
-            "[INFO] systemd[1]: Started Daily apt download activities."
-          ]
+          "logs": ["[INFO] systemd[1]: Started Daily apt download activities."]
         },
         "api-was-icn-01:9100": {
           "instance": "api-was-icn-01:9100",
@@ -396,9 +394,7 @@
             "memory_total_bytes": 17179869184,
             "disk_total_bytes": 5368709120000
           },
-          "logs": [
-            "[INFO] systemd[1]: Started NFS server and services."
-          ]
+          "logs": ["[INFO] systemd[1]: Started NFS server and services."]
         },
         "storage-s3gw-pus-01:9100": {
           "instance": "storage-s3gw-pus-01:9100",
@@ -988,9 +984,7 @@
             "memory_total_bytes": 8589934592,
             "disk_total_bytes": 53687091200
           },
-          "logs": [
-            "[INFO] haproxy[5220]: Proxy api_frontend started (FD 25)"
-          ]
+          "logs": ["[INFO] haproxy[5220]: Proxy api_frontend started (FD 25)"]
         }
       }
     },
@@ -1058,9 +1052,7 @@
             "memory_total_bytes": 8589934592,
             "disk_total_bytes": 107374182400
           },
-          "logs": [
-            "[INFO] systemd[1]: Started Daily apt download activities."
-          ]
+          "logs": ["[INFO] systemd[1]: Started Daily apt download activities."]
         },
         "web-nginx-pus-01:9100": {
           "instance": "web-nginx-pus-01:9100",
@@ -1913,9 +1905,7 @@
             "memory_total_bytes": 8589934592,
             "disk_total_bytes": 214748364800
           },
-          "logs": [
-            "[INFO] systemd[1]: Started NFS server and services."
-          ]
+          "logs": ["[INFO] systemd[1]: Started NFS server and services."]
         },
         "lb-haproxy-icn-01:9100": {
           "instance": "lb-haproxy-icn-01:9100",
@@ -2145,9 +2135,7 @@
             "memory_total_bytes": 17179869184,
             "disk_total_bytes": 214748364800
           },
-          "logs": [
-            "[INFO] systemd[1]: Started Application Service (api-was)."
-          ]
+          "logs": ["[INFO] systemd[1]: Started Application Service (api-was)."]
         },
         "api-was-pus-01:9100": {
           "instance": "api-was-pus-01:9100",
@@ -2509,9 +2497,7 @@
             "memory_total_bytes": 8589934592,
             "disk_total_bytes": 107374182400
           },
-          "logs": [
-            "[INFO] systemd[1]: Started Daily apt download activities."
-          ]
+          "logs": ["[INFO] systemd[1]: Started Daily apt download activities."]
         },
         "web-nginx-icn-02:9100": {
           "instance": "web-nginx-icn-02:9100",
@@ -2671,9 +2657,7 @@
             "memory_total_bytes": 17179869184,
             "disk_total_bytes": 214748364800
           },
-          "logs": [
-            "[INFO] systemd[1]: Started Application Service (api-was)."
-          ]
+          "logs": ["[INFO] systemd[1]: Started Application Service (api-was)."]
         },
         "db-mysql-icn-primary:9100": {
           "instance": "db-mysql-icn-primary:9100",
@@ -2834,9 +2818,7 @@
             "memory_total_bytes": 34359738368,
             "disk_total_bytes": 53687091200
           },
-          "logs": [
-            "[INFO] redis-server[1679]: DB saved on disk (RDB snapshot)"
-          ]
+          "logs": ["[INFO] redis-server[1679]: DB saved on disk (RDB snapshot)"]
         },
         "storage-nfs-icn-01:9100": {
           "instance": "storage-nfs-icn-01:9100",
@@ -2964,9 +2946,7 @@
             "memory_total_bytes": 8589934592,
             "disk_total_bytes": 53687091200
           },
-          "logs": [
-            "[INFO] haproxy[2753]: Proxy api_frontend started (FD 37)"
-          ]
+          "logs": ["[INFO] haproxy[2753]: Proxy api_frontend started (FD 37)"]
         }
       }
     }
