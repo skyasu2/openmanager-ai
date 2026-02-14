@@ -29,6 +29,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -41,6 +43,9 @@ jobs:
 
       - name: Docs quality checks
         run: npm run docs:check
+        env:
+          DOCS_STRICT_CHANGED: ${{ github.event_name == 'schedule' && 'false' || 'true' }}
+          DOCS_DIFF_RANGE: ${{ github.event_name == 'schedule' && '' || (github.event_name == 'pull_request' && format('origin/{0}...HEAD', github.base_ref) || format('{0}...{1}', github.event.before, github.sha)) }}
 
       - name: Changed docs lint
         if: github.event_name != 'schedule'

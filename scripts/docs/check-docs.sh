@@ -10,6 +10,7 @@ ACTIVE_CONFIG="active.markdownlint-cli2.jsonc"
 HISTORICAL_CONFIG="historical.markdownlint-cli2.jsonc"
 FIX_MODE=false
 HAS_ERROR=0
+STRICT_DOCS_MODE="${DOCS_STRICT_CHANGED:-false}"
 
 # 색상 정의
 RED='\033[0;31m'
@@ -28,9 +29,10 @@ mkdir -p "$REPORTS_DIR"
 
 echo -e "${BLUE}📚 문서 품질 검증 시작${NC}"
 echo "========================================"
+echo "  - Strict changed-doc gate: ${STRICT_DOCS_MODE}"
 
 # 1. Markdown Lint 검사 (Active / Historical 분리)
-echo -e "\n${YELLOW}[1/4] Markdown Lint 검사${NC}"
+echo -e "\n${YELLOW}[1/5] Markdown Lint 검사${NC}"
 
 echo "  - Active docs lint"
 if $FIX_MODE; then
@@ -74,7 +76,7 @@ else
 fi
 
 # 2. 내부 링크 유효성 검사 (docs 전체)
-echo -e "\n${YELLOW}[2/4] 내부 링크 유효성 검사 (docs 전체)${NC}"
+echo -e "\n${YELLOW}[2/5] 내부 링크 유효성 검사 (docs 전체)${NC}"
 if node scripts/docs/check-internal-links.js "$DOCS_DIR" 2>&1 | tee "$REPORTS_DIR/internal-links.log"; then
   echo -e "${GREEN}✅ 내부 링크 검사 통과${NC}"
 else
@@ -83,8 +85,8 @@ else
 fi
 
 # 3. 오래된 문서 감지 (90일 이상)
-echo -e "\n${YELLOW}[3/4] 오래된 문서 감지 (90일+)${NC}"
-STALE_DOCS=$(find "$DOCS_DIR" -name "*.md" -mtime +90 -type f 2>/dev/null | head -10)
+echo -e "\n${YELLOW}[3/5] 오래된 문서 감지 (90일+)${NC}"
+STALE_DOCS=$(find "$DOCS_DIR" -name "*.md" -not -path "*/archived/*" -mtime +90 -type f 2>/dev/null | head -10)
 
 if [[ -z "$STALE_DOCS" ]]; then
   echo -e "${GREEN}✅ 오래된 문서 없음${NC}"
@@ -96,8 +98,22 @@ else
   done
 fi
 
-# 4. 문서 통계
-echo -e "\n${YELLOW}[4/4] 문서 통계${NC}"
+# 4. 문서 예산 리포트
+echo -e "\n${YELLOW}[4/5] 문서 예산 리포트${NC}"
+DOC_BUDGET_ARGS=(--write)
+if [[ "$STRICT_DOCS_MODE" == "true" ]]; then
+  DOC_BUDGET_ARGS+=(--strict)
+fi
+
+if node scripts/docs/doc-budget-report.js "${DOC_BUDGET_ARGS[@]}" 2>&1 | tee "$REPORTS_DIR/doc-budget-report.log"; then
+  echo -e "${GREEN}✅ 문서 예산 리포트 생성 완료${NC}"
+else
+  echo -e "${RED}❌ 문서 예산 리포트 생성 실패${NC}"
+  HAS_ERROR=1
+fi
+
+# 5. 문서 통계
+echo -e "\n${YELLOW}[5/5] 문서 통계${NC}"
 TOTAL_DOCS=$(find "$DOCS_DIR" -name "*.md" -type f | wc -l)
 TOTAL_LINES=$(find "$DOCS_DIR" -name "*.md" -type f -exec cat {} \; | wc -l)
 LARGE_DOCS=$(find "$DOCS_DIR" -name "*.md" -type f -exec wc -l {} \; | awk '$1 > 400 {print $2}' | wc -l)
