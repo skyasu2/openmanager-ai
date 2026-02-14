@@ -1,6 +1,6 @@
 #!/bin/bash
 # Codex MCP Health Check Script
-# 목적: Codex MCP 서버 설정 상태 점검 (현재 8개)
+# 목적: Codex MCP 서버 설정 상태 점검 (설정 파일 기반 SSOT)
 # 사용: ./scripts/mcp/mcp-health-check-codex.sh
 
 set -uo pipefail
@@ -19,17 +19,7 @@ REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 CODEX_LOCAL_RUNNER="$REPO_ROOT/scripts/mcp/codex-local.sh"
 RUNTIME_ENV_RESOLVER="$REPO_ROOT/scripts/mcp/resolve-runtime-env.sh"
 USAGE_COUNTER="$REPO_ROOT/scripts/mcp/count-codex-mcp-usage.sh"
-
-EXPECTED_SERVERS=(
-  "vercel"
-  "supabase"
-  "context7"
-  "playwright"
-  "next-devtools"
-  "github"
-  "sequential-thinking"
-  "stitch"
-)
+EXPECTED_SERVERS=()
 
 echo -e "${BLUE}Codex MCP Health Check${NC}"
 echo -e "${BLUE}======================${NC}"
@@ -59,6 +49,41 @@ fi
 : "${OPENMANAGER_CODEX_HOME_MODE:=project}"
 export OPENMANAGER_CODEX_HOME_MODE
 source "$RUNTIME_ENV_RESOLVER"
+
+load_expected_servers() {
+  local config_file="$CODEX_HOME/config.toml"
+  if [ ! -f "$config_file" ]; then
+    echo -e "${RED}Codex 설정 파일 누락: $config_file${NC}"
+    echo "Codex 설정 파일 누락: $config_file" >> "$LOG_FILE"
+    exit 2
+  fi
+
+  mapfile -t EXPECTED_SERVERS < <(
+    awk '
+      /^\[mcp_servers\.[A-Za-z0-9._-]+\]$/ {
+        line = $0
+        sub(/^\[mcp_servers\./, "", line)
+        sub(/\]$/, "", line)
+        if (line !~ /\.env$/) {
+          print line
+        }
+      }
+    ' "$config_file"
+  )
+
+  if [ "${#EXPECTED_SERVERS[@]}" -eq 0 ]; then
+    echo -e "${RED}MCP 서버 설정 파싱 실패: $config_file${NC}"
+    echo "MCP 서버 설정 파싱 실패: $config_file" >> "$LOG_FILE"
+    exit 2
+  fi
+
+  echo "  - MCP config: $config_file (${#EXPECTED_SERVERS[@]} servers)"
+  {
+    echo "  - MCP config: $config_file (${#EXPECTED_SERVERS[@]} servers)"
+  } >> "$LOG_FILE"
+}
+
+load_expected_servers
 
 echo -e "${BLUE}Runtime Paths${NC}"
 echo "  - CODEX_HOME: $CODEX_HOME (${OPENMANAGER_CODEX_HOME_SOURCE})"
@@ -175,7 +200,12 @@ if [ "$FAIL_COUNT" -eq 0 ]; then
   exit 0
 fi
 
-if [ "$SUCCESS_COUNT" -ge 7 ]; then
+WARNING_THRESHOLD=$((TOTAL_SERVERS - 1))
+if [ "$WARNING_THRESHOLD" -lt 0 ]; then
+  WARNING_THRESHOLD=0
+fi
+
+if [ "$SUCCESS_COUNT" -ge "$WARNING_THRESHOLD" ]; then
   exit 1
 fi
 

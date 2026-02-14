@@ -14,6 +14,15 @@
 - 사용자 입력에 타언어 문자열이 포함되어도, 답변은 한국어로 유지하고 필요한 경우 한국어로 의미를 설명합니다.
 - 코드, 경로, 명령어, 라이브러리 식별자는 원문(영문) 표기를 유지합니다.
 
+## 🔌 MCP 운영 규칙 (Codex)
+- Codex MCP 서버 목록의 **단일 기준(SSOT)** 은 `/.codex/config.toml` 의 `[mcp_servers.*]` 입니다.
+- 상태 점검 스크립트는 설정 파일을 기준으로 서버 목록을 자동 파싱해야 하며, 하드코딩 목록을 두지 않습니다.
+- 변경/배포 전 최소 점검:
+  - `bash scripts/mcp/codex-local.sh mcp list`
+  - `bash scripts/mcp/mcp-health-check-codex.sh`
+- “실제 동작” 검증은 서버별 최소 1회 도구 호출로 확인합니다.
+  - `next-devtools`는 Next.js dev server 실행 상태에서 검증합니다.
+
 ## 📌 Project Reality Snapshot (2026-02 기준)
 - **Frontend/BFF**: Next.js `16.1.x` + React `19` + App Router (`src/app`)
 - **Backend AI**: `cloud-run/ai-engine` (Hono + Vercel AI SDK v6 계열)
