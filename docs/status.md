@@ -199,7 +199,7 @@
 - **Backend/DB**: Supabase JS `v2.93.2` (SSR `v0.8.0`)
 - **Utility**: tailwind-merge `v3.4.0`
 
-**AI Ecosystem** (상세: [AI Model Policy](./ai-model-policy.md))
+**AI Ecosystem** (상세: [AI Engine Architecture](./reference/architecture/ai/ai-engine-architecture.md))
 - **SDK**: Vercel AI SDK `v6.0.66` (`@ai-sdk/*` 패키지 포함, Cloud Run: `^6.0.50`)
 - **Native Patterns** (v6.1.0):
   - `finalAnswer` 도구: `stopWhen: [hasToolCall('finalAnswer'), stepCountIs(5)]`

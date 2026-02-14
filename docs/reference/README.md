@@ -7,10 +7,8 @@
 ## Core References
 
 - [API Endpoints](./api/endpoints.md)
-- [System Architecture](./architecture/system/system-architecture-current.md)
+- [System Architecture (Hybrid 포함)](./architecture/system/system-architecture-current.md)
 - [AI Engine Architecture](./architecture/ai/ai-engine-architecture.md)
-- [Hybrid Split (Vercel vs Cloud Run)](./architecture/infrastructure/hybrid-split.md)
-- [Deployment](./architecture/infrastructure/deployment.md)
 - [Database](./architecture/infrastructure/database.md)
 - [Security](./architecture/infrastructure/security.md)
 
@@ -25,16 +23,12 @@
 
 ### Data
 - [Data Architecture](./architecture/data/data-architecture.md)
-- [Observability Transition Readiness](./architecture/data/observability-transition-readiness.md)
-- [Data Pipeline Analysis](./architecture/data/data-pipeline-analysis.md)
-- [Data Pipeline Comparison](./architecture/data/data-pipeline-comparison.md)
-- [OTel Pipeline Audit](./architecture/data/otel-pipeline-audit.md)
+- [OTel Data Architecture](./architecture/data/otel-data-architecture.md)
+- [Data Pipeline](./architecture/data/data-pipeline.md)
 - [Prometheus Comparison](./architecture/data/prometheus-comparison.md)
 - [Server Metadata Comparison](./architecture/data/server-metadata-comparison.md)
 
 ### Infrastructure
-- [Hybrid Split](./architecture/infrastructure/hybrid-split.md)
-- [Deployment](./architecture/infrastructure/deployment.md)
 - [Database](./architecture/infrastructure/database.md)
 - [Security](./architecture/infrastructure/security.md)
 
@@ -44,7 +38,6 @@
 - [Design Consistency](./architecture/design/consistency.md)
 
 ### Decisions (ADR)
-- [ADR-001](./architecture/decisions/adr-001-unified-ai-engine-cache-and-providers.md)
 - [ADR-002](./architecture/decisions/adr-002-server-card-rendering-strategy.md)
 - [ADR-003](./architecture/decisions/adr-003-promql-vs-js-array-filtering.md)
 

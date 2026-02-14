@@ -3,25 +3,22 @@
 > Auto-generated: 2026-02-13
 > Source: `docs/`
 
-- Total files in docs: **90**
-- Total markdown docs: **76**
-- Total markdown lines: **16099**
+- Total files in docs: **83**
+- Total markdown docs: **69**
+- Total markdown lines: **14676**
 
 ## Markdown Distribution
 
 | Scope | Count |
 |---|---:|
-| reference | 25 |
-| analysis | 12 |
-| development | 12 |
-| guides | 10 |
+| reference | 20 |
+| archived | 16 |
+| development | 11 |
+| guides | 9 |
 | vibe-coding | 7 |
-| reviews | 2 |
 | troubleshooting | 2 |
-| DEVELOPMENT.md | 1 |
 | QUICK-START.md | 1 |
 | README.md | 1 |
-| ai-model-policy.md | 1 |
 | llms.md | 1 |
 | status.md | 1 |
 

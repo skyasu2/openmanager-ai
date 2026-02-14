@@ -1,6 +1,6 @@
 # 개발 방법론 & 코딩 표준
 
-> 프로젝트의 코드 스타일, 아키텍처 패턴, 개발 원칙
+> 프로젝트의 코드 스타일, 아키텍처 패턴, 개발 원칙 (typescript-rules.md 통합됨)
 
 ## 개요
 
@@ -38,6 +38,26 @@ function process(data: unknown) {
 }
 ```
 
+### unknown vs any 구분
+
+- **any**: 절대 사용 금지 - 타입 안전성 완전 상실
+- **unknown**: 타입을 알 수 없는 경우 사용 (타입 가드 필수)
+
+```typescript
+// ✅ unknown + 타입 가드
+function processUnknown(data: unknown): string {
+  if (typeof data === 'string') {
+    return data.toUpperCase();
+  }
+  throw new Error('Invalid data type');
+}
+
+// ❌ any - 런타임 오류 가능성
+function processAny(data: any): string {
+  return data.toUpperCase();  // 컴파일은 통과하지만 위험
+}
+```
+
 ### 타입 정의
 
 ```typescript
@@ -52,6 +72,66 @@ type ServerConfig = {
 
 // 사용 시 기본값 지정
 function createServer({ status = 'healthy' }: ServerConfig) { ... }
+```
+
+### Interface vs Type 선택 기준
+
+| 상황 | 선택 | 이유 |
+|------|------|------|
+| Union / Intersection 필요 | `type` | `type Status = 'ok' \| 'error'` |
+| 확장 가능한 객체 구조 | `interface` | `extends`로 상속 가능 |
+| 함수 시그니처, 튜플 | `type` | 표현력 우수 |
+| 라이브러리 공개 API | `interface` | Declaration Merging 지원 |
+
+> 프로젝트 기본 권장: **type alias** (유니온, 인터섹션 유연성)
+
+### Type-First 개발 패턴
+
+타입 정의 -> 구현 -> 리팩토링 순서로 개발:
+
+```typescript
+// 1단계: 타입 정의
+type AIQueryRequest = {
+  query: string;
+  mode: 'LOCAL' | 'GOOGLE_AI';
+  context?: string;
+};
+
+type AIQueryResponse = {
+  answer: string;
+  confidence: number;
+  sources: string[];
+};
+
+// 2단계: 타입에 맞춰 구현 (IDE 자동완성 지원)
+async function queryAI(request: AIQueryRequest): Promise<AIQueryResponse> {
+  return { answer: '...', confidence: 0.95, sources: ['...'] };
+}
+
+// 3단계: 타입 기반 안전한 리팩토링
+function extractSources(response: AIQueryResponse): string[] {
+  return response.sources;
+}
+```
+
+### 타입 가드 활용
+
+```typescript
+// 커스텀 타입 가드 함수
+function isServerData(data: unknown): data is ServerData {
+  return (
+    typeof data === 'object' &&
+    data !== null &&
+    'id' in data &&
+    'name' in data &&
+    'status' in data
+  );
+}
+
+// 사용 - 타입 가드 통과 후 안전한 접근
+if (isServerData(response)) {
+  console.log(response.name);  // 타입 안전
+}
 ```
 
 ---
@@ -260,7 +340,7 @@ const helper = createHelper(config);
 helper.process(data);
 
 // ✅ 3회 이상 반복 시 추상화
-// formatDate가 10곳에서 사용 → 유틸리티로 분리
+// formatDate가 10곳에서 사용 -> 유틸리티로 분리
 ```
 
 ---
@@ -298,9 +378,10 @@ helper.process(data);
 
 | 기준 | 조치 |
 |------|------|
-| ~500줄 | 정상 |
+| ~500줄 | 정상 (권장 상한) |
 | 500~800줄 | 경고, 분할 검토 |
-| 800줄+ | 필수 분할 |
+| 800~1500줄 | 분할 필수 |
+| 1500줄+ | 즉시 분리 |
 
 ---
 

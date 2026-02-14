@@ -45,7 +45,7 @@ docs/
 ### Runtime and API
 1. [Reference Home](./reference/README.md)
 2. [API Endpoints](./reference/api/endpoints.md)
-3. [Hybrid Split](./reference/architecture/infrastructure/hybrid-split.md)
+3. [System Architecture (Hybrid 포함)](./reference/architecture/system/system-architecture-current.md)
 
 ## Historical Documents
 
@@ -56,5 +56,5 @@ docs/
 ## Related
 
 - [Project Status](./status.md)
-- [AI Model Policy](./ai-model-policy.md)
+- [AI Engine Architecture](./reference/architecture/ai/ai-engine-architecture.md)
 - [LLM Context](./llms.md)

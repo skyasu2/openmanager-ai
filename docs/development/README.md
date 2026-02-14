@@ -17,11 +17,9 @@
 | [개발 도구](./dev-tools.md) | Node.js, npm, IDE 설정 |
 | [프로젝트 설정](./project-setup.md) | 프로젝트 초기화 및 환경변수 |
 | [코딩 표준](./coding-standards.md) | 개발 방법론 및 코드 스타일 |
-| [문서 관리](./documentation-management.md) | 문서 구조/정합성 관리 기준 |
-| [문서 인벤토리](./documentation-inventory.md) | docs 트리/수량 자동 리포트 |
+| [문서 관리](./documentation-management.md) | 문서 구조/정합성/인벤토리 관리 기준 |
 | [Codex 전환 가이드](./codex-main-transition-guide.md) | Claude Skill 참조 기반 Codex 메인 전환 전략 |
-| [Stitch 동기화 정책](./stitch-sync-policy.md) | UI 구현 vs Stitch 프로젝트 정합성 관리 |
-| [Stitch 개선 워크플로우](./stitch-improvement-workflow.md) | 완성형 프론트엔드의 증분 UI 개선 절차 |
+| [Stitch 가이드](./stitch-guide.md) | UI 구현 기준, 정합성 정책, 증분 개선 워크플로우 통합 |
 
 ## 기술 스택
 
@@ -71,5 +69,5 @@ npm run dev:network
 
 - [Vibe Coding 가이드](../vibe-coding/README.md) - AI 도구 활용
 - [테스트 전략](../guides/testing/test-strategy.md)
-- [배포 가이드](../reference/architecture/infrastructure/deployment.md)
+- [배포 토폴로지](../reference/architecture/system/system-architecture-current.md#9-deployment-topology)
 - [Stitch 프로젝트 레지스트리](../../config/ai/stitch-project-registry.json)

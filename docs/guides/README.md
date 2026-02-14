@@ -26,7 +26,7 @@
 - [Langfuse + Sentry 가이드](./observability.md) - LLM 트레이싱, 에러 모니터링 설정/점검
 
 ### Standards
-- [TypeScript Rules](./standards/typescript-rules.md)
+- [Coding Standards](../development/coding-standards.md) (typescript-rules.md 통합됨)
 - [Health Check Policy](./standards/health-check-policy.md)
 
 ## Related

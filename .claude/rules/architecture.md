@@ -126,6 +126,5 @@ import { ServerCard } from '../../../components/dashboard/ServerCard';
 ---
 
 **See Also**: 상세 아키텍처 → `docs/reference/architecture/`
-- 시스템 전체: `system/system-architecture-current.md`
+- 시스템 전체 (Hybrid 포함): `system/system-architecture-current.md`
 - AI 엔진: `ai/ai-engine-architecture.md`
-- 하이브리드 분리: `infrastructure/hybrid-split.md`

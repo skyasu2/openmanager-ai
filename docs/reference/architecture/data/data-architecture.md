@@ -56,7 +56,7 @@ AI/ML 서비스가 단순히 API를 호출하는 비효율적인 구조를 탈�
 
 전환 관점의 상세 기준은 아래 문서를 참고합니다.
 
-- [Observability Transition Readiness](./observability-transition-readiness.md)
+- [OTel Data Architecture](./otel-data-architecture.md)
 
 ### 동기화 명령어
 
@@ -192,5 +192,5 @@ const hourlyData = JSON.parse(fs.readFileSync('data/otel-processed/hourly/hour-1
 
 - **데이터 접근 SSOT**: `src/services/metrics/MetricsProvider.ts`
 - **Sync 스크립트**: `scripts/data/sync-hourly-data.ts`
-- **OTel 파이프라인**: `docs/reference/architecture/data/otel-pipeline-audit.md`
+- **OTel 파이프라인**: `docs/reference/architecture/data/otel-data-architecture.md`
 - **시뮬레이션 가이드**: `docs/guides/simulation.md`

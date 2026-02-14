@@ -1,7 +1,7 @@
 # System Architecture (Current v8)
 
-> Last verified against code: 2026-02-13
-> Status: Active Canonical
+> Last verified against code: 2026-02-14
+> Status: Active Canonical (hybrid-split.md 통합됨)
 > Doc type: Explanation
 
 ---
@@ -200,6 +200,18 @@ graph TB
 | **Alert System** | `src/services/monitoring/AlertManager.ts` | MetricsProvider 동일 체인 |
 | **RAG (Supabase)** | `supabase/` (server_logs, embeddings) | DB Query |
 
+### Stateless Cloud Run 설계 원칙
+
+Cloud Run AI Engine은 **Stateless** 설계를 따르며, 모든 영속 데이터는 Supabase에 저장됩니다.
+
+| 원칙 | 설명 |
+|------|------|
+| **Scale-to-Zero** | 컨테이너 종료 시 데이터 손실 없음 |
+| **일관성** | 모든 인스턴스가 Supabase에서 동일 데이터 조회 |
+| **비용 절감** | Cloud Run에 영속 스토리지 비용 없음 |
+
+데이터 동기화: Vercel이 배포 시 Supabase에 seed → Cloud Run이 런타임에 Supabase에서 read.
+
 ### Build-Time Pipeline
 
 ```bash
@@ -227,6 +239,17 @@ npm run data:all       # data:sync + data:otel
 | **Verifier** | Mistral | 응답 검증 | 내부 |
 
 **Dual-Mode Strategy**: 단순 질의 → Single-agent (저지연), 복합 질의 → Multi-agent (전문 처리).
+
+### TypeScript ML (AI Engine 내장)
+
+AI Engine에 내장된 경량 ML 모듈로, LLM 호출 없이 수치 분석을 수행합니다.
+
+| 기능 | 구현 | 설명 |
+|------|------|------|
+| **Anomaly Detection** | `SimpleAnomalyDetector.ts` | 6시간 이동 평균 + 2-sigma |
+| **Trend Prediction** | `TrendPredictor.ts` | 선형 회귀 기반 추세 예측 |
+
+> Note: Rust ML 서비스는 v5.84.0에서 제거되고, TypeScript 구현으로 대체됨.
 
 **상세 문서**: [AI Engine Architecture](../ai/ai-engine-architecture.md)
 
@@ -262,10 +285,11 @@ Static Fallback Response
 
 ### Quota Tracker
 
-| Threshold | 동작 |
-|-----------|------|
-| **80% (Preemptive)** | 다음 Provider로 선제 전환 |
-| **100% (Hard Limit)** | 요청 즉시 거부 |
+| Threshold | 동작 | 비고 |
+|-----------|------|------|
+| **80% (Preemptive)** | 다음 Provider로 선제 전환 | 할당량 여유 확보 |
+| **100% (Hard Limit)** | 요청 즉시 거부 | 과금 방지 |
+| **Reset Period** | Daily/Monthly | 프로바이더별 상이 |
 
 ### Vercel-Side Protections
 
@@ -279,7 +303,47 @@ Static Fallback Response
 
 ---
 
-## 7. Cache Layers
+## 7. Resumable Stream v2 (AI SDK v6)
+
+네트워크 단절 시 스트림을 자동으로 복구하는 Upstash Redis 기반 Resumable Stream 패턴입니다.
+
+### Flow
+
+```
+Client                     Vercel                     Cloud Run
+  │  1. POST /stream/v2     │  2. Proxy + Redis Save    │
+  │  ─────────────────────►  │  ──────────────────────►  │
+  │                          │     + X-Stream-Id header  │
+  │  [네트워크 단절]          │                          │
+  │  ─────────────────────►  │                          │
+  │                          │                          │
+  │  3. GET /stream/v2?sessionId=xxx&skip=N             │
+  │  ─────────────────────►  │  4. Redis에서 남은 chunk  │
+  │                          │  ──────────────────────►  │
+  │  5. 이어서 수신           │  ◄──────────────────────  │
+  │  ◄───────────────────── │     (skip 이후 chunk)     │
+```
+
+### 주요 컴포넌트
+
+| 컴포넌트 | 파일 | 역할 |
+|---------|------|------|
+| **POST Handler** | `stream/v2/route.ts` | 새 스트림 생성, Redis 저장 |
+| **GET Handler** | `stream/v2/route.ts` | 스트림 재개 (skip 파라미터) |
+| **Stream State** | `stream/v2/stream-state.ts` | Redis 세션-스트림 매핑 |
+| **Upstash Context** | `stream/v2/upstash-resumable.ts` | Redis List 기반 chunk 저장 |
+
+### Redis State 관리
+
+| 항목 | 값 | 설명 |
+|------|-----|------|
+| **Stream TTL** | 10분 | Redis 자동 만료 |
+| **Chunk Storage** | Redis List (RPUSH) | 순서 보장 |
+| **Resume API** | GET + skip 파라미터 | 마지막 수신 chunk 이후부터 재개 |
+
+---
+
+## 8. Cache Layers
 
 | Layer | 기술 | 위치 | TTL | 용도 |
 |-------|------|------|-----|------|
@@ -290,7 +354,7 @@ Static Fallback Response
 
 ---
 
-## 8. Deployment Topology
+## 9. Deployment Topology
 
 | 컴포넌트 | 플랫폼 | 플랜 | 비용 |
 |---------|--------|------|------|
@@ -309,6 +373,7 @@ Static Fallback Response
 | CPU Throttling | ON |
 | Min Instances | 0 (Scale-to-Zero) |
 | Docker Image | Alpine 3.21, Node 24, ~693MB |
+| Warmup | `/warmup` 엔드포인트로 Cold Start 완화 |
 
 ### Vercel Constraints
 
@@ -321,7 +386,7 @@ Static Fallback Response
 
 ---
 
-## 9. State Management
+## 10. State Management
 
 ### Server State (TanStack Query)
 
@@ -345,11 +410,11 @@ Static Fallback Response
 ### AI Chat State
 
 - localStorage 기반 대화 이력 (`src/hooks/ai/utils/chat-history-storage.ts`)
-- Resumable Stream v2: Upstash Redis로 스트림 복구 (네트워크 단절 시)
+- Resumable Stream v2: Upstash Redis로 스트림 복구 (상세: [7. Resumable Stream v2](#7-resumable-stream-v2-ai-sdk-v6))
 
 ---
 
-## 10. Key File Reference
+## 11. Key File Reference
 
 ### Entrypoints
 
@@ -401,7 +466,7 @@ Static Fallback Response
 
 ---
 
-## 11. Related Documents
+## 12. Related Documents
 
 ### AI
 
@@ -410,12 +475,11 @@ Static Fallback Response
 ### Data
 
 - [Data Architecture](../data/data-architecture.md) - 2-Tier 데이터 구조, 서버 구성
-- [OTel Pipeline Audit](../data/otel-pipeline-audit.md) - Prometheus→OTel 변환, 소비자 매핑
+- [OTel Data Architecture](../data/otel-data-architecture.md) - Prometheus→OTel 변환, 소비자 매핑, 전환 준비
 - [Data Consistency](../design/consistency.md) - Dashboard-AI 데이터 일관성
 
 ### Infrastructure
 
-- [Hybrid Split](../infrastructure/hybrid-split.md) - Vercel/Cloud Run 역할 분리, Request Flow
 - [Deployment Rules](../../../../.claude/rules/deployment.md) - 배포 절차, Free Tier 가드레일
 
 ### Decisions

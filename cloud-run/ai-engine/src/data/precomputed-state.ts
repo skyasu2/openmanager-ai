@@ -240,7 +240,7 @@ function loadOTelHourly(hour: number): OTelHourlyFile | null {
  * OTel slot → RawServerData[] 변환
  * OTel ratio (0-1) → percent (0-100) 변환 포함
  *
- * @see docs/reference/architecture/data/otel-pipeline-audit.md §6 매핑 테이블
+ * @see docs/reference/architecture/data/otel-data-architecture.md §3 Metrics Mapping
  */
 function otelSlotToRawServers(slot: OTelHourlySlot): Record<string, RawServerData> {
   const catalog = getOTelResourceCatalog();

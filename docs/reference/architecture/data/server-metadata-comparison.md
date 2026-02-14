@@ -8,7 +8,7 @@
 > **관련 문서** (본 문서와 상호 보완적):
 > - `prometheus-comparison.md` — Prometheus best practice vs VIBE 메트릭 네이밍/모델 비교
 > - `data-pipeline-comparison.md` — Custom JSON → Prometheus 포맷 전환 전후 비교
-> - `otel-pipeline-audit.md` — OTel 변환 파이프라인 감사
+> - `otel-data-architecture.md` — OTel 데이터 아키텍처 (파이프라인 + 전환 준비)
 
 ---
 

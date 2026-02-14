@@ -126,14 +126,14 @@ curl -H "X-API-Key: $CLOUD_RUN_API_SECRET" \
 # → 다음 달 1일에 자동 리셋
 ```
 
-2. **API 키 확인**
+1. **API 키 확인**
 ```bash
 curl -H "X-API-Key: $CLOUD_RUN_API_SECRET" \
   https://ai-engine-xxx.run.app/monitoring/traces
 # 401/403 → LANGFUSE_SECRET_KEY 또는 LANGFUSE_PUBLIC_KEY 오류
 ```
 
-3. **모듈 미설치** — Cloud Run 로그에서 `[Langfuse] Module not installed` 검색. 이 경우 no-op 모드로 동작하며 이벤트가 전송되지 않음.
+1. **모듈 미설치** — Cloud Run 로그에서 `[Langfuse] Module not installed` 검색. 이 경우 no-op 모드로 동작하며 이벤트가 전송되지 않음.
 
 ### Langfuse 사용량 급증
 
@@ -152,14 +152,14 @@ curl http://localhost:3000/api/debug/sentry-test?action=info | jq '.sentry.enabl
 # false → 정상 (개발 환경)
 ```
 
-2. **DSN 설정 확인**
+1. **DSN 설정 확인**
 ```bash
 curl -H "x-api-key: $TEST_API_KEY" \
   "https://...vercel.app/api/debug/sentry-test?action=info" | jq '.sentry.dsn'
 # "configured" → 정상, "missing" → 환경변수 확인 (fallback DSN이 있으므로 보통 configured)
 ```
 
-3. **테스트 에러 전송으로 확인**
+1. **테스트 에러 전송으로 확인**
 ```bash
 curl -H "x-api-key: $TEST_API_KEY" \
   "https://...vercel.app/api/debug/sentry-test?action=error"

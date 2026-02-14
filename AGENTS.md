@@ -81,6 +81,16 @@
 - "검토만" 요청이 없는 한, 분석 후 실제 코드 변경까지 진행합니다.
 - 리팩토링/최적화 요청에서는 안전한 범위의 점진적 개선을 우선합니다.
 
+## 📄 Doc Budget Policy
+- 활성 문서 한도: **55개** (`docs/archived/` 제외)
+- **병합 > 기존 확장 > 신규 생성** 우선순위 엄수
+- 신규 문서 생성 전 반드시 기존 유사 문서 검색
+- 메타데이터 정책: 신규/수정 문서는 `Owner`, `Status`, `Doc type`, `Last reviewed` 필수 (`Canonical`, `Tags` 권장)
+- `Last verified`는 레거시 호환 필드로만 허용, 신규 문서는 `Last reviewed` 사용
+- 90일 미갱신 문서는 `docs/archived/`로 이동
+- Hard gate: `npm run docs:budget:strict` (변경 문서 기준)
+- 상세 정책: `.claude/rules/documentation.md`
+
 ## 🤝 Multi-Agent Collaboration Policy
 - 이 저장소는 Codex 단독 작업이 아닌 **Claude Code / Gemini와의 병행 작업 환경**임을 항상 전제합니다.
 - Codex가 **직접 수정하지 않은 코드/변경분은 Claude Code 또는 Gemini가 수정한 것으로 간주**합니다.

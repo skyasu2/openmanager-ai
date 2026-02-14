@@ -42,7 +42,7 @@ Custom JSON → Prometheus 호환 형식으로의 데이터 마이그레이션. 
 
 **신규 메트릭**: `node_load1`, `node_load5`, `node_boot_time_seconds`, `node_procs_running`, `up`, `node_http_request_duration_milliseconds`
 
-> 상세 스키마 비교 → [prometheus-migration-improvements.md](./prometheus-migration-improvements.md#2-데이터-스키마-비교)
+> 상세 스키마 비교 → [prometheus-migration-improvements.md](../../reference/architecture/data/prometheus-migration-improvements.md#1-데이터-스키마-비교)
 
 ---
 
@@ -202,7 +202,7 @@ responseTime     → warning: 2000ms, critical: 5000ms
 
 | 문서 | 초점 | 본 문서와의 관계 |
 |------|------|-----------------|
-| [prometheus-migration-improvements.md](./prometheus-migration-improvements.md) | Before/After 기술 분석, 성능 비교 | 스키마 상세 → 해당 문서 참조 |
+| [prometheus-migration-improvements.md](../../reference/architecture/data/prometheus-migration-improvements.md) | Before/After 기술 분석, 성능 비교 | 스키마 상세 → 해당 문서 참조 |
 | [prometheus-implementation-analysis.md](./prometheus-implementation-analysis.md) | 구현 완료 검증, 체크리스트 | 검증 결과 → 해당 문서 참조 |
 | [dashboard-vs-ai-data-flow.md](./dashboard-vs-ai-data-flow.md) | Dashboard ↔ AI 데이터 일관성 | 데이터 흐름 상세 → 해당 문서 참조 |
 

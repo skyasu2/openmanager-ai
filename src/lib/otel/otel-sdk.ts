@@ -9,7 +9,7 @@
  * - ENABLE_OPENTELEMETRY=true 설정 시 → ConsoleExporter(stdout)만 동작
  * - OTLP 백엔드 연결 없음, @opentelemetry/* 패키지는 devDependencies
  *
- * 관련 문서: docs/reference/architecture/data/otel-pipeline-audit.md
+ * 관련 문서: docs/reference/architecture/data/otel-data-architecture.md
  */
 
 const IS_ENABLED = process.env.ENABLE_OPENTELEMETRY === 'true';

@@ -1,182 +1,89 @@
 # Documentation Management Guide
 
-> Last verified against code: 2026-02-13
+> Owner: docs-platform
 > Status: Active Canonical
 > Doc type: Explanation
+> Last reviewed: 2026-02-14
+> Canonical: docs/development/documentation-management.md
+> Tags: docs-governance,diataxis,docs-as-code
 
-## Current Inventory
+문서 관리의 운영 기준, 자동화 게이트, 그리고 외부 베스트 프랙티스 대비 갭/우선순위를 정의한다.
 
-- Total markdown docs: **70**
-- Directory breakdown:
-  - `docs/reference`: 24
-  - `docs/analysis`: 12
-  - `docs/guides`: 9
-  - `docs/vibe-coding`: 7
-  - `docs/development`: 8
-  - `docs/troubleshooting`: 2
-  - `docs/reviews`: 2
-  - root docs (`README.md`, `QUICK-START.md`, etc.): 6
-- Auto inventory report: `docs/development/documentation-inventory.md`
+## Source of Truth
 
-## Canonical vs Historical
+1. 정책 원본: `.claude/rules/documentation.md`
+2. 에이전트 정책 요약: `AGENTS.md`
+3. Codex skill: `.codex/skills/openmanager-doc-management/SKILL.md`
+4. Claude skill: `.claude/skills/doc-management/SKILL.md`
+5. 자동 점검: `scripts/docs/check-docs.sh`, `scripts/docs/doc-budget-report.js`
 
-### Canonical (운영 기준)
-- `docs/README.md`
-- `docs/reference/README.md`
-- `docs/guides/README.md`
-- `docs/development/README.md`
-- `docs/troubleshooting/README.md`
-- `docs/reference/api/endpoints.md`
-- `docs/reference/architecture/system/system-architecture-current.md`
-- `docs/reference/architecture/folder-structure.md`
+## 운영 규칙
 
-### Historical (기록/회고)
-- `docs/analysis/*`
-- `docs/reviews/*`
-- `docs/status.md` (운영 이력 성격)
-- 문서 상단 `Status: Historical` 라벨이 있는 문서
+1. 우선순위: 병합 > 기존 문서 확장 > 신규 생성
+2. 활성 문서 예산: 총 55개(`docs/archived/` 제외), 세부 한도는 정책 원본 준수
+3. 메타데이터(변경 문서 Hard gate):
+   - 필수: `Owner`, `Status`, `Doc type`, `Last reviewed`
+   - 권장: `Canonical`, `Tags`
+   - 레거시 호환: `Last verified`는 임시 허용
+4. 90일 이상 미갱신 활성 문서는 stale 경고 후 아카이브 후보로 관리
+5. 디렉토리 README 링크가 없는 문서는 운영 기준에서 제외
 
-## Source of Truth Rules
+## Best-Practice 비교 (웹 기준)
 
-1. API 목록: `src/app/api/**/route.ts*`
-2. 런타임/버전: `package.json`, `cloud-run/ai-engine/package.json`
-3. 협업 정책: `AGENTS.md`
-4. 아키텍처 기준: `docs/reference/architecture/system/system-architecture-current.md`
+| 기준 | 외부 권고 | 현재 적용 | 갭 | 우선순위 |
+|------|----------|----------|----|---------|
+| 정보 구조 | Diataxis 4분류 | `Doc type`으로 적용 | 일부 문서 라벨 누락 | P0 |
+| Docs-as-Code | PR/버전관리/CI 게이트 | lint/link/check 파이프라인 존재 | 변경 문서 메타데이터 hard gate가 약했음 | P0 |
+| 스타일 일관성 | 스타일 가이드 기반 작성 | markdownlint + 내부 규칙 | 문서별 owner/책임 경계 약함 | P1 |
+| 메타데이터 표준 | owner/status/date/canonical 권장 | 기존 3필드 중심 | Owner/Last reviewed/Canonical 보강 필요 | P0 |
+| 문서 수명주기 | stale 정책 + 아카이브 | 90일 stale 감지 존재 | stale는 경고 중심, 자동화 후속 부족 | P1 |
+| 중복 방지 | canonical link + merge-first | 중복 후보 탐지 있음 | 기계 판독 가능한 결과 포맷 부족 | P1 |
 
-## Update Workflow
+## 이번 개선에서 반영한 항목
 
-1. 코드 변경
-2. 영향 문서 식별
-3. Canonical 문서 우선 갱신
-4. 필요한 경우 Historical 문서에 맥락 주석 추가
-5. 검증 실행:
+1. 정책 SSOT를 `.claude/rules/documentation.md`로 명시
+2. 메타데이터 최소 스키마를 `Owner/Status/Doc type/Last reviewed`로 확장
+3. `doc-budget-report` 출력에 `PASS|WARN|FAIL + rule_id + file + action_hint` 추가
+4. `check-docs.sh`에 `DOCS_STRICT_CHANGED` 플래그 추가
+5. CI(`docs-quality.yml`)에서 schedule 제외 이벤트는 strict gate 활성화
+6. Codex/Claude 문서관리 skill 내용을 SSOT 기준으로 동기화
+
+## 자동화 실행 규약
 
 ```bash
+# 로컬 통합 점검 (strict off)
 npm run docs:check
-npm run docs:lint:changed
-npm run docs:links:internal
-npm run docs:inventory
+
+# 변경 문서 Hard gate (metadata + budget)
+npm run docs:budget:strict
+
+# 상세 리포트 생성
+npm run docs:budget
 ```
 
-## Quality Gates
+CI에서는 `DOCS_STRICT_CHANGED=true`와 `DOCS_DIFF_RANGE`를 함께 전달해 PR/Push diff 기준으로 변경 문서를 판정한다.
 
-- 내부 링크 깨짐 금지 (`missing_links = 0`)
-- Canonical 문서는 코드 기준값과 숫자 일치
-- Historical 문서는 반드시 라벨 유지
-- CI 문서 게이트: `.github/workflows/docs-quality.yml`
-- Lint 정책 분리:
-  - Active docs: `active.markdownlint-cli2.jsonc`
-  - Historical docs: `historical.markdownlint-cli2.jsonc`
+## 추가된 Skill 분석
 
-## Doc Type (Diataxis)
+1. `openmanager-doc-management` (Codex):
+   - 문서 예산/중복/stale/메타데이터 점검 워크플로를 제공
+   - 현재 SSOT와 일치하도록 metadata 규칙을 확장
+2. `doc-management` (Claude):
+   - 동일 목적의 점검 스킬
+   - Success criteria를 SSOT 기준(`Owner`, `Last reviewed`)으로 동기화
 
-- `Tutorial`: 시작/온보딩 중심 문서 (예: `docs/QUICK-START.md`)
-- `How-to`: 작업 절차/운영 방법 문서
-- `Reference`: API/설정/구조 사실 목록 문서
-- `Explanation`: 아키텍처 배경/의사결정 맥락 문서
+결론: 두 스킬은 목적이 동일하며, 정책 원본 변경 시 동시 업데이트가 필요하다.
 
-## Change Policy
+## 검증 및 수용 기준
 
-- 운영 기준 변경은 Canonical 문서에만 반영
-- 과거 분석 문서는 원문 보존, 삭제보다 라벨링 우선
-- 문서 간 중복이 생기면 인덱스 문서에 canonical 링크로 수렴
+1. `npm run docs:check`가 종료 코드 0으로 완료된다.
+2. `npm run docs:budget:strict`는 변경 문서 필수 메타데이터 누락 시 실패한다.
+3. 예산 리포트에 Rule Results(`DOC-*`)가 출력된다.
+4. 정책/스킬/스크립트 설명이 동일한 메타데이터 기준을 사용한다.
 
----
+## References
 
-## Docs-as-Code Principles
-
-이 프로젝트는 **Docs-as-Code** 접근법을 채택하고 있습니다. 문서를 코드와 동일한 방식으로 관리합니다.
-
-| 원칙 | 구현 상태 |
-|------|----------|
-| Git 버전 관리 | `docs/` 전체 Git 추적 |
-| Markdown 기반 작성 | 전체 문서 Markdown/MDX |
-| PR 기반 리뷰 | `.github/CODEOWNERS`에 docs 소유자 지정 |
-| CI 자동 검증 | `.github/workflows/docs-quality.yml` |
-| Markdown Lint | `markdownlint-cli2` (active/historical 이중 설정) |
-| 내부 링크 검증 | `scripts/docs/check-internal-links.js` |
-| 외부 링크 검증 | `markdown-link-check` (CI 주간 스케줄) |
-| 문서 분류 체계 | Diataxis (Tutorial/How-to/Reference/Explanation) |
-| 메타데이터 | 프론트매터: `Last verified`, `Status`, `Doc type` |
-| 문서 인벤토리 | `generate-inventory.js` 자동 생성 |
-| Stale 감지 | `check-docs.sh`에서 90일 초과 문서 경고 |
-
-## CI Pipeline
-
-문서 변경 시 자동으로 품질 게이트가 실행됩니다.
-
-```
-Push / PR (docs/** 변경)
-    │
-    ├── markdownlint-cli2
-    │     active.markdownlint-cli2.jsonc (운영 문서)
-    │     historical.markdownlint-cli2.jsonc (기록 문서)
-    │
-    ├── check-internal-links.js
-    │     docs/ 내부 링크 유효성 검증
-    │
-    ├── check-docs.sh
-    │     stale 문서 감지 (90일 초과)
-    │     인벤토리 집계
-    │
-    └── Agent config version check
-          CLAUDE.md, GEMINI.md 버전 일치 확인
-
-Weekly Schedule (매주 월요일 09:00 UTC)
-    │
-    └── markdown-link-check
-          docs/ 전체 외부 링크 유효성 검증
-          (continue-on-error: 외부 장애 시 비차단)
-```
-
-## Toolchain
-
-| 도구 | npm 스크립트 | 용도 |
-|------|-------------|------|
-| `markdownlint-cli2` | `npm run docs:lint:changed` | Markdown 스타일 린트 |
-| `check-internal-links.js` | `npm run docs:links:internal` | 내부 링크 검증 |
-| `markdown-link-check` | `npm run docs:links` | 외부 링크 검증 (상위 20개) |
-| `markdown-link-check` | `npm run docs:links:full` | 외부 링크 전체 검증 |
-| `generate-inventory.js` | `npm run docs:inventory` | 문서 인벤토리 자동 생성 |
-| `check-docs.sh` | `npm run docs:check` | 통합 품질 검사 |
-
-## New Document Checklist
-
-새 문서를 작성할 때 다음 항목을 확인하세요.
-
-1. **프론트매터 작성**
-   ```markdown
-   > Last verified against code: YYYY-MM-DD
-   > Status: Active Canonical | Historical
-   > Doc type: Tutorial | How-to | Reference | Explanation
-   ```
-
-2. **Diataxis 분류 결정**
-   - Tutorial: 시작/온보딩 가이드
-   - How-to: 작업 절차/운영 방법
-   - Reference: API/설정/구조 사실 목록
-   - Explanation: 아키텍처 배경/의사결정 맥락
-
-3. **인덱스 등록**: 해당 디렉토리의 `README.md`에 링크 추가
-
-4. **품질 검증 실행**
-   ```bash
-   npm run docs:check           # 통합 검사
-   npm run docs:links:internal  # 내부 링크 확인
-   npm run docs:lint:changed    # 린트 검사
-   ```
-
-5. **CODEOWNERS 확인**: `docs/` 경로 변경은 자동으로 `@skyasu2` 리뷰 지정
-
-## Maturity & Roadmap
-
-**현재 성숙도: ~70%** — 기반 인프라(Git, Lint, CI, 분류 체계)는 우수하나, 웹 배포/API 자동 문서에서 갭 존재.
-
-| 영역 | 현재 | 향후 검토 |
-|------|------|----------|
-| 버전 관리 | Git 완비 | - |
-| CI 검증 | Lint + 링크 + Stale | 외부 링크 CI 추가 완료 |
-| 문서 분류 | Diataxis 적용 | - |
-| 웹 사이트 배포 | 미적용 | Nextra (Next.js 네이티브) 검토 |
-| API 문서 자동 생성 | 미적용 | TypeDoc 검토 (TSDoc 정비 선행) |
-| 문서 소유자 | CODEOWNERS 추가 | 파일별 `review_owner` 메타데이터 확장 |
+- Diataxis: <https://diataxis.fr/>
+- Write the Docs, Docs as Code: <https://www.writethedocs.org/guide/docs-as-code/>
+- Google Developer Documentation Style Guide: <https://developers.google.com/style>
+- Microsoft Learn metadata guidance: <https://review.learn.microsoft.com/en-us/help/platform/metadata>
