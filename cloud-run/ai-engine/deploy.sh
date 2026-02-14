@@ -55,6 +55,10 @@ FREE_TIER_CONCURRENCY="80"
 FREE_TIER_CPU="1"
 FREE_TIER_MEMORY="512Mi"
 FREE_TIER_TIMEOUT="300"
+LOCAL_DOCKER_PREFLIGHT="${LOCAL_DOCKER_PREFLIGHT:-true}"
+LOCAL_DOCKER_PREFLIGHT_SKIP_RUN="${LOCAL_DOCKER_PREFLIGHT_SKIP_RUN:-false}"
+DEFAULT_ORIGIN="${DEFAULT_ORIGIN:-https://openmanager-ai.vercel.app}"
+ALLOWED_ORIGINS="${ALLOWED_ORIGINS:-https://openmanager-ai.vercel.app}"
 
 if [ "${FREE_TIER_GUARD_ONLY:-false}" = "true" ]; then
   PROJECT_ID="guard-only"
@@ -208,6 +212,20 @@ if [ "${FREE_TIER_GUARD_ONLY:-false}" = "true" ]; then
   exit 0
 fi
 
+if [ "${LOCAL_DOCKER_PREFLIGHT}" = "true" ]; then
+  echo ""
+  echo "🐳 Running local Docker preflight..."
+  if [ "${LOCAL_DOCKER_PREFLIGHT_SKIP_RUN}" = "true" ]; then
+    SKIP_RUN=true bash scripts/docker-preflight.sh
+  else
+    bash scripts/docker-preflight.sh
+  fi
+  echo "   ✅ Local Docker preflight passed"
+else
+  echo ""
+  echo "ℹ️ LOCAL_DOCKER_PREFLIGHT=false, skipping local Docker preflight."
+fi
+
 # 0. Sync SSOT Config & Data Files
 echo ""
 echo "📋 Syncing SSOT config and data files..."
@@ -278,7 +296,7 @@ DEPLOY_CMD=(
   --cpu-boost
   --cpu-throttling
   --no-session-affinity
-  --set-env-vars "NODE_ENV=production,BUILD_SHA=${SHORT_SHA}"
+  --set-env-vars "NODE_ENV=production,BUILD_SHA=${SHORT_SHA},DEFAULT_ORIGIN=${DEFAULT_ORIGIN},ALLOWED_ORIGINS=${ALLOWED_ORIGINS}"
   --set-secrets "SUPABASE_CONFIG=supabase-config:latest,AI_PROVIDERS_CONFIG=ai-providers-config:latest,KV_CONFIG=kv-config:latest,CLOUD_RUN_API_SECRET=cloud-run-api-secret:latest,LANGFUSE_CONFIG=langfuse-config:latest"
   --update-labels "version=${SHORT_SHA},framework=ai-sdk-v6,tier=free,registry=artifact"
 )
