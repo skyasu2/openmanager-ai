@@ -4,6 +4,7 @@ import {
   BarChart3,
   ChevronDown,
   LogOut,
+  Play,
   Power,
   Shield,
   User,
@@ -58,6 +59,20 @@ export default function UnifiedProfileHeader({
     (state) => state.isSystemStarted
   );
   const stopSystem = useUnifiedAdminStore((state) => state.stopSystem);
+  const startSystem = useUnifiedAdminStore((state) => state.startSystem);
+
+  // 시스템 시작 핸들러
+  const handleSystemStart = useCallback(async () => {
+    try {
+      closeMenu();
+      logger.info('🚀 시스템 시작 요청 (프로필에서)');
+      startSystem();
+      logger.info('✅ 시스템 시작 성공');
+    } catch (error) {
+      logger.error('❌ 시스템 시작 오류:', error);
+      alert('❌ 시스템 시작 중 오류가 발생했습니다.');
+    }
+  }, [closeMenu, startSystem]);
 
   // 시스템 종료 핸들러 - useUnifiedAdminStore.stopSystem 직접 사용
   const handleSystemStop = useCallback(async () => {
@@ -117,6 +132,16 @@ export default function UnifiedProfileHeader({
         danger: true,
         badge: '확인 후 종료',
       });
+    } else {
+      // 시스템이 정지된 경우 시작 버튼 표시
+      items.push({
+        id: 'system-start',
+        label: '시스템 시작',
+        icon: Play,
+        action: handleSystemStart,
+        visible: true,
+        badge: '재시작',
+      });
     }
 
     // 게스트 사용자 전용 메뉴 (GitHub 계정 연동 안내)
@@ -160,6 +185,7 @@ export default function UnifiedProfileHeader({
     closeMenu,
     navigateToDashboard,
     navigateToLogin,
+    handleSystemStart,
     handleSystemStop,
     handleLogoutClick,
   ]);

@@ -2,7 +2,7 @@
  * Async Context for Request-Scoped Tracing
  *
  * @description AsyncLocalStorage 기반 요청별 traceId 자동 전파
- * - Logger에서 자동으로 traceId를 포함
+ * - 서버 경로에서 요청별 traceId 조회용 유틸 제공
  * - 함수 시그니처에 traceId 전달 불필요
  * - Node.js (서버 사이드) 전용
  * - 클라이언트: Turbopack resolveAlias로 empty-module 대체 → noop
@@ -14,7 +14,7 @@
  * // API route handler에서 컨텍스트 설정
  * await runWithTraceId(traceId, async () => {
  *   // 이 블록 내 모든 코드에서 getTraceId() 사용 가능
- *   logger.info('This log automatically includes traceId');
+ *   const traceIdFromContext = getTraceId();
  * });
  * ```
  *
@@ -22,6 +22,7 @@
  * @updated 2026-02-11 - 클라이언트 번들 호환 (Turbopack empty-module 대응)
  */
 
+import 'server-only';
 import { AsyncLocalStorage } from 'node:async_hooks';
 
 interface TraceContext {

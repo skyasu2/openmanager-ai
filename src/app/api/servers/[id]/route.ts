@@ -77,17 +77,7 @@ export const GET = withAuth(
       const uptimeSeconds = processed?.uptimeSeconds ?? 0;
 
       // 3. 응답 형식에 따른 처리
-      if (format === 'prometheus') {
-        // 🗑️ Prometheus 형식은 더 이상 지원하지 않음
-        return NextResponse.json(
-          {
-            error: 'Prometheus format is no longer supported',
-            message: 'Please use JSON format instead',
-            server_id: serverId,
-          },
-          { status: 410 } // Gone
-        );
-      } else if (format === 'legacy') {
+      if (format === 'legacy') {
         // 레거시 형식
         const legacyServer = {
           id: serverId,
@@ -325,8 +315,9 @@ function generateServerHistoryFromTimeSeries(
   const diskData = ts.metrics.disk?.[serverIndex] || [];
   const networkData = ts.metrics.network?.[serverIndex] || [];
 
-  const data_points = timestamps.map((t: number, i: number) => ({
+  const fullDataPoints = timestamps.map((t: number, i: number) => ({
     timestamp: new Date(t * 1000).toISOString(),
+    timestampUnix: t * 1000,
     metrics: {
       cpu_usage: cpuData[i] ?? 0,
       memory_usage: memoryData[i] ?? 0,
@@ -337,16 +328,37 @@ function generateServerHistoryFromTimeSeries(
     },
   }));
 
-  // 범위에 따른 필터링 (현재는 전체 24시간 반환)
-  // TODO: range 파라미터에 따라 데이터 슬라이싱
+  // 범위에 따른 필터링 구현
+  let durationMs = 24 * 60 * 60 * 1000; // 기본 24h
+  const match = range.match(/^(\d+)([mh])$/);
+  if (match?.[1] && match[2]) {
+    const value = parseInt(match[1], 10);
+    const unit = match[2];
+    if (unit === 'h') durationMs = value * 60 * 60 * 1000;
+    else if (unit === 'm') durationMs = value * 60 * 1000;
+  }
+
+  const now = Date.now();
+  const startTimeMs = now - durationMs;
+
+  const filteredPoints = fullDataPoints.filter(
+    (p) => p.timestampUnix >= startTimeMs
+  );
+
+  // 데이터가 없으면 빈 배열 대신 마지막 포인트라도 반환 (그래프 렌더링 위해)
+  const finalPoints =
+    filteredPoints.length > 0 ? filteredPoints : fullDataPoints.slice(-1);
 
   return {
     time_range: range,
-    start_time: data_points[0]?.timestamp || new Date().toISOString(),
+    start_time: finalPoints[0]?.timestamp || new Date().toISOString(),
     end_time:
-      data_points[data_points.length - 1]?.timestamp ||
+      finalPoints[finalPoints.length - 1]?.timestamp ||
       new Date().toISOString(),
     interval_ms: 600000, // 10분
-    data_points,
+    data_points: finalPoints.map(({ timestamp, metrics }) => ({
+      timestamp,
+      metrics,
+    })),
   };
 }

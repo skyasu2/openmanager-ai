@@ -338,7 +338,7 @@ curl https://ai-engine-xxx.run.app/health
 
 - [전체 환경 구축](./full-setup-guide.md) - WSL 2 + Node.js 설치
 - [개발 도구](./dev-tools.md) - 개발 도구 레퍼런스
-- [배포 가이드](../reference/architecture/infrastructure/deployment.md) - Vercel + Cloud Run 배포
+- [배포 토폴로지](../reference/architecture/system/system-architecture-current.md#9-deployment-topology) - Vercel + Cloud Run 배포
 - [트러블슈팅](../troubleshooting/common-issues.md) - Docker 관련 문제 해결
 - [Cloud Run README](../../cloud-run/README.md) - AI Engine 서비스 상세
 

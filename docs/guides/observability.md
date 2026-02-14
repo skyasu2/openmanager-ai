@@ -368,7 +368,7 @@ curl -H "x-api-key: $KEY" \
 
 - [시스템 아키텍처](../reference/architecture/system/system-architecture-current.md)
 - [Cloud Run README](../../cloud-run/README.md) - AI Engine 서비스 상세
-- [배포 가이드](../reference/architecture/infrastructure/deployment.md)
+- [배포 토폴로지](../reference/architecture/system/system-architecture-current.md#9-deployment-topology)
 - [트러블슈팅](../troubleshooting/common-issues.md)
 
 _Last Updated: 2026-02-13_

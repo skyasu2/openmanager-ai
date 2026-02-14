@@ -3,6 +3,8 @@
 <!-- Version: 8.0.0 | Role: Principal Software Architect -->
 **This file defines the core identity and principles for the Gemini Agent within the OpenManager AI project.**
 
+> **Language Protocol**: 모든 답변은 **한국어**로 우선 작성하며, 기술 용어는 원어(영어)를 혼용하여 정확성을 유지합니다.
+
 ## Document Scope
 - This file is Gemini-specific guidance only.
 - Cross-agent collaboration policy and shared operating rules are defined in `AGENTS.md` (SSOT).

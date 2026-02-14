@@ -270,6 +270,7 @@ function Home() {
             <DashboardSection
               canAccessDashboard={canAccessSystem}
               onNavigateDashboard={navigateToDashboard}
+              onStopSystem={canAccessSystem ? stopSystem : undefined}
             />
           )}
         </div>

@@ -319,7 +319,7 @@ SKIP_NODE_CHECK=true git push
 
 - [코딩 표준](./coding-standards.md)
 - [테스트 전략](../guides/testing/test-strategy.md)
-- [배포](../reference/architecture/infrastructure/deployment.md)
+- [배포 토폴로지](../reference/architecture/system/system-architecture-current.md#9-deployment-topology)
 
 ---
 

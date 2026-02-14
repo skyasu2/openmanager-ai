@@ -24,15 +24,15 @@
 1. 파괴적 Git 명령 금지
 - `git reset --hard`, 강제 push, 무단 amend 금지
 
-2. MCP 우선, CLI fallback
+1. MCP 우선, CLI fallback
 - PR 생성/조회는 MCP 우선
 - MCP 장애 시 `gh` CLI fallback 허용
 
-3. 비용 가드레일 선검사
+1. 비용 가드레일 선검사
 - Cloud Build 유료 머신 타입 탐지 시 배포 중단
 - Cloud Run CPU/메모리 상향 시 사전 승인 필요
 
-4. 검증 결과 포함 보고
+1. 검증 결과 포함 보고
 - "무엇을 변경했고, 왜 변경했고, 무엇으로 검증했는지"를 짧게 고정 포맷으로 보고
 
 ## Codex 메인 운영 시 기본 스킬 세트

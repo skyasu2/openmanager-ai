@@ -311,6 +311,16 @@ COMMIT_MSG.tmp
 # 정체불명 파일
 50%
 
+# Husky 설치 오류 잔재 디렉터리
+--version/
+disable/
+
+# Windows/OS 잔재
+AppData/
+
+# 에이전트 임시 산출물
+source_files.txt
+
 
 # ESLint cache
 .eslintcache

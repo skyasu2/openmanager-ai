@@ -261,12 +261,15 @@ function DashboardPageContent({
   });
 
   // 🛑 시스템 제어 함수들
-  const { isSystemStarted, startSystem } = useUnifiedAdminStore(
-    useShallow((s) => ({
-      isSystemStarted: s.isSystemStarted,
-      startSystem: s.startSystem,
-    }))
-  );
+  const { isSystemStarted, startSystem, stopSystem, aiAgent } =
+    useUnifiedAdminStore(
+      useShallow((s) => ({
+        isSystemStarted: s.isSystemStarted,
+        startSystem: s.startSystem,
+        stopSystem: s.stopSystem,
+        aiAgent: s.aiAgent,
+      }))
+    );
 
   // 🔒 자동 로그아웃 시스템 - 베르셀 사용량 최적화 (1초→10초 최적화 적용)
   const {
@@ -417,15 +420,15 @@ function DashboardPageContent({
   // - ServerDashboard가 useServerDashboard hook에서 직접 클릭/모달 핸들링
   // - 외부에서 서버 클릭/모달 핸들러를 주입할 필요 없음
 
-  // 🚀 시스템 제어 더미 데이터 최적화
-  const dummySystemControl = {
-    systemState: { status: 'ok' },
-    aiAgentState: { state: 'idle' },
-    isSystemActive: true,
-    isSystemPaused: false,
-    onStartSystem: () => Promise.resolve(),
-    onStopSystem: () => Promise.resolve(),
-    onResumeSystem: () => Promise.resolve(),
+  // 🚀 시스템 제어 로직 - Store 연동
+  const systemControl = {
+    systemState: { status: isSystemStarted ? 'ok' : 'stopped' },
+    aiAgentState: { state: aiAgent.state },
+    isSystemActive: isSystemStarted,
+    isSystemPaused: !isSystemStarted, // 중지됨 = 일시정지 상태로 간주
+    onStartSystem: async () => startSystem(),
+    onStopSystem: async () => stopSystem(),
+    onResumeSystem: async () => startSystem(), // 재개 = 시작
   };
 
   // 🔒 대시보드 접근 권한 확인 - PIN 인증한 게스트도 접근 가능
@@ -528,13 +531,13 @@ function DashboardPageContent({
 
         {/* 🎯 플로팅 시스템 제어 */}
         <FloatingSystemControl
-          systemState={dummySystemControl.systemState}
-          aiAgentState={dummySystemControl.aiAgentState}
-          isSystemActive={dummySystemControl.isSystemActive}
-          isSystemPaused={dummySystemControl.isSystemPaused}
-          onStartSystem={dummySystemControl.onStartSystem}
-          onStopSystem={dummySystemControl.onStopSystem}
-          onResumeSystem={dummySystemControl.onResumeSystem}
+          systemState={systemControl.systemState}
+          aiAgentState={systemControl.aiAgentState}
+          isSystemActive={systemControl.isSystemActive}
+          isSystemPaused={systemControl.isSystemPaused}
+          onStartSystem={systemControl.onStartSystem}
+          onStopSystem={systemControl.onStopSystem}
+          onResumeSystem={systemControl.onResumeSystem}
         />
       </div>
 

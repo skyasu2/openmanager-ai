@@ -11,6 +11,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "rag:analyze": "tsx scripts/analyze-rag-distribution.ts",
+    "rag:merge:plan": "tsx scripts/rag-merge-plan.ts",
+    "rag:merge:apply": "tsx scripts/rag-merge-apply.ts",
     "rag:eval:onoff": "tsx scripts/rag-eval-onoff.ts",
     "rag:eval:goldset": "tsx scripts/rag-eval-goldset.ts",
     "prompt:eval": "promptfoo eval -c promptfoo/promptfooconfig.yaml",

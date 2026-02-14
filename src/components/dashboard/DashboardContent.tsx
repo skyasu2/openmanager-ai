@@ -15,6 +15,7 @@ import {
   ARCHITECTURE_DIAGRAMS,
   type ArchitectureDiagram,
 } from '@/data/architecture-diagrams.data';
+import { useDashboardStats } from '@/hooks/dashboard/useDashboardStats';
 import { useMonitoringReport } from '@/hooks/dashboard/useMonitoringReport';
 import type { MonitoringAlert } from '@/schemas/api.monitoring-report.schema';
 import type { Server } from '@/types/server';
@@ -211,92 +212,9 @@ export default memo(function DashboardContent({
   // allServers(전체 서버)가 있으면 전체 기반으로 계산, 없으면 페이지네이션된 servers 사용
   const statsSource =
     allServers && allServers.length > 0 ? allServers : servers;
-  const calculateFallbackStats = useCallback((): DashboardStats => {
-    if (!statsSource || statsSource.length === 0) {
-      return {
-        total: 0,
-        online: 0,
-        offline: 0,
-        warning: 0,
-        critical: 0,
-        unknown: 0,
-      };
-    }
 
-    const stats = statsSource.reduce(
-      (acc, server) => {
-        acc.total += 1;
-        const normalizedStatus = server.status?.toLowerCase() || 'unknown';
-
-        // 🎯 상호 배타적 카운팅: 각 서버는 정확히 하나의 상태에만 속함
-        // total = online + warning + critical + offline + unknown
-        switch (normalizedStatus) {
-          // 오프라인/비가용
-          case 'offline':
-          case 'down':
-          case 'disconnected':
-            acc.offline += 1;
-            break;
-
-          // 🚨 위험 상태 (critical 별도 분리)
-          case 'critical':
-          case 'error':
-          case 'failed':
-            acc.critical += 1;
-            break;
-
-          // ⚠️ 경고 상태
-          case 'warning':
-          case 'degraded':
-          case 'unstable':
-            acc.warning += 1;
-            break;
-
-          // Unknown/Maintenance
-          case 'unknown':
-          case 'maintenance':
-            acc.unknown += 1;
-            break;
-
-          // 정상 온라인
-          case 'online':
-          case 'running':
-          case 'active':
-            acc.online += 1;
-            break;
-
-          // 정의되지 않은 상태
-          default:
-            acc.unknown += 1;
-            break;
-        }
-
-        return acc;
-      },
-      { total: 0, online: 0, offline: 0, warning: 0, critical: 0, unknown: 0 }
-    );
-
-    return stats;
-  }, [statsSource]);
-
-  // 최종 서버 통계 (서버 데이터에서 직접 계산)
-  const serverStats = useMemo(() => {
-    if (statsLoading) {
-      return {
-        total: 0,
-        online: 0,
-        offline: 0,
-        warning: 0,
-        critical: 0,
-        unknown: 0,
-      };
-    }
-
-    // 서버 데이터에서 직접 통계 계산
-    const stats = calculateFallbackStats();
-    debug.log('📊 서버 통계 계산:', stats);
-    return stats;
-  }, [statsLoading, calculateFallbackStats]);
+  // 🚀 리팩토링: Custom Hook으로 통계 계산 로직 분리
+  const serverStats = useDashboardStats(servers, allServers, statsLoading);
 
   // 🚀 에러 상태 추가
   const [renderError, setRenderError] = useState<string | null>(null);
