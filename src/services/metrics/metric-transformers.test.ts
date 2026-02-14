@@ -17,7 +17,6 @@ function buildDataPoints(values: number[]) {
 function buildPayload(cpuValues: number[]): ExportMetricsServiceRequest {
   const lowValues = cpuValues.map(() => 0.1);
   const networkValues = cpuValues.map((_, idx) => idx + 1);
-  const upValues = cpuValues.map(() => 1);
 
   return {
     resourceMetrics: [
@@ -54,10 +53,6 @@ function buildPayload(cpuValues: number[]): ExportMetricsServiceRequest {
                     AggregationTemporality.AGGREGATION_TEMPORALITY_CUMULATIVE,
                   isMonotonic: true,
                 },
-              },
-              {
-                name: 'system.status',
-                gauge: { dataPoints: buildDataPoints(upValues) },
               },
             ],
           },

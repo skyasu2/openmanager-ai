@@ -4,7 +4,7 @@
  * @opentelemetry/* 패키지에 의존하지 않는 순수 TypeScript 타입.
  * 빌드 타임에 생성된 OTel JSON 데이터를 런타임에서 소비할 때 사용.
  *
- * Slim 포맷: timeUnixNano, description, unit, aggregated/alerts/health/aiContext 제거
+ * Slim 포맷: timeUnixNano, description, aggregated/alerts/health/aiContext 제거
  * → 번들 사이즈 ~45% 절감 (196KB → ~110KB/파일)
  *
  * @created 2026-02-11
@@ -50,7 +50,7 @@ export type OTelLogRecord = {
 };
 
 // ============================================================================
-// Metric Types (Slim: timeUnixNano, description, unit 제거)
+// Metric Types (Slim: timeUnixNano, description 제거)
 // ============================================================================
 
 export type OTelMetricDataPoint = {
@@ -60,6 +60,7 @@ export type OTelMetricDataPoint = {
 
 export type OTelMetric = {
   name: string;
+  unit: string;
   type: 'gauge' | 'sum';
   dataPoints: OTelMetricDataPoint[];
 };

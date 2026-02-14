@@ -7,8 +7,8 @@
  * 출력:
  *   src/data/otel-processed/
  *   ├── resource-catalog.json         # 15 서버 OTel Resource 속성
- *   ├── timeseries.json               # 24h 시계열 (OTel + legacy 이름)
- *   └── hourly/hour-{00..23}.json     # 시간별 OTel 메트릭 + 로그 + 집계
+ *   ├── timeseries.json               # 24h 시계열 (OTel 이름만)
+ *   └── hourly/hour-{00..23}.json     # 시간별 OTel 메트릭 + 로그
  *
  * 사용법:
  *   npx tsx scripts/data/otel-precompute.ts
@@ -102,7 +102,7 @@ function main(): void {
 
   console.log('=== OTel Pre-compute Pipeline ===\n');
   console.log(`  Input: src/data/hourly-data/*.json`);
-  console.log(`  Output: src/data/otel-processed/ + public/processed-metrics/timeseries.json\n`);
+  console.log(`  Output: src/data/otel-processed/\n`);
 
   // Output directories
   fs.mkdirSync(outputDir, { recursive: true });
@@ -128,7 +128,7 @@ function main(): void {
   // ====================================================================
   // Step 1: Build Resource Catalog
   // ====================================================================
-  console.log('[1/4] Building resource-catalog.json...');
+  console.log('[1/3] Building resource-catalog.json...');
 
   const firstTargets = allHourlyData[0]!.dataPoints[0]!.targets;
   const resourceCatalog = buildResourceCatalog(firstTargets);
@@ -142,7 +142,7 @@ function main(): void {
   // ====================================================================
   // Step 2: Build OTel Hourly Files
   // ====================================================================
-  console.log('[2/4] Building OTel hourly files...');
+  console.log('[2/3] Building OTel hourly files...');
 
   const serverIds = Object.keys(firstTargets).map(extractServerId).sort();
   let totalDataPoints = 0;
@@ -184,7 +184,7 @@ function main(): void {
     const aiContext = buildAIContext(hour, health, aggregated, alerts);
 
     // Slim 출력: 런타임에서 미사용 필드 제거 (aggregated/alerts/health/aiContext)
-    // 또한 dataPoint에서 timeUnixNano, metric에서 description/unit 제거
+    // 또한 dataPoint에서 timeUnixNano, metric에서 description 제거
     const slimHourlyFile = {
       schemaVersion: SCHEMA_VERSION,
       hour,
@@ -194,6 +194,7 @@ function main(): void {
         endTimeUnixNano: slot.endTimeUnixNano,
         metrics: slot.metrics.map((m) => ({
           name: m.name,
+          unit: m.unit,
           type: m.type,
           dataPoints: m.dataPoints.map((dp) => ({
             asDouble: dp.asDouble,
@@ -215,26 +216,16 @@ function main(): void {
   console.log('');
 
   // ====================================================================
-  // Step 3: Build TimeSeries (OTel metric names + legacy names)
+  // Step 3: Build TimeSeries (OTel metric names only)
   // ====================================================================
-  console.log('[3/4] Building timeseries.json...');
+  console.log('[3/3] Building timeseries.json...');
 
   const timestamps: number[] = [];
-  // OTel named series
   const otelSeriesMap: Record<string, number[][]> = {};
   for (const mapping of METRIC_MAPPINGS) {
-    // Exclude uptime (computed value varies), boot_time, processes
-    if (['system.uptime', 'system.processes.count'].includes(mapping.otel)) continue;
+    if (['system.uptime', 'system.process.count'].includes(mapping.otel)) continue;
     otelSeriesMap[mapping.otel] = serverIds.map(() => []);
   }
-  // Legacy named series (for backward compat)
-  const legacySeriesMap: Record<string, number[][]> = {
-    cpu: serverIds.map(() => []),
-    memory: serverIds.map(() => []),
-    disk: serverIds.map(() => []),
-    network: serverIds.map(() => []),
-    up: serverIds.map(() => []),
-  };
 
   const serverIndexMap = new Map<string, number>();
   serverIds.forEach((id, idx) => serverIndexMap.set(id, idx));
@@ -248,14 +239,6 @@ function main(): void {
         const target = dp.targets[`${serverId}:9100`];
 
         if (target) {
-          // Legacy series (original Prometheus values)
-          legacySeriesMap['cpu']![idx]!.push(target.metrics.node_cpu_usage_percent);
-          legacySeriesMap['memory']![idx]!.push(target.metrics.node_memory_usage_percent);
-          legacySeriesMap['disk']![idx]!.push(target.metrics.node_filesystem_usage_percent);
-          legacySeriesMap['network']![idx]!.push(target.metrics.node_network_transmit_bytes_rate);
-          legacySeriesMap['up']![idx]!.push(target.metrics.up);
-
-          // OTel series (transformed values)
           for (const mapping of METRIC_MAPPINGS) {
             if (!otelSeriesMap[mapping.otel]) continue;
             const rawValue = target.metrics[mapping.prometheus as keyof typeof target.metrics];
@@ -266,10 +249,6 @@ function main(): void {
             }
           }
         } else {
-          // Missing target - fill with 0
-          for (const key of Object.keys(legacySeriesMap)) {
-            legacySeriesMap[key]![idx]!.push(0);
-          }
           for (const key of Object.keys(otelSeriesMap)) {
             otelSeriesMap[key]![idx]!.push(0);
           }
@@ -283,43 +262,14 @@ function main(): void {
     generatedAt: new Date().toISOString(),
     serverIds,
     timestamps,
-    metrics: {
-      ...otelSeriesMap,
-      ...legacySeriesMap,
-    },
+    metrics: otelSeriesMap,
   };
 
   const tsPath = path.join(outputDir, 'timeseries.json');
   fs.writeFileSync(tsPath, JSON.stringify(timeseries));
   const tsSize = (fs.statSync(tsPath).size / 1024).toFixed(1);
   console.log(`  -> timeseries.json (${timestamps.length} points x ${serverIds.length} servers, ${tsSize}KB)`);
-  console.log(`  -> OTel metrics: ${Object.keys(otelSeriesMap).length}, Legacy metrics: ${Object.keys(legacySeriesMap).length}\n`);
-
-  // ====================================================================
-  // Step 3b: Output legacy timeseries to public/processed-metrics/
-  // (Replaces precompute-metrics.ts timeseries output)
-  // ====================================================================
-  console.log('[3b/4] Writing legacy timeseries to public/processed-metrics/...');
-
-  const legacyTimeseries = {
-    serverIds,
-    timestamps,
-    metrics: {
-      cpu: legacySeriesMap['cpu'],
-      memory: legacySeriesMap['memory'],
-      disk: legacySeriesMap['disk'],
-      network: legacySeriesMap['network'],
-      up: legacySeriesMap['up'],
-    },
-  };
-  const legacyTsDir = path.join(projectRoot, 'public/processed-metrics');
-  fs.mkdirSync(legacyTsDir, { recursive: true });
-  const legacyTsPath = path.join(legacyTsDir, 'timeseries.json');
-  fs.writeFileSync(legacyTsPath, JSON.stringify(legacyTimeseries));
-  const legacyTsSize = (fs.statSync(legacyTsPath).size / 1024).toFixed(1);
-  console.log(`  -> public/processed-metrics/timeseries.json (${legacyTsSize}KB)\n`);
-
-  // (Step 4: Verify was removed — legacy processed-metrics/hourly/ no longer exists)
+  console.log(`  -> OTel metrics: ${Object.keys(otelSeriesMap).length}\n`);
 
   // ====================================================================
   // Summary
@@ -329,12 +279,11 @@ function main(): void {
     const hourPath = path.join(hourlyOutputDir, `hour-${h.toString().padStart(2, '0')}.json`);
     totalSize += fs.statSync(hourPath).size;
   }
-  const legacySize = fs.statSync(legacyTsPath).size;
 
   console.log('=== Summary ===');
-  console.log(`  Output: src/data/otel-processed/ + public/processed-metrics/timeseries.json`);
-  console.log(`  Files: 1 resource-catalog + 24 hourly + 1 timeseries (OTel) + 1 timeseries (legacy) = 27 files`);
-  console.log(`  Total: ${((totalSize + legacySize) / 1024).toFixed(1)}KB`);
+  console.log(`  Output: src/data/otel-processed/`);
+  console.log(`  Files: 1 resource-catalog + 24 hourly + 1 timeseries = 26 files`);
+  console.log(`  Total: ${(totalSize / 1024).toFixed(1)}KB`);
   console.log(`  Servers: ${serverCount}`);
   console.log(`  Data points: ${totalDataPoints}`);
   console.log(`  Time points: ${timestamps.length} (${timestamps.length / 6}h x 6 slots)`);

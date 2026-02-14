@@ -38,6 +38,8 @@ type DashboardClientProps = {
   initialServers?: Server[];
   /** Pre-calculated stats from Server Component */
   initialStats?: DashboardStats;
+  /** OTel time info for SSR data context */
+  timeInfo?: { hour: number; slotIndex: number; minuteOfDay: number };
 };
 
 // 🔧 레거시 정리 (2026-01-17): EnhancedServerModal은 ServerDashboard 내부에서 직접 사용

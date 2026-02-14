@@ -89,7 +89,7 @@ async function transformToStandard() {
           const scope = resGroup.scopeMetrics[0];
           let metricDef = scope.metrics.find((m) => m.name === vibeMetric.name);
           if (!metricDef) {
-            metricDef = createMetricDefinition(vibeMetric.name, vibeMetric.type);
+            metricDef = createMetricDefinition(vibeMetric.name, vibeMetric.type, vibeMetric.unit);
             scope.metrics.push(metricDef);
           }
 
@@ -138,23 +138,22 @@ function convertToKeyValue(
 }
 
 // Helper: Create Metric Skeleton
-function createMetricDefinition(name: string, type: string): Metric {
-  const isSum = type === 'sum' || name.includes('counter') || name.includes('io'); // Simple heuristic
-  
-  if (isSum) {
+function createMetricDefinition(name: string, type: string, unit?: string): Metric {
+  if (type === 'sum') {
     return {
       name,
+      unit,
       sum: {
         dataPoints: [],
         aggregationTemporality: AggregationTemporality.AGGREGATION_TEMPORALITY_CUMULATIVE,
-        isMonotonic: true, // Assuming mostly counters
+        isMonotonic: true,
       },
     };
   }
-  
-  // Default to Gauge
+
   return {
     name,
+    unit,
     gauge: {
       dataPoints: [],
     },

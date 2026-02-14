@@ -156,9 +156,6 @@ export function extractMetricsFromStandard(
           case 'system.network.io':
             server.network = value;
             break;
-          case 'system.status':
-            if (value === 0) server.status = 'offline';
-            break;
           case 'system.cpu.load_average.1m':
             server.loadAvg1 = value;
             break;
@@ -168,7 +165,7 @@ export function extractMetricsFromStandard(
           case 'http.server.request.duration':
             server.responseTimeMs = value * 1000; // s → ms
             break;
-          case 'system.processes.count':
+          case 'system.process.count':
             server.procsRunning = value;
             break;
           case 'system.uptime':
@@ -181,7 +178,10 @@ export function extractMetricsFromStandard(
 
   // 4. 상태 결정 및 후처리
   return Array.from(serverMap.values()).map((server) => {
-    if (server.status !== 'offline') {
+    // cpu+memory+disk 모두 0이면 오프라인 판별 (system.status 대체)
+    if (server.cpu === 0 && server.memory === 0 && server.disk === 0) {
+      server.status = 'offline';
+    } else {
       server.status = determineStatus(
         server.cpu,
         server.memory,

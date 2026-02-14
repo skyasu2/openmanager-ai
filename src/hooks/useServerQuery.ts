@@ -31,8 +31,8 @@ export function useServerQuery(options: UseServerQueryOptions = {}) {
     queryFn: fetchServers,
     initialData: transformedInitialData,
     initialDataUpdatedAt: transformedInitialData ? Date.now() : undefined,
-    refetchInterval: 60 * 1000, // 60초 폴링 (모니터링 보고서와 시점 차이 축소)
-    staleTime: 45 * 1000, // 45초간 fresh 유지
+    refetchInterval: 10 * 60 * 1000, // 600초 폴링 (SSR OTel 데이터 기반, 10분 슬롯과 동기)
+    staleTime: 9 * 60 * 1000, // 540초간 fresh 유지
     gcTime: 5 * 60 * 1000, // 5분 미사용 데이터 보관
     refetchOnWindowFocus: false, // 탭 포커스 시 중복 refetch 방지
     refetchOnReconnect: true, // 네트워크 복구 시 최신 상태 동기화

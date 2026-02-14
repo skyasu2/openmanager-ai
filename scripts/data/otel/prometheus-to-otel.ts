@@ -65,7 +65,7 @@ export const METRIC_MAPPINGS: OTelMetricMapping[] = [
   },
   {
     prometheus: 'node_procs_running',
-    otel: 'system.processes.count',
+    otel: 'system.process.count',
     description: 'Number of running processes',
     unit: '{process}',
     type: 'gauge',
@@ -89,14 +89,6 @@ export const METRIC_MAPPINGS: OTelMetricMapping[] = [
     unit: 's',
     type: 'gauge',
     transform: (v) => Math.round((v / 1000) * 10000) / 10000,
-  },
-  {
-    prometheus: 'up',
-    otel: 'system.status',
-    description: 'System availability status (1=up, 0=down)',
-    unit: '1',
-    type: 'gauge',
-    transform: (v) => v,
   },
 ];
 
@@ -141,11 +133,3 @@ export function getMappingByPrometheus(prometheusName: string): OTelMetricMappin
   return MAPPING_BY_PROMETHEUS.get(prometheusName);
 }
 
-/**
- * OTel 메트릭 이름 → legacy Prometheus 이름으로 역변환
- * (하위호환 시계열 생성용)
- */
-export function otelToPrometheusName(otelName: string): string | undefined {
-  const mapping = METRIC_MAPPINGS.find((m) => m.otel === otelName);
-  return mapping?.prometheus;
-}
