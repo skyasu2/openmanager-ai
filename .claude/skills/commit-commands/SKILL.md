@@ -47,35 +47,7 @@ EOF
 )"
 ```
 
-### 4. AI Code Review (Automatic)
-
-After successful commit, run AI review using modular scripts:
-
-```bash
-# 1. Get review engine (default: claude)
-REVIEW_ENGINE=$(bash .claude/skills/commit-commands/scripts/rotate-ai-reviewer.sh)
-
-# 2. Run review based on engine
-DIFF=$(git diff HEAD~1 | head -300)
-PROMPT="커밋: $(git log -1 --oneline)
-변경 파일: $(git diff HEAD~1 --name-only | wc -l)개
-
-다음 변경사항을 리뷰해주세요:
-1. 코드 품질 점수 (1-10)
-2. 보안 이슈
-3. 개선사항
-4. 결론: 승인/거부
-
-$DIFF"
-
-# Claude Code 기본 리뷰
-claude -p "$PROMPT" 2>&1 | head -100
-
-# 3. Save review result
-bash .claude/skills/commit-commands/scripts/save-review-result.sh "$REVIEW_ENGINE"
-```
-
-### 5. Summary
+### 4. Summary
 
 Display:
 - Commit hash and message
@@ -98,6 +70,4 @@ Display:
 
 ## Notes
 
-- AI 리뷰는 백그라운드가 아닌 실시간으로 실행됩니다
-- 기본값은 Claude Code가 리뷰합니다 (`REVIEW_MODE=codex-gemini`으로 Codex/Gemini 순환 사용 가능)
-- 리뷰 결과는 `reports/ai-review/` 디렉토리에 저장됩니다
+- 커밋 후 리뷰가 필요하면 `/review` 명령을 별도로 사용하세요

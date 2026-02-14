@@ -261,14 +261,52 @@ mcp__playwright__browser_take_screenshot()
 
 ---
 
-### Next DevTools (Next.js 전용) - 우선순위: 중간
+### Next DevTools (Next.js 런타임 진단) - 우선순위: 중간
 
-Next.js 런타임 로그/에러/페이지 메타데이터를 MCP로 조회.
+Vercel 공식 MCP. Next.js 16+ 내장 `/_next/mcp` 엔드포인트와 통신하여 런타임 진단 제공.
 
-**도구 네이밍 규칙**:
+**외부 도구 (7개)**:
+
+| 도구 | Dev Server 필요 | 용도 |
+|------|:---:|------|
+| `init` | - | 세션 초기화 |
+| `nextjs_docs` | - | Next.js 문서 검색 (**context7과 중복, context7 우선**) |
+| `nextjs_index` | Y | dev server 탐색, 런타임 도구 목록 |
+| `nextjs_call` | Y | 런타임 도구 실행 (아래 참조) |
+| `upgrade_nextjs_16` | - | 업그레이드 가이드 + codemod |
+| `enable_cache_components` | - | Cache Components 설정 |
+| `browser_eval` | - | Playwright 래핑 (**playwright MCP와 중복, playwright 우선**) |
+
+**런타임 도구 (`nextjs_call`로 호출, 6개)**:
+
+| 도구 | 브라우저 세션 필요 | 기능 |
+|------|:---:|------|
+| `get_errors` | Y | 빌드/런타임/타입 에러 실시간 조회 |
+| `get_project_metadata` | - | 프로젝트 경로, dev server URL |
+| `get_routes` | - | 전체 App Router 라우트 목록 |
+| `get_logs` | - | dev server 로그 파일 경로 |
+| `get_page_metadata` | Y | 현재 페이지 구성 파일 (layout, error, page 등) |
+| `get_server_action_by_id` | - | Server Action ID → 소스 파일/함수명 역추적 |
+
+**고유 가치**: `nextjs_index` + `nextjs_call` 런타임 진단만 다른 MCP로 대체 불가
+
+**사용 예시**:
 ```bash
-mcp__next-devtools__*
+# 1. dev server 실행 중 에러 확인
+nextjs_index → nextjs_call(port=3000, toolName="get_errors")
+
+# 2. 라우트 구조 파악
+nextjs_call(port=3000, toolName="get_routes")
+
+# 3. 브라우저 의존 도구는 Playwright로 페이지 먼저 열기
+playwright__browser_navigate("http://localhost:3000/dashboard")
+→ nextjs_call(port=3000, toolName="get_page_metadata")
 ```
+
+**주의사항**:
+- `get_errors`, `get_page_metadata`는 브라우저가 해당 페이지에 접속해야 동작
+- `get_logs`는 경로만 반환 → 파일을 직접 읽어야 함
+- dev server 시작에 ~100초 소요 (WSL 환경)
 
 ---
 

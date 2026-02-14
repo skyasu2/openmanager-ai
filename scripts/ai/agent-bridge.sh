@@ -14,8 +14,10 @@ Options:
   --to <target>           Required. claude | codex | gemini
   --cwd <dir>             Optional working directory (default: current dir)
   --model <name>          Optional model override for target CLI
+  --timeout <seconds>     Optional timeout for target CLI (default: 120)
   --allow-recursion       Allow nested bridge calls (default: blocked)
   --dry-run               Print resolved settings without calling target
+  --no-log                Disable logging to logs/ai-bridge/
   -h, --help              Show this help
 
 Prompt input:
@@ -25,14 +27,17 @@ Prompt input:
 Examples:
   bash scripts/ai/agent-bridge.sh --to claude "현재 브랜치 요약해줘"
   echo "type error 원인 찾아줘" | bash scripts/ai/agent-bridge.sh --to codex
+  bash scripts/ai/agent-bridge.sh --to gemini --timeout 60 "분석해줘"
 EOF
 }
 
 TARGET=""
 CWD="$(pwd)"
 MODEL=""
+TIMEOUT=120
 ALLOW_RECURSION=false
 DRY_RUN=false
+NO_LOG=false
 
 is_dir_readable() {
   local dir="$1"
@@ -60,6 +65,14 @@ while [ $# -gt 0 ]; do
     --model)
       MODEL="${2:-}"
       shift 2
+      ;;
+    --timeout)
+      TIMEOUT="${2:-120}"
+      shift 2
+      ;;
+    --no-log)
+      NO_LOG=true
+      shift
       ;;
     --allow-recursion)
       ALLOW_RECURSION=true
@@ -91,6 +104,11 @@ fi
 
 if [ "$TARGET" != "claude" ] && [ "$TARGET" != "codex" ] && [ "$TARGET" != "gemini" ]; then
   echo "ERROR: invalid --to target: $TARGET" >&2
+  exit 2
+fi
+
+if ! [[ "$TIMEOUT" =~ ^[0-9]+$ ]] || [ "$TIMEOUT" -lt 1 ] || [ "$TIMEOUT" -gt 600 ]; then
+  echo "ERROR: --timeout must be 1..600 (seconds). Got: $TIMEOUT" >&2
   exit 2
 fi
 
@@ -130,11 +148,41 @@ if [ "$DRY_RUN" = "true" ]; then
   echo "bridge_target=$TARGET"
   echo "bridge_cwd=$CWD"
   echo "bridge_model=${MODEL:-<default>}"
+  echo "bridge_timeout=${TIMEOUT}s"
+  echo "bridge_logging=$([ "$NO_LOG" = "true" ] && echo "disabled" || echo "enabled")"
   echo "prompt_chars=${#PROMPT}"
   exit 0
 fi
 
 export AGENT_BRIDGE_ACTIVE=1
+
+# --- Logging ---
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+LOG_DIR="$PROJECT_ROOT/logs/ai-bridge"
+
+log_call() {
+  if [ "$NO_LOG" = "true" ]; then return; fi
+  mkdir -p "$LOG_DIR"
+  local status="$1" duration="$2"
+  local ts
+  ts="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+  printf '%s\t%s\t%s\t%ss\tmodel=%s\tprompt_chars=%d\n' \
+    "$ts" "$TARGET" "$status" "$duration" "${MODEL:-default}" "${#PROMPT}" \
+    >> "$LOG_DIR/bridge.log"
+}
+
+# --- Timeout wrapper ---
+run_with_timeout() {
+  timeout "$TIMEOUT" "$@"
+  local rc=$?
+  if [ $rc -eq 124 ]; then
+    echo "ERROR: $TARGET timed out after ${TIMEOUT}s." >&2
+  fi
+  return $rc
+}
+export -f run_with_timeout
+export TIMEOUT TARGET
 
 run_claude() {
   if ! command -v claude >/dev/null 2>&1; then
@@ -150,7 +198,7 @@ run_claude() {
 
   (
     cd "$CWD"
-    "${cmd[@]}"
+    run_with_timeout "${cmd[@]}"
   )
 }
 
@@ -171,7 +219,7 @@ run_codex() {
   fi
   cmd+=("$PROMPT")
 
-  if ! "${cmd[@]}" >"$log_file" 2>&1; then
+  if ! run_with_timeout "${cmd[@]}" >"$log_file" 2>&1; then
     cat "$log_file" >&2
     if [ -s "$out_file" ]; then
       cat "$out_file"
@@ -231,7 +279,7 @@ run_gemini() {
 
   if ! (
     cd "$CWD"
-    "${cmd[@]}" >"$log_file" 2>&1
+    run_with_timeout "${cmd[@]}" >"$log_file" 2>&1
   ); then
     cat "$log_file" >&2
     if grep -Eqi "Interactive consent could not be obtained|authorization code|FatalAuthenticationError" "$log_file"; then
@@ -247,14 +295,20 @@ EOF
   cat "$log_file"
 }
 
+START_TIME="$(date +%s)"
+EXIT_CODE=0
+
 case "$TARGET" in
-  claude)
-    run_claude
-    ;;
-  codex)
-    run_codex
-    ;;
-  gemini)
-    run_gemini
-    ;;
+  claude)  run_claude  || EXIT_CODE=$? ;;
+  codex)   run_codex   || EXIT_CODE=$? ;;
+  gemini)  run_gemini  || EXIT_CODE=$? ;;
 esac
+
+ELAPSED=$(( $(date +%s) - START_TIME ))
+if [ $EXIT_CODE -eq 0 ]; then
+  log_call "ok" "$ELAPSED"
+else
+  log_call "fail:$EXIT_CODE" "$ELAPSED"
+fi
+
+exit $EXIT_CODE

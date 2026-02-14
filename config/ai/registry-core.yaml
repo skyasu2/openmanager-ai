@@ -141,7 +141,7 @@ skills:
 # 5. Quick Reference (빠른 참조만)
 # ============================================================================
 quick_commands:
-  mcp_health: "./scripts/mcp/mcp-health-check.sh"
+  mcp_health: "./scripts/mcp/mcp-health-check-codex.sh"
   codex_review: 'codex exec "[review request]"'
   token_usage: "npx ccusage@latest"
 

@@ -37,7 +37,6 @@ check_version() {
 check_version "@anthropic-ai/claude-code" "claude"
 check_version "@openai/codex" "codex"
 check_version "@google/gemini-cli" "gemini"
-check_version "@qwen-code/qwen-code" "qwen"
 
 echo ""
 echo "💡 업데이트 실행:"
