@@ -5,7 +5,7 @@
 
 ## 개요
 
-이 프로젝트는 **WSL 2 + Claude Code + Codex** 기반의 AI-assisted 개발 환경을 사용합니다.
+이 프로젝트는 **WSL 2 + Claude Code + Codex + Gemini CLI** 기반의 AI-assisted 개발 환경을 사용합니다.
 
 ## 문서 목록
 
@@ -46,6 +46,7 @@ AI:           Vercel AI SDK 6, Multi-Agent
 - Git
 - Claude Code CLI
 - Codex CLI
+- Gemini CLI
 
 ## 빠른 시작
 
@@ -63,6 +64,10 @@ cp .env.example .env.local
 
 # 4. 개발 서버 실행
 npm run dev:network
+
+# 5. AI 브릿지 스모크 테스트 (선택)
+bash scripts/ai/agent-bridge.sh --to claude --mode query "안녕하세요만 출력"
+bash scripts/ai/agent-bridge.sh --to codex --mode query "안녕하세요만 출력"
 ```
 
 ## 관련 문서

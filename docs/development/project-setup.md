@@ -147,6 +147,44 @@ npm run test:quick  # 테스트
 npm run build       # 빌드
 ```
 
+## AI 브릿지 설정 (WSL)
+
+`scripts/ai/agent-bridge.sh`로 Claude/Codex/Gemini를 동일 인터페이스로 호출합니다.
+
+권장 환경변수:
+```bash
+# Gemini 비대화형 호출 안정성 향상
+export GEMINI_API_KEY=your_key
+```
+
+기본 점검:
+```bash
+# Claude (기본 fast 모드: /tmp 실행)
+bash scripts/ai/agent-bridge.sh --to claude --mode query "안녕하세요만 출력"
+
+# Codex
+bash scripts/ai/agent-bridge.sh --to codex --mode analysis "현재 브릿지 상태 요약"
+
+# Gemini
+bash scripts/ai/agent-bridge.sh --to gemini --mode query "안녕하세요만 출력"
+```
+
+주요 옵션:
+```bash
+# Claude 전체 컨텍스트 실행
+bash scripts/ai/agent-bridge.sh --to claude --claude-full "요약해줘"
+
+# 자기 자신 호출 차단(오케스트레이션 권장)
+bash scripts/ai/agent-bridge.sh --to claude --from codex --no-self "질문"
+
+# 결과 문서 자동 저장 + 민감정보 마스킹
+bash scripts/ai/agent-bridge.sh --to codex --mode doc --save-auto --redact "회의 내용 정리"
+```
+
+로그 위치:
+- 호출 로그: `logs/ai-bridge/bridge.log`
+- 문서화 결과: `logs/ai-bridge/notes/`
+
 ## 폴더 구조
 
 ```
