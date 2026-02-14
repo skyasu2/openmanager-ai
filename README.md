@@ -65,7 +65,7 @@ Supervisor (Intent Classification & Routing)
     ├── Analyst Agent  : 패턴 분석, 이상 탐지
     ├── Reporter Agent : 장애 보고서 생성 (Evaluator-Optimizer 패턴)
     ├── Advisor Agent  : 트러블슈팅 가이드
-    └── Verifier Agent : 응답 품질 검증 (24B 모델)
+    └── Vision Agent   : 스크린샷 분석 및 대용량 로그 처리 (Gemini)
 
 📡 Resumable Stream v2: 새로고침해도 스트림 유지 (Redis 기반)
 ```
@@ -114,7 +114,7 @@ Supervisor (Intent Classification & Routing)
 │    Native Multi-Agent + Tool Registry (22 Tools)       │
 │                                                         │
 │  ┌─────────┐ ┌─────────┐ ┌─────────┐ ┌─────────────┐  │
-│  │   NLQ   │ │ Analyst │ │Reporter │ │Advisor/Verif│  │
+│  │   NLQ   │ │ Analyst │ │Reporter │ │ Advisor/Vis │  │
 │  └─────────┘ └─────────┘ └─────────┘ └─────────────┘  │
 │                                                         │
 │  📊 Resilience: Circuit Breaker + Quota Tracker        │
@@ -145,7 +145,7 @@ Supervisor (Intent Classification & Routing)
 | **Frontend** | Next.js 16, React 19, TypeScript |
 | **UI** | Tailwind CSS, Radix UI, Lucide Icons |
 | **State** | Zustand, TanStack Query |
-| **AI** | Vercel AI SDK v6 (Native Multi-Agent, UIMessageStream) |
+| **AI** | Vercel AI SDK v6 (Native Multi-Agent, UIMessageStream), Gemini Flash-Lite |
 | **Database** | Supabase (PostgreSQL + pgvector) |
 | **Cache** | Upstash Redis |
 
