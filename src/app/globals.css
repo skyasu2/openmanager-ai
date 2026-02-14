@@ -506,7 +506,7 @@
   transform: scale(1.1) translateZ(0);
 }
 
-/* 🌟 모바일 성능 최적화 - GPU 부하 감소 */
+/* 🌟 모바일 성능 최적화 - GPU 부하 감소 및 배터리 절약 */
 @media (max-width: 768px) {
   .wave-particles {
     background:
@@ -520,8 +520,11 @@
         rgba(156, 39, 176, 0.08) 0%,
         transparent 70%
       );
-    animation: wave-drift-mobile 20s ease-in-out infinite;
-    filter: blur(0.3px);
+    /* 배터리 절약을 위해 모바일에서는 애니메이션 제거 (Static Gradient) */
+    animation: none;
+    /* Blur 필터 제거 */
+    filter: none;
+    opacity: 0.6;
   }
 
   .animate-ai-icon {

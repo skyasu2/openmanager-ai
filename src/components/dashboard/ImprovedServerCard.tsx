@@ -174,20 +174,11 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
     }, []);
 
     // 카드 클릭 핸들러 (키보드 지원)
-    const handleCardClick = useCallback(() => {
-      onClick(safeServer);
-    }, [onClick, safeServer]);
-
-    const handleCardKeyDown = useCallback(
-      (e: React.KeyboardEvent) => {
-        // 내부 토글 버튼에서 이벤트가 발생한 경우 무시 (버블링 방지)
-        if ((e.target as HTMLElement).closest('[data-toggle-button]')) {
-          return;
-        }
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          onClick(safeServer);
-        }
+    const handleCardClick = useCallback(
+      (e?: React.MouseEvent | React.KeyboardEvent) => {
+        // 이벤트 전파 방지 (중복 실행 방지)
+        e?.stopPropagation();
+        onClick(safeServer);
       },
       [onClick, safeServer]
     );
@@ -203,12 +194,10 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
     }, [enableProgressiveDisclosure, showTertiaryInfo]);
 
     return (
-      // biome-ignore lint/a11y/useSemanticElements: 카드 내부에 별도 토글 버튼이 있어 button 요소로 변경 시 HTML 명세 위반 (button 내 interactive 요소 금지)
+      // biome-ignore lint/a11y/useKeyWithClickEvents: Mouse-only click listener for card wrapper (keyboard access handled by inner button)
+      // biome-ignore lint/a11y/noStaticElementInteractions: Wrapper click for UX convenience
       <div
-        role="button"
-        tabIndex={0}
         onClick={handleCardClick}
-        onKeyDown={handleCardKeyDown}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
         className={`group relative w-full cursor-pointer overflow-hidden rounded-2xl border shadow-sm transition-all duration-300 ease-out hover:shadow-xl backdrop-blur-md text-left bg-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 ${statusTheme.background} ${statusTheme.border} ${variantStyles.container} hover:${currentGradient.shadow}`}
@@ -262,7 +251,12 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
         )}
         {/* Header - OS/타입 정보 추가 */}
         <header className="mb-2 flex items-start justify-between relative z-10">
-          <div className="flex min-w-0 flex-1 items-center gap-2">
+          {/* 접근성 수정: 중첩 버튼 문제 해결을 위해 메인 영역을 버튼으로 변경 */}
+          <button
+            type="button"
+            onClick={handleCardClick}
+            className="flex min-w-0 flex-1 items-center gap-2 text-left appearance-none focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded-lg -ml-1 pl-1"
+          >
             {/* 🎨 아이콘 박스 - 그라데이션 스타일 (랜딩 카드 참조) */}
             <div
               className={`relative rounded-xl p-2 shadow-lg backdrop-blur-sm transition-all duration-300 group-hover:scale-110 bg-linear-to-br ${currentGradient.gradient}`}
@@ -302,7 +296,7 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
                 <span>{safeServer.location}</span>
               </div>
             </div>
-          </div>
+          </button>
 
           <div className="flex items-center gap-1 pt-4">
             {enableProgressiveDisclosure && (
