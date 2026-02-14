@@ -9,12 +9,16 @@ if [ ! -f "$RUNTIME_ENV_RESOLVER" ]; then
   exit 2
 fi
 
+# Force project-scoped Codex config by default.
+: "${OPENMANAGER_CODEX_HOME_MODE:=project}"
+export OPENMANAGER_CODEX_HOME_MODE
+
 # shellcheck source=/dev/null
 source "$RUNTIME_ENV_RESOLVER"
 
 if [ ! -f "$CODEX_HOME/config.toml" ]; then
   echo "ERROR: $CODEX_HOME/config.toml not found"
-  echo "Hint: set OPENMANAGER_CODEX_HOME_MODE=project or create $HOME/.codex/config.toml"
+  echo "Hint: create $REPO_ROOT/.codex/config.toml or override OPENMANAGER_CODEX_HOME_MODE"
   exit 2
 fi
 

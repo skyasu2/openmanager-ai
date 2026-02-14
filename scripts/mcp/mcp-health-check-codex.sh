@@ -22,10 +22,10 @@ USAGE_COUNTER="$REPO_ROOT/scripts/mcp/count-codex-mcp-usage.sh"
 
 EXPECTED_SERVERS=(
   "vercel"
-  "serena"
   "supabase"
   "context7"
   "playwright"
+  "next-devtools"
   "github"
   "sequential-thinking"
   "stitch"
@@ -56,6 +56,8 @@ if [ ! -f "$RUNTIME_ENV_RESOLVER" ]; then
 fi
 
 # shellcheck source=/dev/null
+: "${OPENMANAGER_CODEX_HOME_MODE:=project}"
+export OPENMANAGER_CODEX_HOME_MODE
 source "$RUNTIME_ENV_RESOLVER"
 
 echo -e "${BLUE}Runtime Paths${NC}"

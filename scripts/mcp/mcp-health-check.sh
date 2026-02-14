@@ -1,6 +1,6 @@
 #!/bin/bash
 # MCP Health Check Script
-# 목적: MCP 서버 연결 상태 정기 점검 (현재 8개)
+# 목적: MCP 서버 연결 상태 정기 점검 (현재 7개)
 # 작성: 2025-10-16
 # 사용: ./scripts/mcp/mcp-health-check.sh
 
@@ -58,10 +58,9 @@ echo ""
   echo ""
 } >> "$LOG_FILE"
 
-# MCP 서버 목록 (8개)
+# MCP 서버 목록 (7개)
 EXPECTED_SERVERS=(
   "vercel"
-  "serena"
   "supabase"
   "context7"
   "playwright"
@@ -166,7 +165,7 @@ if [ "$SUCCESS_COUNT" -eq "$TOTAL_SERVERS" ]; then
   echo -e "${GREEN}✅ 모든 MCP 서버 정상 연결 (${TOTAL_SERVERS}/${TOTAL_SERVERS})${NC}"
   echo "✅ 모든 MCP 서버 정상 연결 (${TOTAL_SERVERS}/${TOTAL_SERVERS})" >> "$LOG_FILE"
   STATUS="SUCCESS"
-elif [ "$SUCCESS_COUNT" -ge 7 ]; then
+elif [ "$SUCCESS_COUNT" -ge 6 ]; then
   echo -e "${YELLOW}⚠️  일부 MCP 서버 연결 문제 (확인 필요)${NC}"
   echo "⚠️  일부 MCP 서버 연결 문제 (확인 필요)" >> "$LOG_FILE"
   STATUS="WARNING"

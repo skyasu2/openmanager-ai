@@ -21,7 +21,7 @@
 
 ---
 
-## 현재 사용 중인 MCP 서버 (7개)
+## 현재 사용 중인 MCP 서버 (8개)
 
 | MCP | 용도 | 패키지 | 우선순위 |
 |-----|------|--------|:--------:|
@@ -31,6 +31,7 @@
 | **supabase** | PostgreSQL 관리 | `@supabase/mcp-server-supabase` | 중간 |
 | **vercel** | 배포 상태 확인 | `vercel-mcp` | 중간 |
 | **playwright** | E2E 테스트, 브라우저 자동화 | `@playwright/mcp` | 중간 |
+| **next-devtools** | Next.js 런타임 오류/로그/메타데이터 조회 | `next-devtools-mcp` | 중간 |
 | **github** | 저장소/PR 관리 | `@modelcontextprotocol/server-github` | 중간 |
 
 ---
@@ -94,6 +95,10 @@
       "command": "npx",
       "args": ["-y", "@playwright/mcp"]
     },
+    "next-devtools": {
+      "command": "npx",
+      "args": ["-y", "next-devtools-mcp@latest"]
+    },
     "github": {
       "command": "npx",
       "args": ["-y", "@modelcontextprotocol/server-github"],
@@ -127,6 +132,7 @@
       "mcp__supabase__*",
       "mcp__vercel__*",
       "mcp__playwright__*",
+      "mcp__next-devtools__*",
       "mcp__github__*",
       "mcp__sequential-thinking__*",
       "mcp__stitch__*"
@@ -135,7 +141,7 @@
   "enableAllProjectMcpServers": true,
   "enabledMcpjsonServers": [
     "vercel", "supabase", "context7",
-    "playwright", "github", "sequential-thinking", "stitch"
+    "playwright", "next-devtools", "github", "sequential-thinking", "stitch"
   ]
 }
 ```
@@ -255,6 +261,17 @@ mcp__playwright__browser_take_screenshot()
 
 ---
 
+### Next DevTools (Next.js 전용) - 우선순위: 중간
+
+Next.js 런타임 로그/에러/페이지 메타데이터를 MCP로 조회.
+
+**도구 네이밍 규칙**:
+```bash
+mcp__next-devtools__*
+```
+
+---
+
 ### GitHub (저장소) - 우선순위: 중간
 
 PR 생성/관리, 이슈 관리, 파일 조회.
@@ -287,6 +304,7 @@ cat > .claude/settings.local.json << 'EOF'
       "mcp__supabase__*",
       "mcp__vercel__*",
       "mcp__playwright__*",
+      "mcp__next-devtools__*",
       "mcp__github__*",
       "mcp__sequential-thinking__*",
       "mcp__stitch__*"
@@ -295,7 +313,7 @@ cat > .claude/settings.local.json << 'EOF'
   "enableAllProjectMcpServers": true,
   "enabledMcpjsonServers": [
     "vercel", "supabase", "context7",
-    "playwright", "github", "sequential-thinking", "stitch"
+    "playwright", "next-devtools", "github", "sequential-thinking", "stitch"
   ]
 }
 EOF

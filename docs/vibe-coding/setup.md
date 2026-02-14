@@ -85,20 +85,14 @@ claude             # 대화형 모드 시작
 
 ### 빠른 설정
 
-1. **uvx 설치** (Serena용):
-   ```bash
-   pip3 install uvx
-   ```
+1. **`.mcp.json` 생성**: [MCP 서버 가이드 - 설정 백업](./mcp-servers.md#현재-설정-백업-2026-01-27) 참조
 
-2. **`.mcp.json` 생성**: [MCP 서버 가이드 - 설정 백업](./mcp-servers.md#현재-설정-백업-2026-01-27) 참조
-
-3. **권한 설정**: `.claude/settings.local.json` 생성
+2. **권한 설정**: `.claude/settings.local.json` 생성
 
 ### 현재 사용 중인 MCP 서버 (8개)
 
 | MCP | 용도 |
 |-----|------|
-| serena | 코드 검색, 심볼 분석 |
 | context7 | 라이브러리 문서 |
 | sequential-thinking | 복잡한 추론 |
 | stitch | Google UI 디자인 |
@@ -106,6 +100,7 @@ claude             # 대화형 모드 시작
 | vercel | 배포 상태 |
 | playwright | E2E 테스트 |
 | github | 저장소/PR 관리 |
+| next-devtools | Next.js DevTools 컨텍스트/오류 조회 |
 
 ---
 
@@ -209,7 +204,7 @@ gemini
 Claude Code 내에서:
 ```
 You: "MCP 서버 상태 확인해줘"
-Claude: [serena, context7, supabase 등 사용 가능 여부 표시]
+Claude: [context7, supabase, next-devtools 등 사용 가능 여부 표시]
 ```
 
 ---
