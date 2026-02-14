@@ -68,6 +68,60 @@ function runGit(args) {
   }
 }
 
+function stripHashComments(text) {
+  return text
+    .split('\n')
+    .filter((line) => !line.trim().startsWith('#'))
+    .join('\n');
+}
+
+function checkCloudBuildFreeTierGuard() {
+  const cloudbuildPath = path.join(cwd, 'cloud-run/ai-engine/cloudbuild.yaml');
+  const deployPath = path.join(cwd, 'cloud-run/ai-engine/deploy.sh');
+
+  if (!fs.existsSync(cloudbuildPath) || !fs.existsSync(deployPath)) {
+    return;
+  }
+
+  console.log('🛡️ Cloud Build free-tier guard check...');
+
+  const cloudbuildRaw = fs.readFileSync(cloudbuildPath, 'utf8');
+  const cloudbuildBody = stripHashComments(cloudbuildRaw);
+  const deployRaw = fs.readFileSync(deployPath, 'utf8');
+  const failures = [];
+
+  if (/\bmachineType\b/.test(cloudbuildBody)) {
+    failures.push('cloud-run/ai-engine/cloudbuild.yaml contains machineType in active config');
+  }
+
+  if (/\b(E2_HIGHCPU_8|N1_HIGHCPU_8|e2-highcpu-8|n1-highcpu-8)\b/.test(cloudbuildBody)) {
+    failures.push('cloud-run/ai-engine/cloudbuild.yaml contains highcpu machine type in active config');
+  }
+
+  if (!deployRaw.includes('assert_no_forbidden_args "${BUILD_CMD[@]}"')) {
+    failures.push('cloud-run/ai-engine/deploy.sh missing BUILD_CMD forbidden-arg guard');
+  }
+
+  if (!deployRaw.includes('assert_no_forbidden_args "${DEPLOY_CMD[@]}"')) {
+    failures.push('cloud-run/ai-engine/deploy.sh missing DEPLOY_CMD forbidden-arg guard');
+  }
+
+  if (!deployRaw.includes('enforce_free_tier_guards')) {
+    failures.push('cloud-run/ai-engine/deploy.sh missing free-tier guard enforcement');
+  }
+
+  if (failures.length > 0) {
+    console.log('❌ Free-tier guard check failed - push blocked');
+    for (const failure of failures) {
+      console.log(`   - ${failure}`);
+    }
+    console.log('');
+    console.log('💡 Fix: restore free-tier guardrails in cloudbuild/deploy scripts');
+    console.log('⚠️  Bypass: HUSKY=0 git push');
+    process.exit(1);
+  }
+}
+
 // node_modules health check
 function checkNodeModules() {
   if (SKIP_NODE_CHECK) {
@@ -346,6 +400,7 @@ function main() {
     process.exit(1);
   }
 
+  checkCloudBuildFreeTierGuard();
   runTests();
   runBuildValidation();
   checkPackageJson();
