@@ -18,6 +18,8 @@
     "docs:links:full": "find docs -name '*.md' -type f | xargs npx markdown-link-check -q",
     "claude:launch": "bash scripts/ai/launch-claude-wsl.sh",
     "claude:sanitize": "node scripts/diagnostics/claude-json-sanitize.js --write",
+    "ai:bridge": "bash scripts/ai/agent-bridge.sh",
+    "ai:pair-chat": "bash scripts/ai/agent-pair-chat.sh",
     "codex:local": "bash scripts/mcp/codex-local.sh",
     "mcp:env:codex": "bash scripts/mcp/resolve-runtime-env.sh --print",
     "mcp:status": "claude mcp list",
