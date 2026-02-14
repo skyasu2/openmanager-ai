@@ -23,6 +23,35 @@ export function determineStatus(
   return getRulesServerStatus({ cpu, memory, disk, network });
 }
 
+/**
+ * OTel datapoint 인덱스 계산
+ * - 60개(1분 해상도): minute 그대로 사용
+ * - 6개(10분 해상도) 등: 분(0~59)을 데이터 길이에 비례 매핑
+ */
+function getDataPointIndex(
+  dataPointLength: number,
+  minuteOfDay: number
+): number {
+  if (dataPointLength <= 1) return 0;
+
+  const minuteInHour = ((minuteOfDay % 60) + 60) % 60;
+  if (dataPointLength === 60) return minuteInHour;
+
+  return Math.min(
+    dataPointLength - 1,
+    Math.floor((minuteInHour / 60) * dataPointLength)
+  );
+}
+
+function pickDataPoint<T extends { asDouble?: number }>(
+  dataPoints: T[] | undefined,
+  minuteOfDay: number
+): T | null {
+  if (!dataPoints || dataPoints.length === 0) return null;
+  const idx = getDataPointIndex(dataPoints.length, minuteOfDay);
+  return dataPoints[idx] ?? dataPoints[dataPoints.length - 1] ?? null;
+}
+
 // ============================================================================
 // OTel Data Transformation
 // ============================================================================
@@ -37,7 +66,6 @@ export function extractMetricsFromStandard(
   minuteOfDay: number
 ): ApiServerMetrics[] {
   const serverMap = new Map<string, ApiServerMetrics>();
-  const targetMinute = minuteOfDay % 60; // 0~59
 
   // ResourceMetrics(Host) 단위 순회
   for (const resMetric of data.resourceMetrics) {
@@ -105,19 +133,11 @@ export function extractMetricsFromStandard(
     // 3. Metrics 순회 (CPU, Memory, etc.)
     for (const scopeMetric of resMetric.scopeMetrics) {
       for (const metric of scopeMetric.metrics) {
-        // 해당 분(minute)의 DataPoint 찾기
-        // OpenManager AI 데이터 생성 규칙상 DataPoints는 0~59분 순서대로 생성됨
-        // 안전을 위해 배열 길이 체크
-        let dp = null;
-        if (metric.gauge && metric.gauge.dataPoints.length > 0) {
-          dp =
-            metric.gauge.dataPoints[targetMinute] ||
-            metric.gauge.dataPoints[metric.gauge.dataPoints.length - 1];
-        } else if (metric.sum && metric.sum.dataPoints.length > 0) {
-          dp =
-            metric.sum.dataPoints[targetMinute] ||
-            metric.sum.dataPoints[metric.sum.dataPoints.length - 1];
-        }
+        // 해당 분(minute)에 대응하는 DataPoint 선택
+        // 6개 슬롯(10분 간격) / 60개 슬롯(1분 간격) 모두 지원
+        const dp =
+          pickDataPoint(metric.gauge?.dataPoints, minuteOfDay) ??
+          pickDataPoint(metric.sum?.dataPoints, minuteOfDay);
 
         if (!dp || dp.asDouble === undefined) continue;
         const value = dp.asDouble;
