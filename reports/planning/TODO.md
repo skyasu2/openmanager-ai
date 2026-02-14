@@ -44,6 +44,7 @@
 | `landing-card-diagrams-plan.md` | 참조 | 다이어그램 데이터 |
 | `vision-agent-implementation-plan.md` | 검토 대기 | Vision Agent 확장 구현 계획 |
 | `version-changelog-recovery-plan.md` | 계획 수립 | 버전/태그/체인지로그 운영 재정렬 |
+| `work-history-template.md` | 운영 기준 | 일일 작업 이력 기록 템플릿 |
 
 ### Completed (2026-01-22)
 - [x] 코드 단순화 리팩토링 (YAGNI 원칙 적용)
