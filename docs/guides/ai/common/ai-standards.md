@@ -24,12 +24,12 @@
 ## Quick Reference
 
 ```bash
-# 코드 리뷰 순환 (자동)
-git commit -m "feat: 기능"  # → Codex ↔ Gemini 1:1
+# 3-CLI 협업 개발 (브리지)
+bash scripts/ai/agent-bridge.sh --to codex --mode analysis --save-auto "실무 검증"
+bash scripts/ai/agent-bridge.sh --to gemini --mode analysis --save-auto "아키텍처 분석"
+bash scripts/ai/agent-bridge.sh --to claude --mode doc --save-auto "결과 문서화"
 
-# 수동 호출
-Task codex-wrapper "실무 검증"
-Task gemini-wrapper "아키텍처 분석"
+# 집계가 필요하면 Codex 결과를 기준으로 카운트
 ```
 
 ---
@@ -57,7 +57,7 @@ Task gemini-wrapper "아키텍처 분석"
 
 ### 테스트 & 검증
 - **테스트 필수**: 핵심 로직 단위 테스트 확보
-- **상호 검증**: 다른 AI(Claude, Codex, Gemini)의 리뷰 필수
+- **상호 검증**: 3 AI 협업으로 수동 검증 수행
 
 ---
 
@@ -79,9 +79,9 @@ Task gemini-wrapper "아키텍처 분석"
 
 | AI 도구 | 주 역할 | 특화 영역 | 호출 방법 |
 |---------|---------|-----------|-----------|
-| **Claude Code** | 메인 개발 | 아키텍처, 비즈니스 로직 | 직접 |
-| **Codex (GPT-5)** | 개발/개선 + 검증 | 구현, 리팩토링, 실무 검증 | `Task codex-wrapper` |
-| **Gemini** | 아키텍처/검증 | 시스템 설계, 표준화, 리스크 분석 | `Task gemini-wrapper` |
+| **Claude Code** | 협업 개발 | 아키텍처, 비즈니스 로직 | `agent-bridge.sh --to claude` |
+| **Codex (GPT-5)** | 협업 개발 + 기준 검증 | 구현, 리팩토링, 실무 검증 | `agent-bridge.sh --to codex` |
+| **Gemini** | 협업 검증 | 시스템 설계, 표준화, 리스크 분석 | `agent-bridge.sh --to gemini` |
 
 ---
 
@@ -122,7 +122,7 @@ Task gemini-wrapper "아키텍처 분석"
 
 - [Vibe Coding README](../../../vibe-coding/README.md)
 - [Vibe Coding Workflows](../../../vibe-coding/workflows.md)
-- [AI Tools](../../../vibe-coding/ai-tools.md)
+- [AI Tools](../../../vibe-coding/multi-agent-tools.md)
 
 ---
 

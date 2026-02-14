@@ -106,6 +106,14 @@
 - Hard gate: `npm run docs:budget:strict` (변경 문서 기준)
 - 상세 정책: `.claude/rules/documentation.md`
 
+## 🗂 Planning Docs Policy
+- 작업 계획서(실행 계획, 마이그레이션 계획)는 기본적으로 `reports/planning/`에 작성합니다.
+- 파일명 규칙은 `kebab-case` + `-plan.md`를 권장합니다. 예: `reports/planning/ai-engine-refactor-plan.md`
+- 진행 상태는 문서 본문에 명시적으로 유지합니다: `계획 수립 → 진행 중 → 완료`
+- 완료된 계획서는 `reports/planning/archive/`로 이동해 보관합니다. (기본적으로 Git 추적 대상)
+- `docs/archived/`는 문서 임시 보관소이며, 계획서 보관 위치로 사용하지 않습니다.
+- 계획서에는 API 키/토큰/시크릿/실계정 식별자 등 민감정보를 절대 기록하지 않습니다.
+
 ## 🤝 Multi-Agent Collaboration Policy
 - 이 저장소는 Codex 단독 작업이 아닌 **Claude Code / Gemini와의 병행 작업 환경**임을 항상 전제합니다.
 - Codex가 **직접 수정하지 않은 코드/변경분은 Claude Code 또는 Gemini가 수정한 것으로 간주**합니다.

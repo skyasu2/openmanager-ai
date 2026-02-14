@@ -17,9 +17,7 @@
 3. Git/Node.js 24/nvm 설치
 4. `gh auth login` + `gh auth setup-git`
 
-상세 Phase 문서는 보관 문서에서 확인할 수 있습니다.
-
-- 보관 문서: [`docs/archived/development/full-setup-guide.md`](../archived/development/full-setup-guide.md)
+제로베이스 부트스트랩 기준은 본 문서를 Canonical로 유지합니다.
 
 ## GitHub 인증 방식 비교 (WSL)
 

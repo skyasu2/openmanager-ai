@@ -235,9 +235,12 @@ reports/gcp-quota-report-*.md
 reports/*
 !reports/README.md
 !reports/planning/
+!reports/history/
 !reports/ai-review/
 !reports/ai-review/**/
 !reports/ai-review/**/.gitkeep
+reports/history/*
+!reports/history/README.md
 # AI 코드 리뷰 파일 (로컬 전용, GitHub 제외)
 # - 모든 .md 파일은 추적 제외 (README.md 포함)
 # - .gitkeep만 추적하여 폴더 구조 유지

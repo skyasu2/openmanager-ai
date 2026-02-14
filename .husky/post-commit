@@ -1,7 +1,6 @@
 #!/bin/sh
 
-# Post-commit Hook: Background AI Review (Cross-platform)
-# Windows/macOS/Linux compatible
-# Uses Node.js for cross-platform background process handling
+# Post-commit Hook: Commit Notification (Cross-platform)
+# 자동 AI 리뷰는 사용하지 않으며, 커밋 완료 알림만 출력
 
 npm run hook:post-commit

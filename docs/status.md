@@ -1,5 +1,13 @@
 # 프로젝트 현재 상태
 
+> 프로젝트 버전별 변경 이력과 운영 상태 요약
+> Owner: documentation
+> Status: Active
+> Doc type: Status
+> Last reviewed: 2026-02-14
+> Canonical: docs/status.md
+> Tags: status,changelog,release
+
 **마지막 업데이트**: 2026-02-11
 
 ---
@@ -37,7 +45,7 @@
     - **P1 캐시 시스템 통합**: 이원화된 정규화 로직 단일화
       - `ai-response-cache.ts`: 자체 정규화 → `unified-cache.ts`의 `normalizeQueryForCache()` 사용
       - 캐시 히트율 일관성 확보 (구두점 제거, 공백 정규화, 대소문자 통일)
-    - **분석 문서 생성**: `reports/planning/ai-assistant-best-practice-analysis-v713.md`
+    - **분석 문서 생성**: `reports/planning/archive/ai-assistant-best-practice-analysis-v713.md`
     - 변경 파일: `useAISidebarStore.ts`, `ai-response-cache.ts`
   - **이전 개선사항 (v7.1.1 → v7.1.2 초반)**
     - **P1 캐시 쿼리 정규화**: "상태?", "상태!", "상태" → 동일 캐시 키로 매핑
@@ -423,7 +431,7 @@
 - 코드량 분포: Frontend ~137,000 lines → 역할 대비 적정 (집중 영역 3곳 모두 정상)
 - TypeScript strict: ✅ 양쪽 모두 PASS
 
-**상세 보고서**: [`reports/planning/ai-codebase-improvement-plan.md`](../reports/planning/ai-codebase-improvement-plan.md)
+**상세 보고서**: [`reports/planning/archive/ai-codebase-improvement-plan.md`](../reports/planning/archive/ai-codebase-improvement-plan.md)
 
 ---
 

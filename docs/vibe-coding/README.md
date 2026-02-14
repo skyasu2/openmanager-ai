@@ -27,7 +27,7 @@
 ├─────────────────────────────────────────────────────────┤
 │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐     │
 │  │ Claude Code │  │   Codex     │  │   Gemini    │     │
-│  │  (메인 AI)   │  │ (개발/개선)  │  │ (아키텍처/검증)│    │
+│  │ (협업 개발)   │  │ (협업 개발)  │  │ (협업 개발)   │    │
 │  └─────────────┘  └─────────────┘  └─────────────┘     │
 │                          ↓                              │
 │  ┌──────────────────────────────────────────────────┐  │
@@ -47,42 +47,45 @@
 | 문서 | 설명 |
 |------|------|
 | [설치 가이드](./setup.md) | AI 도구 설치 및 로그인 설정 |
-| [Claude Code](./claude-code.md) | 메인 AI 도구 마스터 가이드 |
-| [AI 도구들](./ai-tools.md) | 멀티 AI 활용 (Codex, Gemini) |
+| [Claude Code](./claude-code.md) | Claude CLI 전용 사용법 |
+| [AI 도구들](./multi-agent-tools.md) | 3-CLI 협업 개발 운영 가이드 |
 | [MCP 서버](./mcp-servers.md) | 8개 MCP 서버 활용법 |
 | [Skills](./skills.md) | 11개 커스텀 스킬 레퍼런스 |
 | [워크플로우](./workflows.md) | 실전 개발 워크플로우 |
 
 ## 빠른 시작
 
-### 1. Claude Code 실행
+### 1. 협업 CLI 실행
 
 ```bash
-# 프로젝트 디렉토리에서
+# 프로젝트 디렉토리에서 (주 작업 에이전트 선택)
 claude
+codex
 
-# 또는 특정 모델로
-claude --model opus
+# 보조 검증
+gemini
 ```
 
 ### 2. 기본 워크플로우
 
 ```
 1. 요구사항 전달 (한글 OK)
-2. Claude가 계획 수립
+2. Claude/Codex 중 주 작업 에이전트가 계획 수립
 3. 코드 작성/수정
-4. /commit으로 커밋 (자동 AI 리뷰)
-5. 리뷰 결과 확인 및 개선
+4. Gemini/Codex로 검증 및 보완
+5. /commit으로 커밋
 ```
 
 ### 3. 유용한 명령어
 
 ```bash
-# 커밋 (AI 리뷰 포함)
+# 커밋
 /commit
 
-# 코드 리뷰 결과 확인
-/review
+# 에이전트 간 대화/리뷰 요청 (공통 템플릿)
+bash scripts/ai/agent-bridge.sh --to codex --mode analysis --save-auto "현재 변경분 리뷰해줘"
+bash scripts/ai/agent-bridge.sh --to gemini --mode analysis --save-auto "대안 설계를 비교해줘"
+bash scripts/ai/agent-bridge.sh --to claude --mode doc --save-auto "변경사항 요약 문서 작성"
 
 # PR 생성
 /commit-push-pr
@@ -121,24 +124,24 @@ claude --model opus
 - 병행 작업 환경(Claude Code/Gemini) 협업 정책 적용
 - 에이전트 전용 문서(`CLAUDE.md`, `GEMINI.md`)와 충돌 시 `AGENTS.md` 우선
 
-## 2-AI 코드 리뷰 (선택 워크플로우)
+## 협업 개발 운영 (3-CLI)
 
-프로젝트 설정에 따라 커밋 후 **Codex 또는 Gemini 리뷰를 선택적으로** 운영할 수 있습니다.
+기본 운영은 **Claude Code + Codex CLI + Gemini CLI 협업 개발**입니다.  
+자동 AI 리뷰 대신 브리지 스크립트로 상호 대화/검증 요청을 수행합니다.
+집계가 필요하면 Codex 결과를 기준으로 카운트할 수 있습니다.
 
 ```
-커밋 → post-commit hook → Codex/Gemini 리뷰 → 결과 저장
-                              ↓
-                    reports/ai-review/pending/
+요구사항 정리 → 구현(Claude/Codex) → 검증(Gemini/Codex) → 커밋
 ```
 
-### 리뷰 처리
+### 검증 처리
 
 ```bash
-# 리뷰 확인
-/review
+# Codex 기준 검증
+bash scripts/ai/agent-bridge.sh --to codex --mode analysis --save-auto "현재 변경사항의 리스크를 점검해줘"
 
-# 상세 분석 및 개선
-/ai-code-review
+# Gemini 보조 검증
+bash scripts/ai/agent-bridge.sh --to gemini --mode analysis --save-auto "대안 설계와 트레이드오프를 비교해줘"
 ```
 
 ## Best Practices

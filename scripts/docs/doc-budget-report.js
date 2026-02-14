@@ -23,6 +23,7 @@ const BUDGET = {
 
 const METADATA_REQUIRED_FIELDS = ['Owner', 'Status', 'Doc type', 'Last reviewed'];
 const METADATA_RECOMMENDED_FIELDS = ['Canonical', 'Tags'];
+const DUPLICATE_PREFIX_EXCLUDE = new Set(['readme']);
 
 const ARGS = new Set(process.argv.slice(2));
 const SHOULD_WRITE = ARGS.has('--write');
@@ -179,6 +180,7 @@ function duplicateCandidates(activeFiles) {
   }
 
   const prefixCandidates = [...basenameGroups.entries()]
+    .filter(([prefix]) => !DUPLICATE_PREFIX_EXCLUDE.has(prefix))
     .filter(([, files]) => files.length >= 2)
     .sort((a, b) => b[1].length - a[1].length)
     .slice(0, 10)

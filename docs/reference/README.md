@@ -20,7 +20,7 @@
 
 ### AI
 - [AI Engine Architecture](./architecture/ai/ai-engine-architecture.md)
-- [AI Engine Internals (Archived)](../archived/reference/architecture/ai/ai-engine-internals.md)
+- [API Endpoints](./api/endpoints.md)
 - [Frontend/Backend Comparison](./architecture/ai/frontend-backend-comparison.md)
 - [Monitoring ML](./architecture/ai/monitoring-ml.md)
 - [RAG Knowledge Engine](./architecture/ai/rag-knowledge-engine.md)
@@ -28,7 +28,6 @@
 ### Data
 - [Data Architecture](./architecture/data/data-architecture.md)
 - [OTel Data Architecture](./architecture/data/otel-data-architecture.md)
-- [Data Pipeline (Archived)](../archived/reference/architecture/data/data-pipeline.md)
 - [Prometheus Comparison](./architecture/data/prometheus-comparison.md)
 - [Server Metadata Comparison](./architecture/data/server-metadata-comparison.md)
 

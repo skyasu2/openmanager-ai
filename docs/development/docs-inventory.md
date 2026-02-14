@@ -5,28 +5,28 @@
 > Status: Active
 > Doc type: Reference
 > Last reviewed: 2026-02-14
-> Canonical: docs/development/documentation-inventory.md
+> Canonical: docs/development/docs-inventory.md
 > Tags: docs,inventory,report
 >
-> Auto-generated: 2026-02-13
+> Auto-generated: 2026-02-14
 > Source: `docs/`
 
-- Total files in docs: **83**
-- Total markdown docs: **69**
-- Total markdown lines: **14676**
+- Total files in docs: **63**
+- Total markdown docs: **49**
+- Total markdown lines: **11710**
 
 ## Markdown Distribution
 
 | Scope | Count |
 |---|---:|
-| reference | 20 |
-| archived | 16 |
-| development | 11 |
-| guides | 9 |
+| reference | 18 |
+| development | 10 |
+| guides | 7 |
 | vibe-coding | 7 |
 | troubleshooting | 2 |
 | QUICK-START.md | 1 |
 | README.md | 1 |
+| archived | 1 |
 | llms.md | 1 |
 | status.md | 1 |
 

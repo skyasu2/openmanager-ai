@@ -32,6 +32,7 @@ docs/
 ├── guides/
 ├── reference/
 ├── troubleshooting/
+├── archived/   # 임시 보관(기본 삭제 대상), decisions만 예외 보존
 ├── analysis/   # Historical
 └── reviews/    # Historical
 ```
@@ -58,6 +59,7 @@ docs/
 
 - `docs/analysis/*`: 시점 기반 분석/검토 문서
 - `docs/reviews/*`: 리뷰 리포트 문서
+- `docs/archived/*`: 임시 보관소(삭제 전 흡수 원칙), 현재 예외 보존은 `docs/archived/decisions/*`만 허용
 - 현재 기준과 다를 수 있으므로 각 문서의 `Status`/기준 버전을 확인하세요.
 
 ## Related

@@ -228,8 +228,8 @@ Agent: Analyst (Groq/Mistral)
 ## 관련 문서
 
 - [AI 엔진 아키텍처](../../reference/architecture/ai/ai-engine-architecture.md)
-- [AI 엔진 내부 구조(보관)](../../archived/reference/architecture/ai/ai-engine-internals.md)
 - [API 엔드포인트 레퍼런스](../../reference/api/endpoints.md)
+- [시스템 아키텍처](../../reference/architecture/system/system-architecture-current.md)
 
 ---
 

@@ -1,8 +1,13 @@
 # System Architecture (Current v8)
 
+> Vercel + Cloud Run 하이브리드 시스템 구조의 기준 문서
+> Owner: platform-architecture
 > Last verified against code: 2026-02-14
 > Status: Active Canonical (hybrid-split.md 통합됨)
 > Doc type: Explanation
+> Last reviewed: 2026-02-14
+> Canonical: docs/reference/architecture/system/system-architecture-current.md
+> Tags: system,architecture,hybrid,cloud-run,vercel
 
 ---
 

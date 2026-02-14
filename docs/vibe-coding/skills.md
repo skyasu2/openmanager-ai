@@ -1,6 +1,12 @@
 # Skills 레퍼런스
 
 > 프로젝트 맞춤형 자동화 워크플로우
+> Owner: dev-experience
+> Status: Active
+> Doc type: Reference
+> Last reviewed: 2026-02-14
+> Canonical: docs/vibe-coding/skills.md
+> Tags: vibe-coding,skills,automation
 
 ## Skills란?
 
@@ -19,8 +25,8 @@
 
 | Skill | 명령어 | 설명 |
 |-------|--------|------|
-| review | `/review` | AI 리뷰 결과 요약 |
-| ai-code-review | `/ai-code-review` | 리뷰 분석 + 개선 실행 |
+| review | `/review` | AI 리뷰 결과 요약 (Legacy) |
+| ai-code-review | `/ai-code-review` | 리뷰 분석 + 개선 실행 (Legacy) |
 | lint-smoke | `/lint-smoke` | Lint + 테스트 스모크 |
 | validation-analysis | `/validation-analysis` | 검증 결과 상세 분석 |
 
@@ -37,7 +43,7 @@
 
 | Skill | 명령어 | 설명 |
 |-------|--------|------|
-| commit | `/commit` | Git 커밋 (AI 리뷰 포함) |
+| commit | `/commit` | Git 커밋 |
 | commit-push-pr | `/commit-push-pr` | 커밋 → 푸시 → PR |
 | clean_gone | `/clean_gone` | [gone] 브랜치 정리 |
 | cloud-run-deploy | `/cloud-run-deploy` | AI Engine 배포 |
@@ -47,7 +53,7 @@
 
 | Skill | 명령어 | 설명 |
 |-------|--------|------|
-| ai-report-export | `/ai-report-export` | 2-AI 검증 리포트 |
+| ai-report-export | `/ai-report-export` | 협업 검증 리포트 |
 | mermaid-diagram | `/mermaid-diagram` | 다이어그램 생성 |
 
 ---
@@ -66,7 +72,7 @@
 1. `git status`로 변경사항 확인
 2. 커밋 메시지 자동 생성
 3. `git commit` 실행
-4. post-commit hook → AI 리뷰 자동 실행
+4. 필요 시 `agent-bridge.sh`로 리뷰/검증 요청
 
 **옵션**:
 ```bash
@@ -75,9 +81,9 @@
 
 ---
 
-### /review
+### /review (Legacy)
 
-최신 AI 리뷰 결과 확인.
+기존 리뷰 요약 명령입니다. 현재는 `agent-bridge.sh` 기반 검증 요청을 권장합니다.
 
 ```bash
 /review
@@ -98,9 +104,9 @@
 
 ---
 
-### /ai-code-review
+### /ai-code-review (Legacy)
 
-리뷰 분석 후 실제 개선까지 진행.
+기존 리뷰 후속 처리 명령입니다. 현재는 `agent-bridge.sh` 기반 협업 검증을 권장합니다.
 
 ```bash
 /ai-code-review
@@ -258,11 +264,12 @@ echo "Starting..."
 # 작업 전 검증
 /lint-smoke
 
-# 커밋 시 자동 리뷰
+# 커밋 후 수동 협업 검증
 /commit
+bash scripts/ai/agent-bridge.sh --to codex --mode analysis --save-auto "변경분 리뷰해줘"
 
-# 리뷰 결과 확인
-/review
+# Gemini 보조 검증
+bash scripts/ai/agent-bridge.sh --to gemini --mode analysis --save-auto "대안/리스크 검증"
 ```
 
 ### DON'T

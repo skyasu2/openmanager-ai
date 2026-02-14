@@ -463,7 +463,8 @@ graph TD
 
 ## Related Documentation
 
-- **[AI Engine Internals (Archived)](../../../archived/reference/architecture/ai/ai-engine-internals.md)** - API 명세, 데이터 계층, 환경변수, 파일 구조(보관)
+- **[API Endpoints](../../api/endpoints.md)** - 라우트 기준 API 명세
+- **[System Architecture](../system/system-architecture-current.md)** - 배포/데이터 흐름 포함 전체 구조
 - **[Monitoring & ML Engine](./monitoring-ml.md)** - 이상탐지, 트렌드 예측, 적응형 임계값 시스템
 - **[RAG & Knowledge Engine](./rag-knowledge-engine.md)** - 검색 및 지식 그래프 아키텍처
 - **[Data Architecture](../data/data-architecture.md)** - 서버 데이터 아키텍처

@@ -487,5 +487,5 @@ ServerCard ────────────────────► "이�
 ## Related Documentation
 
 - **[AI Engine Architecture](./ai-engine-architecture.md)** - 전체 AI 엔진 아키텍처
-- **[AI Engine Internals (Archived)](../../../archived/reference/architecture/ai/ai-engine-internals.md)** - API, 데이터 계층, 환경변수(보관)
+- **[API Endpoints](../../api/endpoints.md)** - 라우트 기준 API 명세
 - **[Data Architecture](../data/data-architecture.md)** - 서버 데이터 아키텍처

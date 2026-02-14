@@ -17,7 +17,6 @@
 | 문서 | 설명 |
 |------|------|
 | [프로젝트 설정](./project-setup.md) | 현재 Canonical 설정 가이드 (WSL/환경변수/검증) |
-| [전체 환경 구축(보관)](../archived/development/full-setup-guide.md) | 제로베이스 Windows/WSL 초기 구축 참고 |
 | [Git Hooks 워크플로우](./git-hooks-workflow.md) | Pre-commit, Pre-push, CI/CD 최적화 |
 | [Docker 개발 환경](./docker.md) | Docker Desktop + WSL, AI Engine 로컬 테스트, 배포 |
 | [개발 도구](./dev-tools.md) | Node.js, npm, IDE 설정 |

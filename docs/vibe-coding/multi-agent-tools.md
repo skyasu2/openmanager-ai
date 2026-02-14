@@ -1,6 +1,12 @@
 # AI 도구 가이드
 
 > 멀티 AI 활용으로 코드 품질 향상
+> Owner: dev-experience
+> Status: Active
+> Doc type: How-to
+> Last reviewed: 2026-02-14
+> Canonical: docs/vibe-coding/multi-agent-tools.md
+> Tags: vibe-coding,ai-tools,workflow
 
 ## AI 도구 생태계
 
@@ -10,14 +16,14 @@
 ├─────────────────────────────────────────────────────────┤
 │                                                         │
 │  ┌─────────────────────────────────────────────────┐   │
-│  │           Claude Code (메인)                     │   │
-│  │  코드 생성, 수정, 분석, 디버깅                    │   │
+│  │     Claude Code + Codex + Gemini 협업 개발       │   │
+│  │  구현/개선 + 검증 + 대안 탐색                     │   │
 │  └─────────────────────────────────────────────────┘   │
 │                          ↓                              │
 │  ┌────────────────┐  ┌────────────────┐               │
 │  │     Codex      │  │     Gemini     │               │
-│  │   (코드 리뷰)   │  │   (로직 검증)   │               │
-│  │   홀수 커밋     │  │   짝수 커밋     │               │
+│  │ (개발/개선)     │  │ (검증/대안)     │               │
+│  │   협업 실행      │  │   협업 실행      │               │
 │  └────────────────┘  └────────────────┘               │
 │                                                         │
 └─────────────────────────────────────────────────────────┘
@@ -26,7 +32,7 @@
 ## Claude Code
 
 ### 역할
-- **메인 개발 AI**: 코드 작성, 수정, 리팩토링
+- **협업 개발 AI**: 코드 작성, 수정, 리팩토링
 - **대화형 인터페이스**: 자연어로 요청
 - **도구 통합**: MCP, Skills, Subagents
 
@@ -50,19 +56,15 @@ claude --model haiku   # 빠른 작업
 ## Codex (OpenAI)
 
 ### 역할
-- **자동 코드 리뷰**: 커밋 후 자동 실행
+- **개발/개선 + 리뷰**: 구현과 품질 검토를 함께 수행
 - **보안 취약점 탐지**
 - **베스트 프랙티스 검증**
 
 ### 실행 방식
 
 ```bash
-# 자동 (post-commit hook)
-git commit -m "feat: add feature"
-# → Codex가 자동으로 리뷰
-
-# 수동
-codex "이 코드 리뷰해줘" < file.ts
+# 브리지 스크립트 협업 실행
+bash scripts/ai/agent-bridge.sh --to codex --mode analysis --save-auto "현재 변경분 리뷰해줘"
 ```
 
 ### 리뷰 항목
@@ -81,12 +83,8 @@ codex "이 코드 리뷰해줘" < file.ts
 ### 실행 방식
 
 ```bash
-# 자동 (post-commit hook, 짝수 커밋)
-git commit -m "fix: handle edge case"
-# → Gemini가 자동으로 리뷰
-
-# 수동
-gemini "이 알고리즘 검증해줘"
+# 브리지 스크립트 협업 실행
+bash scripts/ai/agent-bridge.sh --to gemini --mode analysis --save-auto "이 알고리즘 검증해줘"
 ```
 
 ### 리뷰 항목
@@ -94,47 +92,43 @@ gemini "이 알고리즘 검증해줘"
 - 엣지 케이스
 - 테스트 커버리지
 
-## 2-AI 리뷰 시스템
+## 협업 검증 정책
 
-### 로테이션 규칙
-
-```
-커밋 #1 → Codex 리뷰
-커밋 #2 → Gemini 리뷰
-커밋 #3 → Codex 리뷰
-커밋 #4 → Gemini 리뷰
-...
-```
-
-### 리뷰 결과 저장
+### 기본 원칙
 
 ```
-reports/ai-review/
-├── pending/           # 미확인 리뷰
-│   └── review-codex-2026-01-22-14-23-19.md
-└── history/           # 처리 완료
-    └── 2026-01/
+기본 운영: 3 AI 도구 협업 개발
+추적/집계가 필요하면 Codex 결과를 기준으로 사용 가능
+Gemini 검증 결과는 보조 판단 자료로 활용
 ```
 
-### 리뷰 처리
+### 협업 로그 저장
+
+```
+logs/ai-bridge/
+├── bridge.log         # 호출 이력
+└── notes/             # --save-auto 사용 시 결과 저장
+```
+
+### 대화/리뷰 요청
 
 ```bash
-# 리뷰 요약 확인
-/review
+# Codex 리뷰 요청
+bash scripts/ai/agent-bridge.sh --to codex --mode analysis --save-auto "현재 변경분 리뷰해줘"
 
-# 상세 분석 및 개선
-/ai-code-review
+# Gemini 검증 요청
+bash scripts/ai/agent-bridge.sh --to gemini --mode analysis --save-auto "리스크를 점검해줘"
 ```
 
 ## AI 선택 가이드
 
 | 작업 | 추천 AI | 이유 |
 |------|---------|------|
-| 코드 작성 | Claude | 정밀한 수정, 컨텍스트 이해 |
-| 코드 리뷰 | Codex/Gemini | 자동화, 다양한 관점 |
+| 코드 작성 | Claude/Codex | 정밀 수정 + 구현 속도 |
+| 코드 리뷰 | Codex/Gemini | 구현 품질 + 검증 균형 |
 | 보안 검토 | Codex | OWASP 전문 |
 | 로직 검증 | Gemini | 추론 능력 |
-| 문서 작성 | Claude | 자연어 생성 |
+| 문서 작성 | Claude/Codex | 자연어 생성 + 구조화 |
 
 ## 제거된 도구
 
@@ -158,8 +152,8 @@ git commit -m "feat: add single feature"
 # 명확한 커밋 메시지
 git commit -m "fix(api): handle 404 gracefully"
 
-# 리뷰 결과 확인
-/review
+# 브리지로 검증 요청
+bash scripts/ai/agent-bridge.sh --to codex --mode analysis --save-auto "커밋 검증"
 ```
 
 ### DON'T
@@ -198,9 +192,9 @@ git commit -m "update everything"
 ### 리뷰 누락
 
 ```
-증상: pending 폴더에 리뷰 없음
+증상: 요청 결과 로그가 남지 않음
 해결:
-1. post-commit hook 확인
+1. `scripts/ai/agent-bridge.sh` 실행 로그 확인
 2. API 키 유효성 확인
 ```
 

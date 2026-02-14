@@ -86,8 +86,8 @@ Claude: [Explore 에이전트로 탐색]
 ### 커스텀 Skills
 
 ```bash
-/commit              # 커밋 (AI 리뷰 포함)
-/review              # 리뷰 결과 확인
+/commit              # 커밋
+bash scripts/ai/agent-bridge.sh --to codex --mode analysis --save-auto "변경분 리뷰"
 /commit-push-pr      # 커밋 → 푸시 → PR
 /lint-smoke          # 린트 + 테스트
 ```
@@ -138,7 +138,7 @@ Claude: [Explore 에이전트로 탐색]
 .claude/rules/
 ├── code-style.md      # any 금지, strict 모드
 ├── architecture.md    # 폴더 구조, SSOT
-├── ai-tools.md        # MCP, Skills 사용법
+├── multi-agent-tools.md        # MCP, Skills 사용법
 ├── testing.md         # 테스트 전략
 └── deployment.md      # 배포 규칙
 ```
@@ -369,20 +369,20 @@ Claude Code는 도구 실행 전후에 자동 명령을 실행할 수 있습니�
 
 ```
 .claude/commands/
-├── review.md         # /review 명령어
+├── bridge-note.md    # 브리지 요청 템플릿
 └── my-command.md     # /my-command 명령어
 ```
 
-**예시 (review.md)**:
+**예시 (bridge-note.md)**:
 
 ```markdown
-# /review 명령어
+# /bridge-note 명령어
 
-AI 코드 리뷰 결과를 확인합니다.
+브리지 스크립트로 검증 요청을 실행합니다.
 
 ## 실행 내용
-1. reports/ai-review/pending/ 폴더 확인
-2. 최신 리뷰 파일 읽기
+1. `bash scripts/ai/agent-bridge.sh --to codex --mode analysis --save-auto "..."`
+2. `logs/ai-bridge/notes/` 최신 결과 확인
 3. 요약 표시
 ```
 
@@ -424,7 +424,7 @@ AI 코드 리뷰 결과를 확인합니다.
 
 ## 관련 문서
 
-- [AI 도구들](./ai-tools.md)
+- [AI 도구들](./multi-agent-tools.md)
 - [MCP 서버](./mcp-servers.md)
 - [Skills](./skills.md)
 - [워크플로우](./workflows.md)

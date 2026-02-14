@@ -342,7 +342,6 @@ curl https://ai-engine-xxx.run.app/health
 ## 관련 문서
 
 - [프로젝트 설정](./project-setup.md) - WSL/Node.js/환경변수 Canonical 설정
-- [전체 환경 구축(보관)](../archived/development/full-setup-guide.md) - 제로베이스 PC 초기 구축
 - [개발 도구](./dev-tools.md) - 개발 도구 레퍼런스
 - [배포 토폴로지](../reference/architecture/system/system-architecture-current.md#9-deployment-topology) - Vercel + Cloud Run 배포
 - [트러블슈팅](../troubleshooting/common-issues.md) - Docker 관련 문제 해결

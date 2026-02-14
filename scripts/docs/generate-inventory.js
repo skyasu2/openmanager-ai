@@ -4,7 +4,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 
 const docsRoot = 'docs';
-const outputPath = 'docs/development/documentation-inventory.md';
+const outputPath = 'docs/development/docs-inventory.md';
 
 function walk(dir) {
   const out = [];
@@ -38,7 +38,15 @@ const rows = [...byTopDir.entries()].sort((a, b) => b[1] - a[1]);
 
 let out = '';
 out += '# Documentation Inventory\n\n';
-out += '> Auto-generated: 2026-02-13\n';
+out += '> 문서 현황(개수/분포/라인 수)을 요약한 인벤토리 리포트\n';
+out += '> Owner: docs-platform\n';
+out += '> Status: Active\n';
+out += '> Doc type: Reference\n';
+out += `> Last reviewed: ${new Date().toISOString().slice(0, 10)}\n`;
+out += '> Canonical: docs/development/docs-inventory.md\n';
+out += '> Tags: docs,inventory,report\n';
+out += '>\n';
+out += `> Auto-generated: ${new Date().toISOString().slice(0, 10)}\n`;
 out += '> Source: `docs/`\n\n';
 out += `- Total files in docs: **${allFiles.length}**\n`;
 out += `- Total markdown docs: **${mdFiles.length}**\n`;

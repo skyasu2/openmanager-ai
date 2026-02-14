@@ -1,6 +1,6 @@
 # AI 도구 설치 가이드
 
-> Claude Code, Codex, Gemini 설치 가이드
+> Claude Code, Codex CLI, Gemini CLI 협업 개발 설치 가이드
 > Owner: dev-experience
 > Status: Active Supporting
 > Doc type: Tutorial
@@ -16,8 +16,8 @@ Vibe Coding에 필요한 AI CLI 도구들의 설치 방법입니다.
 ┌─────────────────────────────────────────────────────────┐
 │                    설치 순서                             │
 ├─────────────────────────────────────────────────────────┤
-│  1. Claude Code  →  2. MCP 서버  →  3. Codex/Gemini    │
-│     (메인 AI)         (확장 기능)      (코드 리뷰)       │
+│  1. CLI 3종 설치  →  2. MCP 서버  →  3. 협업 검증 절차    │
+│  Claude/Codex/Gemini   (확장 기능)    (코드/로직 검증)    │
 └─────────────────────────────────────────────────────────┘
 ```
 
@@ -104,7 +104,7 @@ claude             # 대화형 모드 시작
 
 ---
 
-## 3. Codex CLI 설치 (코드 리뷰)
+## 3. Codex CLI 설치 (개발/리뷰)
 
 ### 설치
 
@@ -133,7 +133,7 @@ codex --version
 
 ---
 
-## 4. Gemini CLI 설치 (코드 리뷰)
+## 4. Gemini CLI 설치 (검증/대안)
 
 ### 설치
 
@@ -173,26 +173,20 @@ gemini --version
 
 ---
 
-## 5. Git Hooks 설정 (자동 AI 리뷰)
+## 5. 협업 스크립트 사용 (권장)
 
-### Husky 설치
+자동 AI 리뷰 대신, 에이전트 간 대화/리뷰 요청은 브리지 스크립트로 수행합니다.
 
 ```bash
-npm install -D husky
-npx husky init
+# Codex에게 리뷰 요청
+bash scripts/ai/agent-bridge.sh --to codex "현재 변경분 리뷰해줘"
+
+# Gemini에게 로직 검증 요청
+bash scripts/ai/agent-bridge.sh --to gemini "이 로직의 리스크를 분석해줘"
+
+# Claude에게 문서화 요청
+bash scripts/ai/agent-bridge.sh --to claude --mode doc "변경사항 릴리즈노트 작성"
 ```
-
-### post-commit Hook
-
-프로젝트에 이미 설정되어 있습니다:
-- `.husky/post-commit`
-- `scripts/hooks/post-commit.js`
-
-**동작 방식**:
-1. 커밋 번호로 리뷰어 결정 (홀수: Codex, 짝수: Gemini)
-2. 변경된 파일 목록 추출
-3. AI 리뷰 실행
-4. 결과를 `reports/ai-review/pending/`에 저장
 
 ---
 
@@ -272,5 +266,5 @@ echo 'export BROWSER=wslview' >> ~/.bashrc
 
 - [Claude Code](./claude-code.md)
 - [MCP 서버](./mcp-servers.md)
-- [AI 도구들](./ai-tools.md)
+- [AI 도구들](./multi-agent-tools.md)
 - [워크플로우](./workflows.md)

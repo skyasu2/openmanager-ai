@@ -54,8 +54,7 @@ AI/ML 서비스가 단순히 API를 호출하는 비효율적인 구조를 탈�
 ### 통합 기준 (2026-02-14)
 
 기존 파이프라인 단독 문서의 운영 내용을 본 문서로 통합했습니다.
-
-- 통합 대상(보관): [`docs/archived/reference/architecture/data/data-pipeline.md`](../../../archived/reference/architecture/data/data-pipeline.md)
+중복 보관본은 정리 정책에 따라 삭제하여, 본 문서를 단일 기준 문서로 유지합니다.
 
 ### 데이터 경계 (중요)
 

@@ -1,7 +1,13 @@
 # Common Issues
 
+> 자주 발생하는 빌드/API 문제의 증상별 해결 가이드
+> Owner: documentation
 > Last verified against code: 2026-02-13
 > Status: Active Canonical
+> Doc type: How-to
+> Last reviewed: 2026-02-14
+> Canonical: docs/troubleshooting/common-issues.md
+> Tags: troubleshooting,issues,debugging
 
 ## Build and Type Errors
 

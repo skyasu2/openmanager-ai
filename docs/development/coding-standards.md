@@ -416,6 +416,5 @@ import type { ServerConfig } from '@/types';
 
 - [개발 환경](./README.md)
 - [프로젝트 설정](./project-setup.md)
-- [전체 환경 구축(보관)](../archived/development/full-setup-guide.md)
 - [Vibe Coding](../vibe-coding/README.md)
 - [테스트 전략](../guides/testing/test-strategy.md)
