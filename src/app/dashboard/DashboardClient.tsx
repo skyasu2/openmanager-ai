@@ -40,12 +40,6 @@ type DashboardClientProps = {
   initialStats?: DashboardStats;
 };
 
-const FloatingSystemControl = dynamic(
-  () => import('../../components/system/FloatingSystemControl'),
-  {
-    ssr: false, // 클라이언트 전용 컴포넌트 (변경 없음)
-  }
-);
 // 🔧 레거시 정리 (2026-01-17): EnhancedServerModal은 ServerDashboard 내부에서 직접 사용
 
 // AI Sidebar를 CSS 애니메이션으로 동적 로드
@@ -407,17 +401,6 @@ function DashboardPageContent({ initialServers }: DashboardClientProps) {
   // - ServerDashboard가 useServerDashboard hook에서 직접 클릭/모달 핸들링
   // - 외부에서 서버 클릭/모달 핸들러를 주입할 필요 없음
 
-  // 🚀 시스템 제어 로직 - Store 연동
-  const systemControl = {
-    systemState: { status: isSystemStarted ? 'ok' : 'stopped' },
-    aiAgentState: { state: aiAgent.state },
-    isSystemActive: isSystemStarted,
-    isSystemPaused: !isSystemStarted, // 중지됨 = 일시정지 상태로 간주
-    onStartSystem: async () => startSystem(),
-    onStopSystem: async () => stopSystem(),
-    onResumeSystem: async () => startSystem(), // 재개 = 시작
-  };
-
   // 🔒 대시보드 접근 권한 확인 - PIN 인증한 게스트도 접근 가능
   // 🧪 FIX: 테스트 모드일 때는 로딩 상태 스킵 (E2E 테스트용)
   // 🧪 FIX: 테스트 모드 감지를 가장 먼저 체크 (E2E 테스트 타임아웃 해결)
@@ -514,17 +497,6 @@ function DashboardPageContent({ initialServers }: DashboardClientProps) {
           isWarning={showLogoutWarning}
           onExtendSession={handleExtendSession}
           onLogoutNow={handleLogoutNow}
-        />
-
-        {/* 🎯 플로팅 시스템 제어 */}
-        <FloatingSystemControl
-          systemState={systemControl.systemState}
-          aiAgentState={systemControl.aiAgentState}
-          isSystemActive={systemControl.isSystemActive}
-          isSystemPaused={systemControl.isSystemPaused}
-          onStartSystem={systemControl.onStartSystem}
-          onStopSystem={systemControl.onStopSystem}
-          onResumeSystem={systemControl.onResumeSystem}
         />
       </div>
 

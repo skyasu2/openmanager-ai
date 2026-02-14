@@ -6,8 +6,9 @@
  */
 
 import type { MetadataRoute } from 'next';
+import { getSiteUrl } from '@/lib/site-url';
 
-const SITE_URL = 'https://openmanager-ai.vercel.app';
+const SITE_URL = getSiteUrl();
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const currentDate = new Date().toISOString();

@@ -452,7 +452,7 @@ const MetricItem = ({
           {labels[type]}
         </span>
         <span
-          className="text-sm font-bold tracking-tight"
+          className="text-sm font-bold tracking-tight tabular-nums transition-all duration-700 ease-in-out"
           style={{ color: metricColor }}
         >
           {Math.round(value)}%
@@ -467,6 +467,7 @@ const MetricItem = ({
           color={metricColor}
           fill
           strokeWidth={1.5}
+          disableAnimation={false}
         />
       </div>
     </div>

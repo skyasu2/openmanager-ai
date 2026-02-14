@@ -117,7 +117,7 @@ steps:
       - '--cpu-throttling'
       - '--no-session-affinity'
       - '--set-env-vars'
-      - 'NODE_ENV=production,BUILD_SHA=${SHORT_SHA}'
+      - 'NODE_ENV=production,BUILD_SHA=${SHORT_SHA},DEFAULT_ORIGIN=https://openmanager-ai.vercel.app,ALLOWED_ORIGINS=https://openmanager-ai.vercel.app'
       - '--set-secrets'
       - 'SUPABASE_CONFIG=supabase-config:latest,AI_PROVIDERS_CONFIG=ai-providers-config:latest,KV_CONFIG=kv-config:latest,CLOUD_RUN_API_SECRET=cloud-run-api-secret:latest,LANGFUSE_CONFIG=langfuse-config:latest'
       - '--update-labels'

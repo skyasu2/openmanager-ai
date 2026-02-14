@@ -49,7 +49,8 @@ export interface AIProvidersConfig {
   mistral: string;
   cerebras: string;
   tavily: string;
-  gemini?: string; // Vision Agent - Gemini 2.5 Flash-Lite
+  gemini?: string; // Vision Agent - Gemini 2.5 Flash
+  openrouter?: string; // Fallback Vision
 }
 
 /**
@@ -300,12 +301,12 @@ export function getTavilyApiKeyBackup(): string | null {
 }
 
 /**
- * Get Gemini API Key (Vision Agent - Gemini 2.5 Flash-Lite)
+ * Get Gemini API Key (Vision Agent - Gemini 2.5 Flash)
  * Uses AI_PROVIDERS_CONFIG or falls back to individual env var
  *
- * Free Tier Limits (2026-01):
- * - 1,000 RPD (requests per day)
- * - 15 RPM (requests per minute)
+ * Free Tier Limits (2026-02):
+ * - 250 RPD (requests per day)
+ * - 10 RPM (requests per minute)
  * - 250K TPM (tokens per minute)
  * - 1M context window
  *
@@ -316,6 +317,23 @@ export function getGeminiApiKey(): string | null {
   const providersConfig = getAIProvidersConfig();
   if (providersConfig?.gemini) return providersConfig.gemini;
   return process.env.GEMINI_API_KEY || process.env.GEMINI_API_KEY_PRIMARY || null;
+}
+
+/**
+ * Get OpenRouter API Key (Fallback Vision)
+ */
+export function getOpenRouterApiKey(): string | null {
+  const providersConfig = getAIProvidersConfig();
+  if (providersConfig?.openrouter) return providersConfig.openrouter;
+  return process.env.OPENROUTER_API_KEY || null;
+}
+
+/**
+ * Get OpenRouter Vision Model ID
+ * Default: Qwen 2.5 VL 72B (Free)
+ */
+export function getOpenRouterVisionModelId(): string {
+  return process.env.OPENROUTER_MODEL_VISION || 'qwen/qwen-2.5-vl-72b-instruct:free';
 }
 
 /**
@@ -367,6 +385,7 @@ export function getConfigStatus(): {
   cerebras: boolean;
   tavily: boolean;
   gemini: boolean;
+  openrouter: boolean;
   langfuse: boolean;
   cloudRunApi: boolean;
 } {
@@ -378,6 +397,7 @@ export function getConfigStatus(): {
     cerebras: getCerebrasApiKey() !== null,
     tavily: getTavilyApiKey() !== null,
     gemini: getGeminiApiKey() !== null,
+    openrouter: getOpenRouterApiKey() !== null,
     langfuse: getLangfuseConfig() !== null,
     cloudRunApi: getCloudRunApiSecret() !== null,
   };

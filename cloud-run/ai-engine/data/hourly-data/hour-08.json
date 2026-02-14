@@ -7,7 +7,7 @@
   },
   "dataPoints": [
     {
-      "timestampMs": 1770850800000,
+      "timestampMs": 1771023600000,
       "targets": {
         "web-nginx-icn-01:9100": {
           "instance": "web-nginx-icn-01:9100",
@@ -37,7 +37,9 @@
             "memory_total_bytes": 8589934592,
             "disk_total_bytes": 107374182400
           },
-          "logs": []
+          "logs": [
+            "[INFO] nginx[3811]: 10.0.0.1 - - \"GET /health HTTP/1.1\" 200 15 \"-\" \"kube-probe/1.28\""
+          ]
         },
         "web-nginx-icn-02:9100": {
           "instance": "web-nginx-icn-02:9100",
@@ -67,7 +69,10 @@
             "memory_total_bytes": 8589934592,
             "disk_total_bytes": 107374182400
           },
-          "logs": []
+          "logs": [
+            "[INFO] systemd[1]: Started Daily apt download activities.",
+            "[INFO] nginx[1142]: 10.0.0.1 - - \"GET /health HTTP/1.1\" 200 15 \"-\" \"kube-probe/1.28\""
+          ]
         },
         "web-nginx-pus-01:9100": {
           "instance": "web-nginx-pus-01:9100",
@@ -97,7 +102,10 @@
             "memory_total_bytes": 8589934592,
             "disk_total_bytes": 107374182400
           },
-          "logs": []
+          "logs": [
+            "[INFO] nginx[1724]: 10.0.0.1 - - \"GET /health HTTP/1.1\" 200 15 \"-\" \"kube-probe/1.28\"",
+            "[INFO] CRON[7293]: (root) CMD (/usr/lib/apt/apt.systemd.daily install)"
+          ]
         },
         "api-was-icn-01:9100": {
           "instance": "api-was-icn-01:9100",
@@ -127,7 +135,10 @@
             "memory_total_bytes": 17179869184,
             "disk_total_bytes": 214748364800
           },
-          "logs": []
+          "logs": [
+            "[INFO] java[7456]: [GC (Allocation Failure) ParNew: 153344K->17024K(153344K), 0.089 secs]",
+            "[INFO] dockerd[3736]: Container health status: healthy (exit code 0)"
+          ]
         },
         "api-was-icn-02:9100": {
           "instance": "api-was-icn-02:9100",
@@ -157,7 +168,10 @@
             "memory_total_bytes": 17179869184,
             "disk_total_bytes": 214748364800
           },
-          "logs": []
+          "logs": [
+            "[INFO] systemd[1]: Started Application Service (api-was).",
+            "[INFO] java[7635]: [GC (Allocation Failure) ParNew: 153344K->17024K(153344K), 0.048 secs]"
+          ]
         },
         "api-was-pus-01:9100": {
           "instance": "api-was-pus-01:9100",
@@ -187,7 +201,9 @@
             "memory_total_bytes": 17179869184,
             "disk_total_bytes": 214748364800
           },
-          "logs": []
+          "logs": [
+            "[INFO] dockerd[7055]: Container health status: healthy (exit code 0)"
+          ]
         },
         "db-mysql-icn-primary:9100": {
           "instance": "db-mysql-icn-primary:9100",
@@ -217,7 +233,10 @@
             "memory_total_bytes": 68719476736,
             "disk_total_bytes": 1073741824000
           },
-          "logs": []
+          "logs": [
+            "[INFO] mysqld[4360]: InnoDB: Buffer pool(s) load completed at 2026-02-14T14:06:31",
+            "[INFO] CRON[7163]: (mysql) CMD (/usr/bin/mysqladmin --defaults-file=/etc/mysql/debian.cnf ping)"
+          ]
         },
         "db-mysql-icn-replica:9100": {
           "instance": "db-mysql-icn-replica:9100",
@@ -247,7 +266,9 @@
             "memory_total_bytes": 68719476736,
             "disk_total_bytes": 1073741824000
           },
-          "logs": []
+          "logs": [
+            "[INFO] mysqld[4706]: InnoDB: Buffer pool(s) load completed at 2026-02-14T14:06:31"
+          ]
         },
         "db-mysql-pus-dr:9100": {
           "instance": "db-mysql-pus-dr:9100",
@@ -277,7 +298,9 @@
             "memory_total_bytes": 68719476736,
             "disk_total_bytes": 1073741824000
           },
-          "logs": []
+          "logs": [
+            "[INFO] CRON[2964]: (mysql) CMD (/usr/bin/mysqladmin --defaults-file=/etc/mysql/debian.cnf ping)"
+          ]
         },
         "cache-redis-icn-01:9100": {
           "instance": "cache-redis-icn-01:9100",
@@ -307,7 +330,9 @@
             "memory_total_bytes": 34359738368,
             "disk_total_bytes": 53687091200
           },
-          "logs": []
+          "logs": [
+            "[INFO] systemd[1]: redis-server.service: Watchdog timestamp updated."
+          ]
         },
         "cache-redis-icn-02:9100": {
           "instance": "cache-redis-icn-02:9100",
@@ -337,7 +362,10 @@
             "memory_total_bytes": 34359738368,
             "disk_total_bytes": 53687091200
           },
-          "logs": []
+          "logs": [
+            "[INFO] redis-server[6549]: Background AOF rewrite finished successfully",
+            "[INFO] systemd[1]: redis-server.service: Watchdog timestamp updated."
+          ]
         },
         "storage-nfs-icn-01:9100": {
           "instance": "storage-nfs-icn-01:9100",
@@ -367,7 +395,9 @@
             "memory_total_bytes": 17179869184,
             "disk_total_bytes": 5368709120000
           },
-          "logs": []
+          "logs": [
+            "[INFO] CRON[7891]: (root) CMD (/usr/local/bin/check-raid-status.sh)"
+          ]
         },
         "storage-s3gw-pus-01:9100": {
           "instance": "storage-s3gw-pus-01:9100",
@@ -397,7 +427,9 @@
             "memory_total_bytes": 8589934592,
             "disk_total_bytes": 214748364800
           },
-          "logs": []
+          "logs": [
+            "[INFO] CRON[1106]: (root) CMD (/usr/local/bin/check-raid-status.sh)"
+          ]
         },
         "lb-haproxy-icn-01:9100": {
           "instance": "lb-haproxy-icn-01:9100",
@@ -427,7 +459,10 @@
             "memory_total_bytes": 8589934592,
             "disk_total_bytes": 53687091200
           },
-          "logs": []
+          "logs": [
+            "[INFO] haproxy[2499]: Proxy api_frontend started (FD 33)",
+            "[INFO] systemd[1]: haproxy.service: Watchdog timestamp updated."
+          ]
         },
         "lb-haproxy-pus-01:9100": {
           "instance": "lb-haproxy-pus-01:9100",
@@ -457,12 +492,14 @@
             "memory_total_bytes": 8589934592,
             "disk_total_bytes": 53687091200
           },
-          "logs": []
+          "logs": [
+            "[INFO] haproxy[4020]: Health check OK for backend api_servers/server1 (HTTP 200)"
+          ]
         }
       }
     },
     {
-      "timestampMs": 1770851400000,
+      "timestampMs": 1771024200000,
       "targets": {
         "web-nginx-icn-01:9100": {
           "instance": "web-nginx-icn-01:9100",
@@ -492,7 +529,10 @@
             "memory_total_bytes": 8589934592,
             "disk_total_bytes": 107374182400
           },
-          "logs": []
+          "logs": [
+            "[INFO] CRON[7741]: (root) CMD (/usr/lib/apt/apt.systemd.daily install)",
+            "[INFO] nginx[4006]: 10.0.0.1 - - \"GET /health HTTP/1.1\" 200 15 \"-\" \"kube-probe/1.28\""
+          ]
         },
         "web-nginx-icn-02:9100": {
           "instance": "web-nginx-icn-02:9100",
@@ -522,7 +562,10 @@
             "memory_total_bytes": 8589934592,
             "disk_total_bytes": 107374182400
           },
-          "logs": []
+          "logs": [
+            "[INFO] CRON[3276]: (root) CMD (/usr/lib/apt/apt.systemd.daily install)",
+            "[INFO] nginx[7548]: 10.0.0.1 - - \"GET /health HTTP/1.1\" 200 15 \"-\" \"kube-probe/1.28\""
+          ]
         },
         "web-nginx-pus-01:9100": {
           "instance": "web-nginx-pus-01:9100",
@@ -552,7 +595,10 @@
             "memory_total_bytes": 8589934592,
             "disk_total_bytes": 107374182400
           },
-          "logs": []
+          "logs": [
+            "[INFO] systemd[1]: Started Daily apt download activities.",
+            "[INFO] CRON[3142]: (root) CMD (/usr/lib/apt/apt.systemd.daily install)"
+          ]
         },
         "api-was-icn-01:9100": {
           "instance": "api-was-icn-01:9100",
@@ -582,7 +628,9 @@
             "memory_total_bytes": 17179869184,
             "disk_total_bytes": 214748364800
           },
-          "logs": []
+          "logs": [
+            "[INFO] systemd[1]: Started Application Service (api-was)."
+          ]
         },
         "api-was-icn-02:9100": {
           "instance": "api-was-icn-02:9100",
@@ -612,7 +660,10 @@
             "memory_total_bytes": 17179869184,
             "disk_total_bytes": 214748364800
           },
-          "logs": []
+          "logs": [
+            "[INFO] dockerd[6779]: Container health status: healthy (exit code 0)",
+            "[INFO] java[8831]: [GC (Allocation Failure) ParNew: 153344K->17024K(153344K), 0.062 secs]"
+          ]
         },
         "api-was-pus-01:9100": {
           "instance": "api-was-pus-01:9100",
@@ -642,7 +693,10 @@
             "memory_total_bytes": 17179869184,
             "disk_total_bytes": 214748364800
           },
-          "logs": []
+          "logs": [
+            "[INFO] java[2158]: [GC (Allocation Failure) ParNew: 153344K->17024K(153344K), 0.060 secs]",
+            "[INFO] systemd[1]: Started Application Service (api-was)."
+          ]
         },
         "db-mysql-icn-primary:9100": {
           "instance": "db-mysql-icn-primary:9100",
@@ -672,7 +726,9 @@
             "memory_total_bytes": 68719476736,
             "disk_total_bytes": 1073741824000
           },
-          "logs": []
+          "logs": [
+            "[INFO] CRON[3237]: (mysql) CMD (/usr/bin/mysqladmin --defaults-file=/etc/mysql/debian.cnf ping)"
+          ]
         },
         "db-mysql-icn-replica:9100": {
           "instance": "db-mysql-icn-replica:9100",
@@ -702,7 +758,10 @@
             "memory_total_bytes": 68719476736,
             "disk_total_bytes": 1073741824000
           },
-          "logs": []
+          "logs": [
+            "[INFO] CRON[2639]: (mysql) CMD (/usr/bin/mysqladmin --defaults-file=/etc/mysql/debian.cnf ping)",
+            "[INFO] mysqld[7615]: InnoDB: Buffer pool(s) load completed at 2026-02-14T14:06:31"
+          ]
         },
         "db-mysql-pus-dr:9100": {
           "instance": "db-mysql-pus-dr:9100",
@@ -732,7 +791,9 @@
             "memory_total_bytes": 68719476736,
             "disk_total_bytes": 1073741824000
           },
-          "logs": []
+          "logs": [
+            "[INFO] mysqld[8482]: InnoDB: Buffer pool(s) load completed at 2026-02-14T14:06:31"
+          ]
         },
         "cache-redis-icn-01:9100": {
           "instance": "cache-redis-icn-01:9100",
@@ -762,7 +823,9 @@
             "memory_total_bytes": 34359738368,
             "disk_total_bytes": 53687091200
           },
-          "logs": []
+          "logs": [
+            "[INFO] redis-server[4759]: Background AOF rewrite finished successfully"
+          ]
         },
         "cache-redis-icn-02:9100": {
           "instance": "cache-redis-icn-02:9100",
@@ -792,7 +855,9 @@
             "memory_total_bytes": 34359738368,
             "disk_total_bytes": 53687091200
           },
-          "logs": []
+          "logs": [
+            "[INFO] redis-server[5175]: Background AOF rewrite finished successfully"
+          ]
         },
         "storage-nfs-icn-01:9100": {
           "instance": "storage-nfs-icn-01:9100",
@@ -822,7 +887,9 @@
             "memory_total_bytes": 17179869184,
             "disk_total_bytes": 5368709120000
           },
-          "logs": []
+          "logs": [
+            "[INFO] nfsd[8149]: NFS export /data/shared ready, 23 active clients"
+          ]
         },
         "storage-s3gw-pus-01:9100": {
           "instance": "storage-s3gw-pus-01:9100",
@@ -852,7 +919,9 @@
             "memory_total_bytes": 8589934592,
             "disk_total_bytes": 214748364800
           },
-          "logs": []
+          "logs": [
+            "[INFO] nfsd[3135]: NFS export /data/shared ready, 36 active clients"
+          ]
         },
         "lb-haproxy-icn-01:9100": {
           "instance": "lb-haproxy-icn-01:9100",
@@ -882,7 +951,9 @@
             "memory_total_bytes": 8589934592,
             "disk_total_bytes": 53687091200
           },
-          "logs": []
+          "logs": [
+            "[INFO] haproxy[6390]: Proxy api_frontend started (FD 105)"
+          ]
         },
         "lb-haproxy-pus-01:9100": {
           "instance": "lb-haproxy-pus-01:9100",
@@ -912,12 +983,15 @@
             "memory_total_bytes": 8589934592,
             "disk_total_bytes": 53687091200
           },
-          "logs": []
+          "logs": [
+            "[INFO] systemd[1]: haproxy.service: Watchdog timestamp updated.",
+            "[INFO] haproxy[1599]: Proxy api_frontend started (FD 58)"
+          ]
         }
       }
     },
     {
-      "timestampMs": 1770852000000,
+      "timestampMs": 1771024800000,
       "targets": {
         "web-nginx-icn-01:9100": {
           "instance": "web-nginx-icn-01:9100",
@@ -947,7 +1021,10 @@
             "memory_total_bytes": 8589934592,
             "disk_total_bytes": 107374182400
           },
-          "logs": []
+          "logs": [
+            "[INFO] CRON[5561]: (root) CMD (/usr/lib/apt/apt.systemd.daily install)",
+            "[INFO] systemd[1]: Started Daily apt download activities."
+          ]
         },
         "web-nginx-icn-02:9100": {
           "instance": "web-nginx-icn-02:9100",
@@ -977,7 +1054,10 @@
             "memory_total_bytes": 8589934592,
             "disk_total_bytes": 107374182400
           },
-          "logs": []
+          "logs": [
+            "[INFO] systemd[1]: Started Daily apt download activities.",
+            "[INFO] CRON[8051]: (root) CMD (/usr/lib/apt/apt.systemd.daily install)"
+          ]
         },
         "web-nginx-pus-01:9100": {
           "instance": "web-nginx-pus-01:9100",
@@ -1007,7 +1087,9 @@
             "memory_total_bytes": 8589934592,
             "disk_total_bytes": 107374182400
           },
-          "logs": []
+          "logs": [
+            "[INFO] nginx[1606]: 10.0.0.1 - - \"GET /health HTTP/1.1\" 200 15 \"-\" \"kube-probe/1.28\""
+          ]
         },
         "api-was-icn-01:9100": {
           "instance": "api-was-icn-01:9100",
@@ -1037,7 +1119,10 @@
             "memory_total_bytes": 17179869184,
             "disk_total_bytes": 214748364800
           },
-          "logs": []
+          "logs": [
+            "[INFO] java[2227]: [GC (Allocation Failure) ParNew: 153344K->17024K(153344K), 0.019 secs]",
+            "[INFO] dockerd[6634]: Container health status: healthy (exit code 0)"
+          ]
         },
         "api-was-icn-02:9100": {
           "instance": "api-was-icn-02:9100",
@@ -1067,7 +1152,10 @@
             "memory_total_bytes": 17179869184,
             "disk_total_bytes": 214748364800
           },
-          "logs": []
+          "logs": [
+            "[INFO] dockerd[9718]: Container health status: healthy (exit code 0)",
+            "[INFO] java[5422]: [GC (Allocation Failure) ParNew: 153344K->17024K(153344K), 0.065 secs]"
+          ]
         },
         "api-was-pus-01:9100": {
           "instance": "api-was-pus-01:9100",
@@ -1097,7 +1185,10 @@
             "memory_total_bytes": 17179869184,
             "disk_total_bytes": 214748364800
           },
-          "logs": []
+          "logs": [
+            "[INFO] java[9348]: [GC (Allocation Failure) ParNew: 153344K->17024K(153344K), 0.038 secs]",
+            "[INFO] dockerd[8535]: Container health status: healthy (exit code 0)"
+          ]
         },
         "db-mysql-icn-primary:9100": {
           "instance": "db-mysql-icn-primary:9100",
@@ -1127,7 +1218,10 @@
             "memory_total_bytes": 68719476736,
             "disk_total_bytes": 1073741824000
           },
-          "logs": []
+          "logs": [
+            "[INFO] mysqld[6504]: InnoDB: Buffer pool(s) load completed at 2026-02-14T14:06:31",
+            "[INFO] systemd[1]: Started MySQL Community Server."
+          ]
         },
         "db-mysql-icn-replica:9100": {
           "instance": "db-mysql-icn-replica:9100",
@@ -1157,7 +1251,9 @@
             "memory_total_bytes": 68719476736,
             "disk_total_bytes": 1073741824000
           },
-          "logs": []
+          "logs": [
+            "[INFO] CRON[3145]: (mysql) CMD (/usr/bin/mysqladmin --defaults-file=/etc/mysql/debian.cnf ping)"
+          ]
         },
         "db-mysql-pus-dr:9100": {
           "instance": "db-mysql-pus-dr:9100",
@@ -1187,7 +1283,10 @@
             "memory_total_bytes": 68719476736,
             "disk_total_bytes": 1073741824000
           },
-          "logs": []
+          "logs": [
+            "[INFO] systemd[1]: Started MySQL Community Server.",
+            "[INFO] CRON[1673]: (mysql) CMD (/usr/bin/mysqladmin --defaults-file=/etc/mysql/debian.cnf ping)"
+          ]
         },
         "cache-redis-icn-01:9100": {
           "instance": "cache-redis-icn-01:9100",
@@ -1217,7 +1316,10 @@
             "memory_total_bytes": 34359738368,
             "disk_total_bytes": 53687091200
           },
-          "logs": []
+          "logs": [
+            "[INFO] redis-server[8303]: Background AOF rewrite finished successfully",
+            "[INFO] redis-server[2458]: DB saved on disk (RDB snapshot)"
+          ]
         },
         "cache-redis-icn-02:9100": {
           "instance": "cache-redis-icn-02:9100",
@@ -1247,7 +1349,10 @@
             "memory_total_bytes": 34359738368,
             "disk_total_bytes": 53687091200
           },
-          "logs": []
+          "logs": [
+            "[INFO] redis-server[1403]: DB saved on disk (RDB snapshot)",
+            "[INFO] systemd[1]: redis-server.service: Watchdog timestamp updated."
+          ]
         },
         "storage-nfs-icn-01:9100": {
           "instance": "storage-nfs-icn-01:9100",
@@ -1277,7 +1382,10 @@
             "memory_total_bytes": 17179869184,
             "disk_total_bytes": 5368709120000
           },
-          "logs": []
+          "logs": [
+            "[INFO] CRON[4091]: (root) CMD (/usr/local/bin/check-raid-status.sh)",
+            "[INFO] systemd[1]: Started NFS server and services."
+          ]
         },
         "storage-s3gw-pus-01:9100": {
           "instance": "storage-s3gw-pus-01:9100",
@@ -1307,7 +1415,10 @@
             "memory_total_bytes": 8589934592,
             "disk_total_bytes": 214748364800
           },
-          "logs": []
+          "logs": [
+            "[INFO] systemd[1]: Started NFS server and services.",
+            "[INFO] CRON[4439]: (root) CMD (/usr/local/bin/check-raid-status.sh)"
+          ]
         },
         "lb-haproxy-icn-01:9100": {
           "instance": "lb-haproxy-icn-01:9100",
@@ -1337,7 +1448,10 @@
             "memory_total_bytes": 8589934592,
             "disk_total_bytes": 53687091200
           },
-          "logs": []
+          "logs": [
+            "[INFO] systemd[1]: haproxy.service: Watchdog timestamp updated.",
+            "[INFO] haproxy[1386]: Health check OK for backend api_servers/server1 (HTTP 200)"
+          ]
         },
         "lb-haproxy-pus-01:9100": {
           "instance": "lb-haproxy-pus-01:9100",
@@ -1367,12 +1481,15 @@
             "memory_total_bytes": 8589934592,
             "disk_total_bytes": 53687091200
           },
-          "logs": []
+          "logs": [
+            "[INFO] systemd[1]: haproxy.service: Watchdog timestamp updated.",
+            "[INFO] haproxy[5594]: Proxy api_frontend started (FD 77)"
+          ]
         }
       }
     },
     {
-      "timestampMs": 1770852600000,
+      "timestampMs": 1771025400000,
       "targets": {
         "web-nginx-icn-01:9100": {
           "instance": "web-nginx-icn-01:9100",
@@ -1402,7 +1519,10 @@
             "memory_total_bytes": 8589934592,
             "disk_total_bytes": 107374182400
           },
-          "logs": []
+          "logs": [
+            "[INFO] CRON[8067]: (root) CMD (/usr/lib/apt/apt.systemd.daily install)",
+            "[INFO] nginx[4272]: 10.0.0.1 - - \"GET /health HTTP/1.1\" 200 15 \"-\" \"kube-probe/1.28\""
+          ]
         },
         "web-nginx-icn-02:9100": {
           "instance": "web-nginx-icn-02:9100",
@@ -1432,7 +1552,10 @@
             "memory_total_bytes": 8589934592,
             "disk_total_bytes": 107374182400
           },
-          "logs": []
+          "logs": [
+            "[INFO] CRON[4919]: (root) CMD (/usr/lib/apt/apt.systemd.daily install)",
+            "[INFO] systemd[1]: Started Daily apt download activities."
+          ]
         },
         "web-nginx-pus-01:9100": {
           "instance": "web-nginx-pus-01:9100",
@@ -1462,7 +1585,10 @@
             "memory_total_bytes": 8589934592,
             "disk_total_bytes": 107374182400
           },
-          "logs": []
+          "logs": [
+            "[INFO] nginx[7829]: 10.0.0.1 - - \"GET /health HTTP/1.1\" 200 15 \"-\" \"kube-probe/1.28\"",
+            "[INFO] CRON[4400]: (root) CMD (/usr/lib/apt/apt.systemd.daily install)"
+          ]
         },
         "api-was-icn-01:9100": {
           "instance": "api-was-icn-01:9100",
@@ -1492,7 +1618,9 @@
             "memory_total_bytes": 17179869184,
             "disk_total_bytes": 214748364800
           },
-          "logs": []
+          "logs": [
+            "[INFO] systemd[1]: Started Application Service (api-was)."
+          ]
         },
         "api-was-icn-02:9100": {
           "instance": "api-was-icn-02:9100",
@@ -1522,7 +1650,9 @@
             "memory_total_bytes": 17179869184,
             "disk_total_bytes": 214748364800
           },
-          "logs": []
+          "logs": [
+            "[INFO] systemd[1]: Started Application Service (api-was)."
+          ]
         },
         "api-was-pus-01:9100": {
           "instance": "api-was-pus-01:9100",
@@ -1552,7 +1682,9 @@
             "memory_total_bytes": 17179869184,
             "disk_total_bytes": 214748364800
           },
-          "logs": []
+          "logs": [
+            "[INFO] systemd[1]: Started Application Service (api-was)."
+          ]
         },
         "db-mysql-icn-primary:9100": {
           "instance": "db-mysql-icn-primary:9100",
@@ -1582,7 +1714,10 @@
             "memory_total_bytes": 68719476736,
             "disk_total_bytes": 1073741824000
           },
-          "logs": []
+          "logs": [
+            "[INFO] CRON[6283]: (mysql) CMD (/usr/bin/mysqladmin --defaults-file=/etc/mysql/debian.cnf ping)",
+            "[INFO] mysqld[7652]: InnoDB: Buffer pool(s) load completed at 2026-02-14T14:06:31"
+          ]
         },
         "db-mysql-icn-replica:9100": {
           "instance": "db-mysql-icn-replica:9100",
@@ -1612,7 +1747,10 @@
             "memory_total_bytes": 68719476736,
             "disk_total_bytes": 1073741824000
           },
-          "logs": []
+          "logs": [
+            "[INFO] systemd[1]: Started MySQL Community Server.",
+            "[INFO] CRON[7758]: (mysql) CMD (/usr/bin/mysqladmin --defaults-file=/etc/mysql/debian.cnf ping)"
+          ]
         },
         "db-mysql-pus-dr:9100": {
           "instance": "db-mysql-pus-dr:9100",
@@ -1642,7 +1780,9 @@
             "memory_total_bytes": 68719476736,
             "disk_total_bytes": 1073741824000
           },
-          "logs": []
+          "logs": [
+            "[INFO] mysqld[5563]: InnoDB: Buffer pool(s) load completed at 2026-02-14T14:06:31"
+          ]
         },
         "cache-redis-icn-01:9100": {
           "instance": "cache-redis-icn-01:9100",
@@ -1672,7 +1812,10 @@
             "memory_total_bytes": 34359738368,
             "disk_total_bytes": 53687091200
           },
-          "logs": []
+          "logs": [
+            "[INFO] systemd[1]: redis-server.service: Watchdog timestamp updated.",
+            "[INFO] redis-server[5399]: Background AOF rewrite finished successfully"
+          ]
         },
         "cache-redis-icn-02:9100": {
           "instance": "cache-redis-icn-02:9100",
@@ -1702,7 +1845,10 @@
             "memory_total_bytes": 34359738368,
             "disk_total_bytes": 53687091200
           },
-          "logs": []
+          "logs": [
+            "[INFO] systemd[1]: redis-server.service: Watchdog timestamp updated.",
+            "[INFO] redis-server[5875]: Background AOF rewrite finished successfully"
+          ]
         },
         "storage-nfs-icn-01:9100": {
           "instance": "storage-nfs-icn-01:9100",
@@ -1732,7 +1878,9 @@
             "memory_total_bytes": 17179869184,
             "disk_total_bytes": 5368709120000
           },
-          "logs": []
+          "logs": [
+            "[INFO] systemd[1]: Started NFS server and services."
+          ]
         },
         "storage-s3gw-pus-01:9100": {
           "instance": "storage-s3gw-pus-01:9100",
@@ -1762,7 +1910,9 @@
             "memory_total_bytes": 8589934592,
             "disk_total_bytes": 214748364800
           },
-          "logs": []
+          "logs": [
+            "[INFO] nfsd[6994]: NFS export /data/shared ready, 35 active clients"
+          ]
         },
         "lb-haproxy-icn-01:9100": {
           "instance": "lb-haproxy-icn-01:9100",
@@ -1792,7 +1942,9 @@
             "memory_total_bytes": 8589934592,
             "disk_total_bytes": 53687091200
           },
-          "logs": []
+          "logs": [
+            "[INFO] systemd[1]: haproxy.service: Watchdog timestamp updated."
+          ]
         },
         "lb-haproxy-pus-01:9100": {
           "instance": "lb-haproxy-pus-01:9100",
@@ -1822,12 +1974,14 @@
             "memory_total_bytes": 8589934592,
             "disk_total_bytes": 53687091200
           },
-          "logs": []
+          "logs": [
+            "[INFO] haproxy[1669]: Proxy api_frontend started (FD 11)"
+          ]
         }
       }
     },
     {
-      "timestampMs": 1770853200000,
+      "timestampMs": 1771026000000,
       "targets": {
         "web-nginx-icn-01:9100": {
           "instance": "web-nginx-icn-01:9100",
@@ -1857,7 +2011,9 @@
             "memory_total_bytes": 8589934592,
             "disk_total_bytes": 107374182400
           },
-          "logs": []
+          "logs": [
+            "[INFO] systemd[1]: Started Daily apt download activities."
+          ]
         },
         "web-nginx-icn-02:9100": {
           "instance": "web-nginx-icn-02:9100",
@@ -1887,7 +2043,10 @@
             "memory_total_bytes": 8589934592,
             "disk_total_bytes": 107374182400
           },
-          "logs": []
+          "logs": [
+            "[INFO] nginx[7565]: 10.0.0.1 - - \"GET /health HTTP/1.1\" 200 15 \"-\" \"kube-probe/1.28\"",
+            "[INFO] CRON[6390]: (root) CMD (/usr/lib/apt/apt.systemd.daily install)"
+          ]
         },
         "web-nginx-pus-01:9100": {
           "instance": "web-nginx-pus-01:9100",
@@ -1917,7 +2076,9 @@
             "memory_total_bytes": 8589934592,
             "disk_total_bytes": 107374182400
           },
-          "logs": []
+          "logs": [
+            "[INFO] nginx[7798]: 10.0.0.1 - - \"GET /health HTTP/1.1\" 200 15 \"-\" \"kube-probe/1.28\""
+          ]
         },
         "api-was-icn-01:9100": {
           "instance": "api-was-icn-01:9100",
@@ -1947,7 +2108,10 @@
             "memory_total_bytes": 17179869184,
             "disk_total_bytes": 214748364800
           },
-          "logs": []
+          "logs": [
+            "[INFO] systemd[1]: Started Application Service (api-was).",
+            "[INFO] java[7239]: [GC (Allocation Failure) ParNew: 153344K->17024K(153344K), 0.089 secs]"
+          ]
         },
         "api-was-icn-02:9100": {
           "instance": "api-was-icn-02:9100",
@@ -1977,7 +2141,10 @@
             "memory_total_bytes": 17179869184,
             "disk_total_bytes": 214748364800
           },
-          "logs": []
+          "logs": [
+            "[INFO] dockerd[7728]: Container health status: healthy (exit code 0)",
+            "[INFO] java[9966]: [GC (Allocation Failure) ParNew: 153344K->17024K(153344K), 0.010 secs]"
+          ]
         },
         "api-was-pus-01:9100": {
           "instance": "api-was-pus-01:9100",
@@ -2007,7 +2174,10 @@
             "memory_total_bytes": 17179869184,
             "disk_total_bytes": 214748364800
           },
-          "logs": []
+          "logs": [
+            "[INFO] systemd[1]: Started Application Service (api-was).",
+            "[INFO] java[7350]: [GC (Allocation Failure) ParNew: 153344K->17024K(153344K), 0.074 secs]"
+          ]
         },
         "db-mysql-icn-primary:9100": {
           "instance": "db-mysql-icn-primary:9100",
@@ -2037,7 +2207,9 @@
             "memory_total_bytes": 68719476736,
             "disk_total_bytes": 1073741824000
           },
-          "logs": []
+          "logs": [
+            "[INFO] mysqld[9050]: InnoDB: Buffer pool(s) load completed at 2026-02-14T14:06:31"
+          ]
         },
         "db-mysql-icn-replica:9100": {
           "instance": "db-mysql-icn-replica:9100",
@@ -2067,7 +2239,10 @@
             "memory_total_bytes": 68719476736,
             "disk_total_bytes": 1073741824000
           },
-          "logs": []
+          "logs": [
+            "[INFO] systemd[1]: Started MySQL Community Server.",
+            "[INFO] mysqld[5933]: InnoDB: Buffer pool(s) load completed at 2026-02-14T14:06:31"
+          ]
         },
         "db-mysql-pus-dr:9100": {
           "instance": "db-mysql-pus-dr:9100",
@@ -2097,7 +2272,10 @@
             "memory_total_bytes": 68719476736,
             "disk_total_bytes": 1073741824000
           },
-          "logs": []
+          "logs": [
+            "[INFO] systemd[1]: Started MySQL Community Server.",
+            "[INFO] mysqld[5420]: InnoDB: Buffer pool(s) load completed at 2026-02-14T14:06:31"
+          ]
         },
         "cache-redis-icn-01:9100": {
           "instance": "cache-redis-icn-01:9100",
@@ -2127,7 +2305,10 @@
             "memory_total_bytes": 34359738368,
             "disk_total_bytes": 53687091200
           },
-          "logs": []
+          "logs": [
+            "[INFO] redis-server[8474]: Background AOF rewrite finished successfully",
+            "[INFO] redis-server[9516]: DB saved on disk (RDB snapshot)"
+          ]
         },
         "cache-redis-icn-02:9100": {
           "instance": "cache-redis-icn-02:9100",
@@ -2157,7 +2338,10 @@
             "memory_total_bytes": 34359738368,
             "disk_total_bytes": 53687091200
           },
-          "logs": []
+          "logs": [
+            "[INFO] systemd[1]: redis-server.service: Watchdog timestamp updated.",
+            "[INFO] redis-server[9671]: Background AOF rewrite finished successfully"
+          ]
         },
         "storage-nfs-icn-01:9100": {
           "instance": "storage-nfs-icn-01:9100",
@@ -2187,7 +2371,10 @@
             "memory_total_bytes": 17179869184,
             "disk_total_bytes": 5368709120000
           },
-          "logs": []
+          "logs": [
+            "[INFO] systemd[1]: Started NFS server and services.",
+            "[INFO] nfsd[4659]: NFS export /data/shared ready, 48 active clients"
+          ]
         },
         "storage-s3gw-pus-01:9100": {
           "instance": "storage-s3gw-pus-01:9100",
@@ -2217,7 +2404,10 @@
             "memory_total_bytes": 8589934592,
             "disk_total_bytes": 214748364800
           },
-          "logs": []
+          "logs": [
+            "[INFO] systemd[1]: Started NFS server and services.",
+            "[INFO] nfsd[8670]: NFS export /data/shared ready, 24 active clients"
+          ]
         },
         "lb-haproxy-icn-01:9100": {
           "instance": "lb-haproxy-icn-01:9100",
@@ -2247,7 +2437,10 @@
             "memory_total_bytes": 8589934592,
             "disk_total_bytes": 53687091200
           },
-          "logs": []
+          "logs": [
+            "[INFO] haproxy[2074]: Proxy api_frontend started (FD 45)",
+            "[INFO] systemd[1]: haproxy.service: Watchdog timestamp updated."
+          ]
         },
         "lb-haproxy-pus-01:9100": {
           "instance": "lb-haproxy-pus-01:9100",
@@ -2277,12 +2470,15 @@
             "memory_total_bytes": 8589934592,
             "disk_total_bytes": 53687091200
           },
-          "logs": []
+          "logs": [
+            "[INFO] systemd[1]: haproxy.service: Watchdog timestamp updated.",
+            "[INFO] haproxy[4805]: Proxy api_frontend started (FD 42)"
+          ]
         }
       }
     },
     {
-      "timestampMs": 1770853800000,
+      "timestampMs": 1771026600000,
       "targets": {
         "web-nginx-icn-01:9100": {
           "instance": "web-nginx-icn-01:9100",
@@ -2312,7 +2508,10 @@
             "memory_total_bytes": 8589934592,
             "disk_total_bytes": 107374182400
           },
-          "logs": []
+          "logs": [
+            "[INFO] nginx[2952]: 10.0.0.1 - - \"GET /health HTTP/1.1\" 200 15 \"-\" \"kube-probe/1.28\"",
+            "[INFO] CRON[2059]: (root) CMD (/usr/lib/apt/apt.systemd.daily install)"
+          ]
         },
         "web-nginx-icn-02:9100": {
           "instance": "web-nginx-icn-02:9100",
@@ -2342,7 +2541,10 @@
             "memory_total_bytes": 8589934592,
             "disk_total_bytes": 107374182400
           },
-          "logs": []
+          "logs": [
+            "[INFO] nginx[6108]: 10.0.0.1 - - \"GET /health HTTP/1.1\" 200 15 \"-\" \"kube-probe/1.28\"",
+            "[INFO] CRON[5359]: (root) CMD (/usr/lib/apt/apt.systemd.daily install)"
+          ]
         },
         "web-nginx-pus-01:9100": {
           "instance": "web-nginx-pus-01:9100",
@@ -2372,7 +2574,10 @@
             "memory_total_bytes": 8589934592,
             "disk_total_bytes": 107374182400
           },
-          "logs": []
+          "logs": [
+            "[INFO] systemd[1]: Started Daily apt download activities.",
+            "[INFO] CRON[9657]: (root) CMD (/usr/lib/apt/apt.systemd.daily install)"
+          ]
         },
         "api-was-icn-01:9100": {
           "instance": "api-was-icn-01:9100",
@@ -2402,7 +2607,9 @@
             "memory_total_bytes": 17179869184,
             "disk_total_bytes": 214748364800
           },
-          "logs": []
+          "logs": [
+            "[INFO] systemd[1]: Started Application Service (api-was)."
+          ]
         },
         "api-was-icn-02:9100": {
           "instance": "api-was-icn-02:9100",
@@ -2432,7 +2639,10 @@
             "memory_total_bytes": 17179869184,
             "disk_total_bytes": 214748364800
           },
-          "logs": []
+          "logs": [
+            "[INFO] systemd[1]: Started Application Service (api-was).",
+            "[INFO] dockerd[9663]: Container health status: healthy (exit code 0)"
+          ]
         },
         "api-was-pus-01:9100": {
           "instance": "api-was-pus-01:9100",
@@ -2462,7 +2672,9 @@
             "memory_total_bytes": 17179869184,
             "disk_total_bytes": 214748364800
           },
-          "logs": []
+          "logs": [
+            "[INFO] systemd[1]: Started Application Service (api-was)."
+          ]
         },
         "db-mysql-icn-primary:9100": {
           "instance": "db-mysql-icn-primary:9100",
@@ -2492,7 +2704,9 @@
             "memory_total_bytes": 68719476736,
             "disk_total_bytes": 1073741824000
           },
-          "logs": []
+          "logs": [
+            "[INFO] mysqld[1373]: InnoDB: Buffer pool(s) load completed at 2026-02-14T14:06:31"
+          ]
         },
         "db-mysql-icn-replica:9100": {
           "instance": "db-mysql-icn-replica:9100",
@@ -2522,7 +2736,10 @@
             "memory_total_bytes": 68719476736,
             "disk_total_bytes": 1073741824000
           },
-          "logs": []
+          "logs": [
+            "[INFO] CRON[3467]: (mysql) CMD (/usr/bin/mysqladmin --defaults-file=/etc/mysql/debian.cnf ping)",
+            "[INFO] mysqld[2311]: InnoDB: Buffer pool(s) load completed at 2026-02-14T14:06:31"
+          ]
         },
         "db-mysql-pus-dr:9100": {
           "instance": "db-mysql-pus-dr:9100",
@@ -2552,7 +2769,9 @@
             "memory_total_bytes": 68719476736,
             "disk_total_bytes": 1073741824000
           },
-          "logs": []
+          "logs": [
+            "[INFO] CRON[8744]: (mysql) CMD (/usr/bin/mysqladmin --defaults-file=/etc/mysql/debian.cnf ping)"
+          ]
         },
         "cache-redis-icn-01:9100": {
           "instance": "cache-redis-icn-01:9100",
@@ -2582,7 +2801,10 @@
             "memory_total_bytes": 34359738368,
             "disk_total_bytes": 53687091200
           },
-          "logs": []
+          "logs": [
+            "[INFO] redis-server[7354]: DB saved on disk (RDB snapshot)",
+            "[INFO] redis-server[6221]: Background AOF rewrite finished successfully"
+          ]
         },
         "cache-redis-icn-02:9100": {
           "instance": "cache-redis-icn-02:9100",
@@ -2612,7 +2834,10 @@
             "memory_total_bytes": 34359738368,
             "disk_total_bytes": 53687091200
           },
-          "logs": []
+          "logs": [
+            "[INFO] systemd[1]: redis-server.service: Watchdog timestamp updated.",
+            "[INFO] redis-server[8766]: DB saved on disk (RDB snapshot)"
+          ]
         },
         "storage-nfs-icn-01:9100": {
           "instance": "storage-nfs-icn-01:9100",
@@ -2642,7 +2867,10 @@
             "memory_total_bytes": 17179869184,
             "disk_total_bytes": 5368709120000
           },
-          "logs": []
+          "logs": [
+            "[INFO] nfsd[1641]: NFS export /data/shared ready, 50 active clients",
+            "[INFO] systemd[1]: Started NFS server and services."
+          ]
         },
         "storage-s3gw-pus-01:9100": {
           "instance": "storage-s3gw-pus-01:9100",
@@ -2672,7 +2900,9 @@
             "memory_total_bytes": 8589934592,
             "disk_total_bytes": 214748364800
           },
-          "logs": []
+          "logs": [
+            "[INFO] nfsd[8499]: NFS export /data/shared ready, 13 active clients"
+          ]
         },
         "lb-haproxy-icn-01:9100": {
           "instance": "lb-haproxy-icn-01:9100",
@@ -2702,7 +2932,9 @@
             "memory_total_bytes": 8589934592,
             "disk_total_bytes": 53687091200
           },
-          "logs": []
+          "logs": [
+            "[INFO] systemd[1]: haproxy.service: Watchdog timestamp updated."
+          ]
         },
         "lb-haproxy-pus-01:9100": {
           "instance": "lb-haproxy-pus-01:9100",
@@ -2732,7 +2964,10 @@
             "memory_total_bytes": 8589934592,
             "disk_total_bytes": 53687091200
           },
-          "logs": []
+          "logs": [
+            "[INFO] haproxy[4056]: Proxy api_frontend started (FD 79)",
+            "[INFO] systemd[1]: haproxy.service: Watchdog timestamp updated."
+          ]
         }
       }
     }

@@ -25,6 +25,7 @@ import { checkCloudRunHealth } from '@/lib/ai-proxy/proxy';
 import { getApiConfig } from '@/lib/api/api-config';
 import { createApiRoute } from '@/lib/api/zod-middleware';
 import { getCacheStats } from '@/lib/cache/unified-cache';
+import { getSiteUrl } from '@/lib/site-url';
 import { createClient } from '@/lib/supabase/server';
 import {
   type HealthCheckResponse,
@@ -269,11 +270,12 @@ const healthCheckHandler = createApiRoute()
     };
 
     if (isDevelopment) {
+      const siteUrl = getSiteUrl();
       (response as Record<string, unknown>).environment = {
         type: env.NODE_ENV,
         urls: {
-          site: env.NEXT_PUBLIC_APP_URL,
-          api: `${env.NEXT_PUBLIC_APP_URL}/api`,
+          site: siteUrl,
+          api: `${siteUrl}/api`,
           vmApi: env.VM_API_URL,
         },
         config: {

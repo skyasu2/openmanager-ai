@@ -33,8 +33,11 @@ import {
   getGroqModel,
   getMistralModel,
   getGeminiFlashLiteModel,
+  getOpenRouterVisionModel,
   checkProviderStatus,
 } from '../../model-provider';
+
+import { getOpenRouterVisionModelId } from '../../../../lib/config-parser';
 
 // Tools (AI SDK tools)
 import { logger } from '../../../../lib/logger';
@@ -311,37 +314,54 @@ function getAdvisorModel(): ModelResult | null {
 }
 
 /**
- * Get Vision model: Gemini Flash-Lite only (Graceful Degradation)
+ * Get Vision model: Gemini Flash → OpenRouter (Fallback)
  *
- * NO FALLBACK - Vision Agent uses Gemini exclusively due to unique features:
- * - 1M token context window
- * - Vision/PDF/Video/Audio multimodal
- * - Google Search Grounding
- * - URL Context
+ * Primary: Gemini 2.5 Flash
+ * - 1M token context, Vision/PDF/Video/Audio, Search Grounding
+ * - Free Tier: 250 RPD
  *
- * When Gemini is unavailable, returns null (feature disabled)
+ * Fallback: OpenRouter (Qwen 2.5 VL 72B / Llama 3.2 Vision)
+ * - Basic vision capabilities maintained
+ * - Used when Gemini unavailable or quota exceeded
+ *
+ * Graceful Degradation: Both unavailable → returns null
  *
  * @added 2026-01-27
+ * @updated 2026-02-14 - Added OpenRouter fallback
  */
 function getVisionModel(): ModelResult | null {
   const status = checkProviderStatus();
 
-  // Gemini only - no fallback
-  if (!status.gemini) {
-    logger.warn('⚠️ [Vision Agent] Gemini unavailable - Vision features disabled');
-    return null;
+  // 1. Primary: Gemini
+  if (status.gemini) {
+    try {
+      return {
+        model: getGeminiFlashLiteModel('gemini-2.5-flash'),
+        provider: 'gemini',
+        modelId: 'gemini-2.5-flash',
+      };
+    } catch (error) {
+      logger.warn('⚠️ [Vision Agent] Gemini initialization failed, trying OpenRouter:', error);
+    }
   }
 
-  try {
-    return {
-      model: getGeminiFlashLiteModel('gemini-2.5-flash'),
-      provider: 'gemini',
-      modelId: 'gemini-2.5-flash',
-    };
-  } catch (error) {
-    logger.error('❌ [Vision Agent] Gemini initialization failed:', error);
-    return null;
+  // 2. Fallback: OpenRouter
+  if (status.openrouter) {
+    try {
+      const modelId = getOpenRouterVisionModelId();
+      logger.info(`🔄 [Vision Agent] Using OpenRouter fallback: ${modelId}`);
+      return {
+        model: getOpenRouterVisionModel(modelId),
+        provider: 'openrouter',
+        modelId,
+      };
+    } catch (error) {
+      logger.error('❌ [Vision Agent] OpenRouter initialization failed:', error);
+    }
   }
+
+  logger.warn('⚠️ [Vision Agent] No vision provider available - Vision features disabled');
+  return null;
 }
 
 // ============================================================================
@@ -617,14 +637,14 @@ export const AGENT_CONFIGS: Record<string, AgentConfig> = {
   },
 
   // =========================================================================
-  // Vision Agent (Gemini Flash-Lite - Graceful Degradation)
+  // Vision Agent (Gemini Flash → OpenRouter Fallback)
   // =========================================================================
 
   'Vision Agent': {
     name: 'Vision Agent',
     description:
       '대시보드 스크린샷 분석, 대용량 로그 분석(1M 컨텍스트), Google Search Grounding, URL 문서 분석을 수행합니다. 이미지 첨부, 로그 분석, 최신 문서 검색 요청에 적합합니다.',
-    getModel: getVisionModel, // Gemini Flash-Lite only - no fallback
+    getModel: getVisionModel, // Gemini → OpenRouter fallback
     instructions: VISION_INSTRUCTIONS,
     tools: {
       // Vision-specific tools (Gemini Flash-Lite)

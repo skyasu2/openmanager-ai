@@ -16,6 +16,7 @@ import { createCerebras } from '@ai-sdk/cerebras';
 import { createMistral } from '@ai-sdk/mistral';
 import { createGroq } from '@ai-sdk/groq';
 import { createGoogleGenerativeAI } from '@ai-sdk/google';
+import { createOpenAI } from '@ai-sdk/openai';
 import type { LanguageModel } from 'ai';
 
 // Use centralized config getters (supports AI_PROVIDERS_CONFIG JSON format)
@@ -24,6 +25,8 @@ import {
   getMistralApiKey,
   getGroqApiKey,
   getGeminiApiKey,
+  getOpenRouterApiKey,
+  getOpenRouterVisionModelId,
 } from '../../lib/config-parser';
 
 import { getCircuitBreaker } from '../resilience/circuit-breaker';
@@ -32,13 +35,14 @@ import { getCircuitBreaker } from '../resilience/circuit-breaker';
 // 1. Types
 // ============================================================================
 
-export type ProviderName = 'cerebras' | 'groq' | 'mistral' | 'gemini';
+export type ProviderName = 'cerebras' | 'groq' | 'mistral' | 'gemini' | 'openrouter';
 
 export interface ProviderStatus {
   cerebras: boolean;
   groq: boolean;
   mistral: boolean;
   gemini: boolean;
+  openrouter: boolean;
 }
 
 // ============================================================================
@@ -54,6 +58,7 @@ const providerToggleState: Record<ProviderName, boolean> = {
   groq: true,
   mistral: true,
   gemini: true,
+  openrouter: true,
 };
 
 /**
@@ -101,6 +106,7 @@ export function checkProviderStatus(): ProviderStatus {
     groq: !!getGroqApiKey() && isProviderEnabled('groq'),
     mistral: !!getMistralApiKey() && isProviderEnabled('mistral'),
     gemini: !!getGeminiApiKey() && isProviderEnabled('gemini'),
+    openrouter: !!getOpenRouterApiKey() && isProviderEnabled('openrouter'),
   };
 
   return cachedProviderStatus;
@@ -182,6 +188,22 @@ function createGeminiProvider() {
   }
 
   return createGoogleGenerativeAI({
+    apiKey,
+  });
+}
+
+/**
+ * Create OpenRouter provider instance
+ * Uses OpenAI-compatible API
+ */
+function createOpenRouterProvider() {
+  const apiKey = getOpenRouterApiKey();
+  if (!apiKey) {
+    throw new Error('OPENROUTER_API_KEY not configured');
+  }
+
+  return createOpenAI({
+    baseURL: 'https://openrouter.ai/api/v1',
     apiKey,
   });
 }
@@ -274,6 +296,20 @@ export function getGeminiFlashLiteModel(
 ): LanguageModel {
   const gemini = createGeminiProvider();
   return asLanguageModel(gemini(modelId));
+}
+
+/**
+ * Get OpenRouter Vision model (Fallback)
+ * Default: qwen/qwen-2.5-vl-72b-instruct:free
+ *
+ * @param modelId - Model ID (optional, uses env default if not provided)
+ */
+export function getOpenRouterVisionModel(
+  modelId?: string
+): LanguageModel {
+  const openrouter = createOpenRouterProvider();
+  const model = modelId || getOpenRouterVisionModelId();
+  return asLanguageModel(openrouter(model));
 }
 
 // ============================================================================
@@ -450,53 +486,63 @@ export function getAdvisorModel(): {
 }
 
 /**
- * Get Vision Agent model (Gemini Flash-Lite Only - Graceful Degradation)
+ * Get Vision Agent model (Gemini Flash with OpenRouter Fallback)
  *
- * NO FALLBACK: Vision Agent uses Gemini exclusively due to unique features:
- * - 1M token context (vs 128K for others)
- * - Vision/PDF/Video/Audio multimodal
- * - Google Search Grounding
- * - URL Context
+ * @note Actual agent execution uses agent-configs.ts getVisionModel().
+ *       This function is a low-level utility for direct model access.
  *
- * When Gemini is unavailable:
- * - Returns null
- * - Vision Agent will be disabled
- * - Text-based agents continue to function normally
+ * Primary: Gemini 2.5 Flash (1M context, 250 RPD Free Tier)
+ * Fallback: OpenRouter (Qwen 2.5 VL / Llama 3.2 Vision)
  *
  * @returns Model info or null (graceful degradation)
- * @added 2026-01-27
+ * @updated 2026-02-14 - Added OpenRouter fallback
  */
 export function getVisionAgentModel(): {
   model: LanguageModel;
-  provider: 'gemini';
+  provider: 'gemini' | 'openrouter';
   modelId: string;
 } | null {
   const status = checkProviderStatus();
 
-  if (!status.gemini) {
-    logger.warn('⚠️ [Vision Agent] Gemini unavailable - Vision features disabled');
-    return null;
+  // 1. Try Gemini (Primary)
+  if (status.gemini) {
+    try {
+      return {
+        model: getGeminiFlashLiteModel('gemini-2.5-flash'),
+        provider: 'gemini',
+        modelId: 'gemini-2.5-flash',
+      };
+    } catch (error) {
+      logger.warn('⚠️ [Vision Agent] Gemini initialization failed, trying OpenRouter:', error);
+    }
   }
 
-  try {
-    return {
-      model: getGeminiFlashLiteModel('gemini-2.5-flash'),
-      provider: 'gemini',
-      modelId: 'gemini-2.5-flash',
-    };
-  } catch (error) {
-    logger.error('❌ [Vision Agent] Gemini initialization failed:', error);
-    return null;
+  // 2. Try OpenRouter (Fallback)
+  if (status.openrouter) {
+    try {
+      const modelId = getOpenRouterVisionModelId();
+      console.log(`🔄 [Vision Agent] Using OpenRouter fallback: ${modelId}`);
+      return {
+        model: getOpenRouterVisionModel(modelId),
+        provider: 'openrouter',
+        modelId: modelId,
+      };
+    } catch (error) {
+      logger.error('❌ [Vision Agent] OpenRouter initialization failed:', error);
+    }
   }
+
+  logger.warn('⚠️ [Vision Agent] No vision provider available - Vision features disabled');
+  return null;
 }
 
 /**
  * Check if Vision Agent is available
- * @returns true if Gemini provider is configured and enabled
+ * @returns true if Gemini or OpenRouter provider is configured and enabled
  */
 export function isVisionAgentAvailable(): boolean {
   const status = checkProviderStatus();
-  return status.gemini;
+  return status.gemini || status.openrouter;
 }
 
 // ============================================================================
@@ -531,6 +577,9 @@ export async function testProviderHealth(
         break;
       case 'gemini':
         getGeminiFlashLiteModel();
+        break;
+      case 'openrouter':
+        getOpenRouterVisionModel();
         break;
     }
 
@@ -567,6 +616,9 @@ export async function checkAllProvidersHealth(): Promise<ProviderHealth[]> {
   if (status.gemini) {
     results.push(await testProviderHealth('gemini'));
   }
+  if (status.openrouter) {
+    results.push(await testProviderHealth('openrouter'));
+  }
 
   return results;
 }
@@ -581,6 +633,7 @@ export function logProviderStatus(): void {
     Groq: status.groq ? '✅' : '❌',
     Mistral: status.mistral ? '✅' : '❌',
     Gemini: status.gemini ? '✅ (Vision)' : '❌',
+    OpenRouter: status.openrouter ? '✅ (Vision Fallback)' : '❌',
   });
 }
 

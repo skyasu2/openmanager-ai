@@ -192,27 +192,29 @@ export const EnhancedAIChat = memo(function EnhancedAIChat({
       )}
 
       {/* 실시간 Agent 상태 */}
-      {queryMode === 'streaming' && isGenerating && (
-        <div className="border-t border-gray-200 bg-linear-to-r from-gray-50 to-white px-4 py-2">
-          <div className="mx-auto max-w-3xl">
-            {currentAgentStatus && (
-              <AgentStatusIndicator
-                agent={currentAgentStatus.agent}
-                status={currentAgentStatus.status}
-                compact
-              />
-            )}
-            {currentHandoff && (
-              <AgentHandoffBadge
-                from={currentHandoff.from}
-                to={currentHandoff.to}
-                reason={currentHandoff.reason}
-                compact
-              />
-            )}
+      {queryMode === 'streaming' &&
+        isGenerating &&
+        (currentAgentStatus || currentHandoff) && (
+          <div className="border-t border-blue-100 bg-linear-to-r from-blue-50/80 to-indigo-50/50 px-4 py-2.5">
+            <div className="mx-auto flex max-w-3xl items-center gap-2">
+              {currentAgentStatus && (
+                <AgentStatusIndicator
+                  agent={currentAgentStatus.agent}
+                  status={currentAgentStatus.status}
+                  compact
+                />
+              )}
+              {currentHandoff && (
+                <AgentHandoffBadge
+                  from={currentHandoff.from}
+                  to={currentHandoff.to}
+                  reason={currentHandoff.reason}
+                  compact
+                />
+              )}
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
       {/* 에러 표시 */}
       {error && (

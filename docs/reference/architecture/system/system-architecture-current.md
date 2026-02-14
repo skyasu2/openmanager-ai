@@ -19,7 +19,7 @@
 |------|------|
 | UI 컴포넌트 | ~100+ `.tsx` |
 | Custom Hooks | ~35+ |
-| API Routes | 48 (`src/app/api/**/route.ts`) |
+| API Routes | 31 (`src/app/api/**/route.ts`) |
 | AI Agents | 9 (5 외부 라우팅 + 4 내부) |
 | Zustand Stores | 4 |
 | 모니터링 서버 | 15 (Korean DC, synthetic) |
@@ -39,7 +39,7 @@ graph TB
 
     subgraph Vercel["Vercel (Frontend & BFF)"]
         NextJS["Next.js 16.1.x<br/>App Router"]
-        API["API Routes (48)"]
+        API["API Routes (31)"]
         MP["MetricsProvider<br/>(Singleton)"]
         Providers["TanStack Query +<br/>Zustand Stores"]
     end
@@ -93,7 +93,7 @@ graph TB
 │  Vercel (Next.js 16.1.x, App Router)                                 │
 │  ┌─────────────┐  ┌──────────────────┐  ┌─────────────────────────┐ │
 │  │ API Routes   │  │ MetricsProvider  │  │ Auth (NextAuth/Supabase)│ │
-│  │ (48 routes)  │  │ (OTel→hourly)    │  │ Rate Limiter, CSRF     │ │
+│  │ (31 routes)  │  │ (OTel→hourly)    │  │ Rate Limiter, CSRF     │ │
 │  └──────┬──────┘  └──────────────────┘  └─────────────────────────┘ │
 └─────────┼────────────────────────────────────────────────────────────┘
           │ Proxy (X-API-Key)
@@ -201,7 +201,7 @@ graph TB
 | **Dashboard** | `src/services/metrics/MetricsProvider.ts` | otel-processed → hourly-data |
 | **AI Chat (Vercel)** | `src/services/monitoring/MonitoringContext.ts` | MetricsProvider 동일 체인 |
 | **AI Engine (Cloud Run)** | `cloud-run/ai-engine/src/data/precomputed-state.ts` | otel-processed → hourly-data |
-| **24h Chart** | `src/hooks/useFixed24hMetrics.ts` → MetricsProvider | MetricsProvider 동일 체인 |
+| **24h Chart** | `src/hooks/useServerMetrics.ts` → MetricsProvider | MetricsProvider 동일 체인 |
 | **Alert System** | `src/services/monitoring/AlertManager.ts` | MetricsProvider 동일 체인 |
 | **RAG (Supabase)** | `supabase/` (server_logs, embeddings) | DB Query |
 
@@ -238,7 +238,7 @@ npm run data:all       # data:sync + data:otel
 | **Analyst** | Groq llama-3.3-70b | 이상 감지, 추세 예측 | 외부 |
 | **Reporter** | Groq | 장애 보고서, 타임라인 | 외부 |
 | **Advisor** | Mistral small | 트러블슈팅, GraphRAG 검색 | 외부 |
-| **Vision** | Gemini 2.5-flash-lite | 스크린샷/로그 분석, 웹 검색 | 외부 |
+| **Vision** | Gemini 2.5-flash | 스크린샷/로그 분석, 웹 검색 | 외부 |
 | **Evaluator** | Cerebras | 보고서 품질 평가 (내부) | 내부 |
 | **Optimizer** | Mistral | 보고서 품질 개선 (내부) | 내부 |
 | **Verifier** | Mistral | 응답 검증 | 내부 |

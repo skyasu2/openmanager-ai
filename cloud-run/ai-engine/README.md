@@ -90,7 +90,7 @@ const status = AgentFactory.getAvailabilityStatus();
 
 ### Vision Agent
 
-Gemini Flash-Lite 전용 에이전트 (No Fallback - Graceful Degradation):
+Gemini Flash Primary + OpenRouter Fallback:
 
 | Feature | Capability |
 |---------|------------|
@@ -99,7 +99,7 @@ Gemini Flash-Lite 전용 에이전트 (No Fallback - Graceful Degradation):
 | **Google Search** | Grounding 지원 |
 | **URL Context** | 웹 페이지 분석 |
 
-**Graceful Degradation**: Gemini 미구성 시 → Analyst Agent로 폴백 (제한된 분석)
+**Graceful Degradation**: Gemini/OpenRouter 모두 미구성 시 → Analyst Agent로 폴백 (제한된 분석)
 
 ```typescript
 import { getVisionAgentOrFallback, isVisionQuery } from './vision-agent';
@@ -122,7 +122,7 @@ if (isVisionQuery(query)) {
 | Analyst Agent | Groq `llama-3.3-70b-versatile` | Cerebras → Mistral | ~1K RPD, 12K TPM |
 | Reporter Agent | Groq `llama-3.3-70b-versatile` | Cerebras → Mistral | ~1K RPD, 12K TPM |
 | Advisor Agent | Mistral `mistral-small-2506` | Groq → Cerebras | Limited (may require paid) |
-| **Vision Agent** | **Gemini `2.5-flash-lite`** | **(No Fallback)** | **Free tier available** |
+| **Vision Agent** | **Gemini `2.5-flash`** | **OpenRouter (Qwen/Llama Vision)** | **Free tier available** |
 | Evaluator Agent | Cerebras `llama-3.3-70b` | (internal use) | - |
 | Optimizer Agent | Mistral `mistral-small-2506` | (internal use) | - |
 
@@ -238,13 +238,11 @@ npm run prompt:redteam
 ## Deployment
 
 ```bash
-# Deploy to Cloud Run
-gcloud run deploy ai-engine \
-  --source . \
-  --region asia-northeast1 \
-  --memory 512Mi \
-  --cpu 1 \
-  --allow-unauthenticated
+# Recommended deployment (includes free-tier guard + local Docker preflight)
+bash deploy.sh
+
+# Skip local Docker preflight when needed
+LOCAL_DOCKER_PREFLIGHT=false bash deploy.sh
 
 # Service URL
 https://ai-engine-490817238363.asia-northeast1.run.app
@@ -253,12 +251,16 @@ https://ai-engine-490817238363.asia-northeast1.run.app
 ## Docker
 
 ```bash
-# Local build
-docker build -t ai-engine:local .
+# Preflight build + health check (recommended before Cloud Run deploy)
+npm run docker:preflight
 
-# Run locally
-docker run -p 8080:8080 --env-file .env ai-engine:local
+# Build only (skip local run)
+SKIP_RUN=true npm run docker:preflight
 ```
+
+Notes:
+- In WSL environments, the preflight script automatically falls back to `cmd.exe /c docker ...` when `/var/run/docker.sock` is unavailable.
+- If build fails due to lock mismatch, sync dependencies in `cloud-run/ai-engine` and retry.
 
 ## Version
 

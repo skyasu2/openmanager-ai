@@ -12,6 +12,7 @@
 import { ImageResponse } from 'next/og';
 import type { NextRequest } from 'next/server';
 import { logger } from '@/lib/logging';
+import { getSiteUrl } from '@/lib/site-url';
 
 export const runtime = 'edge';
 
@@ -20,7 +21,6 @@ const DEFAULTS = {
   title: 'OpenManager AI',
   description: 'AI Native Server Monitoring Platform',
   tags: ['Next.js 16', 'React 19', 'Vercel AI SDK', '5-Agent System'],
-  url: 'openmanager-ai.vercel.app',
 } as const;
 
 export async function GET(request: NextRequest) {
@@ -34,6 +34,7 @@ export async function GET(request: NextRequest) {
     const safeTitle = title.length > 50 ? `${title.slice(0, 47)}...` : title;
     const safeDescription =
       description.length > 100 ? `${description.slice(0, 97)}...` : description;
+    const siteHost = new URL(getSiteUrl()).host;
 
     return new ImageResponse(
       <div
@@ -158,7 +159,7 @@ export async function GET(request: NextRequest) {
             fontSize: '16px',
           }}
         >
-          <span>{DEFAULTS.url}</span>
+          <span>{siteHost}</span>
         </div>
       </div>,
       {

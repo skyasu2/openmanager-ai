@@ -52,23 +52,4 @@ export const debug: DebugLogger = {
   },
 };
 
-/**
- * 성능 측정 헬퍼
- */
-export function measurePerformance<T>(label: string, fn: () => T): T {
-  if (!isDebugEnabled) return fn();
-
-  debug.time(label);
-  const result = fn();
-  debug.timeEnd(label);
-  return result;
-}
-
-/**
- * 조건부 디버그 블록 실행
- */
-export function debugBlock(fn: () => void): void {
-  if (isDebugEnabled) fn();
-}
-
 export default debug;

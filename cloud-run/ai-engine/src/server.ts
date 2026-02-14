@@ -55,8 +55,14 @@ const app = new Hono();
 // ============================================================================
 
 app.use('*', honoLogger());
+const defaultAllowedOrigin =
+  process.env.DEFAULT_ORIGIN ||
+  process.env.NEXT_PUBLIC_SITE_URL ||
+  process.env.NEXT_PUBLIC_APP_URL ||
+  'https://openmanager-ai.vercel.app';
+
 app.use('*', cors({
-  origin: process.env.ALLOWED_ORIGINS?.split(',') || ['https://openmanager-ai.vercel.app'],
+  origin: process.env.ALLOWED_ORIGINS?.split(',') || [defaultAllowedOrigin],
 }));
 
 // Security Middleware (Skip for health/warmup) — fail-closed

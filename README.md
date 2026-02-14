@@ -136,6 +136,13 @@ Supervisor (Intent Classification & Routing)
 | Database | Supabase | ap-northeast-1 |
 | Cache | Upstash Redis | ap-northeast-1 |
 
+### Runtime Tuning
+
+Job Queue SSE 폴링은 Redis 명령어 예산 보호를 위해 기본값을 아래로 사용합니다.
+
+- `AI_JOB_STREAM_POLL_INTERVAL_MS=200`
+- `AI_JOB_STREAM_QUEUED_POLL_INTERVAL_MS=1000`
+
 ---
 
 ## Tech Stack
@@ -146,7 +153,7 @@ Supervisor (Intent Classification & Routing)
 | **Frontend** | Next.js 16, React 19, TypeScript |
 | **UI** | Tailwind CSS, Radix UI, Lucide Icons |
 | **State** | Zustand, TanStack Query |
-| **AI** | Vercel AI SDK v6 (Native Multi-Agent, UIMessageStream), Gemini Flash-Lite |
+| **AI** | Vercel AI SDK v6 (Native Multi-Agent, UIMessageStream), Gemini Flash |
 | **Database** | Supabase (PostgreSQL + pgvector) |
 | **Cache** | Upstash Redis |
 

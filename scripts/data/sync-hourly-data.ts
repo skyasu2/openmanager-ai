@@ -553,7 +553,14 @@ const LOG_TEMPLATES: Record<ServerType, Record<string, { critical: string[]; war
 };
 
 /**
- * 장애 상황에 맞는 로그 생성
+ * 서버 메트릭에 부합하는 로그 생성 (syslog 형식)
+ *
+ * 모든 서버에 대해 로그 생성:
+ * - 정상(online): 운영 info 로그 (cron, health check, docker 등)
+ * - 경고(warning): info + warning 로그
+ * - 장애(critical): info + warning + error 로그
+ *
+ * 기존 소비자 호환: [ERROR]/[WARN]/[INFO] 마커 포함 string[]
  */
 function generateLogs(
   server: ServerConfig,
@@ -564,15 +571,62 @@ function generateLogs(
   const templates = LOG_TEMPLATES[server.type];
   if (!templates) return logs;
 
-  // 정상 상태면 빈 로그
-  if (status === 'online') {
-    return [];
+  const pid = () => 1000 + Math.floor(seededRandom() * 9000);
+
+  // ── 1단계: 모든 서버 공통 운영 로그 (info) ──────────────────────
+  const COMMON_INFO_LOGS: Record<ServerType, string[]> = {
+    web: [
+      `[INFO] nginx[${pid()}]: 10.0.0.1 - - "GET /health HTTP/1.1" 200 15 "-" "kube-probe/1.28"`,
+      `[INFO] systemd[1]: Started Daily apt download activities.`,
+      `[INFO] CRON[${pid()}]: (root) CMD (/usr/lib/apt/apt.systemd.daily install)`,
+    ],
+    database: [
+      `[INFO] mysqld[${pid()}]: InnoDB: Buffer pool(s) load completed at ${new Date().toISOString().slice(0, 19)}`,
+      `[INFO] systemd[1]: Started MySQL Community Server.`,
+      `[INFO] CRON[${pid()}]: (mysql) CMD (/usr/bin/mysqladmin --defaults-file=/etc/mysql/debian.cnf ping)`,
+    ],
+    cache: [
+      `[INFO] redis-server[${pid()}]: DB saved on disk (RDB snapshot)`,
+      `[INFO] redis-server[${pid()}]: Background AOF rewrite finished successfully`,
+      `[INFO] systemd[1]: redis-server.service: Watchdog timestamp updated.`,
+    ],
+    application: [
+      `[INFO] java[${pid()}]: [GC (Allocation Failure) ParNew: 153344K->17024K(153344K), 0.0${Math.floor(seededRandom() * 90) + 10} secs]`,
+      `[INFO] dockerd[${pid()}]: Container health status: healthy (exit code 0)`,
+      `[INFO] systemd[1]: Started Application Service (api-was).`,
+    ],
+    loadbalancer: [
+      `[INFO] haproxy[${pid()}]: Health check OK for backend api_servers/server1 (HTTP 200)`,
+      `[INFO] haproxy[${pid()}]: Proxy api_frontend started (FD ${Math.floor(seededRandom() * 100) + 10})`,
+      `[INFO] systemd[1]: haproxy.service: Watchdog timestamp updated.`,
+    ],
+    storage: [
+      `[INFO] nfsd[${pid()}]: NFS export /data/shared ready, ${Math.floor(seededRandom() * 50) + 10} active clients`,
+      `[INFO] systemd[1]: Started NFS server and services.`,
+      `[INFO] CRON[${pid()}]: (root) CMD (/usr/local/bin/check-raid-status.sh)`,
+    ],
+  };
+
+  // 서버 타입에 맞는 info 로그 1~2개 추가 (결정론적 선택)
+  const infoLogs = COMMON_INFO_LOGS[server.type] || COMMON_INFO_LOGS.web;
+  const infoCount = status === 'online' ? 2 : 1;
+  for (let i = 0; i < infoCount && i < infoLogs.length; i++) {
+    const idx = Math.floor(seededRandom() * infoLogs.length);
+    const log = infoLogs[idx];
+    if (log && !logs.includes(log)) {
+      logs.push(log);
+    }
   }
 
-  // 가장 심각한 메트릭 찾기
+  // 정상 서버는 info 로그만
+  if (status === 'online') {
+    return logs;
+  }
+
+  // ── 2단계: 장애 서버 경고/에러 로그 ─────────────────────────────
   const severityLevel = status === 'critical' ? 'critical' : 'warning';
 
-  // 메트릭별 심각도 확인
+  // 메트릭별 심각도 확인 (높은 순 정렬)
   const metricSeverity: { metric: string; value: number }[] = [
     { metric: 'cpu', value: metrics.cpu },
     { metric: 'memory', value: metrics.memory },
@@ -582,16 +636,30 @@ function generateLogs(
 
   // 상위 2개 문제 메트릭에 대한 로그 추가
   for (const { metric, value } of metricSeverity.slice(0, 2)) {
-    if (value > 70) { // 70% 이상이면 로그 생성
+    if (value > 70) {
       const metricTemplates = templates[metric];
       if (metricTemplates) {
         const templateList = metricTemplates[severityLevel] || metricTemplates.warning;
         if (templateList.length > 0) {
-          // 결정론적 선택 (시드 기반)
           const selectedLog = templateList[Math.floor(seededRandom() * templateList.length)];
-          logs.push(selectedLog);
+          if (selectedLog) logs.push(selectedLog);
         }
       }
+    }
+  }
+
+  // ── 3단계: critical 상태 시 커널/시스템 레벨 로그 추가 ──────────
+  if (status === 'critical') {
+    const topMetric = metricSeverity[0];
+    if (topMetric && topMetric.value > 85) {
+      const kernelLogs: Record<string, string> = {
+        cpu: `[ERROR] kernel: [${pid()}.${Math.floor(seededRandom() * 999)}] CPU${Math.floor(seededRandom() * 8)}: Package temperature above threshold, cpu clock throttled`,
+        memory: `[ERROR] kernel: Out of memory: Killed process ${pid()} (java) total-vm:${Math.floor(topMetric.value * 100)}kB, anon-rss:${Math.floor(topMetric.value * 80)}kB`,
+        disk: `[ERROR] kernel: [${pid()}.${Math.floor(seededRandom() * 999)}] EXT4-fs warning (device sda1): directory index full, reach max htree level`,
+        network: `[ERROR] kernel: [${pid()}.${Math.floor(seededRandom() * 999)}] nf_conntrack: table full, dropping packet`,
+      };
+      const kernelLog = kernelLogs[topMetric.metric];
+      if (kernelLog) logs.push(kernelLog);
     }
   }
 

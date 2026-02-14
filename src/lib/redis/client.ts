@@ -20,6 +20,7 @@ const HEALTH_CHECK_INTERVAL = 60_000; // 1분
 // 자동 복구 관련
 let recoveryScheduled = false;
 const RECOVERY_DELAY_MS = 60_000; // 1분 후 복구 시도
+const SYSTEM_RUNNING_KEY = 'system:running';
 
 /**
  * Redis 연결 상태
@@ -209,6 +210,69 @@ export async function reconnectRedis(): Promise<boolean> {
  */
 export function isRedisDisabled(): boolean {
   return process.env.REDIS_ENABLED === 'false';
+}
+
+/**
+ * Redis에 저장된 시스템 실행 상태 값을 boolean으로 파싱
+ */
+export function parseSystemRunningFlag(value: unknown): boolean | null {
+  if (value === null || value === undefined) return null;
+
+  if (typeof value === 'boolean') return value;
+  if (typeof value === 'number')
+    return value === 1 ? true : value === 0 ? false : null;
+
+  if (typeof value !== 'string') return null;
+
+  const normalized = value.trim().toLowerCase();
+  if (normalized === '1' || normalized === 'true' || normalized === 'running') {
+    return true;
+  }
+  if (
+    normalized === '0' ||
+    normalized === 'false' ||
+    normalized === 'stopped'
+  ) {
+    return false;
+  }
+
+  return null;
+}
+
+/**
+ * 시스템 실행 상태 플래그 저장 (SSOT)
+ */
+export async function setSystemRunningFlag(
+  isRunning: boolean
+): Promise<boolean> {
+  const client = getRedisClient();
+  if (!client || !isRedisAvailable) return false;
+
+  try {
+    await client.set(SYSTEM_RUNNING_KEY, isRunning ? '1' : '0');
+    return true;
+  } catch (e) {
+    logger.warn('[Redis] Failed to set system running flag:', e);
+    return false;
+  }
+}
+
+/**
+ * 시스템 실행 상태 플래그 조회 (SSOT)
+ * - true/false: Redis에서 명시적으로 확인됨
+ * - null: Redis 사용 불가 또는 값 미존재/파싱 실패 (unknown)
+ */
+export async function getSystemRunningFlag(): Promise<boolean | null> {
+  const client = getRedisClient();
+  if (!client || !isRedisAvailable) return null;
+
+  try {
+    const raw = await client.get<unknown>(SYSTEM_RUNNING_KEY);
+    return parseSystemRunningFlag(raw);
+  } catch (e) {
+    logger.warn('[Redis] Failed to read system running flag:', e);
+    return null;
+  }
 }
 
 // ============================================================================

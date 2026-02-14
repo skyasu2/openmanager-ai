@@ -26,14 +26,17 @@ export {
 export {
   checkRedisHealth,
   getRedisClient,
+  getSystemRunningFlag,
   isRedisDisabled,
   isRedisEnabled,
+  parseSystemRunningFlag,
   reconnectRedis,
   redisDel,
   redisGet,
   redisMGet,
   redisSet,
   safeRedisOp,
+  setSystemRunningFlag,
 } from './client';
 // Rate Limiter
 export {

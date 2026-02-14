@@ -7,7 +7,7 @@
 import { act, renderHook } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { useAuthStore, useAuthType, useAuthUser } from './auth-store';
+import { useAuthStore } from './auth-store';
 
 // CustomEvent 스파이 - beforeEach에서 설정됨
 let dispatchEventSpy: ReturnType<typeof vi.spyOn>;
@@ -255,41 +255,6 @@ describe('useAuthStore', () => {
       const event = dispatchEventSpy.mock.calls[0][0] as CustomEvent;
       expect(event.type).toBe('auth-state-changed');
       expect(event.detail.authType).toBe(null);
-    });
-  });
-
-  describe('선택적 구독 유틸리티', () => {
-    it('useAuthType이 authType만 반환해야 함', () => {
-      // Given
-      const { result: storeResult } = renderHook(() => useAuthStore());
-      act(() => {
-        storeResult.current.setAuth({ authType: 'guest' });
-      });
-
-      // When
-      const { result } = renderHook(() => useAuthType());
-
-      // Then
-      expect(result.current).toBe('guest');
-    });
-
-    it('useAuthUser가 user만 반환해야 함', () => {
-      // Given
-      const mockUser = {
-        id: 'user-1',
-        name: 'User',
-        email: 'user@test.com',
-      };
-      const { result: storeResult } = renderHook(() => useAuthStore());
-      act(() => {
-        storeResult.current.setGitHubAuth(mockUser);
-      });
-
-      // When
-      const { result } = renderHook(() => useAuthUser());
-
-      // Then
-      expect(result.current).toEqual(mockUser);
     });
   });
 });

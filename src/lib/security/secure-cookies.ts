@@ -11,6 +11,7 @@
  * Vercel 환경 감지
  */
 import { logger } from '@/lib/logging';
+import { getSiteUrl } from '@/lib/site-url';
 export function isVercelEnvironment(): boolean {
   if (typeof window !== 'undefined') {
     return (
@@ -94,10 +95,11 @@ export function validateRedirectUrl(url: string): boolean {
   try {
     const urlObj = new URL(url);
     const hostname = urlObj.hostname;
+    const productionHost = new URL(getSiteUrl()).hostname;
 
     // 🔧 Vercel 패턴 매칭 개선
     const isVercelDeploy =
-      hostname === 'openmanager-ai.vercel.app' || // 프로덕션
+      hostname === productionHost || // 프로덕션(커스텀 도메인 포함)
       (hostname.startsWith('openmanager-ai-') &&
         hostname.endsWith('.vercel.app')) || // 프리뷰 배포
       hostname.includes('-skyasus-projects.vercel.app'); // 사용자별 배포

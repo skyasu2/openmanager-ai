@@ -62,14 +62,14 @@ export const TECH_STACKS_DATA: Record<string, TechItem[] | VibeCodeData> = {
       type: 'commercial',
     },
     {
-      name: 'Gemini 2.5 Flash-Lite',
+      name: 'Gemini 2.5 Flash',
       category: 'ai',
       importance: 'high',
       description:
         'Google의 멀티모달 AI 모델. 1M 토큰 컨텍스트, 이미지/PDF/비디오 분석, Google Search Grounding으로 실시간 웹 검색 지원',
       implementation:
         '→ Vision Agent 전용. 대시보드 스크린샷 분석, 대용량 로그 분석(1M 컨텍스트), URL 문서 분석 담당. Graceful Degradation으로 장애 시 기존 에이전트 정상 동작 보장',
-      version: 'gemini-2.5-flash-lite',
+      version: 'gemini-2.5-flash',
       status: 'active',
       icon: '👁️',
       tags: ['Vision', '1M-Context', 'Multimodal', 'Search-Grounding'],

@@ -8,13 +8,14 @@
  */
 
 import type { NextRequest } from 'next/server';
+import { withAuth } from '@/lib/auth/api-auth';
 import { logger } from '@/lib/logging';
 import { MonitoringContext } from '@/services/monitoring/MonitoringContext';
 
 const POLL_INTERVAL_MS = 30_000;
 const MAX_DURATION_MS = 5 * 60 * 1000; // 5분 후 자동 종료
 
-export async function GET(_request: NextRequest) {
+export const GET = withAuth(async (_request: NextRequest) => {
   const encoder = new TextEncoder();
   let aborted = false;
 
@@ -72,4 +73,4 @@ export async function GET(_request: NextRequest) {
       'X-Accel-Buffering': 'no',
     },
   });
-}
+});

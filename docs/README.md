@@ -1,6 +1,6 @@
 # OpenManager AI Documentation
 
-> OpenManager 문서 허브와 학습 경로를 제공하는 인덱스
+> OpenManager 문서 허브 — 개발 결과물과 개발환경을 중심으로 구성
 > Owner: documentation
 > Status: Active Canonical
 > Doc type: Explanation
@@ -9,51 +9,36 @@
 > Tags: docs,index,navigation
 >
 > Project: OpenManager AI v8.0.0
-> Last verified against code: 2026-02-13
+> Last verified against code: 2026-02-14
 
-## Canonical Docs (Active)
+**이 프로젝트는 포트폴리오 & 바이브 코딩 학습 목적으로 개발되었습니다.**
+AI Native 도구(Claude Code, Codex, Gemini)로 서버 모니터링 플랫폼을 구축하는 과정 자체가 핵심 결과물입니다.
 
-- [Quick Start](./QUICK-START.md)
-- [Development](./development/README.md)
-- [Vibe Coding](./vibe-coding/README.md)
-- [Guides](./guides/README.md)
-- [Reference](./reference/README.md)
-- [Troubleshooting](./troubleshooting/README.md)
+## 문서 구성
 
-## Documentation Map
+| 섹션 | 내용 | 비고 |
+|------|------|------|
+| **[개발 결과물](./reference/README.md)** | 시스템 아키텍처, AI 엔진, 데이터 파이프라인 | 무엇을 만들었나 |
+| **[개발환경 & 바이브 코딩](./vibe-coding/README.md)** | AI 도구 세팅, MCP, Agent Teams, 워크플로우 | 어떻게 만들었나 |
+| **[개발 가이드](./development/README.md)** | 프로젝트 셋업, 코딩 표준, 테스트 | 개발 규칙 |
+| **[가이드](./guides/README.md)** | AI 표준, 테스트 전략, 옵저버빌리티 | 운영 지침 |
+| **[트러블슈팅](./troubleshooting/README.md)** | 자주 발생하는 문제와 해결법 | 문제 해결 |
 
-```text
-docs/
-├── README.md
-├── QUICK-START.md
-├── DEVELOPMENT.md
-├── development/
-├── vibe-coding/
-├── guides/
-├── reference/
-├── troubleshooting/
-├── archived/   # 임시 보관(기본 삭제 대상), decisions만 예외 보존
-├── analysis/   # Historical
-└── reviews/    # Historical
-```
+## 추천 학습 경로
 
-## Recommended Paths
-
-### New Contributor
+### 결과물 파악 (무엇을 만들었나)
 1. [Quick Start](./QUICK-START.md)
-2. [Development Setup](./development/README.md)
-3. [System Architecture](./reference/architecture/system/system-architecture-current.md)
-4. [Documentation Management](./development/documentation-management.md)
+2. [System Architecture](./reference/architecture/system/system-architecture-current.md)
+3. [AI Engine Architecture](./reference/architecture/ai/ai-engine-architecture.md)
+4. [API Endpoints](./reference/api/endpoints.md)
 
-### AI Collaboration
-1. [Vibe Coding](./vibe-coding/README.md)
-2. [AI Standards](./guides/ai/common/ai-standards.md)
-3. [AGENTS.md](../AGENTS.md)
-
-### Runtime and API
-1. [Reference Home](./reference/README.md)
-2. [API Endpoints](./reference/api/endpoints.md)
-3. [System Architecture (Hybrid 포함)](./reference/architecture/system/system-architecture-current.md)
+### 개발환경 파악 (어떻게 만들었나)
+1. [Vibe Coding 개요](./vibe-coding/README.md)
+2. [AI 도구 세팅](./vibe-coding/setup.md)
+3. [MCP 서버 구성](./vibe-coding/mcp-servers.md)
+4. [Agent Teams & 워크플로우](./vibe-coding/workflows.md)
+5. [AI Standards](./guides/ai/ai-standards.md)
+6. [AGENTS.md](../AGENTS.md)
 
 ## Historical Documents
 
