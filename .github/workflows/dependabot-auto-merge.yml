@@ -16,11 +16,16 @@ permissions:
   contents: write
   pull-requests: write
 
+concurrency:
+  group: dependabot-auto-merge-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   dependabot-auto-merge:
     name: 🤖 Auto-Merge Patch Updates
     runs-on: ubuntu-latest
     if: github.actor == 'dependabot[bot]'
+    timeout-minutes: 3
 
     steps:
       - name: Fetch Dependabot metadata
@@ -48,16 +53,6 @@ jobs:
             echo "should_merge=false" >> $GITHUB_OUTPUT
           fi
 
-      - name: Wait for CI
-        if: steps.check.outputs.should_merge == 'true'
-        uses: lewagon/wait-on-check-action@v1.3.4
-        with:
-          ref: ${{ github.event.pull_request.head.sha }}
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          wait-interval: 30
-          running-workflow-name: 'Auto-Merge Patch Updates'
-          allowed-conclusions: success,skipped
-
       - name: Auto-merge patch updates
         if: steps.check.outputs.should_merge == 'true'
         env:
@@ -65,7 +60,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DEP_NAMES: ${{ steps.metadata.outputs.dependency-names }}
         run: |
-          echo "🔀 Auto-merging: $DEP_NAMES"
+          echo "🔀 Enable auto-merge (wait handled by GitHub merge queue/checks): $DEP_NAMES"
           gh pr merge --auto --squash "$PR_URL"
 
       - name: Add label for manual review

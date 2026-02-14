@@ -1,16 +1,29 @@
-name: CI/CD Lightweight (2025 Standard)
+name: CI/CD Core Gates
 
-# 🚀 2025년 Non-blocking CI/CD 표준
-# - Push 성공률: 99% (이전 70%)
-# - 배포 시간: 70% 단축
-# - 개발자 스트레스: 90% 감소
-# - GitHub Actions: 항상 성공 (빨간 X 제거)
+# PR/main 보호용 차단형 CI
+# - lint/type/test 실패 시 즉시 차단
+# - skip ci는 push 이벤트에서만 허용
 
 on:
   push:
     branches: [main, develop]
+    paths-ignore:
+      - 'docs/**'
+      - '**/*.md'
+      - '.github/workflows/docs-quality.yml'
   pull_request:
     branches: [main]
+    paths-ignore:
+      - 'docs/**'
+      - '**/*.md'
+      - '.github/workflows/docs-quality.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-core-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 env:
   NODE_VERSION: '24'  # .nvmrc와 일치
@@ -27,7 +40,7 @@ jobs:
     name: Essential Check
     runs-on: ubuntu-latest
     # Fast Track: commit 메시지에 [skip ci] 포함 시 완전 스킵
-    if: "!contains(github.event.head_commit.message, '[skip ci]')"
+    if: ${{ github.event_name != 'push' || !contains(github.event.head_commit.message, '[skip ci]') }}
     steps:
       - uses: actions/checkout@v4
 
@@ -97,119 +110,50 @@ jobs:
         timeout-minutes: 2
         run: |
           echo "🚀 Biome Check 시작..."
-
-          # Biome check (빠른 lint + format 검증)
-          if npm run check; then
-            echo "✅ Biome 검사 통과 (에러 0개)"
-          else
-            echo "⚠️ Biome에서 문제 발견"
-            echo "📋 요약: npm run check 실행 결과"
-            npm run check 2>&1 | grep -E "Found|error|warning" | tail -3 || true
-            echo ""
-            echo "💡 로컬에서 'npm run lint:fix'로 자동 수정 가능"
-
-            # main 브랜치는 에러만 실패, 다른 브랜치는 경고
-            if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
-              # Main 브랜치에서 에러가 있으면 실패
-              if npm run check 2>&1 | grep -q "Found.*error"; then
-                echo "🚨 Main 브랜치 - Biome 에러로 인한 실패"
-                exit 1
-              else
-                echo "⚠️ Main 브랜치 - 경고만 있음 (계속 진행)"
-              fi
-            else
-              echo "⚠️ Feature 브랜치 - Biome 경고 (빌드 계속 진행)"
-            fi
-          fi
+          npm run check
+          echo "✅ Biome 검사 통과"
 
       - name: TypeScript Check
         timeout-minutes: 2
         run: |
           echo "🚀 TypeScript 체크 시작..."
-
-          # TypeScript 빠른 체크
-          if npm run type-check:fast; then
-            echo "✅ TypeScript 체크 통과!"
-          else
-            echo "⚠️ TypeScript 에러 발견"
-            echo "💡 로컬 개발 환경에서 'npm run type-check'로 상세 확인 권장"
-
-            # main 브랜치는 실패, 다른 브랜치는 경고
-            if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
-              echo "🚨 Main 브랜치 - TypeScript 오류로 인한 실패"
-              exit 1
-            else
-              echo "⚠️ Feature 브랜치 - TypeScript 경고 (빌드 계속 진행)"
-            fi
-          fi
+          npm run type-check
+          echo "✅ TypeScript 체크 통과"
 
       - name: Fast CI Tests
         timeout-minutes: 3
         run: |
           echo "🧪 빠른 CI 테스트 실행 시작..."
           echo "📊 핵심 유닛 테스트만 실행하여 빠른 피드백 제공"
+          npm run test:quick
+          echo "✅ 핵심 테스트 모두 통과"
 
-          # Rollup binary 확인 (WSL/Linux 환경 이슈 대응)
-          if npm list @rollup/rollup-linux-x64-gnu > /dev/null 2>&1; then
-            echo "✅ Rollup binary 확인됨"
-
-            # 빠른 CI 테스트 실행 (핵심 유닛 테스트만)
-            if npm run test:quick; then
-              echo "✅ 핵심 테스트 모두 통과!"
-            else
-              echo "❌ 핵심 테스트 실패 감지"
-              echo "📋 실패한 테스트:"
-              npm run test:quick 2>&1 | grep -E "(FAIL|Error|✗)" || echo "상세 로그를 확인하세요"
-
-              # 브랜치별 차등 처리
-              if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
-                echo "🚨 Main 브랜치 - 핵심 테스트 실패로 인한 빌드 중단"
-                exit 1
-              else
-                echo "⚠️ Feature 브랜치 - 테스트 실패 경고 (계속 진행)"
-                echo "💡 로컬에서 'npm run test'로 전체 테스트 실행 권장"
-              fi
-            fi
-          else
-            echo "⚠️ Rollup binary 누락 - 테스트 스킵"
-            echo "ℹ️  WSL/Linux 환경에서 Rollup optional dependency 이슈 발생"
-            echo "::group::📝 해결 방법"
-            echo "   1. package-lock.json과 node_modules 삭제 후 npm install 재실행"
-            echo "   2. 또는 로컬 환경에서 테스트 실행 확인"
-            echo "   3. 참고: https://github.com/npm/cli/issues/4828"
-            echo "::endgroup::"
-            echo "✅ 테스트 스킵됨 (CI 통과)"
-          fi
-
-  # 🔒 보안 검사 (main 브랜치만)
+  # 🔒 보안 검사 (main/pull_request 차단형)
   security-scan:
     name: Security Scan
     runs-on: ubuntu-latest
-    if: "github.ref == 'refs/heads/main' && !contains(github.event.head_commit.message, '[skip ci]')"
-    continue-on-error: true # 보안 검사는 차단하지 않음
+    if: ${{ github.event_name == 'pull_request' || github.ref == 'refs/heads/main' }}
     steps:
       - uses: actions/checkout@v4
 
       - name: Hardcoded Secrets Check
         run: |
           if [ -f "scripts/env/check-hardcoded-secrets.js" ]; then
-            node scripts/env/check-hardcoded-secrets.js || {
-              echo "⚠️ 하드코딩된 시크릿 발견!"
-              exit 1  # 시크릿은 실제로 실패 처리
-            }
+            node scripts/env/check-hardcoded-secrets.js
           fi
 
   # ✅ 배포 준비 상태
   deployment-ready:
     name: Deployment Ready
     runs-on: ubuntu-latest
-    needs: [essential-check]
-    if: "always() && !contains(github.event.head_commit.message, '[skip ci]')"
+    needs: [essential-check, security-scan]
+    if: ${{ always() && (github.event_name != 'push' || !contains(github.event.head_commit.message, '[skip ci]')) }}
     steps:
       - name: Summary
         run: |
           echo "📊 CI/CD 결과 요약"
           echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
           echo "✅ 필수 검증: ${{ needs.essential-check.result }}"
+          echo "✅ 보안 검증: ${{ needs.security-scan.result }}"
           echo "🚀 Vercel 배포: 준비 완료"
           echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
