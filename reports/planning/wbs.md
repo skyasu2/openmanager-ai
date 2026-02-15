@@ -76,7 +76,8 @@
 | 영역 | 완성도 | 근거 |
 |------|:------:|------|
 | Dashboard 컴포넌트 (22파일) | 96% | transition/ 데드코드 삭제, 모든 컴포넌트 활성 |
-| AI Sidebar (15파일) | 95% | useChat → useHybridAIQuery, Streaming+Job Queue |
+| AI Sidebar (V4, 15파일) | 95% | `useAIChatCore` 공통화 + Streaming/Job Queue/명확화/RAG 출처 표시 |
+| AI 전체페이지 (`/dashboard/ai-assistant`) | 93% | `AIWorkspace` 풀스크린 레이아웃 + 기능 페이지 통합, 라우팅 정합성 수정 |
 | Landing Page | 90% | OAuth, 시스템 제어, 웜업, 애니메이션 |
 | 상태관리 (Zustand 4개) | 100% | persist, devtools, useShallow 최적화, 미사용 selector 정리 |
 | 미사용 컴포넌트 | 0개 | 4차 정리 검증 (SystemBootSequence, FloatingSystemControl, Sparkline, Modal 등 삭제) |
@@ -328,6 +329,8 @@
 | Cloud Build free-tier 파라미터 고정 | 완료 | `cloud-run/ai-engine/cloudbuild.yaml:104`, `cloud-run/ai-engine/cloudbuild.yaml:113`, `cloud-run/ai-engine/cloudbuild.yaml:117` |
 | Docker 헬스체크/그레이스풀 종료 | 완료 | `cloud-run/ai-engine/Dockerfile:144`, `cloud-run/ai-engine/Dockerfile:152` |
 | Cloud Run 단독 통합/E2E 파이프라인 | 미완료 | 3.3장 잔여 이슈(Cloud Run 단독 통합 테스트 없음) |
+| 저비용 필수 스모크 스크립트(배포 검증) | 완료 | `scripts/test/cloud-deploy-essential-smoke.mjs`, `package.json` |
+| 토큰 사용 제어(기본 0회, 옵션 1회) | 완료 | `scripts/test/cloud-deploy-essential-smoke.mjs` |
 
 분석:
 - 운영 안정화(보안/폴백/배포 가드레일)는 높은 수준으로 완료.
@@ -339,8 +342,109 @@
    대상: `/health`, `/api/ai/supervisor`, `/api/ai/supervisor/stream/v2`
 2. P2: AI Assistant 회귀 E2E 고정 시나리오 추가  
    대상: 인증, 보안 차단, 스트리밍 재개, 폴백 응답
+3. P2: AI Sidebar/AI 전체페이지 사용자 흐름 E2E 추가  
+   대상: 열기/닫기, 전체화면 전환, 세션 재개, RAG 출처 렌더링
+4. P2: Redis+Supabase RAG 통합 스모크 자동화  
+   대상: `searchKnowledgeBase` 결과 → `ragSources` → 프론트 배지 노출
+
+### 7.4 AI Sidebar 완성도 체크리스트 (코드 점검)
+
+| 항목 | 상태 | 근거 |
+|------|:----:|------|
+| 대시보드 동적 로드 + 전역 오픈 상태 연결 | 완료 | `src/app/dashboard/DashboardClient.tsx:46`, `src/app/dashboard/DashboardClient.tsx:177` |
+| 권한 기반 렌더링 가드 | 완료 | `src/components/ai-sidebar/AISidebarV4.tsx:369` |
+| 공통 채팅 코어(`useAIChatCore`) 사용 | 완료 | `src/components/ai-sidebar/AISidebarV4.tsx:313`, `src/hooks/ai/useAIChatCore.ts:106` |
+| Streaming + Job Queue 하이브리드 동작 | 완료 | `src/hooks/ai/useAIChatCore.ts:168`, `src/app/api/ai/jobs/route.ts:1` |
+| 스트림 재개(Resumable) 연동 | 완료 | `src/app/api/ai/supervisor/stream/v2/route.ts:87`, `src/app/api/ai/supervisor/stream/v2/upstash-resumable.ts:40` |
+| UI 상호작용(리사이즈/ESC/스와이프) | 완료 | `src/components/ai-sidebar/AISidebarV4.tsx:250`, `src/components/ai-sidebar/AISidebarV4.tsx:325`, `src/components/ai-sidebar/AISidebarV4.tsx:347` |
+| 웹 검색 토글/세션 상태 영속화 | 완료 | `src/stores/useAISidebarStore.ts:306`, `src/stores/useAISidebarStore.ts:315` |
+| RAG 출처/분석근거 배지 노출 | 완료 | `src/components/ai-sidebar/AISidebarV4.tsx:175`, `src/hooks/ai/utils/message-helpers.ts:140`, `src/hooks/ai/utils/message-helpers.test.ts` |
+| Sidebar 전용 컴포넌트 회귀 테스트 | 부분완료 | `AIWorkspace` 테스트는 존재하나 `AISidebarV4` 직접 테스트 부재 (`src/components/ai/AIWorkspace.test.tsx:136`) |
+
+점검 결론:
+- 구현 완성도는 높음(약 95%).
+- 남은 갭은 `AISidebarV4` 단위/상호작용 회귀 자동화.
+
+### 7.5 AI 전체페이지 완성도 체크리스트 (코드 점검)
+
+| 항목 | 상태 | 근거 |
+|------|:----:|------|
+| 전용 라우트 제공 (`/dashboard/ai-assistant`) | 완료 | `src/app/dashboard/ai-assistant/page.tsx:5` |
+| 풀스크린 워크스페이스 레이아웃 | 완료 | `src/components/ai/AIWorkspace.tsx:207` |
+| 공통 채팅 코어 + 기능 페이지 통합 | 완료 | `src/components/ai/AIWorkspace.tsx:90`, `src/components/ai/AIWorkspace.tsx:188` |
+| Auto Report / Intelligent Monitoring 페이지 로딩 | 완료 | `src/components/ai/AIContentArea.tsx:58`, `src/components/ai/AIContentArea.tsx:67` |
+| 사이드바→전체화면 전환 경로 정합성 | 완료 | `src/components/ai/AIAssistantIconPanel.tsx:189`, `src/components/ai/AIWorkspace.tsx:142` |
+| Hydration 안전 처리 | 완료 | `src/components/ai/AIWorkspace.tsx:66`, `src/components/ai/AIWorkspace.tsx:124` |
+| 단위 테스트(기본 렌더/네비게이션/경로 회귀) | 완료 | `src/components/ai/AIWorkspace.test.tsx:136` |
+| 라우트 레벨 E2E (`/dashboard/ai-assistant`) | 미완료 | Playwright 고정 시나리오 부재 (WBS 잔여) |
+
+점검 결론:
+- 기능 구현은 안정권(약 93%).
+- `/dashboard/ai-assistant` 기준 브라우저 E2E가 다음 우선 보강 항목.
+
+### 7.6 Redis + Supabase RAG 체크리스트 (코드 점검)
+
+| 항목 | 상태 | 근거 |
+|------|:----:|------|
+| 저장소 경계 분리(Redis=일시 상태, Supabase=영속/RAG) | 완료 | `src/app/api/ai/jobs/route.ts:1`, `cloud-run/ai-engine/src/tools-ai-sdk/reporter-tools/knowledge.ts:343` |
+| Redis Job Queue 저장/조회(MGET 최적화 포함) | 완료 | `src/app/api/ai/jobs/route.ts:107`, `src/app/api/ai/jobs/route.ts:205` |
+| Redis 기반 Stream v2 세션/청크 재개 | 완료 | `src/app/api/ai/supervisor/stream/v2/stream-state.ts:22`, `src/app/api/ai/supervisor/stream/v2/upstash-resumable.ts:174` |
+| Redis 장애 시 방어(가용성 우선/폴백 응답) | 완료 | `src/lib/redis/client.ts:50`, `src/app/api/ai/jobs/route.ts:66` |
+| Supabase 피드백 영속 저장 | 완료 | `src/app/api/ai/feedback/route.ts:43`, `src/app/api/ai/feedback/route.ts:148` |
+| Supabase 장애 보고서 영속 저장/조회 | 완료 | `src/app/api/ai/incident-report/route.ts:166`, `src/app/api/ai/incident-report/route.ts:309` |
+| Cloud Run GraphRAG 검색 + Supabase 미가용 폴백 | 완료 | `cloud-run/ai-engine/src/tools-ai-sdk/reporter-tools/knowledge.ts:345`, `cloud-run/ai-engine/src/tools-ai-sdk/reporter-tools/knowledge.ts:527` |
+| 승인 기반 Incident→RAG 자동 주입/주기 백필 | 완료 | `cloud-run/ai-engine/src/services/approval/approval-store.ts:325`, `cloud-run/ai-engine/src/server.ts:405` |
+| `ragSources` 백엔드→프론트 전달 | 완료 | `cloud-run/ai-engine/src/routes/supervisor.ts:201`, `src/hooks/ai/utils/message-helpers.ts:141` |
+| Redis+Supabase 동시 장애/지연 통합 회귀 테스트 | 부분완료 | 단위 테스트 중심, 실연동 통합 자동화 미흡 (`3.3 테스트 65%`) |
+
+점검 결론:
+- 아키텍처 경계와 주요 경로는 구현 완료(약 89%).
+- 잔여 리스크는 “실서비스 의존 통합 회귀” 자동화 부족.
+
+### 7.7 클라우드 배포 최소 필수 테스트 정책 (비용 최적화)
+
+목표:
+- 배포 환경에서 장애를 빨리 탐지하되, 무료/저비용 범위를 벗어나지 않도록 검증 호출 수를 최소화.
+
+| 항목 | 상태 | 근거 |
+|------|:----:|------|
+| 기본 검증은 LLM 비호출 3개 엔드포인트만 수행 | 완료 | `scripts/test/cloud-deploy-essential-smoke.mjs` |
+| `/health` 필수 | 완료 | `scripts/test/cloud-deploy-essential-smoke.mjs` |
+| `/warmup` 필수 | 완료 | `scripts/test/cloud-deploy-essential-smoke.mjs` |
+| `/api/ai/supervisor/health` 인증 검증 | 완료 | `scripts/test/cloud-deploy-essential-smoke.mjs` |
+| 인증키 미제공 시 비용 높은 테스트 자동 스킵 | 완료 | `scripts/test/cloud-deploy-essential-smoke.mjs` |
+| 실제 추론 테스트는 기본 비활성화(옵션 1회) | 완료 | `scripts/test/cloud-deploy-essential-smoke.mjs` |
+| 실행 스크립트 표준화(`npm run test:cloud:essential*`) | 완료 | `package.json` |
+| 운영 가이드 반영 | 완료 | `cloud-run/ai-engine/README.md` |
+
+권장 운영 순서:
+1. `npm run test:cloud:essential -- --url=<CLOUD_RUN_URL>`
+2. (릴리즈 직전 1회만) `npm run test:cloud:essential:llm-once -- --url=<CLOUD_RUN_URL>`
+
+실행 검증 (2026-02-15):
+- `strict`(인증 필수, LLM 0회): 3/3 PASS
+- `llm-once`(추론 1회): 4/4 PASS
+- 검증 대상: `https://ai-engine-490817238363.asia-northeast1.run.app`
+
+### 7.8 WSL 문서 관리 영역 체크리스트
+
+목표:
+- WSL 환경에서 문서 품질 점검을 표준화하고, 점검 산출물을 고정 경로에 저장해 재현성을 확보.
+
+| 항목 | 상태 | 근거 |
+|------|:----:|------|
+| WSL 전용 문서 점검 스크립트 제공 | 완료 | `scripts/wsl/docs-management-check.sh` |
+| WSL 환경 감지(비-WSL 실행 차단) | 완료 | `scripts/wsl/docs-management-check.sh` |
+| 점검 산출물 전용 경로 생성 | 완료 | `logs/docs-reports/wsl/` |
+| 기본 점검 명령 표준화(`docs:check:wsl`) | 완료 | `package.json` |
+| strict 점검 명령 표준화(`docs:check:wsl:strict`) | 완료 | `package.json` |
+| 문서 관리 가이드 반영 | 완료 | `docs/development/documentation-management.md` |
+
+권장 실행:
+1. `npm run docs:check:wsl`
+2. `npm run docs:check:wsl:strict` (문서 변경 PR 전)
 
 ---
 
 _분석 기준: 4개 병렬 탐색 에이전트로 src/, cloud-run/, scripts/ 전체 코드 분석_
-_최종 갱신: 2026-02-15 (OTel 데이터 품질 개선 + Cloud Run 보안 강화 반영)_
+_최종 갱신: 2026-02-15 (AI Sidebar/AI 전체페이지/Redis+Supabase RAG + Cloud 저비용 필수 테스트 정책 + WSL 문서 관리 체크리스트 반영)_
