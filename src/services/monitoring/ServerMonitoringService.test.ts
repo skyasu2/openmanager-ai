@@ -355,6 +355,19 @@ describe('ServerMonitoringService', () => {
 
       expect(enhanced.networkInfo.status).toBe('offline');
     });
+
+    it('keeps networkInfo bytes fields as bytes/sec and percent in separate fields', () => {
+      const metric = makeApiMetric({ network: 80, serverType: 'web' });
+      vi.mocked(metricsProvider.getServerMetrics).mockReturnValue(metric);
+
+      const processed = service.getProcessedServer('web-01')!;
+      const enhanced = service.toEnhancedMetrics(processed);
+
+      expect(enhanced.networkInfo.receivedBytes).toMatch(/\/s$/);
+      expect(enhanced.networkInfo.sentBytes).toMatch(/\/s$/);
+      expect(enhanced.networkInfo.receivedUtilizationPercent).toBe(56);
+      expect(enhanced.networkInfo.sentUtilizationPercent).toBe(24);
+    });
   });
 
   // ── toPaginatedServer projection ─────────────────────────────────

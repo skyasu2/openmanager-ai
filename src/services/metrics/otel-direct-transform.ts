@@ -26,10 +26,12 @@ import {
 import type { EnhancedServerMetrics } from '@/services/server-data/server-data-types';
 import type { OTelHourlySlot, OTelResourceCatalog } from '@/types/otel-metrics';
 import type { MetricsHistory } from '@/types/server';
+import { formatBytes } from '@/utils/utils-functions';
 
 import {
   normalizeNetworkUtilizationPercent,
   normalizeUtilizationPercent,
+  percentToBytesPerSecond,
 } from './metric-normalization';
 import { determineStatus } from './metric-transformers';
 
@@ -66,6 +68,10 @@ function fallback(
     );
   }
   return defaultValue;
+}
+
+function formatEstimatedNetworkRate(utilizationPercent: number): string {
+  return `${formatBytes(percentToBytesPerSecond(utilizationPercent))}/s`;
 }
 
 // ============================================================================
@@ -274,8 +280,10 @@ export function otelSlotToServers(
       },
       networkInfo: {
         interface: 'eth0',
-        receivedBytes: `${networkIn}%`,
-        sentBytes: `${networkOut}%`,
+        receivedBytes: formatEstimatedNetworkRate(networkIn),
+        sentBytes: formatEstimatedNetworkRate(networkOut),
+        receivedUtilizationPercent: networkIn,
+        sentUtilizationPercent: networkOut,
         receivedErrors,
         sentErrors,
         status,

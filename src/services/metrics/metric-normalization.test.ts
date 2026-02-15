@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   normalizeNetworkUtilizationPercent,
   normalizeUtilizationPercent,
+  percentToBytesPerSecond,
 } from './metric-normalization';
 
 describe('normalizeUtilizationPercent', () => {
@@ -41,5 +42,17 @@ describe('normalizeNetworkUtilizationPercent', () => {
     expect(
       normalizeNetworkUtilizationPercent(Number.POSITIVE_INFINITY, 'By/s')
     ).toBe(0);
+  });
+});
+
+describe('percentToBytesPerSecond', () => {
+  it('퍼센트 값을 bytes/sec로 변환한다 (기본 1Gbps)', () => {
+    expect(percentToBytesPerSecond(50)).toBe(62_500_000);
+    expect(percentToBytesPerSecond(100)).toBe(125_000_000);
+  });
+
+  it('범위를 벗어난 입력은 0~100으로 클램프한다', () => {
+    expect(percentToBytesPerSecond(-1)).toBe(0);
+    expect(percentToBytesPerSecond(150)).toBe(125_000_000);
   });
 });

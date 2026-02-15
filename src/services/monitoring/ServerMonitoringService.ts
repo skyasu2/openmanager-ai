@@ -19,12 +19,14 @@ import {
   type ApiServerMetrics,
   metricsProvider,
 } from '@/services/metrics/MetricsProvider';
+import { percentToBytesPerSecond } from '@/services/metrics/metric-normalization';
 import type { SystemSummary } from '@/services/metrics/types';
 import {
   deriveNetworkSplit,
   estimateLoad15,
 } from '@/services/server-data/server-data-transformer';
 import type { EnhancedServerMetrics, Server } from '@/types/server';
+import { formatBytes } from '@/utils/utils-functions';
 import type { ProcessedServerData } from './types';
 
 // ── OS label builder (DERIVED from Prometheus labels.os + labels.os_version) ──
@@ -43,6 +45,10 @@ function calculateUptime(metric: ApiServerMetrics): number {
   }
   // bootTimeSeconds가 없으면 uptime 알 수 없음
   return 0;
+}
+
+function formatEstimatedNetworkRate(utilizationPercent: number): string {
+  return `${formatBytes(percentToBytesPerSecond(utilizationPercent))}/s`;
 }
 
 // ── Specs builder (SOURCE from Prometheus nodeInfo, undefined if absent) ───────
@@ -238,8 +244,10 @@ export class ServerMonitoringService {
       },
       networkInfo: {
         interface: 'eth0',
-        receivedBytes: `${p.networkIn}%`,
-        sentBytes: `${p.networkOut}%`,
+        receivedBytes: formatEstimatedNetworkRate(p.networkIn),
+        sentBytes: formatEstimatedNetworkRate(p.networkOut),
+        receivedUtilizationPercent: p.networkIn,
+        sentUtilizationPercent: p.networkOut,
         receivedErrors: 0,
         sentErrors: 0,
         status: p.status === 'offline' ? 'offline' : 'online',
@@ -287,8 +295,10 @@ export class ServerMonitoringService {
       },
       networkInfo: {
         interface: 'eth0',
-        receivedBytes: `${p.networkIn}%`,
-        sentBytes: `${p.networkOut}%`,
+        receivedBytes: formatEstimatedNetworkRate(p.networkIn),
+        sentBytes: formatEstimatedNetworkRate(p.networkOut),
+        receivedUtilizationPercent: p.networkIn,
+        sentUtilizationPercent: p.networkOut,
         receivedErrors: 0,
         sentErrors: 0,
         status: p.status === 'offline' ? 'offline' : 'online',

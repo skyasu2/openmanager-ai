@@ -69,3 +69,19 @@ export function normalizeNetworkUtilizationPercent(
 
   return roundToTenth(clampPercent(value));
 }
+
+/**
+ * Convert network utilization percent(0-100) to estimated bytes/sec.
+ * Uses the same default link capacity baseline as normalization.
+ */
+export function percentToBytesPerSecond(
+  percent: number,
+  capacityBytesPerSec: number = DEFAULT_NETWORK_CAPACITY_BYTES_PER_SEC
+): number {
+  if (!Number.isFinite(percent)) return 0;
+  const clampedPercent = clampPercent(percent);
+  const safeCapacity = Number.isFinite(capacityBytesPerSec)
+    ? Math.max(0, capacityBytesPerSec)
+    : DEFAULT_NETWORK_CAPACITY_BYTES_PER_SEC;
+  return (clampedPercent / 100) * safeCapacity;
+}

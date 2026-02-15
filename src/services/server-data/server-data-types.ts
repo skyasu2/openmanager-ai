@@ -58,6 +58,8 @@ export interface EnhancedServerMetrics {
     interface: string;
     receivedBytes: string;
     sentBytes: string;
+    receivedUtilizationPercent?: number;
+    sentUtilizationPercent?: number;
     receivedErrors: number;
     sentErrors: number;
     status:

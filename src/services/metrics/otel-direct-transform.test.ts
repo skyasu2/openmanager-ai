@@ -279,6 +279,14 @@ describe('otelSlotToServers', () => {
     expect(result[0].systemInfo.os).toBe('linux');
     expect(result[0].networkInfo).toBeDefined();
     expect(result[0].networkInfo.interface).toBe('eth0');
+    expect(result[0].networkInfo.receivedBytes).toMatch(/\/s$/);
+    expect(result[0].networkInfo.sentBytes).toMatch(/\/s$/);
+    expect(result[0].networkInfo.receivedUtilizationPercent).toBe(
+      result[0].network_in
+    );
+    expect(result[0].networkInfo.sentUtilizationPercent).toBe(
+      result[0].network_out
+    );
     expect(result[0].specs.cpu_cores).toBe(4);
     expect(result[0].specs.memory_gb).toBe(8);
     expect(result[0].specs.disk_gb).toBe(100);

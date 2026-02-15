@@ -91,9 +91,11 @@ export interface EnhancedServerData {
     interface: string;
     receivedBytes: string;
     sentBytes: string;
+    receivedUtilizationPercent?: number;
+    sentUtilizationPercent?: number;
     receivedErrors: number;
     sentErrors: number;
-    status: 'online' | 'warning' | 'critical';
+    status: 'online' | 'offline' | 'warning' | 'critical';
   };
 }
 

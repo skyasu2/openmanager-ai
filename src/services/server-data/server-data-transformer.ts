@@ -14,11 +14,13 @@
 import { getServerStatus } from '@/config/rules/loader';
 import { getServerIP } from '@/config/server-registry';
 import { getServicesForServer } from '@/config/server-services-map';
+import { percentToBytesPerSecond } from '@/services/metrics/metric-normalization';
 import type {
   EnhancedServerMetrics,
   PrometheusTargetData,
   RawServerData,
 } from '@/services/server-data/server-data-types';
+import { formatBytes } from '@/utils/utils-functions';
 
 /**
  * PrometheusTargetData -> RawServerData 변환
@@ -103,6 +105,10 @@ export function deriveNetworkSplit(
     networkIn: Math.round(transmitRate * rxRatio),
     networkOut: Math.round(transmitRate * txRatio),
   };
+}
+
+function formatEstimatedNetworkRate(utilizationPercent: number): string {
+  return `${formatBytes(percentToBytesPerSecond(utilizationPercent))}/s`;
 }
 
 /**
@@ -249,8 +255,10 @@ export function convertToEnhancedMetrics(
     },
     networkInfo: {
       interface: 'eth0',
-      receivedBytes: `${networkIn}%`,
-      sentBytes: `${networkOut}%`,
+      receivedBytes: formatEstimatedNetworkRate(networkIn),
+      sentBytes: formatEstimatedNetworkRate(networkOut),
+      receivedUtilizationPercent: networkIn,
+      sentUtilizationPercent: networkOut,
       receivedErrors,
       sentErrors,
       status,
