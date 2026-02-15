@@ -26,6 +26,8 @@ export default defineConfig({
       'src/app/api/ai/supervisor/security.test.ts',
       // Phase 2 추가: metrics
       'src/services/metrics/variation-generator.test.ts',
+      // Phase 3 추가: monitoring
+      'src/services/monitoring/HealthCalculator.test.ts',
       // 참고: integration 테스트는 jsdom 필요하므로 vitest.config.ts 사용
     ],
     exclude: [
