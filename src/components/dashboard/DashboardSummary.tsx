@@ -282,8 +282,8 @@ export const DashboardSummary: React.FC<DashboardSummaryProps> = ({
           />
         )}
 
-        <div className="relative z-10 flex items-center justify-between px-3">
-          <div className="flex items-center gap-3 min-w-0">
+        <div className="relative z-10 flex flex-wrap items-center justify-between gap-2 px-3">
+          <div className="flex items-center gap-3">
             {/* 동적 아이콘 박스 */}
             <div
               className={`relative flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl shadow-md bg-linear-to-br ${systemHealthGradient.gradient} text-white`}
@@ -296,7 +296,7 @@ export const DashboardSummary: React.FC<DashboardSummaryProps> = ({
                 />
               )}
             </div>
-            <div className="min-w-0">
+            <div className="whitespace-nowrap">
               <div className="text-2xs font-bold uppercase tracking-wider text-gray-400 leading-tight">
                 시스템 상태
               </div>
