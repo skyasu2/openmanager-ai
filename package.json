@@ -164,7 +164,6 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "crypto-js": "^4.2.0",
-    "lightningcss-win32-x64-msvc": "^1.31.1",
     "lucide-react": "^0.564.0",
     "next": "^16.1.6",
     "pino": "^10.3.0",
@@ -236,10 +235,7 @@
     "node": ">=24.0.0 <25.0.0",
     "npm": ">=10.0.0"
   },
-  "optionalDependencies": {
-    "@biomejs/cli-linux-x64": "^2.3.11",
-    "@biomejs/cli-win32-x64": "^2.3.8"
-  },
+  "optionalDependencies": {},
   "packageManager": "npm@10.9.2",
   "overrides": {
     "@ai-sdk/react": {
