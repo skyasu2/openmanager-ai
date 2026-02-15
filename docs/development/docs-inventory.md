@@ -8,19 +8,19 @@
 > Canonical: docs/development/docs-inventory.md
 > Tags: docs,inventory,report
 >
-> Auto-generated: 2026-02-14
+> Auto-generated: 2026-02-15
 > Source: `docs/`
 
-- Total files in docs: **64**
-- Total markdown docs: **50**
-- Total markdown lines: **12033**
+- Total files in docs: **68**
+- Total markdown docs: **54**
+- Total markdown lines: **~14,000**
 
 ## Markdown Distribution
 
 | Scope | Count |
 |---|---:|
-| reference | 18 |
-| development | 10 |
+| reference | 20 |
+| development | 12 |
 | guides | 7 |
 | vibe-coding | 7 |
 | archived | 2 |

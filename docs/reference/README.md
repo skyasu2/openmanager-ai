@@ -4,7 +4,7 @@
 > Owner: platform-architecture
 > Status: Active Canonical
 > Doc type: Reference
-> Last reviewed: 2026-02-14
+> Last reviewed: 2026-02-15
 > Canonical: docs/reference/README.md
 > Tags: reference,index,architecture
 
@@ -34,6 +34,8 @@
 ### Infrastructure
 - [Database](./architecture/infrastructure/database.md)
 - [Security](./architecture/infrastructure/security.md)
+- [Resilience (Circuit Breaker & Fallback)](./architecture/infrastructure/resilience.md)
+- [Free Tier Optimization](./architecture/infrastructure/free-tier-optimization.md)
 
 ### System and Design
 - [System Architecture (Current)](./architecture/system/system-architecture-current.md)
