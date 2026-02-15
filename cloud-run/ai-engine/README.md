@@ -221,6 +221,9 @@ CLOUD_RUN_API_SECRET=xxx           # API Key for /api/* endpoints
 ## Testing
 
 ```bash
+# Low-cost production smoke (default: 0 LLM calls)
+npm run test:cloud:essential -- --url=https://ai-engine-xxx.asia-northeast1.run.app
+
 # Unit tests
 npm run test
 
@@ -234,6 +237,12 @@ npm run prompt:view
 # Security red-team tests
 npm run prompt:redteam
 ```
+
+### Cost-safe Cloud validation policy
+
+- Default cloud smoke (`test:cloud:essential`) checks only `/health`, `/warmup`, `/api/ai/supervisor/health`.
+- It skips token-consuming generation calls by default.
+- Use `test:cloud:essential:llm-once` only when you explicitly need a single end-to-end inference check.
 
 ## Deployment
 
