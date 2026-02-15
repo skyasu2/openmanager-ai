@@ -139,7 +139,7 @@ export default function AIWorkspace({ mode, onClose }: AIWorkspaceProps) {
           <div className="flex items-center gap-2">
             <button
               type="button"
-              onClick={() => router.push('/ai')}
+              onClick={() => router.push('/dashboard/ai-assistant')}
               className="text-gray-500 hover:text-gray-900 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:ring-offset-2 rounded-md p-1"
               title="전체 화면으로 보기"
             >

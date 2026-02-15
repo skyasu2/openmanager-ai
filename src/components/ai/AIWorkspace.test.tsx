@@ -8,9 +8,10 @@ import AIWorkspace from '@/components/ai/AIWorkspace';
 
 // Mock next/navigation
 const mockBack = vi.fn();
+const mockPush = vi.fn();
 vi.mock('next/navigation', () => ({
   useRouter: vi.fn(() => ({
-    push: vi.fn(),
+    push: mockPush,
     replace: vi.fn(),
     back: mockBack,
     forward: vi.fn(),
@@ -158,6 +159,15 @@ describe('AIWorkspace', () => {
     fireEvent.click(backButton);
 
     expect(mockBack).toHaveBeenCalled();
+  });
+
+  it('navigates to /dashboard/ai-assistant from sidebar fullscreen button', () => {
+    render(<AIWorkspace mode="sidebar" />);
+
+    const fullscreenButton = screen.getByTitle('전체 화면으로 보기');
+    fireEvent.click(fullscreenButton);
+
+    expect(mockPush).toHaveBeenCalledWith('/dashboard/ai-assistant');
   });
 
   it('displays loading state correctly', async () => {
