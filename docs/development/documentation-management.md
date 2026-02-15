@@ -86,6 +86,20 @@ npm run docs:check:wsl:strict
 - 문서 점검 로그: `logs/docs-reports/wsl/docs-check.log`
 - 예산 점검 로그: `logs/docs-reports/wsl/docs-budget.log`
 
+### 운영 모델 (권장)
+
+WSL 문서 관리는 `단일 허브 + 영역별 분산` 하이브리드로 운영한다.
+
+| 구분 | 위치 | 관리 원칙 |
+|------|------|-----------|
+| 허브(진입점) | `scripts/wsl/docs-management-check.sh`, `docs/development/documentation-management.md` | 실행 명령, 공통 규칙, 로그 경로만 유지 |
+| 영역 문서(분산) | `docs/reference/*`, `docs/guides/*`, `reports/planning/wbs.md` | 도메인별 체크리스트/근거/결론 유지 |
+
+운영 규칙:
+1. WSL 관련 신규 문서는 원칙적으로 생성하지 않고 기존 문서에 병합한다.
+2. WSL 공통 정책 변경은 허브 문서 먼저 수정한 뒤, 필요한 영역 문서를 후속 동기화한다.
+3. PR 전에는 `npm run docs:check:wsl:strict`를 최소 1회 실행한다.
+
 ## 추가된 Skill 분석
 
 1. `openmanager-doc-management` (Codex):
@@ -104,6 +118,7 @@ npm run docs:check:wsl:strict
 3. 예산 리포트에 Rule Results(`DOC-*`)가 출력된다.
 4. 정책/스킬/스크립트 설명이 동일한 메타데이터 기준을 사용한다.
 5. WSL에서 `npm run docs:check:wsl:strict` 실행 시 `logs/docs-reports/wsl/` 하위에 점검 아티팩트가 생성된다.
+6. WSL 문서 관리 정책은 하이브리드(허브+분산) 원칙으로 유지된다.
 
 ## References
 

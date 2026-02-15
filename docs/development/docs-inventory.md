@@ -13,7 +13,7 @@
 
 - Total files in docs: **68**
 - Total markdown docs: **54**
-- Total markdown lines: **13155**
+- Total markdown lines: **13170**
 
 ## Markdown Distribution
 
