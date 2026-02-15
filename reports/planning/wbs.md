@@ -82,12 +82,12 @@
 | 상태관리 (Zustand 4개) | 100% | persist, devtools, useShallow 최적화, 미사용 selector 정리 |
 | 미사용 컴포넌트 | 0개 | 4차 정리 검증 (SystemBootSequence, FloatingSystemControl, Sparkline, Modal 등 삭제) |
 
-### 3.2 API Routes (91%)
+### 3.2 API Routes (92%)
 
 | 라우트 | 구현도 | 인증 | 호출 빈도 |
 |--------|:-----:|:---:|:---------:|
 | `/api/ai/supervisor` | 95% | withAuth | 매우높음 |
-| `/api/ai/supervisor/stream/v2` | 90% | withAuth | 매우높음 |
+| `/api/ai/supervisor/stream/v2` | 100% | withAuth | 매우높음 |
 | `/api/ai/jobs` + `/:id` + `/stream` | 90% | withAuth | 높음 |
 | `/api/ai/incident-report` | 90% | withAuth | 중간 |
 | `/api/servers-unified` | 90% | withAuth | 매우높음 |
@@ -234,14 +234,14 @@
 | 도메인 | 가중치 | 완성도 | 가중 점수 |
 |--------|:------:|:------:|:---------:|
 | Frontend | 20% | 95% | 19.0 |
-| API Routes | 15% | 91% | 13.7 |
+| API Routes | 15% | 92% | 13.8 |
 | AI Engine | 20% | 93% | 18.6 |
 | Server Data | 15% | 98% | 14.7 |
 | Services/Lib | 20% | 92% | 18.4 |
 | 문서/테스트 | 10% | 95% | 9.5 |
-| **합계** | **100%** | | **94.2%** |
+| **합계** | **100%** | | **94.4%** |
 
-**결론: 실제 완성도 ~94%** (88% → 91%(P0 보안) → 93%(서버 데이터) → 94%(데드코드 4차) → 94.2%(OTel 데이터 품질+Cloud Run 보안))
+**결론: 실제 완성도 ~94.4%** (88% → 91% → 93% → 94% → 94.2% → 94.4%(Resume Stream V2))
 
 ---
 
@@ -288,6 +288,7 @@
 | ~~hourly-data 로그 적재~~ | ~~완료~~ | ~~P1~~ |
 | 테스트 커버리지 확대 | ~500줄 | P3 |
 | Resume Stream v2 회귀 테스트 강화 | ~200줄 | P2 |
+| Resume Stream | ~~Blocked~~ | **완료** | Redis V2 구현 (SDK v6 호환) |
 
 ---
 

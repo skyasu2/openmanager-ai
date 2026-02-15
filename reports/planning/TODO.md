@@ -8,7 +8,7 @@
 |------|----------|--------|
 | Resume Stream 재활성화 (`resume: true`) | P1 | Blocked (AI SDK parts 처리 버그 대기) |
 | RAG 시스템 개선 (HyDE, BM25) | P2 | Pending |
-| 통합 테스트 확대 (13.1%→16%) | P3 | Pending |
+| 통합 테스트 확대 (13.1%→16%) | P3 | In Progress (AISidebarV4 + OTel transform 추가) |
 
 ### Completed (2026-02-15)
 - [x] P1: OTel 데이터 품질 개선 — network 0-1 ratio 통일, 로그 시간 분산, OOM 시퀀스 수정
