@@ -10,6 +10,7 @@
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import type { Tool } from 'ai';
+import { isOpenRouterVisionToolCallingEnabled } from '../../../lib/config-parser';
 
 // Mock model-provider before imports
 vi.mock('../model-provider', () => ({
@@ -28,6 +29,10 @@ vi.mock('../model-provider', () => ({
 // Mock text-sanitizer
 vi.mock('../../../../lib/text-sanitizer', () => ({
   sanitizeChineseCharacters: vi.fn((text: string) => text),
+}));
+
+vi.mock('../../../lib/config-parser', () => ({
+  isOpenRouterVisionToolCallingEnabled: vi.fn(() => false),
 }));
 
 // Store generateText mock for manipulation in tests
@@ -81,6 +86,7 @@ function createMockConfig(overrides: Partial<{
 describe('BaseAgent', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.mocked(isOpenRouterVisionToolCallingEnabled).mockReturnValue(false);
 
     // Default mock for generateText - successful response
     mockGenerateText.mockResolvedValue({
@@ -163,7 +169,7 @@ describe('BaseAgent', () => {
 
       expect(mockGenerateText).toHaveBeenCalledWith(
         expect.objectContaining({
-          timeout: { totalMs: 30000 },
+          timeout: expect.objectContaining({ totalMs: 30000 }),
         })
       );
     });
@@ -807,6 +813,62 @@ describe('BaseAgent', () => {
 
       // Check that generateText was called with all tools
       const callArgs = mockGenerateText.mock.calls[0][0];
+      expect(callArgs.tools).toHaveProperty('searchWeb');
+    });
+
+    it('should disable tools for Vision Agent on OpenRouter by default', async () => {
+      const { BaseAgent } = await import('./base-agent');
+
+      const mockConfig = createMockConfig({
+        getModel: () => ({
+          model: { modelId: 'nvidia/nemotron-nano-12b-v2-vl:free' },
+          provider: 'openrouter',
+          modelId: 'nvidia/nemotron-nano-12b-v2-vl:free',
+        }),
+      });
+
+      class VisionTestAgent extends BaseAgent {
+        getName(): string {
+          return 'Vision Agent';
+        }
+        getConfig() {
+          return mockConfig;
+        }
+      }
+
+      const agent = new VisionTestAgent();
+      await agent.run('test query');
+
+      const callArgs = mockGenerateText.mock.calls[0][0];
+      expect(callArgs.tools).toEqual({});
+    });
+
+    it('should keep tools when OPENROUTER_VISION_TOOL_CALLING is enabled', async () => {
+      const { BaseAgent } = await import('./base-agent');
+      vi.mocked(isOpenRouterVisionToolCallingEnabled).mockReturnValue(true);
+
+      const mockConfig = createMockConfig({
+        getModel: () => ({
+          model: { modelId: 'nvidia/nemotron-nano-12b-v2-vl:free' },
+          provider: 'openrouter',
+          modelId: 'nvidia/nemotron-nano-12b-v2-vl:free',
+        }),
+      });
+
+      class VisionTestAgent extends BaseAgent {
+        getName(): string {
+          return 'Vision Agent';
+        }
+        getConfig() {
+          return mockConfig;
+        }
+      }
+
+      const agent = new VisionTestAgent();
+      await agent.run('test query');
+
+      const callArgs = mockGenerateText.mock.calls[0][0];
+      expect(callArgs.tools).toHaveProperty('finalAnswer');
       expect(callArgs.tools).toHaveProperty('searchWeb');
     });
   });

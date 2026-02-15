@@ -29,6 +29,7 @@ import {
 } from 'ai';
 import { sanitizeChineseCharacters } from '../../../lib/text-sanitizer';
 import { extractToolResultOutput } from '../../../lib/ai-sdk-utils';
+import { isOpenRouterVisionToolCallingEnabled } from '../../../lib/config-parser';
 import type { AgentConfig, ModelResult } from './config';
 import { logger } from '../../../lib/logger';
 
@@ -193,18 +194,32 @@ export abstract class BaseAgent {
    */
   protected filterTools(
     tools: Record<string, Tool>,
-    options: AgentRunOptions
+    options: AgentRunOptions,
+    provider: string
   ): Record<string, Tool> {
-    if (options.webSearchEnabled !== false) {
-      return tools;
-    }
-
-    // Remove searchWeb tool when disabled
     const filtered = { ...tools };
-    if ('searchWeb' in filtered) {
+
+    if (options.webSearchEnabled !== false) {
+      // keep default tools
+    } else if ('searchWeb' in filtered) {
       delete filtered.searchWeb;
       console.log(`🚫 [${this.getName()}] searchWeb disabled`);
     }
+
+    if (
+      this.getName() === 'Vision Agent' &&
+      provider === 'openrouter' &&
+      !isOpenRouterVisionToolCallingEnabled()
+    ) {
+      const toolCount = Object.keys(filtered).length;
+      if (toolCount > 0) {
+        logger.warn(
+          `⚠️ [Vision Agent] OpenRouter free-tier compatibility mode: disabling ${toolCount} tools (set OPENROUTER_VISION_TOOL_CALLING=true to override)`
+        );
+      }
+      return {};
+    }
+
     return filtered;
   }
 
@@ -317,7 +332,11 @@ export abstract class BaseAgent {
     }
 
     const { model, provider, modelId } = modelResult;
-    const filteredTools = this.filterTools(config.tools as Record<string, Tool>, opts);
+    const filteredTools = this.filterTools(
+      config.tools as Record<string, Tool>,
+      opts,
+      provider
+    );
 
     console.log(`🎯 [${agentName}] Using ${provider}/${modelId}`);
 
@@ -448,7 +467,11 @@ export abstract class BaseAgent {
     }
 
     const { model, provider, modelId } = modelResult;
-    const filteredTools = this.filterTools(config.tools as Record<string, Tool>, opts);
+    const filteredTools = this.filterTools(
+      config.tools as Record<string, Tool>,
+      opts,
+      provider
+    );
 
     console.log(`🎯 [${agentName}] Streaming with ${provider}/${modelId}`);
 

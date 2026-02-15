@@ -15,7 +15,7 @@
 | 항목 | 값 |
 |------|-----|
 | 기간 | 2025-05-23 ~ 2026-02-14 (9개월) |
-| 커밋 | 5,676개 |
+| 커밋 | 5,698개 |
 | 코드량 | ~166,000 Lines (Frontend 47K+ / AI Engine 31K / Config & Tests) |
 | 목적 | 포트폴리오 & 바이브 코딩 학습 결과물 |
 
@@ -44,7 +44,7 @@
 |------|:----:|------|
 | Cloud Run AI Engine 구축 | 100% | Hono + Multi-Agent |
 | LangGraph → Vercel AI SDK v6 마이그레이션 | 100% | 2025-12-28 완료 |
-| 6-Agent 시스템 (NLQ/Analyst/Reporter/Advisor/Vision/Orchestrator) | 100% | Factory 패턴 |
+| 7-Agent 실행 체계 + Orchestrator 코디네이터 | 100% | AgentFactory + Orchestrator 분리 |
 | RAG/Knowledge Graph (pgvector + LlamaIndex) | 85% | 임베딩 품질 개선 여지 |
 | Prompt Injection 방어 | 100% | OWASP LLM Top 10 기반 |
 | Circuit Breaker + 3-way Fallback | 100% | Cerebras → Groq → Mistral |
@@ -96,7 +96,7 @@
 | `/api/ai/feedback` | 95% | withAuth | 낮음 |
 | `/api/metrics` | 90% | withAuth | 중간 |
 | `/api/alerts/stream` | 85% | withAuth | 낮음 |
-| 기타 (31개 전체 구현 완료) | 85%+ | withAuth/Public | 혼합 |
+| 기타 (30개 route.ts 기준 구현) | 85%+ | withAuth/Public | 혼합 |
 
 **해결 완료** (2026-02-14):
 - ~~`/api/ai/feedback` 인증 없음~~ → withAuth 추가 완료
@@ -105,27 +105,55 @@
 - ~~`/api/metrics` PromQL 하드코딩~~ → 레지스트리 기반 파서 (13개 메트릭 + 레이블 필터) 완료
 - ~~스텁 API 7개~~ → 이전 세션에서 삭제 완료, 현재 0개
 - ~~Vision Agent fallback 없음~~ → Orchestrator에 Analyst 폴백 이미 구현됨 확인
+- ~~`/api/servers/:id` 시계열 metric key 불일치~~ → OTel 상수(`OTEL_METRIC.*`) 기반으로 수정 완료 (`system.*`)
+- ~~`/api/servers/next` 인증 응답 public CDN 캐시~~ → `private, no-store`로 수정 완료
 
 ### 3.3 Cloud Run AI Engine (90%)
 
 | 영역 | 완성도 | 근거 |
 |------|:------:|------|
-| 서버 엔트리 (Hono) | 95% | CORS, 인증, Rate Limit, Graceful Shutdown |
-| 6개 에이전트 | 92% | NLQ/Analyst/Reporter/Advisor/Vision/Orchestrator |
-| 26개 도구 (Tools) | 98% | 전체 구현, validateTools() 시작 검증 |
-| 보안 (Prompt Guard) | 92% | 15개 패턴 (EN+KO), OWASP 기반 |
+| 서버 엔트리 (Hono) | 97% | CORS, 인증(timing-safe), Rate Limit(SHA-256), Graceful Shutdown(30s timeout) |
+| 7개 실행 에이전트 + Orchestrator | 92% | NLQ/Analyst/Reporter/Advisor/Vision + Evaluator/Optimizer + Orchestrator |
+| 27개 도구 (Tools) | 98% | 전체 구현, validateTools() 시작 검증 |
+| 보안 (Prompt Guard) | 95% | 15개 패턴 (EN+KO), OWASP 기반, timing-safe 비교, stateful regex 보호 |
 | RAG/Knowledge | 85% | LlamaIndex + pgvector, Mistral 임베딩 |
 | 테스트 | 65% | 5,613줄, 단위 우수, E2E 부족 |
 | 배포 (Docker + Cloud Run) | 98% | Free Tier Guard Rails, 3-stage build |
 | Langfuse 관찰성 | 90% | 10% 샘플링, Free Tier 보호 |
 
 **해결 완료** (2026-02-14~15):
-- ~~Vision Agent fallback 없음~~ → Gemini → OpenRouter(qwen-2.5-vl-72b:free) → Analyst Agent 3단 폴백 완료
+- ~~Vision Agent fallback 없음~~ → Gemini → OpenRouter(nvidia/nemotron-nano-12b-v2-vl:free) → Analyst Agent 3단 폴백 완료
+- ~~OpenRouter 기본 모델 무효 endpoint~~ → 기본 모델/문서 갱신 + OpenRouter 권장 헤더(`HTTP-Referer`, `X-Title`) 및 provider 옵션(`allow_fallbacks`, `require_parameters`) 반영
+- ~~OpenRouter 단일 모델 지정으로 fallback 라우팅 미활용~~ → `models` 체인 주입(`OPENROUTER_MODEL_VISION_FALLBACKS`) + 호환성 테스트 추가 완료
+- ~~OpenRouter Free Tier tool-calling 불안정~~ → Vision+OpenRouter 조합 기본 tool-calling 비활성화(`OPENROUTER_VISION_TOOL_CALLING=false`)
+- ~~OpenRouter 무료티어 실동작 미검증~~ → `/chat/completions` 실호출 스모크(HTTP 200, usage.cost=0) 검증 완료
+
+**해결 완료** (2026-02-15, 보안 개선):
+- ~~API Key 비교 문자열 단순 비교~~ → `timingSafeEqual` (timing attack 방어)
+- ~~Rate Limiter API Key suffix 노출~~ → SHA-256 해시 기반 식별자로 교체
+- ~~Dockerfile heap 384MB (512Mi 컨테이너 headroom 부족)~~ → 256MB로 축소
+- ~~Graceful Shutdown 타임아웃 없음~~ → 30초 강제 종료 타임아웃 추가
+- ~~Handoff events 배열 무한 증가~~ → O(1) 링 버퍼(50건) 교체
+- ~~Prompt Injection stateful regex~~ → `lastIndex` 리셋 + low-risk 경고 분리
 
 **남은 항목 1건**:
 1. E2E 테스트 부족 (Cloud Run 단독 통합 테스트 없음)
 
-### 3.4 Server Data (서버 데이터 파이프라인) (100%)
+#### 3.3-a 에이전트 수 산정 기준 (코드 기준)
+
+- 기준 파일:
+  - `cloud-run/ai-engine/src/services/ai-sdk/agents/config/agent-configs.ts`
+  - `cloud-run/ai-engine/src/services/ai-sdk/agents/index.ts`
+- 산정 규칙:
+  1. `AGENT_CONFIGS`에 등록된 실행 단위를 "실행 에이전트"로 집계
+  2. Orchestrator는 `AGENT_CONFIGS` 외부의 코디네이터이므로 별도 집계
+  3. Verifier는 현재 "모델 헬퍼(getVerifierModel)"만 존재하며 실행 에이전트 집계에서 제외
+- 집계 결과:
+  - 실행 에이전트: 7개 (NLQ, Analyst, Reporter, Advisor, Vision, Evaluator, Optimizer)
+  - 코디네이터 포함 AI 실행 컴포넌트: 8개 (7개 + Orchestrator)
+  - Supervisor 가용 툴: 27개 (`Object.keys(allTools).length`)
+
+### 3.4 Server Data (서버 데이터 파이프라인) (98%)
 
 > 아키텍처: Vercel + Cloud Run 듀얼 배포에 동일 데이터 번들링 (DB 중앙 집중화 대신 통신 비용/지연 제거)
 
@@ -164,12 +192,21 @@
 **해결 완료** (2026-02-15):
 - ~~hourly-data `logs: []` 비어있음~~ → 메트릭 연동 로그 2160/2160 target 100% 적재 완료
 - ~~`generateLogs()` 정상 서버 빈 배열~~ → 모든 서버에 info/warn/error 로그 생성
+- ~~Cloud Run `precomputed-state` OTel 경로 불일치~~ → `otel-processed`/`otel-data` 다중 경로 지원 + runtime fallback 보강 완료
+- ~~빈 슬롯 시 `getCurrentState()`/`getStateAtRelativeTime()` 런타임 예외~~ → fallback 슬롯 생성으로 무중단 응답 보장
+- ~~`system.network.io` 단위 `By/s` + 값 35-65 (혼재)~~ → 단위 `1`, 값 0-1 ratio 통일 (otel-fix.ts)
+- ~~Redis OOM 로그 kill 후 재시작 시퀀스 부재~~ → systemd restart 시퀀스 삽입
+- ~~로그 심각도 INFO 97.7% (비현실적)~~ → INFO 81%/WARN 12%/ERROR 7% 재조정
+- ~~Watchdog 메시지 슬롯당 16회 중복~~ → 슬롯당 2회 이내로 제한
+- ~~S3 Gateway에 NFS 로그 혼입~~ → MinIO S3 로그로 교체
+- ~~`otel-processed/` 레거시 디렉토리 잔존~~ → 삭제 (import 0건 확인)
+- ~~`timeseries.json`에 `system.uptime`, `system.process.count` 누락~~ → 9개 메트릭 완비
 
 ### 3.5 Services & Library (90%)
 
 | 영역 | 완성도 | 근거 |
 |------|:------:|------|
-| MetricsProvider (Singleton) | 100% | OTel Primary + hourly-data Fallback |
+| MetricsProvider (Singleton) | 100% | OTel Primary, network ×100 변환 수정 완료 |
 | ServerMonitoringService | 100% | 11개 API 라우트에서 사용 |
 | Circuit Breaker (분산) | 100% | InMemory + Redis, 3상태 전이 |
 | Auth (전략 패턴) | 100% | Session/JWT/API Key, 캐시 |
@@ -178,6 +215,7 @@
 | Scripts (데이터 동기화) | 100% | sync-hourly-data + otel-precompute (로그 적재 완료) |
 | Utils/Lib 정리 | 100% | api-batcher, error-response, safeFormat, network-tracking, timeout-config 삭제 |
 | 테스트 인프라 | 80% | 52파일, 10,859줄, 커버리지 ~11% |
+| AI SDK 버전 정합성 | 100% | Root `ai@6.0.86`, `@ai-sdk/react@3.0.88`로 상향 및 스모크 검증 |
 
 ### 3.6 문서 (95%)
 
@@ -196,13 +234,13 @@
 |--------|:------:|:------:|:---------:|
 | Frontend | 20% | 95% | 19.0 |
 | API Routes | 15% | 91% | 13.7 |
-| AI Engine | 20% | 92% | 18.4 |
-| Server Data | 15% | 100% | 15.0 |
+| AI Engine | 20% | 93% | 18.6 |
+| Server Data | 15% | 98% | 14.7 |
 | Services/Lib | 20% | 92% | 18.4 |
 | 문서/테스트 | 10% | 95% | 9.5 |
-| **합계** | **100%** | | **94.0%** |
+| **합계** | **100%** | | **94.2%** |
 
-**결론: 실제 완성도 ~94%** (88% → 91%(P0 보안) → 93%(서버 데이터) → 94%(데드코드 4차 정리))
+**결론: 실제 완성도 ~94%** (88% → 91%(P0 보안) → 93%(서버 데이터) → 94%(데드코드 4차) → 94.2%(OTel 데이터 품질+Cloud Run 보안))
 
 ---
 
@@ -248,9 +286,61 @@
 | ~~Vision Agent fallback~~ | ~~완료~~ | ~~P2~~ |
 | ~~hourly-data 로그 적재~~ | ~~완료~~ | ~~P1~~ |
 | 테스트 커버리지 확대 | ~500줄 | P3 |
-| Resume Stream 재활성화 | Blocked (AI SDK 버그) | 대기 |
+| Resume Stream v2 회귀 테스트 강화 | ~200줄 | P2 |
+
+---
+
+## 7. WBS 기반 작업 완성 체크리스트 (AI Assistant / Cloud Run)
+
+요청 반영: 별도 리포트 분리 대신 `wbs.md` 내부 SSOT로 통합.
+
+### 7.1 AI Assistant 체크리스트
+
+| 항목 | 상태 | 근거 |
+|------|:----:|------|
+| Supervisor API 인증/레이트리밋 | 완료 | `src/app/api/ai/supervisor/route.ts:99`, `src/app/api/ai/supervisor/route.ts:101` |
+| Supervisor Zod 요청 검증 | 완료 | `src/app/api/ai/supervisor/route.ts:122` |
+| Prompt Injection 탐지/차단 | 완료 | `src/app/api/ai/supervisor/route.ts:166`, `src/app/api/ai/supervisor/route.ts:172` |
+| Stream v2(GET/POST) 인증 | 완료 | `src/app/api/ai/supervisor/stream/v2/route.ts:183`, `src/app/api/ai/supervisor/stream/v2/route.ts:194` |
+| Stream v2 보안 차단 | 완료 | `src/app/api/ai/supervisor/stream/v2/route.ts:236`, `src/app/api/ai/supervisor/stream/v2/route.ts:239` |
+| Cloud Run 스트림 프록시/타임아웃 | 완료 | `src/app/api/ai/supervisor/stream/v2/route.ts:277`, `src/app/api/ai/supervisor/stream/v2/route.ts:283` |
+| Trace ID 관찰성 연계 | 완료 | `src/app/api/ai/supervisor/route.ts:102`, `src/app/api/ai/supervisor/route.ts:114` |
+| 보안/스키마 단위 테스트 | 완료 | `src/app/api/ai/supervisor/security.test.ts`, `src/app/api/ai/supervisor/schemas.test.ts` |
+| Cloud Run 실연동 E2E 회귀 세트 | 미완료 | 3.3/5장 잔여 이슈(통합/E2E 부족) |
+
+분석:
+- 필수 경로(인증/보안/스트리밍/관찰성)는 구현 완료.
+- 현재 갭은 기능 구현보다 회귀 자동화 범위(E2E) 부족.
+
+### 7.2 Google Cloud Run 체크리스트
+
+| 항목 | 상태 | 근거 |
+|------|:----:|------|
+| Hono API Key 보안(실패시 차단) | 완료 | `cloud-run/ai-engine/src/server.ts:69`, `cloud-run/ai-engine/src/server.ts:73` |
+| API 전역 레이트리밋 | 완료 | `cloud-run/ai-engine/src/server.ts:85`, `cloud-run/ai-engine/src/middleware/rate-limiter.ts:200` |
+| `/health` + `/warmup` 제공 | 완료 | `cloud-run/ai-engine/src/server.ts:107`, `cloud-run/ai-engine/src/server.ts:121` |
+| Supervisor 헬스 엔드포인트 | 완료 | `cloud-run/ai-engine/src/routes/supervisor.ts:413` |
+| Circuit Breaker 적용 | 완료 | `cloud-run/ai-engine/src/services/ai-sdk/supervisor-single-agent.ts:236`, `cloud-run/ai-engine/src/services/ai-sdk/supervisor-single-agent.ts:238` |
+| Retry/Fallback 전략 | 완료 | `cloud-run/ai-engine/src/services/resilience/retry-with-fallback.ts:211`, `cloud-run/ai-engine/src/services/resilience/retry-with-fallback.ts:236` |
+| Vision Gemini→OpenRouter 폴백 | 완료 | `cloud-run/ai-engine/src/services/ai-sdk/model-provider.ts:489`, `cloud-run/ai-engine/src/services/ai-sdk/model-provider.ts:520` |
+| precomputed-state 데이터 경로/빈 슬롯 방어 | 완료 | `cloud-run/ai-engine/src/data/precomputed-state.ts:197`, `cloud-run/ai-engine/src/data/precomputed-state.ts:588`, `cloud-run/ai-engine/src/data/precomputed-state.ts:642` |
+| Free Tier Guardrails 강제 | 완료 | `cloud-run/ai-engine/deploy.sh:177`, `cloud-run/ai-engine/deploy.sh:194`, `cloud-run/ai-engine/deploy.sh:208` |
+| Cloud Build free-tier 파라미터 고정 | 완료 | `cloud-run/ai-engine/cloudbuild.yaml:104`, `cloud-run/ai-engine/cloudbuild.yaml:113`, `cloud-run/ai-engine/cloudbuild.yaml:117` |
+| Docker 헬스체크/그레이스풀 종료 | 완료 | `cloud-run/ai-engine/Dockerfile:144`, `cloud-run/ai-engine/Dockerfile:152` |
+| Cloud Run 단독 통합/E2E 파이프라인 | 미완료 | 3.3장 잔여 이슈(Cloud Run 단독 통합 테스트 없음) |
+
+분석:
+- 운영 안정화(보안/폴백/배포 가드레일)는 높은 수준으로 완료.
+- 남은 리스크는 장애/실연동 회귀를 자동으로 보장하는 테스트 체계 부족.
+
+### 7.3 우선순위 액션
+
+1. P1: Cloud Run 단독 통합 테스트 신설  
+   대상: `/health`, `/api/ai/supervisor`, `/api/ai/supervisor/stream/v2`
+2. P2: AI Assistant 회귀 E2E 고정 시나리오 추가  
+   대상: 인증, 보안 차단, 스트리밍 재개, 폴백 응답
 
 ---
 
 _분석 기준: 4개 병렬 탐색 에이전트로 src/, cloud-run/, scripts/ 전체 코드 분석_
-_최종 갱신: 2026-02-15 (데드코드 4차 정리: ~3,070줄 추가 제거, 770→747파일)_
+_최종 갱신: 2026-02-15 (OTel 데이터 품질 개선 + Cloud Run 보안 강화 반영)_

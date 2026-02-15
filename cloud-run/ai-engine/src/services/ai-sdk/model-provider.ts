@@ -27,6 +27,7 @@ import {
   getGeminiApiKey,
   getOpenRouterApiKey,
   getOpenRouterVisionModelId,
+  getOpenRouterVisionFallbackModelIds,
 } from '../../lib/config-parser';
 
 import { getCircuitBreaker } from '../resilience/circuit-breaker';
@@ -196,15 +197,71 @@ function createGeminiProvider() {
  * Create OpenRouter provider instance
  * Uses OpenAI-compatible API
  */
+function patchOpenRouterRequestInit(init?: RequestInit): RequestInit | undefined {
+  if (!init?.body || typeof init.body !== 'string') {
+    return init;
+  }
+
+  try {
+    const parsedBody = JSON.parse(init.body) as Record<string, unknown>;
+    const provider =
+      typeof parsedBody.provider === 'object' && parsedBody.provider !== null
+        ? parsedBody.provider as Record<string, unknown>
+        : {};
+
+    const modelId = typeof parsedBody.model === 'string' ? parsedBody.model : null;
+    const primaryVisionModel = getOpenRouterVisionModelId();
+
+    if (!('allow_fallbacks' in provider)) {
+      provider.allow_fallbacks = true;
+    }
+
+    if (!('require_parameters' in provider)) {
+      provider.require_parameters = true;
+    }
+
+    // OpenRouter official fallback chain:
+    // provide "models" list so router can fail over to next model on error/quota.
+    if (modelId === primaryVisionModel && !Array.isArray(parsedBody.models)) {
+      const fallbacks = getOpenRouterVisionFallbackModelIds();
+      parsedBody.models = [...new Set([primaryVisionModel, ...fallbacks])];
+    }
+
+    return {
+      ...init,
+      body: JSON.stringify({
+        ...parsedBody,
+        provider,
+      }),
+    };
+  } catch {
+    return init;
+  }
+}
+
 function createOpenRouterProvider() {
   const apiKey = getOpenRouterApiKey();
   if (!apiKey) {
     throw new Error('OPENROUTER_API_KEY not configured');
   }
 
+  const referer = process.env.OPENROUTER_HTTP_REFERER;
+  const title = process.env.OPENROUTER_X_TITLE || 'OpenManager AI';
+
+  const headers: Record<string, string> = {};
+  if (referer) {
+    headers['HTTP-Referer'] = referer;
+  }
+  if (title) {
+    headers['X-Title'] = title;
+  }
+
   return createOpenAI({
     baseURL: 'https://openrouter.ai/api/v1',
     apiKey,
+    name: 'openrouter',
+    headers,
+    fetch: async (input, init) => fetch(input, patchOpenRouterRequestInit(init)),
   });
 }
 
@@ -300,7 +357,7 @@ export function getGeminiFlashLiteModel(
 
 /**
  * Get OpenRouter Vision model (Fallback)
- * Default: qwen/qwen-2.5-vl-72b-instruct:free
+ * Default: nvidia/nemotron-nano-12b-v2-vl:free
  *
  * @param modelId - Model ID (optional, uses env default if not provided)
  */
@@ -492,10 +549,10 @@ export function getAdvisorModel(): {
  *       This function is a low-level utility for direct model access.
  *
  * Primary: Gemini 2.5 Flash (1M context, 250 RPD Free Tier)
- * Fallback: OpenRouter (Qwen 2.5 VL / Llama 3.2 Vision)
+ * Fallback: OpenRouter (nvidia/nemotron-nano-12b-v2-vl:free)
  *
  * @returns Model info or null (graceful degradation)
- * @updated 2026-02-14 - Added OpenRouter fallback
+ * @updated 2026-02-15 - Added OpenRouter request best-practice defaults
  */
 export function getVisionAgentModel(): {
   model: LanguageModel;

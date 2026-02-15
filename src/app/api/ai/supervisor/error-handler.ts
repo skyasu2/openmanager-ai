@@ -24,7 +24,7 @@ export function handleSupervisorError(error: unknown): NextResponse {
   logger.error('❌ AI 스트리밍 처리 실패:', error);
 
   // Sentry에 AI context와 함께 에러 전송
-  Sentry.withScope((scope) => {
+  Sentry.withScope((scope: Sentry.Scope) => {
     scope.setTag('component', 'ai-supervisor');
     if (traceId) scope.setTag('traceId', traceId);
     if (error instanceof Error) {

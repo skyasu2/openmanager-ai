@@ -122,7 +122,7 @@ if (isVisionQuery(query)) {
 | Analyst Agent | Groq `llama-3.3-70b-versatile` | Cerebras → Mistral | ~1K RPD, 12K TPM |
 | Reporter Agent | Groq `llama-3.3-70b-versatile` | Cerebras → Mistral | ~1K RPD, 12K TPM |
 | Advisor Agent | Mistral `mistral-small-2506` | Groq → Cerebras | Limited (may require paid) |
-| **Vision Agent** | **Gemini `2.5-flash`** | **OpenRouter (Qwen/Llama Vision)** | **Free tier available** |
+| **Vision Agent** | **Gemini `2.5-flash`** | **OpenRouter (`nvidia/nemotron-nano-12b-v2-vl:free`)** | **Free tier available** |
 | Evaluator Agent | Cerebras `llama-3.3-70b` | (internal use) | - |
 | Optimizer Agent | Mistral `mistral-small-2506` | (internal use) | - |
 

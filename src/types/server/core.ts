@@ -4,13 +4,13 @@
  * 기본 서버 엔티티 타입 정의
  */
 
+import type { OTelLogRecord } from '../otel-metrics';
 import type {
   ServerHealth,
   ServerMetrics,
   ServerSpecs,
   ServerStatus,
 } from '../server-common';
-import type { OTelLogRecord } from '../otel-metrics';
 import type { LogEntry, NetworkInfo, Service, SystemInfo } from './entities';
 import type { ServerAlert } from './metrics';
 import type { ServerEnvironment, ServerRole } from './types';

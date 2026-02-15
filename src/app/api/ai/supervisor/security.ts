@@ -157,10 +157,10 @@ export function detectPromptInjection(text: string): InjectionDetectionResult {
   let sanitizedQuery = text;
 
   for (const { pattern, name } of PROMPT_INJECTION_PATTERNS) {
-    const testPattern = new RegExp(pattern.source, pattern.flags);
-    if (testPattern.test(text)) {
+    if (pattern.test(text)) {
       detectedPatterns.push(name);
       sanitizedQuery = sanitizedQuery.replace(pattern, '[blocked]');
+      pattern.lastIndex = 0; // reset stateful regex
     }
   }
 
@@ -239,13 +239,13 @@ export function filterMaliciousOutput(text: string): MaliciousOutputResult {
   let filteredOutput = text;
 
   for (const { pattern, name } of MALICIOUS_OUTPUT_PATTERNS) {
-    const testPattern = new RegExp(pattern.source, pattern.flags);
-    if (testPattern.test(text)) {
+    if (pattern.test(text)) {
       detectedPatterns.push(name);
       filteredOutput = filteredOutput.replace(
         pattern,
         '[응답이 필터링되었습니다]'
       );
+      pattern.lastIndex = 0;
     }
   }
 
@@ -283,7 +283,9 @@ export function securityCheck(input: string): {
     inputCheck.riskLevel === 'high' || inputCheck.riskLevel === 'medium';
 
   const warning = inputCheck.isInjection
-    ? `보안 경고: Prompt Injection 시도가 감지되어 차단되었습니다 (${inputCheck.patterns.join(', ')}).`
+    ? inputCheck.riskLevel === 'low'
+      ? `보안 알림: 의심스러운 패턴이 감지되어 정제되었습니다 (${inputCheck.patterns.join(', ')}).`
+      : `보안 경고: Prompt Injection 시도가 감지되어 차단되었습니다 (${inputCheck.patterns.join(', ')}).`
     : undefined;
 
   return {

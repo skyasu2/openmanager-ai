@@ -8,6 +8,7 @@
  * @see src/lib/security/rate-limiter.ts (Frontend reference)
  */
 
+import { createHash } from 'node:crypto';
 import type { Context, Next } from 'hono';
 import { getRedisClient } from '../lib/redis-client';
 import { logger } from '../lib/logger';
@@ -172,8 +173,8 @@ function resolveConfig(path: string): RateLimitConfig {
 function extractClientKey(c: Context): string {
   const apiKey = c.req.header('X-API-Key');
   if (apiKey) {
-    // Hash the API key to avoid storing secrets
-    return `key:${apiKey.slice(-8)}`;
+    const hash = createHash('sha256').update(apiKey).digest('hex').slice(0, 16);
+    return `key:${hash}`;
   }
 
   const forwarded = c.req.header('X-Forwarded-For');

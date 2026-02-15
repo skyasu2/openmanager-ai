@@ -55,7 +55,7 @@ vi.mock('../../../../lib/logger', () => ({
 }));
 
 vi.mock('../../../../lib/config-parser', () => ({
-  getOpenRouterVisionModelId: vi.fn(() => 'qwen/qwen-2.5-vl-72b-instruct:free'),
+  getOpenRouterVisionModelId: vi.fn(() => 'nvidia/nemotron-nano-12b-v2-vl:free'),
 }));
 
 vi.mock('../../model-provider', () => ({
@@ -114,19 +114,19 @@ describe('agent-configs vision fallback', () => {
       throw new Error('gemini unavailable');
     });
     vi.mocked(getOpenRouterVisionModelId).mockReturnValue(
-      'qwen/qwen-2.5-vl-72b-instruct:free'
+      'nvidia/nemotron-nano-12b-v2-vl:free'
     );
     vi.mocked(getOpenRouterVisionModel).mockReturnValue(
-      createMockLanguageModel('qwen/qwen-2.5-vl-72b-instruct:free') as never
+      createMockLanguageModel('nvidia/nemotron-nano-12b-v2-vl:free') as never
     );
 
     const model = visionConfig.getModel();
 
     expect(model).not.toBeNull();
     expect(model?.provider).toBe('openrouter');
-    expect(model?.modelId).toBe('qwen/qwen-2.5-vl-72b-instruct:free');
+    expect(model?.modelId).toBe('nvidia/nemotron-nano-12b-v2-vl:free');
     expect(getOpenRouterVisionModel).toHaveBeenCalledWith(
-      'qwen/qwen-2.5-vl-72b-instruct:free'
+      'nvidia/nemotron-nano-12b-v2-vl:free'
     );
   });
 
@@ -139,10 +139,10 @@ describe('agent-configs vision fallback', () => {
       openrouter: true,
     });
     vi.mocked(getOpenRouterVisionModelId).mockReturnValue(
-      'qwen/qwen-2.5-vl-72b-instruct:free'
+      'nvidia/nemotron-nano-12b-v2-vl:free'
     );
     vi.mocked(getOpenRouterVisionModel).mockReturnValue(
-      createMockLanguageModel('qwen/qwen-2.5-vl-72b-instruct:free') as never
+      createMockLanguageModel('nvidia/nemotron-nano-12b-v2-vl:free') as never
     );
 
     const model = visionConfig.getModel();

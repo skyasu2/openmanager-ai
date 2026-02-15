@@ -10,12 +10,12 @@
 
 import { getOTelHourlyData, getOTelResourceCatalog } from '@/data/otel-data';
 import { executePromQL } from '@/lib/promql/promql-engine';
-import type { OTelHourlyFile } from '@/types/otel-metrics';
 import {
   getKSTMinuteOfDay,
   getKSTTimestamp,
   MetricsProvider,
 } from '@/services/metrics/MetricsProvider';
+import type { OTelHourlyFile } from '@/types/otel-metrics';
 import type { PromQLResult } from '@/types/processed-metrics';
 import { type Alert, AlertManager } from './AlertManager';
 import { HealthCalculator, type HealthReport } from './HealthCalculator';

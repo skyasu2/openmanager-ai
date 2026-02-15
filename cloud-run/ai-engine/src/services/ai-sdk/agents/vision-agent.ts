@@ -12,7 +12,7 @@
  * Primary: Gemini 2.5 Flash
  * - 1M token context, Search Grounding
  *
- * Fallback: OpenRouter (Qwen 2.5 VL / Llama 3.2 Vision)
+ * Fallback: OpenRouter (nvidia/nemotron-nano-12b-v2-vl:free)
  * - Used when Gemini quota exceeded (250 RPD)
  * - Basic vision capabilities maintained
  *

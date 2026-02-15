@@ -12,6 +12,9 @@ import {
   getTavilyApiKeyBackup,
   getGroqApiKey,
   getCerebrasApiKey,
+  getOpenRouterVisionModelId,
+  getOpenRouterVisionFallbackModelIds,
+  isOpenRouterVisionToolCallingEnabled,
   getConfigStatus,
   clearConfigCache,
   getAIProvidersConfig,
@@ -157,6 +160,12 @@ describe('Config Parser', () => {
   // ============================================================================
   describe('getConfigStatus', () => {
     it('should return all false when no config', () => {
+      delete process.env.AI_PROVIDERS_CONFIG;
+      delete process.env.TAVILY_API_KEY;
+      delete process.env.GROQ_API_KEY;
+      delete process.env.CEREBRAS_API_KEY;
+      delete process.env.MISTRAL_API_KEY;
+
       const status = getConfigStatus();
 
       expect(status.tavily).toBe(false);
@@ -166,8 +175,10 @@ describe('Config Parser', () => {
     });
 
     it('should return true for configured providers', () => {
+      delete process.env.AI_PROVIDERS_CONFIG;
       process.env.TAVILY_API_KEY = 'test-key';
       process.env.GROQ_API_KEY = 'test-key';
+      delete process.env.CEREBRAS_API_KEY;
 
       const status = getConfigStatus();
 
@@ -221,6 +232,10 @@ describe('Config Parser', () => {
   describe('JSON Parsing', () => {
     it('should handle invalid JSON gracefully', () => {
       process.env.AI_PROVIDERS_CONFIG = 'not-valid-json';
+      delete process.env.GROQ_API_KEY;
+      delete process.env.MISTRAL_API_KEY;
+      delete process.env.CEREBRAS_API_KEY;
+      delete process.env.TAVILY_API_KEY;
 
       const result = getAIProvidersConfig();
 
@@ -234,6 +249,44 @@ describe('Config Parser', () => {
 
       // Empty object is valid, but properties are undefined
       expect(result).toEqual({});
+    });
+  });
+
+  // ============================================================================
+  // 7. OpenRouter Vision Config Tests
+  // ============================================================================
+  describe('OpenRouter Vision config', () => {
+    it('should use default vision model when env is missing', () => {
+      delete process.env.OPENROUTER_MODEL_VISION;
+      expect(getOpenRouterVisionModelId()).toBe('nvidia/nemotron-nano-12b-v2-vl:free');
+    });
+
+    it('should use OPENROUTER_MODEL_VISION when configured', () => {
+      process.env.OPENROUTER_MODEL_VISION = 'google/gemma-3-4b-it:free';
+      expect(getOpenRouterVisionModelId()).toBe('google/gemma-3-4b-it:free');
+    });
+
+    it('should parse fallback model list from env', () => {
+      process.env.OPENROUTER_MODEL_VISION_FALLBACKS = 'a/b:free, c/d:free, a/b:free';
+      expect(getOpenRouterVisionFallbackModelIds()).toEqual(['a/b:free', 'c/d:free']);
+    });
+
+    it('should return default fallback list when env is missing', () => {
+      delete process.env.OPENROUTER_MODEL_VISION_FALLBACKS;
+      expect(getOpenRouterVisionFallbackModelIds()).toEqual([
+        'mistralai/mistral-small-3.1-24b-instruct:free',
+        'google/gemma-3-4b-it:free',
+      ]);
+    });
+
+    it('should disable OpenRouter vision tool-calling by default', () => {
+      delete process.env.OPENROUTER_VISION_TOOL_CALLING;
+      expect(isOpenRouterVisionToolCallingEnabled()).toBe(false);
+    });
+
+    it('should enable OpenRouter vision tool-calling when env is true', () => {
+      process.env.OPENROUTER_VISION_TOOL_CALLING = 'true';
+      expect(isOpenRouterVisionToolCallingEnabled()).toBe(true);
     });
   });
 });

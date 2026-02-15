@@ -371,7 +371,7 @@ export function useHybridAIQuery(
 
         retryTimeoutRef.current = setTimeout(() => {
           retryTimeoutRef.current = null;
-          errorHandledRef.current = false;
+          // errorHandledRef is reset inside executeQuery (useQueryExecution.ts L99)
           const query = currentQueryRef.current;
           const attachments = pendingAttachmentsRef.current;
           if (query) {

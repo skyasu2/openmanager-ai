@@ -118,12 +118,10 @@ const getHandler = createApiRoute()
 async function handleGET(request: NextRequest) {
   try {
     const response = await getHandler(request);
-    response.headers.set(
-      'Cache-Control',
-      'public, s-maxage=30, stale-while-revalidate=60'
-    );
-    response.headers.set('CDN-Cache-Control', 'public, s-maxage=30');
-    response.headers.set('Vercel-CDN-Cache-Control', 'public, s-maxage=30');
+    response.headers.set('Cache-Control', 'private, no-store, max-age=0');
+    response.headers.set('Pragma', 'no-cache');
+    response.headers.delete('CDN-Cache-Control');
+    response.headers.delete('Vercel-CDN-Cache-Control');
     return response;
   } catch (error) {
     debug.error('❌ 서버 Next API 오류:', error);

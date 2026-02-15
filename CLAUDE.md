@@ -6,7 +6,7 @@
 **OpenManager AI** - AI Native Server Monitoring Platform
 - **Stack**: Next.js 16.1.3, React 19.2, TypeScript 5.9, Supabase, Vercel AI SDK v6
 - **Architecture**: Vercel (Frontend) + Cloud Run (AI Engine)
-- **Data SSOT**: `src/data/hourly-data/*.json` (24h Prometheus)
+- **Data SSOT**: `src/data/otel-data/` (OTel-native 24h metrics + logs)
 
 ## Quick Commands
 ```bash
@@ -22,7 +22,7 @@ npm run type-check          # TypeScript 검사
 |------|------|
 | AI Supervisor | `src/app/api/ai/supervisor/route.ts` |
 | 메트릭 SSOT | `src/services/metrics/MetricsProvider.ts` |
-| 데이터 원본 | `src/data/hourly-data/hour-XX.json` (24개) |
+| 데이터 원본 | `src/data/otel-data/hourly/hour-XX.json` (24개, OTel) |
 | AI Engine | `cloud-run/ai-engine/src/server.ts` |
 | AI 훅 | `src/hooks/ai/useAIChatCore.ts` |
 | 규칙 SSOT | `src/config/rules/system-rules.json` |
@@ -35,4 +35,4 @@ npm run type-check          # TypeScript 검사
 - **문서**: `docs/` (71개) | **AI 설정**: `config/ai/registry-core.yaml`
 - **Production**: `https://openmanager-ai.vercel.app`
 
-_Last Updated: 2026-02-13_
+_Last Updated: 2026-02-15_

@@ -286,6 +286,7 @@ export function useAIChatCore(
     refreshSessionId();
     setInput('');
     setError(null);
+    setStreamRagSources([]);
     pendingQueryRef.current = '';
     lastAttachmentsRef.current = null;
     clearHistory();

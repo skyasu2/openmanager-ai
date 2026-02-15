@@ -4,11 +4,11 @@
 > Owner: documentation
 > Status: Active
 > Doc type: Reference
-> Last reviewed: 2026-02-14
+> Last reviewed: 2026-02-15
 > Canonical: docs/llms.md
 > Tags: llm,context,ai
 >
-> **v8.0.0** | Updated 2026-02-12
+> **v8.0.0** | Updated 2026-02-15
 >
 > AI 어시스턴트가 프로젝트를 이해하는 데 필요한 핵심 정보
 
@@ -31,9 +31,10 @@ OpenManager AI is an AI-native server monitoring platform built with:
 
 ### AI Engine Components
 - Supervisor: Dual-mode (Single/Multi Agent)
-- Agents: NLQ, Analyst, Reporter, Advisor, Vision
+- Agents (실행): NLQ, Analyst, Reporter, Advisor, Vision, Evaluator, Optimizer
+- Orchestrator: 에이전트 라우팅 코디네이터 (별도 컴포넌트)
 - Providers: Cerebras → Groq → Mistral (fallback chain) + Gemini (Vision)
-- Tools: 26 specialized tools (Metrics 5, RCA 3, Analyst 4, Reporter 4, Evaluation 6, Control 1, Vision 4)
+- Tools: 27 specialized tools (Metrics 6, RCA 3, Analyst 4, Reporter 3, Evaluation 6, Control 1, Vision 4)
 
 ## Key Files
 
@@ -45,7 +46,7 @@ OpenManager AI is an AI-native server monitoring platform built with:
 ### Configuration
 - `.env.local` - Environment variables
 - `package.json` - Dependencies
-- `next.config.ts` - Next.js config
+- `next.config.mjs` - Next.js config
 
 ### Documentation
 - `docs/README.md` - Documentation index
@@ -76,7 +77,7 @@ curl https://ai-engine-490817238363.asia-northeast1.run.app/health  # Health che
 ## Important Constraints
 
 1. TypeScript strict mode - no `any` types
-2. AI Engine timeout: unlimited (Cloud Run)
+2. AI Engine timeout: 300s (Cloud Run free-tier deploy config)
 3. Vercel timeout: 60s (Pro tier, route-specific maxDuration)
 4. Free tier optimization: Cerebras/Mistral/Groq rotation + Gemini (Vision)
 

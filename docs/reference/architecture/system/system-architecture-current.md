@@ -2,10 +2,10 @@
 
 > Vercel + Cloud Run 하이브리드 시스템 구조의 기준 문서
 > Owner: platform-architecture
-> Last verified against code: 2026-02-14
+> Last verified against code: 2026-02-15
 > Status: Active Canonical (hybrid-split.md 통합됨)
 > Doc type: Explanation
-> Last reviewed: 2026-02-14
+> Last reviewed: 2026-02-15
 > Canonical: docs/reference/architecture/system/system-architecture-current.md
 > Tags: system,architecture,hybrid,cloud-run,vercel
 
@@ -19,8 +19,8 @@
 |------|------|
 | UI 컴포넌트 | ~100+ `.tsx` |
 | Custom Hooks | ~35+ |
-| API Routes | 31 (`src/app/api/**/route.ts`) |
-| AI Agents | 9 (5 외부 라우팅 + 4 내부) |
+| API Routes | 30 (`src/app/api/**/route.ts`, 테스트 라우트 포함) |
+| AI 실행 컴포넌트 | 8 (실행 에이전트 7 + Orchestrator 1) |
 | Zustand Stores | 4 |
 | 모니터링 서버 | 15 (Korean DC, synthetic) |
 | 데이터 소스 | 2-Tier (OTel Processed + hourly-data) |
@@ -39,7 +39,7 @@ graph TB
 
     subgraph Vercel["Vercel (Frontend & BFF)"]
         NextJS["Next.js 16.1.x<br/>App Router"]
-        API["API Routes (31)"]
+        API["API Routes (30)"]
         MP["MetricsProvider<br/>(Singleton)"]
         Providers["TanStack Query +<br/>Zustand Stores"]
     end
@@ -47,7 +47,7 @@ graph TB
     subgraph CloudRun["Cloud Run (AI Engine)"]
         Hono["Hono Server"]
         Supervisor["Supervisor<br/>(Dual-Mode)"]
-        Agents["9 Agents<br/>(NLQ, Analyst, Reporter,<br/>Advisor, Vision, ...)"]
+        Agents["7 Agents + Orchestrator<br/>(NLQ, Analyst, Reporter,<br/>Advisor, Vision, Evaluator, Optimizer)"]
         PreComp["Precomputed State<br/>(Tiered Data)"]
     end
 
@@ -93,7 +93,7 @@ graph TB
 │  Vercel (Next.js 16.1.x, App Router)                                 │
 │  ┌─────────────┐  ┌──────────────────┐  ┌─────────────────────────┐ │
 │  │ API Routes   │  │ MetricsProvider  │  │ Auth (NextAuth/Supabase)│ │
-│  │ (31 routes)  │  │ (OTel→hourly)    │  │ Rate Limiter, CSRF     │ │
+│  │ (30 routes)  │  │ (OTel→hourly)    │  │ Rate Limiter, CSRF     │ │
 │  └──────┬──────┘  └──────────────────┘  └─────────────────────────┘ │
 └─────────┼────────────────────────────────────────────────────────────┘
           │ Proxy (X-API-Key)
@@ -101,7 +101,7 @@ graph TB
 ┌──────────────────────────────────────────────────────────────────────┐
 │  Cloud Run (AI Engine, Node.js 24 + Hono)                            │
 │  ┌──────────────┐  ┌───────────────────┐  ┌───────────────────────┐ │
-│  │ Supervisor    │  │ 9 Agents          │  │ Circuit Breaker       │ │
+│  │ Supervisor    │  │ 7 Agents + Orch.  │  │ Circuit Breaker       │ │
 │  │ (Dual-Mode)   │  │ NLQ/Analyst/...   │  │ Quota Tracker         │ │
 │  └──────────────┘  └───────────────────┘  └───────────────────────┘ │
 └──────────────────────────────────┬───────────────────────────────────┘
@@ -156,7 +156,7 @@ graph TB
    b. Supervisor: 질의 복잡도 판단 (Single vs Multi-agent)
    c. Orchestrator: intent 분류 → Agent handoff
    d. 선택된 Agent 실행 (NLQ/Analyst/Reporter/Advisor/Vision)
-   e. Verifier: 응답 검증
+   e. finalAnswer tool 종료 신호로 응답 완료
 6. UIMessageStream → Vercel Proxy → Browser
 7. 스트리밍 응답 렌더링 (TypewriterMarkdown)
 ```
@@ -207,15 +207,16 @@ graph TB
 
 ### Stateless Cloud Run 설계 원칙
 
-Cloud Run AI Engine은 **Stateless** 설계를 따르며, 모든 영속 데이터는 Supabase에 저장됩니다.
+Cloud Run AI Engine은 **Stateless** 설계를 따르며, 영속 데이터는 Supabase에 저장됩니다.  
+단, 운영 메트릭 스냅샷은 런타임에 컨테이너 번들 JSON(`otel-processed`/`hourly-data`)을 우선 사용합니다.
 
 | 원칙 | 설명 |
 |------|------|
 | **Scale-to-Zero** | 컨테이너 종료 시 데이터 손실 없음 |
-| **일관성** | 모든 인스턴스가 Supabase에서 동일 데이터 조회 |
+| **일관성** | 메트릭은 번들 JSON, 영속 데이터는 Supabase 기준으로 일관성 유지 |
 | **비용 절감** | Cloud Run에 영속 스토리지 비용 없음 |
 
-데이터 동기화: Vercel이 배포 시 Supabase에 seed → Cloud Run이 런타임에 Supabase에서 read.
+데이터 동기화: 빌드 시 `hourly-data`/`otel-processed`가 이미지에 포함되고, 영속 데이터(RAG/피드백/히스토리)는 Supabase에서 조회합니다.
 
 ### Build-Time Pipeline
 
@@ -229,7 +230,7 @@ npm run data:all       # data:sync + data:otel
 
 ## 5. AI Engine Summary
 
-### Agent Architecture (9 Agents)
+### Agent Architecture (7 Agents + Orchestrator)
 
 | Agent | Provider (Primary) | Role | 라우팅 |
 |-------|-------------------|------|--------|
@@ -241,7 +242,6 @@ npm run data:all       # data:sync + data:otel
 | **Vision** | Gemini 2.5-flash | 스크린샷/로그 분석, 웹 검색 | 외부 |
 | **Evaluator** | Cerebras | 보고서 품질 평가 (내부) | 내부 |
 | **Optimizer** | Mistral | 보고서 품질 개선 (내부) | 내부 |
-| **Verifier** | Mistral | 응답 검증 | 내부 |
 
 **Dual-Mode Strategy**: 단순 질의 → Single-agent (저지연), 복합 질의 → Multi-agent (전문 처리).
 

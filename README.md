@@ -36,10 +36,10 @@ OpenManager AI는 **AI 어시스턴트**가 내장된 서버 모니터링 플랫
 - **⚡ Hybrid Compute Architecture**: UI 렌더링은 **Vercel Edge Network**에서 처리하고, 무거운 AI 연산과 데이터 분석은 **Google Cloud Run**의 컨테이너 환경에서 처리하여 Latency와 비용 최적화.
 - **🔄 Zero-Latency Feedback**: AI 응답 생성 중에도 Tool 실행 상태(Server Check, DB Query 등)를 실시간 스트리밍으로 UI에 노출하여 UX 대기 시간 경험을 최소화.
 
-
 ## AI Assistant
 
-7개의 전문 AI 에이전트가 협업하여 복잡한 질문도 처리합니다. **Vercel AI SDK v6**의 네이티브 멀티-에이전트 패턴으로 구현되었습니다.
+7개의 실행 에이전트가 협업하여 복잡한 질문도 처리합니다. **Vercel AI SDK v6**의 네이티브 멀티-에이전트 패턴으로 구현되었습니다.
+집계 기준: 실행 에이전트 7개(NLQ/Analyst/Reporter/Advisor/Vision/Evaluator/Optimizer) + Orchestrator 1개(코디네이터).
 
 ```
 💬 "서버 상태 어때?"
@@ -111,7 +111,7 @@ Supervisor (Intent Classification & Routing)
                       │
 ┌─────────────────────▼───────────────────────────────────┐
 │              Cloud Run (AI Engine)                      │
-│    Native Multi-Agent + Tool Registry (22 Tools)       │
+│    Native Multi-Agent + Tool Registry (27 Tools)       │
 │                                                         │
 │  ┌─────────┐ ┌─────────┐ ┌─────────┐ ┌─────────────┐  │
 │  │   NLQ   │ │ Analyst │ │Reporter │ │ Advisor/Vis │  │
@@ -180,9 +180,9 @@ Job Queue SSE 폴링은 Redis 명령어 예산 보호를 위해 기본값을 아
 **"From Dashboard to Dialogue"**
 기존의 Ops 도구들이 "데이터를 보여주는 것"에 집중했다면, OpenManager AI는 "데이터를 이해하고 설명하는 것"에 초점을 맞춥니다.
 
-1.  **Context-Aware**: 단순 메트릭 수치가 아닌, 서버의 과거 맥락과 연관성을 함께 분석합니다.
-2.  **Action-Oriented**: 문제 확인에서 그치지 않고, 구체적인 해결책(Shell Command, Config 수정안)을 제안합니다.
-3.  **Minimal Friction**: 복잡한 쿼리 언어(PromQL, SQL) 없이 자연어만으로 인프라를 제어합니다.
+1. **Context-Aware**: 단순 메트릭 수치가 아닌, 서버의 과거 맥락과 연관성을 함께 분석합니다.
+2. **Action-Oriented**: 문제 확인에서 그치지 않고, 구체적인 해결책(Shell Command, Config 수정안)을 제안합니다.
+3. **Minimal Friction**: 복잡한 쿼리 언어(PromQL, SQL) 없이 자연어만으로 인프라를 제어합니다.
 
 ---
 
@@ -200,7 +200,7 @@ Job Queue SSE 폴링은 Redis 명령어 예산 보호를 위해 기본값을 아
 | **Backend** | Google Cloud Run AI Engine |
 | **Database** | Supabase PostgreSQL + pgvector |
 | **Cache** | Upstash Redis |
-| **AI System** | 7-Agent Multi-Agent Orchestration |
+| **AI System** | 7 실행 에이전트 + Orchestrator 코디네이터 |
 
 ### Development Approach
 

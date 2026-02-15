@@ -72,6 +72,10 @@ backups/
 # Environment files (unified)
 .env*
 !.env.example
+!.env.grafana.example
+
+# Grafana OTLP export output
+scripts/grafana/output/
 
 # Cache and debug
 .cache/

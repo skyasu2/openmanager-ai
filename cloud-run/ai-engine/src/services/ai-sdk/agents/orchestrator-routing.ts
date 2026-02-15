@@ -23,57 +23,34 @@ import type { MultiAgentResponse } from './orchestrator-types';
 import { filterToolsByWebSearch } from './orchestrator-web-search';
 import { logger } from '../../../lib/logger';
 // ============================================================================
-// Handoff Event Tracking (Bounded for Cloud Run Memory Safety)
+// Handoff Event Tracking — Ring Buffer (Cloud Run Memory Safety)
 // ============================================================================
 
-const HANDOFF_EVENTS_CONFIG = {
-  maxSize: 50,
-  cleanupAge: 3600000,
-  cleanupInterval: 60000,
-} as const;
+type HandoffEvent = { from: string; to: string; reason?: string; timestamp: Date };
 
-const handoffEvents: Array<{ from: string; to: string; reason?: string; timestamp: Date }> = [];
-
-const handoffCleanupTimer = setInterval(() => {
-  if (handoffEvents.length === 0) return;
-
-  const cutoff = Date.now() - HANDOFF_EVENTS_CONFIG.cleanupAge;
-  let removed = 0;
-
-  while (handoffEvents.length > 0 && handoffEvents[0].timestamp.getTime() < cutoff) {
-    handoffEvents.shift();
-    removed++;
-  }
-
-  if (removed > 0) {
-    console.log(`🧹 [Handoff] Periodic cleanup: removed ${removed} stale events, ${handoffEvents.length} remaining`);
-  }
-}, HANDOFF_EVENTS_CONFIG.cleanupInterval);
-
-handoffCleanupTimer.unref();
-
-process.on('beforeExit', () => {
-  clearInterval(handoffCleanupTimer);
-});
+const HANDOFF_MAX = 50;
+const handoffBuffer: (HandoffEvent | null)[] = new Array(HANDOFF_MAX).fill(null);
+let handoffHead = 0;   // next write index
+let handoffCount = 0;  // total stored
 
 export function recordHandoff(from: string, to: string, reason?: string) {
-  const now = new Date();
-
-  const cutoff = now.getTime() - HANDOFF_EVENTS_CONFIG.cleanupAge;
-  while (handoffEvents.length > 0 && handoffEvents[0].timestamp.getTime() < cutoff) {
-    handoffEvents.shift();
-  }
-
-  if (handoffEvents.length >= HANDOFF_EVENTS_CONFIG.maxSize) {
-    handoffEvents.shift();
-  }
-
-  handoffEvents.push({ from, to, reason, timestamp: now });
-  console.log(`🔀 [Handoff] ${from} → ${to} (${reason || 'no reason'}) [${handoffEvents.length}/${HANDOFF_EVENTS_CONFIG.maxSize}]`);
+  handoffBuffer[handoffHead] = { from, to, reason, timestamp: new Date() };
+  handoffHead = (handoffHead + 1) % HANDOFF_MAX;
+  if (handoffCount < HANDOFF_MAX) handoffCount++;
+  logger.info(`[Handoff] ${from} → ${to} (${reason || 'no reason'}) [${handoffCount}/${HANDOFF_MAX}]`);
 }
 
-export function getRecentHandoffs() {
-  return handoffEvents.slice(-10);
+export function getRecentHandoffs(n = 10): HandoffEvent[] {
+  const result: HandoffEvent[] = [];
+  const start = (handoffHead - handoffCount + HANDOFF_MAX) % HANDOFF_MAX;
+  const count = Math.min(n, handoffCount);
+  const offset = handoffCount - count;
+  for (let i = 0; i < count; i++) {
+    const idx = (start + offset + i) % HANDOFF_MAX;
+    const event = handoffBuffer[idx];
+    if (event) result.push(event);
+  }
+  return result;
 }
 
 // ============================================================================

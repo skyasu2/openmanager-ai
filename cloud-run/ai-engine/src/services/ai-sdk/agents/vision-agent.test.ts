@@ -213,6 +213,8 @@ describe('VisionAgent', () => {
   describe('getVisionAgentOrFallback()', () => {
     it('should return VisionAgent when available', async () => {
       const { getVisionAgentOrFallback, VisionAgent } = await import('./vision-agent');
+      const { AgentFactory } = await import('./agent-factory');
+      vi.spyOn(AgentFactory, 'isAvailable').mockReturnValue(true);
 
       const result = getVisionAgentOrFallback('스크린샷 분석해줘');
 
@@ -222,9 +224,33 @@ describe('VisionAgent', () => {
       expect(result.fallbackReason).toBeUndefined();
     });
 
-    // Note: Tests for Gemini unavailability and fallback scenarios
-    // require dynamic mock changes which have vitest hoisting issues.
-    // These scenarios are better tested via integration tests.
+    it('should fallback to Analyst Agent when vision is unavailable for a vision query', async () => {
+      const { getVisionAgentOrFallback } = await import('./vision-agent');
+      const { AgentFactory, AnalystAgent } = await import('./agent-factory');
+      vi.spyOn(AgentFactory, 'isAvailable').mockReturnValue(false);
+      vi.spyOn(AgentFactory, 'create').mockImplementation((type) => {
+        if (type === 'analyst') return new AnalystAgent();
+        return null;
+      });
+
+      const result = getVisionAgentOrFallback('스크린샷 분석해줘');
+
+      expect(result.agent).toBeInstanceOf(AnalystAgent);
+      expect(result.isFallback).toBe(true);
+      expect(result.fallbackReason).toContain('Vision providers unavailable');
+    });
+
+    it('should return null agent when vision is unavailable for a non-vision query', async () => {
+      const { getVisionAgentOrFallback } = await import('./vision-agent');
+      const { AgentFactory } = await import('./agent-factory');
+      vi.spyOn(AgentFactory, 'isAvailable').mockReturnValue(false);
+
+      const result = getVisionAgentOrFallback('서버 상태 알려줘');
+
+      expect(result.agent).toBeNull();
+      expect(result.isFallback).toBe(false);
+      expect(result.fallbackReason).toBeUndefined();
+    });
   });
 
   // ==========================================================================

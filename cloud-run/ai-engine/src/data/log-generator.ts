@@ -34,7 +34,7 @@ export interface GeneratedLog {
 // Server Type → Log Source Mapping
 // ============================================================================
 
-type ServerType = 'web' | 'database' | 'cache' | 'application' | 'loadbalancer';
+type ServerType = 'web' | 'database' | 'cache' | 'application' | 'loadbalancer' | 'storage';
 
 const SERVER_TYPE_SOURCES: Record<ServerType, Set<string>> = {
   web: new Set(['nginx', 'haproxy', 'systemd', 'kernel', 'docker', 'cron', 'sshd']),
@@ -42,6 +42,7 @@ const SERVER_TYPE_SOURCES: Record<ServerType, Set<string>> = {
   cache: new Set(['redis', 'kernel', 'systemd', 'docker', 'cron', 'sshd']),
   application: new Set(['java', 'docker', 'systemd', 'kernel', 'cron', 'sshd', 'nginx']),
   loadbalancer: new Set(['haproxy', 'nginx', 'kernel', 'systemd', 'cron', 'sshd']),
+  storage: new Set(['kernel', 'systemd', 'docker', 'cron', 'sshd', 'rsync']),
 };
 
 // ============================================================================
@@ -153,7 +154,7 @@ function hasHint(hint: string, keywords: string[]): boolean {
 
 function inferServerType(explicitType: string, serverId: string): ServerType {
   const t = explicitType.toLowerCase();
-  if (t === 'web' || t === 'database' || t === 'cache' || t === 'application' || t === 'loadbalancer') {
+  if (t === 'web' || t === 'database' || t === 'cache' || t === 'application' || t === 'loadbalancer' || t === 'storage') {
     return t;
   }
 
@@ -161,6 +162,7 @@ function inferServerType(explicitType: string, serverId: string): ServerType {
   if (id.includes('db') || id.includes('mysql') || id.includes('postgres')) return 'database';
   if (id.includes('redis') || id.includes('cache') || id.includes('memcache')) return 'cache';
   if (id.includes('lb') || id.includes('haproxy') || id.includes('loadbalancer')) return 'loadbalancer';
+  if (id.includes('storage') || id.includes('nfs') || id.includes('s3')) return 'storage';
   if (id.includes('api') || id.includes('app') || id.includes('worker')) return 'application';
 
   return 'web';

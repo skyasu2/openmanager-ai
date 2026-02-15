@@ -15,6 +15,7 @@ import { logger } from '../lib/logger';
 import type {
   OTelHourlyFile,
   OTelHourlySlot,
+  OTelLogRecord,
   OTelResourceCatalog,
 } from '../types/otel-metrics';
 import { generateLogs, type GeneratedLog } from './log-generator';
@@ -196,8 +197,11 @@ let _resourceCatalog: OTelResourceCatalog | null = null;
 function getOTelResourceCatalog(): OTelResourceCatalog | null {
   if (_resourceCatalog) return _resourceCatalog;
   const paths = [
+    join(__dirname, '../../data/otel-data/resource-catalog.json'),
     join(__dirname, '../../data/otel-processed/resource-catalog.json'),
+    join(process.cwd(), 'data/otel-data/resource-catalog.json'),
     join(process.cwd(), 'data/otel-processed/resource-catalog.json'),
+    join(process.cwd(), 'cloud-run/ai-engine/data/otel-processed/resource-catalog.json'),
   ];
   for (const p of paths) {
     if (existsSync(p)) {
@@ -217,8 +221,11 @@ function getOTelResourceCatalog(): OTelResourceCatalog | null {
 function getOTelPaths(hour: number): string[] {
   const paddedHour = hour.toString().padStart(2, '0');
   return [
+    join(__dirname, '../../data/otel-data/hourly', `hour-${paddedHour}.json`),
     join(__dirname, '../../data/otel-processed/hourly', `hour-${paddedHour}.json`),
+    join(process.cwd(), 'data/otel-data/hourly', `hour-${paddedHour}.json`),
     join(process.cwd(), 'data/otel-processed/hourly', `hour-${paddedHour}.json`),
+    join(process.cwd(), 'cloud-run/ai-engine/data/otel-processed/hourly', `hour-${paddedHour}.json`),
   ];
 }
 
@@ -280,13 +287,10 @@ function otelSlotToRawServers(slot: OTelHourlySlot): Record<string, RawServerDat
         case 'system.network.io':
           server.network = dp.asDouble;
           break;
-        case 'system.status':
-          if (dp.asDouble === 0) server.status = 'offline';
-          break;
-        case 'system.cpu.load_average.1m':
+        case 'system.linux.cpu.load_1m':
           server.load1 = dp.asDouble;
           break;
-        case 'system.cpu.load_average.5m':
+        case 'system.linux.cpu.load_5m':
           server.load5 = dp.asDouble;
           break;
         case 'http.server.request.duration':
@@ -300,80 +304,6 @@ function otelSlotToRawServers(slot: OTelHourlySlot): Record<string, RawServerDat
   }
 
   return serverMap;
-}
-
-// ============================================================================
-// Prometheus Data Loader (FALLBACK)
-// ============================================================================
-
-/** JSON 파일 경로 후보 */
-function getJsonPaths(hour: number): string[] {
-  const paddedHour = hour.toString().padStart(2, '0');
-  return [
-    join(__dirname, '../../../data/hourly-data', `hour-${paddedHour}.json`),
-    join(process.cwd(), 'data/hourly-data', `hour-${paddedHour}.json`),
-    join(process.cwd(), 'cloud-run/ai-engine/data/hourly-data', `hour-${paddedHour}.json`),
-  ];
-}
-
-/** JSON 파일 로드 */
-function loadHourlyJson(hour: number): HourlyJsonData | null {
-  for (const filePath of getJsonPaths(hour)) {
-    if (existsSync(filePath)) {
-      try {
-        const content = readFileSync(filePath, 'utf-8');
-        return JSON.parse(content);
-      } catch {
-        // 다음 경로 시도
-      }
-    }
-  }
-  return null;
-}
-
-interface HourlyJsonData {
-  hour: number;
-  _scenario?: string;
-  scrapeConfig: {
-    scrapeInterval: string;
-    evaluationInterval: string;
-    source: string;
-  };
-  dataPoints: Array<{
-    timestampMs: number;
-    targets: Record<string, PrometheusTargetData>;
-  }>;
-}
-
-interface PrometheusTargetData {
-  job: string;
-  instance: string;
-  labels: {
-    hostname: string;
-    datacenter: string;
-    environment: string;
-    server_type: string;
-    os: string;
-    os_version: string;
-  };
-  metrics: {
-    up: 0 | 1;
-    node_cpu_usage_percent: number;
-    node_memory_usage_percent: number;
-    node_filesystem_usage_percent: number;
-    node_network_transmit_bytes_rate: number;
-    node_load1: number;
-    node_load5: number;
-    node_boot_time_seconds: number;
-    node_procs_running: number;
-    node_http_request_duration_milliseconds: number;
-  };
-  nodeInfo: {
-    cpu_cores: number;
-    memory_total_bytes: number;
-    disk_total_bytes: number;
-  };
-  logs: string[];
 }
 
 interface RawServerData {
@@ -391,28 +321,6 @@ interface RawServerData {
   bootTimeSeconds?: number;
   responseTimeMs?: number;
   cpuCores?: number;
-}
-
-/**
- * PrometheusTargetData → RawServerData 변환
- */
-function targetToRawServer(target: PrometheusTargetData): RawServerData {
-  return {
-    id: target.instance.replace(/:9100$/, ''),
-    name: target.labels.hostname.replace('.openmanager.kr', ''),
-    type: target.labels.server_type,
-    cpu: target.metrics.node_cpu_usage_percent,
-    memory: target.metrics.node_memory_usage_percent,
-    disk: target.metrics.node_filesystem_usage_percent,
-    network: target.metrics.node_network_transmit_bytes_rate,
-    status: target.metrics.up === 0 ? 'offline' : undefined,
-    // 확장 메트릭
-    load1: target.metrics.node_load1,
-    load5: target.metrics.node_load5,
-    bootTimeSeconds: target.metrics.node_boot_time_seconds,
-    responseTimeMs: target.metrics.node_http_request_duration_milliseconds,
-    cpuCores: target.nodeInfo?.cpu_cores,
-  };
 }
 
 /** 서버 상태 결정 (JSON SSOT와 동일한 용어 사용) */
@@ -526,8 +434,21 @@ function detectPatterns(servers: ServerSnapshot[]): ActivePattern[] {
 }
 
 /**
+ * OTel LogRecord → GeneratedLog 변환 (AI 컨텍스트용)
+ */
+function otelLogToGeneratedLog(log: OTelLogRecord): GeneratedLog {
+  return {
+    level: log.severityText.toLowerCase() as GeneratedLog['level'],
+    source: String(log.attributes['log.source'] ?? 'syslog'),
+    message: log.body,
+  };
+}
+
+/**
  * RawServerData → PrecomputedSlot 빌드 헬퍼
  * OTel path와 Prometheus path 양쪽에서 재사용
+ *
+ * @param otelLogs - OTel slot.logs (OTel 경로에서만 전달, 합성 로그 대신 사용)
  */
 function buildSlot(
   rawServers: Record<string, RawServerData>,
@@ -536,6 +457,7 @@ function buildSlot(
   hour: number,
   slotInHour: number,
   scenario: string = '',
+  otelLogs?: OTelLogRecord[],
 ): PrecomputedSlot {
   const minuteOfDay = slotIndex * 10;
   const timeLabel = `${hour.toString().padStart(2, '0')}:${(slotInHour * 10).toString().padStart(2, '0')}`;
@@ -576,19 +498,40 @@ function buildSlot(
   // 패턴 감지
   const activePatterns = detectPatterns(servers);
 
-  // 서버별 로그 생성 (error 우선, 서버당 최대 5개)
+  // 서버별 로그: OTel SSOT 우선, Prometheus fallback 시 합성 생성
   const serverLogs: Record<string, GeneratedLog[]> = {};
-  for (const raw of Object.values(rawServers)) {
-    const logs = generateLogs(
-      { cpu: raw.cpu, memory: raw.memory, disk: raw.disk, network: raw.network },
-      raw.id,
-      raw.type,
-      scenario,
-    );
+
+  if (otelLogs && otelLogs.length > 0) {
+    // OTel 경로: slot.logs를 서버별로 분류
+    for (const log of otelLogs) {
+      const serverId = log.resource;
+      if (!rawServers[serverId]) continue;
+      if (!serverLogs[serverId]) serverLogs[serverId] = [];
+      serverLogs[serverId].push(otelLogToGeneratedLog(log));
+    }
     // error 우선 정렬 후 최대 5개
     const priorityOrder: Record<string, number> = { error: 0, warn: 1, info: 2 };
-    logs.sort((a, b) => (priorityOrder[a.level] ?? 2) - (priorityOrder[b.level] ?? 2));
-    serverLogs[raw.id] = logs.slice(0, 5);
+    for (const [sid, logs] of Object.entries(serverLogs)) {
+      logs.sort((a, b) => (priorityOrder[a.level] ?? 2) - (priorityOrder[b.level] ?? 2));
+      serverLogs[sid] = logs.slice(0, 5);
+    }
+    // OTel에 로그가 없는 서버는 빈 배열
+    for (const raw of Object.values(rawServers)) {
+      if (!serverLogs[raw.id]) serverLogs[raw.id] = [];
+    }
+  } else {
+    // Prometheus fallback: 합성 로그 생성
+    for (const raw of Object.values(rawServers)) {
+      const logs = generateLogs(
+        { cpu: raw.cpu, memory: raw.memory, disk: raw.disk, network: raw.network },
+        raw.id,
+        raw.type,
+        scenario,
+      );
+      const priorityOrder: Record<string, number> = { error: 0, warn: 1, info: 2 };
+      logs.sort((a, b) => (priorityOrder[a.level] ?? 2) - (priorityOrder[b.level] ?? 2));
+      serverLogs[raw.id] = logs.slice(0, 5);
+    }
   }
 
   return {
@@ -603,62 +546,35 @@ function buildSlot(
   };
 }
 
-/** 144개 슬롯 빌드 — OTel 우선, Prometheus 폴백 (Tiered Data Access) */
+/** 144개 슬롯 빌드 — OTel SSOT */
 export function buildPrecomputedStates(): PrecomputedSlot[] {
   const slots: PrecomputedSlot[] = [];
   let previousServers: Record<string, RawServerData> = {};
   let otelCount = 0;
-  let promCount = 0;
 
   // 24시간 순회 (0-23)
   for (let hour = 0; hour < 24; hour++) {
-    // Tier 1: OTel processed data (PRIMARY)
     const otelData = loadOTelHourly(hour);
 
-    if (otelData) {
-      otelCount++;
-      for (let slotInHour = 0; slotInHour < 6; slotInHour++) {
-        const slotIndex = hour * 6 + slotInHour;
-        const slot = otelData.slots[Math.min(slotInHour, otelData.slots.length - 1)];
-        if (!slot) continue;
-
-        const rawServers = otelSlotToRawServers(slot);
-        slots.push(buildSlot(rawServers, previousServers, slotIndex, hour, slotInHour));
-        previousServers = rawServers;
-      }
+    if (!otelData) {
+      logger.warn(`[PrecomputedState] hour-${hour} OTel 데이터 없음, 스킵`);
       continue;
     }
 
-    // Tier 2: Prometheus hourly-data (FALLBACK)
-    const hourlyData = loadHourlyJson(hour);
-    if (!hourlyData) {
-      logger.warn(`[PrecomputedState] hour-${hour} 데이터 없음 (OTel/Prometheus 모두), 스킵`);
-      continue;
-    }
-
-    promCount++;
+    otelCount++;
     for (let slotInHour = 0; slotInHour < 6; slotInHour++) {
       const slotIndex = hour * 6 + slotInHour;
-      const dataPoint = hourlyData.dataPoints[Math.min(slotInHour, hourlyData.dataPoints.length - 1)];
+      const slot = otelData.slots[Math.min(slotInHour, otelData.slots.length - 1)];
+      if (!slot) continue;
 
-      if (!dataPoint?.targets) {
-        logger.warn(`[PrecomputedState] slot ${slotIndex} 데이터 없음`);
-        continue;
-      }
-
-      const rawServers: Record<string, RawServerData> = {};
-      for (const target of Object.values(dataPoint.targets)) {
-        const raw = targetToRawServer(target);
-        rawServers[raw.id] = raw;
-      }
-
-      slots.push(buildSlot(rawServers, previousServers, slotIndex, hour, slotInHour, hourlyData._scenario ?? ''));
+      const rawServers = otelSlotToRawServers(slot);
+      slots.push(buildSlot(rawServers, previousServers, slotIndex, hour, slotInHour, '', slot.logs));
       previousServers = rawServers;
     }
   }
 
   logger.info(
-    `[PrecomputedState] ${slots.length}개 슬롯 빌드 완료 (OTel=${otelCount}h, Prometheus=${promCount}h)`
+    `[PrecomputedState] ${slots.length}개 슬롯 빌드 완료 (OTel=${otelCount}h)`
   );
   return slots;
 }
@@ -668,6 +584,33 @@ export function buildPrecomputedStates(): PrecomputedSlot[] {
 // ============================================================================
 
 let _cachedSlots: PrecomputedSlot[] | null = null;
+
+function createFallbackSlot(slotIndex: number): PrecomputedSlot {
+  const safeIndex = ((slotIndex % 144) + 144) % 144;
+  const hour = Math.floor(safeIndex / 6);
+  const minute = (safeIndex % 6) * 10;
+
+  return {
+    slotIndex: safeIndex,
+    timeLabel: `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`,
+    minuteOfDay: safeIndex * 10,
+    summary: {
+      total: 0,
+      healthy: 0,
+      warning: 0,
+      critical: 0,
+      offline: 0,
+    },
+    alerts: [],
+    activePatterns: [],
+    servers: [],
+    serverLogs: {},
+  };
+}
+
+function getSlotOrFallback(slots: PrecomputedSlot[], slotIndex: number): PrecomputedSlot {
+  return slots[slotIndex] ?? slots[0] ?? createFallbackSlot(slotIndex);
+}
 
 /** Pre-built JSON 경로 후보 */
 function getPrebuiltJsonPaths(): string[] {
@@ -723,7 +666,15 @@ export function getSlots(): PrecomputedSlot[] {
             '[PrecomputedState] stale pre-built 감지, 런타임 빌드 결과 사용',
             { currentIndex, prebuiltSummary, runtimeSummary }
           );
-          _cachedSlots = runtimeBuilt;
+          if (runtimeBuilt.length > 0) {
+            _cachedSlots = runtimeBuilt;
+          } else if (prebuilt.length > 0) {
+            logger.warn('[PrecomputedState] 런타임 빌드 0개, pre-built 유지');
+            _cachedSlots = prebuilt;
+          } else {
+            logger.error('[PrecomputedState] pre-built/런타임 모두 비어있음, fallback 슬롯 생성');
+            _cachedSlots = [createFallbackSlot(currentIndex)];
+          }
         } else {
           _cachedSlots = prebuilt;
         }
@@ -731,12 +682,26 @@ export function getSlots(): PrecomputedSlot[] {
         _cachedSlots = prebuilt;
       } else {
         console.log('[PrecomputedState] Pre-built 없음, 런타임 빌드 시작...');
-        _cachedSlots = buildPrecomputedStates();
+        const runtimeBuilt = buildPrecomputedStates();
+        _cachedSlots =
+          runtimeBuilt.length > 0
+            ? runtimeBuilt
+            : [createFallbackSlot(getCurrentSlotIndex())];
       }
     } else {
       // 런타임 빌드 우선 (권장)
       console.log('[PrecomputedState] 런타임 빌드 모드 사용');
-      _cachedSlots = buildPrecomputedStates();
+      const runtimeBuilt = buildPrecomputedStates();
+      if (runtimeBuilt.length > 0) {
+        _cachedSlots = runtimeBuilt;
+      } else {
+        logger.warn('[PrecomputedState] 런타임 빌드 0개, pre-built fallback 시도');
+        const prebuilt = loadPrebuiltStates();
+        _cachedSlots =
+          prebuilt && prebuilt.length > 0
+            ? prebuilt
+            : [createFallbackSlot(getCurrentSlotIndex())];
+      }
     }
 
     // 3. Pre-built JSON에 serverLogs 없으면 런타임 보충
@@ -787,7 +752,7 @@ function getCurrentSlotIndex(): number {
 export function getCurrentState(): PrecomputedSlot {
   const slots = getSlots();
   const index = getCurrentSlotIndex();
-  return slots[index] || slots[0];
+  return getSlotOrFallback(slots, index);
 }
 
 /**
@@ -982,7 +947,7 @@ export function getStateAtRelativeTime(minutesAgo: number = 0): PrecomputedSlot 
   const isYesterday = date !== currentDate;
 
   const slots = getSlots();
-  const state = slots[slotIndex] || slots[0];
+  const state = getSlotOrFallback(slots, slotIndex);
 
   return {
     ...state,

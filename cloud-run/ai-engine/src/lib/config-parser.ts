@@ -41,8 +41,8 @@ export interface SupabaseConfig {
  * AI Providers Configuration (Grouped)
  * Contains API keys for multiple AI providers
  *
- * @updated 2026-01-12 - Removed OpenRouter (free tier tool calling unreliable)
  * @updated 2026-01-27 - Added Gemini Flash-Lite for Vision Agent
+ * @updated 2026-02-15 - Re-added OpenRouter as Vision fallback with guarded defaults
  */
 export interface AIProvidersConfig {
   groq: string;
@@ -117,6 +117,12 @@ let cachedSupabaseConfig: SupabaseConfig | null = null;
 let cachedAIProvidersConfig: AIProvidersConfig | null = null;
 let cachedKVConfig: KVConfig | null = null;
 let cachedLangfuseConfig: LangfuseConfig | null = null;
+
+const DEFAULT_OPENROUTER_VISION_MODEL = 'nvidia/nemotron-nano-12b-v2-vl:free';
+const DEFAULT_OPENROUTER_VISION_FALLBACKS = [
+  'mistralai/mistral-small-3.1-24b-instruct:free',
+  'google/gemma-3-4b-it:free',
+];
 
 /**
  * Get Supabase configuration
@@ -330,10 +336,38 @@ export function getOpenRouterApiKey(): string | null {
 
 /**
  * Get OpenRouter Vision Model ID
- * Default: Qwen 2.5 VL 72B (Free)
+ * Default: nvidia/nemotron-nano-12b-v2-vl:free
  */
 export function getOpenRouterVisionModelId(): string {
-  return process.env.OPENROUTER_MODEL_VISION || 'qwen/qwen-2.5-vl-72b-instruct:free';
+  return process.env.OPENROUTER_MODEL_VISION || DEFAULT_OPENROUTER_VISION_MODEL;
+}
+
+/**
+ * Get OpenRouter Vision fallback model IDs (comma-separated)
+ * Example: "mistralai/mistral-small-3.1-24b-instruct:free,google/gemma-3-4b-it:free"
+ */
+export function getOpenRouterVisionFallbackModelIds(): string[] {
+  const raw = process.env.OPENROUTER_MODEL_VISION_FALLBACKS;
+  if (!raw) return [...DEFAULT_OPENROUTER_VISION_FALLBACKS];
+
+  const parsed = raw
+    .split(',')
+    .map(model => model.trim())
+    .filter(Boolean);
+
+  if (parsed.length === 0) {
+    return [...DEFAULT_OPENROUTER_VISION_FALLBACKS];
+  }
+
+  return [...new Set(parsed)];
+}
+
+/**
+ * Free-tier OpenRouter vision models often fail on tool calling.
+ * Default is disabled for reliability; enable only when validated.
+ */
+export function isOpenRouterVisionToolCallingEnabled(): boolean {
+  return process.env.OPENROUTER_VISION_TOOL_CALLING === 'true';
 }
 
 /**

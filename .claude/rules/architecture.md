@@ -81,12 +81,14 @@ Cloud Run 측: cloud-run/ai-engine/src/{agents|tools}/
 
 ## Data Source (SSOT)
 
-**Single Source of Truth**: `src/data/hourly-data/hour-XX.json`
+**Single Source of Truth**: `src/data/otel-data/` (OTel-native)
 
 | 컴포넌트 | 파일 | 역할 |
 |---------|------|------|
-| 데이터 원본 | `src/data/hourly-data/*.json` | 24시간 시나리오 (번들 포함) |
-| Vercel 소비 | `src/services/data/UnifiedServerDataSource.ts` | API 제공 |
+| 데이터 원본 | `src/data/otel-data/hourly/*.json` | 24시간 OTel metrics + logs |
+| 리소스 카탈로그 | `src/data/otel-data/resource-catalog.json` | 서버 메타데이터 |
+| 시계열 | `src/data/otel-data/timeseries.json` | 24h 집계 시계열 |
+| Vercel 소비 | `src/services/metrics/MetricsProvider.ts` | OTel 직접 소비 |
 | AI 소비 | `cloud-run/ai-engine/src/data/precomputed-state.ts` | AI 컨텍스트 |
 
 **주의**: 메트릭 수정 시 Dashboard와 AI 응답 **양쪽 확인** 필수
@@ -98,7 +100,7 @@ Cloud Run 측: cloud-run/ai-engine/src/{agents|tools}/
 | `src/` 루트에 파일 생성 | feature별 폴더에 배치 |
 | API에서 직접 LLM 호출 | Cloud Run AI Engine 위임 |
 | 컴포넌트에 비즈니스 로직 | `services/`로 분리 |
-| 하드코딩된 서버 데이터 | `hourly-data/*.json` 사용 |
+| 하드코딩된 서버 데이터 | `otel-data/` SSOT 사용 |
 | `any` 타입 사용 | 명시적 타입 정의 |
 
 ## Import 패턴

@@ -102,11 +102,10 @@ ENV NODE_ENV=production
 ENV PORT=8080
 
 # Cloud Run optimized Node.js settings (FREE TIER)
-# - max-old-space-size: 384MB (within 512Mi container limit)
+# - max-old-space-size: 256MB (within 512Mi container limit, leave headroom for native heap + stack)
 # - enable-source-maps: Better error traces
 # - dns-result-order: IPv4 first (Cloud Run optimization)
-# - no-warnings: Reduce noise in logs
-ENV NODE_OPTIONS="--max-old-space-size=384 --enable-source-maps --dns-result-order=ipv4first"
+ENV NODE_OPTIONS="--max-old-space-size=256 --enable-source-maps --dns-result-order=ipv4first"
 
 # Copy dumb-init from deps stage
 COPY --from=deps /usr/bin/dumb-init /usr/bin/dumb-init
@@ -124,11 +123,9 @@ COPY --from=builder /app/dist ./dist
 
 # Copy data files (SSOT)
 # - precomputed-states.json: O(1) lookup for AI context
-# - hourly-data/: Synced with src/data/hourly-data/ (FALLBACK)
-# - otel-processed/: Pre-aggregated OTel metrics (PRIMARY)
+# - otel-data/: Pre-aggregated OTel metrics (SSOT)
 COPY data/precomputed-states.json ./data/
-COPY data/hourly-data/ ./data/hourly-data/
-COPY data/otel-processed/ ./data/otel-processed/
+COPY data/otel-data/ ./data/otel-data/
 
 # Copy config files (SSOT)
 # - system-rules.json: Threshold values synced with Vercel

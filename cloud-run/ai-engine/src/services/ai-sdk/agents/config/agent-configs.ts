@@ -320,7 +320,7 @@ function getAdvisorModel(): ModelResult | null {
  * - 1M token context, Vision/PDF/Video/Audio, Search Grounding
  * - Free Tier: 250 RPD
  *
- * Fallback: OpenRouter (Qwen 2.5 VL 72B / Llama 3.2 Vision)
+ * Fallback: OpenRouter (nvidia/nemotron-nano-12b-v2-vl:free)
  * - Basic vision capabilities maintained
  * - Used when Gemini unavailable or quota exceeded
  *

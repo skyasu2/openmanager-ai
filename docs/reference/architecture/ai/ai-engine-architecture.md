@@ -4,11 +4,11 @@
 > Owner: platform-architecture
 > Status: Active Canonical
 > Doc type: Reference
-> Last reviewed: 2026-02-14
+> Last reviewed: 2026-02-15
 > Canonical: docs/reference/architecture/ai/ai-engine-architecture.md
 > Tags: ai,architecture,multi-agent,cloud-run
 >
-> **v8.0.0** | Updated 2026-02-14
+> **v8.0.0** | Updated 2026-02-15
 > (ai-model-policy.md 내용 통합됨, 2026-02-14)
 
 ## Overview
@@ -80,12 +80,11 @@ cloud-run/ai-engine/src/services/ai-sdk/
 | **Analyst Agent** | Groq llama-3.3-70b-versatile | Cerebras → Mistral | 이상 탐지, 트렌드 예측 | `detectAnomalies`, `predictTrends`, `analyzePattern`, `correlateMetrics`, `findRootCause` |
 | **Reporter Agent** | Groq llama-3.3-70b-versatile | Cerebras → Mistral | 장애 보고서, 타임라인 | `buildIncidentTimeline`, `findRootCause`, `correlateMetrics`, `searchKnowledgeBase` |
 | **Advisor Agent** | Mistral mistral-small-2506 | Groq → Cerebras | 트러블슈팅, 지식 검색 | `searchKnowledgeBase` (GraphRAG), `recommendCommands` |
-| **Vision Agent** | Gemini 2.5-flash | OpenRouter (Qwen/Llama) | 스크린샷/로그 분석, Search Grounding | `analyzeScreenshot`, `analyzeLargeLog`, `searchWithGrounding` |
+| **Vision Agent** | Gemini 2.5-flash | OpenRouter (Nemotron/Mistral/Gemma Free) | 스크린샷/로그 분석, Search Grounding | `analyzeScreenshot`, `analyzeLargeLog`, `searchWithGrounding` |
 | **Evaluator Agent** | Cerebras llama-3.3-70b | - | 보고서 품질 평가 (내부) | `evaluateIncidentReport`, `validateReportStructure` |
 | **Optimizer Agent** | Mistral mistral-small-2506 | - | 보고서 품질 개선 (내부) | `refineRootCauseAnalysis`, `enhanceSuggestedActions` |
-| **Verifier** | Mistral mistral-small-2506 | Cerebras llama-3.3-70b | 응답 검증 | N/A |
 
-> **Note**: 외부 라우팅 대상 Agent는 5개 (NLQ, Analyst, Reporter, Advisor, Vision). Evaluator/Optimizer는 Reporter Pipeline 내부 전용, Verifier는 별도 검증 컴포넌트.
+> **Note**: 실행 에이전트는 7개(NLQ/Analyst/Reporter/Advisor/Vision/Evaluator/Optimizer)이며, Orchestrator는 코디네이터 컴포넌트로 별도 집계합니다.
 
 > **Dual-Mode Strategy**: Single-agent mode (단순 쿼리, 저지연), Multi-agent mode (복잡 쿼리, 전문 처리). Cerebras는 빠른 라우팅/NLQ, Groq는 분석/보고서 안정성.
 
@@ -109,9 +108,9 @@ cloud-run/ai-engine/src/services/ai-sdk/
 |----------|-------------|------|------|
 | **Cerebras** | 24M tokens/day | Orchestrator, NLQ Agent | llama-3.3-70b |
 | **Groq** | 100K tokens/day | Analyst, Reporter Agent | llama-3.3-70b-versatile |
-| **Mistral** | 1M tokens/mo | Verifier, Advisor, Embedding | mistral-small-2506 |
+| **Mistral** | 1M tokens/mo | Advisor, Embedding, Optimizer | mistral-small-2506 |
 | **Gemini** | 250 RPD, 10 RPM, 250K TPM | Vision Agent | gemini-2.5-flash |
-| **OpenRouter** | ~50 RPD (Free Tier) | Vision Fallback | Qwen 2.5 VL / Llama 3.2 |
+| **OpenRouter** | Provider/Model별 상이 | Vision Fallback | nvidia/nemotron-nano-12b-v2-vl:free (+ fallback list) |
 
 > **주의**: OpenRouter 무료 모델은 일일 50회 제한으로 저사용량 시나리오에만 적합합니다.
 
@@ -150,7 +149,7 @@ cloud-run/ai-engine/src/services/ai-sdk/
 - **Circuit Breaker**: 모델 상태 모니터링 및 자동 장애 전환
 - **GraphRAG Integration**: Advisor agent의 hybrid vector + graph search
 - **Protocol Adaptation**: UIMessageStream native protocol (v6)
-- **Response Verification**: Verifier agent가 응답 반환 전 검증
+- **Response Completion Control**: `finalAnswer` 패턴으로 도구 루프 종료 제어
 
 ### Version History
 
@@ -318,7 +317,7 @@ Vision Agent는 Gemini Flash를 주력으로 사용하며, 무료 할당량(250 
 | **Google Search** | Grounding 지원 (Gemini Only) |
 | **URL Context** | 웹 페이지 분석 |
 
-**Graceful Degradation**: Gemini/OpenRouter 모두 장애 시 Vision Agent는 비활성화되며, 기존 에이전트(NLQ/Analyst/Reporter/Advisor)는 100% 정상 동작합니다. OpenRouter 무료 모델은 PDF, Google Search Grounding, 1M Context를 미지원하여 일부 기능이 제한될 수 있습니다.
+**Graceful Degradation**: Gemini/OpenRouter 모두 장애 시 Vision Agent는 비활성화되며, 기존 에이전트(NLQ/Analyst/Reporter/Advisor)는 100% 정상 동작합니다. OpenRouter 무료 모델은 기능 편차가 커서 기본적으로 Tool Calling을 비활성화하고 텍스트/이미지 분석 중심으로 동작합니다.
 
 ### Observability (Langfuse)
 
@@ -338,34 +337,39 @@ Vision Agent는 Gemini Flash를 주력으로 사용하며, 무료 할당량(250 
 |---------|-------------|----------|
 | **Return-to-Supervisor** | Agent sets `returnToSupervisor=true` | 다른 에이전트 전문성 필요 시 |
 | **Command Pattern** | Explicit `toAgent` in DelegationRequest | 특정 에이전트 직접 위임 |
-| **Verification Loop** | Verifier checks output before response | 품질 보증 및 할루시네이션 체크 |
+| **FinalAnswer Loop** | `finalAnswer` 도구 호출 시 루프 종료 | 무한 루프 방지 및 종료 일관성 |
 
-## Tool Registry (22개 도구)
+## Tool Registry (27개 도구)
 
 | Category | Tool | Agent | Description |
 |----------|------|-------|-------------|
-| **Metrics (5)** | `getServerMetrics` | NLQ | 서버 메트릭 조회 |
+| **Metrics (6)** | `getServerMetrics` | NLQ | 서버 메트릭 조회 |
 | | `getServerMetricsAdvanced` | NLQ | 고급 메트릭 분석 |
 | | `filterServers` | NLQ | 서버 필터링 |
-| | `getServerList` | NLQ | 서버 목록 |
-| | `getServerSummary` | NLQ | 서버 요약 |
+| | `getServerByGroup` | NLQ | 서버 그룹 조회 |
+| | `getServerByGroupAdvanced` | NLQ | 서버 그룹 복합 조회 |
+| | `getServerLogs` | NLQ/Reporter | 서버 로그 조회 |
 | **RCA (3)** | `findRootCause` | Analyst, Reporter | 근본 원인 분석 |
 | | `correlateMetrics` | Analyst, Reporter | 메트릭 상관관계 |
 | | `buildIncidentTimeline` | Reporter | 인시던트 타임라인 |
-| **Analyst (3)** | `detectAnomalies` | Analyst | 이상 탐지 |
+| **Analyst (4)** | `detectAnomalies` | Analyst | 이상 탐지 |
+| | `detectAnomaliesAllServers` | Analyst | 전체 서버 이상 탐지 |
 | | `predictTrends` | Analyst | 트렌드 예측 |
 | | `analyzePattern` | Analyst | 패턴 분석 |
-| **Reporter (4)** | `searchWebWithTavily` | Reporter | 웹 검색 (Tavily) |
-| | `extractWebContent` | Reporter | URL 콘텐츠 추출 |
-| | `generateReport` | Reporter | 보고서 생성 |
-| | `formatIncidentReport` | Reporter | 인시던트 형식화 |
-| **Evaluation (6)** | `evaluateReport` | Reporter Pipeline | 보고서 평가 |
-| | `optimizeReport` | Reporter Pipeline | 보고서 최적화 |
-| | `checkCompleteness` | Verifier | 완전성 검증 |
-| | `checkAccuracy` | Verifier | 정확도 검증 |
-| | `checkClarity` | Verifier | 명확성 검증 |
-| | `checkActionability` | Verifier | 실행가능성 검증 |
+| **Reporter (3)** | `searchKnowledgeBase` | Reporter/Advisor | RAG 지식 검색 |
+| | `recommendCommands` | Reporter/Advisor | 조치 명령 추천 |
+| | `searchWeb` | Reporter | 웹 검색 (Tavily) |
+| **Evaluation (6)** | `evaluateIncidentReport` | Reporter Pipeline | 보고서 품질 평가 |
+| | `validateReportStructure` | Reporter Pipeline | 구조 검증 |
+| | `scoreRootCauseConfidence` | Reporter Pipeline | RCA 신뢰도 점수화 |
+| | `refineRootCauseAnalysis` | Reporter Pipeline | RCA 개선 |
+| | `enhanceSuggestedActions` | Reporter Pipeline | 조치안 구체화 |
+| | `extendServerCorrelation` | Reporter Pipeline | 서버 연관성 확장 |
 | **Control (1)** | `finalAnswer` | All | 에이전트 종료 신호 |
+| **Vision (4)** | `analyzeScreenshot` | Vision | 스크린샷 분석 |
+| | `analyzeLargeLog` | Vision | 대용량 로그 분석 |
+| | `searchWithGrounding` | Vision | Google Search Grounding |
+| | `analyzeUrlContent` | Vision | URL 콘텐츠 분석 |
 
 > **Note**: `finalAnswer`는 AI SDK v6 베스트 프랙티스에 따른 에이전트 종료 도구. `stopWhen: [hasToolCall('finalAnswer')]` 패턴과 함께 사용.
 
@@ -414,7 +418,8 @@ graph TD
             Analyst["Analyst Agent<br/>Anomaly/Trend"]
             Reporter["Reporter Agent<br/>Incident Report"]
             Advisor["Advisor Agent<br/>GraphRAG"]
-            Verifier["Verifier<br/>Response Validation"]
+            Vision["Vision Agent<br/>Image/Log Analysis"]
+            Finalizer["Finalizer<br/>finalAnswer 종료 제어"]
         end
     end
 
@@ -433,22 +438,25 @@ graph TD
     Orchestrator -->|Handoff| Analyst
     Orchestrator -->|Handoff| Reporter
     Orchestrator -->|Handoff| Advisor
+    Orchestrator -->|Handoff| Vision
 
     NLQ --> Metrics
     Analyst --> Metrics
     Reporter --> RAG
     Advisor --> RAG
+    Vision --> RAG
 
-    NLQ --> Verifier
-    Analyst --> Verifier
-    Reporter --> Verifier
-    Advisor --> Verifier
+    NLQ --> Finalizer
+    Analyst --> Finalizer
+    Reporter --> Finalizer
+    Advisor --> Finalizer
+    Vision --> Finalizer
 
     SingleAgent --> Cache
-    Verifier --> Cache
+    Finalizer --> Cache
 
     SingleAgent -->|UIMessageStream| User
-    Verifier -->|UIMessageStream| User
+    Finalizer -->|UIMessageStream| User
 ```
 
 ### ASCII Fallback
@@ -486,7 +494,7 @@ graph TD
 │  │           │                   └─────┬────┘                │  │
 │  │           │                         ▼                     │  │
 │  │           │                  ┌────────────┐               │  │
-│  │           └──────────────────│  Verifier  │               │  │
+│  │           └──────────────────│ Finalizer  │               │  │
 │  │                              └──────┬─────┘               │  │
 │  └─────────────────────────────────────┼─────────────────────┘  │
 └─────────────────────────────────────────┼────────────────────────┘
@@ -504,7 +512,7 @@ graph TD
 | **System Architecture** | Full AI engine overview | [View](https://www.figma.com/online-whiteboard/create-diagram/9a4b29bd-0376-4e0a-8e22-3b9bd008854a) |
 | **Agent Routing Flow** | Supervisor → Agent routing | [View](https://www.figma.com/online-whiteboard/create-diagram/22dbc5b3-44c1-44e7-9eee-1fa0cf8e402a) |
 | **Multi-Agent Communication** | Inter-agent delegation | [View](https://www.figma.com/online-whiteboard/create-diagram/a32f26ab-5d3c-40f6-a8ed-4eb5ec0ed843) |
-| **Supervisor Execution Flow** | Query → Supervisor → Agents → Verifier flow | [View](https://www.figma.com/online-whiteboard/create-diagram/eb37f54b-2795-4320-bd2e-c41854a7ec52) |
+| **Supervisor Execution Flow** | Query → Supervisor → Agents → finalAnswer 종료 흐름 | [View](https://www.figma.com/online-whiteboard/create-diagram/eb37f54b-2795-4320-bd2e-c41854a7ec52) |
 
 ---
 

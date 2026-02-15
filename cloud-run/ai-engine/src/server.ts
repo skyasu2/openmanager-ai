@@ -5,6 +5,7 @@
  * Refactored for maintainability and consistency.
  */
 
+import { timingSafeEqual } from 'node:crypto';
 import { serve } from '@hono/node-server';
 import { version as APP_VERSION } from '../package.json';
 import { Hono } from 'hono';
@@ -75,7 +76,8 @@ app.use('/api/*', async (c: Context, next: Next) => {
     return handleUnauthorizedError(c);
   }
 
-  if (apiKey !== validKey) {
+  if (!apiKey || apiKey.length !== validKey.length ||
+      !timingSafeEqual(Buffer.from(apiKey), Buffer.from(validKey))) {
     return handleUnauthorizedError(c);
   }
   await next();
@@ -123,6 +125,7 @@ app.get('/warmup', (c: Context) => {
   const state = getCurrentState();
   // Validate keys
   const status = validateAPIKeys();
+  const hasRuntimeState = state.servers.length > 0;
 
   return jsonSuccess(c, {
     status: 'warmed_up',
@@ -132,6 +135,7 @@ app.get('/warmup', (c: Context) => {
       currentSlot: state.slotIndex,
       currentTime: state.timeLabel,
       serverCount: state.servers.length,
+      runtimeStateReady: hasRuntimeState,
       summary: state.summary,
     },
   });
@@ -139,12 +143,11 @@ app.get('/warmup', (c: Context) => {
 
 // Monitoring endpoint authentication middleware (must be registered BEFORE route handlers)
 app.use('/monitoring/*', async (c: Context, next: Next) => {
-  if (process.env.NODE_ENV === 'production') {
-    const apiKey = c.req.header('X-API-Key');
-    const validKey = process.env.CLOUD_RUN_API_SECRET;
-    if (!validKey || apiKey !== validKey) {
-      return c.json({ error: 'Monitoring endpoints require authentication in production' }, 403);
-    }
+  const apiKey = c.req.header('X-API-Key');
+  const validKey = process.env.CLOUD_RUN_API_SECRET;
+  if (!validKey || !apiKey || apiKey.length !== validKey.length ||
+      !timingSafeEqual(Buffer.from(apiKey), Buffer.from(validKey))) {
+    return c.json({ error: 'Monitoring endpoints require authentication' }, 403);
   }
   await next();
 });
@@ -477,6 +480,12 @@ serve(
 async function gracefulShutdown(signal: string): Promise<void> {
   logger.info({ signal }, 'Received shutdown signal');
 
+  const SHUTDOWN_TIMEOUT_MS = 30_000;
+  const timeout = setTimeout(() => {
+    logger.error('Shutdown timed out after 30s, forcing exit');
+    process.exit(1);
+  }, SHUTDOWN_TIMEOUT_MS);
+
   try {
     logger.info('Flushing Langfuse traces');
     await flushLangfuse();
@@ -484,9 +493,11 @@ async function gracefulShutdown(signal: string): Promise<void> {
     logger.info('Shutting down Langfuse');
     await shutdownLangfuse();
 
+    clearTimeout(timeout);
     logger.info('Graceful shutdown complete');
     process.exit(0);
   } catch (error) {
+    clearTimeout(timeout);
     logger.error({ error }, 'Error during shutdown');
     process.exit(1);
   }
