@@ -6,7 +6,7 @@
 
 | Task | Priority | Status |
 |------|----------|--------|
-| 통합 테스트 확대 (13.1%→16%) | P3 | In Progress (AISidebarV4 + OTel transform 추가) |
+| 통합 테스트 확대 | P3 | Done — 63개 신규 테스트 추가 (6개 모듈) |
 
 ### Completed (2026-02-15)
 - [x] P1: Resume Stream v2 구현 — Upstash resumable, prepareReconnectToStreamRequest, stream-state 완성
