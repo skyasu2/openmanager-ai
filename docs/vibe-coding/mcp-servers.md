@@ -259,6 +259,20 @@ mcp__playwright__browser_click("Login button", "ref123")
 mcp__playwright__browser_take_screenshot()
 ```
 
+**WSL + Windows GUI 모드 (브라우저 창 표시)**:
+```bash
+# 1) Codex Playwright MCP를 HTTP 모드로 전환 + Windows MCP 서버 실행
+npm run mcp:playwright:windows:enable
+
+# 2) Codex 세션 재시작 후 확인
+bash scripts/mcp/codex-local.sh mcp list
+```
+
+복구(기본 stdio 모드):
+```bash
+npm run mcp:playwright:mode:stdio
+```
+
 ---
 
 ### Next DevTools (Next.js 런타임 진단) - 우선순위: 중간

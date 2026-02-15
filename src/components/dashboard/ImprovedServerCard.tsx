@@ -93,6 +93,7 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
 
     const currentGradient =
       statusGradients[safeServer.status] || statusGradients.online;
+    const isCompactVariant = variant === 'compact';
 
     const [showSecondaryInfo, setShowSecondaryInfo] = useState(false);
     const [showTertiaryInfo, setShowTertiaryInfo] = useState(false);
@@ -293,7 +294,9 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
               {/* 위치 정보 */}
               <div className="mt-1 flex items-center gap-1 text-xs text-gray-500">
                 <MapPin className="h-3 w-3" />
-                <span>{safeServer.location}</span>
+                <span className="max-w-[140px] truncate sm:max-w-none">
+                  {safeServer.location}
+                </span>
               </div>
             </div>
           </button>
@@ -334,8 +337,19 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
             <AIInsightBadge {...realtimeMetrics} historyData={metricsHistory} />
           </div>
 
+          {/* 모바일 compact: 핵심 수치 우선 노출 */}
+          {isCompactVariant && (
+            <div className="mb-2 grid grid-cols-3 gap-1.5 sm:hidden">
+              <CompactMetricChip label="CPU" value={realtimeMetrics.cpu} />
+              <CompactMetricChip label="MEM" value={realtimeMetrics.memory} />
+              <CompactMetricChip label="DISK" value={realtimeMetrics.disk} />
+            </div>
+          )}
+
           {/* 🎨 Core Metrics - 개선된 그리드 (CPU/Memory/Disk) */}
-          <div className="grid grid-cols-3 gap-2 px-0.5">
+          <div
+            className={`grid grid-cols-3 gap-2 px-0.5 ${isCompactVariant ? 'hidden sm:grid' : ''}`}
+          >
             <MetricItem
               type="cpu"
               value={realtimeMetrics.cpu}
@@ -354,7 +368,7 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
           </div>
 
           {/* 🆕 보조 메트릭 (Load, Response Time) */}
-          <SecondaryMetrics server={safeServer} />
+          <SecondaryMetrics server={safeServer} compact={isCompactVariant} />
 
           {/* Tertiary Details (OS, Uptime, IP) */}
           <div
@@ -385,7 +399,7 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
           safeServer.services?.length > 0 &&
           (showSecondaryInfo || !enableProgressiveDisclosure) && (
             <div
-              className={`mt-2 flex flex-wrap gap-1.5 transition-all duration-300 relative z-10 ${showSecondaryInfo || !enableProgressiveDisclosure ? 'opacity-100' : 'opacity-0'}`}
+              className={`mt-2 flex flex-wrap gap-1.5 transition-all duration-300 relative z-10 ${showSecondaryInfo || !enableProgressiveDisclosure ? 'opacity-100' : 'opacity-0'} ${isCompactVariant ? 'hidden sm:flex' : 'flex'}`}
             >
               {safeServer.services
                 .slice(0, variantStyles.maxServices)
@@ -468,6 +482,23 @@ const MetricItem = ({ type, value, history }: MetricItemProps) => {
   );
 };
 
+const CompactMetricChip = ({
+  label,
+  value,
+}: {
+  label: string;
+  value: number;
+}) => (
+  <div className="rounded-md border border-gray-200/80 bg-white/70 px-2 py-1 text-center">
+    <div className="text-2xs font-semibold tracking-wide text-gray-500">
+      {label}
+    </div>
+    <div className="text-xs font-bold tabular-nums text-gray-800">
+      {Math.round(value)}%
+    </div>
+  </div>
+);
+
 interface DetailRowProps {
   icon: React.ReactNode;
   label: string;
@@ -491,7 +522,13 @@ const DetailRow = ({ icon, label, value }: DetailRowProps) => (
  * - Load > 70% 코어 사용 시 경고 색상
  * - Response Time >= 2초 시 경고 색상
  */
-const SecondaryMetrics = ({ server }: { server: ServerType }) => {
+const SecondaryMetrics = ({
+  server,
+  compact = false,
+}: {
+  server: ServerType;
+  compact?: boolean;
+}) => {
   // 표시할 메트릭이 없으면 렌더링 안함
   const hasLoad = server.load1 !== undefined && server.cpuCores !== undefined;
   const hasResponse =
@@ -516,7 +553,9 @@ const SecondaryMetrics = ({ server }: { server: ServerType }) => {
         : 'text-gray-500';
 
   return (
-    <div className="mt-2 flex items-center gap-3 text-xs border-t border-gray-200/50 pt-2">
+    <div
+      className={`mt-2 items-center gap-3 text-xs border-t border-gray-200/50 pt-2 ${compact ? 'hidden sm:flex' : 'flex'}`}
+    >
       {hasLoad && (
         <span
           className={loadColor}

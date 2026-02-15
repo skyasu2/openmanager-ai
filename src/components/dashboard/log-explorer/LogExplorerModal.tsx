@@ -94,9 +94,9 @@ export function LogExplorerModal({
 
   return (
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
-      <DialogContent className="max-w-5xl max-h-[90vh] flex flex-col gap-0 p-0">
+      <DialogContent className="max-h-[90vh] w-[95vw] max-w-5xl flex flex-col gap-0 p-0">
         {/* Header */}
-        <DialogHeader className="px-6 pt-6 pb-4 border-b border-gray-100">
+        <DialogHeader className="border-b border-gray-100 px-4 pb-4 pt-5 sm:px-6 sm:pt-6">
           <div className="flex items-center gap-3">
             <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-100 text-blue-600">
               <FileSearch size={18} />
@@ -116,64 +116,68 @@ export function LogExplorerModal({
         </DialogHeader>
 
         {/* Search & Filter Bar */}
-        <div className="flex flex-wrap items-center gap-3 border-b border-gray-100 px-6 py-3">
+        <div className="sticky top-0 z-20 border-b border-gray-100 bg-white/95 px-4 py-3 backdrop-blur-sm sm:px-6">
           {/* Keyword search */}
-          <input
-            type="text"
-            value={keyword}
-            onChange={(e) => handleKeywordChange(e.target.value)}
-            placeholder="Search logs..."
-            aria-label="로그 키워드 검색"
-            className="w-48 rounded-md border border-gray-200 bg-white px-3 py-1.5 text-xs text-gray-700 placeholder:text-gray-400 focus:border-blue-400 focus:outline-none"
-          />
+          <div className="grid grid-cols-1 gap-2 sm:flex sm:flex-wrap sm:items-center sm:gap-3">
+            <input
+              type="text"
+              value={keyword}
+              onChange={(e) => handleKeywordChange(e.target.value)}
+              placeholder="Search logs..."
+              aria-label="로그 키워드 검색"
+              className="w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-xs text-gray-700 placeholder:text-gray-400 focus:border-blue-400 focus:outline-none sm:w-52 sm:py-1.5"
+            />
 
-          <div className="h-4 w-px bg-gray-200" />
+            <div className="hidden h-4 w-px bg-gray-200 sm:block" />
 
-          {/* Level chips */}
-          <div className="flex items-center gap-1.5">
-            <span className="text-xs font-medium text-gray-500">Level:</span>
-            {(['all', 'info', 'warn', 'error'] as const).map((l) => (
-              <FilterChip
-                key={l}
-                label={l === 'all' ? 'All' : l.toUpperCase()}
-                active={level === l}
-                onClick={() => setLevel(l)}
-                variant={l}
-              />
-            ))}
+            {/* Level chips */}
+            <div className="flex flex-wrap items-center gap-1.5">
+              <span className="text-xs font-medium text-gray-500">Level:</span>
+              {(['all', 'info', 'warn', 'error'] as const).map((l) => (
+                <FilterChip
+                  key={l}
+                  label={l === 'all' ? 'All' : l.toUpperCase()}
+                  active={level === l}
+                  onClick={() => setLevel(l)}
+                  variant={l}
+                />
+              ))}
+            </div>
+
+            <div className="hidden h-4 w-px bg-gray-200 sm:block" />
+
+            <div className="grid grid-cols-2 gap-2 sm:flex sm:items-center">
+              {/* Source dropdown */}
+              <select
+                value={source}
+                onChange={(e) => setSource(e.target.value)}
+                aria-label="소스 필터"
+                className="w-full rounded-md border border-gray-200 bg-white px-2 py-2 text-xs text-gray-700 focus:border-blue-400 focus:outline-none sm:w-auto sm:py-1"
+              >
+                <option value="">All Sources</option>
+                {sources.map((s) => (
+                  <option key={s} value={s}>
+                    {s}
+                  </option>
+                ))}
+              </select>
+
+              {/* Server dropdown */}
+              <select
+                value={serverId}
+                onChange={(e) => setServerId(e.target.value)}
+                aria-label="서버 필터"
+                className="w-full rounded-md border border-gray-200 bg-white px-2 py-2 text-xs text-gray-700 focus:border-blue-400 focus:outline-none sm:w-auto sm:py-1"
+              >
+                <option value="">All Servers</option>
+                {serverIds.map((id) => (
+                  <option key={id} value={id}>
+                    {id}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
-
-          <div className="h-4 w-px bg-gray-200" />
-
-          {/* Source dropdown */}
-          <select
-            value={source}
-            onChange={(e) => setSource(e.target.value)}
-            aria-label="소스 필터"
-            className="rounded-md border border-gray-200 bg-white px-2 py-1 text-xs text-gray-700 focus:border-blue-400 focus:outline-none"
-          >
-            <option value="">All Sources</option>
-            {sources.map((s) => (
-              <option key={s} value={s}>
-                {s}
-              </option>
-            ))}
-          </select>
-
-          {/* Server dropdown */}
-          <select
-            value={serverId}
-            onChange={(e) => setServerId(e.target.value)}
-            aria-label="서버 필터"
-            className="rounded-md border border-gray-200 bg-white px-2 py-1 text-xs text-gray-700 focus:border-blue-400 focus:outline-none"
-          >
-            <option value="">All Servers</option>
-            {serverIds.map((id) => (
-              <option key={id} value={id}>
-                {id}
-              </option>
-            ))}
-          </select>
         </div>
 
         {/* Log Result List - Terminal style */}
@@ -226,13 +230,13 @@ export function LogExplorerModal({
                     <div
                       key={`${log.serverId}-${log.timestamp}-${idx}`}
                       className={cn(
-                        'flex items-start gap-2 rounded px-2.5 py-1.5 border-l-2',
+                        'flex flex-wrap items-start gap-1.5 rounded border-l-2 px-2.5 py-1.5 sm:flex-nowrap sm:gap-2',
                         style.border,
                         'bg-white/[0.03] hover:bg-white/[0.06] transition-colors'
                       )}
                     >
                       {/* Server badge */}
-                      <span className="shrink-0 rounded bg-blue-500/20 px-1.5 py-0.5 text-[10px] font-medium text-blue-400">
+                      <span className="max-w-[120px] shrink-0 truncate rounded bg-blue-500/20 px-1.5 py-0.5 text-[10px] font-medium text-blue-400">
                         {log.serverId.split('.')[0]}
                       </span>
                       {/* Timestamp */}
@@ -253,7 +257,12 @@ export function LogExplorerModal({
                         [{log.source}]
                       </span>
                       {/* Message */}
-                      <span className={cn('flex-1 break-all', style.text)}>
+                      <span
+                        className={cn(
+                          'basis-full break-all sm:basis-auto sm:flex-1',
+                          style.text
+                        )}
+                      >
                         {log.message}
                       </span>
                     </div>
@@ -273,7 +282,7 @@ export function LogExplorerModal({
         </div>
 
         {/* Stats Footer */}
-        <div className="grid grid-cols-4 gap-4 border-t border-gray-100 px-6 py-3 bg-gray-50/80">
+        <div className="grid grid-cols-2 gap-3 border-t border-gray-100 bg-gray-50/80 px-4 py-3 sm:grid-cols-4 sm:gap-4 sm:px-6">
           <StatCell label="Total" value={stats.total} color="text-gray-800" />
           <StatCell label="INFO" value={stats.info} color="text-green-600" />
           <StatCell label="WARN" value={stats.warn} color="text-yellow-600" />
@@ -310,7 +319,7 @@ function FilterChip({
       type="button"
       onClick={onClick}
       className={cn(
-        'rounded-full border px-2.5 py-0.5 text-xs font-medium transition-colors',
+        'rounded-full border px-2.5 py-1 text-xs font-medium transition-colors sm:py-0.5',
         active
           ? (activeColors[variant] ?? activeColors.all)
           : 'border-gray-200 bg-white text-gray-600 hover:border-gray-400'
@@ -332,7 +341,7 @@ function StatCell({
 }) {
   return (
     <div className="text-center">
-      <div className={cn('text-lg font-bold', color)}>{value}</div>
+      <div className={cn('text-base font-bold sm:text-lg', color)}>{value}</div>
       <div className="text-[10px] font-medium text-gray-400 uppercase">
         {label}
       </div>
