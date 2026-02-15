@@ -148,7 +148,9 @@ export function SystemBootstrap(): React.ReactNode {
           }
         }
       } catch (error) {
-        logger.error('❌ Cloud Run AI 상태 확인 오류:', error);
+        const errorMessage =
+          error instanceof Error ? error.message : String(error);
+        logger.warn('⚠️ Cloud Run AI 상태 확인 네트워크 오류:', errorMessage);
         if (isMounted) {
           localStatus.cloudRunAI = 'failed';
           setBootstrapStatus((prev) => ({ ...prev, cloudRunAI: 'failed' }));
