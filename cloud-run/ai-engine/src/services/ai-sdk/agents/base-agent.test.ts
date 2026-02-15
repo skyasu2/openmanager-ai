@@ -354,6 +354,8 @@ describe('BaseAgent', () => {
 
       expect(result.success).toBe(true);
       expect(result.text).toContain('비전 분석 모델 응답이 비어 있습니다');
+      expect(result.metadata.fallbackUsed).toBe(true);
+      expect(result.metadata.fallbackReason).toBe('EMPTY_RESPONSE');
     });
 
     it('should return error result when config not found', async () => {
@@ -661,6 +663,62 @@ describe('BaseAgent', () => {
 
       const callArgs = mockStreamText.mock.calls[0][0];
       expect(callArgs.maxOutputTokens).toBe(256);
+
+      const warningEvent = events.find((e) => e.type === 'warning');
+      expect(warningEvent).toBeDefined();
+      expect((warningEvent!.data as { code: string }).code).toBe('EMPTY_RESPONSE');
+
+      const textDeltas = events.filter((e) => e.type === 'text_delta');
+      expect(textDeltas.at(-1)?.data).toBe(
+        '비전 분석 모델 응답이 비어 있습니다. 잠시 후 다시 시도해 주세요.'
+      );
+    });
+
+    it('should treat whitespace finalAnswer as empty and emit fallback text', async () => {
+      const { BaseAgent } = await import('./base-agent');
+
+      mockStreamText.mockReturnValue({
+        textStream: (async function* () {
+          // No meaningful streamed text
+        })(),
+        steps: Promise.resolve([
+          {
+            finishReason: 'stop',
+            toolCalls: [{ toolName: 'finalAnswer' }],
+            toolResults: [
+              {
+                toolName: 'finalAnswer',
+                result: { answer: '   \n\t' },
+              },
+            ],
+          },
+        ]),
+        usage: Promise.resolve({ inputTokens: 120, outputTokens: 40, totalTokens: 160 }),
+      });
+
+      const mockConfig = createMockConfig({
+        getModel: () => ({
+          model: { modelId: 'nvidia/nemotron-nano-12b-v2-vl:free' },
+          provider: 'openrouter',
+          modelId: 'nvidia/nemotron-nano-12b-v2-vl:free',
+        }),
+      });
+
+      class VisionTestAgent extends BaseAgent {
+        getName(): string {
+          return 'Vision Agent';
+        }
+        getConfig() {
+          return mockConfig;
+        }
+      }
+
+      const agent = new VisionTestAgent();
+      const events: Array<{ type: string; data: unknown }> = [];
+
+      for await (const event of agent.stream('vision query')) {
+        events.push(event);
+      }
 
       const warningEvent = events.find((e) => e.type === 'warning');
       expect(warningEvent).toBeDefined();

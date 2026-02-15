@@ -90,6 +90,8 @@ export interface AgentResult {
     durationMs: number;
     steps: number;
     finishReason?: string;
+    fallbackUsed?: boolean;
+    fallbackReason?: string;
   };
   /** Error message if failed */
   error?: string;
@@ -440,6 +442,8 @@ export abstract class BaseAgent {
       // Use finalAnswer if called, otherwise fall back to result.text
       const responseText = finalAnswerResult?.answer ?? result.text;
       let sanitizedText = sanitizeChineseCharacters(responseText);
+      let fallbackUsed = false;
+      let fallbackReason: string | undefined;
       if (!sanitizedText || sanitizedText.trim().length === 0) {
         logger.warn(
           `⚠️ [${agentName}] Empty response from ${provider}/${modelId} (finish=${finishReason}, outputTokens=${result.usage?.outputTokens ?? 0})`
@@ -449,6 +453,8 @@ export abstract class BaseAgent {
           modelId,
           agentName
         );
+        fallbackUsed = true;
+        fallbackReason = 'EMPTY_RESPONSE';
       }
 
       const durationMs = Date.now() - startTime;
@@ -469,6 +475,8 @@ export abstract class BaseAgent {
           durationMs,
           steps: result.steps.length,
           finishReason,
+          fallbackUsed,
+          fallbackReason,
         },
       };
     } catch (error) {
@@ -598,7 +606,7 @@ export abstract class BaseAgent {
       // 🎯 Fix: If no text was streamed but finalAnswer exists, emit it
       if (!hasTextContent && finalAnswerText) {
         const sanitized = sanitizeChineseCharacters(finalAnswerText);
-        if (sanitized) {
+        if (sanitized && sanitized.trim().length > 0) {
           yield { type: 'text_delta', data: sanitized };
           hasTextContent = true;
         }
