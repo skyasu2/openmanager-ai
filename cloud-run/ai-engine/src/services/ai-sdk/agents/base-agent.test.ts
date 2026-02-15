@@ -290,6 +290,72 @@ describe('BaseAgent', () => {
       expect(result.text).toBe('Fallback text');
     });
 
+    it('should enforce minimum maxOutputTokens for Vision Agent on OpenRouter', async () => {
+      const { BaseAgent } = await import('./base-agent');
+
+      const mockConfig = createMockConfig({
+        getModel: () => ({
+          model: { modelId: 'nvidia/nemotron-nano-12b-v2-vl:free' },
+          provider: 'openrouter',
+          modelId: 'nvidia/nemotron-nano-12b-v2-vl:free',
+        }),
+      });
+
+      class VisionTestAgent extends BaseAgent {
+        getName(): string {
+          return 'Vision Agent';
+        }
+        getConfig() {
+          return mockConfig;
+        }
+      }
+
+      const agent = new VisionTestAgent();
+      await agent.run('vision query', { maxOutputTokens: 64 });
+
+      const callArgs = mockGenerateText.mock.calls[0][0];
+      expect(callArgs.maxOutputTokens).toBe(256);
+    });
+
+    it('should return fallback text when Vision OpenRouter response is empty', async () => {
+      const { BaseAgent } = await import('./base-agent');
+
+      mockGenerateText.mockResolvedValue({
+        text: '',
+        usage: { inputTokens: 100, outputTokens: 32, totalTokens: 132 },
+        steps: [
+          {
+            finishReason: 'length',
+            toolCalls: [],
+            toolResults: [],
+          },
+        ],
+      });
+
+      const mockConfig = createMockConfig({
+        getModel: () => ({
+          model: { modelId: 'nvidia/nemotron-nano-12b-v2-vl:free' },
+          provider: 'openrouter',
+          modelId: 'nvidia/nemotron-nano-12b-v2-vl:free',
+        }),
+      });
+
+      class VisionTestAgent extends BaseAgent {
+        getName(): string {
+          return 'Vision Agent';
+        }
+        getConfig() {
+          return mockConfig;
+        }
+      }
+
+      const agent = new VisionTestAgent();
+      const result = await agent.run('vision query', { maxOutputTokens: 64 });
+
+      expect(result.success).toBe(true);
+      expect(result.text).toContain('비전 분석 모델 응답이 비어 있습니다');
+    });
+
     it('should return error result when config not found', async () => {
       const { BaseAgent } = await import('./base-agent');
 
@@ -549,6 +615,61 @@ describe('BaseAgent', () => {
       const textDeltas = events.filter(e => e.type === 'text_delta');
       expect(textDeltas.length).toBe(1);
       expect(textDeltas[0].data).toBe('Fallback answer');
+    });
+
+    it('should emit EMPTY_RESPONSE warning and fallback text for Vision OpenRouter empty stream', async () => {
+      const { BaseAgent } = await import('./base-agent');
+
+      mockStreamText.mockReturnValue({
+        textStream: (async function* () {
+          yield '   ';
+          yield '\n';
+        })(),
+        steps: Promise.resolve([
+          {
+            finishReason: 'length',
+            toolCalls: [],
+            toolResults: [],
+          },
+        ]),
+        usage: Promise.resolve({ inputTokens: 120, outputTokens: 64, totalTokens: 184 }),
+      });
+
+      const mockConfig = createMockConfig({
+        getModel: () => ({
+          model: { modelId: 'nvidia/nemotron-nano-12b-v2-vl:free' },
+          provider: 'openrouter',
+          modelId: 'nvidia/nemotron-nano-12b-v2-vl:free',
+        }),
+      });
+
+      class VisionTestAgent extends BaseAgent {
+        getName(): string {
+          return 'Vision Agent';
+        }
+        getConfig() {
+          return mockConfig;
+        }
+      }
+
+      const agent = new VisionTestAgent();
+      const events: Array<{ type: string; data: unknown }> = [];
+
+      for await (const event of agent.stream('vision query', { maxOutputTokens: 64 })) {
+        events.push(event);
+      }
+
+      const callArgs = mockStreamText.mock.calls[0][0];
+      expect(callArgs.maxOutputTokens).toBe(256);
+
+      const warningEvent = events.find((e) => e.type === 'warning');
+      expect(warningEvent).toBeDefined();
+      expect((warningEvent!.data as { code: string }).code).toBe('EMPTY_RESPONSE');
+
+      const textDeltas = events.filter((e) => e.type === 'text_delta');
+      expect(textDeltas.at(-1)?.data).toBe(
+        '비전 분석 모델 응답이 비어 있습니다. 잠시 후 다시 시도해 주세요.'
+      );
     });
 
     it('should apply chunkMs timeout', async () => {

@@ -144,6 +144,12 @@ const DEFAULT_OPTIONS: Required<Omit<AgentRunOptions, 'sessionId' | 'images' | '
   webSearchEnabled: true,
 };
 
+const OPENROUTER_VISION_MIN_OUTPUT_TOKENS = 256;
+const VISION_EMPTY_RESPONSE_FALLBACK =
+  '비전 분석 모델 응답이 비어 있습니다. 잠시 후 다시 시도해 주세요.';
+const GENERIC_EMPTY_RESPONSE_FALLBACK =
+  'AI 응답이 비어 있습니다. 잠시 후 다시 시도해 주세요.';
+
 // ============================================================================
 // BaseAgent Abstract Class
 // ============================================================================
@@ -221,6 +227,45 @@ export abstract class BaseAgent {
     }
 
     return filtered;
+  }
+
+  protected isVisionOpenRouter(provider: string, agentName?: string): boolean {
+    return (agentName ?? this.getName()) === 'Vision Agent' && provider === 'openrouter';
+  }
+
+  protected resolveMaxOutputTokens(
+    options: AgentRunOptions,
+    provider: string,
+    agentName?: string
+  ): number {
+    const requested = options.maxOutputTokens ?? DEFAULT_OPTIONS.maxOutputTokens;
+
+    if (
+      this.isVisionOpenRouter(provider, agentName) &&
+      requested < OPENROUTER_VISION_MIN_OUTPUT_TOKENS
+    ) {
+      logger.warn(
+        `⚠️ [Vision Agent] OpenRouter maxOutputTokens too low (${requested}), overriding to ${OPENROUTER_VISION_MIN_OUTPUT_TOKENS}`
+      );
+      return OPENROUTER_VISION_MIN_OUTPUT_TOKENS;
+    }
+
+    return requested;
+  }
+
+  protected getEmptyResponseFallbackMessage(
+    provider: string,
+    modelId: string,
+    agentName?: string
+  ): string {
+    if (this.isVisionOpenRouter(provider, agentName)) {
+      return VISION_EMPTY_RESPONSE_FALLBACK;
+    }
+
+    logger.warn(
+      `⚠️ [${agentName ?? this.getName()}] Empty response from ${provider}/${modelId}, using generic fallback message`
+    );
+    return GENERIC_EMPTY_RESPONSE_FALLBACK;
   }
 
   /**
@@ -332,6 +377,7 @@ export abstract class BaseAgent {
     }
 
     const { model, provider, modelId } = modelResult;
+    const maxOutputTokens = this.resolveMaxOutputTokens(opts, provider, agentName);
     const filteredTools = this.filterTools(
       config.tools as Record<string, Tool>,
       opts,
@@ -357,7 +403,7 @@ export abstract class BaseAgent {
         // AI SDK v6 Best Practice: Graceful termination conditions
         stopWhen: [hasToolCall('finalAnswer'), stepCountIs(opts.maxSteps)],
         temperature: opts.temperature,
-        maxOutputTokens: opts.maxOutputTokens,
+        maxOutputTokens,
         // Step-by-step monitoring
         onStepFinish: ({ finishReason, toolCalls }) => {
           const toolNames = toolCalls?.map(tc => tc.toolName) || [];
@@ -393,7 +439,17 @@ export abstract class BaseAgent {
 
       // Use finalAnswer if called, otherwise fall back to result.text
       const responseText = finalAnswerResult?.answer ?? result.text;
-      const sanitizedText = sanitizeChineseCharacters(responseText);
+      let sanitizedText = sanitizeChineseCharacters(responseText);
+      if (!sanitizedText || sanitizedText.trim().length === 0) {
+        logger.warn(
+          `⚠️ [${agentName}] Empty response from ${provider}/${modelId} (finish=${finishReason}, outputTokens=${result.usage?.outputTokens ?? 0})`
+        );
+        sanitizedText = this.getEmptyResponseFallbackMessage(
+          provider,
+          modelId,
+          agentName
+        );
+      }
 
       const durationMs = Date.now() - startTime;
       console.log(`✅ [${agentName}] Completed in ${durationMs}ms, tools: [${toolsCalled.join(', ')}]`);
@@ -467,6 +523,7 @@ export abstract class BaseAgent {
     }
 
     const { model, provider, modelId } = modelResult;
+    const maxOutputTokens = this.resolveMaxOutputTokens(opts, provider, agentName);
     const filteredTools = this.filterTools(
       config.tools as Record<string, Tool>,
       opts,
@@ -489,7 +546,7 @@ export abstract class BaseAgent {
         timeout: { totalMs: opts.timeoutMs ?? DEFAULT_OPTIONS.timeoutMs, chunkMs: 30_000 },
         stopWhen: [hasToolCall('finalAnswer'), stepCountIs(opts.maxSteps)],
         temperature: opts.temperature,
-        maxOutputTokens: opts.maxOutputTokens,
+        maxOutputTokens,
         onStepFinish: ({ finishReason, toolCalls }) => {
           const toolNames = toolCalls?.map(tc => tc.toolName) || [];
           console.log(`📍 [${agentName}] Step: reason=${finishReason}, tools=[${toolNames.join(',')}]`);
@@ -543,7 +600,27 @@ export abstract class BaseAgent {
         const sanitized = sanitizeChineseCharacters(finalAnswerText);
         if (sanitized) {
           yield { type: 'text_delta', data: sanitized };
+          hasTextContent = true;
         }
+      }
+
+      if (!hasTextContent) {
+        const fallbackText = this.getEmptyResponseFallbackMessage(
+          provider,
+          modelId,
+          agentName
+        );
+        logger.warn(
+          `⚠️ [${agentName}] Stream completed with empty content from ${provider}/${modelId}, emitting fallback`
+        );
+        yield {
+          type: 'warning',
+          data: {
+            code: 'EMPTY_RESPONSE',
+            message: fallbackText,
+          },
+        };
+        yield { type: 'text_delta', data: fallbackText };
       }
 
       const durationMs = Date.now() - startTime;
