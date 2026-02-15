@@ -89,7 +89,8 @@ export function useSystemStatus(): UseSystemStatusReturn {
         const errorMessage =
           err instanceof Error ? err.message : '시스템 상태 조회 실패';
         setError(errorMessage);
-        logger.error('시스템 상태 조회 실패:', err);
+        // 네트워크 에러(페이지 전환, Cloud Run 미활성 등)는 예상 가능한 상황 — debug 레벨
+        logger.debug('시스템 상태 조회 스킵:', errorMessage);
       } finally {
         setIsLoading(false);
       }
