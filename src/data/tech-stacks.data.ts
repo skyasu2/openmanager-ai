@@ -420,7 +420,7 @@ export const TECH_STACKS_DATA: Record<string, TechItem[] | VibeCodeData> = {
       description:
         'CNCF 표준 모니터링 데이터 포맷. 라벨 기반 다차원 시계열 모델. hourly-data SSOT의 기본 네이밍으로, OTel Standard로 빌드 타임 변환되어 2-Tier 데이터 아키텍처 구성',
       implementation:
-        '→ hourly-data/hour-XX.json(24개, SSOT) → otel-precompute.ts로 OTel Semantic Convention 변환 → MetricsProvider 2-Tier 우선순위(OTel Primary → Prometheus Fallback)',
+        '→ otel-data/hourly/hour-XX.json(24개, OTel-native SSOT) → MetricsProvider가 직접 소비. Resource Catalog + Timeseries로 서버 메타데이터 표준화',
       version: 'OpenMetrics',
       status: 'active',
       icon: '🔥',
@@ -434,7 +434,7 @@ export const TECH_STACKS_DATA: Record<string, TechItem[] | VibeCodeData> = {
       description:
         'CNCF 관측성 표준. Prometheus 메트릭을 OTel Semantic Convention으로 변환하여 시스템 전체 데이터 일관성 확보. Resource Catalog로 서버 메타데이터 표준화',
       implementation:
-        '→ otel-precompute.ts가 빌드 타임에 Prometheus→OTel 변환 수행. MetricsProvider(Vercel)와 precomputed-state(Cloud Run) 모두 OTel 포맷 우선 소비. OTel SDK 스켈레톤(otel-sdk.ts)으로 향후 런타임 계측 확장 가능',
+        '→ otel-data/가 OTel-native SSOT. MetricsProvider(Vercel)와 precomputed-state(Cloud Run) 모두 OTel 포맷 직접 소비. Resource Catalog로 서버 메타데이터 표준화',
       version: 'Semantic Conv. 1.x',
       status: 'active',
       icon: '🔭',
@@ -448,7 +448,7 @@ export const TECH_STACKS_DATA: Record<string, TechItem[] | VibeCodeData> = {
       description:
         'Grafana Loki Push API 호환 로그 구조. 라벨 기반 스트림 모델(job, hostname, level)로 구조화된 로그 생성. PLG 스택(Promtail+Loki+Grafana) 즉시 연동 가능',
       implementation:
-        '→ loki-log-generator.ts가 서버별 로그를 Loki Stream 포맷으로 변환. 나노초 타임스탬프 + Structured Metadata(trace_id, scenario) 지원. LogsTab에서 라벨 필터링 UI 제공',
+        '→ OTel hourly JSON에 로그가 내장(slot.logs[]), 나노초 타임스탬프 + severityText + resource 속성 지원. LogsTab에서 severity 필터링 UI 제공',
       version: 'Loki 3.0+ API',
       status: 'active',
       icon: '📋',

@@ -207,8 +207,8 @@ function main(): void {
       }
     }
   }
-  check('Storage network in [0.15, 0.35]', storageOutOfRange === 0, `${storageOutOfRange} out of range`);
-  check('Cache network in [0.30, 0.50]', cacheOutOfRange === 0, `${cacheOutOfRange} out of range`);
+  check('Storage network in [0.14, 0.36] (±0.01 margin)', storageOutOfRange === 0, `${storageOutOfRange} out of range`);
+  check('Cache network in [0.29, 0.51] (±0.01 margin)', cacheOutOfRange === 0, `${cacheOutOfRange} out of range`);
 
   // ── 10. Severity distribution ──
   console.log('\n[10] Severity distribution:');

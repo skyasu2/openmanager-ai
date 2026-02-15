@@ -1,7 +1,7 @@
 /**
  * Pre-computed Metrics Type Definitions
  *
- * hourly-data (Prometheus format) -> otel-precompute pipeline -> processed-metrics
+ * otel-data (OTel-native SSOT) -> MetricsProvider -> processed-metrics
  * - Dashboard (uPlot): PrecomputedTimeSeries
  *
  * @created 2026-02-04
