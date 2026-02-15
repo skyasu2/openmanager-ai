@@ -120,7 +120,6 @@ ${query}
 
 export async function executeParallelSubtasks(
   subtasks: Subtask[],
-  query: string,
   startTime: number,
   webSearchEnabled = true,
   sessionId = ''
@@ -192,8 +191,7 @@ export async function executeParallelSubtasks(
     successfulResults.map(r => ({
       agent: r.subtask.agent,
       response: r.result!.response,
-    })),
-    query
+    }))
   );
 
   const durationMs = Date.now() - startTime;
@@ -230,8 +228,7 @@ export async function executeParallelSubtasks(
 }
 
 function unifyResults(
-  agentResults: Array<{ agent: string; response: string }>,
-  originalQuery: string
+  agentResults: Array<{ agent: string; response: string }>
 ): string {
   if (agentResults.length === 0) {
     return '결과를 생성할 수 없습니다.';

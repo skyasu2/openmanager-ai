@@ -154,11 +154,10 @@ export default function EnhancedServerModal({
       cpu: metricsHistory.map((h) => h.cpu),
       memory: metricsHistory.map((h) => h.memory),
       disk: metricsHistory.map((h) => h.disk),
-      // 📊 네트워크: In/Out 분리 데이터 없음 → NetworkTab에서 단일 사용률로 표시
-      network: metricsHistory.map((h) => {
-        const net = typeof h.network === 'number' ? h.network : 0;
-        return { in: net * 0.6, out: net * 0.4 };
-      }),
+      // 📊 네트워크: 단일 사용률(%)만 사용
+      network: metricsHistory.map((h) =>
+        typeof h.network === 'number' ? h.network : 0
+      ),
       // 📋 시스템 알림: hourly-data 로그에서 WARN/ERROR 필터링
       logs: (() => {
         const serverLogs = server?.logs;

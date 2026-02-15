@@ -121,12 +121,7 @@ export const MetricsTab: FC<MetricsTabProps> = ({
         .gradient,
     },
     {
-      data: realtimeData.network.map((n) =>
-        Math.min(
-          100,
-          Math.max(0, typeof n === 'number' ? n : (n.in + n.out) / 2)
-        )
-      ),
+      data: realtimeData.network.map((n) => Math.min(100, Math.max(0, n))),
       color: getMetricColorByStatus(
         server.network || 0,
         'network',

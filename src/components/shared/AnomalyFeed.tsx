@@ -2,7 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query';
 import { AlertTriangle, CheckCircle2, ServerCrash, Zap } from 'lucide-react';
-import { type FC, useState } from 'react';
+import type { FC } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
@@ -34,22 +34,6 @@ interface AnomalyFeedProps {
   refreshInterval?: number;
   showDetails?: boolean;
 }
-
-const _severityColors = {
-  low: 'bg-blue-100 text-blue-800 border-blue-200',
-  medium: 'bg-yellow-100 text-yellow-800 border-yellow-200',
-  high: 'bg-orange-100 text-orange-800 border-orange-200',
-  critical: 'bg-red-100 text-red-800 border-red-200',
-};
-
-const _typeIcons = {
-  cpu: '🔥',
-  memory: '💾',
-  disk: '💿',
-  network: '🌐',
-  response_time: '⏱️',
-  error_rate: '❌',
-};
 
 // Fetcher function
 const fetchAnomalies = async (): Promise<AnomalyResponse> => {
@@ -87,11 +71,9 @@ export function AnomalyFeed({
   refreshInterval = 20000, // 20 seconds
   showDetails: _showDetails = true,
 }: AnomalyFeedProps) {
-  const [manualRefresh, setManualRefresh] = useState(0);
-
   // Data fetching using React Query
-  const { data, error, isLoading, refetch } = useQuery({
-    queryKey: ['anomalies', manualRefresh],
+  const { data, error, isLoading } = useQuery({
+    queryKey: ['anomalies'],
     queryFn: fetchAnomalies,
     refetchInterval: autoRefresh ? refreshInterval : false,
     refetchOnWindowFocus: false,
@@ -128,12 +110,6 @@ export function AnomalyFeed({
         minute: '2-digit',
       });
     }
-  };
-
-  // Manual refresh (for future use)
-  const _handleRefresh = () => {
-    setManualRefresh((prev) => prev + 1);
-    void refetch();
   };
 
   // Dashboard style rendering

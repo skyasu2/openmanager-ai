@@ -242,7 +242,6 @@ export async function generateTextWithRetry(
   const excludedProviders: ProviderName[] = [];
 
   let currentProviderIndex = 0;
-  const usedFirstProvider = true;
 
   while (true) {
     const availableProviders = getAvailableProviders(preferredOrder, excludedProviders);

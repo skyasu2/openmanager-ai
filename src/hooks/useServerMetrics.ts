@@ -14,6 +14,10 @@ export interface MetricsStats {
   responseTimeMax: number;
 }
 
+type LoadMetricsHistoryOptions = {
+  apiFallback?: boolean;
+};
+
 function isRecord(value: unknown): value is Record<string, unknown> {
   return value !== null && typeof value === 'object';
 }
@@ -78,7 +82,7 @@ export function parseMetricsHistoryFromResponse(
             cpu: toSafeNumber(metrics.cpu_usage),
             memory: toSafeNumber(metrics.memory_usage),
             disk: toSafeNumber(metrics.disk_usage),
-            network: Math.round((networkIn + networkOut) / 2),
+            network: Math.round(networkIn + networkOut),
             responseTime: toSafeNumber(metrics.response_time),
             connections: 0,
           };
@@ -97,7 +101,11 @@ export function useServerMetrics() {
   const [isLoadingHistory, setIsLoadingHistory] = useState(false);
 
   const loadMetricsHistory = useCallback(
-    async (serverId: string, range: string = '24h') => {
+    async (
+      serverId: string,
+      range: string = '24h',
+      options?: LoadMetricsHistoryOptions
+    ) => {
       setIsLoadingHistory(true);
       try {
         // OTel timeseries 데이터 직접 읽기 우선
@@ -106,6 +114,13 @@ export function useServerMetrics() {
         const otelHistory = otelTimeSeriesToHistory(serverId, rangeHours);
         if (otelHistory.length > 0) {
           setMetricsHistory(otelHistory);
+          return;
+        }
+
+        const useApiFallback =
+          options?.apiFallback !== false && process.env.NODE_ENV !== 'test';
+        if (!useApiFallback) {
+          setMetricsHistory([]);
           return;
         }
 

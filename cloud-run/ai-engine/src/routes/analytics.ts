@@ -19,13 +19,9 @@ import {
   detectAnomaliesAllServers,
   predictTrends,
   analyzePattern,
-  searchKnowledgeBase,
-  recommendCommands,
-  extractKeywordsFromQuery,
 } from '../tools-ai-sdk';
-import { getCurrentState } from '../data/precomputed-state';
 import { handleApiError, jsonSuccess } from '../lib/error-handler';
-import { sanitizeChineseCharacters, sanitizeJsonStrings } from '../lib/text-sanitizer';
+import { sanitizeChineseCharacters } from '../lib/text-sanitizer';
 import { getReporterAgentConfig, isReporterAgentAvailable } from '../services/ai-sdk/agents/reporter-agent';
 import { getAnalystAgentConfig, isAnalystAgentAvailable } from '../services/ai-sdk/agents/analyst-agent';
 // incident-rag-injector imports removed - endpoints deprecated
@@ -463,139 +459,6 @@ function parseAgentJsonResponse(
     recommendations: fallback.recommendations,
     pattern: fallback.pattern,
   };
-}
-
-/**
- * Parse Reporter Agent response into structured format
- */
-function parseReporterResponse(text: string, serverId?: string): {
-  id: string;
-  title: string;
-  severity: string;
-  affectedServers: string[];
-  rootCauseAnalysis: { primary_cause: string; contributing_factors: string[] };
-  recommendations: Array<{ action: string; priority: string; expected_impact: string }>;
-  timeline: Array<{ timestamp: string; event: string; severity: string }>;
-  pattern: string;
-} {
-  const id = randomUUID();
-
-  // Extract title (first line or ## heading)
-  const titleMatch = text.match(/^#*\s*(.+?)[\n\r]/m) || text.match(/제목[:\s]*(.+?)[\n\r]/i);
-  const title = titleMatch?.[1]?.trim() || '서버 상태 분석 보고서';
-
-  // Extract severity
-  const severityMatch = text.match(/심각도[:\s]*(critical|high|medium|low|위험|높음|중간|낮음)/i);
-  let severity = 'medium';
-  if (severityMatch) {
-    const s = severityMatch[1].toLowerCase();
-    if (s === 'critical' || s === '위험') severity = 'critical';
-    else if (s === 'high' || s === '높음') severity = 'high';
-    else if (s === 'low' || s === '낮음') severity = 'low';
-  }
-
-  // Extract affected servers
-  const serversMatch = text.match(/영향.*서버[:\s]*([^\n]+)/i) || text.match(/서버[:\s]*([^\n]*(?:,|、)[^\n]*)/i);
-  const affectedServers = serversMatch
-    ? serversMatch[1].split(/[,、\s]+/).filter(Boolean).map(s => s.trim())
-    : serverId ? [serverId] : [];
-
-  // Extract root cause
-  const causeMatch = text.match(/근본\s*원인[:\s]*([^\n]+)/i) || text.match(/원인[:\s]*([^\n]+)/i);
-  const rootCauseAnalysis = {
-    primary_cause: causeMatch?.[1]?.trim() || '분석 결과를 확인하세요',
-    contributing_factors: [] as string[],
-  };
-
-  // Extract recommendations
-  const recommendations: Array<{ action: string; priority: string; expected_impact: string }> = [];
-  const recMatches = text.matchAll(/(?:권장|조치|해결)[:\s]*[-•*]?\s*(.+)/gi);
-  for (const match of recMatches) {
-    if (match[1] && match[1].length > 5) {
-      recommendations.push({
-        action: match[1].trim(),
-        priority: severity === 'critical' ? 'high' : 'medium',
-        expected_impact: '상태 개선 예상',
-      });
-    }
-  }
-  // Also try numbered list
-  const numberedRecs = text.matchAll(/\d+\.\s*(.+)/g);
-  for (const match of numberedRecs) {
-    if (match[1] && match[1].length > 10 && recommendations.length < 5) {
-      recommendations.push({
-        action: match[1].trim(),
-        priority: 'medium',
-        expected_impact: '상태 개선 예상',
-      });
-    }
-  }
-
-  // Extract pattern
-  const patternMatch = text.match(/패턴[:\s]*([^\n]+)/i);
-  const pattern = patternMatch?.[1]?.trim() || '분석 완료';
-
-  return {
-    id,
-    title,
-    severity,
-    affectedServers,
-    rootCauseAnalysis,
-    recommendations: recommendations.slice(0, 5),
-    timeline: [],
-    pattern,
-  };
-}
-
-/**
- * Fallback when Reporter Agent is unavailable
- */
-async function incidentReportFallback(
-  c: Context,
-  { serverId, query, severity, category }: { serverId?: string; query?: string; severity?: string; category?: string }
-) {
-  // Type definitions for searchKnowledgeBase
-  type KBCategory = 'incident' | 'troubleshooting' | 'security' | 'performance' | 'best_practice';
-  type KBSeverity = 'critical' | 'high' | 'medium' | 'low';
-
-  // 1. RAG search
-  const ragResult = await searchKnowledgeBase.execute!({
-    query: query || '서버 장애 분석',
-    category: category as KBCategory | undefined,
-    severity: severity as KBSeverity | undefined,
-    useGraphRAG: true,
-  }, { toolCallId: 'incident-report-rag', messages: [] });
-
-  // 2. Extract keywords and recommend commands
-  const keywords = extractKeywordsFromQuery(query || '');
-  const commandResult = await recommendCommands.execute!(
-    { keywords },
-    { toolCallId: 'incident-report-commands', messages: [] }
-  );
-
-  // 3. Anomaly detection for context
-  const anomalyResult = await detectAnomalies.execute!({
-    serverId: serverId || undefined,
-    metricType: 'all',
-  }, { toolCallId: 'incident-report-anomaly', messages: [] });
-
-  logger.info(`[Incident Report Fallback] Generated for ${serverId || 'general'}`);
-
-  return jsonSuccess(c, {
-    id: randomUUID(),
-    title: '서버 상태 분석 보고서 (Fallback)',
-    severity: severity || 'medium',
-    affected_servers: serverId ? [serverId] : [],
-    root_cause_analysis: { primary_cause: '자동 분석 결과를 확인하세요', contributing_factors: [] },
-    recommendations: [],
-    timeline: [],
-    pattern: 'fallback',
-    knowledgeBase: ragResult,
-    recommendedCommands: commandResult,
-    currentStatus: anomalyResult,
-    created_at: new Date().toISOString(),
-    _source: 'Cloud Run Fallback (Direct Tool)',
-  });
 }
 
 // analyze-batch endpoint removed - not used by frontend

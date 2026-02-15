@@ -115,8 +115,6 @@ export async function updateSession(
 
   // OAuth 콜백 처리는 클라이언트 사이드에서 수행하도록 변경
   // detectSessionInUrl: true 설정으로 Supabase가 자동으로 처리함
-  const _pathname = request.nextUrl.pathname;
-
   // 세션 업데이트 - getSession을 먼저 호출하여 쿠키를 새로고침
   const {
     data: { session },

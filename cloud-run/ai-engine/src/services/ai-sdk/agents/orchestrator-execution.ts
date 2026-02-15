@@ -116,7 +116,7 @@ export async function executeMultiAgent(
       }
     } else {
       const parallelResult = await executeParallelSubtasks(
-        decomposition.subtasks, query, startTime, webSearchEnabled, request.sessionId
+        decomposition.subtasks, startTime, webSearchEnabled, request.sessionId
       );
 
       if (parallelResult) {

@@ -57,14 +57,6 @@ interface RateLimitConfig {
   dailyLimit?: number;
 }
 
-interface _RateLimitRecord {
-  ip: string;
-  path: string;
-  count: number;
-  reset_time: number;
-  expires_at: string;
-}
-
 interface RateLimitResult {
   allowed: boolean;
   remaining: number;

@@ -238,8 +238,8 @@ export class ServerMonitoringService {
       },
       networkInfo: {
         interface: 'eth0',
-        receivedBytes: `${p.networkIn} MB`,
-        sentBytes: `${p.networkOut} MB`,
+        receivedBytes: `${p.networkIn}%`,
+        sentBytes: `${p.networkOut}%`,
         receivedErrors: 0,
         sentErrors: 0,
         status: p.status === 'offline' ? 'offline' : 'online',
@@ -287,8 +287,8 @@ export class ServerMonitoringService {
       },
       networkInfo: {
         interface: 'eth0',
-        receivedBytes: `${p.networkIn} MB`,
-        sentBytes: `${p.networkOut} MB`,
+        receivedBytes: `${p.networkIn}%`,
+        sentBytes: `${p.networkOut}%`,
         receivedErrors: 0,
         sentErrors: 0,
         status: p.status === 'offline' ? 'offline' : 'online',

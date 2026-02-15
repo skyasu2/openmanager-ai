@@ -70,7 +70,7 @@ export interface Server24hDataset {
   data: Fixed10MinMetric[];
 }
 
-function generateLogs(serverId: string, serverType: string, cpu: number, memory: number, disk: number, network: number, activeScenario?: ScenarioDefinition): string[] {
+function generateLogs(serverId: string, cpu: number, memory: number, disk: number, network: number, activeScenario?: ScenarioDefinition): string[] {
   const logs: string[] = [];
   if (activeScenario) {
     if (activeScenario.severity === 'critical') {
@@ -115,7 +115,7 @@ function generateServer24hData(serverId: string, serverType: string, location: s
         disk = applyScenario(serverId, 'disk', minuteOfDay, disk);
         network = applyScenario(serverId, 'network', minuteOfDay, network);
     }
-    const logs = generateLogs(serverId, serverType, cpu, memory, disk, network, activeScenario);
+    const logs = generateLogs(serverId, cpu, memory, disk, network, activeScenario);
     data.push({ minuteOfDay, cpu: Math.round(cpu * 10) / 10, memory: Math.round(memory * 10) / 10, disk: Math.round(disk * 10) / 10, network: Math.round(network * 10) / 10, logs });
   }
   return { serverId, serverType, location, baseline, data };

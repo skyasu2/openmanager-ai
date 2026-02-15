@@ -21,7 +21,7 @@
     "network": {
       "warning": 70,
       "critical": 85,
-      "description": "네트워크 사용률 임계값. 70% 이상 경고, 85% 이상 심각"
+      "description": "네트워크 대역폭 사용률 임계값(%). 70% 이상 경고, 85% 이상 심각 (1Gbps 기준)"
     },
     "responseTime": {
       "warning": 2000,

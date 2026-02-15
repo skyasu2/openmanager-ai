@@ -4,6 +4,10 @@ import { getOTelResourceCatalog } from '@/data/otel-data';
 import { logger } from '@/lib/logging';
 import type { OTelResourceAttributes } from '@/types/otel-metrics';
 import type { ExportMetricsServiceRequest } from '@/types/otel-standard';
+import {
+  normalizeNetworkUtilizationPercent,
+  normalizeUtilizationPercent,
+} from './metric-normalization';
 import type { ApiServerMetrics } from './types';
 
 // ============================================================================
@@ -58,30 +62,30 @@ function pickDataPoint<T extends { asDouble?: number }>(
 
 const STANDARD_METRIC_HANDLERS = new Map<
   string,
-  (server: ApiServerMetrics, value: number) => void
+  (server: ApiServerMetrics, value: number, unit?: string) => void
 >([
   [
     OTEL_METRIC.CPU,
-    (s, v) => {
-      s.cpu = Math.round(v * 100 * 10) / 10;
+    (s, v, unit) => {
+      s.cpu = normalizeUtilizationPercent(v, unit);
     },
   ],
   [
     OTEL_METRIC.MEMORY,
-    (s, v) => {
-      s.memory = Math.round(v * 100 * 10) / 10;
+    (s, v, unit) => {
+      s.memory = normalizeUtilizationPercent(v, unit);
     },
   ],
   [
     OTEL_METRIC.DISK,
-    (s, v) => {
-      s.disk = Math.round(v * 100 * 10) / 10;
+    (s, v, unit) => {
+      s.disk = normalizeUtilizationPercent(v, unit);
     },
   ],
   [
     OTEL_METRIC.NETWORK,
-    (s, v) => {
-      s.network = Math.round(v * 100 * 10) / 10;
+    (s, v, unit) => {
+      s.network = normalizeNetworkUtilizationPercent(v, unit);
     },
   ],
   [
@@ -209,7 +213,7 @@ export function extractMetricsFromStandard(
         // Metric Name → Handler Map
         const handler = STANDARD_METRIC_HANDLERS.get(metric.name);
         if (handler) {
-          handler(server, value);
+          handler(server, value, metric.unit);
         }
       }
     }

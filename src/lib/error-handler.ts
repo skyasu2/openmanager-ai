@@ -397,11 +397,7 @@ export function setupGlobalErrorHandler(): void {
 
   // Unhandled promise rejections
   window.addEventListener('unhandledrejection', (event) => {
-    const _safeError = safeErrorLog(
-      '🚨 Unhandled Promise Rejection',
-      event.reason,
-      true
-    );
+    safeErrorLog('🚨 Unhandled Promise Rejection', event.reason, true);
 
     // 로딩 관련 Promise 에러 자동 복구
     if (isLoadingRelatedError(event.reason)) {

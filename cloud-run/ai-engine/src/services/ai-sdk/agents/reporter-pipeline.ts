@@ -315,10 +315,6 @@ function generateInitialReport(): ReportForEvaluation | null {
       suggestedActions.push('시스템 모니터링 유지');
     }
 
-    // Determine severity
-    const criticalCount = state.servers.filter(s => s.status === 'critical').length;
-    const severity = criticalCount > 0 ? 'critical' : 'medium';
-
     return {
       title: `${now.toISOString().slice(0, 10)} 시스템 상태 보고서`,
       summary: affectedServers.length > 0

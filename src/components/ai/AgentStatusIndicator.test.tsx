@@ -161,7 +161,7 @@ describe('AgentStatusIndicator', () => {
         <AgentStatusIndicator agent="NLQ Agent" status="processing" compact />
       );
 
-      const compactBadge = container.querySelector('span.inline-flex');
+      const compactBadge = container.querySelector('div.inline-flex');
       expect(compactBadge).toBeInTheDocument();
     });
   });

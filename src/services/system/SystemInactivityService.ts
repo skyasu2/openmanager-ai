@@ -55,7 +55,6 @@ class SystemInactivityService {
     if (typeof window === 'undefined') return;
 
     const systemInactive = localStorage.getItem('system_inactive') === 'true';
-    const _autoLogoutTime = localStorage.getItem('auto_logout_time');
 
     if (systemInactive) {
       if (this.isSystemActive) {

@@ -1,6 +1,5 @@
 'use client';
 
-import { AlertTriangle } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import { memo, Suspense, useEffect, useRef, useState } from 'react';
 import {
@@ -9,80 +8,15 @@ import {
 } from '@/data/architecture-diagrams.data';
 import { useDashboardStats } from '@/hooks/dashboard/useDashboardStats';
 import { useMonitoringReport } from '@/hooks/dashboard/useMonitoringReport';
-import type { MonitoringAlert } from '@/schemas/api.monitoring-report.schema';
 import type { Server } from '@/types/server';
 import debug from '@/utils/debug';
 import { safeConsoleError, safeErrorMessage } from '@/utils/utils-functions';
+import { ActiveAlertsModal } from './ActiveAlertsModal';
 import { AlertHistoryModal } from './alert-history/AlertHistoryModal';
 import { DashboardSummary } from './DashboardSummary';
 import { LogExplorerModal } from './log-explorer/LogExplorerModal';
 import { SystemOverviewSection } from './SystemOverviewSection';
 import type { DashboardStats } from './types/dashboard.types';
-
-const severityBadge: Record<MonitoringAlert['severity'], string> = {
-  critical: 'bg-red-100 text-red-700 border-red-200',
-  warning: 'bg-amber-100 text-amber-700 border-amber-200',
-};
-
-function ActiveAlertsSection({ alerts }: { alerts: MonitoringAlert[] }) {
-  const [expanded, setExpanded] = useState(true);
-  const sorted = [...alerts].sort((a, b) => {
-    if (a.severity === 'critical' && b.severity !== 'critical') return -1;
-    if (a.severity !== 'critical' && b.severity === 'critical') return 1;
-    return b.value - a.value;
-  });
-
-  return (
-    <div className="rounded-xl border border-rose-200/40 bg-white/60 backdrop-blur-md overflow-hidden">
-      <button
-        type="button"
-        onClick={() => setExpanded((prev) => !prev)}
-        aria-expanded={expanded}
-        className="flex w-full items-center justify-between px-5 py-3 text-left text-sm font-medium text-gray-700 transition-colors hover:bg-rose-50/30"
-      >
-        <span className="flex items-center gap-2">
-          <AlertTriangle size={14} className="text-rose-500" />
-          Active Alerts ({alerts.length})
-        </span>
-        <span
-          aria-hidden="true"
-          className={`transition-transform duration-200 text-gray-400 ${expanded ? 'rotate-180' : ''}`}
-        >
-          &#9660;
-        </span>
-      </button>
-      {expanded && (
-        <div className="border-t border-rose-100/50 px-5 py-3 space-y-2">
-          {sorted.map((alert) => (
-            <div
-              key={alert.id}
-              className="flex items-center justify-between rounded-lg bg-white/80 px-3 py-2 text-sm"
-            >
-              <div className="flex items-center gap-3">
-                <span
-                  className={`inline-flex rounded-md border px-1.5 py-0.5 text-[10px] font-bold uppercase ${severityBadge[alert.severity]}`}
-                >
-                  {alert.severity}
-                </span>
-                <span className="font-medium text-gray-800">
-                  {alert.instance}
-                </span>
-                <span className="text-gray-500">
-                  {alert.metric} = {alert.value}%
-                </span>
-              </div>
-              <span className="text-xs text-gray-400">
-                {alert.duration > 0
-                  ? `${Math.round(alert.duration / 60)}분 경과`
-                  : 'just now'}
-              </span>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
 
 interface DashboardStatus {
   isRunning?: boolean;
@@ -190,9 +124,10 @@ export default memo(function DashboardContent({
       )
     : null;
 
-  // Alert History / Log Explorer 모달 상태
+  // 모달 상태
   const [alertHistoryOpen, setAlertHistoryOpen] = useState(false);
   const [logExplorerOpen, setLogExplorerOpen] = useState(false);
+  const [activeAlertsOpen, setActiveAlertsOpen] = useState(false);
 
   // 🎯 서버 데이터에서 직접 통계 계산 (중복 API 호출 제거)
   const [statsLoading, _setStatsLoading] = useState(false);
@@ -206,57 +141,10 @@ export default memo(function DashboardContent({
   // 🚀 에러 상태 추가
   const [renderError, setRenderError] = useState<string | null>(null);
   const [isClient, setIsClient] = useState(false);
-  // 🚨 _currentTime 제거됨: 사용하지 않으면서 1초마다 리렌더링 유발 (서버 카드 그래프 깜빡임 원인)
-  const [_screenSize, setScreenSize] = useState<string>('알 수 없음');
 
-  // 🛡️ 클라이언트 사이드 확인 및 실시간 업데이트
+  // 🛡️ 클라이언트 사이드 확인
   useEffect(() => {
     setIsClient(true);
-
-    // 서버 사이드에서는 실행하지 않음
-    if (typeof window === 'undefined') {
-      return;
-    }
-
-    // 화면 크기 감지 함수
-    const updateScreenSize = () => {
-      if (typeof window === 'undefined') return;
-
-      const width = window.innerWidth;
-      if (width >= 1536) {
-        setScreenSize('2K 최적화');
-      } else if (width >= 1280) {
-        setScreenSize('XL 최적화');
-      } else if (width >= 1024) {
-        setScreenSize('LG 최적화');
-      } else if (width >= 768) {
-        setScreenSize('태블릿 최적화');
-      } else {
-        setScreenSize('모바일 최적화');
-      }
-    };
-
-    // 초기 화면 크기 설정
-    updateScreenSize();
-
-    // 🚨 1초 interval 제거됨 - 사용하지 않는 상태 업데이트로 인한 불필요한 리렌더링 방지
-    // 실시간 시계는 RealTimeDisplay 컴포넌트에서 독립적으로 관리됨
-
-    // 화면 크기 변경 감지
-    const resizeHandler = () => {
-      updateScreenSize();
-    };
-
-    // 안전하게 이벤트 리스너 추가
-    if (window?.addEventListener) {
-      window.addEventListener('resize', resizeHandler);
-    }
-
-    return () => {
-      if (window?.removeEventListener) {
-        window.removeEventListener('resize', resizeHandler);
-      }
-    };
   }, []);
 
   useEffect(() => {
@@ -354,17 +242,11 @@ export default memo(function DashboardContent({
                 stats={serverStats}
                 activeFilter={statusFilter}
                 onFilterChange={onStatusFilterChange}
-                healthScore={monitoringReport?.health?.score}
-                healthGrade={monitoringReport?.health?.grade}
                 onOpenAlertHistory={() => setAlertHistoryOpen(true)}
                 onOpenLogExplorer={() => setLogExplorerOpen(true)}
+                activeAlertsCount={monitoringReport?.firingAlerts?.length ?? 0}
+                onOpenActiveAlerts={() => setActiveAlertsOpen(true)}
               />
-
-              {/* Active Alerts (접이식, 0건일 때 숨김) */}
-              {monitoringReport?.firingAlerts &&
-                monitoringReport.firingAlerts.length > 0 && (
-                  <ActiveAlertsSection alerts={monitoringReport.firingAlerts} />
-                )}
 
               {/* Infrastructure Topology (Collapsible) */}
               <div className="rounded-xl border border-white/10 bg-white/5 backdrop-blur-md">
@@ -372,7 +254,7 @@ export default memo(function DashboardContent({
                   type="button"
                   onClick={() => setShowTopology((prev) => !prev)}
                   aria-expanded={showTopology}
-                  className="flex w-full items-center justify-between px-5 py-3 text-left text-sm font-medium text-gray-300 transition-colors hover:text-white"
+                  className="flex w-full items-center justify-between px-5 py-3 text-left text-sm font-medium text-gray-300 transition-colors hover:text-white cursor-pointer"
                 >
                   <span>Infrastructure Topology (15 Servers)</span>
                   <span
@@ -430,6 +312,15 @@ export default memo(function DashboardContent({
                   onStatsUpdate={onStatsUpdate}
                 />
               </Suspense>
+
+              {/* Active Alerts Modal */}
+              {activeAlertsOpen && (
+                <ActiveAlertsModal
+                  open={activeAlertsOpen}
+                  onClose={() => setActiveAlertsOpen(false)}
+                  alerts={monitoringReport?.firingAlerts ?? []}
+                />
+              )}
 
               {/* Alert History Modal */}
               {alertHistoryOpen && (

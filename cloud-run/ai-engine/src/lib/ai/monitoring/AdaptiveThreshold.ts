@@ -190,7 +190,7 @@ export class AdaptiveThreshold {
 
     // Fallback to global stats if no temporal patterns
     if (!hourlyBuckets || !dailyBuckets || !global) {
-      return this.createFallbackThresholds(metricName, hour, dayOfWeek);
+      return this.createFallbackThresholds(hour, dayOfWeek);
     }
 
     const hourlyBucket = hourlyBuckets[hour];
@@ -475,7 +475,6 @@ export class AdaptiveThreshold {
   }
 
   private createFallbackThresholds(
-    metricName: string,
     hour: number,
     dayOfWeek: number
   ): AdaptiveThresholds {

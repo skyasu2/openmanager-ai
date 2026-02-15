@@ -12,17 +12,13 @@ import React, {
   useCallback,
   useEffect,
   useMemo,
-  useRef,
   useState,
 } from 'react';
 import { useSafeServer } from '@/hooks/useSafeServer';
 import { useServerMetrics } from '@/hooks/useServerMetrics';
 import { getServerStatusTheme } from '@/styles/design-constants';
-import type {
-  ServerStatus,
-  Server as ServerType,
-  Service,
-} from '@/types/server';
+import type { Server as ServerType, Service } from '@/types/server';
+import { formatMetricValue } from '@/utils/metric-formatters';
 import { formatUptime } from '@/utils/serverUtils';
 import ServerCardErrorBoundary from '../error/ServerCardErrorBoundary';
 import { AIInsightBadge } from '../shared/AIInsightBadge';
@@ -101,15 +97,6 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
     const [showSecondaryInfo, setShowSecondaryInfo] = useState(false);
     const [showTertiaryInfo, setShowTertiaryInfo] = useState(false);
 
-    // Mount tracking
-    const isMountedRef = useRef(true);
-    useEffect(() => {
-      isMountedRef.current = true;
-      return () => {
-        isMountedRef.current = false;
-      };
-    }, []);
-
     // 📈 서버 메트릭 히스토리 로드 (OTel TimeSeries)
     const { metricsHistory, loadMetricsHistory } = useServerMetrics();
 
@@ -183,6 +170,16 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
       [onClick, safeServer]
     );
 
+    const handleCardKeyDown = useCallback(
+      (e: React.KeyboardEvent<HTMLDivElement>) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          handleCardClick(e);
+        }
+      },
+      [handleCardClick]
+    );
+
     // 🔧 인라인 화살표 함수를 useCallback으로 최적화
     const handleMouseEnter = useCallback(() => {
       if (enableProgressiveDisclosure) setShowSecondaryInfo(true);
@@ -194,10 +191,13 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
     }, [enableProgressiveDisclosure, showTertiaryInfo]);
 
     return (
-      // biome-ignore lint/a11y/useKeyWithClickEvents: Mouse-only click listener for card wrapper (keyboard access handled by inner button)
-      // biome-ignore lint/a11y/noStaticElementInteractions: Wrapper click for UX convenience
+      // biome-ignore lint/a11y/useSemanticElements: Card wrapper stays div[role=button] because it contains inner control buttons.
       <div
+        role="button"
+        tabIndex={0}
+        aria-label={`${safeServer.name} 서버 상세 보기`}
         onClick={handleCardClick}
+        onKeyDown={handleCardKeyDown}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
         className={`group relative w-full cursor-pointer overflow-hidden rounded-2xl border shadow-sm transition-all duration-300 ease-out hover:shadow-xl backdrop-blur-md text-left bg-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 ${statusTheme.background} ${statusTheme.border} ${variantStyles.container} hover:${currentGradient.shadow}`}
@@ -339,23 +339,17 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
             <MetricItem
               type="cpu"
               value={realtimeMetrics.cpu}
-              status={safeServer.status}
               history={cpuHistory}
-              color={statusTheme.graphColor}
             />
             <MetricItem
               type="memory"
               value={realtimeMetrics.memory}
-              status={safeServer.status}
               history={memoryHistory}
-              color={statusTheme.graphColor}
             />
             <MetricItem
               type="disk"
               value={realtimeMetrics.disk}
-              status={safeServer.status}
               history={diskHistory}
-              color={statusTheme.graphColor}
             />
           </div>
 
@@ -414,18 +408,10 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
 interface MetricItemProps {
   type: 'cpu' | 'memory' | 'disk' | 'network';
   value: number;
-  status: ServerStatus;
   history?: number[];
-  color: string;
 }
 
-const MetricItem = ({
-  type,
-  value,
-  status: _status,
-  history,
-  color: _themeColor,
-}: MetricItemProps) => {
+const MetricItem = ({ type, value, history }: MetricItemProps) => {
   // 가독성 향상: 축약어 → 전체 이름
   const labels = {
     cpu: 'CPU',
@@ -434,9 +420,17 @@ const MetricItem = ({
     network: 'Network',
   };
 
-  // 🎨 Per-Metric Severity Coloring (User Request)
-  // Red (>90), Orange (>80), Green (else)
+  // 🎨 Per-Metric Severity Coloring
+  // All metrics (cpu, memory, disk, network) are 0-100% range.
   const getSeverityColor = (val: number) => {
+    // Network: warning=70%, critical=85% (system-rules.json SSOT)
+    if (type === 'network') {
+      if (val >= 85) return '#ef4444'; // Red-500
+      if (val >= 70) return '#f97316'; // Orange-500
+      return '#10b981'; // Emerald-500
+    }
+
+    // CPU/Memory/Disk: warning=80%, critical=90%
     if (val >= 90) return '#ef4444'; // Red-500
     if (val >= 80) return '#f97316'; // Orange-500
     return '#10b981'; // Emerald-500
@@ -455,7 +449,7 @@ const MetricItem = ({
           className="text-sm font-bold tracking-tight tabular-nums transition-all duration-700 ease-in-out"
           style={{ color: metricColor }}
         >
-          {Math.round(value)}%
+          {formatMetricValue(type, value)}
         </span>
       </div>
       {/* Primary: Line Chart - 높이 증가 */}

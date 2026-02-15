@@ -27,6 +27,10 @@ import type { EnhancedServerMetrics } from '@/services/server-data/server-data-t
 import type { OTelHourlySlot, OTelResourceCatalog } from '@/types/otel-metrics';
 import type { MetricsHistory } from '@/types/server';
 
+import {
+  normalizeNetworkUtilizationPercent,
+  normalizeUtilizationPercent,
+} from './metric-normalization';
 import { determineStatus } from './metric-transformers';
 
 // ============================================================================
@@ -70,30 +74,30 @@ function fallback(
 
 const METRIC_HANDLERS = new Map<
   string,
-  (values: OTelMetricValues, value: number) => void
+  (values: OTelMetricValues, value: number, unit?: string) => void
 >([
   [
     OTEL_METRIC.CPU,
-    (v, val) => {
-      v.cpu = val;
+    (v, val, unit) => {
+      v.cpu = normalizeUtilizationPercent(val, unit);
     },
   ],
   [
     OTEL_METRIC.MEMORY,
-    (v, val) => {
-      v.memory = val;
+    (v, val, unit) => {
+      v.memory = normalizeUtilizationPercent(val, unit);
     },
   ],
   [
     OTEL_METRIC.DISK,
-    (v, val) => {
-      v.disk = val;
+    (v, val, unit) => {
+      v.disk = normalizeUtilizationPercent(val, unit);
     },
   ],
   [
     OTEL_METRIC.NETWORK,
-    (v, val) => {
-      v.network = val;
+    (v, val, unit) => {
+      v.network = normalizeNetworkUtilizationPercent(val, unit);
     },
   ],
   [
@@ -173,7 +177,7 @@ export function otelSlotToServers(
       }
 
       const values = serverMetrics.get(serverId)!;
-      handler(values, dp.asDouble);
+      handler(values, dp.asDouble, metric.unit);
     }
   }
 
@@ -185,11 +189,11 @@ export function otelSlotToServers(
     const hostname = resource?.['host.name'] ?? `${serverId}.openmanager.kr`;
     const serverType = resource?.['host.type'] ?? 'unknown';
 
-    // OTel ratio(0-1) → percent(0-100)
-    const cpu = Math.round(values.cpu * 100 * 10) / 10;
-    const memory = Math.round(values.memory * 100 * 10) / 10;
-    const disk = Math.round(values.disk * 100 * 10) / 10;
-    const network = Math.round(values.network * 100 * 10) / 10;
+    // OTel mixed unit(1/By/s/%) → normalized percent(0-100)
+    const cpu = values.cpu;
+    const memory = values.memory;
+    const disk = values.disk;
+    const network = values.network;
 
     // 오프라인 판별: cpu+memory+disk 모두 0이면 오프라인 (Pipeline A와 통일)
     const status =
@@ -270,8 +274,8 @@ export function otelSlotToServers(
       },
       networkInfo: {
         interface: 'eth0',
-        receivedBytes: `${networkIn} MB`,
-        sentBytes: `${networkOut} MB`,
+        receivedBytes: `${networkIn}%`,
+        sentBytes: `${networkOut}%`,
         receivedErrors,
         sentErrors,
         status,
@@ -332,10 +336,10 @@ export function otelTimeSeriesToHistory(
 
     history.push({
       timestamp: new Date(epochSec * 1000).toISOString(),
-      cpu: Math.round((cpuSeries[i] ?? 0) * 100 * 10) / 10,
-      memory: Math.round((memorySeries?.[i] ?? 0) * 100 * 10) / 10,
-      disk: Math.round((diskSeries?.[i] ?? 0) * 100 * 10) / 10,
-      network: Math.round((networkSeries?.[i] ?? 0) * 100 * 10) / 10,
+      cpu: normalizeUtilizationPercent(cpuSeries[i] ?? 0),
+      memory: normalizeUtilizationPercent(memorySeries?.[i] ?? 0),
+      disk: normalizeUtilizationPercent(diskSeries?.[i] ?? 0),
+      network: normalizeNetworkUtilizationPercent(networkSeries?.[i] ?? 0),
       responseTime: Math.round((responseSeries?.[i] ?? 0) * 1000), // s → ms
       connections: 0,
     });

@@ -14,9 +14,16 @@ function buildDataPoints(values: number[]) {
   }));
 }
 
-function buildPayload(cpuValues: number[]): ExportMetricsServiceRequest {
+function buildPayload(
+  cpuValues: number[],
+  options?: {
+    networkValues?: number[];
+    networkUnit?: string;
+  }
+): ExportMetricsServiceRequest {
   const lowValues = cpuValues.map(() => 0.1);
-  const networkValues = cpuValues.map((_, idx) => (idx + 1) / 100);
+  const networkValues =
+    options?.networkValues ?? cpuValues.map((_, idx) => (idx + 1) / 100);
 
   return {
     resourceMetrics: [
@@ -47,6 +54,7 @@ function buildPayload(cpuValues: number[]): ExportMetricsServiceRequest {
               },
               {
                 name: 'system.network.io',
+                unit: options?.networkUnit,
                 sum: {
                   dataPoints: buildDataPoints(networkValues),
                   aggregationTemporality:
@@ -88,6 +96,36 @@ describe('extractMetricsFromStandard', () => {
     expect(metrics).toHaveLength(1);
     expect(metrics[0]?.cpu).toBe(50);
     expect(metrics[0]?.network).toBe(51);
+  });
+
+  it('legacy unit=By/s + percent-scale 값은 재변환 없이 그대로 사용한다', () => {
+    const payload = buildPayload([0.5, 0.5, 0.5, 0.5, 0.5, 0.5], {
+      networkValues: [78, 79, 80, 81, 82, 83],
+      networkUnit: 'By/s',
+    });
+    const metrics = extractMetricsFromStandard(
+      payload,
+      '2026-02-14T21:00:00+09:00',
+      21 * 60
+    );
+
+    expect(metrics).toHaveLength(1);
+    expect(metrics[0]?.network).toBe(78);
+  });
+
+  it('unit=By/s + 실제 bytes/s 값은 1Gbps 기준 사용률로 환산한다', () => {
+    const payload = buildPayload([0.5], {
+      networkValues: [62_500_000], // 1Gbps(125MB/s) 대비 50%
+      networkUnit: 'By/s',
+    });
+    const metrics = extractMetricsFromStandard(
+      payload,
+      '2026-02-14T21:00:00+09:00',
+      21 * 60
+    );
+
+    expect(metrics).toHaveLength(1);
+    expect(metrics[0]?.network).toBe(50);
   });
 
   it('모든 메트릭이 0이면 offline으로 판별한다', () => {

@@ -9,6 +9,7 @@
 
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { ApiServerMetrics } from '@/services/metrics/types';
+import { estimateLoad15 } from '@/services/server-data/server-data-transformer';
 
 // ── Mocks ────────────────────────────────────────────────────────────────────
 
@@ -153,8 +154,8 @@ describe('ServerMonitoringService', () => {
       vi.mocked(metricsProvider.getServerMetrics).mockReturnValue(metric);
 
       const result = service.getProcessedServer('web-01')!;
-      // estimateLoad15 = 1.5 * 0.85 + 2.0 * 0.05 = 1.275 + 0.1 = 1.375
-      expect(result.loadAvg15).toBeCloseTo(1.375, 2);
+      const expectedLoad15 = estimateLoad15(2.0, 1.5);
+      expect(result.loadAvg15).toBeCloseTo(expectedLoad15, 2);
     });
 
     it('derives uptimeSeconds from bootTimeSeconds', () => {
@@ -369,7 +370,8 @@ describe('ServerMonitoringService', () => {
       expect(paginated.metrics.loadAverage).toHaveLength(3);
       expect(paginated.metrics.loadAverage[0]).toBe(2.0);
       expect(paginated.metrics.loadAverage[1]).toBe(1.5);
-      expect(paginated.metrics.loadAverage[2]).toBeCloseTo(1.375, 2);
+      const expectedLoad15 = estimateLoad15(2.0, 1.5);
+      expect(paginated.metrics.loadAverage[2]).toBeCloseTo(expectedLoad15, 2);
     });
 
     it('uses hostname as name', () => {

@@ -249,8 +249,8 @@ export function convertToEnhancedMetrics(
     },
     networkInfo: {
       interface: 'eth0',
-      receivedBytes: `${networkIn} MB`,
-      sentBytes: `${networkOut} MB`,
+      receivedBytes: `${networkIn}%`,
+      sentBytes: `${networkOut}%`,
       receivedErrors,
       sentErrors,
       status,

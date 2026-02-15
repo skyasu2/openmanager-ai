@@ -20,7 +20,6 @@ import {
   streamText,
   hasToolCall,
   stepCountIs,
-  type LanguageModel,
   type Tool,
   type TextPart,
   type ImagePart,

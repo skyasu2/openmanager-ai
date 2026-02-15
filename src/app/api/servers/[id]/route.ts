@@ -5,6 +5,10 @@ import { getOTelTimeSeries } from '@/data/otel-data';
 import { withAuth } from '@/lib/auth/api-auth';
 import type { ServerHistory } from '@/schemas/server-schemas/server-details.schema';
 import { metricsProvider } from '@/services/metrics/MetricsProvider';
+import {
+  normalizeNetworkUtilizationPercent,
+  normalizeUtilizationPercent,
+} from '@/services/metrics/metric-normalization';
 import { getServerMonitoringService } from '@/services/monitoring';
 import debug from '@/utils/debug';
 
@@ -319,16 +323,30 @@ function generateServerHistoryFromTimeSeries(
     ts.metrics[OTEL_METRIC.HTTP_DURATION]?.[serverIndex] || [];
 
   const fullDataPoints = timestamps.map((t: number, i: number) => ({
+    // OTel timeseries는 ratio(0~1) 기반이므로 히스토리 응답 전에 percent(0~100)로 정규화.
+    // UI/경고 로직의 SSOT 임계값(%)과 단위를 맞춘다.
+    //
+    // network_in/out은 단일 utilization 값을 방향 비율로 분할해 제공한다.
+    // (OTel source에 방향 태그가 없는 시나리오 대응)
     timestamp: new Date(t * 1000).toISOString(),
     timestampUnix: t * 1000,
-    metrics: {
-      cpu_usage: cpuData[i] ?? 0,
-      memory_usage: memoryData[i] ?? 0,
-      disk_usage: diskData[i] ?? 0,
-      network_in: Math.round((networkData[i] ?? 0) * 0.6),
-      network_out: Math.round((networkData[i] ?? 0) * 0.4),
-      response_time: Math.round((responseData[i] ?? 0) * 1000), // sec -> ms
-    },
+    metrics: (() => {
+      const cpuUsage = normalizeUtilizationPercent(cpuData[i] ?? 0);
+      const memoryUsage = normalizeUtilizationPercent(memoryData[i] ?? 0);
+      const diskUsage = normalizeUtilizationPercent(diskData[i] ?? 0);
+      const networkUsage = normalizeNetworkUtilizationPercent(
+        networkData[i] ?? 0
+      );
+
+      return {
+        cpu_usage: cpuUsage,
+        memory_usage: memoryUsage,
+        disk_usage: diskUsage,
+        network_in: Math.round(networkUsage * 0.6),
+        network_out: Math.round(networkUsage * 0.4),
+        response_time: Math.round((responseData[i] ?? 0) * 1000), // sec -> ms
+      };
+    })(),
   }));
 
   // 범위에 따른 필터링 구현

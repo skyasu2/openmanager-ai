@@ -1,4 +1,5 @@
 import type { FC } from 'react';
+import { getThreshold } from '@/config/rules';
 import { RealtimeChart } from './EnhancedServerModal.components';
 /**
  * 🌐 Enhanced Server Modal Network Tab (v2.0 간소화)
@@ -29,8 +30,6 @@ interface NetworkTabProps {
   server: ServerData;
   /** 실시간 데이터 (네트워크 메트릭 포함) */
   realtimeData: RealtimeData;
-  /** 네트워크 사용률 배열 (단일값) */
-  networkUsage?: number[];
 }
 
 /**
@@ -59,16 +58,12 @@ const getNetworkStatusInfo = (status?: NetworkStatus) => {
  * - 네트워크 사용률 차트 (실제 데이터)
  * - 네트워크 연결 정보
  */
-export const NetworkTab: FC<NetworkTabProps> = ({
-  server,
-  realtimeData,
-  networkUsage,
-}) => {
+export const NetworkTab: FC<NetworkTabProps> = ({ server, realtimeData }) => {
   const networkStatusInfo = getNetworkStatusInfo(server.networkStatus);
+  const networkThreshold = getThreshold('network');
 
   // 네트워크 사용률 (단일값 배열)
-  const networkData =
-    networkUsage || realtimeData.network.map((n) => n.in + n.out);
+  const networkData = realtimeData.network;
   const latestNetwork = networkData[networkData.length - 1] || 0;
 
   return (
@@ -131,17 +126,17 @@ export const NetworkTab: FC<NetworkTabProps> = ({
                 <span className="text-white/80">대역폭 상태</span>
                 <span
                   className={`font-bold ${
-                    latestNetwork > 80
+                    latestNetwork >= networkThreshold.critical
                       ? 'text-red-300'
-                      : latestNetwork > 60
+                      : latestNetwork >= networkThreshold.warning
                         ? 'text-yellow-300'
                         : 'text-green-300'
                   }`}
                 >
-                  {latestNetwork > 80
-                    ? '높음'
-                    : latestNetwork > 60
-                      ? '보통'
+                  {latestNetwork >= networkThreshold.critical
+                    ? '심각'
+                    : latestNetwork >= networkThreshold.warning
+                      ? '경고'
                       : '양호'}
                 </span>
               </div>

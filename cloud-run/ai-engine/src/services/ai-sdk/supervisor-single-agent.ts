@@ -41,7 +41,6 @@ import type {
   SupervisorRequest,
   SupervisorResponse,
   SupervisorError,
-  SupervisorMode,
   SupervisorHealth,
   StreamEvent,
 } from './supervisor-types';
@@ -292,7 +291,7 @@ async function executeSupervisorAttempt(
           stepMs: TIMEOUT_CONFIG.agent.hard,
         },
         maxRetries: 1,
-        onStepFinish: ({ finishReason, toolCalls, toolResults, usage }) => {
+        onStepFinish: ({ finishReason, toolCalls, toolResults }) => {
           const toolNames = toolCalls?.map((tc) => tc.toolName) || [];
           logger.debug(`[Step] reason=${finishReason}, tools=[${toolNames.join(',')}]`);
 
@@ -610,7 +609,7 @@ async function* streamSingleAgent(
           }
         }
       },
-      onFinish: ({ text, usage: finishUsage, finishReason, steps: finishSteps }) => {
+      onFinish: ({ text, finishReason, steps: finishSteps }) => {
         const durationMs = Date.now() - startTime;
         const allToolsCalled = finishSteps.flatMap((s) => s.toolCalls?.map((tc) => tc.toolName) || []);
         logger.info(

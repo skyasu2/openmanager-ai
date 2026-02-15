@@ -250,15 +250,12 @@ function DashboardPageContent({ initialServers }: DashboardClientProps) {
   });
 
   // 🛑 시스템 제어 함수들
-  const { isSystemStarted, startSystem, stopSystem, aiAgent } =
-    useUnifiedAdminStore(
-      useShallow((s) => ({
-        isSystemStarted: s.isSystemStarted,
-        startSystem: s.startSystem,
-        stopSystem: s.stopSystem,
-        aiAgent: s.aiAgent,
-      }))
-    );
+  const { isSystemStarted, startSystem } = useUnifiedAdminStore(
+    useShallow((s) => ({
+      isSystemStarted: s.isSystemStarted,
+      startSystem: s.startSystem,
+    }))
+  );
 
   // 🔒 자동 로그아웃 시스템 - 베르셀 사용량 최적화 (1초→10초 최적화 적용)
   const {

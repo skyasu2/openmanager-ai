@@ -96,8 +96,6 @@ const ALLOWED_IMAGE_TYPES = [
   'image/gif',
   'image/webp',
 ];
-// Document types for reference (used in classifyFileType inline)
-const _ALLOWED_DOC_TYPES = ['application/pdf', 'text/markdown', 'text/plain'];
 
 // ============================================================================
 // Utilities

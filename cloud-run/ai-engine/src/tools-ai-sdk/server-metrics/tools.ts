@@ -70,7 +70,7 @@ export const getServerMetrics = tool({
     metric: 'cpu' | 'memory' | 'disk' | 'all';
   }) => {
     const cache = getDataCache();
-    const cacheKey = serverId || 'all';
+    const cacheKey = `${serverId || 'all'}:${metric}`;
 
     // Best Practice: Use cache.getMetrics with lazy computation
     return cache.getMetrics(cacheKey, async () => {
@@ -142,6 +142,7 @@ export const getServerMetrics = tool({
           total: servers.length,
           alertCount: alertServersList.length,
         },
+        requestedMetric: metric,
         alertServers: alertServersList.length > 0 ? alertServersList : undefined,
         timestamp: new Date().toISOString(),
         _cached: false,

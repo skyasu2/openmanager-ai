@@ -44,6 +44,14 @@ vi.mock('./EnhancedServerModal.NetworkTab', () => ({
   )),
 }));
 
+// 모달 오픈 시 호출되는 히스토리 로딩 훅을 목 처리하여 테스트 중 API 요청 제거
+vi.mock('@/hooks/useServerMetrics', () => ({
+  useServerMetrics: vi.fn(() => ({
+    metricsHistory: [],
+    loadMetricsHistory: vi.fn(),
+  })),
+}));
+
 describe('🎯 EnhancedServerModal - User Event 테스트', () => {
   const mockOnClose = vi.fn();
 

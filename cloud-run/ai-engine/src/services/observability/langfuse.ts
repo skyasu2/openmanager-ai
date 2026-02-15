@@ -74,7 +74,6 @@ function incrementUsage(count: number = 1): boolean {
   }
 
   usageState.eventCount += count;
-  const usagePercent = (usageState.eventCount / FREE_TIER_LIMIT) * 100;
 
   // 90% 도달 시 차단
   if (usageState.eventCount >= FREE_TIER_LIMIT * SAFETY_THRESHOLD) {

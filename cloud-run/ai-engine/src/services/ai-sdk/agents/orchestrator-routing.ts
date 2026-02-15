@@ -253,13 +253,17 @@ export async function executeForcedRouting(
   console.log(`🎯 [Forced Routing] Using retry with fallback: [${providerOrder.join(' → ')}]`);
 
   const filteredTools = filterToolsByWebSearch(agentConfig.tools, webSearchEnabled);
+  const attachmentHint =
+    images?.length || files?.length
+      ? `\n\n[첨부 컨텍스트]\n- images: ${images?.length ?? 0}\n- files: ${files?.length ?? 0}`
+      : '';
 
   try {
     const retryResult = await generateTextWithRetry(
       {
         messages: [
           { role: 'system', content: agentConfig.instructions },
-          { role: 'user', content: query },
+          { role: 'user', content: `${query}${attachmentHint}` },
         ],
         tools: filteredTools as Parameters<typeof generateText>[0]['tools'],
         stopWhen: [hasToolCall('finalAnswer'), stepCountIs(7)],

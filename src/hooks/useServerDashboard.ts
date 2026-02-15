@@ -27,7 +27,6 @@ import type {
 import type { Server } from '@/types/server';
 import { transformServerData } from '@/utils/dashboard/server-transformer';
 import { formatUptime } from '@/utils/dashboard/server-utils';
-import { useServerMetrics } from './useServerMetrics';
 
 const ONLINE_ALIASES = new Set(['online', 'running', 'active']);
 const WARNING_ALIASES = new Set(['warning', 'degraded', 'unstable']);
@@ -86,9 +85,6 @@ export function useServerDashboard(options: UseServerDashboardOptions = {}) {
 
   // 선택된 서버 상태
   const [selectedServer, setSelectedServer] = useState<Server | null>(null);
-
-  // 서버 메트릭 훅
-  const { metricsHistory } = useServerMetrics();
 
   // 🚀 React Query가 자동 갱신을 처리하므로 별도 useEffect 제거
 
@@ -216,7 +212,6 @@ export function useServerDashboard(options: UseServerDashboardOptions = {}) {
     selectedServerMetrics,
     handleServerSelect,
     handleModalClose,
-    metricsHistory,
     formatUptime,
   };
 }

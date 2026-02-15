@@ -82,16 +82,11 @@ export interface LogEntry {
   source?: string;
 }
 
-export interface NetworkData {
-  in: number;
-  out: number;
-}
-
 export interface RealtimeData {
   cpu: number[];
   memory: number[];
   disk: number[];
-  network: NetworkData[];
+  network: number[];
   logs: LogEntry[];
 }
 

@@ -30,6 +30,7 @@ import { z } from 'zod';
 export interface ScreenshotAnalysisResult {
   success: boolean;
   dashboardType: string;
+  focusArea?: FocusArea;
   findings: {
     anomalies: string[];
     trends: string[];
@@ -212,6 +213,7 @@ export const analyzeScreenshot = tool({
     const result: ScreenshotAnalysisResult = {
       success: true,
       dashboardType: dashboardType || 'unknown',
+      focusArea,
       findings: {
         anomalies: anomalies || [],
         trends: trends || [],

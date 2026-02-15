@@ -11,7 +11,6 @@
 
 import { MistralAI } from '@llamaindex/mistral';
 import {
-  Document,
   Settings,
 } from 'llamaindex';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
@@ -185,10 +184,19 @@ export async function searchKnowledgeBase(
 
     if (error) throw error;
 
-    return (data || []).map((row: Record<string, unknown>) => ({
+    const normalizedCategory = category?.trim().toLowerCase();
+    const filteredRows = (data || [])
+      .filter((row: Record<string, unknown>) => {
+        if (!normalizedCategory) return true;
+        return String(row.category || '').toLowerCase() === normalizedCategory;
+      })
+      .slice(0, maxResults);
+
+    return filteredRows.map((row: Record<string, unknown>) => ({
       id: String(row.id),
       title: String(row.title || ''),
       content: String(row.content || ''),
+      category: row.category ? String(row.category) : undefined,
       score: Number(row.similarity || 0),
       sourceType: 'vector' as const,
       hopDistance: 0,
@@ -337,16 +345,10 @@ export async function indexDocuments(
     let indexed = 0;
 
     for (const doc of documents) {
-      // 1. Create LlamaIndex document
-      const llamaDoc = new Document({
-        text: doc.text,
-        metadata: doc.metadata,
-      });
-
-      // 2. Extract triplets for knowledge graph
+      // 1. Extract triplets for knowledge graph
       const triplets = await extractTriplets(doc.text, 5);
 
-      // 3. Store in Supabase (embeddings handled by existing infrastructure)
+      // 2. Store in Supabase (embeddings handled by existing infrastructure)
       const { error } = await supabaseClient.from('knowledge_base').insert({
         content: doc.text,
         title: doc.metadata?.title || 'Untitled',

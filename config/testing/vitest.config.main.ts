@@ -76,6 +76,7 @@ export default defineConfig({
         'src/app/**/layout.tsx', // Next.js layouts (서버 컴포넌트)
         'src/app/**/page.tsx', // Next.js pages (서버 컴포넌트)
         'src/middleware.ts', // Next.js middleware
+        'src/utils/performance.tsx', // Rollup parse error (JSX + class syntax)
       ],
       reporter: ['text', 'json', 'html', 'lcov'],
       reportsDirectory: './coverage',

@@ -27,15 +27,6 @@ import {
   getTrendPredictor,
   type TrendDataPoint,
 } from '../lib/ai/monitoring/TrendPredictor';
-import {
-  getHybridAnomalyDetector,
-  type ServerMetrics,
-} from '../lib/ai/monitoring/HybridAnomalyDetector';
-import { getAdaptiveThreshold } from '../lib/ai/monitoring/AdaptiveThreshold';
-import {
-  getUnifiedAnomalyEngine,
-  type ServerMetricInput,
-} from '../lib/ai/monitoring/UnifiedAnomalyEngine';
 import { getDataCache } from '../lib/cache-layer';
 
 // Config (SSOT)
@@ -70,14 +61,6 @@ interface TrendResultItem {
 // ============================================================================
 // 2. Helper Functions
 // ============================================================================
-
-function getCurrentMinuteOfDay(): number {
-  const koreaTime = new Date().toLocaleString('en-US', {
-    timeZone: 'Asia/Seoul',
-  });
-  const koreaDate = new Date(koreaTime);
-  return koreaDate.getHours() * 60 + koreaDate.getMinutes();
-}
 
 function toTrendDataPoints(metricPoints: MetricDataPoint[]): TrendDataPoint[] {
   return metricPoints.map((p) => ({ timestamp: p.timestamp, value: p.value }));

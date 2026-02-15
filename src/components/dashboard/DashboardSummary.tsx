@@ -25,10 +25,12 @@ interface DashboardSummaryProps {
   stats: DashboardStats;
   activeFilter?: string | null;
   onFilterChange?: (filter: string | null) => void;
-  healthScore?: number;
-  healthGrade?: string;
   onOpenAlertHistory?: () => void;
   onOpenLogExplorer?: () => void;
+  /** 현재 활성 알림 건수 */
+  activeAlertsCount?: number;
+  /** Active Alerts 모달 열기 */
+  onOpenActiveAlerts?: () => void;
 }
 
 // 🎨 상태별 그라데이션 설정 (ImprovedServerCard와 통일)
@@ -165,36 +167,14 @@ function StatusCard({
   );
 }
 
-// 등급별 색상 매핑
-const gradeColors: Record<string, { bg: string; text: string; ring: string }> =
-  {
-    A: {
-      bg: 'bg-emerald-100',
-      text: 'text-emerald-700',
-      ring: 'ring-emerald-300',
-    },
-    B: { bg: 'bg-blue-100', text: 'text-blue-700', ring: 'ring-blue-300' },
-    C: {
-      bg: 'bg-yellow-100',
-      text: 'text-yellow-700',
-      ring: 'ring-yellow-300',
-    },
-    D: {
-      bg: 'bg-orange-100',
-      text: 'text-orange-700',
-      ring: 'ring-orange-300',
-    },
-    F: { bg: 'bg-red-100', text: 'text-red-700', ring: 'ring-red-300' },
-  };
-
 export const DashboardSummary: React.FC<DashboardSummaryProps> = ({
   stats,
   activeFilter,
   onFilterChange,
-  healthScore,
-  healthGrade,
   onOpenAlertHistory,
   onOpenLogExplorer,
+  activeAlertsCount = 0,
+  onOpenActiveAlerts,
 }) => {
   // Null-safe 처리
   const safeStats = {
@@ -303,12 +283,12 @@ export const DashboardSummary: React.FC<DashboardSummaryProps> = ({
         )}
 
         <div className="relative z-10 flex items-center justify-between px-3">
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3 min-w-0">
             {/* 동적 아이콘 박스 */}
             <div
-              className={`relative flex h-12 w-12 items-center justify-center rounded-2xl shadow-md bg-linear-to-br ${systemHealthGradient.gradient} text-white`}
+              className={`relative flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl shadow-md bg-linear-to-br ${systemHealthGradient.gradient} text-white`}
             >
-              <ShieldAlert size={22} />
+              <ShieldAlert size={20} />
               {/* 상태에 따른 펄스 링 */}
               {showPulse && (
                 <div
@@ -316,29 +296,49 @@ export const DashboardSummary: React.FC<DashboardSummaryProps> = ({
                 />
               )}
             </div>
-            <div>
-              <div className="text-2xs font-bold uppercase tracking-wider text-gray-400 mb-0.5">
+            <div className="min-w-0">
+              <div className="text-2xs font-bold uppercase tracking-wider text-gray-400 leading-tight">
                 시스템 상태
               </div>
-              <div className={`text-sm font-bold ${systemHealthGradient.text}`}>
+              <div
+                className={`text-sm font-bold leading-snug ${systemHealthGradient.text}`}
+              >
                 {safeStats.critical > 0 || safeStats.offline > 0
                   ? '심각한 문제 발생'
                   : safeStats.warning > 0
                     ? '성능 경고'
-                    : '모든 시스템 정상'}
+                    : '정상 운영 중'}
               </div>
             </div>
 
-            {/* Alert History / Log Explorer 버튼 */}
-            <div className="flex items-center gap-1.5 ml-2">
+            {/* 액션 버튼 그룹 */}
+            <div className="flex items-center gap-1.5 ml-1">
+              {/* Active Alerts 버튼 */}
+              {onOpenActiveAlerts && (
+                <button
+                  type="button"
+                  onClick={onOpenActiveAlerts}
+                  aria-label="Active Alerts"
+                  className="relative flex h-8 items-center gap-1 rounded-lg border border-gray-200 bg-white/80 px-2.5 text-xs font-medium text-gray-500 transition-colors hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200 cursor-pointer"
+                >
+                  <AlertTriangle size={13} />
+                  <span className="hidden sm:inline">알림</span>
+                  {activeAlertsCount > 0 && (
+                    <span className="flex h-4 min-w-4 items-center justify-center rounded-full bg-rose-500 px-1 text-[9px] font-bold text-white leading-none">
+                      {activeAlertsCount}
+                    </span>
+                  )}
+                </button>
+              )}
               {onOpenAlertHistory && (
                 <button
                   type="button"
                   onClick={onOpenAlertHistory}
                   aria-label="Alert History"
-                  className="flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 bg-white/80 text-gray-500 transition-colors hover:bg-amber-50 hover:text-amber-600 hover:border-amber-200"
+                  className="flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 bg-white/80 text-gray-500 transition-colors hover:bg-amber-50 hover:text-amber-600 hover:border-amber-200 cursor-pointer"
+                  title="알림 이력"
                 >
-                  <Bell size={15} />
+                  <Bell size={14} />
                 </button>
               )}
               {onOpenLogExplorer && (
@@ -346,53 +346,35 @@ export const DashboardSummary: React.FC<DashboardSummaryProps> = ({
                   type="button"
                   onClick={onOpenLogExplorer}
                   aria-label="Log Explorer"
-                  className="flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 bg-white/80 text-gray-500 transition-colors hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200"
+                  className="flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 bg-white/80 text-gray-500 transition-colors hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 cursor-pointer"
+                  title="로그 탐색기"
                 >
-                  <FileSearch size={15} />
+                  <FileSearch size={14} />
                 </button>
               )}
             </div>
           </div>
 
-          <div className="flex gap-6 text-center pr-2 items-center">
-            {healthGrade != null && healthScore != null && (
-              <>
-                <div className="flex flex-col items-center">
-                  <div
-                    className={cn(
-                      'flex h-10 w-10 items-center justify-center rounded-xl text-lg font-black ring-2',
-                      gradeColors[healthGrade]?.bg ?? 'bg-gray-100',
-                      gradeColors[healthGrade]?.text ?? 'text-gray-700',
-                      gradeColors[healthGrade]?.ring ?? 'ring-gray-300'
-                    )}
-                  >
-                    {healthGrade}
-                  </div>
-                  <div className="text-[9px] font-semibold text-gray-400 uppercase mt-1">
-                    {healthScore}점
-                  </div>
-                </div>
-                <div className="w-px h-8 bg-gray-200" />
-              </>
-            )}
-            <div>
+          {/* 오른쪽: 위험/경고 카운트 */}
+          <div className="flex shrink-0 items-center gap-4 text-center pr-1">
+            <div className="flex flex-col items-center">
               <div
-                className={`text-2xl font-bold leading-none ${safeStats.critical > 0 ? 'text-rose-500' : 'text-gray-400'}`}
+                className={`text-2xl font-bold leading-none tabular-nums ${safeStats.critical > 0 ? 'text-rose-500' : 'text-gray-400'}`}
               >
                 {safeStats.critical}
               </div>
-              <div className="text-[9px] font-semibold text-gray-400 uppercase mt-1">
+              <div className="mt-1 text-[9px] font-semibold uppercase text-gray-400">
                 위험
               </div>
             </div>
-            <div className="w-px h-8 bg-gray-200" />
-            <div>
+            <div className="h-8 w-px bg-gray-200" />
+            <div className="flex flex-col items-center">
               <div
-                className={`text-2xl font-bold leading-none ${safeStats.warning > 0 ? 'text-amber-500' : 'text-gray-400'}`}
+                className={`text-2xl font-bold leading-none tabular-nums ${safeStats.warning > 0 ? 'text-amber-500' : 'text-gray-400'}`}
               >
                 {safeStats.warning}
               </div>
-              <div className="text-[9px] font-semibold text-gray-400 uppercase mt-1">
+              <div className="mt-1 text-[9px] font-semibold uppercase text-gray-400">
                 경고
               </div>
             </div>

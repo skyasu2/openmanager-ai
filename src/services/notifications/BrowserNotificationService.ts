@@ -211,7 +211,6 @@ class BrowserNotificationService {
   sendSystemShutdownNotification(reason: string = '30분 자동 종료'): void {
     if (!this.isEnabled) return;
 
-    const _title = '🛑 OpenManager 시스템 중지';
     const message = `시스템이 중지되었습니다. (${reason})`;
 
     this.sendNotification(message, 'warning', 'system-shutdown');

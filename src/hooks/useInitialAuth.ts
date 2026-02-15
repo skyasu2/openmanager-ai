@@ -7,7 +7,6 @@ import { type AuthUser, getAuthState } from '@/lib/auth/auth-state-manager';
 import { logger } from '@/lib/logging';
 
 // This logic is now inlined from the old vercel-env.ts
-const _authRetryDelay = isVercel ? 5000 : 3000;
 // 깜빡임 방지: 지연 제거 (이전: isVercel ? 300 : 100)
 const initDelay = 0;
 // 🔧 인증 체크 타임아웃: 3초 (Vercel) / 2초 (로컬)

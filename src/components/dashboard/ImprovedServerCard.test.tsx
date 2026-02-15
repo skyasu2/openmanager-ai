@@ -488,8 +488,8 @@ describe('ImprovedServerCard - User Event 테스트', () => {
 
     it('메트릭 값이 화면에 표시된다', () => {
       render(<ImprovedServerCard server={mockServer} onClick={mockOnClick} />);
-      expect(screen.getByText('45%')).toBeInTheDocument();
-      expect(screen.getByText('63%')).toBeInTheDocument();
+      expect(screen.getByText('45.2%')).toBeInTheDocument();
+      expect(screen.getByText('62.8%')).toBeInTheDocument();
     });
   });
 });

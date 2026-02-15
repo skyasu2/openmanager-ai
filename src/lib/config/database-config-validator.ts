@@ -193,12 +193,6 @@ async function performSecurityCheck(config: DatabaseConfig): Promise<{
     }
   }
 
-  // 환경변수 노출 체크
-  const _publicEnvVars = [
-    'NEXT_PUBLIC_SUPABASE_URL',
-    'NEXT_PUBLIC_SUPABASE_ANON_KEY',
-  ];
-
   // Service Role Key나 JWT Secret이 public 접두사를 가지면 안됨
   if (process.env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY) {
     security.score -= 50;

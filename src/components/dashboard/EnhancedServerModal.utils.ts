@@ -13,6 +13,7 @@ import type { ServerStatus } from '@/types/server-enums';
 import { formatUptime as formatUptimeCompact } from '@/utils/serverUtils';
 import type {
   MetricColorResult,
+  NetworkStatus,
   ServerData,
   ServerService,
   StatusTheme,
@@ -152,6 +153,19 @@ export const normalizeChartData = (data: number[]): number[] => {
   return data.map((value) => Math.max(0, Math.min(100, value)));
 };
 
+function deriveNetworkStatus(
+  status: ServerStatus | undefined,
+  network: number
+): NetworkStatus {
+  if (status === 'offline') return 'offline';
+
+  const threshold = getThreshold('network');
+  if (network >= threshold.critical) return 'poor';
+  if (status === 'online' && network < threshold.warning * 0.6)
+    return 'excellent';
+  return 'good';
+}
+
 /**
  * ⏱️ 업타임 문자열 포맷팅
  *
@@ -200,6 +214,7 @@ export const formatUptime = (uptimeString: string): string => {
 export function normalizeServerData(server: Server): ServerData {
   const cpu = typeof server.cpu === 'number' ? server.cpu : 0;
   const memory = typeof server.memory === 'number' ? server.memory : 0;
+  const network = typeof server.network === 'number' ? server.network : 0;
 
   return {
     id: server.id || 'unknown',
@@ -218,7 +233,7 @@ export function normalizeServerData(server: Server): ServerData {
     cpu,
     memory,
     disk: typeof server.disk === 'number' ? server.disk : 0,
-    network: typeof server.network === 'number' ? server.network : 0,
+    network,
     uptime: formatUptimeCompact(server.uptime),
     lastUpdate: server.lastUpdate || new Date(),
     alerts:
@@ -238,13 +253,7 @@ export function normalizeServerData(server: Server): ServerData {
     specs: server.specs || { cpu_cores: 4, memory_gb: 8, disk_gb: 100 },
     os: server.os || 'Unknown OS',
     ip: server.ip || '-',
-    networkStatus: (() => {
-      if (server.status === 'offline') return 'offline';
-      if (server.status === 'critical') return 'poor';
-      const avgLoad = (cpu + memory) / 2;
-      if (server.status === 'online' && avgLoad < 70) return 'excellent';
-      return 'good';
-    })(),
+    networkStatus: deriveNetworkStatus(server.status, network),
     health: server.health || { score: 0, trend: [] },
     alertsSummary: server.alertsSummary || {
       total: 0,

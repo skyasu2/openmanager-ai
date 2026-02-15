@@ -58,7 +58,7 @@ vi.mock('@/services/server-data/server-data-transformer', () => ({
 
 vi.mock('./metric-transformers', () => ({
   determineStatus: vi.fn(
-    (cpu: number, memory: number, disk: number, _net: number) => {
+    (cpu: number, memory: number, _disk: number, _net: number) => {
       if (cpu > 90 || memory > 90) return 'critical';
       if (cpu > 70 || memory > 70) return 'warning';
       return 'healthy';
@@ -75,13 +75,21 @@ function makeSlot(
   servers: Record<
     string,
     { cpu: number; memory: number; disk: number; network: number }
-  >
+  >,
+  options?: {
+    networkUnit?: string;
+  }
 ): OTelHourlySlot {
   const metrics = [
     buildMetric('system.cpu.utilization', '1', servers, 'cpu'),
     buildMetric('system.memory.utilization', '1', servers, 'memory'),
     buildMetric('system.filesystem.utilization', '1', servers, 'disk'),
-    buildMetric('system.network.io', '1', servers, 'network'),
+    buildMetric(
+      'system.network.io',
+      options?.networkUnit ?? '1',
+      servers,
+      'network'
+    ),
   ];
 
   return {
@@ -188,6 +196,34 @@ describe('otelSlotToServers', () => {
     expect(result[0].cpu).toBe(12.3);
     expect(result[0].memory).toBe(99.9);
     expect(result[0].disk).toBe(0.1);
+    expect(result[0].network).toBe(50);
+  });
+
+  it('keeps legacy percent-scale value when network unit is By/s', () => {
+    const slot = makeSlot(
+      {
+        srv: { cpu: 0.2, memory: 0.2, disk: 0.2, network: 78 },
+      },
+      { networkUnit: 'By/s' }
+    );
+    const catalog = makeCatalog(['srv']);
+
+    const result = otelSlotToServers(slot, catalog, '2026-01-01T10:00:00Z');
+
+    expect(result[0].network).toBe(78);
+  });
+
+  it('converts bytes/s to utilization percent when network unit is By/s', () => {
+    const slot = makeSlot(
+      {
+        srv: { cpu: 0.2, memory: 0.2, disk: 0.2, network: 62_500_000 },
+      },
+      { networkUnit: 'By/s' }
+    );
+    const catalog = makeCatalog(['srv']);
+
+    const result = otelSlotToServers(slot, catalog, '2026-01-01T10:00:00Z');
+
     expect(result[0].network).toBe(50);
   });
 

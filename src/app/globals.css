@@ -612,6 +612,18 @@
   }
 }
 
+/* 클릭 가능한 요소에 전역 pointer cursor 적용 */
+button,
+[role='button'],
+summary,
+a[href],
+select,
+[type='button'],
+[type='submit'],
+[type='reset'] {
+  cursor: pointer;
+}
+
 /* Tailwind preflight가 box-sizing 처리, padding/margin은 유틸리티에 위임 */
 * {
   box-sizing: border-box;

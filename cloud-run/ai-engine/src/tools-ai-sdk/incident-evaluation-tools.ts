@@ -239,24 +239,6 @@ function generateRecommendations(scores: EvaluationScores): string[] {
   return recommendations;
 }
 
-/**
- * Determine focus area from report content
- */
-function determineFocusArea(report: EvaluationInputReport): keyof typeof COMMAND_TEMPLATES {
-  if (!report.affectedServers || report.affectedServers.length === 0) {
-    return 'general';
-  }
-
-  const issues = report.affectedServers.map(s => s.primaryIssue.toLowerCase()).join(' ');
-
-  if (issues.includes('cpu')) return 'cpu';
-  if (issues.includes('memory') || issues.includes('메모리')) return 'memory';
-  if (issues.includes('disk') || issues.includes('디스크')) return 'disk';
-  if (issues.includes('network') || issues.includes('네트워크')) return 'network';
-
-  return 'general';
-}
-
 // ============================================================================
 // 4. Evaluator Tools
 // ============================================================================
@@ -602,7 +584,7 @@ export const enhanceSuggestedActions = tool({
 
     const commands = COMMAND_TEMPLATES[focusArea] || COMMAND_TEMPLATES.general;
 
-    const enhancedActions: EnhancedAction[] = actions.map((action, index) => {
+    const enhancedActions: EnhancedAction[] = actions.map((action) => {
       // Determine priority based on action content
       let priority: EnhancedAction['priority'] = 'medium';
       if (/긴급|즉시|critical/i.test(action)) priority = 'critical';

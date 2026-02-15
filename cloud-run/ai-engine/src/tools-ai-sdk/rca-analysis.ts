@@ -13,7 +13,6 @@ import { z } from 'zod';
 
 // Data sources - precomputed-state 기반 분석
 import {
-  getStateBySlot,
   getRecentHistory,
 } from '../data/precomputed-state';
 

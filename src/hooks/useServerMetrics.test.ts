@@ -34,7 +34,7 @@ describe('parseMetricsHistoryFromResponse', () => {
         cpu: 61,
         memory: 52,
         disk: 40,
-        network: 15,
+        network: 30,
         responseTime: 123,
         connections: 0,
       },

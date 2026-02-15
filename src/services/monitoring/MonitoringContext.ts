@@ -17,6 +17,7 @@ import {
 } from '@/services/metrics/MetricsProvider';
 import type { OTelHourlyFile } from '@/types/otel-metrics';
 import type { PromQLResult } from '@/types/processed-metrics';
+import { formatMetricValue } from '@/utils/metric-formatters';
 import { type Alert, AlertManager } from './AlertManager';
 import { HealthCalculator, type HealthReport } from './HealthCalculator';
 import { type AggregatedMetrics, MetricsAggregator } from './MetricsAggregator';
@@ -91,7 +92,7 @@ export class MonitoringContext {
       });
       for (const alert of sorted.slice(0, 5)) {
         const durMin = Math.round(alert.duration / 60);
-        ctx += `- ${alert.instance} ${alert.metric}=${alert.value}% [${alert.severity.toUpperCase()}, firing ${durMin}m]\n`;
+        ctx += `- ${alert.instance} ${alert.metric}=${formatMetricValue(alert.metric, alert.value)} [${alert.severity.toUpperCase()}, firing ${durMin}m]\n`;
       }
       ctx += '\n';
     }
@@ -147,7 +148,7 @@ export class MonitoringContext {
       ctx += `  system.cpu.utilization (alias: node_cpu_usage_percent), ratio 0-1\n`;
       ctx += `  system.memory.utilization (alias: node_memory_usage_percent), ratio 0-1\n`;
       ctx += `  system.filesystem.utilization (alias: node_filesystem_usage_percent), ratio 0-1\n`;
-      ctx += `  system.network.io (alias: node_network_transmit_bytes_rate), By/s\n`;
+      ctx += `  system.network.io (alias: node_network_transmit_bytes_rate), normalized utilization %\n`;
       ctx += `Query: Both OTel and Prometheus names accepted in queryMetric()\n`;
 
       return ctx;

@@ -20,6 +20,8 @@ CODEX_LOCAL_RUNNER="$REPO_ROOT/scripts/mcp/codex-local.sh"
 RUNTIME_ENV_RESOLVER="$REPO_ROOT/scripts/mcp/resolve-runtime-env.sh"
 USAGE_COUNTER="$REPO_ROOT/scripts/mcp/count-codex-mcp-usage.sh"
 EXPECTED_SERVERS=()
+CONFIG_FILE=""
+LIVE_PROBE_TIMEOUT_SEC="${MCP_LIVE_PROBE_TIMEOUT_SEC:-120}"
 
 echo -e "${BLUE}Codex MCP Health Check${NC}"
 echo -e "${BLUE}======================${NC}"
@@ -51,10 +53,10 @@ export OPENMANAGER_CODEX_HOME_MODE
 source "$RUNTIME_ENV_RESOLVER"
 
 load_expected_servers() {
-  local config_file="$CODEX_HOME/config.toml"
-  if [ ! -f "$config_file" ]; then
-    echo -e "${RED}Codex 설정 파일 누락: $config_file${NC}"
-    echo "Codex 설정 파일 누락: $config_file" >> "$LOG_FILE"
+  CONFIG_FILE="$CODEX_HOME/config.toml"
+  if [ ! -f "$CONFIG_FILE" ]; then
+    echo -e "${RED}Codex 설정 파일 누락: $CONFIG_FILE${NC}"
+    echo "Codex 설정 파일 누락: $CONFIG_FILE" >> "$LOG_FILE"
     exit 2
   fi
 
@@ -68,19 +70,116 @@ load_expected_servers() {
           print line
         }
       }
-    ' "$config_file"
+    ' "$CONFIG_FILE"
   )
 
   if [ "${#EXPECTED_SERVERS[@]}" -eq 0 ]; then
-    echo -e "${RED}MCP 서버 설정 파싱 실패: $config_file${NC}"
-    echo "MCP 서버 설정 파싱 실패: $config_file" >> "$LOG_FILE"
+    echo -e "${RED}MCP 서버 설정 파싱 실패: $CONFIG_FILE${NC}"
+    echo "MCP 서버 설정 파싱 실패: $CONFIG_FILE" >> "$LOG_FILE"
     exit 2
   fi
 
-  echo "  - MCP config: $config_file (${#EXPECTED_SERVERS[@]} servers)"
+  echo "  - MCP config: $CONFIG_FILE (${#EXPECTED_SERVERS[@]} servers)"
   {
-    echo "  - MCP config: $config_file (${#EXPECTED_SERVERS[@]} servers)"
+    echo "  - MCP config: $CONFIG_FILE (${#EXPECTED_SERVERS[@]} servers)"
   } >> "$LOG_FILE"
+}
+
+has_server() {
+  local target="$1"
+  local s=""
+  for s in "${EXPECTED_SERVERS[@]}"; do
+    if [ "$s" = "$target" ]; then
+      return 0
+    fi
+  done
+  return 1
+}
+
+get_server_env_value() {
+  local server="$1"
+  local key="$2"
+  awk -v section="[mcp_servers.${server}.env]" -v target="$key" '
+    BEGIN { in_section = 0 }
+    $0 ~ /^\[.*\]$/ {
+      in_section = ($0 == section)
+      next
+    }
+    in_section {
+      pattern = "^[[:space:]]*" target "[[:space:]]*="
+      if ($0 ~ pattern) {
+        line = $0
+        sub(/^[^"]*"/, "", line)
+        sub(/"[[:space:]]*$/, "", line)
+        print line
+        exit
+      }
+    }
+  ' "$CONFIG_FILE"
+}
+
+run_live_probe() {
+  local server="$1"
+  local _transport_command="$2"
+  local _transport_args_json="$3"
+  local _call_tool="$4"
+  local env_prefix="$5"
+  local probe_output=""
+
+  probe_output=$(eval "$env_prefix" timeout "$LIVE_PROBE_TIMEOUT_SEC" node --input-type=module <<'NODE' 2>&1
+import { Client } from '@modelcontextprotocol/sdk/client/index.js';
+import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js';
+import { CallToolResultSchema, ListToolsResultSchema } from '@modelcontextprotocol/sdk/types.js';
+
+const command = process.env.MCP_PROBE_COMMAND;
+const args = JSON.parse(process.env.MCP_PROBE_ARGS_JSON || '[]');
+const callTool = process.env.MCP_PROBE_CALL_TOOL || '';
+const serverName = process.env.MCP_PROBE_SERVER || 'unknown';
+
+const client = new Client({ name: `${serverName}-health-check`, version: '1.0.0' });
+const transport = new StdioClientTransport({
+  command,
+  args,
+  env: { ...process.env },
+});
+
+try {
+  await client.connect(transport);
+  const toolsRes = await client.request({ method: 'tools/list', params: {} }, ListToolsResultSchema);
+  const tools = toolsRes.tools ?? [];
+  const result = { ok: true, toolCount: tools.length };
+
+  if (callTool && tools.some((tool) => tool.name === callTool)) {
+    const callRes = await client.request(
+      { method: 'tools/call', params: { name: callTool, arguments: {} } },
+      CallToolResultSchema,
+    );
+    result.callTool = callTool;
+    result.callIsError = !!callRes.isError;
+  }
+
+  console.log(JSON.stringify(result));
+} catch (error) {
+  console.log(JSON.stringify({ ok: false, error: error?.message ?? String(error) }));
+  process.exitCode = 1;
+} finally {
+  try {
+    await transport.close();
+  } catch {}
+}
+NODE
+)
+  if printf '%s\n' "$probe_output" | grep -q '"ok":true'; then
+    echo -e "${GREEN}OK${NC}   ${server}: live probe"
+    echo "OK   ${server}: live probe" >> "$LOG_FILE"
+    return 0
+  fi
+
+  echo -e "${YELLOW}WARN${NC} ${server}: live probe failed"
+  echo "WARN ${server}: live probe failed" >> "$LOG_FILE"
+  printf '%s\n' "$probe_output" | sed 's/^/  - /' | sed -n '1,4p'
+  printf '%s\n' "$probe_output" | sed 's/^/  - /' | sed -n '1,4p' >> "$LOG_FILE"
+  return 1
 }
 
 load_expected_servers
@@ -120,6 +219,7 @@ fi
 
 SUCCESS_COUNT=0
 FAIL_COUNT=0
+LIVE_PROBE_FAIL_COUNT=0
 
 if [ -n "$PERMISSION_WARNINGS" ]; then
   echo -e "${YELLOW}환경 경고${NC}: 샌드박스 권한 제한으로 일부 정리 작업이 실패했습니다."
@@ -154,6 +254,52 @@ for server in "${EXPECTED_SERVERS[@]}"; do
   fi
 done
 
+echo ""
+echo -e "${BLUE}실동작 프로브:${NC}"
+echo "실동작 프로브:" >> "$LOG_FILE"
+
+if [ ! -d "$REPO_ROOT/node_modules/@modelcontextprotocol/sdk" ]; then
+  echo -e "${YELLOW}WARN${NC} live probe skipped: @modelcontextprotocol/sdk 미설치"
+  echo "WARN live probe skipped: @modelcontextprotocol/sdk 미설치" >> "$LOG_FILE"
+else
+  if has_server "supabase"; then
+    SUPABASE_TOKEN=$(get_server_env_value "supabase" "SUPABASE_ACCESS_TOKEN")
+    if [ -z "$SUPABASE_TOKEN" ]; then
+      echo -e "${YELLOW}WARN${NC} supabase: live probe skipped (SUPABASE_ACCESS_TOKEN missing)"
+      echo "WARN supabase: live probe skipped (SUPABASE_ACCESS_TOKEN missing)" >> "$LOG_FILE"
+      LIVE_PROBE_FAIL_COUNT=$((LIVE_PROBE_FAIL_COUNT + 1))
+    else
+      if ! run_live_probe \
+        "supabase" \
+        "npx" \
+        "[\"-y\",\"@supabase/mcp-server-supabase@0.5.9\"]" \
+        "list_projects" \
+        "SUPABASE_ACCESS_TOKEN=\"$SUPABASE_TOKEN\" MCP_PROBE_SERVER=\"supabase\" MCP_PROBE_COMMAND=\"npx\" MCP_PROBE_ARGS_JSON='[\"-y\",\"@supabase/mcp-server-supabase@0.5.9\"]' MCP_PROBE_CALL_TOOL=\"list_projects\""; then
+        LIVE_PROBE_FAIL_COUNT=$((LIVE_PROBE_FAIL_COUNT + 1))
+      fi
+    fi
+  fi
+
+  if has_server "stitch"; then
+    STITCH_PROJECT_ID=$(get_server_env_value "stitch" "STITCH_PROJECT_ID")
+    STITCH_USE_SYSTEM_GCLOUD=$(get_server_env_value "stitch" "STITCH_USE_SYSTEM_GCLOUD")
+    if [ -z "$STITCH_PROJECT_ID" ] || [ -z "$STITCH_USE_SYSTEM_GCLOUD" ]; then
+      echo -e "${YELLOW}WARN${NC} stitch: live probe skipped (stitch env missing)"
+      echo "WARN stitch: live probe skipped (stitch env missing)" >> "$LOG_FILE"
+      LIVE_PROBE_FAIL_COUNT=$((LIVE_PROBE_FAIL_COUNT + 1))
+    else
+      if ! run_live_probe \
+        "stitch" \
+        "bash" \
+        "[\"-lc\",\"CLOUDSDK_CONFIG=\\\"\\${CLOUDSDK_CONFIG:-\\$HOME/.config/gcloud}\\\" npx -y @_davideast/stitch-mcp proxy\"]" \
+        "list_projects" \
+        "STITCH_PROJECT_ID=\"$STITCH_PROJECT_ID\" STITCH_USE_SYSTEM_GCLOUD=\"$STITCH_USE_SYSTEM_GCLOUD\" CLOUDSDK_CONFIG=\"${CLOUDSDK_CONFIG:-$HOME/.config/gcloud}\" MCP_PROBE_SERVER=\"stitch\" MCP_PROBE_COMMAND=\"bash\" MCP_PROBE_ARGS_JSON='[\"-lc\",\"CLOUDSDK_CONFIG=\\\"\\${CLOUDSDK_CONFIG:-\\$HOME/.config/gcloud}\\\" npx -y @_davideast/stitch-mcp proxy\"]' MCP_PROBE_CALL_TOOL=\"list_projects\""; then
+        LIVE_PROBE_FAIL_COUNT=$((LIVE_PROBE_FAIL_COUNT + 1))
+      fi
+    fi
+  fi
+fi
+
 TOTAL_SERVERS=${#EXPECTED_SERVERS[@]}
 SUCCESS_RATE=$((SUCCESS_COUNT * 100 / TOTAL_SERVERS))
 
@@ -162,6 +308,7 @@ echo -e "${BLUE}요약:${NC}"
 echo "  - 성공: ${SUCCESS_COUNT}/${TOTAL_SERVERS}"
 echo "  - 실패: ${FAIL_COUNT}/${TOTAL_SERVERS}"
 echo "  - 성공률: ${SUCCESS_RATE}%"
+echo "  - 실동작 프로브 실패: ${LIVE_PROBE_FAIL_COUNT}"
 if [ -n "$PERMISSION_WARNINGS" ]; then
   echo "  - 환경 경고: 1 (권한 제한, 비치명)"
 fi
@@ -172,6 +319,7 @@ fi
   echo "  - 성공: ${SUCCESS_COUNT}/${TOTAL_SERVERS}"
   echo "  - 실패: ${FAIL_COUNT}/${TOTAL_SERVERS}"
   echo "  - 성공률: ${SUCCESS_RATE}%"
+  echo "  - 실동작 프로브 실패: ${LIVE_PROBE_FAIL_COUNT}"
   if [ -n "$PERMISSION_WARNINGS" ]; then
     echo "  - 환경 경고: 1 (권한 제한, 비치명)"
   fi
@@ -196,7 +344,7 @@ if [ -x "$USAGE_COUNTER" ]; then
   fi
 fi
 
-if [ "$FAIL_COUNT" -eq 0 ]; then
+if [ "$FAIL_COUNT" -eq 0 ] && [ "$LIVE_PROBE_FAIL_COUNT" -eq 0 ]; then
   exit 0
 fi
 
@@ -205,7 +353,11 @@ if [ "$WARNING_THRESHOLD" -lt 0 ]; then
   WARNING_THRESHOLD=0
 fi
 
-if [ "$SUCCESS_COUNT" -ge "$WARNING_THRESHOLD" ]; then
+if [ "$FAIL_COUNT" -eq 0 ] && [ "$LIVE_PROBE_FAIL_COUNT" -gt 0 ]; then
+  exit 1
+fi
+
+if [ "$SUCCESS_COUNT" -ge "$WARNING_THRESHOLD" ] && [ "$LIVE_PROBE_FAIL_COUNT" -eq 0 ]; then
   exit 1
 fi
 
