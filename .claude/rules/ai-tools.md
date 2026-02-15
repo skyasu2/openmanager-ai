@@ -8,7 +8,7 @@
 | `sequential-thinking` | 복잡한 리팩토링, 아키텍처 설계 | 높음 |
 | `next-devtools` | Next.js 런타임 진단, 에러/라우트/로그 조회 (dev server 필수) | 중간 |
 | `stitch` | Google Stitch AI UI 디자인 | 중간 |
-| `supabase` | PostgreSQL 관리 | 중간 |
+| `supabase-db` | PostgreSQL 관리 (로컬 설치, "supabase" 이름 회피) | 중간 |
 | `vercel` | 배포 상태 확인 | 중간 |
 | `playwright` | E2E 테스트 | 중간 |
 | `github` | 저장소/PR 관리 | 중간 |
