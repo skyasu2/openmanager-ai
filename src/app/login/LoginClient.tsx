@@ -33,6 +33,29 @@ const SUCCESS_MESSAGE_TIMEOUT_MS = 3000; // 성공 메시지 자동 숨김 시�
 const COOKIE_MAX_AGE_SECONDS = 2 * 60 * 60; // 쿠키 만료 시간 (2시간)
 const PAGE_REDIRECT_DELAY_MS = 500; // 페이지 이동 지연
 const PULSE_ANIMATION_DURATION_MS = 600; // 펄스 애니메이션 시간
+const REDIRECT_STORAGE_KEY = 'auth_redirect_to';
+const DEFAULT_REDIRECT_PATH = '/';
+
+function sanitizeRedirectPath(rawValue: string | null): string | null {
+  if (!rawValue) return null;
+
+  const trimmed = rawValue.trim();
+  if (!trimmed) return null;
+
+  try {
+    const parsed = new URL(trimmed, window.location.origin);
+
+    // 외부 오리진 이동 차단 (오픈 리다이렉트 방지)
+    if (parsed.origin !== window.location.origin) {
+      return null;
+    }
+
+    const normalizedPath = `${parsed.pathname}${parsed.search}${parsed.hash}`;
+    return normalizedPath.startsWith('/') ? normalizedPath : null;
+  } catch {
+    return null;
+  }
+}
 
 export default function LoginClient() {
   const _router = useRouter();
@@ -130,10 +153,20 @@ export default function LoginClient() {
       return;
     }
 
-    // redirectTo 파라미터가 있으면 세션 스토리지에 저장
-    if (redirectTo && redirectTo !== '/') {
-      sessionStorage.setItem('auth_redirect_to', redirectTo);
-      debug.log('🔗 로그인 후 리다이렉트 URL 저장:', redirectTo);
+    // redirectTo 파라미터가 있으면 안전한 내부 경로만 세션 스토리지에 저장
+    const safeRedirectFromQuery = sanitizeRedirectPath(redirectTo);
+    if (
+      safeRedirectFromQuery &&
+      safeRedirectFromQuery !== DEFAULT_REDIRECT_PATH
+    ) {
+      try {
+        sessionStorage.setItem(REDIRECT_STORAGE_KEY, safeRedirectFromQuery);
+        debug.log('🔗 로그인 후 리다이렉트 URL 저장:', safeRedirectFromQuery);
+      } catch (error) {
+        debug.warn('⚠️ redirect 세션 저장 실패, 기본 경로로 이동합니다:', error);
+      }
+    } else if (redirectTo && redirectTo !== DEFAULT_REDIRECT_PATH) {
+      debug.warn('⚠️ 유효하지 않은 redirectTo 파라미터 무시:', redirectTo);
     }
 
     if (error && message) {
@@ -194,9 +227,24 @@ export default function LoginClient() {
       );
 
       // 🚀 리다이렉트 로직: sessionStorage의 저장된 redirect 경로 우선 사용
-      const savedRedirect = sessionStorage.getItem('auth_redirect_to');
-      const targetPath = savedRedirect || '/';
-      if (savedRedirect) sessionStorage.removeItem('auth_redirect_to');
+      let targetPath = DEFAULT_REDIRECT_PATH;
+      try {
+        const savedRedirect = sessionStorage.getItem(REDIRECT_STORAGE_KEY);
+        const safeSavedRedirect = sanitizeRedirectPath(savedRedirect);
+        targetPath = safeSavedRedirect || DEFAULT_REDIRECT_PATH;
+
+        if (savedRedirect) {
+          sessionStorage.removeItem(REDIRECT_STORAGE_KEY);
+        }
+        if (savedRedirect && !safeSavedRedirect) {
+          debug.warn(
+            '⚠️ 저장된 redirect 경로가 유효하지 않아 기본 경로로 이동:',
+            savedRedirect
+          );
+        }
+      } catch (error) {
+        debug.warn('⚠️ redirect 세션 조회 실패, 기본 경로로 이동합니다:', error);
+      }
 
       // 1. 먼저 라우터로 이동 시도 (빠른 전환)
       _router.push(targetPath);

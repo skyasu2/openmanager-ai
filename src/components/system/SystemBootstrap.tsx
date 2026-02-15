@@ -120,10 +120,10 @@ export function SystemBootstrap(): React.ReactNode {
       }
 
       // 2. Cloud Run AI 상태 확인 (한 번만, 3초 타임아웃)
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 3000);
       try {
         logger.info('🤖 Cloud Run AI 상태 확인...');
-        const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 3000);
         const aiHealthResponse = await fetch('/api/health?service=ai', {
           method: 'GET',
           headers: {
@@ -131,7 +131,6 @@ export function SystemBootstrap(): React.ReactNode {
           },
           signal: controller.signal,
         });
-        clearTimeout(timeout);
 
         if (isMounted) {
           if (aiHealthResponse.ok) {
@@ -158,6 +157,8 @@ export function SystemBootstrap(): React.ReactNode {
           localStatus.cloudRunAI = 'failed';
           setBootstrapStatus((prev) => ({ ...prev, cloudRunAI: 'failed' }));
         }
+      } finally {
+        clearTimeout(timeout);
       }
 
       // 3. Supabase 상태 확인 (한 번만)
