@@ -280,7 +280,7 @@ curl -H "X-API-Key: $SECRET" https://ai-engine-xxx.run.app/monitoring
 
 - [AI Engine 아키텍처](../ai/ai-engine-architecture.md) - 에이전트 실행 구조
 - [보안 아키텍처](./security.md) - 인증/보안 계층
-- [Observability 가이드](../../guides/observability.md) - Langfuse/Sentry 모니터링
+- [Observability 가이드](../../../guides/observability.md) - Langfuse/Sentry 모니터링
 - [Free Tier 최적화](./free-tier-optimization.md) - 비용 제약 하의 설계
 
 _Last Updated: 2026-02-15_

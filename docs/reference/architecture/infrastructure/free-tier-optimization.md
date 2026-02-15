@@ -279,9 +279,9 @@ Public → Private 전환 시 Actions 분 제한(2,000분/월)이 적용됩니�
 
 ## 관련 문서
 
-- [CI/CD 파이프라인](../../development/ci-cd.md) - GitHub Actions 워크플로우 상세
-- [Docker 가이드](../../development/docker.md) - Cloud Run 컨테이너 설정
-- [Observability 가이드](../../guides/observability.md) - Langfuse/Sentry 비용 관리
+- [CI/CD 파이프라인](../../../development/ci-cd.md) - GitHub Actions 워크플로우 상세
+- [Docker 가이드](../../../development/docker.md) - Cloud Run 컨테이너 설정
+- [Observability 가이드](../../../guides/observability.md) - Langfuse/Sentry 비용 관리
 - [복원력 아키텍처](./resilience.md) - 장애 대응 패턴
 
 _Last Updated: 2026-02-15_

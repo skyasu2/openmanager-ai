@@ -3,7 +3,7 @@
 > Owner: docs-platform
 > Status: Active Canonical
 > Doc type: Explanation
-> Last reviewed: 2026-02-14
+> Last reviewed: 2026-02-15
 > Canonical: docs/development/documentation-management.md
 > Tags: docs-governance,diataxis,docs-as-code
 
@@ -16,6 +16,7 @@
 3. Codex skill: `.codex/skills/openmanager-doc-management/SKILL.md`
 4. Claude skill: `.claude/skills/doc-management/SKILL.md`
 5. 자동 점검: `scripts/docs/check-docs.sh`, `scripts/docs/doc-budget-report.js`
+6. WSL 전용 점검 래퍼: `scripts/wsl/docs-management-check.sh`
 
 ## 운영 규칙
 
@@ -68,6 +69,23 @@ npm run docs:budget
 
 CI에서는 `DOCS_STRICT_CHANGED=true`와 `DOCS_DIFF_RANGE`를 함께 전달해 PR/Push diff 기준으로 변경 문서를 판정한다.
 
+## WSL 문서 관리 영역
+
+WSL에서 문서 점검 결과를 별도 경로로 남기기 위해 `logs/docs-reports/wsl/`를 문서 관리 영역으로 사용한다.
+
+```bash
+# 기본 점검 (WSL 환경 감지 + docs:check + docs:budget)
+npm run docs:check:wsl
+
+# 변경 문서 strict gate 포함 점검
+npm run docs:check:wsl:strict
+```
+
+출력:
+- 환경 정보: `logs/docs-reports/wsl/environment.txt`
+- 문서 점검 로그: `logs/docs-reports/wsl/docs-check.log`
+- 예산 점검 로그: `logs/docs-reports/wsl/docs-budget.log`
+
 ## 추가된 Skill 분석
 
 1. `openmanager-doc-management` (Codex):
@@ -85,6 +103,7 @@ CI에서는 `DOCS_STRICT_CHANGED=true`와 `DOCS_DIFF_RANGE`를 함께 전달해 
 2. `npm run docs:budget:strict`는 변경 문서 필수 메타데이터 누락 시 실패한다.
 3. 예산 리포트에 Rule Results(`DOC-*`)가 출력된다.
 4. 정책/스킬/스크립트 설명이 동일한 메타데이터 기준을 사용한다.
+5. WSL에서 `npm run docs:check:wsl:strict` 실행 시 `logs/docs-reports/wsl/` 하위에 점검 아티팩트가 생성된다.
 
 ## References
 
