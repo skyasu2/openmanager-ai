@@ -184,10 +184,10 @@
 
 | 항목 | 완성도 | 근거 |
 |------|:------:|------|
-| 동기화 스크립트 | 100% | `sync-hourly-data.ts` (seeded random, 결정론적) |
-| OTel 전처리 | 100% | `otel-precompute.ts` + resource-catalog + timeseries |
-| 듀얼 출력 | 100% | `src/data/hourly-data/` + `cloud-run/ai-engine/data/hourly-data/` (byte-identical) |
-| MetricsProvider SSOT | 100% | OTel Primary + hourly-data Fallback, 전 API 사용 |
+| 데이터 품질 스크립트 | 100% | `otel-fix.ts` (일괄 변환) + `otel-verify.ts` (16개 검증) |
+| OTel SSOT | 100% | `src/data/otel-data/` (resource-catalog + timeseries + 24 hourly) |
+| 듀얼 배포 번들링 | 100% | Vercel(src/data) + Cloud Run(cloud-run/data) 동일 스냅샷 |
+| MetricsProvider SSOT | 100% | OTel 직접 소비, hourly-data 레거시 삭제 완료 |
 | AI Engine 장애 감지 | 100% | `precomputed-state.ts` 3-path fallback 로딩 |
 
 **해결 완료** (2026-02-15):
@@ -214,7 +214,7 @@
 | AI Cache (다층) | 100% | 메모리 + Redis, TTL 정책 |
 | Config (SSOT) | 100% | 20파일, Zod 검증 |
 | Scripts (데이터 동기화) | 100% | sync-hourly-data + otel-precompute (로그 적재 완료) |
-| Utils/Lib 정리 | 100% | api-batcher, error-response, safeFormat, network-tracking, timeout-config 삭제 |
+| Utils/Lib 정리 | 100% | api-batcher, error-response, safeFormat, network-tracking, timeout-config, CentralizedDataManager 삭제 |
 | 테스트 인프라 | 80% | 52파일, 10,859줄, 커버리지 ~11% |
 | AI SDK 버전 정합성 | 100% | Root `ai@6.0.86`, `@ai-sdk/react@3.0.88`로 상향 및 스모크 검증 |
 
@@ -439,6 +439,8 @@
 | 기본 점검 명령 표준화(`docs:check:wsl`) | 완료 | `package.json` |
 | strict 점검 명령 표준화(`docs:check:wsl:strict`) | 완료 | `package.json` |
 | 문서 관리 가이드 반영 | 완료 | `docs/development/documentation-management.md` |
+| 운영 모델 결정(단일 허브+영역 분산) | 완료 | `docs/development/documentation-management.md` |
+| WSL 신규 문서 생성 억제(병합 우선) 규칙 | 완료 | `docs/development/documentation-management.md` |
 
 권장 실행:
 1. `npm run docs:check:wsl`
@@ -447,4 +449,4 @@
 ---
 
 _분석 기준: 4개 병렬 탐색 에이전트로 src/, cloud-run/, scripts/ 전체 코드 분석_
-_최종 갱신: 2026-02-15 (AI Sidebar/AI 전체페이지/Redis+Supabase RAG + Cloud 저비용 필수 테스트 정책 + WSL 문서 관리 체크리스트 반영)_
+_최종 갱신: 2026-02-15 (AI Sidebar/AI 전체페이지/Redis+Supabase RAG + Cloud 저비용 필수 테스트 정책 + WSL 문서 관리 체크리스트/하이브리드 운영 모델 반영)_
