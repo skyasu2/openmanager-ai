@@ -193,15 +193,19 @@ export default function LoginClient() {
         guestSession.user.name
       );
 
-      // 🚀 리다이렉트 로직 개선: Next.js 라우터와 강제 이동 병행
+      // 🚀 리다이렉트 로직: sessionStorage의 저장된 redirect 경로 우선 사용
+      const savedRedirect = sessionStorage.getItem('auth_redirect_to');
+      const targetPath = savedRedirect || '/';
+      if (savedRedirect) sessionStorage.removeItem('auth_redirect_to');
+
       // 1. 먼저 라우터로 이동 시도 (빠른 전환)
-      _router.push('/');
+      _router.push(targetPath);
       _router.refresh(); // 데이터 갱신
 
       // 2. 혹시 모를 상황 대비 강제 새로고침 폴백
       const redirectTimer = setTimeout(() => {
         if (window.location.pathname === '/login') {
-          window.location.href = '/';
+          window.location.href = targetPath;
         }
       }, PAGE_REDIRECT_DELAY_MS);
 

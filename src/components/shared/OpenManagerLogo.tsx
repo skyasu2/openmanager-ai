@@ -77,7 +77,11 @@ export const OpenManagerLogo: React.FC<OpenManagerLogoProps> = ({
 
           if (!showSubtitle || !subtitleText) return null;
 
-          return <p className={`text-xs ${subtitleColor}`}>{subtitleText}</p>;
+          return (
+            <p className={`hidden text-xs sm:block ${subtitleColor}`}>
+              {subtitleText}
+            </p>
+          );
         })()}
       </div>
     </div>

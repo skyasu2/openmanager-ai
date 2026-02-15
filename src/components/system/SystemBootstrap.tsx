@@ -119,15 +119,19 @@ export function SystemBootstrap(): React.ReactNode {
         }
       }
 
-      // 2. Cloud Run AI 상태 확인 (한 번만)
+      // 2. Cloud Run AI 상태 확인 (한 번만, 3초 타임아웃)
       try {
         logger.info('🤖 Cloud Run AI 상태 확인...');
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 3000);
         const aiHealthResponse = await fetch('/api/health?service=ai', {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
           },
+          signal: controller.signal,
         });
+        clearTimeout(timeout);
 
         if (isMounted) {
           if (aiHealthResponse.ok) {
@@ -147,10 +151,9 @@ export function SystemBootstrap(): React.ReactNode {
             setBootstrapStatus((prev) => ({ ...prev, cloudRunAI: 'failed' }));
           }
         }
-      } catch (error) {
-        const errorMessage =
-          error instanceof Error ? error.message : String(error);
-        logger.warn('⚠️ Cloud Run AI 상태 확인 네트워크 오류:', errorMessage);
+      } catch {
+        // Cloud Run 미활성은 예상된 상황 — debug 레벨로 격하 (콘솔 노이즈 제거)
+        logger.debug('Cloud Run AI 상태 확인 스킵 (미활성 또는 타임아웃)');
         if (isMounted) {
           localStatus.cloudRunAI = 'failed';
           setBootstrapStatus((prev) => ({ ...prev, cloudRunAI: 'failed' }));

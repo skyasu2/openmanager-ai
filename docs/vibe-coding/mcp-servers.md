@@ -4,7 +4,7 @@
 > Owner: dev-experience
 > Status: Active Supporting
 > Doc type: Reference
-> Last reviewed: 2026-02-14
+> Last reviewed: 2026-02-15
 > Canonical: docs/vibe-coding/mcp-servers.md
 > Tags: vibe-coding,mcp,configuration
 
@@ -66,6 +66,72 @@
 - `claude mcp add` CLI 사용
 - 장점: 보안성, 이식성
 - 단점: 설정 복잡, WSL 환경변수 누락 이슈
+
+---
+
+## Codex MCP 설정법 (프로젝트 SSOT)
+
+### 적용 원칙
+
+- Codex MCP 서버 목록의 단일 기준(SSOT)은 `.codex/config.toml`의 `[mcp_servers.*]`입니다.
+- 하드코딩 목록 대신 설정 파일에서 서버 목록을 파싱합니다.
+- 설정 변경 후 최소 점검:
+  - `bash scripts/mcp/codex-local.sh mcp list`
+  - `bash scripts/mcp/mcp-health-check-codex.sh`
+- 실제 동작 검증은 서버별 도구 1회 이상 호출로 확인합니다.
+
+### 현재 Codex MCP 구성 요약 (2026-02-15)
+
+| Server ID | 실행 방식(요약) | Timeout (startup/tool) | 적용 목적 |
+|---|---|---:|---|
+| `supabase-db` | `node .../mcp-server-supabase/dist/transports/stdio.js` | `30/120` | DB 조회/SQL/마이그레이션 |
+| `context7` | `npx -y @upstash/context7-mcp` | `60/120` | 최신 공식 문서 검색 |
+| `playwright` | `npx -y @playwright/mcp --output-dir .playwright-mcp/screenshots` | `60/180` | 브라우저 자동화 QA |
+| `next-devtools` | `npx -y next-devtools-mcp@latest` | `75/120` | Next.js 런타임 진단 |
+| `github` | `npx -y @modelcontextprotocol/server-github` | `60/120` | PR/Issue/파일 조회 |
+| `sequential-thinking` | `npx -y @modelcontextprotocol/server-sequential-thinking` | `60/90` | 복잡한 추론/계획 |
+| `stitch` | `bash -lc ./scripts/mcp/start-stitch-mcp.sh` | `120/180` | UI 생성/변형 |
+| `vercel` | `bash -lc npx -y vercel-mcp ...` | `60/120` | 배포 상태/로그 확인 |
+
+### Codex에 MCP 추가/수정하는 방법
+
+1. `.codex/config.toml`의 `[mcp_servers.<name>]` 블록을 추가/수정합니다.
+1. 민감값은 평문 노출 금지 원칙으로 관리하고, 문서/리뷰/로그에는 반드시 마스킹합니다.
+1. 변경 후 Codex 세션을 재시작합니다.
+1. 상태 점검:
+```bash
+bash scripts/mcp/codex-local.sh mcp list
+bash scripts/mcp/mcp-health-check-codex.sh
+```
+1. 서버별 최소 1회 도구 호출로 실동작을 확인합니다.
+
+### Playwright MCP (현재 의도된 동작 기준)
+
+- 기본 모드: `stdio` (Codex에서 직접 실행)
+- 현재 설정 핵심:
+  - `--output-dir .playwright-mcp/screenshots`
+  - `DISPLAY=:0` (WSL GUI 브라우저 표시 환경)
+- Windows Headed 모드가 필요하면:
+```bash
+npm run mcp:playwright:windows:enable
+```
+- 다시 기본 stdio로 복구:
+```bash
+npm run mcp:playwright:mode:stdio
+```
+
+### 다른 MCP 목록과 적용 방법 (Codex 기준)
+
+| MCP | 언제 쓰는가 | 최소 적용 순서(예시) |
+|---|---|---|
+| `context7` | 라이브러리/프레임워크 최신 문서 확인 | `resolve-library-id` → `query-docs` |
+| `supabase-db` | 프로젝트/테이블 점검, SQL 실행 | `list_projects` → `list_tables` → 필요 시 `execute_sql` |
+| `vercel` | 최신 배포/이벤트 확인 | `getDeployments` → `getDeployment` |
+| `next-devtools` | Next.js 런타임 에러/라우트 진단 | `nextjs_index` → `nextjs_call(get_errors|get_routes)` |
+| `github` | PR/이슈/파일 조회 및 자동화 | `list_pull_requests` 또는 `get_file_contents` |
+| `sequential-thinking` | 다단계 설계/리팩토링 분석 | `sequentialthinking` 1회 이상 호출 |
+| `stitch` | UI 시안 생성/화면 변형 | `list_projects` → `generate_screen_from_text` |
+| `playwright` | 실제 사용자 플로우 QA | `browser_navigate` → `browser_snapshot` → 상호작용 도구 |
 
 ---
 
@@ -431,4 +497,4 @@ Claude: [context7, supabase 등 사용 가능 여부 표시]
 
 ---
 
-_Last Updated: 2026-02-14_
+_Last Updated: 2026-02-15_
