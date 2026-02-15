@@ -4,6 +4,8 @@
  * @see server-data-loader.ts - Main orchestration facade
  */
 
+import type { OTelLogRecord } from '@/types/otel-metrics';
+
 // Enhanced Server Metrics 인터페이스 (route.ts와 동기화 필요)
 export interface EnhancedServerMetrics {
   id: string;
@@ -66,6 +68,8 @@ export interface EnhancedServerMetrics {
       | 'maintenance'
       | 'unknown';
   };
+  /** OTel structured logs for this server (optional, populated by OTel-Direct pipeline) */
+  structuredLogs?: OTelLogRecord[];
 }
 
 /**

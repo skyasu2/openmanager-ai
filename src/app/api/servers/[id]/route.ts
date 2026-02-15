@@ -1,6 +1,7 @@
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
-import { getOTelTimeSeries } from '@/data/otel-processed';
+import { OTEL_METRIC } from '@/constants/otel-metric-names';
+import { getOTelTimeSeries } from '@/data/otel-data';
 import { withAuth } from '@/lib/auth/api-auth';
 import type { ServerHistory } from '@/schemas/server-schemas/server-details.schema';
 import { metricsProvider } from '@/services/metrics/MetricsProvider';
@@ -310,10 +311,12 @@ function generateServerHistoryFromTimeSeries(
   }
 
   const timestamps: number[] = ts.timestamps;
-  const cpuData = ts.metrics.cpu?.[serverIndex] || [];
-  const memoryData = ts.metrics.memory?.[serverIndex] || [];
-  const diskData = ts.metrics.disk?.[serverIndex] || [];
-  const networkData = ts.metrics.network?.[serverIndex] || [];
+  const cpuData = ts.metrics[OTEL_METRIC.CPU]?.[serverIndex] || [];
+  const memoryData = ts.metrics[OTEL_METRIC.MEMORY]?.[serverIndex] || [];
+  const diskData = ts.metrics[OTEL_METRIC.DISK]?.[serverIndex] || [];
+  const networkData = ts.metrics[OTEL_METRIC.NETWORK]?.[serverIndex] || [];
+  const responseData =
+    ts.metrics[OTEL_METRIC.HTTP_DURATION]?.[serverIndex] || [];
 
   const fullDataPoints = timestamps.map((t: number, i: number) => ({
     timestamp: new Date(t * 1000).toISOString(),
@@ -324,7 +327,7 @@ function generateServerHistoryFromTimeSeries(
       disk_usage: diskData[i] ?? 0,
       network_in: Math.round((networkData[i] ?? 0) * 0.6),
       network_out: Math.round((networkData[i] ?? 0) * 0.4),
-      response_time: 100 + (cpuData[i] ?? 0) * 2, // Simple heuristic
+      response_time: Math.round((responseData[i] ?? 0) * 1000), // sec -> ms
     },
   }));
 

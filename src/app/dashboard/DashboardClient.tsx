@@ -38,8 +38,6 @@ type DashboardClientProps = {
   initialServers?: Server[];
   /** Pre-calculated stats from Server Component */
   initialStats?: DashboardStats;
-  /** OTel time info for SSR data context */
-  timeInfo?: { hour: number; slotIndex: number; minuteOfDay: number };
 };
 
 // 🔧 레거시 정리 (2026-01-17): EnhancedServerModal은 ServerDashboard 내부에서 직접 사용
@@ -168,8 +166,6 @@ function DashboardPageContent({ initialServers }: DashboardClientProps) {
   // 🔧 레거시 정리 (2026-01-17): selectedServer, isServerModalOpen 제거
   // - ServerDashboard 내부에서 EnhancedServerModal로 직접 관리
   const [showLogoutWarning, setShowLogoutWarning] = useState(false);
-  // 🔧 showSystemWarning - setter만 사용 (onWarning 콜백에서 설정, UI 반영은 NotificationToast로 대체)
-  const [, setShowSystemWarning] = useState(false);
   const isResizing = false;
 
   // 🔒 새로운 권한 시스템 사용
@@ -287,7 +283,6 @@ function DashboardPageContent({ initialServers }: DashboardClientProps) {
   useSystemAutoShutdown({
     warningMinutes: 5, // 5분 전 경고
     onWarning: (remainingMinutes) => {
-      setShowSystemWarning(true);
       debug.log(`⚠️ 시스템 자동 종료 경고: ${remainingMinutes}분 남음`);
 
       // 토스트 알림 표시 (CustomEvent 사용)
@@ -305,7 +300,6 @@ function DashboardPageContent({ initialServers }: DashboardClientProps) {
     },
     onShutdown: () => {
       debug.log('🛑 시스템 자동 종료 완료');
-      setShowSystemWarning(false);
       // 세션 만료 → 홈으로 리다이렉트
       window.location.href = '/';
     },

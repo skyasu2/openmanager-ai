@@ -404,6 +404,7 @@ export default function EnhancedServerModal({
                       serverType: safeServer.type || 'web',
                     }}
                     serverLogs={server?.logs}
+                    structuredLogs={server?.structuredLogs}
                   />
                 </div>
 

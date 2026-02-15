@@ -10,6 +10,7 @@ import type {
   ServerSpecs,
   ServerStatus,
 } from '../server-common';
+import type { OTelLogRecord } from '../otel-metrics';
 import type { LogEntry, NetworkInfo, Service, SystemInfo } from './entities';
 import type { ServerAlert } from './metrics';
 import type { ServerEnvironment, ServerRole } from './types';
@@ -152,4 +153,7 @@ export interface Server {
   load5?: number; // 5분 평균 로드 (node_load5)
   bootTimeSeconds?: number; // 부팅 시간 Unix timestamp (node_boot_time_seconds)
   cpuCores?: number; // CPU 코어 수 (load 해석용)
+
+  /** OTel structured logs (populated by OTel-Direct pipeline) */
+  structuredLogs?: OTelLogRecord[];
 }

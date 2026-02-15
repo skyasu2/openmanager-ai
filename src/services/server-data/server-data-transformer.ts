@@ -116,8 +116,8 @@ export function deriveNetworkSplit(
  * This produces a value that's always ≤ load5 ≤ load1 (matching real behavior).
  */
 export function estimateLoad15(load1: number, load5: number): number {
-  // load15 dampens toward 0 faster; approximate with weighted blend
-  const estimated = load5 * 0.85 + load1 * 0.05;
+  // load15 dampens toward 0 faster; approximate with weighted blend (0.9+0.1=1.0)
+  const estimated = load5 * 0.9 + load1 * 0.1;
   return Math.max(0, estimated);
 }
 

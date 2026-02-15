@@ -14,7 +14,7 @@ export interface MockServerInfo {
   hostname: string;
   type:
     | 'web'
-    | 'app'
+    | 'application'
     | 'database'
     | 'storage'
     | 'backup'
@@ -92,7 +92,7 @@ export const mockServers: MockServerInfo[] = [
   {
     id: 'api-was-icn-01',
     hostname: 'api-was-icn-01',
-    type: 'app',
+    type: 'application',
     os: 'Rocky Linux 9.2',
     service: 'Spring Boot 3.2 (JDK 21)',
     ip: '10.1.1.20',
@@ -106,7 +106,7 @@ export const mockServers: MockServerInfo[] = [
   {
     id: 'api-was-icn-02',
     hostname: 'api-was-icn-02',
-    type: 'app',
+    type: 'application',
     os: 'Rocky Linux 9.2',
     service: 'Spring Boot 3.2 (JDK 21)',
     ip: '10.1.2.20',
@@ -120,7 +120,7 @@ export const mockServers: MockServerInfo[] = [
   {
     id: 'api-was-pus-01',
     hostname: 'api-was-pus-01',
-    type: 'app',
+    type: 'application',
     os: 'Rocky Linux 9.2',
     service: 'Spring Boot 3.2 (JDK 21)',
     ip: '10.2.1.20',

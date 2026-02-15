@@ -7,7 +7,7 @@
  * any transformation.
  *
  * @see https://grafana.com/docs/loki/latest/reference/loki-http-api/#ingest-logs
- * @see src/services/server-data/loki-log-generator.ts
+ * @see src/services/log-pipeline/otel-log-views.ts
  */
 
 /** Loki stream labels (indexed, low-cardinality) */

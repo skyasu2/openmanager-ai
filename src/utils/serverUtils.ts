@@ -17,7 +17,7 @@ import type {
   ServerRole,
   Service,
 } from '@/types/server';
-import type { ServerStatus } from '@/types/server-enums'; // 🔧 추가: Single Source of Truth
+import type { ServerStatus } from '@/types/server-enums';
 
 /**
  * 서버 타입 가드 함수들
@@ -342,5 +342,6 @@ export function mapServerToEnhanced(server: Server): EnhancedServerMetrics {
       : undefined,
     systemInfo: server.systemInfo,
     networkInfo: server.networkInfo,
+    structuredLogs: server.structuredLogs,
   };
 }

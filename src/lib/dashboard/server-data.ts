@@ -8,10 +8,16 @@
  * @updated 2026-02-15 - OTel direct consumption 추가
  */
 
+import { logger } from '@/lib/logging';
 import { loadCurrentOTelServers } from '@/services/metrics/otel-direct-transform';
-import { getServerMonitoringService } from '@/services/monitoring';
 import type { EnhancedServerMetrics } from '@/services/server-data/server-data-types';
-import type { Server } from '@/types/server';
+import type {
+  Server,
+  ServerEnvironment,
+  ServerRole,
+  Service,
+} from '@/types/server';
+import type { ServerStatus } from '@/types/server-enums';
 
 const STATUS_PRIORITY: Record<string, number> = {
   critical: 0,
@@ -28,36 +34,42 @@ export type DashboardStats = {
   offline: number;
 };
 
-export type DashboardInitialData = {
-  servers: Server[];
-  stats: DashboardStats;
-};
+// ============================================================================
+// EnhancedServerMetrics → Server 변환
+// ============================================================================
 
-/**
- * Fetch dashboard data on the server side.
- *
- * @returns Pre-sorted servers and calculated stats
- */
-export async function getDashboardData(): Promise<DashboardInitialData> {
-  const service = getServerMonitoringService();
-  const servers = service.getAllAsServers();
+function toServer(em: EnhancedServerMetrics): Server {
+  const status: ServerStatus =
+    em.status === 'maintenance' || em.status === 'unknown'
+      ? 'offline'
+      : em.status;
 
-  // Sort by status priority (critical/offline first)
-  const sortedServers = [...servers].sort((a, b) => {
-    const priorityA = STATUS_PRIORITY[a.status] ?? 3;
-    const priorityB = STATUS_PRIORITY[b.status] ?? 3;
-    return priorityA - priorityB;
-  });
-
-  const stats: DashboardStats = {
-    total: servers.length,
-    online: servers.filter((s) => s.status === 'online').length,
-    warning: servers.filter((s) => s.status === 'warning').length,
-    critical: servers.filter((s) => s.status === 'critical').length,
-    offline: servers.filter((s) => s.status === 'offline').length,
+  return {
+    id: em.id,
+    name: em.name,
+    hostname: em.hostname,
+    status,
+    cpu: em.cpu,
+    memory: em.memory,
+    disk: em.disk,
+    network: em.network,
+    responseTime: em.responseTime,
+    uptime: em.uptime,
+    location: em.location,
+    alerts: [],
+    ip: em.ip,
+    os: em.os,
+    type: em.type as ServerRole,
+    role: em.role as ServerRole,
+    environment: em.environment as ServerEnvironment,
+    provider: em.provider,
+    specs: em.specs,
+    lastUpdate: new Date(em.lastUpdate),
+    services: em.services as Service[],
+    systemInfo: em.systemInfo,
+    networkInfo: em.networkInfo,
+    structuredLogs: em.structuredLogs,
   };
-
-  return { servers: sortedServers, stats };
 }
 
 // ============================================================================
@@ -65,7 +77,7 @@ export async function getDashboardData(): Promise<DashboardInitialData> {
 // ============================================================================
 
 export type OTelDashboardData = {
-  servers: EnhancedServerMetrics[];
+  servers: Server[];
   stats: DashboardStats;
   timeInfo: { hour: number; slotIndex: number; minuteOfDay: number };
 };
@@ -73,27 +85,37 @@ export type OTelDashboardData = {
 /**
  * OTel processed 데이터에서 직접 대시보드 데이터를 생성 (5단계 → 1단계)
  */
-export async function getOTelDashboardData(): Promise<OTelDashboardData> {
-  const { servers, hour, slotIndex, minuteOfDay } = loadCurrentOTelServers();
+export function getOTelDashboardData(): OTelDashboardData {
+  try {
+    const { servers, hour, slotIndex, minuteOfDay } = loadCurrentOTelServers();
 
-  // Sort by status priority (critical/offline first)
-  const sortedServers = [...servers].sort((a, b) => {
-    const priorityA = STATUS_PRIORITY[a.status] ?? 3;
-    const priorityB = STATUS_PRIORITY[b.status] ?? 3;
-    return priorityA - priorityB;
-  });
+    // EnhancedServerMetrics → Server 변환 + 상태 우선순위 정렬
+    const converted = servers.map(toServer);
+    const sortedServers = converted.sort((a, b) => {
+      const priorityA = STATUS_PRIORITY[a.status] ?? 3;
+      const priorityB = STATUS_PRIORITY[b.status] ?? 3;
+      return priorityA - priorityB;
+    });
 
-  const stats: DashboardStats = {
-    total: servers.length,
-    online: servers.filter((s) => s.status === 'online').length,
-    warning: servers.filter((s) => s.status === 'warning').length,
-    critical: servers.filter((s) => s.status === 'critical').length,
-    offline: servers.filter((s) => s.status === 'offline').length,
-  };
+    const stats: DashboardStats = {
+      total: converted.length,
+      online: converted.filter((s) => s.status === 'online').length,
+      warning: converted.filter((s) => s.status === 'warning').length,
+      critical: converted.filter((s) => s.status === 'critical').length,
+      offline: converted.filter((s) => s.status === 'offline').length,
+    };
 
-  return {
-    servers: sortedServers,
-    stats,
-    timeInfo: { hour, slotIndex, minuteOfDay },
-  };
+    return {
+      servers: sortedServers,
+      stats,
+      timeInfo: { hour, slotIndex, minuteOfDay },
+    };
+  } catch (error) {
+    logger.error('[server-data] OTel dashboard data load failed:', error);
+    return {
+      servers: [],
+      stats: { total: 0, online: 0, warning: 0, critical: 0, offline: 0 },
+      timeInfo: { hour: 0, slotIndex: 0, minuteOfDay: 0 },
+    };
+  }
 }

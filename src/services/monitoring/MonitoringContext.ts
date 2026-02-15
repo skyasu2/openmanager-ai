@@ -5,12 +5,12 @@
  * 런타임 계산 (15서버 집계 <1ms, Edge Runtime 호환)
  *
  * @created 2026-02-04
- * @updated 2026-02-11 - Pre-computed fs.readFileSync 제거, 런타임 전용
+ * @updated 2026-02-15 - OTel-native SSOT 전환 (getHourlyData → getOTelHourlyData)
  */
 
-import { getHourlyData, type HourlyData } from '@/data/hourly-data';
-import { getOTelResourceCatalog } from '@/data/otel-processed';
+import { getOTelHourlyData, getOTelResourceCatalog } from '@/data/otel-data';
 import { executePromQL } from '@/lib/promql/promql-engine';
+import type { OTelHourlyFile } from '@/types/otel-metrics';
 import {
   getKSTMinuteOfDay,
   getKSTTimestamp,
@@ -148,7 +148,6 @@ export class MonitoringContext {
       ctx += `  system.memory.utilization (alias: node_memory_usage_percent), ratio 0-1\n`;
       ctx += `  system.filesystem.utilization (alias: node_filesystem_usage_percent), ratio 0-1\n`;
       ctx += `  system.network.io (alias: node_network_transmit_bytes_rate), By/s\n`;
-      ctx += `  system.status (alias: up), 1=up/0=down\n`;
       ctx += `Query: Both OTel and Prometheus names accepted in queryMetric()\n`;
 
       return ctx;
@@ -171,22 +170,22 @@ export class MonitoringContext {
     const currentHour = Math.floor(minuteOfDay / 60);
     const slotIndex = Math.floor((minuteOfDay % 60) / 10);
 
-    const hourlyData = getHourlyData(currentHour);
-    if (!hourlyData) {
+    const hourlyFile = getOTelHourlyData(currentHour);
+    if (!hourlyFile) {
       return { resultType: 'vector', result: [] };
     }
 
     // rate() 쿼리를 위한 전체 시간대 맵
-    const hourlyDataMap = new Map<number, HourlyData>();
+    const hourlyFileMap = new Map<number, OTelHourlyFile>();
     for (let h = 0; h < 24; h++) {
-      const data = getHourlyData(h);
-      if (data) hourlyDataMap.set(h, data);
+      const data = getOTelHourlyData(h);
+      if (data) hourlyFileMap.set(h, data);
     }
 
     return executePromQL(
       promql,
-      hourlyData,
-      hourlyDataMap,
+      hourlyFile,
+      hourlyFileMap,
       currentHour,
       slotIndex
     );

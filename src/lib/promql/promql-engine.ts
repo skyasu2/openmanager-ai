@@ -1,7 +1,8 @@
 /**
- * Lightweight PromQL Engine
+ * Lightweight PromQL Engine (OTel-native)
  *
  * Prometheus 호환 내부 쿼리 레이어. 사용자 UI 없음 — 내부 데이터 처리 전용.
+ * OTel 데이터를 직접 소비하며, Prometheus 메트릭 이름은 별칭으로 지원.
  *
  * 지원 쿼리 패턴:
  *   node_cpu_usage_percent                          → 전체 서버 CPU
@@ -14,14 +15,15 @@
  * 향후 실제 Prometheus 연결 시 HTTP API adapter로 교체 가능.
  *
  * @created 2026-02-04
+ * @updated 2026-02-15 - OTel-native SSOT 전환
  */
 
-import type {
-  HourlyData,
-  PrometheusLabels,
-  PrometheusTarget,
-} from '@/data/hourly-data';
+import { getResourceCatalog } from '@/data/otel-data';
 import { logger } from '@/lib/logging';
+import type {
+  OTelHourlyFile,
+  OTelResourceAttributes,
+} from '@/types/otel-metrics';
 import type { PromQLResult, PromQLSample } from '@/types/processed-metrics';
 
 // ============================================================================
@@ -71,35 +73,47 @@ function getCachedRegex(pattern: string): RegExp | null {
 }
 
 // ============================================================================
-// Metric Name → Prometheus Target Field Mapping
+// OTel ↔ Prometheus Metric Name Mapping
 // ============================================================================
 
-const METRIC_FIELD_MAP: Record<string, keyof PrometheusTarget['metrics']> = {
-  node_cpu_usage_percent: 'node_cpu_usage_percent',
-  node_memory_usage_percent: 'node_memory_usage_percent',
-  node_filesystem_usage_percent: 'node_filesystem_usage_percent',
-  node_network_transmit_bytes_rate: 'node_network_transmit_bytes_rate',
-  node_load1: 'node_load1',
-  node_load5: 'node_load5',
-  node_boot_time_seconds: 'node_boot_time_seconds',
-  node_procs_running: 'node_procs_running',
-  node_http_request_duration_milliseconds:
-    'node_http_request_duration_milliseconds',
-  up: 'up',
-};
-
-// OTel Semantic Convention 이름 → Prometheus 이름 별칭 맵
+// OTel Semantic Convention → Prometheus 이름 (reverse alias)
 const OTEL_ALIAS_MAP: Record<string, string> = {
   'system.cpu.utilization': 'node_cpu_usage_percent',
   'system.memory.utilization': 'node_memory_usage_percent',
   'system.filesystem.utilization': 'node_filesystem_usage_percent',
   'system.network.io': 'node_network_transmit_bytes_rate',
-  'system.cpu.load_average.1m': 'node_load1',
-  'system.cpu.load_average.5m': 'node_load5',
-  'system.processes.count': 'node_procs_running',
+  'system.linux.cpu.load_1m': 'node_load1',
+  'system.linux.cpu.load_5m': 'node_load5',
+  'system.process.count': 'node_procs_running',
+  'system.uptime': 'node_boot_time_seconds',
   'http.server.request.duration': 'node_http_request_duration_milliseconds',
-  'system.status': 'up',
 };
+
+// Prometheus 이름 → OTel Semantic Convention (forward map for OTel slot lookup)
+const PROM_TO_OTEL_MAP: Record<string, string> = {
+  node_cpu_usage_percent: 'system.cpu.utilization',
+  node_memory_usage_percent: 'system.memory.utilization',
+  node_filesystem_usage_percent: 'system.filesystem.utilization',
+  node_network_transmit_bytes_rate: 'system.network.io',
+  node_load1: 'system.linux.cpu.load_1m',
+  node_load5: 'system.linux.cpu.load_5m',
+  node_procs_running: 'system.process.count',
+  node_boot_time_seconds: 'system.uptime',
+  node_http_request_duration_milliseconds: 'http.server.request.duration',
+  up: 'system.uptime', // up은 system.uptime 존재 여부로 판단 (>0 → 1, 없으면 0)
+};
+
+// PromQL 라벨 → OTel Resource 속성 이름 매핑 (타입 가드용 참조)
+const _LABEL_TO_OTEL_ATTR: Record<string, keyof OTelResourceAttributes> = {
+  server_type: 'host.type',
+  hostname: 'host.name',
+  datacenter: 'cloud.availability_zone',
+  environment: 'deployment.environment',
+  os: 'os.type',
+  os_version: 'os.description',
+};
+// 정적 참조 유지 (tree-shaking 방지)
+void _LABEL_TO_OTEL_ATTR;
 
 // ============================================================================
 // Query Validation
@@ -208,15 +222,75 @@ function parsePromQL(query: string): ParsedQuery {
 }
 
 // ============================================================================
+// OTel Metric Name Resolution
+// ============================================================================
+
+/**
+ * 메트릭 이름을 OTel 이름으로 정규화.
+ * Prometheus 이름이 입력되면 OTel 이름으로 변환, 이미 OTel이면 그대로 반환.
+ */
+function resolveOTelMetricName(metricName: string): string | null {
+  // 이미 OTel 이름인지 확인 (OTEL_ALIAS_MAP에 키로 존재)
+  if (OTEL_ALIAS_MAP[metricName] !== undefined) {
+    return metricName;
+  }
+  // Prometheus 이름 → OTel 이름
+  const otelName = PROM_TO_OTEL_MAP[metricName];
+  if (otelName) {
+    return otelName;
+  }
+  return null;
+}
+
+// ============================================================================
+// Resource Catalog → Label Lookup
+// ============================================================================
+
+// hostname → serverId reverse lookup cache
+let hostnameLookupCache: Map<string, string> | null = null;
+
+function getServerIdFromHostname(hostname: string): string | null {
+  if (!hostnameLookupCache) {
+    hostnameLookupCache = new Map();
+    const catalog = getResourceCatalog();
+    for (const [serverId, attrs] of Object.entries(catalog.resources)) {
+      hostnameLookupCache.set(attrs['host.name'], serverId);
+    }
+  }
+  return hostnameLookupCache.get(hostname) ?? null;
+}
+
+function getResourceLabels(hostname: string): Record<string, string> {
+  const serverId = getServerIdFromHostname(hostname);
+  if (!serverId) return {};
+
+  const catalog = getResourceCatalog();
+  const attrs = catalog.resources[serverId];
+  if (!attrs) return {};
+
+  // OTel resource attributes → PromQL-compatible labels
+  return {
+    instance: attrs['host.id'],
+    job: 'node-exporter',
+    hostname: attrs['host.name'],
+    server_type: attrs['host.type'],
+    datacenter: attrs['cloud.availability_zone'],
+    environment: attrs['deployment.environment'],
+    os: attrs['os.type'],
+    os_version: attrs['os.description'],
+  };
+}
+
+// ============================================================================
 // Label Matching
 // ============================================================================
 
 function matchLabels(
-  labels: PrometheusLabels,
+  labels: Record<string, string>,
   matchers: LabelMatcher[]
 ): boolean {
   for (const m of matchers) {
-    const labelValue = labels[m.name as keyof PrometheusLabels] ?? '';
+    const labelValue = labels[m.name] ?? '';
     switch (m.op) {
       case '=':
         if (labelValue !== m.value) return false;
@@ -240,41 +314,52 @@ function matchLabels(
 }
 
 // ============================================================================
-// Data Extraction
+// Data Extraction (OTel-native)
 // ============================================================================
 
-function extractSamples(
-  hourlyData: HourlyData,
+/**
+ * OTel 슬롯에서 PromQL 샘플 추출
+ *
+ * 메트릭 이름 → OTel 슬롯에서 해당 metric 검색 → dataPoints를 순회하며 labels 매칭
+ */
+function extractSamplesFromOTel(
+  hourlyFile: OTelHourlyFile,
   parsed: ParsedQuery,
   slotIndex?: number
 ): PromQLSample[] {
-  const dataPoint =
-    hourlyData.dataPoints[slotIndex ?? 0] ?? hourlyData.dataPoints[0];
-  if (!dataPoint) return [];
+  const slot = hourlyFile.slots[slotIndex ?? 0] ?? hourlyFile.slots[0];
+  if (!slot) return [];
 
-  // OTel 이름 → Prometheus 이름 정규화 (e.g. system.cpu.utilization → node_cpu_usage_percent)
-  const normalizedName = OTEL_ALIAS_MAP[parsed.metricName] ?? parsed.metricName;
-  const fieldKey = METRIC_FIELD_MAP[normalizedName];
-  if (!fieldKey) {
+  const isUpQuery = parsed.metricName === 'up';
+  const otelName = resolveOTelMetricName(parsed.metricName);
+
+  if (!otelName) {
     logger.debug(`[PromQL] Unknown metric name: "${parsed.metricName}"`);
+    return [];
+  }
+
+  // up 메트릭은 system.uptime 기반으로 계산 (uptime > 0 → up=1)
+  const targetOTelName = isUpQuery ? 'system.uptime' : otelName;
+  const otelMetric = slot.metrics.find((m) => m.name === targetOTelName);
+  if (!otelMetric) {
+    logger.debug(`[PromQL] OTel metric not found in slot: "${targetOTelName}"`);
     return [];
   }
 
   const samples: PromQLSample[] = [];
 
-  for (const [, target] of Object.entries(dataPoint.targets)) {
-    if (!matchLabels(target.labels, parsed.matchers)) continue;
+  for (const dp of otelMetric.dataPoints) {
+    const hostname = dp.attributes['host.name'];
+    const labels = getResourceLabels(hostname);
 
-    const value = target.metrics[fieldKey];
-    if (value === undefined) continue;
+    if (!matchLabels(labels, parsed.matchers)) continue;
+
+    // up 메트릭: system.uptime > 0 → 1, else → 0
+    const value = isUpQuery ? (dp.asDouble > 0 ? 1 : 0) : dp.asDouble;
 
     samples.push({
-      labels: {
-        instance: target.instance,
-        job: target.job,
-        ...target.labels,
-      },
-      value: Number(value),
+      labels,
+      value,
     });
   }
 
@@ -381,7 +466,7 @@ function applyComparison(
 // ============================================================================
 
 function computeRate(
-  hourlyDataMap: Map<number, HourlyData>,
+  hourlyDataMap: Map<number, OTelHourlyFile>,
   parsed: ParsedQuery,
   currentHour: number
 ): PromQLSample[] {
@@ -395,8 +480,8 @@ function computeRate(
 
   if (!currentData || !prevData) return [];
 
-  const currentSamples = extractSamples(currentData, parsed, 3);
-  const prevSamples = extractSamples(prevData, parsed, 3);
+  const currentSamples = extractSamplesFromOTel(currentData, parsed, 3);
+  const prevSamples = extractSamplesFromOTel(prevData, parsed, 3);
 
   const prevMap = new Map<string, number>();
   for (const s of prevSamples) {
@@ -418,18 +503,18 @@ function computeRate(
 // ============================================================================
 
 /**
- * PromQL 쿼리 실행
+ * PromQL 쿼리 실행 (OTel-native)
  *
- * @param query - PromQL 쿼리 문자열
- * @param hourlyData - 현재 시간대 hourly data
- * @param hourlyDataMap - 전체 시간대 데이터 맵 (rate 계산용, optional)
+ * @param query - PromQL 쿼리 문자열 (Prometheus 이름, OTel 이름 모두 지원)
+ * @param hourlyFile - 현재 시간대 OTel hourly file
+ * @param hourlyFileMap - 전체 시간대 데이터 맵 (rate 계산용, optional)
  * @param currentHour - 현재 시 (0-23)
  * @param slotIndex - 현재 슬롯 인덱스 (0-5)
  */
 export function executePromQL(
   query: string,
-  hourlyData: HourlyData,
-  hourlyDataMap?: Map<number, HourlyData>,
+  hourlyFile: OTelHourlyFile,
+  hourlyFileMap?: Map<number, OTelHourlyFile>,
   currentHour?: number,
   slotIndex?: number
 ): PromQLResult {
@@ -444,14 +529,14 @@ export function executePromQL(
   switch (parsed.type) {
     case 'rate': {
       const samples =
-        hourlyDataMap && currentHour !== undefined
-          ? computeRate(hourlyDataMap, parsed, currentHour)
+        hourlyFileMap && currentHour !== undefined
+          ? computeRate(hourlyFileMap, parsed, currentHour)
           : [];
       return { resultType: 'vector', result: samples };
     }
 
     case 'aggregate': {
-      const samples = extractSamples(hourlyData, parsed, slotIndex);
+      const samples = extractSamplesFromOTel(hourlyFile, parsed, slotIndex);
       const aggregated = applyAggregation(
         samples,
         parsed.aggregateFunc!,
@@ -461,7 +546,7 @@ export function executePromQL(
     }
 
     case 'comparison': {
-      const samples = extractSamples(hourlyData, parsed, slotIndex);
+      const samples = extractSamplesFromOTel(hourlyFile, parsed, slotIndex);
       const filtered = applyComparison(
         samples,
         parsed.comparisonOp!,
@@ -471,7 +556,7 @@ export function executePromQL(
     }
 
     default: {
-      const samples = extractSamples(hourlyData, parsed, slotIndex);
+      const samples = extractSamplesFromOTel(hourlyFile, parsed, slotIndex);
       return { resultType: 'vector', result: samples };
     }
   }
@@ -488,3 +573,6 @@ export function debugParsePromQL(query: string): ParsedQuery | null {
   }
   return parsePromQL(query);
 }
+
+// Export maps for external use (e.g., MonitoringContext OTel resource context)
+export { OTEL_ALIAS_MAP, PROM_TO_OTEL_MAP };

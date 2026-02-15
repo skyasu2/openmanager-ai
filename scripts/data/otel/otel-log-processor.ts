@@ -8,7 +8,47 @@
  * @created 2026-02-11
  */
 
-import type { OTelLogRecord } from './types';
+import type { OTelLogRecord, OTelResourceAttributes } from './types';
+
+// ============================================================================
+// Server Metadata (for attribute enrichment)
+// ============================================================================
+
+type ServerMeta = Pick<
+  OTelResourceAttributes,
+  'host.type' | 'deployment.environment' | 'cloud.availability_zone'
+>;
+
+// ============================================================================
+// Source Detection (syslog body → process name)
+// ============================================================================
+
+const SOURCE_PATTERNS: Array<{ pattern: RegExp; source: string }> = [
+  { pattern: /\bnginx\b/i, source: 'nginx' },
+  { pattern: /\bapache\b/i, source: 'apache' },
+  { pattern: /\bsshd\b/i, source: 'sshd' },
+  { pattern: /\bsystemd\b/i, source: 'systemd' },
+  { pattern: /\bcron\b/i, source: 'cron' },
+  { pattern: /\bkernel\b/i, source: 'kernel' },
+  { pattern: /\bpostgres\b/i, source: 'postgres' },
+  { pattern: /\bmysql\b|\bmariadb\b/i, source: 'mysql' },
+  { pattern: /\bredis\b/i, source: 'redis' },
+  { pattern: /\bmongod?\b/i, source: 'mongodb' },
+  { pattern: /\bhaproxy\b/i, source: 'haproxy' },
+  { pattern: /\bnode\b|\.js\b/i, source: 'node' },
+  { pattern: /\bdocker\b|container/i, source: 'docker' },
+  { pattern: /\bkube\b|k8s/i, source: 'kubelet' },
+];
+
+/**
+ * syslog body에서 프로세스 이름 추출
+ */
+function detectSource(body: string): string {
+  for (const { pattern, source } of SOURCE_PATTERNS) {
+    if (pattern.test(body)) return source;
+  }
+  return 'syslog';
+}
 
 // ============================================================================
 // Severity Mapping
@@ -59,11 +99,17 @@ function stripSeverityPrefix(logLine: string): string {
 
 /**
  * 단일 문자열 로그 → OTel LogRecord 변환
+ *
+ * @param logLine - 원본 syslog 문자열
+ * @param serverId - 서버 ID (e.g. "web-nginx-icn-01")
+ * @param timestampMs - 밀리초 타임스탬프
+ * @param serverMeta - resource-catalog 메타데이터 (Loki labels 매핑용)
  */
 export function processLogLine(
   logLine: string,
   serverId: string,
-  timestampMs: number
+  timestampMs: number,
+  serverMeta?: ServerMeta
 ): OTelLogRecord {
   const { severityNumber, severityText } = detectSeverity(logLine);
   const body = stripSeverityPrefix(logLine);
@@ -74,7 +120,12 @@ export function processLogLine(
     severityText,
     body,
     attributes: {
-      'log.source': 'openmanager-ai',
+      'log.source': detectSource(body),
+      'host.type': serverMeta?.['host.type'] ?? 'unknown',
+      'deployment.environment':
+        serverMeta?.['deployment.environment'] ?? 'production',
+      'cloud.availability_zone':
+        serverMeta?.['cloud.availability_zone'] ?? 'unknown',
     },
     resource: serverId,
   };
@@ -86,7 +137,10 @@ export function processLogLine(
 export function processServerLogs(
   logs: string[],
   serverId: string,
-  timestampMs: number
+  timestampMs: number,
+  serverMeta?: ServerMeta
 ): OTelLogRecord[] {
-  return logs.map((logLine) => processLogLine(logLine, serverId, timestampMs));
+  return logs.map((logLine) =>
+    processLogLine(logLine, serverId, timestampMs, serverMeta)
+  );
 }

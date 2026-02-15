@@ -4,6 +4,7 @@
  * 서버 메트릭, 알림, 히스토리 관련 타입
  */
 
+import type { OTelLogRecord } from '../otel-metrics';
 import type { ServerSpecs } from '../server-common';
 import type { ProcessInfo, ServerAlert } from './base';
 import type { NetworkInfo, Service, SystemInfo } from './entities';
@@ -149,4 +150,7 @@ export interface EnhancedServerMetrics {
     disk: 'increasing' | 'decreasing' | 'stable';
     network: 'increasing' | 'decreasing' | 'stable';
   };
+
+  /** OTel structured logs (populated by OTel-Direct pipeline) */
+  structuredLogs?: OTelLogRecord[];
 }

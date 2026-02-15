@@ -2,30 +2,21 @@
  * 🎯 MetricsProvider - 단일 데이터 소스 (Single Source of Truth)
  *
  * 역할:
- * - 현재 한국 시간(KST) 기준으로 hourly-data JSON 파일에서 메트릭 제공
- * - Prometheus 포맷 JSON → 내부 ServerMetrics 인터페이스 변환
+ * - 현재 한국 시간(KST) 기준으로 OTel Standard 데이터에서 메트릭 제공
+ * - OTLP Standard Format → 내부 ServerMetrics 인터페이스 변환
  * - Cloud Run AI와 동일한 데이터 소스 사용 (데이터 일관성 보장)
  * - 모든 API와 컴포넌트가 이 서비스를 통해 일관된 데이터 접근
  *
+ * @updated 2026-02-15 - Prometheus fallback 제거, OTel-only
  * @updated 2026-02-12 - OTLP Standard Format 적용
  * @updated 2026-02-10 - SRP 분리 (kst-time, types, time-comparison)
- * @updated 2026-02-04 - Prometheus 포맷 전환
- * @updated 2026-01-19 - Vercel 호환성: 번들 기반 loader로 변경 (fs 제거)
- * @updated 2026-01-04 - hourly-data 통합 (AI와 데이터 동기화)
  */
 
-import {
-  getHourlyData as getBundledHourlyData,
-  type HourlyData,
-} from '@/data/hourly-data';
 import { getOTelHourlyData } from '@/data/otel-metrics';
 import { logger } from '@/lib/logging';
 import type { ExportMetricsServiceRequest } from '@/types/otel-standard';
 import { getKSTMinuteOfDay, getKSTTimestamp } from './kst-time';
-import {
-  extractMetricsFromStandard,
-  targetToServerMetrics,
-} from './metric-transformers';
+import { extractMetricsFromStandard } from './metric-transformers';
 import type { ApiServerMetrics, SystemSummary } from './types';
 
 export {
@@ -46,11 +37,8 @@ export type {
   TimeComparisonResult,
 } from './types';
 
-/** Prometheus fallback slot duration (minutes per data point) */
-const SLOT_DURATION_MINUTES = 10;
-
 // ============================================================================
-// OTel Data Cache & Loader (Primary - 번들 기반)
+// OTel Data Cache & Loader (번들 기반)
 // ============================================================================
 
 let cachedOTelData: { hour: number; data: ExportMetricsServiceRequest } | null =
@@ -64,8 +52,8 @@ let cachedOTelConversion: {
 } | null = null;
 
 /**
- * OTel 사전 계산 데이터 로드 (Primary)
- * @description 빌드 타임에 OTel SDK로 처리된 데이터 우선 사용
+ * OTel 사전 계산 데이터 로드
+ * @description 빌드 타임에 OTel SDK로 처리된 데이터 사용
  */
 function loadOTelData(hour: number): ExportMetricsServiceRequest | null {
   if (cachedOTelData?.hour === hour) {
@@ -81,35 +69,6 @@ function loadOTelData(hour: number): ExportMetricsServiceRequest | null {
     return data;
   }
 
-  return null;
-}
-
-// ============================================================================
-// Hourly Data Cache & Loader (Fallback - 번들 기반)
-// ============================================================================
-
-let cachedHourlyData: { hour: number; data: HourlyData } | null = null;
-
-/**
- * hourly-data 로드 (번들 기반, Fallback)
- * @description OTel 데이터 없을 때 원본 Prometheus 데이터 사용
- */
-function loadHourlyData(hour: number): HourlyData | null {
-  if (cachedHourlyData?.hour === hour) {
-    return cachedHourlyData.data;
-  }
-
-  const data = getBundledHourlyData(hour);
-  if (data) {
-    cachedHourlyData = { hour, data };
-    const targetCount = Object.keys(data.dataPoints[0]?.targets || {}).length;
-    logger.debug(
-      `[MetricsProvider] hourly-data fallback 로드: hour-${hour.toString().padStart(2, '0')} (${targetCount}개 target)`
-    );
-    return data;
-  }
-
-  logger.error(`[MetricsProvider] hourly-data 없음: hour-${hour}`);
   return null;
 }
 
@@ -137,7 +96,6 @@ export class MetricsProvider {
   static resetForTesting(): void {
     if (process.env.NODE_ENV !== 'test') return;
     MetricsProvider.instance = undefined as unknown as MetricsProvider;
-    cachedHourlyData = null;
     cachedOTelData = null;
     cachedOTelConversion = null;
     MetricsProvider.cachedServerList = null;
@@ -145,16 +103,14 @@ export class MetricsProvider {
 
   /**
    * 현재 시간 기준 단일 서버 메트릭 조회
-   * Priority: OTel → Prometheus hourly-data
+   * OTel Standard 데이터 사용
    */
   public getServerMetrics(serverId: string): ApiServerMetrics | null {
     const minuteOfDay = getKSTMinuteOfDay();
     const timestamp = getKSTTimestamp();
     const hour = Math.floor(minuteOfDay / 60);
     const minute = minuteOfDay % 60;
-    const slotIndex = Math.floor(minute / SLOT_DURATION_MINUTES); // for Fallback
 
-    // 1. OTel 데이터 (Primary) — 변환 캐시 사용
     const otelData = loadOTelData(hour);
     if (otelData) {
       let allMetrics: ApiServerMetrics[];
@@ -177,51 +133,22 @@ export class MetricsProvider {
       }
     }
 
-    // 2. Prometheus hourly-data (Fallback)
-    const hourlyData = loadHourlyData(hour);
-    if (hourlyData) {
-      const dataPoint = hourlyData.dataPoints[slotIndex];
-
-      if (!dataPoint) {
-        logger.warn(
-          `[MetricsProvider] slot ${slotIndex} not found for hour-${hour}, using fallback`
-        );
-      }
-
-      if (dataPoint?.targets) {
-        // Fallback 데이터에서도 찾기
-        const instanceKey = `${serverId}:9100`;
-        const target = dataPoint.targets[instanceKey];
-        if (target) {
-          return targetToServerMetrics(target, timestamp, minuteOfDay);
-        }
-
-        // serverId만으로 찾기 시도 (instanceKey가 다를 경우)
-        const foundKey = Object.keys(dataPoint.targets).find((k) =>
-          k.startsWith(serverId)
-        );
-        const foundTarget = foundKey ? dataPoint.targets[foundKey] : undefined;
-        if (foundTarget) {
-          return targetToServerMetrics(foundTarget, timestamp, minuteOfDay);
-        }
-      }
-    }
-
+    logger.warn(
+      `[MetricsProvider] OTel 데이터에서 서버 ${serverId}을(를) 찾을 수 없음 (hour=${hour})`
+    );
     return null;
   }
 
   /**
    * 현재 시간 기준 모든 서버 메트릭 조회
-   * Priority: OTel → Prometheus hourly-data
+   * OTel Standard 데이터 사용
    */
   public getAllServerMetrics(): ApiServerMetrics[] {
     const minuteOfDay = getKSTMinuteOfDay();
     const timestamp = getKSTTimestamp();
     const hour = Math.floor(minuteOfDay / 60);
     const minute = minuteOfDay % 60;
-    const slotIndex = Math.floor(minute / SLOT_DURATION_MINUTES);
 
-    // 1. OTel 데이터 (Primary) — 변환 캐시 사용
     const otelData = loadOTelData(hour);
     if (otelData) {
       if (
@@ -239,20 +166,7 @@ export class MetricsProvider {
       return metrics;
     }
 
-    // 2. Prometheus hourly-data (Fallback)
-    const hourlyData = loadHourlyData(hour);
-    if (hourlyData) {
-      const dataPoint = hourlyData.dataPoints[slotIndex];
-      if (dataPoint?.targets) {
-        return Object.values(dataPoint.targets).map((target) =>
-          targetToServerMetrics(target, timestamp, minuteOfDay)
-        );
-      }
-    }
-
-    logger.error(
-      '[MetricsProvider] OTel + hourly-data 모두 로드 실패, 빈 배열 반환'
-    );
+    logger.error('[MetricsProvider] OTel 데이터 로드 실패, 빈 배열 반환');
     return [];
   }
 
@@ -335,7 +249,7 @@ export class MetricsProvider {
 
   /**
    * 특정 시간대 메트릭 조회 (히스토리용)
-   * Priority: OTel → hourly-data
+   * OTel Standard 데이터 사용
    */
   public getMetricsAtTime(
     serverId: string,
@@ -346,11 +260,8 @@ export class MetricsProvider {
     }
 
     const hour = Math.floor(minuteOfDay / 60);
-    const minute = minuteOfDay % 60;
-    const slotIndex = Math.floor(minute / SLOT_DURATION_MINUTES);
     const timestamp = getKSTTimestamp();
 
-    // 1. OTel (Primary)
     const otelData = loadOTelData(hour);
     if (otelData) {
       const metrics = extractMetricsFromStandard(
@@ -360,23 +271,6 @@ export class MetricsProvider {
       );
       const found = metrics.find((m) => m.serverId === serverId);
       if (found) return found;
-    }
-
-    // 2. hourly-data (Fallback)
-    const hourlyData = loadHourlyData(hour);
-    const dataPoint = hourlyData?.dataPoints[slotIndex];
-    if (dataPoint?.targets) {
-      const instanceKey = `${serverId}:9100`;
-      const target = dataPoint.targets[instanceKey];
-      if (target) return targetToServerMetrics(target, timestamp, minuteOfDay);
-
-      const foundKey = Object.keys(dataPoint.targets).find((k) =>
-        k.startsWith(serverId)
-      );
-      const foundTarget = foundKey ? dataPoint.targets[foundKey] : undefined;
-      if (foundTarget) {
-        return targetToServerMetrics(foundTarget, timestamp, minuteOfDay);
-      }
     }
 
     return null;
@@ -449,7 +343,7 @@ export class MetricsProvider {
     return {
       kstTime: getKSTTimestamp(),
       minuteOfDay,
-      slotIndex: Math.floor(minutes / SLOT_DURATION_MINUTES),
+      slotIndex: Math.floor(minutes / 10),
       humanReadable: `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')} KST`,
     };
   }

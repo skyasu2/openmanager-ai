@@ -44,10 +44,12 @@ export type ServerRole =
   | 'security'
   | 'backup'
   | 'load-balancer'
+  | 'loadbalancer'
   | 'queue'
   | 'storage'
   | 'log'
   | 'app'
+  | 'application'
   | 'fallback';
 
 // 서버 타입 (기존 호환성 유지)
@@ -87,10 +89,12 @@ const VALID_ROLES = new Set<string>([
   'security',
   'backup',
   'load-balancer',
+  'loadbalancer',
   'queue',
   'storage',
   'log',
   'app',
+  'application',
   'fallback',
 ]);
 
@@ -130,9 +134,11 @@ export const SERVER_ROLES: ServerRole[] = [
   'security',
   'backup',
   'load-balancer',
+  'loadbalancer',
   'queue',
   'storage',
   'log',
   'app',
+  'application',
   'fallback',
 ];

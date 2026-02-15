@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react';
 import { logger } from '@/lib/logging';
 import { otelTimeSeriesToHistory } from '@/services/metrics/otel-direct-transform';
-import type { MetricsHistory } from '../types/server';
+import type { MetricsHistory } from '@/types/server';
 
 export interface MetricsStats {
   cpuAvg: number;
@@ -20,6 +20,33 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 
 function toSafeNumber(value: unknown): number {
   return typeof value === 'number' && Number.isFinite(value) ? value : 0;
+}
+
+/** Math.max(...arr) 대체 — 빈 배열 시 -Infinity 방지 + 큰 배열 stack overflow 방지 */
+const safeMax = (arr: number[]) => arr.reduce((a, b) => Math.max(a, b), 0);
+
+export function generateChartPointsFromData(
+  data: number[],
+  maxHeight: number = 140,
+  chartWidth: number = 300
+): string {
+  if (data.length === 0) return '';
+
+  if (data.length === 1) {
+    return `0,${maxHeight / 2}`;
+  }
+
+  const max = safeMax(data);
+  const min = data.reduce((a, b) => Math.min(a, b), data[0] ?? 0);
+  const range = max - min || 1;
+
+  return data
+    .map((value, index) => {
+      const x = (index / (data.length - 1)) * chartWidth;
+      const y = maxHeight - ((value - min) / range) * maxHeight;
+      return `${x},${y}`;
+    })
+    .join(' ');
 }
 
 /**
@@ -99,12 +126,7 @@ export function useServerMetrics() {
           setMetricsHistory([]);
         }
       } catch (error) {
-        if (
-          process.env.NEXT_PUBLIC_NODE_ENV ||
-          process.env.NODE_ENV === 'development'
-        ) {
-          logger.error('히스토리 데이터 로드 실패:', error);
-        }
+        logger.error('히스토리 데이터 로드 실패:', error);
         setMetricsHistory([]);
       } finally {
         setIsLoadingHistory(false);
@@ -131,12 +153,10 @@ export function useServerMetrics() {
           history.length
       );
 
-      const cpuMax = Math.max(...history.map((m) => m.cpu));
-      const memoryMax = Math.max(...history.map((m) => m.memory));
-      const diskMax = Math.max(...history.map((m) => m.disk));
-      const responseTimeMax = Math.max(
-        ...history.map((m) => m.responseTime ?? 0)
-      );
+      const cpuMax = safeMax(history.map((m) => m.cpu));
+      const memoryMax = safeMax(history.map((m) => m.memory));
+      const diskMax = safeMax(history.map((m) => m.disk));
+      const responseTimeMax = safeMax(history.map((m) => m.responseTime ?? 0));
 
       return {
         cpuAvg,
@@ -154,19 +174,7 @@ export function useServerMetrics() {
 
   const generateChartPoints = useCallback(
     (data: number[], maxHeight: number = 140) => {
-      if (data.length === 0) return '';
-
-      const max = Math.max(...data);
-      const min = Math.min(...data);
-      const range = max - min || 1;
-
-      return data
-        .map((value, index) => {
-          const x = (index / (data.length - 1)) * 300;
-          const y = maxHeight - ((value - min) / range) * maxHeight;
-          return `${x},${y}`;
-        })
-        .join(' ');
+      return generateChartPointsFromData(data, maxHeight);
     },
     []
   );

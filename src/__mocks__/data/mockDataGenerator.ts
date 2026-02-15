@@ -61,7 +61,7 @@ function createServerFromMetrics(
       uptime: 99.99,
       lastUpdate: new Date(),
       location: 'Seoul-DC-01',
-      type: 'app', // fallback type
+      type: 'application', // fallback type
       services: [
         {
           name: 'Unknown Service',

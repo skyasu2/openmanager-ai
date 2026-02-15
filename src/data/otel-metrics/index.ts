@@ -1,8 +1,9 @@
 /**
- * OTel Processed Data Loader - Vercel 번들 포함용
+ * OTel Metrics Loader — OTLP Standard Legacy
  *
- * 빌드 타임에 생성된 OTel JSON 데이터를 정적 import로 번들에 포함.
- * src/data/hourly-data/index.ts와 동일한 패턴.
+ * OTLP ExportMetricsServiceRequest 포맷의 시간별 데이터 로더.
+ * otel-data/ (SSOT Primary)와 별도로, OTLP 표준 호환 파이프라인을 위해 유지.
+ * 빌드 타임에 정적 import로 번들에 포함.
  *
  * @created 2026-02-11
  */

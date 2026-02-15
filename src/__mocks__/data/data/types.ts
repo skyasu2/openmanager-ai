@@ -16,13 +16,14 @@ export interface ScenarioPoint {
  */
 export type ServerType =
   | 'web'
-  | 'app'
+  | 'application'
   | 'database'
   | 'cache'
   | 'storage'
   | 'loadbalancer'
   // Legacy 호환성
   | 'api'
+  | 'app'
   | 'log'
   | 'monitoring';
 

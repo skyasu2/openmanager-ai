@@ -8,7 +8,7 @@ import type { ScenarioPoint, Server, ServerType } from './types';
  * - PUS: 부산 (DR 데이터센터)
  *
  * @see src/__mocks__/data/mockServerConfig.ts (SSOT)
- * @see src/data/otel-processed/ (OTel 24시간 메트릭)
+ * @see src/data/otel-data/ (OTel 24시간 메트릭)
  */
 export const SERVERS: Server[] = [
   // 웹서버 (Nginx) - 3대
@@ -34,19 +34,19 @@ export const SERVERS: Server[] = [
   {
     id: 'api-was-icn-01',
     name: '서울 메인 WAS #1',
-    type: 'app',
+    type: 'application',
     description: '서울 메인 WAS 서버 #1 (AZ1)',
   },
   {
     id: 'api-was-icn-02',
     name: '서울 WAS #2',
-    type: 'app',
+    type: 'application',
     description: '서울 WAS 서버 #2 (AZ2)',
   },
   {
     id: 'api-was-pus-01',
     name: '부산 DR WAS',
-    type: 'app',
+    type: 'application',
     description: '부산 DR WAS 서버',
   },
   // 데이터베이스 (MySQL) - 3대
@@ -111,7 +111,7 @@ export const SERVERS: Server[] = [
 
 /**
  * 정상 메트릭 (기본값) - 서버 타입별 baseline
- * @see src/data/otel-processed/ (실제 데이터)
+ * @see src/data/otel-data/ (실제 데이터)
  */
 export const normalMetrics: Record<ServerType, ScenarioPoint> = {
   // 웹서버 (Nginx)
@@ -124,7 +124,7 @@ export const normalMetrics: Record<ServerType, ScenarioPoint> = {
     errorRate: 0.1,
   },
   // API/WAS 서버 (Spring Boot)
-  app: {
+  application: {
     cpu: 45,
     memory: 60,
     disk: 40,
@@ -155,6 +155,14 @@ export const normalMetrics: Record<ServerType, ScenarioPoint> = {
   // 로드밸런서 (HAProxy)
   loadbalancer: { cpu: 30, memory: 50, disk: 15, network: 70 },
   // Legacy 호환성
+  app: {
+    cpu: 45,
+    memory: 60,
+    disk: 40,
+    network: 50,
+    responseTime: 100,
+    errorRate: 0.2,
+  },
   api: {
     cpu: 45,
     memory: 60,

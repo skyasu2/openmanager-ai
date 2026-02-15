@@ -19,7 +19,13 @@
 import type { ServerLogEntry } from '@/services/server-data/server-data-types';
 
 /** Server type determines which log sources are realistic */
-type ServerType = 'web' | 'database' | 'cache' | 'application' | 'loadbalancer';
+type ServerType =
+  | 'web'
+  | 'database'
+  | 'cache'
+  | 'application'
+  | 'loadbalancer'
+  | 'storage';
 
 /** Sources that belong to the application layer and legitimately produce OTel traces.
  *  Kernel/system-level sources (kernel, systemd, cron, sshd, rsync) do NOT generate
@@ -74,6 +80,7 @@ const SERVER_TYPE_SOURCES: Record<ServerType, Set<string>> = {
     'cron',
     'sshd',
   ]),
+  storage: new Set(['kernel', 'systemd', 'docker', 'cron', 'sshd', 'rsync']),
 };
 
 type LogGeneratorOptions = {
@@ -507,6 +514,8 @@ function inferServerType(explicitType: string, serverId: string): ServerType {
     id.includes('loadbalancer')
   )
     return 'loadbalancer';
+  if (id.includes('storage') || id.includes('nfs') || id.includes('s3'))
+    return 'storage';
   if (id.includes('api') || id.includes('app') || id.includes('worker'))
     return 'application';
 

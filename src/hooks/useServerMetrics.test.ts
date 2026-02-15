@@ -1,5 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { parseMetricsHistoryFromResponse } from './useServerMetrics';
+import {
+  generateChartPointsFromData,
+  parseMetricsHistoryFromResponse,
+} from './useServerMetrics';
 
 describe('parseMetricsHistoryFromResponse', () => {
   it('parses standard data.history.data_points response', () => {
@@ -66,5 +69,15 @@ describe('parseMetricsHistoryFromResponse', () => {
     expect(
       parseMetricsHistoryFromResponse({ data: { history: {} } })
     ).toBeNull();
+  });
+});
+
+describe('generateChartPointsFromData', () => {
+  it('returns a centered point for single-value data', () => {
+    expect(generateChartPointsFromData([42], 140)).toBe('0,70');
+  });
+
+  it('returns empty string for empty data', () => {
+    expect(generateChartPointsFromData([])).toBe('');
   });
 });

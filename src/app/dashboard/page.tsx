@@ -9,17 +9,10 @@
  */
 
 import { getOTelDashboardData } from '@/lib/dashboard/server-data';
-import type { Server } from '@/types/server';
 import DashboardClient from './DashboardClient';
 
-export default async function DashboardPage() {
-  const { servers, stats, timeInfo } = await getOTelDashboardData();
+export default function DashboardPage() {
+  const { servers, stats } = getOTelDashboardData();
 
-  return (
-    <DashboardClient
-      initialServers={servers as unknown as Server[]}
-      initialStats={stats}
-      timeInfo={timeInfo}
-    />
-  );
+  return <DashboardClient initialServers={servers} initialStats={stats} />;
 }

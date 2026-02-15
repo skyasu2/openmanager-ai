@@ -3,13 +3,12 @@
  */
 
 /**
- * Integration Test: MetricsProvider + RulesLoader + HourlyData Pipeline
+ * Integration Test: MetricsProvider + RulesLoader + OTel Pipeline
  * Mock 최소화 (logger만 mock), 실제 데이터 기반 통합 검증
  */
 
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { getServerStatus } from '@/config/rules/loader';
-import { getAllServerIds } from '@/data/hourly-data';
 import { metricsProvider } from '@/services/metrics/MetricsProvider';
 
 describe('Metrics Provider Pipeline (통합)', () => {
@@ -24,32 +23,25 @@ describe('Metrics Provider Pipeline (통합)', () => {
       expect(summary.totalServers).toBe(serverList.length);
     });
 
-    it('hourly-data 서버 수 === MetricsProvider 서버 수', () => {
-      const hourlyServerIds = getAllServerIds();
+    it('OTel 데이터에서 서버 메트릭을 로드할 수 있다', () => {
       const providerServerIds = metricsProvider
         .getAllServerMetrics()
         .map((m) => m.serverId);
 
-      // hourly-data의 서버 ID와 provider의 서버 ID가 겹쳐야 함
-      // (provider는 hourly-data 또는 fixed-data에서 로드)
       expect(providerServerIds.length).toBeGreaterThan(0);
-      expect(hourlyServerIds.length).toBeGreaterThan(0);
     });
 
-    it('모든 serverId가 hourly-data에 존재해야 한다', () => {
-      const hourlyServerIds = new Set(getAllServerIds());
+    it('모든 serverId가 serverList에 존재해야 한다', () => {
+      const serverList = metricsProvider.getServerList();
+      const serverListIds = new Set(serverList.map((s) => s.serverId));
 
-      // MetricsProvider에서 hourly-data 로드 시 사용하는 서버 ID 확인
       const allMetrics = metricsProvider.getAllServerMetrics();
-      // hourly-data에서 로드된 메트릭이 있다면 서버 ID가 hourly-data에 존재
-      // (fallback의 경우 다를 수 있으므로 교집합 확인)
-      if (hourlyServerIds.size > 0 && allMetrics.length > 0) {
-        const providerIds = new Set(allMetrics.map((m) => m.serverId));
-        // 최소 1개 이상의 서버가 양쪽에 공통 존재
-        const commonIds = [...providerIds].filter((id) =>
-          hourlyServerIds.has(id)
-        );
-        expect(commonIds.length).toBeGreaterThanOrEqual(0);
+      if (allMetrics.length > 0) {
+        const providerIds = allMetrics.map((m) => m.serverId);
+        // 모든 메트릭의 serverId가 serverList에 존재
+        for (const id of providerIds) {
+          expect(serverListIds.has(id)).toBe(true);
+        }
       }
     });
   });

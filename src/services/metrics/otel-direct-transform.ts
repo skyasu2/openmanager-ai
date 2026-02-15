@@ -9,11 +9,13 @@
 
 import { getServerIP } from '@/config/server-registry';
 import { getServicesForServer } from '@/config/server-services-map';
+import { OTEL_METRIC } from '@/constants/otel-metric-names';
 import {
   getOTelHourlyData,
   getOTelResourceCatalog,
   getOTelTimeSeries,
-} from '@/data/otel-processed';
+} from '@/data/otel-data';
+import { logger } from '@/lib/logging';
 import { getKSTMinuteOfDay } from '@/services/metrics/kst-time';
 import {
   deriveNetworkErrors,
@@ -22,11 +24,7 @@ import {
   estimateLoad15,
 } from '@/services/server-data/server-data-transformer';
 import type { EnhancedServerMetrics } from '@/services/server-data/server-data-types';
-import type {
-  OTelHourlySlot,
-  OTelResourceAttributes,
-  OTelResourceCatalog,
-} from '@/types/otel-metrics';
+import type { OTelHourlySlot, OTelResourceCatalog } from '@/types/otel-metrics';
 import type { MetricsHistory } from '@/types/server';
 
 import { determineStatus } from './metric-transformers';
@@ -48,6 +46,89 @@ type OTelMetricValues = {
 };
 
 // ============================================================================
+// Fallback Helper
+// ============================================================================
+
+function fallback(
+  value: number | undefined,
+  defaultValue: number,
+  label: string,
+  serverId: string
+): number {
+  if (value !== undefined && !Number.isNaN(value)) return value;
+  if (process.env.NODE_ENV === 'development') {
+    logger.warn(
+      `[otel-direct] Fallback: ${label}=${String(defaultValue)} for ${serverId}`
+    );
+  }
+  return defaultValue;
+}
+
+// ============================================================================
+// Metric Name → Handler Map
+// ============================================================================
+
+const METRIC_HANDLERS = new Map<
+  string,
+  (values: OTelMetricValues, value: number) => void
+>([
+  [
+    OTEL_METRIC.CPU,
+    (v, val) => {
+      v.cpu = val;
+    },
+  ],
+  [
+    OTEL_METRIC.MEMORY,
+    (v, val) => {
+      v.memory = val;
+    },
+  ],
+  [
+    OTEL_METRIC.DISK,
+    (v, val) => {
+      v.disk = val;
+    },
+  ],
+  [
+    OTEL_METRIC.NETWORK,
+    (v, val) => {
+      v.network = val;
+    },
+  ],
+  [
+    OTEL_METRIC.LOAD_1M,
+    (v, val) => {
+      v.load1 = val;
+    },
+  ],
+  [
+    OTEL_METRIC.LOAD_5M,
+    (v, val) => {
+      v.load5 = val;
+    },
+  ],
+  [
+    OTEL_METRIC.PROCESSES,
+    (v, val) => {
+      v.processes = val;
+    },
+  ],
+  [
+    OTEL_METRIC.UPTIME,
+    (v, val) => {
+      v.uptime = val;
+    },
+  ],
+  [
+    OTEL_METRIC.HTTP_DURATION,
+    (v, val) => {
+      v.responseTimeMs = val * 1000;
+    },
+  ],
+]);
+
+// ============================================================================
 // Core: Slot → EnhancedServerMetrics[]
 // ============================================================================
 
@@ -67,6 +148,9 @@ export function otelSlotToServers(
   const serverMetrics = new Map<string, OTelMetricValues>();
 
   for (const metric of slot.metrics) {
+    const handler = METRIC_HANDLERS.get(metric.name);
+    if (!handler) continue;
+
     for (const dp of metric.dataPoints) {
       const hostname = dp.attributes['host.name'];
       if (!hostname) continue;
@@ -89,7 +173,7 @@ export function otelSlotToServers(
       }
 
       const values = serverMetrics.get(serverId)!;
-      applyMetricValue(values, metric.name, dp.asDouble);
+      handler(values, dp.asDouble);
     }
   }
 
@@ -105,9 +189,9 @@ export function otelSlotToServers(
     const cpu = Math.round(values.cpu * 100 * 10) / 10;
     const memory = Math.round(values.memory * 100 * 10) / 10;
     const disk = Math.round(values.disk * 100 * 10) / 10;
-    const network = values.network;
+    const network = Math.round(values.network * 100 * 10) / 10;
 
-    // 오프라인 판별: cpu+memory+disk 모두 0이면 offline
+    // 오프라인 판별: cpu+memory+disk 모두 0이면 오프라인 (Pipeline A와 통일)
     const status =
       cpu === 0 && memory === 0 && disk === 0
         ? ('offline' as const)
@@ -117,15 +201,21 @@ export function otelSlotToServers(
     const load5 = values.load5;
     const load15 = estimateLoad15(load1, load5);
     const { networkIn, networkOut } = deriveNetworkSplit(network, serverType);
-    const zombieProcesses = deriveZombieProcesses(
-      serverId,
-      values.processes || 120
-    );
+    const processes =
+      fallback(values.processes, 120, 'processes', serverId) || 120;
+    const zombieProcesses = deriveZombieProcesses(serverId, processes);
     const { receivedErrors, sentErrors } = deriveNetworkErrors(
       network,
       serverId
     );
-    const uptimeSeconds = values.uptime || 2592000;
+    const uptimeSeconds =
+      fallback(values.uptime, 2592000, 'uptime', serverId) || 2592000;
+    const responseTime = fallback(
+      values.responseTimeMs,
+      150,
+      'responseTime',
+      serverId
+    );
 
     results.push({
       id: serverId,
@@ -142,7 +232,7 @@ export function otelSlotToServers(
       network_in: networkIn,
       network_out: networkOut,
       uptime: uptimeSeconds,
-      responseTime: values.responseTimeMs || 150,
+      responseTime,
       last_updated: timestamp,
       location: resource?.['cloud.availability_zone'] ?? 'unknown',
       alerts: [],
@@ -153,18 +243,13 @@ export function otelSlotToServers(
       environment: resource?.['deployment.environment'] ?? '',
       provider: 'OTel-Direct',
       specs: {
-        cpu_cores:
-          (resource as Partial<OTelResourceAttributes>)?.['host.cpu.count'] ??
-          8,
+        cpu_cores: resource?.['host.cpu.count'] ?? 8,
         memory_gb: Math.round(
-          ((resource as Partial<OTelResourceAttributes>)?.[
-            'host.memory.size'
-          ] ?? 16 * 1024 * 1024 * 1024) /
+          (resource?.['host.memory.size'] ?? 16 * 1024 * 1024 * 1024) /
             (1024 * 1024 * 1024)
         ),
         disk_gb: Math.round(
-          ((resource as Partial<OTelResourceAttributes>)?.['host.disk.size'] ??
-            200 * 1024 * 1024 * 1024) /
+          (resource?.['host.disk.size'] ?? 200 * 1024 * 1024 * 1024) /
             (1024 * 1024 * 1024)
         ),
         network_speed: '1Gbps',
@@ -178,7 +263,7 @@ export function otelSlotToServers(
       systemInfo: {
         os: resource?.['os.description'] ?? resource?.['os.type'] ?? '',
         uptime: `${Math.floor(uptimeSeconds / 3600)}h`,
-        processes: values.processes || 120,
+        processes,
         zombieProcesses,
         loadAverage: `${load1.toFixed(2)}, ${load5.toFixed(2)}, ${load15.toFixed(2)}`,
         lastUpdate: timestamp,
@@ -192,6 +277,16 @@ export function otelSlotToServers(
         status,
       },
     });
+  }
+
+  // 3. Attach structured logs from slot to matching servers
+  for (const log of slot.logs) {
+    const serverId = log.resource;
+    const server = results.find((s) => s.id === serverId);
+    if (server) {
+      if (!server.structuredLogs) server.structuredLogs = [];
+      server.structuredLogs.push(log);
+    }
   }
 
   return results;
@@ -215,12 +310,11 @@ export function otelTimeSeriesToHistory(
   const serverIdx = ts.serverIds.indexOf(serverId);
   if (serverIdx === -1) return [];
 
-  const cpuSeries = ts.metrics['system.cpu.utilization']?.[serverIdx];
-  const memorySeries = ts.metrics['system.memory.utilization']?.[serverIdx];
-  const diskSeries = ts.metrics['system.filesystem.utilization']?.[serverIdx];
-  const networkSeries = ts.metrics['system.network.io']?.[serverIdx];
-  const responseSeries =
-    ts.metrics['http.server.request.duration']?.[serverIdx];
+  const cpuSeries = ts.metrics[OTEL_METRIC.CPU]?.[serverIdx];
+  const memorySeries = ts.metrics[OTEL_METRIC.MEMORY]?.[serverIdx];
+  const diskSeries = ts.metrics[OTEL_METRIC.DISK]?.[serverIdx];
+  const networkSeries = ts.metrics[OTEL_METRIC.NETWORK]?.[serverIdx];
+  const responseSeries = ts.metrics[OTEL_METRIC.HTTP_DURATION]?.[serverIdx];
 
   if (!cpuSeries) return [];
 
@@ -241,7 +335,7 @@ export function otelTimeSeriesToHistory(
       cpu: Math.round((cpuSeries[i] ?? 0) * 100 * 10) / 10,
       memory: Math.round((memorySeries?.[i] ?? 0) * 100 * 10) / 10,
       disk: Math.round((diskSeries?.[i] ?? 0) * 100 * 10) / 10,
-      network: Math.round(networkSeries?.[i] ?? 0),
+      network: Math.round((networkSeries?.[i] ?? 0) * 100 * 10) / 10,
       responseTime: Math.round((responseSeries?.[i] ?? 0) * 1000), // s → ms
       connections: 0,
     });
@@ -289,42 +383,6 @@ export function loadCurrentOTelServers(): {
 // ============================================================================
 // Internal Helpers
 // ============================================================================
-
-function applyMetricValue(
-  values: OTelMetricValues,
-  metricName: string,
-  value: number
-): void {
-  switch (metricName) {
-    case 'system.cpu.utilization':
-      values.cpu = value;
-      break;
-    case 'system.memory.utilization':
-      values.memory = value;
-      break;
-    case 'system.filesystem.utilization':
-      values.disk = value;
-      break;
-    case 'system.network.io':
-      values.network = value;
-      break;
-    case 'system.cpu.load_average.1m':
-      values.load1 = value;
-      break;
-    case 'system.cpu.load_average.5m':
-      values.load5 = value;
-      break;
-    case 'system.process.count':
-      values.processes = value;
-      break;
-    case 'system.uptime':
-      values.uptime = value;
-      break;
-    case 'http.server.request.duration':
-      values.responseTimeMs = value * 1000; // s → ms
-      break;
-  }
-}
 
 function mapTypeToRole(type: string): string {
   const roleMap: Record<string, string> = {

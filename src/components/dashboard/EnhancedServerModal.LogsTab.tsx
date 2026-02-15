@@ -1,23 +1,30 @@
 'use client';
 
-import type { FC } from 'react';
-import { useEffect, useMemo, useState } from 'react';
-import type { ServerContext } from '@/services/server-data/loki-log-generator';
 /**
- * Enhanced Server Modal Logs Tab (v4.0 - PLG Stack Compatible)
+ * Enhanced Server Modal Logs Tab (v5.0 - OTel SSOT)
  *
  * Three view modes:
- * - Syslog: metrics-correlated syslog entries
- * - Alerts: metric threshold-based system alerts
- * - Streams: Loki-compatible stream view with label filters and LogQL
+ * - Syslog: OTel structured logs → SyslogEntry view
+ * - Alerts: metric threshold-based system alerts (realtimeData.logs)
+ * - Streams: OTel logs → Loki-compatible stream view with label filters and LogQL
+ *
+ * Data flow (OTel SSOT):
+ *   OTel hourly slot.logs → server.structuredLogs → otelToSyslogView / otelToLokiEntry
+ *
+ * Fallback: when structuredLogs is empty, falls back to serverLogs (Prometheus pipeline)
+ * or generateServerLogs/generateLokiLogs (synthetic).
  */
+
+import type { FC } from 'react';
+import { useMemo, useState } from 'react';
 import {
   buildLogQL,
-  generateLokiLogs,
-  generateServerLogs,
-  groupIntoStreams,
-} from '@/services/server-data/server-data-loader';
-import type { LokiLogEntry, LokiStreamLabels } from '@/types/loki';
+  groupOTelLogsIntoStreams,
+  otelToLokiEntry,
+  otelToSyslogView,
+} from '@/services/log-pipeline/otel-log-views';
+import type { LokiLogEntry, LokiStream, LokiStreamLabels } from '@/types/loki';
+import type { OTelLogRecord } from '@/types/otel-metrics';
 import type { LogEntry as ServerLogEntry } from '@/types/server';
 import type {
   LogEntry,
@@ -42,8 +49,10 @@ interface LogsTabProps {
     datacenter: string;
     serverType: string;
   };
-  /** hourly-data 원본 로그 (Prometheus 파이프라인 경유, 대문자 레벨) */
+  /** Legacy hourly-data logs (Prometheus pipeline, uppercase level) */
   serverLogs?: ServerLogEntry[];
+  /** OTel structured logs (SSOT - preferred source) */
+  structuredLogs?: OTelLogRecord[];
 }
 
 const getLogLevelStyles = (level: LogLevel | string) => {
@@ -101,14 +110,13 @@ const formatNsTimestamp = (ns: string): string => {
 
 export const LogsTab: FC<LogsTabProps> = ({
   serverId,
-  serverMetrics,
+  serverMetrics: _serverMetrics,
   realtimeData,
   serverContext,
   serverLogs,
+  structuredLogs,
 }) => {
   const [activeView, setActiveView] = useState<ViewMode>('syslog');
-  const [scenarioLogs, setScenarioLogs] = useState<LogEntry[]>([]);
-  const [lokiLogs, setLokiLogs] = useState<LokiLogEntry[]>([]);
   const [labelFilters, setLabelFilters] = useState<Partial<LokiStreamLabels>>(
     {}
   );
@@ -116,45 +124,48 @@ export const LogsTab: FC<LogsTabProps> = ({
     new Set()
   );
 
-  const ctx: ServerContext = serverContext ?? {
+  const ctx = serverContext ?? {
     hostname: serverId.split('.')[0] || serverId,
     environment: 'production',
     datacenter: 'Seoul-ICN-AZ1',
     serverType: 'web',
   };
 
-  // hourly-data 원본 로그 → 모달 LogEntry 변환 (대문자→소문자 레벨)
-  const normalizedLogs = useMemo((): LogEntry[] => {
-    if (!serverLogs || serverLogs.length === 0) return [];
-    return serverLogs.map((log) => ({
-      timestamp: log.timestamp,
-      level: log.level.toLowerCase() as LogLevel,
-      message: log.message,
-      source: 'syslog',
-    }));
-  }, [serverLogs]);
-
-  // Syslog: hourly-data 원본 로그 우선, 없으면 합성 로그 fallback
-  useEffect(() => {
-    if (normalizedLogs.length > 0) {
-      setScenarioLogs(normalizedLogs);
-    } else {
-      setScenarioLogs(generateServerLogs(serverMetrics, serverId));
+  // ── OTel SSOT → Syslog view (primary) ──────────────────────────
+  const syslogView = useMemo((): LogEntry[] => {
+    // Primary: OTel structured logs
+    if (structuredLogs && structuredLogs.length > 0) {
+      return structuredLogs.map((log) => {
+        const entry = otelToSyslogView(log);
+        return {
+          timestamp: entry.timestamp,
+          level: entry.level as LogLevel,
+          message: entry.message,
+          source: entry.source,
+        };
+      });
     }
 
-    const loki = generateLokiLogs(serverMetrics, serverId, ctx);
-    setLokiLogs(loki);
+    // Fallback: Legacy serverLogs (Prometheus pipeline, uppercase level)
+    if (serverLogs && serverLogs.length > 0) {
+      return serverLogs.map((log) => ({
+        timestamp: log.timestamp,
+        level: log.level.toLowerCase() as LogLevel,
+        message: log.message,
+        source: 'syslog',
+      }));
+    }
 
-    const interval = setInterval(() => {
-      if (normalizedLogs.length > 0) {
-        setScenarioLogs(normalizedLogs);
-      } else {
-        setScenarioLogs(generateServerLogs(serverMetrics, serverId));
-      }
-      setLokiLogs(generateLokiLogs(serverMetrics, serverId, ctx));
-    }, 60000);
-    return () => clearInterval(interval);
-  }, [serverId, serverMetrics, normalizedLogs, ctx]);
+    return [];
+  }, [structuredLogs, serverLogs]);
+
+  // ── OTel SSOT → Loki view (primary) ────────────────────────────
+  const lokiLogs = useMemo((): LokiLogEntry[] => {
+    if (structuredLogs && structuredLogs.length > 0) {
+      return structuredLogs.map(otelToLokiEntry);
+    }
+    return [];
+  }, [structuredLogs]);
 
   // Filtered Loki entries
   const filteredLokiLogs = useMemo(() => {
@@ -166,11 +177,29 @@ export const LogsTab: FC<LogsTabProps> = ({
     );
   }, [lokiLogs, labelFilters]);
 
-  // Grouped streams
-  const streams = useMemo(
-    () => groupIntoStreams(filteredLokiLogs),
-    [filteredLokiLogs]
-  );
+  // ── OTel SSOT → Streams (primary) ──────────────────────────────
+  const streams = useMemo((): LokiStream[] => {
+    if (structuredLogs && structuredLogs.length > 0) {
+      // Filter by label filters: convert OTel logs → Loki entries, then group
+      if (Object.keys(labelFilters).length > 0) {
+        // Use pre-filtered lokiLogs
+        const streamMap = new Map<string, LokiStream>();
+        for (const entry of filteredLokiLogs) {
+          const key = `${entry.labels.job}|${entry.labels.level}`;
+          let stream = streamMap.get(key);
+          if (!stream) {
+            stream = { stream: { ...entry.labels }, values: [] };
+            streamMap.set(key, stream);
+          }
+          stream.values.push([entry.timestampNs, entry.line]);
+        }
+        return Array.from(streamMap.values());
+      }
+      // No filters: use OTel grouping directly
+      return groupOTelLogsIntoStreams(structuredLogs);
+    }
+    return [];
+  }, [structuredLogs, labelFilters, filteredLokiLogs]);
 
   // LogQL string
   const logqlQuery = useMemo(() => buildLogQL(labelFilters), [labelFilters]);
@@ -214,8 +243,7 @@ export const LogsTab: FC<LogsTabProps> = ({
   };
 
   // Display logs for legacy views
-  const displayLogs =
-    activeView === 'syslog' ? scenarioLogs : realtimeData.logs;
+  const displayLogs = activeView === 'syslog' ? syslogView : realtimeData.logs;
 
   return (
     <div className="space-y-6">
@@ -399,10 +427,15 @@ function StreamsView({
   availableLabels: { jobs: string[]; levels: string[] };
   labelFilters: Partial<LokiStreamLabels>;
   toggleFilter: (key: keyof LokiStreamLabels, value: string) => void;
-  streams: ReturnType<typeof groupIntoStreams>;
+  streams: LokiStream[];
   expandedStreams: Set<string>;
   toggleStream: (key: string) => void;
-  ctx: ServerContext;
+  ctx: {
+    hostname: string;
+    environment: string;
+    datacenter: string;
+    serverType: string;
+  };
 }) {
   return (
     <div className="space-y-4">
@@ -616,7 +649,7 @@ function StreamStats({
   streams,
 }: {
   logs: LokiLogEntry[];
-  streams: ReturnType<typeof groupIntoStreams>;
+  streams: LokiStream[];
 }) {
   const infoCount = logs.filter((l) => l.labels.level === 'info').length;
   const warnCount = logs.filter((l) => l.labels.level === 'warn').length;

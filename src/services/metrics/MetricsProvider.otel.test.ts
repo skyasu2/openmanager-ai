@@ -54,13 +54,13 @@ describe('MetricsProvider OTel Integration', () => {
     expect(OTelData.getOTelHourlyData).toHaveBeenCalled();
   });
 
-  it('should fallback to bundled hourly-data if OTel is missing', () => {
+  it('should return empty array when OTel data is missing', () => {
     vi.mocked(OTelData.getOTelHourlyData).mockReturnValue(null);
 
     const provider = MetricsProvider.getInstance();
     const metrics = provider.getAllServerMetrics();
 
-    expect(metrics.length).toBeGreaterThan(0);
+    expect(metrics).toHaveLength(0);
     expect(OTelData.getOTelHourlyData).toHaveBeenCalled();
   });
 
@@ -93,11 +93,8 @@ describe('MetricsProvider OTel Integration', () => {
                 },
                 {
                   name: 'system.network.io',
-                  sum: { dataPoints: [{ asDouble: 50 }] },
-                },
-                {
-                  name: 'system.status',
-                  gauge: { dataPoints: [{ asDouble: 1 }] },
+                  // OTel network utilization is normalized to 0~1
+                  sum: { dataPoints: [{ asDouble: 0.5 }] },
                 },
               ],
             },

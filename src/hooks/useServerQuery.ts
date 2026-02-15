@@ -36,5 +36,7 @@ export function useServerQuery(options: UseServerQueryOptions = {}) {
     gcTime: 5 * 60 * 1000, // 5분 미사용 데이터 보관
     refetchOnWindowFocus: false, // 탭 포커스 시 중복 refetch 방지
     refetchOnReconnect: true, // 네트워크 복구 시 최신 상태 동기화
+    retry: 2, // 최대 2회 재시도
+    retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 10000), // exponential backoff (1s, 2s, 4s... max 10s)
   });
 }

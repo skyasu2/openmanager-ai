@@ -1,6 +1,6 @@
 import { getServerStatus as getRulesServerStatus } from '@/config/rules/loader';
-import { extractServerId, type PrometheusTarget } from '@/data/hourly-data';
-import { getOTelResourceCatalog } from '@/data/otel-processed';
+import { OTEL_METRIC } from '@/constants/otel-metric-names';
+import { getOTelResourceCatalog } from '@/data/otel-data';
 import { logger } from '@/lib/logging';
 import type { OTelResourceAttributes } from '@/types/otel-metrics';
 import type { ExportMetricsServiceRequest } from '@/types/otel-standard';
@@ -51,6 +51,70 @@ function pickDataPoint<T extends { asDouble?: number }>(
   const idx = getDataPointIndex(dataPoints.length, minuteOfDay);
   return dataPoints[idx] ?? dataPoints[dataPoints.length - 1] ?? null;
 }
+
+// ============================================================================
+// OTel Metric Name → Handler Map
+// ============================================================================
+
+const STANDARD_METRIC_HANDLERS = new Map<
+  string,
+  (server: ApiServerMetrics, value: number) => void
+>([
+  [
+    OTEL_METRIC.CPU,
+    (s, v) => {
+      s.cpu = Math.round(v * 100 * 10) / 10;
+    },
+  ],
+  [
+    OTEL_METRIC.MEMORY,
+    (s, v) => {
+      s.memory = Math.round(v * 100 * 10) / 10;
+    },
+  ],
+  [
+    OTEL_METRIC.DISK,
+    (s, v) => {
+      s.disk = Math.round(v * 100 * 10) / 10;
+    },
+  ],
+  [
+    OTEL_METRIC.NETWORK,
+    (s, v) => {
+      s.network = Math.round(v * 100 * 10) / 10;
+    },
+  ],
+  [
+    OTEL_METRIC.LOAD_1M,
+    (s, v) => {
+      s.loadAvg1 = v;
+    },
+  ],
+  [
+    OTEL_METRIC.LOAD_5M,
+    (s, v) => {
+      s.loadAvg5 = v;
+    },
+  ],
+  [
+    OTEL_METRIC.HTTP_DURATION,
+    (s, v) => {
+      s.responseTimeMs = v * 1000;
+    },
+  ],
+  [
+    OTEL_METRIC.PROCESSES,
+    (s, v) => {
+      s.procsRunning = v;
+    },
+  ],
+  [
+    OTEL_METRIC.UPTIME,
+    (s, v) => {
+      s.bootTimeSeconds = Math.floor(Date.now() / 1000) - v;
+    },
+  ],
+]);
 
 // ============================================================================
 // OTel Data Transformation
@@ -142,35 +206,10 @@ export function extractMetricsFromStandard(
         if (!dp || dp.asDouble === undefined) continue;
         const value = dp.asDouble;
 
-        // Metric Name 매핑
-        switch (metric.name) {
-          case 'system.cpu.utilization':
-            server.cpu = Math.round(value * 100 * 10) / 10;
-            break;
-          case 'system.memory.utilization':
-            server.memory = Math.round(value * 100 * 10) / 10;
-            break;
-          case 'system.filesystem.utilization':
-            server.disk = Math.round(value * 100 * 10) / 10;
-            break;
-          case 'system.network.io':
-            server.network = value;
-            break;
-          case 'system.cpu.load_average.1m':
-            server.loadAvg1 = value;
-            break;
-          case 'system.cpu.load_average.5m':
-            server.loadAvg5 = value;
-            break;
-          case 'http.server.request.duration':
-            server.responseTimeMs = value * 1000; // s → ms
-            break;
-          case 'system.process.count':
-            server.procsRunning = value;
-            break;
-          case 'system.uptime':
-            server.bootTimeSeconds = Math.floor(Date.now() / 1000) - value;
-            break;
+        // Metric Name → Handler Map
+        const handler = STANDARD_METRIC_HANDLERS.get(metric.name);
+        if (handler) {
+          handler(server, value);
         }
       }
     }
@@ -191,61 +230,4 @@ export function extractMetricsFromStandard(
     }
     return server;
   });
-}
-
-// ============================================================================
-// Prometheus Data Transformation
-// ============================================================================
-
-/**
- * PrometheusTarget → ServerMetrics 변환
- */
-export function targetToServerMetrics(
-  target: PrometheusTarget,
-  timestamp: string,
-  minuteOfDay: number
-): ApiServerMetrics {
-  const serverId = extractServerId(target.instance);
-  const cpu = target.metrics.node_cpu_usage_percent;
-  const memory = target.metrics.node_memory_usage_percent;
-  const disk = target.metrics.node_filesystem_usage_percent;
-  const network = target.metrics.node_network_transmit_bytes_rate;
-
-  const metricsStatus = determineStatus(cpu, memory, disk, network);
-  let status: ApiServerMetrics['status'];
-  if (target.metrics.up === 0) {
-    status = 'offline';
-  } else {
-    status = metricsStatus;
-  }
-
-  return {
-    serverId,
-    serverType: target.labels.server_type,
-    location: target.labels.datacenter,
-    timestamp,
-    minuteOfDay,
-    cpu,
-    memory,
-    disk,
-    network,
-    logs: target.logs || [],
-    status,
-    nodeInfo: target.nodeInfo
-      ? {
-          cpuCores: target.nodeInfo.cpu_cores,
-          memoryTotalBytes: target.nodeInfo.memory_total_bytes,
-          diskTotalBytes: target.nodeInfo.disk_total_bytes,
-        }
-      : undefined,
-    hostname: target.labels.hostname,
-    environment: target.labels.environment,
-    os: target.labels.os,
-    osVersion: target.labels.os_version,
-    loadAvg1: target.metrics.node_load1,
-    loadAvg5: target.metrics.node_load5,
-    bootTimeSeconds: target.metrics.node_boot_time_seconds,
-    procsRunning: target.metrics.node_procs_running,
-    responseTimeMs: target.metrics.node_http_request_duration_milliseconds,
-  };
 }

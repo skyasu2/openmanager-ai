@@ -67,8 +67,7 @@ OpenTelemetry는 이 프로젝트에서 **"빌드 타임 시맨틱 변환 도구
 | `node_memory_usage_percent` | `system.memory.utilization` | ratio 0-1 | /100 |
 | `node_filesystem_usage_percent` | `system.filesystem.utilization` | ratio 0-1 | /100 |
 | `node_network_transmit_bytes_rate` | `system.network.io` | By/s | x1 |
-| `up` | `system.status` | boolean | x1 |
-| `node_load1` / `node_load5` | `system.cpu.load_average.{1m,5m}` | load | x1 |
+| `node_load1` / `node_load5` | `system.linux.cpu.load_1m` / `system.linux.cpu.load_5m` | load | x1 |
 | `node_boot_time_seconds` | `system.uptime` | s | now-boot |
 | `node_procs_running` | `system.processes.count` | count | x1 |
 | `node_http_request_duration_milliseconds` | `http.server.request.duration` | s | /1000 |
