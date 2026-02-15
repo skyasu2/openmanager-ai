@@ -2,7 +2,7 @@
  * @vitest-environment node
  */
 
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Mock KoreanTimeUtil to control time
 vi.mock('@/lib/utils/time', () => ({
