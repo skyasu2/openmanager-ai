@@ -1,12 +1,23 @@
 # TODO - OpenManager AI v5
 
-**Last Updated**: 2026-02-10 KST
+**Last Updated**: 2026-02-15 KST
 
 ## Active Tasks
 
 | Task | Priority | Status |
 |------|----------|--------|
 | Resume Stream 재활성화 (`resume: true`) | P1 | Blocked (AI SDK parts 처리 버그 대기) |
+| RAG 시스템 개선 (HyDE, BM25) | P2 | Pending |
+| 통합 테스트 확대 (13.1%→16%) | P3 | Pending |
+
+### Completed (2026-02-15)
+- [x] P1: OTel 데이터 품질 개선 — network 0-1 ratio 통일, 로그 시간 분산, OOM 시퀀스 수정
+- [x] P1: Cloud Run 보안 강화 — timing-safe 비교, SHA-256 해싱, ring buffer, graceful shutdown
+- [x] P2: Legacy 데이터 삭제 — `src/data/hourly-data/` + `src/data/otel-processed/` 전체 제거
+- [x] P2: Vision Agent fallback 구현 — 빈 응답 방어 + min token guard (256)
+- [x] P3: 계획서 정리 — plans/ 51→4개, tasks/ 184→0개, reports 5개 archive 이동
+- [x] P3: package.json dangling scripts 수정 (data:sync/otel/all → data:fix/verify)
+- [x] P3: feature-cards/tech-stacks 문서 OTel 반영
 
 ### Completed (2026-02-10)
 - [x] P3: AI SDK `ai@6.0.77 → 6.0.78` 업그레이드 + `@ts-expect-error` 2건 제거
@@ -38,13 +49,12 @@
 - [x] P3: 레거시 계획서 아카이브 이동 (10개 → archive/)
 
 ### 활성 계획서 (Active Plans)
+
+> 5개 완료 계획서 → `archive/` 이동 완료 (2026-02-15)
+
 | 파일 | 상태 | 비고 |
 |------|------|------|
-| `incident-report-and-anomaly-improvement-plan.md` | 참조 | 구현 가이드 |
-| `landing-card-diagrams-plan.md` | 참조 | 다이어그램 데이터 |
-| `vision-agent-implementation-plan.md` | 검토 대기 | Vision Agent 확장 구현 계획 |
-| `version-changelog-recovery-plan.md` | 계획 수립 | 버전/태그/체인지로그 운영 재정렬 |
-| `work-history-template.md` | 운영 기준 | 일일 작업 이력 기록 템플릿 |
+| `wbs.md` | 운영 | 전체 진행률 94.2% |
 
 ### Completed (2026-01-22)
 - [x] 코드 단순화 리팩토링 (YAGNI 원칙 적용)
