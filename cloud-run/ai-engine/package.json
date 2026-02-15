@@ -22,10 +22,10 @@
     "prompt:cache:clear": "promptfoo cache clear"
   },
   "dependencies": {
-    "@ai-sdk/cerebras": "^2.0.2",
-    "@ai-sdk/google": "^3.0.15",
-    "@ai-sdk/groq": "^2.0.33",
-    "@ai-sdk/mistral": "^3.0.1",
+    "@ai-sdk/cerebras": "^2.0.33",
+    "@ai-sdk/google": "^3.0.29",
+    "@ai-sdk/groq": "^3.0.24",
+    "@ai-sdk/mistral": "^3.0.20",
     "@ai-sdk/openai": "^3.0.29",
     "@hono/node-server": "^1.19.7",
     "@llamaindex/groq": "^0.0.94",
@@ -34,7 +34,7 @@
     "@supabase/supabase-js": "^2.47.7",
     "@tavily/core": "^0.6.0",
     "@upstash/redis": "^1.36.0",
-    "ai": "^6.0.50",
+    "ai": "^6.0.86",
     "dotenv": "^16.4.7",
     "hono": "^4.11.1",
     "isolation-forest": "^0.0.9",

@@ -55,8 +55,8 @@ export function getVisionAgentConfig(): AgentConfig | null {
 /**
  * Check if Vision Agent is available
  *
- * Vision Agent requires Gemini API key to be configured.
- * Unlike other agents, it has NO fallback - either Gemini works or Vision is disabled.
+ * Vision Agent requires at least one vision provider to be configured.
+ * Fallback chain: Gemini (primary) -> OpenRouter.
  *
  * @deprecated Use AgentFactory.isAvailable('vision') instead
  */
@@ -67,7 +67,7 @@ export function isVisionAgentAvailable(): boolean {
 /**
  * Create a new Vision Agent instance
  *
- * Returns null if Gemini is not configured (graceful degradation).
+ * Returns null if no vision provider is configured (graceful degradation).
  *
  * @example
  * ```typescript
@@ -76,7 +76,7 @@ export function isVisionAgentAvailable(): boolean {
  *   const result = await agent.run('이 대시보드 스크린샷 분석해줘');
  *   console.log(result.text);
  * } else {
- *   console.log('Vision Agent unavailable - Gemini not configured');
+ *   console.log('Vision Agent unavailable - no vision provider configured');
  * }
  * ```
  */
@@ -159,11 +159,11 @@ export function getVisionAgentOrFallback(query: string): {
 
   // Vision unavailable - check if query needs vision
   if (isVisionQuery(query)) {
-    logger.warn('⚠️ [Vision Agent] Vision features requested but Gemini unavailable, falling back to Analyst Agent');
+    logger.warn('⚠️ [Vision Agent] Vision features requested but no vision provider available, falling back to Analyst Agent');
     return {
       agent: AgentFactory.create('analyst'),
       isFallback: true,
-      fallbackReason: 'Gemini API not configured - using Analyst Agent as fallback (limited visual analysis)',
+      fallbackReason: 'Vision providers unavailable (Gemini/OpenRouter) - using Analyst Agent as fallback (limited visual analysis)',
     };
   }
 

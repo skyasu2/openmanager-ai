@@ -143,7 +143,7 @@ export class AdvisorAgent extends BaseAgent {
 
 /**
  * Vision Agent - Screenshot analysis, large log analysis, Google Search Grounding
- * Uses Gemini Flash-Lite exclusively (no fallback)
+ * Uses Gemini Flash-Lite with OpenRouter fallback
  */
 export class VisionAgent extends BaseAgent {
   getName(): string {
@@ -155,12 +155,12 @@ export class VisionAgent extends BaseAgent {
   }
 
   /**
-   * Vision Agent has special availability check since it uses Gemini only
+   * Vision Agent has special availability check since it uses vision-provider fallback chain
    */
   override isAvailable(): boolean {
     const config = this.getConfig();
     if (!config) return false;
-    // Vision Agent is only available when Gemini is configured
+    // Vision Agent is available when Gemini or OpenRouter is configured
     const model = config.getModel();
     return model !== null;
   }

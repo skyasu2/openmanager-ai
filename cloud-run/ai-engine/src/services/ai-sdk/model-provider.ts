@@ -8,8 +8,8 @@
  * - Vision: Gemini Flash-Lite (1M context, Vision, Search Grounding)
  *
  * @version 3.0.0
- * @updated 2026-01-12 - Removed OpenRouter (free tier tool calling unreliable)
  * @updated 2026-01-27 - Added Gemini Flash-Lite for Vision Agent
+ * @updated 2026-02-14 - Added OpenRouter fallback for Vision Agent
  */
 
 import { createCerebras } from '@ai-sdk/cerebras';
