@@ -109,7 +109,7 @@ app.onError((err, c) => {
 app.get('/health', (c: Context) =>
   c.json({
     status: 'ok',
-    service: 'ai-engine-v5',
+    service: 'ai-engine',
     version: APP_VERSION,
     config: getConfigStatus(),
     redis: isRedisAvailable(),

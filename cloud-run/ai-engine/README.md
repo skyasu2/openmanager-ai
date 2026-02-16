@@ -254,8 +254,8 @@ bash deploy.sh
 # Skip local Docker preflight when needed
 LOCAL_DOCKER_PREFLIGHT=false bash deploy.sh
 
-# Service URL
-https://ai-engine-490817238363.asia-northeast1.run.app
+# Service URL (dynamic lookup)
+gcloud run services describe ai-engine --region asia-northeast1 --format='value(status.url)'
 ```
 
 ## Docker

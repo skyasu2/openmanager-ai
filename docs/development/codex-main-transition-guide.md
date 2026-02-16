@@ -5,7 +5,7 @@
 > Owner: dev-experience
 > Status: Active Supporting
 > Doc type: Explanation
-> Last reviewed: 2026-02-14
+> Last reviewed: 2026-02-17
 > Canonical: docs/development/README.md
 > Tags: codex,skills,github-workflow
 
@@ -19,11 +19,10 @@
 
 | 항목 | Claude Skill | 평가 | Codex 반영 상태 |
 |---|---|---|---|
-| Cloud Run 배포 | `.claude/skills/cloud-run-deploy` | 높음: 배포 전후 점검/롤백 절차가 실무적 | `openmanager-cloud-run-deploy` (완료) |
-| GCP 비용 점검 | `.claude/skills/gcp-cost-check` | 높음: 머신타입 과금 리스크 탐지에 직접적 | `openmanager-gcp-cost-check` (완료) |
-| Lint/Smoke | `.claude/skills/lint-smoke` | 높음: 품질 게이트 표준화 | `openmanager-lint-smoke` (기존 운영) |
-| Commit 워크플로우 | `.claude/skills/commit-commands` | 중간: 구조는 유용, Claude 전용 리뷰 결합은 분리 필요 | `openmanager-commit-workflow` (기존 운영) |
-| GitHub Deploy | `.claude/skills/github-deploy` | 높음: MCP 우선 + WSL `gh auth` fallback 표준으로 갱신 | `openmanager-github-deploy-safe` (완료) |
+| Cloud Run 배포+비용 | `.claude/skills/cloud-run` | 높음: 배포/비용/CLI 접근 통합 | `openmanager-cloud-run` (병합 완료) |
+| Lint/Smoke | `.claude/skills/lint-smoke` | 높음: 품질 게이트 표준화 | `openmanager-lint-smoke` (유지) |
+| Git 워크플로우 | `.claude/skills/git-workflow` | 높음: commit+push+PR 통합 | `openmanager-git-workflow` (병합 완료) |
+| Code Review | `.claude/skills/code-review` | 높음: 6-관점 severity 리뷰 | `openmanager-code-review` (v2.0 갱신) |
 
 ## 적용 원칙
 
@@ -41,15 +40,14 @@
 1. 검증 결과 포함 보고
 - "무엇을 변경했고, 왜 변경했고, 무엇으로 검증했는지"를 짧게 고정 포맷으로 보고
 
-## Codex 메인 운영 시 기본 스킬 세트
+## Codex 메인 운영 시 기본 스킬 세트 (6개)
 
-- `openmanager-cloud-cli-access-check`
-- `openmanager-lint-smoke`
-- `openmanager-commit-workflow`
-- `openmanager-github-deploy-safe`
-- `openmanager-cloud-run-deploy`
-- `openmanager-gcp-cost-check`
-- `openmanager-stitch-incremental`
+- `openmanager-git-workflow` — Git 커밋/푸시/PR (commit-workflow + github-deploy-safe 병합)
+- `openmanager-cloud-run` — Cloud Run 배포 + 비용 + CLI 접근 (3개 병합)
+- `openmanager-code-review` — Agile 6-관점 severity 리뷰 (v2.0)
+- `openmanager-lint-smoke` — Lint + 테스트 스모크 체크
+- `openmanager-doc-management` — 문서 예산 관리
+- `openmanager-stitch-incremental` — Stitch UI 점진 개선
 
 ## 점검 루틴 (주 1회 권장)
 

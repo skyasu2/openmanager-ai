@@ -2,6 +2,9 @@
 name: clean_gone
 version: v1.0.0
 description: Cleans up all git branches marked as [gone] (branches that have been deleted on the remote but still exist locally), including removing associated worktrees.
+user-invocable: true
+allowed-tools: Bash
+disable-model-invocation: true
 ---
 
 # Clean Gone Branches
@@ -30,9 +33,9 @@ git branch -vv | grep ': gone]' | awk '{print $1}' | xargs -r git branch -D
 ## Output
 
 ```
-🧹 정리된 브랜치:
+정리된 브랜치:
 - feature/old-feature
 - fix/completed-bug
 
-✅ 총 2개 브랜치 삭제됨
+총 2개 브랜치 삭제됨
 ```

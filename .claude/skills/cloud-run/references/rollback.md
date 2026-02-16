@@ -39,7 +39,8 @@ gcloud run services describe ai-engine \
   --format='yaml(status.traffic)'
 
 # Health check
-curl -s https://ai-engine-490817238363.asia-northeast1.run.app/health | jq
+SERVICE_URL=$(gcloud run services describe ai-engine --region asia-northeast1 --format='value(status.url)')
+curl -s ${SERVICE_URL}/health | jq
 ```
 
 ---

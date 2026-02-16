@@ -4,6 +4,7 @@ description: 문서 현황 점검, 예산 초과 감지, 병합/아카이브 제
 version: v1.2.0
 user-invocable: true
 allowed-tools: Bash, Read, Grep, Glob, Edit, Write
+disable-model-invocation: true
 ---
 
 # 문서 관리 스킬
@@ -93,6 +94,8 @@ find docs/ -name "*.md" -not -path "*/archived/*" -mtime +90
 ## Related Skills
 
 - `lint-smoke` - 코드 품질 점검 (문서 점검과 병행 가능)
+- `git-workflow` - 정리 후 커밋
+- `cloud-run` - 배포 전 문서 점검
 
 ## Changelog
 

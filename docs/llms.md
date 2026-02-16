@@ -71,7 +71,8 @@ git push --follow-tags # Deploy to Vercel
 
 ### AI Engine
 ```bash
-curl https://ai-engine-490817238363.asia-northeast1.run.app/health  # Health check
+SERVICE_URL=$(gcloud run services describe ai-engine --region asia-northeast1 --format='value(status.url)')
+curl $SERVICE_URL/health  # Health check
 ```
 
 ## Important Constraints

@@ -66,7 +66,8 @@ gcloud builds submit --timeout=900s
 ```bash
 # 30초 대기 후 재시도
 sleep 30
-curl -s https://ai-engine-490817238363.asia-northeast1.run.app/health | jq
+SERVICE_URL=$(gcloud run services describe ai-engine --region asia-northeast1 --format='value(status.url)')
+curl -s ${SERVICE_URL}/health | jq
 
 # 환경변수 확인
 gcloud run services describe ai-engine --region asia-northeast1 --format='yaml(spec.template.spec.containers[0].env)'
@@ -96,7 +97,8 @@ gcloud auth application-default login
 gcloud config get-value project
 
 # 권한 확인
-gcloud projects get-iam-policy openmanager-free-tier --flatten="bindings[].members" --format='table(bindings.role)'
+PROJECT_ID=$(gcloud config get-value project)
+gcloud projects get-iam-policy "$PROJECT_ID" --flatten="bindings[].members" --format='table(bindings.role)'
 ```
 
 ---

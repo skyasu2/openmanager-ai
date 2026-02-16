@@ -17,13 +17,13 @@
 
 | Skill | 설명 |
 |-------|------|
-| `commit-commands` | Git 커밋 워크플로우 (commit, commit-push-pr, clean_gone) |
+| `git-workflow` | Git 커밋/푸시/PR 워크플로우 (commit, clean_gone) |
+| `cloud-run` | Cloud Run 배포 + GCP 비용 점검 |
+| `code-review` | Agile 6-관점 severity 기반 코드리뷰 |
 | `lint-smoke` | Lint + 테스트 스모크 체크 |
-| `github-deploy` | GitHub MCP 기반 push/PR (`gh auth` 불필요) |
-| `cloud-run-deploy` | Cloud Run AI Engine 배포 |
-| `gcp-cost-check` | GCP 비용 조회, Free Tier 사용량 분석 |
+| `doc-management` | 문서 현황 점검, 예산 관리 |
 
-> Built-in skills: `review` (코드 품질), `code-review` (PR 리뷰), `frontend-design` (UI 생성)
+> Built-in skills: `review` (코드 품질), `frontend-design` (UI 생성)
 
 ## CLI Tools (WSL)
 

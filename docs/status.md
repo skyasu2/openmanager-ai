@@ -451,13 +451,11 @@
 ## 🐳 Infrastructure Status (2026-01-20)
 
 **Cloud Run AI Engine**
-- **Service URL**: `https://ai-engine-490817238363.asia-northeast1.run.app`
-- **Active Revision**: `ai-engine-00201-b5p` (2026-02-03, Gemini API 키 복구)
-- **Health**: ✅ All providers connected (Supabase, Upstash, Groq, Mistral, Cerebras, Tavily, **Gemini**, Langfuse)
-- **Observability**:
-  - Langfuse (10% sampling, 무료 티어 보호)
-  - Sentry (Node.js SDK, 글로벌 에러 핸들링)
-- **Features**: cpu-boost, session-affinity, gen2, 512Mi/1vCPU
+- **Service URL**: `gcloud run services describe ai-engine --region asia-northeast1 --format='value(status.url)'`
+- **Health**: ✅ All providers connected (Supabase, Upstash, Groq, Mistral, Cerebras, Tavily, Gemini, OpenRouter, Langfuse)
+- **Agents**: 7개 (NLQ, Analyst, Reporter, Advisor, Vision, Evaluator, Optimizer)
+- **Observability**: Langfuse (10% sampling, 무료 티어 보호)
+- **Features**: cpu-boost, cpu-throttling, no-session-affinity, gen2, 512Mi/1vCPU, max-instances=1
 
 **Error Monitoring (Sentry)**
 - **Vercel (Next.js)**: `@sentry/nextjs` SDK 통합
