@@ -2,21 +2,21 @@
   "schemaVersion": "1.0.0",
   "generatedAt": "2026-02-15T03:56:42.075Z",
   "serverIds": [
-    "api-was-icn-01",
-    "api-was-icn-02",
-    "api-was-pus-01",
-    "cache-redis-icn-01",
-    "cache-redis-icn-02",
-    "db-mysql-icn-primary",
-    "db-mysql-icn-replica",
-    "db-mysql-pus-dr",
-    "lb-haproxy-icn-01",
-    "lb-haproxy-pus-01",
-    "storage-nfs-icn-01",
-    "storage-s3gw-pus-01",
-    "web-nginx-icn-01",
-    "web-nginx-icn-02",
-    "web-nginx-pus-01"
+    "api-was-dc1-01",
+    "api-was-dc1-02",
+    "api-was-dc1-03",
+    "cache-redis-dc1-01",
+    "cache-redis-dc1-02",
+    "db-mysql-dc1-primary",
+    "db-mysql-dc1-replica",
+    "db-mysql-dc1-backup",
+    "lb-haproxy-dc1-01",
+    "lb-haproxy-dc1-02",
+    "storage-nfs-dc1-01",
+    "storage-s3gw-dc1-01",
+    "web-nginx-dc1-01",
+    "web-nginx-dc1-02",
+    "web-nginx-dc1-03"
   ],
   "timestamps": [
     1770994800, 1770995400, 1770996000, 1770996600, 1770997200, 1770997800,
@@ -681,7 +681,7 @@
         0.22, 0.25, 0.24, 0.25, 0.27, 0.23, 0.24, 0.26, 0.24, 0.23, 0.24, 0.23
       ]
     ],
-    "system.network.io": [
+    "system.network.utilization": [
       [
         0.01, 0.01, 0, 0.01, 0.01, 0.01, 0, 0, 0.01, 0, 0, 0.01, 0.01, 0.01,
         0.01, 0.01, 0, 0.01, 0.01, 0, 0.01, 0, 0, 0.01, 0.01, 0, 0.01, 0, 0.01,

@@ -36,20 +36,26 @@ interface PrometheusMetricResult {
 type MetricExtractor = (m: ApiServerMetrics) => string;
 
 const METRIC_REGISTRY: Record<string, MetricExtractor> = {
-  cpu_usage_percent: (m) => m.cpu.toString(),
-  memory_usage_percent: (m) => m.memory.toString(),
-  disk_usage_percent: (m) => m.disk.toString(),
-  network_throughput_bytes: (m) => m.network.toString(),
-  server_status: (m) => {
+  // Utilization metrics: percent(0-100) → ratio(0-1), fixed precision to avoid round-trip loss
+  node_cpu_utilization_ratio: (m) => (m.cpu / 100).toFixed(4),
+  node_memory_utilization_ratio: (m) => (m.memory / 100).toFixed(4),
+  node_filesystem_utilization_ratio: (m) => (m.disk / 100).toFixed(4),
+  node_network_utilization_ratio: (m) => (m.network / 100).toFixed(4),
+  // Status: custom prefix for project-specific metric
+  openmanager_server_status: (m) => {
     if (m.status === 'offline') return '3';
     if (m.status === 'critical') return '2';
     if (m.status === 'warning') return '1';
     return '0'; // online/healthy
   },
-  load_avg_1m: (m) => (m.loadAvg1 ?? 0).toString(),
-  load_avg_5m: (m) => (m.loadAvg5 ?? 0).toString(),
-  response_time_ms: (m) => (m.responseTimeMs ?? 0).toString(),
-  procs_running: (m) => (m.procsRunning ?? 0).toString(),
+  // Load & process: node_exporter compatible names
+  node_load1: (m) => (m.loadAvg1 ?? 0).toString(),
+  node_load5: (m) => (m.loadAvg5 ?? 0).toString(),
+  node_procs_running: (m) => (m.procsRunning ?? 0).toString(),
+  // Duration: base unit = seconds (Prometheus convention)
+  http_server_request_duration_seconds: (m) =>
+    ((m.responseTimeMs ?? 0) / 1000).toString(),
+  // Static node info
   node_boot_time_seconds: (m) => (m.bootTimeSeconds ?? 0).toString(),
   node_cpu_cores: (m) => (m.nodeInfo?.cpuCores ?? 0).toString(),
   node_memory_total_bytes: (m) =>
@@ -59,18 +65,18 @@ const METRIC_REGISTRY: Record<string, MetricExtractor> = {
 
 /** 쿼리에서 메트릭 이름을 추출 (간이 PromQL 파서) */
 function extractMetricName(query: string): string | null {
-  // 함수 래핑 제거: avg(cpu_usage_percent) → cpu_usage_percent
+  // 함수 래핑 제거: avg(node_cpu_utilization_ratio) → node_cpu_utilization_ratio
   const unwrapped = query
     .replace(/^(avg|sum|min|max|count|rate|irate|increase)\s*\(/i, '')
     .replace(/\)\s*$/, '');
 
-  // 레이블 셀렉터 제거: cpu_usage_percent{instance="web-01"} → cpu_usage_percent
+  // 레이블 셀렉터 제거: node_cpu_utilization_ratio{instance="web-01"} → node_cpu_utilization_ratio
   const metricName = unwrapped.replace(/\{[^}]*\}/, '').trim();
 
   // 레지스트리에서 정확 매칭
   if (METRIC_REGISTRY[metricName]) return metricName;
 
-  // 부분 매칭 (cpu_usage → cpu_usage_percent)
+  // 부분 매칭 (node_cpu → node_cpu_utilization_ratio)
   for (const key of Object.keys(METRIC_REGISTRY)) {
     if (key.includes(metricName) || metricName.includes(key)) return key;
   }

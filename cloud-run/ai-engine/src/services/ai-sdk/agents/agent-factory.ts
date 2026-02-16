@@ -13,8 +13,9 @@
  * }
  * ```
  *
- * @version 1.0.0
+ * @version 2.0.0 - ConfigBasedAgent consolidation, removed per-type subclasses
  * @created 2026-01-27
+ * @updated 2026-02-16 - ToolLoopAgent migration
  */
 
 import { BaseAgent, type AgentResult, type AgentRunOptions, type AgentStreamEvent } from './base-agent';
@@ -64,11 +65,12 @@ const CONFIG_KEY_TO_AGENT_TYPE: Record<string, AgentType> = {
 };
 
 // ============================================================================
-// Concrete Agent Implementations
+// Concrete Agent Implementation (ConfigBasedAgent)
 // ============================================================================
 
 /**
- * Generic Agent implementation that wraps any AgentConfig
+ * Config-driven Agent implementation that wraps any AgentConfig.
+ * All 7 agent types use this single class — no per-type subclass needed.
  */
 class ConfigBasedAgent extends BaseAgent {
   private readonly configKey: string;
@@ -86,109 +88,6 @@ class ConfigBasedAgent extends BaseAgent {
 
   getConfig(): AgentConfig | null {
     return AGENT_CONFIGS[this.configKey] ?? null;
-  }
-}
-
-/**
- * NLQ Agent - Natural Language Query processing
- */
-export class NLQAgent extends BaseAgent {
-  getName(): string {
-    return 'NLQ Agent';
-  }
-
-  getConfig(): AgentConfig | null {
-    return AGENT_CONFIGS['NLQ Agent'] ?? null;
-  }
-}
-
-/**
- * Analyst Agent - Anomaly detection, trend prediction, pattern analysis
- */
-export class AnalystAgent extends BaseAgent {
-  getName(): string {
-    return 'Analyst Agent';
-  }
-
-  getConfig(): AgentConfig | null {
-    return AGENT_CONFIGS['Analyst Agent'] ?? null;
-  }
-}
-
-/**
- * Reporter Agent - Incident reports and timelines
- */
-export class ReporterAgent extends BaseAgent {
-  getName(): string {
-    return 'Reporter Agent';
-  }
-
-  getConfig(): AgentConfig | null {
-    return AGENT_CONFIGS['Reporter Agent'] ?? null;
-  }
-}
-
-/**
- * Advisor Agent - Troubleshooting guides and command recommendations
- */
-export class AdvisorAgent extends BaseAgent {
-  getName(): string {
-    return 'Advisor Agent';
-  }
-
-  getConfig(): AgentConfig | null {
-    return AGENT_CONFIGS['Advisor Agent'] ?? null;
-  }
-}
-
-/**
- * Vision Agent - Screenshot analysis, large log analysis, Google Search Grounding
- * Uses Gemini Flash-Lite with OpenRouter fallback
- */
-export class VisionAgent extends BaseAgent {
-  getName(): string {
-    return 'Vision Agent';
-  }
-
-  getConfig(): AgentConfig | null {
-    return AGENT_CONFIGS['Vision Agent'] ?? null;
-  }
-
-  /**
-   * Vision Agent has special availability check since it uses vision-provider fallback chain
-   */
-  override isAvailable(): boolean {
-    const config = this.getConfig();
-    if (!config) return false;
-    // Vision Agent is available when Gemini or OpenRouter is configured
-    const model = config.getModel();
-    return model !== null;
-  }
-}
-
-/**
- * Evaluator Agent - Report quality evaluation (internal use)
- */
-export class EvaluatorAgent extends BaseAgent {
-  getName(): string {
-    return 'Evaluator Agent';
-  }
-
-  getConfig(): AgentConfig | null {
-    return AGENT_CONFIGS['Evaluator Agent'] ?? null;
-  }
-}
-
-/**
- * Optimizer Agent - Report quality improvement (internal use)
- */
-export class OptimizerAgent extends BaseAgent {
-  getName(): string {
-    return 'Optimizer Agent';
-  }
-
-  getConfig(): AgentConfig | null {
-    return AGENT_CONFIGS['Optimizer Agent'] ?? null;
   }
 }
 
@@ -214,34 +113,13 @@ export class AgentFactory {
    * ```
    */
   static create(type: AgentType): BaseAgent | null {
-    let agent: BaseAgent;
-
-    switch (type) {
-      case 'nlq':
-        agent = new NLQAgent();
-        break;
-      case 'analyst':
-        agent = new AnalystAgent();
-        break;
-      case 'reporter':
-        agent = new ReporterAgent();
-        break;
-      case 'advisor':
-        agent = new AdvisorAgent();
-        break;
-      case 'vision':
-        agent = new VisionAgent();
-        break;
-      case 'evaluator':
-        agent = new EvaluatorAgent();
-        break;
-      case 'optimizer':
-        agent = new OptimizerAgent();
-        break;
-      default:
-        logger.warn(`⚠️ [AgentFactory] Unknown agent type: ${type}`);
-        return null;
+    const configKey = AGENT_TYPE_TO_CONFIG_KEY[type];
+    if (!configKey) {
+      logger.warn(`⚠️ [AgentFactory] Unknown agent type: ${type}`);
+      return null;
     }
+
+    const agent = new ConfigBasedAgent(configKey);
 
     // Check availability
     if (!agent.isAvailable()) {
@@ -390,5 +268,5 @@ export async function* streamAgent(
 // Exports
 // ============================================================================
 
-export { AGENT_TYPE_TO_CONFIG_KEY, CONFIG_KEY_TO_AGENT_TYPE };
+export { BaseAgent, AGENT_TYPE_TO_CONFIG_KEY, CONFIG_KEY_TO_AGENT_TYPE };
 export type { AgentResult, AgentRunOptions, AgentStreamEvent };

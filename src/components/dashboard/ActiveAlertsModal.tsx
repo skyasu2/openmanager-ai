@@ -115,7 +115,7 @@ export function ActiveAlertsModal({
                 >
                   <div className="flex items-center gap-3 min-w-0">
                     <span
-                      className={`inline-flex shrink-0 rounded-md border px-2 py-0.5 text-[10px] font-bold uppercase ${severityBadge[alert.severity]}`}
+                      className={`inline-flex shrink-0 rounded-md border px-2 py-0.5 text-2xs font-bold uppercase ${severityBadge[alert.severity]}`}
                     >
                       {alert.severity}
                     </span>

@@ -133,7 +133,7 @@ export class MonitoringContext {
       const typeCounts = new Map<string, number>();
       const zones = new Set<string>();
       for (const r of resources) {
-        const type = r['host.type'];
+        const type = r['server.role'];
         typeCounts.set(type, (typeCounts.get(type) || 0) + 1);
         zones.add(r['cloud.availability_zone']);
       }
@@ -145,10 +145,10 @@ export class MonitoringContext {
         .join(', ')})\n`;
       ctx += `Zones: ${Array.from(zones).join(', ')}\n`;
       ctx += `Metric Schema (OTel → PromQL alias):\n`;
-      ctx += `  system.cpu.utilization (alias: node_cpu_usage_percent), ratio 0-1\n`;
-      ctx += `  system.memory.utilization (alias: node_memory_usage_percent), ratio 0-1\n`;
-      ctx += `  system.filesystem.utilization (alias: node_filesystem_usage_percent), ratio 0-1\n`;
-      ctx += `  system.network.io (alias: node_network_transmit_bytes_rate), normalized utilization %\n`;
+      ctx += `  system.cpu.utilization (alias: node_cpu_utilization_ratio), ratio 0-1\n`;
+      ctx += `  system.memory.utilization (alias: node_memory_utilization_ratio), ratio 0-1\n`;
+      ctx += `  system.filesystem.utilization (alias: node_filesystem_utilization_ratio), ratio 0-1\n`;
+      ctx += `  system.network.utilization (alias: node_network_utilization_ratio), ratio 0-1\n`;
       ctx += `Query: Both OTel and Prometheus names accepted in queryMetric()\n`;
 
       return ctx;
@@ -161,10 +161,10 @@ export class MonitoringContext {
    * PromQL 스타일 내부 쿼리 실행
    *
    * @example
-   *   queryMetric('node_cpu_usage_percent{server_type="web"}')
-   *   queryMetric('avg(node_cpu_usage_percent) by (server_type)')
+   *   queryMetric('node_cpu_utilization_ratio{server_type="web"}')
+   *   queryMetric('avg(node_cpu_utilization_ratio) by (server_type)')
    *   queryMetric('up == 0')
-   *   queryMetric('rate(node_cpu_usage_percent[1h])')
+   *   queryMetric('rate(node_cpu_utilization_ratio[1h])')
    */
   queryMetric(promql: string): PromQLResult {
     const minuteOfDay = getKSTMinuteOfDay();

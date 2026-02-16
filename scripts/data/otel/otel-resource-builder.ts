@@ -32,10 +32,10 @@ export function buildResourceAttributes(
     'service.name': 'openmanager-ai',
     'host.name': labels.hostname,
     'host.id': serverId,
-    'host.type': labels.server_type,
+    'server.role': labels.server_type,
     'os.type': labels.os,
     'os.description': `${labels.os} ${labels.os_version}`,
-    'cloud.region': 'kr-seoul',
+    'cloud.region': 'onprem-dc1',
     'cloud.availability_zone': labels.datacenter,
     'deployment.environment': labels.environment,
   };

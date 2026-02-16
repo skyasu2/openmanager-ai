@@ -1,5 +1,6 @@
 'use client';
 
+import { Maximize2 } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import { memo, Suspense, useEffect, useRef, useState } from 'react';
 import {
@@ -16,6 +17,7 @@ import { AlertHistoryModal } from './alert-history/AlertHistoryModal';
 import { DashboardSummary } from './DashboardSummary';
 import { LogExplorerModal } from './log-explorer/LogExplorerModal';
 import { SystemOverviewSection } from './SystemOverviewSection';
+import { TopologyModal } from './TopologyModal';
 import type { DashboardStats } from './types/dashboard.types';
 
 interface DashboardStatus {
@@ -128,6 +130,7 @@ export default memo(function DashboardContent({
   const [alertHistoryOpen, setAlertHistoryOpen] = useState(false);
   const [logExplorerOpen, setLogExplorerOpen] = useState(false);
   const [activeAlertsOpen, setActiveAlertsOpen] = useState(false);
+  const [topologyModalOpen, setTopologyModalOpen] = useState(false);
 
   // 🎯 서버 데이터에서 직접 통계 계산 (중복 API 호출 제거)
   const [statsLoading, _setStatsLoading] = useState(false);
@@ -244,44 +247,40 @@ export default memo(function DashboardContent({
                 onFilterChange={onStatusFilterChange}
                 onOpenAlertHistory={() => setAlertHistoryOpen(true)}
                 onOpenLogExplorer={() => setLogExplorerOpen(true)}
+                showTopology={showTopology}
+                onToggleTopology={() => setShowTopology((prev) => !prev)}
                 activeAlertsCount={monitoringReport?.firingAlerts?.length ?? 0}
                 onOpenActiveAlerts={() => setActiveAlertsOpen(true)}
               />
 
-              {/* Infrastructure Topology (Collapsible) */}
-              <div className="rounded-xl border border-white/10 bg-white/5 backdrop-blur-md">
-                <button
-                  type="button"
-                  onClick={() => setShowTopology((prev) => !prev)}
-                  aria-expanded={showTopology}
-                  className="flex w-full items-center justify-between px-5 py-3 text-left text-sm font-medium text-gray-300 transition-colors hover:text-white cursor-pointer"
-                >
-                  <span>Infrastructure Topology (15 Servers)</span>
-                  <span
-                    aria-hidden="true"
-                    className={`transition-transform duration-200 ${showTopology ? 'rotate-180' : ''}`}
-                  >
-                    &#9660;
-                  </span>
-                </button>
-                {showTopology && (
-                  <div className="border-t border-white/10 px-2 pb-4">
-                    <Suspense
-                      fallback={
-                        <div className="flex items-center justify-center py-12">
-                          <div className="h-6 w-6 animate-spin rounded-full border-2 border-blue-400 border-t-transparent" />
-                        </div>
-                      }
+              {/* Infrastructure Topology (Summary 버튼으로 토글) */}
+              {showTopology && (
+                <div className="group relative rounded-xl border border-gray-200/80 bg-white/70 px-2 pb-4 pt-2 shadow-xs backdrop-blur-md">
+                  <div className="absolute top-3 right-3 z-10 opacity-0 transition-opacity group-hover:opacity-100">
+                    <button
+                      onClick={() => setTopologyModalOpen(true)}
+                      className="flex items-center gap-1.5 rounded-lg bg-slate-900/80 px-2.5 py-1.5 text-[10px] font-bold text-white backdrop-blur-sm transition-all hover:bg-slate-800 cursor-pointer shadow-lg"
                     >
-                      <ReactFlowDiagramDynamic
-                        diagram={TOPOLOGY_DIAGRAM}
-                        compact
-                        showControls
-                      />
-                    </Suspense>
+                      <Maximize2 size={12} />
+                      FULL VIEW
+                    </button>
                   </div>
-                )}
-              </div>
+                  <Suspense
+                    fallback={
+                      <div className="flex items-center justify-center py-12">
+                        <div className="h-6 w-6 animate-spin rounded-full border-2 border-blue-400 border-t-transparent" />
+                      </div>
+                    }
+                  >
+                    <ReactFlowDiagramDynamic
+                      diagram={TOPOLOGY_DIAGRAM}
+                      compact
+                      showControls
+                      servers={servers}
+                    />
+                  </Suspense>
+                </div>
+              )}
 
               {/* ======== System Overview: 리소스 평균 + 주요 경고 통합 ======== */}
               <SystemOverviewSection servers={servers} />
@@ -319,6 +318,15 @@ export default memo(function DashboardContent({
                   open={activeAlertsOpen}
                   onClose={() => setActiveAlertsOpen(false)}
                   alerts={monitoringReport?.firingAlerts ?? []}
+                />
+              )}
+
+              {/* Topology Modal */}
+              {topologyModalOpen && (
+                <TopologyModal
+                  open={topologyModalOpen}
+                  onClose={() => setTopologyModalOpen(false)}
+                  servers={allServers?.length ? allServers : servers}
                 />
               )}
 

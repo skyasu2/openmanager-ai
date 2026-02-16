@@ -399,7 +399,7 @@ export default function EnhancedServerModal({
                     serverContext={{
                       hostname: safeServer.hostname || safeServer.id,
                       environment: safeServer.environment || 'production',
-                      datacenter: safeServer.location || 'Seoul-ICN-AZ1',
+                      datacenter: safeServer.location || 'DC1-AZ1',
                       serverType: safeServer.type || 'web',
                     }}
                     serverLogs={server?.logs}

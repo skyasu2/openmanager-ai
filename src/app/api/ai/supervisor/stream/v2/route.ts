@@ -21,6 +21,7 @@ import {
   createUIMessageStreamResponse,
   generateId,
 } from 'ai';
+import { createHash } from 'crypto';
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
@@ -30,7 +31,7 @@ import {
   type HybridMessage,
   normalizeMessagesForCloudRun,
 } from '@/lib/ai/utils/message-normalizer';
-import { withAuth } from '@/lib/auth/api-auth';
+import { getAPIAuthContext, withAuth } from '@/lib/auth/api-auth';
 import { logger } from '@/lib/logging';
 import { rateLimiters, withRateLimit } from '@/lib/security/rate-limiter';
 import { requestSchemaLoose } from '../../schemas';
@@ -63,6 +64,82 @@ const UI_MESSAGE_STREAM_HEADERS = {
   Connection: 'keep-alive',
   'x-vercel-ai-ui-message-stream': 'v1',
 };
+
+const NORMALIZED_MESSAGE_SCHEMA = z.object({
+  role: z.enum(['user', 'assistant', 'system']),
+  content: z.string().min(1).max(50_000),
+  images: z
+    .array(
+      z.object({
+        data: z
+          .string()
+          .min(1)
+          .max(14 * 1024 * 1024),
+        mimeType: z.string().min(1).max(255),
+        name: z.string().max(255).optional(),
+      })
+    )
+    .optional(),
+  files: z
+    .array(
+      z.object({
+        data: z
+          .string()
+          .min(1)
+          .max(14 * 1024 * 1024),
+        mimeType: z.string().min(1).max(255),
+        name: z.string().max(255).optional(),
+      })
+    )
+    .optional(),
+});
+
+const NORMALIZED_MESSAGES_SCHEMA = z
+  .array(NORMALIZED_MESSAGE_SCHEMA)
+  .min(1)
+  .max(50);
+
+const MAX_CONTEXT_MESSAGES = 24;
+
+function hashValue(value: string): string {
+  return createHash('sha256').update(value).digest('hex').slice(0, 20);
+}
+
+function getStreamOwnerKey(req: NextRequest): string {
+  const authContext = getAPIAuthContext(req);
+  if (authContext?.userId) {
+    return `user:${hashValue(authContext.userId)}`;
+  }
+  if (authContext?.keyFingerprint) {
+    return `api:${authContext.keyFingerprint}`;
+  }
+
+  const apiKey = req.headers.get('x-api-key');
+  if (apiKey) return `api:${hashValue(apiKey)}`;
+
+  const cookieHeader = req.headers.get('cookie');
+  if (cookieHeader) return `cookie:${hashValue(cookieHeader)}`;
+
+  const testSecret = req.headers.get('x-test-secret');
+  if (testSecret) return `test:${hashValue(testSecret)}`;
+
+  const ip =
+    req.headers.get('x-real-ip') || req.headers.get('x-forwarded-for') || '';
+  const ua = req.headers.get('user-agent') || '';
+  return `fp:${hashValue(`${ip}|${ua}`)}`;
+}
+
+function trimMessagesForContext(messages: HybridMessage[]): HybridMessage[] {
+  if (messages.length <= MAX_CONTEXT_MESSAGES) {
+    return messages;
+  }
+
+  const systemMessages = messages.filter((m) => m.role === 'system').slice(-2);
+  const nonSystemMessages = messages.filter((m) => m.role !== 'system');
+  const tailLimit = Math.max(1, MAX_CONTEXT_MESSAGES - systemMessages.length);
+
+  return [...systemMessages, ...nonSystemMessages.slice(-tailLimit)];
+}
 
 /** Cloud Run 연결 실패 시 UIMessageStream 형식으로 에러 반환 */
 function createStreamErrorResponse(errorMessage: string): Response {
@@ -109,13 +186,14 @@ const resumeStreamHandler = async (req: NextRequest) => {
     );
   }
   const sessionId = sessionIdResult.data;
+  const ownerKey = getStreamOwnerKey(req);
 
   logger.info(
     `🔄 [SupervisorStreamV2] Resume request for session: ${sessionId}, skip: ${skipChunks}`
   );
 
   // Check for active stream in Redis
-  const activeStreamId = await getActiveStreamId(sessionId);
+  const activeStreamId = await getActiveStreamId(sessionId, ownerKey);
 
   if (!activeStreamId) {
     logger.debug(
@@ -132,7 +210,7 @@ const resumeStreamHandler = async (req: NextRequest) => {
     logger.debug(
       `[SupervisorStreamV2] Stream not found in Redis: ${activeStreamId}`
     );
-    await clearActiveStreamId(sessionId);
+    await clearActiveStreamId(sessionId, ownerKey);
     return new Response(null, { status: 204 });
   }
 
@@ -154,14 +232,14 @@ const resumeStreamHandler = async (req: NextRequest) => {
     logger.warn(
       `[SupervisorStreamV2] Failed to resume stream: ${activeStreamId}`
     );
-    await clearActiveStreamId(sessionId);
+    await clearActiveStreamId(sessionId, ownerKey);
     return new Response(null, { status: 204 });
   }
 
   // 🎯 CODEX Review R3 Fix: 완료된 스트림은 one-shot replay이므로
   // session mapping 즉시 정리 (더 이상 polling 불필요)
   if (streamStatus === 'completed') {
-    await clearActiveStreamId(sessionId);
+    await clearActiveStreamId(sessionId, ownerKey);
     logger.info(
       `[SupervisorStreamV2] Cleared session mapping for completed stream: ${activeStreamId}`
     );
@@ -224,6 +302,7 @@ export const POST = withRateLimit(
       const querySessionId = url.searchParams.get('sessionId');
       const sessionId =
         headerSessionId || bodySessionId || querySessionId || generateId();
+      const ownerKey = getStreamOwnerKey(req);
 
       // 3. Extract and sanitize query
       const rawQuery = extractLastUserQuery(messages as HybridMessage[]);
@@ -257,7 +336,22 @@ export const POST = withRateLimit(
       logger.info(`📡 [SupervisorStreamV2] Session: ${sessionId}`);
 
       // 4. Normalize messages for Cloud Run
-      const normalizedMessages = normalizeMessagesForCloudRun(messages);
+      const trimmedMessages = trimMessagesForContext(
+        messages as HybridMessage[]
+      );
+      const normalizedMessages = normalizeMessagesForCloudRun(trimmedMessages);
+      const normalizedParse =
+        NORMALIZED_MESSAGES_SCHEMA.safeParse(normalizedMessages);
+      if (!normalizedParse.success) {
+        logger.warn(
+          '⚠️ [SupervisorStreamV2] Invalid normalized messages:',
+          normalizedParse.error.issues
+        );
+        return NextResponse.json(
+          { success: false, error: 'Invalid normalized messages' },
+          { status: 400 }
+        );
+      }
 
       // 5. Get Cloud Run URL
       const cloudRunUrl = process.env.CLOUD_RUN_AI_URL;
@@ -271,6 +365,14 @@ export const POST = withRateLimit(
 
       // 6. Generate stream ID for tracking
       const streamId = generateId();
+
+      // Best-effort cleanup for stale stream mapping in same owner/session scope
+      const staleStreamId = await getActiveStreamId(sessionId, ownerKey);
+      if (staleStreamId && staleStreamId !== streamId) {
+        const cleanupContext = createUpstashResumableContext();
+        await cleanupContext.clearStream(staleStreamId);
+        await clearActiveStreamId(sessionId, ownerKey);
+      }
 
       // 7. Proxy to Cloud Run v2 endpoint
       const apiSecret = process.env.CLOUD_RUN_API_SECRET;
@@ -320,7 +422,7 @@ export const POST = withRateLimit(
         }
 
         // 8. Save stream ID to Redis for tracking
-        await saveActiveStreamId(sessionId, streamId);
+        await saveActiveStreamId(sessionId, streamId, ownerKey);
 
         // 9. Wrap stream with Upstash-compatible resumable context
         const resumableContext = createUpstashResumableContext();
@@ -344,7 +446,7 @@ export const POST = withRateLimit(
         });
       } catch (error) {
         // Clear both session mapping and resumable stream data
-        await clearActiveStreamId(sessionId);
+        await clearActiveStreamId(sessionId, ownerKey);
         const cleanupContext = createUpstashResumableContext();
         await cleanupContext.clearStream(streamId);
 

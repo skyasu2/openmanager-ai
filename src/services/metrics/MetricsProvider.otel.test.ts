@@ -22,7 +22,7 @@ describe('MetricsProvider OTel Integration', () => {
           resource: {
             attributes: [
               { key: 'host.name', value: { stringValue: 'test-host.local' } },
-              { key: 'host.type', value: { stringValue: 'web' } },
+              { key: 'server.role', value: { stringValue: 'web' } },
             ],
           },
           scopeMetrics: [
@@ -92,9 +92,9 @@ describe('MetricsProvider OTel Integration', () => {
                   gauge: { dataPoints: [{ asDouble: 0.3 }] },
                 },
                 {
-                  name: 'system.network.io',
+                  name: 'system.network.utilization',
                   // OTel network utilization is normalized to 0~1
-                  sum: { dataPoints: [{ asDouble: 0.5 }] },
+                  gauge: { dataPoints: [{ asDouble: 0.5 }] },
                 },
               ],
             },

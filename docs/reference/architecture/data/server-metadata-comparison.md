@@ -28,15 +28,15 @@
 
 #### Layer 1: ServerConfig (데이터 생성 시점)
 
-> 소스: `scripts/data/sync-hourly-data.ts` lines 57-77
+> 소스: `src/config/server-registry.ts` + `src/config/server-services-map.ts`
 
 ```typescript
 interface ServerConfig {
-  id: string;           // 'web-nginx-icn-01'
+  id: string;           // 'web-nginx-dc1-01'
   name: string;         // 'Nginx Web Server 01'
   type: ServerType;     // 'web' | 'database' | 'application' | 'storage' | 'cache' | 'loadbalancer'
-  location: string;     // 'Seoul-ICN-AZ1'
-  hostname: string;     // 'web-nginx-icn-01.openmanager.kr'
+  location: string;     // 'OnPrem-DC1-AZ1'
+  hostname: string;     // 'web-nginx-dc1-01.openmanager.kr'
   ip: string;           // '10.10.1.11'
   os: string;           // 'ubuntu'
   osVersion: string;    // '22.04'
@@ -56,17 +56,17 @@ interface ServerConfig {
 
 **필드 수**: 13개 (baseline 4개 포함)
 
-#### Layer 2: Prometheus 타겟 라벨 (hourly-data JSON)
+#### Layer 2: OTel Hourly 슬롯 속성 (hourly JSON)
 
-> 소스: `src/data/hourly-data/hour-XX.json`
+> 소스: `src/data/otel-data/hourly/hour-XX.json`
 
 ```json
 {
-  "instance": "web-nginx-icn-01:9100",
+  "instance": "web-nginx-dc1-01:9100",
   "job": "node-exporter",
   "labels": {
-    "hostname": "web-nginx-icn-01.openmanager.kr",
-    "datacenter": "Seoul-ICN-AZ1",
+    "hostname": "web-nginx-dc1-01.openmanager.kr",
+    "datacenter": "DC1-AZ1",
     "environment": "production",
     "server_type": "web",
     "os": "ubuntu",
@@ -84,18 +84,18 @@ interface ServerConfig {
 
 #### Layer 3: OTel Resource Attributes (resource-catalog.json)
 
-> 소스: `src/data/otel-processed/resource-catalog.json`
+> 소스: `src/data/otel-data/resource-catalog.json`
 
 ```json
 {
   "service.name": "openmanager-ai",
-  "host.name": "web-nginx-icn-01.openmanager.kr",
-  "host.id": "web-nginx-icn-01",
-  "host.type": "web",
+  "host.name": "web-nginx-dc1-01.openmanager.kr",
+  "host.id": "web-nginx-dc1-01",
+  "server.role": "web",
   "os.type": "ubuntu",
   "os.description": "ubuntu 22.04",
-  "cloud.region": "kr-seoul",
-  "cloud.availability_zone": "Seoul-ICN-AZ1",
+  "cloud.region": "onprem-dc1",
+  "cloud.availability_zone": "DC1-AZ1",
   "deployment.environment": "production",
   "host.cpu.count": 4,
   "host.memory.size": 8589934592,
@@ -122,7 +122,7 @@ interface ServerConfig {
 
 ### 1.3 런타임 메트릭 (참고)
 
-> 소스: `src/data/hourly-data/hour-XX.json` → metrics 블록
+> 소스: `src/data/otel-data/hourly/hour-XX.json` → metrics 블록
 
 | 메트릭명 | 단위 | 비고 |
 |---------|------|------|
@@ -142,7 +142,7 @@ interface ServerConfig {
 | 카테고리 | 필드 수 | 주요 필드 |
 |---------|:-------:|----------|
 | Identity & Naming | 5 | id, name, hostname, ip, service.name |
-| Server Type & Role | 4 | type (6종), server_type, host.type, role |
+| Server Type & Role | 4 | type (6종), server_type, server.role, role |
 | Location & Infra | 6 | location, datacenter, cloud.region, cloud.availability_zone, environment, deployment.environment |
 | Hardware Specs | 6 | cpu_cores, memory_gb/bytes, disk_gb/bytes (3가지 표현 × 2 단위) |
 | OS Info | 4 | os, osVersion, os.type, os.description |
@@ -252,7 +252,7 @@ interface ServerConfig {
 
 ### 3.2 갭 vs 설계 의도
 
-OpenManager AI는 **시뮬레이션 플랫폼**이다. 실제 서버에서 에이전트가 수집하는 것이 아니라 `sync-hourly-data.ts`에서 PRNG 기반으로 데이터를 생성한다.
+OpenManager AI는 **시뮬레이션 플랫폼**이다. 실제 서버에서 에이전트가 수집하는 것이 아니라 OTel 정적 데이터셋(`src/data/otel-data`)을 기반으로 PRNG 패턴을 재현한다.
 
 따라서 위 갭 중 상당수는 **의도적 생략**이다:
 
@@ -493,7 +493,7 @@ node_exporter가 **절대 알 수 없는** 정보 — 조직/운영 관점의 �
 ### 5.3 OpenManager AI 현재 필드의 Zone 매핑
 
 ```
-현재 ServerConfig           →  Prometheus Zone  →  현재 hourly-data JSON 위치
+현재 ServerConfig           →  Prometheus Zone  →  현재 OTel hourly JSON 위치
 ────────────────────────────────────────────────────────────────────────────
 id                          →  B (target 파생)   →  instance 키 + nodeInfo 없음
 name                        →  C (display name)  →  ❌ JSON에 미포함
@@ -586,7 +586,7 @@ type NicSpec = {
 };
 ```
 
-이렇게 하면 hourly-data JSON의 `nodeInfo`가 자연스럽게 확장된다:
+이렇게 하면 OTel hourly JSON의 `nodeInfo`가 자연스럽게 확장된다:
 
 ```json
 {
@@ -644,7 +644,7 @@ OpenManager AI는 실제 에이전트가 아닌 **시뮬레이션 데이터 생�
 
 ### 6.3 권장 확장 로드맵
 
-#### Phase 1: 즉시 추가 가능 (sync-hourly-data.ts 수정만)
+#### Phase 1: 즉시 추가 가능 (`server-registry`/OTel 데이터셋 수정)
 
 > 난이도: 낮음 | 영향: 중 | 예상 작업량: ServerConfig 확장 + 생성 로직 추가
 
@@ -673,7 +673,7 @@ interface ServerConfig {
 
 #### Phase 2: 중기 확장 (데이터 모델 변경)
 
-> 난이도: 중 | 영향: 높 | 예상 작업량: sync-hourly-data.ts + OTel pipeline + 대시보드 연동
+> 난이도: 중 | 영향: 높 | 예상 작업량: 서버 메타데이터 레지스트리 + OTel pipeline + 대시보드 연동
 
 | 추가 영역 | 변경 사항 | AI 분석 가치 |
 |----------|----------|:----------:|
@@ -728,4 +728,4 @@ interface ServerConfig {
 ---
 
 *Last Updated: 2026-02-12*
-*코드베이스 기준: v8.0.0, sync-hourly-data.ts (15 servers, PRNG-based)*
+*코드베이스 기준: v8.0.0, OTel dataset 기반 (15 servers, PRNG-based)*

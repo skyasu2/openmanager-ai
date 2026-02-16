@@ -11,8 +11,9 @@
 import type { Edge, Node } from '@xyflow/react';
 import { MarkerType } from '@xyflow/react';
 
-import type { ArchitectureDiagram } from '@/data/architecture-diagrams.data';
+import type { Server } from '@/types/server';
 import { logger } from '@/lib/logging';
+import type { ArchitectureDiagram } from '@/data/architecture-diagrams.data';
 
 import {
   LABEL_AREA_WIDTH,
@@ -25,12 +26,18 @@ import {
 import { getLayoutedElements } from '../layout';
 import type { CustomNodeData, SwimlaneBgData } from '../types';
 
-export function convertToReactFlow(diagram: ArchitectureDiagram): {
+export function convertToReactFlow(
+  diagram: ArchitectureDiagram,
+  servers: Server[] = []
+): {
   nodes: Node[];
   edges: Edge[];
 } {
   const contentNodes: Node[] = [];
   const edges: Edge[] = [];
+
+  // 서버 ID 맵 생성
+  const serverMap = new Map(servers.map((s) => [s.id, s]));
 
   // 레이어별 노드 ID 매핑 (Swimlane 생성용)
   const layerNodeIds: Map<number, string[]> = new Map();
@@ -44,6 +51,9 @@ export function convertToReactFlow(diagram: ArchitectureDiagram): {
     layer.nodes.forEach((node) => {
       nodeIds.push(node.id);
       nodeLayerMap.set(node.id, layerIndex);
+
+      const serverData = serverMap.get(node.id);
+
       contentNodes.push({
         id: node.id,
         type: 'customNode',
@@ -55,6 +65,8 @@ export function convertToReactFlow(diagram: ArchitectureDiagram): {
           nodeType: node.type,
           layerColor: layer.color,
           layerTitle: layer.title,
+          status: serverData?.status,
+          serverData: serverData,
         } as CustomNodeData,
       });
     });

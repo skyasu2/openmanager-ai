@@ -22,8 +22,8 @@
 | API Routes | 30 (`src/app/api/**/route.ts`, 테스트 라우트 포함) |
 | AI 실행 컴포넌트 | 8 (실행 에이전트 7 + Orchestrator 1) |
 | Zustand Stores | 4 |
-| 모니터링 서버 | 15 (Korean DC, synthetic) |
-| 데이터 소스 | 2-Tier (OTel Processed + hourly-data) |
+| 모니터링 서버 | 15 (OnPrem DC1, synthetic) |
+| 데이터 소스 | OTel 번들 우선 (`otel-data`/`otel-metrics`) + Cloud Run 호환 폴백 (`otel-processed`) |
 
 ---
 
@@ -58,21 +58,20 @@ graph TB
     end
 
     subgraph Data["Data (Build-Time)"]
-        OTel["otel-processed/<br/>(Primary)"]
-        Hourly["hourly-data/<br/>(Fallback)"]
+        OTel["otel-data + otel-metrics/<br/>(Primary)"]
+        Compat["otel-processed/<br/>(Cloud Run Compatibility)"]
     end
 
     UI -->|HTTP/Stream| NextJS
     NextJS --> API
     API --> MP
     MP --> OTel
-    MP --> Hourly
     API -->|Proxy + X-API-Key| Hono
     Hono --> Supervisor
     Supervisor --> Agents
     Agents --> PreComp
     PreComp --> OTel
-    PreComp --> Hourly
+    PreComp --> Compat
     Agents -->|Tool Calls| Supabase
     Agents -->|LLM API| LLM
     API -->|Rate Limit, Cache| Redis
@@ -128,8 +127,8 @@ graph TB
 4. /api/servers-unified/route.ts → MetricsProvider.getInstance()
 5. MetricsProvider:
    a. getKSTMinuteOfDay() → 현재 KST 10분 슬롯 계산
-   b. loadOTelData(hour) → otel-processed (Primary)
-   c. fallback → getBundledHourlyData(hour) (Secondary)
+   b. loadOTelData(hour) → otel-metrics (Primary runtime bundle)
+   c. 서버 메타/시계열 보조 조회 → otel-data (resource-catalog, timeseries)
    d. extractMetricsFromStandard() → ApiServerMetrics[] 변환
 6. Response → TanStack Query 캐시 → React 렌더링
 ```
@@ -175,22 +174,23 @@ graph TB
 ### 2-Tier Priority System
 
 ```
-┌─────────────────────────────────┐
-│  src/data/otel-processed/       │  ← 1. Primary (OTel Semantic Conv.)
-│  (Build-time derived)           │
-└────────────────┬────────────────┘
-                 │ fallback
-                 ▼
-┌─────────────────────────────────┐
-│  src/data/hourly-data/          │  ← 2. Fallback (Prometheus Format)
-│  (SSOT, Bundle-included JSON)   │
-└─────────────────────────────────┘
+┌─────────────────────────────────────────────────┐
+│  src/data/otel-data/ + src/data/otel-metrics/  │  ← 1. Primary (OTel bundles)
+│  (Vercel/Frontend runtime SSOT)                │
+└──────────────────────────┬──────────────────────┘
+                           │ compatibility fallback (Cloud Run only)
+                           ▼
+┌─────────────────────────────────────────────────┐
+│  cloud-run/ai-engine/data/otel-processed/      │  ← 2. Legacy compatibility
+│  (precomputed-state.ts fallback path)          │
+└─────────────────────────────────────────────────┘
 ```
 
 ### Data Boundary
 
-- `hourly-data/*.json`: AI가 사전 생성한 **synthetic 원본 데이터** (Prometheus 네이밍)
-- `otel-processed/*`: hourly-data를 빌드 타임에 OTel 시맨틱으로 변환한 **derived 데이터**
+- `otel-data/*`: AI가 사전 생성한 **synthetic OTel-native 원본 데이터(SSOT)**
+- `otel-metrics/*`: 대시보드 런타임 호환을 위한 OTLP 번들 데이터
+- `cloud-run/ai-engine/data/otel-processed/*`: Cloud Run 하위 호환 fallback 데이터
 - 런타임에서 외부 Prometheus/OTLP/Loki 수집 없음 (zero external scrape)
 - 24시간 순환, 15서버, 10분 슬롯 (144 data points/server/day)
 
@@ -198,9 +198,9 @@ graph TB
 
 | 소비자 | 진입점 파일 | 데이터 경로 |
 |--------|------------|------------|
-| **Dashboard** | `src/services/metrics/MetricsProvider.ts` | otel-processed → hourly-data |
-| **AI Chat (Vercel)** | `src/services/monitoring/MonitoringContext.ts` | MetricsProvider 동일 체인 |
-| **AI Engine (Cloud Run)** | `cloud-run/ai-engine/src/data/precomputed-state.ts` | otel-processed → hourly-data |
+| **Dashboard** | `src/services/metrics/MetricsProvider.ts` | `otel-metrics` (Primary) |
+| **AI Chat (Vercel)** | `src/services/monitoring/MonitoringContext.ts` | `otel-data` + MetricsProvider |
+| **AI Engine (Cloud Run)** | `cloud-run/ai-engine/src/data/precomputed-state.ts` | `otel-data` → `otel-processed` fallback |
 | **24h Chart** | `src/hooks/useServerMetrics.ts` → MetricsProvider | MetricsProvider 동일 체인 |
 | **Alert System** | `src/services/monitoring/AlertManager.ts` | MetricsProvider 동일 체인 |
 | **RAG (Supabase)** | `supabase/` (server_logs, embeddings) | DB Query |
@@ -208,7 +208,7 @@ graph TB
 ### Stateless Cloud Run 설계 원칙
 
 Cloud Run AI Engine은 **Stateless** 설계를 따르며, 영속 데이터는 Supabase에 저장됩니다.  
-단, 운영 메트릭 스냅샷은 런타임에 컨테이너 번들 JSON(`otel-processed`/`hourly-data`)을 우선 사용합니다.
+단, 운영 메트릭 스냅샷은 런타임에 컨테이너 번들 JSON(`otel-data` 우선, `otel-processed` 호환 폴백)을 사용합니다.
 
 | 원칙 | 설명 |
 |------|------|
@@ -216,14 +216,14 @@ Cloud Run AI Engine은 **Stateless** 설계를 따르며, 영속 데이터는 Su
 | **일관성** | 메트릭은 번들 JSON, 영속 데이터는 Supabase 기준으로 일관성 유지 |
 | **비용 절감** | Cloud Run에 영속 스토리지 비용 없음 |
 
-데이터 동기화: 빌드 시 `hourly-data`/`otel-processed`가 이미지에 포함되고, 영속 데이터(RAG/피드백/히스토리)는 Supabase에서 조회합니다.
+데이터 동기화: 빌드 시 `otel-data`(및 대시보드 번들 `otel-metrics`)가 포함되고, Cloud Run은 `otel-processed` 호환 폴백도 유지합니다. 영속 데이터(RAG/피드백/히스토리)는 Supabase에서 조회합니다.
 
 ### Build-Time Pipeline
 
 ```bash
-npm run data:otel      # hourly-data → otel-processed 변환
-npm run data:sync      # SSOT 데이터 동기화
-npm run data:all       # data:sync + data:otel
+npm run data:fix               # OTel 데이터 정합성 보정
+npm run data:verify            # OTel 데이터 무결성 검증
+npm run data:precomputed:build # Cloud Run precomputed states 재생성
 ```
 
 ---
@@ -436,9 +436,10 @@ Client                     Vercel                     Cloud Run
 | 용도 | 파일 |
 |------|------|
 | Metrics SSOT | `src/services/metrics/MetricsProvider.ts` |
-| OTel Data (Primary) | `src/data/otel-processed/hourly/hour-XX.json` |
-| Hourly Data (Fallback) | `src/data/hourly-data/hour-XX.json` (24개) |
-| OTel 변환 스크립트 | `scripts/data/otel-precompute.ts` |
+| OTel Data (Primary) | `src/data/otel-data/hourly/hour-XX.json` |
+| OTLP Runtime Bundle | `src/data/otel-metrics/hourly/hour-XX.json` |
+| Cloud Run Compatibility Fallback | `cloud-run/ai-engine/data/otel-processed/hourly/hour-XX.json` |
+| OTel 품질/검증 스크립트 | `scripts/data/otel-fix.ts`, `scripts/data/otel-verify.ts` |
 | Cloud Run Data | `cloud-run/ai-engine/src/data/precomputed-state.ts` |
 
 ### AI Layer

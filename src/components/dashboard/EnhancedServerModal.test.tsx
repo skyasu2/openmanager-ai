@@ -62,7 +62,7 @@ describe('🎯 EnhancedServerModal - User Event 테스트', () => {
     hostname: 'web01.example.com',
     type: 'web',
     environment: 'production',
-    location: '서울',
+    location: 'OnPrem-DC1-AZ1',
     provider: 'AWS',
     status: 'online',
     cpu: 45.2,

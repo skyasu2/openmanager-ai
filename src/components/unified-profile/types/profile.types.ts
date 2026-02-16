@@ -3,6 +3,7 @@
  */
 
 import type { LucideIcon } from 'lucide-react';
+import type { ReactNode } from 'react';
 
 /**
  * 사용자 정보 타입
@@ -63,6 +64,7 @@ export interface ProfileDropdownMenuProps {
   userInfo: UserInfo | null;
   userType: UserType;
   onClose: () => void;
+  statusContent?: ReactNode;
 }
 
 /**

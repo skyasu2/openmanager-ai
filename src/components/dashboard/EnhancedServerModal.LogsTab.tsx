@@ -127,7 +127,7 @@ export const LogsTab: FC<LogsTabProps> = ({
   const ctx = serverContext ?? {
     hostname: serverId.split('.')[0] || serverId,
     environment: 'production',
-    datacenter: 'Seoul-ICN-AZ1',
+    datacenter: 'DC1-AZ1',
     serverType: 'web',
   };
 

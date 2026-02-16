@@ -185,18 +185,18 @@ cloud-run/ai-engine/src/services/ai-sdk/
 - **v5.91.0**: RCA Agent, Capacity Agent, Workflow Caching, Tavily 웹 검색 마이그레이션
 </details>
 
-## Agent Lifecycle (v7.1.0)
+## Agent Lifecycle (v8.0.0)
 
-### BaseAgent & AgentFactory Pattern
+### BaseAgent + ToolLoopAgent Pattern
 
-모든 에이전트는 `BaseAgent` 추상 클래스를 상속받아 통합된 실행 인터페이스를 제공합니다.
+모든 에이전트는 `BaseAgent` 추상 클래스를 통해 AI SDK v6의 공식 `ToolLoopAgent`를 내부적으로 사용합니다. 7개 에이전트 모두 `ConfigBasedAgent` 단일 클래스로 구현됩니다.
 
 ```typescript
 abstract class BaseAgent {
   abstract getName(): string;
   abstract getConfig(): AgentConfig | null;
-  async run(query: string, options?: AgentRunOptions): Promise<AgentResult>;
-  async *stream(query: string, options?: AgentRunOptions): AsyncGenerator<AgentStreamEvent>;
+  async run(query, options?): Promise<AgentResult>;   // → ToolLoopAgent.generate()
+  async *stream(query, options?): AsyncGenerator<AgentStreamEvent>; // → ToolLoopAgent.stream()
   isAvailable(): boolean;
 }
 
@@ -213,7 +213,7 @@ interface AgentRunOptions {
 ```typescript
 import { AgentFactory, runAgent, streamAgent } from './agent-factory';
 
-const nlq = AgentFactory.create('nlq');
+const nlq = AgentFactory.create('nlq');       // ConfigBasedAgent 인스턴스 반환
 const available = AgentFactory.isAvailable('vision');
 const result = await runAgent('nlq', '서버 상태 알려줘');
 for await (const event of streamAgent('analyst', '이상 탐지')) {
@@ -226,9 +226,9 @@ for await (const event of streamAgent('analyst', '이상 탐지')) {
 ```
 1. Orchestrator가 쿼리 분석
 2. preFilterQuery()로 패턴 매칭 (정규식 기반 의도 분류)
-3. AgentFactory.create()로 적절한 에이전트 생성
-4. BaseAgent.run() 또는 stream()으로 실행
-5. stopWhen 조건 충족 시 종료:
+3. AgentFactory.create()로 ConfigBasedAgent 생성
+4. BaseAgent.run() → ToolLoopAgent.generate() 위임
+5. ToolLoopAgent stopWhen 조건 충족 시 종료:
    - hasToolCall('finalAnswer')
    - stepCountIs(maxSteps)
 6. 결과 반환 (toolsCalled, usage, metadata)

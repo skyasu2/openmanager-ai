@@ -6,7 +6,7 @@
           {
             "key": "host.name",
             "value": {
-              "stringValue": "web-nginx-icn-01.openmanager.kr"
+              "stringValue": "web-nginx-dc1-01.openmanager.kr"
             }
           },
           {
@@ -157,49 +157,47 @@
               }
             },
             {
-              "name": "system.network.io",
-              "unit": "By/s",
-              "sum": {
+              "name": "system.network.utilization",
+              "unit": "1",
+              "gauge": {
                 "dataPoints": [
                   {
                     "attributes": [],
                     "startTimeUnixNano": "1771009200000000000",
                     "timeUnixNano": "1771009800000000000",
-                    "asDouble": 59
+                    "asDouble": 0.01
                   },
                   {
                     "attributes": [],
                     "startTimeUnixNano": "1771009800000000000",
                     "timeUnixNano": "1771010400000000000",
-                    "asDouble": 59
+                    "asDouble": 0.01
                   },
                   {
                     "attributes": [],
                     "startTimeUnixNano": "1771010400000000000",
                     "timeUnixNano": "1771011000000000000",
-                    "asDouble": 59
+                    "asDouble": 0.01
                   },
                   {
                     "attributes": [],
                     "startTimeUnixNano": "1771011000000000000",
                     "timeUnixNano": "1771011600000000000",
-                    "asDouble": 64
+                    "asDouble": 0.01
                   },
                   {
                     "attributes": [],
                     "startTimeUnixNano": "1771011600000000000",
                     "timeUnixNano": "1771012200000000000",
-                    "asDouble": 59
+                    "asDouble": 0.01
                   },
                   {
                     "attributes": [],
                     "startTimeUnixNano": "1771012200000000000",
                     "timeUnixNano": "1771012800000000000",
-                    "asDouble": 55
+                    "asDouble": 0.01
                   }
-                ],
-                "aggregationTemporality": 2,
-                "isMonotonic": true
+                ]
               }
             },
             {
@@ -432,7 +430,7 @@
           {
             "key": "host.name",
             "value": {
-              "stringValue": "web-nginx-icn-02.openmanager.kr"
+              "stringValue": "web-nginx-dc1-02.openmanager.kr"
             }
           },
           {
@@ -583,49 +581,47 @@
               }
             },
             {
-              "name": "system.network.io",
-              "unit": "By/s",
-              "sum": {
+              "name": "system.network.utilization",
+              "unit": "1",
+              "gauge": {
                 "dataPoints": [
                   {
                     "attributes": [],
                     "startTimeUnixNano": "1771009200000000000",
                     "timeUnixNano": "1771009800000000000",
-                    "asDouble": 54
+                    "asDouble": 0.01
                   },
                   {
                     "attributes": [],
                     "startTimeUnixNano": "1771009800000000000",
                     "timeUnixNano": "1771010400000000000",
-                    "asDouble": 58
+                    "asDouble": 0.01
                   },
                   {
                     "attributes": [],
                     "startTimeUnixNano": "1771010400000000000",
                     "timeUnixNano": "1771011000000000000",
-                    "asDouble": 56
+                    "asDouble": 0.01
                   },
                   {
                     "attributes": [],
                     "startTimeUnixNano": "1771011000000000000",
                     "timeUnixNano": "1771011600000000000",
-                    "asDouble": 51
+                    "asDouble": 0.01
                   },
                   {
                     "attributes": [],
                     "startTimeUnixNano": "1771011600000000000",
                     "timeUnixNano": "1771012200000000000",
-                    "asDouble": 51
+                    "asDouble": 0.01
                   },
                   {
                     "attributes": [],
                     "startTimeUnixNano": "1771012200000000000",
                     "timeUnixNano": "1771012800000000000",
-                    "asDouble": 52
+                    "asDouble": 0.01
                   }
-                ],
-                "aggregationTemporality": 2,
-                "isMonotonic": true
+                ]
               }
             },
             {
@@ -858,7 +854,7 @@
           {
             "key": "host.name",
             "value": {
-              "stringValue": "web-nginx-pus-01.openmanager.kr"
+              "stringValue": "web-nginx-dc1-03.openmanager.kr"
             }
           },
           {
@@ -1009,49 +1005,47 @@
               }
             },
             {
-              "name": "system.network.io",
-              "unit": "By/s",
-              "sum": {
+              "name": "system.network.utilization",
+              "unit": "1",
+              "gauge": {
                 "dataPoints": [
                   {
                     "attributes": [],
                     "startTimeUnixNano": "1771009200000000000",
                     "timeUnixNano": "1771009800000000000",
-                    "asDouble": 39
+                    "asDouble": 0
                   },
                   {
                     "attributes": [],
                     "startTimeUnixNano": "1771009800000000000",
                     "timeUnixNano": "1771010400000000000",
-                    "asDouble": 35
+                    "asDouble": 0
                   },
                   {
                     "attributes": [],
                     "startTimeUnixNano": "1771010400000000000",
                     "timeUnixNano": "1771011000000000000",
-                    "asDouble": 42
+                    "asDouble": 0
                   },
                   {
                     "attributes": [],
                     "startTimeUnixNano": "1771011000000000000",
                     "timeUnixNano": "1771011600000000000",
-                    "asDouble": 44
+                    "asDouble": 0
                   },
                   {
                     "attributes": [],
                     "startTimeUnixNano": "1771011600000000000",
                     "timeUnixNano": "1771012200000000000",
-                    "asDouble": 35
+                    "asDouble": 0
                   },
                   {
                     "attributes": [],
                     "startTimeUnixNano": "1771012200000000000",
                     "timeUnixNano": "1771012800000000000",
-                    "asDouble": 37
+                    "asDouble": 0
                   }
-                ],
-                "aggregationTemporality": 2,
-                "isMonotonic": true
+                ]
               }
             },
             {
@@ -1284,7 +1278,7 @@
           {
             "key": "host.name",
             "value": {
-              "stringValue": "api-was-icn-01.openmanager.kr"
+              "stringValue": "api-was-dc1-01.openmanager.kr"
             }
           },
           {
@@ -1435,49 +1429,47 @@
               }
             },
             {
-              "name": "system.network.io",
-              "unit": "By/s",
-              "sum": {
+              "name": "system.network.utilization",
+              "unit": "1",
+              "gauge": {
                 "dataPoints": [
                   {
                     "attributes": [],
                     "startTimeUnixNano": "1771009200000000000",
                     "timeUnixNano": "1771009800000000000",
-                    "asDouble": 53
+                    "asDouble": 0.01
                   },
                   {
                     "attributes": [],
                     "startTimeUnixNano": "1771009800000000000",
                     "timeUnixNano": "1771010400000000000",
-                    "asDouble": 46
+                    "asDouble": 0
                   },
                   {
                     "attributes": [],
                     "startTimeUnixNano": "1771010400000000000",
                     "timeUnixNano": "1771011000000000000",
-                    "asDouble": 50
+                    "asDouble": 0.01
                   },
                   {
                     "attributes": [],
                     "startTimeUnixNano": "1771011000000000000",
                     "timeUnixNano": "1771011600000000000",
-                    "asDouble": 45
+                    "asDouble": 0
                   },
                   {
                     "attributes": [],
                     "startTimeUnixNano": "1771011600000000000",
                     "timeUnixNano": "1771012200000000000",
-                    "asDouble": 51
+                    "asDouble": 0.01
                   },
                   {
                     "attributes": [],
                     "startTimeUnixNano": "1771012200000000000",
                     "timeUnixNano": "1771012800000000000",
-                    "asDouble": 52
+                    "asDouble": 0.01
                   }
-                ],
-                "aggregationTemporality": 2,
-                "isMonotonic": true
+                ]
               }
             },
             {
@@ -1710,7 +1702,7 @@
           {
             "key": "host.name",
             "value": {
-              "stringValue": "api-was-icn-02.openmanager.kr"
+              "stringValue": "api-was-dc1-02.openmanager.kr"
             }
           },
           {
@@ -1861,49 +1853,47 @@
               }
             },
             {
-              "name": "system.network.io",
-              "unit": "By/s",
-              "sum": {
+              "name": "system.network.utilization",
+              "unit": "1",
+              "gauge": {
                 "dataPoints": [
                   {
                     "attributes": [],
                     "startTimeUnixNano": "1771009200000000000",
                     "timeUnixNano": "1771009800000000000",
-                    "asDouble": 43
+                    "asDouble": 0
                   },
                   {
                     "attributes": [],
                     "startTimeUnixNano": "1771009800000000000",
                     "timeUnixNano": "1771010400000000000",
-                    "asDouble": 44
+                    "asDouble": 0
                   },
                   {
                     "attributes": [],
                     "startTimeUnixNano": "1771010400000000000",
                     "timeUnixNano": "1771011000000000000",
-                    "asDouble": 51
+                    "asDouble": 0.01
                   },
                   {
                     "attributes": [],
                     "startTimeUnixNano": "1771011000000000000",
                     "timeUnixNano": "1771011600000000000",
-                    "asDouble": 51
+                    "asDouble": 0.01
                   },
                   {
                     "attributes": [],
                     "startTimeUnixNano": "1771011600000000000",
                     "timeUnixNano": "1771012200000000000",
-                    "asDouble": 49
+                    "asDouble": 0
                   },
                   {
                     "attributes": [],
                     "startTimeUnixNano": "1771012200000000000",
                     "timeUnixNano": "1771012800000000000",
-                    "asDouble": 43
+                    "asDouble": 0
                   }
-                ],
-                "aggregationTemporality": 2,
-                "isMonotonic": true
+                ]
               }
             },
             {
@@ -2136,7 +2126,7 @@
           {
             "key": "host.name",
             "value": {
-              "stringValue": "api-was-pus-01.openmanager.kr"
+              "stringValue": "api-was-dc1-03.openmanager.kr"
             }
           },
           {
@@ -2287,49 +2277,47 @@
               }
             },
             {
-              "name": "system.network.io",
-              "unit": "By/s",
-              "sum": {
+              "name": "system.network.utilization",
+              "unit": "1",
+              "gauge": {
                 "dataPoints": [
                   {
                     "attributes": [],
                     "startTimeUnixNano": "1771009200000000000",
                     "timeUnixNano": "1771009800000000000",
-                    "asDouble": 34
+                    "asDouble": 0
                   },
                   {
                     "attributes": [],
                     "startTimeUnixNano": "1771009800000000000",
                     "timeUnixNano": "1771010400000000000",
-                    "asDouble": 33
+                    "asDouble": 0
                   },
                   {
                     "attributes": [],
                     "startTimeUnixNano": "1771010400000000000",
                     "timeUnixNano": "1771011000000000000",
-                    "asDouble": 33
+                    "asDouble": 0
                   },
                   {
                     "attributes": [],
                     "startTimeUnixNano": "1771011000000000000",
                     "timeUnixNano": "1771011600000000000",
-                    "asDouble": 39
+                    "asDouble": 0
                   },
                   {
                     "attributes": [],
                     "startTimeUnixNano": "1771011600000000000",
                     "timeUnixNano": "1771012200000000000",
-                    "asDouble": 36
+                    "asDouble": 0
                   },
                   {
                     "attributes": [],
                     "startTimeUnixNano": "1771012200000000000",
                     "timeUnixNano": "1771012800000000000",
-                    "asDouble": 36
+                    "asDouble": 0
                   }
-                ],
-                "aggregationTemporality": 2,
-                "isMonotonic": true
+                ]
               }
             },
             {
@@ -2562,7 +2550,7 @@
           {
             "key": "host.name",
             "value": {
-              "stringValue": "db-mysql-icn-primary.openmanager.kr"
+              "stringValue": "db-mysql-dc1-primary.openmanager.kr"
             }
           },
           {
@@ -2713,49 +2701,47 @@
               }
             },
             {
-              "name": "system.network.io",
-              "unit": "By/s",
-              "sum": {
+              "name": "system.network.utilization",
+              "unit": "1",
+              "gauge": {
                 "dataPoints": [
                   {
                     "attributes": [],
                     "startTimeUnixNano": "1771009200000000000",
                     "timeUnixNano": "1771009800000000000",
-                    "asDouble": 38
+                    "asDouble": 0
                   },
                   {
                     "attributes": [],
                     "startTimeUnixNano": "1771009800000000000",
                     "timeUnixNano": "1771010400000000000",
-                    "asDouble": 43
+                    "asDouble": 0
                   },
                   {
                     "attributes": [],
                     "startTimeUnixNano": "1771010400000000000",
                     "timeUnixNano": "1771011000000000000",
-                    "asDouble": 38
+                    "asDouble": 0
                   },
                   {
                     "attributes": [],
                     "startTimeUnixNano": "1771011000000000000",
                     "timeUnixNano": "1771011600000000000",
-                    "asDouble": 35
+                    "asDouble": 0
                   },
                   {
                     "attributes": [],
                     "startTimeUnixNano": "1771011600000000000",
                     "timeUnixNano": "1771012200000000000",
-                    "asDouble": 43
+                    "asDouble": 0
                   },
                   {
                     "attributes": [],
                     "startTimeUnixNano": "1771012200000000000",
                     "timeUnixNano": "1771012800000000000",
-                    "asDouble": 35
+                    "asDouble": 0
                   }
-                ],
-                "aggregationTemporality": 2,
-                "isMonotonic": true
+                ]
               }
             },
             {
@@ -2988,7 +2974,7 @@
           {
             "key": "host.name",
             "value": {
-              "stringValue": "db-mysql-icn-replica.openmanager.kr"
+              "stringValue": "db-mysql-dc1-replica.openmanager.kr"
             }
           },
           {
@@ -3139,49 +3125,47 @@
               }
             },
             {
-              "name": "system.network.io",
-              "unit": "By/s",
-              "sum": {
+              "name": "system.network.utilization",
+              "unit": "1",
+              "gauge": {
                 "dataPoints": [
                   {
                     "attributes": [],
                     "startTimeUnixNano": "1771009200000000000",
                     "timeUnixNano": "1771009800000000000",
-                    "asDouble": 36
+                    "asDouble": 0
                   },
                   {
                     "attributes": [],
                     "startTimeUnixNano": "1771009800000000000",
                     "timeUnixNano": "1771010400000000000",
-                    "asDouble": 37
+                    "asDouble": 0
                   },
                   {
                     "attributes": [],
                     "startTimeUnixNano": "1771010400000000000",
                     "timeUnixNano": "1771011000000000000",
-                    "asDouble": 30
+                    "asDouble": 0
                   },
                   {
                     "attributes": [],
                     "startTimeUnixNano": "1771011000000000000",
                     "timeUnixNano": "1771011600000000000",
-                    "asDouble": 38
+                    "asDouble": 0
                   },
                   {
                     "attributes": [],
                     "startTimeUnixNano": "1771011600000000000",
                     "timeUnixNano": "1771012200000000000",
-                    "asDouble": 38
+                    "asDouble": 0
                   },
                   {
                     "attributes": [],
                     "startTimeUnixNano": "1771012200000000000",
                     "timeUnixNano": "1771012800000000000",
-                    "asDouble": 37
+                    "asDouble": 0
                   }
-                ],
-                "aggregationTemporality": 2,
-                "isMonotonic": true
+                ]
               }
             },
             {
@@ -3414,7 +3398,7 @@
           {
             "key": "host.name",
             "value": {
-              "stringValue": "db-mysql-pus-dr.openmanager.kr"
+              "stringValue": "db-mysql-dc1-backup.openmanager.kr"
             }
           },
           {
@@ -3565,49 +3549,47 @@
               }
             },
             {
-              "name": "system.network.io",
-              "unit": "By/s",
-              "sum": {
+              "name": "system.network.utilization",
+              "unit": "1",
+              "gauge": {
                 "dataPoints": [
                   {
                     "attributes": [],
                     "startTimeUnixNano": "1771009200000000000",
                     "timeUnixNano": "1771009800000000000",
-                    "asDouble": 21
+                    "asDouble": 0
                   },
                   {
                     "attributes": [],
                     "startTimeUnixNano": "1771009800000000000",
                     "timeUnixNano": "1771010400000000000",
-                    "asDouble": 26
+                    "asDouble": 0
                   },
                   {
                     "attributes": [],
                     "startTimeUnixNano": "1771010400000000000",
                     "timeUnixNano": "1771011000000000000",
-                    "asDouble": 21
+                    "asDouble": 0
                   },
                   {
                     "attributes": [],
                     "startTimeUnixNano": "1771011000000000000",
                     "timeUnixNano": "1771011600000000000",
-                    "asDouble": 23
+                    "asDouble": 0
                   },
                   {
                     "attributes": [],
                     "startTimeUnixNano": "1771011600000000000",
                     "timeUnixNano": "1771012200000000000",
-                    "asDouble": 24
+                    "asDouble": 0
                   },
                   {
                     "attributes": [],
                     "startTimeUnixNano": "1771012200000000000",
                     "timeUnixNano": "1771012800000000000",
-                    "asDouble": 29
+                    "asDouble": 0
                   }
-                ],
-                "aggregationTemporality": 2,
-                "isMonotonic": true
+                ]
               }
             },
             {
@@ -3840,7 +3822,7 @@
           {
             "key": "host.name",
             "value": {
-              "stringValue": "cache-redis-icn-01.openmanager.kr"
+              "stringValue": "cache-redis-dc1-01.openmanager.kr"
             }
           },
           {
@@ -3991,49 +3973,47 @@
               }
             },
             {
-              "name": "system.network.io",
-              "unit": "By/s",
-              "sum": {
+              "name": "system.network.utilization",
+              "unit": "1",
+              "gauge": {
                 "dataPoints": [
                   {
                     "attributes": [],
                     "startTimeUnixNano": "1771009200000000000",
                     "timeUnixNano": "1771009800000000000",
-                    "asDouble": 44
+                    "asDouble": 0.38
                   },
                   {
                     "attributes": [],
                     "startTimeUnixNano": "1771009800000000000",
                     "timeUnixNano": "1771010400000000000",
-                    "asDouble": 45
+                    "asDouble": 0.45
                   },
                   {
                     "attributes": [],
                     "startTimeUnixNano": "1771010400000000000",
                     "timeUnixNano": "1771011000000000000",
-                    "asDouble": 43
+                    "asDouble": 0.31
                   },
                   {
                     "attributes": [],
                     "startTimeUnixNano": "1771011000000000000",
                     "timeUnixNano": "1771011600000000000",
-                    "asDouble": 44
+                    "asDouble": 0.46
                   },
                   {
                     "attributes": [],
                     "startTimeUnixNano": "1771011600000000000",
                     "timeUnixNano": "1771012200000000000",
-                    "asDouble": 48
+                    "asDouble": 0.33
                   },
                   {
                     "attributes": [],
                     "startTimeUnixNano": "1771012200000000000",
                     "timeUnixNano": "1771012800000000000",
-                    "asDouble": 48
+                    "asDouble": 0.39
                   }
-                ],
-                "aggregationTemporality": 2,
-                "isMonotonic": true
+                ]
               }
             },
             {
@@ -4266,7 +4246,7 @@
           {
             "key": "host.name",
             "value": {
-              "stringValue": "cache-redis-icn-02.openmanager.kr"
+              "stringValue": "cache-redis-dc1-02.openmanager.kr"
             }
           },
           {
@@ -4417,49 +4397,47 @@
               }
             },
             {
-              "name": "system.network.io",
-              "unit": "By/s",
-              "sum": {
+              "name": "system.network.utilization",
+              "unit": "1",
+              "gauge": {
                 "dataPoints": [
                   {
                     "attributes": [],
                     "startTimeUnixNano": "1771009200000000000",
                     "timeUnixNano": "1771009800000000000",
-                    "asDouble": 42
+                    "asDouble": 0.47
                   },
                   {
                     "attributes": [],
                     "startTimeUnixNano": "1771009800000000000",
                     "timeUnixNano": "1771010400000000000",
-                    "asDouble": 41
+                    "asDouble": 0.37
                   },
                   {
                     "attributes": [],
                     "startTimeUnixNano": "1771010400000000000",
                     "timeUnixNano": "1771011000000000000",
-                    "asDouble": 41
+                    "asDouble": 0.42
                   },
                   {
                     "attributes": [],
                     "startTimeUnixNano": "1771011000000000000",
                     "timeUnixNano": "1771011600000000000",
-                    "asDouble": 46
+                    "asDouble": 0.34
                   },
                   {
                     "attributes": [],
                     "startTimeUnixNano": "1771011600000000000",
                     "timeUnixNano": "1771012200000000000",
-                    "asDouble": 39
+                    "asDouble": 0.4
                   },
                   {
                     "attributes": [],
                     "startTimeUnixNano": "1771012200000000000",
                     "timeUnixNano": "1771012800000000000",
-                    "asDouble": 37
+                    "asDouble": 0.3
                   }
-                ],
-                "aggregationTemporality": 2,
-                "isMonotonic": true
+                ]
               }
             },
             {
@@ -4692,7 +4670,7 @@
           {
             "key": "host.name",
             "value": {
-              "stringValue": "storage-nfs-icn-01.openmanager.kr"
+              "stringValue": "storage-nfs-dc1-01.openmanager.kr"
             }
           },
           {
@@ -4843,49 +4821,47 @@
               }
             },
             {
-              "name": "system.network.io",
-              "unit": "By/s",
-              "sum": {
+              "name": "system.network.utilization",
+              "unit": "1",
+              "gauge": {
                 "dataPoints": [
                   {
                     "attributes": [],
                     "startTimeUnixNano": "1771009200000000000",
                     "timeUnixNano": "1771009800000000000",
-                    "asDouble": 45
+                    "asDouble": 0.2
                   },
                   {
                     "attributes": [],
                     "startTimeUnixNano": "1771009800000000000",
                     "timeUnixNano": "1771010400000000000",
-                    "asDouble": 53
+                    "asDouble": 0.24
                   },
                   {
                     "attributes": [],
                     "startTimeUnixNano": "1771010400000000000",
                     "timeUnixNano": "1771011000000000000",
-                    "asDouble": 48
+                    "asDouble": 0.16
                   },
                   {
                     "attributes": [],
                     "startTimeUnixNano": "1771011000000000000",
                     "timeUnixNano": "1771011600000000000",
-                    "asDouble": 45
+                    "asDouble": 0.35
                   },
                   {
                     "attributes": [],
                     "startTimeUnixNano": "1771011600000000000",
                     "timeUnixNano": "1771012200000000000",
-                    "asDouble": 46
+                    "asDouble": 0.31
                   },
                   {
                     "attributes": [],
                     "startTimeUnixNano": "1771012200000000000",
                     "timeUnixNano": "1771012800000000000",
-                    "asDouble": 47
+                    "asDouble": 0.24
                   }
-                ],
-                "aggregationTemporality": 2,
-                "isMonotonic": true
+                ]
               }
             },
             {
@@ -5118,7 +5094,7 @@
           {
             "key": "host.name",
             "value": {
-              "stringValue": "storage-s3gw-pus-01.openmanager.kr"
+              "stringValue": "storage-s3gw-dc1-01.openmanager.kr"
             }
           },
           {
@@ -5269,49 +5245,47 @@
               }
             },
             {
-              "name": "system.network.io",
-              "unit": "By/s",
-              "sum": {
+              "name": "system.network.utilization",
+              "unit": "1",
+              "gauge": {
                 "dataPoints": [
                   {
                     "attributes": [],
                     "startTimeUnixNano": "1771009200000000000",
                     "timeUnixNano": "1771009800000000000",
-                    "asDouble": 64
+                    "asDouble": 0.32
                   },
                   {
                     "attributes": [],
                     "startTimeUnixNano": "1771009800000000000",
                     "timeUnixNano": "1771010400000000000",
-                    "asDouble": 62
+                    "asDouble": 0.21
                   },
                   {
                     "attributes": [],
                     "startTimeUnixNano": "1771010400000000000",
                     "timeUnixNano": "1771011000000000000",
-                    "asDouble": 63
+                    "asDouble": 0.24
                   },
                   {
                     "attributes": [],
                     "startTimeUnixNano": "1771011000000000000",
                     "timeUnixNano": "1771011600000000000",
-                    "asDouble": 61
+                    "asDouble": 0.31
                   },
                   {
                     "attributes": [],
                     "startTimeUnixNano": "1771011600000000000",
                     "timeUnixNano": "1771012200000000000",
-                    "asDouble": 57
+                    "asDouble": 0.24
                   },
                   {
                     "attributes": [],
                     "startTimeUnixNano": "1771012200000000000",
                     "timeUnixNano": "1771012800000000000",
-                    "asDouble": 62
+                    "asDouble": 0.17
                   }
-                ],
-                "aggregationTemporality": 2,
-                "isMonotonic": true
+                ]
               }
             },
             {
@@ -5544,7 +5518,7 @@
           {
             "key": "host.name",
             "value": {
-              "stringValue": "lb-haproxy-icn-01.openmanager.kr"
+              "stringValue": "lb-haproxy-dc1-01.openmanager.kr"
             }
           },
           {
@@ -5695,49 +5669,47 @@
               }
             },
             {
-              "name": "system.network.io",
-              "unit": "By/s",
-              "sum": {
+              "name": "system.network.utilization",
+              "unit": "1",
+              "gauge": {
                 "dataPoints": [
                   {
                     "attributes": [],
                     "startTimeUnixNano": "1771009200000000000",
                     "timeUnixNano": "1771009800000000000",
-                    "asDouble": 69
+                    "asDouble": 0.01
                   },
                   {
                     "attributes": [],
                     "startTimeUnixNano": "1771009800000000000",
                     "timeUnixNano": "1771010400000000000",
-                    "asDouble": 74
+                    "asDouble": 0.01
                   },
                   {
                     "attributes": [],
                     "startTimeUnixNano": "1771010400000000000",
                     "timeUnixNano": "1771011000000000000",
-                    "asDouble": 67
+                    "asDouble": 0.01
                   },
                   {
                     "attributes": [],
                     "startTimeUnixNano": "1771011000000000000",
                     "timeUnixNano": "1771011600000000000",
-                    "asDouble": 70
+                    "asDouble": 0.01
                   },
                   {
                     "attributes": [],
                     "startTimeUnixNano": "1771011600000000000",
                     "timeUnixNano": "1771012200000000000",
-                    "asDouble": 65
+                    "asDouble": 0.01
                   },
                   {
                     "attributes": [],
                     "startTimeUnixNano": "1771012200000000000",
                     "timeUnixNano": "1771012800000000000",
-                    "asDouble": 65
+                    "asDouble": 0.01
                   }
-                ],
-                "aggregationTemporality": 2,
-                "isMonotonic": true
+                ]
               }
             },
             {
@@ -5970,7 +5942,7 @@
           {
             "key": "host.name",
             "value": {
-              "stringValue": "lb-haproxy-pus-01.openmanager.kr"
+              "stringValue": "lb-haproxy-dc1-02.openmanager.kr"
             }
           },
           {
@@ -6121,49 +6093,47 @@
               }
             },
             {
-              "name": "system.network.io",
-              "unit": "By/s",
-              "sum": {
+              "name": "system.network.utilization",
+              "unit": "1",
+              "gauge": {
                 "dataPoints": [
                   {
                     "attributes": [],
                     "startTimeUnixNano": "1771009200000000000",
                     "timeUnixNano": "1771009800000000000",
-                    "asDouble": 66
+                    "asDouble": 0.01
                   },
                   {
                     "attributes": [],
                     "startTimeUnixNano": "1771009800000000000",
                     "timeUnixNano": "1771010400000000000",
-                    "asDouble": 65
+                    "asDouble": 0.01
                   },
                   {
                     "attributes": [],
                     "startTimeUnixNano": "1771010400000000000",
                     "timeUnixNano": "1771011000000000000",
-                    "asDouble": 64
+                    "asDouble": 0.01
                   },
                   {
                     "attributes": [],
                     "startTimeUnixNano": "1771011000000000000",
                     "timeUnixNano": "1771011600000000000",
-                    "asDouble": 64
+                    "asDouble": 0.01
                   },
                   {
                     "attributes": [],
                     "startTimeUnixNano": "1771011600000000000",
                     "timeUnixNano": "1771012200000000000",
-                    "asDouble": 66
+                    "asDouble": 0.01
                   },
                   {
                     "attributes": [],
                     "startTimeUnixNano": "1771012200000000000",
                     "timeUnixNano": "1771012800000000000",
-                    "asDouble": 71
+                    "asDouble": 0.01
                   }
-                ],
-                "aggregationTemporality": 2,
-                "isMonotonic": true
+                ]
               }
             },
             {

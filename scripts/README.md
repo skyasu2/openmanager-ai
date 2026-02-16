@@ -16,7 +16,8 @@ scripts/
 │   └── health/                # AI 도구 상태 체크
 ├── data/              # 데이터 파이프라인 & SQL
 │   ├── otel/                  # OpenTelemetry 변환
-│   ├── sync-hourly-data.ts    # hourly-data 동기화
+│   ├── otel-fix.ts            # OTel 데이터 보정
+│   ├── otel-verify.ts         # OTel 데이터 검증
 │   └── *.sql                  # Supabase 테이블/함수
 ├── dev/               # 개발 도구
 │   ├── biome-wrapper.sh       # Biome 포맷터 래퍼
@@ -118,11 +119,14 @@ bash scripts/mcp/mcp-health-check-codex.sh
 ### 데이터 파이프라인
 
 ```bash
-# hourly-data 동기화
-npx tsx scripts/data/sync-hourly-data.ts
+# OTel 데이터 보정 + 검증
+npm run data:fix
+npm run data:verify
+npm run data:precomputed:build
 
-# 서버 데이터 생성
-npx tsx scripts/generators/generate-server-data.ts
+# 레거시 생성기 실행 (명시적 허용 필요)
+ALLOW_LEGACY_HOURLY_DATA=true npx tsx scripts/generators/generate-hourly-failure-scenarios.ts
+ALLOW_LEGACY_PUBLIC_SERVER_DATA=true npx tsx scripts/generators/generate-server-data.ts
 ```
 
 ---

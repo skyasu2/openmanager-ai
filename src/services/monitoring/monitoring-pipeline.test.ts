@@ -21,7 +21,7 @@ function makeServerMetrics(
   return {
     serverId: overrides.serverId,
     serverType: overrides.serverType ?? 'web',
-    location: overrides.location ?? 'icn-01',
+    location: overrides.location ?? 'dc1-az1',
     cpu: overrides.cpu ?? 50,
     memory: overrides.memory ?? 60,
     disk: overrides.disk ?? 40,

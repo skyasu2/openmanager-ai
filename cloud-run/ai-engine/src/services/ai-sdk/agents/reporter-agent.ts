@@ -16,15 +16,9 @@
  */
 
 import { AGENT_CONFIGS, type AgentConfig } from './config';
-import { ReporterAgent, AgentFactory } from './agent-factory';
+import { AgentFactory, type BaseAgent } from './agent-factory';
 import { executeReporterPipeline, type PipelineConfig, type PipelineResult } from './reporter-pipeline';
 import { logger } from '../../../lib/logger';
-
-// ============================================================================
-// Agent Class Export
-// ============================================================================
-
-export { ReporterAgent };
 
 // ============================================================================
 // Factory Functions (Backward Compatibility)
@@ -66,8 +60,8 @@ export function isReporterAgentAvailable(): boolean {
  * }
  * ```
  */
-export function createReporterAgent(): ReporterAgent | null {
-  return AgentFactory.create('reporter') as ReporterAgent | null;
+export function createReporterAgent(): BaseAgent | null {
+  return AgentFactory.create('reporter');
 }
 
 // ============================================================================

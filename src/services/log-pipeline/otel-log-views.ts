@@ -74,7 +74,7 @@ export function otelToLokiEntry(log: OTelLogRecord): LokiLogEntry {
       log.attributes['deployment.environment'] ?? 'production'
     ),
     datacenter: String(log.attributes['cloud.availability_zone'] ?? 'unknown'),
-    server_type: String(log.attributes['host.type'] ?? 'unknown'),
+    server_type: String(log.attributes['server.role'] ?? 'unknown'),
   };
 
   const timestampNs = `${log.timeUnixNano}`;

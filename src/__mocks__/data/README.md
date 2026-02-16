@@ -9,8 +9,8 @@
 **Scenario-based Metrics System** (`src/services/server-data/server-data-loader.ts`)
 
 - **위치**: `src/services/server-data/server-data-loader.ts`
-- **데이터 소스**: `public/hourly-data/hour-*.json` (24시간 × 15개 서버)
-- **생성 스크립트**: `scripts/generate-static-metrics.ts`
+- **데이터 소스**: `src/data/otel-data/hourly/hour-*.json` (24시간 × 15개 서버)
+- **정합성 스크립트**: `scripts/data/otel-fix.ts`, `scripts/data/otel-verify.ts`
 - **품질**: ⭐⭐⭐⭐⭐ (5/5)
 
 ### 특징
@@ -100,9 +100,9 @@ private async loadFromCustomSource(): Promise<Server[]> {
 ### 현재 시스템 (Active)
 
 ```
-scripts/generate-static-metrics.ts (Gemini 구현)
+scripts/data/otel-fix.ts + scripts/data/otel-verify.ts
   ↓
-public/hourly-data/hour-*.json (24시간 × 15개 서버)
+src/data/otel-data/hourly/hour-*.json (24시간 × 15개 서버)
   ↓
 src/services/server-data/server-data-loader.ts (KST 회전)
   ↓
@@ -161,7 +161,7 @@ curl http://localhost:3000/api/servers
 
 - **Gemini 구현 분석**: `archive/deprecated/metrics-generation-systems/DEPRECATION_NOTICE.md`
 - **시나리오 로더**: `src/services/server-data/server-data-loader.ts`
-- **생성 스크립트**: `scripts/generate-static-metrics.ts`
+- **정합성 스크립트**: `scripts/data/otel-fix.ts`, `scripts/data/otel-verify.ts`
 ---
 
 ## 💡 FAQ
@@ -187,7 +187,7 @@ A: **없습니다**. 테스트 및 데모 목적으로 영구 유지됩니다. �
 
 ### Q: 새로운 프로덕션 데이터를 추가하려면?
 
-A: `scripts/generate-static-metrics.ts` 스크립트를 실행하여 24시간 JSON 파일을 재생성하세요. server-data-loader가 자동으로 로드합니다.
+A: `npm run data:fix`와 `npm run data:verify`를 실행해 24시간 OTel JSON 데이터셋을 갱신/검증하세요. server-data-loader가 자동으로 로드합니다.
 
 ### Q: 실시간 데이터 회전은 어떻게 작동하나요?
 

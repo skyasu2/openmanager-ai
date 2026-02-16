@@ -4,11 +4,11 @@
 > Owner: documentation
 > Status: Active
 > Doc type: How-to
-> Last reviewed: 2026-02-14
+> Last reviewed: 2026-02-16
 > Canonical: docs/guides/ai/vision-agent-guide.md
 > Tags: ai,vision,guide
 >
-> **Version**: 1.1.0 | **Last Updated**: 2026-01-28
+> **Version**: 1.2.0 | **Last Updated**: 2026-02-16
 
 ## 개요
 
@@ -163,9 +163,9 @@ AgentFactory가 자동으로 Vision Agent를 선택하는 조건:
 ```typescript
 // AgentFactory 내부 로직
 if (hasAttachments && isGeminiAvailable()) {
-  return new VisionAgent();
+  return AgentFactory.create('vision');
 }
-return new AnalystAgent(); // 폴백
+return AgentFactory.create('analyst'); // 폴백
 ```
 
 ## 환경변수 설정
@@ -233,4 +233,4 @@ Agent: Analyst (Groq/Mistral)
 
 ---
 
-_Last Updated: 2026-01-28_
+_Last Updated: 2026-02-16_

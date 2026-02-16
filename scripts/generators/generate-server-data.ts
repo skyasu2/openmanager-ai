@@ -13,6 +13,20 @@
 import fs from 'fs';
 import path from 'path';
 
+const LEGACY_GUARD_ENV = 'ALLOW_LEGACY_PUBLIC_SERVER_DATA';
+
+function assertLegacyMode(): void {
+  if (process.env[LEGACY_GUARD_ENV] !== 'true') {
+    throw new Error(
+      [
+        '[BLOCKED] Legacy public/data server generator is disabled by default.',
+        `Set ${LEGACY_GUARD_ENV}=true only when regenerating public/data/servers/hourly on purpose.`,
+        'Primary monitoring dataset uses src/data/otel-data.',
+      ].join('\n')
+    );
+  }
+}
+
 // ==========================================
 // 서버 타입 정의 (src/types/server.ts 기반)
 // ==========================================
@@ -445,6 +459,8 @@ function generateHourlyData(hour: number) {
 // ==========================================
 
 function main() {
+  assertLegacyMode();
+
   console.log('📊 Vercel JSON 24시간 서버 데이터 생성 시작...\n');
 
   // 출력 디렉토리

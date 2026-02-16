@@ -111,15 +111,15 @@ export interface PrometheusTargetData {
   };
   metrics: {
     up: 0 | 1;
-    node_cpu_usage_percent: number;
-    node_memory_usage_percent: number;
-    node_filesystem_usage_percent: number;
-    node_network_transmit_bytes_rate: number;
+    node_cpu_utilization_ratio: number;
+    node_memory_utilization_ratio: number;
+    node_filesystem_utilization_ratio: number;
+    node_network_utilization_ratio: number;
     node_load1: number;
     node_load5: number;
     node_boot_time_seconds: number;
     node_procs_running: number;
-    node_http_request_duration_milliseconds: number;
+    http_server_request_duration_seconds: number;
   };
   nodeInfo: {
     cpu_cores: number;

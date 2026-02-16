@@ -19,23 +19,23 @@ type ServerRegistryEntry = {
 };
 
 const SERVER_REGISTRY: ServerRegistryEntry[] = [
-  // Seoul-ICN subnet (10.100.1.0/24)
-  { serverId: 'lb-haproxy-icn-01', ip: '10.100.1.1' },
-  { serverId: 'web-nginx-icn-01', ip: '10.100.1.11' },
-  { serverId: 'web-nginx-icn-02', ip: '10.100.1.12' },
-  { serverId: 'api-was-icn-01', ip: '10.100.1.21' },
-  { serverId: 'api-was-icn-02', ip: '10.100.1.22' },
-  { serverId: 'db-mysql-icn-primary', ip: '10.100.1.31' },
-  { serverId: 'db-mysql-icn-replica', ip: '10.100.1.32' },
-  { serverId: 'cache-redis-icn-01', ip: '10.100.1.41' },
-  { serverId: 'cache-redis-icn-02', ip: '10.100.1.42' },
-  { serverId: 'storage-nfs-icn-01', ip: '10.100.1.51' },
-  // Busan-PUS subnet (10.100.2.0/24)
-  { serverId: 'lb-haproxy-pus-01', ip: '10.100.2.1' },
-  { serverId: 'web-nginx-pus-01', ip: '10.100.2.11' },
-  { serverId: 'api-was-pus-01', ip: '10.100.2.21' },
-  { serverId: 'db-mysql-pus-dr', ip: '10.100.2.31' },
-  { serverId: 'storage-s3gw-pus-01', ip: '10.100.2.51' },
+  // DC1-AZ1/AZ2 subnet (10.100.1.0/24)
+  { serverId: 'lb-haproxy-dc1-01', ip: '10.100.1.1' },
+  { serverId: 'web-nginx-dc1-01', ip: '10.100.1.11' },
+  { serverId: 'web-nginx-dc1-02', ip: '10.100.1.12' },
+  { serverId: 'api-was-dc1-01', ip: '10.100.1.21' },
+  { serverId: 'api-was-dc1-02', ip: '10.100.1.22' },
+  { serverId: 'db-mysql-dc1-primary', ip: '10.100.1.31' },
+  { serverId: 'db-mysql-dc1-replica', ip: '10.100.1.32' },
+  { serverId: 'cache-redis-dc1-01', ip: '10.100.1.41' },
+  { serverId: 'cache-redis-dc1-02', ip: '10.100.1.42' },
+  { serverId: 'storage-nfs-dc1-01', ip: '10.100.1.51' },
+  // DC1-AZ3 subnet (10.100.2.0/24)
+  { serverId: 'lb-haproxy-dc1-02', ip: '10.100.2.1' },
+  { serverId: 'web-nginx-dc1-03', ip: '10.100.2.11' },
+  { serverId: 'api-was-dc1-03', ip: '10.100.2.21' },
+  { serverId: 'db-mysql-dc1-backup', ip: '10.100.2.31' },
+  { serverId: 'storage-s3gw-dc1-01', ip: '10.100.2.51' },
 ];
 
 // O(1) lookup map, built once at module load

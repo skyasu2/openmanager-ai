@@ -5,6 +5,8 @@
 
 import type { ArchitectureDiagram } from '@/data/architecture-diagrams.data';
 
+import type { Server } from '@/types/server';
+
 export interface ReactFlowDiagramProps {
   diagram: ArchitectureDiagram;
   /** 컴팩트 모드 (모달 내부용) */
@@ -13,6 +15,8 @@ export interface ReactFlowDiagramProps {
   showControls?: boolean;
   /** 미니맵 표시 여부 */
   showMiniMap?: boolean;
+  /** 서버 실시간 데이터 (ID 매핑용) */
+  servers?: Server[];
 }
 
 export interface CustomNodeData extends Record<string, unknown> {
@@ -24,6 +28,10 @@ export interface CustomNodeData extends Record<string, unknown> {
   layerColor: string;
   /** @description 레이어 제목 (디버깅/확장용) */
   layerTitle: string;
+  /** @description 실시간 서버 상태 (매핑된 경우) */
+  status?: 'running' | 'warning' | 'danger' | 'offline';
+  /** @description 전체 서버 데이터 객체 */
+  serverData?: Server;
 }
 
 export interface SwimlaneBgData extends Record<string, unknown> {

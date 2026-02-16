@@ -264,7 +264,7 @@ function otelSlotToRawServers(slot: OTelHourlySlot): Record<string, RawServerDat
         serverMap[serverId] = {
           id: serverId,
           name: serverId,
-          type: resource?.['host.type'] ?? 'unknown',
+          type: resource?.['server.role'] ?? 'unknown',
           cpu: 0,
           memory: 0,
           disk: 0,
@@ -284,8 +284,12 @@ function otelSlotToRawServers(slot: OTelHourlySlot): Record<string, RawServerDat
         case 'system.filesystem.utilization':
           server.disk = Math.round(dp.asDouble * 1000) / 10;
           break;
-        case 'system.network.io':
-          server.network = dp.asDouble;
+        case 'system.network.utilization':
+          // Range detection: values >1 are already percent (Cloud Run data),
+          // values ≤1 are ratio (Vercel SSOT data) and need *100 conversion
+          server.network = dp.asDouble > 1
+            ? Math.round(dp.asDouble * 10) / 10
+            : Math.round(dp.asDouble * 1000) / 10;
           break;
         case 'system.linux.cpu.load_1m':
           server.load1 = dp.asDouble;
@@ -294,7 +298,14 @@ function otelSlotToRawServers(slot: OTelHourlySlot): Record<string, RawServerDat
           server.load5 = dp.asDouble;
           break;
         case 'http.server.request.duration':
+          // OTel standard unit is "s" (seconds); convert to ms
           server.responseTimeMs = dp.asDouble * 1000;
+          break;
+        case 'system.status':
+          // 1 = online, 0 = offline (Cloud Run 전용 메트릭)
+          if (dp.asDouble === 0) {
+            server.status = 'offline';
+          }
           break;
         case 'system.uptime':
           server.bootTimeSeconds = Math.floor(Date.now() / 1000 - dp.asDouble);

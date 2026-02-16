@@ -56,24 +56,59 @@ vi.mock('../../../../lib/text-sanitizer', () => ({
   sanitizeChineseCharacters: vi.fn((text: string) => text),
 }));
 
-// Mock AI SDK
-vi.mock('ai', () => ({
-  generateText: vi.fn(async () => ({
+// Mock AI SDK with ToolLoopAgent
+vi.mock('ai', () => {
+  const mockGenerateText = vi.fn(async () => ({
     text: 'Mock response',
     usage: { inputTokens: 100, outputTokens: 50, totalTokens: 150 },
     steps: [{ finishReason: 'stop', toolCalls: [], toolResults: [] }],
-  })),
-  streamText: vi.fn(() => ({
+  }));
+  const mockStreamText = vi.fn(() => ({
     textStream: (async function* () {
       yield 'Mock response';
     })(),
     steps: Promise.resolve([]),
     usage: Promise.resolve({ inputTokens: 100, outputTokens: 50, totalTokens: 150 }),
-  })),
-  hasToolCall: vi.fn(() => () => false),
-  stepCountIs: vi.fn(() => () => false),
-  tool: vi.fn((config) => ({ ...config, _type: 'tool' })),
-}));
+  }));
+
+  class MockToolLoopAgent {
+    settings: Record<string, unknown>;
+    constructor(settings: Record<string, unknown>) {
+      this.settings = settings;
+    }
+    async generate(options: Record<string, unknown>) {
+      const { timeout, onStepFinish, ...rest } = options as Record<string, unknown>;
+      const { onStepFinish: _sOSF, instructions, ...settingsRest } = this.settings;
+      return mockGenerateText({
+        ...settingsRest,
+        system: instructions,
+        ...rest,
+        timeout,
+        onStepFinish,
+      });
+    }
+    async stream(options: Record<string, unknown>) {
+      const { timeout, onStepFinish, ...rest } = options as Record<string, unknown>;
+      const { onStepFinish: _sOSF, instructions, ...settingsRest } = this.settings;
+      return mockStreamText({
+        ...settingsRest,
+        system: instructions,
+        ...rest,
+        timeout,
+        onStepFinish,
+      });
+    }
+  }
+
+  return {
+    generateText: mockGenerateText,
+    streamText: mockStreamText,
+    ToolLoopAgent: MockToolLoopAgent,
+    hasToolCall: vi.fn(() => () => false),
+    stepCountIs: vi.fn(() => () => false),
+    tool: vi.fn((config: unknown) => ({ ...(config as object), _type: 'tool' })),
+  };
+});
 
 // Mock tools
 vi.mock('../../../../tools-ai-sdk', () => ({
@@ -212,30 +247,27 @@ describe('VisionAgent', () => {
 
   describe('getVisionAgentOrFallback()', () => {
     it('should return VisionAgent when available', async () => {
-      const { getVisionAgentOrFallback, VisionAgent } = await import('./vision-agent');
+      const { getVisionAgentOrFallback } = await import('./vision-agent');
       const { AgentFactory } = await import('./agent-factory');
       vi.spyOn(AgentFactory, 'isAvailable').mockReturnValue(true);
 
       const result = getVisionAgentOrFallback('스크린샷 분석해줘');
 
       expect(result.agent).not.toBeNull();
-      expect(result.agent).toBeInstanceOf(VisionAgent);
+      expect(result.agent!.getName()).toBe('Vision Agent');
       expect(result.isFallback).toBe(false);
       expect(result.fallbackReason).toBeUndefined();
     });
 
     it('should fallback to Analyst Agent when vision is unavailable for a vision query', async () => {
       const { getVisionAgentOrFallback } = await import('./vision-agent');
-      const { AgentFactory, AnalystAgent } = await import('./agent-factory');
+      const { AgentFactory } = await import('./agent-factory');
       vi.spyOn(AgentFactory, 'isAvailable').mockReturnValue(false);
-      vi.spyOn(AgentFactory, 'create').mockImplementation((type) => {
-        if (type === 'analyst') return new AnalystAgent();
-        return null;
-      });
 
       const result = getVisionAgentOrFallback('스크린샷 분석해줘');
 
-      expect(result.agent).toBeInstanceOf(AnalystAgent);
+      expect(result.agent).not.toBeNull();
+      expect(result.agent!.getName()).toBe('Analyst Agent');
       expect(result.isFallback).toBe(true);
       expect(result.fallbackReason).toContain('Vision providers unavailable');
     });
@@ -258,13 +290,13 @@ describe('VisionAgent', () => {
   // ==========================================================================
 
   describe('createVisionAgent()', () => {
-    it('should return VisionAgent when Gemini is configured', async () => {
-      const { createVisionAgent, VisionAgent } = await import('./vision-agent');
+    it('should return agent with Vision Agent name when Gemini is configured', async () => {
+      const { createVisionAgent } = await import('./vision-agent');
 
       const agent = createVisionAgent();
 
       expect(agent).not.toBeNull();
-      expect(agent).toBeInstanceOf(VisionAgent);
+      expect(agent!.getName()).toBe('Vision Agent');
     });
 
     // Note: Test for Gemini unavailability requires dynamic mock changes.
@@ -289,34 +321,31 @@ describe('VisionAgent', () => {
   // VisionAgent Class Tests
   // ==========================================================================
 
-  describe('VisionAgent class', () => {
+  describe('Vision Agent via AgentFactory', () => {
     it('should have correct name', async () => {
-      const { VisionAgent } = await import('./vision-agent');
+      const { AgentFactory } = await import('./agent-factory');
 
-      const agent = new VisionAgent();
+      const agent = AgentFactory.create('vision');
 
-      expect(agent.getName()).toBe('Vision Agent');
+      expect(agent).not.toBeNull();
+      expect(agent!.getName()).toBe('Vision Agent');
     });
 
     it('should return config from AGENT_CONFIGS', async () => {
-      const { VisionAgent } = await import('./vision-agent');
+      const { AgentFactory } = await import('./agent-factory');
 
-      const agent = new VisionAgent();
-      const config = agent.getConfig();
+      const agent = AgentFactory.create('vision');
+      const config = agent!.getConfig();
 
       expect(config).not.toBeNull();
       expect(config?.name).toBe('Vision Agent');
     });
 
     it('should check availability based on Gemini', async () => {
-      const { VisionAgent } = await import('./vision-agent');
+      const { AgentFactory } = await import('./agent-factory');
 
-      const agent = new VisionAgent();
-
-      expect(agent.isAvailable()).toBe(true);
+      expect(AgentFactory.isAvailable('vision')).toBe(true);
     });
-
-    // Note: Test for Gemini unavailability requires dynamic mock changes.
   });
 
   // ==========================================================================

@@ -2,25 +2,26 @@
  * BaseAgent - Abstract base class for all agents
  *
  * Encapsulates the common agent execution pattern using AI SDK v6's
- * generateText with stopWhen conditions for graceful termination.
+ * ToolLoopAgent for tool-loop orchestration with stopWhen conditions.
  *
  * Key Features:
  * - Unified execution interface via run() method
- * - AI SDK v6 native: stopWhen with hasToolCall('finalAnswer') + stepCountIs(N)
+ * - AI SDK v6 ToolLoopAgent: official agent pattern with stopWhen
  * - Provider fallback chain support
  * - Step-by-step monitoring via onStepFinish
  * - Timeout protection with configurable limits
  *
- * @version 1.0.0
+ * @version 2.0.0 - Migrated to ToolLoopAgent composition
  * @created 2026-01-27
+ * @updated 2026-02-16 - ToolLoopAgent adoption (AI SDK v6 official pattern)
  */
 
 import {
-  generateText,
-  streamText,
+  ToolLoopAgent,
   hasToolCall,
   stepCountIs,
   type Tool,
+  type LanguageModel,
   type TextPart,
   type ImagePart,
   type FilePart,
@@ -210,7 +211,7 @@ export abstract class BaseAgent {
       // keep default tools
     } else if ('searchWeb' in filtered) {
       delete filtered.searchWeb;
-      console.log(`🚫 [${this.getName()}] searchWeb disabled`);
+      logger.debug(`[${this.getName()}] searchWeb disabled`);
     }
 
     if (
@@ -270,6 +271,34 @@ export abstract class BaseAgent {
   }
 
   /**
+   * Create a ToolLoopAgent instance with resolved configuration
+   *
+   * @param model - Resolved language model
+   * @param instructions - Agent system prompt
+   * @param tools - Filtered tools map
+   * @param maxSteps - Maximum number of steps
+   * @returns ToolLoopAgent instance
+   */
+  private createToolLoopAgent(params: {
+    model: LanguageModel;
+    instructions: string;
+    tools: Record<string, Tool>;
+    maxSteps: number;
+    temperature: number;
+    maxOutputTokens: number;
+  }) {
+    return new ToolLoopAgent({
+      model: params.model,
+      instructions: params.instructions,
+      tools: params.tools,
+      stopWhen: [hasToolCall('finalAnswer'), stepCountIs(params.maxSteps)],
+      maxRetries: 1,
+      temperature: params.temperature,
+      maxOutputTokens: params.maxOutputTokens,
+    });
+  }
+
+  /**
    * Build multimodal user message content
    *
    * AI SDK v6 Best Practice: Include images/files directly in message content
@@ -305,7 +334,7 @@ export abstract class BaseAgent {
           mimeType: img.mimeType,
         } as ImagePart);
       }
-      console.log(`📷 [${this.getName()}] Added ${options.images!.length} image(s) to message`);
+      logger.debug(`[${this.getName()}] Added ${options.images!.length} image(s) to message`);
     }
 
     // Add files (PDF, audio, etc.)
@@ -318,7 +347,7 @@ export abstract class BaseAgent {
           mediaType: file.mimeType, // AI SDK uses 'mediaType'
         } as FilePart);
       }
-      console.log(`📎 [${this.getName()}] Added ${options.files!.length} file(s) to message`);
+      logger.debug(`[${this.getName()}] Added ${options.files!.length} file(s) to message`);
     }
 
     return content;
@@ -340,7 +369,7 @@ export abstract class BaseAgent {
     const opts = { ...DEFAULT_OPTIONS, ...options };
     const agentName = this.getName();
 
-    console.log(`🤖 [${agentName}] Starting execution...`);
+    logger.info(`[${agentName}] Starting execution`);
 
     // Validate configuration
     const config = this.getConfig();
@@ -385,30 +414,31 @@ export abstract class BaseAgent {
       provider
     );
 
-    console.log(`🎯 [${agentName}] Using ${provider}/${modelId}`);
+    logger.info(`[${agentName}] Using ${provider}/${modelId}`);
 
     try {
       // Build multimodal user content (text + images + files)
       const userContent = this.buildUserContent(query, opts);
 
-      // Execute with AI SDK v6 native pattern
-      const result = await generateText({
+      // Create ToolLoopAgent with resolved configuration
+      const agent = this.createToolLoopAgent({
         model,
-        system: config.instructions,
-        messages: [{ role: 'user', content: userContent }],
+        instructions: config.instructions,
         tools: filteredTools,
-        maxRetries: 1,
-        // 🎯 Fix: Apply timeout configuration (AI SDK v6.0.50)
-        // Defensive: use default if undefined to avoid SDK validation errors
-        timeout: { totalMs: opts.timeoutMs ?? DEFAULT_OPTIONS.timeoutMs, stepMs: (opts.timeoutMs ?? DEFAULT_OPTIONS.timeoutMs) - 5_000 },
-        // AI SDK v6 Best Practice: Graceful termination conditions
-        stopWhen: [hasToolCall('finalAnswer'), stepCountIs(opts.maxSteps)],
+        maxSteps: opts.maxSteps,
         temperature: opts.temperature,
         maxOutputTokens,
+      });
+
+      // Execute via ToolLoopAgent.generate() (AI SDK v6 official pattern)
+      const result = await agent.generate({
+        messages: [{ role: 'user', content: userContent }],
+        // 🎯 Fix: Apply timeout configuration (AI SDK v6.0.50)
+        timeout: { totalMs: opts.timeoutMs ?? DEFAULT_OPTIONS.timeoutMs, stepMs: Math.max((opts.timeoutMs ?? DEFAULT_OPTIONS.timeoutMs) - 5_000, 5_000) },
         // Step-by-step monitoring
         onStepFinish: ({ finishReason, toolCalls }) => {
           const toolNames = toolCalls?.map(tc => tc.toolName) || [];
-          console.log(`📍 [${agentName}] Step: reason=${finishReason}, tools=[${toolNames.join(',')}]`);
+          logger.debug(`[${agentName}] Step: reason=${finishReason}, tools=[${toolNames.join(',')}]`);
         },
       });
 
@@ -457,7 +487,7 @@ export abstract class BaseAgent {
       }
 
       const durationMs = Date.now() - startTime;
-      console.log(`✅ [${agentName}] Completed in ${durationMs}ms, tools: [${toolsCalled.join(', ')}]`);
+      logger.info(`[${agentName}] Completed in ${durationMs}ms, tools: [${toolsCalled.join(', ')}]`);
 
       return {
         text: sanitizedText,
@@ -514,7 +544,7 @@ export abstract class BaseAgent {
     const opts = { ...DEFAULT_OPTIONS, ...options };
     const agentName = this.getName();
 
-    console.log(`🤖 [${agentName}] Starting stream...`);
+    logger.info(`[${agentName}] Starting stream...`);
 
     // Validate configuration
     const config = this.getConfig();
@@ -537,26 +567,30 @@ export abstract class BaseAgent {
       provider
     );
 
-    console.log(`🎯 [${agentName}] Streaming with ${provider}/${modelId}`);
+    logger.info(`[${agentName}] Streaming with ${provider}/${modelId}`);
 
     try {
       // Build multimodal user content (text + images + files)
       const userContent = this.buildUserContent(query, opts);
 
-      const streamResult = streamText({
+      // Create ToolLoopAgent with resolved configuration
+      const agent = this.createToolLoopAgent({
         model,
-        system: config.instructions,
-        messages: [{ role: 'user', content: userContent }],
+        instructions: config.instructions,
         tools: filteredTools,
-        // 🎯 Fix: Apply timeout configuration (AI SDK v6.0.50)
-        // Defensive: use default if undefined to avoid SDK validation errors
-        timeout: { totalMs: opts.timeoutMs ?? DEFAULT_OPTIONS.timeoutMs, chunkMs: 30_000 },
-        stopWhen: [hasToolCall('finalAnswer'), stepCountIs(opts.maxSteps)],
+        maxSteps: opts.maxSteps,
         temperature: opts.temperature,
         maxOutputTokens,
+      });
+
+      // Execute via ToolLoopAgent.stream() (AI SDK v6 official pattern)
+      const streamResult = await agent.stream({
+        messages: [{ role: 'user', content: userContent }],
+        // 🎯 Fix: Apply timeout configuration (AI SDK v6.0.50)
+        timeout: { totalMs: opts.timeoutMs ?? DEFAULT_OPTIONS.timeoutMs, chunkMs: 30_000 },
         onStepFinish: ({ finishReason, toolCalls }) => {
           const toolNames = toolCalls?.map(tc => tc.toolName) || [];
-          console.log(`📍 [${agentName}] Step: reason=${finishReason}, tools=[${toolNames.join(',')}]`);
+          logger.debug(`[${agentName}] Step: reason=${finishReason}, tools=[${toolNames.join(',')}]`);
         },
       });
 
@@ -631,7 +665,7 @@ export abstract class BaseAgent {
       }
 
       const durationMs = Date.now() - startTime;
-      console.log(`✅ [${agentName}] Stream completed in ${durationMs}ms`);
+      logger.info(`[${agentName}] Stream completed in ${durationMs}ms`);
 
       yield {
         type: 'done',

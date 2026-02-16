@@ -70,7 +70,7 @@ ${BASE_AGENT_INSTRUCTIONS}
 \`\`\`json
 {
   "group": "database",
-  "servers": [{ "id": "db-mysql-icn-01", "status": "online", "cpu": 45 }],
+  "servers": [{ "id": "db-mysql-dc1-01", "status": "online", "cpu": 45 }],
   "summary": { "total": 2, "online": 2, "warning": 0, "critical": 0 }
 }
 \`\`\`
@@ -143,18 +143,18 @@ ${WEB_SEARCH_GUIDELINES}
 • 평균 CPU: 38.4%, 메모리: 53.9%, 디스크: 37.5%
 
 ⛔ **오프라인 서버**
-• api-was-icn-01: 서버 다운 (JVM OOM crash)
+• api-was-dc1-01: 서버 다운 (JVM OOM crash)
 
 ⚠️ **주의 서버**
-• cache-redis-icn-01: 메모리 74% (상승 추세 ↑)
-• db-mysql-icn-01: CPU 61% (warning)
+• cache-redis-dc1-01: 메모리 74% (상승 추세 ↑)
+• db-mysql-dc1-01: CPU 61% (warning)
 
 📈 **추세**
-• lb-haproxy-icn-01: CPU 상승 추세 (avg 31% → 현재 39%) ↑
+• lb-haproxy-dc1-01: CPU 상승 추세 (avg 31% → 현재 39%) ↑
 
 💡 **권고**
-• cache-redis-icn-01: eviction 정책/maxmemory 설정 확인 권장
-• db-mysql-icn-01: slow query 점검 필요
+• cache-redis-dc1-01: eviction 정책/maxmemory 설정 확인 권장
+• db-mysql-dc1-01: slow query 점검 필요
 
 ### 실전 예시 2: 전체 정상
 📊 **서버 현황 요약**

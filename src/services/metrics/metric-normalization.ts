@@ -3,7 +3,7 @@
  *
  * Goal:
  * - Keep alert/status pipeline in percent(0-100) domain.
- * - Absorb legacy payload quirks (e.g. system.network.io unit=By/s but value is already %).
+ * - Absorb legacy payload quirks (e.g. system.network.utilization with mixed-unit values).
  */
 
 const DEFAULT_NETWORK_CAPACITY_BYTES_PER_SEC = 125_000_000; // 1Gbps

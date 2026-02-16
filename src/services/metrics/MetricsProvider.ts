@@ -318,7 +318,7 @@ export class MetricsProvider {
 
       servers.push({
         serverId,
-        serverType: getAttr('host.type') ?? 'unknown',
+        serverType: getAttr('server.role') ?? 'unknown',
         location: getAttr('cloud.availability_zone') ?? 'unknown',
       });
     }

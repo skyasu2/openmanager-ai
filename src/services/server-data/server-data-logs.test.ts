@@ -91,7 +91,7 @@ describe('generateServerLogs', () => {
   describe('2nd pass: server-role-context logs', () => {
     it('cpu>80 + api role produces nginx upstream timeout', () => {
       const metrics = { cpu: 85, memory: 40, disk: 30, network: 20 };
-      const logs = generateServerLogs(metrics, 'api-was-icn-01', {
+      const logs = generateServerLogs(metrics, 'api-was-dc1-01', {
         serverType: 'web',
       });
 
@@ -100,7 +100,7 @@ describe('generateServerLogs', () => {
 
     it('disk>70 + mysql role produces mysqldump log (not pg_dump)', () => {
       const metrics = { cpu: 30, memory: 40, disk: 75, network: 20 };
-      const logs = generateServerLogs(metrics, 'db-mysql-icn-01', {
+      const logs = generateServerLogs(metrics, 'db-mysql-dc1-01', {
         serverType: 'database',
       });
 
@@ -110,7 +110,7 @@ describe('generateServerLogs', () => {
 
     it('disk>70 + postgres role produces pg_dump log (not mysqldump)', () => {
       const metrics = { cpu: 30, memory: 40, disk: 75, network: 20 };
-      const logs = generateServerLogs(metrics, 'db-postgres-icn-01', {
+      const logs = generateServerLogs(metrics, 'db-postgres-dc1-01', {
         serverType: 'database',
       });
 
@@ -120,7 +120,7 @@ describe('generateServerLogs', () => {
 
     it('cpu>80 + cache role does NOT produce nginx upstream timeout', () => {
       const metrics = { cpu: 85, memory: 40, disk: 30, network: 20 };
-      const logs = generateServerLogs(metrics, 'cache-redis-icn-01', {
+      const logs = generateServerLogs(metrics, 'cache-redis-dc1-01', {
         serverType: 'cache',
       });
 
@@ -129,7 +129,7 @@ describe('generateServerLogs', () => {
 
     it('cpu>80 + api role produces both 1st-pass and 2nd-pass logs', () => {
       const metrics = { cpu: 92, memory: 40, disk: 30, network: 20 };
-      const logs = generateServerLogs(metrics, 'api-was-icn-01', {
+      const logs = generateServerLogs(metrics, 'api-was-dc1-01', {
         serverType: 'application',
       });
 

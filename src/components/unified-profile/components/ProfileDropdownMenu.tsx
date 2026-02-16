@@ -15,6 +15,7 @@ export const ProfileDropdownMenu = memo(function ProfileDropdownMenu({
   userInfo,
   userType,
   onClose,
+  statusContent,
 }: ProfileDropdownMenuProps) {
   const getUserName = () => {
     if (userInfo) {
@@ -52,66 +53,74 @@ export const ProfileDropdownMenu = memo(function ProfileDropdownMenu({
   return (
     <>
       {isOpen && (
-        <div
-          className="absolute right-0 z-9999 mt-2 w-64 rounded-xl border border-gray-200 bg-white py-2 shadow-lg"
-          role="menu"
-          aria-orientation="vertical"
-          aria-labelledby="profile-menu-button"
-        >
-          {/* 사용자 정보 헤더 */}
-          <div className="border-b border-gray-100 px-4 py-3">
-            <div className="flex items-center gap-3">
-              <ProfileAvatar
-                userInfo={userInfo}
-                userType={userType}
-                size="large"
-                showBadge={false}
-              />
+        <div className="absolute right-0 z-9999 mt-2 w-64 space-y-2">
+          <div
+            className="rounded-xl border border-gray-200 bg-white py-2 shadow-lg"
+            role="menu"
+            aria-orientation="vertical"
+            aria-labelledby="profile-menu-button"
+          >
+            {/* 사용자 정보 헤더 */}
+            <div className="border-b border-gray-100 px-4 py-3">
+              <div className="flex items-center gap-3">
+                <ProfileAvatar
+                  userInfo={userInfo}
+                  userType={userType}
+                  size="large"
+                  showBadge={false}
+                />
 
-              <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-2 truncate font-medium text-gray-900">
-                  {getUserName()}
-                  <UserTypeIcon
-                    userType={userType}
-                    className="h-4 w-4 shrink-0"
-                  />
-                </div>
-
-                {getUserEmail() && (
-                  <div className="truncate text-sm text-gray-500">
-                    {getUserEmail()}
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2 truncate font-medium text-gray-900">
+                    {getUserName()}
+                    <UserTypeIcon
+                      userType={userType}
+                      className="h-4 w-4 shrink-0"
+                    />
                   </div>
-                )}
 
-                <div
-                  className={`mt-1 inline-block rounded-full px-2 py-1 text-xs ${getUserTypeClass()}`}
-                >
-                  {getUserTypeLabel()} 계정
+                  {getUserEmail() && (
+                    <div className="truncate text-sm text-gray-500">
+                      {getUserEmail()}
+                    </div>
+                  )}
+
+                  <div
+                    className={`mt-1 inline-block rounded-full px-2 py-1 text-xs ${getUserTypeClass()}`}
+                  >
+                    {getUserTypeLabel()} 계정
+                  </div>
                 </div>
               </div>
             </div>
+
+            {/* 메뉴 아이템들 */}
+            <div className="py-1">
+              {/* 메뉴 아이템 렌더링 */}
+              {menuItems.map((item, _index) => (
+                <ProfileMenuItem
+                  key={item.id}
+                  {...item}
+                  onClick={() => {
+                    if (!item.disabled) {
+                      onClose();
+                    }
+                  }}
+                />
+              ))}
+            </div>
+
+            {/* 하단 정보 */}
+            <div className="border-t border-gray-100 px-4 py-2">
+              <p className="text-center text-xs text-gray-400">🛡️ 보안 연결됨</p>
+            </div>
           </div>
 
-          {/* 메뉴 아이템들 */}
-          <div className="py-1">
-            {/* 메뉴 아이템 렌더링 */}
-            {menuItems.map((item, _index) => (
-              <ProfileMenuItem
-                key={item.id}
-                {...item}
-                onClick={() => {
-                  if (!item.disabled) {
-                    onClose();
-                  }
-                }}
-              />
-            ))}
-          </div>
-
-          {/* 하단 정보 */}
-          <div className="border-t border-gray-100 px-4 py-2">
-            <p className="text-center text-xs text-gray-400">🛡️ 보안 연결됨</p>
-          </div>
+          {statusContent && (
+            <div className="rounded-lg border border-gray-200 bg-white p-3 shadow-lg">
+              {statusContent}
+            </div>
+          )}
         </div>
       )}
     </>

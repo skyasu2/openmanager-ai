@@ -43,7 +43,7 @@ export const getServerMetrics = tool({
 
 ## 입력 예시
 1. 전체 서버 현재 상태: { }
-2. 특정 서버: { "serverId": "web-nginx-icn-01" }
+2. 특정 서버: { "serverId": "web-nginx-dc1-01" }
 
 ## 출력 형식
 { "success": true, "servers": [{ "id": "...", "name": "...", "cpu": 45, "memory": 67, "disk": 55, "dailyTrend": { "cpu": { "avg": 38, "max": 72, "min": 12 }, "memory": { "avg": 54, "max": 78, "min": 30 }, "disk": { "avg": 60, "max": 62, "min": 58 } } }], "summary": { "total": 15 } }
@@ -573,7 +573,7 @@ ${SERVER_GROUP_DESCRIPTION_LIST}
   "success": true,
   "group": "database",
   "servers": [
-    { "id": "db-mysql-icn-01", "name": "MySQL Primary", "type": "database", "status": "online", "cpu": 45, "memory": 78, "disk": 62 }
+    { "id": "db-mysql-dc1-01", "name": "MySQL Primary", "type": "database", "status": "online", "cpu": 45, "memory": 78, "disk": 62 }
   ],
   "summary": { "total": 2, "online": 2, "warning": 0, "critical": 0 }
 }

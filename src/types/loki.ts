@@ -14,13 +14,13 @@
 export type LokiStreamLabels = {
   /** Log source process (nginx, kernel, docker, systemd, mysql, redis...) */
   job: string;
-  /** Server hostname (e.g. web-nginx-icn-01) */
+  /** Server hostname (e.g. web-nginx-dc1-01) */
   hostname: string;
   /** Log severity */
   level: 'info' | 'warn' | 'error' | 'debug';
   /** Deployment environment */
   environment: string;
-  /** Datacenter identifier (e.g. Seoul-ICN-AZ1) */
+  /** Datacenter identifier (e.g. DC1-AZ1) */
   datacenter: string;
   /** Server role category (web, database, cache...) */
   server_type: string;

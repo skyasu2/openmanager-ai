@@ -239,8 +239,8 @@ WSL 터미널
   ├─ ./deploy.sh 실행
   │
   ├─ Phase 0: SSOT 데이터 동기화
-  │   src/data/hourly-data/*.json → cloud-run/ai-engine/data/
-  │   src/data/otel-processed/   → cloud-run/ai-engine/data/
+  │   src/data/otel-data/*      → cloud-run/ai-engine/data/otel-data/
+  │   (호환 경로) otel-processed → cloud-run/ai-engine/data/otel-processed/
   │   src/config/rules/system-rules.json → cloud-run/ai-engine/config/
   │
   ├─ Phase 1: gcloud builds submit (GCP Cloud Build)

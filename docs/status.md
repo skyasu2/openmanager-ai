@@ -15,7 +15,7 @@
 ## 🔄 Recent Changes (v8.0.0)
 
 - **v7.1.5** (2026-02-11)
-  - refactor(data): public/hourly-data/ 이중 복사 제거 — src/data/hourly-data/가 단일 SSOT
+  - refactor(data): 구 hourly 정적 디렉토리 이중 복사 제거 — `src/data/otel-data/` 중심 SSOT로 전환
   - refactor(data): Dead Code 제거 (server-data-cache.ts, loadHourlyServerData, precompute-metrics.ts)
   - fix(api): /api/dashboard 이중 호출 정리 (getServerMetricsFromUnifiedSource 제거)
   - perf(otel): OTel 파이프라인 최적화 — hostname index, conversion cache, JSON diet
@@ -371,7 +371,7 @@
 
 **Mock System SSOT 통합 및 로그 시스템 개선 (v5.83.12, 2025-12-25)**
 - **SSOT 통합**: 모든 Mock 데이터 소스를 한국 데이터센터 기반 15개 서버로 통일
-  - 서버 ID 표준화: `web-nginx-icn-01`, `db-mysql-icn-primary` 등
+  - 서버 ID 표준화: `web-nginx-dc1-01`, `db-mysql-dc1-primary` 등
   - 시나리오 파일 업데이트: `dbOverload.ts`, `cacheFailure.ts`, `networkBottleneck.ts`, `storageFull.ts`
 - **AI Agent 로그 시스템 개선**: 시나리오 이름 노출 제거 (스포일러 방지)
   - 변경 전: `[CRITICAL] 심야 DB 디스크 풀 detected` (정답 직접 노출)

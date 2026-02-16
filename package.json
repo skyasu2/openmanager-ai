@@ -37,6 +37,7 @@
     "dev:playwright": "cross-env NEXT_DISABLE_DEVTOOLS=1 NEXT_PUBLIC_E2E_TESTING=true NODE_OPTIONS='--max-old-space-size=4096' next dev -p 3000",
     "data:fix": "npx tsx scripts/data/otel-fix.ts",
     "data:verify": "npx tsx scripts/data/otel-verify.ts",
+    "data:precomputed:build": "npx tsx cloud-run/ai-engine/scripts/build-precomputed-states.ts",
     "grafana:export": "tsx scripts/grafana/otlp-export.ts --all",
     "grafana:export:hour": "tsx scripts/grafana/otlp-export.ts --hour",
     "grafana:push": "tsx scripts/grafana/otlp-export.ts --push --all",
@@ -239,12 +240,12 @@
     "node": ">=24.0.0 <25.0.0",
     "npm": ">=10.0.0"
   },
-  "optionalDependencies": {},
   "packageManager": "npm@10.9.2",
   "overrides": {
     "@ai-sdk/react": {
       "ai": "$ai"
-    }
+    },
+    "markdown-it": "14.1.1"
   },
   "browserslist": {
     "production": [

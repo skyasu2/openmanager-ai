@@ -206,10 +206,10 @@ Vision 요청 → Gemini (gemini-2.0-flash)
 ### 빈 데이터 방어 (Data Fallback)
 
 ```
-hourly-data 로딩
-  ├── Primary: otel-data/hourly/*.json
-  ├── Fallback 1: otel-processed/hourly/*.json (레거시 경로)
-  ├── Fallback 2: hourly-data/*.json (원본)
+OTel 번들 로딩
+  ├── Primary: src/data/otel-data/hourly/*.json
+  ├── Fallback 1: src/data/otel-metrics/hourly/*.json (Dashboard 런타임 번들)
+  ├── Fallback 2: cloud-run/ai-engine/data/otel-processed/hourly/*.json (Cloud Run 호환 경로)
   └── Fallback 3: 빈 슬롯 동적 생성 (무중단 응답 보장)
 ```
 

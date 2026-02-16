@@ -1,7 +1,7 @@
 'use client';
 
 import { Bell } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -9,12 +9,26 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+  PaginationEllipsis,
+} from '@/components/ui/pagination';
 import { useAlertHistory } from '@/hooks/dashboard/useAlertHistory';
+import { useServerPagination } from '@/hooks/dashboard/useServerPagination';
 import { cn } from '@/lib/utils';
 import type {
   AlertSeverity,
   AlertState,
 } from '@/services/monitoring/AlertManager';
+import {
+  formatDashboardDateTime,
+  formatRotatingTimestamp,
+} from '@/utils/dashboard/rotating-timestamp';
 import type { AlertHistoryModalProps } from './alert-history.types';
 import { TIME_RANGE_OPTIONS } from './alert-history.types';
 
@@ -36,18 +50,6 @@ function formatDuration(seconds: number): string {
   return `${Math.round(seconds / 3600)}h ${Math.round((seconds % 3600) / 60)}m`;
 }
 
-function formatTime(isoString: string): string {
-  try {
-    return new Date(isoString).toLocaleTimeString('ko-KR', {
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-    });
-  } catch {
-    return isoString;
-  }
-}
-
 export function AlertHistoryModal({
   open,
   onClose,
@@ -57,6 +59,15 @@ export function AlertHistoryModal({
   const [state, setState] = useState<AlertState | 'all'>('all');
   const [serverId, setServerId] = useState('');
   const [timeRangeMs, setTimeRangeMs] = useState(86_400_000);
+  const sessionAnchorRef = useRef(new Date());
+  const [sessionAnchorLabel, setSessionAnchorLabel] = useState('');
+
+  useEffect(() => {
+    if (!open) return;
+    const now = new Date();
+    sessionAnchorRef.current = now;
+    setSessionAnchorLabel(formatDashboardDateTime(now));
+  }, [open]);
 
   const filterParams = useMemo(
     () => ({
@@ -70,6 +81,18 @@ export function AlertHistoryModal({
 
   const { alerts, stats, isLoading, isError, errorMessage } =
     useAlertHistory(filterParams);
+
+  const {
+    paginatedItems: paginatedAlerts,
+    currentPage,
+    setCurrentPage,
+    totalPages,
+  } = useServerPagination(alerts, 20);
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: filter values are intentional triggers
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [severity, state, serverId, timeRangeMs, setCurrentPage]);
 
   return (
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
@@ -85,7 +108,7 @@ export function AlertHistoryModal({
                 Alert History
               </DialogTitle>
               <DialogDescription className="text-xs text-gray-500">
-                시스템 알림 이력 (firing + resolved)
+                시스템 알림 이력 (firing + resolved) · 접속 시점 기준 시계열
               </DialogDescription>
             </div>
             {stats.firing > 0 && (
@@ -159,6 +182,17 @@ export function AlertHistoryModal({
             ))}
           </div>
         </div>
+        <div className="border-b border-gray-100 bg-gray-50/80 px-6 py-2.5">
+          <div className="flex flex-wrap items-center gap-2 text-[11px] text-gray-600">
+            <span className="inline-flex items-center rounded-full bg-blue-100 px-2 py-0.5 font-semibold text-blue-700">
+              Realtime Anchor
+            </span>
+            <span className="font-medium tabular-nums text-gray-700">
+              {sessionAnchorLabel || '-'}
+            </span>
+            <span className="text-gray-500">(연/월/일/시:분:초)</span>
+          </div>
+        </div>
 
         {/* Timeline */}
         <div className="flex-1 overflow-y-auto px-6 py-4 min-h-0">
@@ -167,7 +201,7 @@ export function AlertHistoryModal({
               {errorMessage}
             </div>
           )}
-          {isLoading ? (
+          {isLoading && alerts.length === 0 ? (
             <div className="flex items-center justify-center py-12">
               <div className="h-6 w-6 animate-spin rounded-full border-2 border-blue-400 border-t-transparent" />
             </div>
@@ -190,8 +224,15 @@ export function AlertHistoryModal({
               </p>
             </div>
           ) : (
-            <div className="space-y-2">
-              {alerts.map((alert) => {
+            <div
+              className={cn(
+                'space-y-2',
+                isLoading &&
+                  alerts.length > 0 &&
+                  'opacity-50 transition-opacity duration-200'
+              )}
+            >
+              {paginatedAlerts.map((alert) => {
                 const colors = severityColors[alert.severity];
                 const isResolved = alert.state === 'resolved';
 
@@ -241,9 +282,19 @@ export function AlertHistoryModal({
                       </div>
                     </div>
                     <div className="mt-1.5 flex items-center gap-3 text-[11px] text-gray-400">
-                      <span>Fired: {formatTime(alert.firedAt)}</span>
+                      <span>
+                        Fired:{' '}
+                        {formatRotatingTimestamp(alert.firedAt, {
+                          anchorDate: sessionAnchorRef.current,
+                        })}
+                      </span>
                       {alert.resolvedAt && (
-                        <span>Resolved: {formatTime(alert.resolvedAt)}</span>
+                        <span>
+                          Resolved:{' '}
+                          {formatRotatingTimestamp(alert.resolvedAt, {
+                            anchorDate: sessionAnchorRef.current,
+                          })}
+                        </span>
                       )}
                     </div>
                   </div>
@@ -252,6 +303,68 @@ export function AlertHistoryModal({
             </div>
           )}
         </div>
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="border-t border-gray-100 px-6 py-2 flex justify-center">
+            <Pagination>
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious
+                    onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                    className={cn(
+                      'cursor-pointer',
+                      currentPage <= 1 && 'pointer-events-none opacity-50'
+                    )}
+                  />
+                </PaginationItem>
+                {(() => {
+                  const pages: (number | 'ellipsis')[] = [];
+                  if (totalPages <= 7) {
+                    for (let i = 1; i <= totalPages; i++) pages.push(i);
+                  } else {
+                    pages.push(1);
+                    if (currentPage > 3) pages.push('ellipsis');
+                    const start = Math.max(2, currentPage - 1);
+                    const end = Math.min(totalPages - 1, currentPage + 1);
+                    for (let i = start; i <= end; i++) pages.push(i);
+                    if (currentPage < totalPages - 2) pages.push('ellipsis');
+                    pages.push(totalPages);
+                  }
+                  return pages.map((page, idx) =>
+                    page === 'ellipsis' ? (
+                      <PaginationItem key={`ellipsis-${idx}`}>
+                        <PaginationEllipsis />
+                      </PaginationItem>
+                    ) : (
+                      <PaginationItem key={page}>
+                        <PaginationLink
+                          isActive={page === currentPage}
+                          onClick={() => setCurrentPage(page)}
+                          className="cursor-pointer"
+                        >
+                          {page}
+                        </PaginationLink>
+                      </PaginationItem>
+                    )
+                  );
+                })()}
+                <PaginationItem>
+                  <PaginationNext
+                    onClick={() =>
+                      setCurrentPage(Math.min(totalPages, currentPage + 1))
+                    }
+                    className={cn(
+                      'cursor-pointer',
+                      currentPage >= totalPages &&
+                        'pointer-events-none opacity-50'
+                    )}
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          </div>
+        )}
 
         {/* Stats Footer */}
         <div className="grid grid-cols-5 gap-4 border-t border-gray-100 px-6 py-3 bg-gray-50/80">

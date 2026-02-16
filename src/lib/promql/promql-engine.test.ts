@@ -28,44 +28,44 @@ const MOCK_RESOURCE_CATALOG: OTelResourceCatalog = {
       'service.name': 'openmanager-ai',
       'host.name': 'web-01.test.kr',
       'host.id': 'web-01',
-      'host.type': 'web',
+      'server.role': 'web',
       'os.type': 'linux',
       'os.description': 'ubuntu-22.04',
-      'cloud.region': 'kr-seoul',
-      'cloud.availability_zone': 'icn',
+      'cloud.region': 'onprem-dc1',
+      'cloud.availability_zone': 'onprem-dc1',
       'deployment.environment': 'production',
     },
     'web-02': {
       'service.name': 'openmanager-ai',
       'host.name': 'web-02.test.kr',
       'host.id': 'web-02',
-      'host.type': 'web',
+      'server.role': 'web',
       'os.type': 'linux',
       'os.description': 'ubuntu-22.04',
-      'cloud.region': 'kr-seoul',
-      'cloud.availability_zone': 'icn',
+      'cloud.region': 'onprem-dc1',
+      'cloud.availability_zone': 'onprem-dc1',
       'deployment.environment': 'production',
     },
     'db-01': {
       'service.name': 'openmanager-ai',
       'host.name': 'db-01.test.kr',
       'host.id': 'db-01',
-      'host.type': 'database',
+      'server.role': 'database',
       'os.type': 'linux',
       'os.description': 'ubuntu-22.04',
-      'cloud.region': 'kr-seoul',
-      'cloud.availability_zone': 'icn',
+      'cloud.region': 'onprem-dc1',
+      'cloud.availability_zone': 'onprem-dc1',
       'deployment.environment': 'production',
     },
     'cache-01': {
       'service.name': 'openmanager-ai',
       'host.name': 'cache-01.test.kr',
       'host.id': 'cache-01',
-      'host.type': 'cache',
+      'server.role': 'cache',
       'os.type': 'linux',
       'os.description': 'ubuntu-22.04',
-      'cloud.region': 'kr-seoul',
-      'cloud.availability_zone': 'busan',
+      'cloud.region': 'onprem-dc1',
+      'cloud.availability_zone': 'onprem-dc2',
       'deployment.environment': 'staging',
     },
   },
@@ -115,7 +115,7 @@ function makeSlot(
       'system.cpu.utilization': 0.75,
       'system.memory.utilization': 0.6,
       'system.filesystem.utilization': 0.4,
-      'system.network.io': 30,
+      'system.network.utilization': 30,
       'system.linux.cpu.load_1m': 1.5,
       'system.linux.cpu.load_5m': 1.2,
       'system.process.count': 5,
@@ -126,7 +126,7 @@ function makeSlot(
       'system.cpu.utilization': 0.85,
       'system.memory.utilization': 0.7,
       'system.filesystem.utilization': 0.4,
-      'system.network.io': 30,
+      'system.network.utilization': 30,
       'system.linux.cpu.load_1m': 1.5,
       'system.linux.cpu.load_5m': 1.2,
       'system.process.count': 5,
@@ -137,7 +137,7 @@ function makeSlot(
       'system.cpu.utilization': 0.45,
       'system.memory.utilization': 0.8,
       'system.filesystem.utilization': 0.4,
-      'system.network.io': 30,
+      'system.network.utilization': 30,
       'system.linux.cpu.load_1m': 1.5,
       'system.linux.cpu.load_5m': 1.2,
       'system.process.count': 5,
@@ -148,7 +148,7 @@ function makeSlot(
       'system.cpu.utilization': 0,
       'system.memory.utilization': 0,
       'system.filesystem.utilization': 0.4,
-      'system.network.io': 30,
+      'system.network.utilization': 30,
       'system.linux.cpu.load_1m': 1.5,
       'system.linux.cpu.load_5m': 1.2,
       'system.process.count': 5,
@@ -173,7 +173,7 @@ function makeSlot(
     'system.cpu.utilization',
     'system.memory.utilization',
     'system.filesystem.utilization',
-    'system.network.io',
+    'system.network.utilization',
     'system.linux.cpu.load_1m',
     'system.linux.cpu.load_5m',
     'system.process.count',
@@ -231,18 +231,18 @@ beforeEach(() => {
 
 describe('PromQL Parser (debugParsePromQL)', () => {
   it('simple metric name을 instant 쿼리로 파싱', () => {
-    const result = debugParsePromQL('node_cpu_usage_percent');
+    const result = debugParsePromQL('node_cpu_utilization_ratio');
     expect(result!.type).toBe('instant');
-    expect(result!.metricName).toBe('node_cpu_usage_percent');
+    expect(result!.metricName).toBe('node_cpu_utilization_ratio');
     expect(result!.matchers).toEqual([]);
   });
 
   it('라벨 필터가 있는 instant 쿼리 파싱', () => {
     const result = debugParsePromQL(
-      'node_cpu_usage_percent{server_type="web"}'
+      'node_cpu_utilization_ratio{server_type="web"}'
     );
     expect(result!.type).toBe('instant');
-    expect(result!.metricName).toBe('node_cpu_usage_percent');
+    expect(result!.metricName).toBe('node_cpu_utilization_ratio');
     expect(result!.matchers).toEqual([
       { name: 'server_type', op: '=', value: 'web' },
     ]);
@@ -250,7 +250,7 @@ describe('PromQL Parser (debugParsePromQL)', () => {
 
   it('복수 라벨 필터 파싱', () => {
     const result = debugParsePromQL(
-      'node_cpu_usage_percent{server_type="web",datacenter="icn"}'
+      'node_cpu_utilization_ratio{server_type="web",datacenter="onprem-dc1"}'
     );
     expect(result!.type).toBe('instant');
     expect(result!.matchers).toHaveLength(2);
@@ -262,20 +262,20 @@ describe('PromQL Parser (debugParsePromQL)', () => {
     expect(result!.matchers[1]).toEqual({
       name: 'datacenter',
       op: '=',
-      value: 'icn',
+      value: 'onprem-dc1',
     });
   });
 
   it('!= 라벨 연산자 파싱', () => {
     const result = debugParsePromQL(
-      'node_cpu_usage_percent{server_type!="cache"}'
+      'node_cpu_utilization_ratio{server_type!="cache"}'
     );
     expect(result!.matchers[0]!.op).toBe('!=');
   });
 
   it('=~ 정규식 라벨 연산자 파싱', () => {
     const result = debugParsePromQL(
-      'node_cpu_usage_percent{server_type=~"web|api"}'
+      'node_cpu_utilization_ratio{server_type=~"web|api"}'
     );
     expect(result!.matchers[0]!.op).toBe('=~');
     expect(result!.matchers[0]!.value).toBe('web|api');
@@ -283,22 +283,22 @@ describe('PromQL Parser (debugParsePromQL)', () => {
 
   it('!~ 부정 정규식 라벨 연산자 파싱', () => {
     const result = debugParsePromQL(
-      'node_cpu_usage_percent{server_type!~"cache"}'
+      'node_cpu_utilization_ratio{server_type!~"cache"}'
     );
     expect(result!.matchers[0]!.op).toBe('!~');
   });
 
   it('aggregate 함수 파싱 (avg)', () => {
-    const result = debugParsePromQL('avg(node_cpu_usage_percent)');
+    const result = debugParsePromQL('avg(node_cpu_utilization_ratio)');
     expect(result!.type).toBe('aggregate');
     expect(result!.aggregateFunc).toBe('avg');
-    expect(result!.metricName).toBe('node_cpu_usage_percent');
+    expect(result!.metricName).toBe('node_cpu_utilization_ratio');
     expect(result!.groupBy).toBeUndefined();
   });
 
   it('aggregate 함수 + by 절 파싱', () => {
     const result = debugParsePromQL(
-      'max(node_cpu_usage_percent) by (server_type)'
+      'max(node_cpu_utilization_ratio) by (server_type)'
     );
     expect(result!.type).toBe('aggregate');
     expect(result!.aggregateFunc).toBe('max');
@@ -307,12 +307,12 @@ describe('PromQL Parser (debugParsePromQL)', () => {
 
   it('aggregate 함수 + 라벨 필터 + by 절 파싱', () => {
     const result = debugParsePromQL(
-      'avg(node_cpu_usage_percent{datacenter="icn"}) by (server_type)'
+      'avg(node_cpu_utilization_ratio{datacenter="onprem-dc1"}) by (server_type)'
     );
     expect(result!.type).toBe('aggregate');
     expect(result!.aggregateFunc).toBe('avg');
     expect(result!.matchers).toEqual([
-      { name: 'datacenter', op: '=', value: 'icn' },
+      { name: 'datacenter', op: '=', value: 'onprem-dc1' },
     ]);
     expect(result!.groupBy).toEqual(['server_type']);
   });
@@ -327,7 +327,7 @@ describe('PromQL Parser (debugParsePromQL)', () => {
 
   it('comparison 쿼리 (>, <, >=, <=, !=)', () => {
     for (const op of ['>', '<', '>=', '<=', '!='] as const) {
-      const result = debugParsePromQL(`node_cpu_usage_percent ${op} 80`);
+      const result = debugParsePromQL(`node_cpu_utilization_ratio ${op} 80`);
       expect(result!.type).toBe('comparison');
       expect(result!.comparisonOp).toBe(op);
       expect(result!.comparisonValue).toBe(80);
@@ -340,15 +340,15 @@ describe('PromQL Parser (debugParsePromQL)', () => {
   });
 
   it('rate 쿼리 파싱', () => {
-    const result = debugParsePromQL('rate(node_cpu_usage_percent[1h])');
+    const result = debugParsePromQL('rate(node_cpu_utilization_ratio[1h])');
     expect(result!.type).toBe('rate');
-    expect(result!.metricName).toBe('node_cpu_usage_percent');
+    expect(result!.metricName).toBe('node_cpu_utilization_ratio');
     expect(result!.rangeWindow).toBe('1h');
   });
 
   it('rate 쿼리 + 라벨 필터 파싱', () => {
     const result = debugParsePromQL(
-      'rate(node_cpu_usage_percent{server_type="web"}[2h])'
+      'rate(node_cpu_utilization_ratio{server_type="web"}[2h])'
     );
     expect(result!.type).toBe('rate');
     expect(result!.matchers).toEqual([
@@ -359,7 +359,7 @@ describe('PromQL Parser (debugParsePromQL)', () => {
 
   it('지원하는 모든 aggregate 함수', () => {
     for (const func of ['avg', 'max', 'min', 'sum', 'count'] as const) {
-      const result = debugParsePromQL(`${func}(node_cpu_usage_percent)`);
+      const result = debugParsePromQL(`${func}(node_cpu_utilization_ratio)`);
       expect(result!.type).toBe('aggregate');
       expect(result!.aggregateFunc).toBe(func);
     }
@@ -372,9 +372,9 @@ describe('PromQL Parser (debugParsePromQL)', () => {
   });
 
   it('공백이 있는 쿼리 trim 처리', () => {
-    const result = debugParsePromQL('  node_cpu_usage_percent  ');
+    const result = debugParsePromQL('  node_cpu_utilization_ratio  ');
     expect(result!.type).toBe('instant');
-    expect(result!.metricName).toBe('node_cpu_usage_percent');
+    expect(result!.metricName).toBe('node_cpu_utilization_ratio');
   });
 });
 
@@ -384,14 +384,14 @@ describe('PromQL Parser (debugParsePromQL)', () => {
 
 describe('executePromQL - Instant Selectors', () => {
   it('전체 서버 CPU 메트릭 조회 (Prometheus 이름)', () => {
-    const result = executePromQL('node_cpu_usage_percent', TEST_OTEL_DATA);
+    const result = executePromQL('node_cpu_utilization_ratio', TEST_OTEL_DATA);
     expect(result.resultType).toBe('vector');
     expect(result.result).toHaveLength(4);
   });
 
   it('라벨 필터링 (server_type="web")', () => {
     const result = executePromQL(
-      'node_cpu_usage_percent{server_type="web"}',
+      'node_cpu_utilization_ratio{server_type="web"}',
       TEST_OTEL_DATA
     );
     expect(result.result).toHaveLength(2);
@@ -402,7 +402,7 @@ describe('executePromQL - Instant Selectors', () => {
 
   it('라벨 부정 필터링 (server_type!="web")', () => {
     const result = executePromQL(
-      'node_cpu_usage_percent{server_type!="web"}',
+      'node_cpu_utilization_ratio{server_type!="web"}',
       TEST_OTEL_DATA
     );
     expect(result.result).toHaveLength(2);
@@ -413,7 +413,7 @@ describe('executePromQL - Instant Selectors', () => {
 
   it('정규식 라벨 필터링 (server_type=~"web|database")', () => {
     const result = executePromQL(
-      'node_cpu_usage_percent{server_type=~"web|database"}',
+      'node_cpu_utilization_ratio{server_type=~"web|database"}',
       TEST_OTEL_DATA
     );
     expect(result.result).toHaveLength(3);
@@ -421,7 +421,7 @@ describe('executePromQL - Instant Selectors', () => {
 
   it('부정 정규식 라벨 필터링 (server_type!~"cache")', () => {
     const result = executePromQL(
-      'node_cpu_usage_percent{server_type!~"cache"}',
+      'node_cpu_utilization_ratio{server_type!~"cache"}',
       TEST_OTEL_DATA
     );
     expect(result.result).toHaveLength(3);
@@ -429,7 +429,7 @@ describe('executePromQL - Instant Selectors', () => {
 
   it('복수 라벨 필터 AND 조건', () => {
     const result = executePromQL(
-      'node_cpu_usage_percent{server_type="web",datacenter="icn"}',
+      'node_cpu_utilization_ratio{server_type="web",datacenter="onprem-dc1"}',
       TEST_OTEL_DATA
     );
     expect(result.result).toHaveLength(2);
@@ -437,7 +437,7 @@ describe('executePromQL - Instant Selectors', () => {
 
   it('매칭되지 않는 라벨 필터 -> 빈 결과', () => {
     const result = executePromQL(
-      'node_cpu_usage_percent{server_type="nonexistent"}',
+      'node_cpu_utilization_ratio{server_type="nonexistent"}',
       TEST_OTEL_DATA
     );
     expect(result.result).toHaveLength(0);
@@ -445,7 +445,7 @@ describe('executePromQL - Instant Selectors', () => {
 
   it('결과에 instance, job, labels 포함', () => {
     const result = executePromQL(
-      'node_cpu_usage_percent{server_type="database"}',
+      'node_cpu_utilization_ratio{server_type="database"}',
       TEST_OTEL_DATA
     );
     expect(result.result).toHaveLength(1);
@@ -478,7 +478,7 @@ describe('executePromQL - Instant Selectors', () => {
 
   it('slotIndex를 지정하여 특정 slot 조회', () => {
     const result = executePromQL(
-      'node_cpu_usage_percent',
+      'node_cpu_utilization_ratio',
       TEST_OTEL_DATA,
       undefined,
       undefined,
@@ -494,33 +494,45 @@ describe('executePromQL - Instant Selectors', () => {
 
 describe('executePromQL - Aggregation', () => {
   it('avg() 전역 집계', () => {
-    const result = executePromQL('avg(node_cpu_usage_percent)', TEST_OTEL_DATA);
+    const result = executePromQL(
+      'avg(node_cpu_utilization_ratio)',
+      TEST_OTEL_DATA
+    );
     expect(result.result).toHaveLength(1);
     // (0.75 + 0.85 + 0.45 + 0) / 4 = 0.51...
     expect(result.result[0]!.value).toBe(0.51);
   });
 
   it('max() 전역 집계', () => {
-    const result = executePromQL('max(node_cpu_usage_percent)', TEST_OTEL_DATA);
+    const result = executePromQL(
+      'max(node_cpu_utilization_ratio)',
+      TEST_OTEL_DATA
+    );
     expect(result.result).toHaveLength(1);
     expect(result.result[0]!.value).toBe(0.85);
   });
 
   it('min() 전역 집계', () => {
-    const result = executePromQL('min(node_cpu_usage_percent)', TEST_OTEL_DATA);
+    const result = executePromQL(
+      'min(node_cpu_utilization_ratio)',
+      TEST_OTEL_DATA
+    );
     expect(result.result).toHaveLength(1);
     expect(result.result[0]!.value).toBe(0);
   });
 
   it('sum() 전역 집계', () => {
-    const result = executePromQL('sum(node_cpu_usage_percent)', TEST_OTEL_DATA);
+    const result = executePromQL(
+      'sum(node_cpu_utilization_ratio)',
+      TEST_OTEL_DATA
+    );
     expect(result.result).toHaveLength(1);
     expect(result.result[0]!.value).toBeCloseTo(0.75 + 0.85 + 0.45 + 0, 10);
   });
 
   it('count() 전역 집계', () => {
     const result = executePromQL(
-      'count(node_cpu_usage_percent)',
+      'count(node_cpu_utilization_ratio)',
       TEST_OTEL_DATA
     );
     expect(result.result).toHaveLength(1);
@@ -529,7 +541,7 @@ describe('executePromQL - Aggregation', () => {
 
   it('avg() by (server_type) 그룹 집계', () => {
     const result = executePromQL(
-      'avg(node_cpu_usage_percent) by (server_type)',
+      'avg(node_cpu_utilization_ratio) by (server_type)',
       TEST_OTEL_DATA
     );
     // 3 groups: web, database, cache
@@ -551,23 +563,25 @@ describe('executePromQL - Aggregation', () => {
 
   it('max() by (datacenter) 그룹 집계', () => {
     const result = executePromQL(
-      'max(node_cpu_usage_percent) by (datacenter)',
+      'max(node_cpu_utilization_ratio) by (datacenter)',
       TEST_OTEL_DATA
     );
-    expect(result.result).toHaveLength(2); // icn, busan
+    expect(result.result).toHaveLength(2); // onprem-dc1, onprem-dc2
 
-    const icnGroup = result.result.find((s) => s.labels.datacenter === 'icn');
-    expect(icnGroup?.value).toBe(0.85);
-
-    const busanGroup = result.result.find(
-      (s) => s.labels.datacenter === 'busan'
+    const dc1Group = result.result.find(
+      (s) => s.labels.datacenter === 'onprem-dc1'
     );
-    expect(busanGroup?.value).toBe(0);
+    expect(dc1Group?.value).toBe(0.85);
+
+    const dc2Group = result.result.find(
+      (s) => s.labels.datacenter === 'onprem-dc2'
+    );
+    expect(dc2Group?.value).toBe(0);
   });
 
   it('라벨 필터 + aggregate', () => {
     const result = executePromQL(
-      'avg(node_cpu_usage_percent{server_type="web"})',
+      'avg(node_cpu_utilization_ratio{server_type="web"})',
       TEST_OTEL_DATA
     );
     expect(result.result).toHaveLength(1);
@@ -588,7 +602,7 @@ describe('executePromQL - Aggregation', () => {
         },
       ],
     };
-    const result = executePromQL('avg(node_cpu_usage_percent)', emptyData);
+    const result = executePromQL('avg(node_cpu_utilization_ratio)', emptyData);
     expect(result.result).toHaveLength(0);
   });
 });
@@ -609,42 +623,42 @@ describe('executePromQL - Comparison', () => {
     expect(result.result).toHaveLength(3);
   });
 
-  it('node_cpu_usage_percent > 0.80', () => {
+  it('node_cpu_utilization_ratio > 0.80', () => {
     const result = executePromQL(
-      'node_cpu_usage_percent > 0.80',
+      'node_cpu_utilization_ratio > 0.80',
       TEST_OTEL_DATA
     );
     expect(result.result).toHaveLength(1);
     expect(result.result[0]!.value).toBe(0.85);
   });
 
-  it('node_cpu_usage_percent >= 0.75', () => {
+  it('node_cpu_utilization_ratio >= 0.75', () => {
     const result = executePromQL(
-      'node_cpu_usage_percent >= 0.75',
+      'node_cpu_utilization_ratio >= 0.75',
       TEST_OTEL_DATA
     );
     expect(result.result).toHaveLength(2); // 0.75, 0.85
   });
 
-  it('node_cpu_usage_percent < 0.50', () => {
+  it('node_cpu_utilization_ratio < 0.50', () => {
     const result = executePromQL(
-      'node_cpu_usage_percent < 0.50',
+      'node_cpu_utilization_ratio < 0.50',
       TEST_OTEL_DATA
     );
     expect(result.result).toHaveLength(2); // 0.45, 0
   });
 
-  it('node_cpu_usage_percent <= 0.45', () => {
+  it('node_cpu_utilization_ratio <= 0.45', () => {
     const result = executePromQL(
-      'node_cpu_usage_percent <= 0.45',
+      'node_cpu_utilization_ratio <= 0.45',
       TEST_OTEL_DATA
     );
     expect(result.result).toHaveLength(2); // 0.45, 0
   });
 
-  it('node_cpu_usage_percent != 0.75', () => {
+  it('node_cpu_utilization_ratio != 0.75', () => {
     const result = executePromQL(
-      'node_cpu_usage_percent != 0.75',
+      'node_cpu_utilization_ratio != 0.75',
       TEST_OTEL_DATA
     );
     expect(result.result).toHaveLength(3); // 0.85, 0.45, 0
@@ -652,7 +666,7 @@ describe('executePromQL - Comparison', () => {
 
   it('라벨 필터 + comparison', () => {
     const result = executePromQL(
-      'node_cpu_usage_percent{server_type="web"} > 0.80',
+      'node_cpu_utilization_ratio{server_type="web"} > 0.80',
       TEST_OTEL_DATA
     );
     expect(result.result).toHaveLength(1);
@@ -679,7 +693,7 @@ describe('executePromQL - Rate', () => {
     hourlyFileMap.set(prevHour, prevData);
 
     const result = executePromQL(
-      'rate(node_cpu_usage_percent[1h])',
+      'rate(node_cpu_utilization_ratio[1h])',
       TEST_OTEL_DATA,
       hourlyFileMap,
       currentHour
@@ -691,7 +705,7 @@ describe('executePromQL - Rate', () => {
 
   it('rate 쿼리 (hourlyFileMap 없으면 빈 결과)', () => {
     const result = executePromQL(
-      'rate(node_cpu_usage_percent[1h])',
+      'rate(node_cpu_utilization_ratio[1h])',
       TEST_OTEL_DATA
     );
     expect(result.result).toHaveLength(0);
@@ -703,7 +717,7 @@ describe('executePromQL - Rate', () => {
     // prevHour (9) 데이터 없음
 
     const result = executePromQL(
-      'rate(node_cpu_usage_percent[1h])',
+      'rate(node_cpu_utilization_ratio[1h])',
       TEST_OTEL_DATA,
       hourlyFileMap,
       10
@@ -724,13 +738,13 @@ describe('executePromQL - Edge Cases', () => {
       scope: { name: 'test', version: '1.0.0' },
       slots: [],
     };
-    const result = executePromQL('node_cpu_usage_percent', emptyData);
+    const result = executePromQL('node_cpu_utilization_ratio', emptyData);
     expect(result.result).toHaveLength(0);
   });
 
   it('slotIndex가 범위를 벗어나면 첫 번째 slot 사용', () => {
     const result = executePromQL(
-      'node_cpu_usage_percent',
+      'node_cpu_utilization_ratio',
       TEST_OTEL_DATA,
       undefined,
       undefined,
@@ -742,10 +756,10 @@ describe('executePromQL - Edge Cases', () => {
 
   it('여러 메트릭 종류 조회 가능 (Prometheus 이름)', () => {
     const metrics = [
-      'node_cpu_usage_percent',
-      'node_memory_usage_percent',
-      'node_filesystem_usage_percent',
-      'node_network_transmit_bytes_rate',
+      'node_cpu_utilization_ratio',
+      'node_memory_utilization_ratio',
+      'node_filesystem_utilization_ratio',
+      'node_network_utilization_ratio',
       'node_load1',
       'up',
     ];
@@ -757,13 +771,16 @@ describe('executePromQL - Edge Cases', () => {
   });
 
   it('aggregate 결과의 labels는 빈 객체 (전역)', () => {
-    const result = executePromQL('avg(node_cpu_usage_percent)', TEST_OTEL_DATA);
+    const result = executePromQL(
+      'avg(node_cpu_utilization_ratio)',
+      TEST_OTEL_DATA
+    );
     expect(result.result[0]!.labels).toEqual({});
   });
 
   it('group by 결과의 labels에 그룹 키만 포함', () => {
     const result = executePromQL(
-      'avg(node_cpu_usage_percent) by (server_type)',
+      'avg(node_cpu_utilization_ratio) by (server_type)',
       TEST_OTEL_DATA
     );
     for (const sample of result.result) {
@@ -869,14 +886,14 @@ describe('Query Validation', () => {
   });
 
   it('512자 초과 쿼리 -> 빈 결과 반환', () => {
-    const longQuery = `node_cpu_usage_percent{hostname="${'a'.repeat(513)}"}`;
+    const longQuery = `node_cpu_utilization_ratio{hostname="${'a'.repeat(513)}"}`;
     const result = executePromQL(longQuery, TEST_OTEL_DATA);
     expect(result.resultType).toBe('vector');
     expect(result.result).toHaveLength(0);
   });
 
   it('정상 길이 쿼리 -> 정상 동작', () => {
-    const result = executePromQL('node_cpu_usage_percent', TEST_OTEL_DATA);
+    const result = executePromQL('node_cpu_utilization_ratio', TEST_OTEL_DATA);
     expect(result.result.length).toBeGreaterThan(0);
   });
 
@@ -886,7 +903,7 @@ describe('Query Validation', () => {
       { length: 12 },
       (_, i) => `key${i}="val${i}"`
     ).join(',');
-    const query = `node_cpu_usage_percent{${matchers}}`;
+    const query = `node_cpu_utilization_ratio{${matchers}}`;
     const parsed = debugParsePromQL(query);
     expect(parsed).not.toBeNull();
     expect(parsed!.matchers.length).toBeLessThanOrEqual(10);
@@ -895,7 +912,7 @@ describe('Query Validation', () => {
   it('잘못된 정규식 (=~) -> 매칭 실패 (예외 안 남)', () => {
     // "((" 는 잘못된 정규식
     const result = executePromQL(
-      'node_cpu_usage_percent{server_type=~"(("}',
+      'node_cpu_utilization_ratio{server_type=~"(("}',
       TEST_OTEL_DATA
     );
     // 잘못된 정규식이므로 모든 서버가 매칭 실패 -> 빈 결과
@@ -905,7 +922,7 @@ describe('Query Validation', () => {
 
   it('라벨 값 128자 초과 -> 해당 matcher 무시', () => {
     const longValue = 'x'.repeat(129);
-    const query = `node_cpu_usage_percent{server_type="${longValue}"}`;
+    const query = `node_cpu_utilization_ratio{server_type="${longValue}"}`;
     const parsed = debugParsePromQL(query);
     expect(parsed).not.toBeNull();
     // 128자 초과 라벨 값은 무시되므로 matchers가 비어있음

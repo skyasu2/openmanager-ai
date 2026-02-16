@@ -121,7 +121,7 @@ describe('ImprovedServerCard - User Event 테스트', () => {
     status: 'online',
     type: 'web',
     role: 'web',
-    location: '서울',
+    location: 'OnPrem-DC1-AZ1',
     os: 'Ubuntu 22.04',
     ip: '192.168.1.100',
     uptime: 86400000,
@@ -152,7 +152,7 @@ describe('ImprovedServerCard - User Event 테스트', () => {
 
     it('서버 위치가 표시된다', () => {
       render(<ImprovedServerCard server={mockServer} onClick={mockOnClick} />);
-      expect(screen.getByText(/서울/)).toBeInTheDocument();
+      expect(screen.getByText(/DC1-AZ1/)).toBeInTheDocument();
     });
 
     it('Live 인디케이터가 표시된다', () => {

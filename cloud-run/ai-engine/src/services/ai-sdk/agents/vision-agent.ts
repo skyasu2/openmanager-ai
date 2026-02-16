@@ -24,14 +24,8 @@
  */
 
 import { AGENT_CONFIGS, type AgentConfig } from './config';
-import { VisionAgent, AgentFactory } from './agent-factory';
+import { AgentFactory, type BaseAgent } from './agent-factory';
 import { logger } from '../../../lib/logger';
-
-// ============================================================================
-// Agent Class Export
-// ============================================================================
-
-export { VisionAgent };
 
 // ============================================================================
 // Factory Functions
@@ -80,8 +74,8 @@ export function isVisionAgentAvailable(): boolean {
  * }
  * ```
  */
-export function createVisionAgent(): VisionAgent | null {
-  return AgentFactory.create('vision') as VisionAgent | null;
+export function createVisionAgent(): BaseAgent | null {
+  return AgentFactory.create('vision');
 }
 
 // ============================================================================

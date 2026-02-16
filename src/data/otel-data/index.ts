@@ -7,7 +7,7 @@
  *
  * 데이터 소스:
  *   hourly/hour-XX.json     → 10분 슬롯 × 6 = 1시간, 15서버 메트릭 + 로그
- *   resource-catalog.json   → 서버 메타데이터 (host.type, os, zone 등)
+ *   resource-catalog.json   → 서버 메타데이터 (server.role, os, zone 등)
  *   timeseries.json         → 24h 집계 시계열 매트릭스 (144포인트 × 15서버)
  *
  * Public API:

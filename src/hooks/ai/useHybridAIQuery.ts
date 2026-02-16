@@ -146,6 +146,7 @@ export function useHybridAIQuery(
   );
 
   // State
+  const [resumeEnabled, setResumeEnabled] = useState(true);
   const [state, setState] = useState<HybridQueryState>({
     mode: 'streaming',
     complexity: null,
@@ -199,7 +200,9 @@ export function useHybridAIQuery(
   } = useChat({
     id: sessionIdRef.current,
     transport,
-    resume: false,
+    // Abort/stop 사용 후에는 현재 스트림 재연결을 비활성화하고,
+    // 새 쿼리 시작 시에만 다시 활성화해 resume+abort 충돌 가능성을 줄인다.
+    resume: resumeEnabled,
     onFinish: ({ message }) => {
       // 🔒 Race Condition 방지: onError가 이미 에러를 처리했으면 스킵
       if (errorHandledRef.current) {
@@ -453,6 +456,9 @@ export function useHybridAIQuery(
     complexityThreshold,
     asyncQuery,
     sendMessage,
+    onBeforeStreamingSend: () => {
+      setResumeEnabled(true);
+    },
     setMessages,
     setState,
     refs: {
@@ -485,6 +491,12 @@ export function useHybridAIQuery(
     currentMode: state.mode,
     asyncQuery,
     stopChat,
+    onUserAbort: () => {
+      setResumeEnabled(false);
+    },
+    onReset: () => {
+      setResumeEnabled(true);
+    },
     setMessages,
     setState,
     refs: {

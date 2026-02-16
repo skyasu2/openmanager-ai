@@ -296,16 +296,8 @@ export default function UnifiedProfileHeader({
         userInfo={userInfo}
         userType={userType}
         onClose={closeMenu}
+        statusContent={<EnhancedProfileStatusDisplay compact={false} />}
       />
-
-      {/* 시스템 상태 표시 (GitHub + 게스트 공통 - 드롭다운 내부에 위치) */}
-      {menuState.showProfileMenu && (
-        <div className="absolute right-0 z-9998 mt-[280px] w-64">
-          <div className="rounded-lg border border-gray-200 bg-white p-3 shadow-lg">
-            <EnhancedProfileStatusDisplay compact={false} />
-          </div>
-        </div>
-      )}
     </div>
   );
 }

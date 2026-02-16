@@ -27,7 +27,7 @@ type SourceResourceAttributes = {
   'service.name': string;
   'host.name': string;
   'host.id': string;
-  'host.type': string;
+  'server.role': string;
   'os.type': string;
   'os.description': string;
   'cloud.region': string;

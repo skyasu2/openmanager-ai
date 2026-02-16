@@ -16,7 +16,7 @@ import type { OTelLogRecord, OTelResourceAttributes } from './types';
 
 type ServerMeta = Pick<
   OTelResourceAttributes,
-  'host.type' | 'deployment.environment' | 'cloud.availability_zone'
+  'server.role' | 'deployment.environment' | 'cloud.availability_zone'
 >;
 
 // ============================================================================
@@ -101,7 +101,7 @@ function stripSeverityPrefix(logLine: string): string {
  * 단일 문자열 로그 → OTel LogRecord 변환
  *
  * @param logLine - 원본 syslog 문자열
- * @param serverId - 서버 ID (e.g. "web-nginx-icn-01")
+ * @param serverId - 서버 ID (e.g. "web-nginx-dc1-01")
  * @param timestampMs - 밀리초 타임스탬프
  * @param serverMeta - resource-catalog 메타데이터 (Loki labels 매핑용)
  */
@@ -121,7 +121,7 @@ export function processLogLine(
     body,
     attributes: {
       'log.source': detectSource(body),
-      'host.type': serverMeta?.['host.type'] ?? 'unknown',
+      'server.role': serverMeta?.['server.role'] ?? 'unknown',
       'deployment.environment':
         serverMeta?.['deployment.environment'] ?? 'production',
       'cloud.availability_zone':

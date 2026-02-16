@@ -1,11 +1,12 @@
 import type { ScenarioPoint, Server, ServerType } from './types';
 
 /**
- * 🎯 15개 서버 정의 (SSOT 기반 - 한국 데이터센터)
+ * 🎯 15개 서버 정의 (SSOT 기반 - 단일 Active 클러스터)
  *
- * 서버 존:
- * - ICN: 인천/서울 (메인 데이터센터)
- * - PUS: 부산 (DR 데이터센터)
+ * DC1 가용 영역:
+ * - AZ1: Rack Group A (Primary)
+ * - AZ2: Rack Group B (HA Pair)
+ * - AZ3: Rack Group C
  *
  * @see src/__mocks__/data/mockServerConfig.ts (SSOT)
  * @see src/data/otel-data/ (OTel 24시간 메트릭)
@@ -13,99 +14,99 @@ import type { ScenarioPoint, Server, ServerType } from './types';
 export const SERVERS: Server[] = [
   // 웹서버 (Nginx) - 3대
   {
-    id: 'web-nginx-icn-01',
-    name: '서울 메인 Nginx #1',
+    id: 'web-nginx-dc1-01',
+    name: 'Nginx #1 (AZ1)',
     type: 'web',
-    description: '서울 메인 Nginx 웹서버 #1 (AZ1)',
+    description: 'DC1 Nginx 웹서버 #1 (Primary)',
   },
   {
-    id: 'web-nginx-icn-02',
-    name: '서울 Nginx #2',
+    id: 'web-nginx-dc1-02',
+    name: 'Nginx #2 (AZ2)',
     type: 'web',
-    description: '서울 Nginx 웹서버 #2 (AZ2)',
+    description: 'DC1 Nginx 웹서버 #2',
   },
   {
-    id: 'web-nginx-pus-01',
-    name: '부산 DR Nginx',
+    id: 'web-nginx-dc1-03',
+    name: 'Nginx #3 (AZ3)',
     type: 'web',
-    description: '부산 DR Nginx 웹서버',
+    description: 'DC1 Nginx 웹서버 #3',
   },
   // API/WAS 서버 (Spring Boot) - 3대
   {
-    id: 'api-was-icn-01',
-    name: '서울 메인 WAS #1',
+    id: 'api-was-dc1-01',
+    name: 'WAS #1 (AZ1)',
     type: 'application',
-    description: '서울 메인 WAS 서버 #1 (AZ1)',
+    description: 'DC1 Spring Boot WAS #1 (Primary)',
   },
   {
-    id: 'api-was-icn-02',
-    name: '서울 WAS #2',
+    id: 'api-was-dc1-02',
+    name: 'WAS #2 (AZ2)',
     type: 'application',
-    description: '서울 WAS 서버 #2 (AZ2)',
+    description: 'DC1 Spring Boot WAS #2',
   },
   {
-    id: 'api-was-pus-01',
-    name: '부산 DR WAS',
+    id: 'api-was-dc1-03',
+    name: 'WAS #3 (AZ3)',
     type: 'application',
-    description: '부산 DR WAS 서버',
+    description: 'DC1 Spring Boot WAS #3',
   },
   // 데이터베이스 (MySQL) - 3대
   {
-    id: 'db-mysql-icn-primary',
-    name: '서울 MySQL Primary',
+    id: 'db-mysql-dc1-primary',
+    name: 'MySQL Primary (AZ1)',
     type: 'database',
-    description: '서울 MySQL Primary (Master)',
+    description: 'DC1 MySQL Primary (Master)',
   },
   {
-    id: 'db-mysql-icn-replica',
-    name: '서울 MySQL Replica',
+    id: 'db-mysql-dc1-replica',
+    name: 'MySQL Replica (AZ2)',
     type: 'database',
-    description: '서울 MySQL Replica (Slave, AZ2)',
+    description: 'DC1 MySQL Replica (동기 복제)',
   },
   {
-    id: 'db-mysql-pus-dr',
-    name: '부산 MySQL DR',
+    id: 'db-mysql-dc1-backup',
+    name: 'MySQL Standby (AZ3)',
     type: 'database',
-    description: '부산 MySQL DR (비동기 복제)',
+    description: 'DC1 MySQL Standby (비동기 복제)',
   },
   // 캐시 (Redis) - 2대
   {
-    id: 'cache-redis-icn-01',
-    name: '서울 Redis Master',
+    id: 'cache-redis-dc1-01',
+    name: 'Redis Master (AZ1)',
     type: 'cache',
-    description: '서울 Redis 클러스터 Master #1',
+    description: 'DC1 Redis 클러스터 Master',
   },
   {
-    id: 'cache-redis-icn-02',
-    name: '서울 Redis Replica',
+    id: 'cache-redis-dc1-02',
+    name: 'Redis Replica (AZ2)',
     type: 'cache',
-    description: '서울 Redis 클러스터 Replica (AZ2)',
+    description: 'DC1 Redis 클러스터 Replica',
   },
   // 스토리지 - 2대
   {
-    id: 'storage-nfs-icn-01',
-    name: '서울 NFS 스토리지',
+    id: 'storage-nfs-dc1-01',
+    name: 'NFS Storage (AZ1)',
     type: 'storage',
-    description: '서울 NFS 스토리지 서버',
+    description: 'DC1 NFS 스토리지 서버',
   },
   {
-    id: 'storage-s3gw-pus-01',
-    name: '부산 S3 Gateway',
+    id: 'storage-s3gw-dc1-01',
+    name: 'S3 Gateway (AZ3)',
     type: 'storage',
-    description: '부산 S3 호환 게이트웨이 (DR 백업)',
+    description: 'DC1 S3 호환 게이트웨이',
   },
   // 로드밸런서 (HAProxy) - 2대
   {
-    id: 'lb-haproxy-icn-01',
-    name: '서울 HAProxy LB',
+    id: 'lb-haproxy-dc1-01',
+    name: 'HAProxy #1 (AZ1)',
     type: 'loadbalancer',
-    description: '서울 메인 HAProxy 로드밸런서',
+    description: 'DC1 HAProxy 로드밸런서 #1 (Primary)',
   },
   {
-    id: 'lb-haproxy-pus-01',
-    name: '부산 HAProxy LB',
+    id: 'lb-haproxy-dc1-02',
+    name: 'HAProxy #2 (AZ3)',
     type: 'loadbalancer',
-    description: '부산 DR HAProxy 로드밸런서',
+    description: 'DC1 HAProxy 로드밸런서 #2',
   },
 ];
 

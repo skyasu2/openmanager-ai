@@ -129,6 +129,7 @@ test-*-lite.js
 # 개발자 개인 설정 (토큰 포함 가능)
 .vscode/settings.json
 .vscode/launch.json
+.gitconfig
 .claude/personal/
 .claude/private/
 # logs 디렉토리 (ai-decisions 제외)
@@ -413,7 +414,6 @@ eslint-result.json
 *-report.json
 
 # 🔧 IDE & Tools (Enhanced - 2025-08-20)
-.vscode/settings.json
 .idea/
 *.swp
 *.swo
@@ -427,9 +427,9 @@ screenshots/
 # Numbered project screenshots (documentation captures)
 [0-9][0-9]-*.png
 # Playwright/dev verification screenshots (root level)
-dashboard-*.png
-modal-*.png
-server-modal-*.png
+/dashboard-*.png
+/modal-*.png
+/server-modal-*.png
 
 # 🔒 보안: 디버그 로그 파일 Git 추적 제외
 *.debug.log

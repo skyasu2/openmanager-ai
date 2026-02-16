@@ -90,7 +90,7 @@ function processTimeseries(transform: (data: TimeSeries) => TimeSeries): void {
 function fixNetworkRatio(data: HourlyFile): HourlyFile {
   for (const slot of data.slots) {
     for (const metric of slot.metrics) {
-      if (metric.name === 'system.network.io') {
+      if (metric.name === 'system.network.utilization') {
         metric.unit = '1';
         for (const dp of metric.dataPoints) {
           // 현재 35-65 범위 → 0.35-0.65 ratio로 변환
@@ -103,7 +103,7 @@ function fixNetworkRatio(data: HourlyFile): HourlyFile {
 }
 
 function fixNetworkTimeseries(data: TimeSeries): TimeSeries {
-  const networkKey = 'system.network.io';
+  const networkKey = 'system.network.utilization';
   if (data.metrics[networkKey]) {
     data.metrics[networkKey] = data.metrics[networkKey].map((serverSeries) =>
       serverSeries.map((val) => Math.round((val / 100) * 100) / 100)
@@ -216,7 +216,7 @@ function fixLogTimeDistribution(data: HourlyFile): HourlyFile {
 function fixS3GatewayLogs(data: HourlyFile): HourlyFile {
   for (const slot of data.slots) {
     for (const log of slot.logs) {
-      if (log.resource !== 'storage-s3gw-pus-01') continue;
+      if (log.resource !== 'storage-s3gw-dc1-01') continue;
 
       if (log.body.includes('Started NFS server')) {
         log.body = 'systemd[1]: Started MinIO S3 Gateway service.';
@@ -337,7 +337,7 @@ function fixGCParameterVariation(data: HourlyFile): HourlyFile {
 function fixStorageCacheNetwork(data: HourlyFile): HourlyFile {
   for (const slot of data.slots) {
     for (const metric of slot.metrics) {
-      if (metric.name !== 'system.network.io') continue;
+      if (metric.name !== 'system.network.utilization') continue;
 
       for (const dp of metric.dataPoints) {
         const hostname = dp.attributes['host.name'] ?? '';
@@ -442,7 +442,7 @@ const WARN_TEMPLATES: Record<string, string[]> = {
   ],
   'lb': [
     'haproxy[{pid}]: backend web_servers has no server available! Retrying in 1s.',
-    'haproxy[{pid}]: Server web_servers/web-nginx-pus-01 is DOWN, reason: Layer7 timeout',
+    'haproxy[{pid}]: Server web_servers/web-nginx-dc1-03 is DOWN, reason: Layer7 timeout',
   ],
 };
 
@@ -451,7 +451,7 @@ const ERROR_TEMPLATES: Record<string, string[]> = {
     'nginx[{pid}]: connect() failed (111: Connection refused) while connecting to upstream 10.0.1.{b}:8080',
   ],
   'api': [
-    'java[{pid}]: [ERROR] Failed to execute query: Connection reset by peer (db-mysql-icn-primary:3306)',
+    'java[{pid}]: [ERROR] Failed to execute query: Connection reset by peer (db-mysql-dc1-primary:3306)',
   ],
   'db': [
     'mysqld[{pid}]: [ERROR] InnoDB: Cannot allocate {n}MB for the buffer pool, current limit {m}MB',
@@ -564,7 +564,7 @@ function limitWatchdogDuplicates(data: HourlyFile): HourlyFile {
       }
 
       // S3GW cron 제거 → minio healthcheck으로 교체
-      if (log.resource === 'storage-s3gw-pus-01' && log.attributes['log.source'] === 'cron') {
+      if (log.resource === 'storage-s3gw-dc1-01' && log.attributes['log.source'] === 'cron') {
         log.attributes['log.source'] = 'minio';
         log.body = `minio[${2000 + Math.floor(Math.random() * 5000)}]: Healthcheck passed, ${3 + Math.floor(Math.random() * 10)} active connections`;
         log.severityText = 'INFO';
@@ -627,7 +627,7 @@ function main(): void {
 
   // I3: Storage/Cache network in timeseries
   processTimeseries((data) => {
-    const networkKey = 'system.network.io';
+    const networkKey = 'system.network.utilization';
     if (!data.metrics[networkKey]) return data;
 
     for (let sIdx = 0; sIdx < data.serverIds.length; sIdx++) {

@@ -182,7 +182,7 @@ metrics/route.ts:
 
 ### 아키텍처 강점
 
-1. **SSOT 유지**: hourly-data → MetricsProvider → 모든 소비자
+1. **SSOT 유지**: OTel 데이터셋(`otel-data`/`otel-metrics`) → MetricsProvider → 모든 소비자
 2. **2중 구조**: JS 배열(실사용) + PromQL 엔진(확장 대비) 공존
 3. **AI 최적화**: 배열 조작 → 텍스트 요약 → LLM 컨텍스트 (토큰 효율)
 4. **DoS 방어**: PromQL 엔진에 쿼리 길이/라벨 수 제한 내장
@@ -198,7 +198,7 @@ metrics/route.ts:
 | `src/app/api/servers-unified/route.ts` | 검색/정렬/페이지네이션 API | 527 |
 | `src/lib/promql/promql-engine.ts` | 경량 PromQL 엔진 (확장 대비) | 467 |
 | `src/app/api/metrics/route.ts` | Prometheus 호환 엔드포인트 | 112 |
-| `public/hourly-data/hour-*.json` | Prometheus 스타일 JSON 데이터 (24개) | — |
+| `src/data/otel-data/hourly/hour-*.json` | OTel-native 시간별 데이터 (24개) | — |
 
 ## 관련 문서
 

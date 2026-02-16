@@ -15,7 +15,7 @@ vi.mock('../data/precomputed-state', () => ({
     timestamp: new Date().toISOString(),
     servers: [
       {
-        id: 'web-nginx-icn-01',
+        id: 'web-nginx-dc1-01',
         name: 'Web Server 01',
         type: 'web',
         status: 'online',
@@ -25,7 +25,7 @@ vi.mock('../data/precomputed-state', () => ({
         network: 50,
       },
       {
-        id: 'web-nginx-icn-02',
+        id: 'web-nginx-dc1-02',
         name: 'Web Server 02',
         type: 'web',
         status: 'warning',
@@ -35,7 +35,7 @@ vi.mock('../data/precomputed-state', () => ({
         network: 60,
       },
       {
-        id: 'db-mysql-icn-01',
+        id: 'db-mysql-dc1-01',
         name: 'Database Primary',
         type: 'database',
         status: 'critical',
@@ -45,7 +45,7 @@ vi.mock('../data/precomputed-state', () => ({
         network: 70,
       },
       {
-        id: 'db-mysql-icn-02',
+        id: 'db-mysql-dc1-02',
         name: 'Database Replica',
         type: 'database',
         status: 'online',
@@ -55,7 +55,7 @@ vi.mock('../data/precomputed-state', () => ({
         network: 40,
       },
       {
-        id: 'cache-redis-icn-01',
+        id: 'cache-redis-dc1-01',
         name: 'Cache Server 01',
         type: 'cache',
         status: 'online',
@@ -166,9 +166,9 @@ describe('detectAnomaliesAllServers', () => {
 
       expect(result.success).toBe(true);
       if (result.success) {
-        // web-nginx-icn-02 has cpu=75 (>= 70 warning), memory=82 (>= 75 warning)
+        // web-nginx-dc1-02 has cpu=75 (>= 70 warning), memory=82 (>= 75 warning)
         const webServer02Anomalies = result.anomalies.filter(
-          (a) => a.server_id === 'web-nginx-icn-02'
+          (a) => a.server_id === 'web-nginx-dc1-02'
         );
         expect(webServer02Anomalies.length).toBeGreaterThan(0);
         expect(webServer02Anomalies.every((a) => a.severity === 'warning' || a.severity === 'critical')).toBe(true);
@@ -180,9 +180,9 @@ describe('detectAnomaliesAllServers', () => {
 
       expect(result.success).toBe(true);
       if (result.success) {
-        // db-mysql-icn-01 has cpu=90 (>= 85 critical), memory=95 (>= 90 critical)
+        // db-mysql-dc1-01 has cpu=90 (>= 85 critical), memory=95 (>= 90 critical)
         const dbServer01Anomalies = result.anomalies.filter(
-          (a) => a.server_id === 'db-mysql-icn-01'
+          (a) => a.server_id === 'db-mysql-dc1-01'
         );
         expect(dbServer01Anomalies.length).toBeGreaterThan(0);
         expect(dbServer01Anomalies.some((a) => a.severity === 'critical')).toBe(true);
@@ -255,12 +255,12 @@ describe('detectAnomaliesAllServers', () => {
       expect(result.success).toBe(true);
       if (result.success) {
         // web-02 and db-01 have anomalies
-        expect(result.affectedServers).toContain('web-nginx-icn-02');
-        expect(result.affectedServers).toContain('db-mysql-icn-01');
+        expect(result.affectedServers).toContain('web-nginx-dc1-02');
+        expect(result.affectedServers).toContain('db-mysql-dc1-01');
         // Healthy servers should not be in affected list
-        expect(result.affectedServers).not.toContain('web-nginx-icn-01');
-        expect(result.affectedServers).not.toContain('db-mysql-icn-02');
-        expect(result.affectedServers).not.toContain('cache-redis-icn-01');
+        expect(result.affectedServers).not.toContain('web-nginx-dc1-01');
+        expect(result.affectedServers).not.toContain('db-mysql-dc1-02');
+        expect(result.affectedServers).not.toContain('cache-redis-dc1-01');
       }
     });
 

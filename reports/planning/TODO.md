@@ -1,12 +1,20 @@
 # TODO - OpenManager AI v5
 
-**Last Updated**: 2026-02-15 KST
+**Last Updated**: 2026-02-16 KST
 
 ## Active Tasks
 
 | Task | Priority | Status |
 |------|----------|--------|
-| 통합 테스트 확대 | P3 | Done — 63개 신규 테스트 추가 (6개 모듈) |
+| Cloud Run 통합 테스트 고도화 | P3 | In Progress — `ai-nlq-vercel` 외 전용 컨테이너 테스트 추가 (G1) |
+
+### Completed (2026-02-16)
+- [x] P1: Full Stack 관점 최종 검수 완료 (`completion-review.md` 96.8%)
+- [x] P2: Frontend E2E 테스트 추가 (`ai-fullscreen.spec.ts`, `dashboard-ai-sidebar.spec.ts`)
+- [x] P2: API Integration 테스트 추가 (`ai-supervisor.integration.test.ts`)
+- [x] P2: NLQ E2E 테스트 추가 (`ai-nlq-vercel.spec.ts`)
+- [x] P3: 성능/보안/평가 기준 수립 (Lighthouse, CSP, Promptfoo)
+- [x] P3: WBS 최신화 (테스트 커버리지 반영, 실제 완성도 94.7% 달성)
 
 ### Completed (2026-02-15)
 - [x] P1: Resume Stream v2 구현 — Upstash resumable, prepareReconnectToStreamRequest, stream-state 완성
@@ -54,7 +62,7 @@
 
 | 파일 | 상태 | 비고 |
 |------|------|------|
-| `wbs.md` | 운영 | 전체 진행률 94.2% |
+| `wbs.md` | 운영 | 전체 진행률 ~94.7% (검수 96.8%) |
 
 ### Completed (2026-01-22)
 - [x] 코드 단순화 리팩토링 (YAGNI 원칙 적용)

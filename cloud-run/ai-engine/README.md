@@ -35,8 +35,8 @@ src/
 │   │   ├── supervisor.ts          # Vercel AI SDK Supervisor
 │   │   ├── model-provider.ts      # Multi-provider failover
 │   │   └── agents/                # Agent definitions
-│   │       ├── base-agent.ts      # Abstract base class (NEW v7.1.0)
-│   │       ├── agent-factory.ts   # Factory pattern (NEW v7.1.0)
+│   │       ├── base-agent.ts      # ToolLoopAgent-based base class
+│   │       ├── agent-factory.ts   # ConfigBasedAgent factory
 │   │       ├── vision-agent.ts    # Gemini Vision (NEW v7.1.0)
 │   │       ├── orchestrator.ts    # Multi-agent orchestration
 │   │       └── config/            # Agent configurations
@@ -54,18 +54,19 @@ src/
 
 ## Agent Implementation Pattern (v8.0.0)
 
-### BaseAgent Abstract Class
+### BaseAgent + ToolLoopAgent (AI SDK v6 Official Pattern)
 
-모든 에이전트의 기반 클래스로 통합된 실행 인터페이스 제공:
+모든 에이전트는 `BaseAgent` 추상 클래스를 통해 AI SDK v6의 공식 `ToolLoopAgent`를 내부적으로 사용:
 
-- `run(query, options)`: 동기 실행 - 결과를 기다림
-- `stream(query, options)`: 스트리밍 실행 - 실시간 응답
+- `run(query, options)`: `ToolLoopAgent.generate()` 위임 - 결과를 기다림
+- `stream(query, options)`: `ToolLoopAgent.stream()` 위임 - 실시간 응답
 - `isAvailable()`: 에이전트 가용성 확인
 
-**AI SDK v6 통합 기능:**
-- `timeout: { totalMs, chunkMs }` - 실행 시간 제한
+**ToolLoopAgent 설정:**
 - `stopWhen: [hasToolCall('finalAnswer'), stepCountIs(N)]` - 종료 조건
+- `timeout: { totalMs, chunkMs }` - 실행 시간 제한
 - `onStepFinish` - 단계별 모니터링
+- 7개 에이전트 모두 `ConfigBasedAgent` 단일 클래스 사용 (per-type 서브클래스 제거)
 
 ### AgentFactory Pattern
 
@@ -276,6 +277,11 @@ Notes:
 Current: `8.0.0`
 
 ## Changelog
+
+### v8.0.0 (2026-02-16)
+- **ToolLoopAgent 채택** - AI SDK v6 공식 에이전트 패턴으로 BaseAgent 내부 마이그레이션
+- **ConfigBasedAgent 통합** - 7개 per-type 서브클래스 제거, 단일 ConfigBasedAgent로 통합
+- **AgentFactory 단순화** - switch문 제거, config key 매핑 방식으로 전환
 
 ### v7.1.0 (2026-01-27)
 - **BaseAgent 추상 클래스 도입** - 통합 실행 인터페이스 (`run()`, `stream()`)

@@ -60,7 +60,7 @@ function createServerFromMetrics(
       network: Math.round(currentMetrics.network),
       uptime: 99.99,
       lastUpdate: new Date(),
-      location: 'Seoul-DC-01',
+      location: 'OnPrem-DC1',
       type: 'application', // fallback type
       services: [
         {
@@ -83,7 +83,7 @@ function createServerFromMetrics(
     network: Math.round(currentMetrics.network),
     uptime: 99.99,
     lastUpdate: new Date(),
-    location: 'Seoul-DC-01',
+    location: 'OnPrem-DC1',
     type: server.type,
     services: [
       {

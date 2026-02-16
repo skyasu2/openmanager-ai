@@ -18,7 +18,7 @@ vi.mock('@/constants/otel-metric-names', () => ({
     CPU: 'system.cpu.utilization',
     MEMORY: 'system.memory.utilization',
     DISK: 'system.filesystem.utilization',
-    NETWORK: 'system.network.io',
+    NETWORK: 'system.network.utilization',
     LOAD_1M: 'system.linux.cpu.load_1m',
     LOAD_5M: 'system.linux.cpu.load_5m',
     PROCESSES: 'system.process.count',
@@ -85,7 +85,7 @@ function makeSlot(
     buildMetric('system.memory.utilization', '1', servers, 'memory'),
     buildMetric('system.filesystem.utilization', '1', servers, 'disk'),
     buildMetric(
-      'system.network.io',
+      'system.network.utilization',
       options?.networkUnit ?? '1',
       servers,
       'network'
@@ -122,7 +122,7 @@ function makeCatalog(serverIds: string[]): OTelResourceCatalog {
   for (const id of serverIds) {
     resources[id] = {
       'host.name': `${id}.openmanager.kr`,
-      'host.type': 'web',
+      'server.role': 'web',
       'os.type': 'linux',
       'cloud.availability_zone': 'ap-northeast-2a',
       'deployment.environment': 'production',

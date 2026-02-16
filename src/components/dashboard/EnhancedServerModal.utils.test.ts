@@ -12,7 +12,7 @@ const baseServer: Server = {
   disk: 20,
   network: 30,
   uptime: '24h',
-  location: 'icn',
+  location: 'onprem-dc1',
 };
 
 describe('normalizeServerData networkStatus', () => {

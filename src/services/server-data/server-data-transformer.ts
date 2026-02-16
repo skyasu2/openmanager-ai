@@ -29,10 +29,10 @@ export function targetToRawServerData(
   target: PrometheusTargetData
 ): RawServerData {
   const serverId = target.instance.replace(/:9100$/, '');
-  const cpu = target.metrics.node_cpu_usage_percent;
-  const memory = target.metrics.node_memory_usage_percent;
-  const disk = target.metrics.node_filesystem_usage_percent;
-  const network = target.metrics.node_network_transmit_bytes_rate;
+  const cpu = target.metrics.node_cpu_utilization_ratio;
+  const memory = target.metrics.node_memory_utilization_ratio;
+  const disk = target.metrics.node_filesystem_utilization_ratio;
+  const network = target.metrics.node_network_utilization_ratio;
 
   const status: RawServerData['status'] =
     target.metrics.up === 0
@@ -51,7 +51,7 @@ export function targetToRawServerData(
     memory,
     disk,
     network,
-    responseTime: target.metrics.node_http_request_duration_milliseconds,
+    responseTime: target.metrics.http_server_request_duration_seconds * 1000,
     uptime: Math.round(
       Date.now() / 1000 - target.metrics.node_boot_time_seconds
     ),
@@ -76,7 +76,7 @@ export function targetToRawServerData(
 // ── Network ratio by server type ──────────────────────────────────
 // Real-world traffic patterns: web servers receive more (client requests),
 // storage/database servers send more (query results, file transfers).
-// Prometheus only provides node_network_transmit_bytes_rate, so we
+// Prometheus provides node_network_utilization_ratio (0-1), so we
 // estimate receive rate using type-based ratios.
 
 const NETWORK_RX_RATIO: Record<string, number> = {

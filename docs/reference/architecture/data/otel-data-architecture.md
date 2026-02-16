@@ -18,7 +18,7 @@
 OpenTelemetry는 이 프로젝트에서 **"빌드 타임 시맨틱 변환 도구"**로 사용됩니다.
 
 - 모든 관측성 데이터는 **synthetic** (AI 사전 생성 시나리오 JSON)
-- `npm run data:otel` 빌드 타임 스크립트가 Prometheus 네이밍을 OTel 시맨틱으로 변환
+- `npm run data:fix`/`npm run data:verify` 스크립트로 OTel 데이터셋 품질을 유지
 - 런타임 OTel SDK(`src/lib/otel/otel-sdk.ts`)는 기본 비활성화 (zero overhead, ConsoleExporter only)
 - 외부 호출 없음, 비용 영향 없음 --- Free Tier 안전
 
@@ -33,46 +33,42 @@ OpenTelemetry는 이 프로젝트에서 **"빌드 타임 시맨틱 변환 도구
 
 ```
  원본 (SSOT)
- src/data/hourly-data/hour-{00..23}.json  (Prometheus 네이밍)
+ src/data/otel-data/
+ ├── resource-catalog.json
+ ├── timeseries.json
+ └── hourly/hour-{00..23}.json
                     │
-          npm run data:otel (빌드 타임 변환)
-                    │
-                    ▼
-        src/data/otel-processed/
-        ├── resource-catalog.json      (15 서버 OTel Resource)
-        ├── timeseries.json            (24h 시계열)
-        └── hourly/hour-{00..23}.json  (시간별 메트릭+로그+집계)
+       npm run data:fix / npm run data:verify
                     │
          ┌──────────┴──────────┐
-    deploy.sh 복사          import
-         │                     │
          ▼                     ▼
-  Cloud Run AI Engine    MetricsProvider (Vercel)
-  precomputed-state.ts   ┌→ 서버 카드 (Dashboard)
-  1순위: otel-processed  ├→ 서버 모달 (24h 차트)
-  2순위: hourly-data     └→ AI 어시스턴트
+  Cloud Run deploy.sh      MetricsProvider (Vercel)
+  (otel-data 복사)         (otel-metrics import)
+  precomputed-state.ts     ┌→ 서버 카드 (Dashboard)
+  1순위: otel-data         ├→ 서버 모달 (24h 차트)
+  2순위: otel-processed    └→ AI 어시스턴트
 ```
 
-**Tiered Data Access**: Vercel과 Cloud Run 모두 `otel-processed` 1순위, `hourly-data` 폴백으로 동일 우선순위 사용. 데이터 불일치 없음.
+**Tiered Data Access**: Vercel은 `otel-metrics` 번들을 우선 사용하고, Cloud Run은 `otel-data` 1순위 + `otel-processed` 호환 폴백을 사용합니다.
 
-**배포 동기화**: `deploy.sh`가 `otel-processed/` 파일을 Cloud Run 이미지에 복사 (~2.8MB, 512Mi 한도 내 충분).
+**배포 동기화**: `deploy.sh`가 `otel-data/` 파일을 Cloud Run 이미지에 복사하고, 하위 호환을 위해 `otel-processed/`도 함께 유지합니다.
 
 ---
 
 ## 3. Metrics Mapping (Prometheus → OTel)
 
-| Prometheus (hourly-data) | OTel (otel-processed) | 단위 | 변환 |
+| Legacy Prometheus 명칭 | OTel 시맨틱 (`otel-data`) | 단위 | 변환 |
 |---|---|---|---|
 | `node_cpu_usage_percent` | `system.cpu.utilization` | ratio 0-1 | /100 |
 | `node_memory_usage_percent` | `system.memory.utilization` | ratio 0-1 | /100 |
 | `node_filesystem_usage_percent` | `system.filesystem.utilization` | ratio 0-1 | /100 |
-| `node_network_transmit_bytes_rate` | `system.network.io` | By/s | x1 |
+| `node_network_transmit_bytes_rate` | `system.network.utilization` | ratio 0-1 | /100 |
 | `node_load1` / `node_load5` | `system.linux.cpu.load_1m` / `system.linux.cpu.load_5m` | load | x1 |
 | `node_boot_time_seconds` | `system.uptime` | s | now-boot |
 | `node_procs_running` | `system.processes.count` | count | x1 |
 | `node_http_request_duration_milliseconds` | `http.server.request.duration` | s | /1000 |
 
-> 매핑 정의: `scripts/data/otel/prometheus-to-otel.ts`
+> 매핑 정의: `src/services/metrics/metric-transformers.ts`
 
 ---
 
@@ -117,12 +113,13 @@ SDK는 프로덕션 모니터링용이 아닌 향후 확장 스켈레톤입니�
 
 | 파일 | 역할 |
 |---|---|
-| `src/data/hourly-data/hour-*.json` | 원본 SSOT (Prometheus 네이밍) |
-| `src/data/otel-processed/` | OTel 변환 결과 (빌드 타임) |
-| `scripts/data/otel-precompute.ts` | 변환 파이프라인 메인 |
-| `scripts/data/otel/prometheus-to-otel.ts` | 메트릭 매핑 정의 |
+| `src/data/otel-data/` | 원본 SSOT (OTel-native) |
+| `src/data/otel-metrics/` | Dashboard 런타임 호환 번들 |
+| `scripts/data/otel-fix.ts` | 데이터 보정 스크립트 |
+| `scripts/data/otel-verify.ts` | 데이터 무결성 검증 스크립트 |
+| `src/services/metrics/metric-transformers.ts` | Prometheus 명칭 ↔ OTel 시맨틱 매핑 로직 |
 | `src/services/metrics/MetricsProvider.ts` | OTel 데이터 런타임 소비 (Vercel) |
-| `cloud-run/ai-engine/src/data/precomputed-state.ts` | OTel 우선, hourly-data 폴백 (Cloud Run) |
+| `cloud-run/ai-engine/src/data/precomputed-state.ts` | OTel 우선, `otel-processed` 폴백 (Cloud Run) |
 | `src/lib/otel/otel-sdk.ts` | OTel SDK 스켈레톤 (비활성화) |
 
 ---

@@ -2,6 +2,7 @@
 
 import { Clock } from 'lucide-react';
 import { memo, useEffect, useState } from 'react';
+import { formatDashboardDateTime } from '@/utils/dashboard/rotating-timestamp';
 
 /**
  * 실시간 시간 표시 컴포넌트
@@ -33,30 +34,25 @@ export const RealTimeDisplay = memo(function RealTimeDisplay() {
     };
   }, []);
 
-  const timeText = currentTime
-    ? currentTime.toLocaleTimeString('ko-KR', {
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-      })
-    : '--:--:--';
+  const dateTimeText = currentTime
+    ? formatDashboardDateTime(currentTime)
+    : '----.--.-- --:--:--';
 
-  const dateText = currentTime
+  const weekdayText = currentTime
     ? currentTime.toLocaleDateString('ko-KR', {
-        month: 'short',
-        day: 'numeric',
         weekday: 'short',
       })
-    : '--- -- (-- )';
+    : '--';
 
   return (
     <div className="flex items-center gap-2 whitespace-nowrap text-sm text-gray-600">
       <Clock className="h-4 w-4 text-blue-500" aria-hidden="true" />
       <span suppressHydrationWarning aria-live={isMounted ? 'polite' : 'off'}>
-        {timeText}
+        {dateTimeText}
       </span>
-      <span className="text-gray-700">|</span>
-      <span suppressHydrationWarning>{dateText}</span>
+      <span className="text-gray-500" suppressHydrationWarning>
+        ({weekdayText})
+      </span>
     </div>
   );
 });

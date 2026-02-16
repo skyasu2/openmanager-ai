@@ -5,12 +5,12 @@
  * OTel 데이터를 직접 소비하며, Prometheus 메트릭 이름은 별칭으로 지원.
  *
  * 지원 쿼리 패턴:
- *   node_cpu_usage_percent                          → 전체 서버 CPU
- *   node_cpu_usage_percent{server_type="web"}        → 라벨 필터링
- *   avg(node_cpu_usage_percent)                      → 집계 (avg, max, min, sum, count)
- *   max(node_cpu_usage_percent) by (server_type)     → 그룹 집계
- *   up == 0                                          → 비교 연산
- *   rate(node_cpu_usage_percent[1h])                 → 변화율 (시뮬레이션)
+ *   node_cpu_utilization_ratio                            → 전체 서버 CPU
+ *   node_cpu_utilization_ratio{server_type="web"}         → 라벨 필터링
+ *   avg(node_cpu_utilization_ratio)                       → 집계 (avg, max, min, sum, count)
+ *   max(node_cpu_utilization_ratio) by (server_type)      → 그룹 집계
+ *   up == 0                                               → 비교 연산
+ *   rate(node_cpu_utilization_ratio[1h])                  → 변화율 (시뮬레이션)
  *
  * 향후 실제 Prometheus 연결 시 HTTP API adapter로 교체 가능.
  *
@@ -77,35 +77,36 @@ function getCachedRegex(pattern: string): RegExp | null {
 // ============================================================================
 
 // OTel Semantic Convention → Prometheus 이름 (reverse alias)
+// Naming: node_* prefix (node_exporter 호환), _ratio suffix (Prometheus base unit)
 const OTEL_ALIAS_MAP: Record<string, string> = {
-  'system.cpu.utilization': 'node_cpu_usage_percent',
-  'system.memory.utilization': 'node_memory_usage_percent',
-  'system.filesystem.utilization': 'node_filesystem_usage_percent',
-  'system.network.io': 'node_network_transmit_bytes_rate',
+  'system.cpu.utilization': 'node_cpu_utilization_ratio',
+  'system.memory.utilization': 'node_memory_utilization_ratio',
+  'system.filesystem.utilization': 'node_filesystem_utilization_ratio',
+  'system.network.utilization': 'node_network_utilization_ratio',
   'system.linux.cpu.load_1m': 'node_load1',
   'system.linux.cpu.load_5m': 'node_load5',
   'system.process.count': 'node_procs_running',
   'system.uptime': 'node_boot_time_seconds',
-  'http.server.request.duration': 'node_http_request_duration_milliseconds',
+  'http.server.request.duration': 'http_server_request_duration_seconds',
 };
 
 // Prometheus 이름 → OTel Semantic Convention (forward map for OTel slot lookup)
 const PROM_TO_OTEL_MAP: Record<string, string> = {
-  node_cpu_usage_percent: 'system.cpu.utilization',
-  node_memory_usage_percent: 'system.memory.utilization',
-  node_filesystem_usage_percent: 'system.filesystem.utilization',
-  node_network_transmit_bytes_rate: 'system.network.io',
+  node_cpu_utilization_ratio: 'system.cpu.utilization',
+  node_memory_utilization_ratio: 'system.memory.utilization',
+  node_filesystem_utilization_ratio: 'system.filesystem.utilization',
+  node_network_utilization_ratio: 'system.network.utilization',
   node_load1: 'system.linux.cpu.load_1m',
   node_load5: 'system.linux.cpu.load_5m',
   node_procs_running: 'system.process.count',
   node_boot_time_seconds: 'system.uptime',
-  node_http_request_duration_milliseconds: 'http.server.request.duration',
+  http_server_request_duration_seconds: 'http.server.request.duration',
   up: 'system.uptime', // up은 system.uptime 존재 여부로 판단 (>0 → 1, 없으면 0)
 };
 
 // PromQL 라벨 → OTel Resource 속성 이름 매핑 (타입 가드용 참조)
 const _LABEL_TO_OTEL_ATTR: Record<string, keyof OTelResourceAttributes> = {
-  server_type: 'host.type',
+  server_type: 'server.role',
   hostname: 'host.name',
   datacenter: 'cloud.availability_zone',
   environment: 'deployment.environment',
@@ -273,7 +274,7 @@ function getResourceLabels(hostname: string): Record<string, string> {
     instance: attrs['host.id'],
     job: 'node-exporter',
     hostname: attrs['host.name'],
-    server_type: attrs['host.type'],
+    server_type: attrs['server.role'],
     datacenter: attrs['cloud.availability_zone'],
     environment: attrs['deployment.environment'],
     os: attrs['os.type'],

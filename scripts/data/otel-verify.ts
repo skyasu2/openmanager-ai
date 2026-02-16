@@ -55,7 +55,7 @@ function main(): void {
 
     for (const slot of data.slots) {
       for (const metric of slot.metrics) {
-        if (metric.name === 'system.network.io') {
+        if (metric.name === 'system.network.utilization') {
           if (metric.unit !== '1') networkUnitWrong++;
           for (const dp of metric.dataPoints) {
             if (dp.asDouble < 0 || dp.asDouble > 1) networkOutOfRange++;
@@ -75,7 +75,7 @@ function main(): void {
     'system.cpu.utilization',
     'system.memory.utilization',
     'system.filesystem.utilization',
-    'system.network.io',
+    'system.network.utilization',
     'system.linux.cpu.load_1m',
     'system.linux.cpu.load_5m',
     'system.process.count',
@@ -88,7 +88,7 @@ function main(): void {
 
   // ── 3. Timeseries network 0-1 range ──
   console.log('\n[3] Timeseries network range:');
-  const networkTs = ts.metrics['system.network.io'] ?? [];
+  const networkTs = ts.metrics['system.network.utilization'] ?? [];
   let tsNetworkOutOfRange = 0;
   for (const series of networkTs) {
     for (const val of series) {
@@ -125,7 +125,7 @@ function main(): void {
 
     for (const slot of data.slots) {
       for (const log of slot.logs) {
-        if (log.resource === 'storage-s3gw-pus-01' && (log.body.includes('NFS') || log.body.includes('nfsd'))) {
+        if (log.resource === 'storage-s3gw-dc1-01' && (log.body.includes('NFS') || log.body.includes('nfsd'))) {
           nfsInS3++;
         }
       }
@@ -194,7 +194,7 @@ function main(): void {
 
     for (const slot of data.slots) {
       for (const metric of slot.metrics) {
-        if (metric.name !== 'system.network.io') continue;
+        if (metric.name !== 'system.network.utilization') continue;
         for (const dp of metric.dataPoints) {
           const sid = (dp.attributes['host.name'] ?? '').split('.')[0];
           if (sid.startsWith('storage-') && (dp.asDouble < 0.14 || dp.asDouble > 0.36)) {

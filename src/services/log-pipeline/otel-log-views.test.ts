@@ -20,7 +20,7 @@ function makeLog(overrides: Partial<OTelLogRecord> = {}): OTelLogRecord {
     body: 'Request handled successfully',
     attributes: {
       'log.source': 'nginx',
-      'host.type': 'web',
+      'server.role': 'web',
       'deployment.environment': 'production',
       'cloud.availability_zone': 'ap-northeast-2a',
     },

@@ -29,7 +29,7 @@ export const scenario3: ScenarioTimeline = {
       durationHours: 1,
       serverMetrics: [
         {
-          serverId: 'cache-redis-icn-01',
+          serverId: 'cache-redis-dc1-01',
           metrics: {
             cpu: [25, 45],
             memory: [55, 70],
@@ -39,7 +39,7 @@ export const scenario3: ScenarioTimeline = {
           },
           curveType: 'linear',
         },
-        ...SERVERS.filter((s) => s.id !== 'cache-redis-icn-01').map((s) => ({
+        ...SERVERS.filter((s) => s.id !== 'cache-redis-dc1-01').map((s) => ({
           serverId: s.id,
           metrics: {
             cpu: [normalMetrics[s.type].cpu, normalMetrics[s.type].cpu + 2],
@@ -62,7 +62,7 @@ export const scenario3: ScenarioTimeline = {
       durationHours: 2,
       serverMetrics: [
         {
-          serverId: 'cache-redis-icn-01',
+          serverId: 'cache-redis-dc1-01',
           metrics: {
             cpu: [45, 85],
             memory: [70, 92],
@@ -74,7 +74,7 @@ export const scenario3: ScenarioTimeline = {
           curveType: 'spike',
         },
         {
-          serverId: 'cache-redis-icn-02',
+          serverId: 'cache-redis-dc1-02',
           metrics: {
             cpu: [25, 80],
             memory: [55, 88],
@@ -86,7 +86,7 @@ export const scenario3: ScenarioTimeline = {
           curveType: 'spike',
         },
         {
-          serverId: 'db-mysql-icn-primary',
+          serverId: 'db-mysql-dc1-primary',
           metrics: {
             cpu: [40, 75],
             memory: [60, 80],
@@ -97,7 +97,7 @@ export const scenario3: ScenarioTimeline = {
           curveType: 'exponential',
         },
         {
-          serverId: 'db-mysql-icn-replica',
+          serverId: 'db-mysql-dc1-replica',
           metrics: {
             cpu: [40, 72],
             memory: [60, 78],
@@ -110,10 +110,10 @@ export const scenario3: ScenarioTimeline = {
         ...SERVERS.filter(
           (s) =>
             ![
-              'cache-redis-icn-01',
-              'cache-redis-icn-02',
-              'db-mysql-icn-primary',
-              'db-mysql-icn-replica',
+              'cache-redis-dc1-01',
+              'cache-redis-dc1-02',
+              'db-mysql-dc1-primary',
+              'db-mysql-dc1-replica',
             ].includes(s.id)
         ).map((s) => ({
           serverId: s.id,
@@ -141,7 +141,7 @@ export const scenario3: ScenarioTimeline = {
       durationHours: 2,
       serverMetrics: [
         {
-          serverId: 'cache-redis-icn-01',
+          serverId: 'cache-redis-dc1-01',
           metrics: {
             cpu: [85, 35],
             memory: [92, 60],
@@ -153,7 +153,7 @@ export const scenario3: ScenarioTimeline = {
           curveType: 'linear',
         },
         {
-          serverId: 'cache-redis-icn-02',
+          serverId: 'cache-redis-dc1-02',
           metrics: {
             cpu: [80, 30],
             memory: [88, 58],
@@ -165,7 +165,7 @@ export const scenario3: ScenarioTimeline = {
           curveType: 'linear',
         },
         {
-          serverId: 'db-mysql-icn-primary',
+          serverId: 'db-mysql-dc1-primary',
           metrics: {
             cpu: [75, 45],
             memory: [80, 63],
@@ -175,7 +175,7 @@ export const scenario3: ScenarioTimeline = {
           curveType: 'linear',
         },
         {
-          serverId: 'db-mysql-icn-replica',
+          serverId: 'db-mysql-dc1-replica',
           metrics: {
             cpu: [72, 43],
             memory: [78, 62],
@@ -187,10 +187,10 @@ export const scenario3: ScenarioTimeline = {
         ...SERVERS.filter(
           (s) =>
             ![
-              'cache-redis-icn-01',
-              'cache-redis-icn-02',
-              'db-mysql-icn-primary',
-              'db-mysql-icn-replica',
+              'cache-redis-dc1-01',
+              'cache-redis-dc1-02',
+              'db-mysql-dc1-primary',
+              'db-mysql-dc1-replica',
             ].includes(s.id)
         ).map((s) => ({
           serverId: s.id,

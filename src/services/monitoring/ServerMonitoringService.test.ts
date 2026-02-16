@@ -54,7 +54,7 @@ function makeApiMetric(
   return {
     serverId: 'web-01',
     serverType: 'web',
-    location: 'icn-01',
+    location: 'dc1-az1',
     timestamp: '2026-02-01T10:00:00Z',
     minuteOfDay: 600,
     cpu: 55,

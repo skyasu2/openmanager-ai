@@ -43,8 +43,8 @@ graph TB
     end
 
     subgraph Data["데이터 소스"]
-        OTel["otel-processed/*.json<br/>(Primary)"]
-        Hourly["hourly-data/*.json<br/>(Fallback)"]
+        OTel["otel-data + otel-metrics<br/>(Primary)"]
+        Compat["otel-processed/*.json<br/>(Cloud Run Fallback)"]
         Supabase["Supabase<br/>(pgvector + Auth)"]
         Redis["Upstash Redis<br/>(Cache + Jobs)"]
     end
@@ -58,7 +58,7 @@ graph TB
     Auth --> API_Sup
     Auth --> API_Servers
     MP --> OTel
-    MP --> Hourly
+    Orchestrator --> Compat
     Orchestrator --> NLQ & Analyst & Reporter & Advisor & Vision
     Advisor --> Supabase
     API_Jobs --> Redis
@@ -81,8 +81,8 @@ graph TB
 │  /api/ai/.../stream/v2 ───┤  /api/health                 │
 │  /api/ai/jobs ────────────┤  /api/system                 │
 │                            │                              │
-│  MetricsProvider (Singleton) ◄── otel-processed (Primary) │
-│  withAuth (Supabase OAuth)      hourly-data (Fallback)   │
+│  MetricsProvider (Singleton) ◄── otel-metrics (Primary)  │
+│  withAuth (Supabase OAuth)      otel-data (SSOT)         │
 └────────────────┬────────────────────────────────────────┘
                  │ Cloud Run Proxy
                  ▼
@@ -117,7 +117,7 @@ graph TB
 |---|------|------|----------|
 | 1 | **Hybrid Architecture** (Vercel + Cloud Run) | 경량 BFF(Vercel) + 무거운 AI(Cloud Run) 분리 | [system-architecture-current.md](system/system-architecture-current.md) |
 | 2 | **Multi-Agent** (6 Agent + Orchestrator) | 단일 LLM 대비 역할 분리로 품질 향상 | [ai-engine-architecture.md](ai/ai-engine-architecture.md) |
-| 3 | **2-Tier Data** (OTel Primary → hourly-data Fallback) | Synthetic 데이터의 결정론적 재현성 | [data-architecture.md](data/data-architecture.md) |
+| 3 | **2-Tier Data** (OTel Primary → Cloud Run 호환 Fallback) | Synthetic 데이터의 결정론적 재현성 | [data-architecture.md](data/data-architecture.md) |
 | 4 | **Quad-Provider** (Cerebras/Groq/Mistral/Gemini) | Rate Limit 분산 + 비용 $0 유지 | [ai-engine-architecture.md](ai/ai-engine-architecture.md) |
 | 5 | **Evaluator-Optimizer** (Reporter Pipeline) | 보고서 품질 자동 검증 (0.75 임계값) | [monitoring-ml.md](ai/monitoring-ml.md) |
 | 6 | **Hybrid RAG** (Vector 0.5 + BM25 0.3 + Graph 0.2) | 의미 + 키워드 + 관계 3중 검색 | [rag-knowledge-engine.md](ai/rag-knowledge-engine.md) |
@@ -145,20 +145,20 @@ graph TB
 
 ```
 [빌드 타임]
-  scripts/data/sync-hourly-data.ts
-    → src/data/hourly-data/*.json (24개, Prometheus)
-    → src/data/otel-processed/*.json (24개, OTel)
+  scripts/data/otel-fix.ts + scripts/data/otel-verify.ts
+    → src/data/otel-data/hourly/*.json (24개, OTel-native SSOT)
+    → src/data/otel-metrics/hourly/*.json (24개, Dashboard runtime)
 
 [런타임 - Dashboard]
   MetricsProvider.getInstance()
-    → otel-processed (1순위) → hourly-data (2순위)
+    → otel-metrics (1순위)
     → API Routes → Dashboard UI
 
 [런타임 - AI Chat]
   useHybridAIQuery (Streaming or Job Queue)
     → /api/ai/supervisor/stream/v2
     → Cloud Run (Orchestrator → Agent → Tools)
-    → precomputed-state.ts (O(1) 조회)
+    → precomputed-state.ts (otel-data 우선 O(1) 조회, otel-processed 폴백)
     → SSE 응답 → AI Sidebar
 ```
 

@@ -1,8 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import {
-  AggregationTemporality,
-  type ExportMetricsServiceRequest,
-} from '@/types/otel-standard';
+import type { ExportMetricsServiceRequest } from '@/types/otel-standard';
 import { extractMetricsFromStandard } from './metric-transformers';
 
 function buildDataPoints(values: number[]) {
@@ -32,7 +29,7 @@ function buildPayload(
           attributes: [
             {
               key: 'host.name',
-              value: { stringValue: 'web-nginx-icn-01.openmanager.kr' },
+              value: { stringValue: 'web-nginx-dc1-01.openmanager.kr' },
             },
           ],
         },
@@ -53,14 +50,9 @@ function buildPayload(
                 gauge: { dataPoints: buildDataPoints(lowValues) },
               },
               {
-                name: 'system.network.io',
+                name: 'system.network.utilization',
                 unit: options?.networkUnit,
-                sum: {
-                  dataPoints: buildDataPoints(networkValues),
-                  aggregationTemporality:
-                    AggregationTemporality.AGGREGATION_TEMPORALITY_CUMULATIVE,
-                  isMonotonic: true,
-                },
+                gauge: { dataPoints: buildDataPoints(networkValues) },
               },
             ],
           },
@@ -147,13 +139,8 @@ describe('extractMetricsFromStandard', () => {
         gauge: { dataPoints: buildDataPoints([0, 0, 0, 0, 0, 0]) },
       },
       {
-        name: 'system.network.io',
-        sum: {
-          dataPoints: buildDataPoints([0, 0, 0, 0, 0, 0]),
-          aggregationTemporality:
-            AggregationTemporality.AGGREGATION_TEMPORALITY_CUMULATIVE,
-          isMonotonic: true,
-        },
+        name: 'system.network.utilization',
+        gauge: { dataPoints: buildDataPoints([0, 0, 0, 0, 0, 0]) },
       },
     ];
 
@@ -184,7 +171,7 @@ describe('extractMetricsFromStandard', () => {
         attributes: [
           {
             key: 'host.name',
-            value: { stringValue: 'db-postgres-icn-01.openmanager.kr' },
+            value: { stringValue: 'db-postgres-dc1-01.openmanager.kr' },
           },
         ],
       },
@@ -211,12 +198,9 @@ describe('extractMetricsFromStandard', () => {
               },
             },
             {
-              name: 'system.network.io',
-              sum: {
+              name: 'system.network.utilization',
+              gauge: {
                 dataPoints: buildDataPoints([0.1, 0.1, 0.1, 0.1, 0.1, 0.1]),
-                aggregationTemporality:
-                  AggregationTemporality.AGGREGATION_TEMPORALITY_CUMULATIVE,
-                isMonotonic: true,
               },
             },
           ],
@@ -231,7 +215,7 @@ describe('extractMetricsFromStandard', () => {
     );
     expect(metrics).toHaveLength(2);
     const ids = metrics.map((m) => m.serverId).sort();
-    expect(ids).toEqual(['db-postgres-icn-01', 'web-nginx-icn-01']);
+    expect(ids).toEqual(['db-postgres-dc1-01', 'web-nginx-dc1-01']);
   });
 
   it('빈 dataPoints 메트릭은 건너뛴다', () => {
@@ -242,7 +226,7 @@ describe('extractMetricsFromStandard', () => {
             attributes: [
               {
                 key: 'host.name',
-                value: { stringValue: 'web-nginx-icn-01.openmanager.kr' },
+                value: { stringValue: 'web-nginx-dc1-01.openmanager.kr' },
               },
             ],
           },
@@ -260,13 +244,8 @@ describe('extractMetricsFromStandard', () => {
                   gauge: { dataPoints: buildDataPoints([0.3]) },
                 },
                 {
-                  name: 'system.network.io',
-                  sum: {
-                    dataPoints: buildDataPoints([0.05]),
-                    aggregationTemporality:
-                      AggregationTemporality.AGGREGATION_TEMPORALITY_CUMULATIVE,
-                    isMonotonic: true,
-                  },
+                  name: 'system.network.utilization',
+                  gauge: { dataPoints: buildDataPoints([0.05]) },
                 },
               ],
             },

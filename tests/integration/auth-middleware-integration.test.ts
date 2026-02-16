@@ -47,7 +47,7 @@ vi.mock('@/lib/supabase/server', () => ({
 
 // Import after mocks
 import { isGuestFullAccessEnabledServer } from '@/config/guestMode.server';
-import { checkAPIAuth, withAuth } from '@/lib/auth/api-auth';
+import { checkAPIAuth, getAPIAuthContext, withAuth } from '@/lib/auth/api-auth';
 
 describe('Auth Middleware Integration', () => {
   const originalEnv = process.env;
@@ -74,6 +74,9 @@ describe('Auth Middleware Integration', () => {
 
         // Then
         expect(result).toBeNull();
+        expect(getAPIAuthContext(request)).toMatchObject({
+          authType: 'development',
+        });
       });
 
       it('NODE_ENV=test에서 인증 우회', async () => {
@@ -86,6 +89,9 @@ describe('Auth Middleware Integration', () => {
 
         // Then
         expect(result).toBeNull();
+        expect(getAPIAuthContext(request)).toMatchObject({
+          authType: 'test',
+        });
       });
     });
 
@@ -121,6 +127,9 @@ describe('Auth Middleware Integration', () => {
 
         // Then
         expect(result).toBeNull();
+        expect(getAPIAuthContext(request)).toMatchObject({
+          authType: 'test-secret',
+        });
       });
 
       it('잘못된 x-test-secret은 인증 실패', async () => {
@@ -160,6 +169,10 @@ describe('Auth Middleware Integration', () => {
 
         // Then
         expect(result).toBeNull();
+        expect(getAPIAuthContext(request)).toMatchObject({
+          authType: 'api-key',
+        });
+        expect(getAPIAuthContext(request)?.keyFingerprint).toBeTruthy();
       });
 
       it('잘못된 x-api-key는 401 반환', async () => {
@@ -223,6 +236,10 @@ describe('Auth Middleware Integration', () => {
 
         // Then
         expect(result).toBeNull();
+        expect(getAPIAuthContext(request)).toMatchObject({
+          authType: 'supabase',
+          userId: 'user-123',
+        });
       });
 
       it('Supabase 세션 만료 시 401 반환', async () => {

@@ -15,11 +15,11 @@
  * - Evaluator Agent: Report quality evaluation (internal)
  * - Optimizer Agent: Report quality improvement (internal)
  *
- * All agents extend BaseAgent and use AI SDK v6 native generateText/streamText
+ * All agents extend BaseAgent and use AI SDK v6 ToolLoopAgent internally
  * with stopWhen conditions for graceful termination.
  *
- * @version 4.0.0 - Migrated to BaseAgent/AgentFactory pattern
- * @updated 2026-01-27 - Added BaseAgent, AgentFactory, Vision Agent
+ * @version 5.0.0 - ToolLoopAgent adoption, ConfigBasedAgent consolidation
+ * @updated 2026-02-16 - ToolLoopAgent migration, removed per-type subclasses
  */
 
 // ============================================================================
@@ -29,13 +29,6 @@
 export { BaseAgent, type AgentResult, type AgentRunOptions, type AgentStreamEvent } from './base-agent';
 export {
   AgentFactory,
-  NLQAgent,
-  AnalystAgent,
-  ReporterAgent,
-  AdvisorAgent,
-  VisionAgent,
-  EvaluatorAgent,
-  OptimizerAgent,
   runAgent,
   streamAgent,
   type AgentType,

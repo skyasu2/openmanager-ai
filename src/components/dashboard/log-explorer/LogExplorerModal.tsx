@@ -1,7 +1,7 @@
 'use client';
 
 import { FileSearch } from 'lucide-react';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState, useTransition } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -14,6 +14,10 @@ import {
   useGlobalLogs,
 } from '@/hooks/dashboard/useGlobalLogs';
 import { cn } from '@/lib/utils';
+import {
+  formatDashboardDateTime,
+  formatRotatingTimestamp,
+} from '@/utils/dashboard/rotating-timestamp';
 import type { LogExplorerModalProps } from './log-explorer.types';
 
 const levelStyles: Record<
@@ -37,17 +41,8 @@ const levelStyles: Record<
   },
 };
 
-function formatTimestamp(isoString: string): string {
-  try {
-    return new Date(isoString).toLocaleTimeString('ko-KR', {
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-    });
-  } catch {
-    return isoString;
-  }
-}
+const INITIAL_DISPLAY = 100;
+const LOAD_MORE_COUNT = 100;
 
 export function LogExplorerModal({
   open,
@@ -59,6 +54,10 @@ export function LogExplorerModal({
   const [serverId, setServerId] = useState('');
   const [keyword, setKeyword] = useState('');
   const [debouncedKeyword, setDebouncedKeyword] = useState('');
+  const sessionAnchorRef = useRef(new Date());
+  const [sessionAnchorLabel, setSessionAnchorLabel] = useState('');
+  const [displayCount, setDisplayCount] = useState(INITIAL_DISPLAY);
+  const [isPending, startTransition] = useTransition();
 
   // Debounce keyword with proper cleanup on unmount
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -76,6 +75,25 @@ export function LogExplorerModal({
     []
   );
 
+  const handleFilterChange = (update: () => void) => {
+    startTransition(() => {
+      update();
+      setDisplayCount(INITIAL_DISPLAY);
+    });
+  };
+
+  useEffect(() => {
+    if (!open) return;
+    const now = new Date();
+    sessionAnchorRef.current = now;
+    setSessionAnchorLabel(formatDashboardDateTime(now));
+  }, [open]);
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: debouncedKeyword is intentional trigger
+  useEffect(() => {
+    setDisplayCount(INITIAL_DISPLAY);
+  }, [debouncedKeyword]);
+
   const filterParams = useMemo(
     () => ({
       level: level === 'all' ? undefined : level,
@@ -89,8 +107,11 @@ export function LogExplorerModal({
   const { logs, stats, sources, serverIds, isError, errorMessage, retry } =
     useGlobalLogs(servers, filterParams);
 
-  // Limit display to 500 entries for performance
-  const displayLogs = useMemo(() => logs.slice(0, 500), [logs]);
+  const displayLogs = useMemo(
+    () => logs.slice(0, displayCount),
+    [logs, displayCount]
+  );
+  const hasMore = logs.length > displayCount;
 
   return (
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
@@ -103,14 +124,14 @@ export function LogExplorerModal({
             </div>
             <div>
               <DialogTitle className="text-lg font-bold text-gray-900">
-                Log Explorer
+                로그 탐색기
               </DialogTitle>
               <DialogDescription className="text-xs text-gray-500">
-                전체 서버 로그 통합 뷰
+                전체 서버 로그 통합 뷰 · 접속 시점 기준 시계열
               </DialogDescription>
             </div>
             <span className="ml-2 inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-600">
-              {stats.total} logs
+              {stats.total}개 로그
             </span>
           </div>
         </DialogHeader>
@@ -123,7 +144,7 @@ export function LogExplorerModal({
               type="text"
               value={keyword}
               onChange={(e) => handleKeywordChange(e.target.value)}
-              placeholder="Search logs..."
+              placeholder="로그 검색"
               aria-label="로그 키워드 검색"
               className="w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-xs text-gray-700 placeholder:text-gray-400 focus:border-blue-400 focus:outline-none sm:w-52 sm:py-1.5"
             />
@@ -132,13 +153,21 @@ export function LogExplorerModal({
 
             {/* Level chips */}
             <div className="flex flex-wrap items-center gap-1.5">
-              <span className="text-xs font-medium text-gray-500">Level:</span>
+              <span className="text-xs font-medium text-gray-500">레벨:</span>
               {(['all', 'info', 'warn', 'error'] as const).map((l) => (
                 <FilterChip
                   key={l}
-                  label={l === 'all' ? 'All' : l.toUpperCase()}
+                  label={
+                    l === 'all'
+                      ? '전체'
+                      : l === 'info'
+                        ? '정보'
+                        : l === 'warn'
+                          ? '경고'
+                          : '오류'
+                  }
                   active={level === l}
-                  onClick={() => setLevel(l)}
+                  onClick={() => handleFilterChange(() => setLevel(l))}
                   variant={l}
                 />
               ))}
@@ -150,11 +179,13 @@ export function LogExplorerModal({
               {/* Source dropdown */}
               <select
                 value={source}
-                onChange={(e) => setSource(e.target.value)}
+                onChange={(e) =>
+                  handleFilterChange(() => setSource(e.target.value))
+                }
                 aria-label="소스 필터"
                 className="w-full rounded-md border border-gray-200 bg-white px-2 py-2 text-xs text-gray-700 focus:border-blue-400 focus:outline-none sm:w-auto sm:py-1"
               >
-                <option value="">All Sources</option>
+                <option value="">전체 소스</option>
                 {sources.map((s) => (
                   <option key={s} value={s}>
                     {s}
@@ -165,11 +196,13 @@ export function LogExplorerModal({
               {/* Server dropdown */}
               <select
                 value={serverId}
-                onChange={(e) => setServerId(e.target.value)}
+                onChange={(e) =>
+                  handleFilterChange(() => setServerId(e.target.value))
+                }
                 aria-label="서버 필터"
                 className="w-full rounded-md border border-gray-200 bg-white px-2 py-2 text-xs text-gray-700 focus:border-blue-400 focus:outline-none sm:w-auto sm:py-1"
               >
-                <option value="">All Servers</option>
+                <option value="">전체 서버</option>
                 {serverIds.map((id) => (
                   <option key={id} value={id}>
                     {id}
@@ -177,6 +210,17 @@ export function LogExplorerModal({
                 ))}
               </select>
             </div>
+          </div>
+        </div>
+        <div className="border-b border-gray-100 bg-gray-50/80 px-4 py-2.5 sm:px-6">
+          <div className="flex flex-wrap items-center gap-2 text-[11px] text-gray-600">
+            <span className="inline-flex items-center rounded-full bg-blue-100 px-2 py-0.5 font-semibold text-blue-700">
+              Realtime Anchor
+            </span>
+            <span className="font-medium tabular-nums text-gray-700">
+              {sessionAnchorLabel || '-'}
+            </span>
+            <span className="text-gray-500">(연/월/일/시:분:초)</span>
           </div>
         </div>
 
@@ -217,13 +261,18 @@ export function LogExplorerModal({
             ) : displayLogs.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-16 text-gray-500">
                 <FileSearch size={40} className="mb-3 opacity-30" />
-                <p className="text-sm font-medium">No logs found</p>
+                <p className="text-sm font-medium">로그가 없습니다</p>
                 <p className="text-xs mt-1 text-gray-600">
                   필터를 조정하여 로그를 검색하세요
                 </p>
               </div>
             ) : (
-              <div className="space-y-1">
+              <div
+                className={cn(
+                  'space-y-1',
+                  isPending && 'opacity-60 transition-opacity duration-200'
+                )}
+              >
                 {displayLogs.map((log, idx) => {
                   const style = levelStyles[log.level];
                   return (
@@ -240,8 +289,10 @@ export function LogExplorerModal({
                         {log.serverId.split('.')[0]}
                       </span>
                       {/* Timestamp */}
-                      <span className="shrink-0 text-gray-500 tabular-nums">
-                        {formatTimestamp(log.timestamp)}
+                      <span className="shrink-0 text-sky-300/85 tabular-nums">
+                        {formatRotatingTimestamp(log.timestamp, {
+                          anchorDate: sessionAnchorRef.current,
+                        })}
                       </span>
                       {/* Level badge */}
                       <span
@@ -268,10 +319,17 @@ export function LogExplorerModal({
                     </div>
                   );
                 })}
-                {logs.length > 500 && (
-                  <div className="text-center py-3 text-gray-500 text-xs">
-                    Showing 500 of {logs.length} logs. Refine filters to see
-                    more.
+                {hasMore && (
+                  <div className="text-center py-3">
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setDisplayCount((prev) => prev + LOAD_MORE_COUNT)
+                      }
+                      className="rounded-md border border-gray-500/40 px-4 py-1.5 text-xs font-medium text-gray-300 hover:bg-white/10 transition-colors"
+                    >
+                      더 보기 ({logs.length - displayCount}건 남음)
+                    </button>
                   </div>
                 )}
               </div>
@@ -283,10 +341,10 @@ export function LogExplorerModal({
 
         {/* Stats Footer */}
         <div className="grid grid-cols-2 gap-3 border-t border-gray-100 bg-gray-50/80 px-4 py-3 sm:grid-cols-4 sm:gap-4 sm:px-6">
-          <StatCell label="Total" value={stats.total} color="text-gray-800" />
-          <StatCell label="INFO" value={stats.info} color="text-green-600" />
-          <StatCell label="WARN" value={stats.warn} color="text-yellow-600" />
-          <StatCell label="ERROR" value={stats.error} color="text-red-600" />
+          <StatCell label="전체" value={stats.total} color="text-gray-800" />
+          <StatCell label="정보" value={stats.info} color="text-green-600" />
+          <StatCell label="경고" value={stats.warn} color="text-yellow-600" />
+          <StatCell label="오류" value={stats.error} color="text-red-600" />
         </div>
       </DialogContent>
     </Dialog>

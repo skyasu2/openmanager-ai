@@ -24,7 +24,7 @@ export const getServerLogs = tool({
 ## 출력 형식
 { "success": true, "serverId": "...", "logs": [{ "level": "error", "source": "kernel", "message": "..." }], "summary": { "error": 2, "warn": 1, "info": 3 } }`,
   inputSchema: z.object({
-    serverId: z.string().describe('조회할 서버 ID. 예: "web-nginx-icn-01", "db-mysql-icn-primary"'),
+    serverId: z.string().describe('조회할 서버 ID. 예: "web-nginx-dc1-01", "db-mysql-dc1-primary"'),
     level: z
       .enum(['error', 'warn', 'info', 'all'])
       .default('all')

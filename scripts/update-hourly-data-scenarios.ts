@@ -44,36 +44,36 @@ const TIME_SLOT_SCENARIOS: TimeSlotScenarios[] = [
   {
     hours: [0, 1, 2, 3, 4, 5],
     scenarios: [
-      { serverId: 'db-mysql-icn-primary', metric: 'disk', peakValue: 92, severity: 'critical', description: '새벽 자동 백업 + 바이너리 로그 누적으로 디스크 위험' },
-      { serverId: 'web-nginx-icn-01', metric: 'cpu', peakValue: 78, severity: 'warning', description: '새벽 배치 크론 작업으로 CPU 증가' },
-      { serverId: 'cache-redis-icn-01', metric: 'memory', peakValue: 88, severity: 'warning', description: 'Redis 캐시 메모리 누적으로 경고 수준' },
+      { serverId: 'db-mysql-dc1-primary', metric: 'disk', peakValue: 92, severity: 'critical', description: '새벽 자동 백업 + 바이너리 로그 누적으로 디스크 위험' },
+      { serverId: 'web-nginx-dc1-01', metric: 'cpu', peakValue: 78, severity: 'warning', description: '새벽 배치 크론 작업으로 CPU 증가' },
+      { serverId: 'cache-redis-dc1-01', metric: 'memory', peakValue: 88, severity: 'warning', description: 'Redis 캐시 메모리 누적으로 경고 수준' },
     ],
   },
   // 시간대 2: 06:00-12:00 (오전)
   {
     hours: [6, 7, 8, 9, 10, 11],
     scenarios: [
-      { serverId: 'api-was-icn-02', metric: 'memory', peakValue: 94, severity: 'critical', description: '출근 시간대 API 트래픽 급증으로 JVM 힙 메모리 누수' },
-      { serverId: 'web-nginx-icn-02', metric: 'cpu', peakValue: 78, severity: 'warning', description: '출근 피크 시간 Nginx worker CPU 급증' },
-      { serverId: 'lb-haproxy-icn-01', metric: 'cpu', peakValue: 75, severity: 'warning', description: '트래픽 분산 처리로 로드밸런서 CPU 증가' },
+      { serverId: 'api-was-dc1-02', metric: 'memory', peakValue: 94, severity: 'critical', description: '출근 시간대 API 트래픽 급증으로 JVM 힙 메모리 누수' },
+      { serverId: 'web-nginx-dc1-02', metric: 'cpu', peakValue: 78, severity: 'warning', description: '출근 피크 시간 Nginx worker CPU 급증' },
+      { serverId: 'lb-haproxy-dc1-01', metric: 'cpu', peakValue: 75, severity: 'warning', description: '트래픽 분산 처리로 로드밸런서 CPU 증가' },
     ],
   },
   // 시간대 3: 12:00-18:00 (오후)
   {
     hours: [12, 13, 14, 15, 16, 17],
     scenarios: [
-      { serverId: 'web-nginx-pus-01', metric: 'memory', peakValue: 91, severity: 'critical', description: '오후 트래픽 집중으로 Nginx worker 메모리 누수' },
-      { serverId: 'storage-nfs-icn-01', metric: 'disk', peakValue: 86, severity: 'warning', description: '업무 시간 파일 업로드 누적으로 디스크 증가' },
-      { serverId: 'api-was-icn-01', metric: 'cpu', peakValue: 79, severity: 'warning', description: '오후 API 요청 처리로 CPU 증가' },
+      { serverId: 'web-nginx-dc1-03', metric: 'memory', peakValue: 91, severity: 'critical', description: '오후 트래픽 집중으로 Nginx worker 메모리 누수' },
+      { serverId: 'storage-nfs-dc1-01', metric: 'disk', peakValue: 86, severity: 'warning', description: '업무 시간 파일 업로드 누적으로 디스크 증가' },
+      { serverId: 'api-was-dc1-01', metric: 'cpu', peakValue: 79, severity: 'warning', description: '오후 API 요청 처리로 CPU 증가' },
     ],
   },
   // 시간대 4: 18:00-24:00 (저녁/밤)
   {
     hours: [18, 19, 20, 21, 22, 23],
     scenarios: [
-      { serverId: 'cache-redis-icn-02', metric: 'memory', peakValue: 96, severity: 'critical', description: '저녁 피크 타임 캐시 히트율 증가로 메모리 위험' },
-      { serverId: 'db-mysql-icn-replica', metric: 'disk', peakValue: 82, severity: 'warning', description: '하루 트랜잭션 로그 누적으로 디스크 증가' },
-      { serverId: 'lb-haproxy-pus-01', metric: 'cpu', peakValue: 76, severity: 'warning', description: '저녁 SSL termination + health check 오버헤드' },
+      { serverId: 'cache-redis-dc1-02', metric: 'memory', peakValue: 96, severity: 'critical', description: '저녁 피크 타임 캐시 히트율 증가로 메모리 위험' },
+      { serverId: 'db-mysql-dc1-replica', metric: 'disk', peakValue: 82, severity: 'warning', description: '하루 트랜잭션 로그 누적으로 디스크 증가' },
+      { serverId: 'lb-haproxy-dc1-02', metric: 'cpu', peakValue: 76, severity: 'warning', description: '저녁 SSL termination + health check 오버헤드' },
     ],
   },
 ];
@@ -81,9 +81,9 @@ const TIME_SLOT_SCENARIOS: TimeSlotScenarios[] = [
 // 네트워크 시나리오에서 CPU/Memory로 변경된 서버들의 네트워크 baseline 값
 // 이전 네트워크 시나리오 값(82%, 93%)을 정상 값으로 리셋
 const NETWORK_RESET_SERVERS: Record<string, { hours: number[]; baselineNetwork: number }> = {
-  'web-nginx-icn-02': { hours: [6, 7, 8, 9, 10, 11], baselineNetwork: 55 },      // 06-12시
-  'web-nginx-pus-01': { hours: [12, 13, 14, 15, 16, 17], baselineNetwork: 45 },  // 12-18시
-  'lb-haproxy-pus-01': { hours: [18, 19, 20, 21, 22, 23], baselineNetwork: 65 }, // 18-24시
+  'web-nginx-dc1-02': { hours: [6, 7, 8, 9, 10, 11], baselineNetwork: 55 },      // 06-12시
+  'web-nginx-dc1-03': { hours: [12, 13, 14, 15, 16, 17], baselineNetwork: 45 },  // 12-18시
+  'lb-haproxy-dc1-02': { hours: [18, 19, 20, 21, 22, 23], baselineNetwork: 65 }, // 18-24시
 };
 
 // 로그 메시지 생성
@@ -176,8 +176,36 @@ function generateServices(scenario: ScenarioUpdate, serverType: string): Service
   return services;
 }
 
+// LEGACY 보호 가드:
+// 이 스크립트는 src/data/hourly-data(구형 포맷) 전용입니다.
+// 현재 기본 파이프라인은 src/data/otel-data를 사용하므로,
+// 의도치 않은 실행으로 precomputed-states.json이 오염되지 않도록 기본 차단합니다.
+const LEGACY_GUARD_ENV = 'ALLOW_LEGACY_HOURLY_DATA';
+
 // hourly-data 디렉토리 경로
 const HOURLY_DATA_DIR = path.join(__dirname, '../src/data/hourly-data');
+
+function assertLegacyMode(): void {
+  if (process.env[LEGACY_GUARD_ENV] !== 'true') {
+    throw new Error(
+      [
+        '[BLOCKED] Legacy hourly-data generator is disabled by default.',
+        `Set ${LEGACY_GUARD_ENV}=true only when you intentionally maintain src/data/hourly-data.`,
+        'Current primary pipeline: src/data/otel-data (see scripts/data/otel-fix.ts, scripts/data/otel-verify.ts).',
+      ].join('\n')
+    );
+  }
+
+  if (!fs.existsSync(HOURLY_DATA_DIR)) {
+    throw new Error(
+      [
+        `[BLOCKED] Missing legacy directory: ${HOURLY_DATA_DIR}`,
+        'This script cannot run safely without src/data/hourly-data.',
+        'Use OTel pipeline scripts instead: npm run data:fix && npm run data:verify',
+      ].join('\n')
+    );
+  }
+}
 
 // 시나리오를 적용할 시간대 찾기
 function getScenariosForHour(hour: number): ScenarioUpdate[] {
@@ -354,6 +382,12 @@ function regeneratePrecomputedStates(): void {
       }
     }
 
+    if (slots.length !== 144) {
+      throw new Error(
+        `[BLOCKED] precomputed-states 재생성 결과가 비정상입니다 (slots=${slots.length}, expected=144). 쓰기 중단`
+      );
+    }
+
     fs.writeFileSync(precomputedPath, JSON.stringify(slots, null, 2), 'utf-8');
     console.log(`[OK] precomputed-states.json 재생성 완료 (${slots.length}개 슬롯)`);
   } catch (e) {
@@ -474,6 +508,8 @@ function detectPatterns(servers: any[]): any[] {
 
 // 메인 실행
 function main(): void {
+  assertLegacyMode();
+
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
   console.log('🎯 hourly-data 시나리오 값 반영 시작');
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');

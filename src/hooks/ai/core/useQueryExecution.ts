@@ -53,6 +53,7 @@ export interface QueryExecutionDeps {
   complexityThreshold: number;
   asyncQuery: AsyncQueryLike;
   sendMessage: SendMessageLike;
+  onBeforeStreamingSend?: () => void;
   setMessages: SetMessagesLike;
   setState: StateSetter;
   refs: {
@@ -72,6 +73,7 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
     complexityThreshold,
     asyncQuery,
     sendMessage,
+    onBeforeStreamingSend,
     setMessages,
     setState,
     refs,
@@ -180,6 +182,7 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
           });
       } else {
         // Streaming 모드: 빠른 응답
+        onBeforeStreamingSend?.();
         setState((prev) => ({
           ...prev,
           mode: 'streaming',
@@ -228,7 +231,15 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
         });
       }
     },
-    [complexityThreshold, asyncQuery, sendMessage, setMessages, setState, refs]
+    [
+      complexityThreshold,
+      asyncQuery,
+      sendMessage,
+      onBeforeStreamingSend,
+      setMessages,
+      setState,
+      refs,
+    ]
   );
 
   /**

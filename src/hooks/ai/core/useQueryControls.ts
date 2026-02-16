@@ -37,6 +37,8 @@ export interface QueryControlDeps {
   currentMode: QueryMode;
   asyncQuery: AsyncQueryControlLike;
   stopChat: () => void;
+  onUserAbort?: () => void;
+  onReset?: () => void;
   setMessages: SetMessagesLike;
   setState: StateSetter;
   refs: {
@@ -55,8 +57,16 @@ export interface QueryControlDeps {
 // ============================================================================
 
 export function useQueryControls(deps: QueryControlDeps) {
-  const { currentMode, asyncQuery, stopChat, setMessages, setState, refs } =
-    deps;
+  const {
+    currentMode,
+    asyncQuery,
+    stopChat,
+    onUserAbort,
+    onReset,
+    setMessages,
+    setState,
+    refs,
+  } = deps;
 
   const stop = useCallback(() => {
     // AbortController cleanup on stop
@@ -68,19 +78,21 @@ export function useQueryControls(deps: QueryControlDeps) {
     }
 
     if (currentMode === 'streaming') {
+      onUserAbort?.();
       stopChat();
     }
     setState((prev) => ({ ...prev, isLoading: false }));
-  }, [currentMode, stopChat, setState, refs]);
+  }, [currentMode, stopChat, onUserAbort, setState, refs]);
 
   const cancel = useCallback(async () => {
     if (currentMode === 'job-queue') {
       await asyncQuery.cancel();
     } else {
+      onUserAbort?.();
       stopChat();
     }
     setState((prev) => ({ ...prev, isLoading: false }));
-  }, [currentMode, asyncQuery, stopChat, setState]);
+  }, [currentMode, asyncQuery, stopChat, onUserAbort, setState]);
 
   const reset = useCallback(() => {
     // AbortController cleanup on reset
@@ -100,6 +112,7 @@ export function useQueryControls(deps: QueryControlDeps) {
     refs.pendingQuery.current = null;
     refs.pendingAttachments.current = null;
     refs.currentQuery.current = null;
+    onReset?.();
     setState({
       mode: 'streaming',
       complexity: null,
@@ -111,7 +124,7 @@ export function useQueryControls(deps: QueryControlDeps) {
       warning: null,
       processingTime: 0,
     });
-  }, [asyncQuery, setMessages, setState, refs]);
+  }, [asyncQuery, onReset, setMessages, setState, refs]);
 
   const previewComplexity = useCallback((query: string): QueryComplexity => {
     return analyzeQueryComplexity(query).level;

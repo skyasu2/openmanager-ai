@@ -1,6 +1,6 @@
 # Serena Project Configuration
 project_name: openmanager-ai
-project_root: /mnt/d/cursor/openmanager-ai
+project_root: .
 
 # Exclude large directories from parsing
 exclude_paths:

@@ -113,7 +113,19 @@ const METRIC_HANDLERS = new Map<
     },
   ],
   [
+    OTEL_METRIC.LOAD_1M_SEMCONV,
+    (v, val) => {
+      v.load1 = val;
+    },
+  ],
+  [
     OTEL_METRIC.LOAD_5M,
+    (v, val) => {
+      v.load5 = val;
+    },
+  ],
+  [
+    OTEL_METRIC.LOAD_5M_SEMCONV,
     (v, val) => {
       v.load5 = val;
     },
@@ -193,7 +205,7 @@ export function otelSlotToServers(
   for (const [serverId, values] of serverMetrics) {
     const resource = catalog.resources[serverId];
     const hostname = resource?.['host.name'] ?? `${serverId}.openmanager.kr`;
-    const serverType = resource?.['host.type'] ?? 'unknown';
+    const serverType = resource?.['server.role'] ?? 'unknown';
 
     // OTel mixed unit(1/By/s/%) → normalized percent(0-100)
     const cpu = values.cpu;

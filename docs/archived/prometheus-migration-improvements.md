@@ -42,10 +42,10 @@
       "minute": 0,
       "timestamp": "00:00",
       "servers": {
-        "web-nginx-icn-01": {
-          "id": "web-nginx-icn-01",
+        "web-nginx-dc1-01": {
+          "id": "web-nginx-dc1-01",
           "name": "Nginx Web Server 01",
-          "hostname": "web-nginx-icn-01.openmanager.kr",
+          "hostname": "web-nginx-dc1-01.openmanager.kr",
           "type": "web",
           "location": "Seoul-ICN-AZ1",
           "environment": "production",
@@ -94,11 +94,11 @@
     {
       "timestampMs": 1770130800000,
       "targets": {
-        "web-nginx-icn-01:9100": {
-          "instance": "web-nginx-icn-01:9100",
+        "web-nginx-dc1-01:9100": {
+          "instance": "web-nginx-dc1-01:9100",
           "job": "node-exporter",
           "labels": {                   // ✅ 구조화된 라벨
-            "hostname": "web-nginx-icn-01.openmanager.kr",
+            "hostname": "web-nginx-dc1-01.openmanager.kr",
             "datacenter": "Seoul-ICN-AZ1",
             "environment": "production",
             "server_type": "web",
@@ -322,7 +322,7 @@ function detectPattern(metrics: PrometheusMetrics[]): Pattern {
 scrape_configs:
   - job_name: 'node-exporter'
     static_configs:
-      - targets: ['web-nginx-icn-01:9100']
+      - targets: ['web-nginx-dc1-01:9100']
     relabel_configs:
       - source_labels: [__address__]
         target_label: instance

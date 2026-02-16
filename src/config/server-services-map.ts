@@ -56,7 +56,7 @@ const SERVICE_MAPPINGS: ServerServiceMapping[] = [
     ],
   },
   {
-    hostnamePattern: /^db-mysql-.*-dr/,
+    hostnamePattern: /^db-mysql-.*-(backup|standby)/,
     serverType: 'database',
     services: [
       { name: 'mysql', port: 3306, isPrimary: true },
@@ -145,9 +145,9 @@ export function getServicesForServer(
 ): Array<{ name: string; status: ServiceStatus; port: number }> {
   const hostnameBase = hostname.replace(/\.openmanager\.kr$/, '');
 
-  const mapping = SERVICE_MAPPINGS.find(
-    (m) => m.hostnamePattern.test(hostnameBase) || m.serverType === serverType,
-  );
+  const mapping =
+    SERVICE_MAPPINGS.find((m) => m.hostnamePattern.test(hostnameBase)) ??
+    SERVICE_MAPPINGS.find((m) => m.serverType === serverType);
 
   if (!mapping) {
     return [

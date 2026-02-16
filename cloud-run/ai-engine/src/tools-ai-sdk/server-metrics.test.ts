@@ -15,7 +15,7 @@ vi.mock('../data/precomputed-state', () => ({
     timestamp: new Date().toISOString(),
     servers: [
       {
-        id: 'web-nginx-icn-01',
+        id: 'web-nginx-dc1-01',
         name: 'Web Server 01',
         type: 'web',
         status: 'online',
@@ -25,7 +25,7 @@ vi.mock('../data/precomputed-state', () => ({
         network: 120,
       },
       {
-        id: 'web-nginx-icn-02',
+        id: 'web-nginx-dc1-02',
         name: 'Web Server 02',
         type: 'web',
         status: 'warning',
@@ -35,7 +35,7 @@ vi.mock('../data/precomputed-state', () => ({
         network: 150,
       },
       {
-        id: 'db-mysql-icn-01',
+        id: 'db-mysql-dc1-01',
         name: 'Database Primary',
         type: 'database',
         status: 'online',
@@ -45,7 +45,7 @@ vi.mock('../data/precomputed-state', () => ({
         network: 200,
       },
       {
-        id: 'db-mysql-icn-02',
+        id: 'db-mysql-dc1-02',
         name: 'Database Replica',
         type: 'database',
         status: 'online',
@@ -55,7 +55,7 @@ vi.mock('../data/precomputed-state', () => ({
         network: 180,
       },
       {
-        id: 'lb-haproxy-icn-01',
+        id: 'lb-haproxy-dc1-01',
         name: 'Load Balancer 01',
         type: 'loadbalancer',
         status: 'online',
@@ -65,7 +65,7 @@ vi.mock('../data/precomputed-state', () => ({
         network: 500,
       },
       {
-        id: 'cache-redis-icn-01',
+        id: 'cache-redis-dc1-01',
         name: 'Cache Server 01',
         type: 'cache',
         status: 'online',
@@ -75,7 +75,7 @@ vi.mock('../data/precomputed-state', () => ({
         network: 300,
       },
       {
-        id: 'cache-redis-icn-02',
+        id: 'cache-redis-dc1-02',
         name: 'Cache Server 02',
         type: 'cache',
         status: 'warning',
@@ -85,7 +85,7 @@ vi.mock('../data/precomputed-state', () => ({
         network: 280,
       },
       {
-        id: 'api-node-icn-01',
+        id: 'api-node-dc1-01',
         name: 'API Server 01',
         type: 'application',
         status: 'online',
@@ -95,7 +95,7 @@ vi.mock('../data/precomputed-state', () => ({
         network: 150,
       },
       {
-        id: 'storage-nfs-icn-01',
+        id: 'storage-nfs-dc1-01',
         name: 'Storage Server 01',
         type: 'storage',
         status: 'critical',
@@ -159,7 +159,7 @@ describe('getServerByGroup', () => {
       expect(result.success).toBe(true);
       expect(result.group).toBe('loadbalancer');
       expect(result.servers).toHaveLength(1);
-      expect(result.servers[0].id).toBe('lb-haproxy-icn-01');
+      expect(result.servers[0].id).toBe('lb-haproxy-dc1-01');
     });
 
     it('should return web servers for "web" input', async () => {
@@ -703,13 +703,13 @@ describe('getServerMetrics', () => {
 
   it('should return specific server when serverId specified', async () => {
     const result = await getServerMetrics.execute(
-      { serverId: 'db-mysql-icn-01', metric: 'all' },
+      { serverId: 'db-mysql-dc1-01', metric: 'all' },
       {} as never
     );
 
     expect(result.success).toBe(true);
     expect(result.servers).toHaveLength(1);
-    expect(result.servers[0].id).toBe('db-mysql-icn-01');
+    expect(result.servers[0].id).toBe('db-mysql-dc1-01');
   });
 });
 

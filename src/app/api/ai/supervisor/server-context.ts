@@ -21,7 +21,7 @@ export function buildServerContextMessage(): NormalizedMessage | null {
     let trendContext = '';
     try {
       const cpuRate = monitoring.queryMetric(
-        'rate(node_cpu_usage_percent[1h])'
+        'rate(node_cpu_utilization_ratio[1h])'
       );
       if (cpuRate.result.length > 0) {
         const rising = cpuRate.result.filter((r) => r.value > 5);

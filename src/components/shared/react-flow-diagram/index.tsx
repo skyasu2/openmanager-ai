@@ -40,6 +40,7 @@ function ReactFlowDiagram({
   compact = true,
   showControls = true,
   showMiniMap = false,
+  servers = [],
 }: ReactFlowDiagramProps) {
   // onInit setTimeout 클린업용 ref
   const initTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -53,8 +54,8 @@ function ReactFlowDiagram({
   }, []);
 
   const { nodes, edges } = useMemo(
-    () => convertToReactFlow(diagram),
-    [diagram]
+    () => convertToReactFlow(diagram, servers),
+    [diagram, servers]
   );
 
   const defaultEdgeOptions = useMemo(

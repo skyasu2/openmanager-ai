@@ -4,13 +4,45 @@
  * 포트폴리오용 기본 보안 - 민감한 API만 보호
  */
 
-import { timingSafeEqual } from 'crypto';
+import { createHash, timingSafeEqual } from 'crypto';
 import { type NextRequest, NextResponse } from 'next/server';
 import { SECURITY } from '@/config/constants';
 import { isGuestFullAccessEnabledServer } from '@/config/guestMode.server';
 import { logger } from '@/lib/logging';
 import { createClient } from '@/lib/supabase/server';
 import { securityLogger } from '../security/security-logger';
+
+export type APIAuthType =
+  | 'development'
+  | 'test'
+  | 'guest'
+  | 'test-secret'
+  | 'api-key'
+  | 'supabase'
+  | 'unknown';
+
+export interface APIAuthContext {
+  authType: APIAuthType;
+  userId?: string;
+  keyFingerprint?: string;
+}
+
+const apiAuthContextMap = new WeakMap<NextRequest, APIAuthContext>();
+
+function setAPIAuthContext(
+  request: NextRequest,
+  context: APIAuthContext
+): void {
+  apiAuthContextMap.set(request, context);
+}
+
+export function getAPIAuthContext(request: NextRequest): APIAuthContext | null {
+  return apiAuthContextMap.get(request) ?? null;
+}
+
+function fingerprintSecret(value: string): string {
+  return createHash('sha256').update(value).digest('hex').slice(0, 20);
+}
 
 /**
  * API 인증 확인
@@ -32,11 +64,15 @@ export async function checkAPIAuth(request: NextRequest) {
     process.env.NODE_ENV === 'development' ||
     process.env.NODE_ENV === 'test'
   ) {
+    setAPIAuthContext(request, {
+      authType: process.env.NODE_ENV === 'test' ? 'test' : 'development',
+    });
     return null; // 개발환경에서 인증 우회
   }
 
   // 🎭 게스트 풀 액세스 모드: 로그인 없이도 AI 기능 사용 허용
   if (isGuestFullAccessEnabledServer()) {
+    setAPIAuthContext(request, { authType: 'guest' });
     return null; // 게스트 풀 액세스 활성화 시 인증 우회
   }
 
@@ -46,6 +82,7 @@ export async function checkAPIAuth(request: NextRequest) {
 
   if (testSecret && envTestSecret && testSecret === envTestSecret) {
     logger.info('✅ [API Auth] E2E 테스트 모드 바이패스 활성화');
+    setAPIAuthContext(request, { authType: 'test-secret' });
     return null; // E2E 테스트 인증 통과
   }
 
@@ -86,6 +123,10 @@ export async function checkAPIAuth(request: NextRequest) {
 
       // 타이밍 안전한 비교
       if (timingSafeEqual(paddedKeyBuffer, paddedEnvKeyBuffer)) {
+        setAPIAuthContext(request, {
+          authType: 'api-key',
+          keyFingerprint: fingerprintSecret(apiKey),
+        });
         return null; // API 키 인증 통과
       }
 
@@ -128,6 +169,10 @@ export async function checkAPIAuth(request: NextRequest) {
     } = await supabase.auth.getUser();
 
     if (!error && user) {
+      setAPIAuthContext(request, {
+        authType: 'supabase',
+        userId: user.id,
+      });
       return null; // Supabase 인증 통과
     }
 

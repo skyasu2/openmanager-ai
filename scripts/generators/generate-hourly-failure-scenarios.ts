@@ -12,6 +12,20 @@
 import fs from 'fs';
 import path from 'path';
 
+const LEGACY_GUARD_ENV = 'ALLOW_LEGACY_HOURLY_DATA';
+
+function assertLegacyMode(): void {
+  if (process.env[LEGACY_GUARD_ENV] !== 'true') {
+    throw new Error(
+      [
+        '[BLOCKED] Legacy hourly-data generator is disabled by default.',
+        `Set ${LEGACY_GUARD_ENV}=true only for intentional legacy regeneration.`,
+        'Primary data pipeline uses src/data/otel-data.',
+      ].join('\n')
+    );
+  }
+}
+
 // ============================================================================
 // 타입 정의
 // ============================================================================
@@ -1465,6 +1479,8 @@ function generate5MinuteDataPoints(hour: number): any[] {
  * 24시간 JSON 파일 생성
  */
 function generateHourlyJSONFiles() {
+  assertLegacyMode();
+
   const outputDir = path.join(__dirname, '../src/data/hourly-data');
 
   // 디렉토리 생성

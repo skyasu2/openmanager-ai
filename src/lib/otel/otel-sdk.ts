@@ -2,7 +2,7 @@
  * OpenTelemetry SDK Skeleton (프로덕션 모니터링용 아님)
  *
  * 이 SDK는 향후 확장을 위한 스켈레톤 코드입니다.
- * OTel 데이터는 빌드 타임 precompute(`npm run data:otel`)로만 생성/사용됩니다.
+ * OTel 데이터는 빌드 타임 정합성 파이프라인(`npm run data:fix`, `npm run data:verify`)으로 관리됩니다.
  *
  * 런타임 상태:
  * - ENABLE_OPENTELEMETRY 미설정 → 즉시 return (zero overhead)

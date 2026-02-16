@@ -56,24 +56,59 @@ vi.mock('../../../../lib/text-sanitizer', () => ({
   sanitizeChineseCharacters: vi.fn((text: string) => text),
 }));
 
-// Mock AI SDK
-vi.mock('ai', () => ({
-  generateText: vi.fn(async () => ({
+// Mock AI SDK with ToolLoopAgent
+vi.mock('ai', () => {
+  const mockGenerateText = vi.fn(async () => ({
     text: 'Mock response',
     usage: { inputTokens: 100, outputTokens: 50, totalTokens: 150 },
     steps: [{ finishReason: 'stop', toolCalls: [], toolResults: [] }],
-  })),
-  streamText: vi.fn(() => ({
+  }));
+  const mockStreamText = vi.fn(() => ({
     textStream: (async function* () {
       yield 'Mock response';
     })(),
     steps: Promise.resolve([]),
     usage: Promise.resolve({ inputTokens: 100, outputTokens: 50, totalTokens: 150 }),
-  })),
-  hasToolCall: vi.fn(() => () => false),
-  stepCountIs: vi.fn(() => () => false),
-  tool: vi.fn((config) => ({ ...config, _type: 'tool' })),
-}));
+  }));
+
+  class MockToolLoopAgent {
+    settings: Record<string, unknown>;
+    constructor(settings: Record<string, unknown>) {
+      this.settings = settings;
+    }
+    async generate(options: Record<string, unknown>) {
+      const { timeout, onStepFinish, ...rest } = options as Record<string, unknown>;
+      const { onStepFinish: _sOSF, instructions, ...settingsRest } = this.settings;
+      return mockGenerateText({
+        ...settingsRest,
+        system: instructions,
+        ...rest,
+        timeout,
+        onStepFinish,
+      });
+    }
+    async stream(options: Record<string, unknown>) {
+      const { timeout, onStepFinish, ...rest } = options as Record<string, unknown>;
+      const { onStepFinish: _sOSF, instructions, ...settingsRest } = this.settings;
+      return mockStreamText({
+        ...settingsRest,
+        system: instructions,
+        ...rest,
+        timeout,
+        onStepFinish,
+      });
+    }
+  }
+
+  return {
+    generateText: mockGenerateText,
+    streamText: mockStreamText,
+    ToolLoopAgent: MockToolLoopAgent,
+    hasToolCall: vi.fn(() => () => false),
+    stepCountIs: vi.fn(() => () => false),
+    tool: vi.fn((config: unknown) => ({ ...(config as object), _type: 'tool' })),
+  };
+});
 
 // Mock tools
 vi.mock('../../../../tools-ai-sdk', () => ({
@@ -122,73 +157,66 @@ describe('AgentFactory', () => {
   // ==========================================================================
 
   describe('create()', () => {
-    it('should create NLQAgent for type "nlq"', async () => {
-      const { AgentFactory, NLQAgent } = await import('./agent-factory');
+    it('should create agent for type "nlq"', async () => {
+      const { AgentFactory } = await import('./agent-factory');
 
       const agent = AgentFactory.create('nlq');
 
       expect(agent).not.toBeNull();
-      expect(agent).toBeInstanceOf(NLQAgent);
       expect(agent!.getName()).toBe('NLQ Agent');
     });
 
-    it('should create AnalystAgent for type "analyst"', async () => {
-      const { AgentFactory, AnalystAgent } = await import('./agent-factory');
+    it('should create agent for type "analyst"', async () => {
+      const { AgentFactory } = await import('./agent-factory');
 
       const agent = AgentFactory.create('analyst');
 
       expect(agent).not.toBeNull();
-      expect(agent).toBeInstanceOf(AnalystAgent);
       expect(agent!.getName()).toBe('Analyst Agent');
     });
 
-    it('should create ReporterAgent for type "reporter"', async () => {
-      const { AgentFactory, ReporterAgent } = await import('./agent-factory');
+    it('should create agent for type "reporter"', async () => {
+      const { AgentFactory } = await import('./agent-factory');
 
       const agent = AgentFactory.create('reporter');
 
       expect(agent).not.toBeNull();
-      expect(agent).toBeInstanceOf(ReporterAgent);
       expect(agent!.getName()).toBe('Reporter Agent');
     });
 
-    it('should create AdvisorAgent for type "advisor"', async () => {
-      const { AgentFactory, AdvisorAgent } = await import('./agent-factory');
+    it('should create agent for type "advisor"', async () => {
+      const { AgentFactory } = await import('./agent-factory');
 
       const agent = AgentFactory.create('advisor');
 
       expect(agent).not.toBeNull();
-      expect(agent).toBeInstanceOf(AdvisorAgent);
       expect(agent!.getName()).toBe('Advisor Agent');
     });
 
-    it('should create VisionAgent for type "vision"', async () => {
-      const { AgentFactory, VisionAgent } = await import('./agent-factory');
+    it('should create agent for type "vision"', async () => {
+      const { AgentFactory } = await import('./agent-factory');
 
       const agent = AgentFactory.create('vision');
 
       expect(agent).not.toBeNull();
-      expect(agent).toBeInstanceOf(VisionAgent);
       expect(agent!.getName()).toBe('Vision Agent');
     });
 
-    it('should create EvaluatorAgent for type "evaluator"', async () => {
-      const { AgentFactory, EvaluatorAgent } = await import('./agent-factory');
+    it('should create agent for type "evaluator"', async () => {
+      const { AgentFactory } = await import('./agent-factory');
 
       const agent = AgentFactory.create('evaluator');
 
       expect(agent).not.toBeNull();
-      expect(agent).toBeInstanceOf(EvaluatorAgent);
       expect(agent!.getName()).toBe('Evaluator Agent');
     });
 
-    it('should create OptimizerAgent for type "optimizer"', async () => {
-      const { AgentFactory, OptimizerAgent } = await import('./agent-factory');
+    it('should create agent for type "optimizer"', async () => {
+      const { AgentFactory } = await import('./agent-factory');
 
       const agent = AgentFactory.create('optimizer');
 
       expect(agent).not.toBeNull();
-      expect(agent).toBeInstanceOf(OptimizerAgent);
       expect(agent!.getName()).toBe('Optimizer Agent');
     });
 
@@ -200,10 +228,6 @@ describe('AgentFactory', () => {
 
       expect(agent).toBeNull();
     });
-
-    // Note: Dynamic mock changes for testing unavailable providers require
-    // more complex setup with vitest. These tests are omitted in favor of
-    // integration tests that test actual provider availability.
   });
 
   // ==========================================================================

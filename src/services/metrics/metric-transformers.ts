@@ -95,15 +95,28 @@ const STANDARD_METRIC_HANDLERS = new Map<
     },
   ],
   [
+    OTEL_METRIC.LOAD_1M_SEMCONV,
+    (s, v) => {
+      s.loadAvg1 = v;
+    },
+  ],
+  [
     OTEL_METRIC.LOAD_5M,
     (s, v) => {
       s.loadAvg5 = v;
     },
   ],
   [
-    OTEL_METRIC.HTTP_DURATION,
+    OTEL_METRIC.LOAD_5M_SEMCONV,
     (s, v) => {
-      s.responseTimeMs = v * 1000;
+      s.loadAvg5 = v;
+    },
+  ],
+  [
+    OTEL_METRIC.HTTP_DURATION,
+    (s, v, unit) => {
+      // OTel standard unit is "s" (seconds); convert to ms
+      s.responseTimeMs = unit === 'ms' ? v : v * 1000;
     },
   ],
   [
@@ -149,7 +162,7 @@ export function extractMetricsFromStandard(
       continue;
     }
 
-    // Server ID 규칙: 도메인 제거 (web-nginx-icn-01.openmanager.kr -> web-nginx-icn-01)
+    // Server ID 규칙: 도메인 제거 (web-nginx-dc1-01.openmanager.kr -> web-nginx-dc1-01)
     const serverId = hostname.split('.')[0];
     if (!serverId) continue;
 
@@ -167,7 +180,7 @@ export function extractMetricsFromStandard(
       serverMap.set(serverId, {
         serverId,
         serverType:
-          getAttr('host.type') ?? catalogEntry?.['host.type'] ?? 'unknown',
+          getAttr('server.role') ?? catalogEntry?.['server.role'] ?? 'unknown',
         location:
           getAttr('cloud.availability_zone') ??
           catalogEntry?.['cloud.availability_zone'] ??

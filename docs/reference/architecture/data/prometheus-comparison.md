@@ -65,8 +65,8 @@ VIBE 흐름:
   node_cpu_usage_percent = 68  (이미 계산된 최종 값)
 ```
 
-> 이 격차를 교육적으로 해소하기 위해 `PROMETHEUS_METRIC_REFERENCE` 매핑을 추가함.
-> → `src/data/hourly-data/index.ts`
+> 이 격차를 교육적으로 해소하기 위해 Prometheus 명칭 ↔ OTel 시맨틱 매핑을 코드 레이어에 유지한다.
+> → `src/services/metrics/metric-transformers.ts`
 
 ---
 
@@ -76,7 +76,7 @@ VIBE 흐름:
 
 | Label | Prometheus 표준 | VIBE | 평가 |
 |-------|---------------|------|------|
-| `instance` | `host:port` 자동 부여 | `web-nginx-icn-01:9100` | 완벽 |
+| `instance` | `host:port` 자동 부여 | `web-nginx-dc1-01:9100` | 완벽 |
 | `job` | `job_name` 설정에서 | `node-exporter` | 완벽 |
 
 ### 3.2 Custom 레이블
@@ -119,7 +119,7 @@ VIBE는 **데모/교육용 시뮬레이션 플랫폼**으로, 이 설계는 의�
 | VIBE의 선택 | 이유 | 타당한가? |
 |------------|------|:--------:|
 | 사전 계산된 % | PromQL 엔진 불필요 | O |
-| 10분 간격 | hourly-data 파일 크기 제약 | O |
+| 10분 간격 | OTel hourly JSON 파일 크기 제약 | O |
 | JSON 번들 | Vercel Serverless (fs 없음) | O |
 | 24시간 순환 | 시나리오 기반 데모 | O |
 
@@ -182,14 +182,12 @@ VIBE는 **데모/교육용 시뮬레이션 플랫폼**으로, 이 설계는 의�
 각 VIBE 메트릭이 실제 Prometheus에서 어떤 원본 메트릭과 PromQL 식에 해당하는지 `PROMETHEUS_METRIC_REFERENCE` 매핑으로 기록.
 
 ```typescript
-// src/data/hourly-data/index.ts
-import { PROMETHEUS_METRIC_REFERENCE } from '@/data/hourly-data';
-
-const ref = PROMETHEUS_METRIC_REFERENCE['node_cpu_usage_percent'];
-// ref.realMetric      → "node_cpu_seconds_total"
-// ref.promqlExpression → "100 - (avg by(instance)(rate(...))*100)"
-// ref.metricType       → "counter"
-// ref.baseUnit         → "seconds (cumulative)"
+// src/services/metrics/metric-transformers.ts
+const metricNameMap = {
+  node_cpu_usage_percent: 'system.cpu.utilization',
+  node_memory_usage_percent: 'system.memory.utilization',
+  node_filesystem_usage_percent: 'system.filesystem.utilization',
+};
 ```
 
 ### 8.2 `for` 지속시간 개념 추가
@@ -226,8 +224,8 @@ const ref = PROMETHEUS_METRIC_REFERENCE['node_cpu_usage_percent'];
 
 | 파일 | 역할 |
 |------|------|
-| `public/hourly-data/hour-*.json` | Prometheus 스타일 JSON (24개) |
-| `src/data/hourly-data/index.ts` | 타입 정의 + `PROMETHEUS_METRIC_REFERENCE` 매핑 |
+| `src/data/otel-data/hourly/hour-*.json` | OTel-native 시간별 JSON (24개) |
+| `src/services/metrics/metric-transformers.ts` | Legacy Prometheus 명칭 ↔ OTel 시맨틱 변환 로직 |
 | `src/services/metrics/MetricsProvider.ts` | 데이터 변환 & 캐싱 |
 | `src/config/rules/system-rules.json` | Alert 임계값 + `for` 지속시간 (SSOT) |
 | `src/config/rules/types.ts` | `ServerStatusRule` 타입 (for 필드 포함) |

@@ -39,13 +39,46 @@ vi.mock('../../../lib/config-parser', () => ({
 const mockGenerateText = vi.fn();
 const mockStreamText = vi.fn();
 
-// Mock AI SDK
-vi.mock('ai', () => ({
-  generateText: mockGenerateText,
-  streamText: mockStreamText,
-  hasToolCall: vi.fn(() => () => false),
-  stepCountIs: vi.fn(() => () => false),
-}));
+// Mock AI SDK with ToolLoopAgent
+vi.mock('ai', () => {
+  // MockToolLoopAgent mimics ToolLoopAgent behavior: delegates to generateText/streamText
+  class MockToolLoopAgent {
+    settings: Record<string, unknown>;
+    constructor(settings: Record<string, unknown>) {
+      this.settings = settings;
+    }
+    async generate(options: Record<string, unknown>) {
+      const { abortSignal, timeout, onStepFinish, ...rest } = options as Record<string, unknown>;
+      const { onStepFinish: _sOSF, instructions, ...settingsRest } = this.settings;
+      return mockGenerateText({
+        ...settingsRest,
+        system: instructions,
+        ...rest,
+        timeout,
+        onStepFinish,
+      });
+    }
+    async stream(options: Record<string, unknown>) {
+      const { abortSignal, timeout, onStepFinish, ...rest } = options as Record<string, unknown>;
+      const { onStepFinish: _sOSF, instructions, ...settingsRest } = this.settings;
+      return mockStreamText({
+        ...settingsRest,
+        system: instructions,
+        ...rest,
+        timeout,
+        onStepFinish,
+      });
+    }
+  }
+
+  return {
+    generateText: mockGenerateText,
+    streamText: mockStreamText,
+    ToolLoopAgent: MockToolLoopAgent,
+    hasToolCall: vi.fn(() => () => false),
+    stepCountIs: vi.fn(() => () => false),
+  };
+});
 
 // ============================================================================
 // Test Helpers

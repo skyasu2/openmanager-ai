@@ -14,14 +14,8 @@
  */
 
 import { AGENT_CONFIGS, type AgentConfig } from './config';
-import { NLQAgent, AgentFactory } from './agent-factory';
+import { AgentFactory, type BaseAgent } from './agent-factory';
 import { logger } from '../../../lib/logger';
-
-// ============================================================================
-// Agent Class Export
-// ============================================================================
-
-export { NLQAgent };
 
 // ============================================================================
 // Factory Functions (Backward Compatibility)
@@ -63,6 +57,6 @@ export function isNlqAgentAvailable(): boolean {
  * }
  * ```
  */
-export function createNlqAgent(): NLQAgent | null {
-  return AgentFactory.create('nlq') as NLQAgent | null;
+export function createNlqAgent(): BaseAgent | null {
+  return AgentFactory.create('nlq');
 }

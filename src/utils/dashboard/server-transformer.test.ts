@@ -14,7 +14,7 @@ describe('server-transformer', () => {
         disk: 30.1,
         network: 123.4,
         uptime: 3600,
-        location: 'Seoul',
+        location: 'OnPrem-DC1',
         ip: '10.0.0.1',
         type: 'web',
         environment: 'production',

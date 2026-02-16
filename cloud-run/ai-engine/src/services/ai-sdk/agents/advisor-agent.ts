@@ -13,14 +13,8 @@
  */
 
 import { AGENT_CONFIGS, type AgentConfig } from './config';
-import { AdvisorAgent, AgentFactory } from './agent-factory';
+import { AgentFactory, type BaseAgent } from './agent-factory';
 import { logger } from '../../../lib/logger';
-
-// ============================================================================
-// Agent Class Export
-// ============================================================================
-
-export { AdvisorAgent };
 
 // ============================================================================
 // Factory Functions (Backward Compatibility)
@@ -62,6 +56,6 @@ export function isAdvisorAgentAvailable(): boolean {
  * }
  * ```
  */
-export function createAdvisorAgent(): AdvisorAgent | null {
-  return AgentFactory.create('advisor') as AdvisorAgent | null;
+export function createAdvisorAgent(): BaseAgent | null {
+  return AgentFactory.create('advisor');
 }

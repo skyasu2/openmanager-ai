@@ -68,6 +68,39 @@ export const NODE_STYLES: Record<
 };
 
 /**
+ * 실시간 상태 스타일 정의
+ */
+export const STATUS_STYLES: Record<
+  string,
+  { border: string; glow: string; text: string; dot: string }
+> = {
+  running: {
+    border: 'border-emerald-500/50',
+    glow: 'shadow-[0_0_12px_rgba(16,185,129,0.3)]',
+    text: 'text-emerald-400',
+    dot: 'bg-emerald-500',
+  },
+  warning: {
+    border: 'border-amber-500/60',
+    glow: 'shadow-[0_0_12px_rgba(245,158,11,0.4)] animate-pulse',
+    text: 'text-amber-400',
+    dot: 'bg-amber-500',
+  },
+  danger: {
+    border: 'border-rose-500/70',
+    glow: 'shadow-[0_0_15px_rgba(244,63,94,0.5)] animate-pulse',
+    text: 'text-rose-400',
+    dot: 'bg-rose-500',
+  },
+  offline: {
+    border: 'border-slate-500/40',
+    glow: 'grayscale opacity-70',
+    text: 'text-slate-400',
+    dot: 'bg-slate-500',
+  },
+};
+
+/**
  * 접근성 라벨 설정 (WCAG AA)
  */
 export const ARIA_LABEL_CONFIG = {

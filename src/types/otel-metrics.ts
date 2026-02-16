@@ -16,18 +16,21 @@
 // ============================================================================
 
 export type OTelResourceAttributes = {
+  // --- OTel Semantic Convention standard attributes ---
   'service.name': string;
   'host.name': string;
   'host.id': string;
-  'host.type': string;
-  'os.type': string;
+  'host.arch'?: string; // OTel standard: CPU architecture (e.g. "amd64")
+  'os.type': string; // OTel standard: "linux" | "windows" | "darwin"
   'os.description': string;
   'cloud.region': string;
   'cloud.availability_zone': string;
   'deployment.environment': string;
-  'host.cpu.count'?: number;
-  'host.memory.size'?: number;
-  'host.disk.size'?: number;
+  // --- Custom extensions (OTel Registry에 미정의) ---
+  'server.role': string; // Custom: 서버 역할 (web, database, cache 등)
+  'host.cpu.count'?: number; // Custom: OTel은 system.cpu.logical.count 메트릭으로 표현
+  'host.memory.size'?: number; // Custom: OTel은 system.memory.limit 메트릭으로 표현
+  'host.disk.size'?: number; // Custom: OTel은 system.filesystem.limit 메트릭으로 표현
 };
 
 export type OTelResourceCatalog = {
@@ -41,12 +44,12 @@ export type OTelResourceCatalog = {
 // ============================================================================
 
 export type OTelLogRecord = {
-  timeUnixNano: number;
-  severityNumber: number;
-  severityText: string;
-  body: string;
-  attributes: Record<string, string | number>;
-  resource: string;
+  timeUnixNano: number; // OTel standard
+  severityNumber: number; // OTel standard (1-24)
+  severityText: string; // OTel standard
+  body: string; // OTel standard
+  attributes: Record<string, string | number>; // log.source: Custom (syslog appname 대응)
+  resource: string; // Slim: host.id 참조 (표준은 Resource 객체)
 };
 
 // ============================================================================

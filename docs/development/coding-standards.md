@@ -246,7 +246,7 @@ src/
 
 ```
 서버 메트릭 데이터 소스:
-public/hourly-data/hour-XX.json (24개 파일)
+src/data/otel-data/hourly/hour-XX.json (24개 파일)
 
 Dashboard (Vercel)              Cloud Run AI
        ↓                              ↓
