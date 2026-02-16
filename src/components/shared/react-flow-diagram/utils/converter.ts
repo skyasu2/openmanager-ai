@@ -10,10 +10,9 @@
 
 import type { Edge, Node } from '@xyflow/react';
 import { MarkerType } from '@xyflow/react';
-
-import type { Server } from '@/types/server';
-import { logger } from '@/lib/logging';
 import type { ArchitectureDiagram } from '@/data/architecture-diagrams.data';
+import { logger } from '@/lib/logging';
+import type { Server } from '@/types/server';
 
 import {
   LABEL_AREA_WIDTH,

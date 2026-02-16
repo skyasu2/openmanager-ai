@@ -4,11 +4,11 @@ import * as DialogPrimitive from '@radix-ui/react-dialog';
 import { Maximize2, X } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import { Suspense, useEffect, useState } from 'react';
-import type { Server } from '@/types/server';
 import {
   ARCHITECTURE_DIAGRAMS,
   type ArchitectureDiagram,
 } from '@/data/architecture-diagrams.data';
+import type { Server } from '@/types/server';
 
 const ReactFlowDiagramDynamic = dynamic(
   () => import('@/components/shared/react-flow-diagram'),

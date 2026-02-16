@@ -325,6 +325,33 @@ describe('Supervisor Stream V2 Route', () => {
       );
     });
 
+    it('인증 컨텍스트가 없으면 auth_session_id 쿠키를 ownerKey로 사용해야 함', async () => {
+      const request = new NextRequest(
+        'http://localhost/api/ai/supervisor/stream/v2',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Session-Id': 'session-1234',
+            cookie: 'auth_session_id=guest-session-xyz; theme=dark',
+          },
+          body: JSON.stringify({
+            messages: [{ role: 'user', content: '서버 상태 확인' }],
+          }),
+        }
+      );
+
+      const response = await POST(request);
+      expect(response.status).toBe(200);
+
+      const expectedOwnerKey = `guest:${createHash('sha256').update('guest-session-xyz').digest('hex').slice(0, 20)}`;
+      expect(mockSaveActiveStreamId).toHaveBeenCalledWith(
+        'session-1234',
+        expect.any(String),
+        expectedOwnerKey
+      );
+    });
+
     it('긴 대화 이력은 컨텍스트 메시지 수를 제한해야 함', async () => {
       const messages = Array.from({ length: 30 }, (_, idx) => ({
         role: idx % 2 === 0 ? 'user' : 'assistant',

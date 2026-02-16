@@ -12,11 +12,11 @@ import {
 import {
   Pagination,
   PaginationContent,
+  PaginationEllipsis,
   PaginationItem,
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
-  PaginationEllipsis,
 } from '@/components/ui/pagination';
 import { useAlertHistory } from '@/hooks/dashboard/useAlertHistory';
 import { useServerPagination } from '@/hooks/dashboard/useServerPagination';

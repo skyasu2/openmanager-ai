@@ -114,6 +114,16 @@ function getStreamOwnerKey(req: NextRequest): string {
     return `api:${authContext.keyFingerprint}`;
   }
 
+  // Cookie 헤더 전체를 해시하면 회전 쿠키 변화에 취약하므로
+  // 안정적인 세션 식별 쿠키를 우선 사용한다.
+  const authSessionId = req.cookies.get('auth_session_id')?.value;
+  if (authSessionId) return `guest:${hashValue(authSessionId)}`;
+
+  const supabaseTokenCookie = req.cookies
+    .getAll()
+    .find((cookie) => /^sb-.*-auth-token$/.test(cookie.name))?.value;
+  if (supabaseTokenCookie) return `supa:${hashValue(supabaseTokenCookie)}`;
+
   const apiKey = req.headers.get('x-api-key');
   if (apiKey) return `api:${hashValue(apiKey)}`;
 

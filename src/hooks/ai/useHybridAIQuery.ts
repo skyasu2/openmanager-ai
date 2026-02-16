@@ -293,6 +293,8 @@ export function useHybridAIQuery(
           isLoading: true,
         }));
 
+        // resume + stop 조합 충돌을 피하기 위해 redirect 전환 시 현재 스트림 resume 비활성화
+        setResumeEnabled(false);
         stopChat();
 
         const query = currentQueryRef.current;
