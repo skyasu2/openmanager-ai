@@ -4,7 +4,7 @@
 > Owner: dev-experience
 > Status: Active
 > Doc type: Reference
-> Last reviewed: 2026-02-14
+> Last reviewed: 2026-02-16
 > Canonical: docs/development/dev-tools.md
 > Tags: tooling,nodejs,biome
 
@@ -82,24 +82,23 @@ npm run test:e2e:critical  # 핵심 테스트만
 
 ## Git Hooks
 
-### Husky + lint-staged
+### Husky + Custom Hook Scripts
 
 ```bash
-# pre-commit: 린트 자동 실행
-# commit-msg: 커밋 메시지 검증
-# pre-push: 빌드 검증
+# pre-commit: 시크릿 스캔 + Biome(staged)
+# post-commit: 커밋 완료 알림(비차단)
+# pre-push: TypeScript + 빠른 테스트 (환경 검사는 STRICT_PUSH_ENV=true일 때만)
 ```
 
-### Commitlint
+핵심 구현 파일:
 
 ```bash
-# 커밋 메시지 형식
-<type>(<scope>): <subject>
-
-# 예시
-feat(dashboard): add server metrics chart
-fix(api): handle 404 gracefully
-docs(readme): update installation guide
+.husky/pre-commit
+.husky/post-commit
+.husky/pre-push
+scripts/env/precommit-check-secrets.cjs
+scripts/hooks/pre-push.js
+scripts/hooks/post-commit.js
 ```
 
 ## Docker

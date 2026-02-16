@@ -4,7 +4,7 @@
 > Owner: dev-experience
 > Status: Active
 > Doc type: How-to
-> Last reviewed: 2026-02-14
+> Last reviewed: 2026-02-16
 > Canonical: docs/development/git-hooks-workflow.md
 > Tags: git,hooks,cicd,workflow
 >
@@ -116,6 +116,7 @@ const SKIP_FILES = [
 |------|---------|----------|------|
 | **Quick (기본)** | `QUICK_PUSH=true` | TypeScript + 빠른 테스트 | ~78초 |
 | **Full** | `QUICK_PUSH=false` | TypeScript + Full Build | ~4분 |
+| **Strict Env (선택)** | `STRICT_PUSH_ENV=true` | Quick + env:check | +5~15초 |
 | **Skip All** | `HUSKY=0` | 없음 | 0초 |
 
 ### Quick Mode (기본값)
@@ -136,7 +137,6 @@ git push
 🏗️ Build validation...
 ⚡ TypeScript 검증 (기본 모드)...
   ✅ TypeScript Passed
-  ✅ Biome Passed
 
 ✅ Pre-push validation passed in 78s
 ```
@@ -163,14 +163,14 @@ QUICK_PUSH=false git push
 │     └─ 12개 테스트 파일, 228개 테스트                    │
 │     └─ 순수 로직 검증 (DOM 없음)                         │
 │                                                          │
-│  3. TypeScript 검증 (npm run hook:validate)              │
+│  3. TypeScript 검증 (npm run type-check)                 │
 │     └─ 타입 체크 (strict mode)                           │
-│     └─ Biome 린트                                        │
 │                                                          │
-│  4. package.json 구문 검증                               │
+│  4. Cloud Build Guard (변경 파일 있을 때만)              │
+│     └─ cloudbuild.yaml / deploy.sh 변경 시만 검사        │
 │                                                          │
-│  5. 환경변수 검증 (npm run env:check)                    │
-│     └─ 필수 환경변수 존재 여부                           │
+│  5. 환경변수 검증 (STRICT_PUSH_ENV=true 일 때만)         │
+│     └─ npm run env:check                                 │
 │                                                          │
 └─────────────────────────────────────────────────────────┘
 ```
@@ -311,6 +311,19 @@ SKIP_NODE_CHECK=true git push
 
 ---
 
+## 도구 검토 메모 (2026-02-16)
+
+- `Entire CLI` 도입은 보류했습니다.
+- 보류 사유:
+  - 공식 통합 대상이 현재 워크플로 핵심(Codex/ChatGPT)과 직접 일치하지 않음
+  - 현재 Husky 기반 검증 파이프라인과 훅 소유권 충돌 가능성 존재
+  - 포트폴리오 레포 목적상 신규 도구 도입보다 기존 품질 게이트 안정화가 우선
+- 재검토 조건:
+  - 공식 통합 대상 확장(또는 Codex/ChatGPT 공식 지원)
+  - 훅 충돌 없는 마이그레이션 가이드 확보
+
+---
+
 ## 관련 파일
 
 | 파일 | 용도 |
@@ -318,7 +331,7 @@ SKIP_NODE_CHECK=true git push
 | `.husky/pre-commit` | Pre-commit Hook |
 | `scripts/hooks/pre-push.js` | Pre-push Hook |
 | `scripts/env/precommit-check-secrets.cjs` | Secret Scanner |
-| `scripts/hooks/post-commit.js` | AI 코드 리뷰 트리거 |
+| `scripts/hooks/post-commit.js` | 커밋 완료 알림 출력 |
 | `.github/workflows/simple-deploy.yml` | GitHub Actions |
 
 ---
@@ -331,4 +344,4 @@ SKIP_NODE_CHECK=true git push
 
 ---
 
-_Last Updated: 2026-01-27_
+_Last Updated: 2026-02-16_

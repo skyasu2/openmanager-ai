@@ -111,7 +111,6 @@
     "hook:pre-commit": "bash scripts/dev/biome-wrapper.sh check --write --staged --no-errors-on-unmatched",
     "hook:pre-push": "node scripts/hooks/pre-push.js",
     "hook:post-commit": "node scripts/hooks/post-commit.js",
-    "hook:validate": "node scripts/hooks/validate-parallel.js",
     "review:show": "npm run lint && npm run type-check && echo '✅ All checks pass. Use /review in Claude Code for full analysis.'",
     "review:status": "ps aux | grep '[p]ost-commit-background.sh' > /dev/null && echo '🔄 AI Review is running...' || echo '✅ AI Review is NOT running.'",
     "check:usage": "node scripts/check-free-tier-usage.js",

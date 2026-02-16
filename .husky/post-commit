@@ -2,5 +2,6 @@
 
 # Post-commit Hook: Commit Notification (Cross-platform)
 # 자동 AI 리뷰는 사용하지 않으며, 커밋 완료 알림만 출력
+# post-commit은 개발 흐름을 막지 않도록 non-blocking으로 유지
 
-npm run hook:post-commit
+npm run hook:post-commit || true

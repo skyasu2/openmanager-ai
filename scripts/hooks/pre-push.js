@@ -6,7 +6,7 @@
  * Uses execFileSync for security (no shell injection risk)
  */
 
-const { execFileSync, spawnSync } = require('child_process');
+const { spawnSync } = require('child_process');
 const os = require('os');
 const path = require('path');
 const fs = require('fs');
@@ -23,17 +23,22 @@ const isWindowsFS = cwd.startsWith('/mnt/');
 // 🎯 2025 Best Practice: Pre-push는 빠르게, Full Build는 CI/Vercel에서
 // - QUICK_PUSH=true (기본): TypeScript만 (~20초)
 // - QUICK_PUSH=false: Full Build (~3분, 릴리스 전 검증용)
+// - STRICT_PUSH_ENV=true: env:check를 pre-push에서 강제
+// - FORCE_CLOUD_BUILD_GUARD=true: Cloud Build 가드를 항상 실행
 const SKIP_RELEASE_CHECK = process.env.SKIP_RELEASE_CHECK === 'true';
 const QUICK_PUSH = process.env.QUICK_PUSH !== 'false'; // 기본값: true (빠른 푸시)
 const SKIP_TESTS = process.env.SKIP_TESTS === 'true';
 const SKIP_BUILD = process.env.SKIP_BUILD === 'true';
 const SKIP_NODE_CHECK = process.env.SKIP_NODE_CHECK === 'true';
+const STRICT_PUSH_ENV = process.env.STRICT_PUSH_ENV === 'true';
+const FORCE_CLOUD_BUILD_GUARD = process.env.FORCE_CLOUD_BUILD_GUARD === 'true';
 
 // Windows = limited validation mode (TypeScript + Lint only)
 // WSL with Linux node_modules = full validation mode
 const isLimitedMode = isWindows;
 
 let testStatus = 'pending';
+let typeCheckStatus = 'pending';
 
 function runNpm(args) {
   const result = spawnSync(npmCmd, args, {
@@ -43,16 +48,6 @@ function runNpm(args) {
     shell: isWindows,
   });
   return result.status === 0;
-}
-
-function runNpmSilent(args) {
-  const result = spawnSync(npmCmd, args, {
-    encoding: 'utf8',
-    stdio: 'pipe',
-    cwd,
-    shell: isWindows,
-  });
-  return { success: result.status === 0, output: result.stdout || '' };
 }
 
 function runGit(args) {
@@ -75,7 +70,45 @@ function stripHashComments(text) {
     .join('\n');
 }
 
-function checkCloudBuildFreeTierGuard() {
+function getChangedFilesForPush() {
+  const upstream = runGit(['rev-parse', '--abbrev-ref', '--symbolic-full-name', '@{u}']);
+  if (upstream) {
+    const pushedFiles = runGit(['diff', '--name-only', `${upstream}..HEAD`]);
+    if (pushedFiles) {
+      return pushedFiles
+        .split('\n')
+        .map((line) => line.trim())
+        .filter(Boolean);
+    }
+  }
+
+  // Upstream이 없을 때(첫 push 등) 최근 커밋 기준으로 최소 범위 검사
+  const hasPreviousCommit = runGit(['rev-parse', '--verify', 'HEAD~1']);
+  if (hasPreviousCommit) {
+    const recentFiles = runGit(['diff', '--name-only', 'HEAD~1..HEAD']);
+    if (recentFiles) {
+      return recentFiles
+        .split('\n')
+        .map((line) => line.trim())
+        .filter(Boolean);
+    }
+  }
+
+  return [];
+}
+
+function checkCloudBuildFreeTierGuard(changedFiles) {
+  const watchedFiles = [
+    'cloud-run/ai-engine/cloudbuild.yaml',
+    'cloud-run/ai-engine/deploy.sh',
+  ];
+  const hasRelevantChanges = changedFiles.some((file) => watchedFiles.includes(file));
+
+  if (!FORCE_CLOUD_BUILD_GUARD && !hasRelevantChanges) {
+    console.log('⚪ Cloud Build guard skipped (ai-engine deploy files unchanged)');
+    return;
+  }
+
   const cloudbuildPath = path.join(cwd, 'cloud-run/ai-engine/cloudbuild.yaml');
   const deployPath = path.join(cwd, 'cloud-run/ai-engine/deploy.sh');
 
@@ -252,6 +285,7 @@ function runBuildValidation() {
   console.log('🏗️ Build validation...');
 
   if (SKIP_BUILD) {
+    typeCheckStatus = 'skipped';
     console.log('⚪ Build validation skipped (SKIP_BUILD=true)');
     return;
   }
@@ -266,6 +300,7 @@ function runBuildValidation() {
     console.log('📝 TypeScript checking...');
     const tsSuccess = runNpm(['run', 'type-check']);
     if (!tsSuccess) {
+      typeCheckStatus = 'failed';
       console.log('❌ TypeScript check failed - push blocked');
       console.log('');
       console.log('💡 Fix: npm run type-check');
@@ -273,6 +308,7 @@ function runBuildValidation() {
       console.log('⚠️  Bypass: HUSKY=0 git push');
       process.exit(1);
     }
+    typeCheckStatus = 'passed';
 
     // Lint는 pre-commit에서 이미 실행되므로 스킵
     console.log('⚪ Lint skipped (already run in pre-commit)');
@@ -283,8 +319,9 @@ function runBuildValidation() {
 
   if (QUICK_PUSH) {
     console.log('⚡ TypeScript 검증 (기본 모드)...');
-    const success = runNpm(['run', 'hook:validate']);
+    const success = runNpm(['run', 'type-check']);
     if (!success) {
+      typeCheckStatus = 'failed';
       console.log('❌ TypeScript 에러 - push blocked');
       console.log('');
       console.log('💡 Fix: npm run type-check');
@@ -292,9 +329,11 @@ function runBuildValidation() {
       console.log('⚠️  Bypass: HUSKY=0 git push');
       process.exit(1);
     }
+    typeCheckStatus = 'passed';
     console.log('✅ TypeScript 검증 통과');
     console.log('ℹ️  Full build는 GitHub CI + Vercel에서 실행됨');
   } else {
+    typeCheckStatus = 'delegated';
     console.log('🐢 Full Build 검증 (QUICK_PUSH=false)...');
     console.log('   일반적으로 불필요 - Vercel이 빌드 담당');
     const success = runNpm(['run', 'build']);
@@ -334,18 +373,6 @@ function checkEnvironment() {
   }
 }
 
-// Package.json check
-function checkPackageJson() {
-  console.log('📦 Checking package.json...');
-  try {
-    const pkgPath = path.join(cwd, 'package.json');
-    JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
-  } catch (err) {
-    console.log('❌ package.json has syntax errors');
-    process.exit(1);
-  }
-}
-
 // Summary
 function printSummary(duration) {
   console.log('');
@@ -361,13 +388,23 @@ function printSummary(duration) {
     console.log('  🐢 Mode: Full Build');
   }
   console.log(`  ${testStatus === 'passed' ? '✅' : '⚪'} Tests ${testStatus}`);
-  console.log('  ✅ TypeScript check passed');
+  if (typeCheckStatus === 'passed') {
+    console.log('  ✅ TypeScript check passed');
+  } else if (typeCheckStatus === 'skipped') {
+    console.log('  ⚪ TypeScript skipped (SKIP_BUILD=true)');
+  } else if (typeCheckStatus === 'delegated') {
+    console.log('  ⚪ TypeScript covered by full build');
+  }
   if (!QUICK_PUSH && !isLimitedMode) {
     console.log('  ✅ Full build passed');
   } else {
     console.log('  ⚪ Full build → GitHub CI + Vercel');
   }
-  console.log('  ✅ Environment validated');
+  if (STRICT_PUSH_ENV) {
+    console.log('  ✅ Environment validated');
+  } else {
+    console.log('  ⚪ Environment check skipped (set STRICT_PUSH_ENV=true)');
+  }
   console.log('');
 }
 
@@ -400,11 +437,13 @@ function main() {
     process.exit(1);
   }
 
-  checkCloudBuildFreeTierGuard();
+  const changedFiles = getChangedFilesForPush();
+  checkCloudBuildFreeTierGuard(changedFiles);
   runTests();
   runBuildValidation();
-  checkPackageJson();
-  checkEnvironment();
+  if (STRICT_PUSH_ENV) {
+    checkEnvironment();
+  }
 
   const duration = Math.round((Date.now() - startTime) / 1000);
   printSummary(duration);

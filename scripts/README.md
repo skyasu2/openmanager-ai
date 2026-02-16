@@ -3,7 +3,7 @@
 > Owner: team
 > Status: Active Canonical
 > Doc type: Reference
-> Last reviewed: 2026-02-14
+> Last reviewed: 2026-02-16
 
 프로젝트 자동화 및 유틸리티 스크립트 (53개 파일, 16개 디렉토리).
 
@@ -43,7 +43,7 @@ scripts/
 ├── hooks/             # Git hooks
 │   ├── post-commit.js
 │   ├── pre-push.js
-│   └── validate-parallel.js   # 병렬 검증 (lint + type)
+│   └── validate-parallel.js   # 수동 병렬 검증 유틸(현재 pre-push 기본 경로 미사용)
 ├── mcp/               # MCP 서버 관련
 │   ├── codex-local.sh         # 프로젝트 스코프 Codex 래퍼
 │   ├── count-codex-mcp-usage.sh
@@ -131,4 +131,4 @@ ALLOW_LEGACY_PUBLIC_SERVER_DATA=true npx tsx scripts/generators/generate-server-
 
 ---
 
-_Last reviewed: 2026-02-14_
+_Last reviewed: 2026-02-16_
