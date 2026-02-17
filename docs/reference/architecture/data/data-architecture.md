@@ -71,7 +71,6 @@ graph TD
                         ▼
 ┌────────────────────────────────────────────┐
 │  src/data/otel-data/index.ts              │  ← OTel loader (async)
-│  src/data/otel-metrics/index.ts           │  ← OTLP adapter (async)
 └────────────────────────────────────────────┘
 ```
 
@@ -85,7 +84,7 @@ graph TD
 ### 데이터 경계 (중요)
 
 - `public/data/otel-data/*`는 **실서버 scrape 결과가 아닌 synthetic OTel 원본 데이터(SSOT)**입니다.
-- `src/data/otel-data/index.ts`와 `src/data/otel-metrics/index.ts`는 런타임 비동기 로더(fetch/fs)입니다.
+- `src/data/otel-data/index.ts`는 런타임 비동기 로더(fetch/fs)입니다.
 - `cloud-run/ai-engine/data/otel-processed/*`는 Cloud Run 하위 호환 fallback 경로입니다.
 - 런타임에서 외부 Prometheus/OTLP/Loki 수집 엔드포인트를 통해 적재하지 않습니다.
 
@@ -166,7 +165,6 @@ npm run data:verify
 |-----------|------|----------|
 | `public/data/otel-data/*` | **Primary Runtime SSOT** | ❌ 데이터셋 직접 수정 지양 |
 | `src/data/otel-data/index.ts` | OTel JSON 비동기 로더(fetch/fs) | ✅ 로딩 로직 |
-| `src/data/otel-metrics/index.ts` | OTLP 표준 호환 로더(fetch/fs) | ✅ 어댑터 로직 |
 | `src/services/metrics/MetricsProvider.ts` | **데이터 접근 Singleton** | ✅ 핵심 로직 |
 | `scripts/data/otel-fix.ts` / `scripts/data/otel-verify.ts` | 데이터 보정/검증 스크립트 | ✅ 수정 가능 |
 | `cloud-run/ai-engine/data/otel-data/*` | AI Engine용 OTel 데이터 | ❌ 배포 동기화 대상 |

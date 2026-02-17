@@ -111,7 +111,7 @@ bash scripts/ai/agent-bridge.sh --to codex --save-auto "테스트 실행"
 | Claude 설정 | `CLAUDE.md` |
 | Codex 설정 | `.codex/config.toml` |
 | 브릿지 스크립트 | `scripts/ai/agent-bridge.sh` |
-| 데이터 원본 | `src/data/hourly-data/*.json` |
+| 데이터 원본 | `public/data/otel-data/hourly/*.json` |
 | AI Engine | `cloud-run/ai-engine/src/server.ts` |
 
 ---

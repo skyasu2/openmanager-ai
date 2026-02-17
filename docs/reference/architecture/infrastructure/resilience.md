@@ -208,7 +208,7 @@ Vision 요청 → Gemini (gemini-2.0-flash)
 ```
 OTel 번들 로딩
   ├── Primary: public/data/otel-data/hourly/*.json
-  ├── Runtime loader: src/data/otel-data/index.ts, src/data/otel-metrics/index.ts (fetch/fs async)
+  ├── Runtime loader: src/data/otel-data/index.ts (fetch/fs async)
   ├── Cloud Run fallback: cloud-run/ai-engine/data/otel-processed/hourly/*.json
   └── Last fallback: 빈 슬롯 동적 생성 (무중단 응답 보장)
 ```

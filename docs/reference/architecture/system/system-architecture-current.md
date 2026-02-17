@@ -189,7 +189,7 @@ graph TB
 ### Data Boundary
 
 - `public/data/otel-data/*`: AI가 사전 생성한 **synthetic OTel-native 원본 데이터(SSOT)**
-- `src/data/otel-data/index.ts` / `src/data/otel-metrics/index.ts`: 대시보드 런타임 비동기 로더(fetch/fs)
+- `src/data/otel-data/index.ts`: 대시보드 런타임 비동기 로더(fetch/fs)
 - `cloud-run/ai-engine/data/otel-processed/*`: Cloud Run 하위 호환 fallback 데이터
 - 런타임에서 외부 Prometheus/OTLP/Loki 수집 없음 (zero external scrape)
 - 24시간 순환, 15서버, 10분 슬롯 (144 data points/server/day)
@@ -438,7 +438,7 @@ Client                     Vercel                     Cloud Run
 | Metrics SSOT | `src/services/metrics/MetricsProvider.ts` |
 | OTel Data (Primary) | `public/data/otel-data/hourly/hour-XX.json` |
 | OTel Resource/Timeseries | `public/data/otel-data/resource-catalog.json`, `public/data/otel-data/timeseries.json` |
-| OTel Async Loaders | `src/data/otel-data/index.ts`, `src/data/otel-metrics/index.ts` |
+| OTel Async Loader | `src/data/otel-data/index.ts` |
 | Cloud Run Compatibility Fallback | `cloud-run/ai-engine/data/otel-processed/hourly/hour-XX.json` |
 | OTel 품질/검증 스크립트 | `scripts/data/otel-fix.ts`, `scripts/data/otel-verify.ts` |
 | Cloud Run Data | `cloud-run/ai-engine/src/data/precomputed-state.ts` |

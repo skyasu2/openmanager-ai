@@ -40,7 +40,6 @@ OpenTelemetry는 이 프로젝트에서 **"빌드 타임 시맨틱 변환 도구
                     │
     async fetch/fs loaders
  src/data/otel-data/index.ts
- src/data/otel-metrics/index.ts
                     │
          ┌──────────┴──────────┐
          ▼                     ▼
@@ -117,7 +116,6 @@ SDK는 프로덕션 모니터링용이 아닌 향후 확장 스켈레톤입니�
 |---|---|
 | `public/data/otel-data/` | 런타임 SSOT (OTel-native, externalized) |
 | `src/data/otel-data/index.ts` | OTel 데이터 비동기 로더(fetch/fs) |
-| `src/data/otel-metrics/index.ts` | OTLP 표준 호환 비동기 로더(fetch/fs) |
 | `scripts/data/otel-fix.ts` | 데이터 보정 스크립트 |
 | `scripts/data/otel-verify.ts` | 데이터 무결성 검증 스크립트 |
 | `src/services/metrics/metric-transformers.ts` | Prometheus 명칭 ↔ OTel 시맨틱 매핑 로직 |
