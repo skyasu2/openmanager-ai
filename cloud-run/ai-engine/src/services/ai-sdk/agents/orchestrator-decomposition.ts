@@ -78,7 +78,7 @@ ${query}
     const decomposition = result.object;
     console.log(`🔀 [Decompose] Created ${decomposition.subtasks.length} subtasks (sequential: ${decomposition.requiresSequential})`);
 
-    const validSubtasks = decomposition.subtasks.filter(subtask => {
+    const validSubtasks = decomposition.subtasks.filter((subtask: Subtask) => {
       const agentConfig = getAgentConfig(subtask.agent);
 
       if (!agentConfig) {

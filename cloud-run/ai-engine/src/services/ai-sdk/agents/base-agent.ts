@@ -20,7 +20,7 @@ import {
   ToolLoopAgent,
   hasToolCall,
   stepCountIs,
-  type Tool,
+  type ToolSet,
   type LanguageModel,
   type TextPart,
   type ImagePart,
@@ -202,10 +202,10 @@ export abstract class BaseAgent {
    * Filter tools based on options
    */
   protected filterTools(
-    tools: Record<string, Tool>,
+    tools: ToolSet,
     options: AgentRunOptions,
     provider: string
-  ): Record<string, Tool> {
+  ): ToolSet {
     const filtered = { ...tools };
 
     if (options.webSearchEnabled !== false) {
@@ -283,7 +283,7 @@ export abstract class BaseAgent {
   private createToolLoopAgent(params: {
     model: LanguageModel;
     instructions: string;
-    tools: Record<string, Tool>;
+    tools: ToolSet;
     maxSteps: number;
     temperature: number;
     maxOutputTokens: number;
@@ -410,7 +410,7 @@ export abstract class BaseAgent {
     const { model, provider, modelId } = modelResult;
     const maxOutputTokens = this.resolveMaxOutputTokens(opts, provider, agentName);
     const filteredTools = this.filterTools(
-      config.tools as Record<string, Tool>,
+      config.tools,
       opts,
       provider
     );
@@ -563,7 +563,7 @@ export abstract class BaseAgent {
     const { model, provider, modelId } = modelResult;
     const maxOutputTokens = this.resolveMaxOutputTokens(opts, provider, agentName);
     const filteredTools = this.filterTools(
-      config.tools as Record<string, Tool>,
+      config.tools,
       opts,
       provider
     );

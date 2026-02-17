@@ -13,10 +13,10 @@
  * @created 2026-01-06
  */
 
-import type { LanguageModel, Tool } from 'ai';
+import type { LanguageModel, ToolSet } from 'ai';
 
 // Tool type from AI SDK
-type ToolsMap = Record<string, Tool>;
+type ToolsMap = ToolSet;
 
 // Instructions
 import {

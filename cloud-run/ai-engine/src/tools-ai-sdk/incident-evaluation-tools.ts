@@ -584,7 +584,7 @@ export const enhanceSuggestedActions = tool({
 
     const commands = COMMAND_TEMPLATES[focusArea] || COMMAND_TEMPLATES.general;
 
-    const enhancedActions: EnhancedAction[] = actions.map((action) => {
+    const enhancedActions: EnhancedAction[] = actions.map((action: string) => {
       // Determine priority based on action content
       let priority: EnhancedAction['priority'] = 'medium';
       if (/긴급|즉시|critical/i.test(action)) priority = 'critical';
@@ -670,7 +670,7 @@ export const extendServerCorrelation = tool({
 
     for (const server of similarServers) {
       // Check if already in existing correlations
-      const alreadyCorrelated = existingCorrelations.some(c =>
+      const alreadyCorrelated = existingCorrelations.some((c: { serverId: string; correlatedWith: string; correlationType: string }) =>
         (c.serverId === primaryServerId && c.correlatedWith === server.id) ||
         (c.serverId === server.id && c.correlatedWith === primaryServerId)
       );

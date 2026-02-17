@@ -10,9 +10,6 @@
  */
 
 import { MistralAI } from '@llamaindex/mistral';
-import {
-  Settings,
-} from 'llamaindex';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { getSupabaseConfig, getMistralApiKey } from './config-parser';
 import { logger } from './logger';
@@ -55,6 +52,7 @@ export interface LlamaIndexStats {
 
 let isInitialized = false;
 let supabaseClient: SupabaseClient | null = null;
+let llamaLlm: MistralAI | null = null;
 
 /**
  * Initialize LlamaIndex with Mistral AI
@@ -69,8 +67,8 @@ export async function initializeLlamaIndex(): Promise<boolean> {
       return false;
     }
 
-    // Configure LlamaIndex to use Mistral
-    Settings.llm = new MistralAI({
+    // Configure Mistral LLM instance
+    llamaLlm = new MistralAI({
       model: 'mistral-small-latest', // 24B parameters, cost-effective
       apiKey: mistralApiKey,
     });
@@ -107,7 +105,7 @@ export async function extractTriplets(
 ): Promise<KnowledgeTriplet[]> {
   await initializeLlamaIndex();
 
-  if (!Settings.llm) {
+  if (!llamaLlm) {
     logger.warn('⚠️ [LlamaIndex] LLM not configured');
     return [];
   }
@@ -126,7 +124,7 @@ Output as JSON array:
 Only output the JSON array, no other text.
 `;
 
-    const response = await Settings.llm.complete({ prompt });
+    const response = await llamaLlm.complete({ prompt });
     const responseText = response.text.trim();
 
     // Parse JSON response

@@ -41,6 +41,25 @@ vi.mock('../data/precomputed-state', () => ({
       criticalCount: 1,
     },
   })),
+  getRecentHistory: vi.fn((count: number) =>
+    Array.from({ length: count }, (_, idx) => ({
+      timestamp: new Date(Date.now() - idx * 10 * 60 * 1000).toISOString(),
+      servers: [
+        {
+          id: 'web-server-01',
+          cpu: 86,
+          memory: 72,
+          disk: 45,
+        },
+        {
+          id: 'db-server-01',
+          cpu: 92,
+          memory: 88,
+          disk: 78,
+        },
+      ],
+    }))
+  ),
 }));
 
 
