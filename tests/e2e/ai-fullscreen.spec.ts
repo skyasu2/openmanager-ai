@@ -83,8 +83,12 @@ test.describe('AI 어시스턴트 풀스크린 테스트', () => {
     });
     await page.waitForLoadState('networkidle');
 
-    // 채팅 기능 버튼 클릭 (텍스트 기반 셀렉터)
-    const chatButton = page.locator('button:has-text("자연어 질의")').first();
+    // 채팅 기능 버튼 클릭 (라벨 변경 대응: 자연어 질의 → AI Chat)
+    const chatButton = page
+      .locator(
+        '[data-testid="ai-function-chat"], button:has-text("AI Chat"), button:has-text("자연어 질의")'
+      )
+      .first();
     await chatButton.waitFor({
       state: 'visible',
       timeout: TIMEOUTS.MODAL_DISPLAY,

@@ -55,6 +55,8 @@ export default defineConfig({
       name: 'chromium',
       use: {
         ...devices['Desktop Chrome'],
+        // headless-shell 충돌 회피를 위해 full Chromium 채널을 기본 사용
+        channel: process.env.PLAYWRIGHT_CHANNEL || 'chromium',
         launchOptions: {
           args: [
             '--no-sandbox',

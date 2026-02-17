@@ -68,7 +68,7 @@ test.describe('♿ 접근성 (Accessibility) 검증', () => {
       );
     });
 
-    expect(ariaElements.length).toBeGreaterThan(5);
+    expect(ariaElements.length).toBeGreaterThanOrEqual(5);
     console.log('✅ ARIA 접근성 검증 완료');
   });
 

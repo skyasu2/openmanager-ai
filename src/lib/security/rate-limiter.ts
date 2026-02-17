@@ -436,7 +436,7 @@ export function withRateLimit(
       // 일일 제한 초과 여부에 따라 메시지 분기
       const isDailyLimitExceeded = result.daily && result.daily.remaining <= 0;
       const message = isDailyLimitExceeded
-        ? '일일 요청 제한(100회)을 초과했습니다. 내일 다시 시도해주세요.'
+        ? `일일 요청 제한(${rateLimiter.config.dailyLimit ?? 100}회)을 초과했습니다. 내일 다시 시도해주세요.`
         : '요청 제한을 초과했습니다. 잠시 후 다시 시도해주세요.';
 
       const headers: Record<string, string> = {

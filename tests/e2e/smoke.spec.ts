@@ -44,10 +44,12 @@ test.describe('기본 스모크 테스트', () => {
     // (2024-12 리팩토링: /main → / 이동, 리다이렉트 없이 랜딩 페이지 표시)
     await expect(page).toHaveTitle(/OpenManager/);
 
-    // 랜딩 페이지 핵심 요소 확인 (메인 타이틀)
-    await expect(
-      page.getByRole('heading', { name: /AI.*서버 모니터링/ })
-    ).toBeVisible();
+    // 랜딩 페이지 핵심 요소 확인 (카피 변동에 강한 메인 헤더 기준)
+    const landingHeading = page
+      .getByRole('heading', { level: 1 })
+      .filter({ hasText: /OpenManager/i })
+      .first();
+    await expect(landingHeading).toBeVisible();
   });
 
   test('404 페이지가 존재하지 않는 경로에서 작동한다', async ({ page }) => {
