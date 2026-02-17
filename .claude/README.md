@@ -23,13 +23,12 @@
     └── review.md
 ```
 
-## 커스텀 스킬 (5개)
+## 커스텀 스킬 (4개)
 
 | 스킬 | 버전 | 용도 |
 |------|------|------|
 | `git-workflow` | v1.0.0 | Git 커밋/푸시/PR 워크플로우 (commit, clean_gone) |
 | `cloud-run` | v1.0.0 | Cloud Run 배포 + GCP 비용 점검 |
-| `code-review` | v2.0.0 | Agile 6-관점 severity 기반 코드리뷰 |
 | `lint-smoke` | v1.4.0 | Lint + 테스트 스모크 체크 |
 | `doc-management` | v1.2.0 | 문서 현황 점검, 예산 관리 |
 
@@ -45,12 +44,6 @@
 | **next-devtools** | Next.js 런타임 진단 | 중간 |
 | **github** | 저장소 관리 | 중간 |
 | **stitch** | Google Stitch AI UI 디자인 | 중간 |
-
-## Custom Commands
-
-| 명령어 | 파일 | 설명 |
-|--------|------|------|
-| `/review` | `commands/review.md` | Severity 기반 코드리뷰 + release 판정 |
 
 ## Hooks 설정
 

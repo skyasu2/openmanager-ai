@@ -13,17 +13,16 @@
 | `playwright` | E2E 테스트 | 중간 |
 | `github` | 저장소/PR 관리 | 중간 |
 
-## Skills (5개)
+## Skills (4개)
 
 | Skill | 설명 |
 |-------|------|
 | `git-workflow` | Git 커밋/푸시/PR 워크플로우 (commit, clean_gone) |
 | `cloud-run` | Cloud Run 배포 + GCP 비용 점검 |
-| `code-review` | Agile 6-관점 severity 기반 코드리뷰 |
 | `lint-smoke` | Lint + 테스트 스모크 체크 |
 | `doc-management` | 문서 현황 점검, 예산 관리 |
 
-> Built-in skills: `review` (코드 품질), `frontend-design` (UI 생성)
+> Built-in skills: `review` (PR 기반 코드리뷰), `frontend-design` (UI 생성)
 
 ## CLI Tools (WSL)
 

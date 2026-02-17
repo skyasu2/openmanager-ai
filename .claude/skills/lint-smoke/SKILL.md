@@ -36,9 +36,9 @@ allowed-tools: Bash, Read, Grep
 - 성공/실패 명령 분리
 - 실패 시 다음 조치 명령을 한 줄로 제시
 
-5. 리뷰 요청이 있으면 리뷰 스킬로 연결.
+5. 리뷰 요청이 있으면 빌트인 `review` 스킬로 연결.
 - 스모크 체크는 결함 분석이 아님
-- 리뷰 요청 시 `code-review` 스킬 기준으로 severity 보고 수행
+- 리뷰 요청 시 빌트인 `review` 스킬로 위임
 
 ## Output Format
 

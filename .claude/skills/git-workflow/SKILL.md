@@ -29,7 +29,7 @@ Git 커밋, 푸시, PR 생성을 안전한 절차로 수행합니다.
 - 코드 변경이면 최소 `npm run test:quick` 또는 대상 검증 결과 확인
 
 3. 리뷰 요청 여부 확인.
-- 사용자가 리뷰를 요청했으면 `code-review` 기준으로 findings 반영 후 커밋
+- 사용자가 리뷰를 요청했으면 빌트인 `review` 기준으로 findings 반영 후 커밋
 
 4. 커밋 메시지 생성.
 - Conventional Commit 사용: `feat|fix|refactor|docs|chore`
@@ -54,7 +54,7 @@ Git 커밋, 푸시, PR 생성을 안전한 절차로 수행합니다.
 - 코드 변경 시 `npm run test:quick` 또는 대상 검증 수행
 
 3. 리뷰 요청/고위험 변경 확인.
-- 리뷰 요청 또는 고위험 변경이면 `code-review` 기준 findings 요약 포함
+- 리뷰 요청 또는 고위험 변경이면 빌트인 `review` 기준 findings 요약 포함
 
 4. Push 실행.
 - 기본: `git push origin <branch>`
@@ -94,7 +94,7 @@ Git Workflow Results
 
 ## Related Skills
 
-- `code-review` - 커밋/푸시 전 리뷰 연계
+- 빌트인 `review` - 커밋/푸시 전 리뷰 연계
 - `lint-smoke` - 사전 품질 검증
 
 ## Changelog
