@@ -3,10 +3,15 @@
 > Owner: project-lead
 > Status: Active Canonical
 > Doc type: Reference
-> Last reviewed: 2026-02-16
+> Last reviewed: 2026-02-17
 > Tags: wbs,completion,audit,retrospective
+> Canonical: reports/planning/wbs.md
+> 연관 문서: [최종 검수 확인서](completion-review.md) (가중 점수 교차 검증)
 
 **작성 목적**: 실제 코드베이스 분석 기반의 회고형 WBS + 완성도 퍼센트 산출
+
+> **범위 구분**: 본 문서의 §2~§7은 **개발 일정 및 완성도 평가 대상**입니다.
+> 개발 환경·도구·인프라 설정은 완성도에 포함되지 않으며, [부록 A](#부록-a-개발-환경-wbs완성도-미반영)에 별도 관리합니다.
 
 ---
 
@@ -16,7 +21,7 @@
 |------|-----|
 | 기간 | 2025-05-23 ~ 2026-02-14 (9개월) |
 | 커밋 | 5,698개 |
-| 코드량 | ~166,000 Lines (Frontend 47K+ / AI Engine 31K / Config & Tests) |
+| 코드량 | ~199,000 Lines (Frontend 125K+ / AI Engine 38K+ / Config & Tests) |
 | 목적 | 포트폴리오 & 바이브 코딩 학습 결과물 |
 
 ---
@@ -120,7 +125,7 @@
 | 27개 도구 (Tools) | 98% | 전체 구현, validateTools() 시작 검증 |
 | 보안 (Prompt Guard) | 95% | 15개 패턴 (EN+KO), OWASP 기반, timing-safe 비교, stateful regex 보호 |
 | RAG/Knowledge | 85% | LlamaIndex + pgvector, Mistral 임베딩 |
-| 테스트 | 65% | 16개 파일 (node_modules 제외), 단위 우수, E2E 부족 |
+| 테스트 | 75% | 18개 파일 (node_modules 제외), circuit-breaker/quota-tracker 단위 추가, E2E 부족 |
 | 배포 (Docker + Cloud Run) | 98% | Free Tier Guard Rails, 3-stage build |
 | Langfuse 관찰성 | 90% | 10% 샘플링, Free Tier 보호 |
 
@@ -139,8 +144,13 @@
 - ~~Handoff events 배열 무한 증가~~ → O(1) 링 버퍼(50건) 교체
 - ~~Prompt Injection stateful regex~~ → `lastIndex` 리셋 + low-risk 경고 분리
 
+**해결 완료** (2026-02-17):
+- ~~Circuit Breaker 단위 테스트 0개~~ → 24개 테스트 추가 (`circuit-breaker.test.ts`)
+- ~~Quota Tracker 단위 테스트 0개~~ → 23개 테스트 추가 (`quota-tracker.test.ts`)
+- ~~Cloud Run API 계약 테스트 없음~~ → 11개 테스트 추가 (`tests/api/cloud-run-contract.test.ts`, 환경변수 게이트)
+
 **남은 항목 1건**:
-1. E2E 테스트 부족 (Cloud Run 단독 통합 테스트 없음)
+1. Cloud Run 실환경 E2E 통합 테스트 파이프라인 (CI/CD 연계)
 
 #### 3.3-a 에이전트 수 산정 기준 (코드 기준)
 
@@ -217,7 +227,7 @@
 | Config (SSOT) | 100% | 20파일, Zod 검증 |
 | Scripts (데이터 동기화) | 100% | sync-hourly-data + otel-precompute (로그 적재 완료) |
 | Utils/Lib 정리 | 100% | api-batcher, error-response, safeFormat, network-tracking, timeout-config, CentralizedDataManager 삭제 |
-| 테스트 인프라 | 80% | 52파일, 10,859줄, 커버리지 ~11% |
+| 테스트 인프라 | 85% | 55파일, ~11,300줄, resilience 단위 + Cloud Run 계약 테스트 추가 |
 | AI SDK 버전 정합성 | 100% | Root `ai@6.0.86`, `@ai-sdk/react@3.0.88`로 상향 및 스모크 검증 |
 
 ### 3.6 문서 (95%)
@@ -429,10 +439,21 @@
 - `llm-once`(추론 1회): 4/4 PASS
 - 검증 대상: `https://ai-engine-490817238363.asia-northeast1.run.app`
 
-### 7.8 WSL 문서 관리 영역 체크리스트
+---
 
-목표:
-- WSL 환경에서 문서 품질 점검을 표준화하고, 점검 산출물을 고정 경로에 저장해 재현성을 확보.
+_분석 기준: 4개 병렬 탐색 에이전트로 src/, cloud-run/, scripts/ 전체 코드 분석_
+_최종 갱신: 2026-02-17 (개발 환경 부록 분리, 완료 보고서 상호 참조 추가)_
+
+---
+
+## 부록 A: 개발 환경 (WBS/완성도 미반영)
+
+> 이 부록은 **개발 일정·완성도 평가에 포함되지 않는** 개발 환경, 도구, 인프라 설정 항목입니다.
+> 프로젝트 결과물이 아닌 개발 생산성·워크플로우 관련 사항을 기록합니다.
+
+### A.1 WSL 문서 관리 영역
+
+목표: WSL 환경에서 문서 품질 점검을 표준화하고, 점검 산출물을 고정 경로에 저장해 재현성을 확보.
 
 | 항목 | 상태 | 근거 |
 |------|:----:|------|
@@ -449,7 +470,22 @@
 1. `npm run docs:check:wsl`
 2. `npm run docs:check:wsl:strict` (문서 변경 PR 전)
 
----
+### A.2 AI 개발 도구 (MCP / CLI)
 
-_분석 기준: 4개 병렬 탐색 에이전트로 src/, cloud-run/, scripts/ 전체 코드 분석_
-_최종 갱신: 2026-02-17 (수치 현행화: cloud-run 테스트 662→16(node_modules 제외), 활성 문서 48→53, Skills 체계 통합 반영)_
+| 항목 | 상태 | 비고 |
+|------|:----:|------|
+| MCP 서버 8개 구성 | 완료 | context7, sequential-thinking, next-devtools, stitch, supabase-db, vercel, playwright, github |
+| supabase-db 로컬 격리 설치 | 완료 | OAuth/SSE 충돌 회피 (`~/.mcp-servers/supabase/`) |
+| Claude Code + Codex CLI 듀얼 운용 | 완료 | `scripts/ai/agent-bridge.sh` 통한 상호 통신 |
+| Gemini CLI 설치 | 완료 | v0.28.2, Node.js punycode 경고는 기능 무영향 |
+| Skills 체계 통합 | 완료 | 5개 skill (git-workflow, cloud-run, code-review, lint-smoke, doc-management) |
+
+### A.3 개발 환경 설정
+
+| 항목 | 상태 | 비고 |
+|------|:----:|------|
+| WSL2 (Ubuntu) | 완료 | Linux 6.6.87.2-microsoft-standard-WSL2 |
+| Node.js v24.13.1 | 완료 | LTS |
+| Biome (Lint + Format) | 완료 | PostToolUse hook 자동 포맷팅 |
+| Pre-commit / Pre-push hooks | 완료 | lint, type-check, test 게이트 |
+| VS Code 연동 | 완료 | Biome extension + Claude Code |

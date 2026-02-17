@@ -14,6 +14,7 @@
 
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
+import { developmentOnly } from '@/lib/api/development-only';
 import { createApiRoute } from '@/lib/api/zod-middleware';
 import { createClient } from '@/lib/supabase/server';
 import {
@@ -141,15 +142,7 @@ const getHandler = createApiRoute()
     };
   });
 
-export async function GET(request: NextRequest) {
-  // 🚫 개발 환경에서만 접근 허용
-  if (process.env.NODE_ENV === 'production') {
-    return NextResponse.json(
-      { error: 'Test endpoints are not available in production' },
-      { status: 404 }
-    );
-  }
-
+export const GET = developmentOnly(async (request: NextRequest) => {
   try {
     return await getHandler(request);
   } catch (error) {
@@ -165,7 +158,7 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});
 
 // POST 핸들러
 const postHandler = createApiRoute()
@@ -275,18 +268,7 @@ const postHandler = createApiRoute()
     };
   });
 
-/**
- * 🔧 POST: GitHub OAuth 설정 상세 진단
- */
-export async function POST(request: NextRequest) {
-  // 🚫 개발 환경에서만 접근 허용
-  if (process.env.NODE_ENV === 'production') {
-    return NextResponse.json(
-      { error: 'Test endpoints are not available in production' },
-      { status: 404 }
-    );
-  }
-
+export const POST = developmentOnly(async (request: NextRequest) => {
   try {
     return await postHandler(request);
   } catch (error) {
@@ -301,4 +283,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});

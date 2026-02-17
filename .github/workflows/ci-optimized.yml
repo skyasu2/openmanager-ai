@@ -168,3 +168,27 @@ jobs:
           echo "✅ 보안 검증: ${{ needs.security-scan.result }}"
           echo "🚀 Vercel 배포: 준비 완료"
           echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+  # ☁️ Cloud Run 스모크 테스트 (배포 후 자동 검증)
+  cloud-run-smoke:
+    name: Cloud Run Smoke
+    runs-on: ubuntu-latest
+    needs: [deployment-ready]
+    if: >-
+      needs.deployment-ready.result == 'success' &&
+      vars.CLOUD_RUN_AI_URL != ''
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
+      - run: npm ci
+      - name: Cloud Run Essential Smoke
+        run: npm run test:cloud:essential:strict
+        env:
+          CLOUD_RUN_AI_URL: ${{ vars.CLOUD_RUN_AI_URL }}
+          CLOUD_RUN_API_SECRET: ${{ secrets.CLOUD_RUN_API_SECRET }}
+        timeout-minutes: 2

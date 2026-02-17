@@ -53,6 +53,23 @@
 - **Runtime**: Node `>=24 <25` (root `package.json` 기준)
 - 갱신 주기: 최소 월 1회 또는 주요 릴리스(프레임워크/런타임/SDK 버전 변경) 시 즉시 갱신합니다.
 
+## 💰 Free Tier Guard Rules (Non-negotiable)
+
+> **실제 사고**: 2026-01 AI가 "optimize" 명목으로 Cloud Build `E2_HIGHCPU_8` + Cloud Run 유료 옵션을 추가하여 ~20,000 KRW 청구됨.
+
+1. **무료 한도 초과 구성/테스트 생성 절대 금지**: machine-type, GPU, 고사양 인스턴스, 유료 API 호출 등
+2. **발견 즉시 개선**: 기존 코드/설정에서 Free Tier 초과 구성 발견 시 즉시 제거/수정
+3. **"최적화" ≠ 스펙 업그레이드**: 성능 개선은 캐시, 병렬화, 코드 개선으로 해결. 머신 스펙 올리기 금지
+4. **비용 영향 변경 시 `[COST]` 태그**: 인프라 비용에 영향을 주는 커밋에 명시
+5. **CI/테스트에서 LLM 호출 최소화**: 스모크 테스트는 health check만, LLM 호출 0회 기본
+
+| 서비스 | 무료 한도 | 규칙 |
+|--------|----------|------|
+| Cloud Build | `e2-medium` 기본값, 120분/일 | `--machine-type` 옵션 사용 금지 |
+| Cloud Run | 180K vCPU-sec, 360K GB-sec, 2M req/월 | CPU: 1, Memory: 512Mi |
+| Vercel | Pro 플랜 범위 내 | Build Machine: Standard만 |
+| GitHub Actions | 2,000분/월 (Free) | 불필요한 job 추가 자제 |
+
 ## 🛠 Technical Principles (Non-negotiable)
 
 ### 1) Type Safety

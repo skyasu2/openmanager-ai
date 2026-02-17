@@ -174,19 +174,19 @@
 ## 🏗️ Technical Stack (v8.0.0)
 
 **Core Frameworks** (2025 Standard)
-- **Next.js**: `v16.1.3` (App Router, Server Components)
+- **Next.js**: `v16.1.6` (App Router, Server Components)
 - **React**: `v19.2.4` (RSC, Actions, useOptimistic)
 - **TypeScript**: `v5.9.3` (Strict Mode)
 - **Node.js**: `v24.x` (Current, engines: >=24.0.0 <25.0.0)
 
 **UI & Styling**
 - **Tailwind CSS**: `v4.1.17` (PostCSS optimized)
-- **Component Lib**: Radix UI (Latest), Lucide React `v0.562.0`
+- **Component Lib**: Radix UI (Latest), Lucide React `v0.564.0`
 - **Animation**: tailwindcss-animate (CSS-based, Framer Motion 제거됨)
 
 **State & Data**
-- **Zustand**: Global client state
-- **React Query**: Server state synchronization
+- **Zustand**: `v5.0.11` (Global client state)
+- **React Query**: `v5.90.21` (Server state synchronization)
 - **Supabase**: PostgreSQL + Realtime + Auth
 - **Upstash**: Serverless Redis (Caching & Rate Limiting)
 - **GraphRAG**: Knowledge Graph + Vector Search Hybrid (pgvector 기반)
@@ -200,10 +200,10 @@
 - `.claude/rules/` → Claude Code 전용 간략 규칙
 - `docs/` → 개발자용 상세 문서
 - Diataxis 분류 적용 (Tutorial/How-to/Reference/Explanation)
-- **State Mgmt**: Zustand `v5.0.10`
-- **Data Fetching**: TanStack Query `v5.90.18`
-- **Backend/DB**: Supabase JS `v2.93.2` (SSR `v0.8.0`)
-- **Utility**: tailwind-merge `v3.4.0`
+- **State Mgmt**: Zustand `v5.0.11`
+- **Data Fetching**: TanStack Query `v5.90.21`
+- **Backend/DB**: Supabase JS `v2.95.3` (SSR `v0.8.0`)
+- **Utility**: tailwind-merge `v3.4.1`
 
 **AI Ecosystem** (상세: [AI Engine Architecture](./reference/architecture/ai/ai-engine-architecture.md))
 - **SDK**: Vercel AI SDK `v6.0.86` (`@ai-sdk/*` 패키지 포함, Cloud Run: `^6.0.50`)
@@ -421,13 +421,13 @@
 
 | 영역 | 파일 수 | 코드 라인 | 점수 | 상태 |
 |------|---------|----------|------|------|
-| **Frontend** (Vercel) | 760+ | ~50,000+ | 85/100 | ✅ A- |
-| **Backend** (Cloud Run) | 63 | ~18,700 | 87/100 | ✅ A- |
+| **Frontend** (Vercel) | 800+ | ~125,000+ | 85/100 | ✅ A- |
+| **Backend** (Cloud Run) | 106 | ~38,000 | 87/100 | ✅ A- |
 
 **분석 결과**:
 - `any` 타입: **0개** (Frontend 17 + Backend 5 → 전체 제거 완료, TypeScript strict 통과)
 - 대형 파일: Frontend 5개, Backend 12개 → 모두 내부 구조 양호
-- 코드량 분포: Frontend ~137,000 lines → 역할 대비 적정 (집중 영역 3곳 모두 정상)
+- 코드량 분포: Frontend ~125,000 lines → 역할 대비 적정 (집중 영역 3곳 모두 정상)
 - TypeScript strict: ✅ 양쪽 모두 PASS
 
 **상세 보고서**: [`reports/planning/archive/ai-codebase-improvement-plan.md`](../reports/planning/archive/ai-codebase-improvement-plan.md)
@@ -507,4 +507,4 @@
 - **Code Review**: Codex + Gemini 2-AI Rotation
 - **MCP**: 8개 서버 연동 (Context7, Stitch, Supabase-DB, Vercel, Playwright, GitHub, Sequential-Thinking, Next-DevTools)
 
-**총 코드량**: ~169,000 Lines (Frontend 50K+ / Backend 18K+ / Config & Tests)
+**총 코드량**: ~199,000 Lines (Frontend 125K+ / Backend 38K+ / Config & Tests)

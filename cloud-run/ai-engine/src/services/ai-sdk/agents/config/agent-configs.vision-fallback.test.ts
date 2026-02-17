@@ -164,4 +164,40 @@ describe('agent-configs vision fallback', () => {
 
     expect(model).toBeNull();
   });
+
+  it('returns null when Gemini unavailable and OpenRouter init throws', () => {
+    vi.mocked(checkProviderStatus).mockReturnValue({
+      cerebras: false,
+      groq: false,
+      mistral: false,
+      gemini: false,
+      openrouter: true,
+    });
+    vi.mocked(getOpenRouterVisionModelId).mockReturnValue(
+      'nvidia/nemotron-nano-12b-v2-vl:free'
+    );
+    vi.mocked(getOpenRouterVisionModel).mockImplementation(() => {
+      throw new Error('openrouter init failed');
+    });
+
+    const model = visionConfig.getModel();
+
+    expect(model).toBeNull();
+  });
+
+  it('full chain: all providers fail → getModel returns null', () => {
+    // Config null → AgentFactory.isAvailable false → Analyst 라우팅
+    // (Analyst 라우팅은 vision-agent.test.ts:262에서 이미 검증)
+    vi.mocked(checkProviderStatus).mockReturnValue({
+      cerebras: true,
+      groq: true,
+      mistral: true,
+      gemini: false,
+      openrouter: false,
+    });
+
+    expect(visionConfig.getModel()).toBeNull();
+    expect(getGeminiFlashLiteModel).not.toHaveBeenCalled();
+    expect(getOpenRouterVisionModel).not.toHaveBeenCalled();
+  });
 });

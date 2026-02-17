@@ -4,7 +4,7 @@
 > Owner: dev-experience
 > Status: Active Supporting
 > Doc type: Reference
-> Last reviewed: 2026-02-15
+> Last reviewed: 2026-02-17
 > Canonical: docs/vibe-coding/mcp-servers.md
 > Tags: vibe-coding,mcp,configuration
 
@@ -104,6 +104,18 @@ bash scripts/mcp/codex-local.sh mcp list
 bash scripts/mcp/mcp-health-check-codex.sh
 ```
 1. 서버별 최소 1회 도구 호출로 실동작을 확인합니다.
+
+### GitHub MCP 토큰 자동 동기화 (2026-02-17)
+
+- `scripts/mcp/codex-local.sh`와 `scripts/mcp/mcp-health-check-codex.sh`는 실행 전에 `scripts/mcp/sync-github-mcp-auth.sh`를 자동 호출합니다.
+- 동기화 대상: `.env.local`의 `GITHUB_PERSONAL_ACCESS_TOKEN` (없으면 `GITHUB_TOKEN`) → `.codex/config.toml`의 `[mcp_servers.github.env]`.
+- 토큰이 이미 같으면 파일을 변경하지 않습니다.
+- `.env.local` 또는 토큰이 없으면 경고만 출력하고 기존 설정으로 계속 진행합니다.
+- 필요 시 수동 실행:
+
+```bash
+bash scripts/mcp/sync-github-mcp-auth.sh
+```
 
 ### Playwright MCP (현재 의도된 동작 기준)
 
