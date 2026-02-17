@@ -4,6 +4,8 @@
  * @version 4.0.0
  */
 
+import type { ToolSet } from 'ai';
+
 // ============================================================================
 // Web Search Auto-Detection
 // ============================================================================
@@ -105,10 +107,10 @@ export function resolveWebSearchSetting(
  * Filter tools based on web search setting
  * Removes searchWeb tool when web search is disabled
  */
-export function filterToolsByWebSearch<T extends Record<string, unknown>>(
-  tools: T,
+export function filterToolsByWebSearch(
+  tools: ToolSet,
   webSearchEnabled: boolean
-): T {
+): ToolSet {
   if (webSearchEnabled) {
     return tools;
   }

@@ -116,12 +116,13 @@ import { evaluateIncidentReport, validateReportStructure, scoreRootCauseConfiden
 import { finalAnswer } from './final-answer';
 import { getServerLogs } from './server-logs';
 import { analyzeScreenshot, analyzeLargeLog, searchWithGrounding, analyzeUrlContent } from './vision-tools';
+import type { ToolSet } from 'ai';
 import { logger } from '../lib/logger';
 
 /**
  * All available tools for the AI SDK Supervisor
  */
-export const allTools = {
+export const allTools: ToolSet = {
   // Server Metrics (NLQ)
   getServerMetrics,
   getServerMetricsAdvanced,
@@ -216,7 +217,7 @@ export const toolCategories = {
 /**
  * Tool descriptions for intent classification
  */
-export const toolDescriptions = {
+export const toolDescriptions: Record<string, string> = {
   getServerMetrics: '서버 상태 조회 (CPU, 메모리, 디스크)',
   getServerMetricsAdvanced: '고급 서버 메트릭 조회 (시간범위, 필터, 집계)',
   filterServers: '조건에 맞는 서버 필터링',

@@ -13,7 +13,6 @@ import {
   stepCountIs,
   hasToolCall,
   type ModelMessage,
-  type ToolSet,
   type UserContent,
 } from 'ai';
 import {
@@ -282,7 +281,7 @@ async function executeSupervisorAttempt(
       const result = await generateText({
         model,
         messages: modelMessages,
-        tools: filteredTools as ToolSet,
+        tools: filteredTools,
         prepareStep: createPrepareStep(queryText, { enableWebSearch: webSearchEnabled }),
         stopWhen: [hasToolCall('finalAnswer'), stepCountIs(3)],
         temperature: 0.4,
@@ -578,7 +577,7 @@ async function* streamSingleAgent(
     const result = streamText({
       model,
       messages: modelMessages,
-      tools: filteredTools as ToolSet,
+      tools: filteredTools,
       prepareStep: createPrepareStep(queryText, { enableWebSearch: webSearchEnabled }),
       stopWhen: [hasToolCall('finalAnswer'), stepCountIs(3)],
       temperature: 0.4,
