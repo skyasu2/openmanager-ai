@@ -138,7 +138,6 @@
     "dev:tmux:clean": "tmux kill-session -t openmanager-dev"
   },
   "dependencies": {
-    "@ai-sdk/groq": "^3.0.24",
     "@ai-sdk/mistral": "^3.0.20",
     "@ai-sdk/react": "^3.0.88",
     "@dagrejs/dagre": "^2.0.4",
