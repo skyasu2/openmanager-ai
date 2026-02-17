@@ -4,7 +4,7 @@
 > Owner: dev-experience
 > Status: Active Canonical
 > Doc type: How-to
-> Last reviewed: 2026-02-14
+> Last reviewed: 2026-02-17
 > Canonical: docs/development/project-setup.md
 > Tags: wsl,github-auth,project-setup
 
@@ -25,18 +25,24 @@
 |------|------|------|------|
 | HTTPS + `gh auth login` | WSL/Windows 혼합 환경에서 안정적, credential helper 연동 쉬움 | 최초 브라우저 인증 필요 | 권장 |
 | SSH 키 | 키 기반 인증, 토큰 불필요 | 초기 설정/키 관리 부담 | 선택 |
-| PAT 수동 입력/환경변수 | 즉시 사용 가능 | 토큰 노출/만료 관리 부담 | 비권장 |
+| Classic PAT + `gh auth login` | 즉시 사용, push 권한 확실 | 토큰 만료 관리 부담 | WSL 대안 |
 
 권장 절차:
 ```bash
+# 방법 1: 브라우저 로그인 (WSL Interop 필요)
 gh auth login -h github.com -p https -w
 gh auth status -h github.com
+gh auth setup-git
+
+# 방법 2: Classic PAT (WSL에서 브라우저 안 열릴 때)
+# GitHub → Settings → Tokens → Classic → repo, read:org, workflow 스코프
+gh auth login -h github.com -p https  # "Paste an authentication token" 선택
 gh auth setup-git
 ```
 
 > **WSL 주의**: `-w`(브라우저) 방식은 `/etc/wsl.conf`에 `[interop] enabled=true`가 필요합니다.
-> 브라우저가 안 열리면 [WSL Interop 트러블슈팅](../troubleshooting/common-issues.md#wsl-interop-issues)을 참조하거나,
-> `-w` 없이 PAT 토큰 방식으로 인증하세요.
+> 브라우저가 안 열리면 Classic PAT 방식을 사용하세요.
+> **Fine-grained PAT**은 `git push`가 403으로 실패할 수 있으므로 **Classic PAT** 권장.
 
 비교 기준(공식 문서):
 - GitHub CLI 인증/credential helper: https://cli.github.com/manual/gh_auth_login, https://cli.github.com/manual/gh_auth_setup-git
@@ -94,8 +100,8 @@ GROQ_API_KEY=gsk_...
 # ============================================
 # Cloud Run AI Engine
 # ============================================
-AI_ENGINE_URL=https://ai-engine-xxx.run.app
-AI_ENGINE_API_KEY=your-api-key
+CLOUD_RUN_AI_URL=https://ai-engine-xxx.run.app
+CLOUD_RUN_API_SECRET=your-api-secret
 
 # ============================================
 # Optional

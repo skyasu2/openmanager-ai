@@ -4,7 +4,7 @@
 > Owner: platform-devops
 > Status: Active
 > Doc type: How-to
-> Last reviewed: 2026-02-15
+> Last reviewed: 2026-02-17
 > Canonical: docs/development/environment-variables.md
 > Tags: env,secrets,configuration,setup
 
@@ -39,6 +39,15 @@
 | `NEXT_PUBLIC_SUPABASE_URL` | Supabase REST API URL | — | `https://xxx.supabase.co` |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase 익명 키 | — | `eyJhbGciOiJIUzI1NiI...` |
 | `SUPABASE_SERVICE_ROLE_KEY` | Supabase 관리자 키 (서버 전용) | — | `eyJhbGciOiJIUzI1NiI...` |
+
+### 선택 환경변수 — 인증 (Vercel production 전용)
+
+| 변수 | 용도 | 기본값 | 비고 |
+|------|------|--------|------|
+| `NEXTAUTH_URL` | NextAuth callback URL | — | Vercel에서 자동 설정, 로컬 불필요 |
+| `NEXTAUTH_SECRET` | JWT 암호화 키 | — | Vercel에서 자동 설정, 로컬 불필요 |
+
+> `check-env.ts`에서 선택 변수로 분류 — 누락 시 경고만 표시, push 차단 없음.
 
 ### 선택 환경변수 — 앱 설정
 
@@ -214,6 +223,20 @@ SKIP_ENV_VALIDATION=true npm run build
 
 이 플래그가 `true`면 Zod 검증을 건너뛰고 기본값을 사용합니다.
 
+### Pre-push 환경변수 검사
+
+pre-push hook에서 `check-env.ts`를 실행하여 필수 변수를 검증합니다.
+
+```bash
+# 기본: 환경변수 검사 비활성 (CI/Vercel에서 수행)
+git push origin main
+
+# 수동 활성화 (릴리스 전 검증)
+STRICT_PUSH_ENV=true git push origin main
+```
+
+> `STRICT_PUSH_ENV`는 기본 `false`입니다. 로컬에서는 테스트/TypeScript 검증만 실행됩니다.
+
 ---
 
 ## Part 5: 보안 규칙
@@ -246,4 +269,4 @@ CI에서 `check-hardcoded-secrets.js` 스크립트가 자동 실행되어 소스
 - [Observability 가이드](../guides/observability.md) - Langfuse/Sentry 환경변수 상세
 - [보안 아키텍처](../reference/architecture/infrastructure/security.md)
 
-_Last Updated: 2026-02-15_
+_Last Updated: 2026-02-17_

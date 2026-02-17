@@ -4,7 +4,7 @@
 > Owner: dev-experience
 > Status: Active Supporting
 > Doc type: Tutorial
-> Last reviewed: 2026-02-14
+> Last reviewed: 2026-02-17
 > Canonical: docs/vibe-coding/setup.md
 > Tags: vibe-coding,setup,mcp
 
@@ -96,7 +96,7 @@ claude             # 대화형 모드 시작
 | context7 | 라이브러리 문서 |
 | sequential-thinking | 복잡한 추론 |
 | stitch | Google UI 디자인 |
-| supabase | PostgreSQL 관리 |
+| supabase-db | PostgreSQL 관리 |
 | vercel | 배포 상태 |
 | playwright | E2E 테스트 |
 | github | 저장소/PR 관리 |
