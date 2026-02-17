@@ -28,6 +28,29 @@ import { getAnalystAgentConfig, isAnalystAgentAvailable } from '../services/ai-s
 
 export const analyticsRouter = new Hono();
 
+function getErrorMessage(error: unknown): string {
+  return error instanceof Error ? error.message : String(error);
+}
+
+function isRecoverableReporterError(error: unknown): boolean {
+  const message = getErrorMessage(error).toLowerCase();
+  return [
+    'rate limit',
+    'too many',
+    'quota',
+    '429',
+    'timeout',
+    'timed out',
+    'deadline',
+    '503',
+    '502',
+    '504',
+    'service unavailable',
+    'provider',
+    'model',
+  ].some((keyword) => message.includes(keyword));
+}
+
 /**
  * POST /analyze-server - Server Analysis Endpoint
  *
@@ -201,14 +224,26 @@ analyticsRouter.post('/incident-report', async (c: Context) => {
     // Check if Reporter Agent is available
     const reporterConfig = getReporterAgentConfig();
     const reporterModelResult = reporterConfig?.getModel();
+    const createToolBasedFallback = (
+      source: string,
+      fallbackReason?: string
+    ) => ({
+      ...toolBasedData,
+      created_at: new Date().toISOString(),
+      _source: source,
+      _durationMs: Date.now() - startTime,
+      ...(fallbackReason ? { _fallbackReason: fallbackReason } : {}),
+    });
+
     if (!reporterConfig || !reporterModelResult || !isReporterAgentAvailable()) {
       logger.warn('[Incident Report] Reporter Agent unavailable, using tool-based fallback');
-      return jsonSuccess(c, {
-        ...toolBasedData,
-        created_at: new Date().toISOString(),
-        _source: 'Tool-based Fallback (No Agent)',
-        _durationMs: Date.now() - startTime,
-      });
+      return jsonSuccess(
+        c,
+        createToolBasedFallback(
+          'Tool-based Fallback (No Agent)',
+          'reporter_unavailable'
+        )
+      );
     }
 
     // 3. Build prompt for Reporter Agent with JSON output request
@@ -255,15 +290,32 @@ ${metricsContext}
 
     logger.info('[Incident Report] Invoking Reporter Agent with JSON output...');
 
-    const result = await generateText({
-      model: reporterModelResult.model,
-      messages: [
-        { role: 'system', content: reporterConfig.instructions },
-        { role: 'user', content: prompt },
-      ],
-      temperature: 0.4,
-      maxOutputTokens: 1024,
-    });
+    let result: Awaited<ReturnType<typeof generateText>>;
+    try {
+      result = await generateText({
+        model: reporterModelResult.model,
+        messages: [
+          { role: 'system', content: reporterConfig.instructions },
+          { role: 'user', content: prompt },
+        ],
+        temperature: 0.4,
+        maxOutputTokens: 1024,
+      });
+    } catch (reporterError) {
+      if (isRecoverableReporterError(reporterError)) {
+        const reason = getErrorMessage(reporterError);
+        logger.warn(
+          { err: reporterError },
+          '[Incident Report] Reporter Agent degraded, using tool-based fallback'
+        );
+        return jsonSuccess(
+          c,
+          createToolBasedFallback('Tool-based Fallback (Reporter Degraded)', reason)
+        );
+      }
+
+      throw reporterError;
+    }
 
     const durationMs = Date.now() - startTime;
     logger.info(`[Incident Report] Agent completed in ${durationMs}ms`);

@@ -682,6 +682,24 @@ async function* streamSingleAgent(
       yield { type: 'text_delta', data: textPart };
     }
 
+    if (fullText.trim().length === 0) {
+      const fallbackText =
+        '응답 본문이 비어 있어 요약 결과를 생성하지 못했습니다. 질문을 조금 더 구체적으로 다시 시도해 주세요.';
+      logger.warn(
+        '[SupervisorStream] Empty stream output detected, emitting fallback text'
+      );
+      yield {
+        type: 'warning',
+        data: {
+          code: 'EMPTY_RESPONSE',
+          message:
+            '모델이 빈 응답을 반환했습니다. 기본 안내 문구로 대체합니다.',
+        },
+      };
+      yield { type: 'text_delta', data: fallbackText };
+      fullText = fallbackText;
+    }
+
     if (streamError !== null) {
       yield {
         type: 'warning',
