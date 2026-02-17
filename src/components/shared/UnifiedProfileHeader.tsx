@@ -1,14 +1,6 @@
 'use client';
 
-import {
-  BarChart3,
-  ChevronDown,
-  LogOut,
-  Play,
-  Power,
-  Shield,
-  User,
-} from 'lucide-react';
+import { BarChart3, ChevronDown, LogIn, LogOut, User } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 // 프로필 컴포넌트 임포트
 import {
@@ -16,7 +8,6 @@ import {
   UserTypeIcon,
 } from '@/components/unified-profile/components/ProfileAvatar';
 import { ProfileDropdownMenu } from '@/components/unified-profile/components/ProfileDropdownMenu';
-import { EnhancedProfileStatusDisplay } from '@/components/unified-profile/EnhancedProfileStatusDisplay';
 // 프로필 훅 임포트
 import { useProfileAuth } from '@/components/unified-profile/hooks/useProfileAuth';
 import { useProfileMenu } from '@/components/unified-profile/hooks/useProfileMenu';
@@ -62,9 +53,8 @@ export default function UnifiedProfileHeader({
   const startSystem = useUnifiedAdminStore((state) => state.startSystem);
 
   // 시스템 시작 핸들러
-  const handleSystemStart = useCallback(async () => {
+  const handleSystemStart = useCallback(() => {
     try {
-      closeMenu();
       logger.info('🚀 시스템 시작 요청 (프로필에서)');
       startSystem();
       logger.info('✅ 시스템 시작 성공');
@@ -72,10 +62,10 @@ export default function UnifiedProfileHeader({
       logger.error('❌ 시스템 시작 오류:', error);
       alert('❌ 시스템 시작 중 오류가 발생했습니다.');
     }
-  }, [closeMenu, startSystem]);
+  }, [startSystem]);
 
   // 시스템 종료 핸들러 - useUnifiedAdminStore.stopSystem 직접 사용
-  const handleSystemStop = useCallback(async () => {
+  const handleSystemStop = useCallback(() => {
     const confirmed = confirm(
       '⚠️ 시스템을 종료하시겠습니까?\n\n종료 후 메인 페이지에서 다시 시작할 수 있습니다.'
     );
@@ -83,7 +73,6 @@ export default function UnifiedProfileHeader({
     if (!confirmed) return;
 
     try {
-      closeMenu();
       logger.info('🛑 시스템 종료 요청 (프로필에서)');
 
       // useUnifiedAdminStore.stopSystem() 직접 호출
@@ -94,7 +83,7 @@ export default function UnifiedProfileHeader({
       logger.error('❌ 시스템 종료 오류:', error);
       alert('❌ 시스템 종료 중 오류가 발생했습니다.');
     }
-  }, [closeMenu, stopSystem]);
+  }, [stopSystem]);
 
   // 관리자 인증 핸들러
   const handleLogoutClick = useCallback(async () => {
@@ -104,12 +93,11 @@ export default function UnifiedProfileHeader({
     }
   }, [closeMenu, handleLogout]);
 
-  // 메뉴 아이템 구성
+  // 메뉴 아이템 구성 (시스템 시작/종료는 드롭다운 전용 섹션으로 이동)
   const menuItems = useMemo<MenuItem[]>(() => {
     const items: MenuItem[] = [];
 
-    // 🎯 시스템 관리 메뉴 (GitHub + 게스트 공통 - 게스트도 모든 기능 사용 가능)
-    // 로컬 상태 우선 + 서버 상태 보조로 즉시 반영 (논리합 사용)
+    // 대시보드 열기 (시스템 실행 중일 때만)
     if (isSystemStarted || systemStatus?.isRunning) {
       items.push({
         id: 'dashboard',
@@ -122,41 +110,39 @@ export default function UnifiedProfileHeader({
         visible: true,
         badge: '모니터링',
       });
-
-      items.push({
-        id: 'system-stop',
-        label: `시스템 종료 (${systemStatus?.userCount || 1}명 접속 중)`,
-        icon: Power,
-        action: handleSystemStop,
-        visible: true,
-        danger: true,
-        badge: '확인 후 종료',
-      });
-    } else {
-      // 시스템이 정지된 경우 시작 버튼 표시
-      items.push({
-        id: 'system-start',
-        label: '시스템 시작',
-        icon: Play,
-        action: handleSystemStart,
-        visible: true,
-        badge: '재시작',
-      });
     }
 
-    // 게스트 사용자 전용 메뉴 (GitHub 계정 연동 안내)
+    // 로그인 메뉴
     if (userType === 'guest') {
+      // 게스트: "로그인" → /login 페이지로 이동
       items.push({
-        id: 'github-login',
-        label: 'GitHub로 로그인',
-        icon: Shield,
+        id: 'login',
+        label: '로그인',
+        icon: LogIn,
         action: () => {
           closeMenu();
           setTimeout(() => navigateToLogin(), 100);
         },
         visible: true,
-        badge: '계정 연동',
-        dividerBefore: items.length > 0, // 시스템 메뉴가 있을 때만 구분선
+        badge: '로그인 페이지',
+        dividerBefore: items.length > 0,
+      });
+    } else if (userType === 'github' || userType === 'google') {
+      // 인증 사용자: "다른 방법으로 로그인" → 현재 방식 쿼리 전달
+      items.push({
+        id: 'switch-login',
+        label: '다른 방법으로 로그인',
+        icon: LogIn,
+        action: () => {
+          closeMenu();
+          setTimeout(
+            () => window.location.assign(`/login?current=${userType}`),
+            100
+          );
+        },
+        visible: true,
+        badge: '계정 전환',
+        dividerBefore: items.length > 0,
       });
     }
 
@@ -168,7 +154,7 @@ export default function UnifiedProfileHeader({
           ? 'GitHub 로그아웃'
           : userType === 'google'
             ? 'Google 로그아웃'
-            : '게스트 세션 종료',
+            : '세션 종료',
       icon: LogOut,
       action: handleLogoutClick,
       visible: true,
@@ -185,8 +171,6 @@ export default function UnifiedProfileHeader({
     closeMenu,
     navigateToDashboard,
     navigateToLogin,
-    handleSystemStart,
-    handleSystemStop,
     handleLogoutClick,
   ]);
 
@@ -305,7 +289,12 @@ export default function UnifiedProfileHeader({
         userInfo={userInfo}
         userType={userType}
         onClose={closeMenu}
-        statusContent={<EnhancedProfileStatusDisplay compact={false} />}
+        isSystemStarted={isSystemStarted || (systemStatus?.isRunning ?? false)}
+        isSystemStarting={systemStatus?.isStarting}
+        onSystemStart={handleSystemStart}
+        onSystemStop={handleSystemStop}
+        systemVersion={systemStatus?.version}
+        systemEnvironment={systemStatus?.environment}
       />
     </div>
   );

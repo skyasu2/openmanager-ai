@@ -7,13 +7,12 @@
 import type React from 'react';
 
 import {
-  AI_GRADIENT_ANIMATED_STYLE,
   AI_GRADIENT_CLASSES,
   AI_ICON_GRADIENT_ANIMATED_STYLE,
   AI_ICON_GRADIENT_CLASSES,
   AI_ICON_GRADIENT_COLORS,
   AI_ICON_GRADIENT_ID,
-} from '@/styles/design-constants';
+} from '../styles/design-constants';
 
 /**
  * AI 단어에 그라데이션 애니메이션 적용
@@ -78,31 +77,16 @@ export function renderAIGradientWithAnimation(
 
   return text.split(/(AI)/g).map((part, index) => {
     if (part === 'AI') {
-      // Vibe 카드: 따뜻한 amber/orange 배경 위 고대비 스타일
-      if (variant === 'vibe') {
-        return (
-          <span
-            key={index}
-            className="font-extrabold text-white"
-            style={{
-              textShadow:
-                '0 0 8px rgba(251, 191, 36, 0.6), 0 1px 2px rgba(0,0,0,0.3)',
-              letterSpacing: '0.05em',
-            }}
-          >
-            {part}
-          </span>
-        );
-      }
-
-      // 기본: blue→purple→pink 그라데이션 애니메이션
+      // 모든 AI 텍스트를 Vibe 스타일(흰색 + 앰버 글로우)로 통일
+      // 사용자의 요청: "그라데이션 적용하지말고 대신 바이브 코딩 카드의 ai 단서 표시 로 통일 해줘"
       return (
         <span
           key={index}
-          className="bg-clip-text font-bold text-transparent"
+          className="font-extrabold text-white"
           style={{
-            ...AI_GRADIENT_ANIMATED_STYLE,
-            WebkitBackgroundClip: 'text',
+            textShadow:
+              '0 0 8px rgba(251, 191, 36, 0.6), 0 1px 2px rgba(0,0,0,0.3)',
+            letterSpacing: '0.05em',
           }}
         >
           {part}
