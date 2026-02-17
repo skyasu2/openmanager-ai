@@ -171,6 +171,45 @@ describe('Supervisor Stream V2 Route', () => {
     });
   });
 
+  it('sessionId가 8자 미만이면 400을 반환해야 함', async () => {
+    const request = new NextRequest(
+      'http://localhost/api/ai/supervisor/stream/v2?sessionId=short'
+    );
+
+    const response = await GET(request);
+
+    expect(response.status).toBe(400);
+    await expect(response.json()).resolves.toEqual({
+      error: 'sessionId required (8-128 chars)',
+    });
+  });
+
+  it('sessionId가 없으면 400을 반환해야 함', async () => {
+    const request = new NextRequest(
+      'http://localhost/api/ai/supervisor/stream/v2'
+    );
+
+    const response = await GET(request);
+
+    expect(response.status).toBe(400);
+    await expect(response.json()).resolves.toEqual({
+      error: 'sessionId required (8-128 chars)',
+    });
+  });
+
+  it('skip이 숫자가 아니면 400을 반환해야 함', async () => {
+    const request = new NextRequest(
+      'http://localhost/api/ai/supervisor/stream/v2?sessionId=session-1234&skip=abc'
+    );
+
+    const response = await GET(request);
+
+    expect(response.status).toBe(400);
+    await expect(response.json()).resolves.toEqual({
+      error: 'skip must be a non-negative integer',
+    });
+  });
+
   describe('POST /stream', () => {
     it('마지막 사용자 쿼리가 비어있으면 400을 반환해야 함', async () => {
       mockExtractLastUserQuery.mockReturnValue('   ');
@@ -405,6 +444,36 @@ describe('Supervisor Stream V2 Route', () => {
         success: false,
         error: 'Invalid normalized messages',
       });
+    });
+
+    it('fetch AbortError 발생 시 스트림 정리 후 타임아웃 에러를 반환해야 함', async () => {
+      const abortError = new DOMException(
+        'The operation was aborted',
+        'AbortError'
+      );
+      mockFetch.mockRejectedValueOnce(abortError);
+
+      const request = new NextRequest(
+        'http://localhost/api/ai/supervisor/stream/v2',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Session-Id': 'session-timeout',
+          },
+          body: JSON.stringify({
+            messages: [{ role: 'user', content: '서버 상태 확인' }],
+            sessionId: 'session-timeout',
+          }),
+        }
+      );
+
+      const response = await POST(request);
+
+      // AbortError returns a UIMessageStream error response (status 200 with error content)
+      expect(response.status).toBe(200);
+      expect(mockClearActiveStreamId).toHaveBeenCalled();
+      expect(mockClearStream).toHaveBeenCalled();
     });
   });
 });

@@ -83,48 +83,25 @@ export function createVisionAgent(): BaseAgent | null {
 // ============================================================================
 
 /**
- * Keywords that indicate a query requires Vision Agent
- */
-const VISION_KEYWORDS = [
-  // Screenshot/Image keywords
-  '스크린샷', 'screenshot', '이미지', 'image', '사진', '그래프', '차트',
-  // Dashboard keywords
-  '대시보드', 'dashboard', 'grafana', 'cloudwatch', 'datadog',
-  // Large log keywords
-  '로그 분석', '대용량', '전체 로그',
-  // Google Search Grounding
-  '최신', '공식 문서', 'documentation', 'official',
-  // URL context
-  'url', '링크', '페이지',
-];
-
-/**
- * Patterns that indicate Vision Agent is needed
- */
-const VISION_PATTERNS = [
-  /스크린샷.*분석|분석.*스크린샷/i,
-  /이미지.*보여|첨부.*분석/i,
-  /로그.*전체|대용량.*로그/i,
-  /최신.*문서|공식.*가이드/i,
-  /대시보드.*보여|화면.*분석/i,
-];
-
-/**
- * Check if a query requires Vision Agent
+ * Check if a query requires Vision Agent.
+ * Derives keywords/patterns from AGENT_CONFIGS (single source of truth).
  *
  * @param query - User query to check
  * @returns true if Vision Agent should handle this query
  */
 export function isVisionQuery(query: string): boolean {
+  const config = AGENT_CONFIGS['Vision Agent'];
+  if (!config) return false;
+
   const q = query.toLowerCase();
 
-  // Check keywords
-  const hasVisionKeyword = VISION_KEYWORDS.some(kw => q.includes(kw.toLowerCase()));
-  if (hasVisionKeyword) return true;
-
-  // Check patterns
-  const matchesVisionPattern = VISION_PATTERNS.some(pattern => pattern.test(query));
-  if (matchesVisionPattern) return true;
+  for (const pattern of config.matchPatterns) {
+    if (typeof pattern === 'string') {
+      if (q.includes(pattern.toLowerCase())) return true;
+    } else {
+      if (pattern.test(query)) return true;
+    }
+  }
 
   return false;
 }

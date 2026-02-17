@@ -54,13 +54,12 @@ export function stableStringify(filters: Array<Record<string, unknown>> | undefi
 
 /**
  * Get current minute of day (KST)
+ * Uses UTC+9 arithmetic instead of toLocaleString for consistency
  */
 export function getCurrentMinuteOfDay(): number {
-  const koreaTime = new Date().toLocaleString('en-US', {
-    timeZone: 'Asia/Seoul',
-  });
-  const koreaDate = new Date(koreaTime);
-  return koreaDate.getHours() * 60 + koreaDate.getMinutes();
+  const now = new Date();
+  const kstHour = (now.getUTCHours() + 9) % 24;
+  return kstHour * 60 + now.getUTCMinutes();
 }
 
 /**

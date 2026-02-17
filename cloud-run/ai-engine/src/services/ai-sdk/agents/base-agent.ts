@@ -146,6 +146,7 @@ const DEFAULT_OPTIONS: Required<Omit<AgentRunOptions, 'sessionId' | 'images' | '
   webSearchEnabled: true,
 };
 
+const VISION_AGENT_NAME = 'Vision Agent' as const;
 const OPENROUTER_VISION_MIN_OUTPUT_TOKENS = 256;
 const VISION_EMPTY_RESPONSE_FALLBACK =
   '비전 분석 모델 응답이 비어 있습니다. 잠시 후 다시 시도해 주세요.';
@@ -215,7 +216,7 @@ export abstract class BaseAgent {
     }
 
     if (
-      this.getName() === 'Vision Agent' &&
+      this.getName() === VISION_AGENT_NAME &&
       provider === 'openrouter' &&
       !isOpenRouterVisionToolCallingEnabled()
     ) {
@@ -232,7 +233,7 @@ export abstract class BaseAgent {
   }
 
   protected isVisionOpenRouter(provider: string, agentName?: string): boolean {
-    return (agentName ?? this.getName()) === 'Vision Agent' && provider === 'openrouter';
+    return (agentName ?? this.getName()) === VISION_AGENT_NAME && provider === 'openrouter';
   }
 
   protected resolveMaxOutputTokens(
@@ -596,6 +597,11 @@ export abstract class BaseAgent {
 
       const toolsCalled: string[] = [];
       let hasTextContent = false;
+
+      // TODO: Tool call events are only yielded after textStream is fully consumed (lines below).
+      // This means the client won't see tool_call events interleaved with text_delta events.
+      // To fix, switch to streamResult.fullStream which yields interleaved text/tool events,
+      // but this requires reworking the event loop and sanitization logic.
 
       // Stream text deltas
       for await (const textChunk of streamResult.textStream) {

@@ -72,11 +72,10 @@ export type {
 // ============================================================================
 // Error Detection Constants (SSOT)
 // ============================================================================
-// Import for local use and re-export for backward compatibility
 import {
-  COLD_START_ERROR_PATTERNS as _COLD_START_ERROR_PATTERNS,
-  STREAM_ERROR_MARKER as _STREAM_ERROR_MARKER,
-  STREAM_ERROR_REGEX as _STREAM_ERROR_REGEX,
+  COLD_START_ERROR_PATTERNS,
+  STREAM_ERROR_MARKER,
+  STREAM_ERROR_REGEX,
   isColdStartRelatedError,
 } from '@/lib/ai/constants/stream-errors';
 import type {
@@ -91,9 +90,9 @@ import type { FileAttachment } from './useFileAttachments';
 
 // Re-export for consumers
 export {
-  _STREAM_ERROR_MARKER as STREAM_ERROR_MARKER,
-  _COLD_START_ERROR_PATTERNS as COLD_START_ERROR_PATTERNS,
-  _STREAM_ERROR_REGEX as STREAM_ERROR_REGEX,
+  STREAM_ERROR_MARKER,
+  COLD_START_ERROR_PATTERNS,
+  STREAM_ERROR_REGEX,
   extractStreamError,
   isColdStartRelatedError,
 };
@@ -303,7 +302,6 @@ export function useHybridAIQuery(
           const controller = new AbortController();
           abortControllerRef.current = controller;
 
-          const currentAsyncQuery = asyncQuery;
           const currentQuery = query;
 
           queueMicrotask(() => {
@@ -311,7 +309,8 @@ export function useHybridAIQuery(
               logger.debug('[HybridAI] Job Queue redirect aborted');
               return;
             }
-            currentAsyncQuery
+            // P1-10: ref를 통해 최신 asyncQuery 참조 (stale closure 방지)
+            asyncQueryRef.current
               .sendQuery(currentQuery)
               .then(() => {
                 if (!controller.signal.aborted) {
@@ -402,6 +401,9 @@ export function useHybridAIQuery(
   // ============================================================================
   // useAsyncAIQuery Hook (Job Queue Mode)
   // ============================================================================
+  // P1-10 Fix: asyncQuery를 ref에 저장하여 onData redirect 핸들러의 stale closure 방지
+  const asyncQueryRef = useRef<ReturnType<typeof useAsyncAIQuery>>(null!);
+
   const asyncQuery = useAsyncAIQuery({
     sessionId: sessionIdRef.current,
     onProgress: (progress) => {
@@ -443,6 +445,9 @@ export function useHybridAIQuery(
       }));
     },
   });
+
+  // P1-10: ref를 최신 asyncQuery로 동기화
+  asyncQueryRef.current = asyncQuery;
 
   // ============================================================================
   // Computed Values

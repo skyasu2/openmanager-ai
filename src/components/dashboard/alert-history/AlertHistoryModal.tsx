@@ -259,7 +259,7 @@ export function AlertHistoryModal({
                           {alert.serverId}
                         </span>
                         <span className="text-xs text-gray-500">
-                          {alert.metric} = {alert.value.toFixed(1)}%
+                          {alert.metric} = {alert.value?.toFixed(1) ?? 'N/A'}%
                         </span>
                         <span className="text-xs text-gray-400">
                           (threshold: {alert.threshold}%)

@@ -16,7 +16,7 @@ import { metricsProvider } from '@/services/metrics/MetricsProvider';
 import type { ApiServerMetrics } from '@/services/metrics/types';
 
 const PromQLRequestSchema = z.object({
-  query: z.string().min(1, 'query is required'),
+  query: z.string().min(1, 'query is required').max(1000, 'query too long'),
   time: z.number().optional(),
   timeout: z.number().optional(),
 });
@@ -76,9 +76,10 @@ function extractMetricName(query: string): string | null {
   // 레지스트리에서 정확 매칭
   if (METRIC_REGISTRY[metricName]) return metricName;
 
-  // 부분 매칭 (node_cpu → node_cpu_utilization_ratio)
+  // Prefix matching only (node_cpu → node_cpu_utilization_ratio)
+  const lowerMetric = metricName.toLowerCase();
   for (const key of Object.keys(METRIC_REGISTRY)) {
-    if (key.includes(metricName) || metricName.includes(key)) return key;
+    if (key.startsWith(lowerMetric) || lowerMetric.startsWith(key)) return key;
   }
 
   return null;
@@ -176,9 +177,9 @@ export const POST = withAuth(async (request: NextRequest) => {
       {
         status: 'error',
         error: 'Query execution failed',
-        errorType: 'bad_data',
+        errorType: 'internal',
       },
-      { status: 400 }
+      { status: 500 }
     );
   }
 });

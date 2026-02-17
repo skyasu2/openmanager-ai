@@ -3,15 +3,12 @@
 import { Maximize2 } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import { memo, Suspense, useEffect, useRef, useState } from 'react';
-import {
-  ARCHITECTURE_DIAGRAMS,
-  type ArchitectureDiagram,
-} from '@/data/architecture-diagrams.data';
+import type { ArchitectureDiagram } from '@/data/architecture-diagrams.data';
 import { useDashboardStats } from '@/hooks/dashboard/useDashboardStats';
 import { useMonitoringReport } from '@/hooks/dashboard/useMonitoringReport';
 import type { Server } from '@/types/server';
 import debug from '@/utils/debug';
-import { safeConsoleError, safeErrorMessage } from '@/utils/utils-functions';
+import { safeErrorMessage } from '@/utils/utils-functions';
 import { ActiveAlertsModal } from './ActiveAlertsModal';
 import { AlertHistoryModal } from './alert-history/AlertHistoryModal';
 import { DashboardSummary } from './DashboardSummary';
@@ -61,10 +58,8 @@ interface DashboardContentProps {
   onStatusFilterChange?: (filter: string | null) => void;
 }
 
-// Infrastructure Topology 다이어그램 데이터 (컴포넌트 외부 상수)
-const TOPOLOGY_DIAGRAM = ARCHITECTURE_DIAGRAMS[
-  'infrastructure-topology'
-] as ArchitectureDiagram;
+// P1-9: Topology 데이터를 lazy-load — showTopology=true일 때만 로드
+let _cachedTopologyDiagram: ArchitectureDiagram | null = null;
 
 // 동적 임포트로 성능 최적화
 const ReactFlowDiagramDynamic = dynamic(
@@ -97,13 +92,12 @@ export default memo(function DashboardContent({
   statusFilter,
   onStatusFilterChange,
 }: DashboardContentProps) {
-  // 🛡️ 렌더링 로그 스팸 방지 (useRef로 HMR/테스트 시 안전)
-  const hasLoggedRenderRef = useRef(false);
-  const hasLoggedModeRef = useRef(false);
+  // 🛡️ P1-8 Fix: onStatsUpdate를 ref에 저장하여 useEffect 무한 루프 방지
+  const onStatsUpdateRef = useRef(onStatsUpdate);
+  onStatsUpdateRef.current = onStatsUpdate;
 
-  // 🚀 디버깅 로그 (한 번만 출력 - 리렌더링 스팸 방지)
-  if (!hasLoggedRenderRef.current) {
-    hasLoggedRenderRef.current = true;
+  // 🚀 디버깅 로그 (마운트 시 한 번만 출력)
+  useEffect(() => {
     debug.log('🔍 DashboardContent 초기 렌더링:', {
       showSequentialGeneration,
       serversCount: servers?.length,
@@ -111,7 +105,7 @@ export default memo(function DashboardContent({
       status: status?.type,
       timestamp: new Date().toISOString(),
     });
-  }
+  }, []);
 
   // MonitoringContext Health Score
   const {
@@ -133,63 +127,60 @@ export default memo(function DashboardContent({
   const [topologyModalOpen, setTopologyModalOpen] = useState(false);
 
   // 🎯 서버 데이터에서 직접 통계 계산 (중복 API 호출 제거)
-  const [statsLoading, _setStatsLoading] = useState(false);
+  const statsLoading = false;
   const [showTopology, setShowTopology] = useState(false);
+
+  // P1-9: Topology 데이터 lazy-load (showTopology=true일 때만 로드)
+  const [topologyDiagram, setTopologyDiagram] =
+    useState<ArchitectureDiagram | null>(_cachedTopologyDiagram);
+  useEffect(() => {
+    if (!showTopology || _cachedTopologyDiagram) return;
+    import('@/data/architecture-diagrams.data').then(
+      ({ ARCHITECTURE_DIAGRAMS }) => {
+        const diagram = ARCHITECTURE_DIAGRAMS[
+          'infrastructure-topology'
+        ] as ArchitectureDiagram;
+        _cachedTopologyDiagram = diagram;
+        setTopologyDiagram(diagram);
+      }
+    );
+  }, [showTopology]);
 
   // 🛡️ currentTime 제거: 미사용 상태에서 불필요한 interval 실행 (v5.83.13)
 
   // 🚀 리팩토링: Custom Hook으로 통계 계산 로직 분리
   const serverStats = useDashboardStats(servers, allServers, statsLoading);
 
-  // 🚀 에러 상태 추가
-  const [renderError, setRenderError] = useState<string | null>(null);
-  const [isClient, setIsClient] = useState(false);
-
-  // 🛡️ 클라이언트 사이드 확인
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
+  // F04 fix: isClient 상태 제거 — 'use client' 컴포넌트에서 불필요한 이중 렌더링
+  // F05 fix: renderError 상태 제거 — Error Boundary로 위임
 
   useEffect(() => {
-    try {
-      debug.log('✅ DashboardContent 마운트됨');
-      setRenderError(null);
-      // 🎯 상위 컴포넌트에 통계 업데이트 전달
-      if (onStatsUpdate && serverStats.total > 0) {
-        onStatsUpdate(serverStats);
-      }
-    } catch (error) {
-      safeConsoleError('❌ DashboardContent 마운트 에러', error);
-      setRenderError(safeErrorMessage(error, '알 수 없는 마운트 에러'));
+    debug.log('✅ DashboardContent 마운트됨');
+    // 🎯 상위 컴포넌트에 통계 업데이트 전달 (ref 사용으로 무한 루프 방지)
+    if (onStatsUpdateRef.current && serverStats.total > 0) {
+      onStatsUpdateRef.current(serverStats);
     }
-  }, [serverStats, onStatsUpdate]); // onStatsUpdate 함수 의존성 복구
+  }, [serverStats]);
 
-  // 🛡️ 서버 사이드 렌더링 방지
-  if (!isClient) {
+  // 시퀀셜 생성 모드
+  if (showSequentialGeneration) {
+    debug.log('🔄 시퀀셜 생성 모드 렌더링');
     return (
-      <div className="flex items-center justify-center p-8">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-blue-500 border-t-transparent"></div>
-      </div>
-    );
-  }
-
-  // 🚀 렌더링 에러 처리
-  if (renderError) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-red-50 p-4">
-        <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-lg">
-          <div className="text-center">
-            <div className="mb-4 text-4xl text-red-500">⚠️</div>
-            <h2 className="mb-2 text-xl font-semibold text-gray-900">
-              렌더링 오류
+      <div className="min-h-screen bg-linear-to-br from-purple-50 to-blue-50 p-6">
+        <div className="mx-auto max-w-7xl">
+          <div className="rounded-lg bg-white p-6 shadow-lg">
+            <h2 className="mb-4 text-2xl font-bold text-gray-900">
+              🔄 서버 생성 중...
             </h2>
-            <p className="mb-4 text-gray-600">{renderError}</p>
+            <p className="text-gray-600">
+              시퀀셜 서버 생성 모드가 활성화되었습니다.
+            </p>
             <button
               type="button"
-              onClick={() => window.location.reload()}
-              className="rounded-lg bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
+              onClick={() => onShowSequentialChange(false)}
+              className="mt-4 rounded-lg bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
             >
-              새로고침
+              일반 모드로 전환
             </button>
           </div>
         </div>
@@ -197,185 +188,137 @@ export default memo(function DashboardContent({
     );
   }
 
-  try {
-    // 시퀀셜 생성 모드
-    if (showSequentialGeneration) {
-      debug.log('🔄 시퀀셜 생성 모드 렌더링');
-      return (
-        <div className="min-h-screen bg-linear-to-br from-purple-50 to-blue-50 p-6">
-          <div className="mx-auto max-w-7xl">
-            <div className="rounded-lg bg-white p-6 shadow-lg">
-              <h2 className="mb-4 text-2xl font-bold text-gray-900">
-                🔄 서버 생성 중...
-              </h2>
-              <p className="text-gray-600">
-                시퀀셜 서버 생성 모드가 활성화되었습니다.
-              </p>
-              <button
-                type="button"
-                onClick={() => onShowSequentialChange(false)}
-                className="mt-4 rounded-lg bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
-              >
-                일반 모드로 전환
-              </button>
-            </div>
-          </div>
-        </div>
-      );
-    }
+  // 일반 대시보드 모드 - 반응형 그리드 레이아웃
+  return (
+    <div className="animate-fade-in h-full w-full">
+      <div className="mx-auto h-full max-w-none space-y-4 overflow-y-auto overscroll-contain scroll-smooth px-4 pb-6 sm:px-6 lg:px-8 2xl:max-w-[1800px]">
+        {/* 🎯 메인 컨텐츠 영역 */}
+        {servers && servers.length > 0 ? (
+          <>
+            {/* 인프라 전체 현황 (Simple Grid) */}
+            {monitoringErrorMessage && (
+              <div className="rounded-lg border border-amber-200/60 bg-amber-50/80 px-4 py-3 text-xs text-amber-800">
+                모니터링 리포트 조회 실패: {monitoringErrorMessage}
+              </div>
+            )}
+            <DashboardSummary
+              stats={serverStats}
+              activeFilter={statusFilter}
+              onFilterChange={onStatusFilterChange}
+              onOpenAlertHistory={() => setAlertHistoryOpen(true)}
+              onOpenLogExplorer={() => setLogExplorerOpen(true)}
+              showTopology={showTopology}
+              onToggleTopology={() => setShowTopology((prev) => !prev)}
+              activeAlertsCount={monitoringReport?.firingAlerts?.length ?? 0}
+              onOpenActiveAlerts={() => setActiveAlertsOpen(true)}
+            />
 
-    // 일반 대시보드 모드 - 반응형 그리드 레이아웃 (로그 한 번만)
-    if (!hasLoggedModeRef.current) {
-      hasLoggedModeRef.current = true;
-      debug.log('📊 일반 대시보드 모드 렌더링');
-    }
-    return (
-      <div className="animate-fade-in h-full w-full">
-        <div className="mx-auto h-full max-w-none space-y-4 overflow-y-auto overscroll-contain scroll-smooth px-4 pb-6 sm:px-6 lg:px-8 2xl:max-w-[1800px]">
-          {/* 🎯 메인 컨텐츠 영역 */}
-          {servers && servers.length > 0 ? (
-            <>
-              {/* 인프라 전체 현황 (Simple Grid) */}
-              {monitoringErrorMessage && (
-                <div className="rounded-lg border border-amber-200/60 bg-amber-50/80 px-4 py-3 text-xs text-amber-800">
-                  모니터링 리포트 조회 실패: {monitoringErrorMessage}
-                </div>
-              )}
-              <DashboardSummary
-                stats={serverStats}
-                activeFilter={statusFilter}
-                onFilterChange={onStatusFilterChange}
-                onOpenAlertHistory={() => setAlertHistoryOpen(true)}
-                onOpenLogExplorer={() => setLogExplorerOpen(true)}
-                showTopology={showTopology}
-                onToggleTopology={() => setShowTopology((prev) => !prev)}
-                activeAlertsCount={monitoringReport?.firingAlerts?.length ?? 0}
-                onOpenActiveAlerts={() => setActiveAlertsOpen(true)}
-              />
-
-              {/* Infrastructure Topology (Summary 버튼으로 토글) */}
-              {showTopology && (
-                <div className="group relative rounded-xl border border-gray-200/80 bg-white/70 px-2 pb-4 pt-2 shadow-xs backdrop-blur-md">
-                  <div className="absolute top-3 right-3 z-10 opacity-0 transition-opacity group-hover:opacity-100">
-                    <button
-                      onClick={() => setTopologyModalOpen(true)}
-                      className="flex items-center gap-1.5 rounded-lg bg-slate-900/80 px-2.5 py-1.5 text-[10px] font-bold text-white backdrop-blur-sm transition-all hover:bg-slate-800 cursor-pointer shadow-lg"
-                    >
-                      <Maximize2 size={12} />
-                      FULL VIEW
-                    </button>
-                  </div>
-                  <Suspense
-                    fallback={
-                      <div className="flex items-center justify-center py-12">
-                        <div className="h-6 w-6 animate-spin rounded-full border-2 border-blue-400 border-t-transparent" />
-                      </div>
-                    }
+            {/* Infrastructure Topology (Summary 버튼으로 토글) */}
+            {showTopology && topologyDiagram && (
+              <div className="group relative rounded-xl border border-gray-200/80 bg-white/70 px-2 pb-4 pt-2 shadow-xs backdrop-blur-md">
+                <div className="absolute top-3 right-3 z-10 opacity-0 transition-opacity group-hover:opacity-100">
+                  <button
+                    onClick={() => setTopologyModalOpen(true)}
+                    className="flex items-center gap-1.5 rounded-lg bg-slate-900/80 px-2.5 py-1.5 text-[10px] font-bold text-white backdrop-blur-sm transition-all hover:bg-slate-800 cursor-pointer shadow-lg"
                   >
-                    <ReactFlowDiagramDynamic
-                      diagram={TOPOLOGY_DIAGRAM}
-                      compact
-                      showControls
-                      servers={servers}
-                    />
-                  </Suspense>
+                    <Maximize2 size={12} />
+                    FULL VIEW
+                  </button>
                 </div>
-              )}
-
-              {/* ======== System Overview: 리소스 평균 + 주요 경고 통합 ======== */}
-              <SystemOverviewSection servers={servers} />
-
-              {/* 서버 카드 목록 */}
-              <Suspense
-                fallback={
-                  <div className="rounded-xl border border-white/10 bg-white/5 backdrop-blur-md p-6 shadow-lg">
-                    <div className="animate-pulse">
-                      <div className="mb-4 h-4 rounded bg-white/10"></div>
-                      <div className="mb-4 h-4 rounded bg-white/10"></div>
-                      <div className="h-4 w-5/6 rounded bg-white/10"></div>
+                <Suspense
+                  fallback={
+                    <div className="flex items-center justify-center py-12">
+                      <div className="h-6 w-6 animate-spin rounded-full border-2 border-blue-400 border-t-transparent" />
                     </div>
+                  }
+                >
+                  <ReactFlowDiagramDynamic
+                    diagram={topologyDiagram}
+                    compact
+                    showControls
+                    servers={servers}
+                  />
+                </Suspense>
+              </div>
+            )}
+
+            {/* ======== System Overview: 리소스 평균 + 주요 경고 통합 ======== */}
+            <SystemOverviewSection servers={servers} />
+
+            {/* 서버 카드 목록 */}
+            <Suspense
+              fallback={
+                <div className="rounded-xl border border-white/10 bg-white/5 backdrop-blur-md p-6 shadow-lg">
+                  <div className="animate-pulse">
+                    <div className="mb-4 h-4 rounded bg-white/10"></div>
+                    <div className="mb-4 h-4 rounded bg-white/10"></div>
+                    <div className="h-4 w-5/6 rounded bg-white/10"></div>
                   </div>
-                }
-              >
-                {/* 🔧 Phase 4 (2026-01-28): Props 기반 데이터 흐름
+                </div>
+              }
+            >
+              {/* 🔧 Phase 4 (2026-01-28): Props 기반 데이터 흐름
                     - DashboardClient → DashboardContent → ServerDashboard로 전달
                     - 중복 fetch 제거 (useServerDashboard 호출 1회로 최적화) */}
-                <ServerDashboardDynamic
-                  servers={servers}
-                  totalServers={totalServers}
-                  currentPage={currentPage}
-                  totalPages={totalPages}
-                  pageSize={pageSize}
-                  onPageChange={onPageChange}
-                  onPageSizeChange={onPageSizeChange}
-                  onStatsUpdate={onStatsUpdate}
-                />
-              </Suspense>
+              <ServerDashboardDynamic
+                servers={servers}
+                totalServers={totalServers}
+                currentPage={currentPage}
+                totalPages={totalPages}
+                pageSize={pageSize}
+                onPageChange={onPageChange}
+                onPageSizeChange={onPageSizeChange}
+                onStatsUpdate={onStatsUpdate}
+              />
+            </Suspense>
 
-              {/* Active Alerts Modal */}
-              {activeAlertsOpen && (
-                <ActiveAlertsModal
-                  open={activeAlertsOpen}
-                  onClose={() => setActiveAlertsOpen(false)}
-                  alerts={monitoringReport?.firingAlerts ?? []}
-                />
-              )}
+            {/* Active Alerts Modal */}
+            {activeAlertsOpen && (
+              <ActiveAlertsModal
+                open={activeAlertsOpen}
+                onClose={() => setActiveAlertsOpen(false)}
+                alerts={monitoringReport?.firingAlerts ?? []}
+              />
+            )}
 
-              {/* Topology Modal */}
-              {topologyModalOpen && (
-                <TopologyModal
-                  open={topologyModalOpen}
-                  onClose={() => setTopologyModalOpen(false)}
-                  servers={allServers?.length ? allServers : servers}
-                />
-              )}
+            {/* Topology Modal */}
+            {topologyModalOpen && (
+              <TopologyModal
+                open={topologyModalOpen}
+                onClose={() => setTopologyModalOpen(false)}
+                servers={allServers?.length ? allServers : servers}
+              />
+            )}
 
-              {/* Alert History Modal */}
-              {alertHistoryOpen && (
-                <AlertHistoryModal
-                  open={alertHistoryOpen}
-                  onClose={() => setAlertHistoryOpen(false)}
-                  serverIds={(allServers?.length ? allServers : servers).map(
-                    (s) => s.id
-                  )}
-                />
-              )}
+            {/* Alert History Modal */}
+            {alertHistoryOpen && (
+              <AlertHistoryModal
+                open={alertHistoryOpen}
+                onClose={() => setAlertHistoryOpen(false)}
+                serverIds={(allServers?.length ? allServers : servers).map(
+                  (s) => s.id
+                )}
+              />
+            )}
 
-              {/* Log Explorer Modal */}
-              {logExplorerOpen && (
-                <LogExplorerModal
-                  open={logExplorerOpen}
-                  onClose={() => setLogExplorerOpen(false)}
-                  servers={allServers?.length ? allServers : servers}
-                />
-              )}
-            </>
-          ) : (
-            <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-lg">
-              <div className="text-center text-gray-500">
-                <p className="mb-2 text-lg">등록된 서버가 없습니다</p>
-                <p className="text-sm">서버를 추가하여 모니터링을 시작하세요</p>
-              </div>
+            {/* Log Explorer Modal */}
+            {logExplorerOpen && (
+              <LogExplorerModal
+                open={logExplorerOpen}
+                onClose={() => setLogExplorerOpen(false)}
+                servers={allServers?.length ? allServers : servers}
+              />
+            )}
+          </>
+        ) : (
+          <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-lg">
+            <div className="text-center text-gray-500">
+              <p className="mb-2 text-lg">등록된 서버가 없습니다</p>
+              <p className="text-sm">서버를 추가하여 모니터링을 시작하세요</p>
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
-    );
-  } catch (renderError) {
-    debug.error('📱 DashboardContent 렌더링 오류:', renderError);
-    return (
-      <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-lg">
-        <div className="text-center text-gray-500">
-          <p>대시보드를 불러올 수 없습니다.</p>
-          <button
-            type="button"
-            onClick={() => window.location.reload()}
-            className="mt-2 rounded bg-blue-500 px-3 py-1 text-sm text-white"
-          >
-            새로고침
-          </button>
-        </div>
-      </div>
-    );
-  }
+    </div>
+  );
 });

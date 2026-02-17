@@ -1,6 +1,12 @@
 'use client';
 
-import { memo } from 'react';
+import {
+  type KeyboardEvent,
+  memo,
+  useCallback,
+  useEffect,
+  useRef,
+} from 'react';
 import type { ProfileDropdownMenuProps } from '../types/profile.types';
 import { ProfileAvatar, UserTypeIcon } from './ProfileAvatar';
 import { ProfileMenuItem } from './ProfileMenuItem';
@@ -17,6 +23,51 @@ export const ProfileDropdownMenu = memo(function ProfileDropdownMenu({
   onClose,
   statusContent,
 }: ProfileDropdownMenuProps) {
+  const menuRef = useRef<HTMLDivElement>(null);
+  const visibleItems = menuItems.filter((item) => item.visible);
+
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent<HTMLDivElement>) => {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        onClose();
+        return;
+      }
+
+      if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+        e.preventDefault();
+        const items = menuRef.current?.querySelectorAll<HTMLButtonElement>(
+          '[role="menuitem"]:not([disabled])'
+        );
+        if (!items?.length) return;
+
+        const currentIndex = Array.from(items).indexOf(
+          document.activeElement as HTMLButtonElement
+        );
+        let nextIndex: number;
+        if (e.key === 'ArrowDown') {
+          nextIndex = currentIndex < items.length - 1 ? currentIndex + 1 : 0;
+        } else {
+          nextIndex = currentIndex > 0 ? currentIndex - 1 : items.length - 1;
+        }
+        items[nextIndex]?.focus();
+      }
+    },
+    [onClose]
+  );
+
+  // Auto-focus first menu item when opened
+  useEffect(() => {
+    if (!isOpen) return;
+    const timer = setTimeout(() => {
+      const firstItem = menuRef.current?.querySelector<HTMLButtonElement>(
+        '[role="menuitem"]:not([disabled])'
+      );
+      firstItem?.focus();
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [isOpen]);
+
   const getUserName = () => {
     if (userInfo) {
       return (
@@ -55,10 +106,12 @@ export const ProfileDropdownMenu = memo(function ProfileDropdownMenu({
       {isOpen && (
         <div className="absolute right-0 z-9999 mt-2 w-64 space-y-2">
           <div
+            ref={menuRef}
             className="rounded-xl border border-gray-200 bg-white py-2 shadow-lg"
             role="menu"
             aria-orientation="vertical"
             aria-labelledby="profile-menu-button"
+            onKeyDown={handleKeyDown}
           >
             {/* 사용자 정보 헤더 */}
             <div className="border-b border-gray-100 px-4 py-3">
@@ -97,7 +150,7 @@ export const ProfileDropdownMenu = memo(function ProfileDropdownMenu({
             {/* 메뉴 아이템들 */}
             <div className="py-1">
               {/* 메뉴 아이템 렌더링 */}
-              {menuItems.map((item, _index) => (
+              {visibleItems.map((item) => (
                 <ProfileMenuItem
                   key={item.id}
                   {...item}

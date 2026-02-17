@@ -36,6 +36,19 @@ import {
 import { determineStatus } from './metric-transformers';
 
 // ============================================================================
+// Default Hardware Spec Constants
+// ============================================================================
+
+/** Default CPU core count when resource catalog lacks host.cpu.count */
+const DEFAULT_CPU_CORES = 8;
+
+/** Default memory size in bytes (16 GB) when resource catalog lacks host.memory.size */
+const DEFAULT_MEMORY_BYTES = 16 * 1024 * 1024 * 1024;
+
+/** Default disk size in bytes (200 GB) when resource catalog lacks host.disk.size */
+const DEFAULT_DISK_BYTES = 200 * 1024 * 1024 * 1024;
+
+// ============================================================================
 // Types
 // ============================================================================
 
@@ -265,13 +278,13 @@ export function otelSlotToServers(
       environment: resource?.['deployment.environment'] ?? '',
       provider: 'OTel-Direct',
       specs: {
-        cpu_cores: resource?.['host.cpu.count'] ?? 8,
+        cpu_cores: resource?.['host.cpu.count'] ?? DEFAULT_CPU_CORES,
         memory_gb: Math.round(
-          (resource?.['host.memory.size'] ?? 16 * 1024 * 1024 * 1024) /
+          (resource?.['host.memory.size'] ?? DEFAULT_MEMORY_BYTES) /
             (1024 * 1024 * 1024)
         ),
         disk_gb: Math.round(
-          (resource?.['host.disk.size'] ?? 200 * 1024 * 1024 * 1024) /
+          (resource?.['host.disk.size'] ?? DEFAULT_DISK_BYTES) /
             (1024 * 1024 * 1024)
         ),
         network_speed: '1Gbps',

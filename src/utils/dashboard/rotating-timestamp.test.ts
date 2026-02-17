@@ -51,6 +51,24 @@ describe('rotating-timestamp', () => {
     );
   });
 
+  it('정규화 결과가 기준 시각보다 24시간 이상 과거면 하루를 더한다', () => {
+    // anchor 23:59, source hour 00:00 → anchored = same-day 00:00
+    // anchor - anchored = 23h59m
+    // futureToleranceMinutes = -10 → threshold = DAY_MS - 10min = 23h50m
+    // 23h59m > 23h50m → +1 day adjustment triggers
+    const anchorDate = new Date('2026-02-17T23:59:00+09:00');
+    const source = '2025-01-01T00:00:00+09:00';
+
+    const resolved = resolveRotatingTimestamp(source, {
+      anchorDate,
+      futureToleranceMinutes: -10,
+    });
+    expect(resolved).not.toBeNull();
+    expect(formatDashboardDateTime(resolved as Date)).toBe(
+      '2026.02.18 00:00:00'
+    );
+  });
+
   it('잘못된 timestamp 문자열은 원문 그대로 반환한다', () => {
     expect(formatRotatingTimestamp('invalid-date')).toBe('invalid-date');
     expect(resolveRotatingTimestamp('invalid-date')).toBeNull();

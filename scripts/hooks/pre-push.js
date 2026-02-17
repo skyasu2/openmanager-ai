@@ -30,7 +30,7 @@ const QUICK_PUSH = process.env.QUICK_PUSH !== 'false'; // 기본값: true (빠�
 const SKIP_TESTS = process.env.SKIP_TESTS === 'true';
 const SKIP_BUILD = process.env.SKIP_BUILD === 'true';
 const SKIP_NODE_CHECK = process.env.SKIP_NODE_CHECK === 'true';
-const STRICT_PUSH_ENV = process.env.STRICT_PUSH_ENV === 'true';
+const STRICT_PUSH_ENV = process.env.STRICT_PUSH_ENV !== 'false'; // 기본값: true (환경변수 검증 활성)
 const FORCE_CLOUD_BUILD_GUARD = process.env.FORCE_CLOUD_BUILD_GUARD === 'true';
 
 // Windows = limited validation mode (TypeScript + Lint only)
@@ -70,43 +70,187 @@ function stripHashComments(text) {
     .join('\n');
 }
 
+function parseChangedFiles(output) {
+  if (!output) return [];
+  return output
+    .split('\n')
+    .map((line) => line.trim())
+    .filter(Boolean);
+}
+
+function isZeroOid(oid) {
+  return /^0+$/.test(oid);
+}
+
+function parsePrePushUpdateLine(line) {
+  const parts = line.trim().split(/\s+/);
+  if (parts.length < 4) return null;
+  const [localRef, localOid, remoteRef, remoteOid] = parts;
+  return { localRef, localOid, remoteRef, remoteOid };
+}
+
+function readPrePushUpdatesFromStdin() {
+  if (process.stdin.isTTY) return [];
+
+  try {
+    const rawInput = fs.readFileSync(0, 'utf8');
+    if (!rawInput.trim()) return [];
+    return rawInput
+      .split('\n')
+      .map((line) => parsePrePushUpdateLine(line))
+      .filter(Boolean);
+  } catch (error) {
+    console.warn('⚠️  Failed to read pre-push stdin updates:', error);
+    return [];
+  }
+}
+
+function resolveDefaultBaseRef() {
+  const remoteHead = runGit([
+    'symbolic-ref',
+    '--quiet',
+    'refs/remotes/origin/HEAD',
+  ]);
+  if (remoteHead) {
+    const normalized = remoteHead.replace(/^refs\/remotes\//, '');
+    if (normalized) return normalized;
+  }
+
+  const candidates = ['origin/main', 'origin/master', 'main', 'master'];
+  for (const candidate of candidates) {
+    const exists = runGit(['rev-parse', '--verify', candidate]);
+    if (exists) return candidate;
+  }
+
+  return '';
+}
+
+function resolveCommitRef(refOrOid) {
+  if (!refOrOid) return '';
+  return (
+    runGit(['rev-parse', '--verify', `${refOrOid}^{commit}`]) ||
+    runGit(['rev-parse', '--verify', refOrOid])
+  );
+}
+
+function collectChangedFilesFromPrePushUpdates(updates) {
+  const changedFiles = new Set();
+
+  for (const update of updates) {
+    const { localRef, localOid, remoteOid } = update;
+
+    // delete push, tag push는 Cloud Build 가드 대상이 아님
+    if (
+      localRef === '(delete)' ||
+      isZeroOid(localOid) ||
+      localRef.startsWith('refs/tags/')
+    ) {
+      continue;
+    }
+
+    const localCommit = resolveCommitRef(localOid);
+    if (!localCommit) continue;
+
+    let baseCommit = '';
+    if (!isZeroOid(remoteOid)) {
+      baseCommit = resolveCommitRef(remoteOid);
+    } else {
+      // 신규 원격 ref 생성 시 기본 브랜치와 merge-base를 기준으로 계산
+      const defaultBaseRef = resolveDefaultBaseRef();
+      if (defaultBaseRef) {
+        baseCommit = runGit(['merge-base', localCommit, defaultBaseRef]);
+        if (!baseCommit) {
+          baseCommit = resolveCommitRef(defaultBaseRef);
+        }
+      }
+    }
+
+    let diffOutput = '';
+    if (baseCommit) {
+      diffOutput = runGit(['diff', '--name-only', `${baseCommit}..${localCommit}`]);
+    }
+    if (!diffOutput) {
+      diffOutput = runGit([
+        'diff-tree',
+        '--no-commit-id',
+        '--name-only',
+        '-r',
+        localCommit,
+      ]);
+    }
+
+    for (const file of parseChangedFiles(diffOutput)) {
+      changedFiles.add(file);
+    }
+  }
+
+  return Array.from(changedFiles);
+}
+
 function getChangedFilesForPush() {
+  const prePushUpdates = readPrePushUpdatesFromStdin();
+  if (prePushUpdates.length > 0) {
+    const filesFromUpdates = collectChangedFilesFromPrePushUpdates(prePushUpdates);
+    return { files: filesFromUpdates, isKnown: true };
+  }
+
   const upstream = runGit(['rev-parse', '--abbrev-ref', '--symbolic-full-name', '@{u}']);
   if (upstream) {
     const pushedFiles = runGit(['diff', '--name-only', `${upstream}..HEAD`]);
     if (pushedFiles) {
-      return pushedFiles
-        .split('\n')
-        .map((line) => line.trim())
-        .filter(Boolean);
+      return { files: parseChangedFiles(pushedFiles), isKnown: true };
     }
   }
 
-  // Upstream이 없을 때(첫 push 등) 최근 커밋 기준으로 최소 범위 검사
+  // Upstream이 없을 때(첫 push 등) 원격 기본 브랜치와의 merge-base 기준으로 범위 계산
+  const defaultBaseRef = resolveDefaultBaseRef();
+  if (defaultBaseRef) {
+    const mergeBase = runGit(['merge-base', 'HEAD', defaultBaseRef]);
+    if (mergeBase) {
+      const branchFiles = runGit(['diff', '--name-only', `${mergeBase}..HEAD`]);
+      if (branchFiles) {
+        return { files: parseChangedFiles(branchFiles), isKnown: true };
+      }
+    }
+
+    const baseDiffFiles = runGit(['diff', '--name-only', `${defaultBaseRef}..HEAD`]);
+    if (baseDiffFiles) {
+      return { files: parseChangedFiles(baseDiffFiles), isKnown: true };
+    }
+  }
+
+  // 마지막 fallback: 최근 커밋 기준 최소 범위 검사
   const hasPreviousCommit = runGit(['rev-parse', '--verify', 'HEAD~1']);
   if (hasPreviousCommit) {
     const recentFiles = runGit(['diff', '--name-only', 'HEAD~1..HEAD']);
     if (recentFiles) {
-      return recentFiles
-        .split('\n')
-        .map((line) => line.trim())
-        .filter(Boolean);
+      return { files: parseChangedFiles(recentFiles), isKnown: true };
     }
   }
 
-  return [];
+  console.warn(
+    '⚠️  Could not determine changed files (git commands failed). Running guard in fail-closed mode.'
+  );
+  return { files: [], isKnown: false };
 }
 
-function checkCloudBuildFreeTierGuard(changedFiles) {
+function checkCloudBuildFreeTierGuard(changedFilesResult) {
+  const changedFiles = changedFilesResult.files;
   const watchedFiles = [
     'cloud-run/ai-engine/cloudbuild.yaml',
     'cloud-run/ai-engine/deploy.sh',
   ];
+  const hasChangedFiles = changedFiles.length > 0;
   const hasRelevantChanges = changedFiles.some((file) => watchedFiles.includes(file));
 
-  if (!FORCE_CLOUD_BUILD_GUARD && !hasRelevantChanges) {
-    console.log('⚪ Cloud Build guard skipped (ai-engine deploy files unchanged)');
-    return;
+  if (!hasRelevantChanges && !FORCE_CLOUD_BUILD_GUARD) {
+    if (hasChangedFiles || changedFilesResult.isKnown) {
+      console.log('⚪ Cloud Build guard skipped (ai-engine deploy files unchanged)');
+      return;
+    }
+    console.warn(
+      '⚠️  Cloud Build guard running in fail-closed mode (changed files unknown)'
+    );
   }
 
   const cloudbuildPath = path.join(cwd, 'cloud-run/ai-engine/cloudbuild.yaml');
@@ -437,8 +581,8 @@ function main() {
     process.exit(1);
   }
 
-  const changedFiles = getChangedFilesForPush();
-  checkCloudBuildFreeTierGuard(changedFiles);
+  const changedFilesResult = getChangedFilesForPush();
+  checkCloudBuildFreeTierGuard(changedFilesResult);
   runTests();
   runBuildValidation();
   if (STRICT_PUSH_ENV) {

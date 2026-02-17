@@ -49,7 +49,7 @@ export type OTelLogRecord = {
 };
 
 // ============================================================================
-// Metric Types (Slim: description, unit 제거)
+// Metric Types (Slim: description 제거)
 // ============================================================================
 
 export type OTelMetricDataPoint = {
@@ -59,7 +59,7 @@ export type OTelMetricDataPoint = {
 
 export type OTelMetric = {
   name: string;
-  unit?: string;
+  unit: string;
   type: 'gauge' | 'sum';
   dataPoints: OTelMetricDataPoint[];
 };

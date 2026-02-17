@@ -11,16 +11,9 @@ import {
   XCircle,
 } from 'lucide-react';
 import type React from 'react';
+import { memo } from 'react';
 import { cn } from '@/lib/utils';
-
-interface DashboardStats {
-  total: number;
-  online: number;
-  offline: number;
-  warning: number;
-  critical: number; // 🚨 위험 상태
-  unknown: number;
-}
+import type { DashboardStats } from './types/dashboard.types';
 
 interface DashboardSummaryProps {
   stats: DashboardStats;
@@ -170,245 +163,247 @@ function StatusCard({
   );
 }
 
-export const DashboardSummary: React.FC<DashboardSummaryProps> = ({
-  stats,
-  activeFilter,
-  onFilterChange,
-  onOpenAlertHistory,
-  onOpenLogExplorer,
-  showTopology = false,
-  onToggleTopology,
-  activeAlertsCount = 0,
-  onOpenActiveAlerts,
-}) => {
-  // Null-safe 처리
-  const safeStats = {
-    total: stats?.total ?? 0,
-    online: stats?.online ?? 0,
-    offline: stats?.offline ?? 0,
-    warning: stats?.warning ?? 0,
-    critical: stats?.critical ?? 0,
-    unknown: stats?.unknown ?? 0,
-  };
+export const DashboardSummary: React.FC<DashboardSummaryProps> = memo(
+  function DashboardSummary({
+    stats,
+    activeFilter,
+    onFilterChange,
+    onOpenAlertHistory,
+    onOpenLogExplorer,
+    showTopology = false,
+    onToggleTopology,
+    activeAlertsCount = 0,
+    onOpenActiveAlerts,
+  }) {
+    // Null-safe 처리
+    const safeStats = {
+      total: stats?.total ?? 0,
+      online: stats?.online ?? 0,
+      offline: stats?.offline ?? 0,
+      warning: stats?.warning ?? 0,
+      critical: stats?.critical ?? 0,
+      unknown: stats?.unknown ?? 0,
+    };
 
-  // 시스템 상태에 따른 그라데이션 결정
-  const systemHealthGradient =
-    safeStats.critical > 0
-      ? statusGradients.critical
-      : safeStats.warning > 0
-        ? statusGradients.warning
-        : statusGradients.online;
+    // 시스템 상태에 따른 그라데이션 결정
+    const systemHealthGradient =
+      safeStats.critical > 0
+        ? statusGradients.critical
+        : safeStats.warning > 0
+          ? statusGradients.warning
+          : statusGradients.online;
 
-  // 위험/경고 상태일 때 펄스 활성화
-  const showPulse = safeStats.critical > 0 || safeStats.warning > 0;
+    // 위험/경고 상태일 때 펄스 활성화
+    const showPulse = safeStats.critical > 0 || safeStats.warning > 0;
 
-  return (
-    <div className="mb-4 grid grid-cols-1 gap-3 lg:grid-cols-12">
-      {/* 1. Total Servers - 그라데이션 강화 */}
-      <div className="group relative flex flex-row items-center justify-between rounded-2xl border border-white/60 bg-white/60 backdrop-blur-md p-5 shadow-sm transition-all duration-300 hover:shadow-lg hover:scale-[1.02] lg:col-span-2 overflow-hidden">
-        {/* 그라데이션 배경 */}
-        <div
-          className={`absolute inset-0 bg-linear-to-br ${statusGradients.total.gradient} opacity-0 group-hover:opacity-[0.08] transition-opacity duration-500`}
-        />
-        <div className="relative z-10">
-          <div className="flex items-center gap-1.5 text-gray-500 mb-1.5">
-            <ServerIcon size={14} className="text-blue-500" />
-            <span className="text-xs font-medium uppercase tracking-wider text-gray-400">
-              전체
-            </span>
-          </div>
-          <div className="flex items-baseline gap-2">
-            <span className="text-3xl font-bold text-gray-800 leading-none tracking-tight">
-              {safeStats.total}
-            </span>
-          </div>
-        </div>
-        {/* 그라데이션 아이콘 박스 */}
-        <div
-          className={`relative h-10 w-10 rounded-full bg-linear-to-br ${statusGradients.total.gradient} flex items-center justify-center text-white shadow-md`}
-        >
-          <Activity size={18} />
-        </div>
-      </div>
-
-      {/* 2. Status Cards */}
-      <div className="grid grid-cols-4 gap-3 lg:col-span-5">
-        <StatusCard
-          status="online"
-          count={safeStats.online}
-          label="온라인"
-          icon={<CheckCircle2 size={13} className="text-emerald-500" />}
-          activeFilter={activeFilter}
-          onFilterChange={onFilterChange}
-        />
-        <StatusCard
-          status="warning"
-          count={safeStats.warning}
-          label="경고"
-          icon={<AlertTriangle size={13} className="text-amber-500" />}
-          activeFilter={activeFilter}
-          onFilterChange={onFilterChange}
-          pulse="pulse"
-          countColorClass="text-amber-600"
-        />
-        <StatusCard
-          status="critical"
-          count={safeStats.critical}
-          label="위험"
-          icon={<AlertOctagon size={13} className="text-rose-500" />}
-          activeFilter={activeFilter}
-          onFilterChange={onFilterChange}
-          pulse="ping"
-          countColorClass="text-rose-600"
-        />
-        <StatusCard
-          status="offline"
-          count={safeStats.offline}
-          label="오프라인"
-          icon={<XCircle size={13} className="text-slate-400" />}
-          activeFilter={activeFilter}
-          onFilterChange={onFilterChange}
-        />
-      </div>
-
-      {/* 3. 시스템 상태 - 동적 그라데이션 */}
-      <div
-        className={`group relative rounded-2xl border ${systemHealthGradient.border} bg-white/60 backdrop-blur-md p-3 shadow-sm lg:col-span-5 flex flex-col justify-center transition-all duration-300 hover:shadow-lg hover:scale-[1.01] overflow-hidden`}
-      >
-        {/* 상태 기반 그라데이션 배경 */}
-        <div
-          className={`absolute inset-0 bg-linear-to-br ${systemHealthGradient.gradient} opacity-[0.03] group-hover:opacity-[0.08] transition-opacity duration-500`}
-        />
-
-        {/* 위험/경고 시 글로우 효과 */}
-        {showPulse && (
+    return (
+      <div className="mb-4 grid grid-cols-1 gap-3 lg:grid-cols-12">
+        {/* 1. Total Servers - 그라데이션 강화 */}
+        <div className="group relative flex flex-row items-center justify-between rounded-2xl border border-white/60 bg-white/60 backdrop-blur-md p-5 shadow-sm transition-all duration-300 hover:shadow-lg hover:scale-[1.02] lg:col-span-2 overflow-hidden">
+          {/* 그라데이션 배경 */}
           <div
-            className={`absolute inset-0 bg-linear-to-r ${systemHealthGradient.gradient} opacity-[0.02] animate-pulse`}
+            className={`absolute inset-0 bg-linear-to-br ${statusGradients.total.gradient} opacity-0 group-hover:opacity-[0.08] transition-opacity duration-500`}
           />
-        )}
-
-        <div className="relative z-10 flex flex-wrap items-center justify-between gap-2 px-3">
-          <div className="flex min-w-0 flex-wrap items-center gap-3 sm:flex-nowrap">
-            {/* 동적 아이콘 박스 */}
-            <div
-              className={`relative flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl shadow-md bg-linear-to-br ${systemHealthGradient.gradient} text-white`}
-            >
-              <ShieldAlert size={20} />
-              {/* 상태에 따른 펄스 링 */}
-              {showPulse && (
-                <div
-                  className={`absolute inset-0 rounded-2xl bg-linear-to-br ${systemHealthGradient.gradient} animate-ping opacity-30`}
-                />
-              )}
+          <div className="relative z-10">
+            <div className="flex items-center gap-1.5 text-gray-500 mb-1.5">
+              <ServerIcon size={14} className="text-blue-500" />
+              <span className="text-xs font-medium uppercase tracking-wider text-gray-400">
+                전체
+              </span>
             </div>
-            <div className="whitespace-nowrap">
-              <div className="text-2xs font-bold uppercase tracking-wider text-gray-400 leading-tight">
-                시스템 상태
-              </div>
-              <div
-                className={`text-sm font-bold leading-snug ${systemHealthGradient.text}`}
-              >
-                {safeStats.critical > 0 || safeStats.offline > 0
-                  ? '심각한 문제 발생'
-                  : safeStats.warning > 0
-                    ? '성능 경고'
-                    : '정상 운영 중'}
-              </div>
-            </div>
-
-            {/* 액션 버튼 그룹 */}
-            <div className="ml-1 flex flex-wrap items-center gap-1.5 sm:flex-nowrap">
-              {/* Active Alerts 버튼 */}
-              {onOpenActiveAlerts && (
-                <button
-                  type="button"
-                  onClick={onOpenActiveAlerts}
-                  aria-label="활성 알림 보기"
-                  className="relative flex h-10 items-center gap-1.5 rounded-lg border border-rose-100/80 bg-white/90 px-2 text-xs font-semibold text-gray-600 shadow-xs transition-all duration-200 hover:-translate-y-0.5 hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600 hover:shadow-sm active:translate-y-0 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-300/60 cursor-pointer"
-                >
-                  <AlertTriangle size={14} />
-                  <span>알림</span>
-                  {activeAlertsCount > 0 && (
-                    <span className="flex h-4 min-w-4 items-center justify-center rounded-full bg-rose-500 px-1 text-[10px] font-bold text-white leading-none">
-                      {activeAlertsCount}
-                    </span>
-                  )}
-                </button>
-              )}
-              {onOpenAlertHistory && (
-                <button
-                  type="button"
-                  onClick={onOpenAlertHistory}
-                  aria-label="알림 이력 보기"
-                  className="flex h-10 items-center gap-1.5 rounded-lg border border-amber-100/80 bg-white/90 px-2 text-xs font-semibold text-gray-600 shadow-xs transition-all duration-200 hover:-translate-y-0.5 hover:border-amber-200 hover:bg-amber-50 hover:text-amber-600 hover:shadow-sm active:translate-y-0 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300/60 cursor-pointer"
-                  title="알림 이력"
-                >
-                  <Bell size={16} />
-                  <span>알림 이력</span>
-                </button>
-              )}
-              {onOpenLogExplorer && (
-                <button
-                  type="button"
-                  onClick={onOpenLogExplorer}
-                  aria-label="로그 검색 보기"
-                  className="flex h-10 items-center gap-1.5 rounded-lg border border-blue-100/80 bg-white/90 px-2 text-xs font-semibold text-gray-600 shadow-xs transition-all duration-200 hover:-translate-y-0.5 hover:border-blue-200 hover:bg-blue-50 hover:text-blue-600 hover:shadow-sm active:translate-y-0 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-300/60 cursor-pointer"
-                  title="로그 검색"
-                >
-                  <FileSearch size={16} />
-                  <span>로그 검색</span>
-                </button>
-              )}
+            <div className="flex items-baseline gap-2">
+              <span className="text-3xl font-bold text-gray-800 leading-none tracking-tight">
+                {safeStats.total}
+              </span>
             </div>
           </div>
+          {/* 그라데이션 아이콘 박스 */}
+          <div
+            className={`relative h-10 w-10 rounded-full bg-linear-to-br ${statusGradients.total.gradient} flex items-center justify-center text-white shadow-md`}
+          >
+            <Activity size={18} />
+          </div>
+        </div>
 
-          {/* 오른쪽: 위험/경고 카운트 */}
-          <div className="flex shrink-0 items-center gap-3 text-center pr-1">
-            <div className="flex flex-col items-center">
+        {/* 2. Status Cards */}
+        <div className="grid grid-cols-4 gap-3 lg:col-span-5">
+          <StatusCard
+            status="online"
+            count={safeStats.online}
+            label="온라인"
+            icon={<CheckCircle2 size={13} className="text-emerald-500" />}
+            activeFilter={activeFilter}
+            onFilterChange={onFilterChange}
+          />
+          <StatusCard
+            status="warning"
+            count={safeStats.warning}
+            label="경고"
+            icon={<AlertTriangle size={13} className="text-amber-500" />}
+            activeFilter={activeFilter}
+            onFilterChange={onFilterChange}
+            pulse="pulse"
+            countColorClass="text-amber-600"
+          />
+          <StatusCard
+            status="critical"
+            count={safeStats.critical}
+            label="위험"
+            icon={<AlertOctagon size={13} className="text-rose-500" />}
+            activeFilter={activeFilter}
+            onFilterChange={onFilterChange}
+            pulse="ping"
+            countColorClass="text-rose-600"
+          />
+          <StatusCard
+            status="offline"
+            count={safeStats.offline}
+            label="오프라인"
+            icon={<XCircle size={13} className="text-slate-400" />}
+            activeFilter={activeFilter}
+            onFilterChange={onFilterChange}
+          />
+        </div>
+
+        {/* 3. 시스템 상태 - 동적 그라데이션 */}
+        <div
+          className={`group relative rounded-2xl border ${systemHealthGradient.border} bg-white/60 backdrop-blur-md p-3 shadow-sm lg:col-span-5 flex flex-col justify-center transition-all duration-300 hover:shadow-lg hover:scale-[1.01] overflow-hidden`}
+        >
+          {/* 상태 기반 그라데이션 배경 */}
+          <div
+            className={`absolute inset-0 bg-linear-to-br ${systemHealthGradient.gradient} opacity-[0.03] group-hover:opacity-[0.08] transition-opacity duration-500`}
+          />
+
+          {/* 위험/경고 시 글로우 효과 */}
+          {showPulse && (
+            <div
+              className={`absolute inset-0 bg-linear-to-r ${systemHealthGradient.gradient} opacity-[0.02] animate-pulse`}
+            />
+          )}
+
+          <div className="relative z-10 flex flex-wrap items-center justify-between gap-2 px-3">
+            <div className="flex min-w-0 flex-wrap items-center gap-3 sm:flex-nowrap">
+              {/* 동적 아이콘 박스 */}
               <div
-                className={`text-2xl font-bold leading-none tabular-nums ${safeStats.critical > 0 ? 'text-rose-500' : 'text-gray-400'}`}
+                className={`relative flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl shadow-md bg-linear-to-br ${systemHealthGradient.gradient} text-white`}
               >
-                {safeStats.critical}
+                <ShieldAlert size={20} />
+                {/* 상태에 따른 펄스 링 */}
+                {showPulse && (
+                  <div
+                    className={`absolute inset-0 rounded-2xl bg-linear-to-br ${systemHealthGradient.gradient} animate-ping opacity-30`}
+                  />
+                )}
               </div>
-              <div className="mt-1 text-xs font-semibold uppercase text-gray-500">
-                위험
-              </div>
-            </div>
-            <div className="h-8 w-px bg-gray-200" />
-            <div className="flex flex-col items-center">
-              <div
-                className={`text-2xl font-bold leading-none tabular-nums ${safeStats.warning > 0 ? 'text-amber-500' : 'text-gray-400'}`}
-              >
-                {safeStats.warning}
-              </div>
-              <div className="mt-1 text-xs font-semibold uppercase text-gray-500">
-                경고
-              </div>
-            </div>
-            {onToggleTopology && (
-              <>
-                <div className="h-8 w-px bg-gray-200" />
-                <button
-                  type="button"
-                  onClick={onToggleTopology}
-                  aria-pressed={showTopology}
-                  className={cn(
-                    'inline-flex h-9 items-center gap-1.5 rounded-lg border bg-white/85 px-2.5 text-xs font-semibold shadow-xs transition-all duration-200',
-                    'hover:-translate-y-0.5 hover:shadow-sm active:translate-y-0 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 cursor-pointer',
-                    showTopology
-                      ? 'border-indigo-300 text-indigo-700 hover:bg-indigo-50 focus-visible:ring-indigo-300/60'
-                      : 'border-gray-200 text-gray-600 hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-600 focus-visible:ring-indigo-300/60'
-                  )}
-                  title="시스템 토폴로지"
+              <div className="whitespace-nowrap">
+                <div className="text-2xs font-bold uppercase tracking-wider text-gray-400 leading-tight">
+                  시스템 상태
+                </div>
+                <div
+                  className={`text-sm font-bold leading-snug ${systemHealthGradient.text}`}
                 >
-                  <Network size={14} />
-                  <span>토폴로지</span>
-                </button>
-              </>
-            )}
+                  {safeStats.critical > 0 || safeStats.offline > 0
+                    ? '심각한 문제 발생'
+                    : safeStats.warning > 0
+                      ? '성능 경고'
+                      : '정상 운영 중'}
+                </div>
+              </div>
+
+              {/* 액션 버튼 그룹 */}
+              <div className="ml-1 flex flex-wrap items-center gap-1.5 sm:flex-nowrap">
+                {/* Active Alerts 버튼 */}
+                {onOpenActiveAlerts && (
+                  <button
+                    type="button"
+                    onClick={onOpenActiveAlerts}
+                    aria-label="활성 알림 보기"
+                    className="relative flex h-10 items-center gap-1.5 rounded-lg border border-rose-100/80 bg-white/90 px-2 text-xs font-semibold text-gray-600 shadow-xs transition-all duration-200 hover:-translate-y-0.5 hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600 hover:shadow-sm active:translate-y-0 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-300/60 cursor-pointer"
+                  >
+                    <AlertTriangle size={14} />
+                    <span>알림</span>
+                    {activeAlertsCount > 0 && (
+                      <span className="flex h-4 min-w-4 items-center justify-center rounded-full bg-rose-500 px-1 text-[10px] font-bold text-white leading-none">
+                        {activeAlertsCount}
+                      </span>
+                    )}
+                  </button>
+                )}
+                {onOpenAlertHistory && (
+                  <button
+                    type="button"
+                    onClick={onOpenAlertHistory}
+                    aria-label="알림 이력 보기"
+                    className="flex h-10 items-center gap-1.5 rounded-lg border border-amber-100/80 bg-white/90 px-2 text-xs font-semibold text-gray-600 shadow-xs transition-all duration-200 hover:-translate-y-0.5 hover:border-amber-200 hover:bg-amber-50 hover:text-amber-600 hover:shadow-sm active:translate-y-0 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300/60 cursor-pointer"
+                    title="알림 이력"
+                  >
+                    <Bell size={16} />
+                    <span>알림 이력</span>
+                  </button>
+                )}
+                {onOpenLogExplorer && (
+                  <button
+                    type="button"
+                    onClick={onOpenLogExplorer}
+                    aria-label="로그 검색 보기"
+                    className="flex h-10 items-center gap-1.5 rounded-lg border border-blue-100/80 bg-white/90 px-2 text-xs font-semibold text-gray-600 shadow-xs transition-all duration-200 hover:-translate-y-0.5 hover:border-blue-200 hover:bg-blue-50 hover:text-blue-600 hover:shadow-sm active:translate-y-0 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-300/60 cursor-pointer"
+                    title="로그 검색"
+                  >
+                    <FileSearch size={16} />
+                    <span>로그 검색</span>
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* 오른쪽: 위험/경고 카운트 */}
+            <div className="flex shrink-0 items-center gap-3 text-center pr-1">
+              <div className="flex flex-col items-center">
+                <div
+                  className={`text-2xl font-bold leading-none tabular-nums ${safeStats.critical > 0 ? 'text-rose-500' : 'text-gray-400'}`}
+                >
+                  {safeStats.critical}
+                </div>
+                <div className="mt-1 text-xs font-semibold uppercase text-gray-500">
+                  위험
+                </div>
+              </div>
+              <div className="h-8 w-px bg-gray-200" />
+              <div className="flex flex-col items-center">
+                <div
+                  className={`text-2xl font-bold leading-none tabular-nums ${safeStats.warning > 0 ? 'text-amber-500' : 'text-gray-400'}`}
+                >
+                  {safeStats.warning}
+                </div>
+                <div className="mt-1 text-xs font-semibold uppercase text-gray-500">
+                  경고
+                </div>
+              </div>
+              {onToggleTopology && (
+                <>
+                  <div className="h-8 w-px bg-gray-200" />
+                  <button
+                    type="button"
+                    onClick={onToggleTopology}
+                    aria-pressed={showTopology}
+                    className={cn(
+                      'inline-flex h-9 items-center gap-1.5 rounded-lg border bg-white/85 px-2.5 text-xs font-semibold shadow-xs transition-all duration-200',
+                      'hover:-translate-y-0.5 hover:shadow-sm active:translate-y-0 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 cursor-pointer',
+                      showTopology
+                        ? 'border-indigo-300 text-indigo-700 hover:bg-indigo-50 focus-visible:ring-indigo-300/60'
+                        : 'border-gray-200 text-gray-600 hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-600 focus-visible:ring-indigo-300/60'
+                    )}
+                    title="시스템 토폴로지"
+                  >
+                    <Network size={14} />
+                    <span>토폴로지</span>
+                  </button>
+                </>
+              )}
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  );
-};
+    );
+  }
+);

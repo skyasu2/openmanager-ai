@@ -273,11 +273,11 @@ export function LogExplorerModal({
                   isPending && 'opacity-60 transition-opacity duration-200'
                 )}
               >
-                {displayLogs.map((log, idx) => {
+                {displayLogs.map((log) => {
                   const style = levelStyles[log.level];
                   return (
                     <div
-                      key={`${log.serverId}-${log.timestamp}-${idx}`}
+                      key={`${log.serverId}-${log.timestamp}-${log.level}-${log.source}-${log.message.slice(0, 32)}`}
                       className={cn(
                         'flex flex-wrap items-start gap-1.5 rounded border-l-2 px-2.5 py-1.5 sm:flex-nowrap sm:gap-2',
                         style.border,

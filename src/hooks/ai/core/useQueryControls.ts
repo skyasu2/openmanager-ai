@@ -9,7 +9,7 @@
 
 import type { UIMessage } from '@ai-sdk/react';
 import type { MutableRefObject } from 'react';
-import { useCallback } from 'react';
+import { useCallback, useRef } from 'react';
 import { generateTraceId } from '@/config/ai-proxy.config';
 import {
   analyzeQueryComplexity,
@@ -68,6 +68,10 @@ export function useQueryControls(deps: QueryControlDeps) {
     refs,
   } = deps;
 
+  // F14 Fix: currentMode를 ref에 저장하여 stop 호출 시 stale closure 방지
+  const currentModeRef = useRef(currentMode);
+  currentModeRef.current = currentMode;
+
   const stop = useCallback(() => {
     // AbortController cleanup on stop
     refs.abortController.current?.abort();
@@ -77,12 +81,12 @@ export function useQueryControls(deps: QueryControlDeps) {
       refs.retryTimeout.current = null;
     }
 
-    if (currentMode === 'streaming') {
+    if (currentModeRef.current === 'streaming') {
       onUserAbort?.();
       stopChat();
     }
     setState((prev) => ({ ...prev, isLoading: false }));
-  }, [currentMode, stopChat, onUserAbort, setState, refs]);
+  }, [stopChat, onUserAbort, setState, refs]);
 
   const cancel = useCallback(async () => {
     if (currentMode === 'job-queue') {

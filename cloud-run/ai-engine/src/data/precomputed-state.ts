@@ -10,6 +10,7 @@
  */
 
 import { readFileSync, existsSync, writeFileSync } from 'fs';
+import { readFile } from 'fs/promises';
 import { join } from 'path';
 import { logger } from '../lib/logger';
 import type {
@@ -155,7 +156,7 @@ function loadThresholdsFromSystemRules(): SystemRulesThresholds | null {
         const content = readFileSync(filePath, 'utf-8');
         const rules = JSON.parse(content);
         if (rules?.thresholds) {
-          console.log(`[PrecomputedState] system-rules.json 로드: ${filePath}`);
+          logger.info(`[PrecomputedState] system-rules.json 로드: ${filePath}`);
           return {
             cpu: { warning: rules.thresholds.cpu.warning, critical: rules.thresholds.cpu.critical },
             memory: { warning: rules.thresholds.memory.warning, critical: rules.thresholds.memory.critical },
@@ -229,18 +230,62 @@ function getOTelPaths(hour: number): string[] {
   ];
 }
 
-/** OTel hourly JSON 로드 (PRIMARY) */
+/** OTel hourly JSON 로드 (PRIMARY - sync) */
 function loadOTelHourly(hour: number): OTelHourlyFile | null {
+  // Check async cache first (populated by initOTelDataAsync)
+  if (_otelHourlyCache.has(hour)) {
+    return _otelHourlyCache.get(hour)!;
+  }
   for (const filePath of getOTelPaths(hour)) {
     if (existsSync(filePath)) {
       try {
-        return JSON.parse(readFileSync(filePath, 'utf-8'));
+        const data = JSON.parse(readFileSync(filePath, 'utf-8')) as OTelHourlyFile;
+        _otelHourlyCache.set(hour, data);
+        return data;
       } catch {
         /* 다음 경로 시도 */
       }
     }
   }
   return null;
+}
+
+/** Async cache for parallel hourly file loading */
+const _otelHourlyCache = new Map<number, OTelHourlyFile>();
+
+/**
+ * Pre-load all 24 hourly OTel files in parallel (async).
+ * Call at startup to avoid cold-start sync reads.
+ * After this, loadOTelHourly/buildPrecomputedStates use the cache.
+ */
+export async function initOTelDataAsync(): Promise<void> {
+  const loadOne = async (hour: number): Promise<void> => {
+    for (const filePath of getOTelPaths(hour)) {
+      try {
+        const content = await readFile(filePath, 'utf-8');
+        _otelHourlyCache.set(hour, JSON.parse(content) as OTelHourlyFile);
+        return;
+      } catch {
+        /* 다음 경로 시도 */
+      }
+    }
+  };
+
+  await Promise.all(Array.from({ length: 24 }, (_, i) => loadOne(i)));
+  logger.info(`[PrecomputedState] Async pre-load 완료: ${_otelHourlyCache.size}/24 시간 파일`);
+}
+
+/**
+ * Normalize OTel utilization value to percent (0-100).
+ * Matches Vercel-side normalizeUtilizationPercent logic.
+ * - ratio (0~1): multiply by 100
+ * - percent (1~100): keep as-is
+ * - out of range: clamp to 0~100
+ */
+function normalizeUtilizationPercent(value: number): number {
+  if (!Number.isFinite(value)) return 0;
+  if (value >= 0 && value <= 1) return Math.round(value * 1000) / 10;
+  return Math.round(Math.max(0, Math.min(100, value)) * 10) / 10;
 }
 
 /**
@@ -276,20 +321,16 @@ function otelSlotToRawServers(slot: OTelHourlySlot): Record<string, RawServerDat
       const server = serverMap[serverId];
       switch (metric.name) {
         case 'system.cpu.utilization':
-          server.cpu = Math.round(dp.asDouble * 1000) / 10;
+          server.cpu = normalizeUtilizationPercent(dp.asDouble);
           break;
         case 'system.memory.utilization':
-          server.memory = Math.round(dp.asDouble * 1000) / 10;
+          server.memory = normalizeUtilizationPercent(dp.asDouble);
           break;
         case 'system.filesystem.utilization':
-          server.disk = Math.round(dp.asDouble * 1000) / 10;
+          server.disk = normalizeUtilizationPercent(dp.asDouble);
           break;
         case 'system.network.utilization':
-          // Range detection: values >1 are already percent (Cloud Run data),
-          // values ≤1 are ratio (Vercel SSOT data) and need *100 conversion
-          server.network = dp.asDouble > 1
-            ? Math.round(dp.asDouble * 10) / 10
-            : Math.round(dp.asDouble * 1000) / 10;
+          server.network = normalizeUtilizationPercent(dp.asDouble);
           break;
         case 'system.linux.cpu.load_1m':
           server.load1 = dp.asDouble;
@@ -298,8 +339,9 @@ function otelSlotToRawServers(slot: OTelHourlySlot): Record<string, RawServerDat
           server.load5 = dp.asDouble;
           break;
         case 'http.server.request.duration':
-          // OTel standard unit is "s" (seconds); convert to ms
-          server.responseTimeMs = dp.asDouble * 1000;
+          // Normalize to milliseconds based on metric unit field
+          // OTel standard: "s" (seconds), some sources: "ms" (milliseconds)
+          server.responseTimeMs = metric.unit === 'ms' ? dp.asDouble : dp.asDouble * 1000;
           break;
         case 'system.status':
           // 1 = online, 0 = offline (Cloud Run 전용 메트릭)
@@ -365,6 +407,9 @@ function determineStatus(server: RawServerData): ServerStatus {
 
   return 'online'; // 'healthy' → 'online' (JSON SSOT 통일)
 }
+
+/** Log severity priority for sorting (lower = higher priority) */
+const LOG_PRIORITY_ORDER: Readonly<Record<string, number>> = { error: 0, warn: 1, info: 2 };
 
 /** 트렌드 계산 (이전 슬롯과 비교) */
 function calculateTrend(current: number, previous: number | undefined): TrendDirection {
@@ -521,9 +566,8 @@ function buildSlot(
       serverLogs[serverId].push(otelLogToGeneratedLog(log));
     }
     // error 우선 정렬 후 최대 5개
-    const priorityOrder: Record<string, number> = { error: 0, warn: 1, info: 2 };
     for (const [sid, logs] of Object.entries(serverLogs)) {
-      logs.sort((a, b) => (priorityOrder[a.level] ?? 2) - (priorityOrder[b.level] ?? 2));
+      logs.sort((a, b) => (LOG_PRIORITY_ORDER[a.level] ?? 2) - (LOG_PRIORITY_ORDER[b.level] ?? 2));
       serverLogs[sid] = logs.slice(0, 5);
     }
     // OTel에 로그가 없는 서버는 빈 배열
@@ -539,8 +583,7 @@ function buildSlot(
         raw.type,
         scenario,
       );
-      const priorityOrder: Record<string, number> = { error: 0, warn: 1, info: 2 };
-      logs.sort((a, b) => (priorityOrder[a.level] ?? 2) - (priorityOrder[b.level] ?? 2));
+      logs.sort((a, b) => (LOG_PRIORITY_ORDER[a.level] ?? 2) - (LOG_PRIORITY_ORDER[b.level] ?? 2));
       serverLogs[raw.id] = logs.slice(0, 5);
     }
   }
@@ -559,7 +602,7 @@ function buildSlot(
 
 /** 144개 슬롯 빌드 — OTel SSOT */
 export function buildPrecomputedStates(): PrecomputedSlot[] {
-  const slots: PrecomputedSlot[] = [];
+  const slots: (PrecomputedSlot | undefined)[] = new Array(144);
   let previousServers: Record<string, RawServerData> = {};
   let otelCount = 0;
 
@@ -575,19 +618,21 @@ export function buildPrecomputedStates(): PrecomputedSlot[] {
     otelCount++;
     for (let slotInHour = 0; slotInHour < 6; slotInHour++) {
       const slotIndex = hour * 6 + slotInHour;
-      const slot = otelData.slots[Math.min(slotInHour, otelData.slots.length - 1)];
-      if (!slot) continue;
+      const otelSlot = otelData.slots[Math.min(slotInHour, otelData.slots.length - 1)];
+      if (!otelSlot) continue;
 
-      const rawServers = otelSlotToRawServers(slot);
-      slots.push(buildSlot(rawServers, previousServers, slotIndex, hour, slotInHour, '', slot.logs));
+      const rawServers = otelSlotToRawServers(otelSlot);
+      slots[slotIndex] = buildSlot(rawServers, previousServers, slotIndex, hour, slotInHour, '', otelSlot.logs);
       previousServers = rawServers;
     }
   }
 
+  // Filter out gaps from missing hours
+  const filledSlots = slots.filter((s): s is PrecomputedSlot => s !== undefined);
   logger.info(
-    `[PrecomputedState] ${slots.length}개 슬롯 빌드 완료 (OTel=${otelCount}h)`
+    `[PrecomputedState] ${filledSlots.length}개 슬롯 빌드 완료 (OTel=${otelCount}h)`
   );
-  return slots;
+  return filledSlots;
 }
 
 // ============================================================================
@@ -639,7 +684,7 @@ function loadPrebuiltStates(): PrecomputedSlot[] | null {
       try {
         const content = readFileSync(filePath, 'utf-8');
         const slots = JSON.parse(content) as PrecomputedSlot[];
-        console.log(`[PrecomputedState] Pre-built JSON 로드: ${filePath} (${slots.length}개 슬롯)`);
+        logger.info(`[PrecomputedState] Pre-built JSON 로드: ${filePath} (${slots.length}개 슬롯)`);
         return slots;
       } catch (e) {
         logger.warn(`[PrecomputedState] JSON 파싱 실패: ${filePath}`, e);
@@ -692,7 +737,7 @@ export function getSlots(): PrecomputedSlot[] {
       } else if (prebuilt) {
         _cachedSlots = prebuilt;
       } else {
-        console.log('[PrecomputedState] Pre-built 없음, 런타임 빌드 시작...');
+        logger.info('[PrecomputedState] Pre-built 없음, 런타임 빌드 시작...');
         const runtimeBuilt = buildPrecomputedStates();
         _cachedSlots =
           runtimeBuilt.length > 0
@@ -701,7 +746,7 @@ export function getSlots(): PrecomputedSlot[] {
       }
     } else {
       // 런타임 빌드 우선 (권장)
-      console.log('[PrecomputedState] 런타임 빌드 모드 사용');
+      logger.info('[PrecomputedState] 런타임 빌드 모드 사용');
       const runtimeBuilt = buildPrecomputedStates();
       if (runtimeBuilt.length > 0) {
         _cachedSlots = runtimeBuilt;
@@ -726,8 +771,7 @@ export function getSlots(): PrecomputedSlot[] {
             server.id,
             server.type,
           );
-          const priorityOrder: Record<string, number> = { error: 0, warn: 1, info: 2 };
-          logs.sort((a, b) => (priorityOrder[a.level] ?? 2) - (priorityOrder[b.level] ?? 2));
+          logs.sort((a, b) => (LOG_PRIORITY_ORDER[a.level] ?? 2) - (LOG_PRIORITY_ORDER[b.level] ?? 2));
           serverLogs[server.id] = logs.slice(0, 5);
         }
         slot.serverLogs = serverLogs;
@@ -870,7 +914,8 @@ export function getActiveAlerts(): ServerAlert[] {
  */
 export function clearStateCache(): void {
   _cachedSlots = null;
-  console.log('[PrecomputedState] 캐시 초기화됨');
+  _trendCache = null;
+  logger.info('[PrecomputedState] 캐시 초기화됨');
 }
 
 /**
@@ -879,7 +924,7 @@ export function clearStateCache(): void {
 export function exportToJson(outputPath: string): void {
   const slots = buildPrecomputedStates();
   writeFileSync(outputPath, JSON.stringify(slots, null, 2), 'utf-8');
-  console.log(`[PrecomputedState] ${outputPath}에 내보내기 완료`);
+  logger.info(`[PrecomputedState] ${outputPath}에 내보내기 완료`);
 }
 
 // ============================================================================
@@ -1035,10 +1080,21 @@ export function compareWithPast(minutesAgo: number): {
 // ============================================================================
 
 /**
- * precomputed slots에서 24시간 트렌드 요약 생성 (자체 구현)
+ * TTL cache for trend context (recomputed at most once per 60s)
+ */
+let _trendCache: { result: string; timestamp: number } | null = null;
+const TREND_CACHE_TTL_MS = 60_000;
+
+/**
+ * precomputed slots에서 24시간 트렌드 요약 생성 (자체 구현, 60s TTL 캐시)
  */
 function buildTrendLLMContext(slots: PrecomputedSlot[]): string {
   if (slots.length === 0) return '';
+
+  const now = Date.now();
+  if (_trendCache && now - _trendCache.timestamp < TREND_CACHE_TTL_MS) {
+    return _trendCache.result;
+  }
 
   const serverTrends = new Map<string, { type: string; cpu: number[]; memory: number[]; disk: number[] }>();
   for (const slot of slots) {
@@ -1060,6 +1116,8 @@ function buildTrendLLMContext(slots: PrecomputedSlot[]): string {
   for (const [serverId, metrics] of serverTrends) {
     context += `- ${serverId} (${metrics.type}): CPU avg ${avg(metrics.cpu)}%/max ${max(metrics.cpu)}%, Mem avg ${avg(metrics.memory)}%/max ${max(metrics.memory)}%, Disk avg ${avg(metrics.disk)}%/max ${max(metrics.disk)}%\n`;
   }
+
+  _trendCache = { result: context, timestamp: now };
   return context;
 }
 

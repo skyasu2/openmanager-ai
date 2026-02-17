@@ -16,50 +16,6 @@ export const CustomNode = memo(({ data }: NodeProps<Node<CustomNodeData>>) => {
   const styles = NODE_STYLES[data.nodeType];
   const statusStyle = data.status ? STATUS_STYLES[data.status] : null;
 
-  const tooltipContent = (
-    <div className="max-w-tooltip space-y-1">
-      <div className="flex items-center justify-between gap-4">
-        <div className="flex items-center gap-2">
-          {data.icon && <span className="text-base">{data.icon}</span>}
-          <span className="font-semibold text-white">{data.label}</span>
-        </div>
-        {data.status && (
-          <div className="flex items-center gap-1.5">
-            <div className={`h-1.5 w-1.5 rounded-full ${statusStyle?.dot}`} />
-            <span
-              className={`text-[10px] font-bold uppercase tracking-wider ${statusStyle?.text}`}
-            >
-              {data.status}
-            </span>
-          </div>
-        )}
-      </div>
-      {data.sublabel && (
-        <p className="text-xs leading-relaxed text-gray-300">{data.sublabel}</p>
-      )}
-      <div className="mt-1.5 flex items-center gap-1.5 border-t border-white/10 pt-1.5">
-        <span className="text-2xs text-gray-400">Layer:</span>
-        <span className="text-2xs text-gray-300">{data.layerTitle}</span>
-      </div>
-      {data.serverData && (
-        <div className="mt-1 grid grid-cols-2 gap-x-3 gap-y-1 text-[10px]">
-          <div className="flex justify-between">
-            <span className="text-gray-500">CPU</span>
-            <span className="text-gray-300 font-medium">
-              {data.serverData.cpu}%
-            </span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-gray-500">MEM</span>
-            <span className="text-gray-300 font-medium">
-              {data.serverData.memory}%
-            </span>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-
   return (
     <Tooltip.Root>
       <Tooltip.Trigger asChild>
@@ -123,7 +79,51 @@ export const CustomNode = memo(({ data }: NodeProps<Node<CustomNodeData>>) => {
           sideOffset={8}
           side="top"
         >
-          {tooltipContent}
+          <div className="max-w-tooltip space-y-1">
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex items-center gap-2">
+                {data.icon && <span className="text-base">{data.icon}</span>}
+                <span className="font-semibold text-white">{data.label}</span>
+              </div>
+              {data.status && (
+                <div className="flex items-center gap-1.5">
+                  <div
+                    className={`h-1.5 w-1.5 rounded-full ${statusStyle?.dot}`}
+                  />
+                  <span
+                    className={`text-[10px] font-bold uppercase tracking-wider ${statusStyle?.text}`}
+                  >
+                    {data.status}
+                  </span>
+                </div>
+              )}
+            </div>
+            {data.sublabel && (
+              <p className="text-xs leading-relaxed text-gray-300">
+                {data.sublabel}
+              </p>
+            )}
+            <div className="mt-1.5 flex items-center gap-1.5 border-t border-white/10 pt-1.5">
+              <span className="text-2xs text-gray-400">Layer:</span>
+              <span className="text-2xs text-gray-300">{data.layerTitle}</span>
+            </div>
+            {data.serverData && (
+              <div className="mt-1 grid grid-cols-2 gap-x-3 gap-y-1 text-[10px]">
+                <div className="flex justify-between">
+                  <span className="text-gray-500">CPU</span>
+                  <span className="text-gray-300 font-medium">
+                    {data.serverData.cpu}%
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-500">MEM</span>
+                  <span className="text-gray-300 font-medium">
+                    {data.serverData.memory}%
+                  </span>
+                </div>
+              </div>
+            )}
+          </div>
           <Tooltip.Arrow className="fill-slate-800/95" />
         </Tooltip.Content>
       </Tooltip.Portal>

@@ -133,6 +133,8 @@ function getStreamOwnerKey(req: NextRequest): string {
   const testSecret = req.headers.get('x-test-secret');
   if (testSecret) return `test:${hashValue(testSecret)}`;
 
+  // NOTE: IP+UA fingerprint is spoofable; acceptable for portfolio/demo context.
+  // A production system should use a server-generated nonce stored in an HttpOnly cookie.
   const ip =
     req.headers.get('x-real-ip') || req.headers.get('x-forwarded-for') || '';
   const ua = req.headers.get('user-agent') || '';
@@ -377,11 +379,18 @@ export const POST = withRateLimit(
       const streamId = generateId();
 
       // Best-effort cleanup for stale stream mapping in same owner/session scope
-      const staleStreamId = await getActiveStreamId(sessionId, ownerKey);
-      if (staleStreamId && staleStreamId !== streamId) {
-        const cleanupContext = createUpstashResumableContext();
-        await cleanupContext.clearStream(staleStreamId);
-        await clearActiveStreamId(sessionId, ownerKey);
+      try {
+        const staleStreamId = await getActiveStreamId(sessionId, ownerKey);
+        if (staleStreamId && staleStreamId !== streamId) {
+          const cleanupContext = createUpstashResumableContext();
+          await cleanupContext.clearStream(staleStreamId);
+          await clearActiveStreamId(sessionId, ownerKey);
+        }
+      } catch (cleanupError) {
+        console.warn(
+          '[SupervisorStreamV2] Stale stream cleanup failed:',
+          cleanupError
+        );
       }
 
       // 7. Proxy to Cloud Run v2 endpoint
@@ -403,6 +412,8 @@ export const POST = withRateLimit(
           headers: {
             'Content-Type': 'application/json',
             Accept: 'text/event-stream',
+            // NOTE: API secret in header is safe in transit (HTTPS) but may appear
+            // in Cloud Run access logs. Accept this trade-off for standard auth header usage.
             ...(apiSecret && { 'X-API-Key': apiSecret }),
           },
           body: JSON.stringify({

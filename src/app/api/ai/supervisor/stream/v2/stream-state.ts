@@ -26,7 +26,7 @@ function buildStreamStateKey(sessionId: string, ownerKey: string): string {
 export async function saveActiveStreamId(
   sessionId: string,
   streamId: string,
-  ownerKey = 'global'
+  ownerKey: string
 ): Promise<void> {
   if (!isRedisEnabled()) {
     logger.debug('[StreamState] Redis disabled, skipping save');
@@ -54,7 +54,7 @@ export async function saveActiveStreamId(
  */
 export async function getActiveStreamId(
   sessionId: string,
-  ownerKey = 'global'
+  ownerKey: string
 ): Promise<string | null> {
   if (!isRedisEnabled()) {
     return null;
@@ -81,7 +81,7 @@ export async function getActiveStreamId(
 
 export async function clearActiveStreamId(
   sessionId: string,
-  ownerKey = 'global'
+  ownerKey: string
 ): Promise<void> {
   if (!isRedisEnabled()) return;
 
@@ -103,7 +103,7 @@ export async function clearActiveStreamId(
  */
 export async function isStreamActive(
   sessionId: string,
-  ownerKey = 'global'
+  ownerKey: string
 ): Promise<boolean> {
   const streamId = await getActiveStreamId(sessionId, ownerKey);
   return streamId !== null;

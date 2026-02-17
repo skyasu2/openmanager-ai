@@ -52,17 +52,11 @@ const AGENT_TYPE_TO_CONFIG_KEY: Record<AgentType, string> = {
 };
 
 /**
- * Mapping from AGENT_CONFIGS key to AgentType
+ * Mapping from AGENT_CONFIGS key to AgentType (auto-generated from AGENT_TYPE_TO_CONFIG_KEY)
  */
-const CONFIG_KEY_TO_AGENT_TYPE: Record<string, AgentType> = {
-  'NLQ Agent': 'nlq',
-  'Analyst Agent': 'analyst',
-  'Reporter Agent': 'reporter',
-  'Advisor Agent': 'advisor',
-  'Vision Agent': 'vision',
-  'Evaluator Agent': 'evaluator',
-  'Optimizer Agent': 'optimizer',
-};
+const CONFIG_KEY_TO_AGENT_TYPE = Object.fromEntries(
+  Object.entries(AGENT_TYPE_TO_CONFIG_KEY).map(([k, v]) => [v, k])
+) as Record<string, AgentType>;
 
 // ============================================================================
 // Concrete Agent Implementation (ConfigBasedAgent)
@@ -171,8 +165,9 @@ export class AgentFactory {
     const available: AgentType[] = [];
 
     for (const type of Object.keys(AGENT_TYPE_TO_CONFIG_KEY) as AgentType[]) {
-      const agent = AgentFactory.create(type);
-      if (agent) {
+      const configKey = AGENT_TYPE_TO_CONFIG_KEY[type];
+      const config = AGENT_CONFIGS[configKey];
+      if (config && config.getModel() !== null) {
         available.push(type);
       }
     }

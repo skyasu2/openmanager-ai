@@ -41,7 +41,7 @@ export function getAPIAuthContext(request: NextRequest): APIAuthContext | null {
 }
 
 function fingerprintSecret(value: string): string {
-  return createHash('sha256').update(value).digest('hex').slice(0, 20);
+  return createHash('sha256').update(value).digest('hex').slice(0, 32);
 }
 
 /**
@@ -80,10 +80,23 @@ export async function checkAPIAuth(request: NextRequest) {
   const testSecret = request.headers.get('x-test-secret');
   const envTestSecret = process.env.TEST_SECRET_KEY;
 
-  if (testSecret && envTestSecret && testSecret === envTestSecret) {
-    logger.info('✅ [API Auth] E2E 테스트 모드 바이패스 활성화');
-    setAPIAuthContext(request, { authType: 'test-secret' });
-    return null; // E2E 테스트 인증 통과
+  if (testSecret && envTestSecret) {
+    const testSecretBuffer = Buffer.from(testSecret);
+    const envTestSecretBuffer = Buffer.from(envTestSecret);
+    const maxLen = Math.max(
+      testSecretBuffer.length,
+      envTestSecretBuffer.length
+    );
+    const paddedTestSecret = Buffer.alloc(maxLen);
+    const paddedEnvTestSecret = Buffer.alloc(maxLen);
+    testSecretBuffer.copy(paddedTestSecret);
+    envTestSecretBuffer.copy(paddedEnvTestSecret);
+
+    if (timingSafeEqual(paddedTestSecret, paddedEnvTestSecret)) {
+      logger.info('✅ [API Auth] E2E 테스트 모드 바이패스 활성화');
+      setAPIAuthContext(request, { authType: 'test-secret' });
+      return null; // E2E 테스트 인증 통과
+    }
   }
 
   // 🔑 테스트용 API 키 확인 (프로덕션 환경에서 Postman/curl 테스트용)
@@ -186,6 +199,7 @@ export async function checkAPIAuth(request: NextRequest) {
     );
   }
 
+  setAPIAuthContext(request, { authType: 'unknown' });
   return NextResponse.json(
     { error: 'Unauthorized - Please login first' },
     { status: 401 }
@@ -214,12 +228,10 @@ export function withAuth<T extends unknown[] = []>(
   };
 }
 
-/**
- * 관리자 전용 API 보호
- * - 현재는 로그인만 확인 (포트폴리오용이므로 복잡한 권한 체계 없음)
- */
+// TODO: withAdminAuth currently delegates to withAuth without actual admin role verification.
+// When real admin functionality is needed, add role check (e.g., check user metadata or DB role).
 export function withAdminAuth(
   handler: (request: NextRequest) => Promise<NextResponse>
 ) {
-  return withAuth(handler); // 포트폴리오용이므로 일반 인증과 동일
+  return withAuth(handler);
 }

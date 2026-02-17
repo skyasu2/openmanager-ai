@@ -10,7 +10,6 @@
 import type { UIMessage } from '@ai-sdk/react';
 import type { MutableRefObject } from 'react';
 import { useCallback } from 'react';
-import { flushSync } from 'react-dom';
 import { generateClarification } from '@/lib/ai/clarification-generator';
 import { classifyQuery } from '@/lib/ai/query-classifier';
 import {
@@ -194,25 +193,24 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
           clarification: null,
         }));
 
-        // Pre-sanitize: sendMessage 호출 전에 기존 messages를 sanitize
-        flushSync(() => {
-          setMessages((prev) => {
-            let cleaned = sanitizeMessages(prev);
-            // Retry Fix: 재시도 시 이전 실패한 user+assistant 메시지 제거
-            if (isRetry && cleaned.length >= 1) {
-              let lastUserIdx = -1;
-              for (let i = cleaned.length - 1; i >= 0; i--) {
-                if (cleaned[i]?.role === 'user') {
-                  lastUserIdx = i;
-                  break;
-                }
-              }
-              if (lastUserIdx !== -1) {
-                cleaned = cleaned.slice(0, lastUserIdx);
+        // P1-11 Fix: flushSync 제거 — React 19 concurrent mode 충돌 방지
+        // sanitize 후 queueMicrotask로 sendMessage 호출하여 상태 반영 보장
+        setMessages((prev) => {
+          let cleaned = sanitizeMessages(prev);
+          // Retry Fix: 재시도 시 이전 실패한 user+assistant 메시지 제거
+          if (isRetry && cleaned.length >= 1) {
+            let lastUserIdx = -1;
+            for (let i = cleaned.length - 1; i >= 0; i--) {
+              if (cleaned[i]?.role === 'user') {
+                lastUserIdx = i;
+                break;
               }
             }
-            return cleaned;
-          });
+            if (lastUserIdx !== -1) {
+              cleaned = cleaned.slice(0, lastUserIdx);
+            }
+          }
+          return cleaned;
         });
 
         // AI SDK v6: sendMessage({ text, files? }) 형식
@@ -220,14 +218,17 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
           ? { text: trimmedQuery, files: fileUIParts }
           : { text: trimmedQuery };
 
-        void Promise.resolve(sendMessage(messagePayload)).catch((error) => {
-          logger.error('[HybridAI] Streaming send failed:', error);
-          setState((prev) => ({
-            ...prev,
-            isLoading: false,
-            error:
-              error instanceof Error ? error.message : '스트리밍 전송 실패',
-          }));
+        // queueMicrotask: setMessages 반영 후 sendMessage 호출
+        queueMicrotask(() => {
+          void Promise.resolve(sendMessage(messagePayload)).catch((error) => {
+            logger.error('[HybridAI] Streaming send failed:', error);
+            setState((prev) => ({
+              ...prev,
+              isLoading: false,
+              error:
+                error instanceof Error ? error.message : '스트리밍 전송 실패',
+            }));
+          });
         });
       }
     },

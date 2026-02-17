@@ -18,7 +18,7 @@ import { logger } from './lib/logger';
 import { logAPIKeyStatus, validateAPIKeys } from './lib/model-config';
 import { getConfigStatus, getLangfuseConfig } from './lib/config-parser';
 import { isRedisAvailable } from './lib/redis-client';
-import { getCurrentState } from './data/precomputed-state';
+import { getCurrentState, initOTelDataAsync } from './data/precomputed-state';
 import { syncIncidentsToRAG } from './lib/incident-rag-injector';
 
 // Error handling
@@ -364,6 +364,11 @@ app.route('/api/ai/providers', providersRouter);
 const port = parseInt(process.env.PORT || '8080', 10);
 logger.info({ port }, 'AI Engine Server starting');
 logAPIKeyStatus();
+
+// Pre-load OTel data files in parallel (async) to reduce cold start
+initOTelDataAsync().catch((err) => {
+  logger.warn({ err }, 'OTel async pre-load failed, will fall back to sync reads');
+});
 
 // Initialize Langfuse config (sets env vars from JSON secret)
 const langfuseConfig = getLangfuseConfig();
