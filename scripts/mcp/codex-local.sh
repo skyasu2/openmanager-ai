@@ -3,6 +3,7 @@ set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 RUNTIME_ENV_RESOLVER="$REPO_ROOT/scripts/mcp/resolve-runtime-env.sh"
+GITHUB_MCP_AUTH_SYNC="$REPO_ROOT/scripts/mcp/sync-github-mcp-auth.sh"
 
 if [ ! -f "$RUNTIME_ENV_RESOLVER" ]; then
   echo "ERROR: $RUNTIME_ENV_RESOLVER not found"
@@ -20,6 +21,10 @@ if [ ! -f "$CODEX_HOME/config.toml" ]; then
   echo "ERROR: $CODEX_HOME/config.toml not found"
   echo "Hint: create $REPO_ROOT/.codex/config.toml or override OPENMANAGER_CODEX_HOME_MODE"
   exit 2
+fi
+
+if [ -x "$GITHUB_MCP_AUTH_SYNC" ]; then
+  "$GITHUB_MCP_AUTH_SYNC" || true
 fi
 
 exec codex "$@"

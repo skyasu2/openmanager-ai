@@ -18,6 +18,7 @@ TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S')
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 CODEX_LOCAL_RUNNER="$REPO_ROOT/scripts/mcp/codex-local.sh"
 RUNTIME_ENV_RESOLVER="$REPO_ROOT/scripts/mcp/resolve-runtime-env.sh"
+GITHUB_MCP_AUTH_SYNC="$REPO_ROOT/scripts/mcp/sync-github-mcp-auth.sh"
 USAGE_COUNTER="$REPO_ROOT/scripts/mcp/count-codex-mcp-usage.sh"
 EXPECTED_SERVERS=()
 CONFIG_FILE=""
@@ -51,6 +52,10 @@ fi
 : "${OPENMANAGER_CODEX_HOME_MODE:=project}"
 export OPENMANAGER_CODEX_HOME_MODE
 source "$RUNTIME_ENV_RESOLVER"
+
+if [ -x "$GITHUB_MCP_AUTH_SYNC" ]; then
+  "$GITHUB_MCP_AUTH_SYNC" || true
+fi
 
 load_expected_servers() {
   CONFIG_FILE="$CODEX_HOME/config.toml"
