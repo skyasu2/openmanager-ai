@@ -8,7 +8,7 @@
  * - CLOUD_RUN_AI_URL 미설정 시 자동 skip
  * - Supervisor 절대 호출하지 않음 (무료 티어 보호)
  */
-import { describe, it, expect, beforeAll } from 'vitest';
+import { beforeAll, describe, expect, it } from 'vitest';
 import * as z from 'zod';
 
 const CLOUD_RUN_URL = process.env.CLOUD_RUN_AI_URL;
