@@ -12,6 +12,38 @@ SKIP_RUN="${SKIP_RUN:-false}"
 
 DOCKER_MODE=""
 
+ensure_build_assets() {
+  # Ensure config exists
+  if [ ! -f "${ENGINE_DIR}/config/system-rules.json" ]; then
+    if [ -f "${ENGINE_DIR}/../../src/config/rules/system-rules.json" ]; then
+      mkdir -p "${ENGINE_DIR}/config"
+      cp "${ENGINE_DIR}/../../src/config/rules/system-rules.json" "${ENGINE_DIR}/config/system-rules.json"
+      log "synced config/system-rules.json from src/config/rules"
+    else
+      log "missing config/system-rules.json (and source file not found)"
+      exit 1
+    fi
+  fi
+
+  # Ensure OTel SSOT data exists for Dockerfile COPY data/otel-data/
+  if [ ! -f "${ENGINE_DIR}/data/otel-data/resource-catalog.json" ]; then
+    mkdir -p "${ENGINE_DIR}/data/otel-data/hourly"
+
+    if [ -f "${ENGINE_DIR}/../../src/data/otel-data/resource-catalog.json" ]; then
+      cp "${ENGINE_DIR}/../../src/data/otel-data/resource-catalog.json" "${ENGINE_DIR}/data/otel-data/"
+      cp "${ENGINE_DIR}/../../src/data/otel-data/hourly/"*.json "${ENGINE_DIR}/data/otel-data/hourly/"
+      log "synced data/otel-data from src/data/otel-data"
+    elif [ -f "${ENGINE_DIR}/data/otel-processed/resource-catalog.json" ]; then
+      cp "${ENGINE_DIR}/data/otel-processed/resource-catalog.json" "${ENGINE_DIR}/data/otel-data/"
+      cp "${ENGINE_DIR}/data/otel-processed/hourly/"*.json "${ENGINE_DIR}/data/otel-data/hourly/"
+      log "synced data/otel-data from data/otel-processed (fallback)"
+    else
+      log "missing OTel data source (src/data/otel-data and data/otel-processed not found)"
+      exit 1
+    fi
+  fi
+}
+
 log() {
   echo "[docker-preflight] $*"
 }
@@ -37,7 +69,7 @@ trap cleanup EXIT
 if docker ps >/dev/null 2>&1; then
   DOCKER_MODE="wsl"
   log "docker daemon reachable in WSL"
-elif cmd.exe /c docker ps >/dev/null 2>&1; then
+elif cmd.exe /c docker ps; then
   DOCKER_MODE="windows-cli"
   log "docker daemon not reachable in WSL, using Windows Docker CLI fallback"
 else
@@ -46,6 +78,7 @@ else
 fi
 
 cd "$ENGINE_DIR"
+ensure_build_assets
 
 if [ "$DOCKER_MODE" = "wsl" ]; then
   docker build -t "$IMAGE_TAG" .

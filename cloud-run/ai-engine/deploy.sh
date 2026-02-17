@@ -212,20 +212,6 @@ if [ "${FREE_TIER_GUARD_ONLY:-false}" = "true" ]; then
   exit 0
 fi
 
-if [ "${LOCAL_DOCKER_PREFLIGHT}" = "true" ]; then
-  echo ""
-  echo "🐳 Running local Docker preflight..."
-  if [ "${LOCAL_DOCKER_PREFLIGHT_SKIP_RUN}" = "true" ]; then
-    SKIP_RUN=true bash scripts/docker-preflight.sh
-  else
-    bash scripts/docker-preflight.sh
-  fi
-  echo "   ✅ Local Docker preflight passed"
-else
-  echo ""
-  echo "ℹ️ LOCAL_DOCKER_PREFLIGHT=false, skipping local Docker preflight."
-fi
-
 # 0. Sync SSOT Config & Data Files
 echo ""
 echo "📋 Syncing SSOT config and data files..."
@@ -240,6 +226,20 @@ mkdir -p data/otel-data/hourly
 cp ../../src/data/otel-data/resource-catalog.json ./data/otel-data/
 cp ../../src/data/otel-data/hourly/*.json ./data/otel-data/hourly/
 echo "   ✅ otel-data synced (resource-catalog + $(ls -1 data/otel-data/hourly/*.json | wc -l) hourly files)"
+
+if [ "${LOCAL_DOCKER_PREFLIGHT}" = "true" ]; then
+  echo ""
+  echo "🐳 Running local Docker preflight..."
+  if [ "${LOCAL_DOCKER_PREFLIGHT_SKIP_RUN}" = "true" ]; then
+    SKIP_RUN=true bash scripts/docker-preflight.sh
+  else
+    bash scripts/docker-preflight.sh
+  fi
+  echo "   ✅ Local Docker preflight passed"
+else
+  echo ""
+  echo "ℹ️ LOCAL_DOCKER_PREFLIGHT=false, skipping local Docker preflight."
+fi
 
 # 1. Build Container Image (Cloud Build with BuildKit)
 echo ""
