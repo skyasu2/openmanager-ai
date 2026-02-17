@@ -97,6 +97,7 @@ export default memo(function DashboardContent({
   onStatsUpdateRef.current = onStatsUpdate;
 
   // 🚀 디버깅 로그 (마운트 시 한 번만 출력)
+  // biome-ignore lint/correctness/useExhaustiveDependencies: Intentional initial mount log
   useEffect(() => {
     debug.log('🔍 DashboardContent 초기 렌더링:', {
       showSequentialGeneration,

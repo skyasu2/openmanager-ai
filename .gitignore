@@ -145,6 +145,7 @@ combined.log
 ai-combined.log
 # Codex CLI runtime (secrets, sessions, snapshots, tmp)
 .codex/
+.gemini/
 # temporary files
 *~
 *.tmp
