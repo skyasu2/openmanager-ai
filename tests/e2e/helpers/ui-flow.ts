@@ -59,9 +59,12 @@ export async function openProfileDropdown(page: Page): Promise<void> {
   });
   await expect(trigger).toBeVisible({ timeout: TIMEOUTS.DASHBOARD_LOAD });
   await trigger.click({ timeout: TIMEOUTS.FORM_SUBMIT });
-
-  // 드롭다운 애니메이션 대기 (300ms)
-  await page.waitForTimeout(300);
+  const dropdown = page
+    .locator('[role="menu"], [data-testid="profile-dropdown-menu"]')
+    .first();
+  await expect(dropdown)
+    .toBeVisible({ timeout: TIMEOUTS.DOM_UPDATE })
+    .catch(() => undefined);
 }
 
 /**
@@ -242,7 +245,9 @@ export async function navigateToDashboard(
       if (attempt === maxRetries) {
         throw error;
       }
-      await page.waitForTimeout(1000);
+      await page
+        .waitForLoadState('domcontentloaded', { timeout: 1000 })
+        .catch(() => undefined);
     }
   }
 }
@@ -277,12 +282,16 @@ export async function handleClarificationIfPresent(
 
   if (optionCount > 0) {
     await optionButtons.first().click();
-    await page.waitForTimeout(500);
+    await expect(dismissBtn)
+      .toBeHidden({ timeout: TIMEOUTS.DOM_UPDATE })
+      .catch(() => undefined);
     return true;
   }
 
   // 옵션 없으면 dismiss (쿼리 취소됨)
   await dismissBtn.click();
-  await page.waitForTimeout(500);
+  await expect(dismissBtn)
+    .toBeHidden({ timeout: TIMEOUTS.DOM_UPDATE })
+    .catch(() => undefined);
   return false;
 }

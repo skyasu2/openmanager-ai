@@ -19,7 +19,7 @@
  * ```
  */
 
-import type { Locator, Page } from '@playwright/test';
+import { expect, type Locator, type Page } from '@playwright/test';
 import { TIMEOUTS } from './timeouts';
 
 /**
@@ -212,37 +212,54 @@ export async function submitAiMessage(
     }
 
     if (responseElement) {
-      // 스트리밍 완료 대기 (텍스트가 더 이상 변경되지 않을 때까지)
-      let previousText = '';
-      let stableCount = 0;
-      const maxChecks = 50; // 최대 5초 (100ms * 50)
-
-      for (let i = 0; i < maxChecks; i++) {
-        const currentText = (await responseElement.textContent()) ?? '';
-        if (currentText === previousText) {
-          stableCount++;
-          if (stableCount >= 3) {
-            // 3회 연속 동일하면 완료로 판단
-            responseText = currentText;
-            break;
+      // 스트리밍 완료 대기 (텍스트가 3회 연속 동일하면 완료로 간주)
+      const recentSamples: string[] = [];
+      await expect
+        .poll(
+          async () => {
+            const currentText = (
+              (await responseElement.textContent()) ?? ''
+            ).trim();
+            const prevSample = recentSamples.at(-1);
+            if (currentText && currentText !== prevSample) {
+              sseEventCount++;
+            }
+            recentSamples.push(currentText);
+            if (recentSamples.length > 3) recentSamples.shift();
+            return recentSamples.length === 3 &&
+              recentSamples[0] !== '' &&
+              recentSamples[0] === recentSamples[1] &&
+              recentSamples[1] === recentSamples[2]
+              ? 'stable'
+              : 'streaming';
+          },
+          {
+            timeout: Math.min(responseTimeout, 8000),
+            intervals: [100, 150, 200],
           }
-        } else {
-          stableCount = 0;
-          previousText = currentText;
-          sseEventCount++;
-        }
-        await page.waitForTimeout(100);
-      }
+        )
+        .toBe('stable')
+        .catch(() => undefined);
 
-      // 안정화되지 않았으면 마지막 텍스트 사용
-      if (!responseText) {
-        responseText = previousText;
-      }
+      responseText = ((await responseElement.textContent()) ?? '').trim();
     }
   } else {
-    // 단순 대기
-    await page.waitForTimeout(TIMEOUTS.API_RESPONSE);
-    const lastMessage = page.locator('.ai-message').last();
+    const lastMessage = page
+      .locator(
+        '.ai-message, [data-testid="ai-message"], [data-testid="ai-response"]'
+      )
+      .last();
+    await expect(lastMessage).toBeVisible({ timeout: responseTimeout });
+    await expect
+      .poll(
+        async () =>
+          ((await lastMessage.textContent()) ?? '').trim().length > 0 ? 1 : 0,
+        {
+          timeout: responseTimeout,
+          intervals: [100, 200, 300],
+        }
+      )
+      .toBe(1);
     responseText = (await lastMessage.textContent()) ?? '';
   }
 
@@ -331,7 +348,22 @@ export async function switchAiFunction(
 
   // UI 업데이트 대기
   if (waitForUiUpdate) {
-    await page.waitForTimeout(uiUpdateTimeout);
+    await expect
+      .poll(
+        async () => {
+          const ariaPressed = await functionButton.getAttribute('aria-pressed');
+          const dataState = await functionButton.getAttribute('data-state');
+          const ariaCurrent = await functionButton.getAttribute('aria-current');
+          return (
+            ariaPressed === 'true' ||
+            dataState === 'active' ||
+            ariaCurrent === 'true'
+          );
+        },
+        { timeout: uiUpdateTimeout, intervals: [100, 200, 300] }
+      )
+      .toBe(true)
+      .catch(() => undefined);
   }
 }
 

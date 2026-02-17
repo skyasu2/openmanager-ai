@@ -13,8 +13,7 @@ import { TIMEOUTS } from './helpers/timeouts';
 
 test.describe('기본 스모크 테스트', () => {
   test('로그인 페이지가 올바르게 로드된다', async ({ page }) => {
-    // Dev 서버에서 안정적인 로딩을 위해 networkidle 대기
-    await page.goto('/login', { waitUntil: 'networkidle' });
+    await page.goto('/login', { waitUntil: 'domcontentloaded' });
     await hideNextJsDevOverlay(page);
     await skipIfSecurityCheckpoint(page);
 
@@ -37,7 +36,7 @@ test.describe('기본 스모크 테스트', () => {
   });
 
   test('랜딩 페이지가 올바르게 로드된다', async ({ page }) => {
-    await page.goto('/', { waitUntil: 'networkidle' });
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
     await skipIfSecurityCheckpoint(page);
 
     // 루트 경로가 랜딩 페이지를 직접 표시하는지 확인
@@ -104,10 +103,7 @@ test.describe('기본 스모크 테스트', () => {
   });
 
   test('정적 자산이 로드된다', async ({ page }) => {
-    await page.goto('/login');
-
-    // 페이지가 완전히 로드될 때까지 대기
-    await page.waitForLoadState('networkidle');
+    await page.goto('/login', { waitUntil: 'domcontentloaded' });
 
     // CSS가 로드되었는지 확인 (스타일이 적용된 요소 확인)
     const body = page.locator('body');
@@ -124,8 +120,10 @@ test.describe('기본 스모크 테스트', () => {
       }
     });
 
-    await page.goto('/login');
-    await page.waitForLoadState('networkidle');
+    await page.goto('/login', { waitUntil: 'domcontentloaded' });
+    await expect(page.locator('body')).toBeVisible({
+      timeout: TIMEOUTS.DOM_UPDATE,
+    });
 
     // 치명적인 에러는 없어야 함 (일부 경고는 허용)
     const criticalErrors = errors.filter(

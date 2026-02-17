@@ -24,7 +24,7 @@ test.describe('🔐 로그인 기능 테스트', () => {
     test('메인 페이지에서 로그인 버튼 클릭 시 로그인 페이지로 이동', async ({
       page,
     }) => {
-      await page.goto('/', { waitUntil: 'networkidle' });
+      await page.goto('/', { waitUntil: 'domcontentloaded' });
 
       // DOM 완전 로딩 대기 (hardcoded timeout 대신 명시적 상태 대기)
       await page.waitForLoadState('domcontentloaded');

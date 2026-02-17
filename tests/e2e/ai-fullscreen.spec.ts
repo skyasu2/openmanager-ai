@@ -11,10 +11,17 @@
  * @see BUG-001 수정: /ai -> /dashboard/ai-assistant 라우트 변경
  */
 
-import { expect, test } from '@playwright/test';
+import { expect, type Page, test } from '@playwright/test';
 import { openAiSidebar } from './helpers/guest';
 import { TIMEOUTS } from './helpers/timeouts';
 import { navigateToDashboard } from './helpers/ui-flow';
+
+async function gotoAiAssistant(page: Page) {
+  await page.goto('/dashboard/ai-assistant', {
+    waitUntil: 'domcontentloaded',
+  });
+  await expect(page).toHaveURL(/\/dashboard\/ai-assistant/);
+}
 
 test.describe('AI 어시스턴트 풀스크린 테스트', () => {
   test.beforeEach(async ({ page }) => {
@@ -22,9 +29,7 @@ test.describe('AI 어시스턴트 풀스크린 테스트', () => {
   });
 
   test('풀스크린 페이지 직접 접근', async ({ page }) => {
-    // 풀스크린 페이지로 직접 이동
-    await page.goto('/dashboard/ai-assistant');
-    await page.waitForLoadState('networkidle');
+    await gotoAiAssistant(page);
 
     // 페이지 로드 확인
     await expect(page).toHaveURL(/\/dashboard\/ai-assistant/);
@@ -78,10 +83,7 @@ test.describe('AI 어시스턴트 풀스크린 테스트', () => {
   });
 
   test('AI 기능 탭 전환 - 자연어 질의', async ({ page }) => {
-    await page.goto('/dashboard/ai-assistant', {
-      waitUntil: 'domcontentloaded',
-    });
-    await page.waitForLoadState('networkidle');
+    await gotoAiAssistant(page);
 
     // 채팅 기능 버튼 클릭 (라벨 변경 대응: 자연어 질의 → AI Chat)
     const chatButton = page
@@ -105,10 +107,7 @@ test.describe('AI 어시스턴트 풀스크린 테스트', () => {
   });
 
   test('AI 기능 탭 전환 - 장애 보고서', async ({ page }) => {
-    await page.goto('/dashboard/ai-assistant', {
-      waitUntil: 'domcontentloaded',
-    });
-    await page.waitForLoadState('networkidle');
+    await gotoAiAssistant(page);
 
     // v5.87.0: 버튼 텍스트가 "장애 보고서"로 변경됨
     const autoReportButton = page
@@ -119,9 +118,6 @@ test.describe('AI 어시스턴트 풀스크린 테스트', () => {
       timeout: TIMEOUTS.MODAL_DISPLAY,
     });
     await autoReportButton.click();
-
-    // 탭 전환 후 UI 확인
-    await page.waitForTimeout(TIMEOUTS.ANIMATION); // 탭 전환 애니메이션 대기
 
     // auto-report 관련 콘텐츠 또는 data-testid 확인
     const reportContent = page
@@ -135,10 +131,7 @@ test.describe('AI 어시스턴트 풀스크린 테스트', () => {
   });
 
   test('AI 기능 탭 전환 - 이상감지/예측', async ({ page }) => {
-    await page.goto('/dashboard/ai-assistant', {
-      waitUntil: 'domcontentloaded',
-    });
-    await page.waitForLoadState('networkidle');
+    await gotoAiAssistant(page);
 
     // 이상감지/예측 버튼 클릭 (텍스트 기반 셀렉터)
     const monitoringButton = page
@@ -150,8 +143,6 @@ test.describe('AI 어시스턴트 풀스크린 테스트', () => {
     });
     await monitoringButton.click();
 
-    await page.waitForTimeout(TIMEOUTS.ANIMATION);
-
     // 브레드크럼 또는 제목에서 관련 표시 확인
     const breadcrumb = page
       .locator('text=intelligent-monitoring')
@@ -161,8 +152,7 @@ test.describe('AI 어시스턴트 풀스크린 테스트', () => {
   });
 
   test('New Chat 버튼 클릭', async ({ page }) => {
-    await page.goto('/dashboard/ai-assistant');
-    await page.waitForLoadState('networkidle');
+    await gotoAiAssistant(page);
 
     // New Chat 버튼 클릭 (새 대화)
     const newChatButton = page.locator('button:has-text("새 대화")').first();
@@ -183,8 +173,7 @@ test.describe('AI 어시스턴트 풀스크린 테스트', () => {
   });
 
   test('뒤로가기 네비게이션 (또는 홈 이동)', async ({ page }) => {
-    await page.goto('/dashboard/ai-assistant');
-    await page.waitForLoadState('networkidle');
+    await gotoAiAssistant(page);
 
     // 뒤로가기 버튼(모바일) 또는 로고(데스크탑) 클릭
     const backButton = page.locator('button[title="뒤로 가기"]').first();
@@ -216,8 +205,7 @@ test.describe('AI 어시스턴트 풀스크린 테스트', () => {
     });
     await fullscreenButton.click();
 
-    // 페이지 이동 대기
-    await page.waitForLoadState('networkidle', {
+    await page.waitForURL(/\/(dashboard\/ai-assistant|ai)(\/|\?|$)/, {
       timeout: TIMEOUTS.FORM_SUBMIT,
     });
 
@@ -254,8 +242,7 @@ test.describe('AI 어시스턴트 풀스크린 테스트', () => {
   });
 
   test('채팅 입력 필드 동작 확인', async ({ page }) => {
-    await page.goto('/dashboard/ai-assistant');
-    await page.waitForLoadState('networkidle');
+    await gotoAiAssistant(page);
 
     // 채팅 입력 필드 찾기
     const chatInput = page

@@ -11,13 +11,58 @@
  * @created 2026-01-18
  */
 
-import { expect, test } from '@playwright/test';
+import { expect, type Locator, type Page, test } from '@playwright/test';
 import { openAiSidebar } from './helpers/guest';
 import { TIMEOUTS } from './helpers/timeouts';
 import {
   handleClarificationIfPresent,
   navigateToDashboard,
 } from './helpers/ui-flow';
+
+async function gotoAiAssistantAndWaitForInput(page: Page): Promise<Locator> {
+  await page.goto('/dashboard/ai-assistant', {
+    waitUntil: 'domcontentloaded',
+  });
+  const chatInput = page
+    .locator('textarea[placeholder*="메시지"], textarea[placeholder*="질문"]')
+    .first();
+  await expect(chatInput).toBeVisible({ timeout: TIMEOUTS.MODAL_DISPLAY });
+  return chatInput;
+}
+
+async function sendMessageWithFallback(
+  page: Page,
+  input: Locator,
+  message: string
+) {
+  await input.click();
+  await input.evaluate((el, msg) => {
+    const nativeSetter = Object.getOwnPropertyDescriptor(
+      window.HTMLTextAreaElement.prototype,
+      'value'
+    )?.set;
+    if (nativeSetter) nativeSetter.call(el, msg);
+    el.dispatchEvent(new Event('input', { bubbles: true }));
+  }, message);
+
+  const sendButton = page.getByRole('button', { name: '메시지 전송' });
+  const isEnabled = await expect
+    .poll(() => sendButton.isEnabled().catch(() => false), {
+      timeout: TIMEOUTS.DOM_UPDATE,
+      intervals: [100, 200, 300],
+    })
+    .toBe(true)
+    .then(() => true)
+    .catch(() => false);
+
+  if (isEnabled) {
+    await sendButton.click();
+    return;
+  }
+
+  await input.fill(message);
+  await input.press('Enter');
+}
 
 test.describe('AI 스트리밍 Handoff 마커 테스트', () => {
   test.beforeEach(async ({ page }) => {
@@ -34,28 +79,12 @@ test.describe('AI 스트리밍 Handoff 마커 테스트', () => {
     const input = page.getByRole('textbox', { name: 'AI 질문 입력' });
     await expect(input).toBeVisible({ timeout: TIMEOUTS.DOM_UPDATE });
 
-    // React controlled textarea에 native setter로 값 설정
-    await input.click();
-    await input.evaluate((el, msg) => {
-      const nativeSetter = Object.getOwnPropertyDescriptor(
-        window.HTMLTextAreaElement.prototype,
-        'value'
-      )?.set;
-      if (nativeSetter) nativeSetter.call(el, msg);
-      el.dispatchEvent(new Event('input', { bubbles: true }));
-    }, 'MySQL 서버 CPU 사용률 확인해줘');
-    await page.waitForTimeout(500);
-
-    // 전송 버튼 클릭
-    const sendButton = page.getByRole('button', { name: '메시지 전송' });
-    const isEnabled = await sendButton.isEnabled().catch(() => false);
-    if (isEnabled) {
-      await sendButton.click();
-    } else {
-      await input.fill('MySQL 서버 CPU 사용률 확인해줘');
-      await page.waitForTimeout(300);
-      await input.press('Enter');
-    }
+    // React controlled textarea + fallback 입력으로 전송
+    await sendMessageWithFallback(
+      page,
+      input,
+      'MySQL 서버 CPU 사용률 확인해줘'
+    );
 
     // Clarification 다이얼로그 처리 (옵션 선택)
     await handleClarificationIfPresent(page);
@@ -85,7 +114,7 @@ test.describe('AI 스트리밍 Handoff 마커 테스트', () => {
         const isBusy = log.getAttribute('aria-busy') === 'true';
         if (isBusy) return true;
 
-        return /처리 중 오류|AI 응답 중 오류|쿼리 처리 중 오류|다시 시도해주세요/.test(
+        return /처리 중 오류|AI 응답 중 오류|쿼리 처리 중 오류|다시 시도해주세요|요청 제한|Too Many Requests|연결이 끊어졌습니다/.test(
           text
         );
       },
@@ -95,18 +124,7 @@ test.describe('AI 스트리밍 Handoff 마커 테스트', () => {
   });
 
   test('풀스크린에서 AI 채팅 응답 확인', async ({ page }) => {
-    // 풀스크린 AI 페이지로 직접 이동
-    await page.goto('/dashboard/ai-assistant', {
-      waitUntil: 'domcontentloaded',
-    });
-    await page.waitForLoadState('networkidle');
-
-    // 채팅 입력 필드 찾기
-    const chatInput = page
-      .locator('textarea[placeholder*="메시지"], textarea[placeholder*="질문"]')
-      .first();
-
-    await expect(chatInput).toBeVisible({ timeout: TIMEOUTS.MODAL_DISPLAY });
+    const chatInput = await gotoAiAssistantAndWaitForInput(page);
 
     // 메시지 입력 및 전송 (구체적인 질문)
     await chatInput.fill('전체 서버의 CPU 사용률을 알려줘');
@@ -130,16 +148,7 @@ test.describe('AI 스트리밍 Handoff 마커 테스트', () => {
   });
 
   test('스트리밍 응답 중 로딩 상태 표시', async ({ page }) => {
-    await page.goto('/dashboard/ai-assistant', {
-      waitUntil: 'domcontentloaded',
-    });
-    await page.waitForLoadState('networkidle');
-
-    const chatInput = page
-      .locator('textarea[placeholder*="메시지"], textarea[placeholder*="질문"]')
-      .first();
-
-    await expect(chatInput).toBeVisible({ timeout: TIMEOUTS.MODAL_DISPLAY });
+    const chatInput = await gotoAiAssistantAndWaitForInput(page);
 
     // 메시지 전송
     await chatInput.fill('이상 징후 분석');
@@ -163,8 +172,13 @@ test.describe('AI 스트리밍 Handoff 마커 테스트', () => {
       expect(hasLoading).toBe(true);
     }
 
-    // 최종적으로 응답이 오는지 확인
-    await page.waitForTimeout(2000); // 스트리밍 완료 대기
+    // 최종적으로 응답/로그 렌더링이 오는지 확인
+    const response = page
+      .locator(
+        '[data-testid="ai-message"], [data-testid="ai-response"], [role="log"] p'
+      )
+      .first();
+    await expect(response).toBeVisible({ timeout: TIMEOUTS.AI_RESPONSE });
   });
 
   test('채팅 히스토리에 사용자 메시지 표시', async ({ page }) => {
@@ -176,29 +190,8 @@ test.describe('AI 스트리밍 Handoff 마커 테스트', () => {
     const chatInput = page.getByRole('textbox', { name: 'AI 질문 입력' });
     await expect(chatInput).toBeVisible({ timeout: TIMEOUTS.MODAL_DISPLAY });
 
-    // React controlled textarea에 native setter로 값 설정
     const testMessage = 'nginx 서버 상태 알려줘';
-    await chatInput.click();
-    await chatInput.evaluate((el, msg) => {
-      const nativeSetter = Object.getOwnPropertyDescriptor(
-        window.HTMLTextAreaElement.prototype,
-        'value'
-      )?.set;
-      if (nativeSetter) nativeSetter.call(el, msg);
-      el.dispatchEvent(new Event('input', { bubbles: true }));
-    }, testMessage);
-    await page.waitForTimeout(500);
-
-    // 전송
-    const sendButton = page.getByRole('button', { name: '메시지 전송' });
-    const isEnabled = await sendButton.isEnabled().catch(() => false);
-    if (isEnabled) {
-      await sendButton.click();
-    } else {
-      await chatInput.fill(testMessage);
-      await page.waitForTimeout(300);
-      await chatInput.press('Enter');
-    }
+    await sendMessageWithFallback(page, chatInput, testMessage);
 
     // Clarification 다이얼로그 처리
     await handleClarificationIfPresent(page);
@@ -214,16 +207,7 @@ test.describe('AI 스트리밍 Handoff 마커 테스트', () => {
   });
 
   test('입력 필드 비활성화 상태 확인 (전송 중)', async ({ page }) => {
-    await page.goto('/dashboard/ai-assistant', {
-      waitUntil: 'domcontentloaded',
-    });
-    await page.waitForLoadState('networkidle');
-
-    const chatInput = page
-      .locator('textarea[placeholder*="메시지"], textarea[placeholder*="질문"]')
-      .first();
-
-    await expect(chatInput).toBeVisible({ timeout: TIMEOUTS.MODAL_DISPLAY });
+    const chatInput = await gotoAiAssistantAndWaitForInput(page);
 
     // 메시지 전송
     await chatInput.fill('장애 보고서 생성');
@@ -248,24 +232,11 @@ test.describe('Handoff 마커 렌더링 테스트', () => {
   });
 
   test('Handoff 마커 패턴 파싱 (markdown 내)', async ({ page }) => {
-    await page.goto('/dashboard/ai-assistant', {
-      waitUntil: 'domcontentloaded',
-    });
-    await page.waitForLoadState('networkidle');
-
-    // 테스트용 handoff 마커가 포함된 응답을 받는 쿼리 전송
-    const chatInput = page
-      .locator('textarea[placeholder*="메시지"], textarea[placeholder*="질문"]')
-      .first();
-
-    await expect(chatInput).toBeVisible({ timeout: TIMEOUTS.MODAL_DISPLAY });
+    const chatInput = await gotoAiAssistantAndWaitForInput(page);
 
     // 서버 관련 쿼리 - MSW가 handoff 이벤트를 포함한 응답 반환
     await chatInput.fill('서버 상태');
     await chatInput.press('Enter');
-
-    // 응답 대기 (MSW mock에서 handoff 이벤트 포함)
-    await page.waitForTimeout(3000);
 
     // 응답 영역에서 agent 이름이 표시되는지 확인
     // AgentHandoffBadge 또는 텍스트로 표시될 수 있음
@@ -300,16 +271,7 @@ test.describe('AI 응답 오류 처리 테스트', () => {
   test('빈 메시지 전송 시 버튼 비활성화', async ({ page }) => {
     await navigateToDashboard(page);
 
-    await page.goto('/dashboard/ai-assistant', {
-      waitUntil: 'domcontentloaded',
-    });
-    await page.waitForLoadState('networkidle');
-
-    const chatInput = page
-      .locator('textarea[placeholder*="메시지"], textarea[placeholder*="질문"]')
-      .first();
-
-    await expect(chatInput).toBeVisible({ timeout: TIMEOUTS.MODAL_DISPLAY });
+    await gotoAiAssistantAndWaitForInput(page);
 
     // 빈 상태에서 전송 버튼 확인
     const sendButton = page
@@ -335,16 +297,7 @@ test.describe('AI 응답 오류 처리 테스트', () => {
   test('네트워크 오류 시 에러 메시지 표시', async ({ page }) => {
     await navigateToDashboard(page);
 
-    await page.goto('/dashboard/ai-assistant', {
-      waitUntil: 'domcontentloaded',
-    });
-    await page.waitForLoadState('networkidle');
-
-    const chatInput = page
-      .locator('textarea[placeholder*="메시지"], textarea[placeholder*="질문"]')
-      .first();
-
-    await expect(chatInput).toBeVisible({ timeout: TIMEOUTS.MODAL_DISPLAY });
+    const chatInput = await gotoAiAssistantAndWaitForInput(page);
 
     // 메시지 전송 (구체적인 질문)
     await chatInput.fill('전체 서버 오류 상태를 확인해줘');

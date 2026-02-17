@@ -269,7 +269,11 @@ export async function monitorSSEStream(
       break;
     }
 
-    await page.waitForTimeout(100);
+    await page
+      .waitForFunction(() => document.readyState !== 'loading', {
+        timeout: 100,
+      })
+      .catch(() => undefined);
   }
 
   // 이벤트 필터 적용

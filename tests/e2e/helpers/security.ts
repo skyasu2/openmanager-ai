@@ -77,10 +77,14 @@ export async function ensureVercelBypassCookie(page: Page): Promise<void> {
 
   try {
     await page.goto(bypassUrl.toString(), {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: TIMEOUTS.NETWORK_REQUEST,
     });
-    await page.waitForTimeout(300); // Reduced wait time
+    await page
+      .locator('body')
+      .first()
+      .waitFor({ state: 'visible', timeout: TIMEOUTS.DOM_UPDATE })
+      .catch(() => undefined);
   } catch {
     // Silently continue - header-based bypass in config is the fallback
   }
@@ -135,6 +139,10 @@ export async function safeNavigateAndHideOverlay(
   });
 
   // DOM 안정화 대기 후 오버레이 숨기기
-  await page.waitForTimeout(100);
+  await page
+    .waitForFunction(() => document.readyState !== 'loading', {
+      timeout: TIMEOUTS.DOM_UPDATE,
+    })
+    .catch(() => undefined);
   await hideNextJsDevOverlay(page);
 }

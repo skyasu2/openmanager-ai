@@ -25,9 +25,6 @@ test.describe('시스템 부트 테스트', () => {
       await page.goto('/system-boot');
       await skipIfSecurityCheckpoint(page);
 
-      // 부팅 관련 UI 요소 확인 (로딩 또는 진행 표시)
-      await page.waitForLoadState('networkidle');
-
       // 페이지가 렌더링되었는지 확인
       const body = page.locator('body');
       await expect(body).toBeVisible();

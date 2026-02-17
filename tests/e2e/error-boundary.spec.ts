@@ -31,8 +31,6 @@ test.describe('에러 바운더리 테스트', () => {
     await skipIfSecurityCheckpoint(page);
     await expect(page).toHaveTitle(/OpenManager/);
 
-    await page.waitForLoadState('networkidle');
-
     // 로그인 페이지로 이동 가능한지 확인
     const loginLink = page
       .locator('a[href*="login"], button:has-text("로그인")')

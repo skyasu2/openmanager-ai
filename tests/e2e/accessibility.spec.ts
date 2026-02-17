@@ -39,7 +39,6 @@ test.describe('♿ 접근성 (Accessibility) 검증', () => {
       }
 
       await page.keyboard.press('Tab');
-      await page.waitForTimeout(100);
     }
 
     expect(focusableElements.length).toBeGreaterThan(3);

@@ -37,18 +37,22 @@ async function sendMessage(page: Page, message: string) {
     }
     el.dispatchEvent(new Event('input', { bubbles: true }));
   }, message);
-  await page.waitForTimeout(500);
-
   // 전송 버튼 클릭 시도
   const sendButton = page.getByRole('button', { name: '메시지 전송' });
-  const isEnabled = await sendButton.isEnabled().catch(() => false);
+  const isEnabled = await expect
+    .poll(() => sendButton.isEnabled().catch(() => false), {
+      timeout: TIMEOUTS.DOM_UPDATE,
+      intervals: [100, 200, 300],
+    })
+    .toBe(true)
+    .then(() => true)
+    .catch(() => false);
 
   if (isEnabled) {
     await sendButton.click();
   } else {
     // fallback: Playwright fill() + Enter
     await input.fill(message);
-    await page.waitForTimeout(300);
     await input.press('Enter');
   }
 }
@@ -75,7 +79,7 @@ async function waitForAssistantResponse(
       if (messageNode) return true;
 
       const text = log.textContent || '';
-      return /처리 중 오류|AI 응답 중 오류|쿼리 처리 중 오류|다시 시도해주세요/.test(
+      return /처리 중 오류|AI 응답 중 오류|쿼리 처리 중 오류|다시 시도해주세요|요청 제한|Too Many Requests|연결이 끊어졌습니다/.test(
         text
       );
     },
@@ -89,22 +93,30 @@ async function waitForAssistantResponse(
     )
     .last();
 
-  // 스트리밍 완료 대기
-  let prevText = '';
-  let stable = 0;
-  for (let i = 0; i < 120; i++) {
-    const text = (await assistantMessage.textContent()) ?? '';
-    if (text === prevText && text.length > 0) {
-      stable++;
-      if (stable >= 3) break;
-    } else {
-      stable = 0;
-      prevText = text;
-    }
-    await page.waitForTimeout(1000);
-  }
+  // 스트리밍 완료 대기 (텍스트 3회 연속 동일하면 완료)
+  const recentSamples: string[] = [];
+  await expect
+    .poll(
+      async () => {
+        const text = ((await assistantMessage.textContent()) ?? '').trim();
+        recentSamples.push(text);
+        if (recentSamples.length > 3) recentSamples.shift();
+        return recentSamples.length === 3 &&
+          recentSamples[0] !== '' &&
+          recentSamples[0] === recentSamples[1] &&
+          recentSamples[1] === recentSamples[2]
+          ? 'stable'
+          : 'streaming';
+      },
+      {
+        timeout,
+        intervals: [300, 500, 800],
+      }
+    )
+    .toBe('stable')
+    .catch(() => undefined);
 
-  return prevText;
+  return ((await assistantMessage.textContent()) ?? '').trim();
 }
 
 /**
@@ -131,11 +143,17 @@ async function handleClarificationIfPresent(page: Page) {
 
   if (optionCount > 0) {
     await optionButtons.first().click();
+    await expect(dismissBtn)
+      .toBeHidden({ timeout: TIMEOUTS.DOM_UPDATE })
+      .catch(() => undefined);
     return true;
   }
 
   // 옵션이 없으면 dismiss (취소)
   await dismissBtn.click();
+  await expect(dismissBtn)
+    .toBeHidden({ timeout: TIMEOUTS.DOM_UPDATE })
+    .catch(() => undefined);
   return false;
 }
 
@@ -205,9 +223,11 @@ test.describe('자연어 질의 E2E (Vercel)', () => {
 
         if (hasInput) {
           await customInput.fill('CPU와 메모리 사용률 중심으로');
-          await page.waitForTimeout(300);
           // "확인" 버튼 클릭 (clarification 컨테이너 내)
           const confirmBtn = page.getByRole('button', { name: '확인' });
+          await expect(confirmBtn).toBeEnabled({
+            timeout: TIMEOUTS.DOM_UPDATE,
+          });
           await confirmBtn.click();
         } else {
           // fallback: 첫 번째 옵션 선택
