@@ -204,7 +204,7 @@ metrics/route.ts:
 
 - [ADR-001: Unified AI Engine Cache](../../../archived/decisions/adr-001-unified-ai-engine-cache-and-providers.md)
 - [ADR-002: Server Card Rendering Strategy](adr-002-server-card-rendering-strategy.md)
-- [Prometheus Best Practice 비교](../data/prometheus-comparison.md)
+- [Monitoring Stack 비교](../data/monitoring-stack-comparison.md)
 
 ---
 

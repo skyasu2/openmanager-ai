@@ -1,12 +1,18 @@
 # TODO - OpenManager AI v5
 
-**Last Updated**: 2026-02-16 KST
+**Last Updated**: 2026-02-17 KST
 
 ## Active Tasks
 
 | Task | Priority | Status |
 |------|----------|--------|
 | Cloud Run 통합 테스트 고도화 | P3 | In Progress — `ai-nlq-vercel` 외 전용 컨테이너 테스트 추가 (G1) |
+
+### Completed (2026-02-17)
+- [x] P2: ToolSet 캐스팅 근본 수정 — `allTools: ToolSet` 타입 명시, `filterToolsByWebSearch` 단순화, `as ToolSet` 0개
+- [x] P3: 루트 `@ai-sdk/groq` 제거 (cloud-run/ai-engine에서만 사용)
+- [x] P3: 리팩토링 잔류 빈 디렉토리 4개 삭제
+- [x] P3: Docker 빌드 캐시(4.2G) + npm/pip/node-gyp 캐시 + Playwright 구버전 정리 (총 10.3G)
 
 ### Completed (2026-02-16)
 - [x] P1: Full Stack 관점 최종 검수 완료 (`completion-review.md` 96.8%)
@@ -62,7 +68,7 @@
 
 | 파일 | 상태 | 비고 |
 |------|------|------|
-| `wbs.md` | 운영 | 전체 진행률 ~94.7% (검수 96.8%) |
+| `wbs.md` | 운영 | 전체 진행률 ~95.2% (검수 94.4%) |
 
 ### Completed (2026-01-22)
 - [x] 코드 단순화 리팩토링 (YAGNI 원칙 적용)

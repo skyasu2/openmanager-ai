@@ -28,8 +28,13 @@
 ### Data
 - [Data Architecture](./architecture/data/data-architecture.md)
 - [OTel Data Architecture](./architecture/data/otel-data-architecture.md)
-- [Prometheus Comparison](./architecture/data/prometheus-comparison.md)
+- [Monitoring Stack Comparison](./architecture/data/monitoring-stack-comparison.md)
 - [Server Metadata Comparison](./architecture/data/server-metadata-comparison.md)
+
+### Project Specs
+- [WBS (모듈 기반)](./project/wbs.md)
+- [Requirements (SRS)](./project/requirements.md)
+- [Definition of Done](./project/definition-of-done.md)
 
 ### Infrastructure
 - [Database](./architecture/infrastructure/database.md)

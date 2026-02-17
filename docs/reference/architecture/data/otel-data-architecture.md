@@ -128,4 +128,4 @@ SDK는 프로덕션 모니터링용이 아닌 향후 확장 스켈레톤입니�
 ## Related
 
 - [Data Architecture](./data-architecture.md)
-- [Prometheus Comparison](./prometheus-comparison.md)
+- [Monitoring Stack Comparison](./monitoring-stack-comparison.md)

@@ -19,9 +19,9 @@
 
 | 항목 | 값 |
 |------|-----|
-| 기간 | 2025-05-23 ~ 2026-02-14 (9개월) |
-| 커밋 | 5,698개 |
-| 코드량 | ~199,000 Lines (Frontend 125K+ / AI Engine 38K+ / Config & Tests) |
+| 기간 | 2025-05-23 ~ 2026-02-17 (9개월) |
+| 커밋 | 5,764개 |
+| 코드량 | **프로덕션 ~138K** (Frontend 107K + AI Engine 31K) + **테스트 26K** + 설정 12K |
 | 목적 | 포트폴리오 & 바이브 코딩 학습 결과물 |
 
 ---
@@ -116,7 +116,7 @@
 - **New**: `tests/api/ai-supervisor.integration.test.ts` 통합 테스트 추가
 - **New**: `tests/e2e/ai-nlq-vercel.spec.ts` NLQ 흐름 검증 추가
 
-### 3.3 Cloud Run AI Engine (90%)
+### 3.3 Cloud Run AI Engine (92%)
 
 | 영역 | 완성도 | 근거 |
 |------|:------:|------|
@@ -125,7 +125,7 @@
 | 27개 도구 (Tools) | 98% | 전체 구현, validateTools() 시작 검증 |
 | 보안 (Prompt Guard) | 95% | 15개 패턴 (EN+KO), OWASP 기반, timing-safe 비교, stateful regex 보호 |
 | RAG/Knowledge | 85% | LlamaIndex + pgvector, Mistral 임베딩 |
-| 테스트 | 75% | 18개 파일 (node_modules 제외), circuit-breaker/quota-tracker 단위 추가, E2E 부족 |
+| 테스트 | 78% | 18개 파일 (node_modules 제외), circuit-breaker/quota-tracker 단위 + incident-evaluation 21개 테스트 통과 |
 | 배포 (Docker + Cloud Run) | 98% | Free Tier Guard Rails, 3-stage build |
 | Langfuse 관찰성 | 90% | 10% 샘플링, Free Tier 보호 |
 
@@ -148,6 +148,12 @@
 - ~~Circuit Breaker 단위 테스트 0개~~ → 24개 테스트 추가 (`circuit-breaker.test.ts`)
 - ~~Quota Tracker 단위 테스트 0개~~ → 23개 테스트 추가 (`quota-tracker.test.ts`)
 - ~~Cloud Run API 계약 테스트 없음~~ → 11개 테스트 추가 (`tests/api/cloud-run-contract.test.ts`, 환경변수 게이트)
+- ~~AI SDK v6 Tool 타입 불일치(TS2322)~~ → `ToolSet` 경계 정렬(`agent-configs`, `base-agent`, `supervisor-single-agent`)
+- ~~ToolSet 임시 캐스팅 2곳~~ → `allTools: ToolSet` 타입 명시 + `filterToolsByWebSearch` 파라미터 단순화로 근본 해결 (`as ToolSet` 0개)
+- ~~루트 package.json @ai-sdk/groq 중복~~ → 루트에서 제거 (cloud-run/ai-engine에서만 사용)
+- ~~리팩토링 잔류 빈 디렉토리 4개~~ → 삭제 (performance, timezone, catchall, data)
+- ~~LlamaIndex 루트 import 의존성 불안정~~ → `@llamaindex/mistral` 직접 인스턴스 사용 + `verify:llamaindex` 스크립트 추가
+- ~~Optimizer 테스트 mock 누락~~ → `getRecentHistory` mock 보강으로 `incident-evaluation-tools` 21/21 통과
 
 **남은 항목 1건**:
 1. Cloud Run 실환경 E2E 통합 테스트 파이프라인 (CI/CD 연계)
@@ -215,7 +221,7 @@
 - ~~`otel-processed/` 레거시 디렉토리 잔존~~ → 삭제 (import 0건 확인)
 - ~~`timeseries.json`에 `system.uptime`, `system.process.count` 누락~~ → 9개 메트릭 완비
 
-### 3.5 Services & Library (90%)
+### 3.5 Services & Library (92%)
 
 | 영역 | 완성도 | 근거 |
 |------|:------:|------|
@@ -227,10 +233,10 @@
 | Config (SSOT) | 100% | 20파일, Zod 검증 |
 | Scripts (데이터 동기화) | 100% | sync-hourly-data + otel-precompute (로그 적재 완료) |
 | Utils/Lib 정리 | 100% | api-batcher, error-response, safeFormat, network-tracking, timeout-config, CentralizedDataManager 삭제 |
-| 테스트 인프라 | 85% | 55파일, ~11,300줄, resilience 단위 + Cloud Run 계약 테스트 추가 |
+| 테스트 인프라 | 88% | 72개(src)+18개(cloud-run) 테스트 파일, 핵심 경로 smoke/type-check 통과 |
 | AI SDK 버전 정합성 | 100% | Root `ai@6.0.86`, `@ai-sdk/react@3.0.88`로 상향 및 스모크 검증 |
 
-### 3.6 문서 (95%)
+### 3.6 문서 (96%)
 
 | 영역 | 완성도 | 근거 |
 |------|:------:|------|
@@ -247,15 +253,15 @@
 |--------|:------:|:------:|:---------:|
 | Frontend | 20% | 98% | 19.6 |
 | API Routes | 15% | 95% | 14.25 |
-| AI Engine | 20% | 90% | 18.0 |
+| AI Engine | 20% | 92% | 18.4 |
 | Server Data | 15% | 98% | 14.7 |
-| Services/Lib | 20% | 90% | 18.0 |
-| 문서/테스트 | 10% | 98% | 9.8 |
-| **합계** | **100%** | | **94.35%** |
+| Services/Lib | 20% | 93% | 18.6 |
+| 문서/테스트 | 10% | 96% | 9.6 |
+| **합계** | **100%** | | **95.15%** |
 
-**결론: 실제 완성도 ~94.4%** (91% → 93% → 94% → 94.2% → 94.4%)
+**결론: 실제 완성도 ~95.2%** (91% → 93% → 94% → 94.2% → 94.4% → 95.0% → 95.2%)
 
-*Note: Frontend/Test 강화로 점수 상승, AI Engine 통합 테스트 잔여.*
+*Note: ToolSet 타입 캐스팅 근본 수정 + 미사용 의존성/빈 디렉토리 정리로 Services/Lib 소폭 상향.*
 
 ---
 
@@ -408,7 +414,7 @@
 | Cloud Run GraphRAG 검색 + Supabase 미가용 폴백 | 완료 | `cloud-run/ai-engine/src/tools-ai-sdk/reporter-tools/knowledge.ts:345`, `cloud-run/ai-engine/src/tools-ai-sdk/reporter-tools/knowledge.ts:527` |
 | 승인 기반 Incident→RAG 자동 주입/주기 백필 | 완료 | `cloud-run/ai-engine/src/services/approval/approval-store.ts:325`, `cloud-run/ai-engine/src/server.ts:405` |
 | `ragSources` 백엔드→프론트 전달 | 완료 | `cloud-run/ai-engine/src/routes/supervisor.ts:201`, `src/hooks/ai/utils/message-helpers.ts:141` |
-| Redis+Supabase 동시 장애/지연 통합 회귀 테스트 | 부분완료 | 단위 테스트 중심, 실연동 통합 자동화 미흡 (`3.3 테스트 65%`) |
+| Redis+Supabase 동시 장애/지연 통합 회귀 테스트 | 부분완료 | 단위 테스트 중심, 실연동 통합 자동화 미흡 (`3.3 테스트 78%`) |
 
 점검 결론:
 - 아키텍처 경계와 주요 경로는 구현 완료(약 89%).
@@ -442,7 +448,7 @@
 ---
 
 _분석 기준: 4개 병렬 탐색 에이전트로 src/, cloud-run/, scripts/ 전체 코드 분석_
-_최종 갱신: 2026-02-17 (개발 환경 부록 분리, 완료 보고서 상호 참조 추가)_
+_최종 갱신: 2026-02-17 (ToolSet 캐스팅 근본 수정, @ai-sdk/groq 루트 제거, 빈 디렉토리 정리, Skills 4개 현행화)_
 
 ---
 
@@ -478,7 +484,7 @@ _최종 갱신: 2026-02-17 (개발 환경 부록 분리, 완료 보고서 상호
 | supabase-db 로컬 격리 설치 | 완료 | OAuth/SSE 충돌 회피 (`~/.mcp-servers/supabase/`) |
 | Claude Code + Codex CLI 듀얼 운용 | 완료 | `scripts/ai/agent-bridge.sh` 통한 상호 통신 |
 | Gemini CLI 설치 | 완료 | v0.28.2, Node.js punycode 경고는 기능 무영향 |
-| Skills 체계 통합 | 완료 | 5개 skill (git-workflow, cloud-run, code-review, lint-smoke, doc-management) |
+| Skills 체계 통합 | 완료 | 4개 skill (git-workflow, cloud-run, lint-smoke, doc-management) — code-review는 빌트인 review로 대체 |
 
 ### A.3 개발 환경 설정
 

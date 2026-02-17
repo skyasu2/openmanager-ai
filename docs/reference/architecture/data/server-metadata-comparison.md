@@ -14,8 +14,7 @@
 > **범위**: 호스트 인벤토리(등록 시점 정적 메타데이터) 중심, 런타임 메트릭은 참고 수준
 
 > **관련 문서** (본 문서와 상호 보완적):
-> - `prometheus-comparison.md` — Prometheus best practice vs VIBE 메트릭 네이밍/모델 비교
-> - `grafana-cloud-comparison.md` — 외부 관측성 스택 대비 OpenManager 데이터 파이프라인 비교
+> - `monitoring-stack-comparison.md` — Prometheus/Grafana Cloud vs OpenManager 메트릭/파이프라인 비교
 > - `otel-data-architecture.md` — OTel 데이터 아키텍처 (파이프라인 + 전환 준비)
 
 ---
