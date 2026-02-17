@@ -2,7 +2,10 @@ import { getServerStatus as getRulesServerStatus } from '@/config/rules/loader';
 import { OTEL_METRIC } from '@/constants/otel-metric-names';
 import { getOTelResourceCatalog } from '@/data/otel-data';
 import { logger } from '@/lib/logging';
-import type { OTelResourceAttributes } from '@/types/otel-metrics';
+import type {
+  OTelHourlyFile,
+  OTelResourceAttributes,
+} from '@/types/otel-metrics';
 import type { ExportMetricsServiceRequest } from '@/types/otel-standard';
 import {
   normalizeNetworkUtilizationPercent,
@@ -235,6 +238,115 @@ export async function extractMetricsFromStandard(
   // 4. 상태 결정 및 후처리
   return Array.from(serverMap.values()).map((server) => {
     // cpu+memory+disk 모두 0이면 오프라인 판별 (system.status 대체)
+    if (server.cpu === 0 && server.memory === 0 && server.disk === 0) {
+      server.status = 'offline';
+    } else {
+      server.status = determineStatus(
+        server.cpu,
+        server.memory,
+        server.disk,
+        server.network
+      );
+    }
+    return server;
+  });
+}
+
+// ============================================================================
+// OTel Hourly File Transformation (slots-based format)
+// ============================================================================
+
+/**
+ * OTel Hourly File → ApiServerMetrics[] 변환
+ *
+ * OTelHourlyFile 형식: slots[time] → metrics[metric_name] → dataPoints[host]
+ * (OTLP Standard와 축 구조가 다름: host-first vs time-first)
+ *
+ * @param data OTelHourlyFile (schemaVersion, hour, scope, slots[])
+ * @param timestamp KST ISO 타임스탬프
+ * @param minuteOfDay 하루 중 분 (0-1439)
+ */
+export async function extractMetricsFromOTelHourly(
+  data: OTelHourlyFile,
+  timestamp: string,
+  minuteOfDay: number
+): Promise<ApiServerMetrics[]> {
+  const serverMap = new Map<string, ApiServerMetrics>();
+
+  if (!data.slots || data.slots.length === 0) {
+    return [];
+  }
+
+  // 1. 현재 분에 해당하는 슬롯 선택
+  const minuteInHour = ((minuteOfDay % 60) + 60) % 60;
+  const slotCount = data.slots.length;
+  const slotIndex =
+    slotCount === 60
+      ? minuteInHour
+      : Math.min(slotCount - 1, Math.floor((minuteInHour / 60) * slotCount));
+  const slot = data.slots[slotIndex];
+  if (!slot) return [];
+
+  // Resource Catalog 로드 (서버 메타데이터 보강)
+  const catalog = await getOTelResourceCatalog();
+
+  // 2. 슬롯 내 메트릭 순회
+  for (const metric of slot.metrics) {
+    for (const dp of metric.dataPoints) {
+      const hostname = dp.attributes['host.name'];
+      if (!hostname) continue;
+
+      const serverId = hostname.split('.')[0];
+      if (!serverId) continue;
+
+      // 서버 객체 초기화
+      if (!serverMap.has(serverId)) {
+        const catalogEntry = catalog?.resources[serverId];
+        serverMap.set(serverId, {
+          serverId,
+          serverType: catalogEntry?.['server.role'] ?? 'unknown',
+          location: catalogEntry?.['cloud.availability_zone'] ?? 'unknown',
+          timestamp,
+          minuteOfDay,
+          cpu: 0,
+          memory: 0,
+          disk: 0,
+          network: 0,
+          logs: [],
+          status: 'online',
+          hostname,
+          environment: catalogEntry?.['deployment.environment'],
+          os: catalogEntry?.['os.type'],
+          otelResource: catalogEntry ?? ({} as Partial<OTelResourceAttributes>),
+        });
+      }
+
+      const server = serverMap.get(serverId)!;
+
+      // 3. 메트릭 핸들러 적용
+      if (dp.asDouble === undefined) continue;
+      const handler = STANDARD_METRIC_HANDLERS.get(metric.name);
+      if (handler) {
+        handler(server, dp.asDouble, metric.unit);
+      }
+    }
+  }
+
+  // 4. 로그 추출 (슬롯에 로그가 있는 경우)
+  if (slot.logs && slot.logs.length > 0) {
+    for (const logRecord of slot.logs) {
+      const serverId =
+        typeof logRecord.resource === 'string' ? logRecord.resource : undefined;
+      if (!serverId) continue;
+      const server = serverMap.get(serverId);
+      if (server) {
+        server.logs.push(`[${logRecord.severityText}] ${logRecord.body}`);
+      }
+    }
+  }
+
+  // 5. 상태 결정
+  return Array.from(serverMap.values()).map((server) => {
     if (server.cpu === 0 && server.memory === 0 && server.disk === 0) {
       server.status = 'offline';
     } else {

@@ -41,7 +41,7 @@ const getHandler = createApiRoute()
     showDetailedErrors: process.env.NODE_ENV === 'development',
     enableLogging: true,
   })
-  .build((_request, context): Promise<ServerPaginatedResponse> => {
+  .build(async (_request, context): Promise<ServerPaginatedResponse> => {
     const {
       page = 1,
       limit = 10,
@@ -50,9 +50,15 @@ const getHandler = createApiRoute()
       status,
     } = context.query;
 
+    // 비동기 데이터 로딩 보장
+    const { MetricsProvider } = await import(
+      '@/services/metrics/MetricsProvider'
+    );
+    await MetricsProvider.getInstance().ensureDataLoaded();
+
     // ServerMonitoringService에서 서버 데이터 가져오기
     const service = getServerMonitoringService();
-    const processed = service.getAllProcessedServers();
+    const processed = await service.getAllProcessedServers();
 
     debug.log(
       `📊 ServerMonitoringService에서 ${processed.length}개 서버 로드됨`

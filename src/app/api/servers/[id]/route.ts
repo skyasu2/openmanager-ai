@@ -37,19 +37,22 @@ export const GET = withAuth(
         `📊 서버 [${id}] 정보 조회: history=${includeHistory}, range=${range}, format=${format}`
       );
 
+      // 비동기 데이터 로딩 보장
+      await metricsProvider.ensureDataLoaded();
+
       // MetricsProvider에서 서버 찾기 (ID 또는 hostname으로 검색)
-      let metric = metricsProvider.getServerMetrics(id);
+      let metric = await metricsProvider.getServerMetrics(id);
 
       // hostname으로도 검색 시도
       if (!metric) {
-        const allMetrics = metricsProvider.getAllServerMetrics();
+        const allMetrics = await metricsProvider.getAllServerMetrics();
         metric =
           allMetrics.find((m) => m.hostname === id || m.serverId === id) ??
           null;
       }
 
       if (!metric) {
-        const allMetrics = metricsProvider.getAllServerMetrics();
+        const allMetrics = await metricsProvider.getAllServerMetrics();
         const availableServers = allMetrics.slice(0, 10).map((m) => ({
           id: m.serverId,
           hostname: m.hostname ?? m.serverId,
@@ -75,7 +78,7 @@ export const GET = withAuth(
 
       // ServerMonitoringService를 통한 가공된 데이터
       const service = getServerMonitoringService();
-      const processed = service.getProcessedServer(serverId);
+      const processed = await service.getProcessedServer(serverId);
       const specs = processed?.specs
         ? { ...processed.specs, os: processed.osLabel }
         : undefined;

@@ -22,7 +22,7 @@ describe('MetricsProvider Time Comparison', () => {
   });
 
   describe('calculateRelativeDateTime', () => {
-    it('minutesAgo=0 → isYesterday=false', () => {
+    it('minutesAgo=0 → isYesterday=false', async () => {
       vi.useFakeTimers();
       vi.setSystemTime(new Date('2026-01-15T03:00:00.000Z')); // KST 12:00
 
@@ -30,7 +30,7 @@ describe('MetricsProvider Time Comparison', () => {
       expect(result.isYesterday).toBe(false);
     });
 
-    it('minutesAgo=1440 → isYesterday=true (24시간 전)', () => {
+    it('minutesAgo=1440 → isYesterday=true (24시간 전)', async () => {
       vi.useFakeTimers();
       vi.setSystemTime(new Date('2026-01-15T03:00:00.000Z')); // KST 12:00
 
@@ -38,7 +38,7 @@ describe('MetricsProvider Time Comparison', () => {
       expect(result.isYesterday).toBe(true);
     });
 
-    it('자정 경계: KST 00:05에서 minutesAgo=10 → isYesterday=true', () => {
+    it('자정 경계: KST 00:05에서 minutesAgo=10 → isYesterday=true', async () => {
       vi.useFakeTimers();
       // KST 00:05 = UTC 15:05
       vi.setSystemTime(new Date('2026-01-15T15:05:00.000Z'));
@@ -48,7 +48,7 @@ describe('MetricsProvider Time Comparison', () => {
       expect(result.isYesterday).toBe(true);
     });
 
-    it('slotIndex는 10분 단위로 정규화되어야 한다', () => {
+    it('slotIndex는 10분 단위로 정규화되어야 한다', async () => {
       vi.useFakeTimers();
       vi.setSystemTime(new Date('2026-01-15T03:00:00.000Z')); // KST 12:00
 
@@ -59,12 +59,12 @@ describe('MetricsProvider Time Comparison', () => {
   });
 
   describe('getMetricsAtRelativeTime', () => {
-    it('minutesAgo=0 → 현재 메트릭 반환', () => {
+    it('minutesAgo=0 → 현재 메트릭 반환', async () => {
       vi.useFakeTimers();
       vi.setSystemTime(new Date('2026-01-15T03:00:00.000Z')); // KST 12:00
 
       // OTel resource-catalog에서 서버 목록 가져오기
-      const serverList = metricsProvider.getServerList();
+      const serverList = await metricsProvider.getServerList();
       if (serverList.length === 0) return;
 
       const result = getMetricsAtRelativeTime(serverList[0].serverId, 0);
@@ -76,16 +76,16 @@ describe('MetricsProvider Time Comparison', () => {
       }
     });
 
-    it('존재하지 않는 serverId → null', () => {
+    it('존재하지 않는 serverId → null', async () => {
       const result = getMetricsAtRelativeTime('xyz-nonexistent-999', 0);
       expect(result).toBeNull();
     });
 
-    it('유효한 serverId → dateLabel, isYesterday 포함', () => {
+    it('유효한 serverId → dateLabel, isYesterday 포함', async () => {
       vi.useFakeTimers();
       vi.setSystemTime(new Date('2026-01-15T03:00:00.000Z')); // KST 12:00
 
-      const serverList = metricsProvider.getServerList();
+      const serverList = await metricsProvider.getServerList();
       if (serverList.length === 0) return;
 
       const result = getMetricsAtRelativeTime(serverList[0].serverId, 0);
@@ -97,16 +97,16 @@ describe('MetricsProvider Time Comparison', () => {
   });
 
   describe('compareServerMetrics', () => {
-    it('존재하지 않는 serverId → null', () => {
+    it('존재하지 않는 serverId → null', async () => {
       const result = compareServerMetrics('xyz-nonexistent-999', 60);
       expect(result).toBeNull();
     });
 
-    it('유효한 비교 → current, past, delta 구조', () => {
+    it('유효한 비교 → current, past, delta 구조', async () => {
       vi.useFakeTimers();
       vi.setSystemTime(new Date('2026-01-15T03:00:00.000Z')); // KST 12:00
 
-      const serverList = metricsProvider.getServerList();
+      const serverList = await metricsProvider.getServerList();
       if (serverList.length === 0) return;
 
       const result = compareServerMetrics(serverList[0].serverId, 60);
@@ -130,11 +130,11 @@ describe('MetricsProvider Time Comparison', () => {
       }
     });
 
-    it('delta 계산이 소수점 1자리여야 한다', () => {
+    it('delta 계산이 소수점 1자리여야 한다', async () => {
       vi.useFakeTimers();
       vi.setSystemTime(new Date('2026-01-15T03:00:00.000Z'));
 
-      const serverList = metricsProvider.getServerList();
+      const serverList = await metricsProvider.getServerList();
       if (serverList.length === 0) return;
 
       const result = compareServerMetrics(serverList[0].serverId, 60);
@@ -149,7 +149,7 @@ describe('MetricsProvider Time Comparison', () => {
   });
 
   describe('getKSTDateTime', () => {
-    it('올바른 구조를 반환해야 한다', () => {
+    it('올바른 구조를 반환해야 한다', async () => {
       vi.useFakeTimers();
       vi.setSystemTime(new Date('2026-01-15T03:00:00.000Z')); // KST 12:00
 

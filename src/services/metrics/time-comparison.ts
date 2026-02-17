@@ -17,16 +17,18 @@ import type { ApiServerMetrics, TimeComparisonResult } from './types';
  * @param serverId 서버 ID
  * @param minutesAgo 몇 분 전 (0 = 현재)
  */
-export function getMetricsAtRelativeTime(
+export async function getMetricsAtRelativeTime(
   serverId: string,
   minutesAgo: number = 0
-): (ApiServerMetrics & { dateLabel: string; isYesterday: boolean }) | null {
+): Promise<
+  (ApiServerMetrics & { dateLabel: string; isYesterday: boolean }) | null
+> {
   const { date, slotIndex, timestamp, isYesterday } =
     calculateRelativeDateTime(minutesAgo);
   const minuteOfDay = slotIndex * 10;
 
   const provider = MetricsProvider.getInstance();
-  const metrics = provider.getMetricsAtTime(serverId, minuteOfDay);
+  const metrics = await provider.getMetricsAtTime(serverId, minuteOfDay);
   if (!metrics) return null;
 
   return {
@@ -41,12 +43,12 @@ export function getMetricsAtRelativeTime(
 /**
  * 서버 메트릭 시간 비교
  */
-export function compareServerMetrics(
+export async function compareServerMetrics(
   serverId: string,
   minutesAgo: number
-): TimeComparisonResult | null {
-  const current = getMetricsAtRelativeTime(serverId, 0);
-  const past = getMetricsAtRelativeTime(serverId, minutesAgo);
+): Promise<TimeComparisonResult | null> {
+  const current = await getMetricsAtRelativeTime(serverId, 0);
+  const past = await getMetricsAtRelativeTime(serverId, minutesAgo);
 
   if (!current || !past) return null;
 

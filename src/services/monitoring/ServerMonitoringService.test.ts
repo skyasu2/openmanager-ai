@@ -95,13 +95,13 @@ describe('ServerMonitoringService', () => {
   // ── Singleton ────────────────────────────────────────────────────
 
   describe('singleton', () => {
-    it('getInstance() returns the same instance', () => {
+    it('getInstance() returns the same instance', async () => {
       const a = ServerMonitoringService.getInstance();
       const b = ServerMonitoringService.getInstance();
       expect(a).toBe(b);
     });
 
-    it('resetForTesting() creates a new instance', () => {
+    it('resetForTesting() creates a new instance', async () => {
       const first = ServerMonitoringService.getInstance();
       ServerMonitoringService.resetForTesting();
       const second = ServerMonitoringService.getInstance();
@@ -112,16 +112,16 @@ describe('ServerMonitoringService', () => {
   // ── processMetric (via getProcessedServer) ───────────────────────
 
   describe('processMetric via getProcessedServer', () => {
-    it('passes SOURCE fields through: cpu, memory, disk, network', () => {
+    it('passes SOURCE fields through: cpu, memory, disk, network', async () => {
       const metric = makeApiMetric({
         cpu: 72,
         memory: 65,
         disk: 48,
         network: 35,
       });
-      vi.mocked(metricsProvider.getServerMetrics).mockReturnValue(metric);
+      vi.mocked(metricsProvider.getServerMetrics).mockResolvedValue(metric);
 
-      const result = service.getProcessedServer('web-01');
+      const result = await service.getProcessedServer('web-01');
       expect(result).not.toBeNull();
       expect(result!.cpu).toBe(72);
       expect(result!.memory).toBe(65);
@@ -129,73 +129,73 @@ describe('ServerMonitoringService', () => {
       expect(result!.network).toBe(35);
     });
 
-    it('derives networkIn/networkOut from server type ratio', () => {
+    it('derives networkIn/networkOut from server type ratio', async () => {
       const metric = makeApiMetric({ network: 100, serverType: 'web' });
-      vi.mocked(metricsProvider.getServerMetrics).mockReturnValue(metric);
+      vi.mocked(metricsProvider.getServerMetrics).mockResolvedValue(metric);
 
-      const result = service.getProcessedServer('web-01')!;
+      const result = (await service.getProcessedServer('web-01'))!;
       // web ratio: rx=0.7, tx=0.3
       expect(result.networkIn).toBe(70);
       expect(result.networkOut).toBe(30);
     });
 
-    it('derives networkIn/networkOut for database type', () => {
+    it('derives networkIn/networkOut for database type', async () => {
       const metric = makeApiMetric({ network: 100, serverType: 'database' });
-      vi.mocked(metricsProvider.getServerMetrics).mockReturnValue(metric);
+      vi.mocked(metricsProvider.getServerMetrics).mockResolvedValue(metric);
 
-      const result = service.getProcessedServer('db-01')!;
+      const result = (await service.getProcessedServer('db-01'))!;
       // database ratio: rx=0.4, tx=0.6
       expect(result.networkIn).toBe(40);
       expect(result.networkOut).toBe(60);
     });
 
-    it('derives loadAvg15 from estimateLoad15(load1, load5)', () => {
+    it('derives loadAvg15 from estimateLoad15(load1, load5)', async () => {
       const metric = makeApiMetric({ loadAvg1: 2.0, loadAvg5: 1.5 });
-      vi.mocked(metricsProvider.getServerMetrics).mockReturnValue(metric);
+      vi.mocked(metricsProvider.getServerMetrics).mockResolvedValue(metric);
 
-      const result = service.getProcessedServer('web-01')!;
+      const result = (await service.getProcessedServer('web-01'))!;
       const expectedLoad15 = estimateLoad15(2.0, 1.5);
       expect(result.loadAvg15).toBeCloseTo(expectedLoad15, 2);
     });
 
-    it('derives uptimeSeconds from bootTimeSeconds', () => {
+    it('derives uptimeSeconds from bootTimeSeconds', async () => {
       const bootTime = NOW_SECONDS - 7200; // 2 hours ago
       const metric = makeApiMetric({ bootTimeSeconds: bootTime });
-      vi.mocked(metricsProvider.getServerMetrics).mockReturnValue(metric);
+      vi.mocked(metricsProvider.getServerMetrics).mockResolvedValue(metric);
 
-      const result = service.getProcessedServer('web-01')!;
+      const result = (await service.getProcessedServer('web-01'))!;
       // Allow 2s tolerance for test execution time
       expect(result.uptimeSeconds).toBeGreaterThanOrEqual(7198);
       expect(result.uptimeSeconds).toBeLessThanOrEqual(7202);
     });
 
-    it('returns uptimeSeconds=0 when bootTimeSeconds absent', () => {
+    it('returns uptimeSeconds=0 when bootTimeSeconds absent', async () => {
       const metric = makeApiMetric({ bootTimeSeconds: undefined });
-      vi.mocked(metricsProvider.getServerMetrics).mockReturnValue(metric);
+      vi.mocked(metricsProvider.getServerMetrics).mockResolvedValue(metric);
 
-      const result = service.getProcessedServer('web-01')!;
+      const result = (await service.getProcessedServer('web-01'))!;
       expect(result.uptimeSeconds).toBe(0);
     });
 
-    it('sets ip from getServerIP (CONFIG)', () => {
+    it('sets ip from getServerIP (CONFIG)', async () => {
       const metric = makeApiMetric();
-      vi.mocked(metricsProvider.getServerMetrics).mockReturnValue(metric);
+      vi.mocked(metricsProvider.getServerMetrics).mockResolvedValue(metric);
 
-      const result = service.getProcessedServer('web-01')!;
+      const result = (await service.getProcessedServer('web-01'))!;
       expect(result.ip).toBe('10.0.0.6'); // "web-01".length = 6
     });
 
-    it('sets services from getServicesForServer (CONFIG)', () => {
+    it('sets services from getServicesForServer (CONFIG)', async () => {
       const metric = makeApiMetric();
-      vi.mocked(metricsProvider.getServerMetrics).mockReturnValue(metric);
+      vi.mocked(metricsProvider.getServerMetrics).mockResolvedValue(metric);
 
-      const result = service.getProcessedServer('web-01')!;
+      const result = (await service.getProcessedServer('web-01'))!;
       expect(result.services).toEqual([
         { name: 'nginx', status: 'running', port: 80 },
       ]);
     });
 
-    it('returns specs when nodeInfo is present', () => {
+    it('returns specs when nodeInfo is present', async () => {
       const metric = makeApiMetric({
         nodeInfo: {
           cpuCores: 16,
@@ -203,9 +203,9 @@ describe('ServerMonitoringService', () => {
           diskTotalBytes: 1000 * 1024 ** 3,
         },
       });
-      vi.mocked(metricsProvider.getServerMetrics).mockReturnValue(metric);
+      vi.mocked(metricsProvider.getServerMetrics).mockResolvedValue(metric);
 
-      const result = service.getProcessedServer('web-01')!;
+      const result = (await service.getProcessedServer('web-01'))!;
       expect(result.specs).toEqual({
         cpu_cores: 16,
         memory_gb: 32,
@@ -213,58 +213,58 @@ describe('ServerMonitoringService', () => {
       });
     });
 
-    it('returns specs undefined when nodeInfo absent', () => {
+    it('returns specs undefined when nodeInfo absent', async () => {
       const metric = makeApiMetric({ nodeInfo: undefined });
-      vi.mocked(metricsProvider.getServerMetrics).mockReturnValue(metric);
+      vi.mocked(metricsProvider.getServerMetrics).mockResolvedValue(metric);
 
-      const result = service.getProcessedServer('web-01')!;
+      const result = (await service.getProcessedServer('web-01'))!;
       expect(result.specs).toBeUndefined();
     });
 
-    it('builds alerts from [WARN] log entries as warning severity', () => {
+    it('builds alerts from [WARN] log entries as warning severity', async () => {
       const metric = makeApiMetric({
         logs: ['[WARN] CPU usage above threshold'],
       });
-      vi.mocked(metricsProvider.getServerMetrics).mockReturnValue(metric);
+      vi.mocked(metricsProvider.getServerMetrics).mockResolvedValue(metric);
 
-      const result = service.getProcessedServer('web-01')!;
+      const result = (await service.getProcessedServer('web-01'))!;
       expect(result.alerts).toHaveLength(1);
       expect(result.alerts[0]!.severity).toBe('warning');
       expect(result.alerts[0]!.type).toBe('cpu');
     });
 
-    it('builds alerts from [CRITICAL] log entries as critical severity', () => {
+    it('builds alerts from [CRITICAL] log entries as critical severity', async () => {
       const metric = makeApiMetric({
         logs: ['[CRITICAL] memory exceeded limit'],
       });
-      vi.mocked(metricsProvider.getServerMetrics).mockReturnValue(metric);
+      vi.mocked(metricsProvider.getServerMetrics).mockResolvedValue(metric);
 
-      const result = service.getProcessedServer('web-01')!;
+      const result = (await service.getProcessedServer('web-01'))!;
       expect(result.alerts).toHaveLength(1);
       expect(result.alerts[0]!.severity).toBe('critical');
       expect(result.alerts[0]!.type).toBe('memory');
     });
 
-    it('returns null when server not found', () => {
-      vi.mocked(metricsProvider.getServerMetrics).mockReturnValue(undefined);
+    it('returns null when server not found', async () => {
+      vi.mocked(metricsProvider.getServerMetrics).mockResolvedValue(undefined);
 
-      const result = service.getProcessedServer('nonexistent');
+      const result = await service.getProcessedServer('nonexistent');
       expect(result).toBeNull();
     });
 
-    it('builds osLabel from os + osVersion', () => {
+    it('builds osLabel from os + osVersion', async () => {
       const metric = makeApiMetric({ os: 'centos', osVersion: '7.9' });
-      vi.mocked(metricsProvider.getServerMetrics).mockReturnValue(metric);
+      vi.mocked(metricsProvider.getServerMetrics).mockResolvedValue(metric);
 
-      const result = service.getProcessedServer('web-01')!;
+      const result = (await service.getProcessedServer('web-01'))!;
       expect(result.osLabel).toBe('Centos 7.9');
     });
 
-    it('defaults osLabel when os/osVersion missing', () => {
+    it('defaults osLabel when os/osVersion missing', async () => {
       const metric = makeApiMetric({ os: undefined, osVersion: undefined });
-      vi.mocked(metricsProvider.getServerMetrics).mockReturnValue(metric);
+      vi.mocked(metricsProvider.getServerMetrics).mockResolvedValue(metric);
 
-      const result = service.getProcessedServer('web-01')!;
+      const result = (await service.getProcessedServer('web-01'))!;
       expect(result.osLabel).toBe('Ubuntu 22.04 LTS');
     });
   });
@@ -272,47 +272,47 @@ describe('ServerMonitoringService', () => {
   // ── toServer projection ──────────────────────────────────────────
 
   describe('toServer projection', () => {
-    it('maps [CRITICAL] log to ERROR level', () => {
+    it('maps [CRITICAL] log to ERROR level', async () => {
       const metric = makeApiMetric({
         logs: ['[CRITICAL] disk failure imminent'],
       });
-      vi.mocked(metricsProvider.getServerMetrics).mockReturnValue(metric);
+      vi.mocked(metricsProvider.getServerMetrics).mockResolvedValue(metric);
 
-      const processed = service.getProcessedServer('web-01')!;
+      const processed = (await service.getProcessedServer('web-01'))!;
       const server = service.toServer(processed);
 
       expect(server.logs[0]!.level).toBe('ERROR');
     });
 
-    it('maps [WARN] log to WARN level', () => {
+    it('maps [WARN] log to WARN level', async () => {
       const metric = makeApiMetric({
         logs: ['[WARN] Network latency increasing'],
       });
-      vi.mocked(metricsProvider.getServerMetrics).mockReturnValue(metric);
+      vi.mocked(metricsProvider.getServerMetrics).mockResolvedValue(metric);
 
-      const processed = service.getProcessedServer('web-01')!;
+      const processed = (await service.getProcessedServer('web-01'))!;
       const server = service.toServer(processed);
 
       expect(server.logs[0]!.level).toBe('WARN');
     });
 
-    it('maps normal log to INFO level', () => {
+    it('maps normal log to INFO level', async () => {
       const metric = makeApiMetric({
         logs: ['systemd[1]: Started Daily apt download activities.'],
       });
-      vi.mocked(metricsProvider.getServerMetrics).mockReturnValue(metric);
+      vi.mocked(metricsProvider.getServerMetrics).mockResolvedValue(metric);
 
-      const processed = service.getProcessedServer('web-01')!;
+      const processed = (await service.getProcessedServer('web-01'))!;
       const server = service.toServer(processed);
 
       expect(server.logs[0]!.level).toBe('INFO');
     });
 
-    it('formats systemInfo.loadAverage as comma-separated string', () => {
+    it('formats systemInfo.loadAverage as comma-separated string', async () => {
       const metric = makeApiMetric({ loadAvg1: 1.2, loadAvg5: 0.8 });
-      vi.mocked(metricsProvider.getServerMetrics).mockReturnValue(metric);
+      vi.mocked(metricsProvider.getServerMetrics).mockResolvedValue(metric);
 
-      const processed = service.getProcessedServer('web-01')!;
+      const processed = (await service.getProcessedServer('web-01'))!;
       const server = service.toServer(processed);
 
       expect(server.systemInfo.loadAverage).toMatch(
@@ -324,43 +324,43 @@ describe('ServerMonitoringService', () => {
   // ── toEnhancedMetrics projection ─────────────────────────────────
 
   describe('toEnhancedMetrics projection', () => {
-    it('includes cpu_usage alias equal to cpu', () => {
+    it('includes cpu_usage alias equal to cpu', async () => {
       const metric = makeApiMetric({ cpu: 77 });
-      vi.mocked(metricsProvider.getServerMetrics).mockReturnValue(metric);
+      vi.mocked(metricsProvider.getServerMetrics).mockResolvedValue(metric);
 
-      const processed = service.getProcessedServer('web-01')!;
+      const processed = (await service.getProcessedServer('web-01'))!;
       const enhanced = service.toEnhancedMetrics(processed);
 
       expect(enhanced.cpu_usage).toBe(77);
       expect(enhanced.cpu).toBe(77);
     });
 
-    it('includes network_in and network_out', () => {
+    it('includes network_in and network_out', async () => {
       const metric = makeApiMetric({ network: 80, serverType: 'web' });
-      vi.mocked(metricsProvider.getServerMetrics).mockReturnValue(metric);
+      vi.mocked(metricsProvider.getServerMetrics).mockResolvedValue(metric);
 
-      const processed = service.getProcessedServer('web-01')!;
+      const processed = (await service.getProcessedServer('web-01'))!;
       const enhanced = service.toEnhancedMetrics(processed);
 
       expect(enhanced.network_in).toBe(56); // 80 * 0.7
       expect(enhanced.network_out).toBe(24); // 80 * 0.3
     });
 
-    it('sets networkInfo status to offline when server offline', () => {
+    it('sets networkInfo status to offline when server offline', async () => {
       const metric = makeApiMetric({ status: 'offline' });
-      vi.mocked(metricsProvider.getServerMetrics).mockReturnValue(metric);
+      vi.mocked(metricsProvider.getServerMetrics).mockResolvedValue(metric);
 
-      const processed = service.getProcessedServer('web-01')!;
+      const processed = (await service.getProcessedServer('web-01'))!;
       const enhanced = service.toEnhancedMetrics(processed);
 
       expect(enhanced.networkInfo.status).toBe('offline');
     });
 
-    it('keeps networkInfo bytes fields as bytes/sec and percent in separate fields', () => {
+    it('keeps networkInfo bytes fields as bytes/sec and percent in separate fields', async () => {
       const metric = makeApiMetric({ network: 80, serverType: 'web' });
-      vi.mocked(metricsProvider.getServerMetrics).mockReturnValue(metric);
+      vi.mocked(metricsProvider.getServerMetrics).mockResolvedValue(metric);
 
-      const processed = service.getProcessedServer('web-01')!;
+      const processed = (await service.getProcessedServer('web-01'))!;
       const enhanced = service.toEnhancedMetrics(processed);
 
       expect(enhanced.networkInfo.receivedBytes).toMatch(/\/s$/);
@@ -373,11 +373,11 @@ describe('ServerMonitoringService', () => {
   // ── toPaginatedServer projection ─────────────────────────────────
 
   describe('toPaginatedServer projection', () => {
-    it('returns loadAverage as [l1, l5, l15] tuple', () => {
+    it('returns loadAverage as [l1, l5, l15] tuple', async () => {
       const metric = makeApiMetric({ loadAvg1: 2.0, loadAvg5: 1.5 });
-      vi.mocked(metricsProvider.getServerMetrics).mockReturnValue(metric);
+      vi.mocked(metricsProvider.getServerMetrics).mockResolvedValue(metric);
 
-      const processed = service.getProcessedServer('web-01')!;
+      const processed = (await service.getProcessedServer('web-01'))!;
       const paginated = service.toPaginatedServer(processed);
 
       expect(paginated.metrics.loadAverage).toHaveLength(3);
@@ -387,27 +387,27 @@ describe('ServerMonitoringService', () => {
       expect(paginated.metrics.loadAverage[2]).toBeCloseTo(expectedLoad15, 2);
     });
 
-    it('uses hostname as name', () => {
+    it('uses hostname as name', async () => {
       const metric = makeApiMetric({
         hostname: 'web-01.openmanager.local',
       });
-      vi.mocked(metricsProvider.getServerMetrics).mockReturnValue(metric);
+      vi.mocked(metricsProvider.getServerMetrics).mockResolvedValue(metric);
 
-      const processed = service.getProcessedServer('web-01')!;
+      const processed = (await service.getProcessedServer('web-01'))!;
       const paginated = service.toPaginatedServer(processed);
 
       expect(paginated.name).toBe('web-01.openmanager.local');
     });
 
-    it('rounds cpu/memory/disk metrics', () => {
+    it('rounds cpu/memory/disk metrics', async () => {
       const metric = makeApiMetric({
         cpu: 55.7,
         memory: 62.3,
         disk: 41.9,
       });
-      vi.mocked(metricsProvider.getServerMetrics).mockReturnValue(metric);
+      vi.mocked(metricsProvider.getServerMetrics).mockResolvedValue(metric);
 
-      const processed = service.getProcessedServer('web-01')!;
+      const processed = (await service.getProcessedServer('web-01'))!;
       const paginated = service.toPaginatedServer(processed);
 
       expect(paginated.metrics.cpu).toBe(56);

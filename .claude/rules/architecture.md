@@ -81,13 +81,14 @@ Cloud Run 측: cloud-run/ai-engine/src/{agents|tools}/
 
 ## Data Source (SSOT)
 
-**Single Source of Truth**: `src/data/otel-data/` (OTel-native)
+**Single Source of Truth**: `public/data/otel-data/` (데이터) + `src/data/otel-data/index.ts` (로더)
 
 | 컴포넌트 | 파일 | 역할 |
 |---------|------|------|
-| 데이터 원본 | `src/data/otel-data/hourly/*.json` | 24시간 OTel metrics + logs |
-| 리소스 카탈로그 | `src/data/otel-data/resource-catalog.json` | 서버 메타데이터 |
-| 시계열 | `src/data/otel-data/timeseries.json` | 24h 집계 시계열 |
+| 데이터 원본 | `public/data/otel-data/hourly/*.json` | 24시간 OTel metrics + logs |
+| 리소스 카탈로그 | `public/data/otel-data/resource-catalog.json` | 서버 메타데이터 |
+| 시계열 | `public/data/otel-data/timeseries.json` | 24h 집계 시계열 |
+| 데이터 로더 | `src/data/otel-data/index.ts` | async fs/fetch 기반 로딩 |
 | Vercel 소비 | `src/services/metrics/MetricsProvider.ts` | OTel 직접 소비 |
 | AI 소비 | `cloud-run/ai-engine/src/data/precomputed-state.ts` | AI 컨텍스트 |
 

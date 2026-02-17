@@ -20,8 +20,7 @@ export async function getServersAction(): Promise<{
     await MetricsProvider.getInstance().ensureDataLoaded();
 
     const service = getServerMonitoringService();
-    // Assuming getAllAsEnhancedMetrics returns EnhancedServerMetrics[]
-    const servers = service.getAllAsEnhancedMetrics();
+    const servers = await service.getAllAsEnhancedMetrics();
 
     return {
       success: true,

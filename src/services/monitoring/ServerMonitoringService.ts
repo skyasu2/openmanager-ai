@@ -185,14 +185,17 @@ export class ServerMonitoringService {
 
   // ── Data access ───────────────────────────────────────────────
 
-  getProcessedServer(serverId: string): ProcessedServerData | null {
-    const metric = metricsProvider.getServerMetrics(serverId);
+  async getProcessedServer(
+    serverId: string
+  ): Promise<ProcessedServerData | null> {
+    const metric = await metricsProvider.getServerMetrics(serverId);
     if (!metric) return null;
     return processMetric(metric);
   }
 
-  getAllProcessedServers(): ProcessedServerData[] {
-    return metricsProvider.getAllServerMetrics().map(processMetric);
+  async getAllProcessedServers(): Promise<ProcessedServerData[]> {
+    const metrics = await metricsProvider.getAllServerMetrics();
+    return metrics.map(processMetric);
   }
 
   // ── Projections ───────────────────────────────────────────────
@@ -343,23 +346,27 @@ export class ServerMonitoringService {
 
   // ── Convenience methods ────────────────────────────────────────
 
-  getAllAsEnhancedMetrics(): EnhancedServerMetrics[] {
-    return this.getAllProcessedServers().map((p) => this.toEnhancedMetrics(p));
+  async getAllAsEnhancedMetrics(): Promise<EnhancedServerMetrics[]> {
+    const processed = await this.getAllProcessedServers();
+    return processed.map((p) => this.toEnhancedMetrics(p));
   }
 
-  getAllAsServers(): Server[] {
-    return this.getAllProcessedServers().map((p) => this.toServer(p));
+  async getAllAsServers(): Promise<Server[]> {
+    const processed = await this.getAllProcessedServers();
+    return processed.map((p) => this.toServer(p));
   }
 
-  getServerAsEnhanced(serverId: string): EnhancedServerMetrics | null {
-    const p = this.getProcessedServer(serverId);
+  async getServerAsEnhanced(
+    serverId: string
+  ): Promise<EnhancedServerMetrics | null> {
+    const p = await this.getProcessedServer(serverId);
     if (!p) return null;
     return this.toEnhancedMetrics(p);
   }
 
   // ── Delegation ─────────────────────────────────────────────────
 
-  getSystemSummary(): SystemSummary {
+  async getSystemSummary(): Promise<SystemSummary> {
     return metricsProvider.getSystemSummary();
   }
 }

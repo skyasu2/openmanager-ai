@@ -23,7 +23,7 @@ async function getHandler(_request: NextRequest) {
 
   try {
     const ctx = MonitoringContext.getInstance();
-    const report = ctx.analyze();
+    const report = await ctx.analyze();
     const alertHistory = ctx.getAlertHistory();
     const processingTime = Date.now() - startTime;
     const responsePayload = {

@@ -38,7 +38,7 @@ export const GET = withAuth(async (_request: NextRequest) => {
           }
 
           const ctx = MonitoringContext.getInstance();
-          const report = ctx.analyze();
+          const report = await ctx.analyze();
 
           sendEvent('alert', {
             firingAlerts: report.firingAlerts,

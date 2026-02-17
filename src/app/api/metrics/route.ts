@@ -106,7 +106,8 @@ async function executePromQLQuery(
   query: string,
   time?: number
 ): Promise<PrometheusMetricResult[]> {
-  const metrics = metricsProvider.getAllServerMetrics();
+  await metricsProvider.ensureDataLoaded();
+  const metrics = await metricsProvider.getAllServerMetrics();
   const ts = time || Math.floor(Date.now() / 1000);
 
   const metricName = extractMetricName(query);

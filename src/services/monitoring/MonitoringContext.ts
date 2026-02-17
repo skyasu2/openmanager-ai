@@ -48,10 +48,10 @@ export class MonitoringContext {
   /**
    * 분석 실행: 런타임 계산 (15서버 집계 <1ms)
    */
-  analyze(): MonitoringReport {
+  async analyze(): Promise<MonitoringReport> {
     const timestamp = getKSTTimestamp();
     const provider = MetricsProvider.getInstance();
-    const allMetrics = provider.getAllServerMetrics();
+    const allMetrics = await provider.getAllServerMetrics();
 
     // 1. Alert 평가
     const firingAlerts = this.alertManager.evaluate(allMetrics, timestamp);
@@ -69,7 +69,7 @@ export class MonitoringContext {
    * AI용 LLM 컨텍스트 (~100 토큰)
    */
   async getLLMContext(): Promise<string> {
-    const report = this.analyze();
+    const report = await this.analyze();
     const { health, aggregated, firingAlerts, timestamp } = report;
 
     // 타임스탬프 → KST 시간 표시
@@ -203,7 +203,7 @@ export class MonitoringContext {
   /**
    * Dashboard 요약
    */
-  getDashboardSummary(): {
+  async getDashboardSummary(): Promise<{
     healthScore: number;
     healthGrade: string;
     statusCounts: MonitoringReport['aggregated']['statusCounts'];
@@ -211,8 +211,8 @@ export class MonitoringContext {
     criticalAlertCount: number;
     avgCpu: number;
     avgMemory: number;
-  } {
-    const report = this.analyze();
+  }> {
+    const report = await this.analyze();
     return {
       healthScore: report.health.score,
       healthGrade: report.health.grade,

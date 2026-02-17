@@ -63,9 +63,9 @@ function buildPayload(
 }
 
 describe('extractMetricsFromStandard', () => {
-  it('6개 datapoint(10분 슬롯)에서 분 단위를 올바른 슬롯으로 매핑한다', () => {
+  it('6개 datapoint(10분 슬롯)에서 분 단위를 올바른 슬롯으로 매핑한다', async () => {
     const payload = buildPayload([0.1, 0.2, 0.3, 0.4, 0.5, 0.6]);
-    const metrics = extractMetricsFromStandard(
+    const metrics = await extractMetricsFromStandard(
       payload,
       '2026-02-14T21:30:00+09:00',
       21 * 60 + 30
@@ -76,10 +76,10 @@ describe('extractMetricsFromStandard', () => {
     expect(metrics[0]?.network).toBe(4);
   });
 
-  it('60개 datapoint(1분 해상도)에서는 정확한 minute 인덱스를 사용한다', () => {
+  it('60개 datapoint(1분 해상도)에서는 정확한 minute 인덱스를 사용한다', async () => {
     const cpuValues = Array.from({ length: 60 }, (_, i) => i / 100);
     const payload = buildPayload(cpuValues);
-    const metrics = extractMetricsFromStandard(
+    const metrics = await extractMetricsFromStandard(
       payload,
       '2026-02-14T21:50:00+09:00',
       21 * 60 + 50
@@ -90,12 +90,12 @@ describe('extractMetricsFromStandard', () => {
     expect(metrics[0]?.network).toBe(51);
   });
 
-  it('legacy unit=By/s + percent-scale 값은 재변환 없이 그대로 사용한다', () => {
+  it('legacy unit=By/s + percent-scale 값은 재변환 없이 그대로 사용한다', async () => {
     const payload = buildPayload([0.5, 0.5, 0.5, 0.5, 0.5, 0.5], {
       networkValues: [78, 79, 80, 81, 82, 83],
       networkUnit: 'By/s',
     });
-    const metrics = extractMetricsFromStandard(
+    const metrics = await extractMetricsFromStandard(
       payload,
       '2026-02-14T21:00:00+09:00',
       21 * 60
@@ -105,12 +105,12 @@ describe('extractMetricsFromStandard', () => {
     expect(metrics[0]?.network).toBe(78);
   });
 
-  it('unit=By/s + 실제 bytes/s 값은 1Gbps 기준 사용률로 환산한다', () => {
+  it('unit=By/s + 실제 bytes/s 값은 1Gbps 기준 사용률로 환산한다', async () => {
     const payload = buildPayload([0.5], {
       networkValues: [62_500_000], // 1Gbps(125MB/s) 대비 50%
       networkUnit: 'By/s',
     });
-    const metrics = extractMetricsFromStandard(
+    const metrics = await extractMetricsFromStandard(
       payload,
       '2026-02-14T21:00:00+09:00',
       21 * 60
@@ -120,7 +120,7 @@ describe('extractMetricsFromStandard', () => {
     expect(metrics[0]?.network).toBe(50);
   });
 
-  it('모든 메트릭이 0이면 offline으로 판별한다', () => {
+  it('모든 메트릭이 0이면 offline으로 판별한다', async () => {
     const payload = buildPayload([0, 0, 0, 0, 0, 0]);
     // memory/disk도 0으로 세팅
     const rm = payload.resourceMetrics[0]!;
@@ -144,7 +144,7 @@ describe('extractMetricsFromStandard', () => {
       },
     ];
 
-    const metrics = extractMetricsFromStandard(
+    const metrics = await extractMetricsFromStandard(
       payload,
       '2026-02-14T21:00:00+09:00',
       21 * 60
@@ -153,9 +153,9 @@ describe('extractMetricsFromStandard', () => {
     expect(metrics[0]?.status).toBe('offline');
   });
 
-  it('빈 resourceMetrics → 빈 결과', () => {
+  it('빈 resourceMetrics → 빈 결과', async () => {
     const payload: ExportMetricsServiceRequest = { resourceMetrics: [] };
-    const metrics = extractMetricsFromStandard(
+    const metrics = await extractMetricsFromStandard(
       payload,
       '2026-02-14T21:00:00+09:00',
       21 * 60
@@ -163,7 +163,7 @@ describe('extractMetricsFromStandard', () => {
     expect(metrics).toHaveLength(0);
   });
 
-  it('다중 서버 리소스를 개별 변환한다', () => {
+  it('다중 서버 리소스를 개별 변환한다', async () => {
     const payload = buildPayload([0.5, 0.5, 0.5, 0.5, 0.5, 0.5]);
     // 두 번째 서버 추가
     payload.resourceMetrics.push({
@@ -208,7 +208,7 @@ describe('extractMetricsFromStandard', () => {
       ],
     });
 
-    const metrics = extractMetricsFromStandard(
+    const metrics = await extractMetricsFromStandard(
       payload,
       '2026-02-14T21:00:00+09:00',
       21 * 60
@@ -218,7 +218,7 @@ describe('extractMetricsFromStandard', () => {
     expect(ids).toEqual(['db-postgres-dc1-01', 'web-nginx-dc1-01']);
   });
 
-  it('빈 dataPoints 메트릭은 건너뛴다', () => {
+  it('빈 dataPoints 메트릭은 건너뛴다', async () => {
     const payload: ExportMetricsServiceRequest = {
       resourceMetrics: [
         {
@@ -254,7 +254,7 @@ describe('extractMetricsFromStandard', () => {
       ],
     };
 
-    const metrics = extractMetricsFromStandard(
+    const metrics = await extractMetricsFromStandard(
       payload,
       '2026-02-14T21:00:00+09:00',
       21 * 60
@@ -263,7 +263,7 @@ describe('extractMetricsFromStandard', () => {
     expect(metrics[0]?.cpu).toBe(0); // CPU dataPoints 비어서 기본값 0
   });
 
-  it('host.name 없는 리소스는 건너뛴다', () => {
+  it('host.name 없는 리소스는 건너뛴다', async () => {
     const payload: ExportMetricsServiceRequest = {
       resourceMetrics: [
         {
@@ -287,7 +287,7 @@ describe('extractMetricsFromStandard', () => {
       ],
     };
 
-    const metrics = extractMetricsFromStandard(
+    const metrics = await extractMetricsFromStandard(
       payload,
       '2026-02-14T21:00:00+09:00',
       21 * 60

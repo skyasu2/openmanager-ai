@@ -53,7 +53,7 @@ type ServersUnifiedRequest = z.infer<typeof serversUnifiedRequestSchema>;
 /**
  * 🎯 실시간 서버 데이터 (ServerMonitoringService 기반)
  */
-function getRealtimeServers(): EnhancedServerMetrics[] {
+async function getRealtimeServers(): Promise<EnhancedServerMetrics[]> {
   const service = getServerMonitoringService();
   return service.getAllAsEnhancedMetrics();
 }
@@ -61,7 +61,9 @@ function getRealtimeServers(): EnhancedServerMetrics[] {
 /**
  * 🔍 특정 서버 상세 정보
  */
-function getServerDetail(serverId: string): EnhancedServerMetrics | null {
+async function getServerDetail(
+  serverId: string
+): Promise<EnhancedServerMetrics | null> {
   const service = getServerMonitoringService();
   return service.getServerAsEnhanced(serverId);
 }
@@ -69,8 +71,8 @@ function getServerDetail(serverId: string): EnhancedServerMetrics | null {
 /**
  * ⚙️ 서버 프로세스 목록
  */
-function getServerProcesses(serverId: string) {
-  const server = getServerDetail(serverId);
+async function getServerProcesses(serverId: string) {
+  const server = await getServerDetail(serverId);
   if (!server) return null;
 
   // 현실적인 프로세스 목록 생성
@@ -195,11 +197,11 @@ async function handleServersUnified(
     // 액션별 데이터 처리
     switch (action) {
       case 'list':
-        servers = getRealtimeServers();
+        servers = await getRealtimeServers();
         break;
 
       case 'cached': {
-        servers = getRealtimeServers();
+        servers = await getRealtimeServers();
         additionalData.cacheInfo = {
           cached: true,
           cacheTime: new Date().toISOString(),
@@ -209,7 +211,7 @@ async function handleServersUnified(
       }
 
       case 'mock': {
-        servers = getRealtimeServers();
+        servers = await getRealtimeServers();
         additionalData.mockInfo = {
           generated: true,
           serverCount: servers.length,
@@ -219,7 +221,7 @@ async function handleServersUnified(
       }
 
       case 'realtime':
-        servers = getRealtimeServers();
+        servers = await getRealtimeServers();
         additionalData.realtimeInfo = {
           realtime: true,
           source: 'server-monitoring-service',
@@ -234,7 +236,7 @@ async function handleServersUnified(
             error: 'serverId required for detail action',
           };
         }
-        const serverDetail = getServerDetail(serverId);
+        const serverDetail = await getServerDetail(serverId);
         if (!serverDetail) {
           return { success: false, error: 'Server not found' };
         }
@@ -253,7 +255,7 @@ async function handleServersUnified(
             error: 'serverId required for processes action',
           };
         }
-        const processData = getServerProcesses(serverId);
+        const processData = await getServerProcesses(serverId);
         if (!processData) {
           return { success: false, error: 'Server not found' };
         }
