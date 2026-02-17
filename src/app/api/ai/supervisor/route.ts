@@ -295,7 +295,7 @@ export const POST = withRateLimit(
           const normalizedMessages = normalizeMessagesForCloudRun(messages);
 
           // 서버 메트릭 컨텍스트 주입 (alert 서버만, ~100-200 토큰)
-          const contextMessage = buildServerContextMessage();
+          const contextMessage = await buildServerContextMessage();
           const messagesWithContext = contextMessage
             ? [contextMessage, ...normalizedMessages]
             : normalizedMessages;

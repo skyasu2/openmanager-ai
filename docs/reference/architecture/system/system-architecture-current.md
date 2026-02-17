@@ -2,10 +2,10 @@
 
 > Vercel + Cloud Run 하이브리드 시스템 구조의 기준 문서
 > Owner: platform-architecture
-> Last verified against code: 2026-02-15
+> Last verified against code: 2026-02-17
 > Status: Active Canonical (hybrid-split.md 통합됨)
 > Doc type: Explanation
-> Last reviewed: 2026-02-15
+> Last reviewed: 2026-02-17
 > Canonical: docs/reference/architecture/system/system-architecture-current.md
 > Tags: system,architecture,hybrid,cloud-run,vercel
 
@@ -23,7 +23,7 @@
 | AI 실행 컴포넌트 | 8 (실행 에이전트 7 + Orchestrator 1) |
 | Zustand Stores | 4 |
 | 모니터링 서버 | 15 (OnPrem DC1, synthetic) |
-| 데이터 소스 | OTel 번들 우선 (`otel-data`/`otel-metrics`) + Cloud Run 호환 폴백 (`otel-processed`) |
+| 데이터 소스 | `public/data/otel-data` 비동기 로딩 우선 + Cloud Run 호환 폴백 (`otel-processed`) |
 
 ---
 
@@ -58,8 +58,8 @@ graph TB
     end
 
     subgraph Data["Data (Build-Time)"]
-        OTel["otel-data + otel-metrics/<br/>(Primary)"]
-        Compat["otel-processed/<br/>(Cloud Run Compatibility)"]
+        OTel["public/data/otel-data/<br/>(Primary Runtime SSOT)"]
+        Compat["cloud-run/data/otel-processed/<br/>(Cloud Run Compatibility)"]
     end
 
     UI -->|HTTP/Stream| NextJS
@@ -127,8 +127,8 @@ graph TB
 4. /api/servers-unified/route.ts → MetricsProvider.getInstance()
 5. MetricsProvider:
    a. getKSTMinuteOfDay() → 현재 KST 10분 슬롯 계산
-   b. loadOTelData(hour) → otel-metrics (Primary runtime bundle)
-   c. 서버 메타/시계열 보조 조회 → otel-data (resource-catalog, timeseries)
+   b. ensureDataLoaded(hour) → public/data/otel-data 비동기 로딩(fetch/fs)
+   c. 서버 메타/시계열 보조 조회 → resource-catalog, timeseries
    d. extractMetricsFromStandard() → ApiServerMetrics[] 변환
 6. Response → TanStack Query 캐시 → React 렌더링
 ```
@@ -175,8 +175,8 @@ graph TB
 
 ```
 ┌─────────────────────────────────────────────────┐
-│  src/data/otel-data/ + src/data/otel-metrics/  │  ← 1. Primary (OTel bundles)
-│  (Vercel/Frontend runtime SSOT)                │
+│  public/data/otel-data/                        │  ← 1. Primary Runtime SSOT
+│  (Vercel/Frontend async fetch/fs)              │
 └──────────────────────────┬──────────────────────┘
                            │ compatibility fallback (Cloud Run only)
                            ▼
@@ -188,8 +188,8 @@ graph TB
 
 ### Data Boundary
 
-- `otel-data/*`: AI가 사전 생성한 **synthetic OTel-native 원본 데이터(SSOT)**
-- `otel-metrics/*`: 대시보드 런타임 호환을 위한 OTLP 번들 데이터
+- `public/data/otel-data/*`: AI가 사전 생성한 **synthetic OTel-native 원본 데이터(SSOT)**
+- `src/data/otel-data/index.ts` / `src/data/otel-metrics/index.ts`: 대시보드 런타임 비동기 로더(fetch/fs)
 - `cloud-run/ai-engine/data/otel-processed/*`: Cloud Run 하위 호환 fallback 데이터
 - 런타임에서 외부 Prometheus/OTLP/Loki 수집 없음 (zero external scrape)
 - 24시간 순환, 15서버, 10분 슬롯 (144 data points/server/day)
@@ -198,7 +198,7 @@ graph TB
 
 | 소비자 | 진입점 파일 | 데이터 경로 |
 |--------|------------|------------|
-| **Dashboard** | `src/services/metrics/MetricsProvider.ts` | `otel-metrics` (Primary) |
+| **Dashboard** | `src/services/metrics/MetricsProvider.ts` | `public/data/otel-data` (Primary, async) |
 | **AI Chat (Vercel)** | `src/services/monitoring/MonitoringContext.ts` | `otel-data` + MetricsProvider |
 | **AI Engine (Cloud Run)** | `cloud-run/ai-engine/src/data/precomputed-state.ts` | `otel-data` → `otel-processed` fallback |
 | **24h Chart** | `src/hooks/useServerMetrics.ts` → MetricsProvider | MetricsProvider 동일 체인 |
@@ -216,7 +216,7 @@ Cloud Run AI Engine은 **Stateless** 설계를 따르며, 영속 데이터는 Su
 | **일관성** | 메트릭은 번들 JSON, 영속 데이터는 Supabase 기준으로 일관성 유지 |
 | **비용 절감** | Cloud Run에 영속 스토리지 비용 없음 |
 
-데이터 동기화: 빌드 시 `otel-data`(및 대시보드 번들 `otel-metrics`)가 포함되고, Cloud Run은 `otel-processed` 호환 폴백도 유지합니다. 영속 데이터(RAG/피드백/히스토리)는 Supabase에서 조회합니다.
+데이터 동기화: 런타임 SSOT는 `public/data/otel-data`이며, Cloud Run 배포 시 `deploy.sh`가 이를 컨테이너 `data/otel-data`로 복사합니다. Cloud Run은 `otel-processed` 호환 폴백도 유지합니다. 영속 데이터(RAG/피드백/히스토리)는 Supabase에서 조회합니다.
 
 ### Build-Time Pipeline
 
@@ -436,8 +436,9 @@ Client                     Vercel                     Cloud Run
 | 용도 | 파일 |
 |------|------|
 | Metrics SSOT | `src/services/metrics/MetricsProvider.ts` |
-| OTel Data (Primary) | `src/data/otel-data/hourly/hour-XX.json` |
-| OTLP Runtime Bundle | `src/data/otel-metrics/hourly/hour-XX.json` |
+| OTel Data (Primary) | `public/data/otel-data/hourly/hour-XX.json` |
+| OTel Resource/Timeseries | `public/data/otel-data/resource-catalog.json`, `public/data/otel-data/timeseries.json` |
+| OTel Async Loaders | `src/data/otel-data/index.ts`, `src/data/otel-metrics/index.ts` |
 | Cloud Run Compatibility Fallback | `cloud-run/ai-engine/data/otel-processed/hourly/hour-XX.json` |
 | OTel 품질/검증 스크립트 | `scripts/data/otel-fix.ts`, `scripts/data/otel-verify.ts` |
 | Cloud Run Data | `cloud-run/ai-engine/src/data/precomputed-state.ts` |

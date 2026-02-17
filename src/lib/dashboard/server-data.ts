@@ -85,9 +85,10 @@ export type OTelDashboardData = {
 /**
  * OTel processed 데이터에서 직접 대시보드 데이터를 생성 (5단계 → 1단계)
  */
-export function getOTelDashboardData(): OTelDashboardData {
+export async function getOTelDashboardData(): Promise<OTelDashboardData> {
   try {
-    const { servers, hour, slotIndex, minuteOfDay } = loadCurrentOTelServers();
+    const { servers, hour, slotIndex, minuteOfDay } =
+      await loadCurrentOTelServers();
 
     // EnhancedServerMetrics → Server 변환 + 상태 우선순위 정렬
     const converted = servers.map(toServer);

@@ -38,7 +38,7 @@ export type {
 } from './types';
 
 // ============================================================================
-// OTel Data Cache & Loader (번들 기반)
+// OTel Data Cache & Loader (외부 파일 기반 비동기 로드)
 // ============================================================================
 
 let cachedOTelData: { hour: number; data: ExportMetricsServiceRequest } | null =
@@ -52,19 +52,21 @@ let cachedOTelConversion: {
 } | null = null;
 
 /**
- * OTel 사전 계산 데이터 로드
- * @description 빌드 타임에 OTel SDK로 처리된 데이터 사용
+ * OTel 사전 계산 데이터 로드 (비동기)
+ * @description public/data/ 하위의 JSON 파일을 fetch 또는 fs로 로드
  */
-function loadOTelData(hour: number): ExportMetricsServiceRequest | null {
+async function loadOTelData(
+  hour: number
+): Promise<ExportMetricsServiceRequest | null> {
   if (cachedOTelData?.hour === hour) {
     return cachedOTelData.data;
   }
 
-  const data = getOTelHourlyData(hour);
+  const data = await getOTelHourlyData(hour);
   if (data) {
     cachedOTelData = { hour, data };
     logger.debug(
-      `[MetricsProvider] OTel 데이터 로드: hour-${hour.toString().padStart(2, '0')} (${data.resourceMetrics.length}개 Resources)`
+      `[MetricsProvider] OTel 데이터 비동기 로드 완료: hour-${hour.toString().padStart(2, '0')}`
     );
     return data;
   }
@@ -92,6 +94,16 @@ export class MetricsProvider {
     return MetricsProvider.instance;
   }
 
+  /**
+   * [New] 데이터 가용성 확보 (비동기)
+   * 컴포넌트나 API 라우트 진입 시 호출하여 데이터를 미리 로드
+   */
+  public async ensureDataLoaded(hour?: number): Promise<boolean> {
+    const targetHour = hour ?? Math.floor(getKSTMinuteOfDay() / 60);
+    const data = await loadOTelData(targetHour);
+    return !!data;
+  }
+
   /** 테스트 격리용: 싱글톤 인스턴스 및 캐시 리셋 */
   static resetForTesting(): void {
     if (process.env.NODE_ENV !== 'test') return;
@@ -103,7 +115,7 @@ export class MetricsProvider {
 
   /**
    * 현재 시간 기준 단일 서버 메트릭 조회
-   * OTel Standard 데이터 사용
+   * @warning 데이터가 미리 로드되어 있지 않으면 null을 반환할 수 있음 (비동기 대응 필요)
    */
   public getServerMetrics(serverId: string): ApiServerMetrics | null {
     const minuteOfDay = getKSTMinuteOfDay();
@@ -111,37 +123,35 @@ export class MetricsProvider {
     const hour = Math.floor(minuteOfDay / 60);
     const minute = minuteOfDay % 60;
 
-    const otelData = loadOTelData(hour);
-    if (otelData) {
-      let allMetrics: ApiServerMetrics[];
-      if (
-        cachedOTelConversion?.hour === hour &&
-        cachedOTelConversion.minute === minute
-      ) {
-        allMetrics = cachedOTelConversion.metrics;
-      } else {
-        allMetrics = extractMetricsFromStandard(
-          otelData,
-          timestamp,
-          minuteOfDay
-        );
-        cachedOTelConversion = { hour, minute, metrics: allMetrics };
-      }
-      const found = allMetrics.find((m) => m.serverId === serverId);
-      if (found) {
-        return found;
-      }
+    // 캐시 확인 (동기적 반환 시도)
+    if (cachedOTelData?.hour !== hour) {
+      logger.warn(
+        `[MetricsProvider] 데이터 미로드 상태 (hour: ${hour}). ensureDataLoaded() 호출이 필요합니다.`
+      );
+      // 비동기 로드 트리거 (백그라운드)
+      this.ensureDataLoaded(hour);
+      return null;
     }
 
-    logger.warn(
-      `[MetricsProvider] OTel 데이터에서 서버 ${serverId}을(를) 찾을 수 없음 (hour=${hour})`
-    );
-    return null;
+    const otelData = cachedOTelData.data;
+    let allMetrics: ApiServerMetrics[];
+
+    if (
+      cachedOTelConversion?.hour === hour &&
+      cachedOTelConversion.minute === minute
+    ) {
+      allMetrics = cachedOTelConversion.metrics;
+    } else {
+      allMetrics = extractMetricsFromStandard(otelData, timestamp, minuteOfDay);
+      cachedOTelConversion = { hour, minute, metrics: allMetrics };
+    }
+
+    const found = allMetrics.find((m) => m.serverId === serverId);
+    return found || null;
   }
 
   /**
    * 현재 시간 기준 모든 서버 메트릭 조회
-   * OTel Standard 데이터 사용
    */
   public getAllServerMetrics(): ApiServerMetrics[] {
     const minuteOfDay = getKSTMinuteOfDay();
@@ -149,25 +159,26 @@ export class MetricsProvider {
     const hour = Math.floor(minuteOfDay / 60);
     const minute = minuteOfDay % 60;
 
-    const otelData = loadOTelData(hour);
-    if (otelData) {
-      if (
-        cachedOTelConversion?.hour === hour &&
-        cachedOTelConversion.minute === minute
-      ) {
-        return cachedOTelConversion.metrics;
-      }
-      const metrics = extractMetricsFromStandard(
-        otelData,
-        timestamp,
-        minuteOfDay
-      );
-      cachedOTelConversion = { hour, minute, metrics };
-      return metrics;
+    if (cachedOTelData?.hour !== hour) {
+      this.ensureDataLoaded(hour);
+      return [];
     }
 
-    logger.error('[MetricsProvider] OTel 데이터 로드 실패, 빈 배열 반환');
-    return [];
+    const otelData = cachedOTelData.data;
+    if (
+      cachedOTelConversion?.hour === hour &&
+      cachedOTelConversion.minute === minute
+    ) {
+      return cachedOTelConversion.metrics;
+    }
+
+    const metrics = extractMetricsFromStandard(
+      otelData,
+      timestamp,
+      minuteOfDay
+    );
+    cachedOTelConversion = { hour, minute, metrics };
+    return metrics;
   }
 
   /**
@@ -249,7 +260,7 @@ export class MetricsProvider {
 
   /**
    * 특정 시간대 메트릭 조회 (히스토리용)
-   * OTel Standard 데이터 사용
+   * @warning 해당 시간대 데이터가 미리 로드되어 있어야 함
    */
   public getMetricsAtTime(
     serverId: string,
@@ -262,18 +273,19 @@ export class MetricsProvider {
     const hour = Math.floor(minuteOfDay / 60);
     const timestamp = getKSTTimestamp();
 
-    const otelData = loadOTelData(hour);
-    if (otelData) {
-      const metrics = extractMetricsFromStandard(
-        otelData,
-        timestamp,
-        minuteOfDay
-      );
-      const found = metrics.find((m) => m.serverId === serverId);
-      if (found) return found;
+    if (cachedOTelData?.hour !== hour) {
+      this.ensureDataLoaded(hour);
+      return null;
     }
 
-    return null;
+    const otelData = cachedOTelData.data;
+    const metrics = extractMetricsFromStandard(
+      otelData,
+      timestamp,
+      minuteOfDay
+    );
+    const found = metrics.find((m) => m.serverId === serverId);
+    return found || null;
   }
 
   // Server List 캐시
@@ -284,7 +296,7 @@ export class MetricsProvider {
   }> | null = null;
   /**
    * 서버 목록 조회 (OTel Standard Resource 기반)
-   * 캐싱 적용으로 성능 최적화 (O(N) -> O(1))
+   * @warning 데이터가 미리 로드되어 있어야 함
    */
   public getServerList(): Array<{
     serverId: string;
@@ -295,10 +307,13 @@ export class MetricsProvider {
       return MetricsProvider.cachedServerList;
     }
 
-    // 0시 데이터를 로드하여 리소스 목록 추출 (가장 확실한 방법)
-    const data = loadOTelData(0);
-    if (!data) return [];
+    // 캐시된 데이터가 없으면 빈 배열 반환하고 로드 트리거
+    if (!cachedOTelData) {
+      this.ensureDataLoaded(0); // 기본적으로 0시 데이터로 리스트 구성 시도
+      return [];
+    }
 
+    const data = cachedOTelData.data;
     const servers: Array<{
       serverId: string;
       serverType: string;

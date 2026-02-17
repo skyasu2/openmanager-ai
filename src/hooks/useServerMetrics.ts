@@ -111,7 +111,7 @@ export function useServerMetrics() {
         // OTel timeseries 데이터 직접 읽기 우선
         const rangeHours =
           range === '1h' ? 1 : range === '6h' ? 6 : range === '24h' ? 24 : 168;
-        const otelHistory = otelTimeSeriesToHistory(serverId, rangeHours);
+        const otelHistory = await otelTimeSeriesToHistory(serverId, rangeHours);
         if (otelHistory.length > 0) {
           setMetricsHistory(otelHistory);
           return;

@@ -68,7 +68,7 @@ export class MonitoringContext {
   /**
    * AI용 LLM 컨텍스트 (~100 토큰)
    */
-  getLLMContext(): string {
+  async getLLMContext(): Promise<string> {
     const report = this.analyze();
     const { health, aggregated, firingAlerts, timestamp } = report;
 
@@ -115,7 +115,7 @@ export class MonitoringContext {
     }
 
     // OTel Resource Context
-    ctx += this.buildOTelResourceContext();
+    ctx += await this.buildOTelResourceContext();
 
     return ctx;
   }
@@ -123,9 +123,10 @@ export class MonitoringContext {
   /**
    * OTel Resource 메타데이터 컨텍스트 생성
    */
-  private buildOTelResourceContext(): string {
+  private async buildOTelResourceContext(): Promise<string> {
     try {
-      const catalog = getOTelResourceCatalog();
+      const catalog = await getOTelResourceCatalog();
+      if (!catalog) return '';
       const resources = Object.values(catalog.resources);
       if (resources.length === 0) return '';
 
@@ -166,12 +167,12 @@ export class MonitoringContext {
    *   queryMetric('up == 0')
    *   queryMetric('rate(node_cpu_utilization_ratio[1h])')
    */
-  queryMetric(promql: string): PromQLResult {
+  async queryMetric(promql: string): Promise<PromQLResult> {
     const minuteOfDay = getKSTMinuteOfDay();
     const currentHour = Math.floor(minuteOfDay / 60);
     const slotIndex = Math.floor((minuteOfDay % 60) / 10);
 
-    const hourlyFile = getOTelHourlyData(currentHour);
+    const hourlyFile = await getOTelHourlyData(currentHour);
     if (!hourlyFile) {
       return { resultType: 'vector', result: [] };
     }
@@ -179,7 +180,7 @@ export class MonitoringContext {
     // rate() 쿼리를 위한 전체 시간대 맵
     const hourlyFileMap = new Map<number, OTelHourlyFile>();
     for (let h = 0; h < 24; h++) {
-      const data = getOTelHourlyData(h);
+      const data = await getOTelHourlyData(h);
       if (data) hourlyFileMap.set(h, data);
     }
 

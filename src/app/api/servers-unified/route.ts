@@ -184,6 +184,11 @@ async function handleServersUnified(
   try {
     debug.log(`🎯 통합 서버 API - 액션: ${action}`, { serverId, page, limit });
 
+    // 🚀 비동기 데이터 로딩 보장 (Bundle Size Optimization 대응)
+    const MetricsProvider = (await import('@/services/metrics/MetricsProvider'))
+      .MetricsProvider;
+    await MetricsProvider.getInstance().ensureDataLoaded();
+
     let servers: EnhancedServerMetrics[] = [];
     const additionalData: Record<string, unknown> = {};
 

@@ -339,11 +339,12 @@ export function otelSlotToServers(
  * @param serverId - 서버 ID
  * @param rangeHours - 히스토리 범위 (기본 24시간)
  */
-export function otelTimeSeriesToHistory(
+export async function otelTimeSeriesToHistory(
   serverId: string,
   rangeHours: number = 24
-): MetricsHistory[] {
-  const ts = getOTelTimeSeries();
+): Promise<MetricsHistory[]> {
+  const ts = await getOTelTimeSeries();
+  if (!ts) return [];
   const serverIdx = ts.serverIds.indexOf(serverId);
   if (serverIdx === -1) return [];
 
@@ -388,17 +389,17 @@ export function otelTimeSeriesToHistory(
 /**
  * 현재 KST 시간 기준으로 OTel 데이터를 로드하여 서버 목록 반환
  */
-export function loadCurrentOTelServers(): {
+export async function loadCurrentOTelServers(): Promise<{
   servers: EnhancedServerMetrics[];
   hour: number;
   slotIndex: number;
   minuteOfDay: number;
-} {
+}> {
   const minuteOfDay = getKSTMinuteOfDay();
   const hour = Math.floor(minuteOfDay / 60);
   const slotIndex = Math.floor((minuteOfDay % 60) / 10);
 
-  const hourlyData = getOTelHourlyData(hour);
+  const hourlyData = await getOTelHourlyData(hour);
   if (!hourlyData) {
     return { servers: [], hour, slotIndex, minuteOfDay };
   }
@@ -410,7 +411,10 @@ export function loadCurrentOTelServers(): {
     return { servers: [], hour, slotIndex, minuteOfDay };
   }
 
-  const catalog = getOTelResourceCatalog();
+  const catalog = await getOTelResourceCatalog();
+  if (!catalog) {
+    return { servers: [], hour, slotIndex, minuteOfDay };
+  }
   const timestamp = new Date().toISOString();
   const servers = otelSlotToServers(slot, catalog, timestamp);
 

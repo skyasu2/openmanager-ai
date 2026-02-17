@@ -10,17 +10,17 @@
 import type { NormalizedMessage } from '@/lib/ai/utils/message-normalizer';
 import { MonitoringContext } from '@/services/monitoring/MonitoringContext';
 
-export function buildServerContextMessage(): NormalizedMessage | null {
+export async function buildServerContextMessage(): Promise<NormalizedMessage | null> {
   try {
     const monitoring = MonitoringContext.getInstance();
-    const context = monitoring.getLLMContext();
+    const context = await monitoring.getLLMContext();
 
     if (!context) return null;
 
     // PromQL로 최근 트렌드 추가
     let trendContext = '';
     try {
-      const cpuRate = monitoring.queryMetric(
+      const cpuRate = await monitoring.queryMetric(
         'rate(node_cpu_utilization_ratio[1h])'
       );
       if (cpuRate.result.length > 0) {

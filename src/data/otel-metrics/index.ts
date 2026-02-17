@@ -1,88 +1,75 @@
 /**
- * OTel Metrics Loader — OTLP Standard Legacy
+ * OTel Metrics Loader — OTLP Standard (Async Externalized)
  *
  * OTLP ExportMetricsServiceRequest 포맷의 시간별 데이터 로더.
- * otel-data/ (SSOT Primary)와 별도로, OTLP 표준 호환 파이프라인을 위해 유지.
- * 빌드 타임에 정적 import로 번들에 포함.
+ * 번들 크기를 줄이기 위해 정적 import 대신 fetch(클라이언트) 및 fs(서버)를 사용.
  *
- * @created 2026-02-11
+ * @updated 2026-02-17 - Externalized to public/data/ (Bundle size optimization)
  */
 
 import type { ExportMetricsServiceRequest } from '@/types/otel-standard';
-import hour00 from './hourly/hour-00.json';
-import hour01 from './hourly/hour-01.json';
-import hour02 from './hourly/hour-02.json';
-import hour03 from './hourly/hour-03.json';
-import hour04 from './hourly/hour-04.json';
-import hour05 from './hourly/hour-05.json';
-import hour06 from './hourly/hour-06.json';
-import hour07 from './hourly/hour-07.json';
-import hour08 from './hourly/hour-08.json';
-import hour09 from './hourly/hour-09.json';
-import hour10 from './hourly/hour-10.json';
-import hour11 from './hourly/hour-11.json';
-import hour12 from './hourly/hour-12.json';
-import hour13 from './hourly/hour-13.json';
-import hour14 from './hourly/hour-14.json';
-import hour15 from './hourly/hour-15.json';
-import hour16 from './hourly/hour-16.json';
-import hour17 from './hourly/hour-17.json';
-import hour18 from './hourly/hour-18.json';
-import hour19 from './hourly/hour-19.json';
-import hour20 from './hourly/hour-20.json';
-import hour21 from './hourly/hour-21.json';
-import hour22 from './hourly/hour-22.json';
-import hour23 from './hourly/hour-23.json';
 
-// ============================================================================
-// Hourly Data Map (0-23시)
-// ============================================================================
-
-const OTEL_HOURLY_MAP: Record<number, ExportMetricsServiceRequest> = {
-  0: hour00 as unknown as ExportMetricsServiceRequest,
-  1: hour01 as unknown as ExportMetricsServiceRequest,
-  2: hour02 as unknown as ExportMetricsServiceRequest,
-  3: hour03 as unknown as ExportMetricsServiceRequest,
-  4: hour04 as unknown as ExportMetricsServiceRequest,
-  5: hour05 as unknown as ExportMetricsServiceRequest,
-  6: hour06 as unknown as ExportMetricsServiceRequest,
-  7: hour07 as unknown as ExportMetricsServiceRequest,
-  8: hour08 as unknown as ExportMetricsServiceRequest,
-  9: hour09 as unknown as ExportMetricsServiceRequest,
-  10: hour10 as unknown as ExportMetricsServiceRequest,
-  11: hour11 as unknown as ExportMetricsServiceRequest,
-  12: hour12 as unknown as ExportMetricsServiceRequest,
-  13: hour13 as unknown as ExportMetricsServiceRequest,
-  14: hour14 as unknown as ExportMetricsServiceRequest,
-  15: hour15 as unknown as ExportMetricsServiceRequest,
-  16: hour16 as unknown as ExportMetricsServiceRequest,
-  17: hour17 as unknown as ExportMetricsServiceRequest,
-  18: hour18 as unknown as ExportMetricsServiceRequest,
-  19: hour19 as unknown as ExportMetricsServiceRequest,
-  20: hour20 as unknown as ExportMetricsServiceRequest,
-  21: hour21 as unknown as ExportMetricsServiceRequest,
-  22: hour22 as unknown as ExportMetricsServiceRequest,
-  23: hour23 as unknown as ExportMetricsServiceRequest,
-};
-
-// ============================================================================
-// Public API
-// ============================================================================
+// 메모리 캐시 (한 번 로드된 데이터는 유지)
+const OTEL_HOURLY_CACHE: Record<number, ExportMetricsServiceRequest> = {};
 
 /**
- * 특정 시간대 OTel 데이터 조회 (O(1))
+ * 특정 시간대 OTel 데이터 조회 (Async)
  * @param hour 0-23
  */
-export function getOTelHourlyData(
+export async function getOTelHourlyData(
   hour: number
-): ExportMetricsServiceRequest | null {
+): Promise<ExportMetricsServiceRequest | null> {
   const normalizedHour = ((hour % 24) + 24) % 24;
-  return OTEL_HOURLY_MAP[normalizedHour] || null;
+  const hourStr = normalizedHour.toString().padStart(2, '0');
+
+  // 1. 캐시 확인
+  if (OTEL_HOURLY_CACHE[normalizedHour]) {
+    return OTEL_HOURLY_CACHE[normalizedHour];
+  }
+
+  try {
+    // 2. 서버 사이드 vs 클라이언트 사이드 분기
+    if (typeof window === 'undefined') {
+      // 서버 사이드: fs 사용
+      const fs = await import('node:fs/promises');
+      const path = await import('node:path');
+
+      // 프로젝트 루트 기준 경로 (Vercel 배포 환경 고려)
+      const filePath = path.join(
+        process.cwd(),
+        'public',
+        'data',
+        'otel-data',
+        'hourly',
+        `hour-${hourStr}.json`
+      );
+      const fileContent = await fs.readFile(filePath, 'utf-8');
+      const data = JSON.parse(fileContent) as ExportMetricsServiceRequest;
+
+      OTEL_HOURLY_CACHE[normalizedHour] = data;
+      return data;
+    } else {
+      // 클라이언트 사이드: fetch 사용
+      const response = await fetch(
+        `/data/otel-data/hourly/hour-${hourStr}.json`
+      );
+      if (!response.ok) {
+        throw new Error(`Failed to fetch OTel data: ${response.statusText}`);
+      }
+      const data = (await response.json()) as ExportMetricsServiceRequest;
+
+      OTEL_HOURLY_CACHE[normalizedHour] = data;
+      return data;
+    }
+  } catch (error) {
+    console.error(`[OTel Loader] Error loading hour-${hourStr}:`, error);
+    return null;
+  }
 }
 
 /**
  * 로드된 OTel 시간대 수 확인 (디버깅용)
  */
 export function getOTelLoadedHoursCount(): number {
-  return Object.keys(OTEL_HOURLY_MAP).length;
+  return Object.keys(OTEL_HOURLY_CACHE).length;
 }

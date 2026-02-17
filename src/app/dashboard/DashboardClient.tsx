@@ -334,6 +334,20 @@ function DashboardPageContent({ initialServers }: DashboardClientProps) {
   useEffect(() => {
     // triggerAIWarmup은 5분 쿨다운으로 중복 호출 방지
     void triggerAIWarmup('dashboard-mount');
+
+    // 🚀 번들 최적화 대응: 클라이언트 사이드 데이터 비동기 로드 시작
+    const loadInitialMetrics = async () => {
+      try {
+        const { metricsProvider } = await import(
+          '@/services/metrics/MetricsProvider'
+        );
+        await metricsProvider.ensureDataLoaded();
+        debug.log('🚀 클라이언트 사이드 메트릭 데이터 로드 완료');
+      } catch (err) {
+        debug.error('❌ 클라이언트 사이드 메트릭 로드 실패:', err);
+      }
+    };
+    void loadInitialMetrics();
   }, []);
 
   // 🚀 시스템 자동 시작 로직 - "시스템 종료됨" 문제 해결

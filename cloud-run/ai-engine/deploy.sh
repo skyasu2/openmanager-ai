@@ -222,10 +222,11 @@ cp ../../src/config/rules/system-rules.json ./config/system-rules.json
 echo "   ✅ system-rules.json synced to config/"
 
 # OTel processed data (PRIMARY data source — pre-aggregated by build-time pipeline)
+# v8.0 optimization: copy from public/data/ (externalized source)
 mkdir -p data/otel-data/hourly
-cp ../../src/data/otel-data/resource-catalog.json ./data/otel-data/
-cp ../../src/data/otel-data/hourly/*.json ./data/otel-data/hourly/
-echo "   ✅ otel-data synced (resource-catalog + $(ls -1 data/otel-data/hourly/*.json | wc -l) hourly files)"
+cp ../../public/data/otel-data/resource-catalog.json ./data/otel-data/
+cp ../../public/data/otel-data/hourly/*.json ./data/otel-data/hourly/
+echo "   ✅ otel-data synced from public/ (resource-catalog + $(ls -1 data/otel-data/hourly/*.json | wc -l) hourly files)"
 
 if [ "${LOCAL_DOCKER_PREFLIGHT}" = "true" ]; then
   echo ""

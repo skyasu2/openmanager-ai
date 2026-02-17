@@ -116,7 +116,7 @@ export const GET = withAuth(
         // 히스토리 데이터 생성 (요청시)
         let history = null;
         if (includeHistory) {
-          history = generateServerHistoryFromTimeSeries(serverId, range);
+          history = await generateServerHistoryFromTimeSeries(serverId, range);
         }
 
         return NextResponse.json(
@@ -190,7 +190,7 @@ export const GET = withAuth(
         // 히스토리 데이터 (요청시)
         let history: ServerHistory | undefined;
         if (includeHistory) {
-          history = generateServerHistoryFromTimeSeries(serverId, range);
+          history = await generateServerHistoryFromTimeSeries(serverId, range);
         }
 
         // 메타데이터
@@ -295,11 +295,23 @@ function formatUptime(uptimeSeconds: number): string {
 /**
  * 📈 사전 계산된 TimeSeries 데이터에서 서버 히스토리 생성
  */
-function generateServerHistoryFromTimeSeries(
+async function generateServerHistoryFromTimeSeries(
   serverId: string,
   range: string
-): ServerHistory {
-  const ts = getOTelTimeSeries();
+): Promise<ServerHistory> {
+  const ts = await getOTelTimeSeries();
+
+  if (!ts) {
+    const now = new Date().toISOString();
+    return {
+      time_range: range,
+      start_time: now,
+      end_time: now,
+      interval_ms: 0,
+      data_points: [],
+    };
+  }
+
   const serverIndex = ts.serverIds.indexOf(serverId);
 
   if (serverIndex === -1) {

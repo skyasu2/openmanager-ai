@@ -250,22 +250,29 @@ function resolveOTelMetricName(metricName: string): string | null {
 // hostname → serverId reverse lookup cache
 let hostnameLookupCache: Map<string, string> | null = null;
 
-function getServerIdFromHostname(hostname: string): string | null {
+async function getServerIdFromHostname(
+  hostname: string
+): Promise<string | null> {
   if (!hostnameLookupCache) {
     hostnameLookupCache = new Map();
-    const catalog = getResourceCatalog();
-    for (const [serverId, attrs] of Object.entries(catalog.resources)) {
-      hostnameLookupCache.set(attrs['host.name'], serverId);
+    const catalog = await getResourceCatalog();
+    if (catalog) {
+      for (const [serverId, attrs] of Object.entries(catalog.resources)) {
+        hostnameLookupCache.set(attrs['host.name'], serverId);
+      }
     }
   }
   return hostnameLookupCache.get(hostname) ?? null;
 }
 
-function getResourceLabels(hostname: string): Record<string, string> {
-  const serverId = getServerIdFromHostname(hostname);
+async function getResourceLabels(
+  hostname: string
+): Promise<Record<string, string>> {
+  const serverId = await getServerIdFromHostname(hostname);
   if (!serverId) return {};
 
-  const catalog = getResourceCatalog();
+  const catalog = await getResourceCatalog();
+  if (!catalog) return {};
   const attrs = catalog.resources[serverId];
   if (!attrs) return {};
 
@@ -323,11 +330,11 @@ function matchLabels(
  *
  * 메트릭 이름 → OTel 슬롯에서 해당 metric 검색 → dataPoints를 순회하며 labels 매칭
  */
-function extractSamplesFromOTel(
+async function extractSamplesFromOTel(
   hourlyFile: OTelHourlyFile,
   parsed: ParsedQuery,
   slotIndex?: number
-): PromQLSample[] {
+): Promise<PromQLSample[]> {
   const slot = hourlyFile.slots[slotIndex ?? 0] ?? hourlyFile.slots[0];
   if (!slot) return [];
 
@@ -351,7 +358,7 @@ function extractSamplesFromOTel(
 
   for (const dp of otelMetric.dataPoints) {
     const hostname = dp.attributes['host.name'];
-    const labels = getResourceLabels(hostname);
+    const labels = await getResourceLabels(hostname);
 
     if (!matchLabels(labels, parsed.matchers)) continue;
 
@@ -466,11 +473,11 @@ function applyComparison(
 // Rate (Simulated)
 // ============================================================================
 
-function computeRate(
+async function computeRate(
   hourlyDataMap: Map<number, OTelHourlyFile>,
   parsed: ParsedQuery,
   currentHour: number
-): PromQLSample[] {
+): Promise<PromQLSample[]> {
   // Parse window (e.g., "1h" -> 1 hour)
   const windowMatch = parsed.rangeWindow?.match(/^(\d+)h$/);
   const windowHours = windowMatch ? Number.parseInt(windowMatch[1]!, 10) : 1;
@@ -481,8 +488,8 @@ function computeRate(
 
   if (!currentData || !prevData) return [];
 
-  const currentSamples = extractSamplesFromOTel(currentData, parsed, 3);
-  const prevSamples = extractSamplesFromOTel(prevData, parsed, 3);
+  const currentSamples = await extractSamplesFromOTel(currentData, parsed, 3);
+  const prevSamples = await extractSamplesFromOTel(prevData, parsed, 3);
 
   const prevMap = new Map<string, number>();
   for (const s of prevSamples) {
@@ -512,13 +519,13 @@ function computeRate(
  * @param currentHour - 현재 시 (0-23)
  * @param slotIndex - 현재 슬롯 인덱스 (0-5)
  */
-export function executePromQL(
+export async function executePromQL(
   query: string,
   hourlyFile: OTelHourlyFile,
   hourlyFileMap?: Map<number, OTelHourlyFile>,
   currentHour?: number,
   slotIndex?: number
-): PromQLResult {
+): Promise<PromQLResult> {
   const validationError = validateQuery(query);
   if (validationError) {
     logger.warn(`[PromQL] Query rejected: ${validationError}`);
@@ -531,13 +538,17 @@ export function executePromQL(
     case 'rate': {
       const samples =
         hourlyFileMap && currentHour !== undefined
-          ? computeRate(hourlyFileMap, parsed, currentHour)
+          ? await computeRate(hourlyFileMap, parsed, currentHour)
           : [];
       return { resultType: 'vector', result: samples };
     }
 
     case 'aggregate': {
-      const samples = extractSamplesFromOTel(hourlyFile, parsed, slotIndex);
+      const samples = await extractSamplesFromOTel(
+        hourlyFile,
+        parsed,
+        slotIndex
+      );
       const aggregated = applyAggregation(
         samples,
         parsed.aggregateFunc!,
@@ -547,7 +558,11 @@ export function executePromQL(
     }
 
     case 'comparison': {
-      const samples = extractSamplesFromOTel(hourlyFile, parsed, slotIndex);
+      const samples = await extractSamplesFromOTel(
+        hourlyFile,
+        parsed,
+        slotIndex
+      );
       const filtered = applyComparison(
         samples,
         parsed.comparisonOp!,
@@ -557,7 +572,11 @@ export function executePromQL(
     }
 
     default: {
-      const samples = extractSamplesFromOTel(hourlyFile, parsed, slotIndex);
+      const samples = await extractSamplesFromOTel(
+        hourlyFile,
+        parsed,
+        slotIndex
+      );
       return { resultType: 'vector', result: samples };
     }
   }

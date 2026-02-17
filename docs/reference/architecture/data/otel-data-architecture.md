@@ -4,12 +4,12 @@
 > Owner: platform-data
 > Status: Active Canonical
 > Doc type: Reference
-> Last reviewed: 2026-02-14
+> Last reviewed: 2026-02-17
 > Canonical: docs/reference/architecture/data/otel-data-architecture.md
 > Tags: otel,data,architecture,pipeline
 >
 > **(otel-pipeline-audit + observability-transition-readiness 병합)**
-> Last verified: 2026-02-14
+> Last verified: 2026-02-17
 
 ---
 
@@ -32,26 +32,28 @@ OpenTelemetry는 이 프로젝트에서 **"빌드 타임 시맨틱 변환 도구
 ## 2. Data Flow
 
 ```
- 원본 (SSOT)
- src/data/otel-data/
+ 런타임 SSOT (Externalized)
+ public/data/otel-data/
  ├── resource-catalog.json
  ├── timeseries.json
  └── hourly/hour-{00..23}.json
                     │
-       npm run data:fix / npm run data:verify
+    async fetch/fs loaders
+ src/data/otel-data/index.ts
+ src/data/otel-metrics/index.ts
                     │
          ┌──────────┴──────────┐
          ▼                     ▼
   Cloud Run deploy.sh      MetricsProvider (Vercel)
-  (otel-data 복사)         (otel-metrics import)
+  (otel-data 복사)         (ensureDataLoaded)
   precomputed-state.ts     ┌→ 서버 카드 (Dashboard)
   1순위: otel-data         ├→ 서버 모달 (24h 차트)
   2순위: otel-processed    └→ AI 어시스턴트
 ```
 
-**Tiered Data Access**: Vercel은 `otel-metrics` 번들을 우선 사용하고, Cloud Run은 `otel-data` 1순위 + `otel-processed` 호환 폴백을 사용합니다.
+**Tiered Data Access**: Vercel은 `public/data/otel-data`를 비동기 로더(fetch/fs)로 직접 소비하고, Cloud Run은 `otel-data` 1순위 + `otel-processed` 호환 폴백을 사용합니다.
 
-**배포 동기화**: `deploy.sh`가 `otel-data/` 파일을 Cloud Run 이미지에 복사하고, 하위 호환을 위해 `otel-processed/`도 함께 유지합니다.
+**배포 동기화**: `cloud-run/ai-engine/deploy.sh`가 `public/data/otel-data` 파일을 Cloud Run 이미지(`data/otel-data`)로 복사하고, 하위 호환을 위해 `otel-processed/`도 함께 유지합니다.
 
 ---
 
@@ -113,12 +115,13 @@ SDK는 프로덕션 모니터링용이 아닌 향후 확장 스켈레톤입니�
 
 | 파일 | 역할 |
 |---|---|
-| `src/data/otel-data/` | 원본 SSOT (OTel-native) |
-| `src/data/otel-metrics/` | Dashboard 런타임 호환 번들 |
+| `public/data/otel-data/` | 런타임 SSOT (OTel-native, externalized) |
+| `src/data/otel-data/index.ts` | OTel 데이터 비동기 로더(fetch/fs) |
+| `src/data/otel-metrics/index.ts` | OTLP 표준 호환 비동기 로더(fetch/fs) |
 | `scripts/data/otel-fix.ts` | 데이터 보정 스크립트 |
 | `scripts/data/otel-verify.ts` | 데이터 무결성 검증 스크립트 |
 | `src/services/metrics/metric-transformers.ts` | Prometheus 명칭 ↔ OTel 시맨틱 매핑 로직 |
-| `src/services/metrics/MetricsProvider.ts` | OTel 데이터 런타임 소비 (Vercel) |
+| `src/services/metrics/MetricsProvider.ts` | OTel 데이터 런타임 소비 (`ensureDataLoaded` 기반) |
 | `cloud-run/ai-engine/src/data/precomputed-state.ts` | OTel 우선, `otel-processed` 폴백 (Cloud Run) |
 | `src/lib/otel/otel-sdk.ts` | OTel SDK 스켈레톤 (비활성화) |
 

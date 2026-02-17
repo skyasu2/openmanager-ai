@@ -141,11 +141,11 @@ const STANDARD_METRIC_HANDLERS = new Map<
  * OTel Standard Data → ApiServerMetrics[] 변환
  * 특정 분(minute)에 해당하는 데이터 포인트를 추출하여 변환
  */
-export function extractMetricsFromStandard(
+export async function extractMetricsFromStandard(
   data: ExportMetricsServiceRequest,
   timestamp: string,
   minuteOfDay: number
-): ApiServerMetrics[] {
+): Promise<ApiServerMetrics[]> {
   const serverMap = new Map<string, ApiServerMetrics>();
 
   // ResourceMetrics(Host) 단위 순회
@@ -174,8 +174,8 @@ export function extractMetricsFromStandard(
           .stringValue;
 
       // Resource Catalog에서 전체 메타데이터 보강
-      const catalog = getOTelResourceCatalog();
-      const catalogEntry = catalog.resources[serverId];
+      const catalog = await getOTelResourceCatalog();
+      const catalogEntry = catalog?.resources[serverId];
 
       serverMap.set(serverId, {
         serverId,

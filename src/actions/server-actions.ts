@@ -14,6 +14,11 @@ export async function getServersAction(): Promise<{
   error?: string;
 }> {
   try {
+    const { MetricsProvider } = await import(
+      '@/services/metrics/MetricsProvider'
+    );
+    await MetricsProvider.getInstance().ensureDataLoaded();
+
     const service = getServerMonitoringService();
     // Assuming getAllAsEnhancedMetrics returns EnhancedServerMetrics[]
     const servers = service.getAllAsEnhancedMetrics();

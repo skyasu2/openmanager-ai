@@ -3,11 +3,11 @@
 > Owner: platform-data
 > Status: Active Canonical
 > Doc type: Explanation
-> Last reviewed: 2026-02-14
+> Last reviewed: 2026-02-17
 > Canonical: docs/reference/architecture/data/data-architecture.md
 > Tags: data,architecture,otel,prometheus
 
-**최종 업데이트**: 2026-02-08
+**최종 업데이트**: 2026-02-17
 **프로젝트 버전**: v8.0.0
 
 ---
@@ -25,9 +25,9 @@ AI/ML 서비스가 단순히 API를 호출하는 비효율적인 구조를 탈�
 
 | Service | Data Source | Access Method |
 |---------|-------------|---------------|
-| **OTel Dataset** | `src/data/otel-data/*` | Primary Load (SSOT) |
-| **Dashboard UI** | `MetricsProvider` → `src/data/otel-metrics/*` | Singleton Access |
-| **AI Engine** | `cloud-run/ai-engine/data/otel-data/*` → `otel-processed/*` | File Load |
+| **OTel Dataset** | `public/data/otel-data/*` | Externalized SSOT |
+| **Dashboard UI** | `MetricsProvider` → `public/data/otel-data/*` | **Async Fetch** (Bundle Opt) |
+| **AI Engine** | `cloud-run/ai-engine/data/otel-data/*` | **Async FS Load** |
 | **RAG System** | Supabase `server_logs` | DB Query |
 
 ---
@@ -40,12 +40,12 @@ AI/ML 서비스가 단순히 API를 호출하는 비효율적인 구조를 탈�
 
 ```mermaid
 graph TD
-    subgraph BuildTime["Build-Time Pipeline"]
+    subgraph BuildTime["Build & Deploy Pipeline"]
         Script["scripts/data/otel-fix.ts<br/>+ otel-verify.ts"]
-        OTelData["src/data/otel-data/<br/>(OTel-native SSOT)"]
-        OTelMetrics["src/data/otel-metrics/<br/>(Dashboard Runtime Bundle)"]
+        OTelData["public/data/otel-data/<br/>(Externalized Runtime SSOT)"]
+        Deploy["cloud-run/ai-engine/deploy.sh<br/>(Cloud Run sync)"]
         Script -->|"npm run data:fix"| OTelData
-        OTelData -->|"runtime compatibility export"| OTelMetrics
+        OTelData -->|"copy to container"| Deploy
     end
 
     subgraph Runtime["Runtime Consumers"]
@@ -55,27 +55,27 @@ graph TD
         RAG["RAG System<br/>(Supabase)"]
     end
 
-    OTelMetrics -->|"1. Primary"| MP
+    OTelData -->|"1. Primary (Async)"| MP
     MP --> Dashboard
-    OTelData --> AIEngine
+    Deploy --> AIEngine
 ```
 
 #### ASCII Fallback
 
 ```
 ┌────────────────────────────────────────────┐
-│  src/data/otel-data/                       │  ← 1. Primary SSOT
+│  public/data/otel-data/                    │  ← 1. Primary Runtime SSOT
 │  (OTel-native hourly/resource/timeseries)  │
 └───────────────────────┬────────────────────┘
-                        │ runtime bundle
+                        │ async load (fetch/fs)
                         ▼
 ┌────────────────────────────────────────────┐
-│  src/data/otel-metrics/                   │  ← Dashboard runtime format
-│  (OTLP ExportMetricsServiceRequest)        │
+│  src/data/otel-data/index.ts              │  ← OTel loader (async)
+│  src/data/otel-metrics/index.ts           │  ← OTLP adapter (async)
 └────────────────────────────────────────────┘
 ```
 
-> **Note**: 이전 3-Tier의 `fixed-24h-metrics.ts` (Last Resort)는 v8.0.0에서 제거되었습니다. `MetricsProvider` singleton이 2-Tier 우선순위를 자동 관리합니다.
+> **Note**: 이전 3-Tier의 `fixed-24h-metrics.ts` (Last Resort)는 v8.0.0에서 제거되었습니다. 현재는 `MetricsProvider.ensureDataLoaded()`를 통해 비동기 로딩을 선행하고, 실패 시 빈 값 반환 + 재시도를 수행합니다.
 
 ### 통합 기준 (2026-02-14)
 
@@ -84,8 +84,8 @@ graph TD
 
 ### 데이터 경계 (중요)
 
-- `src/data/otel-data/*`는 **실서버 scrape 결과가 아닌 synthetic OTel 원본 데이터(SSOT)**입니다.
-- `src/data/otel-metrics/*`는 대시보드 런타임 호환을 위한 파생 번들입니다.
+- `public/data/otel-data/*`는 **실서버 scrape 결과가 아닌 synthetic OTel 원본 데이터(SSOT)**입니다.
+- `src/data/otel-data/index.ts`와 `src/data/otel-metrics/index.ts`는 런타임 비동기 로더(fetch/fs)입니다.
 - `cloud-run/ai-engine/data/otel-processed/*`는 Cloud Run 하위 호환 fallback 경로입니다.
 - 런타임에서 외부 Prometheus/OTLP/Loki 수집 엔드포인트를 통해 적재하지 않습니다.
 
@@ -102,9 +102,9 @@ npm run data:fix
 # 구조/값 무결성 검증
 npm run data:verify
 
-# 출력:
-#   - src/data/otel-data/hourly/hour-XX.json (24개)
-#   - src/data/otel-metrics/hourly/hour-XX.json (24개, 런타임 번들)
+# 런타임 로딩 기준 경로:
+#   - public/data/otel-data/hourly/hour-XX.json (24개)
+#   - public/data/otel-data/resource-catalog.json / timeseries.json
 ```
 
 ---
@@ -164,8 +164,9 @@ npm run data:verify
 
 | 파일 경로 | 용도 | 수정 가능 |
 |-----------|------|----------|
-| `src/data/otel-data/*` | **Primary (OTel SSOT)** | ❌ 데이터셋 직접 수정 지양 |
-| `src/data/otel-metrics/*` | **Dashboard Runtime Bundle** | ❌ 자동 생성/동기화 대상 |
+| `public/data/otel-data/*` | **Primary Runtime SSOT** | ❌ 데이터셋 직접 수정 지양 |
+| `src/data/otel-data/index.ts` | OTel JSON 비동기 로더(fetch/fs) | ✅ 로딩 로직 |
+| `src/data/otel-metrics/index.ts` | OTLP 표준 호환 로더(fetch/fs) | ✅ 어댑터 로직 |
 | `src/services/metrics/MetricsProvider.ts` | **데이터 접근 Singleton** | ✅ 핵심 로직 |
 | `scripts/data/otel-fix.ts` / `scripts/data/otel-verify.ts` | 데이터 보정/검증 스크립트 | ✅ 수정 가능 |
 | `cloud-run/ai-engine/data/otel-data/*` | AI Engine용 OTel 데이터 | ❌ 배포 동기화 대상 |
@@ -173,7 +174,7 @@ npm run data:verify
 ### 파일 크기
 
 ```
-src/data/otel-data/hourly/
+public/data/otel-data/hourly/
 ├── hour-00.json ~ hour-23.json
 ├── 총 24개 파일
 └── (timeseries/resource-catalog와 함께 SSOT 구성)
@@ -216,11 +217,14 @@ const randomMetric = Math.random() * 100;
 // ✅ Dashboard: MetricsProvider singleton 사용
 import { MetricsProvider } from '@/services/metrics/MetricsProvider';
 const provider = MetricsProvider.getInstance();
-const metrics = provider.getCurrentMetrics();
+await provider.ensureDataLoaded();
+const metrics = provider.getAllServerMetrics();
 
 // ✅ AI Engine: JSON 파일 로드 (Tiered Access)
 // otel-data (1순위) → otel-processed (호환 폴백)
-const hourlyData = JSON.parse(fs.readFileSync('data/otel-data/hourly/hour-12.json'));
+const hourlyData = JSON.parse(
+  await fs.readFile('data/otel-data/hourly/hour-12.json', 'utf-8')
+);
 ```
 
 ---
