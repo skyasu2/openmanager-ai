@@ -30,7 +30,7 @@ const QUICK_PUSH = process.env.QUICK_PUSH !== 'false'; // 기본값: true (빠�
 const SKIP_TESTS = process.env.SKIP_TESTS === 'true';
 const SKIP_BUILD = process.env.SKIP_BUILD === 'true';
 const SKIP_NODE_CHECK = process.env.SKIP_NODE_CHECK === 'true';
-const STRICT_PUSH_ENV = process.env.STRICT_PUSH_ENV !== 'false'; // 기본값: true (환경변수 검증 활성)
+const STRICT_PUSH_ENV = process.env.STRICT_PUSH_ENV === 'true'; // 기본값: false (env 검증은 CI/Vercel에서 수행, 로컬은 opt-in)
 const FORCE_CLOUD_BUILD_GUARD = process.env.FORCE_CLOUD_BUILD_GUARD === 'true';
 
 // Windows = limited validation mode (TypeScript + Lint only)

@@ -48,17 +48,17 @@ const REQUIRED_ENV_VARS: EnvConfig[] = [
     example: 'eyJhbGciOiJIUzI1...',
   },
 
-  // NextAuth
+  // NextAuth (Vercel production에서 관리, 로컬 개발 시 불필요)
   {
     name: 'NEXTAUTH_URL',
-    required: true,
-    description: 'NextAuth callback URL',
+    required: false,
+    description: 'NextAuth callback URL (Vercel production only)',
     example: 'http://localhost:3000 or https://yourdomain.com',
   },
   {
     name: 'NEXTAUTH_SECRET',
-    required: true,
-    description: 'NextAuth secret for JWT encryption',
+    required: false,
+    description: 'NextAuth secret for JWT encryption (Vercel production only)',
     example: 'openssl rand -base64 32',
   },
 

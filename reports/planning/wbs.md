@@ -62,7 +62,7 @@
 ### Phase 5: 문서 & 포트폴리오 (2026-02)
 | 작업 | 상태 | 비고 |
 |------|:----:|------|
-| 문서 통합 (122→48개) | 100% | Diataxis 분류 |
+| 문서 통합 (122→53개) | 100% | Diataxis 분류 |
 | 아키텍처 문서 정확성 검증 | 100% | Mermaid + ASCII |
 | docs/README 포트폴리오 관점 개편 | 100% | 결과물 + 개발환경 |
 | WBS + 완성도 분석 (본 문서) | 100% | 실제 코드 기반 |
@@ -120,7 +120,7 @@
 | 27개 도구 (Tools) | 98% | 전체 구현, validateTools() 시작 검증 |
 | 보안 (Prompt Guard) | 95% | 15개 패턴 (EN+KO), OWASP 기반, timing-safe 비교, stateful regex 보호 |
 | RAG/Knowledge | 85% | LlamaIndex + pgvector, Mistral 임베딩 |
-| 테스트 | 65% | 5,613줄, 단위 우수, E2E 부족 |
+| 테스트 | 65% | 16개 파일 (node_modules 제외), 단위 우수, E2E 부족 |
 | 배포 (Docker + Cloud Run) | 98% | Free Tier Guard Rails, 3-stage build |
 | Langfuse 관찰성 | 90% | 10% 샘플링, Free Tier 보호 |
 
@@ -224,7 +224,7 @@
 
 | 영역 | 완성도 | 근거 |
 |------|:------:|------|
-| 활성 문서 | 48개 (예산 55) | 100% 메타데이터 |
+| 활성 문서 | 53개 (예산 55) | 100% 메타데이터 |
 | 아키텍처 문서 | 6개 | Mermaid + ASCII 듀얼 |
 | 바이브 코딩 문서 | 7개 | MCP, Skills, Agent Teams |
 | README (포트폴리오 관점) | 완료 | 결과물 + 개발환경 |
@@ -452,4 +452,4 @@
 ---
 
 _분석 기준: 4개 병렬 탐색 에이전트로 src/, cloud-run/, scripts/ 전체 코드 분석_
-_최종 갱신: 2026-02-15 (AI Sidebar/AI 전체페이지/Redis+Supabase RAG + Cloud 저비용 필수 테스트 정책 + WSL 문서 관리 체크리스트/하이브리드 운영 모델 반영)_
+_최종 갱신: 2026-02-17 (수치 현행화: cloud-run 테스트 662→16(node_modules 제외), 활성 문서 48→53, Skills 체계 통합 반영)_

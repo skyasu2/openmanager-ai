@@ -4,15 +4,24 @@
 > Owner: documentation
 > Status: Active
 > Doc type: Status
-> Last reviewed: 2026-02-14
+> Last reviewed: 2026-02-17
 > Canonical: docs/status.md
 > Tags: status,changelog,release
 
-**마지막 업데이트**: 2026-02-11
+**마지막 업데이트**: 2026-02-17
 
 ---
 
 ## 🔄 Recent Changes (v8.0.0)
+
+- **v8.0.0** (2026-02-17)
+  - refactor(workflow): Skills 체계 통합 (5개 → 표준화), Cloud Run 메타데이터 갱신
+  - fix(stability): stream/metrics 안정성 강화 (review-driven hardening)
+  - fix(frontend): system-start auth flow 및 bootstrap recovery 개선
+  - chore(deps): AI SDK v6.0.86, 패키지 버전 최신화
+  - MCP 정리: Serena/Tavily 제거, next-devtools/supabase-db 추가 (9→8개)
+  - any 타입 완전 제거 (17→0), OTel 데이터 표준화 완료
+  - WBS + 검수 보고서 수치 현행화
 
 - **v7.1.5** (2026-02-11)
   - refactor(data): 구 hourly 정적 디렉토리 이중 복사 제거 — `src/data/otel-data/` 중심 SSOT로 전환
@@ -185,30 +194,19 @@
 
 ## 📚 Documentation Status
 
-**총 문서 수**: 55개 (~13,000 lines)
-- **development/**: 5개 (WSL 통합 완료)
-- **vibe-coding/**: 7개 (AI 도구, MCP, Skills)
-- **reference/**: 15개 (아키텍처, AI, API)
-- **guides/**: 10개 (테스팅, 표준, DB)
-- **troubleshooting/**: 2개 (문제 해결)
-- **Root**: 7개 (README, QUICK-START 등)
+**총 활성 문서 수**: 53개 (예산 55, `docs/archived/` 제외)
 
 **DRY 구조**:
 - `.claude/rules/` → Claude Code 전용 간략 규칙
 - `docs/` → 개발자용 상세 문서
-
-**최근 최적화 (2026-01-18)**:
-- 문서 경량화: 122개 → 32개 (74% 감소)
-- 레거시 문서 → `reports/history/` 이동
-- CHANGELOG 통합 (중복 제거)
-- 버전 표기 통일 (v5.87.0)
+- Diataxis 분류 적용 (Tutorial/How-to/Reference/Explanation)
 - **State Mgmt**: Zustand `v5.0.10`
 - **Data Fetching**: TanStack Query `v5.90.18`
 - **Backend/DB**: Supabase JS `v2.93.2` (SSR `v0.8.0`)
 - **Utility**: tailwind-merge `v3.4.0`
 
 **AI Ecosystem** (상세: [AI Engine Architecture](./reference/architecture/ai/ai-engine-architecture.md))
-- **SDK**: Vercel AI SDK `v6.0.66` (`@ai-sdk/*` 패키지 포함, Cloud Run: `^6.0.50`)
+- **SDK**: Vercel AI SDK `v6.0.86` (`@ai-sdk/*` 패키지 포함, Cloud Run: `^6.0.50`)
 - **Native Patterns** (v6.1.0):
   - `finalAnswer` 도구: `stopWhen: [hasToolCall('finalAnswer'), stepCountIs(5)]`
   - `UIMessageStream`: 네이티브 스트리밍 프로토콜
@@ -220,20 +218,20 @@
   - Mistral Small 2506 (24B): Advisor, Verifier (Limited free tier)
   - **Gemini 2.5 Flash**: Vision Agent (250 RPD, 10 RPM, 1M context)
   - **OpenRouter (Fallback)**: Qwen 2.5 VL / Llama 3.2 Vision (Gemini 백업)
-- **Agents**: 6개 Multi-Agent (Orchestrator → NLQ/Analyst/Reporter/Advisor/Vision)
-- **Tools**: 26개 도구 Registry (Metrics 5, RCA 3, Analyst 4, Reporter 4, Evaluation 6, Control 1, Vision 4)
+- **Agents**: 7개 실행 에이전트 (NLQ/Analyst/Reporter/Advisor/Vision/Evaluator/Optimizer) + 1 Orchestrator 코디네이터
+- **Tools**: 27개 도구 Registry (Metrics 5, RCA 3, Analyst 4, Reporter 4, Evaluation 6, Control 1, Vision 4)
 - **Reporter Pipeline**: Evaluator-Optimizer 패턴 (0.75 품질 임계값, 최대 2회 반복)
-- **MCP**: 9/9 Server Connected (Serena, Context7, Stitch, Supabase, Vercel, Playwright, GitHub, Tavily, Sequential-Thinking)
-- **Web Search**: Tavily API (15s timeout, 2 retries, 30 cache entries)
+- **MCP**: 8/8 Server Connected (Context7, Stitch, Supabase-DB, Vercel, Playwright, GitHub, Sequential-Thinking, Next-DevTools)
+- **Web Search**: Built-in WebSearch (Tavily 제거, Claude Code 내장 기능으로 대체)
 - **Resilience**:
   - Circuit Breaker: CLOSED → OPEN (5 failures) → HALF_OPEN (30s)
   - Quota Tracker: Pre-emptive Fallback (80% 임계값 도달 시 사전 전환)
   - 3-way Fallback: Cerebras → Groq → Mistral
 
-**AI CLI Tools** (2026-01-16 기준)
-- **Claude Code**: `v2.1.7` (Interactive Development)
-- **Codex CLI**: `v0.85.0` (Code Review - 2-AI Rotation)
-- **Gemini CLI**: `v0.24.0` (Code Review - 2-AI Rotation)
+**AI CLI Tools** (2026-02 기준)
+- **Claude Code**: Opus 4.6 (Interactive Development)
+- **Codex CLI**: `v0.101.0` / GPT-5.3 Codex (Code Review - 2-AI Rotation)
+- **Gemini CLI**: Gemini 3 Pro (Code Review - 2-AI Rotation)
 
 **Quality Control**
 - **Test**: Vitest `v4.0.18`, Playwright `v1.58.1`
@@ -410,10 +408,10 @@
 | Metric | Status | Detail |
 |:---:|:---:|---|
 | **Build** | ✅ Passing | `npm run build` (Next.js 16.1.3) 성공 |
-| **Test** | ✅ 100% | 1558/1558 Tests Passing (78 test files) |
+| **Test** | ✅ Passing | 124개 테스트 파일 (src/ 73 + cloud-run/ 16 + tests/ 35) |
 | **Lint** | ✅ Clean | Biome Check Pass (No Errors) |
 | **E2E** | ✅ 100% | 30/30 Scenarios Passing (Playwright) |
-| **MCP** | ✅ 9/9 | 모든 MCP 서버 정상 연결 |
+| **MCP** | ✅ 8/8 | 모든 MCP 서버 정상 연결 |
 | **Vercel** | ✅ Deployed | Production 배포 정상 |
 | **Sentry** | ✅ Active | Vercel + Cloud Run 에러 트래킹 |
 
@@ -427,7 +425,7 @@
 | **Backend** (Cloud Run) | 63 | ~18,700 | 87/100 | ✅ A- |
 
 **분석 결과**:
-- `any` 타입: Frontend 17개, Backend 5개 → 모두 의도적 사용 (브라우저 호환성, AI SDK 타입)
+- `any` 타입: **0개** (Frontend 17 + Backend 5 → 전체 제거 완료, TypeScript strict 통과)
 - 대형 파일: Frontend 5개, Backend 12개 → 모두 내부 구조 양호
 - 코드량 분포: Frontend ~137,000 lines → 역할 대비 적정 (집중 영역 3곳 모두 정상)
 - TypeScript strict: ✅ 양쪽 모두 PASS
@@ -438,9 +436,9 @@
 
 ## 📝 문서 관리 현황
 
-**최적화 진행 (JBGE 원칙)**
-- 문서 수: 34개 (최적화 완료)
-- 관리 원칙: 400줄 이하 유지, 관련 내용 통합, 중복 제거.
+**관리 원칙 (Diataxis + Doc Budget)**
+- 활성 문서: 53개 (예산 55, `docs/archived/` 제외)
+- 병합 우선: 70%+ 중복 시 병합, Historical 문서는 `docs/archived/`로 이동
 - **Key Docs**:
   - `README.md`: 프로젝트 개요
   - `docs/status.md`: 기술 스택 및 상태 대시보드 (본 문서)
@@ -452,8 +450,8 @@
 
 **Cloud Run AI Engine**
 - **Service URL**: `gcloud run services describe ai-engine --region asia-northeast1 --format='value(status.url)'`
-- **Health**: ✅ All providers connected (Supabase, Upstash, Groq, Mistral, Cerebras, Tavily, Gemini, OpenRouter, Langfuse)
-- **Agents**: 7개 (NLQ, Analyst, Reporter, Advisor, Vision, Evaluator, Optimizer)
+- **Health**: ✅ All providers connected (Supabase, Upstash, Groq, Mistral, Cerebras, Gemini, OpenRouter, Langfuse)
+- **Agents**: 7개 실행 (NLQ, Analyst, Reporter, Advisor, Vision, Evaluator, Optimizer) + 1 Orchestrator
 - **Observability**: Langfuse (10% sampling, 무료 티어 보호)
 - **Features**: cpu-boost, cpu-throttling, no-session-affinity, gen2, 512Mi/1vCPU, max-instances=1
 
@@ -507,6 +505,6 @@
 **개발 도구 체인**:
 - **Primary**: Claude Code (Interactive Development)
 - **Code Review**: Codex + Gemini 2-AI Rotation
-- **MCP**: 9개 서버 연동 (Serena, Context7, Stitch 등)
+- **MCP**: 8개 서버 연동 (Context7, Stitch, Supabase-DB, Vercel, Playwright, GitHub, Sequential-Thinking, Next-DevTools)
 
 **총 코드량**: ~169,000 Lines (Frontend 50K+ / Backend 18K+ / Config & Tests)
