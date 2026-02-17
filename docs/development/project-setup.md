@@ -34,6 +34,10 @@ gh auth status -h github.com
 gh auth setup-git
 ```
 
+> **WSL 주의**: `-w`(브라우저) 방식은 `/etc/wsl.conf`에 `[interop] enabled=true`가 필요합니다.
+> 브라우저가 안 열리면 [WSL Interop 트러블슈팅](../troubleshooting/common-issues.md#wsl-interop-issues)을 참조하거나,
+> `-w` 없이 PAT 토큰 방식으로 인증하세요.
+
 비교 기준(공식 문서):
 - GitHub CLI 인증/credential helper: https://cli.github.com/manual/gh_auth_login, https://cli.github.com/manual/gh_auth_setup-git
 - 토큰 최소 권한 원칙(Fine-grained PAT): https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens

@@ -45,6 +45,11 @@ export function SystemBootstrap(): React.ReactNode {
     }
 
     let isMounted = true;
+    let bootstrapCompleted = false;
+    let aiHealthTimeout: NodeJS.Timeout | null = null;
+    const systemStatusController = new AbortController();
+    const aiHealthController = new AbortController();
+    const databaseController = new AbortController();
 
     const bootstrap = async () => {
       // 🔒 부트스트랩 시작 시 즉시 플래그 설정 (중복 실행 방지)
@@ -82,6 +87,7 @@ export function SystemBootstrap(): React.ReactNode {
             if (isMounted) {
               setBootstrapStatus({ ...cached.status, completed: true });
             }
+            bootstrapCompleted = true;
             return;
           }
         } catch {
@@ -97,6 +103,7 @@ export function SystemBootstrap(): React.ReactNode {
           headers: {
             'Content-Type': 'application/json',
           },
+          signal: systemStatusController.signal,
         });
 
         if (isMounted) {
@@ -112,6 +119,10 @@ export function SystemBootstrap(): React.ReactNode {
           }
         }
       } catch (error) {
+        if (error instanceof Error && error.name === 'AbortError') {
+          logger.debug('시스템 상태 확인 요청 취소');
+          return;
+        }
         logger.error('❌ 시스템 상태 확인 오류:', error);
         if (isMounted) {
           localStatus.mcp = 'failed';
@@ -120,8 +131,7 @@ export function SystemBootstrap(): React.ReactNode {
       }
 
       // 2. Cloud Run AI 상태 확인 (한 번만, 3초 타임아웃)
-      const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 3000);
+      aiHealthTimeout = setTimeout(() => aiHealthController.abort(), 3000);
       try {
         logger.info('🤖 Cloud Run AI 상태 확인...');
         const aiHealthResponse = await fetch('/api/health?service=ai', {
@@ -129,7 +139,7 @@ export function SystemBootstrap(): React.ReactNode {
           headers: {
             'Content-Type': 'application/json',
           },
-          signal: controller.signal,
+          signal: aiHealthController.signal,
         });
 
         if (isMounted) {
@@ -150,15 +160,22 @@ export function SystemBootstrap(): React.ReactNode {
             setBootstrapStatus((prev) => ({ ...prev, cloudRunAI: 'failed' }));
           }
         }
-      } catch {
-        // Cloud Run 미활성은 예상된 상황 — debug 레벨로 격하 (콘솔 노이즈 제거)
-        logger.debug('Cloud Run AI 상태 확인 스킵 (미활성 또는 타임아웃)');
+      } catch (error) {
+        if (error instanceof Error && error.name === 'AbortError') {
+          logger.debug('Cloud Run AI 상태 확인 취소 또는 타임아웃');
+        } else {
+          // Cloud Run 미활성은 예상된 상황 — debug 레벨로 격하 (콘솔 노이즈 제거)
+          logger.debug('Cloud Run AI 상태 확인 스킵 (미활성 또는 타임아웃)');
+        }
         if (isMounted) {
           localStatus.cloudRunAI = 'failed';
           setBootstrapStatus((prev) => ({ ...prev, cloudRunAI: 'failed' }));
         }
       } finally {
-        clearTimeout(timeout);
+        if (aiHealthTimeout) {
+          clearTimeout(aiHealthTimeout);
+          aiHealthTimeout = null;
+        }
       }
 
       // 3. Supabase 상태 확인 (한 번만)
@@ -169,6 +186,7 @@ export function SystemBootstrap(): React.ReactNode {
           headers: {
             'Content-Type': 'application/json',
           },
+          signal: databaseController.signal,
         });
 
         if (isMounted) {
@@ -187,6 +205,10 @@ export function SystemBootstrap(): React.ReactNode {
           }
         }
       } catch (error) {
+        if (error instanceof Error && error.name === 'AbortError') {
+          logger.debug('Supabase 상태 확인 요청 취소');
+          return;
+        }
         logger.error('❌ Supabase 상태 확인 오류:', error);
         if (isMounted) {
           localStatus.supabase = 'failed';
@@ -220,6 +242,7 @@ export function SystemBootstrap(): React.ReactNode {
         }
 
         logger.info('🎉 시스템 부트스트랩 완료 (세션 동안 재사용됨)');
+        bootstrapCompleted = true;
       }
     };
 
@@ -231,6 +254,13 @@ export function SystemBootstrap(): React.ReactNode {
     return () => {
       isMounted = false;
       clearTimeout(timer);
+      if (aiHealthTimeout) clearTimeout(aiHealthTimeout);
+      systemStatusController.abort();
+      aiHealthController.abort();
+      databaseController.abort();
+      if (!bootstrapCompleted) {
+        hasBootstrappedRef.current = false;
+      }
     };
     // 🔒 의존성 배열에서 bootstrapStatus 제거 - 상태 변경 시 재실행 방지
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -32,7 +32,6 @@ import { isVercel } from '@/env-client';
 import { useInitialAuth } from '@/hooks/useInitialAuth';
 import { useUnifiedAdminStore } from '@/stores/useUnifiedAdminStore';
 import { PAGE_BACKGROUNDS } from '@/styles/design-constants';
-import { triggerAIWarmup } from '@/utils/ai-warmup';
 import debug from '@/utils/debug';
 import { renderAIGradientWithAnimation } from '@/utils/text-rendering';
 import {
@@ -113,11 +112,6 @@ function Home() {
   // 클라이언트 마운트
   useEffect(() => {
     if (isVercel) performanceTracker.start('page-mount');
-
-    // 🚀 AI 엔진 조기 웜업 (페이지 로드 즉시 시작)
-    // Cloud Run cold start가 5-10초 소요되므로 사용자가 페이지를 읽는 동안 미리 준비
-    // 5분 쿨다운으로 새로고침 시 중복 요청 방지 (Fire-and-forget 패턴)
-    void triggerAIWarmup('landing-page');
 
     const mountTimer = setTimeout(() => {
       setIsMounted(true);

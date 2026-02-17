@@ -20,6 +20,10 @@ import { debugWithEnv } from '@/utils/vercel-env-utils';
 
 const SYSTEM_START_COUNTDOWN_SECONDS = 5; // Cloud Run cold start 대기 (5-10초)
 const COUNTDOWN_INTERVAL_MS = 1000;
+const SYSTEM_BOOT_PATH = '/system-boot';
+const LOGIN_REDIRECT_URL = `/login?redirect=${encodeURIComponent(
+  SYSTEM_BOOT_PATH
+)}`;
 
 interface UseSystemStartOptions {
   isAuthenticated: boolean;
@@ -198,6 +202,19 @@ export function useSystemStart(options: UseSystemStartOptions) {
       return;
     }
 
+    // 비로그인 상태에서는 카운트다운 없이 즉시 로그인 화면으로 이동
+    if (!isAuthenticated) {
+      if (systemStartCountdown > 0) {
+        cancelCountdown();
+      }
+
+      logger.info('🔐 비로그인 사용자 - 로그인 페이지로 즉시 이동');
+      if (!pathname.startsWith('/login')) {
+        setPendingNavigation(LOGIN_REDIRECT_URL);
+      }
+      return;
+    }
+
     const isGuest = !isGitHubUser;
     if (isGuest && !guestSystemStartEnabled) {
       // alert 대신 모달 표시
@@ -237,7 +254,7 @@ export function useSystemStart(options: UseSystemStartOptions) {
               }
             })();
             // 렌더링 외부에서 네비게이션 실행 (React 규칙 준수)
-            setPendingNavigation('/system-boot');
+            setPendingNavigation(SYSTEM_BOOT_PATH);
             return 0;
           }
           return prev - 1;

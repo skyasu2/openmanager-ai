@@ -390,7 +390,7 @@ export class AuthStateManager {
         return {
           user: {
             id: sessionId || `guest_${Date.now()}`,
-            name: 'Guest User',
+            name: '게스트 사용자',
             provider: 'guest',
           },
           type: 'guest',

@@ -176,6 +176,23 @@ describe('AuthStateManager', () => {
       expect(state.user?.id).toBe('guest-123');
     });
 
+    it('쿠키 fallback 게스트 사용자명은 한국어 기본값을 사용해야 함', async () => {
+      Object.defineProperty(globalThis, 'document', {
+        value: {
+          cookie: 'auth_session_id=cookie-session-abc; auth_type=guest',
+        },
+        writable: true,
+      });
+
+      const manager = AuthStateManager.getInstance();
+      const state = await manager.getAuthState();
+
+      expect(state.isAuthenticated).toBe(true);
+      expect(state.type).toBe('guest');
+      expect(state.user?.id).toBe('cookie-session-abc');
+      expect(state.user?.name).toBe('게스트 사용자');
+    });
+
     it('GitHub 세션이 있을 때 github 상태를 반환해야 함', async () => {
       // GitHub 세션 Mock
       const mockUser = {

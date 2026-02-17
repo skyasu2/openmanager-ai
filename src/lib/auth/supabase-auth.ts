@@ -437,7 +437,7 @@ async function getCurrentUserLegacy(): Promise<AuthUser | null> {
           // localStorage가 없으면 기본 게스트 사용자 생성
           return {
             id: sessionId,
-            name: 'Guest User',
+            name: '게스트 사용자',
             provider: 'guest',
           };
         }

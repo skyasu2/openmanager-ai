@@ -5,7 +5,7 @@
 > Last verified against code: 2026-02-13
 > Status: Active Canonical
 > Doc type: How-to
-> Last reviewed: 2026-02-14
+> Last reviewed: 2026-02-17
 > Canonical: docs/troubleshooting/common-issues.md
 > Tags: troubleshooting,issues,debugging
 
@@ -56,6 +56,43 @@ npm run docs:check
 ```
 - 상대 경로 링크 사용
 - 존재하지 않는 문서는 제거하거나 canonical 문서로 대체
+
+## WSL Interop Issues
+
+### `gh auth login -w` 브라우저 안 열림 (WSLInterop 누락)
+
+```
+증상: grep: /proc/sys/fs/binfmt_misc/WSLInterop: No such file or directory
+      WSL Interopability is disabled.
+```
+
+**원인**: `/etc/wsl.conf`에 `[interop]` 섹션 누락 + binfmt_misc 엔트리 미등록.
+
+**해결**:
+```bash
+# 1. /etc/wsl.conf에 interop 추가
+sudo tee -a /etc/wsl.conf <<'EOF'
+
+[interop]
+enabled=true
+appendWindowsPath=true
+EOF
+
+# 2. PowerShell에서 WSL 재시작
+wsl --shutdown
+
+# 3. 재시작 후에도 WSLInterop 파일 없으면 수동 등록
+sudo sh -c 'echo ":WSLInterop:M::MZ::/init:PF" > /proc/sys/fs/binfmt_misc/register'
+
+# 4. 확인
+cat /proc/sys/fs/binfmt_misc/WSLInterop  # enabled 출력되면 정상
+```
+
+**대안**: 브라우저 방식 대신 PAT 토큰으로 인증:
+```bash
+gh auth login -h github.com -p https --insecure-storage
+# → "Paste an authentication token" 선택
+```
 
 ## Docker / Container Issues
 

@@ -193,8 +193,17 @@ export default function UnifiedProfileHeader({
   // 사용자 정보 가져오기
   const getUserName = () => {
     if (userInfo) {
+      const normalizedName = userInfo.name?.trim();
+      // 레거시 세션('Guest User')이 남아 있어도 UI 표기는 한국어로 통일
+      if (
+        userType === 'guest' &&
+        normalizedName?.toLowerCase() === 'guest user'
+      ) {
+        return '게스트 사용자';
+      }
+
       return (
-        userInfo.name ||
+        normalizedName ||
         userInfo.email ||
         (userType === 'github'
           ? 'GitHub 사용자'
