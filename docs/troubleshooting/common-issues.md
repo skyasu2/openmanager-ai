@@ -2,7 +2,7 @@
 
 > 자주 발생하는 빌드/API 문제의 증상별 해결 가이드
 > Owner: documentation
-> Last verified against code: 2026-02-13
+> Last verified against code: 2026-02-17
 > Status: Active Canonical
 > Doc type: How-to
 > Last reviewed: 2026-02-17

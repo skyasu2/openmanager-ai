@@ -24,7 +24,7 @@
   - WBS + 검수 보고서 수치 현행화
 
 - **v7.1.5** (2026-02-11)
-  - refactor(data): 구 hourly 정적 디렉토리 이중 복사 제거 — `src/data/otel-data/` 중심 SSOT로 전환
+  - refactor(data): 구 hourly 정적 디렉토리 이중 복사 제거 — `src/data/otel-data/` 중심 SSOT로 단순화 (후속 v8.0.0에서 `public/data/otel-data` 런타임 SSOT로 외부화)
   - refactor(data): Dead Code 제거 (server-data-cache.ts, loadHourlyServerData, precompute-metrics.ts)
   - fix(api): /api/dashboard 이중 호출 정리 (getServerMetricsFromUnifiedSource 제거)
   - perf(otel): OTel 파이프라인 최적화 — hostname index, conversion cache, JSON diet

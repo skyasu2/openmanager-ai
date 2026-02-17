@@ -3,7 +3,7 @@
 > Owner: platform-data
 > Status: Active Supporting
 > Doc type: Explanation
-> Last reviewed: 2026-02-16
+> Last reviewed: 2026-02-17
 > Canonical: docs/reference/architecture/data/data-architecture.md
 > Tags: grafana,comparison,architecture,data-pipeline
 
@@ -38,7 +38,7 @@
 **시뮬레이션 방식**: 실제 에이전트 없음
 
 **데이터 소스**:
-- **OTel-native JSON 파일**: `src/data/otel-data/hourly/hour-XX.json` (24개)
+- **OTel-native JSON 파일**: `public/data/otel-data/hourly/hour-XX.json` (24개)
 - **사전 계산된 시나리오**: 5개 장애 시나리오 (DB 과부하, 네트워크 병목, 캐시 OOM 등)
 - **15대 온프레미스 서버** 가상 환경
 
@@ -86,10 +86,10 @@ OTLP SDK → otelcol.exporter.prometheus → prometheus.remote_write → Mimir
 **Vercel (Frontend)**:
 ```typescript
 // src/services/metrics/MetricsProvider.ts - Singleton 패턴
-import { getOTelHourlyData } from '@/data/otel-metrics';
-
-const data = getOTelHourlyData(hour);  // 번들된 JSON 로드
-const metrics = extractMetricsFromStandard(data, timestamp, minuteOfDay);
+import { MetricsProvider } from '@/services/metrics/MetricsProvider';
+const provider = MetricsProvider.getInstance();
+await provider.ensureDataLoaded(hour); // public/data 기반 async 로딩
+const metrics = await provider.getAllServerMetrics();
 ```
 
 **Cloud Run (AI Engine)**:
@@ -133,15 +133,12 @@ const hourlyData = JSON.parse(fs.readFileSync('data/otel-data/hourly/hour-12.jso
 **파일 기반 SSOT**:
 
 ```
-src/data/otel-data/  (OTel-native SSOT)
+public/data/otel-data/  (OTel-native Runtime SSOT)
 ├── hourly/
 │   ├── hour-00.json ~ hour-23.json  (24개)
 │   └── ExportMetricsServiceRequest 포맷
 ├── resource-catalog.json  (서버 메타데이터)
 └── timeseries.json  (24시간 집계 시계열)
-
-src/data/otel-metrics/  (Dashboard 런타임 번들)
-└── hourly/hour-XX.json  (otel-data와 동일, 빌드 최적화)
 ```
 
 **특징**:
@@ -306,14 +303,14 @@ const logs = await getLokiLogs({
 |------|--------------|----------------|
 | 프로토콜 | Prometheus Remote Write v2 | N/A (파일 로드) |
 | 네트워크 | 인터넷 경유 (WAL 버퍼링) | 로컬/번들 (Zero Traffic) |
-| 압축 | 메타데이터 압축 (v2) | JSON 번들 (Webpack) |
+| 압축 | 메타데이터 압축 (v2) | 정적 파일 + fetch/fs 비동기 로딩 |
 | 신뢰성 | WAL + 재전송 | Git 데이터 무결성 |
 
 ### 데이터 저장
 
 | 항목 | Grafana Cloud | OpenManager AI |
 |------|--------------|----------------|
-| 메트릭 | Grafana Mimir (TSDB) | JSON 파일 (otel-data/) |
+| 메트릭 | Grafana Mimir (TSDB) | JSON 파일 (`public/data/otel-data`) |
 | 로그 | Grafana Loki (Index+Chunks) | JSON 파일 + Supabase (RAG) |
 | 트레이스 | Grafana Tempo (오브젝트 스토리지) | 미지원 |
 | 스케일 | 수평 확장 (S3/GCS) | Git 저장소 (수 MB) |
@@ -432,7 +429,7 @@ const logs = await getLokiLogs({
                   │ npm run data:fix
                   ▼
 ┌─────────────────────────────────────┐
-│  src/data/otel-data/                │  ← SSOT (Git)
+│  public/data/otel-data/             │  ← Runtime SSOT (Git)
 │  ├── hourly/hour-XX.json (24개)     │
 │  ├── resource-catalog.json          │
 │  └── timeseries.json                │
@@ -443,7 +440,7 @@ const logs = await getLokiLogs({
    │ Vercel       │  │ Cloud Run AI Engine   │
    │ (Frontend)   │  │ (Multi-Agent)         │
    └──────┬───────┘  └───────────┬───────────┘
-          │ import               │ fs.readFileSync
+          │ async fetch/fs       │ fs.readFileSync
           ▼                      ▼
    ┌──────────────────┐   ┌──────────────────┐
    │ MetricsProvider  │   │ Precomputed      │
@@ -584,9 +581,9 @@ node_cpu_usage_percent > 90
 
 - [데이터 아키텍처 (SSOT)](./data-architecture.md)
 - [OTel 데이터 아키텍처](./otel-data-architecture.md)
-- [시뮬레이션 가이드](../../guides/simulation.md)
+- [옵저버빌리티 가이드](../../../guides/observability.md)
 - [시스템 아키텍처](../system/system-architecture-current.md)
 
 ---
 
-_Last Updated: 2026-02-16_
+_Last Updated: 2026-02-17_

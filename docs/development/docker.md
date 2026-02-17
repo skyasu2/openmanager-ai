@@ -4,7 +4,7 @@
 > Owner: dev-experience
 > Status: Active
 > Doc type: How-to
-> Last reviewed: 2026-02-14
+> Last reviewed: 2026-02-17
 > Canonical: docs/development/docker.md
 > Tags: docker,cloud-run,ai-engine
 
@@ -239,7 +239,7 @@ WSL 터미널
   ├─ ./deploy.sh 실행
   │
   ├─ Phase 0: SSOT 데이터 동기화
-  │   src/data/otel-data/*      → cloud-run/ai-engine/data/otel-data/
+  │   public/data/otel-data/*   → cloud-run/ai-engine/data/otel-data/
   │   (호환 경로) otel-processed → cloud-run/ai-engine/data/otel-processed/
   │   src/config/rules/system-rules.json → cloud-run/ai-engine/config/
   │

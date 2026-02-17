@@ -4,7 +4,7 @@
 > Owner: engineering
 > Status: Active
 > Doc type: Standard
-> Last reviewed: 2026-02-14
+> Last reviewed: 2026-02-17
 > Canonical: docs/development/coding-standards.md
 > Tags: coding,standards,typescript
 
@@ -246,7 +246,7 @@ src/
 
 ```
 서버 메트릭 데이터 소스:
-src/data/otel-data/hourly/hour-XX.json (24개 파일)
+public/data/otel-data/hourly/hour-XX.json (24개 파일)
 
 Dashboard (Vercel)              Cloud Run AI
        ↓                              ↓

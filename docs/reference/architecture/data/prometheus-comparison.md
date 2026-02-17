@@ -4,12 +4,12 @@
 > Owner: platform-data
 > Status: Active
 > Doc type: Reference
-> Last reviewed: 2026-02-14
+> Last reviewed: 2026-02-17
 > Canonical: docs/reference/architecture/data/prometheus-comparison.md
 > Tags: prometheus,data,comparison,metrics
 >
 > **작성일**: 2026-02-06
-> **대상 버전**: OpenManager AI v7.1.0
+> **대상 버전**: OpenManager AI v8.0.0
 > **목적**: VIBE의 Prometheus 스타일 데이터 모델이 실제 베스트 프랙티스와 얼마나 유사한지 평가
 
 ---
@@ -224,7 +224,7 @@ const metricNameMap = {
 
 | 파일 | 역할 |
 |------|------|
-| `src/data/otel-data/hourly/hour-*.json` | OTel-native 시간별 JSON (24개) |
+| `public/data/otel-data/hourly/hour-*.json` | OTel-native 시간별 JSON (24개) |
 | `src/services/metrics/metric-transformers.ts` | Legacy Prometheus 명칭 ↔ OTel 시맨틱 변환 로직 |
 | `src/services/metrics/MetricsProvider.ts` | 데이터 변환 & 캐싱 |
 | `src/config/rules/system-rules.json` | Alert 임계값 + `for` 지속시간 (SSOT) |

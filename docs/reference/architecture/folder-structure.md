@@ -2,10 +2,10 @@
 
 > 코드베이스 현재 폴더 구조와 책임 범위를 정리한 레퍼런스
 > Owner: platform-architecture
-> Last verified against code: 2026-02-13
+> Last verified against code: 2026-02-17
 > Status: Active Canonical
 > Doc type: Reference
-> Last reviewed: 2026-02-14
+> Last reviewed: 2026-02-17
 > Canonical: docs/reference/architecture/folder-structure.md
 > Tags: architecture,folder-structure,reference
 
@@ -40,7 +40,7 @@ src/
 ├── lib/                # shared utilities and infra helpers
 ├── schemas/            # Zod schemas
 ├── config/             # runtime config and rules loader
-├── data/               # bundled/mock/otel data
+├── data/               # OTel data loaders and data modules
 └── types/              # shared TypeScript types
 ```
 
@@ -53,7 +53,7 @@ src/app/api/
 ├── metrics/
 ├── monitoring/
 ├── debug/
-└── ... (총 48 route.ts/route.tsx)
+└── ... (총 34 route.ts/route.tsx)
 ```
 
 상세 엔드포인트 목록은 [API Endpoints](../api/endpoints.md)를 참고합니다.

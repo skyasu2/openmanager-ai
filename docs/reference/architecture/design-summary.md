@@ -3,7 +3,7 @@
 > Owner: platform-architecture
 > Status: Active Canonical
 > Doc type: Reference
-> Last reviewed: 2026-02-14
+> Last reviewed: 2026-02-17
 > Canonical: docs/reference/architecture/design-summary.md
 > Tags: architecture,design,summary,overview
 
@@ -43,7 +43,7 @@ graph TB
     end
 
     subgraph Data["데이터 소스"]
-        OTel["otel-data + otel-metrics<br/>(Primary)"]
+        OTel["public/data/otel-data<br/>(Primary Runtime SSOT)"]
         Compat["otel-processed/*.json<br/>(Cloud Run Fallback)"]
         Supabase["Supabase<br/>(pgvector + Auth)"]
         Redis["Upstash Redis<br/>(Cache + Jobs)"]
@@ -75,14 +75,14 @@ graph TB
             │          │          │
             ▼          ▼          ▼
 ┌─────────────────────────────────────────────────────────┐
-│              Vercel (Frontend + BFF, 31 API Routes)      │
+│              Vercel (Frontend + BFF, 34 API Routes)      │
 │                                                          │
 │  /api/ai/supervisor ──────┐  /api/servers-unified        │
 │  /api/ai/.../stream/v2 ───┤  /api/health                 │
 │  /api/ai/jobs ────────────┤  /api/system                 │
 │                            │                              │
-│  MetricsProvider (Singleton) ◄── otel-metrics (Primary)  │
-│  withAuth (Supabase OAuth)      otel-data (SSOT)         │
+│  MetricsProvider (Singleton) ◄── public/data/otel-data   │
+│  withAuth (Supabase OAuth)      (async fetch/fs loader)  │
 └────────────────┬────────────────────────────────────────┘
                  │ Cloud Run Proxy
                  ▼
@@ -128,15 +128,15 @@ graph TB
 
 | 계층 | 기술 | 버전 |
 |------|------|------|
-| **Framework** | Next.js (App Router) | 16.1.3 |
-| **UI** | React + Tailwind CSS + Radix UI | 19.2 / 4.1 |
+| **Framework** | Next.js (App Router) | 16.1.6 |
+| **UI** | React + Tailwind CSS + Radix UI | 19.2.4 / 4.1 |
 | **State** | Zustand + React Query | 5.0 / 5.90 |
 | **AI SDK** | Vercel AI SDK | 6.0 |
 | **AI Runtime** | Hono (Cloud Run) | - |
 | **DB** | Supabase PostgreSQL + pgvector | - |
 | **Cache** | Upstash Redis | - |
 | **Test** | Vitest + Playwright | 4.0 / 1.58 |
-| **Lint** | Biome | 2.3 |
+| **Lint** | Biome | 2.4.0 |
 | **Deploy** | Vercel (Frontend) + Cloud Run (AI) | Pro / Free |
 
 ---
@@ -146,12 +146,12 @@ graph TB
 ```
 [빌드 타임]
   scripts/data/otel-fix.ts + scripts/data/otel-verify.ts
-    → src/data/otel-data/hourly/*.json (24개, OTel-native SSOT)
-    → src/data/otel-metrics/hourly/*.json (24개, Dashboard runtime)
+    → public/data/otel-data/hourly/*.json (24개, OTel-native SSOT)
+    → public/data/otel-data/resource-catalog.json / timeseries.json
 
 [런타임 - Dashboard]
   MetricsProvider.getInstance()
-    → otel-metrics (1순위)
+    → ensureDataLoaded() (public/data/otel-data 비동기 로딩)
     → API Routes → Dashboard UI
 
 [런타임 - AI Chat]

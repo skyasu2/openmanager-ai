@@ -19,7 +19,7 @@
 |------|------|
 | UI 컴포넌트 | ~100+ `.tsx` |
 | Custom Hooks | ~35+ |
-| API Routes | 30 (`src/app/api/**/route.ts`, 테스트 라우트 포함) |
+| API Routes | 34 (`src/app/api/**/route.ts`, 테스트 라우트 포함) |
 | AI 실행 컴포넌트 | 8 (실행 에이전트 7 + Orchestrator 1) |
 | Zustand Stores | 4 |
 | 모니터링 서버 | 15 (OnPrem DC1, synthetic) |
@@ -39,7 +39,7 @@ graph TB
 
     subgraph Vercel["Vercel (Frontend & BFF)"]
         NextJS["Next.js 16.1.x<br/>App Router"]
-        API["API Routes (30)"]
+        API["API Routes (34)"]
         MP["MetricsProvider<br/>(Singleton)"]
         Providers["TanStack Query +<br/>Zustand Stores"]
     end

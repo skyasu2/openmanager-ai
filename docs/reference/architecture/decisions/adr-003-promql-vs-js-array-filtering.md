@@ -4,14 +4,14 @@
 > Owner: platform-architecture
 > Status: Active
 > Doc type: Decision
-> Last reviewed: 2026-02-14
+> Last reviewed: 2026-02-17
 > Canonical: docs/reference/architecture/decisions/adr-003-promql-vs-js-array-filtering.md
 > Tags: adr,promql,query,metrics
 
 **Date**: 2026-02-07
 **Status**: Decided
 **Context**: 프로젝트에 "PromQL: `rate(http_requests[5m])` 같은 복잡한 쿼리 언어 vs 클라이언트 필터링: 단순한 자바스크립트 배열 필터링으로 처리"라는 비교가 문서에 존재. 현재 구현의 적합성을 분석한다.
-**Version**: v7.1.4
+**Version**: v8.0.0 (재검증)
 
 ---
 
@@ -68,7 +68,7 @@ PromQL의 핵심 기능인 `rate(counter[5m])`가 불필요 — 데이터가 이
 
 ```
 Prometheus TSDB: 수백만 time-series, 수십 TB
-VIBE hourly-data: 24개 JSON 파일, 총 ~500KB
+VIBE hourly-data: 24개 JSON 파일 + catalog/timeseries, 총 ~5.2MB
 ```
 
 시계열 DB가 없는 환경에서 PromQL은 과잉 추상화.
@@ -182,7 +182,7 @@ metrics/route.ts:
 
 ### 아키텍처 강점
 
-1. **SSOT 유지**: OTel 데이터셋(`otel-data`/`otel-metrics`) → MetricsProvider → 모든 소비자
+1. **SSOT 유지**: OTel 데이터셋(`public/data/otel-data`) → MetricsProvider(비동기 로더) → 모든 소비자
 2. **2중 구조**: JS 배열(실사용) + PromQL 엔진(확장 대비) 공존
 3. **AI 최적화**: 배열 조작 → 텍스트 요약 → LLM 컨텍스트 (토큰 효율)
 4. **DoS 방어**: PromQL 엔진에 쿼리 길이/라벨 수 제한 내장
@@ -198,7 +198,7 @@ metrics/route.ts:
 | `src/app/api/servers-unified/route.ts` | 검색/정렬/페이지네이션 API | 527 |
 | `src/lib/promql/promql-engine.ts` | 경량 PromQL 엔진 (확장 대비) | 467 |
 | `src/app/api/metrics/route.ts` | Prometheus 호환 엔드포인트 | 112 |
-| `src/data/otel-data/hourly/hour-*.json` | OTel-native 시간별 데이터 (24개) | — |
+| `public/data/otel-data/hourly/hour-*.json` | OTel-native 시간별 데이터 (24개) | — |
 
 ## 관련 문서
 
@@ -208,4 +208,4 @@ metrics/route.ts:
 
 ---
 
-_분석 기준: v7.1.4, 2026-02-07_
+_분석 기준: v8.0.0, 2026-02-17_

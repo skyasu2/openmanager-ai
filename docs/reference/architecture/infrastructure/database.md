@@ -4,11 +4,11 @@
 > Owner: platform-data
 > Status: Active
 > Doc type: Reference
-> Last reviewed: 2026-02-14
+> Last reviewed: 2026-02-17
 > Canonical: docs/reference/architecture/infrastructure/database.md
 > Tags: database,supabase,schema,infrastructure
 >
-> **프로젝트 버전**: v7.1.4 | **Updated**: 2026-02-08
+> **프로젝트 버전**: v8.0.0 | **Updated**: 2026-02-17
 
 ## 🐘 Supabase PostgreSQL 스키마
 

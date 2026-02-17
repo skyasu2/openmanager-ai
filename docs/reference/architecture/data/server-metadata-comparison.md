@@ -4,7 +4,7 @@
 > Owner: platform-data
 > Status: Active
 > Doc type: Reference
-> Last reviewed: 2026-02-14
+> Last reviewed: 2026-02-17
 > Canonical: docs/reference/architecture/data/server-metadata-comparison.md
 > Tags: server,metadata,comparison,data
 >
@@ -15,7 +15,7 @@
 
 > **관련 문서** (본 문서와 상호 보완적):
 > - `prometheus-comparison.md` — Prometheus best practice vs VIBE 메트릭 네이밍/모델 비교
-> - `data-pipeline-comparison.md` — Custom JSON → Prometheus 포맷 전환 전후 비교
+> - `grafana-cloud-comparison.md` — 외부 관측성 스택 대비 OpenManager 데이터 파이프라인 비교
 > - `otel-data-architecture.md` — OTel 데이터 아키텍처 (파이프라인 + 전환 준비)
 
 ---
@@ -58,7 +58,7 @@ interface ServerConfig {
 
 #### Layer 2: OTel Hourly 슬롯 속성 (hourly JSON)
 
-> 소스: `src/data/otel-data/hourly/hour-XX.json`
+> 소스: `public/data/otel-data/hourly/hour-XX.json`
 
 ```json
 {
@@ -84,7 +84,7 @@ interface ServerConfig {
 
 #### Layer 3: OTel Resource Attributes (resource-catalog.json)
 
-> 소스: `src/data/otel-data/resource-catalog.json`
+> 소스: `public/data/otel-data/resource-catalog.json`
 
 ```json
 {
@@ -122,7 +122,7 @@ interface ServerConfig {
 
 ### 1.3 런타임 메트릭 (참고)
 
-> 소스: `src/data/otel-data/hourly/hour-XX.json` → metrics 블록
+> 소스: `public/data/otel-data/hourly/hour-XX.json` → metrics 블록
 
 | 메트릭명 | 단위 | 비고 |
 |---------|------|------|
@@ -252,7 +252,7 @@ interface ServerConfig {
 
 ### 3.2 갭 vs 설계 의도
 
-OpenManager AI는 **시뮬레이션 플랫폼**이다. 실제 서버에서 에이전트가 수집하는 것이 아니라 OTel 정적 데이터셋(`src/data/otel-data`)을 기반으로 PRNG 패턴을 재현한다.
+OpenManager AI는 **시뮬레이션 플랫폼**이다. 실제 서버에서 에이전트가 수집하는 것이 아니라 OTel 정적 데이터셋(`public/data/otel-data`)을 기반으로 PRNG 패턴을 재현한다.
 
 따라서 위 갭 중 상당수는 **의도적 생략**이다:
 

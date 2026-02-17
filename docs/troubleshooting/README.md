@@ -2,10 +2,10 @@
 
 > 공통 장애 대응 절차와 진입점을 제공하는 트러블슈팅 인덱스
 > Owner: documentation
-> Last verified against code: 2026-02-13
+> Last verified against code: 2026-02-17
 > Status: Active Canonical
 > Doc type: How-to
-> Last reviewed: 2026-02-14
+> Last reviewed: 2026-02-17
 > Canonical: docs/troubleshooting/README.md
 > Tags: troubleshooting,index,operations
 

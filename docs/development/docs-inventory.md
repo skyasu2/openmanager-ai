@@ -4,22 +4,22 @@
 > Owner: docs-platform
 > Status: Active
 > Doc type: Reference
-> Last reviewed: 2026-02-15
+> Last reviewed: 2026-02-17
 > Canonical: docs/development/docs-inventory.md
 > Tags: docs,inventory,report
 >
-> Auto-generated: 2026-02-15
+> Auto-generated: 2026-02-17
 > Source: `docs/`
 
-- Total files in docs: **68**
-- Total markdown docs: **54**
-- Total markdown lines: **13170**
+- Total files in docs: **69**
+- Total markdown docs: **55**
+- Total markdown lines: **13853**
 
 ## Markdown Distribution
 
 | Scope | Count |
 |---|---:|
-| reference | 20 |
+| reference | 21 |
 | development | 12 |
 | guides | 7 |
 | vibe-coding | 7 |

@@ -4,12 +4,12 @@
 > Owner: documentation
 > Status: Active Canonical
 > Doc type: Explanation
-> Last reviewed: 2026-02-14
+> Last reviewed: 2026-02-17
 > Canonical: docs/README.md
 > Tags: docs,index,navigation
 >
 > Project: OpenManager AI v8.0.0
-> Last verified against code: 2026-02-14
+> Last verified against code: 2026-02-17
 
 **이 프로젝트는 포트폴리오 & 바이브 코딩 학습 목적으로 개발되었습니다.**
 AI Native 도구(Claude Code, Codex, Gemini)로 서버 모니터링 플랫폼을 구축하는 과정 자체가 핵심 결과물입니다.
