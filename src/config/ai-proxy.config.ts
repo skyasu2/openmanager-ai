@@ -214,7 +214,20 @@ const PRO_TIER_TIMEOUTS = {
  * 환경변수에서 설정 로드 및 검증
  */
 function loadAIProxyConfig(): AIProxyConfig {
-  const tier = (process.env.VERCEL_TIER as VercelTier) || 'free';
+  const rawTier = process.env.VERCEL_TIER?.trim().toLowerCase();
+  const rawPlan = process.env.VERCEL_PLAN?.trim().toLowerCase();
+  const isVercelRuntime = Boolean(process.env.VERCEL);
+
+  const tier: VercelTier =
+    rawTier === 'free' || rawTier === 'pro'
+      ? rawTier
+      : rawPlan === 'hobby' || rawPlan === 'free'
+        ? 'free'
+        : rawPlan === 'pro' || rawPlan === 'enterprise'
+          ? 'pro'
+          : isVercelRuntime
+            ? 'pro'
+            : 'free';
   const timeouts = tier === 'pro' ? PRO_TIER_TIMEOUTS : FREE_TIER_TIMEOUTS;
 
   const rawConfig = {
@@ -479,4 +492,3 @@ export {
   TRACEPARENT_HEADER,
   traceIdToUUID,
 } from './ai-proxy/tracing';
-
