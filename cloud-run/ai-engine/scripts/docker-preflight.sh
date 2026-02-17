@@ -26,19 +26,32 @@ ensure_build_assets() {
   fi
 
   # Ensure OTel SSOT data exists for Dockerfile COPY data/otel-data/
+  # Always re-sync from source to keep preflight consistent with deploy.sh
+  local needs_sync="false"
   if [ ! -f "${ENGINE_DIR}/data/otel-data/resource-catalog.json" ]; then
+    needs_sync="true"
+  elif [ "${FORCE_SYNC:-false}" = "true" ]; then
+    needs_sync="true"
+  elif [ -f "${ENGINE_DIR}/../../public/data/otel-data/resource-catalog.json" ]; then
+    # Re-sync if source is newer than local copy
+    if [ "${ENGINE_DIR}/../../public/data/otel-data/resource-catalog.json" -nt "${ENGINE_DIR}/data/otel-data/resource-catalog.json" ]; then
+      needs_sync="true"
+    fi
+  fi
+
+  if [ "$needs_sync" = "true" ]; then
     mkdir -p "${ENGINE_DIR}/data/otel-data/hourly"
 
-    if [ -f "${ENGINE_DIR}/../../src/data/otel-data/resource-catalog.json" ]; then
-      cp "${ENGINE_DIR}/../../src/data/otel-data/resource-catalog.json" "${ENGINE_DIR}/data/otel-data/"
-      cp "${ENGINE_DIR}/../../src/data/otel-data/hourly/"*.json "${ENGINE_DIR}/data/otel-data/hourly/"
-      log "synced data/otel-data from src/data/otel-data"
+    if [ -f "${ENGINE_DIR}/../../public/data/otel-data/resource-catalog.json" ]; then
+      cp "${ENGINE_DIR}/../../public/data/otel-data/resource-catalog.json" "${ENGINE_DIR}/data/otel-data/"
+      cp "${ENGINE_DIR}/../../public/data/otel-data/hourly/"*.json "${ENGINE_DIR}/data/otel-data/hourly/"
+      log "synced data/otel-data from public/data/otel-data"
     elif [ -f "${ENGINE_DIR}/data/otel-processed/resource-catalog.json" ]; then
       cp "${ENGINE_DIR}/data/otel-processed/resource-catalog.json" "${ENGINE_DIR}/data/otel-data/"
       cp "${ENGINE_DIR}/data/otel-processed/hourly/"*.json "${ENGINE_DIR}/data/otel-data/hourly/"
       log "synced data/otel-data from data/otel-processed (fallback)"
     else
-      log "missing OTel data source (src/data/otel-data and data/otel-processed not found)"
+      log "missing OTel data source (public/data/otel-data and data/otel-processed not found)"
       exit 1
     fi
   fi
