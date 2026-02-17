@@ -14,7 +14,7 @@ import * as path from 'node:path';
 // Paths
 // ============================================================================
 
-const OTEL_DATA_DIR = path.resolve('src/data/otel-data');
+const OTEL_DATA_DIR = path.resolve('public/data/otel-data');
 const HOURLY_DIR = path.join(OTEL_DATA_DIR, 'hourly');
 const TIMESERIES_PATH = path.join(OTEL_DATA_DIR, 'timeseries.json');
 

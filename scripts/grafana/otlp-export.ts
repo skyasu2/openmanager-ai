@@ -20,7 +20,7 @@ import fs from 'fs';
 import path from 'path';
 
 // ============================================================================
-// Source Data Types (matches src/data/otel-data/ JSON structure)
+// Source Data Types (matches public/data/otel-data/ JSON structure)
 // ============================================================================
 
 type SourceResourceAttributes = {
@@ -146,7 +146,7 @@ type ExportLogsServiceRequest = {
 // Paths
 // ============================================================================
 
-const DATA_DIR = path.resolve(__dirname, '../../src/data/otel-data');
+const DATA_DIR = path.resolve(__dirname, '../../public/data/otel-data');
 const OUTPUT_DIR = path.resolve(__dirname, 'output');
 
 // ============================================================================

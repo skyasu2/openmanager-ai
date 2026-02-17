@@ -20,7 +20,7 @@ function assertLegacyMode(): void {
       [
         '[BLOCKED] Legacy hourly-data generator is disabled by default.',
         `Set ${LEGACY_GUARD_ENV}=true only for intentional legacy regeneration.`,
-        'Primary data pipeline uses src/data/otel-data.',
+        'Primary data pipeline uses public/data/otel-data.',
       ].join('\n')
     );
   }

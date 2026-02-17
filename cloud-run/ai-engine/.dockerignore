@@ -67,7 +67,7 @@ results/
 # Data - explicitly include for SSOT
 # NOTE: data/ directory is NOT ignored (needed for build)
 # - data/precomputed-states.json (AI context)
-# - data/hourly-data/*.json (SSOT with Vercel)
+# - data/otel-data/*.json (SSOT with Vercel)
 
 # OS files
 .DS_Store

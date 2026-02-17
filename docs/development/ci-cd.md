@@ -4,13 +4,13 @@
 > Owner: platform-devops
 > Status: Active
 > Doc type: How-to
-> Last reviewed: 2026-02-15
+> Last reviewed: 2026-02-17
 > Canonical: docs/development/ci-cd.md
 > Tags: ci,cd,github-actions,dependabot,automation
 
 ## 개요
 
-이 프로젝트는 **8개 GitHub Actions 워크플로우** + **Dependabot 자동 의존성 관리**로 CI/CD를 운영합니다.
+이 프로젝트는 **9개 GitHub Actions 워크플로우** + **Dependabot 자동 의존성 관리**로 CI/CD를 운영합니다.
 
 ```
 코드 변경 → CI/CD Core Gates (자동) → Vercel 자동 배포
@@ -27,7 +27,7 @@
 
 ---
 
-## Part 1: CI/CD 워크플로우 (8개)
+## Part 1: CI/CD 워크플로우 (9개)
 
 ### 워크플로우 전체 맵
 
@@ -41,6 +41,7 @@
 | 6 | **Keep Services Alive** | `keep-alive.yml` | 주 2회 (수/일) | 💓 Supabase 비활성화 방지 |
 | 7 | **Prompt Evaluation** | `prompt-eval.yml` | AI 프롬프트 변경 PR / 수동 | 🔬 Promptfoo 테스트 |
 | 8 | **Docs Quality** | `docs-quality.yml` | docs 변경 / 매주 월요일 | 📝 문서 품질 검증 |
+| 9 | **Release Manual** | `release-manual.yml` | 수동 전용 | 🏷️ 버전/태그/CHANGELOG 릴리즈 |
 
 ---
 
@@ -171,6 +172,22 @@ cloud-run/ai-engine/src/agents/** 변경 → Promptfoo eval 실행
 
 ---
 
+### 9. Release Manual (`release-manual.yml`) — 수동 릴리즈
+
+무료 티어 비용을 늘리지 않도록 **workflow_dispatch(수동 실행)** 전용으로 운영합니다.
+
+- 입력값: `release_type` (`patch|minor|major`), `dry_run` (`true|false`)
+- 실행 흐름:
+  - `npm ci`
+  - `npm run release:<type>` (또는 `release:dry-run`)
+  - `npm run release:check` (태그/CHANGELOG/버전 + freshness required)
+  - `git push --follow-tags`
+- 제약: `main` 브랜치에서만 실행 허용
+
+릴리즈 전 일상 배포는 기존과 동일하게 `main` push → Vercel 자동 배포로 처리합니다.
+
+---
+
 ## Part 2: Dependabot 의존성 관리
 
 ### 설정 파일: `.github/dependabot.yml`
@@ -262,4 +279,4 @@ Free Tier 가드레일 검증 → 로컬 Docker 프리플라이트 → SSOT 데�
 - [Git Hooks 워크플로우](./git-hooks-workflow.md) - 로컬 Git hooks
 - [Free Tier 최적화](../reference/architecture/infrastructure/free-tier-optimization.md)
 
-_Last Updated: 2026-02-15_
+_Last Updated: 2026-02-17_

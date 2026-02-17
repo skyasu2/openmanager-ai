@@ -1,0 +1,71 @@
+name: Release Manual
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_type:
+        description: '릴리즈 타입'
+        required: true
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+        default: patch
+      dry_run:
+        description: '실제 반영 없이 미리보기만 실행'
+        required: true
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-manual
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: Manual Release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Validate branch
+        run: |
+          if [ "${GITHUB_REF}" != "refs/heads/main" ]; then
+            echo "❌ Release workflow must run on main branch (current: ${GITHUB_REF})"
+            exit 1
+          fi
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Configure Git identity
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Run release
+        run: |
+          if [ "${{ inputs.dry_run }}" = "true" ]; then
+            npm run release:dry-run
+            exit 0
+          fi
+
+          npm run release:${{ inputs.release_type }}
+          RELEASE_CHECK_TAG=required RELEASE_CHECK_FRESHNESS=required RELEASE_CHECK_MAX_COMMITS=5 npm run release:check
+
+      - name: Push release commit and tags
+        if: ${{ inputs.dry_run == false }}
+        run: git push origin HEAD:main --follow-tags

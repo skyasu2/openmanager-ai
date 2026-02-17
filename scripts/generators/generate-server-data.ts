@@ -21,7 +21,7 @@ function assertLegacyMode(): void {
       [
         '[BLOCKED] Legacy public/data server generator is disabled by default.',
         `Set ${LEGACY_GUARD_ENV}=true only when regenerating public/data/servers/hourly on purpose.`,
-        'Primary monitoring dataset uses src/data/otel-data.',
+        'Primary monitoring dataset uses public/data/otel-data.',
       ].join('\n')
     );
   }

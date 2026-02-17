@@ -15,6 +15,15 @@ const versionRoute = read('src/app/api/version/route.ts');
 
 const expectedVersion = String(rootPkg.version || '').trim();
 const tagMode = String(process.env.RELEASE_CHECK_TAG || 'required').toLowerCase();
+const freshnessMode = String(
+  process.env.RELEASE_CHECK_FRESHNESS || 'warn'
+).toLowerCase();
+const rawMaxCommits = Number.parseInt(
+  String(process.env.RELEASE_CHECK_MAX_COMMITS || '50'),
+  10
+);
+const maxCommitsSinceTag =
+  Number.isFinite(rawMaxCommits) && rawMaxCommits > 0 ? rawMaxCommits : 50;
 const checks = [];
 
 function pass(id, msg) {
@@ -69,6 +78,48 @@ if (tagMode === 'off') {
   warn('REL-004', `local tag v${expectedVersion} is missing (warn mode)`);
 } else {
   fail('REL-004', `local tag v${expectedVersion} is missing`);
+}
+
+function getRevCount(rangeExpr) {
+  try {
+    const out = execSync(`git rev-list --count ${rangeExpr}`, {
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'ignore'],
+    }).trim();
+    const parsed = Number.parseInt(out, 10);
+    return Number.isFinite(parsed) ? parsed : null;
+  } catch {
+    return null;
+  }
+}
+
+if (freshnessMode === 'off') {
+  warn('REL-007', 'release freshness check disabled (RELEASE_CHECK_FRESHNESS=off)');
+} else if (localTags === `v${expectedVersion}`) {
+  const commitsSinceTag = getRevCount(`v${expectedVersion}..HEAD`);
+  if (commitsSinceTag === null) {
+    warn('REL-007', `unable to calculate commits since v${expectedVersion}`);
+  } else if (commitsSinceTag <= maxCommitsSinceTag) {
+    pass(
+      'REL-007',
+      `release freshness OK (${commitsSinceTag} commits since v${expectedVersion}, threshold=${maxCommitsSinceTag})`
+    );
+  } else if (freshnessMode === 'required') {
+    fail(
+      'REL-007',
+      `release metadata is stale (${commitsSinceTag} commits since v${expectedVersion}, threshold=${maxCommitsSinceTag})`
+    );
+  } else {
+    warn(
+      'REL-007',
+      `release metadata drift detected (${commitsSinceTag} commits since v${expectedVersion}, threshold=${maxCommitsSinceTag})`
+    );
+  }
+} else {
+  warn(
+    'REL-007',
+    `release freshness skipped (tag v${expectedVersion} missing)`
+  );
 }
 
 if (versionRoute.includes('NEXT_PUBLIC_APP_VERSION')) {

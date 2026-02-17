@@ -178,7 +178,7 @@ function generateServices(scenario: ScenarioUpdate, serverType: string): Service
 
 // LEGACY 보호 가드:
 // 이 스크립트는 src/data/hourly-data(구형 포맷) 전용입니다.
-// 현재 기본 파이프라인은 src/data/otel-data를 사용하므로,
+// 현재 기본 파이프라인은 public/data/otel-data를 사용하므로,
 // 의도치 않은 실행으로 precomputed-states.json이 오염되지 않도록 기본 차단합니다.
 const LEGACY_GUARD_ENV = 'ALLOW_LEGACY_HOURLY_DATA';
 
@@ -191,7 +191,7 @@ function assertLegacyMode(): void {
       [
         '[BLOCKED] Legacy hourly-data generator is disabled by default.',
         `Set ${LEGACY_GUARD_ENV}=true only when you intentionally maintain src/data/hourly-data.`,
-        'Current primary pipeline: src/data/otel-data (see scripts/data/otel-fix.ts, scripts/data/otel-verify.ts).',
+        'Current primary pipeline: public/data/otel-data (see scripts/data/otel-fix.ts, scripts/data/otel-verify.ts).',
       ].join('\n')
     );
   }

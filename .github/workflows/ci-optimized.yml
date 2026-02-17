@@ -112,9 +112,9 @@ jobs:
         run: |
           echo "📦 릴리즈 정합성 검사..."
           if [ "${{ github.event_name }}" = "pull_request" ]; then
-            RELEASE_CHECK_TAG=warn npm run release:check
+            RELEASE_CHECK_TAG=warn RELEASE_CHECK_FRESHNESS=warn RELEASE_CHECK_MAX_COMMITS=50 npm run release:check
           else
-            npm run release:check
+            RELEASE_CHECK_FRESHNESS=warn RELEASE_CHECK_MAX_COMMITS=50 npm run release:check
           fi
 
       - name: Biome Check
