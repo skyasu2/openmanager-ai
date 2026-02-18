@@ -541,7 +541,7 @@ ImprovedServerCard   │ isMountedRef   │           │                │
 ### 10.3 판정
 
 - 옵션2 완료 조건(1~6) 충족: **완료**
-- 잔여(옵션3 영역): 실환경 E2E를 CI 배포 후 자동 게이트로 완전 고정하는 작업
+- 잔여(옵션3 영역): ~~실환경 E2E를 CI 배포 후 자동 게이트로 완전 고정~~ → `cloud-run-contract.test.ts`에 supervisor/stream/v2 계약 추가로 해소 (LLM 0회, CI `cloud-run-smoke` job에서 자동 실행)
 
 ---
 

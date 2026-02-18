@@ -6,9 +6,10 @@
 
 | Task | Priority | Status |
 |------|----------|--------|
-| Cloud Run 실환경 E2E 통합 테스트 파이프라인 | P3 | In Progress — CI smoke 차단형 전환 완료, 실환경 직접 호출 테스트 잔여 |
+| *(활성 잔여 없음)* | — | — |
 
 ### Completed (2026-02-18)
+- [x] P2: Cloud Run E2E 파이프라인 완성 — contract test에 supervisor/stream/v2 입력검증+인증 계약 추가 (LLM 0회), 리팩토링 계획서 3개 archive 이동
 - [x] P2: 기능 책임 기반 실동작 재검증 수행 — Vercel HTTP 스모크(핵심 경로/상태코드), 로컬 `test:quick` 196 PASS 근거 확보
 - [x] P2: Vercel 크리티컬 브라우저 검증 교차 실행 — 샌드박스 `SIGTRAP` 원인 분리, 비샌드박스 `25/25 PASS (2.8m)` 확인
 - [x] P2: Vercel E2E 저부하 기본값 전환 — `playwright.config.vercel.ts`(desktop default, mobile opt-in, retries 축소), `test:vercel:*:mobile` 스크립트 분리

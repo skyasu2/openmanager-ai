@@ -160,8 +160,8 @@
 - ~~임베딩 모듈 중복 (lib/ + services/)~~ → 단일 모듈 통합 (local fallback + 3h 캐시 + 통계 추적)
 - ~~CI smoke `continue-on-error: true`~~ → 차단형 전환 + `cloud-run-unit` CI job 신설
 
-**남은 항목 1건**:
-1. Cloud Run 실환경 E2E 통합 테스트 파이프라인 (CI/CD 연계)
+**남은 항목 0건** (2026-02-18 완료):
+- ~~Cloud Run 실환경 E2E 통합 테스트 파이프라인~~ → `cloud-run-contract.test.ts`에 supervisor/stream/v2 입력검증+인증 계약 추가 완료 (LLM 0회, CI 자동 게이트)
 
 #### 3.3-a 에이전트 수 산정 기준 (코드 기준)
 
@@ -356,7 +356,7 @@
 | Free Tier Guardrails 강제 | 완료 | `cloud-run/ai-engine/deploy.sh:177`, `cloud-run/ai-engine/deploy.sh:194`, `cloud-run/ai-engine/deploy.sh:208` |
 | Cloud Build free-tier 파라미터 고정 | 완료 | `cloud-run/ai-engine/cloudbuild.yaml:104`, `cloud-run/ai-engine/cloudbuild.yaml:113`, `cloud-run/ai-engine/cloudbuild.yaml:117` |
 | Docker 헬스체크/그레이스풀 종료 | 완료 | `cloud-run/ai-engine/Dockerfile:144`, `cloud-run/ai-engine/Dockerfile:152` |
-| Cloud Run 단독 통합/E2E 파이프라인 | 미완료 | Next.js 통합 테스트로 일부 커버, 전용 슈트 부재 |
+| Cloud Run 단독 통합/E2E 파이프라인 | 완료 | `tests/api/cloud-run-contract.test.ts` — health/warmup/monitoring/supervisor/stream 입력검증+인증 계약 (LLM 0회) |
 | 저비용 필수 스모크 스크립트(배포 검증) | 완료 | `scripts/test/cloud-deploy-essential-smoke.mjs`, `package.json` |
 | 토큰 사용 제어(기본 0회, 옵션 1회) | 완료 | `scripts/test/cloud-deploy-essential-smoke.mjs` |
 
@@ -366,8 +366,7 @@
 
 ### 7.3 우선순위 액션
 
-1. P1: Cloud Run 단독 통합 테스트 신설  
-   대상: `/health`, `/api/ai/supervisor`, `/api/ai/supervisor/stream/v2`
+1. ~~P2: Cloud Run 단독 통합 테스트 신설~~ (**완료**: `tests/api/cloud-run-contract.test.ts` — `/health`, `/warmup`, `/monitoring`, `/api/ai/supervisor`, `/api/ai/supervisor/stream/v2` 입력검증+인증 계약, LLM 0회)
 2. ~~P2: AI Assistant 회귀 E2E 고정 시나리오 추가~~ (**완료**: `tests/e2e/ai-nlq-vercel.manual.ts`, 수동 전용)
 3. ~~P2: AI Sidebar/AI 전체페이지 사용자 흐름 E2E 추가~~ (**완료**: `tests/e2e/ai-fullscreen.spec.ts`)
 4. P2: Redis+Supabase RAG 통합 스모크 자동화  

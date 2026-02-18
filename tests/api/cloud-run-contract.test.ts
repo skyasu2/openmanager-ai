@@ -181,4 +181,117 @@ describe.skipIf(!shouldRun)('Cloud Run API Contract Tests', () => {
       expect(() => UnauthorizedResponseSchema.parse(data)).not.toThrow();
     });
   });
+
+  // --------------------------------------------------------------------------
+  // POST /api/ai/supervisor — 입력 검증 (LLM 0회)
+  // --------------------------------------------------------------------------
+  describe.skipIf(!API_SECRET)(
+    'POST /api/ai/supervisor (input validation)',
+    () => {
+      it('빈 messages 배열 → 400 (Zod min(1) 가드)', async () => {
+        const response = await fetch(`${baseUrl}/api/ai/supervisor`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-API-Key': API_SECRET!,
+          },
+          body: JSON.stringify({ messages: [] }),
+        });
+
+        expect(response.status).toBe(400);
+      });
+
+      it('messages 누락 → 400', async () => {
+        const response = await fetch(`${baseUrl}/api/ai/supervisor`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-API-Key': API_SECRET!,
+          },
+          body: JSON.stringify({}),
+        });
+
+        expect(response.status).toBe(400);
+      });
+
+      it('빈 content → 400 (Zod min(1) 가드)', async () => {
+        const response = await fetch(`${baseUrl}/api/ai/supervisor`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-API-Key': API_SECRET!,
+          },
+          body: JSON.stringify({
+            messages: [{ role: 'user', content: '' }],
+          }),
+        });
+
+        expect(response.status).toBe(400);
+      });
+    }
+  );
+
+  describe('POST /api/ai/supervisor (unauthenticated)', () => {
+    it('인증 없이 401 반환', async () => {
+      const response = await fetch(`${baseUrl}/api/ai/supervisor`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          messages: [{ role: 'user', content: 'test' }],
+        }),
+      });
+
+      expect(response.status).toBe(401);
+    });
+  });
+
+  // --------------------------------------------------------------------------
+  // POST /api/ai/supervisor/stream/v2 — 입력 검증 (LLM 0회)
+  // --------------------------------------------------------------------------
+  describe.skipIf(!API_SECRET)(
+    'POST /api/ai/supervisor/stream/v2 (input validation)',
+    () => {
+      it('빈 messages 배열 → 400', async () => {
+        const response = await fetch(`${baseUrl}/api/ai/supervisor/stream/v2`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-API-Key': API_SECRET!,
+          },
+          body: JSON.stringify({ messages: [] }),
+        });
+
+        expect(response.status).toBe(400);
+      });
+
+      it('빈 content → 400', async () => {
+        const response = await fetch(`${baseUrl}/api/ai/supervisor/stream/v2`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-API-Key': API_SECRET!,
+          },
+          body: JSON.stringify({
+            messages: [{ role: 'user', content: '' }],
+          }),
+        });
+
+        expect(response.status).toBe(400);
+      });
+    }
+  );
+
+  describe('POST /api/ai/supervisor/stream/v2 (unauthenticated)', () => {
+    it('인증 없이 401 반환', async () => {
+      const response = await fetch(`${baseUrl}/api/ai/supervisor/stream/v2`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          messages: [{ role: 'user', content: 'test' }],
+        }),
+      });
+
+      expect(response.status).toBe(401);
+    });
+  });
 });
