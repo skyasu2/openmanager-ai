@@ -174,7 +174,9 @@ describe('🎯 ReactFlowDiagram 컴포넌트', () => {
       render(<ReactFlowDiagram diagram={diagram} />);
 
       // compact 모드에서는 기본 높이 클래스가 적용됨
-      const flowContainer = screen.getByTestId('react-flow-container').parentElement;
+      const flowContainer = screen.getByTestId(
+        'react-flow-container'
+      ).parentElement;
       expect(flowContainer?.className).toContain('h-[48dvh]');
     });
 
@@ -226,7 +228,9 @@ describe('🎯 ReactFlowDiagram 컴포넌트', () => {
       const diagram = createMockDiagram();
       render(<ReactFlowDiagram diagram={diagram} maximizeViewport={true} />);
 
-      const flowContainer = screen.getByTestId('react-flow-container').parentElement;
+      const flowContainer = screen.getByTestId(
+        'react-flow-container'
+      ).parentElement;
       expect(flowContainer?.className).toContain('h-[60dvh]');
     });
   });

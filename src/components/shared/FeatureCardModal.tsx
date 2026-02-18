@@ -459,7 +459,9 @@ export default function FeatureCardModal({
               showDiagram ? 'px-4 py-2.5' : 'p-4'
             }`}
           >
-            <div className={`flex items-center ${showDiagram ? 'gap-2.5' : 'gap-3'}`}>
+            <div
+              className={`flex items-center ${showDiagram ? 'gap-2.5' : 'gap-3'}`}
+            >
               <div
                 className={`flex items-center justify-center rounded-lg bg-gray-800 ${
                   showDiagram ? 'h-7 w-7' : 'h-8 w-8'

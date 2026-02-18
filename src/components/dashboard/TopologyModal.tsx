@@ -93,7 +93,9 @@ export function TopologyModal({ open, onClose, servers }: TopologyModalProps) {
             {/* Compact note strip */}
             <div className="flex shrink-0 items-center justify-between gap-3 border-b border-white/5 bg-slate-900/20 px-6 py-1.5 text-[10px] text-slate-400">
               <span>현실 반영: 계층 분리, DB 복제, 백업 경로</span>
-              <span className="hidden sm:inline">상태 표시는 5초 주기로 갱신</span>
+              <span className="hidden sm:inline">
+                상태 표시는 5초 주기로 갱신
+              </span>
             </div>
 
             {/* Content */}

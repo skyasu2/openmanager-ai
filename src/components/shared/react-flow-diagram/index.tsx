@@ -86,7 +86,9 @@ function ReactFlowDiagram({
         {/* 다이어그램 헤더 */}
         {showHeader && (
           <div className="text-center">
-            <h3 className="mb-2 text-xl font-bold text-white">{diagram.title}</h3>
+            <h3 className="mb-2 text-xl font-bold text-white">
+              {diagram.title}
+            </h3>
             <p className="mx-auto max-w-2xl text-sm text-gray-300">
               {diagram.description}
             </p>
