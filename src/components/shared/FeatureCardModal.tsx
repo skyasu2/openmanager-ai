@@ -280,7 +280,11 @@ export default function FeatureCardModal({
   };
 
   const mainContent = (
-    <div className="p-6 text-white">
+    <div
+      className={
+        showDiagram ? 'px-3 pb-3 pt-2 text-white sm:px-4' : 'p-6 text-white'
+      }
+    >
       {/* 아키텍처 다이어그램 뷰 (React Flow 기반) */}
       {/* 🔧 key prop: showDiagram 전환 시 ReactFlow 완전 재마운트 (fitView 재계산 보장) */}
       {showDiagram && diagramData ? (
@@ -289,6 +293,9 @@ export default function FeatureCardModal({
           diagram={diagramData}
           compact
           showControls
+          showHeader={false}
+          showLegend={false}
+          maximizeViewport
         />
       ) : (
         <>
@@ -429,7 +436,7 @@ export default function FeatureCardModal({
         ref={actualModalRef}
         className={`relative w-full transform overflow-hidden rounded-2xl border border-gray-600/50 bg-linear-to-br from-gray-900 via-gray-900 to-gray-800 shadow-2xl transition-all duration-300 motion-reduce:transition-none ${
           showDiagram
-            ? 'max-h-[85dvh] max-w-[72vw] sm:max-w-[68vw] lg:max-w-4xl xl:max-w-5xl'
+            ? 'max-h-[92dvh] max-w-[72vw] sm:max-w-[68vw] lg:max-w-4xl xl:max-w-5xl'
             : 'max-h-[80dvh] max-w-[76vw] sm:max-w-lg md:max-w-xl lg:max-w-3xl'
         } ${!cardData.id ? 'hidden' : ''}`}
         data-modal-content="portal-unified-v4-ai-cross-verified"
@@ -447,17 +454,30 @@ export default function FeatureCardModal({
           className={`absolute left-0 right-0 top-0 h-48 bg-linear-to-b ${gradient} opacity-20 blur-3xl`}
         ></div>
         <div className="relative z-10 flex h-full flex-col">
-          <header className="flex shrink-0 items-center justify-between border-b border-gray-700/50 p-4">
-            <div className="flex items-center gap-3">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-800">
+          <header
+            className={`flex shrink-0 items-center justify-between border-b border-gray-700/50 ${
+              showDiagram ? 'px-4 py-2.5' : 'p-4'
+            }`}
+          >
+            <div className={`flex items-center ${showDiagram ? 'gap-2.5' : 'gap-3'}`}>
+              <div
+                className={`flex items-center justify-center rounded-lg bg-gray-800 ${
+                  showDiagram ? 'h-7 w-7' : 'h-8 w-8'
+                }`}
+              >
                 <Icon
-                  className="h-5 w-5"
+                  className={showDiagram ? 'h-4 w-4' : 'h-5 w-5'}
                   style={{
                     color: variant === 'home' ? 'white' : 'currentColor',
                   }}
                 />
               </div>
-              <h2 id="modal-title" className="text-lg font-semibold text-white">
+              <h2
+                id="modal-title"
+                className={`font-semibold text-white ${
+                  showDiagram ? 'text-base' : 'text-lg'
+                }`}
+              >
                 {title}
               </h2>
             </div>
@@ -507,7 +527,7 @@ export default function FeatureCardModal({
             className="overflow-y-auto scroll-smooth"
             style={{
               maxHeight: showDiagram
-                ? 'calc(85dvh - 70px)' // 다이어그램 모드: 모달 max-h-[85dvh]에 맞춤
+                ? 'calc(92dvh - 62px)' // 다이어그램 모드: 상단 헤더 압축 + 모달 높이 확장
                 : 'calc(80dvh - 70px)', // 상세 모드: 모달 max-h-[80dvh]에 맞춤
             }}
           >

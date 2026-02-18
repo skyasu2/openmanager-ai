@@ -40,6 +40,9 @@ function ReactFlowDiagram({
   compact = true,
   showControls = true,
   showMiniMap = false,
+  showHeader = true,
+  showLegend = true,
+  maximizeViewport = false,
   servers = [],
 }: ReactFlowDiagramProps) {
   // onInit setTimeout 클린업용 ref
@@ -67,25 +70,33 @@ function ReactFlowDiagram({
     []
   );
 
+  const canvasHeightClass = maximizeViewport
+    ? 'h-[60dvh] sm:h-[64dvh] lg:h-[68dvh] max-h-[72dvh]'
+    : compact
+      ? 'h-[48dvh] sm:h-[50dvh] lg:h-[52dvh] max-h-[380px] sm:max-h-card-lg lg:max-h-[440px]'
+      : 'h-[52dvh] sm:h-[55dvh] lg:h-[58dvh] max-h-[420px] sm:max-h-[460px] lg:max-h-[520px]';
+
+  const containerClassName = maximizeViewport
+    ? 'flex flex-col space-y-2'
+    : 'flex flex-col space-y-4';
+
   return (
     <Tooltip.Provider delayDuration={300}>
-      <div className="flex flex-col space-y-4">
+      <div className={containerClassName}>
         {/* 다이어그램 헤더 */}
-        <div className="text-center">
-          <h3 className="mb-2 text-xl font-bold text-white">{diagram.title}</h3>
-          <p className="mx-auto max-w-2xl text-sm text-gray-300">
-            {diagram.description}
-          </p>
-        </div>
+        {showHeader && (
+          <div className="text-center">
+            <h3 className="mb-2 text-xl font-bold text-white">{diagram.title}</h3>
+            <p className="mx-auto max-w-2xl text-sm text-gray-300">
+              {diagram.description}
+            </p>
+          </div>
+        )}
 
         {/* React Flow 캔버스 */}
         <DiagramErrorBoundary diagramTitle={diagram.title}>
           <div
-            className={`rounded-xl border border-white/10 bg-linear-to-br from-slate-900/90 to-slate-800/90 backdrop-blur-xl shadow-2xl ${
-              compact
-                ? 'h-[48dvh] sm:h-[50dvh] lg:h-[52dvh] max-h-[380px] sm:max-h-card-lg lg:max-h-[440px]'
-                : 'h-[52dvh] sm:h-[55dvh] lg:h-[58dvh] max-h-[420px] sm:max-h-[460px] lg:max-h-[520px]'
-            }`}
+            className={`rounded-xl border border-white/10 bg-linear-to-br from-slate-900/90 to-slate-800/90 backdrop-blur-xl shadow-2xl ${canvasHeightClass}`}
           >
             <ReactFlow
               nodes={nodes}
@@ -140,28 +151,30 @@ function ReactFlowDiagram({
         </DiagramErrorBoundary>
 
         {/* 범례 */}
-        <div className="flex flex-wrap justify-center gap-3 border-t border-white/10 pt-3">
-          <div className="flex items-center gap-1.5">
-            <div className="h-2.5 w-2.5 rounded bg-linear-to-br from-yellow-500/40 to-amber-500/40 ring-1 ring-yellow-400/50" />
-            <span className="text-2xs text-gray-400">핵심</span>
+        {showLegend && (
+          <div className="flex flex-wrap justify-center gap-3 border-t border-white/10 pt-3">
+            <div className="flex items-center gap-1.5">
+              <div className="h-2.5 w-2.5 rounded bg-linear-to-br from-yellow-500/40 to-amber-500/40 ring-1 ring-yellow-400/50" />
+              <span className="text-2xs text-gray-400">핵심</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <div className="h-2.5 w-2.5 rounded bg-white/15 ring-1 ring-white/30" />
+              <span className="text-2xs text-gray-400">주요</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <div className="h-2.5 w-2.5 rounded bg-white/5 ring-1 ring-white/10" />
+              <span className="text-2xs text-gray-400">보조</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <div className="h-3 w-4 border-t border-dashed border-purple-400/60" />
+              <span className="text-2xs text-gray-400">검증</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <div className="h-3 w-4 border-t border-white/40" />
+              <span className="text-2xs text-gray-400">데이터</span>
+            </div>
           </div>
-          <div className="flex items-center gap-1.5">
-            <div className="h-2.5 w-2.5 rounded bg-white/15 ring-1 ring-white/30" />
-            <span className="text-2xs text-gray-400">주요</span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <div className="h-2.5 w-2.5 rounded bg-white/5 ring-1 ring-white/10" />
-            <span className="text-2xs text-gray-400">보조</span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <div className="h-3 w-4 border-t border-dashed border-purple-400/60" />
-            <span className="text-2xs text-gray-400">검증</span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <div className="h-3 w-4 border-t border-white/40" />
-            <span className="text-2xs text-gray-400">데이터</span>
-          </div>
-        </div>
+        )}
       </div>
     </Tooltip.Provider>
   );

@@ -15,6 +15,12 @@ export interface ReactFlowDiagramProps {
   showControls?: boolean;
   /** 미니맵 표시 여부 */
   showMiniMap?: boolean;
+  /** 상단 제목/설명 헤더 표시 여부 */
+  showHeader?: boolean;
+  /** 하단 범례 표시 여부 */
+  showLegend?: boolean;
+  /** 모달/전체 화면에서 캔버스 높이를 우선 확장 */
+  maximizeViewport?: boolean;
   /** 서버 실시간 데이터 (ID 매핑용) */
   servers?: Server[];
 }

@@ -171,11 +171,11 @@ describe('🎯 ReactFlowDiagram 컴포넌트', () => {
   describe('Props 처리', () => {
     it('compact 모드가 기본값으로 적용된다', () => {
       const diagram = createMockDiagram();
-      const { container } = render(<ReactFlowDiagram diagram={diagram} />);
+      render(<ReactFlowDiagram diagram={diagram} />);
 
-      // compact 모드에서는 높이가 제한됨
-      const flowContainer = container.querySelector('.h-\\[500px\\]');
-      expect(flowContainer).toBeDefined();
+      // compact 모드에서는 기본 높이 클래스가 적용됨
+      const flowContainer = screen.getByTestId('react-flow-container').parentElement;
+      expect(flowContainer?.className).toContain('h-[48dvh]');
     });
 
     it('showControls가 true일 때 Controls가 렌더링된다', () => {
@@ -204,6 +204,30 @@ describe('🎯 ReactFlowDiagram 컴포넌트', () => {
       render(<ReactFlowDiagram diagram={diagram} />);
 
       expect(screen.queryByTestId('react-flow-minimap')).toBeNull();
+    });
+
+    it('showHeader가 false이면 제목/설명이 렌더링되지 않는다', () => {
+      const diagram = createMockDiagram();
+      render(<ReactFlowDiagram diagram={diagram} showHeader={false} />);
+
+      expect(screen.queryByText(diagram.title)).toBeNull();
+      expect(screen.queryByText(diagram.description)).toBeNull();
+    });
+
+    it('showLegend가 false이면 범례가 렌더링되지 않는다', () => {
+      const diagram = createMockDiagram();
+      render(<ReactFlowDiagram diagram={diagram} showLegend={false} />);
+
+      expect(screen.queryByText('핵심')).toBeNull();
+      expect(screen.queryByText('데이터')).toBeNull();
+    });
+
+    it('maximizeViewport가 true이면 확장 높이 클래스가 적용된다', () => {
+      const diagram = createMockDiagram();
+      render(<ReactFlowDiagram diagram={diagram} maximizeViewport={true} />);
+
+      const flowContainer = screen.getByTestId('react-flow-container').parentElement;
+      expect(flowContainer?.className).toContain('h-[60dvh]');
     });
   });
 

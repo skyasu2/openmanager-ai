@@ -57,70 +57,43 @@ export function TopologyModal({ open, onClose, servers }: TopologyModalProps) {
           aria-label="인프라 토폴로지 맵"
           className="fixed inset-0 z-50 flex items-center justify-center p-4 focus:outline-none"
         >
-          <div className="relative flex h-[92vh] w-[96vw] max-w-7xl flex-col overflow-hidden rounded-2xl border border-white/10 bg-slate-900 shadow-2xl animate-in fade-in zoom-in-95 duration-300">
+          <div className="relative flex h-[94vh] w-[96vw] max-w-7xl flex-col overflow-hidden rounded-2xl border border-white/10 bg-slate-900 shadow-2xl animate-in fade-in zoom-in-95 duration-300">
             {/* Header */}
-            <div className="flex shrink-0 items-center justify-between border-b border-white/10 bg-slate-900/50 px-6 py-4 backdrop-blur-md">
+            <div className="flex shrink-0 items-center justify-between border-b border-white/10 bg-slate-900/50 px-6 py-2.5 backdrop-blur-md">
               <div className="flex items-center gap-4">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-500/20 text-blue-400 ring-1 ring-blue-500/30">
-                  <Maximize2 size={20} />
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-500/20 text-blue-400 ring-1 ring-blue-500/30">
+                  <Maximize2 size={16} />
                 </div>
                 <div>
-                  <DialogPrimitive.Title className="text-xl font-bold text-white tracking-tight">
+                  <DialogPrimitive.Title className="text-lg font-bold text-white tracking-tight">
                     온프레미스 DC1 서비스 토폴로지
                   </DialogPrimitive.Title>
-                  <DialogPrimitive.Description className="text-xs text-slate-400">
+                  <DialogPrimitive.Description className="text-[11px] text-slate-400">
                     15대 서버 계층 구조와 의존성 흐름
                   </DialogPrimitive.Description>
                 </div>
               </div>
 
               <div className="flex items-center gap-2">
-                <div className="hidden sm:flex items-center gap-2 rounded-lg border border-sky-400/20 bg-sky-500/10 px-3 py-1 text-[11px] text-sky-300">
+                <div className="hidden sm:flex items-center gap-2 rounded-lg border border-sky-400/20 bg-sky-500/10 px-2.5 py-1 text-[10px] text-sky-300">
                   단일 사이트: OnPrem-DC1
                 </div>
-                <div className="hidden sm:flex items-center gap-2 rounded-lg border border-amber-400/20 bg-amber-500/10 px-3 py-1 text-[11px] text-amber-300">
+                <div className="hidden sm:flex items-center gap-2 rounded-lg border border-amber-400/20 bg-amber-500/10 px-2.5 py-1 text-[10px] text-amber-300">
                   synthetic 메트릭 모델
                 </div>
                 <DialogPrimitive.Close
-                  className="flex h-10 w-10 items-center justify-center rounded-xl text-slate-400 transition-all hover:bg-rose-500/20 hover:text-rose-400 cursor-pointer"
+                  className="flex h-9 w-9 items-center justify-center rounded-lg text-slate-400 transition-all hover:bg-rose-500/20 hover:text-rose-400 cursor-pointer"
                   aria-label="닫기"
                 >
-                  <X size={22} />
+                  <X size={20} />
                 </DialogPrimitive.Close>
               </div>
             </div>
 
-            {/* Legend (Status) */}
-            <div className="flex flex-wrap items-center gap-6 border-b border-white/5 bg-slate-900/30 px-6 py-2 text-[11px] font-medium tracking-wider">
-              <div className="flex items-center gap-2">
-                <div className="h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
-                <span className="text-emerald-400/80">정상</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="h-2 w-2 rounded-full bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.5)] animate-pulse" />
-                <span className="text-amber-400/80">주의</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="h-2 w-2 rounded-full bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.5)] animate-pulse" />
-                <span className="text-rose-400/80">위험</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="h-2 w-2 rounded-full bg-slate-500" />
-                <span className="text-slate-500">오프라인</span>
-              </div>
-              <div className="ml-auto flex items-center gap-4 text-slate-500 font-normal italic">
-                <span>* 상태 표시는 5초 주기로 갱신됩니다</span>
-              </div>
-            </div>
-
-            {/* Model notes */}
-            <div className="flex flex-wrap items-center gap-2 border-b border-white/5 bg-slate-900/20 px-6 py-2 text-[11px]">
-              <span className="rounded-full border border-emerald-400/20 bg-emerald-500/10 px-2 py-0.5 text-emerald-300">
-                현실성: 계층 분리 + DB 복제 + 백업 경로 반영
-              </span>
-              <span className="rounded-full border border-slate-400/20 bg-slate-500/10 px-2 py-0.5 text-slate-300">
-                단순화: 방화벽/WAF/서비스메시/운영툴 체인 생략
-              </span>
+            {/* Compact note strip */}
+            <div className="flex shrink-0 items-center justify-between gap-3 border-b border-white/5 bg-slate-900/20 px-6 py-1.5 text-[10px] text-slate-400">
+              <span>현실 반영: 계층 분리, DB 복제, 백업 경로</span>
+              <span className="hidden sm:inline">상태 표시는 5초 주기로 갱신</span>
             </div>
 
             {/* Content */}
@@ -143,6 +116,9 @@ export function TopologyModal({ open, onClose, servers }: TopologyModalProps) {
                     compact={false}
                     showControls={true}
                     showMiniMap={true}
+                    showHeader={false}
+                    showLegend={false}
+                    maximizeViewport={true}
                     servers={servers}
                   />
                 )}
