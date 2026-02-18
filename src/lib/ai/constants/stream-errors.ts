@@ -33,6 +33,18 @@ export const COLD_START_ERROR_PATTERNS = [
   'socket hang up',
 ] as const;
 
+/**
+ * Patterns indicating model configuration / permission errors.
+ * These errors are usually non-retryable without config changes.
+ */
+export const MODEL_CONFIG_ERROR_PATTERNS = [
+  'does not exist or you do not have access',
+  'model does not exist',
+  'invalid model',
+  'model_not_found',
+  'no access to model',
+] as const;
+
 // ============================================================================
 // Error Detection
 // ============================================================================
@@ -77,6 +89,15 @@ export function extractStreamError(content: string): string | null {
  */
 export function isColdStartRelatedError(errorMessage: string): boolean {
   return COLD_START_ERROR_PATTERNS.some((pattern) =>
+    errorMessage.toLowerCase().includes(pattern.toLowerCase())
+  );
+}
+
+/**
+ * Checks if an error message indicates a model config/permission issue.
+ */
+export function isModelConfigRelatedError(errorMessage: string): boolean {
+  return MODEL_CONFIG_ERROR_PATTERNS.some((pattern) =>
     errorMessage.toLowerCase().includes(pattern.toLowerCase())
   );
 }

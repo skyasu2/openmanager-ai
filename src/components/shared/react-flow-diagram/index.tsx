@@ -61,7 +61,8 @@ function ReactFlowDiagram({
   const defaultEdgeOptions = useMemo(
     () => ({
       type: 'smoothstep',
-      style: { stroke: 'rgba(255, 255, 255, 0.4)', strokeWidth: 2 },
+      animated: true,
+      style: { stroke: '#60a5fa', strokeWidth: 1.5, strokeDasharray: '5,5' },
     }),
     []
   );
@@ -80,7 +81,7 @@ function ReactFlowDiagram({
         {/* React Flow 캔버스 */}
         <DiagramErrorBoundary diagramTitle={diagram.title}>
           <div
-            className={`rounded-xl border border-white/10 bg-linear-to-br from-slate-900/50 to-slate-800/50 ${
+            className={`rounded-xl border border-white/10 bg-linear-to-br from-slate-900/90 to-slate-800/90 backdrop-blur-xl shadow-2xl ${
               compact
                 ? 'h-[48dvh] sm:h-[50dvh] lg:h-[52dvh] max-h-[380px] sm:max-h-card-lg lg:max-h-[440px]'
                 : 'h-[52dvh] sm:h-[55dvh] lg:h-[58dvh] max-h-[420px] sm:max-h-[460px] lg:max-h-[520px]'
@@ -110,7 +111,7 @@ function ReactFlowDiagram({
               className="react-flow-dark"
               aria-label={`${diagram.title} 아키텍처 다이어그램`}
             >
-              <Background color="rgba(255, 255, 255, 0.05)" gap={20} size={1} />
+              <Background color="#94a3b8" gap={24} size={1.5} />
               {showControls && (
                 <Controls
                   className="!border-white/20 !bg-slate-800/80 [&>button]:!border-white/20 [&>button]:!bg-slate-700/80 [&>button:hover]:!bg-slate-600/80 [&>button>svg]:!fill-white/80"

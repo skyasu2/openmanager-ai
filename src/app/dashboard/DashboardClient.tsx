@@ -476,7 +476,7 @@ function DashboardPageContent({ initialServers }: DashboardClientProps) {
             - onNavigateHome, isAgentOpen 제거 - DashboardHeader 내부에서 직접 관리 */}
         <DashboardHeader onToggleAgent={toggleAgent} />
 
-        <div className="flex-1 overflow-hidden">
+        <div className="flex-1 overflow-hidden pt-6">
           <Suspense fallback={<ContentLoadingSkeleton />}>
             {/* 🔧 Phase 4 (2026-01-28): Props 기반 데이터 흐름
                 - DashboardClient → DashboardContent → ServerDashboard로 전달

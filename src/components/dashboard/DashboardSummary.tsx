@@ -104,32 +104,23 @@ function StatusCard({
     if (!onFilterChange) return;
     onFilterChange(activeFilter === status ? null : status);
   };
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      handleClick();
-    }
-  };
+  const isInteractive = Boolean(onFilterChange);
 
   return (
-    <div
-      {...(onFilterChange
-        ? {
-            role: 'button' as const,
-            tabIndex: 0,
-            'aria-label': `${label} ${count}대 필터`,
-            'aria-pressed': activeFilter === status,
-            onClick: handleClick,
-            onKeyDown: handleKeyDown,
-          }
-        : {})}
+    <button
+      type="button"
+      onClick={handleClick}
+      disabled={!isInteractive}
+      aria-label={`${label} ${count}대 필터`}
+      aria-pressed={isInteractive ? activeFilter === status : undefined}
       className={cn(
-        'group relative overflow-hidden rounded-2xl bg-white/60 backdrop-blur-md p-4',
+        'group relative overflow-hidden rounded-2xl bg-white/60 backdrop-blur-md p-4 text-left',
         'transition-all duration-300 hover:shadow-lg hover:scale-[1.02]',
         gradient.border,
         gradient.glow,
         onFilterChange && 'cursor-pointer active:scale-[0.98]',
+        !onFilterChange &&
+          'disabled:cursor-default disabled:hover:scale-100 disabled:hover:shadow-none',
         activeFilter === status &&
           `ring-2 ${ringColors[status] ?? 'ring-blue-500'} ring-offset-1`
       )}
@@ -159,7 +150,7 @@ function StatusCard({
           {count}
         </span>
       </div>
-    </div>
+    </button>
   );
 }
 

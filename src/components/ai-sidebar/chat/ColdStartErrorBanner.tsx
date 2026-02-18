@@ -13,7 +13,10 @@
 
 import { AlertCircle, RefreshCw, X, Zap } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
-import { isColdStartRelatedError } from '@/lib/ai/constants/stream-errors';
+import {
+  isColdStartRelatedError,
+  isModelConfigRelatedError,
+} from '@/lib/ai/constants/stream-errors';
 
 const AUTO_RETRY_SECONDS = 5;
 
@@ -32,6 +35,7 @@ export function ColdStartErrorBanner({
   onClearError,
 }: ColdStartErrorBannerProps) {
   const isColdStart = isColdStartRelatedError(error);
+  const isModelConfigError = isModelConfigRelatedError(error);
   const [countdown, setCountdown] = useState(
     isColdStart ? AUTO_RETRY_SECONDS : 0
   );
@@ -113,6 +117,50 @@ export function ColdStartErrorBanner({
                 className="text-xs text-orange-600 underline hover:text-orange-800"
               >
                 자동 재시도 취소
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (isModelConfigError) {
+    return (
+      <div className="border-t border-amber-200 bg-linear-to-r from-amber-50 to-orange-50 p-3">
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex items-start space-x-2">
+            <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-amber-600" />
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-medium text-amber-900">
+                AI 모델 설정 또는 권한 오류
+              </p>
+              <p className="mt-0.5 text-xs text-amber-700">
+                자동 재시도보다 모델 ID/권한 설정 점검이 필요합니다.
+              </p>
+              <p className="mt-1 break-words text-xs text-amber-700">{error}</p>
+            </div>
+          </div>
+          <div className="flex shrink-0 items-center space-x-2">
+            {onRetry && (
+              <button
+                type="button"
+                onClick={onRetry}
+                className="flex items-center space-x-1 rounded-lg bg-amber-600 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-amber-700"
+                aria-label="재시도"
+              >
+                <RefreshCw className="h-4 w-4" />
+                <span>재시도</span>
+              </button>
+            )}
+            {onClearError && (
+              <button
+                type="button"
+                onClick={onClearError}
+                className="rounded-lg p-1.5 text-amber-500 transition-colors hover:bg-amber-100 hover:text-amber-700"
+                aria-label="닫기"
+              >
+                <X className="h-4 w-4" />
               </button>
             )}
           </div>

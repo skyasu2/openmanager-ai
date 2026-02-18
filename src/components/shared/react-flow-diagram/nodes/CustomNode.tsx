@@ -27,24 +27,28 @@ export const CustomNode = memo(({ data }: NodeProps<Node<CustomNodeData>>) => {
             className="!h-1.5 !w-1.5 !border !border-white/30 !bg-white/10"
           />
 
-          {/* 노드 본체 */}
+          {/* 노드 본체 (Glassmorphism + Glow Effect) */}
           <div
-            className={`flex min-w-[110px] max-w-[170px] cursor-pointer items-center gap-1.5 rounded-lg border px-2.5 py-1.5 transition-all duration-200 hover:scale-[1.03] ${styles.bg} ${statusStyle?.border || styles.border} ${statusStyle?.glow || styles.shadow}`}
+            className={`group flex min-w-[120px] max-w-[180px] cursor-pointer items-center gap-2 rounded-xl border px-3 py-2 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-blue-500/10 ${styles.bg} ${statusStyle?.border || styles.border} ${statusStyle?.glow || styles.shadow} backdrop-blur-md`}
           >
-            {data.icon && <span className="text-sm">{data.icon}</span>}
+            {data.icon && (
+              <span className="text-base transition-transform duration-300 group-hover:scale-110">
+                {data.icon}
+              </span>
+            )}
             <div className="min-w-0 flex-1">
               <div className="flex items-center justify-between gap-1">
-                <div className="truncate text-[clamp(10px,2.5vw,12px)] font-bold text-white">
+                <div className="truncate text-xs font-bold text-gray-100 group-hover:text-white transition-colors">
                   {data.label}
                 </div>
                 {data.status && (
                   <div
-                    className={`h-1.5 w-1.5 shrink-0 rounded-full ${statusStyle?.dot}`}
+                    className={`h-2 w-2 shrink-0 rounded-full shadow-[0_0_8px_currentColor] animate-pulse ${statusStyle?.dot}`}
                   />
                 )}
               </div>
               {data.sublabel && (
-                <div className="line-clamp-1 text-[clamp(8px,2vw,9px)] leading-tight text-white/60">
+                <div className="line-clamp-1 text-[9px] leading-tight text-gray-400 group-hover:text-gray-300 transition-colors">
                   {data.sublabel}
                 </div>
               )}

@@ -12,6 +12,7 @@ import { safeErrorMessage } from '@/utils/utils-functions';
 import { ActiveAlertsModal } from './ActiveAlertsModal';
 import { AlertHistoryModal } from './alert-history/AlertHistoryModal';
 import { DashboardSummary } from './DashboardSummary';
+import { resolveDashboardEmptyState } from './dashboard-empty-state';
 import { LogExplorerModal } from './log-explorer/LogExplorerModal';
 import { SystemOverviewSection } from './SystemOverviewSection';
 import { TopologyModal } from './TopologyModal';
@@ -151,6 +152,23 @@ export default memo(function DashboardContent({
 
   // 🚀 리팩토링: Custom Hook으로 통계 계산 로직 분리
   const serverStats = useDashboardStats(servers, allServers, statsLoading);
+  const overallServerCount =
+    allServers?.length ?? Math.max(totalServers, servers.length);
+  const emptyStateMode = resolveDashboardEmptyState({
+    visibleServersCount: servers.length,
+    totalServersCount: overallServerCount,
+    hasActiveFilter: Boolean(statusFilter),
+  });
+  const activeFilterLabel =
+    statusFilter === 'online'
+      ? '온라인'
+      : statusFilter === 'warning'
+        ? '경고'
+        : statusFilter === 'critical'
+          ? '위험'
+          : statusFilter === 'offline'
+            ? '오프라인'
+            : statusFilter;
 
   // F04 fix: isClient 상태 제거 — 'use client' 컴포넌트에서 불필요한 이중 렌더링
   // F05 fix: renderError 상태 제거 — Error Boundary로 위임
@@ -193,56 +211,56 @@ export default memo(function DashboardContent({
   return (
     <div className="animate-fade-in h-full w-full">
       <div className="mx-auto h-full max-w-none space-y-4 overflow-y-auto overscroll-contain scroll-smooth px-4 pb-6 sm:px-6 lg:px-8 2xl:max-w-[1800px]">
-        {/* 🎯 메인 컨텐츠 영역 */}
-        {servers && servers.length > 0 ? (
-          <>
-            {/* 인프라 전체 현황 (Simple Grid) */}
-            {monitoringErrorMessage && (
-              <div className="rounded-lg border border-amber-200/60 bg-amber-50/80 px-4 py-3 text-xs text-amber-800">
-                모니터링 리포트 조회 실패: {monitoringErrorMessage}
-              </div>
-            )}
-            <DashboardSummary
-              stats={serverStats}
-              activeFilter={statusFilter}
-              onFilterChange={onStatusFilterChange}
-              onOpenAlertHistory={() => setAlertHistoryOpen(true)}
-              onOpenLogExplorer={() => setLogExplorerOpen(true)}
-              showTopology={showTopology}
-              onToggleTopology={() => setShowTopology((prev) => !prev)}
-              activeAlertsCount={monitoringReport?.firingAlerts?.length ?? 0}
-              onOpenActiveAlerts={() => setActiveAlertsOpen(true)}
-            />
+        {monitoringErrorMessage && (
+          <div className="rounded-lg border border-amber-200/60 bg-amber-50/80 px-4 py-3 text-xs text-amber-800">
+            모니터링 리포트 조회 실패: {monitoringErrorMessage}
+          </div>
+        )}
 
-            {/* Infrastructure Topology (Summary 버튼으로 토글) */}
-            {showTopology && topologyDiagram && (
-              <div className="group relative rounded-xl border border-gray-200/80 bg-white/70 px-2 pb-4 pt-2 shadow-xs backdrop-blur-md">
-                <div className="absolute top-3 right-3 z-10 opacity-0 transition-opacity group-hover:opacity-100">
-                  <button
-                    onClick={() => setTopologyModalOpen(true)}
-                    className="flex items-center gap-1.5 rounded-lg bg-slate-900/80 px-2.5 py-1.5 text-[10px] font-bold text-white backdrop-blur-sm transition-all hover:bg-slate-800 cursor-pointer shadow-lg"
-                  >
-                    <Maximize2 size={12} />
-                    FULL VIEW
-                  </button>
+        <DashboardSummary
+          stats={serverStats}
+          activeFilter={statusFilter}
+          onFilterChange={onStatusFilterChange}
+          onOpenAlertHistory={() => setAlertHistoryOpen(true)}
+          onOpenLogExplorer={() => setLogExplorerOpen(true)}
+          showTopology={showTopology}
+          onToggleTopology={() => setShowTopology((prev) => !prev)}
+          activeAlertsCount={monitoringReport?.firingAlerts?.length ?? 0}
+          onOpenActiveAlerts={() => setActiveAlertsOpen(true)}
+        />
+
+        {/* Infrastructure Topology (Summary 버튼으로 토글) */}
+        {showTopology && topologyDiagram && servers.length > 0 && (
+          <div className="group relative rounded-xl border border-gray-200/80 bg-white/70 px-2 pb-4 pt-2 shadow-xs backdrop-blur-md">
+            <div className="absolute top-3 right-3 z-10 opacity-0 transition-opacity group-hover:opacity-100">
+              <button
+                onClick={() => setTopologyModalOpen(true)}
+                className="flex items-center gap-1.5 rounded-lg bg-slate-900/80 px-2.5 py-1.5 text-[10px] font-bold text-white backdrop-blur-sm transition-all hover:bg-slate-800 cursor-pointer shadow-lg"
+              >
+                <Maximize2 size={12} />
+                FULL VIEW
+              </button>
+            </div>
+            <Suspense
+              fallback={
+                <div className="flex items-center justify-center py-12">
+                  <div className="h-6 w-6 animate-spin rounded-full border-2 border-blue-400 border-t-transparent" />
                 </div>
-                <Suspense
-                  fallback={
-                    <div className="flex items-center justify-center py-12">
-                      <div className="h-6 w-6 animate-spin rounded-full border-2 border-blue-400 border-t-transparent" />
-                    </div>
-                  }
-                >
-                  <ReactFlowDiagramDynamic
-                    diagram={topologyDiagram}
-                    compact
-                    showControls
-                    servers={servers}
-                  />
-                </Suspense>
-              </div>
-            )}
+              }
+            >
+              <ReactFlowDiagramDynamic
+                diagram={topologyDiagram}
+                compact
+                showControls
+                servers={servers}
+              />
+            </Suspense>
+          </div>
+        )}
 
+        {/* 🎯 메인 컨텐츠 영역 */}
+        {servers.length > 0 ? (
+          <>
             {/* ======== System Overview: 리소스 평균 + 주요 경고 통합 ======== */}
             <SystemOverviewSection servers={servers} />
 
@@ -272,52 +290,86 @@ export default memo(function DashboardContent({
                 onStatsUpdate={onStatsUpdate}
               />
             </Suspense>
-
-            {/* Active Alerts Modal */}
-            {activeAlertsOpen && (
-              <ActiveAlertsModal
-                open={activeAlertsOpen}
-                onClose={() => setActiveAlertsOpen(false)}
-                alerts={monitoringReport?.firingAlerts ?? []}
-              />
-            )}
-
-            {/* Topology Modal */}
-            {topologyModalOpen && (
-              <TopologyModal
-                open={topologyModalOpen}
-                onClose={() => setTopologyModalOpen(false)}
-                servers={allServers?.length ? allServers : servers}
-              />
-            )}
-
-            {/* Alert History Modal */}
-            {alertHistoryOpen && (
-              <AlertHistoryModal
-                open={alertHistoryOpen}
-                onClose={() => setAlertHistoryOpen(false)}
-                serverIds={(allServers?.length ? allServers : servers).map(
-                  (s) => s.id
-                )}
-              />
-            )}
-
-            {/* Log Explorer Modal */}
-            {logExplorerOpen && (
-              <LogExplorerModal
-                open={logExplorerOpen}
-                onClose={() => setLogExplorerOpen(false)}
-                servers={allServers?.length ? allServers : servers}
-              />
-            )}
           </>
         ) : (
-          <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-lg">
+          <div
+            role="status"
+            aria-live="polite"
+            className="rounded-xl border border-gray-200 bg-white p-6 shadow-lg"
+          >
             <div className="text-center text-gray-500">
-              <p className="mb-2 text-lg">등록된 서버가 없습니다</p>
-              <p className="text-sm">서버를 추가하여 모니터링을 시작하세요</p>
+              {emptyStateMode === 'filtered-empty' ? (
+                <>
+                  <p className="mb-2 text-lg">
+                    필터 조건에 맞는 서버가 없습니다
+                  </p>
+                  <p className="text-sm">
+                    선택한 필터를 해제하거나 다른 상태 필터를 선택해 주세요.
+                  </p>
+                  {activeFilterLabel && (
+                    <p className="mt-2 text-xs text-gray-400">
+                      현재 필터: {activeFilterLabel}
+                    </p>
+                  )}
+                  {onStatusFilterChange && (
+                    <button
+                      type="button"
+                      onClick={() => onStatusFilterChange(null)}
+                      className="mt-4 rounded-lg bg-blue-600 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700"
+                      aria-label="상태 필터 초기화"
+                    >
+                      필터 초기화
+                    </button>
+                  )}
+                </>
+              ) : (
+                <>
+                  <p className="mb-2 text-lg">등록된 서버가 없습니다</p>
+                  <p className="text-sm">
+                    서버를 추가하여 모니터링을 시작하세요
+                  </p>
+                </>
+              )}
             </div>
           </div>
+        )}
+
+        {/* Active Alerts Modal */}
+        {activeAlertsOpen && (
+          <ActiveAlertsModal
+            open={activeAlertsOpen}
+            onClose={() => setActiveAlertsOpen(false)}
+            alerts={monitoringReport?.firingAlerts ?? []}
+          />
+        )}
+
+        {/* Topology Modal */}
+        {topologyModalOpen && (
+          <TopologyModal
+            open={topologyModalOpen}
+            onClose={() => setTopologyModalOpen(false)}
+            servers={allServers?.length ? allServers : servers}
+          />
+        )}
+
+        {/* Alert History Modal */}
+        {alertHistoryOpen && (
+          <AlertHistoryModal
+            open={alertHistoryOpen}
+            onClose={() => setAlertHistoryOpen(false)}
+            serverIds={(allServers?.length ? allServers : servers).map(
+              (s) => s.id
+            )}
+          />
+        )}
+
+        {/* Log Explorer Modal */}
+        {logExplorerOpen && (
+          <LogExplorerModal
+            open={logExplorerOpen}
+            onClose={() => setLogExplorerOpen(false)}
+            servers={allServers?.length ? allServers : servers}
+          />
         )}
       </div>
     </div>
