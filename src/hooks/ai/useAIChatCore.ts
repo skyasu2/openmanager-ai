@@ -174,6 +174,7 @@ export function useAIChatCore(
     stop,
     cancel,
     reset: resetHybridQuery,
+    clearError: clearHybridError,
     currentMode,
     selectClarification,
     submitCustomClarification,
@@ -296,7 +297,8 @@ export function useAIChatCore(
 
   const clearError = useCallback(() => {
     setError(null);
-  }, []);
+    clearHybridError();
+  }, [clearHybridError]);
 
   const regenerateLastResponse = useCallback(() => {
     if (messages.length < 2) return;

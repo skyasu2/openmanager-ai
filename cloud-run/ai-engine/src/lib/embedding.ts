@@ -51,6 +51,9 @@ function getCachedEmbedding(text: string): EmbeddingCacheEntry | null {
 
   if (cached && Date.now() - cached.timestamp < EMBEDDING_CACHE_TTL_MS) {
     embeddingStats.cacheHits++;
+    // LRU: re-insert to move to end (most recently used)
+    embeddingCache.delete(key);
+    embeddingCache.set(key, cached);
     return cached;
   }
 
@@ -136,15 +139,20 @@ interface SupabaseClientLike {
 // Core API
 // ============================================================================
 
+interface EmbedResult {
+  embedding: number[];
+  source: 'mistral' | 'local-fallback';
+}
+
 /**
- * 텍스트를 1024차원 벡터로 임베딩
+ * 텍스트를 1024차원 벡터로 임베딩 (source 포함)
  * Mistral API 실패 시 local fallback 사용
  */
-export async function embedText(text: string): Promise<number[]> {
+async function embedTextWithSource(text: string): Promise<EmbedResult> {
   embeddingStats.requests++;
 
   const cached = getCachedEmbedding(text);
-  if (cached) return cached.embedding;
+  if (cached) return { embedding: cached.embedding, source: cached.source };
 
   const mistral = getMistralProvider();
   if (!mistral) {
@@ -152,7 +160,7 @@ export async function embedText(text: string): Promise<number[]> {
     embeddingStats.localFallbacks++;
     const fallback = generateLocalEmbedding(text);
     setCachedEmbedding(text, fallback, 'local-fallback');
-    return fallback;
+    return { embedding: fallback, source: 'local-fallback' };
   }
 
   try {
@@ -165,46 +173,91 @@ export async function embedText(text: string): Promise<number[]> {
 
     embeddingStats.mistralCalls++;
     setCachedEmbedding(text, embedding, 'mistral');
-    return embedding;
+    return { embedding, source: 'mistral' };
   } catch (e) {
     logger.error('[Embedding] Mistral API failed, using fallback:', e);
     embeddingStats.errors++;
     embeddingStats.localFallbacks++;
     const fallback = generateLocalEmbedding(text);
     setCachedEmbedding(text, fallback, 'local-fallback');
-    return fallback;
+    return { embedding: fallback, source: 'local-fallback' };
   }
 }
 
 /**
+ * 텍스트를 1024차원 벡터로 임베딩
+ * Mistral API 실패 시 local fallback 사용
+ */
+export async function embedText(text: string): Promise<number[]> {
+  const { embedding } = await embedTextWithSource(text);
+  return embedding;
+}
+
+/**
  * 여러 텍스트를 배치로 임베딩
+ * 캐시 히트/미스를 분리하여 미스분만 API 호출 후 결과 병합
  * Mistral API 실패 시 local fallback 사용
  */
 export async function embedTexts(texts: string[]): Promise<number[][]> {
   embeddingStats.requests++;
 
+  // Split into cache hits and misses
+  const results: (number[] | null)[] = texts.map(t => {
+    const cached = getCachedEmbedding(t);
+    return cached ? cached.embedding : null;
+  });
+
+  const uncachedIndices: number[] = [];
+  const uncachedTexts: string[] = [];
+  for (let i = 0; i < results.length; i++) {
+    if (results[i] === null) {
+      uncachedIndices.push(i);
+      uncachedTexts.push(texts[i]);
+    }
+  }
+
+  // All cached — no API call needed
+  if (uncachedTexts.length === 0) {
+    return results as number[][];
+  }
+
   const mistral = getMistralProvider();
   if (!mistral) {
     logger.warn('[Embedding] No Mistral API key, batch using local fallback');
     embeddingStats.localFallbacks++;
-    return texts.map((t) => generateLocalEmbedding(t));
+    for (const idx of uncachedIndices) {
+      const fallback = generateLocalEmbedding(texts[idx]);
+      setCachedEmbedding(texts[idx], fallback, 'local-fallback');
+      results[idx] = fallback;
+    }
+    return results as number[][];
   }
 
   try {
     const model = mistral.embedding('mistral-embed');
     const { embeddings } = await embedMany({
       model,
-      values: texts,
+      values: uncachedTexts,
       experimental_telemetry: { isEnabled: false },
     });
 
     embeddingStats.mistralCalls++;
-    return embeddings;
+    for (let i = 0; i < uncachedIndices.length; i++) {
+      const idx = uncachedIndices[i];
+      results[idx] = embeddings[i];
+      setCachedEmbedding(texts[idx], embeddings[i], 'mistral');
+    }
+    return results as number[][];
   } catch (e) {
     logger.error('[Embedding] Batch Mistral API failed, using fallback:', e);
     embeddingStats.errors++;
     embeddingStats.localFallbacks++;
-    return texts.map((t) => generateLocalEmbedding(t));
+    for (const idx of uncachedIndices) {
+      const fallback = generateLocalEmbedding(texts[idx]);
+      setCachedEmbedding(texts[idx], fallback, 'local-fallback');
+      results[idx] = fallback;
+    }
+    return results as number[][];
   }
 }
 
@@ -237,12 +290,7 @@ export async function createEmbedding(text: string): Promise<EmbeddingResult> {
     };
   }
 
-  const fallbackBefore = embeddingStats.localFallbacks;
-  const embedding = await embedText(truncated);
-  const source =
-    embeddingStats.localFallbacks > fallbackBefore
-      ? ('local-fallback' as const)
-      : ('mistral' as const);
+  const { embedding, source } = await embedTextWithSource(truncated);
   return { success: true, embedding, source };
 }
 
@@ -256,12 +304,8 @@ export async function createBatchEmbeddings(texts: string[]): Promise<EmbeddingR
     return { success: false, error: 'No valid texts provided' };
   }
 
-  const fallbackBefore = embeddingStats.localFallbacks;
   const embeddings = await embedTexts(valid);
-  const source =
-    embeddingStats.localFallbacks > fallbackBefore
-      ? ('local-fallback' as const)
-      : ('mistral' as const);
+  const source = getMistralProvider() ? 'mistral' as const : 'local-fallback' as const;
   return { success: true, embeddings, source };
 }
 

@@ -178,6 +178,8 @@ export interface UseHybridAIQueryReturn {
   cancel: () => Promise<void>;
   /** 상태 리셋 */
   reset: () => void;
+  /** 에러 상태만 초기화 */
+  clearError: () => void;
   /** 현재 모드 */
   currentMode: QueryMode;
   /** 복잡도 미리 분석 (UI에서 힌트 표시용) */

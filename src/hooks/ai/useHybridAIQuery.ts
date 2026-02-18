@@ -31,7 +31,7 @@
 import type { UIMessage } from '@ai-sdk/react';
 import { useChat } from '@ai-sdk/react';
 import { DefaultChatTransport } from 'ai';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   calculateRetryDelay,
   generateTraceId,
@@ -131,10 +131,12 @@ export function useHybridAIQuery(
 
   // webSearchEnabled를 ref로 추적: DefaultChatTransport의 body는 ChatStore 생성 시
   // readonly로 고정되므로, Resolvable<object> 함수를 사용해 호출 시점의 최신 값을 반환
-  // NOTE: API 스키마가 boolean(optional)이므로 string 값을 보내지 않는다.
-  const webSearchEnabledRef = useRef<boolean>(webSearchEnabled ?? false);
+  // toggle ON → true (force enable), toggle OFF/unset → undefined (backend auto-detection)
+  const webSearchEnabledRef = useRef<boolean | undefined>(
+    webSearchEnabled || undefined
+  );
   useEffect(() => {
-    webSearchEnabledRef.current = webSearchEnabled ?? false;
+    webSearchEnabledRef.current = webSearchEnabled || undefined;
   }, [webSearchEnabled]);
 
   // Determine API endpoint (v2 only - v1 deprecated and removed)
@@ -531,6 +533,23 @@ export function useHybridAIQuery(
     },
   });
 
+  const clearError = useCallback(() => {
+    retryCountRef.current = 0;
+    errorHandledRef.current = false;
+
+    if (retryTimeoutRef.current) {
+      clearTimeout(retryTimeoutRef.current);
+      retryTimeoutRef.current = null;
+    }
+
+    setState((prev) => ({
+      ...prev,
+      error: null,
+      warning: null,
+      processingTime: 0,
+    }));
+  }, []);
+
   // ============================================================================
   // Cleanup on Unmount
   // ============================================================================
@@ -560,6 +579,7 @@ export function useHybridAIQuery(
     stop,
     cancel,
     reset,
+    clearError,
     currentMode: state.mode,
     previewComplexity,
     // Clarification functions
