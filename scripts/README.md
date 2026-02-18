@@ -112,8 +112,8 @@ bash scripts/env/sync-vercel.sh
 # Codex MCP 래퍼 (프로젝트 스코프)
 bash scripts/mcp/codex-local.sh
 
-# Storybook MCP 포함 실행 (storybook dev 서버 실행 시)
-OPENMANAGER_STORYBOOK_MCP_MODE=on bash scripts/mcp/codex-local.sh
+# Storybook MCP 포함 실행 (storybook dev 서버가 살아있을 때 자동 포함)
+OPENMANAGER_STORYBOOK_MCP_MODE=auto bash scripts/mcp/codex-local.sh
 
 # MCP 상태 점검
 bash scripts/mcp/mcp-health-check-codex.sh

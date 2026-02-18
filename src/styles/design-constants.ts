@@ -270,6 +270,16 @@ export const AI_ICON_GRADIENT_ANIMATED_STYLE = {
   animation: 'gradient-diagonal 3s ease infinite',
 } as const;
 
+// 🎨 AI 텍스트 그라데이션 (아이콘과 동일 색상: 핑크 → 보라 → 시안)
+export const AI_TEXT_GRADIENT_ANIMATED_STYLE = {
+  background: 'linear-gradient(135deg, #ec4899, #a855f7, #22d3ee, #ec4899)',
+  backgroundSize: '200% 200%',
+  animation: 'gradient-diagonal 3s ease infinite',
+  WebkitBackgroundClip: 'text',
+  backgroundClip: 'text',
+  WebkitTextFillColor: 'transparent',
+} as const;
+
 export const AI_ICON_GRADIENT_ID = 'ai-icon-gradient';
 export const AI_ICON_GRADIENT_COLORS = {
   start: '#ec4899', // pink-500

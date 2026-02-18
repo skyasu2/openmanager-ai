@@ -4,7 +4,10 @@ import Link from 'next/link';
 import type React from 'react';
 import { useShallow } from 'zustand/react/shallow';
 import { useUnifiedAdminStore } from '@/stores/useUnifiedAdminStore';
-import { AI_GRADIENT_ANIMATED_STYLE } from '@/styles/design-constants';
+import {
+  AI_ICON_GRADIENT_ANIMATED_STYLE,
+  AI_TEXT_GRADIENT_ANIMATED_STYLE,
+} from '@/styles/design-constants';
 
 interface OpenManagerLogoProps {
   /**
@@ -41,9 +44,10 @@ export const OpenManagerLogo: React.FC<OpenManagerLogoProps> = ({
     }))
   );
 
-  // 배경 그라데이션 로직 (상태 반응형)
-  const backgroundStyle = aiAgent.isEnabled
-    ? AI_GRADIENT_ANIMATED_STYLE // AI 모드: 애니메이션 AI 그라데이션
+  // 아이콘 배경 그라데이션 (상태 반응형)
+  // AI_ICON_GRADIENT_ANIMATED_STYLE 사용 (backgroundClip:'text' 없는 버전)
+  const iconStyle = aiAgent.isEnabled
+    ? AI_ICON_GRADIENT_ANIMATED_STYLE
     : {
         background: isSystemStarted
           ? 'linear-gradient(135deg, #10b981, #059669)' // 시스템 시작: 에메랄드
@@ -56,16 +60,16 @@ export const OpenManagerLogo: React.FC<OpenManagerLogoProps> = ({
 
   const content = (
     <div className={`flex min-w-0 items-center gap-3 ${className}`}>
-      {/* 아이콘 영역 (아이콘 제거됨 - 그라데이션 스퀘어 컨셉) */}
+      {/* 아이콘 영역 - 그라데이션 스퀘어 */}
       <div
         className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-lg shadow-lg"
-        style={backgroundStyle}
+        style={iconStyle}
       />
 
       {/* 텍스트 영역 - suppressHydrationWarning for dynamic subtitle */}
       <div className="min-w-0 text-left" suppressHydrationWarning>
         <h1 className={`truncate text-xl font-bold ${titleColor}`}>
-          OpenManager
+          OpenManager <span style={AI_TEXT_GRADIENT_ANIMATED_STYLE}>AI</span>
         </h1>
         {(() => {
           const subtitleText =

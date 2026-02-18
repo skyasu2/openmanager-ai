@@ -25,11 +25,11 @@ CONFIG_FILE=""
 LIVE_PROBE_TIMEOUT_SEC="${MCP_LIVE_PROBE_TIMEOUT_SEC:-120}"
 
 # OPENMANAGER_STORYBOOK_MCP_MODE:
-# - off (default): 항상 제외 (불필요한 경고 방지)
-# - auto: Storybook MCP endpoint가 살아있을 때만 expected 대상에 포함
+# - auto (default): Storybook MCP endpoint가 살아있을 때만 expected 대상에 포함
+# - off: 항상 제외
 # - on: 항상 포함
 get_storybook_mode() {
-  local mode="${OPENMANAGER_STORYBOOK_MCP_MODE:-off}"
+  local mode="${OPENMANAGER_STORYBOOK_MCP_MODE:-auto}"
   mode="$(printf '%s' "$mode" | tr '[:upper:]' '[:lower:]')"
   case "$mode" in
     on|off|auto)
