@@ -53,19 +53,27 @@ const AnimatedAISidebar = dynamic(
       [key: string]: unknown;
     }) {
       const { isOpen, onClose, ...otherProps } = props;
+      const MOBILE_SIDEBAR_WIDTH_VW = 90;
+      const mobileBackdropTapWidth = `calc(100vw - ${MOBILE_SIDEBAR_WIDTH_VW}vw)`;
       return (
         <>
           {isOpen && (
             <>
-              {/* 모바일 백드롭 오버레이 */}
+              {/* 모바일 백드롭: 시각 레이어 */}
+              <div
+                aria-hidden="true"
+                className="pointer-events-none fixed inset-0 z-30 bg-black/50 md:hidden"
+              />
+              {/* 모바일 백드롭: 탭 닫기 레이어 (사이드바 바깥 영역만) */}
               <button
                 type="button"
-                className="fixed inset-0 z-30 bg-black/50 md:hidden"
+                className="fixed inset-y-0 left-0 z-40 md:hidden"
+                style={{ width: mobileBackdropTapWidth }}
                 onClick={onClose}
                 aria-label="사이드바 닫기"
               />
               <div
-                className="fixed inset-y-0 right-0 z-40 w-full max-w-[90vw] md:w-96 transform transition-transform duration-300 ease-in-out"
+                className="fixed right-0 top-0 z-50 h-dvh w-full max-w-[90vw] transform transition-transform duration-300 ease-in-out md:top-24 md:h-[calc(100dvh-6rem)] md:w-96 lg:top-16 lg:h-[calc(100dvh-4rem)]"
                 style={{
                   transform: isOpen ? 'translateX(0)' : 'translateX(100%)',
                 }}
@@ -84,7 +92,7 @@ const AnimatedAISidebar = dynamic(
   },
   {
     loading: () => (
-      <div className="fixed inset-y-0 right-0 z-40 w-full max-w-[90vw] md:w-96 border-l border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900">
+      <div className="fixed right-0 top-0 z-50 h-dvh w-full max-w-[90vw] border-l border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900 md:top-24 md:h-[calc(100dvh-6rem)] md:w-96 lg:top-16 lg:h-[calc(100dvh-4rem)]">
         <div className="flex h-full items-center justify-center">
           <div className="h-8 w-8 animate-spin rounded-full border-2 border-blue-500 border-t-transparent"></div>
         </div>
