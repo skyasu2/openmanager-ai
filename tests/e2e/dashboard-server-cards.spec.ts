@@ -165,7 +165,7 @@ test.describe('대시보드 서버 카드 테스트', () => {
     await expect(modal).toBeVisible({ timeout: TIMEOUTS.MODAL_DISPLAY });
 
     // 상위 탭: 성능 분석
-    const metricsTab = modal.getByRole('button', { name: '성능 분석' });
+    const metricsTab = modal.getByRole('tab', { name: '성능 분석' });
     await expect(metricsTab).toBeVisible({ timeout: TIMEOUTS.DOM_UPDATE });
     await metricsTab.click();
 
