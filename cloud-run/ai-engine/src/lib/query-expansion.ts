@@ -13,6 +13,7 @@
 import { generateText } from 'ai';
 import { logger } from './logger';
 import { getMistralProvider } from './mistral-provider';
+import { withTimeout } from './with-timeout';
 
 // ============================================================================
 // Constants
@@ -125,19 +126,16 @@ export async function expandQueryWithHyDE(query: string): Promise<string> {
   try {
     const startTime = Date.now();
 
-    // Use Promise.race for timeout
-    const textPromise = generateText({
-      model: mistral('mistral-small-latest'),
-      system: HYDE_SYSTEM_PROMPT,
-      prompt: query,
-      maxOutputTokens: HYDE_MAX_TOKENS,
-    });
-
-    const timeoutPromise = new Promise<never>((_, reject) => {
-      setTimeout(() => reject(new Error('HyDE timeout')), HYDE_TIMEOUT_MS);
-    });
-
-    const { text } = await Promise.race([textPromise, timeoutPromise]);
+    const { text } = await withTimeout(
+      generateText({
+        model: mistral('mistral-small-latest'),
+        system: HYDE_SYSTEM_PROMPT,
+        prompt: query,
+        maxOutputTokens: HYDE_MAX_TOKENS,
+      }),
+      HYDE_TIMEOUT_MS,
+      'HyDE timeout'
+    );
     const expandedText = text.trim();
 
     const elapsed = Date.now() - startTime;

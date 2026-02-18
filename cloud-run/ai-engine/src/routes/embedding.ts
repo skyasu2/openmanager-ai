@@ -43,6 +43,10 @@ embeddingRouter.post('/batch', async (c: Context) => {
       return handleValidationError(c, 'texts array is required');
     }
 
+    if (texts.length > 100) {
+      return handleValidationError(c, 'Max 100 texts per batch');
+    }
+
     const result = await createBatchEmbeddings(texts);
     return c.json(result);
   } catch (error) {

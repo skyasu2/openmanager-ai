@@ -16,6 +16,7 @@
 import { generateText } from 'ai';
 import { logger } from './logger';
 import { getMistralProvider } from './mistral-provider';
+import { withTimeout } from './with-timeout';
 
 // ============================================================================
 // Types
@@ -146,20 +147,18 @@ ${docSummaries}
 
 Rate relevance (0-1) for each document.`;
 
-    // Call Mistral for scoring
-    const textPromise = generateText({
-      model: mistral('mistral-small-latest'),
-      system: includeReason ? RERANK_SYSTEM_PROMPT_WITH_REASON : RERANK_SYSTEM_PROMPT,
-      prompt,
-      maxOutputTokens: 500,
-      temperature: 0.1, // Low temperature for consistent scoring
-    });
-
-    const timeoutPromise = new Promise<never>((_, reject) => {
-      setTimeout(() => reject(new Error('Rerank timeout')), RERANK_TIMEOUT_MS);
-    });
-
-    const { text } = await Promise.race([textPromise, timeoutPromise]);
+    // Call Mistral for scoring with timeout
+    const { text } = await withTimeout(
+      generateText({
+        model: mistral('mistral-small-latest'),
+        system: includeReason ? RERANK_SYSTEM_PROMPT_WITH_REASON : RERANK_SYSTEM_PROMPT,
+        prompt,
+        maxOutputTokens: 500,
+        temperature: 0.1, // Low temperature for consistent scoring
+      }),
+      RERANK_TIMEOUT_MS,
+      'Rerank timeout'
+    );
 
     // Parse scores from response
     const scores = parseRerankScores(text, docsToRerank.length);

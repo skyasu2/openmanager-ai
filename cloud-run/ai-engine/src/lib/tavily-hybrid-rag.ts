@@ -21,6 +21,7 @@
 import { getTavilyApiKey, getTavilyApiKeyBackup } from './config-parser';
 import { logger } from './logger';
 import { TIMEOUT_CONFIG } from '../config/timeout-config';
+import { withTimeout } from './with-timeout';
 
 // ============================================================================
 // Types
@@ -99,26 +100,6 @@ const DEFAULT_INCLUDE_DOMAINS = [
 const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 /**
- * Promise with timeout wrapper (proper cleanup to prevent timer leaks)
- */
-async function withTimeout<T>(
-  promise: Promise<T>,
-  timeoutMs: number,
-  errorMessage: string
-): Promise<T> {
-  let timeoutId: ReturnType<typeof setTimeout>;
-  const timeoutPromise = new Promise<never>((_, reject) => {
-    timeoutId = setTimeout(() => reject(new Error(errorMessage)), timeoutMs);
-  });
-
-  try {
-    return await Promise.race([promise, timeoutPromise]);
-  } finally {
-    clearTimeout(timeoutId!);
-  }
-}
-
-/**
  * Execute Tavily search with a single API key (internal)
  * Includes timeout protection and retry logic for transient errors
  */
@@ -171,11 +152,11 @@ async function executeSingleKeySearch(
 }
 
 /**
- * Execute Tavily search with dual-key failover
+ * Execute Tavily search with dual-key sequential failover
  *
- * When both primary and backup keys are available, uses Promise.any()
- * to race them in parallel — the first success wins, reducing latency
- * and providing automatic failover.
+ * When both primary and backup keys are available, tries primary first.
+ * Only falls back to backup key if primary fails. This avoids double
+ * API credit consumption that occurred with the previous Promise.any() approach.
  *
  * @throws Error if no API keys configured or all attempts fail
  */
@@ -202,14 +183,19 @@ export async function executeTavilySearchWithFailover(
     excludeDomains: options.excludeDomains || [],
   };
 
-  if (primaryKey && backupKey) {
-    return Promise.any([
-      executeSingleKeySearch(primaryKey, query, searchOpts),
-      executeSingleKeySearch(backupKey, query, searchOpts),
-    ]);
+  if (primaryKey) {
+    try {
+      return await executeSingleKeySearch(primaryKey, query, searchOpts);
+    } catch (primaryError) {
+      if (backupKey) {
+        logger.warn('[Tavily] Primary key failed, trying backup:', primaryError);
+        return executeSingleKeySearch(backupKey, query, searchOpts);
+      }
+      throw primaryError;
+    }
   }
 
-  return executeSingleKeySearch((primaryKey || backupKey)!, query, searchOpts);
+  return executeSingleKeySearch(backupKey!, query, searchOpts);
 }
 
 // ============================================================================
