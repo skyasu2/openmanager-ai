@@ -307,16 +307,16 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
                 type="button"
                 data-toggle-button
                 onClick={toggleExpansion}
-                className="flex h-6 w-6 items-center justify-center rounded-full bg-black/5 hover:bg-black/10 text-gray-500 hover:text-gray-700 transition-colors cursor-pointer"
+                className="flex h-11 w-11 items-center justify-center rounded-full bg-black/5 hover:bg-black/10 text-gray-500 hover:text-gray-700 transition-colors cursor-pointer"
                 aria-expanded={showTertiaryInfo}
                 aria-label={
                   showTertiaryInfo ? '상세 정보 접기' : '상세 정보 펼치기'
                 }
               >
                 {showTertiaryInfo ? (
-                  <ChevronUp className="h-3 w-3" />
+                  <ChevronUp className="h-4 w-4" />
                 ) : (
-                  <ChevronDown className="h-3 w-3" />
+                  <ChevronDown className="h-4 w-4" />
                 )}
               </button>
             )}

@@ -148,7 +148,9 @@ export function useHybridAIQuery(
   );
 
   // State
-  const [resumeEnabled, setResumeEnabled] = useState(true);
+  // P0 hotfix: AI SDK resume probe가 일부 환경에서 undefined.state 런타임 에러를 유발해
+  // 기본적으로 비활성화하고, 안정화 전까지 재활성화하지 않는다.
+  const [resumeEnabled, setResumeEnabled] = useState(false);
   const [state, setState] = useState<HybridQueryState>({
     mode: 'streaming',
     complexity: null,
@@ -202,8 +204,7 @@ export function useHybridAIQuery(
   } = useChat({
     id: sessionIdRef.current,
     transport,
-    // Abort/stop 사용 후에는 현재 스트림 재연결을 비활성화하고,
-    // 새 쿼리 시작 시에만 다시 활성화해 resume+abort 충돌 가능성을 줄인다.
+    // P0 hotfix: resume 경로 비활성화
     resume: resumeEnabled,
     onFinish: ({ message }) => {
       // 🔒 Race Condition 방지: onError가 이미 에러를 처리했으면 스킵
@@ -480,7 +481,7 @@ export function useHybridAIQuery(
     asyncQuery,
     sendMessage,
     onBeforeStreamingSend: () => {
-      setResumeEnabled(true);
+      setResumeEnabled(false);
     },
     setMessages,
     setState,
@@ -518,7 +519,7 @@ export function useHybridAIQuery(
       setResumeEnabled(false);
     },
     onReset: () => {
-      setResumeEnabled(true);
+      setResumeEnabled(false);
     },
     setMessages,
     setState,

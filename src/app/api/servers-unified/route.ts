@@ -18,6 +18,8 @@ import { createApiRoute } from '@/lib/api/zod-middleware';
 import { withAuth } from '@/lib/auth/api-auth';
 import { logger } from '@/lib/logging';
 import { getServerMonitoringService } from '@/services/monitoring';
+import { queryIncidentEvents } from '@/services/monitoring/incident-search';
+import type { IncidentMetric, IncidentSeverity } from '@/types/incidents';
 import type { EnhancedServerMetrics } from '@/types/server';
 import { getErrorMessage } from '@/types/type-utils';
 import debug from '@/utils/debug';
@@ -29,6 +31,7 @@ const serversUnifiedRequestSchema = z.object({
     'cached', // 캐시된 서버 데이터
     'mock', // 목업 서버 데이터
     'realtime', // 실시간 서버 데이터
+    'incidents', // 24시간 장애/경고 이벤트 검색
     'detail', // 특정 서버 상세
     'processes', // 서버 프로세스 목록
   ]),
@@ -46,6 +49,12 @@ const serversUnifiedRequestSchema = z.object({
   // 실시간 특화 옵션
   includeProcesses: z.boolean().default(false),
   includeMetrics: z.boolean().default(true),
+
+  // incidents 액션 옵션
+  severity: z.enum(['warning', 'critical', 'offline']).optional(),
+  metric: z.enum(['cpu', 'memory', 'disk', 'network', 'composite']).optional(),
+  from: z.string().optional(),
+  to: z.string().optional(),
 });
 
 type ServersUnifiedRequest = z.infer<typeof serversUnifiedRequestSchema>;
@@ -168,6 +177,10 @@ async function handleServersUnified(
       sortOrder?: ServersUnifiedRequest['sortOrder'];
       includeProcesses?: boolean;
       includeMetrics?: boolean;
+      severity?: IncidentSeverity;
+      metric?: IncidentMetric;
+      from?: string;
+      to?: string;
     };
     query: unknown;
     params: Record<string, string>;
@@ -181,20 +194,35 @@ async function handleServersUnified(
     search,
     sortBy = 'name',
     sortOrder = 'asc',
+    severity,
+    metric,
+    from,
+    to,
   } = context.body;
 
   try {
     debug.log(`🎯 통합 서버 API - 액션: ${action}`, { serverId, page, limit });
 
-    // 🚀 비동기 데이터 로딩 보장 (Bundle Size Optimization 대응)
-    const MetricsProvider = (await import('@/services/metrics/MetricsProvider'))
-      .MetricsProvider;
-    await MetricsProvider.getInstance().ensureDataLoaded();
-
     let servers: EnhancedServerMetrics[] = [];
     const additionalData: Record<string, unknown> = {};
 
     // 액션별 데이터 처리
+    switch (action) {
+      // 🚀 비동기 데이터 로딩 보장 (Bundle Size Optimization 대응)
+      // incidents는 OTel hourly index 기반이므로 MetricsProvider hydration 불필요
+      case 'list':
+      case 'cached':
+      case 'mock':
+      case 'realtime':
+      case 'detail':
+      case 'processes': {
+        const MetricsProvider = (
+          await import('@/services/metrics/MetricsProvider')
+        ).MetricsProvider;
+        await MetricsProvider.getInstance().ensureDataLoaded();
+      }
+    }
+
     switch (action) {
       case 'list':
         servers = await getRealtimeServers();
@@ -228,6 +256,53 @@ async function handleServersUnified(
           updateFrequency: '30s',
         };
         break;
+
+      case 'incidents': {
+        const incidentResult = await queryIncidentEvents({
+          search,
+          severity,
+          metric,
+          from,
+          to,
+          page,
+          limit,
+          sortOrder,
+        });
+
+        return {
+          success: true,
+          action,
+          data: incidentResult.items,
+          pagination: {
+            page: incidentResult.page,
+            limit: incidentResult.limit,
+            total: incidentResult.total,
+            totalPages: incidentResult.totalPages,
+            hasNext: incidentResult.page < incidentResult.totalPages,
+            hasPrev: incidentResult.page > 1,
+          },
+          summary: {
+            total: incidentResult.total,
+            severity,
+            metric,
+            from,
+            to,
+          },
+          metadata: {
+            action,
+            dataSource: 'otel-hourly-incident-index',
+            incidentWindow: {
+              start: incidentResult.metadata.windowStart,
+              end: incidentResult.metadata.windowEnd,
+            },
+            cacheAgeMs: incidentResult.metadata.cacheAgeMs,
+            builtAt: incidentResult.metadata.builtAt,
+            unifiedApi: true,
+            systemVersion: 'servers-unified-v1.1',
+          },
+          timestamp: new Date().toISOString(),
+        };
+      }
 
       case 'detail': {
         if (!serverId) {
@@ -352,19 +427,57 @@ const postHandler = createApiRoute()
 // 호환성을 위한 GET 메서드 (기본 list 액션)
 async function getHandler(request: NextRequest) {
   const { searchParams } = new URL(request.url);
+  const requestedAction = searchParams.get('action');
+  const allowedActions: ServersUnifiedRequest['action'][] = [
+    'list',
+    'cached',
+    'mock',
+    'realtime',
+    'incidents',
+    'detail',
+    'processes',
+  ];
+  const action: ServersUnifiedRequest['action'] = allowedActions.includes(
+    requestedAction as ServersUnifiedRequest['action']
+  )
+    ? (requestedAction as ServersUnifiedRequest['action'])
+    : 'list';
+
+  const severityParam = searchParams.get('severity');
+  const severity = ['warning', 'critical', 'offline'].includes(
+    severityParam || ''
+  )
+    ? (severityParam as IncidentSeverity)
+    : undefined;
+
+  const metricParam = searchParams.get('metric');
+  const metric = ['cpu', 'memory', 'disk', 'network', 'composite'].includes(
+    metricParam || ''
+  )
+    ? (metricParam as IncidentMetric)
+    : undefined;
+
+  const sortOrderParam = searchParams.get('sortOrder');
+  const defaultSortOrder = action === 'incidents' ? 'desc' : 'asc';
+  const sortOrder =
+    sortOrderParam === 'asc' || sortOrderParam === 'desc'
+      ? (sortOrderParam as ServersUnifiedRequest['sortOrder'])
+      : (defaultSortOrder as ServersUnifiedRequest['sortOrder']);
 
   const defaultRequest: ServersUnifiedRequest = {
-    action: 'list',
+    action,
     page: parseInt(searchParams.get('page') || '1', 10),
     limit: parseInt(searchParams.get('limit') || '10', 10),
     search: searchParams.get('search') || undefined,
     sortBy:
       (searchParams.get('sortBy') as ServersUnifiedRequest['sortBy']) || 'name',
-    sortOrder:
-      (searchParams.get('sortOrder') as ServersUnifiedRequest['sortOrder']) ||
-      'asc',
+    sortOrder,
     includeProcesses: false,
     includeMetrics: true,
+    severity,
+    metric,
+    from: searchParams.get('from') || undefined,
+    to: searchParams.get('to') || undefined,
   };
 
   return NextResponse.json(

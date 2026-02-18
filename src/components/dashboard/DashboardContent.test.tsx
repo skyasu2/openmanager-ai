@@ -39,6 +39,10 @@ vi.mock('./SystemOverviewSection', () => ({
   SystemOverviewSection: vi.fn(() => <div data-testid="system-overview" />),
 }));
 
+vi.mock('./ServerDashboard', () => ({
+  default: vi.fn(() => <div data-testid="server-dashboard" />),
+}));
+
 vi.mock('./ActiveAlertsModal', () => ({
   ActiveAlertsModal: vi.fn(() => null),
 }));
@@ -53,6 +57,10 @@ vi.mock('./alert-history/AlertHistoryModal', () => ({
 
 vi.mock('./log-explorer/LogExplorerModal', () => ({
   LogExplorerModal: vi.fn(() => null),
+}));
+
+vi.mock('./incident-explorer/IncidentExplorerModal', () => ({
+  IncidentExplorerModal: vi.fn(() => null),
 }));
 
 const createProps = (

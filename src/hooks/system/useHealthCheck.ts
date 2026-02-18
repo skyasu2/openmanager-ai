@@ -119,9 +119,6 @@ async function performHealthCheck(service: 'ai' | 'all' = 'ai'): Promise<void> {
     return;
   }
 
-  // 이전 요청 취소
-  healthStore.abortController?.abort();
-
   const controller = new AbortController();
   healthStore.abortController = controller;
   healthStore.isChecking = true;
@@ -276,7 +273,6 @@ export function useHealthCheck(options: UseHealthCheckOptions = {}) {
       if (typeof document !== 'undefined') {
         document.removeEventListener('visibilitychange', handleVisibility);
       }
-      healthStore.abortController?.abort();
     };
   }, [pollingInterval, pauseWhenHidden, checkOnMount, check]);
 

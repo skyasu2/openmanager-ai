@@ -13,7 +13,9 @@ import { ActiveAlertsModal } from './ActiveAlertsModal';
 import { AlertHistoryModal } from './alert-history/AlertHistoryModal';
 import { DashboardSummary } from './DashboardSummary';
 import { resolveDashboardEmptyState } from './dashboard-empty-state';
+import { IncidentExplorerModal } from './incident-explorer/IncidentExplorerModal';
 import { LogExplorerModal } from './log-explorer/LogExplorerModal';
+import ServerDashboard from './ServerDashboard';
 import { SystemOverviewSection } from './SystemOverviewSection';
 import { TopologyModal } from './TopologyModal';
 import type { DashboardStats } from './types/dashboard.types';
@@ -68,14 +70,6 @@ const ReactFlowDiagramDynamic = dynamic(
   { ssr: false }
 );
 
-const ServerDashboardDynamic = dynamic(() => import('./ServerDashboard'), {
-  loading: () => (
-    <div className="flex items-center justify-center p-8">
-      <div className="h-8 w-8 animate-spin rounded-full border-2 border-blue-500 border-t-transparent"></div>
-    </div>
-  ),
-});
-
 export default memo(function DashboardContent({
   showSequentialGeneration,
   servers,
@@ -125,6 +119,7 @@ export default memo(function DashboardContent({
   // 모달 상태
   const [alertHistoryOpen, setAlertHistoryOpen] = useState(false);
   const [logExplorerOpen, setLogExplorerOpen] = useState(false);
+  const [incidentExplorerOpen, setIncidentExplorerOpen] = useState(false);
   const [activeAlertsOpen, setActiveAlertsOpen] = useState(false);
   const [topologyModalOpen, setTopologyModalOpen] = useState(false);
 
@@ -223,6 +218,7 @@ export default memo(function DashboardContent({
           onFilterChange={onStatusFilterChange}
           onOpenAlertHistory={() => setAlertHistoryOpen(true)}
           onOpenLogExplorer={() => setLogExplorerOpen(true)}
+          onOpenIncidentExplorer={() => setIncidentExplorerOpen(true)}
           showTopology={showTopology}
           onToggleTopology={() => setShowTopology((prev) => !prev)}
           activeAlertsCount={monitoringReport?.firingAlerts?.length ?? 0}
@@ -279,7 +275,7 @@ export default memo(function DashboardContent({
               {/* 🔧 Phase 4 (2026-01-28): Props 기반 데이터 흐름
                     - DashboardClient → DashboardContent → ServerDashboard로 전달
                     - 중복 fetch 제거 (useServerDashboard 호출 1회로 최적화) */}
-              <ServerDashboardDynamic
+              <ServerDashboard
                 servers={servers}
                 totalServers={totalServers}
                 currentPage={currentPage}
@@ -369,6 +365,21 @@ export default memo(function DashboardContent({
             open={logExplorerOpen}
             onClose={() => setLogExplorerOpen(false)}
             servers={allServers?.length ? allServers : servers}
+          />
+        )}
+
+        {/* Incident Explorer Modal */}
+        {incidentExplorerOpen && (
+          <IncidentExplorerModal
+            open={incidentExplorerOpen}
+            onClose={() => setIncidentExplorerOpen(false)}
+            initialSeverity={
+              statusFilter === 'warning' ||
+              statusFilter === 'critical' ||
+              statusFilter === 'offline'
+                ? statusFilter
+                : 'all'
+            }
           />
         )}
       </div>

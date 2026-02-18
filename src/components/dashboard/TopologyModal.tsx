@@ -82,7 +82,7 @@ export function TopologyModal({ open, onClose, servers }: TopologyModalProps) {
                   synthetic 메트릭 모델
                 </div>
                 <DialogPrimitive.Close
-                  className="flex h-9 w-9 items-center justify-center rounded-lg text-slate-400 transition-all hover:bg-rose-500/20 hover:text-rose-400 cursor-pointer"
+                  className="flex h-11 w-11 items-center justify-center rounded-lg text-slate-400 transition-all hover:bg-rose-500/20 hover:text-rose-400 cursor-pointer"
                   aria-label="닫기"
                 >
                   <X size={20} />

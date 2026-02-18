@@ -11,6 +11,7 @@
 
 import { Activity, BarChart3, Cpu, FileText, Network } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useServerMetrics } from '@/hooks/useServerMetrics';
 import { logger } from '@/lib/logging';
 
@@ -67,59 +68,66 @@ export default function EnhancedServerModal({
   }, []);
 
   // ♿ 접근성: 포커스 트랩 (모달 내부에서만 Tab 키 이동)
-  const getFocusableElements = useCallback(() => {
-    if (!dialogRef.current) return [];
-    return Array.from(
-      dialogRef.current.querySelectorAll<HTMLElement>(
-        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-      )
-    ).filter((el) => !el.hasAttribute('disabled') && el.offsetParent !== null);
-  }, []);
-
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      // ESC 키로 모달 닫기
+  const handleDialogKeyDown = useCallback(
+    (event: React.KeyboardEvent<HTMLDialogElement>) => {
       if (event.key === 'Escape') {
+        event.preventDefault();
         onClose();
         return;
       }
 
-      // Tab 키 트랩
       if (event.key === 'Tab') {
-        const focusableElements = getFocusableElements();
-        if (focusableElements.length === 0) return;
+        const dialog = dialogRef.current;
+        if (!dialog) return;
 
-        const firstElement = focusableElements[0];
-        const lastElement = focusableElements[focusableElements.length - 1];
+        const focusable = Array.from(
+          dialog.querySelectorAll<HTMLElement>(
+            'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+          )
+        ).filter(
+          (el) => !el.hasAttribute('disabled') && el.offsetParent !== null
+        );
 
-        if (!firstElement || !lastElement) return;
+        if (focusable.length === 0) {
+          event.preventDefault();
+          return;
+        }
+
+        event.preventDefault();
+
+        const idx = focusable.indexOf(document.activeElement as HTMLElement);
 
         if (event.shiftKey) {
-          // Shift+Tab: 첫 요소에서 마지막으로 이동
-          if (document.activeElement === firstElement) {
-            event.preventDefault();
-            lastElement.focus();
-          }
+          const prev = idx <= 0 ? focusable.length - 1 : idx - 1;
+          focusable[prev]?.focus();
         } else {
-          // Tab: 마지막 요소에서 첫 요소로 이동
-          if (document.activeElement === lastElement) {
-            event.preventDefault();
-            firstElement.focus();
-          }
+          const next = idx >= focusable.length - 1 ? 0 : idx + 1;
+          focusable[next]?.focus();
         }
       }
-    };
+    },
+    [onClose]
+  );
 
-    // 모달 열릴 때 첫 번째 포커스 가능 요소에 포커스
-    const focusableElements = getFocusableElements();
-    const firstFocusable = focusableElements[0];
-    if (firstFocusable) {
-      firstFocusable.focus();
+  // ♿ 모달 열릴 때 외부 요소를 inert로 비활성화 → 네이티브 focus containment
+  useEffect(() => {
+    const backdrop = document.querySelector<HTMLElement>('.gpu-modal-backdrop');
+    if (!backdrop) return;
+
+    const inertSiblings: Element[] = [];
+    for (const child of document.body.children) {
+      if (child !== backdrop && !child.contains(backdrop)) {
+        child.setAttribute('inert', '');
+        inertSiblings.push(child);
+      }
     }
 
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [onClose, getFocusableElements]);
+    return () => {
+      for (const el of inertSiblings) {
+        el.removeAttribute('inert');
+      }
+    };
+  }, []);
 
   // 🛡️ 서버 데이터 안전성 검증 및 기본값 설정
   const safeServer = useMemo(
@@ -207,7 +215,7 @@ export default function EnhancedServerModal({
 
   if (!safeServer) {
     logger.warn('⚠️ [EnhancedServerModal] 서버 데이터가 없습니다.');
-    return (
+    return createPortal(
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
         <button
           type="button"
@@ -233,11 +241,12 @@ export default function EnhancedServerModal({
             닫기
           </button>
         </div>
-      </div>
+      </div>,
+      document.body
     );
   }
 
-  return (
+  return createPortal(
     <div
       className="gpu-modal-backdrop fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm"
       role="presentation"
@@ -245,12 +254,14 @@ export default function EnhancedServerModal({
       <button
         type="button"
         aria-label="모달 닫기"
+        tabIndex={-1}
         className="absolute inset-0 h-full w-full cursor-pointer"
         onClick={onClose}
       />
       <dialog
         ref={dialogRef}
         open
+        onKeyDown={handleDialogKeyDown}
         className="gpu-modal-content relative flex h-[95vh] w-full max-w-7xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl ring-1 ring-gray-200 sm:h-[90vh] sm:rounded-3xl"
         aria-modal="true"
         aria-labelledby="modal-title"
@@ -456,6 +467,7 @@ export default function EnhancedServerModal({
           </div>
         </div>
       </dialog>
-    </div>
+    </div>,
+    document.body
   );
 }

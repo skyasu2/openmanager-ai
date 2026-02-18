@@ -374,11 +374,18 @@ async function generateServerHistoryFromTimeSeries(
     else if (unit === 'm') durationMs = value * 60 * 1000;
   }
 
-  const now = Date.now();
-  const startTimeMs = now - durationMs;
+  // 정적 데이터셋(public/data)에서도 안정적으로 동작하도록
+  // "현재 시각"이 아니라 데이터셋 마지막 포인트를 anchor로 사용한다.
+  const datasetEndMs =
+    timestamps.length > 0
+      ? timestamps[timestamps.length - 1]! * 1000
+      : Date.now();
+  const datasetStartMs =
+    timestamps.length > 0 ? timestamps[0]! * 1000 : datasetEndMs;
+  const startTimeMs = Math.max(datasetStartMs, datasetEndMs - durationMs);
 
   const filteredPoints = fullDataPoints.filter(
-    (p) => p.timestampUnix >= startTimeMs
+    (p) => p.timestampUnix >= startTimeMs && p.timestampUnix <= datasetEndMs
   );
 
   // 데이터가 없으면 빈 배열 대신 마지막 포인트라도 반환 (그래프 렌더링 위해)

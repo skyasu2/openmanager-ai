@@ -534,3 +534,6 @@ cloud-run/docker-compose.override.yml
 
 # Local npm global directory
 .npm-global/
+
+# Storybook
+storybook-static/

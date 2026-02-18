@@ -5,6 +5,7 @@ import {
   Bell,
   CheckCircle2,
   FileSearch,
+  History,
   Network,
   Server as ServerIcon,
   ShieldAlert,
@@ -21,6 +22,7 @@ interface DashboardSummaryProps {
   onFilterChange?: (filter: string | null) => void;
   onOpenAlertHistory?: () => void;
   onOpenLogExplorer?: () => void;
+  onOpenIncidentExplorer?: () => void;
   showTopology?: boolean;
   onToggleTopology?: () => void;
   /** 현재 활성 알림 건수 */
@@ -161,6 +163,7 @@ export const DashboardSummary: React.FC<DashboardSummaryProps> = memo(
     onFilterChange,
     onOpenAlertHistory,
     onOpenLogExplorer,
+    onOpenIncidentExplorer,
     showTopology = false,
     onToggleTopology,
     activeAlertsCount = 0,
@@ -309,7 +312,7 @@ export const DashboardSummary: React.FC<DashboardSummaryProps> = memo(
                     type="button"
                     onClick={onOpenActiveAlerts}
                     aria-label="활성 알림 보기"
-                    className="relative flex h-10 items-center gap-1.5 rounded-lg border border-rose-100/80 bg-white/90 px-2 text-xs font-semibold text-gray-600 shadow-xs transition-all duration-200 hover:-translate-y-0.5 hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600 hover:shadow-sm active:translate-y-0 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-300/60 cursor-pointer"
+                    className="relative flex h-11 items-center gap-1.5 rounded-lg border border-rose-100/80 bg-white/90 px-3 text-xs font-semibold text-gray-600 shadow-xs transition-all duration-200 hover:-translate-y-0.5 hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600 hover:shadow-sm active:translate-y-0 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-300/60 cursor-pointer"
                   >
                     <AlertTriangle size={14} />
                     <span>알림</span>
@@ -325,7 +328,7 @@ export const DashboardSummary: React.FC<DashboardSummaryProps> = memo(
                     type="button"
                     onClick={onOpenAlertHistory}
                     aria-label="알림 이력 보기"
-                    className="flex h-10 items-center gap-1.5 rounded-lg border border-amber-100/80 bg-white/90 px-2 text-xs font-semibold text-gray-600 shadow-xs transition-all duration-200 hover:-translate-y-0.5 hover:border-amber-200 hover:bg-amber-50 hover:text-amber-600 hover:shadow-sm active:translate-y-0 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300/60 cursor-pointer"
+                    className="flex h-11 items-center gap-1.5 rounded-lg border border-amber-100/80 bg-white/90 px-3 text-xs font-semibold text-gray-600 shadow-xs transition-all duration-200 hover:-translate-y-0.5 hover:border-amber-200 hover:bg-amber-50 hover:text-amber-600 hover:shadow-sm active:translate-y-0 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300/60 cursor-pointer"
                     title="알림 이력"
                   >
                     <Bell size={16} />
@@ -337,11 +340,23 @@ export const DashboardSummary: React.FC<DashboardSummaryProps> = memo(
                     type="button"
                     onClick={onOpenLogExplorer}
                     aria-label="로그 검색 보기"
-                    className="flex h-10 items-center gap-1.5 rounded-lg border border-blue-100/80 bg-white/90 px-2 text-xs font-semibold text-gray-600 shadow-xs transition-all duration-200 hover:-translate-y-0.5 hover:border-blue-200 hover:bg-blue-50 hover:text-blue-600 hover:shadow-sm active:translate-y-0 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-300/60 cursor-pointer"
+                    className="flex h-11 items-center gap-1.5 rounded-lg border border-blue-100/80 bg-white/90 px-3 text-xs font-semibold text-gray-600 shadow-xs transition-all duration-200 hover:-translate-y-0.5 hover:border-blue-200 hover:bg-blue-50 hover:text-blue-600 hover:shadow-sm active:translate-y-0 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-300/60 cursor-pointer"
                     title="로그 검색"
                   >
                     <FileSearch size={16} />
                     <span>로그 검색</span>
+                  </button>
+                )}
+                {onOpenIncidentExplorer && (
+                  <button
+                    type="button"
+                    onClick={onOpenIncidentExplorer}
+                    aria-label="장애 이슈 검색 보기"
+                    className="flex h-11 items-center gap-1.5 rounded-lg border border-purple-100/80 bg-white/90 px-3 text-xs font-semibold text-gray-600 shadow-xs transition-all duration-200 hover:-translate-y-0.5 hover:border-purple-200 hover:bg-purple-50 hover:text-purple-700 hover:shadow-sm active:translate-y-0 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-300/60 cursor-pointer"
+                    title="24시간 이슈 검색"
+                  >
+                    <History size={15} />
+                    <span>이슈 검색</span>
                   </button>
                 )}
               </div>
@@ -378,7 +393,7 @@ export const DashboardSummary: React.FC<DashboardSummaryProps> = memo(
                     onClick={onToggleTopology}
                     aria-pressed={showTopology}
                     className={cn(
-                      'inline-flex h-9 items-center gap-1.5 rounded-lg border bg-white/85 px-2.5 text-xs font-semibold shadow-xs transition-all duration-200',
+                      'inline-flex h-11 items-center gap-1.5 rounded-lg border bg-white/85 px-3 text-xs font-semibold shadow-xs transition-all duration-200',
                       'hover:-translate-y-0.5 hover:shadow-sm active:translate-y-0 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 cursor-pointer',
                       showTopology
                         ? 'border-indigo-300 text-indigo-700 hover:bg-indigo-50 focus-visible:ring-indigo-300/60'

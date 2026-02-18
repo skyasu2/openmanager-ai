@@ -17,6 +17,7 @@ vi.mock('lucide-react', () => {
     Bell: MockIcon,
     CheckCircle2: MockIcon,
     FileSearch: MockIcon,
+    History: MockIcon,
     Network: MockIcon,
     Server: MockIcon,
     ShieldAlert: MockIcon,

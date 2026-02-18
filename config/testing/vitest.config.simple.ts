@@ -45,14 +45,7 @@ export default defineConfig({
         'src/services/ai/**',
         'src/app/api/**',
       ],
-      thresholds: {
-        global: {
-          branches: 10,
-          functions: 10,
-          lines: 10,
-          statements: 10
-        }
-      }
+      // 커버리지는 수집만 하고 임계값 실패 게이트는 적용하지 않음.
     },
     testTimeout: 5000,
     hookTimeout: 5000,

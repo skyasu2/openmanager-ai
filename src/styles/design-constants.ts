@@ -252,6 +252,9 @@ export const AI_GRADIENT_ANIMATED_STYLE = {
   background: 'linear-gradient(135deg, #3b82f6, #8b5cf6, #ec4899, #3b82f6)',
   backgroundSize: '200% 200%',
   animation: 'gradient-diagonal 3s ease infinite',
+  WebkitBackgroundClip: 'text',
+  backgroundClip: 'text',
+  WebkitTextFillColor: 'transparent',
 } as const;
 
 // 🎨 AI 아이콘 그라데이션 상수 (2025 업데이트: 핑크 → 보라 → 밝은 청색)

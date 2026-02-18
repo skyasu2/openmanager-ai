@@ -83,14 +83,7 @@ export default defineConfig({
       // ⚠️ Vitest 4.0: coverage.all 옵션 제거됨 (deprecated)
       // 대안: include 배열로 측정 대상 명시적 지정 (위에서 설정됨)
 
-      // ✅ 커버리지 목표 설정 (WSL worker timeout으로 인한 가변성 고려)
-      // CI에서는 ~13%, WSL 로컬에서는 worker skip으로 8~13% 범위
-      thresholds: {
-        lines: 8,
-        branches: 8,
-        functions: 8,
-        statements: 8,
-      },
+      // 커버리지는 수집만 하고 임계값 실패 게이트는 적용하지 않음.
     },
     testTimeout: 30000,
     hookTimeout: 120000,

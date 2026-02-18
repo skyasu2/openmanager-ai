@@ -10,6 +10,10 @@ import {
 
 export type { MonitoringReportResponse };
 
+const MONITORING_POLL_INTERVAL_MS = 30_000;
+const MONITORING_STALE_TIME_MS = 25_000;
+const MONITORING_GC_TIME_MS = 60_000;
+
 function getMonitoringErrorMessageByStatus(status: number): string {
   if (status === 401) return '모니터링 리포트 조회 권한이 없습니다.';
   if (status === 403) return '모니터링 리포트 접근이 차단되었습니다.';
@@ -66,9 +70,19 @@ export function useMonitoringReport() {
   return useQuery({
     queryKey: ['monitoring-report'],
     queryFn: fetchMonitoringReport,
-    refetchInterval: 30_000, // 30초 간격 갱신
-    staleTime: 25_000,
-    gcTime: 60_000,
+    refetchInterval: () => {
+      if (
+        typeof document !== 'undefined' &&
+        document.visibilityState !== 'visible'
+      ) {
+        return false;
+      }
+      return MONITORING_POLL_INTERVAL_MS;
+    },
+    refetchIntervalInBackground: false,
+    staleTime: MONITORING_STALE_TIME_MS,
+    gcTime: MONITORING_GC_TIME_MS,
     refetchOnWindowFocus: false,
+    retry: 1,
   });
 }

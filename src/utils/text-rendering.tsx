@@ -7,6 +7,7 @@
 import type React from 'react';
 
 import {
+  AI_GRADIENT_ANIMATED_STYLE,
   AI_GRADIENT_CLASSES,
   AI_ICON_GRADIENT_ANIMATED_STYLE,
   AI_ICON_GRADIENT_CLASSES,
@@ -66,22 +67,37 @@ export function renderTextWithAIGradient(
  * ⚠️ Tailwind v4 호환: 인라인 스타일로 gradient + animation 적용
  * Tailwind gradient 클래스와 background-position 애니메이션이 충돌하므로 인라인 스타일 사용
  */
-export function renderAIGradientWithAnimation(text: string): React.ReactNode {
+export function renderAIGradientWithAnimation(
+  text: string,
+  variant: 'gradient' | 'white' = 'gradient'
+): React.ReactNode {
   if (!text.includes('AI')) return text;
 
   return text.split(/(AI)/g).map((part, index) => {
     if (part === 'AI') {
-      // 모든 AI 텍스트를 Vibe 스타일(흰색 + 앰버 글로우)로 통일
-      // 사용자의 요청: "그라데이션 적용하지말고 대신 바이브 코딩 카드의 ai 단서 표시 로 통일 해줘"
+      if (variant === 'white') {
+        // Vibe 스타일 (흰색 + 앰버 글로우) - 카드용
+        return (
+          <span
+            key={index}
+            className="font-extrabold text-white"
+            style={{
+              textShadow:
+                '0 0 8px rgba(251, 191, 36, 0.6), 0 1px 2px rgba(0,0,0,0.3)',
+              letterSpacing: '0.05em',
+            }}
+          >
+            {part}
+          </span>
+        );
+      }
+
+      // 기본 그라데이션 애니메이션 - 타이틀용
       return (
         <span
           key={index}
-          className="font-extrabold text-white"
-          style={{
-            textShadow:
-              '0 0 8px rgba(251, 191, 36, 0.6), 0 1px 2px rgba(0,0,0,0.3)',
-            letterSpacing: '0.05em',
-          }}
+          className={`${AI_GRADIENT_CLASSES} animate-gradient-diagonal bg-clip-text font-extrabold text-transparent`}
+          style={AI_GRADIENT_ANIMATED_STYLE}
         >
           {part}
         </span>

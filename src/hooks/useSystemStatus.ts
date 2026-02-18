@@ -59,8 +59,8 @@ export function useSystemStatus(): UseSystemStatusReturn {
   const [status, setStatus] = useState<SystemStatus | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [lastFocusRefresh, setLastFocusRefresh] = useState<number>(0);
   const statusRef = useRef<SystemStatus | null>(null); // 🔧 비교용 ref
+  const lastFocusRefreshRef = useRef<number>(0);
 
   // 🔧 상태 업데이트 최적화: 변경된 경우만 setState 호출
   const updateStatusIfChanged = useCallback((newStatus: SystemStatus) => {
@@ -161,8 +161,8 @@ export function useSystemStatus(): UseSystemStatusReturn {
     const handleFocus = () => {
       if (!document.hidden) {
         const now = Date.now();
-        if (now - lastFocusRefresh > 120000) {
-          setLastFocusRefresh(now);
+        if (now - lastFocusRefreshRef.current > 120000) {
+          lastFocusRefreshRef.current = now;
           void performFetch(abortController.signal);
         }
       }
@@ -176,7 +176,7 @@ export function useSystemStatus(): UseSystemStatusReturn {
       window.removeEventListener('focus', handleFocus);
       abortController.abort();
     };
-  }, [lastFocusRefresh, performFetch]);
+  }, [performFetch]);
 
   return {
     status,
