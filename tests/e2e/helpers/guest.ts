@@ -218,10 +218,34 @@ export async function guestLogin(
   // 게스트 로그인 버튼 클릭
   await clickLoginButton(page, 'guest');
 
-  await page.waitForURL(`**${waitForPath}**`, {
-    timeout: TIMEOUTS.NETWORK_REQUEST,
-  });
-  await page.waitForLoadState('networkidle', {
+  // NOTE:
+  // waitForPath 기본값 '/'는 '/login'도 매치되어 조기 통과될 수 있으므로,
+  // 먼저 "로그인/콜백 단계 이탈"을 확정한 뒤 선택적으로 목표 경로를 확인한다.
+  await page.waitForURL(
+    (url) =>
+      !url.pathname.startsWith('/login') && !url.pathname.startsWith('/auth'),
+    {
+      timeout: TIMEOUTS.NETWORK_REQUEST,
+    }
+  );
+
+  if (waitForPath !== '/') {
+    await page.waitForURL(`**${waitForPath}**`, {
+      timeout: TIMEOUTS.NETWORK_REQUEST,
+    });
+  }
+
+  await page
+    .waitForFunction(
+      () =>
+        document.cookie.includes('auth_type=guest') ||
+        localStorage.getItem('auth_type') === 'guest',
+      null,
+      { timeout: TIMEOUTS.NETWORK_REQUEST }
+    )
+    .catch(() => undefined);
+
+  await page.waitForLoadState('domcontentloaded', {
     timeout: TIMEOUTS.NETWORK_REQUEST,
   });
 }

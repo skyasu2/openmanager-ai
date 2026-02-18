@@ -22,15 +22,49 @@ export function ActiveAlertsModal({
   alerts,
 }: ActiveAlertsModalProps) {
   const overlayRef = useRef<HTMLDivElement>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
 
-  // ESC 키로 닫기
+  // ESC 키로 닫기 + 포커스 트래핑
   useEffect(() => {
     if (!open) return;
+
+    // 모달 열릴 때 포커스 이동
+    const dialog = dialogRef.current;
+    const previouslyFocused = document.activeElement as HTMLElement | null;
+    dialog?.querySelector<HTMLElement>('button')?.focus();
+
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
+      if (e.key === 'Escape') {
+        onClose();
+        return;
+      }
+
+      // Tab 포커스 트래핑
+      if (e.key === 'Tab' && dialog) {
+        const focusable = dialog.querySelectorAll<HTMLElement>(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        );
+        if (focusable.length === 0) return;
+
+        const first = focusable[0] as HTMLElement | undefined;
+        const last = focusable[focusable.length - 1] as HTMLElement | undefined;
+        if (!first || !last) return;
+
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
     };
+
     document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+      previouslyFocused?.focus();
+    };
   }, [open, onClose]);
 
   if (!open) return null;
@@ -65,7 +99,10 @@ export function ActiveAlertsModal({
         }
       }}
     >
-      <div className="relative mx-4 w-full max-w-2xl rounded-2xl border border-gray-200/60 bg-white shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+      <div
+        ref={dialogRef}
+        className="relative mx-4 w-full max-w-2xl rounded-2xl border border-gray-200/60 bg-white shadow-2xl animate-in fade-in zoom-in-95 duration-200"
+      >
         {/* Header */}
         <div className="flex items-center justify-between border-b border-gray-100 px-6 py-4">
           <div className="flex items-center gap-3">

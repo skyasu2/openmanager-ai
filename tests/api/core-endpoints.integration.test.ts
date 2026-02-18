@@ -456,7 +456,11 @@ describe.skipIf(!shouldRunIntegration)(
       });
 
       it('GET /api/system - 시스템 상태 API 정상 동작', async () => {
-        const result = await testApiEndpoint('/api/system', 200, SystemStatusResponseSchema);
+        const result = await testApiEndpoint(
+          '/api/system',
+          200,
+          SystemStatusResponseSchema
+        );
 
         expect(result.data.isRunning).toBe(true);
         expect(result.data.userCount).toBeGreaterThanOrEqual(0);

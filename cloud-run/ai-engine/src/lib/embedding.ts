@@ -1,115 +1,130 @@
 /**
- * Mistral Embedding Utility
- * AI SDK @ai-sdk/mistral 사용
+ * Mistral Embedding Utility (Consolidated)
+ * AI SDK @ai-sdk/mistral 사용 — 유일한 임베딩 모듈
  *
  * Model: mistral-embed (1024 dimensions)
  * - Context window: 8,000 tokens
  * - MTEB retrieval score: 55.26
  * - Price: $0.10 / 1M tokens (affordable)
  *
+ * ## Consolidation (2026-02-18)
+ * - Merged services/embedding/embedding-service.ts into this file
+ * - Added: local fallback, 3h cache TTL, 5000 cache entries, stats tracking
+ * - HTTP route (routes/embedding.ts) now imports from this module
+ *
  * ## Migration from Gemini (2025-12-31)
  * - Changed from Google text-embedding-004 (384d) to Mistral mistral-embed (1024d)
- * - Supabase schema updated via migration
- * - All knowledge_base embeddings need regeneration
- *
- * ## Secret Configuration
- * Uses MISTRAL_API_KEY environment variable
  */
 
 import { createHash } from 'crypto';
-import { createMistral } from '@ai-sdk/mistral';
 import { embed, embedMany } from 'ai';
-import { getMistralConfig } from './config-parser';
 import { logger } from './logger';
-
-// Lazy-initialized Mistral provider
-let mistralProvider: ReturnType<typeof createMistral> | null = null;
-
-function getMistralProvider() {
-  if (mistralProvider) {
-    return mistralProvider;
-  }
-
-  const config = getMistralConfig();
-  if (!config?.apiKey) {
-    throw new Error('Mistral API key not configured. Check MISTRAL_API_KEY or AI_PROVIDERS_CONFIG secret.');
-  }
-
-  mistralProvider = createMistral({
-    apiKey: config.apiKey,
-  });
-
-  return mistralProvider;
-}
+import { getMistralProvider } from './mistral-provider';
 
 // ============================================================================
-// Embedding Cache (Cost Optimization)
+// Constants
 // ============================================================================
 
-/**
- * In-memory cache for embeddings to reduce Mistral API calls
- * TTL: 5 minutes (same as Tavily cache for consistency)
- */
+const EMBEDDING_DIMENSION = 1024;
+const EMBEDDING_CACHE_TTL_MS = 3 * 60 * 60 * 1000; // 3 hours (reduces API calls)
+const EMBEDDING_CACHE_MAX_SIZE = 5000;
+
+// ============================================================================
+// Cache
+// ============================================================================
+
 interface EmbeddingCacheEntry {
   embedding: number[];
   timestamp: number;
+  source: 'mistral' | 'local-fallback';
 }
 
 const embeddingCache = new Map<string, EmbeddingCacheEntry>();
-const EMBEDDING_CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
-const EMBEDDING_CACHE_MAX_SIZE = 100; // Prevent memory leak
 
-/**
- * Generate cache key from text using SHA-256 hash
- * Prevents cache collision for texts with identical prefixes
- */
 function getCacheKey(text: string): string {
   return createHash('sha256').update(text.trim().toLowerCase()).digest('hex');
 }
 
-/**
- * Get cached embedding if valid
- */
-function getCachedEmbedding(text: string): number[] | null {
+function getCachedEmbedding(text: string): EmbeddingCacheEntry | null {
   const key = getCacheKey(text);
   const cached = embeddingCache.get(key);
 
   if (cached && Date.now() - cached.timestamp < EMBEDDING_CACHE_TTL_MS) {
-    console.log(`📦 [Embedding] Cache hit for: "${text.substring(0, 30)}..."`);
-    return cached.embedding;
+    embeddingStats.cacheHits++;
+    return cached;
   }
 
-  // Remove expired entry
-  if (cached) {
-    embeddingCache.delete(key);
-  }
-
+  if (cached) embeddingCache.delete(key);
   return null;
 }
 
-/**
- * Store embedding in cache
- */
-function setCachedEmbedding(text: string, embedding: number[]): void {
-  // Limit cache size to prevent memory leak
+function setCachedEmbedding(
+  text: string,
+  embedding: number[],
+  source: 'mistral' | 'local-fallback'
+): void {
   if (embeddingCache.size >= EMBEDDING_CACHE_MAX_SIZE) {
-    // Remove oldest entry (first inserted)
     const oldestKey = embeddingCache.keys().next().value;
-    if (oldestKey) {
-      embeddingCache.delete(oldestKey);
-    }
+    if (oldestKey) embeddingCache.delete(oldestKey);
   }
-
-  const key = getCacheKey(text);
-  embeddingCache.set(key, { embedding, timestamp: Date.now() });
+  embeddingCache.set(getCacheKey(text), {
+    embedding,
+    timestamp: Date.now(),
+    source,
+  });
 }
 
-/**
- * Clear embedding cache (for testing)
- */
 export function clearEmbeddingCache(): void {
   embeddingCache.clear();
-  console.log('🧹 [Embedding] Cache cleared');
+}
+
+// ============================================================================
+// Stats
+// ============================================================================
+
+const embeddingStats = {
+  requests: 0,
+  cacheHits: 0,
+  mistralCalls: 0,
+  localFallbacks: 0,
+  errors: 0,
+};
+
+export function getEmbeddingStats() {
+  return {
+    ...embeddingStats,
+    cacheSize: embeddingCache.size,
+    cacheHitRate:
+      embeddingStats.requests > 0
+        ? Math.round((embeddingStats.cacheHits / embeddingStats.requests) * 100)
+        : 0,
+    provider: 'mistral',
+    dimension: EMBEDDING_DIMENSION,
+  };
+}
+
+// ============================================================================
+// Local Fallback (API key 미설정 또는 API 장애 시)
+// ============================================================================
+
+function generateLocalEmbedding(text: string): number[] {
+  const hash = createHash('sha256').update(text).digest('hex');
+  const embedding = new Array(EMBEDDING_DIMENSION);
+
+  for (let i = 0; i < EMBEDDING_DIMENSION; i++) {
+    const charCode = hash.charCodeAt(i % hash.length);
+    const textChar = text.charCodeAt(i % text.length) || 0;
+    embedding[i] =
+      (Math.sin(charCode * (i + 1)) + Math.cos(textChar * (i + 1))) /
+      Math.sqrt(EMBEDDING_DIMENSION);
+  }
+
+  const magnitude = Math.sqrt(
+    embedding.reduce((sum: number, val: number) => sum + val * val, 0)
+  );
+  return magnitude > 0
+    ? embedding.map((val: number) => val / magnitude)
+    : embedding;
 }
 
 // Supabase 클라이언트 인터페이스 (동적 import 호환)
@@ -117,53 +132,137 @@ interface SupabaseClientLike {
   rpc: (fn: string, params: Record<string, unknown>) => Promise<{ data: unknown; error: unknown }>;
 }
 
+// ============================================================================
+// Core API
+// ============================================================================
+
 /**
  * 텍스트를 1024차원 벡터로 임베딩
- * Mistral mistral-embed 사용 (캐싱 적용)
- *
- * @param text - 임베딩할 텍스트
- * @returns 1024차원 float 배열
+ * Mistral API 실패 시 local fallback 사용
  */
 export async function embedText(text: string): Promise<number[]> {
-  // Check cache first (cost optimization)
+  embeddingStats.requests++;
+
   const cached = getCachedEmbedding(text);
-  if (cached) {
-    return cached;
-  }
+  if (cached) return cached.embedding;
 
   const mistral = getMistralProvider();
-  const model = mistral.embedding('mistral-embed');
+  if (!mistral) {
+    logger.warn('[Embedding] No Mistral API key, using local fallback');
+    embeddingStats.localFallbacks++;
+    const fallback = generateLocalEmbedding(text);
+    setCachedEmbedding(text, fallback, 'local-fallback');
+    return fallback;
+  }
 
-  const { embedding } = await embed({
-    model,
-    value: text,
-    experimental_telemetry: { isEnabled: false },
-  });
+  try {
+    const model = mistral.embedding('mistral-embed');
+    const { embedding } = await embed({
+      model,
+      value: text,
+      experimental_telemetry: { isEnabled: false },
+    });
 
-  // Cache the result
-  setCachedEmbedding(text, embedding);
-
-  return embedding;
+    embeddingStats.mistralCalls++;
+    setCachedEmbedding(text, embedding, 'mistral');
+    return embedding;
+  } catch (e) {
+    logger.error('[Embedding] Mistral API failed, using fallback:', e);
+    embeddingStats.errors++;
+    embeddingStats.localFallbacks++;
+    const fallback = generateLocalEmbedding(text);
+    setCachedEmbedding(text, fallback, 'local-fallback');
+    return fallback;
+  }
 }
 
 /**
- * 여러 텍스트를 배치로 임베딩 (시드 데이터용)
- * AI SDK embedMany 사용 - 자동 배치 처리
- *
- * @param texts - 임베딩할 텍스트 배열
- * @returns 1024차원 벡터 배열
+ * 여러 텍스트를 배치로 임베딩
+ * Mistral API 실패 시 local fallback 사용
  */
 export async function embedTexts(texts: string[]): Promise<number[][]> {
+  embeddingStats.requests++;
+
   const mistral = getMistralProvider();
-  const model = mistral.embedding('mistral-embed');
+  if (!mistral) {
+    logger.warn('[Embedding] No Mistral API key, batch using local fallback');
+    embeddingStats.localFallbacks++;
+    return texts.map((t) => generateLocalEmbedding(t));
+  }
 
-  const { embeddings } = await embedMany({
-    model,
-    values: texts,
-    experimental_telemetry: { isEnabled: false },
-  });
+  try {
+    const model = mistral.embedding('mistral-embed');
+    const { embeddings } = await embedMany({
+      model,
+      values: texts,
+      experimental_telemetry: { isEnabled: false },
+    });
 
-  return embeddings;
+    embeddingStats.mistralCalls++;
+    return embeddings;
+  } catch (e) {
+    logger.error('[Embedding] Batch Mistral API failed, using fallback:', e);
+    embeddingStats.errors++;
+    embeddingStats.localFallbacks++;
+    return texts.map((t) => generateLocalEmbedding(t));
+  }
+}
+
+// ============================================================================
+// HTTP Route 호환 API (routes/embedding.ts에서 사용)
+// ============================================================================
+
+export interface EmbeddingResult {
+  success: boolean;
+  embedding?: number[];
+  embeddings?: number[][];
+  error?: string;
+  source?: 'mistral' | 'local-fallback';
+  cached?: boolean;
+}
+
+export async function createEmbedding(text: string): Promise<EmbeddingResult> {
+  if (!text || text.trim().length === 0) {
+    return { success: false, error: 'Empty text provided' };
+  }
+
+  const truncated = text.substring(0, 2000);
+  const cachedResult = getCachedEmbedding(truncated);
+  if (cachedResult) {
+    return {
+      success: true,
+      embedding: cachedResult.embedding,
+      source: cachedResult.source,
+      cached: true,
+    };
+  }
+
+  const fallbackBefore = embeddingStats.localFallbacks;
+  const embedding = await embedText(truncated);
+  const source =
+    embeddingStats.localFallbacks > fallbackBefore
+      ? ('local-fallback' as const)
+      : ('mistral' as const);
+  return { success: true, embedding, source };
+}
+
+export async function createBatchEmbeddings(texts: string[]): Promise<EmbeddingResult> {
+  if (!texts || texts.length === 0) {
+    return { success: false, error: 'Empty texts array' };
+  }
+
+  const valid = texts.filter((t) => t && t.trim().length > 0).map((t) => t.substring(0, 2000));
+  if (valid.length === 0) {
+    return { success: false, error: 'No valid texts provided' };
+  }
+
+  const fallbackBefore = embeddingStats.localFallbacks;
+  const embeddings = await embedTexts(valid);
+  const source =
+    embeddingStats.localFallbacks > fallbackBefore
+      ? ('local-fallback' as const)
+      : ('mistral' as const);
+  return { success: true, embeddings, source };
 }
 
 /**

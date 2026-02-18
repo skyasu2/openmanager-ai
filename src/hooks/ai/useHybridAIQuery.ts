@@ -131,7 +131,8 @@ export function useHybridAIQuery(
 
   // webSearchEnabled를 ref로 추적: DefaultChatTransport의 body는 ChatStore 생성 시
   // readonly로 고정되므로, Resolvable<object> 함수를 사용해 호출 시점의 최신 값을 반환
-  const webSearchEnabledRef = useRef(webSearchEnabled ?? false);
+  // NOTE: API 스키마가 boolean(optional)이므로 string 값을 보내지 않는다.
+  const webSearchEnabledRef = useRef<boolean>(webSearchEnabled ?? false);
   useEffect(() => {
     webSearchEnabledRef.current = webSearchEnabled ?? false;
   }, [webSearchEnabled]);

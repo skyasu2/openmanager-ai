@@ -1,56 +1,34 @@
 /**
  * Reporter Tools - Web Search (Tavily)
  *
- * Real-time web search using Tavily API with failover support,
- * caching, retry logic, and quota management.
- * Extracted from reporter-tools.ts for modularity.
+ * AI SDK tool wrapper for Tavily web search.
+ * Core search logic is in lib/tavily-hybrid-rag.ts (SSOT).
+ * This file adds caching, quota management, and tool schema.
  *
- * @version 1.0.0
- * @updated 2026-01-04
+ * @version 2.0.0
+ * @updated 2026-02-18 — Consolidated: uses executeTavilySearchWithFailover from lib
  */
 
 import { tool } from 'ai';
 import { z } from 'zod';
-import { getTavilyApiKey, getTavilyApiKeyBackup } from '../../lib/config-parser';
 import { logger } from '../../lib/logger';
-import { TIMEOUT_CONFIG } from '../../config/timeout-config';
 import { recordProviderUsage, getQuotaStatus } from '../../services/resilience/quota-tracker';
+import {
+  executeTavilySearchWithFailover,
+  isTavilyAvailable,
+  type WebSearchResult,
+} from '../../lib/tavily-hybrid-rag';
 
 // ============================================================================
-// Types
+// Cache
 // ============================================================================
 
-interface WebSearchResult {
-  title: string;
-  url: string;
-  content: string;
-  score: number;
-}
-
-// ============================================================================
-// Tavily Best Practices Constants
-// ============================================================================
-const TAVILY_TIMEOUT_MS = TIMEOUT_CONFIG.external.tavily; // 15초 (timeout-config.ts SSOT)
-const TAVILY_MAX_RETRIES = 2; // 최대 재시도 횟수 (베스트 프랙티스: 2회)
-const TAVILY_RETRY_DELAY_MS = 500; // 재시도 간 대기 시간 (1000ms → 500ms: 레이턴시 개선)
-/**
- * Web Search Cache Configuration
- * Cloud Run Free Tier: 256MB RAM 제한 고려
- */
 const SEARCH_CACHE_CONFIG = {
-  maxSize: 30,              // 무료 티어 메모리 제한 고려 (100 -> 30)
-  evictCount: 10,           // 한 번에 10개 삭제 (LRU)
-  ttlMs: 30 * 60 * 1000,    // 30분 TTL (10분 → 30분: 반복 쿼리 캐시 히트율 향상)
+  maxSize: 30,
+  evictCount: 10,
+  ttlMs: 30 * 60 * 1000, // 30 min TTL
 } as const;
 
-// ============================================================================
-// Cache Implementation
-// ============================================================================
-
-/**
- * Simple in-memory cache for web search results
- * @see Best Practice: "Cache results strategically to reduce costs"
- */
 interface CacheEntry {
   results: WebSearchResult[];
   answer: string | null;
@@ -58,10 +36,6 @@ interface CacheEntry {
 }
 const searchCache = new Map<string, CacheEntry>();
 
-/**
- * Get cached result if valid
- * LRU 방식: 조회 시 TTL 만료 항목 정리
- */
 function buildCacheKey(query: string, searchDepth?: string, includeDomains?: string[]): string {
   const parts = [query.toLowerCase().trim()];
   if (searchDepth && searchDepth !== 'basic') parts.push(`depth:${searchDepth}`);
@@ -75,8 +49,6 @@ function getCachedResult(query: string, searchDepth?: string, includeDomains?: s
   const now = Date.now();
 
   if (!cached) return null;
-
-  // TTL 만료 체크
   if (now - cached.timestamp > SEARCH_CACHE_CONFIG.ttlMs) {
     searchCache.delete(key);
     return null;
@@ -86,21 +58,15 @@ function getCachedResult(query: string, searchDepth?: string, includeDomains?: s
   return { results: cached.results, answer: cached.answer };
 }
 
-/**
- * Store result in cache with LRU eviction
- * Cloud Run Free Tier 메모리 제한 대응
- */
 function setCacheResult(query: string, results: WebSearchResult[], answer: string | null, searchDepth?: string, includeDomains?: string[]): void {
   const now = Date.now();
 
-  // 1. TTL 만료 항목 먼저 정리
   for (const [key, entry] of searchCache) {
     if (now - entry.timestamp > SEARCH_CACHE_CONFIG.ttlMs) {
       searchCache.delete(key);
     }
   }
 
-  // 2. 크기 제한 (LRU 방식 - 오래된 항목부터 삭제)
   if (searchCache.size >= SEARCH_CACHE_CONFIG.maxSize) {
     const keysToDelete = [...searchCache.keys()].slice(0, SEARCH_CACHE_CONFIG.evictCount);
     keysToDelete.forEach(k => searchCache.delete(k));
@@ -111,103 +77,9 @@ function setCacheResult(query: string, results: WebSearchResult[], answer: strin
 }
 
 // ============================================================================
-// Helper Utilities
-// ============================================================================
-
-/**
- * Promise with timeout wrapper
- * @see Best Practice: "Implement Timeouts: Don't let your agent wait indefinitely"
- */
-async function withTimeout<T>(
-  promise: Promise<T>,
-  timeoutMs: number,
-  errorMessage: string
-): Promise<T> {
-  let timeoutId: ReturnType<typeof setTimeout>;
-  const timeoutPromise = new Promise<never>((_, reject) => {
-    timeoutId = setTimeout(() => reject(new Error(errorMessage)), timeoutMs);
-  });
-
-  try {
-    return await Promise.race([promise, timeoutPromise]);
-  } finally {
-    clearTimeout(timeoutId!);
-  }
-}
-
-/**
- * Sleep utility for retry delay
- */
-const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-
-// ============================================================================
-// Tavily Search Execution
-// ============================================================================
-
-/**
- * Execute Tavily search with a specific API key
- * @see Best Practice: "Use Retry Limits: maximum of two attempts"
- */
-async function executeTavilySearch(
-  apiKey: string,
-  query: string,
-  options: {
-    maxResults: number;
-    searchDepth: 'basic' | 'advanced';
-    includeDomains: string[];
-    excludeDomains: string[];
-  },
-  retryCount = 0
-): Promise<{ results: WebSearchResult[]; answer: string | null }> {
-  try {
-    const { tavily } = await import('@tavily/core');
-    const client = tavily({ apiKey });
-
-    // Timeout wrapper (Best Practice)
-    const response = await withTimeout(
-      client.search(query, {
-        maxResults: options.maxResults,
-        searchDepth: options.searchDepth,
-        includeDomains: options.includeDomains,
-        excludeDomains: options.excludeDomains,
-      }),
-      TAVILY_TIMEOUT_MS,
-      `Tavily search timeout after ${TAVILY_TIMEOUT_MS}ms`
-    );
-
-    const results: WebSearchResult[] = response.results.map((r) => ({
-      title: r.title,
-      url: r.url,
-      content: r.content.substring(0, 1500),
-      score: r.score,
-    }));
-
-    return { results, answer: response.answer || null };
-  } catch (error) {
-    // Retry logic (Best Practice: max 2 retries)
-    if (retryCount < TAVILY_MAX_RETRIES) {
-      const errorMsg = error instanceof Error ? error.message : String(error);
-      // Only retry on timeout or transient errors, not rate limits
-      if (errorMsg.includes('timeout') || errorMsg.includes('ECONNRESET')) {
-        console.log(`🔄 [Tavily] Retry ${retryCount + 1}/${TAVILY_MAX_RETRIES} after error: ${errorMsg}`);
-        await sleep(TAVILY_RETRY_DELAY_MS);
-        return executeTavilySearch(apiKey, query, options, retryCount + 1);
-      }
-    }
-    throw error;
-  }
-}
-
-// ============================================================================
 // Web Search Tool
 // ============================================================================
 
-/**
- * Web Search Tool
- * Uses Tavily API for real-time web search
- * Supports failover to backup API key when primary fails
- * @updated 2026-01-04 - Added failover support
- */
 export const searchWeb = tool({
   description:
     '실시간 웹 검색을 수행합니다. 최신 기술 정보, 문서, 보안 이슈, 에러 해결 방법 등을 검색할 때 사용합니다. 서버 모니터링과 관련 없는 일반 질문에도 활용 가능합니다.',
@@ -245,11 +117,11 @@ export const searchWeb = tool({
   }) => {
     console.log(`🌐 [Reporter Tools] Web search: ${query}`);
 
-    // Tavily 월간 quota 확인 (Free Tier: 1,000 req/month ~ 33/day)
+    // 1. Quota check (Free Tier: 1,000 req/month ~ 33/day)
     try {
       const quotaStatus = await getQuotaStatus('tavily');
       if (quotaStatus.shouldPreemptiveFallback) {
-        logger.warn(`⚠️ [Tavily] Daily quota approaching limit (${quotaStatus.usage.minuteRequests} requests today). Skipping web search.`);
+        logger.warn(`⚠️ [Tavily] Daily quota approaching limit. Skipping web search.`);
         return {
           success: false,
           error: 'Tavily daily quota approaching limit',
@@ -258,10 +130,10 @@ export const searchWeb = tool({
         };
       }
     } catch {
-      // quota 확인 실패 시 검색은 계속 진행
+      // quota check failure → continue search
     }
 
-    // Best Practice: Check cache first to reduce API calls
+    // 2. Cache check
     const cached = getCachedResult(query, searchDepth, includeDomains);
     if (cached) {
       return {
@@ -274,10 +146,8 @@ export const searchWeb = tool({
       };
     }
 
-    const primaryKey = getTavilyApiKey();
-    const backupKey = getTavilyApiKeyBackup();
-
-    if (!primaryKey && !backupKey) {
+    // 3. API key check
+    if (!isTavilyAvailable()) {
       logger.warn('⚠️ [Reporter Tools] No Tavily API keys configured');
       return {
         success: false,
@@ -287,57 +157,22 @@ export const searchWeb = tool({
       };
     }
 
-    const searchOptions = {
-      maxResults,
-      searchDepth,
-      includeDomains: includeDomains || [],
-      excludeDomains: excludeDomains || [],
-    };
-
-    // 병렬 Failover: 두 키가 모두 있으면 Promise.any()로 동시 시도 (레이턴시 -2~3s)
-    if (primaryKey && backupKey) {
-      try {
-        const { results, answer } = await Promise.any([
-          executeTavilySearch(primaryKey, query, searchOptions),
-          executeTavilySearch(backupKey, query, searchOptions),
-        ]);
-
-        const resultCount = results.length;
-        console.log(`📊 [Reporter Tools] Web search (parallel failover): ${resultCount} results`);
-
-        setCacheResult(query, results, answer, searchDepth, includeDomains);
-        recordProviderUsage('tavily', 1).catch(() => {});
-
-        return {
-          success: true,
-          query,
-          results,
-          totalFound: resultCount,
-          _source: 'Tavily Web Search',
-          answer,
-        };
-      } catch (aggregateError) {
-        // 모든 키 실패
-        const errors = aggregateError instanceof AggregateError
-          ? aggregateError.errors.map((e: unknown) => e instanceof Error ? e.message : String(e))
-          : [String(aggregateError)];
-        logger.error('❌ [Reporter Tools] All keys failed (parallel):', errors);
-        return {
-          success: false,
-          error: errors.join('; '),
-          results: [],
-          _source: 'Tavily (All Keys Failed)',
-        };
-      }
-    }
-
-    // 단일 키만 사용 가능한 경우
-    const singleKey = primaryKey || backupKey!;
-    const keyLabel = primaryKey ? 'primary' : 'backup';
-
+    // 4. Execute search (with dual-key failover from lib)
     try {
-      const { results, answer } = await executeTavilySearch(singleKey, query, searchOptions);
-      console.log(`📊 [Reporter Tools] Web search (${keyLabel}): ${results.length} results`);
+      const { results: rawResults, answer } = await executeTavilySearchWithFailover(query, {
+        maxResults,
+        searchDepth,
+        includeDomains: includeDomains || [],
+        excludeDomains: excludeDomains || [],
+      });
+
+      // Truncate content for tool output
+      const results = rawResults.map(r => ({
+        ...r,
+        content: r.content.substring(0, 1500),
+      }));
+
+      console.log(`📊 [Reporter Tools] Web search: ${results.length} results`);
 
       setCacheResult(query, results, answer, searchDepth, includeDomains);
       recordProviderUsage('tavily', 1).catch(() => {});
@@ -347,16 +182,20 @@ export const searchWeb = tool({
         query,
         results,
         totalFound: results.length,
-        _source: `Tavily Web Search (${keyLabel})`,
+        _source: 'Tavily Web Search',
         answer,
       };
     } catch (error) {
-      logger.error(`❌ [Reporter Tools] ${keyLabel} key error:`, error);
+      const errorMsg = error instanceof AggregateError
+        ? error.errors.map((e: unknown) => e instanceof Error ? e.message : String(e)).join('; ')
+        : (error instanceof Error ? error.message : String(error));
+
+      logger.error('❌ [Reporter Tools] Web search failed:', errorMsg);
       return {
         success: false,
-        error: error instanceof Error ? error.message : String(error),
+        error: errorMsg,
         results: [],
-        _source: `Tavily (${keyLabel} Failed)`,
+        _source: 'Tavily (Failed)',
       };
     }
   },

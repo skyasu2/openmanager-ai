@@ -11,9 +11,8 @@
  */
 
 import { generateText } from 'ai';
-import { createMistral } from '@ai-sdk/mistral';
-import { getMistralApiKey } from './config-parser';
 import { logger } from './logger';
+import { getMistralProvider } from './mistral-provider';
 
 // ============================================================================
 // Constants
@@ -43,26 +42,6 @@ const DEFAULT_HYDE_CONFIG: HyDEConfig = {
   maxQueryLength: 30, // Skip HyDE for very long, specific queries
 };
 
-// ============================================================================
-// Lazy Mistral Provider
-// ============================================================================
-
-let mistralProvider: ReturnType<typeof createMistral> | null = null;
-
-function getMistralProvider(): ReturnType<typeof createMistral> | null {
-  if (mistralProvider) {
-    return mistralProvider;
-  }
-
-  const apiKey = getMistralApiKey();
-  if (!apiKey) {
-    logger.warn('[HyDE] Mistral API key not configured');
-    return null;
-  }
-
-  mistralProvider = createMistral({ apiKey });
-  return mistralProvider;
-}
 
 // ============================================================================
 // HyDE Query Expansion

@@ -177,7 +177,6 @@ jobs:
     if: >-
       needs.deployment-ready.result == 'success' &&
       vars.CLOUD_RUN_AI_URL != ''
-    continue-on-error: true
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -192,3 +191,27 @@ jobs:
           CLOUD_RUN_AI_URL: ${{ vars.CLOUD_RUN_AI_URL }}
           CLOUD_RUN_API_SECRET: ${{ secrets.CLOUD_RUN_API_SECRET }}
         timeout-minutes: 2
+      - name: Cloud Run Contract Tests
+        run: npx vitest run tests/api/cloud-run-contract.test.ts --reporter=verbose
+        timeout-minutes: 2
+
+  # 🧪 Cloud Run AI Engine Unit Tests
+  cloud-run-unit:
+    name: AI Engine Unit Tests
+    runs-on: ubuntu-latest
+    needs: [essential-check]
+    if: ${{ needs.essential-check.result == 'success' }}
+    defaults:
+      run:
+        working-directory: cloud-run/ai-engine
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: cloud-run/ai-engine/package-lock.json
+      - run: npm ci
+      - name: Run AI Engine Unit Tests
+        run: npx vitest run src/lib/prompt-guard.test.ts src/lib/error-handler.test.ts src/lib/text-sanitizer.test.ts src/services/ai-sdk/supervisor-routing.test.ts src/lib/rag-doc-policy.test.ts src/lib/rag-merge-planner.test.ts --reporter=verbose
+        timeout-minutes: 3

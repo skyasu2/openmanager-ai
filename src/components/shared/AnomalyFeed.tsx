@@ -85,7 +85,8 @@ const fetchAnomalies = async (): Promise<AnomalyResponse> => {
       type: normalizeType(alert.metric),
       severity: alert.severity === 'critical' ? 'critical' : 'medium',
       message:
-        alert.labels?.summary || `${alert.metric} 임계치(${alert.threshold}) 초과`,
+        alert.labels?.summary ||
+        `${alert.metric} 임계치(${alert.threshold}) 초과`,
       value: alert.value,
       threshold: alert.threshold,
       timestamp: alert.firedAt,

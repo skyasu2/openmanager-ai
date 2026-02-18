@@ -46,8 +46,15 @@ test.describe('대시보드 AI 사이드바 테스트', () => {
     const input = page.getByRole('textbox', { name: 'AI 질문 입력' });
     await expect(input).toBeVisible({ timeout: TIMEOUTS.DOM_UPDATE });
 
-    for (const cardTitle of ['서버 상태 확인', '장애 분석', '성능 예측', '보고서 생성']) {
-      const card = page.getByRole('button', { name: new RegExp(cardTitle) }).first();
+    for (const cardTitle of [
+      '서버 상태 확인',
+      '장애 분석',
+      '성능 예측',
+      '보고서 생성',
+    ]) {
+      const card = page
+        .getByRole('button', { name: new RegExp(cardTitle) })
+        .first();
       await expect(card).toBeVisible({ timeout: TIMEOUTS.DOM_UPDATE });
       await card.click();
 

@@ -103,6 +103,37 @@ export function getDynamicThreshold(query: string, category?: string): number {
   return 0.4;
 }
 
+/**
+ * Calculate dynamic search weights based on query characteristics.
+ * - Exact keyword queries (e.g. "redis maxmemory"): boost BM25 text weight
+ * - Conceptual/ambiguous queries (e.g. "서버 느려짐"): boost vector weight
+ * - Troubleshooting queries with context: boost graph weight
+ */
+export function getDynamicSearchWeights(query: string, category?: string): {
+  vectorWeight: number;
+  textWeight: number;
+  graphWeight: number;
+} {
+  const q = query.toLowerCase();
+
+  // Technical keyword-heavy queries → boost BM25
+  const technicalTerms = ['redis', 'nginx', 'docker', 'postgresql', 'mysql', 'kubernetes', 'k8s', 'oom', 'gc', 'ssl', 'tls', 'dns'];
+  const hasTechnicalTerms = technicalTerms.filter(t => q.includes(t)).length >= 1;
+
+  // Incident/troubleshooting → boost graph traversal for related knowledge
+  if (category === 'incident' || category === 'troubleshooting') {
+    return { vectorWeight: 0.4, textWeight: 0.25, graphWeight: 0.35 };
+  }
+
+  // Technical exact match queries → boost BM25
+  if (hasTechnicalTerms) {
+    return { vectorWeight: 0.35, textWeight: 0.45, graphWeight: 0.2 };
+  }
+
+  // Default balanced weights
+  return { vectorWeight: 0.5, textWeight: 0.3, graphWeight: 0.2 };
+}
+
 const COMMAND_INTENT_KEYWORDS = [
   'command',
   'cmd',
@@ -374,7 +405,10 @@ export const searchKnowledgeBase = tool({
         const maxGraphHops = fastMode ? 1 : 2;
         const maxTotalResults = fastMode ? 5 : 10;
 
-        // First attempt with dynamic threshold
+        // Dynamic search weights based on query characteristics
+        const searchWeights = getDynamicSearchWeights(query, category);
+
+        // First attempt with dynamic threshold and weights
         let hybridResults = await hybridGraphSearch(queryEmbedding, {
           query,
           useBM25: true,
@@ -382,6 +416,7 @@ export const searchKnowledgeBase = tool({
           maxVectorResults,
           maxGraphHops,
           maxTotalResults,
+          ...searchWeights,
         });
 
         // Retry with lower threshold if no results (adaptive fallback)
@@ -394,6 +429,7 @@ export const searchKnowledgeBase = tool({
             maxVectorResults,
             maxGraphHops,
             maxTotalResults,
+            ...searchWeights,
           });
         }
 

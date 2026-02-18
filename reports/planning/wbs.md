@@ -3,7 +3,7 @@
 > Owner: project-lead
 > Status: Active Canonical
 > Doc type: Reference
-> Last reviewed: 2026-02-17
+> Last reviewed: 2026-02-18
 > Tags: wbs,completion,audit,retrospective
 > Canonical: reports/planning/wbs.md
 > 연관 문서: [최종 검수 확인서](completion-review.md) (가중 점수 교차 검증)
@@ -50,7 +50,7 @@
 | Cloud Run AI Engine 구축 | 100% | Hono + Multi-Agent |
 | LangGraph → Vercel AI SDK v6 마이그레이션 | 100% | 2025-12-28 완료 |
 | 7-Agent 실행 체계 + Orchestrator 코디네이터 | 100% | AgentFactory + Orchestrator 분리 |
-| RAG/Knowledge Graph (pgvector + LlamaIndex) | 85% | 임베딩 품질 개선 여지 |
+| RAG/Knowledge Graph (pgvector + LlamaIndex) | 88% | 임베딩 모듈 통합(2→1, local fallback + 3h 캐시 + 통계), 품질 개선 여지 |
 | Prompt Injection 방어 | 100% | OWASP LLM Top 10 기반 |
 | Circuit Breaker + 3-way Fallback | 100% | Cerebras → Groq → Mistral |
 
@@ -67,7 +67,7 @@
 ### Phase 5: 문서 & 포트폴리오 (2026-02)
 | 작업 | 상태 | 비고 |
 |------|:----:|------|
-| 문서 통합 (122→53개) | 100% | Diataxis 분류 |
+| 문서 통합 (122→55개) | 100% | Diataxis 분류 |
 | 아키텍처 문서 정확성 검증 | 100% | Mermaid + ASCII |
 | docs/README 포트폴리오 관점 개편 | 100% | 결과물 + 개발환경 |
 | WBS + 완성도 분석 (본 문서) | 100% | 실제 코드 기반 |
@@ -80,7 +80,7 @@
 
 | 영역 | 완성도 | 근거 |
 |------|:------:|------|
-| Dashboard 컴포넌트 (22파일) | 100% | `AISidebarV4.test.tsx` 회귀 테스트 추가 완료 |
+| Dashboard 컴포넌트 (23파일) | 100% | `AISidebarV4.test.tsx` 회귀 테스트 추가 완료 |
 | AI Sidebar (V4, 15파일) | 100% | `useAIChatCore` 공통화 + Streaming/Job Queue/명확화/RAG 출처 표시 |
 | AI 전체페이지 (`/dashboard/ai-assistant`) | 100% | `ai-fullscreen.spec.ts` E2E 테스트 추가 완료 |
 | Landing Page | 90% | OAuth, 시스템 제어, 웜업, 애니메이션 |
@@ -116,7 +116,7 @@
 - **New**: `tests/api/ai-supervisor.integration.test.ts` 통합 테스트 추가
 - **New**: `tests/e2e/ai-nlq-vercel.spec.ts` NLQ 흐름 검증 추가
 
-### 3.3 Cloud Run AI Engine (92%)
+### 3.3 Cloud Run AI Engine (93%)
 
 | 영역 | 완성도 | 근거 |
 |------|:------:|------|
@@ -125,7 +125,7 @@
 | 27개 도구 (Tools) | 98% | 전체 구현, validateTools() 시작 검증 |
 | 보안 (Prompt Guard) | 95% | 15개 패턴 (EN+KO), OWASP 기반, timing-safe 비교, stateful regex 보호 |
 | RAG/Knowledge | 85% | LlamaIndex + pgvector, Mistral 임베딩 |
-| 테스트 | 78% | 18개 파일 (node_modules 제외), circuit-breaker/quota-tracker 단위 + incident-evaluation 21개 테스트 통과 |
+| 테스트 | 85% | 22개 파일 (node_modules 제외), circuit-breaker/quota-tracker + prompt-guard/supervisor-routing/error-handler/text-sanitizer 91 tests 추가, CI `cloud-run-unit` job 신설 |
 | 배포 (Docker + Cloud Run) | 98% | Free Tier Guard Rails, 3-stage build |
 | Langfuse 관찰성 | 90% | 10% 샘플링, Free Tier 보호 |
 
@@ -154,6 +154,11 @@
 - ~~리팩토링 잔류 빈 디렉토리 4개~~ → 삭제 (performance, timezone, catchall, data)
 - ~~LlamaIndex 루트 import 의존성 불안정~~ → `@llamaindex/mistral` 직접 인스턴스 사용 + `verify:llamaindex` 스크립트 추가
 - ~~Optimizer 테스트 mock 누락~~ → `getRecentHistory` mock 보강으로 `incident-evaluation-tools` 21/21 통과
+
+**해결 완료** (2026-02-18):
+- ~~핵심 모듈 단위 테스트 0개~~ → prompt-guard 24 + supervisor-routing 31 + error-handler 14 + text-sanitizer 22 = 91 tests 추가
+- ~~임베딩 모듈 중복 (lib/ + services/)~~ → 단일 모듈 통합 (local fallback + 3h 캐시 + 통계 추적)
+- ~~CI smoke `continue-on-error: true`~~ → 차단형 전환 + `cloud-run-unit` CI job 신설
 
 **남은 항목 1건**:
 1. Cloud Run 실환경 E2E 통합 테스트 파이프라인 (CI/CD 연계)
@@ -233,14 +238,14 @@
 | Config (SSOT) | 100% | 20파일, Zod 검증 |
 | Scripts (데이터 동기화) | 100% | sync-hourly-data + otel-precompute (로그 적재 완료) |
 | Utils/Lib 정리 | 100% | api-batcher, error-response, safeFormat, network-tracking, timeout-config, CentralizedDataManager 삭제 |
-| 테스트 인프라 | 88% | 72개(src)+18개(cloud-run) 테스트 파일, 핵심 경로 smoke/type-check 통과 |
+| 테스트 인프라 | 90% | 73개(src)+22개(cloud-run)+36개(tests) 테스트 파일, CI `cloud-run-unit` job 추가, 핵심 경로 smoke/type-check 통과 |
 | AI SDK 버전 정합성 | 100% | Root `ai@6.0.86`, `@ai-sdk/react@3.0.88`로 상향 및 스모크 검증 |
 
 ### 3.6 문서 (96%)
 
 | 영역 | 완성도 | 근거 |
 |------|:------:|------|
-| 활성 문서 | 53개 (예산 55) | 100% 메타데이터 |
+| 활성 문서 | 55개 (예산 55) | 100% 메타데이터 |
 | 아키텍처 문서 | 6개 | Mermaid + ASCII 듀얼 |
 | 바이브 코딩 문서 | 7개 | MCP, Skills, Agent Teams |
 | README (포트폴리오 관점) | 완료 | 결과물 + 개발환경 |
@@ -253,13 +258,13 @@
 |--------|:------:|:------:|:---------:|
 | Frontend | 20% | 98% | 19.6 |
 | API Routes | 15% | 95% | 14.25 |
-| AI Engine | 20% | 92% | 18.4 |
+| AI Engine | 20% | 93% | 18.6 |
 | Server Data | 15% | 98% | 14.7 |
 | Services/Lib | 20% | 93% | 18.6 |
 | 문서/테스트 | 10% | 96% | 9.6 |
-| **합계** | **100%** | | **95.15%** |
+| **합계** | **100%** | | **95.35%** |
 
-**결론: 실제 완성도 ~95.2%** (91% → 93% → 94% → 94.2% → 94.4% → 95.0% → 95.2%)
+**결론: 실제 완성도 ~95.4%** (91% → 93% → 94% → 94.2% → 94.4% → 95.0% → 95.2% → 95.4%)
 
 *Note: ToolSet 타입 캐스팅 근본 수정 + 미사용 의존성/빈 디렉토리 정리로 Services/Lib 소폭 상향.*
 
@@ -289,7 +294,7 @@
 
 | # | 항목 | 근거 |
 |---|------|------|
-| 9 | RAG 임베딩 품질 | Mistral small 충분, 비용 0 |
+| 9 | RAG 임베딩 품질 | Mistral small 충분, 비용 0. 임베딩 모듈 통합 완료(2→1) |
 | 10 | Cloud Run 전용 E2E | Next.js 통합 테스트로 주요 로직 검증됨 |
 | 11 | 레거시 API 혼재 | servers-unified가 정상 동작 |
 
@@ -448,7 +453,7 @@
 ---
 
 _분석 기준: 4개 병렬 탐색 에이전트로 src/, cloud-run/, scripts/ 전체 코드 분석_
-_최종 갱신: 2026-02-17 (ToolSet 캐스팅 근본 수정, @ai-sdk/groq 루트 제거, 빈 디렉토리 정리, Skills 4개 현행화)_
+_최종 갱신: 2026-02-18 (AI Engine 테스트 91개 추가, 임베딩 모듈 통합, CI 차단형 전환, 95.4%)_
 
 ---
 

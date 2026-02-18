@@ -4,17 +4,24 @@
 > Owner: documentation
 > Status: Active
 > Doc type: Status
-> Last reviewed: 2026-02-17
+> Last reviewed: 2026-02-18
 > Canonical: docs/status.md
 > Tags: status,changelog,release
 
-**마지막 업데이트**: 2026-02-17
+**마지막 업데이트**: 2026-02-18
 
 ---
 
 ## 🔄 Recent Changes (v8.0.0)
 
-- **v8.0.0** (2026-02-17)
+- **v8.0.0** (2026-02-18)
+  - feat(mobile): 모바일 웹 표준 적용 — WCAG 접근성, Apple HIG, Material Design 가이드라인 준수
+  - feat(ui): 로그인 전환 + 프로필 메뉴 컨트롤 개선
+  - fix(observability): Sentry tunnel upstream timeout 추가
+  - fix(ai-engine): reporter limits 복구, empty streams 방어 강화
+  - fix(ai-engine): incident report retry/fallback/cache 안정성 강화
+  - fix(e2e): 셀렉터 안정화, rate limit 감지 + `test:vercel:ai` 스크립트 추가
+  - chore: gitignore mobile screenshots + lighthouse reports
   - refactor(workflow): Skills 체계 통합 (5개 → 표준화), Cloud Run 메타데이터 갱신
   - fix(stability): stream/metrics 안정성 강화 (review-driven hardening)
   - fix(frontend): system-start auth flow 및 bootstrap recovery 개선
@@ -180,7 +187,7 @@
 - **Node.js**: `v24.x` (Current, engines: >=24.0.0 <25.0.0)
 
 **UI & Styling**
-- **Tailwind CSS**: `v4.1.17` (PostCSS optimized)
+- **Tailwind CSS**: `v4.1.18` (PostCSS optimized)
 - **Component Lib**: Radix UI (Latest), Lucide React `v0.564.0`
 - **Animation**: tailwindcss-animate (CSS-based, Framer Motion 제거됨)
 
@@ -194,7 +201,7 @@
 
 ## 📚 Documentation Status
 
-**총 활성 문서 수**: 53개 (예산 55, `docs/archived/` 제외)
+**총 활성 문서 수**: 55개 (예산 55, `docs/archived/` 제외)
 
 **DRY 구조**:
 - `.claude/rules/` → Claude Code 전용 간략 규칙
@@ -234,8 +241,8 @@
 - **Gemini CLI**: Gemini 3 Pro (Code Review - 2-AI Rotation)
 
 **Quality Control**
-- **Test**: Vitest `v4.0.18`, Playwright `v1.58.1`
-- **Lint/Format**: Biome `v2.3.13`
+- **Test**: Vitest `v4.0.18`, Playwright `v1.58.2`
+- **Lint/Format**: Biome `v2.4.0`
 
 ---
 
@@ -403,12 +410,12 @@
 
 ---
 
-## 📊 품질 지표 (2026-02-03 기준)
+## 📊 품질 지표 (2026-02-18 기준)
 
 | Metric | Status | Detail |
 |:---:|:---:|---|
-| **Build** | ✅ Passing | `npm run build` (Next.js 16.1.3) 성공 |
-| **Test** | ✅ Passing | 124개 테스트 파일 (src/ 73 + cloud-run/ 16 + tests/ 35) |
+| **Build** | ✅ Passing | `npm run build` (Next.js 16.1.6) 성공 |
+| **Test** | ✅ Passing | 128개 테스트 파일 (src/ 74 + cloud-run/ 18 + tests/ 36) |
 | **Lint** | ✅ Clean | Biome Check Pass (No Errors) |
 | **E2E** | ✅ 100% | 30/30 Scenarios Passing (Playwright) |
 | **MCP** | ✅ 8/8 | 모든 MCP 서버 정상 연결 |
@@ -437,7 +444,7 @@
 ## 📝 문서 관리 현황
 
 **관리 원칙 (Diataxis + Doc Budget)**
-- 활성 문서: 53개 (예산 55, `docs/archived/` 제외)
+- 활성 문서: 55개 (예산 55, `docs/archived/` 제외)
 - 병합 우선: 70%+ 중복 시 병합, Historical 문서는 `docs/archived/`로 이동
 - **Key Docs**:
   - `README.md`: 프로젝트 개요

@@ -14,9 +14,8 @@
  */
 
 import { generateText } from 'ai';
-import { createMistral } from '@ai-sdk/mistral';
-import { getMistralApiKey } from './config-parser';
 import { logger } from './logger';
+import { getMistralProvider } from './mistral-provider';
 
 // ============================================================================
 // Types
@@ -74,26 +73,6 @@ const DEFAULT_MAX_DOCUMENTS = 10;
 const DEFAULT_TOP_K = 5;
 const DEFAULT_MIN_SCORE = 0.3;
 
-// ============================================================================
-// Mistral Provider
-// ============================================================================
-
-let mistralProvider: ReturnType<typeof createMistral> | null = null;
-
-function getMistralProvider(): ReturnType<typeof createMistral> | null {
-  if (mistralProvider) {
-    return mistralProvider;
-  }
-
-  const apiKey = getMistralApiKey();
-  if (!apiKey) {
-    logger.warn('[Reranker] Mistral API key not configured');
-    return null;
-  }
-
-  mistralProvider = createMistral({ apiKey });
-  return mistralProvider;
-}
 
 // ============================================================================
 // Reranking Functions
@@ -298,5 +277,5 @@ Rate relevance 0-1. Output ONLY a number.`;
  * Check if reranking is available
  */
 export function isRerankerAvailable(): boolean {
-  return getMistralApiKey() !== null;
+  return getMistralProvider() !== null;
 }

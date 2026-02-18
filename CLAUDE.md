@@ -4,7 +4,7 @@
 
 ## 프로젝트 개요
 **OpenManager AI** - AI Native Server Monitoring Platform
-- **Stack**: Next.js 16.1.3, React 19.2, TypeScript 5.9, Supabase, Vercel AI SDK v6
+- **Stack**: Next.js 16.1.6, React 19.2, TypeScript 5.9, Supabase, Vercel AI SDK v6
 - **Architecture**: Vercel (Frontend) + Cloud Run (AI Engine)
 - **Data SSOT**: `public/data/otel-data/` (데이터) + `src/data/otel-data/index.ts` (로더)
 
@@ -32,7 +32,7 @@ npm run type-check          # TypeScript 검사
 
 ## 참조
 - **상태**: `docs/status.md` | **TODO**: `reports/planning/TODO.md`
-- **문서**: `docs/` (71개) | **AI 설정**: `config/ai/registry-core.yaml`
+- **문서**: `docs/` (55개 활성) | **AI 설정**: `config/ai/registry-core.yaml`
 - **Production**: `https://openmanager-ai.vercel.app`
 
-_Last Updated: 2026-02-17_
+_Last Updated: 2026-02-18_

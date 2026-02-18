@@ -609,15 +609,15 @@
   }
 }
 
-/* 클릭 가능한 요소에 전역 pointer cursor 적용 */
-button,
-[role='button'],
+/* 클릭 가능한 요소에 전역 pointer cursor 적용 (disabled 제외) */
+button:not(:disabled),
+[role='button']:not([aria-disabled='true']),
 summary,
 a[href],
-select,
-[type='button'],
-[type='submit'],
-[type='reset'] {
+select:not(:disabled),
+[type='button']:not(:disabled),
+[type='submit']:not(:disabled),
+[type='reset']:not(:disabled) {
   cursor: pointer;
 }
 

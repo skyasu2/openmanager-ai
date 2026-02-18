@@ -10,8 +10,12 @@
  * 3. Result merging and deduplication
  * 4. LLM reranking (optional)
  *
- * @version 1.0.0
+ * This module is the SSOT for Tavily search execution.
+ * `web-search.ts` (AI SDK tool) imports from here.
+ *
+ * @version 2.0.0
  * @created 2026-01-26
+ * @updated 2026-02-18 — Consolidated search logic, fixed timer leak, added failover
  */
 
 import { getTavilyApiKey, getTavilyApiKeyBackup } from './config-parser';
@@ -58,13 +62,18 @@ export interface WebSearchResult {
   score: number;
 }
 
+export interface TavilySearchResponse {
+  results: WebSearchResult[];
+  answer: string | null;
+}
+
 // ============================================================================
 // Constants
 // ============================================================================
 
-const TAVILY_TIMEOUT_MS = TIMEOUT_CONFIG.external.tavily; // 15초 (timeout-config.ts SSOT)
+const TAVILY_TIMEOUT_MS = TIMEOUT_CONFIG.external.tavily; // 15s (timeout-config.ts SSOT)
 const TAVILY_MAX_RETRIES = 2;
-const TAVILY_RETRY_DELAY_MS = 1000;
+const TAVILY_RETRY_DELAY_MS = 500;
 const DEFAULT_MIN_KB_RESULTS = 2;
 const DEFAULT_MIN_KB_SCORE = 0.6;
 const DEFAULT_MAX_WEB_RESULTS = 3;
@@ -84,67 +93,123 @@ const DEFAULT_INCLUDE_DOMAINS = [
 ];
 
 // ============================================================================
-// Tavily Search
+// Core Tavily Search (SSOT — used by both hybrid-rag and web-search tool)
 // ============================================================================
 
+const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
 /**
- * Execute Tavily web search
+ * Promise with timeout wrapper (proper cleanup to prevent timer leaks)
  */
-async function executeTavilySearch(
+async function withTimeout<T>(
+  promise: Promise<T>,
+  timeoutMs: number,
+  errorMessage: string
+): Promise<T> {
+  let timeoutId: ReturnType<typeof setTimeout>;
+  const timeoutPromise = new Promise<never>((_, reject) => {
+    timeoutId = setTimeout(() => reject(new Error(errorMessage)), timeoutMs);
+  });
+
+  try {
+    return await Promise.race([promise, timeoutPromise]);
+  } finally {
+    clearTimeout(timeoutId!);
+  }
+}
+
+/**
+ * Execute Tavily search with a single API key (internal)
+ * Includes timeout protection and retry logic for transient errors
+ */
+async function executeSingleKeySearch(
+  apiKey: string,
   query: string,
   options: {
     maxResults: number;
     searchDepth: 'basic' | 'advanced';
     includeDomains: string[];
     excludeDomains: string[];
-  }
-): Promise<WebSearchResult[]> {
-  const primaryKey = getTavilyApiKey();
-  const backupKey = getTavilyApiKeyBackup();
-  const apiKey = primaryKey || backupKey;
+  },
+  retryCount = 0
+): Promise<TavilySearchResponse> {
+  try {
+    const { tavily } = await import('@tavily/core');
+    const client = tavily({ apiKey });
 
-  if (!apiKey) {
-    logger.warn('[TavilyHybrid] No Tavily API key configured');
-    return [];
-  }
-
-  const { tavily } = await import('@tavily/core');
-  const client = tavily({ apiKey });
-
-  for (let attempt = 0; attempt <= TAVILY_MAX_RETRIES; attempt++) {
-    try {
-      const timeoutPromise = new Promise<never>((_, reject) => {
-        setTimeout(() => reject(new Error(`Tavily timeout after ${TAVILY_TIMEOUT_MS}ms`)), TAVILY_TIMEOUT_MS);
-      });
-
-      const searchPromise = client.search(query, {
+    const response = await withTimeout(
+      client.search(query, {
         maxResults: options.maxResults,
         searchDepth: options.searchDepth,
         includeDomains: options.includeDomains.length > 0 ? options.includeDomains : undefined,
         excludeDomains: options.excludeDomains.length > 0 ? options.excludeDomains : undefined,
-      });
+      }),
+      TAVILY_TIMEOUT_MS,
+      `Tavily search timeout after ${TAVILY_TIMEOUT_MS}ms`
+    );
 
-      const response = await Promise.race([searchPromise, timeoutPromise]);
-
-      return response.results.map((r) => ({
+    return {
+      results: response.results.map((r) => ({
         title: r.title,
         url: r.url,
-        content: r.content.substring(0, 500),
+        content: r.content,
         score: r.score,
-      }));
-    } catch (error) {
+      })),
+      answer: response.answer || null,
+    };
+  } catch (error) {
+    if (retryCount < TAVILY_MAX_RETRIES) {
       const errorMsg = error instanceof Error ? error.message : String(error);
-      if (attempt < TAVILY_MAX_RETRIES) {
-        console.log(`🔄 [TavilyHybrid] Retry ${attempt + 1}/${TAVILY_MAX_RETRIES} after error: ${errorMsg}`);
-        await new Promise((resolve) => setTimeout(resolve, TAVILY_RETRY_DELAY_MS));
-      } else {
-        logger.warn(`[TavilyHybrid] Web search failed after ${TAVILY_MAX_RETRIES + 1} attempts: ${errorMsg}`);
-        return [];
+      if (errorMsg.includes('timeout') || errorMsg.includes('ECONNRESET')) {
+        console.log(`🔄 [Tavily] Retry ${retryCount + 1}/${TAVILY_MAX_RETRIES}: ${errorMsg}`);
+        await sleep(TAVILY_RETRY_DELAY_MS);
+        return executeSingleKeySearch(apiKey, query, options, retryCount + 1);
       }
     }
+    throw error;
+  }
+}
+
+/**
+ * Execute Tavily search with dual-key failover
+ *
+ * When both primary and backup keys are available, uses Promise.any()
+ * to race them in parallel — the first success wins, reducing latency
+ * and providing automatic failover.
+ *
+ * @throws Error if no API keys configured or all attempts fail
+ */
+export async function executeTavilySearchWithFailover(
+  query: string,
+  options: {
+    maxResults: number;
+    searchDepth: 'basic' | 'advanced';
+    includeDomains?: string[];
+    excludeDomains?: string[];
+  }
+): Promise<TavilySearchResponse> {
+  const primaryKey = getTavilyApiKey();
+  const backupKey = getTavilyApiKeyBackup();
+
+  if (!primaryKey && !backupKey) {
+    throw new Error('No Tavily API keys configured');
   }
 
-  return [];
+  const searchOpts = {
+    maxResults: options.maxResults,
+    searchDepth: options.searchDepth,
+    includeDomains: options.includeDomains || [],
+    excludeDomains: options.excludeDomains || [],
+  };
+
+  if (primaryKey && backupKey) {
+    return Promise.any([
+      executeSingleKeySearch(primaryKey, query, searchOpts),
+      executeSingleKeySearch(backupKey, query, searchOpts),
+    ]);
+  }
+
+  return executeSingleKeySearch((primaryKey || backupKey)!, query, searchOpts);
 }
 
 // ============================================================================
@@ -153,10 +218,6 @@ async function executeTavilySearch(
 
 /**
  * Determine if web search should be triggered
- *
- * @param kbResults - Results from internal KB search
- * @param options - Hybrid RAG options
- * @returns Whether to trigger web search
  */
 export function shouldTriggerWebSearch(
   kbResults: Array<{ score: number }>,
@@ -167,13 +228,11 @@ export function shouldTriggerWebSearch(
     minKBScore = DEFAULT_MIN_KB_SCORE,
   } = options;
 
-  // Too few KB results
   if (kbResults.length < minKBResults) {
     console.log(`[TavilyHybrid] Triggering web search: KB results (${kbResults.length}) < min (${minKBResults})`);
     return true;
   }
 
-  // KB results have low scores
   const avgScore = kbResults.reduce((sum, r) => sum + r.score, 0) / kbResults.length;
   if (avgScore < minKBScore) {
     console.log(`[TavilyHybrid] Triggering web search: avg KB score (${avgScore.toFixed(2)}) < min (${minKBScore})`);
@@ -185,21 +244,6 @@ export function shouldTriggerWebSearch(
 
 /**
  * Enhance RAG results with Tavily web search
- *
- * @param query - User query
- * @param kbResults - Results from internal KB search
- * @param options - Hybrid RAG options
- * @returns Combined and scored results
- *
- * @example
- * ```typescript
- * const kbResults = await hybridGraphSearch(...);
- * const enhanced = await enhanceWithWebSearch(
- *   query,
- *   kbResults,
- *   { maxWebResults: 3, kbWeight: 0.7 }
- * );
- * ```
  */
 export async function enhanceWithWebSearch(
   query: string,
@@ -219,29 +263,31 @@ export async function enhanceWithWebSearch(
     webWeight = 0.3,
   } = options;
 
-  // Check if web search is needed
   if (!shouldTriggerWebSearch(kbResults.map(r => ({ score: r.score })), options)) {
-    return {
-      results: kbResults,
-      webSearchTriggered: false,
-      webResultsCount: 0,
-    };
+    return { results: kbResults, webSearchTriggered: false, webResultsCount: 0 };
   }
 
-  // Execute web search
-  const webResults = await executeTavilySearch(query, {
-    maxResults: maxWebResults,
-    searchDepth: webSearchDepth,
-    includeDomains: webIncludeDomains,
-    excludeDomains: webExcludeDomains,
-  });
+  // Execute web search with failover
+  let webResults: WebSearchResult[];
+  try {
+    const response = await executeTavilySearchWithFailover(query, {
+      maxResults: maxWebResults,
+      searchDepth: webSearchDepth,
+      includeDomains: webIncludeDomains,
+      excludeDomains: webExcludeDomains,
+    });
+    // Truncate content for RAG context (shorter than direct tool output)
+    webResults = response.results.map(r => ({
+      ...r,
+      content: r.content.substring(0, 500),
+    }));
+  } catch (error) {
+    logger.warn('[TavilyHybrid] Web search failed, returning KB results only:', error);
+    return { results: kbResults, webSearchTriggered: true, webResultsCount: 0 };
+  }
 
   if (webResults.length === 0) {
-    return {
-      results: kbResults,
-      webSearchTriggered: true,
-      webResultsCount: 0,
-    };
+    return { results: kbResults, webSearchTriggered: true, webResultsCount: 0 };
   }
 
   // Convert web results to HybridRAGDocument format
@@ -249,7 +295,7 @@ export async function enhanceWithWebSearch(
     id: `web-${idx}-${Date.now()}`,
     title: r.title,
     content: r.content,
-    score: r.score * webWeight, // Apply weight
+    score: r.score * webWeight,
     source: 'web' as const,
     url: r.url,
   }));
@@ -265,7 +311,6 @@ export async function enhanceWithWebSearch(
   const existingTitles = new Set(kbResults.map((r) => r.title.toLowerCase()));
 
   for (const webDoc of webDocuments) {
-    // Skip if similar title exists in KB
     const titleLower = webDoc.title.toLowerCase();
     const hasSimilar = [...existingTitles].some((t) =>
       t.includes(titleLower.slice(0, 20)) || titleLower.includes(t.slice(0, 20))
@@ -276,18 +321,13 @@ export async function enhanceWithWebSearch(
     }
   }
 
-  // Sort by score
   merged.sort((a, b) => b.score - a.score);
 
   console.log(
     `[TavilyHybrid] Merged ${kbResults.length} KB + ${webResults.length} web → ${merged.length} results`
   );
 
-  return {
-    results: merged,
-    webSearchTriggered: true,
-    webResultsCount: webResults.length,
-  };
+  return { results: merged, webSearchTriggered: true, webResultsCount: webResults.length };
 }
 
 /**
@@ -295,21 +335,4 @@ export async function enhanceWithWebSearch(
  */
 export function isTavilyAvailable(): boolean {
   return getTavilyApiKey() !== null || getTavilyApiKeyBackup() !== null;
-}
-
-/**
- * Get optimized include domains for a query type
- */
-export function getOptimizedDomains(queryType: 'devops' | 'database' | 'security' | 'general'): string[] {
-  switch (queryType) {
-    case 'devops':
-      return ['kubernetes.io', 'docs.docker.com', 'prometheus.io', 'grafana.com', 'nginx.org'];
-    case 'database':
-      return ['postgresql.org', 'redis.io', 'docs.mongodb.com', 'dev.mysql.com'];
-    case 'security':
-      return ['owasp.org', 'cve.mitre.org', 'nvd.nist.gov', 'security.googleblog.com'];
-    case 'general':
-    default:
-      return DEFAULT_INCLUDE_DOMAINS;
-  }
 }

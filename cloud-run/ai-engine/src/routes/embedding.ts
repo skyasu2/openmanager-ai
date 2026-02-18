@@ -9,7 +9,7 @@
 
 import { Hono } from 'hono';
 import type { Context } from 'hono';
-import { embeddingService } from '../services/embedding/embedding-service';
+import { createBatchEmbeddings, createEmbedding, getEmbeddingStats } from '../lib/embedding';
 import { handleApiError, handleValidationError, jsonSuccess } from '../lib/error-handler';
 
 export const embeddingRouter = new Hono();
@@ -19,13 +19,13 @@ export const embeddingRouter = new Hono();
  */
 embeddingRouter.post('/', async (c: Context) => {
   try {
-    const { text, options } = await c.req.json();
+    const { text } = await c.req.json();
 
     if (!text) {
       return handleValidationError(c, 'text is required');
     }
 
-    const result = await embeddingService.createEmbedding(text, options || {});
+    const result = await createEmbedding(text);
     return c.json(result);
   } catch (error) {
     return handleApiError(c, error, 'Embedding');
@@ -37,13 +37,13 @@ embeddingRouter.post('/', async (c: Context) => {
  */
 embeddingRouter.post('/batch', async (c: Context) => {
   try {
-    const { texts, options } = await c.req.json();
+    const { texts } = await c.req.json();
 
     if (!texts || !Array.isArray(texts)) {
       return handleValidationError(c, 'texts array is required');
     }
 
-    const result = await embeddingService.createBatchEmbeddings(texts, options || {});
+    const result = await createBatchEmbeddings(texts);
     return c.json(result);
   } catch (error) {
     return handleApiError(c, error, 'Embedding Batch');
@@ -54,6 +54,6 @@ embeddingRouter.post('/batch', async (c: Context) => {
  * GET /embedding/stats - Embedding service statistics
  */
 embeddingRouter.get('/stats', (c: Context) => {
-  const stats = embeddingService.getStats();
+  const stats = getEmbeddingStats();
   return jsonSuccess(c, stats);
 });

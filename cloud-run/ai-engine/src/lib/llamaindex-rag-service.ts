@@ -207,6 +207,79 @@ export async function searchKnowledgeBase(
 }
 
 // ============================================================================
+// Shared Graph Traversal Helper
+// ============================================================================
+
+/**
+ * Traverse knowledge graph from seed results and fetch node contents.
+ * Shared between hybridSearch() and hybridGraphSearch() to avoid duplication.
+ */
+async function traverseAndFetchGraphNodes(
+  client: SupabaseClient,
+  seedResults: Array<{ id: string }>,
+  maxGraphHops: number,
+  topN: number = 3
+): Promise<LlamaIndexSearchResult[]> {
+  const topSeedResults = seedResults.slice(0, topN);
+  if (topSeedResults.length === 0) return [];
+
+  const graphTraversalResults = await Promise.all(
+    topSeedResults.map(result =>
+      client.rpc('traverse_knowledge_graph', {
+        p_start_id: result.id,
+        p_start_table: 'knowledge_base',
+        p_max_hops: maxGraphHops,
+        p_relationship_types: null,
+        p_max_results: 5,
+      })
+    )
+  );
+
+  // Collect unique node IDs with metadata
+  const nodeIds = new Set<string>();
+  const nodeMetaMap = new Map<string, { pathWeight: number; hopDistance: number }>();
+
+  for (const { data } of graphTraversalResults) {
+    if (data && Array.isArray(data)) {
+      for (const node of data) {
+        const nodeId = String(node.node_id);
+        if (!nodeIds.has(nodeId)) {
+          nodeIds.add(nodeId);
+          nodeMetaMap.set(nodeId, {
+            pathWeight: Number(node.path_weight),
+            hopDistance: Number(node.hop_distance || 1),
+          });
+        }
+      }
+    }
+  }
+
+  if (nodeIds.size === 0) return [];
+
+  // Batch fetch all node contents
+  const { data: entries } = await client
+    .from('knowledge_base')
+    .select('id, title, content, category, metadata')
+    .in('id', Array.from(nodeIds));
+
+  if (!entries) return [];
+
+  return entries.map(entry => {
+    const meta = nodeMetaMap.get(entry.id);
+    return {
+      id: entry.id,
+      title: entry.title,
+      content: entry.content,
+      category: entry.category || 'auto',
+      score: (meta?.pathWeight ?? 1) * 0.8,
+      sourceType: 'graph' as const,
+      hopDistance: meta?.hopDistance ?? 1,
+      metadata: entry.metadata,
+    };
+  });
+}
+
+// ============================================================================
 // Hybrid Search (Vector + Knowledge Graph)
 // ============================================================================
 
@@ -244,64 +317,10 @@ export async function hybridSearch(
       maxResults: maxVectorResults,
     });
 
-    // 2. Graph traversal from vector results (PARALLELIZED)
-    // Note: supabaseClient is guaranteed non-null here (checked above)
-    const client = supabaseClient!;
-    const topVectorResults = vectorResults.slice(0, 3);
-    const graphTraversalResults = await Promise.all(
-      topVectorResults.map(result =>
-        client.rpc('traverse_knowledge_graph', {
-          p_start_id: result.id,
-          p_start_table: 'knowledge_base',
-          p_max_hops: maxGraphHops,
-          p_relationship_types: null,
-          p_max_results: 5,
-        })
-      )
+    // 2. Graph traversal from vector results
+    const graphResults = await traverseAndFetchGraphNodes(
+      supabaseClient!, vectorResults, maxGraphHops
     );
-
-    // Collect all unique node IDs from traversal results
-    const nodeIds = new Set<string>();
-    const nodeMetaMap = new Map<string, { pathWeight: number; hopDistance: number }>();
-
-    for (const { data } of graphTraversalResults) {
-      if (data && Array.isArray(data)) {
-        for (const node of data) {
-          const nodeId = String(node.node_id);
-          if (!nodeIds.has(nodeId)) {
-            nodeIds.add(nodeId);
-            nodeMetaMap.set(nodeId, {
-              pathWeight: Number(node.path_weight),
-              hopDistance: Number(node.hop_distance || 1),
-            });
-          }
-        }
-      }
-    }
-
-    // Batch fetch all node contents at once
-    const graphResults: LlamaIndexSearchResult[] = [];
-    if (nodeIds.size > 0) {
-      const { data: entries } = await client
-        .from('knowledge_base')
-        .select('id, title, content, metadata')
-        .in('id', Array.from(nodeIds));
-
-      if (entries) {
-        for (const entry of entries) {
-          const meta = nodeMetaMap.get(entry.id);
-          graphResults.push({
-            id: entry.id,
-            title: entry.title,
-            content: entry.content,
-            score: (meta?.pathWeight ?? 1) * 0.8, // Weight graph results lower
-            sourceType: 'graph', // Use 'graph' for backward compatibility
-            hopDistance: meta?.hopDistance ?? 1,
-            metadata: entry.metadata,
-          });
-        }
-      }
-    }
 
     // 3. Combine and deduplicate
     const allResults = [...vectorResults, ...graphResults];
@@ -421,6 +440,12 @@ export async function hybridGraphSearch(
     maxVectorResults?: number;
     maxGraphHops?: number;
     maxTotalResults?: number;
+    /** Vector similarity weight (default: 0.5) */
+    vectorWeight?: number;
+    /** BM25 text search weight (default: 0.3) */
+    textWeight?: number;
+    /** Graph traversal weight (default: 0.2) */
+    graphWeight?: number;
   } = {}
 ): Promise<LlamaIndexSearchResult[]> {
   await initializeLlamaIndex();
@@ -432,6 +457,9 @@ export async function hybridGraphSearch(
     maxVectorResults = 5,
     maxGraphHops = 2,
     maxTotalResults = 15,
+    vectorWeight = 0.5,
+    textWeight = 0.3,
+    graphWeight = 0.2,
   } = options;
 
   // Use BM25 hybrid search if enabled and query text is provided
@@ -440,9 +468,9 @@ export async function hybridGraphSearch(
 
     try {
       const bm25Results = await hybridTextVectorSearch(query, queryEmbedding, {
-        vectorWeight: 0.5,
-        textWeight: 0.3,
-        graphWeight: 0.2,
+        vectorWeight,
+        textWeight,
+        graphWeight,
         maxVectorResults,
         maxTextResults: maxVectorResults,
         maxTotalResults,
@@ -497,65 +525,10 @@ export async function hybridGraphSearch(
       metadata: row.metadata as Record<string, unknown>,
     }));
 
-    // 2. Graph traversal from vector results (PARALLELIZED)
-    // Note: supabaseClient is guaranteed non-null here (checked above)
-    const client = supabaseClient!;
-    const topVectorResults = vectorResults.slice(0, 3);
-    const graphTraversalResults = await Promise.all(
-      topVectorResults.map(result =>
-        client.rpc('traverse_knowledge_graph', {
-          p_start_id: result.id,
-          p_start_table: 'knowledge_base',
-          p_max_hops: maxGraphHops,
-          p_relationship_types: null,
-          p_max_results: 5,
-        })
-      )
+    // 2. Graph traversal from vector results
+    const graphResults = await traverseAndFetchGraphNodes(
+      supabaseClient!, vectorResults, maxGraphHops
     );
-
-    // Collect all unique node IDs from traversal results
-    const nodeIds = new Set<string>();
-    const nodeMetaMap = new Map<string, { pathWeight: number; hopDistance: number }>();
-
-    for (const { data } of graphTraversalResults) {
-      if (data && Array.isArray(data)) {
-        for (const node of data) {
-          const nodeId = String(node.node_id);
-          if (!nodeIds.has(nodeId)) {
-            nodeIds.add(nodeId);
-            nodeMetaMap.set(nodeId, {
-              pathWeight: Number(node.path_weight),
-              hopDistance: Number(node.hop_distance || 1),
-            });
-          }
-        }
-      }
-    }
-
-    // Batch fetch all node contents at once
-    const graphResults: LlamaIndexSearchResult[] = [];
-    if (nodeIds.size > 0) {
-      const { data: entries } = await client
-        .from('knowledge_base')
-        .select('id, title, content, category, metadata')
-        .in('id', Array.from(nodeIds));
-
-      if (entries) {
-        for (const entry of entries) {
-          const meta = nodeMetaMap.get(entry.id);
-          graphResults.push({
-            id: entry.id,
-            title: entry.title,
-            content: entry.content,
-            category: entry.category || 'auto',
-            score: (meta?.pathWeight ?? 1) * 0.8,
-            sourceType: 'graph',
-            hopDistance: meta?.hopDistance ?? 1,
-            metadata: entry.metadata,
-          });
-        }
-      }
-    }
 
     // 3. Combine and deduplicate
     const allResults = [...vectorResults, ...graphResults];

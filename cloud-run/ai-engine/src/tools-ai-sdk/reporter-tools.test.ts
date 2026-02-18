@@ -9,9 +9,9 @@
  * - Fast, deterministic test execution
  * - CI/CD pipeline reliability
  *
- * @version 1.1.0
+ * @version 2.0.0
  * @created 2026-01-04
- * @updated 2026-01-05 - Added @tavily/core mock (CODEX review feedback)
+ * @updated 2026-02-18 — Mock tavily-hybrid-rag (SSOT) instead of @tavily/core
  */
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 
@@ -19,29 +19,35 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 // Mock Setup - All external dependencies mocked before imports
 // ============================================================================
 
-// Mock Tavily to prevent network calls (CODEX review fix)
-const mockTavilySearch = vi.fn();
-vi.mock('@tavily/core', () => ({
-  tavily: vi.fn(() => ({
-    search: mockTavilySearch,
-  })),
+// Hoisted mock references — accessible inside vi.mock() factories
+const { mockExecuteSearch, mockIsTavilyAvailable } = vi.hoisted(() => ({
+  mockExecuteSearch: vi.fn(),
+  mockIsTavilyAvailable: vi.fn(),
 }));
 
-// Mock config-parser module
-vi.mock('../lib/config-parser', () => ({
-  getTavilyApiKey: vi.fn(),
-  getTavilyApiKeyBackup: vi.fn(),
-  getSupabaseConfig: vi.fn(),
+// Mock the SSOT module (tavily-hybrid-rag) that web-search.ts imports from
+vi.mock('../lib/tavily-hybrid-rag', () => ({
+  executeTavilySearchWithFailover: mockExecuteSearch,
+  isTavilyAvailable: mockIsTavilyAvailable,
+}));
+
+// Mock quota tracker
+vi.mock('../services/resilience/quota-tracker', () => ({
+  recordProviderUsage: vi.fn().mockResolvedValue(undefined),
+  getQuotaStatus: vi.fn().mockResolvedValue({ shouldPreemptiveFallback: false }),
+}));
+
+// Mock logger
+vi.mock('../lib/logger', () => ({
+  logger: { warn: vi.fn(), error: vi.fn(), info: vi.fn() },
 }));
 
 // Mock Supabase to avoid connection attempts
 vi.mock('@supabase/supabase-js', () => ({
-  createClient: vi.fn(() => ({
-    rpc: vi.fn(),
-  })),
+  createClient: vi.fn(() => ({ rpc: vi.fn() })),
 }));
 
-// Mock embedding functions
+// Mock embedding/rag functions (used by knowledge tool, not web-search, but needed for barrel import)
 vi.mock('../lib/embedding', () => ({
   searchWithEmbedding: vi.fn().mockResolvedValue({ success: false, results: [] }),
   embedText: vi.fn().mockResolvedValue([]),
@@ -51,9 +57,14 @@ vi.mock('../lib/llamaindex-rag-service', () => ({
   hybridGraphSearch: vi.fn().mockResolvedValue([]),
 }));
 
+vi.mock('../lib/config-parser', () => ({
+  getTavilyApiKey: vi.fn(),
+  getTavilyApiKeyBackup: vi.fn(),
+  getSupabaseConfig: vi.fn(),
+}));
+
 // Import after mocking
 import { searchWeb } from './reporter-tools';
-import { getTavilyApiKey, getTavilyApiKeyBackup } from '../lib/config-parser';
 
 describe('Reporter Tools - Web Search Configuration', () => {
   beforeEach(() => {
@@ -71,7 +82,6 @@ describe('Reporter Tools - Web Search Configuration', () => {
     it('should have inputSchema with required query parameter', () => {
       const schema = searchWeb.inputSchema;
       expect(schema).toBeDefined();
-      // Zod schema should define query as string
       expect(schema.shape?.query).toBeDefined();
     });
   });
@@ -80,9 +90,8 @@ describe('Reporter Tools - Web Search Configuration', () => {
   // 2. API Key Configuration Tests
   // ============================================================================
   describe('API Key Configuration', () => {
-    it('should return error when no API keys configured', async () => {
-      vi.mocked(getTavilyApiKey).mockReturnValue(null);
-      vi.mocked(getTavilyApiKeyBackup).mockReturnValue(null);
+    it('should return error when Tavily is not available', async () => {
+      mockIsTavilyAvailable.mockReturnValue(false);
 
       const result = await searchWeb.execute({
         query: 'test query',
@@ -97,16 +106,13 @@ describe('Reporter Tools - Web Search Configuration', () => {
       expect(result._source).toBe('Tavily (Unconfigured)');
     });
 
-    it('should call getTavilyApiKey and getTavilyApiKeyBackup', async () => {
-      vi.mocked(getTavilyApiKey).mockReturnValue(null);
-      vi.mocked(getTavilyApiKeyBackup).mockReturnValue(null);
+    it('should check isTavilyAvailable before searching', async () => {
+      mockIsTavilyAvailable.mockReturnValue(false);
 
-      await searchWeb.execute({
-        query: 'test query',
-      });
+      await searchWeb.execute({ query: 'test query' });
 
-      expect(getTavilyApiKey).toHaveBeenCalled();
-      expect(getTavilyApiKeyBackup).toHaveBeenCalled();
+      expect(mockIsTavilyAvailable).toHaveBeenCalled();
+      expect(mockExecuteSearch).not.toHaveBeenCalled();
     });
   });
 
@@ -114,13 +120,10 @@ describe('Reporter Tools - Web Search Configuration', () => {
   // 3. Return Structure Tests
   // ============================================================================
   describe('Return Structure', () => {
-    it('should return correct structure on API key error', async () => {
-      vi.mocked(getTavilyApiKey).mockReturnValue(null);
-      vi.mocked(getTavilyApiKeyBackup).mockReturnValue(null);
+    it('should return correct structure on unavailable error', async () => {
+      mockIsTavilyAvailable.mockReturnValue(false);
 
-      const result = await searchWeb.execute({
-        query: 'test query',
-      });
+      const result = await searchWeb.execute({ query: 'test query' });
 
       expect(result).toHaveProperty('success');
       expect(result).toHaveProperty('_source');
@@ -128,15 +131,11 @@ describe('Reporter Tools - Web Search Configuration', () => {
       expect(result.results).toEqual([]);
     });
 
-    it('should include query in result when provided', async () => {
-      vi.mocked(getTavilyApiKey).mockReturnValue(null);
-      vi.mocked(getTavilyApiKeyBackup).mockReturnValue(null);
+    it('should include error in result when Tavily unavailable', async () => {
+      mockIsTavilyAvailable.mockReturnValue(false);
 
-      const result = await searchWeb.execute({
-        query: 'docker container logs',
-      });
+      const result = await searchWeb.execute({ query: 'docker container logs' });
 
-      // Query is not included in error response, but error is present
       expect(result.error).toBeDefined();
     });
   });
@@ -146,21 +145,16 @@ describe('Reporter Tools - Web Search Configuration', () => {
   // ============================================================================
   describe('Input Handling', () => {
     it('should accept query with default options', async () => {
-      vi.mocked(getTavilyApiKey).mockReturnValue(null);
-      vi.mocked(getTavilyApiKeyBackup).mockReturnValue(null);
+      mockIsTavilyAvailable.mockReturnValue(false);
 
-      // Should not throw even with minimal input
-      const result = await searchWeb.execute({
-        query: 'kubernetes pods',
-      });
+      const result = await searchWeb.execute({ query: 'kubernetes pods' });
 
       expect(result).toBeDefined();
-      expect(result.success).toBe(false); // No API key
+      expect(result.success).toBe(false);
     });
 
     it('should handle all optional parameters', async () => {
-      vi.mocked(getTavilyApiKey).mockReturnValue(null);
-      vi.mocked(getTavilyApiKeyBackup).mockReturnValue(null);
+      mockIsTavilyAvailable.mockReturnValue(false);
 
       const result = await searchWeb.execute({
         query: 'test query',
@@ -182,13 +176,11 @@ describe('Reporter Tools - Web Search Configuration', () => {
 describe('Reporter Tools - Tavily API Mocked', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockTavilySearch.mockReset();
+    mockIsTavilyAvailable.mockReturnValue(true);
   });
 
-  it('should return success when API call succeeds', async () => {
-    vi.mocked(getTavilyApiKey).mockReturnValue('tvly-valid-key');
-    vi.mocked(getTavilyApiKeyBackup).mockReturnValue(null);
-    mockTavilySearch.mockResolvedValue({
+  it('should return success when search succeeds', async () => {
+    mockExecuteSearch.mockResolvedValue({
       results: [
         { title: 'Test Result', url: 'https://example.com', content: 'Test content', score: 0.95 },
       ],
@@ -207,20 +199,12 @@ describe('Reporter Tools - Tavily API Mocked', () => {
     expect(result.answer).toBe('Mocked answer');
   });
 
-  it('should failover to backup key when primary fails', async () => {
-    vi.mocked(getTavilyApiKey).mockReturnValue('primary-key');
-    vi.mocked(getTavilyApiKeyBackup).mockReturnValue('backup-key');
-
-    let callCount = 0;
-    mockTavilySearch.mockImplementation(() => {
-      callCount++;
-      if (callCount === 1) {
-        return Promise.reject(new Error('Rate limit exceeded'));
-      }
-      return Promise.resolve({
-        results: [{ title: 'Backup Result', url: 'https://backup.com', content: 'Backup', score: 0.8 }],
-        answer: null,
-      });
+  it('should succeed via failover (transparent via Promise.any)', async () => {
+    // Failover is handled inside executeTavilySearchWithFailover (SSOT).
+    // From web-search tool's perspective, it just gets a successful result.
+    mockExecuteSearch.mockResolvedValue({
+      results: [{ title: 'Backup Result', url: 'https://backup.com', content: 'Backup content', score: 0.8 }],
+      answer: null,
     });
 
     const result = await searchWeb.execute({
@@ -230,16 +214,16 @@ describe('Reporter Tools - Tavily API Mocked', () => {
     });
 
     expect(result.success).toBe(true);
-    expect(result._source).toBe('Tavily Web Search (Failover)');
+    expect(result._source).toBe('Tavily Web Search');
+    expect(result.results).toHaveLength(1);
   });
 
-  it('should return error when both keys fail', async () => {
-    vi.mocked(getTavilyApiKey).mockReturnValue('primary-key');
-    vi.mocked(getTavilyApiKeyBackup).mockReturnValue('backup-key');
-
-    mockTavilySearch.mockImplementation(() => {
-      return Promise.reject(new Error('API failed'));
-    });
+  it('should return error when search fails (AggregateError)', async () => {
+    const aggError = new AggregateError(
+      [new Error('Primary failed'), new Error('Backup failed')],
+      'All promises were rejected',
+    );
+    mockExecuteSearch.mockRejectedValue(aggError);
 
     const result = await searchWeb.execute({
       query: 'both keys fail query unique-3',
@@ -248,16 +232,13 @@ describe('Reporter Tools - Tavily API Mocked', () => {
     });
 
     expect(result.success).toBe(false);
-    expect(result._source).toBe('Tavily (All Keys Failed)');
+    expect(result._source).toBe('Tavily (Failed)');
+    expect(result.error).toContain('Primary failed');
+    expect(result.error).toContain('Backup failed');
   });
 
-  it('should handle primary key failure with no backup', async () => {
-    vi.mocked(getTavilyApiKey).mockReturnValue('primary-key');
-    vi.mocked(getTavilyApiKeyBackup).mockReturnValue(null);
-
-    mockTavilySearch.mockImplementation(() => {
-      return Promise.reject(new Error('API Error'));
-    });
+  it('should return error when search throws regular Error', async () => {
+    mockExecuteSearch.mockRejectedValue(new Error('API Error'));
 
     const result = await searchWeb.execute({
       query: 'primary fail no backup unique-4',
@@ -266,6 +247,22 @@ describe('Reporter Tools - Tavily API Mocked', () => {
     });
 
     expect(result.success).toBe(false);
-    expect(result._source).toBe('Tavily (Primary Failed, No Backup)');
+    expect(result._source).toBe('Tavily (Failed)');
+    expect(result.error).toBe('API Error');
+  });
+
+  it('should truncate long content to 1500 chars', async () => {
+    const longContent = 'x'.repeat(3000);
+    mockExecuteSearch.mockResolvedValue({
+      results: [{ title: 'Long', url: 'https://example.com', content: longContent, score: 0.9 }],
+      answer: null,
+    });
+
+    const result = await searchWeb.execute({
+      query: 'truncation test unique-5',
+    });
+
+    expect(result.success).toBe(true);
+    expect(result.results[0].content.length).toBe(1500);
   });
 });

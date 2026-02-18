@@ -18,7 +18,7 @@ import {
   buildMergePlan,
   type KnowledgeBaseDoc,
 } from '../src/lib/rag-merge-planner';
-import { embeddingService } from '../src/services/embedding/embedding-service';
+import { createEmbedding } from '../src/lib/embedding';
 
 type KnowledgeRow = {
   id: string | null;
@@ -160,7 +160,7 @@ async function main() {
 
   for (const item of selectedItems) {
     const mergedText = `${item.mergedTitle}\n\n${item.mergedContent}`;
-    const embeddingResult = await embeddingService.createEmbedding(mergedText);
+    const embeddingResult = await createEmbedding(mergedText);
     if (!embeddingResult.success || !embeddingResult.embedding) {
       errors.push(
         `[${item.clusterId}] embedding generation failed: ${

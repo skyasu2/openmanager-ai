@@ -128,8 +128,12 @@ describe('Server History Route Contract (/api/servers/[id])', () => {
     expect(payload.data.history?.data_points[0]?.metrics.cpu_usage).toBeTypeOf(
       'number'
     );
-    expect(payload.data.history?.data_points[0]?.metrics.cpu_usage).toBeGreaterThanOrEqual(0);
-    expect(payload.data.history?.data_points[0]?.metrics.cpu_usage).toBeLessThanOrEqual(100);
+    expect(
+      payload.data.history?.data_points[0]?.metrics.cpu_usage
+    ).toBeGreaterThanOrEqual(0);
+    expect(
+      payload.data.history?.data_points[0]?.metrics.cpu_usage
+    ).toBeLessThanOrEqual(100);
   });
 
   it('존재하지 않는 서버 ID 요청 시 404를 반환한다', async () => {

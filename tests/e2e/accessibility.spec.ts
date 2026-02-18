@@ -1,6 +1,7 @@
 import { expect, test } from '@playwright/test';
 import { guestLogin, resetGuestState } from './helpers/guest';
 import { ensureVercelBypassCookie } from './helpers/security';
+import { TIMEOUTS } from './helpers/timeouts';
 
 test.describe('♿ 접근성 (Accessibility) 검증', () => {
   test.beforeEach(async ({ page }) => {
@@ -48,26 +49,43 @@ test.describe('♿ 접근성 (Accessibility) 검증', () => {
   test('ARIA 라벨 및 역할 검증', async ({ page }) => {
     await guestLogin(page);
 
-    const ariaElements = await page.evaluate(() => {
-      const elements = Array.from(
-        document.querySelectorAll('[aria-label], [aria-labelledby], [role]')
+    const profileButton = page
+      .locator('button[aria-label="프로필 메뉴"]')
+      .first();
+    await expect(profileButton).toBeVisible({
+      timeout: TIMEOUTS.DASHBOARD_LOAD,
+    });
+
+    const ariaSummary = await page.evaluate(() => {
+      const roleElements = Array.from(document.querySelectorAll('[role]'));
+      const labelElements = Array.from(
+        document.querySelectorAll('[aria-label], [aria-labelledby]')
       );
-      return elements.map((el) => ({
-        tagName: el.tagName,
-        role: el.getAttribute('role'),
-        ariaLabel: el.getAttribute('aria-label'),
-        textContent: el.textContent?.substring(0, 30),
-      }));
+      return {
+        roleCount: roleElements.length,
+        labelCount: labelElements.length,
+        preview: roleElements.slice(0, 12).map((el) => ({
+          tagName: el.tagName,
+          role: el.getAttribute('role'),
+          ariaLabel: el.getAttribute('aria-label'),
+          textContent: el.textContent?.substring(0, 30),
+        })),
+      };
     });
 
     console.log('📊 ARIA 접근성 요소 분석:');
-    ariaElements.forEach((el, index) => {
+    ariaSummary.preview.forEach((el, index) => {
       console.log(
         `   ${index + 1}. ${el.tagName}: role="${el.role}", label="${el.ariaLabel}"`
       );
     });
+    console.log(
+      `📌 role=${ariaSummary.roleCount}, aria-label/labelledby=${ariaSummary.labelCount}`
+    );
 
-    expect(ariaElements.length).toBeGreaterThanOrEqual(5);
+    expect(
+      ariaSummary.roleCount + ariaSummary.labelCount
+    ).toBeGreaterThanOrEqual(5);
     console.log('✅ ARIA 접근성 검증 완료');
   });
 

@@ -11,6 +11,7 @@ export const CATEGORY_MIN_COUNTS: Record<string, number> = {
   best_practice: 8,
   troubleshooting: 3,
   architecture: 2,
+  security: 1,
 };
 
 export const SOURCE_PRIORITY: Record<string, number> = {

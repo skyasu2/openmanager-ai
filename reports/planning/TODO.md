@@ -1,12 +1,20 @@
 # TODO - OpenManager AI v5
 
-**Last Updated**: 2026-02-17 KST
+**Last Updated**: 2026-02-18 KST
 
 ## Active Tasks
 
 | Task | Priority | Status |
 |------|----------|--------|
-| Cloud Run 통합 테스트 고도화 | P3 | In Progress — `ai-nlq-vercel` 외 전용 컨테이너 테스트 추가 (G1) |
+| Cloud Run 실환경 E2E 통합 테스트 파이프라인 | P3 | In Progress — CI smoke 차단형 전환 완료, 실환경 직접 호출 테스트 잔여 |
+
+### Completed (2026-02-18)
+- [x] P1: AI Engine 핵심 4모듈 테스트 추가 (prompt-guard 24 + supervisor-routing 31 + error-handler 14 + text-sanitizer 22 = 91 tests)
+- [x] P2: RAG 임베딩 모듈 통합 (`embedding.ts` + `embedding-service.ts` → 단일 모듈, local fallback + 3h 캐시 + 통계)
+- [x] P2: CI 파이프라인 강화 — smoke `continue-on-error` 제거(차단형), `cloud-run-unit` job 신설, 계약 테스트 CI 추가
+- [x] P3: 문서 갱신 — completion-review 95.3%, wbs 95.4% 반영
+- [x] P3: 문서 정합성 재검증 — WBS/Completion 수치 불일치(95.0/95.4, 94% 표기, 카운트 편차) 정리
+- [x] P2: 표준 완료(Option 2) 실환경 검증 — 무료티어 가드레일 + Cloud Run 저비용 스모크 + Vercel 데스크탑/모바일 50개 크리티컬 + NLQ 단건 통과
 
 ### Completed (2026-02-17)
 - [x] P2: ToolSet 캐스팅 근본 수정 — `allTools: ToolSet` 타입 명시, `filterToolsByWebSearch` 단순화, `as ToolSet` 0개
@@ -68,7 +76,7 @@
 
 | 파일 | 상태 | 비고 |
 |------|------|------|
-| `wbs.md` | 운영 | 전체 진행률 ~95.2% (검수 94.4%) |
+| `wbs.md` | 운영 | 전체 진행률 ~95.4% (검수 95.3%) |
 
 ### Completed (2026-01-22)
 - [x] 코드 단순화 리팩토링 (YAGNI 원칙 적용)
