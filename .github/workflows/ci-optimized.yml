@@ -153,4 +153,4 @@ jobs:
           cache-dependency-path: cloud-run/ai-engine/package-lock.json
       - run: npm ci
       - name: Run AI Engine Unit Tests
-        run: npx vitest run src/lib/prompt-guard.test.ts src/lib/error-handler.test.ts src/lib/text-sanitizer.test.ts src/services/ai-sdk/supervisor-routing.test.ts src/lib/rag-doc-policy.test.ts src/lib/rag-merge-planner.test.ts --reporter=verbose
+        run: npx vitest run src/lib/prompt-guard.test.ts src/lib/error-handler.test.ts src/lib/text-sanitizer.test.ts src/services/ai-sdk/supervisor-routing.test.ts src/lib/rag-doc-policy.test.ts src/lib/rag-merge-planner.test.ts src/lib/with-timeout.test.ts src/lib/embedding.test.ts src/services/ai-sdk/agents/orchestrator-web-search.test.ts --reporter=verbose

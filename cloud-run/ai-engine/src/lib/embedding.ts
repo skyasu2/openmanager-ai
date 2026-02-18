@@ -93,10 +93,21 @@ const embeddingStats = {
   errors: 0,
 };
 
+const EMBEDDING_CACHE_WARN_THRESHOLD = 3000;
+const ESTIMATED_BYTES_PER_ENTRY = 8 * 1024; // ~8KB per 1024-dim float64 + overhead
+
 export function getEmbeddingStats() {
+  const cacheSize = embeddingCache.size;
+  const estimatedMemoryMB = Math.round((cacheSize * ESTIMATED_BYTES_PER_ENTRY) / (1024 * 1024) * 10) / 10;
+
+  if (cacheSize > EMBEDDING_CACHE_WARN_THRESHOLD) {
+    logger.warn(`[Embedding] Cache size ${cacheSize} exceeds ${EMBEDDING_CACHE_WARN_THRESHOLD} (~${estimatedMemoryMB}MB)`);
+  }
+
   return {
     ...embeddingStats,
-    cacheSize: embeddingCache.size,
+    cacheSize,
+    estimatedMemoryMB,
     cacheHitRate:
       embeddingStats.requests > 0
         ? Math.round((embeddingStats.cacheHits / embeddingStats.requests) * 100)
