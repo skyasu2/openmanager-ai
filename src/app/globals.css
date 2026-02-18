@@ -64,8 +64,8 @@
 
   --backdrop-blur-xs: 2px;
 
-  /* Custom text sizes */
-  --text-2xs: 10px;
+  /* Custom text sizes (WCAG: min 11px) */
+  --text-2xs: 11px;
   --text-xs-plus: 11px;
   --text-chat: 15px;
 
@@ -338,6 +338,7 @@
 
   body {
     @apply bg-background text-foreground;
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) 0 env(safe-area-inset-left);
   }
 }
 
@@ -452,7 +453,6 @@
 /* AI 카드 아이콘 애니메이션 - 성능 최적화된 단순 버전 */
 .animate-ai-icon {
   animation: ai-icon-simple 6s linear infinite;
-  will-change: transform;
   transform: translateZ(0);
   backface-visibility: hidden;
 }
@@ -472,7 +472,6 @@
 /* Vibe 카드 아이콘 애니메이션 - GPU 최적화 */
 .animate-vibe-icon {
   animation: vibe-icon-wobble 2.5s ease-in-out infinite;
-  will-change: transform;
   transform: translateZ(0);
   backface-visibility: hidden;
 }
@@ -495,11 +494,9 @@
   }
 }
 
-/* 일반 호버 애니메이션 강화 - GPU 최적화 */
+/* 일반 호버 애니메이션 강화 */
 .animate-icon-hover {
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  will-change: transform;
-  transform: translateZ(0);
 }
 
 .animate-icon-hover:hover {
@@ -633,6 +630,7 @@ html,
 body {
   max-width: 100vw;
   overflow-x: hidden;
+  touch-action: manipulation;
   /* Inter(영문) + Noto Sans KR(한글) 폰트 스택 */
   /* next/font가 body에 --font-inter, --font-noto-sans-kr CSS 변수를 주입함 */
   /* Tailwind v4의 font-sans 클래스가 작동하지 않아 직접 font-family 지정 */
@@ -649,7 +647,13 @@ a {
   text-decoration: none;
 }
 
-/* 스크롤바 스타일링 */
+/* 스크롤바 스타일링 (Firefox) */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: hsl(var(--primary)) rgba(0, 0, 0, 0.1);
+}
+
+/* 스크롤바 스타일링 (Webkit) */
 ::-webkit-scrollbar {
   width: 8px;
 }
@@ -1032,34 +1036,14 @@ a {
   }
 }
 
-/* 🚀 성능 최적화 - GPU 가속 및 레이어 최적화 */
+/* 🚀 성능 최적화 - GPU 가속 (모바일 메모리 고려하여 최소화) */
 .gpu-accelerated {
   transform: translateZ(0);
-  will-change: transform;
-  /* 하드웨어 가속 강제 활성화 */
   backface-visibility: hidden;
-  perspective: 1000px;
 }
 
 .smooth-transition {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* 애니메이션 요소들에 GPU 가속 적용 */
-.animate-ai-icon,
-.animate-vibe-icon,
-.finger-pointer-primary,
-.finger-pointer-dashboard,
-.finger-pointer-ai {
-  transform: translateZ(0);
-  will-change: transform;
-  backface-visibility: hidden;
-}
-
-/* 메인 컨테이너 최적화 */
-.responsive-container {
-  transform: translateZ(0);
-  will-change: scroll-position;
 }
 
 /* 🎨 접근성 개선 - 향상된 모션 감소 지원 */
@@ -1210,7 +1194,7 @@ a {
 }
 
 .text-overline {
-  font-size: 0.625rem; /* 10px */
+  font-size: 0.6875rem; /* 11px - WCAG minimum */
   line-height: 1.6;
   font-weight: 500;
   letter-spacing: 0.08em;

@@ -520,11 +520,31 @@ export default function LoginClient() {
 
             {/* Divider */}
             {currentProvider !== 'guest' && (
-              <div className="relative my-1 flex items-center gap-4">
+              <div className="relative my-3 flex items-center gap-4">
                 <div className="h-px w-full bg-gray-200" />
                 <span className="text-xs text-gray-400 font-medium">또는</span>
                 <div className="h-px w-full bg-gray-200" />
               </div>
+            )}
+
+            {/* 모바일 취소 버튼 (로딩 중에만 표시 - ESC 키 대체) */}
+            {isLoading && (
+              <button
+                type="button"
+                onClick={() => {
+                  setIsLoading(false);
+                  setLoadingType(null);
+                  setLoadingMessage('');
+                  setSuccessMessage('로그인이 취소되었습니다.');
+                  setTimeout(
+                    () => setSuccessMessage(null),
+                    SUCCESS_MESSAGE_TIMEOUT_MS
+                  );
+                }}
+                className="flex h-10 w-full items-center justify-center rounded-lg border border-gray-200 text-sm text-gray-500 hover:bg-gray-50 transition-colors"
+              >
+                취소
+              </button>
             )}
 
             {/* Guest Mode Button */}

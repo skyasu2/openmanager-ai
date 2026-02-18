@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Inter, Noto_Sans_KR } from 'next/font/google';
 import type { ReactNode } from 'react';
 import { ClientProviders } from '@/components/providers/ClientProviders';
@@ -70,7 +70,7 @@ export const metadata: Metadata = {
   icons: {
     icon: '/favicon.ico',
     shortcut: '/favicon.ico',
-    apple: '/favicon.ico',
+    apple: '/icon-192.png',
   },
 
   // 📱 OpenGraph (Facebook, LinkedIn, Discord)
@@ -123,6 +123,17 @@ export const metadata: Metadata = {
   // 🎨 Theme & Viewport
   manifest: '/manifest.json',
   category: 'technology',
+};
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+  viewportFit: 'cover',
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#ffffff' },
+    { media: '(prefers-color-scheme: dark)', color: '#0f172a' },
+  ],
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {

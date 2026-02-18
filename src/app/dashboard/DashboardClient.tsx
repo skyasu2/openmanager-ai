@@ -56,18 +56,27 @@ const AnimatedAISidebar = dynamic(
       return (
         <>
           {isOpen && (
-            <div
-              className="fixed inset-y-0 right-0 z-40 w-96 transform transition-transform duration-300 ease-in-out"
-              style={{
-                transform: isOpen ? 'translateX(0)' : 'translateX(100%)',
-              }}
-            >
-              <AISidebarV4.default
-                onClose={onClose}
-                isOpen={isOpen}
-                {...otherProps}
+            <>
+              {/* 모바일 백드롭 오버레이 */}
+              <button
+                type="button"
+                className="fixed inset-0 z-30 bg-black/50 md:hidden"
+                onClick={onClose}
+                aria-label="사이드바 닫기"
               />
-            </div>
+              <div
+                className="fixed inset-y-0 right-0 z-40 w-full max-w-[90vw] md:w-96 transform transition-transform duration-300 ease-in-out"
+                style={{
+                  transform: isOpen ? 'translateX(0)' : 'translateX(100%)',
+                }}
+              >
+                <AISidebarV4.default
+                  onClose={onClose}
+                  isOpen={isOpen}
+                  {...otherProps}
+                />
+              </div>
+            </>
           )}
         </>
       );
@@ -75,7 +84,7 @@ const AnimatedAISidebar = dynamic(
   },
   {
     loading: () => (
-      <div className="fixed inset-y-0 right-0 z-40 w-96 border-l border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900">
+      <div className="fixed inset-y-0 right-0 z-40 w-full max-w-[90vw] md:w-96 border-l border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900">
         <div className="flex h-full items-center justify-center">
           <div className="h-8 w-8 animate-spin rounded-full border-2 border-blue-500 border-t-transparent"></div>
         </div>
@@ -450,7 +459,7 @@ function DashboardPageContent({ initialServers }: DashboardClientProps) {
       data-hydration-complete={isMounted.toString()}
       data-check-test-mode-result={checkTestMode().toString()}
       className={cn(
-        'flex h-screen bg-gray-100',
+        'flex h-dvh bg-gray-100',
         isResizing && 'cursor-col-resize'
       )}
     >

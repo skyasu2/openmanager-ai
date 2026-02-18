@@ -48,10 +48,6 @@ html {
   line-height: 1.5;
   -webkit-text-size-adjust: 100%;
   font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-  scroll-behavior: smooth;
-  /* GPU 가속 활성화 */
-  -webkit-transform: translateZ(0);
-  transform: translateZ(0);
 }
 
 body {
@@ -73,9 +69,6 @@ body {
   align-items: center;
   justify-content: space-between;
   padding: 1.5rem;
-  /* GPU layer 생성 */
-  will-change: transform;
-  transform: translateZ(0);
 }
 
 .hero-section {
@@ -85,9 +78,7 @@ body {
   justify-content: center;
   align-items: center;
   background: var(--bg-gradient);
-  /* 성능 최적화 */
   contain: layout style paint;
-  will-change: transform;
 }
 
 .hero-title {
@@ -140,18 +131,15 @@ body {
   /* 터치 최적화 */
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
-  /* GPU 가속 */
-  will-change: transform;
-  transform: translateZ(0);
 }
 
 .primary-button:hover {
-  transform: scale(1.05) translateZ(0);
+  transform: scale(1.05);
   box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
 }
 
 .primary-button:active {
-  transform: scale(0.95) translateZ(0);
+  transform: scale(0.95);
 }
 
 /* 스켈레톤 로딩 최적화 */
@@ -173,7 +161,6 @@ body {
 
 /* GPU 가속 최적화 클래스 */
 .gpu-accelerated {
-  will-change: transform;
   transform: translateZ(0);
   backface-visibility: hidden;
 }
@@ -209,8 +196,6 @@ body {
       rgb(120 219 255 / 0.3) 0%,
       transparent 50%
     );
-  /* GPU 가속 */
-  will-change: transform;
   transform: translateZ(0);
 }
 

@@ -223,10 +223,10 @@ function Home() {
       </header>
 
       {/* 메인 콘텐츠 */}
-      <div className="container relative z-10 mx-auto px-6 pt-8">
+      <div className="container relative z-10 mx-auto px-4 pt-8 sm:px-6">
         {/* 타이틀 */}
         <div className="mb-12 text-center">
-          <h1 className="mb-4 text-3xl font-bold md:text-5xl">
+          <h1 className="mb-4 text-2xl font-bold sm:text-3xl md:text-5xl">
             <span className="text-white">OpenManager</span>{' '}
             <span>{renderAIGradientWithAnimation('AI')}</span>
           </h1>

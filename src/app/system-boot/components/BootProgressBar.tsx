@@ -4,7 +4,7 @@ interface BootProgressBarProps {
 
 export const BootProgressBar = ({ progress }: BootProgressBarProps) => {
   return (
-    <div className="relative mx-auto mb-8 w-96">
+    <div className="relative mx-auto mb-8 w-full max-w-96">
       {/* 진행률 라벨 */}
       <div className="mb-2 flex items-center justify-between">
         <span className="text-sm font-medium text-white/60">
