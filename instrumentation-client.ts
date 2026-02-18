@@ -30,8 +30,8 @@ Sentry.init({
   // 🎯 무료 티어 최적화: Replay 비활성화 (이벤트 절약)
   integrations: [],
 
-  // 🎯 무료 티어: 샘플링 30% (월 10,000 트랜잭션 제한, ~70% 사용)
-  tracesSampleRate: process.env.NODE_ENV === 'production' ? 0.3 : 0,
+  // 🎯 무료 티어: 샘플링 10% (tunnel 호출량 절감, 월 10,000 트랜잭션 이내)
+  tracesSampleRate: process.env.NODE_ENV === 'production' ? 0.1 : 0,
 
   // 🎯 Replay 비활성화 (무료 티어 제한)
   replaysSessionSampleRate: 0,
