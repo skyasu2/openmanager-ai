@@ -430,9 +430,7 @@ screenshots/
 # Numbered project screenshots (documentation captures)
 [0-9][0-9]-*.png
 # Playwright/dev verification screenshots (root level)
-/dashboard-*.png
-/modal-*.png
-/server-modal-*.png
+/*.png
 
 # 🔒 보안: 디버그 로그 파일 Git 추적 제외
 *.debug.log
