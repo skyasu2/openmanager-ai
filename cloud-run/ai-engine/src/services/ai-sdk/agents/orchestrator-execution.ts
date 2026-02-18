@@ -554,7 +554,12 @@ async function* executeAgentStream(
 
     if (hardTimeoutReached) return;
 
-    const [steps, usage] = await Promise.all([streamResult.steps, streamResult.usage]);
+    const stepsAndUsage = await Promise.all([streamResult.steps, streamResult.usage]).catch((stepsError) => {
+      logger.warn(`[Stream ${agentName}] Steps/usage unavailable:`, stepsError instanceof Error ? stepsError.message : String(stepsError));
+      return undefined;
+    });
+    const steps = stepsAndUsage?.[0];
+    const usage = stepsAndUsage?.[1];
     const finalElapsed = Date.now() - startTime;
     timeoutSpan.complete(true, finalElapsed);
 
@@ -582,8 +587,16 @@ async function* executeAgentStream(
     if (!textEmitted && finalAnswerResult?.answer) {
       const sanitized = sanitizeChineseCharacters(finalAnswerResult.answer);
       if (sanitized) {
+        textEmitted = true;
         yield { type: 'text_delta', data: sanitized };
       }
+    }
+
+    if (!textEmitted) {
+      const fallbackText = '응답을 생성하지 못했습니다. 질문을 더 구체적으로 다시 시도해 주세요.';
+      logger.warn(`[Stream ${agentName}] Empty response, emitting fallback`);
+      yield { type: 'warning', data: { code: 'EMPTY_RESPONSE', message: '모델이 빈 응답을 반환했습니다.' } };
+      yield { type: 'text_delta', data: fallbackText };
     }
 
     const durationMs = Date.now() - startTime;
@@ -606,6 +619,25 @@ async function* executeAgentStream(
   } catch (error) {
     const durationMs = Date.now() - startTime;
     const errorMessage = error instanceof Error ? error.message : String(error);
+    const isNoOutput = errorMessage.includes('No output generated');
+
+    if (isNoOutput) {
+      logger.warn(`[Stream ${agentName}] No output from model, providing fallback`);
+      yield { type: 'text_delta', data: '모델이 응답을 생성하지 못했습니다. 다시 시도해 주세요.' };
+      yield {
+        type: 'done',
+        data: {
+          success: false,
+          finalAgent: agentName,
+          toolsCalled: [],
+          handoffs: [],
+          usage: { promptTokens: 0, completionTokens: 0 },
+          metadata: { provider, modelId, durationMs },
+        },
+      };
+      return;
+    }
+
     logger.error(`❌ [Stream ${agentName}] Error after ${durationMs}ms:`, errorMessage);
 
     // CB에 failure 기록 (provider 장애 감지)

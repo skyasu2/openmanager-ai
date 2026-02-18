@@ -710,7 +710,12 @@ async function* streamSingleAgent(
       };
     }
 
-    const [steps, usage] = await Promise.all([result.steps, result.usage]);
+    const stepsAndUsage = await Promise.all([result.steps, result.usage]).catch((stepsError) => {
+      logger.warn('[SupervisorStream] Steps/usage unavailable:', stepsError instanceof Error ? stepsError.message : String(stepsError));
+      return undefined;
+    });
+    const steps = stepsAndUsage?.[0] ?? [];
+    const usage = stepsAndUsage?.[1];
 
     const ragSources: RagSource[] = [];
 
