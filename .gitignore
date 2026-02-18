@@ -15,6 +15,7 @@ venv/
 # Testing
 /coverage
 /test-results/
+.lighthouseci/
 /playwright-report/
 **/test-results/
 **/playwright-report/
@@ -28,6 +29,7 @@ openmanager-*.png
 playwright-*.png
 step*.png
 qa*.png
+mobile-*.png
 gradient-verify-*.png
 test-output/
 screenshots/
