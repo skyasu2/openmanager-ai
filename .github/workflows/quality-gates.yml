@@ -4,8 +4,6 @@ name: Quality Gates (Type-Safe CI/CD)
 # 목표: TypeScript 에러 0개 강제, 자동 상태 리포트
 
 on:
-  schedule:
-    - cron: '0 10 * * 1'
   workflow_dispatch:
     inputs:
       strict_mode:

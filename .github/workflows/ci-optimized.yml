@@ -17,6 +17,18 @@ on:
       - 'docs/**'
       - '**/*.md'
       - '.github/workflows/docs-quality.yml'
+  workflow_dispatch:
+    inputs:
+      run_cloud_run_checks:
+        description: 'Cloud Run smoke/contract tests 실행'
+        required: false
+        type: boolean
+        default: false
+      run_ai_engine_unit:
+        description: 'AI Engine unit tests 실행'
+        required: false
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -35,6 +47,42 @@ env:
   NODE_ENV: test
 
 jobs:
+  detect-scope:
+    name: Detect Scope
+    runs-on: ubuntu-latest
+    outputs:
+      ai_engine_changed: ${{ steps.scope.outputs.ai_engine_changed }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - id: scope
+        shell: bash
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "ai_engine_changed=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            git fetch origin "${{ github.base_ref }}" --depth=1
+            DIFF_RANGE="origin/${{ github.base_ref }}...HEAD"
+          else
+            BEFORE="${{ github.event.before }}"
+            if [ -z "$BEFORE" ] || [ "$BEFORE" = "0000000000000000000000000000000000000000" ]; then
+              DIFF_RANGE="HEAD~1...HEAD"
+            else
+              DIFF_RANGE="$BEFORE...HEAD"
+            fi
+          fi
+
+          CHANGED_FILES="$(git diff --name-only "$DIFF_RANGE" || true)"
+          if echo "$CHANGED_FILES" | grep -Eq '^(cloud-run/ai-engine/|tests/api/cloud-run-contract.test.ts|scripts/test/cloud-deploy-essential-smoke.mjs|\.github/workflows/ci-optimized.yml)'; then
+            echo "ai_engine_changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ai_engine_changed=false" >> "$GITHUB_OUTPUT"
+          fi
+
   # 🔍 정적 분석 (병렬 실행 1)
   code-quality:
     name: Code Quality (Lint & Type)
@@ -113,10 +161,14 @@ jobs:
   cloud-run-smoke:
     name: Cloud Run Smoke
     runs-on: ubuntu-latest
-    needs: [deployment-ready]
+    needs: [deployment-ready, detect-scope]
     if: >-
       needs.deployment-ready.result == 'success' &&
-      vars.CLOUD_RUN_AI_URL != ''
+      vars.CLOUD_RUN_AI_URL != '' &&
+      (
+        (github.event_name == 'workflow_dispatch' && (inputs.run_cloud_run_checks == true || inputs.run_cloud_run_checks == 'true')) ||
+        (github.ref == 'refs/heads/main' && needs.detect-scope.outputs.ai_engine_changed == 'true')
+      )
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -140,7 +192,13 @@ jobs:
     name: AI Engine Unit Tests
     runs-on: ubuntu-latest
     # Cloud Run 유닛 테스트는 의존성 설치가 다르므로 별도 실행 (병렬)
-    if: ${{ github.event_name != 'push' || !contains(github.event.head_commit.message, '[skip ci]') }}
+    needs: [detect-scope]
+    if: >-
+      (github.event_name != 'push' || !contains(github.event.head_commit.message, '[skip ci]')) &&
+      (
+        (github.event_name == 'workflow_dispatch' && (inputs.run_ai_engine_unit == true || inputs.run_ai_engine_unit == 'true')) ||
+        needs.detect-scope.outputs.ai_engine_changed == 'true'
+      )
     defaults:
       run:
         working-directory: cloud-run/ai-engine

@@ -130,16 +130,20 @@ describe.skipIf(!shouldRun)('Cloud Run API Contract Tests', () => {
   describe('Authentication', () => {
     it('API Key 미제공 시 401 반환', async () => {
       const response = await fetch(`${baseUrl}/api/ai/supervisor/health`);
+      const data = await response.json();
 
       expect(response.status).toBe(401);
+      expect(() => UnauthorizedResponseSchema.parse(data)).not.toThrow();
     });
 
     it('잘못된 API Key 시 401 반환', async () => {
       const response = await fetch(`${baseUrl}/api/ai/supervisor/health`, {
         headers: { 'X-API-Key': 'invalid-key-12345' },
       });
+      const data = await response.json();
 
       expect(response.status).toBe(401);
+      expect(() => UnauthorizedResponseSchema.parse(data)).not.toThrow();
     });
   });
 
@@ -171,8 +175,10 @@ describe.skipIf(!shouldRun)('Cloud Run API Contract Tests', () => {
   describe('GET /monitoring (unauthenticated)', () => {
     it('인증 없이 403 반환', async () => {
       const response = await fetch(`${baseUrl}/monitoring`);
+      const data = await response.json();
 
       expect(response.status).toBe(403);
+      expect(() => UnauthorizedResponseSchema.parse(data)).not.toThrow();
     });
   });
 });

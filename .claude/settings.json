@@ -10,8 +10,7 @@
           {
             "type": "command",
             "command": "./node_modules/.bin/biome format --write \"$(echo $CLAUDE_TOOL_INPUT | jq -r '.file_path // empty')\" 2>/dev/null || true",
-            "timeout": 10,
-            "showOutput": false
+            "timeout": 10
           }
         ]
       }

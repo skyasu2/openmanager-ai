@@ -3,11 +3,6 @@
 name: Prompt Evaluation
 
 on:
-  pull_request:
-    paths:
-      - 'cloud-run/ai-engine/promptfoo/**'
-      - 'cloud-run/ai-engine/src/agents/**'
-      - 'cloud-run/ai-engine/src/services/langgraph/**'
   workflow_dispatch:
     inputs:
       run_redteam:

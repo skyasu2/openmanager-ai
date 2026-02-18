@@ -61,18 +61,12 @@ export function renderTextWithAIGradient(
  * 애니메이션이 포함된 AI 그라데이션 (FeatureCard용)
  *
  * @param text - 변환할 텍스트
- * @param variant - 카드 컨텍스트 ('default' | 'vibe')
- *   - 'default': blue→purple→pink 그라데이션 애니메이션 (AI/일반 카드용)
- *   - 'vibe': 고대비 화이트 bold + text-shadow (따뜻한 배경과 가독성 보장)
  * @returns React 엘리먼트 배열
  *
  * ⚠️ Tailwind v4 호환: 인라인 스타일로 gradient + animation 적용
  * Tailwind gradient 클래스와 background-position 애니메이션이 충돌하므로 인라인 스타일 사용
  */
-export function renderAIGradientWithAnimation(
-  text: string,
-  variant: 'default' | 'vibe' = 'default'
-): React.ReactNode {
+export function renderAIGradientWithAnimation(text: string): React.ReactNode {
   if (!text.includes('AI')) return text;
 
   return text.split(/(AI)/g).map((part, index) => {

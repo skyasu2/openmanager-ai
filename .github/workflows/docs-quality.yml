@@ -21,8 +21,13 @@ on:
       - 'CLAUDE.md'
       - 'GEMINI.md'
       - 'AGENTS.md'
-  schedule:
-    - cron: '0 9 * * 1'
+  workflow_dispatch:
+    inputs:
+      run_external_links:
+        description: '외부 링크 전체 검사 실행'
+        required: false
+        type: boolean
+        default: false
 
 jobs:
   docs-quality:
@@ -44,15 +49,15 @@ jobs:
       - name: Docs quality checks
         run: npm run docs:check
         env:
-          DOCS_STRICT_CHANGED: ${{ github.event_name == 'schedule' && 'false' || 'true' }}
-          DOCS_DIFF_RANGE: ${{ github.event_name == 'schedule' && '' || (github.event_name == 'pull_request' && format('origin/{0}...HEAD', github.base_ref) || format('{0}...{1}', github.event.before, github.sha)) }}
+          DOCS_STRICT_CHANGED: ${{ github.event_name == 'workflow_dispatch' && 'false' || 'true' }}
+          DOCS_DIFF_RANGE: ${{ github.event_name == 'workflow_dispatch' && '' || (github.event_name == 'pull_request' && format('origin/{0}...HEAD', github.base_ref) || format('{0}...{1}', github.event.before, github.sha)) }}
 
       - name: Changed docs lint
-        if: github.event_name != 'schedule'
+        if: github.event_name != 'workflow_dispatch'
         run: npm run docs:lint:changed
 
       - name: Agent config version check
-        if: github.event_name != 'schedule'
+        if: github.event_name != 'workflow_dispatch'
         run: |
           PKG_VERSION=$(node -p "require('./package.json').version")
           echo "Package version: ${PKG_VERSION}"
@@ -65,7 +70,7 @@ jobs:
           done
 
   external-links:
-    if: github.event_name == 'schedule'
+    if: github.event_name == 'workflow_dispatch' && (inputs.run_external_links == true || inputs.run_external_links == 'true')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
