@@ -114,7 +114,7 @@
 - ~~`/api/servers/:id` 시계열 metric key 불일치~~ → OTel 상수(`OTEL_METRIC.*`) 기반으로 수정 완료 (`system.*`)
 - ~~`/api/servers/next` 인증 응답 public CDN 캐시~~ → `private, no-store`로 수정 완료
 - **New**: `tests/api/ai-supervisor.integration.test.ts` 통합 테스트 추가
-- **New**: `tests/e2e/ai-nlq-vercel.spec.ts` NLQ 흐름 검증 추가
+- **New**: `tests/e2e/ai-nlq-vercel.manual.ts` NLQ 흐름 수동 검증 추가
 
 ### 3.3 Cloud Run AI Engine (93%)
 
@@ -335,7 +335,7 @@
 | Cloud Run 스트림 프록시/타임아웃 | 완료 | `src/app/api/ai/supervisor/stream/v2/route.ts:277`, `src/app/api/ai/supervisor/stream/v2/route.ts:283` |
 | Trace ID 관찰성 연계 | 완료 | `src/app/api/ai/supervisor/route.ts:102`, `src/app/api/ai/supervisor/route.ts:114` |
 | 보안/스키마 단위 테스트 | 완료 | `src/app/api/ai/supervisor/security.test.ts`, `src/app/api/ai/supervisor/schemas.test.ts` |
-| Cloud Run 실연동 E2E 회귀 세트 | 부분완료 | `tests/e2e/ai-nlq-vercel.spec.ts` (Next.js 레벨) 존재, Cloud Run 직접 호출 부재 |
+| Cloud Run 실연동 E2E 회귀 세트 | 부분완료 | `tests/e2e/ai-nlq-vercel.manual.ts` (수동 전용, Next.js 레벨) 존재, Cloud Run 직접 호출 부재 |
 
 분석:
 - 필수 경로(인증/보안/스트리밍/관찰성)는 구현 완료.
@@ -368,7 +368,7 @@
 
 1. P1: Cloud Run 단독 통합 테스트 신설  
    대상: `/health`, `/api/ai/supervisor`, `/api/ai/supervisor/stream/v2`
-2. ~~P2: AI Assistant 회귀 E2E 고정 시나리오 추가~~ (**완료**: `tests/e2e/ai-nlq-vercel.spec.ts`)
+2. ~~P2: AI Assistant 회귀 E2E 고정 시나리오 추가~~ (**완료**: `tests/e2e/ai-nlq-vercel.manual.ts`, 수동 전용)
 3. ~~P2: AI Sidebar/AI 전체페이지 사용자 흐름 E2E 추가~~ (**완료**: `tests/e2e/ai-fullscreen.spec.ts`)
 4. P2: Redis+Supabase RAG 통합 스모크 자동화  
    대상: `searchKnowledgeBase` 결과 → `ragSources` → 프론트 배지 노출
@@ -467,6 +467,9 @@
 | AI 상태/잡 (`/api/ai/status`, `/api/ai/jobs`) | AI 가용성/작업 큐 상태 노출 | `GET/POST` 응답 검증 | `200`, `400` | 정상(유효성 가드) |
 | 로컬 회귀 테스트 (`npm run test:quick`) | 핵심 유틸/보안 회귀 방지 | Vitest 10 files / 196 tests | 전부 PASS (3.85s) | 정상 |
 | Vercel 크리티컬 E2E (`npm run test:vercel:critical`) | 사용자 핵심 플로우 브라우저 검증 | 샌드박스/비샌드박스 교차 실행 | 샌드박스 `SIGTRAP` / 비샌드박스 `25 passed (2.8m)` | 코드 정상, 실행 환경 제약 분리 |
+| AI 풀스크린 E2E (`ai-fullscreen.spec.ts`) | AI 페이지 라우팅/탭 전환/입력 동작 | 비샌드박스 실행 | `9 passed (1.8m)` | 정상 |
+| AI NLQ 단건 (`ai-nlq-vercel.manual.ts`) | clarification 이후 응답 수신 | 비샌드박스 단건 반복 실행 | `Timeout` 반복, 로그상 `Failed to create job: 429` | 자동 회귀 제외(수동 전용), 코드 결함 아님(외부 할당량/레이트리밋 변동성) |
+| AI Supervisor 가드 E2E (`ai-supervisor-timeout.spec.ts`) | 빈 메시지 요청 방어 | 테스트 시그니처 수정 후 단건 실행 | `1 passed (11.8s)` | 정상 |
 
 테스트 속도/부하 분석:
 1. 샌드박스 내부에서는 브라우저 런치 실패(`SIGTRAP`)로 비정상 실패가 반복되어 코드 품질과 분리 진단이 필요했다.
@@ -482,6 +485,8 @@
 4. 기본 크리티컬 테스트 실행량을 `50 -> 25`로 절반 축소(`--list` 기준)
 5. 동일 환경 실측: `50케이스/4workers 103.559s` → `25케이스/2workers 91.414s` (실행시간 11.7% 단축, 호출량 50% 축소)
 6. 비샌드박스 기준 크리티컬 실동작 검증: `25 passed (2.8m)` 확인
+7. Playwright 호환성 수정: `tests/e2e/ai-supervisor-timeout.spec.ts` `beforeEach` 첫 인자 객체 구조분해로 수정
+8. NLQ 429 완화 패치: `tests/e2e/ai-nlq-vercel.manual.ts`에서 `/api/ai/jobs` 429 감지, `Retry-After` 상한, rate-limit 텍스트 탐지 강화 (실환경 변동성으로 수동 트랙 유지)
 
 ---
 

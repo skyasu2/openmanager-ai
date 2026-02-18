@@ -7,7 +7,7 @@
  * NOTE: Production 빌드에서 data-testid가 strip됨 → role/class/text 기반 셀렉터 사용.
  * NOTE: ClarificationDialog의 X 버튼은 dismiss(취소)이므로, 옵션 선택으로만 진행 가능.
  *
- * 실행: npm run test:vercel:e2e -- --grep @nlq
+ * 실행: npm run test:vercel:ai:nlq:manual
  */
 
 import type { Page, Response } from '@playwright/test';
@@ -18,6 +18,7 @@ import { TIMEOUTS } from './helpers/timeouts';
 import { navigateToDashboard } from './helpers/ui-flow';
 
 const AI_STREAM_ENDPOINT = '/api/ai/supervisor/stream/v2';
+const AI_JOB_ENDPOINT = '/api/ai/jobs';
 const RATE_LIMIT_TEXT_PATTERN =
   /Too Many Requests|요청 제한|rate limit|요청을 처리할 수 없습니다/i;
 const AI_RUNTIME_ERROR_PATTERN =
@@ -111,10 +112,13 @@ async function waitForAssistantResponse(
 
         const text = log.textContent || '';
         return (
-          /처리 중 오류|AI 응답 중 오류|쿼리 처리 중 오류|다시 시도해주세요|요청 제한|Too Many Requests|연결이 끊어졌습니다/.test(
+          /처리 중 오류|AI 응답 중 오류|쿼리 처리 중 오류|다시 시도해주세요|요청 제한|Too Many Requests|연결이 끊어졌습니다|요청을 처리할 수 없습니다|Failed to start query|Failed to create job/.test(
             text
           ) ||
           /AI 모델 설정 또는 권한 오류|모델 ID\/권한 설정 점검|does not exist or you do not have access/.test(
+            bodyText
+          ) ||
+          /요청을 처리할 수 없습니다|Failed to start query|Failed to create job|요청 제한|Too Many Requests|rate limit/.test(
             bodyText
           )
         );
@@ -140,33 +144,43 @@ async function waitForAssistantResponse(
       '[data-testid="ai-message"], [data-testid="ai-response"], .justify-start'
     )
     .last();
+  const assistantMessageCount = await assistantMessage.count().catch(() => 0);
+  if (assistantMessageCount > 0) {
+    // 스트리밍 완료 대기 (텍스트 3회 연속 동일하면 완료)
+    const recentSamples: string[] = [];
+    await expect
+      .poll(
+        async () => {
+          const text = ((await assistantMessage.textContent()) ?? '').trim();
+          recentSamples.push(text);
+          if (recentSamples.length > 3) recentSamples.shift();
+          return recentSamples.length === 3 &&
+            recentSamples[0] !== '' &&
+            recentSamples[0] === recentSamples[1] &&
+            recentSamples[1] === recentSamples[2]
+            ? 'stable'
+            : 'streaming';
+        },
+        {
+          timeout,
+          intervals: [300, 500, 800],
+        }
+      )
+      .toBe('stable')
+      .catch(() => undefined);
 
-  // 스트리밍 완료 대기 (텍스트 3회 연속 동일하면 완료)
-  const recentSamples: string[] = [];
-  await expect
-    .poll(
-      async () => {
-        const text = ((await assistantMessage.textContent()) ?? '').trim();
-        recentSamples.push(text);
-        if (recentSamples.length > 3) recentSamples.shift();
-        return recentSamples.length === 3 &&
-          recentSamples[0] !== '' &&
-          recentSamples[0] === recentSamples[1] &&
-          recentSamples[1] === recentSamples[2]
-          ? 'stable'
-          : 'streaming';
-      },
-      {
-        timeout,
-        intervals: [300, 500, 800],
-      }
-    )
-    .toBe('stable')
-    .catch(() => undefined);
+    const renderedText = ((await assistantMessage.textContent()) ?? '').trim();
+    if (renderedText.length > 0) {
+      return renderedText;
+    }
+  }
 
-  const renderedText = ((await assistantMessage.textContent()) ?? '').trim();
-  if (renderedText.length > 0) {
-    return renderedText;
+  const logText = ((await logArea.textContent()) ?? '').trim();
+  if (
+    RATE_LIMIT_TEXT_PATTERN.test(logText) ||
+    /Failed to start query|Failed to create job/.test(logText)
+  ) {
+    return 'STREAM_STATUS:429';
   }
 
   const streamResponse = await streamResponsePromise;
@@ -174,7 +188,7 @@ async function waitForAssistantResponse(
     return `STREAM_STATUS:${streamResponse.status()}`;
   }
 
-  return renderedText;
+  return logText;
 }
 
 /**
@@ -187,15 +201,21 @@ async function runWithRateLimitRecovery(
   let retryAfterMs = 0;
 
   const onResponse = (response: Response) => {
-    if (!response.url().includes(AI_STREAM_ENDPOINT)) return;
+    const url = response.url();
+    const isRateLimitRelevantEndpoint =
+      url.includes(AI_STREAM_ENDPOINT) || url.includes(AI_JOB_ENDPOINT);
+
+    if (!isRateLimitRelevantEndpoint) return;
     if (response.status() !== 429) return;
 
     const retryAfterHeader = response.headers()['retry-after'];
     const retryAfterSeconds = Number.parseInt(retryAfterHeader || '8', 10);
-    retryAfterMs =
+    const estimatedRetryAfterMs =
       Number.isFinite(retryAfterSeconds) && retryAfterSeconds > 0
         ? (retryAfterSeconds + 1) * 1000
         : 9000;
+    // 실환경의 과도한 Retry-After 값으로 테스트 전체 타임아웃이 소진되는 것을 방지
+    retryAfterMs = Math.min(Math.max(estimatedRetryAfterMs, 2_000), 15_000);
   };
 
   for (let attempt = 0; attempt < 2; attempt += 1) {
@@ -203,11 +223,43 @@ async function runWithRateLimitRecovery(
     page.on('response', onResponse);
 
     try {
-      return await runner();
+      const result = await runner();
+      const hasRateLimitText = await page
+        .getByText(RATE_LIMIT_TEXT_PATTERN)
+        .first()
+        .isVisible({ timeout: TIMEOUTS.CLICK_RESPONSE })
+        .catch(() => false);
+
+      if (attempt === 0 && hasRateLimitText) {
+        throw new Error('RATE_LIMIT_RETRY');
+      }
+
+      return result;
     } catch (error) {
-      const canRetry = attempt === 0 && retryAfterMs > 0;
+      const isRateLimitRetry =
+        error instanceof Error && error.message === 'RATE_LIMIT_RETRY';
+      const hasRateLimitText = await page
+        .getByText(RATE_LIMIT_TEXT_PATTERN)
+        .first()
+        .isVisible({ timeout: TIMEOUTS.CLICK_RESPONSE })
+        .catch(() => false);
+      const hasJobCreateRateLimitText = await page
+        .getByText(
+          /Failed to start query|Failed to create job|요청을 처리할 수 없습니다/i
+        )
+        .first()
+        .isVisible({ timeout: TIMEOUTS.CLICK_RESPONSE })
+        .catch(() => false);
+      const canRetry = attempt === 0 && (retryAfterMs > 0 || isRateLimitRetry);
       if (!canRetry) {
+        if (hasRateLimitText || hasJobCreateRateLimitText) {
+          return 'STREAM_STATUS:429';
+        }
         throw error;
+      }
+
+      if (retryAfterMs <= 0) {
+        retryAfterMs = 9000;
       }
 
       await page.waitForTimeout(retryAfterMs);

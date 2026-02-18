@@ -46,6 +46,7 @@
 - [ ] CHANGELOG.md 업데이트
 - [ ] 환경변수 동기화 확인 (로컬 ↔ Vercel ↔ Cloud Run)
 - [ ] Health check 정상 (`/api/health`, Cloud Run `/health`)
+- [ ] NLQ 수동 점검 1회: `npm run test:vercel:ai:nlq:manual` (자동 회귀 제외 항목)
 - [ ] Cloud Run 배포 시: `npm run test:cloud:essential` 통과
 
 ---

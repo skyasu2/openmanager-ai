@@ -12,6 +12,10 @@
 - [x] P2: 기능 책임 기반 실동작 재검증 수행 — Vercel HTTP 스모크(핵심 경로/상태코드), 로컬 `test:quick` 196 PASS 근거 확보
 - [x] P2: Vercel 크리티컬 브라우저 검증 교차 실행 — 샌드박스 `SIGTRAP` 원인 분리, 비샌드박스 `25/25 PASS (2.8m)` 확인
 - [x] P2: Vercel E2E 저부하 기본값 전환 — `playwright.config.vercel.ts`(desktop default, mobile opt-in, retries 축소), `test:vercel:*:mobile` 스크립트 분리
+- [x] P2: AI 풀스크린 실동작 검증 — `ai-fullscreen.spec.ts` 9/9 PASS (1.8m)
+- [x] P2: AI NLQ 단건 검증 — 실패 원인 분리 완료 (`Failed to create job: 429`, 코드 결함 아님)
+- [x] P2: AI NLQ 안정성 완화 패치 — `/api/ai/jobs` 429 감지, `Retry-After` 상한(2~15s), rate-limit 텍스트 감지 강화
+- [x] P2: Playwright 테스트 호환성 수정 — `ai-supervisor-timeout.spec.ts` beforeEach 인자 시그니처 교정 후 단건 PASS
 - [x] P2: CI 워크플로우 최적화 — schedule→workflow_dispatch 전환, detect-scope 조건부 테스트
 - [x] P3: Biome 스키마 2.4.2 업그레이드 + renderAIGradientWithAnimation 단순화
 - [x] P3: vercel MCP API key 전달 방식 수정 (env→args, v0.0.7 호환)
@@ -34,7 +38,7 @@
 - [x] P1: Full Stack 관점 최종 검수 완료 (`completion-review.md` 96.8%)
 - [x] P2: Frontend E2E 테스트 추가 (`ai-fullscreen.spec.ts`, `dashboard-ai-sidebar.spec.ts`)
 - [x] P2: API Integration 테스트 추가 (`ai-supervisor.integration.test.ts`)
-- [x] P2: NLQ E2E 테스트 추가 (`ai-nlq-vercel.spec.ts`)
+- [x] P2: NLQ E2E 수동 테스트 추가 (`ai-nlq-vercel.manual.ts`)
 - [x] P3: 성능/보안/평가 기준 수립 (Lighthouse, CSP, Promptfoo)
 - [x] P3: WBS 최신화 (테스트 커버리지 반영, 실제 완성도 94.7% 달성)
 
