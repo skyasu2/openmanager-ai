@@ -198,8 +198,8 @@ export async function extractMetricsFromStandard(
         status: 'online',
         hostname: hostname,
         environment:
-          getAttr('deployment.environment') ??
-          catalogEntry?.['deployment.environment'],
+          getAttr('deployment.environment.name') ??
+          catalogEntry?.['deployment.environment.name'],
         os: getAttr('os.type') ?? catalogEntry?.['os.type'],
         otelResource:
           catalogEntry ??
@@ -315,7 +315,7 @@ export async function extractMetricsFromOTelHourly(
           logs: [],
           status: 'online',
           hostname,
-          environment: catalogEntry?.['deployment.environment'],
+          environment: catalogEntry?.['deployment.environment.name'],
           os: catalogEntry?.['os.type'],
           otelResource: catalogEntry ?? ({} as Partial<OTelResourceAttributes>),
         });

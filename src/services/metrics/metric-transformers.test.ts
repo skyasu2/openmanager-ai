@@ -19,8 +19,10 @@ function buildPayload(
   }
 ): ExportMetricsServiceRequest {
   const lowValues = cpuValues.map(() => 0.1);
+  // 기본 network 값은 OTel 표준: bytes/sec (1Gbps = 125,000,000 B/s 기준)
   const networkValues =
-    options?.networkValues ?? cpuValues.map((_, idx) => (idx + 1) / 100);
+    options?.networkValues ??
+    cpuValues.map((_, idx) => Math.round(((idx + 1) / 100) * 125_000_000));
 
   return {
     resourceMetrics: [
@@ -50,8 +52,8 @@ function buildPayload(
                 gauge: { dataPoints: buildDataPoints(lowValues) },
               },
               {
-                name: 'system.network.utilization',
-                unit: options?.networkUnit,
+                name: 'system.network.io',
+                unit: options?.networkUnit ?? 'By',
                 gauge: { dataPoints: buildDataPoints(networkValues) },
               },
             ],
@@ -139,7 +141,8 @@ describe('extractMetricsFromStandard', () => {
         gauge: { dataPoints: buildDataPoints([0, 0, 0, 0, 0, 0]) },
       },
       {
-        name: 'system.network.utilization',
+        name: 'system.network.io',
+        unit: 'By',
         gauge: { dataPoints: buildDataPoints([0, 0, 0, 0, 0, 0]) },
       },
     ];
@@ -198,9 +201,13 @@ describe('extractMetricsFromStandard', () => {
               },
             },
             {
-              name: 'system.network.utilization',
+              name: 'system.network.io',
+              unit: 'By',
               gauge: {
-                dataPoints: buildDataPoints([0.1, 0.1, 0.1, 0.1, 0.1, 0.1]),
+                dataPoints: buildDataPoints([
+                  12_500_000, 12_500_000, 12_500_000, 12_500_000, 12_500_000,
+                  12_500_000,
+                ]),
               },
             },
           ],
@@ -244,8 +251,9 @@ describe('extractMetricsFromStandard', () => {
                   gauge: { dataPoints: buildDataPoints([0.3]) },
                 },
                 {
-                  name: 'system.network.utilization',
-                  gauge: { dataPoints: buildDataPoints([0.05]) },
+                  name: 'system.network.io',
+                  unit: 'By',
+                  gauge: { dataPoints: buildDataPoints([6_250_000]) },
                 },
               ],
             },

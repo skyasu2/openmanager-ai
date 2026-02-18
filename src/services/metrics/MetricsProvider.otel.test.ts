@@ -67,9 +67,13 @@ describe('MetricsProvider OTel Integration', () => {
         ],
       },
       {
-        name: 'system.network.utilization',
+        name: 'system.network.io',
+        unit: 'By',
         dataPoints: [
-          { asDouble: 0.1, attributes: { 'host.name': 'test-host.local' } },
+          {
+            asDouble: 12_500_000,
+            attributes: { 'host.name': 'test-host.local' },
+          },
         ],
       },
     ]);
@@ -115,9 +119,13 @@ describe('MetricsProvider OTel Integration', () => {
         ],
       },
       {
-        name: 'system.network.utilization',
+        name: 'system.network.io',
+        unit: 'By',
         dataPoints: [
-          { asDouble: 0.5, attributes: { 'host.name': 'full-host.local' } },
+          {
+            asDouble: 62_500_000,
+            attributes: { 'host.name': 'full-host.local' },
+          },
         ],
       },
     ]);

@@ -18,7 +18,7 @@ vi.mock('@/constants/otel-metric-names', () => ({
     CPU: 'system.cpu.utilization',
     MEMORY: 'system.memory.utilization',
     DISK: 'system.filesystem.utilization',
-    NETWORK: 'system.network.utilization',
+    NETWORK: 'system.network.io',
     LOAD_1M: 'system.linux.cpu.load_1m',
     LOAD_5M: 'system.linux.cpu.load_5m',
     PROCESSES: 'system.process.count',
@@ -85,8 +85,8 @@ function makeSlot(
     buildMetric('system.memory.utilization', '1', servers, 'memory'),
     buildMetric('system.filesystem.utilization', '1', servers, 'disk'),
     buildMetric(
-      'system.network.utilization',
-      options?.networkUnit ?? '1',
+      'system.network.io',
+      options?.networkUnit ?? 'By',
       servers,
       'network'
     ),
@@ -125,7 +125,7 @@ function makeCatalog(serverIds: string[]): OTelResourceCatalog {
       'server.role': 'web',
       'os.type': 'linux',
       'cloud.availability_zone': 'ap-northeast-2a',
-      'deployment.environment': 'production',
+      'deployment.environment.name': 'production',
       'host.cpu.count': 4,
       'host.memory.size': 8 * 1024 * 1024 * 1024,
       'host.disk.size': 100 * 1024 * 1024 * 1024,
@@ -143,7 +143,12 @@ function makeCatalog(serverIds: string[]): OTelResourceCatalog {
 describe('otelSlotToServers', () => {
   it('converts OTel slot to EnhancedServerMetrics array', () => {
     const slot = makeSlot({
-      'web-nginx-kr-01': { cpu: 0.45, memory: 0.6, disk: 0.3, network: 0.2 },
+      'web-nginx-kr-01': {
+        cpu: 0.45,
+        memory: 0.6,
+        disk: 0.3,
+        network: 25_000_000,
+      },
     });
     const catalog = makeCatalog(['web-nginx-kr-01']);
     const ts = '2026-01-01T10:00:00Z';
@@ -173,8 +178,8 @@ describe('otelSlotToServers', () => {
 
   it('handles multiple servers in single slot', () => {
     const slot = makeSlot({
-      'web-01': { cpu: 0.3, memory: 0.4, disk: 0.25, network: 0.1 },
-      'db-01': { cpu: 0.85, memory: 0.7, disk: 0.6, network: 0.05 },
+      'web-01': { cpu: 0.3, memory: 0.4, disk: 0.25, network: 12_500_000 },
+      'db-01': { cpu: 0.85, memory: 0.7, disk: 0.6, network: 6_250_000 },
     });
     const catalog = makeCatalog(['web-01', 'db-01']);
 
@@ -185,9 +190,9 @@ describe('otelSlotToServers', () => {
     expect(ids).toEqual(['db-01', 'web-01']);
   });
 
-  it('converts OTel ratio (0-1) to percent (0-100) correctly', () => {
+  it('converts OTel values to percent (0-100) correctly', () => {
     const slot = makeSlot({
-      srv: { cpu: 0.123, memory: 0.999, disk: 0.001, network: 0.5 },
+      srv: { cpu: 0.123, memory: 0.999, disk: 0.001, network: 62_500_000 },
     });
     const catalog = makeCatalog(['srv']);
 
@@ -229,7 +234,7 @@ describe('otelSlotToServers', () => {
 
   it('attaches structured logs to matching servers', () => {
     const slot = makeSlot({
-      'web-01': { cpu: 0.5, memory: 0.5, disk: 0.3, network: 0.1 },
+      'web-01': { cpu: 0.5, memory: 0.5, disk: 0.3, network: 12_500_000 },
     });
     slot.logs = [
       {
@@ -269,7 +274,7 @@ describe('otelSlotToServers', () => {
 
   it('populates systemInfo and networkInfo correctly', () => {
     const slot = makeSlot({
-      'web-01': { cpu: 0.5, memory: 0.5, disk: 0.3, network: 0.2 },
+      'web-01': { cpu: 0.5, memory: 0.5, disk: 0.3, network: 25_000_000 },
     });
     const catalog = makeCatalog(['web-01']);
 

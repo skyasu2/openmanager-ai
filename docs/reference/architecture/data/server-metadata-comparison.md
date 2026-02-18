@@ -95,7 +95,7 @@ interface ServerConfig {
   "os.description": "ubuntu 22.04",
   "cloud.region": "onprem-dc1",
   "cloud.availability_zone": "DC1-AZ1",
-  "deployment.environment": "production",
+  "deployment.environment.name": "production",
   "host.cpu.count": 4,
   "host.memory.size": 8589934592,
   "host.disk.size": 107374182400
@@ -142,7 +142,7 @@ interface ServerConfig {
 |---------|:-------:|----------|
 | Identity & Naming | 5 | id, name, hostname, ip, service.name |
 | Server Type & Role | 4 | type (6종), server_type, server.role, role |
-| Location & Infra | 6 | location, datacenter, cloud.region, cloud.availability_zone, environment, deployment.environment |
+| Location & Infra | 6 | location, datacenter, cloud.region, cloud.availability_zone, environment, deployment.environment.name |
 | Hardware Specs | 6 | cpu_cores, memory_gb/bytes, disk_gb/bytes (3가지 표현 × 2 단위) |
 | OS Info | 4 | os, osVersion, os.type, os.description |
 | Prometheus Labels | 8 | instance, job + labels 6개 |

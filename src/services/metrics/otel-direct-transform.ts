@@ -275,7 +275,7 @@ export function otelSlotToServers(
       os: resource?.['os.type'] ?? '',
       type: serverType,
       role: mapTypeToRole(serverType),
-      environment: resource?.['deployment.environment'] ?? '',
+      environment: resource?.['deployment.environment.name'] ?? '',
       provider: 'OTel-Direct',
       specs: {
         cpu_cores: resource?.['host.cpu.count'] ?? DEFAULT_CPU_CORES,

@@ -21,7 +21,7 @@ function makeLog(overrides: Partial<OTelLogRecord> = {}): OTelLogRecord {
     attributes: {
       'log.source': 'nginx',
       'server.role': 'web',
-      'deployment.environment': 'production',
+      'deployment.environment.name': 'production',
       'cloud.availability_zone': 'ap-northeast-2a',
     },
     resource: 'web-nginx-kr-01',

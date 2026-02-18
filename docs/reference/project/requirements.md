@@ -1,9 +1,9 @@
-# OpenManager AI v8.0.0 - Software Requirements Specification
+# OpenManager AI v8.1.0 - Software Requirements Specification
 
 > Owner: project-lead
 > Status: Active Canonical
 > Doc type: Reference
-> Last reviewed: 2026-02-17
+> Last reviewed: 2026-02-18
 > Tags: requirements,srs,functional,non-functional
 
 **기반**: IEEE 830 / ISO/IEC/IEEE 29148 경량 버전
@@ -197,4 +197,4 @@
 
 ---
 
-_Last Updated: 2026-02-17_
+_Last Updated: 2026-02-18_

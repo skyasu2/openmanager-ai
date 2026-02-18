@@ -8,6 +8,7 @@
  */
 
 import type { NormalizedMessage } from '@/lib/ai/utils/message-normalizer';
+import { getKSTDateTime } from '@/services/metrics/kst-time';
 import { MonitoringContext } from '@/services/monitoring/MonitoringContext';
 
 export async function buildServerContextMessage(): Promise<NormalizedMessage | null> {
@@ -48,9 +49,12 @@ export async function buildServerContextMessage(): Promise<NormalizedMessage | n
       // PromQL trend is best-effort, ignore errors
     }
 
+    const kstDateTime = getKSTDateTime();
+    const slotInfo = `\nData Slot: ${kstDateTime.date} ${kstDateTime.time} KST (slot ${kstDateTime.slotIndex}/143)\n`;
+
     return {
       role: 'system',
-      content: `${context}${trendContext}\n위 모니터링 데이터를 참조하여 구체적으로 답변하세요.`,
+      content: `${context}${slotInfo}${trendContext}\n위 모니터링 데이터를 참조하여 구체적으로 답변하세요.`,
     };
   } catch {
     return null;

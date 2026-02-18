@@ -302,18 +302,18 @@
           ]
         },
         {
-          "name": "system.network.utilization",
-          "unit": "1",
+          "name": "system.network.io",
+          "unit": "By",
           "type": "gauge",
           "dataPoints": [
             {
-              "asDouble": 0.01,
+              "asDouble": 1250000,
               "attributes": {
                 "host.name": "web-nginx-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.01,
+              "asDouble": 1250000,
               "attributes": {
                 "host.name": "web-nginx-dc1-02.openmanager.kr"
               }
@@ -325,7 +325,7 @@
               }
             },
             {
-              "asDouble": 0.01,
+              "asDouble": 1250000,
               "attributes": {
                 "host.name": "api-was-dc1-01.openmanager.kr"
               }
@@ -361,37 +361,37 @@
               }
             },
             {
-              "asDouble": 0.38,
+              "asDouble": 47500000,
               "attributes": {
                 "host.name": "cache-redis-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.47,
+              "asDouble": 58750000,
               "attributes": {
                 "host.name": "cache-redis-dc1-02.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.2,
+              "asDouble": 25000000,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.32,
+              "asDouble": 40000000,
               "attributes": {
                 "host.name": "storage-s3gw-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.01,
+              "asDouble": 1250000,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.01,
+              "asDouble": 1250000,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-02.openmanager.kr"
               }
@@ -893,7 +893,7 @@
           "attributes": {
             "log.source": "systemd",
             "server.role": "web",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ1"
           },
           "resource": "web-nginx-dc1-01"
@@ -906,7 +906,7 @@
           "attributes": {
             "log.source": "systemd",
             "server.role": "web",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ1"
           },
           "resource": "web-nginx-dc1-01"
@@ -919,7 +919,7 @@
           "attributes": {
             "log.source": "systemd",
             "server.role": "web",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ2"
           },
           "resource": "web-nginx-dc1-02"
@@ -942,7 +942,7 @@
           "attributes": {
             "log.source": "systemd",
             "server.role": "web",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ3"
           },
           "resource": "web-nginx-dc1-03"
@@ -965,7 +965,7 @@
           "attributes": {
             "log.source": "systemd",
             "server.role": "web",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ3"
           },
           "resource": "web-nginx-dc1-03"
@@ -998,7 +998,7 @@
           "attributes": {
             "log.source": "systemd",
             "server.role": "application",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ1"
           },
           "resource": "api-was-dc1-01"
@@ -1011,7 +1011,7 @@
           "attributes": {
             "log.source": "syslog",
             "server.role": "application",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ1"
           },
           "resource": "api-was-dc1-01"
@@ -1034,7 +1034,7 @@
           "attributes": {
             "log.source": "systemd",
             "server.role": "application",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ2"
           },
           "resource": "api-was-dc1-02"
@@ -1047,7 +1047,7 @@
           "attributes": {
             "log.source": "syslog",
             "server.role": "application",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ3"
           },
           "resource": "api-was-dc1-03"
@@ -1060,7 +1060,7 @@
           "attributes": {
             "log.source": "cron",
             "server.role": "database",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ1"
           },
           "resource": "db-mysql-dc1-primary"
@@ -1073,7 +1073,7 @@
           "attributes": {
             "log.source": "syslog",
             "server.role": "database",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ1"
           },
           "resource": "db-mysql-dc1-primary"
@@ -1086,7 +1086,7 @@
           "attributes": {
             "log.source": "syslog",
             "server.role": "database",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ2"
           },
           "resource": "db-mysql-dc1-replica"
@@ -1099,7 +1099,7 @@
           "attributes": {
             "log.source": "cron",
             "server.role": "database",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ2"
           },
           "resource": "db-mysql-dc1-replica"
@@ -1112,7 +1112,7 @@
           "attributes": {
             "log.source": "systemd",
             "server.role": "database",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ3"
           },
           "resource": "db-mysql-dc1-backup"
@@ -1125,7 +1125,7 @@
           "attributes": {
             "log.source": "cron",
             "server.role": "database",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ3"
           },
           "resource": "db-mysql-dc1-backup"
@@ -1138,7 +1138,7 @@
           "attributes": {
             "log.source": "redis",
             "server.role": "cache",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ1"
           },
           "resource": "cache-redis-dc1-01"
@@ -1151,7 +1151,7 @@
           "attributes": {
             "log.source": "redis",
             "server.role": "cache",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ1"
           },
           "resource": "cache-redis-dc1-01"
@@ -1164,7 +1164,7 @@
           "attributes": {
             "log.source": "redis",
             "server.role": "cache",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ2"
           },
           "resource": "cache-redis-dc1-02"
@@ -1177,7 +1177,7 @@
           "attributes": {
             "log.source": "systemd",
             "server.role": "cache",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ2"
           },
           "resource": "cache-redis-dc1-02"
@@ -1200,7 +1200,7 @@
           "attributes": {
             "log.source": "syslog",
             "server.role": "storage",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ1"
           },
           "resource": "storage-nfs-dc1-01"
@@ -1213,7 +1213,7 @@
           "attributes": {
             "log.source": "cron",
             "server.role": "storage",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ1"
           },
           "resource": "storage-nfs-dc1-01"
@@ -1226,7 +1226,7 @@
           "attributes": {
             "log.source": "minio",
             "server.role": "storage",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ3"
           },
           "resource": "storage-s3gw-dc1-01"
@@ -1239,7 +1239,7 @@
           "attributes": {
             "log.source": "systemd",
             "server.role": "loadbalancer",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ1"
           },
           "resource": "lb-haproxy-dc1-01"
@@ -1252,7 +1252,7 @@
           "attributes": {
             "log.source": "haproxy",
             "server.role": "loadbalancer",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ1"
           },
           "resource": "lb-haproxy-dc1-01"
@@ -1265,7 +1265,7 @@
           "attributes": {
             "log.source": "haproxy",
             "server.role": "loadbalancer",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ3"
           },
           "resource": "lb-haproxy-dc1-02"
@@ -1278,7 +1278,7 @@
           "attributes": {
             "log.source": "haproxy",
             "server.role": "loadbalancer",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ3"
           },
           "resource": "lb-haproxy-dc1-02"
@@ -1581,18 +1581,18 @@
           ]
         },
         {
-          "name": "system.network.utilization",
-          "unit": "1",
+          "name": "system.network.io",
+          "unit": "By",
           "type": "gauge",
           "dataPoints": [
             {
-              "asDouble": 0.01,
+              "asDouble": 1250000,
               "attributes": {
                 "host.name": "web-nginx-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.01,
+              "asDouble": 1250000,
               "attributes": {
                 "host.name": "web-nginx-dc1-02.openmanager.kr"
               }
@@ -1640,37 +1640,37 @@
               }
             },
             {
-              "asDouble": 0.45,
+              "asDouble": 56250000,
               "attributes": {
                 "host.name": "cache-redis-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.37,
+              "asDouble": 46250000,
               "attributes": {
                 "host.name": "cache-redis-dc1-02.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.24,
+              "asDouble": 30000000,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.21,
+              "asDouble": 26250000,
               "attributes": {
                 "host.name": "storage-s3gw-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.01,
+              "asDouble": 1250000,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.01,
+              "asDouble": 1250000,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-02.openmanager.kr"
               }
@@ -2172,7 +2172,7 @@
           "attributes": {
             "log.source": "systemd",
             "server.role": "web",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ2"
           },
           "resource": "web-nginx-dc1-02"
@@ -2195,7 +2195,7 @@
           "attributes": {
             "log.source": "nginx",
             "server.role": "web",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ3"
           },
           "resource": "web-nginx-dc1-03"
@@ -2208,7 +2208,7 @@
           "attributes": {
             "log.source": "syslog",
             "server.role": "application",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ2"
           },
           "resource": "api-was-dc1-02"
@@ -2221,7 +2221,7 @@
           "attributes": {
             "log.source": "systemd",
             "server.role": "application",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ3"
           },
           "resource": "api-was-dc1-03"
@@ -2244,7 +2244,7 @@
           "attributes": {
             "log.source": "syslog",
             "server.role": "application",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ3"
           },
           "resource": "api-was-dc1-03"
@@ -2257,7 +2257,7 @@
           "attributes": {
             "log.source": "cron",
             "server.role": "database",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ1"
           },
           "resource": "db-mysql-dc1-primary"
@@ -2270,7 +2270,7 @@
           "attributes": {
             "log.source": "cron",
             "server.role": "database",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ2"
           },
           "resource": "db-mysql-dc1-replica"
@@ -2283,7 +2283,7 @@
           "attributes": {
             "log.source": "syslog",
             "server.role": "database",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ2"
           },
           "resource": "db-mysql-dc1-replica"
@@ -2296,7 +2296,7 @@
           "attributes": {
             "log.source": "cron",
             "server.role": "database",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ3"
           },
           "resource": "db-mysql-dc1-backup"
@@ -2309,7 +2309,7 @@
           "attributes": {
             "log.source": "systemd",
             "server.role": "cache",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ1"
           },
           "resource": "cache-redis-dc1-01"
@@ -2322,7 +2322,7 @@
           "attributes": {
             "log.source": "redis",
             "server.role": "cache",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ1"
           },
           "resource": "cache-redis-dc1-01"
@@ -2335,7 +2335,7 @@
           "attributes": {
             "log.source": "systemd",
             "server.role": "cache",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ2"
           },
           "resource": "cache-redis-dc1-02"
@@ -2348,7 +2348,7 @@
           "attributes": {
             "log.source": "syslog",
             "server.role": "storage",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ1"
           },
           "resource": "storage-nfs-dc1-01"
@@ -2371,7 +2371,7 @@
           "attributes": {
             "log.source": "cron",
             "server.role": "storage",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ1"
           },
           "resource": "storage-nfs-dc1-01"
@@ -2384,7 +2384,7 @@
           "attributes": {
             "log.source": "minio",
             "server.role": "storage",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ3"
           },
           "resource": "storage-s3gw-dc1-01"
@@ -2397,7 +2397,7 @@
           "attributes": {
             "log.source": "systemd",
             "server.role": "storage",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ3"
           },
           "resource": "storage-s3gw-dc1-01"
@@ -2410,7 +2410,7 @@
           "attributes": {
             "log.source": "haproxy",
             "server.role": "loadbalancer",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ1"
           },
           "resource": "lb-haproxy-dc1-01"
@@ -2433,7 +2433,7 @@
           "attributes": {
             "log.source": "systemd",
             "server.role": "loadbalancer",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ1"
           },
           "resource": "lb-haproxy-dc1-01"
@@ -2456,7 +2456,7 @@
           "attributes": {
             "log.source": "systemd",
             "server.role": "loadbalancer",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ3"
           },
           "resource": "lb-haproxy-dc1-02"
@@ -2469,7 +2469,7 @@
           "attributes": {
             "log.source": "haproxy",
             "server.role": "loadbalancer",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ3"
           },
           "resource": "lb-haproxy-dc1-02"
@@ -2772,18 +2772,18 @@
           ]
         },
         {
-          "name": "system.network.utilization",
-          "unit": "1",
+          "name": "system.network.io",
+          "unit": "By",
           "type": "gauge",
           "dataPoints": [
             {
-              "asDouble": 0.01,
+              "asDouble": 1250000,
               "attributes": {
                 "host.name": "web-nginx-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.01,
+              "asDouble": 1250000,
               "attributes": {
                 "host.name": "web-nginx-dc1-02.openmanager.kr"
               }
@@ -2795,13 +2795,13 @@
               }
             },
             {
-              "asDouble": 0.01,
+              "asDouble": 1250000,
               "attributes": {
                 "host.name": "api-was-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.01,
+              "asDouble": 1250000,
               "attributes": {
                 "host.name": "api-was-dc1-02.openmanager.kr"
               }
@@ -2831,37 +2831,37 @@
               }
             },
             {
-              "asDouble": 0.31,
+              "asDouble": 38750000,
               "attributes": {
                 "host.name": "cache-redis-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.42,
+              "asDouble": 52500000,
               "attributes": {
                 "host.name": "cache-redis-dc1-02.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.16,
+              "asDouble": 20000000,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.24,
+              "asDouble": 30000000,
               "attributes": {
                 "host.name": "storage-s3gw-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.01,
+              "asDouble": 1250000,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.01,
+              "asDouble": 1250000,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-02.openmanager.kr"
               }
@@ -3363,7 +3363,7 @@
           "attributes": {
             "log.source": "systemd",
             "server.role": "web",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ1"
           },
           "resource": "web-nginx-dc1-01"
@@ -3376,7 +3376,7 @@
           "attributes": {
             "log.source": "nginx",
             "server.role": "web",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ2"
           },
           "resource": "web-nginx-dc1-02"
@@ -3389,7 +3389,7 @@
           "attributes": {
             "log.source": "systemd",
             "server.role": "web",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ3"
           },
           "resource": "web-nginx-dc1-03"
@@ -3402,7 +3402,7 @@
           "attributes": {
             "log.source": "docker",
             "server.role": "application",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ1"
           },
           "resource": "api-was-dc1-01"
@@ -3415,7 +3415,7 @@
           "attributes": {
             "log.source": "syslog",
             "server.role": "application",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ2"
           },
           "resource": "api-was-dc1-02"
@@ -3438,7 +3438,7 @@
           "attributes": {
             "log.source": "docker",
             "server.role": "application",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ2"
           },
           "resource": "api-was-dc1-02"
@@ -3451,7 +3451,7 @@
           "attributes": {
             "log.source": "syslog",
             "server.role": "application",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ3"
           },
           "resource": "api-was-dc1-03"
@@ -3464,7 +3464,7 @@
           "attributes": {
             "log.source": "systemd",
             "server.role": "database",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ1"
           },
           "resource": "db-mysql-dc1-primary"
@@ -3487,7 +3487,7 @@
           "attributes": {
             "log.source": "cron",
             "server.role": "database",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ2"
           },
           "resource": "db-mysql-dc1-replica"
@@ -3500,7 +3500,7 @@
           "attributes": {
             "log.source": "syslog",
             "server.role": "database",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ3"
           },
           "resource": "db-mysql-dc1-backup"
@@ -3533,7 +3533,7 @@
           "attributes": {
             "log.source": "redis",
             "server.role": "cache",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ1"
           },
           "resource": "cache-redis-dc1-01"
@@ -3546,7 +3546,7 @@
           "attributes": {
             "log.source": "systemd",
             "server.role": "cache",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ1"
           },
           "resource": "cache-redis-dc1-01"
@@ -3559,7 +3559,7 @@
           "attributes": {
             "log.source": "redis",
             "server.role": "cache",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ2"
           },
           "resource": "cache-redis-dc1-02"
@@ -3572,7 +3572,7 @@
           "attributes": {
             "log.source": "redis",
             "server.role": "cache",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ2"
           },
           "resource": "cache-redis-dc1-02"
@@ -3585,7 +3585,7 @@
           "attributes": {
             "log.source": "syslog",
             "server.role": "storage",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ1"
           },
           "resource": "storage-nfs-dc1-01"
@@ -3598,7 +3598,7 @@
           "attributes": {
             "log.source": "systemd",
             "server.role": "storage",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ1"
           },
           "resource": "storage-nfs-dc1-01"
@@ -3611,7 +3611,7 @@
           "attributes": {
             "log.source": "minio",
             "server.role": "storage",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ3"
           },
           "resource": "storage-s3gw-dc1-01"
@@ -3624,7 +3624,7 @@
           "attributes": {
             "log.source": "systemd",
             "server.role": "loadbalancer",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ1"
           },
           "resource": "lb-haproxy-dc1-01"
@@ -3647,7 +3647,7 @@
           "attributes": {
             "log.source": "haproxy",
             "server.role": "loadbalancer",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ3"
           },
           "resource": "lb-haproxy-dc1-02"
@@ -3660,7 +3660,7 @@
           "attributes": {
             "log.source": "systemd",
             "server.role": "loadbalancer",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ3"
           },
           "resource": "lb-haproxy-dc1-02"
@@ -3963,18 +3963,18 @@
           ]
         },
         {
-          "name": "system.network.utilization",
-          "unit": "1",
+          "name": "system.network.io",
+          "unit": "By",
           "type": "gauge",
           "dataPoints": [
             {
-              "asDouble": 0.01,
+              "asDouble": 1250000,
               "attributes": {
                 "host.name": "web-nginx-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.01,
+              "asDouble": 1250000,
               "attributes": {
                 "host.name": "web-nginx-dc1-02.openmanager.kr"
               }
@@ -3992,7 +3992,7 @@
               }
             },
             {
-              "asDouble": 0.01,
+              "asDouble": 1250000,
               "attributes": {
                 "host.name": "api-was-dc1-02.openmanager.kr"
               }
@@ -4022,37 +4022,37 @@
               }
             },
             {
-              "asDouble": 0.46,
+              "asDouble": 57500000,
               "attributes": {
                 "host.name": "cache-redis-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.34,
+              "asDouble": 42500000,
               "attributes": {
                 "host.name": "cache-redis-dc1-02.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.35,
+              "asDouble": 43750000,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.31,
+              "asDouble": 38750000,
               "attributes": {
                 "host.name": "storage-s3gw-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.01,
+              "asDouble": 1250000,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.01,
+              "asDouble": 1250000,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-02.openmanager.kr"
               }
@@ -4554,7 +4554,7 @@
           "attributes": {
             "log.source": "nginx",
             "server.role": "web",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ3"
           },
           "resource": "web-nginx-dc1-03"
@@ -4567,7 +4567,7 @@
           "attributes": {
             "log.source": "syslog",
             "server.role": "application",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ1"
           },
           "resource": "api-was-dc1-01"
@@ -4590,7 +4590,7 @@
           "attributes": {
             "log.source": "syslog",
             "server.role": "application",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ2"
           },
           "resource": "api-was-dc1-02"
@@ -4603,7 +4603,7 @@
           "attributes": {
             "log.source": "docker",
             "server.role": "application",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ3"
           },
           "resource": "api-was-dc1-03"
@@ -4616,7 +4616,7 @@
           "attributes": {
             "log.source": "syslog",
             "server.role": "application",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ3"
           },
           "resource": "api-was-dc1-03"
@@ -4629,7 +4629,7 @@
           "attributes": {
             "log.source": "cron",
             "server.role": "database",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ1"
           },
           "resource": "db-mysql-dc1-primary"
@@ -4642,7 +4642,7 @@
           "attributes": {
             "log.source": "syslog",
             "server.role": "database",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ1"
           },
           "resource": "db-mysql-dc1-primary"
@@ -4665,7 +4665,7 @@
           "attributes": {
             "log.source": "cron",
             "server.role": "database",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ2"
           },
           "resource": "db-mysql-dc1-replica"
@@ -4678,7 +4678,7 @@
           "attributes": {
             "log.source": "systemd",
             "server.role": "database",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ2"
           },
           "resource": "db-mysql-dc1-replica"
@@ -4691,7 +4691,7 @@
           "attributes": {
             "log.source": "syslog",
             "server.role": "database",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ3"
           },
           "resource": "db-mysql-dc1-backup"
@@ -4714,7 +4714,7 @@
           "attributes": {
             "log.source": "cron",
             "server.role": "database",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ3"
           },
           "resource": "db-mysql-dc1-backup"
@@ -4737,7 +4737,7 @@
           "attributes": {
             "log.source": "redis",
             "server.role": "cache",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ1"
           },
           "resource": "cache-redis-dc1-01"
@@ -4760,7 +4760,7 @@
           "attributes": {
             "log.source": "redis",
             "server.role": "cache",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ2"
           },
           "resource": "cache-redis-dc1-02"
@@ -4773,7 +4773,7 @@
           "attributes": {
             "log.source": "syslog",
             "server.role": "storage",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ1"
           },
           "resource": "storage-nfs-dc1-01"
@@ -4786,7 +4786,7 @@
           "attributes": {
             "log.source": "minio",
             "server.role": "storage",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ3"
           },
           "resource": "storage-s3gw-dc1-01"
@@ -4799,7 +4799,7 @@
           "attributes": {
             "log.source": "minio",
             "server.role": "storage",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ3"
           },
           "resource": "storage-s3gw-dc1-01"
@@ -4812,7 +4812,7 @@
           "attributes": {
             "log.source": "haproxy",
             "server.role": "loadbalancer",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ1"
           },
           "resource": "lb-haproxy-dc1-01"
@@ -4825,7 +4825,7 @@
           "attributes": {
             "log.source": "haproxy",
             "server.role": "loadbalancer",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ1"
           },
           "resource": "lb-haproxy-dc1-01"
@@ -4838,7 +4838,7 @@
           "attributes": {
             "log.source": "systemd",
             "server.role": "loadbalancer",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ3"
           },
           "resource": "lb-haproxy-dc1-02"
@@ -5141,18 +5141,18 @@
           ]
         },
         {
-          "name": "system.network.utilization",
-          "unit": "1",
+          "name": "system.network.io",
+          "unit": "By",
           "type": "gauge",
           "dataPoints": [
             {
-              "asDouble": 0.01,
+              "asDouble": 1250000,
               "attributes": {
                 "host.name": "web-nginx-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.01,
+              "asDouble": 1250000,
               "attributes": {
                 "host.name": "web-nginx-dc1-02.openmanager.kr"
               }
@@ -5164,7 +5164,7 @@
               }
             },
             {
-              "asDouble": 0.01,
+              "asDouble": 1250000,
               "attributes": {
                 "host.name": "api-was-dc1-01.openmanager.kr"
               }
@@ -5200,37 +5200,37 @@
               }
             },
             {
-              "asDouble": 0.33,
+              "asDouble": 41250000,
               "attributes": {
                 "host.name": "cache-redis-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.4,
+              "asDouble": 50000000,
               "attributes": {
                 "host.name": "cache-redis-dc1-02.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.31,
+              "asDouble": 38750000,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.24,
+              "asDouble": 30000000,
               "attributes": {
                 "host.name": "storage-s3gw-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.01,
+              "asDouble": 1250000,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.01,
+              "asDouble": 1250000,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-02.openmanager.kr"
               }
@@ -5732,7 +5732,7 @@
           "attributes": {
             "log.source": "systemd",
             "server.role": "web",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ1"
           },
           "resource": "web-nginx-dc1-01"
@@ -5755,7 +5755,7 @@
           "attributes": {
             "log.source": "nginx",
             "server.role": "web",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ3"
           },
           "resource": "web-nginx-dc1-03"
@@ -5768,7 +5768,7 @@
           "attributes": {
             "log.source": "syslog",
             "server.role": "application",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ1"
           },
           "resource": "api-was-dc1-01"
@@ -5781,7 +5781,7 @@
           "attributes": {
             "log.source": "docker",
             "server.role": "application",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ1"
           },
           "resource": "api-was-dc1-01"
@@ -5794,7 +5794,7 @@
           "attributes": {
             "log.source": "syslog",
             "server.role": "application",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ2"
           },
           "resource": "api-was-dc1-02"
@@ -5807,7 +5807,7 @@
           "attributes": {
             "log.source": "docker",
             "server.role": "application",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ3"
           },
           "resource": "api-was-dc1-03"
@@ -5820,7 +5820,7 @@
           "attributes": {
             "log.source": "syslog",
             "server.role": "database",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ1"
           },
           "resource": "db-mysql-dc1-primary"
@@ -5833,7 +5833,7 @@
           "attributes": {
             "log.source": "syslog",
             "server.role": "database",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ3"
           },
           "resource": "db-mysql-dc1-backup"
@@ -5846,7 +5846,7 @@
           "attributes": {
             "log.source": "redis",
             "server.role": "cache",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ1"
           },
           "resource": "cache-redis-dc1-01"
@@ -5869,7 +5869,7 @@
           "attributes": {
             "log.source": "redis",
             "server.role": "cache",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ2"
           },
           "resource": "cache-redis-dc1-02"
@@ -5882,7 +5882,7 @@
           "attributes": {
             "log.source": "redis",
             "server.role": "cache",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ2"
           },
           "resource": "cache-redis-dc1-02"
@@ -5905,7 +5905,7 @@
           "attributes": {
             "log.source": "syslog",
             "server.role": "storage",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ1"
           },
           "resource": "storage-nfs-dc1-01"
@@ -5918,7 +5918,7 @@
           "attributes": {
             "log.source": "minio",
             "server.role": "storage",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ3"
           },
           "resource": "storage-s3gw-dc1-01"
@@ -5931,7 +5931,7 @@
           "attributes": {
             "log.source": "haproxy",
             "server.role": "loadbalancer",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ1"
           },
           "resource": "lb-haproxy-dc1-01"
@@ -5944,7 +5944,7 @@
           "attributes": {
             "log.source": "systemd",
             "server.role": "loadbalancer",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ1"
           },
           "resource": "lb-haproxy-dc1-01"
@@ -5957,7 +5957,7 @@
           "attributes": {
             "log.source": "haproxy",
             "server.role": "loadbalancer",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ3"
           },
           "resource": "lb-haproxy-dc1-02"
@@ -6260,18 +6260,18 @@
           ]
         },
         {
-          "name": "system.network.utilization",
-          "unit": "1",
+          "name": "system.network.io",
+          "unit": "By",
           "type": "gauge",
           "dataPoints": [
             {
-              "asDouble": 0.01,
+              "asDouble": 1250000,
               "attributes": {
                 "host.name": "web-nginx-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.01,
+              "asDouble": 1250000,
               "attributes": {
                 "host.name": "web-nginx-dc1-02.openmanager.kr"
               }
@@ -6283,7 +6283,7 @@
               }
             },
             {
-              "asDouble": 0.01,
+              "asDouble": 1250000,
               "attributes": {
                 "host.name": "api-was-dc1-01.openmanager.kr"
               }
@@ -6319,37 +6319,37 @@
               }
             },
             {
-              "asDouble": 0.39,
+              "asDouble": 48750000,
               "attributes": {
                 "host.name": "cache-redis-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.3,
+              "asDouble": 37500000,
               "attributes": {
                 "host.name": "cache-redis-dc1-02.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.24,
+              "asDouble": 30000000,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.17,
+              "asDouble": 21250000,
               "attributes": {
                 "host.name": "storage-s3gw-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.01,
+              "asDouble": 1250000,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.01,
+              "asDouble": 1250000,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-02.openmanager.kr"
               }
@@ -6851,7 +6851,7 @@
           "attributes": {
             "log.source": "systemd",
             "server.role": "web",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ1"
           },
           "resource": "web-nginx-dc1-01"
@@ -6864,7 +6864,7 @@
           "attributes": {
             "log.source": "nginx",
             "server.role": "web",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ2"
           },
           "resource": "web-nginx-dc1-02"
@@ -6877,7 +6877,7 @@
           "attributes": {
             "log.source": "systemd",
             "server.role": "web",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ2"
           },
           "resource": "web-nginx-dc1-02"
@@ -6890,7 +6890,7 @@
           "attributes": {
             "log.source": "docker",
             "server.role": "application",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ1"
           },
           "resource": "api-was-dc1-01"
@@ -6903,7 +6903,7 @@
           "attributes": {
             "log.source": "syslog",
             "server.role": "application",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ2"
           },
           "resource": "api-was-dc1-02"
@@ -6916,7 +6916,7 @@
           "attributes": {
             "log.source": "docker",
             "server.role": "application",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ2"
           },
           "resource": "api-was-dc1-02"
@@ -6929,7 +6929,7 @@
           "attributes": {
             "log.source": "syslog",
             "server.role": "application",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ3"
           },
           "resource": "api-was-dc1-03"
@@ -6942,7 +6942,7 @@
           "attributes": {
             "log.source": "syslog",
             "server.role": "database",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ1"
           },
           "resource": "db-mysql-dc1-primary"
@@ -6955,7 +6955,7 @@
           "attributes": {
             "log.source": "syslog",
             "server.role": "database",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ2"
           },
           "resource": "db-mysql-dc1-replica"
@@ -6968,7 +6968,7 @@
           "attributes": {
             "log.source": "cron",
             "server.role": "database",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ3"
           },
           "resource": "db-mysql-dc1-backup"
@@ -6991,7 +6991,7 @@
           "attributes": {
             "log.source": "redis",
             "server.role": "cache",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ1"
           },
           "resource": "cache-redis-dc1-01"
@@ -7004,7 +7004,7 @@
           "attributes": {
             "log.source": "redis",
             "server.role": "cache",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ1"
           },
           "resource": "cache-redis-dc1-01"
@@ -7027,7 +7027,7 @@
           "attributes": {
             "log.source": "redis",
             "server.role": "cache",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ2"
           },
           "resource": "cache-redis-dc1-02"
@@ -7040,7 +7040,7 @@
           "attributes": {
             "log.source": "redis",
             "server.role": "cache",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ2"
           },
           "resource": "cache-redis-dc1-02"
@@ -7053,7 +7053,7 @@
           "attributes": {
             "log.source": "syslog",
             "server.role": "storage",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ1"
           },
           "resource": "storage-nfs-dc1-01"
@@ -7086,7 +7086,7 @@
           "attributes": {
             "log.source": "minio",
             "server.role": "storage",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ3"
           },
           "resource": "storage-s3gw-dc1-01"
@@ -7099,7 +7099,7 @@
           "attributes": {
             "log.source": "haproxy",
             "server.role": "loadbalancer",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ1"
           },
           "resource": "lb-haproxy-dc1-01"
@@ -7112,7 +7112,7 @@
           "attributes": {
             "log.source": "systemd",
             "server.role": "loadbalancer",
-            "deployment.environment": "production",
+            "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ3"
           },
           "resource": "lb-haproxy-dc1-02"

@@ -1,9 +1,9 @@
-# OpenManager AI v8.0.0 - Work Breakdown Structure (모듈 기반)
+# OpenManager AI v8.1.0 - Work Breakdown Structure (모듈 기반)
 
 > Owner: project-lead
 > Status: Active Canonical
 > Doc type: Reference
-> Last reviewed: 2026-02-17
+> Last reviewed: 2026-02-18
 > Tags: wbs,deliverable,completion,modules
 
 **목적**: 모듈(Deliverable) 기반 WBS. 100% Rule 적용 — 모든 프로덕션 산출물 포착.
@@ -15,8 +15,8 @@
 
 | 항목 | 값 |
 |------|-----|
-| 기간 | 2025-05-23 ~ 2026-02-17 (9개월) |
-| 커밋 | 5,764개 |
+| 기간 | 2025-05-23 ~ 2026-02-18 (9개월) |
+| 커밋 | 5,789개 |
 | 코드량 | 프로덕션 ~138K (Frontend 107K + AI Engine 31K) + 테스트 26K + 설정 12K |
 | 파일 수 | src/ 686, cloud-run/ ~120, docs/ 54 |
 | 목적 | 포트폴리오 & 바이브 코딩 학습 결과물 |
@@ -169,4 +169,4 @@
 
 ---
 
-_Last Updated: 2026-02-17_
+_Last Updated: 2026-02-18_

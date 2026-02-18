@@ -9,6 +9,14 @@
 | Cloud Run 실환경 E2E 통합 테스트 파이프라인 | P3 | In Progress — CI smoke 차단형 전환 완료, 실환경 직접 호출 테스트 잔여 |
 
 ### Completed (2026-02-18)
+- [x] P2: 기능 책임 기반 실동작 재검증 수행 — Vercel HTTP 스모크(핵심 경로/상태코드), 로컬 `test:quick` 196 PASS 근거 확보
+- [x] P2: Vercel 크리티컬 브라우저 검증 교차 실행 — 샌드박스 `SIGTRAP` 원인 분리, 비샌드박스 `25/25 PASS (2.8m)` 확인
+- [x] P2: Vercel E2E 저부하 기본값 전환 — `playwright.config.vercel.ts`(desktop default, mobile opt-in, retries 축소), `test:vercel:*:mobile` 스크립트 분리
+- [x] P2: CI 워크플로우 최적화 — schedule→workflow_dispatch 전환, detect-scope 조건부 테스트
+- [x] P3: Biome 스키마 2.4.2 업그레이드 + renderAIGradientWithAnimation 단순화
+- [x] P3: vercel MCP API key 전달 방식 수정 (env→args, v0.0.7 호환)
+- [x] P3: MCP 전체 동작 테스트 8/8 정상 확인
+- [x] P3: 프로젝트 문서 v8.1.0 현행화 (WBS, DoD, SRS, completion-review, status.md)
 - [x] P1: AI Engine 핵심 4모듈 테스트 추가 (prompt-guard 24 + supervisor-routing 31 + error-handler 14 + text-sanitizer 22 = 91 tests)
 - [x] P2: RAG 임베딩 모듈 통합 (`embedding.ts` + `embedding-service.ts` → 단일 모듈, local fallback + 3h 캐시 + 통계)
 - [x] P2: CI 파이프라인 강화 — smoke `continue-on-error` 제거(차단형), `cloud-run-unit` job 신설, 계약 테스트 CI 추가
@@ -76,7 +84,7 @@
 
 | 파일 | 상태 | 비고 |
 |------|------|------|
-| `wbs.md` | 운영 | 전체 진행률 ~95.4% (검수 95.3%) |
+| `wbs.md` | 운영 | 전체 진행률 ~95.4% (검수 95.3%), v8.1.0 현행화 완료 |
 
 ### Completed (2026-01-22)
 - [x] 코드 단순화 리팩토링 (YAGNI 원칙 적용)

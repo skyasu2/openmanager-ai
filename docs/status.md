@@ -12,7 +12,25 @@
 
 ---
 
-## 🔄 Recent Changes (v8.0.0)
+## 데이터 구조
+
+- **Synthetic 데이터**: 15대 서버, 24시간, 10분 간격 (2026-02-14 기준)
+- **SSOT**: `public/data/otel-data/` → `resource-catalog.json` + `hourly/hour-{00..23}.json` + `timeseries.json`
+- **상세**: [OTel 데이터 아키텍처](reference/architecture/data/otel-data-architecture.md)
+
+---
+
+## 🔄 Recent Changes (v8.1.0)
+
+- **v8.1.0** (2026-02-18)
+  - chore: CI 워크플로우 최적화 — schedule 트리거를 workflow_dispatch로 전환 (비용 절감)
+  - feat(ci): detect-scope job 추가 — Cloud Run/AI Engine 변경 감지 기반 조건부 테스트 실행
+  - refactor(ui): renderAIGradientWithAnimation variant 파라미터 제거 (단순화)
+  - chore: Biome 스키마 2.3.15 → 2.4.2 업그레이드
+  - fix(test): Cloud Run 계약 테스트 UnauthorizedResponseSchema 검증 추가
+  - fix(mcp): vercel MCP API key 전달 방식 수정 (env → args, v0.0.7 호환)
+  - feat(release): publish.sh 자동 GitHub Release 생성 파이프라인 추가
+  - chore: commit-and-tag-version 도입 (deprecated standard-version 교체)
 
 - **v8.0.0** (2026-02-18)
   - feat(mobile): 모바일 웹 표준 적용 — WCAG 접근성, Apple HIG, Material Design 가이드라인 준수

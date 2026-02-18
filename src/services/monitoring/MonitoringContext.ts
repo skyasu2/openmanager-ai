@@ -149,7 +149,7 @@ export class MonitoringContext {
       ctx += `  system.cpu.utilization (alias: node_cpu_utilization_ratio), ratio 0-1\n`;
       ctx += `  system.memory.utilization (alias: node_memory_utilization_ratio), ratio 0-1\n`;
       ctx += `  system.filesystem.utilization (alias: node_filesystem_utilization_ratio), ratio 0-1\n`;
-      ctx += `  system.network.utilization (alias: node_network_utilization_ratio), ratio 0-1\n`;
+      ctx += `  system.network.io (alias: node_network_io_bytes), unit By (1Gbps 기준 변환)\n`;
       ctx += `Query: Both OTel and Prometheus names accepted in queryMetric()\n`;
 
       return ctx;

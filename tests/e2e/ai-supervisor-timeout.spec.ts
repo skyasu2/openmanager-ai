@@ -28,7 +28,14 @@ const TEST_QUERIES = {
     '전체 서버 15대의 현재 성능 상태를 분석하고, 이상 징후가 있는 서버가 있으면 상세 리포트를 작성해줘',
 };
 
-test.describe('AI Supervisor Timeout Tests', () => {
+test.beforeEach((_fixtures, testInfo) => {
+  test.skip(
+    testInfo.project.name === 'mobile-chromium',
+    'AI supervisor timeout 검증은 네트워크 부하를 줄이기 위해 데스크톱 프로젝트에서만 수행합니다.'
+  );
+});
+
+test.describe('AI Supervisor Timeout Tests @ai-test @cloud-heavy', () => {
   test.describe('Streaming Response', () => {
     test('스트리밍 응답이 첫 바이트를 빠르게 전송한다', async ({ request }) => {
       const startTime = Date.now();
@@ -248,7 +255,7 @@ test.describe('AI Supervisor Timeout Tests', () => {
   });
 });
 
-test.describe('Performance Benchmarks', () => {
+test.describe('Performance Benchmarks @ai-test @cloud-heavy', () => {
   test('간단한 쿼리는 10초 이내에 응답한다', async ({ request }) => {
     const startTime = Date.now();
 

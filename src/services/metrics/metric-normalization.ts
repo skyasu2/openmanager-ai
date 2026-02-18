@@ -3,7 +3,7 @@
  *
  * Goal:
  * - Keep alert/status pipeline in percent(0-100) domain.
- * - Absorb legacy payload quirks (e.g. system.network.utilization with mixed-unit values).
+ * - Convert OTel standard system.network.io (bytes) to utilization percent via 1Gbps baseline.
  */
 
 const DEFAULT_NETWORK_CAPACITY_BYTES_PER_SEC = 125_000_000; // 1Gbps
@@ -17,10 +17,11 @@ function clampPercent(value: number): number {
   return Math.max(0, Math.min(100, value));
 }
 
-function isByteRateUnit(unit?: string): boolean {
+function isByteUnit(unit?: string): boolean {
   if (!unit) return false;
   const normalized = unit.toLowerCase();
   return (
+    normalized === 'by' ||
     normalized.includes('by/s') ||
     normalized.includes('byte/s') ||
     normalized.includes('bytes/s')
@@ -59,7 +60,7 @@ export function normalizeNetworkUtilizationPercent(
   if (!Number.isFinite(value)) return 0;
   if (value >= 0 && value <= 1) return roundToTenth(value * 100);
 
-  if (isByteRateUnit(unit)) {
+  if (isByteUnit(unit)) {
     // Legacy fixture compatibility: value is already in percentage scale.
     if (value <= 100) return roundToTenth(clampPercent(value));
 

@@ -329,8 +329,9 @@ function otelSlotToRawServers(slot: OTelHourlySlot): Record<string, RawServerDat
         case 'system.filesystem.utilization':
           server.disk = normalizeUtilizationPercent(dp.asDouble);
           break;
-        case 'system.network.utilization':
-          server.network = normalizeUtilizationPercent(dp.asDouble);
+        case 'system.network.io':
+          // system.network.io 값은 bytes/sec → 1Gbps 기준 utilization %로 변환
+          server.network = Math.min(100, Math.round((dp.asDouble / 125_000_000) * 1000) / 10);
           break;
         case 'system.linux.cpu.load_1m':
           server.load1 = dp.asDouble;

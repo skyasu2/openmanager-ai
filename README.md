@@ -223,5 +223,5 @@ Copyright © 2026. All Rights Reserved.
 <div align="center">
   <sub>Built with Vibe Coding</sub>
   <br/>
-  <sub>v8.0.0</sub>
+  <sub>v8.1.0</sub>
 </div>

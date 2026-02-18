@@ -24,9 +24,9 @@ describe('Metrics Provider Pipeline (통합)', () => {
     });
 
     it('OTel 데이터에서 서버 메트릭을 로드할 수 있다', async () => {
-      const providerServerIds = metricsProvider
-        .getAllServerMetrics()
-        .map((m) => m.serverId);
+      const providerServerIds = (
+        await metricsProvider.getAllServerMetrics()
+      ).map((m) => m.serverId);
 
       expect(providerServerIds.length).toBeGreaterThan(0);
     });
@@ -81,15 +81,16 @@ describe('Metrics Provider Pipeline (통합)', () => {
     it('평균 메트릭 정확도 (개별 합 / 카운트 ≈ summary 평균)', async () => {
       const allMetrics = await metricsProvider.getAllServerMetrics();
       const summary = await metricsProvider.getSystemSummary();
-      const count = allMetrics.length || 1;
+      const onlineMetrics = allMetrics.filter((m) => m.status !== 'offline');
+      const count = onlineMetrics.length || 1;
 
       const manualAvgCpu =
         Math.round(
-          (allMetrics.reduce((sum, m) => sum + m.cpu, 0) / count) * 10
+          (onlineMetrics.reduce((sum, m) => sum + m.cpu, 0) / count) * 10
         ) / 10;
       const manualAvgMemory =
         Math.round(
-          (allMetrics.reduce((sum, m) => sum + m.memory, 0) / count) * 10
+          (onlineMetrics.reduce((sum, m) => sum + m.memory, 0) / count) * 10
         ) / 10;
 
       expect(summary.averageCpu).toBe(manualAvgCpu);
@@ -130,10 +131,10 @@ describe('Metrics Provider Pipeline (통합)', () => {
   });
 
   describe('getAlertServers 통합', () => {
-    it('alert 서버들의 status가 모두 warning 또는 critical', async () => {
+    it('alert 서버들의 status가 모두 warning/critical/offline', async () => {
       const alertServers = await metricsProvider.getAlertServers();
       alertServers.forEach((s) => {
-        expect(['warning', 'critical']).toContain(s.status);
+        expect(['warning', 'critical', 'offline']).toContain(s.status);
       });
     });
 
@@ -141,9 +142,11 @@ describe('Metrics Provider Pipeline (통합)', () => {
       const alertServers = await metricsProvider.getAlertServers();
       const summary = await metricsProvider.getSystemSummary();
       expect(alertServers.length).toBeLessThanOrEqual(summary.totalServers);
-      // alert 수 = warning + critical
+      // alert 수 = warning + critical + offline
       expect(alertServers.length).toBe(
-        summary.warningServers + summary.criticalServers
+        summary.warningServers +
+          summary.criticalServers +
+          summary.offlineServers
       );
     });
   });

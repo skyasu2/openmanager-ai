@@ -10,12 +10,15 @@ import { NextRequest } from 'next/server';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { EnhancedServerMetrics } from '@/types/server';
 
-const { mockGetAllAsEnhancedMetrics, mockGetServerAsEnhanced } = vi.hoisted(
-  () => ({
-    mockGetAllAsEnhancedMetrics: vi.fn(),
-    mockGetServerAsEnhanced: vi.fn(),
-  })
-);
+const {
+  mockGetAllAsEnhancedMetrics,
+  mockGetServerAsEnhanced,
+  mockEnsureDataLoaded,
+} = vi.hoisted(() => ({
+  mockGetAllAsEnhancedMetrics: vi.fn(),
+  mockGetServerAsEnhanced: vi.fn(),
+  mockEnsureDataLoaded: vi.fn(),
+}));
 
 vi.mock('@/lib/auth/api-auth', () => ({
   withAuth: (handler: unknown) => handler,
@@ -26,6 +29,14 @@ vi.mock('@/services/monitoring', () => ({
     getAllAsEnhancedMetrics: mockGetAllAsEnhancedMetrics,
     getServerAsEnhanced: mockGetServerAsEnhanced,
   }),
+}));
+
+vi.mock('@/services/metrics/MetricsProvider', () => ({
+  MetricsProvider: {
+    getInstance: () => ({
+      ensureDataLoaded: mockEnsureDataLoaded,
+    }),
+  },
 }));
 
 vi.mock('@/lib/logging', () => ({
@@ -106,6 +117,7 @@ function makeServer(
 describe('/api/servers-unified Integration', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockEnsureDataLoaded.mockResolvedValue(true);
     mockGetAllAsEnhancedMetrics.mockReturnValue([
       makeServer('web-01', 45, 'online'),
       makeServer('api-01', 75, 'warning'),

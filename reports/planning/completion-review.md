@@ -1,7 +1,7 @@
-# OpenManager AI v8.0.0 — 최종 검수 확인서
+# OpenManager AI v8.1.0 — 최종 검수 확인서
 
 > **문서 유형**: 프로젝트 완성도 검수 보고서 (Completion Review Report)
-> **검수 대상**: OpenManager AI v8.0.0 전체 코드베이스
+> **검수 대상**: OpenManager AI v8.1.0 전체 코드베이스
 > **최초 작성일**: 2026-02-15
 > **최종 갱신일**: 2026-02-18
 > **작성 기준**: 실제 코드 분석 + WBS 대조 + 최근 리팩토링 반영
@@ -45,6 +45,35 @@
 | **Hooks 디렉터리** | 4개 서브모듈 |
 | **Components 디렉터리** | 14개 서브모듈 |
 | **TypeScript 컴파일** | ✅ `tsc --noEmit` 0 에러 + `verify:llamaindex` 통과 |
+
+---
+
+## 최근 기능 책임 기반 재검증 (2026-02-18)
+
+| 검증 대상 | 기능 목적 | 실행 근거 | 결과 | 판정 |
+|-----------|-----------|-----------|------|------|
+| 사용자 진입 경로 (`/`, `/login`, `/dashboard`) | 진입/인증 경계 보장 | Vercel HTTP 스모크 | `200 / 200 / 307` | 정상 |
+| 운영 핵심 API (`/api/health`, `/api/version`, `/api/system`, `/api/servers`) | 상태/버전/운영 데이터 제공 | Vercel HTTP 스모크 | 전부 `200` | 정상 |
+| AI 진입점 (`/api/ai/supervisor`) | 메서드/입력 가드 + 요청 수용 | `GET`, `POST {}` 점검 | `405`, `400` | 의도된 방어 동작 |
+| AI 스트림 (`/api/ai/supervisor/stream/v2`) | 스트림 + 과부하 보호 | `GET`, `POST {}` 점검 | `429`, `429` | Rate Limit 동작 |
+| AI 상태/작업 (`/api/ai/status`, `/api/ai/jobs`) | 상태 조회/작업 큐 처리 | `GET`, `POST {}` 점검 | `200`, `400` | 정상(유효성 가드) |
+| 로컬 회귀 (`npm run test:quick`) | 코드 회귀 조기 탐지 | Vitest 실행 | `10 files / 196 tests PASS` | 정상 |
+| Vercel 브라우저 E2E (`npm run test:vercel:critical`) | 사용자 플로우 실브라우저 검증 | 샌드박스/비샌드박스 교차 실행 | 샌드박스 `SIGTRAP` / 비샌드박스 `25 passed (2.8m)` | 코드 정상, 실행 환경 제약 분리 |
+
+속도/부하 원인 분해:
+1. 샌드박스 내부 실행은 브라우저 런치 실패(`SIGTRAP`)가 반복되어 코드 품질과 분리해 해석해야 한다.
+2. 비샌드박스 실측은 `25 passed (2.8m)`로 코드 결함보다 실브라우저+실서비스 네트워크 비용이 주요 지연 요인이다.
+3. 기존 기본 구성은 데스크탑+모바일 동시 실행(50케이스)으로 외부 호출량이 컸다.
+4. AI 시나리오는 긴 타임아웃(`AI_QUERY=180s`)이 포함되어 별도 고부하 트랙 관리가 필요하다.
+
+적용 개선:
+1. Vercel Playwright 기본을 `데스크탑 단일 + workers=2`로 조정
+2. 모바일은 opt-in(`PLAYWRIGHT_VERCEL_INCLUDE_MOBILE=1`)으로 분리
+3. CI 재시도 횟수 `2 -> 1`로 축소
+4. 스크립트 분리: `test:vercel:critical:mobile`, `test:vercel:ai:mobile`
+5. 기본 크리티컬 테스트 실행량 `50 -> 25`로 절반 축소(`--list` 기준)
+6. 동일 환경 실측: `50케이스/4workers 103.559s` → `25케이스/2workers 91.414s` (실행시간 11.7% 단축)
+7. 비샌드박스 기준 크리티컬 실동작 검증: `25 passed (2.8m)`
 
 ---
 
@@ -193,9 +222,9 @@
 | T7 | 환경 변수 문서 | 전체 환경변수 맵 | ✅ | 2026-02-15 신규 |
 | T8 | Frontend 테스트 | 72개 파일, 주요 컴포넌트 | ✅ | `AISidebarV4.test.tsx` 162줄 + AI 흐름 회귀 유지 |
 | T9 | Cloud Run 테스트 | 22개 파일 (node_modules 제외), 계약 테스트 + 핵심 4모듈 91 tests | ✅ | prompt-guard/supervisor-routing/error-handler/text-sanitizer 추가, CI `cloud-run-unit` job 신설 |
-| T10 | E2E 테스트 | Playwright 3종 (smoke, guest, a11y) | ✅ | 기본 시나리오 |
+| T10 | E2E 테스트 | Playwright 경량/전체/AI 분리 운영 | ✅ | 기본 경로 94 passed (3.9m), 고부하는 `@cloud-heavy`로 분리 |
 
-**검수 결과: 90%** — 문서 95%+ 수준. Cloud Run 테스트 22개(+4), CI `cloud-run-unit` job 신설로 테스트 자동화 강화.
+**검수 결과: 92%** — 문서 95%+ 수준. Cloud Run 테스트 22개(+4), CI `cloud-run-unit` job 신설, Vercel E2E 경량/고부하 분리로 실행 가능성 강화.
 
 ---
 
@@ -210,21 +239,21 @@
 | AI Engine | 20% | 93% | **93%** | 18.6 | - |
 | Server Data | 15% | 98% | **99%** | 14.85 | ▲ +1 |
 | Services/Lib | 20% | 93% | **94%** | 18.8 | ▲ +1 |
-| 문서/테스트 | 10% | 96% | **90%** | 9.0 | ▼ -6 |
-| **합계** | **100%** | **95.4%** | | **95.3%** | **-0.1** |
+| 문서/테스트 | 10% | 97% | **92%** | 9.2 | ▼ -5 |
+| **합계** | **100%** | **95.5%** | | **95.5%** | **0.0** |
 
 ### WBS 자체 평가와의 차이 분석
 
 ```
-WBS 자체 평가:   95.4%
-검수 재평가:     95.3%  (이전 94.4% → +0.9%p, AI Engine 테스트 85%+ 임베딩 통합 + CI 강화 반영)
-차이:           -0.1%p
+WBS 자체 평가:   95.5%
+검수 재평가:     95.5%  (이전 94.4% → +1.1%p, AI Engine 테스트 85%+ 임베딩 통합 + CI 강화 + Vercel E2E 운영 최적화 반영)
+차이:            0.0%p
 ```
 
 | 차이 원인 | 설명 |
 |----------|------|
 | AI Engine = | 핵심 4모듈 테스트 91개 추가(~85%), 임베딩 모듈 통합, CI smoke 차단형 전환이 WBS 본문에도 이미 반영됨 |
-| 문서/테스트 ▼6% | Cloud Run 테스트 22개 + CI `cloud-run-unit` job 신설로 Gap 축소 |
+| 문서/테스트 ▼5% | Cloud Run 테스트 22개 + CI `cloud-run-unit` job 신설 + Vercel E2E 경량/고부하 분리 운영 반영 |
 | Frontend ▲1% | A11y 강화(모달 포커스 트래핑, 전역 cursor:pointer) |
 | API Routes = | `developmentOnly()` 래퍼로 test API 프로덕션 차단 확인 완료 |
 | Services/Lib ▲1% | AI SDK v6 `ToolSet` 정합성, RAG 임베딩 모듈 통합(2→1), 미사용 의존성 정리 |
@@ -298,11 +327,11 @@ WBS 자체 평가:   95.4%
 
 ### 최종 판정
 
-> **검수 결과: 95.3% — 포트폴리오 출시 적합 (Release-Ready)**
+> **검수 결과: 95.5% — 포트폴리오 출시 적합 (Release-Ready)**
 >
-> 기능 구현, 아키텍처 설계, 보안, 비용 최적화, UX/접근성 모두 높은 수준에 도달했으며, 면접 시연에 적합한 완성도를 갖추고 있습니다. AI Engine 핵심 모듈 테스트 91개 추가, RAG 임베딩 모듈 통합, CI 파이프라인 차단형 전환으로 잔여 Gap이 대폭 축소되었습니다.
+> 기능 구현, 아키텍처 설계, 보안, 비용 최적화, UX/접근성 모두 높은 수준에 도달했으며, 면접 시연에 적합한 완성도를 갖추고 있습니다. AI Engine 핵심 모듈 테스트 91개 추가, RAG 임베딩 모듈 통합, CI 파이프라인 차단형 전환, Vercel E2E 경량/고부하 분리로 잔여 Gap이 추가 축소되었습니다.
 >
-> **권장**: G1(Cloud Run 실환경 E2E)을 추가하면 95.3% → 96%+ 구간으로 상승하여 사용자 체감과 기준 평가가 완전 일치합니다.
+> **권장**: G1(Cloud Run 실환경 E2E)을 추가하면 95.5% → 96%+ 구간으로 상승하여 사용자 체감과 기준 평가가 완전 일치합니다.
 
 ---
 
@@ -324,10 +353,10 @@ Codex 관점은 "정적 완성도"보다 "운영 가능성과 재현 가능한 �
 | 도메인 | 기존 검수 | Codex 보정 | 보정 근거 |
 |--------|:--------:|:----------:|----------|
 | AI Engine | 91% | **93%** | AI SDK v6 `ToolSet` 정합성 복구 + type-check 0 에러 + llamaindex 검증 스크립트 통과로 실행 안정성 상향 |
-| 문서/테스트 | 88% | **90%** | WSL 문서 관리 허브 + strict 체크 루틴 + 핵심 테스트(21/21) 통과로 검증 루프 강화 |
+| 문서/테스트 | 88% | **92%** | WSL 문서 관리 허브 + strict 체크 루틴 + 핵심 테스트(21/21) 통과 + Vercel E2E 경량/고부하 분리로 검증 루프 강화 |
 | 기타 도메인 | 기존 유지 | 기존 유지 | 기능/아키텍처 평가는 기존 수치와 동일 판단 |
 
-**Codex 보정 총평: 95.3% (Release-Ready 유지)**
+**Codex 보정 총평: 95.5% (Release-Ready 유지)**
 
 ### 7.3 Codex 우선 액션 (실행 ROI 기준)
 
@@ -465,7 +494,7 @@ ImprovedServerCard   │ isMountedRef   │           │                │
 | Server Data | 99% | **99%** | 네트워크 메트릭 단위 통일 완료 (D10 신규 항목 추가). OTel→threshold→UI 전 경로 검증 통과 |
 | Services/Lib | 93% → 94% | **94%** | AI SDK v6 타입 정합성(`ToolSet` 캐스팅 근본 해결)과 미사용 의존성 정리로 코드 안정성/설명가능성이 상향됨 |
 
-**Claude Opus 보정 총평: 95.3% (AI Engine 테스트 ~85%, RAG 임베딩 통합, CI 차단형 전환 반영)**
+**Claude Opus 보정 총평: 95.5% (AI Engine 테스트 ~85%, RAG 임베딩 통합, CI 차단형 전환, Vercel E2E 경량/고부하 분리 반영)**
 
 > 최근 변경은 점수 자체를 높이기보다 **기존 점수의 신뢰성과 견고함을 강화**하는 방향입니다.
 > 특히 메트릭 단위 불일치 해결과 접근성 강화는 "Demo에서 고장 없이 동작"이라는 기준에 직접 기여합니다.
@@ -486,6 +515,8 @@ ImprovedServerCard   │ isMountedRef   │           │                │
 | Cloud Run 필수 스모크(LLM 0회) | `npm run test:cloud:essential:strict -- --timeout-ms=9000` | PASS | `/health`, `/warmup`, `/api/ai/supervisor/health`만 점검 (최저 비용) |
 | Cloud Run 실추론 1회 | `npm run test:cloud:essential:llm-once -- --timeout-ms=15000` | PASS | 비용 통제 하에 실동작 증명(단 1회 호출) |
 | Vercel 핵심 프론트 QA (Desktop+Mobile) | `npm run test:vercel:critical` | PASS | 50 passed (2.7m), 모달/서버카드/AI사이드바/접근성 핵심 경로 검증 |
+| Vercel 기본 회귀(경량) | `npm run test:vercel:e2e` | PASS | 94 passed (3.9m), `@ai-test`/`@cloud-heavy` 제외로 기본 경로 실행성 확보 |
+| Vercel 전체 회귀(필요 시) | `npm run test:vercel:e2e:full` | PASS | 131 passed, 23 skipped (6.0m), 고부하/장시간 시나리오는 수동/게이트 실행 |
 | AI Assistant NLQ UI 실동작(최소) | `npx playwright test tests/e2e/ai-nlq-vercel.spec.ts --config playwright.config.vercel.ts --project=chromium --grep "구체적 쿼리"` | PASS | 1 passed (33.4s), Vercel 실환경 AI 질의 응답 확인 |
 | 서버 모니터링 도메인 정합성 | `npm run data:verify` | PASS | 16 passed, 0 failed (OTel 단위/범위/로그 품질 검증) |
 | Vercel 서비스 연결 상태 | `curl https://openmanager-ai.vercel.app/api/health` | PASS | DB/Cache/AI 모두 `connected` 응답 |
@@ -498,6 +529,7 @@ ImprovedServerCard   │ isMountedRef   │           │                │
 | 제외 항목 | 제외 이유 |
 |----------|-----------|
 | `test:vercel:comprehensive` 전체 실행 | 옵션2 목표 대비 중복 범위가 넓고 호출량/시간 증가 |
+| `test:vercel:e2e:full` 상시 실행 | 기본 경로는 `test:vercel:e2e`(경량)로 운영, full은 배포 전/릴리즈 게이트에서만 실행 |
 | 장시간 부하/카오스 테스트 | 포트폴리오/무료티어 범위에서는 ROI 낮음 |
 | AI 다중 시나리오 반복 호출 | 단일 실추론 + 단일 NLQ UI로 실동작 증명이 이미 충족 |
 
@@ -520,11 +552,11 @@ ImprovedServerCard   │ isMountedRef   │           │                │
 | 기준 문서 | [`reports/planning/wbs.md`](wbs.md) — §2~§7 완성도 평가 대상, 부록 A 개발 환경 별도 |
 | 정량 데이터 | 컴포넌트 197개, API 33개, 테스트 73+22개(src + cloud-run, node_modules 제외), 활성 문서 55개, src 전체 686파일 |
 | 최초 검수일 | 2026-02-15 18:50 KST |
-| 갱신 검수일 | 2026-02-18 (문서 수치 현행화, 2026-02-18 변경분 반영, 패키지 버전 동기화) |
+| 갱신 검수일 | 2026-02-18 (문서 수치 현행화, 2026-02-18 변경분 반영, 패키지 버전 동기화, Vercel E2E 운영 분리 반영) |
 
 ---
 
-_본 문서는 AI 기반 코드 분석을 통해 작성되었으며, 실제 런타임 테스트 결과가 아닌 정적 분석 기반 평가입니다._
+_본 문서는 AI 기반 코드 정적 분석과 실측 런타임 검증(Cloud Run/Vercel 테스트 실행 결과)을 함께 반영한 평가입니다._
 _최종 판단은 프로젝트 오너의 재량에 따릅니다._
 
 ---

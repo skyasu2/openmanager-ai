@@ -32,7 +32,7 @@ type SourceResourceAttributes = {
   'os.description': string;
   'cloud.region': string;
   'cloud.availability_zone': string;
-  'deployment.environment': string;
+  'deployment.environment.name': string;
   'host.cpu.count'?: number;
   'host.memory.size'?: number;
   'host.disk.size'?: number;

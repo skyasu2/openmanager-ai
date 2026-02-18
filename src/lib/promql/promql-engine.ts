@@ -82,7 +82,7 @@ const OTEL_ALIAS_MAP: Record<string, string> = {
   'system.cpu.utilization': 'node_cpu_utilization_ratio',
   'system.memory.utilization': 'node_memory_utilization_ratio',
   'system.filesystem.utilization': 'node_filesystem_utilization_ratio',
-  'system.network.utilization': 'node_network_utilization_ratio',
+  'system.network.io': 'node_network_io_bytes',
   'system.linux.cpu.load_1m': 'node_load1',
   'system.linux.cpu.load_5m': 'node_load5',
   'system.process.count': 'node_procs_running',
@@ -95,7 +95,8 @@ const PROM_TO_OTEL_MAP: Record<string, string> = {
   node_cpu_utilization_ratio: 'system.cpu.utilization',
   node_memory_utilization_ratio: 'system.memory.utilization',
   node_filesystem_utilization_ratio: 'system.filesystem.utilization',
-  node_network_utilization_ratio: 'system.network.utilization',
+  node_network_io_bytes: 'system.network.io',
+  node_network_utilization_ratio: 'system.network.io', // backward compat
   node_load1: 'system.linux.cpu.load_1m',
   node_load5: 'system.linux.cpu.load_5m',
   node_procs_running: 'system.process.count',
@@ -109,7 +110,7 @@ const _LABEL_TO_OTEL_ATTR: Record<string, keyof OTelResourceAttributes> = {
   server_type: 'server.role',
   hostname: 'host.name',
   datacenter: 'cloud.availability_zone',
-  environment: 'deployment.environment',
+  environment: 'deployment.environment.name',
   os: 'os.type',
   os_version: 'os.description',
 };
@@ -283,7 +284,7 @@ async function getResourceLabels(
     hostname: attrs['host.name'],
     server_type: attrs['server.role'],
     datacenter: attrs['cloud.availability_zone'],
-    environment: attrs['deployment.environment'],
+    environment: attrs['deployment.environment.name'],
     os: attrs['os.type'],
     os_version: attrs['os.description'],
   };

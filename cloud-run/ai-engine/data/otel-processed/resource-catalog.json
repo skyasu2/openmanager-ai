@@ -12,7 +12,7 @@
       "os.description": "ubuntu 22.04",
       "cloud.region": "onprem-dc1",
       "cloud.availability_zone": "DC1-AZ1",
-      "deployment.environment": "production",
+      "deployment.environment.name": "production",
       "host.cpu.count": 4,
       "host.memory.size": 8589934592,
       "host.disk.size": 107374182400
@@ -27,7 +27,7 @@
       "os.description": "ubuntu 22.04",
       "cloud.region": "onprem-dc1",
       "cloud.availability_zone": "DC1-AZ2",
-      "deployment.environment": "production",
+      "deployment.environment.name": "production",
       "host.cpu.count": 4,
       "host.memory.size": 8589934592,
       "host.disk.size": 107374182400
@@ -42,7 +42,7 @@
       "os.description": "ubuntu 22.04",
       "cloud.region": "onprem-dc1",
       "cloud.availability_zone": "DC1-AZ3",
-      "deployment.environment": "production",
+      "deployment.environment.name": "production",
       "host.cpu.count": 4,
       "host.memory.size": 8589934592,
       "host.disk.size": 107374182400
@@ -57,7 +57,7 @@
       "os.description": "ubuntu 22.04",
       "cloud.region": "onprem-dc1",
       "cloud.availability_zone": "DC1-AZ1",
-      "deployment.environment": "production",
+      "deployment.environment.name": "production",
       "host.cpu.count": 8,
       "host.memory.size": 17179869184,
       "host.disk.size": 214748364800
@@ -72,7 +72,7 @@
       "os.description": "ubuntu 22.04",
       "cloud.region": "onprem-dc1",
       "cloud.availability_zone": "DC1-AZ2",
-      "deployment.environment": "production",
+      "deployment.environment.name": "production",
       "host.cpu.count": 8,
       "host.memory.size": 17179869184,
       "host.disk.size": 214748364800
@@ -87,7 +87,7 @@
       "os.description": "ubuntu 22.04",
       "cloud.region": "onprem-dc1",
       "cloud.availability_zone": "DC1-AZ3",
-      "deployment.environment": "production",
+      "deployment.environment.name": "production",
       "host.cpu.count": 8,
       "host.memory.size": 17179869184,
       "host.disk.size": 214748364800
@@ -102,7 +102,7 @@
       "os.description": "ubuntu 22.04",
       "cloud.region": "onprem-dc1",
       "cloud.availability_zone": "DC1-AZ1",
-      "deployment.environment": "production",
+      "deployment.environment.name": "production",
       "host.cpu.count": 16,
       "host.memory.size": 68719476736,
       "host.disk.size": 1073741824000
@@ -117,7 +117,7 @@
       "os.description": "ubuntu 22.04",
       "cloud.region": "onprem-dc1",
       "cloud.availability_zone": "DC1-AZ2",
-      "deployment.environment": "production",
+      "deployment.environment.name": "production",
       "host.cpu.count": 16,
       "host.memory.size": 68719476736,
       "host.disk.size": 1073741824000
@@ -132,7 +132,7 @@
       "os.description": "ubuntu 22.04",
       "cloud.region": "onprem-dc1",
       "cloud.availability_zone": "DC1-AZ3",
-      "deployment.environment": "production",
+      "deployment.environment.name": "production",
       "host.cpu.count": 16,
       "host.memory.size": 68719476736,
       "host.disk.size": 1073741824000
@@ -147,7 +147,7 @@
       "os.description": "ubuntu 22.04",
       "cloud.region": "onprem-dc1",
       "cloud.availability_zone": "DC1-AZ1",
-      "deployment.environment": "production",
+      "deployment.environment.name": "production",
       "host.cpu.count": 4,
       "host.memory.size": 34359738368,
       "host.disk.size": 53687091200
@@ -162,7 +162,7 @@
       "os.description": "ubuntu 22.04",
       "cloud.region": "onprem-dc1",
       "cloud.availability_zone": "DC1-AZ2",
-      "deployment.environment": "production",
+      "deployment.environment.name": "production",
       "host.cpu.count": 4,
       "host.memory.size": 34359738368,
       "host.disk.size": 53687091200
@@ -177,7 +177,7 @@
       "os.description": "ubuntu 22.04",
       "cloud.region": "onprem-dc1",
       "cloud.availability_zone": "DC1-AZ1",
-      "deployment.environment": "production",
+      "deployment.environment.name": "production",
       "host.cpu.count": 4,
       "host.memory.size": 17179869184,
       "host.disk.size": 5368709120000
@@ -192,7 +192,7 @@
       "os.description": "ubuntu 22.04",
       "cloud.region": "onprem-dc1",
       "cloud.availability_zone": "DC1-AZ3",
-      "deployment.environment": "production",
+      "deployment.environment.name": "production",
       "host.cpu.count": 2,
       "host.memory.size": 8589934592,
       "host.disk.size": 214748364800
@@ -207,7 +207,7 @@
       "os.description": "ubuntu 22.04",
       "cloud.region": "onprem-dc1",
       "cloud.availability_zone": "DC1-AZ1",
-      "deployment.environment": "production",
+      "deployment.environment.name": "production",
       "host.cpu.count": 4,
       "host.memory.size": 8589934592,
       "host.disk.size": 53687091200
@@ -222,7 +222,7 @@
       "os.description": "ubuntu 22.04",
       "cloud.region": "onprem-dc1",
       "cloud.availability_zone": "DC1-AZ3",
-      "deployment.environment": "production",
+      "deployment.environment.name": "production",
       "host.cpu.count": 4,
       "host.memory.size": 8589934592,
       "host.disk.size": 53687091200

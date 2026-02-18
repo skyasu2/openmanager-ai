@@ -55,18 +55,19 @@ function main(): void {
 
     for (const slot of data.slots) {
       for (const metric of slot.metrics) {
-        if (metric.name === 'system.network.utilization') {
-          if (metric.unit !== '1') networkUnitWrong++;
+        if (metric.name === 'system.network.io') {
+          if (metric.unit !== 'By') networkUnitWrong++;
           for (const dp of metric.dataPoints) {
-            if (dp.asDouble < 0 || dp.asDouble > 1) networkOutOfRange++;
+            // bytes/sec: 0 ~ 125,000,000 (1Gbps)
+            if (dp.asDouble < 0 || dp.asDouble > 125_000_000) networkOutOfRange++;
           }
         }
       }
     }
   }
 
-  check('Network unit = "1"', networkUnitWrong === 0, `${networkUnitWrong} wrong units`);
-  check('Network values in [0, 1]', networkOutOfRange === 0, `${networkOutOfRange} out of range`);
+  check('Network unit = "By"', networkUnitWrong === 0, `${networkUnitWrong} wrong units`);
+  check('Network values in [0, 125M]', networkOutOfRange === 0, `${networkOutOfRange} out of range`);
 
   // ── 2. Timeseries has 9 metrics ──
   console.log('\n[2] Timeseries metrics count:');
@@ -75,7 +76,7 @@ function main(): void {
     'system.cpu.utilization',
     'system.memory.utilization',
     'system.filesystem.utilization',
-    'system.network.utilization',
+    'system.network.io',
     'system.linux.cpu.load_1m',
     'system.linux.cpu.load_5m',
     'system.process.count',
@@ -88,14 +89,14 @@ function main(): void {
 
   // ── 3. Timeseries network 0-1 range ──
   console.log('\n[3] Timeseries network range:');
-  const networkTs = ts.metrics['system.network.utilization'] ?? [];
+  const networkTs = ts.metrics['system.network.io'] ?? [];
   let tsNetworkOutOfRange = 0;
   for (const series of networkTs) {
     for (const val of series) {
-      if (val < 0 || val > 1) tsNetworkOutOfRange++;
+      if (val < 0 || val > 125_000_000) tsNetworkOutOfRange++;
     }
   }
-  check('Timeseries network in [0, 1]', tsNetworkOutOfRange === 0, `${tsNetworkOutOfRange} out of range`);
+  check('Timeseries network in [0, 125M]', tsNetworkOutOfRange === 0, `${tsNetworkOutOfRange} out of range`);
 
   // ── 4. Cache OOM logs have redis-server (not java) ──
   console.log('\n[4] Cache OOM process name:');
@@ -194,13 +195,15 @@ function main(): void {
 
     for (const slot of data.slots) {
       for (const metric of slot.metrics) {
-        if (metric.name !== 'system.network.utilization') continue;
+        if (metric.name !== 'system.network.io') continue;
         for (const dp of metric.dataPoints) {
           const sid = (dp.attributes['host.name'] ?? '').split('.')[0];
-          if (sid.startsWith('storage-') && (dp.asDouble < 0.14 || dp.asDouble > 0.36)) {
+          // bytes/sec: storage 15-35% of 1Gbps = 18.75M-43.75M
+          if (sid.startsWith('storage-') && (dp.asDouble < 17_500_000 || dp.asDouble > 45_000_000)) {
             storageOutOfRange++;
           }
-          if (sid.startsWith('cache-') && (dp.asDouble < 0.29 || dp.asDouble > 0.51)) {
+          // bytes/sec: cache 29-51% of 1Gbps = 36.25M-63.75M
+          if (sid.startsWith('cache-') && (dp.asDouble < 36_000_000 || dp.asDouble > 64_000_000)) {
             cacheOutOfRange++;
           }
         }

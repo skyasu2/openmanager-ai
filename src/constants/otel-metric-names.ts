@@ -11,7 +11,7 @@ export const OTEL_METRIC = {
   CPU: 'system.cpu.utilization',
   MEMORY: 'system.memory.utilization',
   DISK: 'system.filesystem.utilization',
-  NETWORK: 'system.network.utilization',
+  NETWORK: 'system.network.io',
   LOAD_1M: 'system.linux.cpu.load_1m',
   LOAD_5M: 'system.linux.cpu.load_5m',
   /** OTel semconv standard alias for LOAD_1M (used in otel-metrics/ OTLP Standard data) */

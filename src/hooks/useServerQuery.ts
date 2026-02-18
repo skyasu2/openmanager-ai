@@ -31,7 +31,18 @@ export function useServerQuery(options: UseServerQueryOptions = {}) {
     queryFn: fetchServers,
     initialData: transformedInitialData,
     initialDataUpdatedAt: transformedInitialData ? Date.now() : undefined,
-    refetchInterval: 10 * 60 * 1000, // 600초 폴링 (SSR OTel 데이터 기반, 10분 슬롯과 동기)
+    refetchInterval: () => {
+      // 다음 10분 슬롯 경계까지 남은 ms 계산 (KST :00/:10/:20/:30/:40/:50 정렬)
+      const now = new Date();
+      const kstMs = now.getTime() + 9 * 60 * 60 * 1000;
+      const kst = new Date(kstMs);
+      const minuteInSlot = kst.getUTCMinutes() % 10;
+      const secondsInSlot = kst.getUTCSeconds();
+      const remainingMs =
+        ((10 - minuteInSlot) * 60 - secondsInSlot) * 1000 -
+        kst.getUTCMilliseconds();
+      return Math.max(remainingMs + 2000, 5000); // 2초 버퍼, 최소 5초
+    },
     staleTime: 9 * 60 * 1000, // 540초간 fresh 유지
     gcTime: 5 * 60 * 1000, // 5분 미사용 데이터 보관
     refetchOnWindowFocus: false, // 탭 포커스 시 중복 refetch 방지

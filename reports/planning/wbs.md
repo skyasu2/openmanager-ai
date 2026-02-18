@@ -1,4 +1,4 @@
-# OpenManager AI v8.0.0 - WBS & 완성도 분석
+# OpenManager AI v8.1.0 - WBS & 완성도 분석
 
 > Owner: project-lead
 > Status: Active Canonical
@@ -19,8 +19,8 @@
 
 | 항목 | 값 |
 |------|-----|
-| 기간 | 2025-05-23 ~ 2026-02-17 (9개월) |
-| 커밋 | 5,764개 |
+| 기간 | 2025-05-23 ~ 2026-02-18 (9개월) |
+| 커밋 | 5,789개 |
 | 코드량 | **프로덕션 ~138K** (Frontend 107K + AI Engine 31K) + **테스트 26K** + 설정 12K |
 | 목적 | 포트폴리오 & 바이브 코딩 학습 결과물 |
 
@@ -238,16 +238,17 @@
 | Config (SSOT) | 100% | 20파일, Zod 검증 |
 | Scripts (데이터 동기화) | 100% | sync-hourly-data + otel-precompute (로그 적재 완료) |
 | Utils/Lib 정리 | 100% | api-batcher, error-response, safeFormat, network-tracking, timeout-config, CentralizedDataManager 삭제 |
-| 테스트 인프라 | 90% | 73개(src)+22개(cloud-run)+36개(tests) 테스트 파일, CI `cloud-run-unit` job 추가, 핵심 경로 smoke/type-check 통과 |
+| 테스트 인프라 | 94% | 73개(src)+22개(cloud-run)+36개(tests) 테스트 파일, CI `cloud-run-unit` job 추가, Vercel 경량 회귀 94 passed (3.9m) + 고부하 분리 운영 |
 | AI SDK 버전 정합성 | 100% | Root `ai@6.0.86`, `@ai-sdk/react@3.0.88`로 상향 및 스모크 검증 |
 
-### 3.6 문서 (96%)
+### 3.6 문서 (97%)
 
 | 영역 | 완성도 | 근거 |
 |------|:------:|------|
 | 활성 문서 | 55개 (예산 55) | 100% 메타데이터 |
 | 아키텍처 문서 | 6개 | Mermaid + ASCII 듀얼 |
 | 바이브 코딩 문서 | 7개 | MCP, Skills, Agent Teams |
+| Vercel E2E 운영 정책 | 100% | `test:vercel:e2e`(경량) / `test:vercel:e2e:full`(전체) / `test:vercel:ai`(AI 전용) 분리 + `@cloud-heavy` 태깅 |
 | README (포트폴리오 관점) | 완료 | 결과물 + 개발환경 |
 
 ---
@@ -261,12 +262,12 @@
 | AI Engine | 20% | 93% | 18.6 |
 | Server Data | 15% | 98% | 14.7 |
 | Services/Lib | 20% | 93% | 18.6 |
-| 문서/테스트 | 10% | 96% | 9.6 |
-| **합계** | **100%** | | **95.35%** |
+| 문서/테스트 | 10% | 97% | 9.7 |
+| **합계** | **100%** | | **95.45%** |
 
-**결론: 실제 완성도 ~95.4%** (91% → 93% → 94% → 94.2% → 94.4% → 95.0% → 95.2% → 95.4%)
+**결론: 실제 완성도 ~95.5%** (91% → 93% → 94% → 94.2% → 94.4% → 95.0% → 95.2% → 95.4% → 95.5%)
 
-*Note: ToolSet 타입 캐스팅 근본 수정 + 미사용 의존성/빈 디렉토리 정리로 Services/Lib 소폭 상향.*
+*Note: ToolSet 타입 캐스팅 근본 수정 + 미사용 의존성/빈 디렉토리 정리 + Vercel E2E 경량/고부하 분리 운영으로 실행 가능성 지표를 반영.*
 
 ---
 
@@ -289,6 +290,7 @@
 | ~~6~~ | ~~스텁 API 라우트 7개~~ | ~~미구현~~ | ~~삭제~~ | **완료** (이전 세션) |
 | ~~7~~ | ~~hourly-data 로그 비어있음~~ | ~~`logs: []`~~ | ~~메트릭 연동 로그 적재~~ | **완료** (2026-02-15) |
 | ~~8~~ | ~~테스트 커버리지 부족~~ | ~~206개 테스트~~ | ~~E2E/통합 추가 (588개)~~ | **완료** (Frontend/API 검증 강화) |
+| ~~9~~ | ~~Vercel 실환경 E2E 과부하/장시간 실행~~ | ~~154개 전체 스위트 기본 실행~~ | ~~경량/전체/AI 분리 + `@cloud-heavy` 태깅~~ | **완료** (2026-02-18, 기본 94 passed / 3.9m) |
 
 ### 현상 유지 가능 (포트폴리오로 충분)
 
@@ -450,10 +452,41 @@
 - `llm-once`(추론 1회): 4/4 PASS
 - 검증 대상: `https://ai-engine-490817238363.asia-northeast1.run.app`
 
+### 7.8 기능 책임 기반 실동작 재검증 (2026-02-18)
+
+검증 기준:
+- 기능이 담당하는 목적(존재 이유)을 만족하는지
+- 실패가 코드 결함인지, 실행 환경 이슈인지 분리 가능한지
+
+| 기능 | 존재 목적 | 검증 근거 | 결과 | 판정 |
+|------|-----------|-----------|------|------|
+| 사용자 진입 라우트 (`/`, `/login`, `/dashboard`) | 서비스 진입/인증 경계 | Vercel HTTP 스모크 | `200 / 200 / 307` | 정상 |
+| 운영 상태 API (`/api/health`, `/api/version`, `/api/system`, `/api/servers`) | 상태/버전/운영 데이터 조회 | Vercel HTTP 스모크 | 모두 `200` | 정상 |
+| AI Supervisor (`/api/ai/supervisor`) | AI 요청 진입점(메서드/페이로드 검증) | `GET`, `POST {}` 응답 검증 | `405`, `400` | 의도된 가드 동작 |
+| AI Stream v2 (`/api/ai/supervisor/stream/v2`) | 스트림 처리 및 보호 정책 | `GET/POST` 응답 검증 | `429` | Rate Limit 가드 동작 |
+| AI 상태/잡 (`/api/ai/status`, `/api/ai/jobs`) | AI 가용성/작업 큐 상태 노출 | `GET/POST` 응답 검증 | `200`, `400` | 정상(유효성 가드) |
+| 로컬 회귀 테스트 (`npm run test:quick`) | 핵심 유틸/보안 회귀 방지 | Vitest 10 files / 196 tests | 전부 PASS (3.85s) | 정상 |
+| Vercel 크리티컬 E2E (`npm run test:vercel:critical`) | 사용자 핵심 플로우 브라우저 검증 | 샌드박스/비샌드박스 교차 실행 | 샌드박스 `SIGTRAP` / 비샌드박스 `25 passed (2.8m)` | 코드 정상, 실행 환경 제약 분리 |
+
+테스트 속도/부하 분석:
+1. 샌드박스 내부에서는 브라우저 런치 실패(`SIGTRAP`)로 비정상 실패가 반복되어 코드 품질과 분리 진단이 필요했다.
+2. 비샌드박스 실측에서는 `25 passed (2.8m)`로 코드 기능은 정상이며, 실행 시간은 실브라우저+실서비스 네트워크 왕복 비용이 지배한다.
+3. 기존 Vercel 기본 구성은 데스크탑+모바일 동시 실행(50케이스)으로 외부 호출량이 높았다.
+4. AI 시나리오는 `TIMEOUTS.AI_QUERY(180s)` 구간이 있어 고부하 경로로 분리 운영이 필요하다.
+
+적용 개선 (2026-02-18):
+1. `playwright.config.vercel.ts`를 저부하 기본값으로 조정: 데스크탑 기본, 모바일 opt-in(`PLAYWRIGHT_VERCEL_INCLUDE_MOBILE=1`)
+2. Vercel 기본 워커를 `2`로 조정, CI 재시도 `2 -> 1` 축소
+3. `package.json`에 모바일 분리 스크립트 추가:
+   `test:vercel:critical:mobile`, `test:vercel:ai:mobile`
+4. 기본 크리티컬 테스트 실행량을 `50 -> 25`로 절반 축소(`--list` 기준)
+5. 동일 환경 실측: `50케이스/4workers 103.559s` → `25케이스/2workers 91.414s` (실행시간 11.7% 단축, 호출량 50% 축소)
+6. 비샌드박스 기준 크리티컬 실동작 검증: `25 passed (2.8m)` 확인
+
 ---
 
 _분석 기준: 4개 병렬 탐색 에이전트로 src/, cloud-run/, scripts/ 전체 코드 분석_
-_최종 갱신: 2026-02-18 (AI Engine 테스트 91개 추가, 임베딩 모듈 통합, CI 차단형 전환, 95.4%)_
+_최종 갱신: 2026-02-18 (기능 책임 기반 실동작 재검증, Vercel E2E 저부하 기본값 전환, 95.5%)_
 
 ---
 

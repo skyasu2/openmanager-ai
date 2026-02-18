@@ -19,7 +19,7 @@ exports[`🎯 ReactFlowDiagram 컴포넌트 > 스냅샷 테스트 > 기본 다�
     </p>
   </div>
   <div
-    class="rounded-xl border border-white/10 bg-linear-to-br from-slate-900/50 to-slate-800/50 h-[48dvh] sm:h-[50dvh] lg:h-[52dvh] max-h-[380px] sm:max-h-card-lg lg:max-h-[440px]"
+    class="rounded-xl border border-white/10 bg-linear-to-br from-slate-900/90 to-slate-800/90 backdrop-blur-xl shadow-2xl h-[48dvh] sm:h-[50dvh] lg:h-[52dvh] max-h-[380px] sm:max-h-card-lg lg:max-h-[440px]"
   >
     <div
       data-edges="2"
@@ -120,7 +120,7 @@ exports[`🎯 ReactFlowDiagram 컴포넌트 > 스냅샷 테스트 > 모든 옵�
     </p>
   </div>
   <div
-    class="rounded-xl border border-white/10 bg-linear-to-br from-slate-900/50 to-slate-800/50 h-[52dvh] sm:h-[55dvh] lg:h-[58dvh] max-h-[420px] sm:max-h-[460px] lg:max-h-[520px]"
+    class="rounded-xl border border-white/10 bg-linear-to-br from-slate-900/90 to-slate-800/90 backdrop-blur-xl shadow-2xl h-[52dvh] sm:h-[55dvh] lg:h-[58dvh] max-h-[420px] sm:max-h-[460px] lg:max-h-[520px]"
   >
     <div
       data-edges="2"
@@ -224,7 +224,7 @@ exports[`🎯 ReactFlowDiagram 컴포넌트 > 스냅샷 테스트 > 큰 다이�
     </p>
   </div>
   <div
-    class="rounded-xl border border-white/10 bg-linear-to-br from-slate-900/50 to-slate-800/50 h-[48dvh] sm:h-[50dvh] lg:h-[52dvh] max-h-[380px] sm:max-h-card-lg lg:max-h-[440px]"
+    class="rounded-xl border border-white/10 bg-linear-to-br from-slate-900/90 to-slate-800/90 backdrop-blur-xl shadow-2xl h-[48dvh] sm:h-[50dvh] lg:h-[52dvh] max-h-[380px] sm:max-h-card-lg lg:max-h-[440px]"
   >
     <div
       data-edges="0"

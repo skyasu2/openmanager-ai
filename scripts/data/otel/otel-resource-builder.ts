@@ -37,7 +37,7 @@ export function buildResourceAttributes(
     'os.description': `${labels.os} ${labels.os_version}`,
     'cloud.region': 'onprem-dc1',
     'cloud.availability_zone': labels.datacenter,
-    'deployment.environment': labels.environment,
+    'deployment.environment.name': labels.environment,
   };
 
   if (nodeInfo) {

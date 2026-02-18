@@ -16,6 +16,11 @@ import { openAiSidebar } from './helpers/guest';
 import { TIMEOUTS } from './helpers/timeouts';
 import { navigateToDashboard } from './helpers/ui-flow';
 
+function isMobileViewport(page: Page): boolean {
+  const viewport = page.viewportSize();
+  return Boolean(viewport && viewport.width <= 768);
+}
+
 async function gotoAiAssistant(page: Page) {
   await page.goto('/dashboard/ai-assistant', {
     waitUntil: 'domcontentloaded',
@@ -23,9 +28,13 @@ async function gotoAiAssistant(page: Page) {
   await expect(page).toHaveURL(/\/dashboard\/ai-assistant/);
 }
 
-test.describe('AI 어시스턴트 풀스크린 테스트', () => {
+test.describe('AI 어시스턴트 풀스크린 테스트 @ai-test', () => {
   test.beforeEach(async ({ page }) => {
     await navigateToDashboard(page);
+    test.skip(
+      isMobileViewport(page),
+      'AI 풀스크린 좌측 패널/컨트롤 검증은 현재 데스크톱 레이아웃 전용입니다.'
+    );
   });
 
   test('풀스크린 페이지 직접 접근', async ({ page }) => {

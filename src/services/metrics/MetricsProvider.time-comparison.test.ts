@@ -67,7 +67,7 @@ describe('MetricsProvider Time Comparison', () => {
       const serverList = await metricsProvider.getServerList();
       if (serverList.length === 0) return;
 
-      const result = getMetricsAtRelativeTime(serverList[0].serverId, 0);
+      const result = await getMetricsAtRelativeTime(serverList[0].serverId, 0);
       if (result) {
         expect(result.isYesterday).toBe(false);
         expect(result).toHaveProperty('dateLabel');
@@ -77,7 +77,7 @@ describe('MetricsProvider Time Comparison', () => {
     });
 
     it('존재하지 않는 serverId → null', async () => {
-      const result = getMetricsAtRelativeTime('xyz-nonexistent-999', 0);
+      const result = await getMetricsAtRelativeTime('xyz-nonexistent-999', 0);
       expect(result).toBeNull();
     });
 
@@ -88,7 +88,7 @@ describe('MetricsProvider Time Comparison', () => {
       const serverList = await metricsProvider.getServerList();
       if (serverList.length === 0) return;
 
-      const result = getMetricsAtRelativeTime(serverList[0].serverId, 0);
+      const result = await getMetricsAtRelativeTime(serverList[0].serverId, 0);
       if (result) {
         expect(typeof result.dateLabel).toBe('string');
         expect(typeof result.isYesterday).toBe('boolean');
@@ -98,7 +98,7 @@ describe('MetricsProvider Time Comparison', () => {
 
   describe('compareServerMetrics', () => {
     it('존재하지 않는 serverId → null', async () => {
-      const result = compareServerMetrics('xyz-nonexistent-999', 60);
+      const result = await compareServerMetrics('xyz-nonexistent-999', 60);
       expect(result).toBeNull();
     });
 
@@ -109,7 +109,7 @@ describe('MetricsProvider Time Comparison', () => {
       const serverList = await metricsProvider.getServerList();
       if (serverList.length === 0) return;
 
-      const result = compareServerMetrics(serverList[0].serverId, 60);
+      const result = await compareServerMetrics(serverList[0].serverId, 60);
       if (result) {
         expect(result).toHaveProperty('current');
         expect(result).toHaveProperty('past');
@@ -137,7 +137,7 @@ describe('MetricsProvider Time Comparison', () => {
       const serverList = await metricsProvider.getServerList();
       if (serverList.length === 0) return;
 
-      const result = compareServerMetrics(serverList[0].serverId, 60);
+      const result = await compareServerMetrics(serverList[0].serverId, 60);
       if (result) {
         // 소수점 1자리 확인: value * 10이 정수여야 함
         expect(Number.isInteger(result.delta.cpu * 10)).toBe(true);

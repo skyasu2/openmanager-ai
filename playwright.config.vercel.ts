@@ -13,6 +13,49 @@ const extraHTTPHeaders = bypassSecret
       'x-vercel-protection-bypass': bypassSecret,
     }
   : undefined;
+const parsedVercelWorkers = Number.parseInt(
+  process.env.PLAYWRIGHT_VERCEL_WORKERS || '',
+  10
+);
+const includeMobileProject =
+  process.env.PLAYWRIGHT_VERCEL_INCLUDE_MOBILE === '1';
+const defaultVercelWorkers = 2;
+const vercelWorkers =
+  Number.isFinite(parsedVercelWorkers) && parsedVercelWorkers > 0
+    ? Math.min(parsedVercelWorkers, 4)
+    : defaultVercelWorkers;
+const chromiumLaunchArgs = [
+  '--no-sandbox',
+  '--disable-setuid-sandbox',
+  '--disable-dev-shm-usage',
+];
+const projects = [
+  {
+    name: 'chromium',
+    use: {
+      ...devices['Desktop Chrome'],
+      // headless-shell 충돌 회피를 위해 full Chromium 채널을 기본 사용
+      channel: process.env.PLAYWRIGHT_CHANNEL || 'chromium',
+      launchOptions: {
+        args: chromiumLaunchArgs,
+      },
+    },
+  },
+];
+
+// 모바일 검증은 고부하 경로로 분리(명시적 opt-in)해 Vercel 부하를 기본 최소화
+if (includeMobileProject) {
+  projects.push({
+    name: 'mobile-chromium',
+    use: {
+      ...devices['Pixel 5'],
+      channel: process.env.PLAYWRIGHT_CHANNEL || 'chromium',
+      launchOptions: {
+        args: chromiumLaunchArgs,
+      },
+    },
+  });
+}
 
 export default defineConfig({
   // Load environment variables globally before any tests run
@@ -23,9 +66,9 @@ export default defineConfig({
   /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: !!process.env.CI,
   /* Retry on CI only */
-  retries: process.env.CI ? 2 : 0,
+  retries: process.env.CI ? 1 : 0,
   /* 병렬 테스트 worker 수 - CI에서도 병렬 실행 활성화 */
-  workers: process.env.CI ? 4 : 6,
+  workers: vercelWorkers,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: 'html',
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
@@ -50,37 +93,7 @@ export default defineConfig({
   },
 
   /* Configure projects for major browsers */
-  projects: [
-    {
-      name: 'chromium',
-      use: {
-        ...devices['Desktop Chrome'],
-        // headless-shell 충돌 회피를 위해 full Chromium 채널을 기본 사용
-        channel: process.env.PLAYWRIGHT_CHANNEL || 'chromium',
-        launchOptions: {
-          args: [
-            '--no-sandbox',
-            '--disable-setuid-sandbox',
-            '--disable-dev-shm-usage',
-          ],
-        },
-      },
-    },
-    {
-      name: 'mobile-chromium',
-      use: {
-        ...devices['Pixel 5'],
-        channel: process.env.PLAYWRIGHT_CHANNEL || 'chromium',
-        launchOptions: {
-          args: [
-            '--no-sandbox',
-            '--disable-setuid-sandbox',
-            '--disable-dev-shm-usage',
-          ],
-        },
-      },
-    },
-  ],
+  projects,
 
   /* webServer 설정 제거 - Vercel URL 직접 테스트 */
 });

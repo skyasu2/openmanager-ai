@@ -71,7 +71,7 @@ export function otelToLokiEntry(log: OTelLogRecord): LokiLogEntry {
     hostname: log.resource,
     level: toLokiLevel(log.severityText),
     environment: String(
-      log.attributes['deployment.environment'] ?? 'production'
+      log.attributes['deployment.environment.name'] ?? 'production'
     ),
     datacenter: String(log.attributes['cloud.availability_zone'] ?? 'unknown'),
     server_type: String(log.attributes['server.role'] ?? 'unknown'),

@@ -16,7 +16,7 @@ import type { OTelLogRecord, OTelResourceAttributes } from './types';
 
 type ServerMeta = Pick<
   OTelResourceAttributes,
-  'server.role' | 'deployment.environment' | 'cloud.availability_zone'
+  'server.role' | 'deployment.environment.name' | 'cloud.availability_zone'
 >;
 
 // ============================================================================
@@ -122,8 +122,8 @@ export function processLogLine(
     attributes: {
       'log.source': detectSource(body),
       'server.role': serverMeta?.['server.role'] ?? 'unknown',
-      'deployment.environment':
-        serverMeta?.['deployment.environment'] ?? 'production',
+      'deployment.environment.name':
+        serverMeta?.['deployment.environment.name'] ?? 'production',
       'cloud.availability_zone':
         serverMeta?.['cloud.availability_zone'] ?? 'unknown',
     },

@@ -1,9 +1,9 @@
-# OpenManager AI v8.0.0 - Definition of Done
+# OpenManager AI v8.1.0 - Definition of Done
 
 > Owner: project-lead
 > Status: Active Canonical
 > Doc type: Reference
-> Last reviewed: 2026-02-17
+> Last reviewed: 2026-02-18
 > Tags: dod,checklist,quality,release
 
 **성격**: Living Document — 프로젝트 진화에 따라 갱신.
@@ -103,4 +103,4 @@ npm run test:e2e:critical   # E2E 핵심
 
 ---
 
-_Last Updated: 2026-02-17_
+_Last Updated: 2026-02-18_

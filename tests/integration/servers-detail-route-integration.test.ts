@@ -14,10 +14,12 @@ const {
   mockGetServerMetrics,
   mockGetAllServerMetrics,
   mockGetProcessedServer,
+  mockEnsureDataLoaded,
 } = vi.hoisted(() => ({
   mockGetServerMetrics: vi.fn(),
   mockGetAllServerMetrics: vi.fn(),
   mockGetProcessedServer: vi.fn(),
+  mockEnsureDataLoaded: vi.fn(),
 }));
 
 vi.mock('@/lib/auth/api-auth', () => ({
@@ -26,6 +28,7 @@ vi.mock('@/lib/auth/api-auth', () => ({
 
 vi.mock('@/services/metrics/MetricsProvider', () => ({
   metricsProvider: {
+    ensureDataLoaded: mockEnsureDataLoaded,
     getServerMetrics: mockGetServerMetrics,
     getAllServerMetrics: mockGetAllServerMetrics,
   },
@@ -63,6 +66,7 @@ import { GET } from '@/app/api/servers/[id]/route';
 describe('/api/servers/[id] Integration', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockEnsureDataLoaded.mockResolvedValue(true);
     mockGetServerMetrics.mockReturnValue({
       serverId: 'web-01',
       hostname: 'web-01.openmanager.local',

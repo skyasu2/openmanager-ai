@@ -21,7 +21,7 @@ export type OTelResourceAttributes = {
   'os.description': string;
   'cloud.region': string;
   'cloud.availability_zone': string;
-  'deployment.environment': string;
+  'deployment.environment.name': string;
   // --- Custom extensions (OTel Registry에 미정의) ---
   'server.role': string; // Custom: 서버 역할 (web, database, cache 등)
   'host.cpu.count'?: number; // Custom: OTel은 system.cpu.logical.count 메트릭으로 표현

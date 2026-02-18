@@ -84,17 +84,19 @@ function processTimeseries(transform: (data: TimeSeries) => TimeSeries): void {
 }
 
 // ============================================================================
-// C2: network.io unit/value 통일 (By/s → "1", values / 100)
+// C2: network.io unit/value 통일 (OTel 표준: system.network.io, unit By, bytes/sec)
 // ============================================================================
 
 function fixNetworkRatio(data: HourlyFile): HourlyFile {
   for (const slot of data.slots) {
     for (const metric of slot.metrics) {
-      if (metric.name === 'system.network.utilization') {
-        metric.unit = '1';
+      if (metric.name === 'system.network.io') {
+        metric.unit = 'By';
+        // 값이 0-1 ratio로 잘못 들어온 경우 → bytes/sec로 변환
         for (const dp of metric.dataPoints) {
-          // 현재 35-65 범위 → 0.35-0.65 ratio로 변환
-          dp.asDouble = Math.round((dp.asDouble / 100) * 100) / 100;
+          if (dp.asDouble >= 0 && dp.asDouble <= 1) {
+            dp.asDouble = Math.round(dp.asDouble * 125_000_000);
+          }
         }
       }
     }
@@ -103,10 +105,10 @@ function fixNetworkRatio(data: HourlyFile): HourlyFile {
 }
 
 function fixNetworkTimeseries(data: TimeSeries): TimeSeries {
-  const networkKey = 'system.network.utilization';
+  const networkKey = 'system.network.io';
   if (data.metrics[networkKey]) {
     data.metrics[networkKey] = data.metrics[networkKey].map((serverSeries) =>
-      serverSeries.map((val) => Math.round((val / 100) * 100) / 100)
+      serverSeries.map((val) => (val >= 0 && val <= 1) ? Math.round(val * 125_000_000) : val)
     );
   }
   return data;
@@ -337,22 +339,22 @@ function fixGCParameterVariation(data: HourlyFile): HourlyFile {
 function fixStorageCacheNetwork(data: HourlyFile): HourlyFile {
   for (const slot of data.slots) {
     for (const metric of slot.metrics) {
-      if (metric.name !== 'system.network.utilization') continue;
+      if (metric.name !== 'system.network.io') continue;
 
       for (const dp of metric.dataPoints) {
         const hostname = dp.attributes['host.name'] ?? '';
         const serverId = hostname.split('.')[0];
 
-        // C2 변환 후 값은 이미 0-1 ratio
+        // bytes/sec (1Gbps = 125,000,000 B/s)
         if (serverId.startsWith('storage-')) {
-          // Storage: 0.15-0.35 범위
-          if (dp.asDouble < 0.15 || dp.asDouble > 0.35) {
-            dp.asDouble = Math.round((0.15 + Math.random() * 0.20) * 100) / 100;
+          // Storage: 15-35% of 1Gbps = 18.75M-43.75M
+          if (dp.asDouble < 18_750_000 || dp.asDouble > 43_750_000) {
+            dp.asDouble = Math.round((0.15 + Math.random() * 0.20) * 125_000_000);
           }
         } else if (serverId.startsWith('cache-')) {
-          // Cache: 0.30-0.50 범위
-          if (dp.asDouble < 0.30 || dp.asDouble > 0.50) {
-            dp.asDouble = Math.round((0.30 + Math.random() * 0.20) * 100) / 100;
+          // Cache: 30-50% of 1Gbps = 37.5M-62.5M
+          if (dp.asDouble < 37_500_000 || dp.asDouble > 62_500_000) {
+            dp.asDouble = Math.round((0.30 + Math.random() * 0.20) * 125_000_000);
           }
         }
       }
@@ -627,7 +629,7 @@ function main(): void {
 
   // I3: Storage/Cache network in timeseries
   processTimeseries((data) => {
-    const networkKey = 'system.network.utilization';
+    const networkKey = 'system.network.io';
     if (!data.metrics[networkKey]) return data;
 
     for (let sIdx = 0; sIdx < data.serverIds.length; sIdx++) {
