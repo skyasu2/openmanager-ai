@@ -13,7 +13,6 @@ import { ActiveAlertsModal } from './ActiveAlertsModal';
 import { AlertHistoryModal } from './alert-history/AlertHistoryModal';
 import { DashboardSummary } from './DashboardSummary';
 import { resolveDashboardEmptyState } from './dashboard-empty-state';
-import { IncidentExplorerModal } from './incident-explorer/IncidentExplorerModal';
 import { LogExplorerModal } from './log-explorer/LogExplorerModal';
 import ServerDashboard from './ServerDashboard';
 import { SystemOverviewSection } from './SystemOverviewSection';
@@ -119,7 +118,6 @@ export default memo(function DashboardContent({
   // 모달 상태
   const [alertHistoryOpen, setAlertHistoryOpen] = useState(false);
   const [logExplorerOpen, setLogExplorerOpen] = useState(false);
-  const [incidentExplorerOpen, setIncidentExplorerOpen] = useState(false);
   const [activeAlertsOpen, setActiveAlertsOpen] = useState(false);
   const [topologyModalOpen, setTopologyModalOpen] = useState(false);
 
@@ -218,7 +216,6 @@ export default memo(function DashboardContent({
           onFilterChange={onStatusFilterChange}
           onOpenAlertHistory={() => setAlertHistoryOpen(true)}
           onOpenLogExplorer={() => setLogExplorerOpen(true)}
-          onOpenIncidentExplorer={() => setIncidentExplorerOpen(true)}
           showTopology={showTopology}
           onToggleTopology={() => setShowTopology((prev) => !prev)}
           activeAlertsCount={monitoringReport?.firingAlerts?.length ?? 0}
@@ -364,22 +361,6 @@ export default memo(function DashboardContent({
           <LogExplorerModal
             open={logExplorerOpen}
             onClose={() => setLogExplorerOpen(false)}
-            servers={allServers?.length ? allServers : servers}
-          />
-        )}
-
-        {/* Incident Explorer Modal */}
-        {incidentExplorerOpen && (
-          <IncidentExplorerModal
-            open={incidentExplorerOpen}
-            onClose={() => setIncidentExplorerOpen(false)}
-            initialSeverity={
-              statusFilter === 'warning' ||
-              statusFilter === 'critical' ||
-              statusFilter === 'offline'
-                ? statusFilter
-                : 'all'
-            }
           />
         )}
       </div>

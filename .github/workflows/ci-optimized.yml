@@ -123,8 +123,8 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Fast CI Tests
-        run: npm run test:quick
+      - name: Unit Tests (Full Suite)
+        run: npm run test
 
   # 🔒 보안 검사 (main/pull_request 차단형)
   security-scan:

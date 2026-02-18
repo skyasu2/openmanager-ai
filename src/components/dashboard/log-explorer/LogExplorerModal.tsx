@@ -44,11 +44,7 @@ const levelStyles: Record<
 const INITIAL_DISPLAY = 100;
 const LOAD_MORE_COUNT = 100;
 
-export function LogExplorerModal({
-  open,
-  onClose,
-  servers,
-}: LogExplorerModalProps) {
+export function LogExplorerModal({ open, onClose }: LogExplorerModalProps) {
   const [level, setLevel] = useState<'info' | 'warn' | 'error' | 'all'>('all');
   const [source, setSource] = useState('');
   const [serverId, setServerId] = useState('');
@@ -104,8 +100,18 @@ export function LogExplorerModal({
     [level, source, serverId, debouncedKeyword]
   );
 
-  const { logs, stats, sources, serverIds, isError, errorMessage, retry } =
-    useGlobalLogs(servers, filterParams);
+  const {
+    logs,
+    stats,
+    sources,
+    serverIds,
+    isLoading,
+    isError,
+    errorMessage,
+    retry,
+    windowStart,
+    windowEnd,
+  } = useGlobalLogs(filterParams);
 
   const displayLogs = useMemo(
     () => logs.slice(0, displayCount),
@@ -127,7 +133,7 @@ export function LogExplorerModal({
                 로그 탐색기
               </DialogTitle>
               <DialogDescription className="text-xs text-gray-500">
-                전체 서버 로그 통합 뷰 · 접속 시점 기준 시계열
+                24시간 OTel 로그 통합 검색
               </DialogDescription>
             </div>
             <span className="ml-2 inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-600">
@@ -220,7 +226,13 @@ export function LogExplorerModal({
             <span className="font-medium tabular-nums text-gray-700">
               {sessionAnchorLabel || '-'}
             </span>
-            <span className="text-gray-500">(연/월/일/시:분:초)</span>
+            {windowStart && windowEnd && (
+              <span className="text-gray-500">
+                데이터 범위: {formatRotatingTimestamp(windowStart)}
+                {' ~ '}
+                {formatRotatingTimestamp(windowEnd)}
+              </span>
+            )}
           </div>
         </div>
 
@@ -241,7 +253,11 @@ export function LogExplorerModal({
               </div>
             )}
 
-            {isError && displayLogs.length === 0 ? (
+            {isLoading && displayLogs.length === 0 ? (
+              <div className="flex items-center justify-center py-16">
+                <div className="h-6 w-6 animate-spin rounded-full border-2 border-blue-400 border-t-transparent" />
+              </div>
+            ) : isError && displayLogs.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-16 text-gray-500">
                 <FileSearch size={40} className="mb-3 opacity-30" />
                 <p className="text-sm font-medium">
@@ -274,7 +290,8 @@ export function LogExplorerModal({
                 )}
               >
                 {displayLogs.map((log) => {
-                  const style = levelStyles[log.level];
+                  const logLevel = log.level as keyof typeof levelStyles;
+                  const style = levelStyles[logLevel] ?? levelStyles.info;
                   return (
                     <div
                       key={`${log.serverId}-${log.timestamp}-${log.level}-${log.source}-${log.message.slice(0, 32)}`}

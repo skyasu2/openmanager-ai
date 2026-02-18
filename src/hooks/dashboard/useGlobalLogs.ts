@@ -1,12 +1,12 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { generateServerLogs } from '@/services/server-data/server-data-loader';
-import type { ServerLogEntry } from '@/services/server-data/server-data-types';
-import type { Server } from '@/types/server';
-import { getErrorMessage } from '@/types/type-utils';
+import { useQuery } from '@tanstack/react-query';
 
-export type GlobalLogEntry = ServerLogEntry & {
+export type GlobalLogEntry = {
+  timestamp: string;
+  level: string;
+  message: string;
+  source: string;
   serverId: string;
 };
 
@@ -27,135 +27,137 @@ export type GlobalLogsResult = {
   };
   sources: string[];
   serverIds: string[];
+  isLoading: boolean;
   isError: boolean;
   errorMessage: string | null;
   retry: () => void;
+  windowStart: string | null;
+  windowEnd: string | null;
 };
 
-export function useGlobalLogs(
-  servers: Server[],
-  filter: GlobalLogFilter = {}
-): GlobalLogsResult {
-  const [rawLogs, setRawLogs] = useState<GlobalLogEntry[]>([]);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const serversRef = useRef(servers);
-  const serversSignature = useMemo(
-    () =>
-      servers
-        .map(
-          (server) =>
-            `${server.id}:${server.cpu ?? 0}:${server.memory ?? 0}:${server.disk ?? 0}:${server.network ?? 0}`
-        )
-        .join('|'),
-    [servers]
-  );
-  const generate = useCallback((trigger?: string) => {
-    void trigger;
-    const allLogs: GlobalLogEntry[] = [];
-    let firstError: string | null = null;
-    for (const server of serversRef.current) {
-      try {
-        const metrics = {
-          cpu: server.cpu ?? 0,
-          memory: server.memory ?? 0,
-          disk: server.disk ?? 0,
-          network: server.network ?? 0,
-        };
-        const logs = generateServerLogs(metrics, server.id);
-        for (const log of logs) {
-          allLogs.push({ ...log, serverId: server.id });
-        }
-      } catch (error) {
-        if (firstError === null) {
-          firstError = getErrorMessage(error);
-        }
-      }
-    }
-    // Sort newest first
-    allLogs.sort(
-      (a, b) =>
-        new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
-    );
-    setRawLogs(allLogs);
-    setErrorMessage(
-      firstError === null
-        ? null
-        : `일부 서버 로그를 생성하지 못했습니다: ${firstError}`
-    );
-  }, []);
-  const retry = useCallback(() => {
-    generate();
-  }, [generate]);
+type LogApiResponse = {
+  success?: boolean;
+  error?: string;
+  data?: Array<{
+    timestamp: string;
+    level: string;
+    message: string;
+    source: string;
+    serverId: string;
+  }>;
+  pagination?: {
+    page?: number;
+    limit?: number;
+    total?: number;
+    totalPages?: number;
+  };
+  metadata?: {
+    logWindow?: { start?: string | null; end?: string | null };
+    availableSources?: string[];
+    availableServers?: string[];
+    cacheAgeMs?: number | null;
+    builtAt?: string | null;
+  };
+};
 
-  useEffect(() => {
-    serversRef.current = servers;
-  }, [servers]);
+type LogQueryData = {
+  logs: GlobalLogEntry[];
+  total: number;
+  sources: string[];
+  serverIds: string[];
+  windowStart: string | null;
+  windowEnd: string | null;
+};
 
-  useEffect(() => {
-    generate(serversSignature);
-  }, [serversSignature, generate]);
+async function fetchLogs(filter: GlobalLogFilter): Promise<LogQueryData> {
+  const params = new URLSearchParams();
+  params.set('action', 'logs');
+  params.set('limit', '100');
+  params.set('sortOrder', 'desc');
 
-  // Regenerate every 60s
-  useEffect(() => {
-    const interval = setInterval(generate, 60_000);
-    return () => clearInterval(interval);
-  }, [generate]);
+  if (filter.level) params.set('level', filter.level);
+  if (filter.source) params.set('logSource', filter.source);
+  if (filter.serverId) params.set('search', filter.serverId);
+  if (filter.keyword) params.set('logKeyword', filter.keyword);
 
-  // Available filter values
-  const sources = useMemo(() => {
-    const set = new Set<string>();
-    for (const log of rawLogs) {
-      set.add(log.source);
-    }
-    return Array.from(set).sort();
-  }, [rawLogs]);
+  const response = await fetch(`/api/servers-unified?${params.toString()}`, {
+    headers: { Accept: 'application/json' },
+    cache: 'no-store',
+  });
 
-  const serverIds = useMemo(() => {
-    const set = new Set<string>();
-    for (const log of rawLogs) {
-      set.add(log.serverId);
-    }
-    return Array.from(set).sort();
-  }, [rawLogs]);
+  if (!response.ok) {
+    throw new Error(`log api request failed (${response.status})`);
+  }
 
-  // Filtered logs
-  const logs = useMemo(() => {
-    let filtered = rawLogs;
+  const payload = (await response.json()) as LogApiResponse;
 
-    if (filter.level) {
-      filtered = filtered.filter((l) => l.level === filter.level);
-    }
-    if (filter.source) {
-      filtered = filtered.filter((l) => l.source === filter.source);
-    }
-    if (filter.serverId) {
-      filtered = filtered.filter((l) => l.serverId === filter.serverId);
-    }
-    if (filter.keyword) {
-      const kw = filter.keyword.toLowerCase();
-      filtered = filtered.filter((l) => l.message.toLowerCase().includes(kw));
-    }
+  if (!payload.success) {
+    throw new Error(payload.error || 'log api responded with failure');
+  }
 
-    return filtered;
-  }, [rawLogs, filter.level, filter.source, filter.serverId, filter.keyword]);
+  const logs: GlobalLogEntry[] = (payload.data ?? []).map((item) => ({
+    timestamp: item.timestamp,
+    level: item.level,
+    message: item.message,
+    source: item.source,
+    serverId: item.serverId,
+  }));
 
-  const stats = useMemo(
-    () => ({
-      total: logs.length,
-      info: logs.filter((l) => l.level === 'info').length,
-      warn: logs.filter((l) => l.level === 'warn').length,
-      error: logs.filter((l) => l.level === 'error').length,
-    }),
-    [logs]
-  );
+  return {
+    logs,
+    total: payload.pagination?.total ?? logs.length,
+    sources: payload.metadata?.availableSources ?? [],
+    serverIds: payload.metadata?.availableServers ?? [],
+    windowStart: payload.metadata?.logWindow?.start ?? null,
+    windowEnd: payload.metadata?.logWindow?.end ?? null,
+  };
+}
+
+export function useGlobalLogs(filter: GlobalLogFilter = {}): GlobalLogsResult {
+  const { data, isLoading, isError, error, refetch } = useQuery({
+    queryKey: [
+      'global-logs',
+      {
+        level: filter.level || '',
+        source: filter.source || '',
+        serverId: filter.serverId || '',
+        keyword: filter.keyword || '',
+      },
+    ],
+    queryFn: () => fetchLogs(filter),
+    staleTime: 60_000,
+    gcTime: 5 * 60_000,
+    refetchOnWindowFocus: false,
+    retry: 1,
+  });
+
+  const logs = data?.logs ?? [];
+
+  const stats = {
+    total: data?.total ?? 0,
+    info: logs.filter((l) => l.level === 'info').length,
+    warn: logs.filter((l) => l.level === 'warn').length,
+    error: logs.filter((l) => l.level === 'error').length,
+  };
+
+  const errorMessage = isError
+    ? error instanceof Error
+      ? error.message
+      : '로그를 불러오지 못했습니다.'
+    : null;
 
   return {
     logs,
     stats,
-    sources,
-    serverIds,
-    isError: errorMessage !== null,
+    sources: data?.sources ?? [],
+    serverIds: data?.serverIds ?? [],
+    isLoading,
+    isError,
     errorMessage,
-    retry,
+    retry: () => {
+      void refetch();
+    },
+    windowStart: data?.windowStart ?? null,
+    windowEnd: data?.windowEnd ?? null,
   };
 }

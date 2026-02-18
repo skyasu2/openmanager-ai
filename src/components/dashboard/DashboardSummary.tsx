@@ -5,7 +5,6 @@ import {
   Bell,
   CheckCircle2,
   FileSearch,
-  History,
   Network,
   Server as ServerIcon,
   ShieldAlert,
@@ -22,7 +21,6 @@ interface DashboardSummaryProps {
   onFilterChange?: (filter: string | null) => void;
   onOpenAlertHistory?: () => void;
   onOpenLogExplorer?: () => void;
-  onOpenIncidentExplorer?: () => void;
   showTopology?: boolean;
   onToggleTopology?: () => void;
   /** 현재 활성 알림 건수 */
@@ -163,7 +161,6 @@ export const DashboardSummary: React.FC<DashboardSummaryProps> = memo(
     onFilterChange,
     onOpenAlertHistory,
     onOpenLogExplorer,
-    onOpenIncidentExplorer,
     showTopology = false,
     onToggleTopology,
     activeAlertsCount = 0,
@@ -345,18 +342,6 @@ export const DashboardSummary: React.FC<DashboardSummaryProps> = memo(
                   >
                     <FileSearch size={16} />
                     <span>로그 검색</span>
-                  </button>
-                )}
-                {onOpenIncidentExplorer && (
-                  <button
-                    type="button"
-                    onClick={onOpenIncidentExplorer}
-                    aria-label="장애 이슈 검색 보기"
-                    className="flex h-11 items-center gap-1.5 rounded-lg border border-purple-100/80 bg-white/90 px-3 text-xs font-semibold text-gray-600 shadow-xs transition-all duration-200 hover:-translate-y-0.5 hover:border-purple-200 hover:bg-purple-50 hover:text-purple-700 hover:shadow-sm active:translate-y-0 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-300/60 cursor-pointer"
-                    title="24시간 이슈 검색"
-                  >
-                    <History size={15} />
-                    <span>이슈 검색</span>
                   </button>
                 )}
               </div>

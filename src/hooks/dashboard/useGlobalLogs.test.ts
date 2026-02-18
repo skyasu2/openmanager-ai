@@ -1,107 +1,137 @@
-import { act, renderHook, waitFor } from '@testing-library/react';
+/**
+ * @vitest-environment jsdom
+ */
+
+import { renderHook, waitFor } from '@testing-library/react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import type { ReactNode } from 'react';
+import { createElement } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { generateServerLogs } from '@/services/server-data/server-data-loader';
-import type { Server } from '@/types/server';
 import { useGlobalLogs } from './useGlobalLogs';
 
-vi.mock('@/services/server-data/server-data-loader', () => ({
-  generateServerLogs: vi.fn(),
-}));
+const mockApiResponse = {
+  success: true,
+  data: [
+    {
+      timestamp: '2026-02-13T10:00:00.000Z',
+      level: 'info',
+      message: 'Server started',
+      source: 'systemd',
+      serverId: 'web-01',
+    },
+    {
+      timestamp: '2026-02-13T10:01:00.000Z',
+      level: 'warn',
+      message: 'High memory usage',
+      source: 'monitor',
+      serverId: 'db-01',
+    },
+    {
+      timestamp: '2026-02-13T10:02:00.000Z',
+      level: 'error',
+      message: 'Connection refused',
+      source: 'nginx',
+      serverId: 'web-02',
+    },
+  ],
+  pagination: { page: 1, limit: 100, total: 3, totalPages: 1 },
+  metadata: {
+    logWindow: { start: '2026-02-13T00:00:00Z', end: '2026-02-13T23:59:00Z' },
+    availableSources: ['systemd', 'monitor', 'nginx'],
+    availableServers: ['web-01', 'web-02', 'db-01'],
+  },
+};
 
-const mockedGenerateServerLogs = vi.mocked(generateServerLogs);
-
-function createServer(id: string): Server {
-  return {
-    id,
-    name: id,
-    status: 'online',
-    cpu: 50,
-    memory: 40,
-    disk: 30,
-    network: 20,
-    uptime: 1_000,
-    location: 'seoul',
+function createWrapper() {
+  const queryClient = new QueryClient({
+    defaultOptions: { queries: { retry: false } },
+  });
+  return function Wrapper({ children }: { children: ReactNode }) {
+    return createElement(
+      QueryClientProvider,
+      { client: queryClient },
+      children
+    );
   };
 }
 
 describe('useGlobalLogs', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
-    mockedGenerateServerLogs.mockImplementation((_metrics, serverId) => [
-      {
-        timestamp: '2026-02-13T10:00:00.000Z',
-        level: 'info',
-        source: 'systemd',
-        message: `log-${serverId}`,
-      },
-    ]);
+    vi.restoreAllMocks();
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(() =>
+        Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve(mockApiResponse),
+        } as Response)
+      )
+    );
   });
 
-  it('서버 수가 동일해도 서버 목록 변경 시 로그를 즉시 갱신한다', async () => {
-    const { result, rerender } = renderHook(
-      ({ servers }) => useGlobalLogs(servers, {}),
-      {
-        initialProps: {
-          servers: [createServer('server-a')],
-        },
-      }
+  it('fetches logs from API and returns correct structure', async () => {
+    const { result } = renderHook(() => useGlobalLogs({}), {
+      wrapper: createWrapper(),
+    });
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
+    });
+
+    expect(result.current.logs).toHaveLength(3);
+    expect(result.current.stats.total).toBe(3);
+    expect(result.current.stats.info).toBe(1);
+    expect(result.current.stats.warn).toBe(1);
+    expect(result.current.stats.error).toBe(1);
+    expect(result.current.sources).toEqual(['systemd', 'monitor', 'nginx']);
+    expect(result.current.serverIds).toEqual(['web-01', 'web-02', 'db-01']);
+    expect(result.current.windowStart).toBeTruthy();
+    expect(result.current.windowEnd).toBeTruthy();
+  });
+
+  it('passes filter params as query parameters', async () => {
+    const fetchSpy = vi.mocked(fetch);
+
+    renderHook(
+      () =>
+        useGlobalLogs({ level: 'warn', source: 'monitor', keyword: 'high' }),
+      { wrapper: createWrapper() }
     );
 
     await waitFor(() => {
-      expect(result.current.logs[0]?.serverId).toBe('server-a');
+      expect(fetchSpy).toHaveBeenCalled();
     });
 
-    rerender({
-      servers: [createServer('server-b')],
-    });
-
-    await waitFor(() => {
-      expect(result.current.logs[0]?.serverId).toBe('server-b');
-      expect(result.current.logs[0]?.message).toBe('log-server-b');
-    });
+    const url = fetchSpy.mock.calls[0][0] as string;
+    expect(url).toContain('level=warn');
+    expect(url).toContain('logSource=monitor');
+    expect(url).toContain('logKeyword=high');
   });
 
-  it('로그 생성 에러를 노출하고 retry로 복구할 수 있다', async () => {
-    let shouldFail = true;
-    mockedGenerateServerLogs.mockImplementation((_metrics, serverId) => {
-      if (serverId === 'server-b' && shouldFail) {
-        throw new Error('log generator failed');
-      }
-      return [
-        {
-          timestamp: '2026-02-13T10:00:00.000Z',
-          level: 'info',
-          source: 'systemd',
-          message: `log-${serverId}`,
-        },
-      ];
+  it('handles API errors gracefully', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(() =>
+        Promise.resolve({
+          ok: false,
+          status: 500,
+          json: () => Promise.resolve({}),
+        } as Response)
+      )
+    );
+
+    const { result } = renderHook(() => useGlobalLogs({}), {
+      wrapper: createWrapper(),
     });
 
-    const { result } = renderHook(({ servers }) => useGlobalLogs(servers, {}), {
-      initialProps: {
-        servers: [createServer('server-a'), createServer('server-b')],
+    await waitFor(
+      () => {
+        expect(result.current.isError).toBe(true);
       },
-    });
+      { timeout: 10_000 }
+    );
 
-    await waitFor(() => {
-      expect(result.current.isError).toBe(true);
-      expect(result.current.errorMessage).toContain('log generator failed');
-      expect(
-        result.current.logs.some((log) => log.serverId === 'server-a')
-      ).toBe(true);
-    });
-
-    shouldFail = false;
-    act(() => {
-      result.current.retry();
-    });
-
-    await waitFor(() => {
-      expect(result.current.isError).toBe(false);
-      expect(result.current.errorMessage).toBeNull();
-      expect(
-        result.current.logs.some((log) => log.serverId === 'server-b')
-      ).toBe(true);
-    });
+    expect(result.current.errorMessage).toContain('500');
+    expect(result.current.logs).toHaveLength(0);
   });
 });

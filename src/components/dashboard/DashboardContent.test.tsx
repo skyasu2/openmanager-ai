@@ -59,10 +59,6 @@ vi.mock('./log-explorer/LogExplorerModal', () => ({
   LogExplorerModal: vi.fn(() => null),
 }));
 
-vi.mock('./incident-explorer/IncidentExplorerModal', () => ({
-  IncidentExplorerModal: vi.fn(() => null),
-}));
-
 const createProps = (
   overrides: Partial<ComponentProps<typeof DashboardContent>> = {}
 ): ComponentProps<typeof DashboardContent> => ({

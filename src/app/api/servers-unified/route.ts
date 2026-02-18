@@ -18,8 +18,7 @@ import { createApiRoute } from '@/lib/api/zod-middleware';
 import { withAuth } from '@/lib/auth/api-auth';
 import { logger } from '@/lib/logging';
 import { getServerMonitoringService } from '@/services/monitoring';
-import { queryIncidentEvents } from '@/services/monitoring/incident-search';
-import type { IncidentMetric, IncidentSeverity } from '@/types/incidents';
+import { queryOTelLogs } from '@/services/monitoring/otel-log-search';
 import type { EnhancedServerMetrics } from '@/types/server';
 import { getErrorMessage } from '@/types/type-utils';
 import debug from '@/utils/debug';
@@ -31,7 +30,7 @@ const serversUnifiedRequestSchema = z.object({
     'cached', // 캐시된 서버 데이터
     'mock', // 목업 서버 데이터
     'realtime', // 실시간 서버 데이터
-    'incidents', // 24시간 장애/경고 이벤트 검색
+    'logs', // 24시간 OTel 로그 검색
     'detail', // 특정 서버 상세
     'processes', // 서버 프로세스 목록
   ]),
@@ -50,11 +49,10 @@ const serversUnifiedRequestSchema = z.object({
   includeProcesses: z.boolean().default(false),
   includeMetrics: z.boolean().default(true),
 
-  // incidents 액션 옵션
-  severity: z.enum(['warning', 'critical', 'offline']).optional(),
-  metric: z.enum(['cpu', 'memory', 'disk', 'network', 'composite']).optional(),
-  from: z.string().optional(),
-  to: z.string().optional(),
+  // logs 액션 옵션
+  level: z.enum(['info', 'warn', 'error']).optional(),
+  logSource: z.string().optional(),
+  logKeyword: z.string().optional(),
 });
 
 type ServersUnifiedRequest = z.infer<typeof serversUnifiedRequestSchema>;
@@ -177,10 +175,9 @@ async function handleServersUnified(
       sortOrder?: ServersUnifiedRequest['sortOrder'];
       includeProcesses?: boolean;
       includeMetrics?: boolean;
-      severity?: IncidentSeverity;
-      metric?: IncidentMetric;
-      from?: string;
-      to?: string;
+      level?: 'info' | 'warn' | 'error';
+      logSource?: string;
+      logKeyword?: string;
     };
     query: unknown;
     params: Record<string, string>;
@@ -194,10 +191,9 @@ async function handleServersUnified(
     search,
     sortBy = 'name',
     sortOrder = 'asc',
-    severity,
-    metric,
-    from,
-    to,
+    level,
+    logSource,
+    logKeyword,
   } = context.body;
 
   try {
@@ -209,7 +205,7 @@ async function handleServersUnified(
     // 액션별 데이터 처리
     switch (action) {
       // 🚀 비동기 데이터 로딩 보장 (Bundle Size Optimization 대응)
-      // incidents는 OTel hourly index 기반이므로 MetricsProvider hydration 불필요
+      // logs는 OTel hourly index 기반이므로 MetricsProvider hydration 불필요
       case 'list':
       case 'cached':
       case 'mock':
@@ -257,13 +253,12 @@ async function handleServersUnified(
         };
         break;
 
-      case 'incidents': {
-        const incidentResult = await queryIncidentEvents({
-          search,
-          severity,
-          metric,
-          from,
-          to,
+      case 'logs': {
+        const logResult = await queryOTelLogs({
+          level,
+          source: logSource,
+          serverId: search || undefined,
+          keyword: logKeyword,
           page,
           limit,
           sortOrder,
@@ -272,33 +267,28 @@ async function handleServersUnified(
         return {
           success: true,
           action,
-          data: incidentResult.items,
+          data: logResult.items,
           pagination: {
-            page: incidentResult.page,
-            limit: incidentResult.limit,
-            total: incidentResult.total,
-            totalPages: incidentResult.totalPages,
-            hasNext: incidentResult.page < incidentResult.totalPages,
-            hasPrev: incidentResult.page > 1,
-          },
-          summary: {
-            total: incidentResult.total,
-            severity,
-            metric,
-            from,
-            to,
+            page: logResult.page,
+            limit: logResult.limit,
+            total: logResult.total,
+            totalPages: logResult.totalPages,
+            hasNext: logResult.page < logResult.totalPages,
+            hasPrev: logResult.page > 1,
           },
           metadata: {
             action,
-            dataSource: 'otel-hourly-incident-index',
-            incidentWindow: {
-              start: incidentResult.metadata.windowStart,
-              end: incidentResult.metadata.windowEnd,
+            dataSource: 'otel-hourly-log-index',
+            logWindow: {
+              start: logResult.metadata.windowStart,
+              end: logResult.metadata.windowEnd,
             },
-            cacheAgeMs: incidentResult.metadata.cacheAgeMs,
-            builtAt: incidentResult.metadata.builtAt,
+            cacheAgeMs: logResult.metadata.cacheAgeMs,
+            builtAt: logResult.metadata.builtAt,
+            availableSources: logResult.metadata.availableSources,
+            availableServers: logResult.metadata.availableServers,
             unifiedApi: true,
-            systemVersion: 'servers-unified-v1.1',
+            systemVersion: 'servers-unified-v1.2',
           },
           timestamp: new Date().toISOString(),
         };
@@ -433,7 +423,7 @@ async function getHandler(request: NextRequest) {
     'cached',
     'mock',
     'realtime',
-    'incidents',
+    'logs',
     'detail',
     'processes',
   ];
@@ -443,22 +433,13 @@ async function getHandler(request: NextRequest) {
     ? (requestedAction as ServersUnifiedRequest['action'])
     : 'list';
 
-  const severityParam = searchParams.get('severity');
-  const severity = ['warning', 'critical', 'offline'].includes(
-    severityParam || ''
-  )
-    ? (severityParam as IncidentSeverity)
-    : undefined;
-
-  const metricParam = searchParams.get('metric');
-  const metric = ['cpu', 'memory', 'disk', 'network', 'composite'].includes(
-    metricParam || ''
-  )
-    ? (metricParam as IncidentMetric)
+  const levelParam = searchParams.get('level');
+  const level = ['info', 'warn', 'error'].includes(levelParam || '')
+    ? (levelParam as 'info' | 'warn' | 'error')
     : undefined;
 
   const sortOrderParam = searchParams.get('sortOrder');
-  const defaultSortOrder = action === 'incidents' ? 'desc' : 'asc';
+  const defaultSortOrder = action === 'logs' ? 'desc' : 'asc';
   const sortOrder =
     sortOrderParam === 'asc' || sortOrderParam === 'desc'
       ? (sortOrderParam as ServersUnifiedRequest['sortOrder'])
@@ -474,10 +455,9 @@ async function getHandler(request: NextRequest) {
     sortOrder,
     includeProcesses: false,
     includeMetrics: true,
-    severity,
-    metric,
-    from: searchParams.get('from') || undefined,
-    to: searchParams.get('to') || undefined,
+    level,
+    logSource: searchParams.get('logSource') || undefined,
+    logKeyword: searchParams.get('logKeyword') || undefined,
   };
 
   return NextResponse.json(
