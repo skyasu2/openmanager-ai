@@ -345,6 +345,19 @@ export function useHybridAIQuery(
         errorMessage
       );
 
+      // 초기 resume probe(아직 사용자 쿼리 없음)에서 발생하는 네트워크 오류는
+      // 사용자 오류로 승격하지 않고 무시한다.
+      const isResumeProbeWithoutUserQuery =
+        !currentQueryRef.current &&
+        /(failed to fetch|load failed|networkerror)/i.test(errorMessage);
+      if (isResumeProbeWithoutUserQuery) {
+        logger.debug(
+          `[HybridAI] Ignoring resume probe error before first query (trace: ${traceIdRef.current})`
+        );
+        setState((prev) => ({ ...prev, isLoading: false }));
+        return;
+      }
+
       // Atomic check-and-set pattern to prevent double handling
       if (errorHandledRef.current) {
         logger.debug(
