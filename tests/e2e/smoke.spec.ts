@@ -25,14 +25,16 @@ test.describe('기본 스모크 테스트', () => {
     // 클라이언트 렌더링 완료 대기 - 로그인 폼 요소 확인
     // (로딩 상태에서 실제 콘텐츠로 전환될 때까지 대기)
     await expect(
-      page.getByRole('heading', { name: /OpenManager 로그인/ })
+      page.getByRole('heading', { name: /OpenManager.*로그인/ })
     ).toBeVisible({ timeout: TIMEOUTS.NETWORK_REQUEST });
 
-    // 기본 UI 요소들 확인 (버튼 텍스트: GitHub로 로그인, 게스트 모드)
+    // 기본 UI 요소들 확인 (라벨 변형 허용: 계속하기/로그인, 체험하기/게스트 모드)
     await expect(
-      page.locator('button:has-text("GitHub로 로그인")')
+      page.getByRole('button', { name: /GitHub.*(계속하기|로그인)/ })
     ).toBeVisible();
-    await expect(page.locator('button:has-text("게스트 모드")')).toBeVisible();
+    await expect(
+      page.getByRole('button', { name: /게스트.*(체험하기|모드)/ })
+    ).toBeVisible();
   });
 
   test('랜딩 페이지가 올바르게 로드된다', async ({ page }) => {

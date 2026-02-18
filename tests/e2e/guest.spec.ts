@@ -118,7 +118,7 @@ test.describe('🧭 게스트 대시보드 핵심 플로우', () => {
 
     const logoutMenu = page
       .locator('[role="menuitem"]')
-      .filter({ hasText: /게스트 세션 종료|로그아웃/i });
+      .filter({ hasText: /세션 종료|게스트 세션 종료|로그아웃/i });
     await expect(logoutMenu.first()).toBeVisible();
   });
 

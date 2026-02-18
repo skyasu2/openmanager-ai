@@ -10,12 +10,16 @@
  * 실행: npm run test:vercel:e2e -- --grep @nlq
  */
 
-import type { Page } from '@playwright/test';
+import type { Page, Response } from '@playwright/test';
 import { expect, test } from '@playwright/test';
 
 import { openAiSidebar } from './helpers/guest';
 import { TIMEOUTS } from './helpers/timeouts';
 import { navigateToDashboard } from './helpers/ui-flow';
+
+const AI_STREAM_ENDPOINT = '/api/ai/supervisor/stream/v2';
+const RATE_LIMIT_TEXT_PATTERN =
+  /Too Many Requests|요청 제한|rate limit|요청을 처리할 수 없습니다/i;
 
 /**
  * AI 사이드바에서 메시지를 입력하고 전송합니다.
@@ -120,6 +124,66 @@ async function waitForAssistantResponse(
 }
 
 /**
+ * 429(Rate Limit) 발생 시 Retry-After를 반영해 한 번 재시도합니다.
+ */
+async function runWithRateLimitRecovery(
+  page: Page,
+  runner: () => Promise<string>
+): Promise<string> {
+  let retryAfterMs = 0;
+
+  const onResponse = (response: Response) => {
+    if (!response.url().includes(AI_STREAM_ENDPOINT)) return;
+    if (response.status() !== 429) return;
+
+    const retryAfterHeader = response.headers()['retry-after'];
+    const retryAfterSeconds = Number.parseInt(retryAfterHeader || '8', 10);
+    retryAfterMs =
+      Number.isFinite(retryAfterSeconds) && retryAfterSeconds > 0
+        ? (retryAfterSeconds + 1) * 1000
+        : 9000;
+  };
+
+  for (let attempt = 0; attempt < 2; attempt += 1) {
+    retryAfterMs = 0;
+    page.on('response', onResponse);
+
+    try {
+      return await runner();
+    } catch (error) {
+      const canRetry = attempt === 0 && retryAfterMs > 0;
+      if (!canRetry) {
+        throw error;
+      }
+
+      await page.waitForTimeout(retryAfterMs);
+
+      const retryButton = page.getByRole('button', { name: '재시도' }).first();
+      const hasRetryButton = await retryButton
+        .isVisible({ timeout: TIMEOUTS.DOM_UPDATE })
+        .catch(() => false);
+
+      if (hasRetryButton) {
+        await retryButton.click();
+      } else {
+        const hasRateLimitText = await page
+          .getByText(RATE_LIMIT_TEXT_PATTERN)
+          .first()
+          .isVisible({ timeout: TIMEOUTS.DOM_UPDATE })
+          .catch(() => false);
+        if (!hasRateLimitText) {
+          throw error;
+        }
+      }
+    } finally {
+      page.off('response', onResponse);
+    }
+  }
+
+  throw new Error('429 복구 재시도 후에도 AI 응답 수신에 실패했습니다.');
+}
+
+/**
  * Clarification 다이얼로그에서 첫 번째 옵션을 선택합니다.
  * clarification이 나타나지 않으면 무시하고 진행합니다.
  */
@@ -170,13 +234,15 @@ test.describe('자연어 질의 E2E (Vercel)', () => {
       tag: ['@ai-test', '@nlq'],
     },
     async ({ page }) => {
-      await sendMessage(page, 'MySQL 서버 CPU 92% 대응방안');
+      const responseText = await runWithRateLimitRecovery(page, async () => {
+        await sendMessage(page, 'MySQL 서버 CPU 92% 대응방안');
 
-      // 모델 응답 특성에 따라 clarification이 나타날 수 있으므로 조건부 처리
-      await handleClarificationIfPresent(page);
+        // 모델 응답 특성에 따라 clarification이 나타날 수 있으므로 조건부 처리
+        await handleClarificationIfPresent(page);
 
-      // AI 응답 수신
-      const responseText = await waitForAssistantResponse(page);
+        // AI 응답 수신
+        return waitForAssistantResponse(page, TIMEOUTS.FULL_USER_FLOW);
+      });
       expect(responseText.length).toBeGreaterThan(20);
     }
   );
@@ -187,13 +253,15 @@ test.describe('자연어 질의 E2E (Vercel)', () => {
       tag: ['@ai-test', '@nlq'],
     },
     async ({ page }) => {
-      await sendMessage(page, '현재 전체 서버 상태를 요약해줘');
+      const responseText = await runWithRateLimitRecovery(page, async () => {
+        await sendMessage(page, '현재 전체 서버 상태를 요약해줘');
 
-      // clarification이 나타나면 첫 번째 옵션 선택
-      await handleClarificationIfPresent(page);
+        // clarification이 나타나면 첫 번째 옵션 선택
+        await handleClarificationIfPresent(page);
 
-      // AI 응답 수신
-      const responseText = await waitForAssistantResponse(page);
+        // AI 응답 수신
+        return waitForAssistantResponse(page, TIMEOUTS.FULL_USER_FLOW);
+      });
       expect(responseText.length).toBeGreaterThan(0);
     }
   );
@@ -204,39 +272,41 @@ test.describe('자연어 질의 E2E (Vercel)', () => {
       tag: ['@ai-test', '@nlq'],
     },
     async ({ page }) => {
-      await sendMessage(page, '현재 전체 서버 상태를 요약해줘');
+      const responseText = await runWithRateLimitRecovery(page, async () => {
+        await sendMessage(page, '현재 전체 서버 상태를 요약해줘');
 
-      // clarification이 나타나면 커스텀 입력 필드에 구체적 정보 입력
-      const dismissBtn = page
-        .locator('button[aria-label="명확화 취소"]')
-        .first();
-      const hasClarification = await dismissBtn
-        .isVisible({ timeout: TIMEOUTS.MODAL_DISPLAY })
-        .catch(() => false);
-
-      if (hasClarification) {
-        // 커스텀 입력 필드 (항상 표시됨)
-        const customInput = page.getByPlaceholder('추가 정보를 입력하세요');
-        const hasInput = await customInput
-          .isVisible({ timeout: 3000 })
+        // clarification이 나타나면 커스텀 입력 필드에 구체적 정보 입력
+        const dismissBtn = page
+          .locator('button[aria-label="명확화 취소"]')
+          .first();
+        const hasClarification = await dismissBtn
+          .isVisible({ timeout: TIMEOUTS.MODAL_DISPLAY })
           .catch(() => false);
 
-        if (hasInput) {
-          await customInput.fill('CPU와 메모리 사용률 중심으로');
-          // "확인" 버튼 클릭 (clarification 컨테이너 내)
-          const confirmBtn = page.getByRole('button', { name: '확인' });
-          await expect(confirmBtn).toBeEnabled({
-            timeout: TIMEOUTS.DOM_UPDATE,
-          });
-          await confirmBtn.click();
-        } else {
-          // fallback: 첫 번째 옵션 선택
-          await handleClarificationIfPresent(page);
-        }
-      }
+        if (hasClarification) {
+          // 커스텀 입력 필드 (항상 표시됨)
+          const customInput = page.getByPlaceholder('추가 정보를 입력하세요');
+          const hasInput = await customInput
+            .isVisible({ timeout: 3000 })
+            .catch(() => false);
 
-      // AI 응답 수신
-      const responseText = await waitForAssistantResponse(page);
+          if (hasInput) {
+            await customInput.fill('CPU와 메모리 사용률 중심으로');
+            // "확인" 버튼 클릭 (clarification 컨테이너 내)
+            const confirmBtn = page.getByRole('button', { name: '확인' });
+            await expect(confirmBtn).toBeEnabled({
+              timeout: TIMEOUTS.DOM_UPDATE,
+            });
+            await confirmBtn.click();
+          } else {
+            // fallback: 첫 번째 옵션 선택
+            await handleClarificationIfPresent(page);
+          }
+        }
+
+        // AI 응답 수신
+        return waitForAssistantResponse(page, TIMEOUTS.FULL_USER_FLOW);
+      });
       expect(responseText.length).toBeGreaterThan(0);
     }
   );

@@ -83,20 +83,36 @@ export async function resetGuestState(page: Page): Promise<void> {
   await context.clearCookies();
   await context.clearPermissions().catch(() => undefined);
 
-  try {
-    await page.goto('about:blank');
-  } catch {
-    // ignore navigation errors during reset
-  }
+  const isRetryableContextError = (error: unknown): boolean => {
+    if (!(error instanceof Error)) return false;
+    return /Execution context was destroyed|Cannot find context with specified id|Target closed/i.test(
+      error.message
+    );
+  };
 
-  await page.evaluate(() => {
+  for (let attempt = 0; attempt < 3; attempt += 1) {
     try {
-      localStorage.clear();
-      sessionStorage.clear();
-    } catch {
-      // noop
+      await page.goto('about:blank', {
+        waitUntil: 'domcontentloaded',
+        timeout: TIMEOUTS.DOM_UPDATE,
+      });
+
+      await page.evaluate(() => {
+        try {
+          localStorage.clear();
+          sessionStorage.clear();
+        } catch {
+          // noop
+        }
+      });
+      return;
+    } catch (error) {
+      if (!isRetryableContextError(error) || attempt === 2) {
+        return;
+      }
+      await page.waitForTimeout(150);
     }
-  });
+  }
 }
 
 /**
