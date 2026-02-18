@@ -21,7 +21,7 @@
 
 ---
 
-## 현재 사용 중인 MCP 서버 (8개)
+## 현재 사용 중인 MCP 서버 (9개)
 
 | MCP | 용도 | 패키지 | 우선순위 |
 |-----|------|--------|:--------:|
@@ -33,6 +33,7 @@
 | **playwright** | E2E 테스트, 브라우저 자동화 | `@playwright/mcp` | 중간 |
 | **next-devtools** | Next.js 런타임 오류/로그/메타데이터 조회 | `next-devtools-mcp` | 중간 |
 | **github** | 저장소/PR 관리 | `@modelcontextprotocol/server-github` | 중간 |
+| **storybook** | 컴포넌트 문서 조회, 스토리 기반 작업 | `@storybook/addon-mcp` (Storybook MCP) | 중간 |
 
 ---
 
@@ -213,13 +214,14 @@ npm run mcp:playwright:mode:stdio
       "mcp__next-devtools__*",
       "mcp__github__*",
       "mcp__sequential-thinking__*",
-      "mcp__stitch__*"
+      "mcp__stitch__*",
+      "mcp__storybook__*"
     ]
   },
   "enableAllProjectMcpServers": true,
   "enabledMcpjsonServers": [
     "vercel", "supabase", "context7",
-    "playwright", "next-devtools", "github", "sequential-thinking", "stitch"
+    "playwright", "next-devtools", "github", "sequential-thinking", "stitch", "storybook"
   ]
 }
 ```
@@ -437,13 +439,14 @@ cat > .claude/settings.local.json << 'EOF'
       "mcp__next-devtools__*",
       "mcp__github__*",
       "mcp__sequential-thinking__*",
-      "mcp__stitch__*"
+      "mcp__stitch__*",
+      "mcp__storybook__*"
     ]
   },
   "enableAllProjectMcpServers": true,
   "enabledMcpjsonServers": [
     "vercel", "supabase", "context7",
-    "playwright", "next-devtools", "github", "sequential-thinking", "stitch"
+    "playwright", "next-devtools", "github", "sequential-thinking", "stitch", "storybook"
   ]
 }
 EOF

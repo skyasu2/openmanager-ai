@@ -337,6 +337,7 @@ Claude Code는 도구 실행 전후에 자동 명령을 실행할 수 있습니�
 
       // MCP 서버
       "mcp__supabase__*",
+      "mcp__storybook__*",
       "mcp__context7__*"
     ],
     "deny": [
@@ -399,7 +400,8 @@ Claude Code는 도구 실행 전후에 자동 명령을 실행할 수 있습니�
     "vercel",
     "playwright",
     "github",
-    "sequential-thinking"
+    "sequential-thinking",
+    "storybook"
   ]
 }
 ```
@@ -408,8 +410,12 @@ Claude Code는 도구 실행 전후에 자동 명령을 실행할 수 있습니�
 
 ```json
 {
-  "mcpServers": {
-    "supabase": {
+      "mcpServers": {
+        "storybook": {
+          "type": "http",
+          "url": "http://localhost:6006/mcp"
+        },
+        "supabase": {
       "command": "npx",
       "args": ["-y", "@supabase/mcp-server"],
       "env": {

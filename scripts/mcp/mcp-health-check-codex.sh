@@ -24,6 +24,103 @@ EXPECTED_SERVERS=()
 CONFIG_FILE=""
 LIVE_PROBE_TIMEOUT_SEC="${MCP_LIVE_PROBE_TIMEOUT_SEC:-120}"
 
+# OPENMANAGER_STORYBOOK_MCP_MODE:
+# - off (default): 항상 제외 (불필요한 경고 방지)
+# - auto: Storybook MCP endpoint가 살아있을 때만 expected 대상에 포함
+# - on: 항상 포함
+get_storybook_mode() {
+  local mode="${OPENMANAGER_STORYBOOK_MCP_MODE:-off}"
+  mode="$(printf '%s' "$mode" | tr '[:upper:]' '[:lower:]')"
+  case "$mode" in
+    on|off|auto)
+      printf '%s\n' "$mode"
+      ;;
+    *)
+      printf 'off\n'
+      ;;
+  esac
+}
+
+read_storybook_url() {
+  local config_file="$1"
+  local url=""
+  url="$(
+    awk '
+      /^\[mcp_servers\.storybook\]$/ {
+        in_section = 1
+        next
+      }
+      /^\[mcp_servers\./ {
+        if (in_section) {
+          exit
+        }
+      }
+      in_section && /^[[:space:]]*url[[:space:]]*=/ {
+        line = $0
+        sub(/^[^"]*"/, "", line)
+        sub(/".*$/, "", line)
+        print line
+        exit
+      }
+    ' "$config_file"
+  )"
+  if [ -n "$url" ]; then
+    printf '%s\n' "$url"
+    return 0
+  fi
+  printf 'http://localhost:6006/mcp\n'
+}
+
+is_storybook_reachable() {
+  local url="$1"
+  if command -v curl >/dev/null 2>&1; then
+    if curl -sS -m 2 -o /dev/null "$url" >/dev/null 2>&1; then
+      return 0
+    fi
+  fi
+  return 1
+}
+
+adjust_expected_servers_for_storybook_mode() {
+  local mode=""
+  local include_storybook=1
+  local storybook_url=""
+  local server=""
+  local filtered=()
+
+  mode="$(get_storybook_mode)"
+  case "$mode" in
+    on)
+      include_storybook=1
+      ;;
+    off)
+      include_storybook=0
+      ;;
+    auto)
+      storybook_url="$(read_storybook_url "$CONFIG_FILE")"
+      if is_storybook_reachable "$storybook_url"; then
+        include_storybook=1
+      else
+        include_storybook=0
+      fi
+      ;;
+  esac
+
+  if [ "$include_storybook" -eq 1 ]; then
+    return 0
+  fi
+
+  for server in "${EXPECTED_SERVERS[@]}"; do
+    if [ "$server" != "storybook" ]; then
+      filtered+=("$server")
+    fi
+  done
+  EXPECTED_SERVERS=("${filtered[@]}")
+
+  echo "  - Storybook MCP expected list excluded (mode: $mode)"
+  echo "  - Storybook MCP expected list excluded (mode: $mode)" >> "$LOG_FILE"
+}
+
 echo -e "${BLUE}Codex MCP Health Check${NC}"
 echo -e "${BLUE}======================${NC}"
 echo "시작 시간: $TIMESTAMP"
@@ -188,6 +285,7 @@ NODE
 }
 
 load_expected_servers
+adjust_expected_servers_for_storybook_mode
 
 echo -e "${BLUE}Runtime Paths${NC}"
 echo "  - CODEX_HOME: $CODEX_HOME (${OPENMANAGER_CODEX_HOME_SOURCE})"

@@ -1,7 +1,7 @@
 import { getOTelHourlyData } from '@/data/otel-data';
 import {
-  type SyslogEntry,
   otelToSyslogView,
+  type SyslogEntry,
 } from '@/services/log-pipeline/otel-log-views';
 
 export type LogQuery = {
