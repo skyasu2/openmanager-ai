@@ -127,10 +127,13 @@ export const api = {
   // AI API
   ai: {
     getAnalysis: async (request: unknown): Promise<unknown> => {
-      const response = await fetch('/api/analyze', {
+      const response = await fetch('/api/ai/intelligent-monitoring', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(request),
+        body: JSON.stringify({
+          action: 'analyze',
+          ...((request as Record<string, unknown>) ?? {}),
+        }),
       });
       if (!response.ok) {
         throw new Error(`AI 분석 실패: ${response.status}`);
@@ -142,8 +145,15 @@ export const api = {
       type: string,
       interval = '30min'
     ): Promise<unknown> => {
-      const params = new URLSearchParams({ type, interval });
-      const response = await fetch(`/api/ai/prediction?${params}`);
+      const response = await fetch('/api/ai/intelligent-monitoring', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'predict',
+          metricType: type,
+          interval,
+        }),
+      });
       if (!response.ok) {
         throw new Error(`AI 예측 실패: ${response.status}`);
       }
@@ -151,35 +161,36 @@ export const api = {
     },
   },
 
-  // 데이터 생성기 API (dashboard 기반으로 변경)
+  // 데이터 생성기 API (servers-unified 기반)
   dataGenerator: {
     getStatus: async (): Promise<unknown> => {
-      // 🔄 dashboard API에서 서버 생성 상태 확인
-      const response = await fetch('/api/dashboard');
+      const response = await fetch('/api/servers-unified?limit=100');
       if (!response.ok) {
         throw new Error(`데이터 생성기 상태 조회 실패: ${response.status}`);
       }
 
       const data = await response.json();
+      const servers = Array.isArray(data.data) ? data.data : [];
+      const timestamp = data.timestamp || new Date().toISOString();
 
-      // 대시보드 데이터에서 생성기 상태 시뮬레이션
       return {
         status: 'active',
-        serversGenerated: data.servers?.length || 0,
-        lastUpdate: data.timestamp || new Date().toISOString(),
+        serversGenerated: servers.length,
+        lastUpdate: timestamp,
         mode: 'gcp-direct', // GCP 직접 연동 모드
       };
     },
 
     start: async (pattern?: string): Promise<unknown> => {
-      // 🔄 서버 생성 요청을 servers API로 전달
-      const response = await fetch('/api/servers', {
+      const response = await fetch('/api/system', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          action: 'generate',
-          pattern: pattern || 'default',
-          source: 'gcp-direct',
+          action: 'sync-data',
+          options: {
+            pattern: pattern || 'default',
+            source: 'gcp-direct',
+          },
         }),
       });
       if (!response.ok) {

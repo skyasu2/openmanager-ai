@@ -27,6 +27,22 @@ interface AnomalyResponse {
   anomalies: AnomalyData[];
 }
 
+interface MonitoringReportResponse {
+  success: boolean;
+  firingAlerts?: Array<{
+    id: string;
+    serverId: string;
+    instance: string;
+    metric: string;
+    value: number;
+    threshold: number;
+    severity: 'warning' | 'critical';
+    state: 'firing' | 'resolved';
+    firedAt: string;
+    labels?: Record<string, string>;
+  }>;
+}
+
 interface AnomalyFeedProps {
   className?: string;
   maxItems?: number;
@@ -37,7 +53,7 @@ interface AnomalyFeedProps {
 
 // Fetcher function
 const fetchAnomalies = async (): Promise<AnomalyResponse> => {
-  const res = await fetch('/api/ai/anomaly-detection', {
+  const res = await fetch('/api/monitoring/report', {
     headers: {
       'Cache-Control': 'no-cache',
     },
@@ -45,7 +61,41 @@ const fetchAnomalies = async (): Promise<AnomalyResponse> => {
   if (!res.ok) {
     throw new Error(`이상 징후 데이터 조회 실패: ${res.status}`);
   }
-  return res.json();
+
+  const report = (await res.json()) as MonitoringReportResponse;
+  if (!report.success) {
+    throw new Error('모니터링 리포트 응답이 올바르지 않습니다.');
+  }
+
+  const normalizeType = (metric: string): AnomalyData['type'] => {
+    const value = metric.toLowerCase();
+    if (value.includes('cpu')) return 'cpu';
+    if (value.includes('memory')) return 'memory';
+    if (value.includes('disk')) return 'disk';
+    if (value.includes('network')) return 'network';
+    if (value.includes('response')) return 'response_time';
+    return 'error_rate';
+  };
+
+  const anomalies: AnomalyData[] = (report.firingAlerts ?? []).map((alert) => {
+    return {
+      id: alert.id,
+      serverId: alert.serverId,
+      serverName: alert.instance || alert.serverId,
+      type: normalizeType(alert.metric),
+      severity: alert.severity === 'critical' ? 'critical' : 'medium',
+      message:
+        alert.labels?.summary || `${alert.metric} 임계치(${alert.threshold}) 초과`,
+      value: alert.value,
+      threshold: alert.threshold,
+      timestamp: alert.firedAt,
+      status: alert.state === 'resolved' ? 'resolved' : 'active',
+      source: 'metrics',
+      metric: alert.metric,
+    };
+  });
+
+  return { success: true, anomalies };
 };
 
 // Icon component

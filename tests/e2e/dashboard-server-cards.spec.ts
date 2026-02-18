@@ -151,4 +151,59 @@ test.describe('대시보드 서버 카드 테스트', () => {
 
     expect(tabCount).toBeGreaterThan(0);
   });
+
+  test('성능 분석 탭의 주요 버튼/컨트롤이 동작한다', async ({ page }) => {
+    const firstCard = page.locator(SERVER_CARD_SELECTOR).first();
+    await expect(firstCard).toBeVisible({
+      timeout: TIMEOUTS.MODAL_DISPLAY,
+    });
+    await firstCard.click();
+
+    const modal = page
+      .locator('dialog[open], [role="dialog"], [role="alertdialog"]')
+      .first();
+    await expect(modal).toBeVisible({ timeout: TIMEOUTS.MODAL_DISPLAY });
+
+    // 상위 탭: 성능 분석
+    const metricsTab = modal.getByRole('button', { name: '성능 분석' });
+    await expect(metricsTab).toBeVisible({ timeout: TIMEOUTS.DOM_UPDATE });
+    await metricsTab.click();
+
+    // 하위 뷰 토글: 기본 ↔ 분석
+    const advancedViewButton = modal.getByRole('button', { name: '분석' });
+    await expect(advancedViewButton).toBeVisible({
+      timeout: TIMEOUTS.DOM_UPDATE,
+    });
+    await advancedViewButton.click();
+
+    await expect(modal.getByText(/트렌드 분석/).first()).toBeVisible({
+      timeout: TIMEOUTS.NETWORK_REQUEST,
+    });
+
+    // 메트릭 버튼 순회
+    for (const metric of ['CPU', 'MEMORY', 'DISK', 'NETWORK']) {
+      const metricButton = modal.getByRole('button', { name: metric }).first();
+      await expect(metricButton).toBeVisible({ timeout: TIMEOUTS.DOM_UPDATE });
+      await metricButton.click();
+    }
+
+    // 시간 범위 선택 변경
+    const rangeSelect = modal.locator('select').first();
+    await expect(rangeSelect).toBeVisible({ timeout: TIMEOUTS.DOM_UPDATE });
+    await rangeSelect.selectOption('24h');
+
+    // 토글 옵션 클릭
+    const predictionToggle = modal.getByLabel('예측').first();
+    const anomaliesToggle = modal.getByLabel('이상탐지').first();
+    await predictionToggle.click();
+    await anomaliesToggle.click();
+
+    // 새로고침 버튼 동작
+    const refreshButton = modal.getByRole('button', { name: '새로고침' });
+    await expect(refreshButton).toBeVisible({ timeout: TIMEOUTS.DOM_UPDATE });
+    await refreshButton.click();
+
+    // 에러 배너가 뜨더라도 모달이 유지되어야 함 (치명 크래시 방지)
+    await expect(modal).toBeVisible({ timeout: TIMEOUTS.DOM_UPDATE });
+  });
 });

@@ -40,6 +40,28 @@ test.describe('대시보드 AI 사이드바 테스트', () => {
     await expect(input).toBeVisible({ timeout: TIMEOUTS.DOM_UPDATE });
   });
 
+  test('AI 스타터 프롬프트 카드가 입력창에 반영된다', async ({ page }) => {
+    await openAiSidebar(page);
+
+    const input = page.getByRole('textbox', { name: 'AI 질문 입력' });
+    await expect(input).toBeVisible({ timeout: TIMEOUTS.DOM_UPDATE });
+
+    for (const cardTitle of ['서버 상태 확인', '장애 분석', '성능 예측', '보고서 생성']) {
+      const card = page.getByRole('button', { name: new RegExp(cardTitle) }).first();
+      await expect(card).toBeVisible({ timeout: TIMEOUTS.DOM_UPDATE });
+      await card.click();
+
+      await expect
+        .poll(async () => {
+          const value = await input.inputValue();
+          return value.trim().length > 0;
+        })
+        .toBe(true);
+
+      await input.fill('');
+    }
+  });
+
   test('AI 사이드바 닫기 (ESC)', async ({ page }) => {
     const sidebar = await openAiSidebar(page);
 

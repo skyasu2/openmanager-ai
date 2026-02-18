@@ -98,7 +98,7 @@ class LoadTester {
 
     try {
       // 1. 시스템 상태 확인
-      const statusResult = await this.makeRequest('/api/system/status');
+      const statusResult = await this.makeRequest('/api/system');
 
       // 2. 서버 생성 요청 (실제 가능한 엔드포인트)
       const startResult = await this.makeRequest('/api/servers/next', 'POST', {
@@ -164,7 +164,7 @@ class LoadTester {
   }
 
   /**
-   * 📊 데이터 생성 기능 테스트 (GET 기반)
+   * 📊 대시보드 데이터 플로우 테스트 (GET 기반)
    */
   async testDataGenerator(userId = 1, pattern = 'normal') {
     const testName = `DataGen_User${userId}_${pattern}`;
@@ -172,23 +172,13 @@ class LoadTester {
 
     try {
       // 1. 기본 메트릭 데이터 조회
-      const metricsResult = await this.makeRequest(
-        '/api/data-generator?type=metrics&count=10'
-      );
+      const metricsResult = await this.makeRequest('/api/metrics');
 
-      // 2. 서버 데이터 조회 (다양한 타입 테스트)
-      const typeMap = {
-        normal: 'servers',
-        'high-load': 'logs',
-        maintenance: 'traffic',
-      };
-      const dataType = typeMap[pattern] || 'metrics';
-      const typeResult = await this.makeRequest(
-        `/api/data-generator?type=${dataType}&count=5`
-      );
+      // 2. 서버 데이터 조회
+      const typeResult = await this.makeRequest('/api/servers-unified?limit=5');
 
       // 3. 대시보드 데이터 확인
-      const dashboardResult = await this.makeRequest('/api/dashboard?limit=5');
+      const dashboardResult = await this.makeRequest('/api/monitoring/report');
 
       const totalTime =
         metricsResult.responseTime +
@@ -201,7 +191,9 @@ class LoadTester {
         pattern,
         timestamp: new Date().toISOString(),
         success:
-          metricsResult.statusCode === 200 && typeResult.statusCode === 200,
+          metricsResult.statusCode === 200 &&
+          typeResult.statusCode === 200 &&
+          dashboardResult.statusCode === 200,
         totalResponseTime: totalTime,
         steps: {
           metrics: {
@@ -222,7 +214,7 @@ class LoadTester {
           dashboardResponse: dashboardResult.data
             ? JSON.parse(dashboardResult.data)
             : null,
-          dataType: dataType,
+          dataType: pattern,
         },
       };
 

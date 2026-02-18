@@ -1,7 +1,7 @@
 /**
  * 🧪 OpenManager AI - 핵심 API 엔드포인트 통합 테스트
  *
- * @description 주요 API 엔드포인트들의 기능, 성능, 스키마 검증
+ * @description 주요 API 엔드포인트들의 모킹 기반 계약/성능/스키마 검증
  * @author Claude Code (Test Automation Specialist)
  * @created 2025-08-20
  * @tdd-coverage 100%
@@ -72,28 +72,64 @@ const MetricsResponseSchema = z.object({
 });
 
 const SystemStatusResponseSchema = z.object({
-  success: z.boolean(),
-  timestamp: z.number(),
-  source: z.string(),
-  state: z.object({
-    isRunning: z.boolean(),
-    activeUsers: z.number(),
-    version: z.string(),
-    environment: z.string(),
-  }),
+  isRunning: z.boolean(),
+  userCount: z.number(),
+  environment: z.string(),
+  timestamp: z.string(),
 });
 
 const DashboardResponseSchema = z.object({
   success: z.boolean(),
-  data: z.object({
-    success: z.boolean(),
-    data: z.object({
-      servers: z.record(z.string(), z.any()),
-      stats: z.object({
-        totalServers: z.number(),
-        onlineServers: z.number(),
-      }),
+  health: z.object({
+    score: z.number(),
+    grade: z.string(),
+  }),
+  aggregated: z.object({
+    statusCounts: z.object({
+      total: z.number(),
+      online: z.number(),
+      warning: z.number(),
+      critical: z.number(),
+      offline: z.number(),
     }),
+    avgCpu: z.number(),
+    avgMemory: z.number(),
+    avgDisk: z.number(),
+    avgNetwork: z.number(),
+  }),
+  firingAlerts: z.array(
+    z.object({
+      id: z.string(),
+      serverId: z.string(),
+      metric: z.string(),
+      severity: z.string(),
+      value: z.number(),
+      threshold: z.number(),
+      firedAt: z.string(),
+      state: z.string(),
+      instance: z.string(),
+      labels: z.record(z.string(), z.string()),
+      duration: z.number(),
+    })
+  ),
+  resolvedAlerts: z.array(
+    z.object({
+      id: z.string(),
+      serverId: z.string(),
+      metric: z.string(),
+      severity: z.string(),
+      value: z.number(),
+      threshold: z.number(),
+      firedAt: z.string(),
+      state: z.string(),
+      instance: z.string(),
+      labels: z.record(z.string(), z.string()),
+      duration: z.number(),
+    })
+  ),
+  metadata: z.object({
+    dataSource: z.string(),
+    processingTime: z.number(),
   }),
 });
 
@@ -141,6 +177,8 @@ async function testApiEndpoint(
   return { data, responseTime, status: response.status };
 }
 
+// 이 파일은 네트워크 실호출이 아닌 모킹 기반 계약 검증입니다.
+// 실제 배포 환경 검증은 Playwright Vercel 테스트가 담당합니다.
 // 통합 테스트는 CI 환경 또는 명시적 설정 시에만 실행
 const shouldRunIntegration =
   process.env.CI === 'true' || process.env.RUN_INTEGRATION_TESTS === 'true';
@@ -252,7 +290,7 @@ describe.skipIf(!shouldRunIntegration)(
           }
 
           // System status endpoint
-          if (url.includes('/api/system/status')) {
+          if (url.includes('/api/system')) {
             return Promise.resolve({
               ok: true,
               status: 200,
@@ -260,21 +298,17 @@ describe.skipIf(!shouldRunIntegration)(
               headers: new Headers({ 'Content-Type': 'application/json' }),
               json: () =>
                 Promise.resolve({
-                  success: true,
-                  timestamp: Date.now(),
-                  source: 'integration-test',
-                  state: {
-                    isRunning: true,
-                    activeUsers: 5,
-                    version: '1.0.0',
-                    environment: 'development',
-                  },
+                  isRunning: true,
+                  isStarting: false,
+                  userCount: 5,
+                  environment: 'development',
+                  timestamp: new Date().toISOString(),
                 }),
             } as Response);
           }
 
           // Servers endpoint
-          if (url.includes('/api/servers/all')) {
+          if (url.includes('/api/servers-unified')) {
             return Promise.resolve({
               ok: true,
               status: 200,
@@ -297,7 +331,7 @@ describe.skipIf(!shouldRunIntegration)(
           }
 
           // Dashboard endpoint
-          if (url.includes('/api/dashboard')) {
+          if (url.includes('/api/monitoring/report')) {
             return Promise.resolve({
               ok: true,
               status: 200,
@@ -306,15 +340,43 @@ describe.skipIf(!shouldRunIntegration)(
               json: () =>
                 Promise.resolve({
                   success: true,
-                  data: {
-                    success: true,
-                    data: {
-                      servers: {},
-                      stats: {
-                        totalServers: 10,
-                        onlineServers: 8,
-                      },
+                  timestamp: new Date().toISOString(),
+                  health: {
+                    score: 91,
+                    grade: 'A',
+                  },
+                  aggregated: {
+                    statusCounts: {
+                      total: 10,
+                      online: 8,
+                      warning: 1,
+                      critical: 1,
+                      offline: 0,
                     },
+                    avgCpu: 45.5,
+                    avgMemory: 67.3,
+                    avgDisk: 23.1,
+                    avgNetwork: 18.2,
+                  },
+                  firingAlerts: [
+                    {
+                      id: 'alert-1',
+                      serverId: 'server-9',
+                      instance: 'test-9.local',
+                      labels: { summary: 'CPU high' },
+                      metric: 'system.cpu.utilization',
+                      value: 92,
+                      threshold: 85,
+                      severity: 'critical',
+                      state: 'firing',
+                      firedAt: new Date().toISOString(),
+                      duration: 120,
+                    },
+                  ],
+                  resolvedAlerts: [],
+                  metadata: {
+                    dataSource: 'integration-test',
+                    processingTime: 15,
                   },
                 }),
             } as Response);
@@ -393,24 +455,20 @@ describe.skipIf(!shouldRunIntegration)(
         expect(result.responseTime).toBeLessThan(1000); // 1초 미만
       });
 
-      it('GET /api/system/status - 시스템 상태 API 정상 동작', async () => {
-        const result = await testApiEndpoint(
-          '/api/system/status',
-          200,
-          SystemStatusResponseSchema
-        );
+      it('GET /api/system - 시스템 상태 API 정상 동작', async () => {
+        const result = await testApiEndpoint('/api/system', 200, SystemStatusResponseSchema);
 
-        expect(result.data.success).toBe(true);
-        expect(result.data.state.activeUsers).toBeGreaterThanOrEqual(0);
-        expect(result.data.state.environment).toBe('development');
+        expect(result.data.isRunning).toBe(true);
+        expect(result.data.userCount).toBeGreaterThanOrEqual(0);
+        expect(result.data.environment).toBe('development');
         expect(result.responseTime).toBeLessThan(1000); // 1초 미만
       });
     });
 
     describe('🖥️ 서버 관리 API', () => {
-      it('GET /api/servers/all - 서버 목록 API 정상 동작', async () => {
+      it('GET /api/servers-unified - 서버 목록 API 정상 동작', async () => {
         const result = await testApiEndpoint(
-          '/api/servers/all',
+          '/api/servers-unified',
           200,
           ServersResponseSchema
         );
@@ -433,17 +491,16 @@ describe.skipIf(!shouldRunIntegration)(
     });
 
     describe('📈 대시보드 API', () => {
-      it('GET /api/dashboard - 대시보드 데이터 정상 동작', async () => {
+      it('GET /api/monitoring/report - 대시보드 데이터 정상 동작', async () => {
         const result = await testApiEndpoint(
-          '/api/dashboard',
+          '/api/monitoring/report',
           200,
           DashboardResponseSchema
         );
 
         expect(result.data.success).toBe(true);
-        expect(result.data.data.success).toBe(true);
-        expect(typeof result.data.data.data.servers).toBe('object');
-        expect(result.data.data.data.stats.totalServers).toBeGreaterThan(0);
+        expect(result.data.aggregated.statusCounts.total).toBeGreaterThan(0);
+        expect(result.data.health.score).toBeGreaterThan(0);
         expect(result.responseTime).toBeLessThan(2000); // 2초 미만
       });
     });
@@ -516,9 +573,9 @@ describe.skipIf(!shouldRunIntegration)(
         const endpoints = [
           '/api/health',
           '/api/metrics',
-          '/api/servers/all',
-          '/api/system/status',
-          '/api/dashboard',
+          '/api/servers-unified',
+          '/api/system',
+          '/api/monitoring/report',
         ];
 
         const results = await Promise.all(
@@ -571,7 +628,7 @@ describe.skipIf(!shouldRunIntegration)(
     describe('🔍 데이터 무결성 테스트', () => {
       it('서버 목록과 메트릭 데이터 일관성 확인', async () => {
         const [serversResult, metricsResult] = await Promise.all([
-          testApiEndpoint('/api/servers/all', 200),
+          testApiEndpoint('/api/servers-unified', 200),
           testApiEndpoint('/api/metrics', 200),
         ]);
 

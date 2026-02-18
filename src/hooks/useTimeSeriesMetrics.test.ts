@@ -152,12 +152,11 @@ describe('🎯 useTimeSeriesMetrics - 시계열 메트릭 훅 테스트', () => 
       });
 
       const calledUrl = mockFetch.mock.calls[0][0];
-      expect(calledUrl).toContain('/api/ai/raw-metrics');
-      expect(calledUrl).toContain('serverId=server-1');
-      expect(calledUrl).toContain('metric=cpu');
+      expect(calledUrl).toContain('/api/servers/server-1');
+      expect(calledUrl).toContain('history=true');
       expect(calledUrl).toContain('range=6h'); // default
-      expect(calledUrl).toContain('includePrediction=true'); // default
-      expect(calledUrl).toContain('includeAnomalies=true'); // default
+      expect(calledUrl).toContain('format=enhanced');
+      expect(calledUrl).toContain('include_metrics=true');
     });
 
     it('커스텀 range로 API를 호출한다', async () => {
@@ -180,11 +179,11 @@ describe('🎯 useTimeSeriesMetrics - 시계열 메트릭 훅 테스트', () => 
       expect(calledUrl).toContain('range=24h');
     });
 
-    it('includePrediction=false로 API를 호출할 수 있다', async () => {
+    it('includePrediction=false일 때도 기본 히스토리 데이터 조회가 가능하다', async () => {
       const mockData = createMockTimeSeriesData({ prediction: undefined });
       mockFetch.mockResolvedValueOnce(createSuccessResponse(mockData));
 
-      renderHook(() =>
+      const { result } = renderHook(() =>
         useTimeSeriesMetrics({
           serverId: 'server-1',
           metric: 'cpu',
@@ -193,18 +192,19 @@ describe('🎯 useTimeSeriesMetrics - 시계열 메트릭 훅 테스트', () => 
       );
 
       await waitFor(() => {
-        expect(mockFetch).toHaveBeenCalled();
+        expect(result.current.isLoading).toBe(false);
       });
 
-      const calledUrl = mockFetch.mock.calls[0][0];
-      expect(calledUrl).toContain('includePrediction=false');
+      expect(result.current.data).toBeTruthy();
+      expect(result.current.data?.prediction).toBeUndefined();
+      expect(result.current.error).toBeNull();
     });
 
-    it('includeAnomalies=false로 API를 호출할 수 있다', async () => {
+    it('includeAnomalies=false일 때 anomalies를 비활성화한다', async () => {
       const mockData = createMockTimeSeriesData({ anomalies: undefined });
       mockFetch.mockResolvedValueOnce(createSuccessResponse(mockData));
 
-      renderHook(() =>
+      const { result } = renderHook(() =>
         useTimeSeriesMetrics({
           serverId: 'server-1',
           metric: 'cpu',
@@ -213,11 +213,10 @@ describe('🎯 useTimeSeriesMetrics - 시계열 메트릭 훅 테스트', () => 
       );
 
       await waitFor(() => {
-        expect(mockFetch).toHaveBeenCalled();
+        expect(result.current.isLoading).toBe(false);
       });
 
-      const calledUrl = mockFetch.mock.calls[0][0];
-      expect(calledUrl).toContain('includeAnomalies=false');
+      expect(result.current.data?.anomalies).toBeUndefined();
     });
   });
 
@@ -554,7 +553,8 @@ describe('🎯 useTimeSeriesMetrics - 시계열 메트릭 훅 테스트', () => 
         });
 
         const calledUrl = mockFetch.mock.calls[0][0];
-        expect(calledUrl).toContain(`range=${range}`);
+        const expectedRange = range === '7d' ? '168h' : range;
+        expect(calledUrl).toContain(`range=${expectedRange}`);
       });
     });
   });

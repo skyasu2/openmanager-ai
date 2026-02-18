@@ -188,20 +188,15 @@ export const PROCESS_CONFIGS: ProcessConfig[] = [
       systemLogger.system('🧠 AI 분석 엔진 시작');
 
       try {
-        // MCP 오케스트레이터 초기화 확인
-        const response = await fetch('/api/ai/mcp?action=health', {
+        // Cloud Run AI 헬스체크
+        const response = await fetch('/api/health?service=ai', {
           method: 'GET',
         });
 
         if (!response.ok) {
-          // AI 엔진 초기화 시도
-          const initResponse = await fetch('/api/ai/mcp', {
+          // 웜업 엔드포인트로 초기화 트리거
+          const initResponse = await fetch('/api/ai/wake-up', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              query: '시스템 초기화',
-              context: { action: '_initialize' },
-            }),
           });
 
           if (!initResponse.ok) {
@@ -219,16 +214,8 @@ export const PROCESS_CONFIGS: ProcessConfig[] = [
       systemLogger.system('🧠 AI 분석 엔진 중지');
 
       try {
-        // AI 에이전트 비활성화 시도
-        await fetch('/api/ai/mcp', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            query: '시스템 종료',
-            context: { action: 'shutdown' },
-          }),
-        });
-
+        // 상태 확인만 수행 (서버리스 환경에서는 별도 종료 불필요)
+        await fetch('/api/health?service=ai', { method: 'GET' });
         systemLogger.system('✅ AI 분석 엔진 중지 완료');
       } catch (error) {
         systemLogger.warn('AI 분석 엔진 중지 중 오류 (무시됨):', error);
@@ -236,7 +223,7 @@ export const PROCESS_CONFIGS: ProcessConfig[] = [
     },
     healthCheck: async () => {
       try {
-        const response = await fetch('/api/ai/mcp?action=health', {
+        const response = await fetch('/api/health?service=ai', {
           method: 'GET',
         });
         return response.ok;

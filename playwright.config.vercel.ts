@@ -66,6 +66,20 @@ export default defineConfig({
         },
       },
     },
+    {
+      name: 'mobile-chromium',
+      use: {
+        ...devices['Pixel 5'],
+        channel: process.env.PLAYWRIGHT_CHANNEL || 'chromium',
+        launchOptions: {
+          args: [
+            '--no-sandbox',
+            '--disable-setuid-sandbox',
+            '--disable-dev-shm-usage',
+          ],
+        },
+      },
+    },
   ],
 
   /* webServer 설정 제거 - Vercel URL 직접 테스트 */

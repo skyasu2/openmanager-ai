@@ -7,6 +7,7 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
+import { z } from 'zod';
 import { logger } from '@/lib/logging';
 
 // ============================================================================
@@ -58,6 +59,205 @@ export interface UseTimeSeriesMetricsResult {
   refetch: () => Promise<void>;
 }
 
+const rangeToServerRange: Record<
+  NonNullable<UseTimeSeriesMetricsOptions['range']>,
+  string
+> = {
+  '1h': '1h',
+  '6h': '6h',
+  '24h': '24h',
+  '7d': '168h',
+};
+
+const legacyTimeSeriesResponseSchema = z.object({
+  success: z.boolean(),
+  data: z
+    .object({
+      serverId: z.string(),
+      serverName: z.string(),
+      metric: z.string(),
+      history: z.array(
+        z.object({
+          timestamp: z.string(),
+          value: z.number(),
+        })
+      ),
+      prediction: z
+        .array(
+          z.object({
+            timestamp: z.string(),
+            predicted: z.number(),
+            upper: z.number(),
+            lower: z.number(),
+          })
+        )
+        .optional(),
+      anomalies: z
+        .array(
+          z.object({
+            startTime: z.string(),
+            endTime: z.string(),
+            severity: z.enum(['low', 'medium', 'high', 'critical']),
+            metric: z.string(),
+            description: z.string(),
+          })
+        )
+        .optional(),
+    })
+    .optional(),
+  message: z.string().optional(),
+});
+
+const serverHistoryResponseSchema = z.object({
+  success: z.boolean(),
+  data: z
+    .object({
+      server_info: z
+        .object({
+          id: z.string().optional(),
+          hostname: z.string().optional(),
+        })
+        .optional(),
+      history: z
+        .object({
+          data_points: z
+            .array(
+              z.object({
+                timestamp: z.string(),
+                metrics: z
+                  .object({
+                    cpu_usage: z.number().optional(),
+                    memory_usage: z.number().optional(),
+                    disk_usage: z.number().optional(),
+                    network_in: z.number().optional(),
+                    network_out: z.number().optional(),
+                  })
+                  .passthrough(),
+              })
+            )
+            .optional(),
+        })
+        .optional(),
+      alerts: z
+        .array(
+          z.object({
+            metric: z.string().optional(),
+            severity: z.string().optional(),
+            message: z.string().optional(),
+            firedAt: z.string().optional(),
+            resolvedAt: z.string().optional(),
+          })
+        )
+        .optional(),
+    })
+    .optional(),
+  message: z.string().optional(),
+});
+
+function mapMetricValue(
+  metric: UseTimeSeriesMetricsOptions['metric'],
+  metrics: {
+    cpu_usage?: number;
+    memory_usage?: number;
+    disk_usage?: number;
+    network_in?: number;
+    network_out?: number;
+  }
+): number {
+  switch (metric) {
+    case 'cpu':
+      return metrics.cpu_usage ?? 0;
+    case 'memory':
+      return metrics.memory_usage ?? 0;
+    case 'disk':
+      return metrics.disk_usage ?? 0;
+    case 'network': {
+      const inValue = metrics.network_in ?? 0;
+      const outValue = metrics.network_out ?? 0;
+      return Math.min(100, Math.max(0, inValue + outValue));
+    }
+    default:
+      return 0;
+  }
+}
+
+function normalizeAlertSeverity(value?: string): AnomalyDataPoint['severity'] {
+  switch (value) {
+    case 'critical':
+      return 'critical';
+    case 'high':
+      return 'high';
+    case 'warning':
+    case 'medium':
+      return 'medium';
+    default:
+      return 'low';
+  }
+}
+
+function normalizeToTimeSeriesData(
+  payload: unknown,
+  options: {
+    serverId: string;
+    metric: UseTimeSeriesMetricsOptions['metric'];
+    includePrediction: boolean;
+    includeAnomalies: boolean;
+  }
+): TimeSeriesData {
+  const legacyParsed = legacyTimeSeriesResponseSchema.safeParse(payload);
+  if (
+    legacyParsed.success &&
+    legacyParsed.data.success &&
+    legacyParsed.data.data
+  ) {
+    return {
+      ...legacyParsed.data.data,
+      prediction: options.includePrediction
+        ? legacyParsed.data.data.prediction
+        : undefined,
+    };
+  }
+
+  const serverParsed = serverHistoryResponseSchema.safeParse(payload);
+  if (
+    serverParsed.success &&
+    serverParsed.data.success &&
+    serverParsed.data.data
+  ) {
+    const serverData = serverParsed.data.data;
+    const historyPoints = serverData.history?.data_points ?? [];
+    const history = historyPoints.map((point) => ({
+      timestamp: point.timestamp,
+      value: mapMetricValue(options.metric, point.metrics),
+    }));
+
+    const anomalies = options.includeAnomalies
+      ? (serverData.alerts ?? []).map((alert) => {
+          const startTime = alert.firedAt ?? new Date().toISOString();
+          const endTime = alert.resolvedAt ?? startTime;
+          return {
+            startTime,
+            endTime,
+            severity: normalizeAlertSeverity(alert.severity),
+            metric: alert.metric ?? options.metric,
+            description:
+              alert.message ?? `${options.metric.toUpperCase()} 이상치 감지`,
+          };
+        })
+      : undefined;
+
+    return {
+      serverId: serverData.server_info?.id ?? options.serverId,
+      serverName: serverData.server_info?.hostname ?? options.serverId,
+      metric: options.metric,
+      history,
+      anomalies,
+    };
+  }
+
+  throw new Error('시계열 API 응답 형식이 올바르지 않습니다.');
+}
+
 // ============================================================================
 // Hook
 // ============================================================================
@@ -88,16 +288,14 @@ export function useTimeSeriesMetrics({
 
       try {
         const params = new URLSearchParams({
-          serverId,
-          metric,
-          range,
-          includeHistory: 'true',
-          includePrediction: includePrediction.toString(),
-          includeAnomalies: includeAnomalies.toString(),
+          history: 'true',
+          range: rangeToServerRange[range],
+          format: 'enhanced',
+          include_metrics: 'true',
         });
 
         const response = await fetch(
-          `/api/ai/raw-metrics?${params.toString()}`,
+          `/api/servers/${encodeURIComponent(serverId)}?${params.toString()}`,
           {
             signal, // 🔧 AbortController signal 전달
           }
@@ -119,7 +317,14 @@ export function useTimeSeriesMetrics({
           throw new Error(result.message || '데이터 조회 실패');
         }
 
-        setData(result.data);
+        setData(
+          normalizeToTimeSeriesData(result, {
+            serverId,
+            metric,
+            includePrediction,
+            includeAnomalies,
+          })
+        );
       } catch (err) {
         // 🔧 AbortError는 정상적인 cleanup이므로 무시
         if (err instanceof Error && err.name === 'AbortError') {
