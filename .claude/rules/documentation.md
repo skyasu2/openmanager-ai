@@ -9,12 +9,12 @@
 | 범위 | 한도 | 비고 |
 |------|:----:|------|
 | 전체 활성 문서 | 55개 | `docs/archived/` 제외 |
-| reference/architecture/* | 20개 | `docs/reference/architecture/**` |
-| development/* | 12개 | 개발 가이드 |
-| guides/* | 12개 | 표준/테스트/AI 가이드 |
-| vibe-coding/* | 8개 | AI 도구 문서 |
-| troubleshooting/* | 5개 | 문제해결 |
-| root (docs/) | 5개 | README, QUICK-START 등 |
+| reference/architecture/* | 18개 | 실사용 맞춤 (20→18) |
+| development/* | 14개 | 가장 활발, 여유 확보 (12→14) |
+| guides/* | 7개 | 실사용자 없음, 실사용 맞춤 (12→7) |
+| vibe-coding/* | 8개 | AI 도구 문서 (유지) |
+| troubleshooting/* | 3개 | 실사용 맞춤 (5→3) |
+| root (docs/) | 5개 | README, QUICK-START 등 (유지) |
 
 ## 2) Metadata Schema (Changed Docs Hard Gate)
 

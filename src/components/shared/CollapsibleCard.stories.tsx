@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
-import { fn } from 'storybook/test';
 import { Activity, Server, Settings } from 'lucide-react';
+import { fn } from 'storybook/test';
 import CollapsibleCard from './CollapsibleCard';
 
 const meta = {

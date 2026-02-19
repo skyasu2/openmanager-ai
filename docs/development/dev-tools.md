@@ -4,7 +4,7 @@
 > Owner: dev-experience
 > Status: Active
 > Doc type: Reference
-> Last reviewed: 2026-02-16
+> Last reviewed: 2026-02-19
 > Canonical: docs/development/dev-tools.md
 > Tags: tooling,nodejs,biome
 
@@ -78,6 +78,26 @@ npm run test:coverage  # 커버리지
 ```bash
 npm run test:e2e           # 로컬 E2E
 npm run test:e2e:critical  # 핵심 테스트만
+```
+
+### Storybook (Component Docs)
+
+스토리북 운영 주체는 **Claude Code**를 기본으로 사용합니다.
+
+```bash
+# 개발 미리보기 서버
+npm run storybook
+
+# CI/상태 확인 기준
+npm run storybook:build
+
+# 실행 중 응답 확인
+curl -I http://127.0.0.1:6006
+```
+
+```bash
+# Codex/Gemini에서 Storybook 작업이 필요할 때
+bash scripts/ai/agent-bridge.sh --to claude --mode query "스토리북 실행/점검 진행"
 ```
 
 ## Git Hooks

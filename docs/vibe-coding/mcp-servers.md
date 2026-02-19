@@ -4,7 +4,7 @@
 > Owner: dev-experience
 > Status: Active Supporting
 > Doc type: Reference
-> Last reviewed: 2026-02-17
+> Last reviewed: 2026-02-19
 > Canonical: docs/vibe-coding/mcp-servers.md
 > Tags: vibe-coding,mcp,configuration
 
@@ -33,7 +33,7 @@
 | **playwright** | E2E 테스트, 브라우저 자동화 | `@playwright/mcp` | 중간 |
 | **next-devtools** | Next.js 런타임 오류/로그/메타데이터 조회 | `next-devtools-mcp` | 중간 |
 | **github** | 저장소/PR 관리 | `@modelcontextprotocol/server-github` | 중간 |
-| **storybook** | 컴포넌트 문서 조회, 스토리 기반 작업 | `@storybook/addon-mcp` (Storybook MCP) | 중간 |
+| **storybook** | 컴포넌트 문서 조회, 스토리 기반 작업 (Claude Code 전담 운영) | `@storybook/addon-mcp` (Storybook MCP) | 중간 |
 
 ---
 
@@ -418,6 +418,37 @@ mcp__github__get_file_contents("owner", "repo", "path")
 
 ---
 
+### Storybook (컴포넌트 문서/미리보기) - 우선순위: 중간
+
+스토리북 운영은 **Claude Code 전담**으로 관리합니다.
+
+Codex/Gemini에서 Storybook 작업이 필요하면 `agent-bridge.sh --to claude`로 위임합니다.
+
+**운영 원칙**:
+- Storybook MCP 사용 전 dev server(`http://127.0.0.1:6006`)를 먼저 실행
+- `.storybook/main.ts`에 `@storybook/addon-mcp` 설정을 유지
+- 상태 점검 기본 지표는 `storybook:build` 성공 여부
+- `--smoke-test`는 Storybook `10.2.x`에서 포트 관련 오류가 발생할 수 있어 보조 지표로 사용
+
+**권장 명령**:
+```bash
+# 1) dev server 실행 (Claude Code 운영)
+npm run storybook
+
+# 2) 정적 빌드 검증 (CI/문서화 기준)
+npm run storybook:build
+
+# 3) dev server 응답 확인 (실행 중일 때)
+curl -I http://127.0.0.1:6006
+```
+
+**브리지 호출 예시**:
+```bash
+bash scripts/ai/agent-bridge.sh --to claude --mode query "스토리북 실행 후 상태 확인 및 기본 스토리 점검"
+```
+
+---
+
 ## 신규 설정 가이드
 
 ### 1. .mcp.json 생성
@@ -512,4 +543,4 @@ Claude: [context7, supabase 등 사용 가능 여부 표시]
 
 ---
 
-_Last Updated: 2026-02-15_
+_Last Updated: 2026-02-19_
