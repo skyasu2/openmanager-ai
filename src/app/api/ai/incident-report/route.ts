@@ -11,7 +11,14 @@
 
 import { type NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
-import { getDefaultTimeout } from '@/config/ai-proxy.config';
+import {
+  clampTimeout,
+  getDefaultTimeout,
+  getFunctionTimeoutReserveMs,
+  getMaxFunctionDurationMs,
+  getMaxTimeout,
+  getMinTimeout,
+} from '@/config/ai-proxy.config';
 import {
   type CacheableAIResponse,
   withAICache,
@@ -107,6 +114,42 @@ const NO_STORE_RESPONSE_HEADERS = {
   'CDN-Cache-Control': 'no-store',
   'Vercel-CDN-Cache-Control': 'no-store',
 } as const;
+
+const INCIDENT_REPORT_ENDPOINT: 'incident-report' = 'incident-report';
+const ATTEMPT_GUARD_MS = 250;
+const DIRECT_RETRY_MIN_BUFFER_MS = 1_000;
+
+function getIncidentRetryTimeout(
+  preferredTimeout: number,
+  consumedMs: number,
+  minBufferMs = 0
+): { retryAllowed: boolean; timeoutMs: number } {
+  const routeBudgetMs = getMaxFunctionDurationMs();
+  const budgetReserveMs = getFunctionTimeoutReserveMs();
+  const projectedRemainingMs = Math.max(
+    0,
+    routeBudgetMs - budgetReserveMs - consumedMs - ATTEMPT_GUARD_MS
+  );
+
+  if (
+    projectedRemainingMs <
+    getMinTimeout(INCIDENT_REPORT_ENDPOINT) + minBufferMs
+  ) {
+    return { retryAllowed: false, timeoutMs: 0 };
+  }
+
+  const maxTimeoutMs = Math.min(
+    preferredTimeout,
+    projectedRemainingMs,
+    getMaxTimeout(INCIDENT_REPORT_ENDPOINT)
+  );
+  const clampedTimeout = clampTimeout(INCIDENT_REPORT_ENDPOINT, maxTimeoutMs);
+
+  return {
+    retryAllowed: true,
+    timeoutMs: clampedTimeout,
+  };
+}
 
 function withNoStoreHeaders(
   headers: Record<string, string> = {}
@@ -271,17 +314,27 @@ async function postHandler(request: NextRequest) {
     // 2. 캐시를 통한 Cloud Run 프록시 호출 (Circuit Breaker + Fallback + Cache)
     debug.info(`[incident-report] Proxying action '${action}' to Cloud Run...`);
 
-    const defaultTimeout = getDefaultTimeout('incident-report');
-    const directRetryTimeout = Math.min(55000, Math.max(defaultTimeout, 45000));
+    const defaultTimeout = getDefaultTimeout(INCIDENT_REPORT_ENDPOINT);
+    const maxRequestTimeout = Math.max(
+      500,
+      getMaxFunctionDurationMs() - getFunctionTimeoutReserveMs()
+    );
+    const effectiveDefaultTimeout = clampTimeout(
+      INCIDENT_REPORT_ENDPOINT,
+      Math.min(defaultTimeout, maxRequestTimeout)
+    );
+    const getSecondAttemptPlan = () =>
+      getIncidentRetryTimeout(effectiveDefaultTimeout, effectiveDefaultTimeout);
 
     const fetchCloudRunIncidentReport = async (
-      timeout = defaultTimeout
+      timeout = effectiveDefaultTimeout
     ): Promise<CacheableAIResponse> => {
       const cloudRunResult = await proxyToCloudRun({
         path: '/api/ai/incident-report',
         method: 'POST',
         body,
         timeout,
+        endpoint: INCIDENT_REPORT_ENDPOINT,
       });
 
       if (!cloudRunResult.success || !cloudRunResult.data) {
@@ -326,12 +379,14 @@ async function postHandler(request: NextRequest) {
       };
     };
 
-    const fetchIncidentReport = async (): Promise<CacheableAIResponse> => {
+    const fetchIncidentReport = async (
+      timeout = effectiveDefaultTimeout
+    ): Promise<CacheableAIResponse> => {
       const result = await executeWithCircuitBreakerAndFallback<
         Record<string, unknown>
       >(
         'incident-report',
-        () => fetchCloudRunIncidentReport(defaultTimeout),
+        () => fetchCloudRunIncidentReport(timeout),
         () =>
           createFallbackResponse('incident-report') as Record<string, unknown>
       );
@@ -372,24 +427,30 @@ async function postHandler(request: NextRequest) {
       );
 
       await new Promise((resolve) => setTimeout(resolve, 250));
-      responseData = (await fetchIncidentReport()) as Record<string, unknown>;
-      isFallback = isFallbackPayload(responseData);
+      const secondAttemptPlan = getSecondAttemptPlan();
 
-      if (isFallback) {
-        attemptedDirectRetry = true;
+      if (!secondAttemptPlan.retryAllowed) {
         debug.info(
-          '[incident-report] Generate fallback persisted. Trying direct Cloud Run retry...'
+          '[incident-report] Direct Cloud Run retry skipped due insufficient route budget'
+        );
+        responseData = {
+          ...responseData,
+          _fallbackReason: 'Route budget limit reached',
+        };
+        isFallback = true;
+      } else {
+        debug.info(
+          '[incident-report] Generate fallback persisted. Trying second Cloud Run retry...'
         );
 
         try {
-          responseData = (await fetchCloudRunIncidentReport(
-            directRetryTimeout
+          responseData = (await fetchIncidentReport(
+            secondAttemptPlan.timeoutMs
           )) as Record<string, unknown>;
           isFallback = isFallbackPayload(responseData);
-          didDirectRetry = !isFallback;
         } catch (directRetryError) {
           debug.error(
-            '[incident-report] Direct Cloud Run retry failed:',
+            '[incident-report] Second Cloud Run retry failed:',
             directRetryError
           );
           responseData = {
@@ -397,6 +458,44 @@ async function postHandler(request: NextRequest) {
             _fallbackReason: getErrorMessage(directRetryError),
           };
           isFallback = true;
+        }
+
+        if (isFallback) {
+          const directRetryPlan = getIncidentRetryTimeout(
+            secondAttemptPlan.timeoutMs,
+            effectiveDefaultTimeout + secondAttemptPlan.timeoutMs,
+            DIRECT_RETRY_MIN_BUFFER_MS
+          );
+
+          if (directRetryPlan.retryAllowed) {
+            debug.info(
+              '[incident-report] Generate fallback persisted. Trying direct Cloud Run retry...'
+            );
+            attemptedDirectRetry = true;
+            try {
+              responseData = (await fetchCloudRunIncidentReport(
+                directRetryPlan.timeoutMs
+              )) as Record<string, unknown>;
+              isFallback = isFallbackPayload(responseData);
+              didDirectRetry = !isFallback;
+            } catch (directRetryError) {
+              debug.error(
+                '[incident-report] Direct Cloud Run retry failed:',
+                directRetryError
+              );
+              responseData = {
+                ...responseData,
+                _fallbackReason: getErrorMessage(directRetryError),
+              };
+              isFallback = true;
+            }
+          } else {
+            responseData = {
+              ...responseData,
+              _fallbackReason: 'Route budget limit reached',
+            };
+            isFallback = true;
+          }
         }
       }
     }

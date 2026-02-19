@@ -19,6 +19,10 @@
 export const maxDuration = 60; // Vercel Pro Tier
 
 import type { NextRequest } from 'next/server';
+import {
+  getFunctionTimeoutReserveMs,
+  getMaxFunctionDurationMs,
+} from '@/config/ai-proxy.config';
 import { checkAPIAuth } from '@/lib/auth/api-auth';
 import { logger } from '@/lib/logging';
 import { getRedisClient, getSystemRunningFlag, redisGet } from '@/lib/redis';
@@ -65,7 +69,10 @@ const QUEUED_POLL_INTERVAL_MS = getPollIntervalFromEnv(
   'AI_JOB_STREAM_QUEUED_POLL_INTERVAL_MS',
   1000
 );
-const MAX_WAIT_TIME_MS = 55_000; // 최대 대기 시간 (Pro Tier maxDuration=60에서 5초 마진)
+const MAX_WAIT_TIME_MS = Math.max(
+  1000,
+  getMaxFunctionDurationMs() - getFunctionTimeoutReserveMs()
+); // Vercel maxDuration(10/60초) - 실행 여유 마진
 const PROGRESS_INTERVAL_MS = 2000; // 진행 상황 업데이트 간격
 
 export function getPollIntervalFromEnv(

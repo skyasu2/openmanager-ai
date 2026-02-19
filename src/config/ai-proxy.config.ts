@@ -216,8 +216,11 @@ const PRO_TIER_TIMEOUTS = {
 function loadAIProxyConfig(): AIProxyConfig {
   const rawTier = process.env.VERCEL_TIER?.trim().toLowerCase();
   const rawPlan = process.env.VERCEL_PLAN?.trim().toLowerCase();
-  const isVercelRuntime = Boolean(process.env.VERCEL);
 
+  // 보수적 기본값: 티어를 명시적으로 판별할 수 없으면 'free' (비용 초과 방지)
+  // Vercel은 모든 플랜에서 process.env.VERCEL을 설정하므로,
+  // isVercelRuntime만으로 pro를 추정하면 hobby/free 플랜에서 타임아웃 초과 위험.
+  // Production에서는 반드시 VERCEL_TIER=pro 또는 VERCEL_PLAN=pro 설정 권장.
   const tier: VercelTier =
     rawTier === 'free' || rawTier === 'pro'
       ? rawTier
@@ -225,9 +228,7 @@ function loadAIProxyConfig(): AIProxyConfig {
         ? 'free'
         : rawPlan === 'pro' || rawPlan === 'enterprise'
           ? 'pro'
-          : isVercelRuntime
-            ? 'pro'
-            : 'free';
+          : 'free';
   const timeouts = tier === 'pro' ? PRO_TIER_TIMEOUTS : FREE_TIER_TIMEOUTS;
 
   const rawConfig = {
@@ -337,6 +338,20 @@ export function getVercelTier(): VercelTier {
 export function getCurrentMaxDuration(): 10 | 60 {
   const config = getAIProxyConfig();
   return config.maxDuration[config.tier];
+}
+
+/**
+ * 현재 Vercel 런타임 최대 실행 시간 (ms)
+ */
+export function getMaxFunctionDurationMs(): 10_000 | 60_000 {
+  return getCurrentMaxDuration() === 10 ? 10_000 : 60_000;
+}
+
+/**
+ * 함수 종료 여유 버퍼 (응답 처리/로깅/직렬화 여유)
+ */
+export function getFunctionTimeoutReserveMs(): number {
+  return getCurrentMaxDuration() === 10 ? 1_200 : 1_500;
 }
 
 /**

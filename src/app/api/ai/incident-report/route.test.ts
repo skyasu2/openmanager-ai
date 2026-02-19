@@ -7,6 +7,12 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const {
   mockGetDefaultTimeout,
+  mockGetCurrentMaxDuration,
+  mockGetFunctionTimeoutReserveMs,
+  mockGetMaxFunctionDurationMs,
+  mockGetMinTimeout,
+  mockGetMaxTimeout,
+  mockClampTimeout,
   mockWithAICache,
   mockExecuteWithCircuitBreakerAndFallback,
   mockCreateFallbackResponse,
@@ -18,6 +24,12 @@ const {
   mockDebugError,
 } = vi.hoisted(() => ({
   mockGetDefaultTimeout: vi.fn(),
+  mockGetCurrentMaxDuration: vi.fn(),
+  mockGetFunctionTimeoutReserveMs: vi.fn(),
+  mockGetMaxFunctionDurationMs: vi.fn(),
+  mockGetMinTimeout: vi.fn(),
+  mockGetMaxTimeout: vi.fn(),
+  mockClampTimeout: vi.fn(),
   mockWithAICache: vi.fn(),
   mockExecuteWithCircuitBreakerAndFallback: vi.fn(),
   mockCreateFallbackResponse: vi.fn(),
@@ -35,6 +47,12 @@ vi.mock('@/lib/auth/api-auth', () => ({
 
 vi.mock('@/config/ai-proxy.config', () => ({
   getDefaultTimeout: mockGetDefaultTimeout,
+  getCurrentMaxDuration: mockGetCurrentMaxDuration,
+  getFunctionTimeoutReserveMs: mockGetFunctionTimeoutReserveMs,
+  getMaxFunctionDurationMs: mockGetMaxFunctionDurationMs,
+  getMinTimeout: mockGetMinTimeout,
+  getMaxTimeout: mockGetMaxTimeout,
+  clampTimeout: mockClampTimeout,
 }));
 
 vi.mock('@/lib/ai/cache/ai-response-cache', () => ({
@@ -61,6 +79,11 @@ vi.mock('@/lib/supabase/admin', () => ({
   },
 }));
 
+vi.mock('@/types/type-utils', () => ({
+  getErrorMessage: (error: unknown) =>
+    error instanceof Error ? error.message : String(error),
+}));
+
 vi.mock('@/utils/debug', () => ({
   default: {
     info: mockDebugInfo,
@@ -80,9 +103,23 @@ function createPostRequest(body: Record<string, unknown>): NextRequest {
 
 describe('/api/ai/incident-report POST', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    vi.resetAllMocks();
 
     mockGetDefaultTimeout.mockReturnValue(30000);
+    mockGetCurrentMaxDuration.mockReturnValue(60);
+    mockGetFunctionTimeoutReserveMs.mockReturnValue(1500);
+    mockGetMaxFunctionDurationMs.mockReturnValue(60_000);
+    mockGetMinTimeout.mockImplementation((endpoint: string) =>
+      endpoint === 'incident-report' ? 5000 : 3000
+    );
+    mockGetMaxTimeout.mockImplementation((endpoint: string) =>
+      endpoint === 'incident-report' ? 45_000 : 30_000
+    );
+    mockClampTimeout.mockImplementation((endpoint: string, timeout: number) => {
+      const minTimeout = endpoint === 'incident-report' ? 5000 : 3000;
+      const maxTimeout = endpoint === 'incident-report' ? 45_000 : 30_000;
+      return Math.max(minTimeout, Math.min(maxTimeout, timeout));
+    });
     mockIsCloudRunEnabled.mockReturnValue(true);
     mockSupabaseFrom.mockReturnValue({
       insert: mockInsert,
@@ -146,6 +183,7 @@ describe('/api/ai/incident-report POST', () => {
   });
 
   it('generate 액션에서 폴백이 발생하면 실패 계약을 반환한다', async () => {
+    mockGetDefaultTimeout.mockReturnValue(5000);
     mockProxyToCloudRun.mockResolvedValue({
       success: false,
       error: 'Cloud Run error: 503 - temporarily unavailable',
@@ -190,6 +228,43 @@ describe('/api/ai/incident-report POST', () => {
     expect(data.retryAfter).toBe(45000);
   });
 
+  it('free tier에서는 direct retry 예산이 부족하면 direct retry를 시도하지 않는다', async () => {
+    mockGetCurrentMaxDuration.mockReturnValue(10);
+    mockGetFunctionTimeoutReserveMs.mockReturnValue(1200);
+    mockGetMaxFunctionDurationMs.mockReturnValue(10_000);
+    mockGetDefaultTimeout.mockReturnValue(7_000);
+
+    mockExecuteWithCircuitBreakerAndFallback
+      .mockResolvedValueOnce({
+        source: 'fallback',
+        data: {
+          source: 'fallback',
+          message: '일시적 오류',
+          retryAfter: 30000,
+        },
+      })
+      .mockResolvedValueOnce({
+        source: 'fallback',
+        data: {
+          source: 'fallback',
+          message: '일시적 오류',
+          retryAfter: 30000,
+        },
+      });
+
+    const response = await POST(
+      createPostRequest({ action: 'generate', metrics: [] })
+    );
+    const data = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(response.headers.get('X-Direct-Retry-Attempt')).toBe('0');
+    expect(mockProxyToCloudRun).not.toHaveBeenCalled();
+    expect(response.headers.get('X-Fallback-Response')).toBe('true');
+    expect(data.success).toBe(false);
+    expect(data.message).toBe('일시적 오류');
+  });
+
   it('generate 액션은 1차 폴백 후 재시도 성공 시 성공 응답을 반환한다', async () => {
     mockExecuteWithCircuitBreakerAndFallback
       .mockResolvedValueOnce({
@@ -222,6 +297,7 @@ describe('/api/ai/incident-report POST', () => {
   });
 
   it('generate 액션은 폴백 2회 이후 direct 재시도로 복구할 수 있다', async () => {
+    mockGetDefaultTimeout.mockReturnValue(5000);
     mockExecuteWithCircuitBreakerAndFallback
       .mockResolvedValueOnce({
         source: 'fallback',

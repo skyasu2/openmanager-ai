@@ -15,6 +15,12 @@
 // in serverless environments, NOT at module load time as constants.
 // This ensures fresh values on each request.
 
+import {
+  clampTimeout,
+  getFunctionTimeoutReserveMs,
+  getMaxFunctionDurationMs,
+  type ProxyEndpoint,
+} from '@/config/ai-proxy.config';
 // 로컬 Docker 기본 설정 (개발 환경에서만 사용)
 import { logger } from '@/lib/logging';
 
@@ -102,6 +108,7 @@ export interface ProxyOptions {
   body?: unknown;
   headers?: Record<string, string>;
   timeout?: number;
+  endpoint?: ProxyEndpoint;
 }
 
 export interface ProxyResult {
@@ -109,6 +116,28 @@ export interface ProxyResult {
   data?: unknown;
   error?: string;
   status?: number;
+}
+
+const DEFAULT_PROXY_TIMEOUT_MS = 30_000;
+const DEFAULT_STREAM_PROXY_TIMEOUT_MS = 55_000;
+const MIN_PROXY_TIMEOUT_MS = 500;
+
+function resolveProxyTimeout(
+  requestedTimeout: number,
+  endpoint?: ProxyEndpoint
+): number {
+  const maxFunctionDuration = getMaxFunctionDurationMs();
+  const reserveMs = getFunctionTimeoutReserveMs();
+  const maxAllowedMs = Math.max(
+    MIN_PROXY_TIMEOUT_MS,
+    maxFunctionDuration - reserveMs
+  );
+  const targetTimeout = Math.min(
+    Math.max(requestedTimeout, MIN_PROXY_TIMEOUT_MS),
+    maxAllowedMs
+  );
+
+  return endpoint ? clampTimeout(endpoint, targetTimeout) : targetTimeout;
 }
 
 // ============================================================================
@@ -146,8 +175,10 @@ export async function proxyToCloudRun(
   }
 
   const url = `${config.url}${options.path}`;
-  // Vercel 60초 제한 고려 - 최대 55초로 강제 제한
-  const timeout = Math.min(options.timeout || 30000, 55000);
+  const timeout = resolveProxyTimeout(
+    options.timeout ?? DEFAULT_PROXY_TIMEOUT_MS,
+    options.endpoint
+  );
 
   try {
     const controller = new AbortController();
@@ -214,7 +245,10 @@ export async function proxyStreamToCloudRun(
   }
 
   const url = `${config.url}${options.path}`;
-  const timeout = Math.min(options.timeout || 55000, 55000);
+  const timeout = resolveProxyTimeout(
+    options.timeout ?? DEFAULT_STREAM_PROXY_TIMEOUT_MS,
+    options.endpoint
+  );
 
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), timeout);

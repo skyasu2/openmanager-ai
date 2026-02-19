@@ -79,6 +79,7 @@ async function postHandler(request: NextRequest) {
                 analysisType: body.analysisDepth || 'full',
               },
               timeout: getDefaultTimeout('intelligent-monitoring'),
+              endpoint: 'intelligent-monitoring',
             });
 
             if (!cloudRunResult.success || !cloudRunResult.data) {

@@ -80,6 +80,7 @@ export async function handleCloudRunStream(
         path: '/api/ai/supervisor',
         body: { messages: messagesToSend, sessionId, traceId },
         timeout: dynamicTimeout,
+        endpoint: 'supervisor',
         headers: observability.enableTraceId
           ? {
               [TRACEPARENT_HEADER]: traceparentValue,
@@ -212,6 +213,7 @@ export async function handleCloudRunJson(
         path: '/api/ai/supervisor',
         body: { messages: messagesToSend, sessionId, traceId },
         timeout: dynamicTimeout,
+        endpoint: 'supervisor',
         headers: observability.enableTraceId
           ? {
               [TRACEPARENT_HEADER]: traceparentValue,
