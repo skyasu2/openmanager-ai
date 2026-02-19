@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
-import { InlineAgentStatus, type AgentStep } from './InlineAgentStatus';
+import { type AgentStep, InlineAgentStatus } from './InlineAgentStatus';
 
 const meta = {
   title: 'AISidebar/InlineAgentStatus',
