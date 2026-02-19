@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
-import { expect, userEvent, within } from 'storybook/test';
+import { expect, screen, userEvent, within } from 'storybook/test';
 import { Label } from './label';
 import {
   Select,
@@ -96,7 +96,7 @@ export const OpenOnClick: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     await userEvent.click(canvas.getByRole('combobox'));
-    await expect(canvas.getByRole('listbox')).toBeInTheDocument();
+    await expect(screen.getByRole('listbox')).toBeInTheDocument();
   },
 };
 

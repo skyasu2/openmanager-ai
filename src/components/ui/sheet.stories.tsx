@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
-import { expect, userEvent, within } from 'storybook/test';
+import { expect, screen, userEvent, within } from 'storybook/test';
 import { Button } from './button';
 import { Input } from './input';
 import { Label } from './label';
@@ -71,7 +71,7 @@ export const OpenAndClose: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     await userEvent.click(canvas.getByRole('button', { name: '시트 열기' }));
-    await expect(canvas.getByRole('dialog')).toBeInTheDocument();
+    await expect(screen.getByRole('dialog')).toBeInTheDocument();
   },
 };
 
