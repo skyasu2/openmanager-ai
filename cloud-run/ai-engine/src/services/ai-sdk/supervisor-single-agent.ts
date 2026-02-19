@@ -3,8 +3,6 @@
  *
  * Single-agent mode with multi-step tool calling, retry logic,
  * circuit breaker, and streaming support.
- *
- * @version 2.0.0
  */
 
 import {

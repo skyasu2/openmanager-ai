@@ -2,8 +2,6 @@
  * Supervisor Routing Logic
  *
  * Mode selection, intent classification, and prepareStep for runtime tool filtering.
- *
- * @version 2.0.0
  */
 
 import type { ToolName } from '../../tools-ai-sdk';

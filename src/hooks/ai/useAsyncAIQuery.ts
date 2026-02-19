@@ -343,10 +343,10 @@ export function useAsyncAIQuery(options: UseAsyncAIQueryOptions = {}) {
                 ...prev,
                 isConnected: false,
                 progress: {
-                  ...prev.progress,
                   stage: 'reconnecting',
+                  progress: prev.progress?.progress ?? 0,
                   message: `재연결 중... (${reconnectAttempt + 1}/${maxReconnects})`,
-                } as AsyncQueryProgress,
+                },
               }));
 
               // 🎯 P1-1 Fix: Store reconnection timer in ref for cleanup
@@ -482,8 +482,8 @@ export function useAsyncAIQuery(options: UseAsyncAIQueryOptions = {}) {
     ...state,
 
     // Computed
-    progressPercent: state.progress?.progress || 0,
-    progressMessage: state.progress?.message || '',
+    progressPercent: state.progress?.progress ?? 0,
+    progressMessage: state.progress?.message ?? '',
   };
 }
 

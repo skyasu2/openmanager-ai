@@ -51,8 +51,6 @@ import { InMemoryRateLimiter } from './in-memory-rate-limiter';
 interface RateLimitConfig {
   maxRequests: number;
   windowMs: number;
-  skipSuccessfulRequests?: boolean;
-  skipFailedRequests?: boolean;
   /** 일일 최대 요청 수 (Cloud Run 무료 티어 최적화) */
   dailyLimit?: number;
 }

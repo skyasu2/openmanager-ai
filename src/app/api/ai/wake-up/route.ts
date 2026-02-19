@@ -11,19 +11,17 @@ export async function POST(request: NextRequest) {
     const retryAfter = Math.ceil(
       (rateLimitResult.resetTime - Date.now()) / 1000
     );
+    const retryAfterSec = Math.max(retryAfter, 1);
     return NextResponse.json(
-      { status: 'rate_limited', retryAfter: Math.max(retryAfter, 1) },
-      { status: 429 }
+      { status: 'rate_limited', retryAfter: retryAfterSec },
+      { status: 429, headers: { 'Retry-After': retryAfterSec.toString() } }
     );
   }
 
   const CLOUD_RUN_URL = process.env.CLOUD_RUN_AI_URL;
 
   if (!CLOUD_RUN_URL) {
-    return NextResponse.json(
-      { status: 'skipped', message: 'Cloud Run URL not configured' },
-      { status: 204 }
-    );
+    return new NextResponse(null, { status: 204 });
   }
 
   try {

@@ -56,18 +56,24 @@ app.use('*', cors({
   origin: process.env.ALLOWED_ORIGINS?.split(',') || [defaultAllowedOrigin],
 }));
 
-// Security Middleware (Skip for health/warmup) — fail-closed
-app.use('/api/*', async (c: Context, next: Next) => {
+/** Timing-safe API key verification (shared across all auth middlewares) */
+function verifyApiKey(c: Context): boolean {
   const apiKey = c.req.header('X-API-Key');
   const validKey = process.env.CLOUD_RUN_API_SECRET;
+  if (!validKey || !apiKey || apiKey.length !== validKey.length ||
+      !timingSafeEqual(Buffer.from(apiKey), Buffer.from(validKey))) {
+    return false;
+  }
+  return true;
+}
 
-  if (!validKey) {
+// Security Middleware (Skip for health/warmup) — fail-closed
+app.use('/api/*', async (c: Context, next: Next) => {
+  if (!process.env.CLOUD_RUN_API_SECRET) {
     logger.error('[Security] CLOUD_RUN_API_SECRET is not configured — blocking request');
     return handleUnauthorizedError(c);
   }
-
-  if (!apiKey || apiKey.length !== validKey.length ||
-      !timingSafeEqual(Buffer.from(apiKey), Buffer.from(validKey))) {
+  if (!verifyApiKey(c)) {
     return handleUnauthorizedError(c);
   }
   await next();
@@ -142,10 +148,7 @@ app.get('/ready', (c: Context) =>
 
 // Monitoring endpoint authentication middleware (must be registered BEFORE route handlers)
 app.use('/monitoring/*', async (c: Context, next: Next) => {
-  const apiKey = c.req.header('X-API-Key');
-  const validKey = process.env.CLOUD_RUN_API_SECRET;
-  if (!validKey || !apiKey || apiKey.length !== validKey.length ||
-      !timingSafeEqual(Buffer.from(apiKey), Buffer.from(validKey))) {
+  if (!verifyApiKey(c)) {
     return c.json({ error: 'Monitoring endpoints require authentication' }, 403);
   }
   await next();
@@ -259,13 +262,8 @@ app.get('/monitoring/traces', async (c: Context) => {
 // Debug/Admin endpoint authentication middleware
 // Production: requires API key, Non-production: open access for development
 app.use('/debug/*', async (c: Context, next: Next) => {
-  if (process.env.NODE_ENV === 'production') {
-    const apiKey = c.req.header('X-API-Key');
-    const validKey = process.env.CLOUD_RUN_API_SECRET;
-    if (!validKey || !apiKey || apiKey.length !== validKey.length ||
-        !timingSafeEqual(Buffer.from(apiKey), Buffer.from(validKey))) {
-      return c.json({ error: 'Debug endpoints require authentication in production' }, 403);
-    }
+  if (process.env.NODE_ENV === 'production' && !verifyApiKey(c)) {
+    return c.json({ error: 'Debug endpoints require authentication in production' }, 403);
   }
   await next();
 });
