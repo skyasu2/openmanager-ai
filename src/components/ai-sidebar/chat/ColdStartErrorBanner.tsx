@@ -18,7 +18,8 @@ import {
   isModelConfigRelatedError,
 } from '@/lib/ai/constants/stream-errors';
 
-const AUTO_RETRY_SECONDS = 5;
+const RETRY_SCHEDULE = [5, 10, 15]; // seconds per attempt
+const MAX_AUTO_RETRIES = RETRY_SCHEDULE.length;
 
 export interface ColdStartErrorBannerProps {
   error: string;
@@ -27,7 +28,8 @@ export interface ColdStartErrorBannerProps {
 }
 
 /**
- * Cold Start 에러 배너 (자동 재시도 카운트다운 포함)
+ * Cold Start 에러 배너 (다단계 자동 재시도 카운트다운 포함)
+ * 3단계 progressive retry: 5초, 10초, 15초 = 총 30초 자동 대기
  */
 export function ColdStartErrorBanner({
   error,
@@ -36,19 +38,31 @@ export function ColdStartErrorBanner({
 }: ColdStartErrorBannerProps) {
   const isColdStart = isColdStartRelatedError(error);
   const isModelConfigError = isModelConfigRelatedError(error);
-  const [countdown, setCountdown] = useState(
-    isColdStart ? AUTO_RETRY_SECONDS : 0
+  const [retryAttempt, setRetryAttempt] = useState(0);
+  const currentDelay = RETRY_SCHEDULE[retryAttempt] ?? 0;
+  const [countdown, setCountdown] = useState(isColdStart ? currentDelay : 0);
+  const [isAutoRetrying, setIsAutoRetrying] = useState(
+    isColdStart && retryAttempt < MAX_AUTO_RETRIES
   );
-  const [isAutoRetrying, setIsAutoRetrying] = useState(isColdStart);
+  const [autoRetryExhausted, setAutoRetryExhausted] = useState(false);
 
-  // 자동 재시도 카운트다운
+  // 자동 재시도 카운트다운 (다단계)
   useEffect(() => {
     if (!isAutoRetrying || countdown <= 0) return;
 
     const timer = setTimeout(() => {
       if (countdown === 1) {
         // 카운트다운 종료 → 자동 재시도
-        setIsAutoRetrying(false);
+        const nextAttempt = retryAttempt + 1;
+        setRetryAttempt(nextAttempt);
+        if (nextAttempt < MAX_AUTO_RETRIES) {
+          // 다음 시도 준비
+          setCountdown(RETRY_SCHEDULE[nextAttempt] ?? 5);
+        } else {
+          // 모든 자동 재시도 소진 → 수동 모드
+          setIsAutoRetrying(false);
+          setAutoRetryExhausted(true);
+        }
         onRetry?.();
       } else {
         setCountdown((prev) => prev - 1);
@@ -56,7 +70,7 @@ export function ColdStartErrorBanner({
     }, 1000);
 
     return () => clearTimeout(timer);
-  }, [countdown, isAutoRetrying, onRetry]);
+  }, [countdown, isAutoRetrying, onRetry, retryAttempt]);
 
   // 자동 재시도 취소
   const cancelAutoRetry = useCallback(() => {
@@ -86,14 +100,20 @@ export function ColdStartErrorBanner({
                   <div
                     className="h-full bg-orange-500 transition-all duration-1000 ease-linear"
                     style={{
-                      width: `${(countdown / AUTO_RETRY_SECONDS) * 100}%`,
+                      width: `${(countdown / (RETRY_SCHEDULE[retryAttempt] ?? 1)) * 100}%`,
                     }}
                   />
                 </div>
                 <span className="text-xs font-medium text-orange-600">
-                  {countdown}초 후 재시도
+                  시도 {retryAttempt + 1}/{MAX_AUTO_RETRIES}: {countdown}초 후
+                  재시도
                 </span>
               </div>
+            )}
+            {autoRetryExhausted && (
+              <p className="mt-1 text-xs text-orange-600">
+                AI 엔진이 아직 준비 중입니다. 수동 재시도해 주세요.
+              </p>
             )}
           </div>
           <div className="flex shrink-0 flex-col gap-2">

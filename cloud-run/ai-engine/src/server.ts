@@ -32,18 +32,8 @@ import { flushLangfuse, shutdownLangfuse, getLangfuseUsageStatus, restoreUsageFr
 import { getAllCircuitStats, resetAllCircuitBreakers } from './services/resilience/circuit-breaker';
 import { getAvailableAgentsStatus, preFilterQuery, executeMultiAgent, type MultiAgentRequest } from './services/ai-sdk/agents';
 
-// Routes
-import {
-  supervisorRouter,
-  embeddingRouter,
-  generateRouter,
-  approvalRouter,
-  analyticsRouter,
-  graphragRouter,
-  jobsRouter,
-  feedbackRouter,
-} from './routes';
-import { providersRouter } from './routes/providers';
+// Routes — lazy loaded after server starts listening
+let routesReady = false;
 
 // ============================================================================
 // App Initialization
@@ -140,6 +130,15 @@ app.get('/warmup', (c: Context) => {
     },
   });
 });
+
+/**
+ * GET /ready - Readiness Check (routes fully loaded)
+ */
+app.get('/ready', (c: Context) =>
+  routesReady
+    ? c.json({ status: 'ready', timestamp: new Date().toISOString() })
+    : c.json({ status: 'starting', timestamp: new Date().toISOString() }, 503)
+);
 
 // Monitoring endpoint authentication middleware (must be registered BEFORE route handlers)
 app.use('/monitoring/*', async (c: Context, next: Next) => {
@@ -327,35 +326,45 @@ app.post('/debug/multi-agent', async (c: Context) => {
 });
 
 // ============================================================================
-// Route Registration
+// Route Registration (Lazy — loaded after server starts listening)
 // ============================================================================
 
-// AI Supervisor
-app.route('/api/ai/supervisor', supervisorRouter);
+async function registerRoutes() {
+  const [
+    { supervisorRouter },
+    { embeddingRouter },
+    { generateRouter },
+    { approvalRouter },
+    { analyticsRouter },
+    { graphragRouter },
+    { jobsRouter },
+    { feedbackRouter },
+    { providersRouter },
+  ] = await Promise.all([
+    import('./routes/supervisor.js'),
+    import('./routes/embedding.js'),
+    import('./routes/generate.js'),
+    import('./routes/approval.js'),
+    import('./routes/analytics.js'),
+    import('./routes/graphrag.js'),
+    import('./routes/jobs.js'),
+    import('./routes/feedback.js'),
+    import('./routes/providers.js'),
+  ]);
 
-// Embedding Service
-app.route('/api/ai/embedding', embeddingRouter);
+  app.route('/api/ai/supervisor', supervisorRouter);
+  app.route('/api/ai/embedding', embeddingRouter);
+  app.route('/api/ai/generate', generateRouter);
+  app.route('/api/ai/approval', approvalRouter);
+  app.route('/api/ai', analyticsRouter);
+  app.route('/api/ai/graphrag', graphragRouter);
+  app.route('/api/jobs', jobsRouter);
+  app.route('/api/ai/feedback', feedbackRouter);
+  app.route('/api/ai/providers', providersRouter);
 
-// Generate Service
-app.route('/api/ai/generate', generateRouter);
-
-// Human-in-the-Loop Approval
-app.route('/api/ai/approval', approvalRouter);
-
-// Analytics (analyze-server, incident-report, analyze-batch)
-app.route('/api/ai', analyticsRouter);
-
-// GraphRAG
-app.route('/api/ai/graphrag', graphragRouter);
-
-// Async Job Processing
-app.route('/api/jobs', jobsRouter);
-
-// Human Feedback → Langfuse
-app.route('/api/ai/feedback', feedbackRouter);
-
-// Provider Management (testing/debugging)
-app.route('/api/ai/providers', providersRouter);
+  routesReady = true;
+  logger.info('All API routes registered (lazy load complete)');
+}
 
 // ============================================================================
 // Server Start
@@ -370,26 +379,56 @@ initOTelDataAsync().catch((err) => {
   logger.warn({ err }, 'OTel async pre-load failed, will fall back to sync reads');
 });
 
-// Initialize Langfuse config (sets env vars from JSON secret)
-const langfuseConfig = getLangfuseConfig();
-if (langfuseConfig) {
-  logger.info({ baseUrl: langfuseConfig.baseUrl }, 'Langfuse initialized');
-  initializeLangfuseClient()
-    .then(() => {
-      logger.info('Langfuse client prewarmed');
-    })
-    .catch((error) => {
-      logger.warn(
-        { error: error instanceof Error ? error.message : String(error) },
-        'Langfuse prewarm failed (non-blocking)'
-      );
-    });
-} else {
-  logger.warn('Langfuse not configured - observability disabled');
-}
+// ----------------------------------------------------------------------------
+// Deferred Services Initialization (triggered on first API request)
+// Langfuse + Redis restore are network-bound — deferring saves 2-5s on cold start
+// ----------------------------------------------------------------------------
+let servicesInitialized = false;
+app.use('/api/*', async (c: Context, next: Next) => {
+  if (!servicesInitialized) {
+    servicesInitialized = true;
 
-// Langfuse 사용량 Redis 복원 (fire-and-forget)
-restoreUsageFromRedis().catch(() => {});
+    const langfuseConfig = getLangfuseConfig();
+    if (langfuseConfig) {
+      logger.info({ baseUrl: langfuseConfig.baseUrl }, 'Langfuse init (deferred)');
+      void initializeLangfuseClient().catch((error) => {
+        logger.warn(
+          { error: error instanceof Error ? error.message : String(error) },
+          'Langfuse prewarm failed (non-blocking)'
+        );
+      });
+    } else {
+      logger.warn('Langfuse not configured - observability disabled');
+    }
+
+    void restoreUsageFromRedis().catch(() => {});
+  }
+  await next();
+});
+
+// Start server BEFORE loading routes — /health, /warmup, /ready available immediately
+serve(
+  {
+    fetch: app.fetch,
+    port,
+    hostname: '0.0.0.0', // Required for Cloud Run
+  },
+  (info: { address: string; port: number }) => {
+    logger.info(
+      {
+        address: info.address,
+        port: info.port,
+        immediateRoutes: ['/health', '/warmup', '/ready'],
+      },
+      'Server listening (routes loading async...)'
+    );
+  }
+);
+
+// Lazy load API routes after server is already listening
+registerRoutes().catch((err) => {
+  logger.error({ err }, 'Failed to register API routes');
+});
 
 // Periodic incident -> RAG backfill (lightweight, free-tier conscious)
 const enableIncidentRagBackfill =
@@ -446,37 +485,6 @@ if (enableIncidentRagBackfill) {
     'Incident RAG periodic backfill enabled'
   );
 }
-
-serve(
-  {
-    fetch: app.fetch,
-    port,
-    hostname: '0.0.0.0', // Required for Cloud Run
-  },
-  (info: { address: string; port: number }) => {
-    logger.info(
-      {
-        address: info.address,
-        port: info.port,
-        routes: [
-          '/health',
-          '/warmup',
-          '/monitoring',
-          '/api/ai/supervisor',
-          '/api/ai/embedding',
-          '/api/ai/generate',
-          '/api/ai/approval',
-          '/api/ai/analyze-server',
-          '/api/ai/incident-report',
-          '/api/ai/graphrag',
-          '/api/ai/providers',
-          '/api/jobs',
-        ],
-      },
-      'Server listening'
-    );
-  }
-);
 
 // ============================================================================
 // Graceful Shutdown
