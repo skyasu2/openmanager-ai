@@ -13,11 +13,15 @@ export function AIDebugPanel() {
     setLoading(true);
     try {
       const res = await fetch('/api/ai/wake-up', { method: 'POST' });
+      if (res.status === 204) {
+        toast.success('Cloud Run URL not configured — skipped');
+        return;
+      }
       const data = await res.json();
       if (res.ok) {
-        toast.success(`Wake-up signal sent: ${data.message}`);
+        toast.success(`Wake-up: ${data.status} (${data.warmupMs ?? 0}ms)`);
       } else {
-        toast.error(`Wake-up failed: ${data.error}`);
+        toast.error(`Wake-up failed: ${data.error || data.status}`);
       }
     } catch (_err) {
       toast.error('Network error sending wake-up');

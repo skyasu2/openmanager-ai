@@ -60,7 +60,11 @@ app.use('*', cors({
 function verifyApiKey(c: Context): boolean {
   const apiKey = c.req.header('X-API-Key');
   const validKey = process.env.CLOUD_RUN_API_SECRET;
-  if (!validKey || !apiKey || apiKey.length !== validKey.length ||
+  if (!validKey) {
+    logger.error('[Security] CLOUD_RUN_API_SECRET is not configured — blocking request');
+    return false;
+  }
+  if (!apiKey || apiKey.length !== validKey.length ||
       !timingSafeEqual(Buffer.from(apiKey), Buffer.from(validKey))) {
     return false;
   }
@@ -69,10 +73,6 @@ function verifyApiKey(c: Context): boolean {
 
 // Security Middleware (Skip for health/warmup) — fail-closed
 app.use('/api/*', async (c: Context, next: Next) => {
-  if (!process.env.CLOUD_RUN_API_SECRET) {
-    logger.error('[Security] CLOUD_RUN_API_SECRET is not configured — blocking request');
-    return handleUnauthorizedError(c);
-  }
   if (!verifyApiKey(c)) {
     return handleUnauthorizedError(c);
   }
