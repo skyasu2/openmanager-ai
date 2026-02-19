@@ -405,12 +405,12 @@ export const rateLimiters = {
    * 계산 근거:
    * - Cloud Run 무료: 월 180,000 vCPU-seconds
    * - 일일 용량: 6,000초 / AI Engine 4초 = 1,500회
-   * - 안전 마진: 50회/일 × 4초 = 200초/일 (용량의 3.3%)
+   * - 안전 마진: 100회/일 × 4초 = 400초/일 (용량의 6.7%)
    */
   aiAnalysis: new RateLimiter({
     maxRequests: 10,
     windowMs: 60 * 1000,
-    dailyLimit: 50,
+    dailyLimit: 100,
   }),
 };
 
