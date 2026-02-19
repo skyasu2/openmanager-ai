@@ -1,10 +1,22 @@
-import { NextResponse } from 'next/server';
+import { type NextRequest, NextResponse } from 'next/server';
 import { logger } from '@/lib/logging';
+import { rateLimiters } from '@/lib/security/rate-limiter';
 
 export const runtime = 'nodejs';
 export const maxDuration = 30;
 
-export async function POST() {
+export async function POST(request: NextRequest) {
+  const rateLimitResult = await rateLimiters.dataGenerator.checkLimit(request);
+  if (!rateLimitResult.allowed) {
+    const retryAfter = Math.ceil(
+      (rateLimitResult.resetTime - Date.now()) / 1000
+    );
+    return NextResponse.json(
+      { status: 'rate_limited', retryAfter: Math.max(retryAfter, 1) },
+      { status: 429 }
+    );
+  }
+
   const CLOUD_RUN_URL = process.env.CLOUD_RUN_AI_URL;
 
   if (!CLOUD_RUN_URL) {

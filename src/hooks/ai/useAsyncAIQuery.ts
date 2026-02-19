@@ -421,10 +421,15 @@ export function useAsyncAIQuery(options: UseAsyncAIQueryOptions = {}) {
         )
           .then(async (response) => {
             if (response.status === 429) {
-              const body = await response.json();
-              const message = body.dailyLimitExceeded
-                ? body.message || '일일 요청 제한을 초과했습니다.'
-                : `요청이 너무 많습니다. ${body.retryAfter ?? 60}초 후 다시 시도해주세요.`;
+              let message = '요청이 너무 많습니다. 잠시 후 다시 시도해주세요.';
+              try {
+                const body = await response.json();
+                message = body.dailyLimitExceeded
+                  ? body.message || '일일 요청 제한을 초과했습니다.'
+                  : `요청이 너무 많습니다. ${body.retryAfter ?? 60}초 후 다시 시도해주세요.`;
+              } catch {
+                // Non-JSON 429 response (e.g. from CDN/proxy)
+              }
               throw new Error(message);
             }
             if (!response.ok) {

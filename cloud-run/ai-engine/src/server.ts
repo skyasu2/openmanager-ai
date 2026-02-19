@@ -262,7 +262,8 @@ app.use('/debug/*', async (c: Context, next: Next) => {
   if (process.env.NODE_ENV === 'production') {
     const apiKey = c.req.header('X-API-Key');
     const validKey = process.env.CLOUD_RUN_API_SECRET;
-    if (!validKey || apiKey !== validKey) {
+    if (!validKey || !apiKey || apiKey.length !== validKey.length ||
+        !timingSafeEqual(Buffer.from(apiKey), Buffer.from(validKey))) {
       return c.json({ error: 'Debug endpoints require authentication in production' }, 403);
     }
   }
