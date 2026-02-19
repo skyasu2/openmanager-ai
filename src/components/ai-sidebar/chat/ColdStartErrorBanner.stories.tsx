@@ -23,7 +23,7 @@ type Story = StoryObj<typeof meta>;
 
 export const ColdStart: Story = {
   args: {
-    error: 'Cloud Run cold start: Service Unavailable (503)',
+    error: 'Stream error: Cloud Run AI Engine timeout after 30s',
     onRetry: fn(),
     onClearError: fn(),
   },
@@ -39,7 +39,7 @@ export const GeneralError: Story = {
 
 export const ModelConfigError: Story = {
   args: {
-    error: 'Model not found: cerebras/llama-3.3-70b (404)',
+    error: 'The model does not exist or you do not have access to it (404)',
     onRetry: fn(),
     onClearError: fn(),
   },
@@ -50,13 +50,13 @@ export const AllTypes: Story = {
     <div className="space-y-4">
       <p className="text-sm font-medium text-gray-700">Cold Start 에러:</p>
       <ColdStartErrorBanner
-        error="Cloud Run cold start: Service Unavailable (503)"
+        error="Stream error: Cloud Run AI Engine timeout after 30s"
         onRetry={fn()}
         onClearError={fn()}
       />
       <p className="text-sm font-medium text-gray-700">모델 설정 에러:</p>
       <ColdStartErrorBanner
-        error="Model not found: cerebras/llama-3.3-70b (404)"
+        error="The model does not exist or you do not have access to it (404)"
         onRetry={fn()}
         onClearError={fn()}
       />
