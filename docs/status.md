@@ -4,11 +4,11 @@
 > Owner: documentation
 > Status: Active
 > Doc type: Status
-> Last reviewed: 2026-02-18
+> Last reviewed: 2026-02-19
 > Canonical: docs/status.md
 > Tags: status,changelog,release
 
-**마지막 업데이트**: 2026-02-18
+**마지막 업데이트**: 2026-02-19
 
 ---
 
@@ -22,7 +22,12 @@
 
 ## 🔄 Recent Changes (v8.1.0)
 
-- **v8.1.0** (2026-02-18)
+- **v8.1.0** (2026-02-19)
+  - feat(storybook): UI + Shared 컴포넌트 스토리 22개 추가 (UI 17 + Shared 5, 커버리지 1%→26%)
+  - feat(mcp): Storybook MCP 도입 (addon-mcp v0.2.3, 4개 도구)
+  - feat(ui): Log Explorer OTel 24h 데이터 전환 + Incident Explorer 제거
+  - fix(ui): 로고 그라데이션 아이콘 복구 + "AI" 텍스트 추가
+  - chore(docs): 문서 예산 재분배 (guides 12→7, troubleshooting 5→3, development 12→14)
   - chore: CI 워크플로우 최적화 — schedule 트리거를 workflow_dispatch로 전환 (비용 절감)
   - feat(ci): detect-scope job 추가 — Cloud Run/AI Engine 변경 감지 기반 조건부 테스트 실행
   - refactor(ui): renderAIGradientWithAnimation variant 파라미터 제거 (단순화)
@@ -44,7 +49,7 @@
   - fix(stability): stream/metrics 안정성 강화 (review-driven hardening)
   - fix(frontend): system-start auth flow 및 bootstrap recovery 개선
   - chore(deps): AI SDK v6.0.86, 패키지 버전 최신화
-  - MCP 정리: Serena/Tavily 제거, next-devtools/supabase-db 추가 (9→8개)
+  - MCP: Serena/Tavily 제거, next-devtools/supabase-db/storybook 추가 (9개)
   - any 타입 완전 제거 (17→0), OTel 데이터 표준화 완료
   - WBS + 검수 보고서 수치 현행화
 
@@ -246,7 +251,7 @@
 - **Agents**: 7개 실행 에이전트 (NLQ/Analyst/Reporter/Advisor/Vision/Evaluator/Optimizer) + 1 Orchestrator 코디네이터
 - **Tools**: 27개 도구 Registry (Metrics 5, RCA 3, Analyst 4, Reporter 4, Evaluation 6, Control 1, Vision 4)
 - **Reporter Pipeline**: Evaluator-Optimizer 패턴 (0.75 품질 임계값, 최대 2회 반복)
-- **MCP**: 8/8 Server Connected (Context7, Stitch, Supabase-DB, Vercel, Playwright, GitHub, Sequential-Thinking, Next-DevTools)
+- **MCP**: 9/9 Server Connected (Context7, Stitch, Supabase-DB, Vercel, Playwright, GitHub, Sequential-Thinking, Next-DevTools, Storybook)
 - **Web Search**: Built-in WebSearch (Tavily 제거, Claude Code 내장 기능으로 대체)
 - **Resilience**:
   - Circuit Breaker: CLOSED → OPEN (5 failures) → HALF_OPEN (30s)
@@ -436,7 +441,7 @@
 | **Test** | ✅ Passing | 128개 테스트 파일 (src/ 74 + cloud-run/ 18 + tests/ 36) |
 | **Lint** | ✅ Clean | Biome Check Pass (No Errors) |
 | **E2E** | ✅ 100% | 30/30 Scenarios Passing (Playwright) |
-| **MCP** | ✅ 8/8 | 모든 MCP 서버 정상 연결 |
+| **MCP** | ✅ 9/9 | 모든 MCP 서버 정상 연결 |
 | **Vercel** | ✅ Deployed | Production 배포 정상 |
 | **Sentry** | ✅ Active | Vercel + Cloud Run 에러 트래킹 |
 
@@ -530,6 +535,6 @@
 **개발 도구 체인**:
 - **Primary**: Claude Code (Interactive Development)
 - **Code Review**: Codex + Gemini 2-AI Rotation
-- **MCP**: 8개 서버 연동 (Context7, Stitch, Supabase-DB, Vercel, Playwright, GitHub, Sequential-Thinking, Next-DevTools)
+- **MCP**: 9개 서버 연동 (Context7, Stitch, Supabase-DB, Vercel, Playwright, GitHub, Sequential-Thinking, Next-DevTools, Storybook)
 
 **총 코드량**: ~199,000 Lines (Frontend 125K+ / Backend 38K+ / Config & Tests)
