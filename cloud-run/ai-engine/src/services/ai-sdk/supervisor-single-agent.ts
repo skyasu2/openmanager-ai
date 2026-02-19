@@ -28,6 +28,7 @@ import {
 import { allTools } from '../../tools-ai-sdk';
 import { executeMultiAgent, executeMultiAgentStream, type MultiAgentRequest, type MultiAgentResponse } from './agents';
 import { resolveWebSearchSetting, filterToolsByWebSearch } from './agents/orchestrator-web-search';
+import { isTavilyAvailable } from '../../lib/tavily-hybrid-rag';
 import {
   createSupervisorTrace,
   logGeneration,
@@ -266,7 +267,11 @@ async function executeSupervisorAttempt(
       const queryText = lastUserMessage?.content || '';
       const intentCategory = getIntentCategory(queryText);
 
-      const webSearchEnabled = resolveWebSearchSetting(request.enableWebSearch, queryText);
+      let webSearchEnabled = resolveWebSearchSetting(request.enableWebSearch, queryText);
+      if (webSearchEnabled && !isTavilyAvailable()) {
+        logger.warn('[Single] Web search requested but Tavily unavailable, falling back to internal data');
+        webSearchEnabled = false;
+      }
       logger.debug(`[Single WebSearch] Setting resolved: ${webSearchEnabled} (request: ${request.enableWebSearch})`);
       const filteredTools = filterToolsByWebSearch(allTools, webSearchEnabled);
 
@@ -563,7 +568,12 @@ async function* streamSingleAgent(
       }),
     ];
 
-    const webSearchEnabled = resolveWebSearchSetting(request.enableWebSearch, queryText);
+    let webSearchEnabled = resolveWebSearchSetting(request.enableWebSearch, queryText);
+    if (webSearchEnabled && !isTavilyAvailable()) {
+      logger.warn('[Stream Single] Web search requested but Tavily unavailable');
+      webSearchEnabled = false;
+      yield { type: 'warning', data: { code: 'WEB_SEARCH_UNAVAILABLE', message: '웹 검색을 사용할 수 없습니다. 내부 데이터로 응답합니다.' } };
+    }
     logger.debug(`[Stream Single WebSearch] Setting resolved: ${webSearchEnabled} (request: ${request.enableWebSearch})`);
     const filteredTools = filterToolsByWebSearch(allTools, webSearchEnabled);
 
