@@ -372,13 +372,17 @@ export function useHybridAIQuery(
       errorHandledRef.current = true;
 
       // Streaming retry with exponential backoff
+      // Cold start errors: fewer retries with longer delays to avoid wasting time
+      const isColdStart = isColdStartRelatedError(errorMessage);
+      const maxRetries = isColdStart ? 2 : streamRetryConfig.maxRetries;
       const canRetry =
-        isRetryableError(errorMessage) &&
-        retryCountRef.current < streamRetryConfig.maxRetries;
+        isRetryableError(errorMessage) && retryCountRef.current < maxRetries;
 
       if (canRetry && currentQueryRef.current) {
         retryCountRef.current += 1;
-        const delay = calculateRetryDelay(retryCountRef.current - 1);
+        const delay = isColdStart
+          ? Math.min(10_000, 5_000 * retryCountRef.current) // 5s, 10s
+          : calculateRetryDelay(retryCountRef.current - 1);
 
         logger.info(
           `[HybridAI] Retrying stream (${retryCountRef.current}/${streamRetryConfig.maxRetries}) ` +

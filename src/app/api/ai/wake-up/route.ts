@@ -1,9 +1,10 @@
 import { NextResponse } from 'next/server';
 import { logger } from '@/lib/logging';
 
-export const runtime = 'edge';
+export const runtime = 'nodejs';
+export const maxDuration = 30;
 
-export function POST() {
+export async function POST() {
   const CLOUD_RUN_URL = process.env.CLOUD_RUN_AI_URL;
 
   if (!CLOUD_RUN_URL) {
@@ -14,25 +15,32 @@ export function POST() {
   }
 
   try {
-    // Fire and forget - don't wait for full response, just trigger cold start
-    // Use a short timeout to avoid blocking Vercel function
-    logger.info(`🚀 Sending wake-up signal to ${CLOUD_RUN_URL}/warmup`);
-
+    // 1. Fire-and-forget wake-up signal
+    logger.info(`Sending wake-up signal to ${CLOUD_RUN_URL}/warmup`);
     void fetch(`${CLOUD_RUN_URL}/warmup`, {
       method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      signal: AbortSignal.timeout(1000), // 1s timeout, just to open connection
-    }).catch((err) => {
-      // Ignore timeout errors, as we expect it might take time to start
-      logger.info('Wake-up signal sent (params ignored):', err.message);
-    });
+      signal: AbortSignal.timeout(2000),
+    }).catch(() => {});
 
-    return NextResponse.json({
-      status: 'sent',
-      message: 'Wake-up signal initiated',
-    });
+    // 2. Poll /ready until routes are loaded (max 25s, 2s interval)
+    for (let waited = 0; waited < 25_000; waited += 2_000) {
+      await new Promise((r) => setTimeout(r, 2_000));
+      try {
+        const res = await fetch(`${CLOUD_RUN_URL}/ready`, {
+          signal: AbortSignal.timeout(3000),
+        });
+        if (res.ok) {
+          const warmupMs = waited + 2_000;
+          logger.info(`AI Engine ready after ${warmupMs}ms`);
+          return NextResponse.json({ status: 'ready', warmupMs });
+        }
+      } catch {
+        // /ready not yet available, continue polling
+      }
+    }
+
+    // Timeout — engine still starting
+    return NextResponse.json({ status: 'warming' });
   } catch (error) {
     logger.error('Wake-up failed:', error);
     return NextResponse.json(
