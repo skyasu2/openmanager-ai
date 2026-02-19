@@ -408,7 +408,7 @@ export const rateLimiters = {
    * - 안전 마진: 50회/일 × 4초 = 200초/일 (용량의 3.3%)
    */
   aiAnalysis: new RateLimiter({
-    maxRequests: 5,
+    maxRequests: 10,
     windowMs: 60 * 1000,
     dailyLimit: 50,
   }),

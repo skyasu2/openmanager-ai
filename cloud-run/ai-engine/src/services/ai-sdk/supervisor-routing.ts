@@ -8,6 +8,7 @@
 
 import type { ToolName } from '../../tools-ai-sdk';
 import type { SupervisorMode } from './supervisor-types';
+import { isTavilyAvailable } from '../../lib/tavily-hybrid-rag';
 
 // ============================================================================
 // System Prompt
@@ -240,12 +241,16 @@ export function createPrepareStep(query: string, options?: { enableWebSearch?: b
 
     // 웹 검색 강제: 사용자가 토글 ON → 첫 스텝에서 searchWeb 강제 호출
     if (options?.enableWebSearch) {
-      // 기존 라우팅 결과의 activeTools에 searchWeb 추가
-      const baseTools: ToolName[] = ['getServerMetrics', 'getServerMetricsAdvanced', 'filterServers', 'searchWeb', 'finalAnswer'];
-      return {
-        activeTools: baseTools,
-        toolChoice: { type: 'tool', toolName: 'searchWeb' } as const,
-      };
+      if (isTavilyAvailable()) {
+        // 기존 라우팅 결과의 activeTools에 searchWeb 추가
+        const baseTools: ToolName[] = ['getServerMetrics', 'getServerMetricsAdvanced', 'filterServers', 'searchWeb', 'finalAnswer'];
+        return {
+          activeTools: baseTools,
+          toolChoice: { type: 'tool', toolName: 'searchWeb' } as const,
+        };
+      }
+      // Tavily 미사용: 일반 라우팅으로 fallthrough
+      console.log('⚠️ [PrepareStep] Web search requested but Tavily unavailable');
     }
 
     if (SIMPLE_CONVERSATION_PATTERNS.test(query.trim())) {
