@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
-import { fn } from 'storybook/test';
+import { expect, fn, userEvent, within } from 'storybook/test';
 import { ColdStartErrorBanner } from './ColdStartErrorBanner';
 
 const meta = {
@@ -42,6 +42,19 @@ export const ModelConfigError: Story = {
     error: 'The model does not exist or you do not have access to it (404)',
     onRetry: fn(),
     onClearError: fn(),
+  },
+};
+
+export const RetryInteraction: Story = {
+  args: {
+    error: '네트워크 연결이 불안정합니다.',
+    onRetry: fn(),
+    onClearError: fn(),
+  },
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+    await userEvent.click(canvas.getByRole('button', { name: '재시도' }));
+    await expect(args.onRetry).toHaveBeenCalled();
   },
 };
 

@@ -8,6 +8,11 @@ const meta = {
   parameters: {
     layout: 'centered',
   },
+  argTypes: {
+    value: { control: { type: 'range', min: 0, max: 100, step: 1 } },
+    type: { control: 'radio', options: ['cpu', 'memory', 'disk', 'network'] },
+    variant: { control: 'select', options: ['card', 'modal', 'modal-3d'] },
+  },
 } satisfies Meta<typeof UnifiedCircularGauge>;
 
 export default meta;

@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
+import { expect, userEvent, within } from 'storybook/test';
 import { Button } from './button';
 import { Input } from './input';
 import { Label } from './label';
@@ -51,6 +52,27 @@ export const Right: Story = {
       </SheetContent>
     </Sheet>
   ),
+};
+
+export const OpenAndClose: Story = {
+  render: () => (
+    <Sheet>
+      <SheetTrigger asChild>
+        <Button>시트 열기</Button>
+      </SheetTrigger>
+      <SheetContent>
+        <SheetHeader>
+          <SheetTitle>테스트 시트</SheetTitle>
+          <SheetDescription>시트 열림 테스트</SheetDescription>
+        </SheetHeader>
+      </SheetContent>
+    </Sheet>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await userEvent.click(canvas.getByRole('button', { name: '시트 열기' }));
+    await expect(canvas.getByRole('dialog')).toBeInTheDocument();
+  },
 };
 
 export const Left: Story = {

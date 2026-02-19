@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
+import { expect, userEvent, within } from 'storybook/test';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './tabs';
 
 const meta = {
@@ -34,6 +35,28 @@ export const Default: Story = {
       </TabsContent>
     </Tabs>
   ),
+};
+
+export const SwitchTab: Story = {
+  render: () => (
+    <Tabs defaultValue="first" className="w-[400px]">
+      <TabsList>
+        <TabsTrigger value="first">첫 번째</TabsTrigger>
+        <TabsTrigger value="second">두 번째</TabsTrigger>
+      </TabsList>
+      <TabsContent value="first" className="rounded-md border p-4">
+        <p>첫 번째 탭 내용</p>
+      </TabsContent>
+      <TabsContent value="second" className="rounded-md border p-4">
+        <p>두 번째 탭 내용</p>
+      </TabsContent>
+    </Tabs>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await userEvent.click(canvas.getByRole('tab', { name: '두 번째' }));
+    await expect(canvas.getByText('두 번째 탭 내용')).toBeVisible();
+  },
 };
 
 export const TwoTabs: Story = {

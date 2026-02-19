@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
+import { expect, userEvent, within } from 'storybook/test';
 import { Label } from './label';
 import {
   Select,
@@ -78,6 +79,25 @@ export const WithLabel: Story = {
       </Select>
     </div>
   ),
+};
+
+export const OpenOnClick: Story = {
+  render: () => (
+    <Select>
+      <SelectTrigger className="w-[200px]">
+        <SelectValue placeholder="서버 선택" />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectItem value="web-01">web-server-01</SelectItem>
+        <SelectItem value="web-02">web-server-02</SelectItem>
+      </SelectContent>
+    </Select>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await userEvent.click(canvas.getByRole('combobox'));
+    await expect(canvas.getByRole('listbox')).toBeInTheDocument();
+  },
 };
 
 export const Disabled: Story = {

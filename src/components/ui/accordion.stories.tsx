@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
+import { expect, userEvent, within } from 'storybook/test';
 import {
   Accordion,
   AccordionContent,
@@ -51,6 +52,26 @@ export const Single: Story = {
       </AccordionItem>
     </Accordion>
   ),
+};
+
+export const ExpandOnClick: Story = {
+  render: () => (
+    <Accordion type="single" collapsible>
+      <AccordionItem value="item-1">
+        <AccordionTrigger>클릭하여 열기</AccordionTrigger>
+        <AccordionContent>아코디언 콘텐츠가 표시됩니다.</AccordionContent>
+      </AccordionItem>
+    </Accordion>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await userEvent.click(
+      canvas.getByRole('button', { name: '클릭하여 열기' })
+    );
+    await expect(
+      canvas.getByText('아코디언 콘텐츠가 표시됩니다.')
+    ).toBeVisible();
+  },
 };
 
 export const Multiple: Story = {

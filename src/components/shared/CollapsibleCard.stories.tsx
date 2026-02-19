@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
 import { Activity, Server, Settings } from 'lucide-react';
-import { fn } from 'storybook/test';
+import { expect, fn, userEvent, within } from 'storybook/test';
 import CollapsibleCard from './CollapsibleCard';
 
 const meta = {
@@ -57,6 +57,20 @@ export const WithIcon: Story = {
     children: (
       <p className="text-sm text-gray-600">평균 CPU: 42% | 평균 Memory: 65%</p>
     ),
+  },
+};
+
+export const ToggleInteraction: Story = {
+  args: {
+    title: '토글 테스트',
+    isExpanded: false,
+    onToggle: fn(),
+    children: <p>토글 콘텐츠</p>,
+  },
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+    await userEvent.click(canvas.getByRole('button', { name: /토글 테스트/ }));
+    await expect(args.onToggle).toHaveBeenCalled();
   },
 };
 
