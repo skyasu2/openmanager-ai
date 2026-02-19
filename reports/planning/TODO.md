@@ -1,12 +1,33 @@
 # TODO - OpenManager AI v5
 
-**Last Updated**: 2026-02-18 KST
+**Last Updated**: 2026-02-19 KST
 
 ## Active Tasks
 
 | Task | Priority | Status |
 |------|----------|--------|
 | *(활성 잔여 없음)* | — | — |
+
+### Completed (2026-02-19)
+- [x] P2: Production QA 전체 통과 — 대시보드, AI 사이드바, 서버 카드, 페이지네이션, Cold Start 검증
+- [x] P2: AI Rate Limit dailyLimit 50→100 — QA 테스트 중 소진 확인, Cloud Run 용량 대비 6.7% 안전 마진
+- [x] P0: `/debug/*` timing-safe 인증 — string 비교→`timingSafeEqual` (타이밍 공격 방지)
+- [x] P1: 429 응답 JSON 파싱 방어 — `response.json()` try-catch 래핑 (non-JSON proxy 방어)
+- [x] P1: rate-limiter 주석 불일치 수정 — 실제 값(10회/분, 100회/일)과 일치
+- [x] P1: wake-up 엔드포인트 rate limiter 추가 — 무인증 남용 방지
+- [x] P2: ColdStartErrorBanner error prop 변경 시 retry 상태 리셋
+- [x] P2: useHybridAIQuery retry 카운트 표시를 실제 maxRetries로 통일
+- [x] P2: useAsyncAIQuery JSDoc timeout 기본값 수정 (120000→15000)
+- [x] P2: wake-up/route HTTP 204 스펙 준수 (body 제거)
+- [x] P2: rate-limiter `x-vercel-forwarded-for` 우선 사용
+- [x] P2: supervisor-routing `console.log`→`logger` 마이그레이션
+- [x] P3: server.ts `verifyApiKey()` 헬퍼 추출 (DRY, 3중 복사→1)
+- [x] P3: rate-limiter 미사용 interface 필드 제거
+- [x] P3: useAsyncAIQuery `||`→`??`, type assertion 제거
+- [x] P3: wake-up/route Retry-After 헤더 추가
+- [x] P3: useHybridAIQuery dead `resumeEnabled` useState→const
+- [x] P3: supervisor-routing/single-agent stale `@version` JSDoc 제거
+- [x] P3: Storybook play function + argTypes 추가 (11 stories)
 
 ### Completed (2026-02-18)
 - [x] P2: Cloud Run E2E 파이프라인 완성 — contract test에 supervisor/stream/v2 입력검증+인증 계약 추가 (LLM 0회), 리팩토링 계획서 3개 archive 이동
