@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
   if (!CLOUD_RUN_URL) {
     return NextResponse.json(
       { status: 'skipped', message: 'Cloud Run URL not configured' },
-      { status: 200 }
+      { status: 204 }
     );
   }
 

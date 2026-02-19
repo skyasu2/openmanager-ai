@@ -76,7 +76,7 @@ export interface AsyncQueryState {
 export interface UseAsyncAIQueryOptions {
   /** Session ID for conversation context */
   sessionId?: string;
-  /** Timeout in milliseconds (default: 120000) */
+  /** Timeout in milliseconds (default: 15000) */
   timeout?: number;
   /** Callback when progress updates */
   onProgress?: (progress: AsyncQueryProgress) => void;

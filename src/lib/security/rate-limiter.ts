@@ -314,9 +314,15 @@ class RateLimiter {
    * 🌐 클라이언트 IP 주소 추출
    */
   private getClientIP(request: NextRequest): string {
+    // Vercel 환경에서는 x-vercel-forwarded-for가 가장 신뢰할 수 있는 IP
+    const vercelForwarded = request.headers.get('x-vercel-forwarded-for');
     const forwarded = request.headers.get('x-forwarded-for');
     const realIp = request.headers.get('x-real-ip');
-    const ip = forwarded?.split(',')[0] ?? realIp ?? 'unknown';
+    const ip =
+      vercelForwarded?.split(',')[0] ??
+      forwarded?.split(',')[0] ??
+      realIp ??
+      'unknown';
     return ip;
   }
 

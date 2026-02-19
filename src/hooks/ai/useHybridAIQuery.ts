@@ -385,13 +385,13 @@ export function useHybridAIQuery(
           : calculateRetryDelay(retryCountRef.current - 1);
 
         logger.info(
-          `[HybridAI] Retrying stream (${retryCountRef.current}/${streamRetryConfig.maxRetries}) ` +
+          `[HybridAI] Retrying stream (${retryCountRef.current}/${maxRetries}) ` +
             `after ${delay}ms (trace: ${traceIdRef.current})`
         );
 
         setState((prev) => ({
           ...prev,
-          warning: `재연결 중... (${retryCountRef.current}/${streamRetryConfig.maxRetries})`,
+          warning: `재연결 중... (${retryCountRef.current}/${maxRetries})`,
         }));
 
         retryTimeoutRef.current = setTimeout(() => {

@@ -9,6 +9,7 @@
 import type { ToolName } from '../../tools-ai-sdk';
 import type { SupervisorMode } from './supervisor-types';
 import { isTavilyAvailable } from '../../lib/tavily-hybrid-rag';
+import { logger } from '../../lib/logger';
 
 // ============================================================================
 // System Prompt
@@ -250,11 +251,11 @@ export function createPrepareStep(query: string, options?: { enableWebSearch?: b
         };
       }
       // Tavily 미사용: 일반 라우팅으로 fallthrough
-      console.log('⚠️ [PrepareStep] Web search requested but Tavily unavailable');
+      logger.warn('[PrepareStep] Web search requested but Tavily unavailable');
     }
 
     if (SIMPLE_CONVERSATION_PATTERNS.test(query.trim())) {
-      console.log(`🎯 [PrepareStep] Simple conversation detected, toolChoice: none`);
+      logger.debug('[PrepareStep] Simple conversation detected, toolChoice: none');
       return { toolChoice: 'none' as const };
     }
 

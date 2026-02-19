@@ -46,6 +46,19 @@ export function ColdStartErrorBanner({
   );
   const [autoRetryExhausted, setAutoRetryExhausted] = useState(false);
 
+  // error prop 변경 시 retry 상태 리셋
+  useEffect(() => {
+    setRetryAttempt(0);
+    setAutoRetryExhausted(false);
+    if (isColdStart) {
+      setCountdown(RETRY_SCHEDULE[0] ?? 5);
+      setIsAutoRetrying(true);
+    } else {
+      setCountdown(0);
+      setIsAutoRetrying(false);
+    }
+  }, [error, isColdStart]);
+
   // 자동 재시도 카운트다운 (다단계)
   useEffect(() => {
     if (!isAutoRetrying || countdown <= 0) return;
