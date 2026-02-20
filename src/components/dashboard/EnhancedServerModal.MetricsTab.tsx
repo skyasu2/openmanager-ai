@@ -24,6 +24,13 @@ import { TimeSeriesChart } from '@/components/charts/TimeSeriesChart';
 import { useTimeSeriesMetrics } from '@/hooks/useTimeSeriesMetrics';
 
 import { RealtimeChart } from './EnhancedServerModal.components';
+import {
+  METRIC_TYPES,
+  type MetricType,
+  TIME_RANGE_OPTIONS,
+  type TimeRangeType,
+  type ViewMode,
+} from './EnhancedServerModal.metrics.constants';
 import type {
   ChartData,
   RealtimeData,
@@ -44,17 +51,6 @@ interface MetricsTabProps {
   /** 실시간 모니터링 토글 함수 */
   onToggleRealtime: () => void;
 }
-
-type ViewMode = 'simple' | 'advanced';
-type MetricType = 'cpu' | 'memory' | 'disk' | 'network';
-type TimeRangeType = '1h' | '6h' | '24h' | '7d';
-
-const TIME_RANGE_OPTIONS: { value: TimeRangeType; label: string }[] = [
-  { value: '1h', label: '1시간' },
-  { value: '6h', label: '6시간' },
-  { value: '24h', label: '24시간' },
-  { value: '7d', label: '7일' },
-];
 
 /**
  * 📈 Metrics Tab Component
@@ -317,22 +313,20 @@ export const MetricsTab: FC<MetricsTabProps> = ({
                   메트릭:
                 </span>
                 <div className="flex gap-1">
-                  {(['cpu', 'memory', 'disk', 'network'] as MetricType[]).map(
-                    (m) => (
-                      <button
-                        type="button"
-                        key={m}
-                        onClick={() => setSelectedMetric(m)}
-                        className={`rounded-lg px-3 py-1.5 text-sm font-medium transition-all ${
-                          selectedMetric === m
-                            ? 'bg-blue-500 text-white'
-                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                        }`}
-                      >
-                        {m.toUpperCase()}
-                      </button>
-                    )
-                  )}
+                  {METRIC_TYPES.map((m) => (
+                    <button
+                      type="button"
+                      key={m}
+                      onClick={() => setSelectedMetric(m)}
+                      className={`rounded-lg px-3 py-1.5 text-sm font-medium transition-all ${
+                        selectedMetric === m
+                          ? 'bg-blue-500 text-white'
+                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                      }`}
+                    >
+                      {m.toUpperCase()}
+                    </button>
+                  ))}
                 </div>
               </div>
 

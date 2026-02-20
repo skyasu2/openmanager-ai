@@ -5,13 +5,14 @@ import dynamic from 'next/dynamic';
 import React, { useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { getDiagramByCardId } from '@/data/architecture-diagrams.data';
-import { TECH_STACKS_DATA, type VibeCodeData } from '@/data/tech-stacks.data';
 import { logger } from '@/lib/logging';
 import { useUnifiedAdminStore } from '@/stores/useUnifiedAdminStore';
-import type {
-  FeatureCardModalProps,
-  TechItem,
-} from '@/types/feature-card.types';
+import type { FeatureCardModalProps } from '@/types/feature-card.types';
+import {
+  buildCategorizedTechData,
+  getSafeCardData,
+  sanitizeModalText,
+} from './FeatureCardModal.utils';
 import type { ReactFlowDiagramProps } from './ReactFlowDiagram';
 import { TechStackSection } from './TechStackSection';
 import { VibeHistorySection } from './VibeHistorySection';
@@ -28,26 +29,6 @@ const ReactFlowDiagram = dynamic<ReactFlowDiagramProps>(
     ),
   }
 );
-
-// 🛡️ Codex 제안: 타입 가드 함수 (프로덕션 안정성 강화)
-const isValidCard = (
-  card: unknown
-): card is NonNullable<FeatureCardModalProps['selectedCard']> => {
-  return (
-    typeof card === 'object' &&
-    card !== null &&
-    'id' in card &&
-    'title' in card &&
-    'icon' in card &&
-    'gradient' in card
-  );
-};
-
-// 🛡️ Codex 제안: XSS 방지를 위한 텍스트 검증
-const sanitizeText = (text: string): string => {
-  if (typeof text !== 'string') return '';
-  return text.replace(/<script[^>]*>.*?<\/script>/gi, '').substring(0, 1000); // 길이 제한
-};
 
 export default function FeatureCardModal({
   selectedCard,
@@ -143,31 +124,7 @@ export default function FeatureCardModal({
 
   // 🎯 Gemini 제안: 타입 안전성 강화 + 의존성 최적화
   const cardData = React.useMemo(() => {
-    // 🛡️ Codex 제안: 런타임 검증 추가
-    if (!isValidCard(selectedCard)) {
-      return {
-        title: '',
-        icon: Bot,
-        gradient: 'from-blue-500 to-purple-600',
-        detailedContent: { overview: '', features: [], technologies: [] },
-        id: null,
-        requiresAI: false,
-      };
-    }
-
-    return {
-      title: sanitizeText(selectedCard.title),
-      icon: selectedCard.icon || Bot,
-      gradient: selectedCard.gradient || 'from-blue-500 to-purple-600',
-      detailedContent: selectedCard.detailedContent || {
-        overview: '',
-        features: [],
-        technologies: [],
-      },
-      id: selectedCard.id,
-      requiresAI: selectedCard.requiresAI || false,
-      subSections: selectedCard.subSections,
-    };
+    return getSafeCardData(selectedCard);
   }, [selectedCard]); // selectedCard 전체 객체 의존성
 
   // 일관된 구조분해 할당 (Hook 순서에 영향 없음)
@@ -181,64 +138,7 @@ export default function FeatureCardModal({
 
   // 🎯 Qwen 제안: 메모리 효율성 개선 - 단일 순회로 모든 중요도별 분류 처리
   const categorizedTechData = React.useMemo(() => {
-    const selectedCardId = cardData.id;
-
-    // 항상 동일한 구조 반환 (배열 + 메타데이터)
-    const result = {
-      allCards: [] as TechItem[],
-      currentCards: [] as TechItem[], // 🆕 현재 도구 목록 추가
-      hasData: false,
-      isVibeCard: false,
-      historyStages: null as VibeCodeData['history'] | null,
-      categorized: {
-        critical: [] as TechItem[],
-        high: [] as TechItem[],
-        medium: [] as TechItem[],
-        low: [] as TechItem[],
-      },
-    };
-
-    if (!selectedCardId) {
-      return result; // 빈 구조체 반환
-    }
-
-    const data = TECH_STACKS_DATA[selectedCardId] || null;
-    if (!data) {
-      return result; // 빈 구조체 반환
-    }
-
-    // 바이브 코딩 카드 처리
-    if (selectedCardId === 'vibe-coding' && 'current' in data) {
-      const vibeData = data as VibeCodeData;
-      result.isVibeCard = true;
-      result.historyStages = vibeData.history || null;
-      result.currentCards = vibeData.current || []; // 🆕 현재 도구 저장
-
-      if (isHistoryView && vibeData.history) {
-        // 🎯 Qwen 제안: O(n²) → O(n) 최적화 - concat 체인 사용
-        result.allCards = ([] as TechItem[]).concat(
-          vibeData.history.stage1 || [],
-          vibeData.history.stage2 || [],
-          vibeData.history.stage3 || []
-        );
-      } else {
-        result.allCards = vibeData.current || [];
-      }
-    } else {
-      // 일반 카드 처리
-      result.allCards = Array.isArray(data) ? data : [];
-    }
-
-    // 🎯 Qwen 제안: 단일 순회로 모든 중요도별 분류 처리 (O(n) 복잡도)
-    result.allCards.forEach((tech) => {
-      const importance = tech.importance;
-      if (result.categorized[importance]) {
-        result.categorized[importance].push(tech);
-      }
-    });
-
-    result.hasData = result.allCards.length > 0;
-    return result;
+    return buildCategorizedTechData(cardData.id, isHistoryView);
   }, [cardData.id, isHistoryView]);
 
   // 기술 스택 배열 추출 (항상 배열)
@@ -326,7 +226,7 @@ export default function FeatureCardModal({
             <p className="mx-auto max-w-2xl text-sm text-gray-300">
               {cardData.id === 'vibe-coding' && isHistoryView
                 ? '바이브 코딩 여정: 초기(ChatGPT 개별 페이지) → 중기(Cursor + Vercel + Supabase) → 후기(Claude Code + WSL)로 이어진 개발 환경의 변화를 시간 순서대로 보여줍니다.'
-                : sanitizeText(detailedContent.overview)}
+                : sanitizeModalText(detailedContent.overview)}
             </p>
           </div>
 

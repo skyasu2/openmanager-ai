@@ -16,12 +16,7 @@
  * @updated 2026-01-24 - Implemented Upstash-compatible resumable stream
  */
 
-import {
-  createUIMessageStream,
-  createUIMessageStreamResponse,
-  generateId,
-} from 'ai';
-import { createHash } from 'crypto';
+import { generateId } from 'ai';
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
@@ -35,11 +30,18 @@ import {
   type HybridMessage,
   normalizeMessagesForCloudRun,
 } from '@/lib/ai/utils/message-normalizer';
-import { getAPIAuthContext, withAuth } from '@/lib/auth/api-auth';
+import { withAuth } from '@/lib/auth/api-auth';
 import { logger } from '@/lib/logging';
 import { rateLimiters, withRateLimit } from '@/lib/security/rate-limiter';
 import { requestSchemaLoose } from '../../schemas';
 import { securityCheck } from '../../security';
+import {
+  createStreamErrorResponse,
+  getStreamOwnerKey,
+  NORMALIZED_MESSAGES_SCHEMA,
+  trimMessagesForContext,
+  UI_MESSAGE_STREAM_HEADERS,
+} from './route-utils';
 import {
   clearActiveStreamId,
   getActiveStreamId,
@@ -56,18 +58,6 @@ import { createUpstashResumableContext } from './upstash-resumable';
 // ============================================================================
 export const maxDuration = 60;
 const SUPERVISOR_STREAM_ROUTE_MAX_DURATION_SECONDS = maxDuration;
-
-// UI Message Stream headers (AI SDK v6 standard)
-// 🎯 CRITICAL: x-vercel-ai-ui-message-stream header is REQUIRED for AI SDK v6
-// Cloud Run uses createUIMessageStreamResponse which produces UIMessageStream format.
-// Without this header, the SDK cannot parse the stream correctly.
-// @see https://ai-sdk.dev/docs/ai-sdk-ui/stream-protocol
-const UI_MESSAGE_STREAM_HEADERS = {
-  'Content-Type': 'text/event-stream',
-  'Cache-Control': 'no-cache',
-  Connection: 'keep-alive',
-  'x-vercel-ai-ui-message-stream': 'v1',
-};
 
 function getSupervisorStreamRequestTimeoutMs(): number {
   const routeBudgetMs = getRouteMaxExecutionMs(
@@ -86,113 +76,6 @@ function getSupervisorStreamAbortTimeoutMs(): number {
       getSupervisorStreamRequestTimeoutMs()
     )
   );
-}
-
-const NORMALIZED_MESSAGE_SCHEMA = z.object({
-  role: z.enum(['user', 'assistant', 'system']),
-  content: z.string().min(1).max(50_000),
-  images: z
-    .array(
-      z.object({
-        data: z
-          .string()
-          .min(1)
-          .max(14 * 1024 * 1024),
-        mimeType: z.string().min(1).max(255),
-        name: z.string().max(255).optional(),
-      })
-    )
-    .optional(),
-  files: z
-    .array(
-      z.object({
-        data: z
-          .string()
-          .min(1)
-          .max(14 * 1024 * 1024),
-        mimeType: z.string().min(1).max(255),
-        name: z.string().max(255).optional(),
-      })
-    )
-    .optional(),
-});
-
-const NORMALIZED_MESSAGES_SCHEMA = z
-  .array(NORMALIZED_MESSAGE_SCHEMA)
-  .min(1)
-  .max(50);
-
-const MAX_CONTEXT_MESSAGES = 24;
-
-function hashValue(value: string): string {
-  return createHash('sha256').update(value).digest('hex').slice(0, 20);
-}
-
-function getStreamOwnerKey(req: NextRequest): string {
-  const authContext = getAPIAuthContext(req);
-  if (authContext?.userId) {
-    return `user:${hashValue(authContext.userId)}`;
-  }
-  if (authContext?.keyFingerprint) {
-    return `api:${authContext.keyFingerprint}`;
-  }
-
-  // Cookie 헤더 전체를 해시하면 회전 쿠키 변화에 취약하므로
-  // 안정적인 세션 식별 쿠키를 우선 사용한다.
-  const authSessionId = req.cookies.get('auth_session_id')?.value;
-  if (authSessionId) return `guest:${hashValue(authSessionId)}`;
-
-  const supabaseTokenCookie = req.cookies
-    .getAll()
-    .find((cookie) => /^sb-.*-auth-token$/.test(cookie.name))?.value;
-  if (supabaseTokenCookie) return `supa:${hashValue(supabaseTokenCookie)}`;
-
-  const apiKey = req.headers.get('x-api-key');
-  if (apiKey) return `api:${hashValue(apiKey)}`;
-
-  const cookieHeader = req.headers.get('cookie');
-  if (cookieHeader) return `cookie:${hashValue(cookieHeader)}`;
-
-  const testSecret = req.headers.get('x-test-secret');
-  if (testSecret) return `test:${hashValue(testSecret)}`;
-
-  // NOTE: IP+UA fingerprint is spoofable; acceptable for portfolio/demo context.
-  // A production system should use a server-generated nonce stored in an HttpOnly cookie.
-  const ip =
-    req.headers.get('x-real-ip') || req.headers.get('x-forwarded-for') || '';
-  const ua = req.headers.get('user-agent') || '';
-  return `fp:${hashValue(`${ip}|${ua}`)}`;
-}
-
-function trimMessagesForContext(messages: HybridMessage[]): HybridMessage[] {
-  if (messages.length <= MAX_CONTEXT_MESSAGES) {
-    return messages;
-  }
-
-  const systemMessages = messages.filter((m) => m.role === 'system').slice(-2);
-  const nonSystemMessages = messages.filter((m) => m.role !== 'system');
-  const tailLimit = Math.max(1, MAX_CONTEXT_MESSAGES - systemMessages.length);
-
-  return [...systemMessages, ...nonSystemMessages.slice(-tailLimit)];
-}
-
-/** Cloud Run 연결 실패 시 UIMessageStream 형식으로 에러 반환 */
-function createStreamErrorResponse(errorMessage: string): Response {
-  const stream = createUIMessageStream({
-    execute: async ({ writer }) => {
-      const errorId = `error-${generateId()}`;
-      writer.write({ type: 'text-start', id: errorId });
-      writer.write({
-        type: 'text-delta',
-        id: errorId,
-        delta: `⚠️ 오류: ${errorMessage}`,
-      });
-      writer.write({ type: 'text-end', id: errorId });
-      writer.write({ type: 'error', errorText: errorMessage });
-    },
-  });
-
-  return createUIMessageStreamResponse({ stream });
 }
 
 // ============================================================================

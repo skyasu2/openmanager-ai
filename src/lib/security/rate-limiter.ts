@@ -43,28 +43,7 @@ import {
 } from '../redis/rate-limiter';
 import { EdgeLogger } from '../runtime/edge-runtime-utils';
 import { InMemoryRateLimiter } from './in-memory-rate-limiter';
-
-// ==============================================
-// 🎯 Rate Limit 관련 타입 정의
-// ==============================================
-
-interface RateLimitConfig {
-  maxRequests: number;
-  windowMs: number;
-  /** 일일 최대 요청 수 (Cloud Run 무료 티어 최적화) */
-  dailyLimit?: number;
-}
-
-interface RateLimitResult {
-  allowed: boolean;
-  remaining: number;
-  resetTime: number;
-  /** 일일 제한 정보 (설정된 경우) */
-  daily?: {
-    remaining: number;
-    resetTime: number;
-  };
-}
+import type { RateLimitConfig, RateLimitResult } from './rate-limiter-types';
 
 // ==============================================
 // 🏗️ Serverless Rate Limiter 클래스

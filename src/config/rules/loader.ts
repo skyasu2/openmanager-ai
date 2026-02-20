@@ -32,66 +32,9 @@ import type {
   IRulesLoader,
   AlertRule,
 } from './types';
-import { z } from 'zod';
 import { logger } from '@/lib/logging';
+import { MetricThresholdSchema, SystemRuleRecord, SystemRulesSchema } from './schema';
 import systemRulesJson from './system-rules.json';
-
-// ============================================================================
-// Zod Schema: JSON → SystemRules 변환 시 런타임 검증
-// ============================================================================
-
-const MetricThresholdSchema = z.object({
-  warning: z.number(),
-  critical: z.number(),
-  description: z.string().optional(),
-});
-
-const ServerStatusRuleSchema = z.object({
-  name: z.string(),
-  condition: z.string(),
-  resultStatus: z.enum(['online', 'warning', 'critical', 'offline']),
-  priority: z.number(),
-  for: z.string().optional(),
-});
-
-const AlertRuleSchema = z.object({
-  id: z.string(),
-  name: z.string(),
-  metricType: z.enum(['cpu', 'memory', 'disk', 'network', 'response_time']),
-  operator: z.enum(['>', '>=', '<', '<=', '==', '!=']),
-  threshold: z.number(),
-  severity: z.enum(['info', 'warning', 'critical']),
-  enabled: z.boolean(),
-  description: z.string().optional(),
-});
-
-const SystemRulesSchema = z.object({
-  version: z.string(),
-  lastUpdated: z.string(),
-  thresholds: z.object({
-    cpu: MetricThresholdSchema,
-    memory: MetricThresholdSchema,
-    disk: MetricThresholdSchema,
-    network: MetricThresholdSchema,
-    responseTime: MetricThresholdSchema,
-  }),
-  statusRules: z.array(ServerStatusRuleSchema),
-  alertRules: z.array(AlertRuleSchema),
-  metadata: z.object({
-    description: z.string(),
-    maintainer: z.string(),
-    aiInstructions: z.string(),
-  }),
-});
-
-/** Supabase system_rules 테이블 레코드 타입 */
-interface SystemRuleRecord {
-  category: string;
-  key: string;
-  value: MetricThreshold | AlertRule | string;
-  description?: string;
-  enabled?: boolean;
-}
 
 /**
  * 시스템 규칙 로더 클래스

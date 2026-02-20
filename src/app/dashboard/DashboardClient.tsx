@@ -7,7 +7,6 @@
  * Handles client-side interactivity (auth, AI sidebar, real-time updates).
  */
 
-import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
 import { Suspense, useCallback, useEffect, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
@@ -31,6 +30,11 @@ import { useUnifiedAdminStore } from '@/stores/useUnifiedAdminStore';
 import type { Server } from '@/types/server';
 import { triggerAIWarmup } from '@/utils/ai-warmup';
 import debug from '@/utils/debug';
+import {
+  AnimatedAISidebar,
+  ContentLoadingSkeleton,
+  checkTestMode,
+} from './dashboard-client-helpers';
 
 /** Props for DashboardClient (Phase 2: SSR data) */
 type DashboardClientProps = {
@@ -42,133 +46,9 @@ type DashboardClientProps = {
 
 // 🔧 레거시 정리 (2026-01-17): EnhancedServerModal은 ServerDashboard 내부에서 직접 사용
 
-// AI Sidebar를 CSS 애니메이션으로 동적 로드
-const AnimatedAISidebar = dynamic(
-  async () => {
-    const AISidebarV4 = await import('@/components/ai-sidebar/AISidebarV4');
-
-    return function AnimatedAISidebarWrapper(props: {
-      isOpen: boolean;
-      onClose: () => void;
-      [key: string]: unknown;
-    }) {
-      const { isOpen, onClose, ...otherProps } = props;
-      const MOBILE_SIDEBAR_WIDTH_VW = 90;
-      const mobileBackdropTapWidth = `calc(100vw - ${MOBILE_SIDEBAR_WIDTH_VW}vw)`;
-      return (
-        <>
-          {isOpen && (
-            <>
-              {/* 모바일 백드롭: 시각 레이어 */}
-              <div
-                aria-hidden="true"
-                className="pointer-events-none fixed inset-0 z-30 bg-black/50 md:hidden"
-              />
-              {/* 모바일 백드롭: 탭 닫기 레이어 (사이드바 바깥 영역만) */}
-              <button
-                type="button"
-                className="fixed inset-y-0 left-0 z-40 md:hidden"
-                style={{ width: mobileBackdropTapWidth }}
-                onClick={onClose}
-                aria-label="사이드바 닫기"
-              />
-              <div
-                className="fixed right-0 top-0 z-50 h-dvh w-full max-w-[90vw] transform transition-transform duration-300 ease-in-out md:top-24 md:h-[calc(100dvh-6rem)] md:w-96 lg:top-16 lg:h-[calc(100dvh-4rem)]"
-                style={{
-                  transform: isOpen ? 'translateX(0)' : 'translateX(100%)',
-                }}
-              >
-                <AISidebarV4.default
-                  onClose={onClose}
-                  isOpen={isOpen}
-                  {...otherProps}
-                />
-              </div>
-            </>
-          )}
-        </>
-      );
-    };
-  },
-  {
-    loading: () => (
-      <div className="fixed right-0 top-0 z-50 h-dvh w-full max-w-[90vw] border-l border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900 md:top-24 md:h-[calc(100dvh-6rem)] md:w-96 lg:top-16 lg:h-[calc(100dvh-4rem)]">
-        <div className="flex h-full items-center justify-center">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-blue-500 border-t-transparent"></div>
-        </div>
-      </div>
-    ),
-    ssr: false, // 클라이언트 전용 컴포넌트
-  }
-);
-
 // 🔧 레거시 정리 (2026-01-17): AnimatedServerModal dynamic import 제거
 // - ServerDashboard 내부에서 EnhancedServerModal 직접 렌더링
 // - 중복 모달 시스템 제거로 번들 크기 최적화
-
-const ContentLoadingSkeleton = () => (
-  <div className="min-h-screen bg-gray-100 p-6 dark:bg-gray-900">
-    <div className="space-y-6">
-      {/* 헤더 스켈레톤 */}
-      <div className="h-16 animate-pulse rounded-lg bg-gray-200 dark:bg-gray-800"></div>
-
-      {/* 통계 카드 스켈레톤 */}
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {[1, 2, 3, 4].map((i) => (
-          <div
-            key={i}
-            className="h-24 animate-pulse rounded-lg bg-gray-200 dark:bg-gray-800"
-          ></div>
-        ))}
-      </div>
-
-      {/* 서버 카드 그리드 스켈레톤 */}
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
-          <div
-            key={i}
-            className="h-48 animate-pulse rounded-lg bg-gray-200 dark:bg-gray-800"
-          ></div>
-        ))}
-      </div>
-    </div>
-  </div>
-);
-
-// 🔧 Error Boundary 클래스 제거됨 - React 19의 ErrorBoundary 또는 next.js error.tsx 사용 권장
-
-// 🧪 테스트 모드 체크 함수 (컴포넌트 외부로 이동 - E2E 테스트용)
-function checkTestMode(): boolean {
-  // SSR 환경 체크
-  if (typeof document === 'undefined' || typeof window === 'undefined') {
-    return false;
-  }
-
-  // 쿠키 체크 - 🔒 FIX: Safe access pattern for document.cookie
-  const cookieStr = typeof document.cookie === 'string' ? document.cookie : '';
-  const cookies = cookieStr.split(';').map((c) => c.trim());
-  const hasTestMode = cookies.some((c) => c.startsWith('test_mode=enabled'));
-  const hasTestToken = cookies.some((c) => c.startsWith('vercel_test_token='));
-
-  if (hasTestMode || hasTestToken) {
-    return true;
-  }
-
-  // localStorage 체크 (보조) - 🔒 FIX: Safe access pattern for localStorage
-  try {
-    const testModeEnabled =
-      typeof localStorage !== 'undefined' &&
-      localStorage.getItem('test_mode_enabled') === 'true';
-
-    if (testModeEnabled) {
-      return true;
-    }
-  } catch {
-    // localStorage가 비활성화된 환경 (시크릿 모드 등)에서 무시
-  }
-
-  return false;
-}
 
 function DashboardPageContent({ initialServers }: DashboardClientProps) {
   // 🔒 Hydration 불일치 방지를 위한 클라이언트 전용 상태
