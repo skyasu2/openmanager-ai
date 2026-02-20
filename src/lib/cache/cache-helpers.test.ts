@@ -134,9 +134,7 @@ describe('invalidateSessionCache SCAN 패턴 경계', () => {
    */
   function redisGlobToRegex(pattern: string): RegExp {
     const escaped = pattern.replace(/[.+^${}()|[\]\\]/g, '\\$&');
-    return new RegExp(
-      `^${escaped.replace(/\*/g, '.*').replace(/\?/g, '.')}$`
-    );
+    return new RegExp(`^${escaped.replace(/\*/g, '.*').replace(/\?/g, '.')}$`);
   }
 
   it('세그먼트 패턴이 동일 세션 키만 매칭한다 (endpoint 있음/없음)', async () => {

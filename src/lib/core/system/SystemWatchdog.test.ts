@@ -35,7 +35,9 @@ describe('SystemWatchdog runMonitoringCycle 순서 보장', () => {
       });
 
     // private runMonitoringCycle 직접 호출
-    await (watchdog as unknown as RunMonitoringCycleAccessor).runMonitoringCycle();
+    await (
+      watchdog as unknown as RunMonitoringCycleAccessor
+    ).runMonitoringCycle();
 
     expect(callOrder).toEqual([
       'collectMetrics',

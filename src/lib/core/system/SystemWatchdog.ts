@@ -17,12 +17,12 @@ import {
   getCurrentWatchdogAlerts,
 } from './SystemWatchdog.alerts';
 import {
-  type SystemMetrics,
-  type SystemStatus,
-  type WatchdogAlerts,
   calculatePerformanceScore,
   calculateStabilityScore,
   createInitialSystemMetrics,
+  type SystemMetrics,
+  type SystemStatus,
+  type WatchdogAlerts,
 } from './SystemWatchdog.helpers';
 import {
   collectRuntimeMetrics,

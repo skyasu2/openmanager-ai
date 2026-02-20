@@ -1,8 +1,8 @@
-import type { CacheItem } from './unified-cache.types';
 import {
   decrementNamespaceCount,
   type UnifiedCacheStatsState,
 } from './unified-cache.stats';
+import type { CacheItem } from './unified-cache.types';
 
 function buildGlobRegex(pattern: string): RegExp {
   const escaped = pattern.replace(/[.+?^${}()|[\]\\]/g, '\\$&');

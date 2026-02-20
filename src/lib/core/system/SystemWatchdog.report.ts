@@ -1,5 +1,5 @@
-import { getWatchdogRecommendation } from './SystemWatchdog.helpers';
 import type { SystemMetrics, WatchdogAlerts } from './SystemWatchdog.helpers';
+import { getWatchdogRecommendation } from './SystemWatchdog.helpers';
 import type {
   WatchdogAlertEntry,
   WatchdogReport,

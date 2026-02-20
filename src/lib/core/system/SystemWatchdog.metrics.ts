@@ -1,5 +1,5 @@
-import { calculateErrorRate } from './SystemWatchdog.helpers';
 import type { SystemMetrics, SystemStatus } from './SystemWatchdog.helpers';
+import { calculateErrorRate } from './SystemWatchdog.helpers';
 import type { WatchdogCpuTracker } from './SystemWatchdog.types';
 
 const HISTORY_WINDOW_MS = 5 * 60 * 1000;
@@ -11,7 +11,8 @@ export function estimateCPUUsageDelta(cpuTracker: WatchdogCpuTracker): number {
   if (cpuTracker.previousCpuUsage && cpuTracker.previousCpuTime) {
     const elapsedNs = Number(currentTime - cpuTracker.previousCpuTime);
     const elapsedMs = elapsedNs / 1_000_000;
-    const userDelta = (currentUsage.user - cpuTracker.previousCpuUsage.user) / 1000;
+    const userDelta =
+      (currentUsage.user - cpuTracker.previousCpuUsage.user) / 1000;
     const systemDelta =
       (currentUsage.system - cpuTracker.previousCpuUsage.system) / 1000;
     const totalCPUTime = userDelta + systemDelta;

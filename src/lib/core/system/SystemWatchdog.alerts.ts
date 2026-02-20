@@ -1,10 +1,10 @@
 import {
   type SystemEvent,
-  type WatchdogEventPayload,
   SystemEventType,
+  type WatchdogEventPayload,
 } from '../interfaces/SystemEventBus';
-import { detectMemoryLeak } from './SystemWatchdog.helpers';
 import type { SystemMetrics, WatchdogAlerts } from './SystemWatchdog.helpers';
+import { detectMemoryLeak } from './SystemWatchdog.helpers';
 
 export interface WatchdogAlertDispatchPlan {
   alertType: string;
@@ -12,7 +12,9 @@ export interface WatchdogAlertDispatchPlan {
   eventPayload: SystemEvent<WatchdogEventPayload>;
 }
 
-export function getCurrentWatchdogAlerts(metrics: SystemMetrics): WatchdogAlerts {
+export function getCurrentWatchdogAlerts(
+  metrics: SystemMetrics
+): WatchdogAlerts {
   return {
     memoryLeak: detectMemoryLeak(metrics.memory),
     highErrorRate: metrics.errorRate > 25,

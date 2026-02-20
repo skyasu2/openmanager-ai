@@ -23,19 +23,22 @@
 // 타입 정의
 import { logger } from '@/lib/logging';
 import { normalizeSemanticCacheQuery } from './query-normalizer';
-import { getTopQueryPatterns, learnQueryPattern } from './unified-cache.patterns';
 import {
-  cleanupExpiredEntries,
-  evictLeastRecentlyUsed,
-  invalidateCacheEntries,
-  touchCacheEntry,
-} from './unified-cache.store';
+  getTopQueryPatterns,
+  learnQueryPattern,
+} from './unified-cache.patterns';
 import {
   buildCacheStats,
   createInitialStatsState,
   incrementNamespaceCount,
   type UnifiedCacheStatsState,
 } from './unified-cache.stats';
+import {
+  cleanupExpiredEntries,
+  evictLeastRecentlyUsed,
+  invalidateCacheEntries,
+  touchCacheEntry,
+} from './unified-cache.store';
 import {
   type CacheItem,
   CacheNamespace,
