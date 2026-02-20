@@ -4,11 +4,11 @@
 > Owner: platform-architecture
 > Status: Active
 > Doc type: Reference
-> Last reviewed: 2026-02-15
+> Last reviewed: 2026-02-20
 > Canonical: docs/reference/architecture/infrastructure/free-tier-optimization.md
 > Tags: free-tier,cost,performance,web-vitals,optimization
 >
-> **프로젝트 버전**: v8.0.0 | **Updated**: 2026-02-15
+> **프로젝트 버전**: v8.0.0 | **Updated**: 2026-02-20
 
 ## 개요
 
@@ -18,7 +18,7 @@
 
 | 서비스 | 플랜 | 월 제한 | 현재 사용 | 비용 |
 |--------|------|---------|----------|------|
-| **Vercel** | Hobby | 100GB 대역폭, 100시간 빌드 | ~5% | ₩0 |
+| **Vercel** | Hobby | Included usage 기준 운영 (예: Fast Data Transfer 100GB, Build Execution 100h) | ~5% | ₩0 |
 | **Google Cloud Run** | Free Tier | 180K vCPU-sec, 2M 요청 | ~10% | ₩0 |
 | **Google Cloud Build** | Free Tier | 120분/일 (e2-medium) | ~5% | ₩0 |
 | **Supabase** | Free | 500MB DB, 1GB 스토리지 | ~15% | ₩0 |
@@ -27,6 +27,14 @@
 | **Sentry** | Free | 50K 이벤트/월 | ~3% | ₩0 |
 | **LLM Providers** | Free Tier | 프로바이더별 상이 | 변동 | ₩0 |
 | **합계** | | | | **₩0** |
+
+Vercel Hobby는 개인/비상업 프로젝트 조건이 있으며, 팀/상업 운영은 Pro 이상을 전제로 해야 합니다.
+Pro는 seat 당 월 과금(+사용량 기반 초과 과금) 구조이며, 포함 크레딧/Included usage는 공식 페이지 기준으로 주기 점검합니다.
+
+Reference (checked: 2026-02-20):
+- https://vercel.com/pricing
+- https://vercel.com/docs/limits/overview
+- https://vercel.com/docs/platform/fair-use-guidelines
 
 ---
 

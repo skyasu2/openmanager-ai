@@ -10,6 +10,7 @@ const {
   mockGetCurrentMaxDuration,
   mockGetFunctionTimeoutReserveMs,
   mockGetMaxFunctionDurationMs,
+  mockGetRouteMaxExecutionMs,
   mockGetMinTimeout,
   mockGetMaxTimeout,
   mockClampTimeout,
@@ -27,6 +28,7 @@ const {
   mockGetCurrentMaxDuration: vi.fn(),
   mockGetFunctionTimeoutReserveMs: vi.fn(),
   mockGetMaxFunctionDurationMs: vi.fn(),
+  mockGetRouteMaxExecutionMs: vi.fn(),
   mockGetMinTimeout: vi.fn(),
   mockGetMaxTimeout: vi.fn(),
   mockClampTimeout: vi.fn(),
@@ -50,6 +52,7 @@ vi.mock('@/config/ai-proxy.config', () => ({
   getCurrentMaxDuration: mockGetCurrentMaxDuration,
   getFunctionTimeoutReserveMs: mockGetFunctionTimeoutReserveMs,
   getMaxFunctionDurationMs: mockGetMaxFunctionDurationMs,
+  getRouteMaxExecutionMs: mockGetRouteMaxExecutionMs,
   getMinTimeout: mockGetMinTimeout,
   getMaxTimeout: mockGetMaxTimeout,
   clampTimeout: mockClampTimeout,
@@ -109,6 +112,7 @@ describe('/api/ai/incident-report POST', () => {
     mockGetCurrentMaxDuration.mockReturnValue(60);
     mockGetFunctionTimeoutReserveMs.mockReturnValue(1500);
     mockGetMaxFunctionDurationMs.mockReturnValue(60_000);
+    mockGetRouteMaxExecutionMs.mockReturnValue(60_000);
     mockGetMinTimeout.mockImplementation((endpoint: string) =>
       endpoint === 'incident-report' ? 5000 : 3000
     );
@@ -232,6 +236,7 @@ describe('/api/ai/incident-report POST', () => {
     mockGetCurrentMaxDuration.mockReturnValue(10);
     mockGetFunctionTimeoutReserveMs.mockReturnValue(1200);
     mockGetMaxFunctionDurationMs.mockReturnValue(10_000);
+    mockGetRouteMaxExecutionMs.mockReturnValue(10_000);
     mockGetDefaultTimeout.mockReturnValue(7_000);
 
     mockExecuteWithCircuitBreakerAndFallback

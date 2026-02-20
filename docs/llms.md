@@ -4,11 +4,11 @@
 > Owner: documentation
 > Status: Active
 > Doc type: Reference
-> Last reviewed: 2026-02-15
+> Last reviewed: 2026-02-20
 > Canonical: docs/llms.md
 > Tags: llm,context,ai
 >
-> **v8.0.0** | Updated 2026-02-15
+> **v8.0.0** | Updated 2026-02-20
 >
 > AI 어시스턴트가 프로젝트를 이해하는 데 필요한 핵심 정보
 
@@ -79,8 +79,13 @@ curl $SERVICE_URL/health  # Health check
 
 1. TypeScript strict mode - no `any` types
 2. AI Engine timeout: 300s (Cloud Run free-tier deploy config)
-3. Vercel timeout: 60s (Pro tier, route-specific maxDuration)
+3. Vercel timeout:
+   - Legacy defaults: Hobby 10s default / 60s max, Pro 15s default / 300s max
+   - Fluid Compute: Hobby 300s(default)/300s max, Pro 300s(default)/800s max
 4. Free tier optimization: Cerebras/Mistral/Groq rotation + Gemini (Vision)
+
+Reference (checked: 2026-02-20):
+- https://vercel.com/docs/limits/overview
 
 ## Contact
 

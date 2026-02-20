@@ -25,7 +25,11 @@ import { createHash } from 'crypto';
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
-import { getMaxTimeout } from '@/config/ai-proxy.config';
+import {
+  getFunctionTimeoutReserveMs,
+  getMaxTimeout,
+  getRouteMaxExecutionMs,
+} from '@/config/ai-proxy.config';
 import {
   extractLastUserQuery,
   type HybridMessage,
@@ -46,12 +50,12 @@ import { createUpstashResumableContext } from './upstash-resumable';
 // ============================================================================
 // ⚡ maxDuration - Vercel 빌드 타임 상수
 // ============================================================================
-// Next.js가 정적 분석하므로 리터럴 값 필수. 티어 변경 시 아래 값 수동 변경:
-// - Free tier:  export const maxDuration = 10;
-// - Pro tier:   export const maxDuration = 60;  ← 현재
+// Next.js 정적 분석이 필요하므로 리터럴 값이 필수입니다.
+// 실제 런타임 타임아웃은 src/config/ai-proxy.config.ts 에서 환경변수로 관리합니다.
 // @see src/config/ai-proxy.config.ts (런타임 타임아웃 설정)
 // ============================================================================
-export const maxDuration = 60; // 🔧 현재: Pro tier
+export const maxDuration = 60;
+const SUPERVISOR_STREAM_ROUTE_MAX_DURATION_SECONDS = maxDuration;
 
 // UI Message Stream headers (AI SDK v6 standard)
 // 🎯 CRITICAL: x-vercel-ai-ui-message-stream header is REQUIRED for AI SDK v6
@@ -64,6 +68,25 @@ const UI_MESSAGE_STREAM_HEADERS = {
   Connection: 'keep-alive',
   'x-vercel-ai-ui-message-stream': 'v1',
 };
+
+function getSupervisorStreamRequestTimeoutMs(): number {
+  const routeBudgetMs = getRouteMaxExecutionMs(
+    SUPERVISOR_STREAM_ROUTE_MAX_DURATION_SECONDS
+  );
+  return Math.max(0, routeBudgetMs - getFunctionTimeoutReserveMs());
+}
+
+function getSupervisorStreamAbortTimeoutMs(): number {
+  // 짧은 타임아웃으로 인한 잦은 abort/resume churn을 줄이기 위한 스트리밍 전용 상한
+  const STREAM_SOFT_TARGET_TIMEOUT_MS = 25_000;
+  return Math.max(
+    getMaxTimeout('supervisor'),
+    Math.min(
+      STREAM_SOFT_TARGET_TIMEOUT_MS,
+      getSupervisorStreamRequestTimeoutMs()
+    )
+  );
+}
 
 const NORMALIZED_MESSAGE_SCHEMA = z.object({
   role: z.enum(['user', 'assistant', 'system']),
@@ -403,7 +426,7 @@ export const POST = withRateLimit(
       const controller = new AbortController();
       const timeout = setTimeout(
         () => controller.abort(),
-        getMaxTimeout('supervisor')
+        getSupervisorStreamAbortTimeoutMs()
       );
 
       try {

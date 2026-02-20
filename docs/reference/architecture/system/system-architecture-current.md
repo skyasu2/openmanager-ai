@@ -2,10 +2,10 @@
 
 > Vercel + Cloud Run 하이브리드 시스템 구조의 기준 문서
 > Owner: platform-architecture
-> Last verified against code: 2026-02-17
+> Last verified against code: 2026-02-20
 > Status: Active Canonical (hybrid-split.md 통합됨)
 > Doc type: Explanation
-> Last reviewed: 2026-02-17
+> Last reviewed: 2026-02-20
 > Canonical: docs/reference/architecture/system/system-architecture-current.md
 > Tags: system,architecture,hybrid,cloud-run,vercel
 
@@ -363,7 +363,7 @@ Client                     Vercel                     Cloud Run
 
 | 컴포넌트 | 플랫폼 | 플랜 | 비용 |
 |---------|--------|------|------|
-| **Frontend/BFF** | Vercel | Pro | ~$20/mo |
+| **Frontend/BFF** | Vercel | Hobby(개인/비상업) 또는 Pro(팀/상업) | Hobby: $0 / Pro: $20/seat + usage |
 | **AI Engine** | Cloud Run (gen2) | Free Tier | $0 |
 | **Database** | Supabase | Free Tier | $0 |
 | **Cache** | Upstash Redis | Free Tier | $0 |
@@ -385,9 +385,13 @@ Client                     Vercel                     Cloud Run
 | 항목 | 값 |
 |------|-----|
 | Build Machine | Standard ($0.014/min) |
-| `maxDuration` | 10~60초 (엔드포인트별) |
-| Fluid Compute | 활성화 |
+| `maxDuration` | Legacy: Hobby 10s default/60s max, Pro 15s default/300s max |
+| Fluid Compute | Hobby/Pro 기본 300s, Pro/Enterprise 최대 800s |
 | Turbopack | 빌드 시 사용 |
+
+Reference (checked: 2026-02-20):
+- https://vercel.com/pricing
+- https://vercel.com/docs/limits/overview
 
 ---
 

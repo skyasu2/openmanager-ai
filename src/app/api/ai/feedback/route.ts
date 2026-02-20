@@ -1,4 +1,5 @@
-export const maxDuration = 10; // Vercel Pro Tier (경량 엔드포인트)
+// Vercel 빌드 타임 상수 (정적 분석용). 런타임 타임아웃은 config에서 관리.
+export const maxDuration = 10;
 
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';

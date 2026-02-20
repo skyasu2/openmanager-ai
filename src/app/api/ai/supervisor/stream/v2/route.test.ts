@@ -16,6 +16,8 @@ const {
   mockGetMaxTimeout,
   mockFetch,
   mockGetAPIAuthContext,
+  mockGetRouteMaxExecutionMs,
+  mockGetFunctionTimeoutReserveMs,
 } = vi.hoisted(() => ({
   mockGetActiveStreamId: vi.fn(),
   mockClearActiveStreamId: vi.fn(),
@@ -30,6 +32,8 @@ const {
   mockGetMaxTimeout: vi.fn(),
   mockFetch: vi.fn(),
   mockGetAPIAuthContext: vi.fn(() => null),
+  mockGetRouteMaxExecutionMs: vi.fn(),
+  mockGetFunctionTimeoutReserveMs: vi.fn(),
 }));
 
 vi.mock('@/lib/auth/api-auth', () => ({
@@ -64,6 +68,8 @@ vi.mock('../../security', () => ({
 
 vi.mock('@/config/ai-proxy.config', () => ({
   getMaxTimeout: mockGetMaxTimeout,
+  getRouteMaxExecutionMs: mockGetRouteMaxExecutionMs,
+  getFunctionTimeoutReserveMs: mockGetFunctionTimeoutReserveMs,
 }));
 
 vi.mock('./stream-state', () => ({
@@ -108,6 +114,8 @@ describe('Supervisor Stream V2 Route', () => {
       inputCheck: { patterns: [] },
     });
     mockGetAPIAuthContext.mockReturnValue(null);
+    mockGetRouteMaxExecutionMs.mockReturnValue(60_000);
+    mockGetFunctionTimeoutReserveMs.mockReturnValue(1_500);
     mockGetMaxTimeout.mockReturnValue(1000);
     mockFetch.mockResolvedValue(
       new Response(createSseStream(), {

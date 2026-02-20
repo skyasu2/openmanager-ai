@@ -11,9 +11,15 @@
  * - maxDuration: Next.js 빌드 타임 상수 (라우트 파일에서 정적 export)
  * - timeout: 런타임에 사용되는 실제 타임아웃 (이 config에서 관리)
  *
+ * 공식 Limits를 반영해 운영:
+ * - Legacy runtime: Hobby 기본 10초, 최대 60초 / Pro 기본 15초, 최대 300초
+ * - Fluid Compute: Hobby/Pro 기본 300초, Pro/Enterprise 최대 800초
+ * - Edge streaming: 최초 응답은 25초 내 시작 필요, 스트리밍 지속 300초
+ *
  * Vercel 티어 변경 시:
- * 1. VERCEL_TIER 환경변수 변경 (free → pro)
- * 2. 각 라우트 파일의 maxDuration 주석 참고하여 값 변경
+ * 1. VERCEL_TIER 또는 VERCEL_PLAN 환경변수로 티어 반영
+ * 2. AI_MAX_FUNCTION_DURATION_SECONDS 로 런타임 예산 조정
+ * 3. 라우트의 maxDuration은 빌드 타임 상수로 문서화
  */
 
 import { z } from 'zod';
@@ -26,7 +32,16 @@ import { logger } from '@/lib/logging';
 /**
  * Vercel 티어 스키마
  */
-const VercelTierSchema = z.enum(['free', 'pro']).default('pro');
+const VercelTierSchema = z.enum(['free', 'pro']).default('free');
+
+const TierMaxDurationSecondsSchema = z.number().int().min(1).max(800).default(60);
+
+const FunctionTimeoutReserveSchema = z
+  .number()
+  .int()
+  .min(200)
+  .max(10_000)
+  .default(1_500);
 
 /**
  * 타임아웃 설정 스키마
@@ -126,14 +141,20 @@ const ComplexityCategoryWeightsSchema = z.object({
  * AI Proxy 설정 스키마
  */
 const AIProxyConfigSchema = z.object({
-  /** Vercel 티어 (free: 10초, pro: 60초) */
+  /** Vercel 티어 (build-time 기준): free/pro 모두 런타임 제한 반영 */
   tier: VercelTierSchema,
 
   /** 티어별 maxDuration (빌드 타임 참조용) */
   maxDuration: z.object({
-    free: z.literal(10),
-    pro: z.literal(60),
+    free: TierMaxDurationSecondsSchema,
+    pro: TierMaxDurationSecondsSchema,
   }),
+
+  /** 런타임에서 실제로 적용할 최대 함수 실행 시간 (ms) */
+  maxFunctionDurationMs: z.number().int().min(1_000).max(800_000),
+
+  /** 런타임 안전 마진 (ms) */
+  functionTimeoutReserveMs: FunctionTimeoutReserveSchema,
 
   /** 엔드포인트별 타임아웃 설정 */
   timeouts: z.object({
@@ -187,7 +208,7 @@ export type ComplexityCategoryWeights = z.infer<typeof ComplexityCategoryWeights
 // ============================================================================
 
 /**
- * Free tier 타임아웃 (10초 제한, 1초 안전 마진)
+ * Free tier 타임아웃 기본값(현재 60초 상한 기준 보수값)
  */
 const FREE_TIER_TIMEOUTS = {
   supervisor: { min: 3000, max: 9000, default: 5000 },
@@ -197,7 +218,7 @@ const FREE_TIER_TIMEOUTS = {
 } as const;
 
 /**
- * Pro tier 타임아웃 (60초 제한, 5초 안전 마진)
+ * Pro tier 타임아웃 (비용 안정성을 고려해 하향 기본값에서 시작)
  */
 const PRO_TIER_TIMEOUTS = {
   supervisor: { min: 15000, max: 55000, default: 30000 },
@@ -205,6 +226,100 @@ const PRO_TIER_TIMEOUTS = {
   'intelligent-monitoring': { min: 10000, max: 30000, default: 15000 },
   'analyze-server': { min: 8000, max: 25000, default: 12000 },
 } as const;
+
+const RAG_WEIGHTS_DEFAULT_KEYS = {
+  vector: 'AI_RAG_WEIGHT_VECTOR',
+  graph: 'AI_RAG_WEIGHT_GRAPH',
+  web: 'AI_RAG_WEIGHT_WEB',
+} as const;
+
+const COMPLEXITY_WEIGHTS_DEFAULT_KEYS = {
+  analysis: 'AI_COMPLEXITY_WEIGHT_ANALYSIS',
+  prediction: 'AI_COMPLEXITY_WEIGHT_PREDICTION',
+  aggregation: 'AI_COMPLEXITY_WEIGHT_AGGREGATION',
+  timeRange: 'AI_COMPLEXITY_WEIGHT_TIME_RANGE',
+  multiServer: 'AI_COMPLEXITY_WEIGHT_MULTI_SERVER',
+  report: 'AI_COMPLEXITY_WEIGHT_REPORT',
+  rootCause: 'AI_COMPLEXITY_WEIGHT_ROOT_CAUSE',
+  ragSearch: 'AI_COMPLEXITY_WEIGHT_RAG_SEARCH',
+} as const;
+
+const DEFAULT_MAX_DURATION_SECONDS: Record<VercelTier, number> = {
+  free: 60,
+  pro: 300,
+};
+
+const parseOptionalIntEnv = (key: string): number | null => {
+  const raw = process.env[key];
+  if (!raw) return null;
+  const parsed = Number.parseInt(raw, 10);
+  return Number.isNaN(parsed) ? null : parsed;
+};
+
+const parseOptionalDecimalEnv = (key: string): number | null => {
+  const raw = process.env[key];
+  if (!raw) return null;
+  const parsed = Number.parseFloat(raw);
+  return Number.isNaN(parsed) ? null : parsed;
+};
+
+const parseOptionalBooleanEnv = (key: string): boolean | null => {
+  const raw = process.env[key]?.trim().toLowerCase();
+  if (!raw) return null;
+  if (raw === 'true') return true;
+  if (raw === 'false') return false;
+  return null;
+};
+
+const parseStringListEnv = (key: string): string[] | null => {
+  const raw = process.env[key];
+  if (!raw) return null;
+  return raw
+    .split(',')
+    .map((value) => value.trim())
+    .filter(Boolean);
+};
+
+const parseNumericWithDefault = <T extends number>(
+  key: string,
+  fallback: T,
+  validate: (value: number) => boolean
+): T => {
+  const parsed = parseOptionalIntEnv(key);
+  return parsed === null || !validate(parsed) ? fallback : (parsed as T);
+};
+
+const parseDecimalWithDefault = <T extends number>(
+  key: string,
+  fallback: T,
+  validate: (value: number) => boolean
+): T => {
+  const parsed = parseOptionalDecimalEnv(key);
+  return parsed === null || !validate(parsed) ? fallback : (parsed as T);
+};
+
+const parseTier = (rawTier?: string, rawPlan?: string): VercelTier => {
+  const tier = rawTier?.toLowerCase();
+  const plan = rawPlan?.toLowerCase();
+
+  if (tier === 'free' || tier === 'hobby' || tier === 'pro') {
+    return tier === 'pro' ? 'pro' : 'free';
+  }
+
+  if (plan === 'free' || plan === 'hobby') {
+    return 'free';
+  }
+
+  if (plan === 'pro' || plan === 'enterprise' || plan === 'ent') {
+    return 'pro';
+  }
+
+  return 'free';
+};
+
+const clampTimeoutEnv = (value: number, min = 1_000, max = 60_000): number => {
+  return Math.max(min, Math.min(max, value));
+};
 
 // ============================================================================
 // Config Loader
@@ -214,29 +329,35 @@ const PRO_TIER_TIMEOUTS = {
  * 환경변수에서 설정 로드 및 검증
  */
 function loadAIProxyConfig(): AIProxyConfig {
-  const rawTier = process.env.VERCEL_TIER?.trim().toLowerCase();
-  const rawPlan = process.env.VERCEL_PLAN?.trim().toLowerCase();
-
-  // 보수적 기본값: 티어를 명시적으로 판별할 수 없으면 'free' (비용 초과 방지)
-  // Vercel은 모든 플랜에서 process.env.VERCEL을 설정하므로,
-  // isVercelRuntime만으로 pro를 추정하면 hobby/free 플랜에서 타임아웃 초과 위험.
-  // Production에서는 반드시 VERCEL_TIER=pro 또는 VERCEL_PLAN=pro 설정 권장.
-  const tier: VercelTier =
-    rawTier === 'free' || rawTier === 'pro'
-      ? rawTier
-      : rawPlan === 'hobby' || rawPlan === 'free'
-        ? 'free'
-        : rawPlan === 'pro' || rawPlan === 'enterprise'
-          ? 'pro'
-          : 'free';
+  const tier = parseTier(
+    process.env.VERCEL_TIER?.trim(),
+    process.env.VERCEL_PLAN?.trim()
+  );
   const timeouts = tier === 'pro' ? PRO_TIER_TIMEOUTS : FREE_TIER_TIMEOUTS;
+  const configuredMaxDurationSeconds = parseNumericWithDefault(
+    'AI_MAX_FUNCTION_DURATION_SECONDS',
+    DEFAULT_MAX_DURATION_SECONDS[tier],
+    (value) => value >= 10 && value <= 800
+  );
+  const functionTimeoutReserveMs = parseNumericWithDefault(
+    'AI_FUNCTION_TIMEOUT_RESERVE_MS',
+    tier === 'pro' ? 2_000 : 1_500,
+    (value) => value >= 200 && value <= 10_000
+  );
+  const forceJobQueueKeywords = parseStringListEnv('AI_FORCE_JOB_QUEUE_KEYWORDS');
 
   const rawConfig = {
     tier,
     maxDuration: {
-      free: 10 as const,
-      pro: 60 as const,
+      free: clampTimeoutEnv(configuredMaxDurationSeconds, 10, 300),
+      pro: clampTimeoutEnv(configuredMaxDurationSeconds, 10, 800),
     },
+    maxFunctionDurationMs: clampTimeoutEnv(
+      configuredMaxDurationSeconds * 1_000,
+      1_000,
+      800_000
+    ),
+    functionTimeoutReserveMs,
     timeouts,
     cacheTTL: {
       'supervisor-status': 300,
@@ -245,41 +366,110 @@ function loadAIProxyConfig(): AIProxyConfig {
       'intelligent-monitoring': 600,
     },
     queryRouting: {
-      complexityThreshold: Number(process.env.AI_COMPLEXITY_THRESHOLD) || 19,
-      forceJobQueueKeywords: process.env.AI_FORCE_JOB_QUEUE_KEYWORDS?.split(',') || [
-        '보고서', '리포트', '근본 원인', '장애 분석', '전체 분석',
-      ],
+      complexityThreshold: parseNumericWithDefault(
+        'AI_COMPLEXITY_THRESHOLD',
+        19,
+        (value) => value >= 1 && value <= 100
+      ),
+      forceJobQueueKeywords:
+        forceJobQueueKeywords ?? [
+          '보고서', '리포트', '근본 원인', '장애 분석', '전체 분석',
+        ],
     },
     streamRetry: {
-      maxRetries: Number(process.env.AI_STREAM_MAX_RETRIES) || 3,
-      initialDelayMs: Number(process.env.AI_STREAM_INITIAL_DELAY) || 1000,
-      backoffMultiplier: Number(process.env.AI_STREAM_BACKOFF_MULTIPLIER) || 2,
-      maxDelayMs: Number(process.env.AI_STREAM_MAX_DELAY) || 10000,
-      jitterFactor: Number(process.env.AI_STREAM_JITTER_FACTOR) || 0.1,
+      maxRetries: parseNumericWithDefault(
+        'AI_STREAM_MAX_RETRIES',
+        3,
+        (value) => value >= 0 && value <= 5
+      ),
+      initialDelayMs: parseNumericWithDefault(
+        'AI_STREAM_INITIAL_DELAY',
+        1_000,
+        (value) => value >= 100 && value <= 5_000
+      ),
+      backoffMultiplier: parseNumericWithDefault(
+        'AI_STREAM_BACKOFF_MULTIPLIER',
+        2,
+        (value) => value >= 1 && value <= 5
+      ),
+      maxDelayMs: parseNumericWithDefault(
+        'AI_STREAM_MAX_DELAY',
+        10_000,
+        (value) => value >= 1_000 && value <= 30_000
+      ),
+      jitterFactor: parseDecimalWithDefault(
+        'AI_STREAM_JITTER_FACTOR',
+        0.1,
+        (value) => value >= 0 && value <= 1
+      ),
       retryableErrors: [
         'timeout', 'ETIMEDOUT', 'ECONNRESET', 'fetch failed',
         'socket hang up', '504', '503', 'Stream error',
       ],
     },
     ragWeights: {
-      vector: Number(process.env.AI_RAG_WEIGHT_VECTOR) || 0.5,
-      graph: Number(process.env.AI_RAG_WEIGHT_GRAPH) || 0.3,
-      web: Number(process.env.AI_RAG_WEIGHT_WEB) || 0.2,
+      vector: parseDecimalWithDefault(
+        RAG_WEIGHTS_DEFAULT_KEYS.vector,
+        0.5,
+        (value) => value >= 0 && value <= 1
+      ),
+      graph: parseDecimalWithDefault(
+        RAG_WEIGHTS_DEFAULT_KEYS.graph,
+        0.3,
+        (value) => value >= 0 && value <= 1
+      ),
+      web: parseDecimalWithDefault(
+        RAG_WEIGHTS_DEFAULT_KEYS.web,
+        0.2,
+        (value) => value >= 0 && value <= 1
+      ),
     },
     observability: {
-      enableTraceId: process.env.AI_ENABLE_TRACE_ID !== 'false',
+      enableTraceId: parseOptionalBooleanEnv('AI_ENABLE_TRACE_ID') !== false,
       traceIdHeader: process.env.AI_TRACE_ID_HEADER || 'X-Trace-Id',
       verboseLogging: process.env.AI_VERBOSE_LOGGING === 'true',
     },
     complexityWeights: {
-      analysis: Number(process.env.AI_COMPLEXITY_WEIGHT_ANALYSIS) || 20,
-      prediction: Number(process.env.AI_COMPLEXITY_WEIGHT_PREDICTION) || 25,
-      aggregation: Number(process.env.AI_COMPLEXITY_WEIGHT_AGGREGATION) || 15,
-      timeRange: Number(process.env.AI_COMPLEXITY_WEIGHT_TIME_RANGE) || 15,
-      multiServer: Number(process.env.AI_COMPLEXITY_WEIGHT_MULTI_SERVER) || 15,
-      report: Number(process.env.AI_COMPLEXITY_WEIGHT_REPORT) || 20,
-      rootCause: Number(process.env.AI_COMPLEXITY_WEIGHT_ROOT_CAUSE) || 30,
-      ragSearch: Number(process.env.AI_COMPLEXITY_WEIGHT_RAG_SEARCH) || 25,
+      analysis: parseNumericWithDefault(
+        COMPLEXITY_WEIGHTS_DEFAULT_KEYS.analysis,
+        20,
+        (value) => value >= 0 && value <= 50
+      ),
+      prediction: parseNumericWithDefault(
+        COMPLEXITY_WEIGHTS_DEFAULT_KEYS.prediction,
+        25,
+        (value) => value >= 0 && value <= 50
+      ),
+      aggregation: parseNumericWithDefault(
+        COMPLEXITY_WEIGHTS_DEFAULT_KEYS.aggregation,
+        15,
+        (value) => value >= 0 && value <= 50
+      ),
+      timeRange: parseNumericWithDefault(
+        COMPLEXITY_WEIGHTS_DEFAULT_KEYS.timeRange,
+        15,
+        (value) => value >= 0 && value <= 50
+      ),
+      multiServer: parseNumericWithDefault(
+        COMPLEXITY_WEIGHTS_DEFAULT_KEYS.multiServer,
+        15,
+        (value) => value >= 0 && value <= 50
+      ),
+      report: parseNumericWithDefault(
+        COMPLEXITY_WEIGHTS_DEFAULT_KEYS.report,
+        20,
+        (value) => value >= 0 && value <= 50
+      ),
+      rootCause: parseNumericWithDefault(
+        COMPLEXITY_WEIGHTS_DEFAULT_KEYS.rootCause,
+        30,
+        (value) => value >= 0 && value <= 50
+      ),
+      ragSearch: parseNumericWithDefault(
+        COMPLEXITY_WEIGHTS_DEFAULT_KEYS.ragSearch,
+        25,
+        (value) => value >= 0 && value <= 50
+      ),
     },
   };
 
@@ -335,23 +525,39 @@ export function getVercelTier(): VercelTier {
  * 현재 티어의 maxDuration 값 (빌드 타임 참조용)
  * @note 실제 라우트 파일에서는 리터럴 값 사용 필요
  */
-export function getCurrentMaxDuration(): 10 | 60 {
+export function getCurrentMaxDuration(): number {
   const config = getAIProxyConfig();
   return config.maxDuration[config.tier];
 }
 
 /**
+ * 라우트 maxDuration(초)와 런타임 제한을 함께 고려한 실행 상한(ms)
+ *
+ * - routeMaxDurationSeconds: Next.js route.ts에서 export const maxDuration로 선언된 값
+ * - 런타임 제한: AI_MAX_FUNCTION_DURATION_SECONDS 또는 기본값
+ *
+ * 양쪽 중 더 작은 값을 반환해 route-level 설정 변경 시 과한 타임아웃을 방지.
+ */
+export function getRouteMaxExecutionMs(routeMaxDurationSeconds: number): number {
+  if (!Number.isFinite(routeMaxDurationSeconds) || routeMaxDurationSeconds <= 0) {
+    return 0;
+  }
+  const routeMaxMs = routeMaxDurationSeconds * 1_000;
+  return Math.max(0, Math.min(routeMaxMs, getMaxFunctionDurationMs()));
+}
+
+/**
  * 현재 Vercel 런타임 최대 실행 시간 (ms)
  */
-export function getMaxFunctionDurationMs(): 10_000 | 60_000 {
-  return getCurrentMaxDuration() === 10 ? 10_000 : 60_000;
+export function getMaxFunctionDurationMs(): number {
+  return getAIProxyConfig().maxFunctionDurationMs;
 }
 
 /**
  * 함수 종료 여유 버퍼 (응답 처리/로깅/직렬화 여유)
  */
 export function getFunctionTimeoutReserveMs(): number {
-  return getCurrentMaxDuration() === 10 ? 1_200 : 1_500;
+  return getAIProxyConfig().functionTimeoutReserveMs;
 }
 
 /**

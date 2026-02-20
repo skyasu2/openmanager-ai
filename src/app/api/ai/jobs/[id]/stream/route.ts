@@ -16,12 +16,12 @@
  * @version 1.0.0
  */
 
-export const maxDuration = 60; // Vercel Pro Tier
+export const maxDuration = 60;
 
 import type { NextRequest } from 'next/server';
 import {
+  getRouteMaxExecutionMs,
   getFunctionTimeoutReserveMs,
-  getMaxFunctionDurationMs,
 } from '@/config/ai-proxy.config';
 import { checkAPIAuth } from '@/lib/auth/api-auth';
 import { logger } from '@/lib/logging';
@@ -61,6 +61,7 @@ function isTerminalStatus(
 
 const MIN_POLL_INTERVAL_MS = 100;
 const MAX_POLL_INTERVAL_MS = 5000;
+const JOB_STREAM_ROUTE_MAX_DURATION_SECONDS = 60;
 const ACTIVE_POLL_INTERVAL_MS = getPollIntervalFromEnv(
   'AI_JOB_STREAM_POLL_INTERVAL_MS',
   200
@@ -69,10 +70,16 @@ const QUEUED_POLL_INTERVAL_MS = getPollIntervalFromEnv(
   'AI_JOB_STREAM_QUEUED_POLL_INTERVAL_MS',
   1000
 );
-const MAX_WAIT_TIME_MS = Math.max(
-  1000,
-  getMaxFunctionDurationMs() - getFunctionTimeoutReserveMs()
-); // Vercel maxDuration(10/60초) - 실행 여유 마진
+const getJobStreamMaxWaitTimeMs = (): number => {
+  const routeBudgetMs = getRouteMaxExecutionMs(
+    JOB_STREAM_ROUTE_MAX_DURATION_SECONDS
+  );
+
+  return Math.max(
+    1000,
+    Math.max(0, routeBudgetMs - getFunctionTimeoutReserveMs())
+  );
+}; // 런타임 최대 실행시간 기준 여유 버퍼 적용
 const PROGRESS_INTERVAL_MS = 2000; // 진행 상황 업데이트 간격
 
 export function getPollIntervalFromEnv(
@@ -187,6 +194,7 @@ export async function GET(
 
   const stream = new ReadableStream({
     async start(controller) {
+      const maxWaitTimeMs = getJobStreamMaxWaitTimeMs();
       const startTime = Date.now();
       let lastProgressUpdate = 0;
       let lastKnownStatus: JobResult['status'] | null = initialCheck.status;
@@ -213,7 +221,7 @@ export async function GET(
           const elapsed = Date.now() - startTime;
 
           // 타임아웃 체크
-          if (elapsed > MAX_WAIT_TIME_MS) {
+          if (elapsed > maxWaitTimeMs) {
             sendEvent('timeout', {
               jobId,
               message: 'Job processing timeout',

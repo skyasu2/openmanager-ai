@@ -26,12 +26,11 @@ export const runtime = 'nodejs';
 // ============================================================================
 // ⚡ maxDuration - Vercel 빌드 타임 상수
 // ============================================================================
-// Next.js가 정적 분석하므로 리터럴 값 필수. 티어 변경 시 아래 값 수동 변경:
-// - Free tier:  export const maxDuration = 10;
-// - Pro tier:   export const maxDuration = 30;  ← 현재
+// Next.js 정적 분석이 필요하므로 리터럴 값이 필수입니다.
+// 실제 런타임 타임아웃은 src/config/ai-proxy.config.ts 에서 환경변수로 관리합니다.
 // @see src/config/ai-proxy.config.ts (런타임 타임아웃 설정)
 // ============================================================================
-export const maxDuration = 30; // 🔧 현재: Pro tier
+export const maxDuration = 30;
 
 /**
  * POST handler - Proxy to Cloud Run with Circuit Breaker + Fallback

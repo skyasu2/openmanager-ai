@@ -8,7 +8,8 @@
  * @description Supabase 제거, Redis를 단일 저장소로 사용
  */
 
-export const maxDuration = 30; // Vercel Pro Tier
+// Vercel 빌드 타임 상수 (정적 분석용). 런타임 타임아웃은 config에서 관리.
+export const maxDuration = 30;
 
 import { randomUUID } from 'crypto';
 import { after, type NextRequest, NextResponse } from 'next/server';

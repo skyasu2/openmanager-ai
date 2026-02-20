@@ -15,7 +15,7 @@ import {
   clampTimeout,
   getDefaultTimeout,
   getFunctionTimeoutReserveMs,
-  getMaxFunctionDurationMs,
+  getRouteMaxExecutionMs,
   getMaxTimeout,
   getMinTimeout,
 } from '@/config/ai-proxy.config';
@@ -39,13 +39,12 @@ export const fetchCache = 'force-no-store';
 // ============================================================================
 // ⚡ maxDuration - Vercel 빌드 타임 상수
 // ============================================================================
-// Next.js가 정적 분석하므로 리터럴 값 필수. 티어 변경 시 아래 값 수동 변경:
-// - Free tier:  export const maxDuration = 10;
-// - Pro tier:   export const maxDuration = 60;  ← 현재
+// Next.js 정적 분석이 필요하므로 리터럴 값이 필수입니다.
+// 실제 런타임 타임아웃은 src/config/ai-proxy.config.ts 에서 환경변수로 관리합니다.
 // 복잡한 보고서 생성은 Job Queue 권장
 // @see src/config/ai-proxy.config.ts (런타임 타임아웃 설정)
 // ============================================================================
-export const maxDuration = 60; // 🔧 현재: Pro tier
+export const maxDuration = 60;
 
 const IncidentReportRequestSchema = z
   .object({
@@ -118,13 +117,22 @@ const NO_STORE_RESPONSE_HEADERS = {
 const INCIDENT_REPORT_ENDPOINT: 'incident-report' = 'incident-report';
 const ATTEMPT_GUARD_MS = 250;
 const DIRECT_RETRY_MIN_BUFFER_MS = 1_000;
+const INCIDENT_REPORT_ROUTE_MAX_DURATION_SECONDS = 60;
+
+function getIncidentReportRouteBudgetMs(): number {
+  return getRouteMaxExecutionMs(INCIDENT_REPORT_ROUTE_MAX_DURATION_SECONDS);
+}
+
+function getMaxRequestTimeoutMs(routeBudgetMs: number): number {
+  return Math.max(500, routeBudgetMs - getFunctionTimeoutReserveMs());
+}
 
 function getIncidentRetryTimeout(
   preferredTimeout: number,
   consumedMs: number,
+  routeBudgetMs: number,
   minBufferMs = 0
 ): { retryAllowed: boolean; timeoutMs: number } {
-  const routeBudgetMs = getMaxFunctionDurationMs();
   const budgetReserveMs = getFunctionTimeoutReserveMs();
   const projectedRemainingMs = Math.max(
     0,
@@ -315,16 +323,18 @@ async function postHandler(request: NextRequest) {
     debug.info(`[incident-report] Proxying action '${action}' to Cloud Run...`);
 
     const defaultTimeout = getDefaultTimeout(INCIDENT_REPORT_ENDPOINT);
-    const maxRequestTimeout = Math.max(
-      500,
-      getMaxFunctionDurationMs() - getFunctionTimeoutReserveMs()
-    );
+    const routeBudgetMs = getIncidentReportRouteBudgetMs();
+    const maxRequestTimeout = getMaxRequestTimeoutMs(routeBudgetMs);
     const effectiveDefaultTimeout = clampTimeout(
       INCIDENT_REPORT_ENDPOINT,
       Math.min(defaultTimeout, maxRequestTimeout)
     );
     const getSecondAttemptPlan = () =>
-      getIncidentRetryTimeout(effectiveDefaultTimeout, effectiveDefaultTimeout);
+      getIncidentRetryTimeout(
+        effectiveDefaultTimeout,
+        effectiveDefaultTimeout,
+        routeBudgetMs
+      );
 
     const fetchCloudRunIncidentReport = async (
       timeout = effectiveDefaultTimeout
@@ -464,6 +474,7 @@ async function postHandler(request: NextRequest) {
           const directRetryPlan = getIncidentRetryTimeout(
             secondAttemptPlan.timeoutMs,
             effectiveDefaultTimeout + secondAttemptPlan.timeoutMs,
+            routeBudgetMs,
             DIRECT_RETRY_MIN_BUFFER_MS
           );
 
