@@ -20,8 +20,8 @@ export const maxDuration = 60;
 
 import type { NextRequest } from 'next/server';
 import {
-  getRouteMaxExecutionMs,
   getFunctionTimeoutReserveMs,
+  getRouteMaxExecutionMs,
 } from '@/config/ai-proxy.config';
 import { checkAPIAuth } from '@/lib/auth/api-auth';
 import { logger } from '@/lib/logging';

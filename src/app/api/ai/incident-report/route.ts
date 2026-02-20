@@ -15,9 +15,9 @@ import {
   clampTimeout,
   getDefaultTimeout,
   getFunctionTimeoutReserveMs,
-  getRouteMaxExecutionMs,
   getMaxTimeout,
   getMinTimeout,
+  getRouteMaxExecutionMs,
 } from '@/config/ai-proxy.config';
 import {
   type CacheableAIResponse,
