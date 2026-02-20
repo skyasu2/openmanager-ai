@@ -412,5 +412,4 @@ describe('🎯 useTimeSeriesMetrics - 시계열 메트릭 훅 테스트', () => 
       vi.useRealTimers();
     });
   });
-
 });

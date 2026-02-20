@@ -22,102 +22,14 @@
 
 // 타입 정의
 import { logger } from '@/lib/logging';
-
-interface CacheItem<T = unknown> {
-  value: T;
-  expires: number;
-  created: number;
-  hits: number;
-  namespace: string;
-  pattern?: string;
-  metadata?: Record<string, unknown>;
-}
-
-interface CacheStats {
-  hits: number;
-  misses: number;
-  sets: number;
-  deletes: number;
-  size: number;
-  maxSize: number;
-  hitRate: number;
-  memoryUsage: string;
-  namespaces: Record<string, number>;
-}
-
-interface QueryPattern {
-  id: string;
-  regex: string;
-  frequency: number;
-  avgResponseTime: number;
-  lastUsed: Date;
-  hits: number;
-}
-
-// 캐시 네임스페이스 enum
-export enum CacheNamespace {
-  GENERAL = 'general',
-  AI_QUERY = 'ai_query',
-  AI_RESPONSE = 'ai_response',
-  API = 'api',
-  SERVER_METRICS = 'server_metrics',
-  USER_SESSION = 'user_session',
-}
-
-/**
- * 📊 TTL 계층화 상수 (v3.1)
- *
- * 데이터 특성에 따른 표준 TTL 값
- * - SHORT: 실시간 데이터 (메트릭, 상태)
- * - MEDIUM: 준실시간 데이터 (서버 목록, 대시보드)
- * - LONG: 느린 변경 데이터 (설정, 사용자 정보)
- * - STATIC: 거의 변경 없는 데이터 (버전, 메타데이터)
- */
-export const CacheTTL = {
-  /** 실시간 데이터: 30초 (메트릭, 상태 체크) */
-  SHORT: 30,
-  /** 준실시간: 5분 (서버 목록, 대시보드) */
-  MEDIUM: 300,
-  /** 느린 변경: 30분 (설정, 세션) */
-  LONG: 1800,
-  /** 정적 데이터: 1시간 (버전, 메타데이터) */
-  STATIC: 3600,
-} as const;
-
-/**
- * 📡 SWR 전략 프리셋 (v3.1)
- *
- * stale-while-revalidate 비율 기반 설정
- * - TTL의 2배를 SWR로 설정 (Vercel 권장)
- */
-export const SWRPreset = {
-  /** 실시간: 30s TTL + 60s SWR */
-  REALTIME: {
-    maxAge: 0,
-    sMaxAge: CacheTTL.SHORT,
-    staleWhileRevalidate: CacheTTL.SHORT * 2,
-  },
-  /** 대시보드: 5분 TTL + 10분 SWR */
-  DASHBOARD: {
-    maxAge: 60,
-    sMaxAge: CacheTTL.MEDIUM,
-    staleWhileRevalidate: CacheTTL.MEDIUM * 2,
-  },
-  /** 설정: 30분 TTL + 1시간 SWR */
-  CONFIG: {
-    maxAge: CacheTTL.MEDIUM,
-    sMaxAge: CacheTTL.LONG,
-    staleWhileRevalidate: CacheTTL.LONG * 2,
-  },
-  /** 정적: 1시간 TTL + 2시간 SWR */
-  STATIC: {
-    maxAge: CacheTTL.LONG,
-    sMaxAge: CacheTTL.STATIC,
-    staleWhileRevalidate: CacheTTL.STATIC * 2,
-  },
-} as const;
-
-export type SWRPresetKey = keyof typeof SWRPreset;
+import {
+  CacheNamespace,
+  type CacheItem,
+  type CacheStats,
+  type QueryPattern,
+} from './unified-cache.types';
+export { CacheNamespace, CacheTTL, SWRPreset } from './unified-cache.types';
+export type { SWRPresetKey } from './unified-cache.types';
 
 /**
  * 통합 캐시 서비스
@@ -359,24 +271,7 @@ export class UnifiedCacheService {
       .trim();
   }
 
-  /**
-   * AI 쿼리 캐시 키 정규화 (v3.2)
-   *
-   * @description
-   * 유사한 쿼리를 동일한 캐시 키로 매핑하여 캐시 히트율 향상
-   * - 구두점 제거 ("상태?", "상태!", "상태" → "상태")
-   * - 공백 정규화 ("CPU  사용률" → "cpu 사용률")
-   * - 대소문자 통일 ("Status" → "status")
-   * - 후행/선행 공백 제거
-   *
-   * @param query - 원본 쿼리 문자열
-   * @returns 정규화된 캐시 키
-   *
-   * @example
-   * normalizeQueryForCache("상태?") // "상태"
-   * normalizeQueryForCache("CPU 사용률은?") // "cpu 사용률은"
-   * normalizeQueryForCache("  서버  상태  ") // "서버 상태"
-   */
+  /** AI 쿼리 정규화 키 생성 (구두점/공백/대소문자 표준화) */
   normalizeQueryForCache(query: string): string {
     return query
       .toLowerCase()

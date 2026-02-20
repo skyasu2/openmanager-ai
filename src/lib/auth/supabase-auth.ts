@@ -9,12 +9,10 @@
 
 import type { AuthError, Session } from '@supabase/supabase-js';
 import { logger } from '@/lib/logging';
-import {
-  guestSessionCookies,
-  validateRedirectUrl,
-} from '@/lib/security/secure-cookies';
+import { guestSessionCookies } from '@/lib/security/secure-cookies';
 import { getSupabase } from '../supabase/client';
 import { authStateManager } from './auth-state-manager';
+import { signInWithOAuthProvider } from './supabase-auth-oauth';
 
 // 런타임에 클라이언트를 가져오는 헬퍼 (PKCE flow를 위해 필수)
 const getClient = () => getSupabase();
@@ -57,153 +55,14 @@ export interface AuthCallbackResult {
  * GitHub OAuth 로그인
  */
 export async function signInWithGitHub() {
-  try {
-    // 동적으로 리다이렉트 URL 설정 (로컬/베르셀 자동 감지)
-    const origin = window.location.origin;
-
-    // Authorization Code Flow를 위해 콜백 라우트로 리다이렉트
-    const redirectUrl = `${origin}/auth/callback`;
-
-    // 🔒 OAuth 리다이렉트 URL 보안 검증
-    if (!validateRedirectUrl(redirectUrl)) {
-      throw new Error(
-        `보안상 허용되지 않은 리다이렉트 URL입니다: ${redirectUrl}`
-      );
-    }
-
-    logger.info('🔗 OAuth 리다이렉트 URL:', redirectUrl);
-    logger.info('🌍 현재 환경:', {
-      origin,
-      isVercel: origin.includes('vercel.app'),
-      isLocal: origin.includes('localhost'),
-      redirectUrl,
-      supabaseConfigured: !!process.env.NEXT_PUBLIC_SUPABASE_URL, // 민감정보 마스킹
-    });
-
-    // GitHub OAuth App 설정 확인을 위한 로그
-    logger.info('⚠️ 필요한 설정:');
-    logger.info('  Supabase Redirect URLs:', redirectUrl);
-    logger.info(
-      '  GitHub OAuth Callback:',
-      `${process.env.NEXT_PUBLIC_SUPABASE_URL}/auth/v1/callback`
-    );
-
-    // 환경변수 검증
-    if (
-      !process.env.NEXT_PUBLIC_SUPABASE_URL ||
-      process.env.NEXT_PUBLIC_SUPABASE_URL.includes('test')
-    ) {
-      throw new Error('Supabase URL이 올바르게 설정되지 않았습니다.');
-    }
-
-    if (
-      !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY.includes('test')
-    ) {
-      throw new Error('Supabase Anon Key가 올바르게 설정되지 않았습니다.');
-    }
-
-    const { data, error } = await getClient().auth.signInWithOAuth({
-      provider: 'github',
-      options: {
-        redirectTo: redirectUrl,
-        scopes: 'read:user user:email',
-        // skipBrowserRedirect를 false로 설정하여 브라우저 리다이렉트 허용
-        skipBrowserRedirect: false,
-      },
-    });
-
-    if (error) {
-      logger.error('❌ GitHub OAuth 로그인 실패:', error);
-      logger.error('🔧 디버깅 정보:', {
-        errorCode: error.code,
-        errorMessage: error.message,
-        supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL,
-        redirectUrl,
-      });
-      throw error;
-    }
-
-    logger.info('✅ GitHub OAuth 로그인 요청 성공');
-    return { data, error: null };
-  } catch (error) {
-    logger.error('❌ GitHub OAuth 로그인 에러:', error);
-    return { data: null, error };
-  }
+  return signInWithOAuthProvider('github');
 }
 
 /**
  * Google OAuth 로그인
  */
 export async function signInWithGoogle() {
-  try {
-    // 동적으로 리다이렉트 URL 설정 (로컬/베르셀 자동 감지)
-    const origin = window.location.origin;
-
-    // Authorization Code Flow를 위해 콜백 라우트로 리다이렉트
-    const redirectUrl = `${origin}/auth/callback`;
-
-    // 🔒 OAuth 리다이렉트 URL 보안 검증
-    if (!validateRedirectUrl(redirectUrl)) {
-      throw new Error(
-        `보안상 허용되지 않은 리다이렉트 URL입니다: ${redirectUrl}`
-      );
-    }
-
-    logger.info('🔗 OAuth 리다이렉트 URL:', redirectUrl);
-    logger.info('🌍 현재 환경:', {
-      origin,
-      isVercel: origin.includes('vercel.app'),
-      isLocal: origin.includes('localhost'),
-      redirectUrl,
-      supabaseConfigured: !!process.env.NEXT_PUBLIC_SUPABASE_URL, // 민감정보 마스킹
-    });
-
-    // 환경변수 검증
-    if (
-      !process.env.NEXT_PUBLIC_SUPABASE_URL ||
-      process.env.NEXT_PUBLIC_SUPABASE_URL.includes('test')
-    ) {
-      throw new Error('Supabase URL이 올바르게 설정되지 않았습니다.');
-    }
-
-    if (
-      !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY.includes('test')
-    ) {
-      throw new Error('Supabase Anon Key가 올바르게 설정되지 않았습니다.');
-    }
-
-    const { data, error } = await getClient().auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: redirectUrl,
-        scopes: 'email profile openid',
-        queryParams: {
-          access_type: 'offline',
-          prompt: 'consent',
-        },
-        skipBrowserRedirect: false,
-      },
-    });
-
-    if (error) {
-      logger.error('❌ Google OAuth 로그인 실패:', error);
-      logger.error('🔧 디버깅 정보:', {
-        errorCode: error.code,
-        errorMessage: error.message,
-        supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL,
-        redirectUrl,
-      });
-      throw error;
-    }
-
-    logger.info('✅ Google OAuth 로그인 요청 성공');
-    return { data, error: null };
-  } catch (error) {
-    logger.error('❌ Google OAuth 로그인 에러:', error);
-    return { data: null, error };
-  }
+  return signInWithOAuthProvider('google');
 }
 
 /**

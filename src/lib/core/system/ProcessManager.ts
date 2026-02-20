@@ -17,11 +17,22 @@ import { systemLogger } from '@/lib/logger';
 import {
   type ISystemEventBus,
   type ISystemEventEmitter,
-  type ProcessEventPayload,
   SystemEventType,
   type SystemStatusPayload,
 } from '../interfaces/SystemEventBus';
 import { HealthCheckManager } from './HealthCheckManager';
+import {
+  buildServiceStatuses,
+  buildSystemMetrics,
+  calculateProcessStartupOrder,
+  calculateSystemUptime,
+} from './ProcessManager.helpers';
+import {
+  type RuntimeContext,
+  restartManagedProcess,
+  startManagedProcess,
+  stopManagedProcess,
+} from './ProcessManager.runtime';
 import type {
   ProcessConfig,
   ProcessState,
@@ -159,7 +170,7 @@ export class ProcessManager
       this.systemStartTime = new Date();
 
       // 1단계: 의존성 순서로 프로세스 시작
-      const startOrder = this.calculateStartupOrder();
+      const startOrder = calculateProcessStartupOrder(this.processes);
       systemLogger.system(
         `\ud83d\udccb 시작 순서: ${startOrder.join(' \u2192 ')}`
       );
@@ -205,7 +216,7 @@ export class ProcessManager
           source: 'ProcessManager',
           payload: {
             status: 'healthy',
-            services: this.getServiceStatuses(),
+            services: buildServiceStatuses(this.processes, this.states),
             metrics: {
               uptime: 0,
               totalProcesses: this.processes.size,
@@ -257,107 +268,7 @@ export class ProcessManager
    * 개별 프로세스 시작
    */
   private async startProcess(processId: string): Promise<boolean> {
-    const config = this.processes.get(processId);
-    const state = this.states.get(processId);
-
-    if (!config || !state) {
-      systemLogger.warn(`프로세스 설정을 찾을 수 없음: ${processId}`);
-      return false;
-    }
-
-    if (state.status === 'running') {
-      systemLogger.system(`프로세스 이미 실행 중: ${config.name}`);
-      return true;
-    }
-
-    try {
-      systemLogger.system(`\ud83d\udd04 ${config.name} 시작 중...`);
-      state.status = 'starting';
-      state.startedAt = new Date();
-
-      // 의존성 프로세스 확인
-      if (config.dependencies) {
-        for (const depId of config.dependencies) {
-          const depState = this.states.get(depId);
-          if (!depState || depState.status !== 'running') {
-            throw new Error(`의존성 프로세스 ${depId}가 실행되지 않음`);
-          }
-        }
-      }
-
-      // 프로세스 시작 명령 실행
-      await config.startCommand();
-
-      state.status = 'running';
-      state.errors = [];
-
-      // 초기 헬스체크 (3회 시도) - HealthCheckManager에 위임
-      const isHealthy =
-        await this.healthCheckManager.performInitialHealthCheck(config);
-
-      if (!isHealthy) {
-        throw new Error('초기 헬스체크 실패');
-      }
-
-      state.healthScore = 100;
-      state.lastHealthCheck = new Date();
-
-      systemLogger.system(`\u2705 ${config.name} 시작 완료`);
-
-      // 이벤트 버스를 통해 프로세스 시작 알림
-      if (this.eventBus) {
-        this.eventBus.emit<ProcessEventPayload>({
-          type: SystemEventType.PROCESS_STARTED,
-          timestamp: Date.now(),
-          source: 'ProcessManager',
-          payload: {
-            processId: config.id,
-            processName: config.name,
-            status: 'running',
-          },
-        });
-      }
-
-      this.emit('process:started', { processId, config, state });
-      return true;
-    } catch (error) {
-      state.status = 'error';
-      state.stoppedAt = new Date();
-      const errorMsg =
-        error instanceof Error ? error.message : '알 수 없는 오류';
-
-      state.errors.push({
-        timestamp: new Date(),
-        message: errorMsg,
-        error,
-      });
-
-      systemLogger.error(`${config.name} 시작 실패:`, error);
-
-      // 이벤트 버스를 통해 프로세스 오류 알림
-      if (this.eventBus) {
-        this.eventBus.emit<ProcessEventPayload>({
-          type: SystemEventType.PROCESS_ERROR,
-          timestamp: Date.now(),
-          source: 'ProcessManager',
-          payload: {
-            processId: config.id,
-            processName: config.name,
-            status: 'error',
-            error: error instanceof Error ? error : new Error(errorMsg),
-          },
-        });
-      }
-
-      this.emit('process:error', { processId, error: errorMsg });
-
-      // Auto-restart 시도
-      if (config.autoRestart && state.restartCount < config.maxRestarts) {
-        await this.restartProcess(processId);
-      }
-
-      return false;
-    }
+    return startManagedProcess(this.createRuntimeContext(), processId);
   }
 
   /**
@@ -395,9 +306,9 @@ export class ProcessManager
           source: 'ProcessManager',
           payload: {
             status: 'degraded',
-            services: this.getServiceStatuses(),
+            services: buildServiceStatuses(this.processes, this.states),
             metrics: {
-              uptime: this.calculateUptime(),
+              uptime: calculateSystemUptime(this.systemStartTime),
               totalProcesses: this.processes.size,
               activeConnections: 0,
             },
@@ -406,7 +317,7 @@ export class ProcessManager
       }
 
       // 4단계: 역순으로 프로세스 정지
-      const stopOrder = this.calculateStartupOrder().reverse();
+      const stopOrder = calculateProcessStartupOrder(this.processes).reverse();
       for (const processId of stopOrder) {
         const success = await this.stopProcess(processId);
         if (!success) {
@@ -448,132 +359,11 @@ export class ProcessManager
    * 프로세스 재시작
    */
   private async restartProcess(processId: string): Promise<boolean> {
-    const config = this.processes.get(processId);
-    const state = this.states.get(processId);
-
-    if (!config || !state) {
-      return false;
-    }
-
-    state.restartCount++;
-
-    if (state.restartCount > config.maxRestarts) {
-      systemLogger.error(
-        `${config.name} 최대 재시작 횟수 초과 (${config.maxRestarts}회)`
-      );
-      state.status = 'error';
-      this.emit('process:max-restarts-exceeded', { processId, config });
-      return false;
-    }
-
-    systemLogger.system(
-      `\ud83d\udd04 ${config.name} 재시작 중... (시도 ${state.restartCount}/${config.maxRestarts})`
-    );
-
-    this.emit('process:restarting', {
-      processId,
-      attempt: state.restartCount,
-      maxAttempts: config.maxRestarts,
-    });
-
-    // 정지 후 재시작
-    await this.stopProcess(processId);
-    await this.delay(2000);
-    return await this.startProcess(processId);
-  }
-
-  /**
-   * 서비스 상태 목록 반환
-   */
-  private getServiceStatuses(): Array<{
-    name: string;
-    status: 'up' | 'down' | 'degraded';
-    responseTime?: number;
-  }> {
-    return Array.from(this.processes.entries()).map(([id, config]) => {
-      const state = this.states.get(id);
-      let status: 'up' | 'down' | 'degraded' = 'down';
-
-      if (state?.status === 'running') {
-        status = state.healthScore >= 70 ? 'up' : 'degraded';
-      }
-
-      return {
-        name: config.name,
-        status,
-        responseTime: state?.lastHealthCheck
-          ? Date.now() - state.lastHealthCheck.getTime()
-          : undefined,
-      };
-    });
-  }
-
-  /**
-   * 업타임 계산
-   */
-  private calculateUptime(): number {
-    if (!this.systemStartTime) return 0;
-    return Date.now() - this.systemStartTime.getTime();
-  }
-
-  /**
-   * 의존성 기반 시작 순서 계산
-   */
-  private calculateStartupOrder(): string[] {
-    const visited = new Set<string>();
-    const order: string[] = [];
-
-    const visit = (id: string) => {
-      if (visited.has(id)) return;
-      visited.add(id);
-
-      const config = this.processes.get(id);
-      if (config?.dependencies) {
-        for (const depId of config.dependencies) {
-          visit(depId);
-        }
-      }
-
-      order.push(id);
-    };
-
-    for (const id of Array.from(this.processes.keys())) {
-      visit(id);
-    }
-
-    return order;
+    return restartManagedProcess(this.createRuntimeContext(), processId);
   }
 
   private async stopProcess(processId: string): Promise<boolean> {
-    const config = this.processes.get(processId);
-    const state = this.states.get(processId);
-
-    if (!config || !state) {
-      return false;
-    }
-
-    if (state.status === 'stopped') {
-      return true;
-    }
-
-    try {
-      state.status = 'stopping';
-      await config.stopCommand();
-      state.status = 'stopped';
-      state.stoppedAt = new Date();
-
-      // 업타임 계산
-      if (state.startedAt) {
-        state.uptime = state.stoppedAt.getTime() - state.startedAt.getTime();
-      }
-
-      systemLogger.system(`\u2705 ${config.name} 정지 완료`);
-      this.emit('process:stopped', { processId, config, state });
-      return true;
-    } catch (error) {
-      systemLogger.error(`${config.name} 정지 실패:`, error);
-      return false;
-    }
+    return stopManagedProcess(this.createRuntimeContext(), processId);
   }
 
   private async emergencyShutdown(): Promise<void> {
@@ -626,34 +416,26 @@ export class ProcessManager
   }
 
   getSystemMetrics(): SystemMetrics {
-    const states = Array.from(this.states.values());
-    const runningStates = states.filter((s) => s.status === 'running');
-    const healthyStates = runningStates.filter((s) => s.healthScore >= 70);
-
-    const totalRestarts = states.reduce(
-      (sum, state) => sum + state.restartCount,
-      0
-    );
-
-    const averageHealthScore =
-      runningStates.length > 0
-        ? runningStates.reduce((sum, state) => sum + state.healthScore, 0) /
-          runningStates.length
-        : 0;
-
-    return {
-      totalProcesses: this.processes.size,
-      runningProcesses: runningStates.length,
-      healthyProcesses: healthyStates.length,
-      systemUptime: this.calculateUptime(),
-      memoryUsage: process.memoryUsage().heapUsed / 1024 / 1024,
-      averageHealthScore,
-      totalRestarts,
-      lastStabilityCheck: new Date(),
-    };
+    return buildSystemMetrics({
+      processes: this.processes,
+      states: this.states,
+      systemStartTime: this.systemStartTime,
+    });
   }
 
-  // -- Context factories for delegated modules --
+  private createRuntimeContext(): RuntimeContext {
+    return {
+      processes: this.processes,
+      states: this.states,
+      healthCheckManager: this.healthCheckManager,
+      eventBus: this.eventBus,
+      emitLocal: (event, payload) => this.emit(event, payload),
+      restartProcess: (id) => this.restartProcess(id),
+      startProcess: (id) => this.startProcess(id),
+      stopProcess: (id) => this.stopProcess(id),
+      delay: (ms) => this.delay(ms),
+    };
+  }
 
   /**
    * HealthCheckManager용 컨텍스트 생성

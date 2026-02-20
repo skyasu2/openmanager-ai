@@ -50,9 +50,6 @@ import { useQueryExecution } from './core/useQueryExecution';
 import { useAsyncAIQuery } from './useAsyncAIQuery';
 import { generateMessageId } from './utils/hybrid-query-utils';
 
-// ============================================================================
-// Types (extracted to types/hybrid-query.types.ts)
-// ============================================================================
 export type {
   AgentStatus,
   AgentStatusEventData,
@@ -69,9 +66,6 @@ export type {
   WarningEventData,
 } from './types/hybrid-query.types';
 
-// ============================================================================
-// Error Detection Constants (SSOT)
-// ============================================================================
 import {
   COLD_START_ERROR_PATTERNS,
   isColdStartRelatedError,
@@ -87,8 +81,6 @@ import type {
   WarningEventData,
 } from './types/hybrid-query.types';
 import type { FileAttachment } from './useFileAttachments';
-
-// Re-export for consumers
 export {
   STREAM_ERROR_MARKER,
   COLD_START_ERROR_PATTERNS,
@@ -96,16 +88,6 @@ export {
   extractStreamError,
   isColdStartRelatedError,
 };
-
-// ============================================================================
-// Constants (moved to config/ai-proxy.config.ts)
-// ============================================================================
-// Note: DEFAULT_COMPLEXITY_THRESHOLD has been moved to ai-proxy.config.ts
-// Use getComplexityThreshold() to access the configurable value
-
-// ============================================================================
-// Hook Implementation
-// ============================================================================
 
 export function useHybridAIQuery(
   options: UseHybridAIQueryOptions = {}
@@ -120,35 +102,20 @@ export function useHybridAIQuery(
     onData,
     webSearchEnabled,
   } = options;
-
-  // 🎯 P1: Trace ID for observability
   const traceIdRef = useRef<string>(generateTraceId());
   const observabilityConfig = getObservabilityConfig();
-
-  // 🎯 P1: Stream retry state
   const retryCountRef = useRef<number>(0);
   const streamRetryConfig = getStreamRetryConfig();
-
-  // webSearchEnabled를 ref로 추적: DefaultChatTransport의 body는 ChatStore 생성 시
-  // readonly로 고정되므로, Resolvable<object> 함수를 사용해 호출 시점의 최신 값을 반환
-  // toggle ON → true (force enable), toggle OFF/unset → undefined (backend auto-detection)
   const webSearchEnabledRef = useRef<boolean | undefined>(
     webSearchEnabled || undefined
   );
   useEffect(() => {
     webSearchEnabledRef.current = webSearchEnabled || undefined;
   }, [webSearchEnabled]);
-
-  // Determine API endpoint (v2 only - v1 deprecated and removed)
   const apiEndpoint = customEndpoint ?? '/api/ai/supervisor/stream/v2';
-
-  // Session ID with stable initial value
   const sessionIdRef = useRef<string>(
     initialSessionId || generateMessageId('session')
   );
-
-  // State
-  // P0 hotfix: AI SDK resume probe가 일부 환경에서 undefined.state 런타임 에러를 유발해 비활성화
   const resumeEnabled = false;
   const [state, setState] = useState<HybridQueryState>({
     mode: 'streaming',
@@ -161,23 +128,12 @@ export function useHybridAIQuery(
     warning: null,
     processingTime: 0,
   });
-
-  // 명확화 건너뛰기 시 원본 쿼리 저장
   const pendingQueryRef = useRef<string | null>(null);
-  // 파일 첨부 저장 (명확화 플로우에서 사용)
   const pendingAttachmentsRef = useRef<FileAttachment[] | null>(null);
-  // Redirect 이벤트 처리를 위한 쿼리 저장
   const currentQueryRef = useRef<string | null>(null);
-  // 🔒 Error Race Condition 방지
   const errorHandledRef = useRef<boolean>(false);
-  // AbortController for graceful request cancellation
   const abortControllerRef = useRef<AbortController | null>(null);
-  // Retry setTimeout ID for cleanup on unmount
   const retryTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  // ============================================================================
-  // useChat Hook (Streaming Mode) - AI SDK v6
-  // ============================================================================
   const transport = useMemo(
     () =>
       new DefaultChatTransport({
@@ -203,10 +159,8 @@ export function useHybridAIQuery(
   } = useChat({
     id: sessionIdRef.current,
     transport,
-    // P0 hotfix: resume 경로 비활성화
     resume: resumeEnabled,
     onFinish: ({ message }) => {
-      // 🔒 Race Condition 방지: onError가 이미 에러를 처리했으면 스킵
       if (errorHandledRef.current) {
         logger.debug(
           '[HybridAI] onFinish skipped (error already handled by onError)'
@@ -215,8 +169,6 @@ export function useHybridAIQuery(
         onStreamFinish?.();
         return;
       }
-
-      // 스트림 완료 후 에러 패턴 감지
       const parts = message.parts ?? [];
       const content = parts
         .filter(
@@ -251,8 +203,6 @@ export function useHybridAIQuery(
     },
     onData: (dataPart) => {
       const part = dataPart as StreamDataPart;
-
-      // Warning 이벤트 처리
       if (part.type === 'data-warning' && part.data) {
         const warningData = part.data as WarningEventData;
 
@@ -280,8 +230,6 @@ export function useHybridAIQuery(
         }
         return;
       }
-
-      // Redirect 이벤트 내부 처리 (Job Queue 모드 전환)
       if (part.type === 'data-redirect' && part.data) {
         const redirectData = part.data as RedirectEventData;
         logger.info(
@@ -310,7 +258,6 @@ export function useHybridAIQuery(
               logger.debug('[HybridAI] Job Queue redirect aborted');
               return;
             }
-            // P1-10: ref를 통해 최신 asyncQuery 참조 (stale closure 방지)
             asyncQueryRef.current
               .sendQuery(currentQuery)
               .then(() => {
@@ -335,8 +282,6 @@ export function useHybridAIQuery(
         }
         return;
       }
-
-      // 사용자 onData 콜백 호출
       onData?.(part);
     },
     onError: async (error) => {
@@ -345,9 +290,6 @@ export function useHybridAIQuery(
         `[HybridAI] useChat error (trace: ${traceIdRef.current}):`,
         errorMessage
       );
-
-      // 초기 resume probe(아직 사용자 쿼리 없음)에서 발생하는 네트워크 오류는
-      // 사용자 오류로 승격하지 않고 무시한다.
       const isResumeProbeWithoutUserQuery =
         !currentQueryRef.current &&
         /(failed to fetch|load failed|networkerror)/i.test(errorMessage);
@@ -358,8 +300,6 @@ export function useHybridAIQuery(
         setState((prev) => ({ ...prev, isLoading: false }));
         return;
       }
-
-      // Atomic check-and-set pattern to prevent double handling
       if (errorHandledRef.current) {
         logger.debug(
           '[HybridAI] onError skipped (already handled by onFinish)'
@@ -367,9 +307,6 @@ export function useHybridAIQuery(
         return;
       }
       errorHandledRef.current = true;
-
-      // Streaming retry with exponential backoff
-      // Cold start errors: fewer retries with longer delays to avoid wasting time
       const isColdStart = isColdStartRelatedError(errorMessage);
       const maxRetries = isColdStart ? 2 : streamRetryConfig.maxRetries;
       const canRetry =
@@ -393,7 +330,6 @@ export function useHybridAIQuery(
 
         retryTimeoutRef.current = setTimeout(() => {
           retryTimeoutRef.current = null;
-          // errorHandledRef is reset inside executeQuery (useQueryExecution.ts L99)
           const query = currentQueryRef.current;
           const attachments = pendingAttachmentsRef.current;
           if (query) {
@@ -415,11 +351,6 @@ export function useHybridAIQuery(
       }));
     },
   });
-
-  // ============================================================================
-  // useAsyncAIQuery Hook (Job Queue Mode)
-  // ============================================================================
-  // P1-10 Fix: asyncQuery를 ref에 저장하여 onData redirect 핸들러의 stale closure 방지
   const asyncQueryRef = useRef<ReturnType<typeof useAsyncAIQuery>>(null!);
 
   const asyncQuery = useAsyncAIQuery({
@@ -463,20 +394,10 @@ export function useHybridAIQuery(
       }));
     },
   });
-
-  // P1-10: ref를 최신 asyncQuery로 동기화
   asyncQueryRef.current = asyncQuery;
-
-  // ============================================================================
-  // Computed Values
-  // ============================================================================
   const isChatLoading =
     chatStatus === 'streaming' || chatStatus === 'submitted';
   const isLoading = state.isLoading || isChatLoading || asyncQuery.isLoading;
-
-  // ============================================================================
-  // Sub-Hooks: Query Execution (executeQuery + sendQuery)
-  // ============================================================================
   const { executeQuery, sendQuery } = useQueryExecution({
     complexityThreshold,
     asyncQuery,
@@ -490,10 +411,6 @@ export function useHybridAIQuery(
       pendingAttachments: pendingAttachmentsRef,
     },
   });
-
-  // ============================================================================
-  // Sub-Hook: Clarification Handlers
-  // ============================================================================
   const {
     selectClarification,
     submitCustomClarification,
@@ -505,10 +422,6 @@ export function useHybridAIQuery(
     executeQuery,
     setState,
   });
-
-  // ============================================================================
-  // Sub-Hook: Control Functions
-  // ============================================================================
   const { stop, cancel, reset, previewComplexity } = useQueryControls({
     currentMode: state.mode,
     asyncQuery,
@@ -542,10 +455,6 @@ export function useHybridAIQuery(
       processingTime: 0,
     }));
   }, []);
-
-  // ============================================================================
-  // Cleanup on Unmount
-  // ============================================================================
   useEffect(() => {
     return () => {
       abortControllerRef.current?.abort();
@@ -556,10 +465,6 @@ export function useHybridAIQuery(
       }
     };
   }, []);
-
-  // ============================================================================
-  // Return
-  // ============================================================================
   return {
     sendQuery,
     executeQuery,
@@ -575,7 +480,6 @@ export function useHybridAIQuery(
     clearError,
     currentMode: state.mode,
     previewComplexity,
-    // Clarification functions
     selectClarification,
     submitCustomClarification,
     skipClarification,

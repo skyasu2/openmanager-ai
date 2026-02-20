@@ -468,4 +468,3 @@ describe('HealthCalculator', () => {
     expect(calculator.calculate(aggregated, alertsFor75).grade).toBe('B');
   });
 });
-

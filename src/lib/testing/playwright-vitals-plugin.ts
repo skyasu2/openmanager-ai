@@ -7,8 +7,15 @@
  */
 
 import type { Page } from '@playwright/test';
-import { test } from '@playwright/test';
 import { logger } from '@/lib/logging';
+import {
+  collectBrowserMetricsFromPage,
+  collectWebVitalsFromPage,
+} from './playwright-vitals-browser';
+import {
+  playwrightExample,
+  setupPlaywrightVitalsWithController,
+} from './playwright-vitals-setup';
 import { type UniversalVital, universalVitals } from './universal-vitals';
 
 // 🎯 Playwright Vitals 수집 상태
@@ -143,60 +150,7 @@ export const PlaywrightVitals = {
     );
 
     try {
-      // 🌐 실제 Web Vitals 수집 (브라우저에서)
-      const webVitals = await page.evaluate(() => {
-        return new Promise((resolve) => {
-          const vitals: Record<string, unknown> = {};
-          let metricsCollected = 0;
-          const totalMetrics = 5;
-
-          const handleMetric = (metricName: string, value: number) => {
-            vitals[metricName] = value;
-            metricsCollected++;
-            if (metricsCollected >= totalMetrics) {
-              resolve(vitals);
-            }
-          };
-
-          // Web Vitals 라이브러리를 사용할 수 없는 경우 Performance API 사용
-          setTimeout(() => {
-            const navigation = performance.getEntriesByType(
-              'navigation'
-            )[0] as PerformanceNavigationTiming;
-            const paintEntries = performance.getEntriesByType('paint');
-
-            if (navigation) {
-              // TTFB (Time to First Byte)
-              handleMetric(
-                'TTFB',
-                navigation.responseStart - navigation.fetchStart
-              );
-
-              // FCP (First Contentful Paint)
-              const fcpEntry = paintEntries.find(
-                (entry) => entry.name === 'first-contentful-paint'
-              );
-              if (fcpEntry) {
-                handleMetric('FCP', fcpEntry.startTime);
-              }
-
-              // LCP 추정값 (실제로는 더 복잡한 계산 필요)
-              handleMetric(
-                'LCP',
-                navigation.loadEventEnd - navigation.fetchStart
-              );
-
-              // FID는 사용자 상호작용 후에만 측정 가능하므로 0으로 설정
-              handleMetric('FID', 0);
-
-              // CLS는 레이아웃 시프트 측정이 필요하므로 0으로 설정
-              handleMetric('CLS', 0);
-            } else {
-              resolve({});
-            }
-          }, 1000);
-        });
-      });
+      const webVitals = await collectWebVitalsFromPage(page);
 
       // Web Vitals를 Universal Vitals로 수집
       for (const [metricName, value] of Object.entries(
@@ -296,23 +250,7 @@ export const PlaywrightVitals = {
     label: string = 'browser-metrics'
   ) => {
     try {
-      const metrics = await page.evaluate(() => {
-        const memory = (
-          performance as {
-            memory?: { usedJSHeapSize: number; totalJSHeapSize: number };
-          }
-        ).memory;
-        const timing = performance.timing;
-
-        return {
-          usedJSHeapSize: memory ? memory.usedJSHeapSize / 1024 / 1024 : 0, // MB
-          totalJSHeapSize: memory ? memory.totalJSHeapSize / 1024 / 1024 : 0, // MB
-          domContentLoaded: timing
-            ? timing.domContentLoadedEventEnd - timing.navigationStart
-            : 0,
-          pageLoad: timing ? timing.loadEventEnd - timing.navigationStart : 0,
-        };
-      });
+      const metrics = await collectBrowserMetricsFromPage(page);
 
       // 브라우저 메모리 사용량
       if (metrics.usedJSHeapSize > 0) {
@@ -474,7 +412,6 @@ export const PlaywrightVitals = {
   },
 };
 
-// 🔌 자동 Playwright Hook 통합
 export function setupPlaywrightVitals(
   options: {
     suiteName?: string;
@@ -484,147 +421,7 @@ export function setupPlaywrightVitals(
     reportEndpoint?: string;
   } = {}
 ) {
-  const {
-    suiteName = 'playwright-suite',
-    browserName = 'chromium',
-    collectWebVitals: _collectWebVitals = true,
-    collectBrowserMetrics = true,
-    reportEndpoint,
-  } = options;
-
-  // 🚀 E2E 테스트 스위트 시작
-  test.beforeAll(async () => {
-    PlaywrightVitals.reset();
-    PlaywrightVitals.startSuite(suiteName, browserName);
-  });
-
-  // ⏱️ 각 E2E 테스트 시작
-  test.beforeEach(async ({ page }, testInfo) => {
-    const testName = testInfo.title || 'unknown-test';
-    PlaywrightVitals.startTest(testName, page);
-
-    // 브라우저 메트릭 수집 (테스트 시작 시)
-    if (collectBrowserMetrics) {
-      await PlaywrightVitals.collectBrowserMetrics(
-        page,
-        `test-start-${testName}`
-      );
-    }
-  });
-
-  // ✅ 각 E2E 테스트 완료 (성공/실패 자동 감지)
-  test.afterEach(async ({ page }, testInfo) => {
-    const testName = testInfo.title || 'unknown-test';
-
-    // 브라우저 메트릭 수집 (테스트 완료 시)
-    if (collectBrowserMetrics) {
-      await PlaywrightVitals.collectBrowserMetrics(
-        page,
-        `test-end-${testName}`
-      );
-    }
-
-    // 테스트 결과에 따른 처리
-    if (testInfo.status === 'passed') {
-      PlaywrightVitals.passTest(testName);
-    } else if (testInfo.status === 'failed') {
-      const testError = testInfo.errors?.[0];
-      const errorToPass = testError
-        ? new Error(testError.message || 'Test failed')
-        : undefined;
-      PlaywrightVitals.failTest(testName, errorToPass);
-    }
-  });
-
-  // 🏁 E2E 테스트 스위트 완료
-  test.afterAll(async () => {
-    PlaywrightVitals.endSuite(suiteName);
-
-    // 최종 리포트 생성
-    const report = PlaywrightVitals.generateReport();
-    logger.info('\n📊 [Playwright Vitals] 최종 E2E 리포트:');
-    logger.info(
-      `✅ 성공: ${report.testExecution.passedTests}/${report.testExecution.totalTests}`
-    );
-    logger.info(`📈 성공률: ${report.testExecution.successRate.toFixed(1)}%`);
-    logger.info(`🎭 브라우저: ${report.browserName}`);
-    logger.info(
-      `🎯 Vitals 품질: ${report.summary.goodVitals}개 Good, ${report.summary.poorVitals}개 Poor`
-    );
-
-    // 권장사항 출력
-    if (report.recommendations.length > 0) {
-      logger.info('\n💡 [E2E 성능 개선 권장사항]:');
-      report.recommendations.forEach((rec) => {
-        logger.info(`- ${rec.metric}: ${rec.recommendations?.join(', ')}`);
-      });
-    }
-
-    // API로 리포트 전송 (선택사항)
-    if (reportEndpoint) {
-      try {
-        const response = await fetch(reportEndpoint, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            source: 'playwright',
-            sessionId: report.sessionId,
-            timestamp: report.timestamp,
-            metrics: universalVitals.getAllMetrics(),
-            metadata: {
-              browserName: report.browserName,
-              testSuite: suiteName,
-              environment: process.env.NODE_ENV,
-            },
-          }),
-        });
-
-        if (response.ok) {
-          logger.info(
-            `📤 [Playwright Vitals] E2E 리포트 전송 완료: ${reportEndpoint}`
-          );
-        }
-      } catch (error) {
-        logger.warn(`⚠️ [Playwright Vitals] E2E 리포트 전송 실패:`, error);
-      }
-    }
-  });
+  return setupPlaywrightVitalsWithController(PlaywrightVitals, options);
 }
 
-// 📝 사용 예시를 위한 헬퍼
-export const playwrightExample = {
-  // 기본 설정
-  setup: `
-// tests/setup/playwright-vitals.setup.ts
-import { setupPlaywrightVitals } from '@/lib/testing/playwright-vitals-plugin';
-
-setupPlaywrightVitals({
-  suiteName: 'my-e2e-suite',
-  browserName: 'chromium',
-  collectWebVitals: true,
-  collectBrowserMetrics: true,
-  reportEndpoint: '/api/universal-vitals'
-});
-  `,
-
-  // 개별 테스트에서 사용
-  usage: `
-import { test, expect } from '@playwright/test';
-import { PlaywrightVitals } from '@/lib/testing/playwright-vitals-plugin';
-
-test('페이지 성능 측정', async ({ page }) => {
-  // 페이지 네비게이션 성능 측정
-  PlaywrightVitals.startNavigation(page, '/dashboard');
-  await page.goto('/dashboard');
-  await PlaywrightVitals.endNavigation(page, '/dashboard');
-
-  // API 호출 성능 측정
-  const apiVital = await PlaywrightVitals.measureAPICall(page, '/api/servers');
-  expect(apiVital.value).toBeLessThan(1000); // 1초 미만
-
-  // 브라우저 메트릭 수집
-  const metrics = await PlaywrightVitals.collectBrowserMetrics(page, 'dashboard-test');
-  expect(metrics?.usedJSHeapSize).toBeLessThan(50); // 50MB 미만
-});
-  `,
-};
+export { playwrightExample };
