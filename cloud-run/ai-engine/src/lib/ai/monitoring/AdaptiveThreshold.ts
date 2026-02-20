@@ -22,83 +22,18 @@
  * @date 2026-01-01
  */
 
-// ============================================================================
-// Types
-// ============================================================================
-
-export interface AdaptiveThresholdConfig {
-  /**
-   * Number of sigma for threshold (default: 2.0)
-   */
-  baseSigma: number;
-
-  /**
-   * Weight for hourly pattern (0-1). Default: 0.7
-   */
-  hourlyWeight: number;
-
-  /**
-   * Weight for daily pattern (0-1). Default: 0.3
-   */
-  dailyWeight: number;
-
-  /**
-   * EMA smoothing factor (0-1). Higher = faster adaptation. Default: 0.1
-   */
-  emaSmoothingFactor: number;
-
-  /**
-   * Minimum samples required per bucket for reliable stats. Default: 10
-   */
-  minSamplesPerBucket: number;
-
-  /**
-   * Maximum history to keep (in data points). Default: 1000
-   */
-  maxHistorySize: number;
-}
-
-export interface TemporalBucket {
-  /** Sum of values */
-  sum: number;
-  /** Sum of squared values (for stdDev calculation) */
-  sumSquared: number;
-  /** Number of samples */
-  count: number;
-  /** Calculated mean (cached) */
-  mean: number;
-  /** Calculated stdDev (cached) */
-  stdDev: number;
-  /** Last update timestamp */
-  lastUpdated: number;
-}
-
-export interface AdaptiveThresholds {
-  /** Dynamic upper threshold */
-  upper: number;
-  /** Dynamic lower threshold */
-  lower: number;
-  /** Expected mean for current time */
-  expectedMean: number;
-  /** Expected stdDev for current time */
-  expectedStdDev: number;
-  /** Confidence in thresholds (0-1) */
-  confidence: number;
-  /** Debug info */
-  debug: {
-    hour: number;
-    dayOfWeek: number;
-    hourlyBucketCount: number;
-    dailyBucketCount: number;
-    blendedMean: number;
-    blendedStdDev: number;
-  };
-}
-
-export interface MetricHistoryPoint {
-  timestamp: number;
-  value: number;
-}
+import type {
+  AdaptiveThresholdConfig,
+  AdaptiveThresholds,
+  MetricHistoryPoint,
+  TemporalBucket,
+} from './AdaptiveThreshold.types';
+export type {
+  AdaptiveThresholdConfig,
+  AdaptiveThresholds,
+  MetricHistoryPoint,
+  TemporalBucket,
+} from './AdaptiveThreshold.types';
 
 // ============================================================================
 // Implementation

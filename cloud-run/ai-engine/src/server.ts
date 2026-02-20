@@ -19,7 +19,8 @@ import { logAPIKeyStatus, validateAPIKeys } from './lib/model-config';
 import { getConfigStatus, getLangfuseConfig } from './lib/config-parser';
 import { isRedisAvailable } from './lib/redis-client';
 import { getCurrentState, initOTelDataAsync } from './data/precomputed-state';
-import { syncIncidentsToRAG } from './lib/incident-rag-injector';
+import { setupIncidentRagBackfill } from './server-incident-rag-backfill';
+import { registerGracefulShutdownHandlers } from './server-shutdown';
 
 // Error handling
 import { handleUnauthorizedError, jsonSuccess } from './lib/error-handler';
@@ -28,7 +29,11 @@ import { handleUnauthorizedError, jsonSuccess } from './lib/error-handler';
 import { rateLimitMiddleware } from './middleware/rate-limiter';
 
 // Observability & Resilience
-import { flushLangfuse, shutdownLangfuse, getLangfuseUsageStatus, restoreUsageFromRedis, initializeLangfuseClient } from './services/observability/langfuse';
+import {
+  getLangfuseUsageStatus,
+  restoreUsageFromRedis,
+  initializeLangfuseClient,
+} from './services/observability/langfuse';
 import { getAllCircuitStats, resetAllCircuitBreakers } from './services/resilience/circuit-breaker';
 import { getAvailableAgentsStatus, preFilterQuery, executeMultiAgent, type MultiAgentRequest } from './services/ai-sdk/agents';
 
@@ -430,90 +435,9 @@ registerRoutes().catch((err) => {
 });
 
 // Periodic incident -> RAG backfill (lightweight, free-tier conscious)
-const enableIncidentRagBackfill =
-  process.env.ENABLE_INCIDENT_RAG_BACKFILL !== 'false';
-const incidentRagBackfillMinutes = Math.max(
-  5,
-  Number.parseInt(process.env.INCIDENT_RAG_BACKFILL_MINUTES || '30', 10) || 30
-);
-
-if (enableIncidentRagBackfill) {
-  let backfillInFlight = false;
-
-  const runIncidentRagBackfill = async () => {
-    if (backfillInFlight) return;
-    backfillInFlight = true;
-
-    try {
-      const result = await syncIncidentsToRAG({ limit: 3, daysBack: 30 });
-      if (result.synced > 0 || result.failed > 0) {
-        logger.info(
-          {
-            synced: result.synced,
-            skipped: result.skipped,
-            failed: result.failed,
-            errors: result.errors.slice(0, 3),
-          },
-          'Incident RAG backfill run'
-        );
-      }
-    } catch (error) {
-      logger.warn({ error }, 'Incident RAG backfill failed');
-    } finally {
-      backfillInFlight = false;
-    }
-  };
-
-  const initialTimer = setTimeout(() => {
-    void runIncidentRagBackfill();
-  }, 15_000);
-  if (typeof (initialTimer as NodeJS.Timeout).unref === 'function') {
-    (initialTimer as NodeJS.Timeout).unref();
-  }
-
-  const intervalMs = incidentRagBackfillMinutes * 60 * 1000;
-  const intervalTimer = setInterval(() => {
-    void runIncidentRagBackfill();
-  }, intervalMs);
-  if (typeof (intervalTimer as NodeJS.Timeout).unref === 'function') {
-    (intervalTimer as NodeJS.Timeout).unref();
-  }
-
-  logger.info(
-    { incidentRagBackfillMinutes },
-    'Incident RAG periodic backfill enabled'
-  );
-}
+setupIncidentRagBackfill();
 
 // ============================================================================
 // Graceful Shutdown
 // ============================================================================
-
-async function gracefulShutdown(signal: string): Promise<void> {
-  logger.info({ signal }, 'Received shutdown signal');
-
-  const SHUTDOWN_TIMEOUT_MS = 30_000;
-  const timeout = setTimeout(() => {
-    logger.error('Shutdown timed out after 30s, forcing exit');
-    process.exit(1);
-  }, SHUTDOWN_TIMEOUT_MS);
-
-  try {
-    logger.info('Flushing Langfuse traces');
-    await flushLangfuse();
-
-    logger.info('Shutting down Langfuse');
-    await shutdownLangfuse();
-
-    clearTimeout(timeout);
-    logger.info('Graceful shutdown complete');
-    process.exit(0);
-  } catch (error) {
-    clearTimeout(timeout);
-    logger.error({ error }, 'Error during shutdown');
-    process.exit(1);
-  }
-}
-
-process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
-process.on('SIGINT', () => gracefulShutdown('SIGINT'));
+registerGracefulShutdownHandlers();

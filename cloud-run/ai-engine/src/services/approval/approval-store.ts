@@ -17,8 +17,6 @@
  * for audit trail and analytics.
  */
 
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
-import { getSupabaseConfig } from '../../lib/config-parser';
 import {
   redisGet,
   redisSet,
@@ -27,28 +25,23 @@ import {
 } from '../../lib/redis-client';
 import { syncIncidentsToRAG } from '../../lib/incident-rag-injector';
 import { logger } from '../../lib/logger';
-
-export type ApprovalActionType =
-  | 'incident_report'
-  | 'system_command'
-  | 'critical_alert';
-
-export interface PendingApproval {
-  sessionId: string;
-  actionType: ApprovalActionType;
-  description: string;
-  payload: Record<string, unknown>;
-  requestedAt: Date;
-  requestedBy: string;
-  expiresAt: Date;
-}
-
-export interface ApprovalDecision {
-  approved: boolean;
-  decidedAt: Date;
-  decidedBy?: string;
-  reason?: string;
-}
+import {
+  fetchApprovalHistory,
+  fetchApprovalHistoryStats,
+  hasApprovalHistoryPersistence,
+  markApprovalExpired,
+  persistApprovalDecision,
+  persistApprovalPending,
+} from './approval-store-supabase';
+import type {
+  ApprovalDecision,
+  PendingApproval,
+  RedisApprovalEntry,
+  ApprovalHistoryOptions,
+  ApprovalHistoryRecord,
+  ApprovalHistoryStats,
+} from './approval-store-types';
+export type { ApprovalActionType, ApprovalDecision, PendingApproval } from './approval-store-types';
 
 interface ApprovalEntry {
   pending: PendingApproval;
@@ -59,54 +52,7 @@ interface ApprovalEntry {
 // Redis key prefix
 const REDIS_PREFIX = 'approval:';
 const REDIS_TTL_SECONDS = 5 * 60; // 5 minutes
-
-// ============================================================================
-// Supabase Client Singleton (for PostgreSQL persistence)
-// ============================================================================
-
-let supabaseClient: SupabaseClient | null = null;
-let supabaseInitFailed = false;
-
-function getSupabaseClient(): SupabaseClient | null {
-  if (supabaseInitFailed) return null;
-  if (supabaseClient) return supabaseClient;
-
-  const config = getSupabaseConfig();
-  if (!config) {
-    supabaseInitFailed = true;
-    logger.warn('⚠️ [Approval] Supabase config missing, history persistence disabled');
-    return null;
-  }
-
-  try {
-    supabaseClient = createClient(config.url, config.serviceRoleKey);
-    console.log('✅ [Approval] PostgreSQL persistence enabled');
-    return supabaseClient;
-  } catch (e) {
-    supabaseInitFailed = true;
-    logger.error('❌ [Approval] Supabase init failed:', e);
-    return null;
-  }
-}
-
-// Serializable entry for Redis (no callback)
-interface RedisApprovalEntry {
-  pending: {
-    sessionId: string;
-    actionType: ApprovalActionType;
-    description: string;
-    payload: Record<string, unknown>;
-    requestedAt: string; // ISO string
-    requestedBy: string;
-    expiresAt: string; // ISO string
-  };
-  decision: {
-    approved: boolean;
-    decidedAt: string;
-    decidedBy?: string;
-    reason?: string;
-  } | null;
-}
+const IS_TEST_RUNTIME = process.env.NODE_ENV === 'test' || Boolean(process.env.VITEST);
 
 // ============================================================================
 // Hybrid Store (L1: Memory + L2: Redis)
@@ -134,7 +80,7 @@ class ApprovalStore {
     console.log(`🔔 [Approval] Registered pending: ${approval.sessionId}`);
 
     // L2: Store in Redis (serialized, no callback)
-    if (isRedisAvailable()) {
+    if (!IS_TEST_RUNTIME && isRedisAvailable()) {
       const redisEntry: RedisApprovalEntry = {
         pending: {
           ...approval,
@@ -151,24 +97,8 @@ class ApprovalStore {
     }
 
     // L3: Persist to PostgreSQL (audit trail)
-    const supabase = getSupabaseClient();
-    if (supabase) {
-      try {
-        await supabase.from('approval_history').insert({
-          session_id: approval.sessionId,
-          action_type: approval.actionType,
-          description: approval.description,
-          payload: approval.payload,
-          requested_by: approval.requestedBy,
-          requested_at: approval.requestedAt.toISOString(),
-          expires_at: expiresAt.toISOString(),
-          status: 'pending',
-        });
-        console.log(`💾 [Approval] Persisted to PostgreSQL: ${approval.sessionId}`);
-      } catch (e) {
-        logger.error('⚠️ [Approval] PostgreSQL persist failed:', e);
-        // Don't fail the operation - Redis/Memory still work
-      }
+    if (!IS_TEST_RUNTIME) {
+      await persistApprovalPending(approval, expiresAt);
     }
 
     // Auto-cleanup after TTL
@@ -195,7 +125,7 @@ class ApprovalStore {
     }
 
     // L2: Fallback to Redis (for multi-instance scenarios)
-    if (isRedisAvailable()) {
+    if (!IS_TEST_RUNTIME && isRedisAvailable()) {
       const redisEntry = await redisGet<RedisApprovalEntry>(
         `${REDIS_PREFIX}${sessionId}`
       );
@@ -237,7 +167,7 @@ class ApprovalStore {
     let entry = this.store.get(sessionId);
 
     // L2: If not in memory, try to load from Redis
-    if (!entry && isRedisAvailable()) {
+    if (!entry && !IS_TEST_RUNTIME && isRedisAvailable()) {
       const redisEntry = await redisGet<RedisApprovalEntry>(
         `${REDIS_PREFIX}${sessionId}`
       );
@@ -269,7 +199,7 @@ class ApprovalStore {
     entry.decision = decision;
 
     // L2: Update Redis
-    if (isRedisAvailable()) {
+    if (!IS_TEST_RUNTIME && isRedisAvailable()) {
       const redisEntry: RedisApprovalEntry = {
         pending: {
           ...entry.pending,
@@ -291,23 +221,8 @@ class ApprovalStore {
     }
 
     // L3: Update PostgreSQL (audit trail)
-    const supabase = getSupabaseClient();
-    if (supabase) {
-      try {
-        await supabase
-          .from('approval_history')
-          .update({
-            status: approved ? 'approved' : 'rejected',
-            decided_by: decision.decidedBy,
-            decided_at: decision.decidedAt.toISOString(),
-            reason: decision.reason,
-          })
-          .eq('session_id', sessionId)
-          .eq('status', 'pending'); // Only update if still pending
-        console.log(`💾 [Approval] Decision persisted: ${sessionId}`);
-      } catch (e) {
-        logger.error('⚠️ [Approval] PostgreSQL decision update failed:', e);
-      }
+    if (!IS_TEST_RUNTIME) {
+      await persistApprovalDecision(sessionId, decision);
     }
 
     // Resolve waiting promise if exists
@@ -345,7 +260,7 @@ class ApprovalStore {
     }
 
     // L2: Fallback to Redis
-    if (isRedisAvailable()) {
+    if (!IS_TEST_RUNTIME && isRedisAvailable()) {
       const redisEntry = await redisGet<RedisApprovalEntry>(
         `${REDIS_PREFIX}${sessionId}`
       );
@@ -413,24 +328,15 @@ class ApprovalStore {
     this.store.delete(sessionId);
 
     // L2: Delete from Redis
-    if (isRedisAvailable()) {
+    if (!IS_TEST_RUNTIME && isRedisAvailable()) {
       await redisDel(`${REDIS_PREFIX}${sessionId}`).catch((e) => {
         logger.warn(`⚠️ [Approval] Redis cleanup failed for ${sessionId}:`, e);
       });
     }
 
     // L3: Mark as expired in PostgreSQL (don't delete - keep for audit)
-    const supabase = getSupabaseClient();
-    if (supabase) {
-      try {
-        await supabase
-          .from('approval_history')
-          .update({ status: 'expired' })
-          .eq('session_id', sessionId)
-          .eq('status', 'pending'); // Only update if still pending
-      } catch (e) {
-        logger.warn(`⚠️ [Approval] PostgreSQL expiry update failed for ${sessionId}:`, e);
-      }
+    if (!IS_TEST_RUNTIME) {
+      await markApprovalExpired(sessionId);
     }
 
     console.log(`🧹 [Approval] Cleaned up: ${sessionId}`);
@@ -452,111 +358,25 @@ class ApprovalStore {
     return {
       pending,
       total: this.store.size,
-      redisEnabled: isRedisAvailable(),
-      postgresEnabled: getSupabaseClient() !== null,
+      redisEnabled: !IS_TEST_RUNTIME && isRedisAvailable(),
+      postgresEnabled: !IS_TEST_RUNTIME && hasApprovalHistoryPersistence(),
     };
   }
 
   /**
    * Get approval history from PostgreSQL (for audit/analytics)
    */
-  async getHistory(options: {
-    status?: 'pending' | 'approved' | 'rejected' | 'expired';
-    actionType?: ApprovalActionType;
-    limit?: number;
-    offset?: number;
-    fromDate?: Date;
-    toDate?: Date;
-  } = {}): Promise<Array<{
-    id: string;
-    sessionId: string;
-    actionType: string;
-    description: string;
-    status: string;
-    requestedBy: string;
-    requestedAt: Date;
-    decidedBy: string | null;
-    decidedAt: Date | null;
-    reason: string | null;
-  }> | null> {
-    const supabase = getSupabaseClient();
-    if (!supabase) {
-      logger.warn('⚠️ [Approval] PostgreSQL not available for history query');
-      return null;
-    }
-
-    try {
-      const { data, error } = await supabase.rpc('get_approval_history', {
-        p_status: options.status || null,
-        p_action_type: options.actionType || null,
-        p_limit: options.limit || 50,
-        p_offset: options.offset || 0,
-        p_from_date: options.fromDate?.toISOString() || null,
-        p_to_date: options.toDate?.toISOString() || null,
-      });
-
-      if (error) {
-        logger.error('❌ [Approval] History query failed:', error);
-        return null;
-      }
-
-      return (data || []).map((row: Record<string, unknown>) => ({
-        id: String(row.id),
-        sessionId: String(row.session_id),
-        actionType: String(row.action_type),
-        description: String(row.description),
-        status: String(row.status),
-        requestedBy: String(row.requested_by),
-        requestedAt: new Date(row.requested_at as string),
-        decidedBy: row.decided_by ? String(row.decided_by) : null,
-        decidedAt: row.decided_at ? new Date(row.decided_at as string) : null,
-        reason: row.reason ? String(row.reason) : null,
-      }));
-    } catch (e) {
-      logger.error('❌ [Approval] History query error:', e);
-      return null;
-    }
+  async getHistory(
+    options: ApprovalHistoryOptions = {}
+  ): Promise<ApprovalHistoryRecord[] | null> {
+    return fetchApprovalHistory(options);
   }
 
   /**
    * Get approval statistics from PostgreSQL
    */
-  async getHistoryStats(days = 7): Promise<{
-    totalRequests: number;
-    approvedCount: number;
-    rejectedCount: number;
-    expiredCount: number;
-    pendingCount: number;
-    approvalRate: number;
-    avgDecisionTimeSeconds: number;
-  } | null> {
-    const supabase = getSupabaseClient();
-    if (!supabase) return null;
-
-    try {
-      const { data, error } = await supabase.rpc('get_approval_stats', {
-        p_days: days,
-      });
-
-      if (error || !data || data.length === 0) {
-        logger.error('❌ [Approval] Stats query failed:', error);
-        return null;
-      }
-
-      const stats = data[0];
-      return {
-        totalRequests: Number(stats.total_requests || 0),
-        approvedCount: Number(stats.approved_count || 0),
-        rejectedCount: Number(stats.rejected_count || 0),
-        expiredCount: Number(stats.expired_count || 0),
-        pendingCount: Number(stats.pending_count || 0),
-        approvalRate: Number(stats.approval_rate || 0),
-        avgDecisionTimeSeconds: Number(stats.avg_decision_time_seconds || 0),
-      };
-    } catch (e) {
-      logger.error('❌ [Approval] Stats query error:', e);
-      return null;
-    }
+  async getHistoryStats(days = 7): Promise<ApprovalHistoryStats | null> {
+    return fetchApprovalHistoryStats(days);
   }
 
   /**

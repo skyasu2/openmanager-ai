@@ -35,13 +35,26 @@ vi.mock('./config', () => {
     matchPatterns: name === 'Evaluator Agent' || name === 'Optimizer Agent' ? [] : ['test'],
   });
 
+  // Vision Agent uses real matchPatterns so keyword detection tests work
+  const visionPatterns: (string | RegExp)[] = [
+    '스크린샷', 'screenshot', '이미지', 'image', '사진', '그래프', '차트',
+    '대시보드', 'dashboard', 'grafana', 'cloudwatch', 'datadog',
+    '로그 분석', '대용량', 'log', '전체 로그',
+    '최신', '문서', 'documentation', '공식', 'official',
+    'url', '링크', '페이지',
+    /스크린샷.*분석|분석.*스크린샷/i,
+    /이미지.*보여|첨부.*분석/i,
+    /로그.*전체|대용량.*로그/i,
+    /최신.*문서|공식.*가이드/i,
+  ];
+
   return {
     AGENT_CONFIGS: {
       'NLQ Agent': mockConfig('NLQ Agent'),
       'Analyst Agent': mockConfig('Analyst Agent'),
       'Reporter Agent': mockConfig('Reporter Agent'),
       'Advisor Agent': mockConfig('Advisor Agent'),
-      'Vision Agent': mockConfig('Vision Agent'),
+      'Vision Agent': { ...mockConfig('Vision Agent'), matchPatterns: visionPatterns },
       'Evaluator Agent': mockConfig('Evaluator Agent'),
       'Optimizer Agent': mockConfig('Optimizer Agent'),
     },

@@ -22,136 +22,30 @@ import {
   stepCountIs,
   type ToolSet,
   type LanguageModel,
-  type TextPart,
-  type ImagePart,
-  type FilePart,
-  type UserContent,
 } from 'ai';
 import { sanitizeChineseCharacters } from '../../../lib/text-sanitizer';
 import { extractToolResultOutput } from '../../../lib/ai-sdk-utils';
-import { isOpenRouterVisionToolCallingEnabled } from '../../../lib/config-parser';
 import type { AgentConfig, ModelResult } from './config';
 import { logger } from '../../../lib/logger';
-
-// ============================================================================
-// Types
-// ============================================================================
-
-/**
- * Image attachment for multimodal messages
- * Supports Base64, Data URL, HTTP(S) URL formats
- *
- * @see https://ai-sdk.dev/docs/ai-sdk-core/prompts#image-parts
- */
-export interface ImageAttachment {
-  /** Image data: Base64 string, Data URL, or HTTP(S) URL */
-  data: string;
-  /** MIME type (e.g., 'image/png', 'image/jpeg') */
-  mimeType: string;
-  /** Optional filename for display */
-  name?: string;
-}
-
-/**
- * File attachment for multimodal messages
- * Supports PDF, audio, and other file types
- *
- * @see https://ai-sdk.dev/docs/ai-sdk-core/prompts#file-parts
- */
-export interface FileAttachment {
-  /** File data: Base64 string or HTTP(S) URL */
-  data: string;
-  /** MIME type (e.g., 'application/pdf', 'text/plain') */
-  mimeType: string;
-  /** Optional filename */
-  name?: string;
-}
-
-/**
- * Result returned by agent execution
- */
-export interface AgentResult {
-  /** Generated text response */
-  text: string;
-  /** Whether execution was successful */
-  success: boolean;
-  /** Tools called during execution */
-  toolsCalled: string[];
-  /** Token usage statistics */
-  usage: {
-    promptTokens: number;
-    completionTokens: number;
-    totalTokens: number;
-  };
-  /** Execution metadata */
-  metadata: {
-    provider: string;
-    modelId: string;
-    durationMs: number;
-    steps: number;
-    finishReason?: string;
-    fallbackUsed?: boolean;
-    fallbackReason?: string;
-  };
-  /** Error message if failed */
-  error?: string;
-}
-
-/**
- * Configuration options for agent execution
- */
-export interface AgentRunOptions {
-  /** Maximum execution time in milliseconds */
-  timeoutMs?: number;
-  /** Maximum number of steps (LLM calls) */
-  maxSteps?: number;
-  /** Temperature for response generation */
-  temperature?: number;
-  /** Maximum output tokens */
-  maxOutputTokens?: number;
-  /** Enable web search tools */
-  webSearchEnabled?: boolean;
-  /** Session ID for context tracking */
-  sessionId?: string;
-  /**
-   * Image attachments for multimodal queries (Vision Agent)
-   * Images are passed directly to the model via message content
-   * @see https://ai-sdk.dev/docs/ai-sdk-core/prompts#image-parts
-   */
-  images?: ImageAttachment[];
-  /**
-   * File attachments for multimodal queries (PDF, audio, etc.)
-   * @see https://ai-sdk.dev/docs/ai-sdk-core/prompts#file-parts
-   */
-  files?: FileAttachment[];
-}
-
-/**
- * Stream event types for streaming execution
- */
-export interface AgentStreamEvent {
-  type: 'text_delta' | 'tool_call' | 'step_finish' | 'done' | 'error' | 'warning';
-  data: unknown;
-}
-
-// ============================================================================
-// Default Configuration
-// ============================================================================
-
-const DEFAULT_OPTIONS: Required<Omit<AgentRunOptions, 'sessionId' | 'images' | 'files'>> = {
-  timeoutMs: 45_000,
-  maxSteps: 7,
-  temperature: 0.4,
-  maxOutputTokens: 2048,
-  webSearchEnabled: true,
-};
-
-const VISION_AGENT_NAME = 'Vision Agent' as const;
-const OPENROUTER_VISION_MIN_OUTPUT_TOKENS = 256;
-const VISION_EMPTY_RESPONSE_FALLBACK =
-  '비전 분석 모델 응답이 비어 있습니다. 잠시 후 다시 시도해 주세요.';
-const GENERIC_EMPTY_RESPONSE_FALLBACK =
-  'AI 응답이 비어 있습니다. 잠시 후 다시 시도해 주세요.';
+import { buildUserContent } from './base-agent-multimodal';
+import {
+  filterTools,
+  getEmptyResponseFallbackMessage,
+  resolveMaxOutputTokens,
+} from './base-agent-tooling';
+import {
+  DEFAULT_OPTIONS,
+  type AgentResult,
+  type AgentRunOptions,
+  type AgentStreamEvent,
+} from './base-agent-types';
+export type {
+  AgentResult,
+  AgentRunOptions,
+  AgentStreamEvent,
+  FileAttachment,
+  ImageAttachment,
+} from './base-agent-types';
 
 // ============================================================================
 // BaseAgent Abstract Class
@@ -199,79 +93,6 @@ export abstract class BaseAgent {
   }
 
   /**
-   * Filter tools based on options
-   */
-  protected filterTools(
-    tools: ToolSet,
-    options: AgentRunOptions,
-    provider: string
-  ): ToolSet {
-    const filtered = { ...tools };
-
-    if (options.webSearchEnabled !== false) {
-      // keep default tools
-    } else if ('searchWeb' in filtered) {
-      delete filtered.searchWeb;
-      logger.debug(`[${this.getName()}] searchWeb disabled`);
-    }
-
-    if (
-      this.getName() === VISION_AGENT_NAME &&
-      provider === 'openrouter' &&
-      !isOpenRouterVisionToolCallingEnabled()
-    ) {
-      const toolCount = Object.keys(filtered).length;
-      if (toolCount > 0) {
-        logger.warn(
-          `⚠️ [Vision Agent] OpenRouter free-tier compatibility mode: disabling ${toolCount} tools (set OPENROUTER_VISION_TOOL_CALLING=true to override)`
-        );
-      }
-      return {};
-    }
-
-    return filtered;
-  }
-
-  protected isVisionOpenRouter(provider: string, agentName?: string): boolean {
-    return (agentName ?? this.getName()) === VISION_AGENT_NAME && provider === 'openrouter';
-  }
-
-  protected resolveMaxOutputTokens(
-    options: AgentRunOptions,
-    provider: string,
-    agentName?: string
-  ): number {
-    const requested = options.maxOutputTokens ?? DEFAULT_OPTIONS.maxOutputTokens;
-
-    if (
-      this.isVisionOpenRouter(provider, agentName) &&
-      requested < OPENROUTER_VISION_MIN_OUTPUT_TOKENS
-    ) {
-      logger.warn(
-        `⚠️ [Vision Agent] OpenRouter maxOutputTokens too low (${requested}), overriding to ${OPENROUTER_VISION_MIN_OUTPUT_TOKENS}`
-      );
-      return OPENROUTER_VISION_MIN_OUTPUT_TOKENS;
-    }
-
-    return requested;
-  }
-
-  protected getEmptyResponseFallbackMessage(
-    provider: string,
-    modelId: string,
-    agentName?: string
-  ): string {
-    if (this.isVisionOpenRouter(provider, agentName)) {
-      return VISION_EMPTY_RESPONSE_FALLBACK;
-    }
-
-    logger.warn(
-      `⚠️ [${agentName ?? this.getName()}] Empty response from ${provider}/${modelId}, using generic fallback message`
-    );
-    return GENERIC_EMPTY_RESPONSE_FALLBACK;
-  }
-
-  /**
    * Create a ToolLoopAgent instance with resolved configuration
    *
    * @param model - Resolved language model
@@ -299,59 +120,9 @@ export abstract class BaseAgent {
     });
   }
 
-  /**
-   * Build multimodal user message content
-   *
-   * AI SDK v6 Best Practice: Include images/files directly in message content
-   * @see https://ai-sdk.dev/docs/ai-sdk-core/prompts#image-parts
-   *
-   * @param query - Text query
-   * @param options - Options with images/files
-   * @returns Content array or string (for text-only)
-   */
-  protected buildUserContent(
-    query: string,
-    options: AgentRunOptions
-  ): UserContent {
-    const hasImages = options.images && options.images.length > 0;
-    const hasFiles = options.files && options.files.length > 0;
-
-    // Text-only: return simple string (most common case)
-    if (!hasImages && !hasFiles) {
-      return query;
-    }
-
-    // Multimodal: build content array with AI SDK-compatible types
-    const content: Array<TextPart | ImagePart | FilePart> = [
-      { type: 'text', text: query } as TextPart,
-    ];
-
-    // Add images (Vision Agent)
-    if (hasImages) {
-      for (const img of options.images!) {
-        content.push({
-          type: 'image',
-          image: img.data,
-          mimeType: img.mimeType,
-        } as ImagePart);
-      }
-      logger.debug(`[${this.getName()}] Added ${options.images!.length} image(s) to message`);
-    }
-
-    // Add files (PDF, audio, etc.)
-    // Note: AI SDK FilePart uses 'mediaType' not 'mimeType'
-    if (hasFiles) {
-      for (const file of options.files!) {
-        content.push({
-          type: 'file',
-          data: file.data,
-          mediaType: file.mimeType, // AI SDK uses 'mediaType'
-        } as FilePart);
-      }
-      logger.debug(`[${this.getName()}] Added ${options.files!.length} file(s) to message`);
-    }
-
-    return content;
+  // Backward-compatible protected hook for subclasses/tests.
+  protected buildUserContent(query: string, options: AgentRunOptions) {
+    return buildUserContent(this.getName(), query, options);
   }
 
   /**
@@ -408,11 +179,12 @@ export abstract class BaseAgent {
     }
 
     const { model, provider, modelId } = modelResult;
-    const maxOutputTokens = this.resolveMaxOutputTokens(opts, provider, agentName);
-    const filteredTools = this.filterTools(
+    const maxOutputTokens = resolveMaxOutputTokens(opts, provider, agentName);
+    const filteredTools = filterTools(
       config.tools,
       opts,
-      provider
+      provider,
+      agentName
     );
 
     logger.info(`[${agentName}] Using ${provider}/${modelId}`);
@@ -478,7 +250,7 @@ export abstract class BaseAgent {
         logger.warn(
           `⚠️ [${agentName}] Empty response from ${provider}/${modelId} (finish=${finishReason}, outputTokens=${result.usage?.outputTokens ?? 0})`
         );
-        sanitizedText = this.getEmptyResponseFallbackMessage(
+        sanitizedText = getEmptyResponseFallbackMessage(
           provider,
           modelId,
           agentName
@@ -561,11 +333,12 @@ export abstract class BaseAgent {
     }
 
     const { model, provider, modelId } = modelResult;
-    const maxOutputTokens = this.resolveMaxOutputTokens(opts, provider, agentName);
-    const filteredTools = this.filterTools(
+    const maxOutputTokens = resolveMaxOutputTokens(opts, provider, agentName);
+    const filteredTools = filterTools(
       config.tools,
       opts,
-      provider
+      provider,
+      agentName
     );
 
     logger.info(`[${agentName}] Streaming with ${provider}/${modelId}`);
@@ -652,7 +425,7 @@ export abstract class BaseAgent {
       }
 
       if (!hasTextContent) {
-        const fallbackText = this.getEmptyResponseFallbackMessage(
+        const fallbackText = getEmptyResponseFallbackMessage(
           provider,
           modelId,
           agentName

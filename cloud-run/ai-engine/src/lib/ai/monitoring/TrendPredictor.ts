@@ -21,110 +21,28 @@
  * @date 2025-11-21
  */
 
-export interface TrendDataPoint {
-  timestamp: number;
-  value: number;
-}
-
-export interface TrendPredictionConfig {
-  /**
-   * Number of recent data points to use for regression.
-   * Default: 12 (1 hour at 5-minute intervals)
-   */
-  regressionWindow: number;
-
-  /**
-   * Slope threshold for classifying as "increasing" or "decreasing".
-   * Default: 0.1 (10% change per hour)
-   */
-  slopeThreshold: number;
-
-  /**
-   * Minimum R² value for reliable prediction.
-   * Default: 0.7 (70% of variance explained)
-   */
-  minR2: number;
-}
-
-export interface TrendPrediction {
-  trend: 'increasing' | 'decreasing' | 'stable';
-  prediction: number;
-  confidence: number;
-  details: {
-    currentValue: number;
-    slope: number;
-    intercept: number;
-    r2: number;
-    predictedChange: number; // Absolute change from current value
-    predictedChangePercent: number; // Percentage change
-  };
-  timestamp: number;
-}
-
-/**
- * 🆕 임계값 도달 예측 결과 (Prometheus predict_linear 스타일)
- */
-export interface ThresholdBreachPrediction {
-  /** Warning 임계값 도달 여부 */
-  willBreachWarning: boolean;
-  /** Warning 도달까지 남은 시간 (ms), null = 도달 안함 */
-  timeToWarning: number | null;
-  /** Critical 임계값 도달 여부 */
-  willBreachCritical: boolean;
-  /** Critical 도달까지 남은 시간 (ms), null = 도달 안함 */
-  timeToCritical: number | null;
-  /** 사람이 읽기 쉬운 요약 */
-  humanReadable: string;
-}
-
-/**
- * 🆕 정상 복귀 예측 결과 (Datadog Recovery Forecast 스타일)
- */
-export interface RecoveryPrediction {
-  /** 정상 상태로 복귀할 것인지 */
-  willRecover: boolean;
-  /** 복귀까지 남은 시간 (ms), null = 복귀 안함 */
-  timeToRecovery: number | null;
-  /** 사람이 읽기 쉬운 요약 */
-  humanReadable: string | null;
-}
-
-/**
- * 🆕 향상된 예측 결과 (상용 도구 수준)
- */
-export interface EnhancedTrendPrediction extends TrendPrediction {
-  /** 임계값 도달 예측 (Prometheus predict_linear 스타일) */
-  thresholdBreach: ThresholdBreachPrediction;
-  /** 정상 복귀 예측 (Datadog Recovery Forecast 스타일) */
-  recovery: RecoveryPrediction;
-  /** 현재 상태 */
-  currentStatus: 'online' | 'warning' | 'critical';
-}
-
-/**
- * 메트릭별 임계값 정의
- */
-export interface MetricThresholds {
-  warning: number;
-  critical: number;
-  /** 정상 복귀 기준 (warning보다 약간 낮게 설정) */
-  recovery: number;
-}
-
-/**
- * 🆕 기본 임계값 (Dashboard와 일치)
- */
-const DEFAULT_THRESHOLDS: Record<string, MetricThresholds> = {
-  cpu: { warning: 70, critical: 90, recovery: 65 },
-  memory: { warning: 80, critical: 90, recovery: 75 },
-  disk: { warning: 80, critical: 90, recovery: 75 },
-  network: { warning: 70, critical: 90, recovery: 60 },
-};
-
-/**
- * 최대 예측 기간 (24시간)
- */
-const MAX_PREDICTION_HORIZON = 24 * 60 * 60 * 1000;
+import {
+  DEFAULT_THRESHOLDS,
+  type EnhancedTrendPrediction,
+  type MetricThresholds,
+  type TrendDataPoint,
+  type TrendPrediction,
+  type TrendPredictionConfig,
+} from './TrendPredictor.types';
+import {
+  determineStatus,
+  predictRecovery,
+  predictThresholdBreach,
+} from './TrendPredictor.enhanced';
+export type {
+  EnhancedTrendPrediction,
+  MetricThresholds,
+  RecoveryPrediction,
+  ThresholdBreachPrediction,
+  TrendDataPoint,
+  TrendPrediction,
+  TrendPredictionConfig,
+} from './TrendPredictor.types';
 
 export class TrendPredictor {
   private config: TrendPredictionConfig;
@@ -316,10 +234,10 @@ export class TrendPredictor {
     const thresholds = this.thresholds[metricName] || DEFAULT_THRESHOLDS.cpu;
 
     // 3. 현재 상태 판단
-    const currentStatus = this.determineStatus(currentValue, thresholds);
+    const currentStatus = determineStatus(currentValue, thresholds);
 
     // 4. 임계값 도달 예측 (Prometheus predict_linear 스타일)
-    const thresholdBreach = this.predictThresholdBreach(
+    const thresholdBreach = predictThresholdBreach(
       currentValue,
       slope,
       thresholds,
@@ -327,7 +245,7 @@ export class TrendPredictor {
     );
 
     // 5. 정상 복귀 예측 (Datadog Recovery Forecast 스타일)
-    const recovery = this.predictRecovery(
+    const recovery = predictRecovery(
       currentValue,
       slope,
       thresholds,
@@ -355,213 +273,6 @@ export class TrendPredictor {
     }
 
     return results;
-  }
-
-  // ============================================================================
-  // Private Methods - Enhanced Prediction
-  // ============================================================================
-
-  /**
-   * 현재 상태 판단
-   */
-  private determineStatus(
-    value: number,
-    thresholds: MetricThresholds
-  ): 'online' | 'warning' | 'critical' {
-    if (value >= thresholds.critical) return 'critical';
-    if (value >= thresholds.warning) return 'warning';
-    return 'online';
-  }
-
-  /**
-   * 🆕 임계값 도달 시간 예측 (Prometheus predict_linear 스타일)
-   *
-   * @formula
-   * time_to_threshold = (threshold - currentValue) / slope
-   * (slope > 0 이고 currentValue < threshold 일 때만 유효)
-   */
-  private predictThresholdBreach(
-    currentValue: number,
-    slope: number,
-    thresholds: MetricThresholds,
-    currentStatus: 'online' | 'warning' | 'critical'
-  ): ThresholdBreachPrediction {
-    // 이미 Critical 상태면 더 이상 도달 예측 불필요
-    if (currentStatus === 'critical') {
-      return {
-        willBreachWarning: true,
-        timeToWarning: 0,
-        willBreachCritical: true,
-        timeToCritical: 0,
-        humanReadable: '현재 심각(Critical) 상태입니다.',
-      };
-    }
-
-    // slope <= 0 이면 증가하지 않음 → 도달 안함
-    if (slope <= 0) {
-      return {
-        willBreachWarning: currentStatus === 'warning',
-        timeToWarning: currentStatus === 'warning' ? 0 : null,
-        willBreachCritical: false,
-        timeToCritical: null,
-        humanReadable:
-          currentStatus === 'warning'
-            ? '현재 경고(Warning) 상태이며, 악화 추세 없음'
-            : '정상 상태 유지 예상',
-      };
-    }
-
-    // Warning 도달 시간 계산
-    let timeToWarning: number | null = null;
-    let willBreachWarning = currentStatus === 'warning';
-
-    if (currentStatus === 'online' && currentValue < thresholds.warning) {
-      // time = (threshold - current) / slope (slope는 per-second)
-      const timeSeconds = (thresholds.warning - currentValue) / slope;
-      const timeMs = timeSeconds * 1000;
-
-      if (timeMs > 0 && timeMs <= MAX_PREDICTION_HORIZON) {
-        timeToWarning = timeMs;
-        willBreachWarning = true;
-      }
-    }
-
-    // Critical 도달 시간 계산
-    let timeToCritical: number | null = null;
-    let willBreachCritical = false;
-
-    if (currentValue < thresholds.critical) {
-      const timeSeconds = (thresholds.critical - currentValue) / slope;
-      const timeMs = timeSeconds * 1000;
-
-      if (timeMs > 0 && timeMs <= MAX_PREDICTION_HORIZON) {
-        timeToCritical = timeMs;
-        willBreachCritical = true;
-      }
-    }
-
-    // Human-readable 메시지 생성
-    const humanReadable = this.formatBreachMessage(
-      willBreachWarning,
-      timeToWarning,
-      willBreachCritical,
-      timeToCritical,
-      currentStatus
-    );
-
-    return {
-      willBreachWarning,
-      timeToWarning,
-      willBreachCritical,
-      timeToCritical,
-      humanReadable,
-    };
-  }
-
-  /**
-   * 🆕 정상 복귀 시간 예측 (Datadog Recovery Forecast 스타일)
-   *
-   * @description
-   * Warning/Critical 상태에서 정상으로 돌아오는 시간 예측
-   * slope < 0 (감소 추세)일 때만 복귀 가능
-   */
-  private predictRecovery(
-    currentValue: number,
-    slope: number,
-    thresholds: MetricThresholds,
-    currentStatus: 'online' | 'warning' | 'critical'
-  ): RecoveryPrediction {
-    // 이미 정상이면 복귀 예측 불필요
-    if (currentStatus === 'online') {
-      return {
-        willRecover: true,
-        timeToRecovery: 0,
-        humanReadable: null,
-      };
-    }
-
-    // slope >= 0 이면 감소하지 않음 → 복귀 안함
-    if (slope >= 0) {
-      return {
-        willRecover: false,
-        timeToRecovery: null,
-        humanReadable:
-          currentStatus === 'critical'
-            ? '⚠️ 심각 상태이며, 자연 복구 예상 불가'
-            : '⚠️ 경고 상태이며, 자연 복구 예상 불가',
-      };
-    }
-
-    // 복귀 시간 계산 (recovery 임계값까지)
-    // slope가 음수이므로, time = (recovery - current) / slope
-    const timeSeconds = (thresholds.recovery - currentValue) / slope;
-    const timeMs = timeSeconds * 1000;
-
-    if (timeMs > 0 && timeMs <= MAX_PREDICTION_HORIZON) {
-      return {
-        willRecover: true,
-        timeToRecovery: timeMs,
-        humanReadable: `✅ ${this.formatDuration(timeMs)} 후 정상 복귀 예상`,
-      };
-    }
-
-    return {
-      willRecover: false,
-      timeToRecovery: null,
-      humanReadable: '복구 시간 예측 불가 (24시간 이상 소요 예상)',
-    };
-  }
-
-  /**
-   * 임계값 도달 메시지 포맷
-   */
-  private formatBreachMessage(
-    willBreachWarning: boolean,
-    timeToWarning: number | null,
-    willBreachCritical: boolean,
-    timeToCritical: number | null,
-    currentStatus: 'online' | 'warning' | 'critical'
-  ): string {
-    if (currentStatus === 'warning') {
-      if (willBreachCritical && timeToCritical !== null) {
-        return `⚠️ 현재 경고 상태 → ${this.formatDuration(timeToCritical)} 후 심각 상태 예상`;
-      }
-      return '⚠️ 현재 경고 상태 (심각 상태로의 전환 예상 없음)';
-    }
-
-    if (willBreachCritical && timeToCritical !== null) {
-      return `🚨 ${this.formatDuration(timeToCritical)} 후 심각(Critical) 상태 예상`;
-    }
-
-    if (willBreachWarning && timeToWarning !== null) {
-      return `⚠️ ${this.formatDuration(timeToWarning)} 후 경고(Warning) 상태 예상`;
-    }
-
-    return '✅ 24시간 내 임계값 도달 예상 없음';
-  }
-
-  /**
-   * 시간을 사람이 읽기 쉬운 형식으로 변환
-   */
-  private formatDuration(ms: number): string {
-    const hours = Math.floor(ms / (1000 * 60 * 60));
-    const minutes = Math.floor((ms % (1000 * 60 * 60)) / (1000 * 60));
-
-    if (hours >= 24) {
-      const days = Math.floor(hours / 24);
-      const remainingHours = hours % 24;
-      return remainingHours > 0 ? `${days}일 ${remainingHours}시간` : `${days}일`;
-    }
-
-    if (hours > 0) {
-      return minutes > 0 ? `${hours}시간 ${minutes}분` : `${hours}시간`;
-    }
-
-    if (minutes > 0) {
-      return `${minutes}분`;
-    }
-
-    return '1분 미만';
   }
 
   // ============================================================================

@@ -12,365 +12,60 @@
  * @updated 2026-02-14 - Added OpenRouter fallback for Vision Agent
  */
 
-import { createCerebras } from '@ai-sdk/cerebras';
-import { createMistral } from '@ai-sdk/mistral';
-import { createGroq } from '@ai-sdk/groq';
-import { createGoogleGenerativeAI } from '@ai-sdk/google';
-import { createOpenAI } from '@ai-sdk/openai';
 import type { LanguageModel } from 'ai';
+import { logger } from '../../lib/logger';
 
 // Use centralized config getters (supports AI_PROVIDERS_CONFIG JSON format)
 import {
-  getCerebrasApiKey,
-  getMistralApiKey,
-  getGroqApiKey,
-  getGeminiApiKey,
-  getOpenRouterApiKey,
   getOpenRouterVisionModelId,
-  getOpenRouterVisionFallbackModelIds,
 } from '../../lib/config-parser';
-
 import { getCircuitBreaker } from '../resilience/circuit-breaker';
+import {
+  type LLMProviderName as QuotaProviderName,
+  getQuotaSummary,
+  recordProviderUsage,
+  selectAvailableProvider,
+} from '../resilience/quota-tracker';
+import {
+  getCerebrasModel,
+  getGeminiFlashLiteModel,
+  getGroqModel,
+  getMistralModel,
+  getOpenRouterVisionModel,
+} from './model-provider-core';
+import {
+  checkProviderStatus,
+  getProviderToggleState,
+  invalidateProviderStatusCache,
+  toggleProvider,
+} from './model-provider-status';
+import type {
+  ProviderHealth,
+  ProviderName,
+  ProviderStatus,
+} from './model-provider.types';
 
-// ============================================================================
-// 1. Types
-// ============================================================================
-
-export type ProviderName = 'cerebras' | 'groq' | 'mistral' | 'gemini' | 'openrouter';
-
-export interface ProviderStatus {
-  cerebras: boolean;
-  groq: boolean;
-  mistral: boolean;
-  gemini: boolean;
-  openrouter: boolean;
-}
+export type { ProviderHealth, ProviderName, ProviderStatus } from './model-provider.types';
+export {
+  getCerebrasModel,
+  getGeminiFlashLiteModel,
+  getGroqModel,
+  getMistralModel,
+  getOpenRouterVisionModel,
+} from './model-provider-core';
+export {
+  checkProviderStatus,
+  getProviderToggleState,
+  invalidateProviderStatusCache,
+  toggleProvider,
+} from './model-provider-status';
 
 // ============================================================================
 // 2. Runtime Provider Toggle (for testing)
 // ============================================================================
 
-/**
- * Runtime toggle state for providers (default: all enabled)
- * Use toggleProvider() to enable/disable at runtime for testing
- */
-const providerToggleState: Record<ProviderName, boolean> = {
-  cerebras: true,
-  groq: true,
-  mistral: true,
-  gemini: true,
-  openrouter: true,
-};
-
-/**
- * Cached provider status (invalidated when toggling providers)
- * @optimization Reduces redundant API key checks during agent initialization
- */
-let cachedProviderStatus: ProviderStatus | null = null;
-
-/**
- * Toggle a provider on/off at runtime
- * @note Invalidates provider status cache to reflect changes
- */
-export function toggleProvider(provider: ProviderName, enabled: boolean): void {
-  providerToggleState[provider] = enabled;
-  // Invalidate cache when provider toggle changes
-  cachedProviderStatus = null;
-  console.log(`🔧 [Provider] ${provider} ${enabled ? 'ENABLED' : 'DISABLED'}`);
-}
-
-/**
- * Get current toggle state for all providers
- */
-export function getProviderToggleState(): Record<ProviderName, boolean> {
-  return { ...providerToggleState };
-}
-
-/**
- * Check if provider is enabled (both has API key AND toggle is on)
- */
-function isProviderEnabled(provider: ProviderName): boolean {
-  return providerToggleState[provider];
-}
-
-/**
- * Check which providers are available (API key exists AND toggle enabled)
- * @optimization Caches result for startup performance (agent-configs.ts calls this 5+ times)
- */
-export function checkProviderStatus(): ProviderStatus {
-  if (cachedProviderStatus) {
-    return cachedProviderStatus;
-  }
-
-  cachedProviderStatus = {
-    cerebras: !!getCerebrasApiKey() && isProviderEnabled('cerebras'),
-    groq: !!getGroqApiKey() && isProviderEnabled('groq'),
-    mistral: !!getMistralApiKey() && isProviderEnabled('mistral'),
-    gemini: !!getGeminiApiKey() && isProviderEnabled('gemini'),
-    openrouter: !!getOpenRouterApiKey() && isProviderEnabled('openrouter'),
-  };
-
-  return cachedProviderStatus;
-}
-
-/**
- * Invalidate provider status cache (call when toggling providers)
- */
-export function invalidateProviderStatusCache(): void {
-  cachedProviderStatus = null;
-}
-
-export interface ProviderConfig {
-  apiKey: string | undefined;
-  baseURL?: string;
-}
-
-export interface ModelConfig {
-  temperature?: number;
-  maxTokens?: number;
-}
-
 // ============================================================================
-// 3. Provider Factories
-// ============================================================================
-
-/**
- * Create Cerebras provider instance
- */
-function createCerebrasProvider() {
-  const apiKey = getCerebrasApiKey();
-  if (!apiKey) {
-    throw new Error('CEREBRAS_API_KEY not configured');
-  }
-
-  return createCerebras({
-    apiKey,
-  });
-}
-
-/**
- * Create Groq provider instance
- */
-function createGroqProvider() {
-  const apiKey = getGroqApiKey();
-  if (!apiKey) {
-    throw new Error('GROQ_API_KEY not configured');
-  }
-
-  return createGroq({
-    apiKey,
-  });
-}
-
-/**
- * Create Mistral provider instance
- */
-function createMistralProvider() {
-  const apiKey = getMistralApiKey();
-  if (!apiKey) {
-    throw new Error('MISTRAL_API_KEY not configured');
-  }
-
-  return createMistral({
-    apiKey,
-  });
-}
-
-/**
- * Create Gemini provider instance
- * Uses Google Generative AI (Gemini 2.5 Flash-Lite)
- *
- * @added 2026-01-27 Vision Agent
- */
-function createGeminiProvider() {
-  const apiKey = getGeminiApiKey();
-  if (!apiKey) {
-    throw new Error('GEMINI_API_KEY not configured');
-  }
-
-  return createGoogleGenerativeAI({
-    apiKey,
-  });
-}
-
-/**
- * Create OpenRouter provider instance
- * Uses OpenAI-compatible API
- */
-function patchOpenRouterRequestInit(init?: RequestInit): RequestInit | undefined {
-  if (!init?.body || typeof init.body !== 'string') {
-    return init;
-  }
-
-  try {
-    const parsedBody = JSON.parse(init.body) as Record<string, unknown>;
-    const provider =
-      typeof parsedBody.provider === 'object' && parsedBody.provider !== null
-        ? parsedBody.provider as Record<string, unknown>
-        : {};
-
-    const modelId = typeof parsedBody.model === 'string' ? parsedBody.model : null;
-    const primaryVisionModel = getOpenRouterVisionModelId();
-
-    if (!('allow_fallbacks' in provider)) {
-      provider.allow_fallbacks = true;
-    }
-
-    if (!('require_parameters' in provider)) {
-      provider.require_parameters = true;
-    }
-
-    // OpenRouter official fallback chain:
-    // provide "models" list so router can fail over to next model on error/quota.
-    if (modelId === primaryVisionModel && !Array.isArray(parsedBody.models)) {
-      const fallbacks = getOpenRouterVisionFallbackModelIds();
-      parsedBody.models = [...new Set([primaryVisionModel, ...fallbacks])];
-    }
-
-    return {
-      ...init,
-      body: JSON.stringify({
-        ...parsedBody,
-        provider,
-      }),
-    };
-  } catch {
-    return init;
-  }
-}
-
-function createOpenRouterProvider() {
-  const apiKey = getOpenRouterApiKey();
-  if (!apiKey) {
-    throw new Error('OPENROUTER_API_KEY not configured');
-  }
-
-  const referer = process.env.OPENROUTER_HTTP_REFERER;
-  const title = process.env.OPENROUTER_X_TITLE || 'OpenManager AI';
-
-  const headers: Record<string, string> = {};
-  if (referer) {
-    headers['HTTP-Referer'] = referer;
-  }
-  if (title) {
-    headers['X-Title'] = title;
-  }
-
-  return createOpenAI({
-    baseURL: 'https://openrouter.ai/api/v1',
-    apiKey,
-    name: 'openrouter',
-    headers,
-    fetch: async (input, init) => fetch(input, patchOpenRouterRequestInit(init)),
-  });
-}
-
-// ============================================================================
-// 4. Model Factory Functions
-// ============================================================================
-
-/**
- * AI SDK 타입 호환성 헬퍼
- *
- * Provider SDK들이 LanguageModelV3를 반환하지만 generateText()는 LanguageModelV2를 기대함.
- * 런타임에서는 호환되므로 타입 캐스팅으로 해결.
- *
- * 🎯 P1 Fix: 런타임 검증 추가로 Provider SDK 변경 시 조기 에러 감지
- *
- * @see https://github.com/vercel/ai/issues - AI SDK 버전 호환성 이슈
- */
-function asLanguageModel(model: unknown): LanguageModel {
-  // 🎯 CODEX Review Fix: 함수형 모델도 허용 (callable + 속성 조합 가능)
-  if (!model || (typeof model !== 'object' && typeof model !== 'function')) {
-    throw new TypeError('[ModelProvider] Model must be an object or function');
-  }
-
-  // Check for essential LanguageModel interface methods
-  const m = model as Record<string, unknown>;
-  const hasDoGenerate = typeof m.doGenerate === 'function';
-  const hasDoStream = typeof m.doStream === 'function';
-
-  if (!hasDoGenerate && !hasDoStream) {
-    throw new TypeError(
-      '[ModelProvider] Model does not implement LanguageModel interface (missing doGenerate/doStream)'
-    );
-  }
-
-  return model as LanguageModel;
-}
-
-/**
- * Get Cerebras model via OpenAI-compatible API
- * @param modelId - 'llama-3.3-70b' (default) or 'llama-3.1-8b'
- */
-export function getCerebrasModel(
-  modelId: string = 'llama-3.3-70b'
-): LanguageModel {
-  const cerebras = createCerebrasProvider();
-  return asLanguageModel(cerebras(modelId));
-}
-
-/**
- * Get Groq model
- * @param modelId - 'llama-3.3-70b-versatile' (default) or 'llama-3.1-8b-instant'
- */
-export function getGroqModel(
-  modelId: string = 'llama-3.3-70b-versatile'
-): LanguageModel {
-  const groq = createGroqProvider();
-  return asLanguageModel(groq(modelId));
-}
-
-/**
- * Get Mistral model
- * @param modelId - 'mistral-small-2506' (default)
- */
-export function getMistralModel(
-  modelId: string = 'mistral-small-2506'
-): LanguageModel {
-  const mistral = createMistralProvider();
-  return asLanguageModel(mistral(modelId));
-}
-
-/**
- * Get Gemini Flash-Lite model (Vision Agent)
- *
- * Features:
- * - 1M token context window
- * - Vision (Image/PDF/Video/Audio)
- * - Google Search Grounding
- * - URL Context
- *
- * Free Tier (2026-01):
- * - 1,000 RPD, 15 RPM, 250K TPM
- *
- * @param modelId - 'gemini-2.5-flash' (default, stable) - Vision/PDF/Audio support
- * @added 2026-01-27
- * @updated 2026-01-28 - Changed to gemini-2.5-flash (lite has v1 spec issue, 2.0 deprecated Mar 2026)
- */
-export function getGeminiFlashLiteModel(
-  modelId: string = 'gemini-2.5-flash'
-): LanguageModel {
-  const gemini = createGeminiProvider();
-  return asLanguageModel(gemini(modelId));
-}
-
-/**
- * Get OpenRouter Vision model (Fallback)
- * Default: nvidia/nemotron-nano-12b-v2-vl:free
- *
- * @param modelId - Model ID (optional, uses env default if not provided)
- */
-export function getOpenRouterVisionModel(
-  modelId?: string
-): LanguageModel {
-  const openrouter = createOpenRouterProvider();
-  const model = modelId || getOpenRouterVisionModelId();
-  return asLanguageModel(openrouter(model));
-}
-
-// ============================================================================
-// 5. Supervisor Model with Fallback Chain
+// 3. Supervisor Model with Fallback Chain
 // ============================================================================
 
 /**
@@ -606,13 +301,6 @@ export function isVisionAgentAvailable(): boolean {
 // 6. Health Check
 // ============================================================================
 
-export interface ProviderHealth {
-  provider: ProviderName;
-  status: 'ok' | 'error';
-  latencyMs?: number;
-  error?: string;
-}
-
 /**
  * Test provider connectivity (lightweight check)
  */
@@ -697,14 +385,6 @@ export function logProviderStatus(): void {
 // ============================================================================
 // 7. Pre-emptive Fallback with Quota Tracking
 // ============================================================================
-
-import { logger } from '../../lib/logger';
-import {
-  selectAvailableProvider,
-  recordProviderUsage,
-  getQuotaSummary,
-  type LLMProviderName as QuotaProviderName,
-} from '../resilience/quota-tracker';
 
 /**
  * Get Supervisor model with Pre-emptive Fallback (Quota-aware)

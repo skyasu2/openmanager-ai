@@ -13,7 +13,7 @@
  * @created 2026-01-06
  */
 
-import type { LanguageModel, ToolSet } from 'ai';
+import type { ToolSet } from 'ai';
 
 // Tool type from AI SDK
 type ToolsMap = ToolSet;
@@ -29,18 +29,20 @@ import {
 
 // Model providers
 import {
-  getCerebrasModel,
-  getGroqModel,
-  getMistralModel,
-  getGeminiFlashLiteModel,
-  getOpenRouterVisionModel,
-  checkProviderStatus,
-} from '../../model-provider';
-
-import { getOpenRouterVisionModelId } from '../../../../lib/config-parser';
+  getAdvisorModel,
+  getAnalystModel,
+  getNlqModel,
+  getReporterModel,
+  getVisionModel,
+  type ModelResult,
+} from './agent-model-selectors';
+export type { ModelResult } from './agent-model-selectors';
+import {
+  EVALUATOR_AGENT_INSTRUCTIONS,
+  OPTIMIZER_AGENT_INSTRUCTIONS,
+} from './agent-pipeline-instructions';
 
 // Tools (AI SDK tools)
-import { logger } from '../../../../lib/logger';
 import {
   // Server metrics tools
   getServerMetrics,
@@ -82,15 +84,6 @@ import {
 // ============================================================================
 
 /**
- * Model result from getModel function
- */
-export interface ModelResult {
-  model: LanguageModel;
-  provider: string;
-  modelId: string;
-}
-
-/**
  * Agent configuration interface
  */
 export interface AgentConfig {
@@ -106,262 +99,6 @@ export interface AgentConfig {
   tools: ToolsMap;
   /** Patterns for automatic routing */
   matchPatterns: (string | RegExp)[];
-}
-
-// ============================================================================
-// Model Selection Functions
-// ============================================================================
-
-/**
- * Get NLQ model: Cerebras → Groq → Mistral (3-way fallback)
- * Ensures operation even if 2 of 3 providers are down
- */
-function getNlqModel(): ModelResult | null {
-  const status = checkProviderStatus();
-
-  // Primary: Cerebras (24M tokens/day free tier)
-  if (status.cerebras) {
-    try {
-      return {
-        model: getCerebrasModel('llama-3.3-70b'),
-        provider: 'cerebras',
-        modelId: 'llama-3.3-70b',
-      };
-    } catch {
-      logger.warn('⚠️ [NLQ Agent] Cerebras unavailable, trying Groq');
-    }
-  }
-
-  // Fallback 1: Groq
-  if (status.groq) {
-    try {
-      return {
-        model: getGroqModel('llama-3.3-70b-versatile'),
-        provider: 'groq',
-        modelId: 'llama-3.3-70b-versatile',
-      };
-    } catch {
-      logger.warn('⚠️ [NLQ Agent] Groq unavailable, trying Mistral');
-    }
-  }
-
-  // Fallback 2: Mistral (last resort)
-  if (status.mistral) {
-    try {
-      return {
-        model: getMistralModel('mistral-small-2506'),
-        provider: 'mistral',
-        modelId: 'mistral-small-2506',
-      };
-    } catch {
-      logger.warn('⚠️ [NLQ Agent] Mistral unavailable');
-    }
-  }
-
-  logger.warn('⚠️ [NLQ Agent] No model available (all 3 providers down)');
-  return null;
-}
-
-/**
- * Get Analyst model: Groq → Cerebras → Mistral (3-way fallback)
- * Ensures operation even if 2 of 3 providers are down
- */
-function getAnalystModel(): ModelResult | null {
-  const status = checkProviderStatus();
-
-  // Primary: Groq (good Korean generation quality)
-  if (status.groq) {
-    try {
-      return {
-        model: getGroqModel('llama-3.3-70b-versatile'),
-        provider: 'groq',
-        modelId: 'llama-3.3-70b-versatile',
-      };
-    } catch {
-      logger.warn('⚠️ [Analyst Agent] Groq unavailable, trying Cerebras');
-    }
-  }
-
-  // Fallback 1: Cerebras
-  if (status.cerebras) {
-    try {
-      return {
-        model: getCerebrasModel('llama-3.3-70b'),
-        provider: 'cerebras',
-        modelId: 'llama-3.3-70b',
-      };
-    } catch {
-      logger.warn('⚠️ [Analyst Agent] Cerebras unavailable, trying Mistral');
-    }
-  }
-
-  // Fallback 2: Mistral (last resort)
-  if (status.mistral) {
-    try {
-      return {
-        model: getMistralModel('mistral-small-2506'),
-        provider: 'mistral',
-        modelId: 'mistral-small-2506',
-      };
-    } catch {
-      logger.warn('⚠️ [Analyst Agent] Mistral unavailable');
-    }
-  }
-
-  logger.warn('⚠️ [Analyst Agent] No model available (all 3 providers down)');
-  return null;
-}
-
-/**
- * Get Reporter model: Groq → Cerebras → Mistral (3-way fallback)
- * Ensures operation even if 2 of 3 providers are down
- */
-function getReporterModel(): ModelResult | null {
-  const status = checkProviderStatus();
-
-  // Primary: Groq
-  if (status.groq) {
-    try {
-      return {
-        model: getGroqModel('llama-3.3-70b-versatile'),
-        provider: 'groq',
-        modelId: 'llama-3.3-70b-versatile',
-      };
-    } catch {
-      logger.warn('⚠️ [Reporter Agent] Groq unavailable, trying Cerebras');
-    }
-  }
-
-  // Fallback 1: Cerebras
-  if (status.cerebras) {
-    try {
-      return {
-        model: getCerebrasModel('llama-3.3-70b'),
-        provider: 'cerebras',
-        modelId: 'llama-3.3-70b',
-      };
-    } catch {
-      logger.warn('⚠️ [Reporter Agent] Cerebras unavailable, trying Mistral');
-    }
-  }
-
-  // Fallback 2: Mistral (last resort)
-  if (status.mistral) {
-    try {
-      return {
-        model: getMistralModel('mistral-small-2506'),
-        provider: 'mistral',
-        modelId: 'mistral-small-2506',
-      };
-    } catch {
-      logger.warn('⚠️ [Reporter Agent] Mistral unavailable');
-    }
-  }
-
-  logger.warn('⚠️ [Reporter Agent] No model available (all 3 providers down)');
-  return null;
-}
-
-/**
- * Get Advisor model: Mistral → Groq → Cerebras (3-way fallback)
- * Ensures operation even if 2 of 3 providers are down
- * Primary: Mistral (best for RAG + reasoning)
- */
-function getAdvisorModel(): ModelResult | null {
-  const status = checkProviderStatus();
-
-  // Primary: Mistral (best for RAG + reasoning)
-  if (status.mistral) {
-    try {
-      return {
-        model: getMistralModel('mistral-small-2506'),
-        provider: 'mistral',
-        modelId: 'mistral-small-2506',
-      };
-    } catch {
-      logger.warn('⚠️ [Advisor Agent] Mistral unavailable, trying Groq');
-    }
-  }
-
-  // Fallback 1: Groq
-  if (status.groq) {
-    try {
-      return {
-        model: getGroqModel('llama-3.3-70b-versatile'),
-        provider: 'groq',
-        modelId: 'llama-3.3-70b-versatile',
-      };
-    } catch {
-      logger.warn('⚠️ [Advisor Agent] Groq unavailable, trying Cerebras');
-    }
-  }
-
-  // Fallback 2: Cerebras (last resort)
-  if (status.cerebras) {
-    try {
-      return {
-        model: getCerebrasModel('llama-3.3-70b'),
-        provider: 'cerebras',
-        modelId: 'llama-3.3-70b',
-      };
-    } catch {
-      logger.warn('⚠️ [Advisor Agent] Cerebras unavailable');
-    }
-  }
-
-  logger.warn('⚠️ [Advisor Agent] No model available (all 3 providers down)');
-  return null;
-}
-
-/**
- * Get Vision model: Gemini Flash → OpenRouter (Fallback)
- *
- * Primary: Gemini 2.5 Flash
- * - 1M token context, Vision/PDF/Video/Audio, Search Grounding
- * - Free Tier: 250 RPD
- *
- * Fallback: OpenRouter (nvidia/nemotron-nano-12b-v2-vl:free)
- * - Basic vision capabilities maintained
- * - Used when Gemini unavailable or quota exceeded
- *
- * Graceful Degradation: Both unavailable → returns null
- *
- * @added 2026-01-27
- * @updated 2026-02-14 - Added OpenRouter fallback
- */
-function getVisionModel(): ModelResult | null {
-  const status = checkProviderStatus();
-
-  // 1. Primary: Gemini
-  if (status.gemini) {
-    try {
-      return {
-        model: getGeminiFlashLiteModel('gemini-2.5-flash'),
-        provider: 'gemini',
-        modelId: 'gemini-2.5-flash',
-      };
-    } catch (error) {
-      logger.warn('⚠️ [Vision Agent] Gemini initialization failed, trying OpenRouter:', error);
-    }
-  }
-
-  // 2. Fallback: OpenRouter
-  if (status.openrouter) {
-    try {
-      const modelId = getOpenRouterVisionModelId();
-      logger.info(`🔄 [Vision Agent] Using OpenRouter fallback: ${modelId}`);
-      return {
-        model: getOpenRouterVisionModel(modelId),
-        provider: 'openrouter',
-        modelId,
-      };
-    } catch (error) {
-      logger.error('❌ [Vision Agent] OpenRouter initialization failed:', error);
-    }
-  }
-
-  logger.warn('⚠️ [Vision Agent] No vision provider available - Vision features disabled');
-  return null;
 }
 
 // ============================================================================
@@ -567,26 +304,7 @@ export const AGENT_CONFIGS: Record<string, AgentConfig> = {
     description:
       '생성된 장애 보고서의 품질을 평가합니다. 구조 완성도, 내용 완성도, 근본원인 분석 정확도, 조치 실행가능성을 점수화합니다. Reporter Pipeline에서 내부적으로 사용됩니다.',
     getModel: getNlqModel, // Cerebras - 빠른 평가
-    instructions: `당신은 장애 보고서 품질 평가 전문가입니다.
-
-## 역할
-생성된 장애 보고서를 평가하여 품질 점수를 산출하고, 개선이 필요한 영역을 식별합니다.
-
-## 평가 기준
-1. **구조 완성도** (20%): 필수 섹션 존재 여부, 형식 준수
-2. **내용 완성도** (25%): 모든 필드가 채워져 있는지, 데이터 품질
-3. **분석 정확도** (35%): 근본원인 분석 신뢰도, 증거 품질
-4. **조치 실행가능성** (20%): CLI 명령어 포함 여부, 구체성
-
-## 출력 형식
-- 각 기준별 점수 (0-1)
-- 종합 점수 (가중 평균)
-- 발견된 이슈 목록
-- 개선 권장사항
-
-## 품질 임계값
-- 종합 점수 >= 0.75: 기준 충족
-- 종합 점수 < 0.75: 최적화 필요`,
+    instructions: EVALUATOR_AGENT_INSTRUCTIONS,
     tools: {
       evaluateIncidentReport,
       validateReportStructure,
@@ -600,32 +318,7 @@ export const AGENT_CONFIGS: Record<string, AgentConfig> = {
     description:
       '낮은 품질의 장애 보고서를 개선합니다. 근본원인 분석을 심화하고, 권장 조치에 CLI 명령어를 추가하며, 서버 연관성 분석을 확장합니다.',
     getModel: getAdvisorModel, // Mistral - 추론 강함
-    instructions: `당신은 장애 보고서 최적화 전문가입니다.
-
-## 역할
-평가에서 발견된 문제를 해결하여 보고서 품질을 향상시킵니다.
-
-## 최적화 전략
-
-### 1. 근본원인 분석 개선 (신뢰도 < 75%)
-- 추가 메트릭 데이터 분석
-- 서버 간 상관관계 확인
-- 증거 보강
-
-### 2. 권장 조치 구체화 (실행가능성 점수 < 70%)
-- 각 조치에 CLI 명령어 추가
-- 우선순위 설정
-- 예상 영향 명시
-
-### 3. 서버 연관성 확장
-- cascade 패턴 감지
-- 동시 발생 패턴 분석
-- 주기적 연관 확인
-
-## 제약사항
-- 최대 3회 반복 최적화
-- 각 반복에서 최소 5% 품질 향상 목표
-- 12초 내 완료`,
+    instructions: OPTIMIZER_AGENT_INSTRUCTIONS,
     tools: {
       refineRootCauseAnalysis,
       enhanceSuggestedActions,

@@ -14,20 +14,20 @@ import { z } from 'zod';
 // Data sources
 import {
   getCurrentState,
-  getStateBySlot,
   type ServerSnapshot,
 } from '../data/precomputed-state';
 
 // AI/ML modules
 import {
   getAnomalyDetector,
-  type MetricDataPoint,
 } from '../lib/ai/monitoring/SimpleAnomalyDetector';
-import {
-  getTrendPredictor,
-  type TrendDataPoint,
-} from '../lib/ai/monitoring/TrendPredictor';
 import { getDataCache } from '../lib/cache-layer';
+import {
+  PATTERN_INSIGHTS,
+  getHistoryForMetric,
+  type AnomalyResultItem,
+} from './analyst-tools-shared';
+export { predictTrends } from './analyst-tools-trend';
 
 // Config (SSOT)
 import { STATUS_THRESHOLDS } from '../config/status-thresholds';
@@ -37,88 +37,6 @@ import type {
   ServerAnomalyItem,
   SystemSummary,
 } from '../types/analysis-results';
-
-// ============================================================================
-// 1. Types
-// ============================================================================
-
-interface AnomalyResultItem {
-  isAnomaly: boolean;
-  severity: string;
-  confidence: number;
-  currentValue: number;
-  threshold: { upper: number; lower: number };
-}
-
-interface TrendResultItem {
-  trend: string;
-  currentValue: number;
-  predictedValue: number;
-  changePercent: number;
-  confidence: number;
-}
-
-// ============================================================================
-// 2. Helper Functions
-// ============================================================================
-
-function toTrendDataPoints(metricPoints: MetricDataPoint[]): TrendDataPoint[] {
-  return metricPoints.map((p) => ({ timestamp: p.timestamp, value: p.value }));
-}
-
-function getHistoryForMetric(
-  serverId: string,
-  metric: string,
-  currentValue: number
-): MetricDataPoint[] {
-  const currentSlot = getCurrentSlotIndex();
-  const now = Date.now();
-  const baseTime = now - (now % (10 * 60 * 1000));
-  const points: MetricDataPoint[] = [];
-
-  for (let i = 35; i >= 0; i--) {
-    const slotIdx = ((currentSlot - i) % 144 + 144) % 144;
-    const slot = getStateBySlot(slotIdx);
-    const server = slot?.servers.find((s) => s.id === serverId);
-    if (server) {
-      points.push({
-        timestamp: baseTime - i * 600000,
-        value: (server[metric as keyof typeof server] as number) ?? 0,
-      });
-    } else {
-      points.push({
-        timestamp: baseTime - i * 600000,
-        value: currentValue,
-      });
-    }
-  }
-
-  return points;
-}
-
-function getCurrentSlotIndex(): number {
-  const now = new Date();
-  const kstOffset = 9 * 60;
-  const utcMinutes = now.getUTCHours() * 60 + now.getUTCMinutes();
-  const kstMinutes = (utcMinutes + kstOffset) % 1440;
-  return Math.floor(kstMinutes / 10);
-}
-
-// Pattern analysis constants
-const PATTERN_INSIGHTS: Record<string, string> = {
-  system_performance:
-    '시스템 성능 분석: CPU 사용률, 프로세스 수, 로드 평균 확인 필요',
-  memory_status:
-    '메모리 상태 분석: 사용량, 캐시, 스왑 사용률 확인 필요',
-  storage_info:
-    '스토리지 분석: 디스크 사용량, I/O 대기, 파티션 상태 확인 필요',
-  server_status:
-    '서버 상태 분석: 가동 시간, 서비스 상태, 네트워크 연결 확인',
-  trend_analysis:
-    '트렌드 분석: 시계열 데이터 기반 패턴 인식 및 예측 모델 적용',
-  anomaly_detection:
-    '이상 탐지: 통계적 이상치 감지, 임계값 기반 알림 확인',
-};
 
 // ============================================================================
 // 3. AI SDK Tools
@@ -402,189 +320,6 @@ export const detectAnomalies = tool({
 
 
 
-
-/**
- * Predict Trends Tool v2.0
- *
- * 🆕 Enhanced Prediction (상용 도구 수준):
- * - 임계값 도달 시간 예측 (Prometheus predict_linear 스타일)
- * - 정상 복귀 시간 예측 (Datadog Recovery Forecast 스타일)
- * - 현재 상태 + 미래 상태 예측
- *
- * @version 2.0.0
- * @date 2026-01-12
- */
-export const predictTrends = tool({
-  description:
-    '🆕 v2.0: 서버 메트릭의 트렌드를 예측합니다. 임계값 도달 시간과 정상 복귀 시간을 포함한 향상된 예측을 제공합니다.',
-  inputSchema: z.object({
-    serverId: z
-      .string()
-      .optional()
-      .describe('분석할 서버 ID (선택, 미입력시 첫 번째 서버)'),
-    metricType: z
-      .enum(['cpu', 'memory', 'disk', 'all'])
-      .default('all')
-      .describe('분석할 메트릭 타입'),
-    predictionHours: z
-      .number()
-      .default(1)
-      .describe('예측 시간 (기본 1시간)'),
-  }),
-  execute: async ({
-    serverId,
-    metricType,
-    predictionHours,
-  }: {
-    serverId?: string;
-    metricType: 'cpu' | 'memory' | 'disk' | 'all';
-    predictionHours: number;
-  }) => {
-    try {
-      const cache = getDataCache();
-      const hours = predictionHours ?? 1;
-
-      return await cache.getAnalysis(
-        'trend',
-        { serverId: serverId || 'first', metricType, hours },
-        async () => {
-          const state = getCurrentState();
-          const server: ServerSnapshot | undefined = serverId
-            ? state.servers.find((s) => s.id === serverId)
-            : state.servers[0];
-
-          if (!server) {
-            return {
-              success: false,
-              error: `서버를 찾을 수 없습니다: ${serverId || 'none'}`,
-            };
-          }
-
-          const metrics = ['cpu', 'memory', 'disk'] as const;
-          const targetMetrics =
-            metricType === 'all'
-              ? metrics
-              : [metricType as (typeof metrics)[number]];
-
-          // 🆕 Enhanced Results Interface
-          interface EnhancedTrendResult extends TrendResultItem {
-            currentStatus: 'online' | 'warning' | 'critical';
-            thresholdBreach: {
-              willBreachWarning: boolean;
-              timeToWarning: number | null;
-              willBreachCritical: boolean;
-              timeToCritical: number | null;
-              humanReadable: string;
-            };
-            recovery: {
-              willRecover: boolean;
-              timeToRecovery: number | null;
-              humanReadable: string | null;
-            };
-          }
-
-          const results: Record<string, EnhancedTrendResult> = {};
-          const predictor = getTrendPredictor();
-
-          // 🆕 Alerts for critical predictions
-          const warnings: string[] = [];
-          const criticalAlerts: string[] = [];
-          const recoveryPredictions: string[] = [];
-
-          for (const metric of targetMetrics) {
-            const currentValue = server[metric as keyof typeof server] as number;
-            const history = getHistoryForMetric(server.id, metric, currentValue);
-            const trendHistory = toTrendDataPoints(history);
-
-            // 🆕 Use enhanced prediction
-            const prediction = predictor.predictEnhanced(trendHistory, metric);
-
-            // 백분율 메트릭은 0-100 범위로 클램핑 (이중 안전장치)
-            const clampedPrediction = Math.max(
-              0,
-              Math.min(100, prediction.prediction)
-            );
-
-            results[metric] = {
-              trend: prediction.trend,
-              currentValue,
-              predictedValue: Math.round(clampedPrediction * 100) / 100,
-              changePercent:
-                Math.round(prediction.details.predictedChangePercent * 100) / 100,
-              confidence: Math.round(prediction.confidence * 100) / 100,
-              // 🆕 Enhanced fields
-              currentStatus: prediction.currentStatus,
-              thresholdBreach: prediction.thresholdBreach,
-              recovery: prediction.recovery,
-            };
-
-            // 🆕 Collect alerts
-            if (prediction.thresholdBreach.willBreachCritical) {
-              criticalAlerts.push(
-                `${metric.toUpperCase()}: ${prediction.thresholdBreach.humanReadable}`
-              );
-            } else if (prediction.thresholdBreach.willBreachWarning) {
-              warnings.push(
-                `${metric.toUpperCase()}: ${prediction.thresholdBreach.humanReadable}`
-              );
-            }
-
-            if (prediction.currentStatus !== 'online' && prediction.recovery.willRecover) {
-              recoveryPredictions.push(
-                `${metric.toUpperCase()}: ${prediction.recovery.humanReadable}`
-              );
-            }
-          }
-
-          const increasingMetrics = Object.entries(results)
-            .filter(([, r]) => r.trend === 'increasing')
-            .map(([m]) => m);
-
-          // 🆕 Build enhanced message
-          let message = '';
-          if (criticalAlerts.length > 0) {
-            message = `🚨 ${server.name}: ${criticalAlerts.join('; ')}`;
-          } else if (warnings.length > 0) {
-            message = `⚠️ ${server.name}: ${warnings.join('; ')}`;
-          } else if (recoveryPredictions.length > 0) {
-            message = `✅ ${server.name}: ${recoveryPredictions.join('; ')}`;
-          } else if (increasingMetrics.length > 0) {
-            message = `📈 ${server.name}: ${increasingMetrics.join(', ')} 상승 추세 (임계값 미도달 예상)`;
-          } else {
-            message = `✅ ${server.name}: 안정적 추세`;
-          }
-
-          return {
-            success: true,
-            version: '2.0.0',
-            serverId: server.id,
-            serverName: server.name,
-            predictionHorizon: `${hours}시간`,
-            results,
-            summary: {
-              increasingMetrics,
-              hasRisingTrends: increasingMetrics.length > 0,
-              // 🆕 Enhanced summary
-              hasWarningPredictions: warnings.length > 0,
-              hasCriticalPredictions: criticalAlerts.length > 0,
-              hasRecoveryPredictions: recoveryPredictions.length > 0,
-              warnings,
-              criticalAlerts,
-              recoveryPredictions,
-            },
-            message,
-            timestamp: new Date().toISOString(),
-          };
-        }
-      );
-    } catch (error) {
-      return {
-        success: false,
-        error: error instanceof Error ? error.message : String(error),
-      };
-    }
-  },
-});
 
 /**
  * Analyze Pattern Tool

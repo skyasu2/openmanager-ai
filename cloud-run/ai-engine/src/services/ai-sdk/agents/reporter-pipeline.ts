@@ -13,6 +13,11 @@
 // Data sources for direct tool execution
 import { getCurrentState, getRecentHistory } from '../../../data/precomputed-state';
 import { logger } from '../../../lib/logger';
+import {
+  calculateActionabilityScore,
+  calculateCompletenessScore,
+  calculateStructureScore,
+} from './reporter-pipeline-score-utils';
 
 // ============================================================================
 // Types
@@ -442,43 +447,6 @@ function optimizeReport(
   }
 
   return { report: optimizedReport, optimizations };
-}
-
-// ============================================================================
-// Helper Functions
-// ============================================================================
-
-function calculateStructureScore(report: ReportForEvaluation): number {
-  let score = 0;
-  if (report.title && report.title.length > 5) score += 0.15;
-  if (report.summary && report.summary.length > 20) score += 0.15;
-  if (report.affectedServers && report.affectedServers.length > 0) score += 0.15;
-  if (report.timeline && report.timeline.length >= 3) score += 0.2;
-  if (report.rootCause) score += 0.2;
-  if (report.suggestedActions && report.suggestedActions.length >= 2) score += 0.15;
-  return score;
-}
-
-function calculateCompletenessScore(report: ReportForEvaluation): number {
-  const fields = ['title', 'summary', 'affectedServers', 'timeline', 'rootCause', 'suggestedActions'];
-  let filled = 0;
-  for (const field of fields) {
-    const value = report[field as keyof ReportForEvaluation];
-    if (value !== undefined && value !== null) {
-      if (Array.isArray(value) && value.length > 0) filled++;
-      else if (typeof value === 'object' && Object.keys(value).length > 0) filled++;
-      else if (typeof value === 'string' && value.length > 0) filled++;
-    }
-  }
-  return filled / fields.length;
-}
-
-function calculateActionabilityScore(actions: string[]): number {
-  if (!actions || actions.length === 0) return 0;
-  let score = 0.3 * Math.min(actions.length / 3, 1);
-  const hasCommands = actions.some(a => /`[^`]+`|^\$|^sudo/.test(a));
-  if (hasCommands) score += 0.4;
-  return Math.min(score + 0.2, 1);
 }
 
 function determineFocusArea(report: ReportForEvaluation): keyof typeof COMMAND_TEMPLATES {

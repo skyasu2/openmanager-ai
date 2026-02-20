@@ -17,34 +17,25 @@ import {
   hybridTextVectorSearch,
   type HybridSearchResult as TextSearchResult,
 } from './hybrid-text-search';
-
-// ============================================================================
-// Types
-// ============================================================================
-
-export interface LlamaIndexSearchResult {
-  id: string;
-  title: string;
-  content: string;
-  category?: string;
-  score: number;
-  sourceType: 'vector' | 'knowledge_graph' | 'graph';
-  hopDistance: number;
-  metadata?: Record<string, unknown>;
-}
-
-export interface KnowledgeTriplet {
-  subject: string;
-  predicate: string;
-  object: string;
-  confidence: number;
-}
-
-export interface LlamaIndexStats {
-  totalDocuments: number;
-  totalTriplets: number;
-  lastIndexed: string | null;
-}
+import {
+  extractRelationshipsFromKnowledgeBase,
+  fetchRelatedKnowledgeFromGraph,
+  type ExtractionResult,
+} from './llamaindex-rag-relations';
+import {
+  mergeDeduplicateAndRankResults,
+  traverseAndFetchGraphNodes,
+} from './llamaindex-rag-graph';
+import type {
+  KnowledgeTriplet,
+  LlamaIndexSearchResult,
+  LlamaIndexStats,
+} from './llamaindex-rag-types';
+export type {
+  KnowledgeTriplet,
+  LlamaIndexSearchResult,
+  LlamaIndexStats,
+} from './llamaindex-rag-types';
 
 // ============================================================================
 // Configuration
@@ -207,79 +198,6 @@ export async function searchKnowledgeBase(
 }
 
 // ============================================================================
-// Shared Graph Traversal Helper
-// ============================================================================
-
-/**
- * Traverse knowledge graph from seed results and fetch node contents.
- * Shared between hybridSearch() and hybridGraphSearch() to avoid duplication.
- */
-async function traverseAndFetchGraphNodes(
-  client: SupabaseClient,
-  seedResults: Array<{ id: string }>,
-  maxGraphHops: number,
-  topN: number = 3
-): Promise<LlamaIndexSearchResult[]> {
-  const topSeedResults = seedResults.slice(0, topN);
-  if (topSeedResults.length === 0) return [];
-
-  const graphTraversalResults = await Promise.all(
-    topSeedResults.map(result =>
-      client.rpc('traverse_knowledge_graph', {
-        p_start_id: result.id,
-        p_start_table: 'knowledge_base',
-        p_max_hops: maxGraphHops,
-        p_relationship_types: null,
-        p_max_results: 5,
-      })
-    )
-  );
-
-  // Collect unique node IDs with metadata
-  const nodeIds = new Set<string>();
-  const nodeMetaMap = new Map<string, { pathWeight: number; hopDistance: number }>();
-
-  for (const { data } of graphTraversalResults) {
-    if (data && Array.isArray(data)) {
-      for (const node of data) {
-        const nodeId = String(node.node_id);
-        if (!nodeIds.has(nodeId)) {
-          nodeIds.add(nodeId);
-          nodeMetaMap.set(nodeId, {
-            pathWeight: Number(node.path_weight),
-            hopDistance: Number(node.hop_distance || 1),
-          });
-        }
-      }
-    }
-  }
-
-  if (nodeIds.size === 0) return [];
-
-  // Batch fetch all node contents
-  const { data: entries } = await client
-    .from('knowledge_base')
-    .select('id, title, content, category, metadata')
-    .in('id', Array.from(nodeIds));
-
-  if (!entries) return [];
-
-  return entries.map(entry => {
-    const meta = nodeMetaMap.get(entry.id);
-    return {
-      id: entry.id,
-      title: entry.title,
-      content: entry.content,
-      category: entry.category || 'auto',
-      score: (meta?.pathWeight ?? 1) * 0.8,
-      sourceType: 'graph' as const,
-      hopDistance: meta?.hopDistance ?? 1,
-      metadata: entry.metadata,
-    };
-  });
-}
-
-// ============================================================================
 // Hybrid Search (Vector + Knowledge Graph)
 // ============================================================================
 
@@ -322,19 +240,7 @@ export async function hybridSearch(
       supabaseClient!, vectorResults, maxGraphHops
     );
 
-    // 3. Combine and deduplicate
-    const allResults = [...vectorResults, ...graphResults];
-    const seen = new Set<string>();
-    const deduplicated = allResults.filter(r => {
-      if (seen.has(r.id)) return false;
-      seen.add(r.id);
-      return true;
-    });
-
-    // Sort by score and limit
-    return deduplicated
-      .sort((a, b) => b.score - a.score)
-      .slice(0, maxTotalResults);
+    return mergeDeduplicateAndRankResults(vectorResults, graphResults, maxTotalResults);
   } catch (error) {
     logger.error('❌ [LlamaIndex] Hybrid search failed:', error);
     return [];
@@ -530,29 +436,13 @@ export async function hybridGraphSearch(
       supabaseClient!, vectorResults, maxGraphHops
     );
 
-    // 3. Combine and deduplicate
-    const allResults = [...vectorResults, ...graphResults];
-    const seen = new Set<string>();
-    const deduplicated = allResults.filter(r => {
-      if (seen.has(r.id)) return false;
-      seen.add(r.id);
-      return true;
-    });
-
-    return deduplicated
-      .sort((a, b) => b.score - a.score)
-      .slice(0, maxTotalResults);
+    return mergeDeduplicateAndRankResults(vectorResults, graphResults, maxTotalResults);
   } catch (error) {
     logger.error('❌ [LlamaIndex] Hybrid graph search failed:', error);
     return [];
   }
 }
 export const getGraphRAGStats = getStats;
-
-interface ExtractionResult {
-  entryId: string;
-  relationships: KnowledgeTriplet[];
-}
 
 /**
  * Extract relationships from unprocessed knowledge base entries
@@ -571,59 +461,10 @@ export const extractRelationships = async (options: {
     return [];
   }
 
-  try {
-    // Fetch unprocessed entries
-    let query = supabaseClient
-      .from('knowledge_base')
-      .select('id, content, metadata')
-      .limit(batchSize);
-
-    if (onlyUnprocessed) {
-      // Check if triplets were already extracted
-      query = query.or('metadata->indexed_by.is.null,metadata->triplets.is.null');
-    }
-
-    const { data: entries, error } = await query;
-
-    if (error) throw error;
-    if (!entries || entries.length === 0) {
-      console.log('ℹ️ [LlamaIndex] No unprocessed entries found');
-      return [];
-    }
-
-    const results: ExtractionResult[] = [];
-
-    for (const entry of entries) {
-      // Extract triplets using LLM
-      const triplets = await extractTriplets(entry.content, 5);
-
-      if (triplets.length > 0) {
-        // Update entry with extracted triplets
-        await supabaseClient
-          .from('knowledge_base')
-          .update({
-            metadata: {
-              ...entry.metadata,
-              triplets,
-              indexed_by: 'llamaindex',
-              indexed_at: new Date().toISOString(),
-            },
-          })
-          .eq('id', entry.id);
-
-        results.push({
-          entryId: entry.id,
-          relationships: triplets,
-        });
-      }
-    }
-
-    console.log(`✅ [LlamaIndex] Extracted relationships from ${results.length} entries`);
-    return results;
-  } catch (error) {
-    logger.error('❌ [LlamaIndex] Relationship extraction failed:', error);
-    return [];
-  }
+  return extractRelationshipsFromKnowledgeBase(supabaseClient, extractTriplets, {
+    batchSize,
+    onlyUnprocessed,
+  });
 };
 
 export const getRelatedKnowledge = async (
@@ -632,43 +473,9 @@ export const getRelatedKnowledge = async (
 ) => {
   await initializeLlamaIndex();
 
-  if (!supabaseClient) return [];
-
-  const { maxHops = 2, maxResults = 10 } = options;
-
-  try {
-    const { data } = await supabaseClient.rpc('traverse_knowledge_graph', {
-      p_start_id: nodeId,
-      p_start_table: 'knowledge_base',
-      p_max_hops: maxHops,
-      p_relationship_types: null,
-      p_max_results: maxResults,
-    });
-
-    if (!data) return [];
-
-    // Fetch content for nodes
-    const nodeIds = data.map((r: Record<string, unknown>) => r.node_id);
-    const { data: entries } = await supabaseClient
-      .from('knowledge_base')
-      .select('id, title, content')
-      .in('id', nodeIds);
-
-    const entryMap = new Map((entries || []).map(e => [e.id, e]));
-
-    return data.map((row: Record<string, unknown>) => {
-      const entry = entryMap.get(row.node_id as string);
-      return {
-        id: String(row.node_id),
-        title: entry?.title || '',
-        content: entry?.content || '',
-        hopDistance: Number(row.hop_distance),
-        pathWeight: Number(row.path_weight),
-        relationshipPath: (row.relationship_path as string[]) || [],
-      };
-    });
-  } catch (error) {
-    logger.error('❌ [LlamaIndex] Related knowledge fetch error:', error);
+  if (!supabaseClient) {
     return [];
   }
+
+  return fetchRelatedKnowledgeFromGraph(supabaseClient, nodeId, options);
 };

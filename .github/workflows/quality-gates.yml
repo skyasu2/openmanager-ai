@@ -74,20 +74,10 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Component Complexity Analysis
+      - name: Line Count Guard (500 warn / 800 fail)
         run: |
-          echo "🏗️ 컴포넌트 복잡도 분석..."
-
-          # 대형 컴포넌트 탐지 (500줄 이상)
-          large_components=$(find src/components -name "*.tsx" -exec wc -l {} + | awk '$1 > 500 {print $2 " (" $1 " lines)"}')
-
-          if [ -n "$large_components" ]; then
-            echo "⚠️ 대형 컴포넌트 발견:"
-            echo "$large_components"
-            echo "💡 리팩토링 권장: 500줄 이하로 분리"
-          else
-            echo "✅ 모든 컴포넌트가 적절한 크기"
-          fi
+          echo "📏 파일 라인수 가드 점검..."
+          npm run line-guard
 
       - name: Circular Dependencies Check
         run: |
