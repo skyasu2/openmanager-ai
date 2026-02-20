@@ -43,16 +43,10 @@ vi.mock('@/hooks/useWorkerStats', () => ({
 }));
 
 import {
-  _groupServersByStatus,
-  _hasValidLength,
   adaptWorkerStatsToLegacy,
   calculatePagination,
   calculateServerStats,
   formatUptime,
-  getServerGroupKey,
-  isValidArray,
-  isValidNumber,
-  isValidServer,
 } from './server-utils';
 
 describe('Dashboard Server Utils', () => {

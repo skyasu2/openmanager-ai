@@ -15,6 +15,8 @@ import React from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { AIAssistantButton } from './AIAssistantButton';
 
+void React;
+
 describe('🎯 AIAssistantButton - User Event 테스트', () => {
   const mockOnClick = vi.fn();
 

@@ -1,7 +1,7 @@
 'use client';
 
 import { Bot } from 'lucide-react';
-import React, { memo, useEffect, useState } from 'react';
+import { memo, useEffect, useState } from 'react';
 
 /**
  * AI 어시스턴트 버튼 Props

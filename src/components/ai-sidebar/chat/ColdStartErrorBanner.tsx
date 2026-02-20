@@ -42,15 +42,16 @@ export function ColdStartErrorBanner({
   const currentDelay = RETRY_SCHEDULE[retryAttempt] ?? 0;
   const [countdown, setCountdown] = useState(isColdStart ? currentDelay : 0);
   const [isAutoRetrying, setIsAutoRetrying] = useState(
-    isColdStart && retryAttempt < MAX_AUTO_RETRIES
+    isColdStart && retryAttempt < MAX_AUTO_RETRIES && error.trim().length > 0
   );
   const [autoRetryExhausted, setAutoRetryExhausted] = useState(false);
 
   // error prop 변경 시 retry 상태 리셋
   useEffect(() => {
+    const shouldAutoRetry = isColdStart && error.trim().length > 0;
     setRetryAttempt(0);
     setAutoRetryExhausted(false);
-    if (isColdStart) {
+    if (shouldAutoRetry) {
       setCountdown(RETRY_SCHEDULE[0] ?? 5);
       setIsAutoRetrying(true);
     } else {

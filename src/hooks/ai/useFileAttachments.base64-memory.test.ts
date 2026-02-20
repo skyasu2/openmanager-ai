@@ -12,7 +12,7 @@
 
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { formatFileSize, useFileAttachments } from './useFileAttachments';
+import { useFileAttachments } from './useFileAttachments';
 
 // ============================================================================
 // Mock Setup

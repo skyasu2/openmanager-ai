@@ -29,6 +29,21 @@ vi.mock('../model-provider', () => ({
   logProviderStatus: vi.fn(),
 }));
 
+// Avoid external Upstash network calls in orchestrator tests.
+vi.mock('../../../lib/redis-client', async (importOriginal) => {
+  const actual = await importOriginal();
+  return {
+    ...actual,
+    getRedisClient: vi.fn(() => null),
+    isRedisAvailable: vi.fn(() => false),
+    redisGet: vi.fn(async () => null),
+    redisSet: vi.fn(async () => false),
+    redisDel: vi.fn(async () => false),
+    redisDelByPattern: vi.fn(async () => 0),
+    resetRedisClient: vi.fn(),
+  };
+});
+
 // Mock AI SDK - now we mock the actual 'ai' package
 vi.mock('ai', () => ({
   generateText: vi.fn(async () => ({
@@ -196,6 +211,51 @@ describe('Multi-Agent Orchestrator (AI SDK v6 Native)', () => {
         expect(result.usage.promptTokens).toBeGreaterThanOrEqual(0);
         expect(result.usage.completionTokens).toBeGreaterThanOrEqual(0);
         expect(result.usage.totalTokens).toBeGreaterThanOrEqual(0);
+      }
+    });
+
+    it('should propagate ragSources from tool results', async () => {
+      const { executeMultiAgent } = await import('./orchestrator');
+      const { generateText } = await import('ai');
+
+      vi.mocked(generateText).mockResolvedValueOnce({
+        text: 'RAG 기반 응답',
+        usage: { inputTokens: 42, outputTokens: 18, totalTokens: 60 },
+        finishReason: 'stop',
+        toolCalls: [],
+        steps: [
+          {
+            toolCalls: [{ toolName: 'searchKnowledgeBase' }],
+            toolResults: [
+              {
+                toolName: 'searchKnowledgeBase',
+                result: {
+                  similarCases: [
+                    {
+                      title: 'Redis OOM incident',
+                      similarity: 0.91,
+                      sourceType: 'knowledge-base',
+                      category: 'incident',
+                    },
+                  ],
+                },
+              },
+            ],
+          },
+        ],
+      } as unknown as Awaited<ReturnType<typeof generateText>>);
+
+      const result = await executeMultiAgent({
+        messages: [{ role: 'user', content: '메모리 장애 원인 알려줘' }],
+        sessionId: 'test-session-rag-sources',
+      });
+
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.ragSources).toBeDefined();
+        expect(result.ragSources).toHaveLength(1);
+        expect(result.ragSources?.[0]?.title).toBe('Redis OOM incident');
+        expect(result.ragSources?.[0]?.similarity).toBe(0.91);
       }
     });
   });

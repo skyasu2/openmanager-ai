@@ -2,7 +2,6 @@ import { z } from 'zod';
 import {
   clampTimeout,
   getFunctionTimeoutReserveMs,
-  getMaxFunctionDurationMs,
   getMaxTimeout,
   getMinTimeout,
   getRouteMaxExecutionMs,

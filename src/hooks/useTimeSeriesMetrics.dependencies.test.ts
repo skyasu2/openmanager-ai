@@ -12,7 +12,7 @@
  * - 에러 처리
  */
 
-import { act, renderHook, waitFor } from '@testing-library/react';
+import { renderHook, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createMockResponse } from '../../tests/utils/mock-response';
 import {
@@ -57,14 +57,6 @@ function createMockTimeSeriesData(
 
 function createSuccessResponse(data: TimeSeriesData) {
   return createMockResponse({ success: true, data }, true, 200);
-}
-
-function createErrorResponse(status: number) {
-  return createMockResponse(
-    { success: false, message: 'API Error' },
-    false,
-    status
-  );
 }
 
 describe('🎯 useTimeSeriesMetrics - 시계열 메트릭 훅 테스트', () => {

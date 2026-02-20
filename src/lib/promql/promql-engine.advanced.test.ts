@@ -14,7 +14,7 @@ import type {
   OTelMetricDataPoint,
   OTelResourceCatalog,
 } from '@/types/otel-metrics';
-import { debugParsePromQL, executePromQL } from './promql-engine';
+import { executePromQL } from './promql-engine';
 
 // ============================================================================
 // Mock: Resource Catalog
