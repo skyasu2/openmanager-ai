@@ -1,4 +1,5 @@
 const DAY_MS = 24 * 60 * 60 * 1000;
+const KST_OFFSET_MS = 9 * 60 * 60 * 1000;
 const DEFAULT_REALTIME_THRESHOLD_HOURS = 36;
 const DEFAULT_FUTURE_TOLERANCE_MINUTES = 5;
 
@@ -16,12 +17,46 @@ function pad2(value: number): string {
   return String(value).padStart(2, '0');
 }
 
+type DateTimeParts = {
+  year: number;
+  month: number;
+  day: number;
+  hour: number;
+  minute: number;
+  second: number;
+  millisecond: number;
+};
+
+function getKstDateTimeParts(value: Date): DateTimeParts {
+  const shifted = new Date(value.getTime() + KST_OFFSET_MS);
+  return {
+    year: shifted.getUTCFullYear(),
+    month: shifted.getUTCMonth() + 1,
+    day: shifted.getUTCDate(),
+    hour: shifted.getUTCHours(),
+    minute: shifted.getUTCMinutes(),
+    second: shifted.getUTCSeconds(),
+    millisecond: shifted.getUTCMilliseconds(),
+  };
+}
+
+function createDateFromKstParts(parts: DateTimeParts): Date {
+  return new Date(
+    Date.UTC(
+      parts.year,
+      parts.month - 1,
+      parts.day,
+      parts.hour,
+      parts.minute,
+      parts.second,
+      parts.millisecond
+    ) - KST_OFFSET_MS
+  );
+}
+
 export function formatDashboardDateTime(value: Date): string {
-  return `${value.getFullYear()}.${pad2(value.getMonth() + 1)}.${pad2(
-    value.getDate()
-  )} ${pad2(value.getHours())}:${pad2(value.getMinutes())}:${pad2(
-    value.getSeconds()
-  )}`;
+  const parts = getKstDateTimeParts(value);
+  return `${parts.year}.${pad2(parts.month)}.${pad2(parts.day)} ${pad2(parts.hour)}:${pad2(parts.minute)}:${pad2(parts.second)}`;
 }
 
 export function resolveRotatingTimestamp(
@@ -45,30 +80,30 @@ export function resolveRotatingTimestamp(
   }
 
   // 24시간 순환 샘플: 접속 시점 날짜에 시각만 결합해 표시
-  const anchored = new Date(
-    anchor.getFullYear(),
-    anchor.getMonth(),
-    anchor.getDate(),
-    parsed.getHours(),
-    parsed.getMinutes(),
-    parsed.getSeconds(),
-    parsed.getMilliseconds()
-  );
+  const anchorParts = getKstDateTimeParts(anchor);
+  const parsedParts = getKstDateTimeParts(parsed);
+  let anchoredMs = createDateFromKstParts({
+    year: anchorParts.year,
+    month: anchorParts.month,
+    day: anchorParts.day,
+    hour: parsedParts.hour,
+    minute: parsedParts.minute,
+    second: parsedParts.second,
+    millisecond: parsedParts.millisecond,
+  }).getTime();
 
   const futureToleranceMinutes =
     options.futureToleranceMinutes ?? DEFAULT_FUTURE_TOLERANCE_MINUTES;
   const futureToleranceMs = futureToleranceMinutes * 60 * 1000;
+  const anchorMs = anchor.getTime();
 
-  if (anchored.getTime() - anchor.getTime() > futureToleranceMs) {
-    anchored.setDate(anchored.getDate() - 1);
-  } else if (
-    anchor.getTime() - anchored.getTime() >
-    DAY_MS + futureToleranceMs
-  ) {
-    anchored.setDate(anchored.getDate() + 1);
+  if (anchoredMs - anchorMs > futureToleranceMs) {
+    anchoredMs -= DAY_MS;
+  } else if (anchorMs - anchoredMs > DAY_MS + futureToleranceMs) {
+    anchoredMs += DAY_MS;
   }
 
-  return anchored;
+  return new Date(anchoredMs);
 }
 
 export function formatRotatingTimestamp(
