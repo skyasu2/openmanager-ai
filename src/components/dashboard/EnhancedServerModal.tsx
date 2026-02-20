@@ -109,6 +109,21 @@ export default function EnhancedServerModal({
     [onClose]
   );
 
+  // 포커스 위치와 무관하게 Escape로 닫기 지원 (테스트/접근성 일관성)
+  useEffect(() => {
+    const handleDocumentKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape' || event.defaultPrevented) {
+        return;
+      }
+      onClose();
+    };
+
+    document.addEventListener('keydown', handleDocumentKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleDocumentKeyDown);
+    };
+  }, [onClose]);
+
   // ♿ 모달 열릴 때 외부 요소를 inert로 비활성화 → 네이티브 focus containment
   useEffect(() => {
     const backdrop = document.querySelector<HTMLElement>('.gpu-modal-backdrop');

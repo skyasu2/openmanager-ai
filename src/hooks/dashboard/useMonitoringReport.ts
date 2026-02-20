@@ -83,6 +83,7 @@ export function useMonitoringReport() {
     staleTime: MONITORING_STALE_TIME_MS,
     gcTime: MONITORING_GC_TIME_MS,
     refetchOnWindowFocus: false,
-    retry: 1,
+    // 오류 시 즉시 상태를 노출하고 다음 polling 주기에서 재시도한다.
+    retry: false,
   });
 }
