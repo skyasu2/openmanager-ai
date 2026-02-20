@@ -5,6 +5,7 @@
  */
 
 import { logger } from '@/lib/logging';
+import { SERVER_DATA_INTERVAL_MS } from './server-data-polling';
 interface PerformanceMemory {
   usedJSHeapSize: number;
   totalJSHeapSize: number;
@@ -83,9 +84,9 @@ export function calculateServerConfig(
   const batchSize = Math.min(100, Math.max(10, Math.ceil(serverCount / 2)));
   const bufferSize = Math.min(1000, serverCount * 10);
 
-  // 캐시 설정 (5-10분 갱신 주기 최적화 - Vercel 무료 티어 절약)
-  const updateInterval = calculateOptimalCollectionInterval(); // 5-10분 동적 계산
-  const expireTime = 300000; // 5분 고정
+  // 캐시 설정 (서버 데이터 10분 슬롯 기준)
+  const updateInterval = calculateOptimalCollectionInterval();
+  const expireTime = SERVER_DATA_INTERVAL_MS;
 
   return {
     maxServers: serverCount,
@@ -153,48 +154,25 @@ export function calculateOptimalUpdateInterval(): number {
 }
 
 /**
- * 🎯 데이터 수집 최적화 간격 계산 (5-10분 범위)
- * 🚨 무료 티어 절약: 기존 35-40초 → 5-10분으로 변경
+ * 🎯 데이터 수집 간격 계산 (서버 데이터 10분 슬롯 고정)
+ * - 환경변수 DATA_COLLECTION_INTERVAL이 설정되어도 10분 미만으로는 내려가지 않는다.
  */
 export function calculateOptimalCollectionInterval(): number {
-  // Edge Runtime 호환성을 위한 안전한 메모리 체크
-  try {
-    // Edge Runtime 완전 호환성 보장 (서버 사이드 안전 처리)
-    if (typeof window === 'undefined' && 
-        typeof process !== 'undefined' && 
-        process.env?.NODE_ENV !== 'production' &&
-        process.memoryUsage && 
-        typeof process.memoryUsage === 'function') {
-      // Edge Runtime에서는 이 코드에 절대 도달하지 않음
-      const memoryUsage = process.memoryUsage();
-      const usagePercent = (memoryUsage.heapUsed / memoryUsage.heapTotal) * 100;
-
-      // 🚨 무료 티어 최적화: 5-10분 범위로 대폭 증가
-      if (usagePercent > 80) return 600000; // 높은 사용률: 10분
-      if (usagePercent > 60) return 450000; // 중간 사용률: 7.5분
-      return 300000; // 낮은 사용률: 5분
-    }
-  } catch {
-    // Edge Runtime에서는 process.memoryUsage()가 지원되지 않음
-    logger.info('🔧 Edge Runtime 환경 - 데이터 수집 간격 기본값 사용');
+  const envValue = process.env.DATA_COLLECTION_INTERVAL;
+  if (!envValue) {
+    return SERVER_DATA_INTERVAL_MS;
   }
 
-  // 클라이언트 사이드에서는 performance.memory 사용
-  if (typeof window !== 'undefined' && 'memory' in performance) {
-    const memory = (performance as PerformanceWithMemory).memory;
-    if (memory) {
-      const usagePercent =
-        (memory.usedJSHeapSize / memory.totalJSHeapSize) * 100;
-
-      if (usagePercent > 80) return 600000; // 높은 사용률: 10분
-      if (usagePercent > 60) return 450000; // 중간 사용률: 7.5분
-      return 300000; // 낮은 사용률: 5분
-    }
+  const parsed = Number.parseInt(envValue, 10);
+  if (Number.isNaN(parsed) || parsed <= 0) {
+    logger.warn(
+      `[serverConfig] Invalid DATA_COLLECTION_INTERVAL="${envValue}", fallback to ${SERVER_DATA_INTERVAL_MS}ms`
+    );
+    return SERVER_DATA_INTERVAL_MS;
   }
 
-  return process.env.DATA_COLLECTION_INTERVAL
-    ? parseInt(process.env.DATA_COLLECTION_INTERVAL)
-    : 300000; // 환경변수 우선, 기본값: 5분
+  // 10분 미만 폴링은 금지
+  return Math.max(parsed, SERVER_DATA_INTERVAL_MS);
 }
 
 /**

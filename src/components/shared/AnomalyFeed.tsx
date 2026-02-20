@@ -5,6 +5,10 @@ import { AlertTriangle, CheckCircle2, ServerCrash, Zap } from 'lucide-react';
 import type { FC } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  getMsUntilNextServerDataSlot,
+  SERVER_DATA_INTERVAL_MS,
+} from '@/config/server-data-polling';
 
 interface AnomalyData {
   id: string;
@@ -119,14 +123,27 @@ export function AnomalyFeed({
   className = '',
   maxItems = 20,
   autoRefresh = true,
-  refreshInterval = 20000, // 20 seconds
+  refreshInterval = 0, // 0이면 10분 슬롯 경계 정렬 폴링
   showDetails: _showDetails = true,
 }: AnomalyFeedProps) {
   // Data fetching using React Query
   const { data, error, isLoading } = useQuery({
     queryKey: ['anomalies'],
     queryFn: fetchAnomalies,
-    refetchInterval: autoRefresh ? refreshInterval : false,
+    refetchInterval: () => {
+      if (!autoRefresh) return false;
+      if (
+        typeof document !== 'undefined' &&
+        document.visibilityState !== 'visible'
+      ) {
+        return false;
+      }
+      if (refreshInterval > 0) {
+        return Math.max(refreshInterval, SERVER_DATA_INTERVAL_MS);
+      }
+      return getMsUntilNextServerDataSlot();
+    },
+    refetchIntervalInBackground: false,
     refetchOnWindowFocus: false,
   });
 

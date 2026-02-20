@@ -131,7 +131,7 @@ export class SystemConfigurationManager {
           enabled: true,
           dataSource: 'custom',
           autoRotation: false,
-          updateInterval: 300000,
+          updateInterval: 600000,
         },
         api: {
           defaultPageSize: 10,
@@ -141,7 +141,7 @@ export class SystemConfigurationManager {
         },
         performance: {
           enableCache: true,
-          cacheTtlMs: 300000,
+          cacheTtlMs: 600000,
           batchSize: 100,
           maxConcurrentRequests: 10,
         },

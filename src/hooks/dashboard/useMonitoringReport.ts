@@ -2,6 +2,11 @@
 
 import { useQuery } from '@tanstack/react-query';
 import {
+  getMsUntilNextServerDataSlot,
+  SERVER_DATA_GC_TIME_MS,
+  SERVER_DATA_STALE_TIME_MS,
+} from '@/config/server-data-polling';
+import {
   type MonitoringReportApiResponse,
   MonitoringReportApiResponseSchema,
   type MonitoringReportErrorResponse,
@@ -9,10 +14,6 @@ import {
 } from '@/schemas/api.monitoring-report.schema';
 
 export type { MonitoringReportResponse };
-
-const MONITORING_POLL_INTERVAL_MS = 30_000;
-const MONITORING_STALE_TIME_MS = 25_000;
-const MONITORING_GC_TIME_MS = 60_000;
 
 function getMonitoringErrorMessageByStatus(status: number): string {
   if (status === 401) return '모니터링 리포트 조회 권한이 없습니다.';
@@ -77,11 +78,11 @@ export function useMonitoringReport() {
       ) {
         return false;
       }
-      return MONITORING_POLL_INTERVAL_MS;
+      return getMsUntilNextServerDataSlot();
     },
     refetchIntervalInBackground: false,
-    staleTime: MONITORING_STALE_TIME_MS,
-    gcTime: MONITORING_GC_TIME_MS,
+    staleTime: SERVER_DATA_STALE_TIME_MS,
+    gcTime: SERVER_DATA_GC_TIME_MS,
     refetchOnWindowFocus: false,
     // 오류 시 즉시 상태를 노출하고 다음 polling 주기에서 재시도한다.
     retry: false,

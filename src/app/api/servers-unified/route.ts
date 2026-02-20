@@ -249,7 +249,7 @@ async function handleServersUnified(
         additionalData.realtimeInfo = {
           realtime: true,
           source: 'server-monitoring-service',
-          updateFrequency: '30s',
+          updateFrequency: '10m',
         };
         break;
 

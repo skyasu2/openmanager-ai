@@ -21,6 +21,7 @@ import {
 import { type FC, useState } from 'react';
 
 import { TimeSeriesChart } from '@/components/charts/TimeSeriesChart';
+import { SERVER_DATA_INTERVAL_MS } from '@/config/server-data-polling';
 import { useTimeSeriesMetrics } from '@/hooks/useTimeSeriesMetrics';
 
 import { RealtimeChart } from './EnhancedServerModal.components';
@@ -86,7 +87,7 @@ export const MetricsTab: FC<MetricsTabProps> = ({
     range: timeRange,
     includePrediction: showPrediction,
     includeAnomalies: showAnomalies,
-    refreshInterval: isRealtime ? 30000 : 0, // 30초마다 갱신 (실시간 모드일 때)
+    refreshInterval: isRealtime ? SERVER_DATA_INTERVAL_MS : 0,
   });
 
   // 차트 데이터 구성
