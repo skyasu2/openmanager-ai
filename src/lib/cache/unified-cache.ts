@@ -23,6 +23,19 @@
 // 타입 정의
 import { logger } from '@/lib/logging';
 import { normalizeSemanticCacheQuery } from './query-normalizer';
+import { getTopQueryPatterns, learnQueryPattern } from './unified-cache.patterns';
+import {
+  cleanupExpiredEntries,
+  evictLeastRecentlyUsed,
+  invalidateCacheEntries,
+  touchCacheEntry,
+} from './unified-cache.store';
+import {
+  buildCacheStats,
+  createInitialStatsState,
+  incrementNamespaceCount,
+  type UnifiedCacheStatsState,
+} from './unified-cache.stats';
 import {
   type CacheItem,
   CacheNamespace,
@@ -39,14 +52,9 @@ export { CacheNamespace, CacheTTL, SWRPreset } from './unified-cache.types';
 export class UnifiedCacheService {
   private cache = new Map<string, CacheItem<unknown>>();
   private patterns = new Map<string, QueryPattern>();
+  private readonly maxPatternSize = 500;
   private maxSize = 5000; // v7.1.0: 1000 → 5000 (반복 API 호출 감소)
-  private stats = {
-    hits: 0,
-    misses: 0,
-    sets: 0,
-    deletes: 0,
-    namespaces: {} as Record<string, number>,
-  };
+  private stats: UnifiedCacheStatsState = createInitialStatsState();
   private cleanupInterval: ReturnType<typeof setInterval> | null = null;
 
   // Singleton 인스턴스
@@ -135,6 +143,10 @@ export class UnifiedCacheService {
 
     item.hits++;
     this.stats.hits++;
+
+    // LRU 순서 갱신: delete + set으로 Map 끝으로 이동 (O(1))
+    touchCacheEntry(this.cache, fullKey, item);
+
     return item.value as T;
   }
 
@@ -176,10 +188,15 @@ export class UnifiedCacheService {
     } = options;
 
     const fullKey = `${namespace}:${key}`;
+    const isOverwrite = this.cache.has(fullKey);
 
-    // LRU 정책 적용
-    if (this.cache.size >= this.maxSize) {
-      this.evictLeastRecentlyUsed();
+    if (isOverwrite) {
+      // 기존 키 갱신: delete → set으로 Map 끝으로 이동 (recency 갱신)
+      // 사이즈 불변이므로 eviction 불필요
+      this.cache.delete(fullKey);
+    } else if (this.cache.size >= this.maxSize) {
+      // 신규 키: 용량 초과 시에만 LRU eviction
+      evictLeastRecentlyUsed(this.cache, this.stats);
     }
 
     this.cache.set(fullKey, {
@@ -194,13 +211,14 @@ export class UnifiedCacheService {
 
     // 네임스페이스별 통계 업데이트
     const namespaceKey = String(namespace);
-    this.stats.namespaces[namespaceKey] =
-      (this.stats.namespaces[namespaceKey] || 0) + 1;
+    if (!isOverwrite) {
+      incrementNamespaceCount(this.stats, namespaceKey);
+    }
     this.stats.sets++;
 
     // 패턴 학습 (AI 쿼리인 경우)
     if (namespace === CacheNamespace.AI_QUERY && pattern) {
-      this.learnPattern(pattern, metadata);
+      learnQueryPattern(this.patterns, pattern, metadata, this.maxPatternSize);
     }
   }
 
@@ -230,49 +248,6 @@ export class UnifiedCacheService {
     return data;
   }
 
-  /**
-   * 패턴 학습 (AI 쿼리용)
-   */
-  private learnPattern(
-    pattern: string,
-    metadata?: Record<string, unknown>
-  ): void {
-    const patternKey = this.normalizePattern(pattern);
-    const existing = this.patterns.get(patternKey);
-
-    if (existing) {
-      existing.frequency++;
-      existing.hits++;
-      existing.lastUsed = new Date();
-      if (metadata?.responseTime) {
-        existing.avgResponseTime =
-          (existing.avgResponseTime * (existing.hits - 1) +
-            (metadata.responseTime as number)) /
-          existing.hits;
-      }
-    } else {
-      this.patterns.set(patternKey, {
-        id: patternKey,
-        regex: pattern,
-        frequency: 1,
-        avgResponseTime: (metadata?.responseTime as number) || 0,
-        lastUsed: new Date(),
-        hits: 1,
-      });
-    }
-  }
-
-  /**
-   * 패턴 정규화
-   */
-  private normalizePattern(pattern: string): string {
-    return pattern
-      .toLowerCase()
-      .replace(/\s+/g, ' ')
-      .replace(/[^\w\s]/g, '')
-      .trim();
-  }
-
   /** AI 쿼리 정규화 키 생성 (구두점/공백/대소문자 표준화) */
   normalizeQueryForCache(query: string): string {
     return normalizeSemanticCacheQuery(query);
@@ -285,91 +260,14 @@ export class UnifiedCacheService {
     pattern?: string,
     namespace?: CacheNamespace
   ): Promise<void> {
-    if (!pattern && !namespace) {
-      this.cache.clear();
-      this.stats.deletes += this.cache.size;
-      return;
-    }
-
-    const keysToDelete: string[] = [];
-
-    for (const key of this.cache.keys()) {
-      const item = this.cache.get(key) ?? null;
-      if (!item) continue;
-
-      // 네임스페이스 매칭
-      if (namespace && item.namespace !== String(namespace)) continue;
-
-      // 패턴 매칭
-      if (pattern) {
-        const regex = new RegExp(pattern.replace(/\*/g, '.*'));
-        if (!regex.test(key)) continue;
-      }
-
-      keysToDelete.push(key);
-    }
-
-    keysToDelete.forEach((key) => {
-      this.cache.delete(key);
-      this.stats.deletes++;
-    });
-  }
-
-  /**
-   * LRU 정책으로 가장 오래된/적게 사용된 항목 제거
-   */
-  private evictLeastRecentlyUsed(): void {
-    let leastUsedKey = '';
-    let leastHits = Infinity;
-    let oldestTime = Date.now();
-
-    for (const [key, item] of this.cache.entries()) {
-      if (
-        item.hits < leastHits ||
-        (item.hits === leastHits && item.created < oldestTime)
-      ) {
-        leastHits = item.hits;
-        oldestTime = item.created;
-        leastUsedKey = key;
-      }
-    }
-
-    if (leastUsedKey) {
-      const item = this.cache.get(leastUsedKey);
-      if (item?.namespace && typeof item.namespace === 'string') {
-        const currentCount = this.stats.namespaces[item.namespace];
-        if (currentCount !== undefined && currentCount > 0) {
-          this.stats.namespaces[item.namespace] = currentCount - 1;
-        }
-      }
-      this.cache.delete(leastUsedKey);
-      this.stats.deletes++;
-    }
+    invalidateCacheEntries(this.cache, this.stats, pattern, namespace);
   }
 
   /**
    * 만료된 항목 정리
    */
   cleanup(): void {
-    const now = Date.now();
-    const expiredKeys: string[] = [];
-
-    for (const [key, item] of this.cache.entries()) {
-      if (item?.expires <= now) {
-        expiredKeys.push(key);
-        if (item?.namespace && typeof item.namespace === 'string') {
-          const currentCount = this.stats.namespaces[item.namespace];
-          if (currentCount !== undefined && currentCount > 0) {
-            this.stats.namespaces[item.namespace] = currentCount - 1;
-          }
-        }
-      }
-    }
-
-    expiredKeys.forEach((key) => {
-      this.cache.delete(key);
-      this.stats.deletes++;
-    });
+    cleanupExpiredEntries(this.cache, this.stats);
   }
 
   /**
@@ -427,45 +325,21 @@ export class UnifiedCacheService {
    * 통계 정보 가져오기
    */
   getStats(): CacheStats {
-    const totalRequests = this.stats.hits + this.stats.misses;
-    const namespaceCount: Record<string, number> = {};
-
-    // 현재 네임스페이스별 카운트
-    for (const item of this.cache.values()) {
-      namespaceCount[item.namespace] =
-        (namespaceCount[item.namespace] || 0) + 1;
-    }
-
-    return {
-      ...this.stats,
-      size: this.cache.size,
-      maxSize: this.maxSize,
-      hitRate: totalRequests > 0 ? (this.stats.hits / totalRequests) * 100 : 0,
-      memoryUsage: `${Math.round(this.cache.size * 0.5)}KB`,
-      namespaces: namespaceCount,
-    };
+    return buildCacheStats(this.stats, this.cache, this.maxSize);
   }
 
   /**
    * 패턴 통계 가져오기
    */
   getPatternStats(): QueryPattern[] {
-    return Array.from(this.patterns.values())
-      .sort((a, b) => b.frequency - a.frequency)
-      .slice(0, 10); // Top 10 패턴
+    return getTopQueryPatterns(this.patterns, 10);
   }
 
   /**
    * 통계 리셋
    */
   resetStats(): void {
-    this.stats = {
-      hits: 0,
-      misses: 0,
-      sets: 0,
-      deletes: 0,
-      namespaces: {},
-    };
+    this.stats = createInitialStatsState();
   }
 }
 

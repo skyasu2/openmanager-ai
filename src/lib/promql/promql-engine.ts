@@ -38,46 +38,40 @@ import {
 // Resource Catalog → Label Lookup
 // ============================================================================
 
-// hostname → serverId reverse lookup cache
-let hostnameLookupCache: Map<string, string> | null = null;
+// hostname → labels 캐시 (일괄 구축, 동기 조회)
+let labelsCache: Map<string, Record<string, string>> | null = null;
 
-async function getServerIdFromHostname(
-  hostname: string
-): Promise<string | null> {
-  if (!hostnameLookupCache) {
-    hostnameLookupCache = new Map();
-    const catalog = await getResourceCatalog();
-    if (catalog) {
-      for (const [serverId, attrs] of Object.entries(catalog.resources)) {
-        hostnameLookupCache.set(attrs['host.name'], serverId);
-      }
-    }
+async function ensureLabelsCache(): Promise<
+  Map<string, Record<string, string>>
+> {
+  if (labelsCache) return labelsCache;
+
+  labelsCache = new Map();
+  const catalog = await getResourceCatalog();
+  if (!catalog) return labelsCache;
+
+  for (const [_serverId, attrs] of Object.entries(catalog.resources)) {
+    const hostname = attrs['host.name'];
+    labelsCache.set(hostname, {
+      instance: attrs['host.id'],
+      job: 'node-exporter',
+      hostname: attrs['host.name'],
+      server_type: attrs['server.role'],
+      datacenter: attrs['cloud.availability_zone'],
+      environment: attrs['deployment.environment.name'],
+      os: attrs['os.type'],
+      os_version: attrs['os.description'],
+    });
   }
-  return hostnameLookupCache.get(hostname) ?? null;
+
+  return labelsCache;
 }
 
-async function getResourceLabels(
-  hostname: string
-): Promise<Record<string, string>> {
-  const serverId = await getServerIdFromHostname(hostname);
-  if (!serverId) return {};
-
-  const catalog = await getResourceCatalog();
-  if (!catalog) return {};
-  const attrs = catalog.resources[serverId];
-  if (!attrs) return {};
-
-  // OTel resource attributes → PromQL-compatible labels
-  return {
-    instance: attrs['host.id'],
-    job: 'node-exporter',
-    hostname: attrs['host.name'],
-    server_type: attrs['server.role'],
-    datacenter: attrs['cloud.availability_zone'],
-    environment: attrs['deployment.environment.name'],
-    os: attrs['os.type'],
-    os_version: attrs['os.description'],
-  };
+function getResourceLabelsSync(
+  hostname: string,
+  cache: Map<string, Record<string, string>>
+): Record<string, string> {
+  return cache.get(hostname) ?? {};
 }
 
 // ============================================================================
@@ -113,11 +107,13 @@ async function extractSamplesFromOTel(
     return [];
   }
 
+  // labels Map 일괄 구축 (N+1 async 방지)
+  const labelMap = await ensureLabelsCache();
   const samples: PromQLSample[] = [];
 
   for (const dp of otelMetric.dataPoints) {
     const hostname = dp.attributes['host.name'];
-    const labels = await getResourceLabels(hostname);
+    const labels = getResourceLabelsSync(hostname, labelMap);
 
     if (!matchLabels(labels, parsed.matchers)) continue;
 

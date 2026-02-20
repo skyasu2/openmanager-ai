@@ -25,6 +25,7 @@ import { logger } from '@/lib/logging';
 import {
   type CacheResult,
   getAIResponseCache,
+  invalidateSessionCache,
   type CachedAIResponse as RedisAIResponse,
   setAIResponseCache,
 } from '@/lib/redis/ai-cache';
@@ -234,12 +235,11 @@ export async function setAICache(
       } as Record<string, unknown>,
     };
 
-    // Redis AI Cache는 기본 TTL 사용 (1시간)
     await setAIResponseCache(
       sessionId,
       query,
       redisResponse,
-      undefined,
+      ttlSeconds as number,
       endpoint
     );
   } catch (error) {
@@ -273,7 +273,13 @@ export async function invalidateAICache(sessionId: string): Promise<void> {
     logger.warn('[AI Cache] Memory invalidate error:', error);
   }
 
-  // Redis Cache 무효화는 ai-cache.ts의 invalidateSessionCache 사용
+  // Redis Cache 무효화
+  try {
+    await invalidateSessionCache(sessionId);
+  } catch (error) {
+    logger.warn('[AI Cache] Redis invalidate error:', error);
+  }
+
   logger.info(`[AI Cache] Invalidated session: ${sessionId}`);
 }
 

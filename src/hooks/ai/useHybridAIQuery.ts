@@ -107,10 +107,10 @@ export function useHybridAIQuery(
   const retryCountRef = useRef<number>(0);
   const streamRetryConfig = getStreamRetryConfig();
   const webSearchEnabledRef = useRef<boolean | undefined>(
-    webSearchEnabled || undefined
+    webSearchEnabled ?? undefined
   );
   useEffect(() => {
-    webSearchEnabledRef.current = webSearchEnabled || undefined;
+    webSearchEnabledRef.current = webSearchEnabled ?? undefined;
   }, [webSearchEnabled]);
   const apiEndpoint = customEndpoint ?? '/api/ai/supervisor/stream/v2';
   const sessionIdRef = useRef<string>(

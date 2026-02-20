@@ -1,13 +1,14 @@
 /**
  * @vitest-environment node
  */
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it } from 'vitest';
 import {
   createCachedResponse,
   createCacheHeaders,
   createCacheHeadersFromPreset,
   normalizeQueryForCache,
 } from './cache-helpers';
+import { CacheNamespace, UnifiedCacheService } from './unified-cache';
 
 describe('createCacheHeaders', () => {
   it('should return default cache headers', () => {
@@ -126,6 +127,87 @@ describe('normalizeQueryForCache', () => {
   });
 });
 
+describe('invalidateSessionCache SCAN 패턴 경계', () => {
+  /**
+   * Redis glob(match) 규칙의 부분 집합(*, ?)을 사용해 SCAN 패턴 경계를 검증.
+   * 현재 invalidateSessionCache 패턴은 *만 사용한다.
+   */
+  function redisGlobToRegex(pattern: string): RegExp {
+    const escaped = pattern.replace(/[.+^${}()|[\]\\]/g, '\\$&');
+    return new RegExp(
+      `^${escaped.replace(/\*/g, '.*').replace(/\?/g, '.')}$`
+    );
+  }
+
+  it('세그먼트 패턴이 동일 세션 키만 매칭한다 (endpoint 있음/없음)', async () => {
+    const { generateQueryHash, getSessionScanPatterns } = await import(
+      '@/lib/redis/ai-cache'
+    );
+
+    const sessionId = 'session-abc';
+    const [withEndpointScanPattern, withoutEndpointScanPattern] =
+      getSessionScanPatterns(sessionId);
+    const withEndpointPattern = redisGlobToRegex(withEndpointScanPattern);
+    const withoutEndpointPattern = redisGlobToRegex(withoutEndpointScanPattern);
+    const prefix = 'v2:ai:response';
+
+    // 동일 세션 키 (endpoint 있음)
+    const keyWithEp = `${prefix}:${generateQueryHash(sessionId, 'test query', 'supervisor')}`;
+    // 동일 세션 키 (endpoint 없음)
+    const keyNoEp = `${prefix}:${generateQueryHash(sessionId, 'test query')}`;
+
+    expect(withEndpointPattern.test(keyWithEp)).toBe(true);
+    expect(withoutEndpointPattern.test(keyNoEp)).toBe(true);
+    expect(withEndpointPattern.test(keyNoEp)).toBe(false);
+    expect(withoutEndpointPattern.test(keyWithEp)).toBe(false);
+  });
+
+  it('타 세션 키는 매칭하지 않는다', async () => {
+    const { getSessionScanPatterns } = await import('@/lib/redis/ai-cache');
+    const { hashString } = await import('@/lib/cache/cache-helpers');
+
+    const [withEndpointScanPattern, withoutEndpointScanPattern] =
+      getSessionScanPatterns('session-abc');
+    const otherSessionHash = hashString('session-xyz');
+    const prefix = 'v2:ai:response';
+
+    const withEndpointPattern = redisGlobToRegex(withEndpointScanPattern);
+    const withoutEndpointPattern = redisGlobToRegex(withoutEndpointScanPattern);
+
+    // 타 세션의 키
+    const otherKey1 = `${prefix}:supervisor:${otherSessionHash}:qhash1`;
+    const otherKey2 = `${prefix}:${otherSessionHash}:qhash2`;
+
+    expect(withEndpointPattern.test(otherKey1)).toBe(false);
+    expect(withoutEndpointPattern.test(otherKey2)).toBe(false);
+  });
+
+  it('queryHash 내부에 sessionHash가 우연히 포함돼도 오매칭하지 않는다', async () => {
+    const { getSessionScanPatterns } = await import('@/lib/redis/ai-cache');
+    const { hashString } = await import('@/lib/cache/cache-helpers');
+
+    const [withEndpointScanPattern, withoutEndpointScanPattern] =
+      getSessionScanPatterns('session-abc');
+    const sessionHash = hashString('session-abc');
+    const prefix = 'v2:ai:response';
+
+    const withEndpointPattern = redisGlobToRegex(withEndpointScanPattern);
+    const withoutEndpointPattern = redisGlobToRegex(withoutEndpointScanPattern);
+
+    // queryHash 자체가 sessionHash와 동일한 문자열인 타 세션 키
+    // (세그먼트 분리 덕분에 구분 가능)
+    const otherSessionHash = hashString('session-other');
+    const trickyKey = `${prefix}:${otherSessionHash}:${sessionHash}`;
+
+    // endpoint 패턴: 4세그먼트 구조 `prefix:ep:session:query` 기대
+    // trickyKey는 3세그먼트(`prefix:otherSession:sessionHash`)이므로 불일치
+    expect(withEndpointPattern.test(trickyKey)).toBe(false);
+    // without 패턴: `prefix:session:*` 기대
+    // trickyKey의 2번째 세그먼트가 otherSessionHash이므로 불일치
+    expect(withoutEndpointPattern.test(trickyKey)).toBe(false);
+  });
+});
+
 describe('교차 endpoint 캐시 키 격리', () => {
   // generateQueryHash와 generateCacheKey를 직접 import하여 테스트
   // ai-cache.ts와 ai-response-cache.ts의 키 생성 로직이 endpoint를 올바르게 포함하는지 검증
@@ -170,5 +252,50 @@ describe('교차 endpoint 캐시 키 격리', () => {
     const keyB = generateQueryHash(session, '메모리 cpu 사용률', 'supervisor');
 
     expect(keyA).toBe(keyB);
+  });
+});
+
+describe('UnifiedCacheService LRU overwrite', () => {
+  afterEach(() => {
+    UnifiedCacheService.resetForTesting();
+  });
+
+  it('overwrite 시 eviction이 발생하지 않는다 (기존 키 유지)', async () => {
+    const cache = UnifiedCacheService.getInstance();
+
+    // maxSize(5000)보다 작은 3개 항목 세팅
+    await cache.set('a', 1, { namespace: CacheNamespace.GENERAL });
+    await cache.set('b', 2, { namespace: CacheNamespace.GENERAL });
+    await cache.set('c', 3, { namespace: CacheNamespace.GENERAL });
+
+    // 'a' 키를 overwrite — eviction 없이 갱신돼야 함
+    await cache.set('a', 10, { namespace: CacheNamespace.GENERAL });
+
+    // 모든 키가 존재해야 함
+    expect(await cache.get('a', CacheNamespace.GENERAL)).toBe(10);
+    expect(await cache.get('b', CacheNamespace.GENERAL)).toBe(2);
+    expect(await cache.get('c', CacheNamespace.GENERAL)).toBe(3);
+    expect(cache.getStats().size).toBe(3);
+  });
+
+  it('overwrite 시 recency가 갱신되어 LRU 대상에서 벗어난다', async () => {
+    const cache = UnifiedCacheService.getInstance();
+    // @ts-expect-error -- 테스트용 maxSize 축소
+    cache.maxSize = 3;
+
+    await cache.set('a', 1, { namespace: CacheNamespace.GENERAL });
+    await cache.set('b', 2, { namespace: CacheNamespace.GENERAL });
+    await cache.set('c', 3, { namespace: CacheNamespace.GENERAL });
+
+    // 'a'를 overwrite하면 recency가 갱신되므로 LRU 대상은 'b'
+    await cache.set('a', 10, { namespace: CacheNamespace.GENERAL });
+
+    // 신규 키 'd' 추가 → LRU eviction 시 'b'가 제거돼야 함
+    await cache.set('d', 4, { namespace: CacheNamespace.GENERAL });
+
+    expect(await cache.get('b', CacheNamespace.GENERAL)).toBeNull();
+    expect(await cache.get('a', CacheNamespace.GENERAL)).toBe(10);
+    expect(await cache.get('c', CacheNamespace.GENERAL)).toBe(3);
+    expect(await cache.get('d', CacheNamespace.GENERAL)).toBe(4);
   });
 });

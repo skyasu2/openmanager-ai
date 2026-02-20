@@ -92,6 +92,17 @@ async function scanKeys(client: Redis, pattern: string): Promise<string[]> {
   return keys;
 }
 
+/**
+ * 세션 무효화용 SCAN 패턴 생성
+ * - endpoint 포함 키: v2:ai:response:{endpoint}:{sessionHash}:{queryHash}
+ * - endpoint 없는 키: v2:ai:response:{sessionHash}:{queryHash}
+ */
+export function getSessionScanPatterns(sessionId: string): [string, string] {
+  const sessionHash = hashString(sessionId);
+  const prefix = CACHE_CONFIG.PREFIX.AI_RESPONSE;
+  return [`${prefix}:*:${sessionHash}:*`, `${prefix}:${sessionHash}:*`];
+}
+
 // ==============================================
 // 🎯 AI 응답 캐시
 // ==============================================
@@ -161,7 +172,7 @@ export async function setAIResponseCache(
   sessionId: string,
   query: string,
   response: AIResponse,
-  ttlSeconds = CACHE_CONFIG.AI_RESPONSE_TTL_SECONDS,
+  ttlSeconds: number = CACHE_CONFIG.AI_RESPONSE_TTL_SECONDS,
   endpoint?: string
 ): Promise<boolean> {
   // Redis 비활성화 시 무시
@@ -207,8 +218,13 @@ export async function invalidateSessionCache(
 
   try {
     // 세션 관련 키 패턴 조회 (SCAN으로 O(N) 블로킹 방지)
-    const pattern = `${CACHE_CONFIG.PREFIX.AI_RESPONSE}:${hashString(sessionId)}:*`;
-    const keys = await scanKeys(client, pattern);
+    const [withEndpointPattern, withoutEndpointPattern] =
+      getSessionScanPatterns(sessionId);
+    const [withEndpoint, withoutEndpoint] = await Promise.all([
+      scanKeys(client, withEndpointPattern),
+      scanKeys(client, withoutEndpointPattern),
+    ]);
+    const keys = [...new Set([...withEndpoint, ...withoutEndpoint])];
 
     if (keys.length === 0) {
       return 0;

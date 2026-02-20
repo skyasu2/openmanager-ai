@@ -13,16 +13,27 @@ import {
   type WatchdogEventPayload,
 } from '../interfaces/SystemEventBus';
 import {
-  calculateErrorRate,
-  calculatePerformanceScore,
-  calculateStabilityScore,
-  createInitialSystemMetrics,
-  detectMemoryLeak,
-  getWatchdogRecommendation,
+  buildWatchdogAlertPlans,
+  getCurrentWatchdogAlerts,
+} from './SystemWatchdog.alerts';
+import {
   type SystemMetrics,
   type SystemStatus,
   type WatchdogAlerts,
+  calculatePerformanceScore,
+  calculateStabilityScore,
+  createInitialSystemMetrics,
 } from './SystemWatchdog.helpers';
+import {
+  collectRuntimeMetrics,
+  syncMetricsFromSystemStatus,
+} from './SystemWatchdog.metrics';
+import { createWatchdogReport } from './SystemWatchdog.report';
+import type {
+  WatchdogAlertEntry,
+  WatchdogCpuTracker,
+  WatchdogReport,
+} from './SystemWatchdog.types';
 
 export type { SystemMetrics, WatchdogAlerts } from './SystemWatchdog.helpers';
 
@@ -34,14 +45,14 @@ export class SystemWatchdog {
   private eventBus?: ISystemEventBus;
   private metrics: SystemMetrics = createInitialSystemMetrics();
   private monitoringInterval?: NodeJS.Timeout;
-  private alertsHistory: Array<{
-    timestamp: Date;
-    type: string;
-    message: string;
-  }> = [];
+  private alertsHistory: WatchdogAlertEntry[] = [];
   private systemStatus?: SystemStatus;
   private readonly maxHistoryLength = 100;
   private readonly monitoringIntervalMs = 30000; // 30초 (과도한 헬스체크 방지)
+  private cpuTracker: WatchdogCpuTracker = {
+    previousCpuUsage: null,
+    previousCpuTime: null,
+  };
 
   constructor(eventBus?: ISystemEventBus) {
     if (eventBus) {
@@ -113,9 +124,7 @@ export class SystemWatchdog {
     systemLogger.system('🐕 시스템 Watchdog 활성화');
 
     this.monitoringInterval = setInterval(() => {
-      void this.collectMetrics();
-      void this.analyzeStability();
-      void this.checkAlerts();
+      void this.runMonitoringCycle();
     }, this.monitoringIntervalMs);
 
     // 초기 메트릭스 수집
@@ -134,43 +143,27 @@ export class SystemWatchdog {
   }
 
   /**
+   * 모니터링 사이클: 메트릭 수집 → 안정성 분석 → 알림 확인 (순차)
+   */
+  private async runMonitoringCycle(): Promise<void> {
+    await this.collectMetrics();
+    this.analyzeStability();
+    this.checkAlerts();
+  }
+
+  /**
    * 시스템 메트릭스 수집
    */
   private async collectMetrics(): Promise<void> {
     const timestamp = Date.now();
 
     try {
-      // 메모리 사용량 수집
-      const memoryUsage = process.memoryUsage();
-      const memoryMB = memoryUsage.heapUsed / 1024 / 1024;
-
-      this.metrics.memory.push({
-        timestamp,
-        value: memoryMB,
-      });
-
-      // CPU 사용량 추정 (Node.js에서는 정확한 CPU 사용량 측정이 어려우므로 대안 사용)
-      const cpuEstimate = await this.estimateCPUUsage();
-      this.metrics.cpu.push({
-        timestamp,
-        value: cpuEstimate,
-      });
-
-      // 오래된 데이터 정리 (최근 5분만 유지)
-      const cutoffTime = timestamp - 5 * 60 * 1000; // 5분 전
-      this.metrics.memory = this.metrics.memory.filter(
-        (m) => m.timestamp > cutoffTime
+      const { memoryMB, cpuEstimate } = collectRuntimeMetrics(
+        this.metrics,
+        this.cpuTracker,
+        timestamp
       );
-      this.metrics.cpu = this.metrics.cpu.filter(
-        (c) => c.timestamp > cutoffTime
-      );
-
-      // 시스템 상태에서 오류율 및 재시작 횟수 업데이트
-      if (this.systemStatus) {
-        const totalRestarts = this.systemStatus.metrics?.totalRestarts || 0;
-        this.metrics.restartCount = totalRestarts;
-        this.metrics.errorRate = calculateErrorRate(this.systemStatus);
-      }
+      syncMetricsFromSystemStatus(this.metrics, this.systemStatus);
 
       // 메트릭스를 이벤트 버스를 통해 공유
       if (this.eventBus) {
@@ -193,26 +186,6 @@ export class SystemWatchdog {
     } catch (error) {
       systemLogger.warn('메트릭스 수집 실패:', error);
     }
-  }
-
-  /**
-   * CPU 사용량 추정
-   */
-  private async estimateCPUUsage(): Promise<number> {
-    const startTime = process.hrtime.bigint();
-    const startUsage = process.cpuUsage();
-
-    // 짧은 작업 시뮬레이션
-    await new Promise((resolve) => setTimeout(resolve, 100));
-
-    const endTime = process.hrtime.bigint();
-    const endUsage = process.cpuUsage(startUsage);
-
-    const elapsedTime = Number(endTime - startTime) / 1000000; // ms로 변환
-    const totalCPUTime = (endUsage.user + endUsage.system) / 1000; // ms로 변환
-
-    const cpuPercent = Math.min(100, (totalCPUTime / elapsedTime) * 100);
-    return Math.max(0, cpuPercent);
   }
 
   /**
@@ -246,84 +219,17 @@ export class SystemWatchdog {
    * 알림 확인
    */
   private checkAlerts(): void {
-    const alerts = this.getCurrentAlerts();
+    if (!this.eventBus) return;
 
-    // 메모리 누수 알림
-    if (alerts.memoryLeak && this.eventBus) {
-      this.addAlert('memory-leak', '메모리 누수 패턴 감지됨');
-      this.eventBus.emit<WatchdogEventPayload>({
-        type: SystemEventType.WATCHDOG_ALERT,
-        timestamp: Date.now(),
-        source: 'SystemWatchdog',
-        payload: {
-          alertType: 'memory-leak',
-          severity: 'critical',
-          message: '메모리 누수 패턴 감지됨',
-          metrics: {
-            memoryUsage: this.getLatestMemory(),
-          },
-        },
-      });
-    }
+    const plans = buildWatchdogAlertPlans(
+      this.metrics,
+      this.getLatestMemory(),
+      this.getCurrentAlerts()
+    );
 
-    // 높은 오류율 알림
-    if (alerts.highErrorRate && this.eventBus) {
-      this.addAlert(
-        'high-error-rate',
-        `높은 오류율 감지 (${this.metrics.errorRate.toFixed(1)}%)`
-      );
-      this.eventBus.emit<WatchdogEventPayload>({
-        type: SystemEventType.WATCHDOG_ALERT,
-        timestamp: Date.now(),
-        source: 'SystemWatchdog',
-        payload: {
-          alertType: 'high-error-rate',
-          severity: 'warning',
-          message: `높은 오류율 감지 (${this.metrics.errorRate.toFixed(1)}%)`,
-          metrics: {
-            errorRate: this.metrics.errorRate,
-          },
-        },
-      });
-    }
-
-    // 성능 저하 알림
-    if (alerts.performanceDegradation && this.eventBus) {
-      this.addAlert('performance-degradation', '시스템 성능 저하 감지');
-      this.eventBus.emit<WatchdogEventPayload>({
-        type: SystemEventType.WATCHDOG_ALERT,
-        timestamp: Date.now(),
-        source: 'SystemWatchdog',
-        payload: {
-          alertType: 'performance-degradation',
-          severity: 'warning',
-          message: '시스템 성능 저하 감지',
-          metrics: {
-            performanceScore: this.metrics.performanceScore,
-          },
-        },
-      });
-    }
-
-    // 빈번한 재시작 알림
-    if (alerts.frequentRestarts && this.eventBus) {
-      this.addAlert(
-        'frequent-restarts',
-        `빈번한 프로세스 재시작 감지 (${this.metrics.restartCount}회)`
-      );
-      this.eventBus.emit<WatchdogEventPayload>({
-        type: SystemEventType.WATCHDOG_ALERT,
-        timestamp: Date.now(),
-        source: 'SystemWatchdog',
-        payload: {
-          alertType: 'frequent-restarts',
-          severity: 'warning',
-          message: `빈번한 프로세스 재시작 감지 (${this.metrics.restartCount}회)`,
-          metrics: {
-            restartCount: this.metrics.restartCount,
-          },
-        },
-      });
+    for (const plan of plans) {
+      this.addAlert(plan.alertType, plan.message);
+      this.eventBus.emit(plan.eventPayload);
     }
   }
 
@@ -331,22 +237,13 @@ export class SystemWatchdog {
    * 현재 알림 상태 확인
    */
   private getCurrentAlerts(): WatchdogAlerts {
-    return {
-      memoryLeak: detectMemoryLeak(this.metrics.memory),
-      highErrorRate: this.metrics.errorRate > 25,
-      performanceDegradation: this.metrics.performanceScore < 60,
-      frequentRestarts: this.metrics.restartCount > 5,
-    };
+    return getCurrentWatchdogAlerts(this.metrics);
   }
 
   /**
    * 최근 알림 조회
    */
-  private getRecentAlerts(timeWindow: number): Array<{
-    timestamp: Date;
-    type: string;
-    message: string;
-  }> {
+  private getRecentAlerts(timeWindow: number): WatchdogAlertEntry[] {
     const cutoffTime = Date.now() - timeWindow;
     return this.alertsHistory.filter(
       (alert) => alert.timestamp.getTime() > cutoffTime
@@ -391,35 +288,17 @@ export class SystemWatchdog {
   /**
    * 알림 히스토리 조회
    */
-  getAlertsHistory(): Array<{
-    timestamp: Date;
-    type: string;
-    message: string;
-  }> {
+  getAlertsHistory(): WatchdogAlertEntry[] {
     return [...this.alertsHistory];
   }
 
   /**
    * 상태 리포트 생성
    */
-  generateReport(): {
-    metrics: SystemMetrics;
-    alerts: WatchdogAlerts;
-    recentAlerts: Array<{
-      timestamp: Date;
-      type: string;
-      message: string;
-    }>;
-    recommendation: string;
-  } {
+  generateReport(): WatchdogReport {
     const alerts = this.getCurrentAlerts();
     const recentAlerts = this.getRecentAlerts(15 * 60 * 1000); // 15분
 
-    return {
-      metrics: this.getMetrics(),
-      alerts,
-      recentAlerts,
-      recommendation: getWatchdogRecommendation(alerts),
-    };
+    return createWatchdogReport(this.getMetrics(), alerts, recentAlerts);
   }
 }
