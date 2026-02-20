@@ -22,8 +22,8 @@ import {
   PAGE_REDIRECT_DELAY_MS,
   PULSE_ANIMATION_DURATION_MS,
   REDIRECT_STORAGE_KEY,
-  sanitizeRedirectPath,
   SUCCESS_MESSAGE_TIMEOUT_MS,
+  sanitizeRedirectPath,
 } from './login.constants';
 
 interface GuestSessionData {

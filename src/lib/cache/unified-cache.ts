@@ -23,13 +23,14 @@
 // 타입 정의
 import { logger } from '@/lib/logging';
 import {
-  CacheNamespace,
   type CacheItem,
+  CacheNamespace,
   type CacheStats,
   type QueryPattern,
 } from './unified-cache.types';
-export { CacheNamespace, CacheTTL, SWRPreset } from './unified-cache.types';
+
 export type { SWRPresetKey } from './unified-cache.types';
+export { CacheNamespace, CacheTTL, SWRPreset } from './unified-cache.types';
 
 /**
  * 통합 캐시 서비스

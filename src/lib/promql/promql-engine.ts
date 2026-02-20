@@ -27,11 +27,11 @@ import {
   applyComparison,
   matchLabels,
   OTEL_ALIAS_MAP,
-  parsePromQL,
+  type ParsedQuery,
   PROM_TO_OTEL_MAP,
+  parsePromQL,
   resolveOTelMetricName,
   validateQuery,
-  type ParsedQuery,
 } from './promql-engine-core';
 
 // ============================================================================

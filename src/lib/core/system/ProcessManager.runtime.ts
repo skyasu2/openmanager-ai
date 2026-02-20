@@ -4,7 +4,7 @@ import type {
   ProcessEventPayload,
 } from '../interfaces/SystemEventBus';
 import { SystemEventType } from '../interfaces/SystemEventBus';
-import { HealthCheckManager } from './HealthCheckManager';
+import type { HealthCheckManager } from './HealthCheckManager';
 import type { ProcessConfig, ProcessState } from './process-types';
 
 export type RuntimeContext = {
@@ -84,8 +84,7 @@ export async function startManagedProcess(
   } catch (error) {
     state.status = 'error';
     state.stoppedAt = new Date();
-    const errorMsg =
-      error instanceof Error ? error.message : '알 수 없는 오류';
+    const errorMsg = error instanceof Error ? error.message : '알 수 없는 오류';
 
     state.errors.push({
       timestamp: new Date(),

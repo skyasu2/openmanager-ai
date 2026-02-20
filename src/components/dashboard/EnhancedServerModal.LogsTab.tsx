@@ -26,11 +26,6 @@ import {
 import type { LokiLogEntry, LokiStream, LokiStreamLabels } from '@/types/loki';
 import type { OTelLogRecord } from '@/types/otel-metrics';
 import type { LogEntry as ServerLogEntry } from '@/types/server';
-import type {
-  LogEntry,
-  LogLevel,
-  RealtimeData,
-} from './EnhancedServerModal.types';
 import {
   LegacyLogView,
   LegendDot,
@@ -39,6 +34,11 @@ import {
   StreamsView,
   ViewButton,
 } from './EnhancedServerModal.LogsTab.parts';
+import type {
+  LogEntry,
+  LogLevel,
+  RealtimeData,
+} from './EnhancedServerModal.types';
 
 type ViewMode = 'syslog' | 'alerts' | 'streams';
 

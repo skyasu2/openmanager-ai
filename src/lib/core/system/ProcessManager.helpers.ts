@@ -1,5 +1,9 @@
 import type { SystemStatusPayload } from '../interfaces/SystemEventBus';
-import type { ProcessConfig, ProcessState, SystemMetrics } from './process-types';
+import type {
+  ProcessConfig,
+  ProcessState,
+  SystemMetrics,
+} from './process-types';
 
 type ServiceStatus = SystemStatusPayload['services'][number];
 
@@ -65,7 +69,9 @@ export function buildSystemMetrics(params: {
   const { processes, states, systemStartTime } = params;
   const stateList = Array.from(states.values());
   const runningStates = stateList.filter((state) => state.status === 'running');
-  const healthyStates = runningStates.filter((state) => state.healthScore >= 70);
+  const healthyStates = runningStates.filter(
+    (state) => state.healthScore >= 70
+  );
 
   const totalRestarts = stateList.reduce(
     (sum, state) => sum + state.restartCount,

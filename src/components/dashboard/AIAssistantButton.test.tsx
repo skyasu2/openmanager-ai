@@ -330,5 +330,4 @@ describe('🎯 AIAssistantButton - User Event 테스트', () => {
       });
     });
   });
-
 });
