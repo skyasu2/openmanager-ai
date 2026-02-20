@@ -120,7 +120,7 @@ export const VIBE_CODING_ARCHITECTURE: ArchitectureDiagram = {
     { from: 'antigravity', to: 'claude-code', label: 'Terminal' },
     { from: 'claude-code', to: 'codex', label: '2-AI Review' },
     { from: 'claude-code', to: 'gemini', label: '2-AI Review' },
-    // MCP Servers (8개)
+    // MCP Servers (9개)
     { from: 'claude-code', to: 'context7', label: 'MCP' },
     { from: 'claude-code', to: 'supabase-mcp', label: 'MCP' },
     { from: 'claude-code', to: 'vercel-mcp', label: 'MCP' },

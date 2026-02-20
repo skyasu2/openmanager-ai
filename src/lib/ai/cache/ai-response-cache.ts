@@ -144,7 +144,8 @@ export async function getAICache(
   try {
     const redisResult: CacheResult<RedisAIResponse> = await getAIResponseCache(
       sessionId,
-      query
+      query,
+      endpoint
     );
 
     if (redisResult.hit && redisResult.data) {
@@ -234,7 +235,13 @@ export async function setAICache(
     };
 
     // Redis AI Cache는 기본 TTL 사용 (1시간)
-    await setAIResponseCache(sessionId, query, redisResponse);
+    await setAIResponseCache(
+      sessionId,
+      query,
+      redisResponse,
+      undefined,
+      endpoint
+    );
   } catch (error) {
     logger.warn('[AI Cache] Redis set error:', error);
   }

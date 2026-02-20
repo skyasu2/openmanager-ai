@@ -125,3 +125,50 @@ describe('normalizeQueryForCache', () => {
     expect(normalizeQueryForCache('Please show me')).toBe('please show me');
   });
 });
+
+describe('교차 endpoint 캐시 키 격리', () => {
+  // generateQueryHash와 generateCacheKey를 직접 import하여 테스트
+  // ai-cache.ts와 ai-response-cache.ts의 키 생성 로직이 endpoint를 올바르게 포함하는지 검증
+
+  it('동일 session + 동치 질의 + 다른 endpoint → 다른 Redis 키', async () => {
+    const { generateQueryHash } = await import('@/lib/redis/ai-cache');
+    const session = 'test-session-001';
+    const query = 'CPU 사용률 알려줘';
+
+    const supervisorKey = generateQueryHash(session, query, 'supervisor');
+    const incidentKey = generateQueryHash(session, query, 'incident-report');
+    const noEndpointKey = generateQueryHash(session, query);
+
+    // endpoint가 다르면 키가 달라야 함
+    expect(supervisorKey).not.toBe(incidentKey);
+    // endpoint가 없는 키는 있는 키와 달라야 함
+    expect(noEndpointKey).not.toBe(supervisorKey);
+  });
+
+  it('동일 session + 동치 질의 + 다른 endpoint → 다른 Memory 키', async () => {
+    const { generateCacheKey } = await import(
+      '@/lib/ai/cache/ai-response-cache'
+    );
+    const session = 'test-session-002';
+    const query = '서버 상태 확인해줘';
+
+    const supervisorKey = generateCacheKey(session, query, 'supervisor');
+    const monitoringKey = generateCacheKey(
+      session,
+      query,
+      'intelligent-monitoring'
+    );
+
+    expect(supervisorKey).not.toBe(monitoringKey);
+  });
+
+  it('동일 endpoint + 동치 질의 → 동일 키 (어순 무관)', async () => {
+    const { generateQueryHash } = await import('@/lib/redis/ai-cache');
+    const session = 'test-session-003';
+
+    const keyA = generateQueryHash(session, 'CPU usage 메모리', 'supervisor');
+    const keyB = generateQueryHash(session, '메모리 cpu 사용률', 'supervisor');
+
+    expect(keyA).toBe(keyB);
+  });
+});

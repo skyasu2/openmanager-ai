@@ -48,9 +48,9 @@ const CACHE_CONFIG = {
   AI_RESPONSE_TTL_SECONDS: 3600,
   /** 헬스 체크 캐시 TTL (5분) */
   HEALTH_CHECK_TTL_SECONDS: 300,
-  /** 캐시 키 prefix */
+  /** 캐시 키 prefix (v2: endpoint 격리 적용) */
   PREFIX: {
-    AI_RESPONSE: 'ai:response',
+    AI_RESPONSE: 'v2:ai:response',
     AI_HEALTH: 'ai:health',
     SESSION: 'session',
   },
@@ -59,11 +59,16 @@ const CACHE_CONFIG = {
 // ==============================================
 /**
  * AI 쿼리 해시 생성
- * 세션 ID + 쿼리 내용 조합
+ * 세션 ID + 쿼리 내용 + endpoint 조합 (v2: endpoint 격리)
  */
-export function generateQueryHash(sessionId: string, query: string): string {
+export function generateQueryHash(
+  sessionId: string,
+  query: string,
+  endpoint?: string
+): string {
   const normalized = normalizeQueryForCache(query);
-  return `${hashString(sessionId)}:${hashString(normalized)}`;
+  const endpointSegment = endpoint ? `${endpoint}:` : '';
+  return `${endpointSegment}${hashString(sessionId)}:${hashString(normalized)}`;
 }
 
 // ==============================================
@@ -100,7 +105,8 @@ async function scanKeys(client: Redis, pattern: string): Promise<string[]> {
  */
 export async function getAIResponseCache(
   sessionId: string,
-  query: string
+  query: string,
+  endpoint?: string
 ): Promise<CacheResult<AIResponse>> {
   // Redis 비활성화 시 miss 반환
   if (isRedisDisabled() || !isRedisEnabled()) {
@@ -113,7 +119,7 @@ export async function getAIResponseCache(
   }
 
   const startTime = performance.now();
-  const queryHash = generateQueryHash(sessionId, query);
+  const queryHash = generateQueryHash(sessionId, query, endpoint);
   const cacheKey = `${CACHE_CONFIG.PREFIX.AI_RESPONSE}:${queryHash}`;
 
   try {
@@ -155,7 +161,8 @@ export async function setAIResponseCache(
   sessionId: string,
   query: string,
   response: AIResponse,
-  ttlSeconds = CACHE_CONFIG.AI_RESPONSE_TTL_SECONDS
+  ttlSeconds = CACHE_CONFIG.AI_RESPONSE_TTL_SECONDS,
+  endpoint?: string
 ): Promise<boolean> {
   // Redis 비활성화 시 무시
   if (isRedisDisabled() || !isRedisEnabled()) {
@@ -167,7 +174,7 @@ export async function setAIResponseCache(
     return false;
   }
 
-  const queryHash = generateQueryHash(sessionId, query);
+  const queryHash = generateQueryHash(sessionId, query, endpoint);
   const cacheKey = `${CACHE_CONFIG.PREFIX.AI_RESPONSE}:${queryHash}`;
 
   try {

@@ -225,7 +225,7 @@ export const ENVIRONMENT = {
 // 🔌 MCP 서버 설정 (SSOT - registry-core.yaml 기준)
 // 참조: config/ai/registry-core.yaml mcp-servers.development
 export const MCP_SERVERS = {
-  // 활성화된 MCP 서버 목록 (8/8, 2026-02-14 동기화)
+  // 활성화된 MCP 서버 목록 (9/9, 2026-02-20 동기화)
   ACTIVE: [
     'vercel', // 배포 관리
     'supabase', // DB 관리
