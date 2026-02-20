@@ -28,6 +28,7 @@ import {
   type CacheStats,
   type QueryPattern,
 } from './unified-cache.types';
+import { normalizeSemanticCacheQuery } from './query-normalizer';
 
 export type { SWRPresetKey } from './unified-cache.types';
 export { CacheNamespace, CacheTTL, SWRPreset } from './unified-cache.types';
@@ -274,12 +275,7 @@ export class UnifiedCacheService {
 
   /** AI 쿼리 정규화 키 생성 (구두점/공백/대소문자 표준화) */
   normalizeQueryForCache(query: string): string {
-    return query
-      .toLowerCase()
-      .trim()
-      .replace(/[?!.,;:'"()[\]{}]+/g, '') // 구두점 제거
-      .replace(/\s+/g, ' ') // 다중 공백 → 단일 공백
-      .trim();
+    return normalizeSemanticCacheQuery(query);
   }
 
   /**

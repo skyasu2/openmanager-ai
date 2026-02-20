@@ -6,6 +6,7 @@ import {
   createCachedResponse,
   createCacheHeaders,
   createCacheHeadersFromPreset,
+  normalizeQueryForCache,
 } from './cache-helpers';
 
 describe('createCacheHeaders', () => {
@@ -96,5 +97,31 @@ describe('createCachedResponse', () => {
     const body = await response.json();
 
     expect(body).toEqual(data);
+  });
+});
+
+describe('normalizeQueryForCache', () => {
+  it('구두점/불용어 제거 후 의미 토큰으로 정규화한다', () => {
+    const normalized = normalizeQueryForCache('  서버 상태! 알려줘?? ');
+    expect(normalized).toBe('server status');
+  });
+
+  it('어순이 달라도 동일한 의미 질의는 같은 키를 생성한다', () => {
+    const a = normalizeQueryForCache('CPU usage 메모리');
+    const b = normalizeQueryForCache('메모리 cpu 사용률');
+    expect(a).toBe('cpu memory utilization');
+    expect(a).toBe(b);
+  });
+
+  it('숫자 조건은 유지해서 서로 다른 질의를 구분한다', () => {
+    const top5 = normalizeQueryForCache('top 5 서버 상태');
+    const top10 = normalizeQueryForCache('top 10 server status');
+    expect(top5).toBe('5 server status top');
+    expect(top10).toBe('10 server status top');
+    expect(top5).not.toBe(top10);
+  });
+
+  it('모든 토큰이 불용어로 제거되면 기본 정규화 문자열을 사용한다', () => {
+    expect(normalizeQueryForCache('Please show me')).toBe('please show me');
   });
 });
