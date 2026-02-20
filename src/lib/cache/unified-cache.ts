@@ -22,13 +22,13 @@
 
 // 타입 정의
 import { logger } from '@/lib/logging';
+import { normalizeSemanticCacheQuery } from './query-normalizer';
 import {
   type CacheItem,
   CacheNamespace,
   type CacheStats,
   type QueryPattern,
 } from './unified-cache.types';
-import { normalizeSemanticCacheQuery } from './query-normalizer';
 
 export type { SWRPresetKey } from './unified-cache.types';
 export { CacheNamespace, CacheTTL, SWRPreset } from './unified-cache.types';
