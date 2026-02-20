@@ -63,6 +63,14 @@ export default function FeatureCardModal({
   // 아키텍처 다이어그램 뷰 상태 (모든 카드에 적용)
   const [showDiagram, setShowDiagram] = React.useState(false);
 
+  // 모달이 열리거나 다른 카드로 전환될 때 기본 상세보기 모드로 초기화
+  useEffect(() => {
+    if (isVisible) {
+      setShowDiagram(false);
+      setIsHistoryView(false);
+    }
+  }, [selectedCard?.id, isVisible]);
+
   // AI 상태 확인 (AI 제한 처리용)
   const aiAgentEnabled = useUnifiedAdminStore(
     (state) => state.aiAgent.isEnabled

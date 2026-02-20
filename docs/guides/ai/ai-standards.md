@@ -75,13 +75,15 @@ bash scripts/ai/agent-bridge.sh --to claude --mode doc --save-auto "결과 문�
 
 ---
 
-## 3. AI 도구별 역할
+## 3. AI 도구별 역할 (Identity)
 
-| AI 도구 | 주 역할 | 특화 영역 | 호출 방법 |
+| AI 도구 | 공통 역할 (Independent Full-Stack) | 협업 시의 고유 강점 (선택적) | 호출 방법 |
 |---------|---------|-----------|-----------|
-| **Claude Code** | 협업 개발 | 아키텍처, 비즈니스 로직 | `agent-bridge.sh --to claude` |
-| **Codex (GPT-5)** | 협업 개발 + 기준 검증 | 구현, 리팩토링, 실무 검증 | `agent-bridge.sh --to codex` |
-| **Gemini** | 협업 검증 | 시스템 설계, 표준화, 리스크 분석 | `agent-bridge.sh --to gemini` |
+| **Claude Code** | 기획/아키텍처 설계부터 전체 개발 단독 리드 | 복잡한 비즈니스 로직 분석 및 코드베이스 전반의 리팩토링 | `agent-bridge.sh --to claude` |
+| **Codex (GPT-5)** | 기획/아키텍처 설계부터 전체 개발 단독 리드 | 막힌 문제의 논리적 돌파, 실험적 기능 구현 | `agent-bridge.sh --to codex` |
+| **Gemini** | 기획/아키텍처 설계부터 전체 개발 단독 리드 | 시스템 성능 최적화, 보안 규칙(OWASP) 점검 및 하이브리드 인프라 설계 | `agent-bridge.sh --to gemini` |
+
+- **핵심 원칙:** 세 에이전트는 역할을 쪼개서 분담하는 것이 아니라, **모두가 End-to-End 전체 프로젝트를 리드할 수 있는 독립형 풀스택 엔지니어**로 동작합니다. 자신의 작업은 남에게 넘기지 않고 끝까지 책임집니다.
 
 ---
 

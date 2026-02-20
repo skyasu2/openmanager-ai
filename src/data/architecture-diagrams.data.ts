@@ -212,7 +212,7 @@ export const ARCHITECTURE_DIAGRAMS: Record<string, ArchitectureDiagram> = {
           {
             id: 'cloudrun',
             label: 'Cloud Run',
-            sublabel: 'Node.js 22 + Hono + AI SDK',
+            sublabel: 'Node.js 24 + Hono + AI SDK',
             type: 'highlight',
             icon: '🚀', // Rocket for Cloud Run
           },

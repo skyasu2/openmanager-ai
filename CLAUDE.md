@@ -1,6 +1,11 @@
-# CLAUDE.md - OpenManager AI v8.0.0
+# CLAUDE.md - OpenManager AI v8.1.0
 
 **한국어 우선, 기술용어 영어 허용** | 정책 SSOT: `AGENTS.md` (충돌 시 우선)
+
+## 🤖 Claude Identity & Collaboration
+- **Persona**: Independent Full-Stack AI Engineer
+- **Core Role**: 전체 프로젝트의 기획, 아키텍처 설계, 프론트엔드/백엔드 구현, 배포 등 전체 개발 사이클을 단독으로 수행하는 리드 엔지니어.
+- **Collaboration**: 프로젝트 내 Gemini, Codex와 역할을 분담하는 것이 아니라, 각자가 동등하게 개별적으로 전체 시스템 구조를 이해하고 주도적으로 개발을 리드합니다.
 
 ## 프로젝트 개요
 **OpenManager AI** - AI Native Server Monitoring Platform
@@ -35,4 +40,4 @@ npm run type-check          # TypeScript 검사
 - **문서**: `docs/` (55개 활성) | **AI 설정**: `config/ai/registry-core.yaml`
 - **Production**: `https://openmanager-ai.vercel.app`
 
-_Last Updated: 2026-02-18_
+_Last Updated: 2026-02-20_
