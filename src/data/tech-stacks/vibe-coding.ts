@@ -23,7 +23,7 @@ export const VIBE_CODING_DATA: VibeCodeData = {
       importance: 'high',
       description:
         'Anthropic의 Model Context Protocol. AI가 외부 도구, 데이터 소스, API에 표준화된 방식으로 접근하는 오픈 프로토콜. 다양한 MCP 서버로 AI 기능 확장',
-      implementation: `→ ${MCP_SERVERS.TOTAL_ACTIVE}개 서버 연동: vercel(배포), supabase(DB), context7(문서), playwright(E2E), next-devtools(Next.js진단), github(저장소), sequential-thinking(추론), stitch(UI디자인)`,
+      implementation: `→ ${MCP_SERVERS.TOTAL_ACTIVE}개 서버 연동: vercel(배포), supabase(DB), context7(문서), playwright(E2E), next-devtools(Next.js진단), github(저장소), sequential-thinking(추론), stitch(UI디자인), storybook(컴포넌트문서)`,
       status: 'active',
       icon: '🔌',
       tags: ['MCP', 'Protocol', '확장기능'],
@@ -124,6 +124,20 @@ export const VIBE_CODING_DATA: VibeCodeData = {
       status: 'active',
       icon: '🔧',
       tags: ['Linter', 'Formatter', 'Rust'],
+      type: 'opensource',
+    },
+    {
+      name: 'Storybook 10',
+      category: 'testing',
+      importance: 'high',
+      description:
+        '컴포넌트 단위 문서화·시각적 테스트 플랫폼. 격리된 환경에서 UI 컴포넌트를 개발·검증하고, MCP 서버로 AI가 스토리를 직접 조회·생성',
+      implementation:
+        '→ 58개 스토리로 ~42% 컴포넌트 커버리지. addon-mcp로 Claude Code에서 Storybook 문서·스토리 직접 접근. @storybook/nextjs-vite 기반',
+      version: '10.2.10',
+      status: 'active',
+      icon: '📖',
+      tags: ['컴포넌트문서', 'Visual Testing', 'MCP'],
       type: 'opensource',
     },
     {

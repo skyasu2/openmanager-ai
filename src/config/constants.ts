@@ -235,6 +235,7 @@ export const MCP_SERVERS = {
     'github', // 저장소 관리
     'sequential-thinking', // 복잡한 추론
     'stitch', // Google Stitch AI UI Design (2026-01-27)
+    'storybook', // 컴포넌트 문서·스토리 조회 (2026-02-19)
   ] as const,
 
   // 제거된 MCP 서버 (2026-02-14 업데이트)
@@ -250,7 +251,7 @@ export const MCP_SERVERS = {
   ] as const,
 
   // 서버 수
-  TOTAL_ACTIVE: 8,
+  TOTAL_ACTIVE: 9,
 } as const;
 
 // MCP 서버 목록 타입 (타입 안전성)

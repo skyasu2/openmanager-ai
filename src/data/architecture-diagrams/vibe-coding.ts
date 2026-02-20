@@ -47,7 +47,7 @@ export const VIBE_CODING_ARCHITECTURE: ArchitectureDiagram = {
       ],
     },
     {
-      title: 'MCP Servers (8개)',
+      title: 'MCP Servers (9개)',
       color: 'from-cyan-500 to-teal-600',
       nodes: [
         {
@@ -106,6 +106,13 @@ export const VIBE_CODING_ARCHITECTURE: ArchitectureDiagram = {
           type: 'tertiary',
           icon: '🎨',
         },
+        {
+          id: 'storybook-mcp',
+          label: 'Storybook',
+          sublabel: 'Component Docs & Stories',
+          type: 'tertiary',
+          icon: '📖',
+        },
       ],
     },
   ],
@@ -122,5 +129,6 @@ export const VIBE_CODING_ARCHITECTURE: ArchitectureDiagram = {
     { from: 'claude-code', to: 'github-mcp', label: 'MCP' },
     { from: 'claude-code', to: 'seq-think', label: 'MCP' },
     { from: 'claude-code', to: 'stitch-mcp', label: 'MCP' },
+    { from: 'claude-code', to: 'storybook-mcp', label: 'MCP' },
   ],
 };
