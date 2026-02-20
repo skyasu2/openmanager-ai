@@ -160,31 +160,8 @@ describe('BaseAgent', () => {
   // run() Tests
   // ==========================================================================
 
-  describe('run()', () => {
-    it('should execute with default options', async () => {
-      const { BaseAgent } = await import('./base-agent');
-      const mockConfig = createMockConfig();
-
-      // Create a concrete implementation for testing
-      class TestAgent extends BaseAgent {
-        getName(): string {
-          return 'Test Agent';
-        }
-        getConfig() {
-          return mockConfig;
-        }
-      }
-
-      const agent = new TestAgent();
-      const result = await agent.run('test query');
-
-      expect(result.success).toBe(true);
-      expect(result.text).toBe('Mock response from generateText');
-      expect(result.metadata.provider).toBe('test-provider');
-      expect(result.metadata.modelId).toBe('test-model');
-    });
-
-    it('should apply timeout configuration', async () => {
+  describe('stream()', () => {
+    it('should yield text_delta events', async () => {
       const { BaseAgent } = await import('./base-agent');
       const mockConfig = createMockConfig();
 
@@ -198,33 +175,38 @@ describe('BaseAgent', () => {
       }
 
       const agent = new TestAgent();
-      await agent.run('test query', { timeoutMs: 30000 });
+      const events: Array<{ type: string; data: unknown }> = [];
 
-      expect(mockGenerateText).toHaveBeenCalledWith(
-        expect.objectContaining({
-          timeout: expect.objectContaining({ totalMs: 30000 }),
-        })
-      );
+      for await (const event of agent.stream('test query')) {
+        events.push(event);
+      }
+
+      const textDeltas = events.filter(e => e.type === 'text_delta');
+      expect(textDeltas.length).toBeGreaterThan(0);
+      expect(textDeltas[0].data).toBe('Mock ');
     });
 
-    it('should extract finalAnswer from toolResults', async () => {
+    it('should extract finalAnswer when stream is empty', async () => {
       const { BaseAgent } = await import('./base-agent');
 
-      mockGenerateText.mockResolvedValue({
-        text: '', // Empty text, should use finalAnswer
-        usage: { inputTokens: 100, outputTokens: 50, totalTokens: 150 },
-        steps: [
+      mockStreamText.mockReturnValue({
+        textStream: (async function* () {
+          // Empty stream - only whitespace
+          yield '   ';
+        })(),
+        steps: Promise.resolve([
           {
             finishReason: 'stop',
             toolCalls: [{ toolName: 'finalAnswer' }],
             toolResults: [
               {
                 toolName: 'finalAnswer',
-                result: { answer: 'Final answer from tool' },
+                result: { answer: 'Final answer from stream' },
               },
             ],
           },
-        ],
+        ]),
+        usage: Promise.resolve({ inputTokens: 100, outputTokens: 50, totalTokens: 150 }),
       });
 
       const mockConfig = createMockConfig();
@@ -239,69 +221,40 @@ describe('BaseAgent', () => {
       }
 
       const agent = new TestAgent();
-      const result = await agent.run('test query');
+      const events: Array<{ type: string; data: unknown }> = [];
 
-      expect(result.success).toBe(true);
-      expect(result.text).toBe('Final answer from tool');
-      expect(result.toolsCalled).toContain('finalAnswer');
-    });
-
-    it('should fallback to result.text when no finalAnswer', async () => {
-      const { BaseAgent } = await import('./base-agent');
-
-      mockGenerateText.mockResolvedValue({
-        text: 'Regular text response',
-        usage: { inputTokens: 100, outputTokens: 50, totalTokens: 150 },
-        steps: [
-          {
-            finishReason: 'stop',
-            toolCalls: [{ toolName: 'getServerMetrics' }],
-            toolResults: [
-              {
-                toolName: 'getServerMetrics',
-                result: { cpu: 50 },
-              },
-            ],
-          },
-        ],
-      });
-
-      const mockConfig = createMockConfig();
-
-      class TestAgent extends BaseAgent {
-        getName(): string {
-          return 'Test Agent';
-        }
-        getConfig() {
-          return mockConfig;
-        }
+      for await (const event of agent.stream('test query')) {
+        events.push(event);
       }
 
-      const agent = new TestAgent();
-      const result = await agent.run('test query');
-
-      expect(result.success).toBe(true);
-      expect(result.text).toBe('Regular text response');
+      // Should have emitted finalAnswer as text_delta
+      const textDeltas = events.filter(e => e.type === 'text_delta');
+      expect(textDeltas.length).toBe(1);
+      expect(textDeltas[0].data).toBe('Final answer from stream');
     });
 
-    it('should handle non-string finalAnswer gracefully', async () => {
+    it('should ignore whitespace-only content for hasTextContent', async () => {
       const { BaseAgent } = await import('./base-agent');
 
-      mockGenerateText.mockResolvedValue({
-        text: 'Fallback text',
-        usage: { inputTokens: 100, outputTokens: 50, totalTokens: 150 },
-        steps: [
+      mockStreamText.mockReturnValue({
+        textStream: (async function* () {
+          yield '    '; // Only whitespace
+          yield '\n\n';
+          yield '\t';
+        })(),
+        steps: Promise.resolve([
           {
             finishReason: 'stop',
             toolCalls: [{ toolName: 'finalAnswer' }],
             toolResults: [
               {
                 toolName: 'finalAnswer',
-                result: { answer: 123 }, // Non-string answer
+                result: { answer: 'Fallback answer' },
               },
             ],
           },
-        ],
+        ]),
+        usage: Promise.resolve({ inputTokens: 100, outputTokens: 50, totalTokens: 150 }),
       });
 
       const mockConfig = createMockConfig();
@@ -316,53 +269,34 @@ describe('BaseAgent', () => {
       }
 
       const agent = new TestAgent();
-      const result = await agent.run('test query');
+      const events: Array<{ type: string; data: unknown }> = [];
 
-      // Should use fallback text since answer is not a string
-      expect(result.success).toBe(true);
-      expect(result.text).toBe('Fallback text');
-    });
-
-    it('should enforce minimum maxOutputTokens for Vision Agent on OpenRouter', async () => {
-      const { BaseAgent } = await import('./base-agent');
-
-      const mockConfig = createMockConfig({
-        getModel: () => ({
-          model: { modelId: 'nvidia/nemotron-nano-12b-v2-vl:free' },
-          provider: 'openrouter',
-          modelId: 'nvidia/nemotron-nano-12b-v2-vl:free',
-        }),
-      });
-
-      class VisionTestAgent extends BaseAgent {
-        getName(): string {
-          return 'Vision Agent';
-        }
-        getConfig() {
-          return mockConfig;
-        }
+      for await (const event of agent.stream('test query')) {
+        events.push(event);
       }
 
-      const agent = new VisionTestAgent();
-      await agent.run('vision query', { maxOutputTokens: 64 });
-
-      const callArgs = mockGenerateText.mock.calls[0][0];
-      expect(callArgs.maxOutputTokens).toBe(256);
+      // Should emit finalAnswer since no meaningful text content
+      const textDeltas = events.filter(e => e.type === 'text_delta');
+      expect(textDeltas.length).toBe(1);
+      expect(textDeltas[0].data).toBe('Fallback answer');
     });
 
-    it('should return fallback text when Vision OpenRouter response is empty', async () => {
+    it('should emit EMPTY_RESPONSE warning and fallback text for Vision OpenRouter empty stream', async () => {
       const { BaseAgent } = await import('./base-agent');
 
-      mockGenerateText.mockResolvedValue({
-        text: '',
-        usage: { inputTokens: 100, outputTokens: 32, totalTokens: 132 },
-        steps: [
+      mockStreamText.mockReturnValue({
+        textStream: (async function* () {
+          yield '   ';
+          yield '\n';
+        })(),
+        steps: Promise.resolve([
           {
             finishReason: 'length',
             toolCalls: [],
             toolResults: [],
           },
-        ],
+        ]),
+        usage: Promise.resolve({ inputTokens: 120, outputTokens: 64, totalTokens: 184 }),
       });
 
       const mockConfig = createMockConfig({
@@ -383,40 +317,84 @@ describe('BaseAgent', () => {
       }
 
       const agent = new VisionTestAgent();
-      const result = await agent.run('vision query', { maxOutputTokens: 64 });
+      const events: Array<{ type: string; data: unknown }> = [];
 
-      expect(result.success).toBe(true);
-      expect(result.text).toContain('비전 분석 모델 응답이 비어 있습니다');
-      expect(result.metadata.fallbackUsed).toBe(true);
-      expect(result.metadata.fallbackReason).toBe('EMPTY_RESPONSE');
+      for await (const event of agent.stream('vision query', { maxOutputTokens: 64 })) {
+        events.push(event);
+      }
+
+      const callArgs = mockStreamText.mock.calls[0][0];
+      expect(callArgs.maxOutputTokens).toBe(256);
+
+      const warningEvent = events.find((e) => e.type === 'warning');
+      expect(warningEvent).toBeDefined();
+      expect((warningEvent!.data as { code: string }).code).toBe('EMPTY_RESPONSE');
+
+      const textDeltas = events.filter((e) => e.type === 'text_delta');
+      expect(textDeltas.at(-1)?.data).toBe(
+        '비전 분석 모델 응답이 비어 있습니다. 잠시 후 다시 시도해 주세요.'
+      );
     });
 
-    it('should return error result when config not found', async () => {
+    it('should treat whitespace finalAnswer as empty and emit fallback text', async () => {
       const { BaseAgent } = await import('./base-agent');
 
-      class TestAgent extends BaseAgent {
+      mockStreamText.mockReturnValue({
+        textStream: (async function* () {
+          // No meaningful streamed text
+        })(),
+        steps: Promise.resolve([
+          {
+            finishReason: 'stop',
+            toolCalls: [{ toolName: 'finalAnswer' }],
+            toolResults: [
+              {
+                toolName: 'finalAnswer',
+                result: { answer: '   \n\t' },
+              },
+            ],
+          },
+        ]),
+        usage: Promise.resolve({ inputTokens: 120, outputTokens: 40, totalTokens: 160 }),
+      });
+
+      const mockConfig = createMockConfig({
+        getModel: () => ({
+          model: { modelId: 'nvidia/nemotron-nano-12b-v2-vl:free' },
+          provider: 'openrouter',
+          modelId: 'nvidia/nemotron-nano-12b-v2-vl:free',
+        }),
+      });
+
+      class VisionTestAgent extends BaseAgent {
         getName(): string {
-          return 'Test Agent';
+          return 'Vision Agent';
         }
         getConfig() {
-          return null;
+          return mockConfig;
         }
       }
 
-      const agent = new TestAgent();
-      const result = await agent.run('test query');
+      const agent = new VisionTestAgent();
+      const events: Array<{ type: string; data: unknown }> = [];
 
-      expect(result.success).toBe(false);
-      expect(result.error).toBe('Agent Test Agent config not found');
-      expect(result.metadata.provider).toBe('none');
+      for await (const event of agent.stream('vision query')) {
+        events.push(event);
+      }
+
+      const warningEvent = events.find((e) => e.type === 'warning');
+      expect(warningEvent).toBeDefined();
+      expect((warningEvent!.data as { code: string }).code).toBe('EMPTY_RESPONSE');
+
+      const textDeltas = events.filter((e) => e.type === 'text_delta');
+      expect(textDeltas.at(-1)?.data).toBe(
+        '비전 분석 모델 응답이 비어 있습니다. 잠시 후 다시 시도해 주세요.'
+      );
     });
 
-    it('should return error result on model unavailable', async () => {
+    it('should apply chunkMs timeout', async () => {
       const { BaseAgent } = await import('./base-agent');
-
-      const mockConfig = createMockConfig({
-        getModel: () => null,
-      });
+      const mockConfig = createMockConfig();
 
       class TestAgent extends BaseAgent {
         getName(): string {
@@ -428,16 +406,64 @@ describe('BaseAgent', () => {
       }
 
       const agent = new TestAgent();
-      const result = await agent.run('test query');
+      const events: Array<{ type: string; data: unknown }> = [];
 
-      expect(result.success).toBe(false);
-      expect(result.error).toBe('No model available for Test Agent');
+      for await (const event of agent.stream('test query', { timeoutMs: 60000 })) {
+        events.push(event);
+      }
+
+      expect(mockStreamText).toHaveBeenCalledWith(
+        expect.objectContaining({
+          timeout: { totalMs: 60000, chunkMs: 30000 },
+        })
+      );
+    });
+
+    it('should yield tool_call events', async () => {
+      const { BaseAgent } = await import('./base-agent');
+
+      mockStreamText.mockReturnValue({
+        textStream: (async function* () {
+          yield 'Processing...';
+        })(),
+        steps: Promise.resolve([
+          {
+            finishReason: 'tool_calls',
+            toolCalls: [{ toolName: 'getServerMetrics' }, { toolName: 'detectAnomalies' }],
+            toolResults: [],
+          },
+        ]),
+        usage: Promise.resolve({ inputTokens: 100, outputTokens: 50, totalTokens: 150 }),
+      });
+
+      const mockConfig = createMockConfig();
+
+      class TestAgent extends BaseAgent {
+        getName(): string {
+          return 'Test Agent';
+        }
+        getConfig() {
+          return mockConfig;
+        }
+      }
+
+      const agent = new TestAgent();
+      const events: Array<{ type: string; data: unknown }> = [];
+
+      for await (const event of agent.stream('test query')) {
+        events.push(event);
+      }
+
+      const toolCalls = events.filter(e => e.type === 'tool_call');
+      expect(toolCalls.length).toBe(2);
+      expect((toolCalls[0].data as { name: string }).name).toBe('getServerMetrics');
+      expect((toolCalls[1].data as { name: string }).name).toBe('detectAnomalies');
     });
 
   });
 
   // ==========================================================================
-  // stream() Tests
+  // filterTools() Tests
   // ==========================================================================
 
 });

@@ -160,72 +160,9 @@ describe('BaseAgent', () => {
   // run() Tests
   // ==========================================================================
 
-  describe('run()', () => {
-    it('should execute with default options', async () => {
+  describe('filterTools()', () => {
+    it('should remove web search tools when disabled', async () => {
       const { BaseAgent } = await import('./base-agent');
-      const mockConfig = createMockConfig();
-
-      // Create a concrete implementation for testing
-      class TestAgent extends BaseAgent {
-        getName(): string {
-          return 'Test Agent';
-        }
-        getConfig() {
-          return mockConfig;
-        }
-      }
-
-      const agent = new TestAgent();
-      const result = await agent.run('test query');
-
-      expect(result.success).toBe(true);
-      expect(result.text).toBe('Mock response from generateText');
-      expect(result.metadata.provider).toBe('test-provider');
-      expect(result.metadata.modelId).toBe('test-model');
-    });
-
-    it('should apply timeout configuration', async () => {
-      const { BaseAgent } = await import('./base-agent');
-      const mockConfig = createMockConfig();
-
-      class TestAgent extends BaseAgent {
-        getName(): string {
-          return 'Test Agent';
-        }
-        getConfig() {
-          return mockConfig;
-        }
-      }
-
-      const agent = new TestAgent();
-      await agent.run('test query', { timeoutMs: 30000 });
-
-      expect(mockGenerateText).toHaveBeenCalledWith(
-        expect.objectContaining({
-          timeout: expect.objectContaining({ totalMs: 30000 }),
-        })
-      );
-    });
-
-    it('should extract finalAnswer from toolResults', async () => {
-      const { BaseAgent } = await import('./base-agent');
-
-      mockGenerateText.mockResolvedValue({
-        text: '', // Empty text, should use finalAnswer
-        usage: { inputTokens: 100, outputTokens: 50, totalTokens: 150 },
-        steps: [
-          {
-            finishReason: 'stop',
-            toolCalls: [{ toolName: 'finalAnswer' }],
-            toolResults: [
-              {
-                toolName: 'finalAnswer',
-                result: { answer: 'Final answer from tool' },
-              },
-            ],
-          },
-        ],
-      });
 
       const mockConfig = createMockConfig();
 
@@ -239,32 +176,17 @@ describe('BaseAgent', () => {
       }
 
       const agent = new TestAgent();
-      const result = await agent.run('test query');
+      await agent.run('test query', { webSearchEnabled: false });
 
-      expect(result.success).toBe(true);
-      expect(result.text).toBe('Final answer from tool');
-      expect(result.toolsCalled).toContain('finalAnswer');
+      // Check that generateText was called with filtered tools
+      const callArgs = mockGenerateText.mock.calls[0][0];
+      expect(callArgs.tools).not.toHaveProperty('searchWeb');
+      expect(callArgs.tools).toHaveProperty('testTool');
+      expect(callArgs.tools).toHaveProperty('finalAnswer');
     });
 
-    it('should fallback to result.text when no finalAnswer', async () => {
+    it('should preserve all tools when webSearchEnabled=true', async () => {
       const { BaseAgent } = await import('./base-agent');
-
-      mockGenerateText.mockResolvedValue({
-        text: 'Regular text response',
-        usage: { inputTokens: 100, outputTokens: 50, totalTokens: 150 },
-        steps: [
-          {
-            finishReason: 'stop',
-            toolCalls: [{ toolName: 'getServerMetrics' }],
-            toolResults: [
-              {
-                toolName: 'getServerMetrics',
-                result: { cpu: 50 },
-              },
-            ],
-          },
-        ],
-      });
 
       const mockConfig = createMockConfig();
 
@@ -278,31 +200,17 @@ describe('BaseAgent', () => {
       }
 
       const agent = new TestAgent();
-      const result = await agent.run('test query');
+      await agent.run('test query', { webSearchEnabled: true });
 
-      expect(result.success).toBe(true);
-      expect(result.text).toBe('Regular text response');
+      // Check that generateText was called with all tools
+      const callArgs = mockGenerateText.mock.calls[0][0];
+      expect(callArgs.tools).toHaveProperty('searchWeb');
+      expect(callArgs.tools).toHaveProperty('testTool');
+      expect(callArgs.tools).toHaveProperty('finalAnswer');
     });
 
-    it('should handle non-string finalAnswer gracefully', async () => {
+    it('should preserve all tools by default', async () => {
       const { BaseAgent } = await import('./base-agent');
-
-      mockGenerateText.mockResolvedValue({
-        text: 'Fallback text',
-        usage: { inputTokens: 100, outputTokens: 50, totalTokens: 150 },
-        steps: [
-          {
-            finishReason: 'stop',
-            toolCalls: [{ toolName: 'finalAnswer' }],
-            toolResults: [
-              {
-                toolName: 'finalAnswer',
-                result: { answer: 123 }, // Non-string answer
-              },
-            ],
-          },
-        ],
-      });
 
       const mockConfig = createMockConfig();
 
@@ -316,14 +224,14 @@ describe('BaseAgent', () => {
       }
 
       const agent = new TestAgent();
-      const result = await agent.run('test query');
+      await agent.run('test query'); // No webSearchEnabled option
 
-      // Should use fallback text since answer is not a string
-      expect(result.success).toBe(true);
-      expect(result.text).toBe('Fallback text');
+      // Check that generateText was called with all tools
+      const callArgs = mockGenerateText.mock.calls[0][0];
+      expect(callArgs.tools).toHaveProperty('searchWeb');
     });
 
-    it('should enforce minimum maxOutputTokens for Vision Agent on OpenRouter', async () => {
+    it('should disable tools for Vision Agent on OpenRouter by default', async () => {
       const { BaseAgent } = await import('./base-agent');
 
       const mockConfig = createMockConfig({
@@ -344,26 +252,15 @@ describe('BaseAgent', () => {
       }
 
       const agent = new VisionTestAgent();
-      await agent.run('vision query', { maxOutputTokens: 64 });
+      await agent.run('test query');
 
       const callArgs = mockGenerateText.mock.calls[0][0];
-      expect(callArgs.maxOutputTokens).toBe(256);
+      expect(callArgs.tools).toEqual({});
     });
 
-    it('should return fallback text when Vision OpenRouter response is empty', async () => {
+    it('should keep tools when OPENROUTER_VISION_TOOL_CALLING is enabled', async () => {
       const { BaseAgent } = await import('./base-agent');
-
-      mockGenerateText.mockResolvedValue({
-        text: '',
-        usage: { inputTokens: 100, outputTokens: 32, totalTokens: 132 },
-        steps: [
-          {
-            finishReason: 'length',
-            toolCalls: [],
-            toolResults: [],
-          },
-        ],
-      });
+      vi.mocked(isOpenRouterVisionToolCallingEnabled).mockReturnValue(true);
 
       const mockConfig = createMockConfig({
         getModel: () => ({
@@ -383,15 +280,38 @@ describe('BaseAgent', () => {
       }
 
       const agent = new VisionTestAgent();
-      const result = await agent.run('vision query', { maxOutputTokens: 64 });
+      await agent.run('test query');
 
-      expect(result.success).toBe(true);
-      expect(result.text).toContain('비전 분석 모델 응답이 비어 있습니다');
-      expect(result.metadata.fallbackUsed).toBe(true);
-      expect(result.metadata.fallbackReason).toBe('EMPTY_RESPONSE');
+      const callArgs = mockGenerateText.mock.calls[0][0];
+      expect(callArgs.tools).toHaveProperty('finalAnswer');
+      expect(callArgs.tools).toHaveProperty('searchWeb');
+    });
+  });
+
+  // ==========================================================================
+  // isAvailable() Tests
+  // ==========================================================================
+
+  describe('isAvailable()', () => {
+    it('should return true when model is configured', async () => {
+      const { BaseAgent } = await import('./base-agent');
+
+      const mockConfig = createMockConfig();
+
+      class TestAgent extends BaseAgent {
+        getName(): string {
+          return 'Test Agent';
+        }
+        getConfig() {
+          return mockConfig;
+        }
+      }
+
+      const agent = new TestAgent();
+      expect(agent.isAvailable()).toBe(true);
     });
 
-    it('should return error result when config not found', async () => {
+    it('should return false when config is null', async () => {
       const { BaseAgent } = await import('./base-agent');
 
       class TestAgent extends BaseAgent {
@@ -404,14 +324,10 @@ describe('BaseAgent', () => {
       }
 
       const agent = new TestAgent();
-      const result = await agent.run('test query');
-
-      expect(result.success).toBe(false);
-      expect(result.error).toBe('Agent Test Agent config not found');
-      expect(result.metadata.provider).toBe('none');
+      expect(agent.isAvailable()).toBe(false);
     });
 
-    it('should return error result on model unavailable', async () => {
+    it('should return false when getModel returns null', async () => {
       const { BaseAgent } = await import('./base-agent');
 
       const mockConfig = createMockConfig({
@@ -428,16 +344,78 @@ describe('BaseAgent', () => {
       }
 
       const agent = new TestAgent();
-      const result = await agent.run('test query');
-
-      expect(result.success).toBe(false);
-      expect(result.error).toBe('No model available for Test Agent');
+      expect(agent.isAvailable()).toBe(false);
     });
-
   });
 
   // ==========================================================================
-  // stream() Tests
+  // buildUserContent() Tests (Phase 4 추가 - 멀티모달)
   // ==========================================================================
 
+  describe('buildUserContent()', () => {
+    it('should return array with mixed content (text + images + files)', async () => {
+      const { BaseAgent } = await import('./base-agent');
+      const mockConfig = createMockConfig();
+
+      class TestAgent extends BaseAgent {
+        getName(): string {
+          return 'Test Agent';
+        }
+        getConfig() {
+          return mockConfig;
+        }
+        testBuildUserContent(query: string, options: Parameters<typeof this.buildUserContent>[1]) {
+          return this.buildUserContent(query, options);
+        }
+      }
+
+      const agent = new TestAgent();
+      const result = agent.testBuildUserContent('Analyze these files', {
+        images: [
+          { data: 'data:image/jpeg;base64,img1', mimeType: 'image/jpeg' },
+          { data: 'data:image/png;base64,img2', mimeType: 'image/png' },
+        ],
+        files: [
+          { data: 'data:text/plain;base64,txt1', mimeType: 'text/plain' },
+        ],
+      });
+
+      expect(Array.isArray(result)).toBe(true);
+      const parts = result as Array<{ type: string }>;
+
+      // 1 text + 2 images + 1 file = 4 parts
+      expect(parts).toHaveLength(4);
+      expect(parts[0].type).toBe('text');
+      expect(parts[1].type).toBe('image');
+      expect(parts[2].type).toBe('image');
+      expect(parts[3].type).toBe('file');
+    });
+
+    it('should handle empty images array as text-only', async () => {
+      const { BaseAgent } = await import('./base-agent');
+      const mockConfig = createMockConfig();
+
+      class TestAgent extends BaseAgent {
+        getName(): string {
+          return 'Test Agent';
+        }
+        getConfig() {
+          return mockConfig;
+        }
+        testBuildUserContent(query: string, options: Parameters<typeof this.buildUserContent>[1]) {
+          return this.buildUserContent(query, options);
+        }
+      }
+
+      const agent = new TestAgent();
+      const result = agent.testBuildUserContent('Just text', {
+        images: [],
+        files: [],
+      });
+
+      // Empty arrays should result in text-only
+      expect(typeof result).toBe('string');
+      expect(result).toBe('Just text');
+    });
+  });
 });
