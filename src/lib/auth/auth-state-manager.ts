@@ -324,6 +324,6 @@ export const isGitHubAuthenticated = () =>
 export const clearAuthData = (authType?: 'github' | 'guest') =>
   authStateManager.clearAllAuthData(authType);
 export const invalidateAuthCache = () => authStateManager.invalidateCache();
-export type { AuthState, AuthUser } from './auth-state-manager-types';
+export type { AuthState, AuthUser };
 
 // AuthStateManager 싱글톤 초기화 완료
