@@ -302,7 +302,7 @@ async function handleServersUnified(
         }
         const serverDetail = await getServerDetail(serverId);
         if (!serverDetail) {
-          return { success: false, error: 'Server not found' };
+          return { success: false, error: 'Server not found', notFound: true };
         }
         return {
           success: true,
@@ -321,7 +321,7 @@ async function handleServersUnified(
         }
         const processData = await getServerProcesses(serverId);
         if (!processData) {
-          return { success: false, error: 'Server not found' };
+          return { success: false, error: 'Server not found', notFound: true };
         }
         return {
           success: true,
@@ -437,9 +437,10 @@ async function postHandler(request: NextRequest) {
 
   const r = result as Record<string, unknown> | null;
   const isError = r != null && typeof r === 'object' && r.success === false;
+  const isNotFound = isError && r.notFound === true;
   const isServerError = isError && r.isServerError === true;
   return NextResponse.json(result, {
-    status: isServerError ? 500 : isError ? 400 : 200,
+    status: isNotFound ? 404 : isServerError ? 500 : isError ? 400 : 200,
   });
 }
 
@@ -513,9 +514,10 @@ async function getHandler(request: NextRequest) {
 
   const r2 = result as Record<string, unknown> | null;
   const isError = r2 != null && typeof r2 === 'object' && r2.success === false;
+  const isNotFound = isError && r2.notFound === true;
   const isServerError = isError && r2.isServerError === true;
   return NextResponse.json(result, {
-    status: isServerError ? 500 : isError ? 400 : 200,
+    status: isNotFound ? 404 : isServerError ? 500 : isError ? 400 : 200,
     headers: {
       'Content-Type': 'application/json',
       'Cache-Control': 'private, no-store, max-age=0',

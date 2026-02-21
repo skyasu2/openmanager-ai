@@ -98,7 +98,7 @@ export function buildWatchdogAlertPlans(
           alertType: 'stability',
           severity: 'warning',
           message,
-          metrics: { performanceScore: metrics.stabilityScore },
+          metrics: { stabilityScore: metrics.stabilityScore },
         },
       },
     });

@@ -76,6 +76,7 @@ export interface WatchdogEventPayload {
     memoryUsage?: number;
     errorRate?: number;
     performanceScore?: number;
+    stabilityScore?: number;
     restartCount?: number;
   };
   threshold?: {
