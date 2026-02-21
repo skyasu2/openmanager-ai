@@ -16,21 +16,67 @@ interface PerformanceMeasurement {
 class PerformanceTracker {
   private measurements: PerformanceMeasurement[] = [];
   private renderCounts = new Map<string, number>();
+  private lastLogTimes = new Map<string, number>();
   private isEnabled: boolean = process.env.NODE_ENV === 'development';
+  private static readonly LOG_THROTTLE_MS = 30_000;
+
+  private recordMeasurement(
+    name: string,
+    duration: number,
+    componentName?: string
+  ): number {
+    if (!this.isEnabled) return 0;
+
+    const renderCount = componentName
+      ? (this.renderCounts.get(componentName) || 0) + 1
+      : undefined;
+
+    if (componentName) {
+      this.renderCounts.set(componentName, renderCount ?? 1);
+    }
+
+    const measurement: PerformanceMeasurement = {
+      name,
+      duration,
+      timestamp: Date.now(),
+      componentName,
+      renderCount,
+    };
+
+    this.measurements.push(measurement);
+
+    const now = Date.now();
+    const lastLoggedAt = this.lastLogTimes.get(name) ?? 0;
+    const shouldLog =
+      now - lastLoggedAt >= PerformanceTracker.LOG_THROTTLE_MS ||
+      duration >= 50;
+
+    if (shouldLog) {
+      this.lastLogTimes.set(name, now);
+
+      // 개발환경 로그 스팸 방지: 30초 단위로만 출력 (또는 50ms 이상 급격한 느림)
+      if (duration > 16) {
+        logger.warn(`🐌 성능 경고: ${name} - ${duration.toFixed(2)}ms`);
+      } else if (duration > 5) {
+        logger.info(`⚡ 성능 측정: ${name} - ${duration.toFixed(2)}ms`);
+      }
+    }
+
+    // 메모리 정리 (최근 100개만 유지)
+    if (this.measurements.length > 100) {
+      this.measurements = this.measurements.slice(-100);
+    }
+
+    return duration;
+  }
 
   /**
    * 성능 측정 시작
    */
-  startMeasurement(name: string, componentName?: string): void {
+  startMeasurement(name: string, _componentName?: string): void {
     if (!this.isEnabled || typeof performance === 'undefined') return;
 
     performance.mark(`${name}-start`);
-
-    // 렌더링 카운트 증가
-    if (componentName) {
-      const count = this.renderCounts.get(componentName) || 0;
-      this.renderCounts.set(componentName, count + 1);
-    }
   }
 
   /**
@@ -43,42 +89,34 @@ class PerformanceTracker {
       performance.mark(`${name}-end`);
       performance.measure(name, `${name}-start`, `${name}-end`);
 
-      const measure = performance.getEntriesByName(name)[0];
+      const measures = performance.getEntriesByName(name, 'measure');
+      const measure = measures[measures.length - 1];
       if (!measure) {
         return 0;
       }
       const duration = measure.duration;
 
-      const measurement: PerformanceMeasurement = {
-        name,
-        duration,
-        timestamp: Date.now(),
-        componentName,
-        renderCount: componentName
-          ? this.renderCounts.get(componentName)
-          : undefined,
-      };
+      // 동일 이름의 mark/measure 누적 방지
+      performance.clearMarks(`${name}-start`);
+      performance.clearMarks(`${name}-end`);
+      performance.clearMeasures(name);
 
-      this.measurements.push(measurement);
-
-      // 개발환경에서 성능 로그 출력
-      if (duration > 16) {
-        // 16ms 초과 시 경고 (60fps 기준)
-        logger.warn(`🐌 성능 경고: ${name} - ${duration.toFixed(2)}ms`);
-      } else if (duration > 5) {
-        logger.info(`⚡ 성능 측정: ${name} - ${duration.toFixed(2)}ms`);
-      }
-
-      // 메모리 정리 (최근 100개만 유지)
-      if (this.measurements.length > 100) {
-        this.measurements = this.measurements.slice(-100);
-      }
-
-      return duration;
+      return this.recordMeasurement(name, duration, componentName);
     } catch (error) {
       logger.error('성능 측정 오류:', error);
       return 0;
     }
+  }
+
+  /**
+   * 측정된 렌더링 시간을 직접 기록
+   */
+  addMeasurement(
+    name: string,
+    duration: number,
+    componentName?: string
+  ): number {
+    return this.recordMeasurement(name, duration, componentName);
   }
 
   /**
@@ -150,6 +188,7 @@ class PerformanceTracker {
   clear(): void {
     this.measurements = [];
     this.renderCounts.clear();
+    this.lastLogTimes.clear();
   }
 }
 
@@ -160,30 +199,20 @@ export const performanceTracker = new PerformanceTracker();
  * React Hook: 컴포넌트 렌더링 성능 측정
  */
 export function usePerformanceTracking(componentName: string) {
-  const startTime = Date.now();
+  const renderStartRef = React.useRef(0);
+  renderStartRef.current =
+    typeof performance !== 'undefined' ? performance.now() : Date.now();
 
-  // 컴포넌트 마운트 시 측정 시작
-  React.useEffect(() => {
-    performanceTracker.startMeasurement(
+  // 현재 렌더링의 커밋 시간을 측정
+  React.useLayoutEffect(() => {
+    const now =
+      typeof performance !== 'undefined' ? performance.now() : Date.now();
+    const renderTime = Math.max(0, now - renderStartRef.current);
+    performanceTracker.addMeasurement(
       `${componentName}-render`,
+      renderTime,
       componentName
     );
-
-    // 컴포넌트 언마운트 시 측정 종료
-    return () => {
-      performanceTracker.endMeasurement(
-        `${componentName}-render`,
-        componentName
-      );
-    };
-  });
-
-  // 렌더링 시간 측정
-  React.useLayoutEffect(() => {
-    const renderTime = Date.now() - startTime;
-    if (renderTime > 5) {
-      logger.info(`📊 ${componentName} 렌더링 시간: ${renderTime}ms`);
-    }
   });
 
   return {
