@@ -445,10 +445,13 @@ async function getHandler(request: NextRequest) {
       ? (sortOrderParam as ServersUnifiedRequest['sortOrder'])
       : (defaultSortOrder as ServersUnifiedRequest['sortOrder']);
 
-  const defaultRequest: ServersUnifiedRequest = {
+  const rawPage = parseInt(searchParams.get('page') || '1', 10);
+  const rawLimit = parseInt(searchParams.get('limit') || '10', 10);
+
+  const defaultRequest = {
     action,
-    page: parseInt(searchParams.get('page') || '1', 10),
-    limit: parseInt(searchParams.get('limit') || '10', 10),
+    page: Number.isNaN(rawPage) ? 1 : rawPage,
+    limit: Number.isNaN(rawLimit) ? 10 : rawLimit,
     search: searchParams.get('search') || undefined,
     sortBy:
       (searchParams.get('sortBy') as ServersUnifiedRequest['sortBy']) || 'name',
@@ -460,9 +463,21 @@ async function getHandler(request: NextRequest) {
     logKeyword: searchParams.get('logKeyword') || undefined,
   };
 
+  const parsed = serversUnifiedRequestSchema.safeParse(defaultRequest);
+  if (!parsed.success) {
+    return NextResponse.json(
+      {
+        success: false,
+        error: 'Invalid query parameters',
+        details: parsed.error.flatten().fieldErrors,
+      },
+      { status: 400 }
+    );
+  }
+
   return NextResponse.json(
     await handleServersUnified(request, {
-      body: defaultRequest,
+      body: parsed.data,
       query: {},
       params: {},
     }),

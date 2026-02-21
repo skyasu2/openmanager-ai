@@ -11,7 +11,7 @@ import {
 } from './server-data-polling';
 
 describe('getMsUntilNextServerDataSlot', () => {
-  it('KST 기준 다음 10분 슬롯까지 남은 시간을 계산한다', () => {
+  it('다음 10분 슬롯까지 남은 시간을 계산한다 (timezone-agnostic)', () => {
     // UTC 03:03:15 => KST 12:03:15
     const now = new Date(Date.UTC(2026, 1, 20, 3, 3, 15, 0));
     const expected = 6 * 60 * 1000 + 45 * 1000 + SERVER_DATA_REFETCH_BUFFER_MS;

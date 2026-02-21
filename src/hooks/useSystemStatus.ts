@@ -281,6 +281,9 @@ export function useSystemStatus(): UseSystemStatusReturn {
   }, []);
 
   const startSystem = useCallback(async () => {
+    // Guard against concurrent calls (e.g. double-click)
+    if (systemStatusStore.snapshot.isLoading) return;
+
     try {
       updateSnapshot({ error: null, isLoading: true });
 

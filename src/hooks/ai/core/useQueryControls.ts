@@ -97,6 +97,14 @@ export function useQueryControls(deps: QueryControlDeps) {
   }, [asyncQuery, stopChat, onUserAbort, setState, refs]);
 
   const cancel = useCallback(async () => {
+    // Cleanup abort controller and pending retry (same as stop)
+    refs.abortController.current?.abort();
+    refs.abortController.current = null;
+    if (refs.retryTimeout.current) {
+      clearTimeout(refs.retryTimeout.current);
+      refs.retryTimeout.current = null;
+    }
+
     if (currentModeRef.current === 'job-queue') {
       await asyncQuery.cancel();
     } else {
@@ -110,7 +118,7 @@ export function useQueryControls(deps: QueryControlDeps) {
       jobId: null,
       clarification: null,
     }));
-  }, [asyncQuery, stopChat, onUserAbort, setState]);
+  }, [asyncQuery, stopChat, onUserAbort, setState, refs]);
 
   const reset = useCallback(() => {
     // AbortController cleanup on reset

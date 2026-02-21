@@ -57,6 +57,7 @@ export class UnifiedCacheService {
   private readonly maxPatternSize = 500;
   private maxSize = 5000; // v7.1.0: 1000 → 5000 (반복 API 호출 감소)
   private stats: UnifiedCacheStatsState = createInitialStatsState();
+  private inflight = new Map<string, Promise<unknown>>();
   private cleanupInterval: ReturnType<typeof setInterval> | null = null;
 
   // Singleton 인스턴스
@@ -232,6 +233,7 @@ export class UnifiedCacheService {
     } = {}
   ): Promise<T> {
     const { force = false, namespace = CacheNamespace.GENERAL } = options;
+    const fullKey = `${namespace}:${key}`;
 
     if (!force) {
       const cached = await this.get<T>(key, namespace);
@@ -240,9 +242,23 @@ export class UnifiedCacheService {
       }
     }
 
-    const data = await fetcher();
-    await this.set(key, data, options);
-    return data;
+    // Deduplicate concurrent fetches for the same key
+    const existing = this.inflight.get(fullKey);
+    if (existing) {
+      return existing as Promise<T>;
+    }
+
+    const promise = fetcher()
+      .then(async (data) => {
+        await this.set(key, data, options);
+        return data;
+      })
+      .finally(() => {
+        this.inflight.delete(fullKey);
+      });
+
+    this.inflight.set(fullKey, promise);
+    return promise;
   }
 
   /** AI 쿼리 정규화 키 생성 (구두점/공백/대소문자 표준화) */

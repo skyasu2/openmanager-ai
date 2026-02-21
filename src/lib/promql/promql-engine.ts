@@ -40,31 +40,42 @@ import {
 
 // hostname → labels 캐시 (일괄 구축, 동기 조회)
 let labelsCache: Map<string, Record<string, string>> | null = null;
+let labelsCachePromise: Promise<Map<string, Record<string, string>>> | null =
+  null;
 
 async function ensureLabelsCache(): Promise<
   Map<string, Record<string, string>>
 > {
   if (labelsCache) return labelsCache;
+  if (labelsCachePromise) return labelsCachePromise;
 
-  labelsCache = new Map();
-  const catalog = await getResourceCatalog();
-  if (!catalog) return labelsCache;
+  labelsCachePromise = (async () => {
+    const cache = new Map<string, Record<string, string>>();
+    const catalog = await getResourceCatalog();
+    if (!catalog) {
+      labelsCache = cache;
+      return cache;
+    }
 
-  for (const [_serverId, attrs] of Object.entries(catalog.resources)) {
-    const hostname = attrs['host.name'];
-    labelsCache.set(hostname, {
-      instance: attrs['host.id'],
-      job: 'node-exporter',
-      hostname: attrs['host.name'],
-      server_type: attrs['server.role'],
-      datacenter: attrs['cloud.availability_zone'],
-      environment: attrs['deployment.environment.name'],
-      os: attrs['os.type'],
-      os_version: attrs['os.description'],
-    });
-  }
+    for (const [_serverId, attrs] of Object.entries(catalog.resources)) {
+      const hostname = attrs['host.name'];
+      cache.set(hostname, {
+        instance: attrs['host.id'],
+        job: 'node-exporter',
+        hostname: attrs['host.name'],
+        server_type: attrs['server.role'],
+        datacenter: attrs['cloud.availability_zone'],
+        environment: attrs['deployment.environment.name'],
+        os: attrs['os.type'],
+        os_version: attrs['os.description'],
+      });
+    }
 
-  return labelsCache;
+    labelsCache = cache;
+    return cache;
+  })();
+
+  return labelsCachePromise;
 }
 
 function getResourceLabelsSync(

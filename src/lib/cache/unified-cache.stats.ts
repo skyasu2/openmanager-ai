@@ -5,7 +5,6 @@ export interface UnifiedCacheStatsState {
   misses: number;
   sets: number;
   deletes: number;
-  namespaces: Record<string, number>;
 }
 
 export function createInitialStatsState(): UnifiedCacheStatsState {
@@ -14,7 +13,6 @@ export function createInitialStatsState(): UnifiedCacheStatsState {
     misses: 0,
     sets: 0,
     deletes: 0,
-    namespaces: {},
   };
 }
 
@@ -31,7 +29,10 @@ export function buildCacheStats(
   }
 
   return {
-    ...stats,
+    hits: stats.hits,
+    misses: stats.misses,
+    sets: stats.sets,
+    deletes: stats.deletes,
     size: cache.size,
     maxSize,
     hitRate: totalRequests > 0 ? (stats.hits / totalRequests) * 100 : 0,
