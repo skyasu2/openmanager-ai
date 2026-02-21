@@ -195,9 +195,13 @@ export class SystemWatchdog {
    */
   private analyzeStability(): void {
     this.metrics.performanceScore = calculatePerformanceScore(this.metrics);
-    // 자기 참조 alert(performance-degradation, stability)를 제외하여 피드백 루프 방지
+    // stability score에 영향을 주는 alert 타입을 제외하여 피드백 루프 방지
+    // (frequent-restarts도 restartCount가 metrics에 직접 반영되므로 제외)
     const externalAlerts = this.getRecentAlerts(10 * 60 * 1000).filter(
-      (a) => a.type !== 'stability' && a.type !== 'performance-degradation'
+      (a) =>
+        a.type !== 'stability' &&
+        a.type !== 'performance-degradation' &&
+        a.type !== 'frequent-restarts'
     );
     this.metrics.stabilityScore = calculateStabilityScore(
       this.metrics,

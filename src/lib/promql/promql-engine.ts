@@ -26,9 +26,7 @@ import {
   applyAggregation,
   applyComparison,
   matchLabels,
-  OTEL_ALIAS_MAP,
   type ParsedQuery,
-  PROM_TO_OTEL_MAP,
   parsePromQL,
   resolveOTelMetricName,
   validateQuery,
@@ -53,7 +51,7 @@ async function ensureLabelsCache(): Promise<
     const cache = new Map<string, Record<string, string>>();
     const catalog = await getResourceCatalog();
     if (!catalog) {
-      labelsCache = cache;
+      // catalog null은 일시적 실패 — labelsCache에 고정하지 않아 다음 호출 시 재시도
       return cache;
     }
 
@@ -163,7 +161,11 @@ async function computeRate(
 
   if (!currentData || !prevData) return [];
 
-  const currentSamples = await extractSamplesFromOTel(currentData, parsed, slotIndex);
+  const currentSamples = await extractSamplesFromOTel(
+    currentData,
+    parsed,
+    slotIndex
+  );
   const prevSamples = await extractSamplesFromOTel(prevData, parsed, slotIndex);
 
   const prevMap = new Map<string, number>();
@@ -268,6 +270,3 @@ export function debugParsePromQL(query: string): ParsedQuery | null {
   }
   return parsePromQL(query);
 }
-
-// Export maps for external use (e.g., MonitoringContext OTel resource context)
-export { OTEL_ALIAS_MAP, PROM_TO_OTEL_MAP };

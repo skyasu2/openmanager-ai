@@ -252,10 +252,8 @@ export class SystemEventMediator {
         message: `Process error: ${payload.processName} (${payload.error?.message})`,
         metrics: payload.resources
           ? {
-              cpu: payload.resources.cpu,
-              memory: payload.resources.memory,
-              disk: 0,
-              network: 0,
+              cpuUsage: payload.resources.cpu,
+              memoryUsage: payload.resources.memory,
             }
           : undefined,
       },
@@ -290,10 +288,8 @@ export class SystemEventMediator {
             severity: 'warning',
             message: `Process ${payload.processName} exceeding resource limits`,
             metrics: {
-              cpu,
-              memory,
-              disk: 0,
-              network: 0,
+              cpuUsage: cpu,
+              memoryUsage: memory,
             },
             threshold:
               cpu > this.processHealthThresholds.cpu

@@ -26,9 +26,6 @@ import debug from '@/utils/debug';
 const serversUnifiedRequestSchema = z.object({
   action: z.enum([
     'list', // 기본 서버 목록 (기존 /api/servers/all)
-    'cached', // 캐시된 서버 데이터
-    'mock', // 목업 서버 데이터
-    'realtime', // 실시간 서버 데이터
     'logs', // 24시간 OTel 로그 검색
     'detail', // 특정 서버 상세
     'processes', // 서버 프로세스 목록
@@ -206,9 +203,6 @@ async function handleServersUnified(
       // 🚀 비동기 데이터 로딩 보장 (Bundle Size Optimization 대응)
       // logs는 OTel hourly index 기반이므로 MetricsProvider hydration 불필요
       case 'list':
-      case 'cached':
-      case 'mock':
-      case 'realtime':
       case 'detail':
       case 'processes': {
         const MetricsProvider = (
@@ -221,35 +215,6 @@ async function handleServersUnified(
     switch (action) {
       case 'list':
         servers = await getRealtimeServers();
-        break;
-
-      case 'cached': {
-        servers = await getRealtimeServers();
-        additionalData.cacheInfo = {
-          cached: true,
-          cacheTime: new Date().toISOString(),
-          source: 'server-monitoring-service',
-        };
-        break;
-      }
-
-      case 'mock': {
-        servers = await getRealtimeServers();
-        additionalData.mockInfo = {
-          generated: true,
-          serverCount: servers.length,
-          source: 'server-monitoring-service',
-        };
-        break;
-      }
-
-      case 'realtime':
-        servers = await getRealtimeServers();
-        additionalData.realtimeInfo = {
-          realtime: true,
-          source: 'server-monitoring-service',
-          updateFrequency: '10m',
-        };
         break;
 
       case 'logs': {
@@ -450,9 +415,6 @@ async function getHandler(request: NextRequest) {
   const requestedAction = searchParams.get('action');
   const allowedActions: ServersUnifiedRequest['action'][] = [
     'list',
-    'cached',
-    'mock',
-    'realtime',
     'logs',
     'detail',
     'processes',

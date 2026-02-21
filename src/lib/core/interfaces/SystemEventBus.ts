@@ -68,10 +68,6 @@ export interface WatchdogEventPayload {
   severity: 'info' | 'warning' | 'error' | 'critical';
   message: string;
   metrics?: {
-    cpu?: number;
-    memory?: number;
-    disk?: number;
-    network?: number;
     cpuUsage?: number;
     memoryUsage?: number;
     errorRate?: number;

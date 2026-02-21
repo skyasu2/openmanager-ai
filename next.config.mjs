@@ -215,7 +215,7 @@ const nextConfig = {
     if (process.env.NODE_ENV === 'development') {
       return [];
     }
-    const isDev = process.env.NODE_ENV === 'development';
+    // 이 함수는 production 전용 (개발 환경은 위의 early return으로 이미 제외)
     const isVercel = process.env.VERCEL === '1';
 
     // 🎯 개발/프로덕션 환경별 CSP 정책
@@ -260,8 +260,7 @@ const nextConfig = {
         'https://va.vercel-scripts.com', // Vercel Analytics
         'https://vitals.vercel-insights.com', // Speed Insights
         'https://*.ingest.de.sentry.io', // Sentry EU (tunnel fallback)
-        isDev ? 'ws://localhost:3000' : '', // 개발 환경 WebSocket
-        isDev ? 'http://localhost:3000' : '', // 개발 환경 API
+        // 개발 환경 WebSocket/API는 early return으로 이미 제외됨
       ].filter(Boolean),
       'font-src': [
         "'self'",
@@ -280,7 +279,7 @@ const nextConfig = {
       'form-action': [
         "'self'", // Form action 제한
       ],
-      'upgrade-insecure-requests': isDev ? [] : [''], // 프로덕션에서만 HTTPS 강제
+      'upgrade-insecure-requests': [''], // HTTPS 강제 (production only)
     };
 
     // CSP 문자열 생성

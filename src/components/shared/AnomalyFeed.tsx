@@ -53,7 +53,6 @@ interface AnomalyFeedProps {
   autoRefresh?: boolean;
   /** 갱신 주기 (ms). 최소 SERVER_DATA_INTERVAL_MS(10분)로 클램핑됨. 0이면 슬롯 경계 정렬 폴링. */
   refreshInterval?: number;
-  showDetails?: boolean;
 }
 
 // Fetcher function
@@ -125,7 +124,6 @@ export function AnomalyFeed({
   maxItems = 20,
   autoRefresh = true,
   refreshInterval = 0, // 0이면 10분 슬롯 경계 정렬 폴링
-  showDetails: _showDetails = true,
 }: AnomalyFeedProps) {
   useEffect(() => {
     if (

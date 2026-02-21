@@ -133,25 +133,21 @@ export const DEFAULT_SERVER_CONFIG =
  * 🌍 환경별 서버 설정 (로컬/Vercel 통일)
  */
 export function getEnvironmentServerConfig(): ServerGenerationConfig {
-  // 환경 변수에서 서버 개수 읽기
-  const envServerCount = process.env.SERVER_COUNT
-    ? Number.parseInt(process.env.SERVER_COUNT, 10)
-    : undefined;
-  const envMaxServers = process.env.MAX_SERVERS
-    ? Number.parseInt(process.env.MAX_SERVERS, 10)
-    : undefined;
-
-  // 기본값: DEFAULT_SERVER_COUNT (15개)
   let serverCount = DEFAULT_SERVER_COUNT;
 
-  // 환경변수로 오버라이드 가능
-  if (envServerCount) {
-    serverCount = envServerCount;
-  } else if (envMaxServers) {
-    serverCount = envMaxServers;
+  // 환경변수로 오버라이드 (NaN/음수 방어)
+  const rawCount = process.env.SERVER_COUNT ?? process.env.MAX_SERVERS;
+  if (rawCount) {
+    const parsed = Number.parseInt(rawCount, 10);
+    if (Number.isNaN(parsed) || parsed <= 0) {
+      logger.warn(
+        `[serverConfig] Invalid SERVER_COUNT/MAX_SERVERS="${rawCount}", fallback to ${DEFAULT_SERVER_COUNT}`
+      );
+    } else {
+      serverCount = parsed;
+    }
   }
 
-  // 모든 환경에서 동일한 설정 사용
   return calculateServerConfig(serverCount);
 }
 

@@ -73,7 +73,7 @@ class PerformanceTracker {
   /**
    * 성능 측정 시작
    */
-  startMeasurement(name: string, _componentName?: string): void {
+  startMeasurement(name: string): void {
     if (!this.isEnabled || typeof performance === 'undefined') return;
 
     performance.mark(`${name}-start`);
@@ -240,4 +240,3 @@ export function withPerformanceTracking<P extends object>(
   WithPerformanceTracking.displayName = `withPerformanceTracking(${displayName})`;
   return WithPerformanceTracking;
 }
-

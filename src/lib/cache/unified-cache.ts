@@ -106,11 +106,19 @@ export class UnifiedCacheService {
     this.inflight.clear();
   }
 
+  private static cleanupRegistered = false;
+
   static getInstance(): UnifiedCacheService {
     if (!UnifiedCacheService.instance) {
       UnifiedCacheService.instance = new UnifiedCacheService();
 
-      if (typeof process !== 'undefined' && process.on) {
+      // process.on 핸들러는 최초 1회만 등록 (resetForTesting 반복 시 누적 방지)
+      if (
+        !UnifiedCacheService.cleanupRegistered &&
+        typeof process !== 'undefined' &&
+        process.on
+      ) {
+        UnifiedCacheService.cleanupRegistered = true;
         const cleanup = () => UnifiedCacheService.instance?.destroy();
         process.on('beforeExit', cleanup);
         process.on('SIGTERM', cleanup);
@@ -237,6 +245,8 @@ export class UnifiedCacheService {
       force?: boolean;
     } = {}
   ): Promise<T> {
+    if (this.destroyed) return fetcher();
+
     const { force = false, namespace = CacheNamespace.GENERAL } = options;
     const fullKey = `${namespace}:${key}`;
 
