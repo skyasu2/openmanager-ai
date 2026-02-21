@@ -81,22 +81,36 @@ export function useQueryControls(deps: QueryControlDeps) {
       refs.retryTimeout.current = null;
     }
 
-    if (currentModeRef.current === 'streaming') {
+    if (currentModeRef.current === 'job-queue') {
+      void asyncQuery.cancel();
+    } else {
       onUserAbort?.();
       stopChat();
     }
-    setState((prev) => ({ ...prev, isLoading: false }));
-  }, [stopChat, onUserAbort, setState, refs]);
+    setState((prev) => ({
+      ...prev,
+      isLoading: false,
+      progress: null,
+      jobId: null,
+      clarification: null,
+    }));
+  }, [asyncQuery, stopChat, onUserAbort, setState, refs]);
 
   const cancel = useCallback(async () => {
-    if (currentMode === 'job-queue') {
+    if (currentModeRef.current === 'job-queue') {
       await asyncQuery.cancel();
     } else {
       onUserAbort?.();
       stopChat();
     }
-    setState((prev) => ({ ...prev, isLoading: false }));
-  }, [currentMode, asyncQuery, stopChat, onUserAbort, setState]);
+    setState((prev) => ({
+      ...prev,
+      isLoading: false,
+      progress: null,
+      jobId: null,
+      clarification: null,
+    }));
+  }, [asyncQuery, stopChat, onUserAbort, setState]);
 
   const reset = useCallback(() => {
     // AbortController cleanup on reset

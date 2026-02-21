@@ -79,9 +79,11 @@ const createInitialResult = (): HealthCheckResult => ({
   error: null,
 });
 
+const initialHealthResult = createInitialResult();
+
 // 글로벌 상태 저장소 (싱글톤)
 const healthStore: HealthStoreState = {
-  result: createInitialResult(),
+  result: initialHealthResult,
   isChecking: false,
   subscribers: new Set(),
   abortController: null,
@@ -102,7 +104,7 @@ const subscribeToStore = (callback: () => void) => {
 };
 
 const getStoreSnapshot = () => healthStore.result;
-const getServerSnapshot = () => createInitialResult();
+const getServerSnapshot = () => initialHealthResult;
 
 // ============================================================================
 // Core Health Check Function

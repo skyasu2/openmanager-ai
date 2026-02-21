@@ -34,7 +34,7 @@ type SystemContextPanelProps = {
 const SystemContextPanel = memo(function SystemContextPanel({
   className = '',
 }: SystemContextPanelProps) {
-  // useHealthCheck 훅으로 통합 (5초 폴링 → 30초로 최적화)
+  // useHealthCheck 훅으로 통합 (10분 데이터 주기 기준으로 폴링 최소화)
   const {
     providers: healthProviders,
     isSystemOnline,
@@ -42,7 +42,7 @@ const SystemContextPanel = memo(function SystemContextPanel({
     isChecking,
     check,
   } = useHealthCheck({
-    pollingInterval: 30000, // 30초 (Vercel 비용 최적화)
+    pollingInterval: 600000, // 10분 (서버 데이터 갱신 주기 정렬)
     pauseWhenHidden: true,
     service: 'ai',
   });

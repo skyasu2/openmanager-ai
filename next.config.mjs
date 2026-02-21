@@ -1,7 +1,9 @@
 import { readFileSync } from 'node:fs';
+import { createRequire } from 'node:module';
 import { join } from 'node:path';
-import bundleAnalyzer from '@next/bundle-analyzer';
 import { withSentryConfig } from '@sentry/nextjs';
+
+const require = createRequire(import.meta.url);
 
 // CSP 환경 변수 정규화 헬퍼 (path 제거, origin만 추출)
 function safeOrigin(value, fallback) {
@@ -20,11 +22,18 @@ const sanitizedNextVersion = String(
   packageJson.dependencies?.next || ''
 ).replace(/^[^\d]*/, '');
 
-// Bundle Analyzer 설정
-const withBundleAnalyzer = bundleAnalyzer({
-  enabled: process.env.ANALYZE === 'true',
-  openAnalyzer: false, // 자동 열지 않음
-});
+// Bundle Analyzer 설정 (옵션 의존성 누락 시 no-op)
+const withBundleAnalyzer = (() => {
+  try {
+    const bundleAnalyzer = require('@next/bundle-analyzer');
+    return bundleAnalyzer({
+      enabled: process.env.ANALYZE === 'true',
+      openAnalyzer: false, // 자동 열지 않음
+    });
+  } catch {
+    return (config) => config;
+  }
+})();
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {

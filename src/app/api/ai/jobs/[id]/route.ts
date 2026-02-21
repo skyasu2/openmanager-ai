@@ -108,19 +108,20 @@ export const DELETE = withAuth(async function DELETE(
       );
     }
 
-    // 이미 완료된 Job은 취소 불가
-    if (job.status === 'completed' || job.status === 'failed') {
+    // 멱등 취소: 이미 종료/취소된 Job도 성공으로 처리해 클라이언트 stop 연타/지연응답 시
+    // 불필요한 4xx 콘솔 노이즈를 방지한다.
+    if (
+      job.status === 'completed' ||
+      job.status === 'failed' ||
+      job.status === 'cancelled'
+    ) {
       return NextResponse.json(
-        { error: 'Cannot cancel a completed or failed job' },
-        { status: 400 }
-      );
-    }
-
-    // 이미 취소된 Job
-    if (job.status === 'cancelled') {
-      return NextResponse.json(
-        { error: 'Job is already cancelled' },
-        { status: 400 }
+        {
+          message: `Job already ${job.status}`,
+          jobId,
+          status: job.status,
+        },
+        { status: 200 }
       );
     }
 
