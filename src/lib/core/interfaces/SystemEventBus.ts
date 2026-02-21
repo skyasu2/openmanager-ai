@@ -62,6 +62,7 @@ export interface WatchdogEventPayload {
     | 'memory-leak'
     | 'high-error-rate'
     | 'performance-degradation'
+    | 'stability'
     | 'frequent-restarts'
     | 'metrics-update';
   severity: 'info' | 'warning' | 'error' | 'critical';

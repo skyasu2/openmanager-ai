@@ -85,6 +85,25 @@ export function buildWatchdogAlertPlans(
     });
   }
 
+  if (metrics.stabilityScore < 70) {
+    const message = `시스템 안정성 문제 감지 (${metrics.stabilityScore.toFixed(1)}%)`;
+    plans.push({
+      alertType: 'stability',
+      message,
+      eventPayload: {
+        type: SystemEventType.WATCHDOG_ALERT,
+        timestamp: Date.now(),
+        source: 'SystemWatchdog',
+        payload: {
+          alertType: 'stability',
+          severity: 'warning',
+          message,
+          metrics: { performanceScore: metrics.stabilityScore },
+        },
+      },
+    });
+  }
+
   if (alerts.frequentRestarts) {
     const message = `빈번한 프로세스 재시작 감지 (${metrics.restartCount}회)`;
     plans.push({

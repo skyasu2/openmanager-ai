@@ -59,6 +59,7 @@ export class UnifiedCacheService {
   private stats: UnifiedCacheStatsState = createInitialStatsState();
   private inflight = new Map<string, Promise<unknown>>();
   private cleanupInterval: ReturnType<typeof setInterval> | null = null;
+  private destroyed = false;
 
   // Singleton 인스턴스
   private static instance: UnifiedCacheService;
@@ -95,6 +96,7 @@ export class UnifiedCacheService {
    * 프로세스 종료 시 고아 타이머 방지
    */
   destroy(): void {
+    this.destroyed = true;
     if (this.cleanupInterval) {
       clearInterval(this.cleanupInterval);
       this.cleanupInterval = null;
@@ -184,6 +186,8 @@ export class UnifiedCacheService {
       metadata?: Record<string, unknown>;
     } = {}
   ): Promise<void> {
+    if (this.destroyed) return;
+
     const {
       ttlSeconds = 300,
       namespace = CacheNamespace.GENERAL,

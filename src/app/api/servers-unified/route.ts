@@ -398,6 +398,7 @@ async function handleServersUnified(
       action,
       error: getErrorMessage(error),
       fallback: true,
+      isServerError: true,
       data: [],
       timestamp: new Date().toISOString(),
     };
@@ -434,12 +435,12 @@ async function postHandler(request: NextRequest) {
     params: {},
   });
 
-  const isError =
-    result != null &&
-    typeof result === 'object' &&
-    'success' in result &&
-    (result as Record<string, unknown>).success === false;
-  return NextResponse.json(result, { status: isError ? 400 : 200 });
+  const r = result as Record<string, unknown> | null;
+  const isError = r != null && typeof r === 'object' && r.success === false;
+  const isServerError = isError && r.isServerError === true;
+  return NextResponse.json(result, {
+    status: isServerError ? 500 : isError ? 400 : 200,
+  });
 }
 
 // 호환성을 위한 GET 메서드 (기본 list 액션)
@@ -510,13 +511,11 @@ async function getHandler(request: NextRequest) {
     params: {},
   });
 
-  const isError =
-    result != null &&
-    typeof result === 'object' &&
-    'success' in result &&
-    (result as Record<string, unknown>).success === false;
+  const r2 = result as Record<string, unknown> | null;
+  const isError = r2 != null && typeof r2 === 'object' && r2.success === false;
+  const isServerError = isError && r2.isServerError === true;
   return NextResponse.json(result, {
-    status: isError ? 400 : 200,
+    status: isServerError ? 500 : isError ? 400 : 200,
     headers: {
       'Content-Type': 'application/json',
       'Cache-Control': 'private, no-store, max-age=0',

@@ -135,10 +135,10 @@ export const DEFAULT_SERVER_CONFIG =
 export function getEnvironmentServerConfig(): ServerGenerationConfig {
   // 환경 변수에서 서버 개수 읽기
   const envServerCount = process.env.SERVER_COUNT
-    ? parseInt(process.env.SERVER_COUNT, 10)
+    ? Number.parseInt(process.env.SERVER_COUNT, 10)
     : undefined;
   const envMaxServers = process.env.MAX_SERVERS
-    ? parseInt(process.env.MAX_SERVERS, 10)
+    ? Number.parseInt(process.env.MAX_SERVERS, 10)
     : undefined;
 
   // 기본값: DEFAULT_SERVER_COUNT (15개)

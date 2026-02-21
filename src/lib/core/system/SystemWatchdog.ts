@@ -195,26 +195,15 @@ export class SystemWatchdog {
    */
   private analyzeStability(): void {
     this.metrics.performanceScore = calculatePerformanceScore(this.metrics);
+    // 자기 참조 alert(performance-degradation, stability)를 제외하여 피드백 루프 방지
+    const externalAlerts = this.getRecentAlerts(10 * 60 * 1000).filter(
+      (a) => a.type !== 'stability' && a.type !== 'performance-degradation'
+    );
     this.metrics.stabilityScore = calculateStabilityScore(
       this.metrics,
-      this.getRecentAlerts(10 * 60 * 1000).length
+      externalAlerts.length
     );
-
-    // 성능 저하 감지
-    if (this.metrics.performanceScore < 60) {
-      this.addAlert(
-        'performance-degradation',
-        `시스템 성능 저하 감지 (${this.metrics.performanceScore.toFixed(1)}%)`
-      );
-    }
-
-    // 안정성 문제 감지
-    if (this.metrics.stabilityScore < 70) {
-      this.addAlert(
-        'stability',
-        `시스템 안정성 문제 감지 (${this.metrics.stabilityScore.toFixed(1)}%)`
-      );
-    }
+    // alert 발행은 checkAlerts()에 위임 (cooldown 선점 방지)
   }
 
   /**

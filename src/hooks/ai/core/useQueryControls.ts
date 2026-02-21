@@ -49,6 +49,8 @@ export interface QueryControlDeps {
     pendingQuery: MutableRefObject<string | null>;
     pendingAttachments: MutableRefObject<FileAttachment[] | null>;
     currentQuery: MutableRefObject<string | null>;
+    redirecting?: MutableRefObject<boolean>;
+    errorHandled?: MutableRefObject<boolean>;
   };
 }
 
@@ -80,6 +82,8 @@ export function useQueryControls(deps: QueryControlDeps) {
       clearTimeout(refs.retryTimeout.current);
       refs.retryTimeout.current = null;
     }
+    if (refs.redirecting) refs.redirecting.current = false;
+    if (refs.errorHandled) refs.errorHandled.current = false;
 
     if (currentModeRef.current === 'job-queue') {
       void asyncQuery.cancel().catch(() => {});
@@ -104,6 +108,8 @@ export function useQueryControls(deps: QueryControlDeps) {
       clearTimeout(refs.retryTimeout.current);
       refs.retryTimeout.current = null;
     }
+    if (refs.redirecting) refs.redirecting.current = false;
+    if (refs.errorHandled) refs.errorHandled.current = false;
 
     if (currentModeRef.current === 'job-queue') {
       await asyncQuery.cancel();
@@ -129,9 +135,11 @@ export function useQueryControls(deps: QueryControlDeps) {
       refs.retryTimeout.current = null;
     }
 
-    // Reset retry count and generate new trace ID
+    // Reset retry count, trace ID, and state refs
     refs.retryCount.current = 0;
     refs.traceId.current = generateTraceId();
+    if (refs.redirecting) refs.redirecting.current = false;
+    if (refs.errorHandled) refs.errorHandled.current = false;
 
     asyncQuery.reset();
     setMessages([]);
