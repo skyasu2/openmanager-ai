@@ -1,5 +1,6 @@
 /* Tailwind v4: src 디렉토리 명시적 스캔 */
-@import 'tailwindcss' source('../');
+@import 'tailwindcss';
+@source '../';
 
 @plugin 'tailwindcss-animate';
 
@@ -737,17 +738,14 @@ a {
   0% {
     background-position: 0% 50%;
   }
-  50% {
-    background-position: 100% 50%;
-  }
   100% {
-    background-position: 0% 50%;
+    background-position: 100% 50%;
   }
 }
 
 .animate-gradient-diagonal {
-  background-size: 200% 200%;
-  animation: gradient-diagonal 3s ease infinite;
+  background-size: 400% 400%;
+  animation: gradient-diagonal 3s linear infinite;
 }
 
 /* Removed unused keyframes: fade-in-delay, spin-slow, progress-bar */

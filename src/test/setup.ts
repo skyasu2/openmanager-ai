@@ -131,22 +131,27 @@ vi.mock('@/lib/logging', () => ({
 }));
 
 // Fetch Mock - 더 현실적인 응답
-globalThis.fetch = vi.fn().mockImplementation((url: string) => {
-  return Promise.resolve({
+globalThis.fetch = vi.fn().mockImplementation((input: RequestInfo | URL) => {
+  const resolvedUrl = typeof input === 'string' ? input : input.toString();
+  const jsonPayload = {
+    data: {
+      response: 'Mock AI response',
+      confidence: 0.9,
+    },
+  };
+
+  const createMockResponse = () => ({
     ok: true,
     status: 200,
     statusText: 'OK',
-    json: () =>
-      Promise.resolve({
-        data: {
-          response: 'Mock AI response',
-          confidence: 0.9,
-        },
-      }),
+    json: () => Promise.resolve(jsonPayload),
     text: () => Promise.resolve('Mock text response'),
     headers: new Headers(),
-    url,
+    url: resolvedUrl,
+    clone: () => createMockResponse(),
   });
+
+  return Promise.resolve(createMockResponse());
 }) as typeof fetch;
 
 // Global mocks

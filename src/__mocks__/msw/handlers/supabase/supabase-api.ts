@@ -19,6 +19,20 @@ const SUPABASE_URL =
  */
 export const supabaseHandlers = [
   /**
+   * Base REST endpoint health probe
+   *
+   * Some connectivity checks call `/rest/v1/` directly.
+   */
+  http.get(`${SUPABASE_URL}/rest/v1/`, () => {
+    return HttpResponse.json(
+      {
+        message: 'Supabase REST mock endpoint',
+      },
+      { status: 200 }
+    );
+  }),
+
+  /**
    * Select Query - 테이블 조회
    *
    * @example GET /rest/v1/servers?select=*

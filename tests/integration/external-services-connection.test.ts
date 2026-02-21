@@ -11,6 +11,9 @@
 
 import { beforeAll, describe, expect, it } from 'vitest';
 
+const RUN_EXTERNAL_CONNECTIVITY_TESTS =
+  process.env.RUN_EXTERNAL_CONNECTIVITY_TESTS === 'true';
+
 // 실제 환경변수 로드 (Mock 비활성화)
 const REAL_ENV = {
   // Redis 설정
@@ -279,237 +282,248 @@ async function testVercelConnection(): Promise<TestResult> {
   }
 }
 
-describe('🔗 실제 외부 서비스 연결 테스트', () => {
-  beforeAll(() => {
-    console.log('\n🔍 외부 서비스 연결 테스트 시작...\n');
-    console.log('📋 환경변수 상태:');
-    console.log(
-      `- Redis URL: ${REAL_ENV.UPSTASH_REDIS_REST_URL ? '✅ 설정됨' : '❌ 없음'}`
-    );
-    console.log(
-      `- Supabase URL: ${REAL_ENV.NEXT_PUBLIC_SUPABASE_URL ? '✅ 설정됨' : '❌ 없음'}`
-    );
-    console.log(
-      `- Google AI Key: ${REAL_ENV.GOOGLE_AI_API_KEY ? '✅ 설정됨' : '❌ 없음'}`
-    );
-    console.log(
-      `- Vercel Token: ${REAL_ENV.VERCEL_TOKEN ? '✅ 설정됨' : '❌ 없음'}\n`
-    );
-  });
+describe.skipIf(!RUN_EXTERNAL_CONNECTIVITY_TESTS)(
+  '🔗 실제 외부 서비스 연결 테스트',
+  () => {
+    beforeAll(() => {
+      console.log('\n🔍 외부 서비스 연결 테스트 시작...\n');
+      console.log('📋 환경변수 상태:');
+      console.log(
+        `- Redis URL: ${REAL_ENV.UPSTASH_REDIS_REST_URL ? '✅ 설정됨' : '❌ 없음'}`
+      );
+      console.log(
+        `- Supabase URL: ${REAL_ENV.NEXT_PUBLIC_SUPABASE_URL ? '✅ 설정됨' : '❌ 없음'}`
+      );
+      console.log(
+        `- Google AI Key: ${REAL_ENV.GOOGLE_AI_API_KEY ? '✅ 설정됨' : '❌ 없음'}`
+      );
+      console.log(
+        `- Vercel Token: ${REAL_ENV.VERCEL_TOKEN ? '✅ 설정됨' : '❌ 없음'}\n`
+      );
+    });
 
-  describe('📊 Redis (Upstash) 연결 테스트', () => {
-    it('Redis 서버에 연결하고 PING 테스트', async () => {
-      const result = await testRedisConnection();
+    describe('📊 Redis (Upstash) 연결 테스트', () => {
+      it('Redis 서버에 연결하고 PING 테스트', async () => {
+        const result = await testRedisConnection();
 
-      console.log(`📊 Redis 테스트 결과: ${result.success ? '✅' : '❌'}`);
-      console.log(`   메시지: ${result.message}`);
-      if (result.details) {
-        console.log(`   세부사항:`, result.details);
-      }
+        console.log(`📊 Redis 테스트 결과: ${result.success ? '✅' : '❌'}`);
+        console.log(`   메시지: ${result.message}`);
+        if (result.details) {
+          console.log(`   세부사항:`, result.details);
+        }
 
-      // Mock 환경이 아닌 경우에만 실제 연결을 기대
-      if (
-        REAL_ENV.UPSTASH_REDIS_REST_URL &&
-        REAL_ENV.UPSTASH_REDIS_REST_TOKEN
-      ) {
+        // Mock 환경이 아닌 경우에만 실제 연결을 기대
+        if (
+          REAL_ENV.UPSTASH_REDIS_REST_URL &&
+          REAL_ENV.UPSTASH_REDIS_REST_TOKEN
+        ) {
+          expect(result).toBeDefined();
+          expect(result.message).toBeTruthy();
+        } else {
+          expect(result.success).toBe(false);
+          expect(result.message).toContain('환경변수');
+        }
+      }, 10000);
+    });
+
+    describe('🗄️ Supabase 연결 테스트', () => {
+      it('Supabase API에 연결하고 기본 정보 확인', async () => {
+        const result = await testSupabaseConnection();
+
+        console.log(`🗄️ Supabase 테스트 결과: ${result.success ? '✅' : '❌'}`);
+        console.log(`   메시지: ${result.message}`);
+        if (result.details) {
+          console.log(`   세부사항:`, result.details);
+        }
+
         expect(result).toBeDefined();
         expect(result.message).toBeTruthy();
-      } else {
-        expect(result.success).toBe(false);
-        expect(result.message).toContain('환경변수');
-      }
-    }, 10000);
-  });
-
-  describe('🗄️ Supabase 연결 테스트', () => {
-    it('Supabase API에 연결하고 기본 정보 확인', async () => {
-      const result = await testSupabaseConnection();
-
-      console.log(`🗄️ Supabase 테스트 결과: ${result.success ? '✅' : '❌'}`);
-      console.log(`   메시지: ${result.message}`);
-      if (result.details) {
-        console.log(`   세부사항:`, result.details);
-      }
-
-      expect(result).toBeDefined();
-      expect(result.message).toBeTruthy();
-    }, 10000);
-  });
-
-  describe('🤖 Google AI 연결 테스트', () => {
-    it('Google AI API에 연결하고 모델 목록 확인', async () => {
-      const result = await testGoogleAIConnection();
-
-      console.log(`🤖 Google AI 테스트 결과: ${result.success ? '✅' : '❌'}`);
-      console.log(`   메시지: ${result.message}`);
-      if (result.details) {
-        console.log(`   세부사항:`, result.details);
-      }
-
-      expect(result).toBeDefined();
-      expect(result.message).toBeTruthy();
-    }, 10000);
-  });
-
-  describe('☁️ Google Cloud 연결 테스트', () => {
-    it('Google Cloud 환경 확인 (메타데이터 서버)', async () => {
-      const result = await testGoogleCloudConnection();
-
-      console.log(
-        `☁️ Google Cloud 테스트 결과: ${result.success ? '✅' : '❌'}`
-      );
-      console.log(`   메시지: ${result.message}`);
-      if (result.details) {
-        console.log(`   세부사항:`, result.details);
-      }
-
-      expect(result).toBeDefined();
-      expect(result.message).toBeTruthy();
-
-      // 로컬 환경에서는 GCP 메타데이터 서버에 연결할 수 없음을 확인
-      if (!result.success) {
-        expect(result.message).toContain('로컬 환경');
-      }
-    }, 5000);
-  });
-
-  describe('🚀 Vercel API 연결 테스트', () => {
-    it('Vercel API에 연결하고 사용자 정보 확인', async () => {
-      const result = await testVercelConnection();
-
-      console.log(`🚀 Vercel 테스트 결과: ${result.success ? '✅' : '❌'}`);
-      console.log(`   메시지: ${result.message}`);
-      if (result.details) {
-        console.log(`   세부사항:`, result.details);
-      }
-
-      expect(result).toBeDefined();
-      expect(result.message).toBeTruthy();
-    }, 10000);
-  });
-
-  describe('🎭 목업 vs 실제 서비스 비교', () => {
-    it('목업 시스템이 실제 서비스와 동일한 인터페이스 제공', async () => {
-      console.log('\n🎭 목업 시스템 검증...');
-
-      // 목업 시스템 테스트 - mock 응답 형식 검증
-      // Note: @/test/env.config 제거됨 - 실제 사용되지 않는 import
-
-      // 실제 목업 함수들이 올바른 응답 형식을 반환하는지 확인
-      const mockRedisResponse = {
-        success: true,
-        message: 'Mock Redis 연결 성공',
-        details: { result: 'PONG' },
-      };
-
-      const mockSupabaseResponse = {
-        success: true,
-        message: 'Mock Supabase 연결 성공',
-        details: { status: 200, url: 'https://mock-supabase.test' },
-      };
-
-      console.log('✅ 목업 Redis 응답 형식:', mockRedisResponse);
-      console.log('✅ 목업 Supabase 응답 형식:', mockSupabaseResponse);
-
-      expect(mockRedisResponse).toHaveProperty('success');
-      expect(mockRedisResponse).toHaveProperty('message');
-      expect(mockSupabaseResponse).toHaveProperty('success');
-      expect(mockSupabaseResponse).toHaveProperty('message');
+      }, 10000);
     });
 
-    it('환경별 전략이 올바르게 작동', () => {
-      const strategies = {
-        test: 'mock',
-        development: 'hybrid',
-        vercel: 'limited',
-        production: 'full',
-      };
+    describe('🤖 Google AI 연결 테스트', () => {
+      it('Google AI API에 연결하고 모델 목록 확인', async () => {
+        const result = await testGoogleAIConnection();
 
-      console.log('🎯 환경별 데이터 소스 전략:');
-      Object.entries(strategies).forEach(([env, strategy]) => {
-        console.log(`   ${env}: ${strategy}`);
+        console.log(
+          `🤖 Google AI 테스트 결과: ${result.success ? '✅' : '❌'}`
+        );
+        console.log(`   메시지: ${result.message}`);
+        if (result.details) {
+          console.log(`   세부사항:`, result.details);
+        }
+
+        expect(result).toBeDefined();
+        expect(result.message).toBeTruthy();
+      }, 10000);
+    });
+
+    describe('☁️ Google Cloud 연결 테스트', () => {
+      it('Google Cloud 환경 확인 (메타데이터 서버)', async () => {
+        const result = await testGoogleCloudConnection();
+
+        console.log(
+          `☁️ Google Cloud 테스트 결과: ${result.success ? '✅' : '❌'}`
+        );
+        console.log(`   메시지: ${result.message}`);
+        if (result.details) {
+          console.log(`   세부사항:`, result.details);
+        }
+
+        expect(result).toBeDefined();
+        expect(result.message).toBeTruthy();
+
+        // 로컬 환경에서는 GCP 메타데이터 서버에 연결할 수 없음을 확인
+        if (!result.success) {
+          expect(result.message).toContain('로컬 환경');
+        }
+      }, 5000);
+    });
+
+    describe('🚀 Vercel API 연결 테스트', () => {
+      it('Vercel API에 연결하고 사용자 정보 확인', async () => {
+        const result = await testVercelConnection();
+
+        console.log(`🚀 Vercel 테스트 결과: ${result.success ? '✅' : '❌'}`);
+        console.log(`   메시지: ${result.message}`);
+        if (result.details) {
+          console.log(`   세부사항:`, result.details);
+        }
+
+        expect(result).toBeDefined();
+        expect(result.message).toBeTruthy();
+      }, 10000);
+    });
+
+    describe('🎭 목업 vs 실제 서비스 비교', () => {
+      it('목업 시스템이 실제 서비스와 동일한 인터페이스 제공', async () => {
+        console.log('\n🎭 목업 시스템 검증...');
+
+        // 목업 시스템 테스트 - mock 응답 형식 검증
+        // Note: @/test/env.config 제거됨 - 실제 사용되지 않는 import
+
+        // 실제 목업 함수들이 올바른 응답 형식을 반환하는지 확인
+        const mockRedisResponse = {
+          success: true,
+          message: 'Mock Redis 연결 성공',
+          details: { result: 'PONG' },
+        };
+
+        const mockSupabaseResponse = {
+          success: true,
+          message: 'Mock Supabase 연결 성공',
+          details: { status: 200, url: 'https://mock-supabase.test' },
+        };
+
+        console.log('✅ 목업 Redis 응답 형식:', mockRedisResponse);
+        console.log('✅ 목업 Supabase 응답 형식:', mockSupabaseResponse);
+
+        expect(mockRedisResponse).toHaveProperty('success');
+        expect(mockRedisResponse).toHaveProperty('message');
+        expect(mockSupabaseResponse).toHaveProperty('success');
+        expect(mockSupabaseResponse).toHaveProperty('message');
       });
 
-      expect(strategies.test).toBe('mock');
-      expect(strategies.production).toBe('full');
+      it('환경별 전략이 올바르게 작동', () => {
+        const strategies = {
+          test: 'mock',
+          development: 'hybrid',
+          vercel: 'limited',
+          production: 'full',
+        };
+
+        console.log('🎯 환경별 데이터 소스 전략:');
+        Object.entries(strategies).forEach(([env, strategy]) => {
+          console.log(`   ${env}: ${strategy}`);
+        });
+
+        expect(strategies.test).toBe('mock');
+        expect(strategies.production).toBe('full');
+      });
     });
-  });
-});
+  }
+);
 
 // ===============================
 // 🎭 목업 시스템 구성 상태 확인
 // ===============================
-describe('🎭 목업 시스템 구성 상태 확인', () => {
-  it('테스트 환경 목업 설정 확인', () => {
-    const mockEnvVars = {
-      NODE_ENV: process.env.NODE_ENV,
-      VITEST: process.env.VITEST,
-      FORCE_MOCK_REDIS: process.env.FORCE_MOCK_REDIS,
-      FORCE_MOCK_GOOGLE_AI: process.env.FORCE_MOCK_GOOGLE_AI,
-      DISABLE_EXTERNAL_SERVICES: process.env.DISABLE_EXTERNAL_SERVICES,
-      USE_LOCAL_DEVELOPMENT: process.env.USE_LOCAL_DEVELOPMENT,
-    };
+describe.skipIf(!RUN_EXTERNAL_CONNECTIVITY_TESTS)(
+  '🎭 목업 시스템 구성 상태 확인',
+  () => {
+    it('테스트 환경 목업 설정 확인', () => {
+      const mockEnvVars = {
+        NODE_ENV: process.env.NODE_ENV,
+        VITEST: process.env.VITEST,
+        FORCE_MOCK_REDIS: process.env.FORCE_MOCK_REDIS,
+        FORCE_MOCK_GOOGLE_AI: process.env.FORCE_MOCK_GOOGLE_AI,
+        DISABLE_EXTERNAL_SERVICES: process.env.DISABLE_EXTERNAL_SERVICES,
+        USE_LOCAL_DEVELOPMENT: process.env.USE_LOCAL_DEVELOPMENT,
+      };
 
-    console.log('\n🎭 목업 환경변수 상태:');
-    Object.entries(mockEnvVars).forEach(([key, value]) => {
-      console.log(`${key}: ${value || '미설정'}`);
+      console.log('\n🎭 목업 환경변수 상태:');
+      Object.entries(mockEnvVars).forEach(([key, value]) => {
+        console.log(`${key}: ${value || '미설정'}`);
+      });
+
+      // 테스트 환경에서는 목업이 활성화되어야 함
+      expect(mockEnvVars.NODE_ENV).toBe('test');
+      expect(mockEnvVars.VITEST).toBe('true');
     });
 
-    // 테스트 환경에서는 목업이 활성화되어야 함
-    expect(mockEnvVars.NODE_ENV).toBe('test');
-    expect(mockEnvVars.VITEST).toBe('true');
-  });
+    it('목업 모듈 로드 상태 확인', () => {
+      // 목업 모듈들이 제대로 로드되었는지 확인
+      const mockModules = [
+        'src/test/mocks/redis.ts',
+        'src/test/mocks/supabase.ts',
+        'src/test/mocks/ai-services.ts',
+        'src/test/mocks/external-apis.ts',
+        'src/test/mocks/chart-libraries.ts',
+      ];
 
-  it('목업 모듈 로드 상태 확인', () => {
-    // 목업 모듈들이 제대로 로드되었는지 확인
-    const mockModules = [
-      'src/test/mocks/redis.ts',
-      'src/test/mocks/supabase.ts',
-      'src/test/mocks/ai-services.ts',
-      'src/test/mocks/external-apis.ts',
-      'src/test/mocks/chart-libraries.ts',
-    ];
+      console.log('\n🎭 목업 모듈 상태:');
+      mockModules.forEach((module) => {
+        console.log(`✅ ${module}: 로드됨`);
+      });
 
-    console.log('\n🎭 목업 모듈 상태:');
-    mockModules.forEach((module) => {
-      console.log(`✅ ${module}: 로드됨`);
+      expect(mockModules.length).toBeGreaterThan(0);
     });
-
-    expect(mockModules.length).toBeGreaterThan(0);
-  });
-});
+  }
+);
 
 // ===============================
 // 🔧 테스트 환경 최적화 확인
 // ===============================
-describe('🔧 테스트 환경 최적화 확인', () => {
-  it('Windows 환경 최적화 설정 확인', () => {
-    const isWindows = process.platform === 'win32';
+describe.skipIf(!RUN_EXTERNAL_CONNECTIVITY_TESTS)(
+  '🔧 테스트 환경 최적화 확인',
+  () => {
+    it('Windows 환경 최적화 설정 확인', () => {
+      const isWindows = process.platform === 'win32';
 
-    console.log('\n🔧 시스템 환경:');
-    console.log(`플랫폼: ${process.platform}`);
-    console.log(`Node.js: ${process.version}`);
-    console.log(
-      `메모리: ${Math.round(process.memoryUsage().heapUsed / 1024 / 1024)}MB`
-    );
+      console.log('\n🔧 시스템 환경:');
+      console.log(`플랫폼: ${process.platform}`);
+      console.log(`Node.js: ${process.version}`);
+      console.log(
+        `메모리: ${Math.round(process.memoryUsage().heapUsed / 1024 / 1024)}MB`
+      );
 
-    if (isWindows) {
-      console.log('✅ Windows 환경 최적화 활성화됨');
-    }
+      if (isWindows) {
+        console.log('✅ Windows 환경 최적화 활성화됨');
+      }
 
-    expect(typeof process.platform).toBe('string');
-  });
+      expect(typeof process.platform).toBe('string');
+    });
 
-  it('테스트 성능 메트릭 확인', () => {
-    const startTime = Date.now();
+    it('테스트 성능 메트릭 확인', () => {
+      const startTime = Date.now();
 
-    // 간단한 연산 수행
-    Array.from({ length: 1000 }, (_, i) => i * 2);
+      // 간단한 연산 수행
+      Array.from({ length: 1000 }, (_, i) => i * 2);
 
-    const endTime = Date.now();
-    const duration = endTime - startTime;
+      const endTime = Date.now();
+      const duration = endTime - startTime;
 
-    console.log(`\n⚡ 테스트 성능: ${duration}ms`);
-    expect(duration).toBeLessThan(100); // 100ms 이내
-  });
-});
+      console.log(`\n⚡ 테스트 성능: ${duration}ms`);
+      expect(duration).toBeLessThan(100); // 100ms 이내
+    });
+  }
+);

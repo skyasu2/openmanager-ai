@@ -15,6 +15,36 @@ const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3002';
  */
 export const nextJsApiHandlers = [
   /**
+   * AI Warm-up ping
+   *
+   * Some hooks fire-and-forget POST/HEAD /api/ai/wake-up requests.
+   * Add host-agnostic handlers to avoid unhandled-request warnings in tests.
+   */
+  http.post(/\/api\/ai\/wake-up$/, () => {
+    return HttpResponse.json(
+      {
+        status: 'ok',
+        warmedUp: true,
+      },
+      {
+        status: 200,
+        headers: {
+          'X-Warmup': 'mocked',
+        },
+      }
+    );
+  }),
+
+  http.head(/\/api\/ai\/wake-up$/, () => {
+    return new HttpResponse(null, {
+      status: 200,
+      headers: {
+        'X-Warmup': 'mocked',
+      },
+    });
+  }),
+
+  /**
    * AI Supervisor Stream API v2 - UIMessageStream (Resumable)
    *
    * @example POST /api/ai/supervisor/stream/v2

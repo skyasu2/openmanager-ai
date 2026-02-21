@@ -70,6 +70,8 @@
     "test:ci": "vitest run --config config/testing/vitest.config.ci.ts",
     "test:coverage": "vitest run --config config/testing/vitest.config.simple.ts --coverage",
     "test:watch": "vitest --config config/testing/vitest.config.simple.ts",
+    "test:perf:vitest": "RUN_SLOW_TESTS=true vitest run --config config/testing/vitest.config.main.ts tests/performance/web-vitals-integration.test.ts",
+    "test:external-connectivity": "RUN_EXTERNAL_CONNECTIVITY_TESTS=true vitest run --config config/testing/vitest.config.ci.ts tests/integration/external-services-connection.test.ts",
     "test:e2e": "playwright test",
     "test:e2e:no-ai": "playwright test --grep-invert '@ai-test' --config playwright.config.ts",
     "test:e2e:ai-only": "playwright test --grep '@ai-test' --config playwright.config.ts",

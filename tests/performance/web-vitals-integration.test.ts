@@ -8,6 +8,8 @@
 
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
+const RUN_SLOW_TESTS = process.env.RUN_SLOW_TESTS === 'true';
+
 // Web Vitals 타입 정의 (패키지가 Node.js 환경에서 제대로 작동하지 않을 때 대비)
 interface Metric {
   name: string;
@@ -219,7 +221,7 @@ async function sendToWebVitalsAPI(
   }
 }
 
-describe('🌐 Web Vitals 통합 테스트', () => {
+describe.skipIf(!RUN_SLOW_TESTS)('🌐 Web Vitals 통합 테스트', () => {
   let collector: WebVitalsCollector;
 
   beforeAll(() => {

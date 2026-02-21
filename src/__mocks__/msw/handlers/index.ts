@@ -14,6 +14,7 @@
 
 import type { RequestHandler } from 'msw';
 import { cohereHandlers } from './ai/cohere';
+import { externalResourceHandlers } from './external/time-and-otel';
 // AI 서비스 핸들러 (OpenAI, Cohere)
 import { openAIHandlers } from './ai/openai';
 // Next.js API Routes 핸들러
@@ -36,6 +37,9 @@ export const handlers: RequestHandler[] = [
   // AI 서비스 핸들러
   ...openAIHandlers,
   ...cohereHandlers,
+
+  // 외부 리소스 핸들러 (time api, otel static data)
+  ...externalResourceHandlers,
 
   // 인프라 핸들러
   ...vercelHandlers,

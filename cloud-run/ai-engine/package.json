@@ -10,7 +10,7 @@
     "verify:llamaindex": "node -e \"import('@llamaindex/mistral').then(() => console.log('verify:llamaindex ok')).catch((err) => { console.error('verify:llamaindex failed:', err?.message || err); process.exit(1); })\"",
     "type-check": "tsc --noEmit",
     "line-guard": "node ../../scripts/dev/line-count-guard.js --warn 500 --fail 800 --include src --root .",
-    "test": "vitest run",
+    "test": "LOG_LEVEL=error vitest run --silent=passed-only",
     "test:watch": "vitest",
     "docker:preflight": "bash scripts/docker-preflight.sh",
     "rag:analyze": "tsx scripts/analyze-rag-distribution.ts",
