@@ -109,6 +109,7 @@ export function useHybridAIQuery(
   const webSearchEnabledRef = useRef<boolean | undefined>(
     webSearchEnabled ?? undefined
   );
+  const warmingUpRef = useRef<boolean>(false);
   useEffect(() => {
     webSearchEnabledRef.current = webSearchEnabled ?? undefined;
   }, [webSearchEnabled]);
@@ -130,6 +131,10 @@ export function useHybridAIQuery(
     warmingUp: false,
     estimatedWaitSeconds: 0,
   });
+  // warmingUpRef: onData/transport body 콜백에서 stale closure 방지
+  useEffect(() => {
+    warmingUpRef.current = state.warmingUp;
+  }, [state.warmingUp]);
   const pendingQueryRef = useRef<string | null>(null);
   const pendingAttachmentsRef = useRef<FileAttachment[] | null>(null);
   const currentQueryRef = useRef<string | null>(null);
@@ -145,7 +150,12 @@ export function useHybridAIQuery(
           [TRACEPARENT_HEADER]: generateTraceparent(traceIdRef.current),
           [observabilityConfig.traceIdHeader]: traceIdRef.current,
         }),
-        body: () => ({ enableWebSearch: webSearchEnabledRef.current }),
+        // P2: warmup 중에는 web search 비활성화 (cold start 부하 경감)
+        body: () => ({
+          enableWebSearch: warmingUpRef.current
+            ? false
+            : webSearchEnabledRef.current,
+        }),
         prepareReconnectToStreamRequest: ({ id }) => ({
           api: `${apiEndpoint}?sessionId=${id}`,
         }),
@@ -303,8 +313,8 @@ export function useHybridAIQuery(
         }
         return;
       }
-      // 첫 실제 데이터 수신 시 warmup 해제
-      if (state.warmingUp) {
+      // 첫 실제 데이터 수신 시 warmup 해제 (ref로 stale closure 방지)
+      if (warmingUpRef.current) {
         setState((prev) => ({
           ...prev,
           warmingUp: false,

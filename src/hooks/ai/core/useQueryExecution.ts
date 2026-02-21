@@ -99,16 +99,6 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
       // 🔒 새 요청 시작 시 에러 핸들링 플래그 리셋
       refs.errorHandled.current = false;
 
-      // ⚡ Cloud Run warmup pre-check (fire-and-forget)
-      // 첫 요청 시 AI 엔진을 미리 깨워 cold start 시간 단축
-      if (!isRetry) {
-        try {
-          void fetch('/api/ai/wake-up', { method: 'POST' }).catch(() => {});
-        } catch {
-          // fire-and-forget: 실패해도 무시
-        }
-      }
-
       // Redirect 이벤트 처리를 위해 현재 쿼리 저장
       refs.currentQuery.current = trimmedQuery;
 
