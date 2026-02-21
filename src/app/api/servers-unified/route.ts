@@ -14,7 +14,6 @@
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 import * as z from 'zod';
-import { createApiRoute } from '@/lib/api/zod-middleware';
 import { withAuth } from '@/lib/auth/api-auth';
 import { logger } from '@/lib/logging';
 import { getServerMonitoringService } from '@/services/monitoring';
@@ -406,13 +405,37 @@ async function handleServersUnified(
 }
 
 // 🚀 API 라우트 내보내기
-const postHandler = createApiRoute()
-  .body(serversUnifiedRequestSchema)
-  .configure({
-    showDetailedErrors: process.env.NODE_ENV === 'development',
-    enableLogging: true,
-  })
-  .build(handleServersUnified);
+async function postHandler(request: NextRequest) {
+  let body: unknown;
+  try {
+    body = await request.json();
+  } catch {
+    return NextResponse.json(
+      { success: false, error: 'Invalid JSON body' },
+      { status: 400 }
+    );
+  }
+
+  const parsed = serversUnifiedRequestSchema.safeParse(body);
+  if (!parsed.success) {
+    return NextResponse.json(
+      {
+        success: false,
+        error: 'Request validation failed',
+        details: parsed.error.flatten().fieldErrors,
+      },
+      { status: 400 }
+    );
+  }
+
+  return NextResponse.json(
+    await handleServersUnified(request, {
+      body: parsed.data,
+      query: {},
+      params: {},
+    })
+  );
+}
 
 // 호환성을 위한 GET 메서드 (기본 list 액션)
 async function getHandler(request: NextRequest) {
@@ -450,6 +473,7 @@ async function getHandler(request: NextRequest) {
 
   const defaultRequest = {
     action,
+    serverId: searchParams.get('serverId') || undefined,
     page: Number.isNaN(rawPage) ? 1 : rawPage,
     limit: Number.isNaN(rawLimit) ? 10 : rawLimit,
     search: searchParams.get('search') || undefined,

@@ -46,11 +46,11 @@ export function learnQueryPattern(
 
   if (existing) {
     existing.frequency++;
-    existing.hits++;
     existing.lastUsed = new Date();
 
     const responseTime = getResponseTime(metadata);
     if (responseTime > 0) {
+      existing.hits++;
       existing.avgResponseTime =
         (existing.avgResponseTime * (existing.hits - 1) + responseTime) /
         existing.hits;
