@@ -3,7 +3,7 @@
 > Owner: project-lead
 > Status: Active Canonical
 > Doc type: Reference
-> Last reviewed: 2026-02-18
+> Last reviewed: 2026-02-21
 > Tags: wbs,completion,audit,retrospective
 > Canonical: reports/planning/wbs.md
 > 연관 문서: [최종 검수 확인서](completion-review.md) (가중 점수 교차 검증)
@@ -63,6 +63,7 @@
 | console.log → Pino Logger (92%) | 100% | 구조화 로깅 |
 | AsyncLocalStorage Trace ID | 100% | W3C Trace Context |
 | Free Tier Guard Rails | 100% | Cloud Run + Build |
+| E2E 테스트 강한 축소 & MSW 모킹 전환 | 100% | 클라우드 종속성/비용 제거 (2026-02-21) |
 
 ### Phase 5: 문서 & 포트폴리오 (2026-02)
 | 작업 | 상태 | 비고 |
@@ -290,7 +291,7 @@
 | ~~6~~ | ~~스텁 API 라우트 7개~~ | ~~미구현~~ | ~~삭제~~ | **완료** (이전 세션) |
 | ~~7~~ | ~~hourly-data 로그 비어있음~~ | ~~`logs: []`~~ | ~~메트릭 연동 로그 적재~~ | **완료** (2026-02-15) |
 | ~~8~~ | ~~테스트 커버리지 부족~~ | ~~206개 테스트~~ | ~~E2E/통합 추가 (588개)~~ | **완료** (Frontend/API 검증 강화) |
-| ~~9~~ | ~~Vercel 실환경 E2E 과부하/장시간 실행~~ | ~~154개 전체 스위트 기본 실행~~ | ~~경량/전체/AI 분리 + `@cloud-heavy` 태깅~~ | **완료** (2026-02-18, 기본 94 passed / 3.9m) |
+| ~~9~~ | ~~Vercel 실환경 E2E 과부하/실행 시간 병목~~ | ~~AI/Cloud 실서비스 직접 호출~~ | ~~MSW/계약 테스트 전면 전환 & 실연동 E2E 수동 분리~~ | **완료** (2026-02-21, 모킹 기반 로컬 단위 검증) |
 
 ### 현상 유지 가능 (포트폴리오로 충분)
 
@@ -489,8 +490,8 @@
 
 ---
 
-_분석 기준: 4개 병렬 탐색 에이전트로 src/, cloud-run/, scripts/ 전체 코드 분석_
-_최종 갱신: 2026-02-18 (기능 책임 기반 실동작 재검증, Vercel E2E 저부하 기본값 전환, 95.5%)_
+*분석 기준: 4개 병렬 탐색 에이전트로 src/, cloud-run/, scripts/ 전체 코드 분석*
+*최종 갱신: 2026-02-18 (기능 책임 기반 실동작 재검증, Vercel E2E 저부하 기본값 전환, 95.5%)*
 
 ---
 

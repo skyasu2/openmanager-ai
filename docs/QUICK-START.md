@@ -4,11 +4,11 @@
 > Owner: dev-experience
 > Status: Active
 > Doc type: Tutorial
-> Last reviewed: 2026-02-14
+> Last reviewed: 2026-02-21
 > Canonical: docs/QUICK-START.md
 > Tags: quickstart,onboarding,setup
 >
-> **v8.0.0** | Updated 2026-02-12
+> **v8.0.0** | Updated 2026-02-21
 
 **AI 기반 실시간 서버 모니터링 플랫폼** - 5분 만에 시작하기
 
@@ -81,11 +81,14 @@ npm run dev
 ## 🧪 테스트 실행
 
 ```bash
-# Vercel 환경 실제 테스트 (권장)
-npm run test:vercel:e2e
-
 # 빠른 로컬 테스트
 npm run test:super-fast
+
+# 계약 테스트
+npm run test:contract
+
+# 로컬 핵심 E2E (게스트/대시보드/접근성)
+npm run test:e2e:critical
 
 # 전체 검증
 npm run validate:all

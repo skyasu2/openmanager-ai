@@ -3,7 +3,7 @@
 > Owner: project-lead
 > Status: Active Canonical
 > Doc type: Reference
-> Last reviewed: 2026-02-18
+> Last reviewed: 2026-02-21
 > Tags: dod,checklist,quality,release
 
 **성격**: Living Document — 프로젝트 진화에 따라 갱신.
@@ -42,11 +42,12 @@
 릴리스 전 필수 체크리스트:
 
 - [ ] `npm run validate:all` 통과 (TypeScript + Lint + Test)
-- [ ] `npm run test:e2e:critical` 통과 (smoke, guest, a11y)
+- [ ] `npm run test:gate` 통과 (quick + type-check + lint)
+- [ ] `npm run test:e2e:critical` 통과 (smoke, guest, a11y, dashboard)
 - [ ] CHANGELOG.md 업데이트
 - [ ] 환경변수 동기화 확인 (로컬 ↔ Vercel ↔ Cloud Run)
 - [ ] Health check 정상 (`/api/health`, Cloud Run `/health`)
-- [ ] NLQ 수동 점검 1회: `npm run test:vercel:ai:nlq:manual` (자동 회귀 제외 항목)
+- [ ] AI 변경 시 `npm run test:contract` 통과 (스트림/요청-응답 계약)
 - [ ] Cloud Run 배포 시: `npm run test:cloud:essential` 통과
 
 ---
@@ -96,12 +97,14 @@ AI 생성 코드에 대한 추가 검증:
 npm run type-check          # tsc --noEmit
 npm run lint                # Biome
 npm run test:quick          # 최소 테스트
+npm run test:contract       # API/AI 계약 테스트
 
 # Release 전
+npm run test:gate           # quick + type-check + lint
+npm run test:e2e:critical   # 로컬 E2E 핵심
 npm run validate:all        # 전체 검증
-npm run test:e2e:critical   # E2E 핵심
 ```
 
 ---
 
-_Last Updated: 2026-02-18_
+_Last Updated: 2026-02-21_

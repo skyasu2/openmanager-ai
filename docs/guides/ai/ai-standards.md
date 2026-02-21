@@ -38,7 +38,8 @@ bash scripts/ai/agent-bridge.sh --to claude --mode doc --save-auto "결과 문�
 
 > 이 원칙은 Claude Code 운영 메모리에서 추출한 교차 에이전트 공유 지식입니다.
 
-### 원칙 1: Free Tier 절대 원칙
+### 원칙 1: Free Tier 절대 원칙 (운영/배포 환경 한정)
+- **[중요 분리] 개발 환경(Claude Code, Cursor 등 AI 코딩 도구)은 유료 자원을 활용하되, 배포되어 동작하는 프로덕션(실 서비스) 환경은 100% 무료 티어(₩0)로 운영함을 엄격히 분리하여 인지한다.**
 - 인프라 비용 관련 무료 한도 초과 구성/테스트 생성 **절대 금지**
 - Vercel: Pro 플랜이지만 최소 사용량 유지 (Build Machine: Standard만)
 - Cloud Run: 1 vCPU, 512Mi, `--machine-type` 옵션 사용 금지
@@ -58,6 +59,12 @@ bash scripts/ai/agent-bridge.sh --to claude --mode doc --save-auto "결과 문�
 - Vercel 소비: `src/services/metrics/MetricsProvider.ts`
 - AI Engine 소비: `cloud-run/ai-engine/src/data/precomputed-state.ts`
 - 메트릭 수정 시 **Dashboard + AI 응답 양쪽 확인** 필수
+
+### 원칙 4: 테스트 전략 (무료 티어 사수 및 E2E 축소)
+- 프론트엔드/백엔드 검증은 **MSW(Mock Service Worker)/Vitest 계약 검증 위주**로 진행
+- AI/Cloud-heavy 실추론 기반의 자동화 E2E는 **기본 비활성화** (Pull Request 단계 실행 금지)
+- AI 응답은 스트림 이벤트, 구조(JSON Schema), 상태 전이 중심의 **계약 테스트(Contract Testing)** 도입
+- 수동/야간 스모크 테스트 등 최소한의 단위에서만 실제 외부 서비스(Supabase, Cloud Run, LLM) 연결 허용
 
 ---
 
