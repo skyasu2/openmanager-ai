@@ -67,8 +67,8 @@ function getSupervisorStreamRequestTimeoutMs(): number {
 }
 
 function getSupervisorStreamAbortTimeoutMs(): number {
-  // 짧은 타임아웃으로 인한 잦은 abort/resume churn을 줄이기 위한 스트리밍 전용 상한
-  const STREAM_SOFT_TARGET_TIMEOUT_MS = 25_000;
+  // Cold start(15-40s) 대응: 짧은 타임아웃으로 인한 잦은 abort/resume churn 방지
+  const STREAM_SOFT_TARGET_TIMEOUT_MS = 50_000;
   return Math.max(
     getMaxTimeout('supervisor'),
     Math.min(

@@ -37,6 +37,10 @@ export interface HybridQueryState {
   warning: string | null;
   /** 현재 처리 경과 시간 (ms) */
   processingTime: number;
+  /** Cloud Run AI Engine 웜업 중 여부 */
+  warmingUp: boolean;
+  /** 웜업 예상 대기 시간 (초) */
+  estimatedWaitSeconds: number;
 }
 
 /**

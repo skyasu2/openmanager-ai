@@ -127,6 +127,8 @@ export function useHybridAIQuery(
     clarification: null,
     warning: null,
     processingTime: 0,
+    warmingUp: false,
+    estimatedWaitSeconds: 0,
   });
   const pendingQueryRef = useRef<string | null>(null);
   const pendingAttachmentsRef = useRef<FileAttachment[] | null>(null);
@@ -204,7 +206,12 @@ export function useHybridAIQuery(
             `[HybridAI] Stream completed successfully (trace: ${traceIdRef.current})`
           );
         }
-        setState((prev) => ({ ...prev, isLoading: false }));
+        setState((prev) => ({
+          ...prev,
+          isLoading: false,
+          warmingUp: false,
+          estimatedWaitSeconds: 0,
+        }));
       }
       onStreamFinish?.();
     },
@@ -322,14 +329,15 @@ export function useHybridAIQuery(
       }
       errorHandledRef.current = true;
       const isColdStart = isColdStartRelatedError(errorMessage);
-      const maxRetries = isColdStart ? 2 : streamRetryConfig.maxRetries;
+      // Cold start: 타임아웃 50s 증가로 1회 재시도면 충분
+      const maxRetries = isColdStart ? 1 : streamRetryConfig.maxRetries;
       const canRetry =
         isRetryableError(errorMessage) && retryCountRef.current < maxRetries;
 
       if (canRetry && currentQueryRef.current) {
         retryCountRef.current += 1;
         const delay = isColdStart
-          ? Math.min(10_000, 5_000 * retryCountRef.current) // 5s, 10s
+          ? 3_000 // 3초 후 1회 재시도 (타임아웃 50s로 보상)
           : calculateRetryDelay(retryCountRef.current - 1);
 
         logger.info(
@@ -337,9 +345,14 @@ export function useHybridAIQuery(
             `after ${delay}ms (trace: ${traceIdRef.current})`
         );
 
+        // Cold start 재시도 시 warmingUp 상태 유지, UI 리셋 방지
         setState((prev) => ({
           ...prev,
-          warning: `재연결 중... (${retryCountRef.current}/${maxRetries})`,
+          warning: isColdStart
+            ? 'AI 엔진 웜업 중... 재연결합니다'
+            : `재연결 중... (${retryCountRef.current}/${maxRetries})`,
+          warmingUp: isColdStart,
+          estimatedWaitSeconds: isColdStart ? 60 : 0,
         }));
 
         retryTimeoutRef.current = setTimeout(() => {
@@ -362,6 +375,8 @@ export function useHybridAIQuery(
         error: errorMessage || 'AI 응답 중 오류가 발생했습니다.',
         warning: null,
         processingTime: 0,
+        warmingUp: false,
+        estimatedWaitSeconds: 0,
       }));
     },
   });

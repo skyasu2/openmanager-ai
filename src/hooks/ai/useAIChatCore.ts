@@ -110,6 +110,11 @@ export interface UseAIChatCoreReturn {
   // 🎯 실시간 Agent 상태 (스트리밍 중 표시)
   currentAgentStatus: AgentStatusEventData | null;
   currentHandoff: HandoffEventData | null;
+
+  /** Cloud Run AI Engine 웜업 중 여부 */
+  warmingUp: boolean;
+  /** 웜업 예상 대기 시간 (초) */
+  estimatedWaitSeconds: number;
 }
 
 // ============================================================================
@@ -425,6 +430,10 @@ export function useAIChatCore(
     // 🎯 실시간 Agent 상태
     currentAgentStatus,
     currentHandoff,
+
+    // ⚡ Cloud Run 웜업 상태
+    warmingUp: hybridState.warmingUp,
+    estimatedWaitSeconds: hybridState.estimatedWaitSeconds,
   };
 }
 

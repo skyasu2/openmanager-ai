@@ -113,7 +113,7 @@ export const FREE_TIER_TIMEOUTS = {
 } as const;
 
 export const PRO_TIER_TIMEOUTS = {
-  supervisor: { min: 15000, max: 55000, default: 30000 },
+  supervisor: { min: 30000, max: 55000, default: 50000 },
   'incident-report': { min: 20000, max: 45000, default: 30000 },
   'intelligent-monitoring': { min: 10000, max: 30000, default: 15000 },
   'analyze-server': { min: 8000, max: 25000, default: 12000 },

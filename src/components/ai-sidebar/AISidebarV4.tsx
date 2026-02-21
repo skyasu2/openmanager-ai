@@ -310,6 +310,9 @@ export const AISidebarV4: FC<AISidebarV3Props> = ({
     // 🎯 실시간 Agent 상태
     currentAgentStatus,
     currentHandoff,
+    // ⚡ Cloud Run 웜업 상태
+    warmingUp,
+    estimatedWaitSeconds,
   } = useAIChatCore({
     sessionId: propSessionId,
     onMessageSend,
@@ -405,6 +408,8 @@ export const AISidebarV4: FC<AISidebarV3Props> = ({
           currentHandoff={currentHandoff}
           webSearchEnabled={webSearchEnabled}
           onToggleWebSearch={toggleWebSearch}
+          warmingUp={warmingUp}
+          estimatedWaitSeconds={estimatedWaitSeconds}
         />
       );
     }

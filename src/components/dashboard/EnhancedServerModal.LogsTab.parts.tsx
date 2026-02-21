@@ -139,11 +139,11 @@ export function LegacyLogView({
           <EmptyState
             icon={activeView === 'syslog' ? 'log' : 'check'}
             title={
-              activeView === 'syslog' ? 'Loading logs...' : 'No system alerts'
+              activeView === 'syslog' ? 'No logs available' : 'No system alerts'
             }
             description={
               activeView === 'syslog'
-                ? 'Fetching logs matching current server state'
+                ? 'No OTel structured logs found for this server in the current time slot'
                 : 'All system metrics are within normal range'
             }
           />

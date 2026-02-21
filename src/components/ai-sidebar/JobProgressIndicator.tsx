@@ -24,7 +24,7 @@ import {
   Sparkles,
   Wifi,
 } from 'lucide-react';
-import { memo, useEffect, useState } from 'react';
+import { memo, useEffect, useRef, useState } from 'react';
 import type { AsyncQueryProgress } from '@/hooks/ai/useAsyncAIQuery';
 
 // ============================================================================
@@ -133,17 +133,28 @@ const DEFAULT_CONFIG: StageConfig = {
 export const JobProgressIndicator = memo<JobProgressIndicatorProps>(
   ({ progress, isLoading, jobId, onCancel }) => {
     const [elapsedTime, setElapsedTime] = useState(0);
+    // useRef로 시작 시간 저장 — isLoading 토글 시에도 timer 유지
+    const startTimeRef = useRef<number | null>(null);
 
-    // 경과 시간 타이머
+    // 경과 시간 타이머 (cold start 재시도 시 리셋 방지)
     useEffect(() => {
       if (!isLoading) {
+        startTimeRef.current = null;
         setElapsedTime(0);
         return;
       }
 
-      const startTime = Date.now();
+      // 이미 시작된 타이머가 있으면 유지 (재시도 시 리셋 방지)
+      if (!startTimeRef.current) {
+        startTimeRef.current = Date.now();
+      }
+
       const interval = setInterval(() => {
-        setElapsedTime(Math.floor((Date.now() - startTime) / 1000));
+        if (startTimeRef.current) {
+          setElapsedTime(
+            Math.floor((Date.now() - startTimeRef.current) / 1000)
+          );
+        }
       }, 1000);
 
       return () => clearInterval(interval);
@@ -259,7 +270,8 @@ JobProgressIndicator.displayName = 'JobProgressIndicator';
 function getStageDescription(_stage: string, progress: number): string {
   if (progress < 20) return '에이전트 시스템 준비 중';
   if (progress < 50) return '최적의 처리 방법 결정 중';
-  if (progress < 90) return 'Cloud Run AI Engine에서 처리 중';
+  if (progress < 90)
+    return 'Cloud Run AI Engine 처리 중 (웜업 시 최대 1분 소요)';
   return '결과 정리 및 반환 준비';
 }
 

@@ -18,7 +18,8 @@ import {
   isModelConfigRelatedError,
 } from '@/lib/ai/constants/stream-errors';
 
-const RETRY_SCHEDULE = [5, 10, 15]; // seconds per attempt
+// Cold start 타임아웃 50s 증가로 1회 자동 재시도만 수행
+const RETRY_SCHEDULE = [15]; // 15초 후 1회 재시도
 const MAX_AUTO_RETRIES = RETRY_SCHEDULE.length;
 
 export interface ColdStartErrorBannerProps {
@@ -105,8 +106,8 @@ export function ColdStartErrorBanner({
               ⚡ AI 엔진이 준비 중입니다
             </p>
             <p className="mt-1 text-xs text-orange-700">
-              Cloud Run AI 엔진이 대기 모드에서 깨어나고 있습니다. 일반적으로
-              5-10초 소요됩니다.
+              Cloud Run AI 엔진이 대기 모드에서 깨어나고 있습니다. 최대 1분
+              소요될 수 있습니다.
             </p>
             {isAutoRetrying && countdown > 0 && (
               <div className="mt-2 flex items-center gap-2">

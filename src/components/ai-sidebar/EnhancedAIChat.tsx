@@ -19,6 +19,7 @@ import { ChatMessageList } from './ChatMessageList';
 import { ClarificationDialog } from './ClarificationDialog';
 import { ColdStartErrorBanner } from './chat/ColdStartErrorBanner';
 import { JobProgressIndicator } from './JobProgressIndicator';
+import { StreamingWarmupIndicator } from './StreamingWarmupIndicator';
 import { useChatActions } from './useChatActions';
 
 /**
@@ -72,6 +73,10 @@ interface EnhancedAIChatProps {
   currentHandoff?: HandoffEventData | null;
   webSearchEnabled?: boolean;
   onToggleWebSearch?: () => void;
+  /** Cloud Run AI Engine 웜업 중 여부 */
+  warmingUp?: boolean;
+  /** 웜업 예상 대기 시간 (초) */
+  estimatedWaitSeconds?: number;
 }
 
 /**
@@ -108,6 +113,8 @@ export const EnhancedAIChat = memo(function EnhancedAIChat({
   currentHandoff,
   webSearchEnabled,
   onToggleWebSearch,
+  warmingUp,
+  estimatedWaitSeconds,
 }: EnhancedAIChatProps) {
   const {
     scrollContainerRef,
@@ -180,6 +187,13 @@ export const EnhancedAIChat = memo(function EnhancedAIChat({
             onDismiss={onDismissClarification}
           />
         )}
+
+      {/* Streaming 모드 웜업 인디케이터 */}
+      {queryMode === 'streaming' && warmingUp && isGenerating && (
+        <StreamingWarmupIndicator
+          estimatedWaitSeconds={estimatedWaitSeconds ?? 60}
+        />
+      )}
 
       {/* Job Queue 진행률 */}
       {queryMode === 'job-queue' && isGenerating && (
