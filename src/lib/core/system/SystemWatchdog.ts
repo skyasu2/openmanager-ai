@@ -203,7 +203,7 @@ export class SystemWatchdog {
     // 성능 저하 감지
     if (this.metrics.performanceScore < 60) {
       this.addAlert(
-        'performance',
+        'performance-degradation',
         `시스템 성능 저하 감지 (${this.metrics.performanceScore.toFixed(1)}%)`
       );
     }

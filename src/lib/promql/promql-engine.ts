@@ -150,7 +150,8 @@ async function extractSamplesFromOTel(
 async function computeRate(
   hourlyDataMap: Map<number, OTelHourlyFile>,
   parsed: ParsedQuery,
-  currentHour: number
+  currentHour: number,
+  slotIndex?: number
 ): Promise<PromQLSample[]> {
   // Parse window (e.g., "1h" -> 1 hour)
   const windowMatch = parsed.rangeWindow?.match(/^(\d+)h$/);
@@ -162,8 +163,8 @@ async function computeRate(
 
   if (!currentData || !prevData) return [];
 
-  const currentSamples = await extractSamplesFromOTel(currentData, parsed, 3);
-  const prevSamples = await extractSamplesFromOTel(prevData, parsed, 3);
+  const currentSamples = await extractSamplesFromOTel(currentData, parsed, slotIndex);
+  const prevSamples = await extractSamplesFromOTel(prevData, parsed, slotIndex);
 
   const prevMap = new Map<string, number>();
   for (const s of prevSamples) {
@@ -212,7 +213,7 @@ export async function executePromQL(
     case 'rate': {
       const samples =
         hourlyFileMap && currentHour !== undefined
-          ? await computeRate(hourlyFileMap, parsed, currentHour)
+          ? await computeRate(hourlyFileMap, parsed, currentHour, slotIndex)
           : [];
       return { resultType: 'vector', result: samples };
     }

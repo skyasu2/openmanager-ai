@@ -161,7 +161,7 @@ export function AnomalyFeed({
   });
 
   const anomalies: AnomalyData[] = data?.anomalies || [];
-  const sortedAnomalies = anomalies
+  const sortedAnomalies = [...anomalies]
     .sort(
       (a: AnomalyData, b: AnomalyData) =>
         new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()

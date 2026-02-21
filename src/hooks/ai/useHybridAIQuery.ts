@@ -210,23 +210,17 @@ export function useHybridAIQuery(
           logger.warn(
             `⚠️ [HybridAI] Slow processing: ${warningData.message} (${warningData.elapsed}ms)`
           );
-          setState((prev) => {
-            if (prev.warning) return prev;
-            return {
-              ...prev,
-              warning: warningData.message,
-              processingTime: warningData.elapsed,
-            };
-          });
+          setState((prev) => ({
+            ...prev,
+            warning: warningData.message,
+            processingTime: warningData.elapsed,
+          }));
         } else {
           logger.warn(`⚠️ [HybridAI] Stream error: ${warningData.message}`);
-          setState((prev) => {
-            if (prev.warning) return prev;
-            return {
-              ...prev,
-              warning: warningData.message,
-            };
-          });
+          setState((prev) => ({
+            ...prev,
+            warning: warningData.message,
+          }));
         }
         return;
       }

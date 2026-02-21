@@ -162,6 +162,8 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
           jobId: null,
           isLoading: true,
           error: null,
+          warning: null,
+          processingTime: 0,
           clarification: null,
         }));
 
@@ -190,6 +192,8 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
           jobId: null,
           isLoading: true,
           error: null,
+          warning: null,
+          processingTime: 0,
           clarification: null,
         }));
 

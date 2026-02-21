@@ -101,6 +101,7 @@ export class UnifiedCacheService {
     }
     this.cache.clear();
     this.patterns.clear();
+    this.inflight.clear();
   }
 
   static getInstance(): UnifiedCacheService {
