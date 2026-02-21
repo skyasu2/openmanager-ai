@@ -7,6 +7,7 @@
  */
 
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { getResourceCatalog } from '@/data/otel-data';
 import type {
   OTelHourlyFile,
   OTelHourlySlot,
@@ -72,8 +73,10 @@ const MOCK_RESOURCE_CATALOG: OTelResourceCatalog = {
 };
 
 vi.mock('@/data/otel-data', () => ({
-  getResourceCatalog: () => MOCK_RESOURCE_CATALOG,
+  getResourceCatalog: vi.fn(async () => MOCK_RESOURCE_CATALOG),
 }));
+
+const mockedGetResourceCatalog = vi.mocked(getResourceCatalog);
 
 // ============================================================================
 // Test Fixture Helpers
@@ -223,6 +226,8 @@ let TEST_OTEL_DATA: OTelHourlyFile;
 
 beforeEach(() => {
   TEST_OTEL_DATA = makeOTelHourlyFile();
+  mockedGetResourceCatalog.mockReset();
+  mockedGetResourceCatalog.mockResolvedValue(MOCK_RESOURCE_CATALOG);
 });
 
 // ============================================================================
@@ -230,6 +235,23 @@ beforeEach(() => {
 // ============================================================================
 
 describe('executePromQL - Edge Cases', () => {
+  it('resource catalog 일시 실패(null) 후 다음 호출에서 재시도하여 복구된다', async () => {
+    mockedGetResourceCatalog.mockResolvedValueOnce(null);
+
+    const first = await executePromQL(
+      'node_cpu_utilization_ratio{server_type="web"}',
+      TEST_OTEL_DATA
+    );
+    expect(first.result).toHaveLength(0);
+
+    const second = await executePromQL(
+      'node_cpu_utilization_ratio{server_type="web"}',
+      TEST_OTEL_DATA
+    );
+    expect(second.result).toHaveLength(2);
+    expect(mockedGetResourceCatalog).toHaveBeenCalledTimes(2);
+  });
+
   it('빈 slots -> 빈 결과', async () => {
     const emptyData: OTelHourlyFile = {
       schemaVersion: '1.0.0',

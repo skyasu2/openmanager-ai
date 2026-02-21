@@ -71,9 +71,9 @@ async function ensureLabelsCache(): Promise<
 
     labelsCache = cache;
     return cache;
-  })().catch((err) => {
+  })().finally(() => {
+    // resolve/reject 이후 in-flight 참조 정리 (성공 시 labelsCache가 SSOT)
     labelsCachePromise = null;
-    throw err;
   });
 
   return labelsCachePromise;
