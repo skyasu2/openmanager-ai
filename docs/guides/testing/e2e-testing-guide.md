@@ -2,15 +2,13 @@
 
 > Playwright 기반 End-to-End 테스트 범위와 실행/운영 가이드
 > Owner: documentation
-> Status: Active
+> Status: Active Canonical
 > Doc type: How-to
-> Last reviewed: 2026-02-14
+> Last reviewed: 2026-02-21
 > Canonical: docs/guides/testing/e2e-testing-guide.md
-> Tags: testing,e2e,playwright,cicd
->
-> **Updated**: 2026-01-18
+> Tags: testing,e2e,playwright,playwright-mcp,cicd
 
-**목차**: [개요](#-개요) | [테스트 범위](#-테스트-범위) | [실행 방법](#-테스트-실행-방법) | [결과 분석](#-테스트-결과-분석) | [설정](#-테스트-설정) | [환경별 전략](#-환경별-테스트-전략) | [디버깅](#-디버깅-가이드) | [CI/CD](#-cicd-통합)
+**목차**: [개요](#-개요) | [테스트 범위](#-테스트-범위) | [Playwright MCP 테스트](#-playwright-mcp-인터랙티브-e2e-테스트) | [실행 방법](#-테스트-실행-방법) | [결과 분석](#-테스트-결과-분석) | [설정](#-테스트-설정) | [환경별 전략](#-환경별-테스트-전략) | [디버깅](#-디버깅-가이드) | [CI/CD](#-cicd-통합)
 
 ---
 
@@ -18,10 +16,8 @@
 
 OpenManager AI 프론트엔드의 종합적인 End-to-End 테스트 시스템입니다. 사용자 플로우부터 AI 어시스턴트 기능까지 전체 애플리케이션의 품질을 보장합니다.
 
-> ⚠️ **2025-11 업데이트**  
-> v5.80.0에서 관리자 모드 및 /admin 페이지가 완전히 제거되었습니다.  
-> 관리자 전용 E2E 시나리오(예: `admin-mode-improved.spec.ts`, `ai-assistant-advanced-test.spec.ts`, `vercel-guest-admin-full-check.spec.ts`)는 더 이상 실행되지 않으며 Playwright 파일 상단에서 자동으로 `skip` 처리됩니다.  
-> 새로운 대시보드/게스트 중심 플로우가 정의되기 전까지는 `npm run test:e2e:*` 명령이 관리자 기능을 검증하지 않습니다.
+> ⚠️ **2025-11**: v5.80.0에서 관리자 모드 및 /admin 페이지 제거. 관리자 전용 E2E 시나리오는 `skip` 처리.
+> ✅ **2026-02**: Playwright MCP 기반 Production E2E 테스트 프로세스 확립. 게스트/대시보드/AI 중심 플로우 5개 시나리오 정의.
 
 ## 🎯 테스트 범위
 
@@ -56,6 +52,124 @@ OpenManager AI 프론트엔드의 종합적인 End-to-End 테스트 시스템입
 - **스크린샷 비교**: 메인 대시보드, AI 사이드바, 서버 카드
 - **반응형 디자인**: 데스크톱, 태블릿, 모바일 뷰
 - **다크 모드**: 테마 전환 후 UI 일관성
+
+## 🎭 Playwright MCP 인터랙티브 E2E 테스트
+
+> **2026-02-21 추가**: Claude Code의 Playwright MCP 도구를 사용한 실시간 브라우저 기반 Production E2E 검증.
+> 전통적 spec 파일 없이 AI Agent가 직접 브라우저를 조작하고 스크린샷으로 검증.
+
+### 용도와 차이점
+
+| 항목 | Playwright spec (기존) | Playwright MCP (신규) |
+|------|----------------------|---------------------|
+| 실행 방식 | CLI (`npx playwright test`) | Claude Code MCP 도구 호출 |
+| 대상 환경 | localhost / CI | **Production URL 직접** |
+| 자동화 | spec 파일 기반 자동화 | AI Agent 대화형 실행 |
+| 결과물 | HTML/JSON 리포트 | 스크린샷 + 결과 요약 테이블 |
+| 적합 시점 | 정기 CI/CD, 회귀 테스트 | 코드 리뷰 후 배포 전 수동 검증, 장애 조사 |
+
+### 대상 URL
+
+```
+Primary:  https://openmanager-ai.vercel.app
+Fallback: https://openmanager-vibe-v5.vercel.app  (Security Checkpoint 시)
+```
+
+### 테스트 시나리오 (5개)
+
+#### Pre-flight: 사이트 접근 확인
+1. `browser_navigate` → Production URL 접속
+2. `browser_snapshot` → Vercel Security Checkpoint 여부 확인
+3. Checkpoint 발생 시 → Fallback URL 전환
+4. `browser_evaluate` → `/api/health` fetch로 API 상태 (DB, Cache, AI) 확인
+
+#### P0-1: Guest 로그인 → 대시보드 (GATE)
+1. `/login` 이동 → "게스트 모드로 체험하기" 클릭
+2. `/dashboard` 이동 → 서버 카드/상태 요약 렌더링 대기 (최대 40초)
+3. `browser_console_messages(level: error)` → 치명적 JS 에러 확인
+4. **이 시나리오 FAIL 시 P1 이하 스킵**
+
+검증 기준:
+- 서버 15대 카드 렌더링
+- 상태 요약 바 (온라인/경고/위험/오프라인) 표시
+- 시스템 리소스 (CPU/Memory/Disk) 게이지 표시
+
+#### P1-1: 서버 카드 + 상세 모달
+1. 서버 카드 클릭 (`aria-label*="서버 상세 보기"`)
+2. 모달 오픈 확인 → "종합 상황" 탭 (기본)
+3. "성능 분석" 탭 클릭 → 실시간 메트릭 차트 (CPU/Memory/Disk/Network) 확인
+4. ESC 키로 모달 닫기
+
+#### P1-2: AI 사이드바 + 질문/응답
+1. "AI 어시스턴트 열기" 버튼 클릭
+2. 텍스트 입력 (`aria-label="AI 질문 입력"`)에 질문 입력
+3. "메시지 전송" 버튼 클릭
+4. 명확화 다이얼로그 출현 시 → 첫 번째 옵션 선택
+5. AI 응답 수신 확인 (최대 120초 폴링)
+6. 사이드바 닫기
+
+#### P2-1: AI 풀스크린 페이지
+1. `/dashboard/ai-assistant` 직접 이동
+2. 기능 탭 전환: "장애 보고서" → "이상감지/예측"
+3. "새 대화" 버튼 동작 확인
+
+#### P2-2: 404/에러 처리
+1. 존재하지 않는 URL → 커스텀 404 페이지 렌더 (크래시 없음)
+2. `/auth/error` → 에러 페이지 렌더 (해결 방법 안내)
+3. `/login` 복귀 → 정상 동작 확인
+
+### 핵심 셀렉터
+
+| 요소 | 셀렉터 | 비고 |
+|------|--------|------|
+| AI 어시스턴트 버튼 | `button[name="AI 어시스턴트 열기"]` | 대시보드 헤더 |
+| AI 사이드바 닫기 | `button[name="AI 어시스턴트 사이드바 닫기"]` | 사이드바 내부 |
+| 채팅 입력 | `textbox[name="AI 질문 입력"]` | `placeholder="메시지를 입력하세요..."` |
+| 전송 버튼 | `button[name="메시지 전송"]` | 텍스트 입력 시 활성화 |
+| 서버 카드 | `button[name*="서버 상세 보기"]` | 서버명 포함 |
+| 게스트 로그인 | `button[name="게스트 모드로 체험하기"]` | `/login` 페이지 |
+| 성능 분석 탭 | `tab[name="성능 분석"]` | 서버 모달 내부 |
+| AI 기능 탭 (보고서) | `button[name="장애 보고서 Reporter Agent"]` | AI 풀스크린 좌측 |
+| AI 기능 탭 (예측) | `button[name="이상감지/예측 Analyst Agent"]` | AI 풀스크린 좌측 |
+
+### MCP 도구 활용 패턴
+
+```
+# 1. 페이지 이동 + 스냅샷
+browser_navigate → URL
+browser_snapshot → 접근성 트리로 요소 ref 획득
+
+# 2. 상호작용
+browser_click(ref) → 클릭
+browser_type(ref, text) → 텍스트 입력
+browser_press_key("Escape") → 키보드 이벤트
+
+# 3. 검증
+browser_take_screenshot(filename) → 시각적 증거
+browser_console_messages(level: error) → JS 에러 확인
+browser_network_requests(includeStatic: false) → 5xx 에러 확인
+browser_evaluate(function) → API Health check 등 JS 실행
+browser_wait_for(time/text) → 렌더링 대기
+```
+
+### 결과 리포트 형식
+
+| # | 시나리오 | 결과 | 비고 |
+|---|---------|:----:|------|
+| Pre-flight | 사이트 접근 + API Health | PASS/FAIL | 버전, 서비스 상태 |
+| P0-1 | Guest 로그인 → 대시보드 | PASS/FAIL | 서버 수, 콘솔 에러 수 |
+| P1-1 | 서버 카드 → 상세 모달 | PASS/FAIL/SKIP | 탭 전환, ESC 닫기 |
+| P1-2 | AI 사이드바 + 질문/응답 | PASS/FAIL/SKIP | 응답 수신 여부 |
+| P2-1 | AI 풀스크린 페이지 | PASS/FAIL/SKIP | 탭 전환, 새 대화 |
+| P2-2 | 404/에러 처리 | PASS/FAIL/SKIP | 크래시 없음 확인 |
+
+### 최근 실행 이력
+
+| 날짜 | 버전 | 결과 | 비고 |
+|------|------|------|------|
+| 2026-02-21 | v8.1.0 | **5/5 PASS** | 4~9차 코드 리뷰 후 회귀 검증. Cloud AI 빈 응답(비차단) |
+
+---
 
 ## 🚀 테스트 실행 방법
 

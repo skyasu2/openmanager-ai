@@ -292,6 +292,37 @@ async function* streamSingleAgent(
       yield { type: 'text_delta', data: textPart };
     }
 
+    // Resolve steps/usage early — needed to extract finalAnswer before empty-text check
+    const stepsAndUsage = await Promise.all([result.steps, result.usage]).catch((stepsError) => {
+      logger.warn('[SupervisorStream] Steps/usage unavailable:', stepsError instanceof Error ? stepsError.message : String(stepsError));
+      return undefined;
+    });
+    const steps = stepsAndUsage?.[0] ?? [];
+    const usage = stepsAndUsage?.[1];
+
+    // Recover response from finalAnswer tool result when textStream was empty
+    // (LLM may produce no text when it only calls tools and terminates via finalAnswer)
+    if (fullText.trim().length === 0) {
+      for (const step of steps) {
+        if (fullText.trim().length > 0) break;
+        if (step.toolResults) {
+          for (const tr of step.toolResults) {
+            if (tr.toolName === 'finalAnswer') {
+              const trOutput = extractToolResultOutput(tr);
+              if (trOutput && typeof trOutput === 'object') {
+                const finalResult = trOutput as Record<string, unknown>;
+                if ('answer' in finalResult && typeof finalResult.answer === 'string' && finalResult.answer.trim().length > 0) {
+                  fullText = finalResult.answer;
+                  yield { type: 'text_delta', data: fullText };
+                  logger.info('[SupervisorStream] Recovered response from finalAnswer tool result');
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
     if (fullText.trim().length === 0) {
       const fallbackText =
         '응답 본문이 비어 있어 요약 결과를 생성하지 못했습니다. 질문을 조금 더 구체적으로 다시 시도해 주세요.';
@@ -319,13 +350,6 @@ async function* streamSingleAgent(
         },
       };
     }
-
-    const stepsAndUsage = await Promise.all([result.steps, result.usage]).catch((stepsError) => {
-      logger.warn('[SupervisorStream] Steps/usage unavailable:', stepsError instanceof Error ? stepsError.message : String(stepsError));
-      return undefined;
-    });
-    const steps = stepsAndUsage?.[0] ?? [];
-    const usage = stepsAndUsage?.[1];
 
     const ragSources: RagSource[] = [];
 
