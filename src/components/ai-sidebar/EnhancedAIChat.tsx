@@ -230,8 +230,8 @@ export const EnhancedAIChat = memo(function EnhancedAIChat({
           </div>
         )}
 
-      {/* 에러 표시 */}
-      {error && (
+      {/* 에러 표시 - warmup 중에는 숨김 (warmup indicator가 우선) */}
+      {error && !(queryMode === 'streaming' && warmingUp && isGenerating) && (
         <ColdStartErrorBanner
           error={error}
           onRetry={onRetry}

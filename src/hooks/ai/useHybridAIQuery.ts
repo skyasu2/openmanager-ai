@@ -303,6 +303,14 @@ export function useHybridAIQuery(
         }
         return;
       }
+      // 첫 실제 데이터 수신 시 warmup 해제
+      if (state.warmingUp) {
+        setState((prev) => ({
+          ...prev,
+          warmingUp: false,
+          estimatedWaitSeconds: 0,
+        }));
+      }
       onData?.(part);
     },
     onError: async (error) => {

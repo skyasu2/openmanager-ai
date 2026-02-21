@@ -87,10 +87,7 @@ function getOTelResourceCatalog(): OTelResourceCatalog | null {
   if (_resourceCatalog) return _resourceCatalog;
   const paths = [
     join(__dirname, '../../data/otel-data/resource-catalog.json'),
-    join(__dirname, '../../data/otel-processed/resource-catalog.json'),
     join(process.cwd(), 'data/otel-data/resource-catalog.json'),
-    join(process.cwd(), 'data/otel-processed/resource-catalog.json'),
-    join(process.cwd(), 'cloud-run/ai-engine/data/otel-processed/resource-catalog.json'),
   ];
   for (const p of paths) {
     if (existsSync(p)) {
@@ -111,10 +108,7 @@ function getOTelPaths(hour: number): string[] {
   const paddedHour = hour.toString().padStart(2, '0');
   return [
     join(__dirname, '../../data/otel-data/hourly', `hour-${paddedHour}.json`),
-    join(__dirname, '../../data/otel-processed/hourly', `hour-${paddedHour}.json`),
     join(process.cwd(), 'data/otel-data/hourly', `hour-${paddedHour}.json`),
-    join(process.cwd(), 'data/otel-processed/hourly', `hour-${paddedHour}.json`),
-    join(process.cwd(), 'cloud-run/ai-engine/data/otel-processed/hourly', `hour-${paddedHour}.json`),
   ];
 }
 

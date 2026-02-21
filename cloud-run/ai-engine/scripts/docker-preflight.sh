@@ -46,12 +46,8 @@ ensure_build_assets() {
       cp "${ENGINE_DIR}/../../public/data/otel-data/resource-catalog.json" "${ENGINE_DIR}/data/otel-data/"
       cp "${ENGINE_DIR}/../../public/data/otel-data/hourly/"*.json "${ENGINE_DIR}/data/otel-data/hourly/"
       log "synced data/otel-data from public/data/otel-data"
-    elif [ -f "${ENGINE_DIR}/data/otel-processed/resource-catalog.json" ]; then
-      cp "${ENGINE_DIR}/data/otel-processed/resource-catalog.json" "${ENGINE_DIR}/data/otel-data/"
-      cp "${ENGINE_DIR}/data/otel-processed/hourly/"*.json "${ENGINE_DIR}/data/otel-data/hourly/"
-      log "synced data/otel-data from data/otel-processed (fallback)"
     else
-      log "missing OTel data source (public/data/otel-data and data/otel-processed not found)"
+      log "missing OTel data source (public/data/otel-data not found)"
       exit 1
     fi
   fi

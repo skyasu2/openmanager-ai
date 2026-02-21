@@ -103,7 +103,7 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
       // 첫 요청 시 AI 엔진을 미리 깨워 cold start 시간 단축
       if (!isRetry) {
         try {
-          void fetch('/api/ai/wake-up', { method: 'HEAD' }).catch(() => {});
+          void fetch('/api/ai/wake-up', { method: 'POST' }).catch(() => {});
         } catch {
           // fire-and-forget: 실패해도 무시
         }
@@ -207,8 +207,8 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
           warning: null,
           processingTime: 0,
           clarification: null,
-          warmingUp: false,
-          estimatedWaitSeconds: 0,
+          warmingUp: true,
+          estimatedWaitSeconds: 60,
         }));
 
         // P1-11 Fix: flushSync 제거 — React 19 concurrent mode 충돌 방지
