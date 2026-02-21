@@ -1,7 +1,4 @@
-import {
-  decrementNamespaceCount,
-  type UnifiedCacheStatsState,
-} from './unified-cache.stats';
+import type { UnifiedCacheStatsState } from './unified-cache.stats';
 import type { CacheItem } from './unified-cache.types';
 
 function buildGlobRegex(pattern: string): RegExp {
@@ -25,11 +22,6 @@ export function evictLeastRecentlyUsed(
   const firstKey = cache.keys().next().value;
   if (firstKey === undefined) return;
 
-  const item = cache.get(firstKey);
-  if (item?.namespace) {
-    decrementNamespaceCount(stats, item.namespace);
-  }
-
   cache.delete(firstKey);
   stats.deletes++;
 }
@@ -44,9 +36,6 @@ export function cleanupExpiredEntries(
   for (const [key, item] of cache.entries()) {
     if (item.expires <= now) {
       expiredKeys.push(key);
-      if (item.namespace) {
-        decrementNamespaceCount(stats, item.namespace);
-      }
     }
   }
 
@@ -79,10 +68,6 @@ export function invalidateCacheEntries(
   }
 
   for (const key of keysToDelete) {
-    const item = cache.get(key);
-    if (item?.namespace) {
-      decrementNamespaceCount(stats, item.namespace);
-    }
     cache.delete(key);
     stats.deletes++;
   }

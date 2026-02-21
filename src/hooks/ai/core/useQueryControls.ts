@@ -82,7 +82,7 @@ export function useQueryControls(deps: QueryControlDeps) {
     }
 
     if (currentModeRef.current === 'job-queue') {
-      void asyncQuery.cancel();
+      void asyncQuery.cancel().catch(() => {});
     } else {
       onUserAbort?.();
       stopChat();

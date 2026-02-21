@@ -282,7 +282,11 @@ export class SystemWatchdog {
    * 메트릭스 조회
    */
   getMetrics(): SystemMetrics {
-    return { ...this.metrics };
+    return {
+      ...this.metrics,
+      cpu: [...this.metrics.cpu],
+      memory: [...this.metrics.memory],
+    };
   }
 
   /**

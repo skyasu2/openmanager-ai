@@ -30,7 +30,6 @@ import {
 import {
   buildCacheStats,
   createInitialStatsState,
-  incrementNamespaceCount,
   type UnifiedCacheStatsState,
 } from './unified-cache.stats';
 import {
@@ -212,11 +211,6 @@ export class UnifiedCacheService {
       metadata,
     });
 
-    // 네임스페이스별 통계 업데이트
-    const namespaceKey = String(namespace);
-    if (!isOverwrite) {
-      incrementNamespaceCount(this.stats, namespaceKey);
-    }
     this.stats.sets++;
 
     // 패턴 학습 (AI 쿼리인 경우)

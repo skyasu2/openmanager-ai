@@ -39,6 +39,7 @@ export function useServerQuery(options: UseServerQueryOptions = {}) {
     refetchInterval: () => getMsUntilNextServerDataSlot(),
     staleTime: SERVER_DATA_STALE_TIME_MS,
     gcTime: SERVER_DATA_GC_TIME_MS,
+    refetchIntervalInBackground: false, // 백그라운드 탭 폴링 비활성화
     refetchOnWindowFocus: false, // 탭 포커스 시 중복 refetch 방지
     refetchOnReconnect: true, // 네트워크 복구 시 최신 상태 동기화
     retry: 2, // 최대 2회 재시도

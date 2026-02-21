@@ -37,7 +37,7 @@ export const ServerConfigSchema = z.object({
     enabled: z.boolean().default(true),
     dataSource: z.enum(['basic', 'expanded', 'custom']).default('custom'), // 🎯 server-data-loader 사용
     autoRotation: z.boolean().default(false),
-    updateInterval: z.number().min(1000).default(600000), // 10분 (JSON 데이터 10분 간격에 맞춤)
+    updateInterval: z.number().min(1000).default(600000), // server-data-polling.ts SERVER_DATA_INTERVAL_MS와 동기화 (10분)
   }),
 
   // API 응답 설정
@@ -51,7 +51,7 @@ export const ServerConfigSchema = z.object({
   // 성능 최적화 설정
   performance: z.object({
     enableCache: z.boolean().default(true),
-    cacheTtlMs: z.number().min(1000).default(600000), // 10분 (JSON 데이터 10분 간격에 맞춤)
+    cacheTtlMs: z.number().min(1000).default(600000), // server-data-polling.ts SERVER_DATA_INTERVAL_MS와 동기화 (10분)
     batchSize: safeInt().min(1).max(1000).default(100),
     maxConcurrentRequests: safeInt().min(1).max(50).default(10),
   }),
@@ -131,7 +131,7 @@ export class SystemConfigurationManager {
           enabled: true,
           dataSource: 'custom',
           autoRotation: false,
-          updateInterval: 600000,
+          updateInterval: 600000, // server-data-polling.ts SERVER_DATA_INTERVAL_MS와 동기화
         },
         api: {
           defaultPageSize: 10,
@@ -141,7 +141,7 @@ export class SystemConfigurationManager {
         },
         performance: {
           enableCache: true,
-          cacheTtlMs: 600000,
+          cacheTtlMs: 600000, // server-data-polling.ts SERVER_DATA_INTERVAL_MS와 동기화
           batchSize: 100,
           maxConcurrentRequests: 10,
         },

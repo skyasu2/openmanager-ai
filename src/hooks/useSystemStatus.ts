@@ -147,6 +147,7 @@ async function performFetch(options: { force?: boolean } = {}) {
   const controller = new AbortController();
   systemStatusStore.abortController = controller;
 
+  let thisRequest: Promise<void> | null = null;
   const request = (async () => {
     try {
       const response = await fetch('/api/system', {
@@ -184,10 +185,13 @@ async function performFetch(options: { force?: boolean } = {}) {
         systemStatusStore.abortController = null;
       }
       systemStatusStore.lastFetchAt = Date.now();
-      systemStatusStore.inFlightFetch = null;
+      if (systemStatusStore.inFlightFetch === thisRequest) {
+        systemStatusStore.inFlightFetch = null;
+      }
     }
   })();
 
+  thisRequest = request;
   systemStatusStore.inFlightFetch = request;
   return request;
 }
@@ -278,7 +282,7 @@ export function useSystemStatus(): UseSystemStatusReturn {
 
   const startSystem = useCallback(async () => {
     try {
-      updateSnapshot({ error: null });
+      updateSnapshot({ error: null, isLoading: true });
 
       const response = await fetch('/api/system', {
         method: 'POST',

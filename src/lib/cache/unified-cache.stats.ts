@@ -18,23 +18,6 @@ export function createInitialStatsState(): UnifiedCacheStatsState {
   };
 }
 
-export function incrementNamespaceCount(
-  stats: UnifiedCacheStatsState,
-  namespace: string
-): void {
-  stats.namespaces[namespace] = (stats.namespaces[namespace] || 0) + 1;
-}
-
-export function decrementNamespaceCount(
-  stats: UnifiedCacheStatsState,
-  namespace: string
-): void {
-  const currentCount = stats.namespaces[namespace];
-  if (currentCount !== undefined && currentCount > 0) {
-    stats.namespaces[namespace] = currentCount - 1;
-  }
-}
-
 export function buildCacheStats(
   stats: UnifiedCacheStatsState,
   cache: Map<string, CacheItem<unknown>>,

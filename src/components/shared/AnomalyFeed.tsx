@@ -51,6 +51,7 @@ interface AnomalyFeedProps {
   className?: string;
   maxItems?: number;
   autoRefresh?: boolean;
+  /** 갱신 주기 (ms). 최소 SERVER_DATA_INTERVAL_MS(10분)로 클램핑됨. 0이면 슬롯 경계 정렬 폴링. */
   refreshInterval?: number;
   showDetails?: boolean;
 }
@@ -126,6 +127,16 @@ export function AnomalyFeed({
   refreshInterval = 0, // 0이면 10분 슬롯 경계 정렬 폴링
   showDetails: _showDetails = true,
 }: AnomalyFeedProps) {
+  if (
+    process.env.NODE_ENV !== 'production' &&
+    refreshInterval > 0 &&
+    refreshInterval < SERVER_DATA_INTERVAL_MS
+  ) {
+    console.warn(
+      `[AnomalyFeed] refreshInterval(${refreshInterval}ms)이 최소값(${SERVER_DATA_INTERVAL_MS}ms)보다 작아 클램핑됩니다.`
+    );
+  }
+
   // Data fetching using React Query
   const { data, error, isLoading } = useQuery({
     queryKey: ['anomalies'],
