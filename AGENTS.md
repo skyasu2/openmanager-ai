@@ -1,16 +1,15 @@
 # AGENTS.md - OpenManager Codex 실행 규칙
 
 <!-- Version: 6.0.0 -->
-**이 문서는 OpenManager AI 저장소에서 Codex 실행 규칙만 정의합니다.**
+**이 문서는 OpenManager AI 프로젝트 내에서 Codex 에이전트 전용 실행 규칙만 정의합니다.**
 
-## 1) 문서 범위 (SSOT)
-- 이 파일은 `Codex` 기준 실행 규칙의 SSOT입니다.
+## 1) 정책 참조 구조 (SSOT)
+- **모든 AI 에이전트 공통 규칙의 SSOT는 `docs/guides/ai/ai-standards.md` 입니다.**
 - 공통 정책/에이전트 간 협업 규정은 이 파일에서 정의하지 않습니다.
-- 에이전트별 전용 동작은 각 전용 문서에서 관리합니다.
+- Codex 전용 동작 및 환경 규칙은 오직 이 문서(`AGENTS.md`)에서만 관리합니다.
   - Claude 전용: `CLAUDE.md`
   - Gemini 전용: `GEMINI.md`
-- 공통 정책이 필요하면 `docs/guides/ai/ai-standards.md`에서 관리합니다.
-- 충돌 우선순위: `System > Developer > User > Global AGENTS > Repository AGENTS > 하위 디렉토리 AGENTS`
+- **충돌 우선순위**: `docs/guides/ai/ai-standards.md` > 요약된 에이전트 전용 문서 (`AGENTS.md`, `CLAUDE.md`, `GEMINI.md`)
 
 ## 2) Codex 실행 규칙
 
@@ -42,9 +41,10 @@
   - `cd cloud-run/ai-engine && npm run type-check`
   - `cd cloud-run/ai-engine && npm run test`
 
-## 3) 유지보수 메모
-- 이 문서는 "Codex 실행 규칙"만 유지합니다.
-- 설명성 가이드는 `docs/`에 두고, 실행 규칙은 이 파일을 우선 갱신합니다.
+## 3) 공통 지식 및 유지보수 메모
+- **[필독] 프로젝트 3대 원칙 (Free Tier, 배포 환경 인지, OTel 데이터 SSOT)** 등 모든 AI 에이전트가 완벽히 숙지해야 할 핵심 규칙은 `docs/guides/ai/ai-standards.md` 파일에 정의되어 있습니다. 작업을 시작하기 전 해당 문서를 반드시 참조하세요.
+- 이 문서는 주로 "Codex 전용 실행 환경 및 MCP 설정" 등에 대한 규칙만 제한적으로 유지합니다.
+- 공통 정책이 변경되는 경우 이 파일이 아닌 `docs/guides/ai/ai-standards.md`를 갱신해야 합니다.
 
 ---
-_Last reviewed: 2026-02-20_
+_Last reviewed: 2026-02-21_

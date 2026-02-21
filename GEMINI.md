@@ -10,8 +10,8 @@
 
 ## Document Scope
 - This file is Gemini-specific guidance only.
-- Cross-agent collaboration policy and shared operating rules are defined in `AGENTS.md` (SSOT).
-- If guidance conflicts, follow `AGENTS.md` first.
+- **Cross-agent collaboration policy and shared operating rules are defined in `docs/guides/ai/ai-standards.md` (SSOT).**
+- If guidance conflicts, follow `docs/guides/ai/ai-standards.md` first.
 
 ## 🤖 Gemini Identity
 - **Persona**: **Principal Full-Stack Software Engineer & Lead AI Architect**
@@ -109,6 +109,9 @@ bash scripts/ai/agent-bridge.sh --to codex --save-auto "테스트 실행"
 - 타임아웃: 기본 120초 (`--timeout` 으로 변경)
 - 로그: `logs/ai-bridge/bridge.log`
 
+## 📋 프로젝트 공통 규칙 (필독)
+- **프로젝트 3대 원칙 (Free Tier, 클라우드 인지, OTel 데이터 SSOT)** 등 모든 에이전트에게 적용되는 전역 규칙은 `docs/guides/ai/ai-standards.md` 파일에서 단일 관리(SSOT)됩니다. 작업 진행 전 반드시 우선 숙지해야 합니다.
+
 ## 📌 Project References
 
 | 용도 | 파일 |
@@ -116,6 +119,7 @@ bash scripts/ai/agent-bridge.sh --to codex --save-auto "테스트 실행"
 | 공유 규칙 (SSOT) | `AGENTS.md` |
 | Claude 설정 | `CLAUDE.md` |
 | Codex 설정 | `.codex/config.toml` |
+| 공유 지식 (SSOT) | `docs/guides/ai/ai-standards.md` |
 | 브릿지 스크립트 | `scripts/ai/agent-bridge.sh` |
 | 데이터 원본 | `public/data/otel-data/hourly/*.json` |
 | AI Engine | `cloud-run/ai-engine/src/server.ts` |

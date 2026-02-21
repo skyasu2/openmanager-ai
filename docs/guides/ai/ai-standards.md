@@ -4,12 +4,12 @@
 > Owner: documentation
 > Status: Active
 > Doc type: How-to
-> Last reviewed: 2026-02-14
+> Last reviewed: 2026-02-21
 > Canonical: docs/guides/ai/ai-standards.md
 > Tags: ai,standards,tooling,policy
 >
 > **통합 문서**: ai-coding-standards.md + ai-usage-guidelines.md
-> **최종 갱신**: 2026-02-13 (v8.0.0)
+> **최종 갱신**: 2026-02-21 (v8.1.0)
 >
 > **Note**: Qwen 제거 (2026-01-07) - 평균 201초 응답, 13.3% 실패율로 2-AI 단순화
 
@@ -31,6 +31,33 @@ bash scripts/ai/agent-bridge.sh --to claude --mode doc --save-auto "결과 문�
 
 # 집계가 필요하면 Codex 결과를 기준으로 카운트
 ```
+
+---
+
+## 0. 프로젝트 3대 원칙 (모든 에이전트 필독)
+
+> 이 원칙은 Claude Code 운영 메모리에서 추출한 교차 에이전트 공유 지식입니다.
+
+### 원칙 1: Free Tier 절대 원칙
+- 인프라 비용 관련 무료 한도 초과 구성/테스트 생성 **절대 금지**
+- Vercel: Pro 플랜이지만 최소 사용량 유지 (Build Machine: Standard만)
+- Cloud Run: 1 vCPU, 512Mi, `--machine-type` 옵션 사용 금지
+- Cloud Build: `e2-medium` 기본값만 (120분/일 무료)
+- "최적화" ≠ 스펙 업그레이드. 캐시/병렬화/코드 개선으로 해결
+
+### 원칙 2: 클라우드 배포 인지 개발
+- 배포 대상: Vercel (Frontend) + Cloud Run (AI Engine) + Supabase + Redis
+- 로컬 개발과 프로덕션 환경 차이를 항상 인지
+- 환경변수 동기화 필수 (`.env.local` ↔ Vercel ↔ GCP Secret Manager)
+- API health check로 배포 후 검증: `/api/health`, `/health`
+
+### 원칙 3: Pre-generated OTel 데이터 SSOT
+- 실제 서버 모니터링 대신 사전 생성된 시뮬레이션 데이터 사용
+- **15개 서버 × 24시간 × 10분 간격** = `public/data/otel-data/hourly/hour-XX.json`
+- 데이터 로더: `src/data/otel-data/index.ts`
+- Vercel 소비: `src/services/metrics/MetricsProvider.ts`
+- AI Engine 소비: `cloud-run/ai-engine/src/data/precomputed-state.ts`
+- 메트릭 수정 시 **Dashboard + AI 응답 양쪽 확인** 필수
 
 ---
 

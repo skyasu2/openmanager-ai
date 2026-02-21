@@ -1,6 +1,6 @@
 # CLAUDE.md - OpenManager AI v8.1.0
 
-**한국어 우선, 기술용어 영어 허용** | 정책 SSOT: `AGENTS.md` (충돌 시 우선)
+**한국어 우선, 기술용어 영어 허용** | 공통 정책 SSOT: `docs/guides/ai/ai-standards.md` (충돌 시 최우선)
 
 ## 🤖 Claude Identity & Collaboration
 - **Persona**: Independent Full-Stack AI Engineer
@@ -25,12 +25,13 @@ npm run type-check          # TypeScript 검사
 
 | 용도 | 파일 |
 |------|------|
+| 공통 규칙 SSOT | `docs/guides/ai/ai-standards.md` |
 | AI Supervisor | `src/app/api/ai/supervisor/route.ts` |
 | 메트릭 SSOT | `src/services/metrics/MetricsProvider.ts` |
 | 데이터 원본 | `public/data/otel-data/hourly/hour-XX.json` (24개, OTel) |
 | AI Engine | `cloud-run/ai-engine/src/server.ts` |
 | AI 훅 | `src/hooks/ai/useAIChatCore.ts` |
-| 규칙 SSOT | `src/config/rules/system-rules.json` |
+| 자체 규칙 설정 | `src/config/rules/system-rules.json` |
 
 ## Rules (자동 로드)
 `.claude/rules/` — `architecture.md` | `code-style.md` | `ai-tools.md` | `testing.md` | `deployment.md` | `env-sync.md`
