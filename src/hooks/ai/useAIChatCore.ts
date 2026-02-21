@@ -24,6 +24,7 @@ import {
   useHybridAIQuery,
 } from '@/hooks/ai/useHybridAIQuery';
 import { logger } from '@/lib/logging';
+import { triggerAIWarmup } from '@/utils/ai-warmup';
 import {
   type EnhancedChatMessage,
   useAISidebarStore,
@@ -283,7 +284,7 @@ export function useAIChatCore(
   // ⚡ Cloud Run 선제 웜업: 사이드바 마운트 시 한 번만 실행
   // 쿼리 시점이 아닌 UI 진입 시점에 wake-up하여 cold start 시간 선점
   useEffect(() => {
-    void fetch('/api/ai/wake-up', { method: 'POST' }).catch(() => {});
+    void triggerAIWarmup('ai-chat-core');
   }, []);
 
   // 에러 동기화

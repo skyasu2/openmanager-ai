@@ -249,7 +249,8 @@ export const AI_GRADIENT_STYLE =
 // 🎨 AI 그라데이션 인라인 스타일 (애니메이션 동작 보장)
 // Tailwind v4에서 gradient 클래스와 background-position 애니메이션이 충돌하므로 인라인 스타일 사용
 export const AI_GRADIENT_ANIMATED_STYLE = {
-  background: 'linear-gradient(135deg, #3b82f6, #8b5cf6, #ec4899, #3b82f6, #8b5cf6)',
+  background:
+    'linear-gradient(135deg, #3b82f6, #8b5cf6, #ec4899, #3b82f6, #8b5cf6)',
   backgroundSize: '400% 400%',
   animation: 'gradient-diagonal 3s linear infinite',
   WebkitBackgroundClip: 'text',
@@ -265,14 +266,16 @@ export const AI_ICON_GRADIENT_CLASSES =
 
 // 🎨 AI 아이콘 그라데이션 인라인 스타일 (애니메이션 동작 보장)
 export const AI_ICON_GRADIENT_ANIMATED_STYLE = {
-  background: 'linear-gradient(135deg, #ec4899, #a855f7, #22d3ee, #ec4899, #a855f7)',
+  background:
+    'linear-gradient(135deg, #ec4899, #a855f7, #22d3ee, #ec4899, #a855f7)',
   backgroundSize: '400% 400%',
   animation: 'gradient-diagonal 3s linear infinite',
 } as const;
 
 // 🎨 AI 텍스트 그라데이션 (아이콘과 동일 색상: 핑크 → 보라 → 시안)
 export const AI_TEXT_GRADIENT_ANIMATED_STYLE = {
-  background: 'linear-gradient(135deg, #ec4899, #a855f7, #22d3ee, #ec4899, #a855f7)',
+  background:
+    'linear-gradient(135deg, #ec4899, #a855f7, #22d3ee, #ec4899, #a855f7)',
   backgroundSize: '400% 400%',
   animation: 'gradient-diagonal 3s linear infinite',
   WebkitBackgroundClip: 'text',

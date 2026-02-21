@@ -19,7 +19,7 @@ export function AIDebugPanel() {
       }
       const data = await res.json();
       if (res.ok) {
-        toast.success(`Wake-up: ${data.status} (${data.warmupMs ?? 0}ms)`);
+        toast.success(`Wake-up: ${data.status}`);
       } else {
         toast.error(`Wake-up failed: ${data.error || data.status}`);
       }

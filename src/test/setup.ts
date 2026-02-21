@@ -132,7 +132,12 @@ vi.mock('@/lib/logging', () => ({
 
 // Fetch Mock - 더 현실적인 응답
 globalThis.fetch = vi.fn().mockImplementation((input: RequestInfo | URL) => {
-  const resolvedUrl = typeof input === 'string' ? input : input.toString();
+  const resolvedUrl =
+    typeof input === 'string'
+      ? input
+      : input instanceof Request
+        ? input.url
+        : input.toString();
   const jsonPayload = {
     data: {
       response: 'Mock AI response',

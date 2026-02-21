@@ -14,9 +14,9 @@
 
 import type { RequestHandler } from 'msw';
 import { cohereHandlers } from './ai/cohere';
-import { externalResourceHandlers } from './external/time-and-otel';
 // AI 서비스 핸들러 (OpenAI, Cohere)
 import { openAIHandlers } from './ai/openai';
+import { externalResourceHandlers } from './external/time-and-otel';
 // Next.js API Routes 핸들러
 import { nextJsApiHandlers } from './nextjs/api-routes';
 // Supabase 핸들러

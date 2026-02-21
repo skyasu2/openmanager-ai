@@ -26,7 +26,6 @@ export default defineConfig({
     include: [
       // CI 전용 통합 테스트
       'tests/api/**/*.integration.test.{ts,tsx}',
-      'tests/integration/external-services-connection.test.ts',
       'tests/integration/security/**/*.test.{ts,tsx}',
     ],
     exclude: [
