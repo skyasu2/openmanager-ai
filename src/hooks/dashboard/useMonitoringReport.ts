@@ -71,15 +71,7 @@ export function useMonitoringReport() {
   return useQuery({
     queryKey: ['monitoring-report'],
     queryFn: fetchMonitoringReport,
-    refetchInterval: () => {
-      if (
-        typeof document !== 'undefined' &&
-        document.visibilityState !== 'visible'
-      ) {
-        return false;
-      }
-      return getMsUntilNextServerDataSlot();
-    },
+    refetchInterval: () => getMsUntilNextServerDataSlot(),
     refetchIntervalInBackground: false,
     staleTime: SERVER_DATA_STALE_TIME_MS,
     gcTime: SERVER_DATA_GC_TIME_MS,

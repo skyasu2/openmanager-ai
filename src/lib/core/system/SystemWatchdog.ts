@@ -49,6 +49,8 @@ export class SystemWatchdog {
   private systemStatus?: SystemStatus;
   private readonly maxHistoryLength = 100;
   private readonly monitoringIntervalMs = 30000; // 30초 (과도한 헬스체크 방지)
+  private lastAlertTime = new Map<string, number>();
+  private readonly alertCooldownMs = 5 * 60 * 1000; // 동일 타입 alert 5분 cooldown
   private cpuTracker: WatchdogCpuTracker = {
     previousCpuUsage: null,
     previousCpuTime: null,
@@ -254,6 +256,11 @@ export class SystemWatchdog {
    * 알림 추가
    */
   private addAlert(type: string, message: string): void {
+    const now = Date.now();
+    const lastTime = this.lastAlertTime.get(type) ?? 0;
+    if (now - lastTime < this.alertCooldownMs) return;
+    this.lastAlertTime.set(type, now);
+
     const alert = {
       timestamp: new Date(),
       type,

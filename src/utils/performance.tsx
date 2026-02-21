@@ -241,33 +241,3 @@ export function withPerformanceTracking<P extends object>(
   return WithPerformanceTracking;
 }
 
-/**
- * 렌더링 최적화를 위한 조건부 메모이제이션
- */
-export function useSmartMemo<T>(
-  factory: () => T,
-  deps: React.DependencyList,
-  threshold: number = 5 // ms
-): T {
-  const [value, setValue] = React.useState<T>(() => factory());
-  const lastDeps = React.useRef<React.DependencyList>(deps);
-
-  React.useMemo(() => {
-    const startTime = performance.now();
-
-    // 의존성 배열 비교
-    if (deps.some((dep, index) => dep !== lastDeps.current[index])) {
-      const newValue = factory();
-      const duration = performance.now() - startTime;
-
-      if (duration > threshold) {
-        logger.warn(`🐌 메모이제이션 계산 시간 초과: ${duration.toFixed(2)}ms`);
-      }
-
-      setValue(newValue);
-      lastDeps.current = deps;
-    }
-  }, [deps, factory, threshold]);
-
-  return value;
-}

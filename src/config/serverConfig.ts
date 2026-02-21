@@ -6,15 +6,6 @@
 
 import { logger } from '@/lib/logging';
 import { SERVER_DATA_INTERVAL_MS } from './server-data-polling';
-interface PerformanceMemory {
-  usedJSHeapSize: number;
-  totalJSHeapSize: number;
-  jsHeapSizeLimit: number;
-}
-
-interface PerformanceWithMemory extends Performance {
-  memory?: PerformanceMemory;
-}
 
 export interface ServerGenerationConfig {
   // 기본 서버 설정
@@ -111,49 +102,6 @@ export function calculateServerConfig(
 }
 
 /**
- * 🧠 메모리 사용량 기반 최적 업데이트 간격 계산 (30-40초 범위)
- * 🎯 생성과 수집 분리 전략: 생성 30-35초, 수집 35-40초
- */
-export function calculateOptimalUpdateInterval(): number {
-  // Edge Runtime 호환성을 위한 안전한 메모리 체크
-  try {
-    // Edge Runtime 완전 호환성 보장 (process 접근 차단)
-    if (typeof window === 'undefined' && 
-        typeof process !== 'undefined' && 
-        process.env?.NODE_ENV !== 'production' &&
-        process.memoryUsage && 
-        typeof process.memoryUsage === 'function') {
-      // Edge Runtime에서는 이 코드에 절대 도달하지 않음
-      const memoryUsage = process.memoryUsage();
-      const usagePercent = (memoryUsage.heapUsed / memoryUsage.heapTotal) * 100;
-
-      // 🎯 데이터 생성 간격 (30-35초 범위)
-      if (usagePercent > 80) return 35000; // 높은 사용률: 35초
-      if (usagePercent > 60) return 33000; // 중간 사용률: 33초
-      return 30000; // 낮은 사용률: 30초
-    }
-  } catch {
-    // Edge Runtime에서는 process.memoryUsage()가 지원되지 않음
-    logger.info('🔧 Edge Runtime 환경 - 기본 업데이트 간격 사용');
-  }
-
-  // 클라이언트 사이드에서는 performance.memory 사용
-  if (typeof window !== 'undefined' && 'memory' in performance) {
-    const memory = (performance as PerformanceWithMemory).memory;
-    if (memory) {
-      const usagePercent =
-        (memory.usedJSHeapSize / memory.totalJSHeapSize) * 100;
-
-      if (usagePercent > 80) return 35000; // 높은 사용률: 35초
-      if (usagePercent > 60) return 33000; // 중간 사용률: 33초
-      return 30000; // 낮은 사용률: 30초
-    }
-  }
-
-  return 30000; // 기본값: 30초 (생성 간격)
-}
-
-/**
  * 🎯 데이터 수집 간격 계산 (서버 데이터 10분 슬롯 고정)
  * - 환경변수 DATA_COLLECTION_INTERVAL이 설정되어도 10분 미만으로는 내려가지 않는다.
  */
@@ -187,10 +135,10 @@ export const DEFAULT_SERVER_CONFIG =
 export function getEnvironmentServerConfig(): ServerGenerationConfig {
   // 환경 변수에서 서버 개수 읽기
   const envServerCount = process.env.SERVER_COUNT
-    ? parseInt(process.env.SERVER_COUNT)
+    ? parseInt(process.env.SERVER_COUNT, 10)
     : undefined;
   const envMaxServers = process.env.MAX_SERVERS
-    ? parseInt(process.env.MAX_SERVERS)
+    ? parseInt(process.env.MAX_SERVERS, 10)
     : undefined;
 
   // 기본값: DEFAULT_SERVER_COUNT (15개)

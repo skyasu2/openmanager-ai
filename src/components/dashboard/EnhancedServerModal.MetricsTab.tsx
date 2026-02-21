@@ -21,7 +21,7 @@ import {
 import { type FC, useState } from 'react';
 
 import { TimeSeriesChart } from '@/components/charts/TimeSeriesChart';
-import { getMsUntilNextServerDataSlot } from '@/config/server-data-polling';
+import { SERVER_DATA_INTERVAL_MS } from '@/config/server-data-polling';
 import { useTimeSeriesMetrics } from '@/hooks/useTimeSeriesMetrics';
 
 import { RealtimeChart } from './EnhancedServerModal.components';
@@ -87,7 +87,7 @@ export const MetricsTab: FC<MetricsTabProps> = ({
     range: timeRange,
     includePrediction: showPrediction,
     includeAnomalies: showAnomalies,
-    refreshInterval: isRealtime ? getMsUntilNextServerDataSlot() : 0,
+    refreshInterval: isRealtime ? SERVER_DATA_INTERVAL_MS : 0,
   });
 
   // 차트 데이터 구성
