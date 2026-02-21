@@ -271,6 +271,14 @@ export function useAsyncAIQuery(options: UseAsyncAIQueryOptions = {}) {
               const progress = JSON.parse(event.data) as AsyncQueryProgress;
               setState((prev) => ({ ...prev, progress }));
               onProgress?.(progress);
+
+              // Reset timeout on active progress to prevent premature kill
+              if (timeoutRef.current) {
+                clearTimeout(timeoutRef.current);
+                timeoutRef.current = setTimeout(() => {
+                  handleError(`Request timeout after ${timeout}ms`);
+                }, timeout);
+              }
             } catch (e) {
               logger.warn('[AsyncAI] Failed to parse progress:', e);
             }

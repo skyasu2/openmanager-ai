@@ -451,6 +451,8 @@ export function useHybridAIQuery(
       pendingQuery: pendingQueryRef,
       pendingAttachments: pendingAttachmentsRef,
       currentQuery: currentQueryRef,
+      redirecting: redirectingRef,
+      errorHandled: errorHandledRef,
     },
   });
 
