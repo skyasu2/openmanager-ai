@@ -1,6 +1,9 @@
 name: Release Manual
 
 on:
+  schedule:
+    # Weekly freshness check: Monday 09:00 UTC (18:00 KST)
+    - cron: '0 9 * * 1'
   workflow_dispatch:
     inputs:
       release_type:
@@ -26,8 +29,38 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  check-freshness:
+    name: Release Freshness Check
+    if: github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check commits since last release
+        run: |
+          LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+          if [ -z "$LAST_TAG" ]; then
+            echo "No tags found, skipping freshness check"
+            exit 0
+          fi
+
+          COMMITS=$(git rev-list --count "${LAST_TAG}..HEAD")
+          DAYS=$(( ($(date +%s) - $(git log -1 --format=%ct "$LAST_TAG")) / 86400 ))
+
+          echo "Last release: $LAST_TAG ($DAYS days ago)"
+          echo "Commits since: $COMMITS"
+
+          if [ "$COMMITS" -gt 30 ]; then
+            echo "::warning::Release may be overdue: $COMMITS commits since $LAST_TAG ($DAYS days ago). Consider running a release."
+          else
+            echo "Release freshness OK ($COMMITS commits, threshold=30)"
+          fi
+
   release:
     name: Manual Release
+    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -57,13 +90,16 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
       - name: Run release
+        env:
+          RELEASE_TYPE: ${{ inputs.release_type }}
+          DRY_RUN: ${{ inputs.dry_run }}
         run: |
-          if [ "${{ inputs.dry_run }}" = "true" ]; then
+          if [ "$DRY_RUN" = "true" ]; then
             npm run release:dry-run
             exit 0
           fi
 
-          npm run release:${{ inputs.release_type }}
+          npm run "release:${RELEASE_TYPE}"
           RELEASE_CHECK_TAG=required RELEASE_CHECK_FRESHNESS=required RELEASE_CHECK_MAX_COMMITS=5 npm run release:check
 
       - name: Push release commit and tags

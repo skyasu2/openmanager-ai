@@ -19,11 +19,11 @@ const freshnessMode = String(
   process.env.RELEASE_CHECK_FRESHNESS || 'warn'
 ).toLowerCase();
 const rawMaxCommits = Number.parseInt(
-  String(process.env.RELEASE_CHECK_MAX_COMMITS || '50'),
+  String(process.env.RELEASE_CHECK_MAX_COMMITS || '30'),
   10
 );
 const maxCommitsSinceTag =
-  Number.isFinite(rawMaxCommits) && rawMaxCommits > 0 ? rawMaxCommits : 50;
+  Number.isFinite(rawMaxCommits) && rawMaxCommits > 0 ? rawMaxCommits : 30;
 const checks = [];
 
 function pass(id, msg) {

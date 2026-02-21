@@ -361,7 +361,7 @@ function checkNodeModules() {
 
 // Release check
 function checkRelease() {
-  if (SKIP_RELEASE_CHECK || QUICK_PUSH) return;
+  if (SKIP_RELEASE_CHECK) return;
 
   const lastTag = runGit(['describe', '--tags', '--abbrev=0']);
   if (!lastTag) return;
@@ -369,7 +369,7 @@ function checkRelease() {
   const commitsSinceTag = runGit(['rev-list', `${lastTag}..HEAD`, '--count']);
   const count = parseInt(commitsSinceTag, 10) || 0;
 
-  if (count > 5) {
+  if (count > 20) {
     console.log('');
     console.log(`📦 Release Check: ${count} commits since ${lastTag}`);
     console.log('   Consider running: npm run release:patch (or :minor)');

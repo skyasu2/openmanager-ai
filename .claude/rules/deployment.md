@@ -76,6 +76,14 @@ AI가 인프라/배포 설정을 변경할 때 반드시 준수:
 3. **"최적화" ≠ 스펙 업그레이드**: 성능 최적화는 캐시, 병렬화, 코드 개선으로 해결. 머신 스펙 올리는 건 최적화가 아님
 4. **비용 변경 커밋에 [COST] 태그**: 인프라 비용에 영향을 주는 변경은 커밋 메시지에 명시
 
+## Release Cadence
+
+- **기준**: 30커밋 또는 1주 중 빠른 시점에 릴리즈
+- **알림**: pre-push hook이 20커밋 초과 시 리마인더 출력
+- **자동화**: 매주 월요일 freshness check (GitHub Actions)
+- **긴급**: P0 수정은 CI 통과 즉시 릴리즈
+- **명령어**: `./scripts/release/publish.sh patch` (또는 `minor`/`major`)
+
 ## Environment Variables
 
 | 플랫폼 | 관리 방식 |
