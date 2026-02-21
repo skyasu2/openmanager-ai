@@ -60,13 +60,14 @@ export function learnQueryPattern(
 
   evictOldestPattern(patterns, maxPatternSize);
 
+  const initialResponseTime = getResponseTime(metadata);
   patterns.set(patternKey, {
     id: patternKey,
     regex: pattern,
     frequency: 1,
-    avgResponseTime: getResponseTime(metadata),
+    avgResponseTime: initialResponseTime,
     lastUsed: new Date(),
-    hits: 1,
+    hits: initialResponseTime > 0 ? 1 : 0,
   });
 }
 

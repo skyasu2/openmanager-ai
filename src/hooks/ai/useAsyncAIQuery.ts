@@ -119,6 +119,9 @@ export function useAsyncAIQuery(options: UseAsyncAIQueryOptions = {}) {
   // 🎯 P1-5 Fix: Cleanup function defined before useEffect to avoid stale closure
   const cleanupRef = useRef<() => void>(() => {});
 
+  // 🎯 6th review fix: Track jobId via ref to prevent stale closure in cancel()
+  const jobIdRef = useRef<string | null>(null);
+
   // Cleanup function
   const cleanup = useCallback(() => {
     // 🎯 P1 Fix: Abort any pending fetch requests
@@ -156,13 +159,15 @@ export function useAsyncAIQuery(options: UseAsyncAIQueryOptions = {}) {
   const cancel = useCallback(async () => {
     cleanup();
 
-    if (state.jobId) {
+    const currentJobId = jobIdRef.current;
+    if (currentJobId) {
       try {
-        await fetch(`/api/ai/jobs/${state.jobId}`, { method: 'DELETE' });
+        await fetch(`/api/ai/jobs/${currentJobId}`, { method: 'DELETE' });
       } catch (e) {
         logger.warn('[AsyncAI] Failed to cancel job:', e);
       }
     }
+    jobIdRef.current = null;
 
     setState((prev) => ({
       ...prev,
@@ -170,13 +175,14 @@ export function useAsyncAIQuery(options: UseAsyncAIQueryOptions = {}) {
       isConnected: false,
       error: 'Cancelled by user',
     }));
-  }, [state.jobId, cleanup]);
+  }, [cleanup]);
 
   // Send query
   const sendQuery = useCallback(
     async (query: string): Promise<AsyncQueryResult> => {
       // Cleanup previous state
       cleanup();
+      jobIdRef.current = null;
       setState({
         isLoading: true,
         isConnected: false,
@@ -192,6 +198,7 @@ export function useAsyncAIQuery(options: UseAsyncAIQueryOptions = {}) {
 
         const handleError = (error: string) => {
           cleanup();
+          jobIdRef.current = null;
           setState((prev) => ({
             ...prev,
             isLoading: false,
@@ -205,6 +212,7 @@ export function useAsyncAIQuery(options: UseAsyncAIQueryOptions = {}) {
 
         const handleResult = (result: AsyncQueryResult) => {
           cleanup();
+          jobIdRef.current = null;
           // 🎯 Include jobId in result for Stale Closure prevention
           const resultWithJobId = {
             ...result,
@@ -441,6 +449,7 @@ export function useAsyncAIQuery(options: UseAsyncAIQueryOptions = {}) {
             const { jobId } = data;
             // 🎯 Capture jobId for Stale Closure prevention
             capturedJobId = jobId;
+            jobIdRef.current = jobId;
             setState((prev) => ({ ...prev, jobId }));
 
             // Step 2: Connect to SSE Stream
@@ -462,6 +471,7 @@ export function useAsyncAIQuery(options: UseAsyncAIQueryOptions = {}) {
   // Reset state
   const reset = useCallback(() => {
     cleanup();
+    jobIdRef.current = null;
     setState({
       isLoading: false,
       isConnected: false,

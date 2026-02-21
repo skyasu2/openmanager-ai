@@ -67,6 +67,10 @@ export function syncMetricsFromSystemStatus(
 ): void {
   if (!systemStatus) return;
 
-  metrics.restartCount = systemStatus.metrics?.totalRestarts || 0;
+  // SystemStatusPayload.metrics에 totalRestarts 필드 없음 → 별도 추적 필요 시 추가
+  const metricsWithRestarts = systemStatus.metrics as
+    | (typeof systemStatus.metrics & { totalRestarts?: number })
+    | undefined;
+  metrics.restartCount = metricsWithRestarts?.totalRestarts ?? 0;
   metrics.errorRate = calculateErrorRate(systemStatus);
 }

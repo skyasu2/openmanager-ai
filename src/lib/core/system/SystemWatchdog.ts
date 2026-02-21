@@ -230,8 +230,9 @@ export class SystemWatchdog {
     );
 
     for (const plan of plans) {
-      this.addAlert(plan.alertType, plan.message);
-      this.eventBus.emit(plan.eventPayload);
+      if (this.addAlert(plan.alertType, plan.message)) {
+        this.eventBus.emit(plan.eventPayload);
+      }
     }
   }
 
@@ -255,10 +256,10 @@ export class SystemWatchdog {
   /**
    * 알림 추가
    */
-  private addAlert(type: string, message: string): void {
+  private addAlert(type: string, message: string): boolean {
     const now = Date.now();
     const lastTime = this.lastAlertTime.get(type) ?? 0;
-    if (now - lastTime < this.alertCooldownMs) return;
+    if (now - lastTime < this.alertCooldownMs) return false;
     this.lastAlertTime.set(type, now);
 
     const alert = {
@@ -275,6 +276,7 @@ export class SystemWatchdog {
     }
 
     systemLogger.warn(`⚠️ [Watchdog Alert] ${message}`);
+    return true;
   }
 
   /**

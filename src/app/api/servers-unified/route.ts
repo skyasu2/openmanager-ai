@@ -256,7 +256,7 @@ async function handleServersUnified(
         const logResult = await queryOTelLogs({
           level,
           source: logSource,
-          serverId: search || undefined,
+          serverId: serverId || search || undefined,
           keyword: logKeyword,
           page,
           limit,
@@ -428,13 +428,18 @@ async function postHandler(request: NextRequest) {
     );
   }
 
-  return NextResponse.json(
-    await handleServersUnified(request, {
-      body: parsed.data,
-      query: {},
-      params: {},
-    })
-  );
+  const result = await handleServersUnified(request, {
+    body: parsed.data,
+    query: {},
+    params: {},
+  });
+
+  const isError =
+    result != null &&
+    typeof result === 'object' &&
+    'success' in result &&
+    (result as Record<string, unknown>).success === false;
+  return NextResponse.json(result, { status: isError ? 400 : 200 });
 }
 
 // 호환성을 위한 GET 메서드 (기본 list 액션)
@@ -499,20 +504,25 @@ async function getHandler(request: NextRequest) {
     );
   }
 
-  return NextResponse.json(
-    await handleServersUnified(request, {
-      body: parsed.data,
-      query: {},
-      params: {},
-    }),
-    {
-      headers: {
-        'Content-Type': 'application/json',
-        'Cache-Control': 'private, no-store, max-age=0',
-        Pragma: 'no-cache',
-      },
-    }
-  );
+  const result = await handleServersUnified(request, {
+    body: parsed.data,
+    query: {},
+    params: {},
+  });
+
+  const isError =
+    result != null &&
+    typeof result === 'object' &&
+    'success' in result &&
+    (result as Record<string, unknown>).success === false;
+  return NextResponse.json(result, {
+    status: isError ? 400 : 200,
+    headers: {
+      'Content-Type': 'application/json',
+      'Cache-Control': 'private, no-store, max-age=0',
+      Pragma: 'no-cache',
+    },
+  });
 }
 
 export const POST = withAuth(postHandler);

@@ -132,6 +132,7 @@ export function useHybridAIQuery(
   const pendingAttachmentsRef = useRef<FileAttachment[] | null>(null);
   const currentQueryRef = useRef<string | null>(null);
   const errorHandledRef = useRef<boolean>(false);
+  const redirectingRef = useRef<boolean>(false);
   const abortControllerRef = useRef<AbortController | null>(null);
   const retryTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const transport = useMemo(
@@ -161,6 +162,12 @@ export function useHybridAIQuery(
     transport,
     resume: resumeEnabled,
     onFinish: ({ message }) => {
+      // Skip isLoading reset when redirecting to job-queue (stopChat triggers onFinish)
+      if (redirectingRef.current) {
+        logger.debug('[HybridAI] onFinish skipped (redirect in progress)');
+        onStreamFinish?.();
+        return;
+      }
       if (errorHandledRef.current) {
         logger.debug(
           '[HybridAI] onFinish skipped (error already handled by onError)'
@@ -230,6 +237,8 @@ export function useHybridAIQuery(
           `🔀 [HybridAI] Redirect received: switching to job-queue (${redirectData.complexity})`
         );
 
+        redirectingRef.current = true;
+
         setState((prev) => ({
           ...prev,
           mode: 'job-queue',
@@ -250,16 +259,19 @@ export function useHybridAIQuery(
           queueMicrotask(() => {
             if (controller.signal.aborted) {
               logger.debug('[HybridAI] Job Queue redirect aborted');
+              redirectingRef.current = false;
               return;
             }
             asyncQueryRef.current
               .sendQuery(currentQuery)
               .then(() => {
+                redirectingRef.current = false;
                 if (!controller.signal.aborted) {
                   logger.debug('[HybridAI] Job Queue redirect completed');
                 }
               })
               .catch((error) => {
+                redirectingRef.current = false;
                 if (!controller.signal.aborted) {
                   logger.error('[HybridAI] Job Queue redirect failed:', error);
                   setState((prev) => ({
@@ -273,6 +285,14 @@ export function useHybridAIQuery(
                 }
               });
           });
+        } else {
+          // Safety fallback: redirect 이벤트에 쿼리가 없으면 loading/redirect 상태를 즉시 해제
+          redirectingRef.current = false;
+          setState((prev) => ({
+            ...prev,
+            isLoading: false,
+            error: 'Job Queue 전환에 필요한 쿼리를 찾을 수 없습니다.',
+          }));
         }
         return;
       }
@@ -349,6 +369,7 @@ export function useHybridAIQuery(
 
   const asyncQuery = useAsyncAIQuery({
     sessionId: sessionIdRef.current,
+    timeout: 120_000,
     onProgress: (progress) => {
       setState((prev) => ({ ...prev, progress }));
       onProgress?.(progress);
