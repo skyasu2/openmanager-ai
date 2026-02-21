@@ -73,7 +73,10 @@ async function ensureLabelsCache(): Promise<
 
     labelsCache = cache;
     return cache;
-  })();
+  })().catch((err) => {
+    labelsCachePromise = null;
+    throw err;
+  });
 
   return labelsCachePromise;
 }
