@@ -190,18 +190,66 @@ jobs:
   deployment-ready:
     name: Deployment Ready
     runs-on: ubuntu-latest
-    needs: [code-quality, unit-tests, e2e-critical, security-scan]
+    needs: [detect-scope, code-quality, unit-tests, e2e-critical, security-scan, cloud-run-unit]
     if: ${{ always() && (github.event_name != 'push' || !contains(github.event.head_commit.message, '[skip ci]')) }}
     steps:
+      - name: Enforce Required Gates
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          DETECT_SCOPE_RESULT="${{ needs.detect-scope.result }}"
+          CODE_QUALITY_RESULT="${{ needs.code-quality.result }}"
+          UNIT_TEST_RESULT="${{ needs.unit-tests.result }}"
+          E2E_RESULT="${{ needs.e2e-critical.result }}"
+          SECURITY_RESULT="${{ needs.security-scan.result }}"
+          CLOUD_RUN_UNIT_RESULT="${{ needs.cloud-run-unit.result }}"
+          AI_ENGINE_CHANGED="${{ needs.detect-scope.outputs.ai_engine_changed }}"
+
+          failures=0
+
+          require_success() {
+            local name="$1"
+            local result="$2"
+            if [ "$result" != "success" ]; then
+              echo "::error::$name must be success, got '$result'"
+              failures=1
+            fi
+          }
+
+          require_success "Detect Scope" "$DETECT_SCOPE_RESULT"
+          require_success "Code Quality (Lint & Type)" "$CODE_QUALITY_RESULT"
+          require_success "Unit Tests" "$UNIT_TEST_RESULT"
+          require_success "E2E Critical" "$E2E_RESULT"
+
+          if [ "$SECURITY_RESULT" != "success" ] && [ "$SECURITY_RESULT" != "skipped" ]; then
+            echo "::error::Security Scan must be success or skipped, got '$SECURITY_RESULT'"
+            failures=1
+          fi
+
+          if [ "$AI_ENGINE_CHANGED" = "true" ]; then
+            require_success "AI Engine Unit Tests (ai_engine_changed=true)" "$CLOUD_RUN_UNIT_RESULT"
+          else
+            echo "ℹ️ ai_engine_changed=false -> cloud-run-unit optional (result='$CLOUD_RUN_UNIT_RESULT')"
+          fi
+
+          if [ "$failures" -ne 0 ]; then
+            echo "❌ Required quality gates are not satisfied."
+            exit 1
+          fi
+
+          echo "✅ Required quality gates are satisfied."
       - name: Summary
         run: |
           echo "📊 CI/CD 결과 요약"
           echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-          echo "✅ 정적 분석: ${{ needs.code-quality.result }}"
-          echo "✅ 유닛 테스트: ${{ needs.unit-tests.result }}"
-          echo "✅ E2E 핵심 플로우: ${{ needs.e2e-critical.result }}"
-          echo "✅ 보안 검증: ${{ needs.security-scan.result }}"
-          echo "🚀 Vercel 배포: 준비 완료"
+          echo "🔎 Scope 감지: ${{ needs.detect-scope.result }} (ai_engine_changed=${{ needs.detect-scope.outputs.ai_engine_changed }})"
+          echo "🔍 정적 분석: ${{ needs.code-quality.result }}"
+          echo "🧪 유닛 테스트: ${{ needs.unit-tests.result }}"
+          echo "🎭 E2E 핵심 플로우: ${{ needs.e2e-critical.result }}"
+          echo "🔒 보안 검증: ${{ needs.security-scan.result }}"
+          echo "☁️ AI Engine Unit: ${{ needs.cloud-run-unit.result }}"
+          echo "🚀 배포 게이트: 통과"
           echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
   # ☁️ Cloud Run 스모크 테스트 (배포 후 자동 검증)
