@@ -8,6 +8,7 @@ import { createHash, timingSafeEqual } from 'crypto';
 import { type NextRequest, NextResponse } from 'next/server';
 import { SECURITY } from '@/config/constants';
 import { isGuestFullAccessEnabledServer } from '@/config/guestMode.server';
+import { getGuestSessionIdFromCookieHeader } from '@/lib/auth/guest-session-utils';
 import { logger } from '@/lib/logging';
 import { createClient } from '@/lib/supabase/server';
 import { securityLogger } from '../security/security-logger';
@@ -74,6 +75,17 @@ export async function checkAPIAuth(request: NextRequest) {
   if (isGuestFullAccessEnabledServer()) {
     setAPIAuthContext(request, { authType: 'guest' });
     return null; // 게스트 풀 액세스 활성화 시 인증 우회
+  }
+
+  // 게스트 세션 쿠키가 있으면 제한 모드에서도 API 접근 허용
+  const cookieHeader = request.headers.get('cookie') ?? '';
+  const guestSessionId = getGuestSessionIdFromCookieHeader(cookieHeader);
+  if (guestSessionId) {
+    setAPIAuthContext(request, {
+      authType: 'guest',
+      userId: guestSessionId,
+    });
+    return null;
   }
 
   // 🧪 E2E 테스트 헤더 확인 (Playwright 테스트용)

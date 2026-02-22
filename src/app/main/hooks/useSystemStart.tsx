@@ -30,7 +30,6 @@ interface UseSystemStartOptions {
   isGitHubUser: boolean;
   authLoading: boolean;
   isMounted: boolean;
-  guestSystemStartEnabled: boolean;
 }
 
 interface StatusInfo {
@@ -47,13 +46,7 @@ interface ButtonConfig {
 }
 
 export function useSystemStart(options: UseSystemStartOptions) {
-  const {
-    isAuthenticated,
-    isGitHubUser,
-    authLoading,
-    isMounted,
-    guestSystemStartEnabled,
-  } = options;
+  const { isAuthenticated, isGitHubUser, authLoading, isMounted } = options;
 
   const router = useRouter();
   const pathname = usePathname();
@@ -215,13 +208,6 @@ export function useSystemStart(options: UseSystemStartOptions) {
       return;
     }
 
-    const isGuest = !isGitHubUser;
-    if (isGuest && !guestSystemStartEnabled) {
-      // alert 대신 모달 표시
-      setShowGuestRestriction(true);
-      return;
-    }
-
     logger.info('✅ 시스템 토글 실행 - GitHub 사용자:', isGitHubUser);
 
     // 카운트다운 중이면 취소 (최적화된 함수 사용)
@@ -276,7 +262,6 @@ export function useSystemStart(options: UseSystemStartOptions) {
     router,
     startMultiUserSystem,
     startSystem,
-    guestSystemStartEnabled,
   ]);
 
   // 버튼 설정 계산

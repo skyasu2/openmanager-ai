@@ -24,10 +24,7 @@ import { useSystemStart } from '@/app/main/hooks';
 import AuthLoadingUI from '@/components/shared/AuthLoadingUI';
 import { OpenManagerLogo } from '@/components/shared/OpenManagerLogo';
 import UnifiedProfileHeader from '@/components/shared/UnifiedProfileHeader';
-import {
-  isGuestFullAccessEnabled,
-  isGuestSystemStartEnabled,
-} from '@/config/guestMode';
+import { isGuestFullAccessEnabled } from '@/config/guestMode';
 import { isVercel } from '@/env-client';
 import { useInitialAuth } from '@/hooks/useInitialAuth';
 import { useUnifiedAdminStore } from '@/stores/useUnifiedAdminStore';
@@ -78,7 +75,6 @@ function Home() {
 
   // 마운트 상태
   const [isMounted, setIsMounted] = useState(false);
-  const guestSystemStartEnabled = isGuestSystemStartEnabled();
 
   // 시스템 시작 훅
   const {
@@ -97,7 +93,6 @@ function Home() {
     isGitHubUser,
     authLoading,
     isMounted,
-    guestSystemStartEnabled,
   });
 
   // 시스템 상태 동기화
@@ -177,16 +172,13 @@ function Home() {
 
   // 접근 권한 계산
   const canAccessSystem = useMemo(
-    () => isGitHubUser || guestSystemStartEnabled || isGuestFullAccessEnabled(),
-    [isGitHubUser, guestSystemStartEnabled]
+    () => isGitHubUser || isAuthenticated || isGuestFullAccessEnabled(),
+    [isGitHubUser, isAuthenticated]
   );
 
   const guestModeMessage = useMemo(
-    () =>
-      guestSystemStartEnabled || isGuestFullAccessEnabled()
-        ? '현재 게스트 모드에서도 시스템 제어 기능을 전부 테스트 중입니다.'
-        : '게스트 모드에서는 읽기 전용 기능만 사용 가능합니다.',
-    [guestSystemStartEnabled]
+    () => '게스트 로그인 후에도 시스템 제어 기능을 사용할 수 있습니다.',
+    []
   );
 
   // 로딩 상태 - authReady 단일 조건 (깜빡임 방지)

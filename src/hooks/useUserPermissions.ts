@@ -1,7 +1,4 @@
-import {
-  isGuestFullAccessEnabled,
-  isGuestSystemStartEnabled,
-} from '@/config/guestMode';
+import { isGuestFullAccessEnabled } from '@/config/guestMode';
 import { useAuth } from '@/hooks/useAuth';
 import { useSession } from '@/hooks/useSupabaseSession';
 import type { UserPermissions, UserType } from '@/types/permissions.types';
@@ -18,10 +15,8 @@ export function useUserPermissions(): UserPermissions {
   const isGuest = !isGitHub && Boolean(guestUser);
 
   const guestFullAccess = isGuestFullAccessEnabled();
-  const guestSystemStartAllowed = isGuestSystemStartEnabled();
   const guestHasSession = isGuest;
-  const guestCanControlSystem =
-    guestFullAccess || (guestHasSession && guestSystemStartAllowed);
+  const guestCanControlSystem = guestHasSession || guestFullAccess;
   const guestCanAccessDashboard = guestHasSession || guestFullAccess;
   const resolvedUser = session?.user ||
     guestUser || { name: '사용자', email: 'guest@example.com' };

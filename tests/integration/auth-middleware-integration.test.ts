@@ -111,6 +111,29 @@ describe('Auth Middleware Integration', () => {
       });
     });
 
+    describe('게스트 세션 쿠키 인증', () => {
+      it('제한 모드에서도 guest_session 쿠키가 있으면 인증 통과', async () => {
+        // Given
+        process.env.NODE_ENV = 'production';
+        vi.mocked(isGuestFullAccessEnabledServer).mockReturnValue(false);
+        const request = new NextRequest('http://localhost:3000/api/test', {
+          headers: {
+            Cookie: 'auth_session_id=guest-session-abc-123',
+          },
+        });
+
+        // When
+        const result = await checkAPIAuth(request);
+
+        // Then
+        expect(result).toBeNull();
+        expect(getAPIAuthContext(request)).toMatchObject({
+          authType: 'guest',
+          userId: 'guest-session-abc-123',
+        });
+      });
+    });
+
     describe('E2E 테스트 인증', () => {
       it('x-test-secret 헤더로 인증 우회', async () => {
         // Given
