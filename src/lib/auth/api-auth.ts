@@ -8,12 +8,12 @@ import { createHash, timingSafeEqual } from 'crypto';
 import { type NextRequest, NextResponse } from 'next/server';
 import { SECURITY } from '@/config/constants';
 import { isGuestFullAccessEnabledServer } from '@/config/guestMode.server';
+import { verifyGuestSessionProof } from '@/lib/auth/guest-session-proof.server';
 import {
   AUTH_SESSION_ID_KEY,
   GUEST_AUTH_PROOF_COOKIE_KEY,
   getCookieValueFromHeader,
 } from '@/lib/auth/guest-session-utils';
-import { verifyGuestSessionProof } from '@/lib/auth/guest-session-proof.server';
 import { logger } from '@/lib/logging';
 import { createClient } from '@/lib/supabase/server';
 import { securityLogger } from '../security/security-logger';

@@ -7,13 +7,13 @@ import {
   getRequestCountryCode,
   isGuestCountryBlocked,
 } from '@/lib/auth/guest-region-policy';
+import { createGuestSessionProof } from '@/lib/auth/guest-session-proof.server';
 import {
   AUTH_SESSION_ID_KEY,
   AUTH_TYPE_KEY,
   GUEST_AUTH_PROOF_COOKIE_KEY,
   LEGACY_GUEST_SESSION_COOKIE_KEY,
 } from '@/lib/auth/guest-session-utils';
-import { createGuestSessionProof } from '@/lib/auth/guest-session-proof.server';
 import { recordLoginEvent } from '@/lib/auth/login-audit';
 import { getRedisClient } from '@/lib/redis/client';
 import { rateLimiters, withRateLimit } from '@/lib/security/rate-limiter';

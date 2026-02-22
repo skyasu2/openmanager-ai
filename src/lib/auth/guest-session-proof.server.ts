@@ -75,7 +75,10 @@ export function createGuestSessionProof(
   if (!secret) return null;
 
   const issuedAtMs = options.issuedAtMs ?? Date.now();
-  const maxAgeSeconds = Math.max(1, options.maxAgeSeconds ?? DEFAULT_MAX_AGE_SECONDS);
+  const maxAgeSeconds = Math.max(
+    1,
+    options.maxAgeSeconds ?? DEFAULT_MAX_AGE_SECONDS
+  );
 
   const payload: GuestSessionProofPayload = {
     sid: normalizedSessionId,
