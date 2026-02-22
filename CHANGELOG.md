@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.3.0](https://github.com/skyasu2/openmanager-ai/compare/v8.2.0...v8.3.0) (2026-02-22)
+
+
+### Features
+
+* **auth:** add HMAC-signed guest session proof to prevent cookie forgery ([dfa86e8](https://github.com/skyasu2/openmanager-ai/commit/dfa86e81a3d459079b66ad95e615d9bc24e11600))
+* **hooks:** add prepare-commit-msg hook for AI co-author auto-tagging ([325a1d5](https://github.com/skyasu2/openmanager-ai/commit/325a1d59ead911c168f6474856cea2320d38bac7))
+* **security:** add GPL v3 license and guest PIN brute-force protection ([3905ef2](https://github.com/skyasu2/openmanager-ai/commit/3905ef295f5d72e17beda696340a82788b6c26d8))
+
+
+### Bug Fixes
+
+* **ui:** unify AI gradient animation across logo, text, and button ([d94bcce](https://github.com/skyasu2/openmanager-ai/commit/d94bcce0cbca62d6259111efd8f6d726d3b001a1))
+
 ## [8.2.0](https://github.com/skyasu2/openmanager-ai/compare/v8.1.0...v8.2.0) (2026-02-22)
 
 

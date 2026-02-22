@@ -1,6 +1,6 @@
 {
   "name": "openmanager-ai",
-  "version": "8.2.0",
+  "version": "8.3.0",
   "private": true,
   "scripts": {
     "docs:check": "bash scripts/docs/check-docs.sh",
