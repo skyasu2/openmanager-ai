@@ -8,7 +8,7 @@
 > Canonical: docs/status.md
 > Tags: status,changelog,release
 
-**마지막 업데이트**: 2026-02-19
+**마지막 업데이트**: 2026-02-22
 
 ---
 
@@ -21,6 +21,13 @@
 ---
 
 ## 🔄 Recent Changes (v8.1.0)
+
+- **v8.1.0** (2026-02-22)
+  - feat(auth): 이메일 Magic Link 로그인 추가 (Supabase OTP, 소셜 로그인과 병행)
+  - feat(observability): 런타임 로그 레벨 API + AIDebugPanel UI 토글 추가
+  - refactor(auth): dead code 20+ 파일 삭제, 게스트 정책 단순화 (country-code 기반)
+  - fix(logging): Cloud Run GCP severity 매핑 경량화 (외부 의존성 제거)
+  - copy: 랜딩 히어로 텍스트 및 Feature Card 메시징 개선
 
 - **v8.1.0** (2026-02-19)
   - feat(storybook): UI + Shared 컴포넌트 스토리 22개 추가 (UI 17 + Shared 5, 커버리지 1%→26%)
