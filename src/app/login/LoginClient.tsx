@@ -469,16 +469,25 @@ export default function LoginClient() {
         }
 
         if (!guestLoginAuditResponse.ok) {
-          debug.warn(
-            '⚠️ 게스트 로그인 감사 로그 저장 실패 (로그인은 계속 진행):',
-            guestLoginAuditResponse.status
+          const payload = (await guestLoginAuditResponse.json().catch(() => ({
+            message:
+              '게스트 로그인 검증에 실패했습니다. 잠시 후 다시 시도해주세요.',
+          }))) as { message?: string };
+
+          await authStateManager.clearAllAuthData('guest');
+          setErrorMessage(
+            payload.message ||
+              '게스트 로그인 검증에 실패했습니다. 잠시 후 다시 시도해주세요.'
           );
+          return;
         }
       } catch (auditError) {
-        debug.warn(
-          '⚠️ 게스트 로그인 감사 로그 API 호출 실패 (로그인은 계속 진행):',
-          auditError
+        debug.warn('⚠️ 게스트 로그인 감사 로그 API 호출 실패:', auditError);
+        await authStateManager.clearAllAuthData('guest');
+        setErrorMessage(
+          '게스트 로그인 검증 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.'
         );
+        return;
       }
 
       setGuestSession({ sessionId, user: guestUser });

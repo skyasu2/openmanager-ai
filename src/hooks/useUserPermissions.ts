@@ -19,9 +19,10 @@ export function useUserPermissions(): UserPermissions {
 
   const guestFullAccess = isGuestFullAccessEnabled();
   const guestSystemStartAllowed = isGuestSystemStartEnabled();
+  const guestHasSession = isGuest;
   const guestCanControlSystem =
-    guestFullAccess || (isGuest && guestSystemStartAllowed);
-  const guestCanAccessDashboard = guestFullAccess;
+    guestFullAccess || (guestHasSession && guestSystemStartAllowed);
+  const guestCanAccessDashboard = guestHasSession || guestFullAccess;
   const resolvedUser = session?.user ||
     guestUser || { name: '사용자', email: 'guest@example.com' };
 
@@ -60,7 +61,7 @@ export function useUserPermissions(): UserPermissions {
     isGeneralUser: true,
     isAdmin: isGitHub || guestFullAccess,
     isGitHubAuthenticated: isGitHub,
-    isPinAuthenticated: guestFullAccess,
+    isPinAuthenticated: guestHasSession || guestFullAccess,
 
     canToggleAI: true,
 

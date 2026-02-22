@@ -79,6 +79,31 @@ describe('POST /api/auth/guest-login', () => {
     expect(mockRecordLoginEvent).toHaveBeenCalledTimes(1);
   });
 
+  it('PIN 5회 연속 실패 시 1분 잠금(429)을 반환한다', async () => {
+    const makeRequest = () =>
+      new NextRequest('https://openmanager.test/api/auth/guest-login', {
+        method: 'POST',
+        body: JSON.stringify({
+          sessionId: 'guest-session-lock',
+          guestUserId: 'guest-user-lock',
+          guestPin: '0000',
+        }),
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+    for (let attempt = 1; attempt <= 4; attempt += 1) {
+      const response = await POST(makeRequest());
+      expect(response.status).toBe(403);
+    }
+
+    const lockedResponse = await POST(makeRequest());
+    const body = await lockedResponse.json();
+
+    expect(lockedResponse.status).toBe(429);
+    expect(body.error).toBe('guest_pin_rate_limited');
+    expect(body.retryAfterSeconds).toBeGreaterThan(0);
+  });
+
   it('PIN이 맞아도 차단 국가면 403을 반환한다', async () => {
     mockGetRequestCountryCode.mockReturnValue('CN');
     mockIsGuestCountryBlocked.mockReturnValue(true);

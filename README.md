@@ -5,6 +5,7 @@
 
 ![Docs Quality](https://github.com/skyasu2/openmanager-ai/actions/workflows/docs-quality.yml/badge.svg)
 
+![License](https://img.shields.io/badge/License-GPL_v3-blue.svg?style=for-the-badge)
 ![Next.js](https://img.shields.io/badge/Next.js-black?style=for-the-badge&logo=next.js&logoColor=white)
 ![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
 ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
@@ -215,8 +216,7 @@ Job Queue SSE 폴링은 Redis 명령어 예산 보호를 위해 기본값을 아
 
 ## License
 
-Copyright © 2026. All Rights Reserved.
-본 프로젝트는 개인 포트폴리오 목적으로 공개되었으며, 무단 복제 및 재배포를 금지합니다.
+This project is licensed under the **GNU General Public License v3.0** - see the [LICENSE](LICENSE) file for details.
 
 ---
 

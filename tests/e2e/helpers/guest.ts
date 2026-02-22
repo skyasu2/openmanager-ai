@@ -18,6 +18,8 @@ export interface GuestLoginOptions {
   skipLandingNavigation?: boolean;
   /** 로그인 페이지로 직접 이동할지 여부 (기본값: false - 메인에서 로그인 버튼 클릭) */
   navigateToLoginPage?: boolean;
+  /** restricted 모드에서 prompt에 입력할 게스트 PIN (미지정 시 PLAYWRIGHT_GUEST_PIN 사용) */
+  guestPin?: string;
 }
 
 /**
@@ -201,6 +203,7 @@ export async function guestLogin(
     waitForPath = '/',
     skipLandingNavigation = false,
     navigateToLoginPage: goToLoginPage = true,
+    guestPin,
   } = options;
 
   await ensureVercelBypassCookie(page);
@@ -216,7 +219,26 @@ export async function guestLogin(
   }
 
   // 게스트 로그인 버튼 클릭
+  // restricted 모드에서는 window.prompt(PIN)가 뜰 수 있어 미리 대기한다.
+  const pinPromptPromise = page
+    .waitForEvent('dialog', { timeout: 1200 })
+    .catch(() => null);
+
   await clickLoginButton(page, 'guest');
+
+  const pinPrompt = await pinPromptPromise;
+  if (pinPrompt?.type() === 'prompt') {
+    const resolvedPin = (guestPin ?? process.env.PLAYWRIGHT_GUEST_PIN ?? '').trim();
+
+    if (/^\d{4}$/.test(resolvedPin)) {
+      await pinPrompt.accept(resolvedPin);
+    } else {
+      await pinPrompt.dismiss();
+      throw new Error(
+        '게스트 PIN prompt가 노출되었습니다. PLAYWRIGHT_GUEST_PIN(4자리)을 설정하거나 guestPin 옵션을 전달하세요.'
+      );
+    }
+  }
 
   // NOTE:
   // waitForPath 기본값 '/'는 '/login'도 매치되어 조기 통과될 수 있으므로,
