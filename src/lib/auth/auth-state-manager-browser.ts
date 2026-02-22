@@ -152,7 +152,10 @@ export function getGuestAuthState(
 /**
  * 통합 저장소 정리 (localStorage + sessionStorage + 쿠키)
  */
-export function clearBrowserAuthStorage(authType?: 'github' | 'guest'): void {
+export function clearBrowserAuthStorage(
+  authType?: 'github' | 'guest',
+  skipCookies?: boolean
+): void {
   if (typeof window === 'undefined') return;
 
   const keysToRemove = Object.keys(localStorage).filter((key) => {
@@ -202,7 +205,8 @@ export function clearBrowserAuthStorage(authType?: 'github' | 'guest'): void {
       });
   }
 
-  if (typeof document !== 'undefined') {
+  // skipCookies: setGuestAuth() 호출 시 서버 API가 설정한 쿠키를 보존
+  if (!skipCookies && typeof document !== 'undefined') {
     const isTestMode =
       document.cookie.includes('test_mode=enabled') &&
       document.cookie.includes('vercel_test_token=');

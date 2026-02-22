@@ -187,7 +187,8 @@ export class AuthStateManager {
     }
 
     // 1.6. 🛡️ localStorage 완전 정리 (admin_mode 등 관리자 데이터 포함)
-    this.clearStorage(); // 모든 인증 관련 데이터 정리
+    // skipCookies: 서버 API가 설정한 auth_session_id/guest_auth_proof 쿠키 보존
+    this.clearStorage(undefined, true);
 
     // 2. 게스트 세션 설정
     if (typeof window !== 'undefined') {
@@ -304,8 +305,11 @@ export class AuthStateManager {
   /**
    * 통합 저장소 정리 (localStorage + sessionStorage + 쿠키)
    */
-  private clearStorage(authType?: 'github' | 'guest'): void {
-    clearBrowserAuthStorage(authType);
+  private clearStorage(
+    authType?: 'github' | 'guest',
+    skipCookies?: boolean
+  ): void {
+    clearBrowserAuthStorage(authType, skipCookies);
   }
 }
 

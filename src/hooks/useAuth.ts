@@ -131,13 +131,10 @@ export function useAuth(): UseAuthResult {
         return;
       }
 
-      // 세션 유효성 확인
+      // 세션 유효성 확인 (getAuthState가 만료/무효 세션을 내부적으로 검증)
       const currentState = await authStateManager.getAuthState();
 
-      if (
-        currentState.isAuthenticated &&
-        currentState.sessionId === storedSessionId
-      ) {
+      if (currentState.isAuthenticated) {
         setUser(currentState.user);
         setSessionId(storedSessionId);
       } else {
