@@ -139,10 +139,7 @@ async function registerPinFailure(identity: string): Promise<{
 
   if (nextCount >= GUEST_PIN_MAX_FAILURES) {
     guestPinFailStore.delete(identity);
-    guestPinLockStore.set(
-      identity,
-      Date.now() + GUEST_PIN_LOCK_SECONDS * 1000
-    );
+    guestPinLockStore.set(identity, Date.now() + GUEST_PIN_LOCK_SECONDS * 1000);
 
     return {
       count: nextCount,

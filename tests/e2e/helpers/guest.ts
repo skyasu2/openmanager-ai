@@ -228,7 +228,11 @@ export async function guestLogin(
 
   const pinPrompt = await pinPromptPromise;
   if (pinPrompt?.type() === 'prompt') {
-    const resolvedPin = (guestPin ?? process.env.PLAYWRIGHT_GUEST_PIN ?? '').trim();
+    const resolvedPin = (
+      guestPin ??
+      process.env.PLAYWRIGHT_GUEST_PIN ??
+      ''
+    ).trim();
 
     if (/^\d{4}$/.test(resolvedPin)) {
       await pinPrompt.accept(resolvedPin);
