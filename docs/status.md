@@ -4,7 +4,7 @@
 > Owner: documentation
 > Status: Active
 > Doc type: Status
-> Last reviewed: 2026-02-19
+> Last reviewed: 2026-02-22
 > Canonical: docs/status.md
 > Tags: status,changelog,release
 
@@ -20,14 +20,22 @@
 
 ---
 
-## 🔄 Recent Changes (v8.1.0)
+## 🔄 Recent Changes (v8.2.0)
 
-- **v8.1.0** (2026-02-22)
+- **v8.2.0+** (2026-02-22, post-release)
+  - feat(hooks): AI Co-Author 자동 태그 git hook (Gemini/Claude/Codex 지원)
+  - docs(architecture): 복원력 문서 보강 — 타임아웃 계층, 쿼타 트래커, 에러 분류 정정
+  - refactor(auth): 게스트 접근 단순화 — guestSystemStartEnabled 제거, 세션 쿠키 기반
+  - fix(ui): AI 그라데이션 애니메이션 통일 (로고, 텍스트, 버튼 동일 스타일)
+  - feat(security): GPL v3 라이선스 적용 + 게스트 PIN 브루트포스 방어 (5회 → 1분 잠금)
+
+- **v8.2.0** (2026-02-22)
   - feat(auth): 이메일 Magic Link 로그인 추가 (Supabase OTP, 소셜 로그인과 병행)
   - feat(observability): 런타임 로그 레벨 API + AIDebugPanel UI 토글 추가
   - refactor(auth): dead code 20+ 파일 삭제, 게스트 정책 단순화 (country-code 기반)
   - fix(logging): Cloud Run GCP severity 매핑 경량화 (외부 의존성 제거)
   - copy: 랜딩 히어로 텍스트 및 Feature Card 메시징 개선
+  - chore(deps): lucide-react 0.575.0, @storybook/addon-mcp 0.3.1, @tailwindcss/postcss 4.2.0
 
 - **v8.1.0** (2026-02-19)
   - feat(storybook): UI + Shared 컴포넌트 스토리 22개 추가 (UI 17 + Shared 5, 커버리지 1%→26%)
@@ -208,7 +216,7 @@
 
 ---
 
-## 🏗️ Technical Stack (v8.0.0)
+## 🏗️ Technical Stack (v8.2.0)
 
 **Core Frameworks** (2025 Standard)
 - **Next.js**: `v16.1.6` (App Router, Server Components)
@@ -217,8 +225,8 @@
 - **Node.js**: `v24.x` (Current, engines: >=24.0.0 <25.0.0)
 
 **UI & Styling**
-- **Tailwind CSS**: `v4.1.18` (PostCSS optimized)
-- **Component Lib**: Radix UI (Latest), Lucide React `v0.564.0`
+- **Tailwind CSS**: `v4.2.0` (PostCSS optimized)
+- **Component Lib**: Radix UI (Latest), Lucide React `v0.575.0`
 - **Animation**: tailwindcss-animate (CSS-based, Framer Motion 제거됨)
 
 **State & Data**
@@ -243,7 +251,7 @@
 - **Utility**: tailwind-merge `v3.4.1`
 
 **AI Ecosystem** (상세: [AI Engine Architecture](./reference/architecture/ai/ai-engine-architecture.md))
-- **SDK**: Vercel AI SDK `v6.0.86` (`@ai-sdk/*` 패키지 포함, Cloud Run: `^6.0.50`)
+- **SDK**: Vercel AI SDK `v6.0.97` (`@ai-sdk/*` 패키지 포함, Cloud Run: `^6.0.50`)
 - **Native Patterns** (v6.1.0):
   - `finalAnswer` 도구: `stopWhen: [hasToolCall('finalAnswer'), stepCountIs(5)]`
   - `UIMessageStream`: 네이티브 스트리밍 프로토콜
@@ -267,12 +275,12 @@
 
 **AI CLI Tools** (2026-02 기준)
 - **Claude Code**: Opus 4.6 (Interactive Development)
-- **Codex CLI**: `v0.101.0` / GPT-5.3 Codex (Code Review - 2-AI Rotation)
+- **Codex CLI**: `v0.104.0` / GPT-5.3 Codex (Code Review - 2-AI Rotation)
 - **Gemini CLI**: Gemini 3 Pro (Code Review - 2-AI Rotation)
 
 **Quality Control**
 - **Test**: Vitest `v4.0.18`, Playwright `v1.58.2`
-- **Lint/Format**: Biome `v2.4.0`
+- **Lint/Format**: Biome `v2.4.4`
 
 ---
 
@@ -440,12 +448,12 @@
 
 ---
 
-## 📊 품질 지표 (2026-02-18 기준)
+## 📊 품질 지표 (2026-02-22 기준)
 
 | Metric | Status | Detail |
 |:---:|:---:|---|
 | **Build** | ✅ Passing | `npm run build` (Next.js 16.1.6) 성공 |
-| **Test** | ✅ Passing | 128개 테스트 파일 (src/ 74 + cloud-run/ 18 + tests/ 36) |
+| **Test** | ✅ Passing | 196 tests PASS (`test:quick`) |
 | **Lint** | ✅ Clean | Biome Check Pass (No Errors) |
 | **E2E** | ✅ 100% | 30/30 Scenarios Passing (Playwright) |
 | **MCP** | ✅ 9/9 | 모든 MCP 서버 정상 연결 |
