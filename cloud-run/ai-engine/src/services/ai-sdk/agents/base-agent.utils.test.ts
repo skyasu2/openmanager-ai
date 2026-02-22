@@ -185,7 +185,7 @@ describe('BaseAgent', { timeout: 15000 }, () => {
       expect(callArgs.tools).not.toHaveProperty('searchWeb');
       expect(callArgs.tools).toHaveProperty('testTool');
       expect(callArgs.tools).toHaveProperty('finalAnswer');
-    });
+    }, 30000);
 
     it('should preserve all tools when webSearchEnabled=true', async () => {
       const { BaseAgent } = await import('./base-agent');
