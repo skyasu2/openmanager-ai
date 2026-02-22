@@ -45,6 +45,7 @@ import { POST } from './route';
 
 describe('POST /api/auth/guest-login', () => {
   const originalGuestPin = process.env.GUEST_LOGIN_PIN;
+  const originalSessionSecret = process.env.SESSION_SECRET;
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -53,10 +54,12 @@ describe('POST /api/auth/guest-login', () => {
     mockIsGuestCountryBlocked.mockReturnValue(false);
     mockIsGuestFullAccessEnabledServer.mockReturnValue(false);
     process.env.GUEST_LOGIN_PIN = '1234';
+    process.env.SESSION_SECRET = 'test-session-secret-for-guest-login-route';
   });
 
   afterEach(() => {
     process.env.GUEST_LOGIN_PIN = originalGuestPin;
+    process.env.SESSION_SECRET = originalSessionSecret;
   });
 
   it('PIN이 없거나 불일치하면 403을 반환한다', async () => {
@@ -146,9 +149,13 @@ describe('POST /api/auth/guest-login', () => {
 
     const response = await POST(request);
     const body = await response.json();
+    const setCookieHeader = response.headers.get('set-cookie') || '';
 
     expect(response.status).toBe(200);
     expect(body.success).toBe(true);
+    expect(body.sessionId).toBe('guest-session-2');
+    expect(setCookieHeader).toContain('auth_session_id=');
+    expect(setCookieHeader).toContain('guest_auth_proof=');
     expect(mockRecordLoginEvent).toHaveBeenCalledTimes(1);
   });
 

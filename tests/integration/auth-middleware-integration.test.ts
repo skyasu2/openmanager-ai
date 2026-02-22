@@ -48,6 +48,8 @@ vi.mock('@/lib/supabase/server', () => ({
 // Import after mocks
 import { isGuestFullAccessEnabledServer } from '@/config/guestMode.server';
 import { checkAPIAuth, getAPIAuthContext, withAuth } from '@/lib/auth/api-auth';
+import { createGuestSessionProof } from '@/lib/auth/guest-session-proof.server';
+import { GUEST_AUTH_PROOF_COOKIE_KEY } from '@/lib/auth/guest-session-utils';
 
 describe('Auth Middleware Integration', () => {
   const originalEnv = process.env;
@@ -55,6 +57,7 @@ describe('Auth Middleware Integration', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     process.env = { ...originalEnv };
+    process.env.SESSION_SECRET = 'test-session-secret-for-auth-integration';
   });
 
   afterEach(() => {
@@ -112,13 +115,16 @@ describe('Auth Middleware Integration', () => {
     });
 
     describe('게스트 세션 쿠키 인증', () => {
-      it('제한 모드에서도 guest_session 쿠키가 있으면 인증 통과', async () => {
+      it('제한 모드에서도 서명 검증된 guest 세션 쿠키가 있으면 인증 통과', async () => {
         // Given
         process.env.NODE_ENV = 'production';
         vi.mocked(isGuestFullAccessEnabledServer).mockReturnValue(false);
+        const sessionId = 'guest-session-abc-123';
+        const proof = createGuestSessionProof(sessionId);
+        expect(proof).toBeTruthy();
         const request = new NextRequest('http://localhost:3000/api/test', {
           headers: {
-            Cookie: 'auth_session_id=guest-session-abc-123',
+            Cookie: `auth_session_id=${sessionId}; ${GUEST_AUTH_PROOF_COOKIE_KEY}=${proof}`,
           },
         });
 
@@ -129,8 +135,25 @@ describe('Auth Middleware Integration', () => {
         expect(result).toBeNull();
         expect(getAPIAuthContext(request)).toMatchObject({
           authType: 'guest',
-          userId: 'guest-session-abc-123',
+          userId: sessionId,
         });
+      });
+
+      it('proof 쿠키가 없으면 401을 반환한다', async () => {
+        process.env.NODE_ENV = 'production';
+        vi.mocked(isGuestFullAccessEnabledServer).mockReturnValue(false);
+        const request = new NextRequest('http://localhost:3000/api/test', {
+          headers: {
+            Cookie: 'auth_session_id=guest-session-abc-123',
+          },
+        });
+
+        const result = await checkAPIAuth(request);
+
+        expect(result).toBeInstanceOf(NextResponse);
+        if (result) {
+          expect(result.status).toBe(401);
+        }
       });
     });
 

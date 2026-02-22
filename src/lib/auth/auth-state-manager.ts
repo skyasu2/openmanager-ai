@@ -15,7 +15,6 @@ import {
   generateClientSessionId,
   getGuestAuthState,
   migrateLegacyAuthCookieKeys,
-  SESSION_MAX_AGE_MS,
 } from './auth-state-manager-browser';
 import type { AuthState, AuthUser } from './auth-state-manager-types';
 import {
@@ -200,13 +199,6 @@ export class AuthStateManager {
       localStorage.setItem(AUTH_SESSION_ID_KEY, sessionId);
       localStorage.setItem(AUTH_USER_KEY, JSON.stringify(guestUser));
       localStorage.setItem(AUTH_CREATED_AT_KEY, createdAt.toString()); // 7일 만료용
-
-      // 쿠키에 세션 ID 저장 (7일 만료)
-      // 🔧 localhost(HTTP)에서도 쿠키가 설정되도록 Secure 플래그 조건부 적용
-      const expires = new Date(Date.now() + SESSION_MAX_AGE_MS);
-      const isProduction = window.location.protocol === 'https:';
-      const secureFlag = isProduction ? '; Secure' : '';
-      document.cookie = `${AUTH_SESSION_ID_KEY}=${sessionId}; path=/; expires=${expires.toUTCString()}${secureFlag}; SameSite=Lax`;
 
       logger.info('🔐 게스트 로그인 설정 완료', { userId: guestUser.id });
     }

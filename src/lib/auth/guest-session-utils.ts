@@ -3,8 +3,12 @@ export const AUTH_TYPE_KEY = 'auth_type';
 export const AUTH_USER_KEY = 'auth_user';
 export const AUTH_CREATED_AT_KEY = 'auth_created_at';
 export const LEGACY_GUEST_SESSION_COOKIE_KEY = 'guest_session_id';
+export const GUEST_AUTH_PROOF_COOKIE_KEY = 'guest_auth_proof';
 
-function readCookieValue(cookieHeader: string, key: string): string | null {
+export function getCookieValueFromHeader(
+  cookieHeader: string,
+  key: string
+): string | null {
   const match = cookieHeader
     .split(';')
     .map((cookie) => cookie.trim())
@@ -22,8 +26,8 @@ export function getGuestSessionIdFromCookieHeader(
   cookieHeader: string
 ): string | null {
   return (
-    readCookieValue(cookieHeader, AUTH_SESSION_ID_KEY) ||
-    readCookieValue(cookieHeader, LEGACY_GUEST_SESSION_COOKIE_KEY)
+    getCookieValueFromHeader(cookieHeader, AUTH_SESSION_ID_KEY) ||
+    getCookieValueFromHeader(cookieHeader, LEGACY_GUEST_SESSION_COOKIE_KEY)
   );
 }
 

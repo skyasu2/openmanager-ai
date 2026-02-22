@@ -1,4 +1,4 @@
-import { createHash } from 'node:crypto';
+import { createHash, randomUUID } from 'node:crypto';
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
@@ -7,6 +7,13 @@ import {
   getRequestCountryCode,
   isGuestCountryBlocked,
 } from '@/lib/auth/guest-region-policy';
+import {
+  AUTH_SESSION_ID_KEY,
+  AUTH_TYPE_KEY,
+  GUEST_AUTH_PROOF_COOKIE_KEY,
+  LEGACY_GUEST_SESSION_COOKIE_KEY,
+} from '@/lib/auth/guest-session-utils';
+import { createGuestSessionProof } from '@/lib/auth/guest-session-proof.server';
 import { recordLoginEvent } from '@/lib/auth/login-audit';
 import { getRedisClient } from '@/lib/redis/client';
 import { rateLimiters, withRateLimit } from '@/lib/security/rate-limiter';
@@ -23,10 +30,17 @@ export const maxDuration = 10;
 
 const GUEST_PIN_MAX_FAILURES = 5;
 const GUEST_PIN_LOCK_SECONDS = 60;
+const GUEST_PIN_FAILURE_WINDOW_SECONDS = 15 * 60;
 const GUEST_PIN_FAIL_PREFIX = 'auth:guest:pin:fail';
 const GUEST_PIN_LOCK_PREFIX = 'auth:guest:pin:lock';
+const GUEST_SESSION_COOKIE_MAX_AGE_SECONDS = 7 * 24 * 60 * 60;
 
-const guestPinFailStore = new Map<string, number>();
+interface LocalPinFailureState {
+  count: number;
+  expiresAtMs: number;
+}
+
+const guestPinFailStore = new Map<string, LocalPinFailureState>();
 const guestPinLockStore = new Map<string, number>();
 
 function secureEquals(left: string, right: string): boolean {
@@ -111,6 +125,11 @@ async function registerPinFailure(identity: string): Promise<{
         throw new Error('Invalid redis INCR result');
       }
 
+      // 연속 실패는 유한 관찰 윈도우(15분)에서만 누적
+      if (count <= 1) {
+        await redis.expire(failKey, GUEST_PIN_FAILURE_WINDOW_SECONDS);
+      }
+
       if (count >= GUEST_PIN_MAX_FAILURES) {
         await redis.set(lockKey, '1', { ex: GUEST_PIN_LOCK_SECONDS });
         await redis.del(failKey);
@@ -121,6 +140,11 @@ async function registerPinFailure(identity: string): Promise<{
           locked: true,
           retryAfterSeconds: GUEST_PIN_LOCK_SECONDS,
         };
+      }
+
+      const ttl = Number(await redis.ttl(failKey));
+      if (!Number.isFinite(ttl) || ttl <= 0) {
+        await redis.expire(failKey, GUEST_PIN_FAILURE_WINDOW_SECONDS);
       }
 
       return {
@@ -134,7 +158,10 @@ async function registerPinFailure(identity: string): Promise<{
     }
   }
 
-  const currentCount = guestPinFailStore.get(identity) ?? 0;
+  const previousState = guestPinFailStore.get(identity);
+  const now = Date.now();
+  const currentCount =
+    previousState && previousState.expiresAtMs > now ? previousState.count : 0;
   const nextCount = currentCount + 1;
 
   if (nextCount >= GUEST_PIN_MAX_FAILURES) {
@@ -149,7 +176,10 @@ async function registerPinFailure(identity: string): Promise<{
     };
   }
 
-  guestPinFailStore.set(identity, nextCount);
+  guestPinFailStore.set(identity, {
+    count: nextCount,
+    expiresAtMs: now + GUEST_PIN_FAILURE_WINDOW_SECONDS * 1000,
+  });
   return {
     count: nextCount,
     attemptsLeft: Math.max(0, GUEST_PIN_MAX_FAILURES - nextCount),
@@ -193,11 +223,19 @@ async function handlePOST(request: NextRequest): Promise<NextResponse> {
   }
 
   const { sessionId, guestUserId, guestEmail, guestPin } = bodyResult.data;
+  const normalizedSessionId =
+    typeof sessionId === 'string' ? sessionId.trim() : '';
+  const pinAttemptSessionId =
+    normalizedSessionId.length > 0 ? normalizedSessionId : undefined;
+  const issuedSessionId =
+    normalizedSessionId.length >= 8 && normalizedSessionId.length <= 255
+      ? normalizedSessionId
+      : randomUUID();
   const guestFullAccessEnabled = isGuestFullAccessEnabledServer();
   const configuredPin = process.env.GUEST_LOGIN_PIN?.trim() || '';
   const pinAttemptIdentity = buildPinAttemptIdentity(
     request,
-    sessionId,
+    pinAttemptSessionId,
     guestUserId
   );
 
@@ -209,7 +247,7 @@ async function handlePOST(request: NextRequest): Promise<NextResponse> {
         provider: 'guest',
         actionType: 'login_blocked',
         success: false,
-        sessionId: sessionId ?? null,
+        sessionId: issuedSessionId,
         guestUserId: guestUserId ?? null,
         userEmail: guestEmail ?? null,
         errorMessage: 'Guest login PIN temporarily locked',
@@ -241,7 +279,7 @@ async function handlePOST(request: NextRequest): Promise<NextResponse> {
         provider: 'guest',
         actionType: 'login_blocked',
         success: false,
-        sessionId: sessionId ?? null,
+        sessionId: issuedSessionId,
         guestUserId: guestUserId ?? null,
         userEmail: guestEmail ?? null,
         errorMessage: 'Guest login PIN is not configured',
@@ -272,7 +310,7 @@ async function handlePOST(request: NextRequest): Promise<NextResponse> {
           provider: 'guest',
           actionType: 'login_blocked',
           success: false,
-          sessionId: sessionId ?? null,
+          sessionId: issuedSessionId,
           guestUserId: guestUserId ?? null,
           userEmail: guestEmail ?? null,
           errorMessage: 'Guest login PIN lock activated',
@@ -304,7 +342,7 @@ async function handlePOST(request: NextRequest): Promise<NextResponse> {
         provider: 'guest',
         actionType: 'login_blocked',
         success: false,
-        sessionId: sessionId ?? null,
+        sessionId: issuedSessionId,
         guestUserId: guestUserId ?? null,
         userEmail: guestEmail ?? null,
         errorMessage: 'Guest login PIN mismatch',
@@ -337,7 +375,7 @@ async function handlePOST(request: NextRequest): Promise<NextResponse> {
       provider: 'guest',
       actionType: 'login_blocked',
       success: false,
-      sessionId: sessionId ?? null,
+      sessionId: issuedSessionId,
       guestUserId: guestUserId ?? null,
       userEmail: guestEmail ?? null,
       errorMessage: 'Guest login blocked by country policy',
@@ -360,7 +398,7 @@ async function handlePOST(request: NextRequest): Promise<NextResponse> {
     request,
     provider: 'guest',
     success: true,
-    sessionId: sessionId ?? null,
+    sessionId: issuedSessionId,
     guestUserId: guestUserId ?? null,
     userEmail: guestEmail ?? null,
     metadata: {
@@ -368,10 +406,65 @@ async function handlePOST(request: NextRequest): Promise<NextResponse> {
     },
   });
 
-  return NextResponse.json({
+  const guestSessionProof = createGuestSessionProof(issuedSessionId, {
+    maxAgeSeconds: GUEST_SESSION_COOKIE_MAX_AGE_SECONDS,
+  });
+  if (!guestSessionProof) {
+    return NextResponse.json(
+      {
+        error: 'guest_session_issue_failed',
+        message:
+          '게스트 세션 발급 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.',
+      },
+      { status: 500 }
+    );
+  }
+
+  const secureCookie = process.env.NODE_ENV === 'production';
+  const response = NextResponse.json({
     success: true,
     countryCode,
+    sessionId: issuedSessionId,
   });
+
+  response.cookies.set({
+    name: AUTH_SESSION_ID_KEY,
+    value: issuedSessionId,
+    path: '/',
+    maxAge: GUEST_SESSION_COOKIE_MAX_AGE_SECONDS,
+    httpOnly: false,
+    sameSite: 'strict',
+    secure: secureCookie,
+  });
+  response.cookies.set({
+    name: GUEST_AUTH_PROOF_COOKIE_KEY,
+    value: guestSessionProof,
+    path: '/',
+    maxAge: GUEST_SESSION_COOKIE_MAX_AGE_SECONDS,
+    httpOnly: true,
+    sameSite: 'strict',
+    secure: secureCookie,
+  });
+  response.cookies.set({
+    name: LEGACY_GUEST_SESSION_COOKIE_KEY,
+    value: '',
+    path: '/',
+    maxAge: 0,
+    httpOnly: false,
+    sameSite: 'strict',
+    secure: secureCookie,
+  });
+  response.cookies.set({
+    name: AUTH_TYPE_KEY,
+    value: '',
+    path: '/',
+    maxAge: 0,
+    httpOnly: false,
+    sameSite: 'strict',
+    secure: secureCookie,
+  });
+
+  return response;
 }
 
 export const POST = withRateLimit(rateLimiters.default, handlePOST);

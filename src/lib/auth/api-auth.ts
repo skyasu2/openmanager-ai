@@ -8,7 +8,12 @@ import { createHash, timingSafeEqual } from 'crypto';
 import { type NextRequest, NextResponse } from 'next/server';
 import { SECURITY } from '@/config/constants';
 import { isGuestFullAccessEnabledServer } from '@/config/guestMode.server';
-import { getGuestSessionIdFromCookieHeader } from '@/lib/auth/guest-session-utils';
+import {
+  AUTH_SESSION_ID_KEY,
+  GUEST_AUTH_PROOF_COOKIE_KEY,
+  getCookieValueFromHeader,
+} from '@/lib/auth/guest-session-utils';
+import { verifyGuestSessionProof } from '@/lib/auth/guest-session-proof.server';
 import { logger } from '@/lib/logging';
 import { createClient } from '@/lib/supabase/server';
 import { securityLogger } from '../security/security-logger';
@@ -79,13 +84,26 @@ export async function checkAPIAuth(request: NextRequest) {
 
   // 게스트 세션 쿠키가 있으면 제한 모드에서도 API 접근 허용
   const cookieHeader = request.headers.get('cookie') ?? '';
-  const guestSessionId = getGuestSessionIdFromCookieHeader(cookieHeader);
-  if (guestSessionId) {
-    setAPIAuthContext(request, {
-      authType: 'guest',
-      userId: guestSessionId,
-    });
-    return null;
+  const guestSessionId = getCookieValueFromHeader(
+    cookieHeader,
+    AUTH_SESSION_ID_KEY
+  );
+  const guestSessionProof = getCookieValueFromHeader(
+    cookieHeader,
+    GUEST_AUTH_PROOF_COOKIE_KEY
+  );
+
+  if (guestSessionId && guestSessionProof) {
+    const verifiedProof = verifyGuestSessionProof(guestSessionProof);
+    if (verifiedProof && verifiedProof.sessionId === guestSessionId) {
+      setAPIAuthContext(request, {
+        authType: 'guest',
+        userId: guestSessionId,
+      });
+      return null;
+    }
+
+    logger.warn('[API Auth] Invalid guest session proof detected');
   }
 
   // 🧪 E2E 테스트 헤더 확인 (Playwright 테스트용)

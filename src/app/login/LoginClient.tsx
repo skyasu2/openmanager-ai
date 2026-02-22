@@ -25,7 +25,6 @@ import debug from '@/utils/debug';
 import { renderAIGradientWithAnimation } from '@/utils/text-rendering';
 import { LoginButtons } from './LoginButtons';
 import {
-  COOKIE_MAX_AGE_SECONDS,
   DEFAULT_REDIRECT_PATH,
   LOADING_MESSAGE_INTERVAL_MS,
   PAGE_REDIRECT_DELAY_MS,
@@ -223,7 +222,7 @@ export default function LoginClient() {
     }
   }, []);
 
-  // guestSession 상태가 변경되면 localStorage와 쿠키에 저장하고 페이지 이동
+  // guestSession 상태가 변경되면 localStorage를 저장하고 페이지 이동
   useEffect(() => {
     if (guestSession) {
       // localStorage 저장 (Safari Private Browsing 대응)
@@ -231,20 +230,17 @@ export default function LoginClient() {
         localStorage.setItem(AUTH_SESSION_ID_KEY, guestSession.sessionId);
         localStorage.setItem(AUTH_USER_KEY, JSON.stringify(guestSession.user));
       } catch {
-        // Safari Private Browsing 등 localStorage 쓰기 불가 시 쿠키만 사용
+        // Safari Private Browsing 등 localStorage 쓰기 불가 시 무시
       }
 
-      // 🍪 쿠키 저장 (middleware 인식용, HTTPS 환경 대응)
+      // 레거시 쿠키는 즉시 만료시켜 세션 판별 기준을 auth_session_id로 고정
       const isProduction = window.location.protocol === 'https:';
       const secureFlag = isProduction ? '; Secure' : '';
-      // 🔒 보안: encodeURIComponent로 쿠키 값 인코딩 (세미콜론, 등호 방어)
-      document.cookie = `${AUTH_SESSION_ID_KEY}=${encodeURIComponent(guestSession.sessionId)}; path=/; max-age=${COOKIE_MAX_AGE_SECONDS}; SameSite=Lax${secureFlag}`;
-      // 레거시 쿠키는 즉시 만료시켜 새 세션 판별 기준을 auth_session_id로 고정
       document.cookie = `${LEGACY_GUEST_SESSION_COOKIE_KEY}=; path=/; max-age=0; SameSite=Lax${secureFlag}`;
       document.cookie = `${AUTH_TYPE_KEY}=; path=/; max-age=0; SameSite=Lax${secureFlag}`;
 
       debug.log(
-        '✅ 게스트 세션 저장 완료 (localStorage + 쿠키), 페이지 이동:',
+        '✅ 게스트 세션 저장 완료 (localStorage), 페이지 이동:',
         guestSession.user.name
       );
 
@@ -480,6 +476,17 @@ export default function LoginClient() {
               '게스트 로그인 검증에 실패했습니다. 잠시 후 다시 시도해주세요.'
           );
           return;
+        }
+
+        const successPayload = (await guestLoginAuditResponse
+          .json()
+          .catch(() => null)) as { sessionId?: string } | null;
+
+        if (
+          successPayload?.sessionId &&
+          typeof successPayload.sessionId === 'string'
+        ) {
+          sessionId = successPayload.sessionId;
         }
       } catch (auditError) {
         debug.warn('⚠️ 게스트 로그인 감사 로그 API 호출 실패:', auditError);
