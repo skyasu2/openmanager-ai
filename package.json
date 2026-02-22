@@ -210,7 +210,7 @@
     "@opentelemetry/sdk-metrics": "^2.5.1",
     "@opentelemetry/sdk-node": "^0.212.0",
     "@playwright/test": "^1.58.2",
-    "@storybook/addon-mcp": "^0.2.3",
+    "@storybook/addon-mcp": "^0.3.1",
     "@storybook/nextjs-vite": "^10.2.10",
     "@tailwindcss/postcss": "^4.2.0",
     "@tanstack/react-query-devtools": "^5.91.3",
