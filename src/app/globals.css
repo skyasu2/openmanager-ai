@@ -736,16 +736,19 @@ a {
 
 @keyframes gradient-diagonal {
   0% {
-    background-position: 0% 50%;
+    background-position: 0% 0%;
+  }
+  50% {
+    background-position: 100% 100%;
   }
   100% {
-    background-position: 100% 50%;
+    background-position: 0% 0%;
   }
 }
 
 .animate-gradient-diagonal {
-  background-size: 400% 400%;
-  animation: gradient-diagonal 3s linear infinite;
+  background-size: 300% 300%;
+  animation: gradient-diagonal 6s ease-in-out infinite;
 }
 
 /* Removed unused keyframes: fade-in-delay, spin-slow, progress-bar */
