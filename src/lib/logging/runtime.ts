@@ -5,8 +5,8 @@
  * Supports TTL-based auto-reset to prevent debug mode left on in production.
  */
 
-import { serverLogger } from './server';
 import { type LogLevel, loggerConfig } from './config';
+import { serverLogger } from './server';
 
 const VALID_LEVELS: ReadonlySet<string> = new Set<LogLevel>([
   'debug',

@@ -2,12 +2,11 @@ import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { isGuestFullAccessEnabledServer } from '@/config/guestMode.server';
-import { isGuestChinaIpRangeBlocked } from '@/lib/auth/guest-ip-policy';
-import { recordLoginEvent } from '@/lib/auth/login-audit';
 import {
   getRequestCountryCode,
   isGuestCountryBlocked,
 } from '@/lib/auth/guest-region-policy';
+import { recordLoginEvent } from '@/lib/auth/login-audit';
 import { rateLimiters, withRateLimit } from '@/lib/security/rate-limiter';
 
 const GuestLoginRequestSchema = z.object({
@@ -114,10 +113,7 @@ async function handlePOST(request: NextRequest): Promise<NextResponse> {
   }
 
   const countryCode = getRequestCountryCode(request.headers);
-  const isBlockedByCountry = isGuestCountryBlocked(countryCode);
-  const { blocked: isBlockedByChinaIpRange, clientIp } =
-    isGuestChinaIpRangeBlocked(request.headers);
-  const isBlocked = isBlockedByCountry || isBlockedByChinaIpRange;
+  const isBlocked = isGuestCountryBlocked(countryCode);
 
   if (isBlocked) {
     await recordLoginEvent({
@@ -130,12 +126,7 @@ async function handlePOST(request: NextRequest): Promise<NextResponse> {
       userEmail: guestEmail ?? null,
       errorMessage: 'Guest login blocked by country policy',
       metadata: {
-        reason: isBlockedByChinaIpRange
-          ? 'china_ip_range_blocked'
-          : 'country_blocked',
-        blockedByCountry: isBlockedByCountry,
-        blockedByChinaIpRange: isBlockedByChinaIpRange,
-        clientIp,
+        reason: 'country_blocked',
       },
     });
 

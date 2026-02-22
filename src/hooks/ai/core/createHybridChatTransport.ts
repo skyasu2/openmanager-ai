@@ -1,5 +1,5 @@
-import type { MutableRefObject } from 'react';
 import { DefaultChatTransport } from 'ai';
+import type { MutableRefObject } from 'react';
 import {
   generateTraceparent,
   TRACEPARENT_HEADER,

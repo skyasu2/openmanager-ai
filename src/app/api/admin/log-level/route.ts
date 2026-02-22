@@ -8,13 +8,13 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import { isCloudRunEnabled, proxyToCloudRun } from '@/lib/ai-proxy/proxy';
 import { withAuth } from '@/lib/auth/api-auth';
-import {
-  getRuntimeLogLevel,
-  getDefaultLogLevel,
-  setRuntimeLogLevel,
-  resetToDefaultLogLevel,
-} from '@/lib/logging/runtime';
 import type { LogLevel } from '@/lib/logging';
+import {
+  getDefaultLogLevel,
+  getRuntimeLogLevel,
+  resetToDefaultLogLevel,
+  setRuntimeLogLevel,
+} from '@/lib/logging/runtime';
 
 export const runtime = 'nodejs';
 export const maxDuration = 10;
