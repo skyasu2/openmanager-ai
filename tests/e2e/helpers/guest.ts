@@ -77,6 +77,31 @@ const DEFAULT_AI_SIDEBAR_SELECTORS = [
   '.ai-panel',
 ];
 
+const GUEST_PIN_INPUT_SELECTORS = [
+  '[data-testid="guest-pin-input"]',
+  '#guest-pin-input',
+  'input[placeholder*="PIN"]',
+];
+
+async function detectBuildErrorOverlay(page: Page): Promise<string | null> {
+  const buildErrorTitle = page.locator('text=Build Error').first();
+  const hasBuildError = await buildErrorTitle
+    .isVisible({ timeout: 800 })
+    .catch(() => false);
+
+  if (!hasBuildError) {
+    return null;
+  }
+
+  const dialog = page.locator('dialog').first();
+  const detail = (await dialog.textContent().catch(() => '')).trim();
+  if (detail.length > 0) {
+    return detail.slice(0, 400);
+  }
+
+  return 'Next.js build error overlay detected';
+}
+
 /**
  * 게스트 세션 관련 상태(localStorage/cookies)를 정리합니다.
  */
@@ -184,10 +209,12 @@ async function clickLoginButton(
     }
   }
 
+  const buildError = await detectBuildErrorOverlay(page);
   throw new Error(
     `${provider} 로그인 버튼을 찾을 수 없습니다.\n` +
       `페이지: ${page.url()}\n` +
-      `시도한 셀렉터: ${selectors.join(', ')}`
+      `시도한 셀렉터: ${selectors.join(', ')}` +
+      (buildError ? `\n빌드 오류 감지: ${buildError}` : '')
   );
 }
 
@@ -219,13 +246,33 @@ export async function guestLogin(
   }
 
   // 게스트 로그인 버튼 클릭
-  // restricted 모드(GUEST_FULL_ACCESS=false)에서는 window.prompt(PIN)가 뜬다.
-  // page.once('dialog') 핸들러를 click 전에 등록하여 Playwright 자동 dismiss 방지.
+  // restricted 모드는 인라인 PIN 입력을 우선 사용하고, window.prompt는 하위 호환으로만 대응.
+  // page.once('dialog') 핸들러를 click 전에 등록해 Playwright 자동 dismiss를 방지한다.
   const resolvedPin = (
     guestPin ??
     process.env.PLAYWRIGHT_GUEST_PIN ??
     ''
   ).trim();
+
+  // 인라인 PIN 입력 UI 우선 대응 (window.prompt는 하위 호환 유지)
+  for (const selector of GUEST_PIN_INPUT_SELECTORS) {
+    const pinInput = page.locator(selector).first();
+    const isVisible = await pinInput
+      .isVisible({ timeout: 1000 })
+      .catch(() => false);
+    if (!isVisible) {
+      continue;
+    }
+
+    if (!/^\d{4}$/.test(resolvedPin)) {
+      throw new Error(
+        '게스트 PIN 입력 필드가 노출되었습니다. PLAYWRIGHT_GUEST_PIN(4자리)을 설정하거나 guestPin 옵션을 전달하세요.'
+      );
+    }
+
+    await pinInput.fill(resolvedPin);
+    break;
+  }
 
   let pinDialogHandled = false;
   let pinDialogError: Error | null = null;
@@ -261,13 +308,37 @@ export async function guestLogin(
   // NOTE:
   // waitForPath 기본값 '/'는 '/login'도 매치되어 조기 통과될 수 있으므로,
   // 먼저 "로그인/콜백 단계 이탈"을 확정한 뒤 선택적으로 목표 경로를 확인한다.
-  await page.waitForURL(
-    (url) =>
-      !url.pathname.startsWith('/login') && !url.pathname.startsWith('/auth'),
-    {
-      timeout: TIMEOUTS.NETWORK_REQUEST,
+  const waitForPostLoginTransition = async () =>
+    page.waitForURL(
+      (url) =>
+        !url.pathname.startsWith('/login') && !url.pathname.startsWith('/auth'),
+      {
+        timeout: TIMEOUTS.NETWORK_REQUEST,
+      }
+    );
+
+  try {
+    await waitForPostLoginTransition();
+  } catch (error) {
+    const loginText = (
+      await page
+        .locator('main')
+        .first()
+        .textContent()
+        .catch(() => '')
+    ).replace(/\s+/g, ' ');
+    const shouldRetry = /게스트 로그인 검증에 실패했습니다/.test(loginText);
+
+    if (shouldRetry) {
+      await page.waitForTimeout(500);
+      await clickLoginButton(page, 'guest');
+      await waitForPostLoginTransition();
+    } else {
+      throw new Error(
+        `게스트 로그인 후 리다이렉트에 실패했습니다. URL=${page.url()} / message=${loginText.slice(0, 220)} / original=${String(error)}`
+      );
     }
-  );
+  }
 
   if (waitForPath !== '/') {
     await page.waitForURL(`**${waitForPath}**`, {

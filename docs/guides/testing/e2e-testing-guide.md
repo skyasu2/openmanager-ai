@@ -17,6 +17,7 @@
 - 목적: "앱이 실제 브라우저에서 깨지지 않는가"를 빠르게 확인
 - 범위: 로그인/게스트/대시보드/접근성/오류 복구
 - 원칙: AI 실추론 기반 장시간 시나리오는 자동 E2E에서 제외
+- 게스트 restricted 모드에서는 인라인 PIN 입력(`data-testid="guest-pin-input"`) 경로를 기본 검증
 
 ### 현재 구성 유지 권고 (변경 최소화)
 
@@ -88,8 +89,8 @@ npm run test:e2e:with-server
 
 ### 4) CI 실행 주기 권장안
 
-- Push 기본 게이트: `test:quick` + `type-check` + `lint`
-- PR 병합 전: `test:e2e:critical` 추가 실행
+- Push 기본 게이트: `test:quick` + `type-check` + `lint` + `test:e2e:critical`
+- PR 병합 전: `test:e2e:critical` 유지
 - 정기/수동: `test:e2e:all` 또는 `test:e2e:external` 선택 실행
 
 ---

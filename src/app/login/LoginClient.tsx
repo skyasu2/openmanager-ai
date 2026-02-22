@@ -41,9 +41,56 @@ interface GuestSessionData {
 
 // 🎯 TypeScript strict: Supabase Auth error 타입 정의
 type AuthError = { message?: string; code?: string };
+type GuestLoginErrorCode =
+  | 'guest_pin_invalid'
+  | 'guest_pin_required'
+  | 'guest_pin_rate_limited'
+  | 'guest_region_blocked'
+  | 'guest_session_issue_failed';
+
+interface GuestLoginPayload {
+  success?: boolean;
+  error?: GuestLoginErrorCode | string;
+  message?: string;
+  sessionId?: string;
+  attemptsLeft?: number;
+  retryAfterSeconds?: number;
+  countryCode?: string;
+}
+
+const GUEST_PIN_PATTERN = /^\d{4}$/;
+
+function parseRetryAfterSeconds(
+  response: Response,
+  payload: GuestLoginPayload
+): number {
+  const retryAfterHeader = response.headers.get('Retry-After');
+  const headerValue = retryAfterHeader ? Number(retryAfterHeader) : NaN;
+  if (Number.isFinite(headerValue) && headerValue > 0) {
+    return Math.ceil(headerValue);
+  }
+
+  const bodyValue = payload.retryAfterSeconds;
+  if (typeof bodyValue === 'number' && Number.isFinite(bodyValue)) {
+    return Math.max(1, Math.ceil(bodyValue));
+  }
+
+  return 0;
+}
+
+function createGuestAttemptSeed(): string {
+  if (
+    typeof crypto !== 'undefined' &&
+    typeof crypto.randomUUID === 'function'
+  ) {
+    return crypto.randomUUID();
+  }
+  return `${Date.now()}_${Math.random().toString(36).slice(2, 14)}`;
+}
 
 export default function LoginClient() {
   const _router = useRouter();
+  const isGuestFullAccessMode = isGuestFullAccessEnabled();
   const [isLoading, setIsLoading] = useState(false);
   const [loadingType, setLoadingType] = useState<
     'github' | 'guest' | 'google' | 'email' | null
@@ -54,6 +101,13 @@ export default function LoginClient() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [loadingMessage, setLoadingMessage] = useState<string>('');
+  const [guestPinInput, setGuestPinInput] = useState('');
+  const [guestAttemptsLeft, setGuestAttemptsLeft] = useState<number | null>(
+    null
+  );
+  const [guestLockUntilMs, setGuestLockUntilMs] = useState<number | null>(null);
+  const [guestLockRemainingSeconds, setGuestLockRemainingSeconds] = useState(0);
+  const [guestAttemptSeed] = useState(createGuestAttemptSeed);
   const [_showPulse, _setShowPulse] = useState<
     'github' | 'guest' | 'google' | 'email' | null
   >(null);
@@ -73,6 +127,40 @@ export default function LoginClient() {
       setCurrentProvider(current);
     }
   }, []);
+
+  useEffect(() => {
+    debug.log('🎛️ [GuestMode] Login UI mode resolved', {
+      mode: isGuestFullAccessMode ? 'full_access' : 'restricted',
+    });
+
+    if (isGuestFullAccessMode) {
+      setGuestPinInput('');
+      setGuestAttemptsLeft(null);
+      setGuestLockUntilMs(null);
+      setGuestLockRemainingSeconds(0);
+    }
+  }, [isGuestFullAccessMode]);
+
+  useEffect(() => {
+    if (!guestLockUntilMs) {
+      setGuestLockRemainingSeconds(0);
+      return;
+    }
+
+    const syncRemaining = () => {
+      const remaining = Math.ceil((guestLockUntilMs - Date.now()) / 1000);
+      if (remaining <= 0) {
+        setGuestLockUntilMs(null);
+        setGuestLockRemainingSeconds(0);
+        return;
+      }
+      setGuestLockRemainingSeconds(remaining);
+    };
+
+    syncRemaining();
+    const timer = window.setInterval(syncRemaining, 1000);
+    return () => window.clearInterval(timer);
+  }, [guestLockUntilMs]);
 
   // 단계별 로딩 메시지 효과
   useEffect(() => {
@@ -389,14 +477,19 @@ export default function LoginClient() {
 
       setIsLoading(true);
       setLoadingType('guest');
+      setErrorMessage(null);
+      setSuccessMessage(null);
 
       debug.log('👤 게스트 로그인 시작...');
 
-      // 🔐 게스트 사용자 생성 - 보안 강화된 ID 생성
-      const secureId =
-        typeof crypto !== 'undefined' && crypto.randomUUID
-          ? crypto.randomUUID()
-          : `${Date.now()}_${Math.random().toString(36).substring(2, 14)}`;
+      if (guestLockRemainingSeconds > 0) {
+        setErrorMessage(
+          `게스트 PIN 재시도가 잠겨 있습니다. ${guestLockRemainingSeconds}초 후 다시 시도해주세요.`
+        );
+        return;
+      }
+
+      const secureId = guestAttemptSeed;
 
       const guestUser: AuthUser = {
         id: `guest_${secureId}`,
@@ -406,31 +499,18 @@ export default function LoginClient() {
       };
 
       let guestPin: string | undefined;
-      if (!isGuestFullAccessEnabled()) {
-        const enteredPin =
-          typeof window !== 'undefined'
-            ? window.prompt('게스트 PIN 4자리를 입력하세요')
-            : null;
-
-        if (enteredPin === null) {
-          setSuccessMessage('게스트 로그인이 취소되었습니다.');
-          return;
-        }
-
-        const normalizedPin = enteredPin.trim();
-        if (!/^\d{4}$/.test(normalizedPin)) {
+      if (!isGuestFullAccessMode) {
+        const normalizedPin = guestPinInput.trim();
+        if (!GUEST_PIN_PATTERN.test(normalizedPin)) {
           setErrorMessage('게스트 PIN은 4자리 숫자로 입력해주세요.');
+          setGuestAttemptsLeft(null);
           return;
         }
-
         guestPin = normalizedPin;
       }
 
-      // AuthStateManager를 통한 게스트 인증 설정
-      await authStateManager.setGuestAuth(guestUser);
-
-      // 세션 ID 생성 (localStorage에서 가져옴)
-      let sessionId = `guest_${Date.now()}`;
+      // 잠금/실패 누적을 위해 시도 식별자를 로그인 시도 간 동일하게 유지
+      let sessionId = `guest_${guestAttemptSeed}`;
       try {
         sessionId = localStorage.getItem(AUTH_SESSION_ID_KEY) || sessionId;
       } catch {
@@ -450,27 +530,60 @@ export default function LoginClient() {
           }),
         });
 
-        if (guestLoginAuditResponse.status === 403) {
-          const payload = (await guestLoginAuditResponse.json()) as {
-            error?: string;
-            message?: string;
-          };
-
-          await authStateManager.clearAllAuthData('guest');
-          setErrorMessage(
-            payload.message ||
-              '현재 지역에서는 게스트 로그인이 제한됩니다. GitHub 또는 Google 로그인을 이용해주세요.'
-          );
-          return;
-        }
+        const payload = (await guestLoginAuditResponse
+          .json()
+          .catch(() => ({}))) as GuestLoginPayload;
 
         if (!guestLoginAuditResponse.ok) {
-          const payload = (await guestLoginAuditResponse.json().catch(() => ({
-            message:
-              '게스트 로그인 검증에 실패했습니다. 잠시 후 다시 시도해주세요.',
-          }))) as { message?: string };
+          const retryAfterSeconds = parseRetryAfterSeconds(
+            guestLoginAuditResponse,
+            payload
+          );
 
-          await authStateManager.clearAllAuthData('guest');
+          if (
+            guestLoginAuditResponse.status === 429 ||
+            payload.error === 'guest_pin_rate_limited'
+          ) {
+            if (retryAfterSeconds > 0) {
+              setGuestLockUntilMs(Date.now() + retryAfterSeconds * 1000);
+            }
+            setGuestAttemptsLeft(0);
+            setErrorMessage(
+              payload.message ||
+                `게스트 PIN을 5회 연속 잘못 입력했습니다. ${
+                  retryAfterSeconds > 0 ? retryAfterSeconds : 60
+                }초 후 다시 시도해주세요.`
+            );
+            return;
+          }
+
+          if (payload.error === 'guest_pin_invalid') {
+            if (typeof payload.attemptsLeft === 'number') {
+              setGuestAttemptsLeft(Math.max(0, payload.attemptsLeft));
+            }
+            setErrorMessage(
+              payload.message ||
+                '게스트 PIN 4자리가 올바르지 않습니다. 다시 확인해주세요.'
+            );
+            return;
+          }
+
+          if (payload.error === 'guest_pin_required') {
+            setErrorMessage(
+              payload.message ||
+                '게스트 PIN이 설정되지 않았습니다. 관리자에게 문의해주세요.'
+            );
+            return;
+          }
+
+          if (payload.error === 'guest_region_blocked') {
+            setErrorMessage(
+              payload.message ||
+                '현재 지역에서는 게스트 로그인이 제한됩니다. GitHub 또는 Google 로그인을 이용해주세요.'
+            );
+            return;
+          }
+
           setErrorMessage(
             payload.message ||
               '게스트 로그인 검증에 실패했습니다. 잠시 후 다시 시도해주세요.'
@@ -478,29 +591,25 @@ export default function LoginClient() {
           return;
         }
 
-        const successPayload = (await guestLoginAuditResponse
-          .json()
-          .catch(() => null)) as { sessionId?: string } | null;
-
-        if (
-          successPayload?.sessionId &&
-          typeof successPayload.sessionId === 'string'
-        ) {
-          sessionId = successPayload.sessionId;
+        if (payload.sessionId && typeof payload.sessionId === 'string') {
+          sessionId = payload.sessionId;
         }
       } catch (auditError) {
         debug.warn('⚠️ 게스트 로그인 감사 로그 API 호출 실패:', auditError);
-        await authStateManager.clearAllAuthData('guest');
         setErrorMessage(
           '게스트 로그인 검증 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.'
         );
         return;
       }
 
+      await authStateManager.setGuestAuth(guestUser);
+      setGuestAttemptsLeft(null);
+      setGuestLockUntilMs(null);
+      setGuestPinInput('');
       setGuestSession({ sessionId, user: guestUser });
     } catch (error) {
       debug.error('게스트 로그인 실패:', error);
-      alert('게스트 로그인에 실패했습니다. 다시 시도해주세요.');
+      setErrorMessage('게스트 로그인에 실패했습니다. 다시 시도해주세요.');
     } finally {
       setIsLoading(false);
       setLoadingType(null);
@@ -587,6 +696,21 @@ export default function LoginClient() {
                     ? '다른 방법으로 로그인하세요'
                     : 'AI 서버 모니터링 시스템에 오신 것을 환영합니다'}
                 </p>
+                <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
+                  <span
+                    className={`rounded-full border px-2.5 py-1 text-[11px] font-medium ${
+                      isGuestFullAccessMode
+                        ? 'border-emerald-300/60 bg-emerald-400/20 text-emerald-100'
+                        : 'border-amber-300/60 bg-amber-400/20 text-amber-100'
+                    }`}
+                  >
+                    게스트 모드:{' '}
+                    {isGuestFullAccessMode ? 'FULL ACCESS' : 'RESTRICTED'}
+                  </span>
+                  <span className="text-[11px] text-white/65">
+                    모드 변경 시 배포 재시작이 필요합니다.
+                  </span>
+                </div>
               </div>
 
               {/* Actions */}
@@ -608,6 +732,41 @@ export default function LoginClient() {
                   </div>
                 )}
 
+                {!isGuestFullAccessMode && currentProvider !== 'guest' ? (
+                  <div className="rounded-lg border border-cyan-200/45 bg-white/10 px-4 py-3 backdrop-blur-sm">
+                    <label
+                      htmlFor="guest-pin-input"
+                      className="mb-2 block text-xs font-medium text-cyan-100/90"
+                    >
+                      게스트 PIN (4자리)
+                    </label>
+                    <input
+                      id="guest-pin-input"
+                      data-testid="guest-pin-input"
+                      type="password"
+                      inputMode="numeric"
+                      autoComplete="one-time-code"
+                      pattern="\d{4}"
+                      maxLength={4}
+                      value={guestPinInput}
+                      onChange={(event) => {
+                        const nextValue = event.target.value.replace(/\D/g, '');
+                        setGuestPinInput(nextValue.slice(0, 4));
+                      }}
+                      disabled={isLoading || guestLockRemainingSeconds > 0}
+                      placeholder="PIN 4자리 입력"
+                      className="h-11 w-full rounded-lg border border-cyan-100/55 bg-white/85 px-3 text-sm tracking-[0.22em] text-slate-900 outline-none transition-all placeholder:tracking-normal placeholder:text-slate-400 focus:border-cyan-300 focus:ring-2 focus:ring-cyan-200/60 disabled:opacity-60"
+                    />
+                    <div className="mt-2 text-xs text-cyan-100/85">
+                      {guestLockRemainingSeconds > 0
+                        ? `잠금 해제까지 ${guestLockRemainingSeconds}초`
+                        : typeof guestAttemptsLeft === 'number'
+                          ? `PIN 오류 남은 횟수: ${guestAttemptsLeft}회`
+                          : '연속 5회 실패 시 1분 동안 재시도할 수 없습니다.'}
+                    </div>
+                  </div>
+                ) : null}
+
                 <LoginButtons
                   currentProvider={currentProvider}
                   isLoading={isLoading}
@@ -617,6 +776,17 @@ export default function LoginClient() {
                   onGuest={() => void handleGuestLogin()}
                   onEmail={(email) => void handleEmailLogin(email)}
                   onCancel={handleCancelLoading}
+                  guestButtonDisabled={guestLockRemainingSeconds > 0}
+                  guestButtonLabel={
+                    guestLockRemainingSeconds > 0
+                      ? `게스트 잠금 (${guestLockRemainingSeconds}초)`
+                      : '게스트로 체험하기'
+                  }
+                  guestHelperText={
+                    isGuestFullAccessMode
+                      ? '현재 Full Access 모드입니다. PIN 없이 게스트 기능을 사용할 수 있습니다.'
+                      : 'PIN 4자리를 입력한 뒤 게스트 로그인을 진행하세요.'
+                  }
                   glassButtonBaseClass={glassButtonBaseClass}
                   providerOverlayClass={providerOverlayClass}
                   guestOverlayClass={guestOverlayClass}

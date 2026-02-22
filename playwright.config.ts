@@ -4,6 +4,9 @@ import * as dotenv from 'dotenv';
 
 dotenv.config({ path: path.resolve(__dirname, '.env.e2e') });
 
+const playwrightPort = process.env.PLAYWRIGHT_PORT || '3100';
+const localBaseURL = `http://localhost:${playwrightPort}`;
+
 /**
  * Playwright E2E 테스트 설정
  *
@@ -36,7 +39,7 @@ export default defineConfig({
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
-    baseURL: process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:3000',
+    baseURL: process.env.PLAYWRIGHT_BASE_URL || localBaseURL,
     extraHTTPHeaders,
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
@@ -119,15 +122,15 @@ export default defineConfig({
       ? {
           // 프로덕션 빌드 모드 - Next.js DevTools 문제 완전 회피
           // 사용: PLAYWRIGHT_USE_PRODUCTION=1 npx playwright test
-          command: 'npm run start',
-          url: 'http://localhost:3000',
+          command: `npm run start -- -p ${playwrightPort}`,
+          url: localBaseURL,
           reuseExistingServer: true, // 프로덕션 모드에서는 항상 기존 서버 재사용
           timeout: 30 * 1000, // 프로덕션은 빠름
         }
       : {
           // 개발 모드 - DevTools 비활성화 (WSL + Playwright 호환성)
-          command: 'npm run dev:playwright',
-          url: 'http://localhost:3000',
+          command: `cross-env NEXT_DISABLE_DEVTOOLS=1 NEXT_PUBLIC_E2E_TESTING=true NODE_OPTIONS='--max-old-space-size=4096' npx next dev -p ${playwrightPort}`,
+          url: localBaseURL,
           reuseExistingServer: !process.env.CI,
           timeout: 120 * 1000,
           // Next.js devIndicators 완전 비활성화를 위한 환경변수

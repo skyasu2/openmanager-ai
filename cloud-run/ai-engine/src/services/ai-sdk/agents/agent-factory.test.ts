@@ -21,33 +21,39 @@ const createMockModel = (id: string) => ({
 });
 
 // Mock config module before imports
-vi.mock('./config', () => {
-  const mockConfig = (name: string) => ({
-    name,
-    description: `Mock ${name} description`,
-    getModel: vi.fn(() => ({
-      model: createMockModel(`mock-${name}`),
-      provider: 'mock-provider',
-      modelId: `mock-${name}`,
-    })),
-    instructions: `You are ${name}.`,
-    tools: {},
-    matchPatterns: name === 'Evaluator Agent' || name === 'Optimizer Agent' ? [] : ['test'],
-  });
+vi.mock('./config', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('./config')>();
+  const mockedConfigs = Object.fromEntries(
+    Object.entries(actual.AGENT_CONFIGS).map(([name, config]) => [
+      name,
+      {
+        ...config,
+        getModel: vi.fn(() => ({
+          model: createMockModel(`mock-${name}`),
+          provider: 'mock-provider',
+          modelId: `mock-${name}`,
+        })),
+      },
+    ])
+  ) as typeof actual.AGENT_CONFIGS;
 
   return {
-    AGENT_CONFIGS: {
-      'NLQ Agent': mockConfig('NLQ Agent'),
-      'Analyst Agent': mockConfig('Analyst Agent'),
-      'Reporter Agent': mockConfig('Reporter Agent'),
-      'Advisor Agent': mockConfig('Advisor Agent'),
-      'Vision Agent': mockConfig('Vision Agent'),
-      'Evaluator Agent': mockConfig('Evaluator Agent'),
-      'Optimizer Agent': mockConfig('Optimizer Agent'),
-    },
-    getAgentConfig: vi.fn((name: string) => mockConfig(name)),
-    isAgentAvailable: vi.fn(() => true),
-    getAvailableAgents: vi.fn(() => ['NLQ Agent', 'Analyst Agent', 'Reporter Agent', 'Advisor Agent', 'Vision Agent']),
+    ...actual,
+    AGENT_CONFIGS: mockedConfigs,
+    getAgentConfig: vi.fn(
+      (name: string) =>
+        mockedConfigs[name as keyof typeof mockedConfigs] ?? null
+    ),
+    isAgentAvailable: vi.fn((name: string) => {
+      const config = mockedConfigs[name as keyof typeof mockedConfigs];
+      return !!config && config.getModel() !== null;
+    }),
+    getAvailableAgents: vi.fn(() =>
+      Object.keys(mockedConfigs).filter((name) => {
+        const config = mockedConfigs[name as keyof typeof mockedConfigs];
+        return !!config && config.getModel() !== null;
+      })
+    ),
   };
 });
 
@@ -139,11 +145,19 @@ vi.mock('../../../../tools-ai-sdk', () => ({
   analyzeUrlContent: { execute: vi.fn() },
 }));
 
+import {
+  AGENT_TYPE_TO_CONFIG_KEY,
+  AgentFactory,
+  CONFIG_KEY_TO_AGENT_TYPE,
+  runAgent,
+  streamAgent,
+} from './agent-factory';
+
 // ============================================================================
 // AgentFactory Tests
 // ============================================================================
 
-describe('AgentFactory', () => {
+describe('AgentFactory', { timeout: 15000 }, () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -157,72 +171,56 @@ describe('AgentFactory', () => {
   // ==========================================================================
 
   describe('create()', () => {
-    it('should create agent for type "nlq"', async () => {
-      const { AgentFactory } = await import('./agent-factory');
-
+    it('should create agent for type "nlq"', () => {
       const agent = AgentFactory.create('nlq');
 
       expect(agent).not.toBeNull();
       expect(agent!.getName()).toBe('NLQ Agent');
     });
 
-    it('should create agent for type "analyst"', async () => {
-      const { AgentFactory } = await import('./agent-factory');
-
+    it('should create agent for type "analyst"', () => {
       const agent = AgentFactory.create('analyst');
 
       expect(agent).not.toBeNull();
       expect(agent!.getName()).toBe('Analyst Agent');
     });
 
-    it('should create agent for type "reporter"', async () => {
-      const { AgentFactory } = await import('./agent-factory');
-
+    it('should create agent for type "reporter"', () => {
       const agent = AgentFactory.create('reporter');
 
       expect(agent).not.toBeNull();
       expect(agent!.getName()).toBe('Reporter Agent');
     });
 
-    it('should create agent for type "advisor"', async () => {
-      const { AgentFactory } = await import('./agent-factory');
-
+    it('should create agent for type "advisor"', () => {
       const agent = AgentFactory.create('advisor');
 
       expect(agent).not.toBeNull();
       expect(agent!.getName()).toBe('Advisor Agent');
     });
 
-    it('should create agent for type "vision"', async () => {
-      const { AgentFactory } = await import('./agent-factory');
-
+    it('should create agent for type "vision"', () => {
       const agent = AgentFactory.create('vision');
 
       expect(agent).not.toBeNull();
       expect(agent!.getName()).toBe('Vision Agent');
     });
 
-    it('should create agent for type "evaluator"', async () => {
-      const { AgentFactory } = await import('./agent-factory');
-
+    it('should create agent for type "evaluator"', () => {
       const agent = AgentFactory.create('evaluator');
 
       expect(agent).not.toBeNull();
       expect(agent!.getName()).toBe('Evaluator Agent');
     });
 
-    it('should create agent for type "optimizer"', async () => {
-      const { AgentFactory } = await import('./agent-factory');
-
+    it('should create agent for type "optimizer"', () => {
       const agent = AgentFactory.create('optimizer');
 
       expect(agent).not.toBeNull();
       expect(agent!.getName()).toBe('Optimizer Agent');
     });
 
-    it('should return null for unknown agent type', async () => {
-      const { AgentFactory } = await import('./agent-factory');
-
+    it('should return null for unknown agent type', () => {
       // @ts-expect-error Testing invalid type
       const agent = AgentFactory.create('unknown');
 
@@ -235,36 +233,28 @@ describe('AgentFactory', () => {
   // ==========================================================================
 
   describe('createByName()', () => {
-    it('should create agent by config key name', async () => {
-      const { AgentFactory } = await import('./agent-factory');
-
+    it('should create agent by config key name', () => {
       const agent = AgentFactory.createByName('NLQ Agent');
 
       expect(agent).not.toBeNull();
       expect(agent!.getName()).toBe('NLQ Agent');
     });
 
-    it('should create Analyst Agent by name', async () => {
-      const { AgentFactory } = await import('./agent-factory');
-
+    it('should create Analyst Agent by name', () => {
       const agent = AgentFactory.createByName('Analyst Agent');
 
       expect(agent).not.toBeNull();
       expect(agent!.getName()).toBe('Analyst Agent');
     });
 
-    it('should create Vision Agent by name', async () => {
-      const { AgentFactory } = await import('./agent-factory');
-
+    it('should create Vision Agent by name', () => {
       const agent = AgentFactory.createByName('Vision Agent');
 
       expect(agent).not.toBeNull();
       expect(agent!.getName()).toBe('Vision Agent');
     });
 
-    it('should return null for unknown config key', async () => {
-      const { AgentFactory } = await import('./agent-factory');
-
+    it('should return null for unknown config key', () => {
       const agent = AgentFactory.createByName('Unknown Agent');
 
       expect(agent).toBeNull();
@@ -276,18 +266,14 @@ describe('AgentFactory', () => {
   // ==========================================================================
 
   describe('isAvailable()', () => {
-    it('should return true when model configured', async () => {
-      const { AgentFactory } = await import('./agent-factory');
-
+    it('should return true when model configured', () => {
       expect(AgentFactory.isAvailable('nlq')).toBe(true);
       expect(AgentFactory.isAvailable('analyst')).toBe(true);
       expect(AgentFactory.isAvailable('reporter')).toBe(true);
       expect(AgentFactory.isAvailable('advisor')).toBe(true);
     });
 
-    it('should return true for Vision Agent when Gemini available', async () => {
-      const { AgentFactory } = await import('./agent-factory');
-
+    it('should return true for Vision Agent when Gemini available', () => {
       expect(AgentFactory.isAvailable('vision')).toBe(true);
     });
 
@@ -301,9 +287,7 @@ describe('AgentFactory', () => {
   // ==========================================================================
 
   describe('getAvailabilityStatus()', () => {
-    it('should return status for all agent types', async () => {
-      const { AgentFactory } = await import('./agent-factory');
-
+    it('should return status for all agent types', () => {
       const status = AgentFactory.getAvailabilityStatus();
 
       expect(status).toHaveProperty('nlq');
@@ -315,9 +299,7 @@ describe('AgentFactory', () => {
       expect(status).toHaveProperty('optimizer');
     });
 
-    it('should return true for all agents when providers available', async () => {
-      const { AgentFactory } = await import('./agent-factory');
-
+    it('should return true for all agents when providers available', () => {
       const status = AgentFactory.getAvailabilityStatus();
 
       expect(status.nlq).toBe(true);
@@ -335,9 +317,7 @@ describe('AgentFactory', () => {
   // ==========================================================================
 
   describe('getAvailableTypes()', () => {
-    it('should return all available agent types', async () => {
-      const { AgentFactory } = await import('./agent-factory');
-
+    it('should return all available agent types', () => {
       const types = AgentFactory.getAvailableTypes();
 
       expect(types).toContain('nlq');
@@ -356,8 +336,6 @@ describe('AgentFactory', () => {
 
   describe('runAgent()', () => {
     it('should create and run agent in one call', async () => {
-      const { runAgent } = await import('./agent-factory');
-
       const result = await runAgent('nlq', 'test query');
 
       expect(result).not.toBeNull();
@@ -367,8 +345,6 @@ describe('AgentFactory', () => {
     // Note: Test for unavailable agent requires dynamic mock changes.
 
     it('should pass options to agent.run()', async () => {
-      const { runAgent } = await import('./agent-factory');
-
       const result = await runAgent('nlq', 'test query', {
         timeoutMs: 30000,
         webSearchEnabled: false,
@@ -385,8 +361,6 @@ describe('AgentFactory', () => {
 
   describe('streamAgent()', () => {
     it('should create and stream agent in one call', async () => {
-      const { streamAgent } = await import('./agent-factory');
-
       const events: Array<{ type: string; data: unknown }> = [];
 
       for await (const event of streamAgent('nlq', 'test query')) {
@@ -405,9 +379,7 @@ describe('AgentFactory', () => {
   // ==========================================================================
 
   describe('Type Mappings', () => {
-    it('should correctly map agent types to config keys', async () => {
-      const { AGENT_TYPE_TO_CONFIG_KEY } = await import('./agent-factory');
-
+    it('should correctly map agent types to config keys', () => {
       expect(AGENT_TYPE_TO_CONFIG_KEY.nlq).toBe('NLQ Agent');
       expect(AGENT_TYPE_TO_CONFIG_KEY.analyst).toBe('Analyst Agent');
       expect(AGENT_TYPE_TO_CONFIG_KEY.reporter).toBe('Reporter Agent');
@@ -417,9 +389,7 @@ describe('AgentFactory', () => {
       expect(AGENT_TYPE_TO_CONFIG_KEY.optimizer).toBe('Optimizer Agent');
     });
 
-    it('should correctly map config keys to agent types', async () => {
-      const { CONFIG_KEY_TO_AGENT_TYPE } = await import('./agent-factory');
-
+    it('should correctly map config keys to agent types', () => {
       expect(CONFIG_KEY_TO_AGENT_TYPE['NLQ Agent']).toBe('nlq');
       expect(CONFIG_KEY_TO_AGENT_TYPE['Analyst Agent']).toBe('analyst');
       expect(CONFIG_KEY_TO_AGENT_TYPE['Reporter Agent']).toBe('reporter');

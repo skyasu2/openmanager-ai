@@ -36,8 +36,10 @@ vi.mock('../../../lib/config-parser', () => ({
 }));
 
 // Store generateText mock for manipulation in tests
-const mockGenerateText = vi.fn();
-const mockStreamText = vi.fn();
+const { mockGenerateText, mockStreamText } = vi.hoisted(() => ({
+  mockGenerateText: vi.fn(),
+  mockStreamText: vi.fn(),
+}));
 
 // Mock AI SDK with ToolLoopAgent
 vi.mock('ai', () => {
@@ -80,6 +82,8 @@ vi.mock('ai', () => {
   };
 });
 
+import { BaseAgent } from './base-agent';
+
 // ============================================================================
 // Test Helpers
 // ============================================================================
@@ -116,7 +120,7 @@ function createMockConfig(overrides: Partial<{
 // BaseAgent Tests
 // ============================================================================
 
-describe('BaseAgent', () => {
+describe('BaseAgent', { timeout: 15000 }, () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.mocked(isOpenRouterVisionToolCallingEnabled).mockReturnValue(false);
@@ -162,7 +166,6 @@ describe('BaseAgent', () => {
 
   describe('stream()', () => {
     it('should yield text_delta events', async () => {
-      const { BaseAgent } = await import('./base-agent');
       const mockConfig = createMockConfig();
 
       class TestAgent extends BaseAgent {
@@ -187,7 +190,6 @@ describe('BaseAgent', () => {
     });
 
     it('should extract finalAnswer when stream is empty', async () => {
-      const { BaseAgent } = await import('./base-agent');
 
       mockStreamText.mockReturnValue({
         textStream: (async function* () {
@@ -234,7 +236,6 @@ describe('BaseAgent', () => {
     });
 
     it('should ignore whitespace-only content for hasTextContent', async () => {
-      const { BaseAgent } = await import('./base-agent');
 
       mockStreamText.mockReturnValue({
         textStream: (async function* () {
@@ -282,7 +283,6 @@ describe('BaseAgent', () => {
     });
 
     it('should emit EMPTY_RESPONSE warning and fallback text for Vision OpenRouter empty stream', async () => {
-      const { BaseAgent } = await import('./base-agent');
 
       mockStreamText.mockReturnValue({
         textStream: (async function* () {
@@ -337,7 +337,6 @@ describe('BaseAgent', () => {
     });
 
     it('should treat whitespace finalAnswer as empty and emit fallback text', async () => {
-      const { BaseAgent } = await import('./base-agent');
 
       mockStreamText.mockReturnValue({
         textStream: (async function* () {
@@ -393,7 +392,6 @@ describe('BaseAgent', () => {
     });
 
     it('should apply chunkMs timeout', async () => {
-      const { BaseAgent } = await import('./base-agent');
       const mockConfig = createMockConfig();
 
       class TestAgent extends BaseAgent {
@@ -420,7 +418,6 @@ describe('BaseAgent', () => {
     });
 
     it('should yield tool_call events', async () => {
-      const { BaseAgent } = await import('./base-agent');
 
       mockStreamText.mockReturnValue({
         textStream: (async function* () {

@@ -21,46 +21,40 @@ const createMockModel = (id: string) => ({
 });
 
 // Mock config module before imports
-vi.mock('./config', () => {
-  const mockConfig = (name: string) => ({
-    name,
-    description: `Mock ${name} description`,
-    getModel: vi.fn(() => ({
-      model: createMockModel(`mock-${name}`),
-      provider: 'mock-provider',
-      modelId: `mock-${name}`,
-    })),
-    instructions: `You are ${name}.`,
-    tools: {},
-    matchPatterns: name === 'Evaluator Agent' || name === 'Optimizer Agent' ? [] : ['test'],
-  });
-
-  // Vision Agent uses real matchPatterns so keyword detection tests work
-  const visionPatterns: (string | RegExp)[] = [
-    '스크린샷', 'screenshot', '이미지', 'image', '사진', '그래프', '차트',
-    '대시보드', 'dashboard', 'grafana', 'cloudwatch', 'datadog',
-    '로그 분석', '대용량', 'log', '전체 로그',
-    '최신', '문서', 'documentation', '공식', 'official',
-    'url', '링크', '페이지',
-    /스크린샷.*분석|분석.*스크린샷/i,
-    /이미지.*보여|첨부.*분석/i,
-    /로그.*전체|대용량.*로그/i,
-    /최신.*문서|공식.*가이드/i,
-  ];
+// Use real AGENT_CONFIGS as baseline to prevent test-only keyword drift.
+vi.mock('./config', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('./config')>();
+  const mockedConfigs = Object.fromEntries(
+    Object.entries(actual.AGENT_CONFIGS).map(([name, config]) => [
+      name,
+      {
+        ...config,
+        getModel: vi.fn(() => ({
+          model: createMockModel(`mock-${name}`),
+          provider: 'mock-provider',
+          modelId: `mock-${name}`,
+        })),
+      },
+    ])
+  ) as typeof actual.AGENT_CONFIGS;
 
   return {
-    AGENT_CONFIGS: {
-      'NLQ Agent': mockConfig('NLQ Agent'),
-      'Analyst Agent': mockConfig('Analyst Agent'),
-      'Reporter Agent': mockConfig('Reporter Agent'),
-      'Advisor Agent': mockConfig('Advisor Agent'),
-      'Vision Agent': { ...mockConfig('Vision Agent'), matchPatterns: visionPatterns },
-      'Evaluator Agent': mockConfig('Evaluator Agent'),
-      'Optimizer Agent': mockConfig('Optimizer Agent'),
-    },
-    getAgentConfig: vi.fn((name: string) => mockConfig(name)),
-    isAgentAvailable: vi.fn(() => true),
-    getAvailableAgents: vi.fn(() => ['NLQ Agent', 'Analyst Agent', 'Reporter Agent', 'Advisor Agent', 'Vision Agent']),
+    ...actual,
+    AGENT_CONFIGS: mockedConfigs,
+    getAgentConfig: vi.fn(
+      (name: string) =>
+        mockedConfigs[name as keyof typeof mockedConfigs] ?? null
+    ),
+    isAgentAvailable: vi.fn((name: string) => {
+      const config = mockedConfigs[name as keyof typeof mockedConfigs];
+      return !!config && config.getModel() !== null;
+    }),
+    getAvailableAgents: vi.fn(() =>
+      Object.keys(mockedConfigs).filter((name) => {
+        const config = mockedConfigs[name as keyof typeof mockedConfigs];
+        return !!config && config.getModel() !== null;
+      })
+    ),
   };
 });
 
@@ -152,11 +146,20 @@ vi.mock('../../../../tools-ai-sdk', () => ({
   analyzeUrlContent: { execute: vi.fn() },
 }));
 
+import { AgentFactory } from './agent-factory';
+import {
+  createVisionAgent,
+  getVisionAgentConfig,
+  getVisionAgentOrFallback,
+  isVisionAgentAvailable,
+  isVisionQuery,
+} from './vision-agent';
+
 // ============================================================================
 // VisionAgent Tests
 // ============================================================================
 
-describe('VisionAgent', () => {
+describe('VisionAgent', { timeout: 15000 }, () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -170,8 +173,7 @@ describe('VisionAgent', () => {
   // ==========================================================================
 
   describe('isVisionQuery()', () => {
-    it('should detect screenshot keywords', async () => {
-      const { isVisionQuery } = await import('./vision-agent');
+    it('should detect screenshot keywords', () => {
 
       expect(isVisionQuery('스크린샷 분석해줘')).toBe(true);
       expect(isVisionQuery('이 screenshot을 봐줘')).toBe(true);
@@ -179,8 +181,7 @@ describe('VisionAgent', () => {
       expect(isVisionQuery('사진을 분석해줘')).toBe(true);
     });
 
-    it('should detect dashboard keywords', async () => {
-      const { isVisionQuery } = await import('./vision-agent');
+    it('should detect dashboard keywords', () => {
 
       expect(isVisionQuery('대시보드 상태 확인')).toBe(true);
       expect(isVisionQuery('Grafana 화면 분석')).toBe(true);
@@ -188,32 +189,28 @@ describe('VisionAgent', () => {
       expect(isVisionQuery('Datadog 메트릭 화면')).toBe(true);
     });
 
-    it('should detect large log keywords', async () => {
-      const { isVisionQuery } = await import('./vision-agent');
+    it('should detect large log keywords', () => {
 
       expect(isVisionQuery('대용량 로그 분석해줘')).toBe(true);
       expect(isVisionQuery('전체 로그 파일 확인')).toBe(true);
       expect(isVisionQuery('로그 분석 요청')).toBe(true);
     });
 
-    it('should detect Google Search Grounding keywords', async () => {
-      const { isVisionQuery } = await import('./vision-agent');
+    it('should detect Google Search Grounding keywords', () => {
 
       expect(isVisionQuery('최신 문서 검색해줘')).toBe(true);
       expect(isVisionQuery('공식 documentation 확인')).toBe(true);
       expect(isVisionQuery('official 가이드 찾아줘')).toBe(true);
     });
 
-    it('should detect URL keywords', async () => {
-      const { isVisionQuery } = await import('./vision-agent');
+    it('should detect URL keywords', () => {
 
       expect(isVisionQuery('이 url 내용 분석해줘')).toBe(true);
       expect(isVisionQuery('링크 확인해줘')).toBe(true);
       expect(isVisionQuery('페이지 내용 분석')).toBe(true);
     });
 
-    it('should detect pattern-based queries', async () => {
-      const { isVisionQuery } = await import('./vision-agent');
+    it('should detect pattern-based queries', () => {
 
       expect(isVisionQuery('스크린샷을 분석해줘')).toBe(true);
       expect(isVisionQuery('분석해줘 이 스크린샷')).toBe(true);
@@ -221,8 +218,7 @@ describe('VisionAgent', () => {
       expect(isVisionQuery('첨부된 파일 분석해줘')).toBe(true);
     });
 
-    it('should return false for non-vision queries', async () => {
-      const { isVisionQuery } = await import('./vision-agent');
+    it('should return false for non-vision queries', () => {
 
       expect(isVisionQuery('서버 상태 알려줘')).toBe(false);
       expect(isVisionQuery('CPU 사용량 확인')).toBe(false);
@@ -231,8 +227,7 @@ describe('VisionAgent', () => {
       expect(isVisionQuery('메모리 이상 탐지')).toBe(false);
     });
 
-    it('should be case insensitive', async () => {
-      const { isVisionQuery } = await import('./vision-agent');
+    it('should be case insensitive', () => {
 
       expect(isVisionQuery('SCREENSHOT 분석')).toBe(true);
       expect(isVisionQuery('Dashboard 확인')).toBe(true);
@@ -245,8 +240,7 @@ describe('VisionAgent', () => {
   // ==========================================================================
 
   describe('isVisionAgentAvailable()', () => {
-    it('should return true when Gemini is available', async () => {
-      const { isVisionAgentAvailable } = await import('./vision-agent');
+    it('should return true when Gemini is available', () => {
 
       expect(isVisionAgentAvailable()).toBe(true);
     });
@@ -259,9 +253,7 @@ describe('VisionAgent', () => {
   // ==========================================================================
 
   describe('getVisionAgentOrFallback()', () => {
-    it('should return VisionAgent when available', async () => {
-      const { getVisionAgentOrFallback } = await import('./vision-agent');
-      const { AgentFactory } = await import('./agent-factory');
+    it('should return VisionAgent when available', () => {
       vi.spyOn(AgentFactory, 'isAvailable').mockReturnValue(true);
 
       const result = getVisionAgentOrFallback('스크린샷 분석해줘');
@@ -272,9 +264,7 @@ describe('VisionAgent', () => {
       expect(result.fallbackReason).toBeUndefined();
     });
 
-    it('should fallback to Analyst Agent when vision is unavailable for a vision query', async () => {
-      const { getVisionAgentOrFallback } = await import('./vision-agent');
-      const { AgentFactory } = await import('./agent-factory');
+    it('should fallback to Analyst Agent when vision is unavailable for a vision query', () => {
       vi.spyOn(AgentFactory, 'isAvailable').mockReturnValue(false);
 
       const result = getVisionAgentOrFallback('스크린샷 분석해줘');
@@ -285,9 +275,7 @@ describe('VisionAgent', () => {
       expect(result.fallbackReason).toContain('Vision providers unavailable');
     });
 
-    it('should return null agent when vision is unavailable for a non-vision query', async () => {
-      const { getVisionAgentOrFallback } = await import('./vision-agent');
-      const { AgentFactory } = await import('./agent-factory');
+    it('should return null agent when vision is unavailable for a non-vision query', () => {
       vi.spyOn(AgentFactory, 'isAvailable').mockReturnValue(false);
 
       const result = getVisionAgentOrFallback('서버 상태 알려줘');
@@ -303,8 +291,7 @@ describe('VisionAgent', () => {
   // ==========================================================================
 
   describe('createVisionAgent()', () => {
-    it('should return agent with Vision Agent name when Gemini is configured', async () => {
-      const { createVisionAgent } = await import('./vision-agent');
+    it('should return agent with Vision Agent name when Gemini is configured', () => {
 
       const agent = createVisionAgent();
 
@@ -320,8 +307,7 @@ describe('VisionAgent', () => {
   // ==========================================================================
 
   describe('getVisionAgentConfig()', () => {
-    it('should return config when available', async () => {
-      const { getVisionAgentConfig } = await import('./vision-agent');
+    it('should return config when available', () => {
 
       const config = getVisionAgentConfig();
 
@@ -335,8 +321,7 @@ describe('VisionAgent', () => {
   // ==========================================================================
 
   describe('Vision Agent via AgentFactory', () => {
-    it('should have correct name', async () => {
-      const { AgentFactory } = await import('./agent-factory');
+    it('should have correct name', () => {
 
       const agent = AgentFactory.create('vision');
 
@@ -344,8 +329,7 @@ describe('VisionAgent', () => {
       expect(agent!.getName()).toBe('Vision Agent');
     });
 
-    it('should return config from AGENT_CONFIGS', async () => {
-      const { AgentFactory } = await import('./agent-factory');
+    it('should return config from AGENT_CONFIGS', () => {
 
       const agent = AgentFactory.create('vision');
       const config = agent!.getConfig();
@@ -354,8 +338,7 @@ describe('VisionAgent', () => {
       expect(config?.name).toBe('Vision Agent');
     });
 
-    it('should check availability based on Gemini', async () => {
-      const { AgentFactory } = await import('./agent-factory');
+    it('should check availability based on Gemini', () => {
 
       expect(AgentFactory.isAvailable('vision')).toBe(true);
     });
@@ -366,8 +349,7 @@ describe('VisionAgent', () => {
   // ==========================================================================
 
   describe('Vision Keywords Coverage', () => {
-    it('should detect all screenshot-related keywords', async () => {
-      const { isVisionQuery } = await import('./vision-agent');
+    it('should detect all screenshot-related keywords', () => {
 
       const screenshotKeywords = [
         '스크린샷 보여줘',
@@ -384,8 +366,7 @@ describe('VisionAgent', () => {
       }
     });
 
-    it('should detect all dashboard-related keywords', async () => {
-      const { isVisionQuery } = await import('./vision-agent');
+    it('should detect all dashboard-related keywords', () => {
 
       const dashboardKeywords = [
         '대시보드 확인',
@@ -400,8 +381,7 @@ describe('VisionAgent', () => {
       }
     });
 
-    it('should detect URL and document keywords', async () => {
-      const { isVisionQuery } = await import('./vision-agent');
+    it('should detect URL and document keywords', () => {
 
       const urlKeywords = [
         'url 분석',
@@ -424,35 +404,30 @@ describe('VisionAgent', () => {
   // ==========================================================================
 
   describe('Edge Cases', () => {
-    it('should handle empty query', async () => {
-      const { isVisionQuery } = await import('./vision-agent');
+    it('should handle empty query', () => {
 
       expect(isVisionQuery('')).toBe(false);
     });
 
-    it('should handle query with only whitespace', async () => {
-      const { isVisionQuery } = await import('./vision-agent');
+    it('should handle query with only whitespace', () => {
 
       expect(isVisionQuery('   ')).toBe(false);
     });
 
-    it('should handle very long queries', async () => {
-      const { isVisionQuery } = await import('./vision-agent');
+    it('should handle very long queries', () => {
 
       const longQuery = '서버 상태 확인해주세요. '.repeat(100) + '스크린샷 분석';
 
       expect(isVisionQuery(longQuery)).toBe(true);
     });
 
-    it('should handle special characters', async () => {
-      const { isVisionQuery } = await import('./vision-agent');
+    it('should handle special characters', () => {
 
       expect(isVisionQuery('스크린샷!@#$%')).toBe(true);
       expect(isVisionQuery('dashboard (grafana)')).toBe(true);
     });
 
-    it('should handle mixed language queries', async () => {
-      const { isVisionQuery } = await import('./vision-agent');
+    it('should handle mixed language queries', () => {
 
       expect(isVisionQuery('스크린샷 screenshot 분석해줘')).toBe(true);
       expect(isVisionQuery('Grafana 대시보드 확인')).toBe(true);

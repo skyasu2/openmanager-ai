@@ -4,7 +4,7 @@
 > Owner: platform-devops
 > Status: Active
 > Doc type: How-to
-> Last reviewed: 2026-02-17
+> Last reviewed: 2026-02-22
 > Canonical: docs/development/ci-cd.md
 > Tags: ci,cd,github-actions,dependabot,automation
 
@@ -51,17 +51,21 @@
 
 ```
 Push/PR
-  ├── essential-check (차단형)
-  │   ├── Biome Check (lint + format)
-  │   ├── TypeScript Check (type-check)
-  │   ├── Release 정합성 검사
-  │   └── Fast CI Tests (핵심 유닛 테스트)
+  ├── code-quality (차단형)
+  │   ├── Biome Check
+  │   └── TypeScript Check
   │
-  ├── security-scan (차단형)
+  ├── unit-tests (차단형)
+  │   └── npm run test
+  │
+  ├── e2e-critical (차단형)
+  │   └── npm run test:e2e:critical
+  │
+  ├── security-scan (main/PR 차단형)
   │   └── Hardcoded Secrets Check
   │
   └── deployment-ready (게이트)
-      └── 위 두 job 모두 통과 시 → ✅ 배포 준비 완료
+      └── 위 차단형 job 통과 시 → ✅ 배포 준비 완료
 ```
 
 **NPM 429 에러 대응**: CI 환경에서 npm registry 429 (Rate Limit) 에러가 빈번하므로, retry 로직이 내장되어 있습니다:

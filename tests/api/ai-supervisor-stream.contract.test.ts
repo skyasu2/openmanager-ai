@@ -1,5 +1,10 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { HttpResponse, http } from 'msw';
+import { describe, expect, it } from 'vitest';
 import * as z from 'zod';
+import { server } from '@/__mocks__/msw/server';
+
+const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3002';
+const STREAM_ENDPOINT = `${BASE_URL}/api/ai/supervisor/stream/v2`;
 
 const StreamRequestSchema = z.object({
   messages: z
@@ -45,35 +50,32 @@ function parseSsePayload(payload: string) {
 }
 
 describe('AI Supervisor Stream v2 Contract', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
-  afterEach(() => {
-    vi.unstubAllGlobals();
-  });
-
-  it('요청/응답이 스트리밍 계약(UIMessageStream 헤더 + SSE 이벤트 형식)을 만족한다', async () => {
+  it('MSW 기반 요청/응답이 스트리밍 계약(UIMessageStream 헤더 + SSE 이벤트 형식)을 만족한다', async () => {
+    let capturedRequestBody: unknown;
     const streamEvents = [
       {
         type: 'agent_status',
         data: { agent: 'orchestrator', status: 'thinking' },
       },
-      { type: 'text_delta', data: '서버 상태를 분석 중입니다.' },
+      { type: 'text_delta', data: 'MSW 계약 테스트 ' },
+      { type: 'text_delta', data: '응답입니다.' },
       { type: 'done', data: { success: true, finalAgent: 'NLQ Agent' } },
     ];
 
-    const mockSseResponse = new Response(toSse(streamEvents), {
-      status: 200,
-      headers: {
-        'Content-Type': 'text/event-stream',
-        'X-Stream-Protocol': 'ui-message-stream',
-        'X-Resumable': 'true',
-      },
-    });
+    server.use(
+      http.post(/\/api\/ai\/supervisor\/stream\/v2$/, async ({ request }) => {
+        capturedRequestBody = await request.json();
 
-    const fetchMock = vi.fn().mockResolvedValueOnce(mockSseResponse);
-    vi.stubGlobal('fetch', fetchMock);
+        return new HttpResponse(toSse(streamEvents), {
+          status: 200,
+          headers: {
+            'Content-Type': 'text/event-stream',
+            'X-Stream-Protocol': 'ui-message-stream',
+            'X-Resumable': 'true',
+          },
+        });
+      })
+    );
 
     const requestBody = {
       messages: [{ role: 'user' as const, content: '서버 상태 알려줘' }],
@@ -81,7 +83,7 @@ describe('AI Supervisor Stream v2 Contract', () => {
       enableWebSearch: false,
     };
 
-    const response = await fetch('/api/ai/supervisor/stream/v2', {
+    const response = await fetch(STREAM_ENDPOINT, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -90,12 +92,7 @@ describe('AI Supervisor Stream v2 Contract', () => {
       body: JSON.stringify(requestBody),
     });
 
-    const fetchCall = fetchMock.mock.calls[0];
-    const sentOptions = fetchCall?.[1] as RequestInit;
-    const sentBody = JSON.parse(String(sentOptions.body));
-
-    expect(() => StreamRequestSchema.parse(sentBody)).not.toThrow();
-    expect(sentOptions.method).toBe('POST');
+    expect(() => StreamRequestSchema.parse(capturedRequestBody)).not.toThrow();
 
     expect(response.status).toBe(200);
     expect(response.headers.get('Content-Type')).toContain('text/event-stream');
@@ -109,21 +106,33 @@ describe('AI Supervisor Stream v2 Contract', () => {
     parsedEvents.forEach((event) => {
       expect(() => StreamEventSchema.parse(event)).not.toThrow();
     });
+
+    const streamedText = parsedEvents
+      .filter((event) => event.type === 'text_delta')
+      .map((event) => String(event.data))
+      .join('');
+
+    // AI 문구 exact-match 검증은 flaky한 E2E가 아닌 MSW 계약 테스트에서 수행
+    expect(streamedText).toBe('MSW 계약 테스트 응답입니다.');
     expect(parsedEvents.at(-1)?.type).toBe('done');
   });
 
   it('잘못된 요청은 400 에러 계약(success=false + error)을 만족해야 한다', async () => {
-    const fetchMock = vi.fn().mockResolvedValueOnce(
-      new Response(JSON.stringify({ success: false, error: 'Empty query' }), {
-        status: 400,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
+    server.use(
+      http.post(/\/api\/ai\/supervisor\/stream\/v2$/, () =>
+        HttpResponse.json(
+          { success: false, error: 'query is required' },
+          {
+            status: 400,
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          }
+        )
+      )
     );
-    vi.stubGlobal('fetch', fetchMock);
 
-    const response = await fetch('/api/ai/supervisor/stream/v2', {
+    const response = await fetch(STREAM_ENDPOINT, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

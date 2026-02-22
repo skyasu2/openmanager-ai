@@ -126,6 +126,52 @@ jobs:
       - name: Unit Tests (Full Suite)
         run: npm run test
 
+  # 🎭 E2E 핵심 플로우 (push/PR 차단형)
+  e2e-critical:
+    name: E2E Critical
+    runs-on: ubuntu-latest
+    needs: [code-quality, unit-tests]
+    if: ${{ github.event_name != 'push' || !contains(github.event.head_commit.message, '[skip ci]') }}
+    timeout-minutes: 25
+    env:
+      CI: true
+      PLAYWRIGHT_PORT: 3000
+      PLAYWRIGHT_BASE_URL: http://localhost:3000
+      VERCEL_AUTOMATION_BYPASS_SECRET: local-e2e-secret
+      TEST_SECRET_KEY: local-e2e-secret
+      NEXT_PUBLIC_GUEST_MODE: restricted
+      NEXT_PUBLIC_GUEST_FULL_ACCESS: false
+      GUEST_LOGIN_PIN: 4231
+      PLAYWRIGHT_GUEST_PIN: 4231
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
+      - name: Install dependencies
+        run: npm ci
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Run critical E2E suite
+        run: npm run test:e2e:critical
+      - name: Upload Playwright Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-${{ github.run_id }}
+          path: playwright-report
+          if-no-files-found: ignore
+      - name: Upload Playwright Test Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-results-${{ github.run_id }}
+          path: test-results
+          if-no-files-found: ignore
+
   # 🔒 보안 검사 (main/pull_request 차단형)
   security-scan:
     name: Security Scan
@@ -144,7 +190,7 @@ jobs:
   deployment-ready:
     name: Deployment Ready
     runs-on: ubuntu-latest
-    needs: [code-quality, unit-tests, security-scan]
+    needs: [code-quality, unit-tests, e2e-critical, security-scan]
     if: ${{ always() && (github.event_name != 'push' || !contains(github.event.head_commit.message, '[skip ci]')) }}
     steps:
       - name: Summary
@@ -153,6 +199,7 @@ jobs:
           echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
           echo "✅ 정적 분석: ${{ needs.code-quality.result }}"
           echo "✅ 유닛 테스트: ${{ needs.unit-tests.result }}"
+          echo "✅ E2E 핵심 플로우: ${{ needs.e2e-critical.result }}"
           echo "✅ 보안 검증: ${{ needs.security-scan.result }}"
           echo "🚀 Vercel 배포: 준비 완료"
           echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━"

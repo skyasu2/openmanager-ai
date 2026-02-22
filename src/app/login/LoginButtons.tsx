@@ -14,6 +14,9 @@ type LoginButtonsProps = {
   onGuest: () => void;
   onEmail: (email: string) => void;
   onCancel: () => void;
+  guestButtonDisabled?: boolean;
+  guestButtonLabel?: string;
+  guestHelperText?: string;
   glassButtonBaseClass: string;
   providerOverlayClass: string;
   guestOverlayClass: string;
@@ -32,6 +35,9 @@ export function LoginButtons({
   onGuest,
   onEmail,
   onCancel,
+  guestButtonDisabled = false,
+  guestButtonLabel = '게스트로 체험하기',
+  guestHelperText,
   glassButtonBaseClass,
   providerOverlayClass,
   guestOverlayClass,
@@ -173,9 +179,10 @@ export function LoginButtons({
         <button
           type="button"
           onClick={onGuest}
-          disabled={isLoading}
+          disabled={isLoading || guestButtonDisabled}
           aria-label="게스트 모드로 체험하기"
           className={glassButtonBaseClass}
+          data-testid="guest-login"
         >
           <span className={guestOverlayClass} />
           {loadingType === 'guest' ? (
@@ -184,10 +191,14 @@ export function LoginButtons({
             <User className="relative z-10 h-4 w-4 text-slate-600 transition-colors group-hover:text-slate-900" />
           )}
           <span className="relative z-10 text-sm font-medium tracking-wide">
-            게스트로 체험하기
+            {guestButtonLabel}
           </span>
         </button>
       )}
+
+      {currentProvider !== 'guest' && guestHelperText ? (
+        <p className="px-1 text-xs text-cyan-100/75">{guestHelperText}</p>
+      ) : null}
     </>
   );
 }
