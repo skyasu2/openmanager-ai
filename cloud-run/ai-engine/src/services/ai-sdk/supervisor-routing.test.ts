@@ -1,9 +1,14 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import {
   createPrepareStep,
   getIntentCategory,
   selectExecutionMode,
 } from './supervisor-routing';
+
+// Mock Tavily availability for deterministic tests
+vi.mock('../../lib/tavily-hybrid-rag', () => ({
+  isTavilyAvailable: vi.fn(() => true),
+}));
 
 // ============================================================================
 // selectExecutionMode
