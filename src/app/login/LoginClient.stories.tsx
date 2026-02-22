@@ -5,7 +5,10 @@ import { useProfileAuth } from '../../components/unified-profile/hooks/useProfil
 import { useProfileMenu } from '../../components/unified-profile/hooks/useProfileMenu';
 import { useSystemStatus } from '../../hooks/useSystemStatus';
 import { authStateManager } from '../../lib/auth/auth-state-manager';
-import { signInWithOAuthProvider } from '../../lib/auth/supabase-auth-oauth';
+import {
+  signInWithEmailMagicLink,
+  signInWithOAuthProvider,
+} from '../../lib/auth/supabase-auth-oauth';
 import { useUnifiedAdminStore } from '../../stores/useUnifiedAdminStore';
 
 import LoginClient from './LoginClient';
@@ -73,6 +76,10 @@ const meta = {
       data: null,
       error: null,
     } as never);
+    mocked(signInWithEmailMagicLink).mockResolvedValue({
+      data: null,
+      error: null,
+    } as never);
     Object.assign(authStateManager, {
       setGuestAuth: fn().mockResolvedValue(undefined),
     });
@@ -121,6 +128,32 @@ export const GuestLoading: Story = {
   },
   play: async ({ canvas }) => {
     const btn = canvas.getByLabelText('게스트 모드로 체험하기');
+    await userEvent.click(btn);
+  },
+};
+
+/** 이메일 Magic Link 전송 성공 */
+export const EmailSuccess: Story = {
+  play: async ({ canvas }) => {
+    const input = canvas.getByPlaceholderText('이메일 주소');
+    await userEvent.type(input, 'user@example.com');
+    const btn = canvas.getByText('이메일로 계속하기');
+    await userEvent.click(btn);
+  },
+};
+
+/** 이메일 Magic Link 전송 실패 */
+export const EmailError: Story = {
+  beforeEach() {
+    mocked(signInWithEmailMagicLink).mockResolvedValue({
+      data: null,
+      error: { message: 'Error sending magic link email' },
+    } as never);
+  },
+  play: async ({ canvas }) => {
+    const input = canvas.getByPlaceholderText('이메일 주소');
+    await userEvent.type(input, 'invalid@test.com');
+    const btn = canvas.getByText('이메일로 계속하기');
     await userEvent.click(btn);
   },
 };
