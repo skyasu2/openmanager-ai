@@ -52,7 +52,6 @@
 | `NEXT_PUBLIC_GUEST_FULL_ACCESS` | 게스트 전체 접근 허용 플래그 | `false` | 개발 환경에서는 `true` 가능, 운영은 `false` 권장 |
 | `NEXT_PUBLIC_GUEST_MODE` | 게스트 모드 문자열 설정 | `restricted` | `full_access` 또는 `restricted` |
 | `GUEST_LOGIN_BLOCKED_COUNTRIES` | 게스트 로그인 차단 국가 코드 목록 (쉼표 구분) | `CN` | 예: `CN,RU` |
-| `GUEST_CN_IP_CIDRS` | 게스트 로그인 차단용 중국 IP CIDR 목록 | 비활성 | 예: `1.0.1.0/24,1.0.2.0/23` |
 | `GUEST_LOGIN_PIN` | 게스트 로그인 4자리 PIN | — | 예: `1234` |
 
 > `check-env.ts`에서 선택 변수로 분류 — 누락 시 경고만 표시, push 차단 없음.

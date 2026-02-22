@@ -16,12 +16,6 @@
  */
 
 import { type NextRequest, NextResponse } from 'next/server';
-import { isGuestFullAccessEnabledServer } from '@/config/guestMode.server';
-import { isGuestChinaIpRangeBlocked } from '@/lib/auth/guest-ip-policy';
-import {
-  getRequestCountryCode,
-  isGuestCountryBlocked,
-} from '@/lib/auth/guest-region-policy';
 import { hasGuestSessionCookieHeader } from '@/lib/auth/guest-session-utils';
 import { logger } from '@/lib/logging';
 import {
@@ -128,34 +122,6 @@ export async function proxy(request: NextRequest) {
     // Supabase 권장: 쿠키 문자열이 아니라 검증된 사용자 존재 여부로 판별
     const hasSession = Boolean(user);
     const isGuest = isGuestAuth(request);
-    const guestFullAccessEnabled = isGuestFullAccessEnabledServer();
-    const countryCode = getRequestCountryCode(request.headers);
-    const { blocked: isBlockedByChinaIpRange } = isGuestChinaIpRangeBlocked(
-      request.headers
-    );
-    const isBlockedByCountry = isGuestCountryBlocked(countryCode);
-
-    if (
-      isGuest &&
-      !guestFullAccessEnabled &&
-      (isBlockedByCountry || isBlockedByChinaIpRange)
-    ) {
-      logger.warn(
-        `[Proxy] Guest access blocked by geo policy (country: ${countryCode ?? 'unknown'}, cidr: ${isBlockedByChinaIpRange})`
-      );
-
-      const loginUrl = new URL('/login', request.url);
-      loginUrl.searchParams.set('error', 'guest_region_blocked');
-      if (countryCode) {
-        loginUrl.searchParams.set('country', countryCode);
-      }
-
-      const blockedResponse = NextResponse.redirect(loginUrl);
-      blockedResponse.cookies.delete('auth_session_id');
-      blockedResponse.cookies.delete('guest_session_id');
-      blockedResponse.cookies.delete('auth_type');
-      return blockedResponse;
-    }
 
     // 인증된 사용자만 허용 (GitHub OAuth 또는 게스트 세션)
     if (!hasSession && !isGuest) {

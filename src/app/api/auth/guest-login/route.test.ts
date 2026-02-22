@@ -9,13 +9,11 @@ const {
   mockRecordLoginEvent,
   mockGetRequestCountryCode,
   mockIsGuestCountryBlocked,
-  mockIsGuestChinaIpRangeBlocked,
   mockIsGuestFullAccessEnabledServer,
 } = vi.hoisted(() => ({
   mockRecordLoginEvent: vi.fn(),
   mockGetRequestCountryCode: vi.fn(),
   mockIsGuestCountryBlocked: vi.fn(),
-  mockIsGuestChinaIpRangeBlocked: vi.fn(),
   mockIsGuestFullAccessEnabledServer: vi.fn(),
 }));
 
@@ -26,10 +24,6 @@ vi.mock('@/lib/auth/login-audit', () => ({
 vi.mock('@/lib/auth/guest-region-policy', () => ({
   getRequestCountryCode: mockGetRequestCountryCode,
   isGuestCountryBlocked: mockIsGuestCountryBlocked,
-}));
-
-vi.mock('@/lib/auth/guest-ip-policy', () => ({
-  isGuestChinaIpRangeBlocked: mockIsGuestChinaIpRangeBlocked,
 }));
 
 vi.mock('@/config/guestMode.server', () => ({
@@ -57,10 +51,6 @@ describe('POST /api/auth/guest-login', () => {
     mockRecordLoginEvent.mockResolvedValue(true);
     mockGetRequestCountryCode.mockReturnValue('KR');
     mockIsGuestCountryBlocked.mockReturnValue(false);
-    mockIsGuestChinaIpRangeBlocked.mockReturnValue({
-      blocked: false,
-      clientIp: null,
-    });
     mockIsGuestFullAccessEnabledServer.mockReturnValue(false);
     process.env.GUEST_LOGIN_PIN = '1234';
   });
@@ -113,31 +103,6 @@ describe('POST /api/auth/guest-login', () => {
     expect(response.status).toBe(403);
     expect(body.error).toBe('guest_region_blocked');
     expect(mockRecordLoginEvent).toHaveBeenCalledTimes(1);
-  });
-
-  it('PIN이 맞아도 중국 IP 대역 CIDR에 포함되면 403을 반환한다', async () => {
-    mockIsGuestChinaIpRangeBlocked.mockReturnValue({
-      blocked: true,
-      clientIp: '1.2.3.4',
-    });
-
-    const request = new NextRequest(
-      'https://openmanager.test/api/auth/guest-login',
-      {
-        method: 'POST',
-        body: JSON.stringify({
-          sessionId: 'guest-session-cidr-1',
-          guestPin: '1234',
-        }),
-        headers: { 'Content-Type': 'application/json' },
-      }
-    );
-
-    const response = await POST(request);
-    const body = await response.json();
-
-    expect(response.status).toBe(403);
-    expect(body.error).toBe('guest_region_blocked');
   });
 
   it('허용 국가면 성공을 반환한다', async () => {

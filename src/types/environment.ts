@@ -46,7 +46,6 @@ declare global {
       readonly JWT_SECRET?: string;
       readonly ENCRYPTION_KEY?: string;
       readonly GUEST_LOGIN_BLOCKED_COUNTRIES?: string;
-      readonly GUEST_CN_IP_CIDRS?: string;
       readonly GUEST_LOGIN_PIN?: string;
       readonly NEXT_PUBLIC_GUEST_FULL_ACCESS?: string;
       readonly NEXT_PUBLIC_GUEST_MODE?: string;

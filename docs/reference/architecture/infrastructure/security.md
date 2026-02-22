@@ -54,10 +54,9 @@ export async function signOut() {
 - OAuth 로그인(`github`, `google`)은 `/auth/callback`에서 성공/실패(취소 포함) 이벤트를 모두 `security_audit_logs`에 기록합니다.
 - 게스트 로그인은 `/api/auth/guest-login`에서 국가 헤더(`x-vercel-ip-country`)를 검사하며 기본 정책으로 `CN`만 차단합니다.
 - Vercel 운영 환경에서 `NEXT_PUBLIC_GUEST_FULL_ACCESS=false`이면 게스트 PIN(`GUEST_LOGIN_PIN`, 4자리) 검증이 필요합니다.
-- 추가로 `GUEST_CN_IP_CIDRS`를 설정하면 중국 IP 대역(CIDR) 기준 차단을 함께 적용할 수 있습니다.
 - 게스트 차단 국가는 `GUEST_LOGIN_BLOCKED_COUNTRIES` 환경변수(쉼표 구분)로 확장할 수 있습니다.
 - 감사 로그는 서버에서 IP(`x-vercel-forwarded-for`, `x-forwarded-for`, `x-real-ip`)를 추출해 저장합니다.
-- 보호 라우트 접근 시에도 `proxy`에서 동일 정책을 재검증해 우회 접근을 차단합니다.
+- 보호 라우트의 `proxy`는 세션/게스트 여부만 확인하며, 지역 차단은 로그인 API에서만 적용합니다.
 
 ### 데이터베이스 보안 (RLS)
 ```sql

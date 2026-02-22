@@ -100,7 +100,6 @@ const envSchema = z.object({
   NEXT_PUBLIC_GUEST_FULL_ACCESS: z.string().optional(),
   NEXT_PUBLIC_GUEST_MODE: z.string().optional(),
   GUEST_LOGIN_BLOCKED_COUNTRIES: z.string().optional(),
-  GUEST_CN_IP_CIDRS: z.string().optional(),
   GUEST_LOGIN_PIN: z.string().optional(),
 });
 

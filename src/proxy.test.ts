@@ -10,10 +10,6 @@ const {
   mockUpdateSession,
   mockUpdateSessionWithAuth,
   mockHasGuestSessionCookieHeader,
-  mockGetRequestCountryCode,
-  mockIsGuestCountryBlocked,
-  mockIsGuestChinaIpRangeBlocked,
-  mockIsGuestFullAccessEnabledServer,
   mockLoggerWarn,
   mockLoggerInfo,
   mockLoggerError,
@@ -22,10 +18,6 @@ const {
   mockUpdateSession: vi.fn(),
   mockUpdateSessionWithAuth: vi.fn(),
   mockHasGuestSessionCookieHeader: vi.fn(),
-  mockGetRequestCountryCode: vi.fn(),
-  mockIsGuestCountryBlocked: vi.fn(),
-  mockIsGuestChinaIpRangeBlocked: vi.fn(),
-  mockIsGuestFullAccessEnabledServer: vi.fn(),
   mockLoggerWarn: vi.fn(),
   mockLoggerInfo: vi.fn(),
   mockLoggerError: vi.fn(),
@@ -39,19 +31,6 @@ vi.mock('@/utils/supabase/middleware', () => ({
 
 vi.mock('@/lib/auth/guest-session-utils', () => ({
   hasGuestSessionCookieHeader: mockHasGuestSessionCookieHeader,
-}));
-
-vi.mock('@/lib/auth/guest-region-policy', () => ({
-  getRequestCountryCode: mockGetRequestCountryCode,
-  isGuestCountryBlocked: mockIsGuestCountryBlocked,
-}));
-
-vi.mock('@/lib/auth/guest-ip-policy', () => ({
-  isGuestChinaIpRangeBlocked: mockIsGuestChinaIpRangeBlocked,
-}));
-
-vi.mock('@/config/guestMode.server', () => ({
-  isGuestFullAccessEnabledServer: mockIsGuestFullAccessEnabledServer,
 }));
 
 vi.mock('@/lib/logging', () => ({
@@ -85,13 +64,6 @@ describe('proxy', () => {
       error: null,
     });
     mockHasGuestSessionCookieHeader.mockReturnValue(false);
-    mockGetRequestCountryCode.mockReturnValue(null);
-    mockIsGuestCountryBlocked.mockReturnValue(false);
-    mockIsGuestChinaIpRangeBlocked.mockReturnValue({
-      blocked: false,
-      clientIp: null,
-    });
-    mockIsGuestFullAccessEnabledServer.mockReturnValue(true);
   });
 
   it('공개 경로는 updateSession만 수행한다', async () => {
@@ -131,7 +103,6 @@ describe('proxy', () => {
 
   it('보호 경로에서 게스트 쿠키가 있으면 접근을 허용한다', async () => {
     mockHasGuestSessionCookieHeader.mockReturnValue(true);
-    mockIsGuestFullAccessEnabledServer.mockReturnValue(true);
 
     const request = new NextRequest('https://openmanager.test/dashboard', {
       headers: { cookie: 'auth_session_id=guest-abc' },
@@ -143,51 +114,6 @@ describe('proxy', () => {
     expect(mockHasGuestSessionCookieHeader).toHaveBeenCalledWith(
       'auth_session_id=guest-abc'
     );
-  });
-
-  it('보호 경로에서 게스트 + 차단 국가면 로그인 페이지로 리다이렉트한다', async () => {
-    mockHasGuestSessionCookieHeader.mockReturnValue(true);
-    mockIsGuestFullAccessEnabledServer.mockReturnValue(false);
-    mockGetRequestCountryCode.mockReturnValue('CN');
-    mockIsGuestCountryBlocked.mockReturnValue(true);
-
-    const request = new NextRequest('https://openmanager.test/dashboard', {
-      headers: {
-        cookie: 'auth_session_id=guest-abc',
-        'x-vercel-ip-country': 'CN',
-      },
-    });
-
-    const response = await proxy(request);
-    const location = parseLocation(response);
-
-    expect(response.status).toBe(307);
-    expect(location.pathname).toBe('/login');
-    expect(location.searchParams.get('error')).toBe('guest_region_blocked');
-    expect(location.searchParams.get('country')).toBe('CN');
-  });
-
-  it('보호 경로에서 게스트 + 중국 IP CIDR 차단이면 로그인 페이지로 리다이렉트한다', async () => {
-    mockHasGuestSessionCookieHeader.mockReturnValue(true);
-    mockIsGuestFullAccessEnabledServer.mockReturnValue(false);
-    mockIsGuestChinaIpRangeBlocked.mockReturnValue({
-      blocked: true,
-      clientIp: '1.2.3.4',
-    });
-
-    const request = new NextRequest('https://openmanager.test/dashboard', {
-      headers: {
-        cookie: 'auth_session_id=guest-abc',
-        'x-forwarded-for': '1.2.3.4',
-      },
-    });
-
-    const response = await proxy(request);
-    const location = parseLocation(response);
-
-    expect(response.status).toBe(307);
-    expect(location.pathname).toBe('/login');
-    expect(location.searchParams.get('error')).toBe('guest_region_blocked');
   });
 
   it('개발 바이패스가 켜져 있으면 보호 경로도 updateSession으로 우회한다', async () => {
