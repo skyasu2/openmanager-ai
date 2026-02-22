@@ -4,7 +4,7 @@
 > Owner: documentation
 > Status: Active
 > Doc type: How-to
-> Last reviewed: 2026-02-21
+> Last reviewed: 2026-02-22
 > Canonical: docs/guides/testing/test-strategy.md
 > Tags: testing,strategy,quality
 
@@ -17,6 +17,7 @@ OpenManager AI의 기본 테스트 전략은 **Local-First + Contract-First** �
 - 기본 검증 경로는 `Vitest + MSW` 기반 로컬 테스트
 - 외부 API/LLM 실호출은 자동 회귀에서 제외
 - Playwright는 로컬 핵심 사용자 플로우 검증에 한정
+- Playwright 구성(Chromium 단일, DevTools 비활성화, Vercel bypass header)은 유지하고 실행 주기만 조율
 
 > 핵심 원칙: 무료 티어를 보호하면서도, 회귀를 빠르게 탐지한다.
 
@@ -81,20 +82,25 @@ npm run validate:all
 
 ---
 
-## 4. CI/Release Gate
+## 4. CI/Release Gate (실행 주기 조율)
 
-### PR 기본 게이트
+### Push 기본 게이트 (feature/develop)
 
 1. `npm run test:quick`
 2. `npm run type-check`
 3. `npm run lint`
-4. 변경 범위가 사용자 플로우에 영향 시 `npm run test:e2e:critical`
+4. E2E는 기본 미실행 (필요 시 수동 `npm run test:e2e:critical`)
 
-### 배포 전 권장
+### Pull Request 게이트 (main 병합 전)
 
 1. `npm run test:gate`
 2. `npm run test:e2e:critical`
 3. `npm run test:cloud:essential` (Cloud Run 변경 시)
+
+### 정기/수동 Deep Gate (선택)
+
+1. `npm run test:e2e:all`
+2. `npm run test:e2e:external` (외부 의존 시나리오 점검 시)
 
 ---
 
@@ -103,6 +109,16 @@ npm run validate:all
 - 무료 티어 보호를 위해 테스트 기본값은 외부 서비스 호출 0회에 가깝게 유지
 - 실추론/실클라우드 검증이 꼭 필요하면 수동 1회 스모크로 제한
 - 새 테스트 작성 시 "이 테스트가 외부 토큰/요금을 소비하는가"를 먼저 판단
+- CI 사용량 급증을 막기 위해 E2E는 PR/병합 직전/수동 검증에 우선 배치
+
+---
+
+## 6. Flaky Guardrails (AI 비결정성 대응)
+
+- AI 답변의 정확 문장/수치 문자열 매칭(assert) 금지
+- E2E에서는 렌더링 컨테이너, 상태 전이, 오류 복구 등 안정 신호만 검증
+- AI 응답 검증은 `test:contract` + MSW 모킹으로 우선 처리
+- 동일 시나리오가 반복 flaky면 E2E에서 제거하고 계약 테스트로 전환
 
 ---
 

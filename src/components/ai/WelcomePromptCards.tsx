@@ -93,12 +93,15 @@ export const WelcomePromptCards = memo(function WelcomePromptCards({
 
       {/* 제안 프롬프트 카드 2x2 그리드 */}
       <div className="grid max-w-xl grid-cols-1 gap-3 px-4 sm:grid-cols-2">
-        {prompts.map((card) => {
+        {prompts.map((card, index) => {
           const Icon = card.icon;
           return (
             <button
               type="button"
               key={card.title}
+              data-testid="ai-starter-prompt-card"
+              data-prompt-index={index}
+              data-prompt-title={card.title}
               onClick={() => onPromptClick(card.prompt)}
               className="group rounded-lg border border-gray-200 bg-white p-4 text-left
                          transition-all hover:border-blue-200 hover:shadow-sm

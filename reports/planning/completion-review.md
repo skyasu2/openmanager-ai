@@ -3,7 +3,7 @@
 > **문서 유형**: 프로젝트 완성도 검수 보고서 (Completion Review Report)
 > **검수 대상**: OpenManager AI v8.1.0 전체 코드베이스
 > **최초 작성일**: 2026-02-15
-> **최종 갱신일**: 2026-02-21 (E2E 테스트 축소 및 모킹 전략 전면 전환 반영)
+> **최종 갱신일**: 2026-02-22 (E2E 유지 + CI 실행 주기 조율 + flaky 방지 기준 반영)
 > **작성 기준**: 실제 코드 분석 + WBS 대조 + 최근 리팩토링 반영
 > **검수 요청자**: skyasu2 (Project Owner)
 > **연관 문서**: [WBS & 완성도 분석](wbs.md) (§2~§7 개발 일정, 부록 A 개발 환경 별도)
@@ -79,6 +79,11 @@
 7. 비샌드박스 기준 크리티컬 실동작 검증: `25 passed (2.8m)`
 8. Playwright 호환성 수정: `tests/e2e/ai-supervisor-timeout.spec.ts` `beforeEach` 시그니처 교정
 9. NLQ 429 완화 패치: `tests/e2e/ai-nlq-vercel.manual.ts`에서 `/api/ai/jobs` 429 감지 범위 확장 + `Retry-After` 상한 + rate-limit 텍스트 감지 강화
+
+운영 정책 보정 (2026-02-22):
+1. E2E 구성 자체는 유지하고, CI 실행 주기만 `Push(경량) / PR(critical) / 수동·정기(full)`로 분리
+2. Playwright 최적화 설정(Chromium 단일, `NEXT_DISABLE_DEVTOOLS`, Vercel bypass header)은 기본 유지
+3. AI 비결정성으로 인한 flaky를 줄이기 위해 E2E의 텍스트 exact match 검증을 금지하고, AI 품질 검증은 계약 테스트(MSW)로 이관
 
 ---
 
@@ -557,7 +562,7 @@ ImprovedServerCard   │ isMountedRef   │           │                │
 | 기준 문서 | [`reports/planning/wbs.md`](wbs.md) — §2~§7 완성도 평가 대상, 부록 A 개발 환경 별도 |
 | 정량 데이터 | 컴포넌트 197개, API 33개, 테스트 73+22개(src + cloud-run, node_modules 제외), 활성 문서 55개, src 전체 686파일 |
 | 최초 검수일 | 2026-02-15 18:50 KST |
-| 갱신 검수일 | 2026-02-18 (문서 수치 현행화, 2026-02-18 변경분 반영, 패키지 버전 동기화, Vercel E2E 운영 분리 반영) |
+| 갱신 검수일 | 2026-02-22 (테스트 전략/목표 문서/WBS 동기화, E2E 실행 주기 조율 및 flaky 방지 기준 반영) |
 
 ---
 

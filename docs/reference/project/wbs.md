@@ -3,7 +3,7 @@
 > Owner: project-lead
 > Status: Active Canonical
 > Doc type: Reference
-> Last reviewed: 2026-02-18
+> Last reviewed: 2026-02-22
 > Tags: wbs,deliverable,completion,modules
 
 **목적**: 모듈(Deliverable) 기반 WBS. 100% Rule 적용 — 모든 프로덕션 산출물 포착.
@@ -18,7 +18,7 @@
 | 기간 | 2025-05-23 ~ 2026-02-18 (9개월) |
 | 커밋 | 5,789개 |
 | 코드량 | 프로덕션 ~138K (Frontend 107K + AI Engine 31K) + 테스트 26K + 설정 12K |
-| 파일 수 | src/ 686, cloud-run/ ~120, docs/ 54 |
+| 파일 수 | src/ 686, cloud-run/ ~120, docs/ 55 |
 | 목적 | 포트폴리오 & 바이브 코딩 학습 결과물 |
 
 ---
@@ -129,13 +129,14 @@
 
 | # | 산출물 | 측정 기준 | 현재 값 | 목표 값 | 상태 |
 |---|--------|----------|:-------:|:-------:|:----:|
-| T1 | 활성 문서 | docs/ 내 .md 수 (archived 제외) | 54 | 55 이내 | Done |
+| T1 | 활성 문서 | docs/ 내 .md 수 (archived 제외) | 55 | 55 이내 | Done |
 | T2 | 메타데이터 | Owner+Status+Tags 적용률 | 100% | 100% | Done |
 | T3 | 아키텍처 문서 | Mermaid/ASCII = 코드 일치 | 6개 | 6개 | Done |
 | T4 | Diataxis 분류 | 문서 유형 라벨 적용 | 100% | 100% | Done |
 | T5 | 테스트 파일 | src/ + cloud-run/ 테스트 파일 수 | 90개 | 90+ | Done |
-| T6 | E2E 테스트 | Playwright 시나리오 수 | 7개 | 7+ | Done |
-| T7 | 테스트 통과 | npm run validate:all | Pass | Pass | Done |
+| T6 | E2E 테스트 | Playwright 시나리오 수 | 9개 | 9+ | Done |
+| T7 | E2E 운영 정책 | 유지 + 실행 주기 분리(Push/PR/수동) | 적용 | 적용 | Done |
+| T8 | Flaky 방지 규칙 | AI exact-match 금지 + MSW 계약 테스트 우선 | 적용 | 적용 | Done |
 
 ---
 
@@ -163,10 +164,11 @@
 | 2 | test API 프로덕션 격리 확인 | API Routes | P3 | +0.5%p |
 | 3 | 테스트 커버리지 확대 (~11%→20%+) | Services | P3 | +1.5%p |
 | 4 | RAG 임베딩 품질 개선 | AI Engine | P4 | 설명 대체 |
+| 5 | PR용 `test:e2e:critical` 자동 게이트 분리 적용 | Documentation & Testing | P3 | +1.0%p |
 
 > 상세 회고형 분석: [`reports/planning/wbs.md`](../../../reports/planning/wbs.md)
 > 검수 확인서: [`reports/planning/completion-review.md`](../../../reports/planning/completion-review.md)
 
 ---
 
-_Last Updated: 2026-02-18_
+_Last Updated: 2026-02-22_

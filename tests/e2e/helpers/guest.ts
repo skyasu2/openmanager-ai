@@ -219,29 +219,43 @@ export async function guestLogin(
   }
 
   // 게스트 로그인 버튼 클릭
-  // restricted 모드에서는 window.prompt(PIN)가 뜰 수 있어 미리 대기한다.
-  const pinPromptPromise = page
-    .waitForEvent('dialog', { timeout: 1200 })
-    .catch(() => null);
+  // restricted 모드(GUEST_FULL_ACCESS=false)에서는 window.prompt(PIN)가 뜬다.
+  // page.once('dialog') 핸들러를 click 전에 등록하여 Playwright 자동 dismiss 방지.
+  const resolvedPin = (
+    guestPin ??
+    process.env.PLAYWRIGHT_GUEST_PIN ??
+    ''
+  ).trim();
+
+  let pinDialogHandled = false;
+  let pinDialogError: Error | null = null;
+
+  page.once('dialog', async (dialog) => {
+    if (dialog.type() === 'prompt') {
+      if (/^\d{4}$/.test(resolvedPin)) {
+        await dialog.accept(resolvedPin);
+        pinDialogHandled = true;
+      } else {
+        await dialog.dismiss();
+        pinDialogError = new Error(
+          '게스트 PIN prompt가 노출되었습니다. PLAYWRIGHT_GUEST_PIN(4자리)을 설정하거나 guestPin 옵션을 전달하세요.'
+        );
+      }
+    } else {
+      // alert/confirm 등 예상치 못한 dialog는 dismiss
+      await dialog.dismiss();
+    }
+  });
 
   await clickLoginButton(page, 'guest');
 
-  const pinPrompt = await pinPromptPromise;
-  if (pinPrompt?.type() === 'prompt') {
-    const resolvedPin = (
-      guestPin ??
-      process.env.PLAYWRIGHT_GUEST_PIN ??
-      ''
-    ).trim();
+  // dialog 핸들러가 비동기로 실행되므로 잠시 대기
+  if (!pinDialogHandled && !pinDialogError) {
+    await page.waitForTimeout(500);
+  }
 
-    if (/^\d{4}$/.test(resolvedPin)) {
-      await pinPrompt.accept(resolvedPin);
-    } else {
-      await pinPrompt.dismiss();
-      throw new Error(
-        '게스트 PIN prompt가 노출되었습니다. PLAYWRIGHT_GUEST_PIN(4자리)을 설정하거나 guestPin 옵션을 전달하세요.'
-      );
-    }
+  if (pinDialogError) {
+    throw pinDialogError;
   }
 
   // NOTE:

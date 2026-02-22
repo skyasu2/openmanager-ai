@@ -16,9 +16,9 @@ test.describe('대시보드 AI 사이드바 테스트', () => {
   test.beforeEach(async ({ page }) => {
     await navigateToDashboard(page);
 
-    // AI 버튼 렌더링 대기
+    // AI 토글 렌더링 대기 (문구 exact-match 의존 제거)
     await page
-      .locator('button:has-text("AI 어시스턴트")')
+      .locator('[data-testid="ai-assistant"]')
       .first()
       .waitFor({ state: 'visible', timeout: TIMEOUTS.MODAL_DISPLAY });
   });
@@ -41,20 +41,22 @@ test.describe('대시보드 AI 사이드바 테스트', () => {
   });
 
   test('AI 스타터 프롬프트 카드가 입력창에 반영된다', async ({ page }) => {
-    await openAiSidebar(page);
+    const sidebar = await openAiSidebar(page);
+    await expect(sidebar).toBeVisible({ timeout: TIMEOUTS.MODAL_DISPLAY });
 
     const input = page.getByRole('textbox', { name: 'AI 질문 입력' });
     await expect(input).toBeVisible({ timeout: TIMEOUTS.DOM_UPDATE });
 
-    for (const cardTitle of [
-      '서버 상태 확인',
-      '장애 분석',
-      '성능 예측',
-      '보고서 생성',
-    ]) {
-      const card = page
-        .getByRole('button', { name: new RegExp(cardTitle) })
-        .first();
+    const promptCards = page.locator('[data-testid="ai-starter-prompt-card"]');
+    await expect(promptCards.first()).toBeVisible({
+      timeout: TIMEOUTS.DOM_UPDATE,
+    });
+
+    const cardCount = await promptCards.count();
+    expect(cardCount).toBeGreaterThan(0);
+
+    for (let i = 0; i < cardCount; i++) {
+      const card = promptCards.nth(i);
       await expect(card).toBeVisible({ timeout: TIMEOUTS.DOM_UPDATE });
       await card.click();
 

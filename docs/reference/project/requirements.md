@@ -3,7 +3,7 @@
 > Owner: project-lead
 > Status: Active Canonical
 > Doc type: Reference
-> Last reviewed: 2026-02-18
+> Last reviewed: 2026-02-22
 > Tags: requirements,srs,functional,non-functional
 
 **기반**: IEEE 830 / ISO/IEC/IEEE 29148 경량 버전
@@ -171,6 +171,16 @@
 | 트레이싱 | AsyncLocalStorage Trace ID (W3C Trace Context) |
 | AI 관찰성 | Langfuse 10% 샘플링 (Free Tier 자동 보호) |
 
+### NFR-008: 테스트 운영 안정성
+
+| 항목 | 기준 |
+|------|------|
+| 기본 회귀 게이트 | Push: `test:quick` + `type-check` + `lint` |
+| 병합 전 게이트 | PR(main): `test:e2e:critical` 포함 |
+| E2E 검증 방식 | AI 응답 exact text 매칭 금지, UI 상태 전이/렌더 중심 검증 |
+| 비결정성 제어 | AI 품질 검증은 `Vitest + MSW` 계약 테스트 우선 |
+| 비용 가드 | 외부 유료 의존 E2E는 `@external` 분리 및 수동/정기 실행 |
+
 ---
 
 ## 4. 추적 매트릭스
@@ -194,7 +204,8 @@
 | NFR-005 | `src/components/dashboard/`, `src/app/globals.css` |
 | NFR-006 | `biome.json`, `tsconfig.json` |
 | NFR-007 | `src/lib/logger/`, `cloud-run/ai-engine/src/services/langfuse/` |
+| NFR-008 | `docs/guides/testing/test-strategy.md`, `docs/guides/testing/e2e-testing-guide.md`, `.github/workflows/ci-optimized.yml` |
 
 ---
 
-_Last Updated: 2026-02-18_
+_Last Updated: 2026-02-22_

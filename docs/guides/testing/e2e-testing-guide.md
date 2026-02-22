@@ -4,7 +4,7 @@
 > Owner: documentation
 > Status: Active Canonical
 > Doc type: How-to
-> Last reviewed: 2026-02-21
+> Last reviewed: 2026-02-22
 > Canonical: docs/guides/testing/e2e-testing-guide.md
 > Tags: testing,e2e,playwright
 
@@ -17,6 +17,13 @@
 - 목적: "앱이 실제 브라우저에서 깨지지 않는가"를 빠르게 확인
 - 범위: 로그인/게스트/대시보드/접근성/오류 복구
 - 원칙: AI 실추론 기반 장시간 시나리오는 자동 E2E에서 제외
+
+### 현재 구성 유지 권고 (변경 최소화)
+
+- 브라우저 프로젝트는 `chromium` 단일 유지 (`playwright.config.ts`)
+- 개발 서버는 `NEXT_DISABLE_DEVTOOLS=1`로 실행해 테스트 간섭 최소화
+- 배포 환경 검증 시 `x-vercel-protection-bypass` 헤더 경로 유지
+- `firefox/webkit` 재활성화는 명시적 ROI 근거가 있을 때만 검토
 
 ---
 
@@ -79,6 +86,12 @@ npm run test:e2e:with-server
 - 네트워크/응답 대기 실패: 테스트 타임아웃 설계 문제 가능성 우선 검토
 - 동일 시나리오 flaky 반복 시 E2E에서 제거 후 계약 테스트로 이동
 
+### 4) CI 실행 주기 권장안
+
+- Push 기본 게이트: `test:quick` + `type-check` + `lint`
+- PR 병합 전: `test:e2e:critical` 추가 실행
+- 정기/수동: `test:e2e:all` 또는 `test:e2e:external` 선택 실행
+
 ---
 
 ## 새 E2E 추가 기준
@@ -89,6 +102,15 @@ npm run test:e2e:with-server
 2. 단위/계약 테스트로 대체 불가능한가?
 3. 30초 내 안정적으로 종료되는가?
 4. 외부 유료 API 호출 없이 재현 가능한가?
+5. AI 답변 문자열 exact match 없이도 검증 가능한가?
+
+---
+
+## AI 비결정성 대응 규칙
+
+- 텍스트 자체가 아니라 `응답 컨테이너 렌더링`, `스트림 상태 전이`, `에러 핸들링`을 검증
+- AI 응답 내용 검증이 필요하면 E2E 대신 `Vitest + MSW` 계약 테스트 사용
+- 외부 AI/Cloud 종속 시나리오는 `@external` 태그로 분리해 기본 실행에서 제외
 
 ---
 

@@ -20,14 +20,17 @@
 
 ---
 
-## 🔄 Recent Changes (v8.2.0)
+## 🔄 Recent Changes (v8.3.0)
 
-- **v8.2.0+** (2026-02-22, post-release)
-  - feat(hooks): AI Co-Author 자동 태그 git hook (Gemini/Claude/Codex 지원)
-  - docs(architecture): 복원력 문서 보강 — 타임아웃 계층, 쿼타 트래커, 에러 분류 정정
-  - refactor(auth): 게스트 접근 단순화 — guestSystemStartEnabled 제거, 세션 쿠키 기반
-  - fix(ui): AI 그라데이션 애니메이션 통일 (로고, 텍스트, 버튼 동일 스타일)
-  - feat(security): GPL v3 라이선스 적용 + 게스트 PIN 브루트포스 방어 (5회 → 1분 잠금)
+- **v8.3.0+** (2026-02-22, post-release)
+  - feat(security): Proxy 이중 쿠키 게이트 — auth_session_id + guest_auth_proof 둘 다 필요
+  - feat(observability): Cloud Run GCP 로깅 공식 패키지 전환 (`@google-cloud/pino-logging-gcp-config`)
+  - test: Circuit Breaker 15개 + CSP Utils 22개 단위 테스트 추가
+
+- **v8.3.0** (2026-02-22)
+  - feat(auth): HMAC SHA-256 서명 기반 게스트 세션 증명 (cookie forgery 방지)
+  - test(auth,security): InMemoryRateLimiter 10개 + login-audit 11개 단위 테스트 추가
+  - style: Biome import ordering 및 줄바꿈 포맷팅 적용
 
 - **v8.2.0** (2026-02-22)
   - feat(auth): 이메일 Magic Link 로그인 추가 (Supabase OTP, 소셜 로그인과 병행)
@@ -216,7 +219,7 @@
 
 ---
 
-## 🏗️ Technical Stack (v8.2.0)
+## 🏗️ Technical Stack (v8.3.0)
 
 **Core Frameworks** (2025 Standard)
 - **Next.js**: `v16.1.6` (App Router, Server Components)
@@ -247,8 +250,8 @@
 - Diataxis 분류 적용 (Tutorial/How-to/Reference/Explanation)
 - **State Mgmt**: Zustand `v5.0.11`
 - **Data Fetching**: TanStack Query `v5.90.21`
-- **Backend/DB**: Supabase JS `v2.95.3` (SSR `v0.8.0`)
-- **Utility**: tailwind-merge `v3.4.1`
+- **Backend/DB**: Supabase JS `v2.97.0` (SSR `v0.8.0`)
+- **Utility**: tailwind-merge `v3.5.0`
 
 **AI Ecosystem** (상세: [AI Engine Architecture](./reference/architecture/ai/ai-engine-architecture.md))
 - **SDK**: Vercel AI SDK `v6.0.97` (`@ai-sdk/*` 패키지 포함, Cloud Run: `^6.0.50`)
@@ -453,7 +456,7 @@
 | Metric | Status | Detail |
 |:---:|:---:|---|
 | **Build** | ✅ Passing | `npm run build` (Next.js 16.1.6) 성공 |
-| **Test** | ✅ Passing | 196 tests PASS (`test:quick`) |
+| **Test** | ✅ Passing | 196 tests PASS (`test:quick`), +37 unit tests (CSP 22 + CircuitBreaker 15) |
 | **Lint** | ✅ Clean | Biome Check Pass (No Errors) |
 | **E2E** | ✅ 100% | 30/30 Scenarios Passing (Playwright) |
 | **MCP** | ✅ 9/9 | 모든 MCP 서버 정상 연결 |
