@@ -2,6 +2,16 @@
   "name": "openmanager-ai",
   "version": "8.3.0",
   "private": true,
+  "license": "GPL-3.0-only",
+  "author": "skyasu2 (https://github.com/skyasu2)",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/skyasu2/openmanager-ai.git"
+  },
+  "homepage": "https://openmanager-ai.vercel.app",
+  "bugs": {
+    "url": "https://github.com/skyasu2/openmanager-ai/issues"
+  },
   "scripts": {
     "docs:check": "bash scripts/docs/check-docs.sh",
     "docs:check:fix": "bash scripts/docs/check-docs.sh --fix",

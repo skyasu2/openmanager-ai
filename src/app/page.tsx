@@ -272,7 +272,7 @@ function Home() {
         <footer className="mt-8 border-t border-white/20 pt-6">
           <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-between">
             <p className="text-sm text-white/60">
-              Copyright(c) OpenManager. All rights reserved.
+              &copy; 2025-2026 OpenManager AI. Licensed under GPL-3.0.
             </p>
             <div className="flex items-center gap-4 text-xs text-white/70">
               <span className="flex items-center gap-1.5">

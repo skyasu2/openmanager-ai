@@ -210,7 +210,10 @@ Job Queue SSE 폴링은 Redis 명령어 예산 보호를 위해 기본값을 아
 - **DevTools Integration**: 개발 생산성 향상을 위해 8개의 MCP 서버(Context7, Stitch, Supabase 등)를 Claude Code 개발 환경에 연동하여 활용
 - **Hybrid Architecture**: Vercel Edge + Cloud Run Heavy Lifting
 
-**결과**: 약 **170,000 Lines of Code** (Frontend 50K+ / Backend 18K+ / Config & Docs)
+**결과**: 약 **155,000 Lines of Code** (수동 카운트 + 빈 줄 제거 순수 측정 기준)
+- Frontend (`src/`): ~108,000 LOC
+- Backend (`cloud-run/`): ~34,000 LOC
+- Tests & Scripts: ~13,000 LOC
 
 ---
 

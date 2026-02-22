@@ -87,6 +87,7 @@ LABEL org.opencontainers.image.source="https://github.com/skyasu2/openmanager-ai
 LABEL org.opencontainers.image.created="${BUILD_DATE}"
 LABEL org.opencontainers.image.revision="${GIT_SHA}"
 LABEL org.opencontainers.image.base.name="node:24-alpine3.21"
+LABEL org.opencontainers.image.licenses="GPL-3.0-only"
 
 # Custom labels
 LABEL ai.framework="vercel-ai-sdk-v6"
