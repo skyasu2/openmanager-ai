@@ -8,7 +8,7 @@
 > Canonical: docs/reference/architecture/ai/ai-engine-architecture.md
 > Tags: ai,architecture,multi-agent,cloud-run
 >
-> **v8.0.0** | Updated 2026-02-15
+> **v8.2.0** | Updated 2026-02-22
 > (ai-model-policy.md 내용 통합됨, 2026-02-14)
 
 ## Overview
@@ -253,11 +253,15 @@ for await (const event of streamAgent('analyst', '이상 탐지')) {
 
 ### Circuit Breaker & Retry
 
-| 메커니즘 | 동작 |
-|---------|------|
-| **Circuit Breaker** | API 실패 반복 시 해당 프로바이더를 일시 차단하여 불필요한 대기 시간 감소 |
-| **Exponential Backoff** | Rate Limit(429) 발생 시 지수적으로 재시도 간격 증가 (1s → 2s → 4s) |
-| **Health Check** | 주기적으로 차단된 프로바이더의 복구 상태 확인 후 자동 복원 |
+| 메커니즘 | 동작 | 설정 |
+|---------|------|------|
+| **Circuit Breaker** | 실패 반복 → OPEN (차단) → HALF_OPEN (시험) → CLOSED (복원) | Vercel: 3회/60s, Cloud Run: 5회/30s |
+| **Exponential Backoff** | 500/408 에러 시 같은 프로바이더 재시도 | 500ms → 1s → 2s (최대 5s, 2회) |
+| **Provider Fallback** | 429/502/503/504 에러 시 다음 프로바이더 전환 | 에이전트별 3-way chain |
+| **Quota Tracker** | 할당량 80% 도달 시 선제적 폴백, 95% 시 즉시 스킵 | 일일/분당 토큰+요청 추적 |
+| **Timeout Chain** | 계층적 타임아웃: Supervisor 50s → Agent 45s → Tool 25s | `timeout-config.ts` |
+
+> 상세: [복원력 아키텍처](../infrastructure/resilience.md) — CB 상태 전이, 쿼타 임계값, 타임아웃 계층
 
 ### Reporter Pipeline (Evaluator-Optimizer)
 

@@ -8,7 +8,7 @@
 > Canonical: docs/reference/architecture/infrastructure/resilience.md
 > Tags: resilience,circuit-breaker,fallback,retry,error-handling
 >
-> **프로젝트 버전**: v8.0.0 | **Updated**: 2026-02-15
+> **프로젝트 버전**: v8.2.0 | **Updated**: 2026-02-22
 
 ## 개요
 
@@ -62,8 +62,17 @@
 | 상태 | 조건 | 동작 |
 |------|------|------|
 | `CLOSED` | 정상 | 모든 요청 통과 |
-| `OPEN` | failures ≥ threshold (기본 3회) | 요청 즉시 차단, 폴백 사용 |
-| `HALF_OPEN` | resetTimeout 경과 (기본 60초) | 시험 요청 1건 허용 |
+| `OPEN` | failures ≥ threshold | 요청 즉시 차단, 폴백 사용 |
+| `HALF_OPEN` | resetTimeout 경과 | 시험 요청 허용, 성공 시 CLOSED 복원 |
+
+### 플랫폼별 설정
+
+| 설정 | Vercel | Cloud Run |
+|------|--------|-----------|
+| Failure Threshold | 3회 | 5회 |
+| Success Threshold (HALF_OPEN) | 2회 성공 → CLOSED | 2회 성공 → CLOSED |
+| Open Duration | 60,000ms (60초) | 30,000ms (30초) |
+| 타임아웃 처리 | failure 카운트 제외 | failure 카운트 제외 |
 
 ### 구현 위치
 
@@ -143,9 +152,9 @@ Cloud Run AI Engine은 LLM 호출 시 **자동 프로바이더 전환**을 수�
 // cloud-run/ai-engine/src/services/resilience/retry-with-fallback.ts
 const DEFAULT_RETRY_CONFIG = {
   maxRetries: 2,           // 프로바이더당 최대 2회 재시도
-  initialDelayMs: 1000,    // 첫 재시도 1초 대기
-  maxDelayMs: 15000,       // 최대 15초 대기
-  timeoutMs: 30000,        // 프로바이더별 30초 타임아웃
+  initialDelayMs: 500,     // 첫 재시도 500ms 대기
+  maxDelayMs: 5000,        // 최대 5초 대기
+  timeoutMs: 60000,        // 프로바이더별 60초 타임아웃
 };
 ```
 
@@ -156,10 +165,13 @@ const DEFAULT_RETRY_CONFIG = {
 | 에러 타입 | 동작 | HTTP 코드 |
 |----------|------|----------|
 | Rate Limit | **Fallback** (다음 프로바이더) | 429 |
+| Service Unavailable | **Fallback** | 502, 503, 504 |
 | Unauthorized | **Fallback** | 401, 403 |
-| Server Error | **Retry** (같은 프로바이더) | 500, 502, 503 |
-| Timeout | **Retry** | 408 |
+| Server Error | **Retry** (같은 프로바이더) | 500 |
+| Timeout | **Retry** | 408, ECONNRESET |
 | Client Error | **즉시 실패** | 400, 404 |
+
+> 메시지 기반 탐지도 적용: `"rate limit"`, `"429"`, `"503"`, `"unavailable"` 등 키워드 매칭
 
 ### Vision Agent 3단 Fallback
 
@@ -177,6 +189,65 @@ Vision 요청 → Gemini (gemini-2.0-flash)
 
 - OpenRouter Vision은 기본적으로 tool-calling 비활성화 (`OPENROUTER_VISION_TOOL_CALLING=false`)
 - 무료 티어 모델 호환성을 위해 `models` 체인 주입
+
+### 타임아웃 계층 (Nested Timeout Chain)
+
+Cloud Run AI Engine은 **계층적 타임아웃**으로 각 레벨에서 독립적으로 시간을 제어합니다.
+
+```
+Cloud Run (300s hard limit)
+  └── Supervisor (50s hard / 45s soft / 40s warning)
+       └── Orchestrator (50s hard / 10s routing decision)
+            └── Agent (45s hard / 35s warning)
+                 └── Subtask (30s hard / 25s warning)
+                      └── Tool (25s hard / 5s retry / 20s warning)
+```
+
+구현: `cloud-run/ai-engine/src/config/timeout-config.ts`
+
+| 레벨 | Hard Timeout | Warning | 비고 |
+|------|:-----------:|:-------:|------|
+| Cloud Run | 300s | - | 플랫폼 제한, 10s margin |
+| Supervisor | 50s | 40s | Soft 45s에서 정리 시작 |
+| Orchestrator | 50s | 30s | 라우팅 결정 10s |
+| Agent | 45s | 35s | maxSteps=7 |
+| Subtask | 30s | 25s | 개별 작업 단위 |
+| Tool | 25s | 20s | 재시도 5s |
+| Reporter Pipeline | 45s | - | 이터레이션당 20s |
+
+외부 서비스 타임아웃: LLM API 30s, Tavily 15s, Supabase 10s, Redis 5s
+
+---
+
+### 쿼타 기반 선제적 폴백 (Quota Tracker)
+
+프로바이더 할당량 소진을 방지하기 위해 **사전 임계값**에서 폴백을 결정합니다.
+
+구현: `cloud-run/ai-engine/src/services/resilience/quota-tracker.ts`
+
+```
+사용률 체크
+  ├── 일일 토큰 ≥ 80%  → 선제적 폴백 (다음 프로바이더)
+  ├── 분당 요청 ≥ 85%  → 대기 or 폴백 (wait < 30s면 대기)
+  ├── 분당 토큰 ≥ 85%  → 대기 or 폴백
+  └── 일일 토큰 ≥ 95%  → 즉시 스킵 (대기 없음)
+```
+
+| 임계값 | 비율 | 동작 |
+|--------|:----:|------|
+| Daily Token | 80% | 선제적 폴백 (다음 프로바이더 전환) |
+| Minute Request | 85% | 대기 시간 계산, 30초 미만이면 대기 후 재시도 |
+| Minute Token | 85% | 동일 |
+| Critical Daily | 95% | 즉시 스킵 (해당 프로바이더 완전 회피) |
+
+**프로바이더별 할당량**:
+
+| Provider | 일일 토큰 | 분당 요청 | 분당 토큰 |
+|----------|:---------:|:--------:|:--------:|
+| Cerebras | 24M | 60 | 60K |
+| Groq | 100K | 30 | 12K |
+| Mistral | 1M/월 | 30 | 30K |
+| Gemini | 360M | 15 | 250K |
 
 ---
 
@@ -283,4 +354,4 @@ curl -H "X-API-Key: $SECRET" https://ai-engine-xxx.run.app/monitoring
 - [Observability 가이드](../../../guides/observability.md) - Langfuse/Sentry 모니터링
 - [Free Tier 최적화](./free-tier-optimization.md) - 비용 제약 하의 설계
 
-_Last Updated: 2026-02-15_
+_Last Updated: 2026-02-22_
