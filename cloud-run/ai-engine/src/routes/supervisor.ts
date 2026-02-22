@@ -10,7 +10,7 @@
 
 import { Hono } from 'hono';
 import type { Context } from 'hono';
-import { streamSSE } from 'hono/streaming';
+import { type SSEStreamingApi, streamSSE } from 'hono/streaming';
 import { z } from 'zod';
 import {
   executeSupervisor,
@@ -268,7 +268,7 @@ supervisorRouter.post('/stream', async (c: Context) => {
     }
 
     // 4. Stream response using SSE
-    return streamSSE(c, async (stream) => {
+    return streamSSE(c, async (stream: SSEStreamingApi) => {
       let messageId = 0;
 
       try {

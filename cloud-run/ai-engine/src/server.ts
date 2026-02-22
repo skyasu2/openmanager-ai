@@ -88,7 +88,7 @@ app.use('/api/*', async (c: Context, next: Next) => {
 app.use('/api/*', rateLimitMiddleware);
 
 // 🎯 Global Error Handler (GCP Cloud Logging)
-app.onError((err, c) => {
+app.onError((err: Error, c: Context) => {
   logger.error({ err, url: c.req.url, method: c.req.method }, 'Unhandled error');
 
   return c.json(
