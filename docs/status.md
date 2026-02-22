@@ -20,12 +20,13 @@
 
 ---
 
-## 🔄 Recent Changes (v8.3.0)
+## 🔄 Recent Changes (v8.3.1)
 
-- **v8.3.0+** (2026-02-22, post-release)
-  - feat(security): Proxy 이중 쿠키 게이트 — auth_session_id + guest_auth_proof 둘 다 필요
-  - feat(observability): Cloud Run GCP 로깅 공식 패키지 전환 (`@google-cloud/pino-logging-gcp-config`)
-  - test: Circuit Breaker 15개 + CSP Utils 22개 단위 테스트 추가
+- **v8.3.1** (2026-02-22)
+  - fix(license): GPL-3.0 프로젝트 헤더, package 메타데이터, OCI 라벨 추가
+  - fix(test): Cloud Run 8개 테스트 타임아웃 해결 (vi.hoisted + timeout 확장)
+  - ci: CI 품질 게이트 강화 — Cloud Run 테스트 필수 조건 추가
+  - refactor(auth): 로그인 플로우, E2E 헬퍼, CI 파이프라인 개선
 
 - **v8.3.0** (2026-02-22)
   - feat(auth): HMAC SHA-256 서명 기반 게스트 세션 증명 (cookie forgery 방지)
