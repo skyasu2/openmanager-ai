@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.3.1](https://github.com/skyasu2/openmanager-ai/compare/v8.3.0...v8.3.1) (2026-02-22)
+
+
+### Features
+
+* **security,observability:** strengthen proxy auth, GCP logging, and test coverage ([ed5745e](https://github.com/skyasu2/openmanager-ai/commit/ed5745ea4f42c4bae0a9a0954cb587628c5ca919))
+
+
+### Bug Fixes
+
+* **license:** add GPL-3.0 project header, package metadata, and OCI label ([1866f8b](https://github.com/skyasu2/openmanager-ai/commit/1866f8b5d9a25b5765d4d3db38c2d7534471a95b))
+* **test:** resolve 8 Cloud Run test timeouts with vi.hoisted and extended timeout ([71c0595](https://github.com/skyasu2/openmanager-ai/commit/71c0595fa9b8866048b4db3f0e5ed3aa1ecb4546))
+
 ## [8.3.0](https://github.com/skyasu2/openmanager-ai/compare/v8.2.0...v8.3.0) (2026-02-22)
 
 
