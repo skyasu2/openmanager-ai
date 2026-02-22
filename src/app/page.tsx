@@ -232,10 +232,10 @@ function Home() {
           </h1>
           <p className="mx-auto max-w-3xl text-base leading-relaxed text-white/85 md:text-lg">
             <span className="block font-medium text-white/90">
-              AI가 서버 이상을 감지하고, 원인을 분석하고, 해결책을 제안합니다
+              서버 관리자의 의사결정을 돕는 지능형 모니터링 AI 어시스턴트
             </span>
             <span className="mt-2 block text-sm text-white/60">
-              6개 AI 에이전트 · 실시간 스트리밍 · 자연어 서버 질의
+              멀티 에이전트 아키텍처 · 실시간 메트릭 RAG · 장애 자동 분석
             </span>
           </p>
         </div>

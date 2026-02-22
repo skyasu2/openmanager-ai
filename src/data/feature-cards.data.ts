@@ -118,13 +118,13 @@ export const FEATURE_CARDS_DATA: FeatureCard[] = [
   },
   {
     id: 'vibe-coding',
-    title: '🔥 Vibe Coding',
+    title: '🔥 AI-Driven Development',
     description:
-      'ChatGPT · Cursor · Claude Code · Antigravity 등 AI 도구를 활용해 프로젝트 전체를 구축. 4단계 진화를 거친 개인 AI 개발 워크플로우 기록.',
+      '본 모니터링 플랫폼을 구축하기 위해 실제 적용한 Vibe Coding(AI 협업) 방법론. 4단계 진화를 거친 에이전틱 워크플로우를 증명합니다.',
     icon: Zap,
     gradient: 'from-amber-600 via-orange-600 to-amber-700',
     detailedContent: {
-      overview: `이 프로젝트의 개발 환경입니다. 초기 ChatGPT 활용부터 현재 멀티 에이전트 협업 환경까지 바이브 코딩 적용.`,
+      overview: `이 프로덕트가 탄생한 개발 방법론입니다. 단순 AI 챗봇이 아닌, 서비스 아키텍처 전체를 AI(ChatGPT/Claude/Gemini)와 페어 프로그래밍하여 E2E로 구축했습니다.`,
       features: [
         '1️⃣ Stage 1 (Manual): GPT/Gemini 창에서 수동 코딩 → [Netlify 목업](https://openmanager-vibe-v2.netlify.app/) — 초기 프로토타이핑',
         '2️⃣ Stage 2 (Auto): Cursor의 등장, "IDE 자동 개발"의 시작 — GUI 기반 AI 코딩 도입',
