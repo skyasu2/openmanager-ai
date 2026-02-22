@@ -47,41 +47,6 @@ export function LoginButtons({
 
   return (
     <>
-      <form onSubmit={handleEmailSubmit} className="flex flex-col gap-3">
-        <div className="relative">
-          <Mail className="absolute left-3.5 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            disabled={isLoading}
-            required
-            placeholder="이메일 주소"
-            className="h-12 w-full rounded-xl border border-cyan-100/50 bg-white/70 pl-11 pr-4 text-sm text-slate-800 outline-none backdrop-blur-sm transition-all placeholder:text-slate-400 focus:border-cyan-300 focus:bg-white focus:ring-2 focus:ring-cyan-100 disabled:opacity-60"
-          />
-        </div>
-        <button
-          type="submit"
-          disabled={isLoading || !email}
-          className={`${glassButtonBaseClass} bg-slate-800! text-white! hover:bg-slate-700! hover:border-slate-600!`}
-        >
-          {loadingType === 'email' ? <Spinner /> : null}
-          <span className="relative z-10 text-sm font-medium tracking-wide">
-            이메일로 계속하기
-          </span>
-        </button>
-      </form>
-
-      {currentProvider !== 'guest' && (
-        <div className="relative my-2 flex items-center gap-4">
-          <div className="h-px w-full bg-cyan-200/55" />
-          <span className="whitespace-nowrap text-xs font-medium text-cyan-100/80">
-            소셜 로그인
-          </span>
-          <div className="h-px w-full bg-cyan-200/55" />
-        </div>
-      )}
-
       {currentProvider !== 'google' && (
         <button
           type="button"
@@ -150,6 +115,39 @@ export function LoginButtons({
           </span>
         </button>
       )}
+
+      <div className="relative my-2 flex items-center gap-4">
+        <div className="h-px w-full bg-cyan-200/55" />
+        <span className="whitespace-nowrap text-xs font-medium text-cyan-100/80">
+          이메일 로그인
+        </span>
+        <div className="h-px w-full bg-cyan-200/55" />
+      </div>
+
+      <form onSubmit={handleEmailSubmit} className="flex flex-col gap-3">
+        <div className="relative">
+          <Mail className="absolute left-3.5 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            disabled={isLoading}
+            required
+            placeholder="이메일 주소"
+            className="h-12 w-full rounded-xl border border-cyan-100/50 bg-white/70 pl-11 pr-4 text-sm text-slate-800 outline-none backdrop-blur-sm transition-all placeholder:text-slate-400 focus:border-cyan-300 focus:bg-white focus:ring-2 focus:ring-cyan-100 disabled:opacity-60"
+          />
+        </div>
+        <button
+          type="submit"
+          disabled={isLoading || !email}
+          className={`${glassButtonBaseClass} bg-slate-800! text-white! hover:bg-slate-700! hover:border-slate-600!`}
+        >
+          {loadingType === 'email' ? <Spinner /> : null}
+          <span className="relative z-10 text-sm font-medium tracking-wide">
+            이메일로 계속하기
+          </span>
+        </button>
+      </form>
 
       {currentProvider !== 'guest' && (
         <div className="relative my-2 flex items-center gap-4">
