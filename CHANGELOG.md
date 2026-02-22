@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.3.2](https://github.com/skyasu2/openmanager-ai/compare/v8.3.1...v8.3.2) (2026-02-22)
+
+
+### Bug Fixes
+
+* **ci:** use npm install for AI Engine tests to handle peer dep resolution ([e95dc64](https://github.com/skyasu2/openmanager-ai/commit/e95dc644e4bf56c9e91b55ec038b043d9299af18))
+* **deps:** regenerate AI Engine lockfile to include GCP logging transitive deps ([1114682](https://github.com/skyasu2/openmanager-ai/commit/1114682641365460e73c2d9e676fa4061e4c38d4))
+* **deps:** restore AI Engine lockfile from release baseline and re-resolve ([c7bdced](https://github.com/skyasu2/openmanager-ai/commit/c7bdcedea2387ac173a70f0b2c9345424dab2d48))
+* **test,ci:** stabilize E2E critical suite and Cloud Run peer deps ([2eefd45](https://github.com/skyasu2/openmanager-ai/commit/2eefd45c962a0bca29d3c0e6b53d6f33fbbbe0e4))
+* **test:** mock isTavilyAvailable in supervisor-routing tests ([66e5a88](https://github.com/skyasu2/openmanager-ai/commit/66e5a88e0d64c7b53d24d84e0b368314d481ee2f))
+
 ## [8.3.1](https://github.com/skyasu2/openmanager-ai/compare/v8.3.0...v8.3.1) (2026-02-22)
 
 
