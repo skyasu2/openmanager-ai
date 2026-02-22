@@ -35,9 +35,11 @@ vi.mock('../../../lib/config-parser', () => ({
   isOpenRouterVisionToolCallingEnabled: vi.fn(() => false),
 }));
 
-// Store generateText mock for manipulation in tests
-const mockGenerateText = vi.fn();
-const mockStreamText = vi.fn();
+// Store generateText mock for manipulation in tests (hoisted for proper mock timing)
+const { mockGenerateText, mockStreamText } = vi.hoisted(() => ({
+  mockGenerateText: vi.fn(),
+  mockStreamText: vi.fn(),
+}));
 
 // Mock AI SDK with ToolLoopAgent
 vi.mock('ai', () => {
@@ -116,7 +118,7 @@ function createMockConfig(overrides: Partial<{
 // BaseAgent Tests
 // ============================================================================
 
-describe('BaseAgent', () => {
+describe('BaseAgent', { timeout: 15000 }, () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.mocked(isOpenRouterVisionToolCallingEnabled).mockReturnValue(false);

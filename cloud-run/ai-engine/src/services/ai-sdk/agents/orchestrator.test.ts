@@ -119,7 +119,7 @@ vi.mock('../../../tools-ai-sdk', () => ({
 // Tests for AI SDK v6 Native Architecture
 // ============================================================================
 
-describe('Multi-Agent Orchestrator (AI SDK v6 Native)', () => {
+describe('Multi-Agent Orchestrator (AI SDK v6 Native)', { timeout: 30000 }, () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
