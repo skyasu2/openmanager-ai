@@ -173,7 +173,9 @@ export class ConfigLoader {
       },
       database: {
         url: process.env.NEXT_PUBLIC_SUPABASE_URL,
-        key: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+        key:
+          process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
+          process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
         enableMockMode: process.env.DATABASE_ENABLE_MOCK_MODE !== 'false',
         connectionTimeout:
           Number(process.env.DATABASE_CONNECTION_TIMEOUT) || 10000,

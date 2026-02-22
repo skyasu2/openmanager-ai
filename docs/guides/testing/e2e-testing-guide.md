@@ -37,11 +37,17 @@
 ## 실행 명령
 
 ```bash
-# 전체 로컬 E2E
+# 로컬 핵심 E2E(smoke, 기본)
 npm run test:e2e
+
+# 전체 E2E (필요 시)
+npm run test:e2e:all
 
 # AI 태그 제외 실행
 npm run test:e2e:no-ai
+
+# 외부 의존 시나리오만 분리 실행 (@external)
+npm run test:e2e:external
 
 # 핵심 게이트(권장)
 npm run test:e2e:critical
@@ -49,6 +55,9 @@ npm run test:e2e:critical
 # 개발 서버 포함 1회 실행
 npm run test:e2e:with-server
 ```
+
+> `test:e2e:external`는 `--pass-with-no-tests` 옵션을 사용합니다.
+> 현재 `@external` 테스트가 없으면 0건 통과로 종료되는 것이 의도된 동작입니다.
 
 ---
 

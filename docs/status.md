@@ -43,7 +43,7 @@
   - fix(observability): Sentry tunnel upstream timeout 추가
   - fix(ai-engine): reporter limits 복구, empty streams 방어 강화
   - fix(ai-engine): incident report retry/fallback/cache 안정성 강화
-  - fix(e2e): 셀렉터 안정화, rate limit 감지 + `test:vercel:ai` 스크립트 추가
+  - fix(e2e): 셀렉터 안정화, rate limit 감지 + AI 검증 경로 정리 (당시 `test:vercel:ai` 도입, 현재는 `test:contract` 중심으로 전환)
   - chore: gitignore mobile screenshots + lighthouse reports
   - refactor(workflow): Skills 체계 통합 (5개 → 표준화), Cloud Run 메타데이터 갱신
   - fix(stability): stream/metrics 안정성 강화 (review-driven hardening)

@@ -21,7 +21,7 @@ import { debugWithEnv } from '@/utils/vercel-env-utils';
 const SYSTEM_START_COUNTDOWN_SECONDS = 5; // Cloud Run cold start 대기 (5-10초)
 const COUNTDOWN_INTERVAL_MS = 1000;
 const SYSTEM_BOOT_PATH = '/system-boot';
-const LOGIN_REDIRECT_URL = `/login?redirect=${encodeURIComponent(
+const LOGIN_REDIRECT_URL = `/login?redirectTo=${encodeURIComponent(
   SYSTEM_BOOT_PATH
 )}`;
 

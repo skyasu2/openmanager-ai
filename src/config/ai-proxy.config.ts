@@ -27,10 +27,8 @@ import {
   type ComplexityCategoryWeights,
   type ObservabilityConfig,
   type ProxyEndpoint,
-  type QueryRoutingConfig,
   type RAGWeightsConfig,
   type StreamRetryConfig,
-  type TimeoutConfig,
   type VercelTier,
 } from './ai-proxy/config-schema';
 

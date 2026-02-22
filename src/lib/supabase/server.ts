@@ -13,7 +13,9 @@ export async function createClient(): Promise<SupabaseClient> {
   const cookieStore = await cookies();
   // trim()으로 환경 변수의 불필요한 공백/줄바꿈 제거
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
-  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim();
+  const supabaseKey =
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY?.trim() ||
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim();
 
   if (!supabaseUrl || !supabaseKey) {
     throw new Error('Missing Supabase environment variables');

@@ -32,12 +32,16 @@ import {
   type TimeRangeType,
   type ViewMode,
 } from './EnhancedServerModal.metrics.constants';
+import {
+  buildMetricsChartConfigs,
+  getAnomalySeverityBadgeClass,
+  getMetricSummary,
+} from './EnhancedServerModal.metrics.helpers';
 import type {
   ChartData,
   RealtimeData,
   ServerData,
 } from './EnhancedServerModal.types';
-import { getMetricColorByStatus } from './EnhancedServerModal.utils';
 
 /**
  * Metrics Tab Props
@@ -91,48 +95,10 @@ export const MetricsTab: FC<MetricsTabProps> = ({
   });
 
   // 차트 데이터 구성
-  const chartConfigs: ChartData[] = [
-    {
-      data: realtimeData.cpu,
-      color: getMetricColorByStatus(server.cpu, 'cpu', server.status).color,
-      label: 'CPU 사용률',
-      icon: '🔥',
-      gradient: getMetricColorByStatus(server.cpu, 'cpu', server.status)
-        .gradient,
-    },
-    {
-      data: realtimeData.memory,
-      color: getMetricColorByStatus(server.memory, 'memory', server.status)
-        .color,
-      label: '메모리 사용률',
-      icon: '💾',
-      gradient: getMetricColorByStatus(server.memory, 'memory', server.status)
-        .gradient,
-    },
-    {
-      data: realtimeData.disk,
-      color: getMetricColorByStatus(server.disk, 'disk', server.status).color,
-      label: '디스크 사용률',
-      icon: '💿',
-      gradient: getMetricColorByStatus(server.disk, 'disk', server.status)
-        .gradient,
-    },
-    {
-      data: realtimeData.network.map((n) => Math.min(100, Math.max(0, n))),
-      color: getMetricColorByStatus(
-        server.network || 0,
-        'network',
-        server.status
-      ).color,
-      label: '네트워크 사용률',
-      icon: '🌐',
-      gradient: getMetricColorByStatus(
-        server.network || 0,
-        'network',
-        server.status
-      ).gradient,
-    },
-  ];
+  const chartConfigs: ChartData[] = buildMetricsChartConfigs(
+    server,
+    realtimeData
+  );
 
   return (
     <div className="space-y-6">
@@ -204,7 +170,7 @@ export const MetricsTab: FC<MetricsTabProps> = ({
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
               {chartConfigs.map((chart, idx) => (
                 <div
-                  key={idx}
+                  key={chart.label}
                   className="animate-fade-in relative overflow-hidden rounded-2xl bg-white p-6 shadow-xl transition-all hover:-translate-y-1 hover:shadow-2xl"
                   style={{ animationDelay: `${0.2 + idx * 0.1}s` }}
                 >
@@ -258,17 +224,12 @@ export const MetricsTab: FC<MetricsTabProps> = ({
               className="animate-fade-in mt-6 grid grid-cols-2 gap-4 md:grid-cols-4"
               style={{ animationDelay: '0.6s' }}
             >
-              {chartConfigs.map((chart, idx) => {
-                const currentValue = chart.data[chart.data.length - 1] ?? 0;
-                const avgValue =
-                  chart.data.length > 0
-                    ? chart.data.reduce((sum, val) => sum + val, 0) /
-                      chart.data.length
-                    : 0;
+              {chartConfigs.map((chart) => {
+                const { currentValue, avgValue } = getMetricSummary(chart.data);
 
                 return (
                   <div
-                    key={idx}
+                    key={`${chart.label}-summary`}
                     className="rounded-xl border border-gray-100 bg-white p-4 shadow-xs"
                   >
                     <div className="mb-2 flex items-center gap-2">
@@ -467,13 +428,7 @@ export const MetricsTab: FC<MetricsTabProps> = ({
                       >
                         <div className="flex items-center gap-3">
                           <span
-                            className={`rounded-full px-2 py-0.5 text-xs font-medium ${
-                              anomaly.severity === 'critical'
-                                ? 'bg-red-100 text-red-700'
-                                : anomaly.severity === 'high'
-                                  ? 'bg-orange-100 text-orange-700'
-                                  : 'bg-yellow-100 text-yellow-700'
-                            }`}
+                            className={`rounded-full px-2 py-0.5 text-xs font-medium ${getAnomalySeverityBadgeClass(anomaly.severity)}`}
                           >
                             {anomaly.severity}
                           </span>

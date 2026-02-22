@@ -28,6 +28,10 @@ import { createChildLogger, type ServerLogger, serverLogger } from './server';
 // Re-export config utilities
 export { type LogLevel, loggerConfig, shouldLog } from './config';
 
+// Runtime log level controls are server-only.
+// Import directly from '@/lib/logging/runtime' in server contexts (API routes).
+// Not re-exported here to avoid pulling pino into client bundles.
+
 /**
  * Unified logger interface - accepts multiple arguments like console.log
  */

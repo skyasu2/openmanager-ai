@@ -1,6 +1,12 @@
 import { useCallback, useEffect, useState } from 'react';
 import { signOut, useSession } from '@/hooks/useSupabaseSession';
 import { authStateManager, clearAuthData } from '@/lib/auth/auth-state-manager';
+import {
+  AUTH_SESSION_ID_KEY,
+  AUTH_TYPE_KEY,
+  AUTH_USER_KEY,
+  LEGACY_GUEST_SESSION_COOKIE_KEY,
+} from '@/lib/auth/guest-session-utils';
 import { logger } from '@/lib/logging';
 // Unused imports removed: getCurrentUser, isGitHubAuthenticated, isGuestUser
 import type {
@@ -109,16 +115,15 @@ export function useProfileAuth(): ProfileAuthHook {
           // 게스트 로그아웃은 AuthStateManager가 실패했으므로 수동 정리
           if (typeof window !== 'undefined') {
             localStorage.removeItem('admin_mode');
-            localStorage.removeItem('auth_session_id');
-            localStorage.removeItem('auth_type');
-            localStorage.removeItem('auth_user');
+            localStorage.removeItem(AUTH_SESSION_ID_KEY);
+            localStorage.removeItem(AUTH_TYPE_KEY);
+            localStorage.removeItem(AUTH_USER_KEY);
           }
 
           if (typeof document !== 'undefined') {
-            document.cookie =
-              'auth_session_id=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
-            document.cookie =
-              'auth_type=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+            document.cookie = `${AUTH_SESSION_ID_KEY}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
+            document.cookie = `${AUTH_TYPE_KEY}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
+            document.cookie = `${LEGACY_GUEST_SESSION_COOKIE_KEY}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
           }
         }
       } catch (fallbackError) {

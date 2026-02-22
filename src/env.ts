@@ -24,6 +24,7 @@ const envSchema = z.object({
 
   // Supabase
   NEXT_PUBLIC_SUPABASE_URL: z.string().url().optional(),
+  NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: z.string().min(1).optional(),
   NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().min(1).optional(),
   SUPABASE_SERVICE_ROLE_KEY: z.string().min(1).optional(),
   SUPABASE_PROJECT_ID: z.string().min(1).optional(),
@@ -96,6 +97,11 @@ const envSchema = z.object({
   // Debug & Features
   NEXT_PUBLIC_DEBUG: z.string().optional(),
   MOCK_MODE: z.string().optional(),
+  NEXT_PUBLIC_GUEST_FULL_ACCESS: z.string().optional(),
+  NEXT_PUBLIC_GUEST_MODE: z.string().optional(),
+  GUEST_LOGIN_BLOCKED_COUNTRIES: z.string().optional(),
+  GUEST_CN_IP_CIDRS: z.string().optional(),
+  GUEST_LOGIN_PIN: z.string().optional(),
 });
 
 // 환경변수 타입 추출
@@ -153,7 +159,11 @@ export const isVercelProduction = env.VERCEL_ENV === 'production';
 // 특정 기능 활성화 검사
 export const features = {
   supabase:
-    !!env.NEXT_PUBLIC_SUPABASE_URL && !!env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+    !!env.NEXT_PUBLIC_SUPABASE_URL &&
+    !!(
+      env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
+      env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+    ),
   github: !!env.GITHUB_CLIENT_ID && !!env.GITHUB_CLIENT_SECRET,
   gcp: !!env.GCP_PROJECT_ID,
   ai: !!env.CLOUD_RUN_AI_URL || !!env.CLOUD_RUN_ENABLED, // Cloud Run AI Engine

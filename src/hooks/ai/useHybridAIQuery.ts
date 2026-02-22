@@ -30,20 +30,15 @@
 
 import type { UIMessage } from '@ai-sdk/react';
 import { useChat } from '@ai-sdk/react';
-import { DefaultChatTransport } from 'ai';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
-  calculateRetryDelay,
   generateTraceId,
-  generateTraceparent,
   getComplexityThreshold,
   getObservabilityConfig,
   getStreamRetryConfig,
-  isRetryableError,
-  TRACEPARENT_HEADER,
 } from '@/config/ai-proxy.config';
-import { extractStreamError } from '@/lib/ai/constants/stream-errors';
-import { logger } from '@/lib/logging';
+import { createHybridChatTransport } from './core/createHybridChatTransport';
+import { createHybridStreamCallbacks } from './core/createHybridStreamCallbacks';
 import { useClarificationHandlers } from './core/useClarificationHandlers';
 import { useQueryControls } from './core/useQueryControls';
 import { useQueryExecution } from './core/useQueryExecution';
@@ -68,17 +63,15 @@ export type {
 
 import {
   COLD_START_ERROR_PATTERNS,
+  extractStreamError,
   isColdStartRelatedError,
   STREAM_ERROR_MARKER,
   STREAM_ERROR_REGEX,
 } from '@/lib/ai/constants/stream-errors';
 import type {
   HybridQueryState,
-  RedirectEventData,
-  StreamDataPart,
   UseHybridAIQueryOptions,
   UseHybridAIQueryReturn,
-  WarningEventData,
 } from './types/hybrid-query.types';
 import type { FileAttachment } from './useFileAttachments';
 export {
@@ -142,25 +135,60 @@ export function useHybridAIQuery(
   const redirectingRef = useRef<boolean>(false);
   const abortControllerRef = useRef<AbortController | null>(null);
   const retryTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const stopChatRef = useRef<() => void>(() => {});
+  const executeQueryRef = useRef<
+    | ((
+        query: string,
+        attachments?: FileAttachment[],
+        isRetry?: boolean
+      ) => void)
+    | null
+  >(null);
   const transport = useMemo(
     () =>
-      new DefaultChatTransport({
-        api: apiEndpoint,
-        headers: () => ({
-          [TRACEPARENT_HEADER]: generateTraceparent(traceIdRef.current),
-          [observabilityConfig.traceIdHeader]: traceIdRef.current,
-        }),
-        // P2: warmup 중에는 web search 비활성화 (cold start 부하 경감)
-        body: () => ({
-          enableWebSearch: warmingUpRef.current
-            ? false
-            : webSearchEnabledRef.current,
-        }),
-        prepareReconnectToStreamRequest: ({ id }) => ({
-          api: `${apiEndpoint}?sessionId=${id}`,
-        }),
+      createHybridChatTransport({
+        apiEndpoint,
+        traceIdRef,
+        traceIdHeader: observabilityConfig.traceIdHeader,
+        warmingUpRef,
+        webSearchEnabledRef,
       }),
     [apiEndpoint, observabilityConfig.traceIdHeader]
+  );
+  const asyncQueryRef = useRef<ReturnType<typeof useAsyncAIQuery>>(null!);
+  const streamCallbacks = useMemo(
+    () =>
+      createHybridStreamCallbacks({
+        traceIdRef,
+        verboseLogging: observabilityConfig.verboseLogging,
+        maxRetries: streamRetryConfig.maxRetries,
+        onStreamFinish,
+        onData,
+        setState,
+        refs: {
+          retryCount: retryCountRef,
+          warmingUp: warmingUpRef,
+          currentQuery: currentQueryRef,
+          pendingAttachments: pendingAttachmentsRef,
+          errorHandled: errorHandledRef,
+          redirecting: redirectingRef,
+          abortController: abortControllerRef,
+          retryTimeout: retryTimeoutRef,
+          executeQuery: executeQueryRef,
+        },
+        stopStreaming: () => {
+          stopChatRef.current();
+        },
+        runJobQueueQuery: (query: string) => {
+          return asyncQueryRef.current.sendQuery(query);
+        },
+      }),
+    [
+      onData,
+      onStreamFinish,
+      observabilityConfig.verboseLogging,
+      streamRetryConfig.maxRetries,
+    ]
   );
 
   const {
@@ -173,232 +201,11 @@ export function useHybridAIQuery(
     id: sessionIdRef.current,
     transport,
     resume: resumeEnabled,
-    onFinish: ({ message }) => {
-      // Skip isLoading reset when redirecting to job-queue (stopChat triggers onFinish)
-      if (redirectingRef.current) {
-        logger.debug('[HybridAI] onFinish skipped (redirect in progress)');
-        onStreamFinish?.();
-        return;
-      }
-      if (errorHandledRef.current) {
-        logger.debug(
-          '[HybridAI] onFinish skipped (error already handled by onError)'
-        );
-        setState((prev) => ({ ...prev, isLoading: false }));
-        onStreamFinish?.();
-        return;
-      }
-      const parts = message.parts ?? [];
-      const content = parts
-        .filter(
-          (p): p is { type: 'text'; text: string } =>
-            p != null && p.type === 'text'
-        )
-        .map((p) => p.text)
-        .join('');
-
-      const streamError = extractStreamError(content);
-
-      if (streamError) {
-        logger.warn(
-          `[HybridAI] Stream error detected (trace: ${traceIdRef.current}): ${streamError}`
-        );
-        errorHandledRef.current = true;
-        setState((prev) => ({
-          ...prev,
-          isLoading: false,
-          error: streamError,
-        }));
-      } else {
-        retryCountRef.current = 0;
-        if (observabilityConfig.verboseLogging) {
-          logger.info(
-            `[HybridAI] Stream completed successfully (trace: ${traceIdRef.current})`
-          );
-        }
-        setState((prev) => ({
-          ...prev,
-          isLoading: false,
-          warmingUp: false,
-          estimatedWaitSeconds: 0,
-        }));
-      }
-      onStreamFinish?.();
-    },
-    onData: (dataPart) => {
-      const part = dataPart as StreamDataPart;
-      if (part.type === 'data-warning' && part.data) {
-        const warningData = part.data as WarningEventData;
-
-        if (warningData.code === 'SLOW_PROCESSING') {
-          logger.warn(
-            `⚠️ [HybridAI] Slow processing: ${warningData.message} (${warningData.elapsed}ms)`
-          );
-          setState((prev) => ({
-            ...prev,
-            warning: warningData.message,
-            processingTime: warningData.elapsed,
-          }));
-        } else {
-          logger.warn(`⚠️ [HybridAI] Stream error: ${warningData.message}`);
-          setState((prev) => ({
-            ...prev,
-            warning: warningData.message,
-          }));
-        }
-        return;
-      }
-      if (part.type === 'data-redirect' && part.data) {
-        const redirectData = part.data as RedirectEventData;
-        logger.info(
-          `🔀 [HybridAI] Redirect received: switching to job-queue (${redirectData.complexity})`
-        );
-
-        redirectingRef.current = true;
-
-        setState((prev) => ({
-          ...prev,
-          mode: 'job-queue',
-          complexity: redirectData.complexity,
-          isLoading: true,
-        }));
-
-        stopChat();
-
-        const query = currentQueryRef.current;
-        if (query) {
-          abortControllerRef.current?.abort();
-          const controller = new AbortController();
-          abortControllerRef.current = controller;
-
-          const currentQuery = query;
-
-          queueMicrotask(() => {
-            if (controller.signal.aborted) {
-              logger.debug('[HybridAI] Job Queue redirect aborted');
-              redirectingRef.current = false;
-              return;
-            }
-            asyncQueryRef.current
-              .sendQuery(currentQuery)
-              .then(() => {
-                redirectingRef.current = false;
-                if (!controller.signal.aborted) {
-                  logger.debug('[HybridAI] Job Queue redirect completed');
-                }
-              })
-              .catch((error) => {
-                redirectingRef.current = false;
-                if (!controller.signal.aborted) {
-                  logger.error('[HybridAI] Job Queue redirect failed:', error);
-                  setState((prev) => ({
-                    ...prev,
-                    isLoading: false,
-                    error:
-                      error instanceof Error
-                        ? error.message
-                        : 'Job Queue 전환 실패',
-                  }));
-                }
-              });
-          });
-        } else {
-          // Safety fallback: redirect 이벤트에 쿼리가 없으면 loading/redirect 상태를 즉시 해제
-          redirectingRef.current = false;
-          setState((prev) => ({
-            ...prev,
-            isLoading: false,
-            error: 'Job Queue 전환에 필요한 쿼리를 찾을 수 없습니다.',
-          }));
-        }
-        return;
-      }
-      // 첫 실제 데이터 수신 시 warmup 해제 (ref로 stale closure 방지)
-      if (warmingUpRef.current) {
-        setState((prev) => ({
-          ...prev,
-          warmingUp: false,
-          estimatedWaitSeconds: 0,
-        }));
-      }
-      onData?.(part);
-    },
-    onError: async (error) => {
-      const errorMessage = error.message || 'Unknown error';
-      logger.error(
-        `[HybridAI] useChat error (trace: ${traceIdRef.current}):`,
-        errorMessage
-      );
-      const isResumeProbeWithoutUserQuery =
-        !currentQueryRef.current &&
-        /(failed to fetch|load failed|networkerror)/i.test(errorMessage);
-      if (isResumeProbeWithoutUserQuery) {
-        logger.debug(
-          `[HybridAI] Ignoring resume probe error before first query (trace: ${traceIdRef.current})`
-        );
-        setState((prev) => ({ ...prev, isLoading: false }));
-        return;
-      }
-      if (errorHandledRef.current) {
-        logger.debug(
-          '[HybridAI] onError skipped (already handled by onFinish)'
-        );
-        return;
-      }
-      errorHandledRef.current = true;
-      const isColdStart = isColdStartRelatedError(errorMessage);
-      // Cold start: 타임아웃 50s 증가로 1회 재시도면 충분
-      const maxRetries = isColdStart ? 1 : streamRetryConfig.maxRetries;
-      const canRetry =
-        isRetryableError(errorMessage) && retryCountRef.current < maxRetries;
-
-      if (canRetry && currentQueryRef.current) {
-        retryCountRef.current += 1;
-        const delay = isColdStart
-          ? 3_000 // 3초 후 1회 재시도 (타임아웃 50s로 보상)
-          : calculateRetryDelay(retryCountRef.current - 1);
-
-        logger.info(
-          `[HybridAI] Retrying stream (${retryCountRef.current}/${maxRetries}) ` +
-            `after ${delay}ms (trace: ${traceIdRef.current})`
-        );
-
-        // Cold start 재시도 시 warmingUp 상태 유지, UI 리셋 방지
-        setState((prev) => ({
-          ...prev,
-          warning: isColdStart
-            ? 'AI 엔진 웜업 중... 재연결합니다'
-            : `재연결 중... (${retryCountRef.current}/${maxRetries})`,
-          warmingUp: isColdStart,
-          estimatedWaitSeconds: isColdStart ? 60 : 0,
-        }));
-
-        retryTimeoutRef.current = setTimeout(() => {
-          retryTimeoutRef.current = null;
-          const query = currentQueryRef.current;
-          const attachments = pendingAttachmentsRef.current;
-          if (query) {
-            executeQuery(query, attachments || undefined, true);
-          }
-        }, delay);
-
-        return;
-      }
-
-      retryCountRef.current = 0;
-
-      setState((prev) => ({
-        ...prev,
-        isLoading: false,
-        error: errorMessage || 'AI 응답 중 오류가 발생했습니다.',
-        warning: null,
-        processingTime: 0,
-        warmingUp: false,
-        estimatedWaitSeconds: 0,
-      }));
-    },
+    onFinish: streamCallbacks.onFinish,
+    onData: streamCallbacks.onData,
+    onError: streamCallbacks.onError,
   });
-  const asyncQueryRef = useRef<ReturnType<typeof useAsyncAIQuery>>(null!);
+  stopChatRef.current = stopChat;
 
   const asyncQuery = useAsyncAIQuery({
     sessionId: sessionIdRef.current,
@@ -459,6 +266,7 @@ export function useHybridAIQuery(
       pendingAttachments: pendingAttachmentsRef,
     },
   });
+  executeQueryRef.current = executeQuery;
   const {
     selectClarification,
     submitCustomClarification,

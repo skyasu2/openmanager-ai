@@ -5,10 +5,7 @@ import { useProfileAuth } from '../../components/unified-profile/hooks/useProfil
 import { useProfileMenu } from '../../components/unified-profile/hooks/useProfileMenu';
 import { useSystemStatus } from '../../hooks/useSystemStatus';
 import { authStateManager } from '../../lib/auth/auth-state-manager';
-import {
-  signInWithGitHub,
-  signInWithGoogle,
-} from '../../lib/auth/supabase-auth';
+import { signInWithOAuthProvider } from '../../lib/auth/supabase-auth-oauth';
 import { useUnifiedAdminStore } from '../../stores/useUnifiedAdminStore';
 
 import LoginClient from './LoginClient';
@@ -72,11 +69,7 @@ const meta = {
   beforeEach() {
     setupTransitiveMocks();
 
-    mocked(signInWithGitHub).mockResolvedValue({
-      data: null,
-      error: null,
-    } as never);
-    mocked(signInWithGoogle).mockResolvedValue({
+    mocked(signInWithOAuthProvider).mockResolvedValue({
       data: null,
       error: null,
     } as never);
@@ -97,7 +90,7 @@ export const Default: Story = {};
 /** GitHub 로그인 실패 시 에러 메시지 표시 */
 export const WithError: Story = {
   beforeEach() {
-    mocked(signInWithGitHub).mockResolvedValue({
+    mocked(signInWithOAuthProvider).mockResolvedValue({
       data: null,
       error: { message: 'Invalid login credentials' },
     } as never);
@@ -111,7 +104,7 @@ export const WithError: Story = {
 /** GitHub OAuth 리다이렉트 대기 중 로딩 상태 */
 export const GitHubLoading: Story = {
   beforeEach() {
-    mocked(signInWithGitHub).mockReturnValue(new Promise(() => {}));
+    mocked(signInWithOAuthProvider).mockReturnValue(new Promise(() => {}));
   },
   play: async ({ canvas }) => {
     const btn = canvas.getByLabelText('GitHub 계정으로 로그인');

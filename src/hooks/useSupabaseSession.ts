@@ -3,6 +3,12 @@
 import type { User } from '@supabase/supabase-js';
 import { useEffect, useState } from 'react';
 import { clearAuthData } from '@/lib/auth/auth-state-manager';
+import {
+  AUTH_SESSION_ID_KEY,
+  AUTH_TYPE_KEY,
+  AUTH_USER_KEY,
+  hasGuestStorageState,
+} from '@/lib/auth/guest-session-utils';
 import { logger } from '@/lib/logging';
 import { getSupabase } from '@/lib/supabase/client';
 
@@ -55,10 +61,18 @@ export function useSession(): UseSessionReturn {
         } else {
           // 🎯 게스트 세션 확인 (AuthStateManager 키 체계 통일)
           try {
-            const guestUser = localStorage.getItem('auth_user');
-            const authType = localStorage.getItem('auth_type');
+            const guestUser = localStorage.getItem(AUTH_USER_KEY);
+            const authType = localStorage.getItem(AUTH_TYPE_KEY);
+            const sessionId = localStorage.getItem(AUTH_SESSION_ID_KEY);
 
-            if (guestUser && authType === 'guest') {
+            if (
+              hasGuestStorageState({
+                sessionId,
+                authType,
+                userJson: guestUser,
+              }) &&
+              guestUser
+            ) {
               try {
                 const guestUserData = JSON.parse(guestUser);
                 // 게스트 사용자를 Supabase User 형태로 변환
@@ -88,9 +102,9 @@ export function useSession(): UseSessionReturn {
               } catch (parseError) {
                 logger.warn('게스트 사용자 정보 JSON 파싱 실패:', parseError);
                 // localStorage에서 잘못된 데이터 제거
-                localStorage.removeItem('auth_user');
-                localStorage.removeItem('auth_type');
-                localStorage.removeItem('auth_session_id');
+                localStorage.removeItem(AUTH_USER_KEY);
+                localStorage.removeItem(AUTH_TYPE_KEY);
+                localStorage.removeItem(AUTH_SESSION_ID_KEY);
                 setUser(null);
                 setStatus('unauthenticated');
               }
@@ -116,20 +130,18 @@ export function useSession(): UseSessionReturn {
     void checkSession();
 
     // 세션 변경 감지
-    const response = getSupabase().auth.onAuthStateChange(
-      async (_event, session) => {
-        if (session?.user) {
-          setUser(session.user);
-          setStatus('authenticated');
-        } else {
-          setUser(null);
-          setStatus('unauthenticated');
-        }
-
-        // 🎯 router.refresh() 제거: 불필요한 전체 페이지 리렌더링 방지
-        // React의 자연스러운 상태 전파를 통해 필요한 컴포넌트만 리렌더링
+    const response = getSupabase().auth.onAuthStateChange((_event, session) => {
+      if (session?.user) {
+        setUser(session.user);
+        setStatus('authenticated');
+      } else {
+        setUser(null);
+        setStatus('unauthenticated');
       }
-    );
+
+      // 🎯 router.refresh() 제거: 불필요한 전체 페이지 리렌더링 방지
+      // React의 자연스러운 상태 전파를 통해 필요한 컴포넌트만 리렌더링
+    });
 
     return () => {
       if (response?.data?.subscription) {
@@ -195,7 +207,7 @@ export async function signOut(options?: { callbackUrl?: string }) {
         logger.warn('⚠️ AuthStateManager 정리 실패 (계속 진행):', error);
 
         // Fallback: 기본 localStorage 정리
-        ['auth_session_id', 'auth_type', 'auth_user'].forEach((key) => {
+        [AUTH_SESSION_ID_KEY, AUTH_TYPE_KEY, AUTH_USER_KEY].forEach((key) => {
           localStorage.removeItem(key);
         });
       }

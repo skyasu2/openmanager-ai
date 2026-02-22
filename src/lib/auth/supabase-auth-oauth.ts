@@ -37,6 +37,10 @@ function getOAuthRedirectUrl(): string {
 }
 
 function validateSupabaseEnv(): void {
+  const supabaseKey =
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
   if (
     !process.env.NEXT_PUBLIC_SUPABASE_URL ||
     process.env.NEXT_PUBLIC_SUPABASE_URL.includes('test')
@@ -44,11 +48,10 @@ function validateSupabaseEnv(): void {
     throw new Error('Supabase URL이 올바르게 설정되지 않았습니다.');
   }
 
-  if (
-    !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY.includes('test')
-  ) {
-    throw new Error('Supabase Anon Key가 올바르게 설정되지 않았습니다.');
+  if (!supabaseKey || supabaseKey.includes('test')) {
+    throw new Error(
+      'Supabase Publishable/Anon Key가 올바르게 설정되지 않았습니다.'
+    );
   }
 }
 
@@ -108,6 +111,35 @@ export async function signInWithOAuthProvider(
     return { data, error: null };
   } catch (error) {
     logger.error(`❌ ${providerName} OAuth 로그인 에러:`, error);
+    return { data: null, error };
+  }
+}
+
+export async function signInWithEmailMagicLink(
+  email: string
+): Promise<OAuthSignInResult> {
+  try {
+    const redirectUrl = getOAuthRedirectUrl();
+    validateSupabaseEnv();
+
+    logger.info(`📧 Email Magic Link 전송 시작: ${email}`);
+
+    const { data, error } = await getClient().auth.signInWithOtp({
+      email,
+      options: {
+        emailRedirectTo: redirectUrl,
+      },
+    });
+
+    if (error) {
+      logger.error('❌ Email Magic Link 전송 실패:', error);
+      throw error;
+    }
+
+    logger.info('✅ Email Magic Link 전송 완료');
+    return { data, error: null };
+  } catch (error) {
+    logger.error('❌ Email Magic Link 통신 에러:', error);
     return { data: null, error };
   }
 }

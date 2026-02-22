@@ -24,11 +24,11 @@ import {
   useHybridAIQuery,
 } from '@/hooks/ai/useHybridAIQuery';
 import { logger } from '@/lib/logging';
-import { triggerAIWarmup } from '@/utils/ai-warmup';
 import {
   type EnhancedChatMessage,
   useAISidebarStore,
 } from '@/stores/useAISidebarStore';
+import { triggerAIWarmup } from '@/utils/ai-warmup';
 import { useChatFeedback } from './core/useChatFeedback';
 import { useChatHistory } from './core/useChatHistory';
 import { useChatSession } from './core/useChatSession';

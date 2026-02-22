@@ -20,9 +20,14 @@ AI 관련 회귀는 기본적으로 **E2E가 아니라 계약 테스트(Vitest)*
 # AI/스트림 계약 테스트
 npm run test:contract
 
-# 로컬 E2E 핵심 (AI 사이드바 UI 포함)
-npm run test:e2e:critical
+# 로컬 E2E 핵심(smoke) - 기본값
+npm run test:e2e
+
+# 외부 의존 시나리오만 분리 실행 (@external 태그)
+npm run test:e2e:external
 ```
+
+> `test:e2e:external`는 `--pass-with-no-tests` 설정으로, `@external` 케이스가 없으면 0건 통과로 종료됩니다.
 
 ---
 

@@ -33,7 +33,9 @@ export function getSupabaseClient(): SupabaseClient {
   if (!globalThis.__supabaseInstance) {
     // trim()으로 환경 변수의 불필요한 공백/줄바꿈 제거
     const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
-    const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim();
+    const key =
+      process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY?.trim() ||
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim();
 
     if (!url || !key) {
       throw new Error('Missing Supabase environment variables');
@@ -75,11 +77,3 @@ export function getDefaultSupabaseClient(): SupabaseClient {
 export function getSupabase(): SupabaseClient {
   return getSupabaseClient();
 }
-
-/**
- * @deprecated Use getSupabase() or getDefaultSupabaseClient() instead
- * This export may cause PKCE flow failures due to SSR/CSR mismatch
- * Kept for backwards compatibility - will be removed in next major version
- */
-export const supabase =
-  typeof window !== 'undefined' ? getSupabaseClient() : ({} as SupabaseClient);

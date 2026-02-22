@@ -157,6 +157,8 @@ export function useQueryControls(deps: QueryControlDeps) {
       clarification: null,
       warning: null,
       processingTime: 0,
+      warmingUp: false,
+      estimatedWaitSeconds: 0,
     });
   }, [asyncQuery, onReset, setMessages, setState, refs]);
 

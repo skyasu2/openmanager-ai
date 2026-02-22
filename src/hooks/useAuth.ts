@@ -7,6 +7,12 @@
 import { useCallback, useEffect, useState } from 'react';
 import type { AuthUser } from '@/lib/auth/auth-state-manager';
 import { authStateManager } from '@/lib/auth/auth-state-manager';
+import {
+  AUTH_SESSION_ID_KEY,
+  AUTH_TYPE_KEY,
+  AUTH_USER_KEY,
+  hasGuestStorageState,
+} from '@/lib/auth/guest-session-utils';
 import { logger } from '@/lib/logging';
 
 // Safe localStorage access helpers (SSR compatible)
@@ -67,7 +73,7 @@ export function useAuth(): UseAuthResult {
 
       // 세션 ID 가져오기 (safe access)
       const newSessionId =
-        safeGetItem('auth_session_id') || `guest_${Date.now()}`;
+        safeGetItem(AUTH_SESSION_ID_KEY) || `guest_${Date.now()}`;
 
       setUser(guestUser);
       setSessionId(newSessionId);
@@ -93,8 +99,9 @@ export function useAuth(): UseAuthResult {
       setSessionId(null);
 
       // 로컬 스토리지 정리 (safe access)
-      safeRemoveItem('auth_session_id');
-      safeRemoveItem('auth_type');
+      safeRemoveItem(AUTH_SESSION_ID_KEY);
+      safeRemoveItem(AUTH_TYPE_KEY);
+      safeRemoveItem(AUTH_USER_KEY);
 
       logger.info('로그아웃 완료');
     } catch (error) {
@@ -108,10 +115,17 @@ export function useAuth(): UseAuthResult {
       setIsLoading(true);
 
       // Safe localStorage access (SSR compatible)
-      const storedSessionId = safeGetItem('auth_session_id');
-      const authType = safeGetItem('auth_type');
+      const storedSessionId = safeGetItem(AUTH_SESSION_ID_KEY);
+      const authType = safeGetItem(AUTH_TYPE_KEY);
+      const storedUser = safeGetItem(AUTH_USER_KEY);
 
-      if (!storedSessionId || authType !== 'guest') {
+      if (
+        !hasGuestStorageState({
+          sessionId: storedSessionId,
+          authType,
+          userJson: storedUser,
+        })
+      ) {
         setUser(null);
         setSessionId(null);
         return;
@@ -128,8 +142,9 @@ export function useAuth(): UseAuthResult {
         setSessionId(storedSessionId);
       } else {
         // 세션이 만료된 경우 로컬 스토리지 정리 (safe access)
-        safeRemoveItem('auth_session_id');
-        safeRemoveItem('auth_type');
+        safeRemoveItem(AUTH_SESSION_ID_KEY);
+        safeRemoveItem(AUTH_TYPE_KEY);
+        safeRemoveItem(AUTH_USER_KEY);
         setUser(null);
         setSessionId(null);
       }

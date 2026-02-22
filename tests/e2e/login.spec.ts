@@ -86,8 +86,9 @@ test.describe('🔐 로그인 기능 테스트', () => {
             if (visible) return true;
             return page.evaluate(
               () =>
-                document.cookie.includes('auth_type=guest') ||
-                localStorage.getItem('auth_type') === 'guest'
+                document.cookie.includes('auth_session_id=') ||
+                document.cookie.includes('guest_session_id=') ||
+                !!localStorage.getItem('auth_session_id')
             );
           },
           {
@@ -120,6 +121,8 @@ test.describe('🔐 로그인 기능 테스트', () => {
   });
 
   test.describe('OAuth 로그인 버튼', () => {
+    // 외부 OAuth 공급자 도메인 이동 검증은 flaky/비용 이슈로 E2E에서 제거.
+    // 공급자별 redirect/options 계약은 src/lib/auth/supabase-auth-oauth.test.ts에서 검증한다.
     test('GitHub 로그인 버튼이 클릭 가능하다', async ({ page }) => {
       await navigateToLoginPage(page, { direct: true });
 
@@ -158,62 +161,6 @@ test.describe('🔐 로그인 기능 테스트', () => {
 
       expect(googleButton).not.toBeNull();
       await expect(googleButton!).toBeEnabled();
-    });
-
-    test('GitHub 버튼 클릭 시 OAuth 페이지로 리다이렉트', async ({ page }) => {
-      await navigateToLoginPage(page, { direct: true });
-
-      // GitHub 버튼 클릭
-      for (const selector of LOGIN_BUTTON_SELECTORS.github) {
-        const button = page.locator(selector).first();
-        const isVisible = await button
-          .isVisible({ timeout: 2000 })
-          .catch(() => false);
-        if (isVisible) {
-          // 네비게이션 대기 설정
-          const navigationPromise = page
-            .waitForURL(/github\.com|supabase/, {
-              timeout: TIMEOUTS.NETWORK_REQUEST,
-            })
-            .catch(() => null);
-
-          await button.click();
-          await navigationPromise;
-          break;
-        }
-      }
-
-      // GitHub 또는 Supabase Auth 페이지로 이동 확인
-      const url = page.url();
-      expect(url).toMatch(/github\.com|supabase/);
-    });
-
-    test('Google 버튼 클릭 시 OAuth 페이지로 리다이렉트', async ({ page }) => {
-      await navigateToLoginPage(page, { direct: true });
-
-      // Google 버튼 클릭
-      for (const selector of LOGIN_BUTTON_SELECTORS.google) {
-        const button = page.locator(selector).first();
-        const isVisible = await button
-          .isVisible({ timeout: 2000 })
-          .catch(() => false);
-        if (isVisible) {
-          // 네비게이션 대기 설정
-          const navigationPromise = page
-            .waitForURL(/accounts\.google\.com|supabase/, {
-              timeout: TIMEOUTS.NETWORK_REQUEST,
-            })
-            .catch(() => null);
-
-          await button.click();
-          await navigationPromise;
-          break;
-        }
-      }
-
-      // Google 또는 Supabase Auth 페이지로 이동 확인
-      const url = page.url();
-      expect(url).toMatch(/accounts\.google\.com|supabase/);
     });
   });
 });

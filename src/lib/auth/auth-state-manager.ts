@@ -18,6 +18,11 @@ import {
   SESSION_MAX_AGE_MS,
 } from './auth-state-manager-browser';
 import type { AuthState, AuthUser } from './auth-state-manager-types';
+import {
+  AUTH_CREATED_AT_KEY,
+  AUTH_SESSION_ID_KEY,
+  AUTH_USER_KEY,
+} from './guest-session-utils';
 
 // 런타임에 클라이언트를 가져오는 헬퍼 (PKCE flow를 위해 필수)
 const getClient = () => getSupabase();
@@ -192,18 +197,16 @@ export class AuthStateManager {
       const createdAt = Date.now();
 
       // localStorage에 게스트 정보 저장
-      localStorage.setItem('auth_type', 'guest');
-      localStorage.setItem('auth_session_id', sessionId);
-      localStorage.setItem('auth_user', JSON.stringify(guestUser));
-      localStorage.setItem('auth_created_at', createdAt.toString()); // 7일 만료용
+      localStorage.setItem(AUTH_SESSION_ID_KEY, sessionId);
+      localStorage.setItem(AUTH_USER_KEY, JSON.stringify(guestUser));
+      localStorage.setItem(AUTH_CREATED_AT_KEY, createdAt.toString()); // 7일 만료용
 
       // 쿠키에 세션 ID 저장 (7일 만료)
       // 🔧 localhost(HTTP)에서도 쿠키가 설정되도록 Secure 플래그 조건부 적용
       const expires = new Date(Date.now() + SESSION_MAX_AGE_MS);
       const isProduction = window.location.protocol === 'https:';
       const secureFlag = isProduction ? '; Secure' : '';
-      document.cookie = `auth_session_id=${sessionId}; path=/; expires=${expires.toUTCString()}${secureFlag}; SameSite=Lax`;
-      document.cookie = `auth_type=guest; path=/; expires=${expires.toUTCString()}${secureFlag}; SameSite=Lax`;
+      document.cookie = `${AUTH_SESSION_ID_KEY}=${sessionId}; path=/; expires=${expires.toUTCString()}${secureFlag}; SameSite=Lax`;
 
       logger.info('🔐 게스트 로그인 설정 완료', { userId: guestUser.id });
     }

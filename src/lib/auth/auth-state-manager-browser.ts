@@ -1,5 +1,14 @@
 import { logger } from '@/lib/logging';
 import type { AuthState } from './auth-state-manager-types';
+import {
+  AUTH_CREATED_AT_KEY,
+  AUTH_SESSION_ID_KEY,
+  AUTH_TYPE_KEY,
+  AUTH_USER_KEY,
+  getGuestSessionIdFromCookieHeader,
+  hasGuestStorageState,
+  LEGACY_GUEST_SESSION_COOKIE_KEY,
+} from './guest-session-utils';
 
 // 통일된 키 접두사
 const AUTH_PREFIX = 'auth_';
@@ -27,18 +36,20 @@ export function migrateLegacyAuthCookieKeys(): void {
     if (typeof document !== 'undefined') {
       const cookies = document.cookie.split(';').map((c) => c.trim());
       const legacySessionCookie = cookies.find((c) =>
-        c.startsWith('guest_session_id=')
+        c.startsWith(`${LEGACY_GUEST_SESSION_COOKIE_KEY}=`)
       );
 
       if (
         legacySessionCookie &&
-        !cookies.find((c) => c.startsWith('auth_session_id='))
+        !cookies.find((c) => c.startsWith(`${AUTH_SESSION_ID_KEY}=`))
       ) {
         const sessionId = legacySessionCookie.split('=')[1];
         const expires = new Date(Date.now() + 24 * 60 * 60 * 1000);
-        document.cookie = `auth_session_id=${sessionId}; path=/; expires=${expires.toUTCString()}; Secure; SameSite=Strict`;
-        document.cookie = `guest_session_id=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; Secure; SameSite=Strict`;
-        logger.info('🔐 쿠키 마이그레이션: guest_session_id → auth_session_id');
+        document.cookie = `${AUTH_SESSION_ID_KEY}=${sessionId}; path=/; expires=${expires.toUTCString()}; Secure; SameSite=Strict`;
+        document.cookie = `${LEGACY_GUEST_SESSION_COOKIE_KEY}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; Secure; SameSite=Strict`;
+        logger.info(
+          `🔐 쿠키 마이그레이션: ${LEGACY_GUEST_SESSION_COOKIE_KEY} → ${AUTH_SESSION_ID_KEY}`
+        );
       }
     }
   } catch (error) {
@@ -50,12 +61,19 @@ export function getGuestAuthState(
   onInvalidGuestSession: () => void
 ): AuthState {
   if (typeof window !== 'undefined') {
-    const authType = localStorage.getItem('auth_type');
-    const sessionId = localStorage.getItem('auth_session_id');
-    const userStr = localStorage.getItem('auth_user');
-    const createdAtStr = localStorage.getItem('auth_created_at');
+    const authType = localStorage.getItem(AUTH_TYPE_KEY);
+    const sessionId = localStorage.getItem(AUTH_SESSION_ID_KEY);
+    const userStr = localStorage.getItem(AUTH_USER_KEY);
+    const createdAtStr = localStorage.getItem(AUTH_CREATED_AT_KEY);
 
-    if (authType === 'guest' && sessionId && userStr) {
+    if (
+      hasGuestStorageState({
+        sessionId,
+        authType,
+        userJson: userStr,
+      }) &&
+      sessionId
+    ) {
       if (createdAtStr) {
         const createdAt = Number.parseInt(createdAtStr, 10);
         if (Number.isNaN(createdAt)) {
@@ -81,27 +99,36 @@ export function getGuestAuthState(
         }
       }
 
-      try {
-        const user = JSON.parse(userStr);
-        return {
-          user: { ...user, provider: 'guest' },
-          type: 'guest',
-          isAuthenticated: true,
-          sessionId: `${sessionId.substring(0, 8)}...`,
-        };
-      } catch (error) {
-        logger.warn('⚠️ 게스트 사용자 정보 파싱 실패:', error);
+      if (userStr) {
+        try {
+          const user = JSON.parse(userStr);
+          return {
+            user: { ...user, provider: 'guest' },
+            type: 'guest',
+            isAuthenticated: true,
+            sessionId: `${sessionId.substring(0, 8)}...`,
+          };
+        } catch (error) {
+          logger.warn('⚠️ 게스트 사용자 정보 파싱 실패:', error);
+        }
       }
+
+      return {
+        user: {
+          id: sessionId,
+          name: '게스트 사용자',
+          provider: 'guest',
+        },
+        type: 'guest',
+        isAuthenticated: true,
+        sessionId: `${sessionId.substring(0, 8)}...`,
+      };
     }
   }
 
   if (typeof document !== 'undefined') {
-    const cookies = document.cookie.split(';').map((c) => c.trim());
-    const sessionCookie = cookies.find((c) => c.startsWith('auth_session_id='));
-    const authTypeCookie = cookies.find((c) => c.startsWith('auth_type=guest'));
-
-    if (sessionCookie && authTypeCookie) {
-      const sessionId = sessionCookie.split('=')[1];
+    const sessionId = getGuestSessionIdFromCookieHeader(document.cookie);
+    if (sessionId) {
       return {
         user: {
           id: sessionId || `guest_${Date.now()}`,
@@ -180,7 +207,11 @@ export function clearBrowserAuthStorage(authType?: 'github' | 'guest'): void {
       document.cookie.includes('test_mode=enabled') &&
       document.cookie.includes('vercel_test_token=');
 
-    const cookiesToClear = ['auth_session_id', 'auth_type'];
+    const cookiesToClear = [
+      AUTH_SESSION_ID_KEY,
+      AUTH_TYPE_KEY,
+      LEGACY_GUEST_SESSION_COOKIE_KEY,
+    ];
     if (!isTestMode) {
       cookiesToClear.push('test_mode', 'vercel_test_token');
     } else {

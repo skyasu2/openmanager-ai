@@ -7,6 +7,11 @@
  * - SameSite=Strict로 CSRF 공격 방지
  */
 
+import {
+  AUTH_SESSION_ID_KEY,
+  AUTH_TYPE_KEY,
+  hasGuestSessionCookieHeader,
+} from '@/lib/auth/guest-session-utils';
 /**
  * Vercel 환경 감지
  */
@@ -135,19 +140,18 @@ export function validateRedirectUrl(url: string): boolean {
  */
 export const guestSessionCookies = {
   /**
-   * 게스트 세션 ID 설정 (auth_* 통일 체계)
+   * 게스트 세션 ID 설정 (auth_session_id 단일 체계)
    */
   setGuestSession(sessionId: string): void {
-    setSecureCookie('auth_session_id', sessionId, 24 * 60 * 60); // 24시간
-    setSecureCookie('auth_type', 'guest', 24 * 60 * 60); // 통일 체계
+    setSecureCookie(AUTH_SESSION_ID_KEY, sessionId, 24 * 60 * 60); // 24시간
   },
 
   /**
-   * 게스트 세션 삭제 (통일 체계 쿠키 정리)
+   * 게스트 세션 삭제 (레거시 키 포함 정리)
    */
   clearGuestSession(): void {
-    deleteSecureCookie('auth_session_id');
-    deleteSecureCookie('auth_type');
+    deleteSecureCookie(AUTH_SESSION_ID_KEY);
+    deleteSecureCookie(AUTH_TYPE_KEY);
   },
 
   /**
@@ -156,11 +160,6 @@ export const guestSessionCookies = {
   hasGuestSession(): boolean {
     if (typeof document === 'undefined') return false;
 
-    const cookies = document.cookie.split(';').map((c) => c.trim());
-
-    const hasSessionId = cookies.some((c) => c.startsWith('auth_session_id='));
-    const hasAuthType = cookies.some((c) => c.startsWith('auth_type=guest'));
-
-    return hasSessionId && hasAuthType;
+    return hasGuestSessionCookieHeader(document.cookie);
   },
 };

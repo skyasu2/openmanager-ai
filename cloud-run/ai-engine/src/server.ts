@@ -276,6 +276,72 @@ app.use('/debug/*', async (c: Context, next: Next) => {
 // NOTE: /monitoring/* auth middleware is registered above route handlers (before app.get('/monitoring', ...))
 
 /**
+ * GET /debug/log-level - Current log level
+ */
+app.get('/debug/log-level', (c: Context) => {
+  const defaultLevel = process.env.LOG_LEVEL ||
+    (process.env.NODE_ENV === 'development' ? 'debug' : 'warn');
+
+  return c.json({
+    level: logger.level,
+    defaultLevel,
+  });
+});
+
+/**
+ * PUT /debug/log-level - Change log level at runtime
+ */
+let logLevelResetTimer: ReturnType<typeof setTimeout> | null = null;
+
+app.put('/debug/log-level', async (c: Context) => {
+  const validLevels = new Set(['debug', 'info', 'warn', 'error', 'fatal', 'silent']);
+  const maxTtlSeconds = 3600;
+
+  let body: { level?: string; ttlSeconds?: number };
+  try {
+    body = await c.req.json() as { level?: string; ttlSeconds?: number };
+  } catch {
+    return c.json({ error: 'Invalid JSON body' }, 400);
+  }
+
+  const { level, ttlSeconds } = body;
+
+  if (!level || !validLevels.has(level)) {
+    return c.json(
+      { error: `Invalid level. Valid: ${[...validLevels].join(', ')}` },
+      400
+    );
+  }
+
+  // Clear any previous reset timer to prevent orphaned callbacks
+  if (logLevelResetTimer) {
+    clearTimeout(logLevelResetTimer);
+    logLevelResetTimer = null;
+  }
+
+  const previousLevel = logger.level;
+  logger.level = level;
+
+  let expiresAt: string | null = null;
+  if (ttlSeconds && ttlSeconds > 0) {
+    const clampedTtl = Math.min(ttlSeconds, maxTtlSeconds);
+    expiresAt = new Date(Date.now() + clampedTtl * 1000).toISOString();
+    const defaultLevel = process.env.LOG_LEVEL ||
+      (process.env.NODE_ENV === 'development' ? 'debug' : 'warn');
+    logLevelResetTimer = setTimeout(() => {
+      logger.level = defaultLevel;
+      logLevelResetTimer = null;
+      logger.warn(`Log level auto-reset to ${defaultLevel} after TTL`);
+    }, clampedTtl * 1000);
+  }
+
+  logger.warn({ previousLevel, currentLevel: level, expiresAt },
+    `Log level changed from ${previousLevel} to ${level}`);
+
+  return c.json({ previousLevel, currentLevel: level, expiresAt });
+});
+
+/**
  * GET /debug/prefilter - Test preFilterQuery function
  * Query param: q (the query to test)
  */

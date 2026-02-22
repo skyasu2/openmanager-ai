@@ -56,7 +56,10 @@ function extractDatabaseConfig(): DatabaseConfig {
     supabase: {
       url:
         process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL || '',
-      anonKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '',
+      anonKey:
+        process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+        '',
       serviceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY || '',
       jwtSecret: process.env.SUPABASE_JWT_SECRET || '',
       projectRef: process.env.SUPABASE_PROJECT_REF || '',

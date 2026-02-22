@@ -207,7 +207,8 @@ npm run release:check   # 버전/태그/체인지로그 정합성 점검
 ```bash
 # Supabase
 NEXT_PUBLIC_SUPABASE_URL=
-NEXT_PUBLIC_SUPABASE_ANON_KEY=
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=
+NEXT_PUBLIC_SUPABASE_ANON_KEY= # 레거시 fallback
 SUPABASE_SERVICE_ROLE_KEY=
 
 # AI Providers
@@ -216,7 +217,7 @@ MISTRAL_API_KEY=
 GROQ_API_KEY=
 
 # Cloud Run
-AI_ENGINE_URL=
+CLOUD_RUN_AI_URL=
 ```
 
 ## 관련 문서

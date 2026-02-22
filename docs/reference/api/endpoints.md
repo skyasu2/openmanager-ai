@@ -4,24 +4,26 @@
 > Owner: platform-architecture
 > Status: Active
 > Doc type: Reference
-> Last reviewed: 2026-02-17
+> Last reviewed: 2026-02-22
 > Canonical: docs/reference/api/endpoints.md
 > Tags: api,endpoints,reference
 >
-> Last verified against code: 2026-02-17
+> Last verified against code: 2026-02-22
 > Source of truth: `src/app/api/**/route.ts*`
 
-총 엔드포인트: **34**
+총 엔드포인트: **36**
 
 ## Summary by Group
 
 | Group | Count |
 |---|---:|
+| admin | 1 |
 | ai | 10 |
 | alerts | 1 |
-| auth | 2 |
+| auth | 3 |
 | csrf-token | 1 |
 | database | 1 |
+| error-report | 1 |
 | health | 1 |
 | metrics | 1 |
 | monitoring | 1 |
@@ -32,12 +34,18 @@
 | servers | 4 |
 | servers-unified | 1 |
 | system | 1 |
-| test | 2 |
+| test | 1 |
 | time | 1 |
 | vercel-usage | 1 |
 | version | 2 |
 
 ## Endpoint Catalog
+
+### /api/admin
+
+| Endpoint | Methods | Source |
+|---|---|---|
+| `/api/admin/log-level` | `GET, PUT` | `src/app/api/admin/log-level/route.ts` |
 
 ### /api/ai
 
@@ -65,6 +73,7 @@
 | Endpoint | Methods | Source |
 |---|---|---|
 | `/api/auth/error` | `GET, POST` | `src/app/api/auth/error/route.ts` |
+| `/api/auth/guest-login` | `POST` | `src/app/api/auth/guest-login/route.ts` |
 | `/api/auth/revoke-github-token` | `POST` | `src/app/api/auth/revoke-github-token/route.ts` |
 
 ### /api/csrf-token
@@ -78,6 +87,12 @@
 | Endpoint | Methods | Source |
 |---|---|---|
 | `/api/database` | `GET, POST` | `src/app/api/database/route.ts` |
+
+### /api/error-report
+
+| Endpoint | Methods | Source |
+|---|---|---|
+| `/api/error-report` | `POST` | `src/app/api/error-report/route.ts` |
 
 ### /api/health
 
@@ -147,7 +162,6 @@
 | Endpoint | Methods | Source |
 |---|---|---|
 | `/api/test/auth` | `GET, POST` | `src/app/api/test/auth/route.ts` |
-| `/api/test/vercel-test-auth` | `GET, POST` | `src/app/api/test/vercel-test-auth/route.ts` |
 
 ### /api/time
 

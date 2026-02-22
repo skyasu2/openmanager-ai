@@ -20,7 +20,6 @@
 ## 현재 헬퍼 목록
 
 - `config.ts`: 베이스 URL, 환경 감지
-- `featureFlags.ts`: E2E feature flag 보조
 - `guest.ts`: 게스트 로그인/대시보드 진입
 - `security.ts`: 안전한 셀렉터/입력 보조
 - `timeouts.ts`: 공통 타임아웃 상수

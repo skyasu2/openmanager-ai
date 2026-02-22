@@ -1,7 +1,6 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import * as z from 'zod';
 import { logger } from '@/lib/logging';
-import type { ApiError } from '@/types/common-replacements';
 import {
   validateQueryParams,
   validateRequestBody,
@@ -160,6 +159,12 @@ export function handleApiError(error: unknown): NextResponse {
 }
 
 // ===== 타입 가드 =====
+
+type ApiError = {
+  message: string;
+  code?: string | number;
+  statusCode?: number;
+};
 
 function isApiError(error: unknown): error is ApiError {
   return (

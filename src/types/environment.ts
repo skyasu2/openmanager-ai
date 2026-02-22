@@ -20,6 +20,7 @@ declare global {
 
       // 🔐 Supabase 환경변수
       readonly NEXT_PUBLIC_SUPABASE_URL?: string;
+      readonly NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY?: string;
       readonly NEXT_PUBLIC_SUPABASE_ANON_KEY?: string;
       readonly SUPABASE_SERVICE_ROLE_KEY?: string;
 
@@ -44,6 +45,12 @@ declare global {
       // 🔒 보안 관련 환경변수 (게스트 모드 전용)
       readonly JWT_SECRET?: string;
       readonly ENCRYPTION_KEY?: string;
+      readonly GUEST_LOGIN_BLOCKED_COUNTRIES?: string;
+      readonly GUEST_CN_IP_CIDRS?: string;
+      readonly GUEST_LOGIN_PIN?: string;
+      readonly NEXT_PUBLIC_GUEST_FULL_ACCESS?: string;
+      readonly NEXT_PUBLIC_GUEST_MODE?: string;
+      readonly TEST_SECRET_KEY?: string;
 
       // 📊 모니터링 및 로깅
       readonly ENABLE_LOGGING?: string;
@@ -65,6 +72,7 @@ declare global {
 // 📋 환경변수 그룹별 타입 정의
 export interface SupabaseEnvConfig {
   url: string;
+  publishableKey?: string;
   anonKey: string;
   serviceRoleKey?: string;
   isConfigured: boolean;

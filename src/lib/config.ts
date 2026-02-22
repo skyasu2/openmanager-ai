@@ -86,8 +86,10 @@ const validateEnvVar = (
 const parseSupabaseConfig = () => {
   const supabaseUrl =
     validateEnvVar('NEXT_PUBLIC_SUPABASE_URL') || 'https://temp.supabase.co';
-  const anonKey =
-    validateEnvVar('NEXT_PUBLIC_SUPABASE_ANON_KEY') || 'temp-anon-key';
+  const clientKey =
+    validateEnvVar('NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY', false) ||
+    validateEnvVar('NEXT_PUBLIC_SUPABASE_ANON_KEY', false) ||
+    'temp-anon-key';
   // serviceKey removed - server-only env vars should not be accessed here
 
   // URL에서 호스트 정보 추출
@@ -113,7 +115,7 @@ const parseSupabaseConfig = () => {
 
   return {
     url: supabaseUrl,
-    anonKey,
+    anonKey: clientKey,
     // serviceKey removed - server-only env vars should not be accessed here
     poolMode: 'transaction' as const,
     host,
@@ -235,15 +237,22 @@ export const validateEnvironment = (): {
 
   try {
     // 필수 환경변수 체크
-    const requiredVars = [
-      'NEXT_PUBLIC_SUPABASE_URL',
-      'NEXT_PUBLIC_SUPABASE_ANON_KEY',
-    ];
+    const requiredVars = ['NEXT_PUBLIC_SUPABASE_URL'];
 
     for (const varName of requiredVars) {
       if (!process.env[varName]) {
         warnings.push(`⚠️ 필수 환경변수 누락: ${varName} (기본값 사용)`);
       }
+    }
+
+    const hasSupabaseClientKey = Boolean(
+      process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+    );
+    if (!hasSupabaseClientKey) {
+      warnings.push(
+        '⚠️ Supabase 클라이언트 키 누락: NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY 또는 NEXT_PUBLIC_SUPABASE_ANON_KEY 필요'
+      );
     }
 
     // 선택적 환경변수 체크 (경고만)

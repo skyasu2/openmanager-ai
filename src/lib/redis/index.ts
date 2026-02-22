@@ -8,7 +8,7 @@
 
 // AI Cache
 export {
-  type AIResponse,
+  type CachedAIResponse,
   type CacheResult,
   type CacheStats,
   generateQueryHash,

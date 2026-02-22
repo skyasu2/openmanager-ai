@@ -26,13 +26,13 @@
  */
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { extractStreamError } from '@/lib/ai/constants/stream-errors';
 import { logger } from '@/lib/logging';
+import { fetchWithRetry, RETRY_STANDARD } from '@/lib/utils/retry';
 import {
-  calculateBackoff,
-  fetchWithRetry,
-  RETRY_STANDARD,
-} from '@/lib/utils/retry';
+  closeTrackedEventSource,
+  connectAsyncQuerySSE,
+  type TrackedSSEListener,
+} from './core/asyncQuerySSE';
 
 // ============================================================================
 // Types
@@ -112,15 +112,14 @@ export function useAsyncAIQuery(options: UseAsyncAIQueryOptions = {}) {
 
   // 🎯 P0 Fix: Store listener references for explicit removal
   // Changed from Map to Array to prevent overwrite issues with duplicate event types
-  const listenersRef = useRef<
-    Array<{ eventType: string; handler: EventListener }>
-  >([]);
+  const listenersRef = useRef<TrackedSSEListener[]>([]);
 
   // 🎯 P1-5 Fix: Cleanup function defined before useEffect to avoid stale closure
   const cleanupRef = useRef<() => void>(() => {});
 
   // 🎯 6th review fix: Track jobId via ref to prevent stale closure in cancel()
   const jobIdRef = useRef<string | null>(null);
+  const progressRef = useRef<number>(0);
 
   // Cleanup function
   const cleanup = useCallback(() => {
@@ -129,15 +128,7 @@ export function useAsyncAIQuery(options: UseAsyncAIQueryOptions = {}) {
       abortControllerRef.current.abort();
       abortControllerRef.current = null;
     }
-    // 🎯 P0 Fix: Explicitly remove all listeners before closing (Array version)
-    if (eventSourceRef.current) {
-      for (const { eventType, handler } of listenersRef.current) {
-        eventSourceRef.current.removeEventListener(eventType, handler);
-      }
-      listenersRef.current = [];
-      eventSourceRef.current.close();
-      eventSourceRef.current = null;
-    }
+    closeTrackedEventSource(eventSourceRef, listenersRef);
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
       timeoutRef.current = null;
@@ -158,6 +149,7 @@ export function useAsyncAIQuery(options: UseAsyncAIQueryOptions = {}) {
   // Cancel current query
   const cancel = useCallback(async () => {
     cleanup();
+    progressRef.current = 0;
 
     const currentJobId = jobIdRef.current;
     if (currentJobId) {
@@ -183,6 +175,7 @@ export function useAsyncAIQuery(options: UseAsyncAIQueryOptions = {}) {
       // Cleanup previous state
       cleanup();
       jobIdRef.current = null;
+      progressRef.current = 0;
       setState({
         isLoading: true,
         isConnected: false,
@@ -199,6 +192,7 @@ export function useAsyncAIQuery(options: UseAsyncAIQueryOptions = {}) {
         const handleError = (error: string) => {
           cleanup();
           jobIdRef.current = null;
+          progressRef.current = 0;
           setState((prev) => ({
             ...prev,
             isLoading: false,
@@ -226,179 +220,6 @@ export function useAsyncAIQuery(options: UseAsyncAIQueryOptions = {}) {
           }));
           onResult?.(resultWithJobId);
           resolve(resultWithJobId);
-        };
-
-        // SSE 재연결 로직
-        const connectSSE = (jobId: string, reconnectAttempt = 0) => {
-          const maxReconnects = 3;
-
-          // 🎯 P0 Fix: 기존 리스너 제거 후 EventSource 닫기 (Array version)
-          if (eventSourceRef.current) {
-            for (const { eventType, handler } of listenersRef.current) {
-              eventSourceRef.current.removeEventListener(eventType, handler);
-            }
-            listenersRef.current = [];
-            eventSourceRef.current.close();
-            eventSourceRef.current = null;
-          }
-
-          const eventSource = new EventSource(`/api/ai/jobs/${jobId}/stream`);
-          eventSourceRef.current = eventSource;
-
-          // 🎯 P0 Fix: Helper to add and track listeners (Array version)
-          const addTrackedListener = (
-            eventType: string,
-            handler: EventListener
-          ) => {
-            eventSource.addEventListener(eventType, handler);
-            listenersRef.current.push({ eventType, handler });
-          };
-
-          // Handle connection
-          addTrackedListener('connected', () => {
-            setState((prev) => ({ ...prev, isConnected: true }));
-            // 재연결 성공 시 attempt 리셋
-            if (reconnectAttempt > 0) {
-              logger.info(
-                `[AsyncAI] SSE reconnected after ${reconnectAttempt} attempts`
-              );
-            }
-          });
-
-          // Handle progress updates
-          addTrackedListener('progress', ((event: MessageEvent) => {
-            try {
-              const progress = JSON.parse(event.data) as AsyncQueryProgress;
-              setState((prev) => ({ ...prev, progress }));
-              onProgress?.(progress);
-
-              // Reset timeout on active progress to prevent premature kill
-              if (timeoutRef.current) {
-                clearTimeout(timeoutRef.current);
-                timeoutRef.current = setTimeout(() => {
-                  handleError(`Request timeout after ${timeout}ms`);
-                }, timeout);
-              }
-            } catch (e) {
-              logger.warn('[AsyncAI] Failed to parse progress:', e);
-            }
-          }) as EventListener);
-
-          // Handle result
-          addTrackedListener('result', ((event: MessageEvent) => {
-            try {
-              const resultData = JSON.parse(event.data);
-              if (!resultData || typeof resultData !== 'object') {
-                throw new Error('Invalid result data structure');
-              }
-
-              // 🎯 응답 내용에서 스트림 에러 패턴 확인 (일관성 유지)
-              const errorInResponse = extractStreamError(
-                resultData.response || ''
-              );
-              if (errorInResponse) {
-                logger.warn(
-                  `[AsyncAI] Stream error in result: ${errorInResponse}`
-                );
-                handleError(errorInResponse);
-                return;
-              }
-
-              handleResult({
-                success: true,
-                response: resultData.response,
-                targetAgent: resultData.targetAgent,
-                toolResults: resultData.toolResults,
-                ragSources: resultData.ragSources,
-                processingTimeMs: resultData.processingTimeMs,
-                traceId: resultData.metadata?.traceId,
-              });
-            } catch (e) {
-              handleError(`Failed to parse result: ${e}`);
-            }
-          }) as EventListener);
-
-          // Handle error from stream with reconnection
-          addTrackedListener('error', ((event: Event) => {
-            if (eventSource.readyState === EventSource.CLOSED) {
-              return; // 정상 종료
-            }
-
-            // 에러 데이터 확인
-            const messageEvent = event as MessageEvent;
-            if (messageEvent.data) {
-              try {
-                const errorData = JSON.parse(messageEvent.data);
-                handleError(errorData.error || 'Stream error');
-                return;
-              } catch {
-                // 파싱 실패 - 연결 오류로 처리
-              }
-            }
-
-            // 🎯 P0 Fix: 리스너 제거 후 연결 닫기 (Array version)
-            for (const { eventType: et, handler: h } of listenersRef.current) {
-              eventSourceRef.current?.removeEventListener(et, h);
-            }
-            listenersRef.current = [];
-            eventSource.close();
-            eventSourceRef.current = null;
-
-            if (reconnectAttempt < maxReconnects) {
-              const delay = calculateBackoff(
-                reconnectAttempt,
-                1000,
-                10000,
-                0.1
-              );
-              logger.info(
-                `[AsyncAI] SSE disconnected, reconnecting in ${delay}ms (attempt ${reconnectAttempt + 1}/${maxReconnects})`
-              );
-
-              setState((prev) => ({
-                ...prev,
-                isConnected: false,
-                progress: {
-                  stage: 'reconnecting',
-                  progress: prev.progress?.progress ?? 0,
-                  message: `재연결 중... (${reconnectAttempt + 1}/${maxReconnects})`,
-                },
-              }));
-
-              // 🎯 P1-1 Fix: Store reconnection timer in ref for cleanup
-              if (timeoutRef.current) {
-                clearTimeout(timeoutRef.current);
-              }
-              timeoutRef.current = setTimeout(() => {
-                // Skip if already cleaned up (component unmounted)
-                if (
-                  eventSourceRef.current === null &&
-                  timeoutRef.current === null
-                ) {
-                  return;
-                }
-                // 🎯 P0 Fix: Wrap recursive call in try-catch for safety
-                try {
-                  connectSSE(jobId, reconnectAttempt + 1);
-                } catch (err) {
-                  logger.error('[AsyncAI] Reconnection failed:', err);
-                  handleError('재연결에 실패했습니다.');
-                }
-              }, delay);
-            } else {
-              handleError('연결이 끊어졌습니다. 다시 시도해주세요.');
-            }
-          }) as EventListener);
-
-          // Handle timeout from stream
-          addTrackedListener('timeout', ((event: MessageEvent) => {
-            try {
-              const timeoutData = JSON.parse(event.data);
-              handleError(timeoutData.message || 'Request timeout');
-            } catch {
-              handleError('Request timeout');
-            }
-          }) as EventListener);
         };
 
         // 🎯 P1 Fix: Create AbortController for this request
@@ -461,7 +282,28 @@ export function useAsyncAIQuery(options: UseAsyncAIQueryOptions = {}) {
             setState((prev) => ({ ...prev, jobId }));
 
             // Step 2: Connect to SSE Stream
-            connectSSE(jobId);
+            connectAsyncQuerySSE({
+              jobId,
+              timeout,
+              eventSourceRef,
+              listenersRef,
+              timeoutRef,
+              getCurrentProgress: () => progressRef.current,
+              onConnected: () => {
+                setState((prev) => ({ ...prev, isConnected: true }));
+              },
+              onProgress: (progress) => {
+                progressRef.current = progress.progress;
+                setState((prev) => ({ ...prev, progress, isConnected: true }));
+                onProgress?.(progress);
+              },
+              onResult: (result) => {
+                handleResult(result);
+              },
+              onError: (error) => {
+                handleError(error);
+              },
+            });
 
             // Set timeout
             timeoutRef.current = setTimeout(() => {
@@ -480,6 +322,7 @@ export function useAsyncAIQuery(options: UseAsyncAIQueryOptions = {}) {
   const reset = useCallback(() => {
     cleanup();
     jobIdRef.current = null;
+    progressRef.current = 0;
     setState({
       isLoading: false,
       isConnected: false,

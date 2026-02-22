@@ -162,7 +162,6 @@ describe('AuthStateManager', () => {
         provider: 'guest' as const,
       };
 
-      localStorageMock.setItem('auth_type', 'guest');
       localStorageMock.setItem('auth_session_id', 'session-abc');
       localStorageMock.setItem('auth_user', JSON.stringify(guestUser));
       localStorageMock.setItem('auth_created_at', Date.now().toString());
@@ -179,7 +178,7 @@ describe('AuthStateManager', () => {
     it('쿠키 fallback 게스트 사용자명은 한국어 기본값을 사용해야 함', async () => {
       Object.defineProperty(globalThis, 'document', {
         value: {
-          cookie: 'auth_session_id=cookie-session-abc; auth_type=guest',
+          cookie: 'auth_session_id=cookie-session-abc',
         },
         writable: true,
       });
@@ -232,7 +231,6 @@ describe('AuthStateManager', () => {
 
     it('GitHub 세션이 게스트 세션보다 우선해야 함', async () => {
       // 게스트 데이터 설정
-      localStorageMock.setItem('auth_type', 'guest');
       localStorageMock.setItem('auth_session_id', 'guest-session');
       localStorageMock.setItem(
         'auth_user',
@@ -273,7 +271,6 @@ describe('AuthStateManager', () => {
   describe('clearAllAuthData()', () => {
     it('모든 인증 데이터를 정리해야 함', async () => {
       // 데이터 설정
-      localStorageMock.setItem('auth_type', 'guest');
       localStorageMock.setItem('auth_session_id', 'session-123');
 
       const manager = AuthStateManager.getInstance();

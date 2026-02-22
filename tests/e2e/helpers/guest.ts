@@ -238,8 +238,9 @@ export async function guestLogin(
   await page
     .waitForFunction(
       () =>
-        document.cookie.includes('auth_type=guest') ||
-        localStorage.getItem('auth_type') === 'guest',
+        document.cookie.includes('auth_session_id=') ||
+        document.cookie.includes('guest_session_id=') ||
+        !!localStorage.getItem('auth_session_id'),
       null,
       { timeout: TIMEOUTS.NETWORK_REQUEST }
     )

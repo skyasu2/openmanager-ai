@@ -316,16 +316,16 @@ describe('guestSessionCookies', () => {
     delete global.document;
   });
 
-  it('setGuestSession → 2개 쿠키 설정', () => {
+  it('setGuestSession → auth_session_id 쿠키만 설정', () => {
     // When
     guestSessionCookies.setGuestSession('test-session-id');
 
     // Then
     expect(document.cookie).toContain('auth_session_id=test-session-id');
-    expect(document.cookie).toContain('auth_type=guest');
+    expect(document.cookie).not.toContain('auth_type=guest');
   });
 
-  it('hasGuestSession → 둘 다 있어야 true', () => {
+  it('hasGuestSession → auth_session_id 있으면 true', () => {
     // Given
     guestSessionCookies.setGuestSession('session-123');
 
@@ -333,12 +333,12 @@ describe('guestSessionCookies', () => {
     expect(guestSessionCookies.hasGuestSession()).toBe(true);
   });
 
-  it('hasGuestSession → auth_session_id만 있으면 false', () => {
+  it('hasGuestSession → auth_session_id만 있으면 true', () => {
     // Given - auth_type 없이 auth_session_id만 설정
     document.cookie = 'auth_session_id=session-123';
 
     // When & Then
-    expect(guestSessionCookies.hasGuestSession()).toBe(false);
+    expect(guestSessionCookies.hasGuestSession()).toBe(true);
   });
 
   it('hasGuestSession → auth_type만 있으면 false', () => {

@@ -4,7 +4,7 @@
 > Owner: platform-devops
 > Status: Active
 > Doc type: How-to
-> Last reviewed: 2026-02-17
+> Last reviewed: 2026-02-22
 > Canonical: docs/development/environment-variables.md
 > Tags: env,secrets,configuration,setup
 
@@ -37,8 +37,11 @@
 | 변수 | 용도 | 기본값 | 예시 |
 |------|------|--------|------|
 | `NEXT_PUBLIC_SUPABASE_URL` | Supabase REST API URL | — | `https://xxx.supabase.co` |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase 익명 키 | — | `eyJhbGciOiJIUzI1NiI...` |
+| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Supabase Publishable Key (권장) | — | `sb_publishable_xxx...` |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase 익명 키 (레거시 fallback) | — | `eyJhbGciOiJIUzI1NiI...` |
 | `SUPABASE_SERVICE_ROLE_KEY` | Supabase 관리자 키 (서버 전용) | — | `eyJhbGciOiJIUzI1NiI...` |
+
+> 현재 앱 런타임은 `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`를 우선 사용하며, 값이 없을 때만 `NEXT_PUBLIC_SUPABASE_ANON_KEY`로 fallback합니다.
 
 ### 선택 환경변수 — 인증 (Vercel production 전용)
 
@@ -46,8 +49,31 @@
 |------|------|--------|------|
 | `NEXTAUTH_URL` | NextAuth callback URL | — | Vercel에서 자동 설정, 로컬 불필요 |
 | `NEXTAUTH_SECRET` | JWT 암호화 키 | — | Vercel에서 자동 설정, 로컬 불필요 |
+| `NEXT_PUBLIC_GUEST_FULL_ACCESS` | 게스트 전체 접근 허용 플래그 | `false` | 개발 환경에서는 `true` 가능, 운영은 `false` 권장 |
+| `NEXT_PUBLIC_GUEST_MODE` | 게스트 모드 문자열 설정 | `restricted` | `full_access` 또는 `restricted` |
+| `GUEST_LOGIN_BLOCKED_COUNTRIES` | 게스트 로그인 차단 국가 코드 목록 (쉼표 구분) | `CN` | 예: `CN,RU` |
+| `GUEST_CN_IP_CIDRS` | 게스트 로그인 차단용 중국 IP CIDR 목록 | 비활성 | 예: `1.0.1.0/24,1.0.2.0/23` |
+| `GUEST_LOGIN_PIN` | 게스트 로그인 4자리 PIN | — | 예: `1234` |
 
 > `check-env.ts`에서 선택 변수로 분류 — 누락 시 경고만 표시, push 차단 없음.
+
+#### Vercel 원격 게스트 테스트 (Playwright/API)
+
+운영 환경에서 `NEXT_PUBLIC_GUEST_FULL_ACCESS=false`일 때는 게스트 로그인 시 4자리 PIN이 필요합니다.
+
+```bash
+curl -X POST https://openmanager-ai.vercel.app/api/auth/guest-login \
+  -H "Content-Type: application/json" \
+  -d '{"sessionId":"guest-tool-1","guestUserId":"guest_tool","guestPin":"1234"}'
+```
+
+### 로그인 감사 로그 관련 변수
+
+| 변수 | 용도 | 기본값 | 비고 |
+|------|------|--------|------|
+| `SUPABASE_SERVICE_ROLE_KEY` | 로그인 감사 로그 insert (서버 전용) | — | 없으면 감사 로그 기록만 skip, 로그인 자체는 계속 진행 |
+
+> 로그인 이벤트(`guest/google/github`)는 `security_audit_logs` 테이블에 기록됩니다.
 
 ### 선택 환경변수 — 앱 설정
 
@@ -187,7 +213,8 @@ CI/CD 워크플로우에서 사용하는 GitHub Secrets:
 | Secret | 용도 | 사용 워크플로우 |
 |--------|------|--------------|
 | `NEXT_PUBLIC_SUPABASE_URL` | Supabase URL | simple-deploy |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase 키 | simple-deploy |
+| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Supabase Publishable Key (권장) | simple-deploy |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase 익명 키 (레거시 fallback) | simple-deploy |
 | `SUPABASE_SERVICE_ROLE_KEY` | Supabase 관리자 키 | simple-deploy |
 | `SUPABASE_URL` | Supabase URL (keep-alive) | keep-alive |
 | `SUPABASE_ANON_KEY` | Supabase 키 (keep-alive) | keep-alive |
@@ -269,4 +296,4 @@ CI에서 `check-hardcoded-secrets.js` 스크립트가 자동 실행되어 소스
 - [Observability 가이드](../guides/observability.md) - Langfuse/Sentry 환경변수 상세
 - [보안 아키텍처](../reference/architecture/infrastructure/security.md)
 
-_Last Updated: 2026-02-17_
+_Last Updated: 2026-02-22_

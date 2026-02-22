@@ -8,6 +8,12 @@
 
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import {
+  AUTH_SESSION_ID_KEY,
+  AUTH_TYPE_KEY,
+  AUTH_USER_KEY,
+  hasGuestStorageState,
+} from '@/lib/auth/guest-session-utils';
 import { logger } from '@/lib/logging';
 
 interface UseAutoLogoutOptions {
@@ -51,8 +57,9 @@ export function useAutoLogout({
 
       // 게스트 모드 - 로컬 스토리지 정리 (SSR 안전)
       if (typeof window !== 'undefined') {
-        localStorage.removeItem('auth_session_id');
-        localStorage.removeItem('auth_type');
+        localStorage.removeItem(AUTH_SESSION_ID_KEY);
+        localStorage.removeItem(AUTH_TYPE_KEY);
+        localStorage.removeItem(AUTH_USER_KEY);
       }
       setIsLoggedIn(false);
       router.push(redirectPath);
@@ -185,9 +192,16 @@ export function useAutoLogout({
         return;
       }
 
-      const sessionId = localStorage.getItem('auth_session_id');
-      const authType = localStorage.getItem('auth_type');
-      setIsLoggedIn(!!sessionId && authType === 'guest');
+      const sessionId = localStorage.getItem(AUTH_SESSION_ID_KEY);
+      const authType = localStorage.getItem(AUTH_TYPE_KEY);
+      const guestUser = localStorage.getItem(AUTH_USER_KEY);
+      setIsLoggedIn(
+        hasGuestStorageState({
+          sessionId,
+          authType,
+          userJson: guestUser,
+        })
+      );
     };
 
     checkAuthStatus();

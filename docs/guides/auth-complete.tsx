@@ -1,21 +1,27 @@
 /**
  * AI-Ready Code Snippets: Authentication Complete Implementation
  * Usage: Copy-paste for immediate use in OpenManager AI v5
- * Dependencies: @supabase/auth-helpers-nextjs, @supabase/supabase-js
+ * Dependencies: @supabase/ssr, @supabase/supabase-js
  */
 
 // ===== 1. Supabase Client Setup =====
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createBrowserClient } from '@supabase/ssr';
 import type { Database } from '@/types/database';
 
-export const supabase = createClientComponentClient<Database>();
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
+const supabaseKey =
+  process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+  '';
+
+export const supabase = createBrowserClient<Database>(supabaseUrl, supabaseKey);
 
 // ===== 2. GitHub OAuth Functions =====
 export async function signInWithGitHub(callbackUrl?: string) {
   const baseUrl = window.location.origin;
   const redirectTo = callbackUrl
     ? `${baseUrl}${callbackUrl}`
-    : `${baseUrl}/auth/success`;
+    : `${baseUrl}/auth/callback`;
 
   const { error } = await supabase.auth.signInWithOAuth({
     provider: 'github',
@@ -103,7 +109,8 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
 export const ENV_TEMPLATE = `
 # Copy to .env.local
 NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=your-publishable-key
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key # legacy fallback
 SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
 GITHUB_CLIENT_ID=your-github-client-id
 GITHUB_CLIENT_SECRET=your-github-client-secret
@@ -139,6 +146,11 @@ export async function getCurrentUser(): Promise<AuthUser | null> {
   };
 }
 
-export function isAuthenticated(): boolean {
-  return !!supabase.auth.getUser();
+export async function isAuthenticated(): Promise<boolean> {
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.getUser();
+
+  return !error && !!user;
 }

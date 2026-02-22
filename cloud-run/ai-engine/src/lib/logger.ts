@@ -2,9 +2,10 @@
  * GCP Cloud Logging Optimized Logger
  *
  * Pino-based structured logging for Google Cloud Run.
- * - Maps Pino levels to GCP severity levels
- * - Uses 'message' key instead of 'msg' for GCP compatibility
- * - Outputs JSON for Cloud Logging parsing
+ * - GCP severity mapping (zero-dependency, no @google-cloud/logging)
+ * - insertId for log ordering within same timestamp
+ * - stack_trace extraction for Error Reporting integration
+ * - 'message' key for GCP structured logging compatibility
  *
  * @see https://cloud.google.com/logging/docs/structured-logging
  */
@@ -25,47 +26,68 @@ const GCP_SEVERITY: Record<string, string> = {
   fatal: 'CRITICAL',
 };
 
+/** Monotonic counter for insertId — ensures log ordering within same ms */
+let insertIdCounter = 0;
+
 /**
  * Create GCP-optimized Pino logger
  */
 function createLogger() {
   const isDev = process.env.NODE_ENV === 'development';
-  // 🎯 Free Tier 최적화: Production에서 'warn' 레벨 사용
+  // Free Tier 최적화: Production에서 'warn' 레벨 사용
   // GCP Cloud Logging 비용 50%+ 절감 (info 로그 생략)
   const logLevel = process.env.LOG_LEVEL || (isDev ? 'debug' : 'warn');
 
+  if (!isDev) {
+    // Production: GCP-compatible structured JSON to stdout
+    return pino({
+      level: logLevel,
+      messageKey: 'message',
+      base: {
+        service: 'ai-engine',
+        version: APP_VERSION,
+      },
+      timestamp: () => `,"timestamp":"${new Date().toISOString()}"`,
+      formatters: {
+        level(label: string) {
+          return {
+            severity: GCP_SEVERITY[label] || 'DEFAULT',
+            level: label,
+          };
+        },
+        log(obj: Record<string, unknown>) {
+          // insertId: monotonic counter for ordering logs with same timestamp
+          const result: Record<string, unknown> = {
+            ...obj,
+            'logging.googleapis.com/insertId': `${Date.now()}-${insertIdCounter++}`,
+          };
+
+          // stack_trace: extract for GCP Error Reporting
+          if (obj.err && typeof obj.err === 'object') {
+            const err = obj.err as { stack?: string };
+            if (err.stack) {
+              result['stack_trace'] = err.stack;
+            }
+          }
+
+          return result;
+        },
+      },
+    });
+  }
+
+  // Development: simple stdout output
   return pino({
     level: logLevel,
-
-    // GCP-compatible message key
-    messageKey: 'message',
-
-    // Base context
     base: {
       service: 'ai-engine',
       version: APP_VERSION,
     },
-
-    // GCP-compatible timestamp
-    timestamp: () => `,"timestamp":"${new Date().toISOString()}"`,
-
-    // Map Pino levels to GCP severity
-    formatters: {
-      level(label: string) {
-        return {
-          severity: GCP_SEVERITY[label] || 'DEFAULT',
-          level: label,
-        };
-      },
+    timestamp: pino.stdTimeFunctions.isoTime,
+    transport: {
+      target: 'pino/file',
+      options: { destination: 1 },
     },
-
-    // Development: pretty print
-    ...(isDev && {
-      transport: {
-        target: 'pino/file',
-        options: { destination: 1 }, // stdout
-      },
-    }),
   });
 }
 

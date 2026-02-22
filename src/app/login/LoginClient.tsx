@@ -6,11 +6,20 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { OpenManagerLogo } from '@/components/shared/OpenManagerLogo';
 import UnifiedProfileHeader from '@/components/shared/UnifiedProfileHeader';
+import { isGuestFullAccessEnabled } from '@/config/guestMode';
 // 게스트 로그인 관련 임포트 (lib/auth-state-manager로 통합)
 import type { AuthUser } from '@/lib/auth/auth-state-manager';
 import { authStateManager } from '@/lib/auth/auth-state-manager';
-// Supabase Auth 관련 임포트
-import { signInWithGitHub, signInWithGoogle } from '@/lib/auth/supabase-auth';
+import {
+  AUTH_SESSION_ID_KEY,
+  AUTH_TYPE_KEY,
+  AUTH_USER_KEY,
+  LEGACY_GUEST_SESSION_COOKIE_KEY,
+} from '@/lib/auth/guest-session-utils';
+import {
+  signInWithEmailMagicLink,
+  signInWithOAuthProvider,
+} from '@/lib/auth/supabase-auth-oauth';
 import { PAGE_BACKGROUNDS } from '@/styles/design-constants';
 import debug from '@/utils/debug';
 import { renderAIGradientWithAnimation } from '@/utils/text-rendering';
@@ -38,7 +47,7 @@ export default function LoginClient() {
   const _router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [loadingType, setLoadingType] = useState<
-    'github' | 'guest' | 'google' | null
+    'github' | 'guest' | 'google' | 'email' | null
   >(null);
   const [guestSession, setGuestSession] = useState<GuestSessionData | null>(
     null
@@ -47,7 +56,7 @@ export default function LoginClient() {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [loadingMessage, setLoadingMessage] = useState<string>('');
   const [_showPulse, _setShowPulse] = useState<
-    'github' | 'guest' | 'google' | null
+    'github' | 'guest' | 'google' | 'email' | null
   >(null);
   const [currentProvider, setCurrentProvider] = useState<string | null>(null);
   const glassButtonBaseClass =
@@ -88,6 +97,12 @@ export default function LoginClient() {
         '임시 프로필 설정 중...',
         '시스템 접근 권한 부여 중...',
         '메인 페이지로 이동 중...',
+      ],
+      email: [
+        '이메일 확인 중...',
+        'Magic Link 생성 중...',
+        '이메일 발송 중...',
+        '보안 링크 전송 완료!',
       ],
     };
 
@@ -186,6 +201,21 @@ export default function LoginClient() {
       }
     } else if (error === 'session_timeout') {
       setErrorMessage('세션 생성에 실패했습니다. 다시 로그인해주세요.');
+    } else if (error === 'guest_region_blocked') {
+      const countryCode = searchParams.get('country');
+      setErrorMessage(
+        countryCode
+          ? `현재 지역(${countryCode})에서는 게스트 로그인이 제한됩니다. GitHub 또는 Google 로그인을 이용해주세요.`
+          : '현재 지역에서는 게스트 로그인이 제한됩니다. GitHub 또는 Google 로그인을 이용해주세요.'
+      );
+    } else if (error === 'guest_pin_invalid') {
+      setErrorMessage(
+        '게스트 PIN 4자리가 올바르지 않습니다. 다시 확인해주세요.'
+      );
+    } else if (error === 'guest_pin_required') {
+      setErrorMessage(
+        '게스트 PIN이 설정되지 않았습니다. 관리자에게 문의해주세요.'
+      );
     } else if (warning === 'no_session') {
       setSuccessMessage(
         '인증이 완료되었지만 세션이 생성되지 않았습니다. 게스트 모드를 이용해주세요.'
@@ -198,9 +228,8 @@ export default function LoginClient() {
     if (guestSession) {
       // localStorage 저장 (Safari Private Browsing 대응)
       try {
-        localStorage.setItem('auth_session_id', guestSession.sessionId);
-        localStorage.setItem('auth_type', 'guest');
-        localStorage.setItem('auth_user', JSON.stringify(guestSession.user));
+        localStorage.setItem(AUTH_SESSION_ID_KEY, guestSession.sessionId);
+        localStorage.setItem(AUTH_USER_KEY, JSON.stringify(guestSession.user));
       } catch {
         // Safari Private Browsing 등 localStorage 쓰기 불가 시 쿠키만 사용
       }
@@ -209,8 +238,10 @@ export default function LoginClient() {
       const isProduction = window.location.protocol === 'https:';
       const secureFlag = isProduction ? '; Secure' : '';
       // 🔒 보안: encodeURIComponent로 쿠키 값 인코딩 (세미콜론, 등호 방어)
-      document.cookie = `guest_session_id=${encodeURIComponent(guestSession.sessionId)}; path=/; max-age=${COOKIE_MAX_AGE_SECONDS}; SameSite=Lax${secureFlag}`;
-      document.cookie = `auth_type=guest; path=/; max-age=${COOKIE_MAX_AGE_SECONDS}; SameSite=Lax${secureFlag}`;
+      document.cookie = `${AUTH_SESSION_ID_KEY}=${encodeURIComponent(guestSession.sessionId)}; path=/; max-age=${COOKIE_MAX_AGE_SECONDS}; SameSite=Lax${secureFlag}`;
+      // 레거시 쿠키는 즉시 만료시켜 새 세션 판별 기준을 auth_session_id로 고정
+      document.cookie = `${LEGACY_GUEST_SESSION_COOKIE_KEY}=; path=/; max-age=0; SameSite=Lax${secureFlag}`;
+      document.cookie = `${AUTH_TYPE_KEY}=; path=/; max-age=0; SameSite=Lax${secureFlag}`;
 
       debug.log(
         '✅ 게스트 세션 저장 완료 (localStorage + 쿠키), 페이지 이동:',
@@ -266,7 +297,7 @@ export default function LoginClient() {
 
       debug.log('🔐 Google OAuth 로그인 시작 (Supabase Auth)...');
 
-      const { error } = await signInWithGoogle();
+      const { error } = await signInWithOAuthProvider('google');
 
       if (error) {
         debug.error('❌ Google 로그인 실패:', error);
@@ -307,7 +338,7 @@ export default function LoginClient() {
         isVercel: window.location.origin.includes('vercel.app'),
       });
 
-      const { error } = await signInWithGitHub();
+      const { error } = await signInWithOAuthProvider('github');
 
       if (error) {
         debug.error('❌ GitHub 로그인 실패:', error);
@@ -378,15 +409,76 @@ export default function LoginClient() {
         provider: 'guest',
       };
 
+      let guestPin: string | undefined;
+      if (!isGuestFullAccessEnabled()) {
+        const enteredPin =
+          typeof window !== 'undefined'
+            ? window.prompt('게스트 PIN 4자리를 입력하세요')
+            : null;
+
+        if (enteredPin === null) {
+          setSuccessMessage('게스트 로그인이 취소되었습니다.');
+          return;
+        }
+
+        const normalizedPin = enteredPin.trim();
+        if (!/^\d{4}$/.test(normalizedPin)) {
+          setErrorMessage('게스트 PIN은 4자리 숫자로 입력해주세요.');
+          return;
+        }
+
+        guestPin = normalizedPin;
+      }
+
       // AuthStateManager를 통한 게스트 인증 설정
       await authStateManager.setGuestAuth(guestUser);
 
       // 세션 ID 생성 (localStorage에서 가져옴)
       let sessionId = `guest_${Date.now()}`;
       try {
-        sessionId = localStorage.getItem('auth_session_id') || sessionId;
+        sessionId = localStorage.getItem(AUTH_SESSION_ID_KEY) || sessionId;
       } catch {
         // Safari Private Browsing 등 localStorage 접근 불가 시 fallback
+      }
+
+      // 서버 정책 검사 + 게스트 로그인 감사 로그 기록 (IP/Country는 서버에서 수집)
+      try {
+        const guestLoginAuditResponse = await fetch('/api/auth/guest-login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            sessionId,
+            guestUserId: guestUser.id,
+            guestEmail: guestUser.email,
+            guestPin,
+          }),
+        });
+
+        if (guestLoginAuditResponse.status === 403) {
+          const payload = (await guestLoginAuditResponse.json()) as {
+            error?: string;
+            message?: string;
+          };
+
+          await authStateManager.clearAllAuthData('guest');
+          setErrorMessage(
+            payload.message ||
+              '현재 지역에서는 게스트 로그인이 제한됩니다. GitHub 또는 Google 로그인을 이용해주세요.'
+          );
+          return;
+        }
+
+        if (!guestLoginAuditResponse.ok) {
+          debug.warn(
+            '⚠️ 게스트 로그인 감사 로그 저장 실패 (로그인은 계속 진행):',
+            guestLoginAuditResponse.status
+          );
+        }
+      } catch (auditError) {
+        debug.warn(
+          '⚠️ 게스트 로그인 감사 로그 API 호출 실패 (로그인은 계속 진행):',
+          auditError
+        );
       }
 
       setGuestSession({ sessionId, user: guestUser });
@@ -394,6 +486,46 @@ export default function LoginClient() {
       debug.error('게스트 로그인 실패:', error);
       alert('게스트 로그인에 실패했습니다. 다시 시도해주세요.');
     } finally {
+      setIsLoading(false);
+      setLoadingType(null);
+    }
+  };
+
+  // Email Magic Link 로그인
+  const handleEmailLogin = async (email: string) => {
+    try {
+      _setShowPulse('email');
+      setTimeout(() => _setShowPulse(null), PULSE_ANIMATION_DURATION_MS);
+
+      setIsLoading(true);
+      setLoadingType('email');
+      setErrorMessage('');
+
+      debug.log(`📧 Email Magic Link 로그인 시작: ${email}`);
+
+      const { error } = await signInWithEmailMagicLink(email);
+
+      if (error) {
+        debug.error('❌ Email 로그인 실패:', error);
+
+        const authError = error as AuthError;
+        setErrorMessage(
+          authError?.message || '이메일 로그인 링크 발송에 실패했습니다.'
+        );
+
+        setIsLoading(false);
+        setLoadingType(null);
+        return;
+      }
+
+      setSuccessMessage(
+        '이메일로 로그인 링크가 발송되었습니다! 메일함을 확인해주세요.'
+      );
+      setIsLoading(false);
+      setLoadingType(null);
+    } catch (error) {
+      debug.error('❌ Email 로그인 에러:', error);
+      setErrorMessage('링크 전송 중 예상치 못한 오류가 발생했습니다.');
       setIsLoading(false);
       setLoadingType(null);
     }
@@ -467,6 +599,7 @@ export default function LoginClient() {
                   onGitHub={() => void handleGitHubLogin()}
                   onGoogle={() => void handleGoogleLogin()}
                   onGuest={() => void handleGuestLogin()}
+                  onEmail={(email) => void handleEmailLogin(email)}
                   onCancel={handleCancelLoading}
                   glassButtonBaseClass={glassButtonBaseClass}
                   providerOverlayClass={providerOverlayClass}

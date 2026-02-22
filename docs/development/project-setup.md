@@ -4,7 +4,7 @@
 > Owner: dev-experience
 > Status: Active Canonical
 > Doc type: How-to
-> Last reviewed: 2026-02-17
+> Last reviewed: 2026-02-22
 > Canonical: docs/development/project-setup.md
 > Tags: wsl,github-auth,project-setup
 
@@ -87,7 +87,8 @@ cp .env.example .env.local
 # Supabase (필수)
 # ============================================
 NEXT_PUBLIC_SUPABASE_URL=https://xxx.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJ...
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_...
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJ... # 레거시 fallback
 SUPABASE_SERVICE_ROLE_KEY=eyJ...
 
 # ============================================
@@ -108,6 +109,10 @@ CLOUD_RUN_API_SECRET=your-api-secret
 # ============================================
 SENTRY_DSN=
 NEXT_PUBLIC_GA_ID=
+GUEST_LOGIN_BLOCKED_COUNTRIES=CN
+NEXT_PUBLIC_GUEST_FULL_ACCESS=false
+NEXT_PUBLIC_GUEST_MODE=restricted
+GUEST_LOGIN_PIN=1234
 ```
 
 ### 3. API 키 발급

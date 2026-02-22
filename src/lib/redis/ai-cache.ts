@@ -29,9 +29,6 @@ export interface CachedAIResponse {
   metadata?: Record<string, unknown>;
 }
 
-/** @deprecated Use CachedAIResponse instead */
-export type AIResponse = CachedAIResponse;
-
 export interface CacheResult<T> {
   hit: boolean;
   data: T | null;
@@ -118,7 +115,7 @@ export async function getAIResponseCache(
   sessionId: string,
   query: string,
   endpoint?: string
-): Promise<CacheResult<AIResponse>> {
+): Promise<CacheResult<CachedAIResponse>> {
   // Redis 비활성화 시 miss 반환
   if (isRedisDisabled() || !isRedisEnabled()) {
     return { hit: false, data: null };
@@ -134,7 +131,7 @@ export async function getAIResponseCache(
   const cacheKey = `${CACHE_CONFIG.PREFIX.AI_RESPONSE}:${queryHash}`;
 
   try {
-    const cached = await client.get<AIResponse>(cacheKey);
+    const cached = await client.get<CachedAIResponse>(cacheKey);
     const latencyMs = Math.round(performance.now() - startTime);
 
     if (cached) {
@@ -171,7 +168,7 @@ export async function getAIResponseCache(
 export async function setAIResponseCache(
   sessionId: string,
   query: string,
-  response: AIResponse,
+  response: CachedAIResponse,
   ttlSeconds: number = CACHE_CONFIG.AI_RESPONSE_TTL_SECONDS,
   endpoint?: string
 ): Promise<boolean> {

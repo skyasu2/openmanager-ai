@@ -4,11 +4,11 @@
 > Owner: dev-experience
 > Status: Active
 > Doc type: Tutorial
-> Last reviewed: 2026-02-21
+> Last reviewed: 2026-02-22
 > Canonical: docs/QUICK-START.md
 > Tags: quickstart,onboarding,setup
 >
-> **v8.0.0** | Updated 2026-02-21
+> **v8.0.0** | Updated 2026-02-22
 
 **AI 기반 실시간 서버 모니터링 플랫폼** - 5분 만에 시작하기
 
@@ -43,10 +43,19 @@ cp .env.example .env.local
 # Supabase 연결 (필수)
 SUPABASE_URL=your_supabase_url
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=your_supabase_publishable_key
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key # 레거시 fallback
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key # 로그인 감사 로그 저장용(서버 전용)
 
 # AI 기능 (Cloud Run AI - GCP IAM 인증 사용)
 CLOUD_RUN_AI_URL=https://ai-engine-xxx.asia-northeast1.run.app
+
+# Optional: 게스트 로그인 국가 차단 (기본값: CN)
+GUEST_LOGIN_BLOCKED_COUNTRIES=CN
+
+# Optional: Vercel 원격 테스트용 게스트 PIN 인증
+NEXT_PUBLIC_GUEST_FULL_ACCESS=false
+GUEST_LOGIN_PIN=1234
 ```
 
 ### 3. 개발 서버 실행

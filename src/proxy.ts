@@ -16,8 +16,18 @@
  */
 
 import { type NextRequest, NextResponse } from 'next/server';
+import { isGuestFullAccessEnabledServer } from '@/config/guestMode.server';
+import { isGuestChinaIpRangeBlocked } from '@/lib/auth/guest-ip-policy';
+import {
+  getRequestCountryCode,
+  isGuestCountryBlocked,
+} from '@/lib/auth/guest-region-policy';
+import { hasGuestSessionCookieHeader } from '@/lib/auth/guest-session-utils';
 import { logger } from '@/lib/logging';
-import { updateSession } from '@/utils/supabase/middleware';
+import {
+  updateSession,
+  updateSessionWithAuth,
+} from '@/utils/supabase/middleware';
 
 // ============================================================================
 // 접근 권한 설정
@@ -81,23 +91,11 @@ function isDevBypassEnabled(): boolean {
 }
 
 /**
- * Supabase 세션 쿠키 존재 여부 확인
- * Vercel Edge Runtime 호환 방식
- */
-function hasSupabaseAuthCookie(request: NextRequest): boolean {
-  // Next.js RequestCookies는 getAll() 메서드 지원
-  // Edge Runtime에서는 request.headers.get('cookie')로 직접 접근
-  const cookieHeader = request.headers.get('cookie') || '';
-  // sb-*-auth-token 패턴 확인
-  return cookieHeader.includes('-auth-token');
-}
-
-/**
  * 게스트 세션 여부 확인
  */
 function isGuestAuth(request: NextRequest): boolean {
   const cookieHeader = request.headers.get('cookie') || '';
-  return cookieHeader.includes('auth_type=guest');
+  return hasGuestSessionCookieHeader(cookieHeader);
 }
 
 // ============================================================================
@@ -120,13 +118,44 @@ export async function proxy(request: NextRequest) {
 
   // 3. 보호 경로 - GitHub 로그인 확인
   if (isProtectedPath(pathname)) {
-    // Supabase 세션 확인
+    // Supabase 세션 확인 (검증된 user 기준)
     const response = NextResponse.next();
-    const supabaseResponse = await updateSession(request, response);
+    const { response: supabaseResponse, user } = await updateSessionWithAuth(
+      request,
+      response
+    );
 
-    // 세션 쿠키 확인 (Edge Runtime 호환)
-    const hasSession = hasSupabaseAuthCookie(request);
+    // Supabase 권장: 쿠키 문자열이 아니라 검증된 사용자 존재 여부로 판별
+    const hasSession = Boolean(user);
     const isGuest = isGuestAuth(request);
+    const guestFullAccessEnabled = isGuestFullAccessEnabledServer();
+    const countryCode = getRequestCountryCode(request.headers);
+    const { blocked: isBlockedByChinaIpRange } = isGuestChinaIpRangeBlocked(
+      request.headers
+    );
+    const isBlockedByCountry = isGuestCountryBlocked(countryCode);
+
+    if (
+      isGuest &&
+      !guestFullAccessEnabled &&
+      (isBlockedByCountry || isBlockedByChinaIpRange)
+    ) {
+      logger.warn(
+        `[Proxy] Guest access blocked by geo policy (country: ${countryCode ?? 'unknown'}, cidr: ${isBlockedByChinaIpRange})`
+      );
+
+      const loginUrl = new URL('/login', request.url);
+      loginUrl.searchParams.set('error', 'guest_region_blocked');
+      if (countryCode) {
+        loginUrl.searchParams.set('country', countryCode);
+      }
+
+      const blockedResponse = NextResponse.redirect(loginUrl);
+      blockedResponse.cookies.delete('auth_session_id');
+      blockedResponse.cookies.delete('guest_session_id');
+      blockedResponse.cookies.delete('auth_type');
+      return blockedResponse;
+    }
 
     // 인증된 사용자만 허용 (GitHub OAuth 또는 게스트 세션)
     if (!hasSession && !isGuest) {
@@ -136,7 +165,7 @@ export async function proxy(request: NextRequest) {
 
       // 로그인 페이지로 리다이렉트 (원래 URL 저장)
       const loginUrl = new URL('/login', request.url);
-      loginUrl.searchParams.set('redirect', pathname);
+      loginUrl.searchParams.set('redirectTo', pathname);
       return NextResponse.redirect(loginUrl);
     }
 

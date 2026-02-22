@@ -12,13 +12,58 @@
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import { type NextRequest, NextResponse } from 'next/server';
+import {
+  normalizeOAuthProvider,
+  recordLoginEvent,
+} from '@/lib/auth/login-audit';
 import { logger } from '@/lib/logging';
+
+function sanitizeRedirectPath(path: string | null): string | null {
+  if (!path) return null;
+  if (!path.startsWith('/')) return null;
+  if (path.startsWith('//')) return null;
+  if (path.includes('\n') || path.includes('\r')) return null;
+  return path;
+}
+
+function getRequestedOAuthProvider(requestUrl: URL): string | null {
+  return (
+    requestUrl.searchParams.get('provider') ||
+    requestUrl.searchParams.get('oauth_provider') ||
+    null
+  );
+}
+
+async function recordOAuthFailureEvent(params: {
+  request: NextRequest;
+  requestUrl: URL;
+  reason: string;
+  errorMessage: string;
+  metadata?: Record<string, unknown>;
+}): Promise<void> {
+  await recordLoginEvent({
+    request: params.request,
+    provider: normalizeOAuthProvider(
+      getRequestedOAuthProvider(params.requestUrl)
+    ),
+    success: false,
+    errorMessage: params.errorMessage,
+    metadata: {
+      reason: params.reason,
+      ...params.metadata,
+    },
+  });
+}
 
 export async function GET(request: NextRequest) {
   const requestUrl = new URL(request.url);
   const code = requestUrl.searchParams.get('code');
   const error = requestUrl.searchParams.get('error');
   const errorDescription = requestUrl.searchParams.get('error_description');
+  const nextPath =
+    sanitizeRedirectPath(requestUrl.searchParams.get('next')) ||
+    sanitizeRedirectPath(requestUrl.searchParams.get('redirectTo')) ||
+    '/main';
 
   logger.info('🔐 OAuth 콜백 수신 (Server-side):', {
     hasCode: !!code,
@@ -29,6 +74,16 @@ export async function GET(request: NextRequest) {
   // OAuth 에러 처리
   if (error) {
     logger.error('❌ OAuth 에러:', error, errorDescription);
+    await recordOAuthFailureEvent({
+      request,
+      requestUrl,
+      reason: 'oauth_callback_error',
+      errorMessage: errorDescription || error,
+      metadata: {
+        oauthError: error,
+      },
+    });
+
     const loginUrl = new URL('/login', requestUrl.origin);
     loginUrl.searchParams.set('error', error);
     if (errorDescription) {
@@ -46,8 +101,11 @@ export async function GET(request: NextRequest) {
   try {
     const cookieStore = await cookies();
     // trim()으로 환경 변수의 불필요한 공백/줄바꿈 제거
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim() ?? '';
-    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim() ?? '';
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim() || '';
+    const supabaseKey =
+      process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY?.trim() ||
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim() ||
+      '';
 
     if (!supabaseUrl || !supabaseKey) {
       logger.error('❌ Supabase 환경 변수 누락');
@@ -57,7 +115,9 @@ export async function GET(request: NextRequest) {
     }
 
     // 응답 객체 생성 (쿠키 설정용)
-    const response = NextResponse.redirect(new URL('/main', requestUrl.origin));
+    const response = NextResponse.redirect(
+      new URL(nextPath, requestUrl.origin)
+    );
 
     // 서버 클라이언트 생성 (쿠키 읽기/쓰기 가능)
     const supabase = createServerClient(supabaseUrl, supabaseKey, {
@@ -80,6 +140,13 @@ export async function GET(request: NextRequest) {
 
     if (exchangeError) {
       logger.error('❌ 코드 교환 실패:', exchangeError.message);
+      await recordOAuthFailureEvent({
+        request,
+        requestUrl,
+        reason: 'oauth_code_exchange_failed',
+        errorMessage: exchangeError.message,
+      });
+
       const loginUrl = new URL('/login', requestUrl.origin);
       loginUrl.searchParams.set('error', 'exchange_failed');
       loginUrl.searchParams.set('message', exchangeError.message);
@@ -88,6 +155,13 @@ export async function GET(request: NextRequest) {
 
     if (!data.session) {
       logger.error('❌ 세션 생성 실패');
+      await recordOAuthFailureEvent({
+        request,
+        requestUrl,
+        reason: 'oauth_session_missing',
+        errorMessage: 'OAuth exchange succeeded but session is missing',
+      });
+
       const loginUrl = new URL('/login', requestUrl.origin);
       loginUrl.searchParams.set('error', 'no_session');
       return NextResponse.redirect(loginUrl);
@@ -95,8 +169,20 @@ export async function GET(request: NextRequest) {
 
     logger.info('✅ OAuth 로그인 성공:', {
       userId: data.session.user.id,
-      email: data.session.user.email,
       provider: data.session.user.app_metadata?.provider,
+    });
+
+    await recordLoginEvent({
+      request,
+      provider: normalizeOAuthProvider(
+        data.session.user.app_metadata?.provider
+      ),
+      success: true,
+      userId: data.session.user.id,
+      userEmail: data.session.user.email ?? null,
+      metadata: {
+        reason: 'oauth_callback_success',
+      },
     });
 
     // 게스트 쿠키 정리
@@ -107,6 +193,14 @@ export async function GET(request: NextRequest) {
     return response;
   } catch (error) {
     logger.error('❌ 콜백 처리 예외:', error);
+    await recordOAuthFailureEvent({
+      request,
+      requestUrl,
+      reason: 'oauth_callback_exception',
+      errorMessage:
+        error instanceof Error ? error.message : 'Unknown callback exception',
+    });
+
     const loginUrl = new URL('/login', requestUrl.origin);
     loginUrl.searchParams.set('error', 'callback_exception');
     return NextResponse.redirect(loginUrl);

@@ -1,41 +1,34 @@
 /**
  * 🔐 Supabase Auth Provider
  *
- * Supabase 기반 GitHub OAuth 세션 관리를 위한 Provider 컴포넌트
+ * Supabase 기반 OAuth 세션 관리를 위한 Provider 컴포넌트
  */
 
 'use client';
 
 import type { ReactNode } from 'react';
 import { useEffect } from 'react';
-import { onAuthStateChange } from '@/lib/auth/supabase-auth';
+import { authStateManager } from '@/lib/auth/auth-state-manager';
 import { logger } from '@/lib/logging';
+import { getSupabase } from '@/lib/supabase/client';
 
 interface SupabaseAuthProviderProps {
   children: ReactNode;
 }
 
-/**
- * Supabase Auth Provider
- *
- * @description
- * GitHub OAuth 세션 관리를 위한 Supabase Auth Provider
- * 인증 상태 변경을 감지하고 전역적으로 관리합니다.
- *
- * @param children - 자식 컴포넌트들
- */
 export default function SupabaseAuthProvider({
   children,
 }: SupabaseAuthProviderProps) {
   useEffect(() => {
-    // 인증 상태 변경 리스너 설정
-    const authListener = onAuthStateChange((session) => {
-      // 전역 인증 상태 업데이트는 각 컴포넌트에서 처리
-      logger.info(
-        '🔐 Auth state changed:',
-        session ? 'Authenticated' : 'Not authenticated'
-      );
-    });
+    const { data: authListener } = getSupabase().auth.onAuthStateChange(
+      (_event, session) => {
+        authStateManager.invalidateCache();
+        logger.info(
+          '🔐 Auth state changed:',
+          session ? 'Authenticated' : 'Not authenticated'
+        );
+      }
+    );
 
     return () => {
       authListener?.subscription?.unsubscribe();
