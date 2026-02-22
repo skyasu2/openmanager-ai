@@ -9,7 +9,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 const {
   mockUpdateSession,
   mockUpdateSessionWithAuth,
-  mockHasGuestSessionCookieHeader,
+  mockGetCookieValueFromHeader,
   mockLoggerWarn,
   mockLoggerInfo,
   mockLoggerError,
@@ -17,7 +17,7 @@ const {
 } = vi.hoisted(() => ({
   mockUpdateSession: vi.fn(),
   mockUpdateSessionWithAuth: vi.fn(),
-  mockHasGuestSessionCookieHeader: vi.fn(),
+  mockGetCookieValueFromHeader: vi.fn(),
   mockLoggerWarn: vi.fn(),
   mockLoggerInfo: vi.fn(),
   mockLoggerError: vi.fn(),
@@ -30,7 +30,9 @@ vi.mock('@/utils/supabase/middleware', () => ({
 }));
 
 vi.mock('@/lib/auth/guest-session-utils', () => ({
-  hasGuestSessionCookieHeader: mockHasGuestSessionCookieHeader,
+  AUTH_SESSION_ID_KEY: 'auth_session_id',
+  GUEST_AUTH_PROOF_COOKIE_KEY: 'guest_auth_proof',
+  getCookieValueFromHeader: mockGetCookieValueFromHeader,
 }));
 
 vi.mock('@/lib/logging', () => ({
@@ -63,7 +65,7 @@ describe('proxy', () => {
       user: null,
       error: null,
     });
-    mockHasGuestSessionCookieHeader.mockReturnValue(false);
+    mockGetCookieValueFromHeader.mockReturnValue(null);
   });
 
   it('공개 경로는 updateSession만 수행한다', async () => {
@@ -98,22 +100,54 @@ describe('proxy', () => {
     const response = await proxy(request);
 
     expect(response).toBe(allowedResponse);
-    expect(mockHasGuestSessionCookieHeader).toHaveBeenCalledWith('');
+    expect(mockGetCookieValueFromHeader).toHaveBeenCalled();
   });
 
-  it('보호 경로에서 게스트 쿠키가 있으면 접근을 허용한다', async () => {
-    mockHasGuestSessionCookieHeader.mockReturnValue(true);
+  it('보호 경로에서 게스트 쿠키(session + proof)가 모두 있으면 접근을 허용한다', async () => {
+    // Given: session ID와 proof 쿠키가 모두 존재
+    mockGetCookieValueFromHeader.mockImplementation(
+      (_header: string, key: string) => {
+        if (key === 'auth_session_id') return 'guest-abc';
+        if (key === 'guest_auth_proof') return 'v1.payload.signature';
+        return null;
+      }
+    );
+
+    const request = new NextRequest('https://openmanager.test/dashboard', {
+      headers: {
+        cookie:
+          'auth_session_id=guest-abc; guest_auth_proof=v1.payload.signature',
+      },
+    });
+
+    // When
+    const response = await proxy(request);
+
+    // Then: 접근 허용
+    expect(response.status).toBe(200);
+    expect(response.headers.get('location')).toBeNull();
+  });
+
+  it('보호 경로에서 proof 쿠키 없이 session ID만 있으면 접근을 거부한다', async () => {
+    // Given: session ID만 있고 proof 쿠키 없음
+    mockGetCookieValueFromHeader.mockImplementation(
+      (_header: string, key: string) => {
+        if (key === 'auth_session_id') return 'guest-abc';
+        return null;
+      }
+    );
 
     const request = new NextRequest('https://openmanager.test/dashboard', {
       headers: { cookie: 'auth_session_id=guest-abc' },
     });
+
+    // When
     const response = await proxy(request);
 
-    expect(response.status).toBe(200);
-    expect(response.headers.get('location')).toBeNull();
-    expect(mockHasGuestSessionCookieHeader).toHaveBeenCalledWith(
-      'auth_session_id=guest-abc'
-    );
+    // Then: 로그인 페이지로 리다이렉트
+    expect(response.status).toBe(307);
+    const location = new URL(response.headers.get('location') as string);
+    expect(location.pathname).toBe('/login');
   });
 
   it('개발 바이패스가 켜져 있으면 보호 경로도 updateSession으로 우회한다', async () => {

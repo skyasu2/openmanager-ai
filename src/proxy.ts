@@ -16,7 +16,11 @@
  */
 
 import { type NextRequest, NextResponse } from 'next/server';
-import { hasGuestSessionCookieHeader } from '@/lib/auth/guest-session-utils';
+import {
+  AUTH_SESSION_ID_KEY,
+  GUEST_AUTH_PROOF_COOKIE_KEY,
+  getCookieValueFromHeader,
+} from '@/lib/auth/guest-session-utils';
 import { logger } from '@/lib/logging';
 import {
   updateSession,
@@ -86,10 +90,19 @@ function isDevBypassEnabled(): boolean {
 
 /**
  * 게스트 세션 여부 확인
+ *
+ * auth_session_id + guest_auth_proof 쿠키가 모두 존재하는지 확인합니다.
+ * 실제 HMAC 서명 검증은 API 레이어(checkAPIAuth)에서 수행됩니다.
+ * Proxy는 Edge Runtime 호환을 위해 쿠키 존재 여부만 게이트합니다.
  */
 function isGuestAuth(request: NextRequest): boolean {
   const cookieHeader = request.headers.get('cookie') || '';
-  return hasGuestSessionCookieHeader(cookieHeader);
+  const sessionId = getCookieValueFromHeader(cookieHeader, AUTH_SESSION_ID_KEY);
+  const proof = getCookieValueFromHeader(
+    cookieHeader,
+    GUEST_AUTH_PROOF_COOKIE_KEY
+  );
+  return Boolean(sessionId) && Boolean(proof);
 }
 
 // ============================================================================
