@@ -1,12 +1,25 @@
-# TODO - OpenManager AI v5
+# TODO - OpenManager AI v8
 
-**Last Updated**: 2026-02-19 KST
+**Last Updated**: 2026-02-22 KST
 
 ## Active Tasks
 
 | Task | Priority | Status |
 |------|----------|--------|
 | *(활성 잔여 없음)* | — | — |
+
+### Completed (2026-02-22)
+- [x] P1: 이메일 Magic Link 로그인 추가 — Supabase OTP 기반, 소셜 로그인과 병행
+- [x] P1: 런타임 로그 레벨 API + AIDebugPanel UI 토글 — TTL 자동 리셋, Vercel + Cloud Run 양쪽
+- [x] P1: GPL v3 라이선스 적용 — LICENSE 파일 + README 배지
+- [x] P1: 게스트 PIN 브루트포스 방어 — 5회 실패 → 1분 잠금 (Redis + 메모리 폴백)
+- [x] P2: Dead code 20+ 파일 삭제 — 미사용 스토어, 서비스, 테스트, 유틸리티 정리
+- [x] P2: 게스트 정책 단순화 — CIDR IP 범위 차단 제거, 국가코드 기반으로 통일
+- [x] P2: 로그인 버튼 순서 변경 — 소셜 → 이메일 → 게스트
+- [x] P2: Storybook 스토리 추가 — 이메일 로그인, AIDebugPanel, stale mock 수정
+- [x] P2: 랜딩 히어로 텍스트 및 Feature Card 메시징 개선
+- [x] P3: Playwright 스크린샷 정리 — 778개/356MB → 6개/1.7MB
+- [x] P0: v8.2.0 릴리즈 — 89커밋 포함
 
 ### Completed (2026-02-19)
 - [x] P2: Production QA 전체 통과 — 대시보드, AI 사이드바, 서버 카드, 페이지네이션, Cold Start 검증
