@@ -1,6 +1,67 @@
 # Changelog
 
-All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
+
+## [8.2.0](https://github.com/skyasu2/openmanager-ai/compare/v8.1.0...v8.2.0) (2026-02-22)
+
+
+### Features
+
+* [COST] optimize AI route timeout budgets and align Vercel limits ([4b9aca0](https://github.com/skyasu2/openmanager-ai/commit/4b9aca0f00c0e3df06f56785b2d2235dbebd81dc))
+* add 5 page-level Storybook stories with mock infrastructure ([06033e9](https://github.com/skyasu2/openmanager-ai/commit/06033e974f33f051b233b85a62494e48438762cb))
+* add incident search, Storybook v10 setup, login dark theme, and stability fixes ([a8e0206](https://github.com/skyasu2/openmanager-ai/commit/a8e0206f1d802d803ca43546666a8cf0a4e1f4d5))
+* **auth,observability:** add email magic link login, runtime log level control, and dead code cleanup ([fc9c555](https://github.com/skyasu2/openmanager-ai/commit/fc9c555e627c0e4f99cf1850b39eb9fcaa06fc28))
+* budget-aware proxy timeout and retry for free-tier safety ([4c90e0c](https://github.com/skyasu2/openmanager-ai/commit/4c90e0c7193b4c881e98d66262c0e60e5285484f))
+* **cache:** add semantic-lite query normalization for AI cache ([6770110](https://github.com/skyasu2/openmanager-ai/commit/677011015c22839e2496fc34f2c04f6d9301e11e))
+* **cold-start-ux:** add streaming warmup indicator and improve cold start error handling ([11346d2](https://github.com/skyasu2/openmanager-ai/commit/11346d2c61594619001e4d2d0bcaa50792f2c328))
+* **config:** add server-data-polling SSOT module ([bf3415c](https://github.com/skyasu2/openmanager-ai/commit/bf3415ced883355bfdc0fe611f724f6859a7899c))
+* **landing:** add Storybook to vibe-coding diagram and detail cards ([6fa3f55](https://github.com/skyasu2/openmanager-ai/commit/6fa3f55817736c85da2351dc4349b3bb59201045))
+* **mcp:** add Storybook MCP support for Codex with auto/on/off mode ([9fcd74f](https://github.com/skyasu2/openmanager-ai/commit/9fcd74f6166900293c959af92c25203cff012080))
+* **release:** add publish.sh for automated GitHub Release creation ([1ef8a10](https://github.com/skyasu2/openmanager-ai/commit/1ef8a10958dc4397c904c13614d14e04a216199e))
+* replace Log Explorer with OTel 24h data and remove Incident Explorer ([51ac2c5](https://github.com/skyasu2/openmanager-ai/commit/51ac2c59764632fdccbc8a78e8ce7a1be5c06f66))
+* **storybook:** add 27 component stories to reach ~42% coverage ([b60e4ed](https://github.com/skyasu2/openmanager-ai/commit/b60e4edaa6217154e8fe6a9649f50845fe99994a))
+* **storybook:** add email login stories, AIDebugPanel story, fix stale mock ([b4a5726](https://github.com/skyasu2/openmanager-ai/commit/b4a57264613e224b9462cfe426fa564ae6c1c312))
+* **storybook:** add ErrorMessage stories for all error types ([c9eb305](https://github.com/skyasu2/openmanager-ai/commit/c9eb30503c7f4c115c37c04d95514889a67f7769))
+* **storybook:** add play function interactions and argTypes controls ([8139c83](https://github.com/skyasu2/openmanager-ai/commit/8139c83af0061e5fa5ca0a68de39b24badc5a7fc))
+* **storybook:** add Tier 1 UI component stories for 9 core primitives ([99d10c8](https://github.com/skyasu2/openmanager-ai/commit/99d10c85da2d4af67947f894b56ed58ab56b08b1))
+* **storybook:** add Tier 2 stories for UI primitives and shared components ([cd9ad5d](https://github.com/skyasu2/openmanager-ai/commit/cd9ad5d73b6bdd4943e431456270433795445e79))
+* **storybook:** add Tier 3 dashboard and AI sidebar stories ([ffca496](https://github.com/skyasu2/openmanager-ai/commit/ffca496a9aa8cf14c1c63ff4feb4bddb574f6db0))
+* **test:** complete Cloud Run E2E contract and fix doc consistency ([5c087ae](https://github.com/skyasu2/openmanager-ai/commit/5c087ae2159175b5bd622c80e6c4f723f35dad42))
+
+
+### Bug Fixes
+
+* address P2 code review issues across 6 files ([2fa19ae](https://github.com/skyasu2/openmanager-ai/commit/2fa19ae79d01a4aa690866bb1e7e49aa6670e0fc))
+* **ai-stream:** recover finalAnswer text in streaming mode + add Playwright MCP E2E guide ([dc14fbe](https://github.com/skyasu2/openmanager-ai/commit/dc14fbea1a6759593010332bf3e499aeb5439018))
+* apply 3rd code review fixes (P0-P2, 10 items across 11 files) ([e70d199](https://github.com/skyasu2/openmanager-ai/commit/e70d199ca92a53eedb5b81731d88607f4117f7e6))
+* apply 4th code review fixes (P0-P2, 14 items across 14 files) ([b3ddcbf](https://github.com/skyasu2/openmanager-ai/commit/b3ddcbf70cafe893d151e48bad89fed24838fe4a))
+* apply 5th code review fixes (P0-P2, 8 items across 8 files) ([06fdca0](https://github.com/skyasu2/openmanager-ai/commit/06fdca00e2d1f4cac9d1e7cdc3f66c3d26b7e527))
+* apply 7th code review fixes (P1 5, P2 4 across 9 files) ([9bfb180](https://github.com/skyasu2/openmanager-ai/commit/9bfb1802a1a9474d9bcafba60fb9b4b53433ad0e))
+* apply 9th code review fixes (P1 5, P2 6 across 10 files) ([6bb05e9](https://github.com/skyasu2/openmanager-ai/commit/6bb05e9b54e93030a4f94ad21f0b6216edf7f62f))
+* **cache:** add endpoint isolation to Redis AI cache keys ([749da0d](https://github.com/skyasu2/openmanager-ai/commit/749da0dae264fb1929830946559d7d9152b5bcd2))
+* **cold-start:** fix wake-up HTTP method, preemptive warmup state, and remove dead code ([5498d6f](https://github.com/skyasu2/openmanager-ai/commit/5498d6f425d582385aef98b673e0a3198bec13ed))
+* correct stability alert metric field name and HTTP 404 for missing servers ([a3a6104](https://github.com/skyasu2/openmanager-ai/commit/a3a61040c916f869579ccf9ef683e5d538e5a175))
+* delete orphaned store tests and reorder login buttons ([4a681d8](https://github.com/skyasu2/openmanager-ai/commit/4a681d83d6e968329f835b3eed6583661524862f))
+* **e2e:** separate NLQ to manual track and fix review feedback ([fa305bd](https://github.com/skyasu2/openmanager-ai/commit/fa305bd3fd119b03383ee474a587c485230b622d))
+* **frontend:** reduce polling and harden AI stop flow ([e449508](https://github.com/skyasu2/openmanager-ai/commit/e449508bc096bacc4f59c8fa5ef55ddd81efa3c9))
+* guard web search against Tavily unavailability and relax 429 rate limit ([d3fb9c2](https://github.com/skyasu2/openmanager-ai/commit/d3fb9c20ff7052cd2363040bc1f8a9fc0cbc3fa9))
+* handle 204 no-body response in AIDebugPanel and consolidate auth logging ([eeb4cbf](https://github.com/skyasu2/openmanager-ai/commit/eeb4cbf79112a200006cc0babd18fa98f3a71f43))
+* **landing:** improve Storybook description for non-developers ([b78ab2e](https://github.com/skyasu2/openmanager-ai/commit/b78ab2e1f04a476553122991022bffdfcffd3a55))
+* **performance:** throttle dashboard render warning logs ([128db36](https://github.com/skyasu2/openmanager-ai/commit/128db36da59e80d92fd15289d2c7a87b1ef27f8a))
+* **promql:** retry label cache load after transient catalog miss ([e535b11](https://github.com/skyasu2/openmanager-ai/commit/e535b11dc729529df1736e09c386e755d4ff7ed9))
+* **release:** enable release reminder in pre-push and add weekly freshness check ([88e157d](https://github.com/skyasu2/openmanager-ai/commit/88e157d5faf4c8a38d2f9f0c90b46d574e58293a))
+* remove unused guest IP range check and apply Biome formatting ([bbefa67](https://github.com/skyasu2/openmanager-ai/commit/bbefa67657740d4305ec3f9a245edf6d83e148b1))
+* remove unused import in card stories ([dc805d6](https://github.com/skyasu2/openmanager-ai/commit/dc805d67d6706209e74febf12df25de149bdbbb3))
+* reset labelsCachePromise on rejection + remove orphaned JSDoc ([70e0f7d](https://github.com/skyasu2/openmanager-ai/commit/70e0f7d42c327d34e2e69e5a6def433506036b95))
+* **review:** apply P2 code review fixes (warmup, test setup, debug panel) ([e22cc0f](https://github.com/skyasu2/openmanager-ai/commit/e22cc0f2ec2ff956d8268ecb4237e2e26ecdd1f8))
+* **review:** harden unified api and ai redirect handling ([19a4c43](https://github.com/skyasu2/openmanager-ai/commit/19a4c439f302aa7d491ba0a4b1b81a77dd3d2699))
+* **security:** timing-safe auth for debug endpoints and harden rate limiting ([b54d1c2](https://github.com/skyasu2/openmanager-ai/commit/b54d1c2fb3d1982f4b68c52afedcf0dc53fd6489))
+* **storybook:** use matching error patterns in ColdStartErrorBanner stories ([c8935a7](https://github.com/skyasu2/openmanager-ai/commit/c8935a77ce2ae14e65bce9eb01b9d9d15734c329))
+* **storybook:** use screen instead of canvas for portal component assertions ([9d955d8](https://github.com/skyasu2/openmanager-ai/commit/9d955d8643a3b7d012e91e0c85060bbd5a9e94a5))
+* **test:** stabilize monitoring report error state and modal escape close ([1b87361](https://github.com/skyasu2/openmanager-ai/commit/1b87361123803d15dc53c1584434e3d6c48ef13b))
+* **time:** make rotating timestamp logic timezone-stable in KST ([f05cee1](https://github.com/skyasu2/openmanager-ai/commit/f05cee1791dd6003869056234047ee01fdc6ad6e))
+* **ui:** maximize architecture modal viewport and trim header space ([b46ceba](https://github.com/skyasu2/openmanager-ai/commit/b46ceba3535cfb486838416a6da747c57268307e))
+* **ui:** restore logo gradient icon and add "AI" text with matching gradient ([92a3acb](https://github.com/skyasu2/openmanager-ai/commit/92a3acb107f03bbae3a3b43ba0c01d8260a417a7))
 
 ## [8.1.0](https://github.com/skyasu2/openmanager-ai/compare/v8.0.0...v8.1.0) (2026-02-18)
 
