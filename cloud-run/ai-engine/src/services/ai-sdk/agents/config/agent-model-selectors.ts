@@ -17,23 +17,11 @@ export interface ModelResult {
 }
 
 /**
- * Get NLQ model: Cerebras → Groq → Mistral (3-way fallback)
- * Ensures operation even if 2 of 3 providers are down
+ * Get NLQ model: Groq → Mistral → Cerebras (3-way fallback)
+ * Cerebras demoted to last (only llama3.1-8b available after llama-3.3-70b deprecation)
  */
 export function getNlqModel(): ModelResult | null {
   const status = checkProviderStatus();
-
-  if (status.cerebras) {
-    try {
-      return {
-        model: getCerebrasModel('llama-3.3-70b'),
-        provider: 'cerebras',
-        modelId: 'llama-3.3-70b',
-      };
-    } catch {
-      logger.warn('⚠️ [NLQ Agent] Cerebras unavailable, trying Groq');
-    }
-  }
 
   if (status.groq) {
     try {
@@ -55,7 +43,19 @@ export function getNlqModel(): ModelResult | null {
         modelId: 'mistral-small-2506',
       };
     } catch {
-      logger.warn('⚠️ [NLQ Agent] Mistral unavailable');
+      logger.warn('⚠️ [NLQ Agent] Mistral unavailable, trying Cerebras');
+    }
+  }
+
+  if (status.cerebras) {
+    try {
+      return {
+        model: getCerebrasModel('llama3.1-8b'),
+        provider: 'cerebras',
+        modelId: 'llama3.1-8b',
+      };
+    } catch {
+      logger.warn('⚠️ [NLQ Agent] Cerebras unavailable');
     }
   }
 
@@ -64,8 +64,8 @@ export function getNlqModel(): ModelResult | null {
 }
 
 /**
- * Get Analyst model: Groq → Cerebras → Mistral (3-way fallback)
- * Ensures operation even if 2 of 3 providers are down
+ * Get Analyst model: Groq → Mistral → Cerebras (3-way fallback)
+ * Cerebras demoted to last (only llama3.1-8b available after llama-3.3-70b deprecation)
  */
 export function getAnalystModel(): ModelResult | null {
   const status = checkProviderStatus();
@@ -78,19 +78,7 @@ export function getAnalystModel(): ModelResult | null {
         modelId: 'llama-3.3-70b-versatile',
       };
     } catch {
-      logger.warn('⚠️ [Analyst Agent] Groq unavailable, trying Cerebras');
-    }
-  }
-
-  if (status.cerebras) {
-    try {
-      return {
-        model: getCerebrasModel('llama-3.3-70b'),
-        provider: 'cerebras',
-        modelId: 'llama-3.3-70b',
-      };
-    } catch {
-      logger.warn('⚠️ [Analyst Agent] Cerebras unavailable, trying Mistral');
+      logger.warn('⚠️ [Analyst Agent] Groq unavailable, trying Mistral');
     }
   }
 
@@ -102,7 +90,19 @@ export function getAnalystModel(): ModelResult | null {
         modelId: 'mistral-small-2506',
       };
     } catch {
-      logger.warn('⚠️ [Analyst Agent] Mistral unavailable');
+      logger.warn('⚠️ [Analyst Agent] Mistral unavailable, trying Cerebras');
+    }
+  }
+
+  if (status.cerebras) {
+    try {
+      return {
+        model: getCerebrasModel('llama3.1-8b'),
+        provider: 'cerebras',
+        modelId: 'llama3.1-8b',
+      };
+    } catch {
+      logger.warn('⚠️ [Analyst Agent] Cerebras unavailable');
     }
   }
 
@@ -111,8 +111,8 @@ export function getAnalystModel(): ModelResult | null {
 }
 
 /**
- * Get Reporter model: Groq → Cerebras → Mistral (3-way fallback)
- * Ensures operation even if 2 of 3 providers are down
+ * Get Reporter model: Groq → Mistral → Cerebras (3-way fallback)
+ * Cerebras demoted to last (only llama3.1-8b available after llama-3.3-70b deprecation)
  */
 export function getReporterModel(): ModelResult | null {
   const status = checkProviderStatus();
@@ -125,19 +125,7 @@ export function getReporterModel(): ModelResult | null {
         modelId: 'llama-3.3-70b-versatile',
       };
     } catch {
-      logger.warn('⚠️ [Reporter Agent] Groq unavailable, trying Cerebras');
-    }
-  }
-
-  if (status.cerebras) {
-    try {
-      return {
-        model: getCerebrasModel('llama-3.3-70b'),
-        provider: 'cerebras',
-        modelId: 'llama-3.3-70b',
-      };
-    } catch {
-      logger.warn('⚠️ [Reporter Agent] Cerebras unavailable, trying Mistral');
+      logger.warn('⚠️ [Reporter Agent] Groq unavailable, trying Mistral');
     }
   }
 
@@ -149,7 +137,19 @@ export function getReporterModel(): ModelResult | null {
         modelId: 'mistral-small-2506',
       };
     } catch {
-      logger.warn('⚠️ [Reporter Agent] Mistral unavailable');
+      logger.warn('⚠️ [Reporter Agent] Mistral unavailable, trying Cerebras');
+    }
+  }
+
+  if (status.cerebras) {
+    try {
+      return {
+        model: getCerebrasModel('llama3.1-8b'),
+        provider: 'cerebras',
+        modelId: 'llama3.1-8b',
+      };
+    } catch {
+      logger.warn('⚠️ [Reporter Agent] Cerebras unavailable');
     }
   }
 
@@ -191,9 +191,9 @@ export function getAdvisorModel(): ModelResult | null {
   if (status.cerebras) {
     try {
       return {
-        model: getCerebrasModel('llama-3.3-70b'),
+        model: getCerebrasModel('llama3.1-8b'),
         provider: 'cerebras',
-        modelId: 'llama-3.3-70b',
+        modelId: 'llama3.1-8b',
       };
     } catch {
       logger.warn('⚠️ [Advisor Agent] Cerebras unavailable');

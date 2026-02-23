@@ -143,7 +143,7 @@ function asLanguageModel(model: unknown): LanguageModel {
 }
 
 export function getCerebrasModel(
-  modelId: string = 'llama-3.3-70b'
+  modelId: string = 'llama3.1-8b'
 ): LanguageModel {
   const cerebras = createCerebrasProvider();
   return asLanguageModel(cerebras(modelId));

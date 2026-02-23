@@ -60,14 +60,6 @@ export function getRecentHandoffs(n = 10): HandoffEvent[] {
 export function getOrchestratorModel(): { model: ReturnType<typeof getCerebrasModel>; provider: string; modelId: string } | null {
   const status = checkProviderStatus();
 
-  if (status.cerebras) {
-    try {
-      return { model: getCerebrasModel('llama-3.3-70b'), provider: 'cerebras', modelId: 'llama-3.3-70b' };
-    } catch {
-      logger.warn('⚠️ [Orchestrator] Cerebras unavailable, trying Groq');
-    }
-  }
-
   if (status.groq) {
     try {
       return { model: getGroqModel('llama-3.3-70b-versatile'), provider: 'groq', modelId: 'llama-3.3-70b-versatile' };
@@ -80,7 +72,15 @@ export function getOrchestratorModel(): { model: ReturnType<typeof getCerebrasMo
     try {
       return { model: getMistralModel('mistral-small-2506'), provider: 'mistral', modelId: 'mistral-small-2506' };
     } catch {
-      logger.warn('⚠️ [Orchestrator] Mistral unavailable');
+      logger.warn('⚠️ [Orchestrator] Mistral unavailable, trying Cerebras');
+    }
+  }
+
+  if (status.cerebras) {
+    try {
+      return { model: getCerebrasModel('llama3.1-8b'), provider: 'cerebras', modelId: 'llama3.1-8b' };
+    } catch {
+      logger.warn('⚠️ [Orchestrator] Cerebras unavailable');
     }
   }
 
