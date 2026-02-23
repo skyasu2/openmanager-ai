@@ -85,7 +85,7 @@ export const CLOUD_PLATFORM_TECH_STACK: TechItem[] = [
       '프로덕션 에러 모니터링 및 성능 추적 플랫폼. 크래시 리포트, 성능 병목 탐지, Release Health 추적 제공',
     implementation:
       '→ 에러 발생 시 스택 트레이스, 브레드크럼 자동 수집. Next.js Client/Server/Edge 전체 커버',
-    version: '10.34',
+    version: '10.39',
     status: 'active',
     icon: '🛡️',
     tags: ['Error-Tracking', 'Performance', 'Monitoring'],
@@ -99,7 +99,7 @@ export const CLOUD_PLATFORM_TECH_STACK: TechItem[] = [
       'Node.js 초고속 JSON 로깅 라이브러리. 낮은 오버헤드, 구조화된 로그, Child Logger 지원. Bunyan/Winston 대비 5배 빠른 성능',
     implementation:
       '→ 서버/브라우저 통합 로거 구현. Cloud Run에서 GCP Cloud Logging 호환 포맷 출력',
-    version: '10.1',
+    version: '10.3',
     status: 'active',
     icon: '📋',
     tags: ['Logging', 'JSON', 'Performance'],

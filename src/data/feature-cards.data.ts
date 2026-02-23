@@ -9,21 +9,21 @@ import type { FeatureCard } from '@/types/feature-card.types';
 
 export const FEATURE_CARDS_DATA: FeatureCard[] = [
   {
-    id: 'ai-assistant-pro',
+    id: 'ai-assistant',
     title: '🧠 AI Assistant',
     description:
-      '4개 AI 프로바이더 + 5개 전문 에이전트로 서버 장애를 실시간 분석. Vision Agent로 대시보드 스크린샷 분석, 대용량 로그 처리 지원.',
+      '4개 AI 프로바이더 + 7개 전문 에이전트로 서버 장애를 실시간 분석. Vision Agent로 대시보드 스크린샷 분석, 대용량 로그 처리 지원.',
     icon: Bot,
     gradient: 'from-indigo-500 via-purple-500 to-pink-500',
     detailedContent: {
-      overview: `4개의 AI Provider(Cerebras, Groq, Mistral, Gemini)와 Vercel AI SDK 6.0 기반 5-Agent + Orchestrator 멀티 에이전트 시스템입니다. Vision Agent로 대시보드 스크린샷 분석, 1M 토큰 대용량 로그 분석, Google Search Grounding 지원. Isolation Forest ML 엔진으로 다변량 이상 탐지, LlamaIndex.TS GraphRAG로 하이브리드 검색을 수행합니다.`,
+      overview: `4개의 AI Provider(Cerebras, Groq, Mistral, Gemini)와 Vercel AI SDK 6.0 네이티브 ToolLoopAgent 기반 7-Agent 멀티 에이전트 시스템입니다. Vision Agent로 대시보드 스크린샷 분석, 1M 토큰 대용량 로그 분석, Google Search Grounding 지원. Isolation Forest ML 엔진으로 다변량 이상 탐지, LlamaIndex.TS GraphRAG로 하이브리드 검색을 수행합니다.`,
       features: [
         '🧠 Cerebras Inference: WSE-3 칩 기반 24M 토큰/일 초고속 추론 (llama-3.3-70b) — NLQ 에이전트 전용, 최저 지연 우선',
         '⚡ Groq Cloud: LPU 기반 500 Tokens/s 초고속 추론 (llama-3.3-70b-versatile) — Analyst/Reporter 기본 모델',
         '🛡️ Mistral AI: 24B SLM + mistral-embed 1024차원 벡터 임베딩 — Advisor 전용, RAG 검색 품질 최적',
         '👁️ Gemini Flash: Vision Agent 전용, 스크린샷 분석, 1M 컨텍스트 — 대용량 로그/이미지 처리 유일 모델',
         '▲ Vercel AI SDK 6.0: streamText, generateObject, embed 통합 API — 멀티 에이전트 스트리밍 응답 기반',
-        '🤖 Orchestrator-Worker: AI SDK v6 ToolLoopAgent + stopWhen 기반 5-Agent 라우팅 — 공식 에이전트 패턴으로 응답 품질 향상',
+        '🤖 Orchestrator-Worker: AI SDK v6 네이티브 ToolLoopAgent + stopWhen 기반 7-Agent 라우팅 — 공식 에이전트 패턴으로 응답 품질 향상',
         '🌲 Isolation Forest: ML 기반 다변량 이상 탐지 + Adaptive Thresholds — 단일 메트릭 임계값의 한계 보완',
         '🦙 LlamaIndex.TS: GraphRAG + Knowledge Triplet Extraction — 키워드 검색으로 못 찾는 관계 탐색',
         '🐘 Supabase pgVector: 벡터 유사도 검색 + 그래프 탐색 — 의미 검색과 관계 탐색을 단일 DB에 통합',
@@ -37,7 +37,7 @@ export const FEATURE_CARDS_DATA: FeatureCard[] = [
         'Mistral AI (SLM 24B + Embedding)',
         'Gemini 2.5 Flash (Vision)',
         'Vercel AI SDK 6.0',
-        'Orchestrator-Worker (AI SDK v6 native)',
+        'AI SDK v6 ToolLoopAgent (native)',
         'LlamaIndex.TS (GraphRAG)',
         'Isolation Forest (ML)',
         'Supabase pgVector',
@@ -65,7 +65,7 @@ export const FEATURE_CARDS_DATA: FeatureCard[] = [
         '⚡ Upstash: Serverless Redis를 이용한 초고속 데이터 캐싱 및 Rate Limiting — LLM 응답 캐싱으로 비용 절감',
         '🐋 Docker: Cloud Run 로컬 개발 환경 에뮬레이션 — 로컬과 배포 환경 차이 제거',
         '🔄 GitHub Actions: CI/CD 파이프라인, 자동 테스트 및 배포 — push→Vercel, tag→Cloud Run 분리 배포',
-        '💰 무료 티어 최적화: Vercel/Supabase/Cloud Run/Upstash 무료 사용량 100% 활용 — 4개 플랫폼 $0 운영 달성',
+        '💰 비용 최적화: Vercel Pro($20/mo) 외 Supabase/Cloud Run/Upstash Free Tier 100% 활용 — 최소 비용 운영 달성',
       ],
       technologies: [
         'Vercel Platform',
@@ -105,7 +105,7 @@ export const FEATURE_CARDS_DATA: FeatureCard[] = [
         'React 19',
         'TypeScript 5.9',
         'Tailwind CSS 4.1',
-        'Recharts 3.7 + uPlot 1.6',
+        'Recharts 3.7.0 + uPlot 1.6',
         'OTel-native Data (SSOT)',
         'OpenTelemetry (Semantic Conv.)',
         'Loki Log Format',

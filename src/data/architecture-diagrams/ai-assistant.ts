@@ -1,10 +1,10 @@
 import type { ArchitectureDiagram } from '../architecture-diagrams.types';
 
-export const AI_ASSISTANT_PRO_ARCHITECTURE: ArchitectureDiagram = {
-  id: 'ai-assistant-pro',
+export const AI_ASSISTANT_ARCHITECTURE: ArchitectureDiagram = {
+  id: 'ai-assistant',
   title: 'Multi-Agent Architecture (AI SDK v6)',
   description:
-    'Vercel AI SDK v6 + @ai-sdk-tools/agents 기반 6-Agent 멀티 에이전트. Vision Agent(Gemini)로 스크린샷/로그 분석 지원. UIMessageStream 네이티브 프로토콜, Resumable Stream v2 적용.',
+    'Vercel AI SDK v6 네이티브 ToolLoopAgent 기반 7-Agent 멀티 에이전트. Vision Agent(Gemini)로 스크린샷/로그 분석 지원. UIMessageStream 네이티브 프로토콜, Resumable Stream v2 적용.',
   layers: [
     {
       title: 'Client',

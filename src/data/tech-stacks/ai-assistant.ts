@@ -1,6 +1,6 @@
 import type { TechItem } from '@/types/feature-card.types';
 
-export const AI_ASSISTANT_PRO_TECH_STACK: TechItem[] = [
+export const AI_ASSISTANT_TECH_STACK: TechItem[] = [
   // ========== AI Providers (기술 소개) ==========
   {
     name: 'Cerebras Inference',
@@ -65,27 +65,13 @@ export const AI_ASSISTANT_PRO_TECH_STACK: TechItem[] = [
     category: 'ai',
     importance: 'critical',
     description:
-      'Vercel이 개발한 AI 애플리케이션 프레임워크. streamText, generateObject 등 API로 스트리밍 응답, 도구 호출, 멀티 에이전트 오케스트레이션 지원',
+      'Vercel이 개발한 AI 애플리케이션 프레임워크. streamText, generateObject, ToolLoopAgent 등 API로 스트리밍 응답, 도구 호출, 멀티 에이전트 오케스트레이션 지원',
     implementation:
-      '@ai-sdk-tools/agents 패키지로 7-Agent 멀티 에이전트 시스템 구축. Orchestrator-Worker Handoff 패턴 구현',
+      'v6 네이티브 ToolLoopAgent + stopWhen 패턴으로 7-Agent 멀티 에이전트 시스템 구축. Orchestrator-Worker Handoff 패턴으로 질문 유형별 자동 라우팅 구현',
     version: '6.0',
     status: 'active',
     icon: '▲',
-    tags: ['AI SDK', 'Streaming', 'Multi-Agent'],
-    type: 'opensource',
-  },
-  {
-    name: '@ai-sdk-tools/agents',
-    category: 'ai',
-    importance: 'high',
-    description:
-      'Vercel AI SDK 확장 패키지. Agent 클래스로 전문 에이전트 정의, matchOn으로 패턴 매칭, handoffs로 에이전트 간 작업 위임 지원',
-    implementation:
-      'Orchestrator + NLQ + Analyst + Reporter + Advisor + Vision + Evaluator + Optimizer 7개 에이전트 (5 외부 라우팅 + 2 내부) 정의. 질문 유형별 자동 라우팅 구현',
-    version: '1.2',
-    status: 'active',
-    icon: '🤖',
-    tags: ['Agents', 'Handoff', 'Pattern Matching'],
+    tags: ['AI SDK', 'Streaming', 'Multi-Agent', 'ToolLoopAgent'],
     type: 'opensource',
   },
   // ========== Database & RAG ==========

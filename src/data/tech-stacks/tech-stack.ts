@@ -22,7 +22,7 @@ export const TECH_STACK_ITEMS: TechItem[] = [
       'Vercel의 React 풀스택 프레임워크. App Router, Server Actions, Partial Prerendering, Edge Runtime, 자동 코드 분할 제공',
     implementation:
       '→ App Router + Server Actions + PPR로 최적화된 렌더링 구현',
-    version: '16.1.1',
+    version: '16.1.6',
     status: 'active',
     icon: '▲',
     tags: ['프레임워크', '오픈소스', 'SSR'],
@@ -55,14 +55,14 @@ export const TECH_STACK_ITEMS: TechItem[] = [
     type: 'opensource',
   },
   {
-    name: 'Recharts 3.6',
+    name: 'Recharts 3.7',
     category: 'ui',
     importance: 'high',
     description:
       'React 기반 선언적 차트 라이브러리. D3.js 위에 구축, SVG 렌더링, 반응형 컨테이너, 애니메이션 지원. 예측선, 이상치 영역, Brush 줌 등 풍부한 인터랙션 제공',
     implementation:
       '→ TimeSeriesChart(예측+이상치), MiniLineChart(서버카드 스파크라인) 구현. 수백 포인트 규모 데이터에 최적',
-    version: '3.6.0',
+    version: '3.7.0',
     status: 'active',
     icon: '📊',
     tags: ['차트', 'SVG', '인터랙티브'],
@@ -182,7 +182,7 @@ export const TECH_STACK_ITEMS: TechItem[] = [
     description:
       '경량 상태 관리 라이브러리. Redux 대비 간결한 API, 미들웨어 지원, React 외부에서도 사용 가능. 번들 사이즈 1KB',
     implementation: '→ 글로벌 UI 상태 및 Admin 설정 관리에 사용',
-    version: '5.0.9',
+    version: '5.0.11',
     status: 'active',
     icon: '🧰',
     tags: ['상태관리', 'Store', 'React'],

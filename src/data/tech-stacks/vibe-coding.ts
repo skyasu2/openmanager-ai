@@ -65,7 +65,7 @@ export const VIBE_CODING_DATA: VibeCodeData = {
         'A lightweight coding agent that runs in your terminal (OpenAI)',
       implementation:
         'Generate, edit, and run code using natural language. ChatGPT Plus/Pro 플랜으로 사용. Claude 작성 코드의 Cross-Model 리뷰어',
-      version: 'v0.63.0',
+      version: 'v0.101.0',
       status: 'active',
       icon: '💎',
       tags: ['OpenAI', 'Lightweight', 'ChatGPT'],
@@ -106,21 +106,21 @@ export const VIBE_CODING_DATA: VibeCodeData = {
         'Vite 기반 차세대 테스트 프레임워크. Jest 호환 API, 네이티브 ESM, HMR 지원으로 초고속 테스트 실행. 워치 모드에서 변경 파일만 재실행',
       implementation:
         '→ 유닛/통합 테스트 전체 적용. Coverage 리포트 및 실시간 피드백',
-      version: '4.0.16',
+      version: '4.0.18',
       status: 'active',
       icon: '🧪',
       tags: ['테스트', 'Vite', 'Jest호환'],
       type: 'opensource',
     },
     {
-      name: 'Biome 2.3',
+      name: 'Biome 2.4',
       category: 'tooling',
       importance: 'high',
       description:
         'Rust 기반 초고속 Linter + Formatter. ESLint/Prettier 통합 대체, 단일 도구로 린트와 포맷팅 동시 수행. 10배 빠른 속도',
       implementation:
         '→ 코드 스타일 자동 적용. PostToolUse hook으로 저장 시 자동 포맷',
-      version: '2.3.10',
+      version: '2.4.4',
       status: 'active',
       icon: '🔧',
       tags: ['Linter', 'Formatter', 'Rust'],
@@ -141,14 +141,14 @@ export const VIBE_CODING_DATA: VibeCodeData = {
       type: 'opensource',
     },
     {
-      name: 'Playwright 1.57',
+      name: 'Playwright 1.58',
       category: 'testing',
       importance: 'high',
       description:
         'Microsoft의 E2E 테스트 프레임워크. Chromium/Firefox/WebKit 크로스 브라우저, 자동 대기, 트레이싱, 스크린샷 캡처 지원',
       implementation:
         '→ 크리티컬 플로우 E2E 테스트. MCP 서버로 Claude Code에서 직접 제어',
-      version: '1.57.0',
+      version: '1.58.2',
       status: 'active',
       icon: '🎭',
       tags: ['E2E', 'Microsoft', '크로스브라우저'],
