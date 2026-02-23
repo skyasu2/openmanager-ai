@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.3.3](https://github.com/skyasu2/openmanager-ai/compare/v8.3.2...v8.3.3) (2026-02-23)
+
+
+### Bug Fixes
+
+* **ai-engine:** add explicit types for TS7006 strict mode compliance ([aee4f17](https://github.com/skyasu2/openmanager-ai/commit/aee4f1742d7b9e2d4c7da3b27250fd002a682619))
+* **auth:** allow guest PIN users to access AI assistant ([fcf3202](https://github.com/skyasu2/openmanager-ai/commit/fcf3202fa3789c0ccad895b05fabd38a5001333b))
+* **auth:** resolve guest login cookie deletion and sessionId mismatch ([5d95381](https://github.com/skyasu2/openmanager-ai/commit/5d95381066386e5a2ab6293e0282d5b76759139d))
+* **data:** correct landing page tech versions and rename ai-assistant-pro ([3ea88e6](https://github.com/skyasu2/openmanager-ai/commit/3ea88e67d198cabbbe247c52f08267eb4f5d0a5e))
+* **observability:** add warmup telemetry and first-query latency tracking ([c9de419](https://github.com/skyasu2/openmanager-ai/commit/c9de4196d0cd88fe3f1cc19498b272d7ad1e0f80))
+* **test:** add root vitest.config.ts and sync aliases from tsconfig ([be1a3af](https://github.com/skyasu2/openmanager-ai/commit/be1a3afca023d3abe6796972f058759a32aefbd1))
+* **warmup:** await Cloud Run response and trigger warmup at login ([f2f1b2d](https://github.com/skyasu2/openmanager-ai/commit/f2f1b2dba291953bc1650a23963a25aa351aba68))
+
 ## [8.3.2](https://github.com/skyasu2/openmanager-ai/compare/v8.3.1...v8.3.2) (2026-02-22)
 
 
