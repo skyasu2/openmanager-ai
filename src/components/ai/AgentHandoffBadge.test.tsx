@@ -1,4 +1,6 @@
 /**
+ * @vitest-environment jsdom
+ *
  * AgentHandoffBadge Component Tests
  *
  * Tests for the agent handoff badge component and utility functions.

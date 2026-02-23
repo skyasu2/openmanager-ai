@@ -15,6 +15,7 @@ import { navigateToDashboard } from './helpers/ui-flow';
 // 서버 카드는 role=button + aria-label="<서버명> 서버 상세 보기" 패턴을 사용
 const SERVER_CARD_SELECTOR = '[role="button"][aria-label*="서버 상세 보기"]';
 const EMPTY_STATE_SELECTOR = 'text=표시할 서버가 없습니다.';
+const isCI = process.env.CI === 'true';
 
 test.describe('대시보드 서버 카드 테스트', () => {
   test.beforeEach(async ({ page }) => {
@@ -34,6 +35,11 @@ test.describe('대시보드 서버 카드 테스트', () => {
         .isVisible({ timeout: TIMEOUTS.MODAL_DISPLAY })
         .catch(() => false);
       if (hasEmptyState) {
+        if (isCI) {
+          throw new Error(
+            'CI에서는 대시보드 서버 카드 데이터가 비어 있으면 안 됩니다.'
+          );
+        }
         test.skip(
           true,
           '대시보드에 서버 카드가 없어 모달 테스트를 건너뜁니다.'

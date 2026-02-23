@@ -1,11 +1,28 @@
 import { defineConfig } from 'vitest/config';
+import os from 'os';
 import path from 'path';
 import { testAliases } from './shared-aliases';
+
+function parsePositiveInt(value: string | undefined): number | null {
+  if (!value) return null;
+  const parsed = Number.parseInt(value, 10);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : null;
+}
+
+const isCI = process.env.CI === 'true';
+const defaultForks = isCI ? 1 : 2;
+const configuredMaxForks = parsePositiveInt(process.env.VITEST_MAX_FORKS);
+const configuredMinForks = parsePositiveInt(process.env.VITEST_MIN_FORKS);
+const cpuCount = Math.max(1, os.cpus().length);
+const maxForks = Math.min(configuredMaxForks ?? defaultForks, cpuCount);
+const minForks = Math.min(configuredMinForks ?? 1, maxForks);
+const ignoreUnhandledErrors =
+  process.env.VITEST_IGNORE_UNHANDLED_ERRORS === 'true';
 
 export default defineConfig({
   test: {
     globals: true,
-    environment: 'jsdom',
+    environment: 'node',
     css: false,
     env: {
       NEXT_PUBLIC_SUPABASE_URL: 'http://mock-supabase-url.local',
@@ -40,7 +57,9 @@ export default defineConfig({
     ],
     coverage: {
       provider: 'v8',
-      enabled: true,
+      // 기본 로컬 전체 테스트는 속도 우선으로 coverage 비활성화.
+      // 필요 시 CLI에서 --coverage.enabled=true 로 켤 수 있다.
+      enabled: false,
       // ✅ 소스 파일만 측정 (빌드 파일 제외)
       include: [
         'src/components/**/*.{ts,tsx}',
@@ -87,9 +106,8 @@ export default defineConfig({
     testTimeout: 30000,
     hookTimeout: 120000,
     teardownTimeout: 30000,
-    // ✅ WSL worker timeout 대응: worker 시작 실패 시 exit code 0 유지
-    // WSL + Windows 파일시스템 I/O 병목으로 간헐적 worker timeout 발생
-    dangerouslyIgnoreUnhandledErrors: true,
+    // 기본은 strict 모드(false). 로컬 WSL 우회가 꼭 필요할 때만 env로 활성화한다.
+    dangerouslyIgnoreUnhandledErrors: ignoreUnhandledErrors,
     pool: 'forks',
     isolate: true, // ✅ Enable test isolation to prevent state pollution
     // ⚠️ pool: 'forks' 사용 (WSL2에서 'threads'는 무거운 모듈 그래프 파싱 시 hang 발생)
@@ -103,8 +121,10 @@ export default defineConfig({
       },
     },
     // ✅ Vitest 4: poolOptions → 최상위 옵션으로 이동
-    maxForks: 1,
-    minForks: 1,
+    // 로컬 전체 테스트 시간 단축을 위해 기본 병렬도는 2 forks.
+    // 필요 시 VITEST_MAX_FORKS / VITEST_MIN_FORKS로 재조정 가능.
+    maxForks,
+    minForks,
   },
   resolve: {
     extensions: ['.ts', '.tsx', '.js', '.jsx', '.json'], // ✅ Auto-resolve .ts files in node environment

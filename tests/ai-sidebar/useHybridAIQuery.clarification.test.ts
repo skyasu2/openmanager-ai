@@ -1,4 +1,6 @@
 /**
+ * @vitest-environment jsdom
+ *
  * Clarification Functions Unit Tests
  *
  * @description useHybridAIQuery 훅의 명확화 관련 함수 테스트

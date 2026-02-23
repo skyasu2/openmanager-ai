@@ -106,9 +106,9 @@ jobs:
       - name: TypeScript Check
         run: npm run type-check
 
-  # 🧪 유닛 테스트 (병렬 실행 2)
+  # 🧪 유닛/계약 테스트 (병렬 실행 2)
   unit-tests:
-    name: Unit Tests
+    name: Unit & Contract Tests (Essential)
     runs-on: ubuntu-latest
     if: ${{ github.event_name != 'push' || !contains(github.event.head_commit.message, '[skip ci]') }}
     steps:
@@ -123,8 +123,11 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Unit Tests (Full Suite)
-        run: npm run test
+      - name: Essential Unit Tests (Pure Functions)
+        run: npm run test:quick
+
+      - name: API/AI Contract Tests (No External Calls)
+        run: npm run test:contract
 
   # 🎭 E2E 핵심 플로우 (push/PR 차단형)
   e2e-critical:
@@ -132,7 +135,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [code-quality, unit-tests]
     if: ${{ github.event_name != 'push' || !contains(github.event.head_commit.message, '[skip ci]') }}
-    timeout-minutes: 25
+    timeout-minutes: 15
     env:
       CI: true
       PLAYWRIGHT_PORT: 3000

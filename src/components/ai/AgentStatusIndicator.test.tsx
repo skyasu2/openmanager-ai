@@ -1,4 +1,6 @@
 /**
+ * @vitest-environment jsdom
+ *
  * AgentStatusIndicator Component Tests
  *
  * Tests for the agent status indicator component and utility functions.

@@ -181,7 +181,7 @@ export const ChatInputArea = memo(function ChatInputArea({
                 <button
                   type="button"
                   onClick={onToggleWebSearch}
-                  disabled={isGenerating || sessionState?.isLimitReached}
+                  disabled={sessionState?.isLimitReached}
                   className={`flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg transition-colors disabled:cursor-not-allowed disabled:opacity-40 ${
                     webSearchEnabled
                       ? 'bg-blue-500/20 text-blue-400'
@@ -198,9 +198,7 @@ export const ChatInputArea = memo(function ChatInputArea({
               <button
                 type="button"
                 onClick={onOpenFileDialog}
-                disabled={
-                  !canAddMore || isGenerating || sessionState?.isLimitReached
-                }
+                disabled={!canAddMore || sessionState?.isLimitReached}
                 className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 disabled:cursor-not-allowed disabled:opacity-40"
                 title={
                   canAddMore ? '파일 첨부 (이미지, PDF, MD)' : '최대 3개 파일'
@@ -219,21 +217,23 @@ export const ChatInputArea = memo(function ChatInputArea({
               placeholder={
                 sessionState?.isLimitReached
                   ? '새 대화를 시작해주세요'
-                  : attachments.length > 0
-                    ? '이미지/파일과 함께 질문하세요...'
-                    : '메시지를 입력하세요...'
+                  : isGenerating
+                    ? '📝 대답 중에도 편하게 입력하세요 (대기열에 추가됨)'
+                    : attachments.length > 0
+                      ? '이미지/파일과 함께 질문하세요...'
+                      : '메시지를 입력하세요...'
               }
               className="flex-1 resize-none border-none bg-transparent px-2 py-3 pr-14 text-chat text-gray-900 placeholder:text-gray-400 focus:outline-hidden focus:ring-0"
               minHeight={48}
               maxHeight={200}
               maxHeightVh={30}
               aria-label="AI 질문 입력"
-              disabled={isGenerating || sessionState?.isLimitReached}
+              disabled={sessionState?.isLimitReached}
             />
 
             {/* 전송/중단 버튼 */}
-            <div className="absolute bottom-2 right-2">
-              {isGenerating && onStopGeneration ? (
+            <div className="absolute bottom-2 right-2 flex items-center gap-1">
+              {isGenerating && onStopGeneration && (
                 <button
                   type="button"
                   onClick={onStopGeneration}
@@ -243,22 +243,20 @@ export const ChatInputArea = memo(function ChatInputArea({
                 >
                   <Square className="h-4 w-4 fill-current" />
                 </button>
-              ) : (
-                <button
-                  type="button"
-                  onClick={onSendWithAttachments}
-                  disabled={
-                    (!inputValue.trim() && attachments.length === 0) ||
-                    isGenerating ||
-                    sessionState?.isLimitReached
-                  }
-                  className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-500 text-white shadow-sm transition-all hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-40"
-                  title="메시지 전송"
-                  aria-label="메시지 전송"
-                >
-                  <Send className="h-4 w-4" />
-                </button>
               )}
+              <button
+                type="button"
+                onClick={onSendWithAttachments}
+                disabled={
+                  (!inputValue.trim() && attachments.length === 0) ||
+                  sessionState?.isLimitReached
+                }
+                className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-500 text-white shadow-sm transition-all hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-40"
+                title={isGenerating ? '대기열에 추가' : '메시지 전송'}
+                aria-label={isGenerating ? '대기열에 추가' : '메시지 전송'}
+              >
+                <Send className="h-4 w-4" />
+              </button>
             </div>
           </div>
 

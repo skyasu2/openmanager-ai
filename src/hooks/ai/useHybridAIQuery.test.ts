@@ -1,4 +1,6 @@
 /**
+ * @vitest-environment jsdom
+ *
  * useHybridAIQuery Hook Integration Tests
  *
  * @description 하이브리드 AI 쿼리 훅의 쿼리 복잡도 기반 모드 선택 로직 테스트

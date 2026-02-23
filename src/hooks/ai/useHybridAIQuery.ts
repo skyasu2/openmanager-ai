@@ -259,6 +259,7 @@ export function useHybridAIQuery(
     sendMessage,
     setMessages,
     setState,
+    chatStatus,
     refs: {
       errorHandled: errorHandledRef,
       currentQuery: currentQueryRef,

@@ -1,4 +1,6 @@
 /**
+ * @vitest-environment jsdom
+ *
  * useFileAttachments Hook Tests
  *
  * AI 채팅 파일 첨부 기능의 핵심 로직 테스트

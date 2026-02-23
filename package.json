@@ -79,6 +79,7 @@
     "test:quick": "vitest run --config config/testing/vitest.config.minimal.ts",
     "test:ci": "vitest run --config config/testing/vitest.config.ci.ts",
     "test:coverage": "vitest run --config config/testing/vitest.config.simple.ts --coverage",
+    "test:coverage:full": "vitest run --config config/testing/vitest.config.main.ts --coverage.enabled=true",
     "test:watch": "vitest --config config/testing/vitest.config.simple.ts",
     "test:perf:vitest": "RUN_SLOW_TESTS=true vitest run --config config/testing/vitest.config.main.ts tests/performance/web-vitals-integration.test.ts",
     "test:external-connectivity": "RUN_EXTERNAL_CONNECTIVITY_TESTS=true vitest run --config config/testing/vitest.config.ci.ts tests/integration/external-services-connection.test.ts",

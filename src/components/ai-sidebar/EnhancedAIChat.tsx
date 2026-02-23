@@ -77,6 +77,12 @@ interface EnhancedAIChatProps {
   warmingUp?: boolean;
   /** 웜업 예상 대기 시간 (초) */
   estimatedWaitSeconds?: number;
+  queuedQueries?: Array<{
+    id: number;
+    text: string;
+    attachments?: FileAttachment[];
+  }>;
+  removeQueuedQuery?: (index: number) => void;
 }
 
 /**
@@ -115,6 +121,8 @@ export const EnhancedAIChat = memo(function EnhancedAIChat({
   onToggleWebSearch,
   warmingUp,
   estimatedWaitSeconds,
+  queuedQueries,
+  removeQueuedQuery,
 }: EnhancedAIChatProps) {
   const {
     scrollContainerRef,
@@ -290,6 +298,42 @@ export const EnhancedAIChat = memo(function EnhancedAIChat({
                 새 대화
               </button>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* 대기 중인 메시지 표시 영역 */}
+      {queuedQueries && queuedQueries.length > 0 && (
+        <div className="flex flex-col gap-2 border-t border-blue-100 bg-linear-to-r from-blue-50/30 to-indigo-50/30 px-4 py-3 pb-0">
+          <div className="mb-1 flex items-center text-xs font-semibold text-blue-600">
+            <Bot className="mr-1 h-3 w-3" /> 답변 완료 시 자동 전송됩니다
+          </div>
+          <div className="scrollbar-thin flex max-h-36 flex-col gap-2 overflow-y-auto">
+            {queuedQueries.map((q, idx) => (
+              <div
+                key={q.id}
+                className="flex justify-end opacity-70 transition-all"
+              >
+                <div className="text-chat relative max-w-[85%] whitespace-pre-wrap rounded-2xl rounded-tr-sm border border-indigo-100 bg-indigo-50 px-3 py-2 pr-7 text-indigo-900 shadow-xs wrap-break-word">
+                  {removeQueuedQuery && (
+                    <button
+                      type="button"
+                      onClick={() => removeQueuedQuery(idx)}
+                      className="absolute right-1 top-1 flex h-5 w-5 items-center justify-center rounded-full text-indigo-400 transition-colors hover:bg-indigo-200 hover:text-indigo-700"
+                      aria-label="대기열에서 제거"
+                    >
+                      &times;
+                    </button>
+                  )}
+                  {q.attachments && q.attachments.length > 0 && (
+                    <div className="mb-1 flex items-center text-xs text-indigo-500">
+                      첨부 {q.attachments.length}개
+                    </div>
+                  )}
+                  {q.text}
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       )}

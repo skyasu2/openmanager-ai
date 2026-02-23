@@ -1,4 +1,6 @@
 /**
+ * @vitest-environment jsdom
+ *
  * CSRF 토큰 유틸리티 테스트
  *
  * @description

@@ -2,8 +2,8 @@ import { defineConfig } from 'vitest/config';
 import { testAliases } from './shared-aliases';
 
 /**
- * 🚀 최소 테스트 설정 - 22ms 초고속 실행
- * Mock 테스트 제거 후 순수 함수만 테스트
+ * 🚀 최소 테스트 설정
+ * 빠른 회귀 확인용 핵심 유틸/보안/스키마 테스트만 실행
  */
 export default defineConfig({
   test: {
@@ -14,9 +14,7 @@ export default defineConfig({
       'src/utils/type-guards.test.ts',
       'src/utils/metricValidation.test.ts',
       'src/utils/utils-functions.test.ts',
-      'src/lib/project-meta.test.ts',
       'src/lib/utils/time.test.ts',
-      'src/safe-format.test.ts',
       // Phase 1 추가: validators + AI utils
       'src/validators/paginationQuerySchema.test.ts',
       'src/lib/ai/utils/context-compressor.test.ts',
@@ -24,11 +22,9 @@ export default defineConfig({
       // Phase 2 추가: AI supervisor utils
       'src/app/api/ai/supervisor/cache-utils.test.ts',
       'src/app/api/ai/supervisor/security.test.ts',
-      // Phase 2 추가: metrics
-      'src/services/metrics/variation-generator.test.ts',
       // Phase 3 추가: monitoring
       'src/services/monitoring/HealthCalculator.test.ts',
-      // 참고: integration 테스트는 jsdom 필요하므로 vitest.config.ts 사용
+      // 참고: integration 테스트는 별도 config에서 실행
     ],
     exclude: [
       'node_modules/**',

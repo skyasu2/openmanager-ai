@@ -1,4 +1,6 @@
 /**
+ * @vitest-environment jsdom
+ *
  * useAISidebarStore Unit Tests
  *
  * @description AI 사이드바 상태 관리 스토어 테스트 (핵심 액션)

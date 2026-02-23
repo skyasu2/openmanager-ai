@@ -10,11 +10,15 @@
 import { beforeAll, afterEach, afterAll } from 'vitest';
 import { server } from '../../src/__mocks__/msw/server';
 
+const isVerboseMsw = process.env.VITEST_VERBOSE_MSW === 'true';
+
 /**
  * 테스트 시작 전: MSW 서버 시작
  */
 beforeAll(() => {
-  console.log('[MSW] Starting mock server for tests...');
+  if (isVerboseMsw) {
+    console.log('[MSW] Starting mock server for tests...');
+  }
   server.listen({
     onUnhandledRequest: 'warn', // 처리되지 않은 요청에 대해 경고
   });
@@ -33,6 +37,8 @@ afterEach(() => {
  * 모든 테스트 종료 후: MSW 서버 정리
  */
 afterAll(() => {
-  console.log('[MSW] Cleaning up mock server...');
+  if (isVerboseMsw) {
+    console.log('[MSW] Cleaning up mock server...');
+  }
   server.close();
 });

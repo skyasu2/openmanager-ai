@@ -108,6 +108,14 @@ export interface UseAIChatCoreReturn {
   /** 명확화 취소 (쿼리 미실행, 상태 정리만) */
   dismissClarification: () => void;
 
+  // 대기열 큐 상태
+  queuedQueries: Array<{
+    id: number;
+    text: string;
+    attachments?: FileAttachment[];
+  }>;
+  removeQueuedQuery: (index: number) => void;
+
   // 🎯 실시간 Agent 상태 (스트리밍 중 표시)
   currentAgentStatus: AgentStatusEventData | null;
   currentHandoff: HandoffEventData | null;
@@ -145,6 +153,21 @@ export function useAIChatCore(
   // 웹 검색 토글 상태 (Store에서 읽기)
   const webSearchEnabled = useAISidebarStore((s) => s.webSearchEnabled);
 
+  // 메시지 대기열 (Batching용)
+  const queueIdCounter = useRef(0);
+  const [queuedQueries, setQueuedQueries] = useState<
+    Array<{ id: number; text: string; attachments?: FileAttachment[] }>
+  >([]);
+  const queuedQueriesRef = useRef(queuedQueries);
+
+  const removeQueuedQuery = useCallback((index: number) => {
+    setQueuedQueries((prev) => {
+      const updated = prev.filter((_, i) => i !== index);
+      queuedQueriesRef.current = updated;
+      return updated;
+    });
+  }, []);
+
   // 스트리밍 done 이벤트에서 수신한 ragSources (웹 검색 결과 등)
   const [streamRagSources, setStreamRagSources] = useState<
     Array<{
@@ -169,6 +192,38 @@ export function useAIChatCore(
   // ============================================================================
   // Hybrid AI Query Hook
   // ============================================================================
+
+  const sendQueryRef = useRef<
+    ((query: string, attachments?: FileAttachment[]) => void) | null
+  >(null);
+
+  const popAndSendQueue = useCallback(() => {
+    const sendFn = sendQueryRef.current;
+    if (queuedQueriesRef.current.length === 0 || !sendFn) return;
+
+    const queries = queuedQueriesRef.current;
+    queuedQueriesRef.current = [];
+    setQueuedQueries([]);
+
+    // 병합: 2개 이상이면 구분자로 연결, 1개면 그대로
+    const combinedText =
+      queries.length === 1
+        ? (queries[0]?.text ?? '')
+        : queries.map((q) => q.text).join('\n\n추가 질문:\n');
+    const combinedAttachments = queries.flatMap((q) => q.attachments || []);
+
+    logger.info(
+      `[ChatQueue] Flushing ${queries.length} queued message(s) as single query`
+    );
+
+    // React 상태 반영 후 전송 (queueMicrotask > setTimeout)
+    queueMicrotask(() => {
+      sendFn(
+        combinedText,
+        combinedAttachments.length > 0 ? combinedAttachments : undefined
+      );
+    });
+  }, []);
 
   const {
     sendQuery,
@@ -248,6 +303,18 @@ export function useAIChatCore(
     },
   });
 
+  useEffect(() => {
+    sendQueryRef.current = sendQuery;
+  }, [sendQuery]);
+
+  // 🎯 대기열 쿼리 발송 Effect: 응답이 완전히 끝났을 때(hybridIsLoading false 전환 시)
+  // 단, 에러가 없을 때만 발송(에러 발생 시엔 재시도 등 대비해 큐 유지/또는 별도 처리)
+  useEffect(() => {
+    if (!hybridIsLoading && queuedQueriesRef.current.length > 0 && !error) {
+      popAndSendQueue();
+    }
+  }, [hybridIsLoading, error, popAndSendQueue]);
+
   // ============================================================================
   // Message Transformation
   // ============================================================================
@@ -305,6 +372,8 @@ export function useAIChatCore(
     pendingQueryRef.current = '';
     lastAttachmentsRef.current = null;
     clearHistory();
+    setQueuedQueries([]);
+    queuedQueriesRef.current = [];
   }, [resetHybridQuery, refreshSessionId, clearHistory]);
 
   const clearError = useCallback(() => {
@@ -387,10 +456,24 @@ export function useAIChatCore(
         return;
       }
 
-      setError(null);
-      setStreamRagSources([]);
       // 🎯 Fix: 첨부만 있을 경우 기본 텍스트 설정
       const effectiveText = hasText ? input : '[이미지/파일 분석 요청]';
+
+      // 🎯 Batching: 스트리밍 중이면 큐에 추가 (즉시 전송하지 않음)
+      if (hybridIsLoading) {
+        const id = ++queueIdCounter.current;
+        const item = { id, text: effectiveText, attachments };
+        setQueuedQueries((prev) => {
+          const updated = [...prev, item];
+          queuedQueriesRef.current = updated;
+          return updated;
+        });
+        setInput('');
+        return;
+      }
+
+      setError(null);
+      setStreamRagSources([]);
       lastQueryRef.current = effectiveText;
       lastAttachmentsRef.current = attachments || null;
       pendingQueryRef.current = effectiveText;
@@ -399,7 +482,7 @@ export function useAIChatCore(
       // 🎯 파일 첨부와 함께 전송
       sendQuery(effectiveText, attachments);
     },
-    [input, disableSessionLimit, sessionState, sendQuery]
+    [input, disableSessionLimit, sessionState, hybridIsLoading, sendQuery]
   );
 
   // ============================================================================
@@ -434,6 +517,8 @@ export function useAIChatCore(
     submitCustomClarification,
     skipClarification,
     dismissClarification,
+    queuedQueries,
+    removeQueuedQuery,
     // 🎯 실시간 Agent 상태
     currentAgentStatus,
     currentHandoff,

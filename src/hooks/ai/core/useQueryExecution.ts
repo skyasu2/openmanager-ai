@@ -55,6 +55,8 @@ export interface QueryExecutionDeps {
   onBeforeStreamingSend?: () => void;
   setMessages: SetMessagesLike;
   setState: StateSetter;
+  /** AI SDK useChat의 chatStatus — 동시 요청 방지에 사용 */
+  chatStatus: string;
   refs: {
     errorHandled: MutableRefObject<boolean>;
     currentQuery: MutableRefObject<string | null>;
@@ -75,6 +77,7 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
     onBeforeStreamingSend,
     setMessages,
     setState,
+    chatStatus,
     refs,
   } = deps;
 
@@ -91,6 +94,15 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
         if (process.env.NODE_ENV === 'development') {
           logger.warn('[HybridAI] executeQuery: Empty query, skipping');
         }
+        return;
+      }
+
+      // 🔒 P0 Guard: AI SDK가 streaming/submitted 상태이면 새 요청 차단
+      // UI disabled만으로는 프로그래매틱 호출(retry, clarification 등)을 방어 불가
+      if (chatStatus === 'streaming' || chatStatus === 'submitted') {
+        logger.warn(
+          `[HybridAI] executeQuery blocked: chatStatus="${chatStatus}" (previous request still active)`
+        );
         return;
       }
 
@@ -247,6 +259,7 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
       onBeforeStreamingSend,
       setMessages,
       setState,
+      chatStatus,
       refs,
     ]
   );

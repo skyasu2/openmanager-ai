@@ -313,6 +313,9 @@ export const AISidebarV4: FC<AISidebarV3Props> = ({
     // ⚡ Cloud Run 웜업 상태
     warmingUp,
     estimatedWaitSeconds,
+    // 대기열
+    queuedQueries,
+    removeQueuedQuery,
   } = useAIChatCore({
     sessionId: propSessionId,
     onMessageSend,
@@ -410,6 +413,8 @@ export const AISidebarV4: FC<AISidebarV3Props> = ({
           onToggleWebSearch={toggleWebSearch}
           warmingUp={warmingUp}
           estimatedWaitSeconds={estimatedWaitSeconds}
+          queuedQueries={queuedQueries}
+          removeQueuedQuery={removeQueuedQuery}
         />
       );
     }

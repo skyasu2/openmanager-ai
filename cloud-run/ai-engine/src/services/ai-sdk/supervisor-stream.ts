@@ -326,9 +326,18 @@ async function* streamSingleAgent(
     if (fullText.trim().length === 0) {
       const fallbackText =
         '응답 본문이 비어 있어 요약 결과를 생성하지 못했습니다. 질문을 조금 더 구체적으로 다시 시도해 주세요.';
-      logger.warn(
-        '[SupervisorStream] Empty stream output detected, emitting fallback text'
-      );
+      const durationAtEmpty = Date.now() - startTime;
+      logger.warn({
+        event: 'empty_stream_output',
+        provider,
+        modelId,
+        query: queryText.substring(0, 100),
+        stepsCount: steps.length,
+        toolsCalled: steps.flatMap((s) => s.toolCalls?.map((tc) => tc.toolName) || []),
+        durationMs: durationAtEmpty,
+        hasStreamError: streamError !== null,
+        streamErrorMessage: streamError instanceof Error ? streamError.message : null,
+      }, '[SupervisorStream] Empty stream output — diagnosing root cause');
       yield {
         type: 'warning',
         data: {

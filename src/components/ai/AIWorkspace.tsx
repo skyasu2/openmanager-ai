@@ -111,6 +111,9 @@ export default function AIWorkspace({ mode, onClose }: AIWorkspaceProps) {
     cancel,
     // 통합 입력 핸들러
     handleSendInput,
+    // 대기열
+    queuedQueries,
+    removeQueuedQuery,
   } = useAIChatCore({
     // 전체화면에서도 세션 제한 적용 (악의적 사용/폭주 방지)
     disableSessionLimit: false,
@@ -183,6 +186,8 @@ export default function AIWorkspace({ mode, onClose }: AIWorkspaceProps) {
               onRetry={retryLastQuery}
               webSearchEnabled={webSearchEnabled}
               onToggleWebSearch={toggleWebSearch}
+              queuedQueries={queuedQueries}
+              removeQueuedQuery={removeQueuedQuery}
             />
           ) : (
             <AIFunctionPages
@@ -453,6 +458,8 @@ export default function AIWorkspace({ mode, onClose }: AIWorkspaceProps) {
                   onRetry={retryLastQuery}
                   webSearchEnabled={webSearchEnabled}
                   onToggleWebSearch={toggleWebSearch}
+                  queuedQueries={queuedQueries}
+                  removeQueuedQuery={removeQueuedQuery}
                 />
               ) : (
                 <div className="h-full p-0">
