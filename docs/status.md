@@ -4,11 +4,11 @@
 > Owner: documentation
 > Status: Active
 > Doc type: Status
-> Last reviewed: 2026-02-22
+> Last reviewed: 2026-02-23
 > Canonical: docs/status.md
 > Tags: status,changelog,release
 
-**마지막 업데이트**: 2026-02-22
+**마지막 업데이트**: 2026-02-23
 
 ---
 
@@ -20,7 +20,18 @@
 
 ---
 
-## 🔄 Recent Changes (v8.3.1)
+## 🔄 Recent Changes (v8.3.2)
+
+- **Post-release QA & Observability** (2026-02-23)
+  - QA 결과: Guest PIN 로그인, 랜딩→대시보드, AI 사이드바, RAG 응답 포함 **9/9 PASS**
+  - Warmup 개선 효과 확인: 첫 질의 기준 `90초+`(재시도 포함) → `~30초`
+  - 구조화 로그 추가:
+    - `warmup_started`, `warmup_ready` (source, warmup_latency_ms, upstream_status)
+    - `first_query_latency_ms` (warmup_started_at_ms 기반 1회 측정)
+  - 추적 경로:
+    - `/api/ai/wake-up` (클라이언트 웜업)
+    - `/api/auth/callback` (OAuth 성공 직후 선제 웜업)
+    - `/api/ai/supervisor/stream/v2` (첫 질의 latency 측정)
 
 - **v8.3.1** (2026-02-22)
   - fix(license): GPL-3.0 프로젝트 헤더, package 메타데이터, OCI 라벨 추가

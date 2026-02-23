@@ -58,6 +58,8 @@ import { createUpstashResumableContext } from './upstash-resumable';
 // ============================================================================
 export const maxDuration = 60;
 const SUPERVISOR_STREAM_ROUTE_MAX_DURATION_SECONDS = maxDuration;
+const AI_WARMUP_STARTED_AT_HEADER = 'x-ai-warmup-started-at';
+const AI_FIRST_QUERY_HEADER = 'x-ai-first-query';
 
 function getSupervisorStreamRequestTimeoutMs(): number {
   const routeBudgetMs = getRouteMaxExecutionMs(
@@ -76,6 +78,13 @@ function getSupervisorStreamAbortTimeoutMs(): number {
       getSupervisorStreamRequestTimeoutMs()
     )
   );
+}
+
+function parseWarmupStartedAt(value: string | null): number | null {
+  if (!value) return null;
+  const parsed = Number(value);
+  if (!Number.isFinite(parsed) || parsed <= 0) return null;
+  return Math.floor(parsed);
 }
 
 // ============================================================================
@@ -221,6 +230,35 @@ export const POST = withRateLimit(
       const sessionId =
         headerSessionId || bodySessionId || querySessionId || generateId();
       const ownerKey = getStreamOwnerKey(req);
+      const warmupStartedAt = parseWarmupStartedAt(
+        req.headers.get(AI_WARMUP_STARTED_AT_HEADER)
+      );
+      const isFirstQuery = req.headers.get(AI_FIRST_QUERY_HEADER) === '1';
+
+      if (isFirstQuery && warmupStartedAt) {
+        const latencyMs = Date.now() - warmupStartedAt;
+        if (latencyMs >= 0 && latencyMs <= 15 * 60 * 1000) {
+          logger.info(
+            {
+              event: 'first_query_latency',
+              sessionId,
+              first_query_latency_ms: latencyMs,
+              warmup_started_at_ms: warmupStartedAt,
+            },
+            '[AI Warmup] First query latency tracked'
+          );
+        } else {
+          logger.warn(
+            {
+              event: 'first_query_latency_invalid',
+              sessionId,
+              warmup_started_at_ms: warmupStartedAt,
+              computed_latency_ms: latencyMs,
+            },
+            '[AI Warmup] Invalid first query latency window'
+          );
+        }
+      }
 
       // 3. Extract and sanitize query
       const rawQuery = extractLastUserQuery(messages as HybridMessage[]);

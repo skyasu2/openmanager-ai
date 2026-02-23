@@ -4,6 +4,7 @@ import {
   generateTraceparent,
   TRACEPARENT_HEADER,
 } from '@/config/ai-proxy.config';
+import { consumeWarmupStartedAtForFirstQuery } from '@/utils/ai-warmup';
 
 interface CreateHybridChatTransportParams {
   apiEndpoint: string;
@@ -26,10 +27,20 @@ export function createHybridChatTransport(
 
   return new DefaultChatTransport({
     api: apiEndpoint,
-    headers: () => ({
-      [TRACEPARENT_HEADER]: generateTraceparent(traceIdRef.current),
-      [traceIdHeader]: traceIdRef.current,
-    }),
+    headers: () => {
+      const headers: Record<string, string> = {
+        [TRACEPARENT_HEADER]: generateTraceparent(traceIdRef.current),
+        [traceIdHeader]: traceIdRef.current,
+      };
+
+      const warmupStartedAt = consumeWarmupStartedAtForFirstQuery();
+      if (warmupStartedAt) {
+        headers['X-AI-Warmup-Started-At'] = String(warmupStartedAt);
+        headers['X-AI-First-Query'] = '1';
+      }
+
+      return headers;
+    },
     // warmup 동안 web search를 비활성화해 cold start 부하를 낮춘다.
     body: () => ({
       enableWebSearch: warmingUpRef.current

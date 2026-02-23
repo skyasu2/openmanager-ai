@@ -194,10 +194,52 @@ export async function GET(request: NextRequest) {
     // 사용자가 /main → 시스템 시작 → 대시보드까지 가는 동안 cold start 해소
     const cloudRunUrl = process.env.CLOUD_RUN_AI_URL;
     if (cloudRunUrl) {
+      const warmupStartedAt = Date.now();
+      logger.info(
+        {
+          event: 'warmup_started',
+          source: 'oauth_callback',
+        },
+        '[AI Warmup] Started'
+      );
+
       void fetch(`${cloudRunUrl}/warmup`, {
         method: 'GET',
         signal: AbortSignal.timeout(10_000),
-      }).catch(() => {});
+      })
+        .then((warmupResponse) => {
+          logger.info(
+            {
+              event: warmupResponse.ok
+                ? 'warmup_ready'
+                : 'warmup_upstream_not_ready',
+              source: 'oauth_callback',
+              warmup_latency_ms: Date.now() - warmupStartedAt,
+              upstream_status: warmupResponse.status,
+            },
+            warmupResponse.ok
+              ? '[AI Warmup] Ready'
+              : '[AI Warmup] Upstream not ready'
+          );
+        })
+        .catch((warmupError: unknown) => {
+          logger.warn(
+            {
+              event: 'warmup_failed',
+              source: 'oauth_callback',
+              warmup_latency_ms: Date.now() - warmupStartedAt,
+              error_name:
+                warmupError instanceof Error
+                  ? warmupError.name
+                  : 'UnknownError',
+              error_message:
+                warmupError instanceof Error
+                  ? warmupError.message
+                  : String(warmupError),
+            },
+            '[AI Warmup] Failed'
+          );
+        });
     }
 
     return response;
