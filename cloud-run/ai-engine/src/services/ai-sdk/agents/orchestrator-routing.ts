@@ -8,7 +8,7 @@
  */
 
 import { generateText, hasToolCall, stepCountIs } from 'ai';
-import { getCerebrasModel, getGroqModel, checkProviderStatus, type ProviderName } from '../model-provider';
+import { getCerebrasModel, getGroqModel, getMistralModel, checkProviderStatus, type ProviderName } from '../model-provider';
 import { generateTextWithRetry } from '../../resilience/retry-with-fallback';
 import { sanitizeChineseCharacters } from '../../../lib/text-sanitizer';
 import { extractToolResultOutput } from '../../../lib/ai-sdk-utils';
@@ -72,11 +72,19 @@ export function getOrchestratorModel(): { model: ReturnType<typeof getCerebrasMo
     try {
       return { model: getCerebrasModel('gpt-oss-120b'), provider: 'cerebras', modelId: 'gpt-oss-120b' };
     } catch {
-      logger.warn('⚠️ [Orchestrator] Cerebras unavailable');
+      logger.warn('⚠️ [Orchestrator] Cerebras unavailable, trying Mistral');
     }
   }
 
-  logger.warn('⚠️ [Orchestrator] No model available (Groq + Cerebras both down)');
+  if (status.mistral) {
+    try {
+      return { model: getMistralModel('mistral-large-latest'), provider: 'mistral', modelId: 'mistral-large-latest' };
+    } catch {
+      logger.warn('⚠️ [Orchestrator] Mistral unavailable');
+    }
+  }
+
+  logger.warn('⚠️ [Orchestrator] No model available (all providers down)');
   return null;
 }
 
@@ -204,13 +212,14 @@ export function getAgentConfig(name: string): AgentConfig | null {
 function getAgentProviderOrder(agentName: string): ProviderName[] {
   switch (agentName) {
     case 'NLQ Agent':
+      return ['cerebras', 'groq', 'mistral'];
     case 'Advisor Agent':
-      return ['cerebras', 'groq'];
+      return ['mistral', 'cerebras', 'groq'];
     case 'Analyst Agent':
     case 'Reporter Agent':
-      return ['groq', 'cerebras'];
+      return ['groq', 'cerebras', 'mistral'];
     default:
-      return ['cerebras', 'groq'];
+      return ['cerebras', 'groq', 'mistral'];
   }
 }
 

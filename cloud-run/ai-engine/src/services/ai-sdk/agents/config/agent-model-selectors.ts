@@ -6,6 +6,7 @@ import {
   getCerebrasModel,
   getGeminiFlashLiteModel,
   getGroqModel,
+  getMistralModel,
   getOpenRouterVisionModel,
 } from '../../model-provider';
 
@@ -16,9 +17,8 @@ export interface ModelResult {
 }
 
 /**
- * Get NLQ model: Cerebras → Groq (2-way fallback)
+ * Get NLQ model: Cerebras → Groq → Mistral (3-way fallback)
  * Primary: Cerebras gpt-oss-120b (120B MoE, 1M TPD, 3000 tok/s)
- * Mistral excluded — 2 RPM 임베딩 전용
  */
 export function getNlqModel(): ModelResult | null {
   const status = checkProviderStatus();
@@ -43,16 +43,28 @@ export function getNlqModel(): ModelResult | null {
         modelId: 'llama-3.3-70b-versatile',
       };
     } catch {
-      logger.warn('⚠️ [NLQ Agent] Groq unavailable');
+      logger.warn('⚠️ [NLQ Agent] Groq unavailable, trying Mistral');
     }
   }
 
-  logger.warn('⚠️ [NLQ Agent] No model available (Cerebras + Groq both down)');
+  if (status.mistral) {
+    try {
+      return {
+        model: getMistralModel('mistral-large-latest'),
+        provider: 'mistral',
+        modelId: 'mistral-large-latest',
+      };
+    } catch {
+      logger.warn('⚠️ [NLQ Agent] Mistral unavailable');
+    }
+  }
+
+  logger.warn('⚠️ [NLQ Agent] No model available (all providers down)');
   return null;
 }
 
 /**
- * Get Analyst model: Groq → Cerebras (2-way fallback)
+ * Get Analyst model: Groq → Cerebras → Mistral (3-way fallback)
  * Primary: Groq llama-3.3-70b-versatile (70B)
  */
 export function getAnalystModel(): ModelResult | null {
@@ -78,16 +90,28 @@ export function getAnalystModel(): ModelResult | null {
         modelId: 'gpt-oss-120b',
       };
     } catch {
-      logger.warn('⚠️ [Analyst Agent] Cerebras unavailable');
+      logger.warn('⚠️ [Analyst Agent] Cerebras unavailable, trying Mistral');
     }
   }
 
-  logger.warn('⚠️ [Analyst Agent] No model available (Groq + Cerebras both down)');
+  if (status.mistral) {
+    try {
+      return {
+        model: getMistralModel('mistral-large-latest'),
+        provider: 'mistral',
+        modelId: 'mistral-large-latest',
+      };
+    } catch {
+      logger.warn('⚠️ [Analyst Agent] Mistral unavailable');
+    }
+  }
+
+  logger.warn('⚠️ [Analyst Agent] No model available (all providers down)');
   return null;
 }
 
 /**
- * Get Reporter model: Groq → Cerebras (2-way fallback)
+ * Get Reporter model: Groq → Cerebras → Mistral (3-way fallback)
  * Primary: Groq llama-3.3-70b-versatile (70B)
  */
 export function getReporterModel(): ModelResult | null {
@@ -113,20 +137,45 @@ export function getReporterModel(): ModelResult | null {
         modelId: 'gpt-oss-120b',
       };
     } catch {
-      logger.warn('⚠️ [Reporter Agent] Cerebras unavailable');
+      logger.warn('⚠️ [Reporter Agent] Cerebras unavailable, trying Mistral');
     }
   }
 
-  logger.warn('⚠️ [Reporter Agent] No model available (Groq + Cerebras both down)');
+  if (status.mistral) {
+    try {
+      return {
+        model: getMistralModel('mistral-large-latest'),
+        provider: 'mistral',
+        modelId: 'mistral-large-latest',
+      };
+    } catch {
+      logger.warn('⚠️ [Reporter Agent] Mistral unavailable');
+    }
+  }
+
+  logger.warn('⚠️ [Reporter Agent] No model available (all providers down)');
   return null;
 }
 
 /**
- * Get Advisor model: Cerebras → Groq (2-way fallback)
- * Primary: Cerebras gpt-oss-120b (120B MoE, 1M TPD, 3000 tok/s)
+ * Get Advisor model: Mistral → Cerebras → Groq (3-way fallback)
+ * Primary: Mistral mistral-large-latest (Frontier model)
+ * Advisor는 Mistral이 메인 — 각 provider가 최소 1개 에이전트 Primary
  */
 export function getAdvisorModel(): ModelResult | null {
   const status = checkProviderStatus();
+
+  if (status.mistral) {
+    try {
+      return {
+        model: getMistralModel('mistral-large-latest'),
+        provider: 'mistral',
+        modelId: 'mistral-large-latest',
+      };
+    } catch {
+      logger.warn('⚠️ [Advisor Agent] Mistral unavailable, trying Cerebras');
+    }
+  }
 
   if (status.cerebras) {
     try {
@@ -152,7 +201,7 @@ export function getAdvisorModel(): ModelResult | null {
     }
   }
 
-  logger.warn('⚠️ [Advisor Agent] No model available (Cerebras + Groq both down)');
+  logger.warn('⚠️ [Advisor Agent] No model available (all providers down)');
   return null;
 }
 

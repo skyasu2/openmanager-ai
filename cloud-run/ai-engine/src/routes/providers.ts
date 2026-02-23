@@ -32,7 +32,7 @@ providersRouter.get('/', (c: Context) => {
     info: {
       cerebras: { role: 'Primary (Supervisor/NLQ/Advisor/Verifier/RAG-LLM)', model: 'gpt-oss-120b' },
       groq: { role: 'Primary (Analyst/Reporter)', model: 'llama-3.3-70b-versatile' },
-      mistral: { role: 'RAG Embedding Only (mistral-embed)', model: 'mistral-embed' },
+      mistral: { role: 'Primary (Advisor) + RAG Embedding + Last-Resort Fallback', model: 'mistral-large-latest / mistral-embed' },
     },
   });
 });
