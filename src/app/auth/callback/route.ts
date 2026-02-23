@@ -190,6 +190,16 @@ export async function GET(request: NextRequest) {
     response.cookies.delete('auth_session_id');
     response.cookies.delete('auth_type');
 
+    // 🚀 Cloud Run 선제 웜업: OAuth 성공 즉시 서버 사이드에서 발사
+    // 사용자가 /main → 시스템 시작 → 대시보드까지 가는 동안 cold start 해소
+    const cloudRunUrl = process.env.CLOUD_RUN_AI_URL;
+    if (cloudRunUrl) {
+      void fetch(`${cloudRunUrl}/warmup`, {
+        method: 'GET',
+        signal: AbortSignal.timeout(10_000),
+      }).catch(() => {});
+    }
+
     return response;
   } catch (error) {
     logger.error('❌ 콜백 처리 예외:', error);

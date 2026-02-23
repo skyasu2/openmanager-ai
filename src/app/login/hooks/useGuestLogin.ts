@@ -13,6 +13,7 @@ import {
   AUTH_USER_KEY,
   LEGACY_GUEST_SESSION_COOKIE_KEY,
 } from '@/lib/auth/guest-session-utils';
+import { triggerAIWarmup } from '@/utils/ai-warmup';
 import debug from '@/utils/debug';
 import {
   DEFAULT_REDIRECT_PATH,
@@ -323,6 +324,10 @@ export function useGuestLogin(deps: {
       setGuestLockUntilMs(null);
       setGuestPinInput('');
       setGuestSession({ sessionId, user: guestUser });
+
+      // 🚀 Cloud Run 선제 웜업: 로그인 성공 즉시 발사
+      // 시스템 시작 → 대시보드 → AI 사이드바까지 ~15초 여유로 cold start 해소
+      void triggerAIWarmup('guest-login-success');
     } catch (error) {
       debug.error('게스트 로그인 실패:', error);
       deps.setErrorMessage('게스트 로그인에 실패했습니다. 다시 시도해주세요.');
