@@ -20,7 +20,6 @@ export default defineConfig({
       'src/**/*.{test,spec}.{js,ts,tsx}',
       'tests/ai-sidebar/**/*.{test,spec}.{js,ts,tsx}',
       'tests/api/**/*.{test,spec}.{js,ts,tsx}',
-      'tests/archive/**/*.{test,spec}.{js,ts,tsx}',
       'tests/integration/**/*.{test,spec}.{js,ts,tsx}',
       'tests/performance/**/*.{test,spec}.{js,ts,tsx}',
       'tests/unit/**/*.{test,spec}.{js,ts,tsx}',
