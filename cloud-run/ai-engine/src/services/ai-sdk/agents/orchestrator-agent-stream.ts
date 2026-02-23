@@ -73,9 +73,9 @@ export async function* executeAgentStream(
         { role: 'user', content: userContent as UserContent },
       ],
       tools: filteredTools as Parameters<typeof generateText>[0]['tools'],
-      stopWhen: [hasToolCall('finalAnswer'), stepCountIs(3)],
+      stopWhen: [hasToolCall('finalAnswer'), stepCountIs(10)],
       temperature: 0.4,
-      maxOutputTokens: 1536,
+      maxOutputTokens: 2048,
       timeout: {
         totalMs: TIMEOUT_CONFIG.agent.hard,
         stepMs: TIMEOUT_CONFIG.subtask.hard,
@@ -167,6 +167,8 @@ export async function* executeAgentStream(
     timeoutSpan.complete(true, finalElapsed);
 
     let finalAnswerResult: { answer: string } | null = null;
+    // Collect tool results for potential summarization fallback
+    const collectedToolResults: Array<{ toolName: string; result: unknown }> = [];
 
     if (steps) {
       for (const step of steps) {
@@ -179,6 +181,10 @@ export async function* executeAgentStream(
         if (step.toolResults) {
           for (const toolResult of step.toolResults) {
             const toolResultOutput = extractToolResultOutput(toolResult);
+            collectedToolResults.push({
+              toolName: toolResult.toolName,
+              result: toolResultOutput,
+            });
             if (
               toolResult.toolName === 'finalAnswer' &&
               toolResultOutput &&
@@ -196,6 +202,60 @@ export async function* executeAgentStream(
       if (sanitized) {
         textEmitted = true;
         yield { type: 'text_delta', data: sanitized };
+      }
+    }
+
+    // =========================================================================
+    // Summarization Fallback: if model produced tool results but no text,
+    // use generateText (no tools) to summarize the collected tool results.
+    // This prevents tool-loop models from returning empty responses.
+    // =========================================================================
+    if (!textEmitted && collectedToolResults.length > 0) {
+      logger.warn(
+        `[Stream ${agentName}] Empty response with ${collectedToolResults.length} tool results — attempting summarization fallback`
+      );
+
+      try {
+        // Deduplicate tool results: only keep unique results per tool name
+        const uniqueResults = new Map<string, unknown>();
+        for (const tr of collectedToolResults) {
+          if (!uniqueResults.has(tr.toolName)) {
+            uniqueResults.set(tr.toolName, tr.result);
+          }
+        }
+
+        const toolResultsSummary = Array.from(uniqueResults.entries())
+          .map(([name, result]) => `[${name}]: ${JSON.stringify(result).slice(0, 2000)}`)
+          .join('\n\n');
+
+        const summaryResult = await generateText({
+          model,
+          messages: [
+            {
+              role: 'system',
+              content:
+                '당신은 서버 모니터링 분석 도우미입니다. 아래 도구 실행 결과를 바탕으로 사용자 질문에 한국어로 명확하게 답변하세요. 핵심 데이터를 인용하고 권장 조치를 포함하세요.',
+            },
+            {
+              role: 'user',
+              content: `질문: ${query}\n\n도구 실행 결과:\n${toolResultsSummary}\n\n위 결과를 바탕으로 분석 답변을 작성하세요.`,
+            },
+          ],
+          temperature: 0.4,
+          maxOutputTokens: 2048,
+        });
+
+        const summaryText = sanitizeChineseCharacters(summaryResult.text?.trim() || '');
+        if (summaryText) {
+          textEmitted = true;
+          yield { type: 'text_delta', data: summaryText };
+          logger.info(`[Stream ${agentName}] Summarization fallback succeeded (${summaryText.length} chars)`);
+        }
+      } catch (summaryError) {
+        logger.warn(
+          `[Stream ${agentName}] Summarization fallback failed:`,
+          summaryError instanceof Error ? summaryError.message : String(summaryError)
+        );
       }
     }
 

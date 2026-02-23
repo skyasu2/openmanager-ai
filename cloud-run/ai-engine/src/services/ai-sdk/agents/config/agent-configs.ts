@@ -52,6 +52,7 @@ import {
   getServerByGroupAdvanced,
   // Analysis tools
   detectAnomalies,
+  detectAnomaliesAllServers,
   predictTrends,
   analyzePattern,
   correlateMetrics,
@@ -181,6 +182,7 @@ export const AGENT_CONFIGS: Record<string, AgentConfig> = {
       getServerMetrics,
       getServerMetricsAdvanced,
       detectAnomalies,
+      detectAnomaliesAllServers, // 전체 서버 이상치 스캔 (1회 호출로 15대 분석)
       predictTrends,
       analyzePattern,
       correlateMetrics,

@@ -51,7 +51,7 @@ export const DEFAULT_OPTIONS: Required<
   Omit<AgentRunOptions, 'sessionId' | 'images' | 'files'>
 > = {
   timeoutMs: 45_000,
-  maxSteps: 7,
+  maxSteps: 10,
   temperature: 0.4,
   maxOutputTokens: 2048,
   webSearchEnabled: true,

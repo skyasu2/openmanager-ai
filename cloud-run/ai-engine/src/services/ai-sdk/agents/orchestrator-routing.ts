@@ -216,10 +216,28 @@ function getAgentProviderOrder(agentName: string): ProviderName[] {
     case 'Advisor Agent':
       return ['mistral', 'cerebras', 'groq'];
     case 'Analyst Agent':
+      return ['cerebras', 'groq', 'mistral'];
     case 'Reporter Agent':
       return ['groq', 'cerebras', 'mistral'];
     default:
       return ['cerebras', 'groq', 'mistral'];
+  }
+}
+
+/**
+ * Per-agent maxSteps configuration
+ *
+ * Analyst/Reporter need more steps for multi-tool workflows:
+ * - Analyst: detectAnomaliesAllServers + searchKnowledgeBase + findRootCause + finalAnswer
+ * - Reporter: buildIncidentTimeline + findRootCause + correlateMetrics + finalAnswer
+ */
+function getAgentMaxSteps(agentName: string): number {
+  switch (agentName) {
+    case 'Analyst Agent':
+    case 'Reporter Agent':
+      return 10;
+    default:
+      return 7;
   }
 }
 
@@ -258,6 +276,9 @@ export async function executeForcedRouting(
       ? `\n\n[첨부 컨텍스트]\n- images: ${images?.length ?? 0}\n- files: ${files?.length ?? 0}`
       : '';
 
+  // Per-agent maxSteps: Analyst/Reporter need more steps for multi-tool workflows
+  const agentMaxSteps = getAgentMaxSteps(suggestedAgentName);
+
   try {
     const retryResult = await generateTextWithRetry(
       {
@@ -266,7 +287,7 @@ export async function executeForcedRouting(
           { role: 'user', content: `${query}${attachmentHint}` },
         ],
         tools: filteredTools as Parameters<typeof generateText>[0]['tools'],
-        stopWhen: [hasToolCall('finalAnswer'), stepCountIs(7)],
+        stopWhen: [hasToolCall('finalAnswer'), stepCountIs(agentMaxSteps)],
         temperature: 0.4,
         maxOutputTokens: 2048,
       },
@@ -341,7 +362,61 @@ export async function executeForcedRouting(
       }
     }
 
-    const response = finalAnswerResult?.answer ?? result.text;
+    let response = finalAnswerResult?.answer ?? result.text;
+
+    // Summarization Fallback: if model called tools but produced no text,
+    // re-run generateText without tools to summarize tool results.
+    if (!response && toolsCalled.length > 0) {
+      logger.warn(`[Forced Routing] ${suggestedAgentName}: Empty response with ${toolsCalled.length} tool calls — summarization fallback`);
+
+      try {
+        const uniqueResults = new Map<string, unknown>();
+        for (const step of result.steps) {
+          if (step.toolResults) {
+            for (const tr of step.toolResults) {
+              const trOutput = extractToolResultOutput(tr);
+              if (!uniqueResults.has(tr.toolName)) {
+                uniqueResults.set(tr.toolName, trOutput);
+              }
+            }
+          }
+        }
+
+        const toolResultsSummary = Array.from(uniqueResults.entries())
+          .map(([name, r]) => `[${name}]: ${JSON.stringify(r).slice(0, 2000)}`)
+          .join('\n\n');
+
+        const summaryResult = await generateTextWithRetry(
+          {
+            messages: [
+              {
+                role: 'system',
+                content: '당신은 서버 모니터링 분석 도우미입니다. 아래 도구 실행 결과를 바탕으로 사용자 질문에 한국어로 명확하게 답변하세요. 핵심 데이터를 인용하고 권장 조치를 포함하세요.',
+              },
+              {
+                role: 'user',
+                content: `질문: ${query}\n\n도구 실행 결과:\n${toolResultsSummary}\n\n위 결과를 바탕으로 분석 답변을 작성하세요.`,
+              },
+            ],
+            temperature: 0.4,
+            maxOutputTokens: 2048,
+          },
+          providerOrder,
+          { timeoutMs: 30000 }
+        );
+
+        if (summaryResult.success && summaryResult.result?.text) {
+          response = summaryResult.result.text;
+          logger.info(`[Forced Routing] Summarization fallback succeeded (${response.length} chars)`);
+        }
+      } catch (summaryError) {
+        logger.warn(
+          `[Forced Routing] Summarization fallback failed:`,
+          summaryError instanceof Error ? summaryError.message : String(summaryError)
+        );
+      }
+    }
+
     const sanitizedResponse = sanitizeChineseCharacters(response);
 
     if (usedFallback) {
@@ -422,7 +497,7 @@ export async function executeWithAgentFactory(
   try {
     const result = await agent.run(query, {
       webSearchEnabled,
-      maxSteps: 5,
+      maxSteps: 10,
       timeoutMs: TIMEOUT_CONFIG.agent.hard,
       images,
       files,

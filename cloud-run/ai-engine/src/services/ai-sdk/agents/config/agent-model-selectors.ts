@@ -64,23 +64,13 @@ export function getNlqModel(): ModelResult | null {
 }
 
 /**
- * Get Analyst model: Groq → Cerebras → Mistral (3-way fallback)
- * Primary: Groq llama-3.3-70b-versatile (70B)
+ * Get Analyst model: Cerebras → Groq → Mistral (3-way fallback)
+ * Primary: Cerebras gpt-oss-120b (120B MoE)
+ * Reason: Groq/llama-3.3-70b produces empty responses with Analyst's multi-tool workflow.
+ *         Cerebras/gpt-oss-120b handles tool calling reliably and is faster.
  */
 export function getAnalystModel(): ModelResult | null {
   const status = checkProviderStatus();
-
-  if (status.groq) {
-    try {
-      return {
-        model: getGroqModel('llama-3.3-70b-versatile'),
-        provider: 'groq',
-        modelId: 'llama-3.3-70b-versatile',
-      };
-    } catch {
-      logger.warn('⚠️ [Analyst Agent] Groq unavailable, trying Cerebras');
-    }
-  }
 
   if (status.cerebras) {
     try {
@@ -90,7 +80,19 @@ export function getAnalystModel(): ModelResult | null {
         modelId: 'gpt-oss-120b',
       };
     } catch {
-      logger.warn('⚠️ [Analyst Agent] Cerebras unavailable, trying Mistral');
+      logger.warn('⚠️ [Analyst Agent] Cerebras unavailable, trying Groq');
+    }
+  }
+
+  if (status.groq) {
+    try {
+      return {
+        model: getGroqModel('llama-3.3-70b-versatile'),
+        provider: 'groq',
+        modelId: 'llama-3.3-70b-versatile',
+      };
+    } catch {
+      logger.warn('⚠️ [Analyst Agent] Groq unavailable, trying Mistral');
     }
   }
 

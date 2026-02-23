@@ -78,12 +78,12 @@ import type {
  */
 export const detectAnomalies = tool({
   description:
-    '서버 메트릭의 이상치를 탐지합니다. Dashboard와 동일한 임계값 + 통계적 분석을 결합합니다. Load Average 및 Network 상태도 분석합니다.',
+    '특정 서버 1대의 메트릭 이상치를 탐지합니다 (단일 서버 전용). 반드시 serverId를 지정하세요. 전체 서버를 스캔하려면 detectAnomaliesAllServers를 사용하세요.',
   inputSchema: z.object({
     serverId: z
       .string()
       .optional()
-      .describe('분석할 서버 ID (선택, 미입력시 첫 번째 서버)'),
+      .describe('분석할 서버 ID (필수 권장 — 미입력시 첫 번째 서버만 반환)'),
     metricType: z
       .enum(['cpu', 'memory', 'disk', 'all'])
       .default('all')
@@ -390,7 +390,7 @@ export const analyzePattern = tool({
  */
 export const detectAnomaliesAllServers = tool({
   description:
-    '전체 서버의 이상치를 탐지합니다. 장애보고서용으로 모든 서버를 스캔합니다.',
+    '전체 서버의 이상치를 한번에 탐지합니다. "이상 있는 서버?", "서버 분석해줘" 등의 질문에 이 도구를 먼저 호출하세요. 1회 호출로 모든 서버를 스캔합니다.',
   inputSchema: z.object({
     metricType: z
       .enum(['cpu', 'memory', 'disk', 'all'])
