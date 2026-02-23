@@ -2,9 +2,13 @@ import { getRedisClient } from '../../../lib/redis-client';
 import { logger } from '../../../lib/logger';
 import type { AgentContext } from './context-store-types';
 
+/** Parse CONTEXT_TTL_SECONDS from environment, default 1800 (30 minutes) */
+const parsedTtl = Number.parseInt(process.env.CONTEXT_TTL_SECONDS ?? '', 10);
+const contextTtl = Number.isFinite(parsedTtl) && parsedTtl > 0 ? parsedTtl : 1800;
+
 export const CONTEXT_CONFIG = {
   keyPrefix: 'ai:context:',
-  ttlSeconds: 600,
+  ttlSeconds: contextTtl,
   maxHandoffs: 20,
   maxAnomalies: 50,
   maxMetrics: 100,

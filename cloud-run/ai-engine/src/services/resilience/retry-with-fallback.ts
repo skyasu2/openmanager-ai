@@ -17,6 +17,7 @@ import {
   getMistralModel,
   checkProviderStatus,
 } from '../ai-sdk/model-provider';
+import { getCircuitBreaker } from './circuit-breaker';
 
 // ============================================================================
 // Types
@@ -127,7 +128,17 @@ function getAvailableProviders(
   const excluded = new Set(excludeProviders);
 
   return preferredOrder
-    .filter((name) => status[name] && !excluded.has(name))
+    .filter((name) => {
+      if (excluded.has(name)) return false;
+      if (!status[name]) return false;
+      // Check circuit breaker state — skip providers in OPEN state
+      const cb = getCircuitBreaker(name);
+      if (!cb.isAllowed()) {
+        logger.warn(`⚠️ [RetryWithFallback] Skipping ${name}: circuit breaker OPEN`);
+        return false;
+      }
+      return true;
+    })
     .map((name) => PROVIDER_CHAIN.find((p) => p.name === name)!)
     .filter(Boolean);
 }

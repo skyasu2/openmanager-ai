@@ -88,6 +88,7 @@ fi
 TIMESTAMP=$(date +%Y%m%d-%H%M%S)
 SHORT_SHA=$(git rev-parse --short HEAD 2>/dev/null || echo "manual")
 BUILD_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+APP_VERSION=$(node -p "require('./package.json').version" 2>/dev/null || echo "0.0.0")
 TAG="v-${TIMESTAMP}-${SHORT_SHA}"
 # Artifact Registry format: REGION-docker.pkg.dev/PROJECT/REPOSITORY/IMAGE:TAG
 IMAGE_URI="${REGION}-docker.pkg.dev/${PROJECT_ID}/${REPOSITORY}/${SERVICE_NAME}:${TAG}"
@@ -251,6 +252,8 @@ echo "   Target: Artifact Registry"
 # Use Cloud Build with BuildKit enabled
 # ⚠️ FREE TIER: Do NOT add --machine-type (default e2-medium = free 120 min/day)
 #    e2-highcpu-8 등 커스텀 머신은 무료 대상 아님!
+# Note: --tag mode uses Dockerfile ARG defaults for APP_VERSION/BUILD_DATE/GIT_SHA.
+# For dynamic version passing, use: gcloud builds submit --config cloudbuild.yaml --substitutions=TAG_NAME=$APP_VERSION
 BUILD_CMD=(
   gcloud builds submit
   --tag "$IMAGE_URI"

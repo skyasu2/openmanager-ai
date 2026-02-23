@@ -299,11 +299,22 @@ export const AGENT_CONFIGS: Record<string, AgentConfig> = {
   // Evaluator-Optimizer Pattern Agents (for Reporter Pipeline)
   // =========================================================================
 
+  // =========================================================================
+  // Pipeline-Internal Agents (deterministic scoring, no LLM calls)
+  //
+  // Evaluator와 Optimizer는 reporter-pipeline.ts에서 결정론적으로 실행됩니다.
+  // - Evaluator: 4차원 가중 평균 스코어링 (structure/completeness/accuracy/actionability)
+  // - Optimizer: precomputed-state 히스토리 기반 근본원인 보강 + CLI 명령어 추가
+  //
+  // getModel은 AgentConfig 인터페이스 호환용으로 유지되지만, 실제 LLM 호출 없이
+  // reporter-pipeline-score-utils.ts의 결정론적 함수들이 평가/개선을 수행합니다.
+  // =========================================================================
+
   'Evaluator Agent': {
     name: 'Evaluator Agent',
     description:
-      '생성된 장애 보고서의 품질을 평가합니다. 구조 완성도, 내용 완성도, 근본원인 분석 정확도, 조치 실행가능성을 점수화합니다. Reporter Pipeline에서 내부적으로 사용됩니다.',
-    getModel: getNlqModel, // Cerebras - 빠른 평가
+      '[Pipeline-Internal, Deterministic] 생성된 장애 보고서의 품질을 결정론적으로 평가합니다. 구조 완성도, 내용 완성도, 근본원인 분석 정확도, 조치 실행가능성을 점수화합니다.',
+    getModel: getNlqModel, // Interface 호환용 (실제 LLM 호출 없음)
     instructions: EVALUATOR_AGENT_INSTRUCTIONS,
     tools: {
       evaluateIncidentReport,
@@ -316,8 +327,8 @@ export const AGENT_CONFIGS: Record<string, AgentConfig> = {
   'Optimizer Agent': {
     name: 'Optimizer Agent',
     description:
-      '낮은 품질의 장애 보고서를 개선합니다. 근본원인 분석을 심화하고, 권장 조치에 CLI 명령어를 추가하며, 서버 연관성 분석을 확장합니다.',
-    getModel: getAdvisorModel, // Mistral - 추론 강함
+      '[Pipeline-Internal, Deterministic] 낮은 품질의 장애 보고서를 개선합니다. precomputed-state 히스토리 기반 근본원인 심화, CLI 명령어 추가, 서버 연관성 확장.',
+    getModel: getAdvisorModel, // Interface 호환용 (실제 LLM 호출 없음)
     instructions: OPTIMIZER_AGENT_INSTRUCTIONS,
     tools: {
       refineRootCauseAnalysis,

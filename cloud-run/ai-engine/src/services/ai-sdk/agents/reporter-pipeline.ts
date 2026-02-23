@@ -172,7 +172,7 @@ export async function executeReporterPipeline(
 
       // Evaluate current report
       console.log(`📊 [Stage 2] Evaluating report (iteration ${iteration + 1})...`);
-      agentsUsed.push('Evaluator Agent');
+      agentsUsed.push('Evaluator (deterministic)');
 
       const evaluation = evaluateReport(currentReport);
       currentScore = evaluation.overallScore;
@@ -188,7 +188,7 @@ export async function executeReporterPipeline(
       // Optimize if not final iteration
       if (iteration < finalConfig.maxIterations - 1) {
         console.log(`🔧 [Stage 3] Optimizing report (iteration ${iteration + 1})...`);
-        agentsUsed.push('Optimizer Agent');
+        agentsUsed.push('Optimizer (deterministic)');
 
         const optimized = optimizeReport(currentReport, evaluation);
 
@@ -212,7 +212,7 @@ export async function executeReporterPipeline(
       quality: {
         initialScore,
         finalScore: currentScore,
-        iterations: agentsUsed.filter(a => a === 'Optimizer Agent').length + 1,
+        iterations: agentsUsed.filter(a => a === 'Optimizer (deterministic)').length + 1,
       },
       metadata: {
         durationMs,
