@@ -19,7 +19,7 @@ vi.mock('../model-provider', () => ({
   })),
   getCerebrasModel: vi.fn(() => ({ modelId: 'llama-3.3-70b' })),
   getGroqModel: vi.fn(() => ({ modelId: 'llama-3.3-70b-versatile' })),
-  getMistralModel: vi.fn(() => ({ modelId: 'mistral-small-2506' })),
+  getMistralModel: vi.fn(() => ({ modelId: 'mistral-large-3-25-12' })),
   getGeminiFlashLiteModel: vi.fn(() => ({ modelId: 'gemini-2.5-flash-lite' })),
   getVisionAgentModel: vi.fn(() => ({
     model: { modelId: 'gemini-2.5-flash-lite' },

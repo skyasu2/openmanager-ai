@@ -8,7 +8,7 @@
  */
 
 import { generateText, hasToolCall, stepCountIs } from 'ai';
-import { getCerebrasModel, getGroqModel, getMistralModel, checkProviderStatus, type ProviderName } from '../model-provider';
+import { getCerebrasModel, getGroqModel, checkProviderStatus, type ProviderName } from '../model-provider';
 import { generateTextWithRetry } from '../../resilience/retry-with-fallback';
 import { sanitizeChineseCharacters } from '../../../lib/text-sanitizer';
 import { extractToolResultOutput } from '../../../lib/ai-sdk-utils';
@@ -64,27 +64,19 @@ export function getOrchestratorModel(): { model: ReturnType<typeof getCerebrasMo
     try {
       return { model: getGroqModel('llama-3.3-70b-versatile'), provider: 'groq', modelId: 'llama-3.3-70b-versatile' };
     } catch {
-      logger.warn('⚠️ [Orchestrator] Groq unavailable, trying Mistral');
-    }
-  }
-
-  if (status.mistral) {
-    try {
-      return { model: getMistralModel('mistral-small-2506'), provider: 'mistral', modelId: 'mistral-small-2506' };
-    } catch {
-      logger.warn('⚠️ [Orchestrator] Mistral unavailable, trying Cerebras');
+      logger.warn('⚠️ [Orchestrator] Groq unavailable, trying Cerebras');
     }
   }
 
   if (status.cerebras) {
     try {
-      return { model: getCerebrasModel('llama3.1-8b'), provider: 'cerebras', modelId: 'llama3.1-8b' };
+      return { model: getCerebrasModel('gpt-oss-120b'), provider: 'cerebras', modelId: 'gpt-oss-120b' };
     } catch {
       logger.warn('⚠️ [Orchestrator] Cerebras unavailable');
     }
   }
 
-  logger.warn('⚠️ [Orchestrator] No model available (all 3 providers down)');
+  logger.warn('⚠️ [Orchestrator] No model available (Groq + Cerebras both down)');
   return null;
 }
 
@@ -212,14 +204,13 @@ export function getAgentConfig(name: string): AgentConfig | null {
 function getAgentProviderOrder(agentName: string): ProviderName[] {
   switch (agentName) {
     case 'NLQ Agent':
-      return ['cerebras', 'groq', 'mistral'];
+    case 'Advisor Agent':
+      return ['cerebras', 'groq'];
     case 'Analyst Agent':
     case 'Reporter Agent':
-      return ['groq', 'cerebras', 'mistral'];
-    case 'Advisor Agent':
-      return ['mistral', 'groq', 'cerebras'];
+      return ['groq', 'cerebras'];
     default:
-      return ['cerebras', 'groq', 'mistral'];
+      return ['cerebras', 'groq'];
   }
 }
 

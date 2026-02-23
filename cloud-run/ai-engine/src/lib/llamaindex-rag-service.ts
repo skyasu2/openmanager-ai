@@ -9,9 +9,10 @@
  * @replaces graph-rag-service.ts (custom implementation)
  */
 
-import { MistralAI } from '@llamaindex/mistral';
+import { generateText, type LanguageModel } from 'ai';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
-import { getSupabaseConfig, getMistralApiKey } from './config-parser';
+import { getSupabaseConfig } from './config-parser';
+import { getCerebrasModel } from '../services/ai-sdk/model-provider-core';
 import { logger } from './logger';
 import {
   hybridTextVectorSearch,
@@ -43,26 +44,17 @@ export type {
 
 let isInitialized = false;
 let supabaseClient: SupabaseClient | null = null;
-let llamaLlm: MistralAI | null = null;
+let llamaLlm: LanguageModel | null = null;
 
 /**
- * Initialize LlamaIndex with Mistral AI
+ * Initialize LlamaIndex with Cerebras AI (gpt-oss-120b)
  */
 export async function initializeLlamaIndex(): Promise<boolean> {
   if (isInitialized) return true;
 
   try {
-    const mistralApiKey = getMistralApiKey();
-    if (!mistralApiKey) {
-      logger.warn('⚠️ [LlamaIndex] Mistral API key missing, using fallback');
-      return false;
-    }
-
-    // Configure Mistral LLM instance
-    llamaLlm = new MistralAI({
-      model: 'mistral-small-latest', // 24B parameters, cost-effective
-      apiKey: mistralApiKey,
-    });
+    // Configure Cerebras LLM instance (120B MoE, 1M TPD)
+    llamaLlm = getCerebrasModel('gpt-oss-120b');
 
     // Initialize Supabase client
     const supabaseConfig = getSupabaseConfig();
@@ -74,7 +66,7 @@ export async function initializeLlamaIndex(): Promise<boolean> {
     }
 
     isInitialized = true;
-    console.log('✅ [LlamaIndex] Initialized with Mistral AI');
+    console.log('✅ [LlamaIndex] Initialized with Cerebras AI (gpt-oss-120b)');
     return true;
   } catch (error) {
     logger.error('❌ [LlamaIndex] Initialization failed:', error);
@@ -115,8 +107,12 @@ Output as JSON array:
 Only output the JSON array, no other text.
 `;
 
-    const response = await llamaLlm.complete({ prompt });
-    const responseText = response.text.trim();
+    const { text: responseRaw } = await generateText({
+      model: llamaLlm,
+      prompt,
+      maxOutputTokens: 500,
+    });
+    const responseText = responseRaw.trim();
 
     // Parse JSON response
     const jsonMatch = responseText.match(/\[[\s\S]*\]/);

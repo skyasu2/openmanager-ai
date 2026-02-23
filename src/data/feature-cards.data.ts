@@ -118,7 +118,7 @@ export const FEATURE_CARDS_DATA: FeatureCard[] = [
   },
   {
     id: 'vibe-coding',
-    title: '🔥 AI-Driven Development',
+    title: '🔥 Vibe Coding',
     description:
       '본 모니터링 플랫폼을 구축하기 위해 실제 적용한 Vibe Coding(AI 협업) 방법론. 4단계 진화를 거친 에이전틱 워크플로우를 증명합니다.',
     icon: Zap,

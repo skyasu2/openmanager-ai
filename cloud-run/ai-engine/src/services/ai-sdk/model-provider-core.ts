@@ -143,7 +143,7 @@ function asLanguageModel(model: unknown): LanguageModel {
 }
 
 export function getCerebrasModel(
-  modelId: string = 'llama3.1-8b'
+  modelId: string = 'gpt-oss-120b'
 ): LanguageModel {
   const cerebras = createCerebrasProvider();
   return asLanguageModel(cerebras(modelId));
@@ -157,7 +157,7 @@ export function getGroqModel(
 }
 
 export function getMistralModel(
-  modelId: string = 'mistral-small-2506'
+  modelId: string = 'mistral-large-3-25-12'
 ): LanguageModel {
   const mistral = createMistralProvider();
   return asLanguageModel(mistral(modelId));

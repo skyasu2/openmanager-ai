@@ -10,9 +10,9 @@
  * @see https://arxiv.org/abs/2212.10496
  */
 
-import { generateText } from 'ai';
+import { generateText, type LanguageModel } from 'ai';
 import { logger } from './logger';
-import { getMistralProvider } from './mistral-provider';
+import { getCerebrasModel } from '../services/ai-sdk/model-provider-core';
 import { withTimeout } from './with-timeout';
 
 // ============================================================================
@@ -116,10 +116,11 @@ export function shouldUseHyDE(
  * ```
  */
 export async function expandQueryWithHyDE(query: string): Promise<string> {
-  const mistral = getMistralProvider();
-
-  if (!mistral) {
-    logger.warn('[HyDE] Mistral provider unavailable, returning original query');
+  let model: LanguageModel;
+  try {
+    model = getCerebrasModel('gpt-oss-120b');
+  } catch {
+    logger.warn('[HyDE] Cerebras provider unavailable, returning original query');
     return query;
   }
 
@@ -128,7 +129,7 @@ export async function expandQueryWithHyDE(query: string): Promise<string> {
 
     const { text } = await withTimeout(
       generateText({
-        model: mistral('mistral-small-latest'),
+        model,
         system: HYDE_SYSTEM_PROMPT,
         prompt: query,
         maxOutputTokens: HYDE_MAX_TOKENS,

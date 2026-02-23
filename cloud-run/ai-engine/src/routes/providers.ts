@@ -30,9 +30,9 @@ providersRouter.get('/', (c: Context) => {
     toggle: toggleState,
     available: availableStatus,
     info: {
-      groq: { role: 'Primary (Supervisor/NLQ/Analyst/Reporter)', model: 'llama-3.3-70b-versatile' },
-      mistral: { role: 'Verifier/Advisor Agent', model: 'mistral-small-2506' },
-      cerebras: { role: 'Last Resort Fallback', model: 'llama3.1-8b' },
+      cerebras: { role: 'Primary (Supervisor/NLQ/Advisor/Verifier/RAG-LLM)', model: 'gpt-oss-120b' },
+      groq: { role: 'Primary (Analyst/Reporter)', model: 'llama-3.3-70b-versatile' },
+      mistral: { role: 'RAG Embedding Only (mistral-embed)', model: 'mistral-embed' },
     },
   });
 });

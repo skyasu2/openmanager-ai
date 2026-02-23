@@ -4,7 +4,7 @@
  * Specializes in troubleshooting guidance and command recommendations.
  * Uses GraphRAG to search past incidents and best practices.
  *
- * Model: Mistral mistral-small-2506 (primary - RAG + reasoning)
+ * Model: Mistral mistral-large-3-25-12 (primary - RAG + reasoning)
  * Fallback: Groq → Cerebras
  *
  * @version 4.0.0 - Migrated to BaseAgent pattern

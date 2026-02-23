@@ -14,7 +14,6 @@ import { logger } from '../../lib/logger';
 import {
   getCerebrasModel,
   getGroqModel,
-  getMistralModel,
   checkProviderStatus,
 } from '../ai-sdk/model-provider';
 
@@ -100,19 +99,14 @@ interface ProviderConfig {
 
 const PROVIDER_CHAIN: ProviderConfig[] = [
   {
+    name: 'cerebras',
+    getModel: getCerebrasModel,
+    defaultModelId: 'gpt-oss-120b',
+  },
+  {
     name: 'groq',
     getModel: getGroqModel,
     defaultModelId: 'llama-3.3-70b-versatile',
-  },
-  {
-    name: 'mistral',
-    getModel: getMistralModel,
-    defaultModelId: 'mistral-small-2506',
-  },
-  {
-    name: 'cerebras',
-    getModel: getCerebrasModel,
-    defaultModelId: 'llama3.1-8b',
   },
 ];
 
@@ -120,7 +114,7 @@ const PROVIDER_CHAIN: ProviderConfig[] = [
  * Get available providers based on current status
  */
 function getAvailableProviders(
-  preferredOrder: ProviderName[] = ['groq', 'mistral', 'cerebras'],
+  preferredOrder: ProviderName[] = ['cerebras', 'groq'],
   excludeProviders: ProviderName[] = []
 ): ProviderConfig[] {
   const status = checkProviderStatus();
@@ -233,7 +227,7 @@ function shouldRetry(error: unknown): boolean {
  */
 export async function generateTextWithRetry(
   options: GenerateTextOptions,
-  preferredOrder: ProviderName[] = ['groq', 'mistral', 'cerebras'],
+  preferredOrder: ProviderName[] = ['cerebras', 'groq'],
   config: Partial<RetryConfig> = {}
 ): Promise<RetryResult<Awaited<ReturnType<typeof generateText>>>> {
   const fullConfig = { ...DEFAULT_RETRY_CONFIG, ...config };

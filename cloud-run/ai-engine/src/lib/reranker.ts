@@ -13,9 +13,9 @@
  * @created 2026-01-26
  */
 
-import { generateText } from 'ai';
+import { generateText, type LanguageModel } from 'ai';
 import { logger } from './logger';
-import { getMistralProvider } from './mistral-provider';
+import { getCerebrasModel } from '../services/ai-sdk/model-provider-core';
 import { withTimeout } from './with-timeout';
 
 // ============================================================================
@@ -117,9 +117,11 @@ export async function rerankDocuments(
     }));
   }
 
-  const mistral = getMistralProvider();
-  if (!mistral) {
-    logger.warn('[Reranker] Mistral unavailable, returning original order');
+  let model: LanguageModel;
+  try {
+    model = getCerebrasModel('gpt-oss-120b');
+  } catch {
+    logger.warn('[Reranker] Cerebras unavailable, returning original order');
     return documents.map((doc) => ({
       ...doc,
       rerankScore: doc.originalScore,
@@ -147,10 +149,10 @@ ${docSummaries}
 
 Rate relevance (0-1) for each document.`;
 
-    // Call Mistral for scoring with timeout
+    // Call Cerebras for scoring with timeout
     const { text } = await withTimeout(
       generateText({
-        model: mistral('mistral-small-latest'),
+        model,
         system: includeReason ? RERANK_SYSTEM_PROMPT_WITH_REASON : RERANK_SYSTEM_PROMPT,
         prompt,
         maxOutputTokens: 500,
@@ -247,8 +249,10 @@ export async function quickRelevanceScore(
   query: string,
   document: { title: string; content: string }
 ): Promise<number> {
-  const mistral = getMistralProvider();
-  if (!mistral) {
+  let model: LanguageModel;
+  try {
+    model = getCerebrasModel('gpt-oss-120b');
+  } catch {
     return 0.5; // Neutral score if unavailable
   }
 
@@ -259,7 +263,7 @@ Document: ${document.title} - ${document.content.substring(0, 300)}
 Rate relevance 0-1. Output ONLY a number.`;
 
     const { text } = await generateText({
-      model: mistral('mistral-small-latest'),
+      model,
       prompt,
       maxOutputTokens: 10,
       temperature: 0.1,
@@ -276,5 +280,10 @@ Rate relevance 0-1. Output ONLY a number.`;
  * Check if reranking is available
  */
 export function isRerankerAvailable(): boolean {
-  return getMistralProvider() !== null;
+  try {
+    getCerebrasModel('gpt-oss-120b');
+    return true;
+  } catch {
+    return false;
+  }
 }

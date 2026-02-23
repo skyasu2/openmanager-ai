@@ -104,7 +104,7 @@ describe('model-provider compatibility (SDK upgrades)', () => {
     const models = [
       getCerebrasModel('llama-3.3-70b'),
       getGroqModel('llama-3.3-70b-versatile'),
-      getMistralModel('mistral-small-2506'),
+      getMistralModel('mistral-large-3-25-12'),
       getGeminiFlashLiteModel('gemini-2.5-flash'),
       getOpenRouterVisionModel('nvidia/nemotron-nano-12b-v2-vl:free'),
     ];

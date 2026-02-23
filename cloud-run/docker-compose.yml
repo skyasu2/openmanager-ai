@@ -49,9 +49,8 @@ services:
       # Groq (Fallback)
       - GROQ_API_KEY=${GROQ_API_KEY}
 
-      # Mistral (Verifier Agent)
+      # Mistral (RAG Embedding Only)
       - MISTRAL_API_KEY=${MISTRAL_API_KEY}
-      - MISTRAL_DEFAULT_MODEL=${MISTRAL_DEFAULT_MODEL:-mistral-small-2506}
 
       # Google/Gemini (Optional)
       - GOOGLE_API_KEY=${GOOGLE_API_KEY}

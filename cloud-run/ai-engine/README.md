@@ -117,15 +117,14 @@ if (isVisionQuery(query)) {
 
 | Agent | Primary | Fallback | Free Tier |
 |-------|---------|----------|-----------|
-| Supervisor | Cerebras `llama-3.3-70b` | Groq → Mistral | 1M tokens/day, 60K TPM |
-| Orchestrator | Cerebras `llama-3.3-70b` | Groq | 1M tokens/day, 60K TPM |
-| NLQ Agent | Cerebras `llama-3.3-70b` | Groq → Mistral | 1M tokens/day, 60K TPM |
-| Analyst Agent | Groq `llama-3.3-70b-versatile` | Cerebras → Mistral | ~1K RPD, 12K TPM |
-| Reporter Agent | Groq `llama-3.3-70b-versatile` | Cerebras → Mistral | ~1K RPD, 12K TPM |
-| Advisor Agent | Mistral `mistral-small-2506` | Groq → Cerebras | Limited (may require paid) |
+| Supervisor | Cerebras `gpt-oss-120b` | Groq | 1M TPD, 3000 tok/s |
+| Orchestrator | Groq `llama-3.3-70b-versatile` | Cerebras | 100K TPD, 12K TPM |
+| NLQ Agent | Cerebras `gpt-oss-120b` | Groq | 1M TPD, 3000 tok/s |
+| Analyst Agent | Groq `llama-3.3-70b-versatile` | Cerebras | 100K TPD, 12K TPM |
+| Reporter Agent | Groq `llama-3.3-70b-versatile` | Cerebras | 100K TPD, 12K TPM |
+| Advisor Agent | Cerebras `gpt-oss-120b` | Groq | 1M TPD, 3000 tok/s |
 | **Vision Agent** | **Gemini `2.5-flash`** | **OpenRouter (`nvidia/nemotron-nano-12b-v2-vl:free`)** | **Free tier available** |
-| Evaluator Agent | Cerebras `llama-3.3-70b` | (internal use) | - |
-| Optimizer Agent | Mistral `mistral-small-2506` | (internal use) | - |
+| RAG Embedding | Mistral `mistral-embed` | — | 2 RPM, 500K TPM |
 
 ### Agent Usage by Feature
 

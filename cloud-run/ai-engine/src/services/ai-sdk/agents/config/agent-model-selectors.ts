@@ -6,7 +6,6 @@ import {
   getCerebrasModel,
   getGeminiFlashLiteModel,
   getGroqModel,
-  getMistralModel,
   getOpenRouterVisionModel,
 } from '../../model-provider';
 
@@ -17,11 +16,24 @@ export interface ModelResult {
 }
 
 /**
- * Get NLQ model: Groq → Mistral → Cerebras (3-way fallback)
- * Cerebras demoted to last (only llama3.1-8b available after llama-3.3-70b deprecation)
+ * Get NLQ model: Cerebras → Groq (2-way fallback)
+ * Primary: Cerebras gpt-oss-120b (120B MoE, 1M TPD, 3000 tok/s)
+ * Mistral excluded — 2 RPM 임베딩 전용
  */
 export function getNlqModel(): ModelResult | null {
   const status = checkProviderStatus();
+
+  if (status.cerebras) {
+    try {
+      return {
+        model: getCerebrasModel('gpt-oss-120b'),
+        provider: 'cerebras',
+        modelId: 'gpt-oss-120b',
+      };
+    } catch {
+      logger.warn('⚠️ [NLQ Agent] Cerebras unavailable, trying Groq');
+    }
+  }
 
   if (status.groq) {
     try {
@@ -31,41 +43,17 @@ export function getNlqModel(): ModelResult | null {
         modelId: 'llama-3.3-70b-versatile',
       };
     } catch {
-      logger.warn('⚠️ [NLQ Agent] Groq unavailable, trying Mistral');
+      logger.warn('⚠️ [NLQ Agent] Groq unavailable');
     }
   }
 
-  if (status.mistral) {
-    try {
-      return {
-        model: getMistralModel('mistral-small-2506'),
-        provider: 'mistral',
-        modelId: 'mistral-small-2506',
-      };
-    } catch {
-      logger.warn('⚠️ [NLQ Agent] Mistral unavailable, trying Cerebras');
-    }
-  }
-
-  if (status.cerebras) {
-    try {
-      return {
-        model: getCerebrasModel('llama3.1-8b'),
-        provider: 'cerebras',
-        modelId: 'llama3.1-8b',
-      };
-    } catch {
-      logger.warn('⚠️ [NLQ Agent] Cerebras unavailable');
-    }
-  }
-
-  logger.warn('⚠️ [NLQ Agent] No model available (all 3 providers down)');
+  logger.warn('⚠️ [NLQ Agent] No model available (Cerebras + Groq both down)');
   return null;
 }
 
 /**
- * Get Analyst model: Groq → Mistral → Cerebras (3-way fallback)
- * Cerebras demoted to last (only llama3.1-8b available after llama-3.3-70b deprecation)
+ * Get Analyst model: Groq → Cerebras (2-way fallback)
+ * Primary: Groq llama-3.3-70b-versatile (70B)
  */
 export function getAnalystModel(): ModelResult | null {
   const status = checkProviderStatus();
@@ -78,41 +66,29 @@ export function getAnalystModel(): ModelResult | null {
         modelId: 'llama-3.3-70b-versatile',
       };
     } catch {
-      logger.warn('⚠️ [Analyst Agent] Groq unavailable, trying Mistral');
-    }
-  }
-
-  if (status.mistral) {
-    try {
-      return {
-        model: getMistralModel('mistral-small-2506'),
-        provider: 'mistral',
-        modelId: 'mistral-small-2506',
-      };
-    } catch {
-      logger.warn('⚠️ [Analyst Agent] Mistral unavailable, trying Cerebras');
+      logger.warn('⚠️ [Analyst Agent] Groq unavailable, trying Cerebras');
     }
   }
 
   if (status.cerebras) {
     try {
       return {
-        model: getCerebrasModel('llama3.1-8b'),
+        model: getCerebrasModel('gpt-oss-120b'),
         provider: 'cerebras',
-        modelId: 'llama3.1-8b',
+        modelId: 'gpt-oss-120b',
       };
     } catch {
       logger.warn('⚠️ [Analyst Agent] Cerebras unavailable');
     }
   }
 
-  logger.warn('⚠️ [Analyst Agent] No model available (all 3 providers down)');
+  logger.warn('⚠️ [Analyst Agent] No model available (Groq + Cerebras both down)');
   return null;
 }
 
 /**
- * Get Reporter model: Groq → Mistral → Cerebras (3-way fallback)
- * Cerebras demoted to last (only llama3.1-8b available after llama-3.3-70b deprecation)
+ * Get Reporter model: Groq → Cerebras (2-way fallback)
+ * Primary: Groq llama-3.3-70b-versatile (70B)
  */
 export function getReporterModel(): ModelResult | null {
   const status = checkProviderStatus();
@@ -125,54 +101,42 @@ export function getReporterModel(): ModelResult | null {
         modelId: 'llama-3.3-70b-versatile',
       };
     } catch {
-      logger.warn('⚠️ [Reporter Agent] Groq unavailable, trying Mistral');
-    }
-  }
-
-  if (status.mistral) {
-    try {
-      return {
-        model: getMistralModel('mistral-small-2506'),
-        provider: 'mistral',
-        modelId: 'mistral-small-2506',
-      };
-    } catch {
-      logger.warn('⚠️ [Reporter Agent] Mistral unavailable, trying Cerebras');
+      logger.warn('⚠️ [Reporter Agent] Groq unavailable, trying Cerebras');
     }
   }
 
   if (status.cerebras) {
     try {
       return {
-        model: getCerebrasModel('llama3.1-8b'),
+        model: getCerebrasModel('gpt-oss-120b'),
         provider: 'cerebras',
-        modelId: 'llama3.1-8b',
+        modelId: 'gpt-oss-120b',
       };
     } catch {
       logger.warn('⚠️ [Reporter Agent] Cerebras unavailable');
     }
   }
 
-  logger.warn('⚠️ [Reporter Agent] No model available (all 3 providers down)');
+  logger.warn('⚠️ [Reporter Agent] No model available (Groq + Cerebras both down)');
   return null;
 }
 
 /**
- * Get Advisor model: Mistral → Groq → Cerebras (3-way fallback)
- * Ensures operation even if 2 of 3 providers are down
+ * Get Advisor model: Cerebras → Groq (2-way fallback)
+ * Primary: Cerebras gpt-oss-120b (120B MoE, 1M TPD, 3000 tok/s)
  */
 export function getAdvisorModel(): ModelResult | null {
   const status = checkProviderStatus();
 
-  if (status.mistral) {
+  if (status.cerebras) {
     try {
       return {
-        model: getMistralModel('mistral-small-2506'),
-        provider: 'mistral',
-        modelId: 'mistral-small-2506',
+        model: getCerebrasModel('gpt-oss-120b'),
+        provider: 'cerebras',
+        modelId: 'gpt-oss-120b',
       };
     } catch {
-      logger.warn('⚠️ [Advisor Agent] Mistral unavailable, trying Groq');
+      logger.warn('⚠️ [Advisor Agent] Cerebras unavailable, trying Groq');
     }
   }
 
@@ -184,23 +148,11 @@ export function getAdvisorModel(): ModelResult | null {
         modelId: 'llama-3.3-70b-versatile',
       };
     } catch {
-      logger.warn('⚠️ [Advisor Agent] Groq unavailable, trying Cerebras');
+      logger.warn('⚠️ [Advisor Agent] Groq unavailable');
     }
   }
 
-  if (status.cerebras) {
-    try {
-      return {
-        model: getCerebrasModel('llama3.1-8b'),
-        provider: 'cerebras',
-        modelId: 'llama3.1-8b',
-      };
-    } catch {
-      logger.warn('⚠️ [Advisor Agent] Cerebras unavailable');
-    }
-  }
-
-  logger.warn('⚠️ [Advisor Agent] No model available (all 3 providers down)');
+  logger.warn('⚠️ [Advisor Agent] No model available (Cerebras + Groq both down)');
   return null;
 }
 

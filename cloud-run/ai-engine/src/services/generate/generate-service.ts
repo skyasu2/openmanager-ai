@@ -1,16 +1,16 @@
 /**
  * Cloud Run Generate Service
- * Mistral AI 텍스트 생성 담당 (AI SDK 버전)
+ * Cerebras AI 텍스트 생성 담당 (AI SDK 버전)
  *
  * Hybrid Architecture:
  * - Vercel에서 프록시를 통해 이 서비스 호출
  * - API 키는 Cloud Run에서만 관리
  *
- * Updated: 2025-12-28 - Migrated to Vercel AI SDK
+ * Updated: 2026-02-23 - Migrated from Mistral to Cerebras (gpt-oss-120b)
  */
 
 import { generateText, streamText } from 'ai';
-import { createMistral } from '@ai-sdk/mistral';
+import { createCerebras } from '@ai-sdk/cerebras';
 import { logger } from '../../lib/logger';
 
 interface GenerateOptions {
@@ -34,9 +34,9 @@ interface GenerateResult {
 }
 
 class CloudRunGenerateService {
-  // Use Mistral Small for high availability and fast responses
-  private readonly DEFAULT_MODEL = 'mistral-small-latest';
-  private mistral: ReturnType<typeof createMistral> | null = null;
+  // Use Cerebras gpt-oss-120b for high throughput (3000 tok/s)
+  private readonly DEFAULT_MODEL = 'gpt-oss-120b';
+  private cerebras: ReturnType<typeof createCerebras> | null = null;
 
   // 통계
   private stats = {
@@ -47,19 +47,19 @@ class CloudRunGenerateService {
   };
 
   /**
-   * Get Mistral provider (lazy initialization)
+   * Get Cerebras provider (lazy initialization)
    */
-  private getMistral(): ReturnType<typeof createMistral> | null {
-    if (this.mistral) return this.mistral;
+  private getCerebras(): ReturnType<typeof createCerebras> | null {
+    if (this.cerebras) return this.cerebras;
 
-    const apiKey = process.env.MISTRAL_API_KEY;
+    const apiKey = process.env.CEREBRAS_API_KEY;
     if (!apiKey) {
-      logger.error('❌ [Generate] MISTRAL_API_KEY not configured');
+      logger.error('❌ [Generate] CEREBRAS_API_KEY not configured');
       return null;
     }
 
-    this.mistral = createMistral({ apiKey });
-    return this.mistral;
+    this.cerebras = createCerebras({ apiKey });
+    return this.cerebras;
   }
 
   /**
@@ -79,14 +79,14 @@ class CloudRunGenerateService {
       return { success: false, error: 'Empty prompt provided' };
     }
 
-    const mistral = this.getMistral();
-    if (!mistral) {
+    const cerebras = this.getCerebras();
+    if (!cerebras) {
       return { success: false, error: 'No API key configured' };
     }
 
     try {
       const { text, usage } = await generateText({
-        model: mistral(modelId),
+        model: cerebras(modelId),
         prompt,
         temperature: options.temperature ?? 0.7,
         maxOutputTokens: options.maxTokens ?? 2048,
@@ -138,15 +138,15 @@ class CloudRunGenerateService {
   ): Promise<ReadableStream<Uint8Array> | null> {
     const modelId = options.model || this.DEFAULT_MODEL;
 
-    const mistral = this.getMistral();
-    if (!mistral) {
+    const cerebras = this.getCerebras();
+    if (!cerebras) {
       logger.error('❌ [Generate Stream] No API key available');
       return null;
     }
 
     try {
       const result = streamText({
-        model: mistral(modelId),
+        model: cerebras(modelId),
         prompt,
         temperature: options.temperature ?? 0.7,
         maxOutputTokens: options.maxTokens ?? 2048,
@@ -187,7 +187,7 @@ class CloudRunGenerateService {
         this.stats.requests > 0
           ? Math.round((this.stats.successes / this.stats.requests) * 100)
           : 0,
-      provider: 'mistral (ai-sdk)',
+      provider: 'cerebras (ai-sdk)',
       model: this.DEFAULT_MODEL,
     };
   }
