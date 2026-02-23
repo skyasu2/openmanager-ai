@@ -4,7 +4,6 @@
 import React, { memo, useState } from 'react';
 import { OpenManagerLogo } from '@/components/shared/OpenManagerLogo';
 import UnifiedProfileHeader from '@/components/shared/UnifiedProfileHeader';
-import { isGuestFullAccessEnabled } from '@/config/guestMode';
 import { useUserPermissions } from '@/hooks/useUserPermissions';
 import { useAISidebarStore } from '@/stores/useAISidebarStore';
 import { useUnifiedAdminStore } from '@/stores/useUnifiedAdminStore';
@@ -63,8 +62,8 @@ const DashboardHeader = memo(function DashboardHeader({
   const handleAIAgentToggle = () => {
     debug.log('🤖 AI 어시스턴트 토글');
 
-    // 🔐 비로그인 사용자는 로그인 모달 표시 (단, guest full access 시 허용)
-    if (!permissions.isGitHubAuthenticated && !isGuestFullAccessEnabled()) {
+    // 🔐 비로그인 사용자는 로그인 모달 표시 (GitHub OAuth 또는 게스트 PIN 인증 시 허용)
+    if (!permissions.isGitHubAuthenticated && !permissions.isPinAuthenticated) {
       debug.log('🔒 로그인 필요 - 모달 표시');
       setShowLoginModal(true);
       return;
