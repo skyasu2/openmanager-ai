@@ -7,7 +7,8 @@ export const maxDuration = 30; // cold start 포함 15초 + 여유
 const AI_WARMUP_SOURCE_HEADER = 'x-ai-warmup-source';
 
 export async function POST(request: NextRequest) {
-  const warmupSource = request.headers.get(AI_WARMUP_SOURCE_HEADER) || 'unknown';
+  const warmupSource =
+    request.headers.get(AI_WARMUP_SOURCE_HEADER) || 'unknown';
   const warmupStartedAt = Date.now();
 
   const rateLimitResult = await rateLimiters.dataGenerator.checkLimit(request);
