@@ -84,7 +84,7 @@ Dual-Mode Supervisor 패턴으로 특화된 에이전트를 오케스트레이�
 |----------|----------------|------|-----------|
 | **Cerebras** | Supervisor, NLQ, Verifier | `gpt-oss-120b` (120B MoE, 5.1B active) | 1M TPD, 3000 tok/s |
 | **Groq** | Analyst, Reporter, Orchestrator | `llama-3.3-70b-versatile` (70B) | 100K TPD, 12K TPM |
-| **Mistral** | Advisor + RAG Embedding | `mistral-large-latest` / `mistral-embed` (1024d) | 500K TPM, 1B/month |
+| **Mistral** | Advisor + RAG Embedding | `mistral-large-latest` / `mistral-embed` (1024d) | Tier 0: 1 RPS, 40K~500K TPM |
 | **Gemini** | Vision | `gemini-2.5-flash` (1M context) | 1000 RPD, 250K TPM |
 | **OpenRouter** | Vision Fallback | `nvidia/nemotron-nano-12b-v2-vl:free` | Provider별 상이 |
 
@@ -104,8 +104,11 @@ Dual-Mode Supervisor 패턴으로 특화된 에이전트를 오케스트레이�
 | Vision | Gemini | OpenRouter | — |
 | RAG Embedding | Mistral (`mistral-embed`) | local fallback (SHA256) | — |
 
-> **Mistral RPM 실측**: 공식 문서 2 RPM이나, 실제는 soft throttling (Embed 60+/min, Chat 15+/min).
-> 테스트 스크립트: `cloud-run/ai-engine/scripts/test-mistral-rpm*.ts`
+> **Mistral Free Tier (Tier 0) 분석 결과 및 정책 변경 반영**:
+> 미스트랄 La Plateforme 홈페이지의 공식 데이터에 따르면, 과거 "2 RPM"으로 알려졌던 한도는 **초당 1회(1 RPS) 및 40,000~500,000 TPM**으로 보다 명시적이고 엄격한 정책(Tier 0)으로 변경되었습니다.
+> (오픈 모델은 500K TPM, 상업용 `mistral-large` 프리미엄 모델은 더 낮은 TPM. 10억 토큰/월 한도 적용 중)
+> 이에 맞춰 현재 시스템에 완벽히 구현된 **3-Way Fallback**(서킷 브레이커 + 사전 Quota 전환) 설계가 모델 한계 극복에 더욱 주요하게 작용합니다.
+> 상세 테스트 스크립트 참조: `cloud-run/ai-engine/scripts/test-mistral-rpm*.ts`
 
 ## 4. Agent 구성 (7개)
 
