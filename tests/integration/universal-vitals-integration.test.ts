@@ -211,7 +211,7 @@ describe('🌐 Universal Vitals 통합 테스트', () => {
       // 번들 크기 시뮬레이션 (100KB - 2MB)
       const bundleSize = 100000 + Math.random() * 1900000; // bytes
 
-      const bundleVital = universalVitals.collectVital(
+      universalVitals.collectVital(
         'bundle-size',
         'build-performance',
         bundleSize,
@@ -234,7 +234,7 @@ describe('🌐 Universal Vitals 통합 테스트', () => {
     it('Web Vitals Core 메트릭 수집', () => {
       // LCP (Largest Contentful Paint)
       const lcpValue = 1500 + Math.random() * 2000; // 1.5-3.5초
-      const lcpVital = universalVitals.collectVital(
+      universalVitals.collectVital(
         'LCP',
         'web-performance',
         lcpValue,
@@ -244,7 +244,7 @@ describe('🌐 Universal Vitals 통합 테스트', () => {
 
       // FID (First Input Delay) - 새로운 INP로 대체 예정
       const fidValue = 50 + Math.random() * 200; // 50-250ms
-      const fidVital = universalVitals.collectVital(
+      universalVitals.collectVital(
         'FID',
         'web-performance',
         fidValue,
@@ -254,7 +254,7 @@ describe('🌐 Universal Vitals 통합 테스트', () => {
 
       // CLS (Cumulative Layout Shift)
       const clsValue = Math.random() * 0.3; // 0-0.3 스코어
-      const clsVital = universalVitals.collectVital(
+      universalVitals.collectVital(
         'CLS',
         'web-performance',
         clsValue,
