@@ -1,20 +1,35 @@
 'use client';
 
+import dynamic from 'next/dynamic';
 import { memo, Suspense, useEffect, useRef, useState } from 'react';
 import { useDashboardStats } from '@/hooks/dashboard/useDashboardStats';
 import { useMonitoringReport } from '@/hooks/dashboard/useMonitoringReport';
 import type { Server } from '@/types/server';
 import debug from '@/utils/debug';
 import { safeErrorMessage } from '@/utils/utils-functions';
-import { ActiveAlertsModal } from './ActiveAlertsModal';
-import { AlertHistoryModal } from './alert-history/AlertHistoryModal';
 import { DashboardSummary } from './DashboardSummary';
 import { resolveDashboardEmptyState } from './dashboard-empty-state';
-import { LogExplorerModal } from './log-explorer/LogExplorerModal';
 import ServerDashboard from './ServerDashboard';
 import { SystemOverviewSection } from './SystemOverviewSection';
-import { TopologyModal } from './TopologyModal';
 import type { DashboardStats } from './types/dashboard.types';
+
+// Lazy load modals for better initial load performance
+const ActiveAlertsModal = dynamic(
+  () => import('./ActiveAlertsModal').then((mod) => mod.ActiveAlertsModal),
+  { ssr: false }
+);
+const AlertHistoryModal = dynamic(
+  () => import('./alert-history/AlertHistoryModal').then((mod) => mod.AlertHistoryModal),
+  { ssr: false }
+);
+const LogExplorerModal = dynamic(
+  () => import('./log-explorer/LogExplorerModal').then((mod) => mod.LogExplorerModal),
+  { ssr: false }
+);
+const TopologyModal = dynamic(
+  () => import('./TopologyModal').then((mod) => mod.TopologyModal),
+  { ssr: false }
+);
 
 interface DashboardStatus {
   isRunning?: boolean;
@@ -70,7 +85,6 @@ export default memo(function DashboardContent({
   status,
   onStatsUpdate,
   onShowSequentialChange,
-  isAgentOpen,
   statusFilter,
   onStatusFilterChange,
 }: DashboardContentProps) {
@@ -84,7 +98,6 @@ export default memo(function DashboardContent({
     debug.log('🔍 DashboardContent 초기 렌더링:', {
       showSequentialGeneration,
       serversCount: servers?.length,
-      isAgentOpen,
       status: status?.type,
       timestamp: new Date().toISOString(),
     });
