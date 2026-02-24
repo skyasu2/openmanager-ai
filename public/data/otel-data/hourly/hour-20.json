@@ -94,7 +94,7 @@
               }
             },
             {
-              "asDouble": 0.72,
+              "asDouble": 0.7,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-01.openmanager.kr"
               }
@@ -385,7 +385,7 @@
               }
             },
             {
-              "asDouble": 90522409,
+              "asDouble": 91627445,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-01.openmanager.kr"
               }
@@ -886,7 +886,7 @@
       ],
       "logs": [
         {
-          "timeUnixNano": 1771066800794275800,
+          "timeUnixNano": 1771066800000000000,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "nginx[5949]: 10.0.0.1 - - \"GET /health HTTP/1.1\" 200 15 \"-\" \"kube-probe/1.28\"",
@@ -899,7 +899,7 @@
           "resource": "web-nginx-dc1-01"
         },
         {
-          "timeUnixNano": 1771066817729939200,
+          "timeUnixNano": 1771066820575097000,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "systemd[1]: Started Daily apt download activities.",
@@ -912,7 +912,7 @@
           "resource": "web-nginx-dc1-01"
         },
         {
-          "timeUnixNano": 1771066858919136500,
+          "timeUnixNano": 1771066836327744000,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "systemd[1]: Started Daily apt download activities.",
@@ -925,17 +925,7 @@
           "resource": "web-nginx-dc1-02"
         },
         {
-          "timeUnixNano": 1771066868504178000,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "nginx[9275]: *4938 upstream prematurely closed connection while reading response header",
-          "attributes": {
-            "log.source": "nginx"
-          },
-          "resource": "web-nginx-dc1-03"
-        },
-        {
-          "timeUnixNano": 1771066876186137900,
+          "timeUnixNano": 1771066879423981300,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "CRON[1412]: (root) CMD (/usr/lib/apt/apt.systemd.daily install)",
@@ -948,7 +938,7 @@
           "resource": "web-nginx-dc1-02"
         },
         {
-          "timeUnixNano": 1771066898707089200,
+          "timeUnixNano": 1771066896220099300,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "CRON[2520]: (root) CMD (/usr/lib/apt/apt.systemd.daily install)",
@@ -961,7 +951,7 @@
           "resource": "web-nginx-dc1-03"
         },
         {
-          "timeUnixNano": 1771066917513337300,
+          "timeUnixNano": 1771066914529520000,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "nginx[7592]: 10.0.0.1 - - \"GET /health HTTP/1.1\" 200 15 \"-\" \"kube-probe/1.28\"",
@@ -974,7 +964,7 @@
           "resource": "web-nginx-dc1-03"
         },
         {
-          "timeUnixNano": 1771066938163580000,
+          "timeUnixNano": 1771066933331669500,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "dockerd[3407]: Container health status: healthy (exit code 0)",
@@ -987,7 +977,7 @@
           "resource": "api-was-dc1-01"
         },
         {
-          "timeUnixNano": 1771066957315129000,
+          "timeUnixNano": 1771066956552938200,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "systemd[1]: Started Application Service (api-was).",
@@ -1000,7 +990,7 @@
           "resource": "api-was-dc1-01"
         },
         {
-          "timeUnixNano": 1771066975110903000,
+          "timeUnixNano": 1771066972212813300,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "dockerd[1617]: Container health status: healthy (exit code 0)",
@@ -1013,7 +1003,7 @@
           "resource": "api-was-dc1-02"
         },
         {
-          "timeUnixNano": 1771066990950359600,
+          "timeUnixNano": 1771066995271886800,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "systemd[1]: Started Application Service (api-was).",
@@ -1026,10 +1016,10 @@
           "resource": "api-was-dc1-02"
         },
         {
-          "timeUnixNano": 1771067010739670500,
+          "timeUnixNano": 1771067015517040400,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "java[2178]: [GC (Allocation Failure) ParNew: 185955K->20401K(188507K), 0.042 secs]",
+          "body": "java[2178]: [GC (Allocation Failure) ParNew: 170284K->17525K(171824K), 0.042 secs]",
           "attributes": {
             "log.source": "syslog",
             "server.role": "application",
@@ -1039,7 +1029,7 @@
           "resource": "api-was-dc1-03"
         },
         {
-          "timeUnixNano": 1771067034680815600,
+          "timeUnixNano": 1771067032430906600,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "dockerd[6570]: Container health status: healthy (exit code 0)",
@@ -1052,17 +1042,17 @@
           "resource": "api-was-dc1-03"
         },
         {
-          "timeUnixNano": 1771067061001008600,
+          "timeUnixNano": 1771067066617507800,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "haproxy[3866]: WARNING: Connection table 75% full (conntrack saturation)",
+          "body": "nginx[1731]: upstream timed out (110: Connection timed out) while connecting to upstream",
           "attributes": {
-            "log.source": "haproxy"
+            "log.source": "nginx"
           },
-          "resource": "lb-haproxy-dc1-01"
+          "resource": "web-nginx-dc1-02"
         },
         {
-          "timeUnixNano": 1771067068819051300,
+          "timeUnixNano": 1771067068182107600,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "systemd[1]: Started MySQL Community Server.",
@@ -1075,7 +1065,7 @@
           "resource": "db-mysql-dc1-primary"
         },
         {
-          "timeUnixNano": 1771067091250818300,
+          "timeUnixNano": 1771067088108481500,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "systemd[1]: Started MySQL Community Server.",
@@ -1088,7 +1078,7 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1771067109195115000,
+          "timeUnixNano": 1771067109804427000,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "mysqld[8317]: InnoDB: Buffer pool(s) load completed at 2026-02-14T11:00:00",
@@ -1101,17 +1091,7 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1771067117787007700,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "nginx[5345]: *8974 upstream prematurely closed connection while reading response header",
-          "attributes": {
-            "log.source": "nginx"
-          },
-          "resource": "web-nginx-dc1-01"
-        },
-        {
-          "timeUnixNano": 1771067128201603600,
+          "timeUnixNano": 1771067149567653000,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "CRON[7403]: (mysql) CMD (/usr/bin/mysqladmin --defaults-file=/etc/mysql/debian.cnf ping)",
@@ -1124,7 +1104,7 @@
           "resource": "db-mysql-dc1-backup"
         },
         {
-          "timeUnixNano": 1771067146478151700,
+          "timeUnixNano": 1771067169521193200,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "redis-server[4116]: Background AOF rewrite finished successfully",
@@ -1137,7 +1117,7 @@
           "resource": "cache-redis-dc1-01"
         },
         {
-          "timeUnixNano": 1771067186230507000,
+          "timeUnixNano": 1771067188578562300,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "redis-server[8853]: DB saved on disk (RDB snapshot)",
@@ -1150,7 +1130,7 @@
           "resource": "cache-redis-dc1-01"
         },
         {
-          "timeUnixNano": 1771067204687181000,
+          "timeUnixNano": 1771067205842535700,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "systemd[1]: redis-server.service: Watchdog timestamp updated.",
@@ -1163,7 +1143,7 @@
           "resource": "cache-redis-dc1-02"
         },
         {
-          "timeUnixNano": 1771067224269675000,
+          "timeUnixNano": 1771067225096821500,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "systemd[1]: Started NFS server and services.",
@@ -1176,7 +1156,7 @@
           "resource": "storage-nfs-dc1-01"
         },
         {
-          "timeUnixNano": 1771067243260661000,
+          "timeUnixNano": 1771067244656772000,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "nfsd[9145]: NFS export /data/shared ready, 32 active clients",
@@ -1189,7 +1169,17 @@
           "resource": "storage-nfs-dc1-01"
         },
         {
-          "timeUnixNano": 1771067264024923100,
+          "timeUnixNano": 1771067244797968600,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "nginx[2332]: *3941 upstream prematurely closed connection while reading response header",
+          "attributes": {
+            "log.source": "nginx"
+          },
+          "resource": "web-nginx-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771067265804684300,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "minio[3362]: Healthcheck passed, 6 active connections",
@@ -1202,7 +1192,7 @@
           "resource": "storage-s3gw-dc1-01"
         },
         {
-          "timeUnixNano": 1771067286499684600,
+          "timeUnixNano": 1771067283008499200,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "systemd[1]: Started MinIO S3 Gateway service.",
@@ -1215,7 +1205,7 @@
           "resource": "storage-s3gw-dc1-01"
         },
         {
-          "timeUnixNano": 1771067320108241000,
+          "timeUnixNano": 1771067302439584500,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "haproxy[2322]: Health check OK for backend api_servers/server1 (HTTP 200)",
@@ -1228,7 +1218,7 @@
           "resource": "lb-haproxy-dc1-01"
         },
         {
-          "timeUnixNano": 1771067344631376600,
+          "timeUnixNano": 1771067321567861200,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "systemd[1]: haproxy.service: Watchdog timestamp updated.",
@@ -1241,7 +1231,17 @@
           "resource": "lb-haproxy-dc1-01"
         },
         {
-          "timeUnixNano": 1771067361950415000,
+          "timeUnixNano": 1771067331854281000,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "nginx[2275]: *3047 upstream prematurely closed connection while reading response header",
+          "attributes": {
+            "log.source": "nginx"
+          },
+          "resource": "web-nginx-dc1-03"
+        },
+        {
+          "timeUnixNano": 1771067340293568500,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "haproxy[6381]: Proxy api_frontend started (FD 101)",
@@ -1254,17 +1254,7 @@
           "resource": "lb-haproxy-dc1-02"
         },
         {
-          "timeUnixNano": 1771067370652557600,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "nginx[9582]: upstream timed out (110: Connection timed out) while connecting to upstream",
-          "attributes": {
-            "log.source": "nginx"
-          },
-          "resource": "web-nginx-dc1-02"
-        },
-        {
-          "timeUnixNano": 1771067378631756300,
+          "timeUnixNano": 1771067379793323800,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "haproxy[8603]: Health check OK for backend api_servers/server1 (HTTP 200)",
@@ -1275,6 +1265,16 @@
             "cloud.availability_zone": "DC1-AZ3"
           },
           "resource": "lb-haproxy-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771067392549074400,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "haproxy[5945]: WARNING: SYN cookie activation detected, possible SYN flood",
+          "attributes": {
+            "log.source": "haproxy"
+          },
+          "resource": "lb-haproxy-dc1-01"
         }
       ]
     },
@@ -1366,7 +1366,7 @@
               }
             },
             {
-              "asDouble": 0.72,
+              "asDouble": 0.71,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-01.openmanager.kr"
               }
@@ -1657,7 +1657,7 @@
               }
             },
             {
-              "asDouble": 89733569,
+              "asDouble": 89561494,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-01.openmanager.kr"
               }
@@ -2158,7 +2158,7 @@
       ],
       "logs": [
         {
-          "timeUnixNano": 1771067403480396300,
+          "timeUnixNano": 1771067403014198300,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "nginx[4131]: 10.0.0.1 - - \"GET /health HTTP/1.1\" 200 15 \"-\" \"kube-probe/1.28\"",
@@ -2171,17 +2171,17 @@
           "resource": "web-nginx-dc1-01"
         },
         {
-          "timeUnixNano": 1771067405314547000,
+          "timeUnixNano": 1771067442687573200,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "haproxy[5820]: WARNING: Connection table 76% full (conntrack saturation)",
+          "body": "nginx[3646]: *8526 upstream prematurely closed connection while reading response header",
           "attributes": {
-            "log.source": "haproxy"
+            "log.source": "nginx"
           },
-          "resource": "lb-haproxy-dc1-01"
+          "resource": "web-nginx-dc1-02"
         },
         {
-          "timeUnixNano": 1771067428433905000,
+          "timeUnixNano": 1771067463555424800,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "nginx[8994]: 10.0.0.1 - - \"GET /health HTTP/1.1\" 200 15 \"-\" \"kube-probe/1.28\"",
@@ -2194,7 +2194,7 @@
           "resource": "web-nginx-dc1-02"
         },
         {
-          "timeUnixNano": 1771067456393257700,
+          "timeUnixNano": 1771067489812757500,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "CRON[9763]: (root) CMD (/usr/lib/apt/apt.systemd.daily install)",
@@ -2207,7 +2207,7 @@
           "resource": "web-nginx-dc1-03"
         },
         {
-          "timeUnixNano": 1771067490630088200,
+          "timeUnixNano": 1771067521297185300,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "nginx[7420]: 10.0.0.1 - - \"GET /health HTTP/1.1\" 200 15 \"-\" \"kube-probe/1.28\"",
@@ -2220,17 +2220,17 @@
           "resource": "web-nginx-dc1-03"
         },
         {
-          "timeUnixNano": 1771067513941603000,
+          "timeUnixNano": 1771067544743696400,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "nginx[8350]: *9179 upstream prematurely closed connection while reading response header",
+          "body": "nginx[1775]: upstream timed out (110: Connection timed out) while connecting to upstream",
           "attributes": {
             "log.source": "nginx"
           },
-          "resource": "web-nginx-dc1-03"
+          "resource": "web-nginx-dc1-01"
         },
         {
-          "timeUnixNano": 1771067517504098000,
+          "timeUnixNano": 1771067578958891800,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "dockerd[5788]: Container health status: healthy (exit code 0)",
@@ -2243,10 +2243,10 @@
           "resource": "api-was-dc1-01"
         },
         {
-          "timeUnixNano": 1771067552117245700,
+          "timeUnixNano": 1771067612305497900,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "java[5092]: [GC (Allocation Failure) ParNew: 145353K->11638K(101552K), 0.081 secs]",
+          "body": "java[5092]: [GC (Allocation Failure) ParNew: 153756K->12910K(98174K), 0.081 secs]",
           "attributes": {
             "log.source": "syslog",
             "server.role": "application",
@@ -2256,17 +2256,7 @@
           "resource": "api-was-dc1-01"
         },
         {
-          "timeUnixNano": 1771067557774261000,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "nginx[2683]: upstream timed out (110: Connection timed out) while connecting to upstream",
-          "attributes": {
-            "log.source": "nginx"
-          },
-          "resource": "web-nginx-dc1-01"
-        },
-        {
-          "timeUnixNano": 1771067642836066300,
+          "timeUnixNano": 1771067670038688000,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "dockerd[5668]: Container health status: healthy (exit code 0)",
@@ -2279,7 +2269,7 @@
           "resource": "api-was-dc1-03"
         },
         {
-          "timeUnixNano": 1771067670396029200,
+          "timeUnixNano": 1771067701148034300,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "systemd[1]: Started MySQL Community Server.",
@@ -2292,7 +2282,7 @@
           "resource": "db-mysql-dc1-backup"
         },
         {
-          "timeUnixNano": 1771067697924230000,
+          "timeUnixNano": 1771067728818198800,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "redis-server[4605]: DB saved on disk (RDB snapshot)",
@@ -2305,7 +2295,7 @@
           "resource": "cache-redis-dc1-01"
         },
         {
-          "timeUnixNano": 1771067763103500800,
+          "timeUnixNano": 1771067764145301500,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "redis-server[3691]: Background AOF rewrite finished successfully",
@@ -2318,7 +2308,7 @@
           "resource": "cache-redis-dc1-02"
         },
         {
-          "timeUnixNano": 1771067788673852000,
+          "timeUnixNano": 1771067790295952000,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "CRON[5151]: (root) CMD (/usr/local/bin/check-raid-status.sh)",
@@ -2331,7 +2321,7 @@
           "resource": "storage-nfs-dc1-01"
         },
         {
-          "timeUnixNano": 1771067820836141300,
+          "timeUnixNano": 1771067819712231200,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "nfsd[5067]: NFS export /data/shared ready, 50 active clients",
@@ -2344,17 +2334,7 @@
           "resource": "storage-nfs-dc1-01"
         },
         {
-          "timeUnixNano": 1771067837670780400,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "nginx[1982]: upstream timed out (110: Connection timed out) while connecting to upstream",
-          "attributes": {
-            "log.source": "nginx"
-          },
-          "resource": "web-nginx-dc1-02"
-        },
-        {
-          "timeUnixNano": 1771067847926035000,
+          "timeUnixNano": 1771067883198349300,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "minio[4728]: Healthcheck passed, 10 active connections",
@@ -2367,7 +2347,7 @@
           "resource": "storage-s3gw-dc1-01"
         },
         {
-          "timeUnixNano": 1771067881335559200,
+          "timeUnixNano": 1771067912139409700,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "haproxy[8259]: Proxy api_frontend started (FD 105)",
@@ -2380,7 +2360,17 @@
           "resource": "lb-haproxy-dc1-01"
         },
         {
-          "timeUnixNano": 1771067906911041300,
+          "timeUnixNano": 1771067913006718200,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "haproxy[1294]: WARNING: SYN cookie activation detected, possible SYN flood",
+          "attributes": {
+            "log.source": "haproxy"
+          },
+          "resource": "lb-haproxy-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771067939711949000,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "haproxy[5583]: Proxy api_frontend started (FD 33)",
@@ -2393,7 +2383,17 @@
           "resource": "lb-haproxy-dc1-02"
         },
         {
-          "timeUnixNano": 1771067969437402600,
+          "timeUnixNano": 1771067939942585600,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "nginx[5230]: *5799 upstream prematurely closed connection while reading response header",
+          "attributes": {
+            "log.source": "nginx"
+          },
+          "resource": "web-nginx-dc1-03"
+        },
+        {
+          "timeUnixNano": 1771067965722655200,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "systemd[1]: haproxy.service: Watchdog timestamp updated.",
@@ -2495,7 +2495,7 @@
               }
             },
             {
-              "asDouble": 0.73,
+              "asDouble": 0.72,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-01.openmanager.kr"
               }
@@ -2786,7 +2786,7 @@
               }
             },
             {
-              "asDouble": 93611767,
+              "asDouble": 93098144,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-01.openmanager.kr"
               }
@@ -3300,7 +3300,7 @@
           "resource": "web-nginx-dc1-01"
         },
         {
-          "timeUnixNano": 1771068042439827500,
+          "timeUnixNano": 1771068025124299800,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "nginx[9740]: 10.0.0.1 - - \"GET /health HTTP/1.1\" 200 15 \"-\" \"kube-probe/1.28\"",
@@ -3313,7 +3313,17 @@
           "resource": "web-nginx-dc1-02"
         },
         {
-          "timeUnixNano": 1771068067528322600,
+          "timeUnixNano": 1771068034805623300,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "haproxy[4339]: WARNING: SYN cookie activation detected, possible SYN flood",
+          "attributes": {
+            "log.source": "haproxy"
+          },
+          "resource": "lb-haproxy-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771068041954011600,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "CRON[2377]: (root) CMD (/usr/lib/apt/apt.systemd.daily install)",
@@ -3326,17 +3336,7 @@
           "resource": "web-nginx-dc1-02"
         },
         {
-          "timeUnixNano": 1771068087275670300,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "nginx[9160]: upstream timed out (110: Connection timed out) while connecting to upstream",
-          "attributes": {
-            "log.source": "nginx"
-          },
-          "resource": "web-nginx-dc1-03"
-        },
-        {
-          "timeUnixNano": 1771068108371340000,
+          "timeUnixNano": 1771068091362820600,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "nginx[1116]: 10.0.0.1 - - \"GET /health HTTP/1.1\" 200 15 \"-\" \"kube-probe/1.28\"",
@@ -3349,7 +3349,7 @@
           "resource": "web-nginx-dc1-03"
         },
         {
-          "timeUnixNano": 1771068131346915000,
+          "timeUnixNano": 1771068107882894300,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "CRON[7335]: (root) CMD (/usr/lib/apt/apt.systemd.daily install)",
@@ -3362,10 +3362,10 @@
           "resource": "web-nginx-dc1-03"
         },
         {
-          "timeUnixNano": 1771068158653765000,
+          "timeUnixNano": 1771068130130719200,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "java[1237]: [GC (Allocation Failure) ParNew: 170733K->14248K(119056K), 0.088 secs]",
+          "body": "java[1237]: [GC (Allocation Failure) ParNew: 166314K->15999K(135026K), 0.088 secs]",
           "attributes": {
             "log.source": "syslog",
             "server.role": "application",
@@ -3375,7 +3375,7 @@
           "resource": "api-was-dc1-01"
         },
         {
-          "timeUnixNano": 1771068180343192600,
+          "timeUnixNano": 1771068157060068900,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "dockerd[1965]: Container health status: healthy (exit code 0)",
@@ -3388,10 +3388,10 @@
           "resource": "api-was-dc1-01"
         },
         {
-          "timeUnixNano": 1771068199923852500,
+          "timeUnixNano": 1771068179114557200,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "java[2433]: [GC (Allocation Failure) ParNew: 180534K->22026K(151567K), 0.063 secs]",
+          "body": "java[2433]: [GC (Allocation Failure) ParNew: 164571K->23960K(149372K), 0.063 secs]",
           "attributes": {
             "log.source": "syslog",
             "server.role": "application",
@@ -3401,7 +3401,17 @@
           "resource": "api-was-dc1-02"
         },
         {
-          "timeUnixNano": 1771068242630623700,
+          "timeUnixNano": 1771068182061593000,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "nginx[9232]: *9487 upstream prematurely closed connection while reading response header",
+          "attributes": {
+            "log.source": "nginx"
+          },
+          "resource": "web-nginx-dc1-03"
+        },
+        {
+          "timeUnixNano": 1771068198081166800,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "dockerd[3995]: Container health status: healthy (exit code 0)",
@@ -3414,10 +3424,10 @@
           "resource": "api-was-dc1-03"
         },
         {
-          "timeUnixNano": 1771068263858103800,
+          "timeUnixNano": 1771068218972361500,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "java[9911]: [GC (Allocation Failure) ParNew: 148510K->18497K(174647K), 0.071 secs]",
+          "body": "java[9911]: [GC (Allocation Failure) ParNew: 168297K->18378K(185082K), 0.071 secs]",
           "attributes": {
             "log.source": "syslog",
             "server.role": "application",
@@ -3427,7 +3437,7 @@
           "resource": "api-was-dc1-03"
         },
         {
-          "timeUnixNano": 1771068286599334000,
+          "timeUnixNano": 1771068247408675300,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "CRON[3472]: (mysql) CMD (/usr/bin/mysqladmin --defaults-file=/etc/mysql/debian.cnf ping)",
@@ -3440,17 +3450,7 @@
           "resource": "db-mysql-dc1-primary"
         },
         {
-          "timeUnixNano": 1771068289919644000,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "nginx[2922]: upstream timed out (110: Connection timed out) while connecting to upstream",
-          "attributes": {
-            "log.source": "nginx"
-          },
-          "resource": "web-nginx-dc1-01"
-        },
-        {
-          "timeUnixNano": 1771068313090130000,
+          "timeUnixNano": 1771068285708166700,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "mysqld[7317]: InnoDB: Buffer pool(s) load completed at 2026-02-14T11:20:00",
@@ -3463,7 +3463,7 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1771068335293607700,
+          "timeUnixNano": 1771068314421965800,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "CRON[2088]: (mysql) CMD (/usr/bin/mysqladmin --defaults-file=/etc/mysql/debian.cnf ping)",
@@ -3476,7 +3476,17 @@
           "resource": "db-mysql-dc1-backup"
         },
         {
-          "timeUnixNano": 1771068357089132800,
+          "timeUnixNano": 1771068323898972400,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "nginx[3596]: *1344 upstream prematurely closed connection while reading response header",
+          "attributes": {
+            "log.source": "nginx"
+          },
+          "resource": "web-nginx-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771068330134287600,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "mysqld[7329]: InnoDB: Buffer pool(s) load completed at 2026-02-14T11:20:00",
@@ -3489,7 +3499,7 @@
           "resource": "db-mysql-dc1-backup"
         },
         {
-          "timeUnixNano": 1771068375008841700,
+          "timeUnixNano": 1771068358404715000,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "redis-server[9394]: DB saved on disk (RDB snapshot)",
@@ -3502,17 +3512,7 @@
           "resource": "cache-redis-dc1-01"
         },
         {
-          "timeUnixNano": 1771068383240006100,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "nginx[3978]: *8739 upstream prematurely closed connection while reading response header",
-          "attributes": {
-            "log.source": "nginx"
-          },
-          "resource": "web-nginx-dc1-02"
-        },
-        {
-          "timeUnixNano": 1771068401355593200,
+          "timeUnixNano": 1771068401494726000,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "systemd[1]: redis-server.service: Watchdog timestamp updated.",
@@ -3525,7 +3525,7 @@
           "resource": "cache-redis-dc1-01"
         },
         {
-          "timeUnixNano": 1771068446461034200,
+          "timeUnixNano": 1771068421382774300,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "systemd[1]: redis-server.service: Watchdog timestamp updated.",
@@ -3538,7 +3538,17 @@
           "resource": "cache-redis-dc1-02"
         },
         {
-          "timeUnixNano": 1771068469664193000,
+          "timeUnixNano": 1771068422531125000,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "nginx[8906]: upstream timed out (110: Connection timed out) while connecting to upstream",
+          "attributes": {
+            "log.source": "nginx"
+          },
+          "resource": "web-nginx-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771068442483110400,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "CRON[3019]: (root) CMD (/usr/local/bin/check-raid-status.sh)",
@@ -3551,17 +3561,7 @@
           "resource": "storage-nfs-dc1-01"
         },
         {
-          "timeUnixNano": 1771068486282688800,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "haproxy[3801]: WARNING: SYN cookie activation detected, possible SYN flood",
-          "attributes": {
-            "log.source": "haproxy"
-          },
-          "resource": "lb-haproxy-dc1-01"
-        },
-        {
-          "timeUnixNano": 1771068488868528000,
+          "timeUnixNano": 1771068488481357300,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "nfsd[4203]: NFS export /data/shared ready, 50 active clients",
@@ -3574,7 +3574,7 @@
           "resource": "storage-nfs-dc1-01"
         },
         {
-          "timeUnixNano": 1771068512294583800,
+          "timeUnixNano": 1771068509988161300,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "minio[2912]: Healthcheck passed, 9 active connections",
@@ -3587,7 +3587,7 @@
           "resource": "storage-s3gw-dc1-01"
         },
         {
-          "timeUnixNano": 1771068535204134000,
+          "timeUnixNano": 1771068532885009700,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "systemd[1]: haproxy.service: Watchdog timestamp updated.",
@@ -3600,7 +3600,7 @@
           "resource": "lb-haproxy-dc1-01"
         },
         {
-          "timeUnixNano": 1771068556628013000,
+          "timeUnixNano": 1771068553930483700,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "systemd[1]: haproxy.service: Watchdog timestamp updated.",
@@ -3613,7 +3613,7 @@
           "resource": "lb-haproxy-dc1-02"
         },
         {
-          "timeUnixNano": 1771068574896804400,
+          "timeUnixNano": 1771068578811097600,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "haproxy[5572]: Health check OK for backend api_servers/server1 (HTTP 200)",
@@ -3715,7 +3715,7 @@
               }
             },
             {
-              "asDouble": 0.73,
+              "asDouble": 0.72,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-01.openmanager.kr"
               }
@@ -4006,7 +4006,7 @@
               }
             },
             {
-              "asDouble": 94195331,
+              "asDouble": 94101210,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-01.openmanager.kr"
               }
@@ -4507,7 +4507,7 @@
       ],
       "logs": [
         {
-          "timeUnixNano": 1771068602045148700,
+          "timeUnixNano": 1771068600000000000,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "CRON[8052]: (root) CMD (/usr/lib/apt/apt.systemd.daily install)",
@@ -4520,7 +4520,17 @@
           "resource": "web-nginx-dc1-01"
         },
         {
-          "timeUnixNano": 1771068619681300700,
+          "timeUnixNano": 1771068617795845600,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "nginx[6367]: *3725 upstream prematurely closed connection while reading response header",
+          "attributes": {
+            "log.source": "nginx"
+          },
+          "resource": "web-nginx-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771068620870162200,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "nginx[3556]: 10.0.0.1 - - \"GET /health HTTP/1.1\" 200 15 \"-\" \"kube-probe/1.28\"",
@@ -4533,7 +4543,17 @@
           "resource": "web-nginx-dc1-01"
         },
         {
-          "timeUnixNano": 1771068641679803100,
+          "timeUnixNano": 1771068639852328400,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "nginx[4661]: *9855 upstream prematurely closed connection while reading response header",
+          "attributes": {
+            "log.source": "nginx"
+          },
+          "resource": "web-nginx-dc1-03"
+        },
+        {
+          "timeUnixNano": 1771068641106245400,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "CRON[7378]: (root) CMD (/usr/lib/apt/apt.systemd.daily install)",
@@ -4546,17 +4566,7 @@
           "resource": "web-nginx-dc1-02"
         },
         {
-          "timeUnixNano": 1771068647221004500,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "haproxy[4856]: WARNING: Connection table 87% full (conntrack saturation)",
-          "attributes": {
-            "log.source": "haproxy"
-          },
-          "resource": "lb-haproxy-dc1-01"
-        },
-        {
-          "timeUnixNano": 1771068666989092400,
+          "timeUnixNano": 1771068686127119000,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "nginx[8369]: 10.0.0.1 - - \"GET /health HTTP/1.1\" 200 15 \"-\" \"kube-probe/1.28\"",
@@ -4569,7 +4579,7 @@
           "resource": "web-nginx-dc1-02"
         },
         {
-          "timeUnixNano": 1771068685319443700,
+          "timeUnixNano": 1771068704793734100,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "CRON[1519]: (root) CMD (/usr/lib/apt/apt.systemd.daily install)",
@@ -4582,7 +4592,7 @@
           "resource": "web-nginx-dc1-03"
         },
         {
-          "timeUnixNano": 1771068710053263600,
+          "timeUnixNano": 1771068726803588000,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "systemd[1]: Started Daily apt download activities.",
@@ -4595,17 +4605,17 @@
           "resource": "web-nginx-dc1-03"
         },
         {
-          "timeUnixNano": 1771068721166655700,
+          "timeUnixNano": 1771068754095655200,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "nginx[7447]: *1503 upstream prematurely closed connection while reading response header",
+          "body": "nginx[8328]: upstream timed out (110: Connection timed out) while connecting to upstream",
           "attributes": {
             "log.source": "nginx"
           },
           "resource": "web-nginx-dc1-02"
         },
         {
-          "timeUnixNano": 1771068730312141800,
+          "timeUnixNano": 1771068769017970200,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "dockerd[7522]: Container health status: healthy (exit code 0)",
@@ -4618,10 +4628,10 @@
           "resource": "api-was-dc1-01"
         },
         {
-          "timeUnixNano": 1771068771315759000,
+          "timeUnixNano": 1771068789659201500,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "java[1265]: [GC (Allocation Failure) ParNew: 178985K->16167K(161458K), 0.090 secs]",
+          "body": "java[1265]: [GC (Allocation Failure) ParNew: 162399K->14189K(182757K), 0.090 secs]",
           "attributes": {
             "log.source": "syslog",
             "server.role": "application",
@@ -4631,10 +4641,10 @@
           "resource": "api-was-dc1-01"
         },
         {
-          "timeUnixNano": 1771068812991285200,
+          "timeUnixNano": 1771068813224395000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "java[9820]: [GC (Allocation Failure) ParNew: 212658K->28280K(153124K), 0.072 secs]",
+          "body": "java[9820]: [GC (Allocation Failure) ParNew: 204133K->26753K(154123K), 0.072 secs]",
           "attributes": {
             "log.source": "syslog",
             "server.role": "application",
@@ -4644,7 +4654,7 @@
           "resource": "api-was-dc1-02"
         },
         {
-          "timeUnixNano": 1771068832945902600,
+          "timeUnixNano": 1771068834169851600,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "systemd[1]: Started Application Service (api-was).",
@@ -4657,20 +4667,10 @@
           "resource": "api-was-dc1-03"
         },
         {
-          "timeUnixNano": 1771068856398844000,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "nginx[4127]: *7321 upstream prematurely closed connection while reading response header",
-          "attributes": {
-            "log.source": "nginx"
-          },
-          "resource": "web-nginx-dc1-03"
-        },
-        {
-          "timeUnixNano": 1771068856491461400,
+          "timeUnixNano": 1771068880844519400,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "java[6289]: [GC (Allocation Failure) ParNew: 167740K->15638K(119502K), 0.028 secs]",
+          "body": "java[6289]: [GC (Allocation Failure) ParNew: 159112K->13662K(106571K), 0.028 secs]",
           "attributes": {
             "log.source": "syslog",
             "server.role": "application",
@@ -4680,7 +4680,7 @@
           "resource": "api-was-dc1-03"
         },
         {
-          "timeUnixNano": 1771068899293204500,
+          "timeUnixNano": 1771068899761385200,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "CRON[5404]: (mysql) CMD (/usr/bin/mysqladmin --defaults-file=/etc/mysql/debian.cnf ping)",
@@ -4693,7 +4693,7 @@
           "resource": "db-mysql-dc1-primary"
         },
         {
-          "timeUnixNano": 1771068919515857700,
+          "timeUnixNano": 1771068920800806400,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "CRON[4483]: (mysql) CMD (/usr/bin/mysqladmin --defaults-file=/etc/mysql/debian.cnf ping)",
@@ -4706,17 +4706,7 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1771068922521827800,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "nginx[4512]: upstream timed out (110: Connection timed out) while connecting to upstream",
-          "attributes": {
-            "log.source": "nginx"
-          },
-          "resource": "web-nginx-dc1-01"
-        },
-        {
-          "timeUnixNano": 1771068943376819700,
+          "timeUnixNano": 1771068967242913300,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "mysqld[2591]: InnoDB: Buffer pool(s) load completed at 2026-02-14T11:30:00",
@@ -4729,7 +4719,7 @@
           "resource": "db-mysql-dc1-backup"
         },
         {
-          "timeUnixNano": 1771068961491656000,
+          "timeUnixNano": 1771068983167504400,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "redis-server[6628]: Background AOF rewrite finished successfully",
@@ -4742,7 +4732,7 @@
           "resource": "cache-redis-dc1-01"
         },
         {
-          "timeUnixNano": 1771069006177204500,
+          "timeUnixNano": 1771069008641026000,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "redis-server[7749]: DB saved on disk (RDB snapshot)",
@@ -4755,7 +4745,7 @@
           "resource": "cache-redis-dc1-01"
         },
         {
-          "timeUnixNano": 1771069027163351800,
+          "timeUnixNano": 1771069027657389300,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "redis-server[7409]: DB saved on disk (RDB snapshot)",
@@ -4768,7 +4758,7 @@
           "resource": "cache-redis-dc1-02"
         },
         {
-          "timeUnixNano": 1771069052613231900,
+          "timeUnixNano": 1771069052015479600,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "systemd[1]: redis-server.service: Watchdog timestamp updated.",
@@ -4781,7 +4771,7 @@
           "resource": "cache-redis-dc1-02"
         },
         {
-          "timeUnixNano": 1771069070186848000,
+          "timeUnixNano": 1771069070032072200,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "CRON[9647]: (root) CMD (/usr/local/bin/check-raid-status.sh)",
@@ -4794,7 +4784,7 @@
           "resource": "storage-nfs-dc1-01"
         },
         {
-          "timeUnixNano": 1771069094865787400,
+          "timeUnixNano": 1771069094504646100,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "minio[4644]: S3 Gateway ready, 10 buckets loaded",
@@ -4807,7 +4797,17 @@
           "resource": "storage-s3gw-dc1-01"
         },
         {
-          "timeUnixNano": 1771069117391694800,
+          "timeUnixNano": 1771069098023201800,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "haproxy[5348]: WARNING: Connection table 90% full (conntrack saturation)",
+          "attributes": {
+            "log.source": "haproxy"
+          },
+          "resource": "lb-haproxy-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771069114117896700,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "systemd[1]: haproxy.service: Watchdog timestamp updated.",
@@ -4820,7 +4820,7 @@
           "resource": "lb-haproxy-dc1-01"
         },
         {
-          "timeUnixNano": 1771069135516402000,
+          "timeUnixNano": 1771069134808505300,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "haproxy[6394]: Health check OK for backend api_servers/server1 (HTTP 200)",
@@ -4833,7 +4833,7 @@
           "resource": "lb-haproxy-dc1-01"
         },
         {
-          "timeUnixNano": 1771069154129613600,
+          "timeUnixNano": 1771069156271489800,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "haproxy[8165]: Health check OK for backend api_servers/server1 (HTTP 200)",
@@ -4846,7 +4846,7 @@
           "resource": "lb-haproxy-dc1-02"
         },
         {
-          "timeUnixNano": 1771069179479544000,
+          "timeUnixNano": 1771069180875195400,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "systemd[1]: haproxy.service: Watchdog timestamp updated.",
@@ -4948,7 +4948,7 @@
               }
             },
             {
-              "asDouble": 0.72,
+              "asDouble": 0.74,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-01.openmanager.kr"
               }
@@ -5239,7 +5239,7 @@
               }
             },
             {
-              "asDouble": 92710647,
+              "asDouble": 94768946,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-01.openmanager.kr"
               }
@@ -5740,7 +5740,7 @@
       ],
       "logs": [
         {
-          "timeUnixNano": 1771069201800477400,
+          "timeUnixNano": 1771069200000000000,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "CRON[8848]: (root) CMD (/usr/lib/apt/apt.systemd.daily install)",
@@ -5753,7 +5753,7 @@
           "resource": "web-nginx-dc1-01"
         },
         {
-          "timeUnixNano": 1771069226730641400,
+          "timeUnixNano": 1771069222630417400,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "CRON[6682]: (root) CMD (/usr/lib/apt/apt.systemd.daily install)",
@@ -5766,7 +5766,7 @@
           "resource": "web-nginx-dc1-02"
         },
         {
-          "timeUnixNano": 1771069246252947000,
+          "timeUnixNano": 1771069249323328800,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "CRON[8584]: (root) CMD (/usr/lib/apt/apt.systemd.daily install)",
@@ -5779,10 +5779,20 @@
           "resource": "web-nginx-dc1-03"
         },
         {
-          "timeUnixNano": 1771069274920327400,
+          "timeUnixNano": 1771069259609342200,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "nginx[3838]: *294 upstream prematurely closed connection while reading response header",
+          "attributes": {
+            "log.source": "nginx"
+          },
+          "resource": "web-nginx-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771069274876647200,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "java[2108]: [GC (Allocation Failure) ParNew: 110953K->14674K(124129K), 0.082 secs]",
+          "body": "java[2108]: [GC (Allocation Failure) ParNew: 95691K->12547K(117584K), 0.082 secs]",
           "attributes": {
             "log.source": "syslog",
             "server.role": "application",
@@ -5792,7 +5802,7 @@
           "resource": "api-was-dc1-01"
         },
         {
-          "timeUnixNano": 1771069300098822400,
+          "timeUnixNano": 1771069302707342800,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "dockerd[2289]: Container health status: healthy (exit code 0)",
@@ -5805,10 +5815,10 @@
           "resource": "api-was-dc1-02"
         },
         {
-          "timeUnixNano": 1771069323232735200,
+          "timeUnixNano": 1771069322098893800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "java[9591]: [GC (Allocation Failure) ParNew: 139929K->14232K(186562K), 0.091 secs]",
+          "body": "java[9591]: [GC (Allocation Failure) ParNew: 124802K->15041K(168638K), 0.091 secs]",
           "attributes": {
             "log.source": "syslog",
             "server.role": "application",
@@ -5818,7 +5828,7 @@
           "resource": "api-was-dc1-02"
         },
         {
-          "timeUnixNano": 1771069349467329000,
+          "timeUnixNano": 1771069346415261400,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "dockerd[5276]: Container health status: healthy (exit code 0)",
@@ -5831,17 +5841,17 @@
           "resource": "api-was-dc1-03"
         },
         {
-          "timeUnixNano": 1771069375695987500,
+          "timeUnixNano": 1771069395731893500,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "nginx[7119]: *9623 upstream prematurely closed connection while reading response header",
+          "body": "nginx[9946]: upstream timed out (110: Connection timed out) while connecting to upstream",
           "attributes": {
             "log.source": "nginx"
           },
-          "resource": "web-nginx-dc1-01"
+          "resource": "web-nginx-dc1-02"
         },
         {
-          "timeUnixNano": 1771069377672832000,
+          "timeUnixNano": 1771069396438173400,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "CRON[8105]: (mysql) CMD (/usr/bin/mysqladmin --defaults-file=/etc/mysql/debian.cnf ping)",
@@ -5854,17 +5864,17 @@
           "resource": "db-mysql-dc1-primary"
         },
         {
-          "timeUnixNano": 1771069377779660500,
+          "timeUnixNano": 1771069438006713000,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "haproxy[7260]: WARNING: SYN cookie activation detected, possible SYN flood",
+          "body": "haproxy[6779]: WARNING: SYN cookie activation detected, possible SYN flood",
           "attributes": {
             "log.source": "haproxy"
           },
           "resource": "lb-haproxy-dc1-01"
         },
         {
-          "timeUnixNano": 1771069399721375500,
+          "timeUnixNano": 1771069446436689000,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "mysqld[3945]: InnoDB: Buffer pool(s) load completed at 2026-02-14T11:40:00",
@@ -5877,7 +5887,7 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1771069424022924000,
+          "timeUnixNano": 1771069476710766800,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "CRON[5116]: (mysql) CMD (/usr/bin/mysqladmin --defaults-file=/etc/mysql/debian.cnf ping)",
@@ -5890,7 +5900,7 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1771069452072181800,
+          "timeUnixNano": 1771069502839747000,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "redis-server[6482]: DB saved on disk (RDB snapshot)",
@@ -5903,7 +5913,7 @@
           "resource": "cache-redis-dc1-01"
         },
         {
-          "timeUnixNano": 1771069496275521500,
+          "timeUnixNano": 1771069524165108200,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "redis-server[6164]: Background AOF rewrite finished successfully",
@@ -5916,7 +5926,7 @@
           "resource": "cache-redis-dc1-01"
         },
         {
-          "timeUnixNano": 1771069523442112000,
+          "timeUnixNano": 1771069549701839400,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "redis-server[2916]: DB saved on disk (RDB snapshot)",
@@ -5929,7 +5939,17 @@
           "resource": "cache-redis-dc1-02"
         },
         {
-          "timeUnixNano": 1771069602530304500,
+          "timeUnixNano": 1771069572532298200,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "nginx[5878]: *5795 upstream prematurely closed connection while reading response header",
+          "attributes": {
+            "log.source": "nginx"
+          },
+          "resource": "web-nginx-dc1-03"
+        },
+        {
+          "timeUnixNano": 1771069577941465900,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "systemd[1]: redis-server.service: Watchdog timestamp updated.",
@@ -5942,7 +5962,7 @@
           "resource": "cache-redis-dc1-02"
         },
         {
-          "timeUnixNano": 1771069626515432400,
+          "timeUnixNano": 1771069603540152300,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "nfsd[8904]: NFS export /data/shared ready, 25 active clients",
@@ -5955,17 +5975,7 @@
           "resource": "storage-nfs-dc1-01"
         },
         {
-          "timeUnixNano": 1771069639856150000,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "nginx[5291]: upstream timed out (110: Connection timed out) while connecting to upstream",
-          "attributes": {
-            "log.source": "nginx"
-          },
-          "resource": "web-nginx-dc1-03"
-        },
-        {
-          "timeUnixNano": 1771069653080801000,
+          "timeUnixNano": 1771069649475248600,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "minio[6539]: S3 Gateway ready, 24 buckets loaded",
@@ -5978,7 +5988,7 @@
           "resource": "storage-s3gw-dc1-01"
         },
         {
-          "timeUnixNano": 1771069672738556700,
+          "timeUnixNano": 1771069673912275000,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "minio[2744]: Healthcheck passed, 10 active connections",
@@ -5991,7 +6001,7 @@
           "resource": "storage-s3gw-dc1-01"
         },
         {
-          "timeUnixNano": 1771069722647537400,
+          "timeUnixNano": 1771069701671554000,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "haproxy[4968]: Proxy api_frontend started (FD 18)",
@@ -6004,7 +6014,7 @@
           "resource": "lb-haproxy-dc1-01"
         },
         {
-          "timeUnixNano": 1771069750119383800,
+          "timeUnixNano": 1771069722829547300,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "haproxy[4844]: Health check OK for backend api_servers/server1 (HTTP 200)",
@@ -6017,7 +6027,7 @@
           "resource": "lb-haproxy-dc1-02"
         },
         {
-          "timeUnixNano": 1771069777563698700,
+          "timeUnixNano": 1771069752988990700,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "systemd[1]: haproxy.service: Watchdog timestamp updated.",
@@ -6028,16 +6038,6 @@
             "cloud.availability_zone": "DC1-AZ3"
           },
           "resource": "lb-haproxy-dc1-02"
-        },
-        {
-          "timeUnixNano": 1771069787004719000,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "nginx[2495]: upstream timed out (110: Connection timed out) while connecting to upstream",
-          "attributes": {
-            "log.source": "nginx"
-          },
-          "resource": "web-nginx-dc1-02"
         }
       ]
     },
@@ -6420,7 +6420,7 @@
               }
             },
             {
-              "asDouble": 94160377,
+              "asDouble": 93901389,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-01.openmanager.kr"
               }
@@ -6921,17 +6921,7 @@
       ],
       "logs": [
         {
-          "timeUnixNano": 1771069801411308500,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "nginx[8736]: upstream timed out (110: Connection timed out) while connecting to upstream",
-          "attributes": {
-            "log.source": "nginx"
-          },
-          "resource": "web-nginx-dc1-02"
-        },
-        {
-          "timeUnixNano": 1771069801507721500,
+          "timeUnixNano": 1771069829705341200,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "nginx[1826]: 10.0.0.1 - - \"GET /health HTTP/1.1\" 200 15 \"-\" \"kube-probe/1.28\"",
@@ -6944,7 +6934,7 @@
           "resource": "web-nginx-dc1-01"
         },
         {
-          "timeUnixNano": 1771069854165499000,
+          "timeUnixNano": 1771069848390079500,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "nginx[9757]: 10.0.0.1 - - \"GET /health HTTP/1.1\" 200 15 \"-\" \"kube-probe/1.28\"",
@@ -6957,7 +6947,7 @@
           "resource": "web-nginx-dc1-02"
         },
         {
-          "timeUnixNano": 1771069877501434600,
+          "timeUnixNano": 1771069877934041900,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "CRON[6581]: (root) CMD (/usr/lib/apt/apt.systemd.daily install)",
@@ -6970,17 +6960,7 @@
           "resource": "web-nginx-dc1-03"
         },
         {
-          "timeUnixNano": 1771069909470814700,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "nginx[3155]: upstream timed out (110: Connection timed out) while connecting to upstream",
-          "attributes": {
-            "log.source": "nginx"
-          },
-          "resource": "web-nginx-dc1-01"
-        },
-        {
-          "timeUnixNano": 1771069932190984000,
+          "timeUnixNano": 1771069928355222800,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "dockerd[3629]: Container health status: healthy (exit code 0)",
@@ -6993,7 +6973,7 @@
           "resource": "api-was-dc1-01"
         },
         {
-          "timeUnixNano": 1771069953771073000,
+          "timeUnixNano": 1771069954864586500,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "dockerd[1670]: Container health status: healthy (exit code 0)",
@@ -7006,10 +6986,10 @@
           "resource": "api-was-dc1-02"
         },
         {
-          "timeUnixNano": 1771069979395857400,
+          "timeUnixNano": 1771069981841750800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "java[9151]: [GC (Allocation Failure) ParNew: 83205K->17353K(171758K), 0.072 secs]",
+          "body": "java[9151]: [GC (Allocation Failure) ParNew: 92112K->16793K(178939K), 0.072 secs]",
           "attributes": {
             "log.source": "syslog",
             "server.role": "application",
@@ -7019,7 +6999,7 @@
           "resource": "api-was-dc1-03"
         },
         {
-          "timeUnixNano": 1771070010587054000,
+          "timeUnixNano": 1771070005197289500,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "dockerd[8894]: Container health status: healthy (exit code 0)",
@@ -7032,7 +7012,7 @@
           "resource": "api-was-dc1-03"
         },
         {
-          "timeUnixNano": 1771070032967680500,
+          "timeUnixNano": 1771070034161015300,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "mysqld[1152]: InnoDB: Buffer pool(s) load completed at 2026-02-14T11:50:00",
@@ -7045,7 +7025,17 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1771070059046909200,
+          "timeUnixNano": 1771070042961538300,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "haproxy[4020]: WARNING: SYN cookie activation detected, possible SYN flood",
+          "attributes": {
+            "log.source": "haproxy"
+          },
+          "resource": "lb-haproxy-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771070061133204200,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "CRON[1296]: (mysql) CMD (/usr/bin/mysqladmin --defaults-file=/etc/mysql/debian.cnf ping)",
@@ -7058,7 +7048,7 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1771070088466393300,
+          "timeUnixNano": 1771070086080934400,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "CRON[2090]: (mysql) CMD (/usr/bin/mysqladmin --defaults-file=/etc/mysql/debian.cnf ping)",
@@ -7071,7 +7061,7 @@
           "resource": "db-mysql-dc1-backup"
         },
         {
-          "timeUnixNano": 1771070115910467800,
+          "timeUnixNano": 1771070115898423600,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "redis-server[8677]: DB saved on disk (RDB snapshot)",
@@ -7084,7 +7074,17 @@
           "resource": "cache-redis-dc1-01"
         },
         {
-          "timeUnixNano": 1771070140132952000,
+          "timeUnixNano": 1771070130063561000,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "nginx[1656]: *339 upstream prematurely closed connection while reading response header",
+          "attributes": {
+            "log.source": "nginx"
+          },
+          "resource": "web-nginx-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771070138023913000,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "redis-server[4087]: Background AOF rewrite finished successfully",
@@ -7097,7 +7097,7 @@
           "resource": "cache-redis-dc1-01"
         },
         {
-          "timeUnixNano": 1771070163026691000,
+          "timeUnixNano": 1771070165618349600,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "redis-server[2207]: Background AOF rewrite finished successfully",
@@ -7110,7 +7110,7 @@
           "resource": "cache-redis-dc1-02"
         },
         {
-          "timeUnixNano": 1771070190247561000,
+          "timeUnixNano": 1771070192090259700,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "systemd[1]: redis-server.service: Watchdog timestamp updated.",
@@ -7123,7 +7123,7 @@
           "resource": "cache-redis-dc1-02"
         },
         {
-          "timeUnixNano": 1771070244503815700,
+          "timeUnixNano": 1771070215766746400,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "CRON[8639]: (root) CMD (/usr/local/bin/check-raid-status.sh)",
@@ -7136,7 +7136,7 @@
           "resource": "storage-nfs-dc1-01"
         },
         {
-          "timeUnixNano": 1771070273478099000,
+          "timeUnixNano": 1771070245542224100,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "minio[2338]: Healthcheck passed, 12 active connections",
@@ -7149,7 +7149,17 @@
           "resource": "storage-s3gw-dc1-01"
         },
         {
-          "timeUnixNano": 1771070293496072000,
+          "timeUnixNano": 1771070253202319400,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "nginx[5888]: *2114 upstream prematurely closed connection while reading response header",
+          "attributes": {
+            "log.source": "nginx"
+          },
+          "resource": "web-nginx-dc1-03"
+        },
+        {
+          "timeUnixNano": 1771070271815573500,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "haproxy[6930]: Health check OK for backend api_servers/server1 (HTTP 200)",
@@ -7162,17 +7172,7 @@
           "resource": "lb-haproxy-dc1-01"
         },
         {
-          "timeUnixNano": 1771070301459271200,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "haproxy[5791]: WARNING: SYN cookie activation detected, possible SYN flood",
-          "attributes": {
-            "log.source": "haproxy"
-          },
-          "resource": "lb-haproxy-dc1-01"
-        },
-        {
-          "timeUnixNano": 1771070346053560300,
+          "timeUnixNano": 1771070323538306600,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "haproxy[6391]: Health check OK for backend api_servers/server1 (HTTP 200)",
@@ -7185,17 +7185,17 @@
           "resource": "lb-haproxy-dc1-02"
         },
         {
-          "timeUnixNano": 1771070362485642500,
+          "timeUnixNano": 1771070343007016000,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "nginx[7370]: upstream timed out (110: Connection timed out) while connecting to upstream",
+          "body": "nginx[8642]: upstream timed out (110: Connection timed out) while connecting to upstream",
           "attributes": {
             "log.source": "nginx"
           },
-          "resource": "web-nginx-dc1-03"
+          "resource": "web-nginx-dc1-02"
         },
         {
-          "timeUnixNano": 1771070372646558500,
+          "timeUnixNano": 1771070376275876000,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "haproxy[1808]: Proxy api_frontend started (FD 49)",

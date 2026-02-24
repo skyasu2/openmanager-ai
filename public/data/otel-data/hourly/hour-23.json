@@ -64,7 +64,7 @@
               }
             },
             {
-              "asDouble": 0.59,
+              "asDouble": 0.57,
               "attributes": {
                 "host.name": "db-mysql-dc1-backup.openmanager.kr"
               }
@@ -258,7 +258,7 @@
               }
             },
             {
-              "asDouble": 0.75,
+              "asDouble": 0.74,
               "attributes": {
                 "host.name": "db-mysql-dc1-backup.openmanager.kr"
               }
@@ -276,7 +276,7 @@
               }
             },
             {
-              "asDouble": 0.8,
+              "asDouble": 0.79,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
               }
@@ -379,7 +379,7 @@
               }
             },
             {
-              "asDouble": 84204907,
+              "asDouble": 83182503,
               "attributes": {
                 "host.name": "storage-s3gw-dc1-01.openmanager.kr"
               }
@@ -886,7 +886,7 @@
       ],
       "logs": [
         {
-          "timeUnixNano": 1771077601866532400,
+          "timeUnixNano": 1771077601578536200,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "CRON[8710]: (root) CMD (/usr/lib/apt/apt.systemd.daily install)",
@@ -899,7 +899,7 @@
           "resource": "web-nginx-dc1-01"
         },
         {
-          "timeUnixNano": 1771077619708345300,
+          "timeUnixNano": 1771077625457620000,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "systemd[1]: Started Daily apt download activities.",
@@ -912,7 +912,7 @@
           "resource": "web-nginx-dc1-01"
         },
         {
-          "timeUnixNano": 1771077646479990800,
+          "timeUnixNano": 1771077642748952300,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "nginx[8793]: 10.0.0.1 - - \"GET /health HTTP/1.1\" 200 15 \"-\" \"kube-probe/1.28\"",
@@ -925,7 +925,7 @@
           "resource": "web-nginx-dc1-02"
         },
         {
-          "timeUnixNano": 1771077670086773500,
+          "timeUnixNano": 1771077666242144500,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "systemd[1]: Started Daily apt download activities.",
@@ -938,7 +938,7 @@
           "resource": "web-nginx-dc1-02"
         },
         {
-          "timeUnixNano": 1771077689461528600,
+          "timeUnixNano": 1771077690850620200,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "systemd[1]: Started Daily apt download activities.",
@@ -951,17 +951,7 @@
           "resource": "web-nginx-dc1-03"
         },
         {
-          "timeUnixNano": 1771077690739616800,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "nfsd[8672]: WARNING: Export /data I/O latency 2773ms exceeds 100ms threshold",
-          "attributes": {
-            "log.source": "syslog"
-          },
-          "resource": "storage-nfs-dc1-01"
-        },
-        {
-          "timeUnixNano": 1771077714132655000,
+          "timeUnixNano": 1771077738898821000,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "systemd[1]: Started Application Service (api-was).",
@@ -974,7 +964,7 @@
           "resource": "api-was-dc1-01"
         },
         {
-          "timeUnixNano": 1771077735715463700,
+          "timeUnixNano": 1771077760846290700,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "dockerd[2190]: Container health status: healthy (exit code 0)",
@@ -987,10 +977,10 @@
           "resource": "api-was-dc1-01"
         },
         {
-          "timeUnixNano": 1771077787230052600,
+          "timeUnixNano": 1771077784332187400,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "java[8705]: [GC (Allocation Failure) ParNew: 167295K->13760K(145856K), 0.046 secs]",
+          "body": "java[8705]: [GC (Allocation Failure) ParNew: 166842K->14616K(160771K), 0.046 secs]",
           "attributes": {
             "log.source": "syslog",
             "server.role": "application",
@@ -1000,7 +990,7 @@
           "resource": "api-was-dc1-02"
         },
         {
-          "timeUnixNano": 1771077810634122000,
+          "timeUnixNano": 1771077809314724600,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "systemd[1]: Started Application Service (api-was).",
@@ -1013,10 +1003,10 @@
           "resource": "api-was-dc1-02"
         },
         {
-          "timeUnixNano": 1771077828540647000,
+          "timeUnixNano": 1771077832501011200,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "java[2869]: [GC (Allocation Failure) ParNew: 133615K->18036K(171905K), 0.032 secs]",
+          "body": "java[2869]: [GC (Allocation Failure) ParNew: 153078K->20112K(186809K), 0.032 secs]",
           "attributes": {
             "log.source": "syslog",
             "server.role": "application",
@@ -1026,7 +1016,7 @@
           "resource": "api-was-dc1-03"
         },
         {
-          "timeUnixNano": 1771077854461560000,
+          "timeUnixNano": 1771077854812897500,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "mysqld[1359]: InnoDB: Buffer pool(s) load completed at 2026-02-14T14:00:00",
@@ -1039,7 +1029,7 @@
           "resource": "db-mysql-dc1-primary"
         },
         {
-          "timeUnixNano": 1771077874516845300,
+          "timeUnixNano": 1771077876875715800,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "mysqld[7236]: InnoDB: Buffer pool(s) load completed at 2026-02-14T14:00:00",
@@ -1052,7 +1042,7 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1771077901903883500,
+          "timeUnixNano": 1771077903232245200,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "mysqld[3094]: InnoDB: Buffer pool(s) load completed at 2026-02-14T14:00:00",
@@ -1065,7 +1055,7 @@
           "resource": "db-mysql-dc1-backup"
         },
         {
-          "timeUnixNano": 1771077922028936000,
+          "timeUnixNano": 1771077923497908700,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "redis-server[5861]: Background AOF rewrite finished successfully",
@@ -1078,7 +1068,7 @@
           "resource": "cache-redis-dc1-01"
         },
         {
-          "timeUnixNano": 1771077943792592600,
+          "timeUnixNano": 1771077944882007300,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "redis-server[1181]: DB saved on disk (RDB snapshot)",
@@ -1091,7 +1081,7 @@
           "resource": "cache-redis-dc1-01"
         },
         {
-          "timeUnixNano": 1771077967486658600,
+          "timeUnixNano": 1771077971422634000,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "redis-server[6972]: DB saved on disk (RDB snapshot)",
@@ -1104,7 +1094,7 @@
           "resource": "cache-redis-dc1-02"
         },
         {
-          "timeUnixNano": 1771078012765126100,
+          "timeUnixNano": 1771077990776604700,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "redis-server[3445]: Background AOF rewrite finished successfully",
@@ -1117,7 +1107,7 @@
           "resource": "cache-redis-dc1-02"
         },
         {
-          "timeUnixNano": 1771078040327022600,
+          "timeUnixNano": 1771078016585558500,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "systemd[1]: Started NFS server and services.",
@@ -1130,7 +1120,7 @@
           "resource": "storage-nfs-dc1-01"
         },
         {
-          "timeUnixNano": 1771078062278263600,
+          "timeUnixNano": 1771078040477544700,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "CRON[9589]: (root) CMD (/usr/local/bin/check-raid-status.sh)",
@@ -1143,7 +1133,7 @@
           "resource": "storage-nfs-dc1-01"
         },
         {
-          "timeUnixNano": 1771078084083964200,
+          "timeUnixNano": 1771078058499258000,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "minio[4432]: S3 Gateway ready, 7 buckets loaded",
@@ -1156,7 +1146,7 @@
           "resource": "storage-s3gw-dc1-01"
         },
         {
-          "timeUnixNano": 1771078110216086500,
+          "timeUnixNano": 1771078081311777800,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "systemd[1]: Started MinIO S3 Gateway service.",
@@ -1169,7 +1159,7 @@
           "resource": "storage-s3gw-dc1-01"
         },
         {
-          "timeUnixNano": 1771078130879157000,
+          "timeUnixNano": 1771078109231620600,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "haproxy[8229]: Health check OK for backend api_servers/server1 (HTTP 200)",
@@ -1182,7 +1172,7 @@
           "resource": "lb-haproxy-dc1-01"
         },
         {
-          "timeUnixNano": 1771078155315536400,
+          "timeUnixNano": 1771078131403346400,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "haproxy[1984]: Proxy api_frontend started (FD 16)",
@@ -1195,17 +1185,7 @@
           "resource": "lb-haproxy-dc1-01"
         },
         {
-          "timeUnixNano": 1771078165043906000,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "mysqld[8163]: [Warning] InnoDB: Write to NFS mount stalled for 1342ms",
-          "attributes": {
-            "log.source": "mysqld"
-          },
-          "resource": "db-mysql-dc1-backup"
-        },
-        {
-          "timeUnixNano": 1771078179195507000,
+          "timeUnixNano": 1771078174419760000,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "haproxy[9576]: Health check OK for backend api_servers/server1 (HTTP 200)",
@@ -1471,7 +1451,7 @@
               }
             },
             {
-              "asDouble": 0.75,
+              "asDouble": 0.73,
               "attributes": {
                 "host.name": "db-mysql-dc1-backup.openmanager.kr"
               }
@@ -1489,13 +1469,13 @@
               }
             },
             {
-              "asDouble": 0.82,
+              "asDouble": 0.81,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.71,
+              "asDouble": 0.72,
               "attributes": {
                 "host.name": "storage-s3gw-dc1-01.openmanager.kr"
               }
@@ -1592,7 +1572,7 @@
               }
             },
             {
-              "asDouble": 83049307,
+              "asDouble": 83744554,
               "attributes": {
                 "host.name": "storage-s3gw-dc1-01.openmanager.kr"
               }
@@ -2099,7 +2079,7 @@
       ],
       "logs": [
         {
-          "timeUnixNano": 1771078200000000000,
+          "timeUnixNano": 1771078200986335500,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "CRON[4515]: (root) CMD (/usr/lib/apt/apt.systemd.daily install)",
@@ -2112,7 +2092,7 @@
           "resource": "web-nginx-dc1-01"
         },
         {
-          "timeUnixNano": 1771078222780722200,
+          "timeUnixNano": 1771078228280926000,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "nginx[2383]: 10.0.0.1 - - \"GET /health HTTP/1.1\" 200 15 \"-\" \"kube-probe/1.28\"",
@@ -2125,7 +2105,7 @@
           "resource": "web-nginx-dc1-01"
         },
         {
-          "timeUnixNano": 1771078252637969200,
+          "timeUnixNano": 1771078248345312300,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "nginx[2407]: 10.0.0.1 - - \"GET /health HTTP/1.1\" 200 15 \"-\" \"kube-probe/1.28\"",
@@ -2138,7 +2118,7 @@
           "resource": "web-nginx-dc1-02"
         },
         {
-          "timeUnixNano": 1771078278208461000,
+          "timeUnixNano": 1771078272885397000,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "nginx[8295]: 10.0.0.1 - - \"GET /health HTTP/1.1\" 200 15 \"-\" \"kube-probe/1.28\"",
@@ -2151,10 +2131,10 @@
           "resource": "web-nginx-dc1-03"
         },
         {
-          "timeUnixNano": 1771078297421600500,
+          "timeUnixNano": 1771078297599619000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "java[8341]: [GC (Allocation Failure) ParNew: 123701K->23698K(133316K), 0.063 secs]",
+          "body": "java[8341]: [GC (Allocation Failure) ParNew: 115578K->24934K(131674K), 0.063 secs]",
           "attributes": {
             "log.source": "syslog",
             "server.role": "application",
@@ -2164,7 +2144,7 @@
           "resource": "api-was-dc1-01"
         },
         {
-          "timeUnixNano": 1771078321740915700,
+          "timeUnixNano": 1771078327239025000,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "systemd[1]: Started Application Service (api-was).",
@@ -2177,7 +2157,7 @@
           "resource": "api-was-dc1-03"
         },
         {
-          "timeUnixNano": 1771078347532097800,
+          "timeUnixNano": 1771078348526419200,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "dockerd[9774]: Container health status: healthy (exit code 0)",
@@ -2190,7 +2170,7 @@
           "resource": "api-was-dc1-03"
         },
         {
-          "timeUnixNano": 1771078377503724000,
+          "timeUnixNano": 1771078372845678000,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "mysqld[3953]: InnoDB: Buffer pool(s) load completed at 2026-02-14T14:10:00",
@@ -2203,7 +2183,7 @@
           "resource": "db-mysql-dc1-primary"
         },
         {
-          "timeUnixNano": 1771078402395548200,
+          "timeUnixNano": 1771078400575822800,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "CRON[9479]: (mysql) CMD (/usr/bin/mysqladmin --defaults-file=/etc/mysql/debian.cnf ping)",
@@ -2216,7 +2196,7 @@
           "resource": "db-mysql-dc1-primary"
         },
         {
-          "timeUnixNano": 1771078423429323800,
+          "timeUnixNano": 1771078425643627500,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "systemd[1]: Started MySQL Community Server.",
@@ -2229,7 +2209,7 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1771078446413012700,
+          "timeUnixNano": 1771078451595905000,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "CRON[1565]: (mysql) CMD (/usr/bin/mysqladmin --defaults-file=/etc/mysql/debian.cnf ping)",
@@ -2242,7 +2222,7 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1771078472801971200,
+          "timeUnixNano": 1771078476076971800,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "systemd[1]: Started MySQL Community Server.",
@@ -2255,7 +2235,7 @@
           "resource": "db-mysql-dc1-backup"
         },
         {
-          "timeUnixNano": 1771078503456026000,
+          "timeUnixNano": 1771078498721028000,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "mysqld[9424]: InnoDB: Buffer pool(s) load completed at 2026-02-14T14:10:00",
@@ -2268,7 +2248,7 @@
           "resource": "db-mysql-dc1-backup"
         },
         {
-          "timeUnixNano": 1771078527674672000,
+          "timeUnixNano": 1771078525350125300,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "systemd[1]: redis-server.service: Watchdog timestamp updated.",
@@ -2281,7 +2261,7 @@
           "resource": "cache-redis-dc1-01"
         },
         {
-          "timeUnixNano": 1771078547363361800,
+          "timeUnixNano": 1771078552046034000,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "redis-server[7235]: DB saved on disk (RDB snapshot)",
@@ -2294,7 +2274,17 @@
           "resource": "cache-redis-dc1-01"
         },
         {
-          "timeUnixNano": 1771078573914905900,
+          "timeUnixNano": 1771078569530382800,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "nfsd[5200]: WARNING: Export /data I/O latency 2537ms exceeds 100ms threshold",
+          "attributes": {
+            "log.source": "syslog"
+          },
+          "resource": "storage-nfs-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771078575045326600,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "redis-server[5735]: DB saved on disk (RDB snapshot)",
@@ -2307,17 +2297,17 @@
           "resource": "cache-redis-dc1-02"
         },
         {
-          "timeUnixNano": 1771078598649077200,
+          "timeUnixNano": 1771078597011089200,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "mysqld[1999]: [Warning] InnoDB: Write to NFS mount stalled for 2661ms",
+          "body": "mysqld[6262]: [Warning] InnoDB: Write to NFS mount stalled for 3116ms",
           "attributes": {
             "log.source": "mysqld"
           },
           "resource": "db-mysql-dc1-backup"
         },
         {
-          "timeUnixNano": 1771078602200248800,
+          "timeUnixNano": 1771078622681223700,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "systemd[1]: redis-server.service: Watchdog timestamp updated.",
@@ -2330,7 +2320,7 @@
           "resource": "cache-redis-dc1-02"
         },
         {
-          "timeUnixNano": 1771078626570169900,
+          "timeUnixNano": 1771078649474078500,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "minio[6852]: Healthcheck passed, 11 active connections",
@@ -2343,7 +2333,7 @@
           "resource": "storage-s3gw-dc1-01"
         },
         {
-          "timeUnixNano": 1771078678598454800,
+          "timeUnixNano": 1771078674213855500,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "systemd[1]: haproxy.service: Watchdog timestamp updated.",
@@ -2356,7 +2346,7 @@
           "resource": "lb-haproxy-dc1-01"
         },
         {
-          "timeUnixNano": 1771078696557704000,
+          "timeUnixNano": 1771078699502998500,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "haproxy[5189]: Health check OK for backend api_servers/server1 (HTTP 200)",
@@ -2369,7 +2359,7 @@
           "resource": "lb-haproxy-dc1-01"
         },
         {
-          "timeUnixNano": 1771078722743546600,
+          "timeUnixNano": 1771078728603036400,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "haproxy[5721]: Health check OK for backend api_servers/server1 (HTTP 200)",
@@ -2382,17 +2372,7 @@
           "resource": "lb-haproxy-dc1-02"
         },
         {
-          "timeUnixNano": 1771078733759634400,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "nfsd[6340]: WARNING: Export /data I/O latency 880ms exceeds 100ms threshold",
-          "attributes": {
-            "log.source": "syslog"
-          },
-          "resource": "storage-nfs-dc1-01"
-        },
-        {
-          "timeUnixNano": 1771078775775978000,
+          "timeUnixNano": 1771078771752551000,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "haproxy[3560]: Proxy api_frontend started (FD 43)",
@@ -2464,7 +2444,7 @@
               }
             },
             {
-              "asDouble": 0.61,
+              "asDouble": 0.59,
               "attributes": {
                 "host.name": "db-mysql-dc1-backup.openmanager.kr"
               }
@@ -2482,7 +2462,7 @@
               }
             },
             {
-              "asDouble": 0.64,
+              "asDouble": 0.63,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
               }
@@ -2658,7 +2638,7 @@
               }
             },
             {
-              "asDouble": 0.75,
+              "asDouble": 0.76,
               "attributes": {
                 "host.name": "db-mysql-dc1-backup.openmanager.kr"
               }
@@ -2682,7 +2662,7 @@
               }
             },
             {
-              "asDouble": 0.73,
+              "asDouble": 0.72,
               "attributes": {
                 "host.name": "storage-s3gw-dc1-01.openmanager.kr"
               }
@@ -2779,7 +2759,7 @@
               }
             },
             {
-              "asDouble": 86383363,
+              "asDouble": 86172095,
               "attributes": {
                 "host.name": "storage-s3gw-dc1-01.openmanager.kr"
               }
@@ -3299,7 +3279,7 @@
           "resource": "web-nginx-dc1-02"
         },
         {
-          "timeUnixNano": 1771078829124588800,
+          "timeUnixNano": 1771078824267638000,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "nginx[2551]: 10.0.0.1 - - \"GET /health HTTP/1.1\" 200 15 \"-\" \"kube-probe/1.28\"",
@@ -3312,7 +3292,7 @@
           "resource": "web-nginx-dc1-03"
         },
         {
-          "timeUnixNano": 1771078857461883100,
+          "timeUnixNano": 1771078851508159200,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "CRON[1354]: (root) CMD (/usr/lib/apt/apt.systemd.daily install)",
@@ -3325,10 +3305,10 @@
           "resource": "web-nginx-dc1-03"
         },
         {
-          "timeUnixNano": 1771078878925293800,
+          "timeUnixNano": 1771078878074377000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "java[2196]: [GC (Allocation Failure) ParNew: 177412K->16260K(151803K), 0.077 secs]",
+          "body": "java[2196]: [GC (Allocation Failure) ParNew: 152401K->17635K(148110K), 0.077 secs]",
           "attributes": {
             "log.source": "syslog",
             "server.role": "application",
@@ -3338,17 +3318,7 @@
           "resource": "api-was-dc1-01"
         },
         {
-          "timeUnixNano": 1771078897329954300,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "mysqld[1890]: [Warning] InnoDB: Write to NFS mount stalled for 1336ms",
-          "attributes": {
-            "log.source": "mysqld"
-          },
-          "resource": "db-mysql-dc1-backup"
-        },
-        {
-          "timeUnixNano": 1771078905398696200,
+          "timeUnixNano": 1771078932522610000,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "dockerd[8399]: Container health status: healthy (exit code 0)",
@@ -3361,7 +3331,7 @@
           "resource": "api-was-dc1-02"
         },
         {
-          "timeUnixNano": 1771078939984020700,
+          "timeUnixNano": 1771078959963217000,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "dockerd[9240]: Container health status: healthy (exit code 0)",
@@ -3374,7 +3344,7 @@
           "resource": "api-was-dc1-03"
         },
         {
-          "timeUnixNano": 1771078966156222000,
+          "timeUnixNano": 1771078989030034000,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "systemd[1]: Started MySQL Community Server.",
@@ -3387,7 +3357,17 @@
           "resource": "db-mysql-dc1-primary"
         },
         {
-          "timeUnixNano": 1771079048482228200,
+          "timeUnixNano": 1771079005353885000,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "nfsd[9707]: WARNING: Export /data I/O latency 552ms exceeds 100ms threshold",
+          "attributes": {
+            "log.source": "syslog"
+          },
+          "resource": "storage-nfs-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771079016469803000,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "mysqld[9457]: InnoDB: Buffer pool(s) load completed at 2026-02-14T14:20:00",
@@ -3400,7 +3380,7 @@
           "resource": "db-mysql-dc1-primary"
         },
         {
-          "timeUnixNano": 1771079076475976700,
+          "timeUnixNano": 1771079048639698700,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "CRON[3642]: (mysql) CMD (/usr/bin/mysqladmin --defaults-file=/etc/mysql/debian.cnf ping)",
@@ -3413,7 +3393,7 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1771079096995833300,
+          "timeUnixNano": 1771079068884429600,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "mysqld[6882]: InnoDB: Buffer pool(s) load completed at 2026-02-14T14:20:00",
@@ -3426,7 +3406,7 @@
           "resource": "db-mysql-dc1-backup"
         },
         {
-          "timeUnixNano": 1771079130313762300,
+          "timeUnixNano": 1771079097932563000,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "redis-server[8885]: Background AOF rewrite finished successfully",
@@ -3439,7 +3419,7 @@
           "resource": "cache-redis-dc1-01"
         },
         {
-          "timeUnixNano": 1771079150664987600,
+          "timeUnixNano": 1771079124147057700,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "redis-server[5505]: DB saved on disk (RDB snapshot)",
@@ -3452,7 +3432,7 @@
           "resource": "cache-redis-dc1-02"
         },
         {
-          "timeUnixNano": 1771079177922061600,
+          "timeUnixNano": 1771079152528852200,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "redis-server[7129]: Background AOF rewrite finished successfully",
@@ -3465,7 +3445,7 @@
           "resource": "cache-redis-dc1-02"
         },
         {
-          "timeUnixNano": 1771079213051819000,
+          "timeUnixNano": 1771079179593296600,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "nfsd[7407]: NFS export /data/shared ready, 36 active clients",
@@ -3478,7 +3458,7 @@
           "resource": "storage-nfs-dc1-01"
         },
         {
-          "timeUnixNano": 1771079239242502400,
+          "timeUnixNano": 1771079205418258400,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "CRON[4574]: (root) CMD (/usr/local/bin/check-raid-status.sh)",
@@ -3491,17 +3471,7 @@
           "resource": "storage-nfs-dc1-01"
         },
         {
-          "timeUnixNano": 1771079255263720700,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "nfsd[8361]: WARNING: Export /data I/O latency 1611ms exceeds 100ms threshold",
-          "attributes": {
-            "log.source": "syslog"
-          },
-          "resource": "storage-nfs-dc1-01"
-        },
-        {
-          "timeUnixNano": 1771079261671069400,
+          "timeUnixNano": 1771079264623776800,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "minio[6268]: Healthcheck passed, 11 active connections",
@@ -3514,7 +3484,7 @@
           "resource": "storage-s3gw-dc1-01"
         },
         {
-          "timeUnixNano": 1771079288102769400,
+          "timeUnixNano": 1771079290077928000,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "haproxy[7533]: Health check OK for backend api_servers/server1 (HTTP 200)",
@@ -3527,7 +3497,7 @@
           "resource": "lb-haproxy-dc1-01"
         },
         {
-          "timeUnixNano": 1771079316356914400,
+          "timeUnixNano": 1771079319722050000,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "systemd[1]: haproxy.service: Watchdog timestamp updated.",
@@ -3540,7 +3510,17 @@
           "resource": "lb-haproxy-dc1-01"
         },
         {
-          "timeUnixNano": 1771079341992747500,
+          "timeUnixNano": 1771079324424721000,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "mysqld[6275]: [Warning] InnoDB: Write to NFS mount stalled for 2065ms",
+          "attributes": {
+            "log.source": "mysqld"
+          },
+          "resource": "db-mysql-dc1-backup"
+        },
+        {
+          "timeUnixNano": 1771079344794282800,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "haproxy[8505]: Health check OK for backend api_servers/server1 (HTTP 200)",
@@ -3553,7 +3533,7 @@
           "resource": "lb-haproxy-dc1-02"
         },
         {
-          "timeUnixNano": 1771079372677429500,
+          "timeUnixNano": 1771079376128081000,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "haproxy[9228]: Proxy api_frontend started (FD 89)",
@@ -3625,7 +3605,7 @@
               }
             },
             {
-              "asDouble": 0.59,
+              "asDouble": 0.6,
               "attributes": {
                 "host.name": "db-mysql-dc1-backup.openmanager.kr"
               }
@@ -3643,7 +3623,7 @@
               }
             },
             {
-              "asDouble": 0.66,
+              "asDouble": 0.65,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
               }
@@ -3819,7 +3799,7 @@
               }
             },
             {
-              "asDouble": 0.75,
+              "asDouble": 0.76,
               "attributes": {
                 "host.name": "db-mysql-dc1-backup.openmanager.kr"
               }
@@ -3837,13 +3817,13 @@
               }
             },
             {
-              "asDouble": 0.82,
+              "asDouble": 0.81,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.73,
+              "asDouble": 0.74,
               "attributes": {
                 "host.name": "storage-s3gw-dc1-01.openmanager.kr"
               }
@@ -3940,7 +3920,7 @@
               }
             },
             {
-              "asDouble": 85203418,
+              "asDouble": 84638660,
               "attributes": {
                 "host.name": "storage-s3gw-dc1-01.openmanager.kr"
               }
@@ -4447,7 +4427,7 @@
       ],
       "logs": [
         {
-          "timeUnixNano": 1771079400490984200,
+          "timeUnixNano": 1771079401620694000,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "nginx[5736]: 10.0.0.1 - - \"GET /health HTTP/1.1\" 200 15 \"-\" \"kube-probe/1.28\"",
@@ -4460,7 +4440,7 @@
           "resource": "web-nginx-dc1-01"
         },
         {
-          "timeUnixNano": 1771079432546642200,
+          "timeUnixNano": 1771079429548506600,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "CRON[1460]: (root) CMD (/usr/lib/apt/apt.systemd.daily install)",
@@ -4473,7 +4453,7 @@
           "resource": "web-nginx-dc1-02"
         },
         {
-          "timeUnixNano": 1771079453414001700,
+          "timeUnixNano": 1771079456973123300,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "CRON[6220]: (root) CMD (/usr/lib/apt/apt.systemd.daily install)",
@@ -4486,7 +4466,7 @@
           "resource": "web-nginx-dc1-03"
         },
         {
-          "timeUnixNano": 1771079485063084800,
+          "timeUnixNano": 1771079481823974100,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "dockerd[1765]: Container health status: healthy (exit code 0)",
@@ -4499,7 +4479,7 @@
           "resource": "api-was-dc1-02"
         },
         {
-          "timeUnixNano": 1771079513040624600,
+          "timeUnixNano": 1771079513045715500,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "mysqld[6329]: InnoDB: Buffer pool(s) load completed at 2026-02-14T14:30:00",
@@ -4512,7 +4492,7 @@
           "resource": "db-mysql-dc1-primary"
         },
         {
-          "timeUnixNano": 1771079546035068000,
+          "timeUnixNano": 1771079539043046100,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "CRON[3523]: (mysql) CMD (/usr/bin/mysqladmin --defaults-file=/etc/mysql/debian.cnf ping)",
@@ -4525,7 +4505,7 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1771079570547659300,
+          "timeUnixNano": 1771079573253315300,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "mysqld[4905]: InnoDB: Buffer pool(s) load completed at 2026-02-14T14:30:00",
@@ -4538,7 +4518,17 @@
           "resource": "db-mysql-dc1-backup"
         },
         {
-          "timeUnixNano": 1771079625490512100,
+          "timeUnixNano": 1771079593976504000,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "nfsd[3859]: WARNING: Export /data I/O latency 1689ms exceeds 100ms threshold",
+          "attributes": {
+            "log.source": "syslog"
+          },
+          "resource": "storage-nfs-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771079604028964400,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "redis-server[5317]: Background AOF rewrite finished successfully",
@@ -4551,17 +4541,7 @@
           "resource": "cache-redis-dc1-01"
         },
         {
-          "timeUnixNano": 1771079630314748400,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "nfsd[5712]: WARNING: Export /data I/O latency 780ms exceeds 100ms threshold",
-          "attributes": {
-            "log.source": "syslog"
-          },
-          "resource": "storage-nfs-dc1-01"
-        },
-        {
-          "timeUnixNano": 1771079655876877600,
+          "timeUnixNano": 1771079654385461500,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "redis-server[7530]: DB saved on disk (RDB snapshot)",
@@ -4574,7 +4554,17 @@
           "resource": "cache-redis-dc1-01"
         },
         {
-          "timeUnixNano": 1771079713103554300,
+          "timeUnixNano": 1771079677467265500,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "mysqld[1377]: [Warning] InnoDB: Write to NFS mount stalled for 460ms",
+          "attributes": {
+            "log.source": "mysqld"
+          },
+          "resource": "db-mysql-dc1-backup"
+        },
+        {
+          "timeUnixNano": 1771079683485725000,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "redis-server[9855]: DB saved on disk (RDB snapshot)",
@@ -4587,7 +4577,7 @@
           "resource": "cache-redis-dc1-02"
         },
         {
-          "timeUnixNano": 1771079741902140200,
+          "timeUnixNano": 1771079714354208800,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "systemd[1]: redis-server.service: Watchdog timestamp updated.",
@@ -4600,7 +4590,7 @@
           "resource": "cache-redis-dc1-02"
         },
         {
-          "timeUnixNano": 1771079770277930800,
+          "timeUnixNano": 1771079741936434700,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "CRON[1430]: (root) CMD (/usr/local/bin/check-raid-status.sh)",
@@ -4613,7 +4603,7 @@
           "resource": "storage-nfs-dc1-01"
         },
         {
-          "timeUnixNano": 1771079801716366000,
+          "timeUnixNano": 1771079768651577600,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "nfsd[6701]: NFS export /data/shared ready, 25 active clients",
@@ -4626,7 +4616,7 @@
           "resource": "storage-nfs-dc1-01"
         },
         {
-          "timeUnixNano": 1771079826130561000,
+          "timeUnixNano": 1771079801463474400,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "minio[2412]: S3 Gateway ready, 18 buckets loaded",
@@ -4639,7 +4629,7 @@
           "resource": "storage-s3gw-dc1-01"
         },
         {
-          "timeUnixNano": 1771079857947058200,
+          "timeUnixNano": 1771079826748568600,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "minio[5552]: Healthcheck passed, 7 active connections",
@@ -4652,7 +4642,7 @@
           "resource": "storage-s3gw-dc1-01"
         },
         {
-          "timeUnixNano": 1771079881830076000,
+          "timeUnixNano": 1771079855084614400,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "systemd[1]: haproxy.service: Watchdog timestamp updated.",
@@ -4665,7 +4655,7 @@
           "resource": "lb-haproxy-dc1-01"
         },
         {
-          "timeUnixNano": 1771079912470427600,
+          "timeUnixNano": 1771079887810437400,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "haproxy[6193]: Health check OK for backend api_servers/server1 (HTTP 200)",
@@ -4678,7 +4668,7 @@
           "resource": "lb-haproxy-dc1-01"
         },
         {
-          "timeUnixNano": 1771079945204878300,
+          "timeUnixNano": 1771079916858003000,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "haproxy[7220]: Proxy api_frontend started (FD 66)",
@@ -4691,7 +4681,7 @@
           "resource": "lb-haproxy-dc1-02"
         },
         {
-          "timeUnixNano": 1771079972041438500,
+          "timeUnixNano": 1771079946799098600,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "haproxy[1190]: Health check OK for backend api_servers/server1 (HTTP 200)",
@@ -4702,16 +4692,6 @@
             "cloud.availability_zone": "DC1-AZ3"
           },
           "resource": "lb-haproxy-dc1-02"
-        },
-        {
-          "timeUnixNano": 1771079999299892700,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "mysqld[3001]: [Warning] InnoDB: Write to NFS mount stalled for 1546ms",
-          "attributes": {
-            "log.source": "mysqld"
-          },
-          "resource": "db-mysql-dc1-backup"
         }
       ]
     },
@@ -4773,7 +4753,7 @@
               }
             },
             {
-              "asDouble": 0.61,
+              "asDouble": 0.6,
               "attributes": {
                 "host.name": "db-mysql-dc1-backup.openmanager.kr"
               }
@@ -4791,7 +4771,7 @@
               }
             },
             {
-              "asDouble": 0.66,
+              "asDouble": 0.67,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
               }
@@ -4991,7 +4971,7 @@
               }
             },
             {
-              "asDouble": 0.73,
+              "asDouble": 0.74,
               "attributes": {
                 "host.name": "storage-s3gw-dc1-01.openmanager.kr"
               }
@@ -5088,7 +5068,7 @@
               }
             },
             {
-              "asDouble": 85884453,
+              "asDouble": 87964288,
               "attributes": {
                 "host.name": "storage-s3gw-dc1-01.openmanager.kr"
               }
@@ -5595,7 +5575,7 @@
       ],
       "logs": [
         {
-          "timeUnixNano": 1771080002409496300,
+          "timeUnixNano": 1771080002328913700,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "CRON[6797]: (root) CMD (/usr/lib/apt/apt.systemd.daily install)",
@@ -5608,7 +5588,7 @@
           "resource": "web-nginx-dc1-01"
         },
         {
-          "timeUnixNano": 1771080036765000200,
+          "timeUnixNano": 1771080029671254500,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "nginx[7047]: 10.0.0.1 - - \"GET /health HTTP/1.1\" 200 15 \"-\" \"kube-probe/1.28\"",
@@ -5621,7 +5601,7 @@
           "resource": "web-nginx-dc1-01"
         },
         {
-          "timeUnixNano": 1771080067118459100,
+          "timeUnixNano": 1771080067919385000,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "CRON[6906]: (root) CMD (/usr/lib/apt/apt.systemd.daily install)",
@@ -5634,7 +5614,7 @@
           "resource": "web-nginx-dc1-02"
         },
         {
-          "timeUnixNano": 1771080102110401300,
+          "timeUnixNano": 1771080097200935700,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "nginx[7348]: 10.0.0.1 - - \"GET /health HTTP/1.1\" 200 15 \"-\" \"kube-probe/1.28\"",
@@ -5647,10 +5627,20 @@
           "resource": "web-nginx-dc1-03"
         },
         {
-          "timeUnixNano": 1771080132164155100,
+          "timeUnixNano": 1771080116132415000,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "minio[7113]: WARNING: S3 sync bandwidth at 86% capacity",
+          "attributes": {
+            "log.source": "syslog"
+          },
+          "resource": "storage-s3gw-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771080131999733800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "java[4205]: [GC (Allocation Failure) ParNew: 159606K->18090K(141541K), 0.047 secs]",
+          "body": "java[4205]: [GC (Allocation Failure) ParNew: 175882K->19760K(137464K), 0.047 secs]",
           "attributes": {
             "log.source": "syslog",
             "server.role": "application",
@@ -5660,7 +5650,17 @@
           "resource": "api-was-dc1-03"
         },
         {
-          "timeUnixNano": 1771080165456080600,
+          "timeUnixNano": 1771080158554413600,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "nfsd[3797]: WARNING: Export /data I/O latency 2613ms exceeds 100ms threshold",
+          "attributes": {
+            "log.source": "syslog"
+          },
+          "resource": "storage-nfs-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771080163034393300,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "dockerd[9323]: Container health status: healthy (exit code 0)",
@@ -5673,7 +5673,7 @@
           "resource": "api-was-dc1-03"
         },
         {
-          "timeUnixNano": 1771080197945192200,
+          "timeUnixNano": 1771080203752579300,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "mysqld[8750]: InnoDB: Buffer pool(s) load completed at 2026-02-14T14:40:00",
@@ -5686,17 +5686,7 @@
           "resource": "db-mysql-dc1-primary"
         },
         {
-          "timeUnixNano": 1771080231941427200,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "nfsd[1353]: WARNING: Export /data I/O latency 1957ms exceeds 100ms threshold",
-          "attributes": {
-            "log.source": "syslog"
-          },
-          "resource": "storage-nfs-dc1-01"
-        },
-        {
-          "timeUnixNano": 1771080266350804700,
+          "timeUnixNano": 1771080269437976800,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "mysqld[9967]: InnoDB: Buffer pool(s) load completed at 2026-02-14T14:40:00",
@@ -5709,7 +5699,7 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1771080297320374000,
+          "timeUnixNano": 1771080300862514200,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "mysqld[6277]: InnoDB: Buffer pool(s) load completed at 2026-02-14T14:40:00",
@@ -5722,7 +5712,7 @@
           "resource": "db-mysql-dc1-backup"
         },
         {
-          "timeUnixNano": 1771080330866502100,
+          "timeUnixNano": 1771080333208238800,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "redis-server[4306]: DB saved on disk (RDB snapshot)",
@@ -5735,7 +5725,7 @@
           "resource": "cache-redis-dc1-01"
         },
         {
-          "timeUnixNano": 1771080370517659100,
+          "timeUnixNano": 1771080371188836600,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "redis-server[1384]: Background AOF rewrite finished successfully",
@@ -5748,7 +5738,17 @@
           "resource": "cache-redis-dc1-02"
         },
         {
-          "timeUnixNano": 1771080396043422000,
+          "timeUnixNano": 1771080380682619000,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "mysqld[2474]: [Warning] InnoDB: Write to NFS mount stalled for 1185ms",
+          "attributes": {
+            "log.source": "mysqld"
+          },
+          "resource": "db-mysql-dc1-backup"
+        },
+        {
+          "timeUnixNano": 1771080395836983600,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "nfsd[9624]: NFS export /data/shared ready, 11 active clients",
@@ -5761,7 +5761,7 @@
           "resource": "storage-nfs-dc1-01"
         },
         {
-          "timeUnixNano": 1771080470514791400,
+          "timeUnixNano": 1771080429622313200,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "minio[2542]: Healthcheck passed, 4 active connections",
@@ -5774,17 +5774,7 @@
           "resource": "storage-s3gw-dc1-01"
         },
         {
-          "timeUnixNano": 1771080480216340500,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "mysqld[2771]: [Warning] InnoDB: Write to NFS mount stalled for 208ms",
-          "attributes": {
-            "log.source": "mysqld"
-          },
-          "resource": "db-mysql-dc1-backup"
-        },
-        {
-          "timeUnixNano": 1771080502937228500,
+          "timeUnixNano": 1771080498528358100,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "haproxy[4392]: Health check OK for backend api_servers/server1 (HTTP 200)",
@@ -5797,7 +5787,7 @@
           "resource": "lb-haproxy-dc1-01"
         },
         {
-          "timeUnixNano": 1771080531026804500,
+          "timeUnixNano": 1771080536113275600,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "haproxy[8018]: Proxy api_frontend started (FD 86)",
@@ -5810,7 +5800,7 @@
           "resource": "lb-haproxy-dc1-01"
         },
         {
-          "timeUnixNano": 1771080568774283800,
+          "timeUnixNano": 1771080568551537400,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "haproxy[6316]: Health check OK for backend api_servers/server1 (HTTP 200)",
@@ -5882,7 +5872,7 @@
               }
             },
             {
-              "asDouble": 0.61,
+              "asDouble": 0.6,
               "attributes": {
                 "host.name": "db-mysql-dc1-backup.openmanager.kr"
               }
@@ -5900,7 +5890,7 @@
               }
             },
             {
-              "asDouble": 0.67,
+              "asDouble": 0.66,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
               }
@@ -6076,7 +6066,7 @@
               }
             },
             {
-              "asDouble": 0.78,
+              "asDouble": 0.77,
               "attributes": {
                 "host.name": "db-mysql-dc1-backup.openmanager.kr"
               }
@@ -6094,13 +6084,13 @@
               }
             },
             {
-              "asDouble": 0.84,
+              "asDouble": 0.83,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.73,
+              "asDouble": 0.74,
               "attributes": {
                 "host.name": "storage-s3gw-dc1-01.openmanager.kr"
               }
@@ -6197,7 +6187,7 @@
               }
             },
             {
-              "asDouble": 87466811,
+              "asDouble": 86110876,
               "attributes": {
                 "host.name": "storage-s3gw-dc1-01.openmanager.kr"
               }
@@ -6704,7 +6694,7 @@
       ],
       "logs": [
         {
-          "timeUnixNano": 1771080603651044400,
+          "timeUnixNano": 1771080600844046000,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "CRON[6876]: (root) CMD (/usr/lib/apt/apt.systemd.daily install)",
@@ -6717,7 +6707,7 @@
           "resource": "web-nginx-dc1-01"
         },
         {
-          "timeUnixNano": 1771080656823931100,
+          "timeUnixNano": 1771080632297073700,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "nginx[5984]: 10.0.0.1 - - \"GET /health HTTP/1.1\" 200 15 \"-\" \"kube-probe/1.28\"",
@@ -6730,7 +6720,7 @@
           "resource": "web-nginx-dc1-01"
         },
         {
-          "timeUnixNano": 1771080694156456400,
+          "timeUnixNano": 1771080657595672600,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "nginx[3256]: 10.0.0.1 - - \"GET /health HTTP/1.1\" 200 15 \"-\" \"kube-probe/1.28\"",
@@ -6743,7 +6733,7 @@
           "resource": "web-nginx-dc1-02"
         },
         {
-          "timeUnixNano": 1771080717402074400,
+          "timeUnixNano": 1771080692610168300,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "CRON[5096]: (root) CMD (/usr/lib/apt/apt.systemd.daily install)",
@@ -6756,7 +6746,7 @@
           "resource": "web-nginx-dc1-02"
         },
         {
-          "timeUnixNano": 1771080748547258400,
+          "timeUnixNano": 1771080721241070300,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "nginx[1745]: 10.0.0.1 - - \"GET /health HTTP/1.1\" 200 15 \"-\" \"kube-probe/1.28\"",
@@ -6769,20 +6759,10 @@
           "resource": "web-nginx-dc1-03"
         },
         {
-          "timeUnixNano": 1771080753925618700,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "nfsd[8672]: WARNING: Export /data I/O latency 529ms exceeds 100ms threshold",
-          "attributes": {
-            "log.source": "syslog"
-          },
-          "resource": "storage-nfs-dc1-01"
-        },
-        {
-          "timeUnixNano": 1771080776935340500,
+          "timeUnixNano": 1771080781811016400,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "java[9698]: [GC (Allocation Failure) ParNew: 159118K->18343K(129081K), 0.029 secs]",
+          "body": "java[9698]: [GC (Allocation Failure) ParNew: 138343K->20888K(128505K), 0.029 secs]",
           "attributes": {
             "log.source": "syslog",
             "server.role": "application",
@@ -6792,7 +6772,17 @@
           "resource": "api-was-dc1-02"
         },
         {
-          "timeUnixNano": 1771080807646097000,
+          "timeUnixNano": 1771080796419617300,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "nfsd[5483]: WARNING: Export /data I/O latency 977ms exceeds 100ms threshold",
+          "attributes": {
+            "log.source": "syslog"
+          },
+          "resource": "storage-nfs-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771080812331241700,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "dockerd[1091]: Container health status: healthy (exit code 0)",
@@ -6805,7 +6795,7 @@
           "resource": "api-was-dc1-03"
         },
         {
-          "timeUnixNano": 1771080842105321200,
+          "timeUnixNano": 1771080836547631600,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "CRON[6150]: (mysql) CMD (/usr/bin/mysqladmin --defaults-file=/etc/mysql/debian.cnf ping)",
@@ -6818,7 +6808,7 @@
           "resource": "db-mysql-dc1-primary"
         },
         {
-          "timeUnixNano": 1771080872038312700,
+          "timeUnixNano": 1771080874466333000,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "CRON[9846]: (mysql) CMD (/usr/bin/mysqladmin --defaults-file=/etc/mysql/debian.cnf ping)",
@@ -6831,7 +6821,7 @@
           "resource": "db-mysql-dc1-backup"
         },
         {
-          "timeUnixNano": 1771080895660807200,
+          "timeUnixNano": 1771080897365063200,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "redis-server[2762]: Background AOF rewrite finished successfully",
@@ -6844,7 +6834,7 @@
           "resource": "cache-redis-dc1-01"
         },
         {
-          "timeUnixNano": 1771080925768392200,
+          "timeUnixNano": 1771080929130098200,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "redis-server[9188]: DB saved on disk (RDB snapshot)",
@@ -6857,17 +6847,7 @@
           "resource": "cache-redis-dc1-01"
         },
         {
-          "timeUnixNano": 1771080961675030500,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "mysqld[6454]: [Warning] InnoDB: Write to NFS mount stalled for 2995ms",
-          "attributes": {
-            "log.source": "mysqld"
-          },
-          "resource": "db-mysql-dc1-backup"
-        },
-        {
-          "timeUnixNano": 1771080963870608000,
+          "timeUnixNano": 1771080991768164600,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "systemd[1]: redis-server.service: Watchdog timestamp updated.",
@@ -6880,7 +6860,7 @@
           "resource": "cache-redis-dc1-02"
         },
         {
-          "timeUnixNano": 1771080988928270600,
+          "timeUnixNano": 1771081022799007000,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "redis-server[2964]: DB saved on disk (RDB snapshot)",
@@ -6893,7 +6873,17 @@
           "resource": "cache-redis-dc1-02"
         },
         {
-          "timeUnixNano": 1771081018079117600,
+          "timeUnixNano": 1771081043473327600,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "mysqld[4998]: [Warning] InnoDB: Write to NFS mount stalled for 641ms",
+          "attributes": {
+            "log.source": "mysqld"
+          },
+          "resource": "db-mysql-dc1-backup"
+        },
+        {
+          "timeUnixNano": 1771081053972202000,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "nfsd[3226]: NFS export /data/shared ready, 40 active clients",
@@ -6906,7 +6896,7 @@
           "resource": "storage-nfs-dc1-01"
         },
         {
-          "timeUnixNano": 1771081047921042700,
+          "timeUnixNano": 1771081080215135500,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "haproxy[6449]: Proxy api_frontend started (FD 100)",
@@ -6919,7 +6909,7 @@
           "resource": "lb-haproxy-dc1-01"
         },
         {
-          "timeUnixNano": 1771081075580713200,
+          "timeUnixNano": 1771081107471886300,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "haproxy[2087]: Health check OK for backend api_servers/server1 (HTTP 200)",
@@ -6932,7 +6922,7 @@
           "resource": "lb-haproxy-dc1-01"
         },
         {
-          "timeUnixNano": 1771081107016283100,
+          "timeUnixNano": 1771081138737083000,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "systemd[1]: haproxy.service: Watchdog timestamp updated.",
@@ -6945,7 +6935,7 @@
           "resource": "lb-haproxy-dc1-02"
         },
         {
-          "timeUnixNano": 1771081142818609000,
+          "timeUnixNano": 1771081169525127000,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "haproxy[2547]: Health check OK for backend api_servers/server1 (HTTP 200)",

@@ -52,7 +52,7 @@
               }
             },
             {
-              "asDouble": 0.54,
+              "asDouble": 0.55,
               "attributes": {
                 "host.name": "db-mysql-dc1-primary.openmanager.kr"
               }
@@ -149,7 +149,7 @@
               }
             },
             {
-              "asDouble": 0.66,
+              "asDouble": 0.67,
               "attributes": {
                 "host.name": "db-mysql-dc1-primary.openmanager.kr"
               }
@@ -246,7 +246,7 @@
               }
             },
             {
-              "asDouble": 0.81,
+              "asDouble": 0.78,
               "attributes": {
                 "host.name": "db-mysql-dc1-primary.openmanager.kr"
               }
@@ -886,7 +886,7 @@
       ],
       "logs": [
         {
-          "timeUnixNano": 1770994801115798000,
+          "timeUnixNano": 1770994801005232600,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "CRON[3216]: (root) CMD (/usr/lib/apt/apt.systemd.daily install)",
@@ -899,7 +899,7 @@
           "resource": "web-nginx-dc1-01"
         },
         {
-          "timeUnixNano": 1770994824686146600,
+          "timeUnixNano": 1770994821754378500,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "systemd[1]: Started Daily apt download activities.",
@@ -912,7 +912,7 @@
           "resource": "web-nginx-dc1-02"
         },
         {
-          "timeUnixNano": 1770994866841976300,
+          "timeUnixNano": 1770994846688386800,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "CRON[6682]: (root) CMD (/usr/lib/apt/apt.systemd.daily install)",
@@ -925,7 +925,7 @@
           "resource": "web-nginx-dc1-02"
         },
         {
-          "timeUnixNano": 1770994888289724200,
+          "timeUnixNano": 1770994864002730800,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "systemd[1]: Started Daily apt download activities.",
@@ -938,7 +938,7 @@
           "resource": "web-nginx-dc1-03"
         },
         {
-          "timeUnixNano": 1770994913885101800,
+          "timeUnixNano": 1770994889580055000,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "dockerd[9208]: Container health status: healthy (exit code 0)",
@@ -951,10 +951,10 @@
           "resource": "api-was-dc1-01"
         },
         {
-          "timeUnixNano": 1770994935021949000,
+          "timeUnixNano": 1770994909326389800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "java[4007]: [GC (Allocation Failure) ParNew: 165453K->9815K(151843K), 0.043 secs]",
+          "body": "java[4007]: [GC (Allocation Failure) ParNew: 166887K->10639K(133317K), 0.043 secs]",
           "attributes": {
             "log.source": "syslog",
             "server.role": "application",
@@ -964,7 +964,7 @@
           "resource": "api-was-dc1-01"
         },
         {
-          "timeUnixNano": 1770994957613414700,
+          "timeUnixNano": 1770994932615480800,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "systemd[1]: Started Application Service (api-was).",
@@ -977,7 +977,7 @@
           "resource": "api-was-dc1-02"
         },
         {
-          "timeUnixNano": 1770994974732476200,
+          "timeUnixNano": 1770994954807218000,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "systemd[1]: Started Application Service (api-was).",
@@ -990,17 +990,7 @@
           "resource": "api-was-dc1-03"
         },
         {
-          "timeUnixNano": 1770994993224545800,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "java[2031]: [WARN] Slow transaction: downstream dependency response 922ms (threshold: 500ms)",
-          "attributes": {
-            "log.source": "java"
-          },
-          "resource": "api-was-dc1-01"
-        },
-        {
-          "timeUnixNano": 1770995022814602500,
+          "timeUnixNano": 1770995001492500500,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "dockerd[8354]: Container health status: healthy (exit code 0)",
@@ -1013,7 +1003,7 @@
           "resource": "api-was-dc1-03"
         },
         {
-          "timeUnixNano": 1770995045319259000,
+          "timeUnixNano": 1770995021304600800,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "CRON[9191]: (mysql) CMD (/usr/bin/mysqladmin --defaults-file=/etc/mysql/debian.cnf ping)",
@@ -1026,7 +1016,7 @@
           "resource": "db-mysql-dc1-primary"
         },
         {
-          "timeUnixNano": 1770995064142555600,
+          "timeUnixNano": 1770995043947129900,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "systemd[1]: Started MySQL Community Server.",
@@ -1039,7 +1029,7 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1770995087302994400,
+          "timeUnixNano": 1770995068793343700,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "CRON[7150]: (mysql) CMD (/usr/bin/mysqladmin --defaults-file=/etc/mysql/debian.cnf ping)",
@@ -1052,7 +1042,7 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1770995110515806500,
+          "timeUnixNano": 1770995086033329400,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "systemd[1]: Started MySQL Community Server.",
@@ -1065,7 +1055,7 @@
           "resource": "db-mysql-dc1-backup"
         },
         {
-          "timeUnixNano": 1770995156950522000,
+          "timeUnixNano": 1770995113599192800,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "CRON[1939]: (mysql) CMD (/usr/bin/mysqladmin --defaults-file=/etc/mysql/debian.cnf ping)",
@@ -1078,7 +1068,7 @@
           "resource": "db-mysql-dc1-backup"
         },
         {
-          "timeUnixNano": 1770995176937480200,
+          "timeUnixNano": 1770995132284410400,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "redis-server[7210]: DB saved on disk (RDB snapshot)",
@@ -1091,7 +1081,7 @@
           "resource": "cache-redis-dc1-01"
         },
         {
-          "timeUnixNano": 1770995198010311000,
+          "timeUnixNano": 1770995154188376600,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "redis-server[5504]: DB saved on disk (RDB snapshot)",
@@ -1104,17 +1094,7 @@
           "resource": "cache-redis-dc1-02"
         },
         {
-          "timeUnixNano": 1770995214153791700,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "java[4517]: [WARN] HikariPool - Connection to backend timed out after 2996ms",
-          "attributes": {
-            "log.source": "java"
-          },
-          "resource": "api-was-dc1-03"
-        },
-        {
-          "timeUnixNano": 1770995224820528400,
+          "timeUnixNano": 1770995202067420700,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "systemd[1]: Started NFS server and services.",
@@ -1127,7 +1107,7 @@
           "resource": "storage-nfs-dc1-01"
         },
         {
-          "timeUnixNano": 1770995246120960300,
+          "timeUnixNano": 1770995224552385300,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "CRON[8643]: (root) CMD (/usr/local/bin/check-raid-status.sh)",
@@ -1140,17 +1120,7 @@
           "resource": "storage-nfs-dc1-01"
         },
         {
-          "timeUnixNano": 1770995262954242800,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "java[4487]: [WARN] HikariPool - Connection to backend timed out after 989ms",
-          "attributes": {
-            "log.source": "java"
-          },
-          "resource": "api-was-dc1-02"
-        },
-        {
-          "timeUnixNano": 1770995290086329900,
+          "timeUnixNano": 1770995268435645400,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "systemd[1]: Started MinIO S3 Gateway service.",
@@ -1163,7 +1133,7 @@
           "resource": "storage-s3gw-dc1-01"
         },
         {
-          "timeUnixNano": 1770995310197561300,
+          "timeUnixNano": 1770995286308109800,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "minio[4542]: S3 Gateway ready, 6 buckets loaded",
@@ -1176,17 +1146,7 @@
           "resource": "storage-s3gw-dc1-01"
         },
         {
-          "timeUnixNano": 1770995310598102800,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "mysqld[8133]: [Warning] Disk I/O stalling: fsync took 285ms for file ./ibdata1",
-          "attributes": {
-            "log.source": "mysqld"
-          },
-          "resource": "db-mysql-dc1-primary"
-        },
-        {
-          "timeUnixNano": 1770995334230146600,
+          "timeUnixNano": 1770995331260614400,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "haproxy[1466]: Proxy api_frontend started (FD 74)",
@@ -1199,7 +1159,7 @@
           "resource": "lb-haproxy-dc1-01"
         },
         {
-          "timeUnixNano": 1770995352633359000,
+          "timeUnixNano": 1770995355038827500,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "haproxy[6588]: Proxy api_frontend started (FD 49)",
@@ -1212,7 +1172,7 @@
           "resource": "lb-haproxy-dc1-02"
         },
         {
-          "timeUnixNano": 1770995378584392400,
+          "timeUnixNano": 1770995380342498600,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "systemd[1]: haproxy.service: Watchdog timestamp updated.",
@@ -1272,7 +1232,7 @@
               }
             },
             {
-              "asDouble": 0.54,
+              "asDouble": 0.55,
               "attributes": {
                 "host.name": "db-mysql-dc1-primary.openmanager.kr"
               }
@@ -1369,7 +1329,7 @@
               }
             },
             {
-              "asDouble": 0.67,
+              "asDouble": 0.66,
               "attributes": {
                 "host.name": "db-mysql-dc1-primary.openmanager.kr"
               }
@@ -1466,7 +1426,7 @@
               }
             },
             {
-              "asDouble": 0.8,
+              "asDouble": 0.81,
               "attributes": {
                 "host.name": "db-mysql-dc1-primary.openmanager.kr"
               }
@@ -2106,7 +2066,7 @@
       ],
       "logs": [
         {
-          "timeUnixNano": 1770995400000000000,
+          "timeUnixNano": 1770995403504631300,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "systemd[1]: Started Daily apt download activities.",
@@ -2119,7 +2079,7 @@
           "resource": "web-nginx-dc1-01"
         },
         {
-          "timeUnixNano": 1770995420948394200,
+          "timeUnixNano": 1770995421308543000,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "CRON[5097]: (root) CMD (/usr/lib/apt/apt.systemd.daily install)",
@@ -2132,7 +2092,17 @@
           "resource": "web-nginx-dc1-01"
         },
         {
-          "timeUnixNano": 1770995448047693300,
+          "timeUnixNano": 1770995435260554800,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "mysqld[1222]: [Warning] Disk I/O stalling: fsync took 1236ms for file ./ibdata1",
+          "attributes": {
+            "log.source": "mysqld"
+          },
+          "resource": "db-mysql-dc1-primary"
+        },
+        {
+          "timeUnixNano": 1770995447139752200,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "nginx[1698]: 10.0.0.1 - - \"GET /health HTTP/1.1\" 200 15 \"-\" \"kube-probe/1.28\"",
@@ -2145,17 +2115,7 @@
           "resource": "web-nginx-dc1-02"
         },
         {
-          "timeUnixNano": 1770995462566648000,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "java[3358]: [WARN] HikariPool - Connection to backend timed out after 1730ms",
-          "attributes": {
-            "log.source": "java"
-          },
-          "resource": "api-was-dc1-03"
-        },
-        {
-          "timeUnixNano": 1770995469211869400,
+          "timeUnixNano": 1770995495715361300,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "systemd[1]: Started Application Service (api-was).",
@@ -2168,7 +2128,7 @@
           "resource": "api-was-dc1-01"
         },
         {
-          "timeUnixNano": 1770995520578863600,
+          "timeUnixNano": 1770995516989944000,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "dockerd[8157]: Container health status: healthy (exit code 0)",
@@ -2181,10 +2141,10 @@
           "resource": "api-was-dc1-01"
         },
         {
-          "timeUnixNano": 1770995542213024300,
+          "timeUnixNano": 1770995547031337700,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "java[1003]: [GC (Allocation Failure) ParNew: 152685K->18537K(159509K), 0.091 secs]",
+          "body": "java[1003]: [GC (Allocation Failure) ParNew: 167300K->16927K(176824K), 0.091 secs]",
           "attributes": {
             "log.source": "syslog",
             "server.role": "application",
@@ -2194,10 +2154,10 @@
           "resource": "api-was-dc1-02"
         },
         {
-          "timeUnixNano": 1770995590333698300,
+          "timeUnixNano": 1770995570829690400,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "java[7685]: [GC (Allocation Failure) ParNew: 169590K->13310K(198524K), 0.089 secs]",
+          "body": "java[7685]: [GC (Allocation Failure) ParNew: 155821K->11380K(191120K), 0.089 secs]",
           "attributes": {
             "log.source": "syslog",
             "server.role": "application",
@@ -2207,7 +2167,7 @@
           "resource": "api-was-dc1-03"
         },
         {
-          "timeUnixNano": 1770995613413829400,
+          "timeUnixNano": 1770995590341629400,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "CRON[8562]: (mysql) CMD (/usr/bin/mysqladmin --defaults-file=/etc/mysql/debian.cnf ping)",
@@ -2220,7 +2180,7 @@
           "resource": "db-mysql-dc1-primary"
         },
         {
-          "timeUnixNano": 1770995643066301000,
+          "timeUnixNano": 1770995613587556400,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "systemd[1]: Started MySQL Community Server.",
@@ -2233,7 +2193,17 @@
           "resource": "db-mysql-dc1-primary"
         },
         {
-          "timeUnixNano": 1770995666268961800,
+          "timeUnixNano": 1770995635150133500,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "java[4315]: [WARN] Slow transaction: downstream dependency response 2572ms (threshold: 500ms)",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-01"
+        },
+        {
+          "timeUnixNano": 1770995640709499600,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "mysqld[7533]: InnoDB: Buffer pool(s) load completed at 2026-02-13T15:10:00",
@@ -2246,7 +2216,7 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1770995689229012700,
+          "timeUnixNano": 1770995664717073400,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "CRON[2143]: (mysql) CMD (/usr/bin/mysqladmin --defaults-file=/etc/mysql/debian.cnf ping)",
@@ -2259,7 +2229,17 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1770995732481946000,
+          "timeUnixNano": 1770995665156046800,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "java[2585]: [WARN] HikariPool - Connection to backend timed out after 463ms",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-03"
+        },
+        {
+          "timeUnixNano": 1770995686897906000,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "mysqld[7755]: InnoDB: Buffer pool(s) load completed at 2026-02-13T15:10:00",
@@ -2272,7 +2252,7 @@
           "resource": "db-mysql-dc1-backup"
         },
         {
-          "timeUnixNano": 1770995758477300700,
+          "timeUnixNano": 1770995713136308500,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "systemd[1]: redis-server.service: Watchdog timestamp updated.",
@@ -2285,7 +2265,7 @@
           "resource": "cache-redis-dc1-01"
         },
         {
-          "timeUnixNano": 1770995782425573400,
+          "timeUnixNano": 1770995736548490200,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "redis-server[6821]: Background AOF rewrite finished successfully",
@@ -2298,7 +2278,7 @@
           "resource": "cache-redis-dc1-01"
         },
         {
-          "timeUnixNano": 1770995807170358300,
+          "timeUnixNano": 1770995757659899400,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "redis-server[8623]: Background AOF rewrite finished successfully",
@@ -2311,7 +2291,7 @@
           "resource": "cache-redis-dc1-02"
         },
         {
-          "timeUnixNano": 1770995832416494800,
+          "timeUnixNano": 1770995783967186700,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "redis-server[5525]: DB saved on disk (RDB snapshot)",
@@ -2324,7 +2304,7 @@
           "resource": "cache-redis-dc1-02"
         },
         {
-          "timeUnixNano": 1770995855059197200,
+          "timeUnixNano": 1770995804957323800,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "nfsd[4032]: NFS export /data/shared ready, 20 active clients",
@@ -2337,17 +2317,7 @@
           "resource": "storage-nfs-dc1-01"
         },
         {
-          "timeUnixNano": 1770995872748347100,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "java[1041]: [WARN] HikariPool - Connection to backend timed out after 998ms",
-          "attributes": {
-            "log.source": "java"
-          },
-          "resource": "api-was-dc1-02"
-        },
-        {
-          "timeUnixNano": 1770995879487078100,
+          "timeUnixNano": 1770995852619887900,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "minio[2479]: Healthcheck passed, 11 active connections",
@@ -2360,17 +2330,17 @@
           "resource": "storage-s3gw-dc1-01"
         },
         {
-          "timeUnixNano": 1770995899226162400,
+          "timeUnixNano": 1770995876742777000,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "java[6495]: [WARN] HikariPool - Connection to backend timed out after 1462ms",
+          "body": "java[9478]: [WARN] HikariPool - Connection to backend timed out after 325ms",
           "attributes": {
             "log.source": "java"
           },
-          "resource": "api-was-dc1-01"
+          "resource": "api-was-dc1-02"
         },
         {
-          "timeUnixNano": 1770995906720862700,
+          "timeUnixNano": 1770995906460328000,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "systemd[1]: haproxy.service: Watchdog timestamp updated.",
@@ -2383,17 +2353,7 @@
           "resource": "lb-haproxy-dc1-01"
         },
         {
-          "timeUnixNano": 1770995930351251500,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "mysqld[1613]: [Warning] Disk I/O stalling: fsync took 2301ms for file ./ibdata1",
-          "attributes": {
-            "log.source": "mysqld"
-          },
-          "resource": "db-mysql-dc1-primary"
-        },
-        {
-          "timeUnixNano": 1770995954292352500,
+          "timeUnixNano": 1770995949729239800,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "systemd[1]: haproxy.service: Watchdog timestamp updated.",
@@ -2406,7 +2366,7 @@
           "resource": "lb-haproxy-dc1-02"
         },
         {
-          "timeUnixNano": 1770995977178448000,
+          "timeUnixNano": 1770995975243101400,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "haproxy[4514]: Health check OK for backend api_servers/server1 (HTTP 200)",
@@ -2563,7 +2523,7 @@
               }
             },
             {
-              "asDouble": 0.69,
+              "asDouble": 0.67,
               "attributes": {
                 "host.name": "db-mysql-dc1-primary.openmanager.kr"
               }
@@ -3300,7 +3260,7 @@
       ],
       "logs": [
         {
-          "timeUnixNano": 1770996000000000000,
+          "timeUnixNano": 1770996002028578000,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "nginx[2026]: 10.0.0.1 - - \"GET /health HTTP/1.1\" 200 15 \"-\" \"kube-probe/1.28\"",
@@ -3313,7 +3273,7 @@
           "resource": "web-nginx-dc1-01"
         },
         {
-          "timeUnixNano": 1770996024972402000,
+          "timeUnixNano": 1770996026449862000,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "CRON[8072]: (root) CMD (/usr/lib/apt/apt.systemd.daily install)",
@@ -3326,7 +3286,7 @@
           "resource": "web-nginx-dc1-01"
         },
         {
-          "timeUnixNano": 1770996053492546300,
+          "timeUnixNano": 1770996052859577900,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "CRON[5697]: (root) CMD (/usr/lib/apt/apt.systemd.daily install)",
@@ -3339,7 +3299,7 @@
           "resource": "web-nginx-dc1-02"
         },
         {
-          "timeUnixNano": 1770996076413944000,
+          "timeUnixNano": 1770996074881193000,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "CRON[2791]: (root) CMD (/usr/lib/apt/apt.systemd.daily install)",
@@ -3352,17 +3312,7 @@
           "resource": "web-nginx-dc1-03"
         },
         {
-          "timeUnixNano": 1770996116308978400,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "java[5835]: [WARN] Slow transaction: downstream dependency response 2380ms (threshold: 500ms)",
-          "attributes": {
-            "log.source": "java"
-          },
-          "resource": "api-was-dc1-02"
-        },
-        {
-          "timeUnixNano": 1770996127696959500,
+          "timeUnixNano": 1770996128405944600,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "nginx[1971]: 10.0.0.1 - - \"GET /health HTTP/1.1\" 200 15 \"-\" \"kube-probe/1.28\"",
@@ -3375,20 +3325,10 @@
           "resource": "web-nginx-dc1-03"
         },
         {
-          "timeUnixNano": 1770996152823388200,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "java[6072]: [WARN] HikariPool - Connection to backend timed out after 2039ms",
-          "attributes": {
-            "log.source": "java"
-          },
-          "resource": "api-was-dc1-03"
-        },
-        {
-          "timeUnixNano": 1770996182676786200,
+          "timeUnixNano": 1770996180374151000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "java[7716]: [GC (Allocation Failure) ParNew: 133099K->17199K(136688K), 0.061 secs]",
+          "body": "java[7716]: [GC (Allocation Failure) ParNew: 137823K->17110K(154987K), 0.061 secs]",
           "attributes": {
             "log.source": "syslog",
             "server.role": "application",
@@ -3398,10 +3338,10 @@
           "resource": "api-was-dc1-01"
         },
         {
-          "timeUnixNano": 1770996207808693500,
+          "timeUnixNano": 1770996211428746000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "java[8657]: [GC (Allocation Failure) ParNew: 115402K->16146K(112686K), 0.019 secs]",
+          "body": "java[8657]: [GC (Allocation Failure) ParNew: 108663K->15967K(110922K), 0.019 secs]",
           "attributes": {
             "log.source": "syslog",
             "server.role": "application",
@@ -3411,17 +3351,17 @@
           "resource": "api-was-dc1-02"
         },
         {
-          "timeUnixNano": 1770996225100985600,
+          "timeUnixNano": 1770996222930609700,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "mysqld[9336]: [Warning] Disk usage at 86%, approaching critical threshold",
+          "body": "mysqld[3634]: [Warning] Disk usage at 88%, approaching critical threshold",
           "attributes": {
             "log.source": "mysqld"
           },
           "resource": "db-mysql-dc1-primary"
         },
         {
-          "timeUnixNano": 1770996263252857300,
+          "timeUnixNano": 1770996258328878000,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "dockerd[2524]: Container health status: healthy (exit code 0)",
@@ -3434,10 +3374,10 @@
           "resource": "api-was-dc1-03"
         },
         {
-          "timeUnixNano": 1770996288116157700,
+          "timeUnixNano": 1770996288413972000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "java[6636]: [GC (Allocation Failure) ParNew: 146330K->16843K(132950K), 0.058 secs]",
+          "body": "java[6636]: [GC (Allocation Failure) ParNew: 143104K->15232K(119634K), 0.058 secs]",
           "attributes": {
             "log.source": "syslog",
             "server.role": "application",
@@ -3447,7 +3387,17 @@
           "resource": "api-was-dc1-03"
         },
         {
-          "timeUnixNano": 1770996311156490800,
+          "timeUnixNano": 1770996290667640000,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "java[2442]: [WARN] Slow transaction: downstream dependency response 3024ms (threshold: 500ms)",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-02"
+        },
+        {
+          "timeUnixNano": 1770996309237534200,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "CRON[8688]: (mysql) CMD (/usr/bin/mysqladmin --defaults-file=/etc/mysql/debian.cnf ping)",
@@ -3460,7 +3410,7 @@
           "resource": "db-mysql-dc1-primary"
         },
         {
-          "timeUnixNano": 1770996338744930600,
+          "timeUnixNano": 1770996340847583200,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "mysqld[6857]: InnoDB: Buffer pool(s) load completed at 2026-02-13T15:20:00",
@@ -3473,7 +3423,7 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1770996363934928100,
+          "timeUnixNano": 1770996368977719000,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "CRON[7377]: (mysql) CMD (/usr/bin/mysqladmin --defaults-file=/etc/mysql/debian.cnf ping)",
@@ -3486,17 +3436,7 @@
           "resource": "db-mysql-dc1-backup"
         },
         {
-          "timeUnixNano": 1770996385523728600,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "java[3311]: [WARN] Slow transaction: downstream dependency response 385ms (threshold: 500ms)",
-          "attributes": {
-            "log.source": "java"
-          },
-          "resource": "api-was-dc1-01"
-        },
-        {
-          "timeUnixNano": 1770996391214684200,
+          "timeUnixNano": 1770996413568519200,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "systemd[1]: redis-server.service: Watchdog timestamp updated.",
@@ -3509,7 +3449,7 @@
           "resource": "cache-redis-dc1-01"
         },
         {
-          "timeUnixNano": 1770996415078839300,
+          "timeUnixNano": 1770996440211284000,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "redis-server[6314]: DB saved on disk (RDB snapshot)",
@@ -3522,7 +3462,7 @@
           "resource": "cache-redis-dc1-01"
         },
         {
-          "timeUnixNano": 1770996443541180400,
+          "timeUnixNano": 1770996467419215000,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "redis-server[3843]: Background AOF rewrite finished successfully",
@@ -3535,7 +3475,27 @@
           "resource": "cache-redis-dc1-02"
         },
         {
-          "timeUnixNano": 1770996470568536000,
+          "timeUnixNano": 1770996482257791500,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "java[5110]: [WARN] HikariPool - Connection to backend timed out after 1638ms",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-01"
+        },
+        {
+          "timeUnixNano": 1770996483278204200,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "java[8730]: [WARN] Slow transaction: downstream dependency response 3007ms (threshold: 500ms)",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-03"
+        },
+        {
+          "timeUnixNano": 1770996497627766800,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "nfsd[2658]: NFS export /data/shared ready, 59 active clients",
@@ -3548,7 +3508,7 @@
           "resource": "storage-nfs-dc1-01"
         },
         {
-          "timeUnixNano": 1770996492874176800,
+          "timeUnixNano": 1770996517917237200,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "minio[5506]: Healthcheck passed, 6 active connections",
@@ -3561,7 +3521,7 @@
           "resource": "storage-s3gw-dc1-01"
         },
         {
-          "timeUnixNano": 1770996520349288700,
+          "timeUnixNano": 1770996550982853000,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "systemd[1]: haproxy.service: Watchdog timestamp updated.",
@@ -3574,7 +3534,7 @@
           "resource": "lb-haproxy-dc1-01"
         },
         {
-          "timeUnixNano": 1770996550407523800,
+          "timeUnixNano": 1770996577579927300,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "systemd[1]: haproxy.service: Watchdog timestamp updated.",
@@ -3634,7 +3594,7 @@
               }
             },
             {
-              "asDouble": 0.55,
+              "asDouble": 0.57,
               "attributes": {
                 "host.name": "db-mysql-dc1-primary.openmanager.kr"
               }
@@ -3731,7 +3691,7 @@
               }
             },
             {
-              "asDouble": 0.67,
+              "asDouble": 0.69,
               "attributes": {
                 "host.name": "db-mysql-dc1-primary.openmanager.kr"
               }
@@ -4481,7 +4441,7 @@
           "resource": "web-nginx-dc1-01"
         },
         {
-          "timeUnixNano": 1770996629324513800,
+          "timeUnixNano": 1770996628910364400,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "nginx[5973]: 10.0.0.1 - - \"GET /health HTTP/1.1\" 200 15 \"-\" \"kube-probe/1.28\"",
@@ -4494,17 +4454,27 @@
           "resource": "web-nginx-dc1-01"
         },
         {
-          "timeUnixNano": 1770996659527011600,
+          "timeUnixNano": 1770996634402080300,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "java[5815]: [WARN] Slow transaction: downstream dependency response 2357ms (threshold: 500ms)",
+          "body": "java[7163]: [WARN] HikariPool - Connection to backend timed out after 2717ms",
           "attributes": {
             "log.source": "java"
           },
           "resource": "api-was-dc1-03"
         },
         {
-          "timeUnixNano": 1770996681374034700,
+          "timeUnixNano": 1770996650783244800,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "java[7089]: [WARN] Slow transaction: downstream dependency response 1770ms (threshold: 500ms)",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-02"
+        },
+        {
+          "timeUnixNano": 1770996679893053400,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "nginx[2333]: 10.0.0.1 - - \"GET /health HTTP/1.1\" 200 15 \"-\" \"kube-probe/1.28\"",
@@ -4517,7 +4487,7 @@
           "resource": "web-nginx-dc1-02"
         },
         {
-          "timeUnixNano": 1770996709045607700,
+          "timeUnixNano": 1770996706260601000,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "CRON[9711]: (root) CMD (/usr/lib/apt/apt.systemd.daily install)",
@@ -4530,7 +4500,7 @@
           "resource": "web-nginx-dc1-03"
         },
         {
-          "timeUnixNano": 1770996759612236000,
+          "timeUnixNano": 1770996739262415600,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "nginx[7699]: 10.0.0.1 - - \"GET /health HTTP/1.1\" 200 15 \"-\" \"kube-probe/1.28\"",
@@ -4543,10 +4513,20 @@
           "resource": "web-nginx-dc1-03"
         },
         {
-          "timeUnixNano": 1770996815791230000,
+          "timeUnixNano": 1770996745047101700,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "java[8049]: [WARN] Slow transaction: downstream dependency response 1144ms (threshold: 500ms)",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-01"
+        },
+        {
+          "timeUnixNano": 1770996765621227800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "java[9399]: [GC (Allocation Failure) ParNew: 115146K->23730K(195969K), 0.011 secs]",
+          "body": "java[9399]: [GC (Allocation Failure) ParNew: 112706K->20929K(221149K), 0.011 secs]",
           "attributes": {
             "log.source": "syslog",
             "server.role": "application",
@@ -4556,20 +4536,10 @@
           "resource": "api-was-dc1-01"
         },
         {
-          "timeUnixNano": 1770996829918983200,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "java[1360]: [WARN] Slow transaction: downstream dependency response 2115ms (threshold: 500ms)",
-          "attributes": {
-            "log.source": "java"
-          },
-          "resource": "api-was-dc1-01"
-        },
-        {
-          "timeUnixNano": 1770996844760005400,
+          "timeUnixNano": 1770996815929555200,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "java[7580]: [GC (Allocation Failure) ParNew: 163203K->16662K(147006K), 0.087 secs]",
+          "body": "java[7580]: [GC (Allocation Failure) ParNew: 176699K->15941K(162719K), 0.087 secs]",
           "attributes": {
             "log.source": "syslog",
             "server.role": "application",
@@ -4579,7 +4549,7 @@
           "resource": "api-was-dc1-02"
         },
         {
-          "timeUnixNano": 1770996899178563000,
+          "timeUnixNano": 1770996846916412400,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "dockerd[6754]: Container health status: healthy (exit code 0)",
@@ -4592,7 +4562,7 @@
           "resource": "api-was-dc1-02"
         },
         {
-          "timeUnixNano": 1770996929164699100,
+          "timeUnixNano": 1770996871776514300,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "dockerd[4807]: Container health status: healthy (exit code 0)",
@@ -4605,17 +4575,7 @@
           "resource": "api-was-dc1-03"
         },
         {
-          "timeUnixNano": 1770996933996787700,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "java[8824]: [WARN] HikariPool - Connection to backend timed out after 1572ms",
-          "attributes": {
-            "log.source": "java"
-          },
-          "resource": "api-was-dc1-02"
-        },
-        {
-          "timeUnixNano": 1770996958406384400,
+          "timeUnixNano": 1770996930949370600,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "mysqld[4029]: InnoDB: Buffer pool(s) load completed at 2026-02-13T15:30:00",
@@ -4628,7 +4588,7 @@
           "resource": "db-mysql-dc1-primary"
         },
         {
-          "timeUnixNano": 1770996985471037200,
+          "timeUnixNano": 1770996954846022000,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "CRON[5433]: (mysql) CMD (/usr/bin/mysqladmin --defaults-file=/etc/mysql/debian.cnf ping)",
@@ -4641,7 +4601,7 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1770997007698927900,
+          "timeUnixNano": 1770996980104690400,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "mysqld[4888]: InnoDB: Buffer pool(s) load completed at 2026-02-13T15:30:00",
@@ -4654,7 +4614,7 @@
           "resource": "db-mysql-dc1-backup"
         },
         {
-          "timeUnixNano": 1770997036992183600,
+          "timeUnixNano": 1770997007423560000,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "redis-server[3135]: Background AOF rewrite finished successfully",
@@ -4667,7 +4627,7 @@
           "resource": "cache-redis-dc1-01"
         },
         {
-          "timeUnixNano": 1770997063936402400,
+          "timeUnixNano": 1770997038294937900,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "systemd[1]: redis-server.service: Watchdog timestamp updated.",
@@ -4680,7 +4640,7 @@
           "resource": "cache-redis-dc1-02"
         },
         {
-          "timeUnixNano": 1770997091286144500,
+          "timeUnixNano": 1770997065999027000,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "redis-server[2412]: DB saved on disk (RDB snapshot)",
@@ -4693,7 +4653,7 @@
           "resource": "cache-redis-dc1-02"
         },
         {
-          "timeUnixNano": 1770997116989005000,
+          "timeUnixNano": 1770997094101278000,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "CRON[6849]: (root) CMD (/usr/local/bin/check-raid-status.sh)",
@@ -4706,17 +4666,7 @@
           "resource": "storage-nfs-dc1-01"
         },
         {
-          "timeUnixNano": 1770997130588828700,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "mysqld[5459]: [Warning] Disk I/O stalling: fsync took 2232ms for file ./ibdata1",
-          "attributes": {
-            "log.source": "mysqld"
-          },
-          "resource": "db-mysql-dc1-primary"
-        },
-        {
-          "timeUnixNano": 1770997144338196000,
+          "timeUnixNano": 1770997146497073700,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "systemd[1]: haproxy.service: Watchdog timestamp updated.",
@@ -4729,7 +4679,7 @@
           "resource": "lb-haproxy-dc1-01"
         },
         {
-          "timeUnixNano": 1770997171742609000,
+          "timeUnixNano": 1770997175917932500,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "haproxy[5547]: Proxy api_frontend started (FD 87)",
@@ -4740,6 +4690,16 @@
             "cloud.availability_zone": "DC1-AZ3"
           },
           "resource": "lb-haproxy-dc1-02"
+        },
+        {
+          "timeUnixNano": 1770997178960926000,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "mysqld[4304]: [Warning] Disk I/O stalling: fsync took 1444ms for file ./ibdata1",
+          "attributes": {
+            "log.source": "mysqld"
+          },
+          "resource": "db-mysql-dc1-primary"
         }
       ]
     },
@@ -4789,7 +4749,7 @@
               }
             },
             {
-              "asDouble": 0.57,
+              "asDouble": 0.56,
               "attributes": {
                 "host.name": "db-mysql-dc1-primary.openmanager.kr"
               }
@@ -5623,7 +5583,7 @@
       ],
       "logs": [
         {
-          "timeUnixNano": 1770997200000000000,
+          "timeUnixNano": 1770997201042898400,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "nginx[7217]: 10.0.0.1 - - \"GET /health HTTP/1.1\" 200 15 \"-\" \"kube-probe/1.28\"",
@@ -5636,7 +5596,7 @@
           "resource": "web-nginx-dc1-01"
         },
         {
-          "timeUnixNano": 1770997223808005400,
+          "timeUnixNano": 1770997221017064200,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "CRON[7913]: (root) CMD (/usr/lib/apt/apt.systemd.daily install)",
@@ -5649,7 +5609,7 @@
           "resource": "web-nginx-dc1-01"
         },
         {
-          "timeUnixNano": 1770997242651991000,
+          "timeUnixNano": 1770997245610435600,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "CRON[9644]: (root) CMD (/usr/lib/apt/apt.systemd.daily install)",
@@ -5662,20 +5622,10 @@
           "resource": "web-nginx-dc1-02"
         },
         {
-          "timeUnixNano": 1770997261243953200,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "java[4702]: [WARN] HikariPool - Connection to backend timed out after 803ms",
-          "attributes": {
-            "log.source": "java"
-          },
-          "resource": "api-was-dc1-01"
-        },
-        {
-          "timeUnixNano": 1770997265804402000,
+          "timeUnixNano": 1770997288787466500,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "java[6932]: [GC (Allocation Failure) ParNew: 142654K->17580K(199219K), 0.043 secs]",
+          "body": "java[6932]: [GC (Allocation Failure) ParNew: 138757K->15325K(177298K), 0.043 secs]",
           "attributes": {
             "log.source": "syslog",
             "server.role": "application",
@@ -5685,10 +5635,10 @@
           "resource": "api-was-dc1-01"
         },
         {
-          "timeUnixNano": 1770997290661947100,
+          "timeUnixNano": 1770997312794542800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "java[7935]: [GC (Allocation Failure) ParNew: 217658K->12756K(115319K), 0.076 secs]",
+          "body": "java[7935]: [GC (Allocation Failure) ParNew: 242087K->13049K(123209K), 0.076 secs]",
           "attributes": {
             "log.source": "syslog",
             "server.role": "application",
@@ -5698,7 +5648,7 @@
           "resource": "api-was-dc1-02"
         },
         {
-          "timeUnixNano": 1770997308415989000,
+          "timeUnixNano": 1770997334464677000,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "dockerd[5766]: Container health status: healthy (exit code 0)",
@@ -5711,7 +5661,7 @@
           "resource": "api-was-dc1-02"
         },
         {
-          "timeUnixNano": 1770997334950638000,
+          "timeUnixNano": 1770997353242650000,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "dockerd[6982]: Container health status: healthy (exit code 0)",
@@ -5724,7 +5674,7 @@
           "resource": "api-was-dc1-03"
         },
         {
-          "timeUnixNano": 1770997357060278800,
+          "timeUnixNano": 1770997377304935400,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "CRON[7373]: (mysql) CMD (/usr/bin/mysqladmin --defaults-file=/etc/mysql/debian.cnf ping)",
@@ -5737,7 +5687,7 @@
           "resource": "db-mysql-dc1-primary"
         },
         {
-          "timeUnixNano": 1770997403008289300,
+          "timeUnixNano": 1770997400223322600,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "mysqld[9360]: InnoDB: Buffer pool(s) load completed at 2026-02-13T15:40:00",
@@ -5750,17 +5700,27 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1770997417846256000,
+          "timeUnixNano": 1770997401305052700,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "java[8737]: [WARN] Slow transaction: downstream dependency response 1829ms (threshold: 500ms)",
+          "body": "java[9892]: [WARN] HikariPool - Connection to backend timed out after 1288ms",
           "attributes": {
             "log.source": "java"
           },
-          "resource": "api-was-dc1-03"
+          "resource": "api-was-dc1-02"
         },
         {
-          "timeUnixNano": 1770997422230644700,
+          "timeUnixNano": 1770997428361769000,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "java[3041]: [WARN] HikariPool - Connection to backend timed out after 1200ms",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-01"
+        },
+        {
+          "timeUnixNano": 1770997441132483800,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "CRON[5242]: (mysql) CMD (/usr/bin/mysqladmin --defaults-file=/etc/mysql/debian.cnf ping)",
@@ -5773,7 +5733,7 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1770997442985302300,
+          "timeUnixNano": 1770997463492450600,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "CRON[6014]: (mysql) CMD (/usr/bin/mysqladmin --defaults-file=/etc/mysql/debian.cnf ping)",
@@ -5786,17 +5746,7 @@
           "resource": "db-mysql-dc1-backup"
         },
         {
-          "timeUnixNano": 1770997443618967800,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "mysqld[5151]: [Warning] Disk I/O stalling: fsync took 1901ms for file ./ibdata1",
-          "attributes": {
-            "log.source": "mysqld"
-          },
-          "resource": "db-mysql-dc1-primary"
-        },
-        {
-          "timeUnixNano": 1770997491773545200,
+          "timeUnixNano": 1770997509887013400,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "mysqld[4500]: InnoDB: Buffer pool(s) load completed at 2026-02-13T15:40:00",
@@ -5809,7 +5759,7 @@
           "resource": "db-mysql-dc1-backup"
         },
         {
-          "timeUnixNano": 1770997511312388000,
+          "timeUnixNano": 1770997533608723000,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "systemd[1]: redis-server.service: Watchdog timestamp updated.",
@@ -5822,7 +5772,7 @@
           "resource": "cache-redis-dc1-01"
         },
         {
-          "timeUnixNano": 1770997536565990100,
+          "timeUnixNano": 1770997557621173000,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "redis-server[5548]: Background AOF rewrite finished successfully",
@@ -5835,7 +5785,7 @@
           "resource": "cache-redis-dc1-01"
         },
         {
-          "timeUnixNano": 1770997558270967300,
+          "timeUnixNano": 1770997576047061800,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "systemd[1]: redis-server.service: Watchdog timestamp updated.",
@@ -5848,7 +5798,7 @@
           "resource": "cache-redis-dc1-02"
         },
         {
-          "timeUnixNano": 1770997575232018700,
+          "timeUnixNano": 1770997603041297000,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "redis-server[7255]: Background AOF rewrite finished successfully",
@@ -5861,7 +5811,7 @@
           "resource": "cache-redis-dc1-02"
         },
         {
-          "timeUnixNano": 1770997602714130200,
+          "timeUnixNano": 1770997624380188700,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "nfsd[4131]: NFS export /data/shared ready, 26 active clients",
@@ -5874,7 +5824,17 @@
           "resource": "storage-nfs-dc1-01"
         },
         {
-          "timeUnixNano": 1770997622285185000,
+          "timeUnixNano": 1770997639801320700,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "java[4831]: [WARN] HikariPool - Connection to backend timed out after 3184ms",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-03"
+        },
+        {
+          "timeUnixNano": 1770997642218241300,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "minio[3220]: S3 Gateway ready, 5 buckets loaded",
@@ -5887,7 +5847,17 @@
           "resource": "storage-s3gw-dc1-01"
         },
         {
-          "timeUnixNano": 1770997669426050000,
+          "timeUnixNano": 1770997662048547800,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "mysqld[3056]: [Warning] Disk I/O stalling: fsync took 3093ms for file ./ibdata1",
+          "attributes": {
+            "log.source": "mysqld"
+          },
+          "resource": "db-mysql-dc1-primary"
+        },
+        {
+          "timeUnixNano": 1770997667761590800,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "minio[4490]: Healthcheck passed, 4 active connections",
@@ -5900,7 +5870,7 @@
           "resource": "storage-s3gw-dc1-01"
         },
         {
-          "timeUnixNano": 1770997710585503700,
+          "timeUnixNano": 1770997692181205000,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "systemd[1]: haproxy.service: Watchdog timestamp updated.",
@@ -5913,7 +5883,7 @@
           "resource": "lb-haproxy-dc1-01"
         },
         {
-          "timeUnixNano": 1770997732709998600,
+          "timeUnixNano": 1770997708409872000,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "haproxy[2451]: Health check OK for backend api_servers/server1 (HTTP 200)",
@@ -5926,7 +5896,7 @@
           "resource": "lb-haproxy-dc1-01"
         },
         {
-          "timeUnixNano": 1770997758514586000,
+          "timeUnixNano": 1770997730159195100,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "systemd[1]: haproxy.service: Watchdog timestamp updated.",
@@ -5939,7 +5909,7 @@
           "resource": "lb-haproxy-dc1-02"
         },
         {
-          "timeUnixNano": 1770997775685117200,
+          "timeUnixNano": 1770997755680615400,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "haproxy[4921]: Proxy api_frontend started (FD 105)",
@@ -5950,16 +5920,6 @@
             "cloud.availability_zone": "DC1-AZ3"
           },
           "resource": "lb-haproxy-dc1-02"
-        },
-        {
-          "timeUnixNano": 1770997798648045600,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "java[1990]: [WARN] HikariPool - Connection to backend timed out after 1863ms",
-          "attributes": {
-            "log.source": "java"
-          },
-          "resource": "api-was-dc1-02"
         }
       ]
     },
@@ -6203,7 +6163,7 @@
               }
             },
             {
-              "asDouble": 0.82,
+              "asDouble": 0.84,
               "attributes": {
                 "host.name": "db-mysql-dc1-primary.openmanager.kr"
               }
@@ -6843,7 +6803,7 @@
       ],
       "logs": [
         {
-          "timeUnixNano": 1770997800000000000,
+          "timeUnixNano": 1770997803017562400,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "nginx[3064]: 10.0.0.1 - - \"GET /health HTTP/1.1\" 200 15 \"-\" \"kube-probe/1.28\"",
@@ -6856,7 +6816,7 @@
           "resource": "web-nginx-dc1-01"
         },
         {
-          "timeUnixNano": 1770997821191963600,
+          "timeUnixNano": 1770997820883951900,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "nginx[3437]: 10.0.0.1 - - \"GET /health HTTP/1.1\" 200 15 \"-\" \"kube-probe/1.28\"",
@@ -6869,17 +6829,7 @@
           "resource": "web-nginx-dc1-02"
         },
         {
-          "timeUnixNano": 1770997826675116800,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "mysqld[5186]: [Warning] Disk I/O stalling: fsync took 1705ms for file ./ibdata1",
-          "attributes": {
-            "log.source": "mysqld"
-          },
-          "resource": "db-mysql-dc1-primary"
-        },
-        {
-          "timeUnixNano": 1770997839261332700,
+          "timeUnixNano": 1770997861004820200,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "CRON[9051]: (root) CMD (/usr/lib/apt/apt.systemd.daily install)",
@@ -6892,7 +6842,7 @@
           "resource": "web-nginx-dc1-02"
         },
         {
-          "timeUnixNano": 1770997861080150300,
+          "timeUnixNano": 1770997885461441500,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "CRON[9753]: (root) CMD (/usr/lib/apt/apt.systemd.daily install)",
@@ -6905,17 +6855,17 @@
           "resource": "web-nginx-dc1-03"
         },
         {
-          "timeUnixNano": 1770997867323179000,
+          "timeUnixNano": 1770997898367758300,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "java[9324]: [WARN] Slow transaction: downstream dependency response 2518ms (threshold: 500ms)",
+          "body": "java[9307]: [WARN] HikariPool - Connection to backend timed out after 359ms",
           "attributes": {
             "log.source": "java"
           },
-          "resource": "api-was-dc1-03"
+          "resource": "api-was-dc1-02"
         },
         {
-          "timeUnixNano": 1770997883856213800,
+          "timeUnixNano": 1770997922197142800,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "nginx[4529]: 10.0.0.1 - - \"GET /health HTTP/1.1\" 200 15 \"-\" \"kube-probe/1.28\"",
@@ -6928,7 +6878,7 @@
           "resource": "web-nginx-dc1-03"
         },
         {
-          "timeUnixNano": 1770997903474942200,
+          "timeUnixNano": 1770997943714941700,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "dockerd[2670]: Container health status: healthy (exit code 0)",
@@ -6941,10 +6891,10 @@
           "resource": "api-was-dc1-01"
         },
         {
-          "timeUnixNano": 1770997922909864200,
+          "timeUnixNano": 1770997967122571800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "java[7498]: [GC (Allocation Failure) ParNew: 155483K->11579K(123734K), 0.087 secs]",
+          "body": "java[7498]: [GC (Allocation Failure) ParNew: 174909K->11299K(136334K), 0.087 secs]",
           "attributes": {
             "log.source": "syslog",
             "server.role": "application",
@@ -6954,7 +6904,7 @@
           "resource": "api-was-dc1-01"
         },
         {
-          "timeUnixNano": 1770997962535256600,
+          "timeUnixNano": 1770997988618185200,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "dockerd[2939]: Container health status: healthy (exit code 0)",
@@ -6967,10 +6917,10 @@
           "resource": "api-was-dc1-02"
         },
         {
-          "timeUnixNano": 1770997987781490400,
+          "timeUnixNano": 1770998004385923600,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "java[4342]: [GC (Allocation Failure) ParNew: 145803K->15359K(142501K), 0.046 secs]",
+          "body": "java[4342]: [GC (Allocation Failure) ParNew: 150359K->13192K(133124K), 0.046 secs]",
           "attributes": {
             "log.source": "syslog",
             "server.role": "application",
@@ -6980,7 +6930,7 @@
           "resource": "api-was-dc1-02"
         },
         {
-          "timeUnixNano": 1770998007690430500,
+          "timeUnixNano": 1770998025850605300,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "dockerd[1255]: Container health status: healthy (exit code 0)",
@@ -6993,7 +6943,7 @@
           "resource": "api-was-dc1-03"
         },
         {
-          "timeUnixNano": 1770998025917240600,
+          "timeUnixNano": 1770998050457787600,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "mysqld[1877]: InnoDB: Buffer pool(s) load completed at 2026-02-13T15:50:00",
@@ -7006,7 +6956,7 @@
           "resource": "db-mysql-dc1-primary"
         },
         {
-          "timeUnixNano": 1770998049543428400,
+          "timeUnixNano": 1770998070153909200,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "mysqld[9470]: InnoDB: Buffer pool(s) load completed at 2026-02-13T15:50:00",
@@ -7019,7 +6969,17 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1770998089792727600,
+          "timeUnixNano": 1770998080094578400,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "java[3030]: [WARN] Slow transaction: downstream dependency response 760ms (threshold: 500ms)",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-01"
+        },
+        {
+          "timeUnixNano": 1770998088701653500,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "CRON[9000]: (mysql) CMD (/usr/bin/mysqladmin --defaults-file=/etc/mysql/debian.cnf ping)",
@@ -7032,7 +6992,7 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1770998109004693500,
+          "timeUnixNano": 1770998109591535900,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "CRON[8455]: (mysql) CMD (/usr/bin/mysqladmin --defaults-file=/etc/mysql/debian.cnf ping)",
@@ -7045,7 +7005,7 @@
           "resource": "db-mysql-dc1-backup"
         },
         {
-          "timeUnixNano": 1770998128892926200,
+          "timeUnixNano": 1770998129109028900,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "mysqld[2258]: InnoDB: Buffer pool(s) load completed at 2026-02-13T15:50:00",
@@ -7058,7 +7018,7 @@
           "resource": "db-mysql-dc1-backup"
         },
         {
-          "timeUnixNano": 1770998149815837200,
+          "timeUnixNano": 1770998152217744100,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "systemd[1]: redis-server.service: Watchdog timestamp updated.",
@@ -7071,7 +7031,7 @@
           "resource": "cache-redis-dc1-01"
         },
         {
-          "timeUnixNano": 1770998171748567000,
+          "timeUnixNano": 1770998173795741200,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "redis-server[1266]: DB saved on disk (RDB snapshot)",
@@ -7084,7 +7044,7 @@
           "resource": "cache-redis-dc1-01"
         },
         {
-          "timeUnixNano": 1770998192392403500,
+          "timeUnixNano": 1770998192658642200,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "redis-server[9490]: Background AOF rewrite finished successfully",
@@ -7097,7 +7057,7 @@
           "resource": "cache-redis-dc1-02"
         },
         {
-          "timeUnixNano": 1770998212609072000,
+          "timeUnixNano": 1770998214062774800,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "redis-server[4009]: DB saved on disk (RDB snapshot)",
@@ -7110,17 +7070,7 @@
           "resource": "cache-redis-dc1-02"
         },
         {
-          "timeUnixNano": 1770998240834382300,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "java[4864]: [WARN] HikariPool - Connection to backend timed out after 348ms",
-          "attributes": {
-            "log.source": "java"
-          },
-          "resource": "api-was-dc1-01"
-        },
-        {
-          "timeUnixNano": 1770998257781842000,
+          "timeUnixNano": 1770998257715525400,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "CRON[9475]: (root) CMD (/usr/local/bin/check-raid-status.sh)",
@@ -7133,7 +7083,7 @@
           "resource": "storage-nfs-dc1-01"
         },
         {
-          "timeUnixNano": 1770998274618343200,
+          "timeUnixNano": 1770998278389004500,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "minio[2043]: S3 Gateway ready, 11 buckets loaded",
@@ -7146,7 +7096,7 @@
           "resource": "storage-s3gw-dc1-01"
         },
         {
-          "timeUnixNano": 1770998296754536200,
+          "timeUnixNano": 1770998296285679600,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "minio[3065]: Healthcheck passed, 4 active connections",
@@ -7159,7 +7109,7 @@
           "resource": "storage-s3gw-dc1-01"
         },
         {
-          "timeUnixNano": 1770998314823717400,
+          "timeUnixNano": 1770998314652435500,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "haproxy[3994]: Health check OK for backend api_servers/server1 (HTTP 200)",
@@ -7172,7 +7122,17 @@
           "resource": "lb-haproxy-dc1-01"
         },
         {
-          "timeUnixNano": 1770998336352501200,
+          "timeUnixNano": 1770998322882588400,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "mysqld[2249]: [Warning] Disk I/O stalling: fsync took 514ms for file ./ibdata1",
+          "attributes": {
+            "log.source": "mysqld"
+          },
+          "resource": "db-mysql-dc1-primary"
+        },
+        {
+          "timeUnixNano": 1770998340535089200,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "haproxy[6650]: Health check OK for backend api_servers/server1 (HTTP 200)",
@@ -7185,7 +7145,7 @@
           "resource": "lb-haproxy-dc1-02"
         },
         {
-          "timeUnixNano": 1770998360673157400,
+          "timeUnixNano": 1770998356368664600,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "systemd[1]: haproxy.service: Watchdog timestamp updated.",
@@ -7198,14 +7158,14 @@
           "resource": "lb-haproxy-dc1-02"
         },
         {
-          "timeUnixNano": 1770998388400982500,
+          "timeUnixNano": 1770998370739513600,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "java[5150]: [WARN] Slow transaction: downstream dependency response 250ms (threshold: 500ms)",
+          "body": "java[4657]: [WARN] Slow transaction: downstream dependency response 494ms (threshold: 500ms)",
           "attributes": {
             "log.source": "java"
           },
-          "resource": "api-was-dc1-02"
+          "resource": "api-was-dc1-03"
         }
       ]
     }

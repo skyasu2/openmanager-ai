@@ -897,69 +897,61 @@ function limitWatchdogDuplicates(data: HourlyFile): HourlyFile {
 // Timeseries: 시나리오 동기화
 // ============================================================================
 
-function syncTimeseriesWithScenarios(data: TimeSeries): TimeSeries {
-  const metricKeyToName: Record<string, string> = {
-    'cpu': 'system.cpu.utilization',
-    'memory': 'system.memory.utilization',
-    'disk': 'system.filesystem.utilization',
-    'network': 'system.network.io',
-  };
+/**
+ * Timeseries를 hourly 파일에서 직접 추출하여 완벽히 동기화.
+ * 기존 방식(시나리오만 덮어쓰기)이 1.8% 불일치를 일으킨 것을 해결.
+ *
+ * 방식: 24개 hourly JSON을 읽고, 각 슬롯의 메트릭 값을 timeseries 144포인트에 1:1 매핑.
+ * - cpu/memory/disk: hourly에 0-1 ratio 저장 → 그대로 복사
+ * - network: hourly에 bytes 저장 → ratio로 역변환 (bytes / 125,000,000)
+ */
+function syncTimeseriesFromHourlyFiles(data: TimeSeries): TimeSeries {
+  const NETWORK_MAX_BYTES = 125_000_000;
+  const RATIO_METRICS = [
+    'system.cpu.utilization',
+    'system.memory.utilization',
+    'system.filesystem.utilization',
+  ];
+  const NETWORK_METRIC = 'system.network.io';
 
-  // 시나리오 서버 메트릭 오버라이드
   for (let hour = 0; hour < 24; hour++) {
-    const scenario = HOUR_SCENARIOS[hour];
-    if (!scenario) continue;
+    const filename = `hour-${String(hour).padStart(2, '0')}.json`;
+    const filepath = path.join(HOURLY_DIR, filename);
+    const raw = fs.readFileSync(filepath, 'utf-8');
+    const hourly: HourlyFile = JSON.parse(raw);
 
-    for (const [serverId, override] of Object.entries(scenario)) {
-      const serverIdx = data.serverIds.indexOf(serverId);
-      if (serverIdx === -1) continue;
+    for (let slotIdx = 0; slotIdx < hourly.slots.length; slotIdx++) {
+      const slot = hourly.slots[slotIdx];
+      if (!slot) continue;
+      const tsIdx = hour * 6 + slotIdx;
 
-      for (const [metricKey, targetValue] of Object.entries(override)) {
-        if (targetValue === undefined) continue;
-        const metricName = metricKeyToName[metricKey];
-        if (!metricName || !data.metrics[metricName]) continue;
+      for (const metric of slot.metrics) {
+        const isRatio = RATIO_METRICS.includes(metric.name);
+        const isNetwork = metric.name === NETWORK_METRIC;
+        if (!isRatio && !isNetwork) continue;
 
-        const series = data.metrics[metricName][serverIdx];
-        if (!series) continue;
+        const tsSeries = data.metrics[metric.name];
+        if (!tsSeries) continue;
 
-        for (let slotIdx = 0; slotIdx < 6; slotIdx++) {
-          const tsIdx = hour * 6 + slotIdx;
-          if (tsIdx >= series.length) continue;
+        for (const dp of metric.dataPoints) {
+          const hostname = dp.attributes['host.name'];
+          const serverId = hostname?.split('.')[0];
+          if (!serverId) continue;
 
-          const slotOffset = (slotIdx - 2.5) / 6 * 0.04;
-          const jitter = (Math.random() - 0.5) * 0.03;
-          const value = Math.max(0.01, Math.min(0.99, targetValue + slotOffset + jitter));
-          series[tsIdx] = Math.round(value * 100) / 100;
-        }
-      }
-    }
-  }
+          const serverIdx = data.serverIds.indexOf(serverId);
+          if (serverIdx === -1) continue;
 
-  // 비시나리오 서버: 건강 범위 보장
-  const metricNameToKeyMap: Record<string, string> = {
-    'system.cpu.utilization': 'cpu',
-    'system.memory.utilization': 'memory',
-    'system.filesystem.utilization': 'disk',
-    'system.network.io': 'network',
-  };
+          const series = tsSeries[serverIdx];
+          if (!series || tsIdx >= series.length) continue;
 
-  for (const [metricName, serverSeries] of Object.entries(data.metrics)) {
-    const mKey = metricNameToKeyMap[metricName];
-    if (!mKey) continue;
-
-    for (let sIdx = 0; sIdx < data.serverIds.length; sIdx++) {
-      const sid = data.serverIds[sIdx];
-      const series = serverSeries[sIdx];
-      if (!series) continue;
-
-      for (let tsIdx = 0; tsIdx < series.length; tsIdx++) {
-        const hour = Math.floor(tsIdx / 6);
-        const scenario = HOUR_SCENARIOS[hour];
-        if (scenario?.[sid]?.[mKey as keyof ServerMetricOverride] !== undefined) continue;
-
-        const maxHealthy = mKey === 'network' ? 0.60 : 0.72;
-        if (series[tsIdx] > maxHealthy) {
-          series[tsIdx] = Math.round((0.35 + Math.random() * 0.25) * 100) / 100;
+          if (isRatio) {
+            // ratio 그대로 복사 (소수점 4자리)
+            series[tsIdx] = Math.round(dp.asDouble * 10000) / 10000;
+          } else {
+            // bytes → ratio 역변환
+            const ratio = dp.asDouble / NETWORK_MAX_BYTES;
+            series[tsIdx] = Math.round(Math.min(ratio, 0.99) * 10000) / 10000;
+          }
         }
       }
     }
@@ -1014,10 +1006,9 @@ function main(): void {
   // C4: Add missing metrics (uptime, process.count)
   addMissingTimeseriesMetrics();
 
-  // ★ Timeseries 시나리오 동기화 (C2/I3 대체 — 시나리오 반영 + 비시나리오 건강 보장)
-  // Note: fixNetworkTimeseries 제거 — syncTimeseriesWithScenarios가 모든 값을 ratio로 통일
-  processTimeseries((data) => syncTimeseriesWithScenarios(data));
-  console.log('  ★ Timeseries synced with 5 scenarios');
+  // ★ Timeseries를 hourly 파일에서 직접 추출 (100% 정합성 보장)
+  processTimeseries((data) => syncTimeseriesFromHourlyFiles(data));
+  console.log('  ★ Timeseries synced from hourly files (direct extraction)');
 
   console.log('\n=== Done ===');
 }
