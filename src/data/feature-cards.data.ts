@@ -1,7 +1,7 @@
 /**
  * Feature Cards 데이터
  * 메인 페이지에 표시되는 4개의 주요 기능 카드 데이터
- * @updated 2026-02-16 - 실제 코드베이스와 불일치 항목 수정 (에이전트 수, 패키지명, 버전)
+ * @updated 2026-02-24 - AI 모델/에이전트 정보 실제 코드베이스와 동기화
  */
 
 import { Bot, Database, Sparkles, Zap } from 'lucide-react';
@@ -16,14 +16,14 @@ export const FEATURE_CARDS_DATA: FeatureCard[] = [
     icon: Bot,
     gradient: 'from-indigo-500 via-purple-500 to-pink-500',
     detailedContent: {
-      overview: `4개의 AI Provider(Cerebras, Groq, Mistral, Gemini)와 Vercel AI SDK 6.0 네이티브 ToolLoopAgent 기반 7-Agent 멀티 에이전트 시스템입니다. Vision Agent로 대시보드 스크린샷 분석, 1M 토큰 대용량 로그 분석, Google Search Grounding 지원. Isolation Forest ML 엔진으로 다변량 이상 탐지, LlamaIndex.TS GraphRAG로 하이브리드 검색을 수행합니다.`,
+      overview: `4개의 AI Provider(Cerebras, Groq, Mistral, Gemini)와 Vercel AI SDK 6.0 네이티브 ToolLoopAgent 기반 5-Agent + Evaluator-Optimizer 파이프라인 시스템입니다. Vision Agent로 대시보드 스크린샷 분석, 1M 토큰 대용량 로그 분석, Google Search Grounding 지원. Isolation Forest ML 엔진으로 다변량 이상 탐지, LlamaIndex.TS GraphRAG + Tavily 하이브리드 검색을 수행합니다.`,
       features: [
-        '🧠 Cerebras Inference: WSE-3 칩 기반 24M 토큰/일 초고속 추론 (llama-3.3-70b) — NLQ 에이전트 전용, 최저 지연 우선',
-        '⚡ Groq Cloud: LPU 기반 500 Tokens/s 초고속 추론 (llama-3.3-70b-versatile) — Analyst/Reporter 기본 모델',
-        '🛡️ Mistral AI: 24B SLM + mistral-embed 1024차원 벡터 임베딩 — Advisor 전용, RAG 검색 품질 최적',
+        '🧠 Cerebras Inference: WSE-3 칩 기반 1M 토큰/일 초고속 추론 (gpt-oss-120b) — NLQ/Analyst/Supervisor 1순위, 최저 지연 우선',
+        '⚡ Groq Cloud: LPU 기반 500 Tokens/s 초고속 추론 (llama-3.3-70b-versatile) — Reporter/Orchestrator 1순위 모델',
+        '🛡️ Mistral AI: mistral-large-latest Frontier 모델 — Advisor 1순위, RAG 검색 품질 최적',
         '👁️ Gemini Flash: Vision Agent 전용, 스크린샷 분석, 1M 컨텍스트 — 대용량 로그/이미지 처리 유일 모델',
         '▲ Vercel AI SDK 6.0: streamText, generateObject, embed 통합 API — 멀티 에이전트 스트리밍 응답 기반',
-        '🤖 Orchestrator-Worker: AI SDK v6 네이티브 ToolLoopAgent + stopWhen 기반 7-Agent 라우팅 — 공식 에이전트 패턴으로 응답 품질 향상',
+        '🤖 Orchestrator-Worker: AI SDK v6 네이티브 ToolLoopAgent + stopWhen 기반 5-Agent 라우팅 + Evaluator-Optimizer 파이프라인',
         '🌲 Isolation Forest: ML 기반 다변량 이상 탐지 + Adaptive Thresholds — 단일 메트릭 임계값의 한계 보완',
         '🦙 LlamaIndex.TS: GraphRAG + Knowledge Triplet Extraction — 키워드 검색으로 못 찾는 관계 탐색',
         '🐘 Supabase pgVector: 벡터 유사도 검색 + 그래프 탐색 — 의미 검색과 관계 탐색을 단일 DB에 통합',
@@ -32,9 +32,9 @@ export const FEATURE_CARDS_DATA: FeatureCard[] = [
         '☁️ GCP Cloud Run: Node.js 24 + Hono 서버리스 컨테이너 — Vercel 10초 제한 우회 (300초 허용)',
       ],
       technologies: [
-        'Cerebras Inference (Llama 3.3 70B)',
-        'Groq Cloud (LPU)',
-        'Mistral AI (SLM 24B + Embedding)',
+        'Cerebras Inference (gpt-oss-120b)',
+        'Groq Cloud (llama-3.3-70b)',
+        'Mistral AI (mistral-large-latest)',
         'Gemini 2.5 Flash (Vision)',
         'Vercel AI SDK 6.0',
         'AI SDK v6 ToolLoopAgent (native)',

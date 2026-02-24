@@ -4,11 +4,11 @@
 > Owner: documentation
 > Status: Active
 > Doc type: Reference
-> Last reviewed: 2026-02-20
+> Last reviewed: 2026-02-24
 > Canonical: docs/llms.md
 > Tags: llm,context,ai
 >
-> **v8.0.0** | Updated 2026-02-20
+> **v8.3.3** | Updated 2026-02-24
 >
 > AI 어시스턴트가 프로젝트를 이해하는 데 필요한 핵심 정보
 
@@ -33,8 +33,8 @@ OpenManager AI is an AI-native server monitoring platform built with:
 - Supervisor: Dual-mode (Single/Multi Agent)
 - Agents (실행): NLQ, Analyst, Reporter, Advisor, Vision, Evaluator, Optimizer
 - Orchestrator: 에이전트 라우팅 코디네이터 (별도 컴포넌트)
-- Providers: Cerebras → Groq → Mistral (fallback chain) + Gemini (Vision)
-- Tools: 27 specialized tools (Metrics 6, RCA 3, Analyst 4, Reporter 3, Evaluation 6, Control 1, Vision 4)
+- Providers: Cerebras(gpt-oss-120b) → Groq(llama-3.3-70b) → Mistral(mistral-large) (3-way fallback chain) + Gemini (Vision)
+- Tools: 26 specialized tools (Metrics 5, RCA 3, Analyst 4, Knowledge 3, Evaluation 6, Control 1, Vision 4)
 
 ## Key Files
 
@@ -80,14 +80,13 @@ curl $SERVICE_URL/health  # Health check
 1. TypeScript strict mode - no `any` types
 2. AI Engine timeout: 300s (Cloud Run free-tier deploy config)
 3. Vercel timeout:
-   - Legacy defaults: Hobby 10s default / 60s max, Pro 15s default / 300s max
    - Fluid Compute: Hobby 300s(default)/300s max, Pro 300s(default)/800s max
-4. Free tier optimization: Cerebras/Mistral/Groq rotation + Gemini (Vision)
+4. Free tier optimization: Cerebras(3000 tok/s)/Groq/Mistral rotation
 
-Reference (checked: 2026-02-20):
+Reference (checked: 2026-02-24):
 - https://vercel.com/docs/limits/overview
 
 ## Contact
 
 - Repository: github.com/skyasu2/openmanager-ai
-- Version: 8.0.0
+- Version: 8.3.3

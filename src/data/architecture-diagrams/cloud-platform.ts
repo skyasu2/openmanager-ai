@@ -13,7 +13,7 @@ export const CLOUD_PLATFORM_ARCHITECTURE: ArchitectureDiagram = {
         {
           id: 'vercel',
           label: 'Vercel',
-          sublabel: 'Next.js 16 + Edge CDN',
+          sublabel: 'Next.js 16.1 + Edge CDN',
           type: 'primary',
           icon: '▲',
         },
