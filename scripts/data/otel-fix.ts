@@ -2,7 +2,8 @@
  * OTel Data Quality Fix Script
  *
  * 24개 hourly JSON + timeseries.json 일괄 변환.
- * C2, C4, W1-W3, W8, I1-I3 수정사항을 일괄 적용.
+ * P1/P2: 인과관계 기반 24시간 장애 시나리오 (5 stories, 메트릭-로그 일치)
+ * C2, C4, W1-W3, W8, I1-I3: 기존 데이터 품질 수정
  *
  * Usage: npx tsx scripts/data/otel-fix.ts
  */
@@ -81,6 +82,291 @@ function processTimeseries(transform: (data: TimeSeries) => TimeSeries): void {
   const data: TimeSeries = JSON.parse(raw);
   const transformed = transform(data);
   fs.writeFileSync(TIMESERIES_PATH, JSON.stringify(transformed, null, 2) + '\n');
+}
+
+// ============================================================================
+// Scenario System: 인과관계 기반 24시간 장애 시나리오
+// ============================================================================
+
+type ServerMetricOverride = {
+  cpu?: number;     // 0-1 ratio
+  memory?: number;  // 0-1 ratio
+  disk?: number;    // 0-1 ratio
+  network?: number; // 0-1 ratio (bytes 변환은 adjustMetricsForScenario에서)
+};
+
+// 5개 스토리의 시간별 메트릭 오버라이드
+// S1: 야간 배치→DB 연쇄(00-05), S2: 출근 피크→API 과부하(07-12)
+// S3: Redis 메모리 누수(13-18), S4: 네트워크/LB 포화(19-22), S5: 스토리지 백업(23)
+const HOUR_SCENARIOS: Record<number, Record<string, ServerMetricOverride>> = {
+  // === S1: 야간 배치 → 디스크 포화 → DB 연쇄 (00~05) ===
+  0:  { 'db-mysql-dc1-primary': { cpu: 0.55, memory: 0.68, disk: 0.81 } },
+  1:  { 'db-mysql-dc1-primary': { cpu: 0.62, memory: 0.72, disk: 0.82 } },
+  2:  { 'db-mysql-dc1-primary': { cpu: 0.72, memory: 0.82, disk: 0.83 } },
+  3:  {
+    'db-mysql-dc1-primary': { cpu: 0.82, memory: 0.88, disk: 0.84 },
+    'api-was-dc1-01': { cpu: 0.82, memory: 0.68 },
+  },
+  4:  {
+    'db-mysql-dc1-primary': { cpu: 0.68, memory: 0.78, disk: 0.82 },
+    'api-was-dc1-01': { cpu: 0.72 },
+  },
+  5:  { 'db-mysql-dc1-primary': { cpu: 0.55, memory: 0.68, disk: 0.81 } },
+  // === S1→S2 전환 (잔여 disk warning + 트래픽 상승) ===
+  6:  {
+    'db-mysql-dc1-primary': { disk: 0.80 },
+    'api-was-dc1-01': { cpu: 0.65 },
+  },
+  // === S2: 출근 트래픽 → API 과부하 → 전구간 연쇄 (07~12) ===
+  7:  { 'api-was-dc1-01': { cpu: 0.81, memory: 0.65 } },
+  8:  {
+    'api-was-dc1-01': { cpu: 0.84, memory: 0.72 },
+    'api-was-dc1-02': { cpu: 0.72 },
+  },
+  9:  {
+    'api-was-dc1-01': { cpu: 0.91, memory: 0.78 },
+    'api-was-dc1-02': { cpu: 0.84 },
+    'lb-haproxy-dc1-01': { cpu: 0.72, network: 0.65 },
+    'db-mysql-dc1-primary': { cpu: 0.68, memory: 0.72 },
+  },
+  10: {
+    'api-was-dc1-01': { cpu: 0.93, memory: 0.86 },
+    'api-was-dc1-02': { cpu: 0.87 },
+    'db-mysql-dc1-primary': { cpu: 0.75, memory: 0.78 },
+    'lb-haproxy-dc1-01': { cpu: 0.70 },
+  },
+  11: {
+    'api-was-dc1-01': { cpu: 0.82, memory: 0.76 },
+    'api-was-dc1-02': { cpu: 0.76 },
+  },
+  12: {
+    'api-was-dc1-01': { cpu: 0.81 },
+    'cache-redis-dc1-01': { memory: 0.68 },
+  },
+  // === S3: Redis 메모리 누수 → 캐시 장애 (13~18) ===
+  13: { 'cache-redis-dc1-01': { memory: 0.81 } },
+  14: { 'cache-redis-dc1-01': { memory: 0.82 } },
+  15: {
+    'cache-redis-dc1-01': { memory: 0.83 },
+    'cache-redis-dc1-02': { memory: 0.72 },
+  },
+  16: {
+    'cache-redis-dc1-01': { memory: 0.91, cpu: 0.75 },
+    'api-was-dc1-01': { cpu: 0.78 },
+    'api-was-dc1-02': { cpu: 0.72 },
+    'db-mysql-dc1-primary': { cpu: 0.72, memory: 0.75 },
+  },
+  17: {
+    'cache-redis-dc1-01': { memory: 0.85, cpu: 0.68 },
+    'api-was-dc1-01': { cpu: 0.72 },
+  },
+  18: {
+    'cache-redis-dc1-01': { memory: 0.81 },
+    'lb-haproxy-dc1-01': { network: 0.62 },
+  },
+  // === S4: 네트워크 이상 → LB 포화 (19~22) ===
+  19: { 'lb-haproxy-dc1-01': { network: 0.71, cpu: 0.62 } },
+  20: { 'lb-haproxy-dc1-01': { network: 0.74, cpu: 0.72 } },
+  21: {
+    'lb-haproxy-dc1-01': { network: 0.88, cpu: 0.85 },
+    'api-was-dc1-01': { cpu: 0.75 },
+    'api-was-dc1-02': { cpu: 0.70 },
+    'lb-haproxy-dc1-02': { network: 0.68, cpu: 0.65 },
+  },
+  22: {
+    'lb-haproxy-dc1-01': { network: 0.72, cpu: 0.74 },
+    'lb-haproxy-dc1-02': { network: 0.60 },
+  },
+  // === S5: 스토리지 백업 충돌 (23, S1과 시간적 연결) ===
+  23: {
+    'storage-nfs-dc1-01': { disk: 0.82, cpu: 0.65 },
+    'storage-s3gw-dc1-01': { network: 0.68, disk: 0.72 },
+    'db-mysql-dc1-backup': { disk: 0.75, cpu: 0.60 },
+  },
+};
+
+// 장애 서버 → cascade WARN을 받을 서버 (호출자/의존 서버)
+const CASCADE_MAP: Record<string, string[]> = {
+  'db-mysql-dc1-primary': ['api-was-dc1-01', 'api-was-dc1-02', 'api-was-dc1-03'],
+  'db-mysql-dc1-replica': ['api-was-dc1-01', 'api-was-dc1-02', 'api-was-dc1-03'],
+  'cache-redis-dc1-01':   ['api-was-dc1-01', 'api-was-dc1-02', 'api-was-dc1-03'],
+  'cache-redis-dc1-02':   ['api-was-dc1-01', 'api-was-dc1-02', 'api-was-dc1-03'],
+  'api-was-dc1-01': ['web-nginx-dc1-01', 'web-nginx-dc1-02', 'web-nginx-dc1-03'],
+  'api-was-dc1-02': ['web-nginx-dc1-01', 'web-nginx-dc1-02', 'web-nginx-dc1-03'],
+  'api-was-dc1-03': ['web-nginx-dc1-01', 'web-nginx-dc1-02', 'web-nginx-dc1-03'],
+  'lb-haproxy-dc1-01': ['web-nginx-dc1-01', 'web-nginx-dc1-02', 'web-nginx-dc1-03'],
+  'lb-haproxy-dc1-02': ['web-nginx-dc1-01', 'web-nginx-dc1-02', 'web-nginx-dc1-03'],
+  'storage-nfs-dc1-01': ['db-mysql-dc1-backup'],
+};
+
+// cascade 대상 서버 카테고리별 WARN 로그 템플릿
+const CASCADE_WARN_TEMPLATES: Record<string, string[]> = {
+  'api': [
+    'java[{pid}]: [WARN] HikariPool - Connection to backend timed out after {ms}ms',
+    'java[{pid}]: [WARN] Slow transaction: downstream dependency response {ms}ms (threshold: 500ms)',
+  ],
+  'web': [
+    'nginx[{pid}]: upstream timed out (110: Connection timed out) while connecting to upstream',
+    'nginx[{pid}]: *{n} upstream prematurely closed connection while reading response header',
+  ],
+  'db': [
+    'mysqld[{pid}]: [Warning] InnoDB: Write to NFS mount stalled for {ms}ms',
+  ],
+};
+
+// 메트릭별 WARN 로그 템플릿 (직접 장애 서버용)
+const METRIC_WARN_TEMPLATES: Record<string, Record<string, string[]>> = {
+  'db': {
+    'cpu': [
+      'mysqld[{pid}]: [Warning] InnoDB: Long semaphore wait (>2sec), holder thread {tid}',
+      'mysqld[{pid}]: [Warning] Too many active connections ({n} of 200), queries delayed',
+    ],
+    'memory': [
+      'mysqld[{pid}]: [Warning] InnoDB: Buffer pool usage {pct}% of allocated 64GB',
+      'mysqld[{pid}]: [Warning] InnoDB: page_cleaner: 1000ms intended loop took {ms}ms',
+    ],
+    'disk': [
+      'mysqld[{pid}]: [Warning] Disk I/O stalling: fsync took {ms}ms for file ./ibdata1',
+      'mysqld[{pid}]: [Warning] Disk usage at {pct}%, approaching critical threshold',
+    ],
+  },
+  'api': {
+    'cpu': [
+      'java[{pid}]: [WARN] Thread pool nearing exhaustion: active {n}/200, queue depth {m}',
+      'java[{pid}]: [WARN] Slow transaction: /api/servers took {ms}ms (threshold: 500ms)',
+    ],
+    'memory': [
+      'java[{pid}]: [WARN] GC overhead: ParNew pause {ms}ms, old gen usage {pct}%',
+      'java[{pid}]: [WARN] Heap memory usage {pct}%, approaching GC pressure zone',
+    ],
+  },
+  'cache': {
+    'memory': [
+      'redis-server[{pid}]: WARNING: Memory usage {pct}% of maxmemory limit',
+      'redis-server[{pid}]: WARNING: Eviction rate increasing, {n} keys evicted in last 60s',
+    ],
+    'cpu': [
+      'redis-server[{pid}]: WARNING: Slow command detected, took {ms}ms to process',
+    ],
+  },
+  'lb': {
+    'network': [
+      'haproxy[{pid}]: WARNING: Connection table {pct}% full (conntrack saturation)',
+      'haproxy[{pid}]: WARNING: SYN cookie activation detected, possible SYN flood',
+    ],
+    'cpu': [
+      'haproxy[{pid}]: WARNING: CPU usage at {pct}%, request queuing increasing',
+    ],
+  },
+  'storage': {
+    'disk': [
+      'nfsd[{pid}]: WARNING: Export /data I/O latency {ms}ms exceeds 100ms threshold',
+    ],
+    'cpu': [
+      'nfsd[{pid}]: WARNING: High CPU from concurrent I/O, {n} pending operations',
+    ],
+    'network': [
+      'minio[{pid}]: WARNING: S3 sync bandwidth at {pct}% capacity',
+    ],
+  },
+};
+
+// 메트릭별 ERROR 로그 템플릿 (critical 서버용)
+const METRIC_ERROR_TEMPLATES: Record<string, Record<string, string[]>> = {
+  'db': {
+    'cpu': ['mysqld[{pid}]: [ERROR] Too many connections: max_connections (200) exceeded'],
+    'memory': ['mysqld[{pid}]: [ERROR] InnoDB: Cannot allocate {n}MB for the buffer pool'],
+    'disk': ['mysqld[{pid}]: [ERROR] InnoDB: Write to ./ibdata1 failed: No space left on device'],
+  },
+  'api': {
+    'cpu': ['java[{pid}]: [ERROR] RejectedExecutionException: Thread pool exhausted, {n} tasks rejected'],
+    'memory': ['java[{pid}]: [ERROR] java.lang.OutOfMemoryError: Java heap space (used {pct}%)'],
+  },
+  'cache': {
+    'memory': ['redis-server[{pid}]: ERROR: MISCONF Redis unable to persist to disk (OOM during BGSAVE)'],
+    'cpu': ['redis-server[{pid}]: ERROR: Command timeout after {ms}ms, client disconnected'],
+  },
+  'lb': {
+    'network': ['haproxy[{pid}]: ERROR: Connection table full, dropping new connections (SYN flood active)'],
+    'cpu': ['haproxy[{pid}]: ERROR: Backend queue overflow, {n} requests dropped'],
+  },
+  'storage': {
+    'disk': ['nfsd[{pid}]: ERROR: Write to /data/backup failed: No space left on device'],
+  },
+};
+
+function metricNameToKey(name: string): 'cpu' | 'memory' | 'disk' | 'network' | undefined {
+  switch (name) {
+    case 'system.cpu.utilization': return 'cpu';
+    case 'system.memory.utilization': return 'memory';
+    case 'system.filesystem.utilization': return 'disk';
+    case 'system.network.io': return 'network';
+    default: return undefined;
+  }
+}
+
+function getLogSource(category: string): string {
+  switch (category) {
+    case 'db': return 'mysqld';
+    case 'cache': return 'redis';
+    case 'web': return 'nginx';
+    case 'api': return 'java';
+    case 'lb': return 'haproxy';
+    case 'storage': return 'syslog';
+    default: return 'syslog';
+  }
+}
+
+// ============================================================================
+// P1: 시나리오 기반 메트릭 조정 (C2/I3 이후 실행, 최종 메트릭 권한)
+// ============================================================================
+
+function adjustMetricsForScenario(data: HourlyFile, hour: number): HourlyFile {
+  const scenario = HOUR_SCENARIOS[hour];
+
+  for (let slotIdx = 0; slotIdx < data.slots.length; slotIdx++) {
+    const slot = data.slots[slotIdx];
+    const slotOffset = (slotIdx - 2.5) / 6 * 0.04; // -0.017 ~ +0.017 점진 변화
+
+    for (const metric of slot.metrics) {
+      const metricKey = metricNameToKey(metric.name);
+      if (!metricKey) continue;
+
+      for (const dp of metric.dataPoints) {
+        const hostname = dp.attributes['host.name'] ?? '';
+        const serverId = hostname.split('.')[0];
+
+        if (scenario?.[serverId]?.[metricKey] !== undefined) {
+          // 시나리오 서버: 목표값 + 슬롯 내 점진 변화 + jitter
+          const target = scenario[serverId][metricKey] as number;
+          const jitter = (Math.random() - 0.5) * 0.03;
+          const value = Math.max(0.01, Math.min(0.99, target + slotOffset + jitter));
+
+          if (metricKey === 'network') {
+            dp.asDouble = Math.round(value * 125_000_000);
+          } else {
+            dp.asDouble = Math.round(value * 100) / 100;
+          }
+        } else {
+          // 비시나리오 서버: 건강 범위 보장 (warning 미만)
+          const maxHealthy = metricKey === 'network' ? 0.60 : 0.72;
+          const currentRatio = metricKey === 'network'
+            ? dp.asDouble / 125_000_000
+            : dp.asDouble;
+
+          if (currentRatio > maxHealthy) {
+            const healthyValue = 0.35 + Math.random() * 0.25;
+            if (metricKey === 'network') {
+              dp.asDouble = Math.round(healthyValue * 125_000_000);
+            } else {
+              dp.asDouble = Math.round(healthyValue * 100) / 100;
+            }
+          }
+        }
+      }
+    }
+  }
+  return data;
 }
 
 // ============================================================================
@@ -422,49 +708,8 @@ function fixRedisOOMSequence(data: HourlyFile): HourlyFile {
 }
 
 // ============================================================================
-// L2: 심각도 분포 재조정 (INFO→WARN/ERROR 승격 + 새 로그 삽입)
+// L2 (교체): 메트릭 기반 로그 재조정 — 인과관계 일치
 // ============================================================================
-
-const WARN_TEMPLATES: Record<string, string[]> = {
-  'web': [
-    'nginx[{pid}]: upstream timed out (110: Connection timed out) while connecting to upstream',
-    'nginx[{pid}]: client request body is buffered to a temporary file, client: 10.0.{a}.{b}',
-  ],
-  'api': [
-    'java[{pid}]: [WARN] HikariPool - Connection pool is running low (available: 2/20)',
-    'java[{pid}]: [WARN] Slow transaction detected: /api/servers took {ms}ms (threshold: 500ms)',
-  ],
-  'db': [
-    'mysqld[{pid}]: [Warning] Aborted connection {n} to db: openmanager (Got timeout reading communication packets)',
-    'mysqld[{pid}]: [Warning] InnoDB: Long semaphore wait (>2sec), holder thread {tid}',
-  ],
-  'cache': [
-    'redis-server[{pid}]: WARNING: Memory usage {pct}% of maxmemory, consider increasing maxmemory',
-    'redis-server[{pid}]: Client id={n} addr=10.0.{a}.{b}:{port} paused for {ms}ms during BGSAVE',
-  ],
-  'lb': [
-    'haproxy[{pid}]: backend web_servers has no server available! Retrying in 1s.',
-    'haproxy[{pid}]: Server web_servers/web-nginx-dc1-03 is DOWN, reason: Layer7 timeout',
-  ],
-};
-
-const ERROR_TEMPLATES: Record<string, string[]> = {
-  'web': [
-    'nginx[{pid}]: connect() failed (111: Connection refused) while connecting to upstream 10.0.1.{b}:8080',
-  ],
-  'api': [
-    'java[{pid}]: [ERROR] Failed to execute query: Connection reset by peer (db-mysql-dc1-primary:3306)',
-  ],
-  'db': [
-    'mysqld[{pid}]: [ERROR] InnoDB: Cannot allocate {n}MB for the buffer pool, current limit {m}MB',
-  ],
-  'cache': [
-    'redis-server[{pid}]: ERROR: MISCONF Redis is configured to save RDB snapshots, but is currently unable to persist',
-  ],
-  'lb': [
-    'haproxy[{pid}]: Connect() to backend failed: Connection refused (errno 111)',
-  ],
-};
 
 function getServerCategory(resource: string): string {
   if (resource.startsWith('web-')) return 'web';
@@ -472,6 +717,7 @@ function getServerCategory(resource: string): string {
   if (resource.startsWith('db-')) return 'db';
   if (resource.startsWith('cache-')) return 'cache';
   if (resource.startsWith('lb-')) return 'lb';
+  if (resource.startsWith('storage-')) return 'storage';
   return 'web';
 }
 
@@ -488,62 +734,130 @@ function fillTemplate(tpl: string): string {
     .replace(/\{port\}/g, String(10000 + Math.floor(Math.random() * 55000)));
 }
 
-function rebalanceSeverity(data: HourlyFile): HourlyFile {
+type HealthStatus = 'healthy' | 'warning' | 'critical';
+
+const THRESHOLDS: Record<string, { warning: number; critical: number }> = {
+  cpu: { warning: 0.80, critical: 0.90 },
+  memory: { warning: 0.80, critical: 0.90 },
+  disk: { warning: 0.80, critical: 0.90 },
+  network: { warning: 0.70, critical: 0.85 },
+};
+
+function reconcileLogsWithMetrics(data: HourlyFile, _hour: number): HourlyFile {
   for (const slot of data.slots) {
-    const infoLogs = slot.logs.filter(l => l.severityText === 'INFO');
-    const totalLogs = slot.logs.length;
-    if (totalLogs < 5) continue;
-
-    // 목표: INFO 78%, WARN 14%, ERROR 8%
-    const targetWarn = Math.max(1, Math.round(totalLogs * 0.14));
-    const targetError = Math.max(1, Math.round(totalLogs * 0.08));
-    const currentWarn = slot.logs.filter(l => l.severityText === 'WARN').length;
-    const currentError = slot.logs.filter(l => l.severityText === 'ERROR').length;
-    const needWarn = Math.max(0, targetWarn - currentWarn);
-    const needError = Math.max(0, targetError - currentError);
-
-    // 서버별로 균등 배분
-    const serverIds = [...new Set(slot.logs.map(l => l.resource))];
-    let warnAdded = 0;
-    let errorAdded = 0;
-
-    for (const sid of serverIds) {
-      const cat = getServerCategory(sid);
-      const warnTpls = WARN_TEMPLATES[cat] ?? WARN_TEMPLATES['web'];
-      const errTpls = ERROR_TEMPLATES[cat] ?? ERROR_TEMPLATES['web'];
-
-      // WARN 삽입
-      if (warnAdded < needWarn) {
-        const tpl = warnTpls[Math.floor(Math.random() * warnTpls.length)];
-        const jitter = Math.floor(Math.random() * (slot.endTimeUnixNano - slot.startTimeUnixNano));
-        slot.logs.push({
-          timeUnixNano: slot.startTimeUnixNano + jitter,
-          severityNumber: 13,
-          severityText: 'WARN',
-          body: fillTemplate(tpl),
-          attributes: { 'log.source': cat === 'db' ? 'mysqld' : cat === 'cache' ? 'redis' : 'syslog' },
-          resource: sid,
-        });
-        warnAdded++;
-      }
-
-      // ERROR 삽입 (주간 시간대에 집중: slot 시간 기반)
-      if (errorAdded < needError) {
-        const tpl = errTpls[Math.floor(Math.random() * errTpls.length)];
-        const jitter = Math.floor(Math.random() * (slot.endTimeUnixNano - slot.startTimeUnixNano));
-        slot.logs.push({
-          timeUnixNano: slot.startTimeUnixNano + jitter,
-          severityNumber: 17,
-          severityText: 'ERROR',
-          body: fillTemplate(tpl),
-          attributes: { 'log.source': cat === 'db' ? 'mysqld' : cat === 'cache' ? 'redis' : 'syslog' },
-          resource: sid,
-        });
-        errorAdded++;
+    // 1. 슬롯별 서버 메트릭 추출
+    const serverMetrics: Record<string, Record<string, number>> = {};
+    for (const metric of slot.metrics) {
+      const metricKey = metricNameToKey(metric.name);
+      if (!metricKey) continue;
+      for (const dp of metric.dataPoints) {
+        const hostname = dp.attributes['host.name'] ?? '';
+        const serverId = hostname.split('.')[0];
+        if (!serverMetrics[serverId]) serverMetrics[serverId] = {};
+        serverMetrics[serverId][metricKey] = metricKey === 'network'
+          ? dp.asDouble / 125_000_000
+          : dp.asDouble;
       }
     }
 
-    // 타임스탬프 순 정렬
+    // 2. 서버별 건강 상태 판정 (system-rules.json 임계값 기준)
+    const serverHealth: Record<string, { status: HealthStatus; highMetrics: string[] }> = {};
+    for (const [sid, metrics] of Object.entries(serverMetrics)) {
+      let status: HealthStatus = 'healthy';
+      const highMetrics: string[] = [];
+      for (const [key, value] of Object.entries(metrics)) {
+        const threshold = THRESHOLDS[key];
+        if (!threshold) continue;
+        if (value >= threshold.critical) {
+          status = 'critical';
+          highMetrics.push(key);
+        } else if (value >= threshold.warning) {
+          if (status !== 'critical') status = 'warning';
+          highMetrics.push(key);
+        }
+      }
+      serverHealth[sid] = { status, highMetrics };
+    }
+
+    // 3. 기존 WARN/ERROR 로그 제거 (INFO만 유지)
+    slot.logs = slot.logs.filter(log =>
+      log.severityText !== 'WARN' && log.severityText !== 'ERROR'
+    );
+
+    const newLogs: LogEntry[] = [];
+
+    // 4. 메트릭 기반 WARN/ERROR 로그 생성
+    for (const [sid, health] of Object.entries(serverHealth)) {
+      if (health.status === 'healthy') continue;
+      const cat = getServerCategory(sid);
+
+      for (const metricKey of health.highMetrics) {
+        // Critical → ERROR + WARN
+        if (health.status === 'critical') {
+          const errTpls = METRIC_ERROR_TEMPLATES[cat]?.[metricKey] ?? [];
+          if (errTpls.length > 0) {
+            const tpl = errTpls[Math.floor(Math.random() * errTpls.length)];
+            const jitter = Math.floor(Math.random() * (slot.endTimeUnixNano - slot.startTimeUnixNano));
+            newLogs.push({
+              timeUnixNano: slot.startTimeUnixNano + jitter,
+              severityNumber: 17,
+              severityText: 'ERROR',
+              body: fillTemplate(tpl),
+              attributes: { 'log.source': getLogSource(cat) },
+              resource: sid,
+            });
+          }
+        }
+        // Warning/Critical → WARN
+        const warnTpls = METRIC_WARN_TEMPLATES[cat]?.[metricKey] ?? [];
+        if (warnTpls.length > 0) {
+          const tpl = warnTpls[Math.floor(Math.random() * warnTpls.length)];
+          const jitter = Math.floor(Math.random() * (slot.endTimeUnixNano - slot.startTimeUnixNano));
+          newLogs.push({
+            timeUnixNano: slot.startTimeUnixNano + jitter,
+            severityNumber: 13,
+            severityText: 'WARN',
+            body: fillTemplate(tpl),
+            attributes: { 'log.source': getLogSource(cat) },
+            resource: sid,
+          });
+        }
+      }
+    }
+
+    // 5. 토폴로지 연쇄 로그 (장애 서버의 의존 서버에 cascade WARN)
+    const cascadeTargets = new Set<string>();
+    for (const [sid, health] of Object.entries(serverHealth)) {
+      if (health.status === 'healthy') continue;
+      const targets = CASCADE_MAP[sid];
+      if (!targets) continue;
+      for (const target of targets) {
+        // cascade 대상이 자체적으로 비정상이 아닌 경우에만 추가
+        const targetHealth = serverHealth[target]?.status ?? 'healthy';
+        if (targetHealth === 'healthy') {
+          cascadeTargets.add(target);
+        }
+      }
+    }
+
+    for (const target of cascadeTargets) {
+      const cat = getServerCategory(target);
+      const tpls = CASCADE_WARN_TEMPLATES[cat] ?? [];
+      if (tpls.length === 0) continue;
+      const tpl = tpls[Math.floor(Math.random() * tpls.length)];
+      const jitter = Math.floor(Math.random() * (slot.endTimeUnixNano - slot.startTimeUnixNano));
+      newLogs.push({
+        timeUnixNano: slot.startTimeUnixNano + jitter,
+        severityNumber: 13,
+        severityText: 'WARN',
+        body: fillTemplate(tpl),
+        attributes: { 'log.source': getLogSource(cat) },
+        resource: target,
+      });
+    }
+
+    // 6. 새 로그 추가 + 시간순 정렬
+    slot.logs.push(...newLogs);
     slot.logs.sort((a, b) => a.timeUnixNano - b.timeUnixNano);
   }
   return data;
@@ -580,18 +894,97 @@ function limitWatchdogDuplicates(data: HourlyFile): HourlyFile {
 }
 
 // ============================================================================
+// Timeseries: 시나리오 동기화
+// ============================================================================
+
+function syncTimeseriesWithScenarios(data: TimeSeries): TimeSeries {
+  const metricKeyToName: Record<string, string> = {
+    'cpu': 'system.cpu.utilization',
+    'memory': 'system.memory.utilization',
+    'disk': 'system.filesystem.utilization',
+    'network': 'system.network.io',
+  };
+
+  // 시나리오 서버 메트릭 오버라이드
+  for (let hour = 0; hour < 24; hour++) {
+    const scenario = HOUR_SCENARIOS[hour];
+    if (!scenario) continue;
+
+    for (const [serverId, override] of Object.entries(scenario)) {
+      const serverIdx = data.serverIds.indexOf(serverId);
+      if (serverIdx === -1) continue;
+
+      for (const [metricKey, targetValue] of Object.entries(override)) {
+        if (targetValue === undefined) continue;
+        const metricName = metricKeyToName[metricKey];
+        if (!metricName || !data.metrics[metricName]) continue;
+
+        const series = data.metrics[metricName][serverIdx];
+        if (!series) continue;
+
+        for (let slotIdx = 0; slotIdx < 6; slotIdx++) {
+          const tsIdx = hour * 6 + slotIdx;
+          if (tsIdx >= series.length) continue;
+
+          const slotOffset = (slotIdx - 2.5) / 6 * 0.04;
+          const jitter = (Math.random() - 0.5) * 0.03;
+          const value = Math.max(0.01, Math.min(0.99, targetValue + slotOffset + jitter));
+          series[tsIdx] = Math.round(value * 100) / 100;
+        }
+      }
+    }
+  }
+
+  // 비시나리오 서버: 건강 범위 보장
+  const metricNameToKeyMap: Record<string, string> = {
+    'system.cpu.utilization': 'cpu',
+    'system.memory.utilization': 'memory',
+    'system.filesystem.utilization': 'disk',
+    'system.network.io': 'network',
+  };
+
+  for (const [metricName, serverSeries] of Object.entries(data.metrics)) {
+    const mKey = metricNameToKeyMap[metricName];
+    if (!mKey) continue;
+
+    for (let sIdx = 0; sIdx < data.serverIds.length; sIdx++) {
+      const sid = data.serverIds[sIdx];
+      const series = serverSeries[sIdx];
+      if (!series) continue;
+
+      for (let tsIdx = 0; tsIdx < series.length; tsIdx++) {
+        const hour = Math.floor(tsIdx / 6);
+        const scenario = HOUR_SCENARIOS[hour];
+        if (scenario?.[sid]?.[mKey as keyof ServerMetricOverride] !== undefined) continue;
+
+        const maxHealthy = mKey === 'network' ? 0.60 : 0.72;
+        if (series[tsIdx] > maxHealthy) {
+          series[tsIdx] = Math.round((0.35 + Math.random() * 0.25) * 100) / 100;
+        }
+      }
+    }
+  }
+
+  return data;
+}
+
+// ============================================================================
 // Main
 // ============================================================================
 
 function main(): void {
-  console.log('=== OTel Data Quality Fix ===\n');
+  console.log('=== OTel Data Quality Fix (Scenario-based) ===\n');
 
-  // Phase 1: Hourly data fixes (순서 중요: C2 먼저, I3는 C2 이후)
+  // Phase 1: Hourly data fixes
   console.log('[Phase 1] Hourly JSON fixes...');
 
   processAllHourlyFiles((data, hour) => {
-    // C2: Network ratio
+    // C2: Network ratio → bytes
     data = fixNetworkRatio(data);
+    // I3: Storage/Cache network (after C2)
+    data = fixStorageCacheNetwork(data);
+    // ★ P1: 시나리오 메트릭 조정 (C2/I3 이후, 최종 메트릭 권한)
+    data = adjustMetricsForScenario(data, hour);
     // W1: Log time distribution
     data = fixLogTimeDistribution(data);
     // W2: S3 Gateway logs
@@ -604,56 +997,27 @@ function main(): void {
     data = fixInnoDBTimestamp(data);
     // I2: GC parameter variation
     data = fixGCParameterVariation(data);
-    // I3: Storage/Cache network (after C2)
-    data = fixStorageCacheNetwork(data);
     // L1: Redis OOM sequence (kill → restart)
     data = fixRedisOOMSequence(data);
-    // L2: Severity rebalance (INFO 97%→78%)
-    data = rebalanceSeverity(data);
+    // ★ P2: 메트릭-로그 일치 (L2 교체, 최종 로그 권한)
+    data = reconcileLogsWithMetrics(data, hour);
     // L3: Watchdog dedup + S3GW cron cleanup
     data = limitWatchdogDuplicates(data);
     return data;
   });
 
-  console.log('  ✓ 24 hourly files processed');
+  console.log('  ✓ 24 hourly files processed (5 scenarios applied)');
 
   // Phase 2: Timeseries fixes
   console.log('\n[Phase 2] Timeseries fixes...');
 
-  // C2: Network ratio in timeseries
-  processTimeseries((data) => fixNetworkTimeseries(data));
-  console.log('  C2: Network values /100 in timeseries');
-
-  // C4: Add missing metrics
+  // C4: Add missing metrics (uptime, process.count)
   addMissingTimeseriesMetrics();
 
-  // I3: Storage/Cache network in timeseries
-  processTimeseries((data) => {
-    const networkKey = 'system.network.io';
-    if (!data.metrics[networkKey]) return data;
-
-    for (let sIdx = 0; sIdx < data.serverIds.length; sIdx++) {
-      const sid = data.serverIds[sIdx];
-      const series = data.metrics[networkKey][sIdx];
-      if (!series) continue;
-
-      if (sid.startsWith('storage-')) {
-        for (let i = 0; i < series.length; i++) {
-          if (series[i] < 0.15 || series[i] > 0.35) {
-            series[i] = Math.round((0.15 + Math.random() * 0.20) * 100) / 100;
-          }
-        }
-      } else if (sid.startsWith('cache-')) {
-        for (let i = 0; i < series.length; i++) {
-          if (series[i] < 0.30 || series[i] > 0.50) {
-            series[i] = Math.round((0.30 + Math.random() * 0.20) * 100) / 100;
-          }
-        }
-      }
-    }
-    return data;
-  });
-  console.log('  I3: Storage/Cache network values adjusted in timeseries');
+  // ★ Timeseries 시나리오 동기화 (C2/I3 대체 — 시나리오 반영 + 비시나리오 건강 보장)
+  // Note: fixNetworkTimeseries 제거 — syncTimeseriesWithScenarios가 모든 값을 ratio로 통일
+  processTimeseries((data) => syncTimeseriesWithScenarios(data));
+  console.log('  ★ Timeseries synced with 5 scenarios');
 
   console.log('\n=== Done ===');
 }
