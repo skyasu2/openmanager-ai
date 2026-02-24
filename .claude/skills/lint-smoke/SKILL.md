@@ -4,6 +4,7 @@ description: Run fast quality smoke checks for OpenManager before commit or depl
 version: v1.4.0
 user-invocable: true
 allowed-tools: Bash, Read, Grep
+disable-model-invocation: true
 ---
 
 # Lint Smoke

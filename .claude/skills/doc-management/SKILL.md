@@ -36,8 +36,8 @@ find docs/ -name "*.md" -not -path "*/archived/*" | \
 ### 2. 예산 초과 감지
 
 디렉토리별 한도와 비교:
-- reference/architecture/*: 20 | development/*: 12 | guides/*: 12
-- vibe-coding/*: 8 | troubleshooting/*: 5 | root: 5
+- reference/architecture/*: 18 | development/*: 14 | guides/*: 7
+- vibe-coding/*: 8 | troubleshooting/*: 3 | root: 5
 
 초과 시 병합/아카이브 후보 제안.
 
