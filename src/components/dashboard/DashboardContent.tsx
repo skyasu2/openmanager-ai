@@ -192,7 +192,7 @@ export default memo(function DashboardContent({
 
   // 일반 대시보드 모드 - 반응형 그리드 레이아웃
   return (
-    <div className="animate-fade-in h-full w-full">
+    <main className="animate-fade-in h-full w-full">
       <div className="mx-auto h-full max-w-none space-y-4 overflow-y-auto overscroll-contain scroll-smooth px-4 pb-6 sm:px-6 lg:px-8 2xl:max-w-[1800px]">
         {monitoringErrorMessage && (
           <div className="rounded-lg border border-amber-200/60 bg-amber-50/80 px-4 py-3 text-xs text-amber-800">
@@ -325,6 +325,6 @@ export default memo(function DashboardContent({
           />
         )}
       </div>
-    </div>
+    </main>
   );
 });

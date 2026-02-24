@@ -114,7 +114,7 @@ function StatusCard({
       aria-label={`${label} ${count}대 필터`}
       aria-pressed={isInteractive ? activeFilter === status : undefined}
       className={cn(
-        'group relative overflow-hidden rounded-2xl bg-white/60 backdrop-blur-md p-4 text-left',
+        'group relative overflow-hidden rounded-2xl bg-white/60 backdrop-blur-md p-4 text-left min-h-[84px]',
         'transition-all duration-300 hover:shadow-lg hover:scale-[1.02]',
         gradient.border,
         gradient.glow,
@@ -217,7 +217,7 @@ export const DashboardSummary: React.FC<DashboardSummaryProps> = memo(
         </div>
 
         {/* 2. Status Cards */}
-        <div className="grid grid-cols-4 gap-2 sm:gap-3 lg:col-span-4">
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 sm:gap-3 lg:col-span-4">
           <StatusCard
             status="online"
             count={safeStats.online}
@@ -309,7 +309,7 @@ export const DashboardSummary: React.FC<DashboardSummaryProps> = memo(
                     type="button"
                     onClick={onOpenActiveAlerts}
                     aria-label="활성 알림 보기"
-                    className="relative flex h-11 items-center gap-1.5 rounded-lg border border-rose-100/80 bg-white/90 px-2 sm:px-3 text-xs font-semibold text-gray-600 shadow-xs transition-all duration-200 hover:-translate-y-0.5 hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600 hover:shadow-sm active:translate-y-0 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-300/60 cursor-pointer"
+                    className="relative flex h-12 min-w-12 items-center gap-1.5 rounded-lg border border-rose-100/80 bg-white/90 px-2.5 sm:px-3 text-xs font-semibold text-gray-600 shadow-xs transition-all duration-200 hover:-translate-y-0.5 hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600 hover:shadow-sm active:translate-y-0 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-300/60 cursor-pointer"
                   >
                     <AlertTriangle size={14} />
                     <span className="hidden sm:inline">알림</span>
@@ -325,7 +325,7 @@ export const DashboardSummary: React.FC<DashboardSummaryProps> = memo(
                     type="button"
                     onClick={onOpenAlertHistory}
                     aria-label="알림 이력 보기"
-                    className="flex h-11 items-center gap-1.5 rounded-lg border border-amber-100/80 bg-white/90 px-2 sm:px-3 text-xs font-semibold text-gray-600 shadow-xs transition-all duration-200 hover:-translate-y-0.5 hover:border-amber-200 hover:bg-amber-50 hover:text-amber-600 hover:shadow-sm active:translate-y-0 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300/60 cursor-pointer"
+                    className="flex h-12 min-w-12 items-center gap-1.5 rounded-lg border border-amber-100/80 bg-white/90 px-2.5 sm:px-3 text-xs font-semibold text-gray-600 shadow-xs transition-all duration-200 hover:-translate-y-0.5 hover:border-amber-200 hover:bg-amber-50 hover:text-amber-600 hover:shadow-sm active:translate-y-0 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300/60 cursor-pointer"
                     title="알림 이력"
                   >
                     <Bell size={16} />
@@ -337,7 +337,7 @@ export const DashboardSummary: React.FC<DashboardSummaryProps> = memo(
                     type="button"
                     onClick={onOpenLogExplorer}
                     aria-label="로그 검색 보기"
-                    className="flex h-11 items-center gap-1.5 rounded-lg border border-blue-100/80 bg-white/90 px-2 sm:px-3 text-xs font-semibold text-gray-600 shadow-xs transition-all duration-200 hover:-translate-y-0.5 hover:border-blue-200 hover:bg-blue-50 hover:text-blue-600 hover:shadow-sm active:translate-y-0 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-300/60 cursor-pointer"
+                    className="flex h-12 min-w-12 items-center gap-1.5 rounded-lg border border-blue-100/80 bg-white/90 px-2.5 sm:px-3 text-xs font-semibold text-gray-600 shadow-xs transition-all duration-200 hover:-translate-y-0.5 hover:border-blue-200 hover:bg-blue-50 hover:text-blue-600 hover:shadow-sm active:translate-y-0 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-300/60 cursor-pointer"
                     title="로그 검색"
                   >
                     <FileSearch size={16} />

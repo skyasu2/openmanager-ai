@@ -237,7 +237,7 @@ export async function GET(request: NextRequest) {
           isStarting: false,
           lastUpdate: new Date().toISOString(),
           userCount: 1, // 현재 접속자 (데모용)
-          version: process.env.npm_package_version || '7.0.1',
+          version: process.env.npm_package_version || '8.3.3',
           environment: process.env.NODE_ENV || 'development',
           uptime: metrics.systemUptime || 0,
           services: {

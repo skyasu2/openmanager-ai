@@ -42,6 +42,16 @@ vi.mock('../../hooks/useSafeServer', () => ({
         network: server?.network ?? 0,
         alerts: server?.alerts || 0,
         services: Array.isArray(server?.services) ? server.services : [],
+        load1:
+          typeof server?.load1 === 'number' ? Number(server.load1) : undefined,
+        cpuCores:
+          typeof server?.cpuCores === 'number'
+            ? Number(server.cpuCores)
+            : undefined,
+        responseTime:
+          typeof server?.responseTime === 'number'
+            ? Number(server.responseTime)
+            : undefined,
         lastUpdate: server?.lastUpdate || new Date(),
       },
       statusTheme: {
@@ -385,6 +395,68 @@ describe('ImprovedServerCard - User Event 테스트', () => {
         />
       );
       expect(getCard(container)).toBeInTheDocument();
+    });
+
+    it('compact variant에서 모바일 숨김 클래스를 유지한다', () => {
+      const { container } = render(
+        <ImprovedServerCard
+          server={mockServer}
+          onClick={mockOnClick}
+          variant="compact"
+        />
+      );
+
+      const osBadge = container.querySelector('[title="운영체제: Ubuntu"]');
+      const locationText = screen.getByText(/DC1-AZ1/);
+      const aiBadge = screen.getByTestId('ai-insight-badge');
+
+      expect(osBadge).toHaveClass('hidden');
+      expect(osBadge).toHaveClass('sm:inline-flex');
+      expect(locationText.closest('div')).toHaveClass('hidden');
+      expect(locationText.closest('div')).toHaveClass('sm:flex');
+      expect(aiBadge.parentElement).toHaveClass('hidden');
+      expect(aiBadge.parentElement).toHaveClass('sm:block');
+    });
+
+    it('compact variant에서 모바일 핵심 메트릭 칩을 렌더링한다', () => {
+      const { container } = render(
+        <ImprovedServerCard
+          server={mockServer}
+          onClick={mockOnClick}
+          variant="compact"
+        />
+      );
+
+      const mobileCompactGrid = container.querySelector(
+        '.sm\\:hidden'
+      ) as HTMLElement;
+
+      expect(mobileCompactGrid).toBeInTheDocument();
+      expect(within(mobileCompactGrid).getByText('CPU')).toBeInTheDocument();
+      expect(within(mobileCompactGrid).getByText('MEM')).toBeInTheDocument();
+      expect(within(mobileCompactGrid).getByText('DISK')).toBeInTheDocument();
+      expect(within(mobileCompactGrid).getByText('45%')).toBeInTheDocument();
+    });
+
+    it('compact variant에서 보조 메트릭도 모바일 숨김 클래스를 유지한다', () => {
+      const secondaryMetricServer = {
+        ...mockServer,
+        load1: 1.4,
+        cpuCores: 4,
+        responseTime: 920,
+      };
+
+      render(
+        <ImprovedServerCard
+          server={secondaryMetricServer}
+          onClick={mockOnClick}
+          variant="compact"
+        />
+      );
+
+      const loadMetric = screen.getByText(/Load:/);
+      expect(loadMetric.closest('div')).toHaveClass('hidden');
+      expect(loadMetric.closest('div')).toHaveClass('sm:flex');
     });
   });
 

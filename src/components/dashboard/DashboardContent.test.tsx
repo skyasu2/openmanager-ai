@@ -32,7 +32,50 @@ vi.mock('@/hooks/dashboard/useMonitoringReport', () => ({
 }));
 
 vi.mock('./DashboardSummary', () => ({
-  DashboardSummary: vi.fn(() => <div data-testid="dashboard-summary" />),
+  DashboardSummary: vi.fn(
+    ({
+      onOpenActiveAlerts,
+      onOpenAlertHistory,
+      onOpenLogExplorer,
+      onToggleTopology,
+    }: {
+      onOpenActiveAlerts?: () => void;
+      onOpenAlertHistory?: () => void;
+      onOpenLogExplorer?: () => void;
+      onToggleTopology?: () => void;
+    }) => (
+      <div data-testid="dashboard-summary">
+        <button
+          type="button"
+          aria-label="open active alerts"
+          onClick={onOpenActiveAlerts}
+        >
+          active alerts
+        </button>
+        <button
+          type="button"
+          aria-label="open alert history"
+          onClick={onOpenAlertHistory}
+        >
+          alert history
+        </button>
+        <button
+          type="button"
+          aria-label="open log explorer"
+          onClick={onOpenLogExplorer}
+        >
+          log explorer
+        </button>
+        <button
+          type="button"
+          aria-label="open topology"
+          onClick={onToggleTopology}
+        >
+          topology
+        </button>
+      </div>
+    )
+  ),
 }));
 
 vi.mock('./SystemOverviewSection', () => ({
@@ -44,19 +87,27 @@ vi.mock('./ServerDashboard', () => ({
 }));
 
 vi.mock('./ActiveAlertsModal', () => ({
-  ActiveAlertsModal: vi.fn(() => null),
+  ActiveAlertsModal: vi.fn(({ open }: { open: boolean }) =>
+    open ? <div data-testid="active-alerts-modal" /> : null
+  ),
 }));
 
 vi.mock('./TopologyModal', () => ({
-  TopologyModal: vi.fn(() => null),
+  TopologyModal: vi.fn(({ open }: { open: boolean }) =>
+    open ? <div data-testid="topology-modal" /> : null
+  ),
 }));
 
 vi.mock('./alert-history/AlertHistoryModal', () => ({
-  AlertHistoryModal: vi.fn(() => null),
+  AlertHistoryModal: vi.fn(({ open }: { open: boolean }) =>
+    open ? <div data-testid="alert-history-modal" /> : null
+  ),
 }));
 
 vi.mock('./log-explorer/LogExplorerModal', () => ({
-  LogExplorerModal: vi.fn(() => null),
+  LogExplorerModal: vi.fn(({ open }: { open: boolean }) =>
+    open ? <div data-testid="log-explorer-modal" /> : null
+  ),
 }));
 
 const createProps = (
@@ -114,5 +165,33 @@ describe('DashboardContent empty state', () => {
     expect(
       screen.queryByRole('button', { name: '상태 필터 초기화' })
     ).not.toBeInTheDocument();
+  });
+
+  it('요약 액션 콜백을 각 모달 open 상태로 연결한다', () => {
+    render(
+      <DashboardContent
+        {...createProps({
+          servers: [{ id: 's1', name: 'server-1', status: 'online' } as Server],
+          allServers: [
+            { id: 's1', name: 'server-1', status: 'online' } as Server,
+          ],
+          totalServers: 1,
+        })}
+      />
+    );
+
+    expect(screen.queryAllByTestId('dynamic-component')).toHaveLength(0);
+
+    fireEvent.click(screen.getByRole('button', { name: 'open active alerts' }));
+    expect(screen.queryAllByTestId('dynamic-component')).toHaveLength(1);
+
+    fireEvent.click(screen.getByRole('button', { name: 'open alert history' }));
+    expect(screen.queryAllByTestId('dynamic-component')).toHaveLength(2);
+
+    fireEvent.click(screen.getByRole('button', { name: 'open log explorer' }));
+    expect(screen.queryAllByTestId('dynamic-component')).toHaveLength(3);
+
+    fireEvent.click(screen.getByRole('button', { name: 'open topology' }));
+    expect(screen.queryAllByTestId('dynamic-component')).toHaveLength(4);
   });
 });

@@ -2,8 +2,8 @@
  * @vitest-environment jsdom
  */
 
-import { fireEvent, render, screen } from '@testing-library/react';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import AISidebarV4 from '@/components/ai-sidebar/AISidebarV4';
 
 // Mock useAIChatCore
@@ -42,6 +42,7 @@ vi.mock('@/hooks/ui/useResizable', () => ({
     width: 400,
     isResizing: false,
     handleMouseDown: vi.fn(),
+    handleTouchStart: vi.fn(),
   })),
 }));
 
@@ -63,6 +64,8 @@ vi.mock('@/stores/useAISidebarStore', () => ({
       isOpen: true,
       toggleSidebar: vi.fn(),
       setIsOpen: vi.fn(),
+      sidebarWidth: 600,
+      setSidebarWidth: vi.fn(),
       messages: [],
       addMessage: vi.fn(),
       webSearchEnabled: false,
@@ -126,10 +129,27 @@ describe('AISidebarV4', () => {
     isOpen: true,
     onClose: vi.fn(),
   };
+  let originalInnerWidth = 1024;
+
+  const setViewportWidth = (width: number) => {
+    Object.defineProperty(window, 'innerWidth', {
+      configurable: true,
+      writable: true,
+      value: width,
+    });
+  };
 
   beforeEach(() => {
     vi.clearAllMocks();
     mockPermissions.canToggleAI = true;
+    originalInnerWidth = window.innerWidth;
+    setViewportWidth(1024);
+  });
+
+  afterEach(() => {
+    setViewportWidth(originalInnerWidth);
+    document.body.style.overflow = '';
+    document.documentElement.style.overflow = '';
   });
 
   it('renders sidebar when user has AI permission', () => {
@@ -158,5 +178,41 @@ describe('AISidebarV4', () => {
   it('renders chat view by default', () => {
     render(<AISidebarV4 {...defaultProps} />);
     expect(screen.getByTestId('enhanced-ai-chat')).toBeInTheDocument();
+  });
+
+  it('renders mobile backdrop and closes when clicked', () => {
+    setViewportWidth(375);
+    render(<AISidebarV4 {...defaultProps} />);
+
+    fireEvent.click(screen.getByRole('button', { name: '사이드바 닫기' }));
+    expect(defaultProps.onClose).toHaveBeenCalledTimes(1);
+  });
+
+  it('uses full-screen layout on mobile', () => {
+    setViewportWidth(375);
+    render(<AISidebarV4 {...defaultProps} />);
+
+    const sidebar = screen.getByTestId('ai-sidebar');
+    expect(sidebar).toHaveClass('inset-0');
+    expect(sidebar).toHaveClass('h-dvh');
+    expect(sidebar).toHaveClass('w-screen');
+  });
+
+  it('locks background scroll on mobile and restores on unmount', async () => {
+    document.body.style.overflow = 'auto';
+    document.documentElement.style.overflow = 'scroll';
+    setViewportWidth(375);
+
+    const { unmount } = render(<AISidebarV4 {...defaultProps} />);
+
+    await waitFor(() => {
+      expect(document.body.style.overflow).toBe('hidden');
+      expect(document.documentElement.style.overflow).toBe('hidden');
+    });
+
+    unmount();
+
+    expect(document.body.style.overflow).toBe('auto');
+    expect(document.documentElement.style.overflow).toBe('scroll');
   });
 });

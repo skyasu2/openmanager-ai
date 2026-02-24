@@ -287,7 +287,7 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
                   {serverTypeLabel}
                 </span>
                 <span
-                  className="inline-flex items-center gap-1 rounded bg-gray-100 px-1.5 py-0.5 text-gray-700"
+                  className={`${isCompactVariant ? 'hidden sm:inline-flex' : 'inline-flex'} items-center gap-1 rounded bg-gray-100 px-1.5 py-0.5 text-gray-700`}
                   title={`운영체제: ${osShortName}`}
                 >
                   <span aria-hidden="true">{osIcon}</span>
@@ -297,7 +297,9 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
                 </span>
               </div>
               {/* 위치 정보 */}
-              <div className="mt-1 flex items-center gap-1 text-xs text-gray-500">
+              <div
+                className={`mt-1 ${isCompactVariant ? 'hidden sm:flex' : 'flex'} items-center gap-1 text-xs text-gray-500`}
+              >
                 <MapPin className="h-3 w-3" />
                 <span className="max-w-[140px] truncate sm:max-w-none">
                   {safeServer.location}
@@ -339,7 +341,19 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
                 Live Metrics
               </span>
             </div>
-            <AIInsightBadge {...realtimeMetrics} historyData={metricsHistory} />
+            {isCompactVariant ? (
+              <div className="hidden sm:block">
+                <AIInsightBadge
+                  {...realtimeMetrics}
+                  historyData={metricsHistory}
+                />
+              </div>
+            ) : (
+              <AIInsightBadge
+                {...realtimeMetrics}
+                historyData={metricsHistory}
+              />
+            )}
           </div>
 
           {/* 모바일 compact: 핵심 수치 우선 노출 */}
@@ -373,7 +387,16 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
           </div>
 
           {/* 🆕 보조 메트릭 (Load, Response Time) */}
-          <SecondaryMetrics server={safeServer} compact={isCompactVariant} />
+          {isCompactVariant ? (
+            <div className="hidden sm:block">
+              <SecondaryMetrics
+                server={safeServer}
+                compact={isCompactVariant}
+              />
+            </div>
+          ) : (
+            <SecondaryMetrics server={safeServer} compact={isCompactVariant} />
+          )}
 
           {/* Tertiary Details (OS, Uptime, IP) */}
           <div

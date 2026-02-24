@@ -266,6 +266,22 @@ export const AISidebarV4: FC<AISidebarV3Props> = ({
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
+  // 📱 모바일 전체 화면 모드에서는 배경 스크롤 잠금
+  useEffect(() => {
+    if (!isOpen || !isMobile) return;
+
+    const prevBodyOverflow = document.body.style.overflow;
+    const prevHtmlOverflow = document.documentElement.style.overflow;
+
+    document.body.style.overflow = 'hidden';
+    document.documentElement.style.overflow = 'hidden';
+
+    return () => {
+      document.body.style.overflow = prevBodyOverflow;
+      document.documentElement.style.overflow = prevHtmlOverflow;
+    };
+  }, [isMobile, isOpen]);
+
   // 📱 스와이프 제스처 상태
   const touchStartX = useRef<number>(0);
   const touchStartY = useRef<number>(0);
@@ -427,60 +443,71 @@ export const AISidebarV4: FC<AISidebarV3Props> = ({
   };
 
   return (
-    <div
-      data-testid="ai-sidebar"
-      role="dialog"
-      aria-labelledby="ai-sidebar-v4-title"
-      aria-modal="true"
-      aria-hidden={!isOpen}
-      className={cn(
-        'gpu-sidebar-slide-in fixed right-0 top-0 z-30 flex h-full bg-white shadow-2xl',
-        // 모바일에서는 기존 반응형 너비 사용
-        isMobile && 'w-full max-w-[90vw]',
-        // 리사이징 중이 아닐 때만 너비 전환 애니메이션
-        !isResizing && 'transition-[width] duration-200 ease-out',
-        isOpen ? '' : 'gpu-sidebar-slide-out',
-        className
-      )}
-      // 📐 데스크톱에서는 동적 너비 적용
-      style={!isMobile ? { width: `${width}px` } : undefined}
-      // 📱 스와이프 제스처 지원
-      onTouchStart={handleSwipeTouchStart}
-      onTouchMove={handleSwipeTouchMove}
-      onTouchEnd={handleSwipeTouchEnd}
-    >
-      {/* 📐 리사이즈 핸들 (데스크톱 전용) */}
-      {!isMobile && (
-        <ResizeHandle
-          onMouseDown={handleMouseDown}
-          onTouchStart={handleTouchStart}
-          isResizing={isResizing}
+    <>
+      {isOpen && isMobile && (
+        <button
+          type="button"
+          aria-label="사이드바 닫기"
+          onClick={onClose}
+          className="fixed inset-0 z-30 bg-slate-900/35 backdrop-blur-[1px] md:hidden"
         />
       )}
+      <div
+        data-testid="ai-sidebar"
+        role="dialog"
+        aria-labelledby="ai-sidebar-v4-title"
+        aria-modal="true"
+        aria-hidden={!isOpen}
+        className={cn(
+          'gpu-sidebar-slide-in fixed z-40 flex bg-white shadow-2xl',
+          isMobile
+            ? 'inset-0 h-dvh w-screen max-w-none rounded-none'
+            : 'right-0 top-0 h-full',
+          // 리사이징 중이 아닐 때만 너비 전환 애니메이션
+          !isResizing && 'transition-[width] duration-200 ease-out',
+          isOpen ? '' : 'gpu-sidebar-slide-out',
+          className
+        )}
+        // 📐 데스크톱에서는 동적 너비 적용
+        style={!isMobile ? { width: `${width}px` } : undefined}
+        // 📱 스와이프 제스처 지원
+        onTouchStart={handleSwipeTouchStart}
+        onTouchMove={handleSwipeTouchMove}
+        onTouchEnd={handleSwipeTouchEnd}
+      >
+        {/* 📐 리사이즈 핸들 (데스크톱 전용) */}
+        {!isMobile && (
+          <ResizeHandle
+            onMouseDown={handleMouseDown}
+            onTouchStart={handleTouchStart}
+            isResizing={isResizing}
+          />
+        )}
 
-      <div className="flex min-w-0 flex-1 flex-col">
-        <AISidebarHeader onClose={onClose} onNewSession={handleNewSession} />
-        <div className="flex-1 overflow-hidden pb-20 sm:pb-0">
-          <AIErrorBoundary
-            componentName="AISidebar"
-            onReset={() => {
-              // 에러 발생 시 세션 리셋
-              setInput('');
-            }}
-          >
-            {renderFunctionPage()}
-          </AIErrorBoundary>
+        <div className="flex min-w-0 flex-1 flex-col">
+          <AISidebarHeader onClose={onClose} onNewSession={handleNewSession} />
+          <div className="flex-1 overflow-hidden pb-20 sm:pb-0">
+            <AIErrorBoundary
+              componentName="AISidebar"
+              onReset={() => {
+                // 에러 발생 시 세션 리셋
+                setInput('');
+              }}
+            >
+              {renderFunctionPage()}
+            </AIErrorBoundary>
+          </div>
+        </div>
+
+        <div className="hidden sm:block">
+          <AIAssistantIconPanel
+            selectedFunction={selectedFunction}
+            onFunctionChange={setSelectedFunction}
+            className="w-16 sm:w-20"
+          />
         </div>
       </div>
-
-      <div className="hidden sm:block">
-        <AIAssistantIconPanel
-          selectedFunction={selectedFunction}
-          onFunctionChange={setSelectedFunction}
-          className="w-16 sm:w-20"
-        />
-      </div>
-    </div>
+    </>
   );
 };
 

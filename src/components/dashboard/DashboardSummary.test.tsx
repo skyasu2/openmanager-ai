@@ -77,4 +77,45 @@ describe('DashboardSummary status filter cards', () => {
       screen.getByRole('button', { name: '위험 1대 필터' })
     ).toBeDisabled();
   });
+
+  it('모바일 상태 카드 레이아웃 클래스를 유지한다', () => {
+    render(<DashboardSummary stats={mockStats} onFilterChange={vi.fn()} />);
+
+    const onlineButton = screen.getByRole('button', {
+      name: '온라인 3대 필터',
+    });
+    const statusGrid = onlineButton.parentElement;
+
+    expect(statusGrid).toHaveClass('grid-cols-2');
+    expect(statusGrid).toHaveClass('sm:grid-cols-4');
+    expect(onlineButton).toHaveClass('min-h-[84px]');
+  });
+
+  it('모바일 액션 버튼 터치 영역 클래스를 유지한다', () => {
+    render(
+      <DashboardSummary
+        stats={mockStats}
+        onOpenActiveAlerts={vi.fn()}
+        onOpenAlertHistory={vi.fn()}
+        onOpenLogExplorer={vi.fn()}
+      />
+    );
+
+    const activeAlertsButton = screen.getByRole('button', {
+      name: '활성 알림 보기',
+    });
+    const alertHistoryButton = screen.getByRole('button', {
+      name: '알림 이력 보기',
+    });
+    const logSearchButton = screen.getByRole('button', {
+      name: '로그 검색 보기',
+    });
+
+    expect(activeAlertsButton).toHaveClass('h-12');
+    expect(activeAlertsButton).toHaveClass('min-w-12');
+    expect(alertHistoryButton).toHaveClass('h-12');
+    expect(alertHistoryButton).toHaveClass('min-w-12');
+    expect(logSearchButton).toHaveClass('h-12');
+    expect(logSearchButton).toHaveClass('min-w-12');
+  });
 });
