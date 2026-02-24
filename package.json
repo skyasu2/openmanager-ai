@@ -92,7 +92,7 @@
     "test:e2e:critical": "playwright test tests/e2e/smoke.spec.ts tests/e2e/critical-auth.spec.ts --grep-invert '@external' --config playwright.config.ts",
     "test:e2e:critical:auth": "playwright test tests/e2e/critical-auth.spec.ts --grep-invert '@external' --config playwright.config.ts",
     "test:e2e:with-server": "PORT=3000 npm run dev:stable & sleep 5 && playwright test --config playwright.config.ts; kill %1",
-    "test:contract": "vitest run --config config/testing/vitest.config.main.ts tests/ai-sidebar/useHybridAIQuery.contract.test.ts tests/api/ai-supervisor-stream.contract.test.ts tests/api/api-contract.test.ts",
+    "test:contract": "vitest run --config config/testing/vitest.config.contract.ts",
     "test:cloud:essential": "node scripts/test/cloud-deploy-essential-smoke.mjs",
     "test:cloud:essential:strict": "node scripts/test/cloud-deploy-essential-smoke.mjs --require-auth",
     "test:cloud:essential:llm-once": "node scripts/test/cloud-deploy-essential-smoke.mjs --require-auth --with-supervisor-call",

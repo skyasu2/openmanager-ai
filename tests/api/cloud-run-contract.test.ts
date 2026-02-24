@@ -294,4 +294,129 @@ describe.skipIf(!shouldRun)('Cloud Run API Contract Tests', () => {
       expect(response.status).toBe(401);
     });
   });
+
+  // --------------------------------------------------------------------------
+  // HTTP 메서드 검증
+  // --------------------------------------------------------------------------
+  describe('HTTP Method Validation', () => {
+    it('GET /api/ai/supervisor → 404 또는 405 (POST only)', async () => {
+      const response = await fetch(`${baseUrl}/api/ai/supervisor`, {
+        headers: API_SECRET ? { 'X-API-Key': API_SECRET } : {},
+      });
+
+      expect([404, 405]).toContain(response.status);
+    });
+
+    it('PUT /api/ai/supervisor → 404 또는 405', async () => {
+      const response = await fetch(`${baseUrl}/api/ai/supervisor`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(API_SECRET && { 'X-API-Key': API_SECRET }),
+        },
+        body: JSON.stringify({
+          messages: [{ role: 'user', content: 'test' }],
+        }),
+      });
+
+      expect([404, 405]).toContain(response.status);
+    });
+  });
+
+  // --------------------------------------------------------------------------
+  // 응답 헤더 검증
+  // --------------------------------------------------------------------------
+  describe('Response Headers', () => {
+    it('/health 응답에 Content-Type: application/json 포함', async () => {
+      const response = await fetch(`${baseUrl}/health`);
+
+      expect(response.headers.get('content-type')).toContain('application/json');
+    });
+
+    it('/health 응답 시간이 5초 미만', async () => {
+      const start = Date.now();
+      await fetch(`${baseUrl}/health`);
+      const elapsed = Date.now() - start;
+
+      expect(elapsed).toBeLessThan(5000);
+    });
+  });
+
+  // --------------------------------------------------------------------------
+  // GET /ready — Readiness Check
+  // --------------------------------------------------------------------------
+  describe('GET /ready', () => {
+    it('200 또는 503으로 응답', async () => {
+      const response = await fetch(`${baseUrl}/ready`);
+
+      // 라우트 로딩 상태에 따라 200(ready) 또는 503(starting)
+      expect([200, 503]).toContain(response.status);
+    });
+
+    it('응답에 status 필드 포함', async () => {
+      const response = await fetch(`${baseUrl}/ready`);
+      const data = await response.json();
+
+      expect(['ready', 'starting']).toContain(data.status);
+      expect(data.timestamp).toBeDefined();
+    });
+  });
+
+  // --------------------------------------------------------------------------
+  // POST /api/ai/supervisor — 보안 입력 검증 (LLM 0회)
+  // --------------------------------------------------------------------------
+  describe.skipIf(!API_SECRET)(
+    'POST /api/ai/supervisor (security validation)',
+    () => {
+      it('과도하게 긴 content → 400 또는 처리됨', async () => {
+        const longContent = 'a'.repeat(50_000);
+        const response = await fetch(`${baseUrl}/api/ai/supervisor`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-API-Key': API_SECRET!,
+          },
+          body: JSON.stringify({
+            messages: [{ role: 'user', content: longContent }],
+          }),
+        });
+
+        // 400(입력 제한) 또는 200(처리됨) 어느 쪽이든 서버가 크래시하지 않으면 OK
+        expect([200, 400, 413]).toContain(response.status);
+      });
+
+      it('잘못된 role 값 → 400', async () => {
+        const response = await fetch(`${baseUrl}/api/ai/supervisor`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-API-Key': API_SECRET!,
+          },
+          body: JSON.stringify({
+            messages: [{ role: 'invalid_role', content: 'test' }],
+          }),
+        });
+
+        expect(response.status).toBe(400);
+      });
+
+      it('50개 초과 messages → 400', async () => {
+        const messages = Array.from({ length: 51 }, (_, i) => ({
+          role: i % 2 === 0 ? 'user' : 'assistant',
+          content: `message ${i}`,
+        }));
+
+        const response = await fetch(`${baseUrl}/api/ai/supervisor`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-API-Key': API_SECRET!,
+          },
+          body: JSON.stringify({ messages }),
+        });
+
+        expect(response.status).toBe(400);
+      });
+    }
+  );
 });

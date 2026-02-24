@@ -146,4 +146,134 @@ describe('AI Supervisor Stream v2 Contract', () => {
     expect(() => StreamErrorSchema.parse(data)).not.toThrow();
     expect(data.error).toContain('query');
   });
+
+  it('4단계 파이프라인(agent_status → handoff → text_delta → done) 이벤트 순서가 올바르다', async () => {
+    const pipelineEvents = [
+      { type: 'agent_status', data: { agent: 'orchestrator', status: 'routing' } },
+      { type: 'handoff', data: { from: 'orchestrator', to: 'nlq-agent' } },
+      { type: 'agent_status', data: { agent: 'nlq-agent', status: 'thinking' } },
+      { type: 'tool_call', data: { name: 'getServerMetrics', args: { serverId: 'all' } } },
+      { type: 'tool_result', data: { name: 'getServerMetrics', result: '15 servers' } },
+      { type: 'text_delta', data: '서버 현황: ' },
+      { type: 'text_delta', data: '15대 정상' },
+      { type: 'step_finish', data: { agent: 'nlq-agent', stepIndex: 0 } },
+      { type: 'done', data: { success: true, finalAgent: 'NLQ Agent' } },
+    ];
+
+    server.use(
+      http.post(/\/api\/ai\/supervisor\/stream\/v2$/, () =>
+        new HttpResponse(toSse(pipelineEvents), {
+          status: 200,
+          headers: {
+            'Content-Type': 'text/event-stream',
+            'X-Stream-Protocol': 'ui-message-stream',
+          },
+        })
+      )
+    );
+
+    const response = await fetch(STREAM_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        messages: [{ role: 'user', content: '서버 상태 알려줘' }],
+        sessionId: 'session-pipe',
+      }),
+    });
+
+    const rawPayload = await response.text();
+    const parsedEvents = parseSsePayload(rawPayload);
+
+    // 모든 이벤트 타입이 계약을 만족
+    parsedEvents.forEach((event) => {
+      expect(() => StreamEventSchema.parse(event)).not.toThrow();
+    });
+
+    // 첫 이벤트는 agent_status (routing)
+    expect(parsedEvents[0].type).toBe('agent_status');
+
+    // handoff 이벤트 존재
+    const handoff = parsedEvents.find((e) => e.type === 'handoff');
+    expect(handoff).toBeDefined();
+    expect(handoff?.data).toHaveProperty('from');
+    expect(handoff?.data).toHaveProperty('to');
+
+    // tool_call → tool_result 순서
+    const toolCallIdx = parsedEvents.findIndex((e) => e.type === 'tool_call');
+    const toolResultIdx = parsedEvents.findIndex((e) => e.type === 'tool_result');
+    expect(toolCallIdx).toBeLessThan(toolResultIdx);
+
+    // text_delta 결합
+    const text = parsedEvents
+      .filter((e) => e.type === 'text_delta')
+      .map((e) => String(e.data))
+      .join('');
+    expect(text).toBe('서버 현황: 15대 정상');
+
+    // 마지막 이벤트는 done
+    expect(parsedEvents.at(-1)?.type).toBe('done');
+    expect(parsedEvents.at(-1)?.data).toHaveProperty('success', true);
+  });
+
+  it('서버 에러(500) 시 SSE error 이벤트를 반환한다', async () => {
+    const errorEvents = [
+      { type: 'agent_status', data: { agent: 'orchestrator', status: 'routing' } },
+      { type: 'done', data: { success: false, error: 'LLM provider timeout' } },
+    ];
+
+    server.use(
+      http.post(/\/api\/ai\/supervisor\/stream\/v2$/, () =>
+        new HttpResponse(toSse(errorEvents), {
+          status: 200,
+          headers: { 'Content-Type': 'text/event-stream' },
+        })
+      )
+    );
+
+    const response = await fetch(STREAM_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        messages: [{ role: 'user', content: '테스트' }],
+        sessionId: 'session-err',
+      }),
+    });
+
+    const rawPayload = await response.text();
+    const parsedEvents = parseSsePayload(rawPayload);
+
+    const doneEvent = parsedEvents.find((e) => e.type === 'done');
+    expect(doneEvent).toBeDefined();
+    expect(doneEvent?.data).toHaveProperty('success', false);
+    expect(doneEvent?.data).toHaveProperty('error');
+  });
+
+  it('resume 헤더(X-Resumed, X-Skip-Chunks)가 올바르게 설정된다', async () => {
+    server.use(
+      http.get(/\/api\/ai\/supervisor\/stream\/v2/, () =>
+        new HttpResponse(
+          toSse([{ type: 'text_delta', data: '이어받기' }]),
+          {
+            status: 200,
+            headers: {
+              'Content-Type': 'text/event-stream',
+              'X-Resumed': 'true',
+              'X-Skip-Chunks': '5',
+              'X-Session-Id': 'session-resume',
+              'X-Stream-Id': 'stream-abc',
+            },
+          }
+        )
+      )
+    );
+
+    const response = await fetch(
+      `${BASE_URL}/api/ai/supervisor/stream/v2?sessionId=session-resume&skip=5`
+    );
+
+    expect(response.status).toBe(200);
+    expect(response.headers.get('X-Resumed')).toBe('true');
+    expect(response.headers.get('X-Skip-Chunks')).toBe('5');
+    expect(response.headers.get('X-Session-Id')).toBe('session-resume');
+  });
 });

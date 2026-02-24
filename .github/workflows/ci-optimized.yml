@@ -282,7 +282,10 @@ jobs:
           CLOUD_RUN_API_SECRET: ${{ secrets.CLOUD_RUN_API_SECRET }}
         timeout-minutes: 5 # 콜드 스타트 고려하여 타임아웃 증가
       - name: Cloud Run Contract Tests
-        run: npx vitest run tests/api/cloud-run-contract.test.ts --reporter=verbose
+        run: npx vitest run --config config/testing/vitest.config.main.ts tests/api/cloud-run-contract.test.ts --reporter=verbose
+        env:
+          CLOUD_RUN_AI_URL: ${{ vars.CLOUD_RUN_AI_URL }}
+          CLOUD_RUN_API_SECRET: ${{ secrets.CLOUD_RUN_API_SECRET }}
         timeout-minutes: 5
 
   # 🧪 Cloud Run AI Engine Unit Tests (독립 실행)
