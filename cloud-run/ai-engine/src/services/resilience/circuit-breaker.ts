@@ -202,13 +202,18 @@ export class CircuitBreaker {
   }
 
   private async withTimeout<T>(promise: Promise<T>): Promise<T> {
+    let timeoutId: ReturnType<typeof setTimeout>;
     const timeoutPromise = new Promise<never>((_, reject) => {
-      setTimeout(() => {
+      timeoutId = setTimeout(() => {
         reject(new TimeoutError(`Operation timed out after ${this.config.timeout}ms`));
       }, this.config.timeout);
     });
 
-    return Promise.race([promise, timeoutPromise]);
+    try {
+      return await Promise.race([promise, timeoutPromise]);
+    } finally {
+      clearTimeout(timeoutId!);
+    }
   }
 }
 
@@ -239,23 +244,46 @@ export class TimeoutError extends Error {
 
 const circuitBreakers = new Map<string, CircuitBreaker>();
 
+const KNOWN_PROVIDERS = [
+  'cerebras',
+  'groq',
+  'mistral',
+  'gemini',
+  'tavily',
+] as const;
+
 /**
- * Get or create a circuit breaker for a provider
+ * Normalize CB key: "stream-gemini" → "gemini", "orchestrator-groq" → "groq"
+ * 같은 provider의 장애를 하나의 CB로 집계하여 빠른 감지 보장
+ */
+function normalizeProviderKey(key: string): string {
+  for (const provider of KNOWN_PROVIDERS) {
+    if (key === provider || key.endsWith(`-${provider}`)) {
+      return provider;
+    }
+  }
+  return key;
+}
+
+/**
+ * Get or create a circuit breaker for a provider.
+ * Keys are normalized so "stream-gemini" and "supervisor-gemini" share one CB.
  */
 export function getCircuitBreaker(
   provider: string,
   config?: Partial<CircuitBreakerConfig>
 ): CircuitBreaker {
-  if (!circuitBreakers.has(provider)) {
+  const normalizedKey = normalizeProviderKey(provider);
+  if (!circuitBreakers.has(normalizedKey)) {
     circuitBreakers.set(
-      provider,
+      normalizedKey,
       new CircuitBreaker({
-        name: provider,
+        name: normalizedKey,
         ...config,
       })
     );
   }
-  return circuitBreakers.get(provider)!;
+  return circuitBreakers.get(normalizedKey)!;
 }
 
 /**

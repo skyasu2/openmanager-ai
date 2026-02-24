@@ -339,10 +339,13 @@ export const AISidebarV4: FC<AISidebarV3Props> = ({
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // 자동 스크롤
+  // 자동 스크롤 (메시지 추가 시 하단으로)
+  const messageCount = enhancedMessages.length;
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, []);
+    if (messageCount > 0) {
+      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [messageCount]);
 
   // ESC 키로 사이드바 닫기
   useEffect(() => {
@@ -456,8 +459,7 @@ export const AISidebarV4: FC<AISidebarV3Props> = ({
         data-testid="ai-sidebar"
         role="dialog"
         aria-labelledby="ai-sidebar-v4-title"
-        aria-modal="true"
-        aria-hidden={!isOpen}
+        aria-modal={isOpen || undefined}
         className={cn(
           'gpu-sidebar-slide-in fixed z-40 flex bg-white shadow-2xl',
           isMobile

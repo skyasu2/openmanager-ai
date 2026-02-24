@@ -36,7 +36,7 @@ import {
  * - 호버 스케일 + 글로우 효과
  * - 서버 카드 독자 기능: 실시간 메트릭, AI Insight, Progressive Disclosure
  * - 카드 크기 50% 축소 (2025-12-13)
- * - HTML 접근성 완전 수정: 카드=div[role=button], 토글=button (2026-01-17)
+ * - HTML 접근성 수정: 중첩 인터랙티브 제거, header button이 카드 클릭 담당 (2026-02-24)
  */
 
 export interface ImprovedServerCardProps {
@@ -80,6 +80,16 @@ const statusGradients = {
     shadow: 'shadow-purple-500/20',
     glow: 'rgba(139, 92, 246, 0.3)',
   },
+};
+
+// BUG-5 fix: Tailwind JIT는 동적 클래스를 감지 못함 → 정적 룩업 맵 사용
+const hoverShadowClasses: Record<string, string> = {
+  critical: 'hover:shadow-red-500/30',
+  warning: 'hover:shadow-amber-500/30',
+  online: 'hover:shadow-emerald-500/30',
+  offline: 'hover:shadow-gray-500/20',
+  maintenance: 'hover:shadow-blue-500/30',
+  unknown: 'hover:shadow-purple-500/20',
 };
 
 const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
@@ -166,24 +176,13 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
       });
     }, []);
 
-    // 카드 클릭 핸들러 (키보드 지원)
+    // 카드 클릭 핸들러
     const handleCardClick = useCallback(
       (e?: React.MouseEvent | React.KeyboardEvent) => {
-        // 이벤트 전파 방지 (중복 실행 방지)
         e?.stopPropagation();
         onClick(safeServer);
       },
       [onClick, safeServer]
-    );
-
-    const handleCardKeyDown = useCallback(
-      (e: React.KeyboardEvent<HTMLDivElement>) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          handleCardClick(e);
-        }
-      },
-      [handleCardClick]
     );
 
     // 🔧 인라인 화살표 함수를 useCallback으로 최적화
@@ -196,17 +195,15 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
         setShowSecondaryInfo(false);
     }, [enableProgressiveDisclosure, showTertiaryInfo]);
 
+    const currentHoverShadow =
+      hoverShadowClasses[safeServer.status] || hoverShadowClasses.online;
+
     return (
-      // biome-ignore lint/a11y/useSemanticElements: Card wrapper stays div[role=button] because it contains inner control buttons.
+      // biome-ignore lint/a11y/noStaticElementInteractions: Container div with mouse hover for progressive disclosure — inner buttons handle keyboard interaction.
       <div
-        role="button"
-        tabIndex={0}
-        aria-label={`${safeServer.name} 서버 상세 보기`}
-        onClick={handleCardClick}
-        onKeyDown={handleCardKeyDown}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
-        className={`group relative w-full cursor-pointer overflow-hidden rounded-2xl border shadow-sm transition-all duration-300 ease-out hover:shadow-xl backdrop-blur-md text-left bg-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 ${statusTheme.background} ${statusTheme.border} ${variantStyles.container} hover:${currentGradient.shadow}`}
+        className={`group relative w-full overflow-hidden rounded-2xl border shadow-sm transition-all duration-300 ease-out hover:shadow-xl backdrop-blur-md text-left bg-transparent ${statusTheme.background} ${statusTheme.border} ${variantStyles.container} ${currentHoverShadow}`}
       >
         {/* 🎨 그라데이션 애니메이션 배경 (랜딩 카드 스타일) */}
         <div

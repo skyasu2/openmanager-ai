@@ -73,7 +73,7 @@ export const PROVIDER_QUOTAS: Record<ProviderName, ProviderQuota> = {
   },
   mistral: {
     dailyTokenLimit: 1_000_000,
-    requestsPerMinute: 30,
+    requestsPerMinute: 2, // Free Tier: ~1-2 RPM (모델별 상이)
     tokensPerMinute: 30_000,
     requestsPerDay: 500,
   },
@@ -82,8 +82,8 @@ export const PROVIDER_QUOTAS: Record<ProviderName, ProviderQuota> = {
    * @see https://ai.google.dev/gemini-api/docs/models/gemini
    * @added 2026-01-27
    *
-   * Free Tier Limits:
-   * - 1,000 RPD (requests per day)
+   * Free Tier Limits (gemini-2.0-flash-lite):
+   * - 250 RPD (requests per day) — 모델별 상이, flash-lite 기준
    * - 15 RPM (requests per minute)
    * - 250,000 TPM (tokens per minute)
    * - 1M context window
@@ -92,7 +92,7 @@ export const PROVIDER_QUOTAS: Record<ProviderName, ProviderQuota> = {
     dailyTokenLimit: 250_000 * 60 * 24, // TPM * 60min * 24h (theoretical max)
     requestsPerMinute: 15,
     tokensPerMinute: 250_000,
-    requestsPerDay: 1_000,
+    requestsPerDay: 250,
   },
   /**
    * Tavily Web Search API

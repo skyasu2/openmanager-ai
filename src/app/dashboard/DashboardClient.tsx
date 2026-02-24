@@ -374,7 +374,6 @@ function DashboardPageContent({ initialServers }: DashboardClientProps) {
               status={{ type: 'idle' }}
               onStatsUpdate={handleStatsUpdate}
               onShowSequentialChange={() => {}}
-              isAgentOpen={isAgentOpen}
               statusFilter={statusFilter}
               onStatusFilterChange={setStatusFilter}
             />

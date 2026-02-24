@@ -71,7 +71,6 @@ interface DashboardContentProps {
   status: DashboardStatus;
   onStatsUpdate: (stats: DashboardStats) => void;
   onShowSequentialChange: (show: boolean) => void;
-  isAgentOpen: boolean;
   /** 현재 활성 상태 필터 */
   statusFilter?: string | null;
   /** 상태 필터 변경 핸들러 */

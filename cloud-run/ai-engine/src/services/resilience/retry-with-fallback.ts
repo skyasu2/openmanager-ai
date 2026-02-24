@@ -253,8 +253,10 @@ export async function generateTextWithRetry(
   const excludedProviders: ProviderName[] = [];
 
   let currentProviderIndex = 0;
+  const MAX_ITERATIONS = preferredOrder.length * (fullConfig.maxRetries + 1) + 1;
+  let iterations = 0;
 
-  while (true) {
+  while (iterations++ < MAX_ITERATIONS) {
     const availableProviders = getAvailableProviders(preferredOrder, excludedProviders);
 
     if (availableProviders.length === 0) {
@@ -285,9 +287,10 @@ export async function generateTextWithRetry(
 
         const model = getModel(defaultModelId);
 
-        // Create timeout promise
+        // Create timeout promise (E-2 fix: clearTimeout on resolve)
+        let timeoutId: ReturnType<typeof setTimeout>;
         const timeoutPromise = new Promise<never>((_, reject) => {
-          setTimeout(() => reject(new Error('Request timeout')), fullConfig.timeoutMs);
+          timeoutId = setTimeout(() => reject(new Error('Request timeout')), fullConfig.timeoutMs);
         });
 
         // Execute with timeout
@@ -295,19 +298,24 @@ export async function generateTextWithRetry(
         // maxRetries: 1 handles transient network errors automatically
         // Provider-level fallback is still managed by our custom logic
         // 🎯 P2-2: Native timeout as primary + Promise.race as backup for full control
-        const result = await Promise.race([
-          generateText({
-            model,
-            messages: options.messages,
-            tools: options.tools,
-            temperature: options.temperature ?? 0.2,
-            maxOutputTokens: options.maxOutputTokens ?? 2048,
-            maxRetries: 1, // 🎯 P3-1: Delegate network retry to AI SDK
-            timeout: { totalMs: fullConfig.timeoutMs }, // 🎯 P2-2: Native timeout
-            ...(options.stopWhen && { stopWhen: options.stopWhen }),
-          }),
-          timeoutPromise, // Backup timeout via Promise.race
-        ]);
+        let result: Awaited<ReturnType<typeof generateText>>;
+        try {
+          result = await Promise.race([
+            generateText({
+              model,
+              messages: options.messages,
+              tools: options.tools,
+              temperature: options.temperature ?? 0.2,
+              maxOutputTokens: options.maxOutputTokens ?? 2048,
+              maxRetries: 1, // 🎯 P3-1: Delegate network retry to AI SDK
+              timeout: { totalMs: fullConfig.timeoutMs }, // 🎯 P2-2: Native timeout
+              ...(options.stopWhen && { stopWhen: options.stopWhen }),
+            }),
+            timeoutPromise, // Backup timeout via Promise.race
+          ]);
+        } finally {
+          clearTimeout(timeoutId!);
+        }
 
         const durationMs = Date.now() - attemptStart;
 

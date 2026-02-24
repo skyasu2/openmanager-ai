@@ -109,6 +109,7 @@ export const ChatInputArea = memo(function ChatInputArea({
                   type="button"
                   onClick={onClearFileErrors}
                   className="text-red-400 hover:text-red-600"
+                  aria-label="파일 에러 닫기"
                 >
                   <X className="h-4 w-4" />
                 </button>
@@ -162,6 +163,7 @@ export const ChatInputArea = memo(function ChatInputArea({
                     type="button"
                     onClick={() => onRemoveFile(file.id)}
                     className="rounded-full p-1 text-gray-400 hover:bg-gray-200 hover:text-gray-600"
+                    aria-label={`${file.name} 첨부 제거`}
                   >
                     <X className="h-3 w-3" />
                   </button>
@@ -188,9 +190,8 @@ export const ChatInputArea = memo(function ChatInputArea({
                       : 'text-gray-400 hover:bg-gray-100 hover:text-gray-600'
                   }`}
                   title={webSearchEnabled ? '웹 검색 끄기' : '웹 검색 켜기'}
-                  aria-label={
-                    webSearchEnabled ? '웹 검색 끄기' : '웹 검색 켜기'
-                  }
+                  aria-label="웹 검색 토글"
+                  aria-pressed={webSearchEnabled}
                 >
                   <Globe className="h-5 w-5" />
                 </button>
