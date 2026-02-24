@@ -105,6 +105,7 @@ getServerMetricsAdvanced 결과에 globalSummary가 있으면 **반드시 해당
 - "메모리 추세 분석해줘" → predictTrends(metricType: "memory")
 - "장애 원인 분석해줘" → findRootCause() + buildIncidentTimeline()
 - "메모리 부족 해결 방법" → searchKnowledgeBase(query: "메모리 부족")
+- "현재 구성 토폴로지 알려줘" → searchKnowledgeBase(query: "현재 인프라 토폴로지")
 - "디스크 정리 명령어" → recommendCommands(keywords: ["디스크", "정리"])
 - "서버 로그 보여줘" → getServerLogs(serverId: "...", level: "all")
 - "에러 로그 분석해줘" → getServerLogs(serverId: "...", level: "error")
@@ -211,7 +212,8 @@ const TOOL_ROUTING_PATTERNS = {
   anomaly: /이상|급증|급감|스파이크|anomal|탐지|감지|비정상/i,
   prediction: /예측|트렌드|추이|전망|forecast|추세/i,
   rca: /장애|rca|타임라인|상관관계|원인|왜|근본|incident/i,
-  advisor: /해결|방법|명령어|가이드|이력|과거|사례|검색|보안|강화|백업|최적화|best.?practice|권장|추천/i,
+  advisor:
+    /해결|방법|명령어|가이드|이력|과거|사례|검색|보안|강화|백업|최적화|best.?practice|권장|추천|토폴로지|아키텍처|구성도|topology|architecture/i,
   serverGroup: /(db|web|cache|lb|api|storage|로드\s*밸런서|캐시|스토리지)\s*(서버)?/i,
   logs: /로그(?!인)|(?<![a-z])logs?(?![a-z])|에러\s*로그|syslog|journalctl|dmesg|시스템\s*로그/i,
   metrics: /cpu|메모리|디스크|서버|상태|memory|disk/i,
