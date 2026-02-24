@@ -174,12 +174,17 @@ Cloud Run은 **GCP Secret Manager**에 JSON 형태로 시크릿을 저장하고,
 ### 로컬 개발용 (`cloud-run/ai-engine/.env`)
 
 ```bash
-# AI Providers
-CEREBRAS_API_KEY=csk-xxx
-GROQ_API_KEY=gsk_xxx
-MISTRAL_API_KEY=xxx
-GOOGLE_AI_API_KEY=xxx
-OPENROUTER_API_KEY=sk-or-v1-xxx
+# AI Providers (OSS 전문가용 120B급 모델 사용 권장)
+CEREBRAS_API_KEY=csk-xxx  # NLQ/Analyst 주력 (gpt-oss-120b)
+GROQ_API_KEY=gsk_xxx     # Reporter 주력 (llama-3.3-70b)
+MISTRAL_API_KEY=xxx      # Advisor 주력 (mistral-large-latest)
+GOOGLE_AI_API_KEY=xxx    # Vision 주력 (gemini-2.5-flash)
+OPENROUTER_API_KEY=sk-or-v1-xxx # Vision Fallback (gemma-3-4b-it:free)
+
+# 시크릿 설정 주의사항:
+# 1. API 키 값 양끝에 큰따옴표(")가 포함된 경우 일부 파싱 로직에서 에러(Unauthorized/Leaked)가 발생할 수 있습니다. 
+# 2. 로컬 테스트 스크립트 작성 시 반드시 `apiKey.replace(/^"|"$/g, '')` 처리를 권장합니다.
+# 3. 유출 감지된 키는 즉시 삭제하고 새 키로 갱신하여 .env.local 및 Vercel Dashboard를 동기화하십시오.
 
 # Supabase
 SUPABASE_URL=https://xxx.supabase.co

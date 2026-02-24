@@ -47,6 +47,7 @@ import {
   getIntentCategory,
   createPrepareStep,
 } from './supervisor-routing';
+import { evaluateAgentResponseQuality } from './agents/response-quality';
 
 export { executeSupervisorStream } from './supervisor-stream';
 
@@ -120,6 +121,10 @@ async function executeMultiAgentMode(
         modelId: multiResult.metadata.modelId,
         stepsExecuted: multiResult.metadata.totalRounds,
         durationMs: multiResult.metadata.durationMs,
+        responseChars: multiResult.metadata.responseChars,
+        formatCompliance: multiResult.metadata.formatCompliance,
+        qualityFlags: multiResult.metadata.qualityFlags,
+        latencyTier: multiResult.metadata.latencyTier,
         mode: 'multi',
         handoffs: multiResult.handoffs,
         finalAgent: multiResult.finalAgent,
@@ -205,6 +210,11 @@ async function executeSupervisorAttempt(
 
     // Graceful fallback: 사용자 친화적 응답 반환 (에러 대신)
     const durationMs = Date.now() - startTime;
+    const fallbackResponse = '현재 AI 엔진 모델이 일시적으로 사용 불가능합니다. 잠시 후 다시 시도해주세요.';
+    const quality = evaluateAgentResponseQuality('Supervisor', fallbackResponse, {
+      durationMs,
+      fallbackReason: 'NO_PROVIDER',
+    });
     finalizeTrace(trace, 'Provider unavailable - fallback response', false, {
       durationMs,
       fallback: true,
@@ -214,7 +224,7 @@ async function executeSupervisorAttempt(
 
     return {
       success: true,
-      response: '현재 AI 엔진 모델이 일시적으로 사용 불가능합니다. 잠시 후 다시 시도해주세요.',
+      response: fallbackResponse,
       toolsCalled: [],
       toolResults: [],
       usage: { promptTokens: 0, completionTokens: 0, totalTokens: 0 },
@@ -223,6 +233,10 @@ async function executeSupervisorAttempt(
         modelId: 'none',
         stepsExecuted: 0,
         durationMs,
+        responseChars: quality.responseChars,
+        formatCompliance: quality.formatCompliance,
+        qualityFlags: quality.qualityFlags,
+        latencyTier: quality.latencyTier,
         fallback: true,
         fallbackReason: 'no_provider',
       },
@@ -338,6 +352,9 @@ async function executeSupervisorAttempt(
       const response = finalAnswerResult?.answer ?? result.text;
 
       const durationMs = Date.now() - startTime;
+      const quality = evaluateAgentResponseQuality('Supervisor', response, {
+        durationMs,
+      });
 
       logGeneration(trace, {
         model: modelId,
@@ -385,6 +402,10 @@ async function executeSupervisorAttempt(
           modelId,
           stepsExecuted: result.steps.length,
           durationMs,
+          responseChars: quality.responseChars,
+          formatCompliance: quality.formatCompliance,
+          qualityFlags: quality.qualityFlags,
+          latencyTier: quality.latencyTier,
           traceId: trace.id,
         },
       };

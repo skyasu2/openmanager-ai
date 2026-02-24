@@ -10,67 +10,73 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 // Mock precomputed-state
+const mockServers = [
+  {
+    id: 'web-nginx-dc1-01',
+    name: 'Web Server 01',
+    type: 'web',
+    status: 'online',
+    cpu: 45,
+    memory: 62,
+    disk: 55,
+    network: 50,
+  },
+  {
+    id: 'web-nginx-dc1-02',
+    name: 'Web Server 02',
+    type: 'web',
+    status: 'warning',
+    cpu: 75, // >= 70 warning threshold
+    memory: 82, // >= 75 warning threshold
+    disk: 60,
+    network: 60,
+  },
+  {
+    id: 'db-mysql-dc1-01',
+    name: 'Database Primary',
+    type: 'database',
+    status: 'critical',
+    cpu: 90, // >= 85 critical threshold
+    memory: 95, // >= 90 critical threshold
+    disk: 65,
+    network: 70,
+  },
+  {
+    id: 'db-mysql-dc1-02',
+    name: 'Database Replica',
+    type: 'database',
+    status: 'online',
+    cpu: 35,
+    memory: 55,
+    disk: 60,
+    network: 40,
+  },
+  {
+    id: 'cache-redis-dc1-01',
+    name: 'Cache Server 01',
+    type: 'cache',
+    status: 'online',
+    cpu: 30,
+    memory: 40,
+    disk: 20,
+    network: 30,
+  },
+];
+
 vi.mock('../data/precomputed-state', () => ({
   getCurrentState: vi.fn(() => ({
     timestamp: new Date().toISOString(),
-    servers: [
-      {
-        id: 'web-nginx-dc1-01',
-        name: 'Web Server 01',
-        type: 'web',
-        status: 'online',
-        cpu: 45,
-        memory: 62,
-        disk: 55,
-        network: 50,
-      },
-      {
-        id: 'web-nginx-dc1-02',
-        name: 'Web Server 02',
-        type: 'web',
-        status: 'warning',
-        cpu: 75, // >= 70 warning threshold
-        memory: 82, // >= 75 warning threshold
-        disk: 60,
-        network: 60,
-      },
-      {
-        id: 'db-mysql-dc1-01',
-        name: 'Database Primary',
-        type: 'database',
-        status: 'critical',
-        cpu: 90, // >= 85 critical threshold
-        memory: 95, // >= 90 critical threshold
-        disk: 65,
-        network: 70,
-      },
-      {
-        id: 'db-mysql-dc1-02',
-        name: 'Database Replica',
-        type: 'database',
-        status: 'online',
-        cpu: 35,
-        memory: 55,
-        disk: 60,
-        network: 40,
-      },
-      {
-        id: 'cache-redis-dc1-01',
-        name: 'Cache Server 01',
-        type: 'cache',
-        status: 'online',
-        cpu: 30,
-        memory: 40,
-        disk: 20,
-        network: 30,
-      },
-    ],
+    servers: mockServers,
     systemHealth: {
       overall: 'warning',
       healthyCount: 3,
       warningCount: 1,
       criticalCount: 1,
     },
+  })),
+  getStateBySlot: vi.fn(() => ({
+    timestamp: new Date().toISOString(),
+    servers: mockServers,
   })),
 }));
 
@@ -157,7 +163,11 @@ describe('detectAnomaliesAllServers', () => {
         expect(result.totalServers).toBe(5);
         expect(result.summary.totalServers).toBe(5);
         expect(result.timestamp).toBeDefined();
-        expect(result._algorithm).toContain('Threshold Scan');
+        expect(result.algorithmVersion).toBe('2.3.0');
+        expect(result.decisionSource).toBe('threshold_scan+linear_projection');
+        expect(result.confidenceBasis).toBe('status-thresholds:ssot,history:last6h');
+        expect(result.riskForecast.model).toBe('lightweight_linear_projection_v1');
+        expect(result._algorithm).toContain('Linear Projection');
       }
     });
 
@@ -316,6 +326,10 @@ describe('detectAnomaliesAllServers', () => {
         expect(result).toHaveProperty('hasAnomalies');
         expect(result).toHaveProperty('anomalyCount');
         expect(result).toHaveProperty('timestamp');
+        expect(result).toHaveProperty('algorithmVersion');
+        expect(result).toHaveProperty('decisionSource');
+        expect(result).toHaveProperty('confidenceBasis');
+        expect(result).toHaveProperty('riskForecast');
         expect(result).toHaveProperty('_algorithm');
       }
     });
@@ -343,6 +357,18 @@ describe('detectAnomaliesAllServers', () => {
         expect(result.summary).toHaveProperty('healthyCount');
         expect(result.summary).toHaveProperty('warningCount');
         expect(result.summary).toHaveProperty('criticalCount');
+      }
+    });
+
+    it('should include risk forecast metadata', async () => {
+      const result = await detectAnomaliesAllServers.execute({ metricType: 'all' }, {} as never);
+
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.riskForecast.horizonHours).toBe(1);
+        expect(result.riskForecast.model).toBe('lightweight_linear_projection_v1');
+        expect(Array.isArray(result.riskForecast.predictedBreaches)).toBe(true);
+        expect(result.riskForecast.breachCount).toBe(result.riskForecast.predictedBreaches.length);
       }
     });
   });

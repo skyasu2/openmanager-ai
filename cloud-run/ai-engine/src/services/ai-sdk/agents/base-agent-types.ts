@@ -24,6 +24,10 @@ export interface AgentResult {
     modelId: string;
     durationMs: number;
     steps: number;
+    responseChars: number;
+    formatCompliance: boolean;
+    qualityFlags: string[];
+    latencyTier?: 'fast' | 'normal' | 'slow' | 'very_slow';
     finishReason?: string;
     fallbackUsed?: boolean;
     fallbackReason?: string;

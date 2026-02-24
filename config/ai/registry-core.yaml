@@ -2,9 +2,9 @@
 # 핵심 정보만 포함, 상세 내역은 별도 문서 참조
 # 목적: 토큰 사용량 최소화 (Cache Read 79% → 30% 목표)
 
-version: "3.0.0"  # registry-core 버전 (v3.0.0: MCP 정리 및 버전 동기화)
-last_updated: "2026-01-18"
-project: "OpenManager AI v8.0.0"
+version: "3.1.0"  # registry-core 버전 (v3.1.0: 모델/라우팅 기준 최신화)
+last_updated: "2026-02-24"
+project: "OpenManager AI v8.3.3"
 
 # ============================================================================
 # 0. AI Architecture Overview (v6.0 - AI SDK Multi-Agent)
@@ -12,12 +12,14 @@ project: "OpenManager AI v8.0.0"
 ai-architecture:
   current: "Vercel AI SDK Multi-Agent"
   api_endpoint: "/api/ai/supervisor"
-  # 실제 구현 기준 (model-provider.ts 참조, 2025-12-29 최신화)
+  # 실제 구현 기준 (model-provider.ts + agent-model-selectors.ts 참조, 2026-02-24)
   providers:
-    primary: "Cerebras (llama-3.3-70b, 24M tokens/day)"
-    nlq-agent: "Groq (llama-3.3-70b-versatile, tool calling)"
-    verifier: "Mistral (mistral-small-2506)"
-  # Note: Gemini는 더 이상 Primary로 사용하지 않음 (2025-12-29 확인)
+    text-primary: "Cerebras (gpt-oss-120b)"
+    text-fallback-1: "Groq (llama-3.3-70b-versatile)"
+    text-fallback-2: "Mistral (mistral-large-latest)"
+    vision-primary: "Gemini (gemini-2.5-flash)"
+    vision-fallback: "OpenRouter (OPENROUTER_VISION_MODEL_ID)"
+  # Note: 에이전트별 우선순위는 AGENT_CONFIGS의 selector 체인을 따른다.
 
   deprecated:
     - unified-ai-processor    # Python/Cloud Run - AI SDK로 대체됨 (2025-12-28)

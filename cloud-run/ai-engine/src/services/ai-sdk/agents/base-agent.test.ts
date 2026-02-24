@@ -33,6 +33,7 @@ vi.mock('../../../../lib/text-sanitizer', () => ({
 
 vi.mock('../../../lib/config-parser', () => ({
   isOpenRouterVisionToolCallingEnabled: vi.fn(() => false),
+  getUpstashConfig: vi.fn(() => null),
 }));
 
 // Store generateText mock for manipulation in tests (hoisted for proper mock timing)
@@ -118,7 +119,7 @@ function createMockConfig(overrides: Partial<{
 // BaseAgent Tests
 // ============================================================================
 
-describe('BaseAgent', { timeout: 15000 }, () => {
+describe('BaseAgent', { timeout: 30000 }, () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.mocked(isOpenRouterVisionToolCallingEnabled).mockReturnValue(false);

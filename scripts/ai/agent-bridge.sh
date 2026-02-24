@@ -455,14 +455,50 @@ if [ -n "$MODE_PREFIX" ]; then
 ${PROMPT}"
 fi
 
+classify_duration() {
+  local duration="$1"
+  if [ "$duration" -le 30 ]; then
+    echo "fast"
+  elif [ "$duration" -le 90 ]; then
+    echo "normal"
+  elif [ "$duration" -le 180 ]; then
+    echo "slow"
+  else
+    echo "very_slow"
+  fi
+}
+
+classify_failure() {
+  local status="$1"
+  if [[ "$status" == "ok" ]]; then
+    echo "none"
+    return 0
+  fi
+
+  local code="${status#fail:}"
+  case "$code" in
+    124) echo "timeout" ;;
+    127) echo "command_not_found" ;;
+    78) echo "auth" ;;
+    2) echo "usage" ;;
+    3) echo "recursion_blocked" ;;
+    4) echo "self_target_blocked" ;;
+    1) echo "runtime_error" ;;
+    *) echo "exit_${code}" ;;
+  esac
+}
+
 log_call() {
   if [ "$NO_LOG" = "true" ]; then return; fi
   mkdir -p "$LOG_DIR"
-  local status="$1" duration="$2"
+  local status="$1" duration="$2" response_chars="$3"
+  local duration_class failure_class
+  duration_class="$(classify_duration "$duration")"
+  failure_class="$(classify_failure "$status")"
   local ts
   ts="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
-  printf '%s\t%s\t%s\t%ss\tmodel=%s\tprompt_chars=%d\n' \
-    "$ts" "$TARGET" "$status" "$duration" "${MODEL:-default}" "${#PROMPT}" \
+  printf '%s\t%s\t%s\t%ss\tmodel=%s\tprompt_chars=%d\tresponse_chars=%s\tduration_class=%s\tfailure_class=%s\n' \
+    "$ts" "$TARGET" "$status" "$duration" "${MODEL:-default}" "${#PROMPT}" "$response_chars" "$duration_class" "$failure_class" \
     >> "$LOG_DIR/bridge.log"
 }
 
@@ -607,10 +643,14 @@ set -e
 cat "$OUTPUT_FILE"
 
 ELAPSED=$(( $(date +%s) - START_TIME ))
+RESPONSE_CHARS="$(wc -m < "$OUTPUT_FILE" | tr -d '[:space:]')"
+if [ -z "$RESPONSE_CHARS" ]; then
+  RESPONSE_CHARS=0
+fi
 if [ $EXIT_CODE -eq 0 ]; then
-  log_call "ok" "$ELAPSED"
+  log_call "ok" "$ELAPSED" "$RESPONSE_CHARS"
 else
-  log_call "fail:$EXIT_CODE" "$ELAPSED"
+  log_call "fail:$EXIT_CODE" "$ELAPSED" "$RESPONSE_CHARS"
 fi
 
 if [ "$SAVE_AUTO" = "true" ] || [ -n "$SAVE_PATH" ]; then

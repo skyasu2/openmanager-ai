@@ -37,6 +37,16 @@ export interface ServerAnomalyItem {
   severity: 'warning' | 'critical';
 }
 
+export interface ForecastBreachItem {
+  serverId: string;
+  serverName: string;
+  metric: 'cpu' | 'memory' | 'disk';
+  currentValue: number;
+  predictedValue1h: number;
+  warningThreshold: number;
+  riskLevel: 'medium' | 'high';
+}
+
 /**
  * Result type for detectAnomaliesAllServers tool
  */
@@ -49,6 +59,15 @@ export interface DetectAnomaliesAllServersResult {
   hasAnomalies: boolean;
   anomalyCount: number;
   timestamp: string;
+  algorithmVersion: string;
+  decisionSource: string;
+  confidenceBasis: string;
+  riskForecast: {
+    horizonHours: number;
+    model: string;
+    breachCount: number;
+    predictedBreaches: ForecastBreachItem[];
+  };
   _algorithm: string;
 }
 

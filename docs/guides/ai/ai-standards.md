@@ -66,6 +66,17 @@ bash scripts/ai/agent-bridge.sh --to claude --mode doc --save-auto "결과 문�
 - AI 응답은 스트림 이벤트, 구조(JSON Schema), 상태 전이 중심의 **계약 테스트(Contract Testing)** 도입
 - 수동/야간 스모크 테스트 등 최소한의 단위에서만 실제 외부 서비스(Supabase, Cloud Run, LLM) 연결 허용
 
+### 원칙 5: 시크릿 보안 및 테스트 무결성 (Secret Management)
+- **하드코딩 절대 금지**: 모든 API 키는 반드시 `.env.local` 또는 GCP Secret Manager를 통해 관리하며, 소스 코드(스크립트 포함)에 직접 기재하는 것을 금지한다.
+- **파싱 시 따옴표 처리**: `.env` 파일의 값을 파싱할 때 값 양끝의 큰따옴표(`"`)를 반드시 제거하는 코드를 포함해야 한다. (예: `val.replace(/^"|"$/g, '')`)
+- **Git 노출 차단**: `.env`, `.env.local`, `.env.test` 등 모든 시크릿 설정 파일은 `.gitignore`에 등록되어야 하며, 이를 위반하는 커밋은 `pre-commit` 단계에서 차단된다.
+
+### 원칙 6: 토큰 절약 및 비용 최적화 (Token Conservation)
+- **수동 테스트 제한**: `scripts/*.ts` 로컬 테스트는 **장애 진단 및 설정 변경 시 1회성**으로만 사용하며, 자동화된 루프나 CI 파이프라인에 절대로 포함하지 않는다.
+- **최소 출력 토큰(Minimum Tokens)**: 테스트 쿼리는 반드시 `maxOutputTokens`를 최소값(50~150)으로 설정하여 토큰 낭비를 방지한다.
+- **Mock 우선**: 로직 검증은 가급적 실제 LLM 호출 대신 MSW(Mock Service Worker)나 Vitest Mock을 활용한다.
+- **쿼터 보호 준수**: `GOOGLE_AI_QUOTA_PROTECTION=true` 등 모델별 쿼터 보호 플래그를 상시 활성화한다.
+
 ---
 
 ## 1. 핵심 코딩 규칙
@@ -92,6 +103,17 @@ bash scripts/ai/agent-bridge.sh --to claude --mode doc --save-auto "결과 문�
 ### 테스트 & 검증
 - **테스트 필수**: 핵심 로직 단위 테스트 확보
 - **상호 검증**: 3 AI 협업으로 수동 검증 수행
+- **개별 에이전트 수동 테스트**: `cloud-run/ai-engine/scripts/` 디렉토리의 전용 스크립트로 검증
+
+| 테스트 대상 | 실행 명령어 (in `cloud-run/ai-engine`) | 검증 항목 |
+| :--- | :--- | :--- |
+| **Advisor (Mistral)** | `npx ts-node scripts/test-mistral-advisor-local.ts` | 조치 명령어 제안, 스트리밍 응답 |
+| **Reporter (Groq)** | `npx ts-node scripts/test-groq-reporter-local.ts` | 요약 보고서 작성 품질 |
+| **Vision (Gemini)** | `npx ts-node scripts/test-vision-multimodal-fallback.ts` | 이미지 분석, Fallback 메커니즘 |
+| **NLQ (Cerebras)** | `npx ts-node scripts/test-cerebras-nlq-local.ts` | **gpt-oss-120b** 모델의 SQL 생성 전문성 |
+| **전체 Agent API** | `bash scripts/test-agents-api.sh` | Supervisor 라우팅 및 툴 호출 |
+
+> **주의**: `gpt-oss-120b`는 OSS(Open Source Software) 전문 모델로, 단순 대화보다는 SQL 생성이나 코드 분석 등 기술적인 쿼리에 최적화되어 있습니다. 일반적인 인사말에는 응답이 비어있을 수 있으므로 반드시 기술적 컨텍스트와 함께 테스트하십시오.
 
 ---
 

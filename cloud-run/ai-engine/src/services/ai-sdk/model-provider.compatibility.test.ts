@@ -72,6 +72,7 @@ vi.mock('../../lib/config-parser', () => ({
   getGroqApiKey: vi.fn(() => 'test-groq-key'),
   getGeminiApiKey: vi.fn(() => 'test-gemini-key'),
   getOpenRouterApiKey: vi.fn(() => 'test-openrouter-key'),
+  getUpstashConfig: vi.fn(() => null),
   getOpenRouterVisionModelId: vi.fn(() => 'nvidia/nemotron-nano-12b-v2-vl:free'),
   getOpenRouterVisionFallbackModelIds: vi.fn(() => [
     'mistralai/mistral-small-3.1-24b-instruct:free',
@@ -104,7 +105,7 @@ describe('model-provider compatibility (SDK upgrades)', () => {
     const models = [
       getCerebrasModel('llama-3.3-70b'),
       getGroqModel('llama-3.3-70b-versatile'),
-      getMistralModel('mistral-large-3-25-12'),
+      getMistralModel('mistral-large-latest'),
       getGeminiFlashLiteModel('gemini-2.5-flash'),
       getOpenRouterVisionModel('nvidia/nemotron-nano-12b-v2-vl:free'),
     ];

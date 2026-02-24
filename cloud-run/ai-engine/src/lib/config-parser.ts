@@ -118,10 +118,10 @@ let cachedAIProvidersConfig: AIProvidersConfig | null = null;
 let cachedKVConfig: KVConfig | null = null;
 let cachedLangfuseConfig: LangfuseConfig | null = null;
 
-const DEFAULT_OPENROUTER_VISION_MODEL = 'nvidia/nemotron-nano-12b-v2-vl:free';
+const DEFAULT_OPENROUTER_VISION_MODEL = 'google/gemma-3-4b-it:free';
 const DEFAULT_OPENROUTER_VISION_FALLBACKS = [
+  'nvidia/nemotron-nano-12b-v2-vl:free',
   'mistralai/mistral-small-3.1-24b-instruct:free',
-  'google/gemma-3-4b-it:free',
 ];
 
 /**

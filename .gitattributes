@@ -37,3 +37,6 @@
 *.woff2 binary
 *.ttf binary
 *.eot binary
+
+# local runtime config can contain secrets; avoid textual diffs if it is ever tracked
+.gemini/settings.json -diff

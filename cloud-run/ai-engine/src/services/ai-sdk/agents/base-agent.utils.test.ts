@@ -33,6 +33,7 @@ vi.mock('../../../../lib/text-sanitizer', () => ({
 
 vi.mock('../../../lib/config-parser', () => ({
   isOpenRouterVisionToolCallingEnabled: vi.fn(() => false),
+  getUpstashConfig: vi.fn(() => null),
 }));
 
 // Store generateText mock for manipulation in tests (hoisted for proper mock timing)

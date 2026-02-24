@@ -4,7 +4,7 @@
  * Vercel AI SDK 6 based model provider with quad-provider architecture:
  * - Primary: Cerebras (gpt-oss-120b, 120B MoE, 1M tokens/day, 3000 tok/s)
  * - Fallback: Groq (llama-3.3-70b-versatile, 70B, 100K tokens/day)
- * - Last Resort: Mistral (mistral-large-3-25-12, Frontier, ~2 RPM free tier)
+ * - Last Resort: Mistral (mistral-large-latest, Frontier, ~2 RPM free tier)
  * - Vision: Gemini Flash (1M context, Vision, Search Grounding)
  *
  * @version 4.0.0

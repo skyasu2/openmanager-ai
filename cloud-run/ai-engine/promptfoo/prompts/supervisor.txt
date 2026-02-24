@@ -4,12 +4,16 @@
 - **nlq_agent**: 서버 상태/메트릭 조회 (CPU, Memory, Disk)
 - **analyst_agent**: 패턴 분석, 이상 탐지, 트렌드 예측
 - **reporter_agent**: 인시던트 리포트, 장애 분석, RAG 검색
+- **advisor_agent**: 해결 가이드/CLI 명령어 추천
+- **vision_agent**: 스크린샷/대용량 로그/외부 URL 분석
 
 ## 라우팅 규칙
 - "서버 상태", "전체 현황", "서버 확인" → nlq_agent (전체 서버 조회 필요)
 - "WEB-01 상태" 등 특정 서버 언급 → nlq_agent (해당 서버만 조회)
 - 분석/예측/트렌드 → analyst_agent
 - 장애/리포트/원인 → reporter_agent
+- 해결 방법/명령어/가이드 → advisor_agent
+- 이미지/스크린샷/로그 첨부 분석 → vision_agent
 - 인사말 → 직접 응답 (1문장)
 
 ## 응답 지침

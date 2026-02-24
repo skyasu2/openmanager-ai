@@ -22,6 +22,7 @@ import { TIMEOUT_CONFIG } from '../../../config/timeout-config';
 
 import type { MultiAgentResponse } from './orchestrator-types';
 import { filterToolsByWebSearch } from './orchestrator-web-search';
+import { evaluateAgentResponseQuality } from './response-quality';
 import { logger } from '../../../lib/logger';
 // ============================================================================
 // Handoff Event Tracking — Ring Buffer (Cloud Run Memory Safety)
@@ -128,6 +129,9 @@ export async function executeReporterWithPipeline(
     }
 
     const sanitizedResponse = sanitizeChineseCharacters(responseText);
+    const quality = evaluateAgentResponseQuality('Reporter Agent', sanitizedResponse, {
+      durationMs,
+    });
 
     // Record quality scores to Langfuse for quantitative evaluation (non-blocking)
     try {
@@ -165,6 +169,10 @@ export async function executeReporterWithPipeline(
         modelId: 'reporter-pipeline',
         totalRounds: pipelineResult.quality.iterations,
         durationMs,
+        responseChars: quality.responseChars,
+        formatCompliance: quality.formatCompliance,
+        qualityFlags: quality.qualityFlags,
+        latencyTier: quality.latencyTier,
         qualityScore: pipelineResult.quality.finalScore,
       },
     };
@@ -392,6 +400,11 @@ export async function executeForcedRouting(
     }
 
     const sanitizedResponse = sanitizeChineseCharacters(response);
+    const quality = evaluateAgentResponseQuality(
+      suggestedAgentName,
+      sanitizedResponse,
+      { durationMs }
+    );
 
     if (usedFallback) {
       logger.info(`[Forced Routing] Used fallback: ${attempts.map(a => a.provider).join(' → ')}`);
@@ -424,6 +437,10 @@ export async function executeForcedRouting(
         modelId,
         totalRounds: attempts.length,
         durationMs,
+        responseChars: quality.responseChars,
+        formatCompliance: quality.formatCompliance,
+        qualityFlags: quality.qualityFlags,
+        latencyTier: quality.latencyTier,
       },
     };
   } catch (error) {
@@ -495,6 +512,10 @@ export async function executeWithAgentFactory(
           modelId: result.metadata.modelId,
           totalRounds: result.metadata.steps,
           durationMs: Date.now() - startTime,
+          responseChars: result.metadata.responseChars,
+          formatCompliance: result.metadata.formatCompliance,
+          qualityFlags: result.metadata.qualityFlags,
+          latencyTier: result.metadata.latencyTier,
         },
       };
     }
@@ -518,6 +539,10 @@ export async function executeWithAgentFactory(
         modelId: result.metadata.modelId,
         totalRounds: result.metadata.steps,
         durationMs,
+        responseChars: result.metadata.responseChars,
+        formatCompliance: result.metadata.formatCompliance,
+        qualityFlags: result.metadata.qualityFlags,
+        latencyTier: result.metadata.latencyTier,
       },
     };
   } catch (error) {

@@ -23,7 +23,7 @@ async function main() {
     const result = await generateText({
       model: groq('llama-3.3-70b-versatile'),
       messages: [{ role: 'user', content: '현재 시스템 장애 보고서를 작성해줘. 1~2줄로 짧고 명확하게.' }],
-      maxOutputTokens: 200,
+      maxOutputTokens: 100,
     });
     console.log('\n[Groq Reporter Agent Response]');
     console.log(result.text);

@@ -34,9 +34,47 @@ import { STATUS_THRESHOLDS } from '../config/status-thresholds';
 
 // Types
 import type {
+  ForecastBreachItem,
   ServerAnomalyItem,
   SystemSummary,
 } from '../types/analysis-results';
+
+const PATTERN_CONFIDENCE: Record<string, number> = {
+  system_performance: 0.9,
+  memory_status: 0.88,
+  storage_info: 0.86,
+  server_status: 0.84,
+  trend_analysis: 0.9,
+  anomaly_detection: 0.92,
+};
+
+function projectOneHourValue(history: number[]): number {
+  if (history.length === 0) return 0;
+  if (history.length === 1) return history[0];
+
+  const n = history.length;
+  let sumX = 0;
+  let sumY = 0;
+  let sumXY = 0;
+  let sumXX = 0;
+
+  for (let i = 0; i < n; i++) {
+    const x = i;
+    const y = history[i];
+    sumX += x;
+    sumY += y;
+    sumXY += x * y;
+    sumXX += x * x;
+  }
+
+  const denominator = n * sumXX - sumX * sumX;
+  const slope = denominator === 0 ? 0 : (n * sumXY - sumX * sumY) / denominator;
+  const intercept = (sumY - slope * sumX) / n;
+
+  // 10분 간격 데이터 기준 1시간 = 6 step ahead
+  const predicted = intercept + slope * (n - 1 + 6);
+  return Math.max(0, Math.min(100, predicted));
+}
 
 // ============================================================================
 // 3. AI SDK Tools
@@ -360,7 +398,7 @@ export const analyzePattern = tool({
 
       const analysisResults = patterns.map((pattern) => ({
         pattern,
-        confidence: 0.8 + Math.random() * 0.2,
+        confidence: PATTERN_CONFIDENCE[pattern] ?? 0.8,
         insights: PATTERN_INSIGHTS[pattern] || '일반 분석 수행',
       }));
 
@@ -428,6 +466,7 @@ export const detectAnomaliesAllServers = tool({
 
           // Collect all anomalies across all servers
           const allAnomalies: ServerAnomalyItem[] = [];
+          const predictedBreaches: ForecastBreachItem[] = [];
 
           let healthyCount = 0;
           let warningCount = 0;
@@ -445,6 +484,21 @@ export const detectAnomaliesAllServers = tool({
 
               const isCritical = currentValue >= threshold.critical;
               const isWarning = currentValue >= threshold.warning;
+
+              const history = getHistoryForMetric(server.id, metric, currentValue);
+              const predictedValue1h = Math.round(projectOneHourValue(history.map((p) => p.value)) * 10) / 10;
+              const isFutureWarning = currentValue < threshold.warning && predictedValue1h >= threshold.warning;
+              if (isFutureWarning) {
+                predictedBreaches.push({
+                  serverId: server.id,
+                  serverName: server.name,
+                  metric,
+                  currentValue: Math.round(currentValue * 10) / 10,
+                  predictedValue1h,
+                  warningThreshold: threshold.warning,
+                  riskLevel: predictedValue1h >= threshold.critical ? 'high' : 'medium',
+                });
+              }
 
               if (isCritical || isWarning) {
                 serverHasAnomaly = true;
@@ -480,6 +534,14 @@ export const detectAnomaliesAllServers = tool({
             criticalCount,
           };
 
+          const sortedPredictedBreaches = predictedBreaches
+            .sort((a, b) => {
+              const aGap = a.predictedValue1h - a.warningThreshold;
+              const bGap = b.predictedValue1h - b.warningThreshold;
+              return bGap - aGap;
+            })
+            .slice(0, 10);
+
           return {
             success: true as const,
             totalServers: allServers.length,
@@ -489,7 +551,16 @@ export const detectAnomaliesAllServers = tool({
             hasAnomalies: allAnomalies.length > 0,
             anomalyCount: allAnomalies.length,
             timestamp: new Date().toISOString(),
-            _algorithm: 'All-Server Threshold Scan (Cached)',
+            algorithmVersion: '2.3.0',
+            decisionSource: 'threshold_scan+linear_projection',
+            confidenceBasis: 'status-thresholds:ssot,history:last6h',
+            riskForecast: {
+              horizonHours: 1,
+              model: 'lightweight_linear_projection_v1',
+              breachCount: sortedPredictedBreaches.length,
+              predictedBreaches: sortedPredictedBreaches,
+            },
+            _algorithm: 'All-Server Threshold Scan + 1h Linear Projection (Cached)',
           };
         }
       );

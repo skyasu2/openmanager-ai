@@ -1,3 +1,7 @@
+// ⚠️ SECURITY WARNING: NEVER hardcode API keys in this script.
+// This script reads from the local .env file for testing purposes only.
+// Ensure .env is added to .gitignore to prevent accidental leakage.
+
 import { createMistral } from '@ai-sdk/mistral';
 import { generateText } from 'ai';
 import dotenv from 'dotenv';
@@ -31,7 +35,7 @@ async function main() {
             'Nginx 서버 메모리 누수 발생 시 어떻게 조치해야 해? 명령어 위주로 1~2줄로 짧고 핵심만 알려줘.',
         },
       ],
-      maxOutputTokens: 200,
+      maxOutputTokens: 100,
     });
     console.log('\n[Mistral Advisor Agent Response]');
     console.log(result.text);

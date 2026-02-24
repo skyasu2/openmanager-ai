@@ -74,6 +74,10 @@ export interface MultiAgentResponse {
     modelId: string;
     totalRounds: number;
     durationMs: number;
+    responseChars?: number;
+    formatCompliance?: boolean;
+    qualityFlags?: string[];
+    latencyTier?: 'fast' | 'normal' | 'slow' | 'very_slow';
     /** Quality score from Reporter Pipeline (optional, 0-1) */
     qualityScore?: number;
   };

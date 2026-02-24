@@ -33,6 +33,7 @@ import {
   recordHandoff,
   getRecentHandoffs,
 } from './orchestrator-routing';
+import { evaluateAgentResponseQuality } from './response-quality';
 import { logger } from '../../../lib/logger';
 import {
   decomposeTask,
@@ -73,6 +74,11 @@ export async function executeMultiAgent(
 
   if (!preFilterResult.shouldHandoff && preFilterResult.directResponse) {
     const durationMs = Date.now() - startTime;
+    const quality = evaluateAgentResponseQuality(
+      'Orchestrator',
+      preFilterResult.directResponse,
+      { durationMs }
+    );
     logger.info(`[Fast Path] Direct response in ${durationMs}ms (confidence: ${preFilterResult.confidence})`);
 
     return {
@@ -82,7 +88,16 @@ export async function executeMultiAgent(
       finalAgent: 'Orchestrator (Fast Path)',
       toolsCalled: [],
       usage: { promptTokens: 0, completionTokens: 0, totalTokens: 0 },
-      metadata: { provider: 'rule-based', modelId: 'prefilter', totalRounds: 1, durationMs },
+      metadata: {
+        provider: 'rule-based',
+        modelId: 'prefilter',
+        totalRounds: 1,
+        durationMs,
+        responseChars: quality.responseChars,
+        formatCompliance: quality.formatCompliance,
+        qualityFlags: quality.qualityFlags,
+        latencyTier: quality.latencyTier,
+      },
     };
   }
 
@@ -254,6 +269,7 @@ export async function executeMultiAgent(
 
     const durationMs = Date.now() - startTime;
     const fallbackResponse = routingDecision.reasoning || '죄송합니다. 질문을 처리할 적절한 에이전트를 찾지 못했습니다.';
+    const quality = evaluateAgentResponseQuality('Orchestrator', fallbackResponse, { durationMs });
 
     return {
       success: true,
@@ -262,7 +278,16 @@ export async function executeMultiAgent(
       finalAgent: 'Orchestrator',
       toolsCalled: [],
       usage: { promptTokens: 0, completionTokens: 0, totalTokens: 0 },
-      metadata: { provider, modelId, totalRounds: 1, durationMs },
+      metadata: {
+        provider,
+        modelId,
+        totalRounds: 1,
+        durationMs,
+        responseChars: quality.responseChars,
+        formatCompliance: quality.formatCompliance,
+        qualityFlags: quality.qualityFlags,
+        latencyTier: quality.latencyTier,
+      },
     };
   } catch (error) {
     const durationMs = Date.now() - startTime;

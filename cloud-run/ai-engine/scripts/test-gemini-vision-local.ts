@@ -23,7 +23,7 @@ async function main() {
     const result = await generateText({
       model: google('gemini-2.5-flash'),
       messages: [{ role: 'user', content: 'Linux 서버 메모리 최적화 최신 공식 문서를 찾아줘. 1~2줄로 짧고 핵심적인 링크 위주로 답변해줘.' }],
-      maxOutputTokens: 200,
+      maxOutputTokens: 100,
     });
     console.log();
     console.log('[Gemini Vision Agent Response]');

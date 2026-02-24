@@ -153,7 +153,7 @@ export function getGroqModel(
 }
 
 export function getMistralModel(
-  modelId: string = 'mistral-large-3-25-12'
+  modelId: string = 'mistral-large-latest'
 ): LanguageModel {
   const mistral = getMistralProvider();
   return asLanguageModel(mistral(modelId));

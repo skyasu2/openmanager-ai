@@ -67,6 +67,10 @@ export interface SupervisorResponse {
     modelId: string;
     stepsExecuted: number;
     durationMs: number;
+    responseChars?: number;
+    formatCompliance?: boolean;
+    qualityFlags?: string[];
+    latencyTier?: 'fast' | 'normal' | 'slow' | 'very_slow';
     mode?: SupervisorMode;
     traceId?: string;
     handoffs?: Array<{ from: string; to: string; reason?: string }>;

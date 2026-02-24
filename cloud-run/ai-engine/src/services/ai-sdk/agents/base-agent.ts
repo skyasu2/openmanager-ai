@@ -10,10 +10,11 @@
  * - Provider fallback chain support
  * - Step-by-step monitoring via onStepFinish
  * - Timeout protection with configurable limits
+ * - Redis-based Session Memory & History Recovery
  *
- * @version 2.0.0 - Migrated to ToolLoopAgent composition
+ * @version 2.1.0 - Integrated Session Memory & Context Recovery
  * @created 2026-01-27
- * @updated 2026-02-16 - ToolLoopAgent adoption (AI SDK v6 official pattern)
+ * @updated 2026-02-24 - Session persistence & Redis recovery
  */
 
 import {
@@ -22,17 +23,23 @@ import {
   stepCountIs,
   type ToolSet,
   type LanguageModel,
+  type CoreMessage,
 } from 'ai';
 import { sanitizeChineseCharacters } from '../../../lib/text-sanitizer';
 import { extractToolResultOutput } from '../../../lib/ai-sdk-utils';
 import type { AgentConfig, ModelResult } from './config';
 import { logger } from '../../../lib/logger';
 import { buildUserContent } from './base-agent-multimodal';
+import { SessionMemoryService } from '../session-memory';
 import {
   filterTools,
   getEmptyResponseFallbackMessage,
   resolveMaxOutputTokens,
 } from './base-agent-tooling';
+import {
+  classifyLatencyTier,
+  evaluateAgentResponseQuality,
+} from './response-quality';
 import {
   DEFAULT_OPTIONS,
   type AgentResult,
@@ -126,11 +133,32 @@ export abstract class BaseAgent {
   }
 
   /**
+   * Build complete context including Redis history
+   */
+  private async buildContext(query: string, options: AgentRunOptions): Promise<CoreMessage[]> {
+    const userContent = this.buildUserContent(query, options);
+    const messages: CoreMessage[] = [];
+
+    // 1. Recover history from Redis if sessionId provided
+    if (options.sessionId) {
+      try {
+        const history = await SessionMemoryService.getHistory(options.sessionId);
+        if (history && history.length > 0) {
+          messages.push(...history);
+        }
+      } catch (err) {
+        logger.error(`[SessionMemory] History recovery failed for ${options.sessionId}:`, err);
+      }
+    }
+
+    // 2. Add current user message
+    messages.push({ role: 'user', content: userContent });
+
+    return messages;
+  }
+
+  /**
    * Execute agent with query and return complete result
-   *
-   * Uses AI SDK v6 generateText with stopWhen conditions:
-   * - hasToolCall('finalAnswer'): Graceful termination when agent calls finalAnswer
-   * - stepCountIs(maxSteps): Safety limit to prevent infinite loops
    *
    * @param query - User query to process
    * @param options - Execution options
@@ -141,11 +169,12 @@ export abstract class BaseAgent {
     const opts = { ...DEFAULT_OPTIONS, ...options };
     const agentName = this.getName();
 
-    logger.info(`[${agentName}] Starting execution`);
+    logger.info(`[${agentName}] Starting execution (Session: ${opts.sessionId || 'none'})`);
 
     // Validate configuration
     const config = this.getConfig();
     if (!config) {
+      const durationMs = Date.now() - startTime;
       return {
         text: '',
         success: false,
@@ -154,8 +183,12 @@ export abstract class BaseAgent {
         metadata: {
           provider: 'none',
           modelId: 'none',
-          durationMs: Date.now() - startTime,
+          durationMs,
           steps: 0,
+          responseChars: 0,
+          formatCompliance: false,
+          qualityFlags: ['CONFIG_NOT_FOUND'],
+          latencyTier: classifyLatencyTier(durationMs, agentName),
         },
         error: `Agent ${agentName} config not found`,
       };
@@ -163,6 +196,7 @@ export abstract class BaseAgent {
 
     const modelResult = config.getModel();
     if (!modelResult) {
+      const durationMs = Date.now() - startTime;
       return {
         text: '',
         success: false,
@@ -171,8 +205,12 @@ export abstract class BaseAgent {
         metadata: {
           provider: 'none',
           modelId: 'none',
-          durationMs: Date.now() - startTime,
+          durationMs,
           steps: 0,
+          responseChars: 0,
+          formatCompliance: false,
+          qualityFlags: ['MODEL_UNAVAILABLE'],
+          latencyTier: classifyLatencyTier(durationMs, agentName),
         },
         error: `No model available for ${agentName}`,
       };
@@ -190,8 +228,8 @@ export abstract class BaseAgent {
     logger.info(`[${agentName}] Using ${provider}/${modelId}`);
 
     try {
-      // Build multimodal user content (text + images + files)
-      const userContent = this.buildUserContent(query, opts);
+      // Build context (History + User Content)
+      const messages = await this.buildContext(query, opts);
 
       // Create ToolLoopAgent with resolved configuration
       const agent = this.createToolLoopAgent({
@@ -203,12 +241,10 @@ export abstract class BaseAgent {
         maxOutputTokens,
       });
 
-      // Execute via ToolLoopAgent.generate() (AI SDK v6 official pattern)
+      // Execute via ToolLoopAgent.generate()
       const result = await agent.generate({
-        messages: [{ role: 'user', content: userContent }],
-        // 🎯 Fix: Apply timeout configuration (AI SDK v6.0.50)
+        messages,
         timeout: { totalMs: opts.timeoutMs ?? DEFAULT_OPTIONS.timeoutMs, stepMs: Math.max((opts.timeoutMs ?? DEFAULT_OPTIONS.timeoutMs) - 5_000, 5_000) },
-        // Step-by-step monitoring
         onStepFinish: ({ finishReason, toolCalls }) => {
           const toolNames = toolCalls?.map(tc => tc.toolName) || [];
           logger.debug(`[${agentName}] Step: reason=${finishReason}, tools=[${toolNames.join(',')}]`);
@@ -221,45 +257,49 @@ export abstract class BaseAgent {
       let finishReason = 'stop';
 
       for (const step of result.steps) {
-        if (step.finishReason) {
-          finishReason = step.finishReason;
-        }
-        for (const toolCall of step.toolCalls) {
-          toolsCalled.push(toolCall.toolName);
-        }
-        // Extract finalAnswer result if called
+        if (step.finishReason) finishReason = step.finishReason;
+        for (const toolCall of step.toolCalls) toolsCalled.push(toolCall.toolName);
         if (step.toolResults) {
           for (const tr of step.toolResults) {
             const trOutput = extractToolResultOutput(tr);
             if (tr.toolName === 'finalAnswer' && trOutput && typeof trOutput === 'object') {
-              const result = trOutput as Record<string, unknown>;
-              if ('answer' in result && typeof result.answer === 'string') {
-                finalAnswerResult = { answer: result.answer };
+              const res = trOutput as Record<string, unknown>;
+              if ('answer' in res && typeof res.answer === 'string') {
+                finalAnswerResult = { answer: res.answer };
               }
             }
           }
         }
       }
 
-      // Use finalAnswer if called, otherwise fall back to result.text
       const responseText = finalAnswerResult?.answer ?? result.text;
       let sanitizedText = sanitizeChineseCharacters(responseText);
       let fallbackUsed = false;
       let fallbackReason: string | undefined;
+      
       if (!sanitizedText || sanitizedText.trim().length === 0) {
-        logger.warn(
-          `⚠️ [${agentName}] Empty response from ${provider}/${modelId} (finish=${finishReason}, outputTokens=${result.usage?.outputTokens ?? 0})`
-        );
-        sanitizedText = getEmptyResponseFallbackMessage(
-          provider,
-          modelId,
-          agentName
-        );
+        logger.warn(`⚠️ [${agentName}] Empty response from ${provider}/${modelId}`);
+        sanitizedText = getEmptyResponseFallbackMessage(provider, modelId, agentName);
         fallbackUsed = true;
         fallbackReason = 'EMPTY_RESPONSE';
       }
 
+      // Persist session history in Redis (Async)
+      if (opts.sessionId && sanitizedText) {
+        const updatedMessages: CoreMessage[] = [
+          ...messages,
+          { role: 'assistant', content: sanitizedText }
+        ];
+        SessionMemoryService.saveHistory(opts.sessionId, updatedMessages).catch(err => {
+          logger.error(`[SessionMemory] Failed to save history for ${opts.sessionId}:`, err);
+        });
+      }
+
       const durationMs = Date.now() - startTime;
+      const quality = evaluateAgentResponseQuality(agentName, sanitizedText, {
+        durationMs,
+        fallbackReason,
+      });
       logger.info(`[${agentName}] Completed in ${durationMs}ms, tools: [${toolsCalled.join(', ')}]`);
 
       return {
@@ -276,6 +316,10 @@ export abstract class BaseAgent {
           modelId,
           durationMs,
           steps: result.steps.length,
+          responseChars: quality.responseChars,
+          formatCompliance: quality.formatCompliance,
+          qualityFlags: quality.qualityFlags,
+          latencyTier: quality.latencyTier,
           finishReason,
           fallbackUsed,
           fallbackReason,
@@ -284,7 +328,6 @@ export abstract class BaseAgent {
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error);
       const durationMs = Date.now() - startTime;
-
       logger.error(`❌ [${agentName}] Error after ${durationMs}ms:`, errorMessage);
 
       return {
@@ -293,10 +336,14 @@ export abstract class BaseAgent {
         toolsCalled: [],
         usage: { promptTokens: 0, completionTokens: 0, totalTokens: 0 },
         metadata: {
-          provider,
-          modelId,
+          provider: 'error',
+          modelId: 'error',
           durationMs,
           steps: 0,
+          responseChars: 0,
+          formatCompliance: false,
+          qualityFlags: ['EXECUTION_ERROR'],
+          latencyTier: classifyLatencyTier(durationMs, agentName),
         },
         error: errorMessage,
       };
@@ -305,21 +352,14 @@ export abstract class BaseAgent {
 
   /**
    * Execute agent with streaming response
-   *
-   * Yields AgentStreamEvent chunks in real-time for progressive UI updates.
-   *
-   * @param query - User query to process
-   * @param options - Execution options
-   * @yields AgentStreamEvent - Real-time streaming events
    */
   async *stream(query: string, options: AgentRunOptions = {}): AsyncGenerator<AgentStreamEvent> {
     const startTime = Date.now();
     const opts = { ...DEFAULT_OPTIONS, ...options };
     const agentName = this.getName();
 
-    logger.info(`[${agentName}] Starting stream...`);
+    logger.info(`[${agentName}] Starting stream (Session: ${opts.sessionId || 'none'})`);
 
-    // Validate configuration
     const config = this.getConfig();
     if (!config) {
       yield { type: 'error', data: { code: 'CONFIG_NOT_FOUND', error: `Agent ${agentName} config not found` } };
@@ -334,20 +374,10 @@ export abstract class BaseAgent {
 
     const { model, provider, modelId } = modelResult;
     const maxOutputTokens = resolveMaxOutputTokens(opts, provider, agentName);
-    const filteredTools = filterTools(
-      config.tools,
-      opts,
-      provider,
-      agentName
-    );
-
-    logger.info(`[${agentName}] Streaming with ${provider}/${modelId}`);
+    const filteredTools = filterTools(config.tools, opts, provider, agentName);
 
     try {
-      // Build multimodal user content (text + images + files)
-      const userContent = this.buildUserContent(query, opts);
-
-      // Create ToolLoopAgent with resolved configuration
+      const messages = await this.buildContext(query, opts);
       const agent = this.createToolLoopAgent({
         model,
         instructions: config.instructions,
@@ -357,10 +387,8 @@ export abstract class BaseAgent {
         maxOutputTokens,
       });
 
-      // Execute via ToolLoopAgent.stream() (AI SDK v6 official pattern)
       const streamResult = await agent.stream({
-        messages: [{ role: 'user', content: userContent }],
-        // 🎯 Fix: Apply timeout configuration (AI SDK v6.0.50)
+        messages,
         timeout: { totalMs: opts.timeoutMs ?? DEFAULT_OPTIONS.timeoutMs, chunkMs: 30_000 },
         onStepFinish: ({ finishReason, toolCalls }) => {
           const toolNames = toolCalls?.map(tc => tc.toolName) || [];
@@ -370,27 +398,20 @@ export abstract class BaseAgent {
 
       const toolsCalled: string[] = [];
       let hasTextContent = false;
+      let fullResponseText = '';
+      let streamFallbackReason: string | undefined;
 
-      // TODO: Tool call events are only yielded after textStream is fully consumed (lines below).
-      // This means the client won't see tool_call events interleaved with text_delta events.
-      // To fix, switch to streamResult.fullStream which yields interleaved text/tool events,
-      // but this requires reworking the event loop and sanitization logic.
-
-      // Stream text deltas
       for await (const textChunk of streamResult.textStream) {
         const sanitized = sanitizeChineseCharacters(textChunk);
-        // 🎯 Fix: Only set hasTextContent for non-whitespace content (Codex review feedback)
-        // This ensures finalAnswer fallback works when stream is empty/whitespace-only
         if (sanitized && sanitized.trim().length > 0) {
           hasTextContent = true;
+          fullResponseText += sanitized;
           yield { type: 'text_delta', data: sanitized };
         }
       }
 
-      // Gather metadata after streaming completes
       const [steps, usage] = await Promise.all([streamResult.steps, streamResult.usage]);
 
-      // Extract tool calls and finalAnswer result
       let finalAnswerText: string | null = null;
       if (steps) {
         for (const step of steps) {
@@ -400,14 +421,13 @@ export abstract class BaseAgent {
               yield { type: 'tool_call', data: { name: tc.toolName } };
             }
           }
-          // 🎯 Fix: Extract finalAnswer from toolResults (Codex review feedback)
           if (step.toolResults) {
             for (const tr of step.toolResults) {
               const trOutput = extractToolResultOutput(tr);
               if (tr.toolName === 'finalAnswer' && trOutput && typeof trOutput === 'object') {
-                const result = trOutput as Record<string, unknown>;
-                if ('answer' in result && typeof result.answer === 'string') {
-                  finalAnswerText = result.answer;
+                const res = trOutput as Record<string, unknown>;
+                if ('answer' in res && typeof res.answer === 'string') {
+                  finalAnswerText = res.answer;
                 }
               }
             }
@@ -415,35 +435,38 @@ export abstract class BaseAgent {
         }
       }
 
-      // 🎯 Fix: If no text was streamed but finalAnswer exists, emit it
       if (!hasTextContent && finalAnswerText) {
         const sanitized = sanitizeChineseCharacters(finalAnswerText);
         if (sanitized && sanitized.trim().length > 0) {
+          fullResponseText = sanitized;
           yield { type: 'text_delta', data: sanitized };
           hasTextContent = true;
         }
       }
 
       if (!hasTextContent) {
-        const fallbackText = getEmptyResponseFallbackMessage(
-          provider,
-          modelId,
-          agentName
-        );
-        logger.warn(
-          `⚠️ [${agentName}] Stream completed with empty content from ${provider}/${modelId}, emitting fallback`
-        );
-        yield {
-          type: 'warning',
-          data: {
-            code: 'EMPTY_RESPONSE',
-            message: fallbackText,
-          },
-        };
+        const fallbackText = getEmptyResponseFallbackMessage(provider, modelId, agentName);
+        fullResponseText = fallbackText;
+        streamFallbackReason = 'EMPTY_RESPONSE';
+        yield { type: 'warning', data: { code: 'EMPTY_RESPONSE', message: fallbackText } };
         yield { type: 'text_delta', data: fallbackText };
       }
 
+      if (opts.sessionId && fullResponseText) {
+        const updatedMessages: CoreMessage[] = [
+          ...messages,
+          { role: 'assistant', content: fullResponseText }
+        ];
+        SessionMemoryService.saveHistory(opts.sessionId, updatedMessages).catch(err => {
+          logger.error(`[SessionMemory] Failed to save history for ${opts.sessionId}:`, err);
+        });
+      }
+
       const durationMs = Date.now() - startTime;
+      const quality = evaluateAgentResponseQuality(agentName, fullResponseText, {
+        durationMs,
+        fallbackReason: streamFallbackReason,
+      });
       logger.info(`[${agentName}] Stream completed in ${durationMs}ms`);
 
       yield {
@@ -456,14 +479,20 @@ export abstract class BaseAgent {
             promptTokens: usage?.inputTokens ?? 0,
             completionTokens: usage?.outputTokens ?? 0,
           },
-          metadata: { provider, modelId, durationMs },
+          metadata: {
+            provider,
+            modelId,
+            durationMs,
+            responseChars: quality.responseChars,
+            formatCompliance: quality.formatCompliance,
+            qualityFlags: quality.qualityFlags,
+            latencyTier: quality.latencyTier,
+          },
         },
       };
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error);
-      const durationMs = Date.now() - startTime;
-
-      logger.error(`❌ [${agentName}] Stream error after ${durationMs}ms:`, errorMessage);
+      logger.error(`❌ [${agentName}] Stream error:`, errorMessage);
       yield { type: 'error', data: { code: 'STREAM_ERROR', error: errorMessage } };
     }
   }

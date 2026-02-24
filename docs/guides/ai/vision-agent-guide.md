@@ -19,6 +19,7 @@ Vision Agent는 멀티모달 분석을 위한 AI 에이전트로, 이미지와 �
 - **모델**: Gemini 2.5 Flash (AI SDK v6 호환)
 - **컨텍스트 윈도우**: 1M 토큰 (대용량 문서 처리)
 - **멀티모달 지원**: 이미지 + 텍스트 동시 분석
+- **Search Grounding**: 구글 검색과 연동하여 최신 공식 문서 및 실시간 데이터 기반 답변 생성 (기본 활성화)
 
 > **Note**: `gemini-2.5-flash-lite`는 AI SDK v6과 호환되지 않음 (spec v1 반환, v2+ 필요)
 
@@ -38,7 +39,9 @@ Vision Agent는 멀티모달 분석을 위한 AI 에이전트로, 이미지와 �
 
 - **최대 파일 개수**: 3개 (동시 첨부)
 - **총 크기**: 개별 파일 제한 적용
-- **Gemini 미설정 시**: Analyst Agent로 폴백 (텍스트 전용 분석)
+- **Gemini 미설정 시**: OpenRouter(Primary) -> Analyst Agent(Fallback)로 폴백. 
+
+> **OpenRouter Fallback 추천**: 2026-02 테스트 결과, `google/gemma-3-4b-it:free`가 `nvidia/nemotron-nano`보다 비전 분석(이미지 내 텍스트 인식 등) 능력이 뛰어난 것으로 확인되어 기본 대체 모델로 설정되었습니다.
 
 ## 사용 예시
 

@@ -16,6 +16,7 @@ import type { FileAttachment, ImageAttachment } from './base-agent';
 import { getAgentConfig } from './orchestrator-routing';
 import { ORCHESTRATOR_CONFIG } from './orchestrator-types';
 import { filterToolsByWebSearch } from './orchestrator-web-search';
+import { evaluateAgentResponseQuality } from './response-quality';
 
 export async function* executeAgentStream(
   query: string,
@@ -92,6 +93,8 @@ export async function* executeAgentStream(
     let hardTimeoutReached = false;
     let textEmitted = false;
     const toolsCalled: string[] = [];
+    let fullResponseText = '';
+    let fallbackReason: string | undefined;
 
     for await (const textChunk of streamResult.textStream) {
       const elapsed = Date.now() - startTime;
@@ -144,6 +147,7 @@ export async function* executeAgentStream(
       const sanitized = sanitizeChineseCharacters(textChunk);
       if (sanitized) {
         textEmitted = true;
+        fullResponseText += sanitized;
         yield { type: 'text_delta', data: sanitized };
       }
     }
@@ -201,6 +205,7 @@ export async function* executeAgentStream(
       const sanitized = sanitizeChineseCharacters(finalAnswerResult.answer);
       if (sanitized) {
         textEmitted = true;
+        fullResponseText += sanitized;
         yield { type: 'text_delta', data: sanitized };
       }
     }
@@ -248,6 +253,7 @@ export async function* executeAgentStream(
         const summaryText = sanitizeChineseCharacters(summaryResult.text?.trim() || '');
         if (summaryText) {
           textEmitted = true;
+          fullResponseText += summaryText;
           yield { type: 'text_delta', data: summaryText };
           logger.info(`[Stream ${agentName}] Summarization fallback succeeded (${summaryText.length} chars)`);
         }
@@ -263,14 +269,20 @@ export async function* executeAgentStream(
       const fallbackText =
         '응답을 생성하지 못했습니다. 질문을 더 구체적으로 다시 시도해 주세요.';
       logger.warn(`[Stream ${agentName}] Empty response, emitting fallback`);
+      fallbackReason = 'EMPTY_RESPONSE';
       yield {
         type: 'warning',
         data: { code: 'EMPTY_RESPONSE', message: '모델이 빈 응답을 반환했습니다.' },
       };
       yield { type: 'text_delta', data: fallbackText };
+      fullResponseText = fallbackText;
     }
 
     const durationMs = Date.now() - startTime;
+    const quality = evaluateAgentResponseQuality(agentName, fullResponseText, {
+      durationMs,
+      fallbackReason,
+    });
     logger.info(`[Stream ${agentName}] Completed in ${durationMs}ms, tools: [${toolsCalled.join(', ')}]`);
 
     yield {
@@ -284,7 +296,15 @@ export async function* executeAgentStream(
           promptTokens: usage?.inputTokens ?? 0,
           completionTokens: usage?.outputTokens ?? 0,
         },
-        metadata: { provider, modelId, durationMs },
+        metadata: {
+          provider,
+          modelId,
+          durationMs,
+          responseChars: quality.responseChars,
+          formatCompliance: quality.formatCompliance,
+          qualityFlags: quality.qualityFlags,
+          latencyTier: quality.latencyTier,
+        },
       },
     };
   } catch (error) {
@@ -295,6 +315,10 @@ export async function* executeAgentStream(
     if (isNoOutput) {
       logger.warn(`[Stream ${agentName}] No output from model, providing fallback`);
       yield { type: 'text_delta', data: '모델이 응답을 생성하지 못했습니다. 다시 시도해 주세요.' };
+      const quality = evaluateAgentResponseQuality(agentName, '모델이 응답을 생성하지 못했습니다. 다시 시도해 주세요.', {
+        durationMs,
+        fallbackReason: 'NO_OUTPUT',
+      });
       yield {
         type: 'done',
         data: {
@@ -303,7 +327,15 @@ export async function* executeAgentStream(
           toolsCalled: [],
           handoffs: [],
           usage: { promptTokens: 0, completionTokens: 0 },
-          metadata: { provider, modelId, durationMs },
+          metadata: {
+            provider,
+            modelId,
+            durationMs,
+            responseChars: quality.responseChars,
+            formatCompliance: quality.formatCompliance,
+            qualityFlags: quality.qualityFlags,
+            latencyTier: quality.latencyTier,
+          },
         },
       };
       return;
