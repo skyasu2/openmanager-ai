@@ -13,6 +13,7 @@ export type AlertHistoryFilter = {
   state?: AlertState;
   serverId?: string;
   timeRangeMs?: number;
+  keyword?: string;
 };
 
 export type AlertHistoryResult = {
@@ -78,6 +79,16 @@ export function useAlertHistory(
       combined = combined.filter((a) => getTime(a.firedAt) >= cutoff);
     }
 
+    // keyword filter
+    if (filter.keyword) {
+      const lower = filter.keyword.toLowerCase();
+      combined = combined.filter(
+        (a) =>
+          a.serverId.toLowerCase().includes(lower) ||
+          a.metric.toLowerCase().includes(lower)
+      );
+    }
+
     // sort newest first
     combined.sort((a, b) => getTime(b.firedAt) - getTime(a.firedAt));
 
@@ -88,6 +99,7 @@ export function useAlertHistory(
     filter.state,
     filter.serverId,
     filter.timeRangeMs,
+    filter.keyword,
   ]);
 
   const stats = useMemo(() => {

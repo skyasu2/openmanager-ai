@@ -1,9 +1,6 @@
 'use client';
 
-import { Maximize2 } from 'lucide-react';
-import dynamic from 'next/dynamic';
 import { memo, Suspense, useEffect, useRef, useState } from 'react';
-import type { ArchitectureDiagram } from '@/data/architecture-diagrams.data';
 import { useDashboardStats } from '@/hooks/dashboard/useDashboardStats';
 import { useMonitoringReport } from '@/hooks/dashboard/useMonitoringReport';
 import type { Server } from '@/types/server';
@@ -60,15 +57,6 @@ interface DashboardContentProps {
   onStatusFilterChange?: (filter: string | null) => void;
 }
 
-// P1-9: Topology 데이터를 lazy-load — showTopology=true일 때만 로드
-let _cachedTopologyDiagram: ArchitectureDiagram | null = null;
-
-// 동적 임포트로 성능 최적화
-const ReactFlowDiagramDynamic = dynamic(
-  () => import('@/components/shared/react-flow-diagram'),
-  { ssr: false }
-);
-
 export default memo(function DashboardContent({
   showSequentialGeneration,
   servers,
@@ -123,23 +111,6 @@ export default memo(function DashboardContent({
 
   // 🎯 서버 데이터에서 직접 통계 계산 (중복 API 호출 제거)
   const statsLoading = false;
-  const [showTopology, setShowTopology] = useState(false);
-
-  // P1-9: Topology 데이터 lazy-load (showTopology=true일 때만 로드)
-  const [topologyDiagram, setTopologyDiagram] =
-    useState<ArchitectureDiagram | null>(_cachedTopologyDiagram);
-  useEffect(() => {
-    if (!showTopology || _cachedTopologyDiagram) return;
-    import('@/data/architecture-diagrams.data').then(
-      ({ ARCHITECTURE_DIAGRAMS }) => {
-        const diagram = ARCHITECTURE_DIAGRAMS[
-          'infrastructure-topology'
-        ] as ArchitectureDiagram;
-        _cachedTopologyDiagram = diagram;
-        setTopologyDiagram(diagram);
-      }
-    );
-  }, [showTopology]);
 
   // 🛡️ currentTime 제거: 미사용 상태에서 불필요한 interval 실행 (v5.83.13)
 
@@ -216,40 +187,11 @@ export default memo(function DashboardContent({
           onFilterChange={onStatusFilterChange}
           onOpenAlertHistory={() => setAlertHistoryOpen(true)}
           onOpenLogExplorer={() => setLogExplorerOpen(true)}
-          showTopology={showTopology}
-          onToggleTopology={() => setShowTopology((prev) => !prev)}
+          showTopology={topologyModalOpen}
+          onToggleTopology={() => setTopologyModalOpen(true)}
           activeAlertsCount={monitoringReport?.firingAlerts?.length ?? 0}
           onOpenActiveAlerts={() => setActiveAlertsOpen(true)}
         />
-
-        {/* Infrastructure Topology (Summary 버튼으로 토글) */}
-        {showTopology && topologyDiagram && servers.length > 0 && (
-          <div className="group relative rounded-xl border border-gray-200/80 bg-white/70 px-2 pb-4 pt-2 shadow-xs backdrop-blur-md">
-            <div className="absolute top-3 right-3 z-10 opacity-0 transition-opacity group-hover:opacity-100">
-              <button
-                onClick={() => setTopologyModalOpen(true)}
-                className="flex items-center gap-1.5 rounded-lg bg-slate-900/80 px-2.5 py-1.5 text-[10px] font-bold text-white backdrop-blur-sm transition-all hover:bg-slate-800 cursor-pointer shadow-lg"
-              >
-                <Maximize2 size={12} />
-                FULL VIEW
-              </button>
-            </div>
-            <Suspense
-              fallback={
-                <div className="flex items-center justify-center py-12">
-                  <div className="h-6 w-6 animate-spin rounded-full border-2 border-blue-400 border-t-transparent" />
-                </div>
-              }
-            >
-              <ReactFlowDiagramDynamic
-                diagram={topologyDiagram}
-                compact
-                showControls
-                servers={servers}
-              />
-            </Suspense>
-          </div>
-        )}
 
         {/* 🎯 메인 컨텐츠 영역 */}
         {servers.length > 0 ? (

@@ -19,6 +19,8 @@ import {
   formatRotatingTimestamp,
 } from '@/utils/dashboard/rotating-timestamp';
 import type { LogExplorerModalProps } from './log-explorer.types';
+import { FilterChip } from '../shared/FilterChip';
+import { StatCell } from '../shared/StatCell';
 
 const levelStyles: Record<
   Exclude<GlobalLogFilter['level'], undefined>,
@@ -365,61 +367,5 @@ export function LogExplorerModal({ open, onClose }: LogExplorerModalProps) {
         </div>
       </DialogContent>
     </Dialog>
-  );
-}
-
-function FilterChip({
-  label,
-  active,
-  onClick,
-  variant = 'all',
-}: {
-  label: string;
-  active: boolean;
-  onClick: () => void;
-  variant?: 'all' | Exclude<GlobalLogFilter['level'], undefined>;
-}) {
-  const activeColors: Record<
-    'all' | Exclude<GlobalLogFilter['level'], undefined>,
-    string
-  > = {
-    all: 'border-blue-500 bg-blue-500 text-white',
-    info: 'border-green-500 bg-green-500 text-white',
-    warn: 'border-yellow-500 bg-yellow-500 text-white',
-    error: 'border-red-500 bg-red-500 text-white',
-  };
-
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={cn(
-        'rounded-full border px-2.5 py-1 text-xs font-medium transition-colors sm:py-0.5',
-        active
-          ? (activeColors[variant] ?? activeColors.all)
-          : 'border-gray-200 bg-white text-gray-600 hover:border-gray-400'
-      )}
-    >
-      {label}
-    </button>
-  );
-}
-
-function StatCell({
-  label,
-  value,
-  color,
-}: {
-  label: string;
-  value: number;
-  color: string;
-}) {
-  return (
-    <div className="text-center">
-      <div className={cn('text-base font-bold sm:text-lg', color)}>{value}</div>
-      <div className="text-[10px] font-medium text-gray-400 uppercase">
-        {label}
-      </div>
-    </div>
   );
 }
