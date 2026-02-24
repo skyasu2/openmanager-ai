@@ -43,7 +43,7 @@ export function FilterChip({
       className={cn(
         'rounded-full border px-2.5 py-1 text-xs font-medium transition-colors sm:py-0.5',
         active
-          ? activeColors[variant] ?? activeColors.all
+          ? (activeColors[variant] ?? activeColors.all)
           : 'border-gray-200 bg-white text-gray-600 hover:border-gray-400'
       )}
     >

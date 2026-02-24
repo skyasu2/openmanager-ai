@@ -8,9 +8,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { cn } from '@/lib/utils';
 import type { MonitoringAlert } from '@/schemas/api.monitoring-report.schema';
 import { formatMetricName, formatMetricValue } from '@/utils/metric-formatters';
-import { cn } from '@/lib/utils';
 import { StatCell } from './shared/StatCell';
 
 const severityBadge: Record<MonitoringAlert['severity'], string> = {
@@ -120,8 +120,16 @@ export function ActiveAlertsModal({
         {/* Footer */}
         <div className="grid grid-cols-3 gap-4 border-t border-gray-100 bg-gray-50/80 px-6 py-3">
           <StatCell label="Total" value={alerts.length} color="text-gray-800" />
-          <StatCell label="Critical" value={criticalCount} color="text-red-600" />
-          <StatCell label="Warning" value={warningCount} color="text-amber-600" />
+          <StatCell
+            label="Critical"
+            value={criticalCount}
+            color="text-red-600"
+          />
+          <StatCell
+            label="Warning"
+            value={warningCount}
+            color="text-amber-600"
+          />
         </div>
       </DialogContent>
     </Dialog>

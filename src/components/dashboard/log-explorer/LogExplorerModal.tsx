@@ -18,9 +18,9 @@ import {
   formatDashboardDateTime,
   formatRotatingTimestamp,
 } from '@/utils/dashboard/rotating-timestamp';
-import type { LogExplorerModalProps } from './log-explorer.types';
 import { FilterChip } from '../shared/FilterChip';
 import { StatCell } from '../shared/StatCell';
+import type { LogExplorerModalProps } from './log-explorer.types';
 
 const levelStyles: Record<
   Exclude<GlobalLogFilter['level'], undefined>,

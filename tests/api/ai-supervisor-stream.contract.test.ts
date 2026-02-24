@@ -149,11 +149,23 @@ describe('AI Supervisor Stream v2 Contract', () => {
 
   it('4단계 파이프라인(agent_status → handoff → text_delta → done) 이벤트 순서가 올바르다', async () => {
     const pipelineEvents = [
-      { type: 'agent_status', data: { agent: 'orchestrator', status: 'routing' } },
+      {
+        type: 'agent_status',
+        data: { agent: 'orchestrator', status: 'routing' },
+      },
       { type: 'handoff', data: { from: 'orchestrator', to: 'nlq-agent' } },
-      { type: 'agent_status', data: { agent: 'nlq-agent', status: 'thinking' } },
-      { type: 'tool_call', data: { name: 'getServerMetrics', args: { serverId: 'all' } } },
-      { type: 'tool_result', data: { name: 'getServerMetrics', result: '15 servers' } },
+      {
+        type: 'agent_status',
+        data: { agent: 'nlq-agent', status: 'thinking' },
+      },
+      {
+        type: 'tool_call',
+        data: { name: 'getServerMetrics', args: { serverId: 'all' } },
+      },
+      {
+        type: 'tool_result',
+        data: { name: 'getServerMetrics', result: '15 servers' },
+      },
       { type: 'text_delta', data: '서버 현황: ' },
       { type: 'text_delta', data: '15대 정상' },
       { type: 'step_finish', data: { agent: 'nlq-agent', stepIndex: 0 } },
@@ -161,14 +173,16 @@ describe('AI Supervisor Stream v2 Contract', () => {
     ];
 
     server.use(
-      http.post(/\/api\/ai\/supervisor\/stream\/v2$/, () =>
-        new HttpResponse(toSse(pipelineEvents), {
-          status: 200,
-          headers: {
-            'Content-Type': 'text/event-stream',
-            'X-Stream-Protocol': 'ui-message-stream',
-          },
-        })
+      http.post(
+        /\/api\/ai\/supervisor\/stream\/v2$/,
+        () =>
+          new HttpResponse(toSse(pipelineEvents), {
+            status: 200,
+            headers: {
+              'Content-Type': 'text/event-stream',
+              'X-Stream-Protocol': 'ui-message-stream',
+            },
+          })
       )
     );
 
@@ -200,7 +214,9 @@ describe('AI Supervisor Stream v2 Contract', () => {
 
     // tool_call → tool_result 순서
     const toolCallIdx = parsedEvents.findIndex((e) => e.type === 'tool_call');
-    const toolResultIdx = parsedEvents.findIndex((e) => e.type === 'tool_result');
+    const toolResultIdx = parsedEvents.findIndex(
+      (e) => e.type === 'tool_result'
+    );
     expect(toolCallIdx).toBeLessThan(toolResultIdx);
 
     // text_delta 결합
@@ -217,16 +233,21 @@ describe('AI Supervisor Stream v2 Contract', () => {
 
   it('서버 에러(500) 시 SSE error 이벤트를 반환한다', async () => {
     const errorEvents = [
-      { type: 'agent_status', data: { agent: 'orchestrator', status: 'routing' } },
+      {
+        type: 'agent_status',
+        data: { agent: 'orchestrator', status: 'routing' },
+      },
       { type: 'done', data: { success: false, error: 'LLM provider timeout' } },
     ];
 
     server.use(
-      http.post(/\/api\/ai\/supervisor\/stream\/v2$/, () =>
-        new HttpResponse(toSse(errorEvents), {
-          status: 200,
-          headers: { 'Content-Type': 'text/event-stream' },
-        })
+      http.post(
+        /\/api\/ai\/supervisor\/stream\/v2$/,
+        () =>
+          new HttpResponse(toSse(errorEvents), {
+            status: 200,
+            headers: { 'Content-Type': 'text/event-stream' },
+          })
       )
     );
 
@@ -250,10 +271,10 @@ describe('AI Supervisor Stream v2 Contract', () => {
 
   it('resume 헤더(X-Resumed, X-Skip-Chunks)가 올바르게 설정된다', async () => {
     server.use(
-      http.get(/\/api\/ai\/supervisor\/stream\/v2/, () =>
-        new HttpResponse(
-          toSse([{ type: 'text_delta', data: '이어받기' }]),
-          {
+      http.get(
+        /\/api\/ai\/supervisor\/stream\/v2/,
+        () =>
+          new HttpResponse(toSse([{ type: 'text_delta', data: '이어받기' }]), {
             status: 200,
             headers: {
               'Content-Type': 'text/event-stream',
@@ -262,8 +283,7 @@ describe('AI Supervisor Stream v2 Contract', () => {
               'X-Session-Id': 'session-resume',
               'X-Stream-Id': 'stream-abc',
             },
-          }
-        )
+          })
       )
     );
 

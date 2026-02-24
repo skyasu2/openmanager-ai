@@ -19,10 +19,10 @@ import {
   formatDashboardDateTime,
   formatRotatingTimestamp,
 } from '@/utils/dashboard/rotating-timestamp';
-import type { AlertHistoryModalProps } from './alert-history.types';
-import { TIME_RANGE_OPTIONS } from './alert-history.types';
 import { FilterChip } from '../shared/FilterChip';
 import { StatCell } from '../shared/StatCell';
+import type { AlertHistoryModalProps } from './alert-history.types';
+import { TIME_RANGE_OPTIONS } from './alert-history.types';
 
 const severityColors: Record<AlertSeverity, { badge: string; border: string }> =
   {
@@ -151,12 +151,14 @@ export function AlertHistoryModal({
               aria-label="알림 검색"
               className="w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-xs text-gray-700 placeholder:text-gray-400 focus:border-blue-400 focus:outline-none sm:w-52 sm:py-1.5"
             />
-            
+
             <div className="hidden h-4 w-px bg-gray-200 sm:block" />
 
             {/* Severity chips */}
             <div className="flex flex-wrap items-center gap-1.5">
-              <span className="text-xs font-medium text-gray-500">Severity:</span>
+              <span className="text-xs font-medium text-gray-500">
+                Severity:
+              </span>
               {(['all', 'warning', 'critical'] as const).map((s) => (
                 <FilterChip
                   key={s}
@@ -193,7 +195,9 @@ export function AlertHistoryModal({
             {/* Server dropdown */}
             <select
               value={serverId}
-              onChange={(e) => handleFilterChange(() => setServerId(e.target.value))}
+              onChange={(e) =>
+                handleFilterChange(() => setServerId(e.target.value))
+              }
               aria-label="서버 필터"
               className="w-full rounded-md border border-gray-200 bg-white px-2 py-2 text-xs text-gray-700 focus:border-blue-400 focus:outline-none sm:w-auto sm:py-1"
             >
@@ -212,7 +216,9 @@ export function AlertHistoryModal({
                   key={opt.value}
                   label={opt.label}
                   active={timeRangeMs === opt.value}
-                  onClick={() => handleFilterChange(() => setTimeRangeMs(opt.value))}
+                  onClick={() =>
+                    handleFilterChange(() => setTimeRangeMs(opt.value))
+                  }
                   variant="time"
                 />
               ))}

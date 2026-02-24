@@ -330,7 +330,9 @@ describe.skipIf(!shouldRun)('Cloud Run API Contract Tests', () => {
     it('/health 응답에 Content-Type: application/json 포함', async () => {
       const response = await fetch(`${baseUrl}/health`);
 
-      expect(response.headers.get('content-type')).toContain('application/json');
+      expect(response.headers.get('content-type')).toContain(
+        'application/json'
+      );
     });
 
     it('/health 응답 시간이 5초 미만', async () => {
