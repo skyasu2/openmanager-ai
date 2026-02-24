@@ -30,10 +30,11 @@
 | CLI | 용도 | 비고 |
 |-----|------|------|
 | `claude` | 코드 생성/수정/리뷰 | 현재 세션 |
-| `codex` | 코드 구현/리팩토링/테스트 | gpt-5.3-codex, Pro 구독 |
-| `gemini` | 리서치/분석/문서화 | Pro 구독, OAuth 인증 |
+| `codex` | 코드 구현/리팩토링/테스트 | gpt-5.3-codex, Pro 구독, **사용자가 수동 실행** |
+| `gemini` | 리서치/분석/문서화 | Pro 구독, OAuth 인증, **사용자가 수동 실행** |
 
-> **3자 브릿지**: `scripts/ai/agent-bridge.sh --to <claude|codex|gemini>` (query/analysis/doc 모드)
+> **Codex/Gemini 정책**: Claude가 서브에이전트로 위임하지 않음. 사용자가 각 CLI를 직접 실행.
+> 브릿지 스크립트(`scripts/ai/agent-bridge.sh`)는 사용자 수동 호출용으로 유지.
 
 ## Built-in Subagents (5개)
 
@@ -45,87 +46,47 @@
 | `claude-code-guide` | Claude Code 공식 문서 |
 | `statusline-setup` | 상태라인 설정 |
 
-## Custom Agents — 외부 AI 위임 (2개)
-
-> `.claude/agents/` 디렉토리에 정의. **하이브리드 정책**: 단순 작업은 Claude가 bridge 직접 호출, 복잡한 작업만 에이전트 spawn.
-
-| Agent | 위임 대상 | 주요 용도 | 모델 | maxTurns |
-|-------|----------|----------|------|:--------:|
-| `codex-agent` | Codex CLI (gpt-5.3-codex) | 코드 구현, 리팩토링, 버그 수정, 테스트 | haiku | 8 |
-| `gemini-agent` | Gemini CLI (Pro) | 리서치, 분석, 문서화, 코드 리뷰 | haiku | 7 |
-
-### 하이브리드 위임 정책 (방안 C)
-
-> **핵심 원칙**: haiku 래퍼 spawn은 Claude Max 한도를 소모한다. 불필요한 중간 레이어를 제거하여 토큰을 절약한다.
-
-#### 단순 작업 → Claude가 bridge 직접 호출 (에이전트 spawn 안 함)
-- 파일 5개 미만 수정, 단일 함수/컴포넌트
-- 분석/리서치 1건
-- 문서화 1건
-
-```bash
-# Claude가 직접 호출 (haiku spawn 없이)
-bash scripts/ai/agent-bridge.sh --to codex --context-file src/path/file.ts "리팩토링해줘"
-bash scripts/ai/agent-bridge.sh --to gemini --mode analysis "아키텍처 분석해줘"
-```
-
-#### 복잡한 작업 → 에이전트 spawn (팀 모드 포함)
-- 크로스 파일 리팩토링 (5개 이상)
-- 병렬 작업 (codex + gemini 동시 실행)
-- 자율적 판단/반복 수정이 필요한 구현
-
-```bash
-# 팀 모드 (병렬 대규모 작업)
-Task(codex-agent, "컴포넌트 리팩토링", background)
-Task(gemini-agent, "최신 패턴 조사", background)
-```
-
-#### Gemini 사전 검증 (필수)
-```bash
-# bridge 호출 전 OAuth 확인 (실패율 47% 방지)
-test -s ~/.gemini/oauth_creds.json && echo "OK" || echo "FAIL"
-```
-
-### 역할 분담 — 자유 분배
-
-| AI | 주요 강점 | 우선 선택되는 작업 |
-|----|----------|------------------|
-| Claude Code (Opus) | 오케스트레이션, 도구 체계, 컨텍스트 | 계획, 리뷰, 통합, 최종 판단, **단순 bridge 호출** |
-| Codex (gpt-5.3-codex) | 코드 생성, sandbox full-access | 구현, 리팩토링, 버그 수정, 테스트 작성 |
-| Gemini (Pro) | 대규모 컨텍스트, 멀티모달 | 리서치, 분석, 문서화, 긴 파일 처리 |
-
 ## Agent Teams (3팀 구성)
 
 > 활성화: `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` (settings.json)
 
+### 공유 파일 (편집 금지 영역)
+
+아래 경로는 모든 팀이 참조하므로 **teammate가 직접 수정하지 않음**. 수정 필요 시 lead가 직접 처리.
+
+- `components/ui/` — 공용 UI 컴포넌트 (Button, Card, Dialog 등 52파일)
+- `types/` — 공유 타입 정의
+- `stores/` — Zustand 스토어 (3파일)
+- `lib/utils.ts` — 공용 유틸리티
+
 ### Team 1: Dashboard & Metrics
 | Teammate | 담당 | 파일 경계 |
 |----------|------|----------|
-| ui | 컴포넌트 UI | `components/dashboard/`, `components/charts/`, `components/ui/` |
-| data | 데이터 레이어 | `services/metrics/`, `hooks/api/`, `stores/`, `data/` |
+| ui | 컴포넌트 UI | `components/dashboard/`, `components/charts/` |
+| data | 데이터 레이어 | `services/metrics/`, `hooks/dashboard/`, `data/otel-data/` |
 
 프롬프트 예시:
 ```
 Create an agent team for dashboard work:
 - "ui": owns src/components/dashboard/ and src/components/charts/
-- "data": owns src/services/metrics/, src/hooks/api/, src/stores/
-No shared file edits between teammates.
+- "data": owns src/services/metrics/, src/hooks/dashboard/, src/data/otel-data/
+Neither teammate edits src/components/ui/ or src/stores/ — lead handles those.
 ```
 
 ### Team 2: AI & Chat
 | Teammate | 담당 | 파일 경계 |
 |----------|------|----------|
 | frontend-ai | AI UI/훅 | `components/ai/`, `components/ai-sidebar/`, `hooks/ai/` |
-| backend-ai | API/로직 | `app/api/ai/`, `lib/ai/`, `services/rag/` |
+| backend-ai | API/로직 | `app/api/ai/`, `lib/ai/`, `lib/ai-proxy/` |
 | engine | Cloud Run | `cloud-run/ai-engine/` |
 
 프롬프트 예시:
 ```
 Create an agent team for AI feature work:
-- "frontend-ai": owns src/components/ai/, src/hooks/ai/
-- "backend-ai": owns src/app/api/ai/, src/lib/ai/
+- "frontend-ai": owns src/components/ai/, src/components/ai-sidebar/, src/hooks/ai/
+- "backend-ai": owns src/app/api/ai/, src/lib/ai/, src/lib/ai-proxy/
 - "engine": owns cloud-run/ai-engine/
-Each teammate must not edit files outside their domain.
+No teammate edits src/stores/ or src/types/ — lead handles shared files.
 ```
 
 ### Team 3: Quality & Review (읽기 전용)
@@ -141,14 +102,16 @@ Create an agent team to review recent changes:
 - "security": review for OWASP top 10 vulnerabilities
 - "performance": review for bundle size, render cycles, API latency
 - "test": review for coverage gaps and edge cases
-Have them challenge each other's findings.
+Have them challenge each other's findings. Read-only — no file edits.
 ```
 
 ### 사용 주의사항
-- WSL 환경: split-pane 미지원, in-process 모드만 사용
+- **WSL 환경**: split-pane 미지원, in-process 모드만 사용 (Shift+Down으로 teammate 전환)
+- **Delegate Mode**: 팀 생성 직후 Shift+Tab으로 delegate 모드 활성화 → lead는 오케스트레이션에 집중
 - **토큰 비용**: teammate 수에 비례 증가 (3명 팀 1회 = 단독 에이전트 3~5회 비용)
-- 파일 충돌 방지: teammate별 파일 경계 반드시 명시
-- **spawn 기준**: 병렬 처리가 확실히 이득일 때만 팀 모드 사용. 순차 처리로 충분하면 Claude가 bridge 직접 호출
+- **파일 충돌 방지**: teammate별 파일 경계 반드시 명시. 공유 파일은 lead만 수정
+- **spawn 기준**: 병렬 처리가 확실히 이득일 때만 팀 모드 사용 (15분 이상 소요 예상 시)
+- **/resume 제한**: 세션 resume 시 기존 teammate가 소멸됨. 재개 후 teammate를 새로 spawn 필요
 
 ## Permission Pattern (Best Practice)
 
