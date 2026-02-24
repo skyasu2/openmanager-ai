@@ -25,9 +25,7 @@ interface VitalsSummary {
 // 🎯 통합 테스트 시나리오: 다중 테스트 도구 Vitals 수집
 describe('🌐 Universal Vitals 통합 테스트', () => {
   beforeAll(() => {
-    // Universal Vitals 시스템 초기화
     universalVitals.clearMetrics();
-    console.log('🎯 [Universal Vitals Integration] 통합 테스트 시작');
   });
 
   beforeEach(() => {
@@ -36,12 +34,7 @@ describe('🌐 Universal Vitals 통합 테스트', () => {
   });
 
   afterAll(async () => {
-    // 최종 통합 리포트 생성 및 API 전송 시뮬레이션
-    const finalReport = await generateIntegratedReport();
-    console.log(
-      '\n📊 [Universal Vitals Integration] 최종 통합 리포트:',
-      finalReport
-    );
+    await generateIntegratedReport();
   });
 
   describe('🧪 Vitest Vitals 통합', () => {
@@ -68,10 +61,6 @@ describe('🌐 Universal Vitals 통합 테스트', () => {
       expect(testVital.category).toBe('test-execution');
       expect(testVital.value).toBeGreaterThan(0);
       expect(testVital.rating).toBeOneOf(['good', 'needs-improvement', 'poor']);
-
-      console.log(
-        `✅ Vitest 메트릭 수집됨: ${testName} (${testVital.value.toFixed(2)}ms)`
-      );
     });
 
     it('메모리 사용량 메트릭이 Infrastructure Vitals로 수집됨', () => {
@@ -86,8 +75,6 @@ describe('🌐 Universal Vitals 통합 테스트', () => {
 
         expect(memoryMetrics.length).toBeGreaterThan(0);
         expect(memoryUsage).toBeTypeOf('number');
-
-        console.log(`📊 메모리 메트릭 수집됨: ${memoryUsage.toFixed(2)}MB`);
       }
     });
 
@@ -115,10 +102,6 @@ describe('🌐 Universal Vitals 통합 테스트', () => {
       );
       expect(totalCoverageMetric).toBeDefined();
       expect(totalCoverageMetric?.value).toBeCloseTo(92.25); // 평균값
-
-      console.log(
-        `📈 커버리지 메트릭 수집됨: ${totalCoverageMetric?.value.toFixed(1)}%`
-      );
     });
   });
 
@@ -152,10 +135,6 @@ describe('🌐 Universal Vitals 통합 테스트', () => {
       expect(apiMetrics.length).toBeGreaterThan(0);
       expect(apiVital.value).toBeCloseTo(simulatedDelay, -1); // 근사값 비교
       expect(apiVital.rating).toBeOneOf(['good', 'needs-improvement', 'poor']);
-
-      console.log(
-        `🔗 API 메트릭 수집됨: ${apiEndpoint} (${apiVital.value.toFixed(0)}ms, ${apiVital.rating})`
-      );
     });
 
     it('API 오류율 메트릭 수집', () => {
@@ -200,10 +179,6 @@ describe('🌐 Universal Vitals 통합 테스트', () => {
       expect(errorRateMetric).toBeDefined();
       expect(errorRateMetric?.value).toBe(5);
       expect(errorRateMetric?.rating).toBe('poor'); // 5%는 poor (임계값 초과)
-
-      console.log(
-        `📊 API 오류율 메트릭: ${errorRate}% (${errorRateMetric?.rating})`
-      );
     });
   });
 
@@ -230,10 +205,6 @@ describe('🌐 Universal Vitals 통합 테스트', () => {
         'needs-improvement',
         'poor',
       ]);
-
-      console.log(
-        `🏗️ 빌드 메트릭 수집됨: ${(simulatedBuildTime / 1000).toFixed(1)}s (${buildVital.rating})`
-      );
     });
 
     it('번들 크기 메트릭 수집', () => {
@@ -256,11 +227,6 @@ describe('🌐 Universal Vitals 통합 테스트', () => {
 
       expect(bundleSizeMetric).toBeDefined();
       expect(bundleSizeMetric?.value).toBe(bundleSize);
-
-      const bundleSizeMB = bundleSize / 1024 / 1024;
-      console.log(
-        `📦 번들 크기 메트릭: ${bundleSizeMB.toFixed(2)}MB (${bundleVital.rating})`
-      );
     });
   });
 
@@ -301,11 +267,6 @@ describe('🌐 Universal Vitals 통합 테스트', () => {
       expect(webMetrics.filter((m) => m.name === 'LCP')).toHaveLength(1);
       expect(webMetrics.filter((m) => m.name === 'FID')).toHaveLength(1);
       expect(webMetrics.filter((m) => m.name === 'CLS')).toHaveLength(1);
-
-      console.log(`🌐 Core Web Vitals 수집완료:`);
-      console.log(`  LCP: ${lcpValue.toFixed(0)}ms (${lcpVital.rating})`);
-      console.log(`  FID: ${fidValue.toFixed(0)}ms (${fidVital.rating})`);
-      console.log(`  CLS: ${clsValue.toFixed(3)} (${clsVital.rating})`);
     });
   });
 
@@ -318,11 +279,6 @@ describe('🌐 Universal Vitals 통합 테스트', () => {
       expect(summary.categories).toHaveProperty('api-performance');
       expect(summary.categories).toHaveProperty('build-performance');
       expect(summary.categories).toHaveProperty('web-performance');
-
-      console.log(`📈 통합 메트릭 요약:`);
-      console.log(`  총 메트릭: ${summary.total}개`);
-      console.log(`  Good: ${summary.good}개, Poor: ${summary.poor}개`);
-      console.log(`  카테고리별 분포:`, summary.categories);
     });
 
     it('통합 리포트 생성 및 API 전송 시뮬레이션', async () => {
@@ -346,10 +302,6 @@ describe('🌐 Universal Vitals 통합 테스트', () => {
 
       expect(mockApiResponse.success).toBe(true);
       expect(mockApiResponse.data.processed).toBe(report.metrics.length);
-
-      console.log(
-        `📤 통합 리포트 API 전송 시뮬레이션: ${report.metrics.length}개 메트릭 처리됨`
-      );
     });
 
     it('성능 회귀 감지 시뮬레이션', async () => {
@@ -391,10 +343,6 @@ describe('🌐 Universal Vitals 통합 테스트', () => {
             current: currentApiTime,
             severity: 'high',
           }
-        );
-
-        console.log(
-          `🚨 성능 회귀 감지: API 응답시간 ${regressionPercentage.toFixed(1)}% 증가`
         );
       }
 

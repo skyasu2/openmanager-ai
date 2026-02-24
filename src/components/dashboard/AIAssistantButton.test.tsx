@@ -332,4 +332,139 @@ describe('🎯 AIAssistantButton - User Event 테스트', () => {
       });
     });
   });
+
+  describe('상태 변경 인터랙션', () => {
+    it('isOpen prop이 변경되면 스타일이 업데이트된다', async () => {
+      const { rerender } = render(
+        <AIAssistantButton
+          isOpen={false}
+          isEnabled={false}
+          onClick={mockOnClick}
+        />
+      );
+
+      const button = screen.getByRole('button');
+      expect(button.className).toContain('bg-gray-100');
+
+      rerender(
+        <AIAssistantButton
+          isOpen={true}
+          isEnabled={false}
+          onClick={mockOnClick}
+        />
+      );
+
+      await waitFor(() => {
+        expect(button.style.background).toBeTruthy();
+      });
+    });
+
+    it('isEnabled prop이 변경되면 스타일이 업데이트된다', async () => {
+      const { rerender } = render(
+        <AIAssistantButton
+          isOpen={false}
+          isEnabled={false}
+          onClick={mockOnClick}
+        />
+      );
+
+      const button = screen.getByRole('button');
+      expect(button.className).toContain('bg-gray-100');
+
+      rerender(
+        <AIAssistantButton
+          isOpen={false}
+          isEnabled={true}
+          onClick={mockOnClick}
+        />
+      );
+
+      await waitFor(() => {
+        expect(button.style.background).toBeTruthy();
+      });
+    });
+  });
+
+  describe('실전 시나리오', () => {
+    it('토글 시나리오 - 열기/닫기 반복', async () => {
+      let isOpen = false;
+      const handleToggle = () => {
+        isOpen = !isOpen;
+        mockOnClick();
+      };
+
+      const { rerender } = render(
+        <AIAssistantButton
+          isOpen={isOpen}
+          isEnabled={false}
+          onClick={handleToggle}
+        />
+      );
+
+      const button = screen.getByRole('button');
+
+      fireEvent.click(button);
+      expect(mockOnClick).toHaveBeenCalledTimes(1);
+      isOpen = true;
+
+      rerender(
+        <AIAssistantButton
+          isOpen={isOpen}
+          isEnabled={false}
+          onClick={handleToggle}
+        />
+      );
+
+      await waitFor(() => {
+        expect(button.getAttribute('aria-pressed')).toBe('true');
+      });
+
+      fireEvent.click(button);
+      expect(mockOnClick).toHaveBeenCalledTimes(2);
+      isOpen = false;
+
+      rerender(
+        <AIAssistantButton
+          isOpen={isOpen}
+          isEnabled={false}
+          onClick={handleToggle}
+        />
+      );
+
+      await waitFor(() => {
+        expect(button.getAttribute('aria-pressed')).toBe('false');
+      });
+    });
+  });
+
+  describe('CSS 애니메이션', () => {
+    it('호버 효과 클래스가 포함되어 있다', () => {
+      render(
+        <AIAssistantButton
+          isOpen={false}
+          isEnabled={false}
+          onClick={mockOnClick}
+        />
+      );
+
+      const button = screen.getByRole('button');
+      expect(button.className).toContain('hover:scale-105');
+      expect(button.className).toContain('active:scale-95');
+    });
+
+    it('활성 상태일 때 scale-105가 적용된다', async () => {
+      render(
+        <AIAssistantButton
+          isOpen={true}
+          isEnabled={false}
+          onClick={mockOnClick}
+        />
+      );
+
+      await waitFor(() => {
+        const button = screen.getByRole('button');
+        expect(button.className).toContain('scale-105');
+      });
+    });
+  });
 });

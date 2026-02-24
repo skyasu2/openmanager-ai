@@ -217,7 +217,7 @@ export const DashboardSummary: React.FC<DashboardSummaryProps> = memo(
         </div>
 
         {/* 2. Status Cards */}
-        <div className="grid grid-cols-4 gap-3 lg:col-span-5">
+        <div className="grid grid-cols-4 gap-2 sm:gap-3 lg:col-span-4">
           <StatusCard
             status="online"
             count={safeStats.online}
@@ -258,7 +258,7 @@ export const DashboardSummary: React.FC<DashboardSummaryProps> = memo(
 
         {/* 3. 시스템 상태 - 동적 그라데이션 */}
         <div
-          className={`group relative rounded-2xl border ${systemHealthGradient.border} bg-white/60 backdrop-blur-md p-3 shadow-sm lg:col-span-5 flex flex-col justify-center transition-all duration-300 hover:shadow-lg hover:scale-[1.01] overflow-hidden`}
+          className={`group relative rounded-2xl border ${systemHealthGradient.border} bg-white/60 backdrop-blur-md p-3 shadow-sm lg:col-span-6 flex flex-col justify-center transition-all duration-300 hover:shadow-lg hover:scale-[1.01] overflow-hidden`}
         >
           {/* 상태 기반 그라데이션 배경 */}
           <div
