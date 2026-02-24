@@ -354,12 +354,12 @@ export function useAIChatCore(
     void triggerAIWarmup('ai-chat-core');
   }, []);
 
-  // 에러 동기화
+  // 에러 동기화: hybridState.error가 변경될 때만 반영
   useEffect(() => {
-    if (hybridState.error && !error) {
+    if (hybridState.error) {
       setError(hybridState.error);
     }
-  }, [hybridState.error, error]);
+  }, [hybridState.error]);
 
   const handleNewSession = useCallback(() => {
     resetHybridQuery();
@@ -400,7 +400,8 @@ export function useAIChatCore(
     if (textContent) {
       setMessages(messages.slice(0, actualIndex));
       setError(null);
-      sendQuery(textContent);
+      // BUG-7 fix: setMessages는 비동기 상태 업데이트이므로 sendQuery를 microtask로 지연
+      queueMicrotask(() => sendQuery(textContent));
     }
   }, [messages, setMessages, sendQuery]);
 

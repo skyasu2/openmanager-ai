@@ -125,7 +125,6 @@ const createProps = (
   status: { type: 'running' },
   onStatsUpdate: vi.fn(),
   onShowSequentialChange: vi.fn(),
-  isAgentOpen: false,
   statusFilter: null,
   onStatusFilterChange: vi.fn(),
   ...overrides,

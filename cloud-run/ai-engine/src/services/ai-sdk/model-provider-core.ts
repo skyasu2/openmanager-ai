@@ -14,48 +14,42 @@ import {
   getOpenRouterVisionModelId,
 } from '../../lib/config-parser';
 
-function createCerebrasProvider() {
+// P-1: Lazy singleton — 동일 프로세스 내 provider 재생성 방지
+let _cerebras: ReturnType<typeof createCerebras> | null = null;
+let _groq: ReturnType<typeof createGroq> | null = null;
+let _mistral: ReturnType<typeof createMistral> | null = null;
+let _gemini: ReturnType<typeof createGoogleGenerativeAI> | null = null;
+
+function getCerebrasProvider() {
+  if (_cerebras) return _cerebras;
   const apiKey = getCerebrasApiKey();
-  if (!apiKey) {
-    throw new Error('CEREBRAS_API_KEY not configured');
-  }
-
-  return createCerebras({
-    apiKey,
-  });
+  if (!apiKey) throw new Error('CEREBRAS_API_KEY not configured');
+  _cerebras = createCerebras({ apiKey });
+  return _cerebras;
 }
 
-function createGroqProvider() {
+function getGroqProvider() {
+  if (_groq) return _groq;
   const apiKey = getGroqApiKey();
-  if (!apiKey) {
-    throw new Error('GROQ_API_KEY not configured');
-  }
-
-  return createGroq({
-    apiKey,
-  });
+  if (!apiKey) throw new Error('GROQ_API_KEY not configured');
+  _groq = createGroq({ apiKey });
+  return _groq;
 }
 
-function createMistralProvider() {
+function getMistralProvider() {
+  if (_mistral) return _mistral;
   const apiKey = getMistralApiKey();
-  if (!apiKey) {
-    throw new Error('MISTRAL_API_KEY not configured');
-  }
-
-  return createMistral({
-    apiKey,
-  });
+  if (!apiKey) throw new Error('MISTRAL_API_KEY not configured');
+  _mistral = createMistral({ apiKey });
+  return _mistral;
 }
 
-function createGeminiProvider() {
+function getGeminiProvider() {
+  if (_gemini) return _gemini;
   const apiKey = getGeminiApiKey();
-  if (!apiKey) {
-    throw new Error('GEMINI_API_KEY not configured');
-  }
-
-  return createGoogleGenerativeAI({
-    apiKey,
-  });
+  if (!apiKey) throw new Error('GEMINI_API_KEY not configured');
+  _gemini = createGoogleGenerativeAI({ apiKey });
+  return _gemini;
 }
 
 function patchOpenRouterRequestInit(init?: RequestInit): RequestInit | undefined {
@@ -98,11 +92,12 @@ function patchOpenRouterRequestInit(init?: RequestInit): RequestInit | undefined
   }
 }
 
-function createOpenRouterProvider() {
+let _openrouter: ReturnType<typeof createOpenAI> | null = null;
+
+function getOpenRouterProvider() {
+  if (_openrouter) return _openrouter;
   const apiKey = getOpenRouterApiKey();
-  if (!apiKey) {
-    throw new Error('OPENROUTER_API_KEY not configured');
-  }
+  if (!apiKey) throw new Error('OPENROUTER_API_KEY not configured');
 
   const referer = process.env.OPENROUTER_HTTP_REFERER;
   const title = process.env.OPENROUTER_X_TITLE || 'OpenManager AI';
@@ -115,13 +110,14 @@ function createOpenRouterProvider() {
     headers['X-Title'] = title;
   }
 
-  return createOpenAI({
+  _openrouter = createOpenAI({
     baseURL: 'https://openrouter.ai/api/v1',
     apiKey,
     name: 'openrouter',
     headers,
     fetch: async (input, init) => fetch(input, patchOpenRouterRequestInit(init)),
   });
+  return _openrouter;
 }
 
 function asLanguageModel(model: unknown): LanguageModel {
@@ -145,33 +141,33 @@ function asLanguageModel(model: unknown): LanguageModel {
 export function getCerebrasModel(
   modelId: string = 'gpt-oss-120b'
 ): LanguageModel {
-  const cerebras = createCerebrasProvider();
+  const cerebras = getCerebrasProvider();
   return asLanguageModel(cerebras(modelId));
 }
 
 export function getGroqModel(
   modelId: string = 'llama-3.3-70b-versatile'
 ): LanguageModel {
-  const groq = createGroqProvider();
+  const groq = getGroqProvider();
   return asLanguageModel(groq(modelId));
 }
 
 export function getMistralModel(
   modelId: string = 'mistral-large-3-25-12'
 ): LanguageModel {
-  const mistral = createMistralProvider();
+  const mistral = getMistralProvider();
   return asLanguageModel(mistral(modelId));
 }
 
 export function getGeminiFlashLiteModel(
   modelId: string = 'gemini-2.5-flash'
 ): LanguageModel {
-  const gemini = createGeminiProvider();
+  const gemini = getGeminiProvider();
   return asLanguageModel(gemini(modelId));
 }
 
 export function getOpenRouterVisionModel(modelId?: string): LanguageModel {
-  const openrouter = createOpenRouterProvider();
+  const openrouter = getOpenRouterProvider();
   const model = modelId || getOpenRouterVisionModelId();
   return asLanguageModel(openrouter(model));
 }
