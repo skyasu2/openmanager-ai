@@ -20,6 +20,7 @@ import { getConfigStatus, getLangfuseConfig } from './lib/config-parser';
 import { isRedisAvailable } from './lib/redis-client';
 import { getCurrentState, initOTelDataAsync } from './data/precomputed-state';
 import { setupIncidentRagBackfill } from './server-incident-rag-backfill';
+import { setupTopologyRagBackfill } from './server-topology-rag-backfill';
 import { registerGracefulShutdownHandlers } from './server-shutdown';
 
 // Error handling
@@ -502,6 +503,7 @@ registerRoutes().catch((err) => {
 
 // Periodic incident -> RAG backfill (lightweight, free-tier conscious)
 setupIncidentRagBackfill();
+setupTopologyRagBackfill();
 
 // ============================================================================
 // Graceful Shutdown
