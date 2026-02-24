@@ -30,6 +30,10 @@
 | CLI | 용도 | 비고 |
 |-----|------|------|
 | `claude` | 코드 생성/수정/리뷰 | 현재 세션 |
+| `codex` | 코드 구현/리팩토링/테스트 | gpt-5.3-codex, Pro 구독 |
+| `gemini` | 리서치/분석/문서화 | Pro 구독, OAuth 인증 |
+
+> **3자 브릿지**: `scripts/ai/agent-bridge.sh --to <claude|codex|gemini>` (query/analysis/doc 모드)
 
 ## Built-in Subagents (5개)
 
@@ -40,6 +44,35 @@
 | `general-purpose` | 범용 리서치 |
 | `claude-code-guide` | Claude Code 공식 문서 |
 | `statusline-setup` | 상태라인 설정 |
+
+## Custom Agents — 외부 AI 위임 (2개)
+
+> `.claude/agents/` 디렉토리에 정의. Claude가 작업 특성에 따라 자유 선택.
+
+| Agent | 위임 대상 | 주요 용도 | 모델 |
+|-------|----------|----------|------|
+| `codex-worker` | Codex CLI (gpt-5.3-codex) | 코드 구현, 리팩토링, 버그 수정, 테스트 | haiku (래퍼) |
+| `gemini-researcher` | Gemini CLI (Pro) | 리서치, 분석, 문서화, 코드 리뷰 | haiku (래퍼) |
+
+### 역할 분담 — 자유 분배
+
+| AI | 주요 강점 | 우선 선택되는 작업 |
+|----|----------|------------------|
+| Claude Code (Opus) | 오케스트레이션, 도구 체계, 컨텍스트 | 계획, 리뷰, 통합, 최종 판단 |
+| Codex (gpt-5.3-codex) | 코드 생성, sandbox full-access | 구현, 리팩토링, 버그 수정, 테스트 작성 |
+| Gemini (Pro) | 대규모 컨텍스트, 멀티모달 | 리서치, 분석, 문서화, 긴 파일 처리 |
+
+### 사용법
+
+```bash
+# 자동 위임 (Claude가 에이전트 선택)
+"codex한테 이 함수 리팩토링 시켜"     → codex-worker 자동 선택
+"gemini한테 아키텍처 리뷰 받아"       → gemini-researcher 자동 선택
+
+# 팀 모드 (병렬 대규모 작업)
+Task(codex-worker, "컴포넌트 리팩토링", background)
+Task(gemini-researcher, "최신 패턴 조사", background)
+```
 
 ## Agent Teams (3팀 구성)
 

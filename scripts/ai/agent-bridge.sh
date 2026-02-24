@@ -25,6 +25,7 @@ Options:
   --gemini-yolo           Pass --yolo to Gemini CLI (opt-in only)
   --no-self               Block self-target calls (e.g., codex -> codex)
   --from <agent>          Explicit source agent: claude | codex | gemini
+  --context-file <path>   Prepend file contents to prompt as context
   --allow-external-save   Allow --save path outside project root
   --allow-recursion       Allow nested bridge calls (default: blocked)
   --dry-run               Print resolved settings without calling target
@@ -55,6 +56,7 @@ CLAUDE_FAST=true
 GEMINI_YOLO=false
 NO_SELF=false
 FROM_AGENT=""
+CONTEXT_FILE=""
 ALLOW_EXTERNAL_SAVE=false
 ALLOW_RECURSION=false
 DRY_RUN=false
@@ -275,6 +277,10 @@ while [ $# -gt 0 ]; do
       FROM_AGENT="${2:-}"
       shift 2
       ;;
+    --context-file)
+      CONTEXT_FILE="${2:-}"
+      shift 2
+      ;;
     --allow-external-save)
       ALLOW_EXTERNAL_SAVE=true
       shift
@@ -363,6 +369,17 @@ if [ -n "$SAVE_PATH" ]; then
   SAVE_PATH="$RESOLVED_SAVE_PATH"
 fi
 
+if [ -n "$CONTEXT_FILE" ]; then
+  if [ ! -f "$CONTEXT_FILE" ]; then
+    echo "ERROR: --context-file does not exist: $CONTEXT_FILE" >&2
+    exit 2
+  fi
+  if [ ! -r "$CONTEXT_FILE" ]; then
+    echo "ERROR: --context-file is not readable: $CONTEXT_FILE" >&2
+    exit 2
+  fi
+fi
+
 PROMPT=""
 if [ $# -gt 0 ]; then
   PROMPT="$*"
@@ -377,6 +394,17 @@ fi
 if [ -z "${PROMPT//[[:space:]]/}" ]; then
   echo "ERROR: prompt is empty." >&2
   exit 2
+fi
+
+if [ -n "$CONTEXT_FILE" ]; then
+  CONTEXT_CONTENT="$(cat "$CONTEXT_FILE")"
+  CONTEXT_BASENAME="$(basename "$CONTEXT_FILE")"
+  PROMPT="[컨텍스트 파일: ${CONTEXT_BASENAME}]
+\`\`\`
+${CONTEXT_CONTENT}
+\`\`\`
+
+${PROMPT}"
 fi
 
 if [ "${AGENT_BRIDGE_ACTIVE:-0}" = "1" ] && [ "$ALLOW_RECURSION" != "true" ]; then
@@ -410,6 +438,7 @@ if [ "$DRY_RUN" = "true" ]; then
   echo "bridge_gemini_yolo=$GEMINI_YOLO"
   echo "bridge_no_self=$NO_SELF"
   echo "bridge_from=${FROM_AGENT:-<auto>}"
+  echo "bridge_context_file=${CONTEXT_FILE:-<none>}"
   echo "bridge_allow_external_save=$ALLOW_EXTERNAL_SAVE"
   echo "bridge_logging=$([ "$NO_LOG" = "true" ] && echo "disabled" || echo "enabled")"
   echo "prompt_chars=${#PROMPT}"
