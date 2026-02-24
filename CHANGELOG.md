@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.3.4](https://github.com/skyasu2/openmanager-ai/compare/v8.3.3...v8.3.4) (2026-02-24)
+
+
+### Features
+
+* add Claude-Codex-Gemini 3-way orchestration agents ([db16391](https://github.com/skyasu2/openmanager-ai/commit/db16391ea67650eca4a786e6d00f2f2b76b76c4a))
+* **ai-chat:** add message queue for streaming + review fixes ([d1b8b1c](https://github.com/skyasu2/openmanager-ai/commit/d1b8b1c53a151afb21b5a20da467cd981308d00f))
+* **ai-engine:** 3-way fallback with Mistral as Advisor primary ([bb568d7](https://github.com/skyasu2/openmanager-ai/commit/bb568d7ed4995acfdee3ff7cfa2172f39fdd825d))
+* **ai-engine:** add topology RAG periodic sync ([6d6d296](https://github.com/skyasu2/openmanager-ai/commit/6d6d2963abf27479065af1efee01b3738d48687d))
+* **ai-engine:** architecture evaluation + deploy prep (P0/P1) ([300a29f](https://github.com/skyasu2/openmanager-ai/commit/300a29f02e4a34542566fc0c36e718a4e4fd7a04))
+* **ai-engine:** hybrid cache layer + session memory + response quality metrics ([bebb050](https://github.com/skyasu2/openmanager-ai/commit/bebb050faf01ef2d5724e196739e8666f30da1bc))
+* **e2e:** add AI chat test + optimize alerts-logs (27→6 tests) ([f0f3e06](https://github.com/skyasu2/openmanager-ai/commit/f0f3e060aae3033a1647dc3487c1e39a90a0b0f6))
+
+
+### Bug Fixes
+
+* **ai-engine:** handle Cerebras llama-3.3-70b deprecation with provider retry ([65b9868](https://github.com/skyasu2/openmanager-ai/commit/65b98680c52ce54945e4ed73c3bc8da1d367f613))
+* **ai-engine:** resolve Analyst Agent empty response with summarization fallback ([8298319](https://github.com/skyasu2/openmanager-ai/commit/8298319d178a2cda7888b780ecc19a2caf394ec7))
+* **ai-engine:** route topology queries through RAG advisor path ([8dd5a53](https://github.com/skyasu2/openmanager-ai/commit/8dd5a5343d6ffc7542d93e23c2596980f80c7724))
+* **landing:** sync architecture diagrams and feature cards with actual AI engine ([3feca0f](https://github.com/skyasu2/openmanager-ai/commit/3feca0f1efeea48466df11a5f47be84f578536c5))
+* **qa:** accessibility + version fix, add 5 Storybook stories ([d98b98f](https://github.com/skyasu2/openmanager-ai/commit/d98b98fdfd1ead32094e20fd7f95cf57ccc809c2))
+* resolve 16 code review issues across frontend and backend (P0-P2) ([7c98780](https://github.com/skyasu2/openmanager-ai/commit/7c98780858ec5dce29790bf1592ba26e61cc1681))
+
 ## [8.3.3](https://github.com/skyasu2/openmanager-ai/compare/v8.3.2...v8.3.3) (2026-02-23)
 
 
