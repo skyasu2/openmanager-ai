@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
-import { fn } from 'storybook/test';
 import { createRef } from 'react';
+import { fn } from 'storybook/test';
 import type { EnhancedChatMessage } from '@/stores/useAISidebarStore';
 import { ChatMessageList } from './ChatMessageList';
 
