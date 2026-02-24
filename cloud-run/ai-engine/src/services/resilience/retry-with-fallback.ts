@@ -381,6 +381,17 @@ export async function generateTextWithRetry(
     // If we've exhausted retries for this provider, it's already excluded
     currentProviderIndex++;
   }
+
+  // Defensive return for theoretical loop-cap exhaustion.
+  logger.error('[RetryWithFallback] Aborted due to max iteration guard');
+  return {
+    success: false,
+    provider: preferredOrder[0] ?? 'cerebras',
+    modelId: '',
+    attempts,
+    totalDurationMs: Date.now() - startTime,
+    usedFallback: excludedProviders.length > 0,
+  };
 }
 
 /**

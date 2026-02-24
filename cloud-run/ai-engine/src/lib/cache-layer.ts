@@ -32,6 +32,21 @@ interface CachedItem<T> {
 
 type CacheType = 'metrics' | 'rag' | 'analysis';
 
+interface CacheStats {
+  hitCount: number;
+  missCount: number;
+  hitRate: number;
+  totalEntries: number;
+  oldestEntry: number | null;
+  newestEntry: number | null;
+}
+
+interface CacheDebugInfo {
+  entriesByType: Record<CacheType, number>;
+  config: CacheConfig;
+  stats: CacheStats;
+}
+
 // ============================================================================
 // 2. Default Configuration
 // ============================================================================
@@ -153,8 +168,8 @@ export class DataCacheLayer {
         this.memoryCache.delete(key);
       }
     }
-    // 2. 여전히 초과면 LRU 방식으로 최소 hit 항목 제거
-    if (this.memoryCache.size > this.config.maxSize) {
+    // 2. 새 엔트리 삽입 전에 공간을 확보하도록 LRU 제거
+    while (this.memoryCache.size >= this.config.maxSize) {
       let lruKey: string | null = null;
       let lruHits = Infinity;
       for (const [key, item] of this.memoryCache.entries()) {
@@ -163,7 +178,8 @@ export class DataCacheLayer {
           lruKey = key;
         }
       }
-      if (lruKey) this.memoryCache.delete(lruKey);
+      if (!lruKey) break;
+      this.memoryCache.delete(lruKey);
     }
   }
 
@@ -196,6 +212,25 @@ export class DataCacheLayer {
   }
 
   /**
+   * Invalidate all local entries of a specific type.
+   * L2 Redis wildcard delete is intentionally not performed because the client
+   * only supports key-level delete operations.
+   */
+  async invalidateByType(type: CacheType): Promise<number> {
+    const prefix = `${type}:`;
+    let deletedCount = 0;
+
+    for (const key of this.memoryCache.keys()) {
+      if (key.startsWith(prefix)) {
+        this.memoryCache.delete(key);
+        deletedCount++;
+      }
+    }
+
+    return deletedCount;
+  }
+
+  /**
    * Clear all cache entries
    */
   async clear(): Promise<void> {
@@ -203,6 +238,44 @@ export class DataCacheLayer {
     // Note: Global clear not implemented to avoid accidental wide impact
     this.hitCount = 0;
     this.missCount = 0;
+  }
+
+  getStats(): CacheStats {
+    const entries = Array.from(this.memoryCache.values());
+    const totalEntries = entries.length;
+    const timestamps = entries.map((item) => item.cachedAt);
+    const oldestEntry = timestamps.length > 0 ? Math.min(...timestamps) : null;
+    const newestEntry = timestamps.length > 0 ? Math.max(...timestamps) : null;
+    const totalLookups = this.hitCount + this.missCount;
+
+    return {
+      hitCount: this.hitCount,
+      missCount: this.missCount,
+      hitRate: totalLookups > 0 ? this.hitCount / totalLookups : 0,
+      totalEntries,
+      oldestEntry,
+      newestEntry,
+    };
+  }
+
+  getDebugInfo(): CacheDebugInfo {
+    const entriesByType: Record<CacheType, number> = {
+      metrics: 0,
+      rag: 0,
+      analysis: 0,
+    };
+
+    for (const key of this.memoryCache.keys()) {
+      if (key.startsWith('metrics:')) entriesByType.metrics++;
+      else if (key.startsWith('rag:')) entriesByType.rag++;
+      else if (key.startsWith('analysis:')) entriesByType.analysis++;
+    }
+
+    return {
+      entriesByType,
+      config: this.config,
+      stats: this.getStats(),
+    };
   }
 
   // ============================================================================

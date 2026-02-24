@@ -105,31 +105,31 @@ export const AI_ASSISTANT_TECH_STACK: TechItem[] = [
   },
   // ========== ML Engine ==========
   {
-    name: 'Isolation Forest',
+    name: 'Custom Monitoring ML (TypeScript)',
     category: 'ai',
     importance: 'high',
     description:
-      'ML 기반 다변량 이상 탐지 알고리즘. 정상 데이터로부터 이상치를 효율적으로 분리하는 앙상블 트리 기반 비지도 학습',
+      '경량 커스텀 이상 탐지 계층. 이동평균과 표준편차 기반 통계 탐지로 실시간 응답성과 설명 가능성을 우선한 운영형 ML 구현',
     implementation:
-      '→ Analyst Agent에서 사용. Statistical 빠른 체크 → IF 다변량 분석 → Adaptive Thresholds 앙상블 투표로 최종 판정',
-    version: 'isolation-forest v0.0.9',
+      '→ Analyst Agent에서 사용. SimpleAnomalyDetector로 이상 신호를 빠르게 감지하고 보고서 생성 파이프라인에 연결',
+    version: 'In-house',
     status: 'active',
-    icon: '🌲',
-    tags: ['ML', '이상탐지', '앙상블'],
-    type: 'opensource',
+    icon: '🧪',
+    tags: ['Custom-ML', '이상탐지', '저지연', '설명가능성'],
+    type: 'custom',
   },
   {
-    name: 'Adaptive Thresholds',
+    name: 'Trend Predictor (Enhanced)',
     category: 'ai',
     importance: 'medium',
     description:
-      '시계열 패턴을 학습하여 동적으로 임계값을 조정하는 알고리즘. 시간대별, 요일별 패턴을 반영한 정확한 이상 탐지',
+      '선형 회귀 기반 추세 예측에 임계값 도달/복귀 ETA 계산을 결합한 확장 모듈. 운영자가 선제 대응 시점을 판단할 수 있도록 보조',
     implementation:
-      '→ UnifiedAnomalyEngine에서 사용. 과거 데이터 패턴 학습 → 실시간 임계값 조정 → Ensemble Voting 참여',
+      '→ TrendPredictor + TrendPredictor.enhanced 경로에서 사용. 상승/하락 추세와 임계값 이벤트 시점을 함께 제공',
     version: 'Custom',
     status: 'active',
     icon: '📈',
-    tags: ['시계열', '패턴학습', '동적임계값'],
+    tags: ['시계열', '선형회귀', 'ETA'],
     type: 'custom',
   },
   {

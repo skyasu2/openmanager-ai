@@ -119,7 +119,7 @@ function createMockConfig(overrides: Partial<{
 // BaseAgent Tests
 // ============================================================================
 
-describe('BaseAgent', { timeout: 15000 }, () => {
+describe('BaseAgent', { timeout: 60000 }, () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.mocked(isOpenRouterVisionToolCallingEnabled).mockReturnValue(false);

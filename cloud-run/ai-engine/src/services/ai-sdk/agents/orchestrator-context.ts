@@ -257,6 +257,15 @@ const SERVER_KEYWORDS = [
   '장비',
 ];
 
+const ANALYST_QUERY_PATTERN = /이상|분석|예측|트렌드|패턴|원인|왜|상관관계|근본\s*원인|rca/i;
+const REPORTER_QUERY_PATTERN = /보고서|리포트|타임라인|인시던트|incident/i;
+const ADVISOR_QUERY_PATTERN = /해결|방법|명령어|가이드|어떻게|과거.*사례|사례.*찾|이력|유사|권장\s*조치/i;
+const COMPOSITE_QUERY_PATTERNS = [
+  /그리고|또한|동시에|함께|및|plus|and|then/i,
+  /비교|대비|차이/i,
+  /원인.*해결|해결.*원인|분석.*조치|조치.*분석/i,
+];
+
 /**
  * Fast pre-filter before LLM routing
  * Handles simple queries without LLM call
@@ -335,22 +344,54 @@ export function preFilterQuery(query: string): PreFilterResult {
   const hasServerKeyword = SERVER_KEYWORDS.some(kw => normalized.includes(kw));
 
   if (hasServerKeyword) {
-    let suggestedAgent = 'NLQ Agent';
+    const isVisionIntent = isVisionQuery(query);
+    const isAnalystIntent = ANALYST_QUERY_PATTERN.test(query);
+    const isReporterIntent = REPORTER_QUERY_PATTERN.test(query);
+    const isAdvisorIntent = ADVISOR_QUERY_PATTERN.test(query);
 
-    if (isVisionQuery(query)) {
+    const intentMatches = [
+      isVisionIntent,
+      isAnalystIntent,
+      isReporterIntent,
+      isAdvisorIntent,
+    ].filter(Boolean).length;
+
+    const hasCompositeSignal = COMPOSITE_QUERY_PATTERNS.some((pattern) => pattern.test(query));
+    const likelyCompositeQuery =
+      intentMatches >= 2 ||
+      (hasCompositeSignal && (intentMatches >= 1 || query.length >= 70));
+
+    if (likelyCompositeQuery) {
+      return {
+        shouldHandoff: true,
+        confidence: 0.68,
+      };
+    }
+
+    let suggestedAgent = 'NLQ Agent';
+    let confidence = 0.8;
+
+    if (isVisionIntent) {
       suggestedAgent = 'Vision Agent';
-    } else if (/이상|분석|예측|트렌드|패턴|원인|왜/.test(query)) {
-      suggestedAgent = 'Analyst Agent';
-    } else if (/보고서|리포트|타임라인|인시던트/.test(query)) {
+      confidence = 0.92;
+    } else if (isReporterIntent) {
       suggestedAgent = 'Reporter Agent';
-    } else if (/해결|방법|명령어|가이드|어떻게|과거.*사례|사례.*찾|이력|유사/.test(query)) {
+      confidence = 0.9;
+    } else if (isAnalystIntent) {
+      suggestedAgent = 'Analyst Agent';
+      confidence = 0.88;
+    } else if (isAdvisorIntent) {
       suggestedAgent = 'Advisor Agent';
+      confidence = 0.87;
+    } else {
+      // Generic metric/status query: allow LLM confirmation unless confidence is very high.
+      confidence = 0.78;
     }
 
     return {
       shouldHandoff: true,
       suggestedAgent,
-      confidence: 0.8,
+      confidence,
     };
   }
 

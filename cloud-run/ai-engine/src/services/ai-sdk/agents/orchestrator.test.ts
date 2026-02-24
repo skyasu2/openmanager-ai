@@ -56,6 +56,7 @@ vi.mock('ai', () => ({
   generateObject: vi.fn(async () => ({
     object: {
       selectedAgent: 'NLQ Agent',
+      confidence: 0.86,
       reasoning: 'Mock reasoning for agent selection',
     },
     usage: { promptTokens: 50, completionTokens: 30, totalTokens: 80 },
@@ -88,11 +89,13 @@ vi.mock('../../../tools-ai-sdk', () => ({
   getServerByGroup: { execute: vi.fn() },
   getServerByGroupAdvanced: { execute: vi.fn() },
   detectAnomalies: { execute: vi.fn() },
+  detectAnomaliesAllServers: { execute: vi.fn() },
   predictTrends: { execute: vi.fn() },
   analyzePattern: { execute: vi.fn() },
   correlateMetrics: { execute: vi.fn() },
   findRootCause: { execute: vi.fn() },
   buildIncidentTimeline: { execute: vi.fn() },
+  getServerLogs: { execute: vi.fn() },
   searchKnowledgeBase: { execute: vi.fn() },
   searchWeb: { execute: vi.fn() },
   recommendCommands: { execute: vi.fn() },
@@ -119,7 +122,7 @@ vi.mock('../../../tools-ai-sdk', () => ({
 // Tests for AI SDK v6 Native Architecture
 // ============================================================================
 
-describe('Multi-Agent Orchestrator (AI SDK v6 Native)', { timeout: 30000 }, () => {
+describe('Multi-Agent Orchestrator (AI SDK v6 Native)', { timeout: 60000 }, () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });

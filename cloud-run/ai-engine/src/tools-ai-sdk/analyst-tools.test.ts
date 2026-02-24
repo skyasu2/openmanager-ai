@@ -131,18 +131,6 @@ vi.mock('../lib/ai/monitoring/TrendPredictor', () => ({
   })),
 }));
 
-vi.mock('../lib/ai/monitoring/HybridAnomalyDetector', () => ({
-  getHybridAnomalyDetector: vi.fn(),
-}));
-
-vi.mock('../lib/ai/monitoring/AdaptiveThreshold', () => ({
-  getAdaptiveThreshold: vi.fn(),
-}));
-
-vi.mock('../lib/ai/monitoring/UnifiedAnomalyEngine', () => ({
-  getUnifiedAnomalyEngine: vi.fn(),
-}));
-
 import { detectAnomaliesAllServers } from './analyst-tools';
 
 // ============================================================================

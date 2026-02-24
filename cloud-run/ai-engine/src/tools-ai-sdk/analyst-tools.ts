@@ -81,7 +81,7 @@ function projectOneHourValue(history: number[]): number {
 // ============================================================================
 
 // ============================================================================
-// 3.0 Threshold-based Check Tool (NEW) + AdaptiveThreshold Integration
+// 3.0 Threshold-based Check Tool (SSOT thresholds)
 // ============================================================================
 // NOTE: Using STATUS_THRESHOLDS from config/status-thresholds.ts (SSOT)
 

@@ -258,7 +258,7 @@ describe('Config Parser', () => {
   describe('OpenRouter Vision config', () => {
     it('should use default vision model when env is missing', () => {
       delete process.env.OPENROUTER_MODEL_VISION;
-      expect(getOpenRouterVisionModelId()).toBe('nvidia/nemotron-nano-12b-v2-vl:free');
+      expect(getOpenRouterVisionModelId()).toBe('google/gemma-3-4b-it:free');
     });
 
     it('should use OPENROUTER_MODEL_VISION when configured', () => {
@@ -274,8 +274,8 @@ describe('Config Parser', () => {
     it('should return default fallback list when env is missing', () => {
       delete process.env.OPENROUTER_MODEL_VISION_FALLBACKS;
       expect(getOpenRouterVisionFallbackModelIds()).toEqual([
+        'nvidia/nemotron-nano-12b-v2-vl:free',
         'mistralai/mistral-small-3.1-24b-instruct:free',
-        'google/gemma-3-4b-it:free',
       ]);
     });
 

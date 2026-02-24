@@ -185,6 +185,17 @@ export function selectExecutionMode(query: string): SupervisorMode {
     /이상.*원인|비정상.*이유|스파이크.*원인|급증.*이유/i,
   ];
 
+  const compositeConnectors = [
+    /그리고|또한|동시에|함께|및|plus|and|then/i,
+    /비교|대비|차이|compared?|versus|vs\.?/i,
+  ];
+
+  const compositeIntentPatterns = [
+    /상태.*원인|원인.*상태/i,
+    /원인.*해결|해결.*원인|분석.*조치|조치.*분석/i,
+    /요약.*보고서|보고서.*요약|분석.*보고서|보고서.*분석/i,
+  ];
+
   for (const pattern of multiAgentPatterns) {
     if (pattern.test(q)) {
       return 'multi';
@@ -196,6 +207,13 @@ export function selectExecutionMode(query: string): SupervisorMode {
       if (pattern.test(q)) {
         return 'multi';
       }
+    }
+
+    const connectorHits = compositeConnectors.filter((pattern) => pattern.test(q)).length;
+    const intentHits = compositeIntentPatterns.filter((pattern) => pattern.test(q)).length;
+
+    if (intentHits >= 1 || connectorHits >= 2 || (connectorHits >= 1 && q.length >= 80)) {
+      return 'multi';
     }
   }
 

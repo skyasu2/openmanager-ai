@@ -18,6 +18,15 @@ export const ORCHESTRATOR_CONFIG = {
   hardTimeout: TIMEOUT_CONFIG.orchestrator.hard,
   /** Warning threshold (ms) - from TIMEOUT_CONFIG.orchestrator */
   warnThreshold: TIMEOUT_CONFIG.orchestrator.warning,
+  /**
+   * Minimum confidence required to bypass LLM routing and force a specific agent.
+   * Keep this conservative to reduce premature single-agent locking.
+   */
+  forcedRoutingConfidence: 0.85,
+  /**
+   * Minimum confidence to use pre-filter suggested agent when LLM routing is inconclusive.
+   */
+  fallbackRoutingConfidence: 0.65,
 };
 
 // ============================================================================

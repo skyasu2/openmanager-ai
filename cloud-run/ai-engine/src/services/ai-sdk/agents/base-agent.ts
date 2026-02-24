@@ -23,7 +23,7 @@ import {
   stepCountIs,
   type ToolSet,
   type LanguageModel,
-  type CoreMessage,
+  type ModelMessage,
 } from 'ai';
 import { sanitizeChineseCharacters } from '../../../lib/text-sanitizer';
 import { extractToolResultOutput } from '../../../lib/ai-sdk-utils';
@@ -135,9 +135,9 @@ export abstract class BaseAgent {
   /**
    * Build complete context including Redis history
    */
-  private async buildContext(query: string, options: AgentRunOptions): Promise<CoreMessage[]> {
+  private async buildContext(query: string, options: AgentRunOptions): Promise<ModelMessage[]> {
     const userContent = this.buildUserContent(query, options);
-    const messages: CoreMessage[] = [];
+    const messages: ModelMessage[] = [];
 
     // 1. Recover history from Redis if sessionId provided
     if (options.sessionId) {
@@ -286,7 +286,7 @@ export abstract class BaseAgent {
 
       // Persist session history in Redis (Async)
       if (opts.sessionId && sanitizedText) {
-        const updatedMessages: CoreMessage[] = [
+        const updatedMessages: ModelMessage[] = [
           ...messages,
           { role: 'assistant', content: sanitizedText }
         ];
@@ -453,7 +453,7 @@ export abstract class BaseAgent {
       }
 
       if (opts.sessionId && fullResponseText) {
-        const updatedMessages: CoreMessage[] = [
+        const updatedMessages: ModelMessage[] = [
           ...messages,
           { role: 'assistant', content: fullResponseText }
         ];

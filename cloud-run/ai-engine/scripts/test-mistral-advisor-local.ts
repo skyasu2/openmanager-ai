@@ -18,30 +18,34 @@ async function main() {
   }
 
   const mistral = createMistral({ apiKey });
+  
+  // 프롬프트를 변수로 분리하여 출력용과 실제 호출용 데이터 일치
+  const queryMessage = 'Nginx 서버 메모리 누수 발생 시 어떻게 조치해야 해? 명령어 위주로 1~2줄로 짧고 핵심만 알려줘.';
+  const testModel = 'mistral-small-latest'; // Cost Guard: 무료/저비용 한도 최적화를 위한 경량 모델 사용
 
   console.log('--- Testing Mistral Agent (Advisor Role) via API ---');
-  console.log('Model: mistral-large-latest');
-  console.log(
-    'Query: "Nginx 서버 메모리 누수 발생 시 어떻게 조치해야 해? 명령어 위주로 알려줘."'
-  );
+  console.log(`Model: ${testModel}`);
+  console.log(`Query: "${queryMessage}"`);
 
   try {
     const result = await generateText({
-      model: mistral('mistral-large-latest'),
+      model: mistral(testModel),
       messages: [
         {
           role: 'user',
-          content:
-            'Nginx 서버 메모리 누수 발생 시 어떻게 조치해야 해? 명령어 위주로 1~2줄로 짧고 핵심만 알려줘.',
+          content: queryMessage,
         },
       ],
-      maxOutputTokens: 100,
+      maxOutputTokens: 100, // 원본 코드 유지 (ai SDK 최신 버전 표준)
     });
+    
     console.log('\n[Mistral Advisor Agent Response]');
     console.log(result.text);
     console.log('\n✅ Test passed!');
   } catch (error) {
-    console.error('❌ Test failed:', error);
+    // 안전한 에러 타입 가드 및 추출
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    console.error('\n❌ Test failed:', errorMessage);
   }
 }
 

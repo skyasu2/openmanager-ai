@@ -1,6 +1,6 @@
 import { RedisClient } from '../../lib/redis-client';
 import { logger } from '../../lib/logger';
-import type { CoreMessage } from 'ai';
+import type { ModelMessage } from 'ai';
 
 /**
  * Session Memory Service
@@ -11,9 +11,9 @@ import type { CoreMessage } from 'ai';
 export class SessionMemoryService {
   private static TTL = 3600; // 1 Hour
 
-  static async getHistory(sessionId: string): Promise<CoreMessage[]> {
+  static async getHistory(sessionId: string): Promise<ModelMessage[]> {
     if (!sessionId) return [];
-    const history = await RedisClient.get<CoreMessage[]>(`chat:history:${sessionId}`);
+    const history = await RedisClient.get<ModelMessage[]>(`chat:history:${sessionId}`);
     if (history) {
       logger.debug(`[SessionMemory] Retrieved ${history.length} messages for ${sessionId}`);
       return history;
@@ -21,7 +21,7 @@ export class SessionMemoryService {
     return [];
   }
 
-  static async saveHistory(sessionId: string, messages: CoreMessage[]): Promise<void> {
+  static async saveHistory(sessionId: string, messages: ModelMessage[]): Promise<void> {
     if (!sessionId || !messages.length) return;
     
     // Keep only last 20 messages to prevent token bloat

@@ -54,28 +54,23 @@ docker-compose up --build
 | Component | Algorithm | Library |
 |-----------|-----------|---------|
 | SimpleAnomalyDetector | Moving Avg + 2σ | None (Custom) |
-| IsolationForestDetector | Isolation Forest | `isolation-forest` |
 | TrendPredictor | Linear Regression | None (Custom) |
-| AdaptiveThreshold | Temporal Bucketing + EMA | None (Custom) |
-| HybridAnomalyDetector | Ensemble (Statistical + IF) | None (Custom) |
-| UnifiedAnomalyEngine | 3-way Ensemble + EventEmitter | None (Custom) |
+| TrendPredictor.enhanced | Threshold crossing / recovery ETA | None (Custom) |
 
 ### Location
 
 ```
 ai-engine/src/lib/ai/monitoring/
 ├── SimpleAnomalyDetector.ts    # 통계 기반 탐지
-├── IsolationForestDetector.ts  # ML 기반 다변량 탐지
 ├── TrendPredictor.ts           # 선형 회귀 예측
-├── AdaptiveThreshold.ts        # 시간대별 적응형 임계값
-├── HybridAnomalyDetector.ts    # 앙상블 투표
-└── UnifiedAnomalyEngine.ts     # 통합 엔진 (Production)
+├── TrendPredictor.enhanced.ts  # 임계값 도달/복귀 ETA 예측
+└── TrendPredictor.types.ts     # 예측 타입 정의
 ```
 
 ### Performance
 
 | Component | Latency | Use Case |
 |-----------|---------|----------|
-| Statistical | ~1-5ms | 빠른 1차 필터 |
-| Isolation Forest | ~10-50ms | 다변량 정밀 분석 |
-| Unified Engine | ~20-50ms | 프로덕션 전체 파이프라인 |
+| SimpleAnomalyDetector | ~1-5ms | 빠른 실시간 이상 탐지 |
+| TrendPredictor | ~1-3ms | 선형 추세 예측 |
+| TrendPredictor.enhanced | ~2-5ms | 임계값 도달/복귀 시점 추정 |

@@ -16,7 +16,7 @@ export const FEATURE_CARDS_DATA: FeatureCard[] = [
     icon: Bot,
     gradient: 'from-indigo-500 via-purple-500 to-pink-500',
     detailedContent: {
-      overview: `4개의 AI Provider(Cerebras, Groq, Mistral, Gemini)와 Vercel AI SDK 6.0 네이티브 ToolLoopAgent 기반 5-Agent + Evaluator-Optimizer 파이프라인 시스템입니다. Vision Agent로 대시보드 스크린샷 분석, 1M 토큰 대용량 로그 분석, Google Search Grounding 지원. Isolation Forest ML 엔진으로 다변량 이상 탐지, LlamaIndex.TS GraphRAG + Tavily 하이브리드 검색을 수행합니다.`,
+      overview: `4개의 AI Provider(Cerebras, Groq, Mistral, Gemini)와 Vercel AI SDK 6.0 네이티브 ToolLoopAgent 기반 5-Agent + Evaluator-Optimizer 파이프라인 시스템입니다. Vision Agent로 대시보드 스크린샷 분석, 1M 토큰 대용량 로그 분석, Google Search Grounding 지원. 경량 커스텀 TypeScript ML(통계 이상 탐지 + 추세 예측)과 LlamaIndex.TS GraphRAG + Tavily 하이브리드 검색을 함께 사용합니다.`,
       features: [
         '🧠 Cerebras Inference: WSE-3 칩 기반 1M 토큰/일 초고속 추론 (gpt-oss-120b) — NLQ/Analyst/Supervisor 1순위, 최저 지연 우선',
         '⚡ Groq Cloud: LPU 기반 500 Tokens/s 초고속 추론 (llama-3.3-70b-versatile) — Reporter/Orchestrator 1순위 모델',
@@ -24,7 +24,7 @@ export const FEATURE_CARDS_DATA: FeatureCard[] = [
         '👁️ Gemini Flash: Vision Agent 전용, 스크린샷 분석, 1M 컨텍스트 — 대용량 로그/이미지 처리 유일 모델',
         '▲ Vercel AI SDK 6.0: streamText, generateObject, embed 통합 API — 멀티 에이전트 스트리밍 응답 기반',
         '🤖 Orchestrator-Worker: AI SDK v6 네이티브 ToolLoopAgent + stopWhen 기반 5-Agent 라우팅 + Evaluator-Optimizer 파이프라인',
-        '🌲 Isolation Forest: ML 기반 다변량 이상 탐지 + Adaptive Thresholds — 단일 메트릭 임계값의 한계 보완',
+        '🧪 Custom Monitoring ML: SimpleAnomalyDetector + TrendPredictor.enhanced — 저지연·설명가능성 중심의 운영형 이상 탐지/예측',
         '🦙 LlamaIndex.TS: GraphRAG + Knowledge Triplet Extraction — 키워드 검색으로 못 찾는 관계 탐색',
         '🐘 Supabase pgVector: 벡터 유사도 검색 + 그래프 탐색 — 의미 검색과 관계 탐색을 단일 DB에 통합',
         '📊 Langfuse: AI 호출 추적 및 품질 모니터링 — 멀티 에이전트 파이프라인 전체 추적 및 비용 분석',
@@ -39,7 +39,7 @@ export const FEATURE_CARDS_DATA: FeatureCard[] = [
         'Vercel AI SDK 6.0',
         'AI SDK v6 ToolLoopAgent (native)',
         'LlamaIndex.TS (GraphRAG)',
-        'Isolation Forest (ML)',
+        'Custom Monitoring ML (TypeScript)',
         'Supabase pgVector',
         'Langfuse (Observability)',
         'Upstash Redis',

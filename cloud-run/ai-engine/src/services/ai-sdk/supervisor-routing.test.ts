@@ -57,6 +57,12 @@ describe('selectExecutionMode', () => {
       expect(selectExecutionMode('메모리 예측 분석해줘')).toBe('multi');
     });
 
+    it('should select multi for composite infra requests', () => {
+      expect(selectExecutionMode('서버 상태와 원인 분석을 같이 해줘')).toBe('multi');
+      expect(selectExecutionMode('CPU 추이 비교하고 해결 방법도 알려줘')).toBe('multi');
+      expect(selectExecutionMode('server status and root cause analysis together')).toBe('multi');
+    });
+
     it('should handle typos in Korean', () => {
       expect(selectExecutionMode('서벼 요약')).toBe('multi');
       expect(selectExecutionMode('요먁 해줘 서버')).toBe('multi');
@@ -83,6 +89,11 @@ describe('selectExecutionMode', () => {
     it('should select single for non-infra analysis queries', () => {
       expect(selectExecutionMode('왜 느려?')).toBe('single');
       expect(selectExecutionMode('예측해줘')).toBe('single');
+    });
+
+    it('should keep simple infra lookups in single mode', () => {
+      expect(selectExecutionMode('서버 상태')).toBe('single');
+      expect(selectExecutionMode('cpu 평균')).toBe('single');
     });
   });
 });

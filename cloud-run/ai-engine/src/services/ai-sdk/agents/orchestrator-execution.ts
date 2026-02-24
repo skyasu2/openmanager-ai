@@ -139,7 +139,10 @@ export async function executeMultiAgent(
   // Forced Routing
   logger.debug(`[Orchestrator] Forced routing check: suggestedAgent=${preFilterResult.suggestedAgent}, confidence=${preFilterResult.confidence}`);
 
-  if (preFilterResult.suggestedAgent && preFilterResult.confidence >= 0.8) {
+  if (
+    preFilterResult.suggestedAgent &&
+    preFilterResult.confidence >= ORCHESTRATOR_CONFIG.forcedRoutingConfidence
+  ) {
     const suggestedAgentName = preFilterResult.suggestedAgent;
     logger.info(`[Orchestrator] Triggering forced routing to ${suggestedAgentName}`);
 
@@ -248,7 +251,7 @@ export async function executeMultiAgent(
     }
 
     const suggestedAgent = preFilterResult.suggestedAgent;
-    if (suggestedAgent && preFilterResult.confidence >= 0.5) {
+    if (suggestedAgent && preFilterResult.confidence >= ORCHESTRATOR_CONFIG.fallbackRoutingConfidence) {
       logger.debug(`[Orchestrator] LLM routing inconclusive, falling back to ${suggestedAgent}`);
 
       const fallbackResult = await executeForcedRouting(query, suggestedAgent, startTime, webSearchEnabled, request.images, request.files);
@@ -354,7 +357,10 @@ export async function* executeMultiAgentStream(
   }
 
   // Forced Routing
-  if (preFilterResult.suggestedAgent && preFilterResult.confidence >= 0.8) {
+  if (
+    preFilterResult.suggestedAgent &&
+    preFilterResult.confidence >= ORCHESTRATOR_CONFIG.forcedRoutingConfidence
+  ) {
     logger.info(`[Stream] Forced routing to ${preFilterResult.suggestedAgent}`);
     yield* executeAgentStream(
       query, preFilterResult.suggestedAgent, startTime, request.sessionId, webSearchEnabled, request.images, request.files
@@ -380,7 +386,7 @@ export async function* executeMultiAgentStream(
     const routingResult = await generateObject({
       model,
       schema: routingSchema,
-      system: '에이전트 라우터입니다. 사용자 질문에 가장 적합한 에이전트를 선택하세요.',
+      system: ORCHESTRATOR_INSTRUCTIONS,
       prompt: routingPrompt,
       temperature: 0.1,
     });
@@ -400,7 +406,7 @@ export async function* executeMultiAgentStream(
     }
 
     const suggestedAgent = preFilterResult.suggestedAgent;
-    if (suggestedAgent && preFilterResult.confidence >= 0.5) {
+    if (suggestedAgent && preFilterResult.confidence >= ORCHESTRATOR_CONFIG.fallbackRoutingConfidence) {
       logger.debug(`[Stream] Fallback to ${suggestedAgent}`);
       recordHandoff('Orchestrator', suggestedAgent, 'Fallback routing');
       await recordHandoffEvent(request.sessionId, 'Orchestrator', suggestedAgent, 'Fallback routing');

@@ -48,6 +48,7 @@ import {
   createPrepareStep,
 } from './supervisor-routing';
 import { evaluateAgentResponseQuality } from './agents/response-quality';
+import { shouldRetryForQuality } from './supervisor-quality-retry';
 
 export { executeSupervisorStream } from './supervisor-stream';
 
@@ -151,6 +152,8 @@ async function executeSingleAgentMode(
 ): Promise<SupervisorResponse | SupervisorError> {
   let lastError: SupervisorError | null = null;
   const failedProviders: ProviderName[] = [];
+  const queryText = request.messages.filter((m) => m.role === 'user').pop()?.content ?? '';
+  const queryIntent = getIntentCategory(queryText);
 
   for (let attempt = 0; attempt <= RETRY_CONFIG.maxRetries; attempt++) {
     if (attempt > 0) {
@@ -161,8 +164,22 @@ async function executeSingleAgentMode(
     const result = await executeSupervisorAttempt(request, startTime, failedProviders);
 
     if (result.success) {
-      (result as SupervisorResponse).metadata.mode = 'single';
-      return result;
+      const successResult = result as SupervisorResponse;
+
+      if (attempt < RETRY_CONFIG.maxRetries && shouldRetryForQuality(successResult, queryIntent)) {
+        const degradedProvider = successResult.metadata.provider as ProviderName;
+        if (degradedProvider && !failedProviders.includes(degradedProvider)) {
+          failedProviders.push(degradedProvider);
+        }
+        logger.warn(
+          `[Supervisor] Quality-based retry triggered (attempt ${attempt + 1}/${RETRY_CONFIG.maxRetries}): ` +
+          `provider=${successResult.metadata.provider}, flags=[${(successResult.metadata.qualityFlags ?? []).join(', ')}]`
+        );
+        continue;
+      }
+
+      successResult.metadata.mode = 'single';
+      return successResult;
     }
 
     lastError = result as SupervisorError;
