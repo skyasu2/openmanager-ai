@@ -30,7 +30,7 @@ import { logger } from '../../../lib/logger';
 export function getNlqAgentConfig(): AgentConfig | null {
   const config = AGENT_CONFIGS['NLQ Agent'];
   if (!config) {
-    logger.error('❌ [NLQ Agent] Config not found in AGENT_CONFIGS');
+    logger.error('[NLQ Agent] Config not found in AGENT_CONFIGS');
     return null;
   }
   return config;

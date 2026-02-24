@@ -142,7 +142,7 @@ async function executeSingleKeySearch(
     if (retryCount < TAVILY_MAX_RETRIES) {
       const errorMsg = error instanceof Error ? error.message : String(error);
       if (errorMsg.includes('timeout') || errorMsg.includes('ECONNRESET')) {
-        console.log(`🔄 [Tavily] Retry ${retryCount + 1}/${TAVILY_MAX_RETRIES}: ${errorMsg}`);
+        logger.info(`[Tavily] Retry ${retryCount + 1}/${TAVILY_MAX_RETRIES}: ${errorMsg}`);
         await sleep(TAVILY_RETRY_DELAY_MS);
         return executeSingleKeySearch(apiKey, query, options, retryCount + 1);
       }
@@ -215,13 +215,13 @@ export function shouldTriggerWebSearch(
   } = options;
 
   if (kbResults.length < minKBResults) {
-    console.log(`[TavilyHybrid] Triggering web search: KB results (${kbResults.length}) < min (${minKBResults})`);
+    logger.info(`[TavilyHybrid] Triggering web search: KB results (${kbResults.length}) < min (${minKBResults})`);
     return true;
   }
 
   const avgScore = kbResults.reduce((sum, r) => sum + r.score, 0) / kbResults.length;
   if (avgScore < minKBScore) {
-    console.log(`[TavilyHybrid] Triggering web search: avg KB score (${avgScore.toFixed(2)}) < min (${minKBScore})`);
+    logger.info(`[TavilyHybrid] Triggering web search: avg KB score (${avgScore.toFixed(2)}) < min (${minKBScore})`);
     return true;
   }
 
@@ -309,7 +309,7 @@ export async function enhanceWithWebSearch(
 
   merged.sort((a, b) => b.score - a.score);
 
-  console.log(
+  logger.info(
     `[TavilyHybrid] Merged ${kbResults.length} KB + ${webResults.length} web → ${merged.length} results`
   );
 

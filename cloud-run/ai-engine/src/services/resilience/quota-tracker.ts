@@ -245,7 +245,7 @@ export async function recordProviderUsage(
   // 로깅
   const quota = PROVIDER_QUOTAS[provider];
   const dailyRate = (usage.dailyTokens / quota.dailyTokenLimit) * 100;
-  console.log(
+  logger.info(
     `[QuotaTracker] ${provider}: +${tokensUsed} tokens (daily: ${dailyRate.toFixed(1)}%)`
   );
 }
@@ -308,14 +308,14 @@ export async function selectAvailableProvider(
     }
 
     if (status.dailyTokenUsageRate >= 0.95) {
-      console.log(
+      logger.info(
         `[QuotaTracker] ${provider}: Daily limit 95% exceeded, switching`
       );
       continue;
     }
 
     if (status.recommendedWaitMs && status.recommendedWaitMs < 30_000) {
-      console.log(
+      logger.info(
         `[QuotaTracker] ${provider}: Rate limit approaching, wait ${status.recommendedWaitMs}ms`
       );
       return { provider, status, isPreemptiveFallback: true };

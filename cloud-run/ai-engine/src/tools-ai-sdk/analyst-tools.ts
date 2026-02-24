@@ -134,6 +134,8 @@ export const detectAnomalies = tool({
             return {
               success: false,
               error: `서버를 찾을 수 없습니다: ${serverId || 'none'}`,
+              systemMessage: `TOOL_EXECUTION_FAILED: 대상 서버(${serverId || 'none'})를 목록에서 찾을 수 없어 이상 탐지를 수행하지 못했습니다.`,
+              suggestedAgentAction: `사용자에게 요청하신 서버(${serverId})가 존재하지 않음을 알리고 올바른 서버 ID를 다시 확인해 달라고 요청하세요.`,
             };
           }
 
@@ -313,6 +315,8 @@ export const detectAnomalies = tool({
       return {
         success: false,
         error: error instanceof Error ? error.message : String(error),
+        systemMessage: `TOOL_EXECUTION_FAILED: 메트릭 데이터 분석 중 알 수 없는 오류가 발생했습니다. (${String(error)})`,
+        suggestedAgentAction: '사용자에게 분석 도구 실행 중 일시적인 오류가 발생했음을 안내하고, 대신 서버 로그 등 다른 방식으로 분석할 수 있는지 대안을 제시하세요.',
       };
     }
   },
@@ -349,6 +353,8 @@ export const analyzePattern = tool({
           success: false,
           message: '매칭되는 패턴 없음',
           query,
+          systemMessage: 'TOOL_EXECUTION_FAILED: 사용자 질문에서 분석 가능한 이상/메트릭 관련 패턴을 찾지 못했습니다.',
+          suggestedAgentAction: '특정 시스템 문제가 아닌 일반적 질문일 수 있으므로, 사용자의 질문 의도를 직접 추론하여 자연스러운 대화로 응답하세요.',
         };
       }
 
@@ -370,6 +376,8 @@ export const analyzePattern = tool({
       return {
         success: false,
         error: error instanceof Error ? error.message : String(error),
+        systemMessage: `TOOL_EXECUTION_FAILED: 패턴 분석 실행 중 오류발생. (${String(error)})`,
+        suggestedAgentAction: '패턴 분석 도구 오류가 발생했으나 당황하지 말고, 사용자의 질문 컨텍스트를 문장 그대로 해석하여 본인의 지식으로 적절히 대응하세요.',
       };
     }
   },
@@ -489,6 +497,8 @@ export const detectAnomaliesAllServers = tool({
       return {
         success: false as const,
         error: error instanceof Error ? error.message : String(error),
+        systemMessage: `TOOL_EXECUTION_FAILED: 전체 서버 이상 스캔 중 오류가 발생했습니다. (${String(error)})`,
+        suggestedAgentAction: '전체 서버 분석 도구 오류가 발생했음을 사용자에게 안내하고, 특정 단일 서버(예: 문제가 된 서버)를 지정해서 스캔하도록 유도하세요.',
       };
     }
   },

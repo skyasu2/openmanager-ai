@@ -54,7 +54,7 @@ class CloudRunGenerateService {
 
     const apiKey = process.env.CEREBRAS_API_KEY;
     if (!apiKey) {
-      logger.error('❌ [Generate] CEREBRAS_API_KEY not configured');
+      logger.error('[Generate] CEREBRAS_API_KEY not configured');
       return null;
     }
 
@@ -105,8 +105,8 @@ class CloudRunGenerateService {
       this.stats.successes++;
       this.stats.totalTokens += usageInfo.totalTokens;
 
-      console.log(
-        `✅ [Generate] Success: ${modelId}, ${usageInfo.totalTokens} tokens, ${processingTime}ms`
+      logger.info(
+        `[Generate] Success: ${modelId}, ${usageInfo.totalTokens} tokens, ${processingTime}ms`
       );
 
       return {
@@ -118,7 +118,7 @@ class CloudRunGenerateService {
       };
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error);
-      logger.error('❌ [Generate] Error:', errorMessage);
+      logger.error('[Generate] Error:', errorMessage);
 
       this.stats.errors++;
       return {
@@ -140,7 +140,7 @@ class CloudRunGenerateService {
 
     const cerebras = this.getCerebras();
     if (!cerebras) {
-      logger.error('❌ [Generate Stream] No API key available');
+      logger.error('[Generate Stream] No API key available');
       return null;
     }
 
@@ -172,7 +172,7 @@ class CloudRunGenerateService {
         },
       });
     } catch (error) {
-      logger.error('❌ [Generate Stream] Error:', error);
+      logger.error('[Generate Stream] Error:', error);
       return null;
     }
   }

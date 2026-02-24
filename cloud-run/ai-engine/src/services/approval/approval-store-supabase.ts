@@ -23,17 +23,17 @@ function getSupabaseClient(): SupabaseClient | null {
   const config = getSupabaseConfig();
   if (!config) {
     supabaseInitFailed = true;
-    logger.warn('⚠️ [Approval] Supabase config missing, history persistence disabled');
+    logger.warn('[Approval] Supabase config missing, history persistence disabled');
     return null;
   }
 
   try {
     supabaseClient = createClient(config.url, config.serviceRoleKey);
-    console.log('✅ [Approval] PostgreSQL persistence enabled');
+    logger.info('[Approval] PostgreSQL persistence enabled');
     return supabaseClient;
   } catch (error) {
     supabaseInitFailed = true;
-    logger.error('❌ [Approval] Supabase init failed:', error);
+    logger.error('[Approval] Supabase init failed:', error);
     return null;
   }
 }
@@ -62,9 +62,9 @@ export async function persistApprovalPending(
       expires_at: expiresAt.toISOString(),
       status: 'pending',
     });
-    console.log(`💾 [Approval] Persisted to PostgreSQL: ${approval.sessionId}`);
+    logger.info(`[Approval] Persisted to PostgreSQL: ${approval.sessionId}`);
   } catch (error) {
-    logger.error('⚠️ [Approval] PostgreSQL persist failed:', error);
+    logger.error('[Approval] PostgreSQL persist failed:', error);
   }
 }
 
@@ -88,9 +88,9 @@ export async function persistApprovalDecision(
       })
       .eq('session_id', sessionId)
       .eq('status', 'pending');
-    console.log(`💾 [Approval] Decision persisted: ${sessionId}`);
+    logger.info(`[Approval] Decision persisted: ${sessionId}`);
   } catch (error) {
-    logger.error('⚠️ [Approval] PostgreSQL decision update failed:', error);
+    logger.error('[Approval] PostgreSQL decision update failed:', error);
   }
 }
 
@@ -107,7 +107,7 @@ export async function markApprovalExpired(sessionId: string): Promise<void> {
       .eq('session_id', sessionId)
       .eq('status', 'pending');
   } catch (error) {
-    logger.warn(`⚠️ [Approval] PostgreSQL expiry update failed for ${sessionId}:`, error);
+    logger.warn(`[Approval] PostgreSQL expiry update failed for ${sessionId}:`, error);
   }
 }
 
@@ -116,7 +116,7 @@ export async function fetchApprovalHistory(
 ): Promise<ApprovalHistoryRecord[] | null> {
   const supabase = getSupabaseClient();
   if (!supabase) {
-    logger.warn('⚠️ [Approval] PostgreSQL not available for history query');
+    logger.warn('[Approval] PostgreSQL not available for history query');
     return null;
   }
 
@@ -131,7 +131,7 @@ export async function fetchApprovalHistory(
     });
 
     if (error) {
-      logger.error('❌ [Approval] History query failed:', error);
+      logger.error('[Approval] History query failed:', error);
       return null;
     }
 
@@ -148,7 +148,7 @@ export async function fetchApprovalHistory(
       reason: row.reason ? String(row.reason) : null,
     }));
   } catch (error) {
-    logger.error('❌ [Approval] History query error:', error);
+    logger.error('[Approval] History query error:', error);
     return null;
   }
 }
@@ -167,7 +167,7 @@ export async function fetchApprovalHistoryStats(
     });
 
     if (error || !data || data.length === 0) {
-      logger.error('❌ [Approval] Stats query failed:', error);
+      logger.error('[Approval] Stats query failed:', error);
       return null;
     }
 
@@ -182,7 +182,7 @@ export async function fetchApprovalHistoryStats(
       avgDecisionTimeSeconds: Number(stats.avg_decision_time_seconds || 0),
     };
   } catch (error) {
-    logger.error('❌ [Approval] Stats query error:', error);
+    logger.error('[Approval] Stats query error:', error);
     return null;
   }
 }

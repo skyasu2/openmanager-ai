@@ -22,6 +22,7 @@
  * @date 2026-01-01
  */
 
+import { logger } from '../../logger';
 import type {
   AdaptiveThresholdConfig,
   AdaptiveThresholds,
@@ -86,7 +87,7 @@ export class AdaptiveThreshold {
     // Calculate cached statistics
     this.recalculateBucketStats(metricName);
 
-    console.log(
+    logger.info(
       `[AdaptiveThreshold] Learned patterns for ${metricName} from ${history.length} samples`
     );
   }

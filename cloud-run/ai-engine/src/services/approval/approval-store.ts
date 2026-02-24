@@ -77,7 +77,7 @@ class ApprovalStore {
 
     // L1: Store in memory (with callback support)
     this.store.set(approval.sessionId, entry);
-    console.log(`🔔 [Approval] Registered pending: ${approval.sessionId}`);
+    logger.info(`[Approval] Registered pending: ${approval.sessionId}`);
 
     // L2: Store in Redis (serialized, no callback)
     if (!IS_TEST_RUNTIME && isRedisAvailable()) {
@@ -184,7 +184,7 @@ class ApprovalStore {
     }
 
     if (!entry || entry.decision) {
-      logger.warn(`⚠️ [Approval] No pending request for: ${sessionId}`);
+      logger.warn(`[Approval] No pending request for: ${sessionId}`);
       return false;
     }
 
@@ -230,8 +230,8 @@ class ApprovalStore {
       entry.resolveCallback(decision);
     }
 
-    console.log(
-      `✅ [Approval] Decision submitted: ${sessionId} -> ${approved ? 'APPROVED' : 'REJECTED'}`
+    logger.info(
+      `[Approval] Decision submitted: ${sessionId} -> ${approved ? 'APPROVED' : 'REJECTED'}`
     );
 
     // Auto-sync to RAG when incident_report is approved
@@ -239,10 +239,10 @@ class ApprovalStore {
       // Fire-and-forget: don't block the approval response
       syncIncidentsToRAG({ limit: 1, daysBack: 1 }).then((result) => {
         if (result.synced > 0) {
-          console.log(`📚 [Approval] Auto-synced incident to RAG: ${sessionId}`);
+          logger.info(`[Approval] Auto-synced incident to RAG: ${sessionId}`);
         }
       }).catch((e) => {
-        logger.warn(`⚠️ [Approval] RAG auto-sync failed for ${sessionId}:`, e);
+        logger.warn(`[Approval] RAG auto-sync failed for ${sessionId}:`, e);
       });
     }
 
@@ -330,7 +330,7 @@ class ApprovalStore {
     // L2: Delete from Redis
     if (!IS_TEST_RUNTIME && isRedisAvailable()) {
       await redisDel(`${REDIS_PREFIX}${sessionId}`).catch((e) => {
-        logger.warn(`⚠️ [Approval] Redis cleanup failed for ${sessionId}:`, e);
+        logger.warn(`[Approval] Redis cleanup failed for ${sessionId}:`, e);
       });
     }
 
@@ -339,7 +339,7 @@ class ApprovalStore {
       await markApprovalExpired(sessionId);
     }
 
-    console.log(`🧹 [Approval] Cleaned up: ${sessionId}`);
+    logger.info(`[Approval] Cleaned up: ${sessionId}`);
   }
 
   /**

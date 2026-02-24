@@ -30,7 +30,7 @@ export async function extractRelationshipsFromKnowledgeBase(
       throw error;
     }
     if (!entries || entries.length === 0) {
-      console.log('ℹ️ [LlamaIndex] No unprocessed entries found');
+      logger.info('[LlamaIndex] No unprocessed entries found');
       return [];
     }
 
@@ -59,10 +59,10 @@ export async function extractRelationshipsFromKnowledgeBase(
       }
     }
 
-    console.log(`✅ [LlamaIndex] Extracted relationships from ${results.length} entries`);
+    logger.info(`[LlamaIndex] Extracted relationships from ${results.length} entries`);
     return results;
   } catch (error) {
-    logger.error('❌ [LlamaIndex] Relationship extraction failed:', error);
+    logger.error('[LlamaIndex] Relationship extraction failed:', error);
     return [];
   }
 }
@@ -116,7 +116,7 @@ export async function fetchRelatedKnowledgeFromGraph(
       };
     });
   } catch (error) {
-    logger.error('❌ [LlamaIndex] Related knowledge fetch error:', error);
+    logger.error('[LlamaIndex] Related knowledge fetch error:', error);
     return [];
   }
 }

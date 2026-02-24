@@ -140,7 +140,7 @@ export async function expandQueryWithHyDE(query: string): Promise<string> {
     const expandedText = text.trim();
 
     const elapsed = Date.now() - startTime;
-    console.log(`[HyDE] Query expanded in ${elapsed}ms: "${query.substring(0, 30)}..." → "${expandedText.substring(0, 50)}..."`);
+    logger.info(`[HyDE] Query expanded in ${elapsed}ms: "${query.substring(0, 30)}..." -> "${expandedText.substring(0, 50)}..."`);
 
     // Validate expansion result
     if (!expandedText || expandedText.length < 10) {

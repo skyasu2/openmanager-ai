@@ -7,6 +7,8 @@
  * - Analysis: 10 minutes TTL (computed results)
  */
 
+import { logger } from './logger';
+
 // ============================================================================
 // 1. Types
 // ============================================================================
@@ -369,7 +371,7 @@ let cacheInstance: DataCacheLayer | null = null;
 export function getDataCache(config?: Partial<CacheConfig>): DataCacheLayer {
   if (!cacheInstance) {
     cacheInstance = new DataCacheLayer(config);
-    console.log('📦 [DataCache] Initialized with config:', {
+    logger.info('[DataCache] Initialized with config:', {
       ttlMetrics: `${DEFAULT_CACHE_CONFIG.ttl.metrics / 1000}s`,
       ttlRag: `${DEFAULT_CACHE_CONFIG.ttl.rag / 1000}s`,
       ttlAnalysis: `${DEFAULT_CACHE_CONFIG.ttl.analysis / 1000}s`,
@@ -386,6 +388,6 @@ export function resetDataCache(): void {
   if (cacheInstance) {
     cacheInstance.clear();
     cacheInstance = null;
-    console.log('📦 [DataCache] Reset');
+    logger.info('[DataCache] Reset');
   }
 }

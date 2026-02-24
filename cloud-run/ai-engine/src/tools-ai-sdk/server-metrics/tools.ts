@@ -9,6 +9,7 @@
 
 import { tool } from 'ai';
 import { z } from 'zod';
+import { logger } from '../../lib/logger';
 import {
   getCurrentState,
   get24hTrendSummaries,
@@ -80,7 +81,7 @@ export const getServerMetrics = tool({
         ? state.servers.filter((s) => s.id === serverId)
         : state.servers;
 
-      console.log(`📊 [getServerMetrics] Computing for ${cacheKey} (cache miss)`);
+      logger.info(`[getServerMetrics] Computing for ${cacheKey} (cache miss)`);
 
       // Build daily trend lookup for requested servers
       const trendSummaries = get24hTrendSummaries();
@@ -223,7 +224,7 @@ export const filterServers = tool({
     const cacheKey = `filter:${field}:${operator}:${value}:${limit}`;
 
     return cache.getOrCompute('metrics', cacheKey, async () => {
-    console.log(`📊 [filterServers] Computing for ${cacheKey} (cache miss)`);
+    logger.info(`[filterServers] Computing for ${cacheKey} (cache miss)`);
     const state = getCurrentState();
 
     const filtered = state.servers.filter((server) => {
@@ -357,7 +358,7 @@ ${SERVER_GROUP_DESCRIPTION_LIST}
     const cacheKey = `group:${normalizedGroup}`;
 
     return cache.getOrCompute('metrics', cacheKey, async () => {
-      console.log(`📊 [getServerByGroup] Computing for ${cacheKey} (cache miss)`);
+      logger.info(`[getServerByGroup] Computing for ${cacheKey} (cache miss)`);
 
       // Use shared type mapping from config/server-types.ts
       const targetType = normalizeServerType(normalizedGroup);

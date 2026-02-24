@@ -377,7 +377,7 @@ export async function searchWithEmbedding(
     // 2. Supabase RPC로 유사도 검색
     const { data, error } = await supabaseClient.rpc('search_knowledge_base', {
       query_embedding: vectorString,
-      similarity_threshold: options.similarityThreshold ?? 0.3,
+      similarity_threshold: options.similarityThreshold ?? 0.4,
       max_results: options.maxResults ?? 5,
       filter_category: options.category ?? null,
       filter_severity: options.severity ?? null,
@@ -403,7 +403,7 @@ export async function searchWithEmbedding(
       results,
     };
   } catch (e) {
-    logger.error('❌ [Embedding] Search failed:', e);
+    logger.error('[Embedding] Search failed:', e);
     return {
       success: false,
       results: [],

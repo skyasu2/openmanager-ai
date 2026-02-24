@@ -1,5 +1,6 @@
 import { tool } from 'ai';
 import { z } from 'zod';
+import { logger } from '../../lib/logger';
 import {
   stableStringify,
   calculateAggregation,
@@ -86,7 +87,7 @@ export const getServerMetricsAdvanced = tool({
     const cacheKey = `adv:${serverId || 'all'}:${timeRange}:${metric}:${aggregation}:${sortBy || 'none'}:${sortOrder}:${limit || 0}:${stableStringify(filters)}`;
 
     return cache.getOrCompute('metrics', cacheKey, async () => {
-      console.log(`📊 [getServerMetricsAdvanced] Computing for ${cacheKey} (cache miss)`);
+      logger.info(`[getServerMetricsAdvanced] Computing for ${cacheKey} (cache miss)`);
       try {
         const allEntries = getAllServerEntries();
         const targetEntries = serverId
@@ -94,7 +95,12 @@ export const getServerMetricsAdvanced = tool({
           : allEntries;
 
         if (targetEntries.length === 0) {
-          return { success: false, error: `Server not found: ${serverId}` };
+          return {
+            success: false,
+            error: `Server not found: ${serverId}`,
+            systemMessage: `TOOL_EXECUTION_FAILED: 대상 서버(${serverId})를 찾을 수 없어 데이터를 조회하지 못했습니다.`,
+            suggestedAgentAction: `사용자에게 요청하신 서버(${serverId})가 인프라에 존재하지 않거나 오타가 있을 수 있다고 안내하고 올바른 서버 ID를 다시 확인해달라고 요청하세요.`
+          };
         }
 
         const serverResults: Array<{
@@ -227,6 +233,8 @@ export const getServerMetricsAdvanced = tool({
         return {
           success: false,
           error: error instanceof Error ? error.message : String(error),
+          systemMessage: `TOOL_EXECUTION_FAILED: 서버 메트릭 데이터 집계 중 알 수 없는 오류가 발생했습니다. (${String(error)})`,
+          suggestedAgentAction: '메트릭 조회가 실패했음을 알리고, 사용자에게 일시적인 시스템 문제일 수 있으니 로그 확인 등 다른 우회 분석 방법을 원하시는지 질문하세요.',
         };
       }
     });
@@ -299,7 +307,7 @@ ${SERVER_GROUP_DESCRIPTION_LIST}
     const cacheKey = `group-adv:${normalizedGroup}:${filterKey}:${sortKey}:${limit || 'all'}`;
 
     return cache.getOrCompute('metrics', cacheKey, async () => {
-      console.log(`📊 [getServerByGroupAdvanced] Computing for ${cacheKey} (cache miss)`);
+      logger.info(`[getServerByGroupAdvanced] Computing for ${cacheKey} (cache miss)`);
 
       const targetType = normalizeServerType(normalizedGroup);
       const state = getCurrentState();

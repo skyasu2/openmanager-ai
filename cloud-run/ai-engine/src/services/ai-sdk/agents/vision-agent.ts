@@ -40,7 +40,7 @@ import { logger } from '../../../lib/logger';
 export function getVisionAgentConfig(): AgentConfig | null {
   const config = AGENT_CONFIGS['Vision Agent'];
   if (!config) {
-    logger.warn('⚠️ [Vision Agent] Config not found in AGENT_CONFIGS');
+    logger.warn('[Vision Agent] Config not found in AGENT_CONFIGS');
     return null;
   }
   return config;
@@ -130,7 +130,7 @@ export function getVisionAgentOrFallback(query: string): {
 
   // Vision unavailable - check if query needs vision
   if (isVisionQuery(query)) {
-    logger.warn('⚠️ [Vision Agent] Vision features requested but no vision provider available, falling back to Analyst Agent');
+    logger.warn('[Vision Agent] Vision features requested but no vision provider available, falling back to Analyst Agent');
     return {
       agent: AgentFactory.create('analyst'),
       isFallback: true,

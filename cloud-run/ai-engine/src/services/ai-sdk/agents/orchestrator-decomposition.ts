@@ -34,20 +34,20 @@ function isComplexQuery(query: string): boolean {
 
 export async function decomposeTask(query: string): Promise<TaskDecomposition | null> {
   if (!isComplexQuery(query)) {
-    console.log('📋 [Decompose] Query is simple, skipping decomposition');
+    logger.info('[Decompose] Query is simple, skipping decomposition');
     return null;
   }
 
   const modelConfig = getOrchestratorModel();
   if (!modelConfig) {
-    logger.warn('⚠️ [Decompose] No model available');
+    logger.warn('[Decompose] No model available');
     return null;
   }
 
   const { model } = modelConfig;
 
   try {
-    console.log('🔀 [Decompose] Analyzing complex query for task decomposition...');
+    logger.info('[Decompose] Analyzing complex query for task decomposition...');
 
     const decomposePrompt = `다음 복합 질문을 서브태스크로 분해하세요.
 
@@ -76,19 +76,19 @@ ${query}
     });
 
     const decomposition = result.object;
-    console.log(`🔀 [Decompose] Created ${decomposition.subtasks.length} subtasks (sequential: ${decomposition.requiresSequential})`);
+    logger.info(`[Decompose] Created ${decomposition.subtasks.length} subtasks (sequential: ${decomposition.requiresSequential})`);
 
     const validSubtasks = decomposition.subtasks.filter((subtask: Subtask) => {
       const agentConfig = getAgentConfig(subtask.agent);
 
       if (!agentConfig) {
-        logger.warn(`⚠️ [Decompose] Agent "${subtask.agent}" not found, removing subtask: "${subtask.task.substring(0, 40)}..."`);
+        logger.warn(`[Decompose] Agent "${subtask.agent}" not found, removing subtask: "${subtask.task.substring(0, 40)}..."`);
         return false;
       }
 
       const modelResult = agentConfig.getModel();
       if (!modelResult) {
-        logger.warn(`⚠️ [Decompose] Agent "${subtask.agent}" model unavailable, removing subtask: "${subtask.task.substring(0, 40)}..."`);
+        logger.warn(`[Decompose] Agent "${subtask.agent}" model unavailable, removing subtask: "${subtask.task.substring(0, 40)}..."`);
         return false;
       }
 
@@ -96,12 +96,12 @@ ${query}
     });
 
     if (validSubtasks.length === 0) {
-      logger.warn('⚠️ [Decompose] No valid subtasks after validation, falling back to single-agent');
+      logger.warn('[Decompose] No valid subtasks after validation, falling back to single-agent');
       return null;
     }
 
     if (validSubtasks.length !== decomposition.subtasks.length) {
-      console.log(`🔀 [Decompose] Validated: ${validSubtasks.length}/${decomposition.subtasks.length} subtasks kept`);
+      logger.info(`[Decompose] Validated: ${validSubtasks.length}/${decomposition.subtasks.length} subtasks kept`);
     }
 
     return {
@@ -109,7 +109,7 @@ ${query}
       subtasks: validSubtasks,
     };
   } catch (error) {
-    logger.error('❌ [Decompose] Task decomposition failed:', error);
+    logger.error('[Decompose] Task decomposition failed:', error);
     return null;
   }
 }
@@ -124,12 +124,12 @@ export async function executeParallelSubtasks(
   webSearchEnabled = true,
   sessionId = ''
 ): Promise<MultiAgentResponse | null> {
-  console.log(`🚀 [Parallel] Executing ${subtasks.length} subtasks in parallel...`);
+  logger.info(`[Parallel] Executing ${subtasks.length} subtasks in parallel...`);
 
   const SUBTASK_TIMEOUT_MS = TIMEOUT_CONFIG.subtask.hard;
 
   const subtaskPromises = subtasks.map(async (subtask, index) => {
-    console.log(`   [${index + 1}/${subtasks.length}] ${subtask.agent}: ${subtask.task.substring(0, 50)}...`);
+    logger.info(`   [${index + 1}/${subtasks.length}] ${subtask.agent}: ${subtask.task.substring(0, 50)}...`);
 
     let timeoutId: ReturnType<typeof setTimeout> | null = null;
     let isTimedOut = false;
@@ -138,7 +138,7 @@ export async function executeParallelSubtasks(
       timeoutId = setTimeout(() => {
         isTimedOut = true;
         logger.warn(
-          `⏱️ [Parallel] Subtask ${index + 1}/${subtasks.length} timeout after ${SUBTASK_TIMEOUT_MS}ms\n` +
+          `[Parallel] Subtask ${index + 1}/${subtasks.length} timeout after ${SUBTASK_TIMEOUT_MS}ms\n` +
           `   Agent: ${subtask.agent}\n` +
           `   Task: "${subtask.task.substring(0, 80)}${subtask.task.length > 80 ? '...' : ''}"`
         );
@@ -165,7 +165,7 @@ export async function executeParallelSubtasks(
       if (timeoutId !== null && !isTimedOut) {
         clearTimeout(timeoutId);
       }
-      logger.error(`❌ [Parallel] Subtask ${index + 1} error:`, error);
+      logger.error(`[Parallel] Subtask ${index + 1} error:`, error);
       return { subtask, result: null, index };
     }
   });
@@ -177,13 +177,13 @@ export async function executeParallelSubtasks(
 
   if (failedResults.length > 0) {
     logger.warn(
-      `⚠️ [Parallel] ${failedResults.length}/${results.length} subtasks failed:\n` +
+      `[Parallel] ${failedResults.length}/${results.length} subtasks failed:\n` +
       failedResults.map(r => `   - [${r.index + 1}] ${r.subtask.agent}: "${r.subtask.task.substring(0, 50)}..."`).join('\n')
     );
   }
 
   if (successfulResults.length === 0) {
-    logger.error('❌ [Parallel] All subtasks failed - no results to aggregate');
+    logger.error('[Parallel] All subtasks failed - no results to aggregate');
     return null;
   }
 
@@ -199,7 +199,7 @@ export async function executeParallelSubtasks(
   const toolsCalled = [...new Set(successfulResults.flatMap(r => r.result!.toolsCalled))];
   const totalTokens = successfulResults.reduce((sum, r) => sum + (r.result!.usage?.totalTokens ?? 0), 0);
 
-  console.log(`✅ [Parallel] Completed ${successfulResults.length}/${subtasks.length} subtasks in ${durationMs}ms`);
+  logger.info(`[Parallel] Completed ${successfulResults.length}/${subtasks.length} subtasks in ${durationMs}ms`);
 
   if (sessionId) {
     for (const result of successfulResults) {

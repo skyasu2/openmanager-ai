@@ -1,6 +1,7 @@
 import type { LanguageModel } from 'ai';
 import { getOpenRouterVisionModelId } from '../../../../lib/config-parser';
 import { logger } from '../../../../lib/logger';
+import { getCircuitBreaker } from '../../../resilience/circuit-breaker';
 import {
   checkProviderStatus,
   getCerebrasModel,
@@ -9,6 +10,7 @@ import {
   getMistralModel,
   getOpenRouterVisionModel,
 } from '../../model-provider';
+import type { ProviderName } from '../../model-provider.types';
 
 export interface ModelResult {
   model: LanguageModel;
@@ -16,196 +18,110 @@ export interface ModelResult {
   modelId: string;
 }
 
+// ============================================================================
+// Text Provider → Model SSOT
+// ============================================================================
+
+type TextProvider = 'cerebras' | 'groq' | 'mistral';
+
+const TEXT_PROVIDER_MODELS: Record<TextProvider, { factory: (id: string) => LanguageModel; modelId: string }> = {
+  cerebras: { factory: getCerebrasModel, modelId: 'gpt-oss-120b' },
+  groq:     { factory: getGroqModel,     modelId: 'llama-3.3-70b-versatile' },
+  mistral:  { factory: getMistralModel,  modelId: 'mistral-large-latest' },
+};
+
+// ============================================================================
+// selectTextModel — Common Helper
+// ============================================================================
+
+interface SelectTextModelOptions {
+  /** If true, throw when no provider is available (default: false → return null) */
+  throwOnEmpty?: boolean;
+  /** Providers to exclude (e.g., recently failed) */
+  excludeProviders?: ProviderName[];
+  /** CB key prefix override (default: agentLabel lowercase) */
+  cbPrefix?: string;
+}
+
 /**
- * Get NLQ model: Cerebras → Groq → Mistral (3-way fallback)
- * Primary: Cerebras gpt-oss-120b (120B MoE, 1M TPD, 3000 tok/s)
+ * Unified text model selector with CB check + provider status + fallback chain.
+ *
+ * Replaces per-agent model selection functions with a single SSOT.
+ * Every provider is checked against its Circuit Breaker before attempting init.
  */
+export function selectTextModel(
+  agentLabel: string,
+  providerOrder: TextProvider[],
+  options: SelectTextModelOptions = {},
+): ModelResult | null {
+  const { throwOnEmpty = false, excludeProviders = [], cbPrefix } = options;
+  const status = checkProviderStatus();
+  const excluded = new Set<string>(excludeProviders);
+  const prefix = cbPrefix ?? agentLabel.toLowerCase().replace(/\s+/g, '-');
+
+  // CB pre-check: auto-exclude OPEN providers
+  for (const provider of providerOrder) {
+    if (!excluded.has(provider)) {
+      const cb = getCircuitBreaker(`${prefix}-${provider}`);
+      if (!cb.isAllowed()) {
+        excluded.add(provider);
+        logger.info(`[${agentLabel}] CB OPEN: auto-excluding ${provider}`);
+      }
+    }
+  }
+
+  for (const provider of providerOrder) {
+    if (!status[provider] || excluded.has(provider)) continue;
+
+    const config = TEXT_PROVIDER_MODELS[provider];
+    try {
+      return {
+        model: config.factory(config.modelId),
+        provider,
+        modelId: config.modelId,
+      };
+    } catch {
+      const nextIdx = providerOrder.indexOf(provider) + 1;
+      const next = nextIdx < providerOrder.length ? providerOrder[nextIdx] : null;
+      logger.warn(`[${agentLabel}] ${provider} unavailable${next ? `, trying ${next}` : ''}`);
+    }
+  }
+
+  if (throwOnEmpty) {
+    throw new Error(`No provider available for ${agentLabel} (all providers down).`);
+  }
+
+  logger.warn(`[${agentLabel}] No model available (all providers down)`);
+  return null;
+}
+
+// ============================================================================
+// Per-Agent Model Selectors (1-line delegation)
+// ============================================================================
+
+/** NLQ model: Cerebras → Groq → Mistral */
 export function getNlqModel(): ModelResult | null {
-  const status = checkProviderStatus();
-
-  if (status.cerebras) {
-    try {
-      return {
-        model: getCerebrasModel('gpt-oss-120b'),
-        provider: 'cerebras',
-        modelId: 'gpt-oss-120b',
-      };
-    } catch {
-      logger.warn('⚠️ [NLQ Agent] Cerebras unavailable, trying Groq');
-    }
-  }
-
-  if (status.groq) {
-    try {
-      return {
-        model: getGroqModel('llama-3.3-70b-versatile'),
-        provider: 'groq',
-        modelId: 'llama-3.3-70b-versatile',
-      };
-    } catch {
-      logger.warn('⚠️ [NLQ Agent] Groq unavailable, trying Mistral');
-    }
-  }
-
-  if (status.mistral) {
-    try {
-      return {
-        model: getMistralModel('mistral-large-latest'),
-        provider: 'mistral',
-        modelId: 'mistral-large-latest',
-      };
-    } catch {
-      logger.warn('⚠️ [NLQ Agent] Mistral unavailable');
-    }
-  }
-
-  logger.warn('⚠️ [NLQ Agent] No model available (all providers down)');
-  return null;
+  return selectTextModel('NLQ Agent', ['cerebras', 'groq', 'mistral']);
 }
 
-/**
- * Get Analyst model: Cerebras → Groq → Mistral (3-way fallback)
- * Primary: Cerebras gpt-oss-120b (120B MoE)
- * Reason: Groq/llama-3.3-70b produces empty responses with Analyst's multi-tool workflow.
- *         Cerebras/gpt-oss-120b handles tool calling reliably and is faster.
- */
+/** Analyst model: Cerebras → Groq → Mistral */
 export function getAnalystModel(): ModelResult | null {
-  const status = checkProviderStatus();
-
-  if (status.cerebras) {
-    try {
-      return {
-        model: getCerebrasModel('gpt-oss-120b'),
-        provider: 'cerebras',
-        modelId: 'gpt-oss-120b',
-      };
-    } catch {
-      logger.warn('⚠️ [Analyst Agent] Cerebras unavailable, trying Groq');
-    }
-  }
-
-  if (status.groq) {
-    try {
-      return {
-        model: getGroqModel('llama-3.3-70b-versatile'),
-        provider: 'groq',
-        modelId: 'llama-3.3-70b-versatile',
-      };
-    } catch {
-      logger.warn('⚠️ [Analyst Agent] Groq unavailable, trying Mistral');
-    }
-  }
-
-  if (status.mistral) {
-    try {
-      return {
-        model: getMistralModel('mistral-large-latest'),
-        provider: 'mistral',
-        modelId: 'mistral-large-latest',
-      };
-    } catch {
-      logger.warn('⚠️ [Analyst Agent] Mistral unavailable');
-    }
-  }
-
-  logger.warn('⚠️ [Analyst Agent] No model available (all providers down)');
-  return null;
+  return selectTextModel('Analyst Agent', ['cerebras', 'groq', 'mistral']);
 }
 
-/**
- * Get Reporter model: Groq → Cerebras → Mistral (3-way fallback)
- * Primary: Groq llama-3.3-70b-versatile (70B)
- */
+/** Reporter model: Groq → Cerebras → Mistral */
 export function getReporterModel(): ModelResult | null {
-  const status = checkProviderStatus();
-
-  if (status.groq) {
-    try {
-      return {
-        model: getGroqModel('llama-3.3-70b-versatile'),
-        provider: 'groq',
-        modelId: 'llama-3.3-70b-versatile',
-      };
-    } catch {
-      logger.warn('⚠️ [Reporter Agent] Groq unavailable, trying Cerebras');
-    }
-  }
-
-  if (status.cerebras) {
-    try {
-      return {
-        model: getCerebrasModel('gpt-oss-120b'),
-        provider: 'cerebras',
-        modelId: 'gpt-oss-120b',
-      };
-    } catch {
-      logger.warn('⚠️ [Reporter Agent] Cerebras unavailable, trying Mistral');
-    }
-  }
-
-  if (status.mistral) {
-    try {
-      return {
-        model: getMistralModel('mistral-large-latest'),
-        provider: 'mistral',
-        modelId: 'mistral-large-latest',
-      };
-    } catch {
-      logger.warn('⚠️ [Reporter Agent] Mistral unavailable');
-    }
-  }
-
-  logger.warn('⚠️ [Reporter Agent] No model available (all providers down)');
-  return null;
+  return selectTextModel('Reporter Agent', ['groq', 'cerebras', 'mistral']);
 }
 
-/**
- * Get Advisor model: Mistral → Cerebras → Groq (3-way fallback)
- * Primary: Mistral mistral-large-latest (Frontier model)
- * Advisor는 Mistral이 메인 — 각 provider가 최소 1개 에이전트 Primary
- */
+/** Advisor model: Mistral → Cerebras → Groq */
 export function getAdvisorModel(): ModelResult | null {
-  const status = checkProviderStatus();
-
-  if (status.mistral) {
-    try {
-      return {
-        model: getMistralModel('mistral-large-latest'),
-        provider: 'mistral',
-        modelId: 'mistral-large-latest',
-      };
-    } catch {
-      logger.warn('⚠️ [Advisor Agent] Mistral unavailable, trying Cerebras');
-    }
-  }
-
-  if (status.cerebras) {
-    try {
-      return {
-        model: getCerebrasModel('gpt-oss-120b'),
-        provider: 'cerebras',
-        modelId: 'gpt-oss-120b',
-      };
-    } catch {
-      logger.warn('⚠️ [Advisor Agent] Cerebras unavailable, trying Groq');
-    }
-  }
-
-  if (status.groq) {
-    try {
-      return {
-        model: getGroqModel('llama-3.3-70b-versatile'),
-        provider: 'groq',
-        modelId: 'llama-3.3-70b-versatile',
-      };
-    } catch {
-      logger.warn('⚠️ [Advisor Agent] Groq unavailable');
-    }
-  }
-
-  logger.warn('⚠️ [Advisor Agent] No model available (all providers down)');
-  return null;
+  return selectTextModel('Advisor Agent', ['mistral', 'cerebras', 'groq']);
 }
+
+// ============================================================================
+// Vision Model (different provider type — not unified)
+// ============================================================================
 
 /**
  * Get Vision model: Gemini Flash → OpenRouter (Fallback)
@@ -221,24 +137,24 @@ export function getVisionModel(): ModelResult | null {
         modelId: 'gemini-2.5-flash',
       };
     } catch (error) {
-      logger.warn('⚠️ [Vision Agent] Gemini initialization failed, trying OpenRouter:', error);
+      logger.warn('[Vision Agent] Gemini initialization failed, trying OpenRouter:', error);
     }
   }
 
   if (status.openrouter) {
     try {
       const modelId = getOpenRouterVisionModelId();
-      logger.info(`🔄 [Vision Agent] Using OpenRouter fallback: ${modelId}`);
+      logger.info(`[Vision Agent] Using OpenRouter fallback: ${modelId}`);
       return {
         model: getOpenRouterVisionModel(modelId),
         provider: 'openrouter',
         modelId,
       };
     } catch (error) {
-      logger.error('❌ [Vision Agent] OpenRouter initialization failed:', error);
+      logger.error('[Vision Agent] OpenRouter initialization failed:', error);
     }
   }
 
-  logger.warn('⚠️ [Vision Agent] No vision provider available - Vision features disabled');
+  logger.warn('[Vision Agent] No vision provider available - Vision features disabled');
   return null;
 }

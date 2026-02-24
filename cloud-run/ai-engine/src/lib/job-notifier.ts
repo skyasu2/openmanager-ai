@@ -10,6 +10,7 @@
  */
 
 import { getRedisClient, redisGet, redisSet, redisDel } from './redis-client';
+import { logger } from './logger';
 
 // ============================================================================
 // Types
@@ -120,8 +121,8 @@ export async function storeJobResult(
     ? { ...existingJob, ...result }
     : result;
 
-  console.log(
-    `✅ [JobNotifier] Storing result for job ${jobId} (${processingTimeMs}ms)`
+  logger.info(
+    `[JobNotifier] Storing result for job ${jobId} (${processingTimeMs}ms)`
   );
   return redisSet(`${JOB_KEY_PREFIX}${jobId}`, mergedResult, JOB_TTL_SECONDS);
 }
@@ -157,7 +158,7 @@ export async function storeJobError(
     ? { ...existingJob, ...result }
     : result;
 
-  console.log(`❌ [JobNotifier] Storing error for job ${jobId}: ${error}`);
+  logger.error(`[JobNotifier] Storing error for job ${jobId}: ${error}`);
   return redisSet(`${JOB_KEY_PREFIX}${jobId}`, mergedResult, JOB_TTL_SECONDS);
 }
 

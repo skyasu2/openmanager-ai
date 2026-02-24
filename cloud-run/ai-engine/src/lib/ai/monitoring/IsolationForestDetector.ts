@@ -141,7 +141,7 @@ export class IsolationForestDetector {
       this.isTrained = true;
       this.lastTrainedAt = Date.now();
 
-      console.log(
+      logger.info(
         `[IsolationForest] Model trained with ${historicalData.length} samples`
       );
       return true;

@@ -66,10 +66,10 @@ export async function initializeLlamaIndex(): Promise<boolean> {
     }
 
     isInitialized = true;
-    console.log('✅ [LlamaIndex] Initialized with Cerebras AI (gpt-oss-120b)');
+    logger.info('[LlamaIndex] Initialized with Cerebras AI (gpt-oss-120b)');
     return true;
   } catch (error) {
-    logger.error('❌ [LlamaIndex] Initialization failed:', error);
+    logger.error('[LlamaIndex] Initialization failed:', error);
     return false;
   }
 }
@@ -89,7 +89,7 @@ export async function extractTriplets(
   await initializeLlamaIndex();
 
   if (!llamaLlm) {
-    logger.warn('⚠️ [LlamaIndex] LLM not configured');
+    logger.warn('[LlamaIndex] LLM not configured');
     return [];
   }
 
@@ -117,15 +117,15 @@ Only output the JSON array, no other text.
     // Parse JSON response
     const jsonMatch = responseText.match(/\[[\s\S]*\]/);
     if (!jsonMatch) {
-      logger.warn('⚠️ [LlamaIndex] Failed to parse triplets JSON');
+      logger.warn('[LlamaIndex] Failed to parse triplets JSON');
       return [];
     }
 
     const triplets = JSON.parse(jsonMatch[0]) as KnowledgeTriplet[];
-    console.log(`📊 [LlamaIndex] Extracted ${triplets.length} triplets`);
+    logger.info(`[LlamaIndex] Extracted ${triplets.length} triplets`);
     return triplets;
   } catch (error) {
-    logger.error('❌ [LlamaIndex] Triplet extraction failed:', error);
+    logger.error('[LlamaIndex] Triplet extraction failed:', error);
     return [];
   }
 }
@@ -149,13 +149,13 @@ export async function searchKnowledgeBase(
   await initializeLlamaIndex();
 
   const {
-    similarityThreshold = 0.3,
+    similarityThreshold = 0.4,
     maxResults = 10,
     category,
   } = options;
 
   if (!supabaseClient) {
-    logger.warn('⚠️ [LlamaIndex] Supabase not available');
+    logger.warn('[LlamaIndex] Supabase not available');
     return [];
   }
 
@@ -188,7 +188,7 @@ export async function searchKnowledgeBase(
       metadata: row.metadata as Record<string, unknown>,
     }));
   } catch (error) {
-    logger.error('❌ [LlamaIndex] Search failed:', error);
+    logger.error('[LlamaIndex] Search failed:', error);
     return [];
   }
 }
@@ -213,14 +213,14 @@ export async function hybridSearch(
   await initializeLlamaIndex();
 
   const {
-    similarityThreshold = 0.3,
+    similarityThreshold = 0.4,
     maxVectorResults = 5,
     maxGraphHops = 2,
     maxTotalResults = 15,
   } = options;
 
   if (!supabaseClient) {
-    logger.warn('⚠️ [LlamaIndex] Supabase not available');
+    logger.warn('[LlamaIndex] Supabase not available');
     return [];
   }
 
@@ -238,7 +238,7 @@ export async function hybridSearch(
 
     return mergeDeduplicateAndRankResults(vectorResults, graphResults, maxTotalResults);
   } catch (error) {
-    logger.error('❌ [LlamaIndex] Hybrid search failed:', error);
+    logger.error('[LlamaIndex] Hybrid search failed:', error);
     return [];
   }
 }
@@ -284,10 +284,10 @@ export async function indexDocuments(
       if (!error) indexed++;
     }
 
-    console.log(`✅ [LlamaIndex] Indexed ${indexed}/${documents.length} documents`);
+    logger.info(`[LlamaIndex] Indexed ${indexed}/${documents.length} documents`);
     return { success: true, indexed };
   } catch (error) {
-    logger.error('❌ [LlamaIndex] Indexing failed:', error);
+    logger.error('[LlamaIndex] Indexing failed:', error);
     return { success: false, indexed: 0 };
   }
 }
@@ -314,7 +314,7 @@ export async function getStats(): Promise<LlamaIndexStats | null> {
       lastIndexed: relsResult.data?.[0]?.created_at || null,
     };
   } catch (error) {
-    logger.error('❌ [LlamaIndex] Stats fetch failed:', error);
+    logger.error('[LlamaIndex] Stats fetch failed:', error);
     return null;
   }
 }
@@ -355,7 +355,7 @@ export async function hybridGraphSearch(
   const {
     query,
     useBM25 = false,
-    similarityThreshold = 0.3,
+    similarityThreshold = 0.4,
     maxVectorResults = 5,
     maxGraphHops = 2,
     maxTotalResults = 15,
@@ -366,7 +366,7 @@ export async function hybridGraphSearch(
 
   // Use BM25 hybrid search if enabled and query text is provided
   if (useBM25 && query) {
-    console.log(`[LlamaIndex] Using BM25 hybrid search for: "${query.substring(0, 30)}..."`);
+    logger.info(`[LlamaIndex] Using BM25 hybrid search for: "${query.substring(0, 30)}..."`);
 
     try {
       const bm25Results = await hybridTextVectorSearch(query, queryEmbedding, {
@@ -402,7 +402,7 @@ export async function hybridGraphSearch(
   }
 
   if (!supabaseClient) {
-    logger.warn('⚠️ [LlamaIndex] Supabase not available');
+    logger.warn('[LlamaIndex] Supabase not available');
     return [];
   }
 
@@ -434,7 +434,7 @@ export async function hybridGraphSearch(
 
     return mergeDeduplicateAndRankResults(vectorResults, graphResults, maxTotalResults);
   } catch (error) {
-    logger.error('❌ [LlamaIndex] Hybrid graph search failed:', error);
+    logger.error('[LlamaIndex] Hybrid graph search failed:', error);
     return [];
   }
 }
@@ -453,7 +453,7 @@ export const extractRelationships = async (options: {
   const { batchSize = 50, onlyUnprocessed = true } = options;
 
   if (!supabaseClient) {
-    logger.warn('⚠️ [LlamaIndex] Supabase not available');
+    logger.warn('[LlamaIndex] Supabase not available');
     return [];
   }
 

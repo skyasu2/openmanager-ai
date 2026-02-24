@@ -134,7 +134,7 @@ function getAvailableProviders(
       // Check circuit breaker state — skip providers in OPEN state
       const cb = getCircuitBreaker(name);
       if (!cb.isAllowed()) {
-        logger.warn(`⚠️ [RetryWithFallback] Skipping ${name}: circuit breaker OPEN`);
+        logger.warn(`[RetryWithFallback] Skipping ${name}: circuit breaker OPEN`);
         return false;
       }
       return true;
@@ -259,7 +259,7 @@ export async function generateTextWithRetry(
 
     if (availableProviders.length === 0) {
       // All providers exhausted
-      logger.error('❌ [RetryWithFallback] All providers exhausted');
+      logger.error('[RetryWithFallback] All providers exhausted');
       return {
         success: false,
         provider: preferredOrder[0],
@@ -279,8 +279,8 @@ export async function generateTextWithRetry(
       const attemptStart = Date.now();
 
       try {
-        console.log(
-          `🔄 [RetryWithFallback] Trying ${provider}/${defaultModelId} (attempt ${retryCount + 1}/${fullConfig.maxRetries + 1})`
+        logger.info(
+          `[RetryWithFallback] Trying ${provider}/${defaultModelId} (attempt ${retryCount + 1}/${fullConfig.maxRetries + 1})`
         );
 
         const model = getModel(defaultModelId);
@@ -318,8 +318,8 @@ export async function generateTextWithRetry(
           durationMs,
         });
 
-        console.log(
-          `✅ [RetryWithFallback] ${provider} succeeded in ${durationMs}ms`
+        logger.info(
+          `[RetryWithFallback] ${provider} succeeded in ${durationMs}ms`
         );
 
         return {
@@ -344,12 +344,12 @@ export async function generateTextWithRetry(
         });
 
         logger.warn(
-          `⚠️ [RetryWithFallback] ${provider} failed (attempt ${retryCount + 1}): ${errorMessage}`
+          `[RetryWithFallback] ${provider} failed (attempt ${retryCount + 1}): ${errorMessage}`
         );
 
         // Check if should fallback to next provider
         if (shouldFallback(error)) {
-          console.log(`🔀 [RetryWithFallback] Rate limit/unavailable, switching provider...`);
+          logger.info(`[RetryWithFallback] Rate limit/unavailable, switching provider...`);
           excludedProviders.push(provider);
           break; // Exit retry loop, try next provider
         }
@@ -357,14 +357,14 @@ export async function generateTextWithRetry(
         // Check if should retry same provider
         if (shouldRetry(error) && retryCount < fullConfig.maxRetries) {
           const delay = getBackoffDelay(retryCount, fullConfig);
-          console.log(`⏳ [RetryWithFallback] Retrying ${provider} in ${delay}ms...`);
+          logger.info(`[RetryWithFallback] Retrying ${provider} in ${delay}ms...`);
           await sleep(delay);
           retryCount++;
           continue;
         }
 
         // Non-retryable error - try next provider
-        console.log(`❌ [RetryWithFallback] Non-retryable error, trying next provider...`);
+        logger.info(`[RetryWithFallback] Non-retryable error, trying next provider...`);
         excludedProviders.push(provider);
         break;
       }

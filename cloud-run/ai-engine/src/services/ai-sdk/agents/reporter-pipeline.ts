@@ -122,8 +122,8 @@ export async function executeReporterPipeline(
   const startTime = Date.now();
   const finalConfig = { ...DEFAULT_CONFIG, ...config };
 
-  console.log(`📋 [ReporterPipeline] Starting with query: "${query.substring(0, 50)}..."`);
-  console.log(`📋 [ReporterPipeline] Config: maxIterations=${finalConfig.maxIterations}, threshold=${finalConfig.qualityThreshold}`);
+  logger.info(`[ReporterPipeline] Starting with query: "${query.substring(0, 50)}..."`);
+  logger.info(`[ReporterPipeline] Config: maxIterations=${finalConfig.maxIterations}, threshold=${finalConfig.qualityThreshold}`);
 
   const agentsUsed: string[] = [];
   const optimizationsApplied: string[] = [];
@@ -132,7 +132,7 @@ export async function executeReporterPipeline(
     // =========================================================================
     // Stage 1: Generate Initial Report
     // =========================================================================
-    console.log('📄 [Stage 1] Generating initial report...');
+    logger.info('[Stage 1] Generating initial report...');
     agentsUsed.push('Reporter Agent');
 
     const initialReport = generateInitialReport();
@@ -166,28 +166,28 @@ export async function executeReporterPipeline(
     for (let iteration = 0; iteration < finalConfig.maxIterations; iteration++) {
       // Check timeout
       if (Date.now() - startTime > finalConfig.timeout) {
-        logger.warn(`⏱️ [ReporterPipeline] Timeout reached at iteration ${iteration + 1}`);
+        logger.warn(`[ReporterPipeline] Timeout reached at iteration ${iteration + 1}`);
         break;
       }
 
       // Evaluate current report
-      console.log(`📊 [Stage 2] Evaluating report (iteration ${iteration + 1})...`);
+      logger.info(`[Stage 2] Evaluating report (iteration ${iteration + 1})...`);
       agentsUsed.push('Evaluator (deterministic)');
 
       const evaluation = evaluateReport(currentReport);
       currentScore = evaluation.overallScore;
 
-      console.log(`📊 [Evaluation] Score: ${(currentScore * 100).toFixed(1)}%`);
+      logger.info(`[Evaluation] Score: ${(currentScore * 100).toFixed(1)}%`);
 
       // Check if quality threshold met
       if (currentScore >= finalConfig.qualityThreshold) {
-        console.log(`✅ [ReporterPipeline] Quality threshold met (${(currentScore * 100).toFixed(1)}% >= ${(finalConfig.qualityThreshold * 100).toFixed(1)}%)`);
+        logger.info(`[ReporterPipeline] Quality threshold met (${(currentScore * 100).toFixed(1)}% >= ${(finalConfig.qualityThreshold * 100).toFixed(1)}%)`);
         break;
       }
 
       // Optimize if not final iteration
       if (iteration < finalConfig.maxIterations - 1) {
-        console.log(`🔧 [Stage 3] Optimizing report (iteration ${iteration + 1})...`);
+        logger.info(`[Stage 3] Optimizing report (iteration ${iteration + 1})...`);
         agentsUsed.push('Optimizer (deterministic)');
 
         const optimized = optimizeReport(currentReport, evaluation);
@@ -195,16 +195,16 @@ export async function executeReporterPipeline(
         if (optimized.report) {
           currentReport = optimized.report;
           optimizationsApplied.push(...optimized.optimizations);
-          console.log(`🔧 [Optimization] Applied: ${optimized.optimizations.join(', ')}`);
+          logger.info(`[Optimization] Applied: ${optimized.optimizations.join(', ')}`);
         }
       }
     }
 
     const durationMs = Date.now() - startTime;
 
-    console.log(`✅ [ReporterPipeline] Completed in ${durationMs}ms`);
-    console.log(`   Initial: ${(initialScore * 100).toFixed(1)}% → Final: ${(currentScore * 100).toFixed(1)}%`);
-    console.log(`   Agents: ${agentsUsed.join(' → ')}`);
+    logger.info(`[ReporterPipeline] Completed in ${durationMs}ms`);
+    logger.info(`   Initial: ${(initialScore * 100).toFixed(1)}% -> Final: ${(currentScore * 100).toFixed(1)}%`);
+    logger.info(`   Agents: ${agentsUsed.join(' -> ')}`);
 
     return {
       success: true,
@@ -223,7 +223,7 @@ export async function executeReporterPipeline(
 
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
-    logger.error(`❌ [ReporterPipeline] Error:`, errorMessage);
+    logger.error(`[ReporterPipeline] Error:`, errorMessage);
 
     return {
       success: false,
@@ -337,7 +337,7 @@ function generateInitialReport(): ReportForEvaluation | null {
     };
 
   } catch (error) {
-    logger.error('❌ [generateInitialReport] Error:', error);
+    logger.error('[generateInitialReport] Error:', error);
     return null;
   }
 }

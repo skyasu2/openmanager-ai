@@ -47,17 +47,17 @@ function getSupabaseClient(): SupabaseClient | null {
   const config = getSupabaseConfig();
   if (!config) {
     initFailed = true;
-    logger.warn('⚠️ [IncidentRAG] Supabase config missing');
+    logger.warn('[IncidentRAG] Supabase config missing');
     return null;
   }
 
   try {
     supabaseClient = createClient(config.url, config.serviceRoleKey);
-    console.log('✅ [IncidentRAG] Supabase client initialized');
+    logger.info('[IncidentRAG] Supabase client initialized');
     return supabaseClient;
   } catch (e) {
     initFailed = true;
-    logger.error('❌ [IncidentRAG] Supabase init failed:', e);
+    logger.error('[IncidentRAG] Supabase init failed:', e);
     return null;
   }
 }
@@ -84,7 +84,7 @@ async function isAlreadySynced(
     .limit(1);
 
   if (error) {
-    logger.warn('⚠️ [IncidentRAG] Dedup check failed, assuming already synced to prevent duplicates:', error);
+    logger.warn('[IncidentRAG] Dedup check failed, assuming already synced to prevent duplicates:', error);
     return true;
   }
 
@@ -102,7 +102,7 @@ async function isAlreadySynced(
     .limit(1);
 
   if (legacyError) {
-    logger.warn('⚠️ [IncidentRAG] Legacy dedup check failed, assuming already synced to prevent duplicates:', legacyError);
+    logger.warn('[IncidentRAG] Legacy dedup check failed, assuming already synced to prevent duplicates:', legacyError);
     return true;
   }
 
@@ -137,13 +137,13 @@ async function insertToKnowledgeBase(
     });
 
     if (error) {
-      logger.error('❌ [IncidentRAG] Insert failed:', error);
+      logger.error('[IncidentRAG] Insert failed:', error);
       return false;
     }
 
     return true;
   } catch (e) {
-    logger.error('❌ [IncidentRAG] Insert error:', e);
+    logger.error('[IncidentRAG] Insert error:', e);
     return false;
   }
 }
@@ -176,11 +176,11 @@ export async function syncIncidentsToRAG(
 
   // Log validation warnings
   if (warnings.length > 0) {
-    logger.warn(`⚠️ [IncidentRAG] Input validation warnings: ${warnings.join('; ')}`);
+    logger.warn(`[IncidentRAG] Input validation warnings: ${warnings.join('; ')}`);
   }
 
-  console.log(
-    `🔄 [IncidentRAG] Starting sync (limit=${limit}, daysBack=${daysBack})`
+  logger.info(
+    `[IncidentRAG] Starting sync (limit=${limit}, daysBack=${daysBack})`
   );
 
   const supabase = getSupabaseClient();
@@ -238,19 +238,19 @@ export async function syncIncidentsToRAG(
     }
 
     if (incidents.length === 0) {
-      console.log('✅ [IncidentRAG] No new incidents to sync');
+      logger.info('[IncidentRAG] No new incidents to sync');
       result.success = true;
       return result;
     }
 
-    console.log(`📋 [IncidentRAG] Found ${incidents.length} source incidents`);
+    logger.info(`[IncidentRAG] Found ${incidents.length} source incidents`);
 
     // 2. Process each incident
     for (const incident of incidents) {
       try {
         // Check dedup
         if (await isAlreadySynced(supabase, incident.session_id)) {
-          console.log(`⏭️ [IncidentRAG] Skipping already synced: ${incident.session_id}`);
+          logger.info(`[IncidentRAG] Skipping already synced: ${incident.session_id}`);
           result.skipped++;
           continue;
         }
@@ -259,7 +259,7 @@ export async function syncIncidentsToRAG(
         const extracted = extractIncidentContent(incident);
 
         if (!extracted.content || extracted.content.length < SYNC_LIMITS.MIN_CONTENT_LENGTH) {
-          logger.warn(`⚠️ [IncidentRAG] Insufficient content for: ${incident.session_id}`);
+          logger.warn(`[IncidentRAG] Insufficient content for: ${incident.session_id}`);
           result.skipped++;
           continue;
         }
@@ -289,26 +289,26 @@ export async function syncIncidentsToRAG(
         const inserted = await insertToKnowledgeBase(supabase, entry);
 
         if (inserted) {
-          console.log(`✅ [IncidentRAG] Synced: ${incident.session_id}`);
+          logger.info(`[IncidentRAG] Synced: ${incident.session_id}`);
           result.synced++;
         } else {
           result.failed++;
         }
       } catch (e) {
-        logger.error(`❌ [IncidentRAG] Error processing ${incident.session_id}:`, e);
+        logger.error(`[IncidentRAG] Error processing ${incident.session_id}:`, e);
         result.errors.push(`${incident.session_id}: ${String(e)}`);
         result.failed++;
       }
     }
 
     result.success = true;
-    console.log(
-      `✅ [IncidentRAG] Sync complete: ${result.synced} synced, ${result.skipped} skipped, ${result.failed} failed`
+    logger.info(
+      `[IncidentRAG] Sync complete: ${result.synced} synced, ${result.skipped} skipped, ${result.failed} failed`
     );
 
     return result;
   } catch (e) {
-    logger.error('❌ [IncidentRAG] Sync failed:', e);
+    logger.error('[IncidentRAG] Sync failed:', e);
     result.errors.push(String(e));
     return result;
   }
@@ -346,13 +346,13 @@ export async function getRAGInjectionStats(): Promise<{
         .gte('updated_at', sinceDate.toISOString());
 
       if (reportCountError) {
-        logger.error('❌ [IncidentRAG] incident_reports count failed:', reportCountError);
+        logger.error('[IncidentRAG] incident_reports count failed:', reportCountError);
         return null;
       }
 
       totalCount = reportCount || 0;
     } else if (approvalCountError) {
-      logger.error('❌ [IncidentRAG] approval_history count failed:', approvalCountError);
+      logger.error('[IncidentRAG] approval_history count failed:', approvalCountError);
       return null;
     }
 
@@ -369,7 +369,7 @@ export async function getRAGInjectionStats(): Promise<{
       pendingSync: Math.max(0, totalCount - (syncedCount || 0)),
     };
   } catch (e) {
-    logger.error('❌ [IncidentRAG] Stats error:', e);
+    logger.error('[IncidentRAG] Stats error:', e);
     return null;
   }
 }

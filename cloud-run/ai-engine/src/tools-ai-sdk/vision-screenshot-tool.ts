@@ -100,6 +100,8 @@ export const analyzeScreenshot = tool({
           },
           metrics: [],
           summary: '분석 실패: 결과 없음',
+          systemMessage: 'TOOL_EXECUTION_FAILED: 필수 입력 파라미터(summary, anomalies)가 누락되었습니다.',
+          suggestedAgentAction: '제공된 대시보드 이미지를 다시 분석하여 명확한 이상 징후(anomalies)와 요약(summary)을 추출한 뒤 도구를 재호출하거나, 이미지에서 문제를 찾을 수 없다면 사용자에게 명시적으로 안내하세요.',
         };
       }
     }

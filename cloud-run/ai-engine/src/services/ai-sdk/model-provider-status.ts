@@ -5,6 +5,7 @@ import {
   getMistralApiKey,
   getOpenRouterApiKey,
 } from '../../lib/config-parser';
+import { logger } from '../../lib/logger';
 import type { ProviderName, ProviderStatus } from './model-provider.types';
 
 /**
@@ -39,7 +40,7 @@ function isProviderEnabled(provider: ProviderName): boolean {
 export function toggleProvider(provider: ProviderName, enabled: boolean): void {
   providerToggleState[provider] = enabled;
   cachedProviderStatus = null;
-  console.log(`🔧 [Provider] ${provider} ${enabled ? 'ENABLED' : 'DISABLED'}`);
+  logger.info(`[Provider] ${provider} ${enabled ? 'ENABLED' : 'DISABLED'}`);
 }
 
 /**

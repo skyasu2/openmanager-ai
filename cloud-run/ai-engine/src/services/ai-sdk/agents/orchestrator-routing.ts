@@ -8,11 +8,12 @@
  */
 
 import { generateText, hasToolCall, stepCountIs } from 'ai';
-import { getCerebrasModel, getGroqModel, getMistralModel, checkProviderStatus, type ProviderName } from '../model-provider';
+import type { ProviderName } from '../model-provider';
 import { generateTextWithRetry } from '../../resilience/retry-with-fallback';
 import { sanitizeChineseCharacters } from '../../../lib/text-sanitizer';
 import { extractToolResultOutput } from '../../../lib/ai-sdk-utils';
 import { AGENT_CONFIGS, type AgentConfig } from './config';
+import { selectTextModel } from './config/agent-model-selectors';
 import { executeReporterPipeline } from './reporter-pipeline';
 import { createSupervisorTrace } from '../../observability/langfuse';
 import { AgentFactory, type AgentType } from './agent-factory';
@@ -57,35 +58,8 @@ export function getRecentHandoffs(n = 10): HandoffEvent[] {
 // Orchestrator Model (3-way fallback)
 // ============================================================================
 
-export function getOrchestratorModel(): { model: ReturnType<typeof getCerebrasModel>; provider: string; modelId: string } | null {
-  const status = checkProviderStatus();
-
-  if (status.groq) {
-    try {
-      return { model: getGroqModel('llama-3.3-70b-versatile'), provider: 'groq', modelId: 'llama-3.3-70b-versatile' };
-    } catch {
-      logger.warn('⚠️ [Orchestrator] Groq unavailable, trying Cerebras');
-    }
-  }
-
-  if (status.cerebras) {
-    try {
-      return { model: getCerebrasModel('gpt-oss-120b'), provider: 'cerebras', modelId: 'gpt-oss-120b' };
-    } catch {
-      logger.warn('⚠️ [Orchestrator] Cerebras unavailable, trying Mistral');
-    }
-  }
-
-  if (status.mistral) {
-    try {
-      return { model: getMistralModel('mistral-large-latest'), provider: 'mistral', modelId: 'mistral-large-latest' };
-    } catch {
-      logger.warn('⚠️ [Orchestrator] Mistral unavailable');
-    }
-  }
-
-  logger.warn('⚠️ [Orchestrator] No model available (all providers down)');
-  return null;
+export function getOrchestratorModel() {
+  return selectTextModel('Orchestrator', ['groq', 'cerebras', 'mistral']);
 }
 
 // Log available agents from AGENT_CONFIGS
@@ -97,7 +71,7 @@ const availableAgentNames = Object.keys(AGENT_CONFIGS).filter(name => {
 if (availableAgentNames.length === 0) {
   logger.error('❌ [CRITICAL] No agents available! Check API keys: CEREBRAS_API_KEY, GROQ_API_KEY, MISTRAL_API_KEY');
 } else {
-  console.log(`📋 [Orchestrator] Available agents: ${availableAgentNames.length} - [${availableAgentNames.join(', ')}]`);
+  logger.info(`[Orchestrator] Available agents: ${availableAgentNames.length} - [${availableAgentNames.join(', ')}]`);
 }
 
 // ============================================================================
@@ -108,7 +82,7 @@ export async function executeReporterWithPipeline(
   query: string,
   startTime: number
 ): Promise<MultiAgentResponse | null> {
-  console.log(`📋 [ReporterPipeline] Starting pipeline for query: "${query.substring(0, 50)}..."`);
+  logger.info(`[ReporterPipeline] Starting pipeline for query: "${query.substring(0, 50)}..."`);
 
   try {
     const pipelineResult = await executeReporterPipeline(query, {
@@ -169,8 +143,8 @@ export async function executeReporterWithPipeline(
       logger.warn(`⚠️ [ReporterPipeline] Langfuse score recording failed (non-blocking):`, error instanceof Error ? error.message : error);
     }
 
-    console.log(
-      `✅ [ReporterPipeline] Completed in ${durationMs}ms, ` +
+    logger.info(
+      `[ReporterPipeline] Completed in ${durationMs}ms, ` +
       `Quality: ${(pipelineResult.quality.initialScore * 100).toFixed(0)}% → ${(pipelineResult.quality.finalScore * 100).toFixed(0)}%, ` +
       `Iterations: ${pipelineResult.quality.iterations}`
     );
@@ -249,15 +223,15 @@ export async function executeForcedRouting(
   images?: ImageAttachment[],
   files?: FileAttachment[]
 ): Promise<MultiAgentResponse | null> {
-  console.log(`🔍 [Forced Routing] Looking up agent config: "${suggestedAgentName}"`);
+  logger.info(`[Forced Routing] Looking up agent config: "${suggestedAgentName}"`);
 
   if (suggestedAgentName === 'Reporter Agent') {
-    console.log(`📋 [Forced Routing] Routing to Reporter Pipeline`);
+    logger.info(`[Forced Routing] Routing to Reporter Pipeline`);
     const pipelineResult = await executeReporterWithPipeline(query, startTime);
     if (pipelineResult) {
       return pipelineResult;
     }
-    console.log(`🔄 [Forced Routing] Pipeline failed, falling back to direct Reporter Agent`);
+    logger.info(`[Forced Routing] Pipeline failed, falling back to direct Reporter Agent`);
   }
 
   const agentConfig = AGENT_CONFIGS[suggestedAgentName];
@@ -268,7 +242,7 @@ export async function executeForcedRouting(
   }
 
   const providerOrder = getAgentProviderOrder(suggestedAgentName);
-  console.log(`🎯 [Forced Routing] Using retry with fallback: [${providerOrder.join(' → ')}]`);
+  logger.info(`[Forced Routing] Using retry with fallback: [${providerOrder.join(' → ')}]`);
 
   const filteredTools = filterToolsByWebSearch(agentConfig.tools, webSearchEnabled);
   const attachmentHint =
@@ -298,7 +272,7 @@ export async function executeForcedRouting(
     if (!retryResult.success || !retryResult.result) {
       logger.warn(`⚠️ [Forced Routing] All providers failed for ${suggestedAgentName}`);
       for (const attempt of retryResult.attempts) {
-        console.log(`   - ${attempt.provider}: ${attempt.error || 'unknown error'}`);
+        logger.warn(`  - ${attempt.provider}: ${attempt.error || 'unknown error'}`);
       }
       return null;
     }
@@ -420,11 +394,11 @@ export async function executeForcedRouting(
     const sanitizedResponse = sanitizeChineseCharacters(response);
 
     if (usedFallback) {
-      console.log(`🔀 [Forced Routing] Used fallback: ${attempts.map(a => a.provider).join(' → ')}`);
+      logger.info(`[Forced Routing] Used fallback: ${attempts.map(a => a.provider).join(' → ')}`);
     }
 
-    console.log(
-      `✅ [Forced Routing] ${suggestedAgentName} completed in ${durationMs}ms via ${provider}, tools: [${toolsCalled.join(', ')}], ragSources: ${ragSources.length}`
+    logger.info(
+      `[Forced Routing] ${suggestedAgentName} completed in ${durationMs}ms via ${provider}, tools: [${toolsCalled.join(', ')}], ragSources: ${ragSources.length}`
     );
 
     return {
@@ -492,7 +466,7 @@ export async function executeWithAgentFactory(
   }
 
   const agentName = agent.getName();
-  console.log(`🤖 [AgentFactory] Executing ${agentName}...`);
+  logger.info(`[AgentFactory] Executing ${agentName}...`);
 
   try {
     const result = await agent.run(query, {

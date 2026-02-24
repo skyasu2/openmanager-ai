@@ -28,7 +28,7 @@ import { logger } from '../../../lib/logger';
 export function getAnalystAgentConfig(): AgentConfig | null {
   const config = AGENT_CONFIGS['Analyst Agent'];
   if (!config) {
-    logger.error('❌ [Analyst Agent] Config not found in AGENT_CONFIGS');
+    logger.error('[Analyst Agent] Config not found in AGENT_CONFIGS');
     return null;
   }
   return config;

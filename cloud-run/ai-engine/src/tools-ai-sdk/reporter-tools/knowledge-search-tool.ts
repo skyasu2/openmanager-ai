@@ -88,48 +88,39 @@ export const searchKnowledgeBase = tool({
         searchQuery = await expandQueryWithHyDE(query);
         hydeApplied = searchQuery !== query;
         if (hydeApplied) {
-          console.log(
-            `🧠 [Reporter Tools] HyDE applied: "${query}" → "${searchQuery.substring(0, 50)}..."`,
+          logger.info(
+            `[Reporter Tools] HyDE applied: "${query}" -> "${searchQuery.substring(0, 50)}..."`,
           );
         }
       } catch (err) {
         logger.warn(
-          '⚠️ [Reporter Tools] HyDE expansion failed, using original query:',
+          '[Reporter Tools] HyDE expansion failed, using original query:',
           err,
         );
       }
     }
 
     if (fastMode) {
-      console.log(
-        '⚡ [Reporter Tools] Fast mode enabled: skipping HyDE + reranking',
+      logger.info(
+        '[Reporter Tools] Fast mode enabled: skipping HyDE + reranking',
       );
     }
 
-    console.log(
-      `🔍 [Reporter Tools] GraphRAG search: ${query} (graph: ${useGraphRAG}, threshold: ${initialThreshold}, hyde: ${hydeApplied}, fast: ${fastMode})`,
+    logger.info(
+      `[Reporter Tools] GraphRAG search: ${query} (graph: ${useGraphRAG}, threshold: ${initialThreshold}, hyde: ${hydeApplied}, fast: ${fastMode})`,
     );
 
     const supabase = await getSupabaseClient();
 
     if (!supabase) {
-      logger.warn('⚠️ [Reporter Tools] Supabase unavailable, using fallback');
+      logger.warn('[Reporter Tools] Supabase unavailable, using fallback');
       return {
-        success: true,
-        results: [
-          {
-            id: 'fallback-1',
-            title: '기본 문제 해결 가이드',
-            content:
-              '일반적인 문제 해결 절차: 1. 로그 확인 2. 리소스 사용량 체크 3. 서비스 재시작',
-            category: 'troubleshooting',
-            similarity: 0.8,
-            sourceType: 'fallback' as const,
-            hopDistance: 0,
-          },
-        ] as RAGResultItem[],
-        totalFound: 1,
+        success: false,
+        results: [] as RAGResultItem[],
+        totalFound: 0,
         _source: 'Fallback (No Supabase)',
+        systemMessage: 'TOOL_EXECUTION_FAILED: Supabase 데이터베이스 연결 실패로 사내 런북 및 장애 이력을 검색할 수 없습니다.',
+        suggestedAgentAction: '사용자에게 "현재 사내 지식 문서를 검색할 수 없어 일반적인 지식망을 바탕으로 추론합니다"라고 안내한 뒤, LLM에 내재된 지식만으로 조치 방안을 제시하세요.',
       };
     }
 
@@ -153,8 +144,8 @@ export const searchKnowledgeBase = tool({
         });
 
         if (hybridResults.length === 0 && initialThreshold > 0.25) {
-          console.log(
-            '🔄 [Reporter Tools] No results, retrying with lower threshold (0.2)',
+          logger.info(
+            '[Reporter Tools] No results, retrying with lower threshold (0.2)',
           );
           hybridResults = await hybridGraphSearch(queryEmbedding, {
             query,
@@ -185,8 +176,8 @@ export const searchKnowledgeBase = tool({
             (r) => r.sourceType === 'graph',
           ).length;
 
-          console.log(
-            `📊 [Reporter Tools] GraphRAG: ${vectorCount} vector, ${graphCount} graph`,
+          logger.info(
+            `[Reporter Tools] GraphRAG: ${vectorCount} vector, ${graphCount} graph`,
           );
 
           let finalResults = graphEnhanced;
@@ -222,12 +213,12 @@ export const searchKnowledgeBase = tool({
               })) as RAGResultItem[];
 
               reranked = true;
-              console.log(
-                `🎯 [Reporter Tools] Reranked ${graphEnhanced.length} → ${finalResults.length} results`,
+              logger.info(
+                `[Reporter Tools] Reranked ${graphEnhanced.length} -> ${finalResults.length} results`,
               );
             } catch (rerankError) {
               logger.warn(
-                '⚠️ [Reporter Tools] Reranking failed, using original order:',
+                '[Reporter Tools] Reranking failed, using original order:',
                 rerankError,
               );
             }
@@ -284,13 +275,13 @@ export const searchKnowledgeBase = tool({
                   url: r.url,
                 })) as RAGResultItem[];
 
-                console.log(
-                  `🌐 [Reporter Tools] Web search added ${webResultsCount} results`,
+                logger.info(
+                  `[Reporter Tools] Web search added ${webResultsCount} results`,
                 );
               }
             } catch (webError) {
               logger.warn(
-                '⚠️ [Reporter Tools] Web search enhancement failed:',
+                '[Reporter Tools] Web search enhancement failed:',
                 webError,
               );
             }
@@ -357,23 +348,15 @@ export const searchKnowledgeBase = tool({
         hydeApplied,
       };
     } catch (error) {
-      logger.error('❌ [Reporter Tools] RAG search error:', error);
+      logger.error('[Reporter Tools] RAG search error:', error);
 
       return {
-        success: true,
-        results: [
-          {
-            id: 'error-fallback',
-            title: '검색 오류 발생',
-            content: `검색 중 오류가 발생했습니다. 오류: ${String(error)}`,
-            category: 'error',
-            similarity: 0,
-            sourceType: 'fallback' as const,
-            hopDistance: 0,
-          },
-        ] as RAGResultItem[],
-        totalFound: 1,
+        success: false,
+        results: [] as RAGResultItem[],
+        totalFound: 0,
         _source: 'Error Fallback',
+        systemMessage: `TOOL_EXECUTION_FAILED: 지식 베이스 검색 중 오류가 발생했습니다. (오류: ${String(error)})`,
+        suggestedAgentAction: '사용자에게 "지식 베이스 검색 중 오류가 발생하여 내재된 기본 지식으로 답변을 제공합니다"라고 알리고, 본래 보유한 기술적 지식 기반으로 구체적인 답변이나 팁을 제공하세요.',
       };
     }
   },

@@ -1,6 +1,7 @@
 import { tool } from 'ai';
 import { z } from 'zod';
 import { getCurrentState, getRecentHistory } from '../data/precomputed-state';
+import { logger } from '../lib/logger';
 import { COMMAND_TEMPLATES } from './incident-evaluation-helpers';
 import type { EnhancedAction } from './incident-evaluation-types';
 
@@ -13,7 +14,7 @@ export const refineRootCauseAnalysis = tool({
     currentConfidence: z.number().describe('현재 신뢰도'),
   }),
   execute: async ({ serverId, currentCause, currentConfidence }) => {
-    console.log(`🔬 [Optimizer] Refining root cause for ${serverId}`);
+    logger.info(`[Optimizer] Refining root cause for ${serverId}`);
 
     const state = getCurrentState();
     const server = state.servers.find((s) => s.id === serverId);
@@ -118,7 +119,7 @@ export const enhanceSuggestedActions = tool({
       .describe('주요 문제 영역'),
   }),
   execute: async ({ actions, focusArea }) => {
-    console.log(`🔧 [Optimizer] Enhancing actions for ${focusArea}`);
+    logger.info(`[Optimizer] Enhancing actions for ${focusArea}`);
 
     const commands = COMMAND_TEMPLATES[focusArea] || COMMAND_TEMPLATES.general;
     const enhancedActions: EnhancedAction[] = actions.map((action: string) => {
@@ -180,7 +181,7 @@ export const extendServerCorrelation = tool({
       .describe('기존 연관 분석 결과'),
   }),
   execute: async ({ primaryServerId, existingCorrelations }) => {
-    console.log(`🔗 [Optimizer] Extending correlation from ${primaryServerId}`);
+    logger.info(`[Optimizer] Extending correlation from ${primaryServerId}`);
 
     const state = getCurrentState();
     const primaryServer = state.servers.find((s) => s.id === primaryServerId);

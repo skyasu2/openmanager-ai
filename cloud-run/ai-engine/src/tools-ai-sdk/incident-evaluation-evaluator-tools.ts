@@ -1,5 +1,6 @@
 import { tool } from 'ai';
 import { z } from 'zod';
+import { logger } from '../lib/logger';
 import {
   calculateActionabilityScore,
   calculateCompletenessScore,
@@ -62,7 +63,7 @@ export const evaluateIncidentReport = tool({
       .describe('평가할 장애 보고서'),
   }),
   execute: async ({ report }) => {
-    console.log('📊 [Evaluator] Evaluating incident report quality');
+    logger.info('[Evaluator] Evaluating incident report quality');
 
     const scores: EvaluationScores = {
       structure: calculateStructureScore(report),
@@ -88,8 +89,8 @@ export const evaluateIncidentReport = tool({
       recommendations,
     };
 
-    console.log(
-      `📊 [Evaluator] Score: ${(overallScore * 100).toFixed(1)}%, needs optimization: ${result.needsOptimization}`,
+    logger.info(
+      `[Evaluator] Score: ${(overallScore * 100).toFixed(1)}%, needs optimization: ${result.needsOptimization}`,
     );
 
     return {
@@ -119,7 +120,7 @@ export const validateReportStructure = tool({
       .describe('검증할 보고서'),
   }),
   execute: async ({ report }) => {
-    console.log('🔍 [Validator] Validating report structure');
+    logger.info('[Validator] Validating report structure');
 
     const validationResults: Array<{
       field: string;
@@ -219,7 +220,7 @@ export const scoreRootCauseConfidence = tool({
     timelineEventsCount: z.number().default(0).describe('타임라인 이벤트 수'),
   }),
   execute: async ({ rootCause, affectedServersCount, timelineEventsCount }) => {
-    console.log('📈 [RCA Scorer] Scoring root cause confidence');
+    logger.info('[RCA Scorer] Scoring root cause confidence');
 
     const evidenceScore = Math.min(rootCause.evidence.length / 5, 1) * 0.4;
 

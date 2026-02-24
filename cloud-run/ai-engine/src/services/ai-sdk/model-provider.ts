@@ -18,13 +18,13 @@ import { logger } from '../../lib/logger';
 import {
   getOpenRouterVisionModelId,
 } from '../../lib/config-parser';
-import { getCircuitBreaker } from '../resilience/circuit-breaker';
 import {
   type LLMProviderName as QuotaProviderName,
   getQuotaSummary,
   recordProviderUsage,
   selectAvailableProvider,
 } from '../resilience/quota-tracker';
+import { selectTextModel } from './agents/config/agent-model-selectors';
 import {
   getCerebrasModel,
   getGeminiFlashLiteModel,
@@ -69,8 +69,7 @@ export {
 
 /**
  * Get primary model for Supervisor (Single-Agent Mode)
- * Fallback chain: Cerebras → Groq → Mistral (3-way)
- * Primary: Cerebras gpt-oss-120b (120B MoE, 1M TPD, 3000 tok/s)
+ * Fallback chain: Cerebras → Groq → Mistral (3-way) with CB check
  *
  * @param excludeProviders - Providers to skip (e.g., recently failed providers on retry)
  */
@@ -79,70 +78,17 @@ export function getSupervisorModel(excludeProviders: ProviderName[] = []): {
   provider: ProviderName;
   modelId: string;
 } {
-  const status = checkProviderStatus();
-  const excluded = new Set(excludeProviders);
-
-  // CB 사전 체크: OPEN 상태인 provider를 자동으로 exclude
-  const cbProviders: ProviderName[] = ['cerebras', 'groq', 'mistral'];
-  for (const provider of cbProviders) {
-    if (!excluded.has(provider)) {
-      const cb = getCircuitBreaker(`supervisor-${provider}`);
-      if (!cb.isAllowed()) {
-        excluded.add(provider);
-        console.log(`🔌 [Supervisor] CB OPEN: auto-excluding ${provider}`);
-      }
-    }
-  }
-
-  if (excluded.size > 0) {
-    console.log(`🔄 [Supervisor] Excluding providers: [${[...excluded].join(', ')}]`);
-  }
-
-  // Primary: Cerebras (gpt-oss-120b, 120B MoE, 1M TPD)
-  if (status.cerebras && !excluded.has('cerebras')) {
-    try {
-      return {
-        model: getCerebrasModel('gpt-oss-120b'),
-        provider: 'cerebras',
-        modelId: 'gpt-oss-120b',
-      };
-    } catch (error) {
-      logger.warn('⚠️ [Supervisor] Cerebras initialization failed:', error);
-    }
-  }
-
-  // Fallback: Groq (llama-3.3-70b-versatile, 70B)
-  if (status.groq && !excluded.has('groq')) {
-    try {
-      return {
-        model: getGroqModel('llama-3.3-70b-versatile'),
-        provider: 'groq',
-        modelId: 'llama-3.3-70b-versatile',
-      };
-    } catch (error) {
-      logger.warn('⚠️ [Supervisor] Groq initialization failed:', error);
-    }
-  }
-
-  // Last Resort: Mistral (mistral-large-latest, Frontier)
-  if (status.mistral && !excluded.has('mistral')) {
-    try {
-      console.log('🔄 [Supervisor] Using Mistral last-resort fallback');
-      return {
-        model: getMistralModel('mistral-large-latest'),
-        provider: 'mistral',
-        modelId: 'mistral-large-latest',
-      };
-    } catch (error) {
-      logger.warn('⚠️ [Supervisor] Mistral initialization failed:', error);
-    }
-  }
-
-  throw new Error('No LLM provider configured. Set CEREBRAS_API_KEY, GROQ_API_KEY, or MISTRAL_API_KEY.');
+  const result = selectTextModel('Supervisor', ['cerebras', 'groq', 'mistral'], {
+    throwOnEmpty: true,
+    excludeProviders,
+    cbPrefix: 'supervisor',
+  });
+  // throwOnEmpty guarantees non-null
+  return result as { model: LanguageModel; provider: ProviderName; modelId: string };
 }
 
 /**
- * Get verifier model with 3-way fallback
+ * Get verifier model with 3-way fallback + CB check
  * Cerebras → Groq → Mistral
  */
 export function getVerifierModel(): {
@@ -150,101 +96,14 @@ export function getVerifierModel(): {
   provider: ProviderName;
   modelId: string;
 } {
-  const status = checkProviderStatus();
-
-  if (status.cerebras) {
-    try {
-      return {
-        model: getCerebrasModel('gpt-oss-120b'),
-        provider: 'cerebras',
-        modelId: 'gpt-oss-120b',
-      };
-    } catch (error) {
-      logger.warn('⚠️ [Verifier] Cerebras initialization failed, trying Groq:', error);
-    }
-  }
-
-  if (status.groq) {
-    try {
-      console.log('🔄 [Verifier] Using Groq fallback');
-      return {
-        model: getGroqModel('llama-3.3-70b-versatile'),
-        provider: 'groq',
-        modelId: 'llama-3.3-70b-versatile',
-      };
-    } catch (error) {
-      logger.warn('⚠️ [Verifier] Groq initialization failed, trying Mistral:', error);
-    }
-  }
-
-  if (status.mistral) {
-    try {
-      console.log('🔄 [Verifier] Using Mistral last-resort fallback');
-      return {
-        model: getMistralModel('mistral-large-latest'),
-        provider: 'mistral',
-        modelId: 'mistral-large-latest',
-      };
-    } catch (error) {
-      logger.warn('⚠️ [Verifier] Mistral initialization failed:', error);
-    }
-  }
-
-  throw new Error('No provider available for verifier model (all providers down).');
+  const result = selectTextModel('Verifier', ['cerebras', 'groq', 'mistral'], {
+    throwOnEmpty: true,
+  });
+  return result as { model: LanguageModel; provider: ProviderName; modelId: string };
 }
 
-/**
- * Get advisor model with 3-way fallback
- * Mistral → Cerebras → Groq (Mistral Primary — Advisor 전용)
- */
-export function getAdvisorModel(): {
-  model: LanguageModel;
-  provider: ProviderName;
-  modelId: string;
-} {
-  const status = checkProviderStatus();
-
-  // Primary: Mistral (mistral-large-latest, Frontier)
-  if (status.mistral) {
-    try {
-      return {
-        model: getMistralModel('mistral-large-latest'),
-        provider: 'mistral',
-        modelId: 'mistral-large-latest',
-      };
-    } catch (error) {
-      logger.warn('⚠️ [Advisor] Mistral initialization failed, trying Cerebras:', error);
-    }
-  }
-
-  if (status.cerebras) {
-    try {
-      console.log('🔄 [Advisor] Using Cerebras fallback');
-      return {
-        model: getCerebrasModel('gpt-oss-120b'),
-        provider: 'cerebras',
-        modelId: 'gpt-oss-120b',
-      };
-    } catch (error) {
-      logger.warn('⚠️ [Advisor] Cerebras initialization failed, trying Groq:', error);
-    }
-  }
-
-  if (status.groq) {
-    try {
-      console.log('🔄 [Advisor] Using Groq last-resort fallback');
-      return {
-        model: getGroqModel('llama-3.3-70b-versatile'),
-        provider: 'groq',
-        modelId: 'llama-3.3-70b-versatile',
-      };
-    } catch (error) {
-      logger.warn('⚠️ [Advisor] Groq initialization failed:', error);
-    }
-  }
-
-  throw new Error('No provider available for advisor model (all providers down).');
-}
+// Advisor model: re-exported from agent-model-selectors (SSOT)
+export { getAdvisorModel } from './agents/config/agent-model-selectors';
 
 /**
  * Get Vision Agent model (Gemini Flash with OpenRouter Fallback)
@@ -282,7 +141,7 @@ export function getVisionAgentModel(): {
   if (status.openrouter) {
     try {
       const modelId = getOpenRouterVisionModelId();
-      console.log(`🔄 [Vision Agent] Using OpenRouter fallback: ${modelId}`);
+      logger.info(`[Vision Agent] Using OpenRouter fallback: ${modelId}`);
       return {
         model: getOpenRouterVisionModel(modelId),
         provider: 'openrouter',
@@ -382,13 +241,13 @@ export async function checkAllProvidersHealth(): Promise<ProviderHealth[]> {
  */
 export function logProviderStatus(): void {
   const status = checkProviderStatus();
-  console.log('🔑 AI SDK Provider Status:', {
-    Cerebras: status.cerebras ? '✅' : '❌',
-    Groq: status.groq ? '✅' : '❌',
-    Mistral: status.mistral ? '✅' : '❌',
-    Gemini: status.gemini ? '✅ (Vision)' : '❌',
-    OpenRouter: status.openrouter ? '✅ (Vision Fallback)' : '❌',
-  });
+  logger.info({
+    Cerebras: status.cerebras ? 'ok' : 'off',
+    Groq: status.groq ? 'ok' : 'off',
+    Mistral: status.mistral ? 'ok' : 'off',
+    Gemini: status.gemini ? 'ok (Vision)' : 'off',
+    OpenRouter: status.openrouter ? 'ok (Vision Fallback)' : 'off',
+  }, '[Provider Status]');
 }
 
 // ============================================================================
@@ -427,7 +286,7 @@ export async function getSupervisorModelWithQuota(
     const { provider, isPreemptiveFallback } = selection;
 
     if (isPreemptiveFallback) {
-      console.log(`⚠️ [Supervisor] Pre-emptive fallback to ${provider}`);
+      logger.info(`[Supervisor] Pre-emptive fallback to ${provider}`);
     }
 
     // Provider별 모델 반환
@@ -483,7 +342,7 @@ export async function recordModelUsage(
 
   // Enhanced logging with context
   if (provider === 'groq') {
-    console.log(`[QuotaTracker] Groq (${context}): ${tokensUsed} tokens - low quota provider, monitor closely`);
+    logger.info(`[QuotaTracker] Groq (${context}): ${tokensUsed} tokens - low quota provider, monitor closely`);
   }
 }
 

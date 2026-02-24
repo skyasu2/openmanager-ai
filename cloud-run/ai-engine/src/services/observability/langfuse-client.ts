@@ -24,7 +24,7 @@ async function loadLangfuse(): Promise<LangfuseConstructor | null> {
     LangfuseClass = module.Langfuse;
     return LangfuseClass;
   } catch {
-    logger.warn('⚠️ [Langfuse] Module not installed, observability disabled');
+    logger.warn('[Langfuse] Module not installed, observability disabled');
     return null;
   }
 }
@@ -49,7 +49,7 @@ async function initLangfuse(): Promise<LangfuseClient> {
   const baseUrl = process.env.LANGFUSE_BASE_URL || 'https://us.cloud.langfuse.com';
 
   if (!secretKey || !publicKey) {
-    logger.warn('⚠️ [Langfuse] Missing API keys, observability disabled');
+    logger.warn('[Langfuse] Missing API keys, observability disabled');
     return createNoOpLangfuse();
   }
 
@@ -61,7 +61,7 @@ async function initLangfuse(): Promise<LangfuseClient> {
     ...flushConfig,
   });
 
-  console.log(`✅ [Langfuse] Initialized with ${baseUrl} (flushAt: ${flushConfig.flushAt})`);
+  logger.info(`[Langfuse] Initialized with ${baseUrl} (flushAt: ${flushConfig.flushAt})`);
   return client;
 }
 
@@ -106,13 +106,13 @@ export async function initializeLangfuseClient(): Promise<void> {
 
 export async function enableLangfuseTestMode(): Promise<void> {
   setLangfuseTestModeEnabled(true);
-  console.log('🧪 [Langfuse] 테스트 모드 활성화 - 100% 추적, 즉시 플러시');
+  logger.info('[Langfuse] 테스트 모드 활성화 - 100% 추적, 즉시 플러시');
   await reinitializeLangfuse();
 }
 
 export async function disableLangfuseTestMode(): Promise<void> {
   setLangfuseTestModeEnabled(false);
-  console.log('🔒 [Langfuse] 테스트 모드 비활성화 - 100% 샘플링, 배치 플러시 복귀');
+  logger.info('[Langfuse] 테스트 모드 비활성화 - 100% 샘플링, 배치 플러시 복귀');
   await reinitializeLangfuse();
 }
 

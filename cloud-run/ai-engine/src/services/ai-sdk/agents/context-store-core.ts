@@ -150,7 +150,7 @@ export async function deleteSessionContext(sessionId: string): Promise<void> {
   }
 
   inMemoryStore.delete(key);
-  console.log(`[ContextStore] Deleted context for ${sessionId}`);
+  logger.info(`[ContextStore] Deleted context for ${sessionId}`);
 }
 
 export function getContextStoreStats(): {

@@ -1,4 +1,5 @@
 import { CONTEXT_CONFIG, getOrCreateSessionContext, getSessionContext, saveSessionContext } from './context-store-core';
+import { logger } from '../../../lib/logger';
 import type {
   AnomalyData,
   HandoffEvent,
@@ -28,7 +29,7 @@ export async function recordHandoffEvent(
   context.updatedAt = new Date().toISOString();
 
   await saveSessionContext(context);
-  console.log(`[ContextStore] Handoff: ${from} → ${to} (${reason || 'no reason'})`);
+  logger.info(`[ContextStore] Handoff: ${from} -> ${to} (${reason || 'no reason'})`);
 }
 
 export async function appendAnomalies(sessionId: string, anomalies: AnomalyData[]): Promise<void> {
@@ -51,7 +52,7 @@ export async function appendAnomalies(sessionId: string, anomalies: AnomalyData[
   context.updatedAt = new Date().toISOString();
   await saveSessionContext(context);
 
-  console.log(
+  logger.info(
     `[ContextStore] Added ${newAnomalies.length} anomalies (total: ${context.findings.anomalies.length})`
   );
 }
@@ -62,7 +63,7 @@ export async function setRootCause(sessionId: string, rootCause: RootCauseData):
   context.updatedAt = new Date().toISOString();
   await saveSessionContext(context);
 
-  console.log(
+  logger.info(
     `[ContextStore] Root cause set: ${rootCause.cause} (${(rootCause.confidence * 100).toFixed(0)}%)`
   );
 }
@@ -81,7 +82,7 @@ export async function appendAffectedServers(sessionId: string, serverIds: string
   context.updatedAt = new Date().toISOString();
   await saveSessionContext(context);
 
-  console.log(
+  logger.info(
     `[ContextStore] Added ${newServers.length} affected servers (total: ${context.findings.affectedServers.length})`
   );
 }
@@ -105,7 +106,7 @@ export async function appendMetrics(sessionId: string, metrics: MetricSnapshot[]
   context.updatedAt = new Date().toISOString();
   await saveSessionContext(context);
 
-  console.log(
+  logger.info(
     `[ContextStore] Updated metrics for ${metrics.length} servers (total: ${context.findings.metrics.length})`
   );
 }
@@ -125,7 +126,7 @@ export async function appendKnowledgeResults(sessionId: string, results: string[
   context.updatedAt = new Date().toISOString();
   await saveSessionContext(context);
 
-  console.log(`[ContextStore] Added ${newResults.length} knowledge results`);
+  logger.info(`[ContextStore] Added ${newResults.length} knowledge results`);
 }
 
 export async function appendRecommendedCommands(
@@ -149,7 +150,7 @@ export async function appendRecommendedCommands(
   context.updatedAt = new Date().toISOString();
   await saveSessionContext(context);
 
-  console.log(`[ContextStore] Added ${newCommands.length} recommended commands`);
+  logger.info(`[ContextStore] Added ${newCommands.length} recommended commands`);
 }
 
 export async function getContextSummary(sessionId: string): Promise<string | null> {

@@ -30,6 +30,7 @@
  */
 
 import { EventEmitter } from 'events';
+import { logger } from '../../logger';
 import {
   SimpleAnomalyDetector,
   getAnomalyDetector,
@@ -214,7 +215,7 @@ export class UnifiedAnomalyEngine extends EventEmitter {
     if (historicalData.multiMetric && historicalData.multiMetric.length >= 50) {
       this.isolationForestDetector.fit(historicalData.multiMetric);
       this.stats.modelsStatus.isolationForestTrained = true;
-      console.log(
+      logger.info(
         `[UnifiedEngine] IF trained with ${historicalData.multiMetric.length} samples`
       );
     }
@@ -230,7 +231,7 @@ export class UnifiedAnomalyEngine extends EventEmitter {
           this.stats.modelsStatus.adaptiveLearnedMetrics.push(metric);
         }
       }
-      console.log(
+      logger.info(
         `[UnifiedEngine] Adaptive thresholds initialized for: ${Object.keys(historicalData.perMetric).join(', ')}`
       );
     }

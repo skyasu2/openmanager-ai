@@ -129,7 +129,7 @@ export async function hybridTextVectorSearch(
     maxVectorResults = 5,
     maxTextResults = 5,
     maxTotalResults = 15,
-    threshold = 0.3,
+    threshold = 0.4,
     category,
     maxGraphHops = 2,
   } = options;
@@ -176,7 +176,7 @@ export async function hybridTextVectorSearch(
     const hybridCount = results.filter((r) => r.sourceType === 'hybrid').length;
     const graphCount = results.filter((r) => r.sourceType === 'graph').length;
 
-    console.log(
+    logger.info(
       `[HybridTextSearch] Found ${results.length} results (${hybridCount} hybrid, ${graphCount} graph) in ${elapsed}ms`
     );
 
@@ -275,7 +275,7 @@ export async function isBM25Available(): Promise<boolean> {
     }
 
     const available = (count || 0) > 0;
-    console.log(
+    logger.info(
       `[HybridTextSearch] BM25 available: ${available} (${count} indexed entries)`
     );
     return available;

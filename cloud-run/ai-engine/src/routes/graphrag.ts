@@ -15,6 +15,7 @@ import {
   getRelatedKnowledge,
 } from '../lib/llamaindex-rag-service';
 import { handleApiError, handleValidationError, jsonSuccess } from '../lib/error-handler';
+import { logger } from '../lib/logger';
 
 export const graphragRouter = new Hono();
 
@@ -28,7 +29,7 @@ graphragRouter.post('/extract', async (c: Context) => {
   try {
     const { batchSize = 50 } = await c.req.json();
 
-    console.log(`🔗 [GraphRAG] Starting extraction (heuristics-only, batch: ${batchSize})`);
+    logger.info(`[GraphRAG] Starting extraction (heuristics-only, batch: ${batchSize})`);
 
     const results = await extractRelationships({
       batchSize,
@@ -37,7 +38,7 @@ graphragRouter.post('/extract', async (c: Context) => {
 
     const totalRelationships = results.reduce((sum, r) => sum + r.relationships.length, 0);
 
-    console.log(`✅ [GraphRAG] Extracted ${totalRelationships} relationships from ${results.length} entries`);
+    logger.info(`[GraphRAG] Extracted ${totalRelationships} relationships from ${results.length} entries`);
 
     return jsonSuccess(c, {
       entriesProcessed: results.length,
@@ -87,7 +88,7 @@ graphragRouter.get('/related/:nodeId', async (c: Context) => {
       return handleValidationError(c, 'nodeId is required');
     }
 
-    console.log(`🔗 [GraphRAG] Finding related for ${nodeId} (hops: ${maxHops})`);
+    logger.info(`[GraphRAG] Finding related for ${nodeId} (hops: ${maxHops})`);
 
     const related = await getRelatedKnowledge(nodeId, {
       maxHops,

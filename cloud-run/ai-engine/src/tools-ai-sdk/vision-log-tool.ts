@@ -135,6 +135,8 @@ export const analyzeLargeLog = tool({
         },
         recommendations: [],
         summary: '분석 실패: 입력 데이터 없음',
+        systemMessage: 'TOOL_EXECUTION_FAILED: 필수 입력 파라미터(logContent 또는 analysisResult)가 누락되었습니다.',
+        suggestedAgentAction: '사용자가 제공한 원본 로그 콘텐츠를 추출하여 전달하거나, 로그를 찾을 수 없는 경우 LLM의 지식을 이용해 일반적인 로그 확인 방법에 대해 안내하세요.',
       };
     }
 

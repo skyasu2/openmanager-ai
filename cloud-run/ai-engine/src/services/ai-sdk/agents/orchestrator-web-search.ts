@@ -6,6 +6,7 @@
  */
 
 import type { ToolSet } from 'ai';
+import { logger } from '../../../lib/logger';
 
 // ============================================================================
 // Web Search Auto-Detection
@@ -128,7 +129,7 @@ export function filterToolsByWebSearch(
   const filtered = { ...tools };
   if ('searchWeb' in filtered) {
     delete filtered.searchWeb;
-    console.log('🚫 [Tools] searchWeb disabled by enableWebSearch setting');
+    logger.info('[Tools] searchWeb disabled by enableWebSearch setting');
   }
   return filtered;
 }

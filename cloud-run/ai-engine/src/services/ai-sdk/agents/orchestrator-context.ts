@@ -60,7 +60,7 @@ export async function saveAgentFindingsToContext(
       const servers = extractServerNames(response);
       if (servers.length > 0) {
         await appendAffectedServers(sessionId, servers);
-        console.log(`💾 [Context] NLQ Agent saved ${servers.length} servers: [${servers.slice(0, 3).join(', ')}${servers.length > 3 ? '...' : ''}]`);
+        logger.info(`[Context] NLQ Agent saved ${servers.length} servers: [${servers.slice(0, 3).join(', ')}${servers.length > 3 ? '...' : ''}]`);
       }
     }
 
@@ -69,7 +69,7 @@ export async function saveAgentFindingsToContext(
       const anomalies = extractAnomalies(response);
       if (anomalies.length > 0) {
         await appendAnomalies(sessionId, anomalies);
-        console.log(`💾 [Context] Analyst Agent saved ${anomalies.length} anomalies`);
+        logger.info(`[Context] Analyst Agent saved ${anomalies.length} anomalies`);
       }
     }
 
@@ -78,18 +78,18 @@ export async function saveAgentFindingsToContext(
       const metrics = extractMetrics(response);
       if (metrics.length > 0) {
         await appendMetrics(sessionId, metrics);
-        console.log(`💾 [Context] Reporter Agent saved ${metrics.length} metrics`);
+        logger.info(`[Context] Reporter Agent saved ${metrics.length} metrics`);
       }
     }
 
     // Advisor Agent: Save recommendations (via lastAgent update)
     if (normalizedAgent.includes('advisor')) {
       await updateSessionContext(sessionId, { lastAgent: agentName });
-      console.log(`💾 [Context] Advisor Agent updated lastAgent`);
+      logger.info(`[Context] Advisor Agent updated lastAgent`);
     }
   } catch (error) {
     // Non-critical: log but don't throw
-    logger.warn(`⚠️ [Context] Failed to save findings for ${agentName}:`, error);
+    logger.warn(`[Context] Failed to save findings for ${agentName}:`, error);
   }
 }
 

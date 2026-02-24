@@ -54,7 +54,7 @@ function getCachedResult(query: string, searchDepth?: string, includeDomains?: s
     return null;
   }
 
-  console.log(`📦 [Tavily] Cache hit for: "${query.substring(0, 30)}..." (size: ${searchCache.size})`);
+  logger.info(`[Tavily] Cache hit for: "${query.substring(0, 30)}..." (size: ${searchCache.size})`);
   return { results: cached.results, answer: cached.answer };
 }
 
@@ -70,7 +70,7 @@ function setCacheResult(query: string, results: WebSearchResult[], answer: strin
   if (searchCache.size >= SEARCH_CACHE_CONFIG.maxSize) {
     const keysToDelete = [...searchCache.keys()].slice(0, SEARCH_CACHE_CONFIG.evictCount);
     keysToDelete.forEach(k => searchCache.delete(k));
-    console.log(`🗑️ [Tavily] Cache evicted ${keysToDelete.length} entries (LRU)`);
+    logger.info(`[Tavily] Cache evicted ${keysToDelete.length} entries (LRU)`);
   }
 
   searchCache.set(buildCacheKey(query, searchDepth, includeDomains), { results, answer, timestamp: now });
@@ -115,18 +115,20 @@ export const searchWeb = tool({
     includeDomains?: string[];
     excludeDomains?: string[];
   }) => {
-    console.log(`🌐 [Reporter Tools] Web search: ${query}`);
+    logger.info(`[Reporter Tools] Web search: ${query}`);
 
     // 1. Quota check (Free Tier: 1,000 req/month ~ 33/day)
     try {
       const quotaStatus = await getQuotaStatus('tavily');
       if (quotaStatus.shouldPreemptiveFallback) {
-        logger.warn(`⚠️ [Tavily] Daily quota approaching limit. Skipping web search.`);
+        logger.warn(`[Tavily] Daily quota approaching limit. Skipping web search.`);
         return {
           success: false,
           error: 'Tavily daily quota approaching limit',
           results: [],
           _source: 'Tavily (Quota Exceeded)',
+          systemMessage: 'TOOL_EXECUTION_FAILED: 현재 Tavily 웹 검색 API의 일일 한도가 초과위험 상태이므로 실시간 웹 검색을 차단했습니다.',
+          suggestedAgentAction: '사용자에게 "현재 시스템의 외부 검색 사용량 한도 초과로 실시간 검색이 제한되어 있어, 내재된 지식망만으로 답변해 드립니다"라고 안내하고 보유한 기본 지식으로 상세히 응답하세요.',
         };
       }
     } catch {
@@ -148,12 +150,14 @@ export const searchWeb = tool({
 
     // 3. API key check
     if (!isTavilyAvailable()) {
-      logger.warn('⚠️ [Reporter Tools] No Tavily API keys configured');
+      logger.warn('[Reporter Tools] No Tavily API keys configured');
       return {
         success: false,
         error: 'Tavily API key not configured',
         results: [],
         _source: 'Tavily (Unconfigured)',
+        systemMessage: 'TOOL_EXECUTION_FAILED: 서버에 웹 검색 가능 API Key가 설정되지 않아 실시간 검색 기능이 비활성화 되었습니다.',
+        suggestedAgentAction: '검색 기능이 제공되지 않음을 인지하고, 추가 웹 검색 시도 없이 현재 모델에 내재된 기술 지식을 이용해 최선을 다해 응답하세요.',
       };
     }
 
@@ -172,7 +176,7 @@ export const searchWeb = tool({
         content: r.content.substring(0, 1500),
       }));
 
-      console.log(`📊 [Reporter Tools] Web search: ${results.length} results`);
+      logger.info(`[Reporter Tools] Web search: ${results.length} results`);
 
       setCacheResult(query, results, answer, searchDepth, includeDomains);
       recordProviderUsage('tavily', 1).catch(() => {});
@@ -190,12 +194,14 @@ export const searchWeb = tool({
         ? error.errors.map((e: unknown) => e instanceof Error ? e.message : String(e)).join('; ')
         : (error instanceof Error ? error.message : String(error));
 
-      logger.error('❌ [Reporter Tools] Web search failed:', errorMsg);
+      logger.error('[Reporter Tools] Web search failed:', errorMsg);
       return {
         success: false,
         error: errorMsg,
         results: [],
         _source: 'Tavily (Failed)',
+        systemMessage: `TOOL_EXECUTION_FAILED: 웹 검색 중 네트워크 또는 서비스 오류가 발생했습니다. (${errorMsg})`,
+        suggestedAgentAction: '사용자에게 웹 검색 결과 수신에 실패했음을 솔직히 안내하고, 모델 내부에 이미 학습되어 있는 지식을 총동원하여 차선책이 될 수 있는 유용한 가이드라인이나 대안을 제공하세요.',
       };
     }
   },

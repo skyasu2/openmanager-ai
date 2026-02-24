@@ -49,7 +49,7 @@ export function getRedisClient(): Redis | null {
 
   const config = getUpstashConfig();
   if (!config) {
-    console.log('📦 [Redis] Not configured, using in-memory cache only');
+    logger.info('[Redis] Not configured, using in-memory cache only');
     return null;
   }
 
@@ -58,10 +58,10 @@ export function getRedisClient(): Redis | null {
       url: config.url,
       token: config.token,
     });
-    console.log('✅ [Redis] Client initialized');
+    logger.info('[Redis] Client initialized');
     return redisInstance;
   } catch (e) {
-    logger.error('❌ [Redis] Client initialization failed:', e);
+    logger.error('[Redis] Client initialization failed:', e);
     connectionFailed = true;
     return null;
   }
@@ -89,7 +89,7 @@ export async function redisGet<T>(key: string): Promise<T | null> {
     const value = await client.get<T>(key);
     return value;
   } catch (e) {
-    logger.warn(`⚠️ [Redis] GET failed for ${key}:`, e);
+    logger.warn(`[Redis] GET failed for ${key}:`, e);
     return null;
   }
 }
@@ -110,7 +110,7 @@ export async function redisSet<T>(
     await client.set(key, value, { ex: ttlSeconds });
     return true;
   } catch (e) {
-    logger.warn(`⚠️ [Redis] SET failed for ${key}:`, e);
+    logger.warn(`[Redis] SET failed for ${key}:`, e);
     return false;
   }
 }
@@ -126,7 +126,7 @@ export async function redisDel(key: string): Promise<boolean> {
     await client.del(key);
     return true;
   } catch (e) {
-    logger.warn(`⚠️ [Redis] DEL failed for ${key}:`, e);
+    logger.warn(`[Redis] DEL failed for ${key}:`, e);
     return false;
   }
 }
@@ -157,7 +157,7 @@ export async function redisDelByPattern(pattern: string): Promise<number> {
 
     return deletedCount;
   } catch (e) {
-    logger.warn(`⚠️ [Redis] DEL pattern failed for ${pattern}:`, e);
+    logger.warn(`[Redis] DEL pattern failed for ${pattern}:`, e);
     return 0;
   }
 }
@@ -212,5 +212,5 @@ export async function checkRedisHealth(): Promise<RedisHealthStatus> {
 export function resetRedisClient(): void {
   redisInstance = null;
   connectionFailed = false;
-  console.log('📦 [Redis] Client reset');
+  logger.info('[Redis] Client reset');
 }

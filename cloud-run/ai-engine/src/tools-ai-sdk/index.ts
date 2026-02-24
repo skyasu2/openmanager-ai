@@ -300,7 +300,7 @@ export function validateTools(): ToolValidationResult {
     // Check if tool has execute function (AI SDK tool interface)
     if (typeof tool !== 'object' || !('execute' in tool || 'generate' in tool)) {
       // Some tools might be wrapped differently, just warn
-      logger.warn(`⚠️ [ToolValidation] Tool "${name}" may not have standard structure`);
+      logger.warn(`[ToolValidation] Tool "${name}" may not have standard structure`);
     }
 
     // Check if tool has description
@@ -337,18 +337,18 @@ export function logToolValidation(): void {
   const result = validateTools();
 
   if (result.isValid) {
-    console.log(`✅ [ToolValidation] ${result.totalTools} tools validated successfully`);
-    console.log(`   Tools: [${result.validTools.join(', ')}]`);
+    logger.info(`[ToolValidation] ${result.totalTools} tools validated successfully`);
+    logger.info(`[ToolValidation] Tools: [${result.validTools.join(', ')}]`);
   } else {
-    logger.error(`❌ [ToolValidation] Validation failed!`);
-    logger.error(`   Invalid tools: [${result.invalidTools.join(', ')}]`);
+    logger.error(`[ToolValidation] Validation failed!`);
+    logger.error(`[ToolValidation] Invalid tools: [${result.invalidTools.join(', ')}]`);
     for (const error of result.errors) {
-      logger.error(`   - ${error}`);
+      logger.error(`[ToolValidation] ${error}`);
     }
   }
 
   if (result.missingDescriptions.length > 0) {
-    logger.warn(`⚠️ [ToolValidation] Missing descriptions: [${result.missingDescriptions.join(', ')}]`);
+    logger.warn(`[ToolValidation] Missing descriptions: [${result.missingDescriptions.join(', ')}]`);
   }
 }
 

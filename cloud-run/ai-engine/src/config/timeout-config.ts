@@ -57,7 +57,7 @@ export const CLOUD_RUN_CONSTRAINTS = {
  * Timeout configuration for each processing layer
  *
  * Architecture:
- *   Supervisor (50s) → Orchestrator (50s) → Agent (45s) → Subtask (30s) → Tool (25s)
+ *   Supervisor (50s) → Orchestrator (45s) → Agent (45s) → Subtask (30s) → Tool (25s)
  *
  * Each layer has progressively shorter timeouts to allow:
  * - Parent to handle child timeouts gracefully
@@ -86,8 +86,8 @@ export const TIMEOUT_CONFIG = {
    * - Parallel execution coordination
    */
   orchestrator: {
-    /** Hard timeout for entire orchestration */
-    hard: 50_000,
+    /** Hard timeout for entire orchestration (5s headroom before Supervisor 50s) */
+    hard: 45_000,
     /** Warning threshold for slow operations */
     warning: 30_000,
     /** Soft timeout for LLM routing decisions */

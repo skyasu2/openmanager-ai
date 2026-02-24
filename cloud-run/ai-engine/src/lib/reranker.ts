@@ -72,7 +72,7 @@ Output ONLY a JSON array with scores and brief reasons, no other text:
 const RERANK_TIMEOUT_MS = 8000; // 8 seconds
 const DEFAULT_MAX_DOCUMENTS = 10;
 const DEFAULT_TOP_K = 5;
-const DEFAULT_MIN_SCORE = 0.3;
+const DEFAULT_MIN_SCORE = 0.4;
 
 
 // ============================================================================
@@ -110,7 +110,7 @@ export async function rerankDocuments(
 
   // Skip reranking for small result sets
   if (documents.length <= 2) {
-    console.log('[Reranker] Skipping rerank for small result set');
+    logger.info('[Reranker] Skipping rerank for small result set');
     return documents.map((doc) => ({
       ...doc,
       rerankScore: doc.originalScore,
@@ -182,8 +182,8 @@ Rate relevance (0-1) for each document.`;
       .slice(0, topK);
 
     const elapsed = Date.now() - startTime;
-    console.log(
-      `[Reranker] Reranked ${docsToRerank.length} docs → ${filteredDocs.length} results in ${elapsed}ms`
+    logger.info(
+      `[Reranker] Reranked ${docsToRerank.length} docs -> ${filteredDocs.length} results in ${elapsed}ms`
     );
 
     return filteredDocs;

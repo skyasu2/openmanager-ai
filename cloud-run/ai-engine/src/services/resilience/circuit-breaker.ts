@@ -129,7 +129,7 @@ export class CircuitBreaker {
     this.failures = 0;
     this.successes = 0;
     this.openedAt = undefined;
-    console.log(`🔄 [CircuitBreaker:${this.config.name}] Manually reset to CLOSED`);
+    logger.info(`[CircuitBreaker:${this.config.name}] Manually reset to CLOSED`);
   }
 
   // ============================================================================
@@ -158,7 +158,7 @@ export class CircuitBreaker {
     this.lastFailure = new Date();
 
     logger.warn(
-      `⚠️ [CircuitBreaker:${this.config.name}] Failure ${this.failures}/${this.config.failureThreshold}:`,
+      `[CircuitBreaker:${this.config.name}] Failure ${this.failures}/${this.config.failureThreshold}:`,
       error instanceof Error ? error.message : String(error)
     );
 
@@ -190,8 +190,8 @@ export class CircuitBreaker {
       this.openedAt = new Date();
     }
 
-    console.log(
-      `🔌 [CircuitBreaker:${this.config.name}] ${oldState} → ${newState}`
+    logger.info(
+      `[CircuitBreaker:${this.config.name}] ${oldState} → ${newState}`
     );
   }
 

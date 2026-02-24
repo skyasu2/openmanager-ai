@@ -52,6 +52,8 @@ export const predictTrends = tool({
             return {
               success: false,
               error: `서버를 찾을 수 없습니다: ${serverId || 'none'}`,
+              systemMessage: `TOOL_EXECUTION_FAILED: 대상 서버(${serverId || 'none'})를 찾을 수 없어 트렌드 예측에 실패했습니다.`,
+              suggestedAgentAction: `요청하신 서버 ID(${serverId})가 올바른지 사용자에게 다시 확인해달라고 정중히 요청하세요.`,
             };
           }
 
@@ -166,6 +168,8 @@ export const predictTrends = tool({
       return {
         success: false,
         error: error instanceof Error ? error.message : String(error),
+        systemMessage: `TOOL_EXECUTION_FAILED: 트렌드 예측 분석 도중 오류 발생. (${String(error)})`,
+        suggestedAgentAction: '트렌드 예측에 실패했음을 사용자에게 알리고, 이 대신 현재 시점의 실시간 서버 모니터링 수치를 바탕으로 분석해드릴지 여쭤보세요.',
       };
     }
   },

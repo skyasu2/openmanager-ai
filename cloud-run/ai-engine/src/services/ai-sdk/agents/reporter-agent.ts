@@ -33,7 +33,7 @@ import { logger } from '../../../lib/logger';
 export function getReporterAgentConfig(): AgentConfig | null {
   const config = AGENT_CONFIGS['Reporter Agent'];
   if (!config) {
-    logger.error('❌ [Reporter Agent] Config not found in AGENT_CONFIGS');
+    logger.error('[Reporter Agent] Config not found in AGENT_CONFIGS');
     return null;
   }
   return config;
@@ -100,6 +100,6 @@ export async function generateHighQualityReport(
   query: string,
   options: Partial<PipelineConfig> = {}
 ): Promise<PipelineResult> {
-  console.log(`📋 [Reporter] Generating high-quality report with pipeline...`);
+  logger.info(`[Reporter] Generating high-quality report with pipeline...`);
   return executeReporterPipeline(query, options);
 }

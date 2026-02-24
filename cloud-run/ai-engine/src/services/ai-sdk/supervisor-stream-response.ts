@@ -40,7 +40,7 @@ async function flushLangfuseBestEffort(timeoutMs: number = 350): Promise<void> {
 export function createSupervisorStreamResponse(
   request: SupervisorRequest
 ): Response {
-  console.log(`🌊 [UIMessageStream] Creating native stream for session: ${request.sessionId}`);
+  logger.info(`[UIMessageStream] Creating native stream for session: ${request.sessionId}`);
 
   const stream = createUIMessageStream({
     execute: async ({ writer }) => {
@@ -187,7 +187,7 @@ export function createSupervisorStreamResponse(
         }
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        logger.error(`❌ [UIMessageStream] Error:`, errorMessage);
+        logger.error(`[UIMessageStream] Error:`, errorMessage);
 
         if (textPartStarted) {
           writer.write({

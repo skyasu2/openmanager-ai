@@ -43,7 +43,7 @@ function getUsageRedisKey(): string {
 function checkAndResetMonth(): void {
   const currentMonth = getCurrentMonthKey();
   if (usageState.monthKey !== currentMonth) {
-    console.log(`🔄 [Langfuse] 월간 카운터 리셋: ${usageState.monthKey} → ${currentMonth}`);
+    logger.info(`[Langfuse] 월간 카운터 리셋: ${usageState.monthKey} -> ${currentMonth}`);
     usageState = {
       eventCount: 0,
       monthKey: currentMonth,
@@ -65,7 +65,7 @@ function incrementUsage(count: number = 1): boolean {
   if (usageState.eventCount >= FREE_TIER_LIMIT * SAFETY_THRESHOLD) {
     usageState.isDisabled = true;
     logger.error(
-      `🚨 [Langfuse] 무료 티어 한도 90% 도달! 자동 비활성화됨 ` +
+      `[Langfuse] 무료 티어 한도 90% 도달! 자동 비활성화됨 ` +
         `(${usageState.eventCount.toLocaleString()}/${FREE_TIER_LIMIT.toLocaleString()} events)`
     );
     redisSet(getUsageRedisKey(), usageState, REDIS_TTL_SECONDS).catch(() => {});
@@ -81,7 +81,7 @@ function incrementUsage(count: number = 1): boolean {
     ) {
       usageState.lastWarning = thresholdKey;
       logger.warn(
-        `⚠️ [Langfuse] 무료 티어 ${thresholdKey} 사용 중 ` +
+        `[Langfuse] 무료 티어 ${thresholdKey} 사용 중 ` +
           `(${usageState.eventCount.toLocaleString()}/${FREE_TIER_LIMIT.toLocaleString()} events)`
       );
     }
@@ -162,12 +162,12 @@ export async function restoreUsageFromRedis(): Promise<void> {
     const saved = await redisGet<UsageState>(getUsageRedisKey());
     if (saved && saved.monthKey === getCurrentMonthKey()) {
       usageState = saved;
-      console.log(
-        `♻️ [Langfuse] Redis에서 사용량 복원: ${saved.eventCount.toLocaleString()} events (${saved.monthKey})`
+      logger.info(
+        `[Langfuse] Redis에서 사용량 복원: ${saved.eventCount.toLocaleString()} events (${saved.monthKey})`
       );
     }
   } catch {
-    logger.warn('⚠️ [Langfuse] Redis 복원 실패, 인메모리 카운터 사용');
+    logger.warn('[Langfuse] Redis 복원 실패, 인메모리 카운터 사용');
   }
 }
 

@@ -9,6 +9,7 @@
  */
 
 import { getGroqApiKey, getCerebrasApiKey, getMistralApiKey } from './config-parser';
+import { logger } from './logger';
 
 // ============================================================================
 // API Key Validation
@@ -41,9 +42,9 @@ export function validateAPIKeys(): {
  */
 export function logAPIKeyStatus(): void {
   const status = validateAPIKeys();
-  console.log('🔑 API Key Status:', {
-    'Mistral AI': status.mistral ? '✅' : '❌',
-    Groq: status.groq ? '✅' : '❌',
-    Cerebras: status.cerebras ? '✅' : '❌',
+  logger.info('[APIKeyStatus]', {
+    'Mistral AI': status.mistral ? 'configured' : 'missing',
+    Groq: status.groq ? 'configured' : 'missing',
+    Cerebras: status.cerebras ? 'configured' : 'missing',
   });
 }

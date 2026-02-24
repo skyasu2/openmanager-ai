@@ -7,6 +7,7 @@
 
 import { readFileSync, existsSync } from 'fs';
 import { join } from 'path';
+import { logger } from '../lib/logger';
 
 interface ThresholdConfig {
   warning: number;
@@ -46,7 +47,7 @@ function loadThresholdsFromSystemRules(): SystemRulesThresholds | null {
         const content = readFileSync(filePath, 'utf-8');
         const rules = JSON.parse(content);
         if (rules?.thresholds) {
-          console.log(`[StatusThresholds] system-rules.json 로드: ${filePath}`);
+          logger.info(`[StatusThresholds] system-rules.json 로드: ${filePath}`);
           return {
             cpu: { warning: rules.thresholds.cpu.warning, critical: rules.thresholds.cpu.critical },
             memory: { warning: rules.thresholds.memory.warning, critical: rules.thresholds.memory.critical },
@@ -56,7 +57,7 @@ function loadThresholdsFromSystemRules(): SystemRulesThresholds | null {
           };
         }
       } catch (e) {
-        console.warn(`[StatusThresholds] system-rules.json 파싱 실패: ${filePath}`, e);
+        logger.warn(`[StatusThresholds] system-rules.json 파싱 실패: ${filePath}`, e);
       }
     }
   }

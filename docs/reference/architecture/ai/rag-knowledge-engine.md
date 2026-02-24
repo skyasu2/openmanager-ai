@@ -4,11 +4,11 @@
 > Owner: platform-architecture
 > Status: Active
 > Doc type: Reference
-> Last reviewed: 2026-02-14
+> Last reviewed: 2026-02-23
 > Canonical: docs/reference/architecture/ai/rag-knowledge-engine.md
 > Tags: ai,rag,knowledge-engine,architecture
 >
-> **v1.1.0** | Updated 2026-01-26
+> **v1.2.0** | Updated 2026-02-23
 >
 > 검색 증강 생성(RAG) 및 지식 엔진 아키텍처 상세 문서입니다.
 
@@ -19,6 +19,62 @@
 ## Overview
 
 OpenManager AI의 RAG(Retrieval-Augmented Generation) 시스템은 **Hybrid GraphSearch** 기술을 기반으로 내부 지식과 외부 정보를 결합하여 고정밀 답변을 생성합니다.
+
+## RAG Corpus Governance (2026-02-23)
+
+`knowledge_base` 운영 품질을 유지하기 위한 문서 수/길이 제약입니다. 기준은 `cloud-run/ai-engine/src/lib/rag-doc-policy.ts`를 SSOT로 사용합니다.
+
+### 현재 규모 (실측, 정리 후)
+
+| 지표 | 값 |
+|------|---:|
+| 총 문서 수 | 48 |
+| 타깃 길이(280~520자) | 48 |
+| 타깃 미달(<280자) | 0 |
+| 하드 제한 초과(>600자) | 0 |
+| command 카테고리 | 18 (37.5%) |
+| auto_generated | 0 |
+
+### 운영 제약 (권장/하드)
+
+| 규칙 | 기준 |
+|------|------|
+| 총 문서 수 | 권장 `<=52`, 하드 `<=60` |
+| 문서 길이 | 권장 `280~520자`, 하드 `<=600자` |
+| 타깃 미달 비율 | `<=15%` |
+| 하드 초과 비율 | `<=8%` |
+| command 비중 | `<=38%` |
+| auto_generated 문서 | `<=1` |
+| placeholder 제목(예: `제목`) | `0` 유지 |
+
+### 카테고리 목표 범위
+
+| 카테고리 | 목표 범위 |
+|----------|-----------|
+| command | 18~24 |
+| incident | 8~12 |
+| best_practice | 8~12 |
+| troubleshooting | 8~12 |
+| architecture | 2~4 |
+| security | 1~2 |
+
+### 큐레이션 우선순위
+
+1. `auto_generated` 중 placeholder 제목/내용 문서 우선 삭제 또는 재생성
+2. `below_target` 문서(특히 130~220자대 seed_script)를 주제별로 병합 또는 확장
+3. `over_limit` 장문 문서는 2~3개 문서로 분할해 검색 정밀도 개선
+4. `command` 과다 시 Windows 전용/저빈도 명령부터 축소 검토
+
+### Best Practice Reference
+
+- Azure AI Search의 RAG 가이드: 인덱싱/청킹/관련성 튜닝을 검색 품질 핵심 요소로 명시  
+  https://learn.microsoft.com/en-us/azure/search/retrieval-augmented-generation-overview
+- Azure의 청킹 전략 가이드: 의미 단위 청킹과 파이프라인 단순화를 권장  
+  https://learn.microsoft.com/en-us/azure/search/vector-search-how-to-chunk-documents
+- Google Vertex AI RAG Engine: 검색 품질을 위한 인덱싱/임베딩/구조화 워크플로 강조  
+  https://cloud.google.com/vertex-ai/generative-ai/docs/rag-engine
+
+위 외부 가이드는 방향성 근거이며, OpenManager의 최종 기준값은 운영 데이터(`rag:analyze`, `rag:eval:*`)로 주기 재보정합니다.
 
 ### Key Technologies
 
@@ -310,5 +366,6 @@ CREATE INDEX idx_kr_tail ON knowledge_relationships(tail);
 
 | 버전 | 날짜 | 변경 내용 |
 |------|------|----------|
+| v1.2.0 | 2026-02-23 | RAG corpus 운영 제약(문서 수/길이/카테고리 비중) 및 Best Practice 참조 추가 |
 | v1.1.0 | 2026-01-26 | HyDE, Reranker, Tavily 상세 추가 |
 | v1.0.0 | 2026-01-26 | 초기 문서 작성 |
