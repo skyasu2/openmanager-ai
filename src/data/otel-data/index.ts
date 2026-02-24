@@ -7,6 +7,7 @@
  * @updated 2026-02-17 - Externalized to public/data/ (Bundle size optimization)
  */
 
+import debug from '@/utils/debug';
 import type {
   OTelHourlyFile,
   OTelHourlySlot,
@@ -42,7 +43,7 @@ async function loadJsonData<T>(fileName: string): Promise<T | null> {
       return (await response.json()) as T;
     }
   } catch (error) {
-    console.error(`[OTel Data Loader] Error loading ${fileName}:`, error);
+    debug.error(`[OTel Data Loader] Error loading ${fileName}:`, error);
     return null;
   }
 }

@@ -35,12 +35,13 @@ export async function initMonitoring(): Promise<void> {
     });
 
     sdk.start();
-    console.log('[OTel] SDK initialized (console exporter)');
+    if (process.env.NODE_ENV !== 'production') {
+      console.log('[OTel] SDK initialized (console exporter)');
+    }
   } catch (error) {
-    console.warn(
-      '[OTel] Failed to initialize (dev-only: @opentelemetry/* packages are in devDependencies. Move to dependencies for production use):',
-      error
-    );
+    if (process.env.NODE_ENV !== 'production') {
+      console.warn('[OTel] Failed to initialize (devDependencies only):', error);
+    }
   }
 }
 

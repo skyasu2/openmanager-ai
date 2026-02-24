@@ -5,12 +5,17 @@
  * 서버 사이드 렌더링으로 작동 (SSG 비활성화)
  */
 
+import type { Metadata } from 'next';
+
 // 정적 생성 활성화 - 404 페이지 최적화
 export const dynamic = 'force-static';
-export const revalidate = 0;
 
-import { AlertCircle, ArrowLeft, Home, Search } from 'lucide-react';
+import { AlertCircle, Home, Search } from 'lucide-react';
 import Link from 'next/link';
+
+export const metadata: Metadata = {
+  title: '404 - Page Not Found',
+};
 
 export default function NotFound() {
   return (
@@ -45,11 +50,11 @@ export default function NotFound() {
               홈으로 돌아가기
             </Link>
             <Link
-              href="/"
+              href="/dashboard"
               className="inline-flex items-center justify-center rounded-lg bg-gray-600 px-6 py-3 font-medium text-white transition-colors hover:bg-gray-700"
             >
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              이전 페이지
+              <Search className="mr-2 h-4 w-4" />
+              대시보드
             </Link>
           </div>
 

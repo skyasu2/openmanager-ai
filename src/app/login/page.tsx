@@ -7,10 +7,17 @@
  * // Enhanced System Consistency Verified: 2025-12-12
  */
 
+import type { Metadata } from 'next';
+
 // 서버 사이드 설정 - 서버 컴포넌트에서만 사용 가능
 export const dynamic = 'force-dynamic';
 
 import LoginClient from './LoginClient';
+
+export const metadata: Metadata = {
+  title: 'Login',
+  description: 'OpenManager AI 로그인',
+};
 
 // 🎯 로그인 페이지 - 서버 컴포넌트
 export default function LoginPage() {

@@ -1,5 +1,5 @@
 /**
- * 🎉 OAuth 인증 성공 페이지 (레거시 호환 경량 라우트)
+ * OAuth 인증 성공 페이지 (레거시 호환 경량 라우트)
  *
  * 현재 권장 플로우는 /auth/callback에서 처리되며, 이 경로는
  * 과거 리다이렉트를 받은 경우를 위한 최소 호환 로직만 유지합니다.
@@ -9,7 +9,7 @@
 
 import { Loader2 } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useEffect } from 'react';
+import { Suspense, useEffect } from 'react';
 import { getSupabase } from '@/lib/supabase/client';
 import debug from '@/utils/debug';
 
@@ -35,7 +35,18 @@ function getTargetPath(): string {
   }
 }
 
-export default function AuthSuccessPage() {
+function LoadingFallback() {
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-linear-to-br from-gray-900 via-gray-800 to-black">
+      <div className="text-center">
+        <Loader2 className="mx-auto mb-6 h-12 w-12 animate-spin text-blue-500" />
+        <h1 className="mb-2 text-2xl font-bold text-white">로딩 중...</h1>
+      </div>
+    </div>
+  );
+}
+
+function AuthSuccessContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -69,7 +80,7 @@ export default function AuthSuccessPage() {
         if (!isActive) return;
 
         if (error && error.message !== 'Auth session missing!') {
-          debug.warn('⚠️ auth/success 사용자 검증 경고:', error.message);
+          debug.warn('auth/success 사용자 검증 경고:', error.message);
         }
 
         if (!user) {
@@ -79,7 +90,7 @@ export default function AuthSuccessPage() {
 
         router.replace(targetPath);
       } catch (error) {
-        debug.error('❌ auth/success 세션 확인 실패:', error);
+        debug.error('auth/success 세션 확인 실패:', error);
         if (isActive) {
           router.replace('/login?error=session_check_failed');
         }
@@ -101,5 +112,13 @@ export default function AuthSuccessPage() {
         <p className="text-gray-400">잠시만 기다려주세요</p>
       </div>
     </div>
+  );
+}
+
+export default function AuthSuccessPage() {
+  return (
+    <Suspense fallback={<LoadingFallback />}>
+      <AuthSuccessContent />
+    </Suspense>
   );
 }

@@ -331,10 +331,7 @@ export const POST = withRateLimit(
           await clearActiveStreamId(sessionId, ownerKey);
         }
       } catch (cleanupError) {
-        console.warn(
-          '[SupervisorStreamV2] Stale stream cleanup failed:',
-          cleanupError
-        );
+        logger.warn({ err: cleanupError }, '[SupervisorStreamV2] Stale stream cleanup failed');
       }
 
       // 7. Proxy to Cloud Run v2 endpoint
