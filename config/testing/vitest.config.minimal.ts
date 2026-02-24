@@ -12,7 +12,6 @@ export default defineConfig({
     include: [
       // Co-located 순수 함수 테스트만 포함 (jsdom 불필요)
       'src/utils/type-guards.test.ts',
-      'src/utils/metricValidation.test.ts',
       'src/utils/utils-functions.test.ts',
       'src/lib/utils/time.test.ts',
       // Phase 1 추가: validators + AI utils
