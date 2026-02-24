@@ -50,6 +50,23 @@
 
 > 활성화: `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` (settings.json)
 
+### Worktree 격리 (v2.1.50+)
+
+teammate/서브에이전트를 임시 git worktree에서 실행하여 파일 충돌을 원천 차단.
+
+```bash
+# CLI에서 worktree 격리 모드로 시작
+claude --worktree  # 또는 -w
+
+# 서브에이전트 spawn 시 격리
+Task(agent, "작업 내용", isolation: "worktree")
+```
+
+- 변경 없이 완료 시 worktree 자동 정리
+- 변경이 있으면 worktree 경로와 브랜치 반환
+- `WorktreeCreate` / `WorktreeRemove` 훅 이벤트로 커스텀 setup/teardown 가능
+- **권장**: Team 1, 2에서 teammate 간 같은 파일 접근 가능성이 있을 때 사용
+
 ### 공유 파일 (편집 금지 영역)
 
 아래 경로는 모든 팀이 참조하므로 **teammate가 직접 수정하지 않음**. 수정 필요 시 lead가 직접 처리.
