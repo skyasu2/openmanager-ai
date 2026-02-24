@@ -272,8 +272,8 @@ export const DashboardSummary: React.FC<DashboardSummaryProps> = memo(
             />
           )}
 
-          <div className="relative z-10 flex flex-wrap items-center justify-between gap-2 px-3">
-            <div className="flex min-w-0 flex-wrap items-center gap-3 sm:flex-nowrap">
+          <div className="relative z-10 flex flex-wrap items-center justify-between gap-2 px-1 sm:px-3">
+            <div className="flex min-w-0 flex-wrap items-center gap-2 sm:gap-3 sm:flex-nowrap">
               {/* 동적 아이콘 박스 */}
               <div
                 className={`relative flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl shadow-md bg-linear-to-br ${systemHealthGradient.gradient} text-white`}
@@ -288,31 +288,31 @@ export const DashboardSummary: React.FC<DashboardSummaryProps> = memo(
               </div>
               <div className="whitespace-nowrap">
                 <div className="text-2xs font-bold uppercase tracking-wider text-gray-400 leading-tight">
-                  시스템 상태
+                  상태
                 </div>
                 <div
                   className={`text-sm font-bold leading-snug ${systemHealthGradient.text}`}
                 >
                   {safeStats.critical > 0 || safeStats.offline > 0
-                    ? '심각한 문제 발생'
+                    ? '문제 발생'
                     : safeStats.warning > 0
                       ? '성능 경고'
-                      : '정상 운영 중'}
+                      : '정상 운영'}
                 </div>
               </div>
 
               {/* 액션 버튼 그룹 */}
-              <div className="ml-1 flex flex-wrap items-center gap-1.5 sm:flex-nowrap">
+              <div className="ml-0 sm:ml-1 flex flex-wrap items-center gap-1.5 sm:flex-nowrap">
                 {/* Active Alerts 버튼 */}
                 {onOpenActiveAlerts && (
                   <button
                     type="button"
                     onClick={onOpenActiveAlerts}
                     aria-label="활성 알림 보기"
-                    className="relative flex h-11 items-center gap-1.5 rounded-lg border border-rose-100/80 bg-white/90 px-3 text-xs font-semibold text-gray-600 shadow-xs transition-all duration-200 hover:-translate-y-0.5 hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600 hover:shadow-sm active:translate-y-0 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-300/60 cursor-pointer"
+                    className="relative flex h-11 items-center gap-1.5 rounded-lg border border-rose-100/80 bg-white/90 px-2 sm:px-3 text-xs font-semibold text-gray-600 shadow-xs transition-all duration-200 hover:-translate-y-0.5 hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600 hover:shadow-sm active:translate-y-0 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-300/60 cursor-pointer"
                   >
                     <AlertTriangle size={14} />
-                    <span>알림</span>
+                    <span className="hidden sm:inline">알림</span>
                     {activeAlertsCount > 0 && (
                       <span className="flex h-4 min-w-4 items-center justify-center rounded-full bg-rose-500 px-1 text-[10px] font-bold text-white leading-none">
                         {activeAlertsCount}
@@ -325,11 +325,11 @@ export const DashboardSummary: React.FC<DashboardSummaryProps> = memo(
                     type="button"
                     onClick={onOpenAlertHistory}
                     aria-label="알림 이력 보기"
-                    className="flex h-11 items-center gap-1.5 rounded-lg border border-amber-100/80 bg-white/90 px-3 text-xs font-semibold text-gray-600 shadow-xs transition-all duration-200 hover:-translate-y-0.5 hover:border-amber-200 hover:bg-amber-50 hover:text-amber-600 hover:shadow-sm active:translate-y-0 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300/60 cursor-pointer"
+                    className="flex h-11 items-center gap-1.5 rounded-lg border border-amber-100/80 bg-white/90 px-2 sm:px-3 text-xs font-semibold text-gray-600 shadow-xs transition-all duration-200 hover:-translate-y-0.5 hover:border-amber-200 hover:bg-amber-50 hover:text-amber-600 hover:shadow-sm active:translate-y-0 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300/60 cursor-pointer"
                     title="알림 이력"
                   >
                     <Bell size={16} />
-                    <span>알림 이력</span>
+                    <span className="hidden sm:inline">이력</span>
                   </button>
                 )}
                 {onOpenLogExplorer && (
@@ -337,57 +337,57 @@ export const DashboardSummary: React.FC<DashboardSummaryProps> = memo(
                     type="button"
                     onClick={onOpenLogExplorer}
                     aria-label="로그 검색 보기"
-                    className="flex h-11 items-center gap-1.5 rounded-lg border border-blue-100/80 bg-white/90 px-3 text-xs font-semibold text-gray-600 shadow-xs transition-all duration-200 hover:-translate-y-0.5 hover:border-blue-200 hover:bg-blue-50 hover:text-blue-600 hover:shadow-sm active:translate-y-0 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-300/60 cursor-pointer"
+                    className="flex h-11 items-center gap-1.5 rounded-lg border border-blue-100/80 bg-white/90 px-2 sm:px-3 text-xs font-semibold text-gray-600 shadow-xs transition-all duration-200 hover:-translate-y-0.5 hover:border-blue-200 hover:bg-blue-50 hover:text-blue-600 hover:shadow-sm active:translate-y-0 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-300/60 cursor-pointer"
                     title="로그 검색"
                   >
                     <FileSearch size={16} />
-                    <span>로그 검색</span>
+                    <span className="hidden sm:inline">로그</span>
                   </button>
                 )}
               </div>
             </div>
 
             {/* 오른쪽: 위험/경고 카운트 */}
-            <div className="flex shrink-0 items-center gap-3 text-center pr-1">
+            <div className="flex flex-1 justify-end shrink-0 items-center gap-4 text-center pr-1 sm:pr-4">
               <div className="flex flex-col items-center">
                 <div
-                  className={`text-2xl font-bold leading-none tabular-nums ${safeStats.critical > 0 ? 'text-rose-500' : 'text-gray-400'}`}
+                  className={`text-3xl font-bold leading-none tabular-nums ${safeStats.critical > 0 ? 'text-rose-500' : 'text-gray-400'}`}
                 >
                   {safeStats.critical}
                 </div>
-                <div className="mt-1 text-xs font-semibold uppercase text-gray-500">
+                <div className="mt-1 text-xs font-semibold uppercase text-gray-500 tracking-wide">
                   위험
                 </div>
               </div>
-              <div className="h-8 w-px bg-gray-200" />
+              <div className="h-10 w-px bg-gray-200" />
               <div className="flex flex-col items-center">
                 <div
-                  className={`text-2xl font-bold leading-none tabular-nums ${safeStats.warning > 0 ? 'text-amber-500' : 'text-gray-400'}`}
+                  className={`text-3xl font-bold leading-none tabular-nums ${safeStats.warning > 0 ? 'text-amber-500' : 'text-gray-400'}`}
                 >
                   {safeStats.warning}
                 </div>
-                <div className="mt-1 text-xs font-semibold uppercase text-gray-500">
+                <div className="mt-1 text-xs font-semibold uppercase text-gray-500 tracking-wide">
                   경고
                 </div>
               </div>
               {onToggleTopology && (
                 <>
-                  <div className="h-8 w-px bg-gray-200" />
+                  <div className="h-10 w-px bg-gray-200 mx-2" />
                   <button
                     type="button"
                     onClick={onToggleTopology}
                     aria-pressed={showTopology}
                     className={cn(
-                      'inline-flex h-11 items-center gap-1.5 rounded-lg border bg-white/85 px-3 text-xs font-semibold shadow-xs transition-all duration-200',
-                      'hover:-translate-y-0.5 hover:shadow-sm active:translate-y-0 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 cursor-pointer',
+                      'inline-flex h-12 items-center gap-2 rounded-xl border bg-white/85 px-4 sm:px-6 text-sm font-bold shadow-xs transition-all duration-200',
+                      'hover:-translate-y-0.5 hover:shadow-md active:translate-y-0 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 cursor-pointer',
                       showTopology
                         ? 'border-indigo-300 text-indigo-700 hover:bg-indigo-50 focus-visible:ring-indigo-300/60'
-                        : 'border-gray-200 text-gray-600 hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-600 focus-visible:ring-indigo-300/60'
+                        : 'border-gray-200 text-gray-700 hover:border-indigo-300 hover:bg-indigo-50 hover:text-indigo-600 focus-visible:ring-indigo-300/60'
                     )}
                     title="시스템 토폴로지"
                   >
-                    <Network size={14} />
-                    <span>토폴로지</span>
+                    <Network size={18} />
+                    <span>토폴로지 맵</span>
                   </button>
                 </>
               )}
