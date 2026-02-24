@@ -19,11 +19,17 @@ const ActiveAlertsModal = dynamic(
   { ssr: false }
 );
 const AlertHistoryModal = dynamic(
-  () => import('./alert-history/AlertHistoryModal').then((mod) => mod.AlertHistoryModal),
+  () =>
+    import('./alert-history/AlertHistoryModal').then(
+      (mod) => mod.AlertHistoryModal
+    ),
   { ssr: false }
 );
 const LogExplorerModal = dynamic(
-  () => import('./log-explorer/LogExplorerModal').then((mod) => mod.LogExplorerModal),
+  () =>
+    import('./log-explorer/LogExplorerModal').then(
+      (mod) => mod.LogExplorerModal
+    ),
   { ssr: false }
 );
 const TopologyModal = dynamic(
