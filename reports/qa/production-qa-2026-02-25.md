@@ -1,77 +1,101 @@
-# Production QA Report — 2026-02-25 (KST 15:42~15:45)
+# Production QA Report — 2026-02-25
 
-> **Target**: `https://openmanager-ai.vercel.app` (Vercel) + `ai-engine-490817238363` (Cloud Run)
-> **Commit**: `aa5b311dd` (main, squash merge of PR #171)
-> **Cloud Run Revision**: `ai-engine-00233-fc8`
-> **Active Scenario**: S3 (13-18h KST) — `cache-redis-dc1-01` memory leak
-> **Tool**: Playwright MCP (browser automation)
-> **Tester**: Claude Code (Opus 4.6)
+> Owner: Claude Code
+> Status: Active Canonical
+> Doc type: Reference
+> Last reviewed: 2026-02-25
 
 ---
 
-## QA Result Summary
+## Round 1 (KST 15:42~15:45) — Baseline
+
+> **Commit**: `aa5b311dd` (PR #171 squash merge)
+> **Cloud Run**: `ai-engine-00233-fc8`
+> **Scenario**: S3 (13-18h) — `cache-redis-dc1-01` memory leak
+
+### Result: 20/20 PASS
 
 | # | Phase | Test | Result | Time | Notes |
 |:-:|:-----:|------|:------:|:----:|-------|
 | 0.1 | Infra | Cloud Run `/health` | **PASS** | - | HTTP 200 |
 | 0.2 | Infra | Vercel `/api/health` | **PASS** | - | HTTP 200 |
 | 1.1 | Landing | Page render | **PASS** | - | v8.3.4, no error overlay |
-| 1.2 | Login | Guest auto-login + system start | **PASS** | 3s | 3s countdown → `/dashboard` redirect |
-| 2.1 | Dashboard | Server cards + status summary | **PASS** | - | 15 servers: 14 online, 1 warning, 0 critical |
-| 2.2 | Dashboard | S3 scenario reflected | **PASS** | - | `cache-redis-dc1-01` MEM 84% (top warning) |
+| 1.2 | Login | Guest auto-login + system start | **PASS** | 3s | 3s countdown → `/dashboard` |
+| 2.1 | Dashboard | Server cards + status | **PASS** | - | 15 servers: 14 online, 1 warning |
+| 2.2 | Dashboard | S3 scenario reflected | **PASS** | - | `cache-redis-dc1-01` MEM 84% |
 | 2.3 | Dashboard | Resource overview | **PASS** | - | CPU 32%, MEM 49%, Disk 32% |
-| 3.1 | AI Chat | Sidebar open | **PASS** | - | Welcome msg + 4 starter prompts |
-| 3.2 | AI Chat | Starter prompts | **PASS** | - | 서버상태/장애분석/성능예측/보고서 4개 |
+| 3.1 | AI Chat | Sidebar open | **PASS** | - | Welcome + 4 starter prompts |
+| 3.2 | AI Chat | Starter prompts | **PASS** | - | 4개 정상 |
 | 3.3 | AI Chat | Query send | **PASS** | - | "현재 모든 서버의 상태를 요약해줘" |
-| 3.4 | AI Chat | AI response quality | **PASS** | ~5s | 실시간 메트릭 기반 분석, `cache-redis-dc1-01` MEM 84% 감지, `maxmemory`+`allkeys-lru` eviction 권고 |
-| 3.5 | AI Chat | Pipeline visualization | **PASS** | - | 4단계: 초기화→라우팅→AI처리→완료 |
-| 4.1 | Analyst | 전체 분석 (15 servers) | **PASS** | ~5s | 주요이슈: redis MEM 84%. 상승추세: `db-mysql-dc1-primary` 72%→85%, `cache-redis-dc1-02` 72%→84% |
-| 4.2 | Analyst | Saturation model | **PASS** | - | 예측값 85%, 84% (이전 100%→포화 모델 적용 확인). 임계값 메시지 "시스템 보호 메커니즘 발동 가능" 표시 |
-| 4.3 | Reporter | 보고서 생성 | **PASS** | <1s | "cache-redis-dc1-01 메모리 사용량 경고" — 제목/설명/영향서버/시스템요약 포함 |
-| 4.4 | Reporter | MD 복사 버튼 | **PASS** | - | 클릭 → "MD 복사됨" 피드백 (신규 기능 정상) |
-| 5.1 | UI/UX | 피드백 버튼 (👍) | **PASS** | - | 클릭 정상 동작 |
-| 5.2 | UI/UX | ESC 사이드바 닫기 | **PASS** | - | 사이드바 숨김 |
-| 5.3 | UI/UX | 대화 히스토리 유지 | **PASS** | - | AI Chat 재진입 시 이전 대화 보존 |
-| 5.4 | UI/UX | 최종 대시보드 상태 | **PASS** | - | 에러 없이 정상 렌더링 |
+| 3.4 | AI Chat | AI response quality | **PASS** | ~5s | `cache-redis-dc1-01` MEM 84%, `maxmemory`+`allkeys-lru` 권고 |
+| 3.5 | AI Chat | Pipeline visualization | **PASS** | - | 초기화→라우팅→AI처리→완료 |
+| 4.1 | Analyst | 전체 분석 (15 servers) | **PASS** | ~5s | redis MEM 84%, 상승추세 2건 |
+| 4.2 | Analyst | Saturation model | **PASS** | - | 72%→85% (이전 100%→포화 모델 적용) |
+| 4.3 | Reporter | 보고서 생성 | **PASS** | <1s | 제목/설명/영향서버/시스템요약 |
+| 4.4 | Reporter | MD 복사 버튼 | **PASS** | - | "MD 복사됨" 피드백 정상 |
+| 5.1 | UI/UX | 피드백 버튼 | **PASS** | - | 정상 동작 |
+| 5.2 | UI/UX | ESC 사이드바 닫기 | **PASS** | - | 숨김 |
+| 5.3 | UI/UX | 대화 히스토리 유지 | **PASS** | - | 재진입 시 보존 |
+| 5.4 | UI/UX | 최종 대시보드 | **PASS** | - | 에러 없이 정상 |
+
+### PR #171 검증 항목
+
+| 기능 | Before | After | 상태 |
+|------|--------|-------|:----:|
+| Saturation Model | MEM 72%→100% | 72%→85% (logistic dampening) | **VERIFIED** |
+| Reporter Korean | 기계적 번역체 | 자연스러운 한국어 | **VERIFIED** |
+| MD Copy Button | 없음 | "MD로 복사" → "MD 복사됨" 피드백 | **VERIFIED** |
 
 ---
 
-## Score: 20/20 PASS (100%)
+## Round 2 (KST 18:31~18:35) — 3 QA Fix 검증
 
-| Priority | Total | Pass | Fail |
-|:--------:|:-----:|:----:|:----:|
-| P0 (critical) | 8 | 8 | 0 |
-| P1 (important) | 7 | 7 | 0 |
-| P2 (nice-to-have) | 5 | 5 | 0 |
+> **Commit**: `0f3cfd416` (3 QA fixes + Biome sort)
+> **Cloud Run**: `ai-engine-00234-d5b`
+> **Scenario**: S3 종료 경계 (18h) — `cache-redis-dc1-01` MEM 80%
+
+### Result: 18/18 PASS
+
+| # | Phase | Test | Result | Time | Notes |
+|:-:|:-----:|------|:------:|:----:|-------|
+| 0.1 | Infra | Cloud Run `/health` | **PASS** | - | HTTP 200, 9 providers |
+| 0.2 | Infra | Vercel `/api/health` | **PASS** | - | healthy, DB 8ms, Cache 5ms |
+| 1.1 | Landing | Page render | **PASS** | - | 에러 없음 |
+| 1.2 | Landing | **Fix 1: envLabel** | **PASS** | - | **"Vercel 환경"** 표시 (이전 "Local 환경" 수정) |
+| 1.3 | Login | 시스템 시작 → /dashboard | **PASS** | 3s | 정상 리다이렉트 |
+| 2.1 | Dashboard | 서버 15대 | **PASS** | - | 온라인 14, 경고 1, 위험 0 |
+| 2.2 | Dashboard | S3 시나리오 | **PASS** | - | `cache-redis-dc1-01` MEM 80% (Top 1) |
+| 2.3 | Dashboard | 시스템 리소스 | **PASS** | - | CPU 32%, MEM 49%, Disk 33% |
+| 3.1 | AI Chat | 사이드바 열기 | **PASS** | - | 스타터 프롬프트 4개 |
+| 3.2 | AI Chat | AI 응답 품질 | **PASS** | ~5s | redis MEM 80% 경고 + eviction/maxmemory 권고 |
+| 3.3 | AI Chat | 파이프라인 | **PASS** | - | 4단계 정상 |
+| 4.1 | Analyst | 전체 분석 | **PASS** | ~5s | 주요이슈 1건, 상승추세 1건 |
+| 4.2 | Analyst | **Fix 3: slot timing** | **PASS** | - | `lb-haproxy-dc1-01` 16%→19% (합리적 범위) |
+| 4.3 | Reporter | 보고서 생성 | **PASS** | <1s | "Cache 서버 메모리 사용률 경고" |
+| 4.4 | Reporter | **Fix 2: MD 복사** | **PASS** | - | "MD로 복사" → "MD 복사됨" 피드백 정상 |
+| 4.5 | Reporter | 상세보기 | **PASS** | - | 이상항목 + 권장조치(우선순위) + 감지패턴 |
+| 5.1 | UI/UX | ESC 닫기 + 재열기 | **PASS** | - | 히스토리 유지 (2/20) |
+| 5.2 | UI/UX | 최종 대시보드 | **PASS** | - | 에러 없이 정상 |
+
+### 3 QA Fix 검증 항목
+
+| Fix | Issue | Before | After | 상태 |
+|:---:|-------|--------|-------|:----:|
+| Fix 1 | "Local 환경" in Vercel | `envLabel` prop 미전달 → 기본값 'Local' | `envLabel={envLabel}` 전달 → 'Vercel' | **VERIFIED** |
+| Fix 2 | 히스토리 MD 버튼 없음 | `IncidentTable` 상세 패널에 버튼 없음 | `DetailActionButtons` 컴포넌트 추가 | **VERIFIED** |
+| Fix 3 | AI 응답 불일치 | `getCurrentSlotIndex()` 매 호출 재계산 → 슬롯 경계 drift | `fixedSlot` 1회 계산 후 전달 → 일관성 보장 | **VERIFIED** |
 
 ---
 
-## Response Time Summary
+## Response Time Summary (양 라운드 통합)
 
-| Feature | Response Time | Target | Status |
-|---------|:------------:|:------:|:------:|
-| AI Chat (서버 상태 요약) | ~5s | <30s | **Excellent** |
-| Analyst (15 servers) | ~5s | <30s | **Excellent** |
-| Reporter (보고서 생성) | <1s | <5s | **Excellent** |
+| Feature | Round 1 | Round 2 | Target | Status |
+|---------|:-------:|:-------:|:------:|:------:|
+| AI Chat | ~5s | ~5s | <30s | **Excellent** |
+| Analyst (15 servers) | ~5s | ~5s | <30s | **Excellent** |
+| Reporter | <1s | <1s | <5s | **Excellent** |
 
-> Cloud Run이 이전 배포 QA에서 이미 warm 상태. Cold start 시 +10~20s 예상.
-
----
-
-## Key Findings (PR #171 Changes Verified)
-
-### 1. Saturation Model (TrendPredictor) — VERIFIED
-- **Before**: `db-mysql-dc1-primary` MEM 72% → 100% (unrealistic, OOM 미반영)
-- **After**: `db-mysql-dc1-primary` MEM 72% → 85% (logistic dampening applied)
-- 임계값 메시지: "1시간 48분 후 심각(Critical) 도달 예상 — 이후 시스템 보호 메커니즘 발동 가능"
-
-### 2. Reporter Korean Quality — VERIFIED
-- 보고서 설명: 자연스러운 한국어 문장. 기계적 번역체 없음.
-- "데이터 세트의 크기, 캐시 만료 정책, 메모리 할당 설정 등을 확인해야 합니다" — 정확한 조사, 간결체 통일
-
-### 3. MD Copy Button (ReportCard) — VERIFIED
-- 버튼 표시: `ClipboardCopy` 아이콘 + "MD로 복사" 타이틀
-- 클릭 후: "MD 복사됨" 피드백 (2초 후 원복)
+> Cloud Run warm 상태 기준. Cold start 시 +10~20s 예상.
 
 ---
 
@@ -79,12 +103,14 @@
 
 ```
 Frontend: Vercel Pro, v8.3.4
-AI Engine: Cloud Run (asia-northeast1), revision ai-engine-00233-fc8
+AI Engine: Cloud Run (asia-northeast1)
+  Round 1: ai-engine-00233-fc8
+  Round 2: ai-engine-00234-d5b
 Stack: Next.js 16.1.6, React 19.2, TypeScript 5.9
 AI Providers: Cerebras (gpt-oss-120b), Groq (llama-3.3-70b), Mistral, Gemini Flash
-Data: 15 servers × 24h × 10min OTel data (5 causal incident scenarios)
+Data: 15 servers × 24h × 10min OTel (5 causal incident scenarios)
 ```
 
 ---
 
-*Generated by Claude Code (Opus 4.6) via Playwright MCP — 2026-02-25T15:45 KST*
+*Generated by Claude Code (Opus 4.6) via Playwright MCP — 2026-02-25*
