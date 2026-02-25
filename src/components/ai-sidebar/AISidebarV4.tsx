@@ -14,7 +14,6 @@ import {
 import type { AIAssistantFunction } from '@/components/ai/AIAssistantIconPanel';
 import AIAssistantIconPanel from '@/components/ai/AIAssistantIconPanel';
 import { AnalysisBasisBadge } from '@/components/ai/AnalysisBasisBadge';
-import { CollapsibleContent } from '@/components/ai/CollapsibleContent';
 import { MessageActions } from '@/components/ai/MessageActions';
 import { WebSourceCards } from '@/components/ai/WebSourceCards';
 // Components
@@ -146,7 +145,7 @@ const MessageComponent = memo<{
                         </p>
                         <RenderMarkdownContent
                           content={assistantResponseView.summary}
-                          className="text-chat leading-relaxed"
+                          className="text-chat leading-relaxed break-words [overflow-wrap:anywhere]"
                         />
                       </div>
 
@@ -164,23 +163,19 @@ const MessageComponent = memo<{
                           <div className="mt-3 border-t border-slate-200 pt-3">
                             <RenderMarkdownContent
                               content={assistantResponseView.details}
-                              className="text-chat leading-relaxed"
+                              className="text-chat leading-relaxed break-words [overflow-wrap:anywhere]"
                             />
                           </div>
                         )}
                       </details>
                     </div>
                   ) : (
-                    <CollapsibleContent
-                      maxHeight={400}
-                      isStreaming={message.isStreaming}
-                      isLastMessage={Boolean(isLastMessage)}
-                    >
+                    <div className="min-h-[44px] break-words [overflow-wrap:anywhere]">
                       <RenderMarkdownContent
                         content={message.content}
-                        className="text-chat leading-relaxed"
+                        className="text-chat leading-relaxed break-words [overflow-wrap:anywhere]"
                       />
-                    </CollapsibleContent>
+                    </div>
                   )}
                   {/* 🎯 스트리밍 중 타이핑 커서 */}
                   {message.isStreaming && (
@@ -504,7 +499,7 @@ export const AISidebarV4: FC<AISidebarV3Props> = ({
           type="button"
           aria-label="사이드바 닫기"
           onClick={onClose}
-          className="fixed inset-0 z-30 bg-slate-900/35 backdrop-blur-[1px] md:hidden"
+          className="fixed inset-0 z-40 bg-slate-950/55 backdrop-blur-sm md:hidden"
         />
       )}
       <div
@@ -513,7 +508,7 @@ export const AISidebarV4: FC<AISidebarV3Props> = ({
         aria-labelledby="ai-sidebar-v4-title"
         aria-modal={isOpen || undefined}
         className={cn(
-          'gpu-sidebar-slide-in fixed z-40 flex bg-white shadow-2xl',
+          'gpu-sidebar-slide-in fixed z-50 flex bg-white shadow-2xl',
           isMobile
             ? 'inset-0 h-dvh w-screen max-w-none rounded-none'
             : 'right-0 top-0 h-full',

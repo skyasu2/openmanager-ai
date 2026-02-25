@@ -30,8 +30,8 @@ export const ColdStart: Story = {
 };
 
 /**
- * 다단계 자동 재시도 검증
- * - 초기 렌더 시 "시도 1/3" 표시 확인
+ * 자동 재시도 검증
+ * - 초기 렌더 시 "시도 1/1" 표시 확인 (RETRY_SCHEDULE=[15], 1회)
  * - 프로그레스 바와 카운트다운 텍스트 존재 확인
  * - "자동 재시도 취소" 버튼 존재 확인
  */
@@ -44,9 +44,9 @@ export const MultiStepRetry: Story = {
   play: async ({ canvasElement, args }) => {
     const screen = within(canvasElement);
 
-    // 초기 상태: "시도 1/3" 텍스트 확인
+    // 초기 상태: "시도 1/1" 텍스트 확인 (RETRY_SCHEDULE=[15], 1회 자동 재시도)
     await waitFor(() => {
-      expect(screen.getByText(/시도 1\/3/)).toBeInTheDocument();
+      expect(screen.getByText(/시도 1\/1/)).toBeInTheDocument();
     });
 
     // 프로그레스 바 존재 확인
@@ -74,9 +74,9 @@ export const CancelAutoRetry: Story = {
   play: async ({ canvasElement }) => {
     const screen = within(canvasElement);
 
-    // 자동 재시도 상태 확인
+    // 자동 재시도 상태 확인 (RETRY_SCHEDULE=[15], 1회)
     await waitFor(() => {
-      expect(screen.getByText(/시도 1\/3/)).toBeInTheDocument();
+      expect(screen.getByText(/시도 1\/1/)).toBeInTheDocument();
     });
 
     // 취소 클릭
@@ -84,7 +84,7 @@ export const CancelAutoRetry: Story = {
 
     // 카운트다운 관련 UI 사라짐 확인
     await waitFor(() => {
-      expect(screen.queryByText(/시도 1\/3/)).not.toBeInTheDocument();
+      expect(screen.queryByText(/시도 1\/1/)).not.toBeInTheDocument();
     });
   },
 };

@@ -1,9 +1,9 @@
 import { Bot, Brain, ChevronDown, ChevronUp, User } from 'lucide-react';
-import { memo, useEffect, useState } from 'react';
+import { memo, useEffect, useMemo, useState } from 'react';
+import { createAssistantResponseView } from '@/lib/ai/utils/assistant-response-view';
 import { formatTime } from '@/lib/format-date';
 import type { EnhancedChatMessage } from '@/stores/useAISidebarStore';
 import type { AIThinkingStep } from '@/types/ai-sidebar/ai-sidebar-types';
-import { CollapsibleContent } from './CollapsibleContent';
 import { MarkdownRenderer } from './MarkdownRenderer';
 import { MessageActions } from './MessageActions';
 import ThinkingProcessVisualizer from './ThinkingProcessVisualizer';
@@ -59,6 +59,17 @@ export const AIWorkspaceMessage = memo<{
   ) => Promise<boolean>;
   isLastMessage?: boolean;
 }>(({ message, onRegenerateResponse, onFeedback, isLastMessage = false }) => {
+  const assistantResponseView = useMemo(() => {
+    if (
+      message.role !== 'assistant' ||
+      !message.content ||
+      message.isStreaming
+    ) {
+      return null;
+    }
+    return createAssistantResponseView(message.content);
+  }, [message.content, message.isStreaming, message.role]);
+
   if (message.role === 'thinking' && message.thinkingSteps) {
     return (
       <div className="my-4">
@@ -107,24 +118,54 @@ export const AIWorkspaceMessage = memo<{
             }
           >
             {message.role === 'assistant' ? (
-              <CollapsibleContent
-                maxHeight={400}
-                isStreaming={message.isStreaming}
-                isLastMessage={isLastMessage}
-              >
-                {isLastMessage && !message.isStreaming ? (
-                  <TypewriterMarkdown
-                    content={message.content}
-                    enableTypewriter={true}
-                    speed={12}
-                  />
+              <div className="relative">
+                {assistantResponseView?.shouldCollapse ? (
+                  <div className="space-y-3">
+                    <div className="rounded-xl border border-indigo-100 bg-indigo-50/40 p-3">
+                      <p className="mb-2 text-2xs font-semibold uppercase tracking-wide text-indigo-500">
+                        핵심 요약
+                      </p>
+                      <MarkdownRenderer
+                        content={assistantResponseView.summary}
+                        className="text-chat leading-relaxed break-words [overflow-wrap:anywhere]"
+                      />
+                    </div>
+
+                    <details className="group rounded-xl border border-slate-200 bg-slate-50/60 p-3">
+                      <summary className="flex cursor-pointer list-none items-center justify-between text-xs font-semibold text-slate-600 hover:text-slate-800">
+                        <span>상세 분석 보기</span>
+                        <span className="text-2xs text-slate-500 group-open:hidden">
+                          펼치기
+                        </span>
+                        <span className="hidden text-2xs text-slate-500 group-open:inline">
+                          접기
+                        </span>
+                      </summary>
+                      {assistantResponseView.details && (
+                        <div className="mt-3 border-t border-slate-200 pt-3">
+                          <MarkdownRenderer
+                            content={assistantResponseView.details}
+                            className="text-chat leading-relaxed break-words [overflow-wrap:anywhere]"
+                          />
+                        </div>
+                      )}
+                    </details>
+                  </div>
                 ) : (
-                  <MarkdownRenderer
-                    content={message.content}
-                    className="text-chat leading-relaxed"
-                  />
+                  isLastMessage && !message.isStreaming ? (
+                    <TypewriterMarkdown
+                      content={message.content}
+                      enableTypewriter={true}
+                      speed={12}
+                    />
+                  ) : (
+                    <MarkdownRenderer
+                      content={message.content}
+                      className="text-chat leading-relaxed break-words [overflow-wrap:anywhere]"
+                    />
+                  )
                 )}
-              </CollapsibleContent>
+              </div>
             ) : (
               <div className="whitespace-pre-wrap wrap-break-word text-chat leading-relaxed">
                 {message.content}

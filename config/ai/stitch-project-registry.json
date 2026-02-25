@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "updatedAt": "2026-02-13",
+  "updatedAt": "2026-02-26",
   "sourceOfTruth": "code",
   "usagePurpose": "incremental-ui-improvement-and-prototyping",
   "activeProjectId": "9992716002442491853",
@@ -15,16 +15,19 @@
       "title": "System Overview Dashboard Section",
       "status": "active",
       "screenCount": 4,
-      "lastVerifiedAt": "2026-02-13",
+      "lastVerifiedAt": "2026-02-26",
       "mappedFiles": [
         "src/components/dashboard/SystemOverviewSection.tsx",
         "src/components/dashboard/DashboardContent.tsx",
+        "src/components/dashboard/AIAssistantButton.tsx",
         "src/components/ai/WelcomePromptCards.tsx",
         "src/components/ai-sidebar/ChatMessageList.tsx",
+        "src/components/ai-sidebar/AISidebarV4.tsx",
+        "src/components/ai/AIWorkspaceMessage.tsx",
         "src/components/ai/AnalysisResultsCard.tsx",
         "src/components/ai/pages/IntelligentMonitoringPage.tsx"
       ],
-      "notes": "Primary design source for current dashboard + AI chat surfaces."
+      "notes": "Primary design source for current dashboard + AI chat surfaces. Includes mobile AI trigger/sidebar refinements from 2026-02-26 Stitch incremental pass."
     },
     {
       "id": "12614339337978422653",
