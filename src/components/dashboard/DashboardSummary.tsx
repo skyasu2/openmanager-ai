@@ -86,6 +86,7 @@ function StatusCard({
   onFilterChange,
   pulse,
   countColorClass,
+  className,
 }: {
   status: string;
   count: number;
@@ -95,6 +96,7 @@ function StatusCard({
   onFilterChange?: (filter: string | null) => void;
   pulse?: 'ping' | 'pulse' | false;
   countColorClass?: string;
+  className?: string;
 }) {
   const gradient =
     statusGradients[status as keyof typeof statusGradients] ??
@@ -109,6 +111,7 @@ function StatusCard({
   return (
     <button
       type="button"
+      data-testid={`status-card-${status}`}
       onClick={handleClick}
       disabled={!isInteractive}
       aria-label={`${label} ${count}대 필터`}
@@ -122,7 +125,8 @@ function StatusCard({
         !onFilterChange &&
           'disabled:cursor-default disabled:hover:scale-100 disabled:hover:shadow-none',
         activeFilter === status &&
-          `ring-2 ${ringColors[status] ?? 'ring-blue-500'} ring-offset-1`
+          `ring-2 ${ringColors[status] ?? 'ring-blue-500'} ring-offset-1`,
+        className
       )}
     >
       <div
@@ -190,7 +194,10 @@ export const DashboardSummary: React.FC<DashboardSummaryProps> = memo(
     return (
       <div className="mb-4 grid grid-cols-1 gap-3 lg:grid-cols-12">
         {/* 1. Total Servers - 그라데이션 강화 */}
-        <div className="group relative flex flex-row items-center justify-between rounded-2xl border border-white/60 bg-white/60 backdrop-blur-md p-5 shadow-sm transition-all duration-300 hover:shadow-lg hover:scale-[1.02] lg:col-span-2 overflow-hidden">
+        <div
+          data-testid="dashboard-total-card"
+          className="order-3 lg:order-1 group relative flex flex-row items-center justify-between rounded-2xl border border-white/60 bg-white/60 backdrop-blur-md p-5 shadow-sm transition-all duration-300 hover:shadow-lg hover:scale-[1.02] lg:col-span-2 overflow-hidden"
+        >
           {/* 그라데이션 배경 */}
           <div
             className={`absolute inset-0 bg-linear-to-br ${statusGradients.total.gradient} opacity-0 group-hover:opacity-[0.08] transition-opacity duration-500`}
@@ -217,7 +224,10 @@ export const DashboardSummary: React.FC<DashboardSummaryProps> = memo(
         </div>
 
         {/* 2. Status Cards */}
-        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 sm:gap-3 lg:col-span-4">
+        <div
+          data-testid="dashboard-status-grid"
+          className="order-2 lg:order-2 grid grid-cols-2 gap-2 sm:grid-cols-4 sm:gap-3 lg:col-span-4"
+        >
           <StatusCard
             status="online"
             count={safeStats.online}
@@ -225,6 +235,7 @@ export const DashboardSummary: React.FC<DashboardSummaryProps> = memo(
             icon={<CheckCircle2 size={13} className="text-emerald-500" />}
             activeFilter={activeFilter}
             onFilterChange={onFilterChange}
+            className="order-4 sm:order-none"
           />
           <StatusCard
             status="warning"
@@ -235,6 +246,7 @@ export const DashboardSummary: React.FC<DashboardSummaryProps> = memo(
             onFilterChange={onFilterChange}
             pulse="pulse"
             countColorClass="text-amber-600"
+            className="order-2 sm:order-none"
           />
           <StatusCard
             status="critical"
@@ -245,6 +257,7 @@ export const DashboardSummary: React.FC<DashboardSummaryProps> = memo(
             onFilterChange={onFilterChange}
             pulse="ping"
             countColorClass="text-rose-600"
+            className="order-1 sm:order-none"
           />
           <StatusCard
             status="offline"
@@ -253,12 +266,14 @@ export const DashboardSummary: React.FC<DashboardSummaryProps> = memo(
             icon={<XCircle size={13} className="text-slate-400" />}
             activeFilter={activeFilter}
             onFilterChange={onFilterChange}
+            className="order-3 sm:order-none"
           />
         </div>
 
         {/* 3. 시스템 상태 - 동적 그라데이션 */}
         <div
-          className={`group relative rounded-2xl border ${systemHealthGradient.border} bg-white/60 backdrop-blur-md p-3 shadow-sm lg:col-span-6 flex flex-col justify-center transition-all duration-300 hover:shadow-lg hover:scale-[1.01] overflow-hidden`}
+          data-testid="dashboard-system-status-card"
+          className={`order-1 lg:order-3 group relative rounded-2xl border ${systemHealthGradient.border} bg-white/60 backdrop-blur-md p-3 shadow-sm lg:col-span-6 flex flex-col justify-center transition-all duration-300 hover:shadow-lg hover:scale-[1.01] overflow-hidden`}
         >
           {/* 상태 기반 그라데이션 배경 */}
           <div
@@ -348,7 +363,7 @@ export const DashboardSummary: React.FC<DashboardSummaryProps> = memo(
             </div>
 
             {/* 오른쪽: 위험/경고 카운트 */}
-            <div className="flex flex-1 justify-end shrink-0 items-center gap-4 text-center pr-1 sm:pr-4">
+            <div className="flex flex-1 shrink-0 flex-wrap items-center justify-end gap-3 text-center pr-1 sm:gap-4 sm:pr-4">
               <div className="flex flex-col items-center">
                 <div
                   className={`text-3xl font-bold leading-none tabular-nums ${safeStats.critical > 0 ? 'text-rose-500' : 'text-gray-400'}`}
@@ -368,6 +383,17 @@ export const DashboardSummary: React.FC<DashboardSummaryProps> = memo(
                 </div>
                 <div className="mt-1 text-xs font-semibold uppercase text-gray-500 tracking-wide">
                   경고
+                </div>
+              </div>
+              <div className="h-10 w-px bg-gray-200" />
+              <div className="flex flex-col items-center">
+                <div
+                  className={`text-3xl font-bold leading-none tabular-nums ${safeStats.offline > 0 ? 'text-slate-600' : 'text-gray-400'}`}
+                >
+                  {safeStats.offline}
+                </div>
+                <div className="mt-1 text-xs font-semibold uppercase text-gray-500 tracking-wide">
+                  오프라인
                 </div>
               </div>
               {onToggleTopology && (

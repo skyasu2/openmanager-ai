@@ -25,6 +25,7 @@ import {
 } from '@/hooks/ai/useAIChatCore';
 import { useResizable } from '@/hooks/ui/useResizable';
 import { useUserPermissions } from '@/hooks/useUserPermissions';
+import { createAssistantResponseView } from '@/lib/ai/utils/assistant-response-view';
 import { cn } from '@/lib/utils';
 import type { EnhancedChatMessage } from '@/stores/useAISidebarStore';
 import { useAISidebarStore } from '@/stores/useAISidebarStore';
@@ -68,6 +69,12 @@ const MessageComponent = memo<{
     () => convertToAgentSteps(message.thinkingSteps),
     [message.thinkingSteps]
   );
+  const assistantResponseView = useMemo(() => {
+    if (message.role !== 'assistant' || !message.content || message.isStreaming) {
+      return null;
+    }
+    return createAssistantResponseView(message.content);
+  }, [message.content, message.isStreaming, message.role]);
 
   // thinking 메시지일 경우 간소화된 인라인 상태 표시
   if (message.role === 'thinking' && message.thinkingSteps) {
@@ -126,10 +133,44 @@ const MessageComponent = memo<{
             >
               {message.role === 'assistant' ? (
                 <div className="relative">
-                  <RenderMarkdownContent
-                    content={message.content}
-                    className="text-chat leading-relaxed"
-                  />
+                  {assistantResponseView?.shouldCollapse ? (
+                    <div className="space-y-3">
+                      <div className="rounded-xl border border-indigo-100 bg-indigo-50/40 p-3">
+                        <p className="mb-2 text-2xs font-semibold uppercase tracking-wide text-indigo-500">
+                          핵심 요약
+                        </p>
+                        <RenderMarkdownContent
+                          content={assistantResponseView.summary}
+                          className="text-chat leading-relaxed"
+                        />
+                      </div>
+
+                      <details className="group rounded-xl border border-slate-200 bg-slate-50/60 p-3">
+                        <summary className="flex cursor-pointer list-none items-center justify-between text-xs font-semibold text-slate-600 hover:text-slate-800">
+                          <span>상세 분석 보기</span>
+                          <span className="text-2xs text-slate-500 group-open:hidden">
+                            펼치기
+                          </span>
+                          <span className="hidden text-2xs text-slate-500 group-open:inline">
+                            접기
+                          </span>
+                        </summary>
+                        {assistantResponseView.details && (
+                          <div className="mt-3 border-t border-slate-200 pt-3">
+                            <RenderMarkdownContent
+                              content={assistantResponseView.details}
+                              className="text-chat leading-relaxed"
+                            />
+                          </div>
+                        )}
+                      </details>
+                    </div>
+                  ) : (
+                    <RenderMarkdownContent
+                      content={message.content}
+                      className="text-chat leading-relaxed"
+                    />
+                  )}
                   {/* 🎯 스트리밍 중 타이핑 커서 */}
                   {message.isStreaming && (
                     <span className="ml-0.5 inline-block h-5 w-0.5 animate-pulse bg-purple-500" />

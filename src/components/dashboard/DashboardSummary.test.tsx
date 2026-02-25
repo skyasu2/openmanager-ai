@@ -81,14 +81,27 @@ describe('DashboardSummary status filter cards', () => {
   it('모바일 상태 카드 레이아웃 클래스를 유지한다', () => {
     render(<DashboardSummary stats={mockStats} onFilterChange={vi.fn()} />);
 
-    const onlineButton = screen.getByRole('button', {
-      name: '온라인 3대 필터',
-    });
-    const statusGrid = onlineButton.parentElement;
+    const onlineButton = screen.getByTestId('status-card-online');
+    const statusGrid = screen.getByTestId('dashboard-status-grid');
 
     expect(statusGrid).toHaveClass('grid-cols-2');
     expect(statusGrid).toHaveClass('sm:grid-cols-4');
     expect(onlineButton).toHaveClass('min-h-[84px]');
+  });
+
+  it('모바일에서 위험/경고/오프라인을 우선 순서로 배치한다', () => {
+    render(<DashboardSummary stats={mockStats} onFilterChange={vi.fn()} />);
+
+    expect(screen.getByTestId('dashboard-system-status-card')).toHaveClass(
+      'order-1'
+    );
+    expect(screen.getByTestId('dashboard-status-grid')).toHaveClass('order-2');
+    expect(screen.getByTestId('dashboard-total-card')).toHaveClass('order-3');
+
+    expect(screen.getByTestId('status-card-critical')).toHaveClass('order-1');
+    expect(screen.getByTestId('status-card-warning')).toHaveClass('order-2');
+    expect(screen.getByTestId('status-card-offline')).toHaveClass('order-3');
+    expect(screen.getByTestId('status-card-online')).toHaveClass('order-4');
   });
 
   it('모바일 액션 버튼 터치 영역 클래스를 유지한다', () => {
@@ -117,5 +130,10 @@ describe('DashboardSummary status filter cards', () => {
     expect(alertHistoryButton).toHaveClass('min-w-12');
     expect(logSearchButton).toHaveClass('h-12');
     expect(logSearchButton).toHaveClass('min-w-12');
+  });
+
+  it('시스템 상태 카드에 오프라인 카운트를 표시한다', () => {
+    render(<DashboardSummary stats={mockStats} />);
+    expect(screen.getAllByText('오프라인').length).toBeGreaterThanOrEqual(2);
   });
 });
