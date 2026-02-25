@@ -14,6 +14,7 @@ import {
 import type { AIAssistantFunction } from '@/components/ai/AIAssistantIconPanel';
 import AIAssistantIconPanel from '@/components/ai/AIAssistantIconPanel';
 import { AnalysisBasisBadge } from '@/components/ai/AnalysisBasisBadge';
+import { CollapsibleContent } from '@/components/ai/CollapsibleContent';
 import { MessageActions } from '@/components/ai/MessageActions';
 import { WebSourceCards } from '@/components/ai/WebSourceCards';
 // Components
@@ -170,10 +171,16 @@ const MessageComponent = memo<{
                       </details>
                     </div>
                   ) : (
-                    <RenderMarkdownContent
-                      content={message.content}
-                      className="text-chat leading-relaxed"
-                    />
+                    <CollapsibleContent
+                      maxHeight={400}
+                      isStreaming={message.isStreaming}
+                      isLastMessage={Boolean(isLastMessage)}
+                    >
+                      <RenderMarkdownContent
+                        content={message.content}
+                        className="text-chat leading-relaxed"
+                      />
+                    </CollapsibleContent>
                   )}
                   {/* 🎯 스트리밍 중 타이핑 커서 */}
                   {message.isStreaming && (
