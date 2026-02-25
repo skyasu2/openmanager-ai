@@ -77,15 +77,16 @@ export function SystemSummarySection({ summary }: SystemSummarySectionProps) {
           <div className="space-y-1">
             {summary.predictions.map((pred, idx) => {
               const current = Math.round(pred.currentValue ?? 0);
-              const predicted = Math.min(100, Math.max(0, Math.round(pred.predictedValue)));
+              const predicted = Math.min(
+                100,
+                Math.max(0, Math.round(pred.predictedValue))
+              );
               return (
-                <div
-                  key={idx}
-                  className="rounded bg-white/60 px-2 py-1"
-                >
+                <div key={idx} className="rounded bg-white/60 px-2 py-1">
                   <div className="flex items-center justify-between text-xs">
                     <span>
-                      {pred.serverName} - {metricLabels[pred.metric] || pred.metric}
+                      {pred.serverName} -{' '}
+                      {metricLabels[pred.metric] || pred.metric}
                     </span>
                     <span className="font-medium text-orange-600">
                       {current}% → {predicted}%

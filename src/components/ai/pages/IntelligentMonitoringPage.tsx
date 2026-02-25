@@ -179,7 +179,9 @@ export default function IntelligentMonitoringPage() {
                 currentValue: result.currentValue,
                 predictedValue: result.predictedValue,
                 changePercent: result.changePercent,
-                thresholdBreachMessage: (result as { thresholdBreach?: { humanReadable?: string } }).thresholdBreach?.humanReadable,
+                thresholdBreachMessage: (
+                  result as { thresholdBreach?: { humanReadable?: string } }
+                ).thresholdBreach?.humanReadable,
               });
             }
           }
