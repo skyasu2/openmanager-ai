@@ -70,7 +70,9 @@ test.describe('AI 채팅 E2E 테스트', () => {
     const sidebar = await openAiSidebar(page, {
       waitTimeout: TIMEOUTS.COMPLEX_INTERACTION,
     });
-    await expect(sidebar).toBeVisible({ timeout: TIMEOUTS.COMPLEX_INTERACTION });
+    await expect(sidebar).toBeVisible({
+      timeout: TIMEOUTS.COMPLEX_INTERACTION,
+    });
 
     // 스타터 프롬프트 카드 클릭
     const promptCards = page.locator('[data-testid="ai-starter-prompt-card"]');
@@ -96,7 +98,9 @@ test.describe('AI 채팅 E2E 테스트', () => {
     const sidebar = await openAiSidebar(page, {
       waitTimeout: TIMEOUTS.COMPLEX_INTERACTION,
     });
-    await expect(sidebar).toBeVisible({ timeout: TIMEOUTS.COMPLEX_INTERACTION });
+    await expect(sidebar).toBeVisible({
+      timeout: TIMEOUTS.COMPLEX_INTERACTION,
+    });
 
     const input = page.getByRole('textbox', { name: 'AI 질문 입력' });
     await expect(input).toBeVisible({ timeout: TIMEOUTS.COMPLEX_INTERACTION });

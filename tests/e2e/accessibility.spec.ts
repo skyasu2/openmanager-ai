@@ -180,11 +180,16 @@ test.describe('♿ 접근성 (Accessibility) 검증', () => {
       const landmarkRoles = ['banner', 'navigation', 'main', 'contentinfo'];
       return landmarkRoles.map((role) => ({
         role,
-        count: document.querySelectorAll(`[role="${role}"]`).length +
+        count:
+          document.querySelectorAll(`[role="${role}"]`).length +
           (role === 'banner' ? document.querySelectorAll('header').length : 0) +
-          (role === 'navigation' ? document.querySelectorAll('nav').length : 0) +
+          (role === 'navigation'
+            ? document.querySelectorAll('nav').length
+            : 0) +
           (role === 'main' ? document.querySelectorAll('main').length : 0) +
-          (role === 'contentinfo' ? document.querySelectorAll('footer').length : 0),
+          (role === 'contentinfo'
+            ? document.querySelectorAll('footer').length
+            : 0),
       }));
     });
 

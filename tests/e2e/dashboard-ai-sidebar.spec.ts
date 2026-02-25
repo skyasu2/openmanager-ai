@@ -47,7 +47,9 @@ test.describe('대시보드 AI 사이드바 테스트', () => {
     const sidebar = await openAiSidebar(page, {
       waitTimeout: TIMEOUTS.COMPLEX_INTERACTION,
     });
-    await expect(sidebar).toBeVisible({ timeout: TIMEOUTS.COMPLEX_INTERACTION });
+    await expect(sidebar).toBeVisible({
+      timeout: TIMEOUTS.COMPLEX_INTERACTION,
+    });
 
     const input = page.getByRole('textbox', { name: 'AI 질문 입력' });
     await expect(input).toBeVisible({ timeout: TIMEOUTS.COMPLEX_INTERACTION });

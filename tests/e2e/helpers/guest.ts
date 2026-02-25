@@ -503,7 +503,10 @@ export async function openAiSidebar(
 
   // 사이드바가 닫혀있으면 버튼을 찾아서 클릭
   const attemptedButtonSelectors = [...buttonSelectors];
-  const triggerMatch = await findVisibleBySelectors(buttonSelectors, waitTimeout);
+  const triggerMatch = await findVisibleBySelectors(
+    buttonSelectors,
+    waitTimeout
+  );
   const trigger = triggerMatch?.locator ?? null;
 
   if (!trigger) {
@@ -521,12 +524,17 @@ export async function openAiSidebar(
   }
 
   const attemptedSidebarSelectors = [...sidebarSelectors];
-  const sidebarMatch = await findVisibleBySelectors(sidebarSelectors, waitTimeout);
+  const sidebarMatch = await findVisibleBySelectors(
+    sidebarSelectors,
+    waitTimeout
+  );
   if (sidebarMatch) {
     return sidebarMatch.locator;
   }
 
-  const triggerLabel = await trigger.getAttribute('aria-label').catch(() => null);
+  const triggerLabel = await trigger
+    .getAttribute('aria-label')
+    .catch(() => null);
   const triggerPressed = await trigger
     .getAttribute('aria-pressed')
     .catch(() => null);
