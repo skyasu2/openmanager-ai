@@ -70,7 +70,11 @@ const MessageComponent = memo<{
     [message.thinkingSteps]
   );
   const assistantResponseView = useMemo(() => {
-    if (message.role !== 'assistant' || !message.content || message.isStreaming) {
+    if (
+      message.role !== 'assistant' ||
+      !message.content ||
+      message.isStreaming
+    ) {
       return null;
     }
     return createAssistantResponseView(message.content);

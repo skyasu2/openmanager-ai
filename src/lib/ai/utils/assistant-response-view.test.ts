@@ -55,4 +55,3 @@ ${'y'.repeat(700)}`;
     expect(view.details).toBeTruthy();
   });
 });
-

@@ -41,7 +41,9 @@ export function createAssistantResponseView(
     return { summary: '', details: null, shouldCollapse: false };
   }
 
-  const lines = normalized.split(/\r?\n/).filter((line) => line.trim().length > 0);
+  const lines = normalized
+    .split(/\r?\n/)
+    .filter((line) => line.trim().length > 0);
   const isLong =
     normalized.length >= COLLAPSE_CHAR_THRESHOLD ||
     lines.length >= COLLAPSE_LINE_THRESHOLD;
