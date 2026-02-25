@@ -37,12 +37,12 @@ import {
   getObservabilityConfig,
   getStreamRetryConfig,
 } from '@/config/ai-proxy.config';
+import { normalizeAIResponse } from '@/lib/ai/utils/message-normalizer';
 import { createHybridChatTransport } from './core/createHybridChatTransport';
 import { createHybridStreamCallbacks } from './core/createHybridStreamCallbacks';
 import { useClarificationHandlers } from './core/useClarificationHandlers';
 import { useQueryControls } from './core/useQueryControls';
 import { useQueryExecution } from './core/useQueryExecution';
-import { normalizeAIResponse } from '@/lib/ai/utils/message-normalizer';
 import { useAsyncAIQuery } from './useAsyncAIQuery';
 import { generateMessageId } from './utils/hybrid-query-utils';
 

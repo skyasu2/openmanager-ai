@@ -72,7 +72,9 @@ export async function getResourceCatalog(): Promise<OTelResourceCatalog | null> 
   if (cachedResourceCatalog) return cachedResourceCatalog;
   if (inflightResourceCatalog) return inflightResourceCatalog;
 
-  inflightResourceCatalog = loadJsonData<OTelResourceCatalog>('resource-catalog.json')
+  inflightResourceCatalog = loadJsonData<OTelResourceCatalog>(
+    'resource-catalog.json'
+  )
     .then((data) => {
       if (data) cachedResourceCatalog = data;
       return data;

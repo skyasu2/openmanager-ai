@@ -63,7 +63,8 @@ export default function VirtualizedServerList({
   // 첫 노출 개수: 모바일(1열)에서는 경고/위험 서버 수만큼 최소 보장
   const isMobileGrid = cardsPerRow <= 2;
   const alertServerCount = isMobileGrid
-    ? servers.filter((s) => s.status === 'critical' || s.status === 'warning').length
+    ? servers.filter((s) => s.status === 'critical' || s.status === 'warning')
+        .length
     : 0;
   const initialVisible = Math.max(cardsPerRow, alertServerCount);
   const visibleCount = expanded ? servers.length : initialVisible;
