@@ -120,6 +120,7 @@ function DashboardPageContent({ initialServers }: DashboardClientProps) {
         !canAccess &&
         (permissions.userType === 'guest' || permissions.userType === 'github')
       ) {
+        setAuthLoading(false);
         toast({
           variant: 'destructive',
           title: '접근 권한 없음',

@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
-import { fn } from 'storybook/test';
+import { fn, mocked } from 'storybook/test';
+import { useServerMetrics } from '../../hooks/useServerMetrics';
 import type { Server } from '../../types/server';
 import ImprovedServerCard from './ImprovedServerCard';
 
@@ -76,6 +77,13 @@ const meta = {
     variant: 'standard',
     showRealTimeUpdates: true,
     enableProgressiveDisclosure: true,
+  },
+  beforeEach() {
+    mocked(useServerMetrics).mockReturnValue({
+      metricsHistory: [],
+      isLoadingHistory: false,
+      loadMetricsHistory: fn().mockResolvedValue(undefined),
+    } as never);
   },
 } satisfies Meta<typeof ImprovedServerCard>;
 

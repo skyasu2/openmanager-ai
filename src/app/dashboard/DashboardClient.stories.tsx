@@ -6,9 +6,11 @@ import { useProfileAuth } from '../../components/unified-profile/hooks/useProfil
 import { useProfileMenu } from '../../components/unified-profile/hooks/useProfileMenu';
 import { isGuestFullAccessEnabled } from '../../config/guestMode';
 import { useMonitoringReport } from '../../hooks/dashboard/useMonitoringReport';
+import { useHealthCheck } from '../../hooks/system/useHealthCheck';
 import { useToast } from '../../hooks/use-toast';
 import { useAutoLogout } from '../../hooks/useAutoLogout';
 import { useServerDashboard } from '../../hooks/useServerDashboard';
+import { useServerMetrics } from '../../hooks/useServerMetrics';
 import { useSystemAutoShutdown } from '../../hooks/useSystemAutoShutdown';
 import { useSystemStatus } from '../../hooks/useSystemStatus';
 import { useUserPermissions } from '../../hooks/useUserPermissions';
@@ -166,6 +168,31 @@ function setupHookMocks() {
     isLoading: false,
     isError: false,
     error: null,
+  } as never);
+
+  // ImprovedServerCard: useServerMetrics
+  mocked(useServerMetrics).mockReturnValue({
+    metricsHistory: [],
+    isLoadingHistory: false,
+    loadMetricsHistory: fn().mockResolvedValue(undefined),
+  } as never);
+
+  // CloudRunStatusIndicator (via AISidebarHeader): useHealthCheck
+  mocked(useHealthCheck).mockReturnValue({
+    status: 'healthy',
+    providers: [
+      { name: 'Cerebras', status: 'active', role: 'primary' },
+      { name: 'Groq', status: 'active', role: 'fallback' },
+    ],
+    latency: 120,
+    lastChecked: new Date(),
+    isSystemOnline: true,
+    error: null,
+    isChecking: false,
+    check: fn().mockResolvedValue(undefined),
+    isHealthy: true,
+    isDegraded: false,
+    isError: false,
   } as never);
 
   Object.assign(systemInactivityService, {
