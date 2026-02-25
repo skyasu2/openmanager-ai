@@ -4,12 +4,15 @@ import {
   Calendar,
   ChevronLeft,
   ChevronRight,
+  ClipboardCopy,
   Clock,
+  Download,
   FileText,
   RefreshCw,
   X,
 } from 'lucide-react';
-import { memo, useCallback } from 'react';
+import { memo, useCallback, useState } from 'react';
+import { copyReportAsMarkdown, downloadReport } from './formatters';
 import { IncidentTimeline } from './IncidentTimeline';
 import type { IncidentReport } from './types';
 import type { PaginationInfo } from './useIncidentHistory';
@@ -310,8 +313,52 @@ export const IncidentTable = memo(function IncidentTable({
                 </div>
               </div>
             )}
+
+          {/* Action Buttons */}
+          <DetailActionButtons report={selectedReport} />
         </div>
       )}
     </div>
   );
 });
+
+interface DetailActionButtonsProps {
+  report: IncidentReport;
+}
+
+function DetailActionButtons({ report }: DetailActionButtonsProps) {
+  const [copyState, setCopyState] = useState<'idle' | 'copied'>('idle');
+
+  const handleCopy = async () => {
+    const success = await copyReportAsMarkdown(report);
+    if (success) {
+      setCopyState('copied');
+      setTimeout(() => setCopyState('idle'), 2000);
+    }
+  };
+
+  return (
+    <div className="mt-6 flex items-center gap-2 border-t border-gray-200 pt-4">
+      <button
+        type="button"
+        onClick={handleCopy}
+        className={`flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm transition-colors ${
+          copyState === 'copied'
+            ? 'bg-green-100 text-green-700'
+            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+        }`}
+      >
+        <ClipboardCopy className="h-4 w-4" />
+        {copyState === 'copied' ? 'MD 복사됨' : 'MD로 복사'}
+      </button>
+      <button
+        type="button"
+        onClick={() => downloadReport(report, 'md')}
+        className="flex items-center gap-1.5 rounded-lg bg-gray-100 px-3 py-2 text-sm text-gray-600 hover:bg-gray-200"
+      >
+        <Download className="h-4 w-4" />
+        다운로드
+      </button>
+    </div>
+  );
+}

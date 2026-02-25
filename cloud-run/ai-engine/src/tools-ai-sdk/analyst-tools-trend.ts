@@ -4,6 +4,7 @@ import { getCurrentState, type ServerSnapshot } from '../data/precomputed-state'
 import { getTrendPredictor } from '../lib/ai/monitoring/TrendPredictor';
 import { getDataCache } from '../lib/cache-layer';
 import {
+  getCurrentSlotIndex,
   getHistoryForMetric,
   toTrendDataPoints,
   type TrendResultItem,
@@ -84,10 +85,11 @@ export const predictTrends = tool({
           const warnings: string[] = [];
           const criticalAlerts: string[] = [];
           const recoveryPredictions: string[] = [];
+          const fixedSlot = getCurrentSlotIndex();
 
           for (const metric of targetMetrics) {
             const currentValue = server[metric as keyof typeof server] as number;
-            const history = getHistoryForMetric(server.id, metric, currentValue);
+            const history = getHistoryForMetric(server.id, metric, currentValue, fixedSlot);
             const trendHistory = toTrendDataPoints(history);
             const prediction = predictor.predictEnhanced(trendHistory, metric);
 

@@ -21,6 +21,7 @@ import {
 } from '../lib/ai/monitoring/SimpleAnomalyDetector';
 import { getDataCache } from '../lib/cache-layer';
 import {
+  getCurrentSlotIndex,
   getHistoryForMetric,
   type AnomalyResultItem,
 } from './analyst-tools-shared';
@@ -185,11 +186,12 @@ export const detectAnomalies = tool({
 
           const results: Record<string, AnomalyResultItem & { thresholdExceeded?: boolean }> = {};
           const detector = getAnomalyDetector();
+          const fixedSlot = getCurrentSlotIndex();
 
           // 1. Basic Metrics Analysis (CPU, Memory, Disk)
           for (const metric of targetMetrics) {
             const currentValue = analyzedServer[metric as keyof typeof analyzedServer] as number;
-            const history = getHistoryForMetric(analyzedServer.id, metric, currentValue);
+            const history = getHistoryForMetric(analyzedServer.id, metric, currentValue, fixedSlot);
             const threshold = STATUS_THRESHOLDS[metric as keyof typeof STATUS_THRESHOLDS];
 
             // Statistical detection

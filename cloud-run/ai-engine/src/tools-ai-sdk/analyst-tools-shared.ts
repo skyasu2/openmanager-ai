@@ -25,12 +25,25 @@ export function toTrendDataPoints(metricPoints: MetricDataPoint[]): TrendDataPoi
   return metricPoints.map((point) => ({ timestamp: point.timestamp, value: point.value }));
 }
 
+/**
+ * 현재 슬롯 인덱스 (KST 기준 10분 단위).
+ * 도구 호출 간 일관성을 위해 export하여 호출 시점에 한 번만 계산 후 전달 가능.
+ */
+export function getCurrentSlotIndex(): number {
+  const now = new Date();
+  const kstOffset = 9 * 60;
+  const utcMinutes = now.getUTCHours() * 60 + now.getUTCMinutes();
+  const kstMinutes = (utcMinutes + kstOffset) % 1440;
+  return Math.floor(kstMinutes / 10);
+}
+
 export function getHistoryForMetric(
   serverId: string,
   metric: string,
-  currentValue: number
+  currentValue: number,
+  fixedSlot?: number
 ): MetricDataPoint[] {
-  const currentSlot = getCurrentSlotIndex();
+  const currentSlot = fixedSlot ?? getCurrentSlotIndex();
   const now = Date.now();
   const baseTime = now - (now % (10 * 60 * 1000));
   const points: MetricDataPoint[] = [];
@@ -53,14 +66,6 @@ export function getHistoryForMetric(
   }
 
   return points;
-}
-
-function getCurrentSlotIndex(): number {
-  const now = new Date();
-  const kstOffset = 9 * 60;
-  const utcMinutes = now.getUTCHours() * 60 + now.getUTCMinutes();
-  const kstMinutes = (utcMinutes + kstOffset) % 1440;
-  return Math.floor(kstMinutes / 10);
 }
 
 export const PATTERN_INSIGHTS: Record<string, string> = {

@@ -14,6 +14,7 @@ import { AutoLogoutWarning } from '@/components/auth/AutoLogoutWarning';
 import DashboardContent from '@/components/dashboard/DashboardContent';
 import DashboardHeader from '@/components/dashboard/DashboardHeader';
 import AuthLoadingUI from '@/components/shared/AuthLoadingUI';
+import { envLabel } from '@/utils/vercel-env-utils';
 import UnauthorizedAccessUI from '@/components/shared/UnauthorizedAccessUI';
 import { NotificationToast } from '@/components/system/NotificationToast';
 import { isGuestFullAccessEnabled } from '@/config/guestMode';
@@ -319,7 +320,12 @@ function DashboardPageContent({ initialServers }: DashboardClientProps) {
     isMounted &&
     (authLoading || permissions.userType === 'loading')
   ) {
-    return <AuthLoadingUI loadingMessage="권한을 확인하고 있습니다" />;
+    return (
+      <AuthLoadingUI
+        loadingMessage="권한을 확인하고 있습니다"
+        envLabel={envLabel}
+      />
+    );
   }
 
   // 🔒 대시보드 접근 권한이 없는 경우 (GitHub 로그인 또는 PIN 인증 또는 테스트 모드 또는 게스트 전체 접근 모드 필요)

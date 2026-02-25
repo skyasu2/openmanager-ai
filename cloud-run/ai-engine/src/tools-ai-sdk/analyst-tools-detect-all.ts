@@ -12,7 +12,7 @@ import { z } from 'zod';
 
 import { getCurrentState } from '../data/precomputed-state';
 import { getDataCache } from '../lib/cache-layer';
-import { getHistoryForMetric } from './analyst-tools-shared';
+import { getCurrentSlotIndex, getHistoryForMetric } from './analyst-tools-shared';
 import { STATUS_THRESHOLDS } from '../config/status-thresholds';
 
 import type {
@@ -95,6 +95,7 @@ export const detectAnomaliesAllServers = tool({
           let warningCount = 0;
           let criticalCount = 0;
           const affectedServers: string[] = [];
+          const fixedSlot = getCurrentSlotIndex();
 
           for (const server of allServers) {
             let serverHasAnomaly = false;
@@ -108,7 +109,7 @@ export const detectAnomaliesAllServers = tool({
               const isCritical = currentValue >= threshold.critical;
               const isWarning = currentValue >= threshold.warning;
 
-              const history = getHistoryForMetric(server.id, metric, currentValue);
+              const history = getHistoryForMetric(server.id, metric, currentValue, fixedSlot);
               const predictedValue1h = Math.round(projectOneHourValue(history.map((p) => p.value)) * 10) / 10;
               const isFutureWarning = currentValue < threshold.warning && predictedValue1h >= threshold.warning;
               if (isFutureWarning) {
