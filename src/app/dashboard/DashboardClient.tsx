@@ -14,7 +14,6 @@ import { AutoLogoutWarning } from '@/components/auth/AutoLogoutWarning';
 import DashboardContent from '@/components/dashboard/DashboardContent';
 import DashboardHeader from '@/components/dashboard/DashboardHeader';
 import AuthLoadingUI from '@/components/shared/AuthLoadingUI';
-import { envLabel } from '@/utils/vercel-env-utils';
 import UnauthorizedAccessUI from '@/components/shared/UnauthorizedAccessUI';
 import { NotificationToast } from '@/components/system/NotificationToast';
 import { isGuestFullAccessEnabled } from '@/config/guestMode';
@@ -31,6 +30,7 @@ import { useUnifiedAdminStore } from '@/stores/useUnifiedAdminStore';
 import type { Server } from '@/types/server';
 import { triggerAIWarmup } from '@/utils/ai-warmup';
 import debug from '@/utils/debug';
+import { envLabel } from '@/utils/vercel-env-utils';
 import {
   AnimatedAISidebar,
   ContentLoadingSkeleton,
