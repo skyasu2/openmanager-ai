@@ -75,20 +75,30 @@ export function SystemSummarySection({ summary }: SystemSummarySectionProps) {
         <div>
           <h4 className="mb-2 text-sm font-medium">상승 추세 경고</h4>
           <div className="space-y-1">
-            {summary.predictions.map((pred, idx) => (
-              <div
-                key={idx}
-                className="flex items-center justify-between rounded bg-white/60 px-2 py-1 text-xs"
-              >
-                <span>
-                  {pred.serverName} - {metricLabels[pred.metric] || pred.metric}
-                </span>
-                <span className="font-medium text-orange-600">
-                  +{pred.changePercent.toFixed(1)}% →{' '}
-                  {Math.min(100, Math.max(0, Math.round(pred.predictedValue)))}%
-                </span>
-              </div>
-            ))}
+            {summary.predictions.map((pred, idx) => {
+              const current = Math.round(pred.currentValue ?? 0);
+              const predicted = Math.min(100, Math.max(0, Math.round(pred.predictedValue)));
+              return (
+                <div
+                  key={idx}
+                  className="rounded bg-white/60 px-2 py-1"
+                >
+                  <div className="flex items-center justify-between text-xs">
+                    <span>
+                      {pred.serverName} - {metricLabels[pred.metric] || pred.metric}
+                    </span>
+                    <span className="font-medium text-orange-600">
+                      {current}% → {predicted}%
+                    </span>
+                  </div>
+                  {pred.thresholdBreachMessage && (
+                    <div className="mt-0.5 text-xs text-orange-500">
+                      {pred.thresholdBreachMessage}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </div>
       )}

@@ -109,18 +109,15 @@ ${
     ? `## 🔬 근본 원인 분석 (RCA)
 
 ### 감지된 패턴
-${report.pattern}
 
-### 추정 원인
-- 리소스 사용량 증가로 인한 성능 저하
-- 임계값 초과 이벤트 발생
+${report.pattern}
 
 `
     : '';
 
   return `# 📋 ${report.title || '장애 보고서'}
 
-> **문서 버전**: 1.0 | **보고서 ID**: ${reportId}
+> **보고서 ID**: \`${reportId}\` | **생성 시각**: ${timestamp}
 
 ---
 
@@ -129,19 +126,20 @@ ${report.pattern}
 | 항목 | 내용 |
 |------|------|
 | **심각도** | ${severityKo} |
-| **상태** | ${statusKo} |
+| **현재 상태** | ${statusKo} |
 | **발생 시간** | ${timestamp} |
 | **영향 서버** | ${report.affectedServers.length}대 |
+| **영향도** | ${report.systemSummary ? `전체 인프라의 ${Math.round(((report.systemSummary.warningServers + report.systemSummary.criticalServers) / report.systemSummary.totalServers) * 100)}%` : 'N/A'} |
 
-**개요**: ${report.description.split('.')[0] || report.description}
-
----
-
-## 📝 상세 설명
+### 상황 개요
 
 ${report.description}
 
-## 🖥️ 영향받는 서버
+---
+
+## 🖥️ 영향 범위
+
+### 영향받는 서버 (${report.affectedServers.length}대)
 
 ${report.affectedServers.length > 0 ? report.affectedServers.map((s) => `- \`${s}\``).join('\n') : '- 없음'}
 
@@ -149,13 +147,15 @@ ${systemSummarySection}${timelineSection}${anomaliesSection}${patternSection}${r
 
 ## 📎 부록
 
-- **보고서 생성 도구**: OpenManager AI AI Engine
-- **분석 기준**: 실시간 메트릭 + AI 패턴 분석
-- **문서 형식**: ITIL Major Incident Report Template 준수
+| 항목 | 내용 |
+|------|------|
+| **보고서 생성** | OpenManager AI Engine |
+| **분석 기준** | 실시간 메트릭 + AI 패턴 분석 |
+| **참조 표준** | ITIL v4 Major Incident Management |
 
 ---
-*자동 생성된 장애 보고서 - OpenManager AI v5*
-*Generated at: ${timestamp}*
+*자동 생성 — OpenManager AI*
+*${timestamp}*
 `;
 }
 
@@ -242,6 +242,21 @@ ${recommendationsTxt}
 자동 생성된 장애 보고서 - OpenManager AI v5
 문서 형식: ITIL Major Incident Report Template
 `;
+}
+
+/**
+ * 보고서를 마크다운으로 클립보드에 복사
+ */
+export async function copyReportAsMarkdown(
+  report: IncidentReport
+): Promise<boolean> {
+  try {
+    const content = formatReportAsMarkdown(report);
+    await navigator.clipboard.writeText(content);
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 /**

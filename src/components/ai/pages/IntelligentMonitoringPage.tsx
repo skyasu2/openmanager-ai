@@ -176,8 +176,10 @@ export default function IntelligentMonitoringPage() {
                 serverName: server.serverName,
                 metric,
                 trend: result.trend,
+                currentValue: result.currentValue,
                 predictedValue: result.predictedValue,
                 changePercent: result.changePercent,
+                thresholdBreachMessage: (result as { thresholdBreach?: { humanReadable?: string } }).thresholdBreach?.humanReadable,
               });
             }
           }

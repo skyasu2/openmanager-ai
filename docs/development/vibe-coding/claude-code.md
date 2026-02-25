@@ -5,7 +5,7 @@
 > Status: Active Supporting
 > Doc type: Reference
 > Last reviewed: 2026-02-14
-> Canonical: docs/vibe-coding/claude-code.md
+> Canonical: docs/development/vibe-coding/claude-code.md
 > Tags: vibe-coding,claude,mcp
 
 ## 개요

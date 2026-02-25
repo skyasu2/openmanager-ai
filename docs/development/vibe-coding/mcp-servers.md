@@ -4,13 +4,13 @@
 > Owner: dev-experience
 > Status: Active Supporting
 > Doc type: Reference
-> Last reviewed: 2026-02-19
-> Canonical: docs/vibe-coding/mcp-servers.md
+> Last reviewed: 2026-02-25
+> Canonical: docs/development/vibe-coding/mcp-servers.md
 > Tags: vibe-coding,mcp,configuration
 
 ## 개요
 
-**MCP (Model Context Protocol)**는 Claude Code에 외부 도구와 데이터를 연결하는 프로토콜입니다.
+**MCP (Model Context Protocol)**는 AI 에이전트에 외부 도구와 데이터를 연결하는 프로토콜입니다.
 
 ```
 ┌─────────────┐     ┌─────────────┐     ┌─────────────┐
@@ -21,19 +21,22 @@
 
 ---
 
-## 현재 사용 중인 MCP 서버 (9개)
+## MCP 카탈로그 (프로젝트 공통)
 
-| MCP | 용도 | 패키지 | 우선순위 |
-|-----|------|--------|:--------:|
-| **context7** | 라이브러리 공식 문서 | `@upstash/context7-mcp` | 높음 |
-| **sequential-thinking** | 복잡한 추론, 아키텍처 설계 | `@modelcontextprotocol/server-sequential-thinking` | 높음 |
-| **stitch** | Google Stitch AI UI 디자인 | `@_davideast/stitch-mcp` | 중간 |
-| **supabase** | PostgreSQL 관리 | `@supabase/mcp-server-supabase` | 중간 |
-| **vercel** | 배포 상태 확인 | `vercel-mcp` | 중간 |
-| **playwright** | E2E 테스트, 브라우저 자동화 | `@playwright/mcp` | 중간 |
-| **next-devtools** | Next.js 런타임 오류/로그/메타데이터 조회 | `next-devtools-mcp` | 중간 |
-| **github** | 저장소/PR 관리 | `@modelcontextprotocol/server-github` | 중간 |
-| **storybook** | 컴포넌트 문서 조회, 스토리 기반 작업 (Claude Code 전담 운영) | `@storybook/addon-mcp` (Storybook MCP) | 중간 |
+| MCP | 용도 | 기본 활성 (Codex) | 비고 |
+|-----|------|:-----------------:|------|
+| **context7** | 라이브러리 공식 문서 검색 | ✅ | 공식 문서 우선 참조 |
+| **sequential-thinking** | 복잡한 추론/설계 분해 | ✅ | 다단계 분석 |
+| **stitch** | UI 디자인 생성/변형 | ✅ | Google Stitch 연동 |
+| **supabase-db** | PostgreSQL 조회/SQL/마이그레이션 | ✅ | Supabase MCP |
+| **vercel** | 배포 상태/이벤트 확인 | ✅ | Vercel MCP |
+| **playwright** | 브라우저 자동화/E2E | ✅ | 로컬 QA |
+| **next-devtools** | Next.js 런타임 진단 | ✅ | Next.js 16+ |
+| **github** | 저장소/PR/이슈 관리 | ✅ | GitHub MCP |
+| **storybook** | 컴포넌트 문서/스토리 기반 작업 | 선택 | Claude 전담 운영 시 사용 |
+
+- Codex 기준 SSOT: `.codex/config.toml` (현재 8개 활성, `storybook` 제외)
+- Claude 기준 로컬 구성은 `.mcp.json`/`.claude/settings.local.json` 정책에 따릅니다.
 
 ---
 
@@ -81,18 +84,18 @@
   - `bash scripts/mcp/mcp-health-check-codex.sh`
 - 실제 동작 검증은 서버별 도구 1회 이상 호출로 확인합니다.
 
-### 현재 Codex MCP 구성 요약 (2026-02-15)
+### 현재 Codex MCP 구성 요약 (2026-02-25)
 
 | Server ID | 실행 방식(요약) | Timeout (startup/tool) | 적용 목적 |
 |---|---|---:|---|
 | `supabase-db` | `node .../mcp-server-supabase/dist/transports/stdio.js` | `30/120` | DB 조회/SQL/마이그레이션 |
-| `context7` | `npx -y @upstash/context7-mcp` | `60/120` | 최신 공식 문서 검색 |
-| `playwright` | `npx -y @playwright/mcp --output-dir .playwright-mcp/screenshots` | `60/180` | 브라우저 자동화 QA |
+| `context7` | `npx -y @upstash/context7-mcp` | `120/120` | 최신 공식 문서 검색 |
+| `playwright` | `npx -y @playwright/mcp --output-dir .playwright-mcp/screenshots` | `180/180` | 브라우저 자동화 QA |
 | `next-devtools` | `npx -y next-devtools-mcp@latest` | `75/120` | Next.js 런타임 진단 |
-| `github` | `npx -y @modelcontextprotocol/server-github` | `60/120` | PR/Issue/파일 조회 |
-| `sequential-thinking` | `npx -y @modelcontextprotocol/server-sequential-thinking` | `60/90` | 복잡한 추론/계획 |
+| `github` | `npx -y @modelcontextprotocol/server-github` | `120/120` | PR/Issue/파일 조회 |
+| `sequential-thinking` | `npx -y @modelcontextprotocol/server-sequential-thinking` | `120/90` | 복잡한 추론/계획 |
 | `stitch` | `bash -lc ./scripts/mcp/start-stitch-mcp.sh` | `120/180` | UI 생성/변형 |
-| `vercel` | `bash -lc npx -y vercel-mcp ...` | `60/120` | 배포 상태/로그 확인 |
+| `vercel` | `bash -lc npx -y vercel-mcp ...` | `180/120` | 배포 상태/로그 확인 |
 
 ### Codex에 MCP 추가/수정하는 방법
 

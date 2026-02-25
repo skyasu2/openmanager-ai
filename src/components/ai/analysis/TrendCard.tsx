@@ -94,6 +94,16 @@ export function TrendCard({ metric, data }: TrendCardProps) {
           </span>
         )}
       </div>
+      {data.thresholdBreach?.humanReadable && data.thresholdBreach.humanReadable !== '✅ 24시간 내 임계값 도달 예상 없음' && (
+        <div className="mt-1 rounded bg-white/60 px-1.5 py-0.5 text-xs text-orange-600">
+          {data.thresholdBreach.humanReadable}
+        </div>
+      )}
+      {data.recovery?.humanReadable && (
+        <div className="mt-1 rounded bg-white/60 px-1.5 py-0.5 text-xs text-blue-600">
+          {data.recovery.humanReadable}
+        </div>
+      )}
     </div>
   );
 }

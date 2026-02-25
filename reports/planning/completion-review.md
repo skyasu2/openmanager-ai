@@ -226,7 +226,7 @@
 | T1 | 활성 문서 수 | 55개 (목표 55, archived 제외) | ✅ | docs/ 전체 |
 | T2 | 메타데이터 100% | Owner, Status, Tags 전부 | ✅ | Diataxis 분류 |
 | T3 | 아키텍처 정확성 | Mermaid/ASCII = 코드 일치 | ✅ | 6개 아키텍처 문서 |
-| T4 | 바이브 코딩 문서 | 7개 (MCP, Skills, Agent) | ✅ | `docs/vibe-coding/` |
+| T4 | 바이브 코딩 문서 | 7개 (MCP, Skills, Agent) | ✅ | `docs/development/vibe-coding/` |
 | T5 | WBS 완성도 분석 | 코드 근거 기반, 줄번호 참조 | ✅ | 본 검수 대상 |
 | T6 | CI/CD + 인프라 문서 | 8개 워크플로우 + Free Tier + Resilience | ✅ | 2026-02-15 신규 4건 |
 | T7 | 환경 변수 문서 | 전체 환경변수 맵 | ✅ | 2026-02-15 신규 |

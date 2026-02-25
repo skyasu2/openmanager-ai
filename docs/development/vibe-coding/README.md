@@ -4,8 +4,8 @@
 > Owner: dev-experience
 > Status: Active Canonical
 > Doc type: Overview
-> Last reviewed: 2026-02-14
-> Canonical: docs/vibe-coding/README.md
+> Last reviewed: 2026-02-25
+> Canonical: docs/development/vibe-coding/README.md
 > Tags: vibe-coding,ai-workflow
 
 ## Vibe Coding이란?
@@ -31,12 +31,12 @@
 │  └─────────────┘  └─────────────┘  └─────────────┘     │
 │                          ↓                              │
 │  ┌──────────────────────────────────────────────────┐  │
-│  │              MCP Servers (8개)                    │  │
+│  │              MCP Servers (SSOT 기반)              │  │
 │  │  context7 | supabase | playwright | next-devtools │  │
 │  └──────────────────────────────────────────────────┘  │
 │                          ↓                              │
 │  ┌──────────────────────────────────────────────────┐  │
-│  │              Skills (11개)                        │  │
+│  │              Skills (에이전트별)                  │  │
 │  │  commit | review | lint-smoke | security | ...   │  │
 │  └──────────────────────────────────────────────────┘  │
 └─────────────────────────────────────────────────────────┘
@@ -49,9 +49,16 @@
 | [설치 가이드](./setup.md) | AI 도구 설치 및 로그인 설정 |
 | [Claude Code](./claude-code.md) | Claude CLI 전용 사용법 |
 | [AI 도구들](./multi-agent-tools.md) | 3-CLI 협업 개발 운영 가이드 |
-| [MCP 서버](./mcp-servers.md) | 8개 MCP 서버 활용법 |
-| [Skills](./skills.md) | 11개 커스텀 스킬 레퍼런스 |
+| [MCP 서버](./mcp-servers.md) | 에이전트별 MCP 구성/운영/문제해결 |
+| [Skills](./skills.md) | Codex/Claude 스킬 구성과 호출 방식 |
 | [워크플로우](./workflows.md) | 실전 개발 워크플로우 |
+
+## 범위 경계 (중복 최소화)
+
+- 설치/로그인 상세: [setup.md](./setup.md)
+- MCP 구성/토큰/권한 상세: [mcp-servers.md](./mcp-servers.md)
+- 스킬 카탈로그 상세: [skills.md](./skills.md)
+- 이 문서는 허브/내비게이션 중심으로 유지
 
 ## 빠른 시작
 
@@ -151,10 +158,10 @@ bash scripts/ai/agent-bridge.sh --to gemini --mode analysis --save-auto "대안 
 AI 도구의 context window를 효율적으로 사용하기 위해 4단계 계층으로 문서를 구성합니다:
 
 ```
-L1: CLAUDE.md (~40줄)      ← 항상 로드, 핵심 포인터만
-L2: .claude/rules/ (6파일)  ← 자동 로드, 도메인별 규칙
-L3: docs/ (71파일)          ← 필요시 참조, 상세 가이드
-L4: Skills (11개)           ← 명시적 호출, 자동화 워크플로우
+L1: CLAUDE.md               ← 항상 로드, 핵심 포인터만
+L2: .claude/rules/          ← 자동 로드, 도메인별 규칙
+L3: docs/                   ← 필요시 참조, 상세 가이드
+L4: Skills                  ← 명시적 호출, 자동화 워크플로우
 ```
 
 **Context Rot 방지**: LLM의 긴 context에서 attention이 불균일하게 저하됩니다. 문서를 짧게 유지하고, 상세 내용은 포인터로 연결하세요.
@@ -183,6 +190,6 @@ L4: Skills (11개)           ← 명시적 호출, 자동화 워크플로우
 
 ## 관련 문서
 
-- [개발 환경](../development/README.md)
-- [테스트 전략](../guides/testing/test-strategy.md)
-- [아키텍처](../reference/architecture/system/system-architecture-current.md)
+- [개발 환경](../README.md)
+- [테스트 전략](../../guides/testing/test-strategy.md)
+- [아키텍처](../../reference/architecture/system/system-architecture-current.md)

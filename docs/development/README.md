@@ -12,20 +12,39 @@
 
 이 프로젝트는 **WSL 2 + Claude Code + Codex + Gemini CLI** 기반의 AI-assisted 개발 환경을 사용합니다.
 
-## 문서 목록
+## 문서 구조
+
+### 1. WSL/배포환경 영역
 
 | 문서 | 설명 |
 |------|------|
-| [프로젝트 설정](./project-setup.md) | 현재 Canonical 설정 가이드 (WSL/환경변수/검증) |
-| [Git Hooks 워크플로우](./git-hooks-workflow.md) | Pre-commit, Pre-push, CI/CD 최적화 |
+| [프로젝트 설정](./project-setup.md) | WSL/의존성/환경변수 부트스트랩 Canonical 가이드 |
 | [Docker 개발 환경](./docker.md) | Docker Desktop + WSL, AI Engine 로컬 테스트, 배포 |
-| [CI/CD 파이프라인](./ci-cd.md) | GitHub Actions 8개 워크플로우, Dependabot 자동 의존성 관리 |
-| [환경 변수 관리](./environment-variables.md) | 전체 환경변수 맵, GCP Secret Manager, 시크릿 관리 |
-| [개발 도구](./dev-tools.md) | Node.js, npm, IDE 설정 |
+| [환경 변수 관리](./environment-variables.md) | 전체 환경변수 맵, Secret Manager, 주입 정책 |
+| [CI/CD 파이프라인](./ci-cd.md) | GitHub Actions/배포 흐름/운영 자동화 |
+| [Git Hooks 워크플로우](./git-hooks-workflow.md) | Pre-commit/Pre-push 품질 게이트 |
+| [개발 도구](./dev-tools.md) | Node.js/npm/IDE/로컬 도구 설정 |
+
+### 2. Vibe Coding 영역
+
+| 문서 | 설명 |
+|------|------|
+| [Vibe Coding 허브](./vibe-coding/README.md) | 멀티 에이전트 협업 운영 개요 |
+| [AI 도구 설치](./vibe-coding/setup.md) | Claude/Codex/Gemini + MCP 설치/로그인 |
+| [MCP 서버 가이드](./vibe-coding/mcp-servers.md) | MCP 구성/우선순위/트러블슈팅 |
+| [AI 도구 운영](./vibe-coding/multi-agent-tools.md) | 역할 분담/도구 선택 기준 |
+| [개발 워크플로우](./vibe-coding/workflows.md) | 실전 구현/검증/배포 플로우 |
+| [Claude Code 가이드](./vibe-coding/claude-code.md) | CLI 중심 운영 레퍼런스 |
+| [Skills 레퍼런스](./vibe-coding/skills.md) | 커스텀 스킬 카탈로그 |
+
+### 3. 공통 개발 기준
+
+| 문서 | 설명 |
+|------|------|
 | [코딩 표준](./coding-standards.md) | 개발 방법론 및 코드 스타일 |
-| [문서 관리](./documentation-management.md) | 문서 구조/정합성/인벤토리 관리 기준 + WSL 전용 체크 경로 |
-| [Codex 전환 가이드](./codex-main-transition-guide.md) | Claude Skill 참조 기반 Codex 메인 전환 전략 |
-| [Stitch 가이드](./stitch-guide.md) | UI 구현 기준, 정합성 정책, 증분 개선 워크플로우 통합 |
+| [문서 관리](./documentation-management.md) | 문서 구조/정합성/인벤토리 관리 기준 |
+| [Codex 전환 가이드](./codex-main-transition-guide.md) | Codex 메인 운영 전환 전략 |
+| [Stitch 가이드](./stitch-guide.md) | UI 증분 개선 워크플로우 통합 |
 
 ## 기술 스택
 
@@ -78,7 +97,7 @@ bash scripts/ai/agent-bridge.sh --to codex --mode query "안녕하세요만 출�
 
 ## 관련 문서
 
-- [Vibe Coding 가이드](../vibe-coding/README.md) - AI 도구 활용
+- [Vibe Coding 허브](./vibe-coding/README.md) - AI 도구 활용
 - [테스트 전략](../guides/testing/test-strategy.md)
 - [배포 토폴로지](../reference/architecture/system/system-architecture-current.md#9-deployment-topology)
 - [Stitch 프로젝트 레지스트리](../../config/ai/stitch-project-registry.json)

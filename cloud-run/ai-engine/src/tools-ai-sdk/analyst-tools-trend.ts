@@ -131,7 +131,7 @@ export const predictTrends = tool({
 
           let message = '';
           if (criticalAlerts.length > 0) {
-            message = `🚨 ${server.name}: ${criticalAlerts.join('; ')}`;
+            message = `🚨 ${server.name}: ${criticalAlerts.join('; ')} (포화 근처에서 비선형 동작 가능)`;
           } else if (warnings.length > 0) {
             message = `⚠️ ${server.name}: ${warnings.join('; ')}`;
           } else if (recoveryPredictions.length > 0) {

@@ -216,16 +216,36 @@ export class TrendPredictor {
     const currentValue = basePrediction.details.currentValue;
     const slope = basePrediction.details.slope;
 
-    // 1.5. 백분율 메트릭(cpu/memory/disk/network)은 0-100 범위로 클램핑
+    // 1.5. 백분율 메트릭(cpu/memory/disk/network): 포화 모델 적용
+    // 선형 회귀는 100% 초과를 예측하지만, 실제로는:
+    // - OOM Killer가 프로세스 강제 종료 → 메모리 급락
+    // - Redis maxmemory → eviction 발동 → 메모리 감소
+    // - 시스템 자체 보호 메커니즘이 100% 도달을 방지
+    // 따라서 critical 임계값(90%) 이상에서는 로지스틱 감속을 적용
     const percentMetrics = new Set(['cpu', 'memory', 'disk', 'network']);
     if (percentMetrics.has(metricName)) {
-      const clamped = Math.max(0, Math.min(100, basePrediction.prediction));
-      if (clamped !== basePrediction.prediction) {
-        basePrediction.prediction = clamped;
-        basePrediction.details.predictedChange = clamped - currentValue;
+      const criticalThreshold = (this.thresholds[metricName] || DEFAULT_THRESHOLDS.cpu).critical;
+      const linearPrediction = basePrediction.prediction;
+
+      let adjusted: number;
+      if (linearPrediction > criticalThreshold && currentValue < criticalThreshold) {
+        // 현재 critical 미만 → 예측이 critical 초과: 점진적 감속
+        // critical 지점까지는 선형, 이후는 로지스틱 감속
+        const overshoot = linearPrediction - criticalThreshold;
+        const maxOvershoot = 100 - criticalThreshold; // 10%
+        // 로지스틱: overshoot이 클수록 실제 증가분은 줄어듦
+        const dampedOvershoot = maxOvershoot * (1 - Math.exp(-overshoot / maxOvershoot));
+        adjusted = criticalThreshold + dampedOvershoot;
+      } else {
+        adjusted = Math.max(0, Math.min(100, linearPrediction));
+      }
+
+      if (adjusted !== basePrediction.prediction) {
+        basePrediction.prediction = adjusted;
+        basePrediction.details.predictedChange = adjusted - currentValue;
         basePrediction.details.predictedChangePercent =
           currentValue !== 0
-            ? ((clamped - currentValue) / currentValue) * 100
+            ? ((adjusted - currentValue) / currentValue) * 100
             : 0;
       }
     }

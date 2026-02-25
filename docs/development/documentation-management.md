@@ -21,7 +21,8 @@
 ## 운영 규칙
 
 1. 우선순위: 병합 > 기존 문서 확장 > 신규 생성
-2. 활성 문서 예산: 총 55개(`docs/archived/` 제외), 세부 한도는 정책 원본 준수
+2. 활성 문서 예산: 총 55개(`docs/archived/` 제외)
+   - Scope 한도: `reference/architecture 20`, `development 20(= vibe-coding 포함)`, `guides 12`, `troubleshooting 5`, `root 5`
 3. 메타데이터(변경 문서 Hard gate):
    - 필수: `Owner`, `Status`, `Doc type`, `Last reviewed`
    - 권장: `Canonical`, `Tags`

@@ -178,9 +178,9 @@ bash scripts/ai/agent-bridge.sh --to claude --mode doc --save-auto "결과 문�
 
 ## Related Documents
 
-- [Vibe Coding README](../../vibe-coding/README.md)
-- [Vibe Coding Workflows](../../vibe-coding/workflows.md)
-- [AI Tools](../../vibe-coding/multi-agent-tools.md)
+- [Vibe Coding README](../../development/vibe-coding/README.md)
+- [Vibe Coding Workflows](../../development/vibe-coding/workflows.md)
+- [AI Tools](../../development/vibe-coding/multi-agent-tools.md)
 
 ---
 

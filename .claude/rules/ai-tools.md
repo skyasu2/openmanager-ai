@@ -151,4 +151,4 @@ Have them challenge each other's findings. Read-only — no file edits.
 
 ---
 
-**See Also**: 상세 문서 → `docs/vibe-coding/` (mcp-servers.md, skills.md, ai-tools.md)
+**See Also**: 상세 문서 → `docs/development/vibe-coding/` (mcp-servers.md, skills.md, multi-agent-tools.md)

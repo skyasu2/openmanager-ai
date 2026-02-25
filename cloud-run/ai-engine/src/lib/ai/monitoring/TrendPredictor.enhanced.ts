@@ -26,7 +26,7 @@ export function predictThresholdBreach(
       timeToWarning: 0,
       willBreachCritical: true,
       timeToCritical: 0,
-      humanReadable: '현재 심각(Critical) 상태입니다.',
+      humanReadable: '🚨 현재 심각(Critical) 상태 — 시스템 보호 메커니즘(OOM Killer, eviction 등) 발동 가능',
     };
   }
 
@@ -144,7 +144,7 @@ function formatBreachMessage(
   }
 
   if (willBreachCritical && timeToCritical !== null) {
-    return `🚨 ${formatDuration(timeToCritical)} 후 심각(Critical) 상태 예상`;
+    return `🚨 ${formatDuration(timeToCritical)} 후 심각(Critical) 도달 예상 — 이후 시스템 보호 메커니즘 발동 가능`;
   }
 
   if (willBreachWarning && timeToWarning !== null) {

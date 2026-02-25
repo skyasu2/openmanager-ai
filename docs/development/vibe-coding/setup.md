@@ -4,13 +4,18 @@
 > Owner: dev-experience
 > Status: Active Supporting
 > Doc type: Tutorial
-> Last reviewed: 2026-02-17
-> Canonical: docs/vibe-coding/setup.md
+> Last reviewed: 2026-02-25
+> Canonical: docs/development/vibe-coding/setup.md
 > Tags: vibe-coding,setup,mcp
 
 ## 개요
 
 Vibe Coding에 필요한 AI CLI 도구들의 설치 방법입니다.
+
+범위:
+- 이 문서: AI CLI 설치/로그인/최소 검증
+- MCP 상세 설정/권한/서버 카탈로그: [mcp-servers.md](./mcp-servers.md)
+- WSL/배포환경 부트스트랩: [../project-setup.md](../project-setup.md)
 
 ```
 ┌─────────────────────────────────────────────────────────┐
@@ -85,22 +90,15 @@ claude             # 대화형 모드 시작
 
 ### 빠른 설정
 
-1. **`.mcp.json` 생성**: [MCP 서버 가이드 - 설정 백업](./mcp-servers.md#현재-설정-백업-2026-01-27) 참조
+1. **`.mcp.json` 생성**: [MCP 서버 가이드](./mcp-servers.md)의 설정 백업 섹션 참조
 
 2. **권한 설정**: `.claude/settings.local.json` 생성
 
-### 현재 사용 중인 MCP 서버 (8개)
+### 구성 기준
 
-| MCP | 용도 |
-|-----|------|
-| context7 | 라이브러리 문서 |
-| sequential-thinking | 복잡한 추론 |
-| stitch | Google UI 디자인 |
-| supabase-db | PostgreSQL 관리 |
-| vercel | 배포 상태 |
-| playwright | E2E 테스트 |
-| github | 저장소/PR 관리 |
-| next-devtools | Next.js DevTools 컨텍스트/오류 조회 |
+- Codex SSOT: `.codex/config.toml`의 `[mcp_servers.*]`
+- Claude 로컬: `.mcp.json` + `.claude/settings.local.json`
+- 수치(서버 개수) 대신 SSOT 기준으로 확인: `bash scripts/mcp/codex-local.sh mcp list`
 
 ---
 
