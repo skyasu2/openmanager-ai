@@ -156,7 +156,7 @@ GEMINI_API_KEY=${GEMINI_API_KEY_PRIMARY}
 | 문서 | 변경 내용 |
 |------|----------|
 | `.env.example` | GEMINI_API_KEY 설명 추가 |
-| `docs/vibe-coding/mcp-servers.md` | Gemini 관련 없음 (MCP 아님) |
+| `docs/development/vibe-coding/mcp-servers.md` | Gemini 관련 없음 (MCP 아님) |
 
 ---
 

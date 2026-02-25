@@ -5,7 +5,7 @@
 > Status: Active
 > Doc type: How-to
 > Last reviewed: 2026-02-14
-> Canonical: docs/vibe-coding/workflows.md
+> Canonical: docs/development/vibe-coding/workflows.md
 > Tags: vibe-coding,workflow,development
 
 ## 일일 개발 사이클
@@ -319,4 +319,4 @@ You: "아까 만든 훅에 캐싱 추가해줘"
 - [Claude Code](./claude-code.md)
 - [Skills](./skills.md)
 - [AI 도구들](./multi-agent-tools.md)
-- [Git Hooks 워크플로우](../development/git-hooks-workflow.md) - Pre-commit/Pre-push 상세
+- [Git Hooks 워크플로우](../git-hooks-workflow.md) - Pre-commit/Pre-push 상세

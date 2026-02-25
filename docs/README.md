@@ -19,8 +19,8 @@ AI Native 도구(Claude Code, Codex, Gemini)로 서버 모니터링 플랫폼을
 | 섹션 | 내용 | 비고 |
 |------|------|------|
 | **[개발 결과물](./reference/README.md)** | 시스템 아키텍처, AI 엔진, 데이터 파이프라인 | 무엇을 만들었나 |
-| **[개발환경 & 바이브 코딩](./vibe-coding/README.md)** | AI 도구 세팅, MCP, Agent Teams, 워크플로우 | 어떻게 만들었나 |
-| **[개발 가이드](./development/README.md)** | 프로젝트 셋업, 코딩 표준, 테스트 | 개발 규칙 |
+| **[개발환경 (WSL/배포)](./development/README.md)** | 로컬 개발환경, CI/CD, 배포 운영 가이드 | 개발 기반 |
+| **[Vibe Coding](./development/vibe-coding/README.md)** | AI 도구 세팅, MCP, Agent Teams, 워크플로우 | AI 협업 방식 |
 | **[가이드](./guides/README.md)** | AI 표준, 테스트 전략, 옵저버빌리티 | 운영 지침 |
 | **[트러블슈팅](./troubleshooting/README.md)** | 자주 발생하는 문제와 해결법 | 문제 해결 |
 
@@ -33,12 +33,13 @@ AI Native 도구(Claude Code, Codex, Gemini)로 서버 모니터링 플랫폼을
 4. [API Endpoints](./reference/api/endpoints.md)
 
 ### 개발환경 파악 (어떻게 만들었나)
-1. [Vibe Coding 개요](./vibe-coding/README.md)
-2. [AI 도구 세팅](./vibe-coding/setup.md)
-3. [MCP 서버 구성](./vibe-coding/mcp-servers.md)
-4. [Agent Teams & 워크플로우](./vibe-coding/workflows.md)
-5. [AI Standards](./guides/ai/ai-standards.md)
-6. [AGENTS.md](../AGENTS.md)
+1. [개발환경 허브](./development/README.md)
+2. [프로젝트 설정 (WSL/배포)](./development/project-setup.md)
+3. [Vibe Coding 개요](./development/vibe-coding/README.md)
+4. [MCP 서버 구성](./development/vibe-coding/mcp-servers.md)
+5. [Agent Teams & 워크플로우](./development/vibe-coding/workflows.md)
+6. [AI Standards](./guides/ai/ai-standards.md)
+7. [AGENTS.md](../AGENTS.md)
 
 ## Historical Documents
 

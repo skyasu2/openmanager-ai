@@ -129,6 +129,19 @@ export interface MetricTrendResult {
   predictedValue: number;
   changePercent: number;
   confidence: number;
+  currentStatus?: 'online' | 'warning' | 'critical';
+  thresholdBreach?: {
+    willBreachWarning: boolean;
+    timeToWarning: number | null;
+    willBreachCritical: boolean;
+    timeToCritical: number | null;
+    humanReadable: string;
+  };
+  recovery?: {
+    willRecover: boolean;
+    timeToRecovery: number | null;
+    humanReadable: string | null;
+  };
 }
 
 /** 트렌드 예측 API 응답 */
@@ -211,8 +224,10 @@ export interface SystemAnalysisSummary {
     serverName: string;
     metric: string;
     trend: 'increasing' | 'decreasing' | 'stable';
+    currentValue: number;
     predictedValue: number;
     changePercent: number;
+    thresholdBreachMessage?: string;
   }>;
 }
 

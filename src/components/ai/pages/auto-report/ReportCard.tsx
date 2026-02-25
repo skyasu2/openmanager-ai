@@ -9,14 +9,16 @@
 import {
   Activity,
   CheckSquare,
+  ClipboardCopy,
   Clock,
   Download,
   Eye,
   Server,
   TrendingUp,
 } from 'lucide-react';
+import { useState } from 'react';
 import { formatTime } from '@/lib/format-date';
-import { downloadReport } from './formatters';
+import { copyReportAsMarkdown, downloadReport } from './formatters';
 import type { IncidentReport } from './types';
 import {
   getSeverityColor,
@@ -203,6 +205,16 @@ export default function ReportCard({
   onResolve,
   onSetDownloadMenuId,
 }: ReportCardProps) {
+  const [copyState, setCopyState] = useState<'idle' | 'copied'>('idle');
+
+  const handleCopyMarkdown = async () => {
+    const success = await copyReportAsMarkdown(report);
+    if (success) {
+      setCopyState('copied');
+      setTimeout(() => setCopyState('idle'), 2000);
+    }
+  };
+
   return (
     <div
       className={`animate-fade-in rounded-lg border p-4 transition-shadow hover:shadow-md ${getSeverityColor(report.severity)}`}
@@ -292,6 +304,19 @@ export default function ReportCard({
               <CheckSquare className="h-4 w-4" />
             </button>
           )}
+
+          <button
+            type="button"
+            onClick={handleCopyMarkdown}
+            className={`rounded p-1.5 transition-all duration-200 hover:scale-110 active:scale-90 ${
+              copyState === 'copied'
+                ? 'bg-green-100 text-green-600'
+                : 'text-gray-400 hover:bg-gray-100 hover:text-gray-600'
+            }`}
+            title={copyState === 'copied' ? 'MD 복사됨' : 'MD로 복사'}
+          >
+            <ClipboardCopy className="h-4 w-4" />
+          </button>
 
           <div className="relative">
             <button

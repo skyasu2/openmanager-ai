@@ -14,9 +14,8 @@ const STALE_DAYS = 90;
 const BUDGET = {
   total: 55,
   referenceArchitecture: 20,
-  development: 12,
+  development: 20,
   guides: 12,
-  vibeCoding: 8,
   troubleshooting: 5,
   root: 5,
 };
@@ -122,7 +121,6 @@ function countByBudgetScope(activeFiles) {
     ).length,
     development: rel.filter((p) => p.startsWith('development/')).length,
     guides: rel.filter((p) => p.startsWith('guides/')).length,
-    vibeCoding: rel.filter((p) => p.startsWith('vibe-coding/')).length,
     troubleshooting: rel.filter((p) => p.startsWith('troubleshooting/')).length,
     root: rel.filter((p) => !p.includes('/')).length,
   };
@@ -141,9 +139,6 @@ function countByBudgetScope(activeFiles) {
   }
   if (counts.guides > BUDGET.guides) {
     overBudget.push(`guides ${counts.guides}/${BUDGET.guides}`);
-  }
-  if (counts.vibeCoding > BUDGET.vibeCoding) {
-    overBudget.push(`vibe-coding ${counts.vibeCoding}/${BUDGET.vibeCoding}`);
   }
   if (counts.troubleshooting > BUDGET.troubleshooting) {
     overBudget.push(
@@ -315,7 +310,6 @@ function buildReport() {
   );
   lines.push(`- development: ${counts.development} / ${BUDGET.development}`);
   lines.push(`- guides: ${counts.guides} / ${BUDGET.guides}`);
-  lines.push(`- vibe-coding: ${counts.vibeCoding} / ${BUDGET.vibeCoding}`);
   lines.push(
     `- troubleshooting: ${counts.troubleshooting} / ${BUDGET.troubleshooting}`
   );

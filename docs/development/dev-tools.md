@@ -223,4 +223,4 @@ CLOUD_RUN_AI_URL=
 ## 관련 문서
 
 - [프로젝트 설정](./project-setup.md)
-- [Vibe Coding](../vibe-coding/README.md)
+- [Vibe Coding](./vibe-coding/README.md)

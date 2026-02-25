@@ -5,7 +5,7 @@
 > Status: Active
 > Doc type: How-to
 > Last reviewed: 2026-02-14
-> Canonical: docs/vibe-coding/multi-agent-tools.md
+> Canonical: docs/development/vibe-coding/multi-agent-tools.md
 > Tags: vibe-coding,ai-tools,workflow
 
 ## AI 도구 생태계

@@ -81,7 +81,7 @@ cloud-run/ai-engine/
 docs/
 ├── README.md
 ├── development/
-├── vibe-coding/
+│   └── vibe-coding/
 ├── guides/
 ├── reference/
 ├── troubleshooting/

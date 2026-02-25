@@ -278,6 +278,6 @@ npm run dev:network
 
 ## 다음 단계
 
-1. [Vibe Coding 가이드](../vibe-coding/README.md) - AI 도구 활용
+1. [Vibe Coding 허브](./vibe-coding/README.md) - AI 도구 활용
 2. [테스트 전략](../guides/testing/test-strategy.md)
 3. [아키텍처](../reference/architecture/system/system-architecture-current.md)
