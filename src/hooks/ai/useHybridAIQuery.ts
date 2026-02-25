@@ -42,6 +42,7 @@ import { createHybridStreamCallbacks } from './core/createHybridStreamCallbacks'
 import { useClarificationHandlers } from './core/useClarificationHandlers';
 import { useQueryControls } from './core/useQueryControls';
 import { useQueryExecution } from './core/useQueryExecution';
+import { normalizeAIResponse } from '@/lib/ai/utils/message-normalizer';
 import { useAsyncAIQuery } from './useAsyncAIQuery';
 import { generateMessageId } from './utils/hybrid-query-utils';
 
@@ -224,11 +225,12 @@ export function useHybridAIQuery(
       onJobResult?.(result);
 
       if (result.success && result.response) {
+        const normalizedResponse = normalizeAIResponse(result.response);
         const messageWithRag = {
           id: generateMessageId('assistant'),
           role: 'assistant' as const,
-          content: result.response,
-          parts: [{ type: 'text' as const, text: result.response }],
+          content: normalizedResponse,
+          parts: [{ type: 'text' as const, text: normalizedResponse }],
           metadata:
             result.ragSources || result.traceId
               ? {

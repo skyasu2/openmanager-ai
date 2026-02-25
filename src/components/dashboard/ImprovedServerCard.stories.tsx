@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
 import { fn } from 'storybook/test';
-import type { Server } from '@/types/server';
+import type { Server } from '../../types/server';
 import ImprovedServerCard from './ImprovedServerCard';
 
 const onlineServer: Server = {

@@ -43,6 +43,8 @@ export interface SupervisorRequest {
   enableWebSearch?: boolean | 'auto';
   /** Upstream trace ID (W3C traceparent에서 추출). Langfuse 연동에 사용. */
   traceId?: string;
+  /** 클라이언트 디바이스 타입 (응답 길이/형식 최적화) */
+  deviceType?: 'mobile' | 'desktop';
 }
 
 export interface SupervisorResponse {

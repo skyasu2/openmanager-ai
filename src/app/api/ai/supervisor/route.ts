@@ -318,6 +318,8 @@ export const POST = withRateLimit(
             `📝 [Supervisor] Normalized ${messages.length} messages → ${messagesToSend.length} for Cloud Run`
           );
 
+          const deviceType = req.headers.get('X-Device-Type') || 'desktop';
+
           const handlerParams = {
             messagesToSend,
             sessionId,
@@ -326,6 +328,7 @@ export const POST = withRateLimit(
             skipCache,
             cacheEndpoint,
             securityWarning,
+            deviceType,
           };
 
           return wantsStream

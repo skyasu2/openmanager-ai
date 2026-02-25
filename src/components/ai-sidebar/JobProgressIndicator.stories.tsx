@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
 import { fn } from 'storybook/test';
-import type { AsyncQueryProgress } from '@/hooks/ai/useAsyncAIQuery';
+import type { AsyncQueryProgress } from '../../hooks/ai/useAsyncAIQuery';
 import { JobProgressIndicator } from './JobProgressIndicator';
 
 const meta = {

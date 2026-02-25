@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
-import type { Server } from '@/types/server';
+import type { Server } from '../../types/server';
 import { SystemOverviewSection } from './SystemOverviewSection';
 
 const sampleServers: Server[] = [

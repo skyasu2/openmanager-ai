@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
 import { createRef } from 'react';
 import { fn } from 'storybook/test';
-import type { EnhancedChatMessage } from '@/stores/useAISidebarStore';
+import type { EnhancedChatMessage } from '../../stores/useAISidebarStore';
 import { ChatMessageList } from './ChatMessageList';
 
 function SimpleMessage({ message }: { message: EnhancedChatMessage }) {

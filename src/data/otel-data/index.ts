@@ -15,10 +15,15 @@ import type {
 } from '@/types/otel-metrics';
 import debug from '@/utils/debug';
 
-// 메모리 캐시
+// 메모리 캐시 (값 캐시 + in-flight Promise dedupe)
 let cachedResourceCatalog: OTelResourceCatalog | null = null;
 let cachedTimeSeries: OTelTimeSeries | null = null;
 const OTEL_HOURLY_CACHE: Record<number, OTelHourlyFile> = {};
+
+// In-flight Promise 캐시: 동시 호출 시 중복 fetch 방지
+let inflightResourceCatalog: Promise<OTelResourceCatalog | null> | null = null;
+let inflightTimeSeries: Promise<OTelTimeSeries | null> | null = null;
+const inflightHourly: Record<number, Promise<OTelHourlyFile | null>> = {};
 
 /**
  * 범용 비동기 로더 (서버/클라이언트 하이브리드)
@@ -65,9 +70,18 @@ export async function getHourlySlots(hour: number): Promise<OTelHourlySlot[]> {
  */
 export async function getResourceCatalog(): Promise<OTelResourceCatalog | null> {
   if (cachedResourceCatalog) return cachedResourceCatalog;
-  const data = await loadJsonData<OTelResourceCatalog>('resource-catalog.json');
-  if (data) cachedResourceCatalog = data;
-  return data;
+  if (inflightResourceCatalog) return inflightResourceCatalog;
+
+  inflightResourceCatalog = loadJsonData<OTelResourceCatalog>('resource-catalog.json')
+    .then((data) => {
+      if (data) cachedResourceCatalog = data;
+      return data;
+    })
+    .finally(() => {
+      inflightResourceCatalog = null;
+    });
+
+  return inflightResourceCatalog;
 }
 
 /**
@@ -75,9 +89,18 @@ export async function getResourceCatalog(): Promise<OTelResourceCatalog | null> 
  */
 export async function getTimeSeries(): Promise<OTelTimeSeries | null> {
   if (cachedTimeSeries) return cachedTimeSeries;
-  const data = await loadJsonData<OTelTimeSeries>('timeseries.json');
-  if (data) cachedTimeSeries = data;
-  return data;
+  if (inflightTimeSeries) return inflightTimeSeries;
+
+  inflightTimeSeries = loadJsonData<OTelTimeSeries>('timeseries.json')
+    .then((data) => {
+      if (data) cachedTimeSeries = data;
+      return data;
+    })
+    .finally(() => {
+      inflightTimeSeries = null;
+    });
+
+  return inflightTimeSeries;
 }
 
 /**
@@ -89,11 +112,20 @@ export async function getOTelHourlyData(
   const normalizedHour = ((hour % 24) + 24) % 24;
   if (OTEL_HOURLY_CACHE[normalizedHour])
     return OTEL_HOURLY_CACHE[normalizedHour];
+  if (inflightHourly[normalizedHour]) return inflightHourly[normalizedHour];
 
   const fileName = `hourly/hour-${normalizedHour.toString().padStart(2, '0')}.json`;
-  const data = await loadJsonData<OTelHourlyFile>(fileName);
-  if (data) OTEL_HOURLY_CACHE[normalizedHour] = data;
-  return data;
+
+  inflightHourly[normalizedHour] = loadJsonData<OTelHourlyFile>(fileName)
+    .then((data) => {
+      if (data) OTEL_HOURLY_CACHE[normalizedHour] = data;
+      return data;
+    })
+    .finally(() => {
+      delete inflightHourly[normalizedHour];
+    });
+
+  return inflightHourly[normalizedHour];
 }
 
 // Backward-compatible aliases (Note: Now async)

@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
 import { fn } from 'storybook/test';
-import type { EnhancedChatMessage } from '@/stores/useAISidebarStore';
+import type { EnhancedChatMessage } from '../../stores/useAISidebarStore';
 import { AIWorkspaceMessage } from './AIWorkspaceMessage';
 
 const userMessage: EnhancedChatMessage = {

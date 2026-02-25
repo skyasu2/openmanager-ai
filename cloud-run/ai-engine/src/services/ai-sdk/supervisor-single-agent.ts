@@ -41,7 +41,7 @@ import type {
 } from './supervisor-types';
 import { logger } from '../../lib/logger';
 import {
-  SYSTEM_PROMPT,
+  createSystemPrompt,
   RETRY_CONFIG,
   selectExecutionMode,
   getIntentCategory,
@@ -303,7 +303,7 @@ async function executeSupervisorAttempt(
       const filteredTools = filterToolsByWebSearch(allTools, webSearchEnabled);
 
       const modelMessages: ModelMessage[] = [
-        { role: 'system', content: SYSTEM_PROMPT },
+        { role: 'system', content: createSystemPrompt(request.deviceType) },
         ...request.messages.map((m) => ({
           role: m.role as 'user' | 'assistant',
           content: m.content,

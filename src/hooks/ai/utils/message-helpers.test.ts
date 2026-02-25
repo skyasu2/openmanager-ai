@@ -1,5 +1,6 @@
 import type { UIMessage } from 'ai';
 import { describe, expect, it } from 'vitest';
+import { normalizeAIResponse } from '@/lib/ai/utils/message-normalizer';
 import { transformMessages } from './message-helpers';
 
 type RagSource = {
@@ -125,5 +126,44 @@ describe('transformMessages', () => {
     expect(lastAssistant?.metadata?.analysisBasis?.ragSources).toEqual(
       streamRagSources
     );
+  });
+});
+
+describe('normalizeAIResponse', () => {
+  it('extracts answer field from JSON response', () => {
+    const json = JSON.stringify({
+      answer: '서버 15대 중 경고 1대',
+      confidence: 0.93,
+      toolsUsed: ['getServerMetrics'],
+    });
+    expect(normalizeAIResponse(json)).toBe('서버 15대 중 경고 1대');
+  });
+
+  it('extracts response field from Cloud Run JSON', () => {
+    const json = JSON.stringify({
+      response: '분석 결과입니다',
+      success: true,
+    });
+    expect(normalizeAIResponse(json)).toBe('분석 결과입니다');
+  });
+
+  it('returns plain text as-is', () => {
+    const text = '일반 텍스트 응답입니다';
+    expect(normalizeAIResponse(text)).toBe(text);
+  });
+
+  it('returns markdown as-is', () => {
+    const md = '## 서버 현황\n- CPU: 45%\n- MEM: 60%';
+    expect(normalizeAIResponse(md)).toBe(md);
+  });
+
+  it('returns original for unrecognized JSON structure', () => {
+    const json = JSON.stringify({ foo: 'bar', baz: 123 });
+    expect(normalizeAIResponse(json)).toBe(json);
+  });
+
+  it('handles empty/null input gracefully', () => {
+    expect(normalizeAIResponse('')).toBe('');
+    expect(normalizeAIResponse(null as unknown as string)).toBe(null);
   });
 });

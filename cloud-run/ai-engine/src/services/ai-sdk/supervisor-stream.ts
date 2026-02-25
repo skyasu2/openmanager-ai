@@ -21,7 +21,7 @@ import {
   recordModelUsage,
   type ProviderName,
 } from './model-provider';
-import { createPrepareStep, selectExecutionMode, SYSTEM_PROMPT } from './supervisor-routing';
+import { createPrepareStep, createSystemPrompt, selectExecutionMode } from './supervisor-routing';
 import type { StreamEvent, SupervisorRequest } from './supervisor-types';
 
 function resolveStreamMode(request: SupervisorRequest): 'single' | 'multi' {
@@ -69,7 +69,7 @@ async function* streamSingleAgent(
   const queryText = lastUserMessage?.content || '';
 
   const modelMessages: ModelMessage[] = [
-    { role: 'system', content: SYSTEM_PROMPT },
+    { role: 'system', content: createSystemPrompt(request.deviceType) },
     ...request.messages.map((m, idx): ModelMessage => {
       const isLastUserMessage =
         m.role === 'user' &&

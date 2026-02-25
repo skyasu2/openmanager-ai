@@ -358,6 +358,48 @@ export function normalizeMessagesForCloudRun(
   });
 }
 
+// ============================================================================
+// AI 응답 정규화 (JSON → 텍스트)
+// ============================================================================
+
+/**
+ * AI 응답이 JSON 문자열인 경우 `answer` 필드만 추출
+ *
+ * Cloud Run AI Engine이 `{ answer, confidence, toolsUsed }` 형태의 JSON을
+ * 반환할 때, UI에 원본 JSON이 노출되는 것을 방지합니다.
+ *
+ * @param text - AI 응답 텍스트 (JSON 또는 일반 텍스트)
+ * @returns 정규화된 텍스트
+ */
+export function normalizeAIResponse(text: string): string {
+  if (!text || typeof text !== 'string') return text;
+
+  const trimmed = text.trim();
+
+  // JSON 객체가 아닌 경우 원본 반환
+  if (!trimmed.startsWith('{') || !trimmed.endsWith('}')) return text;
+
+  try {
+    const parsed = JSON.parse(trimmed) as Record<string, unknown>;
+
+    // `answer` 필드가 있는 AI 응답 JSON → 텍스트만 추출
+    if (typeof parsed.answer === 'string' && parsed.answer.length > 0) {
+      return parsed.answer;
+    }
+
+    // `response` 필드가 있는 Cloud Run 응답 JSON
+    if (typeof parsed.response === 'string' && parsed.response.length > 0) {
+      return parsed.response;
+    }
+
+    // 인식할 수 없는 JSON 구조 → 원본 반환
+    return text;
+  } catch {
+    // JSON 파싱 실패 → 일반 텍스트로 취급
+    return text;
+  }
+}
+
 /**
  * 마지막 사용자 메시지에서 쿼리 텍스트 추출
  *

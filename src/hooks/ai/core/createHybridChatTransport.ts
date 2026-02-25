@@ -6,6 +6,11 @@ import {
 } from '@/config/ai-proxy.config';
 import { consumeWarmupStartedAtForFirstQuery } from '@/utils/ai-warmup';
 
+function detectDeviceType(): 'mobile' | 'desktop' {
+  if (typeof window === 'undefined') return 'desktop';
+  return window.innerWidth < 768 ? 'mobile' : 'desktop';
+}
+
 interface CreateHybridChatTransportParams {
   apiEndpoint: string;
   traceIdRef: MutableRefObject<string>;
@@ -31,6 +36,7 @@ export function createHybridChatTransport(
       const headers: Record<string, string> = {
         [TRACEPARENT_HEADER]: generateTraceparent(traceIdRef.current),
         [traceIdHeader]: traceIdRef.current,
+        'X-Device-Type': detectDeviceType(),
       };
 
       const warmupStartedAt = consumeWarmupStartedAtForFirstQuery();
