@@ -151,19 +151,17 @@ export const AIWorkspaceMessage = memo<{
                       )}
                     </details>
                   </div>
+                ) : isLastMessage && !message.isStreaming ? (
+                  <TypewriterMarkdown
+                    content={message.content}
+                    enableTypewriter={true}
+                    speed={12}
+                  />
                 ) : (
-                  isLastMessage && !message.isStreaming ? (
-                    <TypewriterMarkdown
-                      content={message.content}
-                      enableTypewriter={true}
-                      speed={12}
-                    />
-                  ) : (
-                    <MarkdownRenderer
-                      content={message.content}
-                      className="text-chat leading-relaxed break-words [overflow-wrap:anywhere]"
-                    />
-                  )
+                  <MarkdownRenderer
+                    content={message.content}
+                    className="text-chat leading-relaxed break-words [overflow-wrap:anywhere]"
+                  />
                 )}
               </div>
             ) : (
