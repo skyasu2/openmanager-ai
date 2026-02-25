@@ -7,13 +7,13 @@
  * @updated 2026-02-17 - Externalized to public/data/ (Bundle size optimization)
  */
 
-import debug from '@/utils/debug';
 import type {
   OTelHourlyFile,
   OTelHourlySlot,
   OTelResourceCatalog,
   OTelTimeSeries,
 } from '@/types/otel-metrics';
+import debug from '@/utils/debug';
 
 // 메모리 캐시
 let cachedResourceCatalog: OTelResourceCatalog | null = null;

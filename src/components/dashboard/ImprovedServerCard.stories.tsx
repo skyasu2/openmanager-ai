@@ -104,7 +104,7 @@ export const Compact: Story = {
 
 export const AllStatuses: Story = {
   decorators: [
-    (Story) => (
+    (_Story) => (
       <div className="grid w-[900px] grid-cols-2 gap-4">
         <ImprovedServerCard server={onlineServer} onClick={fn()} />
         <ImprovedServerCard server={warningServer} onClick={fn()} />

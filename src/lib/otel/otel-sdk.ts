@@ -40,7 +40,10 @@ export async function initMonitoring(): Promise<void> {
     }
   } catch (error) {
     if (process.env.NODE_ENV !== 'production') {
-      console.warn('[OTel] Failed to initialize (devDependencies only):', error);
+      console.warn(
+        '[OTel] Failed to initialize (devDependencies only):',
+        error
+      );
     }
   }
 }

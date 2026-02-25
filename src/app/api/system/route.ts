@@ -38,6 +38,11 @@ import { getSystemRunningFlag, setSystemRunningFlag } from '@/lib/redis';
 import { getErrorMessage } from '@/types/type-utils';
 import debug from '@/utils/debug';
 
+const APP_VERSION =
+  process.env.NEXT_PUBLIC_APP_VERSION ||
+  process.env.npm_package_version ||
+  '8.3.4';
+
 // ============================================================================
 // ProcessManager Singleton
 // ============================================================================
@@ -237,7 +242,7 @@ export async function GET(request: NextRequest) {
           isStarting: false,
           lastUpdate: new Date().toISOString(),
           userCount: 1, // 현재 접속자 (데모용)
-          version: process.env.npm_package_version || '8.3.3',
+          version: APP_VERSION,
           environment: process.env.NODE_ENV || 'development',
           uptime: metrics.systemUptime || 0,
           services: {

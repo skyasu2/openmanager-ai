@@ -61,18 +61,19 @@ export interface AiToggleOptions {
 }
 
 const DEFAULT_AI_BUTTON_SELECTORS = [
-  'button:has-text("AI 어시스턴트 열기")',
-  'button:has-text("AI 어시스턴트")',
   '[data-testid="ai-assistant"]',
   '[data-testid="ai-sidebar-trigger"]',
-  'button[aria-label*="AI"]',
-  'button[title*="AI"]',
+  'button[aria-label="AI 어시스턴트 열기"]',
+  'button[aria-label="AI 어시스턴트 닫기"]',
+  'button[title="AI 어시스턴트 열기"]',
+  'button[title="AI 어시스턴트 닫기"]',
+  'button:has-text("AI 어시스턴트 열기")',
+  'button:has-text("AI 어시스턴트")',
 ];
 
 const DEFAULT_AI_SIDEBAR_SELECTORS = [
-  'dialog:has-text("AI 어시스턴트")',
-  '[role="dialog"]:has-text("AI")',
   '[data-testid="ai-sidebar"]',
+  '[role="dialog"][aria-labelledby="ai-sidebar-v4-title"]',
   '.ai-sidebar',
   '.ai-panel',
 ];
@@ -110,12 +111,54 @@ export async function resetGuestState(page: Page): Promise<void> {
   await context.clearCookies();
   await context.clearPermissions().catch(() => undefined);
 
+  // Vercel production에서는 쿠키 삭제 후 bypass 쿠키를 재설정해야
+  // 이후 origin 네비게이션이 Security Checkpoint에 막히지 않는다.
+  await ensureVercelBypassCookie(page);
+
   const isRetryableContextError = (error: unknown): boolean => {
     if (!(error instanceof Error)) return false;
     return /Execution context was destroyed|Cannot find context with specified id|Target closed/i.test(
       error.message
     );
   };
+
+  const storageOrigins = new Set<string>();
+  const currentUrl = page.url();
+  const configuredBaseUrl = process.env.PLAYWRIGHT_BASE_URL;
+
+  if (/^https?:\/\//.test(currentUrl)) {
+    storageOrigins.add(new URL(currentUrl).origin);
+  }
+
+  if (configuredBaseUrl && /^https?:\/\//.test(configuredBaseUrl)) {
+    storageOrigins.add(new URL(configuredBaseUrl).origin);
+  }
+
+  for (const origin of storageOrigins) {
+    for (let attempt = 0; attempt < 3; attempt += 1) {
+      try {
+        await page.goto(origin, {
+          waitUntil: 'domcontentloaded',
+          timeout: TIMEOUTS.NETWORK_REQUEST,
+        });
+
+        await page.evaluate(() => {
+          try {
+            localStorage.clear();
+            sessionStorage.clear();
+          } catch {
+            // noop
+          }
+        });
+        break;
+      } catch (error) {
+        if (!isRetryableContextError(error) || attempt === 2) {
+          break;
+        }
+        await page.waitForTimeout(150);
+      }
+    }
+  }
 
   for (let attempt = 0; attempt < 3; attempt += 1) {
     try {
@@ -416,38 +459,52 @@ export async function openAiSidebar(
     buttonSelectors = DEFAULT_AI_BUTTON_SELECTORS,
     sidebarSelectors = DEFAULT_AI_SIDEBAR_SELECTORS,
     waitForSidebar = true,
-    waitTimeout = TIMEOUTS.DOM_UPDATE,
+    waitTimeout = TIMEOUTS.MODAL_DISPLAY,
   } = options;
 
-  // 먼저 사이드바가 이미 열려있는지 확인
-  for (const selector of sidebarSelectors) {
-    const sidebar = page.locator(selector).first();
-    const isVisible = await sidebar
-      .isVisible({ timeout: 1000 })
-      .catch(() => false);
-    if (isVisible) {
-      // 이미 열려있으면 바로 반환
-      return sidebar;
+  const pollIntervalMs = 250;
+  const selectorProbeMs = 300;
+
+  const findVisibleBySelectors = async (
+    selectors: string[],
+    maxWaitMs: number
+  ): Promise<{ locator: Locator; selector: string } | null> => {
+    const deadline = Date.now() + maxWaitMs;
+
+    while (Date.now() <= deadline) {
+      for (const selector of selectors) {
+        const candidate = page.locator(selector).first();
+        const remainingMs = Math.max(1, deadline - Date.now());
+        const probeTimeout = Math.min(selectorProbeMs, remainingMs);
+        const isVisible = await candidate
+          .isVisible({ timeout: probeTimeout })
+          .catch(() => false);
+
+        if (isVisible) {
+          return { locator: candidate, selector };
+        }
+      }
+
+      const remainingMs = deadline - Date.now();
+      if (remainingMs <= 0) {
+        break;
+      }
+      await page.waitForTimeout(Math.min(pollIntervalMs, remainingMs));
     }
+
+    return null;
+  };
+
+  // 먼저 사이드바가 이미 열려있는지 확인
+  const preOpenedSidebar = await findVisibleBySelectors(sidebarSelectors, 1500);
+  if (preOpenedSidebar) {
+    return preOpenedSidebar.locator;
   }
 
   // 사이드바가 닫혀있으면 버튼을 찾아서 클릭
-  let trigger: Locator | null = null;
-  const attemptedButtonSelectors: string[] = [];
-
-  for (const selector of buttonSelectors) {
-    attemptedButtonSelectors.push(selector);
-    const candidate = page.locator(selector).first();
-    try {
-      // waitFor를 사용하여 실제로 버튼이 나타날 때까지 기다림
-      await candidate.waitFor({
-        state: 'visible',
-        timeout: TIMEOUTS.DOM_UPDATE,
-      });
-      trigger = candidate;
-      break;
-    } catch {}
-  }
+  const attemptedButtonSelectors = [...buttonSelectors];
+  const triggerMatch = await findVisibleBySelectors(buttonSelectors, waitTimeout);
+  const trigger = triggerMatch?.locator ?? null;
 
   if (!trigger) {
     throw new Error(
@@ -463,22 +520,21 @@ export async function openAiSidebar(
     return trigger;
   }
 
-  const attemptedSidebarSelectors: string[] = [];
-
-  for (const selector of sidebarSelectors) {
-    attemptedSidebarSelectors.push(selector);
-    const sidebar = page.locator(selector).first();
-    try {
-      await sidebar.waitFor({ state: 'visible', timeout: waitTimeout });
-      return sidebar;
-    } catch {
-      // 다음 셀렉터 시도
-    }
+  const attemptedSidebarSelectors = [...sidebarSelectors];
+  const sidebarMatch = await findVisibleBySelectors(sidebarSelectors, waitTimeout);
+  if (sidebarMatch) {
+    return sidebarMatch.locator;
   }
+
+  const triggerLabel = await trigger.getAttribute('aria-label').catch(() => null);
+  const triggerPressed = await trigger
+    .getAttribute('aria-pressed')
+    .catch(() => null);
 
   throw new Error(
     `AI 사이드바가 나타나지 않았습니다.\n` +
       `페이지: ${page.url()}\n` +
-      `시도한 셀렉터: ${attemptedSidebarSelectors.join(', ')}`
+      `시도한 셀렉터: ${attemptedSidebarSelectors.join(', ')}\n` +
+      `토글 상태: aria-label=${triggerLabel ?? 'N/A'}, aria-pressed=${triggerPressed ?? 'N/A'}`
   );
 }

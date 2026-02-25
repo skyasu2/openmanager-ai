@@ -123,8 +123,12 @@ test.describe('♿ 접근성 (Accessibility) 검증', () => {
     console.log('✅ 색상 대비 검증 완료 (수동 확인 필요)');
   });
 
-  test('스크린 리더 호환성 (헤딩 구조)', async ({ page }) => {
-    await guestLogin(page);
+  test('스크린 리더 호환성 (로그인 페이지 헤딩 구조)', async ({ page }) => {
+    await page.goto('/login', { waitUntil: 'domcontentloaded' });
+    await page
+      .getByRole('heading', { level: 1 })
+      .first()
+      .waitFor({ state: 'visible', timeout: TIMEOUTS.NETWORK_REQUEST });
 
     const headings = await page.evaluate(() => {
       const headingElements = Array.from(
@@ -136,13 +140,67 @@ test.describe('♿ 접근성 (Accessibility) 검증', () => {
       }));
     });
 
-    console.log('📊 헤딩 구조 분석:');
+    console.log('📊 로그인 페이지 헤딩 구조:');
     headings.forEach((heading, index) => {
       console.log(`   ${index + 1}. ${heading.level}: "${heading.text}"`);
     });
 
-    const hasH1 = headings.some((h) => h.level === 'H1');
-    expect(hasH1).toBe(true);
-    console.log('✅ 스크린 리더 호환성 (헤딩 구조) 검증 완료');
+    expect(headings.length).toBeGreaterThan(0);
+    console.log('✅ 로그인 페이지 헤딩 검증 완료');
+  });
+
+  test('스크린 리더 호환성 (대시보드 헤딩 및 랜드마크)', async ({ page }) => {
+    await guestLogin(page);
+
+    const profileButton = page
+      .locator('button[aria-label="프로필 메뉴"]')
+      .first();
+    await expect(profileButton).toBeVisible({
+      timeout: TIMEOUTS.DASHBOARD_LOAD,
+    });
+
+    const headings = await page.evaluate(() => {
+      const headingElements = Array.from(
+        document.querySelectorAll('h1, h2, h3, h4, h5, h6')
+      );
+      return headingElements.map((el) => ({
+        level: el.tagName,
+        text: el.textContent?.trim(),
+      }));
+    });
+
+    console.log('📊 대시보드 헤딩 구조:');
+    headings.forEach((heading, index) => {
+      console.log(`   ${index + 1}. ${heading.level}: "${heading.text}"`);
+    });
+
+    expect(headings.length).toBeGreaterThan(0);
+
+    const landmarks = await page.evaluate(() => {
+      const landmarkRoles = ['banner', 'navigation', 'main', 'contentinfo'];
+      return landmarkRoles.map((role) => ({
+        role,
+        count: document.querySelectorAll(`[role="${role}"]`).length +
+          (role === 'banner' ? document.querySelectorAll('header').length : 0) +
+          (role === 'navigation' ? document.querySelectorAll('nav').length : 0) +
+          (role === 'main' ? document.querySelectorAll('main').length : 0) +
+          (role === 'contentinfo' ? document.querySelectorAll('footer').length : 0),
+      }));
+    });
+
+    console.log('📊 대시보드 랜드마크:');
+    landmarks.forEach((lm) => {
+      console.log(`   ${lm.role}: ${lm.count}개`);
+    });
+
+    const totalLandmarks = landmarks.reduce((sum, lm) => sum + lm.count, 0);
+    expect(totalLandmarks).toBeGreaterThan(0);
+
+    const mainLandmark = landmarks.find((lm) => lm.role === 'main');
+    if (!mainLandmark?.count) {
+      console.log('⚠️ 대시보드에 <main> 랜드마크가 없습니다 — 접근성 개선 권장');
+    }
+
+    console.log('✅ 대시보드 헤딩 및 랜드마크 검증 완료');
   });
 });

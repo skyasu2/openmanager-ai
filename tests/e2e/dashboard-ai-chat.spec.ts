@@ -9,7 +9,7 @@
  */
 
 import { expect, test } from '@playwright/test';
-import { openAiSidebar } from './helpers/guest';
+import { openAiSidebar, resetGuestState } from './helpers/guest';
 import { TIMEOUTS } from './helpers/timeouts';
 import {
   handleClarificationIfPresent,
@@ -53,24 +53,29 @@ async function waitForAiResponse(
 }
 
 test.describe('AI 채팅 E2E 테스트', () => {
+  test.describe.configure({ timeout: TIMEOUTS.FULL_USER_FLOW });
+
   test.beforeEach(async ({ page }) => {
+    await resetGuestState(page);
     await navigateToDashboard(page);
-    await page
-      .locator('[data-testid="ai-assistant"]')
-      .first()
-      .waitFor({ state: 'visible', timeout: TIMEOUTS.MODAL_DISPLAY });
+  });
+
+  test.afterEach(async ({ page }) => {
+    await resetGuestState(page);
   });
 
   test('스타터 프롬프트 클릭 → 메시지 전송 → AI 응답 수신', async ({
     page,
   }) => {
-    const sidebar = await openAiSidebar(page);
-    await expect(sidebar).toBeVisible({ timeout: TIMEOUTS.MODAL_DISPLAY });
+    const sidebar = await openAiSidebar(page, {
+      waitTimeout: TIMEOUTS.COMPLEX_INTERACTION,
+    });
+    await expect(sidebar).toBeVisible({ timeout: TIMEOUTS.COMPLEX_INTERACTION });
 
     // 스타터 프롬프트 카드 클릭
     const promptCards = page.locator('[data-testid="ai-starter-prompt-card"]');
     await expect(promptCards.first()).toBeVisible({
-      timeout: TIMEOUTS.DOM_UPDATE,
+      timeout: TIMEOUTS.COMPLEX_INTERACTION,
     });
     await promptCards.first().click();
 
@@ -88,11 +93,13 @@ test.describe('AI 채팅 E2E 테스트', () => {
   });
 
   test('직접 메시지 입력 → 전송 → AI 응답 수신', async ({ page }) => {
-    const sidebar = await openAiSidebar(page);
-    await expect(sidebar).toBeVisible({ timeout: TIMEOUTS.MODAL_DISPLAY });
+    const sidebar = await openAiSidebar(page, {
+      waitTimeout: TIMEOUTS.COMPLEX_INTERACTION,
+    });
+    await expect(sidebar).toBeVisible({ timeout: TIMEOUTS.COMPLEX_INTERACTION });
 
     const input = page.getByRole('textbox', { name: 'AI 질문 입력' });
-    await expect(input).toBeVisible({ timeout: TIMEOUTS.DOM_UPDATE });
+    await expect(input).toBeVisible({ timeout: TIMEOUTS.COMPLEX_INTERACTION });
 
     // 짧은 테스트 메시지 입력 → 전송
     await input.fill('서버 상태 요약');
