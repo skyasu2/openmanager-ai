@@ -6,7 +6,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { renderHook, waitFor } from '@testing-library/react';
 import type { PropsWithChildren } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import type { MonitoringReportResponse } from './useMonitoringReport';
+import type { MonitoringReportResponse } from '@/schemas/api.monitoring-report.schema';
 import { useMonitoringReport } from './useMonitoringReport';
 
 const mockFetch = vi.fn();

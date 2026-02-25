@@ -232,5 +232,5 @@ class SystemInactivityService {
 // 전역 인스턴스 생성
 export const systemInactivityService = SystemInactivityService.getInstance();
 
-// 타입 내보내기
-export type { BackgroundTask };
+// NOTE: BackgroundTask 타입은 이 파일 내 정의를 직접 참조하세요.
+// Storybook vitest mock 변환기가 type 재내보내기를 런타임 값으로 취급하므로 제거

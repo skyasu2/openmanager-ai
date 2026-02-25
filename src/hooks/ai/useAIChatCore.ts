@@ -44,7 +44,8 @@ import {
 
 // Re-export for backwards compatibility
 export { convertThinkingStepsToUI };
-export type { SessionState };
+// NOTE: SessionState 타입은 './core/useChatSessionState'에서 직접 import하세요.
+// Storybook vitest mock 변환기가 type 재내보내기를 런타임 값으로 취급하므로 제거
 
 // ============================================================================
 // Types

@@ -13,7 +13,8 @@ import {
   type MonitoringReportResponse,
 } from '@/schemas/api.monitoring-report.schema';
 
-export type { MonitoringReportResponse };
+// NOTE: MonitoringReportResponse 타입은 '@/schemas/api.monitoring-report.schema'에서 직접 import
+// Storybook vitest mock 변환기가 type 재내보내기를 런타임 값으로 취급하므로 제거
 
 function getMonitoringErrorMessageByStatus(status: number): string {
   if (status === 401) return '모니터링 리포트 조회 권한이 없습니다.';

@@ -358,14 +358,5 @@ export function useEnhancedServerDashboard({
   };
 }
 
-// 🔄 Re-export types for backward compatibility
-export type {
-  EnhancedServerData,
-  ServerStats,
-  ServerWithMetrics,
-  DashboardTab,
-  ViewMode,
-  UseServerDashboardOptions,
-  UseEnhancedServerDashboardProps,
-  UseEnhancedServerDashboardReturn,
-};
+// NOTE: Dashboard 타입은 '@/types/dashboard/server-dashboard.types'에서 직접 import하세요.
+// Storybook vitest mock 변환기가 type 재내보내기를 런타임 값으로 취급하므로 제거

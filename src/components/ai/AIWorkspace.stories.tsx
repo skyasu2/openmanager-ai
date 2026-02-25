@@ -4,6 +4,7 @@ import { fn, mocked } from 'storybook/test';
 import { useProfileAuth } from '../../components/unified-profile/hooks/useProfileAuth';
 import { useProfileMenu } from '../../components/unified-profile/hooks/useProfileMenu';
 import { useAIChatCore } from '../../hooks/ai/useAIChatCore';
+import { useHealthCheck } from '../../hooks/system/useHealthCheck';
 import { useSystemStatus } from '../../hooks/useSystemStatus';
 import { useAISidebarStore } from '../../stores/useAISidebarStore';
 import { useUnifiedAdminStore } from '../../stores/useUnifiedAdminStore';
@@ -65,6 +66,24 @@ function setupSidebarMock() {
 }
 
 function setupTransitiveMocks() {
+  // SystemContextPanel: useHealthCheck
+  mocked(useHealthCheck).mockReturnValue({
+    status: 'healthy',
+    providers: [
+      { name: 'Cerebras', status: 'active', role: 'primary' },
+      { name: 'Groq', status: 'active', role: 'fallback' },
+    ],
+    latency: 120,
+    lastChecked: new Date(),
+    isSystemOnline: true,
+    error: null,
+    isChecking: false,
+    check: fn().mockResolvedValue(undefined),
+    isHealthy: true,
+    isDegraded: false,
+    isError: false,
+  } as never);
+
   // OpenManagerLogo: useUnifiedAdminStore → aiAgent.isEnabled
   mocked(useUnifiedAdminStore).mockImplementation(
     (selector?: (s: Record<string, unknown>) => unknown) => {

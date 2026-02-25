@@ -7,7 +7,7 @@ import ImprovedServerCard from '@/components/dashboard/ImprovedServerCard';
 import ServerDashboardPaginationControls from '@/components/dashboard/ServerDashboardPaginationControls';
 import VirtualizedServerList from '@/components/dashboard/VirtualizedServerList';
 import ServerCardErrorBoundary from '@/components/error/ServerCardErrorBoundary';
-import type { DashboardTab } from '@/hooks/useServerDashboard';
+import type { DashboardTab } from '@/types/dashboard/server-dashboard.types';
 import { logger } from '@/lib/logging';
 import type { Server } from '@/types/server';
 // react-window Grid는 사용하지 않음 (VirtualizedServerList에서 List 사용)

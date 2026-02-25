@@ -3,8 +3,8 @@
 import { usePathname } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { isVercel } from '@/env-client';
-import type { AuthUser } from '@/lib/auth/auth-state-manager-types';
 import { getAuthState } from '@/lib/auth/auth-state-manager';
+import type { AuthUser } from '@/lib/auth/auth-state-manager-types';
 import { logger } from '@/lib/logging';
 
 // This logic is now inlined from the old vercel-env.ts

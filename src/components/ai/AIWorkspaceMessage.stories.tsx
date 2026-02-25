@@ -7,7 +7,7 @@ const userMessage: EnhancedChatMessage = {
   id: 'msg-1',
   role: 'user',
   content: '서버 상태를 확인해 주세요',
-  timestamp: Date.now(),
+  timestamp: new Date(),
 };
 
 const assistantMessage: EnhancedChatMessage = {
@@ -23,7 +23,7 @@ const assistantMessage: EnhancedChatMessage = {
 | DB 서버 | 2대 | 30.0% | 65.5% |
 
 > 모든 서버가 안정적인 범위 내에서 운영되고 있습니다.`,
-  timestamp: Date.now(),
+  timestamp: new Date(),
 };
 
 const longAssistantMessage: EnhancedChatMessage = {
@@ -46,7 +46,7 @@ Redis 서버의 메모리 사용률이 **74%**로 확인됩니다.
 \`\`\`bash
 redis-cli -h 10.100.3.11 INFO memory
 \`\`\``,
-  timestamp: Date.now(),
+  timestamp: new Date(),
   traceId: 'trace-abc-123',
 };
 

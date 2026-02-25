@@ -5,6 +5,7 @@ import { fn, mocked } from 'storybook/test';
 import { useProfileAuth } from '../../components/unified-profile/hooks/useProfileAuth';
 import { useProfileMenu } from '../../components/unified-profile/hooks/useProfileMenu';
 import { isGuestFullAccessEnabled } from '../../config/guestMode';
+import { useMonitoringReport } from '../../hooks/dashboard/useMonitoringReport';
 import { useToast } from '../../hooks/use-toast';
 import { useAutoLogout } from '../../hooks/useAutoLogout';
 import { useServerDashboard } from '../../hooks/useServerDashboard';
@@ -157,6 +158,14 @@ function setupHookMocks() {
     error: null,
     refresh: fn().mockResolvedValue(undefined),
     startSystem: fn().mockResolvedValue(undefined),
+  } as never);
+
+  // DashboardContent: useMonitoringReport
+  mocked(useMonitoringReport).mockReturnValue({
+    data: undefined,
+    isLoading: false,
+    isError: false,
+    error: null,
   } as never);
 
   Object.assign(systemInactivityService, {

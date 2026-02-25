@@ -4,7 +4,7 @@
 import { renderHook } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { useAlertHistory } from './useAlertHistory';
-import type { MonitoringReportResponse } from './useMonitoringReport';
+import type { MonitoringReportResponse } from '@/schemas/api.monitoring-report.schema';
 import { useMonitoringReport } from './useMonitoringReport';
 
 vi.mock('./useMonitoringReport', () => ({

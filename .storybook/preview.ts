@@ -16,14 +16,18 @@ sb.mock(import('../src/hooks/useUserPermissions.ts'));
 sb.mock(import('../src/hooks/useServerDashboard.ts'));
 sb.mock(import('../src/hooks/useAutoLogout.ts'));
 sb.mock(import('../src/hooks/useSystemAutoShutdown.ts'));
+sb.mock(import('../src/hooks/useServerMetrics.ts'));
 sb.mock(import('../src/hooks/use-toast.ts'));
 sb.mock(import('../src/hooks/ai/useAIChatCore.ts'));
 sb.mock(import('../src/hooks/ai/utils/chat-history-storage.ts'));
+sb.mock(import('../src/hooks/system/useHealthCheck.ts'));
 // Sub-component transitive dependencies
 sb.mock(import('../src/components/unified-profile/hooks/useProfileAuth.ts'));
 sb.mock(import('../src/components/unified-profile/hooks/useProfileMenu.ts'));
 sb.mock(import('../src/hooks/useSystemStatus.ts'));
 sb.mock(import('../src/hooks/useSupabaseSession.ts'));
+// Dashboard data hooks
+sb.mock(import('../src/hooks/dashboard/useMonitoringReport.ts'));
 // Config & Utils
 sb.mock(import('../src/config/guestMode.ts'));
 sb.mock(import('../src/utils/ai-warmup.ts'));
