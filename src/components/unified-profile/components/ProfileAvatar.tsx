@@ -47,18 +47,24 @@ export const ProfileAvatar = memo(function ProfileAvatar({
 
   // 사용자 이니셜 가져오기
   const getUserInitials = () => {
-    const name = getUserName();
-    if (name === '사용자') return '?';
+    // Provider/guest 계정은 고정 이니셜로 의미를 유지
+    if (userType === 'guest') return 'GU';
+    if (userType === 'github') return 'GH';
+    if (userType === 'google') return 'G';
 
-    const words = name.split(' ');
-    if (words.length >= 2) {
-      const firstWord = words[0];
-      const secondWord = words[1];
-      if (firstWord && secondWord && firstWord[0] && secondWord[0]) {
-        return (firstWord[0] + secondWord[0]).toUpperCase();
+    if (userInfo?.name) {
+      const words = userInfo.name.split(' ');
+      if (words.length >= 2 && words[0]?.[0] && words[1]?.[0]) {
+        return (words[0][0] + words[1][0]).toUpperCase();
       }
+      return userInfo.name.substring(0, 2).toUpperCase();
     }
-    return name.substring(0, 2).toUpperCase();
+
+    if (userInfo?.email) {
+      return userInfo.email.substring(0, 2).toUpperCase();
+    }
+
+    return '?';
   };
 
   // 배경색 클래스 결정

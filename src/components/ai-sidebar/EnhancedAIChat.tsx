@@ -1,7 +1,7 @@
 'use client';
 
 import { Bot, RefreshCw } from 'lucide-react';
-import React, { memo, type RefObject } from 'react';
+import React, { memo, type RefObject, useEffect, useState } from 'react';
 import { AgentHandoffBadge } from '@/components/ai/AgentHandoffBadge';
 import { AgentStatusIndicator } from '@/components/ai/AgentStatusIndicator';
 import type { AsyncQueryProgress } from '@/hooks/ai/useAsyncAIQuery';
@@ -12,12 +12,14 @@ import type {
   ClarificationRequest,
   HandoffEventData,
 } from '@/hooks/ai/useHybridAIQuery';
+import { loadChatHistory } from '@/hooks/ai/utils/chat-history-storage';
 import type { EnhancedChatMessage } from '@/stores/useAISidebarStore';
 import type { SessionState } from '@/types/session';
 import { ChatInputArea } from './ChatInputArea';
 import { ChatMessageList } from './ChatMessageList';
 import { ClarificationDialog } from './ClarificationDialog';
 import { ColdStartErrorBanner } from './chat/ColdStartErrorBanner';
+import { RestoreConversationBanner } from './chat/RestoreConversationBanner';
 import { JobProgressIndicator } from './JobProgressIndicator';
 import { StreamingWarmupIndicator } from './StreamingWarmupIndicator';
 import { useChatActions } from './useChatActions';
@@ -151,6 +153,35 @@ export const EnhancedAIChat = memo(function EnhancedAIChat({
     limitedMessagesLength: limitedMessages.length,
   });
 
+  const [hasRestored, setHasRestored] = useState<boolean>(
+    allMessages.length === 0
+  );
+  const [hasPersistedHistory, setHasPersistedHistory] = useState(false);
+
+  useEffect(() => {
+    const history = loadChatHistory();
+    const hasHistory = Boolean(history?.messages?.length);
+    setHasPersistedHistory(hasHistory);
+    setHasRestored(!hasHistory);
+  }, []);
+
+  // If user is actively generating, skip restore prompt and continue with live flow.
+  useEffect(() => {
+    if (isGenerating) {
+      setHasRestored(true);
+    }
+  }, [isGenerating]);
+
+  const handleRestore = () => {
+    setHasRestored(true);
+    setHasPersistedHistory(false);
+  };
+  const handleNewSessionAndRestore = () => {
+    onNewSession?.();
+    setHasRestored(true);
+    setHasPersistedHistory(false);
+  };
+
   return (
     <div className="flex h-full flex-col bg-linear-to-br from-slate-50 to-blue-50">
       {/* 헤더 */}
@@ -169,18 +200,28 @@ export const EnhancedAIChat = memo(function EnhancedAIChat({
       </div>
 
       {/* 메시지 영역 */}
-      <ChatMessageList
-        scrollContainerRef={scrollContainerRef}
-        autoReportTrigger={autoReportTrigger}
-        allMessages={allMessages}
-        limitedMessages={limitedMessages}
-        messagesEndRef={messagesEndRef}
-        MessageComponent={MessageComponent}
-        onFeedback={onFeedback}
-        isGenerating={isGenerating}
-        regenerateResponse={regenerateResponse}
-        setInputValue={setInputValue}
-      />
+      {!hasRestored && hasPersistedHistory && allMessages.length > 0 ? (
+        <div className="flex-1 overflow-y-auto p-4 flex items-center justify-center">
+          <RestoreConversationBanner
+            messageCount={allMessages.length}
+            onRestore={handleRestore}
+            onNewSession={handleNewSessionAndRestore}
+          />
+        </div>
+      ) : (
+        <ChatMessageList
+          scrollContainerRef={scrollContainerRef}
+          autoReportTrigger={autoReportTrigger}
+          allMessages={allMessages}
+          limitedMessages={limitedMessages}
+          messagesEndRef={messagesEndRef}
+          MessageComponent={MessageComponent}
+          onFeedback={onFeedback}
+          isGenerating={isGenerating}
+          regenerateResponse={regenerateResponse}
+          setInputValue={setInputValue}
+        />
+      )}
 
       {/* 명확화 다이얼로그 */}
       {clarification &&

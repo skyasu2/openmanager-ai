@@ -3,6 +3,7 @@ import { memo, useEffect, useState } from 'react';
 import { formatTime } from '@/lib/format-date';
 import type { EnhancedChatMessage } from '@/stores/useAISidebarStore';
 import type { AIThinkingStep } from '@/types/ai-sidebar/ai-sidebar-types';
+import { CollapsibleContent } from './CollapsibleContent';
 import { MarkdownRenderer } from './MarkdownRenderer';
 import { MessageActions } from './MessageActions';
 import ThinkingProcessVisualizer from './ThinkingProcessVisualizer';
@@ -106,18 +107,24 @@ export const AIWorkspaceMessage = memo<{
             }
           >
             {message.role === 'assistant' ? (
-              isLastMessage && !message.isStreaming ? (
-                <TypewriterMarkdown
-                  content={message.content}
-                  enableTypewriter={true}
-                  speed={12}
-                />
-              ) : (
-                <MarkdownRenderer
-                  content={message.content}
-                  className="text-chat leading-relaxed"
-                />
-              )
+              <CollapsibleContent
+                maxHeight={400}
+                isStreaming={message.isStreaming}
+                isLastMessage={isLastMessage}
+              >
+                {isLastMessage && !message.isStreaming ? (
+                  <TypewriterMarkdown
+                    content={message.content}
+                    enableTypewriter={true}
+                    speed={12}
+                  />
+                ) : (
+                  <MarkdownRenderer
+                    content={message.content}
+                    className="text-chat leading-relaxed"
+                  />
+                )}
+              </CollapsibleContent>
             ) : (
               <div className="whitespace-pre-wrap wrap-break-word text-chat leading-relaxed">
                 {message.content}
