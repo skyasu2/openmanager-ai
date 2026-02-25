@@ -5,7 +5,7 @@
  */
 
 import { useCallback, useEffect, useState } from 'react';
-import type { AuthUser } from '@/lib/auth/auth-state-manager';
+import type { AuthUser } from '@/lib/auth/auth-state-manager-types';
 import { authStateManager } from '@/lib/auth/auth-state-manager';
 import {
   AUTH_SESSION_ID_KEY,

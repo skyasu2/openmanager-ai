@@ -323,6 +323,6 @@ export const isGitHubAuthenticated = () =>
 export const clearAuthData = (authType?: 'github' | 'guest') =>
   authStateManager.clearAllAuthData(authType);
 export const invalidateAuthCache = () => authStateManager.invalidateCache();
-export type { AuthState, AuthUser };
-
-// AuthStateManager 싱글톤 초기화 완료
+// NOTE: AuthState, AuthUser 타입은 './auth-state-manager-types'에서 직접 import하세요.
+// `export type { AuthState, AuthUser }` 재내보내기는 Storybook vitest mock 변환기가
+// 타입을 런타임 값으로 취급하여 ReferenceError를 발생시키므로 제거되었습니다.

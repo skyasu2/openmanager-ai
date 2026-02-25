@@ -8,6 +8,7 @@ import '../src/styles/globals.css';
 sb.mock(import('../src/stores/useUnifiedAdminStore.ts'));
 sb.mock(import('../src/stores/useAISidebarStore.ts'));
 // Auth
+sb.mock(import('../src/lib/supabase/client.ts'));
 sb.mock(import('../src/lib/auth/supabase-auth-oauth.ts'));
 sb.mock(import('../src/lib/auth/auth-state-manager.ts'));
 // Hooks
