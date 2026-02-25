@@ -230,6 +230,34 @@ describe('Config Parser', () => {
   // 6. JSON Parsing Error Handling
   // ============================================================================
   describe('JSON Parsing', () => {
+    it('should parse JSON wrapped in single quotes', () => {
+      process.env.AI_PROVIDERS_CONFIG = `'${JSON.stringify({
+        groq: 'groq-quoted',
+        mistral: 'mistral-quoted',
+        cerebras: 'cerebras-quoted',
+        tavily: 'tavily-quoted',
+      })}'`;
+
+      const result = getAIProvidersConfig();
+
+      expect(result?.groq).toBe('groq-quoted');
+      expect(result?.tavily).toBe('tavily-quoted');
+    });
+
+    it('should parse JSON wrapped in double quotes', () => {
+      process.env.AI_PROVIDERS_CONFIG = `"${JSON.stringify({
+        groq: 'groq-quoted-double',
+        mistral: 'mistral-quoted-double',
+        cerebras: 'cerebras-quoted-double',
+        tavily: 'tavily-quoted-double',
+      })}"`;
+
+      const result = getAIProvidersConfig();
+
+      expect(result?.groq).toBe('groq-quoted-double');
+      expect(result?.tavily).toBe('tavily-quoted-double');
+    });
+
     it('should handle invalid JSON gracefully', () => {
       process.env.AI_PROVIDERS_CONFIG = 'not-valid-json';
       delete process.env.GROQ_API_KEY;

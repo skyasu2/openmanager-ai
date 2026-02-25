@@ -97,6 +97,9 @@ export interface AnomalyResultItem {
   isAnomaly: boolean;
   severity: string;
   confidence: number;
+  decisionSource: 'threshold' | 'statistical' | 'threshold+statistical';
+  confidenceBasis: string;
+  rationale: string[];
   currentValue: number;
   threshold: {
     upper: number;

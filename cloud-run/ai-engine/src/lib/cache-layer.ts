@@ -100,17 +100,20 @@ export class DataCacheLayer {
     
     // 1. Check L1 In-Memory Cache
     const item = this.memoryCache.get(key) as CachedItem<T> | undefined;
-    if (item && this.isValid(item)) {
-      item.hits++;
-      this.hitCount++;
-      logger.debug(`[Cache] L1 HIT: ${key}`);
-      return item.data;
+    if (item) {
+      if (this.isValid(item)) {
+        item.hits++;
+        this.hitCount++;
+        logger.debug(`[Cache] L1 HIT: ${key}`);
+        return item.data;
+      }
+      this.memoryCache.delete(key);
     }
 
     // 2. Check L2 Redis Cache
     try {
       const redisData = await RedisClient.get<T>(`global:cache:${key}`);
-      if (redisData) {
+      if (redisData !== null) {
         // Hydrate L1 cache from L2
         this.setLocal(type, identifier, redisData);
         this.hitCount++;
@@ -183,6 +186,15 @@ export class DataCacheLayer {
     }
   }
 
+  private cleanupExpiredOnly(): void {
+    const now = Date.now();
+    for (const [key, item] of this.memoryCache.entries()) {
+      if (now - item.cachedAt >= item.ttl) {
+        this.memoryCache.delete(key);
+      }
+    }
+  }
+
   /**
    * Get or compute: returns cached value or computes and caches new value
    */
@@ -207,8 +219,8 @@ export class DataCacheLayer {
   async invalidate(type: CacheType, identifier: string): Promise<boolean> {
     const key = this.generateKey(type, identifier);
     const deletedLocal = this.memoryCache.delete(key);
-    await RedisClient.del(`global:cache:${key}`);
-    return deletedLocal;
+    const deletedRemote = await RedisClient.del(`global:cache:${key}`);
+    return deletedLocal || deletedRemote;
   }
 
   /**
@@ -241,6 +253,7 @@ export class DataCacheLayer {
   }
 
   getStats(): CacheStats {
+    this.cleanupExpiredOnly();
     const entries = Array.from(this.memoryCache.values());
     const totalEntries = entries.length;
     const timestamps = entries.map((item) => item.cachedAt);
@@ -259,6 +272,7 @@ export class DataCacheLayer {
   }
 
   getDebugInfo(): CacheDebugInfo {
+    this.cleanupExpiredOnly();
     const entriesByType: Record<CacheType, number> = {
       metrics: 0,
       rag: 0,

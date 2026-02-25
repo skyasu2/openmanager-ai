@@ -101,7 +101,13 @@ vi.mock('../lib/ai/monitoring/SimpleAnomalyDetector', () => ({
       isAnomaly: false,
       severity: 'low',
       confidence: 0.5,
-      details: { lowerThreshold: 0, upperThreshold: 100 },
+      details: {
+        lowerThreshold: 0,
+        upperThreshold: 100,
+        mean: 50,
+        stdDev: 12,
+        deviation: 0.1,
+      },
     })),
   })),
 }));
@@ -131,7 +137,7 @@ vi.mock('../lib/ai/monitoring/TrendPredictor', () => ({
   })),
 }));
 
-import { detectAnomaliesAllServers } from './analyst-tools';
+import { detectAnomalies, detectAnomaliesAllServers } from './analyst-tools';
 
 // ============================================================================
 // detectAnomaliesAllServers Tests
@@ -396,5 +402,45 @@ describe('detectAnomaliesAllServers', () => {
         });
       }
     });
+  });
+});
+
+// ============================================================================ 
+// detectAnomalies Tests (single-server explainability)
+// ============================================================================
+
+describe('detectAnomalies', () => {
+  it('should include anomaly decision metadata for explainability', async () => {
+    const result = await detectAnomalies.execute(
+      { serverId: 'db-mysql-dc1-01', metricType: 'cpu' },
+      {} as never
+    );
+
+    expect(result.success).toBe(true);
+    if (result.success) {
+      const cpu = result.results.cpu;
+      expect(cpu).toBeDefined();
+      expect(cpu.decisionSource).toBe('threshold');
+      expect(cpu.confidenceBasis).toContain('rule=threshold');
+      expect(cpu.rationale).toBeInstanceOf(Array);
+      expect(cpu.rationale.length).toBeGreaterThan(0);
+      expect(result._algorithm).toBe('Threshold + Statistical + Enhanced Metrics');
+      expect(result).toHaveProperty('summaryMessage');
+    }
+  });
+
+  it('should tag threshold anomaly severity correctly when threshold is breached', async () => {
+    const result = await detectAnomalies.execute(
+      { serverId: 'db-mysql-dc1-01', metricType: 'cpu' },
+      {} as never
+    );
+
+    expect(result.success).toBe(true);
+    if (result.success) {
+      const cpu = result.results.cpu;
+      expect(cpu.isAnomaly).toBe(true);
+      expect(cpu.thresholdExceeded).toBe(true);
+      expect(cpu.severity).toBe('high');
+    }
   });
 });

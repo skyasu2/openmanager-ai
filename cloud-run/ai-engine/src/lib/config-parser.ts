@@ -82,8 +82,10 @@ function parseJsonSecret<T>(envVar: string, secretName: string): T | null {
     return null;
   }
 
+  const normalizedValue = value.trim().replace(/^\"|\"$/g, '').replace(/^'|'$/g, '');
+
   try {
-    return JSON.parse(value) as T;
+    return JSON.parse(normalizedValue) as T;
   } catch (err) {
     logger.error(`❌ [Config] Failed to parse ${secretName}:`, err);
     return null;

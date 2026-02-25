@@ -20,7 +20,8 @@ export const ORCHESTRATOR_CONFIG = {
   warnThreshold: TIMEOUT_CONFIG.orchestrator.warning,
   /**
    * Minimum confidence required to bypass LLM routing and force a specific agent.
-   * Keep this conservative to reduce premature single-agent locking.
+   * Slightly tuned to increase single-shot routing for clear infra queries
+   * and reduce LLM latency where signal is unambiguous.
    */
   forcedRoutingConfidence: 0.85,
   /**

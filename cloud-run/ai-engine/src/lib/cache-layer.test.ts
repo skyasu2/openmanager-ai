@@ -5,6 +5,7 @@ import {
   getDataCache,
   resetDataCache,
 } from './cache-layer';
+import { RedisClient } from './redis-client';
 
 vi.mock('./redis-client', () => ({
   RedisClient: {
@@ -39,6 +40,18 @@ describe('DataCacheLayer', () => {
     await expect(cache.get('metrics', 'missing')).resolves.toBeNull();
   });
 
+  it('returns falsy values cached in Redis', async () => {
+    vi.mocked(RedisClient.get).mockResolvedValueOnce(0 as never);
+
+    await expect(cache.get('metrics', 'zero')).resolves.toBe(0);
+  });
+
+  it('returns empty string cached in Redis', async () => {
+    vi.mocked(RedisClient.get).mockResolvedValueOnce('' as never);
+
+    await expect(cache.get('metrics', 'empty')).resolves.toBe('');
+  });
+
   it('supports getOrCompute memoization', async () => {
     const compute = vi.fn().mockResolvedValue({ cpu: 99 });
 
@@ -57,6 +70,10 @@ describe('DataCacheLayer', () => {
 
     vi.advanceTimersByTime(61_000);
     await expect(cache.get('metrics', 'k1')).resolves.toBeNull();
+
+    const stats = cache.getStats();
+    expect(stats.totalEntries).toBe(0);
+    expect(stats.missCount).toBe(1);
   });
 
   it('invalidates single entry', async () => {
@@ -135,4 +152,3 @@ describe('DataCacheLayer', () => {
     await expect(three.get('metrics', 'k1')).resolves.toBeNull();
   });
 });
-

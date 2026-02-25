@@ -225,6 +225,7 @@ export const AGENT_CONFIGS: Record<string, AgentConfig> = {
       getServerMetricsAdvanced,
       filterServers,
       searchKnowledgeBase,
+      searchWeb, // 에러 코드/CVE 조회용
       buildIncidentTimeline,
       findRootCause,
       correlateMetrics,

@@ -85,6 +85,14 @@ cloud-run/ai-engine/src/lib/ai/monitoring/
 - 운영 경로 미사용 + 향후 도입 계획 없음 → 제거
 - 운영 경로 미사용 + 단기 도입 계획 있음 → `experimental/`로 격리 + 로드맵 명시
 
+## 현재 상태 반영(2026-02-24)
+
+- `detectAnomalies` 단일 서버 탐지는 임계값 + 통계 기반 하이브리드 판정을 유지하며, 판정 근거를 구조화해 전달합니다.
+  - `decisionSource`: `threshold | statistical | threshold+statistical`
+  - `confidenceBasis`: 규칙/통계 신뢰 근거 문자열
+  - `rationale`: `string[]` 근거 토큰
+- `detectAnomaliesAllServers`는 임계치 기반 스캔 + 1시간 선형 예측 경로를 유지하여 비용/지연 우선 정책을 보존합니다.
+
 ## 향후 재도입(오픈소스 ML) 트리거
 
 아래 3개 이상 충족 시 Isolation Forest/대체 모델 재평가:

@@ -27,7 +27,7 @@ describe('preFilterQuery', () => {
     const result = preFilterQuery('서버 상태 알려줘');
     expect(result.shouldHandoff).toBe(true);
     expect(result.suggestedAgent).toBe('NLQ Agent');
-    expect(result.confidence).toBe(0.78);
+    expect(result.confidence).toBe(0.86);
   });
 
   it('prefers analyst/reporter/advisor with high confidence for clear intent', () => {

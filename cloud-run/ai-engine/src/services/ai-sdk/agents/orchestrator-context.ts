@@ -384,8 +384,8 @@ export function preFilterQuery(query: string): PreFilterResult {
       suggestedAgent = 'Advisor Agent';
       confidence = 0.87;
     } else {
-      // Generic metric/status query: allow LLM confirmation unless confidence is very high.
-      confidence = 0.78;
+      // Generic metric/status query: force NLQ for clear infra metric intent.
+      confidence = 0.86;
     }
 
     return {

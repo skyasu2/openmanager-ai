@@ -44,7 +44,7 @@ export class RedisClient {
 
   static async get<T>(key: string): Promise<T | null> {
     const value = await this.fetchRedis(['GET', key]);
-    if (!value) return null;
+    if (value === null || value === undefined) return null;
     try {
       return JSON.parse(value) as T;
     } catch {
@@ -60,8 +60,9 @@ export class RedisClient {
     await this.fetchRedis(command);
   }
 
-  static async del(key: string): Promise<void> {
-    await this.fetchRedis(['DEL', key]);
+  static async del(key: string): Promise<boolean> {
+    const result = await this.fetchRedis(['DEL', key]);
+    return typeof result === 'number' ? result > 0 : Number(result ?? 0) > 0;
   }
 
   static async incr(key: string): Promise<number> {
@@ -86,7 +87,7 @@ export class RedisClient {
 export interface RedisLikeClient {
   get: <T>(key: string) => Promise<T | null>;
   set: (key: string, value: unknown, ttlSeconds?: number) => Promise<void>;
-  del: (key: string) => Promise<void>;
+  del: (key: string) => Promise<boolean>;
   incr: (key: string) => Promise<number>;
   expire: (key: string, ttlSeconds: number) => Promise<void>;
   pexpire: (key: string, ttlMs: number) => Promise<void>;
@@ -128,8 +129,7 @@ export async function redisSet(
 
 export async function redisDel(key: string): Promise<boolean> {
   if (!isRedisAvailable()) return false;
-  await RedisClient.del(key);
-  return true;
+  return RedisClient.del(key);
 }
 
 /**
