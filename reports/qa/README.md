@@ -43,8 +43,13 @@ reports/qa/
     - `data-metrics-quality`
 - 동일 `id`가 반복 기록될 때:
   - `completedImprovements`에 있으면 해당 항목 상태를 `completed`로 갱신
-  - `pendingImprovements`에 있으면 해당 항목 상태를 `pending`으로 갱신
+  - `pendingImprovements`에 있으면 `record-qa-run.js`가 `isBlocking`/우선순위 정책에 따라 `pending` 또는 `wont-fix`로 정리
   - `dodChecks`에 있는 항목도 동일 규칙으로 병합 (`completed` > `pending` 우선)
+- 오버엔지니어링 방지 규칙(미확정 항목 자동 WONT-FIX):
+  - `isBlocking` 미지정 시 `P0/P1`은 기본 `true`, `P2`는 기본 `false`
+  - `P2` 기본 비차단 항목은 `pending` 전달 시 `wont-fix`로 자동 기록(완료 지표에서 제외)
+  - 과도 항목은 템플릿의 `overengineeringScope`에 근거를 남겨 다음 런에서도 의도 추적 가능
+  - 예외적으로 개선 우선순위가 높다고 판단되면 `isBlocking: true`로 명시
 - `QA_STATUS.md`는 기록 시마다 자동 재생성됩니다.
 
 ## DoD Closeout Playbook
@@ -55,8 +60,8 @@ reports/qa/
 - 실행 로드맵:
   - [DoD Closeout Roadmap](/reports/qa/dod-closeout-roadmap.md)
 - 기본 원칙:
-  - DoD 항목은 `completed`/`pending` 상태를 유지하고, 해결 즉시 `completedImprovements`로 기록
-  - 미완료 항목은 `pendingImprovements`로 지속 노출
+  - DoD 항목은 `completed`/`pending`/`wont-fix`를 구분하여 추적하고, 해결 시 `completedImprovements`로 전환
+  - `wont-fix`는 의도적으로 미개선 처리된 항목으로, 오버엔지니어링 억제 관점의 결정값
 - 우선순위:
   - `P0`: 릴리즈 차단 게이트 (예: tsc/lint zero-error)
   - `P1`: 릴리즈 보증 필수 항목 (예: 단위/통합, 보안 회귀, 모니터링 정량화)

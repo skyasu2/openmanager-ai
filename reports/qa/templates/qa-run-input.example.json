@@ -115,6 +115,8 @@
           "id": "observability-monitoring",
           "title": "precision/recall 오탐·미탐 정량 리포트",
           "status": "pending",
+          "isBlocking": false,
+          "overengineeringScope": "오탐/미탐 정량 리포트는 포트폴리오 범위에서는 정기 운영 자동화 대비 과도할 수 있음",
           "owner": "codex",
           "evidencePath": "reports/qa/runs/..."
         },
@@ -122,6 +124,8 @@
           "id": "security-attack-regression-pack",
           "title": "Prompt/보안 회귀 시나리오 10+ 편입",
           "status": "pending",
+          "isBlocking": false,
+          "overengineeringScope": "보안 회귀 시나리오 확대는 운영팀·사이드 채널 대응이 본격화될 때 추가 반영",
           "owner": "codex",
           "evidencePath": "reports/qa/runs/..."
         },
@@ -129,6 +133,8 @@
           "id": "metrics-drift-threshold-standard",
           "title": "정상범위/드리프트 임계치 표준화",
           "status": "pending",
+          "isBlocking": false,
+          "overengineeringScope": "실서비스 시계열 인프라가 준비되지 않은 상태에서 임계치 운영 표준화는 범위 초과",
           "owner": "codex",
           "evidencePath": "reports/qa/runs/..."
         }
@@ -148,13 +154,23 @@
       "id": "landing-copy-alignment",
       "title": "랜딩 로그인 정책 카피 정합성 추가 점검",
       "priority": "P1",
+      "isBlocking": true,
       "note": "GitHub 운영제어 문구와 게스트 테스트 문구 유지 확인 필요"
     },
     {
       "id": "home-semantic-nav",
       "title": "홈 페이지 nav 랜드마크 보강",
       "priority": "P1",
+      "isBlocking": true,
       "note": "a11y 스캔 기준 보강"
+    },
+    {
+      "id": "system-start-modal-flow",
+      "title": "시스템 시작/게스트 모드 안내 모달 UX 재점검",
+      "priority": "P2",
+      "isBlocking": false,
+      "overengineeringScope": "메시지 표시 조건은 핵심 UX 리스크가 없을 때 범위 내로 제한하고, 반복 알림은 지연/압축",
+      "note": "게스트 로그인은 유지하되, 로그인 완료 전 오탐 유도 문구가 뜨지 않도록 경로 조건 점검"
     }
   ],
   "notes": [

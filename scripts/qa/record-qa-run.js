@@ -125,6 +125,18 @@ function toBoolean(value, fallback = false) {
   return fallback;
 }
 
+function normalizePriority(rawValue) {
+  const normalized = String(rawValue || 'P2')
+    .trim()
+    .toUpperCase()
+    .replace(/\s+/g, '');
+  return /^P[0-5]$/.test(normalized) ? normalized : 'P2';
+}
+
+function hasOwnField(obj, field) {
+  return Object.prototype.hasOwnProperty.call(obj, field);
+}
+
 function normalizeItem(rawItem, fallbackPrefix, index) {
   if (!rawItem) {
     throw new Error(`${fallbackPrefix}[${index}] 항목이 비어있습니다.`);
@@ -142,10 +154,22 @@ function normalizeItem(rawItem, fallbackPrefix, index) {
     throw new Error(`${fallbackPrefix}[${index}] id 생성에 실패했습니다.`);
   }
 
+  const priority = normalizePriority(item.priority);
+  const hasBlocking = hasOwnField(item, 'isBlocking');
+  const blockingDefault = priority === 'P0' || priority === 'P1';
+  const isBlocking = hasBlocking
+    ? toBoolean(item.isBlocking, blockingDefault)
+    : blockingDefault;
+
   return {
     id,
     title,
-    priority: item.priority ? String(item.priority).toUpperCase() : 'P2',
+    priority,
+    isBlocking,
+    isBlockingExplicit: hasBlocking,
+    overengineeringScope: item.overengineeringScope
+      ? String(item.overengineeringScope)
+      : '',
     evidence: item.evidence ? String(item.evidence) : '',
     note: item.note ? String(item.note) : '',
     owner: item.owner ? String(item.owner) : '',
@@ -177,14 +201,53 @@ function normalizeDodCheck(rawItem, fallbackPrefix, index) {
   const statusRaw = String(item.status || 'pending').trim().toLowerCase();
   const status = statusRaw === 'completed' ? 'completed' : 'pending';
 
+  const priority = normalizePriority(item.priority);
+  const hasBlocking = hasOwnField(item, 'isBlocking');
+  const blockingDefault = priority === 'P0' || priority === 'P1';
+  const isBlocking = hasBlocking
+    ? toBoolean(item.isBlocking, blockingDefault)
+    : blockingDefault;
+
   return {
     id,
     title,
-    priority: item.priority ? String(item.priority).toUpperCase() : 'P2',
+    priority,
     evidence: item.evidence || item.evidencePath ? String(item.evidence || item.evidencePath) : '',
     note: item.note ? String(item.note) : '',
+    isBlocking,
+    isBlockingExplicit: hasBlocking,
+    overengineeringScope: item.overengineeringScope
+      ? String(item.overengineeringScope)
+      : '',
     owner: item.owner ? String(item.owner) : '',
     status,
+  };
+}
+
+function normalizePendingPolicy(item, sourceStatus) {
+  if (sourceStatus !== 'pending') {
+    return {
+      status: sourceStatus,
+      policyNote: '',
+    };
+  }
+
+  if (item.isBlocking) {
+    return {
+      status: 'pending',
+      policyNote: '',
+    };
+  }
+
+  const scopeNote =
+    item.overengineeringScope ||
+    '포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리';
+  const sourcePolicy = item.isBlockingExplicit
+    ? '요청자 표시(isBlocking=true)로 즉시 개선 필요'
+    : '기본 규칙(P2 기본 비차단) 적용';
+  return {
+    status: 'wont-fix',
+    policyNote: `이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: ${scopeNote} (${sourcePolicy})`,
   };
 }
 
@@ -267,6 +330,7 @@ function initializeTracker(nowIso) {
       completionRate: 0,
       completedItems: 0,
       pendingItems: 0,
+      wontFixItems: 0,
       expertDomainsTracked: 0,
       expertDomainsOpenGaps: 0,
       lastRunId: null,
@@ -318,9 +382,14 @@ function upsertTrackerItem({
         seenCount: 0,
         completedCount: 0,
         pendingCount: 0,
+        wontFixCount: 0,
         owner: normalizedItem.owner || '',
         lastEvidence: '',
         lastNote: '',
+        isBlocking: false,
+        isBlockingExplicit: false,
+        overengineeringScope: '',
+        lastPolicyNote: '',
       };
 
   next.title = normalizedItem.title;
@@ -332,8 +401,20 @@ function upsertTrackerItem({
   next.status = status;
   if (status === 'completed') next.completedCount += 1;
   if (status === 'pending') next.pendingCount += 1;
+  if (status === 'wont-fix') next.wontFixCount += 1;
   if (normalizedItem.evidence) next.lastEvidence = normalizedItem.evidence;
   if (normalizedItem.note) next.lastNote = normalizedItem.note;
+  next.isBlocking =
+    normalizedItem.isBlocking === true
+      ? true
+      : normalizedItem.isBlocking === false
+        ? false
+        : next.isBlocking || false;
+  next.isBlockingExplicit = normalizedItem.isBlockingExplicit === true;
+  if (normalizedItem.overengineeringScope) {
+    next.overengineeringScope = normalizedItem.overengineeringScope;
+  }
+  next.lastPolicyNote = normalizedItem.policyNote || '';
   next.lastStatusChangeAt = recordedAt;
 
   tracker.items[normalizedItem.id] = next;
@@ -395,6 +476,7 @@ function recalculateSummary(tracker) {
   const itemList = Object.values(tracker.items);
   const completedItems = itemList.filter((item) => item.status === 'completed').length;
   const pendingItems = itemList.filter((item) => item.status === 'pending').length;
+  const wontFixItems = itemList.filter((item) => item.status === 'wont-fix').length;
   const completionRateBase = completedItems + pendingItems;
   const completionRate =
     completionRateBase === 0
@@ -416,6 +498,7 @@ function recalculateSummary(tracker) {
     completionRate,
     completedItems,
     pendingItems,
+    wontFixItems,
     expertDomainsTracked,
     expertDomainsOpenGaps,
     lastRunId: lastRun ? lastRun.runId : null,
@@ -432,6 +515,12 @@ function statusMarkdown(tracker) {
     .sort((a, b) => a.id.localeCompare(b.id));
   const pending = itemList
     .filter((item) => item.status === 'pending')
+    .sort((a, b) => {
+      if (a.priority === b.priority) return a.id.localeCompare(b.id);
+      return a.priority.localeCompare(b.priority);
+    });
+  const wontFix = itemList
+    .filter((item) => item.status === 'wont-fix')
     .sort((a, b) => {
       if (a.priority === b.priority) return a.id.localeCompare(b.id);
       return a.priority.localeCompare(b.priority);
@@ -458,6 +547,7 @@ function statusMarkdown(tracker) {
   lines.push(`| Failed | ${tracker.summary.totalFailed} |`);
   lines.push(`| Completed Items | ${tracker.summary.completedItems} |`);
   lines.push(`| Pending Items | ${tracker.summary.pendingItems} |`);
+  lines.push(`| Wont-Fix Items | ${tracker.summary.wontFixItems || wontFix.length} |`);
   lines.push(`| Expert Domains Tracked | ${tracker.summary.expertDomainsTracked || 0} |`);
   lines.push(`| Expert Open Gaps | ${tracker.summary.expertDomainsOpenGaps || 0} |`);
   lines.push(`| Completion Rate | ${tracker.summary.completionRate}% |`);
@@ -511,6 +601,21 @@ function statusMarkdown(tracker) {
     }
   }
   lines.push('');
+  lines.push('## Wont-Fix Improvements');
+  lines.push('');
+  if (wontFix.length === 0) {
+    lines.push('- None');
+  } else {
+    for (const item of wontFix) {
+      lines.push(
+        `- [${item.priority}] ${item.id}: ${item.title} (seen ${item.seenCount}회, last ${item.lastSeenRunId})`
+      );
+      if (item.lastPolicyNote) {
+        lines.push(`  - note: ${item.lastPolicyNote}`);
+      }
+    }
+  }
+  lines.push('');
   lines.push('## Completed Improvements');
   lines.push('');
   if (completed.length === 0) {
@@ -525,14 +630,14 @@ function statusMarkdown(tracker) {
   lines.push('');
   lines.push('## Recent Runs');
   lines.push('');
-  lines.push('| Run ID | Time (UTC) | Title | Checks | Completed | Pending | Expert Gaps |');
-  lines.push('|---|---|---|---:|---:|---:|---:|');
+  lines.push('| Run ID | Time (UTC) | Title | Checks | Completed | Pending | Wont-Fix | Expert Gaps |');
+  lines.push('|---|---|---|---:|---:|---:|---:|---:|');
   if (recentRuns.length === 0) {
-    lines.push('| - | - | - | 0 | 0 | 0 | 0 |');
+    lines.push('| - | - | - | 0 | 0 | 0 | 0 | 0 |');
   } else {
     for (const run of recentRuns) {
       lines.push(
-        `| ${run.runId} | ${run.recordedAt} | ${run.title} | ${run.checks.total} | ${run.completedCount} | ${run.pendingCount} | ${run.expertNeedsImprovementCount || 0} |`
+        `| ${run.runId} | ${run.recordedAt} | ${run.title} | ${run.checks.total} | ${run.completedCount} | ${run.pendingCount || 0} | ${run.wontFixCount || 0} | ${run.expertNeedsImprovementCount || 0} |`
       );
     }
   }
@@ -594,12 +699,22 @@ function run() {
   );
 
   const finalItemMap = new Map();
-  const addItem = (item, status) => {
+  const addItem = (item, sourceStatus) => {
+    const { status, policyNote } = normalizePendingPolicy(item, sourceStatus);
+    const normalizedItem = { ...item, status, policyNote };
+    const priorityMap = {
+      completed: 2,
+      pending: 1,
+      'wont-fix': 0,
+    };
     const existing = finalItemMap.get(item.id);
-    if (existing && existing.status === 'completed') {
+    const existingPriority = existing ? priorityMap[existing.status] : -1;
+    const incomingPriority = priorityMap[status];
+
+    if (existing && existingPriority >= incomingPriority) {
       return;
     }
-    finalItemMap.set(item.id, { ...item, status });
+    finalItemMap.set(item.id, normalizedItem);
   };
 
   for (const item of completedImprovements) {
@@ -614,11 +729,14 @@ function run() {
 
   const finalCompletedImprovements = [];
   const finalPendingImprovements = [];
+  const finalWontFixImprovements = [];
   for (const item of finalItemMap.values()) {
     if (item.status === 'completed') {
       finalCompletedImprovements.push(item);
-    } else {
+    } else if (item.status === 'pending') {
       finalPendingImprovements.push(item);
+    } else {
+      finalWontFixImprovements.push(item);
     }
   }
 
@@ -656,6 +774,7 @@ function run() {
     expertAssessments,
     completedImprovements: finalCompletedImprovements,
     pendingImprovements: finalPendingImprovements,
+    wontFixImprovements: finalWontFixImprovements,
     notes: Array.isArray(payload.notes) ? payload.notes.map(String) : [],
     links: Array.isArray(payload.links) ? payload.links : [],
   };
@@ -678,6 +797,15 @@ function run() {
       recordedAt: nowIso,
       normalizedItem: pendingItem,
       status: 'pending',
+    });
+  }
+  for (const wontFixItem of finalWontFixImprovements) {
+    upsertTrackerItem({
+      tracker,
+      runId,
+      recordedAt: nowIso,
+      normalizedItem: wontFixItem,
+      status: 'wont-fix',
     });
   }
   for (const expertAssessment of expertAssessments) {
@@ -707,6 +835,7 @@ function run() {
     expertNeedsImprovementCount,
     completedCount: finalCompletedImprovements.length,
     pendingCount: finalPendingImprovements.length,
+    wontFixCount: finalWontFixImprovements.length,
   });
   tracker.sequence.nextRunNumber = runNumber + 1;
   tracker.meta.updatedAt = nowIso;
@@ -719,7 +848,7 @@ function run() {
   console.log(`✅ QA run recorded: ${runId}`);
   console.log(`- run file: ${runFileRelative}`);
   console.log(
-    `- summary: runs=${tracker.summary.totalRuns}, completed=${tracker.summary.completedItems}, pending=${tracker.summary.pendingItems}`
+    `- summary: runs=${tracker.summary.totalRuns}, completed=${tracker.summary.completedItems}, pending=${tracker.summary.pendingItems}, wont-fix=${tracker.summary.wontFixItems || 0}`
   );
   console.log(
     `- expert domains: tracked=${tracker.summary.expertDomainsTracked || 0}, open-gaps=${tracker.summary.expertDomainsOpenGaps || 0}`
