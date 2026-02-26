@@ -6,7 +6,10 @@
 
 import type { UIMessage } from 'ai';
 import type { StructuredAssistantResponse } from '@/lib/ai/utils/assistant-response-view';
-import { extractTextFromUIMessage } from '@/lib/ai/utils/message-normalizer';
+import {
+  extractTextFromUIMessage,
+  normalizeAIResponse,
+} from '@/lib/ai/utils/message-normalizer';
 import type {
   AnalysisBasis,
   EnhancedChatMessage,
@@ -91,7 +94,12 @@ export function transformUIMessageToEnhanced(
   isLastMessage: boolean
 ): EnhancedChatMessage {
   const { isLoading, currentMode, streamRagSources } = options;
-  const textContent = extractTextFromUIMessage(message);
+  const rawText = extractTextFromUIMessage(message);
+  // 🐛 Fix: 스트리밍 응답에서 JSON 페이로드 노출 방지
+  // Cloud Run NLQ Agent가 { answer, confidence, toolsUsed } JSON을 반환할 때
+  // answer 필드만 추출 (Job Queue 경로에서는 이미 적용됨, 스트리밍 경로 누락 수정)
+  const textContent =
+    message.role === 'assistant' ? normalizeAIResponse(rawText) : rawText;
 
   // Tool parts 추출 (null/undefined 방어 코드 추가)
   const toolParts =
