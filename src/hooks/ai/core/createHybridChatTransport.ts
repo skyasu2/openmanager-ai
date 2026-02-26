@@ -4,11 +4,12 @@ import {
   generateTraceparent,
   TRACEPARENT_HEADER,
 } from '@/config/ai-proxy.config';
+import { BREAKPOINTS } from '@/config/constants';
 import { consumeWarmupStartedAtForFirstQuery } from '@/utils/ai-warmup';
 
 function detectDeviceType(): 'mobile' | 'desktop' {
   if (typeof window === 'undefined') return 'desktop';
-  return window.innerWidth < 768 ? 'mobile' : 'desktop';
+  return window.innerWidth < BREAKPOINTS.MOBILE ? 'mobile' : 'desktop';
 }
 
 interface CreateHybridChatTransportParams {

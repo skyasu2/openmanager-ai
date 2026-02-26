@@ -16,7 +16,7 @@ import {
   Server,
   TrendingUp,
 } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { formatTime } from '@/lib/format-date';
 import { copyReportAsMarkdown, downloadReport } from './formatters';
 import type { IncidentReport } from './types';
@@ -207,11 +207,16 @@ export default function ReportCard({
 }: ReportCardProps) {
   const [copyState, setCopyState] = useState<'idle' | 'copied'>('idle');
 
+  useEffect(() => {
+    if (copyState !== 'copied') return;
+    const timer = setTimeout(() => setCopyState('idle'), 2000);
+    return () => clearTimeout(timer);
+  }, [copyState]);
+
   const handleCopyMarkdown = async () => {
     const success = await copyReportAsMarkdown(report);
     if (success) {
       setCopyState('copied');
-      setTimeout(() => setCopyState('idle'), 2000);
     }
   };
 

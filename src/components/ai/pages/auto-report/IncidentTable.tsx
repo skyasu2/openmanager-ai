@@ -11,7 +11,7 @@ import {
   RefreshCw,
   X,
 } from 'lucide-react';
-import { memo, useCallback, useState } from 'react';
+import { memo, useCallback, useEffect, useState } from 'react';
 import { copyReportAsMarkdown, downloadReport } from './formatters';
 import { IncidentTimeline } from './IncidentTimeline';
 import type { IncidentReport } from './types';
@@ -329,11 +329,16 @@ interface DetailActionButtonsProps {
 function DetailActionButtons({ report }: DetailActionButtonsProps) {
   const [copyState, setCopyState] = useState<'idle' | 'copied'>('idle');
 
+  useEffect(() => {
+    if (copyState !== 'copied') return;
+    const timer = setTimeout(() => setCopyState('idle'), 2000);
+    return () => clearTimeout(timer);
+  }, [copyState]);
+
   const handleCopy = async () => {
     const success = await copyReportAsMarkdown(report);
     if (success) {
       setCopyState('copied');
-      setTimeout(() => setCopyState('idle'), 2000);
     }
   };
 

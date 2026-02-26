@@ -11,7 +11,7 @@ import {
   type ResponseSourceData,
 } from './response-view-helpers';
 
-export type StreamDataCallbacks = {
+type StreamDataCallbacks = {
   setCurrentAgentStatus: (status: AgentStatusEventData | null) => void;
   setCurrentHandoff: (handoff: HandoffEventData | null) => void;
   setStreamRagSources: (

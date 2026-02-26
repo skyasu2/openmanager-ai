@@ -4,6 +4,7 @@
  * 실제 서버 개수와 화면 표시 개수의 혼동을 방지하기 위한 중앙 설정입니다.
  */
 
+import { BREAKPOINTS } from './constants';
 import { ACTIVE_SERVER_CONFIG } from './serverConfig';
 
 /**
@@ -62,7 +63,7 @@ export interface ServerDisplayConfig {
  * 🎯 화면 크기별 세로 2줄 계산
  */
 export const calculateTwoRowsLayout = (screenWidth: number) => {
-  if (screenWidth < 768) {
+  if (screenWidth < BREAKPOINTS.MOBILE) {
     // 모바일: 2열 x 2줄 = 4개
     return { cols: 2, rows: 2, total: 4 };
   } else if (screenWidth < 1024) {
