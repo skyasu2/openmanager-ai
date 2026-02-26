@@ -344,8 +344,7 @@ function DashboardPageContent({ initialServers }: DashboardClientProps) {
   }
 
   return (
-    <div
-      role="main"
+    <main
       aria-label="대시보드"
       data-testid="dashboard-container"
       data-test-mode={testModeDetected.toString()}
@@ -414,7 +413,7 @@ function DashboardPageContent({ initialServers }: DashboardClientProps) {
 
       {/* 🔔 알림 토스트 */}
       <NotificationToast />
-    </div>
+    </main>
   );
 }
 

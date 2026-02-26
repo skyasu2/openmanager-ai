@@ -67,7 +67,7 @@ export function useChatHistory<TMessage extends RestoredMessage>({
         `📂 [ChatHistory] Restored ${restoredMessages.length} messages`
       );
     }
-  }, [isMessagesEmpty, setMessages, onSessionRestore, sessionId]);
+  }, [isMessagesEmpty, setMessages, onSessionRestore]);
 
   // 메시지 변경 시 localStorage 자동 저장
   useEffect(() => {

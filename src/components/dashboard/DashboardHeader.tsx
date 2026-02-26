@@ -101,7 +101,6 @@ const DashboardHeader = memo(function DashboardHeader({
 
   return (
     <header
-      aria-label="대시보드 헤더"
       suppressHydrationWarning
       className="sticky top-0 z-40 border-b border-gray-200 bg-white shadow-xs"
     >
