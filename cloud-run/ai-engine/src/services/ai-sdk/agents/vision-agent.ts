@@ -82,6 +82,15 @@ const VISUAL_CONTEXT_KEYWORDS = [
   '에러',
 ];
 
+const LOG_CONTEXT_KEYWORDS = [
+  '전체',
+  '대용량',
+  '요약',
+  '분석',
+  '이상',
+  '에러',
+];
+
 const DOC_KEYWORDS = [
   '최신',
   '문서',
@@ -211,7 +220,7 @@ export function isVisionQuery(query: string): boolean {
   const hasLogSignal =
     includesAny(normalized, LOG_KEYWORDS) &&
     (includesAny(normalized, VISUAL_CONTEXT_KEYWORDS) ||
-      includesAny(normalized, ['전체', '대용량', '요약', '분석', '이상', '에러']) ||
+      includesAny(normalized, LOG_CONTEXT_KEYWORDS) ||
       hasAction(normalized));
   const hasDocSignal = includesAny(normalized, DOC_KEYWORDS) && hasAction(normalized);
   const hasUrlSignal =

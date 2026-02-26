@@ -44,6 +44,24 @@ import { generateObjectWithFallback } from './orchestrator-object-fallback';
 export { getRecentHandoffs };
 
 // ============================================================================
+// Vision Agent Helper (DRY: Gemini → Analyst fallback)
+// ============================================================================
+
+async function executeVisionOrFallback(
+  query: string,
+  startTime: number,
+  webSearchEnabled: boolean,
+  images?: Parameters<typeof executeWithAgentFactory>[4],
+  files?: Parameters<typeof executeWithAgentFactory>[5]
+): Promise<MultiAgentResponse | null> {
+  const result = await executeWithAgentFactory(query, 'vision', startTime, webSearchEnabled, images, files);
+  if (result) return result;
+
+  logger.warn('⚠️ [Vision] Gemini unavailable, falling back to Analyst Agent');
+  return executeForcedRouting(query, 'Analyst Agent', startTime, webSearchEnabled, images, files);
+}
+
+// ============================================================================
 // Main Execution Functions
 // ============================================================================
 
@@ -150,12 +168,7 @@ export async function executeMultiAgent(
 
     if (suggestedAgentName === 'Vision Agent') {
       logger.info(`[Vision] Using AgentFactory for Vision Agent`);
-      forcedResult = await executeWithAgentFactory(query, 'vision', startTime, webSearchEnabled, request.images, request.files);
-
-      if (!forcedResult) {
-        logger.warn(`⚠️ [Vision] Gemini unavailable, falling back to Analyst Agent`);
-        forcedResult = await executeForcedRouting(query, 'Analyst Agent', startTime, webSearchEnabled, request.images, request.files);
-      }
+      forcedResult = await executeVisionOrFallback(query, startTime, webSearchEnabled, request.images, request.files);
     } else {
       forcedResult = await executeForcedRouting(query, suggestedAgentName, startTime, webSearchEnabled, request.images, request.files);
     }
@@ -227,12 +240,7 @@ export async function executeMultiAgent(
       let agentResult: MultiAgentResponse | null = null;
 
       if (selectedAgent === 'Vision Agent') {
-        agentResult = await executeWithAgentFactory(query, 'vision', startTime, webSearchEnabled, request.images, request.files);
-
-        if (!agentResult) {
-          logger.warn(`⚠️ [LLM Routing] Vision Agent unavailable, falling back to Analyst`);
-          agentResult = await executeForcedRouting(query, 'Analyst Agent', startTime, webSearchEnabled, request.images, request.files);
-        }
+        agentResult = await executeVisionOrFallback(query, startTime, webSearchEnabled, request.images, request.files);
       } else {
         agentResult = await executeForcedRouting(query, selectedAgent, startTime, webSearchEnabled, request.images, request.files);
       }

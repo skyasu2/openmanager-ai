@@ -66,10 +66,10 @@ export const calculateTwoRowsLayout = (screenWidth: number) => {
   if (screenWidth < BREAKPOINTS.MOBILE) {
     // 모바일: 2열 x 2줄 = 4개
     return { cols: 2, rows: 2, total: 4 };
-  } else if (screenWidth < 1024) {
+  } else if (screenWidth < BREAKPOINTS.TABLET) {
     // 태블릿: 4열 x 2줄 = 8개
     return { cols: 4, rows: 2, total: 8 };
-  } else if (screenWidth < 1280) {
+  } else if (screenWidth < BREAKPOINTS.DESKTOP) {
     // 데스크톱: 6열 x 2줄 = 12개
     return { cols: 6, rows: 2, total: 12 };
   } else {
