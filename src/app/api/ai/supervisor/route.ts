@@ -34,7 +34,6 @@ import {
   shouldCompress,
 } from '@/lib/ai/utils/context-compressor';
 import {
-  extractLastUserQuery,
   type HybridMessage,
   normalizeMessagesForCloudRun,
 } from '@/lib/ai/utils/message-normalizer';
@@ -147,36 +146,33 @@ export const POST = withRateLimit(
         } = parseResult.data;
 
         // 2. sessionId 추출 (Header > Body > Query Param)
-        const url = new URL(req.url);
-        const headerSessionId = req.headers.get('X-Session-Id');
-        const querySessionId = url.searchParams.get('sessionId');
-        const clientSessionId =
-          headerSessionId || bodySessionId || querySessionId;
+        const clientSessionId = resolveSessionId(req, bodySessionId);
 
         // 3. 사용자 쿼리 추출 + 보안 검사
-        const rawQuery = extractLastUserQuery(messages as HybridMessage[]);
+        const queryResult = extractAndValidateQuery(
+          messages as HybridMessage[]
+        );
 
-        if (!rawQuery || rawQuery.trim() === '') {
-          return NextResponse.json(
-            {
-              success: false,
-              error: 'Empty query',
-              message: '쿼리를 입력해주세요.',
-            },
-            { status: 400 }
-          );
-        }
-
-        const {
-          sanitizedInput,
-          shouldBlock,
-          inputCheck,
-          warning: securityWarning,
-        } = securityCheck(rawQuery);
-        if (shouldBlock) {
+        if (!queryResult.ok) {
+          if (queryResult.reason === 'empty_query') {
+            return NextResponse.json(
+              {
+                success: false,
+                error: 'Empty query',
+                message: '쿼리를 입력해주세요.',
+              },
+              { status: 400 }
+            );
+          }
+          // blocked
           logger.warn(
-            `🛡️ [Supervisor] Blocked injection attempt: ${inputCheck.patterns.join(', ')}`
+            `🛡️ [Supervisor] Blocked injection attempt: ${queryResult.inputCheck?.patterns.join(', ')}`
           );
+          if (queryResult.warning) {
+            logger.warn(
+              `🛡️ [Supervisor] Security warning: ${queryResult.warning}`
+            );
+          }
           return NextResponse.json(
             {
               success: false,
@@ -190,10 +186,7 @@ export const POST = withRateLimit(
             }
           );
         }
-        if (securityWarning) {
-          logger.warn(`🛡️ [Supervisor] Security warning: ${securityWarning}`);
-        }
-        const userQuery = sanitizedInput;
+        const userQuery = queryResult.userQuery;
 
         // C4: userId를 sessionId에 결합하여 사용자 간 캐시 충돌 방지
         const userId = getUserId(req);
@@ -332,7 +325,7 @@ export const POST = withRateLimit(
             dynamicTimeout,
             skipCache,
             cacheEndpoint,
-            securityWarning,
+            securityWarning: queryResult.ok ? queryResult.warning : undefined,
             enableWebSearch,
             enableRAG,
             deviceType,

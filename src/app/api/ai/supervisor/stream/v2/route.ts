@@ -26,15 +26,14 @@ import {
   getRouteMaxExecutionMs,
 } from '@/config/ai-proxy.config';
 import {
-  extractLastUserQuery,
   type HybridMessage,
   normalizeMessagesForCloudRun,
 } from '@/lib/ai/utils/message-normalizer';
 import { withAuth } from '@/lib/auth/api-auth';
 import { logger } from '@/lib/logging';
 import { rateLimiters, withRateLimit } from '@/lib/security/rate-limiter';
+import { extractAndValidateQuery, resolveSessionId } from '../../request-utils';
 import { requestSchemaLoose } from '../../schemas';
-import { securityCheck } from '../../security';
 import {
   createStreamErrorResponse,
   getStreamOwnerKey,
@@ -225,11 +224,12 @@ export const POST = withRateLimit(
       } = parseResult.data;
 
       // 2. Extract session ID
-      const url = new URL(req.url);
-      const headerSessionId = req.headers.get('X-Session-Id');
-      const querySessionId = url.searchParams.get('sessionId');
-      const sessionId =
-        headerSessionId || bodySessionId || querySessionId || generateId();
+      const resolvedSessionId = resolveSessionId(
+        req,
+        bodySessionId,
+        generateId()
+      );
+      const sessionId = resolvedSessionId;
       const ownerKey = getStreamOwnerKey(req);
       const warmupStartedAt = parseWarmupStartedAt(
         req.headers.get(AI_WARMUP_STARTED_AT_HEADER)
@@ -262,30 +262,35 @@ export const POST = withRateLimit(
       }
 
       // 3. Extract and sanitize query
-      const rawQuery = extractLastUserQuery(messages as HybridMessage[]);
-      if (!rawQuery?.trim()) {
-        return NextResponse.json(
-          { success: false, error: 'Empty query' },
-          { status: 400 }
-        );
-      }
-      // Security check: block prompt injection attempts
-      const { shouldBlock, inputCheck, sanitizedInput } =
-        securityCheck(rawQuery);
-      if (shouldBlock) {
-        logger.warn(
-          `🛡️ [SupervisorStreamV2] Blocked injection: ${inputCheck.patterns.join(', ')}`
-        );
+      const queryResult = extractAndValidateQuery(
+        messages as HybridMessage[]
+      );
+      if (!queryResult.ok) {
+        if (queryResult.reason === 'blocked') {
+          logger.warn(
+            `🛡️ [SupervisorStreamV2] Blocked injection: ${queryResult.inputCheck?.patterns.join(', ')}`
+          );
+          if (queryResult.warning) {
+            logger.warn(
+                `🛡️ [SupervisorStreamV2] Security warning: ${queryResult.warning}`
+            );
+          }
+        }
         return NextResponse.json(
           {
             success: false,
-            error: 'Security: blocked input',
-            message: '보안 정책에 의해 차단된 요청입니다.',
+            error:
+              queryResult.reason === 'empty_query'
+                ? 'Empty query'
+                : 'Security: blocked input',
+            ...(queryResult.reason === 'blocked' && {
+              message: '보안 정책에 의해 차단된 요청입니다.',
+            }),
           },
           { status: 400 }
         );
       }
-      const userQuery = sanitizedInput;
+      const userQuery = queryResult.userQuery;
 
       logger.info(
         `🌊 [SupervisorStreamV2] Query: "${userQuery.slice(0, 50)}..."`
