@@ -1,7 +1,7 @@
 /**
- * 🚫 NextAuth Error Page
+ * 🚫 Auth Error Page
  *
- * GitHub OAuth 인증 오류 시 표시되는 페이지
+ * GitHub / Google / 이메일 인증 오류 시 표시되는 페이지
  *
  * NOTE: Dynamic rendering은 layout.tsx에서 설정됨
  */
@@ -20,35 +20,35 @@ function AuthErrorContent() {
   useEffect(() => {
     const errorParam = searchParams?.get('error');
 
-    // NextAuth 에러 코드를 한국어로 변환
+    // 인증 에러 코드를 한국어로 변환
     const getErrorMessage = (errorCode: string | null): string => {
       switch (errorCode) {
         case 'Configuration':
-          return 'GitHub OAuth 설정 오류가 발생했습니다.';
+          return '인증 설정 오류가 발생했습니다.';
         case 'AccessDenied':
-          return 'GitHub 로그인 권한이 거부되었습니다.';
+          return '로그인 권한이 거부되었습니다.';
         case 'Verification':
-          return 'GitHub 계정 인증에 실패했습니다.';
+          return '인증에 실패했습니다.';
         case 'Default':
-          return 'GitHub 로그인 중 알 수 없는 오류가 발생했습니다.';
+          return '로그인 중 알 수 없는 오류가 발생했습니다.';
         case 'OAuthCallback':
-          return 'GitHub OAuth 콜백 처리 중 오류가 발생했습니다.';
+          return 'OAuth 콜백 처리 중 오류가 발생했습니다.';
         case 'OAuthCreateAccount':
-          return 'GitHub 계정 정보를 가져오는데 실패했습니다.';
+          return '계정 정보를 가져오는데 실패했습니다.';
         case 'EmailCreateAccount':
-          return 'GitHub 이메일 정보를 가져오는데 실패했습니다.';
+          return '이메일 정보를 가져오는데 실패했습니다.';
         case 'Callback':
-          return 'GitHub 인증 콜백 처리에 실패했습니다.';
+          return '인증 콜백 처리에 실패했습니다.';
         case 'OAuthAccountNotLinked':
-          return 'GitHub 계정이 다른 제공자와 연결되어 있습니다.';
+          return '해당 계정이 이미 다른 소셜/이메일 제공자와 연결되어 있습니다.';
         case 'EmailSignin':
-          return 'GitHub 이메일로 로그인할 수 없습니다.';
+          return '이메일 인증으로 로그인할 수 없습니다.';
         case 'CredentialsSignin':
-          return 'GitHub 자격 증명 확인에 실패했습니다.';
+          return '자격 증명 확인에 실패했습니다.';
         case 'SessionRequired':
-          return 'GitHub 로그인 세션이 필요합니다.';
+          return '로그인 세션이 필요합니다.';
         default:
-          return 'GitHub 로그인 중 오류가 발생했습니다.';
+          return '로그인 중 오류가 발생했습니다.';
       }
     };
 
@@ -63,7 +63,7 @@ function AuthErrorContent() {
   };
 
   /**
-   * 🔄 GitHub 로그인 다시 시도
+   * 🔄 로그인 다시 시도
    */
   const handleTryAgain = () => {
     router.push('/login');
@@ -91,7 +91,7 @@ function AuthErrorContent() {
             </svg>
           </div>
           <h1 className="mb-2 text-2xl font-bold text-gray-900">로그인 실패</h1>
-          <p className="text-gray-600">GitHub OAuth 인증에 실패했습니다</p>
+          <p className="text-gray-600">소셜/이메일 인증에 실패했습니다</p>
         </div>
 
         {/* 에러 메시지 */}
@@ -126,7 +126,7 @@ function AuthErrorContent() {
           <div className="space-y-2 text-sm text-blue-800">
             <div className="flex items-start space-x-2">
               <span className="text-blue-600">1.</span>
-              <span>GitHub에 로그인되어 있는지 확인하세요</span>
+              <span>로그인 상태를 확인하세요</span>
             </div>
             <div className="flex items-start space-x-2">
               <span className="text-blue-600">2.</span>
@@ -180,7 +180,7 @@ function AuthErrorContent() {
         {/* 기술 정보 */}
         <div className="mt-8 text-center">
           <div className="space-y-1 text-xs text-gray-500">
-            <p>🔐 NextAuth 기반 GitHub OAuth</p>
+            <p>🔐 GitHub/Google/이메일 기반 인증</p>
             <p>🛠️ 문제가 계속되면 관리자에게 문의하세요</p>
             <p>OpenManager AI v8.0.0</p>
           </div>

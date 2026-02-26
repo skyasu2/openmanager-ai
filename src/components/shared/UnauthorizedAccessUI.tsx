@@ -2,7 +2,7 @@
  * UnauthorizedAccessUI - 권한 없음 상태 표시 컴포넌트
  *
  * 대시보드 접근 권한이 없을 때 표시되는 UI
- * GitHub 로그인 또는 PIN 인증 안내를 담당
+ * GitHub/Google/이메일 로그인 또는 PIN 인증 안내를 담당
  *
  * 추출 위치:
  * - src/app/dashboard/DashboardClient.tsx (lines 904-942)
@@ -16,7 +16,7 @@ import FullScreenLayout from './FullScreenLayout';
 
 interface UnauthorizedAccessUIProps {
   /**
-   * GitHub 로그인이 필수인지 여부
+   * GitHub/Google/이메일 로그인이 필수인지 여부
    * @default true
    */
   requiresGitHub?: boolean;
@@ -67,7 +67,7 @@ export default function UnauthorizedAccessUI({
           <h2 className="mb-2 text-2xl font-bold text-white">접근 권한 필요</h2>
           <p className="mb-6 text-gray-300">
             {requiresGitHub
-              ? '대시보드 접근을 위해 GitHub 로그인 또는 관리자 PIN 인증이 필요합니다.'
+              ? '대시보드 접근을 위해 GitHub, Google, 이메일 로그인 또는 관리자 PIN 인증이 필요합니다.'
               : '대시보드 접근을 위해 인증이 필요합니다.'}
           </p>
         </div>
@@ -78,7 +78,7 @@ export default function UnauthorizedAccessUI({
             onClick={handleLoginClick}
             className="w-full rounded-lg bg-linear-to-r from-blue-500 to-blue-600 px-6 py-3 font-semibold text-white transition-all duration-200 hover:from-blue-600 hover:to-blue-700"
           >
-            {requiresGitHub ? 'GitHub 로그인' : '로그인'}
+            {requiresGitHub ? '로그인' : '로그인'}
           </button>
 
           <button

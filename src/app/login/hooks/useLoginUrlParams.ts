@@ -65,13 +65,13 @@ export function useLoginUrlParams(deps: {
       setErrorMessage(decodeURIComponent(message));
     } else if (error === 'provider_error') {
       setErrorMessage(
-        'GitHub OAuth 설정을 확인해주세요. 아래 가이드를 참고하세요.'
+        'OAuth 설정을 확인해주세요. 아래 가이드를 참고하거나 다른 인증 방식을 이용하세요.'
       );
     } else if (error === 'auth_callback_failed') {
       setErrorMessage('인증 처리 중 오류가 발생했습니다. 다시 시도해주세요.');
     } else if (error === 'pkce_failed') {
       setErrorMessage(
-        '인증 코드 처리에 실패했습니다. GitHub 로그인을 다시 시도하거나 게스트 모드를 이용해주세요.'
+        '인증 코드 처리에 실패했습니다. 소셜/이메일 로그인 또는 게스트 모드로 재시도해 주세요.'
       );
       try {
         const keysToRemove = Object.keys(localStorage).filter(
@@ -89,8 +89,8 @@ export function useLoginUrlParams(deps: {
       const countryCode = searchParams.get('country');
       setErrorMessage(
         countryCode
-          ? `현재 지역(${countryCode})에서는 게스트 로그인이 제한됩니다. GitHub 또는 Google 로그인을 이용해주세요.`
-          : '현재 지역에서는 게스트 로그인이 제한됩니다. GitHub 또는 Google 로그인을 이용해주세요.'
+          ? `현재 지역(${countryCode})에서는 게스트 로그인이 제한됩니다. GitHub, Google 또는 이메일 로그인으로 이용해주세요.`
+          : '현재 지역에서는 게스트 로그인이 제한됩니다. GitHub, Google 또는 이메일 로그인으로 이용해주세요.'
       );
     } else if (error === 'guest_pin_invalid') {
       setErrorMessage(

@@ -43,12 +43,12 @@ export function GuestRestrictionModal({
   const description =
     reason === 'guest-start-blocked'
       ? '현재 게스트 모드에서는 시스템 시작이 제한되어 있습니다.'
-      : '시스템 시작은 로그인 후 이용할 수 있습니다.';
+      : '현재 로그인 상태가 아니어도 시스템 시작 버튼은 보이지만, 시작하려면 로그인해야 합니다.';
 
   const infoText =
     reason === 'guest-start-blocked'
-      ? '게스트 세션이 제한된 환경에서는 GitHub/Google/이메일 계정으로 로그인해 주세요.'
-      : 'GitHub, Google, 또는 이메일 계정으로 로그인해 주세요.';
+      ? '게스트 세션이 제한된 환경에서는 GitHub, Google 또는 이메일 인증 계정으로 로그인해 주세요.'
+      : 'GitHub, Google, 또는 이메일 인증 계정으로 로그인해 주세요.';
 
   return (
     <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>

@@ -1,0 +1,119 @@
+{
+  "runId": "QA-20260227-0014",
+  "recordedAt": "2026-02-26T18:03:30.997Z",
+  "recordedAtKst": "2026-02-27 03:03:30 KST",
+  "runTitle": "Vercel Playwright QA - 로그인 정책/시스템 시작 가드 배포 검증",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main"
+  },
+  "checks": {
+    "total": 3,
+    "passed": 2,
+    "failed": 1
+  },
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "비로그인 시스템 시작 버튼 노출, 모달 노출, 게스트 PIN 인증 후 버튼 노출 플로우는 정상 동작함",
+      "nextAction": "배포 최신 상태에서 로그아웃/초기화 캐시 재검증"
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "시스템 시작 가드 UI는 확인되었으나 시작 API 레벨 상태 전환(요청/성공/실패)이 QA 메트릭과 직접 연결되지 않음",
+      "nextAction": "시스템 시작 시도/완료/실패 이벤트를 OTEL 메트릭으로 연결"
+    },
+    {
+      "domainId": "ai-security-reliability",
+      "domainName": "AI Security & Reliability Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "게스트 PIN 진입은 제한된 채널로 정상 이동하며 로그인 우회 없이 메인 버튼 접근까지 이어짐",
+      "nextAction": "게스트 차단/잠금 이벤트를 보안 로그와 상관 검증"
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Vercel 배포 기준 경로로 재현 가능한 E2E 검증이 수행됨",
+      "nextAction": "채널별 배포마다 동일 QA를 자동 스케줄"
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Playwright MCP로 비로그인 게이트/게스트 PIN 플로우를 수동 실행해 재현성 확인",
+      "nextAction": "재현성 실패 시 재시작 정책 문서화"
+    },
+    {
+      "domainId": "data-metrics-quality",
+      "domainName": "Data Quality & Metrics Analyst",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "현재 결과는 흐름 성공률 정성 확인이지만 운영 QA_run 메타와 성공률 지표 파이프라인은 미연동",
+      "nextAction": "system-start 성공률/실패률을 QA_run 메타와 연동"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "feature-dod-system-start-guard",
+      "title": "비로그인/제한 게스트 시스템 시작 가드 모달 동작",
+      "priority": "P1",
+      "evidence": "비로그인 상태에서 시스템 시작 모달이 정상 노출됨",
+      "note": "",
+      "owner": "",
+      "status": "completed"
+    },
+    {
+      "id": "guest-pin-login-flow",
+      "title": "게스트 PIN 인증 후 시스템 시작 버튼 노출",
+      "priority": "P2",
+      "evidence": "게스트 PIN으로 로그인 후 / 페이지에서 시스템 시작 버튼이 계속 표시됨",
+      "note": "",
+      "owner": "",
+      "status": "completed"
+    },
+    {
+      "id": "login-copy-neutral",
+      "title": "로그인 정책 카피 중립성 개선",
+      "priority": "P1",
+      "evidence": "GitHub/Google/이메일 동시 언급 케이스를 기준 테스트로 확인",
+      "note": "",
+      "owner": "",
+      "status": "completed"
+    }
+  ],
+  "pendingImprovements": [
+    {
+      "id": "landing-copy-alignment",
+      "title": "랜딩/로그인 정책 카피 정합성",
+      "priority": "P1",
+      "evidence": "배포본 모달 문구가 '시스템 시작은 로그인 후 이용할 수 있습니다.'로 노출되어 소스 기대 카피와 확인 필요",
+      "note": "Vercel 재배포 후 문구 일치 여부 추가 확인 필요",
+      "owner": "",
+      "status": "pending"
+    }
+  ],
+  "notes": [
+    "Playwright MCP 기준으로 비로그인 상태에서 시스템 시작 버튼과 가드 모달 동작을 검증함",
+    "게스트 PIN(4231)으로 게스트 로그인을 진행해 시스템 시작 버튼이 유지되는 것을 확인함",
+    "현재 배포 텍스트가 기대 카피와 다를 경우 Cloud Run/Next 배포 동기화 또는 빌드 재적용이 필요함"
+  ],
+  "links": [
+    {
+      "label": "Vercel URL",
+      "url": "https://openmanager-ai.vercel.app"
+    }
+  ]
+}

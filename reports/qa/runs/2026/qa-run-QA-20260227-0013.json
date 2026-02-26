@@ -1,0 +1,127 @@
+{
+  "runId": "QA-20260227-0013",
+  "recordedAt": "2026-02-26T17:50:54.243Z",
+  "recordedAtKst": "2026-02-27 02:50:54 KST",
+  "runTitle": "Vercel Playwright QA - 시스템 시작 가드/게스트 PIN 체험 흐름 재검증",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main"
+  },
+  "checks": {
+    "total": 2,
+    "passed": 2,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "비로그인 시스템 시작 모달 동작 및 게스트 PIN 로그인 후 시스템 시작 버튼 노출을 실제 페이지에서 재확인함",
+      "nextAction": "시스템 시작 API 응답시간 임계치와 상태 전환 실패 사유 코드도 함께 계측"
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "UX 가드 동작은 확인되었으나 시작 API 레벨 성공/실패 이벤트 수집이 아직 QA 스코어에 직접 연결되지 않음",
+      "nextAction": "시스템 시작 시도/완료/실패 이벤트를 OTEL 메트릭으로 연결"
+    },
+    {
+      "domainId": "ai-security-reliability",
+      "domainName": "AI Security & Reliability Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "게스트 PIN 기반 체험 진입은 제한된 경로로 정상 동작하며 인증 우회가 없는지 확인함",
+      "nextAction": "게스트 차단 시도 로깅 이벤트를 보안 로그와 연동"
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Vercel 기준 재현 가능한 Playwright 경로로 회귀 검증이 가능함",
+      "nextAction": "채널별 배포마다 동일 QA를 자동 스케줄"
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "핵심 시나리오를 수동 Playwright MCP로 검증했고 기존 QA spec의 구조와 정합",
+      "nextAction": "재현성 회귀용 테스트 재시작 정책 문서 보강"
+    },
+    {
+      "domainId": "data-metrics-quality",
+      "domainName": "Data Quality & Metrics Analyst",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "플로우별 성공률은 확인됐으나 QA 트래커 지표와 운영 메트릭 파이프라인이 아직 연결되지 않음",
+      "nextAction": "system-start 성공률/실패률 지표를 QA_run 메타와 연동"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "feature-dod-system-start-guard",
+      "title": "비로그인/제한 게스트 시스템 시작 가드 모달 동작",
+      "priority": "P1",
+      "evidence": "Vercel Playwright QA에서 모달 노출 및 메시지 확인",
+      "note": "",
+      "owner": "",
+      "status": "completed"
+    },
+    {
+      "id": "guest-login-visibility-toggle",
+      "title": "게스트 로그인 버튼 노출 옵션화",
+      "priority": "P1",
+      "evidence": "게스트 모드/핀 인증 동작 확인",
+      "note": "",
+      "owner": "",
+      "status": "completed"
+    }
+  ],
+  "pendingImprovements": [
+    {
+      "id": "metrics-drift-threshold-standard",
+      "title": "지표 드리프트 임계치 표준화",
+      "priority": "P1",
+      "evidence": "",
+      "note": "아직 문서된 임계치/검증 스크립트 미완성",
+      "owner": "",
+      "status": "pending"
+    },
+    {
+      "id": "obs-fp-fn-weekly-report",
+      "title": "오탐/미탐 주간 리포트 자동 생성",
+      "priority": "P1",
+      "evidence": "",
+      "note": "정량 리포트 파이프라인 구현 필요",
+      "owner": "",
+      "status": "pending"
+    },
+    {
+      "id": "security-attack-regression-pack",
+      "title": "보안 공격 시나리오 회귀팩 구축",
+      "priority": "P1",
+      "evidence": "",
+      "note": "AI 보안 회귀 케이스 수립 필요",
+      "owner": "",
+      "status": "pending"
+    }
+  ],
+  "notes": [
+    "현재 브랜치 기준 라우팅/UI가 비로그인에서 시스템 시작 가드 모달을 정확히 노출함",
+    "게스트 PIN(4231) 입력 후 시스템 시작 버튼은 계속 표시됨"
+  ],
+  "links": [
+    {
+      "label": "Vercel URL",
+      "url": "https://openmanager-ai.vercel.app"
+    }
+  ]
+}

@@ -2,23 +2,23 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-02-26T14:07:55.933Z"
+    "updatedAt": "2026-02-26T18:11:05.996Z"
   },
   "sequence": {
-    "nextRunNumber": 10
+    "nextRunNumber": 16
   },
   "summary": {
-    "totalRuns": 9,
-    "totalChecks": 59,
-    "totalPassed": 45,
-    "totalFailed": 14,
-    "completionRate": 77.27,
-    "completedItems": 17,
-    "pendingItems": 5,
+    "totalRuns": 15,
+    "totalChecks": 71,
+    "totalPassed": 55,
+    "totalFailed": 16,
+    "completionRate": 75,
+    "completedItems": 24,
+    "pendingItems": 8,
     "expertDomainsTracked": 6,
-    "expertDomainsOpenGaps": 4,
-    "lastRunId": "QA-20260226-0009",
-    "lastRecordedAt": "2026-02-26T14:07:55.933Z"
+    "expertDomainsOpenGaps": 3,
+    "lastRunId": "QA-20260227-0015",
+    "lastRecordedAt": "2026-02-26T18:11:05.996Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -45,32 +45,32 @@
       "status": "completed",
       "firstSeenRunId": "QA-20260226-0001",
       "firstSeenAt": "2026-02-26T10:50:26.077Z",
-      "lastSeenRunId": "QA-20260226-0001",
-      "lastSeenAt": "2026-02-26T10:50:26.077Z",
-      "seenCount": 1,
-      "completedCount": 1,
+      "lastSeenRunId": "QA-20260227-0013",
+      "lastSeenAt": "2026-02-26T17:50:54.243Z",
+      "seenCount": 2,
+      "completedCount": 2,
       "pendingCount": 0,
       "owner": "",
-      "lastEvidence": "NEXT_PUBLIC_SHOW_GUEST_LOGIN 토글 추가",
+      "lastEvidence": "게스트 모드/핀 인증 동작 확인",
       "lastNote": "",
-      "lastStatusChangeAt": "2026-02-26T10:50:26.077Z"
+      "lastStatusChangeAt": "2026-02-26T17:50:54.243Z"
     },
     "landing-copy-alignment": {
       "id": "landing-copy-alignment",
-      "title": "랜딩 로그인 정책 카피 정합성 추가 점검",
+      "title": "랜딩/로그인 정책 카피 정합성",
       "priority": "P1",
-      "status": "completed",
+      "status": "pending",
       "firstSeenRunId": "QA-20260226-0001",
       "firstSeenAt": "2026-02-26T10:50:26.077Z",
-      "lastSeenRunId": "QA-20260226-0009",
-      "lastSeenAt": "2026-02-26T14:07:55.933Z",
-      "seenCount": 4,
-      "completedCount": 2,
-      "pendingCount": 2,
+      "lastSeenRunId": "QA-20260227-0015",
+      "lastSeenAt": "2026-02-26T18:11:05.996Z",
+      "seenCount": 7,
+      "completedCount": 3,
+      "pendingCount": 4,
       "owner": "",
-      "lastEvidence": "login-policy.ts SSOT 생성 → LoginPrompt, GuestRestrictionModal, DashboardSection 3개 컴포넌트 통일",
-      "lastNote": "GitHub 운영제어 문구 및 게스트 테스트 안내 문구를 제품 정책 문서와 교차 검증",
-      "lastStatusChangeAt": "2026-02-26T14:07:55.933Z"
+      "lastEvidence": "배포본 모달이 여전히 '시스템 시작은 로그인 후 이용할 수 있습니다.'를 노출해 소스 카피와 불일치",
+      "lastNote": "구버전 배포/캐시 정합성 이슈 가능성. Vercel 재배포 또는 배포 버전 고정 필요",
+      "lastStatusChangeAt": "2026-02-26T18:11:05.996Z"
     },
     "login-pin-form-structure": {
       "id": "login-pin-form-structure",
@@ -130,15 +130,15 @@
       "status": "pending",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "lastSeenRunId": "QA-20260226-0004",
-      "lastSeenAt": "2026-02-26T11:24:21.055Z",
-      "seenCount": 2,
+      "lastSeenRunId": "QA-20260227-0013",
+      "lastSeenAt": "2026-02-26T17:50:54.243Z",
+      "seenCount": 3,
       "completedCount": 0,
-      "pendingCount": 2,
+      "pendingCount": 3,
       "owner": "",
       "lastEvidence": "",
-      "lastNote": "알림 precision/recall을 오탐률, 미탐률로 분리 추적",
-      "lastStatusChangeAt": "2026-02-26T11:24:21.055Z"
+      "lastNote": "정량 리포트 파이프라인 구현 필요",
+      "lastStatusChangeAt": "2026-02-26T17:50:54.243Z"
     },
     "security-attack-regression-pack": {
       "id": "security-attack-regression-pack",
@@ -147,15 +147,15 @@
       "status": "pending",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "lastSeenRunId": "QA-20260226-0004",
-      "lastSeenAt": "2026-02-26T11:24:21.055Z",
-      "seenCount": 2,
+      "lastSeenRunId": "QA-20260227-0013",
+      "lastSeenAt": "2026-02-26T17:50:54.243Z",
+      "seenCount": 3,
       "completedCount": 0,
-      "pendingCount": 2,
+      "pendingCount": 3,
       "owner": "",
       "lastEvidence": "",
-      "lastNote": "Prompt injection, jailbreak, 정보추출 변형 테스트 포함",
-      "lastStatusChangeAt": "2026-02-26T11:24:21.055Z"
+      "lastNote": "AI 보안 회귀 케이스 수립 필요",
+      "lastStatusChangeAt": "2026-02-26T17:50:54.243Z"
     },
     "metrics-drift-threshold-standard": {
       "id": "metrics-drift-threshold-standard",
@@ -164,15 +164,15 @@
       "status": "pending",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "lastSeenRunId": "QA-20260226-0003",
-      "lastSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 1,
+      "lastSeenRunId": "QA-20260227-0013",
+      "lastSeenAt": "2026-02-26T17:50:54.243Z",
+      "seenCount": 2,
       "completedCount": 0,
-      "pendingCount": 1,
+      "pendingCount": 2,
       "owner": "",
       "lastEvidence": "",
-      "lastNote": "Data Quality 전문영역 마무리 검증용",
-      "lastStatusChangeAt": "2026-02-26T11:15:22.325Z"
+      "lastNote": "아직 문서된 임계치/검증 스크립트 미완성",
+      "lastStatusChangeAt": "2026-02-26T17:50:54.243Z"
     },
     "feature-dod-validation-health-endpoints": {
       "id": "feature-dod-validation-health-endpoints",
@@ -394,6 +394,176 @@
       "lastEvidence": "reports/planning/TODO.md",
       "lastNote": "",
       "lastStatusChangeAt": "2026-02-26T12:00:38.039Z"
+    },
+    "auth-error-provider-copy": {
+      "id": "auth-error-provider-copy",
+      "title": "인증 에러 라우트 메시지를 제공자-중립 표현으로 전환",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260227-0010",
+      "firstSeenAt": "2026-02-26T16:36:37.248Z",
+      "lastSeenRunId": "QA-20260227-0010",
+      "lastSeenAt": "2026-02-26T16:36:37.248Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "owner": "",
+      "lastEvidence": "src/app/api/auth/error/route.ts",
+      "lastNote": "",
+      "lastStatusChangeAt": "2026-02-26T16:36:37.248Z"
+    },
+    "로그인-정책-카피-정합성": {
+      "id": "로그인-정책-카피-정합성",
+      "title": "로그인 정책 카피 정합성",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260227-0010",
+      "firstSeenAt": "2026-02-26T16:36:37.248Z",
+      "lastSeenRunId": "QA-20260227-0010",
+      "lastSeenAt": "2026-02-26T16:36:37.248Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "owner": "codex",
+      "lastEvidence": "reports/qa/runs",
+      "lastNote": "",
+      "lastStatusChangeAt": "2026-02-26T16:36:37.248Z"
+    },
+    "비로그인-시스템-시작-가드-모달-동작": {
+      "id": "비로그인-시스템-시작-가드-모달-동작",
+      "title": "비로그인 시스템 시작 가드 모달 동작",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260227-0010",
+      "firstSeenAt": "2026-02-26T16:36:37.248Z",
+      "lastSeenRunId": "QA-20260227-0010",
+      "lastSeenAt": "2026-02-26T16:36:37.248Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "owner": "codex",
+      "lastEvidence": "reports/qa/runs",
+      "lastNote": "",
+      "lastStatusChangeAt": "2026-02-26T16:36:37.248Z"
+    },
+    "게스트-pin-로그인-후-시스템-시작-버튼-노출": {
+      "id": "게스트-pin-로그인-후-시스템-시작-버튼-노출",
+      "title": "게스트 PIN 로그인 후 시스템 시작 버튼 노출",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260227-0010",
+      "firstSeenAt": "2026-02-26T16:36:37.248Z",
+      "lastSeenRunId": "QA-20260227-0010",
+      "lastSeenAt": "2026-02-26T16:36:37.248Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "owner": "codex",
+      "lastEvidence": "reports/qa/runs",
+      "lastNote": "",
+      "lastStatusChangeAt": "2026-02-26T16:36:37.248Z"
+    },
+    "system-start-metrics-gate": {
+      "id": "system-start-metrics-gate",
+      "title": "시스템 시작 지연/실패율 KPI 기준 자동 수집",
+      "priority": "P2",
+      "status": "pending",
+      "firstSeenRunId": "QA-20260227-0010",
+      "firstSeenAt": "2026-02-26T16:36:37.248Z",
+      "lastSeenRunId": "QA-20260227-0010",
+      "lastSeenAt": "2026-02-26T16:36:37.248Z",
+      "seenCount": 1,
+      "completedCount": 0,
+      "pendingCount": 1,
+      "owner": "",
+      "lastEvidence": "",
+      "lastNote": "",
+      "lastStatusChangeAt": "2026-02-26T16:36:37.248Z"
+    },
+    "feature-dod-login-policy-copy": {
+      "id": "feature-dod-login-policy-copy",
+      "title": "로그인 정책 안내 카피가 GitHub/Google/이메일 중립 표현인지",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260227-0011",
+      "firstSeenAt": "2026-02-26T17:46:20.701Z",
+      "lastSeenRunId": "QA-20260227-0012",
+      "lastSeenAt": "2026-02-26T17:46:29.032Z",
+      "seenCount": 2,
+      "completedCount": 2,
+      "pendingCount": 0,
+      "owner": "",
+      "lastEvidence": "src/app/auth/error/page.tsx",
+      "lastNote": "",
+      "lastStatusChangeAt": "2026-02-26T17:46:29.032Z"
+    },
+    "feature-dod-system-start-guard": {
+      "id": "feature-dod-system-start-guard",
+      "title": "비로그인/제한 게스트 시스템 시작 가드 모달 동작",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260227-0011",
+      "firstSeenAt": "2026-02-26T17:46:20.701Z",
+      "lastSeenRunId": "QA-20260227-0015",
+      "lastSeenAt": "2026-02-26T18:11:05.996Z",
+      "seenCount": 5,
+      "completedCount": 5,
+      "pendingCount": 0,
+      "owner": "",
+      "lastEvidence": "시스템 시작 버튼 터치 시 로그인 모달이 정상 노출되고 로그인 경로 유도 버튼이 활성",
+      "lastNote": "",
+      "lastStatusChangeAt": "2026-02-26T18:11:05.996Z"
+    },
+    "guest-pin-login-flow": {
+      "id": "guest-pin-login-flow",
+      "title": "게스트 PIN 인증 후 시스템 시작 버튼 노출",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260227-0014",
+      "firstSeenAt": "2026-02-26T18:03:30.997Z",
+      "lastSeenRunId": "QA-20260227-0015",
+      "lastSeenAt": "2026-02-26T18:11:05.996Z",
+      "seenCount": 2,
+      "completedCount": 2,
+      "pendingCount": 0,
+      "owner": "",
+      "lastEvidence": "로그인 페이지 게스트 PIN(4231) 인증 후 /로 복귀해 시스템 시작 버튼 확인",
+      "lastNote": "",
+      "lastStatusChangeAt": "2026-02-26T18:11:05.996Z"
+    },
+    "login-copy-neutral": {
+      "id": "login-copy-neutral",
+      "title": "로그인 정책 카피 중립성 개선",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260227-0014",
+      "firstSeenAt": "2026-02-26T18:03:30.997Z",
+      "lastSeenRunId": "QA-20260227-0014",
+      "lastSeenAt": "2026-02-26T18:03:30.997Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "owner": "",
+      "lastEvidence": "GitHub/Google/이메일 동시 언급 케이스를 기준 테스트로 확인",
+      "lastNote": "",
+      "lastStatusChangeAt": "2026-02-26T18:03:30.997Z"
+    },
+    "feature-dod-login-copy-neutral": {
+      "id": "feature-dod-login-copy-neutral",
+      "title": "로그인 정책 카피 중립성 지속성",
+      "priority": "P1",
+      "status": "pending",
+      "firstSeenRunId": "QA-20260227-0015",
+      "firstSeenAt": "2026-02-26T18:11:05.996Z",
+      "lastSeenRunId": "QA-20260227-0015",
+      "lastSeenAt": "2026-02-26T18:11:05.996Z",
+      "seenCount": 1,
+      "completedCount": 0,
+      "pendingCount": 1,
+      "owner": "",
+      "lastEvidence": "텍스트 추적 지표가 배포본과 분리되어 있으며, 동일 항목이 구/신버전 혼재 가능성 확인",
+      "lastNote": "",
+      "lastStatusChangeAt": "2026-02-26T18:11:05.996Z"
     }
   },
   "runs": [
@@ -757,6 +927,382 @@
       "expertNeedsImprovementCount": 0,
       "completedCount": 3,
       "pendingCount": 0
+    },
+    {
+      "runId": "QA-20260227-0010",
+      "recordedAt": "2026-02-26T16:36:37.248Z",
+      "recordedAtKst": "2026-02-27 01:36:37 KST",
+      "title": "Vercel Playwright QA - 시스템 시작/게스트 PIN",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260227-0010.json",
+      "checks": {
+        "total": 2,
+        "passed": 2,
+        "failed": 0
+      },
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "로그인 경로/시스템 시작 게이트 시나리오에서 사용자 메시지와 가드 동작이 명확히 검증됨",
+          "nextAction": ""
+        },
+        {
+          "domainId": "observability-monitoring",
+          "domainName": "IT Monitoring & Observability SME",
+          "fit": "partially-appropriate",
+          "improvementNeeded": true,
+          "rationale": "본 QA는 기능 검증 중심으로 실서비스 모니터링/알람 KPI는 미검증",
+          "nextAction": "실시간 모니터링 게이트(시스템 시작 지연/실패율) 메트릭 수집 스텝을 별도 보강"
+        },
+        {
+          "domainId": "ai-security-reliability",
+          "domainName": "AI Security & Reliability Architect",
+          "fit": "partially-appropriate",
+          "improvementNeeded": false,
+          "rationale": "인증 실패/차단 경로 접근은 확인되었으나, 보안 공격 시나리오(credential stuffing 등)와 연동된 회귀는 별도 범위",
+          "nextAction": "보안 레드팀 회귀는 별도 수면 주기 실행"
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Vercel 환경에서 MCP 기반 E2E 실행 및 재현성 검증이 완료됨",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "시스템 시작 모달, 게스트 PIN 테스트를 Playwright MCP 실행 흐름으로 재현 가능하게 구성",
+          "nextAction": ""
+        },
+        {
+          "domainId": "data-metrics-quality",
+          "domainName": "Data Quality & Metrics Analyst",
+          "fit": "partially-appropriate",
+          "improvementNeeded": true,
+          "rationale": "이번 실행은 정량 지표 산출보다 플로우 정상성 위주",
+          "nextAction": "실행 결과(성공률, 실패율, 평균 지연시간)를 QA_TRACKER 메트릭과 연결"
+        }
+      ],
+      "expertCount": 6,
+      "expertNeedsImprovementCount": 2,
+      "completedCount": 5,
+      "pendingCount": 1
+    },
+    {
+      "runId": "QA-20260227-0011",
+      "recordedAt": "2026-02-26T17:46:20.701Z",
+      "recordedAtKst": "2026-02-27 02:46:20 KST",
+      "title": "Vercel Playwright QA - 로그인 정책/시스템 시작 UX 보강",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260227-0011.json",
+      "checks": {
+        "total": 0,
+        "passed": 0,
+        "failed": 0
+      },
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Playwright MCP 시나리오가 비로그인 가드와 테스트 모드 진입을 커버, 인증 경로별 실패/성공 케이스가 증거 중심으로 정합화됨",
+          "nextAction": "시스템 시작 지연/실패율 KPI를 같은 Run에서 API latency 카운터로 확장"
+        },
+        {
+          "domainId": "observability-monitoring",
+          "domainName": "IT Monitoring & Observability SME",
+          "fit": "partially-appropriate",
+          "improvementNeeded": true,
+          "rationale": "UX-레벨 가드 확인은 완료되었으나, 시작 지연/성공률 메트릭 수집이 아직 런타임 지표로 자동 기록되지 않음",
+          "nextAction": "system-start 요청 단위에 대한 duration/failure metric 이벤트(시작 시도, 취소, 실패 원인) 수집"
+        }
+      ],
+      "expertCount": 2,
+      "expertNeedsImprovementCount": 1,
+      "completedCount": 2,
+      "pendingCount": 0
+    },
+    {
+      "runId": "QA-20260227-0012",
+      "recordedAt": "2026-02-26T17:46:29.032Z",
+      "recordedAtKst": "2026-02-27 02:46:29 KST",
+      "title": "Vercel Playwright QA - 로그인 정책/시스템 시작 UX 보강 (재기록)",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260227-0012.json",
+      "checks": {
+        "total": 3,
+        "passed": 3,
+        "failed": 0
+      },
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "비로그인 가드, 게스트 PIN 로그인, 시스템 시작 버튼 노출을 Playwright MCP로 확인해 사용자 흐름 기반 검증이 강화됨",
+          "nextAction": "시스템 시작 API 응답시간 임계치와 실패 사유 코드를 동일 run에서 동시 검증"
+        },
+        {
+          "domainId": "observability-monitoring",
+          "domainName": "IT Monitoring & Observability SME",
+          "fit": "partially-appropriate",
+          "improvementNeeded": true,
+          "rationale": "UX 동작은 확인되었으나 시작 API 단계별 duration/failure 이벤트가 아직 런타임 메트릭으로 수집되지 않음",
+          "nextAction": "시스템 시작 시도/완료/실패 이벤트를 OTEL 메트릭과 연결"
+        },
+        {
+          "domainId": "ai-security-reliability",
+          "domainName": "AI Security & Reliability Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "인증 에러/게스트 PIN 흐름에서의 접근 제어 메시지가 보이고, 우회 경로가 제한됨",
+          "nextAction": "게스트 차단 시 보안 이벤트 로그와 연동"
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Vercel 배포 환경에서 로그인/시작 시나리오가 재현 가능",
+          "nextAction": "배포 채널별 동일 플로우 자동 회귀 스케줄 추가"
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Playwright MCP로 엔드투엔드 동작을 정량화해 실행 증거 확보",
+          "nextAction": "재현성 확보를 위해 테스트 재시작 정책 문서화"
+        },
+        {
+          "domainId": "data-metrics-quality",
+          "domainName": "Data Quality & Metrics Analyst",
+          "fit": "partially-appropriate",
+          "improvementNeeded": true,
+          "rationale": "실행은 완료되었으나 지표 집계 라인(시작 성공률, 실패율)이 QA 스코어와 직접 연결되지 않음",
+          "nextAction": "system-start-metrics-gate 정의를 완성 후 run 데이터와 연동"
+        }
+      ],
+      "expertCount": 6,
+      "expertNeedsImprovementCount": 2,
+      "completedCount": 2,
+      "pendingCount": 0
+    },
+    {
+      "runId": "QA-20260227-0013",
+      "recordedAt": "2026-02-26T17:50:54.243Z",
+      "recordedAtKst": "2026-02-27 02:50:54 KST",
+      "title": "Vercel Playwright QA - 시스템 시작 가드/게스트 PIN 체험 흐름 재검증",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260227-0013.json",
+      "checks": {
+        "total": 2,
+        "passed": 2,
+        "failed": 0
+      },
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "비로그인 시스템 시작 모달 동작 및 게스트 PIN 로그인 후 시스템 시작 버튼 노출을 실제 페이지에서 재확인함",
+          "nextAction": "시스템 시작 API 응답시간 임계치와 상태 전환 실패 사유 코드도 함께 계측"
+        },
+        {
+          "domainId": "observability-monitoring",
+          "domainName": "IT Monitoring & Observability SME",
+          "fit": "partially-appropriate",
+          "improvementNeeded": true,
+          "rationale": "UX 가드 동작은 확인되었으나 시작 API 레벨 성공/실패 이벤트 수집이 아직 QA 스코어에 직접 연결되지 않음",
+          "nextAction": "시스템 시작 시도/완료/실패 이벤트를 OTEL 메트릭으로 연결"
+        },
+        {
+          "domainId": "ai-security-reliability",
+          "domainName": "AI Security & Reliability Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "게스트 PIN 기반 체험 진입은 제한된 경로로 정상 동작하며 인증 우회가 없는지 확인함",
+          "nextAction": "게스트 차단 시도 로깅 이벤트를 보안 로그와 연동"
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Vercel 기준 재현 가능한 Playwright 경로로 회귀 검증이 가능함",
+          "nextAction": "채널별 배포마다 동일 QA를 자동 스케줄"
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "핵심 시나리오를 수동 Playwright MCP로 검증했고 기존 QA spec의 구조와 정합",
+          "nextAction": "재현성 회귀용 테스트 재시작 정책 문서 보강"
+        },
+        {
+          "domainId": "data-metrics-quality",
+          "domainName": "Data Quality & Metrics Analyst",
+          "fit": "partially-appropriate",
+          "improvementNeeded": true,
+          "rationale": "플로우별 성공률은 확인됐으나 QA 트래커 지표와 운영 메트릭 파이프라인이 아직 연결되지 않음",
+          "nextAction": "system-start 성공률/실패률 지표를 QA_run 메타와 연동"
+        }
+      ],
+      "expertCount": 6,
+      "expertNeedsImprovementCount": 2,
+      "completedCount": 2,
+      "pendingCount": 3
+    },
+    {
+      "runId": "QA-20260227-0014",
+      "recordedAt": "2026-02-26T18:03:30.997Z",
+      "recordedAtKst": "2026-02-27 03:03:30 KST",
+      "title": "Vercel Playwright QA - 로그인 정책/시스템 시작 가드 배포 검증",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260227-0014.json",
+      "checks": {
+        "total": 3,
+        "passed": 2,
+        "failed": 1
+      },
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "비로그인 시스템 시작 버튼 노출, 모달 노출, 게스트 PIN 인증 후 버튼 노출 플로우는 정상 동작함",
+          "nextAction": "배포 최신 상태에서 로그아웃/초기화 캐시 재검증"
+        },
+        {
+          "domainId": "observability-monitoring",
+          "domainName": "IT Monitoring & Observability SME",
+          "fit": "partially-appropriate",
+          "improvementNeeded": true,
+          "rationale": "시스템 시작 가드 UI는 확인되었으나 시작 API 레벨 상태 전환(요청/성공/실패)이 QA 메트릭과 직접 연결되지 않음",
+          "nextAction": "시스템 시작 시도/완료/실패 이벤트를 OTEL 메트릭으로 연결"
+        },
+        {
+          "domainId": "ai-security-reliability",
+          "domainName": "AI Security & Reliability Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "게스트 PIN 진입은 제한된 채널로 정상 이동하며 로그인 우회 없이 메인 버튼 접근까지 이어짐",
+          "nextAction": "게스트 차단/잠금 이벤트를 보안 로그와 상관 검증"
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Vercel 배포 기준 경로로 재현 가능한 E2E 검증이 수행됨",
+          "nextAction": "채널별 배포마다 동일 QA를 자동 스케줄"
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Playwright MCP로 비로그인 게이트/게스트 PIN 플로우를 수동 실행해 재현성 확인",
+          "nextAction": "재현성 실패 시 재시작 정책 문서화"
+        },
+        {
+          "domainId": "data-metrics-quality",
+          "domainName": "Data Quality & Metrics Analyst",
+          "fit": "partially-appropriate",
+          "improvementNeeded": true,
+          "rationale": "현재 결과는 흐름 성공률 정성 확인이지만 운영 QA_run 메타와 성공률 지표 파이프라인은 미연동",
+          "nextAction": "system-start 성공률/실패률을 QA_run 메타와 연동"
+        }
+      ],
+      "expertCount": 6,
+      "expertNeedsImprovementCount": 2,
+      "completedCount": 3,
+      "pendingCount": 1
+    },
+    {
+      "runId": "QA-20260227-0015",
+      "recordedAt": "2026-02-26T18:11:05.996Z",
+      "recordedAtKst": "2026-02-27 03:11:05 KST",
+      "title": "Vercel Playwright QA - 랜딩 로그인 모달 카피 배포 정합성 재검증",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260227-0015.json",
+      "checks": {
+        "total": 2,
+        "passed": 1,
+        "failed": 1
+      },
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "비로그인 상태에서 시스템 시작 모달 노출과 게스트 PIN 인증 후 시스템 시작 버튼 접근은 재현됩니다.",
+          "nextAction": "배포본 텍스트 정합성(로그인 카피)만 재배포/캐시 정합성 검증 필요"
+        },
+        {
+          "domainId": "observability-monitoring",
+          "domainName": "IT Monitoring & Observability SME",
+          "fit": "partially-appropriate",
+          "improvementNeeded": true,
+          "rationale": "배포 배경에서의 UI 텍스트 정합성 실패 원인(구버전 캐시/재배포 지연) 추적 로그와 빌드 메타가 분리되어 있음",
+          "nextAction": "Vercel 배포 ID와 런타임 커밋 매핑 로그 수집"
+        },
+        {
+          "domainId": "ai-security-reliability",
+          "domainName": "AI Security & Reliability Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "게스트 PIN 로그인은 제한 채널로 동작하고 우회 루트는 발견되지 않음",
+          "nextAction": "게스트 차단/지역 제한 이벤트를 보안 로그와 크로스체크"
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Vercel 전용 Playwright 실행으로 재현되며 2개 시나리오 중 1개 실패",
+          "nextAction": "문구 정합성 완료 전까지 릴리스 게이트에서 P1 체크 적용"
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": true,
+          "rationale": "모달 텍스트가 Radix dialog로 노출되어 기존 locator가 취약했고 보강 필요",
+          "nextAction": "배포 카피 검증용 assertions에 역할 기반 선택자 적용 유지"
+        },
+        {
+          "domainId": "data-metrics-quality",
+          "domainName": "Data Quality & Metrics Analyst",
+          "fit": "partially-appropriate",
+          "improvementNeeded": true,
+          "rationale": "이번 실패는 정성 지표가 아닌 텍스트 정합성 실패이므로 메트릭 임계치 연동은 별도 과제",
+          "nextAction": "배포 카피 실패율을 QA_RUN 메트릭에 분리 저장"
+        }
+      ],
+      "expertCount": 6,
+      "expertNeedsImprovementCount": 3,
+      "completedCount": 2,
+      "pendingCount": 2
     }
   ],
   "experts": {
@@ -765,102 +1311,102 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 4,
-      "appropriateCount": 4,
+      "seenCount": 10,
+      "appropriateCount": 10,
       "partialCount": 0,
       "inappropriateCount": 0,
       "improvementNeededCount": 0,
-      "lastRunId": "QA-20260226-0006",
-      "lastSeenAt": "2026-02-26T12:00:38.039Z",
+      "lastRunId": "QA-20260227-0015",
+      "lastSeenAt": "2026-02-26T18:11:05.996Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "관리자 인증 흐름의 실제 경계 검증이 반영되어 품질 판정의 실효성이 개선됨",
-      "lastNextAction": "AI 출력/실패 케이스 경계 기준을 DoD 체크리스트에 추가"
+      "lastRationale": "비로그인 상태에서 시스템 시작 모달 노출과 게스트 PIN 인증 후 시스템 시작 버튼 접근은 재현됩니다.",
+      "lastNextAction": "배포본 텍스트 정합성(로그인 카피)만 재배포/캐시 정합성 검증 필요"
     },
     "observability-monitoring": {
       "domainId": "observability-monitoring",
       "domainName": "IT Monitoring & Observability SME",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 4,
+      "seenCount": 10,
       "appropriateCount": 0,
-      "partialCount": 4,
+      "partialCount": 10,
       "inappropriateCount": 0,
-      "improvementNeededCount": 4,
-      "lastRunId": "QA-20260226-0006",
-      "lastSeenAt": "2026-02-26T12:00:38.039Z",
+      "improvementNeededCount": 10,
+      "lastRunId": "QA-20260227-0015",
+      "lastSeenAt": "2026-02-26T18:11:05.996Z",
       "lastFit": "partially-appropriate",
       "lastImprovementNeeded": true,
-      "lastRationale": "오탐/미탐 정량 리포트 자동화는 여전히 미완료",
-      "lastNextAction": "precision/recall 주간 리포트 파이프라인을 문서화한 뒤 자동화"
+      "lastRationale": "배포 배경에서의 UI 텍스트 정합성 실패 원인(구버전 캐시/재배포 지연) 추적 로그와 빌드 메타가 분리되어 있음",
+      "lastNextAction": "Vercel 배포 ID와 런타임 커밋 매핑 로그 수집"
     },
     "ai-security-reliability": {
       "domainId": "ai-security-reliability",
       "domainName": "AI Security & Reliability Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 4,
-      "appropriateCount": 0,
-      "partialCount": 4,
+      "seenCount": 9,
+      "appropriateCount": 4,
+      "partialCount": 5,
       "inappropriateCount": 0,
       "improvementNeededCount": 4,
-      "lastRunId": "QA-20260226-0006",
-      "lastSeenAt": "2026-02-26T12:00:38.039Z",
-      "lastFit": "partially-appropriate",
-      "lastImprovementNeeded": true,
-      "lastRationale": "역할 검증은 완료되었으나 공격 회귀셋은 지속 구축 필요",
-      "lastNextAction": "OWASP LLM Top 10 기반 공격 회귀 10건+ 운영 테스트화"
+      "lastRunId": "QA-20260227-0015",
+      "lastSeenAt": "2026-02-26T18:11:05.996Z",
+      "lastFit": "appropriate",
+      "lastImprovementNeeded": false,
+      "lastRationale": "게스트 PIN 로그인은 제한 채널로 동작하고 우회 루트는 발견되지 않음",
+      "lastNextAction": "게스트 차단/지역 제한 이벤트를 보안 로그와 크로스체크"
     },
     "sre-devops": {
       "domainId": "sre-devops",
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 4,
-      "appropriateCount": 4,
+      "seenCount": 9,
+      "appropriateCount": 9,
       "partialCount": 0,
       "inappropriateCount": 0,
       "improvementNeededCount": 0,
-      "lastRunId": "QA-20260226-0006",
-      "lastSeenAt": "2026-02-26T12:00:38.039Z",
+      "lastRunId": "QA-20260227-0015",
+      "lastSeenAt": "2026-02-26T18:11:05.996Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "배포·롤백·헬스체크는 기존 체계에서 검증됨",
-      "lastNextAction": ""
+      "lastRationale": "Vercel 전용 Playwright 실행으로 재현되며 2개 시나리오 중 1개 실패",
+      "lastNextAction": "문구 정합성 완료 전까지 릴리스 게이트에서 P1 체크 적용"
     },
     "test-automation": {
       "domainId": "test-automation",
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 4,
-      "appropriateCount": 1,
+      "seenCount": 9,
+      "appropriateCount": 6,
       "partialCount": 3,
       "inappropriateCount": 0,
-      "improvementNeededCount": 3,
-      "lastRunId": "QA-20260226-0006",
-      "lastSeenAt": "2026-02-26T12:00:38.039Z",
-      "lastFit": "partially-appropriate",
+      "improvementNeededCount": 4,
+      "lastRunId": "QA-20260227-0015",
+      "lastSeenAt": "2026-02-26T18:11:05.996Z",
+      "lastFit": "appropriate",
       "lastImprovementNeeded": true,
-      "lastRationale": "핵심 E2E는 정착되었으나 템플릿 기반 단위/통합 커버리지는 보강 필요",
-      "lastNextAction": "단위/통합 테스트 최소 1건씩 DoD 게이트에 반영"
+      "lastRationale": "모달 텍스트가 Radix dialog로 노출되어 기존 locator가 취약했고 보강 필요",
+      "lastNextAction": "배포 카피 검증용 assertions에 역할 기반 선택자 적용 유지"
     },
     "data-metrics-quality": {
       "domainId": "data-metrics-quality",
       "domainName": "Data Quality & Metrics Analyst",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 4,
+      "seenCount": 9,
       "appropriateCount": 0,
-      "partialCount": 4,
+      "partialCount": 9,
       "inappropriateCount": 0,
-      "improvementNeededCount": 4,
-      "lastRunId": "QA-20260226-0006",
-      "lastSeenAt": "2026-02-26T12:00:38.039Z",
+      "improvementNeededCount": 9,
+      "lastRunId": "QA-20260227-0015",
+      "lastSeenAt": "2026-02-26T18:11:05.996Z",
       "lastFit": "partially-appropriate",
       "lastImprovementNeeded": true,
-      "lastRationale": "문서 메타데이터 갱신 주기와 지표 임계값 자동 경고는 미적용",
-      "lastNextAction": "문서/지표 운영 규칙을 주기 자동화"
+      "lastRationale": "이번 실패는 정성 지표가 아닌 텍스트 정합성 실패이므로 메트릭 임계치 연동은 별도 과제",
+      "lastNextAction": "배포 카피 실패율을 QA_RUN 메트릭에 분리 저장"
     }
   }
 }

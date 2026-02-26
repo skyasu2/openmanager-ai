@@ -2,7 +2,7 @@
  * 🔐 AI 로그인 필요 모달
  *
  * 비로그인 사용자가 AI 어시스턴트를 사용하려 할 때 표시
- * GitHub 또는 Google 로그인 안내
+ * GitHub, Google, 이메일 로그인 안내
  */
 
 'use client';
@@ -52,8 +52,9 @@ export function AILoginRequiredModal({
 
         <div className="mt-4 rounded-lg border border-slate-700 bg-slate-800/50 p-4">
           <p className="text-sm leading-relaxed text-slate-400">
-            <span className="font-medium text-white">GitHub</span> 또는{' '}
-            <span className="font-medium text-white">Google</span> 계정으로
+            <span className="font-medium text-white">GitHub</span>,{' '}
+            <span className="font-medium text-white">Google</span>, 또는{' '}
+            <span className="font-medium text-white">이메일</span> 인증으로
             로그인하여 다음 기능을 이용하세요:
           </p>
           <ul className="mt-3 space-y-2 text-sm text-slate-400">

@@ -1,0 +1,123 @@
+{
+  "runId": "QA-20260227-0015",
+  "recordedAt": "2026-02-26T18:11:05.996Z",
+  "recordedAtKst": "2026-02-27 03:11:05 KST",
+  "runTitle": "Vercel Playwright QA - 랜딩 로그인 모달 카피 배포 정합성 재검증",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main"
+  },
+  "checks": {
+    "total": 2,
+    "passed": 1,
+    "failed": 1
+  },
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "비로그인 상태에서 시스템 시작 모달 노출과 게스트 PIN 인증 후 시스템 시작 버튼 접근은 재현됩니다.",
+      "nextAction": "배포본 텍스트 정합성(로그인 카피)만 재배포/캐시 정합성 검증 필요"
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "배포 배경에서의 UI 텍스트 정합성 실패 원인(구버전 캐시/재배포 지연) 추적 로그와 빌드 메타가 분리되어 있음",
+      "nextAction": "Vercel 배포 ID와 런타임 커밋 매핑 로그 수집"
+    },
+    {
+      "domainId": "ai-security-reliability",
+      "domainName": "AI Security & Reliability Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "게스트 PIN 로그인은 제한 채널로 동작하고 우회 루트는 발견되지 않음",
+      "nextAction": "게스트 차단/지역 제한 이벤트를 보안 로그와 크로스체크"
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Vercel 전용 Playwright 실행으로 재현되며 2개 시나리오 중 1개 실패",
+      "nextAction": "문구 정합성 완료 전까지 릴리스 게이트에서 P1 체크 적용"
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": true,
+      "rationale": "모달 텍스트가 Radix dialog로 노출되어 기존 locator가 취약했고 보강 필요",
+      "nextAction": "배포 카피 검증용 assertions에 역할 기반 선택자 적용 유지"
+    },
+    {
+      "domainId": "data-metrics-quality",
+      "domainName": "Data Quality & Metrics Analyst",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "이번 실패는 정성 지표가 아닌 텍스트 정합성 실패이므로 메트릭 임계치 연동은 별도 과제",
+      "nextAction": "배포 카피 실패율을 QA_RUN 메트릭에 분리 저장"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "feature-dod-system-start-guard",
+      "title": "비로그인/제한 게스트 시스템 시작 가드 모달 동작",
+      "priority": "P1",
+      "evidence": "시스템 시작 버튼 터치 시 로그인 모달이 정상 노출되고 로그인 경로 유도 버튼이 활성",
+      "note": "",
+      "owner": "",
+      "status": "completed"
+    },
+    {
+      "id": "guest-pin-login-flow",
+      "title": "게스트 PIN 인증 후 시스템 시작 버튼 노출",
+      "priority": "P1",
+      "evidence": "로그인 페이지 게스트 PIN(4231) 인증 후 /로 복귀해 시스템 시작 버튼 확인",
+      "note": "",
+      "owner": "",
+      "status": "completed"
+    }
+  ],
+  "pendingImprovements": [
+    {
+      "id": "landing-copy-alignment",
+      "title": "랜딩/로그인 정책 카피 정합성",
+      "priority": "P1",
+      "evidence": "배포본 모달이 여전히 '시스템 시작은 로그인 후 이용할 수 있습니다.'를 노출해 소스 카피와 불일치",
+      "note": "구버전 배포/캐시 정합성 이슈 가능성. Vercel 재배포 또는 배포 버전 고정 필요",
+      "owner": "",
+      "status": "pending"
+    },
+    {
+      "id": "feature-dod-login-copy-neutral",
+      "title": "로그인 정책 카피 중립성 지속성",
+      "priority": "P1",
+      "evidence": "텍스트 추적 지표가 배포본과 분리되어 있으며, 동일 항목이 구/신버전 혼재 가능성 확인",
+      "note": "",
+      "owner": "",
+      "status": "pending"
+    }
+  ],
+  "notes": [
+    "Playwright Vercel 모드로 비로그인 로그인 가드 및 게스트 PIN 흐름을 실행했으며, 로그인 가드 모달은 열림",
+    "문구 불일치 항목으로 첫 시나리오 1개 실패",
+    "재배포/캐시 정합성 확인 전까지 배포 채널 Gate에서 이 항목 P1 보류"
+  ],
+  "links": [
+    {
+      "label": "Vercel URL",
+      "url": "https://openmanager-ai.vercel.app"
+    },
+    {
+      "label": "Fail Trace",
+      "url": "test-results/qa-systemstart-auth-QA-시스템-87f7c-에서-시스템-시작-클릭-시-로그인-모달이-노출된다-chromium/error-context.md"
+    }
+  ]
+}

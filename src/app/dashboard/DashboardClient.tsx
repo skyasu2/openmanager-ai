@@ -125,7 +125,7 @@ function DashboardPageContent({ initialServers }: DashboardClientProps) {
           variant: 'destructive',
           title: '접근 권한 없음',
           description:
-            '대시보드 접근 권한이 없습니다. GitHub 로그인 또는 관리자 모드 인증이 필요합니다.',
+            '대시보드 접근 권한이 없습니다. GitHub, Google, 이메일 로그인 또는 관리자 모드 인증이 필요합니다.',
         });
         router.push('/');
         return; // cleanup 불필요
@@ -329,7 +329,7 @@ function DashboardPageContent({ initialServers }: DashboardClientProps) {
     );
   }
 
-  // 🔒 대시보드 접근 권한이 없는 경우 (GitHub 로그인 또는 PIN 인증 또는 테스트 모드 또는 게스트 전체 접근 모드 필요)
+  // 🔒 대시보드 접근 권한이 없는 경우 (GitHub/Google/이메일 로그인 또는 PIN 인증 또는 테스트 모드 또는 게스트 전체 접근 모드 필요)
   // 🧪 FIX: 테스트 모드 체크 추가 (E2E 테스트용)
   // 🎛️ FIX: 게스트 전체 접근 모드 체크 추가 (개발 모드용)
   // 🔄 FIX: SSR/Hydration 중에는 권한 체크 건너뛰기 (쿠키 접근 불가능) - E2E 테스트 타임아웃 해결

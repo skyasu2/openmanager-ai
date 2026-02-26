@@ -1,0 +1,55 @@
+{
+  "runId": "QA-20260227-0011",
+  "recordedAt": "2026-02-26T17:46:20.701Z",
+  "recordedAtKst": "2026-02-27 02:46:20 KST",
+  "runTitle": "Vercel Playwright QA - 로그인 정책/시스템 시작 UX 보강",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {},
+  "checks": {
+    "total": 0,
+    "passed": 0,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Playwright MCP 시나리오가 비로그인 가드와 테스트 모드 진입을 커버, 인증 경로별 실패/성공 케이스가 증거 중심으로 정합화됨",
+      "nextAction": "시스템 시작 지연/실패율 KPI를 같은 Run에서 API latency 카운터로 확장"
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "UX-레벨 가드 확인은 완료되었으나, 시작 지연/성공률 메트릭 수집이 아직 런타임 지표로 자동 기록되지 않음",
+      "nextAction": "system-start 요청 단위에 대한 duration/failure metric 이벤트(시작 시도, 취소, 실패 원인) 수집"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "feature-dod-login-policy-copy",
+      "title": "로그인 정책 안내 카피가 GitHub/Google/이메일 중립 표현인지",
+      "priority": "P1",
+      "evidence": "src/app/auth/error/page.tsx",
+      "note": "",
+      "owner": "",
+      "status": "completed"
+    },
+    {
+      "id": "feature-dod-system-start-guard",
+      "title": "비로그인/제한 게스트 시스템 시작 가드 모달 동작",
+      "priority": "P1",
+      "evidence": "src/app/main/hooks/useSystemStart.tsx",
+      "note": "",
+      "owner": "",
+      "status": "completed"
+    }
+  ],
+  "pendingImprovements": [],
+  "notes": [],
+  "links": []
+}

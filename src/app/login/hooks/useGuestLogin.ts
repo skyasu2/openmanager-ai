@@ -296,7 +296,7 @@ export function useGuestLogin(deps: {
           if (payload.error === 'guest_region_blocked') {
             deps.setErrorMessage(
               payload.message ||
-                '현재 지역에서는 게스트 로그인이 제한됩니다. GitHub 또는 Google 로그인을 이용해주세요.'
+                '현재 지역에서는 게스트 로그인이 제한됩니다. GitHub, Google 또는 이메일 로그인으로 이용해주세요.'
             );
             return;
           }

@@ -2,7 +2,7 @@
  * 🚨 Auth Error Handler API
  *
  * Supabase Auth 에러 처리를 위한 엔드포인트
- * GitHub OAuth 실패 시 이 경로로 리다이렉트됩니다.
+ * GitHub / Google / 이메일 인증 실패 시 이 경로로 리다이렉트됩니다.
  */
 
 import type { NextRequest } from 'next/server';
@@ -26,7 +26,7 @@ export function GET(request: NextRequest) {
   let userMessage = '인증 중 오류가 발생했습니다.';
 
   if (error === 'access_denied') {
-    userMessage = 'GitHub 로그인이 취소되었습니다.';
+    userMessage = '로그인이 취소되었습니다.';
   } else if (error === 'server_error') {
     userMessage = '서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.';
   } else if (

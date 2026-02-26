@@ -1,0 +1,141 @@
+{
+  "runId": "QA-20260227-0010",
+  "recordedAt": "2026-02-26T16:36:37.248Z",
+  "recordedAtKst": "2026-02-27 01:36:37 KST",
+  "runTitle": "Vercel Playwright QA - 시스템 시작/게스트 PIN",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "frontend": "Vercel Production",
+    "backend": "Cloud Run",
+    "branch": "main"
+  },
+  "checks": {
+    "total": 2,
+    "passed": 2,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "로그인 경로/시스템 시작 게이트 시나리오에서 사용자 메시지와 가드 동작이 명확히 검증됨",
+      "nextAction": ""
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "본 QA는 기능 검증 중심으로 실서비스 모니터링/알람 KPI는 미검증",
+      "nextAction": "실시간 모니터링 게이트(시스템 시작 지연/실패율) 메트릭 수집 스텝을 별도 보강"
+    },
+    {
+      "domainId": "ai-security-reliability",
+      "domainName": "AI Security & Reliability Architect",
+      "fit": "partially-appropriate",
+      "improvementNeeded": false,
+      "rationale": "인증 실패/차단 경로 접근은 확인되었으나, 보안 공격 시나리오(credential stuffing 등)와 연동된 회귀는 별도 범위",
+      "nextAction": "보안 레드팀 회귀는 별도 수면 주기 실행"
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Vercel 환경에서 MCP 기반 E2E 실행 및 재현성 검증이 완료됨",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "시스템 시작 모달, 게스트 PIN 테스트를 Playwright MCP 실행 흐름으로 재현 가능하게 구성",
+      "nextAction": ""
+    },
+    {
+      "domainId": "data-metrics-quality",
+      "domainName": "Data Quality & Metrics Analyst",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "이번 실행은 정량 지표 산출보다 플로우 정상성 위주",
+      "nextAction": "실행 결과(성공률, 실패율, 평균 지연시간)를 QA_TRACKER 메트릭과 연결"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "landing-copy-alignment",
+      "title": "랜딩/에러 페이지 로그인 정책 카피를 GitHub/Google/이메일로 정합화",
+      "priority": "P1",
+      "evidence": "src/app/auth/error/page.tsx",
+      "note": "",
+      "owner": "",
+      "status": "completed"
+    },
+    {
+      "id": "auth-error-provider-copy",
+      "title": "인증 에러 라우트 메시지를 제공자-중립 표현으로 전환",
+      "priority": "P1",
+      "evidence": "src/app/api/auth/error/route.ts",
+      "note": "",
+      "owner": "",
+      "status": "completed"
+    },
+    {
+      "id": "로그인-정책-카피-정합성",
+      "title": "로그인 정책 카피 정합성",
+      "priority": "P1",
+      "evidence": "reports/qa/runs",
+      "note": "",
+      "owner": "codex",
+      "status": "completed"
+    },
+    {
+      "id": "비로그인-시스템-시작-가드-모달-동작",
+      "title": "비로그인 시스템 시작 가드 모달 동작",
+      "priority": "P1",
+      "evidence": "reports/qa/runs",
+      "note": "",
+      "owner": "codex",
+      "status": "completed"
+    },
+    {
+      "id": "게스트-pin-로그인-후-시스템-시작-버튼-노출",
+      "title": "게스트 PIN 로그인 후 시스템 시작 버튼 노출",
+      "priority": "P1",
+      "evidence": "reports/qa/runs",
+      "note": "",
+      "owner": "codex",
+      "status": "completed"
+    }
+  ],
+  "pendingImprovements": [
+    {
+      "id": "system-start-metrics-gate",
+      "title": "시스템 시작 지연/실패율 KPI 기준 자동 수집",
+      "priority": "P2",
+      "evidence": "",
+      "note": "",
+      "owner": "",
+      "status": "pending"
+    }
+  ],
+  "notes": [
+    "Vercel(https://openmanager-ai.vercel.app) 기준으로 Playwright MCP 흐름 실행",
+    "비로그인 시스템 시작 시 로그인 가이드 모달 노출 확인",
+    "게스트 PIN(4231) 테스트로 세션 생성 후 시스템 시작 버튼 노출 확인"
+  ],
+  "links": [
+    {
+      "label": "Vercel URL",
+      "url": "https://openmanager-ai.vercel.app"
+    },
+    {
+      "label": "Playwright Report",
+      "url": "./playwright-report/index.html"
+    }
+  ]
+}

@@ -1,0 +1,99 @@
+{
+  "runId": "QA-20260227-0012",
+  "recordedAt": "2026-02-26T17:46:29.032Z",
+  "recordedAtKst": "2026-02-27 02:46:29 KST",
+  "runTitle": "Vercel Playwright QA - 로그인 정책/시스템 시작 UX 보강 (재기록)",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main"
+  },
+  "checks": {
+    "total": 3,
+    "passed": 3,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "비로그인 가드, 게스트 PIN 로그인, 시스템 시작 버튼 노출을 Playwright MCP로 확인해 사용자 흐름 기반 검증이 강화됨",
+      "nextAction": "시스템 시작 API 응답시간 임계치와 실패 사유 코드를 동일 run에서 동시 검증"
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "UX 동작은 확인되었으나 시작 API 단계별 duration/failure 이벤트가 아직 런타임 메트릭으로 수집되지 않음",
+      "nextAction": "시스템 시작 시도/완료/실패 이벤트를 OTEL 메트릭과 연결"
+    },
+    {
+      "domainId": "ai-security-reliability",
+      "domainName": "AI Security & Reliability Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "인증 에러/게스트 PIN 흐름에서의 접근 제어 메시지가 보이고, 우회 경로가 제한됨",
+      "nextAction": "게스트 차단 시 보안 이벤트 로그와 연동"
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Vercel 배포 환경에서 로그인/시작 시나리오가 재현 가능",
+      "nextAction": "배포 채널별 동일 플로우 자동 회귀 스케줄 추가"
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Playwright MCP로 엔드투엔드 동작을 정량화해 실행 증거 확보",
+      "nextAction": "재현성 확보를 위해 테스트 재시작 정책 문서화"
+    },
+    {
+      "domainId": "data-metrics-quality",
+      "domainName": "Data Quality & Metrics Analyst",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "실행은 완료되었으나 지표 집계 라인(시작 성공률, 실패율)이 QA 스코어와 직접 연결되지 않음",
+      "nextAction": "system-start-metrics-gate 정의를 완성 후 run 데이터와 연동"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "feature-dod-login-policy-copy",
+      "title": "로그인 정책 안내 카피가 GitHub/Google/이메일 중립 표현인지",
+      "priority": "P1",
+      "evidence": "src/app/auth/error/page.tsx",
+      "note": "",
+      "owner": "",
+      "status": "completed"
+    },
+    {
+      "id": "feature-dod-system-start-guard",
+      "title": "비로그인/제한 게스트 시스템 시작 가드 모달 동작",
+      "priority": "P1",
+      "evidence": "src/app/main/components/GuestRestrictionModal.tsx, src/app/main/hooks/useSystemStart.tsx",
+      "note": "",
+      "owner": "",
+      "status": "completed"
+    }
+  ],
+  "pendingImprovements": [],
+  "notes": [
+    "게스트 로그인은 테스트 용도로 유지되고, 필요시 NEXT_PUBLIC_SHOW_GUEST_LOGIN=false로 비활성화 가능",
+    "시스템 시작 버튼은 랜딩에서 비로그인 상태에서도 표시됨"
+  ],
+  "links": [
+    {
+      "label": "Vercel QA 대상",
+      "url": "https://openmanager-ai.vercel.app"
+    }
+  ]
+}
