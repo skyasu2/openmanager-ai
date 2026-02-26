@@ -23,8 +23,6 @@ import {
   type StreamDataPart,
   useHybridAIQuery,
 } from '@/hooks/ai/useHybridAIQuery';
-import type { StructuredAssistantResponse } from '@/lib/ai/utils/assistant-response-view';
-import { resolveAssistantResponseView } from '@/lib/ai/utils/assistant-response-view';
 import { logger } from '@/lib/logging';
 import {
   type EnhancedChatMessage,
@@ -43,6 +41,7 @@ import {
   convertThinkingStepsToUI,
   transformMessages,
 } from './utils/message-helpers';
+import { handleStreamDataPart } from './utils/stream-data-handler';
 
 // Re-export for backwards compatibility
 export { convertThinkingStepsToUI };
@@ -127,52 +126,6 @@ export interface UseAIChatCoreReturn {
   warmingUp: boolean;
   /** 웜업 예상 대기 시간 (초) */
   estimatedWaitSeconds: number;
-}
-
-type ResponseSourceData = {
-  responseSummary?: unknown;
-  responseDetails?: unknown;
-  responseShouldCollapse?: unknown;
-  summary?: unknown;
-  details?: unknown;
-  shouldCollapse?: unknown;
-  assistantResponseView?: unknown;
-  ragSources?: unknown;
-};
-
-function normalizeRagSources(sources: unknown): Array<{
-  title: string;
-  similarity: number;
-  sourceType: string;
-  category?: string;
-  url?: string;
-}> | null {
-  if (!Array.isArray(sources)) return null;
-  return sources as Array<{
-    title: string;
-    similarity: number;
-    sourceType: string;
-    category?: string;
-    url?: string;
-  }>;
-}
-
-function buildStructuredResponseView(
-  doneData: ResponseSourceData | undefined
-): StructuredAssistantResponse | null {
-  if (!doneData) return null;
-
-  const responseMeta = doneData as Record<string, unknown>;
-  const structured = resolveAssistantResponseView('', responseMeta);
-  const summary = structured.summary.trim();
-
-  if (!summary) return null;
-
-  return {
-    summary,
-    details: structured.details,
-    shouldCollapse: structured.shouldCollapse,
-  };
 }
 
 // ============================================================================
@@ -322,70 +275,13 @@ export function useAIChatCore(
     },
     // 🎯 실시간 SSE 이벤트 처리 (agent_status, handoff)
     onData: (dataPart: StreamDataPart) => {
-      // AI SDK v6: custom data parts는 'data-' prefix 포함 (data-agent-status, data-done 등)
-      const partType = dataPart.type;
-      if (partType === 'data-agent-status' && dataPart.data) {
-        const agentStatus = dataPart.data as AgentStatusEventData;
-        setCurrentAgentStatus(agentStatus);
-        if (process.env.NODE_ENV === 'development') {
-          logger.info(
-            `🤖 [Agent Status] ${agentStatus.agent}: ${agentStatus.status}`
-          );
-        }
-      } else if (partType === 'data-handoff' && dataPart.data) {
-        const handoff = dataPart.data as HandoffEventData;
-        setCurrentHandoff(handoff);
-        if (process.env.NODE_ENV === 'development') {
-          logger.info(`🔄 [Handoff] ${handoff.from} → ${handoff.to}`);
-        }
-      } else if (partType === 'data-done') {
-        // 완료 시 상태 초기화
-        setCurrentAgentStatus(null);
-        setCurrentHandoff(null);
-
-        // done 이벤트에서 ragSources 추출 (스트리밍 모드 웹 검색 결과)
-        const doneData = dataPart.data as ResponseSourceData | undefined;
-
-        if (doneData?.ragSources) {
-          const parsedRagSources = normalizeRagSources(doneData.ragSources);
-          if (parsedRagSources) {
-            setStreamRagSources(parsedRagSources);
-          }
-        } else {
-          setStreamRagSources([]);
-        }
-
-        const structuredView = buildStructuredResponseView(doneData);
-        if (structuredView) {
-          const currentMessages = [...messages];
-          const lastAssistantIndex = currentMessages
-            .map((message) => message.role)
-            .lastIndexOf('assistant');
-          if (lastAssistantIndex < 0) return;
-
-          const targetMessage = currentMessages[lastAssistantIndex];
-          const prevMetadata =
-            typeof targetMessage?.metadata === 'object' &&
-            targetMessage?.metadata !== null
-              ? (targetMessage.metadata as Record<string, unknown>)
-              : {};
-
-          setMessages(
-            currentMessages.map(
-              (message: (typeof currentMessages)[number], index: number) => {
-                if (index !== lastAssistantIndex) return message;
-                return {
-                  ...message,
-                  metadata: {
-                    ...prevMetadata,
-                    assistantResponseView: structuredView,
-                  },
-                };
-              }
-            )
-          );
-        }
-      }
+      handleStreamDataPart(dataPart, {
+        setCurrentAgentStatus,
+        setCurrentHandoff,
+        setStreamRagSources,
+        getMessages: () => messages,
+        setMessages,
+      });
     },
   });
 
