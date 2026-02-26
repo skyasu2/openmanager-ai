@@ -2,6 +2,37 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.4.0](https://github.com/skyasu2/openmanager-ai/compare/v8.3.4...v8.4.0) (2026-02-26)
+
+
+### Features
+
+* **ai-engine:** ReAct prompt overhaul + analyst-tools split + quality improvements ([e23a847](https://github.com/skyasu2/openmanager-ai/commit/e23a847a915f3e7c11d43957ccd850aa39ea97bd))
+* **ai:** use structured assistant response metadata ([a095242](https://github.com/skyasu2/openmanager-ai/commit/a0952423c09bc869e315371553bee4b22a079d7c))
+* **otel-data:** causal incident scenarios + jitter clamping for 24h realistic data ([0aa9f67](https://github.com/skyasu2/openmanager-ai/commit/0aa9f67423c449f124276ed6d530d01caecb29e4))
+* **otel-data:** causality-based 24h incident scenarios with metric-log reconciliation ([2261479](https://github.com/skyasu2/openmanager-ai/commit/226147928855b035fab3b73c836699192d7b03b3))
+* **ui:** add ai response summary collapse and mobile alert-first dashboard ([30d2e66](https://github.com/skyasu2/openmanager-ai/commit/30d2e66adbca3b547828fa8caf01544e803a8a96))
+* **ui:** improve avatar initials and ai chat restore flow ([91e0bcb](https://github.com/skyasu2/openmanager-ai/commit/91e0bcb8c5a3dc3d229a71c305d3eb93cc4f71fb))
+
+
+### Bug Fixes
+
+* **ai-engine:** harden stream metadata wait and stabilize stream tests ([63dc476](https://github.com/skyasu2/openmanager-ai/commit/63dc4760798aec3501496eb8ea70cd28ecd6cd4a))
+* **ai-engine:** saturation model + reporter Korean quality + MD copy ([#171](https://github.com/skyasu2/openmanager-ai/issues/171)) ([aa5b311](https://github.com/skyasu2/openmanager-ai/commit/aa5b311ddcccd9ab7eefe6af4d5a13af8d7ee59e))
+* **ai:** normalize JSON responses + device-adaptive AI + OTel dedupe ([65751e6](https://github.com/skyasu2/openmanager-ai/commit/65751e69a27f8d2e2b4f37a1a7525010bf1d2ebc))
+* **e2e:** resolve 3 code review findings + improve test reliability ([29a4dc2](https://github.com/skyasu2/openmanager-ai/commit/29a4dc23c931866d93b4057a21c6e0ba3a6978bd))
+* **otel-data:** sync timeseries directly from hourly files for 100% alignment ([dab8a20](https://github.com/skyasu2/openmanager-ai/commit/dab8a20740822d9f9c11ce6e2fcbf7cc692c2aaa))
+* production quality improvements (P1/P2) ([9106dbc](https://github.com/skyasu2/openmanager-ai/commit/9106dbce4d62ca55e79ea2d416190355935e0053))
+* resolve 3 QA findings (envLabel, MD copy, slot timing) ([b9ebc14](https://github.com/skyasu2/openmanager-ai/commit/b9ebc1444184036424835a5549b189feb411b252))
+* resolve 4 code quality warnings and add stream utility tests ([5272d7b](https://github.com/skyasu2/openmanager-ai/commit/5272d7b2e1e81b87b3fb323860c4e1b64b46d455))
+* **storybook:** add missing mock configs and fix authLoading state ([a87880d](https://github.com/skyasu2/openmanager-ai/commit/a87880d171949597b43e58e8fe6766232ee5f07a))
+* **storybook:** remove type re-exports from sb.mock()-ed modules ([4856a5a](https://github.com/skyasu2/openmanager-ai/commit/4856a5aa52a2485007aea468305d42fb7286b8d5))
+* **storybook:** resolve AuthState ReferenceError in Dashboard stories ([441c79c](https://github.com/skyasu2/openmanager-ai/commit/441c79c6e5abaf5ce597c288a2c59237e815c1e9))
+* **test:** update ImprovedServerCard tests for semantic button refactor ([72dc645](https://github.com/skyasu2/openmanager-ai/commit/72dc645acec6ee713facdccfd0e7a27485ce6fbb))
+* **ui:** enable long-response collapse in sidebar chat ([bad8a4c](https://github.com/skyasu2/openmanager-ai/commit/bad8a4c06ccb053f0a8e8592dc30bc8c047c2017))
+* **ui:** polish ai assistant mobile and message readability ([e42f8b5](https://github.com/skyasu2/openmanager-ai/commit/e42f8b518f79938ee06fedb4e32b8031d06d6410))
+* **vision:** tighten vision routing and add structured output fallback ([2b626b1](https://github.com/skyasu2/openmanager-ai/commit/2b626b1c345126d13bc35a683ef25876952b9569))
+
 ## [8.3.4](https://github.com/skyasu2/openmanager-ai/compare/v8.3.3...v8.3.4) (2026-02-24)
 
 

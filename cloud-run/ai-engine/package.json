@@ -1,6 +1,6 @@
 {
   "name": "ai-engine",
-  "version": "8.3.4",
+  "version": "8.4.0",
   "description": "Vercel AI SDK Supervisor Engine for Cloud Run",
   "license": "GPL-3.0-only",
   "author": "skyasu2 (https://github.com/skyasu2)",
