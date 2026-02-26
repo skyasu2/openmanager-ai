@@ -235,6 +235,14 @@ describe('createPrepareStep', () => {
     expect(result.toolChoice).toEqual({ type: 'tool', toolName: 'searchWeb' });
   });
 
+  it('should not include searchWeb when enableWebSearch is false', async () => {
+    const prepare = createPrepareStep('해결 방법 알려줘', { enableWebSearch: false });
+    const result = await prepare({ stepNumber: 0 });
+    expect((result as { activeTools?: string[] }).activeTools).toContain('recommendCommands');
+    expect((result as { activeTools?: string[] }).activeTools).not.toContain('searchWeb');
+    expect(result.toolChoice).toBe('required');
+  });
+
   it('should default to metric tools for generic queries', async () => {
     const prepare = createPrepareStep('서버 확인');
     const result = await prepare({ stepNumber: 0 });

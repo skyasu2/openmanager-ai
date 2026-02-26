@@ -4,11 +4,11 @@
 > Owner: platform-architecture
 > Status: Active Canonical
 > Doc type: Reference
-> Last reviewed: 2026-02-23
+> Last reviewed: 2026-02-26
 > Canonical: docs/reference/architecture/ai/ai-engine-architecture.md
 > Tags: ai,architecture,multi-agent,cloud-run
 >
-> **v8.3.3** | Updated 2026-02-23
+> **v8.4.0** | Updated 2026-02-26
 > (ai-model-policy.md 내용 통합됨, 2026-02-14)
 
 ## 1. Overview
@@ -200,7 +200,7 @@ for await (const event of streamAgent('analyst', '이상 탐지')) { ... }
 | | analyzePattern | Analyst | 시계열 패턴 분석 |
 | **Knowledge (3)** | searchKnowledgeBase | Reporter/Advisor | GraphRAG 벡터+그래프 검색 |
 | | recommendCommands | Reporter/Advisor | CLI 추천 |
-| | searchWeb | NLQ/Reporter/Advisor | Tavily 실시간 웹 검색 |
+| | searchWeb | NLQ/Reporter/Advisor | 외부 실시간 웹 검색 |
 | **Evaluation (6)** | evaluateIncidentReport | Pipeline | 보고서 품질 평가 |
 | | validateReportStructure | Pipeline | 구조 검증 |
 | | scoreRootCauseConfidence | Pipeline | RCA 신뢰도 |
@@ -210,6 +210,16 @@ for await (const event of streamAgent('analyst', '이상 탐지')) { ... }
 | | searchWithGrounding | Vision | Google Search Grounding |
 | | analyzeUrlContent | Vision | URL 문서 추출 |
 | **Control (1)** | finalAnswer | All | 에이전트 종료 신호 |
+
+### 검색 제어 정책
+
+- **웹 검색 제어 (`enableWebSearch`)**
+  - 기본 정책: 요청 단에서 `enableWebSearch` 값이 `true`일 때만 Web Search를 사용.
+  - `false`일 때는 `searchWeb` 도구를 라우팅 단계에서 제거하여 NLQ/Reporter/Advisor가 웹 검색을 호출하지 않음.
+  - Vercel API 라우터(`src/app/api/ai/supervisor/route.ts`)에서 수신한 `enableWebSearch` 값을 Cloud Run 프록시 바디에 함께 전달.
+- **RAG 제어 (`enableRAG`)**
+  - `false`일 때는 `searchKnowledgeBase` 도구를 제외하여 지식기반 조회가 발생하지 않음.
+  - 해당 제어값 역시 Cloud Run 요청 체인으로 일관 전달.
 
 ## 7. Resilience 계층
 

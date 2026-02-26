@@ -41,6 +41,12 @@ export interface SupervisorRequest {
    * - 'auto': Auto-detect based on query keywords (default)
    */
   enableWebSearch?: boolean | 'auto';
+  /**
+   * RAG (Knowledge Base) control:
+   * - true: Enable searchKnowledgeBase tool
+   * - false: Disable RAG tool (default)
+   */
+  enableRAG?: boolean;
   /** Upstream trace ID (W3C traceparent에서 추출). Langfuse 연동에 사용. */
   traceId?: string;
   /** 클라이언트 디바이스 타입 (응답 길이/형식 최적화) */

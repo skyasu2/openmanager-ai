@@ -22,7 +22,7 @@ import {
 } from '../../config/timeout-config';
 import { allTools } from '../../tools-ai-sdk';
 import { executeMultiAgent, type MultiAgentRequest, type MultiAgentResponse } from './agents';
-import { resolveWebSearchSetting, filterToolsByWebSearch } from './agents/orchestrator-web-search';
+import { filterToolsByRAG, resolveWebSearchSetting, filterToolsByWebSearch } from './agents/orchestrator-web-search';
 import { isTavilyAvailable } from '../../lib/tavily-hybrid-rag';
 import {
   createSupervisorTrace,
@@ -90,6 +90,7 @@ async function executeMultiAgentMode(
       sessionId: request.sessionId,
       enableTracing: request.enableTracing,
       enableWebSearch: request.enableWebSearch,
+      enableRAG: request.enableRAG,
       images: request.images,
       files: request.files,
     };
@@ -300,7 +301,9 @@ async function executeSupervisorAttempt(
         webSearchEnabled = false;
       }
       logger.debug(`[Single WebSearch] Setting resolved: ${webSearchEnabled} (request: ${request.enableWebSearch})`);
-      const filteredTools = filterToolsByWebSearch(allTools, webSearchEnabled);
+      const ragEnabled = request.enableRAG ?? false;
+      let filteredTools = filterToolsByWebSearch(allTools, webSearchEnabled);
+      filteredTools = filterToolsByRAG(filteredTools, ragEnabled);
 
       const modelMessages: ModelMessage[] = [
         { role: 'system', content: createSystemPrompt(request.deviceType) },

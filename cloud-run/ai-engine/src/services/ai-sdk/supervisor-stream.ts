@@ -13,7 +13,7 @@ import { allTools } from '../../tools-ai-sdk';
 import { createSupervisorTrace, finalizeTrace, logGeneration, logToolCall } from '../observability/langfuse';
 import { CircuitOpenError, getCircuitBreaker } from '../resilience/circuit-breaker';
 import { executeMultiAgentStream } from './agents';
-import { filterToolsByWebSearch, resolveWebSearchSetting } from './agents/orchestrator-web-search';
+import { filterToolsByRAG, filterToolsByWebSearch, resolveWebSearchSetting } from './agents/orchestrator-web-search';
 import {
   getSupervisorModel,
   getVisionAgentModel,
@@ -47,6 +47,7 @@ export async function* executeSupervisorStream(
       sessionId: request.sessionId,
       enableTracing: request.enableTracing,
       enableWebSearch: request.enableWebSearch,
+      enableRAG: request.enableRAG,
       images: request.images,
       files: request.files,
     });
@@ -96,7 +97,10 @@ async function* streamSingleAgent(
     yield { type: 'warning', data: { code: 'WEB_SEARCH_UNAVAILABLE', message: '웹 검색을 사용할 수 없습니다. 내부 데이터로 응답합니다.' } };
   }
   logger.debug(`[Stream Single WebSearch] Setting resolved: ${webSearchEnabled} (request: ${request.enableWebSearch})`);
-  const filteredTools = filterToolsByWebSearch(allTools, webSearchEnabled);
+  const ragEnabled = request.enableRAG ?? false;
+  logger.debug(`[Stream Single RAG] Setting: ${ragEnabled} (request: ${request.enableRAG})`);
+  let filteredTools = filterToolsByWebSearch(allTools, webSearchEnabled);
+  filteredTools = filterToolsByRAG(filteredTools, ragEnabled);
 
   // Provider retry loop: automatically falls back to next provider on failure
   providerLoop:

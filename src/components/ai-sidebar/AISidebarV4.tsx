@@ -53,10 +53,16 @@ export const AISidebarV4: FC<AISidebarV3Props> = ({
   const setWebSearchEnabled = useAISidebarStore(
     (state) => state.setWebSearchEnabled
   );
+  const ragEnabled = useAISidebarStore((state) => state.ragEnabled);
+  const setRagEnabled = useAISidebarStore((state) => state.setRagEnabled);
 
   const toggleWebSearch = useCallback(() => {
     setWebSearchEnabled(!webSearchEnabled);
   }, [webSearchEnabled, setWebSearchEnabled]);
+
+  const toggleRAG = useCallback(() => {
+    setRagEnabled(!ragEnabled);
+  }, [ragEnabled, setRagEnabled]);
 
   // 📐 드래그 리사이즈 훅
   const { width, isResizing, handleMouseDown, handleTouchStart } = useResizable(
@@ -242,6 +248,8 @@ export const AISidebarV4: FC<AISidebarV3Props> = ({
           currentHandoff={currentHandoff}
           webSearchEnabled={webSearchEnabled}
           onToggleWebSearch={toggleWebSearch}
+          ragEnabled={ragEnabled}
+          onToggleRAG={toggleRAG}
           warmingUp={warmingUp}
           estimatedWaitSeconds={estimatedWaitSeconds}
           queuedQueries={queuedQueries}

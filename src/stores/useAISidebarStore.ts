@@ -195,6 +195,9 @@ interface AISidebarState {
   // 웹 검색 토글
   webSearchEnabled: boolean;
 
+  // RAG (Knowledge Base) 토글
+  ragEnabled: boolean;
+
   // 함수 패널 관련 상태
   functionTab: 'qa' | 'report' | 'patterns' | 'logs' | 'context';
   selectedContext: 'basic' | 'advanced' | 'custom';
@@ -205,6 +208,7 @@ interface AISidebarState {
   toggleSidebar: () => void;
   setSidebarWidth: (width: number) => void;
   setWebSearchEnabled: (enabled: boolean) => void;
+  setRagEnabled: (enabled: boolean) => void;
   setActiveTab: (
     tab: 'chat' | 'presets' | 'thinking' | 'settings' | 'functions'
   ) => void;
@@ -236,6 +240,7 @@ export const useAISidebarStore = create<AISidebarState>()(
         activeTab: 'chat',
         sidebarWidth: 600, // 기본 너비 600px
         webSearchEnabled: false,
+        ragEnabled: false,
         functionTab: 'qa',
         selectedContext: 'basic',
         messages: [],
@@ -259,6 +264,8 @@ export const useAISidebarStore = create<AISidebarState>()(
         setSidebarWidth: (width) => set({ sidebarWidth: width }),
 
         setWebSearchEnabled: (enabled) => set({ webSearchEnabled: enabled }),
+
+        setRagEnabled: (enabled) => set({ ragEnabled: enabled }),
 
         setActiveTab: (tab) => set({ activeTab: tab }),
 
@@ -292,6 +299,7 @@ export const useAISidebarStore = create<AISidebarState>()(
             activeTab: 'chat',
             sidebarWidth: 600, // 기본 너비로 리셋
             webSearchEnabled: false,
+            ragEnabled: false,
             functionTab: 'qa',
             selectedContext: 'basic',
             messages: [],
@@ -310,6 +318,7 @@ export const useAISidebarStore = create<AISidebarState>()(
           activeTab: state.activeTab,
           sidebarWidth: state.sidebarWidth, // 사이드바 너비 영속화
           webSearchEnabled: state.webSearchEnabled,
+          ragEnabled: state.ragEnabled,
           functionTab: state.functionTab,
           selectedContext: state.selectedContext,
           // 🔥 대화 기록 영속화 (최근 20개만 - localStorage 5MB 초과 방지)

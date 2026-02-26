@@ -133,3 +133,23 @@ export function filterToolsByWebSearch(
   }
   return filtered;
 }
+
+/**
+ * Filter tools based on RAG setting
+ * Removes searchKnowledgeBase tool when RAG is disabled
+ */
+export function filterToolsByRAG(
+  tools: ToolSet,
+  ragEnabled: boolean
+): ToolSet {
+  if (ragEnabled) {
+    return tools;
+  }
+
+  const filtered = { ...tools };
+  if ('searchKnowledgeBase' in filtered) {
+    delete filtered.searchKnowledgeBase;
+    logger.info('[Tools] searchKnowledgeBase disabled by enableRAG setting');
+  }
+  return filtered;
+}

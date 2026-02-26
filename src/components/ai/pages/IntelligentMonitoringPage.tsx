@@ -12,7 +12,7 @@
 
 'use client';
 
-import { Monitor, Play, RefreshCw, Server } from 'lucide-react';
+import { BookOpen, Monitor, Play, RefreshCw, Server } from 'lucide-react';
 import { useCallback, useState } from 'react';
 import AnalysisResultsCard from '@/components/ai/AnalysisResultsCard';
 import { useServerQuery } from '@/hooks/useServerQuery';
@@ -36,6 +36,7 @@ export default function IntelligentMonitoringPage() {
   const [progress, setProgress] = useState({ current: 0, total: 0 });
   const [result, setResult] = useState<AnalysisResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [ragEnabled, setRagEnabled] = useState(false);
 
   // 🔧 P3: useCallback으로 핸들러 메모이제이션
   const handleServerChange = useCallback(
@@ -77,7 +78,8 @@ export default function IntelligentMonitoringPage() {
             action: 'analyze_server',
             serverId,
             analysisType: 'full',
-            currentMetrics, // Pass real-time metrics
+            currentMetrics,
+            enableRAG: ragEnabled,
           }),
         });
 
@@ -119,7 +121,7 @@ export default function IntelligentMonitoringPage() {
         return null;
       }
     },
-    []
+    [ragEnabled]
   );
 
   // 종합 요약 생성 함수
@@ -341,6 +343,19 @@ export default function IntelligentMonitoringPage() {
 
           {/* 버튼 그룹 */}
           <div className="flex items-end gap-2">
+            <button
+              type="button"
+              onClick={() => setRagEnabled((prev) => !prev)}
+              className={`rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+                ragEnabled
+                  ? 'bg-purple-100 text-purple-700'
+                  : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
+              }`}
+              title={ragEnabled ? 'RAG 검색 끄기' : 'RAG 검색 켜기'}
+            >
+              <BookOpen className="mr-1.5 inline h-4 w-4" />
+              RAG
+            </button>
             <button
               type="button"
               onClick={resetAnalysis}

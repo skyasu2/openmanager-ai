@@ -277,12 +277,16 @@ const SIMPLE_CONVERSATION_PATTERNS = /^(안녕|감사|고마워|잘했어|hi|hel
 
 export function createPrepareStep(query: string, options?: { enableWebSearch?: boolean }) {
   const q = query.toLowerCase();
+  const shouldForceWebSearch = options?.enableWebSearch === true;
+
+  const filterActiveTools = (tools: ToolName[]) =>
+    shouldForceWebSearch ? tools : tools.filter((tool) => tool !== 'searchWeb');
 
   return async ({ stepNumber }: { stepNumber: number }) => {
     if (stepNumber > 0) return {};
 
     // 웹 검색 강제: 사용자가 토글 ON → 첫 스텝에서 searchWeb 강제 호출
-    if (options?.enableWebSearch) {
+    if (shouldForceWebSearch) {
       if (isTavilyAvailable()) {
         // 기존 라우팅 결과의 activeTools에 searchWeb 추가
         const baseTools: ToolName[] = ['getServerMetrics', 'getServerMetricsAdvanced', 'filterServers', 'searchWeb', 'finalAnswer'];
@@ -323,7 +327,7 @@ export function createPrepareStep(query: string, options?: { enableWebSearch?: b
 
     if (TOOL_ROUTING_PATTERNS.advisor.test(q)) {
       return {
-        activeTools: ['searchKnowledgeBase', 'recommendCommands', 'searchWeb', 'finalAnswer'] as ToolName[],
+        activeTools: filterActiveTools(['searchKnowledgeBase', 'recommendCommands', 'searchWeb', 'finalAnswer']) as ToolName[],
         toolChoice: 'required' as const,
       };
     }

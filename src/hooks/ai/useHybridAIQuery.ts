@@ -95,6 +95,7 @@ export function useHybridAIQuery(
     onProgress,
     onData,
     webSearchEnabled,
+    ragEnabled,
   } = options;
   const traceIdRef = useRef<string>(generateTraceId());
   const observabilityConfig = getObservabilityConfig();
@@ -103,10 +104,14 @@ export function useHybridAIQuery(
   const webSearchEnabledRef = useRef<boolean | undefined>(
     webSearchEnabled ?? undefined
   );
+  const ragEnabledRef = useRef<boolean | undefined>(ragEnabled ?? undefined);
   const warmingUpRef = useRef<boolean>(false);
   useEffect(() => {
     webSearchEnabledRef.current = webSearchEnabled ?? undefined;
   }, [webSearchEnabled]);
+  useEffect(() => {
+    ragEnabledRef.current = ragEnabled ?? undefined;
+  }, [ragEnabled]);
   const apiEndpoint = customEndpoint ?? '/api/ai/supervisor/stream/v2';
   const sessionIdRef = useRef<string>(
     initialSessionId || generateMessageId('session')
@@ -153,6 +158,7 @@ export function useHybridAIQuery(
         traceIdHeader: observabilityConfig.traceIdHeader,
         warmingUpRef,
         webSearchEnabledRef,
+        ragEnabledRef,
       }),
     [apiEndpoint, observabilityConfig.traceIdHeader]
   );

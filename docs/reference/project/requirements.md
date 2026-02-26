@@ -3,7 +3,7 @@
 > Owner: project-lead
 > Status: Active Canonical
 > Doc type: Reference
-> Last reviewed: 2026-02-22
+> Last reviewed: 2026-02-26
 > Tags: requirements,srs,functional,non-functional
 
 **기반**: IEEE 830 / ISO/IEC/IEEE 29148 경량 버전
@@ -94,8 +94,8 @@
 | 항목 | 내용 |
 |------|------|
 | 설명 | AI 응답 시 실시간 웹 검색 정보 통합 (토글 가능) |
-| 수용 기준 | 웹 검색 토글 ON/OFF, 세션 상태 영속화, 검색 결과 응답에 반영 |
-| 구현 | `src/stores/useAISidebarStore.ts`, `cloud-run/ai-engine/src/tools-ai-sdk/` |
+| 수용 기준 | 웹 검색 토글 ON/OFF, 세션 상태 영속화, 검색 결과 응답 반영, 토글 OFF일 때 `searchWeb` 호출 완전 비활성 |
+| 구현 | `src/stores/useAISidebarStore.ts`, `src/app/api/ai/supervisor/route.ts`, `src/app/api/ai/supervisor/schemas.ts`, `cloud-run/ai-engine/src/services/ai-sdk/` |
 
 ### FR-010: 모바일 반응형 대시보드
 

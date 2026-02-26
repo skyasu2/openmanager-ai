@@ -75,6 +75,8 @@ interface EnhancedAIChatProps {
   currentHandoff?: HandoffEventData | null;
   webSearchEnabled?: boolean;
   onToggleWebSearch?: () => void;
+  ragEnabled?: boolean;
+  onToggleRAG?: () => void;
   /** Cloud Run AI Engine 웜업 중 여부 */
   warmingUp?: boolean;
   /** 웜업 예상 대기 시간 (초) */
@@ -121,6 +123,8 @@ export const EnhancedAIChat = memo(function EnhancedAIChat({
   currentHandoff,
   webSearchEnabled,
   onToggleWebSearch,
+  ragEnabled,
+  onToggleRAG,
   warmingUp,
   estimatedWaitSeconds,
   queuedQueries,
@@ -404,6 +408,8 @@ export const EnhancedAIChat = memo(function EnhancedAIChat({
         onStopGeneration={onStopGeneration}
         webSearchEnabled={webSearchEnabled}
         onToggleWebSearch={onToggleWebSearch}
+        ragEnabled={ragEnabled}
+        onToggleRAG={onToggleRAG}
       />
     </div>
   );

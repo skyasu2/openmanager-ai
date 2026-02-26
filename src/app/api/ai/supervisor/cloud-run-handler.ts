@@ -34,6 +34,8 @@ interface CloudRunHandlerParams {
   cacheEndpoint: AIEndpoint;
   securityWarning?: string;
   deviceType?: string;
+  enableWebSearch?: boolean;
+  enableRAG?: boolean;
 }
 
 /**
@@ -52,6 +54,8 @@ export async function handleCloudRunStream(
     cacheEndpoint,
     securityWarning,
     deviceType,
+    enableWebSearch,
+    enableRAG,
   } = params;
 
   // 🎯 W3C Trace Context: traceId from AsyncLocalStorage + traceparent 생성
@@ -80,7 +84,14 @@ export async function handleCloudRunStream(
     async () => {
       const proxyResult = await proxyToCloudRun({
         path: '/api/ai/supervisor',
-        body: { messages: messagesToSend, sessionId, traceId, deviceType },
+        body: {
+          messages: messagesToSend,
+          sessionId,
+          traceId,
+          deviceType,
+          enableWebSearch,
+          enableRAG,
+        },
         timeout: dynamicTimeout,
         endpoint: 'supervisor',
         headers: observability.enableTraceId
@@ -186,6 +197,8 @@ export async function handleCloudRunJson(
     cacheEndpoint,
     securityWarning,
     deviceType,
+    enableWebSearch,
+    enableRAG,
   } = params;
 
   // 🎯 W3C Trace Context: traceId from AsyncLocalStorage + traceparent 생성
@@ -214,7 +227,14 @@ export async function handleCloudRunJson(
     async () => {
       const proxyResult = await proxyToCloudRun({
         path: '/api/ai/supervisor',
-        body: { messages: messagesToSend, sessionId, traceId, deviceType },
+        body: {
+          messages: messagesToSend,
+          sessionId,
+          traceId,
+          deviceType,
+          enableWebSearch,
+          enableRAG,
+        },
         timeout: dynamicTimeout,
         endpoint: 'supervisor',
         headers: observability.enableTraceId

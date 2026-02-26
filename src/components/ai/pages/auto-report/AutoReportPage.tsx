@@ -19,7 +19,14 @@
 
 'use client';
 
-import { AlertCircle, FileText, History, RefreshCw, X } from 'lucide-react';
+import {
+  AlertCircle,
+  BookOpen,
+  FileText,
+  History,
+  RefreshCw,
+  X,
+} from 'lucide-react';
 import { useCallback, useState } from 'react';
 import { rulesLoader } from '@/config/rules/loader';
 import { useServerQuery } from '@/hooks/useServerQuery';
@@ -50,6 +57,7 @@ export default function AutoReportPage() {
   const [selectedReport, setSelectedReport] = useState<string | null>(null);
   const [downloadMenuId, setDownloadMenuId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [ragEnabled, setRagEnabled] = useState(false);
 
   // Generate new report
   const handleGenerateReport = useCallback(async () => {
@@ -74,6 +82,7 @@ export default function AutoReportPage() {
           action: 'generate',
           metrics,
           notify: true,
+          enableRAG: ragEnabled,
         }),
       });
 
@@ -215,7 +224,7 @@ export default function AutoReportPage() {
     } finally {
       setIsGenerating(false);
     }
-  }, [servers]);
+  }, [servers, ragEnabled]);
 
   // Event handlers
   const handleResolve = useCallback((reportId: string) => {
@@ -329,17 +338,32 @@ export default function AutoReportPage() {
             </div>
           </div>
 
-          <button
-            type="button"
-            onClick={handleGenerateReport}
-            disabled={isGenerating}
-            className="flex items-center space-x-2 rounded-lg bg-red-500 px-4 py-2 text-white transition-all duration-200 hover:scale-105 hover:bg-red-600 active:scale-95 disabled:opacity-50"
-          >
-            <RefreshCw
-              className={`h-4 w-4 ${isGenerating ? 'animate-spin' : ''}`}
-            />
-            <span>{isGenerating ? '생성 중...' : '새 보고서'}</span>
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setRagEnabled((prev) => !prev)}
+              className={`flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+                ragEnabled
+                  ? 'bg-purple-100 text-purple-700'
+                  : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
+              }`}
+              title={ragEnabled ? 'RAG 검색 끄기' : 'RAG 검색 켜기'}
+            >
+              <BookOpen className="h-4 w-4" />
+              RAG
+            </button>
+            <button
+              type="button"
+              onClick={handleGenerateReport}
+              disabled={isGenerating}
+              className="flex items-center space-x-2 rounded-lg bg-red-500 px-4 py-2 text-white transition-all duration-200 hover:scale-105 hover:bg-red-600 active:scale-95 disabled:opacity-50"
+            >
+              <RefreshCw
+                className={`h-4 w-4 ${isGenerating ? 'animate-spin' : ''}`}
+              />
+              <span>{isGenerating ? '생성 중...' : '새 보고서'}</span>
+            </button>
+          </div>
         </div>
 
         {/* Tabs */}

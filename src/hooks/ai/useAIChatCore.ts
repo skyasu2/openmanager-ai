@@ -152,8 +152,9 @@ export function useAIChatCore(
     null
   );
 
-  // 웹 검색 토글 상태 (Store에서 읽기)
+  // 웹 검색 / RAG 토글 상태 (Store에서 읽기)
   const webSearchEnabled = useAISidebarStore((s) => s.webSearchEnabled);
+  const ragEnabled = useAISidebarStore((s) => s.ragEnabled);
 
   // 메시지 대기열 (Batching용)
   const queueIdCounter = useRef(0);
@@ -246,6 +247,7 @@ export function useAIChatCore(
   } = useHybridAIQuery({
     sessionId: sessionId,
     webSearchEnabled,
+    ragEnabled,
     onStreamFinish: () => {
       onMessageSend?.(pendingQueryRef.current);
       setError(null);

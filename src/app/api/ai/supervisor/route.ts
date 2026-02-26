@@ -139,7 +139,12 @@ export const POST = withRateLimit(
           );
         }
 
-        const { messages, sessionId: bodySessionId } = parseResult.data;
+        const {
+          messages,
+          sessionId: bodySessionId,
+          enableWebSearch,
+          enableRAG,
+        } = parseResult.data;
 
         // 2. sessionId 추출 (Header > Body > Query Param)
         const url = new URL(req.url);
@@ -328,6 +333,8 @@ export const POST = withRateLimit(
             skipCache,
             cacheEndpoint,
             securityWarning,
+            enableWebSearch,
+            enableRAG,
             deviceType,
           };
 

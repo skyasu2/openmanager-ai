@@ -18,6 +18,7 @@ interface CreateHybridChatTransportParams {
   traceIdHeader: string;
   warmingUpRef: MutableRefObject<boolean>;
   webSearchEnabledRef: MutableRefObject<boolean | undefined>;
+  ragEnabledRef: MutableRefObject<boolean | undefined>;
 }
 
 export function createHybridChatTransport(
@@ -29,6 +30,7 @@ export function createHybridChatTransport(
     traceIdHeader,
     warmingUpRef,
     webSearchEnabledRef,
+    ragEnabledRef,
   } = params;
 
   return new DefaultChatTransport({
@@ -53,6 +55,7 @@ export function createHybridChatTransport(
       enableWebSearch: warmingUpRef.current
         ? false
         : webSearchEnabledRef.current,
+      enableRAG: warmingUpRef.current ? false : ragEnabledRef.current,
     }),
     prepareReconnectToStreamRequest: ({ id }) => ({
       api: `${apiEndpoint}?sessionId=${id}`,

@@ -45,6 +45,8 @@ export interface MultiAgentRequest {
    * - undefined/'auto': Auto-detect based on query content
    */
   enableWebSearch?: boolean | 'auto';
+  /** RAG (Knowledge Base 검색) 활성화 여부 */
+  enableRAG?: boolean;
   /**
    * Image attachments for multimodal queries (Vision Agent)
    * @see https://ai-sdk.dev/docs/ai-sdk-core/prompts#image-parts

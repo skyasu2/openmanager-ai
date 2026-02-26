@@ -221,6 +221,7 @@ export const POST = withRateLimit(
         messages,
         sessionId: bodySessionId,
         enableWebSearch,
+        enableRAG,
       } = parseResult.data;
 
       // 2. Extract session ID
@@ -364,6 +365,7 @@ export const POST = withRateLimit(
             messages: normalizedMessages,
             sessionId,
             enableWebSearch,
+            enableRAG,
           }),
           signal: controller.signal,
         });

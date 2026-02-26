@@ -123,6 +123,8 @@ export const messageSchema = z
 export const requestSchema = z.object({
   messages: z.array(messageSchema).min(1).max(50),
   sessionId: z.string().min(8).max(128).optional(),
+  enableWebSearch: z.boolean().optional(),
+  enableRAG: z.boolean().optional(),
 });
 
 /**
@@ -145,6 +147,7 @@ export const requestSchemaLoose = z.object({
     .max(50),
   sessionId: z.string().min(8).max(128).optional(),
   enableWebSearch: z.boolean().optional(),
+  enableRAG: z.boolean().optional(),
 });
 
 // ============================================================================
