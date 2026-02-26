@@ -95,9 +95,8 @@ export function transformUIMessageToEnhanced(
 ): EnhancedChatMessage {
   const { isLoading, currentMode, streamRagSources } = options;
   const rawText = extractTextFromUIMessage(message);
-  // 🐛 Fix: 스트리밍 응답에서 JSON 페이로드 노출 방지
-  // Cloud Run NLQ Agent가 { answer, confidence, toolsUsed } JSON을 반환할 때
-  // answer 필드만 추출 (Job Queue 경로에서는 이미 적용됨, 스트리밍 경로 누락 수정)
+  // 단일 정규화 지점: Cloud Run Agent가 { answer, confidence } JSON을 반환할 때
+  // answer 필드만 추출. Streaming/Job Queue 양쪽 경로 모두 여기서 처리.
   const textContent =
     message.role === 'assistant' ? normalizeAIResponse(rawText) : rawText;
 

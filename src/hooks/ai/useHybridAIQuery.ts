@@ -37,7 +37,6 @@ import {
   getObservabilityConfig,
   getStreamRetryConfig,
 } from '@/config/ai-proxy.config';
-import { normalizeAIResponse } from '@/lib/ai/utils/message-normalizer';
 import { createHybridChatTransport } from './core/createHybridChatTransport';
 import { createHybridStreamCallbacks } from './core/createHybridStreamCallbacks';
 import { useClarificationHandlers } from './core/useClarificationHandlers';
@@ -231,12 +230,13 @@ export function useHybridAIQuery(
       onJobResult?.(result);
 
       if (result.success && result.response) {
-        const normalizedResponse = normalizeAIResponse(result.response);
+        // NOTE: normalizeAIResponse는 transformUIMessageToEnhanced에서
+        // 단일 지점으로 처리됨 (이중 호출 방지)
         const messageWithRag = {
           id: generateMessageId('assistant'),
           role: 'assistant' as const,
-          content: normalizedResponse,
-          parts: [{ type: 'text' as const, text: normalizedResponse }],
+          content: result.response,
+          parts: [{ type: 'text' as const, text: result.response }],
           metadata:
             result.ragSources || result.traceId
               ? {
