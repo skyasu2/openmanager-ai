@@ -15,9 +15,7 @@ import { useServerPagination } from '@/hooks/dashboard/useServerPagination';
 import { useServerStats } from '@/hooks/dashboard/useServerStats';
 import { useServerQuery } from '@/hooks/useServerQuery';
 import type {
-  DashboardTab,
   EnhancedServerData,
-  ServerStats,
   ServerWithMetrics,
   UseEnhancedServerDashboardProps,
   UseEnhancedServerDashboardReturn,

@@ -19,7 +19,7 @@ OpenManager AI의 기본 테스트 전략은 **Local-First + Contract-First** �
 - Playwright는 로컬 핵심 사용자 플로우 검증에 한정
 - Playwright 구성(Chromium 단일, DevTools 비활성화, Vercel bypass header)은 유지하고 `test:e2e:critical`을 CI push/PR 게이트에 포함
 
-> 핵심 원칙: 무료 티어를 보호하면서도, 회귀를 빠르게 탐지한다.
+> 핵심 원칙: 무료 티어를 보호하면서도, 회귀를 빠르게 탐지한다. "과도한 텍스트 기반 커버리지(%) 쫓기"를 철저히 배제하고 작동 검증에만 집중한다.
 
 ---
 
@@ -41,6 +41,15 @@ OpenManager AI의 기본 테스트 전략은 **Local-First + Contract-First** �
 | 계약/단위 | Vitest, MSW, Zod | 요청/응답 형식, 상태 전이, UI 로직 | 항상 |
 | 로컬 핵심 E2E | Playwright | 게스트 로그인, 대시보드 렌더, 핵심 상호작용 | CI Push/PR + 필요 시 로컬 |
 | 수동 스모크 | 브라우저 + health check | 배포 직후 최소 생존 확인 | 선택 |
+
+## 1.5 테스트 커버리지 정책 (Coverage Policy)
+
+> **"숫자 채우기식 테스트 커버리지(%) 달성 지양"**
+
+1인 개발 포트폴리오 및 Vibe Coding의 특성 상, 과도한 단위 테스트 작성을 강제하지 않습니다.
+- **Coverage Tool (Istanbul/v8) 미사용**: 80% 이상 커버리지 달성 같은 인위적인 지표를 목표로 삼지 않습니다.
+- **실용주의 (Pragmatism)**: "수정했을 때 화면이 터지지 않는가?", "API가 에러를 뱉지 않는가?" 를 즉각 확인하는 스모크 방식에 집중합니다.
+- **AI 한계 인정**: AI 코딩의 생산성을 극한으로 끌어올리려면, 테스트 코드 작성에 AI 토큰과時間を 낭비하기보다 핵심 비즈니스 로직(계약/스키마) 검증에 집중해야 합니다.
 
 ---
 

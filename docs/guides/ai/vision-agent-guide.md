@@ -4,11 +4,11 @@
 > Owner: documentation
 > Status: Active
 > Doc type: How-to
-> Last reviewed: 2026-02-16
+> Last reviewed: 2026-02-26
 > Canonical: docs/guides/ai/vision-agent-guide.md
 > Tags: ai,vision,guide
 >
-> **Version**: 1.2.0 | **Last Updated**: 2026-02-16
+> **Version**: 1.2.0 | **Last Updated**: 2026-02-26
 
 ## 개요
 
@@ -39,7 +39,7 @@ Vision Agent는 멀티모달 분석을 위한 AI 에이전트로, 이미지와 �
 
 - **최대 파일 개수**: 3개 (동시 첨부)
 - **총 크기**: 개별 파일 제한 적용
-- **Gemini 미설정 시**: OpenRouter(Primary) -> Analyst Agent(Fallback)로 폴백. 
+- **Gemini 미설정 시**: OpenRouter(Primary) -> Analyst Agent(Fallback)로 폴백.
 
 > **OpenRouter Fallback 추천**: 2026-02 테스트 결과, `google/gemma-3-4b-it:free`가 `nvidia/nemotron-nano`보다 비전 분석(이미지 내 텍스트 인식 등) 능력이 뛰어난 것으로 확인되어 기본 대체 모델로 설정되었습니다.
 
@@ -236,4 +236,4 @@ Agent: Analyst (Groq/Mistral)
 
 ---
 
-_Last Updated: 2026-02-16_
+_Last Updated: 2026-02-26_
