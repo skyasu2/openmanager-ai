@@ -6,8 +6,6 @@
  * @version 4.0.0
  */
 
-import { generateObject } from 'ai';
-
 import { taskDecomposeSchema, type TaskDecomposition, type Subtask } from './schemas';
 import { TIMEOUT_CONFIG } from '../../../config/timeout-config';
 
@@ -15,6 +13,7 @@ import type { MultiAgentResponse } from './orchestrator-types';
 import { getOrchestratorModel, getAgentConfig, executeForcedRouting } from './orchestrator-routing';
 import { saveAgentFindingsToContext } from './orchestrator-context';
 import { logger } from '../../../lib/logger';
+import { generateObjectWithFallback } from './orchestrator-object-fallback';
 
 // ============================================================================
 // Task Decomposition (Orchestrator-Worker Pattern)
@@ -67,12 +66,13 @@ ${query}
 - 최대 4개의 서브태스크로 제한
 - Vision Agent는 이미지/스크린샷이 필요한 경우에만 할당`;
 
-    const result = await generateObject({
+    const result = await generateObjectWithFallback({
       model,
       schema: taskDecomposeSchema,
       system: '복합 질문을 서브태스크로 분해하는 전문가입니다.',
       prompt: decomposePrompt,
       temperature: 0.2,
+      operation: 'orchestrator-decomposition',
     });
 
     const decomposition = result.object;

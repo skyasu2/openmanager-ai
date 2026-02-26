@@ -6,7 +6,6 @@
  * @version 4.0.0
  */
 
-import { generateObject } from 'ai';
 import type { StreamEvent } from '../supervisor';
 
 import { routingSchema, getAgentFromRouting, type RoutingDecision } from './schemas';
@@ -40,6 +39,7 @@ import {
   executeParallelSubtasks,
 } from './orchestrator-decomposition';
 import { executeAgentStream } from './orchestrator-agent-stream';
+import { generateObjectWithFallback } from './orchestrator-object-fallback';
 
 export { getRecentHandoffs };
 
@@ -200,12 +200,13 @@ export async function executeMultiAgent(
     let routingDecision: RoutingDecision;
     try {
       const routingResult = await Promise.race([
-        generateObject({
+        generateObjectWithFallback({
           model,
           schema: routingSchema,
           system: ORCHESTRATOR_INSTRUCTIONS,
           prompt: routingPrompt,
           temperature: 0.1,
+          operation: 'orchestrator-routing',
         }),
         timeoutPromise,
       ]);
@@ -383,12 +384,13 @@ export async function* executeMultiAgentStream(
 
     const routingPrompt = buildRoutingPrompt(query);
 
-    const routingResult = await generateObject({
+    const routingResult = await generateObjectWithFallback({
       model,
       schema: routingSchema,
       system: ORCHESTRATOR_INSTRUCTIONS,
       prompt: routingPrompt,
       temperature: 0.1,
+      operation: 'orchestrator-routing',
     });
 
     const routingDecision = routingResult.object;
