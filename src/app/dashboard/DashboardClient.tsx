@@ -17,6 +17,7 @@ import AuthLoadingUI from '@/components/shared/AuthLoadingUI';
 import UnauthorizedAccessUI from '@/components/shared/UnauthorizedAccessUI';
 import { NotificationToast } from '@/components/system/NotificationToast';
 import { isGuestFullAccessEnabled } from '@/config/guestMode';
+import { LOGIN_POLICY_COPY } from '@/lib/auth/login-policy-copy';
 import { useToast } from '@/hooks/use-toast';
 import { useAutoLogout } from '@/hooks/useAutoLogout';
 import { useServerDashboard } from '@/hooks/useServerDashboard';
@@ -124,8 +125,7 @@ function DashboardPageContent({ initialServers }: DashboardClientProps) {
         toast({
           variant: 'destructive',
           title: '접근 권한 없음',
-          description:
-            '대시보드 접근 권한이 없습니다. GitHub, Google, 이메일 로그인 또는 관리자 모드 인증이 필요합니다.',
+          description: `대시보드 접근 권한이 없습니다. ${LOGIN_POLICY_COPY.adminPinAuthText} 또는 ${LOGIN_POLICY_COPY.authPrompt}`,
         });
         router.push('/');
         return; // cleanup 불필요

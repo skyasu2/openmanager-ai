@@ -18,6 +18,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { AUTH_PROVIDER_COPY, LOGIN_POLICY_COPY } from '@/lib/auth/login-policy-copy';
 
 interface GuestRestrictionModalProps {
   open: boolean;
@@ -42,17 +43,20 @@ export function GuestRestrictionModal({
 
   const description =
     reason === 'guest-start-blocked'
-      ? '현재 게스트 모드에서는 시스템 시작이 제한되어 있습니다.'
-      : '현재 로그인 상태가 아니어도 시스템 시작 버튼은 보이지만, 시작하려면 로그인해야 합니다.';
+      ? LOGIN_POLICY_COPY.guestSystemStartBlocked
+      : LOGIN_POLICY_COPY.systemStartGateDescription;
 
   const infoText =
     reason === 'guest-start-blocked'
-      ? '게스트 세션이 제한된 환경에서는 GitHub, Google 또는 이메일 인증 계정으로 로그인해 주세요.'
-      : 'GitHub, Google, 또는 이메일 인증 계정으로 로그인해 주세요.';
+      ? `게스트 세션이 제한된 환경에서는 ${AUTH_PROVIDER_COPY.listWithOr} 인증 계정으로 로그인해 주세요.`
+      : LOGIN_POLICY_COPY.authPrompt;
 
   return (
     <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
-      <DialogContent className="border-yellow-500/30 bg-linear-to-br from-slate-900 via-slate-800 to-slate-900 sm:max-w-md">
+      <DialogContent
+        className="border-yellow-500/30 bg-linear-to-br from-slate-900 via-slate-800 to-slate-900 sm:max-w-md"
+        data-testid="system-start-auth-modal"
+      >
         <DialogHeader className="text-center">
           <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-yellow-500/20">
             <AlertTriangle className="h-6 w-6 text-yellow-500" />

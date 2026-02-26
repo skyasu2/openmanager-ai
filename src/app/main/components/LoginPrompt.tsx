@@ -8,6 +8,7 @@
 
 import { User } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { LOGIN_POLICY_COPY } from '@/lib/auth/login-policy-copy';
 
 interface LoginPromptProps {
   isMounted: boolean;
@@ -25,8 +26,7 @@ export function LoginPrompt({ isMounted, guestModeMessage }: LoginPromptProps) {
           로그인 또는 게스트 테스트가 필요합니다
         </h3>
         <p className="mb-4 text-sm text-blue-100">
-          시스템 운영 기능은 GitHub, Google, 이메일 인증 사용자와 게스트 테스트
-          모드 사용자가 이용할 수 있습니다.
+          {LOGIN_POLICY_COPY.landingCapabilities}
         </p>
         <button
           type="button"

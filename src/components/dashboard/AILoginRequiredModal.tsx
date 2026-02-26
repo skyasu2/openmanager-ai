@@ -10,6 +10,7 @@
 import { Bot, Github } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
+import { AUTH_PROVIDER_COPY } from '@/lib/auth/login-policy-copy';
 import {
   Dialog,
   DialogContent,
@@ -52,10 +53,8 @@ export function AILoginRequiredModal({
 
         <div className="mt-4 rounded-lg border border-slate-700 bg-slate-800/50 p-4">
           <p className="text-sm leading-relaxed text-slate-400">
-            <span className="font-medium text-white">GitHub</span>,{' '}
-            <span className="font-medium text-white">Google</span>, 또는{' '}
-            <span className="font-medium text-white">이메일</span> 인증으로
-            로그인하여 다음 기능을 이용하세요:
+            <span className="font-medium text-white">{AUTH_PROVIDER_COPY.listInline}</span>{' '}
+            인증으로 로그인하여 다음 기능을 이용하세요:
           </p>
           <ul className="mt-3 space-y-2 text-sm text-slate-400">
             <li className="flex items-center gap-2">
@@ -84,6 +83,7 @@ export function AILoginRequiredModal({
           <Button
             onClick={handleLoginRedirect}
             className="w-full bg-linear-to-r from-purple-500 to-blue-600 text-white hover:from-purple-600 hover:to-blue-700 sm:w-auto"
+            data-testid="ai-login-redirect-button"
           >
             <Github className="mr-2 h-4 w-4" />
             로그인하기

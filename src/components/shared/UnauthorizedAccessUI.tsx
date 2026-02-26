@@ -13,6 +13,7 @@
 import { Shield } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import FullScreenLayout from './FullScreenLayout';
+import { LOGIN_POLICY_COPY } from '@/lib/auth/login-policy-copy';
 
 interface UnauthorizedAccessUIProps {
   /**
@@ -67,7 +68,7 @@ export default function UnauthorizedAccessUI({
           <h2 className="mb-2 text-2xl font-bold text-white">접근 권한 필요</h2>
           <p className="mb-6 text-gray-300">
             {requiresGitHub
-              ? '대시보드 접근을 위해 GitHub, Google, 이메일 로그인 또는 관리자 PIN 인증이 필요합니다.'
+              ? LOGIN_POLICY_COPY.dashboardAccess
               : '대시보드 접근을 위해 인증이 필요합니다.'}
           </p>
         </div>
@@ -92,7 +93,8 @@ export default function UnauthorizedAccessUI({
 
         {requiresGitHub && (
           <p className="mt-4 text-xs text-gray-500">
-            게스트 모드에서는 관리자 PIN 인증으로 대시보드 접근이 가능합니다
+            게스트 모드에서는 {LOGIN_POLICY_COPY.adminPinAuthText}로 대시보드 접근이
+            가능합니다.
           </p>
         )}
       </div>

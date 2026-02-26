@@ -1,58 +1,58 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-02-27 03:34:32 KST
+> Generated at: 2026-02-27 04:25:22 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 16 |
-| Total Checks | 73 |
-| Passed | 57 |
+| Total Runs | 17 |
+| Total Checks | 75 |
+| Passed | 59 |
 | Failed | 16 |
-| Completed Items | 25 |
-| Pending Items | 7 |
+| Completed Items | 26 |
+| Pending Items | 6 |
 | Expert Domains Tracked | 6 |
 | Expert Open Gaps | 2 |
-| Completion Rate | 78.13% |
-| Last Run | QA-20260227-0016 (2026-02-26T18:34:32.172Z) |
+| Completion Rate | 81.25% |
+| Last Run | QA-20260227-0017 (2026-02-26T19:25:22.388Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260227-0016 (2026-02-26T18:34:32.172Z)
+Latest run: QA-20260227-0017 (2026-02-26T19:25:22.388Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| AI Quality Assurance Specialist | appropriate | no | 배포 채널별 동일 시나리오 반복 실행을 정기 게이트로 고정 |
-| IT Monitoring & Observability SME | partially-appropriate | yes | Vercel 배포 ID와 런타임 커밋 매핑 로그에 시작 시도/성공률 지표를 연결 |
-| AI Security & Reliability Architect | appropriate | no | 게스트 차단/지역 제한 이벤트를 보안 로그와 교차 검증 |
-| DevOps / SRE Engineer | appropriate | no | 배포 완료 후 릴리스 게이트에 본 스위트를 추가 |
-| Test Automation Architect | appropriate | no | 실패 항목 발생 시 재시도 정책과 실패 추적 규칙 문서화 |
-| Data Quality & Metrics Analyst | partially-appropriate | yes | system-start metrics 게이트를 qa-tracker 항목으로 상향 |
+| AI Quality Assurance Specialist | appropriate | no | 배포 채널별 동일 시나리오를 정기 게이트로 고정합니다. |
+| IT Monitoring & Observability SME | partially-appropriate | yes | system-start 시도/성공률/실패률/지연 지표를 QA 트래커 메타와 연동합니다. |
+| AI Security & Reliability Architect | appropriate | no | 게스트 차단/지역 제한 이벤트를 보안 로그와 교차 검증합니다. |
+| DevOps / SRE Engineer | appropriate | no | 채널별 재배포 시 동일 스위트 자동 실행을 고정합니다. |
+| Test Automation Architect | appropriate | no | 실패 재현 시 재시작·증분 추적 규칙을 표준화합니다. |
+| Data Quality & Metrics Analyst | partially-appropriate | yes | system-start KPI를 qa-tracker 체크 항목으로 상향해 run 결과 메타에 포함합니다. |
 
 ## Expert Domain Open Gaps
 
-- data-metrics-quality: Data Quality & Metrics Analyst (last QA-20260227-0016)
-  next: system-start metrics 게이트를 qa-tracker 항목으로 상향
-- observability-monitoring: IT Monitoring & Observability SME (last QA-20260227-0016)
-  next: Vercel 배포 ID와 런타임 커밋 매핑 로그에 시작 시도/성공률 지표를 연결
+- data-metrics-quality: Data Quality & Metrics Analyst (last QA-20260227-0017)
+  next: system-start KPI를 qa-tracker 체크 항목으로 상향해 run 결과 메타에 포함합니다.
+- observability-monitoring: IT Monitoring & Observability SME (last QA-20260227-0017)
+  next: system-start 시도/성공률/실패률/지연 지표를 QA 트래커 메타와 연동합니다.
 
 ## Pending Improvements
 
-- [P1] feature-dod-login-copy-neutral: 로그인 정책 카피 중립성 지속성 (seen 1회, last QA-20260227-0015)
 - [P1] metrics-drift-threshold-standard: 지표 드리프트 임계치 표준화 (seen 2회, last QA-20260227-0013)
 - [P1] obs-fp-fn-weekly-report: 오탐/미탐 주간 리포트 자동 생성 (seen 3회, last QA-20260227-0013)
 - [P1] security-attack-regression-pack: 보안 공격 시나리오 회귀팩 구축 (seen 3회, last QA-20260227-0013)
 - [P2] ai-code-gate-input-policy: AI Code Gate: Prompt 패턴 15개 방어 점검 (seen 1회, last QA-20260226-0005)
 - [P2] release-dod-doc-gate: Release DoD: 문서 게이트 90일 갱신·메타데이터·아카이빙 정책 (seen 1회, last QA-20260226-0005)
-- [P2] system-start-metrics-gate: 시스템 시작 지연/실패율 KPI 기준 자동 수집 (seen 1회, last QA-20260227-0010)
+- [P2] system-start-metrics-gate: 시스템 시작 지연/실패율 KPI 기준 자동 수집 (seen 2회, last QA-20260227-0017)
 
 ## Completed Improvements
 
 - ai-friendly-template-todo-marker: Template TODO marker 분리 (TEMPLATE_TODO 적용) (completed 1회, last QA-20260226-0006)
 - auth-error-provider-copy: 인증 에러 라우트 메시지를 제공자-중립 표현으로 전환 (completed 1회, last QA-20260227-0010)
 - feature-dod-lint-zero-error: Feature DoD: lint 0 에러 (completed 1회, last QA-20260226-0007)
+- feature-dod-login-copy-neutral: 로그인 정책 카피 중립성 지속성 (completed 1회, last QA-20260227-0017)
 - feature-dod-login-policy-copy: 로그인 정책 안내 카피가 GitHub/Google/이메일 중립 표현인지 (completed 2회, last QA-20260227-0012)
 - feature-dod-release-response-time-check: Feature/Release DoD: 핵심 응답시간 합격 (completed 1회, last QA-20260226-0005)
 - feature-dod-security-review: Feature DoD: 보안 검토(입력 검증/인증/OWASP) (completed 1회, last QA-20260226-0006)
@@ -80,6 +80,7 @@ Latest run: QA-20260227-0016 (2026-02-26T18:34:32.172Z)
 
 | Run ID | Time (UTC) | Title | Checks | Completed | Pending | Expert Gaps |
 |---|---|---|---:|---:|---:|---:|
+| QA-20260227-0017 | 2026-02-26T19:25:22.388Z | Vercel Playwright QA - 로그인 정책 카피 지속성 및 시스템 시작 가드 재확인 | 2 | 1 | 1 | 2 |
 | QA-20260227-0016 | 2026-02-26T18:34:32.172Z | Vercel Playwright QA - 로그인 정책/시스템 시작 가드 재검증 | 2 | 3 | 0 | 2 |
 | QA-20260227-0015 | 2026-02-26T18:11:05.996Z | Vercel Playwright QA - 랜딩 로그인 모달 카피 배포 정합성 재검증 | 2 | 2 | 2 | 3 |
 | QA-20260227-0014 | 2026-02-26T18:03:30.997Z | Vercel Playwright QA - 로그인 정책/시스템 시작 가드 배포 검증 | 3 | 3 | 1 | 2 |

@@ -1,0 +1,92 @@
+{
+  "runId": "QA-20260227-0017",
+  "recordedAt": "2026-02-26T19:25:22.388Z",
+  "recordedAtKst": "2026-02-27 04:25:22 KST",
+  "runTitle": "Vercel Playwright QA - 로그인 정책 카피 지속성 및 시스템 시작 가드 재확인",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main"
+  },
+  "checks": {
+    "total": 2,
+    "passed": 2,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "비로그인 시스템 시작 가드 및 게스트 PIN 로그인 후 시스템 시작 노출 플로우가 정합성 있게 동작합니다.",
+      "nextAction": "배포 채널별 동일 시나리오를 정기 게이트로 고정합니다."
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "로그인 정책/시스템시작 UX는 확인되었으나 시작 API의 시도/성공/실패 지표는 QA 스코어와 직접 연결되지 않았습니다.",
+      "nextAction": "system-start 시도/성공률/실패률/지연 지표를 QA 트래커 메타와 연동합니다."
+    },
+    {
+      "domainId": "ai-security-reliability",
+      "domainName": "AI Security & Reliability Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "게스트 PIN은 테스트 전용 경로로 동작하고 로그인 우회 경로가 관찰되지 않습니다.",
+      "nextAction": "게스트 차단/지역 제한 이벤트를 보안 로그와 교차 검증합니다."
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Vercel 최신 배포 기준 Playwright MCP 시나리오가 재현되어 배포 레이어 QA가 가능했습니다.",
+      "nextAction": "채널별 재배포 시 동일 스위트 자동 실행을 고정합니다."
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "핵심 시나리오 2건이 role 기반 선택자와 기존 흐름 기반으로 안정적으로 재현되었습니다.",
+      "nextAction": "실패 재현 시 재시작·증분 추적 규칙을 표준화합니다."
+    },
+    {
+      "domainId": "data-metrics-quality",
+      "domainName": "Data Quality & Metrics Analyst",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "정성적 pass/fail은 확보되었으나 실행률, 실패률, 지연시간 KPI를 qa-tracker checks에 직접 반영하지 못했습니다.",
+      "nextAction": "system-start KPI를 qa-tracker 체크 항목으로 상향해 run 결과 메타에 포함합니다."
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "feature-dod-login-copy-neutral",
+      "title": "로그인 정책 카피 중립성 지속성",
+      "priority": "P1",
+      "evidence": "reports/qa/runs/2026/qa-run-QA-20260227-0017.json",
+      "note": "GitHub/Google/이메일 카피를 단일 상수로 고정 후 qa-systemstart-auth 시나리오에서 일치 확인",
+      "owner": "",
+      "status": "completed"
+    }
+  ],
+  "pendingImprovements": [
+    {
+      "id": "system-start-metrics-gate",
+      "title": "시스템 시작 지연/실패율 KPI 기준 자동 수집",
+      "priority": "P2",
+      "evidence": "",
+      "note": "시작 API 시도/성공/실패 카운트 및 latency 지표를 다음 런에서 qa-run 메타로 연결",
+      "owner": "codex",
+      "status": "pending"
+    }
+  ],
+  "notes": [],
+  "links": []
+}

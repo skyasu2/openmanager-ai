@@ -4,6 +4,7 @@
 
 import { useEffect, useState } from 'react';
 import debug from '@/utils/debug';
+import { LOGIN_POLICY_COPY } from '@/lib/auth/login-policy-copy';
 import {
   DEFAULT_REDIRECT_PATH,
   REDIRECT_STORAGE_KEY,
@@ -89,8 +90,8 @@ export function useLoginUrlParams(deps: {
       const countryCode = searchParams.get('country');
       setErrorMessage(
         countryCode
-          ? `현재 지역(${countryCode})에서는 게스트 로그인이 제한됩니다. GitHub, Google 또는 이메일 로그인으로 이용해주세요.`
-          : '현재 지역에서는 게스트 로그인이 제한됩니다. GitHub, Google 또는 이메일 로그인으로 이용해주세요.'
+          ? `현재 지역(${countryCode})에서는 ${LOGIN_POLICY_COPY.guestRegionBlockedPrompt}`
+          : `현재 지역에서는 ${LOGIN_POLICY_COPY.guestRegionBlockedPrompt}`
       );
     } else if (error === 'guest_pin_invalid') {
       setErrorMessage(

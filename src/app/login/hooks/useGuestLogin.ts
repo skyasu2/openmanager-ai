@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react';
 import { isGuestFullAccessEnabled } from '@/config/guestMode';
 import { authStateManager } from '@/lib/auth/auth-state-manager';
 import type { AuthUser } from '@/lib/auth/auth-state-manager-types';
+import { LOGIN_POLICY_COPY } from '@/lib/auth/login-policy-copy';
 import {
   AUTH_SESSION_ID_KEY,
   AUTH_TYPE_KEY,
@@ -296,7 +297,7 @@ export function useGuestLogin(deps: {
           if (payload.error === 'guest_region_blocked') {
             deps.setErrorMessage(
               payload.message ||
-                '현재 지역에서는 게스트 로그인이 제한됩니다. GitHub, Google 또는 이메일 로그인으로 이용해주세요.'
+                LOGIN_POLICY_COPY.guestRegionBlockedPrompt
             );
             return;
           }
