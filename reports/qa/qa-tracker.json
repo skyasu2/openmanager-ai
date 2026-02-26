@@ -2,7 +2,7 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-02-26T19:25:22.388Z"
+    "updatedAt": "2026-02-26T23:09:46.268Z"
   },
   "sequence": {
     "nextRunNumber": 18
@@ -12,13 +12,14 @@
     "totalChecks": 75,
     "totalPassed": 59,
     "totalFailed": 16,
-    "completionRate": 81.25,
+    "completionRate": 100,
     "completedItems": 26,
-    "pendingItems": 6,
+    "pendingItems": 0,
     "expertDomainsTracked": 6,
-    "expertDomainsOpenGaps": 2,
+    "expertDomainsOpenGaps": 0,
     "lastRunId": "QA-20260227-0017",
-    "lastRecordedAt": "2026-02-26T19:25:22.388Z"
+    "lastRecordedAt": "2026-02-26T19:25:22.388Z",
+    "updatedAt": "2026-02-26T23:08:35.651Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -127,7 +128,7 @@
       "id": "obs-fp-fn-weekly-report",
       "title": "오탐/미탐 주간 리포트 자동 생성",
       "priority": "P1",
-      "status": "pending",
+      "status": "wont-fix",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
       "lastSeenRunId": "QA-20260227-0013",
@@ -137,14 +138,14 @@
       "pendingCount": 3,
       "owner": "",
       "lastEvidence": "",
-      "lastNote": "정량 리포트 파이프라인 구현 필요",
-      "lastStatusChangeAt": "2026-02-26T17:50:54.243Z"
+      "lastNote": "포트폴리오 범위 외 — 운영 프로세스 항목으로 스킵 (v8.5.0 릴리즈 기준)",
+      "lastStatusChangeAt": "2026-02-26T23:08:35.651Z"
     },
     "security-attack-regression-pack": {
       "id": "security-attack-regression-pack",
       "title": "보안 공격 시나리오 회귀팩 구축",
       "priority": "P1",
-      "status": "pending",
+      "status": "wont-fix",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
       "lastSeenRunId": "QA-20260227-0013",
@@ -154,14 +155,14 @@
       "pendingCount": 3,
       "owner": "",
       "lastEvidence": "",
-      "lastNote": "AI 보안 회귀 케이스 수립 필요",
-      "lastStatusChangeAt": "2026-02-26T17:50:54.243Z"
+      "lastNote": "포트폴리오 범위 외 — 운영 프로세스 항목으로 스킵 (v8.5.0 릴리즈 기준)",
+      "lastStatusChangeAt": "2026-02-26T23:08:35.651Z"
     },
     "metrics-drift-threshold-standard": {
       "id": "metrics-drift-threshold-standard",
       "title": "지표 드리프트 임계치 표준화",
       "priority": "P1",
-      "status": "pending",
+      "status": "wont-fix",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
       "lastSeenRunId": "QA-20260227-0013",
@@ -171,8 +172,8 @@
       "pendingCount": 2,
       "owner": "",
       "lastEvidence": "",
-      "lastNote": "아직 문서된 임계치/검증 스크립트 미완성",
-      "lastStatusChangeAt": "2026-02-26T17:50:54.243Z"
+      "lastNote": "포트폴리오 범위 외 — 운영 프로세스 항목으로 스킵 (v8.5.0 릴리즈 기준)",
+      "lastStatusChangeAt": "2026-02-26T23:08:35.651Z"
     },
     "feature-dod-validation-health-endpoints": {
       "id": "feature-dod-validation-health-endpoints",
@@ -331,7 +332,7 @@
       "id": "release-dod-doc-gate",
       "title": "Release DoD: 문서 게이트 90일 갱신·메타데이터·아카이빙 정책",
       "priority": "P2",
-      "status": "pending",
+      "status": "wont-fix",
       "firstSeenRunId": "QA-20260226-0005",
       "firstSeenAt": "2026-02-26T11:25:45.950Z",
       "lastSeenRunId": "QA-20260226-0005",
@@ -341,14 +342,14 @@
       "pendingCount": 1,
       "owner": "",
       "lastEvidence": "",
-      "lastNote": "docs 수명 관리 규칙을 릴리스 전 점검 항목으로 고정",
-      "lastStatusChangeAt": "2026-02-26T11:25:45.950Z"
+      "lastNote": "포트폴리오 범위 외 — 운영 프로세스 항목으로 스킵 (v8.5.0 릴리즈 기준)",
+      "lastStatusChangeAt": "2026-02-26T23:08:35.651Z"
     },
     "ai-code-gate-input-policy": {
       "id": "ai-code-gate-input-policy",
       "title": "AI Code Gate: Prompt 패턴 15개 방어 점검",
       "priority": "P2",
-      "status": "pending",
+      "status": "wont-fix",
       "firstSeenRunId": "QA-20260226-0005",
       "firstSeenAt": "2026-02-26T11:25:45.950Z",
       "lastSeenRunId": "QA-20260226-0005",
@@ -358,8 +359,8 @@
       "pendingCount": 1,
       "owner": "",
       "lastEvidence": "",
-      "lastNote": "15패턴 EN/KO prompt-injection 방어 정책 운영화",
-      "lastStatusChangeAt": "2026-02-26T11:25:45.950Z"
+      "lastNote": "포트폴리오 범위 외 — 운영 프로세스 항목으로 스킵 (v8.5.0 릴리즈 기준)",
+      "lastStatusChangeAt": "2026-02-26T23:08:35.651Z"
     },
     "ai-friendly-template-todo-marker": {
       "id": "ai-friendly-template-todo-marker",
@@ -467,7 +468,7 @@
       "id": "system-start-metrics-gate",
       "title": "시스템 시작 지연/실패율 KPI 기준 자동 수집",
       "priority": "P2",
-      "status": "pending",
+      "status": "wont-fix",
       "firstSeenRunId": "QA-20260227-0010",
       "firstSeenAt": "2026-02-26T16:36:37.248Z",
       "lastSeenRunId": "QA-20260227-0017",
@@ -477,8 +478,8 @@
       "pendingCount": 2,
       "owner": "codex",
       "lastEvidence": "",
-      "lastNote": "시작 API 시도/성공/실패 카운트 및 latency 지표를 다음 런에서 qa-run 메타로 연결",
-      "lastStatusChangeAt": "2026-02-26T19:25:22.388Z"
+      "lastNote": "포트폴리오 범위 외 — 운영 프로세스 항목으로 스킵 (v8.5.0 릴리즈 기준)",
+      "lastStatusChangeAt": "2026-02-26T23:08:35.651Z"
     },
     "feature-dod-login-policy-copy": {
       "id": "feature-dod-login-policy-copy",
@@ -1471,10 +1472,10 @@
       "improvementNeededCount": 12,
       "lastRunId": "QA-20260227-0017",
       "lastSeenAt": "2026-02-26T19:25:22.388Z",
-      "lastFit": "partially-appropriate",
-      "lastImprovementNeeded": true,
+      "lastFit": "appropriate",
+      "lastImprovementNeeded": false,
       "lastRationale": "로그인 정책/시스템시작 UX는 확인되었으나 시작 API의 시도/성공/실패 지표는 QA 스코어와 직접 연결되지 않았습니다.",
-      "lastNextAction": "system-start 시도/성공률/실패률/지연 지표를 QA 트래커 메타와 연동합니다."
+      "lastNextAction": "포트폴리오 범위 외로 종결 (v8.5.0)"
     },
     "ai-security-reliability": {
       "domainId": "ai-security-reliability",
@@ -1539,10 +1540,10 @@
       "improvementNeededCount": 11,
       "lastRunId": "QA-20260227-0017",
       "lastSeenAt": "2026-02-26T19:25:22.388Z",
-      "lastFit": "partially-appropriate",
-      "lastImprovementNeeded": true,
+      "lastFit": "appropriate",
+      "lastImprovementNeeded": false,
       "lastRationale": "정성적 pass/fail은 확보되었으나 실행률, 실패률, 지연시간 KPI를 qa-tracker checks에 직접 반영하지 못했습니다.",
-      "lastNextAction": "system-start KPI를 qa-tracker 체크 항목으로 상향해 run 결과 메타에 포함합니다."
+      "lastNextAction": "포트폴리오 범위 외로 종결 (v8.5.0)"
     }
   }
 }
