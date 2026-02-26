@@ -61,8 +61,8 @@ export function ServerResultCard({ server }: ServerResultCardProps) {
             !server.trendPrediction &&
             !server.patternAnalysis && (
               <p className="text-center text-xs text-gray-400">
-                상세 분석 데이터가 없습니다. AI 엔진이 일시적으로 폴백 상태일
-                수 있습니다.
+                상세 분석 데이터가 없습니다. AI 엔진이 일시적으로 폴백 상태일 수
+                있습니다.
               </p>
             )}
         </div>

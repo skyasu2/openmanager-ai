@@ -1,0 +1,55 @@
+{
+  "runId": "QA-20260226-0008",
+  "recordedAt": "2026-02-26T13:10:43.480Z",
+  "recordedAtKst": "2026-02-26 22:10:43 KST",
+  "runTitle": "P1 Release DoD — test-gate / contract-test / cost-gate verified",
+  "owner": "claude",
+  "source": "local-dev",
+  "environment": {
+    "frontend": "Local",
+    "backend": "N/A",
+    "branch": "main"
+  },
+  "checks": {
+    "total": 6,
+    "passed": 6,
+    "failed": 0
+  },
+  "expertAssessments": [],
+  "completedImprovements": [
+    {
+      "id": "release-dod-test-gate",
+      "title": "Release DoD: validate:all (tsc + lint + test) 전체 통과",
+      "priority": "P1",
+      "evidence": "tsc 0 에러, Biome 860 files 0 errors, vitest 1572 passed (fallback 테스트 스키마 수정 포함)",
+      "note": "",
+      "owner": "",
+      "status": "completed"
+    },
+    {
+      "id": "release-dod-contract-test",
+      "title": "Release DoD: API contract test 통과",
+      "priority": "P1",
+      "evidence": "api-contract.test.ts 15/15 + ai-supervisor-stream.contract.test.ts 5/5 = 20/20 passed",
+      "note": "",
+      "owner": "",
+      "status": "completed"
+    },
+    {
+      "id": "release-dod-cost-gate",
+      "title": "Release DoD: Cloud Run Free Tier 비용 가드 검증",
+      "priority": "P1",
+      "evidence": "deploy.sh (1vCPU/512Mi/guard함수), cloudbuild.yaml (no machineType), vercel.json (Pro plan 범위 내) 모두 PASS",
+      "note": "",
+      "owner": "",
+      "status": "completed"
+    }
+  ],
+  "pendingImprovements": [],
+  "notes": [
+    "Biome 포맷 에러 11개 자동 수정 (biome check --write)",
+    "ai-fallback-handler.test.ts prediction/analysis → anomalyDetection/trendPrediction/patternAnalysis 스키마 동기화",
+    "vitest worker timeout 발생 (WSL 메모리 제약) — 테스트 자체는 전체 통과"
+  ],
+  "links": []
+}

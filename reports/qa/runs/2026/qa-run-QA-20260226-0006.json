@@ -1,0 +1,109 @@
+{
+  "runId": "QA-20260226-0006",
+  "recordedAt": "2026-02-26T12:00:38.039Z",
+  "recordedAtKst": "2026-02-26 21:00:38 KST",
+  "runTitle": "Technical Debt Closeout - Admin Auth Role Validation",
+  "owner": "codex",
+  "source": "qa-ops",
+  "environment": {
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main"
+  },
+  "checks": {
+    "total": 4,
+    "passed": 4,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "관리자 인증 흐름의 실제 경계 검증이 반영되어 품질 판정의 실효성이 개선됨",
+      "nextAction": "AI 출력/실패 케이스 경계 기준을 DoD 체크리스트에 추가"
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "오탐/미탐 정량 리포트 자동화는 여전히 미완료",
+      "nextAction": "precision/recall 주간 리포트 파이프라인을 문서화한 뒤 자동화"
+    },
+    {
+      "domainId": "ai-security-reliability",
+      "domainName": "AI Security & Reliability Architect",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "역할 검증은 완료되었으나 공격 회귀셋은 지속 구축 필요",
+      "nextAction": "OWASP LLM Top 10 기반 공격 회귀 10건+ 운영 테스트화"
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "배포·롤백·헬스체크는 기존 체계에서 검증됨",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "핵심 E2E는 정착되었으나 템플릿 기반 단위/통합 커버리지는 보강 필요",
+      "nextAction": "단위/통합 테스트 최소 1건씩 DoD 게이트에 반영"
+    },
+    {
+      "domainId": "data-metrics-quality",
+      "domainName": "Data Quality & Metrics Analyst",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "문서 메타데이터 갱신 주기와 지표 임계값 자동 경고는 미적용",
+      "nextAction": "문서/지표 운영 규칙을 주기 자동화"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "feature-dod-security-review",
+      "title": "Feature DoD: 보안 검토(입력 검증/인증/OWASP)",
+      "priority": "P1",
+      "evidence": "src/lib/auth/api-auth.ts: withAdminAuth admin role 인증 로직 구현",
+      "note": "",
+      "owner": "codex",
+      "status": "completed"
+    },
+    {
+      "id": "ai-friendly-template-todo-marker",
+      "title": "Template TODO marker 분리 (TEMPLATE_TODO 적용)",
+      "priority": "P1",
+      "evidence": "src/test/ai-friendly-template.ts",
+      "note": "",
+      "owner": "codex",
+      "status": "completed"
+    },
+    {
+      "id": "planning-backlog-clear",
+      "title": "planning TODO 잔여 항목 정리",
+      "priority": "P1",
+      "evidence": "reports/planning/TODO.md",
+      "note": "",
+      "owner": "codex",
+      "status": "completed"
+    }
+  ],
+  "pendingImprovements": [],
+  "notes": [
+    "관리자 API 라우트에서 Supabase 인증 사용자 role 기반 권한 검증을 적용",
+    "TEMPLATE_TODO로 템플릿 TODO와 실제 코드 TODO를 분리",
+    "백로그 TODO.md의 flushSync 정리 항목 삭제 반영"
+  ],
+  "links": [
+    {
+      "label": "QA Ops",
+      "url": "reports/qa"
+    }
+  ]
+}

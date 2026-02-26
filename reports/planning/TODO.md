@@ -183,7 +183,6 @@
 | Task | Description | Status |
 |------|-------------|--------|
 | Semantic Caching | 해시 기반 → 임베딩 기반 유사 쿼리 캐시 매칭 | P3 |
-| flushSync 검토 | `useQueryExecution.ts:195` 성능 영향 재평가 | P3 |
 
 ## Completed Archive
 

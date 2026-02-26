@@ -345,6 +345,8 @@ function DashboardPageContent({ initialServers }: DashboardClientProps) {
 
   return (
     <div
+      role="main"
+      aria-label="대시보드"
       data-testid="dashboard-container"
       data-test-mode={testModeDetected.toString()}
       data-cookies-present={String(

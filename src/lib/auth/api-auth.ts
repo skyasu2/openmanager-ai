@@ -258,10 +258,73 @@ export function withAuth<T extends unknown[] = []>(
   };
 }
 
-// TODO: withAdminAuth currently delegates to withAuth without actual admin role verification.
-// When real admin functionality is needed, add role check (e.g., check user metadata or DB role).
-export function withAdminAuth(
-  handler: (request: NextRequest) => Promise<NextResponse>
+export function withAdminAuth<T extends unknown[] = []>(
+  handler: (
+    request: NextRequest,
+    ...args: T
+  ) => Promise<NextResponse | Response>
 ) {
-  return withAuth(handler);
+  return async (request: NextRequest, ...args: T) => {
+    // 1. Check base API authentication
+    const authError = await checkAPIAuth(request);
+    if (authError) return authError;
+
+    // 2. Additional Admin authorization check
+    const context = getAPIAuthContext(request);
+    if (!context) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Allow development, test environments, and server-to-server API keys
+    if (
+      context.authType === 'development' ||
+      context.authType === 'test' ||
+      context.authType === 'test-secret' ||
+      context.authType === 'api-key'
+    ) {
+      return handler(request, ...args);
+    }
+
+    // For Supabase users, verify the admin role in metadata
+    if (context.authType === 'supabase' && context.userId) {
+      try {
+        const supabase = await createClient();
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+
+        // Check if user has 'admin' role in user_metadata or app_metadata
+        const isAdmin =
+          user?.user_metadata?.role === 'admin' ||
+          user?.app_metadata?.role === 'admin';
+
+        if (isAdmin) {
+          return handler(request, ...args);
+        } else {
+          logger.warn(
+            `[API Auth] User ${context.userId} attempted to access admin route without admin role.`
+          );
+          return NextResponse.json(
+            { error: 'Forbidden - Admin access required' },
+            { status: 403 }
+          );
+        }
+      } catch (error) {
+        logger.error('[API Auth] Error verifying admin role:', error);
+        return NextResponse.json(
+          { error: 'Internal Server Error' },
+          { status: 500 }
+        );
+      }
+    }
+
+    // Default deny for guests or unknown auth types
+    logger.warn(
+      `[API Auth] Blocked admin access for authType: ${context.authType}`
+    );
+    return NextResponse.json(
+      { error: 'Forbidden - Admin access required' },
+      { status: 403 }
+    );
+  };
 }

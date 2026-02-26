@@ -1,0 +1,117 @@
+{
+  "runId": "QA-20260226-0004",
+  "recordedAt": "2026-02-26T11:24:21.055Z",
+  "recordedAtKst": "2026-02-26 20:24:21 KST",
+  "runTitle": "Domain Fit Review vs Industry Best Practices",
+  "owner": "codex",
+  "source": "web-research-summary",
+  "environment": {
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main"
+  },
+  "checks": {
+    "total": 8,
+    "passed": 5,
+    "failed": 3
+  },
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "AI 응답 신뢰성, 편향/환각, 리그레션 테스트 축이 프로젝트 QA 정책에 적합",
+      "nextAction": "모델 출력 근거성(logit/온도 고정 범위) 가이드 추가"
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "SLO/SLI, 알림 노이즈 관리, 오탐·미탐 정량화 항목이 부족",
+      "nextAction": "오탐/미탐 precision-recall 주간 리포트 및 경보 임계 자동화 구현"
+    },
+    {
+      "domainId": "ai-security-reliability",
+      "domainName": "AI Security & Reliability Architect",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "Prompt injection/입력 위협 회귀셋이 미흡하고, 테스트 자동화가 제한적",
+      "nextAction": "공격 시나리오 10개 포함한 security regression pack 운영"
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Cloud Run 재배포 흐름, 헬스체크, 롤백 정책이 정착되어 있음",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "현재 E2E Playwright 중심이라 단위/통합/계약 테스트 비중이 낮음",
+      "nextAction": "단위/통합 스모크 3종 추가(로그인 토큰·이메일 인증·서버 상태 API)"
+    },
+    {
+      "domainId": "data-metrics-quality",
+      "domainName": "Data Quality & Metrics Analyst",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "지표 정합성 점검과 드리프트 임계 기준의 운영화가 미완성",
+      "nextAction": "정상범위/드리프트 기준표를 KPI와 결합한 자동 경고로 운영"
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [
+    {
+      "id": "landing-copy-alignment",
+      "title": "랜딩 로그인 정책 카피 정합성 추가 점검",
+      "priority": "P1",
+      "evidence": "",
+      "note": "GitHub 운영제어 문구 및 게스트 테스트 안내 문구를 제품 정책 문서와 교차 검증",
+      "owner": ""
+    },
+    {
+      "id": "obs-fp-fn-weekly-report",
+      "title": "오탐/미탐 주간 리포트 자동 생성",
+      "priority": "P1",
+      "evidence": "",
+      "note": "알림 precision/recall을 오탐률, 미탐률로 분리 추적",
+      "owner": ""
+    },
+    {
+      "id": "security-attack-regression-pack",
+      "title": "보안 공격 시나리오 회귀팩 구축",
+      "priority": "P1",
+      "evidence": "",
+      "note": "Prompt injection, jailbreak, 정보추출 변형 테스트 포함",
+      "owner": ""
+    }
+  ],
+  "notes": [
+    "베스트 프렉티스 비교 근거: NIST AI RMF, Google SRE SLO, OWASP Top 10 for LLM, OpenTelemetry Observability Primer",
+    "Playwright MCP는 현재 운영 테스트의 핵심 도구로 유지"
+  ],
+  "links": [
+    {
+      "label": "NIST AI RMF",
+      "url": "https://www.nist.gov/itl/ai-risk-management-framework"
+    },
+    {
+      "label": "Google SRE SLO",
+      "url": "https://sre.google/sre-book/service-level-objectives/"
+    },
+    {
+      "label": "OWASP LLM Top 10",
+      "url": "https://owasp.org/www-project-top-10-for-large-language-model-applications/"
+    },
+    {
+      "label": "OpenTelemetry",
+      "url": "https://opentelemetry.io/docs/concepts/observability-primer/"
+    }
+  ]
+}

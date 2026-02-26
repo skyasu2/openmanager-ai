@@ -179,7 +179,7 @@ export const EnhancedAIChat = memo(function EnhancedAIChat({
     if (!hasHistory) {
       dismissRestoreBanner();
     }
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [dismissRestoreBanner]);
 
   // If user is actively generating, skip restore prompt and continue with live flow.
   useEffect(() => {

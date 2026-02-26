@@ -10,7 +10,14 @@
  */
 
 import type { LucideIcon } from 'lucide-react';
-import { AlertTriangle, Bot, Eye, FileText, Server, TrendingUp } from 'lucide-react';
+import {
+  AlertTriangle,
+  Bot,
+  Eye,
+  FileText,
+  Server,
+  TrendingUp,
+} from 'lucide-react';
 import { memo } from 'react';
 
 /**

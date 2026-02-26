@@ -1,0 +1,170 @@
+{
+  "runTitle": "Vercel Playwright QA - Login/Modal/Copy Alignment",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main"
+  },
+  "checks": {
+    "total": 12,
+    "passed": 10,
+    "failed": 2
+  },
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "AI 응답 일관성/리그레션 시나리오가 QA 범위에 포함됨",
+      "nextAction": ""
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "오탐/미탐 정량지표의 주기적 리포트가 부족함",
+      "nextAction": "알람 정밀도(precision/recall) 주간 리포트 추가"
+    },
+    {
+      "domainId": "ai-security-reliability",
+      "domainName": "AI Security & Reliability Architect",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "prompt injection 공격 시나리오 회귀셋 보강 필요",
+      "nextAction": "보안 공격 시나리오 10개를 정기 regression에 편입"
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "배포/롤백/헬스체크 절차가 문서화되어 있고 재현 가능",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Playwright MCP 기반 E2E 시나리오와 자동화 루틴 보유",
+      "nextAction": ""
+    },
+    {
+      "domainId": "data-metrics-quality",
+      "domainName": "Data Quality & Metrics Analyst",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "정상범위 드리프트 판정 기준 자동화가 일부 미완료",
+      "nextAction": "시계열 드리프트 임계값과 경보 정책 명문화"
+    }
+  ],
+  "dodChecks": [
+    {
+      "group": "Feature DoD",
+      "items": [
+        {
+          "id": "feature-dod-tsc-zero-error",
+          "title": "tsc --noEmit 0 에러",
+          "status": "pending",
+          "owner": "codex",
+          "evidencePath": "reports/qa/runs/..."
+        },
+        {
+          "id": "feature-dod-lint-zero-error",
+          "title": "lint 0 에러",
+          "status": "pending",
+          "owner": "codex",
+          "evidencePath": "reports/qa/runs/..."
+        },
+        {
+          "id": "feature-dod-unit-tests",
+          "title": "신규 로직 단위 테스트 추가",
+          "status": "pending",
+          "owner": "codex",
+          "evidencePath": "reports/qa/runs/..."
+        }
+      ]
+    },
+    {
+      "group": "Release DoD",
+      "items": [
+        {
+          "id": "release-dod-test-gate",
+          "title": "validate:all, test:gate, test:e2e:critical",
+          "status": "pending",
+          "owner": "codex",
+          "evidencePath": "reports/qa/runs/..."
+        },
+        {
+          "id": "release-dod-contract-test",
+          "title": "AI 변경 시 test:contract 통과",
+          "status": "pending",
+          "owner": "codex",
+          "evidencePath": "reports/qa/runs/..."
+        }
+      ]
+    },
+    {
+      "group": "AI/보안/메트릭",
+      "items": [
+        {
+          "id": "observability-monitoring",
+          "title": "precision/recall 오탐·미탐 정량 리포트",
+          "status": "pending",
+          "owner": "codex",
+          "evidencePath": "reports/qa/runs/..."
+        },
+        {
+          "id": "security-attack-regression-pack",
+          "title": "Prompt/보안 회귀 시나리오 10+ 편입",
+          "status": "pending",
+          "owner": "codex",
+          "evidencePath": "reports/qa/runs/..."
+        },
+        {
+          "id": "metrics-drift-threshold-standard",
+          "title": "정상범위/드리프트 임계치 표준화",
+          "status": "pending",
+          "owner": "codex",
+          "evidencePath": "reports/qa/runs/..."
+        }
+      ]
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "modal-backdrop-close",
+      "title": "모달 백드롭 클릭 닫기 안정화",
+      "priority": "P0",
+      "evidence": "FeatureCardModal 외부 클릭 처리 반영"
+    }
+  ],
+  "pendingImprovements": [
+    {
+      "id": "landing-copy-alignment",
+      "title": "랜딩 로그인 정책 카피 정합성 추가 점검",
+      "priority": "P1",
+      "note": "GitHub 운영제어 문구와 게스트 테스트 문구 유지 확인 필요"
+    },
+    {
+      "id": "home-semantic-nav",
+      "title": "홈 페이지 nav 랜드마크 보강",
+      "priority": "P1",
+      "note": "a11y 스캔 기준 보강"
+    }
+  ],
+  "notes": [
+    "게스트 로그인은 테스트 용도 유지",
+    "GitHub/Google/Email 인증 흐름 정상"
+  ],
+  "links": [
+    {
+      "label": "Vercel URL",
+      "url": "https://openmanager-ai.vercel.app"
+    }
+  ]
+}

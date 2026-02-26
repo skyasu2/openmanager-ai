@@ -1,0 +1,54 @@
+{
+  "runId": "QA-20260226-0009",
+  "recordedAt": "2026-02-26T14:07:55.933Z",
+  "recordedAtKst": "2026-02-26 23:07:55 KST",
+  "runTitle": "P1 Closeout — unit-tests / copy-alignment / nav-landmarks",
+  "owner": "claude",
+  "source": "local-dev",
+  "environment": {
+    "frontend": "Local",
+    "backend": "N/A",
+    "branch": "main"
+  },
+  "checks": {
+    "total": 5,
+    "passed": 5,
+    "failed": 0
+  },
+  "expertAssessments": [],
+  "completedImprovements": [
+    {
+      "id": "feature-dod-unit-tests",
+      "title": "Feature DoD: 신규 로직 단위 테스트",
+      "priority": "P1",
+      "evidence": "request-utils.test.ts 8/8 passed (resolveSessionId 3 + extractAndValidateQuery 5)",
+      "note": "",
+      "owner": "",
+      "status": "completed"
+    },
+    {
+      "id": "landing-copy-alignment",
+      "title": "랜딩 로그인 정책 카피 정합성 추가 점검",
+      "priority": "P1",
+      "evidence": "login-policy.ts SSOT 생성 → LoginPrompt, GuestRestrictionModal, DashboardSection 3개 컴포넌트 통일",
+      "note": "",
+      "owner": "",
+      "status": "completed"
+    },
+    {
+      "id": "home-semantic-nav",
+      "title": "홈 페이지 nav 랜드마크 보강",
+      "priority": "P1",
+      "evidence": "page.tsx header/main/footer aria-label 추가, div→nav 변환, DashboardHeader aria-label, DashboardClient role=main",
+      "note": "",
+      "owner": "",
+      "status": "completed"
+    }
+  ],
+  "pendingImprovements": [],
+  "notes": [
+    "login-policy.ts: github.title/description/cta/buttonLabel/dashboardAccess + guest.notice + benefits[] 상수화",
+    "a11y: WCAG 2.1 Level A 1.3.1 (Info and Relationships) 준수 개선"
+  ],
+  "links": []
+}

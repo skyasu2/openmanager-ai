@@ -55,8 +55,9 @@ describe('ai-fallback-handler', () => {
 
         expect(response.success).toBe(true);
         expect(response.source).toBe('fallback');
-        expect(data.prediction).toBeNull();
-        expect(data.analysis).toBeNull();
+        expect(data.anomalyDetection).toBeNull();
+        expect(data.trendPrediction).toBeNull();
+        expect(data.patternAnalysis).toBeNull();
         expect(data.message).toBeDefined();
       });
     });

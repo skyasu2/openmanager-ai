@@ -65,7 +65,11 @@ export default function LoginClient() {
 
   const handleGuestModalSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (isLoading || guestLockRemainingSeconds > 0 || guestPinInput.length < 4) {
+    if (
+      isLoading ||
+      guestLockRemainingSeconds > 0 ||
+      guestPinInput.length < 4
+    ) {
       return;
     }
     void handleGuestLogin();
@@ -269,7 +273,10 @@ export default function LoginClient() {
                   </div>
                 )}
 
-                <Dialog open={isGuestModalOpen} onOpenChange={setIsGuestModalOpen}>
+                <Dialog
+                  open={isGuestModalOpen}
+                  onOpenChange={setIsGuestModalOpen}
+                >
                   <DialogContent className="border-cyan-500/30 bg-slate-900 sm:max-w-md">
                     <DialogHeader className="text-center">
                       <DialogTitle className="text-xl font-semibold text-white">
@@ -304,7 +311,10 @@ export default function LoginClient() {
                           maxLength={4}
                           value={guestPinInput}
                           onChange={(event) => {
-                            const nextValue = event.target.value.replace(/\D/g, '');
+                            const nextValue = event.target.value.replace(
+                              /\D/g,
+                              ''
+                            );
                             setGuestPinInput(nextValue.slice(0, 4));
                           }}
                           disabled={isLoading || guestLockRemainingSeconds > 0}

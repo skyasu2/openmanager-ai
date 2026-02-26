@@ -1,0 +1,72 @@
+{
+  "runId": "QA-20260226-0001",
+  "recordedAt": "2026-02-26T10:50:26.077Z",
+  "recordedAtKst": "2026-02-26 19:50:26 KST",
+  "runTitle": "Portfolio QA Tracking Setup + P0/P1 Fix Verification",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main"
+  },
+  "checks": {
+    "total": 5,
+    "passed": 4,
+    "failed": 1
+  },
+  "completedImprovements": [
+    {
+      "id": "modal-backdrop-close",
+      "title": "Feature card modal 외부 클릭 닫기 안정화",
+      "priority": "P0",
+      "evidence": "FeatureCardModal backdrop 클릭 처리 교체",
+      "note": "",
+      "owner": ""
+    },
+    {
+      "id": "guest-login-visibility-toggle",
+      "title": "게스트 로그인 버튼 노출 옵션화",
+      "priority": "P1",
+      "evidence": "NEXT_PUBLIC_SHOW_GUEST_LOGIN 토글 추가",
+      "note": "",
+      "owner": ""
+    },
+    {
+      "id": "landing-copy-alignment",
+      "title": "랜딩/로그인 정책 카피 정합성 개선",
+      "priority": "P1",
+      "evidence": "운영 제어 GitHub 기준 + 게스트 테스트 용도 문구 통일",
+      "note": "",
+      "owner": ""
+    },
+    {
+      "id": "login-pin-form-structure",
+      "title": "게스트 PIN 입력 폼 구조 정리",
+      "priority": "P1",
+      "evidence": "Dialog 내부 PIN 입력을 form submit 구조로 변경",
+      "note": "",
+      "owner": ""
+    }
+  ],
+  "pendingImprovements": [
+    {
+      "id": "home-semantic-nav",
+      "title": "홈 페이지 nav 랜드마크 보강",
+      "priority": "P1",
+      "evidence": "",
+      "note": "main 반영 완료, nav 랜드마크는 추가 보강 필요",
+      "owner": ""
+    }
+  ],
+  "notes": [
+    "로그인 방식은 GitHub/Google/Email 유지",
+    "게스트 로그인 방식은 유지하고 옵션으로 숨김 가능"
+  ],
+  "links": [
+    {
+      "label": "Vercel",
+      "url": "https://openmanager-ai.vercel.app"
+    }
+  ]
+}

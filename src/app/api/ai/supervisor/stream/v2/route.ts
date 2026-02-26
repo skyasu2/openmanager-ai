@@ -262,9 +262,7 @@ export const POST = withRateLimit(
       }
 
       // 3. Extract and sanitize query
-      const queryResult = extractAndValidateQuery(
-        messages as HybridMessage[]
-      );
+      const queryResult = extractAndValidateQuery(messages as HybridMessage[]);
       if (!queryResult.ok) {
         if (queryResult.reason === 'blocked') {
           logger.warn(
@@ -272,7 +270,7 @@ export const POST = withRateLimit(
           );
           if (queryResult.warning) {
             logger.warn(
-                `🛡️ [SupervisorStreamV2] Security warning: ${queryResult.warning}`
+              `🛡️ [SupervisorStreamV2] Security warning: ${queryResult.warning}`
             );
           }
         }

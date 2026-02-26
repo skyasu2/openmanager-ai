@@ -1,0 +1,174 @@
+{
+  "runId": "QA-20260226-0005",
+  "recordedAt": "2026-02-26T11:25:45.950Z",
+  "recordedAtKst": "2026-02-26 20:25:45 KST",
+  "runTitle": "DoD-Gap Analysis for Final QA Closeout",
+  "owner": "codex",
+  "source": "dod-doc-analysis",
+  "environment": {
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main"
+  },
+  "checks": {
+    "total": 10,
+    "passed": 4,
+    "failed": 6
+  },
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "AI 품질/응답 품질 검증 근거(보고서 + QA 누적)이 존재함",
+      "nextAction": "DoD 기준으로 AI 출력 근거 신뢰도 임계치(지연/재현율/정합성)를 측정 항목으로 추가"
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "서비스 가시성/헬스체크는 동작하나 SLO/알림 정밀도와 오탐·미탐 지표가 DoD 수준으로 정량화되지 않음",
+      "nextAction": "precision/recall 기반 오탐·미탐 자동 리포트 및 임계치 알림표준 확정"
+    },
+    {
+      "domainId": "ai-security-reliability",
+      "domainName": "AI Security & Reliability Architect",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "AI 보안 DoD(패턴 15개 포함 Prompt Injection, 공격 회귀)은 운영 검증체계가 미흡",
+      "nextAction": "OWASP LLM Top 10 기반 공격 회귀셋 10건+을 수동/자동 테스트에 편성"
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "헬스체크, 배포·롤백·재현성 체크는 기존 생산 QA에 포함되어 있음",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "Playwright 기반 E2E는 정착되었으나, DoD 요구 단위/통합/계약 테스트 자동화 커버리지가 부족",
+      "nextAction": "단위/통합/계약 테스트 최소 1종씩을 Release DoD 게이트에 포함"
+    },
+    {
+      "domainId": "data-metrics-quality",
+      "domainName": "Data Quality & Metrics Analyst",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "DoD의 문서/운영 지표 표준(메타데이터, 갱신 주기, KPI) 미적용 항목이 존재",
+      "nextAction": "문서 메타데이터/지표 임계치(정상범위/드리프트)를 운영 규칙으로 고정"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "feature-dod-validation-health-endpoints",
+      "title": "Feature/Release DoD: 헬스체크 엔드포인트 통과 검증",
+      "priority": "P1",
+      "evidence": "production-qa-2026-02-25 Round 1/2: Cloud Run /health, Vercel /api/health 모두 PASS",
+      "note": "DoD Release 항목 중 Health check 게이트 반영",
+      "owner": ""
+    },
+    {
+      "id": "feature-dod-release-response-time-check",
+      "title": "Feature/Release DoD: 핵심 응답시간 합격",
+      "priority": "P1",
+      "evidence": "production-qa-2026-02-25: AI Chat/Analyst/Reporter 응답시간 대상 < Target 통과",
+      "note": "응답시간 KPI는 양 라운드 모두 우수",
+      "owner": ""
+    }
+  ],
+  "pendingImprovements": [
+    {
+      "id": "feature-dod-tsc-zero-error",
+      "title": "Feature DoD: tsc noEmit 0 에러",
+      "priority": "P0",
+      "evidence": "",
+      "note": "최종 릴리스 전 최신 브랜치에서 정기 검증 필요",
+      "owner": ""
+    },
+    {
+      "id": "feature-dod-lint-zero-error",
+      "title": "Feature DoD: lint 0 에러",
+      "priority": "P0",
+      "evidence": "",
+      "note": "릴리스 게이트 자동화를 통해 매칭 필요",
+      "owner": ""
+    },
+    {
+      "id": "feature-dod-unit-tests",
+      "title": "Feature DoD: 신규 로직 단위 테스트",
+      "priority": "P1",
+      "evidence": "",
+      "note": "단위/통합/회귀 테스트 범위를 기능별로 정의 후 추가",
+      "owner": ""
+    },
+    {
+      "id": "feature-dod-security-review",
+      "title": "Feature DoD: 보안 검토(입력 검증/인증/OWASP)",
+      "priority": "P1",
+      "evidence": "",
+      "note": "OAuth 토큰·이메일 인증·AI 입력 경로 보안 체크리스트 반영",
+      "owner": ""
+    },
+    {
+      "id": "release-dod-test-gate",
+      "title": "Release DoD: validate:all, test:gate, test:e2e:critical 충족",
+      "priority": "P1",
+      "evidence": "",
+      "note": "실환경 기준으로 결과 저장 후 QA 트래커 반영",
+      "owner": ""
+    },
+    {
+      "id": "release-dod-contract-test",
+      "title": "Release DoD: AI 변경 시 test:contract 통과",
+      "priority": "P1",
+      "evidence": "",
+      "note": "AI API/응답 계약 테스트 자동화 강화",
+      "owner": ""
+    },
+    {
+      "id": "release-dod-cost-gate",
+      "title": "Release DoD: 클라우드 비용 게이트 재확인",
+      "priority": "P1",
+      "evidence": "",
+      "note": "Cloud Build 머신타입/Cloud Run 스펙/테스트 스케줄/크론 정책 준수 재검증",
+      "owner": ""
+    },
+    {
+      "id": "release-dod-doc-gate",
+      "title": "Release DoD: 문서 게이트 90일 갱신·메타데이터·아카이빙 정책",
+      "priority": "P2",
+      "evidence": "",
+      "note": "docs 수명 관리 규칙을 릴리스 전 점검 항목으로 고정",
+      "owner": ""
+    },
+    {
+      "id": "ai-code-gate-input-policy",
+      "title": "AI Code Gate: Prompt 패턴 15개 방어 점검",
+      "priority": "P2",
+      "evidence": "",
+      "note": "15패턴 EN/KO prompt-injection 방어 정책 운영화",
+      "owner": ""
+    }
+  ],
+  "notes": [
+    "DoD 문서 기반: docs/reference/project/definition-of-done.md",
+    "기준선: reports/qa/production-qa-2026-02-25.md"
+  ],
+  "links": [
+    {
+      "label": "DoD Reference",
+      "url": "docs/reference/project/definition-of-done.md"
+    },
+    {
+      "label": "Production QA Baseline",
+      "url": "reports/qa/production-qa-2026-02-25.md"
+    }
+  ]
+}

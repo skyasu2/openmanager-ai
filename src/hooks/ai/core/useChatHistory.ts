@@ -42,36 +42,34 @@ export function useChatHistory<TMessage extends RestoredMessage>({
   // 로컬 스토리지에서 히스토리 복원
   useEffect(() => {
     if (isHistoryLoaded.current || !isMessagesEmpty) return;
+    isHistoryLoaded.current = true;
 
-    const history = loadChatHistory();
-    if (history && history.messages.length > 0) {
-      const restoredMessages = history.messages
-        .filter((m) => m.content && m.content.trim().length > 0)
-        .map((m) => ({
-          id: m.id,
-          role: m.role as 'user' | 'assistant',
-          content: m.content,
-          parts: [{ type: 'text' as const, text: m.content }],
-        }));
+    const localHistory = loadChatHistory();
+    if (!localHistory || localHistory.messages.length === 0) return;
 
-      // Cast to TMessage[] - the restored messages satisfy RestoredMessage constraint
-      setMessages(restoredMessages as TMessage[]);
+    const restoredMessages = localHistory.messages
+      .filter((m) => m.content && m.content.trim().length > 0)
+      .map((m) => ({
+        id: m.id,
+        role: m.role as 'user' | 'assistant',
+        content: m.content,
+        parts: [{ type: 'text' as const, text: m.content }],
+      }));
 
-      if (history.sessionId && onSessionRestore) {
-        onSessionRestore(history.sessionId);
-      }
+    setMessages(restoredMessages as TMessage[]);
 
-      if (process.env.NODE_ENV === 'development') {
-        logger.info(
-          `📂 [ChatHistory] Restored ${restoredMessages.length} messages`
-        );
-      }
+    if (localHistory.sessionId && onSessionRestore) {
+      onSessionRestore(localHistory.sessionId);
     }
 
-    isHistoryLoaded.current = true;
-  }, [isMessagesEmpty, setMessages, onSessionRestore]);
+    if (process.env.NODE_ENV === 'development') {
+      logger.info(
+        `📂 [ChatHistory] Restored ${restoredMessages.length} messages`
+      );
+    }
+  }, [isMessagesEmpty, setMessages, onSessionRestore, sessionId]);
 
-  // 메시지 변경 시 자동 저장
+  // 메시지 변경 시 localStorage 자동 저장
   useEffect(() => {
     if (!isLoading && enhancedMessages.length > 0) {
       saveChatHistory(sessionId, enhancedMessages);

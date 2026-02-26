@@ -52,9 +52,7 @@ export function GuestRestrictionModal({
 
         <div className="mt-4 rounded-lg border border-slate-700 bg-slate-800/50 p-4">
           <p className="text-sm leading-relaxed text-slate-400">
-            시스템 시작 기능을 사용하시려면{' '}
-            <span className="font-medium text-white">GitHub 계정</span>으로
-            로그인해 주세요.
+            GitHub 계정으로 로그인해 주세요.
           </p>
           <ul className="mt-3 space-y-2 text-sm text-slate-400">
             <li className="flex items-center gap-2">

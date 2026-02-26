@@ -207,15 +207,21 @@ function Home() {
       <div className="wave-particles" />
 
       {/* 헤더 */}
-      <header className="relative z-50 flex items-center justify-between p-4 sm:p-6">
+      <header
+        aria-label="사이트 헤더"
+        className="relative z-50 flex items-center justify-between p-4 sm:p-6"
+      >
         <OpenManagerLogo variant="dark" href="/" titleAs="p" />
-        <div className="flex items-center gap-3">
+        <nav aria-label="사용자 메뉴" className="flex items-center gap-3">
           <UnifiedProfileHeader />
-        </div>
+        </nav>
       </header>
 
       {/* 메인 콘텐츠 */}
-      <main className="container relative z-10 mx-auto px-4 pt-8 sm:px-6">
+      <main
+        aria-label="메인 콘텐츠"
+        className="container relative z-10 mx-auto px-4 pt-8 sm:px-6"
+      >
         {/* 타이틀 */}
         <div className="mb-12 text-center">
           <h1 className="mb-4 text-2xl font-bold sm:text-3xl md:text-5xl">
@@ -269,7 +275,10 @@ function Home() {
         </div>
 
         {/* 푸터 */}
-        <footer className="mt-8 border-t border-white/20 pt-6">
+        <footer
+          aria-label="사이트 푸터"
+          className="mt-8 border-t border-white/20 pt-6"
+        >
           <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-between">
             <p className="text-sm text-white/60">
               &copy; 2025-2026 OpenManager AI. Licensed under GPL-3.0.

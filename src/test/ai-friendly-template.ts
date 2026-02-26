@@ -194,7 +194,7 @@ ${suiteContent}
     // Then: ${scenario.then}
     ${scenario.and ? `// And: ${scenario.and.join(' AND ')}` : ''}
 
-    // TODO: Implement test logic
+    // TEMPLATE_TODO: Implement test logic
     expect(true).toBe(true); // Placeholder
   });`;
   }

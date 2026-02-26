@@ -345,7 +345,10 @@ export default function FeatureCardModal({
       }}
     >
       {/* 개선된 배경 블러 효과 */}
-      <div className="absolute inset-0 bg-black/85 backdrop-blur-sm" aria-hidden />
+      <div
+        className="absolute inset-0 bg-black/85 backdrop-blur-sm"
+        aria-hidden
+      />
 
       {/* 모달 컨텐츠 - Hook 안정화를 위해 항상 렌더링 */}
       {/* 🔧 P1: dvh 단위로 모바일 주소바 문제 해결, motion-reduce 지원 */}

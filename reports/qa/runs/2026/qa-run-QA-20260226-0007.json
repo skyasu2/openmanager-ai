@@ -1,0 +1,46 @@
+{
+  "runId": "QA-20260226-0007",
+  "recordedAt": "2026-02-26T12:03:08.146Z",
+  "recordedAtKst": "2026-02-26 21:03:08 KST",
+  "runTitle": "P0 DoD Closeout — tsc/lint zero-error verified",
+  "owner": "claude",
+  "source": "local-dev",
+  "environment": {
+    "frontend": "Local",
+    "backend": "N/A",
+    "branch": "main"
+  },
+  "checks": {
+    "total": 3,
+    "passed": 3,
+    "failed": 0
+  },
+  "expertAssessments": [],
+  "completedImprovements": [
+    {
+      "id": "feature-dod-tsc-zero-error",
+      "title": "Feature DoD: tsc noEmit 0 에러",
+      "priority": "P0",
+      "evidence": "npm run type-check 성공 (2026-02-26, main 브랜치)",
+      "note": "",
+      "owner": "",
+      "status": "completed"
+    },
+    {
+      "id": "feature-dod-lint-zero-error",
+      "title": "Feature DoD: lint 0 에러",
+      "priority": "P0",
+      "evidence": "npm run lint 성공 — 857 files, 0 errors, 0 warnings (EnhancedAIChat deps 수정 포함)",
+      "note": "",
+      "owner": "",
+      "status": "completed"
+    }
+  ],
+  "pendingImprovements": [],
+  "notes": [
+    "EnhancedAIChat.tsx의 useEffect exhaustive-deps warning 수정 포함",
+    "lint-smoke SKILL.md 버전 v1.4.0 → v1.5.0 수정",
+    "누락된 QA-20260226-0002.json 런 파일 복원"
+  ],
+  "links": []
+}

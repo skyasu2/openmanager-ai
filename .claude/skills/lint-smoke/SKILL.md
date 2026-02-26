@@ -1,7 +1,7 @@
 ---
 name: lint-smoke
 description: Run fast quality smoke checks for OpenManager before commit or deploy. Use when validating changed code quickly.
-version: v1.4.0
+version: v1.5.0
 user-invocable: true
 allowed-tools: Bash, Read, Grep
 disable-model-invocation: true
