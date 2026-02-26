@@ -18,6 +18,8 @@
     "type-check": "tsc --noEmit",
     "line-guard": "node ../../scripts/dev/line-count-guard.js --warn 500 --fail 800 --include src --root .",
     "test": "LOG_LEVEL=error vitest run --silent=passed-only",
+    "test:core": "SKIP_VISION_TESTS=1 LOG_LEVEL=error vitest run --silent=passed-only",
+    "test:vision": "LOG_LEVEL=error vitest run --silent=passed-only src/services/ai-sdk/agents/vision-agent.test.ts src/services/ai-sdk/agents/config/agent-configs.vision-fallback.test.ts",
     "test:watch": "vitest",
     "docker:preflight": "bash scripts/docker-preflight.sh",
     "rag:analyze": "tsx scripts/analyze-rag-distribution.ts",
