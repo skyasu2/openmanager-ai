@@ -11,7 +11,7 @@
  * - Analyst Agent (Groq): Anomaly detection, trend prediction
  * - Reporter Agent (Groq): Incident reports, timelines
  * - Advisor Agent (Mistral): Troubleshooting guides, RAG search
- * - Vision Agent (Gemini): Screenshot analysis, large log processing
+ * - Vision Agent (Gemini): Screenshot/image analysis
  * - Evaluator Agent: Report quality evaluation (internal)
  * - Optimizer Agent: Report quality improvement (internal)
  *

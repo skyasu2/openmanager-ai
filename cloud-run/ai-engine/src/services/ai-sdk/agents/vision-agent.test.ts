@@ -183,39 +183,26 @@ describe('VisionAgent', { timeout: 15000 }, () => {
 
     it('should detect dashboard keywords', () => {
 
-      expect(isVisionQuery('대시보드 상태 확인')).toBe(true);
-      expect(isVisionQuery('Grafana 화면 분석')).toBe(true);
-      expect(isVisionQuery('CloudWatch 대시보드 확인')).toBe(true);
-      expect(isVisionQuery('Datadog 메트릭 화면')).toBe(true);
+      expect(isVisionQuery('CloudWatch 대시보드 차트 분석')).toBe(true);
+      expect(isVisionQuery('Grafana 화면 확인')).toBe(true);
+      expect(isVisionQuery('Datadog 메트릭 화면 보여줘')).toBe(true);
     });
 
-    it('should detect large log keywords', () => {
+    it('should not detect non-visual keywords as vision queries', () => {
 
-      expect(isVisionQuery('대용량 로그 분석해줘')).toBe(true);
-      expect(isVisionQuery('전체 로그 파일 확인')).toBe(true);
-      expect(isVisionQuery('로그 분석 요청')).toBe(true);
+      expect(isVisionQuery('대용량 로그 분석해줘')).toBe(false);
+      expect(isVisionQuery('전체 로그 파일 확인')).toBe(false);
+      expect(isVisionQuery('최신 문서 검색해줘')).toBe(false);
+      expect(isVisionQuery('이 url 내용 분석해줘')).toBe(false);
+      expect(isVisionQuery('링크 확인해줘')).toBe(false);
     });
 
-    it('should detect Google Search Grounding keywords', () => {
-
-      expect(isVisionQuery('최신 문서 검색해줘')).toBe(true);
-      expect(isVisionQuery('공식 documentation 확인')).toBe(true);
-      expect(isVisionQuery('official 가이드 찾아줘')).toBe(true);
-    });
-
-    it('should detect URL keywords', () => {
-
-      expect(isVisionQuery('이 url 내용 분석해줘')).toBe(true);
-      expect(isVisionQuery('링크 확인해줘')).toBe(true);
-      expect(isVisionQuery('페이지 내용 분석')).toBe(false);
-    });
-
-    it('should detect pattern-based queries', () => {
+    it('should detect file attachment intent', () => {
 
       expect(isVisionQuery('스크린샷을 분석해줘')).toBe(true);
       expect(isVisionQuery('분석해줘 이 스크린샷')).toBe(true);
       expect(isVisionQuery('이미지를 보여줘')).toBe(true);
-      expect(isVisionQuery('첨부된 파일 분석해줘')).toBe(true);
+      expect(isVisionQuery('첨부된 파일 이미지 분석해줘')).toBe(true);
     });
 
     it('should return false for non-vision queries', () => {
@@ -227,14 +214,16 @@ describe('VisionAgent', { timeout: 15000 }, () => {
       expect(isVisionQuery('메모리 이상 탐지')).toBe(false);
       expect(isVisionQuery('대시보드 서버 상태')).toBe(false);
       expect(isVisionQuery('Grafana 상태')).toBe(false);
+      expect(isVisionQuery('CloudWatch 상태')).toBe(false);
+      expect(isVisionQuery('dashboard 확인')).toBe(false);
     });
 
     it('should be case insensitive', () => {
 
       expect(isVisionQuery('SCREENSHOT 분석')).toBe(true);
-      expect(isVisionQuery('Dashboard 확인')).toBe(true);
+      expect(isVisionQuery('DASHBOARD 화면 확인')).toBe(true);
+      expect(isVisionQuery('GRAFANA 화면 확인')).toBe(true);
       expect(isVisionQuery('GRAFANA 상태')).toBe(false);
-      expect(isVisionQuery('GRAFANA 화면')).toBe(true);
     });
   });
 
@@ -360,8 +349,6 @@ describe('VisionAgent', { timeout: 15000 }, () => {
         '이미지 확인',
         'image 파일 분석',
         '사진 분석',
-        '그래프 확인',
-        '차트 분석',
       ];
 
       for (const query of screenshotKeywords) {
@@ -372,11 +359,9 @@ describe('VisionAgent', { timeout: 15000 }, () => {
     it('should detect all dashboard-related keywords', () => {
 
       const dashboardKeywords = [
-        '대시보드 확인',
-        'dashboard 분석',
-        'grafana 화면',
-        'cloudwatch 메트릭',
-        'datadog 대시보드 화면',
+        'grafana 화면 확인',
+        'CloudWatch 메트릭 화면 확인',
+        'datadog 대시보드 화면 보여줘',
       ];
 
       for (const query of dashboardKeywords) {
@@ -384,9 +369,9 @@ describe('VisionAgent', { timeout: 15000 }, () => {
       }
     });
 
-    it('should detect URL and document keywords', () => {
+    it('should ignore non-visual URL/document keywords', () => {
 
-      const urlKeywords = [
+      const nonVisualKeywords = [
         'url 분석',
         '링크 확인',
         '최신 문서 찾아줘',
@@ -395,8 +380,8 @@ describe('VisionAgent', { timeout: 15000 }, () => {
         'official docs 찾아줘',
       ];
 
-      for (const query of urlKeywords) {
-        expect(isVisionQuery(query)).toBe(true);
+      for (const query of nonVisualKeywords) {
+        expect(isVisionQuery(query)).toBe(false);
       }
     });
   });
@@ -432,7 +417,7 @@ describe('VisionAgent', { timeout: 15000 }, () => {
     it('should handle mixed language queries', () => {
 
       expect(isVisionQuery('스크린샷 screenshot 분석해줘')).toBe(true);
-      expect(isVisionQuery('Grafana 대시보드 확인')).toBe(true);
+      expect(isVisionQuery('Grafana 대시보드 화면 확인')).toBe(true);
     });
   });
 });

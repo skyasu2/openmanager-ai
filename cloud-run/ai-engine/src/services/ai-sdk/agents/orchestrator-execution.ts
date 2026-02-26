@@ -87,7 +87,10 @@ export async function executeMultiAgent(
   logger.debug(`[Context] Session ${request.sessionId}: ${sessionContext.handoffs.length} previous handoffs`);
 
   // Fast Path
-  const preFilterResult = preFilterQuery(query);
+  const preFilterResult = preFilterQuery(query, {
+    hasImageAttachments: !!(request.images && request.images.length > 0),
+    hasFileAttachments: !!(request.files && request.files.length > 0),
+  });
   logger.debug(`[PreFilter] Query: "${query.substring(0, 50)}..." → Suggested: ${preFilterResult.suggestedAgent || 'none'} (confidence: ${preFilterResult.confidence})`);
 
   if (!preFilterResult.shouldHandoff && preFilterResult.directResponse) {
@@ -344,7 +347,10 @@ export async function* executeMultiAgentStream(
   logger.debug(`[Stream Context] Session ${request.sessionId}: ${sessionContext.handoffs.length} previous handoffs`);
 
   // Fast Path
-  const preFilterResult = preFilterQuery(query);
+  const preFilterResult = preFilterQuery(query, {
+    hasImageAttachments: !!(request.images && request.images.length > 0),
+    hasFileAttachments: !!(request.files && request.files.length > 0),
+  });
   logger.debug(`[Stream PreFilter] Query: "${query.substring(0, 50)}..." → Suggested: ${preFilterResult.suggestedAgent || 'none'} (confidence: ${preFilterResult.confidence})`);
 
   if (!preFilterResult.shouldHandoff && preFilterResult.directResponse) {

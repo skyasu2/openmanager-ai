@@ -121,14 +121,14 @@ export function buildRoutingPrompt(query: string): string {
 - Analyst Agent: 이상 탐지, 트렌드 예측, 패턴 분석, 근본 원인 분석
 - Reporter Agent: 장애 보고서 생성, 인시던트 타임라인
 - Advisor Agent: 문제 해결 방법, CLI 명령어 추천, 과거 사례 검색
-- Vision Agent: 스크린샷/이미지 분석, 대용량 로그, 최신 공식 문서 검색
+- Vision Agent: 스크린샷/이미지 분석
 
 ## 사용자 질문
 ${query}
 
 ## 판단 기준
 - 서버/모니터링 관련 질문 → 적절한 에이전트 선택
-- 이미지/스크린샷/대시보드 분석 → Vision Agent
+- 이미지/스크린샷/첨부 파일 시각 분석 → Vision Agent
 - 일반 대화(인사, 날씨, 시간 등) → NONE`;
 }
 

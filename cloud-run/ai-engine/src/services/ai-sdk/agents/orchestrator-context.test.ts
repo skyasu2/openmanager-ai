@@ -30,6 +30,14 @@ describe('preFilterQuery', () => {
     expect(result.confidence).toBe(0.86);
   });
 
+  it('routes attached visual intent to Vision Agent when image/file is attached', () => {
+    const result = preFilterQuery('CPU 차트 첨부해서 확인해줘', { hasImageAttachments: true });
+
+    expect(result.shouldHandoff).toBe(true);
+    expect(result.suggestedAgent).toBe('Vision Agent');
+    expect(result.confidence).toBe(0.92);
+  });
+
   it('prefers analyst/reporter/advisor with high confidence for clear intent', () => {
     expect(preFilterQuery('CPU 급증 원인 분석해줘').suggestedAgent).toBe('Analyst Agent');
     expect(preFilterQuery('장애 보고서 작성해줘').suggestedAgent).toBe('Reporter Agent');

@@ -1,16 +1,14 @@
 /**
  * Vision Agent
  *
- * Specializes in visual analysis and large context processing:
+ * Specializes in visual analysis:
  * - Dashboard screenshot analysis (Grafana, CloudWatch, Datadog)
- * - Large log file analysis (1M token context window)
- * - Google Search Grounding for up-to-date documentation
- * - URL content analysis
+ * - Uploaded image attachment analysis
  *
  * Model: Gemini Flash (Primary) + OpenRouter (Fallback)
  *
  * Primary: Gemini 2.5 Flash
- * - 1M token context, Search Grounding
+ * - 1M token context
  *
  * Fallback: OpenRouter (nvidia/nemotron-nano-12b-v2-vl:free)
  * - Used when Gemini quota exceeded (250 RPD)
@@ -27,22 +25,18 @@ import { AGENT_CONFIGS, type AgentConfig } from './config';
 import { AgentFactory, type BaseAgent } from './agent-factory';
 import { logger } from '../../../lib/logger';
 
-const URL_PATTERN =
-  /(https?:\/\/[^\s]+|www\.[^\s]+\.[a-z]{2,}|(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,}[^\s]*)/i;
-
 const IMAGE_KEYWORDS = [
   '스크린샷',
   'screenshot',
   '이미지',
   'image',
   '사진',
-  '차트',
-  '그래프',
   '스냅샷',
+  'snapshot',
   'visual',
-  's3://',
-  '첨부',
-  '파일',
+  '캡처',
+  'capture',
+  'photo',
 ];
 
 const DASHBOARD_KEYWORDS = [
@@ -53,54 +47,30 @@ const DASHBOARD_KEYWORDS = [
   'datadog',
   'kibana',
   'prometheus',
-  '애플리케이션',
-  'application',
-];
-
-const LOG_KEYWORDS = [
-  '로그',
-  'log',
-  '로그파일',
-  '에러',
-  '오류',
-  'stack',
-  'trace',
 ];
 
 const VISUAL_CONTEXT_KEYWORDS = [
   '화면',
-  '스크린',
   '패널',
   '차트',
   '그래프',
   '메트릭',
-  '알람',
-  '이슈',
-  '문제',
-  '변화',
-  '이상',
-  '에러',
 ];
 
-const LOG_CONTEXT_KEYWORDS = [
-  '전체',
-  '대용량',
-  '요약',
-  '분석',
-  '이상',
-  '에러',
-];
-
-const DOC_KEYWORDS = [
-  '최신',
-  '문서',
-  'documentation',
-  '공식',
-  'official',
-  'docs',
-  '가이드',
-  '링크',
-  'url',
+const ATTACHMENT_KEYWORDS = ['첨부', '첨부된', '파일'];
+const ATTACHMENT_VISUAL_KEYWORDS = [
+  '이미지',
+  'image',
+  '사진',
+  'screenshot',
+  '스냅샷',
+  'snapshot',
+  '차트',
+  '그래프',
+  '대시보드',
+  'dashboard',
+  '화면',
+  '패널',
 ];
 
 const ACTION_KEYWORDS = [
@@ -121,17 +91,6 @@ const ACTION_KEYWORDS = [
   '판독',
 ];
 
-const URL_ACTION_KEYWORDS = [
-  '확인',
-  '분석',
-  '요약',
-  '내용',
-  '읽',
-  '열람',
-  '조회',
-  '검색',
-];
-
 function includesAny(text: string, terms: string[]): boolean {
   return terms.some((term) => text.includes(term));
 }
@@ -140,8 +99,20 @@ function hasAction(text: string): boolean {
   return includesAny(text, ACTION_KEYWORDS);
 }
 
-function hasUrlAction(text: string): boolean {
-  return includesAny(text, URL_ACTION_KEYWORDS);
+function hasAttachmentIntent(text: string): boolean {
+  return (
+    includesAny(text, ATTACHMENT_KEYWORDS) &&
+    includesAny(text, ATTACHMENT_VISUAL_KEYWORDS) &&
+    hasAction(text)
+  );
+}
+
+function hasDashboardVisualIntent(text: string): boolean {
+  return (
+    includesAny(text, DASHBOARD_KEYWORDS) &&
+    includesAny(text, VISUAL_CONTEXT_KEYWORDS) &&
+    hasAction(text)
+  );
 }
 
 // ============================================================================
@@ -214,27 +185,10 @@ export function isVisionQuery(query: string): boolean {
   if (!normalized) return false;
 
   const hasImageSignal = includesAny(normalized, IMAGE_KEYWORDS) && hasAction(normalized);
-  const hasDashboardSignal =
-    includesAny(normalized, DASHBOARD_KEYWORDS) &&
-    (includesAny(normalized, VISUAL_CONTEXT_KEYWORDS) || hasAction(normalized));
-  const hasLogSignal =
-    includesAny(normalized, LOG_KEYWORDS) &&
-    (includesAny(normalized, VISUAL_CONTEXT_KEYWORDS) ||
-      includesAny(normalized, LOG_CONTEXT_KEYWORDS) ||
-      hasAction(normalized));
-  const hasDocSignal = includesAny(normalized, DOC_KEYWORDS) && hasAction(normalized);
-  const hasUrlSignal =
-    (URL_PATTERN.test(normalized) || includesAny(normalized, ['url', '링크'])) &&
-    (includesAny(normalized, ['screenshot', '이미지', '이미지로', 'url', '링크']) ||
-      hasUrlAction(normalized));
+  const hasDashboardSignal = hasDashboardVisualIntent(normalized);
+  const hasAttachmentSignal = hasAttachmentIntent(normalized);
 
-  return (
-    hasImageSignal ||
-    hasDashboardSignal ||
-    hasLogSignal ||
-    hasDocSignal ||
-    hasUrlSignal
-  );
+  return hasImageSignal || hasDashboardSignal || hasAttachmentSignal;
 }
 
 /**

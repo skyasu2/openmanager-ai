@@ -266,11 +266,34 @@ const COMPOSITE_QUERY_PATTERNS = [
   /원인.*해결|해결.*원인|분석.*조치|조치.*분석/i,
 ];
 
+const ATTACHMENT_IMAGE_KEYWORDS = ['스크린샷', 'screenshot', '이미지', 'image', '사진', '차트', '그래프', '화면', '패널'];
+const ATTACHMENT_HINT_KEYWORDS = ['첨부', '첨부된', '파일'];
+const ATTACHMENT_ACTION_KEYWORDS = ['분석', '확인', '보여', '봐줘', '해석', '판독', '점검', '요약', '열어'];
+
+function includesAny(text: string, terms: string[]): boolean {
+  return terms.some((term) => text.includes(term));
+}
+
+function looksLikeAttachedVisionRequest(normalizedQuery: string): boolean {
+  return (
+    includesAny(normalizedQuery, ATTACHMENT_IMAGE_KEYWORDS) &&
+    includesAny(normalizedQuery, ATTACHMENT_HINT_KEYWORDS.concat(ATTACHMENT_ACTION_KEYWORDS))
+  );
+}
+
 /**
  * Fast pre-filter before LLM routing
  * Handles simple queries without LLM call
  */
-export function preFilterQuery(query: string): PreFilterResult {
+export interface PreFilterContext {
+  hasImageAttachments?: boolean;
+  hasFileAttachments?: boolean;
+}
+
+export function preFilterQuery(
+  query: string,
+  context: PreFilterContext = {},
+): PreFilterResult {
   const normalized = query.trim().toLowerCase();
 
   // 1. Check greeting patterns - direct response
@@ -344,7 +367,10 @@ export function preFilterQuery(query: string): PreFilterResult {
   const hasServerKeyword = SERVER_KEYWORDS.some(kw => normalized.includes(kw));
 
   if (hasServerKeyword) {
-    const isVisionIntent = isVisionQuery(query);
+    const hasAttachmentVisionHint =
+      (context.hasImageAttachments || context.hasFileAttachments) &&
+      looksLikeAttachedVisionRequest(normalized);
+    const isVisionIntent = isVisionQuery(query) || hasAttachmentVisionHint;
     const isAnalystIntent = ANALYST_QUERY_PATTERN.test(query);
     const isReporterIntent = REPORTER_QUERY_PATTERN.test(query);
     const isAdvisorIntent = ADVISOR_QUERY_PATTERN.test(query);

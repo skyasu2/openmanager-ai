@@ -75,9 +75,6 @@ import {
   finalAnswer,
   // Vision tools (Gemini Flash-Lite)
   analyzeScreenshot,
-  analyzeLargeLog,
-  searchWithGrounding,
-  analyzeUrlContent,
 } from '../../../../tools-ai-sdk';
 
 // ============================================================================
@@ -350,15 +347,12 @@ export const AGENT_CONFIGS: Record<string, AgentConfig> = {
   'Vision Agent': {
     name: 'Vision Agent',
     description:
-      '대시보드 스크린샷 분석, 대용량 로그 분석(1M 컨텍스트), Google Search Grounding, URL 문서 분석을 수행합니다. 이미지 첨부, 로그 분석, 최신 문서 검색 요청에 적합합니다.',
+      '대시보드 스크린샷 및 첨부 이미지 분석을 수행합니다. 이미지 기반의 시각 정보 추출에 적합합니다.',
     getModel: getVisionModel, // Gemini → OpenRouter fallback
     instructions: VISION_INSTRUCTIONS,
     tools: {
       // Vision-specific tools (Gemini Flash-Lite)
       analyzeScreenshot,
-      analyzeLargeLog,
-      searchWithGrounding,
-      analyzeUrlContent,
       finalAnswer, // AI SDK v6 Best Practice: graceful loop termination
     },
     matchPatterns: [
@@ -368,34 +362,18 @@ export const AGENT_CONFIGS: Record<string, AgentConfig> = {
       '이미지',
       'image',
       '사진',
-      '그래프',
       '차트',
+      '그래프',
+      '패널',
       // Dashboard keywords
       '대시보드',
       'dashboard',
       'grafana',
       'cloudwatch',
       'datadog',
-      // Large log keywords
-      '로그 분석',
-      '대용량',
-      'log',
-      '전체 로그',
-      // Google Search Grounding
-      '최신',
-      '문서',
-      'documentation',
-      '공식',
-      'official',
-      // URL context
-      'url',
-      '링크',
-      '페이지',
       // Patterns
       /스크린샷.*분석|분석.*스크린샷/i,
-      /이미지.*보여|첨부.*분석/i,
-      /로그.*전체|대용량.*로그/i,
-      /최신.*문서|공식.*가이드/i,
+      /이미지.*보여|첨부.*분석|시각.*분석/i,
     ],
   },
 };

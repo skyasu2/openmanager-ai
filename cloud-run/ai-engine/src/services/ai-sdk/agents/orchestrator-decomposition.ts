@@ -55,7 +55,7 @@ export async function decomposeTask(query: string): Promise<TaskDecomposition | 
 - Analyst Agent: 이상 탐지, 트렌드 예측, 근본 원인 분석
 - Reporter Agent: 장애 보고서, 인시던트 타임라인
 - Advisor Agent: 해결 방법, CLI 명령어, 과거 사례
-- Vision Agent: 스크린샷 분석, 대용량 로그, 최신 문서 검색 (Gemini)
+- Vision Agent: 스크린샷/이미지 분석 (Gemini)
 
 ## 사용자 질문
 ${query}
@@ -64,7 +64,7 @@ ${query}
 - 각 서브태스크는 하나의 에이전트가 독립적으로 처리할 수 있어야 함
 - 의존성이 있으면 requiresSequential=true
 - 최대 4개의 서브태스크로 제한
-- Vision Agent는 이미지/스크린샷이 필요한 경우에만 할당`;
+- Vision Agent는 첨부 이미지/스크린샷이 필요한 경우에만 할당`;
 
     const result = await generateObjectWithFallback({
       model,
