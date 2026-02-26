@@ -17,8 +17,11 @@ npm run build
 # Type check
 npm run type-check
 
-# Run tests
+# Run tests (Fast default)
 npm run test
+
+# Run full test suite including Vision tests
+npm run test:all
 
 # Deploy to Cloud Run
 gcloud run deploy ai-engine --source . --region asia-northeast1
@@ -225,8 +228,11 @@ CLOUD_RUN_API_SECRET=xxx           # API Key for /api/* endpoints
 # Low-cost production smoke (default: 0 LLM calls)
 npm run test:cloud:essential -- --url=https://ai-engine-xxx.asia-northeast1.run.app
 
-# Unit tests
+# Unit tests (default, vision-excluded)
 npm run test
+
+# Unit tests including Vision coverage (required for Vision Agent changes)
+npm run test:all
 
 # Watch mode
 npm run test:watch
