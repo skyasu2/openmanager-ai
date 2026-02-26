@@ -22,10 +22,11 @@ export function LoginPrompt({ isMounted, guestModeMessage }: LoginPromptProps) {
       <div className="mb-4 rounded-xl border border-blue-400/30 bg-blue-500/10 p-4 sm:p-6">
         {isMounted && <User className="mx-auto mb-3 h-12 w-12 text-blue-400" />}
         <h3 className="mb-2 text-lg font-semibold text-white">
-          GitHub 로그인이 필요합니다
+          로그인 또는 게스트 테스트가 필요합니다
         </h3>
         <p className="mb-4 text-sm text-blue-100">
-          시스템 운영 기능은 GitHub 인증 사용자에게만 제공됩니다.
+          시스템 운영 기능은 GitHub, Google, 또는 이메일 인증 사용자와 게스트
+          테스트 모드 사용자가 이용할 수 있습니다.
         </p>
         <button
           type="button"

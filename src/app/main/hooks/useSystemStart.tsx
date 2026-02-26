@@ -21,15 +21,16 @@ import { debugWithEnv } from '@/utils/vercel-env-utils';
 const SYSTEM_START_COUNTDOWN_SECONDS = 5; // Cloud Run cold start 대기 (5-10초)
 const COUNTDOWN_INTERVAL_MS = 1000;
 const SYSTEM_BOOT_PATH = '/system-boot';
-const LOGIN_REDIRECT_URL = `/login?redirectTo=${encodeURIComponent(
-  SYSTEM_BOOT_PATH
-)}`;
+
+type GuestRestrictionReason = 'login-required' | 'guest-start-blocked';
 
 interface UseSystemStartOptions {
   isAuthenticated: boolean;
   isGitHubUser: boolean;
+  isGuestUser: boolean;
   authLoading: boolean;
   isMounted: boolean;
+  isGuestSystemStartEnabled?: boolean;
 }
 
 interface StatusInfo {
@@ -46,7 +47,14 @@ interface ButtonConfig {
 }
 
 export function useSystemStart(options: UseSystemStartOptions) {
-  const { isAuthenticated, isGitHubUser, authLoading, isMounted } = options;
+  const {
+    isAuthenticated,
+    isGitHubUser,
+    isGuestUser,
+    authLoading,
+    isMounted,
+    isGuestSystemStartEnabled = true,
+  } = options;
 
   const router = useRouter();
   const pathname = usePathname();
@@ -85,6 +93,13 @@ export function useSystemStart(options: UseSystemStartOptions) {
 
   // 게스트 제한 모달 상태 (alert 대체)
   const [showGuestRestriction, setShowGuestRestriction] = useState(false);
+  const [guestRestrictionReason, setGuestRestrictionReason] =
+    useState<GuestRestrictionReason>('login-required');
+
+  const openGuestRestriction = useCallback((reason: GuestRestrictionReason) => {
+    setGuestRestrictionReason(reason);
+    setShowGuestRestriction(true);
+  }, []);
 
   // 🔧 카운트다운 취소 함수 (setState 배칭 최적화)
   const cancelCountdown = useCallback(() => {
@@ -195,16 +210,21 @@ export function useSystemStart(options: UseSystemStartOptions) {
       return;
     }
 
-    // 비로그인 상태에서는 카운트다운 없이 즉시 로그인 화면으로 이동
     if (!isAuthenticated) {
       if (systemStartCountdown > 0) {
         cancelCountdown();
       }
 
-      logger.info('🔐 비로그인 사용자 - 로그인 페이지로 즉시 이동');
-      if (!pathname.startsWith('/login')) {
-        setPendingNavigation(LOGIN_REDIRECT_URL);
-      }
+      logger.info('🔐 비로그인 사용자 - 시스템 시작 잠금 모달 표시');
+      openGuestRestriction('login-required');
+      return;
+    }
+
+    if (isGuestUser && !isGuestSystemStartEnabled) {
+      logger.info('🔒 게스트 사용자 - 게스트 시스템 시작 차단', {
+        isGuestSystemStartEnabled,
+      });
+      openGuestRestriction('guest-start-blocked');
       return;
     }
 
@@ -259,6 +279,9 @@ export function useSystemStart(options: UseSystemStartOptions) {
     authLoading,
     statusLoading,
     cancelCountdown, // 🔧 countdownTimer → cancelCountdown으로 최적화
+    openGuestRestriction,
+    isGuestSystemStartEnabled,
+    isGuestUser,
     router,
     startMultiUserSystem,
     startSystem,
@@ -345,6 +368,7 @@ export function useSystemStart(options: UseSystemStartOptions) {
 
     // 게스트 제한 모달 상태
     showGuestRestriction,
+    guestRestrictionReason,
     dismissGuestRestriction: () => setShowGuestRestriction(false),
 
     // 계산된 값
@@ -361,4 +385,4 @@ export function useSystemStart(options: UseSystemStartOptions) {
   };
 }
 
-export type { StatusInfo, ButtonConfig };
+export type { GuestRestrictionReason, StatusInfo, ButtonConfig };

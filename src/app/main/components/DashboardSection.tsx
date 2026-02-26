@@ -54,7 +54,7 @@ export function DashboardSection({
                 시스템이 다른 사용자에 의해 실행 중입니다
               </p>
               <p className="text-xs text-gray-500">
-                GitHub 로그인 후 대시보드에 접근할 수 있습니다
+                로그인 후 대시보드에 접근할 수 있습니다
               </p>
             </div>
           )}

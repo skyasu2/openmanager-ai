@@ -1,7 +1,7 @@
 /**
  * 🏠 OpenManager 랜딩 페이지
  *
- * GitHub OAuth + 게스트 로그인 지원
+ * GitHub, Google, 이메일 OAuth + 게스트 로그인 지원
  * 웨이브 파티클 배경, 고급 애니메이션, 카운트다운 시스템
  *
  * NOTE: 이 파일은 반드시 Client Component여야 합니다 (hooks 사용)
@@ -16,7 +16,6 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   DashboardSection,
   GuestRestrictionModal,
-  LoginPrompt,
   MainPageErrorBoundary,
   SystemStartSection,
 } from '@/app/main/components';
@@ -24,7 +23,7 @@ import { useSystemStart } from '@/app/main/hooks';
 import AuthLoadingUI from '@/components/shared/AuthLoadingUI';
 import { OpenManagerLogo } from '@/components/shared/OpenManagerLogo';
 import UnifiedProfileHeader from '@/components/shared/UnifiedProfileHeader';
-import { isGuestFullAccessEnabled } from '@/config/guestMode';
+import { isGuestSystemStartEnabled } from '@/config/guestMode';
 import { isVercel } from '@/env-client';
 import { useInitialAuth } from '@/hooks/useInitialAuth';
 import { useUnifiedAdminStore } from '@/stores/useUnifiedAdminStore';
@@ -65,7 +64,7 @@ function Home() {
   const {
     isLoading: authLoading,
     isAuthenticated,
-    user: _currentUser,
+    user: currentUser,
     isGitHubConnected: isGitHubUser,
     error: authError,
     isReady: authReady,
@@ -77,11 +76,26 @@ function Home() {
   const [isMounted, setIsMounted] = useState(false);
 
   // 시스템 시작 훅
+  const isGuestUser = useMemo(
+    () => currentUser?.provider === 'guest',
+    [currentUser]
+  );
+  const isGuestSystemStartEnabledValue = useMemo(
+    () => isGuestSystemStartEnabled(),
+    []
+  );
+
+  const canAccessDashboard = useMemo(
+    () => isAuthenticated && (!isGuestUser || isGuestSystemStartEnabledValue),
+    [isAuthenticated, isGuestUser, isGuestSystemStartEnabledValue]
+  );
+
   const {
     systemStartCountdown,
     isSystemStarting,
     isSystemStarted,
     multiUserStatus,
+    guestRestrictionReason,
     showGuestRestriction,
     dismissGuestRestriction,
     statusInfo,
@@ -91,6 +105,8 @@ function Home() {
   } = useSystemStart({
     isAuthenticated,
     isGitHubUser,
+    isGuestUser,
+    isGuestSystemStartEnabled: isGuestSystemStartEnabledValue,
     authLoading,
     isMounted,
   });
@@ -170,17 +186,6 @@ function Home() {
     return () => clearInterval(timerInterval);
   }, [isSystemStarted, getSystemRemainingTime]);
 
-  // 접근 권한 계산
-  const canAccessSystem = useMemo(
-    () => isGitHubUser || isAuthenticated || isGuestFullAccessEnabled(),
-    [isGitHubUser, isAuthenticated]
-  );
-
-  const guestModeMessage = useMemo(
-    () => '게스트 로그인은 테스트/체험 용도로만 제공됩니다.',
-    []
-  );
-
   // 로딩 상태 - authReady 단일 조건 (깜빡임 방지)
   // isMounted는 성능 추적용으로만 사용, 로딩 조건에서 제거
   const shouldShowLoading = !authReady;
@@ -195,9 +200,6 @@ function Home() {
       />
     );
   }
-
-  // 비로그인 상태에서도 메인 페이지 표시 (LoginPrompt로 로그인 유도)
-  // 게스트/GitHub 로그인 후 시스템 시작 가능
 
   return (
     <div
@@ -238,30 +240,21 @@ function Home() {
         {/* 시스템 시작/대시보드 섹션 */}
         <div className="mb-12">
           {!isSystemStarted ? (
-            canAccessSystem ? (
-              <SystemStartSection
-                isMounted={isMounted}
-                systemStartCountdown={systemStartCountdown}
-                isSystemStarting={isSystemStarting}
-                isSystemStarted={isSystemStarted}
-                isSystemRunning={multiUserStatus?.isRunning || false}
-                buttonConfig={buttonConfig}
-                statusInfo={statusInfo}
-                onSystemToggle={handleSystemToggle}
-              />
-            ) : (
-              <div className="mx-auto max-w-2xl">
-                <LoginPrompt
-                  isMounted={isMounted}
-                  guestModeMessage={guestModeMessage}
-                />
-              </div>
-            )
+            <SystemStartSection
+              isMounted={isMounted}
+              systemStartCountdown={systemStartCountdown}
+              isSystemStarting={isSystemStarting}
+              isSystemStarted={isSystemStarted}
+              isSystemRunning={multiUserStatus?.isRunning || false}
+              buttonConfig={buttonConfig}
+              statusInfo={statusInfo}
+              onSystemToggle={handleSystemToggle}
+            />
           ) : (
             <DashboardSection
-              canAccessDashboard={canAccessSystem}
+              canAccessDashboard={canAccessDashboard}
               onNavigateDashboard={navigateToDashboard}
-              onStopSystem={canAccessSystem ? stopSystem : undefined}
+              onStopSystem={canAccessDashboard ? stopSystem : undefined}
             />
           )}
         </div>
@@ -293,6 +286,7 @@ function Home() {
       <GuestRestrictionModal
         open={showGuestRestriction}
         onClose={dismissGuestRestriction}
+        reason={guestRestrictionReason}
       />
     </div>
   );

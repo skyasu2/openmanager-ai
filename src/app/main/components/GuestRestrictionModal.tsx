@@ -7,7 +7,7 @@
 
 'use client';
 
-import { AlertTriangle, Github } from 'lucide-react';
+import { AlertTriangle, LogIn } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import {
@@ -22,11 +22,13 @@ import {
 interface GuestRestrictionModalProps {
   open: boolean;
   onClose: () => void;
+  reason?: 'login-required' | 'guest-start-blocked';
 }
 
 export function GuestRestrictionModal({
   open,
   onClose,
+  reason = 'login-required',
 }: GuestRestrictionModalProps) {
   const router = useRouter();
 
@@ -34,6 +36,19 @@ export function GuestRestrictionModal({
     onClose();
     router.push('/login');
   };
+
+  const modalTitle =
+    reason === 'guest-start-blocked' ? '게스트 모드 제한' : '로그인 필요';
+
+  const description =
+    reason === 'guest-start-blocked'
+      ? '현재 게스트 모드에서는 시스템 시작이 제한되어 있습니다.'
+      : '시스템 시작은 로그인 후 이용할 수 있습니다.';
+
+  const infoText =
+    reason === 'guest-start-blocked'
+      ? '게스트 세션이 제한된 환경에서는 GitHub/Google/이메일 계정으로 로그인해 주세요.'
+      : 'GitHub, Google, 또는 이메일 계정으로 로그인해 주세요.';
 
   return (
     <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
@@ -43,17 +58,15 @@ export function GuestRestrictionModal({
             <AlertTriangle className="h-6 w-6 text-yellow-500" />
           </div>
           <DialogTitle className="text-xl font-semibold text-white">
-            게스트 모드 제한
+            {modalTitle}
           </DialogTitle>
           <DialogDescription className="text-base text-slate-300">
-            게스트 모드에서는 시스템을 시작할 수 없습니다.
+            {description}
           </DialogDescription>
         </DialogHeader>
 
         <div className="mt-4 rounded-lg border border-slate-700 bg-slate-800/50 p-4">
-          <p className="text-sm leading-relaxed text-slate-400">
-            GitHub 계정으로 로그인해 주세요.
-          </p>
+          <p className="text-sm leading-relaxed text-slate-400">{infoText}</p>
           <ul className="mt-3 space-y-2 text-sm text-slate-400">
             <li className="flex items-center gap-2">
               <span className="text-green-400">✓</span>
@@ -82,8 +95,8 @@ export function GuestRestrictionModal({
             onClick={handleLoginRedirect}
             className="w-full bg-linear-to-r from-blue-500 to-purple-600 text-white hover:from-blue-600 hover:to-purple-700 sm:w-auto"
           >
-            <Github className="mr-2 h-4 w-4" />
-            GitHub 로그인
+            <LogIn className="mr-2 h-4 w-4" />
+            로그인 페이지로 이동
           </Button>
         </DialogFooter>
       </DialogContent>
