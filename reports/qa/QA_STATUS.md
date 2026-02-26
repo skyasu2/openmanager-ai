@@ -1,49 +1,46 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-02-27 03:11:06 KST
+> Generated at: 2026-02-27 03:34:32 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 15 |
-| Total Checks | 71 |
-| Passed | 55 |
+| Total Runs | 16 |
+| Total Checks | 73 |
+| Passed | 57 |
 | Failed | 16 |
-| Completed Items | 24 |
-| Pending Items | 8 |
+| Completed Items | 25 |
+| Pending Items | 7 |
 | Expert Domains Tracked | 6 |
-| Expert Open Gaps | 3 |
-| Completion Rate | 75% |
-| Last Run | QA-20260227-0015 (2026-02-26T18:11:05.996Z) |
+| Expert Open Gaps | 2 |
+| Completion Rate | 78.13% |
+| Last Run | QA-20260227-0016 (2026-02-26T18:34:32.172Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260227-0015 (2026-02-26T18:11:05.996Z)
+Latest run: QA-20260227-0016 (2026-02-26T18:34:32.172Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| AI Quality Assurance Specialist | appropriate | no | 배포본 텍스트 정합성(로그인 카피)만 재배포/캐시 정합성 검증 필요 |
-| IT Monitoring & Observability SME | partially-appropriate | yes | Vercel 배포 ID와 런타임 커밋 매핑 로그 수집 |
-| AI Security & Reliability Architect | appropriate | no | 게스트 차단/지역 제한 이벤트를 보안 로그와 크로스체크 |
-| DevOps / SRE Engineer | appropriate | no | 문구 정합성 완료 전까지 릴리스 게이트에서 P1 체크 적용 |
-| Test Automation Architect | appropriate | yes | 배포 카피 검증용 assertions에 역할 기반 선택자 적용 유지 |
-| Data Quality & Metrics Analyst | partially-appropriate | yes | 배포 카피 실패율을 QA_RUN 메트릭에 분리 저장 |
+| AI Quality Assurance Specialist | appropriate | no | 배포 채널별 동일 시나리오 반복 실행을 정기 게이트로 고정 |
+| IT Monitoring & Observability SME | partially-appropriate | yes | Vercel 배포 ID와 런타임 커밋 매핑 로그에 시작 시도/성공률 지표를 연결 |
+| AI Security & Reliability Architect | appropriate | no | 게스트 차단/지역 제한 이벤트를 보안 로그와 교차 검증 |
+| DevOps / SRE Engineer | appropriate | no | 배포 완료 후 릴리스 게이트에 본 스위트를 추가 |
+| Test Automation Architect | appropriate | no | 실패 항목 발생 시 재시도 정책과 실패 추적 규칙 문서화 |
+| Data Quality & Metrics Analyst | partially-appropriate | yes | system-start metrics 게이트를 qa-tracker 항목으로 상향 |
 
 ## Expert Domain Open Gaps
 
-- data-metrics-quality: Data Quality & Metrics Analyst (last QA-20260227-0015)
-  next: 배포 카피 실패율을 QA_RUN 메트릭에 분리 저장
-- observability-monitoring: IT Monitoring & Observability SME (last QA-20260227-0015)
-  next: Vercel 배포 ID와 런타임 커밋 매핑 로그 수집
-- test-automation: Test Automation Architect (last QA-20260227-0015)
-  next: 배포 카피 검증용 assertions에 역할 기반 선택자 적용 유지
+- data-metrics-quality: Data Quality & Metrics Analyst (last QA-20260227-0016)
+  next: system-start metrics 게이트를 qa-tracker 항목으로 상향
+- observability-monitoring: IT Monitoring & Observability SME (last QA-20260227-0016)
+  next: Vercel 배포 ID와 런타임 커밋 매핑 로그에 시작 시도/성공률 지표를 연결
 
 ## Pending Improvements
 
 - [P1] feature-dod-login-copy-neutral: 로그인 정책 카피 중립성 지속성 (seen 1회, last QA-20260227-0015)
-- [P1] landing-copy-alignment: 랜딩/로그인 정책 카피 정합성 (seen 7회, last QA-20260227-0015)
 - [P1] metrics-drift-threshold-standard: 지표 드리프트 임계치 표준화 (seen 2회, last QA-20260227-0013)
 - [P1] obs-fp-fn-weekly-report: 오탐/미탐 주간 리포트 자동 생성 (seen 3회, last QA-20260227-0013)
 - [P1] security-attack-regression-pack: 보안 공격 시나리오 회귀팩 구축 (seen 3회, last QA-20260227-0013)
@@ -59,13 +56,14 @@ Latest run: QA-20260227-0015 (2026-02-26T18:11:05.996Z)
 - feature-dod-login-policy-copy: 로그인 정책 안내 카피가 GitHub/Google/이메일 중립 표현인지 (completed 2회, last QA-20260227-0012)
 - feature-dod-release-response-time-check: Feature/Release DoD: 핵심 응답시간 합격 (completed 1회, last QA-20260226-0005)
 - feature-dod-security-review: Feature DoD: 보안 검토(입력 검증/인증/OWASP) (completed 1회, last QA-20260226-0006)
-- feature-dod-system-start-guard: 비로그인/제한 게스트 시스템 시작 가드 모달 동작 (completed 5회, last QA-20260227-0015)
+- feature-dod-system-start-guard: 비로그인/제한 게스트 시스템 시작 가드 모달 동작 (completed 6회, last QA-20260227-0016)
 - feature-dod-tsc-zero-error: Feature DoD: tsc noEmit 0 에러 (completed 1회, last QA-20260226-0007)
 - feature-dod-unit-tests: Feature DoD: 신규 로직 단위 테스트 (completed 1회, last QA-20260226-0009)
 - feature-dod-validation-health-endpoints: Feature/Release DoD: 헬스체크 엔드포인트 통과 검증 (completed 1회, last QA-20260226-0005)
 - guest-login-visibility-toggle: 게스트 로그인 버튼 노출 옵션화 (completed 2회, last QA-20260227-0013)
-- guest-pin-login-flow: 게스트 PIN 인증 후 시스템 시작 버튼 노출 (completed 2회, last QA-20260227-0015)
+- guest-pin-login-flow: 게스트 PIN 인증 후 시스템 시작 버튼 노출 (completed 3회, last QA-20260227-0016)
 - home-semantic-nav: 홈 페이지 nav 랜드마크 보강 (completed 1회, last QA-20260226-0009)
+- landing-copy-alignment: 랜딩/로그인 정책 카피 정합성 (completed 4회, last QA-20260227-0016)
 - login-copy-neutral: 로그인 정책 카피 중립성 개선 (completed 1회, last QA-20260227-0014)
 - login-pin-form-structure: 게스트 PIN 입력 폼 구조 정리 (completed 1회, last QA-20260226-0001)
 - modal-backdrop-close: 모달 백드롭 클릭 닫기 안정화 (completed 2회, last QA-20260226-0002)
@@ -82,6 +80,7 @@ Latest run: QA-20260227-0015 (2026-02-26T18:11:05.996Z)
 
 | Run ID | Time (UTC) | Title | Checks | Completed | Pending | Expert Gaps |
 |---|---|---|---:|---:|---:|---:|
+| QA-20260227-0016 | 2026-02-26T18:34:32.172Z | Vercel Playwright QA - 로그인 정책/시스템 시작 가드 재검증 | 2 | 3 | 0 | 2 |
 | QA-20260227-0015 | 2026-02-26T18:11:05.996Z | Vercel Playwright QA - 랜딩 로그인 모달 카피 배포 정합성 재검증 | 2 | 2 | 2 | 3 |
 | QA-20260227-0014 | 2026-02-26T18:03:30.997Z | Vercel Playwright QA - 로그인 정책/시스템 시작 가드 배포 검증 | 3 | 3 | 1 | 2 |
 | QA-20260227-0013 | 2026-02-26T17:50:54.243Z | Vercel Playwright QA - 시스템 시작 가드/게스트 PIN 체험 흐름 재검증 | 2 | 2 | 3 | 2 |
