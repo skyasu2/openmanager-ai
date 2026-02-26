@@ -5,6 +5,7 @@
  */
 
 import type { UIMessage } from 'ai';
+import type { StructuredAssistantResponse } from '@/lib/ai/utils/assistant-response-view';
 import { extractTextFromUIMessage } from '@/lib/ai/utils/message-normalizer';
 import type {
   AnalysisBasis,
@@ -23,6 +24,7 @@ type RagSource = {
 type MessageMetadata = {
   traceId?: string;
   ragSources?: RagSource[];
+  assistantResponseView?: StructuredAssistantResponse;
 };
 
 function getMessageMetadata(message: UIMessage): MessageMetadata | undefined {
@@ -169,10 +171,13 @@ export function transformUIMessageToEnhanced(
     isStreaming: isLoading && isLastMessage,
     thinkingSteps: thinkingSteps.length > 0 ? thinkingSteps : undefined,
     metadata:
-      analysisBasis || traceId
+      analysisBasis || traceId || metadata?.assistantResponseView
         ? {
             ...(analysisBasis && { analysisBasis }),
             ...(traceId && { traceId }),
+            ...(metadata?.assistantResponseView && {
+              assistantResponseView: metadata.assistantResponseView,
+            }),
           }
         : undefined,
   };

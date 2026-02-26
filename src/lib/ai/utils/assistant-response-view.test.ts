@@ -1,5 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { createAssistantResponseView } from './assistant-response-view';
+import {
+  createAssistantResponseView,
+  resolveAssistantResponseView,
+} from './assistant-response-view';
 
 describe('createAssistantResponseView', () => {
   it('짧은 응답은 접지 않고 그대로 반환한다', () => {
@@ -53,5 +56,43 @@ ${'y'.repeat(700)}`;
     expect(view.shouldCollapse).toBe(true);
     expect(view.summary).toContain('첫째, API 서버 지연이 증가했습니다.');
     expect(view.details).toBeTruthy();
+  });
+
+  it('구조화된 메타데이터 요약을 최우선으로 사용한다', () => {
+    const view = resolveAssistantResponseView('원문 텍스트', {
+      responseSummary: '메타데이터 요약',
+      responseDetails: '메타데이터 상세',
+      responseShouldCollapse: true,
+    });
+
+    expect(view.summary).toBe('메타데이터 요약');
+    expect(view.details).toBe('메타데이터 상세');
+    expect(view.shouldCollapse).toBe(true);
+  });
+
+  it('메타데이터 details 없이 shouldCollapse가 false여도 기본 규칙으로 추론한다', () => {
+    const view = resolveAssistantResponseView('원문 텍스트', {
+      responseSummary: '짧은 요약',
+      responseShouldCollapse: false,
+      responseDetails: null,
+    });
+
+    expect(view.summary).toBe('짧은 요약');
+    expect(view.details).toBeNull();
+    expect(view.shouldCollapse).toBe(false);
+  });
+
+  it('assistantResponseView 객체가 있으면 응답을 그대로 매핑한다', () => {
+    const view = resolveAssistantResponseView('원문 텍스트', {
+      assistantResponseView: {
+        summary: '객체 기반 요약',
+        details: '객체 상세',
+        shouldCollapse: true,
+      },
+    });
+
+    expect(view.summary).toBe('객체 기반 요약');
+    expect(view.details).toBe('객체 상세');
+    expect(view.shouldCollapse).toBe(true);
   });
 });

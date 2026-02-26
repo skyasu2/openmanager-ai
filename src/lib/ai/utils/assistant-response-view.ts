@@ -11,6 +11,22 @@ export interface AssistantResponseView {
   shouldCollapse: boolean;
 }
 
+export interface StructuredAssistantResponse {
+  summary: string;
+  details?: string | null;
+  shouldCollapse?: boolean;
+}
+
+interface ResponseMetadataInput {
+  responseSummary?: unknown;
+  responseDetails?: unknown;
+  responseShouldCollapse?: unknown;
+  summary?: unknown;
+  details?: unknown;
+  shouldCollapse?: unknown;
+  assistantResponseView?: unknown;
+}
+
 const COLLAPSE_CHAR_THRESHOLD = 680;
 const COLLAPSE_LINE_THRESHOLD = 14;
 
@@ -96,5 +112,90 @@ export function createAssistantResponseView(
     summary: normalized,
     details: null,
     shouldCollapse: false,
+  };
+}
+
+function isStringValue(value: unknown): value is string {
+  return typeof value === 'string';
+}
+
+function isNullableString(value: unknown): value is string | null {
+  return value === null || isStringValue(value);
+}
+
+function isBooleanValue(value: unknown): value is boolean {
+  return typeof value === 'boolean';
+}
+
+function normalizeStructuredResponse(
+  data: ResponseMetadataInput
+): StructuredAssistantResponse | null {
+  const structured = data.assistantResponseView;
+
+  if (structured && typeof structured === 'object') {
+    const metadata = structured as Partial<StructuredAssistantResponse>;
+    if (isStringValue(metadata.summary)) {
+      return {
+        summary: metadata.summary,
+        details: isNullableString(metadata.details)
+          ? metadata.details
+          : undefined,
+        shouldCollapse: isBooleanValue(metadata.shouldCollapse)
+          ? metadata.shouldCollapse
+          : undefined,
+      };
+    }
+  }
+
+  const summary = isStringValue(data.responseSummary)
+    ? data.responseSummary
+    : isStringValue(data.summary)
+      ? data.summary
+      : undefined;
+  if (!summary) return null;
+
+  return {
+    summary,
+    details: isNullableString(data.responseDetails)
+      ? (data.responseDetails ?? null)
+      : isNullableString(data.details)
+        ? (data.details ?? null)
+        : undefined,
+    shouldCollapse: isBooleanValue(data.responseShouldCollapse)
+      ? data.responseShouldCollapse
+      : isBooleanValue(data.shouldCollapse)
+        ? data.shouldCollapse
+        : undefined,
+  };
+}
+
+export function resolveAssistantResponseView(
+  content: string,
+  data: Record<string, unknown> | null | undefined
+): AssistantResponseView {
+  const normalizedContent = typeof content === 'string' ? content : '';
+  const structured = data ? normalizeStructuredResponse(data) : null;
+
+  if (!structured) {
+    return createAssistantResponseView(normalizedContent);
+  }
+
+  if (!structured.summary.trim()) {
+    return createAssistantResponseView(normalizedContent);
+  }
+
+  const shouldCollapse =
+    typeof structured.shouldCollapse === 'boolean'
+      ? structured.shouldCollapse
+      : !!(structured.details && structured.details.trim().length > 0);
+
+  return {
+    summary: structured.summary,
+    details:
+      typeof structured.details === 'string' &&
+      structured.details.trim().length > 0
+        ? structured.details
+        : null,
+    shouldCollapse,
   };
 }

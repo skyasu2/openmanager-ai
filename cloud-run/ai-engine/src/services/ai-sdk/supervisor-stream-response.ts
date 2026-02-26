@@ -23,6 +23,149 @@ import { flushLangfuse } from '../observability/langfuse';
 // UIMessageStream Response
 // ============================================================================
 
+const RESPONSE_SUMMARY_CHAR_THRESHOLD = 680;
+const RESPONSE_SUMMARY_LINE_THRESHOLD = 14;
+
+interface AssistantResponseSummary {
+  summary: string;
+  details: string | null;
+  shouldCollapse: boolean;
+}
+
+function splitIntoParagraphs(text: string): string[] {
+  return text
+    .split(/\n\s*\n/)
+    .map((paragraph) => paragraph.trim())
+    .filter(Boolean);
+}
+
+function splitSentences(text: string): string[] {
+  return text
+    .split(/(?<=[.!?])\s+/)
+    .map((sentence) => sentence.trim())
+    .filter(Boolean);
+}
+
+function createAssistantResponseSummary(content: string): AssistantResponseSummary {
+  const normalized = typeof content === 'string' ? content.trim() : '';
+  if (!normalized) {
+    return { summary: '', details: null, shouldCollapse: false };
+  }
+
+  const lines = normalized
+    .split(/\r?\n/)
+    .filter((line) => line.trim().length > 0);
+  const isLong =
+    normalized.length >= RESPONSE_SUMMARY_CHAR_THRESHOLD ||
+    lines.length >= RESPONSE_SUMMARY_LINE_THRESHOLD;
+
+  if (!isLong) {
+    return {
+      summary: normalized,
+      details: null,
+      shouldCollapse: false,
+    };
+  }
+
+  const paragraphs = splitIntoParagraphs(normalized);
+  if (paragraphs.length >= 2) {
+    const firstParagraph = paragraphs[0];
+    if (!firstParagraph) {
+      return { summary: normalized, details: null, shouldCollapse: false };
+    }
+
+    let summary = firstParagraph;
+    let detailsStartIndex = 1;
+
+    const isHeadingOnly =
+      /^#{1,3}\s.+$/m.test(summary) && summary.length <= 80;
+    const secondParagraph = paragraphs[1];
+    if (isHeadingOnly && secondParagraph) {
+      summary = `${summary}\n\n${secondParagraph}`;
+      detailsStartIndex = 2;
+    }
+
+    const details = paragraphs.slice(detailsStartIndex).join('\n\n').trim();
+    if (details.length > 0) {
+      return {
+        summary,
+        details,
+        shouldCollapse: true,
+      };
+    }
+  }
+
+  const sentences = splitSentences(normalized);
+  if (sentences.length >= 3) {
+    const summary = sentences.slice(0, 2).join(' ').trim();
+    const details = sentences.slice(2).join(' ').trim();
+    if (summary && details) {
+      return {
+        summary,
+        details,
+        shouldCollapse: true,
+      };
+    }
+  }
+
+  return {
+    summary: normalized,
+    details: null,
+    shouldCollapse: false,
+  };
+}
+
+function isStringValue(value: unknown): value is string {
+  return typeof value === 'string';
+}
+
+function isNullableString(value: unknown): value is string | null {
+  return value === null || isStringValue(value);
+}
+
+function isBooleanValue(value: unknown): value is boolean {
+  return typeof value === 'boolean';
+}
+
+function getStructuredResponseSummary(
+  doneData: Record<string, unknown>,
+  fallback: AssistantResponseSummary
+): { summary: string; details: string | null; shouldCollapse: boolean } {
+  const responseSummary = isStringValue(doneData.responseSummary)
+    ? doneData.responseSummary
+    : isStringValue(doneData.summary)
+      ? doneData.summary
+      : undefined;
+
+  const responseDetails = isNullableString(doneData.responseDetails)
+    ? (doneData.responseDetails ?? null)
+    : isNullableString(doneData.details)
+      ? (doneData.details ?? null)
+      : undefined;
+
+  const responseShouldCollapse = isBooleanValue(doneData.responseShouldCollapse)
+    ? doneData.responseShouldCollapse
+    : isBooleanValue(doneData.shouldCollapse)
+      ? doneData.shouldCollapse
+      : fallback.shouldCollapse;
+
+  const summary = isStringValue(responseSummary)
+    ? responseSummary
+    : fallback.summary;
+
+  const details = isNullableString(responseDetails)
+    ? responseDetails
+    : fallback.details;
+
+  return {
+    summary,
+    details: typeof details === 'string' ? details : null,
+    shouldCollapse: typeof summary === 'string' && summary.trim().length > 0
+      ? responseShouldCollapse
+      : false,
+  };
+}
+
 async function flushLangfuseBestEffort(timeoutMs: number = 350): Promise<void> {
   await Promise.race([
     flushLangfuse(),
@@ -49,6 +192,7 @@ export function createSupervisorStreamResponse(
 
       let messageSeq = 0;
       let currentMessageId = `assistant-${request.sessionId}-${startTime}-${nonce}-${messageSeq}`;
+      let responseText = '';
 
       let textPartStarted = false;
 
@@ -88,6 +232,9 @@ export function createSupervisorStreamResponse(
                 delta: event.data as string,
                 id: currentMessageId,
               });
+              if (typeof event.data === 'string') {
+                responseText += event.data;
+              }
               break;
 
             case 'handoff':
@@ -148,12 +295,28 @@ export function createSupervisorStreamResponse(
               const doneData = event.data as Record<string, unknown>;
               const upstreamSuccess = doneData.success;
               const success = typeof upstreamSuccess === 'boolean' ? upstreamSuccess : true;
+              const summary = createAssistantResponseSummary(responseText);
+              const responseSummaryView = getStructuredResponseSummary(
+                doneData,
+                summary
+              );
+              const normalizedResponseSummary = responseSummaryView.summary.trim();
 
               writer.write({
                 type: 'data-done',
                 data: {
                   durationMs: Date.now() - startTime,
                   ...doneData,
+                  ...(normalizedResponseSummary
+                    ? {
+                        responseSummary: responseSummaryView.summary,
+                        responseDetails:
+                          responseSummaryView.shouldCollapse
+                            ? responseSummaryView.details
+                            : null,
+                        responseShouldCollapse: responseSummaryView.shouldCollapse,
+                      }
+                    : {}),
                   success,
                 },
               });

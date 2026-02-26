@@ -25,7 +25,7 @@ import {
 } from '@/hooks/ai/useAIChatCore';
 import { useResizable } from '@/hooks/ui/useResizable';
 import { useUserPermissions } from '@/hooks/useUserPermissions';
-import { createAssistantResponseView } from '@/lib/ai/utils/assistant-response-view';
+import { resolveAssistantResponseView } from '@/lib/ai/utils/assistant-response-view';
 import { cn } from '@/lib/utils';
 import type { EnhancedChatMessage } from '@/stores/useAISidebarStore';
 import { useAISidebarStore } from '@/stores/useAISidebarStore';
@@ -77,8 +77,8 @@ const MessageComponent = memo<{
     ) {
       return null;
     }
-    return createAssistantResponseView(message.content);
-  }, [message.content, message.isStreaming, message.role]);
+    return resolveAssistantResponseView(message.content, message.metadata);
+  }, [message.content, message.metadata, message.isStreaming, message.role]);
 
   // thinking 메시지일 경우 간소화된 인라인 상태 표시
   if (message.role === 'thinking' && message.thinkingSteps) {

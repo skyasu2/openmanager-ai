@@ -23,6 +23,8 @@ import {
   type StreamDataPart,
   useHybridAIQuery,
 } from '@/hooks/ai/useHybridAIQuery';
+import type { StructuredAssistantResponse } from '@/lib/ai/utils/assistant-response-view';
+import { resolveAssistantResponseView } from '@/lib/ai/utils/assistant-response-view';
 import { logger } from '@/lib/logging';
 import {
   type EnhancedChatMessage,
@@ -125,6 +127,52 @@ export interface UseAIChatCoreReturn {
   warmingUp: boolean;
   /** 웜업 예상 대기 시간 (초) */
   estimatedWaitSeconds: number;
+}
+
+type ResponseSourceData = {
+  responseSummary?: unknown;
+  responseDetails?: unknown;
+  responseShouldCollapse?: unknown;
+  summary?: unknown;
+  details?: unknown;
+  shouldCollapse?: unknown;
+  assistantResponseView?: unknown;
+  ragSources?: unknown;
+};
+
+function normalizeRagSources(sources: unknown): Array<{
+  title: string;
+  similarity: number;
+  sourceType: string;
+  category?: string;
+  url?: string;
+}> | null {
+  if (!Array.isArray(sources)) return null;
+  return sources as Array<{
+    title: string;
+    similarity: number;
+    sourceType: string;
+    category?: string;
+    url?: string;
+  }>;
+}
+
+function buildStructuredResponseView(
+  doneData: ResponseSourceData | undefined
+): StructuredAssistantResponse | null {
+  if (!doneData) return null;
+
+  const responseMeta = doneData as Record<string, unknown>;
+  const structured = resolveAssistantResponseView('', responseMeta);
+  const summary = structured.summary.trim();
+
+  if (!summary) return null;
+
+  return {
+    summary,
+    details: structured.details,
+    shouldCollapse: structured.shouldCollapse,
+  };
 }
 
 // ============================================================================
@@ -296,9 +344,46 @@ export function useAIChatCore(
         setCurrentHandoff(null);
 
         // done 이벤트에서 ragSources 추출 (스트리밍 모드 웹 검색 결과)
-        const doneData = dataPart.data as Record<string, unknown> | undefined;
-        if (doneData?.ragSources && Array.isArray(doneData.ragSources)) {
-          setStreamRagSources(doneData.ragSources as typeof streamRagSources);
+        const doneData = dataPart.data as ResponseSourceData | undefined;
+
+        if (doneData?.ragSources) {
+          const parsedRagSources = normalizeRagSources(doneData.ragSources);
+          if (parsedRagSources) {
+            setStreamRagSources(parsedRagSources);
+          }
+        } else {
+          setStreamRagSources([]);
+        }
+
+        const structuredView = buildStructuredResponseView(doneData);
+        if (structuredView) {
+          const currentMessages = [...messages];
+          const lastAssistantIndex = currentMessages
+            .map((message) => message.role)
+            .lastIndexOf('assistant');
+          if (lastAssistantIndex < 0) return;
+
+          const targetMessage = currentMessages[lastAssistantIndex];
+          const prevMetadata =
+            typeof targetMessage?.metadata === 'object' &&
+            targetMessage?.metadata !== null
+              ? (targetMessage.metadata as Record<string, unknown>)
+              : {};
+
+          setMessages(
+            currentMessages.map(
+              (message: (typeof currentMessages)[number], index: number) => {
+                if (index !== lastAssistantIndex) return message;
+                return {
+                  ...message,
+                  metadata: {
+                    ...prevMetadata,
+                    assistantResponseView: structuredView,
+                  },
+                };
+              }
+            )
+          );
         }
       }
     },

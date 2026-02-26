@@ -1,6 +1,6 @@
 import { Bot, Brain, ChevronDown, ChevronUp, User } from 'lucide-react';
 import { memo, useEffect, useMemo, useState } from 'react';
-import { createAssistantResponseView } from '@/lib/ai/utils/assistant-response-view';
+import { resolveAssistantResponseView } from '@/lib/ai/utils/assistant-response-view';
 import { formatTime } from '@/lib/format-date';
 import type { EnhancedChatMessage } from '@/stores/useAISidebarStore';
 import type { AIThinkingStep } from '@/types/ai-sidebar/ai-sidebar-types';
@@ -67,8 +67,8 @@ export const AIWorkspaceMessage = memo<{
     ) {
       return null;
     }
-    return createAssistantResponseView(message.content);
-  }, [message.content, message.isStreaming, message.role]);
+    return resolveAssistantResponseView(message.content, message.metadata);
+  }, [message.content, message.metadata, message.isStreaming, message.role]);
 
   if (message.role === 'thinking' && message.thinkingSteps) {
     return (
