@@ -3,8 +3,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import debug from '@/utils/debug';
 import { LOGIN_POLICY_COPY } from '@/lib/auth/login-policy-copy';
+import debug from '@/utils/debug';
 import {
   DEFAULT_REDIRECT_PATH,
   REDIRECT_STORAGE_KEY,

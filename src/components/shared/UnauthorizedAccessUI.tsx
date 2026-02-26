@@ -12,8 +12,8 @@
 
 import { Shield } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import FullScreenLayout from './FullScreenLayout';
 import { LOGIN_POLICY_COPY } from '@/lib/auth/login-policy-copy';
+import FullScreenLayout from './FullScreenLayout';
 
 interface UnauthorizedAccessUIProps {
   /**
@@ -93,8 +93,8 @@ export default function UnauthorizedAccessUI({
 
         {requiresGitHub && (
           <p className="mt-4 text-xs text-gray-500">
-            게스트 모드에서는 {LOGIN_POLICY_COPY.adminPinAuthText}로 대시보드 접근이
-            가능합니다.
+            게스트 모드에서는 {LOGIN_POLICY_COPY.adminPinAuthText}로 대시보드
+            접근이 가능합니다.
           </p>
         )}
       </div>

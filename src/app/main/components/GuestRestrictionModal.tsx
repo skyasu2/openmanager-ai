@@ -18,7 +18,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { AUTH_PROVIDER_COPY, LOGIN_POLICY_COPY } from '@/lib/auth/login-policy-copy';
+import {
+  AUTH_PROVIDER_COPY,
+  LOGIN_POLICY_COPY,
+} from '@/lib/auth/login-policy-copy';
 
 interface GuestRestrictionModalProps {
   open: boolean;

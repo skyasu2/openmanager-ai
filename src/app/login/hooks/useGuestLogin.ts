@@ -7,13 +7,13 @@ import { useEffect, useState } from 'react';
 import { isGuestFullAccessEnabled } from '@/config/guestMode';
 import { authStateManager } from '@/lib/auth/auth-state-manager';
 import type { AuthUser } from '@/lib/auth/auth-state-manager-types';
-import { LOGIN_POLICY_COPY } from '@/lib/auth/login-policy-copy';
 import {
   AUTH_SESSION_ID_KEY,
   AUTH_TYPE_KEY,
   AUTH_USER_KEY,
   LEGACY_GUEST_SESSION_COOKIE_KEY,
 } from '@/lib/auth/guest-session-utils';
+import { LOGIN_POLICY_COPY } from '@/lib/auth/login-policy-copy';
 import { triggerAIWarmup } from '@/utils/ai-warmup';
 import debug from '@/utils/debug';
 import {
@@ -296,8 +296,7 @@ export function useGuestLogin(deps: {
 
           if (payload.error === 'guest_region_blocked') {
             deps.setErrorMessage(
-              payload.message ||
-                LOGIN_POLICY_COPY.guestRegionBlockedPrompt
+              payload.message || LOGIN_POLICY_COPY.guestRegionBlockedPrompt
             );
             return;
           }
