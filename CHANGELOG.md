@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.5.0](https://github.com/skyasu2/openmanager-ai/compare/v8.4.0...v8.5.0) (2026-02-26)
+
+
+### Features
+
+* **chat:** add RAG toggle + ChatGPT-style "+" popover for tool options ([6b8a9c5](https://github.com/skyasu2/openmanager-ai/commit/6b8a9c59670b80206366866408d1fc367c231740))
+
+
+### Bug Fixes
+
+* **a11y:** resolve Biome aria warnings — remove unsupported aria-label on header/footer, div→main ([ab32864](https://github.com/skyasu2/openmanager-ai/commit/ab3286453513054346a166d5086ff61ae8b0be09))
+* **ai:** TypeScript compilation error in supervisor routes regarding securityWarning property ([87f4880](https://github.com/skyasu2/openmanager-ai/commit/87f48808d3588927c29a9ebd40159663db25cf26))
+* **auth:** unify login provider copy and record login UX QA run ([a4568b6](https://github.com/skyasu2/openmanager-ai/commit/a4568b62e8061d428eeb01b04554c6f5eb307583))
+* **chat:** prevent raw JSON payload display in streaming AI responses ([de11d32](https://github.com/skyasu2/openmanager-ai/commit/de11d3272cafe921fb60a01c6e5db71dd0b06cf0))
+* **vision:** constrain routing to image-only analysis ([af45ea4](https://github.com/skyasu2/openmanager-ai/commit/af45ea490321cfde95b0d95af16e8ff75218a791))
+
 ## [8.4.0](https://github.com/skyasu2/openmanager-ai/compare/v8.3.4...v8.4.0) (2026-02-26)
 
 
