@@ -14,6 +14,7 @@ type LoginButtonsProps = {
   onGuest: () => void;
   onEmail: (email: string) => void;
   onCancel: () => void;
+  showGuestLogin?: boolean;
   guestButtonDisabled?: boolean;
   guestButtonLabel?: string;
   guestHelperText?: string;
@@ -35,6 +36,7 @@ export function LoginButtons({
   onGuest,
   onEmail,
   onCancel,
+  showGuestLogin = true,
   guestButtonDisabled = false,
   guestButtonLabel = '게스트로 체험하기',
   guestHelperText,
@@ -155,7 +157,7 @@ export function LoginButtons({
         </button>
       </form>
 
-      {currentProvider !== 'guest' && (
+      {showGuestLogin && currentProvider !== 'guest' && (
         <div className="relative my-2 flex items-center gap-4">
           <div className="h-px w-full bg-cyan-200/55" />
           <span className="whitespace-nowrap text-xs font-medium text-cyan-100/80">
@@ -175,7 +177,7 @@ export function LoginButtons({
         </button>
       )}
 
-      {currentProvider !== 'guest' && (
+      {showGuestLogin && currentProvider !== 'guest' && (
         <button
           type="button"
           onClick={onGuest}
@@ -196,7 +198,7 @@ export function LoginButtons({
         </button>
       )}
 
-      {currentProvider !== 'guest' && guestHelperText ? (
+      {showGuestLogin && currentProvider !== 'guest' && guestHelperText ? (
         <p className="px-1 text-xs text-cyan-100/75">{guestHelperText}</p>
       ) : null}
     </>

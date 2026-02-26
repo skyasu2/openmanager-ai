@@ -41,6 +41,15 @@
   - `cd cloud-run/ai-engine && npm run type-check`
   - `cd cloud-run/ai-engine && npm run test`
 
+### 2.5 최종 QA 운영 규칙 (Codex)
+- 현재 프로젝트의 QA 기준선은 `reports/qa/production-qa-2026-02-25.md`와 `reports/qa/qa-tracker.json`을 함께 참조합니다.
+- 최종 QA(릴리즈 게이트)는 기본적으로 **Vercel 실환경 + Playwright MCP**에서 수행합니다.
+- AI 기능 검증이 불필요한 QA(예: 레이아웃/카피/일반 인증 동선)는 로컬 개발 서버 기반 QA로 전환할 수 있습니다.
+- 모든 QA 실행 결과는 누적 추적을 위해 반드시 기록합니다.
+  - 입력 템플릿: `reports/qa/templates/qa-run-input.example.json`
+  - 기록: `npm run qa:record -- --input <json>`
+  - 상태 확인: `npm run qa:status`
+
 ## 3) 공통 지식 및 유지보수 메모
 - **[필독] 프로젝트 3대 원칙 (Free Tier, 배포 환경 인지, OTel 데이터 SSOT)** 등 모든 AI 에이전트가 완벽히 숙지해야 할 핵심 규칙은 `docs/guides/ai/ai-standards.md` 파일에 정의되어 있습니다. 작업을 시작하기 전 해당 문서를 반드시 참조하세요.
 - 이 문서는 주로 "Codex 전용 실행 환경 및 MCP 설정" 등에 대한 규칙만 제한적으로 유지합니다.

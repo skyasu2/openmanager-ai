@@ -198,6 +198,9 @@ interface AISidebarState {
   // RAG (Knowledge Base) 토글
   ragEnabled: boolean;
 
+  // 대화 복원 배너 닫힘 상태 (탭 전환 시 재노출 방지)
+  restoreBannerDismissed: boolean;
+
   // 함수 패널 관련 상태
   functionTab: 'qa' | 'report' | 'patterns' | 'logs' | 'context';
   selectedContext: 'basic' | 'advanced' | 'custom';
@@ -209,6 +212,8 @@ interface AISidebarState {
   setSidebarWidth: (width: number) => void;
   setWebSearchEnabled: (enabled: boolean) => void;
   setRagEnabled: (enabled: boolean) => void;
+  dismissRestoreBanner: () => void;
+  resetRestoreBanner: () => void;
   setActiveTab: (
     tab: 'chat' | 'presets' | 'thinking' | 'settings' | 'functions'
   ) => void;
@@ -241,6 +246,7 @@ export const useAISidebarStore = create<AISidebarState>()(
         sidebarWidth: 600, // 기본 너비 600px
         webSearchEnabled: false,
         ragEnabled: false,
+        restoreBannerDismissed: false,
         functionTab: 'qa',
         selectedContext: 'basic',
         messages: [],
@@ -266,6 +272,9 @@ export const useAISidebarStore = create<AISidebarState>()(
         setWebSearchEnabled: (enabled) => set({ webSearchEnabled: enabled }),
 
         setRagEnabled: (enabled) => set({ ragEnabled: enabled }),
+
+        dismissRestoreBanner: () => set({ restoreBannerDismissed: true }),
+        resetRestoreBanner: () => set({ restoreBannerDismissed: false }),
 
         setActiveTab: (tab) => set({ activeTab: tab }),
 
@@ -300,6 +309,7 @@ export const useAISidebarStore = create<AISidebarState>()(
             sidebarWidth: 600, // 기본 너비로 리셋
             webSearchEnabled: false,
             ragEnabled: false,
+            restoreBannerDismissed: false,
             functionTab: 'qa',
             selectedContext: 'basic',
             messages: [],
@@ -319,6 +329,7 @@ export const useAISidebarStore = create<AISidebarState>()(
           sidebarWidth: state.sidebarWidth, // 사이드바 너비 영속화
           webSearchEnabled: state.webSearchEnabled,
           ragEnabled: state.ragEnabled,
+          restoreBannerDismissed: state.restoreBannerDismissed,
           functionTab: state.functionTab,
           selectedContext: state.selectedContext,
           // 🔥 대화 기록 영속화 (최근 20개만 - localStorage 5MB 초과 방지)

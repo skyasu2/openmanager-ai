@@ -40,6 +40,15 @@
 ## 💻 Agent Dev Server Protocol
 > **개발 서버 포트 지정**: Gemini 또는 Antigravity 등 AI 에이전트가 로컬 개발 서버를 구동할 때는 기본 포트(3000)를 피하고 **3004 또는 3005 포트를 사용**해야 합니다. (동시 작업 시 Port 충돌 방지)
 
+## ✅ QA Operation Protocol (Final Gate)
+- QA 기준선 문서: `reports/qa/production-qa-2026-02-25.md`
+- QA 상태 SSOT: `reports/qa/qa-tracker.json` + `reports/qa/QA_STATUS.md`
+- 기본 QA 실행 환경: **Vercel + Playwright MCP**
+- AI 기능 검증이 필요 없는 항목(UI 카피/레이아웃/일반 인증 흐름)은 **로컬 dev server(3004/3005)** 에서 진행
+- 모든 QA 실행 후 결과를 누적 기록:
+  - `npm run qa:record -- --input <json>`
+  - `npm run qa:status`
+
 ## 🛠 Technical Principles
 When writing or analyzing code, ALWAYS adhere to the following principles:
 

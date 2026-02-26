@@ -183,9 +183,9 @@ export const MessageComponent = memo<{
                 {/* 인라인 소스 메타 */}
                 <div className="mt-1.5 flex items-center gap-1.5 text-xs text-slate-500">
                   <Cpu className="h-3 w-3 text-slate-400" />
-                  <span>Cloud AI</span>
+                  <span>{message.metadata.analysisBasis.engine}</span>
                   <span className="text-slate-300">&middot;</span>
-                  <span>실시간 메트릭</span>
+                  <span>{message.metadata.analysisBasis.dataSource}</span>
                   {message.metadata.analysisBasis.ragSources &&
                     message.metadata.analysisBasis.ragSources.length > 0 && (
                       <span className="rounded bg-indigo-50 px-1.5 py-0.5 text-xs font-medium text-indigo-600">

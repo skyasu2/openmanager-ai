@@ -1,14 +1,16 @@
 # OpenManager AI v8.1.0 - WBS & 완성도 분석
 
 > Owner: project-lead
-> Status: Active Canonical
+> Status: Closed (운영 중 QA 진행으로 전환)
 > Doc type: Reference
-> Last reviewed: 2026-02-21
+> Last reviewed: 2026-02-26
 > Tags: wbs,completion,audit,retrospective
 > Canonical: reports/planning/wbs.md
 > 연관 문서: [최종 검수 확인서](completion-review.md) (가중 점수 교차 검증)
 
 **작성 목적**: 실제 코드베이스 분석 기반의 회고형 WBS + 완성도 퍼센트 산출
+
+> 🚨 **공지 (2026-02-26)**: 본 WBS 단위의 목표 추적 및 완료보고서는 현재 달성도를 기준으로 **공식 종료(Closed)** 처리되었습니다. 미완료된 잔여 작업이나 추가적인 품질 검증은 별도의 개발 단계가 아닌, **운영과 병행하는 QA 프로세스**를 통해 지속 개선해 나갈 예정입니다.
 
 > **범위 구분**: 본 문서의 §2~§7은 **개발 일정 및 완성도 평가 대상**입니다.
 > 개발 환경·도구·인프라 설정은 완성도에 포함되지 않으며, [부록 A](#부록-a-개발-환경-wbs완성도-미반영)에 별도 관리합니다.

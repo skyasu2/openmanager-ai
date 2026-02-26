@@ -50,10 +50,12 @@ export interface SupervisorFallbackData {
 
 /**
  * Intelligent Monitoring 폴백 데이터
+ * Cloud Run 응답 스키마와 일치: anomalyDetection, trendPrediction, patternAnalysis
  */
 export interface IntelligentMonitoringFallbackData {
-  prediction: null;
-  analysis: null;
+  anomalyDetection: null;
+  trendPrediction: null;
+  patternAnalysis: null;
   message: string;
 }
 
@@ -175,8 +177,9 @@ export function createFallbackResponse(
         success: true,
         message: FALLBACK_MESSAGES['intelligent-monitoring'].message,
         data: {
-          prediction: null,
-          analysis: null,
+          anomalyDetection: null,
+          trendPrediction: null,
+          patternAnalysis: null,
           message: FALLBACK_MESSAGES['intelligent-monitoring'].message,
         } as IntelligentMonitoringFallbackData,
         source: 'fallback',

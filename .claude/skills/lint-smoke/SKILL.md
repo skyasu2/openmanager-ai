@@ -52,8 +52,13 @@ Lint Smoke Summary
 - ready to commit: yes|no
 ```
 
+## Related Skills
+
+- `qa-ops` - Vercel/local 최종 QA + `reports/qa` 누적 기록
+
 ## Changelog
 
 - 2026-02-16: v1.4.0 - v1.1.0에서 전면 재작성 (220행→56행), 공개용 톤 정리, 리뷰 스킬 연계 명시
   - v1.2.x (2025-12): Vitest 4.0, Biome 전환 반영 (이력 통합)
   - v1.1.0 (2025-11): 트리거 키워드 확장, 자동수정 로직 추가
+- 2026-02-26: v1.5.0 - 최종 QA는 `qa-ops` 스킬로 누적 추적(`reports/qa`) 수행 원칙 추가

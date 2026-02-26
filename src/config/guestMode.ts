@@ -129,6 +129,18 @@ export function isGuestSystemStartEnabled(): boolean {
 }
 
 /**
+ * 로그인 화면에서 게스트 로그인 버튼 노출 여부
+ *
+ * @default true (명시적으로 false 설정 시에만 숨김)
+ */
+export function isGuestLoginButtonVisible(): boolean {
+  const flag = parseGuestBooleanFlag(
+    process.env.NEXT_PUBLIC_SHOW_GUEST_LOGIN
+  );
+  return typeof flag === 'boolean' ? flag : true;
+}
+
+/**
  * 현재 게스트 모드 설정 정보를 반환합니다.
  *
  * @returns 설정 정보 객체

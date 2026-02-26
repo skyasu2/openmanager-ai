@@ -13,7 +13,10 @@ import type {
   HandoffEventData,
 } from '@/hooks/ai/useHybridAIQuery';
 import { loadChatHistory } from '@/hooks/ai/utils/chat-history-storage';
-import type { EnhancedChatMessage } from '@/stores/useAISidebarStore';
+import {
+  type EnhancedChatMessage,
+  useAISidebarStore,
+} from '@/stores/useAISidebarStore';
 import type { SessionState } from '@/types/session';
 import { ChatInputArea } from './ChatInputArea';
 import { ChatMessageList } from './ChatMessageList';
@@ -157,32 +160,41 @@ export const EnhancedAIChat = memo(function EnhancedAIChat({
     limitedMessagesLength: limitedMessages.length,
   });
 
-  const [hasRestored, setHasRestored] = useState<boolean>(
-    allMessages.length === 0
+  // 대화 복원 배너 상태 — Zustand Store로 영속화 (탭 전환 시 재노출 방지)
+  const restoreBannerDismissed = useAISidebarStore(
+    (state) => state.restoreBannerDismissed
   );
+  const dismissRestoreBanner = useAISidebarStore(
+    (state) => state.dismissRestoreBanner
+  );
+
   const [hasPersistedHistory, setHasPersistedHistory] = useState(false);
+
+  const hasRestored = restoreBannerDismissed || allMessages.length === 0;
 
   useEffect(() => {
     const history = loadChatHistory();
     const hasHistory = Boolean(history?.messages?.length);
     setHasPersistedHistory(hasHistory);
-    setHasRestored(!hasHistory);
-  }, []);
+    if (!hasHistory) {
+      dismissRestoreBanner();
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // If user is actively generating, skip restore prompt and continue with live flow.
   useEffect(() => {
     if (isGenerating) {
-      setHasRestored(true);
+      dismissRestoreBanner();
     }
-  }, [isGenerating]);
+  }, [isGenerating, dismissRestoreBanner]);
 
   const handleRestore = () => {
-    setHasRestored(true);
+    dismissRestoreBanner();
     setHasPersistedHistory(false);
   };
   const handleNewSessionAndRestore = () => {
     onNewSession?.();
-    setHasRestored(true);
+    dismissRestoreBanner();
     setHasPersistedHistory(false);
   };
 

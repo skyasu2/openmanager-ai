@@ -10,7 +10,7 @@
  */
 
 import type { LucideIcon } from 'lucide-react';
-import { AlertTriangle, Bot, FileText, Server, TrendingUp } from 'lucide-react';
+import { AlertTriangle, Bot, Eye, FileText, Server, TrendingUp } from 'lucide-react';
 import { memo } from 'react';
 
 /**
@@ -55,6 +55,13 @@ export const STARTER_PROMPTS: StarterPrompt[] = [
     icon: FileText,
     title: '보고서 생성',
     prompt: '오늘의 시스템 요약 보고서를 만들어줘',
+    iconBg: 'bg-blue-50',
+    iconColor: 'text-blue-600',
+  },
+  {
+    icon: Eye,
+    title: '시각 분석',
+    prompt: '대시보드 스크린샷을 분석해줘. 이미지를 첨부할게',
     iconBg: 'bg-blue-50',
     iconColor: 'text-blue-600',
   },

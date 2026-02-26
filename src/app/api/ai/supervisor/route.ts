@@ -50,8 +50,8 @@ import { runWithTraceId } from '@/lib/tracing/async-context';
 import { isStatusQuery, shouldSkipCache } from './cache-utils';
 import { handleCloudRunJson, handleCloudRunStream } from './cloud-run-handler';
 import { handleSupervisorError } from './error-handler';
+import { extractAndValidateQuery, resolveSessionId } from './request-utils';
 import { requestSchema } from './schemas';
-import { securityCheck } from './security';
 import { buildServerContextMessage } from './server-context';
 
 // ============================================================================

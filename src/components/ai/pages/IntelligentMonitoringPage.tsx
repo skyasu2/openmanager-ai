@@ -240,21 +240,31 @@ export default function IntelligentMonitoringPage() {
 
         setProgress({ current: 0, total: targetServers.length });
 
+        // 병렬 호출 (최대 5개 동시 실행으로 Cloud Run 부하 제어)
+        const CONCURRENCY_LIMIT = 5;
         const serverResults: ServerAnalysisResult[] = [];
+        let completed = 0;
 
-        for (let i = 0; i < targetServers.length; i++) {
-          const server = targetServers[i];
-          if (!server) continue;
+        for (let i = 0; i < targetServers.length; i += CONCURRENCY_LIMIT) {
+          const batch = targetServers.slice(i, i + CONCURRENCY_LIMIT);
+          const batchPromises = batch.map((server) => {
+            if (!server) return Promise.resolve(null);
+            return analyzeSingleServer(
+              server.id,
+              server.name,
+              'hostname' in server
+                ? (server as unknown as EnhancedServerMetrics)
+                : undefined
+            );
+          });
 
-          setProgress({ current: i + 1, total: targetServers.length });
-
-          const serverResult = await analyzeSingleServer(
-            server.id,
-            server.name,
-            'hostname' in server ? server : undefined
-          );
-          if (serverResult) {
-            serverResults.push(serverResult);
+          const batchResults = await Promise.all(batchPromises);
+          for (const result of batchResults) {
+            completed++;
+            setProgress({ current: completed, total: targetServers.length });
+            if (result) {
+              serverResults.push(result);
+            }
           }
         }
 

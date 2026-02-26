@@ -24,6 +24,8 @@ venv/
 # Playwright
 .playwright-mcp/
 **/traces/
+dashboard-after-*
+dashboard-before-*
 *-test*.png
 openmanager-*.png
 playwright-*.png

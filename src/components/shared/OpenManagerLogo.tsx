@@ -22,6 +22,8 @@ interface OpenManagerLogoProps {
   className?: string;
   /** 클릭 시 이동할 경로 (기본: /) */
   href?: string;
+  /** 로고 제목 태그 (접근성/문서 구조 제어용) */
+  titleAs?: 'h1' | 'p' | 'span';
 }
 
 /**
@@ -36,6 +38,7 @@ export const OpenManagerLogo: React.FC<OpenManagerLogoProps> = ({
   showSubtitle = true,
   className = '',
   href,
+  titleAs = 'h1',
 }) => {
   const { aiAgent, isSystemStarted } = useUnifiedAdminStore(
     useShallow((s) => ({
@@ -58,6 +61,8 @@ export const OpenManagerLogo: React.FC<OpenManagerLogoProps> = ({
   const titleColor = variant === 'dark' ? 'text-white' : 'text-gray-900';
   const subtitleColor = variant === 'dark' ? 'text-white/90' : 'text-gray-500';
 
+  const TitleTag = titleAs;
+
   const content = (
     <div className={`flex min-w-0 items-center gap-3 ${className}`}>
       {/* 아이콘 영역 - 그라데이션 스퀘어 */}
@@ -68,9 +73,9 @@ export const OpenManagerLogo: React.FC<OpenManagerLogoProps> = ({
 
       {/* 텍스트 영역 - suppressHydrationWarning for dynamic subtitle */}
       <div className="min-w-0 text-left" suppressHydrationWarning>
-        <h1 className={`truncate text-xl font-bold ${titleColor}`}>
+        <TitleTag className={`truncate text-xl font-bold ${titleColor}`}>
           OpenManager <span style={AI_TEXT_GRADIENT_ANIMATED_STYLE}>AI</span>
-        </h1>
+        </TitleTag>
         {(() => {
           const subtitleText =
             aiAgent.isEnabled && isSystemStarted

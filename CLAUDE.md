@@ -19,7 +19,17 @@ npm run dev:network         # 개발 서버 (0.0.0.0:3000)
 npm run validate:all        # TypeScript + Lint + Test
 npm run test:quick          # 최소 테스트
 npm run type-check          # TypeScript 검사
+npm run qa:status           # 누적 QA 상태 요약
 ```
+
+## QA Operation Protocol (Final Gate)
+- QA 기준선 문서: `reports/qa/production-qa-2026-02-25.md`
+- QA 상태 SSOT: `reports/qa/qa-tracker.json` + `reports/qa/QA_STATUS.md`
+- 기본 실행 환경: **Vercel + Playwright MCP**
+- AI 기능 검증이 필요 없는 항목(UI 카피/레이아웃/일반 인증 흐름)은 로컬 개발 서버 QA로 전환 가능
+- 모든 QA 실행 후 결과 기록 필수:
+  - `npm run qa:record -- --input <json>`
+  - `npm run qa:status`
 
 ## 핵심 진입점
 

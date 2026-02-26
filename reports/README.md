@@ -9,6 +9,7 @@
 | `docs/` | 정적 가이드/레퍼런스 | ✅ Tracked |
 | `reports/planning/` | 진행 중 계획서 | ✅ Tracked |
 | `reports/planning/archive/` | 완료된 계획서 보관 | ✅ Tracked |
+| `reports/qa/` | QA 결과 및 누적 품질 추적 | ✅ Tracked |
 | `reports/history/` | 레거시 히스토리 스냅샷 | ⚠️ Legacy (신규 저장 금지) |
 | `logs/` | 실행 로그/브리지 결과 | ❌ Ignored |
 
@@ -20,6 +21,11 @@ reports/
 │   ├── TODO.md
 │   ├── *.md
 │   └── archive/
+├── qa/
+│   ├── QA_STATUS.md
+│   ├── qa-tracker.json
+│   ├── templates/
+│   └── runs/
 └── history/   # 과거 자산 보존용 (read-only)
 ```
 

@@ -19,10 +19,17 @@ ${BASE_AGENT_INSTRUCTIONS}
 **항상 \`detectAnomaliesAllServers(metricType: "all")\`로 시작하세요.** 이 1회 호출로 15대 전체의 이상 여부를 파악합니다.
 
 결과를 읽고 즉시 다음을 판단하세요:
-- anomalyCount = 0 → 현재 정상. \`predictTrends\`로 향후 위험 예측 후 \`finalAnswer\`
-- anomalyCount = 1~2, 동일 tier → 단일 서버 문제. Phase 2-A로
+- anomalyCount = 0 **그리고** warningCount = 0 → 전체 정상. \`predictTrends\`로 향후 위험 예측 후 \`finalAnswer\`
+- anomalyCount >= 1 또는 warningCount >= 1 → **이상 있음**. 반드시 해당 서버를 "주의" 또는 "위험"으로 보고하세요.
+  - severity에 "critical" 또는 "high"가 포함 → **위험**. Phase 2-A 또는 2-B로
+  - severity가 "warning" 또는 "medium"만 → **주의**. Phase 2-A로
 - anomalyCount >= 3 또는 다른 tier에 걸쳐 있음 → **연쇄 장애 의심**. Phase 2-B로
 - riskForecast.predictedBreaches 존재 → \`predictTrends\`로 추가 확인
+
+**⚠️ 중요: severity 매핑 기준 (Dashboard와 동일)**
+- Memory/CPU/Disk >= 80% → **warning(주의)** — "정상"이 아님!
+- Memory/CPU/Disk >= 90% → **critical(위험)**
+- 도구가 warning/medium anomaly를 반환하면, 해당 서버의 overallStatus는 반드시 "주의"로 보고하세요.
 
 ### Phase 2-A: 단일 서버 딥다이브
 1. **\`detectAnomalies(serverId: "대상ID", metricType: "all")\`** 호출 → 해당 서버의 전 메트릭 상세 분석

@@ -2,10 +2,20 @@
 
 'use client';
 
-import { useState } from 'react';
+import { type FormEvent, useState } from 'react';
 import { OpenManagerLogo } from '@/components/shared/OpenManagerLogo';
 import UnifiedProfileHeader from '@/components/shared/UnifiedProfileHeader';
-import { isGuestFullAccessEnabled } from '@/config/guestMode';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import {
+  isGuestFullAccessEnabled,
+  isGuestLoginButtonVisible,
+} from '@/config/guestMode';
 import {
   signInWithEmailMagicLink,
   signInWithOAuthProvider,
@@ -20,12 +30,14 @@ type AuthError = { message?: string; code?: string };
 
 export default function LoginClient() {
   const isGuestFullAccessMode = isGuestFullAccessEnabled();
+  const showGuestLogin = isGuestLoginButtonVisible();
   const [isLoading, setIsLoading] = useState(false);
   const [loadingType, setLoadingType] = useState<
     'github' | 'guest' | 'google' | 'email' | null
   >(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [isGuestModalOpen, setIsGuestModalOpen] = useState(false);
 
   const { currentProvider } = useLoginUrlParams({
     setErrorMessage,
@@ -50,6 +62,14 @@ export default function LoginClient() {
     loadingType,
     { setIsLoading, setLoadingType, setSuccessMessage }
   );
+
+  const handleGuestModalSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (isLoading || guestLockRemainingSeconds > 0 || guestPinInput.length < 4) {
+      return;
+    }
+    void handleGuestLogin();
+  };
 
   const glassButtonBaseClass =
     'group relative flex h-12 w-full items-center justify-center gap-3 overflow-hidden rounded-xl border border-cyan-100/80 bg-white/92 text-slate-900 shadow-[0_8px_20px_rgba(15,23,42,0.16)] backdrop-blur-md transition-all duration-200 hover:-translate-y-0.5 hover:border-cyan-50 hover:bg-white hover:shadow-[0_12px_24px_rgba(15,23,42,0.24)] active:scale-[0.98] disabled:opacity-60';
@@ -188,7 +208,7 @@ export default function LoginClient() {
       <div className="wave-particles" />
 
       <header className="relative z-50 flex items-center justify-between p-4 sm:p-6">
-        <OpenManagerLogo variant="dark" href="/" />
+        <OpenManagerLogo variant="dark" href="/" titleAs="p" />
         <div className="flex items-center gap-3">
           <UnifiedProfileHeader />
         </div>
@@ -249,40 +269,80 @@ export default function LoginClient() {
                   </div>
                 )}
 
-                {!isGuestFullAccessMode && currentProvider !== 'guest' ? (
-                  <div className="rounded-lg border border-cyan-200/45 bg-white/10 px-4 py-3 backdrop-blur-sm">
-                    <label
-                      htmlFor="guest-pin-input"
-                      className="mb-2 block text-xs font-medium text-cyan-100/90"
-                    >
-                      게스트 PIN (4자리)
-                    </label>
-                    <input
-                      id="guest-pin-input"
-                      data-testid="guest-pin-input"
-                      type="password"
-                      inputMode="numeric"
-                      autoComplete="one-time-code"
-                      pattern="\d{4}"
-                      maxLength={4}
-                      value={guestPinInput}
-                      onChange={(event) => {
-                        const nextValue = event.target.value.replace(/\D/g, '');
-                        setGuestPinInput(nextValue.slice(0, 4));
-                      }}
-                      disabled={isLoading || guestLockRemainingSeconds > 0}
-                      placeholder="PIN 4자리 입력"
-                      className="h-11 w-full rounded-lg border border-cyan-100/55 bg-white/85 px-3 text-sm tracking-[0.22em] text-slate-900 outline-none transition-all placeholder:tracking-normal placeholder:text-slate-400 focus:border-cyan-300 focus:ring-2 focus:ring-cyan-200/60 disabled:opacity-60"
-                    />
-                    <div className="mt-2 text-xs text-cyan-100/85">
-                      {guestLockRemainingSeconds > 0
-                        ? `잠금 해제까지 ${guestLockRemainingSeconds}초`
-                        : typeof guestAttemptsLeft === 'number'
-                          ? `PIN 오류 남은 횟수: ${guestAttemptsLeft}회`
-                          : '연속 5회 실패 시 1분 동안 재시도할 수 없습니다.'}
-                    </div>
-                  </div>
-                ) : null}
+                <Dialog open={isGuestModalOpen} onOpenChange={setIsGuestModalOpen}>
+                  <DialogContent className="border-cyan-500/30 bg-slate-900 sm:max-w-md">
+                    <DialogHeader className="text-center">
+                      <DialogTitle className="text-xl font-semibold text-white">
+                        게스트 로그인
+                      </DialogTitle>
+                      <DialogDescription className="text-slate-300">
+                        게스트 모드 접근을 위한 4자리 PIN을 입력해주세요.
+                      </DialogDescription>
+                    </DialogHeader>
+
+                    {errorMessage && (
+                      <div className="mt-2 rounded-lg border border-red-300/35 bg-red-500/15 px-4 py-3 text-sm text-red-100 backdrop-blur-sm">
+                        {errorMessage}
+                      </div>
+                    )}
+
+                    <form onSubmit={handleGuestModalSubmit} className="mt-4">
+                      <div className="rounded-lg bg-slate-800/50 p-4">
+                        <label
+                          htmlFor="guest-pin-input"
+                          className="mb-2 block text-sm font-medium text-cyan-100"
+                        >
+                          게스트 PIN (4자리)
+                        </label>
+                        <input
+                          id="guest-pin-input"
+                          data-testid="guest-pin-input"
+                          type="password"
+                          inputMode="numeric"
+                          autoComplete="one-time-code"
+                          pattern="\d{4}"
+                          maxLength={4}
+                          value={guestPinInput}
+                          onChange={(event) => {
+                            const nextValue = event.target.value.replace(/\D/g, '');
+                            setGuestPinInput(nextValue.slice(0, 4));
+                          }}
+                          disabled={isLoading || guestLockRemainingSeconds > 0}
+                          placeholder="PIN 4자리 입력"
+                          className="h-12 w-full rounded-lg border border-slate-600 bg-slate-900 px-4 text-center text-lg tracking-[0.25em] text-white outline-none transition-all placeholder:text-base placeholder:tracking-normal placeholder:text-slate-500 focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 disabled:opacity-60"
+                        />
+                        <div className="mt-3 text-center text-xs text-red-300/80">
+                          {guestLockRemainingSeconds > 0
+                            ? `잠금 해제까지 ${guestLockRemainingSeconds}초 남았습니다.`
+                            : typeof guestAttemptsLeft === 'number'
+                              ? `남은 시도 횟수: ${guestAttemptsLeft}회`
+                              : '연속 5회 실패 시 1분간 잠금 상태가 됩니다.'}
+                        </div>
+                      </div>
+
+                      <div className="mt-2 flex gap-3">
+                        <button
+                          type="button"
+                          onClick={() => setIsGuestModalOpen(false)}
+                          className="h-11 w-full rounded-lg border border-slate-700 bg-slate-800 text-sm font-medium text-slate-200 transition-colors hover:bg-slate-700"
+                        >
+                          취소
+                        </button>
+                        <button
+                          type="submit"
+                          disabled={
+                            isLoading ||
+                            guestLockRemainingSeconds > 0 ||
+                            guestPinInput.length < 4
+                          }
+                          className="h-11 w-full rounded-lg bg-cyan-600 text-sm font-medium text-white transition-colors hover:bg-cyan-500 disabled:opacity-50"
+                        >
+                          {isLoading ? '로그인 중...' : '로그인'}
+                        </button>
+                      </div>
+                    </form>
+                  </DialogContent>
+                </Dialog>
 
                 <LoginButtons
                   currentProvider={currentProvider}
@@ -290,9 +350,16 @@ export default function LoginClient() {
                   loadingType={loadingType}
                   onGitHub={() => void handleGitHubLogin()}
                   onGoogle={() => void handleGoogleLogin()}
-                  onGuest={() => void handleGuestLogin()}
+                  onGuest={() => {
+                    if (!isGuestFullAccessMode) {
+                      setIsGuestModalOpen(true);
+                    } else {
+                      void handleGuestLogin();
+                    }
+                  }}
                   onEmail={(email) => void handleEmailLogin(email)}
                   onCancel={handleCancelLoading}
+                  showGuestLogin={showGuestLogin}
                   guestButtonDisabled={guestLockRemainingSeconds > 0}
                   guestButtonLabel={
                     guestLockRemainingSeconds > 0
@@ -301,8 +368,8 @@ export default function LoginClient() {
                   }
                   guestHelperText={
                     isGuestFullAccessMode
-                      ? '현재 Full Access 모드입니다. PIN 없이 게스트 기능을 사용할 수 있습니다.'
-                      : 'PIN 4자리를 입력한 뒤 게스트 로그인을 진행하세요.'
+                      ? '현재 Full Access 모드입니다. 테스트 목적에 한해 게스트 기능을 사용할 수 있습니다.'
+                      : '게스트 로그인은 테스트 용도입니다. PIN을 입력해 제한된 체험을 진행하세요.'
                   }
                   glassButtonBaseClass={glassButtonBaseClass}
                   providerOverlayClass={providerOverlayClass}

@@ -177,7 +177,7 @@ function Home() {
   );
 
   const guestModeMessage = useMemo(
-    () => '게스트 로그인 후에도 시스템 제어 기능을 사용할 수 있습니다.',
+    () => '게스트 로그인은 테스트/체험 용도로만 제공됩니다.',
     []
   );
 
@@ -208,14 +208,14 @@ function Home() {
 
       {/* 헤더 */}
       <header className="relative z-50 flex items-center justify-between p-4 sm:p-6">
-        <OpenManagerLogo variant="dark" href="/" />
+        <OpenManagerLogo variant="dark" href="/" titleAs="p" />
         <div className="flex items-center gap-3">
           <UnifiedProfileHeader />
         </div>
       </header>
 
       {/* 메인 콘텐츠 */}
-      <div className="container relative z-10 mx-auto px-4 pt-8 sm:px-6">
+      <main className="container relative z-10 mx-auto px-4 pt-8 sm:px-6">
         {/* 타이틀 */}
         <div className="mb-12 text-center">
           <h1 className="mb-4 text-2xl font-bold sm:text-3xl md:text-5xl">
@@ -284,7 +284,7 @@ function Home() {
             </div>
           </div>
         </footer>
-      </div>
+      </main>
 
       {/* 게스트 제한 모달 */}
       <GuestRestrictionModal

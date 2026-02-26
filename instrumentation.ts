@@ -23,8 +23,8 @@ export async function register() {
     Sentry.init({
       dsn: SENTRY_DSN,
 
-      // 🎯 무료 티어: 샘플링 10% (tunnel 호출량 절감, 월 10,000 트랜잭션 이내)
-      tracesSampleRate: process.env.NODE_ENV === 'production' ? 0.1 : 0,
+      // 🎯 무료 티어: 서버 샘플링 1% (클라이언트 5%와 분리, 에러 캡처는 100% 유지)
+      tracesSampleRate: process.env.NODE_ENV === 'production' ? 0.01 : 0,
 
       // Production에서만 활성화
       enabled: process.env.NODE_ENV === 'production',
@@ -70,8 +70,8 @@ export async function register() {
     Sentry.init({
       dsn: SENTRY_DSN,
 
-      // 🎯 무료 티어: 샘플링 10%
-      tracesSampleRate: process.env.NODE_ENV === 'production' ? 0.1 : 0,
+      // 🎯 무료 티어: Edge 샘플링 1%
+      tracesSampleRate: process.env.NODE_ENV === 'production' ? 0.01 : 0,
 
       // Production에서만 활성화
       enabled: process.env.NODE_ENV === 'production',
