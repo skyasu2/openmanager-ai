@@ -53,9 +53,7 @@ describe('handleStreamDataPart', () => {
 
       handleStreamDataPart(part, callbacks);
 
-      expect(callbacks.setCurrentAgentStatus).toHaveBeenCalledWith(
-        agentStatus
-      );
+      expect(callbacks.setCurrentAgentStatus).toHaveBeenCalledWith(agentStatus);
     });
 
     it('should not set status when data is missing', () => {
