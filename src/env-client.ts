@@ -27,6 +27,7 @@ export const isProduction = nodeEnv === 'production';
 export const isTest = nodeEnv === 'test';
 export const isVercel = hasVercelEnvFlag || isVercelHost;
 export const isVercelProduction =
-  process.env.VERCEL_ENV === 'production' || nextPublicVercelEnv === 'production';
+  process.env.VERCEL_ENV === 'production' ||
+  nextPublicVercelEnv === 'production';
 export const isDebugEnabled =
   isDevelopment || process.env.NEXT_PUBLIC_DEBUG === 'true';
