@@ -410,7 +410,40 @@ export abstract class BaseAgent {
         }
       }
 
-      const [steps, usage] = await Promise.all([streamResult.steps, streamResult.usage]);
+      const waitForStreamField = async <T>(
+        value: T | Promise<T> | PromiseLike<T>,
+        fieldName: string
+      ): Promise<T | null> => {
+        const timeoutMs = Math.max(1_000, (opts.timeoutMs ?? DEFAULT_OPTIONS.timeoutMs) * 0.5);
+        let timeoutHandle: ReturnType<typeof setTimeout> | null = null;
+        const timeout = new Promise<T | null>((resolve) => {
+          timeoutHandle = setTimeout(() => {
+            logger.warn(
+              `[${agentName}] Stream ${fieldName} not ready within ${timeoutMs}ms; continuing without it.`
+            );
+            resolve(null);
+          }, timeoutMs);
+        });
+        try {
+          const resolved = await Promise.race([Promise.resolve(value), timeout]);
+          return resolved;
+        } catch (error) {
+          logger.warn(
+            `[${agentName}] Failed to read stream ${fieldName}:`,
+            error instanceof Error ? error.message : String(error)
+          );
+          return null;
+        } finally {
+          if (timeoutHandle) {
+            clearTimeout(timeoutHandle);
+          }
+        }
+      };
+
+      const [steps, usage] = await Promise.all([
+        waitForStreamField(streamResult.steps, 'steps'),
+        waitForStreamField(streamResult.usage, 'usage'),
+      ]);
 
       let finalAnswerText: string | null = null;
       if (steps) {

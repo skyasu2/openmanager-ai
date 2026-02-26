@@ -11,6 +11,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import type { Tool } from 'ai';
 import { isOpenRouterVisionToolCallingEnabled } from '../../../lib/config-parser';
+import { BaseAgent } from './base-agent';
 
 // Mock model-provider before imports
 vi.mock('../model-provider', () => ({
@@ -165,7 +166,6 @@ describe('BaseAgent', { timeout: 30000 }, () => {
 
   describe('stream()', () => {
     it('should yield done event with metadata', async () => {
-      const { BaseAgent } = await import('./base-agent');
       const mockConfig = createMockConfig();
 
       class TestAgent extends BaseAgent {
@@ -200,8 +200,6 @@ describe('BaseAgent', { timeout: 30000 }, () => {
     });
 
     it('should yield error event when config not found', async () => {
-      const { BaseAgent } = await import('./base-agent');
-
       class TestAgent extends BaseAgent {
         getName(): string {
           return 'Test Agent';
@@ -224,8 +222,6 @@ describe('BaseAgent', { timeout: 30000 }, () => {
     });
 
     it('should yield error event when model unavailable', async () => {
-      const { BaseAgent } = await import('./base-agent');
-
       const mockConfig = createMockConfig({
         getModel: () => null,
       });
@@ -252,8 +248,6 @@ describe('BaseAgent', { timeout: 30000 }, () => {
     });
 
     it('should handle stream errors gracefully', async () => {
-      const { BaseAgent } = await import('./base-agent');
-
       mockStreamText.mockReturnValue({
         textStream: (async function* () {
           throw new Error('Stream connection lost');
