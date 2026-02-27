@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
 import { ChevronRight, Mail } from 'lucide-react';
-import { fn } from 'storybook/test';
+import { expect, fn, userEvent, within } from 'storybook/test';
 import { Button } from './button';
 
 const meta = {
@@ -19,6 +19,21 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   args: { children: 'Button' },
+  play: async ({ canvasElement, step }) => {
+    const canvas = within(canvasElement);
+    const button = canvas.getByRole('button', { name: 'Button' });
+
+    await step('Verify initial render', async () => {
+      await expect(button).toBeInTheDocument();
+      await expect(button).not.toBeDisabled();
+    });
+
+    await step('Simulate user click', async () => {
+      await userEvent.click(button);
+      // Wait for args.onClick to have been called (which is mocked by fn())
+      // Storybook test spy verification is possible here if args.onClick was captured.
+    });
+  },
 };
 
 export const Destructive: Story = {

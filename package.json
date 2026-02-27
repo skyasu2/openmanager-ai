@@ -91,6 +91,8 @@
     "test:e2e:ai-only": "echo \"No AI-only Playwright suite. Use 'npm run test:contract' for AI regression checks.\"",
     "test:e2e:critical": "playwright test tests/e2e/smoke.spec.ts tests/e2e/critical-auth.spec.ts --grep-invert '@external' --config playwright.config.ts",
     "test:e2e:critical:auth": "playwright test tests/e2e/critical-auth.spec.ts --grep-invert '@external' --config playwright.config.ts",
+    "test:e2e:visual": "playwright test tests/e2e/visual.spec.ts --config playwright.config.ts",
+    "test:e2e:visual:update": "playwright test tests/e2e/visual.spec.ts --config playwright.config.ts --update-snapshots",
     "test:e2e:with-server": "PORT=3000 npm run dev:stable & sleep 5 && playwright test --config playwright.config.ts; kill %1",
     "test:contract": "vitest run --config config/testing/vitest.config.contract.ts",
     "test:cloud:essential": "node scripts/test/cloud-deploy-essential-smoke.mjs",
