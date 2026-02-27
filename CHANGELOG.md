@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.6.0](https://github.com/skyasu2/openmanager-ai/compare/v8.5.0...v8.6.0) (2026-02-27)
+
+
+### Features
+
+* **ai-engine:** add RAG toggle support to supervisor routing ([f68214c](https://github.com/skyasu2/openmanager-ai/commit/f68214c0a11609d90c65a76fa3386e0f8497d0a1))
+* **ai-engine:** add streaming task decomposition and resilience improvements ([4eb3de2](https://github.com/skyasu2/openmanager-ai/commit/4eb3de2afbab8b6f8196c5279743f8df38054c7c))
+* **qa:** add wont-fix policy support to QA tracking scripts ([c221e4b](https://github.com/skyasu2/openmanager-ai/commit/c221e4b57cc315e4deac8ddc0c3ac063e27c6346))
+
+
+### Bug Fixes
+
+* **ai-engine:** address code review findings for streaming architecture ([2c19afb](https://github.com/skyasu2/openmanager-ai/commit/2c19afbd355d9788cf872ec1af23794c490175a6))
+* **ai-engine:** resolve Groq json_schema error in orchestrator routing ([5e8f8ed](https://github.com/skyasu2/openmanager-ai/commit/5e8f8edee9f84ffe295ac0b0879ff334066b86cc))
+* **deploy:** harden cloud run cleanup and update release notes ([efd510b](https://github.com/skyasu2/openmanager-ai/commit/efd510bcad67f731548bcf8e5a9d3d8c66407568))
+* **storybook:** remove v8 packages incompatible with Storybook v10 ([054c5d7](https://github.com/skyasu2/openmanager-ai/commit/054c5d721a38861325c41171de35bee67380f1dd))
+
 ## [8.5.0](https://github.com/skyasu2/openmanager-ai/compare/v8.4.0...v8.5.0) (2026-02-26)
 
 
