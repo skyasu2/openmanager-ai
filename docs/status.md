@@ -4,11 +4,11 @@
 > Owner: documentation
 > Status: Active
 > Doc type: Status
-> Last reviewed: 2026-02-26
+> Last reviewed: 2026-02-27
 > Canonical: docs/status.md
 > Tags: status,changelog,release
 
-**마지막 업데이트**: 2026-02-26
+**마지막 업데이트**: 2026-02-27
 
 ---
 
@@ -21,6 +21,14 @@
 ---
 
 ## 🔄 Recent Changes
+
+- **v8.5.0** (2026-02-27)
+  - fix(ai-engine): Groq `json_schema` 미지원 에러 해결 — Orchestrator 모델 우선순위를 `['cerebras', 'mistral', 'groq']`로 재배치
+  - feat(ai-engine): RAG 토글 지원 — `createPrepareStep` + `filterToolsByRAG`로 `enableRAG=false` 시 `searchKnowledgeBase` 도구 제거
+  - fix(ai-engine): Analyst 모델 Groq → Cerebras Primary 전환 (Cerebras `gpt-oss-120b` 우선)
+  - fix(storybook): Storybook v10 비호환 `@storybook/blocks@8.6.14`, `@storybook/test@8.6.15` v8 패키지 제거
+  - fix(ui): AI 응답 JSON 블록 표시 개선
+  - test: 중복 테스트 병합 및 브리틀한 테스트 개선, a11y 테스트 강화
 
 - **v8.4.0** (2026-02-26)
   - AI 검색 제어 정합성(Cloud Run 동기화):
@@ -239,7 +247,7 @@
 
 ---
 
-## 🏗️ Technical Stack (v8.3.0)
+## 🏗️ Technical Stack (v8.5.0)
 
 **Core Frameworks** (2025 Standard)
 - **Next.js**: `v16.1.6` (App Router, Server Components)
@@ -281,11 +289,11 @@
   - `Resumable Stream v2`: Upstash Redis 기반 자동 재연결
   - `prepareStep`: 에이전트 라우팅 순서 최적화
 - **Models**: Quad-provider 전략 (Rate limit 최적화, 2026-01-27)
-  - Cerebras llama-3.3-70b: Orchestrator, NLQ (24M tokens/day, 60K TPM)
-  - Groq llama-3.3-70b: Analyst, Reporter (~1K requests/day, 12K TPM)
-  - Mistral Small 2506 (24B): Advisor, Verifier (Limited free tier)
+  - Cerebras `gpt-oss-120b`: Supervisor, NLQ, Orchestrator, Analyst, Verifier (1M TPD, 3000 tok/s)
+  - Groq `llama-3.3-70b-versatile`: Reporter (100K TPD, 12K TPM)
+  - Mistral `mistral-large-latest`: Advisor (Tier 0: 1 RPS)
   - **Gemini 2.5 Flash**: Vision Agent (250 RPD, 10 RPM, 1M context)
-  - **OpenRouter (Fallback)**: Qwen 2.5 VL / Llama 3.2 Vision (Gemini 백업)
+  - **OpenRouter (Fallback)**: `nvidia/nemotron-nano-12b-v2-vl:free` (Gemini Vision 백업)
 - **Agents**: 7개 실행 에이전트 (NLQ/Analyst/Reporter/Advisor/Vision/Evaluator/Optimizer) + 1 Orchestrator 코디네이터
 - **Tools**: 27개 도구 Registry (Metrics 5, RCA 3, Analyst 4, Reporter 4, Evaluation 6, Control 1, Vision 4)
 - **Reporter Pipeline**: Evaluator-Optimizer 패턴 (0.75 품질 임계값, 최대 2회 반복)

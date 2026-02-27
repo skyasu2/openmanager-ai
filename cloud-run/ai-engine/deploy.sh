@@ -3,6 +3,11 @@
 # ==============================================================================
 # Cloud Run Deployment Script (AI Engine)
 #
+# v7.2 - 2026-02-27 (Cleanup Reliability Improvements)
+#   - Added configurable cleanup controls (enable/dry-run/parallel + retain counts)
+#   - Added Cloud Build source cleanup via gcloud storage JSON listing (time-based)
+#   - Improved cleanup result reporting (deleted/failed per resource type)
+#
 # v7.1 - 2026-02-13 (Free Tier Guardrail Enforcement)
 #   - Added hard guard checks for free-tier runtime limits
 #   - Added forbidden option checks (machine-type/highcpu)
@@ -59,6 +64,12 @@ LOCAL_DOCKER_PREFLIGHT="${LOCAL_DOCKER_PREFLIGHT:-true}"
 LOCAL_DOCKER_PREFLIGHT_SKIP_RUN="${LOCAL_DOCKER_PREFLIGHT_SKIP_RUN:-false}"
 DEFAULT_ORIGIN="${DEFAULT_ORIGIN:-https://openmanager-ai.vercel.app}"
 ALLOWED_ORIGINS="${ALLOWED_ORIGINS:-https://openmanager-ai.vercel.app}"
+CLEANUP_ENABLED="${CLEANUP_ENABLED:-true}"
+CLEANUP_DRY_RUN="${CLEANUP_DRY_RUN:-false}"
+CLEANUP_PARALLEL="${CLEANUP_PARALLEL:-false}"
+KEEP_IMAGES="${CLEANUP_KEEP_IMAGES:-2}"
+KEEP_SOURCES="${CLEANUP_KEEP_SOURCES:-10}"
+KEEP_REVISIONS="${CLEANUP_KEEP_REVISIONS:-3}"
 
 if [ "${FREE_TIER_GUARD_ONLY:-false}" = "true" ]; then
   PROJECT_ID="guard-only"
@@ -108,6 +119,160 @@ cd "$SCRIPT_DIR"
 fail_free_tier_guard() {
   echo "❌ [Free Tier Guard] $1"
   exit 1
+}
+
+validate_non_negative_integer() {
+  local name="$1"
+  local value="$2"
+  if ! [[ "$value" =~ ^[0-9]+$ ]]; then
+    fail_free_tier_guard "${name} must be a non-negative integer (current: ${value})"
+  fi
+}
+
+run_cleanup_images() {
+  local image_uri="$1"
+  local keep_count="$2"
+  local -a digests old_digests
+  local digest deleted_count failed_count
+
+  echo "   [images] Retention: keep latest ${keep_count}, delete oldest"
+  set +e
+  mapfile -t digests < <(
+    gcloud artifacts docker images list "$image_uri" \
+      --include-tags \
+      --format=json 2>/dev/null \
+      | jq -r 'sort_by(.createTime) | reverse | .[].version | select(length > 0)'
+  )
+  set -e
+  if [ "${#digests[@]}" -eq 0 ]; then
+    echo "   [images] ⚠️ No images found for ${image_uri}"
+    return 0
+  fi
+
+  old_digests=("${digests[@]:keep_count}")
+  deleted_count=0
+  failed_count=0
+
+  if [ "${#old_digests[@]}" -eq 0 ]; then
+    echo "   [images] ✅ No old images to delete (${#digests[@]} retained)"
+    return 0
+  fi
+
+  for digest in "${old_digests[@]}"; do
+    if [ "${CLEANUP_DRY_RUN}" = "true" ]; then
+      echo "   [images] - DRY-RUN delete ${image_uri}@${digest}"
+      deleted_count=$((deleted_count + 1))
+      continue
+    fi
+
+    if gcloud artifacts docker images delete "${image_uri}@${digest}" --quiet --delete-tags >/dev/null 2>&1; then
+      deleted_count=$((deleted_count + 1))
+    else
+      failed_count=$((failed_count + 1))
+      echo "   [images] ⚠️ Failed to delete ${image_uri}@${digest}"
+    fi
+  done
+
+  echo "   [images] ✅ cleanup summary: ${deleted_count} deleted, ${failed_count} failed"
+}
+
+run_cleanup_sources() {
+  local bucket_name="$1"
+  local keep_count="$2"
+  local -a all_sources old_sources
+  local source_url source_obj deleted_count failed_count
+
+  echo "   [sources] Retention: keep latest ${keep_count}, delete oldest"
+  set +e
+  mapfile -t all_sources < <(
+    gcloud storage ls --recursive --json "gs://${bucket_name}/source/" 2>/dev/null \
+      | jq -r '.[] | select(.type=="cloud_object") | "\(.metadata.timeCreated)\t\(.url)"' \
+      | sort -r -k1,1 \
+      | awk -F'\t' 'NF==2 {print $2}'
+  )
+  set -e
+
+  if [ "${#all_sources[@]}" -eq 0 ]; then
+    echo "   [sources] ⚠️ No cloud build sources found for gs://${bucket_name}/source/"
+    return 0
+  fi
+
+  old_sources=("${all_sources[@]:keep_count}")
+  deleted_count=0
+  failed_count=0
+
+  if [ "${#old_sources[@]}" -eq 0 ]; then
+    echo "   [sources] ✅ No old sources to delete (${#all_sources[@]} retained)"
+    return 0
+  fi
+
+  for source_url in "${old_sources[@]}"; do
+    source_obj="${source_url%%#*}"
+    if [ "${CLEANUP_DRY_RUN}" = "true" ]; then
+      echo "   [sources] - DRY-RUN delete ${source_obj}"
+      deleted_count=$((deleted_count + 1))
+      continue
+    fi
+
+    if gcloud storage rm "$source_obj" >/dev/null 2>&1; then
+      deleted_count=$((deleted_count + 1))
+    else
+      failed_count=$((failed_count + 1))
+      echo "   [sources] ⚠️ Failed to delete ${source_obj}"
+    fi
+  done
+
+  echo "   [sources] ✅ cleanup summary: ${deleted_count} deleted, ${failed_count} failed"
+}
+
+run_cleanup_revisions() {
+  local service_name="$1"
+  local region="$2"
+  local keep_count="$3"
+  local -a revisions old_revisions
+  local revision deleted_count failed_count
+
+  echo "   [revisions] Retention: keep latest ${keep_count}, delete oldest"
+  set +e
+  mapfile -t revisions < <(
+    gcloud run revisions list \
+      --service="$service_name" \
+      --region="$region" \
+      --format="value(name)" \
+      --sort-by="~metadata.creationTimestamp" 2>/dev/null
+  )
+  set -e
+
+  if [ "${#revisions[@]}" -eq 0 ]; then
+    echo "   [revisions] ⚠️ No revisions found for ${service_name}"
+    return 0
+  fi
+
+  old_revisions=("${revisions[@]:keep_count}")
+  deleted_count=0
+  failed_count=0
+
+  if [ "${#old_revisions[@]}" -eq 0 ]; then
+    echo "   [revisions] ✅ No old revisions to delete (${#revisions[@]} retained)"
+    return 0
+  fi
+
+  for revision in "${old_revisions[@]}"; do
+    if [ "${CLEANUP_DRY_RUN}" = "true" ]; then
+      echo "   [revisions] - DRY-RUN delete ${revision}"
+      deleted_count=$((deleted_count + 1))
+      continue
+    fi
+
+    if gcloud run revisions delete "$revision" --region="$region" --quiet >/dev/null 2>&1; then
+      deleted_count=$((deleted_count + 1))
+    else
+      failed_count=$((failed_count + 1))
+      echo "   [revisions] ⚠️ Failed to delete ${revision}"
+    fi
+  done
+
+  echo "   [revisions] ✅ cleanup summary: ${deleted_count} deleted, ${failed_count} failed"
 }
 
 assert_no_forbidden_args() {
@@ -207,6 +372,9 @@ enforce_free_tier_guards() {
 }
 
 enforce_free_tier_guards
+validate_non_negative_integer "KEEP_IMAGES" "$KEEP_IMAGES"
+validate_non_negative_integer "KEEP_SOURCES" "$KEEP_SOURCES"
+validate_non_negative_integer "KEEP_REVISIONS" "$KEEP_REVISIONS"
 
 if [ "${FREE_TIER_GUARD_ONLY:-false}" = "true" ]; then
   echo "ℹ️ FREE_TIER_GUARD_ONLY=true, skipping build/deploy."
@@ -320,61 +488,29 @@ if [ $? -eq 0 ]; then
       echo "   ⚠️  Health check returned HTTP $HEALTH_STATUS (may still be starting)"
     fi
 
-    # 4. Cleanup old images and sources (parallel, non-blocking)
+    # 4. Cleanup old images and sources
     echo ""
-    echo "🧹 Cleaning up old resources (background)..."
+    echo "🧹 Cleaning up old resources..."
+    echo "   Policy => cleanup enabled: ${CLEANUP_ENABLED}, dry-run: ${CLEANUP_DRY_RUN}, parallel: ${CLEANUP_PARALLEL}"
+    echo "   Retain => images:${KEEP_IMAGES} sources:${KEEP_SOURCES} revisions:${KEEP_REVISIONS}"
 
-    # Cleanup old container images from Artifact Registry (keep latest 2)
-    KEEP_IMAGES=2
-    AR_IMAGE="${REGION}-docker.pkg.dev/${PROJECT_ID}/${REPOSITORY}/${SERVICE_NAME}"
-    (
-      OLD_DIGESTS=$(gcloud artifacts docker images list "$AR_IMAGE" \
-        --format="value(digest)" --sort-by=~CREATE_TIME 2>/dev/null | tail -n +$((KEEP_IMAGES + 1)))
+    if [ "${CLEANUP_ENABLED}" = "true" ]; then
+      AR_IMAGE="${REGION}-docker.pkg.dev/${PROJECT_ID}/${REPOSITORY}/${SERVICE_NAME}"
+      BUCKET_NAME="${PROJECT_ID}_cloudbuild"
 
-      if [ -n "$OLD_DIGESTS" ]; then
-        for digest in $OLD_DIGESTS; do
-          gcloud artifacts docker images delete "${AR_IMAGE}@${digest}" \
-            --quiet --delete-tags 2>/dev/null &
-        done
+      if [ "${CLEANUP_PARALLEL}" = "true" ]; then
+        run_cleanup_images "$AR_IMAGE" "$KEEP_IMAGES" &
+        run_cleanup_sources "$BUCKET_NAME" "$KEEP_SOURCES" &
+        run_cleanup_revisions "$SERVICE_NAME" "$REGION" "$KEEP_REVISIONS" &
         wait
-        echo "   ✅ Old images cleaned up (Artifact Registry)"
+      else
+        run_cleanup_images "$AR_IMAGE" "$KEEP_IMAGES"
+        run_cleanup_sources "$BUCKET_NAME" "$KEEP_SOURCES"
+        run_cleanup_revisions "$SERVICE_NAME" "$REGION" "$KEEP_REVISIONS"
       fi
-    ) &
-
-    # Cleanup old Cloud Build sources (keep latest 10)
-    KEEP_SOURCES=10
-    BUCKET_NAME="${PROJECT_ID}_cloudbuild"
-    (
-      if gsutil ls "gs://${BUCKET_NAME}/" >/dev/null 2>&1; then
-        OLD_SOURCES=$(gsutil ls -l "gs://${BUCKET_NAME}/source/" 2>/dev/null | \
-          grep -v "TOTAL:" | sort -k2 -r | tail -n +$((KEEP_SOURCES + 1)) | awk '{print $3}')
-
-        if [ -n "$OLD_SOURCES" ]; then
-          echo "$OLD_SOURCES" | xargs -P 10 gsutil rm 2>/dev/null || true
-          echo "   ✅ Old build sources cleaned up"
-        fi
-      fi
-    ) &
-
-    # Cleanup old Cloud Run revisions (keep latest 3)
-    KEEP_REVISIONS=3
-    (
-      OLD_REVISIONS=$(gcloud run revisions list \
-        --service="$SERVICE_NAME" \
-        --region="$REGION" \
-        --format="value(name)" \
-        --sort-by="~metadata.creationTimestamp" 2>/dev/null | tail -n +$((KEEP_REVISIONS + 1)))
-
-      if [ -n "$OLD_REVISIONS" ]; then
-        for rev in $OLD_REVISIONS; do
-          gcloud run revisions delete "$rev" --region="$REGION" --quiet 2>/dev/null || true
-        done
-        echo "   ✅ Old revisions cleaned up"
-      fi
-    ) &
-
-    # Wait for all cleanup tasks
-    wait
+    else
+      echo "   ℹ️ Cleanup skipped (CLEANUP_ENABLED=false)"
+    fi
 
     echo "=============================================================================="
     echo "📊 Deployment Summary (FREE TIER OPTIMIZED):"

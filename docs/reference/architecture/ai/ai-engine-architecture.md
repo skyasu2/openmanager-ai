@@ -4,11 +4,11 @@
 > Owner: platform-architecture
 > Status: Active Canonical
 > Doc type: Reference
-> Last reviewed: 2026-02-26
+> Last reviewed: 2026-02-27
 > Canonical: docs/reference/architecture/ai/ai-engine-architecture.md
 > Tags: ai,architecture,multi-agent,cloud-run
 >
-> **v8.4.0** | Updated 2026-02-26
+> **v8.5.0** | Updated 2026-02-27
 > (ai-model-policy.md 내용 통합됨, 2026-02-14)
 
 ## 1. Overview
@@ -82,8 +82,8 @@ Dual-Mode Supervisor 패턴으로 특화된 에이전트를 오케스트레이�
 
 | Provider | Primary 에이전트 | 모델 | Free Tier |
 |----------|----------------|------|-----------|
-| **Cerebras** | Supervisor, NLQ, Verifier | `gpt-oss-120b` (120B MoE, 5.1B active) | 1M TPD, 3000 tok/s |
-| **Groq** | Analyst, Reporter, Orchestrator | `llama-3.3-70b-versatile` (70B) | 100K TPD, 12K TPM |
+| **Cerebras** | Supervisor, NLQ, Verifier, Orchestrator, Analyst | `gpt-oss-120b` (120B MoE, 5.1B active) | 1M TPD, 3000 tok/s |
+| **Groq** | Reporter | `llama-3.3-70b-versatile` (70B) | 100K TPD, 12K TPM |
 | **Mistral** | Advisor + RAG Embedding | `mistral-large-latest` / `mistral-embed` (1024d) | Tier 0: 1 RPS, 40K~500K TPM |
 | **Gemini** | Vision | `gemini-2.5-flash` (1M context) | 1000 RPD, 250K TPM |
 | **OpenRouter** | Vision Fallback | `nvidia/nemotron-nano-12b-v2-vl:free` | Provider별 상이 |
@@ -97,8 +97,8 @@ Dual-Mode Supervisor 패턴으로 특화된 에이전트를 오케스트레이�
 | Supervisor | Cerebras | Groq | Mistral |
 | NLQ | Cerebras | Groq | Mistral |
 | Verifier | Cerebras | Groq | Mistral |
-| Orchestrator | Groq | Cerebras | Mistral |
-| Analyst | Groq | Cerebras | Mistral |
+| Orchestrator | Cerebras | Mistral | Groq |
+| Analyst | Cerebras | Groq | Mistral |
 | Reporter | Groq | Cerebras | Mistral |
 | **Advisor** | **Mistral** | **Cerebras** | **Groq** |
 | Vision | Gemini | OpenRouter | — |
@@ -220,6 +220,7 @@ for await (const event of streamAgent('analyst', '이상 탐지')) { ... }
 - **RAG 제어 (`enableRAG`)**
   - `false`일 때는 `searchKnowledgeBase` 도구를 제외하여 지식기반 조회가 발생하지 않음.
   - 해당 제어값 역시 Cloud Run 요청 체인으로 일관 전달.
+  - 구현: `createPrepareStep(query, { enableRAG })` → 내부 `filterToolsByRAG()`가 `enableRAG=false` 시 `searchKnowledgeBase` 도구를 필터링. Orchestrator의 `filterToolsByRAG()`도 동일 로직 적용.
 
 ## 7. Resilience 계층
 
@@ -362,6 +363,15 @@ cloud-run/ai-engine/src/
 | **generateObject** | 구조화 라우팅 (Orchestrator) |
 
 ## Version History
+
+<details>
+<summary>v8.5.0 (2026-02-27) - Orchestrator/Analyst Model Redistribution + RAG Toggle</summary>
+
+- **Groq `json_schema` 에러 해결**: Orchestrator `generateObject()` 호출 시 Groq `llama-3.3-70b-versatile`가 `json_schema` 미지원 → 모델 우선순위를 `['cerebras', 'mistral', 'groq']`로 재배치
+- **Analyst Primary 변경**: Groq → Cerebras (`gpt-oss-120b`) 전환. Cerebras가 5개 에이전트(Supervisor, NLQ, Verifier, Orchestrator, Analyst) Primary 담당
+- **RAG 토글 구현**: `createPrepareStep` + `filterToolsByRAG`로 `enableRAG=false` 시 `searchKnowledgeBase` 도구 필터링
+- **Storybook v10 호환성**: v8 전용 패키지 제거 (`@storybook/blocks`, `@storybook/test`)
+</details>
 
 <details>
 <summary>v8.3.3 (2026-02-23) - 3-Way Provider Redistribution</summary>
