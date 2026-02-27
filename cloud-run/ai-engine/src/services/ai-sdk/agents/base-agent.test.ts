@@ -437,6 +437,98 @@ describe('BaseAgent', { timeout: 60000 }, () => {
       expect(result.error).toBe('No model available for Test Agent');
     });
 
+    it('should handle generateText errors gracefully', async () => {
+      const { BaseAgent } = await import('./base-agent');
+
+      mockGenerateText.mockRejectedValue(new Error('API rate limit exceeded'));
+
+      const mockConfig = createMockConfig();
+
+      class TestAgent extends BaseAgent {
+        getName(): string {
+          return 'Test Agent';
+        }
+        getConfig() {
+          return mockConfig;
+        }
+      }
+
+      const agent = new TestAgent();
+      const result = await agent.run('test query');
+
+      expect(result.success).toBe(false);
+      expect(result.error).toBe('API rate limit exceeded');
+      expect(result.metadata.durationMs).toBeGreaterThanOrEqual(0);
+    });
+
+    it('should track token usage correctly', async () => {
+      const { BaseAgent } = await import('./base-agent');
+
+      mockGenerateText.mockResolvedValue({
+        text: 'Response',
+        usage: { inputTokens: 200, outputTokens: 100, totalTokens: 300 },
+        steps: [{ finishReason: 'stop', toolCalls: [], toolResults: [] }],
+      });
+
+      const mockConfig = createMockConfig();
+
+      class TestAgent extends BaseAgent {
+        getName(): string {
+          return 'Test Agent';
+        }
+        getConfig() {
+          return mockConfig;
+        }
+      }
+
+      const agent = new TestAgent();
+      const result = await agent.run('test query');
+
+      expect(result.usage.promptTokens).toBe(200);
+      expect(result.usage.completionTokens).toBe(100);
+      expect(result.usage.totalTokens).toBe(300);
+    });
+
+    it('should track tools called during execution', async () => {
+      const { BaseAgent } = await import('./base-agent');
+
+      mockGenerateText.mockResolvedValue({
+        text: 'Response',
+        usage: { inputTokens: 100, outputTokens: 50, totalTokens: 150 },
+        steps: [
+          {
+            finishReason: 'tool_calls',
+            toolCalls: [{ toolName: 'getServerMetrics' }, { toolName: 'detectAnomalies' }],
+            toolResults: [],
+          },
+          {
+            finishReason: 'stop',
+            toolCalls: [{ toolName: 'finalAnswer' }],
+            toolResults: [],
+          },
+        ],
+      });
+
+      const mockConfig = createMockConfig();
+
+      class TestAgent extends BaseAgent {
+        getName(): string {
+          return 'Test Agent';
+        }
+        getConfig() {
+          return mockConfig;
+        }
+      }
+
+      const agent = new TestAgent();
+      const result = await agent.run('test query');
+
+      expect(result.toolsCalled).toContain('getServerMetrics');
+      expect(result.toolsCalled).toContain('detectAnomalies');
+      expect(result.toolsCalled).toContain('finalAnswer');
+      expect(result.metadata.steps).toBe(2);
+    });
+
   });
 
   // ==========================================================================

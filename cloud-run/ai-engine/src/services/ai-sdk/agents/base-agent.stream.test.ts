@@ -458,6 +458,120 @@ describe('BaseAgent', { timeout: 15000 }, () => {
       expect((toolCalls[1].data as { name: string }).name).toBe('detectAnomalies');
     });
 
+    it('should yield done event with metadata', async () => {
+      const mockConfig = createMockConfig();
+
+      class TestAgent extends BaseAgent {
+        getName(): string {
+          return 'Test Agent';
+        }
+        getConfig() {
+          return mockConfig;
+        }
+      }
+
+      const agent = new TestAgent();
+      const events: Array<{ type: string; data: unknown }> = [];
+
+      for await (const event of agent.stream('test query')) {
+        events.push(event);
+      }
+
+      const doneEvents = events.filter(e => e.type === 'done');
+      expect(doneEvents.length).toBe(1);
+
+      const doneData = doneEvents[0].data as {
+        success: boolean;
+        finalAgent: string;
+        toolsCalled: string[];
+        metadata: { provider: string; modelId: string; durationMs: number };
+      };
+      expect(doneData.success).toBe(true);
+      expect(doneData.finalAgent).toBe('Test Agent');
+      expect(doneData.metadata.provider).toBe('test-provider');
+      expect(doneData.metadata.durationMs).toBeGreaterThanOrEqual(0);
+    });
+
+    it('should yield error event when config not found', async () => {
+      class TestAgent extends BaseAgent {
+        getName(): string {
+          return 'Test Agent';
+        }
+        getConfig() {
+          return null;
+        }
+      }
+
+      const agent = new TestAgent();
+      const events: Array<{ type: string; data: unknown }> = [];
+
+      for await (const event of agent.stream('test query')) {
+        events.push(event);
+      }
+
+      const errorEvents = events.filter(e => e.type === 'error');
+      expect(errorEvents.length).toBe(1);
+      expect((errorEvents[0].data as { code: string }).code).toBe('CONFIG_NOT_FOUND');
+    });
+
+    it('should yield error event when model unavailable', async () => {
+      const mockConfig = createMockConfig({
+        getModel: () => null,
+      });
+
+      class TestAgent extends BaseAgent {
+        getName(): string {
+          return 'Test Agent';
+        }
+        getConfig() {
+          return mockConfig;
+        }
+      }
+
+      const agent = new TestAgent();
+      const events: Array<{ type: string; data: unknown }> = [];
+
+      for await (const event of agent.stream('test query')) {
+        events.push(event);
+      }
+
+      const errorEvents = events.filter(e => e.type === 'error');
+      expect(errorEvents.length).toBe(1);
+      expect((errorEvents[0].data as { code: string }).code).toBe('MODEL_UNAVAILABLE');
+    });
+
+    it('should handle stream errors gracefully', async () => {
+      mockStreamText.mockReturnValue({
+        textStream: (async function* () {
+          throw new Error('Stream connection lost');
+        })(),
+        steps: Promise.resolve([]),
+        usage: Promise.resolve({ inputTokens: 0, outputTokens: 0, totalTokens: 0 }),
+      });
+
+      const mockConfig = createMockConfig();
+
+      class TestAgent extends BaseAgent {
+        getName(): string {
+          return 'Test Agent';
+        }
+        getConfig() {
+          return mockConfig;
+        }
+      }
+
+      const agent = new TestAgent();
+      const events: Array<{ type: string; data: unknown }> = [];
+
+      for await (const event of agent.stream('test query')) {
+        events.push(event);
+      }
+
+      const errorEvents = events.filter(e => e.type === 'error');
+      expect(errorEvents.length).toBe(1);
+      expect((errorEvents[0].data as { code: string }).code).toBe('STREAM_ERROR');
+    });
+
   });
 
   // ==========================================================================

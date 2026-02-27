@@ -453,5 +453,70 @@ describe('BaseAgent', { timeout: 60000 }, () => {
       expect(filePart.mediaType).toBe('application/pdf'); // AI SDK uses mediaType
     });
 
+    it('should return array with mixed content (text + images + files)', async () => {
+      const { BaseAgent } = await import('./base-agent');
+      const mockConfig = createMockConfig();
+
+      class TestAgent extends BaseAgent {
+        getName(): string {
+          return 'Test Agent';
+        }
+        getConfig() {
+          return mockConfig;
+        }
+        testBuildUserContent(query: string, options: Parameters<typeof this.buildUserContent>[1]) {
+          return this.buildUserContent(query, options);
+        }
+      }
+
+      const agent = new TestAgent();
+      const result = agent.testBuildUserContent('Analyze these files', {
+        images: [
+          { data: 'data:image/jpeg;base64,img1', mimeType: 'image/jpeg' },
+          { data: 'data:image/png;base64,img2', mimeType: 'image/png' },
+        ],
+        files: [
+          { data: 'data:text/plain;base64,txt1', mimeType: 'text/plain' },
+        ],
+      });
+
+      expect(Array.isArray(result)).toBe(true);
+      const parts = result as Array<{ type: string }>;
+
+      // 1 text + 2 images + 1 file = 4 parts
+      expect(parts).toHaveLength(4);
+      expect(parts[0].type).toBe('text');
+      expect(parts[1].type).toBe('image');
+      expect(parts[2].type).toBe('image');
+      expect(parts[3].type).toBe('file');
+    });
+
+    it('should handle empty images array as text-only', async () => {
+      const { BaseAgent } = await import('./base-agent');
+      const mockConfig = createMockConfig();
+
+      class TestAgent extends BaseAgent {
+        getName(): string {
+          return 'Test Agent';
+        }
+        getConfig() {
+          return mockConfig;
+        }
+        testBuildUserContent(query: string, options: Parameters<typeof this.buildUserContent>[1]) {
+          return this.buildUserContent(query, options);
+        }
+      }
+
+      const agent = new TestAgent();
+      const result = agent.testBuildUserContent('Just text', {
+        images: [],
+        files: [],
+      });
+
+      // Empty arrays should result in text-only
+      expect(typeof result).toBe('string');
+      expect(result).toBe('Just text');
+    });
+
   });
 });
