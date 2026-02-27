@@ -1,0 +1,54 @@
+{
+  "runId": "QA-20260227-0021",
+  "recordedAt": "2026-02-27T12:12:23.798Z",
+  "recordedAtKst": "2026-02-27 21:12:23 KST",
+  "runTitle": "Vercel Playwright MCP: 비로그인 시스템 시작 로그인 모달",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main"
+  },
+  "checks": {
+    "total": 1,
+    "passed": 1,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Playwright MCP 수동 브라우저 세션에서 비로그인 사용자 동선이 기대대로 동작한다.",
+      "nextAction": ""
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "system-start-login-modal",
+      "title": "비로그인 상태에서 시스템 시작 클릭 시 로그인 모달 노출",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "mcp__playwright MCP로 https://openmanager-ai.vercel.app에서 '🚀 시스템 시작' 클릭 후 dialog('로그인 필요') 확인",
+      "note": "시스템 시작 버튼 클릭 시 '로그인 필요' 모달이 표시됨",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "문구/버튼 조건 하드코딩 변경 없이 렌더링 경로만으로 동작을 검증함"
+  ],
+  "links": [
+    {
+      "label": "Vercel Landing",
+      "url": "https://openmanager-ai.vercel.app"
+    }
+  ]
+}

@@ -1,51 +1,52 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-02-27 04:25:22 KST
+> Generated at: 2026-02-27 21:22:13 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 17 |
-| Total Checks | 75 |
-| Passed | 59 |
+| Total Runs | 22 |
+| Total Checks | 87 |
+| Passed | 71 |
 | Failed | 16 |
-| Completed Items | 26 |
-| Pending Items | 6 |
+| Completed Items | 30 |
+| Pending Items | 0 |
+| Wont-Fix Items | 6 |
 | Expert Domains Tracked | 6 |
 | Expert Open Gaps | 2 |
-| Completion Rate | 81.25% |
-| Last Run | QA-20260227-0017 (2026-02-26T19:25:22.388Z) |
+| Completion Rate | 100% |
+| Last Run | QA-20260227-0022 (2026-02-27T12:22:13.317Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260227-0017 (2026-02-26T19:25:22.388Z)
+Latest run: QA-20260227-0022 (2026-02-27T12:22:13.317Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| AI Quality Assurance Specialist | appropriate | no | 배포 채널별 동일 시나리오를 정기 게이트로 고정합니다. |
-| IT Monitoring & Observability SME | partially-appropriate | yes | system-start 시도/성공률/실패률/지연 지표를 QA 트래커 메타와 연동합니다. |
-| AI Security & Reliability Architect | appropriate | no | 게스트 차단/지역 제한 이벤트를 보안 로그와 교차 검증합니다. |
-| DevOps / SRE Engineer | appropriate | no | 채널별 재배포 시 동일 스위트 자동 실행을 고정합니다. |
-| Test Automation Architect | appropriate | no | 실패 재현 시 재시작·증분 추적 규칙을 표준화합니다. |
-| Data Quality & Metrics Analyst | partially-appropriate | yes | system-start KPI를 qa-tracker 체크 항목으로 상향해 run 결과 메타에 포함합니다. |
+| Test Automation Architect | appropriate | no | - |
 
 ## Expert Domain Open Gaps
 
-- data-metrics-quality: Data Quality & Metrics Analyst (last QA-20260227-0017)
-  next: system-start KPI를 qa-tracker 체크 항목으로 상향해 run 결과 메타에 포함합니다.
-- observability-monitoring: IT Monitoring & Observability SME (last QA-20260227-0017)
-  next: system-start 시도/성공률/실패률/지연 지표를 QA 트래커 메타와 연동합니다.
+- data-metrics-quality: Data Quality & Metrics Analyst (last QA-20260227-0018)
+  next: system-start KPI를 QA 체크 메타 항목으로 상향해 run 메트릭을 보강합니다.
+- observability-monitoring: IT Monitoring & Observability SME (last QA-20260227-0018)
+  next: system-start API 시도/성공률/실패률/지연 시간을 qa-tracker checks로 반영합니다.
 
 ## Pending Improvements
+
+- None
+
+## Wont-Fix Improvements
 
 - [P1] metrics-drift-threshold-standard: 지표 드리프트 임계치 표준화 (seen 2회, last QA-20260227-0013)
 - [P1] obs-fp-fn-weekly-report: 오탐/미탐 주간 리포트 자동 생성 (seen 3회, last QA-20260227-0013)
 - [P1] security-attack-regression-pack: 보안 공격 시나리오 회귀팩 구축 (seen 3회, last QA-20260227-0013)
 - [P2] ai-code-gate-input-policy: AI Code Gate: Prompt 패턴 15개 방어 점검 (seen 1회, last QA-20260226-0005)
 - [P2] release-dod-doc-gate: Release DoD: 문서 게이트 90일 갱신·메타데이터·아카이빙 정책 (seen 1회, last QA-20260226-0005)
-- [P2] system-start-metrics-gate: 시스템 시작 지연/실패율 KPI 기준 자동 수집 (seen 2회, last QA-20260227-0017)
+- [P2] system-start-metrics-gate: 시스템 시작 지연/실패율 KPI 기준 자동 수집 (seen 3회, last QA-20260227-0018)
+  - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
 
 ## Completed Improvements
 
@@ -53,15 +54,15 @@ Latest run: QA-20260227-0017 (2026-02-26T19:25:22.388Z)
 - auth-error-provider-copy: 인증 에러 라우트 메시지를 제공자-중립 표현으로 전환 (completed 1회, last QA-20260227-0010)
 - feature-dod-lint-zero-error: Feature DoD: lint 0 에러 (completed 1회, last QA-20260226-0007)
 - feature-dod-login-copy-neutral: 로그인 정책 카피 중립성 지속성 (completed 1회, last QA-20260227-0017)
-- feature-dod-login-policy-copy: 로그인 정책 안내 카피가 GitHub/Google/이메일 중립 표현인지 (completed 2회, last QA-20260227-0012)
+- feature-dod-login-policy-copy: 로그인 정책 카피 중립성 지속성 (completed 3회, last QA-20260227-0018)
 - feature-dod-release-response-time-check: Feature/Release DoD: 핵심 응답시간 합격 (completed 1회, last QA-20260226-0005)
 - feature-dod-security-review: Feature DoD: 보안 검토(입력 검증/인증/OWASP) (completed 1회, last QA-20260226-0006)
-- feature-dod-system-start-guard: 비로그인/제한 게스트 시스템 시작 가드 모달 동작 (completed 6회, last QA-20260227-0016)
+- feature-dod-system-start-guard: 비로그인 시스템 시작 가드 모달 동작 (completed 7회, last QA-20260227-0018)
 - feature-dod-tsc-zero-error: Feature DoD: tsc noEmit 0 에러 (completed 1회, last QA-20260226-0007)
 - feature-dod-unit-tests: Feature DoD: 신규 로직 단위 테스트 (completed 1회, last QA-20260226-0009)
-- feature-dod-validation-health-endpoints: Feature/Release DoD: 헬스체크 엔드포인트 통과 검증 (completed 1회, last QA-20260226-0005)
+- feature-dod-validation-health-endpoints: 헬스/버전 API 검사 (Vercel) (completed 2회, last QA-20260227-0018)
 - guest-login-visibility-toggle: 게스트 로그인 버튼 노출 옵션화 (completed 2회, last QA-20260227-0013)
-- guest-pin-login-flow: 게스트 PIN 인증 후 시스템 시작 버튼 노출 (completed 3회, last QA-20260227-0016)
+- guest-pin-login-flow: 게스트 PIN 인증 후 시스템 시작 버튼 노출 (completed 4회, last QA-20260227-0018)
 - home-semantic-nav: 홈 페이지 nav 랜드마크 보강 (completed 1회, last QA-20260226-0009)
 - landing-copy-alignment: 랜딩/로그인 정책 카피 정합성 (completed 4회, last QA-20260227-0016)
 - login-copy-neutral: 로그인 정책 카피 중립성 개선 (completed 1회, last QA-20260227-0014)
@@ -72,29 +73,36 @@ Latest run: QA-20260227-0017 (2026-02-26T19:25:22.388Z)
 - release-dod-contract-test: Release DoD: API contract test 통과 (completed 1회, last QA-20260226-0008)
 - release-dod-cost-gate: Release DoD: Cloud Run Free Tier 비용 가드 검증 (completed 1회, last QA-20260226-0008)
 - release-dod-test-gate: Release DoD: validate:all (tsc + lint + test) 전체 통과 (completed 1회, last QA-20260226-0008)
+- system-start-login-modal: 비로그인 상태에서 시스템 시작 클릭 시 로그인 모달 노출 (completed 1회, last QA-20260227-0021)
+- system-start-login-modal-redirect: 로그인 모달에서 로그인 페이지로 이동 (completed 1회, last QA-20260227-0022)
 - 게스트-pin-로그인-후-시스템-시작-버튼-노출: 게스트 PIN 로그인 후 시스템 시작 버튼 노출 (completed 1회, last QA-20260227-0010)
 - 로그인-정책-카피-정합성: 로그인 정책 카피 정합성 (completed 1회, last QA-20260227-0010)
 - 비로그인-시스템-시작-가드-모달-동작: 비로그인 시스템 시작 가드 모달 동작 (completed 1회, last QA-20260227-0010)
+- 비로그인-시스템-시작-버튼-노출-유지: 비로그인 사용자 시스템 시작 버튼 노출 유지 (completed 2회, last QA-20260227-0020)
+- 비로그인-시스템-시작-클릭-로그인-모달: 비로그인 사용자 시스템 시작 클릭 시 로그인 모달 경유 (completed 2회, last QA-20260227-0020)
 
 ## Recent Runs
 
-| Run ID | Time (UTC) | Title | Checks | Completed | Pending | Expert Gaps |
-|---|---|---|---:|---:|---:|---:|
-| QA-20260227-0017 | 2026-02-26T19:25:22.388Z | Vercel Playwright QA - 로그인 정책 카피 지속성 및 시스템 시작 가드 재확인 | 2 | 1 | 1 | 2 |
-| QA-20260227-0016 | 2026-02-26T18:34:32.172Z | Vercel Playwright QA - 로그인 정책/시스템 시작 가드 재검증 | 2 | 3 | 0 | 2 |
-| QA-20260227-0015 | 2026-02-26T18:11:05.996Z | Vercel Playwright QA - 랜딩 로그인 모달 카피 배포 정합성 재검증 | 2 | 2 | 2 | 3 |
-| QA-20260227-0014 | 2026-02-26T18:03:30.997Z | Vercel Playwright QA - 로그인 정책/시스템 시작 가드 배포 검증 | 3 | 3 | 1 | 2 |
-| QA-20260227-0013 | 2026-02-26T17:50:54.243Z | Vercel Playwright QA - 시스템 시작 가드/게스트 PIN 체험 흐름 재검증 | 2 | 2 | 3 | 2 |
-| QA-20260227-0012 | 2026-02-26T17:46:29.032Z | Vercel Playwright QA - 로그인 정책/시스템 시작 UX 보강 (재기록) | 3 | 2 | 0 | 2 |
-| QA-20260227-0011 | 2026-02-26T17:46:20.701Z | Vercel Playwright QA - 로그인 정책/시스템 시작 UX 보강 | 0 | 2 | 0 | 1 |
-| QA-20260227-0010 | 2026-02-26T16:36:37.248Z | Vercel Playwright QA - 시스템 시작/게스트 PIN | 2 | 5 | 1 | 2 |
-| QA-20260226-0009 | 2026-02-26T14:07:55.933Z | P1 Closeout — unit-tests / copy-alignment / nav-landmarks | 5 | 3 | 0 | 0 |
-| QA-20260226-0008 | 2026-02-26T13:10:43.480Z | P1 Release DoD — test-gate / contract-test / cost-gate verified | 6 | 3 | 0 | 0 |
-| QA-20260226-0007 | 2026-02-26T12:03:08.146Z | P0 DoD Closeout — tsc/lint zero-error verified | 3 | 2 | 0 | 0 |
-| QA-20260226-0006 | 2026-02-26T12:00:38.039Z | Technical Debt Closeout - Admin Auth Role Validation | 4 | 3 | 0 | 4 |
-| QA-20260226-0005 | 2026-02-26T11:25:45.950Z | DoD-Gap Analysis for Final QA Closeout | 10 | 2 | 9 | 4 |
-| QA-20260226-0004 | 2026-02-26T11:24:21.055Z | Domain Fit Review vs Industry Best Practices | 8 | 0 | 3 | 4 |
-| QA-20260226-0003 | 2026-02-26T11:15:22.325Z | Final QA Domain-Fit Review for Project Closure | 6 | 1 | 3 | 3 |
-| QA-20260226-0002 | 2026-02-26T11:13:57.091Z | Vercel Playwright QA - Login/Modal/Copy Alignment | 12 | 1 | 2 | 0 |
-| QA-20260226-0001 | 2026-02-26T10:50:26.077Z | Portfolio QA Tracking Setup + P0/P1 Fix Verification | 5 | 4 | 1 | 0 |
+| Run ID | Time (UTC) | Title | Checks | Completed | Pending | Wont-Fix | Expert Gaps |
+|---|---|---|---:|---:|---:|---:|---:|
+| QA-20260227-0022 | 2026-02-27T12:22:13.317Z | Vercel Playwright MCP: 로그인 모달에서 로그인 페이지 이동 | 1 | 1 | 0 | 0 | 0 |
+| QA-20260227-0021 | 2026-02-27T12:12:23.798Z | Vercel Playwright MCP: 비로그인 시스템 시작 로그인 모달 | 1 | 1 | 0 | 0 | 0 |
+| QA-20260227-0020 | 2026-02-27T12:00:06.421Z | Vercel Playwright MCP QA - 비로그인 시작 CTA 노출/모달 재검증 | 2 | 2 | 0 | 0 | 0 |
+| QA-20260227-0019 | 2026-02-27T11:53:49.388Z | Vercel Playwright MCP QA - 비로그인 시작 CTA 가시성 및 모달 확인 | 2 | 2 | 0 | 0 | 0 |
+| QA-20260227-0018 | 2026-02-27T11:13:35.120Z | Vercel Playwright MCP QA - 시스템 시작 가드 및 게스트 인증 경로 재확인 | 6 | 4 | 0 | 1 | 2 |
+| QA-20260227-0017 | 2026-02-26T19:25:22.388Z | Vercel Playwright QA - 로그인 정책 카피 지속성 및 시스템 시작 가드 재확인 | 2 | 1 | 1 | 0 | 2 |
+| QA-20260227-0016 | 2026-02-26T18:34:32.172Z | Vercel Playwright QA - 로그인 정책/시스템 시작 가드 재검증 | 2 | 3 | 0 | 0 | 2 |
+| QA-20260227-0015 | 2026-02-26T18:11:05.996Z | Vercel Playwright QA - 랜딩 로그인 모달 카피 배포 정합성 재검증 | 2 | 2 | 2 | 0 | 3 |
+| QA-20260227-0014 | 2026-02-26T18:03:30.997Z | Vercel Playwright QA - 로그인 정책/시스템 시작 가드 배포 검증 | 3 | 3 | 1 | 0 | 2 |
+| QA-20260227-0013 | 2026-02-26T17:50:54.243Z | Vercel Playwright QA - 시스템 시작 가드/게스트 PIN 체험 흐름 재검증 | 2 | 2 | 3 | 0 | 2 |
+| QA-20260227-0012 | 2026-02-26T17:46:29.032Z | Vercel Playwright QA - 로그인 정책/시스템 시작 UX 보강 (재기록) | 3 | 2 | 0 | 0 | 2 |
+| QA-20260227-0011 | 2026-02-26T17:46:20.701Z | Vercel Playwright QA - 로그인 정책/시스템 시작 UX 보강 | 0 | 2 | 0 | 0 | 1 |
+| QA-20260227-0010 | 2026-02-26T16:36:37.248Z | Vercel Playwright QA - 시스템 시작/게스트 PIN | 2 | 5 | 1 | 0 | 2 |
+| QA-20260226-0009 | 2026-02-26T14:07:55.933Z | P1 Closeout — unit-tests / copy-alignment / nav-landmarks | 5 | 3 | 0 | 0 | 0 |
+| QA-20260226-0008 | 2026-02-26T13:10:43.480Z | P1 Release DoD — test-gate / contract-test / cost-gate verified | 6 | 3 | 0 | 0 | 0 |
+| QA-20260226-0007 | 2026-02-26T12:03:08.146Z | P0 DoD Closeout — tsc/lint zero-error verified | 3 | 2 | 0 | 0 | 0 |
+| QA-20260226-0006 | 2026-02-26T12:00:38.039Z | Technical Debt Closeout - Admin Auth Role Validation | 4 | 3 | 0 | 0 | 4 |
+| QA-20260226-0005 | 2026-02-26T11:25:45.950Z | DoD-Gap Analysis for Final QA Closeout | 10 | 2 | 9 | 0 | 4 |
+| QA-20260226-0004 | 2026-02-26T11:24:21.055Z | Domain Fit Review vs Industry Best Practices | 8 | 0 | 3 | 0 | 4 |
+| QA-20260226-0003 | 2026-02-26T11:15:22.325Z | Final QA Domain-Fit Review for Project Closure | 6 | 1 | 3 | 0 | 3 |
 

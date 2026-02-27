@@ -1,0 +1,148 @@
+{
+  "runId": "QA-20260227-0018",
+  "recordedAt": "2026-02-27T11:13:35.120Z",
+  "recordedAtKst": "2026-02-27 20:13:35 KST",
+  "runTitle": "Vercel Playwright MCP QA - 시스템 시작 가드 및 게스트 인증 경로 재확인",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main"
+  },
+  "checks": {
+    "total": 6,
+    "passed": 6,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "비로그인 가드 문구, 로그인 정책 카피, 게스트 PIN 인증 및 시스템 시작/부팅 흐름이 Vercel 배포 기준에서 일관되게 재현됩니다.",
+      "nextAction": "현재 시나리오를 1회 주기로 재실행해 배포 채널 차이를 감시합니다."
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "기능 플로우는 통과했으나 시작 시도/성공/실패 지표가 QA 체크 메타로 구조화되지 않았습니다.",
+      "nextAction": "system-start API 시도/성공률/실패률/지연 시간을 qa-tracker checks로 반영합니다."
+    },
+    {
+      "domainId": "ai-security-reliability",
+      "domainName": "AI Security & Reliability Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "게스트 모드 PIN 진입 경로가 테스트용 임계 제약 아래에서만 노출되며, 로그인 우회로가 관찰되지 않았습니다.",
+      "nextAction": "지역 제한/차단 로그와 보안 감사 로그를 주기적으로 상호검증합니다."
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Vercel + Playwright MCP를 통해 배포 환경 랜딩/로그인/시스템 시작이 재현되었고, /system-boot 진입도 확인되었습니다.",
+      "nextAction": "채널별 재배포 시 동일 스위트를 자동 실행으로 고정합니다."
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "핵심 플로우 6건이 Playwright MCP로 역할 기반 탐색과 실시간 상호작용을 통해 안정적으로 검증되었습니다.",
+      "nextAction": "실패시 재시도/재기동 규칙을 자동화된 재현 템플릿으로 정형화합니다."
+    },
+    {
+      "domainId": "data-metrics-quality",
+      "domainName": "Data Quality & Metrics Analyst",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "정성적 통과는 확보되었으나 실행률·지연·실패율 KPI를 실행 메트릭으로 정량화하지 못했습니다.",
+      "nextAction": "system-start KPI를 QA 체크 메타 항목으로 상향해 run 메트릭을 보강합니다."
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "feature-dod-login-policy-copy",
+      "title": "로그인 정책 카피 중립성 지속성",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "비로그인 가드 모달 문구에서 GitHub/Google/이메일 중립 안내 텍스트 확인",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "feature-dod-system-start-guard",
+      "title": "비로그인 시스템 시작 가드 모달 동작",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "시스템 시작 클릭 시 모달 노출, 문구/버튼/차단 문구 확인",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "guest-pin-login-flow",
+      "title": "게스트 PIN 인증 후 시스템 시작 버튼 노출",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "게스트 PIN 4231 입력 후 세션 생성 및 대시보드/시스템부팅 진입 확인",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "feature-dod-validation-health-endpoints",
+      "title": "헬스/버전 API 검사 (Vercel)",
+      "priority": "P1",
+      "evidence": "/api/health와 /api/version 모두 200 응답 확인",
+      "note": "",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "wontFixImprovements": [
+    {
+      "id": "system-start-metrics-gate",
+      "title": "시스템 시작 지연/실패율 KPI 기준 자동 수집",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "시스템 시작 시도/성공/실패 카운트 및 latency 지표를 다음 런에서 qa-run 메타로 연동",
+      "owner": "codex",
+      "status": "wont-fix",
+      "policyNote": "이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)"
+    }
+  ],
+  "notes": [
+    "Playwright MCP를 통한 Vercel 수동 시나리오로 `/`, `/login`, `/system-boot`, `/dashboard` 핵심 흐름 검증 완료",
+    "게스트 인증 후 3초 카운트다운/부팅 페이지를 거쳐 대시보드 복귀 확인"
+  ],
+  "links": [
+    {
+      "label": "Vercel URL",
+      "url": "https://openmanager-ai.vercel.app"
+    }
+  ]
+}

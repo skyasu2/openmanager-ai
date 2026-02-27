@@ -1,0 +1,73 @@
+{
+  "runId": "QA-20260227-0020",
+  "recordedAt": "2026-02-27T12:00:06.421Z",
+  "recordedAtKst": "2026-02-27 21:00:06 KST",
+  "runTitle": "Vercel Playwright MCP QA - 비로그인 시작 CTA 노출/모달 재검증",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main"
+  },
+  "checks": {
+    "total": 2,
+    "passed": 2,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "요청한 비로그인 노출/모달 시나리오가 Vercel 환경에서 검증됨",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Playwright 기반 랜딩/시스템 시작/모달 시나리오가 안정적으로 재현됨",
+      "nextAction": ""
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "비로그인-시스템-시작-버튼-노출-유지",
+      "title": "비로그인 사용자 시스템 시작 버튼 노출 유지",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "비로그인-시스템-시작-클릭-로그인-모달",
+      "title": "비로그인 사용자 시스템 시작 클릭 시 로그인 모달 경유",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [],
+  "links": [
+    {
+      "label": "Vercel URL",
+      "url": "https://openmanager-ai.vercel.app"
+    }
+  ]
+}

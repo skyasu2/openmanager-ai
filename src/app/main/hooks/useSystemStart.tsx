@@ -147,6 +147,14 @@ export function useSystemStart(options: UseSystemStartOptions) {
 
   // 상태 정보 계산
   const statusInfo: StatusInfo = useMemo(() => {
+    if (!isAuthenticated) {
+      return {
+        color: 'text-white',
+        message: '로그인 후 시스템을 시작할 수 있습니다',
+        showEscHint: false,
+      };
+    }
+
     if (systemStartCountdown > 0) {
       return {
         color: 'text-orange-300',
@@ -188,6 +196,7 @@ export function useSystemStart(options: UseSystemStartOptions) {
   }, [
     systemStartCountdown,
     isSystemStarting,
+    isAuthenticated,
     multiUserStatus?.isRunning,
     isSystemStarted,
   ]);
@@ -311,6 +320,16 @@ export function useSystemStart(options: UseSystemStartOptions) {
         className:
           'bg-linear-to-r from-purple-500 to-blue-600 text-white border-purple-400/50 cursor-not-allowed',
         disabled: true,
+      };
+    }
+
+    if (!isAuthenticated) {
+      return {
+        text: '🚀 로그인 후 시작',
+        icon: getIcon(Play, 'h-5 w-5'),
+        className:
+          'bg-linear-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white border-blue-400/50',
+        disabled: false,
       };
     }
 

@@ -110,6 +110,7 @@ function Home() {
     authLoading,
     isMounted,
   });
+  const shouldShowSystemStart = !isSystemStarted || !isAuthenticated;
 
   // 시스템 상태 동기화
   const { startSystem, stopSystem, getSystemRemainingTime } =
@@ -210,7 +211,12 @@ function Home() {
 
       {/* 헤더 */}
       <header className="relative z-50 flex items-center justify-between p-4 sm:p-6">
-        <OpenManagerLogo variant="dark" href="/" titleAs="p" />
+        <OpenManagerLogo
+          variant="dark"
+          href="/"
+          titleAs="p"
+          showSubtitle={false}
+        />
         <nav aria-label="사용자 메뉴" className="flex items-center gap-3">
           <UnifiedProfileHeader />
         </nav>
@@ -239,7 +245,7 @@ function Home() {
 
         {/* 시스템 시작/대시보드 섹션 */}
         <div className="mb-12">
-          {!isSystemStarted ? (
+          {shouldShowSystemStart ? (
             <SystemStartSection
               isMounted={isMounted}
               systemStartCountdown={systemStartCountdown}

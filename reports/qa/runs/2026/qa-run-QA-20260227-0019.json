@@ -1,0 +1,68 @@
+{
+  "runId": "QA-20260227-0019",
+  "recordedAt": "2026-02-27T11:53:49.388Z",
+  "recordedAtKst": "2026-02-27 20:53:49 KST",
+  "runTitle": "Vercel Playwright MCP QA - 비로그인 시작 CTA 가시성 및 모달 확인",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main"
+  },
+  "checks": {
+    "total": 2,
+    "passed": 2,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "비로그인 환경에서 시스템 시작 CTA 노출 및 로그인 유도 흐름이 의도대로 동작함.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Playwright 기반 탐색으로 주요 버튼/모달 전환 시나리오 검증 대상 2건 통과.",
+      "nextAction": ""
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "비로그인-시스템-시작-버튼-노출-유지",
+      "title": "비로그인 사용자 시스템 시작 버튼 노출 유지",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "src/app/page.tsx",
+      "note": "",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "비로그인-시스템-시작-클릭-로그인-모달",
+      "title": "비로그인 클릭 시 로그인 모달 경유",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "src/app/main/hooks/useSystemStart.tsx",
+      "note": "",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [],
+  "links": []
+}

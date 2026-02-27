@@ -212,7 +212,12 @@ export default function LoginClient() {
       <div className="wave-particles" />
 
       <header className="relative z-50 flex items-center justify-between p-4 sm:p-6">
-        <OpenManagerLogo variant="dark" href="/" titleAs="p" />
+        <OpenManagerLogo
+          variant="dark"
+          href="/"
+          titleAs="p"
+          showSubtitle={false}
+        />
         <div className="flex items-center gap-3">
           <UnifiedProfileHeader />
         </div>
