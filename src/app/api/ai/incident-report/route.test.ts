@@ -186,6 +186,22 @@ describe('/api/ai/incident-report POST', () => {
     expect(data.report?.id).toBe('report-1');
   });
 
+  it('enableRAG 값이 Cloud Run proxy body에 전달되어야 함', async () => {
+    await POST(
+      createPostRequest({ action: 'generate', metrics: [], enableRAG: true })
+    );
+
+    expect(mockProxyToCloudRun).toHaveBeenCalledTimes(1);
+    const proxyCall = mockProxyToCloudRun.mock.calls[0];
+    expect(proxyCall?.[0]).toMatchObject({
+      path: '/api/ai/incident-report',
+      body: expect.objectContaining({
+        enableRAG: true,
+        action: 'generate',
+      }),
+    });
+  });
+
   it('generate 액션에서 폴백이 발생하면 실패 계약을 반환한다', async () => {
     mockGetDefaultTimeout.mockReturnValue(5000);
     mockProxyToCloudRun.mockResolvedValue({

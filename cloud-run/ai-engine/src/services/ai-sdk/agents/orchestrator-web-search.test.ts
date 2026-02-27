@@ -3,6 +3,7 @@ import {
   shouldEnableWebSearch,
   resolveWebSearchSetting,
   filterToolsByWebSearch,
+  filterToolsByRAG,
 } from './orchestrator-web-search';
 
 describe('shouldEnableWebSearch', () => {
@@ -73,6 +74,28 @@ describe('filterToolsByWebSearch', () => {
   it('returns unchanged tools when no searchWeb present', () => {
     const tools = { analyze: 'mock', report: 'mock' };
     const filtered = filterToolsByWebSearch(tools, false);
+    expect(Object.keys(filtered)).toEqual(['analyze', 'report']);
+  });
+});
+
+describe('filterToolsByRAG', () => {
+  it('returns all tools when RAG enabled', () => {
+    const tools = { searchKnowledgeBase: 'mock', analyze: 'mock' };
+    const filtered = filterToolsByRAG(tools, true);
+    expect(filtered).toHaveProperty('searchKnowledgeBase');
+    expect(filtered).toHaveProperty('analyze');
+  });
+
+  it('removes searchKnowledgeBase when RAG disabled', () => {
+    const tools = { searchKnowledgeBase: 'mock', analyze: 'mock' };
+    const filtered = filterToolsByRAG(tools, false);
+    expect(filtered).not.toHaveProperty('searchKnowledgeBase');
+    expect(filtered).toHaveProperty('analyze');
+  });
+
+  it('returns unchanged tools when no searchKnowledgeBase present', () => {
+    const tools = { analyze: 'mock', report: 'mock' };
+    const filtered = filterToolsByRAG(tools, false);
     expect(Object.keys(filtered)).toEqual(['analyze', 'report']);
   });
 });

@@ -310,6 +310,35 @@ describe('Supervisor Stream V2 Route', () => {
       expect(mockCreateNewResumableStream).toHaveBeenCalledTimes(1);
     });
 
+    it('enableRAG 값도 Cloud Run으로 전달해야 함', async () => {
+      const request = new NextRequest(
+        'http://localhost/api/ai/supervisor/stream/v2',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Session-Id': 'session-1234',
+          },
+          body: JSON.stringify({
+            messages: [{ role: 'user', content: 'RAG 테스트' }],
+            enableRAG: true,
+          }),
+        }
+      );
+
+      const response = await POST(request);
+
+      expect(response.status).toBe(200);
+      expect(mockFetch).toHaveBeenCalledTimes(1);
+
+      const fetchOptions = mockFetch.mock.calls[0]?.[1] as RequestInit;
+      const body = JSON.parse(String(fetchOptions.body));
+      expect(body).toMatchObject({
+        sessionId: 'session-1234',
+        enableRAG: true,
+      });
+    });
+
     it('인증 컨텍스트 userId가 있으면 ownerKey는 해시 기반 user 키를 사용해야 함', async () => {
       mockGetAPIAuthContext.mockReturnValueOnce({
         authType: 'supabase',

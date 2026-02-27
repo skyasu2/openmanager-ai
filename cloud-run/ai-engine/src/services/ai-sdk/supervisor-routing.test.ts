@@ -207,10 +207,26 @@ describe('createPrepareStep', () => {
   });
 
   it('should route advisor queries to knowledge tools', async () => {
-    const prepare = createPrepareStep('해결 방법 알려줘');
+    const prepare = createPrepareStep('해결 방법 알려줘', {
+      enableRAG: true,
+    });
     const result = await prepare({ stepNumber: 0 });
     expect(result.activeTools).toContain('searchKnowledgeBase');
     expect(result.activeTools).toContain('recommendCommands');
+    expect(result.toolChoice).toBe('required');
+  });
+
+  it('should omit searchKnowledgeBase when RAG is disabled', async () => {
+    const prepare = createPrepareStep('해결 방법 알려줘', {
+      enableRAG: false,
+    });
+    const result = await prepare({ stepNumber: 0 });
+    expect((result as { activeTools?: string[] }).activeTools).not.toContain(
+      'searchKnowledgeBase'
+    );
+    expect((result as { activeTools?: string[] }).activeTools).toContain(
+      'recommendCommands'
+    );
     expect(result.toolChoice).toBe('required');
   });
 

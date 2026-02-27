@@ -205,7 +205,10 @@ async function* streamSingleAgent(
         model,
         messages: modelMessages,
         tools: filteredTools,
-        prepareStep: createPrepareStep(queryText, { enableWebSearch: webSearchEnabled }),
+        prepareStep: createPrepareStep(queryText, {
+          enableWebSearch: webSearchEnabled,
+          enableRAG: ragEnabled,
+        }),
         stopWhen: [hasToolCall('finalAnswer'), stepCountIs(5)],
         temperature: 0.3,
         maxOutputTokens: 2048,

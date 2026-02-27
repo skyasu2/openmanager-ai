@@ -196,6 +196,17 @@ describe('requestSchemaLoose (V2 Proxy)', () => {
       expect(result.success).toBe(true);
     });
 
+    it('should accept enableRAG flag', () => {
+      const input = {
+        messages: [{ role: 'user', content: 'test' }],
+        enableRAG: true,
+      };
+
+      const result = requestSchemaLoose.safeParse(input);
+      expect(result.success).toBe(true);
+      expect(result.data?.enableRAG).toBe(true);
+    });
+
     it('should accept message with createdAt as string', () => {
       const input = {
         messages: [

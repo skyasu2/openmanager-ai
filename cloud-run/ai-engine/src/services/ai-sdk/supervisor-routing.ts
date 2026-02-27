@@ -275,12 +275,28 @@ export function getIntentCategory(query: string): IntentCategory {
 
 const SIMPLE_CONVERSATION_PATTERNS = /^(안녕|감사|고마워|잘했어|hi|hello|thanks|thank you|bye|잘가)[\s!?.]*$/i;
 
-export function createPrepareStep(query: string, options?: { enableWebSearch?: boolean }) {
+export function createPrepareStep(
+  query: string,
+  options?: {
+    enableWebSearch?: boolean;
+    enableRAG?: boolean;
+  }
+) {
   const q = query.toLowerCase();
   const shouldForceWebSearch = options?.enableWebSearch === true;
+  const shouldEnableRAG = options?.enableRAG === true;
 
-  const filterActiveTools = (tools: ToolName[]) =>
-    shouldForceWebSearch ? tools : tools.filter((tool) => tool !== 'searchWeb');
+  const filterActiveTools = (tools: ToolName[]) => {
+    const withoutWebSearch = shouldForceWebSearch
+      ? tools
+      : tools.filter((tool) => tool !== 'searchWeb');
+
+    if (shouldEnableRAG) {
+      return withoutWebSearch;
+    }
+
+    return withoutWebSearch.filter((tool) => tool !== 'searchKnowledgeBase');
+  };
 
   return async ({ stepNumber }: { stepNumber: number }) => {
     if (stepNumber > 0) return {};
