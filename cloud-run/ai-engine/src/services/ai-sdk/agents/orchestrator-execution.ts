@@ -153,7 +153,7 @@ export async function executeMultiAgent(
       }
     } else {
       const parallelResult = await executeParallelSubtasks(
-        decomposition.subtasks, startTime, webSearchEnabled, ragEnabled, request.sessionId
+        decomposition.subtasks, startTime, webSearchEnabled, ragEnabled, request.sessionId, request.images, request.files
       );
 
       if (parallelResult) {
@@ -388,11 +388,11 @@ export async function* executeMultiAgentStream(
 
     if (decomposition.requiresSequential) {
       yield* executeSequentialSubtasksStream(
-        decomposition.subtasks, startTime, webSearchEnabled, ragEnabled, request.sessionId
+        decomposition.subtasks, startTime, webSearchEnabled, ragEnabled, request.sessionId, request.images, request.files
       );
     } else {
       yield* executeParallelSubtasksStream(
-        decomposition.subtasks, startTime, webSearchEnabled, ragEnabled, request.sessionId
+        decomposition.subtasks, startTime, webSearchEnabled, ragEnabled, request.sessionId, request.images, request.files
       );
     }
     return;
@@ -439,9 +439,10 @@ export async function* executeMultiAgentStream(
 
     const routingPrompt = buildRoutingPrompt(query);
 
-    // Phase 2D: LLM routing timeout — wrap with Promise.race
+    // Phase 2D: LLM routing timeout — wrap with Promise.race + clearTimeout
     const routingTimeout = TIMEOUT_CONFIG.orchestrator.routingDecision;
     let routingResult: Awaited<ReturnType<typeof generateObjectWithFallback>>;
+    let routingTimeoutId: ReturnType<typeof setTimeout> | undefined;
 
     try {
       routingResult = await Promise.race([
@@ -453,9 +454,9 @@ export async function* executeMultiAgentStream(
           temperature: 0.1,
           operation: 'orchestrator-routing',
         }),
-        new Promise<never>((_, reject) =>
-          setTimeout(() => reject(new Error(`Routing decision timeout after ${routingTimeout}ms`)), routingTimeout)
-        ),
+        new Promise<never>((_, reject) => {
+          routingTimeoutId = setTimeout(() => reject(new Error(`Routing decision timeout after ${routingTimeout}ms`)), routingTimeout);
+        }),
       ]);
     } catch (routingError) {
       const errorMsg = routingError instanceof Error ? routingError.message : String(routingError);
@@ -470,6 +471,8 @@ export async function* executeMultiAgentStream(
         return;
       }
       throw routingError;
+    } finally {
+      if (routingTimeoutId !== undefined) clearTimeout(routingTimeoutId);
     }
 
     const routingDecision = routingResult.object;

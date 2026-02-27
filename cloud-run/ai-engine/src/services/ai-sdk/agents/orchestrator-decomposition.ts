@@ -10,6 +10,7 @@ import { taskDecomposeSchema, type TaskDecomposition, type Subtask } from './sch
 import { TIMEOUT_CONFIG } from '../../../config/timeout-config';
 
 import type { StreamEvent } from '../supervisor';
+import type { FileAttachment, ImageAttachment } from './base-agent';
 import type { MultiAgentResponse } from './orchestrator-types';
 import { getOrchestratorModel, getAgentConfig, executeForcedRouting } from './orchestrator-routing';
 import { saveAgentFindingsToContext } from './orchestrator-context';
@@ -124,7 +125,9 @@ export async function executeParallelSubtasks(
   startTime: number,
   webSearchEnabled = true,
   ragEnabled = true,
-  sessionId = ''
+  sessionId = '',
+  images?: ImageAttachment[],
+  files?: FileAttachment[]
 ): Promise<MultiAgentResponse | null> {
   logger.info(`[Parallel] Executing ${subtasks.length} subtasks in parallel...`);
 
@@ -153,7 +156,9 @@ export async function executeParallelSubtasks(
       subtask.agent,
       startTime,
       webSearchEnabled,
-      ragEnabled
+      ragEnabled,
+      images,
+      files
     );
 
     try {
@@ -279,7 +284,9 @@ export async function* executeParallelSubtasksStream(
   startTime: number,
   webSearchEnabled = true,
   ragEnabled = true,
-  sessionId = ''
+  sessionId = '',
+  images?: ImageAttachment[],
+  files?: FileAttachment[]
 ): AsyncGenerator<StreamEvent> {
   logger.info(`[ParallelStream] Executing ${subtasks.length} subtasks in parallel...`);
 
@@ -315,7 +322,9 @@ export async function* executeParallelSubtasksStream(
       subtask.agent,
       startTime,
       webSearchEnabled,
-      ragEnabled
+      ragEnabled,
+      images,
+      files
     );
 
     try {
@@ -404,7 +413,9 @@ export async function* executeSequentialSubtasksStream(
   startTime: number,
   webSearchEnabled = true,
   ragEnabled = true,
-  sessionId = ''
+  sessionId = '',
+  images?: ImageAttachment[],
+  files?: FileAttachment[]
 ): AsyncGenerator<StreamEvent> {
   logger.info(`[SequentialStream] Executing ${subtasks.length} subtasks sequentially...`);
 
@@ -440,7 +451,9 @@ export async function* executeSequentialSubtasksStream(
       subtask.agent,
       startTime,
       webSearchEnabled,
-      ragEnabled
+      ragEnabled,
+      images,
+      files
     );
 
     if (!result) {

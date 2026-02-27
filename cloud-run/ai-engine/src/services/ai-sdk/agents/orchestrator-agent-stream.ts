@@ -15,7 +15,7 @@ import type { StreamEvent } from '../supervisor';
 import type { FileAttachment, ImageAttachment } from './base-agent';
 import { getAgentConfig, getAgentProviderOrder, executeReporterWithPipeline } from './orchestrator-routing';
 import { saveAgentFindingsToContext } from './orchestrator-context';
-import { selectTextModel, type TextProvider } from './config/agent-model-selectors';
+import { selectTextModel, type TextProvider, type ModelResult } from './config/agent-model-selectors';
 import { ORCHESTRATOR_CONFIG } from './orchestrator-types';
 import { filterToolsByWebSearch, filterToolsByRAG } from './orchestrator-web-search';
 import { evaluateAgentResponseQuality } from './response-quality';
@@ -75,41 +75,49 @@ export async function* executeAgentStream(
     }
   }
 
+  // Vision Agent: use native model (gemini) directly, skip text provider chain
+  const isVisionAgent = agentName === 'Vision Agent';
+  const nativeModel = isVisionAgent ? agentConfig.getModel() : null;
+
   // Phase 2A: Provider fallback — try multiple providers on failure
   const TEXT_PROVIDERS: TextProvider[] = ['cerebras', 'groq', 'mistral'];
   const rawProviderOrder = getAgentProviderOrder(agentName);
-  // Filter to TextProvider only (excludes gemini etc. which are not text providers)
-  const providerOrder = rawProviderOrder.filter((p): p is TextProvider => TEXT_PROVIDERS.includes(p as TextProvider));
+  const providerOrder = isVisionAgent
+    ? [] // Vision Agent skips text providers
+    : rawProviderOrder.filter((p): p is TextProvider => TEXT_PROVIDERS.includes(p as TextProvider));
   const excludedProviders: string[] = [];
   let lastError: string | undefined;
 
-  // If no text providers available (e.g., Vision Agent), use agentConfig.getModel() directly
-  if (providerOrder.length === 0) {
-    const modelResult = agentConfig.getModel();
-    if (modelResult) {
-      providerOrder.push(modelResult.provider as TextProvider);
-    }
+  // Build provider attempt list: Vision Agent uses native model, others use text providers
+  const providerAttempts: ModelResult[] = [];
+
+  if (isVisionAgent && nativeModel) {
+    // Vision Agent: single attempt with native model (gemini/openrouter)
+    providerAttempts.push(nativeModel);
+  } else if (isVisionAgent && !nativeModel) {
+    // Vision model unavailable — will fall through to "all providers exhausted"
+    logger.warn(`[Stream ${agentName}] Native vision model unavailable`);
   }
 
+  // Text agents: build attempts from provider order
   for (const attemptProvider of providerOrder) {
-    // Skip excluded providers (from previous failures)
-    if (excludedProviders.includes(attemptProvider)) continue;
-
     const circuitBreaker = getCircuitBreaker(`orchestrator-${attemptProvider}`);
     if (!circuitBreaker.isAllowed()) {
       logger.warn(`🔌 [Stream ${agentName}] CB OPEN for ${attemptProvider}, trying next`);
-      excludedProviders.push(attemptProvider);
       continue;
     }
 
     const modelResult = selectTextModel(agentName, [attemptProvider]);
     if (!modelResult) {
       logger.debug(`[Stream ${agentName}] No model for ${attemptProvider}, trying next`);
-      excludedProviders.push(attemptProvider);
       continue;
     }
 
-    const { model, provider, modelId } = modelResult;
+    providerAttempts.push(modelResult);
+  }
+
+  for (const { model, provider, modelId } of providerAttempts) {
+    if (excludedProviders.includes(provider)) continue;
     logger.debug(`[Stream ${agentName}] Attempting ${provider}/${modelId}`);
 
     let filteredTools = filterToolsByWebSearch(agentConfig.tools, webSearchEnabled);
