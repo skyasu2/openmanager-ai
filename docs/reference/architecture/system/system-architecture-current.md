@@ -2,10 +2,10 @@
 
 > Vercel + Cloud Run 하이브리드 시스템 구조의 기준 문서
 > Owner: platform-architecture
-> Last verified against code: 2026-02-20
+> Last verified against code: 2026-02-27
 > Status: Active Canonical (hybrid-split.md 통합됨)
 > Doc type: Explanation
-> Last reviewed: 2026-02-20
+> Last reviewed: 2026-02-27
 > Canonical: docs/reference/architecture/system/system-architecture-current.md
 > Tags: system,architecture,hybrid,cloud-run,vercel
 
@@ -13,7 +13,7 @@
 
 ## 1. Overview
 
-**OpenManager AI v8.0.0**은 AI Native Server Monitoring Platform으로, Vercel(Frontend/BFF)과 Cloud Run(AI Engine)의 **Hybrid Architecture**로 운영됩니다.
+**OpenManager AI v8.5.0**은 AI Native Server Monitoring Platform으로, Vercel(Frontend/BFF)과 Cloud Run(AI Engine)의 **Hybrid Architecture**로 운영됩니다.
 
 | 항목 | 수치 |
 |------|------|
@@ -39,7 +39,7 @@ graph TB
 
     subgraph Vercel["Vercel (Frontend & BFF)"]
         NextJS["Next.js 16.1.x<br/>App Router"]
-        API["API Routes (34)"]
+        API["API Routes (34)<br/>(/src/app/api/**/route.ts)"]
         MP["MetricsProvider<br/>(Singleton)"]
         Providers["TanStack Query +<br/>Zustand Stores"]
     end
@@ -54,7 +54,7 @@ graph TB
     subgraph External["External Services"]
         Supabase["Supabase<br/>(PostgreSQL + pgvector)"]
         Redis["Upstash Redis<br/>(Cache, Stream)"]
-        LLM["LLM Providers<br/>(Cerebras, Groq,<br/>Mistral, Gemini)"]
+        LLM["LLM Providers<br/>(Cerebras, Groq,<br/>Mistral, Gemini, OpenRouter)"]
     end
 
     subgraph Data["Data (Build-Time)"]
@@ -92,7 +92,7 @@ graph TB
 │  Vercel (Next.js 16.1.x, App Router)                                 │
 │  ┌─────────────┐  ┌──────────────────┐  ┌─────────────────────────┐ │
 │  │ API Routes   │  │ MetricsProvider  │  │ Auth (NextAuth/Supabase)│ │
-│  │ (30 routes)  │  │ (OTel→hourly)    │  │ Rate Limiter, CSRF     │ │
+│  │ (34 routes)  │  │ (OTel→hourly)    │  │ Rate Limiter, CSRF     │ │
 │  └──────┬──────┘  └──────────────────┘  └─────────────────────────┘ │
 └─────────┼────────────────────────────────────────────────────────────┘
           │ Proxy (X-API-Key)
@@ -234,12 +234,12 @@ npm run data:precomputed:build # Cloud Run precomputed states 재생성
 
 | Agent | Provider (Primary) | Role | 라우팅 |
 |-------|-------------------|------|--------|
-| **Orchestrator** | Cerebras llama-3.3-70b | Intent 분류, Agent 핸드오프 | 진입점 |
+| **Orchestrator** | Cerebras gpt-oss-120b | Intent 분류, Agent 핸드오프 | 진입점 |
 | **NLQ** | Cerebras | 서버 메트릭 조회 (단순+복합) | 외부 |
-| **Analyst** | Groq llama-3.3-70b | 이상 감지, 추세 예측 | 외부 |
+| **Analyst** | Cerebras gpt-oss-120b | 이상 감지, 추세 예측 | 외부 |
 | **Reporter** | Groq | 장애 보고서, 타임라인 | 외부 |
-| **Advisor** | Mistral small | 트러블슈팅, GraphRAG 검색 | 외부 |
-| **Vision** | Gemini 2.5-flash | 스크린샷/로그 분석, 웹 검색 | 외부 |
+| **Advisor** | Mistral-large | 트러블슈팅, GraphRAG 검색 | 외부 |
+| **Vision** | Gemini 2.5-flash (fallback: OpenRouter vision 모델) | 스크린샷/로그 분석, 웹 검색 | 외부 |
 | **Evaluator** | Cerebras | 보고서 품질 평가 (내부) | 내부 |
 | **Optimizer** | Mistral | 보고서 품질 개선 (내부) | 내부 |
 
@@ -284,6 +284,7 @@ Cerebras (Primary, ~200ms)
 Groq (Secondary)
     ↓ 실패 또는 quota 80%
 Mistral (Tertiary)
+    ↓ Vision 전용: Gemini → OpenRouter
     ↓ 모두 실패
 Static Fallback Response
 ```

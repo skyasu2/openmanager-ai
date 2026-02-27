@@ -4,11 +4,11 @@
 > Owner: documentation
 > Status: Active
 > Doc type: How-to
-> Last reviewed: 2026-02-26
+> Last reviewed: 2026-02-27
 > Canonical: docs/guides/ai/vision-agent-guide.md
 > Tags: ai,vision,guide
 >
-> **Version**: 1.2.0 | **Last Updated**: 2026-02-26
+> **Version**: 1.2.1 | **Last Updated**: 2026-02-27
 
 ## 개요
 
@@ -20,8 +20,6 @@ Vision Agent는 멀티모달 분석을 위한 AI 에이전트로, 이미지와 �
 - **컨텍스트 윈도우**: 1M 토큰 (대용량 문서 처리)
 - **멀티모달 지원**: 이미지 + 텍스트 동시 분석
 - **Search Grounding**: 구글 검색과 연동하여 최신 공식 문서 및 실시간 데이터 기반 답변 생성 (기본 활성화)
-
-> **Note**: `gemini-2.5-flash-lite`는 AI SDK v6과 호환되지 않음 (spec v1 반환, v2+ 필요)
 
 ## 지원 파일 형식
 
@@ -39,9 +37,11 @@ Vision Agent는 멀티모달 분석을 위한 AI 에이전트로, 이미지와 �
 
 - **최대 파일 개수**: 3개 (동시 첨부)
 - **총 크기**: 개별 파일 제한 적용
-- **Gemini 미설정 시**: OpenRouter(Primary) -> Analyst Agent(Fallback)로 폴백.
+- **폴백**: `Gemini` 설정/사용 불가 시 OpenRouter Vision 모델로 시도,  
+  OpenRouter까지 실패하면 분석 용도는 유지하되 텍스트 기반 `Analyst Agent`로 폴백.
 
-> **OpenRouter Fallback 추천**: 2026-02 테스트 결과, `google/gemma-3-4b-it:free`가 `nvidia/nemotron-nano`보다 비전 분석(이미지 내 텍스트 인식 등) 능력이 뛰어난 것으로 확인되어 기본 대체 모델로 설정되었습니다.
+> **OpenRouter Vision 권장 구성**: 1차 `google/gemma-3-4b-it:free`를 기본으로 사용하고,  
+> 실패 시 `nvidia/nemotron-nano-12b-v2-vl:free` 및 `mistralai/mistral-small-3.1-24b-instruct:free`로 폴백(권장값).
 
 ## 사용 예시
 
@@ -124,7 +124,7 @@ function ChatInput() {
 }
 ```
 
-### 메시지 형식 (AI SDK v5 호환)
+### 메시지 형식 (AI SDK v6)
 
 ```typescript
 // 이미지 첨부 메시지
@@ -157,27 +157,35 @@ const fileMessage = {
 
 ## 에이전트 라우팅
 
-AgentFactory가 자동으로 Vision Agent를 선택하는 조건:
+Vision 요청은 백엔드에서 다음 우선순위로 처리됩니다.
 
-1. **파일 첨부 감지**: 메시지에 이미지 또는 파일 파트 존재
-2. **Gemini 가용성**: `GOOGLE_AI_API_KEY` 환경변수 설정됨
-3. **폴백**: Gemini 미설정 시 Analyst Agent 사용 (텍스트 전용)
+1. **첨부 파일/이미지 감지**: 메시지에 이미지 또는 파일 파트 존재
+2. **Vision Agent 가용성**: `GOOGLE_AI_API_KEY` 또는 `OPENROUTER_API_KEY`로 Vision Provider 구성 여부 확인
+3. **폴백 처리**: Vision Provider 미설정/장애 시 텍스트 기반 `Analyst Agent`로 라우팅
 
 ```typescript
-// AgentFactory 내부 로직
-if (hasAttachments && isGeminiAvailable()) {
-  return AgentFactory.create('vision');
+// 핵심 라우팅 의사코드
+if (hasAttachments && isVisionAgentAvailable()) {
+  return { agent: 'Vision Agent', isFallback: false };
 }
-return AgentFactory.create('analyst'); // 폴백
+if (hasAttachments) {
+  return { agent: 'Analyst Agent', isFallback: true };
+}
+return null; // 오케스트레이터 기본 라우팅으로 진행
 ```
 
 ## 환경변수 설정
 
-Vision Agent 사용을 위한 필수 환경변수:
+Vision Agent 사용을 위한 권장 환경변수:
 
 ```bash
 # .env.local 또는 Vercel 환경변수
 GOOGLE_AI_API_KEY=your-gemini-api-key
+OPENROUTER_API_KEY=your-openrouter-api-key
+
+# 선택: OpenRouter Vision 모델 구성
+OPENROUTER_MODEL_VISION=google/gemma-3-4b-it:free
+OPENROUTER_MODEL_VISION_FALLBACKS=nvidia/nemotron-nano-12b-v2-vl:free,mistralai/mistral-small-3.1-24b-instruct:free
 ```
 
 ### 환경변수 확인
@@ -185,7 +193,7 @@ GOOGLE_AI_API_KEY=your-gemini-api-key
 ```bash
 # Cloud Run에서 확인
 curl https://ai-engine-xxx.run.app/health
-# 응답: { "providers": { "gemini": true, ... } }
+# 응답: { "providers": { "gemini": true, "openrouter": true, ... } }
 ```
 
 ## 문제 해결
@@ -193,13 +201,14 @@ curl https://ai-engine-xxx.run.app/health
 ### Vision Agent가 선택되지 않음
 
 1. **Gemini API 키 확인**:
-   ```bash
-   # 로컬
-   echo $GOOGLE_AI_API_KEY
+```bash
+# 로컬
+echo $GOOGLE_AI_API_KEY
+echo $OPENROUTER_API_KEY
 
-   # Vercel
-   vercel env ls production | grep GOOGLE
-   ```
+# Vercel
+vercel env ls production | grep -E "GOOGLE|OPENROUTER"
+```
 
 2. **첨부 파일 형식 확인**:
    - 지원되는 MIME 타입인지 확인
@@ -214,11 +223,11 @@ curl https://ai-engine-xxx.run.app/health
 ### 폴백이 발생함
 
 ```
-Agent: Analyst (Groq/Mistral)
-원인: Gemini API 키 미설정 또는 rate limit
+Agent: Analyst (텍스트 모드)
+원인: Vision Provider(Gemini/OpenRouter) 미설정 또는 rate limit
 ```
 
-해결: GOOGLE_AI_API_KEY 환경변수 설정 확인
+해결: `GOOGLE_AI_API_KEY`와 `OPENROUTER_API_KEY` 환경변수 설정/가용성 확인
 
 ### 재시도 시 첨부 파일 유실
 
@@ -236,4 +245,4 @@ Agent: Analyst (Groq/Mistral)
 
 ---
 
-_Last Updated: 2026-02-26_
+_Last Updated: 2026-02-27_

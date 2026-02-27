@@ -44,16 +44,17 @@ Dual-Mode Supervisor 패턴으로 특화된 에이전트를 오케스트레이�
 │                                                              │
 │  ┌────────────────────────────────────────────────────────┐ │
 │  │ Supervisor (진입점) — "단순 vs 복잡?" [15개 regex]       │ │
-│  │  ├─ Single-Agent → streamText() + 26개 도구            │ │
+│  │  ├─ Single-Agent → streamText() + 27개 도구            │ │
 │  │  └─ Multi-Agent  → Orchestrator에 위임                 │ │
 │  ├────────────────────────────────────────────────────────┤ │
 │  │ Orchestrator (멀티에이전트 조율)                         │ │
-│  │  ├─ Pre-Filter (regex, ≥80% 신뢰도면 LLM 스킵)         │ │
+│  │  ├─ Pre-Filter (규칙 기반, forced/fallback 임계값 적용) │ │
 │  │  ├─ Task Decomposition (LLM #1)                        │ │
 │  │  ├─ Agent Routing (LLM #2)                             │ │
-│  │  └─ Agent Execution (LLM #3+)                          │ │
+│  │  ├─ 스트림 분기: executeMultiAgentStream (collect-then-stream) │ │
+│  │  └─ 배치 분기: executeMultiAgent (비스트리밍)            │ │
 │  ├────────────────────────────────────────────────────────┤ │
-│  │ 7 Agents × 26 Tools × 5 Providers                      │ │
+│  │ 7 Agents × 27 Tools × 5 Providers                      │ │
 │  └────────────────────────────────────────────────────────┘ │
 │           │              │              │                     │
 │     ┌─────┴─────┐  ┌────┴────┐  ┌─────┴──────┐             │
@@ -70,8 +71,8 @@ Dual-Mode Supervisor 패턴으로 특화된 에이전트를 오케스트레이�
 | **레벨** | High-level (진입점) | Low-level (멀티에이전트) |
 | **결정** | "단순 vs 복잡 쿼리?" | "어떤 에이전트가 처리?" |
 | **방법** | 15개 regex 패턴 (LLM 호출 없음) | LLM 2-3회 호출 (분해 + 라우팅) |
-| **실행** | `streamText()` 실시간 스트리밍 | `generateObject()` 배치 처리 |
-| **타임아웃** | 30초 | 5초 (라우팅만) |
+| **실행** | `streamText()` 실시간 스트리밍 | `executeMultiAgent` + `executeMultiAgentStream` |
+| **타임아웃** | Supervisor 하드 50초 / warn 40초 | Orchestrator 하드 45초, 라우팅 10초, warn 30초 |
 | **호출 시점** | 모든 쿼리 | multi-agent 모드에서만 |
 
 **분리 유지 근거**: 스트리밍 모델이 다르고, LLM 호출 그래프 분리, 각자 독립 테스트 가능.
@@ -82,11 +83,11 @@ Dual-Mode Supervisor 패턴으로 특화된 에이전트를 오케스트레이�
 
 | Provider | Primary 에이전트 | 모델 | Free Tier |
 |----------|----------------|------|-----------|
-| **Cerebras** | Supervisor, NLQ, Verifier, Orchestrator, Analyst | `gpt-oss-120b` (120B MoE, 5.1B active) | 1M TPD, 3000 tok/s |
+| **Cerebras** | Supervisor, NLQ, Analyst, Orchestrator | `gpt-oss-120b` (120B MoE, 5.1B active) | 1M TPD, 3000 tok/s |
 | **Groq** | Reporter | `llama-3.3-70b-versatile` (70B) | 100K TPD, 12K TPM |
 | **Mistral** | Advisor + RAG Embedding | `mistral-large-latest` / `mistral-embed` (1024d) | Tier 0: 1 RPS, 40K~500K TPM |
 | **Gemini** | Vision | `gemini-2.5-flash` (1M context) | 1000 RPD, 250K TPM |
-| **OpenRouter** | Vision Fallback | `nvidia/nemotron-nano-12b-v2-vl:free` | Provider별 상이 |
+| **OpenRouter** | Vision Fallback | `google/gemma-3-4b-it:free` (fallback: `nvidia/nemotron-nano-12b-v2-vl:free`, `mistralai/mistral-small-3.1-24b-instruct:free`) | Provider별 상이 |
 
 ### Fallback 체인
 
@@ -96,7 +97,6 @@ Dual-Mode Supervisor 패턴으로 특화된 에이전트를 오케스트레이�
 |-------|---------|-------|---------------------|
 | Supervisor | Cerebras | Groq | Mistral |
 | NLQ | Cerebras | Groq | Mistral |
-| Verifier | Cerebras | Groq | Mistral |
 | Orchestrator | Cerebras | Mistral | Groq |
 | Analyst | Cerebras | Groq | Mistral |
 | Reporter | Groq | Cerebras | Mistral |
@@ -183,7 +183,7 @@ for await (const event of streamAgent('analyst', '이상 탐지')) { ... }
 | 요약 | `서버.*요약`, `핵심.*알려` | Multi → NLQ |
 | **기타** | 단순 조회 | **Single-Agent** |
 
-## 6. Tool Registry (26개)
+## 6. Tool Registry (27개)
 
 | Category | 도구 | 에이전트 | 설명 |
 |----------|------|---------|------|
@@ -237,7 +237,7 @@ for await (const event of streamAgent('analyst', '이상 탐지')) { ... }
 │  408/500 → 동일 provider 재시도 (2회)     │
 ├──────────────────────────────────────────┤
 │ Timeout 계층                              │
-│  Supervisor 30s → Agent 45s → Tool 25s   │
+│  Supervisor 50s → Orchestrator 45s → Agent 45s → Tool 25s │
 └──────────────────────────────────────────┘
 ```
 
@@ -327,7 +327,7 @@ cloud-run/ai-engine/src/
 │   │   └── retry-with-fallback.ts     # 3-way retry + exponential backoff
 │   └── observability/
 │       └── langfuse.ts                # Langfuse 파사드 (trace/score/usage)
-├── tools-ai-sdk/                      # 26개 도구 정의
+├── tools-ai-sdk/                      # 27개 도구 정의
 ├── lib/
 │   ├── embedding.ts                   # Mistral Embedding (1024d, 3h 캐시)
 │   ├── mistral-provider.ts            # Mistral Singleton (임베딩 전용)
@@ -343,7 +343,7 @@ cloud-run/ai-engine/src/
 | 항목 | 값 |
 |------|-----|
 | 에이전트 | 7개 (공개 5 + 내부 Pipeline 2) |
-| 도구 | 26개 (7개 카테고리) |
+| 도구 | 27개 (7개 카테고리) |
 | LLM Provider | 5개 (Cerebras, Groq, Mistral, Gemini, OpenRouter) |
 | Fallback 체인 | 3-way (모든 에이전트) |
 | 데이터 슬롯 | 144개 (24h x 6/hr, 10분 간격) |
@@ -368,7 +368,7 @@ cloud-run/ai-engine/src/
 <summary>v8.5.0 (2026-02-27) - Orchestrator/Analyst Model Redistribution + RAG Toggle</summary>
 
 - **Groq `json_schema` 에러 해결**: Orchestrator `generateObject()` 호출 시 Groq `llama-3.3-70b-versatile`가 `json_schema` 미지원 → 모델 우선순위를 `['cerebras', 'mistral', 'groq']`로 재배치
-- **Analyst Primary 변경**: Groq → Cerebras (`gpt-oss-120b`) 전환. Cerebras가 5개 에이전트(Supervisor, NLQ, Verifier, Orchestrator, Analyst) Primary 담당
+- **Analyst Primary 변경**: Groq → Cerebras (`gpt-oss-120b`) 전환. Cerebras가 4개 에이전트(Supervisor, NLQ, Analyst, Orchestrator) Primary 담당
 - **RAG 토글 구현**: `createPrepareStep` + `filterToolsByRAG`로 `enableRAG=false` 시 `searchKnowledgeBase` 도구 필터링
 - **Storybook v10 호환성**: v8 전용 패키지 제거 (`@storybook/blocks`, `@storybook/test`)
 </details>
@@ -421,7 +421,7 @@ cloud-run/ai-engine/src/
 |------|------|------|
 | **7-Agent 구성** | 적절 (5 Active + 2 Internal) | NLQ/Analyst/Reporter/Advisor/Vision은 도구·프롬프트가 명확히 차별화됨. Evaluator/Optimizer는 Reporter Pipeline 내부용으로 **LLM 호출 없이 결정론적 스코어링만 수행** |
 | **Supervisor→Orchestrator→Agent 계층** | 잘 설계됨 | Single-Agent(streamText)와 Multi-Agent(generateObject 라우팅)의 분리가 명확. `executeForcedRouting`이 BaseAgent 우회하는 이중 경로 존재 |
-| **3-Layer 라우팅** | 효율적 | Pre-filter가 confidence=0.8 반환 → Forced Routing 임계값(≥0.8)과 일치 → LLM Routing은 서버 키워드 없는 쿼리에서만 동작. 서버 모니터링 도메인에서 합리적 |
+| **3-Layer 라우팅** | 효율적 | Pre-filter confidence(0.5~0.92) 후 `forcedRoutingConfidence=0.85`, `fallbackRoutingConfidence=0.65`로 2단 fallback. 서버 모니터링 도메인에서 신호 보존이 높은 편 |
 | **ConfigBasedAgent + AgentFactory** | 올바른 패턴 | 서브클래스 폭발 방지, 단일 SSOT 설정. BaseAgent에 ConfigBasedAgent 하나만 구현 → 확장성 확보 |
 | **도구 할당** | 적절 | 에이전트별 도구 중복(findRootCause 등)은 Cross-cutting 용도로 정당. NLQ=조회, Analyst=분석으로 구분 |
 | **finalAnswer 패턴** | AI SDK v6 Best Practice | `stopWhen: [hasToolCall('finalAnswer'), stepCountIs(N)]` 적용. 빈 텍스트 시 toolResults 복구 로직 구현 |
@@ -443,18 +443,18 @@ cloud-run/ai-engine/src/
 |------|------|------|
 | **3-Way Fallback** | 적절 | 5개 에이전트 모델 선택 함수가 동일 패턴 반복 → 공통 유틸 추출 가능 (P2) |
 | **CB + Quota + Retry 레이어링** | 건전, CB 통합 완료 | `getAvailableProviders()`에서 CB `isAllowed()` 사전 체크 → OPEN 상태 provider 제외 |
-| **타임아웃 체계** | 양호 | Tool(25s)→Agent(45s)→Orchestrator(50s)→Supervisor(50s)→CB(55s). Supervisor=Orchestrator=50s headroom 부재 (P2) |
+| **타임아웃 체계** | 양호 | Tool(25s)→Agent(45s)→Orchestrator(45s)→Supervisor(50s)→CB(55s). Supervisor에 5초 헤드룸 확보 |
 | **Vercel 플랜** | Pro ($20/mo) | `timeout-config.ts`에 Pro 60s 반영 완료 |
 | **Free Tier 현실성** | 충분 | 1vCPU/512Mi에서 경량 객체, I/O-bound LLM 호출. 병목은 provider RPM |
 | **Cold Start 최적화** | 잘 설계됨 | Lazy route loading + deferred service init + cpu-boost |
 | **Secret 관리** | 적절 | 5개 JSON 그룹, GCP Secret Manager `:latest` |
 | **RAG 파이프라인** | 기능 | cosine threshold 0.3은 낮음 (P2), Mistral embed 단일 의존 |
 | **Observability** | 충분 | Langfuse + Pino + Cloud Logging. 분산 트레이싱(Vercel↔CloudRun) 미구현 |
-| **확장성 한계** | Provider RPM이 첫 병목 | Groq 30 RPM, Gemini 15 RPM. max-instances=1 수평 확장 불가 |
+| **확장성 한계** | Provider RPM이 첫 병목 | 기본적으로 LLM 쿼터/쿨타임 정책이 병목 가능, 추적 필요 |
 
 ### Pending Improvements (P2)
 
-- Supervisor/Orchestrator 타임아웃 headroom: Orchestrator 45s로 조정
+- Supervisor/Orchestrator 타임아웃 정렬 점검
 - `console.log` → `logger.info` 통일 (orchestrator-routing.ts, reporter-pipeline.ts)
 - RAG cosine threshold 0.3 → 0.5 상향
 - Handoff Ring Buffer Redis 이관
