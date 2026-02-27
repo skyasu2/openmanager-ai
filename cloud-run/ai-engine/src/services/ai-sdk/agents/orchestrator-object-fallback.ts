@@ -169,12 +169,18 @@ export async function generateObjectWithFallback<T extends ZodTypeAny>(
         usage: coerceUsage(fallbackResult.usage as UsageLike),
       };
     } catch (parseError) {
+      const originalMessage = error instanceof Error ? error.message : String(error);
+      const parseMessage = parseError instanceof Error ? parseError.message : String(parseError);
       logger.error(
         `[${options.operation}] Structured fallback parsing failed:`,
-        parseError instanceof Error ? parseError.message : String(parseError)
+        parseMessage
       );
 
-      throw error;
+      // Throw a combined error instead of raw provider error to aid debugging
+      throw new Error(
+        `[${options.operation}] Structured output failed and text fallback also failed. ` +
+        `Original: ${originalMessage}. Fallback: ${parseMessage}`
+      );
     }
   }
 }

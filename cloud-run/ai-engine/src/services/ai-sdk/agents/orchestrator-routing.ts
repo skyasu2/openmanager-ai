@@ -60,7 +60,10 @@ export function getRecentHandoffs(n = 10): HandoffEvent[] {
 // ============================================================================
 
 export function getOrchestratorModel() {
-  return selectTextModel('Orchestrator', ['groq', 'cerebras', 'mistral']);
+  // Orchestrator uses generateObject (requires json_schema support).
+  // Groq llama-3.3-70b-versatile does NOT support json_schema,
+  // so prefer Cerebras/Mistral first.
+  return selectTextModel('Orchestrator', ['cerebras', 'mistral', 'groq']);
 }
 
 // Log available agents from AGENT_CONFIGS

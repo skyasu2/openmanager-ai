@@ -115,7 +115,7 @@ describe('generateObjectWithFallback', () => {
     expect(mockGenerateText).not.toHaveBeenCalled();
   });
 
-  it('should rethrow original error when fallback text also fails parsing', async () => {
+  it('should throw combined error when fallback text also fails parsing', async () => {
     const originalError = new Error('Schema output validation failed: bad data');
     mockGenerateObject.mockRejectedValue(originalError);
 
@@ -125,7 +125,7 @@ describe('generateObjectWithFallback', () => {
     });
 
     await expect(generateObjectWithFallback(baseOptions)).rejects.toThrow(
-      originalError
+      /Structured output failed and text fallback also failed/
     );
   });
 
