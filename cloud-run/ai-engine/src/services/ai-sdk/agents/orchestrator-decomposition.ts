@@ -9,6 +9,7 @@
 import { taskDecomposeSchema, type TaskDecomposition, type Subtask } from './schemas';
 import { TIMEOUT_CONFIG } from '../../../config/timeout-config';
 
+import type { StreamEvent } from '../supervisor';
 import type { MultiAgentResponse } from './orchestrator-types';
 import { getOrchestratorModel, getAgentConfig, executeForcedRouting } from './orchestrator-routing';
 import { saveAgentFindingsToContext } from './orchestrator-context';
@@ -122,6 +123,7 @@ export async function executeParallelSubtasks(
   subtasks: Subtask[],
   startTime: number,
   webSearchEnabled = true,
+  ragEnabled = true,
   sessionId = ''
 ): Promise<MultiAgentResponse | null> {
   logger.info(`[Parallel] Executing ${subtasks.length} subtasks in parallel...`);
@@ -150,7 +152,8 @@ export async function executeParallelSubtasks(
       subtask.task,
       subtask.agent,
       startTime,
-      webSearchEnabled
+      webSearchEnabled,
+      ragEnabled
     );
 
     try {
@@ -227,7 +230,7 @@ export async function executeParallelSubtasks(
   };
 }
 
-function unifyResults(
+export function unifyResults(
   agentResults: Array<{ agent: string; response: string }>
 ): string {
   if (agentResults.length === 0) {
@@ -244,4 +247,253 @@ function unifyResults(
   });
 
   return `# 종합 분석 결과\n\n${sections.join('\n\n---\n\n')}`;
+}
+
+// ============================================================================
+// Streaming Helpers
+// ============================================================================
+
+/**
+ * Stream pre-computed text as text_delta events in chunks.
+ * Used by Collect-then-Stream pattern to deliver unified results.
+ */
+export function* streamTextInChunks(
+  text: string,
+  chunkSize = 80
+): Generator<StreamEvent> {
+  for (let i = 0; i < text.length; i += chunkSize) {
+    yield { type: 'text_delta', data: text.slice(i, i + chunkSize) };
+  }
+}
+
+// ============================================================================
+// Streaming Parallel/Sequential Execution (Collect-then-Stream)
+// ============================================================================
+
+/**
+ * Execute subtasks in parallel with progress events, then stream unified result.
+ * "Collect-then-Stream" pattern: collect non-streaming results → unify → stream.
+ */
+export async function* executeParallelSubtasksStream(
+  subtasks: Subtask[],
+  startTime: number,
+  webSearchEnabled = true,
+  ragEnabled = true,
+  sessionId = ''
+): AsyncGenerator<StreamEvent> {
+  logger.info(`[ParallelStream] Executing ${subtasks.length} subtasks in parallel...`);
+
+  // Emit agent_status immediately for fast TTFT
+  yield {
+    type: 'agent_status',
+    data: {
+      status: 'decomposing',
+      subtaskCount: subtasks.length,
+      agents: subtasks.map(s => s.agent),
+      message: `${subtasks.length}개 서브태스크로 분할하여 병렬 처리 중...`,
+    },
+  };
+
+  const SUBTASK_TIMEOUT_MS = TIMEOUT_CONFIG.subtask.hard;
+
+  const subtaskPromises = subtasks.map(async (subtask, index) => {
+    logger.info(`   [${index + 1}/${subtasks.length}] ${subtask.agent}: ${subtask.task.substring(0, 50)}...`);
+
+    let timeoutId: ReturnType<typeof setTimeout> | null = null;
+    let isTimedOut = false;
+
+    const timeoutPromise = new Promise<null>((resolve) => {
+      timeoutId = setTimeout(() => {
+        isTimedOut = true;
+        logger.warn(`[ParallelStream] Subtask ${index + 1} timeout after ${SUBTASK_TIMEOUT_MS}ms`);
+        resolve(null);
+      }, SUBTASK_TIMEOUT_MS);
+    });
+
+    const executionPromise = executeForcedRouting(
+      subtask.task,
+      subtask.agent,
+      startTime,
+      webSearchEnabled,
+      ragEnabled
+    );
+
+    try {
+      const result = await Promise.race([executionPromise, timeoutPromise]);
+      if (timeoutId !== null && !isTimedOut) clearTimeout(timeoutId);
+      return { subtask, result, index };
+    } catch (error) {
+      if (timeoutId !== null && !isTimedOut) clearTimeout(timeoutId);
+      logger.error(`[ParallelStream] Subtask ${index + 1} error:`, error);
+      return { subtask, result: null, index };
+    }
+  });
+
+  const results = await Promise.all(subtaskPromises);
+  const successfulResults = results.filter(r => r.result !== null);
+
+  if (successfulResults.length === 0) {
+    logger.error('[ParallelStream] All subtasks failed');
+    yield { type: 'error', data: { code: 'ALL_SUBTASKS_FAILED', error: '모든 서브태스크가 실패했습니다.' } };
+    return;
+  }
+
+  // Emit progress update
+  yield {
+    type: 'agent_status',
+    data: {
+      status: 'unifying',
+      completed: successfulResults.length,
+      total: subtasks.length,
+      message: `${successfulResults.length}/${subtasks.length} 서브태스크 완료, 결과 통합 중...`,
+    },
+  };
+
+  // Save context for successful results
+  if (sessionId) {
+    for (const result of successfulResults) {
+      await saveAgentFindingsToContext(sessionId, result.subtask.agent, result.result!.response);
+    }
+  }
+
+  // Unify and stream
+  const unifiedResponse = unifyResults(
+    successfulResults.map(r => ({ agent: r.subtask.agent, response: r.result!.response }))
+  );
+
+  yield* streamTextInChunks(unifiedResponse);
+
+  const durationMs = Date.now() - startTime;
+  const toolsCalled = [...new Set(successfulResults.flatMap(r => r.result!.toolsCalled))];
+  const totalTokens = successfulResults.reduce((sum, r) => sum + (r.result!.usage?.totalTokens ?? 0), 0);
+
+  logger.info(`[ParallelStream] Completed ${successfulResults.length}/${subtasks.length} subtasks in ${durationMs}ms`);
+
+  yield {
+    type: 'done',
+    data: {
+      success: true,
+      finalAgent: 'Orchestrator (Multi-Agent Stream)',
+      toolsCalled,
+      handoffs: successfulResults.map(r => ({
+        from: 'Orchestrator',
+        to: r.subtask.agent,
+        reason: 'Task decomposition (parallel)',
+      })),
+      usage: {
+        promptTokens: successfulResults.reduce((sum, r) => sum + (r.result!.usage?.promptTokens ?? 0), 0),
+        completionTokens: successfulResults.reduce((sum, r) => sum + (r.result!.usage?.completionTokens ?? 0), 0),
+      },
+      metadata: {
+        provider: 'multi-agent',
+        modelId: 'orchestrator-worker',
+        durationMs,
+        subtaskCount: subtasks.length,
+        completedCount: successfulResults.length,
+      },
+    },
+  };
+}
+
+/**
+ * Execute subtasks sequentially with progress events, then stream results.
+ * Used when subtasks have dependencies (requiresSequential=true).
+ */
+export async function* executeSequentialSubtasksStream(
+  subtasks: Subtask[],
+  startTime: number,
+  webSearchEnabled = true,
+  ragEnabled = true,
+  sessionId = ''
+): AsyncGenerator<StreamEvent> {
+  logger.info(`[SequentialStream] Executing ${subtasks.length} subtasks sequentially...`);
+
+  yield {
+    type: 'agent_status',
+    data: {
+      status: 'decomposing',
+      subtaskCount: subtasks.length,
+      agents: subtasks.map(s => s.agent),
+      sequential: true,
+      message: `${subtasks.length}개 서브태스크를 순차 처리 중...`,
+    },
+  };
+
+  const successfulResults: Array<{ subtask: Subtask; result: MultiAgentResponse }> = [];
+
+  for (let i = 0; i < subtasks.length; i++) {
+    const subtask = subtasks[i];
+
+    yield {
+      type: 'agent_status',
+      data: {
+        status: 'executing',
+        current: i + 1,
+        total: subtasks.length,
+        agent: subtask.agent,
+        message: `[${i + 1}/${subtasks.length}] ${subtask.agent} 실행 중...`,
+      },
+    };
+
+    const result = await executeForcedRouting(
+      subtask.task,
+      subtask.agent,
+      startTime,
+      webSearchEnabled,
+      ragEnabled
+    );
+
+    if (!result) {
+      logger.warn(`[SequentialStream] Subtask ${i + 1} failed: ${subtask.agent}`);
+      continue;
+    }
+
+    successfulResults.push({ subtask, result });
+
+    if (sessionId) {
+      await saveAgentFindingsToContext(sessionId, subtask.agent, result.response);
+    }
+  }
+
+  if (successfulResults.length === 0) {
+    yield { type: 'error', data: { code: 'ALL_SUBTASKS_FAILED', error: '모든 순차 서브태스크가 실패했습니다.' } };
+    return;
+  }
+
+  // Unify and stream
+  const unifiedResponse = unifyResults(
+    successfulResults.map(r => ({ agent: r.subtask.agent, response: r.result.response }))
+  );
+
+  yield* streamTextInChunks(unifiedResponse);
+
+  const durationMs = Date.now() - startTime;
+  const toolsCalled = [...new Set(successfulResults.flatMap(r => r.result.toolsCalled))];
+
+  logger.info(`[SequentialStream] Completed ${successfulResults.length}/${subtasks.length} subtasks in ${durationMs}ms`);
+
+  yield {
+    type: 'done',
+    data: {
+      success: true,
+      finalAgent: 'Orchestrator (Multi-Agent Sequential Stream)',
+      toolsCalled,
+      handoffs: successfulResults.map(r => ({
+        from: 'Orchestrator',
+        to: r.subtask.agent,
+        reason: 'Task decomposition (sequential)',
+      })),
+      usage: {
+        promptTokens: successfulResults.reduce((sum, r) => sum + (r.result.usage?.promptTokens ?? 0), 0),
+        completionTokens: successfulResults.reduce((sum, r) => sum + (r.result.usage?.completionTokens ?? 0), 0),
+      },
+      metadata: {
+        provider: 'multi-agent',
+        modelId: 'orchestrator-worker-sequential',
+        durationMs,
+        subtaskCount: subtasks.length,
+        completedCount: successfulResults.length,
+      },
+    },
+  };
 }

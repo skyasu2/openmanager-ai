@@ -27,6 +27,11 @@ export function filterTools(
     logger.debug(`[${agentName}] searchWeb disabled`);
   }
 
+  if (options.ragEnabled === false && 'searchKnowledgeBase' in filtered) {
+    delete filtered.searchKnowledgeBase;
+    logger.debug(`[${agentName}] searchKnowledgeBase disabled (RAG off)`);
+  }
+
   if (
     agentName === VISION_AGENT_NAME &&
     provider === 'openrouter' &&

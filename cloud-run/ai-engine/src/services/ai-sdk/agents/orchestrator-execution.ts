@@ -27,16 +27,20 @@ import { preFilterQuery, saveAgentFindingsToContext } from './orchestrator-conte
 
 import {
   getOrchestratorModel,
+  getAgentConfig,
   executeForcedRouting,
   executeWithAgentFactory,
   recordHandoff,
   getRecentHandoffs,
 } from './orchestrator-routing';
+import { TIMEOUT_CONFIG } from '../../../config/timeout-config';
 import { evaluateAgentResponseQuality } from './response-quality';
 import { logger } from '../../../lib/logger';
 import {
   decomposeTask,
   executeParallelSubtasks,
+  executeParallelSubtasksStream,
+  executeSequentialSubtasksStream,
 } from './orchestrator-decomposition';
 import { executeAgentStream } from './orchestrator-agent-stream';
 import { generateObjectWithFallback } from './orchestrator-object-fallback';
@@ -51,14 +55,15 @@ async function executeVisionOrFallback(
   query: string,
   startTime: number,
   webSearchEnabled: boolean,
-  images?: Parameters<typeof executeWithAgentFactory>[4],
-  files?: Parameters<typeof executeWithAgentFactory>[5]
+  ragEnabled: boolean,
+  images?: Parameters<typeof executeWithAgentFactory>[5],
+  files?: Parameters<typeof executeWithAgentFactory>[6]
 ): Promise<MultiAgentResponse | null> {
-  const result = await executeWithAgentFactory(query, 'vision', startTime, webSearchEnabled, images, files);
+  const result = await executeWithAgentFactory(query, 'vision', startTime, webSearchEnabled, ragEnabled, images, files);
   if (result) return result;
 
   logger.warn('⚠️ [Vision] Gemini unavailable, falling back to Analyst Agent');
-  return executeForcedRouting(query, 'Analyst Agent', startTime, webSearchEnabled, images, files);
+  return executeForcedRouting(query, 'Analyst Agent', startTime, webSearchEnabled, ragEnabled, images, files);
 }
 
 // ============================================================================
@@ -81,7 +86,9 @@ export async function executeMultiAgent(
   const query = lastUserMessage.content;
 
   const webSearchEnabled = resolveWebSearchSetting(request.enableWebSearch, query);
+  const ragEnabled = request.enableRAG !== false; // default: true
   logger.debug(`[WebSearch] Setting resolved: ${webSearchEnabled} (request: ${request.enableWebSearch})`);
+  logger.debug(`[RAG] Setting resolved: ${ragEnabled} (request: ${request.enableRAG})`);
 
   const sessionContext = await getOrCreateSessionContext(request.sessionId, query);
   logger.debug(`[Context] Session ${request.sessionId}: ${sessionContext.handoffs.length} previous handoffs`);
@@ -133,7 +140,7 @@ export async function executeMultiAgent(
       let lastResult: MultiAgentResponse | null = null;
 
       for (const subtask of decomposition.subtasks) {
-        lastResult = await executeForcedRouting(subtask.task, subtask.agent, startTime, webSearchEnabled, request.images, request.files);
+        lastResult = await executeForcedRouting(subtask.task, subtask.agent, startTime, webSearchEnabled, ragEnabled, request.images, request.files);
         if (!lastResult) {
           logger.warn(`⚠️ [Orchestrator] Sequential subtask failed: ${subtask.agent}`);
           break;
@@ -146,7 +153,7 @@ export async function executeMultiAgent(
       }
     } else {
       const parallelResult = await executeParallelSubtasks(
-        decomposition.subtasks, startTime, webSearchEnabled, request.sessionId
+        decomposition.subtasks, startTime, webSearchEnabled, ragEnabled, request.sessionId
       );
 
       if (parallelResult) {
@@ -171,9 +178,9 @@ export async function executeMultiAgent(
 
     if (suggestedAgentName === 'Vision Agent') {
       logger.info(`[Vision] Using AgentFactory for Vision Agent`);
-      forcedResult = await executeVisionOrFallback(query, startTime, webSearchEnabled, request.images, request.files);
+      forcedResult = await executeVisionOrFallback(query, startTime, webSearchEnabled, ragEnabled, request.images, request.files);
     } else {
-      forcedResult = await executeForcedRouting(query, suggestedAgentName, startTime, webSearchEnabled, request.images, request.files);
+      forcedResult = await executeForcedRouting(query, suggestedAgentName, startTime, webSearchEnabled, ragEnabled, request.images, request.files);
     }
 
     if (forcedResult) {
@@ -243,9 +250,9 @@ export async function executeMultiAgent(
       let agentResult: MultiAgentResponse | null = null;
 
       if (selectedAgent === 'Vision Agent') {
-        agentResult = await executeVisionOrFallback(query, startTime, webSearchEnabled, request.images, request.files);
+        agentResult = await executeVisionOrFallback(query, startTime, webSearchEnabled, ragEnabled, request.images, request.files);
       } else {
-        agentResult = await executeForcedRouting(query, selectedAgent, startTime, webSearchEnabled, request.images, request.files);
+        agentResult = await executeForcedRouting(query, selectedAgent, startTime, webSearchEnabled, ragEnabled, request.images, request.files);
       }
 
       if (agentResult) {
@@ -266,7 +273,7 @@ export async function executeMultiAgent(
     if (suggestedAgent && preFilterResult.confidence >= ORCHESTRATOR_CONFIG.fallbackRoutingConfidence) {
       logger.debug(`[Orchestrator] LLM routing inconclusive, falling back to ${suggestedAgent}`);
 
-      const fallbackResult = await executeForcedRouting(query, suggestedAgent, startTime, webSearchEnabled, request.images, request.files);
+      const fallbackResult = await executeForcedRouting(query, suggestedAgent, startTime, webSearchEnabled, ragEnabled, request.images, request.files);
 
       if (fallbackResult) {
         await saveAgentFindingsToContext(request.sessionId, suggestedAgent, fallbackResult.response);
@@ -341,7 +348,9 @@ export async function* executeMultiAgentStream(
   const query = lastUserMessage.content;
 
   const webSearchEnabled = resolveWebSearchSetting(request.enableWebSearch, query);
+  const ragEnabled = request.enableRAG !== false; // default: true
   logger.debug(`[Stream WebSearch] Setting resolved: ${webSearchEnabled} (request: ${request.enableWebSearch})`);
+  logger.debug(`[Stream RAG] Setting resolved: ${ragEnabled} (request: ${request.enableRAG})`);
 
   const sessionContext = await getOrCreateSessionContext(request.sessionId, query);
   logger.debug(`[Stream Context] Session ${request.sessionId}: ${sessionContext.handoffs.length} previous handoffs`);
@@ -371,14 +380,46 @@ export async function* executeMultiAgentStream(
     return;
   }
 
+  // Task Decomposition (Collect-then-Stream pattern)
+  const decomposition = await decomposeTask(query);
+
+  if (decomposition && decomposition.subtasks.length > 1) {
+    logger.info(`[Stream] Complex query detected, using Orchestrator-Worker stream pattern (${decomposition.subtasks.length} subtasks)`);
+
+    if (decomposition.requiresSequential) {
+      yield* executeSequentialSubtasksStream(
+        decomposition.subtasks, startTime, webSearchEnabled, ragEnabled, request.sessionId
+      );
+    } else {
+      yield* executeParallelSubtasksStream(
+        decomposition.subtasks, startTime, webSearchEnabled, ragEnabled, request.sessionId
+      );
+    }
+    return;
+  }
+
   // Forced Routing
   if (
     preFilterResult.suggestedAgent &&
     preFilterResult.confidence >= ORCHESTRATOR_CONFIG.forcedRoutingConfidence
   ) {
     logger.info(`[Stream] Forced routing to ${preFilterResult.suggestedAgent}`);
+
+    // Phase 2B: Vision Agent fallback — if Gemini unavailable, route to Analyst
+    if (preFilterResult.suggestedAgent === 'Vision Agent') {
+      const visionConfig = getAgentConfig(preFilterResult.suggestedAgent);
+      if (!visionConfig || !visionConfig.getModel()) {
+        logger.warn('[Stream] Vision Agent model unavailable, falling back to Analyst Agent');
+        yield { type: 'agent_status', data: { status: 'vision_fallback', message: 'Vision Agent 사용 불가, Analyst Agent로 전환 중...' } };
+        yield* executeAgentStream(
+          query, 'Analyst Agent', startTime, request.sessionId, webSearchEnabled, ragEnabled, request.images, request.files
+        );
+        return;
+      }
+    }
+
     yield* executeAgentStream(
-      query, preFilterResult.suggestedAgent, startTime, request.sessionId, webSearchEnabled, request.images, request.files
+      query, preFilterResult.suggestedAgent, startTime, request.sessionId, webSearchEnabled, ragEnabled, request.images, request.files
     );
     return;
   }
@@ -398,14 +439,38 @@ export async function* executeMultiAgentStream(
 
     const routingPrompt = buildRoutingPrompt(query);
 
-    const routingResult = await generateObjectWithFallback({
-      model,
-      schema: routingSchema,
-      system: ORCHESTRATOR_INSTRUCTIONS,
-      prompt: routingPrompt,
-      temperature: 0.1,
-      operation: 'orchestrator-routing',
-    });
+    // Phase 2D: LLM routing timeout — wrap with Promise.race
+    const routingTimeout = TIMEOUT_CONFIG.orchestrator.routingDecision;
+    let routingResult: Awaited<ReturnType<typeof generateObjectWithFallback>>;
+
+    try {
+      routingResult = await Promise.race([
+        generateObjectWithFallback({
+          model,
+          schema: routingSchema,
+          system: ORCHESTRATOR_INSTRUCTIONS,
+          prompt: routingPrompt,
+          temperature: 0.1,
+          operation: 'orchestrator-routing',
+        }),
+        new Promise<never>((_, reject) =>
+          setTimeout(() => reject(new Error(`Routing decision timeout after ${routingTimeout}ms`)), routingTimeout)
+        ),
+      ]);
+    } catch (routingError) {
+      const errorMsg = routingError instanceof Error ? routingError.message : String(routingError);
+      logger.warn(`[Stream] LLM routing failed: ${errorMsg}`);
+
+      // Fallback to preFilter suggestion if available
+      const suggestedAgent = preFilterResult.suggestedAgent;
+      if (suggestedAgent && preFilterResult.confidence >= ORCHESTRATOR_CONFIG.fallbackRoutingConfidence) {
+        logger.info(`[Stream] Routing timeout fallback to ${suggestedAgent}`);
+        yield { type: 'agent_status', data: { status: 'routing_fallback', message: `라우팅 타임아웃, ${suggestedAgent}로 전환...` } };
+        yield* executeAgentStream(query, suggestedAgent, startTime, request.sessionId, webSearchEnabled, ragEnabled, request.images, request.files);
+        return;
+      }
+      throw routingError;
+    }
 
     const routingDecision = routingResult.object;
     logger.debug(`[Stream] LLM routing decision: ${routingDecision.selectedAgent} (confidence: ${routingDecision.confidence.toFixed(2)})`);
@@ -417,7 +482,17 @@ export async function* executeMultiAgentStream(
       await recordHandoffEvent(request.sessionId, 'Orchestrator', selectedAgent, 'LLM routing');
       yield { type: 'handoff', data: { from: 'Orchestrator', to: selectedAgent, reason: 'LLM routing' } };
 
-      yield* executeAgentStream(query, selectedAgent, startTime, request.sessionId, webSearchEnabled, request.images, request.files);
+      // Phase 2B: Vision fallback in LLM routing path
+      if (selectedAgent === 'Vision Agent') {
+        const visionConfig = getAgentConfig(selectedAgent);
+        if (!visionConfig || !visionConfig.getModel()) {
+          logger.warn('[Stream] Vision Agent model unavailable (LLM routing), falling back to Analyst Agent');
+          yield* executeAgentStream(query, 'Analyst Agent', startTime, request.sessionId, webSearchEnabled, ragEnabled, request.images, request.files);
+          return;
+        }
+      }
+
+      yield* executeAgentStream(query, selectedAgent, startTime, request.sessionId, webSearchEnabled, ragEnabled, request.images, request.files);
       return;
     }
 
@@ -428,7 +503,7 @@ export async function* executeMultiAgentStream(
       await recordHandoffEvent(request.sessionId, 'Orchestrator', suggestedAgent, 'Fallback routing');
       yield { type: 'handoff', data: { from: 'Orchestrator', to: suggestedAgent, reason: 'Fallback' } };
 
-      yield* executeAgentStream(query, suggestedAgent, startTime, request.sessionId, webSearchEnabled, request.images, request.files);
+      yield* executeAgentStream(query, suggestedAgent, startTime, request.sessionId, webSearchEnabled, ragEnabled, request.images, request.files);
       return;
     }
 

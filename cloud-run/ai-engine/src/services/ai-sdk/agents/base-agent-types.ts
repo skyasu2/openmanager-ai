@@ -41,6 +41,7 @@ export interface AgentRunOptions {
   temperature?: number;
   maxOutputTokens?: number;
   webSearchEnabled?: boolean;
+  ragEnabled?: boolean;
   sessionId?: string;
   images?: ImageAttachment[];
   files?: FileAttachment[];
@@ -59,6 +60,7 @@ export const DEFAULT_OPTIONS: Required<
   temperature: 0.4,
   maxOutputTokens: 2048,
   webSearchEnabled: true,
+  ragEnabled: true,
 };
 
 export const VISION_AGENT_NAME = 'Vision Agent' as const;

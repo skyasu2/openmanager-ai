@@ -21,7 +21,7 @@ import type { ImageAttachment, FileAttachment } from './base-agent';
 import { TIMEOUT_CONFIG } from '../../../config/timeout-config';
 
 import type { MultiAgentResponse } from './orchestrator-types';
-import { filterToolsByWebSearch } from './orchestrator-web-search';
+import { filterToolsByWebSearch, filterToolsByRAG } from './orchestrator-web-search';
 import { evaluateAgentResponseQuality } from './response-quality';
 import { logger } from '../../../lib/logger';
 // ============================================================================
@@ -194,7 +194,7 @@ export function getAgentConfig(name: string): AgentConfig | null {
   return AGENT_CONFIGS[name] ?? null;
 }
 
-function getAgentProviderOrder(agentName: string): ProviderName[] {
+export function getAgentProviderOrder(agentName: string): ProviderName[] {
   switch (agentName) {
     case 'NLQ Agent':
       return ['cerebras', 'groq', 'mistral'];
@@ -231,6 +231,7 @@ export async function executeForcedRouting(
   suggestedAgentName: string,
   startTime: number,
   webSearchEnabled = true,
+  ragEnabled = true,
   images?: ImageAttachment[],
   files?: FileAttachment[]
 ): Promise<MultiAgentResponse | null> {
@@ -255,7 +256,8 @@ export async function executeForcedRouting(
   const providerOrder = getAgentProviderOrder(suggestedAgentName);
   logger.info(`[Forced Routing] Using retry with fallback: [${providerOrder.join(' → ')}]`);
 
-  const filteredTools = filterToolsByWebSearch(agentConfig.tools, webSearchEnabled);
+  let filteredTools = filterToolsByWebSearch(agentConfig.tools, webSearchEnabled);
+  filteredTools = filterToolsByRAG(filteredTools, ragEnabled);
   const attachmentHint =
     images?.length || files?.length
       ? `\n\n[첨부 컨텍스트]\n- images: ${images?.length ?? 0}\n- files: ${files?.length ?? 0}`
@@ -475,6 +477,7 @@ export async function executeWithAgentFactory(
   agentType: AgentType,
   startTime: number,
   webSearchEnabled = true,
+  ragEnabled = true,
   images?: ImageAttachment[],
   files?: FileAttachment[]
 ): Promise<MultiAgentResponse | null> {
@@ -491,6 +494,7 @@ export async function executeWithAgentFactory(
   try {
     const result = await agent.run(query, {
       webSearchEnabled,
+      ragEnabled,
       maxSteps: 10,
       timeoutMs: TIMEOUT_CONFIG.agent.hard,
       images,

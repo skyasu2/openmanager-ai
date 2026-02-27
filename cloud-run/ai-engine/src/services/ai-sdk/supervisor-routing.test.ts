@@ -206,14 +206,23 @@ describe('createPrepareStep', () => {
     expect(result.toolChoice).toBe('required');
   });
 
-  it('should route advisor queries to knowledge tools', async () => {
+  it('should route advisor queries to recommendCommands (no search tools by default)', async () => {
+    const prepare = createPrepareStep('해결 방법 알려줘');
+    const result = await prepare({ stepNumber: 0 });
+    expect(result.activeTools).toContain('recommendCommands');
+    expect(result.activeTools).not.toContain('searchKnowledgeBase');
+    expect(result.activeTools).not.toContain('searchWeb');
+    expect(result.toolChoice).toBe('auto');
+  });
+
+  it('should inject searchKnowledgeBase into advisor tools when RAG is ON', async () => {
     const prepare = createPrepareStep('해결 방법 알려줘', {
       enableRAG: true,
     });
     const result = await prepare({ stepNumber: 0 });
     expect(result.activeTools).toContain('searchKnowledgeBase');
     expect(result.activeTools).toContain('recommendCommands');
-    expect(result.toolChoice).toBe('required');
+    expect(result.toolChoice).toBe('auto');
   });
 
   it('should omit searchKnowledgeBase when RAG is disabled', async () => {
@@ -227,7 +236,7 @@ describe('createPrepareStep', () => {
     expect((result as { activeTools?: string[] }).activeTools).toContain(
       'recommendCommands'
     );
-    expect(result.toolChoice).toBe('required');
+    expect(result.toolChoice).toBe('auto');
   });
 
   it('should route log queries to log tools', async () => {
@@ -249,7 +258,7 @@ describe('createPrepareStep', () => {
     const result = await prepare({ stepNumber: 0 });
     expect(result.activeTools).toContain('searchWeb');
     expect(result.activeTools).toContain('getServerMetrics'); // 의도 기반 도구 보존
-    expect(result.toolChoice).toBe('required'); // auto → required 승격
+    expect(result.toolChoice).toBe('auto'); // LLM이 자율적으로 판단
   });
 
   it('should not include searchWeb when enableWebSearch is false', async () => {
@@ -257,7 +266,7 @@ describe('createPrepareStep', () => {
     const result = await prepare({ stepNumber: 0 });
     expect((result as { activeTools?: string[] }).activeTools).toContain('recommendCommands');
     expect((result as { activeTools?: string[] }).activeTools).not.toContain('searchWeb');
-    expect(result.toolChoice).toBe('required');
+    expect(result.toolChoice).toBe('auto');
   });
 
   it('should default to metric tools for generic queries', async () => {
@@ -272,7 +281,7 @@ describe('createPrepareStep', () => {
     const result = await prepare({ stepNumber: 0 });
     expect(result.activeTools).toContain('findRootCause'); // 의도 도구 보존
     expect(result.activeTools).toContain('searchWeb'); // 웹 검색 주입
-    expect(result.toolChoice).toBe('required');
+    expect(result.toolChoice).toBe('required'); // RCA 패턴은 원래 required
   });
 
   it('should inject searchKnowledgeBase into non-advisor tools when RAG is ON', async () => {
@@ -280,7 +289,7 @@ describe('createPrepareStep', () => {
     const result = await prepare({ stepNumber: 0 });
     expect(result.activeTools).toContain('getServerMetrics'); // 의도 도구 보존
     expect(result.activeTools).toContain('searchKnowledgeBase'); // RAG 주입
-    expect(result.toolChoice).toBe('required'); // auto → required 승격
+    expect(result.toolChoice).toBe('auto'); // LLM이 자율적으로 판단
   });
 
   it('should inject both searchWeb and searchKnowledgeBase when both toggles ON', async () => {
@@ -292,6 +301,6 @@ describe('createPrepareStep', () => {
     expect(result.activeTools).toContain('detectAnomalies'); // 의도 도구 보존
     expect(result.activeTools).toContain('searchWeb');
     expect(result.activeTools).toContain('searchKnowledgeBase');
-    expect(result.toolChoice).toBe('required');
+    expect(result.toolChoice).toBe('required'); // anomaly 패턴은 원래 required
   });
 });

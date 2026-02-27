@@ -22,7 +22,7 @@ export interface ModelResult {
 // Text Provider → Model SSOT
 // ============================================================================
 
-type TextProvider = 'cerebras' | 'groq' | 'mistral';
+export type TextProvider = 'cerebras' | 'groq' | 'mistral';
 
 const TEXT_PROVIDER_MODELS: Record<TextProvider, { factory: (id: string) => LanguageModel; modelId: string }> = {
   cerebras: { factory: getCerebrasModel, modelId: 'gpt-oss-120b' },

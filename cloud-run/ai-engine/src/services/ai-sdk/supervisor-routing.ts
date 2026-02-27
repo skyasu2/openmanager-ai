@@ -307,8 +307,8 @@ export function createPrepareStep(
       activeTools = ['findRootCause', 'buildIncidentTimeline', 'correlateMetrics', 'getServerMetrics', 'detectAnomalies', 'finalAnswer'];
       toolChoice = 'required';
     } else if (TOOL_ROUTING_PATTERNS.advisor.test(q)) {
-      activeTools = ['searchKnowledgeBase', 'recommendCommands', 'searchWeb', 'finalAnswer'];
-      toolChoice = 'required';
+      activeTools = ['recommendCommands', 'finalAnswer'];
+      toolChoice = 'auto';
     } else if (TOOL_ROUTING_PATTERNS.logs.test(q)) {
       activeTools = ['getServerLogs', 'getServerMetrics', 'filterServers', 'finalAnswer'];
       toolChoice = 'required';
@@ -345,10 +345,8 @@ export function createPrepareStep(
       activeTools = activeTools.filter((t) => t !== 'searchKnowledgeBase');
     }
 
-    // ── Step 3: 검색 도구가 추가되었으면 toolChoice를 'required'로 승격 ──
-    if ((webSearchEnabled || ragEnabled) && toolChoice === 'auto') {
-      toolChoice = 'required';
-    }
+    // ── Step 3: toolChoice는 유지 — LLM이 검색 도구 사용 여부를 자율적으로 결정 ──
+    // 상용 AI 표준 패턴: "도구를 제공하고, LLM이 판단" (ChatGPT, Claude API, Gemini 방식)
 
     return { activeTools, toolChoice };
   };
