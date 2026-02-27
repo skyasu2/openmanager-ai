@@ -244,11 +244,12 @@ describe('createPrepareStep', () => {
     expect(result.toolChoice).toBe('auto');
   });
 
-  it('should force web search when enableWebSearch is true', async () => {
+  it('should inject searchWeb into pattern tools when enableWebSearch is true', async () => {
     const prepare = createPrepareStep('CPU 상태', { enableWebSearch: true });
     const result = await prepare({ stepNumber: 0 });
     expect(result.activeTools).toContain('searchWeb');
-    expect(result.toolChoice).toEqual({ type: 'tool', toolName: 'searchWeb' });
+    expect(result.activeTools).toContain('getServerMetrics'); // 의도 기반 도구 보존
+    expect(result.toolChoice).toBe('required'); // auto → required 승격
   });
 
   it('should not include searchWeb when enableWebSearch is false', async () => {
@@ -264,5 +265,33 @@ describe('createPrepareStep', () => {
     const result = await prepare({ stepNumber: 0 });
     expect(result.activeTools).toContain('getServerMetrics');
     expect(result.toolChoice).toBe('auto');
+  });
+
+  it('should inject searchWeb into RCA tools when web search is ON', async () => {
+    const prepare = createPrepareStep('장애 원인 분석', { enableWebSearch: true });
+    const result = await prepare({ stepNumber: 0 });
+    expect(result.activeTools).toContain('findRootCause'); // 의도 도구 보존
+    expect(result.activeTools).toContain('searchWeb'); // 웹 검색 주입
+    expect(result.toolChoice).toBe('required');
+  });
+
+  it('should inject searchKnowledgeBase into non-advisor tools when RAG is ON', async () => {
+    const prepare = createPrepareStep('CPU 상태', { enableRAG: true });
+    const result = await prepare({ stepNumber: 0 });
+    expect(result.activeTools).toContain('getServerMetrics'); // 의도 도구 보존
+    expect(result.activeTools).toContain('searchKnowledgeBase'); // RAG 주입
+    expect(result.toolChoice).toBe('required'); // auto → required 승격
+  });
+
+  it('should inject both searchWeb and searchKnowledgeBase when both toggles ON', async () => {
+    const prepare = createPrepareStep('이상 탐지해줘', {
+      enableWebSearch: true,
+      enableRAG: true,
+    });
+    const result = await prepare({ stepNumber: 0 });
+    expect(result.activeTools).toContain('detectAnomalies'); // 의도 도구 보존
+    expect(result.activeTools).toContain('searchWeb');
+    expect(result.activeTools).toContain('searchKnowledgeBase');
+    expect(result.toolChoice).toBe('required');
   });
 });

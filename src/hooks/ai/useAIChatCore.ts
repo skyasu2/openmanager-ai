@@ -309,8 +309,9 @@ export function useAIChatCore(
       currentMode: currentMode ?? undefined,
       streamRagSources:
         streamRagSources.length > 0 ? streamRagSources : undefined,
+      ragEnabled,
     });
-  }, [messages, hybridIsLoading, currentMode, streamRagSources]);
+  }, [messages, hybridIsLoading, currentMode, streamRagSources, ragEnabled]);
 
   // 🧩 History Hook (Needs messages from hybrid query)
   const { clearHistory } = useChatHistory({

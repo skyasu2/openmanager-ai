@@ -297,25 +297,20 @@ export async function guestLogin(
     ''
   ).trim();
 
-  // 인라인 PIN 입력 UI 우선 대응 (window.prompt는 하위 호환 유지)
-  for (const selector of GUEST_PIN_INPUT_SELECTORS) {
-    const pinInput = page.locator(selector).first();
-    const isVisible = await pinInput
-      .isVisible({ timeout: 1000 })
-      .catch(() => false);
-    if (!isVisible) {
-      continue;
+  const resolveInlinePinInput = async () => {
+    for (const selector of GUEST_PIN_INPUT_SELECTORS) {
+      const pinInput = page.locator(selector).first();
+      const isVisible = await pinInput
+        .isVisible({ timeout: 1200 })
+        .catch(() => false);
+      if (!isVisible) {
+        continue;
+      }
+      return pinInput;
     }
 
-    if (!/^\d{4}$/.test(resolvedPin)) {
-      throw new Error(
-        '게스트 PIN 입력 필드가 노출되었습니다. PLAYWRIGHT_GUEST_PIN(4자리)을 설정하거나 guestPin 옵션을 전달하세요.'
-      );
-    }
-
-    await pinInput.fill(resolvedPin);
-    break;
-  }
+    return null;
+  };
 
   let pinDialogHandled = false;
   let pinDialogError: Error | null = null;
@@ -338,6 +333,35 @@ export async function guestLogin(
   });
 
   await clickLoginButton(page, 'guest');
+
+  const submitGuestLogin = async () => {
+    const inlinePinInput = await resolveInlinePinInput();
+    if (!inlinePinInput) {
+      return;
+    }
+
+    if (!/^\d{4}$/.test(resolvedPin)) {
+      throw new Error(
+        '게스트 PIN 입력 필드가 노출되었습니다. PLAYWRIGHT_GUEST_PIN(4자리)을 설정하거나 guestPin 옵션을 전달하세요.'
+      );
+    }
+
+    await inlinePinInput.fill(resolvedPin);
+
+    const loginButton = page.locator('form button:has-text("로그인")').first();
+    const isLoginButtonVisible = await loginButton
+      .isVisible({ timeout: 1000 })
+      .catch(() => false);
+
+    if (isLoginButtonVisible) {
+      await loginButton.click();
+      return;
+    }
+
+    await inlinePinInput.press('Enter');
+  };
+
+  await submitGuestLogin();
 
   // dialog 핸들러가 비동기로 실행되므로 잠시 대기
   if (!pinDialogHandled && !pinDialogError) {
@@ -375,6 +399,7 @@ export async function guestLogin(
     if (shouldRetry) {
       await page.waitForTimeout(500);
       await clickLoginButton(page, 'guest');
+      await submitGuestLogin();
       await waitForPostLoginTransition();
     } else {
       throw new Error(

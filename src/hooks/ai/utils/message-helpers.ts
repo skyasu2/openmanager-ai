@@ -83,6 +83,10 @@ interface TransformOptions {
   currentMode?: 'streaming' | 'job-queue';
   /** 스트리밍 done 이벤트에서 수신한 ragSources (웹 검색 결과 등) */
   streamRagSources?: RagSource[];
+  /** 사용자가 RAG 토글을 켰는지 여부 */
+  ragEnabled?: boolean;
+  /** 사용자가 웹 검색 토글을 켰는지 여부 */
+  webSearchEnabled?: boolean;
 }
 
 /**
@@ -93,7 +97,7 @@ export function transformUIMessageToEnhanced(
   options: TransformOptions,
   isLastMessage: boolean
 ): EnhancedChatMessage {
-  const { isLoading, currentMode, streamRagSources } = options;
+  const { isLoading, currentMode, streamRagSources, ragEnabled } = options;
   const rawText = extractTextFromUIMessage(message);
   // 단일 정규화 지점: Cloud Run Agent가 { answer, confidence } JSON을 반환할 때
   // answer 필드만 추출. Streaming/Job Queue 양쪽 경로 모두 여기서 처리.
@@ -146,6 +150,9 @@ export function transformUIMessageToEnhanced(
     const isJobQueue = currentMode === 'job-queue';
     const hasTools = toolParts.length > 0;
 
+    // 실제 호출된 도구 이름 추출
+    const calledToolNames = toolParts.map((p) => p.type.slice(5));
+
     // RAG 출처 추출 (job-queue: metadata, streaming: streamRagSources fallback)
     const ragSources =
       metadata?.ragSources ?? (isLastMessage ? streamRagSources : undefined);
@@ -154,17 +161,25 @@ export function transformUIMessageToEnhanced(
     const webSources = ragSources?.filter((s) => s.sourceType === 'web') ?? [];
     const hasWebSearch = webSources.length > 0;
 
+    // dataSource 결정: 실제 도구 호출 기반 + 토글 상태 반영
+    let dataSource: string;
+    if (hasWebSearch) {
+      dataSource = `웹 검색 (${webSources.length}건)`;
+    } else if (hasRag) {
+      dataSource = `RAG 지식베이스 검색 (${ragSources.length}건)`;
+    } else if (hasTools) {
+      dataSource = '서버 실시간 데이터 분석';
+    } else if (ragEnabled) {
+      dataSource = '일반 대화 응답 (RAG 활성)';
+    } else {
+      dataSource = '일반 대화 응답';
+    }
+
     analysisBasis = {
-      dataSource: hasWebSearch
-        ? `웹 검색 (${webSources.length}건)`
-        : hasRag
-          ? `RAG 지식베이스 검색 (${ragSources.length}건)`
-          : hasTools
-            ? '서버 실시간 데이터 분석'
-            : '일반 대화 응답',
+      dataSource,
       engine: isJobQueue ? 'Cloud Run AI' : 'Streaming AI',
       ragUsed: hasRag || hasTools || hasWebSearch,
-      confidence: hasWebSearch ? 88 : hasRag ? 90 : hasTools ? 85 : undefined,
+      toolsCalled: calledToolNames.length > 0 ? calledToolNames : undefined,
       timeRange: hasTools ? '최근 1시간' : undefined,
       ragSources: hasRag ? ragSources : undefined,
     };

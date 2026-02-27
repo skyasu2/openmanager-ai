@@ -42,8 +42,8 @@ export interface AnalysisBasis {
   serverCount?: number;
   /** 분석 시간 범위 (예: "최근 1시간") */
   timeRange?: string;
-  /** 신뢰도 (0-100) */
-  confidence?: number;
+  /** 실제 호출된 도구 이름 목록 */
+  toolsCalled?: string[];
   /** RAG 검색 출처 목록 */
   ragSources?: Array<{
     title: string;

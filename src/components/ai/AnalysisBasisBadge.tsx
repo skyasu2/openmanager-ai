@@ -8,6 +8,7 @@ import {
   Cpu,
   Database,
   ExternalLink,
+  Wrench,
 } from 'lucide-react';
 import { type FC, useState } from 'react';
 import type { AnalysisBasis } from '@/stores/useAISidebarStore';
@@ -20,21 +21,42 @@ function extractDomain(url: string): string {
   }
 }
 
+const TOOL_LABELS: Record<string, string> = {
+  getServerMetrics: '서버 메트릭 조회',
+  getServerMetricsAdvanced: '서버 메트릭 상세 조회',
+  filterServers: '서버 필터링',
+  getServerByGroup: '서버 그룹 조회',
+  getServerLogs: '시스템 로그 조회',
+  findRootCause: '근본 원인 분석',
+  correlateMetrics: '메트릭 상관 분석',
+  buildIncidentTimeline: '인시던트 타임라인',
+  detectAnomalies: '이상 탐지',
+  detectAnomaliesAllServers: '전체 서버 이상 탐지',
+  predictTrends: '트렌드 예측',
+  analyzePattern: '패턴 분석',
+  searchKnowledgeBase: 'RAG 지식베이스 검색',
+  recommendCommands: 'CLI 명령어 추천',
+  searchWeb: '웹 검색',
+  finalAnswer: '최종 응답',
+};
+
+function getToolLabel(toolName: string): string {
+  return TOOL_LABELS[toolName] ?? toolName;
+}
+
 interface AnalysisBasisBadgeProps {
   basis: AnalysisBasis;
   className?: string;
 }
 
 /**
- * 📊 분석 근거 뱃지 컴포넌트
+ * 분석 근거 뱃지 컴포넌트
  *
  * AI 응답의 투명성을 위해 분석에 사용된 근거 정보를 표시합니다.
  * - 데이터 소스
  * - AI 엔진
- * - 신뢰도
- * - RAG 사용 여부
- *
- * 기본적으로 접힌 상태로 표시되며, 클릭하면 상세 정보가 펼쳐집니다.
+ * - 호출된 도구 목록
+ * - RAG 참조 문서
  */
 export const AnalysisBasisBadge: FC<AnalysisBasisBadgeProps> = ({
   basis,
@@ -42,13 +64,15 @@ export const AnalysisBasisBadge: FC<AnalysisBasisBadgeProps> = ({
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
-  // 엔진 종류에 따른 색상
   const getEngineColor = (engine: string) => {
     if (engine.includes('Cloud Run')) return 'text-green-600';
     if (engine.includes('Fallback')) return 'text-orange-500';
     if (engine.includes('Streaming')) return 'text-blue-500';
     return 'text-gray-600';
   };
+
+  // finalAnswer 제외한 실질적 도구 호출
+  const meaningfulTools = basis.toolsCalled?.filter((t) => t !== 'finalAnswer');
 
   return (
     <div
@@ -94,6 +118,24 @@ export const AnalysisBasisBadge: FC<AnalysisBasisBadgeProps> = ({
               </span>
             )}
           </div>
+
+          {/* 호출된 도구 */}
+          {meaningfulTools && meaningfulTools.length > 0 && (
+            <div className="flex items-start gap-2">
+              <Wrench className="h-3.5 w-3.5 text-gray-400 mt-0.5 shrink-0" />
+              <span className="text-gray-500 shrink-0">도구:</span>
+              <div className="flex flex-wrap gap-1">
+                {meaningfulTools.map((tool) => (
+                  <span
+                    key={tool}
+                    className="px-1.5 py-0.5 rounded bg-blue-50 text-blue-700 text-xs"
+                  >
+                    {getToolLabel(tool)}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* 시간 범위 */}
           {basis.timeRange && (
