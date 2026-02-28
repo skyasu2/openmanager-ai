@@ -1,31 +1,31 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-02-28 01:34:47 KST
+> Generated at: 2026-02-28 14:16:29 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 27 |
-| Total Checks | 113 |
-| Passed | 95 |
+| Total Runs | 28 |
+| Total Checks | 118 |
+| Passed | 100 |
 | Failed | 18 |
-| Completed Items | 34 |
+| Completed Items | 36 |
 | Pending Items | 0 |
 | Wont-Fix Items | 5 |
 | Expert Domains Tracked | 6 |
 | Expert Open Gaps | 2 |
 | Completion Rate | 100% |
-| Last Run | QA-20260228-0027 (2026-02-27T16:34:47.012Z) |
+| Last Run | QA-20260228-0028 (2026-02-28T05:16:29.599Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260228-0027 (2026-02-27T16:34:47.012Z)
+Latest run: QA-20260228-0028 (2026-02-28T05:16:29.599Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| AI Quality Assurance Specialist | appropriate | no | - |
+| - | - | - | - |
 
 ## Expert Domain Open Gaps
 
@@ -52,15 +52,16 @@ Latest run: QA-20260228-0027 (2026-02-27T16:34:47.012Z)
 - ai-friendly-template-todo-marker: Template TODO marker 분리 (TEMPLATE_TODO 적용) (completed 1회, last QA-20260226-0006)
 - ai-math-tools: AI 계산 도구(수식/통계/용량) 셋업 완료 (completed 1회, last QA-20260228-0023)
 - auth-error-provider-copy: 인증 에러 라우트 메시지를 제공자-중립 표현으로 전환 (completed 1회, last QA-20260227-0010)
-- feature-dod-lint-zero-error: Feature DoD: lint 0 error (completed 2회, last QA-20260228-0024)
+- feature-dod-lint-zero-error: lint 0 에러 (completed 3회, last QA-20260228-0028)
 - feature-dod-login-copy-neutral: 로그인 정책 카피 중립성 지속성 (completed 1회, last QA-20260227-0017)
 - feature-dod-login-policy-copy: 로그인 정책 카피 중립성 지속성 (completed 3회, last QA-20260227-0018)
 - feature-dod-release-response-time-check: Feature/Release DoD: 핵심 응답시간 합격 (completed 1회, last QA-20260226-0005)
 - feature-dod-security-review: Feature DoD: 보안 검토(입력 검증/인증/OWASP) (completed 1회, last QA-20260226-0006)
 - feature-dod-system-start-guard: 비로그인 시스템 시작 가드 모달 동작 (completed 7회, last QA-20260227-0018)
-- feature-dod-tsc-zero-error: Feature DoD: tsc noEmit 0 error (completed 2회, last QA-20260228-0024)
-- feature-dod-unit-tests: Feature DoD: 신규 로직 단위 테스트 (completed 2회, last QA-20260228-0024)
+- feature-dod-tsc-zero-error: tsc --noEmit 0 에러 (completed 3회, last QA-20260228-0028)
+- feature-dod-unit-tests: 전체 단위/통합 테스트 통과 (completed 3회, last QA-20260228-0028)
 - feature-dod-validation-health-endpoints: 헬스/버전 API 검사 (Vercel) (completed 2회, last QA-20260227-0018)
+- feature-dod-vitals-integration: vitals:integration 통합 실행 통과 (completed 1회, last QA-20260228-0028)
 - guest-login-visibility-toggle: 게스트 로그인 버튼 노출 옵션화 (completed 2회, last QA-20260227-0013)
 - guest-pin-login-flow: 게스트 PIN 인증 후 시스템 시작 버튼 노출 (completed 4회, last QA-20260227-0018)
 - home-semantic-nav: 홈 페이지 nav 랜드마크 보강 (completed 1회, last QA-20260226-0009)
@@ -78,6 +79,7 @@ Latest run: QA-20260228-0027 (2026-02-27T16:34:47.012Z)
 - release-dod-test-gate: Release DoD: validate:all (tsc + lint + test) 전체 통과 (completed 1회, last QA-20260226-0008)
 - system-start-login-modal: 비로그인 상태에서 시스템 시작 클릭 시 로그인 모달 노출 (completed 1회, last QA-20260227-0021)
 - system-start-login-modal-redirect: 로그인 모달에서 로그인 페이지로 이동 (completed 1회, last QA-20260227-0022)
+- vitals-log-suppression: Web Vitals 통합 테스트 로그 억제 옵션 추가 (completed 1회, last QA-20260228-0028)
 - 게스트-pin-로그인-후-시스템-시작-버튼-노출: 게스트 PIN 로그인 후 시스템 시작 버튼 노출 (completed 1회, last QA-20260227-0010)
 - 로그인-정책-카피-정합성: 로그인 정책 카피 정합성 (completed 1회, last QA-20260227-0010)
 - 비로그인-시스템-시작-가드-모달-동작: 비로그인 시스템 시작 가드 모달 동작 (completed 1회, last QA-20260227-0010)
@@ -88,6 +90,7 @@ Latest run: QA-20260228-0027 (2026-02-27T16:34:47.012Z)
 
 | Run ID | Time (UTC) | Title | Checks | Completed | Pending | Wont-Fix | Expert Gaps |
 |---|---|---|---:|---:|---:|---:|---:|
+| QA-20260228-0028 | 2026-02-28T05:16:29.599Z | Web Vitals integration log suppression + full validation | 5 | 5 | 0 | 0 | 0 |
 | QA-20260228-0027 | 2026-02-27T16:34:47.012Z | AI Math Tools & Routing Verification (Type-check + targeted tests) | 3 | 1 | 0 | 0 | 0 |
 | QA-20260228-0026 | 2026-02-27T16:23:32.022Z | Docs full-link health after infrastructure and Vertex RAG URL repair | 1 | 1 | 0 | 0 | 0 |
 | QA-20260228-0025 | 2026-02-27T16:02:07.173Z | Docs QA Gate Repair for Dead Link and Ordered List | 2 | 1 | 0 | 0 | 0 |
@@ -107,5 +110,4 @@ Latest run: QA-20260228-0027 (2026-02-27T16:34:47.012Z)
 | QA-20260227-0011 | 2026-02-26T17:46:20.701Z | Vercel Playwright QA - 로그인 정책/시스템 시작 UX 보강 | 0 | 2 | 0 | 0 | 1 |
 | QA-20260227-0010 | 2026-02-26T16:36:37.248Z | Vercel Playwright QA - 시스템 시작/게스트 PIN | 2 | 5 | 1 | 0 | 2 |
 | QA-20260226-0009 | 2026-02-26T14:07:55.933Z | P1 Closeout — unit-tests / copy-alignment / nav-landmarks | 5 | 3 | 0 | 0 | 0 |
-| QA-20260226-0008 | 2026-02-26T13:10:43.480Z | P1 Release DoD — test-gate / contract-test / cost-gate verified | 6 | 3 | 0 | 0 | 0 |
 

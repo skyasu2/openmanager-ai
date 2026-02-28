@@ -1,0 +1,98 @@
+{
+  "runId": "QA-20260228-0028",
+  "recordedAt": "2026-02-28T05:16:29.599Z",
+  "recordedAtKst": "2026-02-28 14:16:29 KST",
+  "runTitle": "Web Vitals integration log suppression + full validation",
+  "owner": "codex",
+  "source": "local-validation",
+  "environment": {
+    "frontend": "local",
+    "backend": "local",
+    "branch": "main"
+  },
+  "checks": {
+    "total": 5,
+    "passed": 5,
+    "failed": 0
+  },
+  "expertAssessments": [],
+  "completedImprovements": [
+    {
+      "id": "vitals-log-suppression",
+      "title": "Web Vitals 통합 테스트 로그 억제 옵션 추가",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "tests/performance/web-vitals-integration.test.ts",
+      "note": "WEB_VITALS_SUPPRESS_LOGS가 설정된 환경에서 테스트 경고 로그를 정리",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "feature-dod-tsc-zero-error",
+      "title": "tsc --noEmit 0 에러",
+      "priority": "P0",
+      "evidence": "npm run type-check",
+      "note": "",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "feature-dod-lint-zero-error",
+      "title": "lint 0 에러",
+      "priority": "P0",
+      "evidence": "npm run lint",
+      "note": "",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "feature-dod-unit-tests",
+      "title": "전체 단위/통합 테스트 통과",
+      "priority": "P1",
+      "evidence": "npm run test",
+      "note": "",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "feature-dod-vitals-integration",
+      "title": "vitals:integration 통합 실행 통과",
+      "priority": "P2",
+      "evidence": "npm run vitals:integration",
+      "note": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Web Vitals 통합 테스트의 폴백 경고 로그는 WEB_VITALS_SUPPRESS_LOGS로 기본 억제",
+    "조건부 외부/계약 테스트는 환경 구성에 따라 스킵됨"
+  ],
+  "links": [
+    {
+      "label": "QA Log",
+      "url": "file://reports/qa/runs"
+    }
+  ]
+}
