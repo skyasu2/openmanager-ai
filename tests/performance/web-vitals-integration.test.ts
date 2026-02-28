@@ -244,7 +244,9 @@ async function sendToWebVitalsAPI(
 
     return await response.json();
   } catch (error) {
-    logError(`Web Vitals API Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    logError(
+      `Web Vitals API Error: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Unknown error',
