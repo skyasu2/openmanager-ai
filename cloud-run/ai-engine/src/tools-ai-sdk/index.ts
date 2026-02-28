@@ -98,6 +98,15 @@ export {
   visionToolDescriptions,
 } from './vision-tools';
 
+// ============================================================================
+// Calculation Tools (Safe Expression + Analytics)
+// ============================================================================
+export {
+  evaluateMathExpression,
+  computeSeriesStats,
+  estimateCapacityProjection,
+} from './calculation-tools';
+
 export type {
   ScreenshotAnalysisResult,
   LogAnalysisResult,
@@ -116,6 +125,7 @@ import { evaluateIncidentReport, validateReportStructure, scoreRootCauseConfiden
 import { finalAnswer } from './final-answer';
 import { getServerLogs } from './server-logs';
 import { analyzeScreenshot, analyzeLargeLog, searchWithGrounding, analyzeUrlContent } from './vision-tools';
+import { evaluateMathExpression, computeSeriesStats, estimateCapacityProjection } from './calculation-tools';
 import type { ToolSet } from 'ai';
 import { logger } from '../lib/logger';
 
@@ -165,6 +175,11 @@ export const allTools: ToolSet = {
   analyzeLargeLog,
   searchWithGrounding,
   analyzeUrlContent,
+
+  // Calculation Tools (safe expression/statistics/capacity modeling)
+  evaluateMathExpression,
+  computeSeriesStats,
+  estimateCapacityProjection,
 };
 
 /**
@@ -212,6 +227,11 @@ export const toolCategories = {
     searchWithGrounding,
     analyzeUrlContent,
   },
+  math: {
+    evaluateMathExpression,
+    computeSeriesStats,
+    estimateCapacityProjection,
+  },
 };
 
 /**
@@ -248,6 +268,9 @@ export const toolDescriptions: Record<string, string> = {
   analyzeLargeLog: '대용량 로그 파일 분석 (1M 컨텍스트)',
   searchWithGrounding: 'Google Search Grounding 실시간 검색',
   analyzeUrlContent: 'URL 콘텐츠 추출 및 분석',
+  evaluateMathExpression: '수식 계산 (사칙연산, 괄호, 지수, 기본 함수 sqrt/log/sin/cos/tan)',
+  computeSeriesStats: '숫자 배열 통계 계산 (평균/중앙값/분산/표준편차/백분위수)',
+  estimateCapacityProjection: '용량/성장률 기반 보수적 포화 예측',
 };
 
 export type ToolName = keyof typeof allTools;

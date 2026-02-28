@@ -50,7 +50,7 @@ export function formatReportAsMarkdown(report: IncidentReport): string {
 | 경고 | ${report.systemSummary.warningServers}대 |
 | 위험 | ${report.systemSummary.criticalServers}대 |
 
-**영향도**: 전체 인프라의 ${Math.round(((report.systemSummary.warningServers + report.systemSummary.criticalServers) / report.systemSummary.totalServers) * 100)}%가 영향받음
+**영향도**: 전체 인프라의 ${report.systemSummary.totalServers > 0 ? Math.round(((report.systemSummary.warningServers + report.systemSummary.criticalServers) / report.systemSummary.totalServers) * 100) : 0}%가 영향받음
 
 `
     : '';
@@ -129,7 +129,7 @@ ${report.pattern}
 | **현재 상태** | ${statusKo} |
 | **발생 시간** | ${timestamp} |
 | **영향 서버** | ${report.affectedServers.length}대 |
-| **영향도** | ${report.systemSummary ? `전체 인프라의 ${Math.round(((report.systemSummary.warningServers + report.systemSummary.criticalServers) / report.systemSummary.totalServers) * 100)}%` : 'N/A'} |
+| **영향도** | ${report.systemSummary ? `전체 인프라의 ${report.systemSummary.totalServers > 0 ? Math.round(((report.systemSummary.warningServers + report.systemSummary.criticalServers) / report.systemSummary.totalServers) * 100) : 0}%` : 'N/A'} |
 
 ### 상황 개요
 
