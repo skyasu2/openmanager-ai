@@ -6,7 +6,7 @@
  * and client-side authentication state
  */
 
-export const dynamic = 'force-dynamic';
+// MIGRATED: Removed export const dynamic = "force-dynamic" (now default)
 
 export default function AuthLayout({
   children,

@@ -2,8 +2,8 @@ import { type NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { getErrorMessage } from '@/types/type-utils';
 
-export const runtime = 'nodejs';
-export const dynamic = 'force-dynamic';
+// MIGRATED: Removed export const runtime = "nodejs" (default)
+// MIGRATED: Removed export const dynamic = "force-dynamic" (now default)
 
 const CONNECTION_TIMEOUT_MS = 3000;
 

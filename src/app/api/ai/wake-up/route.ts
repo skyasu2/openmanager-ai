@@ -2,7 +2,7 @@ import { type NextRequest, NextResponse } from 'next/server';
 import { logger } from '@/lib/logging';
 import { rateLimiters } from '@/lib/security/rate-limiter';
 
-export const runtime = 'nodejs';
+// MIGRATED: Removed export const runtime = "nodejs" (default)
 export const maxDuration = 30; // cold start 포함 15초 + 여유
 const AI_WARMUP_SOURCE_HEADER = 'x-ai-warmup-source';
 

@@ -21,7 +21,7 @@ import { withAuth } from '@/lib/auth/api-auth';
 import { getErrorMessage } from '@/types/type-utils';
 import debug from '@/utils/debug';
 
-export const runtime = 'nodejs';
+// MIGRATED: Removed export const runtime = "nodejs" (default)
 
 // ============================================================================
 // ⚡ maxDuration - Vercel 빌드 타임 상수

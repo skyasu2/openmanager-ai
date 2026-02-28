@@ -10,7 +10,7 @@
 import type { Metadata } from 'next';
 
 // 서버 사이드 설정 - 서버 컴포넌트에서만 사용 가능
-export const dynamic = 'force-dynamic';
+// MIGRATED: Removed export const dynamic = "force-dynamic" (now default)
 
 import LoginClient from './LoginClient';
 

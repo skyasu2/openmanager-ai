@@ -14,7 +14,7 @@ import type { NextRequest } from 'next/server';
 import { logger } from '@/lib/logging';
 import { getSiteUrl } from '@/lib/site-url';
 
-export const runtime = 'edge';
+// MIGRATED: Removed export const runtime = 'edge';
 
 // 기본값 상수
 const DEFAULTS = {

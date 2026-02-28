@@ -37,6 +37,8 @@ const withBundleAnalyzer = (() => {
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  cacheComponents: true,
+
   // 🚀 Next.js 16 기본 설정 - Vercel/Docker 호환
   // NEXT_OUTPUT_MODE=standalone 환경변수로 Docker 빌드 시 standalone 출력 활성화
   output:

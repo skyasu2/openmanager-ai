@@ -25,7 +25,7 @@ const GuestLoginRequestSchema = z.object({
   guestPin: z.string().min(1).max(20).optional(),
 });
 
-export const runtime = 'nodejs';
+// MIGRATED: Removed export const runtime = "nodejs" (default)
 export const maxDuration = 10;
 
 const GUEST_PIN_MAX_FAILURES = 5;

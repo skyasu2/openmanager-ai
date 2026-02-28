@@ -5,7 +5,7 @@
  * to avoid SSR issues with client-side hooks and authentication
  */
 
-export const dynamic = 'force-dynamic';
+// MIGRATED: Removed export const dynamic = "force-dynamic" (now default)
 
 export default function DashboardLayout({
   children,

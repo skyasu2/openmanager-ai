@@ -22,8 +22,8 @@
  *   - action: 'sync-data'
  */
 
-export const dynamic = 'force-dynamic';
-export const runtime = 'nodejs';
+// MIGRATED: Removed export const dynamic = "force-dynamic" (now default)
+// MIGRATED: Removed export const runtime = "nodejs" (default)
 
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';

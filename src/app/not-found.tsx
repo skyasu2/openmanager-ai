@@ -8,7 +8,8 @@
 import type { Metadata } from 'next';
 
 // 정적 생성 활성화 - 404 페이지 최적화
-export const dynamic = 'force-static';
+// MIGRATED: Removed export const dynamic = "force-static"
+// TODO: Add "use cache" if you want caching
 
 import { AlertCircle, Home, Search } from 'lucide-react';
 import Link from 'next/link';

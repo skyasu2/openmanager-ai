@@ -2,4 +2,4 @@
 // @deprecated /api/servers-unified 직접 사용 권장
 export { GET } from '../servers-unified/route';
 
-export const dynamic = 'force-dynamic';
+// MIGRATED: Removed export const dynamic = "force-dynamic" (now default)

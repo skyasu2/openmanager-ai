@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
 import { logger } from '@/lib/logging';
 
-export const runtime = 'nodejs';
-export const dynamic = 'force-dynamic';
+// MIGRATED: Removed export const runtime = "nodejs" (default)
+// MIGRATED: Removed export const dynamic = "force-dynamic" (now default)
 
 const DEFAULT_SENTRY_DSN =
   'https://c4cfe13cdda790d1d9a6c3f92c593f39@o4509732473667584.ingest.de.sentry.io/4510731369119824';

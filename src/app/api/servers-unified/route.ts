@@ -491,4 +491,4 @@ async function getHandler(request: NextRequest) {
 export const POST = withAuth(postHandler);
 export const GET = withAuth(getHandler);
 
-export const dynamic = 'force-dynamic';
+// MIGRATED: Removed export const dynamic = "force-dynamic" (now default)

@@ -22,7 +22,7 @@ import { logger } from '@/lib/logging';
 import { getErrorMessage } from '@/types/type-utils';
 
 // Node.js 런타임 사용 (인메모리 상태 유지)
-export const runtime = 'nodejs';
+// MIGRATED: Removed export const runtime = "nodejs" (default)
 
 /**
  * GET /api/ai/status

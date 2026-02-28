@@ -38,10 +38,10 @@ import {
   withNoStoreHeaders,
 } from './route-helpers';
 
-export const runtime = 'nodejs';
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
-export const fetchCache = 'force-no-store';
+// MIGRATED: Removed export const runtime = "nodejs" (default)
+// MIGRATED: Removed export const dynamic = "force-dynamic" (now default)
+// MIGRATED: Removed export const revalidate = 0
+// MIGRATED: Removed export const fetchCache
 
 // ============================================================================
 // ⚡ maxDuration - Vercel 빌드 타임 상수

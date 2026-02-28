@@ -15,8 +15,8 @@ import { logger } from '@/lib/logging';
 import { getErrorMessage } from '@/types/type-utils';
 
 // ⚡ Edge Runtime으로 전환 - 무료 티어 친화적 최적화
-export const runtime = 'edge';
-export const dynamic = 'force-dynamic';
+// MIGRATED: Removed export const runtime = 'edge';
+// MIGRATED: Removed export const dynamic = "force-dynamic" (now default)
 
 // 📊 Vercel 무료 티어 한계값 (2025년 1월 기준)
 const FREE_TIER_LIMITS = {

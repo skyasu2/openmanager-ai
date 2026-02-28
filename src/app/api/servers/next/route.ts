@@ -30,8 +30,8 @@ import debug from '@/utils/debug';
  */
 
 // Next.js App Router 런타임 설정
-export const runtime = 'nodejs';
-export const dynamic = 'force-dynamic';
+// MIGRATED: Removed export const runtime = "nodejs" (default)
+// MIGRATED: Removed export const dynamic = "force-dynamic" (now default)
 
 // GET 핸들러
 const getHandler = createApiRoute()

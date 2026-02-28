@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { logger } from '@/lib/logging';
 
 // ⚡ Edge Runtime으로 전환 - 60% 응답시간 개선 예상
-export const runtime = 'edge';
+// MIGRATED: Removed export const runtime = 'edge';
 
 /**
  * 📦 정적 버전 정보 - Lock-Step Versioning

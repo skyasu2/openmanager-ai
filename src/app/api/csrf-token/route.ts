@@ -38,4 +38,4 @@ export function GET(_request: NextRequest) {
   }
 }
 
-export const runtime = 'edge';
+// MIGRATED: Removed export const runtime = 'edge';

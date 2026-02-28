@@ -34,8 +34,8 @@ import {
 import { getErrorMessage } from '@/types/type-utils';
 import debug from '@/utils/debug';
 
-export const runtime = 'nodejs';
-export const dynamic = 'force-dynamic'; // 캐시는 응답 레벨에서 처리
+// MIGRATED: Removed export const runtime = "nodejs" (default)
+// MIGRATED: Removed export const dynamic = "force-dynamic" (now default) // 캐시는 응답 레벨에서 처리
 
 /** 헬스체크 캐시 (60초 TTL)
  * Note: Module-level cache is per-serverless-instance. This is acceptable
