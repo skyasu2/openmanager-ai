@@ -10,37 +10,51 @@ import { formatBytes } from './utils-functions';
  * NOTE: OTel 파이프라인에서 network 값은 0~1 ratio → *100 = 퍼센트(%)로
  * 변환되어 저장됩니다. 따라서 network도 % 단위 메트릭으로 처리합니다.
  */
+// 사전 컴파일된 word-boundary 패턴
+const WORD_PATTERNS: Record<string, RegExp> = {};
+function wordMatch(normalizedKey: string, keyword: string): boolean {
+  if (!WORD_PATTERNS[keyword]) {
+    WORD_PATTERNS[keyword] = new RegExp(`(^|[_.-])${keyword}([_.-]|$)`);
+  }
+  return (
+    WORD_PATTERNS[keyword].test(normalizedKey) || normalizedKey === keyword
+  );
+}
+
+const CAMEL_TO_SNAKE = /([a-z])([A-Z])/g;
+
 export function formatMetricValue(metric: string, value: number): string {
   // camelCase를 "_" 구분자로 정규화: "responseTime" → "response_time"
-  const normalizedKey = metric
-    .replace(/([a-z])([A-Z])/g, '$1_$2')
-    .toLowerCase();
-
-  // word-boundary 매칭: "disk_io"가 "disk"에, "duration"이 "io"에 걸리지 않도록
-  const wordMatch = (keyword: string) =>
-    new RegExp(`(^|[_.-])${keyword}([_.-]|$)`).test(normalizedKey) ||
-    normalizedKey === keyword;
+  const normalizedKey = metric.replace(CAMEL_TO_SNAKE, '$1_$2').toLowerCase();
 
   // 1. 바이트 단위 메트릭 (bytes_received, bytes_sent, io_read 등)
   // ※ "duration"의 "io" 오매칭 방지를 위해 퍼센트/시간보다 먼저, word-boundary로 검사
-  if (wordMatch('bytes') || wordMatch('io')) {
+  if (wordMatch(normalizedKey, 'bytes') || wordMatch(normalizedKey, 'io')) {
     return `${formatBytes(value)}/s`;
   }
 
   // 2. 응답 시간 (ms) — "duration", "latency", "*_time" 등
-  if (wordMatch('time') || wordMatch('duration') || wordMatch('latency')) {
+  if (
+    wordMatch(normalizedKey, 'time') ||
+    wordMatch(normalizedKey, 'duration') ||
+    wordMatch(normalizedKey, 'latency')
+  ) {
     if (value >= 1000) {
       return `${(value / 1000).toFixed(2)}s`;
     }
     return `${Math.round(value)}ms`;
   }
 
-  // 3. 퍼센트 단위 메트릭 (cpu, memory, disk, network 모두 % 단위)
-  if (
-    ['cpu', 'memory', 'disk', 'filesystem', 'usage', 'network'].some((k) =>
-      normalizedKey.includes(k)
-    )
-  ) {
+  // 3. 퍼센트 단위 메트릭 — word-boundary 통일
+  const percentKeywords = [
+    'cpu',
+    'memory',
+    'disk',
+    'filesystem',
+    'usage',
+    'network',
+  ];
+  if (percentKeywords.some((k) => wordMatch(normalizedKey, k))) {
     return `${Number(value).toFixed(1)}%`;
   }
 

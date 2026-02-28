@@ -10,6 +10,7 @@ import type {
   ServerRole,
   Service,
 } from '@/types/server';
+import { serverTypeGuards } from '@/utils/serverUtils';
 
 // 서버 확장 타입 (any 타입 제거용)
 export interface ExtendedServer extends Omit<Server, 'type' | 'environment'> {
@@ -57,21 +58,6 @@ export function isExtendedServer(server: unknown): server is ExtendedServer {
     typeof s.memory === 'number' &&
     typeof s.disk === 'number'
   );
-}
-
-// alerts 카운트 헬퍼
-export function getAlertsCount(
-  alerts: number | ServerAlert[] | undefined
-): number {
-  if (typeof alerts === 'number') {
-    return alerts;
-  }
-
-  if (Array.isArray(alerts)) {
-    return alerts.length;
-  }
-
-  return 0;
 }
 
 // 서버를 ExtendedServer로 안전하게 변환
@@ -130,9 +116,9 @@ export function toExtendedServer(server: Server): ExtendedServer {
       trend: [],
     },
     alertsSummary: server.alertsSummary || {
-      total: getAlertsCount(server.alerts),
+      total: serverTypeGuards.getAlerts(server.alerts),
       critical: 0,
-      warning: getAlertsCount(server.alerts),
+      warning: serverTypeGuards.getAlerts(server.alerts),
     },
   };
 }
