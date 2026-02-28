@@ -2,24 +2,24 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-02-28T05:16:29.599Z"
+    "updatedAt": "2026-02-28T05:58:33.745Z"
   },
   "sequence": {
-    "nextRunNumber": 29
+    "nextRunNumber": 30
   },
   "summary": {
-    "totalRuns": 28,
-    "totalChecks": 118,
-    "totalPassed": 100,
+    "totalRuns": 29,
+    "totalChecks": 129,
+    "totalPassed": 111,
     "totalFailed": 18,
     "completionRate": 100,
-    "completedItems": 36,
+    "completedItems": 37,
     "pendingItems": 0,
     "wontFixItems": 5,
     "expertDomainsTracked": 6,
     "expertDomainsOpenGaps": 2,
-    "lastRunId": "QA-20260228-0028",
-    "lastRecordedAt": "2026-02-28T05:16:29.599Z"
+    "lastRunId": "QA-20260228-0029",
+    "lastRecordedAt": "2026-02-28T05:58:33.745Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -791,6 +791,28 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-02-28T05:16:29.599Z"
+    },
+    "feature-dod-e2e-critical": {
+      "id": "feature-dod-e2e-critical",
+      "title": "E2E 크리티컬 흐름 통과",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260228-0029",
+      "firstSeenAt": "2026-02-28T05:58:33.745Z",
+      "lastSeenRunId": "QA-20260228-0029",
+      "lastSeenAt": "2026-02-28T05:58:33.745Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "wontFixCount": 0,
+      "owner": "codex",
+      "lastEvidence": "npm run test:e2e:critical",
+      "lastNote": "11/11 passed (smoke + critical-auth)",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-02-28T05:58:33.745Z"
     }
   },
   "runs": [
@@ -2054,6 +2076,26 @@
       "expertCount": 0,
       "expertNeedsImprovementCount": 0,
       "completedCount": 5,
+      "pendingCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260228-0029",
+      "recordedAt": "2026-02-28T05:58:33.745Z",
+      "recordedAtKst": "2026-02-28 14:58:33 KST",
+      "title": "Critical E2E validation with local server",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260228-0029.json",
+      "checks": {
+        "total": 11,
+        "passed": 11,
+        "failed": 0
+      },
+      "expertAssessments": [],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
       "pendingCount": 0,
       "wontFixCount": 0
     }

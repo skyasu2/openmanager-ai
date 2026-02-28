@@ -1,0 +1,41 @@
+{
+  "runId": "QA-20260228-0029",
+  "recordedAt": "2026-02-28T05:58:33.745Z",
+  "recordedAtKst": "2026-02-28 14:58:33 KST",
+  "runTitle": "Critical E2E validation with local server",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "frontend": "local",
+    "backend": "local",
+    "branch": "main"
+  },
+  "checks": {
+    "total": 11,
+    "passed": 11,
+    "failed": 0
+  },
+  "expertAssessments": [],
+  "completedImprovements": [
+    {
+      "id": "feature-dod-e2e-critical",
+      "title": "E2E 크리티컬 흐름 통과",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "npm run test:e2e:critical",
+      "note": "11/11 passed (smoke + critical-auth)",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Playwright local run completed successfully (11 passed)",
+    "No blocking failure; initial auto-start timeout was resolved by explicit local server run"
+  ],
+  "links": []
+}

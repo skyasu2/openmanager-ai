@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-02-28 14:16:29 KST
+> Generated at: 2026-02-28 14:58:32 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 28 |
-| Total Checks | 118 |
-| Passed | 100 |
+| Total Runs | 29 |
+| Total Checks | 129 |
+| Passed | 111 |
 | Failed | 18 |
-| Completed Items | 36 |
+| Completed Items | 37 |
 | Pending Items | 0 |
 | Wont-Fix Items | 5 |
 | Expert Domains Tracked | 6 |
 | Expert Open Gaps | 2 |
 | Completion Rate | 100% |
-| Last Run | QA-20260228-0028 (2026-02-28T05:16:29.599Z) |
+| Last Run | QA-20260228-0029 (2026-02-28T05:58:33.745Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260228-0028 (2026-02-28T05:16:29.599Z)
+Latest run: QA-20260228-0029 (2026-02-28T05:58:33.745Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -52,6 +52,7 @@ Latest run: QA-20260228-0028 (2026-02-28T05:16:29.599Z)
 - ai-friendly-template-todo-marker: Template TODO marker 분리 (TEMPLATE_TODO 적용) (completed 1회, last QA-20260226-0006)
 - ai-math-tools: AI 계산 도구(수식/통계/용량) 셋업 완료 (completed 1회, last QA-20260228-0023)
 - auth-error-provider-copy: 인증 에러 라우트 메시지를 제공자-중립 표현으로 전환 (completed 1회, last QA-20260227-0010)
+- feature-dod-e2e-critical: E2E 크리티컬 흐름 통과 (completed 1회, last QA-20260228-0029)
 - feature-dod-lint-zero-error: lint 0 에러 (completed 3회, last QA-20260228-0028)
 - feature-dod-login-copy-neutral: 로그인 정책 카피 중립성 지속성 (completed 1회, last QA-20260227-0017)
 - feature-dod-login-policy-copy: 로그인 정책 카피 중립성 지속성 (completed 3회, last QA-20260227-0018)
@@ -90,6 +91,7 @@ Latest run: QA-20260228-0028 (2026-02-28T05:16:29.599Z)
 
 | Run ID | Time (UTC) | Title | Checks | Completed | Pending | Wont-Fix | Expert Gaps |
 |---|---|---|---:|---:|---:|---:|---:|
+| QA-20260228-0029 | 2026-02-28T05:58:33.745Z | Critical E2E validation with local server | 11 | 1 | 0 | 0 | 0 |
 | QA-20260228-0028 | 2026-02-28T05:16:29.599Z | Web Vitals integration log suppression + full validation | 5 | 5 | 0 | 0 | 0 |
 | QA-20260228-0027 | 2026-02-27T16:34:47.012Z | AI Math Tools & Routing Verification (Type-check + targeted tests) | 3 | 1 | 0 | 0 | 0 |
 | QA-20260228-0026 | 2026-02-27T16:23:32.022Z | Docs full-link health after infrastructure and Vertex RAG URL repair | 1 | 1 | 0 | 0 | 0 |
@@ -109,5 +111,4 @@ Latest run: QA-20260228-0028 (2026-02-28T05:16:29.599Z)
 | QA-20260227-0012 | 2026-02-26T17:46:29.032Z | Vercel Playwright QA - 로그인 정책/시스템 시작 UX 보강 (재기록) | 3 | 2 | 0 | 0 | 2 |
 | QA-20260227-0011 | 2026-02-26T17:46:20.701Z | Vercel Playwright QA - 로그인 정책/시스템 시작 UX 보강 | 0 | 2 | 0 | 0 | 1 |
 | QA-20260227-0010 | 2026-02-26T16:36:37.248Z | Vercel Playwright QA - 시스템 시작/게스트 PIN | 2 | 5 | 1 | 0 | 2 |
-| QA-20260226-0009 | 2026-02-26T14:07:55.933Z | P1 Closeout — unit-tests / copy-alignment / nav-landmarks | 5 | 3 | 0 | 0 | 0 |
 
