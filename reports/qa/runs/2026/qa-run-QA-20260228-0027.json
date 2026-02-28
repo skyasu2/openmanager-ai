@@ -1,0 +1,54 @@
+{
+  "runId": "QA-20260228-0027",
+  "recordedAt": "2026-02-27T16:34:47.012Z",
+  "recordedAtKst": "2026-02-28 01:34:47 KST",
+  "runTitle": "AI Math Tools & Routing Verification (Type-check + targeted tests)",
+  "owner": "codex",
+  "source": "local-checks",
+  "environment": {
+    "frontend": "Local",
+    "backend": "Cloud Run",
+    "branch": "main"
+  },
+  "checks": {
+    "total": 3,
+    "passed": 3,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Type-check와 계산 툴/라우팅 대상 테스트가 모두 통과했습니다.",
+      "nextAction": ""
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "math-tool-implementation-validation",
+      "title": "AI 계산 툴 라우팅/실행 검증",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "calculation-tools.test.ts 11개, supervisor-routing.test.ts(수학 분기) 41개 전부 통과",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "evaluateMathExpression, computeSeriesStats, estimateCapacityProjection 연동 및 라우팅 분기 검증 완료"
+  ],
+  "links": [
+    {
+      "label": "Math tools run",
+      "url": "https://openmanager-ai.vercel.app"
+    }
+  ]
+}

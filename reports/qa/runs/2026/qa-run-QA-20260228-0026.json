@@ -1,0 +1,54 @@
+{
+  "runId": "QA-20260228-0026",
+  "recordedAt": "2026-02-27T16:23:32.022Z",
+  "recordedAtKst": "2026-02-28 01:23:32 KST",
+  "runTitle": "Docs full-link health after infrastructure and Vertex RAG URL repair",
+  "owner": "codex",
+  "source": "local-checks",
+  "environment": {
+    "frontend": "Local",
+    "backend": "Repo",
+    "branch": "main"
+  },
+  "checks": {
+    "total": 1,
+    "passed": 1,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "docs:links:full 실행 시 외부 링크 검증이 실패 없이 통과했습니다.",
+      "nextAction": ""
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "rag-engine-doc-link-repair",
+      "title": "RAG, Vercel fair-use 문서 링크 경로 갱신",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "docs:links:full 통과 확인 후 링크 2건 교체",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "docs/reference/architecture/ai/rag-knowledge-engine.md 및 free-tier-infrastructure 링크 dead link 수정"
+  ],
+  "links": [
+    {
+      "label": "Docs Inventory",
+      "url": "https://openmanager-ai.vercel.app/docs/development/docs-inventory"
+    }
+  ]
+}

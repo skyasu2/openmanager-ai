@@ -1,0 +1,54 @@
+{
+  "runId": "QA-20260228-0025",
+  "recordedAt": "2026-02-27T16:02:07.173Z",
+  "recordedAtKst": "2026-02-28 01:02:07 KST",
+  "runTitle": "Docs QA Gate Repair for Dead Link and Ordered List",
+  "owner": "codex",
+  "source": "local-checks",
+  "environment": {
+    "frontend": "Local",
+    "backend": "Repo",
+    "branch": "main"
+  },
+  "checks": {
+    "total": 2,
+    "passed": 2,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "docs:check 및 docs:links에서 사전 회귀 이슈였던 ordered list/외부 링크 이슈가 모두 해소되었습니다.",
+      "nextAction": ""
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "release-dod-doc-gate",
+      "title": "Release DoD: 문서 게이트 90일 갱신·메타데이터·아카이빙 정책",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "docs:check와 docs:links 통과 후 docs/links dead link 및 MD029 이슈 정리 완료",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Vision 가이드 리스트 번호 정렬 수정 및 프로젝트 셋업의 Mistral 링크를 m.istral.ai로 정리"
+  ],
+  "links": [
+    {
+      "label": "Docs Inventory",
+      "url": "https://openmanager-ai.vercel.app/docs/development/docs-inventory"
+    }
+  ]
+}

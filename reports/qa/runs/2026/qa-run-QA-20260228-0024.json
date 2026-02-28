@@ -1,0 +1,81 @@
+{
+  "runId": "QA-20260228-0024",
+  "recordedAt": "2026-02-27T15:51:09.352Z",
+  "recordedAtKst": "2026-02-28 00:51:09 KST",
+  "runTitle": "Release DoD Evidence: Type/Lint/Unit Checks for AI Math Tools",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main"
+  },
+  "checks": {
+    "total": 3,
+    "passed": 3,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "이번 변경분에서 추가된 AI 수학 툴에 대해 루트/엔진 타입체크와 단위 테스트가 모두 통과했습니다.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Release DoD 항목(타입체크/린트/단위테스트) 증거가 동일한 런에서 정합화되었습니다.",
+      "nextAction": ""
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "feature-dod-tsc-zero-error",
+      "title": "Feature DoD: tsc noEmit 0 error",
+      "priority": "P0",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "npm run type-check",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "feature-dod-lint-zero-error",
+      "title": "Feature DoD: lint 0 error",
+      "priority": "P0",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "npm run lint",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "feature-dod-unit-tests",
+      "title": "Feature DoD: 신규 로직 단위 테스트",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "cloud-run/ai-engine/src/tools-ai-sdk/calculation-tools.test.ts 및 supervisor-routing.test.ts",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "wontFixImprovements": [],
+  "notes": ["이 런은 이전 run의 DoD 항목 상태 정합화를 위한 보강 기록입니다."],
+  "links": []
+}
