@@ -116,6 +116,13 @@ describe('getIntentCategory', () => {
     expect(getIntentCategory('forecast CPU usage')).toBe('prediction');
   });
 
+  it('should classify math queries', () => {
+    expect(getIntentCategory('12*5 계산해줘')).toBe('math');
+    expect(getIntentCategory('표준편차 계산해줘')).toBe('math');
+    expect(getIntentCategory('퍼센트는 어떻게 계산해?')).toBe('math');
+    expect(getIntentCategory('cpu 80% 상태는 어떤가요')).toBe('metrics');
+  });
+
   it('should classify RCA queries', () => {
     expect(getIntentCategory('장애 원인 분석')).toBe('rca');
     expect(getIntentCategory('타임라인 구성')).toBe('rca');
@@ -191,10 +198,20 @@ describe('createPrepareStep', () => {
     expect(result.toolChoice).toBe('required');
   });
 
-  it('should route prediction queries to trend tools', async () => {
+  it('should route math queries to math tools', async () => {
+    const prepare = createPrepareStep('12*5 계산해줘');
+    const result = await prepare({ stepNumber: 0 });
+    expect(result.activeTools).toContain('evaluateMathExpression');
+    expect(result.activeTools).toContain('computeSeriesStats');
+    expect(result.activeTools).toContain('estimateCapacityProjection');
+    expect(result.toolChoice).toBe('required');
+  });
+
+  it('should route prediction queries to trend tools including capacity projection', async () => {
     const prepare = createPrepareStep('트렌드 예측해줘');
     const result = await prepare({ stepNumber: 0 });
     expect(result.activeTools).toContain('predictTrends');
+    expect(result.activeTools).toContain('estimateCapacityProjection');
     expect(result.toolChoice).toBe('required');
   });
 

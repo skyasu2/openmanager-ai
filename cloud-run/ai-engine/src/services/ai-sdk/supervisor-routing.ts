@@ -129,6 +129,9 @@ getServerMetricsAdvanced 결과에 globalSummary가 있으면 **반드시 해당
 - "디스크 정리 명령어" → recommendCommands(keywords: ["디스크", "정리"])
 - "서버 로그 보여줘" → getServerLogs(serverId: "...", level: "all")
 - "에러 로그 분석해줘" → getServerLogs(serverId: "...", level: "error")
+- "3*25+10은?" → evaluateMathExpression(expression: "3*25+10")
+- "월별 처리량 배열의 p95가?" → computeSeriesStats(values: [20, 25, 30, 40, 65, 80])
+- "현재 60%에 15% 성장률이면 12개월 뒤 얼마로 포화?" → estimateCapacityProjection(currentLoad: 60, targetCapacity: 100, growthRatePercent: 15, forecastPeriods: 12)
 
 ## 보고서 작성 품질 규칙
 
@@ -246,12 +249,13 @@ export function selectExecutionMode(query: string): SupervisorMode {
 // Intent Classification & prepareStep (SSOT)
 // ============================================================================
 
-export type IntentCategory = 'anomaly' | 'prediction' | 'rca' | 'advisor' | 'serverGroup' | 'logs' | 'metrics' | 'general';
+export type IntentCategory = 'anomaly' | 'prediction' | 'math' | 'rca' | 'advisor' | 'serverGroup' | 'logs' | 'metrics' | 'general';
 
 const TOOL_ROUTING_PATTERNS = {
   anomaly: /이상|급증|급감|스파이크|anomal|탐지|감지|비정상/i,
   prediction: /예측|트렌드|추이|전망|forecast|추세/i,
   rca: /장애|rca|타임라인|상관관계|원인|왜|근본|incident/i,
+  math: /(?:계산|연산|수식|평균|중앙값|분산|표준편차|퍼센트|백분율|증가율|성장률|지수|루트|\d+\s*[+\-*\/\^]\s*\d+)/i,
   advisor:
     /해결|방법|명령어|가이드|이력|과거|사례|검색|보안|강화|백업|최적화|best.?practice|권장|추천|토폴로지|아키텍처|구성도|topology|architecture/i,
   serverGroup: /(db|web|cache|lb|api|storage|로드\s*밸런서|캐시|스토리지)\s*(서버)?/i,
@@ -264,6 +268,7 @@ export function getIntentCategory(query: string): IntentCategory {
 
   if (TOOL_ROUTING_PATTERNS.anomaly.test(q)) return 'anomaly';
   if (TOOL_ROUTING_PATTERNS.prediction.test(q)) return 'prediction';
+  if (TOOL_ROUTING_PATTERNS.math.test(q)) return 'math';
   if (TOOL_ROUTING_PATTERNS.rca.test(q)) return 'rca';
   if (TOOL_ROUTING_PATTERNS.advisor.test(q)) return 'advisor';
   if (TOOL_ROUTING_PATTERNS.logs.test(q)) return 'logs';
@@ -300,8 +305,11 @@ export function createPrepareStep(
     if (TOOL_ROUTING_PATTERNS.anomaly.test(q)) {
       activeTools = ['detectAnomalies', 'predictTrends', 'analyzePattern', 'getServerMetrics', 'finalAnswer'];
       toolChoice = 'required';
+    } else if (TOOL_ROUTING_PATTERNS.math.test(q)) {
+      activeTools = ['evaluateMathExpression', 'computeSeriesStats', 'estimateCapacityProjection', 'finalAnswer'];
+      toolChoice = 'required';
     } else if (TOOL_ROUTING_PATTERNS.prediction.test(q)) {
-      activeTools = ['predictTrends', 'analyzePattern', 'detectAnomalies', 'correlateMetrics', 'finalAnswer'];
+      activeTools = ['predictTrends', 'analyzePattern', 'detectAnomalies', 'correlateMetrics', 'estimateCapacityProjection', 'finalAnswer'];
       toolChoice = 'required';
     } else if (TOOL_ROUTING_PATTERNS.rca.test(q)) {
       activeTools = ['findRootCause', 'buildIncidentTimeline', 'correlateMetrics', 'getServerMetrics', 'detectAnomalies', 'finalAnswer'];
