@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.7.0](https://github.com/skyasu2/openmanager-ai/compare/v8.6.0...v8.7.0) (2026-02-28)
+
+
+### Features
+
+* **ui:** enforce guest login modal for system start ([77f81eb](https://github.com/skyasu2/openmanager-ai/commit/77f81ebe2c974c284eaa280989a14f60d635ab1a))
+
+
+### Bug Fixes
+
+* **ai-engine:** address calculation tools bugs and cleanup ([0f12d36](https://github.com/skyasu2/openmanager-ai/commit/0f12d3655143a4cd305d4509d5edb43aa1113568))
+* **ai-engine:** register calculation tools and fix division-by-zero guard ([e8c33d5](https://github.com/skyasu2/openmanager-ai/commit/e8c33d550c18990034bfe4d767002fffa6e1bcdb))
+
 ## [8.6.0](https://github.com/skyasu2/openmanager-ai/compare/v8.5.0...v8.6.0) (2026-02-27)
 
 
