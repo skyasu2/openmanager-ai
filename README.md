@@ -15,6 +15,13 @@
 
 ---
 
+<div align="center">
+  <img src="docs/screenshots/demo/step1-dashboard.png" alt="OpenManager AI Dashboard" width="800" />
+  <br/>
+  <i>Real-time Server Monitoring Dashboard</i>
+</div>
+
+
 ## Overview
 
 OpenManager AI는 **AI 어시스턴트**가 내장된 서버 모니터링 플랫폼입니다.
