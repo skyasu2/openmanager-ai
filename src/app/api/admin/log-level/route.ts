@@ -100,10 +100,10 @@ export const PUT = withAuth(async (request: NextRequest) => {
       applied.vercel = level;
     }
 
-  if (level !== 'reset' && ttlSeconds && ttlSeconds > 0) {
-    const clampedTtl = Math.min(ttlSeconds, 3600);
-    expiresAt = new Date(Date.now() + clampedTtl * 1000).toISOString();
-  }
+    if (level !== 'reset' && ttlSeconds && ttlSeconds > 0) {
+      const clampedTtl = Math.min(ttlSeconds, 3600);
+      expiresAt = new Date(Date.now() + clampedTtl * 1000).toISOString();
+    }
   }
 
   // Proxy to Cloud Run

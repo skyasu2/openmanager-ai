@@ -45,7 +45,9 @@ describe('GET /api/admin/log-level', () => {
   });
 
   it('현재 Vercel 레벨과 기본 레벨, Cloud Run 상태를 반환한다', async () => {
-    const response = await GET(new NextRequest('http://localhost/api/admin/log-level'));
+    const response = await GET(
+      new NextRequest('http://localhost/api/admin/log-level')
+    );
     const body = (await response.json()) as {
       vercel: { level: string; defaultLevel: string };
       cloudRun: { level: string; reachable: boolean };
@@ -57,7 +59,9 @@ describe('GET /api/admin/log-level', () => {
   });
 
   it('Cloud Run이 비활성화되면 cloudRun 상태는 disabled로 처리한다', async () => {
-    const response = await GET(new NextRequest('http://localhost/api/admin/log-level'));
+    const response = await GET(
+      new NextRequest('http://localhost/api/admin/log-level')
+    );
     const body = await response.json();
 
     expect(mockIsCloudRunEnabled).toHaveBeenCalledTimes(1);
@@ -130,7 +134,11 @@ describe('PUT /api/admin/log-level', () => {
       new NextRequest('http://localhost/api/admin/log-level', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ level: 'reset', target: 'all', ttlSeconds: 120 }),
+        body: JSON.stringify({
+          level: 'reset',
+          target: 'all',
+          ttlSeconds: 120,
+        }),
       })
     );
     const body = (await response.json()) as {
@@ -142,4 +150,3 @@ describe('PUT /api/admin/log-level', () => {
     expect(body.expiresAt).toBeNull();
   });
 });
-
