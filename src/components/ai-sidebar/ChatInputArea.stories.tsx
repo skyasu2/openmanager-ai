@@ -14,7 +14,7 @@ const noopDragHandlers = {
 };
 
 const meta = {
-  title: 'AI-Sidebar/ChatInputArea',
+  title: 'AISidebar/ChatInputArea',
   component: ChatInputArea,
   tags: ['autodocs'],
   parameters: { layout: 'padded' },

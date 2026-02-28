@@ -3,7 +3,7 @@ import { userEvent } from 'storybook/test';
 import { AIDebugPanel } from './AIDebugPanel';
 
 const meta = {
-  title: 'AI/AIDebugPanel',
+  title: 'AISidebar/AIDebugPanel',
   component: AIDebugPanel,
   parameters: {
     layout: 'padded',

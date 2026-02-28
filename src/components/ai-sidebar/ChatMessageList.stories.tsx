@@ -56,7 +56,7 @@ const sampleMessages: EnhancedChatMessage[] = [
 ];
 
 const meta = {
-  title: 'AI-Sidebar/ChatMessageList',
+  title: 'AISidebar/ChatMessageList',
   component: ChatMessageList,
   tags: ['autodocs'],
   parameters: { layout: 'padded' },
