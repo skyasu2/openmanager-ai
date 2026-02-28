@@ -152,7 +152,7 @@
     "perf:precommit-benchmark": "npm run test:quick",
     "perf:all-benchmarks": "npm run perf:lint-benchmark && npm run perf:precommit-benchmark",
     "perf:quick": "npm run test:perf:vitest",
-    "vitals:integration": "RUN_SLOW_TESTS=true vitest run --config config/testing/vitest.config.main.ts tests/performance/web-vitals-integration.test.ts --reporter=verbose",
+    "vitals:integration": "WEB_VITALS_SUPPRESS_LOGS=1 RUN_SLOW_TESTS=true vitest run --config config/testing/vitest.config.main.ts tests/performance/web-vitals-integration.test.ts --reporter=verbose",
     "vitals:e2e": "npm run test:e2e:critical",
     "vitals:mock": "npm run test tests/performance/core-web-vitals.test.ts",
     "vitals:all": "npm-run-all --parallel vitals:integration vitals:e2e vitals:mock",

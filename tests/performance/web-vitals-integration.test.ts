@@ -9,6 +9,25 @@
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 const RUN_SLOW_TESTS = process.env.RUN_SLOW_TESTS === 'true';
+const SUPPRESS_VITALS_LOGS =
+  process.env.WEB_VITALS_SUPPRESS_LOGS === 'true' ||
+  process.env.WEB_VITALS_SUPPRESS_LOGS === '1' ||
+  process.env.VITEST_WEB_VITALS_QUIET === '1';
+
+function logInfo(message: string) {
+  if (SUPPRESS_VITALS_LOGS) return;
+  console.log(message);
+}
+
+function logWarn(message: string) {
+  if (SUPPRESS_VITALS_LOGS) return;
+  console.warn(message);
+}
+
+function logError(message: string) {
+  if (SUPPRESS_VITALS_LOGS) return;
+  console.error(message);
+}
 
 // Web Vitals 타입 정의 (패키지가 Node.js 환경에서 제대로 작동하지 않을 때 대비)
 interface Metric {
@@ -40,11 +59,11 @@ async function loadWebVitals() {
     return webVitalsModule;
   } catch (error) {
     if (error instanceof Error) {
-      console.warn(
+      logWarn(
         `web-vitals 모듈 로드 실패 (${error.message}), Mock으로 대체합니다.`
       );
     } else {
-      console.warn('web-vitals 모듈 로드 실패, Mock으로 대체합니다.');
+      logWarn('web-vitals 모듈 로드 실패, Mock으로 대체합니다.');
     }
     // Mock 버전 반환
     return {
@@ -92,11 +111,11 @@ class WebVitalsCollector {
         webVitals.onTTFB(handleMetric);
       } catch (error) {
         if (error instanceof Error) {
-          console.warn(
+          logWarn(
             `Web Vitals 수집 중 오류(${error.message}), fallback으로 전환`
           );
         } else {
-          console.warn('Web Vitals 수집 중 오류, fallback으로 전환');
+          logWarn('Web Vitals 수집 중 오류, fallback으로 전환');
         }
         // Mock 데이터로 대체
         setTimeout(() => {
@@ -225,7 +244,7 @@ async function sendToWebVitalsAPI(
 
     return await response.json();
   } catch (error) {
-    console.error('Web Vitals API Error:', error);
+    logError(`Web Vitals API Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Unknown error',
@@ -274,7 +293,7 @@ describe.skipIf(!RUN_SLOW_TESTS)('🌐 Web Vitals 통합 테스트', () => {
       expect(typeof webVitals.onFCP).toBe('function');
       expect(typeof webVitals.onTTFB).toBe('function');
 
-      console.log('✅ web-vitals 패키지 로드 성공');
+      logInfo('✅ web-vitals 패키지 로드 성공');
     });
 
     it('WebVitalsCollector가 정상 작동함', async () => {
