@@ -295,7 +295,15 @@ app.get('/debug/log-level', (c: Context) => {
 let logLevelResetTimer: ReturnType<typeof setTimeout> | null = null;
 
 app.put('/debug/log-level', async (c: Context) => {
-  const validLevels = new Set(['debug', 'info', 'warn', 'error', 'fatal', 'silent']);
+  const validLevels = new Set([
+    'debug',
+    'info',
+    'warn',
+    'error',
+    'fatal',
+    'silent',
+    'reset',
+  ]);
   const maxTtlSeconds = 3600;
 
   let body: { level?: string; ttlSeconds?: number };
@@ -306,6 +314,8 @@ app.put('/debug/log-level', async (c: Context) => {
   }
 
   const { level, ttlSeconds } = body;
+  const defaultLevel = process.env.LOG_LEVEL ||
+    (process.env.NODE_ENV === 'development' ? 'debug' : 'warn');
 
   if (!level || !validLevels.has(level)) {
     return c.json(
@@ -321,14 +331,13 @@ app.put('/debug/log-level', async (c: Context) => {
   }
 
   const previousLevel = logger.level;
-  logger.level = level;
+  const resolvedLevel = level === 'reset' ? defaultLevel : level;
+  logger.level = resolvedLevel;
 
   let expiresAt: string | null = null;
-  if (ttlSeconds && ttlSeconds > 0) {
+  if (level !== 'reset' && ttlSeconds && ttlSeconds > 0) {
     const clampedTtl = Math.min(ttlSeconds, maxTtlSeconds);
     expiresAt = new Date(Date.now() + clampedTtl * 1000).toISOString();
-    const defaultLevel = process.env.LOG_LEVEL ||
-      (process.env.NODE_ENV === 'development' ? 'debug' : 'warn');
     logLevelResetTimer = setTimeout(() => {
       logger.level = defaultLevel;
       logLevelResetTimer = null;
@@ -336,10 +345,10 @@ app.put('/debug/log-level', async (c: Context) => {
     }, clampedTtl * 1000);
   }
 
-  logger.warn({ previousLevel, currentLevel: level, expiresAt },
-    `Log level changed from ${previousLevel} to ${level}`);
+  logger.warn({ previousLevel, currentLevel: resolvedLevel, requestLevel: level, expiresAt },
+    `Log level changed from ${previousLevel} to ${resolvedLevel}`);
 
-  return c.json({ previousLevel, currentLevel: level, expiresAt });
+  return c.json({ previousLevel, currentLevel: resolvedLevel, expiresAt });
 });
 
 /**

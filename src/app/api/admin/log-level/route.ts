@@ -16,15 +16,16 @@ import {
   setRuntimeLogLevel,
 } from '@/lib/logging/runtime';
 
-export const runtime = 'nodejs';
+// MIGRATED: Removed export const runtime = "nodejs" (default)
 export const maxDuration = 10;
 
-const VALID_LEVELS: ReadonlySet<string> = new Set<LogLevel>([
+const VALID_LEVELS: ReadonlySet<string> = new Set([
   'debug',
   'info',
   'warn',
   'error',
   'silent',
+  'reset',
 ]);
 const VALID_TARGETS = new Set(['vercel', 'cloud-run', 'all']);
 
