@@ -58,7 +58,7 @@ describe('GET /api/admin/log-level', () => {
     expect(body.cloudRun).toEqual({ level: 'unknown', reachable: false });
   });
 
-  it('Cloud Run이 비활성화되면 cloudRun 상태는 disabled로 처리한다', async () => {
+  it('Cloud Run이 비활성화되면 cloudRun 상태는 도달 불가로 처리한다', async () => {
     const response = await GET(
       new NextRequest('http://localhost/api/admin/log-level')
     );
@@ -112,6 +112,41 @@ describe('PUT /api/admin/log-level', () => {
     expect(body.applied.vercel).toBe('warn');
     expect(body.applied.cloudRun).toBe('warn');
     expect(body.expiresAt).toBeNull();
+  });
+
+  it('cloud-run 단독 타깃에서도 ttlSeconds의 만료 시점을 반영한다', async () => {
+    const expectedExpiresAt = new Date(Date.now() + 120_000).toISOString();
+    mockProxyToCloudRun.mockResolvedValueOnce({
+      success: true,
+      data: {
+        currentLevel: 'debug',
+        expiresAt: expectedExpiresAt,
+      },
+    });
+
+    const response = await PUT(
+      new NextRequest('http://localhost/api/admin/log-level', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ level: 'debug', target: 'cloud-run', ttlSeconds: 120 }),
+      })
+    );
+
+    const body = (await response.json()) as {
+      applied: { vercel?: string; cloudRun?: string };
+      expiresAt: string | null;
+    };
+
+    expect(response.status).toBe(200);
+    expect(mockSetRuntimeLogLevel).not.toHaveBeenCalled();
+    expect(mockProxyToCloudRun).toHaveBeenCalledWith({
+      path: '/debug/log-level',
+      method: 'PUT',
+      body: { level: 'debug', ttlSeconds: 120 },
+      timeout: 5000,
+    });
+    expect(body.applied.cloudRun).toBe('debug');
+    expect(body.expiresAt).toBe(expectedExpiresAt);
   });
 
   it('유효하지 않은 레벨은 400을 반환한다', async () => {

@@ -117,8 +117,12 @@ export const PUT = withAuth(async (request: NextRequest) => {
           timeout: 5000,
         });
         if (result.success && result.data) {
-          const data = result.data as { currentLevel: string };
+          const data = result.data as { currentLevel: string; expiresAt?: string | null };
           applied.cloudRun = data.currentLevel;
+
+          if (data.expiresAt) {
+            expiresAt = data.expiresAt;
+          }
         } else {
           applied.cloudRun = 'unreachable';
         }

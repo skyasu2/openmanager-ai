@@ -9,7 +9,6 @@ import type { Metadata } from 'next';
 
 // 정적 생성 활성화 - 404 페이지 최적화
 // MIGRATED: Removed export const dynamic = "force-static"
-// TODO: Add "use cache" if you want caching
 
 import { AlertCircle, Home, Search } from 'lucide-react';
 import Link from 'next/link';
@@ -19,6 +18,8 @@ export const metadata: Metadata = {
 };
 
 export default function NotFound() {
+  "use cache";
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-linear-to-br from-gray-900 via-blue-900 to-purple-900">
       <div className="mx-auto max-w-md space-y-8 p-8 text-center">
