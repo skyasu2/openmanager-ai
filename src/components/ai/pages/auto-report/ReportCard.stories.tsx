@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
 import { fn } from 'storybook/test';
-import type { IncidentReport } from './types';
 import ReportCard from './ReportCard';
+import type { IncidentReport } from './types';
 
 const baseReport: IncidentReport = {
   id: 'report-1',
@@ -18,12 +18,32 @@ const baseReport: IncidentReport = {
     criticalServers: 2,
   },
   anomalies: [
-    { server_id: 's1', server_name: 'cache-redis-dc1-01', metric: 'memory', value: 94, severity: 'critical' },
-    { server_id: 's2', server_name: 'cache-redis-dc1-02', metric: 'memory', value: 91, severity: 'critical' },
+    {
+      server_id: 's1',
+      server_name: 'cache-redis-dc1-01',
+      metric: 'memory',
+      value: 94,
+      severity: 'critical',
+    },
+    {
+      server_id: 's2',
+      server_name: 'cache-redis-dc1-02',
+      metric: 'memory',
+      value: 91,
+      severity: 'critical',
+    },
   ],
   recommendations: [
-    { action: 'maxmemory-policy 확인 및 eviction 모니터링', priority: '높음', expected_impact: '메모리 안정화' },
-    { action: 'TTL 없는 키 점검', priority: '중간', expected_impact: '불필요 데이터 정리' },
+    {
+      action: 'maxmemory-policy 확인 및 eviction 모니터링',
+      priority: '높음',
+      expected_impact: '메모리 안정화',
+    },
+    {
+      action: 'TTL 없는 키 점검',
+      priority: '중간',
+      expected_impact: '불필요 데이터 정리',
+    },
   ],
 };
 
