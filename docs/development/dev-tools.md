@@ -4,7 +4,7 @@
 > Owner: dev-experience
 > Status: Active
 > Doc type: Reference
-> Last reviewed: 2026-02-19
+> Last reviewed: 2026-02-28
 > Canonical: docs/development/dev-tools.md
 > Tags: tooling,nodejs,biome
 
@@ -71,6 +71,9 @@ npm run type-check
 npm run test           # 전체 테스트
 npm run test:quick     # 빠른 테스트
 npm run test:coverage  # 커버리지
+npm run test:external-connectivity # 외부 연동 통합(선택)
+npm run test:cloud-contract         # Cloud Run 계약 통합(선택)
+npm run vitals:integration        # web-vitals 통합(느린 테스트, 선택)
 ```
 
 ### Playwright (E2E)

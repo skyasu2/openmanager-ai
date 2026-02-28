@@ -39,7 +39,13 @@ async function loadWebVitals() {
     webVitalsModule = await import('web-vitals');
     return webVitalsModule;
   } catch (error) {
-    console.warn('web-vitals 모듈 로드 실패, Mock으로 대체:', error);
+    if (error instanceof Error) {
+      console.warn(
+        `web-vitals 모듈 로드 실패 (${error.message}), Mock으로 대체합니다.`
+      );
+    } else {
+      console.warn('web-vitals 모듈 로드 실패, Mock으로 대체합니다.');
+    }
     // Mock 버전 반환
     return {
       onCLS: vi.fn(),
@@ -85,7 +91,11 @@ class WebVitalsCollector {
         webVitals.onLCP(handleMetric);
         webVitals.onTTFB(handleMetric);
       } catch (error) {
-        console.warn('Web Vitals 수집 중 오류:', error);
+        if (error instanceof Error) {
+          console.warn(`Web Vitals 수집 중 오류(${error.message}), fallback으로 전환`);
+        } else {
+          console.warn('Web Vitals 수집 중 오류, fallback으로 전환');
+        }
         // Mock 데이터로 대체
         setTimeout(() => {
           this.metrics.set('LCP', {

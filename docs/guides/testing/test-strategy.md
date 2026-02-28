@@ -4,7 +4,7 @@
 > Owner: documentation
 > Status: Active
 > Doc type: How-to
-> Last reviewed: 2026-02-22
+> Last reviewed: 2026-02-28
 > Canonical: docs/guides/testing/test-strategy.md
 > Tags: testing,strategy,quality
 
@@ -79,6 +79,11 @@ npm run test:quick
 # 계약 테스트 묶음
 npm run test:contract
 
+# 운영/외부 의존 심화 점검 (선택)
+npm run test:external-connectivity
+npm run test:cloud-contract
+npm run vitals:integration
+
 # 로컬 핵심 E2E
 npm run test:e2e:critical
 
@@ -88,6 +93,23 @@ npm run test:gate
 # 전체(필요 시)
 npm run validate:all
 ```
+
+## 3.1 외부/느린 테스트 실행 가이드 (선택)
+
+- `npm run test:external-connectivity`:
+  - `.env`에 외부 서비스 키/엔드포인트가 모두 설정돼야 함
+  - `RUN_EXTERNAL_CONNECTIVITY_TESTS=true` 조건을 충족하지 않으면 전체 스킵
+  - 실제 Upstash/Supabase/Google AI/Vercel/Google Cloud 환경 확인 목적
+
+- `npm run test:cloud-contract`:
+  - Cloud Run AI 엔진 공개 계약 엔드포인트(`health`, `warmup`, `monitoring`, `supervisor`) 계약 검증
+  - `CLOUD_RUN_AI_URL`이 없으면 테스트 전체 스킵
+
+- `npm run vitals:integration`:
+  - `web-vitals` 실측 수집 통합 테스트 실행
+  - 내부에서 `RUN_SLOW_TESTS=true`를 설정해 `tests/performance/web-vitals-integration.test.ts`의 스킵 가드를 통과시킴
+
+주의: 두 스위트는 네트워크/요금/응답 시간 변동 영향이 있으므로 기본 CI 게이트에는 포함하지 않습니다.
 
 ---
 

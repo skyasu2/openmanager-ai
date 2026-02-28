@@ -4,7 +4,7 @@
 > Owner: dev-experience
 > Status: Active Canonical
 > Doc type: How-to
-> Last reviewed: 2026-02-22
+> Last reviewed: 2026-02-28
 > Canonical: docs/development/project-setup.md
 > Tags: wsl,github-auth,project-setup
 
@@ -171,6 +171,19 @@ npm run lint        # 린트
 npm run type-check  # 타입
 npm run test:quick  # 테스트
 npm run build       # 빌드
+```
+
+### 선택 검증(환경 의존)
+
+```bash
+# 외부 연결 점검: .env의 서비스 키/주소가 설정돼야 함
+npm run test:external-connectivity
+
+# Cloud Run 계약 검증: CLOUD_RUN_AI_URL 필요
+npm run test:cloud-contract
+
+# Web Vitals 통합 점검: 느린/네트워크 영향 테스트
+npm run vitals:integration
 ```
 
 ## AI 브릿지 설정 (WSL)
