@@ -92,7 +92,9 @@ class WebVitalsCollector {
         webVitals.onTTFB(handleMetric);
       } catch (error) {
         if (error instanceof Error) {
-          console.warn(`Web Vitals 수집 중 오류(${error.message}), fallback으로 전환`);
+          console.warn(
+            `Web Vitals 수집 중 오류(${error.message}), fallback으로 전환`
+          );
         } else {
           console.warn('Web Vitals 수집 중 오류, fallback으로 전환');
         }

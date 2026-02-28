@@ -4,11 +4,11 @@
 > Owner: dev-experience
 > Status: Active
 > Doc type: Tutorial
-> Last reviewed: 2026-02-22
+> Last reviewed: 2026-02-28
 > Canonical: docs/QUICK-START.md
 > Tags: quickstart,onboarding,setup
 >
-> **v8.0.0** | Updated 2026-02-22
+> **v8.0.0** | Updated 2026-02-28
 
 **AI 기반 실시간 서버 모니터링 플랫폼** - 5분 만에 시작하기
 
@@ -49,6 +49,7 @@ SUPABASE_SERVICE_ROLE_KEY=your_service_role_key # 로그인 감사 로그 저장
 
 # AI 기능 (Cloud Run AI - GCP IAM 인증 사용)
 CLOUD_RUN_AI_URL=https://ai-engine-xxx.asia-northeast1.run.app
+CLOUD_RUN_API_SECRET=your_cloud_run_api_secret
 
 # Optional: 게스트 로그인 국가 차단 (기본값: CN)
 GUEST_LOGIN_BLOCKED_COUNTRIES=CN
@@ -95,6 +96,11 @@ npm run test:super-fast
 
 # 계약 테스트
 npm run test:contract
+
+# 선택 검증(환경 의존)
+npm run test:external-connectivity
+npm run test:cloud-contract
+npm run vitals:integration
 
 # 로컬 핵심 E2E (게스트/대시보드/접근성)
 npm run test:e2e:critical
