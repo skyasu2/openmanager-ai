@@ -1,15 +1,20 @@
 # API Endpoints (Code-Synced)
 
-> 코드 기준 API 엔드포인트 동기화 레퍼런스
+> API 엔드포인트 동기화(카탈로그) 레퍼런스
 > Owner: platform-architecture
 > Status: Active
 > Doc type: Reference
-> Last reviewed: 2026-02-22
+> Last reviewed: 2026-02-28
 > Canonical: docs/reference/api/endpoints.md
 > Tags: api,endpoints,reference
 >
 > Last verified against code: 2026-02-22
 > Source of truth: `src/app/api/**/route.ts*`
+
+이 문서는 **엔드포인트 존재 여부와 라우트 매핑**을 빠르게 확인하기 위한 카탈로그입니다.
+각 엔드포인트의 요청/응답 계약(파라미터·헤더·상태코드)은 별도 계약 문서에서 관리합니다.
+
+> 계약 문서: [API Contracts](./contracts.md)
 
 총 엔드포인트: **36**
 

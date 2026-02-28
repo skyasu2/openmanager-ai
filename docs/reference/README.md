@@ -11,6 +11,7 @@
 ## Core References
 
 - [API Endpoints](./api/endpoints.md)
+- [API Contracts](./api/contracts.md)
 - [System Architecture (Hybrid 포함)](./architecture/system/system-architecture-current.md)
 - [AI Engine Architecture](./architecture/ai/ai-engine-architecture.md)
 - [Database](./architecture/infrastructure/database.md)
@@ -21,6 +22,7 @@
 ### AI
 - [AI Engine Architecture](./architecture/ai/ai-engine-architecture.md)
 - [API Endpoints](./api/endpoints.md)
+- [API Contracts](./api/contracts.md)
 - [Frontend/Backend Comparison](./architecture/ai/frontend-backend-comparison.md)
 - [Monitoring ML](./architecture/ai/monitoring-ml.md)
 - [RAG Knowledge Engine](./architecture/ai/rag-knowledge-engine.md)

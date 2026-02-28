@@ -1,0 +1,1071 @@
+openapi: 3.0.3
+info:
+  title: OpenManager AI API (v1)
+  version: 2026.02.28
+  contact:
+    name: OpenManager Team
+    email: support@openmanager-ai.vercel.app
+  description: |
+    Contract-first API baseline for high-complexity endpoints.
+    Scope excludes complete product surface; remaining routes are in the route catalog.
+servers:
+  - url: /
+    description: Vercel API base
+paths:
+  /api/health:
+    get:
+      operationId: getHealth
+      summary: Unified health check
+      description: |
+        기본 헬스체크 동작입니다.
+        - query simple=true: ping/pong
+        - query service=cloudrun|ai: 외부 AI 엔진 헬스체크 대리 호출
+      parameters:
+        - in: query
+          name: simple
+          required: false
+          schema:
+            type: string
+            enum: ['true']
+          description: simple mode (`true`) returns ping/pong payload.
+        - in: query
+          name: service
+          required: false
+          schema:
+            type: string
+            enum: [cloudrun, ai]
+          description: Delegated health check to Cloud Run AI engine.
+      responses:
+        '200':
+          description: Healthy response
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+            X-Cache:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - type: object
+                    required: [status, timestamp]
+                    properties:
+                      ping:
+                        type: string
+                        enum: [pong]
+                      timestamp:
+                        type: string
+                        format: date-time
+                  - type: object
+                    required: [status, backend, timestamp]
+                    properties:
+                      status:
+                        type: string
+                        enum: [ok, error]
+                      backend:
+                        type: string
+                      latency:
+                        type: number
+                        minimum: 0
+                      timestamp:
+                        type: string
+                        format: date-time
+                  - type: object
+                    required: [status, services, cache]
+                    properties:
+                      status:
+                        type: string
+                        enum: [healthy, degraded, unhealthy]
+                      version:
+                        type: string
+                      services:
+                        type: object
+                        additionalProperties:
+                          type: object
+                      cache:
+                        type: object
+                        additionalProperties: true
+        '503':
+          description: Unhealthy
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [status, timestamp, error]
+                properties:
+                  status:
+                    type: string
+                    enum: [unhealthy]
+                  timestamp:
+                    type: string
+                    format: date-time
+                  error:
+                    type: string
+                  message:
+                    type: string
+    head:
+      operationId: headHealth
+      summary: Cacheable health probe (no body)
+      responses:
+        '200':
+          description: Health head probe success
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+        '503':
+          description: Health probe failure
+          content:
+            text/plain:
+              schema:
+                type: string
+  /api/ai/jobs:
+    get:
+      operationId: listJobs
+      summary: List AI jobs for a session
+      security:
+        - sessionCookie: []
+        - secureSessionCookie: []
+        - guestSessionCookie: []
+        - apiKeyAuth: []
+        - testSecretAuth: []
+      parameters:
+        - in: query
+          name: sessionId
+          required: true
+          schema:
+            type: string
+          description: Job list session scope
+        - in: query
+          name: limit
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 50
+            default: 10
+      responses:
+        '200':
+          description: Job list
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+            X-RateLimit-Daily-Limit:
+              $ref: '#/components/headers/X-RateLimit-Daily-Limit'
+            X-RateLimit-Daily-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Daily-Remaining'
+            X-RateLimit-Daily-Reset:
+              $ref: '#/components/headers/X-RateLimit-Daily-Reset'
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [jobs, total, hasMore]
+                properties:
+                  jobs:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/JobStatusResponse'
+                  total:
+                    type: integer
+                  hasMore:
+                    type: boolean
+        '400':
+          description: Invalid sessionId or request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '429':
+          description: Rate limit exceeded
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+            Retry-After:
+              $ref: '#/components/headers/Retry-After'
+            X-RateLimit-Daily-Limit:
+              $ref: '#/components/headers/X-RateLimit-Daily-Limit'
+            X-RateLimit-Daily-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Daily-Remaining'
+            X-RateLimit-Daily-Reset:
+              $ref: '#/components/headers/X-RateLimit-Daily-Reset'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RateLimitError'
+    post:
+      operationId: createJob
+      summary: Create AI job
+      security:
+        - sessionCookie: []
+        - secureSessionCookie: []
+        - guestSessionCookie: []
+        - apiKeyAuth: []
+        - testSecretAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [query]
+              properties:
+                query:
+                  type: string
+                options:
+                  type: object
+                  required: []
+                  properties:
+                    sessionId:
+                      type: string
+                    timeoutMs:
+                      type: integer
+                      minimum: 100
+                type:
+                  type: string
+      responses:
+        '201':
+          description: Job accepted
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+            X-RateLimit-Daily-Limit:
+              $ref: '#/components/headers/X-RateLimit-Daily-Limit'
+            X-RateLimit-Daily-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Daily-Remaining'
+            X-RateLimit-Daily-Reset:
+              $ref: '#/components/headers/X-RateLimit-Daily-Reset'
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [jobId, status, pollUrl, estimatedTime, triggerStatus]
+                properties:
+                  jobId:
+                    type: string
+                  status:
+                    type: string
+                  pollUrl:
+                    type: string
+                    format: uri
+                  estimatedTime:
+                    type: number
+                    minimum: 0
+                  triggerStatus:
+                    type: string
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '503':
+          description: Redis unavailable or queue worker unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '429':
+          description: Rate limit exceeded
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+            Retry-After:
+              $ref: '#/components/headers/Retry-After'
+            X-RateLimit-Daily-Limit:
+              $ref: '#/components/headers/X-RateLimit-Daily-Limit'
+            X-RateLimit-Daily-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Daily-Remaining'
+            X-RateLimit-Daily-Reset:
+              $ref: '#/components/headers/X-RateLimit-Daily-Reset'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RateLimitError'
+  /api/ai/jobs/{id}:
+    get:
+      operationId: getJobById
+      summary: Get AI job status by id
+      security:
+        - sessionCookie: []
+        - secureSessionCookie: []
+        - guestSessionCookie: []
+        - apiKeyAuth: []
+        - testSecretAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Job status
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+            X-Job-Status:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobStatusResponse'
+        '400':
+          description: Invalid job id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Job not found or expired
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    delete:
+      operationId: cancelJob
+      summary: Cancel AI job by id
+      security:
+        - sessionCookie: []
+        - secureSessionCookie: []
+        - guestSessionCookie: []
+        - apiKeyAuth: []
+        - testSecretAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Cancel success or idempotent success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  jobId:
+                    type: string
+                  status:
+                    type: string
+        '400':
+          description: Invalid job id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/servers:
+    get:
+      operationId: getServersLegacy
+      summary: Legacy servers API alias
+      deprecated: true
+      security:
+        - sessionCookie: []
+        - secureSessionCookie: []
+        - guestSessionCookie: []
+        - apiKeyAuth: []
+        - testSecretAuth: []
+      description: This route delegates to `/api/servers-unified?action=list`.
+      responses:
+        '200':
+          description: Legacy alias response passthrough
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServersUnifiedList'
+        '400':
+          description: Query validation failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/servers-unified:
+    get:
+      operationId: listServersUnified
+      summary: Unified servers API (action-based)
+      security:
+        - sessionCookie: []
+        - secureSessionCookie: []
+        - guestSessionCookie: []
+        - apiKeyAuth: []
+        - testSecretAuth: []
+      parameters:
+        - in: query
+          name: action
+          required: false
+          schema:
+            type: string
+            enum: [list, logs, detail, processes]
+            default: list
+        - in: query
+          name: serverId
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: page
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - in: query
+          name: limit
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 10
+      responses:
+        '200':
+          description: Unified response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServersUnifiedList'
+        '400':
+          description: Invalid query
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    post:
+      operationId: postServersUnified
+      summary: Unified servers API (request-body action)
+      security:
+        - sessionCookie: []
+        - secureSessionCookie: []
+        - guestSessionCookie: []
+        - apiKeyAuth: []
+        - testSecretAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ServersUnifiedRequest'
+      responses:
+        '200':
+          description: Unified response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServersUnifiedList'
+        '400':
+          description: Invalid body
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/ai/supervisor/stream/v2:
+    get:
+      operationId: resumeStreamV2
+      summary: Resume streaming response
+      security:
+        - sessionCookie: []
+        - secureSessionCookie: []
+        - guestSessionCookie: []
+        - apiKeyAuth: []
+        - testSecretAuth: []
+      parameters:
+        - in: query
+          name: sessionId
+          required: true
+          schema:
+            type: string
+            minLength: 8
+            maxLength: 128
+        - in: query
+          name: skip
+          required: false
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+      responses:
+        '200':
+          description: Resumed stream (SSE)
+          headers:
+            X-Resumed:
+              schema:
+                type: string
+                example: 'true'
+            X-Session-Id:
+              schema:
+                type: string
+            X-Stream-Id:
+              schema:
+                type: string
+            X-Skip-Chunks:
+              schema:
+                type: string
+            X-Stream-Protocol:
+              schema:
+                type: string
+                example: 'ui-message-stream'
+          content:
+            text/event-stream:
+              schema:
+                type: string
+                description: SSE payload chunks
+        '204':
+          description: No active stream
+        '400':
+          description: invalid sessionId/skip
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '429':
+          description: Rate limit exceeded
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+            Retry-After:
+              $ref: '#/components/headers/Retry-After'
+            X-RateLimit-Daily-Limit:
+              $ref: '#/components/headers/X-RateLimit-Daily-Limit'
+            X-RateLimit-Daily-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Daily-Remaining'
+            X-RateLimit-Daily-Reset:
+              $ref: '#/components/headers/X-RateLimit-Daily-Reset'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RateLimitError'
+    post:
+      operationId: createStreamV2
+      summary: Create resumable stream
+      security:
+        - sessionCookie: []
+        - secureSessionCookie: []
+        - guestSessionCookie: []
+        - apiKeyAuth: []
+        - testSecretAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SupervisorStreamRequest'
+      responses:
+        '200':
+          description: Stream started (SSE)
+          headers:
+            X-Session-Id:
+              schema:
+                type: string
+            X-Stream-Id:
+              schema:
+                type: string
+            X-Stream-Protocol:
+              schema:
+                type: string
+                example: 'ui-message-stream'
+            X-Resumable:
+              schema:
+                type: string
+                example: 'true'
+          content:
+            text/event-stream:
+              schema:
+                type: string
+        '400':
+          description: Invalid request payload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Stream pipeline error
+          content:
+            text/event-stream:
+              schema:
+                type: string
+                description: SSE error event stream (text/event-stream)
+        '503':
+          description: Streaming unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '429':
+          description: Rate limit exceeded
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+            Retry-After:
+              $ref: '#/components/headers/Retry-After'
+            X-RateLimit-Daily-Limit:
+              $ref: '#/components/headers/X-RateLimit-Daily-Limit'
+            X-RateLimit-Daily-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Daily-Remaining'
+            X-RateLimit-Daily-Reset:
+              $ref: '#/components/headers/X-RateLimit-Daily-Reset'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RateLimitError'
+  /api/security/csp-report:
+    get:
+      operationId: getCspReportEndpoint
+      summary: CSP report endpoint status
+      responses:
+        '200':
+          description: Endpoint status
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+            Content-Type:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [status, endpoint, description, environment, timestamp]
+                properties:
+                  status:
+                    type: string
+                    enum: [active]
+                  endpoint:
+                    type: string
+                    example: /api/security/csp-report
+                  description:
+                    type: string
+                  environment:
+                    type: string
+                  timestamp:
+                    type: string
+                    format: date-time
+    post:
+      operationId: postCspReport
+      summary: Collect CSP violation report
+      description: JSON report payload is required; parsing failure returns 400.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+      responses:
+        '204':
+          description: Accepted/processed
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+        '400':
+          description: Invalid report format
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Error
+    options:
+      operationId: optionsCspReport
+      summary: CORS preflight
+      responses:
+        '200':
+          description: CORS preflight allowed
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              schema:
+                type: string
+            Access-Control-Allow-Methods:
+              schema:
+                type: string
+components:
+  securitySchemes:
+    apiKeyAuth:
+      type: apiKey
+      in: header
+      name: x-api-key
+    testSecretAuth:
+      type: apiKey
+      in: header
+      name: x-test-secret
+    sessionCookie:
+      type: apiKey
+      in: cookie
+      name: next-auth.session-token
+    secureSessionCookie:
+      type: apiKey
+      in: cookie
+      name: __Secure-next-auth.session-token
+    guestSessionCookie:
+      type: apiKey
+      in: cookie
+      name: auth_session_id
+  headers:
+    X-RateLimit-Limit:
+      schema:
+        type: integer
+        minimum: 0
+    X-RateLimit-Remaining:
+      schema:
+        type: integer
+        minimum: 0
+    X-RateLimit-Reset:
+      schema:
+        type: string
+        description: Epoch ms timestamp
+    X-RateLimit-Daily-Limit:
+      schema:
+        type: integer
+        minimum: 0
+    X-RateLimit-Daily-Remaining:
+      schema:
+        type: integer
+        minimum: 0
+    X-RateLimit-Daily-Reset:
+      schema:
+        type: string
+        description: Epoch ms timestamp
+    Retry-After:
+      schema:
+        type: string
+        description: Retry delay in seconds
+  schemas:
+        ErrorResponse:
+          type: object
+          required: [error]
+          properties:
+            error:
+              type: string
+            message:
+              type: string
+            fallback:
+              oneOf:
+                - type: boolean
+                - type: string
+            isServerError:
+              type: boolean
+            notFound:
+              type: boolean
+            details:
+              oneOf:
+                - type: object
+                  additionalProperties: true
+            - type: array
+              items:
+                type: string
+            - type: string
+        dailyLimitExceeded:
+          type: boolean
+        retryAfter:
+          type: integer
+          minimum: 0
+        code:
+          type: string
+    RateLimitError:
+      type: object
+      required: [error, message, retryAfter]
+      properties:
+        error:
+          type: string
+          example: Too Many Requests
+        message:
+          type: string
+        retryAfter:
+          type: integer
+          minimum: 0
+        dailyLimitExceeded:
+          type: boolean
+    JobStatusResponse:
+      type: object
+      required: [jobId, type, status, progress, createdAt]
+      properties:
+        jobId:
+          type: string
+        type:
+          type: string
+        status:
+          type: string
+          enum: [queued, processing, completed, failed, cancelled]
+        progress:
+          type: number
+          minimum: 0
+          maximum: 100
+        currentStep:
+          type: string
+          nullable: true
+        result:
+          type: object
+          nullable: true
+          properties:
+            content:
+              type: string
+        error:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        startedAt:
+          type: string
+          nullable: true
+          format: date-time
+        completedAt:
+          type: string
+          nullable: true
+          format: date-time
+    ServersUnifiedRequest:
+      type: object
+      required: [action]
+      properties:
+        action:
+          type: string
+          enum: [list, logs, detail, processes]
+          default: list
+        serverId:
+          type: string
+        page:
+          type: integer
+          minimum: 1
+          default: 1
+        limit:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 10
+        search:
+          type: string
+        sortBy:
+          type: string
+          enum: [name, cpu, memory, disk, network, uptime]
+        sortOrder:
+          type: string
+          enum: [asc, desc]
+        includeProcesses:
+          type: boolean
+        includeMetrics:
+          type: boolean
+        level:
+          type: string
+          enum: [info, warn, error]
+        logSource:
+          type: string
+        logKeyword:
+          type: string
+    ServersUnifiedList:
+      type: object
+      required: [success, action]
+      properties:
+        success:
+          type: boolean
+        action:
+          type: string
+        data:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+        pagination:
+          type: object
+          properties:
+            page:
+              type: integer
+            limit:
+              type: integer
+            total:
+              type: integer
+            totalPages:
+              type: integer
+            hasNext:
+              type: boolean
+            hasPrev:
+              type: boolean
+        summary:
+          type: object
+          additionalProperties: true
+        metadata:
+          type: object
+          additionalProperties: true
+        timestamp:
+          type: string
+          format: date-time
+    SupervisorStreamRequest:
+      type: object
+      required: [messages]
+      properties:
+        messages:
+          type: array
+          minItems: 1
+          maxItems: 50
+          items:
+            type: object
+            required: [role]
+            properties:
+              role:
+                type: string
+                enum: [user, assistant, system]
+              content:
+                type: string
+              parts:
+                type: array
+                items:
+                  type: object
+                  additionalProperties: true
+              createdAt:
+                oneOf:
+                  - type: string
+                  - type: string
+                    format: date-time
+        sessionId:
+          type: string
+          minLength: 8
+          maxLength: 128
+        enableWebSearch:
+          type: boolean
+        enableRAG:
+          type: boolean
