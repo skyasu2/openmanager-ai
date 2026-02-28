@@ -98,35 +98,65 @@ Supervisor (Intent Classification & Routing)
 
 ## Architecture
 
+```mermaid
+graph TD
+    %% 스타일 정의
+    classDef client fill:#f9f9f9,stroke:#333,stroke-width:2px,color:#000
+    classDef frontend fill:#000,stroke:#fff,stroke-width:2px,color:#fff
+    classDef backend fill:#4285F4,stroke:#fff,stroke-width:2px,color:#fff
+    classDef database fill:#3ECF8E,stroke:#fff,stroke-width:2px,color:#000
+    classDef agents fill:#F4B400,stroke:#fff,stroke-width:2px,color:#000
+    classDef monitoring fill:#e83e8c,stroke:#fff,stroke-width:2px,color:#fff
+
+    User((User)):::client -->|Natural Language Query| Vercel
+
+    subgraph Frontend [Edge / UI Layer]
+        Vercel[Vercel: Next.js 16 Frontend]:::frontend
+    end
+
+    subgraph Backend [Heavy AI & Logic Layer]
+        CR[Google Cloud Run: AI Engine]:::backend
+        AB[Agent Bridge & Orchestrator]:::agents
+        
+        Vercel <-->|API / Streaming (Bypassing Vercel Timeout)| CR
+        CR <-->|Multi-Agent Orchestration| AB
+        
+        AB -.->|Route| AgentNLQ(NLQ Agent)
+        AB -.->|Route| AgentAnalyst(Analyst Agent)
+        AB -.->|Route| AgentReporter(Reporter Agent)
+    end
+
+    subgraph Data Layer [Persistence]
+        Supabase[(Supabase: PostgreSQL & pgvector)]:::database
+        Vercel <-->|Auth & Metadata| Supabase
+        CR <-->|Vector Search & AI Data| Supabase
+    end
+
+    subgraph Observability [Monitoring Architecture]
+        Sentry[Sentry (Internal Error Tracking)]:::monitoring
+        OTel[OpenTelemetry (Product Feature)]:::monitoring
+        TargetServers[[User's Target Servers]]:::client
+
+        %% Sentry는 시스템 자체를 모니터링
+        Vercel -.->|Error/Perf Tracking| Sentry
+        CR -.->|Error/Perf Tracking| Sentry
+
+        %% OTel은 프로덕트의 핵심 수집기
+        TargetServers ==>|Metrics Ingestion| OTel
+        OTel ==>|Server Data| CR
+    end
 ```
-┌─────────────────────────────────────────────────────────┐
-│                    User Interface                       │
-│         (Next.js 16 + React 19 + AI SDK v6)            │
-│            useChat(resume: true) + UIMessageStream     │
-└─────────────────────┬───────────────────────────────────┘
-                      │
-┌─────────────────────▼───────────────────────────────────┐
-│                 Vercel (Frontend)                       │
-│      Dashboard + Resumable Stream v2 Proxy + Auth      │
-└─────────────────────┬───────────────────────────────────┘
-                      │
-┌─────────────────────▼───────────────────────────────────┐
-│              Cloud Run (AI Engine)                      │
-│    Native Multi-Agent + Tool Registry (27 Tools)       │
-│                                                         │
-│  ┌─────────┐ ┌─────────┐ ┌─────────┐ ┌─────────────┐  │
-│  │   NLQ   │ │ Analyst │ │Reporter │ │ Advisor/Vis │  │
-│  └─────────┘ └─────────┘ └─────────┘ └─────────────┘  │
-│                                                         │
-│  📊 Resilience: Circuit Breaker + Quota Tracker        │
-│  🔄 Fallback: Cerebras → Groq → Mistral                │
-└─────────────────────┬───────────────────────────────────┘
-                      │
-┌─────────────────────▼───────────────────────────────────┐
-│                  Data Layer                             │
-│     Supabase (PostgreSQL) + Upstash (Redis/Stream)     │
-└─────────────────────────────────────────────────────────┘
-```
+
+### 🔭 Observability Context: Sentry vs OpenTelemetry (OTel)
+프로젝트 내에서 사용되는 두 가지 모니터링 도구는 **완전히 다른 목적**을 가집니다. 이를 혼동하지 않는 것이 중요합니다.
+
+1. **Sentry (개발 및 시스템 운영용)**
+   - **목적**: OpenManager AI **플랫폼 자체의 안정성**을 위한 도구입니다.
+   - **역할**: 코드 레벨의 에러, 프론트엔드/백엔드 크래시, 그리고 Vercel 및 Cloud Run에서 발생하는 예기치 못한 시스템 예외를 추적합니다.
+
+2. **OpenTelemetry (프로덕트 핵심 비즈니스 도메인)**
+   - **목적**: OpenManager AI의 **본질적인 기능(서버 모니터링)을 제공하기 위한 데이터 파이프라인**입니다.
+   - **역할**: 사용자가 모니터링하고자 하는 대상 서버들(Target Servers)로부터 실시간 메트릭(CPU, Memory, Disk 등)을 수집(Ingestion)하여 AI Engine이 이를 분석할 수 있도록 제공합니다. 즉, 개발용이 아닌 **실제 고객에게 제공되는 서비스 로직의 일부**입니다.
 
 ### Deployment
 
