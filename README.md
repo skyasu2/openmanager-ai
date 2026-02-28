@@ -3,15 +3,7 @@
 > **AI-Native Server Monitoring Platform**
 > 자연어로 대화하며 서버를 모니터링하는 차세대 운영 플랫폼
 
-![Docs Quality](https://github.com/skyasu2/openmanager-ai/actions/workflows/docs-quality.yml/badge.svg)
-
-![License](https://img.shields.io/badge/License-GPL_v3-blue.svg?style=for-the-badge)
-![Next.js](https://img.shields.io/badge/Next.js-black?style=for-the-badge&logo=next.js&logoColor=white)
-![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
-![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
-![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
-![Supabase](https://img.shields.io/badge/Supabase-181818?style=for-the-badge&logo=supabase&logoColor=3ECF8E)
-![Google Cloud](https://img.shields.io/badge/Google_Cloud-4285F4?style=for-the-badge&logo=google-cloud&logoColor=white)
+![Docs Quality](https://github.com/skyasu2/openmanager-ai/actions/workflows/docs-quality.yml/badge.svg) ![License](https://img.shields.io/badge/License-GPL_v3-blue.svg?style=for-the-badge) ![Next.js](https://img.shields.io/badge/Next.js-black?style=for-the-badge&logo=next.js&logoColor=white) ![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB) ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white) ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white) ![Supabase](https://img.shields.io/badge/Supabase-181818?style=for-the-badge&logo=supabase&logoColor=3ECF8E) ![Google Cloud](https://img.shields.io/badge/Google_Cloud-4285F4?style=for-the-badge&logo=google-cloud&logoColor=white)
 
 ---
 
@@ -278,5 +270,5 @@ This project is licensed under the **GNU General Public License v3.0** - see the
 <div align="center">
   <sub>Built with Vibe Coding</sub>
   <br/>
-  <sub>v8.1.0</sub>
+  <sub>v8.7.0</sub>
 </div>
