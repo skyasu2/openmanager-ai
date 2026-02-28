@@ -186,12 +186,20 @@ async function handleGET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const sessionId = searchParams.get('sessionId');
-    const limit = Math.min(parseInt(searchParams.get('limit') || '10', 10), 50);
-
     // sessionId 필수 (Redis는 복잡한 쿼리 불가)
     if (!sessionId) {
       return NextResponse.json(
         { error: 'sessionId is required for job list query' },
+        { status: 400 }
+      );
+    }
+
+    const limitParam = searchParams.get('limit');
+    const limit = limitParam === null ? 10 : Number(limitParam);
+
+    if (!Number.isInteger(limit) || limit < 1 || limit > 50) {
+      return NextResponse.json(
+        { error: 'limit must be an integer between 1 and 50' },
         { status: 400 }
       );
     }

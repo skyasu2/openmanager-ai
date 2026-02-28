@@ -1,8 +1,11 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
-import { fn, mocked } from 'storybook/test';
+import { fn, mocked, sb } from 'storybook/test';
 
 import { useAISidebarStore } from '../../stores/useAISidebarStore';
 import { useUnifiedAdminStore } from '../../stores/useUnifiedAdminStore';
+
+sb.mock(import('../../stores/useAISidebarStore.ts'));
+sb.mock(import('../../stores/useUnifiedAdminStore.ts'));
 
 import SystemBootClient from './SystemBootClient';
 

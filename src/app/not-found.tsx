@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   title: '404 - Page Not Found',
 };
 
-export default function NotFound() {
+export default async function NotFound() {
   'use cache';
 
   return (

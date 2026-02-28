@@ -1,8 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
-import { fn, mocked } from 'storybook/test';
+import { fn, mocked, sb } from 'storybook/test';
 import { useServerMetrics } from '../../hooks/useServerMetrics';
 import type { Server } from '../../types/server';
 import ImprovedServerCard from './ImprovedServerCard';
+
+sb.mock(import('../../hooks/useServerMetrics.ts'));
 
 const onlineServer: Server = {
   id: 'web-nginx-dc1-01',

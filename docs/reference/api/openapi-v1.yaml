@@ -160,12 +160,6 @@ paths:
               $ref: '#/components/headers/X-RateLimit-Remaining'
             X-RateLimit-Reset:
               $ref: '#/components/headers/X-RateLimit-Reset'
-            X-RateLimit-Daily-Limit:
-              $ref: '#/components/headers/X-RateLimit-Daily-Limit'
-            X-RateLimit-Daily-Remaining:
-              $ref: '#/components/headers/X-RateLimit-Daily-Remaining'
-            X-RateLimit-Daily-Reset:
-              $ref: '#/components/headers/X-RateLimit-Daily-Reset'
           content:
             application/json:
               schema:
@@ -209,12 +203,6 @@ paths:
               $ref: '#/components/headers/X-RateLimit-Reset'
             Retry-After:
               $ref: '#/components/headers/Retry-After'
-            X-RateLimit-Daily-Limit:
-              $ref: '#/components/headers/X-RateLimit-Daily-Limit'
-            X-RateLimit-Daily-Remaining:
-              $ref: '#/components/headers/X-RateLimit-Daily-Remaining'
-            X-RateLimit-Daily-Reset:
-              $ref: '#/components/headers/X-RateLimit-Daily-Reset'
           content:
             application/json:
               schema:
@@ -876,37 +864,30 @@ components:
         type: string
         description: Retry delay in seconds
   schemas:
-        ErrorResponse:
-          type: object
-          required: [error]
-          properties:
-            error:
-              type: string
-            message:
-              type: string
-            fallback:
-              oneOf:
-                - type: boolean
-                - type: string
-            isServerError:
-              type: boolean
-            notFound:
-              type: boolean
-            details:
-              oneOf:
-                - type: object
-                  additionalProperties: true
+    ErrorResponse:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+        fallback:
+          oneOf:
+            - type: boolean
+            - type: string
+        isServerError:
+          type: boolean
+        notFound:
+          type: boolean
+        details:
+          oneOf:
+            - type: object
+              additionalProperties: true
             - type: array
               items:
                 type: string
             - type: string
-        dailyLimitExceeded:
-          type: boolean
-        retryAfter:
-          type: integer
-          minimum: 0
-        code:
-          type: string
     RateLimitError:
       type: object
       required: [error, message, retryAfter]

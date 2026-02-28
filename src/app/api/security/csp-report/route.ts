@@ -63,11 +63,10 @@ export async function POST(request: NextRequest) {
     }
 
     // ⚡ 빠른 응답 (무료 티어 최적화)
-    return new NextResponse('OK', {
+    return new NextResponse(null, {
       status: 204, // No Content
       headers: {
         'Cache-Control': 'no-store',
-        'Content-Type': 'text/plain',
       },
     });
   } catch (error) {

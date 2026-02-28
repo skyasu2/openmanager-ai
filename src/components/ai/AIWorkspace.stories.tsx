@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
-import { fn, mocked } from 'storybook/test';
+import { fn, mocked, sb } from 'storybook/test';
 
 import { useProfileAuth } from '../../components/unified-profile/hooks/useProfileAuth';
 import { useProfileMenu } from '../../components/unified-profile/hooks/useProfileMenu';
@@ -8,6 +8,14 @@ import { useHealthCheck } from '../../hooks/system/useHealthCheck';
 import { useSystemStatus } from '../../hooks/useSystemStatus';
 import { useAISidebarStore } from '../../stores/useAISidebarStore';
 import { useUnifiedAdminStore } from '../../stores/useUnifiedAdminStore';
+
+sb.mock(import('../../hooks/ai/useAIChatCore.ts'));
+sb.mock(import('../../hooks/system/useHealthCheck.ts'));
+sb.mock(import('../../hooks/useSystemStatus.ts'));
+sb.mock(import('../../stores/useAISidebarStore.ts'));
+sb.mock(import('../../stores/useUnifiedAdminStore.ts'));
+sb.mock(import('../../components/unified-profile/hooks/useProfileAuth.ts'));
+sb.mock(import('../../components/unified-profile/hooks/useProfileMenu.ts'));
 
 import AIWorkspace from './AIWorkspace';
 
