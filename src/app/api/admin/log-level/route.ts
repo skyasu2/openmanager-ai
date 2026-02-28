@@ -2,7 +2,9 @@
  * Runtime Log Level API
  *
  * GET  /api/admin/log-level → Current log level status (Vercel + Cloud Run)
- * PUT  /api/admin/log-level → Change log level at runtime with optional TTL
+ * PUT  /api/admin/log-level → Change log level at runtime with optional TTL.
+ * `expiresAt` is computed locally for Vercel changes and aligned with Cloud Run
+ * response when target includes `cloud-run`.
  */
 
 import { type NextRequest, NextResponse } from 'next/server';
@@ -117,7 +119,10 @@ export const PUT = withAuth(async (request: NextRequest) => {
           timeout: 5000,
         });
         if (result.success && result.data) {
-          const data = result.data as { currentLevel: string; expiresAt?: string | null };
+          const data = result.data as {
+            currentLevel: string;
+            expiresAt?: string | null;
+          };
           applied.cloudRun = data.currentLevel;
 
           if (data.expiresAt) {

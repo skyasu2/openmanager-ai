@@ -128,7 +128,11 @@ describe('PUT /api/admin/log-level', () => {
       new NextRequest('http://localhost/api/admin/log-level', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ level: 'debug', target: 'cloud-run', ttlSeconds: 120 }),
+        body: JSON.stringify({
+          level: 'debug',
+          target: 'cloud-run',
+          ttlSeconds: 120,
+        }),
       })
     );
 

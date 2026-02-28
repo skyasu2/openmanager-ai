@@ -18,7 +18,7 @@ export const metadata: Metadata = {
 };
 
 export default function NotFound() {
-  "use cache";
+  'use cache';
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-linear-to-br from-gray-900 via-blue-900 to-purple-900">
