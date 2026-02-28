@@ -121,7 +121,7 @@ GUEST_LOGIN_PIN=1234
 |--------|---------|----------|
 | Supabase | [supabase.com](https://supabase.com) | 500MB DB |
 | Cerebras | [cloud.cerebras.ai](https://cloud.cerebras.ai) | 무료 |
-| Mistral | [console.mistral.ai](https://console.mistral.ai) | 무료 크레딧 |
+| Mistral | https://mistral.ai | 무료 크레딧 |
 | Groq | [console.groq.com](https://console.groq.com) | 무료 |
 
 ## 데이터베이스 설정

@@ -97,7 +97,15 @@
 | 수용 기준 | 웹 검색 토글 ON/OFF, 세션 상태 영속화, 검색 결과 응답 반영, 토글 OFF일 때 `searchWeb` 호출 완전 비활성 |
 | 구현 | `src/stores/useAISidebarStore.ts`, `src/app/api/ai/supervisor/route.ts`, `src/app/api/ai/supervisor/schemas.ts`, `cloud-run/ai-engine/src/services/ai-sdk/` |
 
-### FR-010: 모바일 반응형 대시보드
+### FR-010: 수학 계산 도구 통합
+
+| 항목 | 내용 |
+|------|------|
+| 설명 | 수식 계산/통계 집계/용량 성장 예측 전용 도구 3종(`evaluateMathExpression`, `computeSeriesStats`, `estimateCapacityProjection`) 통합 |
+| 수용 기준 | intent 분류(math/prediction)에 따라 계산 도구 자동 라우팅, 수식/통계/용량 예측 결과 정확성 검증 |
+| 구현 | `cloud-run/ai-engine/src/tools-ai-sdk/calculation-tools.ts`, `cloud-run/ai-engine/src/services/ai-sdk/supervisor-routing.ts`, `cloud-run/ai-engine/src/tools-ai-sdk/index.ts` |
+
+### FR-011: 모바일 반응형 대시보드
 
 | 항목 | 내용 |
 |------|------|

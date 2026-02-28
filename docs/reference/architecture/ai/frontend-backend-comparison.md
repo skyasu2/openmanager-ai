@@ -33,7 +33,7 @@ graph LR
     subgraph CloudRun["Cloud Run AI Engine"]
         Supervisor["Supervisor (듀얼모드)"]
         Orchestrator["Orchestrator (5모듈)"]
-        Agents["9 Agents + 26 Tools"]
+        Agents["9 Agents + 30 Tools"]
         Provider["Quad-Provider LLM"]
         PreComp["Pre-computed 144슬롯"]
     end
@@ -49,7 +49,7 @@ graph LR
          UI/UX Layer                            AI Processing Layer
          - AISidebarV4                          - Supervisor (듀얼모드)
          - useAIChatCore                        - Orchestrator (5모듈 분할)
-         - Hybrid Query Router                  - 9 Agents + 26 Tools
+         - Hybrid Query Router                  - 9 Agents + 30 Tools
          - Security (52패턴 방어)               - Quad-Provider LLM
          - Resumable Stream                     - Pre-computed 144슬롯
 ```
@@ -150,7 +150,7 @@ graph LR
 | `orchestrator.ts` + 분할 5개 | 오케스트레이터 | 51 + 72,348 | 6파일 분할 |
 | `agent-factory.ts` | 에이전트 팩토리 7종 | 394 | 단일 파일 |
 | `model-provider.ts` | Quad-Provider | 680 | 4단계 폴백 |
-| `tools-ai-sdk/index.ts` | 도구 레지스트리 26개 | 344 | 총 도구 ~146K줄 |
+| `tools-ai-sdk/index.ts` | 도구 레지스트리 30개 | 344 | 총 도구 ~146K줄 |
 | `precomputed-state.ts` | 사전 계산 144슬롯 | 853 | O(1) 조회 |
 
 ### Backend 도구 파일 규모
@@ -228,7 +228,7 @@ Quad-Provider Fallback Chain:
 
 1. **Modular Split Architecture**: Supervisor 5파일, Orchestrator 6파일 분할로 유지보수성 확보
 2. **Quad-Provider Resilience**: Cerebras Mistral Groq Gemini 4단계 폴백
-3. **26개 전문 도구**: 서버 메트릭, RCA 분석, 이상치 탐지, 웹 검색 등 포괄적 도구 세트
+3. **30개 전문 도구**: 서버 메트릭, RCA 분석, 이상치 탐지, 웹 검색, 계산 도구까지 포함한 포괄적 세트
 4. **Pre-computed State**: 144슬롯 10분 간격 사전 계산으로 ~100토큰 압축 (O(1) 조회)
 5. **Langfuse Observability**: 전체 AI 호출 추적 + 비용 자동 제어
 
@@ -277,7 +277,7 @@ Quad-Provider Fallback Chain:
 
 OpenManager AI v8.0.0의 AI Assistant는 **Frontend-Backend 양쪽 모두 높은 완성도**를 보입니다.
 
-- **Backend (95%)**: Modular Split Architecture, Quad-Provider 폴백, 26개 전문 도구, Pre-computed Data, Circuit Breaker (Orchestrator 포함), Rate Limiting 등 AI 처리의 핵심이 모두 구현됨
+- **Backend (95%)**: Modular Split Architecture, Quad-Provider 폴백, 30개 전문 도구, Pre-computed Data, Circuit Breaker (Orchestrator 포함), Rate Limiting 등 AI 처리의 핵심이 모두 구현됨
 - **Frontend (93%)**: Hybrid Query Router, Resumable Streaming, Clarification Dialog, 52패턴 보안 방어, Memory+Redis 다층 캐시, Sentry AI Context 태깅 등 사용자 경험 관련 기능이 잘 구현됨
 
 **양쪽 완성도가 거의 동등합니다.** 초기 분석 이후 Rate Limiting, CB Orchestrator 통합, Sentry AI Context, 대용량 파일 분할 등 5건의 개선이 완료되어 종합 94%로 상향. 잔여 과제는 `useHybridAIQuery.ts` 추가 분할과 Cloud Run Sentry 연동 검토(선택적)로, 현재 상태에서 프로덕션 운영에 문제가 없습니다.
@@ -288,7 +288,7 @@ OpenManager AI v8.0.0의 AI Assistant는 **Frontend-Backend 양쪽 모두 높은
 |------|:--------:|:-------:|
 | 핵심 파일 | 6개 (3,314줄) | 108개 TypeScript 파일 |
 | 가장 큰 파일 | useHybridAIQuery.ts (909줄) | model-provider.ts (680줄) |
-| 도구/유틸리티 | 보안+캐시+에러 핸들링 | 26개 AI 도구 (~146K줄) |
+| 도구/유틸리티 | 보안+캐시+에러 핸들링 | 30개 AI 도구 (~146K줄) |
 | 아키텍처 분할 | 단일 파일 중심 | Modular Split (Supervisor 5, Orchestrator 6) |
 
 ### 조치 권장 사항 (Low 우선순위)
@@ -300,6 +300,6 @@ OpenManager AI v8.0.0의 AI Assistant는 **Frontend-Backend 양쪽 모두 높은
 
 ---
 
-_Last Updated: 2026-02-17 (v8 기준 메타데이터/구성 정합성 재검토)_
+_Last Updated: 2026-02-28 (v8 기준 메타데이터/구성 정합성 재검토)_
 _Analysis Method: 코드베이스 실측 (wc -l, symbol analysis)_
 _Corrections: 캐시(Memory+Redis), Sentry(AI context), Provider순서(Cerebras→Mistral→Groq→Gemini), 줄 수 오류 수정_

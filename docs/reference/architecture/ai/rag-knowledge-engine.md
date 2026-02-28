@@ -72,7 +72,7 @@ OpenManager AI의 RAG(Retrieval-Augmented Generation) 시스템은 **Hybrid Grap
 - Azure의 청킹 전략 가이드: 의미 단위 청킹과 파이프라인 단순화를 권장  
   https://learn.microsoft.com/en-us/azure/search/vector-search-how-to-chunk-documents
 - Google Vertex AI RAG Engine: 검색 품질을 위한 인덱싱/임베딩/구조화 워크플로 강조  
-  https://cloud.google.com/vertex-ai/generative-ai/docs/rag-engine
+  https://cloud.google.com/vertex-ai/generative-ai/docs/rag-overview
 
 위 외부 가이드는 방향성 근거이며, OpenManager의 최종 기준값은 운영 데이터(`rag:analyze`, `rag:eval:*`)로 주기 재보정합니다.
 

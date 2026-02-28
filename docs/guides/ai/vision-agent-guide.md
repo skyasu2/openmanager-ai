@@ -210,7 +210,7 @@ echo $OPENROUTER_API_KEY
 vercel env ls production | grep -E "GOOGLE|OPENROUTER"
 ```
 
-2. **첨부 파일 형식 확인**:
+1. **첨부 파일 형식 확인**:
    - 지원되는 MIME 타입인지 확인
    - 파일 크기 제한 확인
 

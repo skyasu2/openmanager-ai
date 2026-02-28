@@ -34,7 +34,7 @@ OpenManager AI is an AI-native server monitoring platform built with:
 - Agents (실행): NLQ, Analyst, Reporter, Advisor, Vision, Evaluator, Optimizer
 - Orchestrator: 에이전트 라우팅 코디네이터 (별도 컴포넌트)
 - Providers: Cerebras(gpt-oss-120b) → Groq(llama-3.3-70b) → Mistral(mistral-large) (3-way fallback chain) + Gemini (Vision)
-- Tools: 26 specialized tools (Metrics 5, RCA 3, Analyst 4, Knowledge 3, Evaluation 6, Control 1, Vision 4)
+- Tools: 30 specialized tools (Metrics 6, RCA 3, Analyst 4, Knowledge 3, Evaluation 6, Control 1, Vision 4, Math 3)
 
 ## Key Files
 

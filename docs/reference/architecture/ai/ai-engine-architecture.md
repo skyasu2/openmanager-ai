@@ -44,7 +44,7 @@ Dual-Mode Supervisor 패턴으로 특화된 에이전트를 오케스트레이�
 │                                                              │
 │  ┌────────────────────────────────────────────────────────┐ │
 │  │ Supervisor (진입점) — "단순 vs 복잡?" [15개 regex]       │ │
-│  │  ├─ Single-Agent → streamText() + 27개 도구            │ │
+│  │  ├─ Single-Agent → streamText() + 30개 도구            │ │
 │  │  └─ Multi-Agent  → Orchestrator에 위임                 │ │
 │  ├────────────────────────────────────────────────────────┤ │
 │  │ Orchestrator (멀티에이전트 조율)                         │ │
@@ -54,7 +54,7 @@ Dual-Mode Supervisor 패턴으로 특화된 에이전트를 오케스트레이�
 │  │  ├─ 스트림 분기: executeMultiAgentStream (collect-then-stream) │ │
 │  │  └─ 배치 분기: executeMultiAgent (비스트리밍)            │ │
 │  ├────────────────────────────────────────────────────────┤ │
-│  │ 7 Agents × 27 Tools × 5 Providers                      │ │
+│  │ 7 Agents × 30 Tools × 5 Providers                      │ │
 │  └────────────────────────────────────────────────────────┘ │
 │           │              │              │                     │
 │     ┌─────┴─────┐  ┌────┴────┐  ┌─────┴──────┐             │
@@ -118,6 +118,7 @@ Dual-Mode Supervisor 패턴으로 특화된 에이전트를 오케스트레이�
 |---------|------|----------|-------------|
 | **NLQ** | 서버 메트릭 조회/요약 | getServerMetrics, filterServers, searchWeb | 서버, CPU, 메모리, 요약 |
 | **Analyst** | 이상 탐지, 예측, RCA | detectAnomalies, predictTrends, findRootCause | 이상, 예측, 원인 |
+| **Math (Math Assistant)** | 수식 계산, 통계 집계, 용량 성장 예측 | evaluateMathExpression, computeSeriesStats, estimateCapacityProjection | 계산, 평균, 분산, 성장률 |
 | **Reporter** | 장애 보고서 생성 | buildIncidentTimeline, correlateMetrics, searchWeb | 보고서, 장애, 인시던트 |
 | **Advisor** | 해결방안, CLI 추천 | searchKnowledgeBase, recommendCommands, searchWeb | 해결, 방법, 명령어 |
 | **Vision** | 스크린샷/로그 분석, Search Grounding | analyzeScreenshot, analyzeLargeLog, searchWithGrounding | 스크린샷, 로그, 최신, 문서 |
@@ -183,7 +184,7 @@ for await (const event of streamAgent('analyst', '이상 탐지')) { ... }
 | 요약 | `서버.*요약`, `핵심.*알려` | Multi → NLQ |
 | **기타** | 단순 조회 | **Single-Agent** |
 
-## 6. Tool Registry (27개)
+## 6. Tool Registry (30개)
 
 | Category | 도구 | 에이전트 | 설명 |
 |----------|------|---------|------|
@@ -201,6 +202,9 @@ for await (const event of streamAgent('analyst', '이상 탐지')) { ... }
 | **Knowledge (3)** | searchKnowledgeBase | Reporter/Advisor | GraphRAG 벡터+그래프 검색 |
 | | recommendCommands | Reporter/Advisor | CLI 추천 |
 | | searchWeb | NLQ/Reporter/Advisor | 외부 실시간 웹 검색 |
+| **Math (3)** | evaluateMathExpression | NLQ/Analyst | 수식 계산 (사칙연산/함수), 퍼센트 지원 |
+| | computeSeriesStats | Analyst | 배열 통계 (평균/중앙값/분산/표준편차/백분위) |
+| | estimateCapacityProjection | Analyst | 성장률 기반 용량 포화 시뮬레이션 |
 | **Evaluation (6)** | evaluateIncidentReport | Pipeline | 보고서 품질 평가 |
 | | validateReportStructure | Pipeline | 구조 검증 |
 | | scoreRootCauseConfidence | Pipeline | RCA 신뢰도 |
@@ -221,6 +225,9 @@ for await (const event of streamAgent('analyst', '이상 탐지')) { ... }
   - `false`일 때는 `searchKnowledgeBase` 도구를 제외하여 지식기반 조회가 발생하지 않음.
   - 해당 제어값 역시 Cloud Run 요청 체인으로 일관 전달.
   - 구현: `createPrepareStep(query, { enableRAG })` → 내부 `filterToolsByRAG()`가 `enableRAG=false` 시 `searchKnowledgeBase` 도구를 필터링. Orchestrator의 `filterToolsByRAG()`도 동일 로직 적용.
+- **수학 도구 (항상 활성)**
+  - 계산 계열 도구(`evaluateMathExpression`, `computeSeriesStats`, `estimateCapacityProjection`)는 별도 토글 없이 항상 활성.
+  - `createPrepareStep`의 intent 분류에 따라 math/prediction 쿼리일 때만 activeTools에 포함되므로, 일반 대화에서는 LLM에 노출되지 않음.
 
 ## 7. Resilience 계층
 
@@ -327,7 +334,7 @@ cloud-run/ai-engine/src/
 │   │   └── retry-with-fallback.ts     # 3-way retry + exponential backoff
 │   └── observability/
 │       └── langfuse.ts                # Langfuse 파사드 (trace/score/usage)
-├── tools-ai-sdk/                      # 27개 도구 정의
+├── tools-ai-sdk/                      # 30개 도구 정의
 ├── lib/
 │   ├── embedding.ts                   # Mistral Embedding (1024d, 3h 캐시)
 │   ├── mistral-provider.ts            # Mistral Singleton (임베딩 전용)
@@ -343,7 +350,7 @@ cloud-run/ai-engine/src/
 | 항목 | 값 |
 |------|-----|
 | 에이전트 | 7개 (공개 5 + 내부 Pipeline 2) |
-| 도구 | 27개 (7개 카테고리) |
+| 도구 | 30개 (8개 카테고리) |
 | LLM Provider | 5개 (Cerebras, Groq, Mistral, Gemini, OpenRouter) |
 | Fallback 체인 | 3-way (모든 에이전트) |
 | 데이터 슬롯 | 144개 (24h x 6/hr, 10분 간격) |
@@ -370,6 +377,7 @@ cloud-run/ai-engine/src/
 - **Groq `json_schema` 에러 해결**: Orchestrator `generateObject()` 호출 시 Groq `llama-3.3-70b-versatile`가 `json_schema` 미지원 → 모델 우선순위를 `['cerebras', 'mistral', 'groq']`로 재배치
 - **Analyst Primary 변경**: Groq → Cerebras (`gpt-oss-120b`) 전환. Cerebras가 4개 에이전트(Supervisor, NLQ, Analyst, Orchestrator) Primary 담당
 - **RAG 토글 구현**: `createPrepareStep` + `filterToolsByRAG`로 `enableRAG=false` 시 `searchKnowledgeBase` 도구 필터링
+- **Math Tools 통합**: 수식 계산/통계/용량 예측 3종 도구 추가 (intent 기반 라우팅, 항상 활성)
 - **Storybook v10 호환성**: v8 전용 패키지 제거 (`@storybook/blocks`, `@storybook/test`)
 </details>
 

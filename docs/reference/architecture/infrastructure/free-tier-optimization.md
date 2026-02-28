@@ -37,7 +37,7 @@ Pro는 seat 당 월 과금(+사용량 기반 초과 과금) 구조이며, 포함
 Reference (checked: 2026-02-20):
 - https://vercel.com/pricing
 - https://vercel.com/docs/limits/overview
-- https://vercel.com/docs/platform/fair-use-guidelines
+- https://vercel.com/docs/limits/fair-use-guidelines
 
 ---
 
