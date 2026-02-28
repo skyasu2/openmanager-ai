@@ -132,24 +132,24 @@ graph TD
         CR[Google Cloud Run: AI Engine]:::backend
         AB[Agent Bridge & Orchestrator]:::agents
         
-        Vercel <-->|API / Streaming (Bypassing Vercel Timeout)| CR
+        Vercel <-->|"API / Streaming"| CR
         CR <-->|Multi-Agent Orchestration| AB
-        
-        AB -.->|Route| AgentNLQ(NLQ Agent)
-        AB -.->|Route| AgentAnalyst(Analyst Agent)
-        AB -.->|Route| AgentReporter(Reporter Agent)
+
+        AB -.->|Route| AgentNLQ["NLQ Agent"]
+        AB -.->|Route| AgentAnalyst["Analyst Agent"]
+        AB -.->|Route| AgentReporter["Reporter Agent"]
     end
 
     subgraph Data Layer [Persistence]
-        Supabase[(Supabase: PostgreSQL & pgvector)]:::database
+        Supabase[("Supabase: PostgreSQL + pgvector")]:::database
         Vercel <-->|Auth & Metadata| Supabase
         CR <-->|Vector Search & AI Data| Supabase
     end
 
     subgraph Observability [Monitoring Architecture]
-        Sentry[Sentry (Internal Error Tracking)]:::monitoring
-        OTel[OpenTelemetry (Product Feature)]:::monitoring
-        TargetServers[[User's Target Servers]]:::client
+        Sentry["Sentry: Error Tracking"]:::monitoring
+        OTel["OpenTelemetry: Metrics"]:::monitoring
+        TargetServers[["Target Servers"]]:::client
 
         %% Sentry는 시스템 자체를 모니터링
         Vercel -.->|Error/Perf Tracking| Sentry
