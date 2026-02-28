@@ -58,18 +58,33 @@ OpenManager AI는 **AI 어시스턴트**가 내장된 서버 모니터링 플랫
 
 ### Agent Architecture (AI SDK v6)
 
-```
-User Query
-    ↓
-Supervisor (Intent Classification & Routing)
-    ├── NLQ Agent      : 자연어 → 메트릭 조회 (시간범위/필터 파싱)
-    ├── Analyst Agent  : 패턴 분석, 이상 탐지
-    ├── Reporter Agent : 장애 보고서 생성 (Evaluator-Optimizer 패턴)
-    ├── Advisor Agent  : 트러블슈팅 가이드
-    └── Vision Agent   : 스크린샷 분석 및 대용량 로그 처리 (Gemini)
+```mermaid
+graph TD
+    %% Theme
+    classDef default fill:#f9f9f9,stroke:#333,stroke-width:1px,color:#000
+    classDef input fill:#000,stroke:#fff,stroke-width:2px,color:#fff
+    classDef supervisor fill:#4285F4,stroke:#fff,stroke-width:2px,color:#fff
+    classDef agent fill:#F4B400,stroke:#fff,stroke-width:2px,color:#000
+    classDef tools fill:#3ECF8E,stroke:#fff,stroke-width:2px,color:#000
+    
+    Q([User Query]):::input --> S
+    
+    S{Supervisor<br/>Intent Classification<br/>& Routing}:::supervisor
+    
+    S -->|Routing| A[NLQ Agent]:::agent
+    S -->|Routing| B[Analyst Agent]:::agent
+    S -->|Routing| C[Reporter Agent]:::agent
+    S -->|Routing| D[Advisor Agent]:::agent
+    S -->|Routing| E[Vision Agent]:::agent
 
-📡 Resumable Stream v2: 새로고침해도 스트림 유지 (Redis 기반)
+    A -.->|Time/Filter Parse| DB[(Metrics DB)]:::tools
+    B -.->|Anomaly Detect| DB
+    C -.->|Evaluator-Optimizer| MD[Markdown Gen]:::tools
+    D -.->|Troubleshoot| Docs[Guide DB]:::tools
+    E -.->|Log/Image| Model[Gemini Vision]:::tools
 ```
+
+📡 **Resumable Stream v2**: 새로고침해도 스트림 유지 (Redis 기반)
 
 ---
 
