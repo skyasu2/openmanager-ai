@@ -64,15 +64,37 @@ export const serverTypeGuards = {
 };
 
 /**
- * 업타임 포맷팅
+ * 업타임 포맷팅 (SSOT)
  */
-export function formatUptime(uptime?: number | string): string {
+export type UptimeFormatOptions = {
+  locale?: 'en' | 'ko';
+  includeMinutes?: boolean;
+};
+
+export function formatUptime(
+  uptime?: number | string,
+  options?: UptimeFormatOptions
+): string {
   if (typeof uptime === 'string') return uptime;
   if (typeof uptime !== 'number' || uptime <= 0) return '0m';
 
   const days = Math.floor(uptime / (24 * 3600));
   const hours = Math.floor((uptime % (24 * 3600)) / 3600);
   const minutes = Math.floor((uptime % 3600) / 60);
+
+  if (options?.locale === 'ko') {
+    if (days > 0) {
+      return hours > 0 ? `${days}일 ${hours}시간` : `${days}일`;
+    }
+    if (hours > 0) {
+      return minutes > 0 ? `${hours}시간 ${minutes}분` : `${hours}시간`;
+    }
+    return `${minutes}분`;
+  }
+
+  if (options?.includeMinutes) {
+    return `${days}d ${hours}h ${minutes}m`;
+  }
 
   if (days > 0) return `${days}d ${hours}h`;
   if (hours > 0) return `${hours}h ${minutes}m`;

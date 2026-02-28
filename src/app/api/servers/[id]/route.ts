@@ -11,6 +11,7 @@ import {
 } from '@/services/metrics/metric-normalization';
 import { getServerMonitoringService } from '@/services/monitoring';
 import debug from '@/utils/debug';
+import { formatUptime } from '@/utils/serverUtils';
 
 /**
  * 📊 MetricsProvider 기반 개별 서버 정보 조회 API
@@ -100,7 +101,7 @@ export const GET = withAuth(
           cpu: Math.round(metric.cpu),
           memory: Math.round(metric.memory),
           disk: Math.round(metric.disk),
-          uptime: formatUptime(uptimeSeconds),
+          uptime: formatUptime(uptimeSeconds, { includeMinutes: true }),
           lastUpdate: new Date(metric.timestamp),
           alerts: 0,
           services: processed?.services ?? [],
@@ -153,7 +154,7 @@ export const GET = withAuth(
             environment: metric.environment ?? 'unknown',
             role: metric.serverType,
             status: metric.status,
-            uptime: formatUptime(uptimeSeconds),
+            uptime: formatUptime(uptimeSeconds, { includeMinutes: true }),
             last_updated: metric.timestamp,
           },
 
@@ -282,17 +283,6 @@ function getProviderByEnvironment(environment: string): string {
     onpremise: 'On-Premise',
   };
   return providerMap[environment] || 'Unknown Provider';
-}
-
-/**
- * ⏰ 업타임 포맷팅
- */
-function formatUptime(uptimeSeconds: number): string {
-  const days = Math.floor(uptimeSeconds / (24 * 3600));
-  const hours = Math.floor((uptimeSeconds % (24 * 3600)) / 3600);
-  const minutes = Math.floor((uptimeSeconds % 3600) / 60);
-
-  return `${days}d ${hours}h ${minutes}m`;
 }
 
 /**

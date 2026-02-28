@@ -167,45 +167,6 @@ function deriveNetworkStatus(
 }
 
 /**
- * ⏱️ 업타임 문자열 포맷팅
- *
- * @param uptimeString - 원본 업타임 문자열 (예: "4320h 30m")
- * @returns 포맷된 업타임 문자열 (예: "180일 30분")
- */
-export const formatUptime = (uptimeString: string): string => {
-  try {
-    // 시간과 분 추출
-    const hourMatch = uptimeString.match(/(\d+)h/);
-    const minuteMatch = uptimeString.match(/(\d+)m/);
-
-    const hours = hourMatch ? parseInt(hourMatch[1] ?? '0', 10) : 0;
-    const minutes = minuteMatch ? parseInt(minuteMatch[1] ?? '0', 10) : 0;
-
-    // 일 단위로 변환
-    const days = Math.floor(hours / 24);
-    const remainingHours = hours % 24;
-
-    if (days > 0) {
-      if (remainingHours > 0) {
-        return `${days}일 ${remainingHours}시간`;
-      } else if (minutes > 0) {
-        return `${days}일 ${minutes}분`;
-      } else {
-        return `${days}일`;
-      }
-    } else if (remainingHours > 0) {
-      return minutes > 0
-        ? `${remainingHours}시간 ${minutes}분`
-        : `${remainingHours}시간`;
-    } else {
-      return `${minutes}분`;
-    }
-  } catch {
-    return uptimeString; // 파싱 실패 시 원본 반환
-  }
-};
-
-/**
  * 서버 원본 데이터를 모달용 안전한 ServerData로 변환
  *
  * 방어적 타입 검증 + 기본값 설정을 서비스 레이어에서 처리하여

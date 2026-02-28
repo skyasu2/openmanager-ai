@@ -59,23 +59,6 @@ export function isExtendedServer(server: unknown): server is ExtendedServer {
   );
 }
 
-// uptime 포매팅 헬퍼
-export function formatUptime(uptime: string | number | undefined): string {
-  if (!uptime) return 'N/A';
-
-  if (typeof uptime === 'string') {
-    return uptime;
-  }
-
-  if (typeof uptime === 'number') {
-    const hours = Math.floor(uptime / 3600);
-    const minutes = Math.floor((uptime % 3600) / 60);
-    return `${hours}h ${minutes}m`;
-  }
-
-  return 'N/A';
-}
-
 // alerts 카운트 헬퍼
 export function getAlertsCount(
   alerts: number | ServerAlert[] | undefined

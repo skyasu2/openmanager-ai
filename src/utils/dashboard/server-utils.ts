@@ -159,13 +159,5 @@ export const calculatePagination = <T>(
   return { paginatedItems, totalPages };
 };
 
-// 업타임 포맷팅 유틸리티
-export const formatUptime = (uptime: number): string => {
-  const days = Math.floor(uptime / (24 * 3600));
-  const hours = Math.floor((uptime % (24 * 3600)) / 3600);
-  const minutes = Math.floor((uptime % 3600) / 60);
-
-  if (days > 0) return `${days}d ${hours}h`;
-  if (hours > 0) return `${hours}h ${minutes}m`;
-  return `${minutes}m`;
-};
+// 업타임 포맷팅 — SSOT re-export
+export { formatUptime } from '@/utils/serverUtils';

@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { useState } from 'react';
 import { useSystemStatus } from '@/hooks/useSystemStatus';
+import { formatUptime } from '@/utils/serverUtils';
 
 interface EnhancedProfileStatusDisplayProps {
   compact?: boolean;
@@ -23,17 +24,6 @@ export function EnhancedProfileStatusDisplay({
 }: EnhancedProfileStatusDisplayProps) {
   const { status, isLoading, error, refresh } = useSystemStatus();
   const [showDetails, setShowDetails] = useState(false);
-
-  // 업타임을 사람이 읽기 쉬운 형태로 변환
-  const formatUptime = (seconds: number): string => {
-    const hours = Math.floor(seconds / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
-
-    if (hours > 0) {
-      return `${hours}시간 ${minutes}분`;
-    }
-    return `${minutes}분`;
-  };
 
   // 환경 표시 이름 변환
   const getEnvironmentDisplay = (env: string): string => {
@@ -174,7 +164,7 @@ export function EnhancedProfileStatusDisplay({
             <div className="col-span-2 flex items-center gap-1">
               <Clock className="h-3 w-3 text-green-500" />
               <span data-testid="uptime-display" className="text-gray-600">
-                가동시간: {formatUptime(status.uptime)}
+                가동시간: {formatUptime(status.uptime, { locale: 'ko' })}
               </span>
             </div>
           )}
