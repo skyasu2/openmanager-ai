@@ -43,6 +43,7 @@
 |------|------|
 | [코딩 표준](./coding-standards.md) | 개발 방법론 및 코드 스타일 |
 | [문서 관리](./documentation-management.md) | 문서 구조/정합성/인벤토리 관리 기준 |
+| [문서 인벤토리](./docs-inventory.md) | 문서 현황 요약 (자동 생성) |
 | [Stitch 가이드](./stitch-guide.md) | UI 증분 개선 워크플로우 통합 |
 
 ## 기술 스택

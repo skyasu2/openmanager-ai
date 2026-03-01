@@ -12,8 +12,8 @@ const REPORT_PATH = path.resolve(
 const STALE_DAYS = 90;
 
 const BUDGET = {
-  total: 55,
-  referenceArchitecture: 20,
+  total: 60,
+  referenceArchitecture: 25,
   development: 20,
   guides: 12,
   troubleshooting: 5,
