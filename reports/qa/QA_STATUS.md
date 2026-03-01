@@ -1,15 +1,15 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-01 15:16:36 KST
+> Generated at: 2026-03-01 16:37:43 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 33 |
-| Total Checks | 177 |
-| Passed | 159 |
+| Total Runs | 34 |
+| Total Checks | 185 |
+| Passed | 167 |
 | Failed | 18 |
 | Completed Items | 51 |
 | Pending Items | 0 |
@@ -17,11 +17,11 @@
 | Expert Domains Tracked | 6 |
 | Expert Open Gaps | 2 |
 | Completion Rate | 100% |
-| Last Run | QA-20260301-0033 (2026-03-01T06:16:36.498Z) |
+| Last Run | QA-20260301-0034 (2026-03-01T07:37:43.156Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260301-0033 (2026-03-01T06:16:36.498Z)
+Latest run: QA-20260301-0034 (2026-03-01T07:37:43.156Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -165,6 +165,7 @@ Latest run: QA-20260301-0033 (2026-03-01T06:16:36.498Z)
 
 | Run ID | Time (UTC) | Title | Checks | Completed | Pending | Wont-Fix | Expert Gaps |
 |---|---|---|---:|---:|---:|---:|---:|
+| QA-20260301-0034 | 2026-03-01T07:37:43.156Z | Production Playwright MCP QA — observability commit 6179e54 (8/8 PASS) | 8 | 0 | 0 | 0 | 0 |
 | QA-20260301-0033 | 2026-03-01T06:16:36.498Z | Production Playwright MCP QA | 0 | 0 | 0 | 0 | 0 |
 | QA-20260301-0032 | 2026-03-01T03:33:12.090Z | Final QA Gate v8.7.1 — Static + Security + Build + Code Quality (18/18 PASS) | 18 | 14 | 0 | 0 | 0 |
 | QA-20260301-0031 | 2026-03-01T01:08:05.088Z | Comprehensive Button/Modal/UI QA - v8.7.1 post-release | 18 | 0 | 0 | 18 | 0 |
@@ -184,5 +185,4 @@ Latest run: QA-20260301-0033 (2026-03-01T06:16:36.498Z)
 | QA-20260227-0017 | 2026-02-26T19:25:22.388Z | Vercel Playwright QA - 로그인 정책 카피 지속성 및 시스템 시작 가드 재확인 | 2 | 1 | 1 | 0 | 2 |
 | QA-20260227-0016 | 2026-02-26T18:34:32.172Z | Vercel Playwright QA - 로그인 정책/시스템 시작 가드 재검증 | 2 | 3 | 0 | 0 | 2 |
 | QA-20260227-0015 | 2026-02-26T18:11:05.996Z | Vercel Playwright QA - 랜딩 로그인 모달 카피 배포 정합성 재검증 | 2 | 2 | 2 | 0 | 3 |
-| QA-20260227-0014 | 2026-02-26T18:03:30.997Z | Vercel Playwright QA - 로그인 정책/시스템 시작 가드 배포 검증 | 3 | 3 | 1 | 0 | 2 |
 

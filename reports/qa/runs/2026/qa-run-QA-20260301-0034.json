@@ -1,0 +1,38 @@
+{
+  "runId": "QA-20260301-0034",
+  "recordedAt": "2026-03-01T07:37:43.156Z",
+  "recordedAtKst": "2026-03-01 16:37:43 KST",
+  "runTitle": "Production Playwright MCP QA — observability commit 6179e54 (8/8 PASS)",
+  "owner": "claude",
+  "source": "playwright-mcp",
+  "environment": {
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main"
+  },
+  "checks": {
+    "total": 8,
+    "passed": 8,
+    "failed": 0
+  },
+  "expertAssessments": [],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "QA-1: Landing -> Dashboard (15 servers, 14 online, 1 critical) PASS",
+    "QA-2: AI Sidebar open (5 presets, 3 AI tabs, engine Ready) PASS",
+    "QA-3: AI Chat response (server summary, ~13s, Cloud Run AI) PASS",
+    "QA-4: Auto Incident Report (~1s, cache-redis-dc1-01 identified) PASS",
+    "QA-5: Analyst (15 servers, ~5s, trend prediction) PASS",
+    "QA-6: Server detail modal (3 tabs, live metrics, services) PASS",
+    "QA-7: Topology map (5 layers, 15 nodes, 18 edges) PASS",
+    "QA-8: Health API (healthy, v8.7.1, all services connected) PASS"
+  ],
+  "links": [
+    {
+      "label": "Vercel URL",
+      "url": "https://openmanager-ai.vercel.app"
+    }
+  ]
+}
