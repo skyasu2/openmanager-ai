@@ -41,6 +41,11 @@ import {
   analyzeQueryComplexity,
   calculateDynamicTimeout,
 } from '@/lib/ai/utils/query-complexity';
+import {
+  logAIRequest,
+  logAIResponse,
+  startAITimer,
+} from '@/lib/ai/observability';
 import { isCloudRunEnabled } from '@/lib/ai-proxy/proxy';
 import { withAuth } from '@/lib/auth/api-auth';
 import { logger } from '@/lib/logging';
@@ -286,8 +291,19 @@ export const POST = withRateLimit(
         const wantsStream = acceptHeaderFinal !== 'application/json';
 
         // 8. Cloud Run 프록시
+        const aiTimer = startAITimer();
+
         if (isCloudRunEnabled()) {
           logger.info('☁️ [Supervisor] Using Cloud Run backend');
+
+          logAIRequest({
+            operation: 'chat',
+            system: 'cloud-run',
+            model: 'multi-agent',
+            sessionId,
+            traceId,
+            querySummary: userQuery.slice(0, 80),
+          });
 
           const normalizedMessages = normalizeMessagesForCloudRun(messages);
 
@@ -331,9 +347,21 @@ export const POST = withRateLimit(
             deviceType,
           };
 
-          return wantsStream
-            ? handleCloudRunStream(handlerParams)
-            : handleCloudRunJson(handlerParams);
+          const response = wantsStream
+            ? await handleCloudRunStream(handlerParams)
+            : await handleCloudRunJson(handlerParams);
+
+          logAIResponse({
+            operation: 'chat',
+            system: 'cloud-run',
+            model: 'multi-agent',
+            latencyMs: aiTimer.elapsed(),
+            success: response.ok || response.status < 400,
+            agent: complexity.level,
+            traceId,
+          });
+
+          return response;
         }
 
         // 9. Fallback: Cloud Run 비활성화

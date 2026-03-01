@@ -9,6 +9,7 @@
  */
 
 import type { Metadata } from 'next';
+import { connection } from 'next/server';
 import { getOTelDashboardData } from '@/lib/dashboard/server-data';
 import DashboardClient from './DashboardClient';
 
@@ -18,6 +19,7 @@ export const metadata: Metadata = {
 };
 
 export default async function DashboardPage() {
+  await connection();
   const { servers, stats } = await getOTelDashboardData();
 
   return <DashboardClient initialServers={servers} initialStats={stats} />;

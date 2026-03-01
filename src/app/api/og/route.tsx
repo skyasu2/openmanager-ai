@@ -14,8 +14,6 @@ import type { NextRequest } from 'next/server';
 import { logger } from '@/lib/logging';
 import { getSiteUrl } from '@/lib/site-url';
 
-// MIGRATED: Removed export const runtime = 'edge';
-
 // 기본값 상수
 const DEFAULTS = {
   title: 'OpenManager AI',
@@ -26,7 +24,7 @@ const DEFAULTS = {
 export async function GET(request: NextRequest) {
   try {
     // 쿼리 파라미터에서 커스텀 값 추출
-    const { searchParams } = new URL(request.url);
+    const { searchParams } = request.nextUrl;
     const title = searchParams.get('title') || DEFAULTS.title;
     const description = searchParams.get('description') || DEFAULTS.description;
 
@@ -168,6 +166,16 @@ export async function GET(request: NextRequest) {
       }
     );
   } catch (error) {
+    // Next.js 프리렌더 인터럽트 에러는 재전파 (프레임워크가 처리)
+    if (
+      error instanceof Error &&
+      (error.message.includes('NEXT_PRERENDER_INTERRUPTED') ||
+        ('digest' in error &&
+          (error as Error & { digest: string }).digest ===
+            'NEXT_PRERENDER_INTERRUPTED'))
+    ) {
+      throw error;
+    }
     logger.error('Error generating OG image:', error);
 
     // 에러 발생 시 간단한 폴백 이미지 반환

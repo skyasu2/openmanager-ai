@@ -1,6 +1,23 @@
 /**
  * CSP(Content Security Policy) 유틸리티
  * Vercel 플랫폼에서 안전한 스크립트 실행 지원
+ *
+ * ## unsafe-inline → nonce 전환 로드맵
+ *
+ * 현재 상태: script-src에 'unsafe-inline' 포함 (B- 등급)
+ *
+ * 원인:
+ * - Next.js 16.x가 인라인 스크립트를 런타임에 삽입 (프레임워크 제약)
+ * - Vercel Analytics/Speed Insights가 인라인 스크립트 사용
+ * - style-src의 'unsafe-inline'은 Tailwind CSS v4 런타임 스타일에 필수
+ *
+ * 전환 단계:
+ * 1. [현재] generateCSPNonce() 인프라 준비 완료 — nonce 파라미터 지원
+ * 2. [대기] Next.js의 built-in nonce 지원 안정화 (experimental.cspNonce)
+ * 3. [대기] middleware.ts에서 nonce 생성 → <Script nonce={nonce}> 전파
+ * 4. [목표] script-src에서 'unsafe-inline' 제거, nonce 기반 전환
+ *
+ * 참고: OWASP CSP Cheat Sheet, Next.js Security Headers 공식 문서
  */
 
 /**

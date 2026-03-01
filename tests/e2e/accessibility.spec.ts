@@ -1,7 +1,49 @@
+import * as fs from 'node:fs';
+import * as path from 'node:path';
 import { expect, test } from '@playwright/test';
 import { guestLogin, resetGuestState } from './helpers/guest';
 import { ensureVercelBypassCookie } from './helpers/security';
 import { TIMEOUTS } from './helpers/timeouts';
+
+/**
+ * axe-core 를 Playwright 페이지에 주입하고 WCAG 2.1 AA 검증을 실행하는 헬퍼.
+ * @axe-core/playwright 패키지 설치 없이 node_modules/axe-core 번들을 직접 주입.
+ */
+async function injectAxeAndRun(
+  page: import('@playwright/test').Page,
+  context?: string
+) {
+  const axePath = path.resolve(
+    __dirname,
+    '../../node_modules/axe-core/axe.min.js'
+  );
+  const axeSource = fs.readFileSync(axePath, 'utf-8');
+  await page.evaluate(axeSource);
+  return page.evaluate((ctx) => {
+    return (
+      window as unknown as {
+        axe: {
+          run: (
+            el?: unknown,
+            opts?: unknown
+          ) => Promise<{
+            violations: Array<{
+              id: string;
+              impact: string | null;
+              description: string;
+              nodes: Array<{ html: string }>;
+            }>;
+          }>;
+        };
+      }
+    ).axe.run(ctx ? (document.querySelector(ctx) ?? document) : document, {
+      runOnly: {
+        type: 'tag',
+        values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'],
+      },
+    });
+  }, context ?? null);
+}
 
 test.describe('♿ 접근성 (Accessibility) 검증', () => {
   test.beforeEach(async ({ page }) => {
@@ -207,5 +249,113 @@ test.describe('♿ 접근성 (Accessibility) 검증', () => {
     }
 
     console.log('✅ 대시보드 헤딩 및 랜드마크 검증 완료');
+  });
+});
+
+test.describe('♿ axe-core WCAG 2.1 AA 자동 검증', () => {
+  test.beforeEach(async ({ page }) => {
+    await resetGuestState(page);
+    await ensureVercelBypassCookie(page);
+  });
+
+  test.afterEach(async ({ page }) => {
+    await resetGuestState(page);
+  });
+
+  test('랜딩 페이지 WCAG 2.1 AA 위반 0건', async ({ page }) => {
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
+    await page.waitForTimeout(2000);
+
+    const results = await injectAxeAndRun(page);
+
+    const critical = results.violations.filter(
+      (v) => v.impact === 'critical' || v.impact === 'serious'
+    );
+
+    if (critical.length > 0) {
+      console.log('❌ WCAG 2.1 AA Critical/Serious 위반:');
+      critical.forEach((v) => {
+        console.log(`  [${v.impact}] ${v.id}: ${v.description}`);
+        for (const n of v.nodes.slice(0, 3)) {
+          console.log(`    ${n.html}`);
+        }
+      });
+    }
+
+    // Critical/Serious 위반은 0건이어야 함
+    expect(
+      critical,
+      `WCAG 2.1 AA critical/serious 위반 ${critical.length}건 발견`
+    ).toHaveLength(0);
+    console.log(
+      `✅ 랜딩 페이지 WCAG 2.1 AA 검증 완료 (minor 위반: ${results.violations.length - critical.length}건)`
+    );
+  });
+
+  test('로그인 페이지 WCAG 2.1 AA 위반 0건', async ({ page }) => {
+    await page.goto('/login', { waitUntil: 'domcontentloaded' });
+    await page
+      .getByRole('heading', { level: 1 })
+      .first()
+      .waitFor({ state: 'visible', timeout: TIMEOUTS.NETWORK_REQUEST });
+
+    const results = await injectAxeAndRun(page);
+
+    const critical = results.violations.filter(
+      (v) => v.impact === 'critical' || v.impact === 'serious'
+    );
+
+    if (critical.length > 0) {
+      console.log('❌ 로그인 페이지 WCAG 위반:');
+      critical.forEach((v) => {
+        console.log(`  [${v.impact}] ${v.id}: ${v.description}`);
+        for (const n of v.nodes.slice(0, 3)) {
+          console.log(`    ${n.html}`);
+        }
+      });
+    }
+
+    expect(
+      critical,
+      `WCAG 2.1 AA critical/serious 위반 ${critical.length}건 발견`
+    ).toHaveLength(0);
+    console.log(
+      `✅ 로그인 페이지 WCAG 2.1 AA 검증 완료 (minor 위반: ${results.violations.length - critical.length}건)`
+    );
+  });
+
+  test('대시보드 WCAG 2.1 AA 위반 0건', async ({ page }) => {
+    await guestLogin(page);
+
+    const profileButton = page
+      .locator('button[aria-label="프로필 메뉴"]')
+      .first();
+    await expect(profileButton).toBeVisible({
+      timeout: TIMEOUTS.DASHBOARD_LOAD,
+    });
+
+    const results = await injectAxeAndRun(page);
+
+    const critical = results.violations.filter(
+      (v) => v.impact === 'critical' || v.impact === 'serious'
+    );
+
+    if (critical.length > 0) {
+      console.log('❌ 대시보드 WCAG 위반:');
+      critical.forEach((v) => {
+        console.log(`  [${v.impact}] ${v.id}: ${v.description}`);
+        for (const n of v.nodes.slice(0, 3)) {
+          console.log(`    ${n.html}`);
+        }
+      });
+    }
+
+    expect(
+      critical,
+      `WCAG 2.1 AA critical/serious 위반 ${critical.length}건 발견`
+    ).toHaveLength(0);
+    console.log(
+      `✅ 대시보드 WCAG 2.1 AA 검증 완료 (minor 위반: ${results.violations.length - critical.length}건)`
+    );
   });
 });
