@@ -1,0 +1,55 @@
+{
+  "runId": "QA-20260302-0037",
+  "recordedAt": "2026-03-01T17:02:04.585Z",
+  "recordedAtKst": "2026-03-02 02:02:04 KST",
+  "runTitle": "Local QA Improvement Run - system-start KPI smoke",
+  "owner": "codex",
+  "source": "local-checks",
+  "environment": {
+    "frontend": "Local",
+    "backend": "Local",
+    "branch": "main"
+  },
+  "checks": {
+    "total": 1,
+    "passed": 1,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "data-metrics-quality",
+      "domainName": "Data Quality & Metrics Analyst",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "시스템 시작 KPI 스모크가 start API 시도/성공/실패/지연(ms) 지표를 단일 실행 내에서 수집/검증하도록 보강됨",
+      "nextAction": ""
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "시스템 시작 요청의 상태·지연·성공/실패 집계를 QA 플로우에서 계측해 모니터링 지표 기반 점검을 확보",
+      "nextAction": ""
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "system-start-metrics-gate",
+      "title": "시스템 시작 KPI 계측",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "tests/e2e/system-boot.spec.ts",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "wontFixImprovements": [],
+  "notes": ["시작 API 호출 지연은 n=3 시도 기준으로 평균/최대값을 로그로 산출"],
+  "links": []
+}

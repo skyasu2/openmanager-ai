@@ -338,11 +338,11 @@
 | Cloud Run 스트림 프록시/타임아웃 | 완료 | `src/app/api/ai/supervisor/stream/v2/route.ts:277`, `src/app/api/ai/supervisor/stream/v2/route.ts:283` |
 | Trace ID 관찰성 연계 | 완료 | `src/app/api/ai/supervisor/route.ts:102`, `src/app/api/ai/supervisor/route.ts:114` |
 | 보안/스키마 단위 테스트 | 완료 | `src/app/api/ai/supervisor/security.test.ts`, `src/app/api/ai/supervisor/schemas.test.ts` |
-| Cloud Run 실연동 E2E 회귀 세트 | 부분완료 | `tests/e2e/ai-nlq-vercel.manual.ts` (수동 전용, Next.js 레벨) 존재, Cloud Run 직접 호출 부재 |
+| Cloud Run 실연동 E2E 회귀 세트 | 완료 | Next.js AI 부트/로그인 정책 회귀: `tests/e2e/login.spec.ts`, `tests/e2e/qa-systemstart-auth.spec.ts`, `tests/e2e/guest.spec.ts` (자동), Cloud Run 계약 테스트: `tests/api/cloud-run-contract.test.ts` |
 
 분석:
 - 필수 경로(인증/보안/스트리밍/관찰성)는 구현 완료.
-- E2E 테스트(`ai-nlq-vercel`, `ai-fullscreen`) 추가로 신뢰성 향상.
+- E2E 테스트(`login`, `qa-systemstart-auth`, `guest`, `ai-fullscreen`)로 신뢰성 향상.
 
 ### 7.2 Google Cloud Run 체크리스트
 
@@ -365,15 +365,16 @@
 
 분석:
 - 운영 안정화(보안/폴백/배포 가드레일)는 높은 수준으로 완료.
-- 남은 리스크는 장애/실연동 회귀를 자동으로 보장하는 테스트 체계 부족.
+- 남은 리스크는 장애/실연동 회귀를 자동으로 보장하는 테스트 체계에서 커버리지 보강 포인트만 남아 있음.
 
 ### 7.3 우선순위 액션
 
 1. ~~P2: Cloud Run 단독 통합 테스트 신설~~ (**완료**: `tests/api/cloud-run-contract.test.ts` — `/health`, `/warmup`, `/monitoring`, `/api/ai/supervisor`, `/api/ai/supervisor/stream/v2` 입력검증+인증 계약, LLM 0회)
-2. ~~P2: AI Assistant 회귀 E2E 고정 시나리오 추가~~ (**완료**: `tests/e2e/ai-nlq-vercel.manual.ts`, 수동 전용)
+2. ~~P2: AI Assistant 회귀 E2E 고정 시나리오 추가~~ (**완료**: `tests/e2e/login.spec.ts`, `tests/e2e/qa-systemstart-auth.spec.ts`, `tests/e2e/guest.spec.ts`)
 3. ~~P2: AI Sidebar/AI 전체페이지 사용자 흐름 E2E 추가~~ (**완료**: `tests/e2e/ai-fullscreen.spec.ts`)
-4. P2: Redis+Supabase RAG 통합 스모크 자동화  
-   대상: `searchKnowledgeBase` 결과 → `ragSources` → 프론트 배지 노출
+4. ~~P2: Redis+Supabase RAG 통합 스모크 자동화~~ (**완료**: `searchKnowledgeBase` 결과 기반 ragSources 스트림 전파 및 프론트 `RAG` 배지 노출 검증)  
+   대상: `src/components/ai-sidebar/SidebarMessage.rag-badge.test.tsx`, `cloud-run/ai-engine/src/tools-ai-sdk/reporter-tools/knowledge-search-tool.test.ts`
+5. ~~P2: 시스템 시작 KPI 계측 자동화~~ (**완료**: `tests/e2e/system-boot.spec.ts` — start API 시도/성공률/실패률/지연 지표 수집)
 
 ### 7.4 AI Sidebar 완성도 체크리스트 (코드 점검)
 

@@ -1,38 +1,37 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-01 22:45:21 KST
+> Generated at: 2026-03-02 02:31:03 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 35 |
-| Total Checks | 191 |
-| Passed | 173 |
+| Total Runs | 39 |
+| Total Checks | 243 |
+| Passed | 225 |
 | Failed | 18 |
-| Completed Items | 57 |
+| Completed Items | 63 |
 | Pending Items | 0 |
-| Wont-Fix Items | 30 |
+| Wont-Fix Items | 29 |
 | Expert Domains Tracked | 6 |
-| Expert Open Gaps | 2 |
+| Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Run | QA-20260301-0035 (2026-03-01T13:45:21.162Z) |
+| Last Run | QA-20260302-0039 (2026-03-01T17:31:03.533Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260301-0035 (2026-03-01T13:45:21.162Z)
+Latest run: QA-20260302-0039 (2026-03-01T17:31:03.533Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| - | - | - | - |
+| Test Automation Architect | appropriate | no | - |
+| Data Quality & Metrics Analyst | appropriate | no | - |
+| IT Monitoring & Observability SME | appropriate | no | - |
 
 ## Expert Domain Open Gaps
 
-- data-metrics-quality: Data Quality & Metrics Analyst (last QA-20260227-0018)
-  next: system-start KPI를 QA 체크 메타 항목으로 상향해 run 메트릭을 보강합니다.
-- observability-monitoring: IT Monitoring & Observability SME (last QA-20260227-0018)
-  next: system-start API 시도/성공률/실패률/지연 시간을 qa-tracker checks로 반영합니다.
+- None
 
 ## Pending Improvements
 
@@ -90,8 +89,6 @@ Latest run: QA-20260301-0035 (2026-03-01T13:45:21.162Z)
   - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
 - [P2] show-more-servers: 12개 더 보기 버튼 (seen 1회, last QA-20260301-0031)
   - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
-- [P2] system-start-metrics-gate: 시스템 시작 지연/실패율 KPI 기준 자동 수집 (seen 3회, last QA-20260227-0018)
-  - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
 - [P2] top5-server-detail: Top5 서버 상세 모달 (3탭) (seen 1회, last QA-20260301-0031)
   - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
 - [P2] ui-esc-close: ESC 사이드바 닫기 (seen 1회, last QA-20260301-0030)
@@ -105,19 +102,21 @@ Latest run: QA-20260301-0035 (2026-03-01T13:45:21.162Z)
 - api-인증-검증-401-확인: API 인증 검증 401 확인 (completed 1회, last QA-20260301-0032)
 - auth-error-provider-copy: 인증 에러 라우트 메시지를 제공자-중립 표현으로 전환 (completed 1회, last QA-20260227-0010)
 - biome-lint-900-files-에러-0: Biome Lint 900 files 에러 0 (completed 1회, last QA-20260301-0032)
-- dashboard-server-cards: 대시보드 서버 카드 및 메트릭 (completed 1회, last QA-20260301-0035)
+- dashboard-server-card-selector-stabilization: 서버 카드 선택자 및 빈 상태 처리 안정화 (completed 2회, last QA-20260302-0039)
+- dashboard-server-cards: 대시보드 서버 카드 및 메트릭 (completed 2회, last QA-20260302-0038)
 - feature-card-modal: 피처카드 모달 (completed 1회, last QA-20260301-0035)
 - feature-dod-e2e-critical: E2E 크리티컬 흐름 통과 (completed 1회, last QA-20260228-0029)
-- feature-dod-lint-zero-error: lint 0 에러 (completed 3회, last QA-20260228-0028)
+- feature-dod-lint-zero-error: lint 0 에러 (completed 4회, last QA-20260302-0039)
 - feature-dod-login-copy-neutral: 로그인 정책 카피 중립성 지속성 (completed 1회, last QA-20260227-0017)
 - feature-dod-login-policy-copy: 로그인 정책 카피 중립성 지속성 (completed 3회, last QA-20260227-0018)
 - feature-dod-release-response-time-check: Feature/Release DoD: 핵심 응답시간 합격 (completed 1회, last QA-20260226-0005)
 - feature-dod-security-review: Feature DoD: 보안 검토(입력 검증/인증/OWASP) (completed 1회, last QA-20260226-0006)
 - feature-dod-system-start-guard: 비로그인 시스템 시작 가드 모달 동작 (completed 7회, last QA-20260227-0018)
-- feature-dod-tsc-zero-error: tsc --noEmit 0 에러 (completed 3회, last QA-20260228-0028)
-- feature-dod-unit-tests: 전체 단위/통합 테스트 통과 (completed 3회, last QA-20260228-0028)
+- feature-dod-tsc-zero-error: tsc --noEmit 0 에러 (completed 4회, last QA-20260302-0039)
+- feature-dod-unit-tests: 신규 로직 단위 테스트 추가 (completed 4회, last QA-20260302-0039)
 - feature-dod-validation-health-endpoints: 헬스/버전 API 검사 (Vercel) (completed 2회, last QA-20260227-0018)
 - feature-dod-vitals-integration: vitals:integration 통합 실행 통과 (completed 1회, last QA-20260228-0028)
+- guest-flow-server-card-and-startflow-resilience: 게스트 플로우 시스템 시작/AI 진입 내성 보강 (completed 3회, last QA-20260302-0039)
 - guest-login-visibility-toggle: 게스트 로그인 버튼 노출 옵션화 (completed 2회, last QA-20260227-0013)
 - guest-pin-login-flow: 게스트 PIN 인증 후 시스템 시작 버튼 노출 (completed 4회, last QA-20260227-0018)
 - health-api: Health API 검증 (completed 1회, last QA-20260301-0035)
@@ -133,13 +132,17 @@ Latest run: QA-20260301-0035 (2026-03-01T13:45:21.162Z)
 - planning-backlog-clear: planning TODO 잔여 항목 정리 (completed 1회, last QA-20260226-0006)
 - qa-expert-domain-tracking: QA 런에서 전문가 영역 적합성 추적 체계 도입 (completed 1회, last QA-20260226-0003)
 - rag-engine-doc-link-repair: RAG, Vercel fair-use 문서 링크 경로 갱신 (completed 1회, last QA-20260228-0026)
+- rag-smoke-coverage: Redis+Supabase RAG 경로 스모크 강화 (completed 2회, last QA-20260302-0039)
 - release-dod-contract-test: Release DoD: API contract test 통과 (completed 1회, last QA-20260226-0008)
 - release-dod-cost-gate: Release DoD: Cloud Run Free Tier 비용 가드 검증 (completed 1회, last QA-20260226-0008)
 - release-dod-doc-gate: Release DoD: 문서 게이트 90일 갱신·메타데이터·아카이빙 정책 (completed 1회, last QA-20260228-0025)
-- release-dod-test-gate: Release DoD: validate:all (tsc + lint + test) 전체 통과 (completed 1회, last QA-20260226-0008)
+- release-dod-test-gate: validate:all 0 에러 (completed 2회, last QA-20260302-0036)
+- system-boot-api-checks: 시스템 부트 API 존재성/헬스 체크 (completed 2회, last QA-20260302-0039)
 - system-boot-redirect: 시스템 시작 대시보드 리다이렉트 (completed 1회, last QA-20260301-0035)
+- system-start-auth-modal-guard-stability: 시스템 시작 로그인 모달 노출 경로 검증 보강 (completed 2회, last QA-20260302-0038)
 - system-start-login-modal: 비로그인 상태에서 시스템 시작 클릭 시 로그인 모달 노출 (completed 1회, last QA-20260227-0021)
 - system-start-login-modal-redirect: 로그인 모달에서 로그인 페이지로 이동 (completed 1회, last QA-20260227-0022)
+- system-start-metrics-gate: 시스템 시작 KPI 계측 (completed 2회, last QA-20260302-0038)
 - typescript-무결성: TypeScript 무결성 (completed 1회, last QA-20260301-0032)
 - vitals-log-suppression: Web Vitals 통합 테스트 로그 억제 옵션 추가 (completed 1회, last QA-20260228-0028)
 - 게스트-pin-로그인-후-시스템-시작-버튼-노출: 게스트 PIN 로그인 후 시스템 시작 버튼 노출 (completed 1회, last QA-20260227-0010)
@@ -161,6 +164,10 @@ Latest run: QA-20260301-0035 (2026-03-01T13:45:21.162Z)
 
 | Run ID | Time (UTC) | Title | Checks | Completed | Pending | Wont-Fix | Expert Gaps |
 |---|---|---|---:|---:|---:|---:|---:|
+| QA-20260302-0039 | 2026-03-01T17:31:03.533Z | Local QA Improvement Run - dashboard/guest/system-start continuity | 20 | 7 | 0 | 0 | 0 |
+| QA-20260302-0038 | 2026-03-01T17:09:26.362Z | Local QA Improvement Run - system-start KPI + guest + server cards | 20 | 5 | 0 | 0 | 0 |
+| QA-20260302-0037 | 2026-03-01T17:02:04.585Z | Local QA Improvement Run - system-start KPI smoke | 1 | 1 | 0 | 0 | 0 |
+| QA-20260302-0036 | 2026-03-01T16:58:39.657Z | Local QA Improvement Run - Server Cards + Guest/System Start + RAG Smoke | 11 | 5 | 0 | 0 | 0 |
 | QA-20260301-0035 | 2026-03-01T13:45:21.162Z | Production Playwright MCP QA v8.7.2 — Full Functional Validation (6/6 PASS) | 6 | 6 | 0 | 0 | 0 |
 | QA-20260301-0034 | 2026-03-01T07:37:43.156Z | Production Playwright MCP QA — observability commit 6179e54 (8/8 PASS) | 8 | 0 | 0 | 0 | 0 |
 | QA-20260301-0033 | 2026-03-01T06:16:36.498Z | Production Playwright MCP QA | 0 | 0 | 0 | 0 | 0 |
@@ -177,8 +184,4 @@ Latest run: QA-20260301-0035 (2026-03-01T13:45:21.162Z)
 | QA-20260227-0022 | 2026-02-27T12:22:13.317Z | Vercel Playwright MCP: 로그인 모달에서 로그인 페이지 이동 | 1 | 1 | 0 | 0 | 0 |
 | QA-20260227-0021 | 2026-02-27T12:12:23.798Z | Vercel Playwright MCP: 비로그인 시스템 시작 로그인 모달 | 1 | 1 | 0 | 0 | 0 |
 | QA-20260227-0020 | 2026-02-27T12:00:06.421Z | Vercel Playwright MCP QA - 비로그인 시작 CTA 노출/모달 재검증 | 2 | 2 | 0 | 0 | 0 |
-| QA-20260227-0019 | 2026-02-27T11:53:49.388Z | Vercel Playwright MCP QA - 비로그인 시작 CTA 가시성 및 모달 확인 | 2 | 2 | 0 | 0 | 0 |
-| QA-20260227-0018 | 2026-02-27T11:13:35.120Z | Vercel Playwright MCP QA - 시스템 시작 가드 및 게스트 인증 경로 재확인 | 6 | 4 | 0 | 1 | 2 |
-| QA-20260227-0017 | 2026-02-26T19:25:22.388Z | Vercel Playwright QA - 로그인 정책 카피 지속성 및 시스템 시작 가드 재확인 | 2 | 1 | 1 | 0 | 2 |
-| QA-20260227-0016 | 2026-02-26T18:34:32.172Z | Vercel Playwright QA - 로그인 정책/시스템 시작 가드 재검증 | 2 | 3 | 0 | 0 | 2 |
 

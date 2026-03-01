@@ -1,0 +1,143 @@
+{
+  "runId": "QA-20260302-0039",
+  "recordedAt": "2026-03-01T17:31:03.533Z",
+  "recordedAtKst": "2026-03-02 02:31:03 KST",
+  "runTitle": "Local QA Improvement Run - dashboard/guest/system-start continuity",
+  "owner": "codex",
+  "source": "local-checks",
+  "environment": {
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main"
+  },
+  "checks": {
+    "total": 20,
+    "passed": 20,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "게스트/시스템 시작/서버 카드 경로의 주요 E2E가 재실행되어 안정적으로 통과했으며, KPI 시뮬레이션도 계측되었습니다.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "data-metrics-quality",
+      "domainName": "Data Quality & Metrics Analyst",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "시스템 시작 호출 지연/성공률을 3회 샘플 기준으로 수집하고 임계치 내 동작을 검증했습니다.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "실행 로그 기반 KPI 로그(상태, 지연, 성공/실패)가 QA 런에 반영되었습니다.",
+      "nextAction": ""
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "dashboard-server-card-selector-stabilization",
+      "title": "서버 카드 선택자 및 빈 상태 처리 안정화",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "dashboard-server-cards.spec.ts 모달/탭/컨트롤 안정성 검증",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "guest-flow-server-card-and-startflow-resilience",
+      "title": "게스트 플로우 시스템 시작/AI 진입 내성 보강",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "guest.spec.ts 환경 분기 대응 및 빈 상태 fallback 허용",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "system-boot-api-checks",
+      "title": "시스템 부트 API 존재성/헬스 체크",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "system-boot.spec.ts의 시스템 API/헬스 응답 테스트 재실행",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "rag-smoke-coverage",
+      "title": "Redis+Supabase RAG 경로 스모크 강화",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "RAG 프런트/백엔드 smoke 테스트 유지",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "feature-dod-tsc-zero-error",
+      "title": "tsc --noEmit 0 에러",
+      "priority": "P2",
+      "evidence": "reports/qa/runs/2026/qa-run-QA-20260302-0039.json",
+      "note": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "feature-dod-lint-zero-error",
+      "title": "lint 0 에러",
+      "priority": "P2",
+      "evidence": "reports/qa/runs/2026/qa-run-QA-20260302-0039.json",
+      "note": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "feature-dod-unit-tests",
+      "title": "신규 로직 단위 테스트 추가",
+      "priority": "P2",
+      "evidence": "reports/qa/runs/2026/qa-run-QA-20260302-0039.json",
+      "note": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "로컬 Playwright 기준 20/20 통과. 환경 변수를 이용한 로컬/운영 분기 대응을 유지하면서 모달/시작/AI 토글 경로를 점검했습니다."
+  ],
+  "links": []
+}

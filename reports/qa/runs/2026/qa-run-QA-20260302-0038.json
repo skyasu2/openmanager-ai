@@ -1,0 +1,115 @@
+{
+  "runId": "QA-20260302-0038",
+  "recordedAt": "2026-03-01T17:09:26.362Z",
+  "recordedAtKst": "2026-03-02 02:09:26 KST",
+  "runTitle": "Local QA Improvement Run - system-start KPI + guest + server cards",
+  "owner": "codex",
+  "source": "local-checks",
+  "environment": {
+    "frontend": "local-dev",
+    "backend": "local-next",
+    "branch": "main"
+  },
+  "checks": {
+    "total": 20,
+    "passed": 20,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Dashboard, guest auth flow, AI sidebar open and system-start KPI E2E가 모두 안정적으로 통과했습니다.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "data-metrics-quality",
+      "domainName": "Data Quality & Metrics Analyst",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "시스템 시작 KPI가 start 요청/응답 지연·성공률을 단일 실행 내에서 수집·검증했습니다.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "시스템 시작 KPI 로그(지연·성공률)와 대시보드/게스트 플로우가 실시간 검증으로 확보됩니다.",
+      "nextAction": ""
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "system-start-metrics-gate",
+      "title": "시스템 시작 KPI 계측",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "tests/e2e/system-boot.spec.ts",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "guest-flow-server-card-and-startflow-resilience",
+      "title": "게스트 플로우 시스템 시작/AI 진입 내성 보강",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "tests/e2e/guest.spec.ts",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "dashboard-server-cards",
+      "title": "대시보드 서버 카드 및 메트릭",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "tests/e2e/dashboard-server-cards.spec.ts",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "system-start-auth-modal-guard-stability",
+      "title": "시스템 시작 로그인 모달 노출 경로 검증 보강",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "tests/e2e/qa-systemstart-auth.spec.ts",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "system-boot-api-checks",
+      "title": "시스템 부트 API 존재성/헬스 체크",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "tests/e2e/system-boot.spec.ts",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [],
+  "links": []
+}

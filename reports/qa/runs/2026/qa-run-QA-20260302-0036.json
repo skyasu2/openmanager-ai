@@ -1,0 +1,115 @@
+{
+  "runId": "QA-20260302-0036",
+  "recordedAt": "2026-03-01T16:58:39.657Z",
+  "recordedAtKst": "2026-03-02 01:58:39 KST",
+  "runTitle": "Local QA Improvement Run - Server Cards + Guest/System Start + RAG Smoke",
+  "owner": "codex",
+  "source": "local-checks",
+  "environment": {
+    "frontend": "Local",
+    "backend": "Local",
+    "branch": "main"
+  },
+  "checks": {
+    "total": 11,
+    "passed": 11,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "서버 카드, 게스트 진입, 시스템 시작 정책, AI 사이드바 핵심 E2E와 RAG 스모크를 통해 핵심 플로우가 안정적으로 재현되며, 회귀 대응 신호가 강화됨.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "RAG 지식 검색 경로와 프론트 RagSources 전달/배지 노출이 단위·스모크 테스트로 확인되어 AI 흐름 검증이 강화됨.",
+      "nextAction": ""
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "dashboard-server-card-selector-stabilization",
+      "title": "서버 카드 선택자 및 빈 상태 처리 안정화",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "tests/e2e/dashboard-server-cards.spec.ts",
+      "note": "",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "guest-flow-server-card-and-startflow-resilience",
+      "title": "게스트 플로우 시스템 시작/AI 진입 내성 보강",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "tests/e2e/guest.spec.ts",
+      "note": "",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "system-start-auth-modal-guard-stability",
+      "title": "시스템 시작 로그인 모달 노출 경로 검증 보강",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "tests/e2e/qa-systemstart-auth.spec.ts",
+      "note": "",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "rag-smoke-coverage",
+      "title": "Redis+Supabase RAG 경로 스모크 커버리지 추가",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "cloud-run/ai-engine/src/tools-ai-sdk/reporter-tools/knowledge-search-tool.test.ts, src/components/ai-sidebar/SidebarMessage.rag-badge.test.tsx",
+      "note": "",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "release-dod-test-gate",
+      "title": "validate:all 0 에러",
+      "priority": "P0",
+      "evidence": "",
+      "note": "",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "로컬 환경 기준 실행",
+    "타사 무료 티어 제약 하에서 비용·호출량을 최소화한 테스트 범위로 실행"
+  ],
+  "links": [
+    {
+      "label": "Vercel URL",
+      "url": "https://openmanager-ai.vercel.app"
+    }
+  ]
+}
