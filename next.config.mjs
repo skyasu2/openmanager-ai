@@ -45,6 +45,12 @@ const nextConfig = {
     process.env.NEXT_OUTPUT_MODE === 'standalone' ? 'standalone' : undefined,
   trailingSlash: false,
 
+  // 📦 Output File Tracing: OTel 데이터 파일을 serverless 함수 번들에 포함
+  // fs.readFile로 동적 로드하는 파일은 자동 추적이 안 되므로 명시적 포함 필요
+  outputFileTracingIncludes: {
+    '/*': ['./public/data/otel-data/**/*'],
+  },
+
   // 🔧 Windows IDE에서 WSL 개발 서버 접속 허용 (Cross-Origin)
   allowedDevOrigins: [
     'http://localhost:3000',

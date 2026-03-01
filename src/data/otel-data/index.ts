@@ -27,21 +27,37 @@ const inflightHourly: Record<number, Promise<OTelHourlyFile | null>> = {};
 
 /**
  * 범용 비동기 로더 (서버/클라이언트 하이브리드)
+ *
+ * 서버 측: fs.readFile 우선, 실패 시 fetch fallback (Vercel serverless 대응)
+ * 클라이언트 측: fetch 사용
  */
 async function loadJsonData<T>(fileName: string): Promise<T | null> {
   try {
     if (typeof window === 'undefined') {
-      const fs = await import('node:fs/promises');
-      const path = await import('node:path');
-      const filePath = path.join(
-        process.cwd(),
-        'public',
-        'data',
-        'otel-data',
-        fileName
-      );
-      const fileContent = await fs.readFile(filePath, 'utf-8');
-      return JSON.parse(fileContent) as T;
+      // 서버 측: fs.readFile → fetch fallback
+      try {
+        const fs = await import('node:fs/promises');
+        const path = await import('node:path');
+        const filePath = path.join(
+          process.cwd(),
+          'public',
+          'data',
+          'otel-data',
+          fileName
+        );
+        const fileContent = await fs.readFile(filePath, 'utf-8');
+        return JSON.parse(fileContent) as T;
+      } catch {
+        // Vercel serverless: fs.readFile 실패 시 CDN static asset으로 fetch
+        const baseUrl = process.env.VERCEL_URL
+          ? `https://${process.env.VERCEL_URL}`
+          : process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+        const response = await fetch(`${baseUrl}/data/otel-data/${fileName}`);
+        if (!response.ok) {
+          throw new Error(`Fetch fallback failed: ${response.status}`);
+        }
+        return (await response.json()) as T;
+      }
     } else {
       const response = await fetch(`/data/otel-data/${fileName}`);
       if (!response.ok) throw new Error(`Failed to fetch: ${fileName}`);
