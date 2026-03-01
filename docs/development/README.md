@@ -43,7 +43,6 @@
 |------|------|
 | [코딩 표준](./coding-standards.md) | 개발 방법론 및 코드 스타일 |
 | [문서 관리](./documentation-management.md) | 문서 구조/정합성/인벤토리 관리 기준 |
-| [Codex 전환 가이드](./codex-main-transition-guide.md) | Codex 메인 운영 전환 전략 |
 | [Stitch 가이드](./stitch-guide.md) | UI 증분 개선 워크플로우 통합 |
 
 ## 기술 스택
