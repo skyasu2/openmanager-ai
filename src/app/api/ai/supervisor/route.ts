@@ -30,6 +30,11 @@ import {
 import { type AIEndpoint, getAICache } from '@/lib/ai/cache/ai-response-cache';
 import { createFallbackResponse } from '@/lib/ai/fallback/ai-fallback-handler';
 import {
+  logAIRequest,
+  logAIResponse,
+  startAITimer,
+} from '@/lib/ai/observability';
+import {
   compressContext,
   shouldCompress,
 } from '@/lib/ai/utils/context-compressor';
@@ -41,11 +46,6 @@ import {
   analyzeQueryComplexity,
   calculateDynamicTimeout,
 } from '@/lib/ai/utils/query-complexity';
-import {
-  logAIRequest,
-  logAIResponse,
-  startAITimer,
-} from '@/lib/ai/observability';
 import { isCloudRunEnabled } from '@/lib/ai-proxy/proxy';
 import { withAuth } from '@/lib/auth/api-auth';
 import { logger } from '@/lib/logging';
