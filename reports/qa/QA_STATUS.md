@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-01 16:37:43 KST
+> Generated at: 2026-03-01 22:45:21 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 34 |
-| Total Checks | 185 |
-| Passed | 167 |
+| Total Runs | 35 |
+| Total Checks | 191 |
+| Passed | 173 |
 | Failed | 18 |
-| Completed Items | 51 |
+| Completed Items | 57 |
 | Pending Items | 0 |
-| Wont-Fix Items | 35 |
+| Wont-Fix Items | 30 |
 | Expert Domains Tracked | 6 |
 | Expert Open Gaps | 2 |
 | Completion Rate | 100% |
-| Last Run | QA-20260301-0034 (2026-03-01T07:37:43.156Z) |
+| Last Run | QA-20260301-0035 (2026-03-01T13:45:21.162Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260301-0034 (2026-03-01T07:37:43.156Z)
+Latest run: QA-20260301-0035 (2026-03-01T13:45:21.162Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -44,8 +44,6 @@ Latest run: QA-20260301-0034 (2026-03-01T07:37:43.156Z)
 - [P1] obs-fp-fn-weekly-report: 오탐/미탐 주간 리포트 자동 생성 (seen 3회, last QA-20260227-0013)
 - [P1] security-attack-regression-pack: 보안 공격 시나리오 회귀팩 구축 (seen 3회, last QA-20260227-0013)
 - [P2] ai-chat-detail-expand: AI Chat 상세 분석 펼치기 (seen 1회, last QA-20260301-0030)
-  - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
-- [P2] ai-chat-response: AI Chat 응답 (seen 1회, last QA-20260301-0030)
   - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
 - [P2] ai-chat-sidebar-open: AI 사이드바 열기 (seen 1회, last QA-20260301-0030)
   - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
@@ -70,17 +68,11 @@ Latest run: QA-20260301-0034 (2026-03-01T07:37:43.156Z)
   - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
 - [P2] dashboard-resources: 시스템 리소스 개요 (seen 1회, last QA-20260301-0030)
   - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
-- [P2] dashboard-server-cards: 대시보드 서버 카드 (seen 1회, last QA-20260301-0030)
-  - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
 - [P2] dashboard-status-filter: 상태 필터 토글 (seen 1회, last QA-20260301-0031)
   - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
 - [P2] dashboard-topology-map: 토폴로지 맵 모달 (seen 1회, last QA-20260301-0031)
   - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
-- [P2] health-api: Health API 검증 (seen 1회, last QA-20260301-0030)
-  - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
 - [P2] landing-feature-cards: 랜딩 피처카드 4개 모달 (seen 1회, last QA-20260301-0031)
-  - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
-- [P2] landing-page-render: 랜딩 페이지 렌더링 (seen 1회, last QA-20260301-0030)
   - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
 - [P2] landing-system-start: 시스템 시작 카운트다운 (seen 1회, last QA-20260301-0031)
   - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
@@ -98,8 +90,6 @@ Latest run: QA-20260301-0034 (2026-03-01T07:37:43.156Z)
   - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
 - [P2] show-more-servers: 12개 더 보기 버튼 (seen 1회, last QA-20260301-0031)
   - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
-- [P2] system-boot-redirect: 시스템 시작 대시보드 리다이렉트 (seen 1회, last QA-20260301-0030)
-  - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
 - [P2] system-start-metrics-gate: 시스템 시작 지연/실패율 KPI 기준 자동 수집 (seen 3회, last QA-20260227-0018)
   - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
 - [P2] top5-server-detail: Top5 서버 상세 모달 (3탭) (seen 1회, last QA-20260301-0031)
@@ -109,11 +99,14 @@ Latest run: QA-20260301-0034 (2026-03-01T07:37:43.156Z)
 
 ## Completed Improvements
 
+- ai-chat-response: AI Chat 응답 (completed 1회, last QA-20260301-0035)
 - ai-friendly-template-todo-marker: Template TODO marker 분리 (TEMPLATE_TODO 적용) (completed 1회, last QA-20260226-0006)
 - ai-math-tools: AI 계산 도구(수식/통계/용량) 셋업 완료 (completed 1회, last QA-20260228-0023)
 - api-인증-검증-401-확인: API 인증 검증 401 확인 (completed 1회, last QA-20260301-0032)
 - auth-error-provider-copy: 인증 에러 라우트 메시지를 제공자-중립 표현으로 전환 (completed 1회, last QA-20260227-0010)
 - biome-lint-900-files-에러-0: Biome Lint 900 files 에러 0 (completed 1회, last QA-20260301-0032)
+- dashboard-server-cards: 대시보드 서버 카드 및 메트릭 (completed 1회, last QA-20260301-0035)
+- feature-card-modal: 피처카드 모달 (completed 1회, last QA-20260301-0035)
 - feature-dod-e2e-critical: E2E 크리티컬 흐름 통과 (completed 1회, last QA-20260228-0029)
 - feature-dod-lint-zero-error: lint 0 에러 (completed 3회, last QA-20260228-0028)
 - feature-dod-login-copy-neutral: 로그인 정책 카피 중립성 지속성 (completed 1회, last QA-20260227-0017)
@@ -127,9 +120,11 @@ Latest run: QA-20260301-0034 (2026-03-01T07:37:43.156Z)
 - feature-dod-vitals-integration: vitals:integration 통합 실행 통과 (completed 1회, last QA-20260228-0028)
 - guest-login-visibility-toggle: 게스트 로그인 버튼 노출 옵션화 (completed 2회, last QA-20260227-0013)
 - guest-pin-login-flow: 게스트 PIN 인증 후 시스템 시작 버튼 노출 (completed 4회, last QA-20260227-0018)
+- health-api: Health API 검증 (completed 1회, last QA-20260301-0035)
 - health-api-200-healthy: Health API 200 healthy (completed 1회, last QA-20260301-0032)
 - home-semantic-nav: 홈 페이지 nav 랜드마크 보강 (completed 1회, last QA-20260226-0009)
 - landing-copy-alignment: 랜딩/로그인 정책 카피 정합성 (completed 4회, last QA-20260227-0016)
+- landing-page-render: 랜딩 페이지 렌더링 (completed 1회, last QA-20260301-0035)
 - login-copy-neutral: 로그인 정책 카피 중립성 개선 (completed 1회, last QA-20260227-0014)
 - login-pin-form-structure: 게스트 PIN 입력 폼 구조 정리 (completed 1회, last QA-20260226-0001)
 - math-tool-implementation-validation: AI 계산 툴 라우팅/실행 검증 (completed 1회, last QA-20260228-0027)
@@ -142,6 +137,7 @@ Latest run: QA-20260301-0034 (2026-03-01T07:37:43.156Z)
 - release-dod-cost-gate: Release DoD: Cloud Run Free Tier 비용 가드 검증 (completed 1회, last QA-20260226-0008)
 - release-dod-doc-gate: Release DoD: 문서 게이트 90일 갱신·메타데이터·아카이빙 정책 (completed 1회, last QA-20260228-0025)
 - release-dod-test-gate: Release DoD: validate:all (tsc + lint + test) 전체 통과 (completed 1회, last QA-20260226-0008)
+- system-boot-redirect: 시스템 시작 대시보드 리다이렉트 (completed 1회, last QA-20260301-0035)
 - system-start-login-modal: 비로그인 상태에서 시스템 시작 클릭 시 로그인 모달 노출 (completed 1회, last QA-20260227-0021)
 - system-start-login-modal-redirect: 로그인 모달에서 로그인 페이지로 이동 (completed 1회, last QA-20260227-0022)
 - typescript-무결성: TypeScript 무결성 (completed 1회, last QA-20260301-0032)
@@ -165,6 +161,7 @@ Latest run: QA-20260301-0034 (2026-03-01T07:37:43.156Z)
 
 | Run ID | Time (UTC) | Title | Checks | Completed | Pending | Wont-Fix | Expert Gaps |
 |---|---|---|---:|---:|---:|---:|---:|
+| QA-20260301-0035 | 2026-03-01T13:45:21.162Z | Production Playwright MCP QA v8.7.2 — Full Functional Validation (6/6 PASS) | 6 | 6 | 0 | 0 | 0 |
 | QA-20260301-0034 | 2026-03-01T07:37:43.156Z | Production Playwright MCP QA — observability commit 6179e54 (8/8 PASS) | 8 | 0 | 0 | 0 | 0 |
 | QA-20260301-0033 | 2026-03-01T06:16:36.498Z | Production Playwright MCP QA | 0 | 0 | 0 | 0 | 0 |
 | QA-20260301-0032 | 2026-03-01T03:33:12.090Z | Final QA Gate v8.7.1 — Static + Security + Build + Code Quality (18/18 PASS) | 18 | 14 | 0 | 0 | 0 |
@@ -184,5 +181,4 @@ Latest run: QA-20260301-0034 (2026-03-01T07:37:43.156Z)
 | QA-20260227-0018 | 2026-02-27T11:13:35.120Z | Vercel Playwright MCP QA - 시스템 시작 가드 및 게스트 인증 경로 재확인 | 6 | 4 | 0 | 1 | 2 |
 | QA-20260227-0017 | 2026-02-26T19:25:22.388Z | Vercel Playwright QA - 로그인 정책 카피 지속성 및 시스템 시작 가드 재확인 | 2 | 1 | 1 | 0 | 2 |
 | QA-20260227-0016 | 2026-02-26T18:34:32.172Z | Vercel Playwright QA - 로그인 정책/시스템 시작 가드 재검증 | 2 | 3 | 0 | 0 | 2 |
-| QA-20260227-0015 | 2026-02-26T18:11:05.996Z | Vercel Playwright QA - 랜딩 로그인 모달 카피 배포 정합성 재검증 | 2 | 2 | 2 | 0 | 3 |
 

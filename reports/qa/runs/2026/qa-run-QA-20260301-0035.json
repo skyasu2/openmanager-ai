@@ -1,0 +1,112 @@
+{
+  "runId": "QA-20260301-0035",
+  "recordedAt": "2026-03-01T13:45:21.162Z",
+  "recordedAtKst": "2026-03-01 22:45:21 KST",
+  "runTitle": "Production Playwright MCP QA v8.7.2 — Full Functional Validation (6/6 PASS)",
+  "owner": "claude",
+  "source": "playwright-mcp",
+  "environment": {
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main"
+  },
+  "checks": {
+    "total": 6,
+    "passed": 6,
+    "failed": 0
+  },
+  "expertAssessments": [],
+  "completedImprovements": [
+    {
+      "id": "landing-page-render",
+      "title": "랜딩 페이지 렌더링",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "타이틀, 서브타이틀, 시스템 시작 버튼, 피처카드 4개, v8.7.2, 게스트 프로필, 푸터 정상",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "system-boot-redirect",
+      "title": "시스템 시작 대시보드 리다이렉트",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "/system-boot 부팅 애니메이션 → /dashboard 자동 리다이렉트 정상",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "dashboard-server-cards",
+      "title": "대시보드 서버 카드 및 메트릭",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "15대(온라인 14, 경고 1), CPU 35%/MEM 49%/Disk 32%, Top5, 필터, 상세 펼치기 정상",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "ai-chat-response",
+      "title": "AI Chat 응답",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "Cloud Run AI 응답 정상. 15대 요약, lb-haproxy-dc1-01 CPU 72% 식별, 추세 분석, 권고사항",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "feature-card-modal",
+      "title": "피처카드 모달",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "AI Assistant 모달 필수(3) 중요(7) 보통(3) 기술 스택 상세",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "health-api",
+      "title": "Health API 검증",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "200 healthy, DB/Cache/AI connected 1ms, v8.7.2",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "v8.7.2 Production 전체 기능 검증 완료",
+    "AI Chat Cloud Run 응답 정상 (약 30초)",
+    "콘솔 에러 0건, 경고는 리소스 preload 관련 (비기능적)"
+  ],
+  "links": [
+    {
+      "label": "Vercel URL",
+      "url": "https://openmanager-ai.vercel.app"
+    }
+  ]
+}
