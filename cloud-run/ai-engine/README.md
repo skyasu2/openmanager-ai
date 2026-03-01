@@ -24,6 +24,11 @@ npm run test
 npm run test:all
 
 # Deploy to Cloud Run
+# 권장: 운영 배포 스크립트(Cloud Build 원격 빌드 + Free Tier 가드레일)
+bash deploy.sh
+
+# 실험용/임시 목적만: 로컬 소스로 직접 배포
+# (운영 반영에는 권장하지 않음)
 gcloud run deploy ai-engine --source . --region asia-northeast1
 ```
 
@@ -254,10 +259,13 @@ npm run prompt:redteam
 ## Deployment
 
 ```bash
-# Recommended deployment (includes free-tier guard + local Docker preflight)
+# Recommended deployment (includes free-tier guard)
 bash deploy.sh
 
-# Skip local Docker preflight when needed
+# Enable local Docker preflight only when you want an extra local runtime check
+LOCAL_DOCKER_PREFLIGHT=true bash deploy.sh
+
+# Disable explicitly when needed (default false)
 LOCAL_DOCKER_PREFLIGHT=false bash deploy.sh
 
 # Service URL (dynamic lookup)
@@ -267,7 +275,7 @@ gcloud run services describe ai-engine --region asia-northeast1 --format='value(
 ## Docker
 
 ```bash
-# Preflight build + health check (recommended before Cloud Run deploy)
+# Preflight build + health check (optional)
 npm run docker:preflight
 
 # Build only (skip local run)

@@ -18,6 +18,19 @@ This directory contains the AI Engine microservice for OpenManager AI.
 
 ```bash
 cd ai-engine
+./deploy.sh
+```
+
+현재 레포 공식 배포 경로는 `./deploy.sh`입니다.
+- `deploy.sh`는 `gcloud builds submit`로 Cloud Build에서 Docker를 원격 빌드합니다.
+- `scripts/docker-preflight.sh`는 배포 전에 로컬 런타임을 검증하는 **권장 사전 점검**입니다.
+- 실 배포는 `gcloud run deploy --image ...`로 진행되며, 로컬 Docker 결과물을 바로 사용하지 않습니다.
+- 운영 반영 시에는 `--source .` 방식보다 위 스크립트를 사용해 태깅/라벨/가드레일/클린업 규칙을 일관되게 적용하세요.
+
+원하면 빠른 실험/검증 목적(권장 아님)으로만 아래와 같이 `--source` 배포를 사용할 수 있습니다.
+
+```bash
+cd ai-engine
 gcloud run deploy ai-engine \
   --source . \
   --platform managed \

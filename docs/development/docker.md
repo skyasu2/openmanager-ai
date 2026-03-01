@@ -33,6 +33,10 @@
 
 > **판단 기준**: `cloud-run/ai-engine/` 내부 코드를 수정했다면 Docker 테스트 권장. `src/` 내부만 수정했다면 `npm run dev`로 충분.
 
+Cloud Run 배포는 `./deploy.sh`에서 `gcloud builds submit`으로 원격 빌드를 수행합니다.  
+즉, 로컬에서 `docker build`를 먼저 완료했더라도, 운영 배포 시에는 같은 이미지를 재사용하지 않습니다.  
+로컬 Docker의 의미는 **사전 동작 검증(preflight)**이며, 배포 전 품질 보장 역할입니다.
+
 ---
 
 ## 아키텍처: Windows + WSL 2 + Docker

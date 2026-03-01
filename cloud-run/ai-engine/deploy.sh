@@ -3,6 +3,8 @@
 # ==============================================================================
 # Cloud Run Deployment Script (AI Engine)
 #
+# v7.3 - 2026-03-01 (Deployment Simplification)
+#   - Defaulted local Docker preflight to opt-in mode to avoid mandatory local builds
 # v7.2 - 2026-02-27 (Cleanup Reliability Improvements)
 #   - Added configurable cleanup controls (enable/dry-run/parallel + retain counts)
 #   - Added Cloud Build source cleanup via gcloud storage JSON listing (time-based)
@@ -60,7 +62,7 @@ FREE_TIER_CONCURRENCY="80"
 FREE_TIER_CPU="1"
 FREE_TIER_MEMORY="512Mi"
 FREE_TIER_TIMEOUT="300"
-LOCAL_DOCKER_PREFLIGHT="${LOCAL_DOCKER_PREFLIGHT:-true}"
+LOCAL_DOCKER_PREFLIGHT="${LOCAL_DOCKER_PREFLIGHT:-false}"
 LOCAL_DOCKER_PREFLIGHT_SKIP_RUN="${LOCAL_DOCKER_PREFLIGHT_SKIP_RUN:-false}"
 DEFAULT_ORIGIN="${DEFAULT_ORIGIN:-https://openmanager-ai.vercel.app}"
 ALLOWED_ORIGINS="${ALLOWED_ORIGINS:-https://openmanager-ai.vercel.app}"
