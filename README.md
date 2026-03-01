@@ -270,5 +270,5 @@ This project is licensed under the **GNU General Public License v3.0** - see the
 <div align="center">
   <sub>Built with Vibe Coding</sub>
   <br/>
-  <sub>v8.7.0</sub>
+  <sub>v8.7.1</sub>
 </div>
