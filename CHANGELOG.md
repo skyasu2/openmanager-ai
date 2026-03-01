@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.7.1](https://github.com/skyasu2/openmanager-ai/compare/v8.7.0...v8.7.1) (2026-03-01)
+
+
+### Features
+
+* **next16:** enable cacheComponents and remove conflicting route segment config ([b5598f0](https://github.com/skyasu2/openmanager-ai/commit/b5598f03ba558f739ffc5da7321ed7732c934bb8))
+
+
+### Bug Fixes
+
+* **nextjs16:** resolve use cache directive async error and storybook warnings ([6ee7391](https://github.com/skyasu2/openmanager-ai/commit/6ee7391cf6ba894e37a29233b76ea4c37cb10732))
+* **observability:** support log-level reset across vercel and cloud-run ([17bf3e1](https://github.com/skyasu2/openmanager-ai/commit/17bf3e10b19415787ee6bb3c8d2e67c22abab2cd))
+* **readme:** add demo screenshots and fix version/badge display ([3bfb212](https://github.com/skyasu2/openmanager-ai/commit/3bfb21243f6a030db37065532950bc4a80478819))
+* **readme:** escape Mermaid parentheses in architecture diagram ([462a476](https://github.com/skyasu2/openmanager-ai/commit/462a476811efce0b48ebd2c87d221988726607b0))
+* **test:** format web-vitals log error fallback ([bf2f2bb](https://github.com/skyasu2/openmanager-ai/commit/bf2f2bb44449310839b2529ffb1a78668382b877))
+
 ## [8.7.0](https://github.com/skyasu2/openmanager-ai/compare/v8.6.0...v8.7.0) (2026-02-28)
 
 
