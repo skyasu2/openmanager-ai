@@ -9,6 +9,7 @@
  */
 
 import { type NextRequest, NextResponse } from 'next/server';
+import { z } from 'zod';
 import { getDefaultTimeout } from '@/config/ai-proxy.config';
 import {
   type CacheableAIResponse,
@@ -25,6 +26,15 @@ import { isCloudRunEnabled, proxyToCloudRun } from '@/lib/ai-proxy/proxy';
 import { withAuth } from '@/lib/auth/api-auth';
 import { getErrorMessage } from '@/types/type-utils';
 import debug from '@/utils/debug';
+
+const IntelligentMonitoringRequestSchema = z
+  .object({
+    action: z.string().min(1),
+    serverId: z.string().min(1),
+    sessionId: z.string().optional(),
+    analysisDepth: z.string().optional(),
+  })
+  .passthrough();
 
 // MIGRATED: Removed export const runtime = "nodejs" (default)
 
@@ -44,7 +54,21 @@ export const maxDuration = 30;
  */
 async function postHandler(request: NextRequest) {
   try {
-    const body = await request.json();
+    const rawBody = await request.json();
+    const parsed = IntelligentMonitoringRequestSchema.safeParse(rawBody);
+
+    if (!parsed.success) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Invalid request',
+          details: parsed.error.flatten().fieldErrors,
+        },
+        { status: 400 }
+      );
+    }
+
+    const body = parsed.data;
     const { action, serverId } = body;
     const sessionId = body.sessionId ?? `monitoring_${serverId}`;
     const cacheQuery = `${action}:${serverId}:${body.analysisDepth || 'full'}`;
@@ -65,10 +89,7 @@ async function postHandler(request: NextRequest) {
       querySummary: `intelligent-monitoring:${action}:${serverId}`,
     });
 
-    let cloudRunPath = '/api/ai/analyze-server';
-    if (action === 'predict') cloudRunPath = '/api/ai/analyze-server';
-    if (action === 'forecast_anomalies')
-      cloudRunPath = '/api/ai/analyze-server';
+    const cloudRunPath = '/api/ai/analyze-server';
 
     debug.info(
       `[intelligent-monitoring] Proxying action '${action}' for ${serverId} to Cloud Run...`

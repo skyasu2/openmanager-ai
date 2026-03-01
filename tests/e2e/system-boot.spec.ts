@@ -105,7 +105,7 @@ test.describe('시스템 부트 테스트', () => {
       expect(response.status()).toBe(200);
 
       const data = await response.json();
-      expect(data).toBeDefined();
+      expect(data).toHaveProperty('status');
     });
 
     test('시스템 헬스 뷰 API가 응답한다', async ({ page }) => {
@@ -116,5 +116,90 @@ test.describe('시스템 부트 테스트', () => {
 
       expect([200, 503]).toContain(response.status());
     });
+  });
+});
+
+test.describe('시스템 시작 KPI', () => {
+  const requestHeaders = {
+    'Content-Type': 'application/json',
+    'x-test-secret': process.env.TEST_SECRET_KEY || '',
+  };
+  const attemptCount = 3;
+  const maxLatencyMs = 45000;
+
+  test('시스템 시작 호출 지연/성공률을 계측한다', async ({ page }) => {
+    const startAttempts: Array<{
+      attempt: number;
+      status: number;
+      latencyMs: number;
+      success: boolean;
+      alreadyRunning: boolean;
+    }> = [];
+
+    let hasAuthBlock = false;
+
+    for (let attempt = 1; attempt <= attemptCount; attempt += 1) {
+      const startedAt = Date.now();
+      const response = await page.request.post('/api/system', {
+        headers: requestHeaders,
+        data: { action: 'start' },
+        timeout: TIMEOUTS.NETWORK_REQUEST,
+      });
+
+      if (skipIfSecurityBlocked(response.status(), '시스템 시작 KPI')) {
+        hasAuthBlock = true;
+        break;
+      }
+
+      const latencyMs = Date.now() - startedAt;
+      const body = await response.json().catch(() => ({}));
+      const alreadyRunning =
+        typeof body?.message === 'string' &&
+        body.message.includes('이미 실행 중');
+      const success = response.status() === 200 || alreadyRunning;
+
+      startAttempts.push({
+        attempt,
+        status: response.status(),
+        latencyMs,
+        success,
+        alreadyRunning,
+      });
+
+      console.log(
+        `시스템 시작 KPI 시도 #${attempt}: status=${response.status()}, latency=${latencyMs}ms, success=${success}, alreadyRunning=${alreadyRunning}`
+      );
+    }
+
+    if (hasAuthBlock) {
+      test.skip(true, '보안 블록으로 인해 KPI 샘플링이 제한됩니다.');
+    }
+
+    expect(startAttempts.length).toBeGreaterThan(0);
+
+    const completedAttempts = startAttempts.length;
+    const successfulAttempts = startAttempts.filter(
+      (item) => item.success || item.alreadyRunning
+    ).length;
+    const failedAttempts = startAttempts.filter(
+      (item) => !item.success && !item.alreadyRunning
+    ).length;
+    const avgLatencyMs = Math.round(
+      startAttempts.reduce((acc, item) => acc + item.latencyMs, 0) /
+        completedAttempts
+    );
+    const maxLatencyObserved = Math.max(
+      ...startAttempts.map((item) => item.latencyMs)
+    );
+    const successRate = (successfulAttempts / completedAttempts) * 100;
+
+    console.log(
+      `시스템 시작 KPI (n=${completedAttempts}, success=${successRate.toFixed(0)}%, avg=${avgLatencyMs}ms, max=${maxLatencyObserved}ms)`
+    );
+
+    expect(completedAttempts).toBe(attemptCount);
+    expect(successfulAttempts + failedAttempts).toBe(completedAttempts);
+    expect(successfulAttempts).toBeGreaterThanOrEqual(1);
+    expect(maxLatencyObserved).toBeLessThanOrEqual(maxLatencyMs);
   });
 });

@@ -47,8 +47,12 @@ async function loadJsonData<T>(fileName: string): Promise<T | null> {
         );
         const fileContent = await fs.readFile(filePath, 'utf-8');
         return JSON.parse(fileContent) as T;
-      } catch {
+      } catch (fsError) {
         // Vercel serverless: fs.readFile 실패 시 CDN static asset으로 fetch
+        debug.warn(
+          `[OTel Data Loader] fs.readFile failed for ${fileName}, falling back to fetch:`,
+          fsError
+        );
         const baseUrl = process.env.VERCEL_URL
           ? `https://${process.env.VERCEL_URL}`
           : process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';

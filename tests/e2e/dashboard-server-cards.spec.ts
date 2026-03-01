@@ -9,12 +9,13 @@
  */
 
 import { expect, test } from '@playwright/test';
+import {
+  getServerCardButtons,
+  hasEmptyServerState,
+} from './helpers/server-cards';
 import { TIMEOUTS } from './helpers/timeouts';
 import { navigateToDashboard } from './helpers/ui-flow';
 
-// 서버 카드는 role=button + aria-label="<서버명> 서버 상세 보기" 패턴을 사용
-const SERVER_CARD_SELECTOR = '[role="button"][aria-label*="서버 상세 보기"]';
-const EMPTY_STATE_SELECTOR = 'text=표시할 서버가 없습니다.';
 const isCI = process.env.CI === 'true';
 
 test.describe('대시보드 서버 카드 테스트', () => {
@@ -22,18 +23,14 @@ test.describe('대시보드 서버 카드 테스트', () => {
     await navigateToDashboard(page);
 
     // 서버 카드 로드 대기
-    const hasServerCard = await page
-      .locator(SERVER_CARD_SELECTOR)
+    const serverCards = getServerCardButtons(page);
+    const hasServerCard = await serverCards
       .first()
       .isVisible({ timeout: TIMEOUTS.DASHBOARD_LOAD })
       .catch(() => false);
 
     if (!hasServerCard) {
-      const hasEmptyState = await page
-        .locator(EMPTY_STATE_SELECTOR)
-        .first()
-        .isVisible({ timeout: TIMEOUTS.MODAL_DISPLAY })
-        .catch(() => false);
+      const hasEmptyState = await hasEmptyServerState(page).catch(() => false);
       if (hasEmptyState) {
         if (isCI) {
           throw new Error(
@@ -47,14 +44,14 @@ test.describe('대시보드 서버 카드 테스트', () => {
       }
     }
 
-    await expect(page.locator(SERVER_CARD_SELECTOR).first()).toBeVisible({
+    await expect(serverCards.first()).toBeVisible({
       timeout: TIMEOUTS.DASHBOARD_LOAD,
     });
   });
 
   test('서버 카드 렌더링 확인', async ({ page }) => {
     // 서버 카드가 최소 1개 이상 렌더링되는지 확인
-    const serverCards = page.locator(SERVER_CARD_SELECTOR);
+    const serverCards = getServerCardButtons(page);
     await expect(serverCards.first()).toBeVisible({
       timeout: TIMEOUTS.MODAL_DISPLAY,
     });
@@ -65,47 +62,19 @@ test.describe('대시보드 서버 카드 테스트', () => {
 
   test('서버 카드 메트릭 표시 확인', async ({ page }) => {
     // 첫 번째 서버 카드가 표시되는지 확인
-    const serverCard = page.locator(SERVER_CARD_SELECTOR).first();
+    const serverCard = getServerCardButtons(page).first();
     await expect(serverCard).toBeVisible({ timeout: TIMEOUTS.MODAL_DISPLAY });
 
-    // 대시보드 전체에서 "보이는" CPU/Memory 메트릭 라벨 존재 확인
-    const visibleCpuCount = await page.locator('text=/CPU|cpu/i').evaluateAll(
-      (elements) =>
-        elements.filter((el) => {
-          const htmlEl = el as HTMLElement;
-          const style = window.getComputedStyle(htmlEl);
-          const rect = htmlEl.getBoundingClientRect();
-          return (
-            style.display !== 'none' &&
-            style.visibility !== 'hidden' &&
-            rect.width > 0 &&
-            rect.height > 0
-          );
-        }).length
-    );
-    const visibleMemoryCount = await page
-      .locator('text=/Memory|메모리/i')
-      .evaluateAll(
-        (elements) =>
-          elements.filter((el) => {
-            const htmlEl = el as HTMLElement;
-            const style = window.getComputedStyle(htmlEl);
-            const rect = htmlEl.getBoundingClientRect();
-            return (
-              style.display !== 'none' &&
-              style.visibility !== 'hidden' &&
-              rect.width > 0 &&
-              rect.height > 0
-            );
-          }).length
-      );
+    // 대시보드 전체에서 보이는 CPU/Memory 메트릭 라벨 존재 확인
+    const cpuLabel = page.locator('text=/CPU|cpu/i').first();
+    const memoryLabel = page.locator('text=/Memory|메모리/i').first();
 
-    expect(visibleCpuCount).toBeGreaterThan(0);
-    expect(visibleMemoryCount).toBeGreaterThan(0);
+    await expect(cpuLabel).toBeVisible({ timeout: TIMEOUTS.MODAL_DISPLAY });
+    await expect(memoryLabel).toBeVisible({ timeout: TIMEOUTS.MODAL_DISPLAY });
   });
 
   test('서버 카드 클릭 → 모달 열기', async ({ page }) => {
-    const firstCard = page.locator(SERVER_CARD_SELECTOR).first();
+    const firstCard = getServerCardButtons(page).first();
     await expect(firstCard).toBeVisible({
       timeout: TIMEOUTS.MODAL_DISPLAY,
     });
@@ -119,7 +88,7 @@ test.describe('대시보드 서버 카드 테스트', () => {
   });
 
   test('서버 모달 닫기 (ESC 키)', async ({ page }) => {
-    const firstCard = page.locator(SERVER_CARD_SELECTOR).first();
+    const firstCard = getServerCardButtons(page).first();
     await expect(firstCard).toBeVisible({
       timeout: TIMEOUTS.MODAL_DISPLAY,
     });
@@ -137,7 +106,7 @@ test.describe('대시보드 서버 카드 테스트', () => {
   });
 
   test('서버 모달 탭 전환 확인', async ({ page }) => {
-    const firstCard = page.locator(SERVER_CARD_SELECTOR).first();
+    const firstCard = getServerCardButtons(page).first();
     await expect(firstCard).toBeVisible({
       timeout: TIMEOUTS.MODAL_DISPLAY,
     });
@@ -159,7 +128,7 @@ test.describe('대시보드 서버 카드 테스트', () => {
   });
 
   test('성능 분석 탭의 주요 버튼/컨트롤이 동작한다', async ({ page }) => {
-    const firstCard = page.locator(SERVER_CARD_SELECTOR).first();
+    const firstCard = getServerCardButtons(page).first();
     await expect(firstCard).toBeVisible({
       timeout: TIMEOUTS.MODAL_DISPLAY,
     });
