@@ -38,8 +38,7 @@ describe('parseMarkdownLinks', () => {
     );
 
     const links = parsed.filter(
-      (node): node is ReactElement =>
-        isValidElement(node) && node.type === 'a'
+      (node): node is ReactElement => isValidElement(node) && node.type === 'a'
     );
     const texts = parsed.filter((node) => typeof node === 'string');
 
@@ -54,8 +53,7 @@ describe('parseMarkdownLinks', () => {
     const parsed = parseMarkdownLinks('[xss](javascript:alert%281%29)');
 
     const links = parsed.filter(
-      (node): node is ReactElement =>
-        isValidElement(node) && node.type === 'a'
+      (node): node is ReactElement => isValidElement(node) && node.type === 'a'
     );
 
     expect(links).toHaveLength(0);
@@ -68,8 +66,7 @@ describe('parseMarkdownLinks', () => {
     );
 
     const links = parsed.filter(
-      (node): node is ReactElement =>
-        isValidElement(node) && node.type === 'a'
+      (node): node is ReactElement => isValidElement(node) && node.type === 'a'
     );
 
     expect(links).toHaveLength(2);

@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-02-28 14:58:32 KST
+> Generated at: 2026-03-01 10:08:05 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 29 |
-| Total Checks | 129 |
-| Passed | 111 |
+| Total Runs | 31 |
+| Total Checks | 159 |
+| Passed | 141 |
 | Failed | 18 |
 | Completed Items | 37 |
 | Pending Items | 0 |
-| Wont-Fix Items | 5 |
+| Wont-Fix Items | 35 |
 | Expert Domains Tracked | 6 |
 | Expert Open Gaps | 2 |
 | Completion Rate | 100% |
-| Last Run | QA-20260228-0029 (2026-02-28T05:58:33.745Z) |
+| Last Run | QA-20260301-0031 (2026-03-01T01:08:05.088Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260228-0029 (2026-02-28T05:58:33.745Z)
+Latest run: QA-20260301-0031 (2026-03-01T01:08:05.088Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -43,8 +43,68 @@ Latest run: QA-20260228-0029 (2026-02-28T05:58:33.745Z)
 - [P1] metrics-drift-threshold-standard: 지표 드리프트 임계치 표준화 (seen 2회, last QA-20260227-0013)
 - [P1] obs-fp-fn-weekly-report: 오탐/미탐 주간 리포트 자동 생성 (seen 3회, last QA-20260227-0013)
 - [P1] security-attack-regression-pack: 보안 공격 시나리오 회귀팩 구축 (seen 3회, last QA-20260227-0013)
+- [P2] ai-chat-detail-expand: AI Chat 상세 분석 펼치기 (seen 1회, last QA-20260301-0030)
+  - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
+- [P2] ai-chat-response: AI Chat 응답 (seen 1회, last QA-20260301-0030)
+  - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
+- [P2] ai-chat-sidebar-open: AI 사이드바 열기 (seen 1회, last QA-20260301-0030)
+  - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
 - [P2] ai-code-gate-input-policy: AI Code Gate: Prompt 패턴 15개 방어 점검 (seen 1회, last QA-20260226-0005)
+- [P2] ai-engine-status: AI 엔진 상태 표시 (seen 1회, last QA-20260301-0031)
+  - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
+- [P2] ai-sidebar-open: AI 사이드바 열기/닫기 (seen 1회, last QA-20260301-0031)
+  - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
+- [P2] ai-sidebar-right-panel: AI 우측 패널 기능 메뉴 (seen 1회, last QA-20260301-0031)
+  - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
+- [P2] ai-sidebar-starters: AI 스타터 프롬프트 5개 (seen 1회, last QA-20260301-0031)
+  - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
+- [P2] ai-sidebar-tools-menu: AI 도구 메뉴 (seen 1회, last QA-20260301-0031)
+  - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
+- [P2] alert-history-modal: 알림 이력 모달 (seen 1회, last QA-20260301-0031)
+  - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
+- [P2] analyst-drilldown: Analyst 서버별 드릴다운 (seen 1회, last QA-20260301-0030)
+  - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
+- [P2] analyst-full-analysis: Analyst 전체 분석 (seen 1회, last QA-20260301-0030)
+  - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
+- [P2] dashboard-active-alerts: 활성 알림 모달 (seen 1회, last QA-20260301-0031)
+  - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
+- [P2] dashboard-resources: 시스템 리소스 개요 (seen 1회, last QA-20260301-0030)
+  - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
+- [P2] dashboard-server-cards: 대시보드 서버 카드 (seen 1회, last QA-20260301-0030)
+  - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
+- [P2] dashboard-status-filter: 상태 필터 토글 (seen 1회, last QA-20260301-0031)
+  - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
+- [P2] dashboard-topology-map: 토폴로지 맵 모달 (seen 1회, last QA-20260301-0031)
+  - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
+- [P2] health-api: Health API 검증 (seen 1회, last QA-20260301-0030)
+  - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
+- [P2] landing-feature-cards: 랜딩 피처카드 4개 모달 (seen 1회, last QA-20260301-0031)
+  - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
+- [P2] landing-page-render: 랜딩 페이지 렌더링 (seen 1회, last QA-20260301-0030)
+  - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
+- [P2] landing-system-start: 시스템 시작 카운트다운 (seen 1회, last QA-20260301-0031)
+  - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
+- [P2] log-explorer-modal: 로그 탐색기 모달 (seen 1회, last QA-20260301-0031)
+  - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
+- [P2] profile-menu: 프로필 메뉴 드롭다운 (seen 1회, last QA-20260301-0031)
+  - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
+- [P2] reporter-generate: Reporter 보고서 생성 (seen 1회, last QA-20260301-0030)
+  - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
+- [P2] server-card-expand: 서버 카드 상세 펼치기/접기 (seen 1회, last QA-20260301-0031)
+  - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
+- [P2] server-detail-log-tab: 로그 & 네트워크 탭 (seen 1회, last QA-20260301-0031)
+  - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
+- [P2] server-detail-perf-tab: 성능 분석 탭 (seen 1회, last QA-20260301-0031)
+  - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
+- [P2] show-more-servers: 12개 더 보기 버튼 (seen 1회, last QA-20260301-0031)
+  - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
+- [P2] system-boot-redirect: 시스템 시작 대시보드 리다이렉트 (seen 1회, last QA-20260301-0030)
+  - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
 - [P2] system-start-metrics-gate: 시스템 시작 지연/실패율 KPI 기준 자동 수집 (seen 3회, last QA-20260227-0018)
+  - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
+- [P2] top5-server-detail: Top5 서버 상세 모달 (3탭) (seen 1회, last QA-20260301-0031)
+  - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
+- [P2] ui-esc-close: ESC 사이드바 닫기 (seen 1회, last QA-20260301-0030)
   - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
 
 ## Completed Improvements
@@ -91,6 +151,8 @@ Latest run: QA-20260228-0029 (2026-02-28T05:58:33.745Z)
 
 | Run ID | Time (UTC) | Title | Checks | Completed | Pending | Wont-Fix | Expert Gaps |
 |---|---|---|---:|---:|---:|---:|---:|
+| QA-20260301-0031 | 2026-03-01T01:08:05.088Z | Comprehensive Button/Modal/UI QA - v8.7.1 post-release | 18 | 0 | 0 | 18 | 0 |
+| QA-20260301-0030 | 2026-03-01T00:54:39.785Z | Vercel Playwright MCP QA - v8.7.1 post-release production validation | 12 | 0 | 0 | 12 | 0 |
 | QA-20260228-0029 | 2026-02-28T05:58:33.745Z | Critical E2E validation with local server | 11 | 1 | 0 | 0 | 0 |
 | QA-20260228-0028 | 2026-02-28T05:16:29.599Z | Web Vitals integration log suppression + full validation | 5 | 5 | 0 | 0 | 0 |
 | QA-20260228-0027 | 2026-02-27T16:34:47.012Z | AI Math Tools & Routing Verification (Type-check + targeted tests) | 3 | 1 | 0 | 0 | 0 |
@@ -109,6 +171,4 @@ Latest run: QA-20260228-0029 (2026-02-28T05:58:33.745Z)
 | QA-20260227-0014 | 2026-02-26T18:03:30.997Z | Vercel Playwright QA - 로그인 정책/시스템 시작 가드 배포 검증 | 3 | 3 | 1 | 0 | 2 |
 | QA-20260227-0013 | 2026-02-26T17:50:54.243Z | Vercel Playwright QA - 시스템 시작 가드/게스트 PIN 체험 흐름 재검증 | 2 | 2 | 3 | 0 | 2 |
 | QA-20260227-0012 | 2026-02-26T17:46:29.032Z | Vercel Playwright QA - 로그인 정책/시스템 시작 UX 보강 (재기록) | 3 | 2 | 0 | 0 | 2 |
-| QA-20260227-0011 | 2026-02-26T17:46:20.701Z | Vercel Playwright QA - 로그인 정책/시스템 시작 UX 보강 | 0 | 2 | 0 | 0 | 1 |
-| QA-20260227-0010 | 2026-02-26T16:36:37.248Z | Vercel Playwright QA - 시스템 시작/게스트 PIN | 2 | 5 | 1 | 0 | 2 |
 

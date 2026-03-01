@@ -249,7 +249,11 @@ function renderFormattedText(text: string): React.ReactNode {
       );
     }
 
-    return <React.Fragment key={index}>{renderTextWithLinks(part, `text-${index}`)}</React.Fragment>;
+    return (
+      <React.Fragment key={index}>
+        {renderTextWithLinks(part, `text-${index}`)}
+      </React.Fragment>
+    );
   });
 }
 

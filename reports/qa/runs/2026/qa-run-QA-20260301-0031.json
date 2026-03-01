@@ -1,14 +1,14 @@
 {
-  "runId": "QA-20260301-0030",
-  "recordedAt": "2026-03-01T00:54:39.785Z",
-  "recordedAtKst": "2026-03-01 09:54:39 KST",
-  "runTitle": "Vercel Playwright MCP QA - v8.7.1 post-release production validation",
+  "runId": "QA-20260301-0031",
+  "recordedAt": "2026-03-01T01:08:05.088Z",
+  "recordedAtKst": "2026-03-01 10:08:05 KST",
+  "runTitle": "Comprehensive Button/Modal/UI QA - v8.7.1 post-release",
   "owner": "claude-code",
   "source": "",
   "environment": {},
   "checks": {
-    "total": 12,
-    "passed": 12,
+    "total": 18,
+    "passed": 18,
     "failed": 0
   },
   "expertAssessments": [],
@@ -16,8 +16,8 @@
   "pendingImprovements": [],
   "wontFixImprovements": [
     {
-      "id": "health-api",
-      "title": "Health API 검증",
+      "id": "landing-feature-cards",
+      "title": "랜딩 피처카드 4개 모달",
       "priority": "P2",
       "evidence": "",
       "note": "",
@@ -29,8 +29,8 @@
       "policyNote": "이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)"
     },
     {
-      "id": "landing-page-render",
-      "title": "랜딩 페이지 렌더링",
+      "id": "landing-system-start",
+      "title": "시스템 시작 카운트다운",
       "priority": "P2",
       "evidence": "",
       "note": "",
@@ -42,8 +42,8 @@
       "policyNote": "이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)"
     },
     {
-      "id": "system-boot-redirect",
-      "title": "시스템 시작 대시보드 리다이렉트",
+      "id": "dashboard-status-filter",
+      "title": "상태 필터 토글",
       "priority": "P2",
       "evidence": "",
       "note": "",
@@ -55,8 +55,8 @@
       "policyNote": "이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)"
     },
     {
-      "id": "dashboard-server-cards",
-      "title": "대시보드 서버 카드",
+      "id": "dashboard-active-alerts",
+      "title": "활성 알림 모달",
       "priority": "P2",
       "evidence": "",
       "note": "",
@@ -68,8 +68,8 @@
       "policyNote": "이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)"
     },
     {
-      "id": "dashboard-resources",
-      "title": "시스템 리소스 개요",
+      "id": "dashboard-topology-map",
+      "title": "토폴로지 맵 모달",
       "priority": "P2",
       "evidence": "",
       "note": "",
@@ -81,8 +81,8 @@
       "policyNote": "이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)"
     },
     {
-      "id": "ai-chat-sidebar-open",
-      "title": "AI 사이드바 열기",
+      "id": "server-card-expand",
+      "title": "서버 카드 상세 펼치기/접기",
       "priority": "P2",
       "evidence": "",
       "note": "",
@@ -94,8 +94,8 @@
       "policyNote": "이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)"
     },
     {
-      "id": "ai-chat-response",
-      "title": "AI Chat 응답",
+      "id": "alert-history-modal",
+      "title": "알림 이력 모달",
       "priority": "P2",
       "evidence": "",
       "note": "",
@@ -107,8 +107,8 @@
       "policyNote": "이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)"
     },
     {
-      "id": "ai-chat-detail-expand",
-      "title": "AI Chat 상세 분석 펼치기",
+      "id": "log-explorer-modal",
+      "title": "로그 탐색기 모달",
       "priority": "P2",
       "evidence": "",
       "note": "",
@@ -120,8 +120,8 @@
       "policyNote": "이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)"
     },
     {
-      "id": "reporter-generate",
-      "title": "Reporter 보고서 생성",
+      "id": "top5-server-detail",
+      "title": "Top5 서버 상세 모달 (3탭)",
       "priority": "P2",
       "evidence": "",
       "note": "",
@@ -133,8 +133,8 @@
       "policyNote": "이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)"
     },
     {
-      "id": "analyst-full-analysis",
-      "title": "Analyst 전체 분석",
+      "id": "server-detail-perf-tab",
+      "title": "성능 분석 탭",
       "priority": "P2",
       "evidence": "",
       "note": "",
@@ -146,8 +146,8 @@
       "policyNote": "이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)"
     },
     {
-      "id": "analyst-drilldown",
-      "title": "Analyst 서버별 드릴다운",
+      "id": "server-detail-log-tab",
+      "title": "로그 & 네트워크 탭",
       "priority": "P2",
       "evidence": "",
       "note": "",
@@ -159,8 +159,86 @@
       "policyNote": "이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)"
     },
     {
-      "id": "ui-esc-close",
-      "title": "ESC 사이드바 닫기",
+      "id": "show-more-servers",
+      "title": "12개 더 보기 버튼",
+      "priority": "P2",
+      "evidence": "",
+      "note": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "owner": "",
+      "status": "wont-fix",
+      "policyNote": "이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)"
+    },
+    {
+      "id": "profile-menu",
+      "title": "프로필 메뉴 드롭다운",
+      "priority": "P2",
+      "evidence": "",
+      "note": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "owner": "",
+      "status": "wont-fix",
+      "policyNote": "이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)"
+    },
+    {
+      "id": "ai-sidebar-open",
+      "title": "AI 사이드바 열기/닫기",
+      "priority": "P2",
+      "evidence": "",
+      "note": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "owner": "",
+      "status": "wont-fix",
+      "policyNote": "이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)"
+    },
+    {
+      "id": "ai-sidebar-starters",
+      "title": "AI 스타터 프롬프트 5개",
+      "priority": "P2",
+      "evidence": "",
+      "note": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "owner": "",
+      "status": "wont-fix",
+      "policyNote": "이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)"
+    },
+    {
+      "id": "ai-sidebar-tools-menu",
+      "title": "AI 도구 메뉴",
+      "priority": "P2",
+      "evidence": "",
+      "note": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "owner": "",
+      "status": "wont-fix",
+      "policyNote": "이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)"
+    },
+    {
+      "id": "ai-sidebar-right-panel",
+      "title": "AI 우측 패널 기능 메뉴",
+      "priority": "P2",
+      "evidence": "",
+      "note": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "owner": "",
+      "status": "wont-fix",
+      "policyNote": "이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)"
+    },
+    {
+      "id": "ai-engine-status",
+      "title": "AI 엔진 상태 표시",
       "priority": "P2",
       "evidence": "",
       "note": "",
