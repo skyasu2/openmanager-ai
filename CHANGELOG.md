@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.7.2](https://github.com/skyasu2/openmanager-ai/compare/v8.7.1...v8.7.2) (2026-03-01)
+
+
+### Features
+
+* **ai:** add session persistence and job retry mechanism ([6c5bff7](https://github.com/skyasu2/openmanager-ai/commit/6c5bff79bee3078381feeb671dad9c51274d1b68))
+* **markdown:** extend link parser to shared renderer with XSS protection ([e949b67](https://github.com/skyasu2/openmanager-ai/commit/e949b67456253d28516ff21d9df7f7ead412683b))
+* **observability:** extend LLM OTel logging to incident-report and intelligent-monitoring routes ([6179e54](https://github.com/skyasu2/openmanager-ai/commit/6179e5417a916dc2a0ba3b82dd53be0ed1abb223))
+* **ui:** add markdown link parser to feature card modals ([3b5be1a](https://github.com/skyasu2/openmanager-ai/commit/3b5be1ab9fa36c92a270ed1cd06a11822fec7722))
+
+
+### Bug Fixes
+
+* **data:** include OTel data files in Vercel serverless bundle ([553b1ea](https://github.com/skyasu2/openmanager-ai/commit/553b1eade4cd4a56fc32d428268a633a5045ddde))
+* **docs:** remove broken link to archived codex-main-transition-guide ([b34038a](https://github.com/skyasu2/openmanager-ai/commit/b34038a03f0a8998ff52a7c12bc12ab6e71985df))
+
 ## [8.7.1](https://github.com/skyasu2/openmanager-ai/compare/v8.7.0...v8.7.1) (2026-03-01)
 
 
