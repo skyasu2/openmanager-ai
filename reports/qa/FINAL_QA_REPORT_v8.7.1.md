@@ -1,8 +1,9 @@
 # OpenManager AI v8.7.1 — Final QA Closing Report
 
 > **Date**: 2026-03-01
-> **QA Run**: QA-20260301-0032 (32nd cumulative run)
+> **QA Run**: QA-20260301-0033 (33rd cumulative run)
 > **Result**: 18/18 PASS | Build OK (46 pages) | 1704 unit tests PASS
+> **Production QA**: Playwright MCP — 15서버 표시, AI Chat 응답, 전체 UI 검증 완료
 
 ---
 
@@ -69,6 +70,15 @@
 - **내용**: unsafe-inline 잔존 원인 (Next.js 16 프레임워크 제약) 명시
 - **로드맵**: 4단계 전환 계획 (현재 → nonce 인프라 준비 → 대기 → 전환)
 
+### 4.4 Vercel Serverless OTel 데이터 로딩 수정 (Critical Fix)
+- **파일**: `next.config.mjs` + `src/data/otel-data/index.ts`
+- **원인**: Next.js Output File Tracing이 동적 `fs.readFile` 경로를 추적하지 못해 OTel 데이터 파일이 serverless 함수 번들에 미포함
+- **증상**: 대시보드에서 0서버 표시 (모든 API가 빈 배열 반환)
+- **수정**:
+  - `outputFileTracingIncludes: { '/*': ['./public/data/otel-data/**/*'] }` 추가
+  - `loadJsonData()` 에 fetch 기반 fallback 추가 (fs.readFile 실패 시 CDN static asset으로 fetch)
+- **결과**: 15서버 정상 표시, 모든 API 정상 응답
+
 ---
 
 ## 5. 기술 부채 목록
@@ -87,8 +97,8 @@
 
 | 지표 | 값 |
 |------|-----|
-| 총 QA 실행 | 32회 |
-| 누적 통과 | 159/177 (89.8%) |
+| 총 QA 실행 | 33회 |
+| 누적 통과 | 163/181 (90.1%) |
 | 단위 테스트 | 1704 tests (124 files) |
 | 계약 테스트 | 20 tests (2 files) |
 | 보안 테스트 | 62 tests (5 files) |
@@ -98,12 +108,32 @@
 
 ---
 
-## 7. 결론
+## 7. Production QA 결과 (Playwright MCP, QA-0033)
+
+| # | 항목 | 결과 | 비고 |
+|:-:|------|:----:|------|
+| 1 | 랜딩 페이지 렌더링 | PASS | 피처카드 4개, v8.7.1, 모달 정상 |
+| 2 | 게스트 로그인 → 대시보드 | PASS | 시스템 부트 → 대시보드 전환 정상 |
+| 3 | 서버 15대 표시 | PASS | 온라인 14, 경고 1, 위험 0, 오프라인 0 |
+| 4 | 시스템 리소스 | PASS | CPU 32%, Memory 49%, Disk 32% |
+| 5 | 리소스 경고 TOP 5 | PASS | cache-redis-dc1-01 MEM 83% 등 |
+| 6 | Active Alerts 모달 | PASS | WARNING 1건, cache-redis-dc1-01 |
+| 7 | Alert History 모달 | PASS | 검색/필터 5종, firing/resolved 상태 |
+| 8 | 로그 탐색기 | PASS | 3674개 로그, 레벨/소스/서버 필터 |
+| 9 | 프로필 메뉴 | PASS | v8.7.1, Production, 세션 정보 |
+| 10 | AI 사이드바 | PASS | 스타터 프롬프트 5개, 입력창 |
+| 11 | AI Chat 질의+응답 | PASS | Cloud Run AI, 메트릭 기반 분석 |
+| 12 | AI 도구 패널 | PASS | Chat/보고서/이상감지 3기능 |
+
+---
+
+## 8. 결론
 
 OpenManager AI v8.7.1은 **포트폴리오 제출 품질 기준을 충족**합니다.
 
 - 정적 분석, 보안, 빌드 모두 통과
-- Production 환경에서 AI Chat, Analyst, Reporter 정상 동작 확인
+- Production 환경에서 AI Chat, Analyst, Reporter 정상 동작 확인 (Playwright MCP)
 - 베스트 프랙티스 대비 A-~A 수준의 구현 품질
 - 식별된 기술 부채는 모두 P1-P3 수준으로 운영에 영향 없음
-- 이번 세션에서 접근성, LLM Observability, CSP 3개 영역 개선 완료
+- 이번 세션에서 접근성, LLM Observability, CSP, Vercel 데이터 로딩 4개 영역 개선 완료
+- Vercel serverless OTel 데이터 로딩 이슈 발견 및 수정 (outputFileTracingIncludes)

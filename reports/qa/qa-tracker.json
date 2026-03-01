@@ -2,13 +2,13 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-03-01T03:33:12.090Z"
+    "updatedAt": "2026-03-01T06:16:36.498Z"
   },
   "sequence": {
-    "nextRunNumber": 33
+    "nextRunNumber": 34
   },
   "summary": {
-    "totalRuns": 32,
+    "totalRuns": 33,
     "totalChecks": 177,
     "totalPassed": 159,
     "totalFailed": 18,
@@ -18,8 +18,8 @@
     "wontFixItems": 35,
     "expertDomainsTracked": 6,
     "expertDomainsOpenGaps": 2,
-    "lastRunId": "QA-20260301-0032",
-    "lastRecordedAt": "2026-03-01T03:33:12.090Z"
+    "lastRunId": "QA-20260301-0033",
+    "lastRecordedAt": "2026-03-01T06:16:36.498Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -3124,6 +3124,26 @@
       "expertCount": 0,
       "expertNeedsImprovementCount": 0,
       "completedCount": 14,
+      "pendingCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260301-0033",
+      "recordedAt": "2026-03-01T06:16:36.498Z",
+      "recordedAtKst": "2026-03-01 15:16:36 KST",
+      "title": "Production Playwright MCP QA",
+      "owner": "claude",
+      "source": "",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260301-0033.json",
+      "checks": {
+        "total": 0,
+        "passed": 0,
+        "failed": 0
+      },
+      "expertAssessments": [],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
       "pendingCount": 0,
       "wontFixCount": 0
     }

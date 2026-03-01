@@ -1,0 +1,20 @@
+{
+  "runId": "QA-20260301-0033",
+  "recordedAt": "2026-03-01T06:16:36.498Z",
+  "recordedAtKst": "2026-03-01 15:16:36 KST",
+  "runTitle": "Production Playwright MCP QA",
+  "owner": "claude",
+  "source": "",
+  "environment": {},
+  "checks": {
+    "total": 0,
+    "passed": 0,
+    "failed": 0
+  },
+  "expertAssessments": [],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [],
+  "links": []
+}
