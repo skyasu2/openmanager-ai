@@ -1,6 +1,7 @@
 import { expect, test } from '@playwright/test';
 import { LOGIN_BUTTON_SELECTORS, resetGuestState } from './helpers/guest';
 import { skipIfSecurityCheckpoint } from './helpers/security';
+import { SYSTEM_START_SELECTORS } from './helpers/server-cards';
 import { TIMEOUTS } from './helpers/timeouts';
 
 test.describe('QA: 시스템 시작/로그인 정책 검증', () => {
@@ -14,14 +15,8 @@ test.describe('QA: 시스템 시작/로그인 정책 검증', () => {
     await page.goto('/', { waitUntil: 'domcontentloaded' });
     await skipIfSecurityCheckpoint(page, '비로그인 시스템 시작 모달');
 
-    const startButtons = [
-      'button:has-text("🚀 시스템 시작")',
-      'button:has-text("시스템 시작")',
-      '[data-testid="start-system"]',
-    ];
-
     let started = false;
-    for (const selector of startButtons) {
+    for (const selector of SYSTEM_START_SELECTORS) {
       const button = page.locator(selector).first();
       const visible = await button
         .isVisible({ timeout: TIMEOUTS.MODAL_DISPLAY })
@@ -33,10 +28,16 @@ test.describe('QA: 시스템 시작/로그인 정책 검증', () => {
       break;
     }
 
-    expect(started).toBeTruthy();
+    expect(
+      started,
+      `시스템 시작 버튼을 찾지 못했습니다. 현재 메인 랜딩 텍스트: ${await page
+        .textContent('main')
+        .catch(() => '')}`
+    ).toBeTruthy();
 
     const loginModal = page
-      .locator('text=로그인 필요')
+      .locator('[data-testid="system-start-auth-modal"]')
+      .or(page.locator('text=로그인 필요'))
       .or(page.locator('text=로그인 페이지로 이동'))
       .first();
     await expect(loginModal).toBeVisible({ timeout: TIMEOUTS.MODAL_DISPLAY });
