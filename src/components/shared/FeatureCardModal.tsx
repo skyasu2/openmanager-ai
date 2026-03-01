@@ -8,6 +8,7 @@ import { getDiagramByCardId } from '@/data/architecture-diagrams.data';
 import { logger } from '@/lib/logging';
 import { useUnifiedAdminStore } from '@/stores/useUnifiedAdminStore';
 import type { FeatureCardModalProps } from '@/types/feature-card.types';
+import { parseMarkdownLinks } from '@/utils/markdown-parser';
 import {
   buildCategorizedTechData,
   getSafeCardData,
@@ -234,7 +235,9 @@ export default function FeatureCardModal({
             <p className="mx-auto max-w-2xl text-sm text-gray-300">
               {cardData.id === 'vibe-coding' && isHistoryView
                 ? '바이브 코딩 여정: 초기(ChatGPT 개별 페이지) → 중기(Cursor + Vercel + Supabase) → 후기(Claude Code + WSL)로 이어진 개발 환경의 변화를 시간 순서대로 보여줍니다.'
-                : sanitizeModalText(detailedContent.overview)}
+                : parseMarkdownLinks(
+                    sanitizeModalText(detailedContent.overview)
+                  )}
             </p>
           </div>
 
@@ -270,7 +273,7 @@ export default function FeatureCardModal({
                           className="flex items-start gap-2 text-xs text-gray-400"
                         >
                           <span className="mt-1 h-1 w-1 shrink-0 rounded-full bg-white/40" />
-                          <span>{feature}</span>
+                          <span>{parseMarkdownLinks(feature)}</span>
                         </li>
                       ))}
                     </ul>
