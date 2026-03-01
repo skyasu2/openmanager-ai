@@ -4,7 +4,7 @@
 > Owner: platform-architecture
 > Status: Active
 > Doc type: Reference
-> Last reviewed: 2026-02-17
+> Last reviewed: 2026-03-01
 > Canonical: docs/reference/architecture/ai/frontend-backend-comparison.md
 > Tags: ai,frontend,backend,comparison
 
@@ -246,6 +246,13 @@ Quad-Provider Fallback Chain:
 | F1 | Sentry AI Context | `error-handler.ts`에 `ai_error_type`, `traceId` scope 태그 추가 | ✅ |
 | F2 | 유틸리티 추출 | `useHybridAIQuery.ts`에서 `hybrid-query-utils.ts` 분리 | ✅ (부분) |
 
+### 추가 해결 (2건, v8.7.1)
+
+| # | 영역 | 문제 | 해결 | 상태 |
+|---|------|------|------|:----:|
+| S1 | Session Continuity | sessionId 새로고침 시 유실 | localStorage 영속화 (30분 TTL) | Done |
+| S2 | Job Queue Retry | 실패 Job 재시도 불가 | POST /api/ai/jobs/:id/retry + retryJob 훅 | Done |
+
 ### 잔여 과제 (2건)
 
 | # | 영역 | 현재 상태 | 개선 방향 | 우선순위 |
@@ -266,7 +273,7 @@ Quad-Provider Fallback Chain:
 | UX | 95% | N/A | 95% |
 | 데이터/캐시 | 90% | 95% | 93% |
 | Observability | 90% | 95% | 93% |
-| Resilience | 90% | 95% | 93% |
+| Resilience | 92% | 95% | 94% |
 | **종합** | **93%** | **95%** | **94%** |
 
 ### 등급: A+ (Production Ready)

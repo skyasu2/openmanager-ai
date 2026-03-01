@@ -96,6 +96,7 @@ export interface AIJob {
     complexity: string;
     estimatedTime: number;
     factors: Record<string, unknown>;
+    retryCount?: number;
   };
 }
 

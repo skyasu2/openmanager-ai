@@ -460,6 +460,31 @@ cloud-run/ai-engine/src/
 | **Observability** | 충분 | Langfuse + Pino + Cloud Logging. 분산 트레이싱(Vercel↔CloudRun) 미구현 |
 | **확장성 한계** | Provider RPM이 첫 병목 | 기본적으로 LLM 쿼터/쿨타임 정책이 병목 가능, 추적 필요 |
 
+### Architecture Maturity Summary (v8.7.1 Analysis)
+
+| Dimension | Score | Evidence |
+|-----------|:-----:|----------|
+| Resilience | A+ | CB + Fallback + 3-way 모델 폴백 (Cerebras→Groq→Mistral) |
+| Observability | A | Langfuse + Sentry + Pino + W3C Trace Context 전 구간 |
+| Security | A | 52-패턴 Injection 방어 + Zod + Rate Limit + 출력 필터링 |
+| Caching | A | Memory→Redis 2-tier, 엔드포인트별 TTL 차별화 |
+| Data Architecture | A | 144-slot O(1) Pre-computed State, ~100토큰 컨텍스트 |
+| Cost Efficiency | A | 전 구간 Free Tier 최적화, 샘플링 적용 |
+| Session Continuity | B+→A- | localStorage sessionId 영속화 (30분 TTL) |
+| Job Recovery | B→B+ | 실패 Job 재시도 (max 2회) |
+
+### Agent Performance Benchmarks (Production QA)
+
+| Agent | Primary Model | Avg Latency | Tool Count | Quality Gate |
+|-------|--------------|:-----------:|:----------:|:------------:|
+| NLQ | Cerebras gpt-oss-120b | ~3s | 7 | — |
+| Analyst | Cerebras/Groq | ~25s (15 servers) | 8 | — |
+| Reporter | Groq llama-3.3-70b | ~1s (pipeline) | 12 | score ≥ 0.75 |
+| Advisor | Mistral large | ~5s | 4 | — |
+| Vision | Gemini 2.5 Flash | ~8s | 5 | — |
+| Evaluator | 결정론적 (LLM 없음) | <100ms | 3 | — |
+| Optimizer | 결정론적 (LLM 없음) | <100ms | 3 | — |
+
 ### Pending Improvements (P2)
 
 - Supervisor/Orchestrator 타임아웃 정렬 점검

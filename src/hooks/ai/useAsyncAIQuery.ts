@@ -333,11 +333,108 @@ export function useAsyncAIQuery(options: UseAsyncAIQueryOptions = {}) {
     });
   }, [cleanup]);
 
+  // Retry a failed job
+  const retryJob = useCallback(
+    async (failedJobId: string): Promise<AsyncQueryResult> => {
+      cleanup();
+      progressRef.current = 0;
+      setState({
+        isLoading: true,
+        isConnected: false,
+        progress: { stage: 'retrying', progress: 0, message: '재시도 중...' },
+        result: null,
+        error: null,
+        jobId: failedJobId,
+      });
+
+      return new Promise((resolve) => {
+        let capturedJobId: string | null = failedJobId;
+
+        const handleError = (error: string) => {
+          cleanup();
+          jobIdRef.current = null;
+          progressRef.current = 0;
+          setState((prev) => ({
+            ...prev,
+            isLoading: false,
+            isConnected: false,
+            error,
+            progress: null,
+          }));
+          onError?.(error);
+          resolve({ success: false, error, jobId: capturedJobId ?? undefined });
+        };
+
+        const handleResult = (result: AsyncQueryResult) => {
+          cleanup();
+          jobIdRef.current = null;
+          const resultWithJobId = {
+            ...result,
+            jobId: capturedJobId ?? undefined,
+          };
+          setState((prev) => ({
+            ...prev,
+            isLoading: false,
+            isConnected: false,
+            result: resultWithJobId,
+          }));
+          onResult?.(resultWithJobId);
+          resolve(resultWithJobId);
+        };
+
+        fetch(`/api/ai/jobs/${failedJobId}/retry`, { method: 'POST' })
+          .then(async (res) => {
+            if (!res.ok) {
+              const body = await res.json().catch(() => ({}));
+              throw new Error(
+                (body as { error?: string }).error ||
+                  `Retry failed: ${res.status}`
+              );
+            }
+            return res.json();
+          })
+          .then((data: { jobId: string; retryCount: number }) => {
+            capturedJobId = data.jobId;
+            jobIdRef.current = data.jobId;
+            setState((prev) => ({ ...prev, jobId: data.jobId }));
+
+            connectAsyncQuerySSE({
+              jobId: data.jobId,
+              timeout,
+              eventSourceRef,
+              listenersRef,
+              timeoutRef,
+              getCurrentProgress: () => progressRef.current,
+              onConnected: () => {
+                setState((prev) => ({ ...prev, isConnected: true }));
+              },
+              onProgress: (progress) => {
+                progressRef.current = progress.progress;
+                setState((prev) => ({ ...prev, progress, isConnected: true }));
+                onProgress?.(progress);
+              },
+              onResult: handleResult,
+              onError: handleError,
+            });
+
+            timeoutRef.current = setTimeout(() => {
+              handleError(`Retry timeout after ${timeout}ms`);
+            }, timeout);
+          })
+          .catch((e: Error) => {
+            handleError(`Retry failed: ${e.message}`);
+          });
+      });
+    },
+    [timeout, cleanup, onProgress, onResult, onError]
+  );
+
   return {
     // Actions
     sendQuery,
     cancel,
     reset,
+    retryJob,
 
     // State
     ...state,
