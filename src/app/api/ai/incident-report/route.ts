@@ -17,6 +17,11 @@ import {
 } from '@/lib/ai/cache/ai-response-cache';
 import { executeWithCircuitBreakerAndFallback } from '@/lib/ai/circuit-breaker';
 import { createFallbackResponse } from '@/lib/ai/fallback/ai-fallback-handler';
+import {
+  logAIRequest,
+  logAIResponse,
+  startAITimer,
+} from '@/lib/ai/observability';
 import { isCloudRunEnabled, proxyToCloudRun } from '@/lib/ai-proxy/proxy';
 import { withAuth } from '@/lib/auth/api-auth';
 import { supabaseAdmin } from '@/lib/supabase/admin';
@@ -83,6 +88,15 @@ async function postHandler(request: NextRequest) {
     }
 
     // 2. 캐시를 통한 Cloud Run 프록시 호출 (Circuit Breaker + Fallback + Cache)
+    const aiTimer = startAITimer();
+    logAIRequest({
+      operation: 'chat',
+      system: 'cloud-run',
+      model: 'multi-agent',
+      sessionId,
+      querySummary: `incident-report:${action}:${serverId ?? 'all'}`,
+    });
+
     debug.info(`[incident-report] Proxying action '${action}' to Cloud Run...`);
 
     const defaultTimeout = getDefaultTimeout(INCIDENT_REPORT_ENDPOINT);
@@ -275,6 +289,15 @@ async function postHandler(request: NextRequest) {
     }
 
     if (isFallback) {
+      logAIResponse({
+        operation: 'chat',
+        system: 'cloud-run',
+        model: 'multi-agent',
+        latencyMs: aiTimer.elapsed(),
+        success: false,
+        errorMessage: 'fallback response',
+      });
+
       const retryAfterMs = getRetryAfterMs(responseData);
       const fallbackReasonCode = toFallbackReasonCode(
         getFallbackReason(responseData)
@@ -308,6 +331,14 @@ async function postHandler(request: NextRequest) {
         headers: withNoStoreHeaders({ 'X-Cache': 'HIT' }),
       });
     }
+
+    logAIResponse({
+      operation: 'chat',
+      system: 'cloud-run',
+      model: 'multi-agent',
+      latencyMs: aiTimer.elapsed(),
+      success: true,
+    });
 
     debug.info('[incident-report] Cloud Run success');
     const successHeaders: Record<string, string> = { 'X-Cache': 'MISS' };

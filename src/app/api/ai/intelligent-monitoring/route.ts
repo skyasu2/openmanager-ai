@@ -16,6 +16,11 @@ import {
 } from '@/lib/ai/cache/ai-response-cache';
 import { executeWithCircuitBreakerAndFallback } from '@/lib/ai/circuit-breaker';
 import { createFallbackResponse } from '@/lib/ai/fallback/ai-fallback-handler';
+import {
+  logAIRequest,
+  logAIResponse,
+  startAITimer,
+} from '@/lib/ai/observability';
 import { isCloudRunEnabled, proxyToCloudRun } from '@/lib/ai-proxy/proxy';
 import { withAuth } from '@/lib/auth/api-auth';
 import { getErrorMessage } from '@/types/type-utils';
@@ -51,6 +56,15 @@ async function postHandler(request: NextRequest) {
     }
 
     // 2. 캐시를 통한 Cloud Run 프록시 호출 (Circuit Breaker + Fallback + Cache)
+    const aiTimer = startAITimer();
+    logAIRequest({
+      operation: 'chat',
+      system: 'cloud-run',
+      model: 'multi-agent',
+      sessionId,
+      querySummary: `intelligent-monitoring:${action}:${serverId}`,
+    });
+
     let cloudRunPath = '/api/ai/analyze-server';
     if (action === 'predict') cloudRunPath = '/api/ai/analyze-server';
     if (action === 'forecast_anomalies')
@@ -121,6 +135,15 @@ async function postHandler(request: NextRequest) {
     }
 
     if (isFallback) {
+      logAIResponse({
+        operation: 'chat',
+        system: 'cloud-run',
+        model: 'multi-agent',
+        latencyMs: aiTimer.elapsed(),
+        success: false,
+        errorMessage: 'fallback response',
+      });
+
       debug.info('[intelligent-monitoring] Using fallback response');
       return NextResponse.json(responseData, {
         headers: {
@@ -129,6 +152,14 @@ async function postHandler(request: NextRequest) {
         },
       });
     }
+
+    logAIResponse({
+      operation: 'chat',
+      system: 'cloud-run',
+      model: 'multi-agent',
+      latencyMs: aiTimer.elapsed(),
+      success: true,
+    });
 
     debug.info('[intelligent-monitoring] Cloud Run success');
     return NextResponse.json(responseData, {

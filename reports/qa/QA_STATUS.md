@@ -1,13 +1,13 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-01 12:33:12 KST
+> Generated at: 2026-03-01 15:16:36 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 32 |
+| Total Runs | 33 |
 | Total Checks | 177 |
 | Passed | 159 |
 | Failed | 18 |
@@ -17,11 +17,11 @@
 | Expert Domains Tracked | 6 |
 | Expert Open Gaps | 2 |
 | Completion Rate | 100% |
-| Last Run | QA-20260301-0032 (2026-03-01T03:33:12.090Z) |
+| Last Run | QA-20260301-0033 (2026-03-01T06:16:36.498Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260301-0032 (2026-03-01T03:33:12.090Z)
+Latest run: QA-20260301-0033 (2026-03-01T06:16:36.498Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -165,6 +165,7 @@ Latest run: QA-20260301-0032 (2026-03-01T03:33:12.090Z)
 
 | Run ID | Time (UTC) | Title | Checks | Completed | Pending | Wont-Fix | Expert Gaps |
 |---|---|---|---:|---:|---:|---:|---:|
+| QA-20260301-0033 | 2026-03-01T06:16:36.498Z | Production Playwright MCP QA | 0 | 0 | 0 | 0 | 0 |
 | QA-20260301-0032 | 2026-03-01T03:33:12.090Z | Final QA Gate v8.7.1 — Static + Security + Build + Code Quality (18/18 PASS) | 18 | 14 | 0 | 0 | 0 |
 | QA-20260301-0031 | 2026-03-01T01:08:05.088Z | Comprehensive Button/Modal/UI QA - v8.7.1 post-release | 18 | 0 | 0 | 18 | 0 |
 | QA-20260301-0030 | 2026-03-01T00:54:39.785Z | Vercel Playwright MCP QA - v8.7.1 post-release production validation | 12 | 0 | 0 | 12 | 0 |
@@ -184,5 +185,4 @@ Latest run: QA-20260301-0032 (2026-03-01T03:33:12.090Z)
 | QA-20260227-0016 | 2026-02-26T18:34:32.172Z | Vercel Playwright QA - 로그인 정책/시스템 시작 가드 재검증 | 2 | 3 | 0 | 0 | 2 |
 | QA-20260227-0015 | 2026-02-26T18:11:05.996Z | Vercel Playwright QA - 랜딩 로그인 모달 카피 배포 정합성 재검증 | 2 | 2 | 2 | 0 | 3 |
 | QA-20260227-0014 | 2026-02-26T18:03:30.997Z | Vercel Playwright QA - 로그인 정책/시스템 시작 가드 배포 검증 | 3 | 3 | 1 | 0 | 2 |
-| QA-20260227-0013 | 2026-02-26T17:50:54.243Z | Vercel Playwright QA - 시스템 시작 가드/게스트 PIN 체험 흐름 재검증 | 2 | 2 | 3 | 0 | 2 |
 
