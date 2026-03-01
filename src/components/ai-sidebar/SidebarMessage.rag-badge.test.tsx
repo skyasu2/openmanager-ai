@@ -4,8 +4,7 @@
 
 import type { UIMessage } from '@ai-sdk/react';
 import { render, screen } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
-import { vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { MessageComponent } from '@/components/ai-sidebar/SidebarMessage';
 import { transformMessages } from '@/hooks/ai/utils/message-helpers';
 
