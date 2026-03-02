@@ -1,34 +1,32 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-02 19:30:38 KST
+> Generated at: 2026-03-02 23:29:50 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 43 |
-| Total Checks | 295 |
-| Passed | 277 |
+| Total Runs | 44 |
+| Total Checks | 299 |
+| Passed | 281 |
 | Failed | 18 |
-| Completed Items | 94 |
+| Completed Items | 95 |
 | Pending Items | 0 |
-| Deferred Items | 3 |
+| Deferred Items | 2 |
 | Wont-Fix Items | 30 |
 | Expert Domains Tracked | 6 |
 | Expert Open Gaps | 0 |
-| Completion Rate | 96.91% |
-| Last Run | QA-20260302-0043 (2026-03-02T10:30:38.260Z) |
+| Completion Rate | 97.94% |
+| Last Run | QA-20260302-0044 (2026-03-02T14:29:50.264Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260302-0043 (2026-03-02T10:30:38.260Z)
+Latest run: QA-20260302-0044 (2026-03-02T14:29:50.264Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| AI Quality Assurance Specialist | appropriate | no | - |
-| IT Monitoring & Observability SME | appropriate | no | - |
-| Test Automation Architect | appropriate | no | - |
+| - | - | - | - |
 
 ## Expert Domain Open Gaps
 
@@ -40,7 +38,6 @@ Latest run: QA-20260302-0043 (2026-03-02T10:30:38.260Z)
 
 ## Deferred Improvements
 
-- [P1] metrics-drift-threshold-standard: 지표 드리프트 임계치 표준화 (seen 2회, last QA-20260227-0013)
 - [P1] obs-fp-fn-weekly-report: 오탐/미탐 주간 리포트 자동 생성 (seen 3회, last QA-20260227-0013)
 - [P1] security-attack-regression-pack: 보안 공격 시나리오 회귀팩 구축 (seen 3회, last QA-20260227-0013)
 
@@ -119,14 +116,14 @@ Latest run: QA-20260302-0043 (2026-03-02T10:30:38.260Z)
 - dashboard-server-cards: 대시보드 서버 카드 및 메트릭 (completed 2회, last QA-20260302-0038)
 - feature-card-modal: 피처카드 모달 (completed 1회, last QA-20260301-0035)
 - feature-dod-e2e-critical: E2E 크리티컬 흐름 통과 (completed 1회, last QA-20260228-0029)
-- feature-dod-lint-zero-error: lint 0 에러 (completed 4회, last QA-20260302-0039)
+- feature-dod-lint-zero-error: lint 0 에러 (completed 5회, last QA-20260302-0044)
 - feature-dod-login-copy-neutral: 로그인 정책 카피 중립성 지속성 (completed 1회, last QA-20260227-0017)
 - feature-dod-login-policy-copy: 로그인 정책 카피 중립성 지속성 (completed 3회, last QA-20260227-0018)
 - feature-dod-release-response-time-check: Feature/Release DoD: 핵심 응답시간 합격 (completed 1회, last QA-20260226-0005)
 - feature-dod-security-review: Feature DoD: 보안 검토(입력 검증/인증/OWASP) (completed 1회, last QA-20260226-0006)
 - feature-dod-system-start-guard: 비로그인 시스템 시작 가드 모달 동작 (completed 7회, last QA-20260227-0018)
-- feature-dod-tsc-zero-error: tsc --noEmit 0 에러 (completed 4회, last QA-20260302-0039)
-- feature-dod-unit-tests: 신규 로직 단위 테스트 추가 (completed 4회, last QA-20260302-0039)
+- feature-dod-tsc-zero-error: tsc --noEmit 0 에러 (completed 5회, last QA-20260302-0044)
+- feature-dod-unit-tests: 신규 로직 단위 테스트 추가 (completed 5회, last QA-20260302-0044)
 - feature-dod-validation-health-endpoints: 헬스/버전 API 검사 (Vercel) (completed 2회, last QA-20260227-0018)
 - feature-dod-vitals-integration: vitals:integration 통합 실행 통과 (completed 1회, last QA-20260228-0028)
 - guest-flow-server-card-and-startflow-resilience: 게스트 플로우 시스템 시작/AI 진입 내성 보강 (completed 3회, last QA-20260302-0039)
@@ -140,6 +137,7 @@ Latest run: QA-20260302-0043 (2026-03-02T10:30:38.260Z)
 - login-copy-neutral: 로그인 정책 카피 중립성 개선 (completed 1회, last QA-20260227-0014)
 - login-pin-form-structure: 게스트 PIN 입력 폼 구조 정리 (completed 1회, last QA-20260226-0001)
 - math-tool-implementation-validation: AI 계산 툴 라우팅/실행 검증 (completed 1회, last QA-20260228-0027)
+- metrics-drift-threshold-standard: 지표 드리프트 임계치 표준화 (completed 1회, last QA-20260302-0044)
 - modal-backdrop-close: 모달 백드롭 클릭 닫기 안정화 (completed 2회, last QA-20260226-0002)
 - otel-데이터-무결성-24x15-완전: OTel 데이터 무결성 24x15 완전 (completed 1회, last QA-20260301-0032)
 - planning-backlog-clear: planning TODO 잔여 항목 정리 (completed 1회, last QA-20260226-0006)
@@ -207,6 +205,7 @@ Latest run: QA-20260302-0043 (2026-03-02T10:30:38.260Z)
 
 | Run ID | Time (UTC) | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260302-0044 | 2026-03-02T14:29:50.264Z | metrics-drift-threshold-standard implementation verification | 4 | 4 | 0 | 0 | 0 | 0 |
 | QA-20260302-0043 | 2026-03-02T10:30:38.260Z | Production Playwright MCP QA v8.7.3 post-storybook-fix (13/13 PASS) | 13 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260302-0042 | 2026-03-02T01:28:03.340Z | Production Playwright MCP QA v8.7.3 (13/13 PASS) | 13 | 13 | 0 | 0 | 4 | 0 |
 | QA-20260302-0041 | 2026-03-01T19:22:04.972Z | Production Playwright MCP QA v8.7.2 Post-Deploy (13/13 PASS) | 13 | 13 | 0 | 0 | 4 | 0 |
@@ -226,5 +225,4 @@ Latest run: QA-20260302-0043 (2026-03-02T10:30:38.260Z)
 | QA-20260228-0027 | 2026-02-27T16:34:47.012Z | AI Math Tools & Routing Verification (Type-check + targeted tests) | 3 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260228-0026 | 2026-02-27T16:23:32.022Z | Docs full-link health after infrastructure and Vertex RAG URL repair | 1 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260228-0025 | 2026-02-27T16:02:07.173Z | Docs QA Gate Repair for Dead Link and Ordered List | 2 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260228-0024 | 2026-02-27T15:51:09.352Z | Release DoD Evidence: Type/Lint/Unit Checks for AI Math Tools | 3 | 3 | 0 | 0 | 0 | 0 |
 

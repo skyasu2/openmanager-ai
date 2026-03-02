@@ -1,0 +1,84 @@
+{
+  "runId": "QA-20260302-0044",
+  "recordedAt": "2026-03-02T14:29:50.264Z",
+  "recordedAtKst": "2026-03-02 23:29:50 KST",
+  "runTitle": "metrics-drift-threshold-standard implementation verification",
+  "owner": "claude",
+  "source": "unit-test",
+  "environment": {
+    "frontend": "Local",
+    "backend": "Local",
+    "branch": "main"
+  },
+  "checks": {
+    "total": 4,
+    "passed": 4,
+    "failed": 0
+  },
+  "expertAssessments": [],
+  "completedImprovements": [
+    {
+      "id": "metrics-drift-threshold-standard",
+      "title": "지표 드리프트 임계치 표준화",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "commit 5db00429f: SSOT recovery 임계치 추가(v1.1.0), DEFAULT_THRESHOLDS 하드코딩 제거, buildTrendThresholds() SSOT 파생, detectBaselineDrift() 구현, 13개 테스트 PASS",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "feature-dod-tsc-zero-error",
+      "title": "tsc --noEmit 0 에러",
+      "priority": "P2",
+      "evidence": "commit 5db00429f",
+      "note": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "owner": "claude",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "feature-dod-lint-zero-error",
+      "title": "lint 0 에러",
+      "priority": "P2",
+      "evidence": "commit 5db00429f",
+      "note": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "owner": "claude",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "feature-dod-unit-tests",
+      "title": "신규 로직 단위 테스트 추가",
+      "priority": "P2",
+      "evidence": "SimpleAnomalyDetector.test.ts (5), status-thresholds.test.ts (8) = 13 tests PASS",
+      "note": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "owner": "claude",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "system-rules.json v1.1.0: recovery 필드 5개 메트릭 추가",
+    "TrendPredictor.types.ts DEFAULT_THRESHOLDS 삭제 → buildTrendThresholds() SSOT 파생",
+    "SimpleAnomalyDetector.detectBaselineDrift(): 6시간 윈도우 전반/후반 비교, 1σ 임계값",
+    "analyst-tools-detect: drift 결과 하위 호환 노출 (optional baselineDrift 필드)",
+    "Frontend type-check + Lint + Test 157개 + Cloud Run Build + 신규 테스트 13개 전체 PASS"
+  ],
+  "links": []
+}
