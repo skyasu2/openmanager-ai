@@ -1,0 +1,31 @@
+{
+  "runId": "QA-20260302-0045",
+  "recordedAt": "2026-03-02T14:48:48.455Z",
+  "recordedAtKst": "2026-03-02 23:48:48 KST",
+  "runTitle": "Production Playwright MCP QA v8.7.5 post-drift-threshold-standard",
+  "owner": "claude",
+  "source": "playwright-mcp",
+  "environment": {
+    "frontend": "Vercel Production",
+    "backend": "Cloud Run Production",
+    "branch": "main"
+  },
+  "checks": {
+    "total": 13,
+    "passed": 13,
+    "failed": 0
+  },
+  "expertAssessments": [],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "v8.7.5: metrics-drift-threshold-standard 구현 후 첫 Production QA",
+    "AI Chat: 서버 현황 요약 + 추세 감지 + 구체적 권고 제공",
+    "Analyst: 주요이슈 5건, 상승추세 경고 5건 (임계값 도달 시간 예측 포함)",
+    "Reporter: 1초 이내 보고서 생성, 영향 서버/추정원인/현황 구조화",
+    "전체 AI 기능 Cloud Run 경유 정상 동작 확인"
+  ],
+  "links": []
+}
