@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.7.7](https://github.com/skyasu2/openmanager-ai/compare/v8.7.6...v8.7.7) (2026-03-02)
+
+
+### Features
+
+* **test:** add mobile responsive E2E tests and Lighthouse score automation ([fc8bca1](https://github.com/skyasu2/openmanager-ai/commit/fc8bca19abbf68b13bfac3e2b8de85bb965b232a))
+
 ## [8.7.6](https://github.com/skyasu2/openmanager-ai/compare/v8.7.5...v8.7.6) (2026-03-02)
 
 ## [8.7.5](https://github.com/skyasu2/openmanager-ai/compare/v8.7.4...v8.7.5) (2026-03-02)
