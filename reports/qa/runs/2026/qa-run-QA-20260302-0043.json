@@ -1,0 +1,73 @@
+{
+  "runId": "QA-20260302-0043",
+  "recordedAt": "2026-03-02T10:30:38.260Z",
+  "recordedAtKst": "2026-03-02 19:30:38 KST",
+  "runTitle": "Production Playwright MCP QA v8.7.3 post-storybook-fix (13/13 PASS)",
+  "owner": "claude",
+  "source": "playwright-mcp",
+  "environment": {
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main"
+  },
+  "checks": {
+    "total": 13,
+    "passed": 13,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "13개 QA 체크 전항목 PASS, AI 사이드바 및 프리셋 질문 정상 확인",
+      "nextAction": ""
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "15서버 메트릭, 리소스 요약, Top5 경고 모두 정상 렌더링",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Playwright MCP 기반 13개 시나리오 안정적 실행",
+      "nextAction": ""
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "storybook-sb-mock-fix",
+      "title": "sb.mock()을 preview.ts로 이동하여 Storybook v10 호환성 수정",
+      "priority": "P0",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "커밋 8e8c0c831, 모든 스토리 렌더링 정상",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "커밋 8e8c0c831 (sb.mock() preview.ts 이동) 배포 후 검증",
+    "전체 13/13 PASS - Storybook 수정이 Production에 영향 없음 확인",
+    "v8.7.3 버전 확인, 게스트 로그인 정상, 대시보드 15서버 정상"
+  ],
+  "links": [
+    {
+      "label": "Vercel Production",
+      "url": "https://openmanager-ai.vercel.app"
+    }
+  ]
+}

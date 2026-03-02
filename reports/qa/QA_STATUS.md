@@ -1,31 +1,34 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-02 10:28:03 KST
+> Generated at: 2026-03-02 19:30:38 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 42 |
-| Total Checks | 282 |
-| Passed | 264 |
+| Total Runs | 43 |
+| Total Checks | 295 |
+| Passed | 277 |
 | Failed | 18 |
-| Completed Items | 93 |
+| Completed Items | 94 |
 | Pending Items | 0 |
-| Wont-Fix Items | 33 |
+| Deferred Items | 3 |
+| Wont-Fix Items | 30 |
 | Expert Domains Tracked | 6 |
 | Expert Open Gaps | 0 |
-| Completion Rate | 100% |
-| Last Run | QA-20260302-0042 (2026-03-02T01:28:03.340Z) |
+| Completion Rate | 96.91% |
+| Last Run | QA-20260302-0043 (2026-03-02T10:30:38.260Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260302-0042 (2026-03-02T01:28:03.340Z)
+Latest run: QA-20260302-0043 (2026-03-02T10:30:38.260Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
 | AI Quality Assurance Specialist | appropriate | no | - |
+| IT Monitoring & Observability SME | appropriate | no | - |
+| Test Automation Architect | appropriate | no | - |
 
 ## Expert Domain Open Gaps
 
@@ -35,11 +38,14 @@ Latest run: QA-20260302-0042 (2026-03-02T01:28:03.340Z)
 
 - None
 
-## Wont-Fix Improvements
+## Deferred Improvements
 
 - [P1] metrics-drift-threshold-standard: 지표 드리프트 임계치 표준화 (seen 2회, last QA-20260227-0013)
 - [P1] obs-fp-fn-weekly-report: 오탐/미탐 주간 리포트 자동 생성 (seen 3회, last QA-20260227-0013)
 - [P1] security-attack-regression-pack: 보안 공격 시나리오 회귀팩 구축 (seen 3회, last QA-20260227-0013)
+
+## Wont-Fix Improvements
+
 - [P2] ai-chat-detail-expand: AI Chat 상세 분석 펼치기 (seen 1회, last QA-20260301-0030)
   - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
 - [P2] ai-chat-sidebar-open: AI 사이드바 열기 (seen 1회, last QA-20260301-0030)
@@ -144,6 +150,7 @@ Latest run: QA-20260302-0042 (2026-03-02T01:28:03.340Z)
 - release-dod-cost-gate: Release DoD: Cloud Run Free Tier 비용 가드 검증 (completed 1회, last QA-20260226-0008)
 - release-dod-doc-gate: Release DoD: 문서 게이트 90일 갱신·메타데이터·아카이빙 정책 (completed 1회, last QA-20260228-0025)
 - release-dod-test-gate: validate:all 0 에러 (completed 2회, last QA-20260302-0036)
+- storybook-sb-mock-fix: sb.mock()을 preview.ts로 이동하여 Storybook v10 호환성 수정 (completed 1회, last QA-20260302-0043)
 - system-boot-api-checks: 시스템 부트 API 존재성/헬스 체크 (completed 2회, last QA-20260302-0039)
 - system-boot-redirect: 시스템 시작 대시보드 리다이렉트 (completed 1회, last QA-20260301-0035)
 - system-start-auth-modal-guard-stability: 시스템 시작 로그인 모달 노출 경로 검증 보강 (completed 2회, last QA-20260302-0038)
@@ -198,26 +205,26 @@ Latest run: QA-20260302-0042 (2026-03-02T01:28:03.340Z)
 
 ## Recent Runs
 
-| Run ID | Time (UTC) | Title | Checks | Completed | Pending | Wont-Fix | Expert Gaps |
-|---|---|---|---:|---:|---:|---:|---:|
-| QA-20260302-0042 | 2026-03-02T01:28:03.340Z | Production Playwright MCP QA v8.7.3 (13/13 PASS) | 13 | 13 | 0 | 4 | 0 |
-| QA-20260302-0041 | 2026-03-01T19:22:04.972Z | Production Playwright MCP QA v8.7.2 Post-Deploy (13/13 PASS) | 13 | 13 | 0 | 4 | 0 |
-| QA-20260302-0040 | 2026-03-01T18:55:54.581Z | Production Playwright MCP QA v8.7.2 - Post Code Review (13/13 PASS) | 13 | 13 | 0 | 4 | 0 |
-| QA-20260302-0039 | 2026-03-01T17:31:03.533Z | Local QA Improvement Run - dashboard/guest/system-start continuity | 20 | 7 | 0 | 0 | 0 |
-| QA-20260302-0038 | 2026-03-01T17:09:26.362Z | Local QA Improvement Run - system-start KPI + guest + server cards | 20 | 5 | 0 | 0 | 0 |
-| QA-20260302-0037 | 2026-03-01T17:02:04.585Z | Local QA Improvement Run - system-start KPI smoke | 1 | 1 | 0 | 0 | 0 |
-| QA-20260302-0036 | 2026-03-01T16:58:39.657Z | Local QA Improvement Run - Server Cards + Guest/System Start + RAG Smoke | 11 | 5 | 0 | 0 | 0 |
-| QA-20260301-0035 | 2026-03-01T13:45:21.162Z | Production Playwright MCP QA v8.7.2 — Full Functional Validation (6/6 PASS) | 6 | 6 | 0 | 0 | 0 |
-| QA-20260301-0034 | 2026-03-01T07:37:43.156Z | Production Playwright MCP QA — observability commit 6179e54 (8/8 PASS) | 8 | 0 | 0 | 0 | 0 |
-| QA-20260301-0033 | 2026-03-01T06:16:36.498Z | Production Playwright MCP QA | 0 | 0 | 0 | 0 | 0 |
-| QA-20260301-0032 | 2026-03-01T03:33:12.090Z | Final QA Gate v8.7.1 — Static + Security + Build + Code Quality (18/18 PASS) | 18 | 14 | 0 | 0 | 0 |
-| QA-20260301-0031 | 2026-03-01T01:08:05.088Z | Comprehensive Button/Modal/UI QA - v8.7.1 post-release | 18 | 0 | 0 | 18 | 0 |
-| QA-20260301-0030 | 2026-03-01T00:54:39.785Z | Vercel Playwright MCP QA - v8.7.1 post-release production validation | 12 | 0 | 0 | 12 | 0 |
-| QA-20260228-0029 | 2026-02-28T05:58:33.745Z | Critical E2E validation with local server | 11 | 1 | 0 | 0 | 0 |
-| QA-20260228-0028 | 2026-02-28T05:16:29.599Z | Web Vitals integration log suppression + full validation | 5 | 5 | 0 | 0 | 0 |
-| QA-20260228-0027 | 2026-02-27T16:34:47.012Z | AI Math Tools & Routing Verification (Type-check + targeted tests) | 3 | 1 | 0 | 0 | 0 |
-| QA-20260228-0026 | 2026-02-27T16:23:32.022Z | Docs full-link health after infrastructure and Vertex RAG URL repair | 1 | 1 | 0 | 0 | 0 |
-| QA-20260228-0025 | 2026-02-27T16:02:07.173Z | Docs QA Gate Repair for Dead Link and Ordered List | 2 | 1 | 0 | 0 | 0 |
-| QA-20260228-0024 | 2026-02-27T15:51:09.352Z | Release DoD Evidence: Type/Lint/Unit Checks for AI Math Tools | 3 | 3 | 0 | 0 | 0 |
-| QA-20260228-0023 | 2026-02-27T15:50:59.689Z | Vercel Playwright + AI Math Tool Verification | 17 | 1 | 3 | 0 | 1 |
+| Run ID | Time (UTC) | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
+|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260302-0043 | 2026-03-02T10:30:38.260Z | Production Playwright MCP QA v8.7.3 post-storybook-fix (13/13 PASS) | 13 | 1 | 0 | 0 | 0 | 0 |
+| QA-20260302-0042 | 2026-03-02T01:28:03.340Z | Production Playwright MCP QA v8.7.3 (13/13 PASS) | 13 | 13 | 0 | 0 | 4 | 0 |
+| QA-20260302-0041 | 2026-03-01T19:22:04.972Z | Production Playwright MCP QA v8.7.2 Post-Deploy (13/13 PASS) | 13 | 13 | 0 | 0 | 4 | 0 |
+| QA-20260302-0040 | 2026-03-01T18:55:54.581Z | Production Playwright MCP QA v8.7.2 - Post Code Review (13/13 PASS) | 13 | 13 | 0 | 0 | 4 | 0 |
+| QA-20260302-0039 | 2026-03-01T17:31:03.533Z | Local QA Improvement Run - dashboard/guest/system-start continuity | 20 | 7 | 0 | 0 | 0 | 0 |
+| QA-20260302-0038 | 2026-03-01T17:09:26.362Z | Local QA Improvement Run - system-start KPI + guest + server cards | 20 | 5 | 0 | 0 | 0 | 0 |
+| QA-20260302-0037 | 2026-03-01T17:02:04.585Z | Local QA Improvement Run - system-start KPI smoke | 1 | 1 | 0 | 0 | 0 | 0 |
+| QA-20260302-0036 | 2026-03-01T16:58:39.657Z | Local QA Improvement Run - Server Cards + Guest/System Start + RAG Smoke | 11 | 5 | 0 | 0 | 0 | 0 |
+| QA-20260301-0035 | 2026-03-01T13:45:21.162Z | Production Playwright MCP QA v8.7.2 — Full Functional Validation (6/6 PASS) | 6 | 6 | 0 | 0 | 0 | 0 |
+| QA-20260301-0034 | 2026-03-01T07:37:43.156Z | Production Playwright MCP QA — observability commit 6179e54 (8/8 PASS) | 8 | 0 | 0 | 0 | 0 | 0 |
+| QA-20260301-0033 | 2026-03-01T06:16:36.498Z | Production Playwright MCP QA | 0 | 0 | 0 | 0 | 0 | 0 |
+| QA-20260301-0032 | 2026-03-01T03:33:12.090Z | Final QA Gate v8.7.1 — Static + Security + Build + Code Quality (18/18 PASS) | 18 | 14 | 0 | 0 | 0 | 0 |
+| QA-20260301-0031 | 2026-03-01T01:08:05.088Z | Comprehensive Button/Modal/UI QA - v8.7.1 post-release | 18 | 0 | 0 | 0 | 18 | 0 |
+| QA-20260301-0030 | 2026-03-01T00:54:39.785Z | Vercel Playwright MCP QA - v8.7.1 post-release production validation | 12 | 0 | 0 | 0 | 12 | 0 |
+| QA-20260228-0029 | 2026-02-28T05:58:33.745Z | Critical E2E validation with local server | 11 | 1 | 0 | 0 | 0 | 0 |
+| QA-20260228-0028 | 2026-02-28T05:16:29.599Z | Web Vitals integration log suppression + full validation | 5 | 5 | 0 | 0 | 0 | 0 |
+| QA-20260228-0027 | 2026-02-27T16:34:47.012Z | AI Math Tools & Routing Verification (Type-check + targeted tests) | 3 | 1 | 0 | 0 | 0 | 0 |
+| QA-20260228-0026 | 2026-02-27T16:23:32.022Z | Docs full-link health after infrastructure and Vertex RAG URL repair | 1 | 1 | 0 | 0 | 0 | 0 |
+| QA-20260228-0025 | 2026-02-27T16:02:07.173Z | Docs QA Gate Repair for Dead Link and Ordered List | 2 | 1 | 0 | 0 | 0 | 0 |
+| QA-20260228-0024 | 2026-02-27T15:51:09.352Z | Release DoD Evidence: Type/Lint/Unit Checks for AI Math Tools | 3 | 3 | 0 | 0 | 0 | 0 |
 

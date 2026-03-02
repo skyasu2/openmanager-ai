@@ -2,25 +2,25 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-03-02T01:28:03.340Z"
+    "updatedAt": "2026-03-02T10:30:38.260Z"
   },
   "sequence": {
-    "nextRunNumber": 43
+    "nextRunNumber": 44
   },
   "summary": {
-    "totalRuns": 42,
-    "totalChecks": 282,
-    "totalPassed": 264,
+    "totalRuns": 43,
+    "totalChecks": 295,
+    "totalPassed": 277,
     "totalFailed": 18,
-    "completionRate": 100,
-    "completedItems": 93,
+    "completionRate": 96.91,
+    "completedItems": 94,
     "pendingItems": 0,
     "deferredItems": 3,
     "wontFixItems": 30,
     "expertDomainsTracked": 6,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260302-0042",
-    "lastRecordedAt": "2026-03-02T01:28:03.340Z"
+    "lastRunId": "QA-20260302-0043",
+    "lastRecordedAt": "2026-03-02T10:30:38.260Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -2668,6 +2668,30 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-03-02T01:28:03.340Z"
+    },
+    "storybook-sb-mock-fix": {
+      "id": "storybook-sb-mock-fix",
+      "title": "sb.mock()을 preview.ts로 이동하여 Storybook v10 호환성 수정",
+      "priority": "P0",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260302-0043",
+      "firstSeenAt": "2026-03-02T10:30:38.260Z",
+      "lastSeenRunId": "QA-20260302-0043",
+      "lastSeenAt": "2026-03-02T10:30:38.260Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "커밋 8e8c0c831, 모든 스토리 렌더링 정상",
+      "lastNote": "",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-03-02T10:30:38.260Z"
     }
   },
   "runs": [
@@ -4332,6 +4356,52 @@
       "completedCount": 13,
       "pendingCount": 0,
       "wontFixCount": 4
+    },
+    {
+      "runId": "QA-20260302-0043",
+      "recordedAt": "2026-03-02T10:30:38.260Z",
+      "recordedAtKst": "2026-03-02 19:30:38 KST",
+      "title": "Production Playwright MCP QA v8.7.3 post-storybook-fix (13/13 PASS)",
+      "owner": "claude",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260302-0043.json",
+      "checks": {
+        "total": 13,
+        "passed": 13,
+        "failed": 0
+      },
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "13개 QA 체크 전항목 PASS, AI 사이드바 및 프리셋 질문 정상 확인",
+          "nextAction": ""
+        },
+        {
+          "domainId": "observability-monitoring",
+          "domainName": "IT Monitoring & Observability SME",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "15서버 메트릭, 리소스 요약, Top5 경고 모두 정상 렌더링",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Playwright MCP 기반 13개 시나리오 안정적 실행",
+          "nextAction": ""
+        }
+      ],
+      "expertCount": 3,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -4340,16 +4410,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 24,
-      "appropriateCount": 23,
+      "seenCount": 25,
+      "appropriateCount": 24,
       "partialCount": 1,
       "inappropriateCount": 0,
       "improvementNeededCount": 1,
-      "lastRunId": "QA-20260302-0042",
-      "lastSeenAt": "2026-03-02T01:28:03.340Z",
+      "lastRunId": "QA-20260302-0043",
+      "lastSeenAt": "2026-03-02T10:30:38.260Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "v8.7.3 릴리즈 후 Production QA 13/13 PASS. 시간대 변화에 따라 api-was-dc1-01이 Critical(CPU 91%)로 상승, 서버 상태 분포 자연 변동 확인.",
+      "lastRationale": "13개 QA 체크 전항목 PASS, AI 사이드바 및 프리셋 질문 정상 확인",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -4357,16 +4427,16 @@
       "domainName": "IT Monitoring & Observability SME",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 16,
-      "appropriateCount": 3,
+      "seenCount": 17,
+      "appropriateCount": 4,
       "partialCount": 13,
       "inappropriateCount": 0,
       "improvementNeededCount": 13,
-      "lastRunId": "QA-20260302-0039",
-      "lastSeenAt": "2026-03-01T17:31:03.533Z",
+      "lastRunId": "QA-20260302-0043",
+      "lastSeenAt": "2026-03-02T10:30:38.260Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "실행 로그 기반 KPI 로그(상태, 지연, 성공/실패)가 QA 런에 반영되었습니다.",
+      "lastRationale": "15서버 메트릭, 리소스 요약, Top5 경고 모두 정상 렌더링",
       "lastNextAction": ""
     },
     "ai-security-reliability": {
@@ -4408,16 +4478,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 22,
-      "appropriateCount": 19,
+      "seenCount": 23,
+      "appropriateCount": 20,
       "partialCount": 3,
       "inappropriateCount": 0,
       "improvementNeededCount": 4,
-      "lastRunId": "QA-20260302-0040",
-      "lastSeenAt": "2026-03-01T18:55:54.581Z",
+      "lastRunId": "QA-20260302-0043",
+      "lastSeenAt": "2026-03-02T10:30:38.260Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "E2E 테스트 리팩토링(공용 헬퍼 추출, evaluateAll 안티패턴 제거) 후 Production 동작 확인 완료.",
+      "lastRationale": "Playwright MCP 기반 13개 시나리오 안정적 실행",
       "lastNextAction": ""
     },
     "data-metrics-quality": {
