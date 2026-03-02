@@ -1,0 +1,31 @@
+{
+  "runId": "QA-20260303-0046",
+  "recordedAt": "2026-03-02T15:45:41.261Z",
+  "recordedAtKst": "2026-03-03 00:45:41 KST",
+  "runTitle": "Production Playwright MCP QA v8.7.6 (13/13 PASS)",
+  "owner": "claude",
+  "source": "playwright-mcp",
+  "environment": {
+    "frontend": "Vercel Production",
+    "backend": "Cloud Run Production",
+    "branch": "main"
+  },
+  "checks": {
+    "total": 13,
+    "passed": 13,
+    "failed": 0
+  },
+  "expertAssessments": [],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "v8.7.6: QA 기록 포함 릴리스, drift-threshold-standard 구현 반영 확인",
+    "AI Chat: ~12초 응답, 상승/하락 추세 분리 감지, 구체적 권고 (쿼리 최적화, 스케일 업/아웃)",
+    "Analyst: 주요이슈 1건 (db-mysql Disk 82%), 상승추세 경고 2건 (17분/2시간 후 심각 예측)",
+    "Reporter: ~1초 보고서 생성, 영향 서버/추정원인/현황 구조화",
+    "전체 AI 기능 Cloud Run 경유 정상 동작 확인"
+  ],
+  "links": []
+}
