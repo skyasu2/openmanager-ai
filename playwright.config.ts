@@ -100,13 +100,13 @@ export default defineConfig({
   projects,
 
   /* Firefox, WebKit 제거 (2025-10-12 WSL 환경 최적화)
-     * 이유:
-     * - Chromium/Chrome 프로덕션 점유율 90%+
-     * - Firefox/WebKit ROI 낮음 (3% 이하)
-     * - 테스트 속도 3배 향상
-     * - 디스크 공간 1.6GB 절약
-     * - WSL 환경에서 Chromium 헤드리스 최적화
-     * - MCP 통합 (Playwright + Serena 모두 Chromium 사용)
+   * 이유:
+   * - Chromium/Chrome 프로덕션 점유율 90%+
+   * - Firefox/WebKit ROI 낮음 (3% 이하)
+   * - 테스트 속도 3배 향상
+   * - 디스크 공간 1.6GB 절약
+   * - WSL 환경에서 Chromium 헤드리스 최적화
+   * - MCP 통합 (Playwright + Serena 모두 Chromium 사용)
    */
   // {
   //   name: 'firefox',
