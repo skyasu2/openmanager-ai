@@ -4,7 +4,7 @@
 > Owner: dev-experience
 > Status: Active
 > Doc type: Reference
-> Last reviewed: 2026-02-28
+> Last reviewed: 2026-03-02
 > Canonical: docs/development/dev-tools.md
 > Tags: tooling,nodejs,biome
 
@@ -81,6 +81,16 @@ npm run vitals:integration        # web-vitals 통합(느린 테스트, 선택)
 ```bash
 npm run test:e2e           # 로컬 E2E
 npm run test:e2e:critical  # 핵심 테스트만
+npm run test:e2e:mobile    # 모바일 반응형 회귀 (mobile 프로젝트만)
+npm run test:e2e:responsive # 데스크톱+모바일 통합 회귀
+```
+
+### Lighthouse (성능 점수 자동 측정)
+
+```bash
+npm run lighthouse:local   # 로컬 빌드/서버 기동 후 mobile+desktop 점수 자동 측정
+npm run lighthouse:vercel  # Vercel URL 대상으로 mobile+desktop 점수 자동 측정
+npm run lighthouse:score -- --url https://openmanager-ai.vercel.app --preset mobile --runs 3
 ```
 
 ### Storybook (Component Docs)

@@ -21,6 +21,45 @@ const extraHTTPHeaders = bypassSecret
       'x-vercel-protection-bypass': bypassSecret,
     }
   : undefined;
+const includeMobileProjects = process.env.PLAYWRIGHT_INCLUDE_MOBILE === '1';
+const mobileOnly = process.env.PLAYWRIGHT_MOBILE_ONLY === '1';
+const chromiumLaunchOptions = {
+  args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
+};
+
+const desktopProjects = [
+  {
+    name: 'chromium',
+    use: {
+      ...devices['Desktop Chrome'],
+      // headless-shell 충돌 회피를 위해 full Chromium 채널을 기본 사용
+      channel: process.env.PLAYWRIGHT_CHANNEL || 'chromium',
+      // Playwright 자체 최신 Chromium 사용 (자동 선택)
+      launchOptions: chromiumLaunchOptions,
+    },
+  },
+];
+
+const mobileProjects = [
+  {
+    name: 'mobile-chrome',
+    use: {
+      ...devices['Pixel 5'],
+      channel: process.env.PLAYWRIGHT_CHANNEL || 'chromium',
+      launchOptions: chromiumLaunchOptions,
+    },
+  },
+  {
+    name: 'mobile-iphone',
+    use: {
+      ...devices['iPhone 12'],
+    },
+  },
+];
+
+const projects = mobileOnly
+  ? mobileProjects
+  : [...desktopProjects, ...(includeMobileProjects ? mobileProjects : [])];
 
 export default defineConfig({
   // Load environment variables globally before any tests run
@@ -58,25 +97,9 @@ export default defineConfig({
   },
 
   /* Configure projects for major browsers */
-  projects: [
-    {
-      name: 'chromium',
-      use: {
-        ...devices['Desktop Chrome'],
-        // headless-shell 충돌 회피를 위해 full Chromium 채널을 기본 사용
-        channel: process.env.PLAYWRIGHT_CHANNEL || 'chromium',
-        // Playwright 자체 최신 Chromium 사용 (자동 선택)
-        launchOptions: {
-          args: [
-            '--no-sandbox',
-            '--disable-setuid-sandbox',
-            '--disable-dev-shm-usage',
-          ],
-        },
-      },
-    },
+  projects,
 
-    /* Firefox, WebKit 제거 (2025-10-12 WSL 환경 최적화)
+  /* Firefox, WebKit 제거 (2025-10-12 WSL 환경 최적화)
      * 이유:
      * - Chromium/Chrome 프로덕션 점유율 90%+
      * - Firefox/WebKit ROI 낮음 (3% 이하)
@@ -84,36 +107,24 @@ export default defineConfig({
      * - 디스크 공간 1.6GB 절약
      * - WSL 환경에서 Chromium 헤드리스 최적화
      * - MCP 통합 (Playwright + Serena 모두 Chromium 사용)
-     */
-    // {
-    //   name: 'firefox',
-    //   use: { ...devices['Desktop Firefox'] },
-    // },
-    // {
-    //   name: 'webkit',
-    //   use: { ...devices['Desktop Safari'] },
-    // },
-
-    /* Test against mobile viewports. */
-    // {
-    //   name: 'Mobile Chrome',
-    //   use: { ...devices['Pixel 5'] },
-    // },
-    // {
-    //   name: 'Mobile Safari',
-    //   use: { ...devices['iPhone 12'] },
-    // },
-
-    /* Test against branded browsers. */
-    // {
-    //   name: 'Microsoft Edge',
-    //   use: { ...devices['Desktop Edge'], channel: 'msedge' },
-    // },
-    // {
-    //   name: 'Google Chrome',
-    //   use: { ...devices['Desktop Chrome'], channel: 'chrome' },
-    // },
-  ],
+   */
+  // {
+  //   name: 'firefox',
+  //   use: { ...devices['Desktop Firefox'] },
+  // },
+  // {
+  //   name: 'webkit',
+  //   use: { ...devices['Desktop Safari'] },
+  // },
+  /* Test against branded browsers. */
+  // {
+  //   name: 'Microsoft Edge',
+  //   use: { ...devices['Desktop Edge'], channel: 'msedge' },
+  // },
+  // {
+  //   name: 'Google Chrome',
+  //   use: { ...devices['Desktop Chrome'], channel: 'chrome' },
+  // },
 
   /* Run local dev server before starting the tests */
   webServer: process.env.PLAYWRIGHT_SKIP_SERVER

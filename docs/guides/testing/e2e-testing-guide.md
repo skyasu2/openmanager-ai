@@ -4,7 +4,7 @@
 > Owner: documentation
 > Status: Active Canonical
 > Doc type: How-to
-> Last reviewed: 2026-02-22
+> Last reviewed: 2026-03-02
 > Canonical: docs/guides/testing/e2e-testing-guide.md
 > Tags: testing,e2e,playwright
 
@@ -21,7 +21,7 @@
 
 ### 현재 구성 유지 권고 (변경 최소화)
 
-- 브라우저 프로젝트는 `chromium` 단일 유지 (`playwright.config.ts`)
+- 기본 브라우저 프로젝트는 `chromium` 유지, 모바일 회귀는 `test:e2e:mobile` 또는 `PLAYWRIGHT_INCLUDE_MOBILE=1`로 선택 실행
 - 개발 서버는 `NEXT_DISABLE_DEVTOOLS=1`로 실행해 테스트 간섭 최소화
 - 배포 환경 검증 시 `x-vercel-protection-bypass` 헤더 경로 유지
 - `firefox/webkit` 재활성화는 명시적 ROI 근거가 있을 때만 검토
@@ -39,6 +39,7 @@
 - `tests/e2e/login.spec.ts`
 - `tests/e2e/error-boundary.spec.ts`
 - `tests/e2e/system-boot.spec.ts`
+- `tests/e2e/mobile-responsive.spec.ts` (모바일 프로젝트 전용)
 
 ---
 
@@ -59,6 +60,12 @@ npm run test:e2e:external
 
 # 핵심 게이트(권장)
 npm run test:e2e:critical
+
+# 모바일 반응형 전용 회귀
+npm run test:e2e:mobile
+
+# 데스크톱 + 모바일 통합 회귀
+npm run test:e2e:responsive
 
 # 개발 서버 포함 1회 실행
 npm run test:e2e:with-server
