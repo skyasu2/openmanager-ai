@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.7.8](https://github.com/skyasu2/openmanager-ai/compare/v8.7.7...v8.7.8) (2026-03-02)
+
 ## [8.7.7](https://github.com/skyasu2/openmanager-ai/compare/v8.7.6...v8.7.7) (2026-03-02)
 
 
