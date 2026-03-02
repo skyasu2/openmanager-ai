@@ -390,13 +390,13 @@ class RulesLoader implements IRulesLoader {
     return `
 ## 현재 시스템 모니터링 임계값 (v${this.rules.version})
 
-| 메트릭 | 경고(Warning) | 심각(Critical) |
-|--------|--------------|----------------|
-| CPU | ${t.cpu.warning}% | ${t.cpu.critical}% |
-| Memory | ${t.memory.warning}% | ${t.memory.critical}% |
-| Disk | ${t.disk.warning}% | ${t.disk.critical}% |
-| Network | ${t.network.warning}% | ${t.network.critical}% |
-| Response Time | ${t.responseTime.warning}ms | ${t.responseTime.critical}ms |
+| 메트릭 | 경고(Warning) | 심각(Critical) | 복구(Recovery) |
+|--------|--------------|----------------|----------------|
+| CPU | ${t.cpu.warning}% | ${t.cpu.critical}% | ${t.cpu.recovery ?? '-'}% |
+| Memory | ${t.memory.warning}% | ${t.memory.critical}% | ${t.memory.recovery ?? '-'}% |
+| Disk | ${t.disk.warning}% | ${t.disk.critical}% | ${t.disk.recovery ?? '-'}% |
+| Network | ${t.network.warning}% | ${t.network.critical}% | ${t.network.recovery ?? '-'}% |
+| Response Time | ${t.responseTime.warning}ms | ${t.responseTime.critical}ms | ${t.responseTime.recovery ?? '-'}ms |
 
 ### 상태 결정 규칙 (Prometheus alerting 스타일)
 | 규칙 | 조건 | 상태 | 우선순위 | 지속시간(for) |

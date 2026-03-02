@@ -50,11 +50,4 @@ export interface MetricThresholds {
   recovery: number;
 }
 
-export const DEFAULT_THRESHOLDS: Record<string, MetricThresholds> = {
-  cpu: { warning: 70, critical: 90, recovery: 65 },
-  memory: { warning: 80, critical: 90, recovery: 75 },
-  disk: { warning: 80, critical: 90, recovery: 75 },
-  network: { warning: 70, critical: 90, recovery: 60 },
-};
-
 export const MAX_PREDICTION_HORIZON = 24 * 60 * 60 * 1000;

@@ -22,7 +22,6 @@
  */
 
 import {
-  DEFAULT_THRESHOLDS,
   type EnhancedTrendPrediction,
   type MetricThresholds,
   type TrendDataPoint,
@@ -34,6 +33,7 @@ import {
   predictRecovery,
   predictThresholdBreach,
 } from './TrendPredictor.enhanced';
+import { buildTrendThresholds } from '../../../config/status-thresholds';
 export type {
   EnhancedTrendPrediction,
   MetricThresholds,
@@ -57,7 +57,7 @@ export class TrendPredictor {
       slopeThreshold: config?.slopeThreshold ?? 0.1,
       minR2: config?.minR2 ?? 0.7,
     };
-    this.thresholds = thresholds ?? DEFAULT_THRESHOLDS;
+    this.thresholds = thresholds ?? buildTrendThresholds();
   }
 
   /**
@@ -224,7 +224,8 @@ export class TrendPredictor {
     // 따라서 critical 임계값(90%) 이상에서는 로지스틱 감속을 적용
     const percentMetrics = new Set(['cpu', 'memory', 'disk', 'network']);
     if (percentMetrics.has(metricName)) {
-      const criticalThreshold = (this.thresholds[metricName] || DEFAULT_THRESHOLDS.cpu).critical;
+      const cpuFallback = this.thresholds['cpu'] ?? buildTrendThresholds()['cpu'];
+      const criticalThreshold = (this.thresholds[metricName] || cpuFallback).critical;
       const linearPrediction = basePrediction.prediction;
 
       let adjusted: number;
@@ -251,7 +252,7 @@ export class TrendPredictor {
     }
 
     // 2. 임계값 가져오기
-    const thresholds = this.thresholds[metricName] || DEFAULT_THRESHOLDS.cpu;
+    const thresholds = this.thresholds[metricName] || (this.thresholds['cpu'] ?? buildTrendThresholds()['cpu']);
 
     // 3. 현재 상태 판단
     const currentStatus = determineStatus(currentValue, thresholds);

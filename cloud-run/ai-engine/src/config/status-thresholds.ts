@@ -12,6 +12,7 @@ import { logger } from '../lib/logger';
 interface ThresholdConfig {
   warning: number;
   critical: number;
+  recovery?: number;
 }
 
 interface SystemRulesThresholds {
@@ -49,11 +50,11 @@ function loadThresholdsFromSystemRules(): SystemRulesThresholds | null {
         if (rules?.thresholds) {
           logger.info(`[StatusThresholds] system-rules.json 로드: ${filePath}`);
           return {
-            cpu: { warning: rules.thresholds.cpu.warning, critical: rules.thresholds.cpu.critical },
-            memory: { warning: rules.thresholds.memory.warning, critical: rules.thresholds.memory.critical },
-            disk: { warning: rules.thresholds.disk.warning, critical: rules.thresholds.disk.critical },
-            network: { warning: rules.thresholds.network.warning, critical: rules.thresholds.network.critical },
-            responseTime: { warning: rules.thresholds.responseTime?.warning ?? 2000, critical: rules.thresholds.responseTime?.critical ?? 5000 },
+            cpu: { warning: rules.thresholds.cpu.warning, critical: rules.thresholds.cpu.critical, recovery: rules.thresholds.cpu.recovery },
+            memory: { warning: rules.thresholds.memory.warning, critical: rules.thresholds.memory.critical, recovery: rules.thresholds.memory.recovery },
+            disk: { warning: rules.thresholds.disk.warning, critical: rules.thresholds.disk.critical, recovery: rules.thresholds.disk.recovery },
+            network: { warning: rules.thresholds.network.warning, critical: rules.thresholds.network.critical, recovery: rules.thresholds.network.recovery },
+            responseTime: { warning: rules.thresholds.responseTime?.warning ?? 2000, critical: rules.thresholds.responseTime?.critical ?? 5000, recovery: rules.thresholds.responseTime?.recovery },
           };
         }
       } catch (e) {
@@ -76,12 +77,30 @@ const loadedThresholds = loadThresholdsFromSystemRules();
 
 export const STATUS_THRESHOLDS = loadedThresholds ?? {
   // 폴백 기본값 (system-rules.json과 동일)
-  cpu: { warning: 80, critical: 90 },
-  memory: { warning: 80, critical: 90 },
-  disk: { warning: 80, critical: 90 },
-  network: { warning: 70, critical: 85 },
-  responseTime: { warning: 2000, critical: 5000 },
+  cpu: { warning: 80, critical: 90, recovery: 65 },
+  memory: { warning: 80, critical: 90, recovery: 75 },
+  disk: { warning: 80, critical: 90, recovery: 75 },
+  network: { warning: 70, critical: 85, recovery: 60 },
+  responseTime: { warning: 2000, critical: 5000, recovery: 1500 },
 };
+
+/**
+ * Build MetricThresholds (with recovery) from STATUS_THRESHOLDS for TrendPredictor.
+ * Recovery fallback: warning × 0.8
+ */
+export function buildTrendThresholds(): Record<string, { warning: number; critical: number; recovery: number }> {
+  const metrics = ['cpu', 'memory', 'disk', 'network'] as const;
+  const result: Record<string, { warning: number; critical: number; recovery: number }> = {};
+  for (const metric of metrics) {
+    const t = STATUS_THRESHOLDS[metric];
+    result[metric] = {
+      warning: t.warning,
+      critical: t.critical,
+      recovery: t.recovery ?? Math.round(t.warning * 0.8),
+    };
+  }
+  return result;
+}
 
 export type MetricType = keyof Omit<typeof STATUS_THRESHOLDS, 'responseTime'>;
 export type ServerStatus = 'online' | 'warning' | 'critical';

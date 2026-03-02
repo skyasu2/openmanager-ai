@@ -1,5 +1,5 @@
 import { getStateBySlot } from '../data/precomputed-state';
-import type { MetricDataPoint } from '../lib/ai/monitoring/SimpleAnomalyDetector';
+import type { BaselineDriftResult, MetricDataPoint } from '../lib/ai/monitoring/SimpleAnomalyDetector';
 import type { TrendDataPoint } from '../lib/ai/monitoring/TrendPredictor';
 
 export interface AnomalyResultItem {
@@ -11,6 +11,7 @@ export interface AnomalyResultItem {
   rationale: string[];
   currentValue: number;
   threshold: { upper: number; lower: number };
+  baselineDrift?: BaselineDriftResult;
 }
 
 export interface TrendResultItem {

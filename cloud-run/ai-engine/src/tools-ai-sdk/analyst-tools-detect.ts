@@ -221,6 +221,9 @@ export const detectAnomalies = tool({
               severity = 'medium';
             }
 
+            // Baseline drift detection
+            const driftResult = detector.detectBaselineDrift(history);
+
             results[metric] = {
               isAnomaly,
               severity,
@@ -234,6 +237,7 @@ export const detectAnomalies = tool({
                 lower: Math.round(detection.details.lowerThreshold * 100) / 100,
               },
               thresholdExceeded,
+              ...(driftResult.hasDrift ? { baselineDrift: driftResult } : {}),
             };
           }
 

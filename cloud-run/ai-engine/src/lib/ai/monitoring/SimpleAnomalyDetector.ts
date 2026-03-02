@@ -67,6 +67,14 @@ export interface AnomalyDetectionResult {
   timestamp: number;
 }
 
+export interface BaselineDriftResult {
+  hasDrift: boolean;
+  direction: 'increasing' | 'decreasing' | 'stable';
+  magnitude: number;
+  magnitudeSigma: number;
+  confidence: number;
+}
+
 export class SimpleAnomalyDetector {
   private config: AnomalyDetectionConfig;
 
@@ -195,6 +203,70 @@ export class SimpleAnomalyDetector {
     // Normalize to 0-1 scale
     const maxPossibleWeight = Object.keys(results).length * 1.0; // All high severity
     return Math.min(totalWeight / maxPossibleWeight, 1.0);
+  }
+
+  /**
+   * Detect baseline drift by comparing first half vs second half of a 6-hour window.
+   * Drift is flagged when the difference exceeds driftThresholdSigma standard deviations.
+   *
+   * @param historicalData - Array of historical data points (6-hour window recommended)
+   * @param driftThresholdSigma - Sigma threshold for drift detection (default: 1.0)
+   * @returns Baseline drift result
+   */
+  public detectBaselineDrift(
+    historicalData: MetricDataPoint[],
+    driftThresholdSigma: number = 1.0
+  ): BaselineDriftResult {
+    if (historicalData.length < this.config.minDataPoints) {
+      return {
+        hasDrift: false,
+        direction: 'stable',
+        magnitude: 0,
+        magnitudeSigma: 0,
+        confidence: 0,
+      };
+    }
+
+    const recentValues = historicalData
+      .slice(-this.config.movingAverageWindow)
+      .map((d) => d.value);
+
+    const midpoint = Math.floor(recentValues.length / 2);
+    const firstHalf = recentValues.slice(0, midpoint);
+    const secondHalf = recentValues.slice(midpoint);
+
+    if (firstHalf.length === 0 || secondHalf.length === 0) {
+      return {
+        hasDrift: false,
+        direction: 'stable',
+        magnitude: 0,
+        magnitudeSigma: 0,
+        confidence: 0,
+      };
+    }
+
+    const meanFirst = this.calculateMean(firstHalf);
+    const meanSecond = this.calculateMean(secondHalf);
+    const overallStdDev = this.calculateStdDev(recentValues, this.calculateMean(recentValues));
+
+    const magnitude = meanSecond - meanFirst;
+    const magnitudeSigma = overallStdDev > 0 ? Math.abs(magnitude) / overallStdDev : 0;
+    const hasDrift = magnitudeSigma > driftThresholdSigma;
+
+    let direction: 'increasing' | 'decreasing' | 'stable' = 'stable';
+    if (hasDrift) {
+      direction = magnitude > 0 ? 'increasing' : 'decreasing';
+    }
+
+    const confidence = this.calculateConfidence(historicalData.length);
+
+    return {
+      hasDrift,
+      direction,
+      magnitude: Math.round(magnitude * 100) / 100,
+      magnitudeSigma: Math.round(magnitudeSigma * 100) / 100,
+      confidence,
+    };
   }
 
   // ============================================================================

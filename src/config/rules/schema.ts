@@ -4,6 +4,7 @@ import type { AlertRule, MetricThreshold } from './types';
 export const MetricThresholdSchema = z.object({
   warning: z.number(),
   critical: z.number(),
+  recovery: z.number().optional(),
   description: z.string().optional(),
 });
 

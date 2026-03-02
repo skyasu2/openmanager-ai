@@ -17,6 +17,8 @@ export interface MetricThreshold {
   warning: number;
   /** 심각 수준 (critical) */
   critical: number;
+  /** 복구 수준 (recovery) — 이 값 이하로 떨어져야 정상 복귀 판정 */
+  recovery?: number;
   /** 설명 (AI 참조용) */
   description?: string;
 }
