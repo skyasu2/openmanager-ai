@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.7.5](https://github.com/skyasu2/openmanager-ai/compare/v8.7.4...v8.7.5) (2026-03-02)
+
+
+### Features
+
+* **metrics:** standardize drift thresholds across Frontend and Cloud Run ([5db0042](https://github.com/skyasu2/openmanager-ai/commit/5db00429fe6dbe95e679b7b473e67894a3c7ebca))
+
 ## [8.7.4](https://github.com/skyasu2/openmanager-ai/compare/v8.7.3...v8.7.4) (2026-03-02)
 
 
