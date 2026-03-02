@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
-import { fn, mocked, sb, userEvent } from 'storybook/test';
+import { fn, mocked, userEvent } from 'storybook/test';
 
 import { useProfileAuth } from '../../components/unified-profile/hooks/useProfileAuth';
 import { useProfileMenu } from '../../components/unified-profile/hooks/useProfileMenu';
@@ -10,13 +10,6 @@ import {
   signInWithOAuthProvider,
 } from '../../lib/auth/supabase-auth-oauth';
 import { useUnifiedAdminStore } from '../../stores/useUnifiedAdminStore';
-
-sb.mock(import('../../lib/auth/auth-state-manager.ts'));
-sb.mock(import('../../lib/auth/supabase-auth-oauth.ts'));
-sb.mock(import('../../components/unified-profile/hooks/useProfileAuth.ts'));
-sb.mock(import('../../components/unified-profile/hooks/useProfileMenu.ts'));
-sb.mock(import('../../hooks/useSystemStatus.ts'));
-sb.mock(import('../../stores/useUnifiedAdminStore.ts'));
 
 import LoginClient from './LoginClient';
 

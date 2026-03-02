@@ -16,6 +16,7 @@ function run() {
   const items = Object.values(tracker.items || {});
   const completed = items.filter((item) => item.status === 'completed');
   const pending = items.filter((item) => item.status === 'pending');
+  const deferred = items.filter((item) => item.status === 'deferred');
   const wontFix = items.filter((item) => item.status === 'wont-fix');
   const recentRuns = (tracker.runs || []).slice(-5).reverse();
   const experts = Object.values(tracker.experts || {});
@@ -26,7 +27,7 @@ function run() {
   console.log(`- total checks: ${summary.totalChecks || 0}`);
   console.log(`- passed/failed: ${summary.totalPassed || 0}/${summary.totalFailed || 0}`);
   console.log(
-    `- completed/pending/wont-fix items: ${completed.length}/${pending.length}/${wontFix.length} (${summary.completionRate || 0}%)`
+    `- completed/pending/deferred/wont-fix items: ${completed.length}/${pending.length}/${deferred.length}/${wontFix.length} (${summary.completionRate || 0}%)`
   );
   console.log(
     `- expert domains tracked/open-gaps: ${experts.length}/${openExpertGaps.length}`
@@ -38,6 +39,19 @@ function run() {
     for (const item of pending.sort((a, b) => a.id.localeCompare(b.id))) {
       console.log(
         `- [${item.priority || 'P2'}] ${item.id}: ${item.title} (last ${item.lastSeenRunId})`
+      );
+    }
+  }
+
+  if (deferred.length > 0) {
+    console.log('\nDeferred Improvements');
+    for (const item of deferred.sort((a, b) => {
+      if (a.priority === b.priority) return a.id.localeCompare(b.id);
+      return (a.priority || 'P2').localeCompare(b.priority || 'P2');
+    })) {
+      const policy = item.lastPolicyNote ? ` - ${item.lastPolicyNote}` : '';
+      console.log(
+        `- [${item.priority || 'P2'}] ${item.id}: ${item.title} (last ${item.lastSeenRunId})${policy}`
       );
     }
   }

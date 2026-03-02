@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { fn, mocked, sb } from 'storybook/test';
+import { fn, mocked } from 'storybook/test';
 
 import { useProfileAuth } from '../../components/unified-profile/hooks/useProfileAuth';
 import { useProfileMenu } from '../../components/unified-profile/hooks/useProfileMenu';
@@ -19,22 +19,8 @@ import { useAISidebarStore } from '../../stores/useAISidebarStore';
 import { useUnifiedAdminStore } from '../../stores/useUnifiedAdminStore';
 import type { Server } from '../../types/server';
 
-// Story-scoped mocks to avoid global Storybook pollution.
-sb.mock(import('../../stores/useUnifiedAdminStore.ts'));
-sb.mock(import('../../stores/useAISidebarStore.ts'));
-sb.mock(import('../../hooks/useUserPermissions.ts'));
-sb.mock(import('../../hooks/useServerDashboard.ts'));
-sb.mock(import('../../hooks/useAutoLogout.ts'));
-sb.mock(import('../../hooks/useSystemAutoShutdown.ts'));
-sb.mock(import('../../hooks/useServerMetrics.ts'));
-sb.mock(import('../../hooks/use-toast.ts'));
-sb.mock(import('../../hooks/system/useHealthCheck.ts'));
-sb.mock(import('../../components/unified-profile/hooks/useProfileAuth.ts'));
-sb.mock(import('../../components/unified-profile/hooks/useProfileMenu.ts'));
-sb.mock(import('../../hooks/useSystemStatus.ts'));
-sb.mock(import('../../hooks/dashboard/useMonitoringReport.ts'));
-sb.mock(import('../../config/guestMode.ts'));
-sb.mock(import('../../services/system/SystemInactivityService.ts'));
+// Module mocks registered globally in .storybook/preview.ts via sb.mock().
+// Story configures mock behavior via mocked() in beforeEach.
 
 import DashboardClient from './DashboardClient';
 
@@ -102,6 +88,14 @@ function setupStoreMocks(sidebarOpen = false) {
   const sidebarState = {
     isOpen: sidebarOpen,
     setOpen: fn(),
+    webSearchEnabled: false,
+    setWebSearchEnabled: fn(),
+    ragEnabled: false,
+    setRagEnabled: fn(),
+    sidebarWidth: 420,
+    setSidebarWidth: fn(),
+    restoreBannerDismissed: true,
+    dismissRestoreBanner: fn(),
     clearMessages: fn(),
   };
   mocked(useAISidebarStore).mockImplementation(

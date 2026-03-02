@@ -13,7 +13,7 @@ const config: StorybookConfig = {
     experimentalComponentsManifest: true,
   },
   typescript: {
-    reactDocgen: 'react-docgen-typescript',
+    reactDocgen: 'react-docgen',
   },
   viteFinal(config) {
     config.plugins ??= [];

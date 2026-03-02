@@ -8,6 +8,24 @@ const RUNS_ROOT = path.join(QA_ROOT, 'runs');
 const TRACKER_PATH = path.join(QA_ROOT, 'qa-tracker.json');
 const STATUS_PATH = path.join(QA_ROOT, 'QA_STATUS.md');
 
+const KNOWN_VERIFICATIONS = [
+  { pattern: /^랜딩-페이지-v[\d.]+-로드/, baseId: 'landing-page-load-guest-login' },
+  { pattern: /^대시보드-15서버-렌더링/, baseId: 'dashboard-15server-render' },
+  { pattern: /^서버-모달-종합-상황-탭/, baseId: 'server-modal-overview-tab' },
+  { pattern: /^서버-모달-성능-분석-탭/, baseId: 'server-modal-perf-tab' },
+  { pattern: /^서버-모달-로그-네트워크-탭/, baseId: 'server-modal-log-network-tab' },
+  { pattern: /^리소스-경고-top-5/, baseId: 'resource-warning-top5' },
+  { pattern: /^상태-필터-온라인/, baseId: 'dashboard-status-filter-counts' },
+  { pattern: /^세션-타이머-정상-카운트다운/, baseId: 'session-timer-countdown' },
+  { pattern: /^시스템-리소스-요약/, baseId: 'system-resource-summary' },
+  { pattern: /^시스템-시작.*리다이렉트/, baseId: 'system-start-dashboard-redirect' },
+  { pattern: /^(esc-모달-닫기|모달-esc-닫기|ui-esc-close)/, baseId: 'modal-esc-close' },
+  { pattern: /^(ai-사이드바|ai-sidebar-open|ai-chat-sidebar-open)/, baseId: 'ai-sidebar-toggle' },
+  { pattern: /^(프로필-메뉴|profile-menu)/, baseId: 'profile-menu' },
+  { pattern: /^서버-모달-3탭-전환/, baseId: 'server-modal-3tab-switch' },
+  { pattern: /^프로덕션-대시보드-렌더링/, baseId: 'production-dashboard-render' },
+];
+
 const EXPERT_DOMAIN_CATALOG = [
   { id: 'ai-quality-assurance', name: 'AI Quality Assurance Specialist' },
   { id: 'observability-monitoring', name: 'IT Monitoring & Observability SME' },
@@ -107,6 +125,17 @@ function slugify(text) {
     .replace(/^[-_.]+|[-_.]+$/g, '');
 }
 
+function resolveStableId(slugifiedId, originalTitle) {
+  for (const entry of KNOWN_VERIFICATIONS) {
+    if (entry.pattern.test(slugifiedId)) {
+      const parenMatch = originalTitle?.match(/\((.+)\)$/);
+      const extractedEvidence = parenMatch ? parenMatch[1] : '';
+      return { id: entry.baseId, extractedEvidence };
+    }
+  }
+  return { id: slugifiedId, extractedEvidence: '' };
+}
+
 function toNonNegativeInteger(value, fieldName) {
   const number = Number(value);
   if (!Number.isInteger(number) || number < 0) {
@@ -148,11 +177,12 @@ function normalizeItem(rawItem, fallbackPrefix, index) {
     throw new Error(`${fallbackPrefix}[${index}] title이 필요합니다.`);
   }
 
-  const idCandidate = String(item.id || slugify(title)).trim();
-  const id = slugify(idCandidate);
-  if (!id) {
+  const rawId = slugify(String(item.id || slugify(title)).trim());
+  if (!rawId) {
     throw new Error(`${fallbackPrefix}[${index}] id 생성에 실패했습니다.`);
   }
+  const { id: resolvedId, extractedEvidence } = resolveStableId(rawId, title);
+  const id = resolvedId;
 
   const priority = normalizePriority(item.priority);
   const hasBlocking = hasOwnField(item, 'isBlocking');
@@ -160,6 +190,9 @@ function normalizeItem(rawItem, fallbackPrefix, index) {
   const isBlocking = hasBlocking
     ? toBoolean(item.isBlocking, blockingDefault)
     : blockingDefault;
+
+  const baseEvidence = item.evidence ? String(item.evidence) : '';
+  const mergedEvidence = [baseEvidence, extractedEvidence].filter(Boolean).join('; ');
 
   return {
     id,
@@ -170,9 +203,10 @@ function normalizeItem(rawItem, fallbackPrefix, index) {
     overengineeringScope: item.overengineeringScope
       ? String(item.overengineeringScope)
       : '',
-    evidence: item.evidence ? String(item.evidence) : '',
+    evidence: mergedEvidence,
     note: item.note ? String(item.note) : '',
     owner: item.owner ? String(item.owner) : '',
+    originalId: rawId !== id ? rawId : undefined,
   };
 }
 
@@ -192,11 +226,12 @@ function normalizeDodCheck(rawItem, fallbackPrefix, index) {
     throw new Error(`${fallbackPrefix}[${index}] title이 필요합니다.`);
   }
 
-  const idCandidate = String(item.id || slugify(title)).trim();
-  const id = slugify(idCandidate);
-  if (!id) {
+  const rawId = slugify(String(item.id || slugify(title)).trim());
+  if (!rawId) {
     throw new Error(`${fallbackPrefix}[${index}] id 생성에 실패했습니다.`);
   }
+  const { id: resolvedId, extractedEvidence } = resolveStableId(rawId, title);
+  const id = resolvedId;
 
   const statusRaw = String(item.status || 'pending').trim().toLowerCase();
   const status = statusRaw === 'completed' ? 'completed' : 'pending';
@@ -208,11 +243,14 @@ function normalizeDodCheck(rawItem, fallbackPrefix, index) {
     ? toBoolean(item.isBlocking, blockingDefault)
     : blockingDefault;
 
+  const baseEvidence = item.evidence || item.evidencePath ? String(item.evidence || item.evidencePath) : '';
+  const mergedEvidence = [baseEvidence, extractedEvidence].filter(Boolean).join('; ');
+
   return {
     id,
     title,
     priority,
-    evidence: item.evidence || item.evidencePath ? String(item.evidence || item.evidencePath) : '',
+    evidence: mergedEvidence,
     note: item.note ? String(item.note) : '',
     isBlocking,
     isBlockingExplicit: hasBlocking,
@@ -220,6 +258,7 @@ function normalizeDodCheck(rawItem, fallbackPrefix, index) {
       ? String(item.overengineeringScope)
       : '',
     owner: item.owner ? String(item.owner) : '',
+    originalId: rawId !== id ? rawId : undefined,
     status,
   };
 }
@@ -236,6 +275,13 @@ function normalizePendingPolicy(item, sourceStatus) {
     return {
       status: 'pending',
       policyNote: '',
+    };
+  }
+
+  if (item.priority === 'P0' || item.priority === 'P1') {
+    return {
+      status: 'deferred',
+      policyNote: `${item.priority} 우선순위이나 현재 비차단으로 deferred 처리`,
     };
   }
 
@@ -382,7 +428,9 @@ function upsertTrackerItem({
         seenCount: 0,
         completedCount: 0,
         pendingCount: 0,
+        deferredCount: 0,
         wontFixCount: 0,
+        aliases: [],
         owner: normalizedItem.owner || '',
         lastEvidence: '',
         lastNote: '',
@@ -391,6 +439,13 @@ function upsertTrackerItem({
         overengineeringScope: '',
         lastPolicyNote: '',
       };
+
+  if (!next.aliases) next.aliases = [];
+  if (!next.deferredCount) next.deferredCount = 0;
+
+  if (normalizedItem.originalId && !next.aliases.includes(normalizedItem.originalId)) {
+    next.aliases.push(normalizedItem.originalId);
+  }
 
   next.title = normalizedItem.title;
   next.priority = normalizedItem.priority || next.priority || 'P2';
@@ -401,6 +456,7 @@ function upsertTrackerItem({
   next.status = status;
   if (status === 'completed') next.completedCount += 1;
   if (status === 'pending') next.pendingCount += 1;
+  if (status === 'deferred') next.deferredCount += 1;
   if (status === 'wont-fix') next.wontFixCount += 1;
   if (normalizedItem.evidence) next.lastEvidence = normalizedItem.evidence;
   if (normalizedItem.note) next.lastNote = normalizedItem.note;
@@ -476,8 +532,9 @@ function recalculateSummary(tracker) {
   const itemList = Object.values(tracker.items);
   const completedItems = itemList.filter((item) => item.status === 'completed').length;
   const pendingItems = itemList.filter((item) => item.status === 'pending').length;
+  const deferredItems = itemList.filter((item) => item.status === 'deferred').length;
   const wontFixItems = itemList.filter((item) => item.status === 'wont-fix').length;
-  const completionRateBase = completedItems + pendingItems;
+  const completionRateBase = completedItems + pendingItems + deferredItems;
   const completionRate =
     completionRateBase === 0
       ? 0
@@ -498,6 +555,7 @@ function recalculateSummary(tracker) {
     completionRate,
     completedItems,
     pendingItems,
+    deferredItems,
     wontFixItems,
     expertDomainsTracked,
     expertDomainsOpenGaps,
@@ -515,6 +573,12 @@ function statusMarkdown(tracker) {
     .sort((a, b) => a.id.localeCompare(b.id));
   const pending = itemList
     .filter((item) => item.status === 'pending')
+    .sort((a, b) => {
+      if (a.priority === b.priority) return a.id.localeCompare(b.id);
+      return a.priority.localeCompare(b.priority);
+    });
+  const deferred = itemList
+    .filter((item) => item.status === 'deferred')
     .sort((a, b) => {
       if (a.priority === b.priority) return a.id.localeCompare(b.id);
       return a.priority.localeCompare(b.priority);
@@ -547,6 +611,7 @@ function statusMarkdown(tracker) {
   lines.push(`| Failed | ${tracker.summary.totalFailed} |`);
   lines.push(`| Completed Items | ${tracker.summary.completedItems} |`);
   lines.push(`| Pending Items | ${tracker.summary.pendingItems} |`);
+  lines.push(`| Deferred Items | ${tracker.summary.deferredItems || deferred.length} |`);
   lines.push(`| Wont-Fix Items | ${tracker.summary.wontFixItems || wontFix.length} |`);
   lines.push(`| Expert Domains Tracked | ${tracker.summary.expertDomainsTracked || 0} |`);
   lines.push(`| Expert Open Gaps | ${tracker.summary.expertDomainsOpenGaps || 0} |`);
@@ -601,6 +666,21 @@ function statusMarkdown(tracker) {
     }
   }
   lines.push('');
+  lines.push('## Deferred Improvements');
+  lines.push('');
+  if (deferred.length === 0) {
+    lines.push('- None');
+  } else {
+    for (const item of deferred) {
+      lines.push(
+        `- [${item.priority}] ${item.id}: ${item.title} (seen ${item.seenCount}회, last ${item.lastSeenRunId})`
+      );
+      if (item.lastPolicyNote) {
+        lines.push(`  - note: ${item.lastPolicyNote}`);
+      }
+    }
+  }
+  lines.push('');
   lines.push('## Wont-Fix Improvements');
   lines.push('');
   if (wontFix.length === 0) {
@@ -630,14 +710,14 @@ function statusMarkdown(tracker) {
   lines.push('');
   lines.push('## Recent Runs');
   lines.push('');
-  lines.push('| Run ID | Time (UTC) | Title | Checks | Completed | Pending | Wont-Fix | Expert Gaps |');
-  lines.push('|---|---|---|---:|---:|---:|---:|---:|');
+  lines.push('| Run ID | Time (UTC) | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |');
+  lines.push('|---|---|---|---:|---:|---:|---:|---:|---:|');
   if (recentRuns.length === 0) {
-    lines.push('| - | - | - | 0 | 0 | 0 | 0 | 0 |');
+    lines.push('| - | - | - | 0 | 0 | 0 | 0 | 0 | 0 |');
   } else {
     for (const run of recentRuns) {
       lines.push(
-        `| ${run.runId} | ${run.recordedAt} | ${run.title} | ${run.checks.total} | ${run.completedCount} | ${run.pendingCount || 0} | ${run.wontFixCount || 0} | ${run.expertNeedsImprovementCount || 0} |`
+        `| ${run.runId} | ${run.recordedAt} | ${run.title} | ${run.checks.total} | ${run.completedCount} | ${run.pendingCount || 0} | ${run.deferredCount || 0} | ${run.wontFixCount || 0} | ${run.expertNeedsImprovementCount || 0} |`
       );
     }
   }
@@ -703,8 +783,9 @@ function run() {
     const { status, policyNote } = normalizePendingPolicy(item, sourceStatus);
     const normalizedItem = { ...item, status, policyNote };
     const priorityMap = {
-      completed: 2,
-      pending: 1,
+      completed: 3,
+      pending: 2,
+      deferred: 1,
       'wont-fix': 0,
     };
     const existing = finalItemMap.get(item.id);
@@ -729,12 +810,15 @@ function run() {
 
   const finalCompletedImprovements = [];
   const finalPendingImprovements = [];
+  const finalDeferredImprovements = [];
   const finalWontFixImprovements = [];
   for (const item of finalItemMap.values()) {
     if (item.status === 'completed') {
       finalCompletedImprovements.push(item);
     } else if (item.status === 'pending') {
       finalPendingImprovements.push(item);
+    } else if (item.status === 'deferred') {
+      finalDeferredImprovements.push(item);
     } else {
       finalWontFixImprovements.push(item);
     }
@@ -774,6 +858,7 @@ function run() {
     expertAssessments,
     completedImprovements: finalCompletedImprovements,
     pendingImprovements: finalPendingImprovements,
+    deferredImprovements: finalDeferredImprovements,
     wontFixImprovements: finalWontFixImprovements,
     notes: Array.isArray(payload.notes) ? payload.notes.map(String) : [],
     links: Array.isArray(payload.links) ? payload.links : [],
@@ -797,6 +882,15 @@ function run() {
       recordedAt: nowIso,
       normalizedItem: pendingItem,
       status: 'pending',
+    });
+  }
+  for (const deferredItem of finalDeferredImprovements) {
+    upsertTrackerItem({
+      tracker,
+      runId,
+      recordedAt: nowIso,
+      normalizedItem: deferredItem,
+      status: 'deferred',
     });
   }
   for (const wontFixItem of finalWontFixImprovements) {
@@ -835,6 +929,7 @@ function run() {
     expertNeedsImprovementCount,
     completedCount: finalCompletedImprovements.length,
     pendingCount: finalPendingImprovements.length,
+    deferredCount: finalDeferredImprovements.length,
     wontFixCount: finalWontFixImprovements.length,
   });
   tracker.sequence.nextRunNumber = runNumber + 1;
@@ -848,7 +943,7 @@ function run() {
   console.log(`✅ QA run recorded: ${runId}`);
   console.log(`- run file: ${runFileRelative}`);
   console.log(
-    `- summary: runs=${tracker.summary.totalRuns}, completed=${tracker.summary.completedItems}, pending=${tracker.summary.pendingItems}, wont-fix=${tracker.summary.wontFixItems || 0}`
+    `- summary: runs=${tracker.summary.totalRuns}, completed=${tracker.summary.completedItems}, pending=${tracker.summary.pendingItems}, deferred=${tracker.summary.deferredItems || 0}, wont-fix=${tracker.summary.wontFixItems || 0}`
   );
   console.log(
     `- expert domains: tracked=${tracker.summary.expertDomainsTracked || 0}, open-gaps=${tracker.summary.expertDomainsOpenGaps || 0}`
