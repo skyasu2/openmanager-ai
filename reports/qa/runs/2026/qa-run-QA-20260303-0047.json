@@ -1,0 +1,31 @@
+{
+  "runId": "QA-20260303-0047",
+  "recordedAt": "2026-03-02T23:07:38.546Z",
+  "recordedAtKst": "2026-03-03 08:07:38 KST",
+  "runTitle": "Production Playwright MCP QA v8.7.7 (13/13 PASS)",
+  "owner": "claude",
+  "source": "playwright-mcp",
+  "environment": {
+    "frontend": "Vercel Production",
+    "backend": "Cloud Run Production",
+    "branch": "main"
+  },
+  "checks": {
+    "total": 13,
+    "passed": 13,
+    "failed": 0
+  },
+  "expertAssessments": [],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "v8.7.7: 모바일 반응형 E2E + Lighthouse 자동화 스크립트 추가 릴리스",
+    "AI Chat: ~8초 응답, Cloud Run AI 경유, 핵심 요약 + 상세 분석 접기 구조",
+    "Analyst: 주요이슈 4건 (api-was CPU 82%/70%, storage DISK 67%, lb DISK 16%), 상승추세 경고 4건 (37분~3시간 후 심각 예측)",
+    "Reporter: ~3초 보고서 생성, API WAS CPU 과부하 경고, 영향서버/추정원인/신뢰도 구조화",
+    "전체 AI 기능 Cloud Run 경유 정상 동작 확인"
+  ],
+  "links": []
+}

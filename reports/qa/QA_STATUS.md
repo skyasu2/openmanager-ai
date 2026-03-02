@@ -1,15 +1,15 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-03 00:45:41 KST
+> Generated at: 2026-03-03 08:07:38 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 46 |
-| Total Checks | 325 |
-| Passed | 307 |
+| Total Runs | 47 |
+| Total Checks | 338 |
+| Passed | 320 |
 | Failed | 18 |
 | Completed Items | 95 |
 | Pending Items | 0 |
@@ -18,11 +18,11 @@
 | Expert Domains Tracked | 6 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 97.94% |
-| Last Run | QA-20260303-0046 (2026-03-02T15:45:41.261Z) |
+| Last Run | QA-20260303-0047 (2026-03-02T23:07:38.546Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260303-0046 (2026-03-02T15:45:41.261Z)
+Latest run: QA-20260303-0047 (2026-03-02T23:07:38.546Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -205,6 +205,7 @@ Latest run: QA-20260303-0046 (2026-03-02T15:45:41.261Z)
 
 | Run ID | Time (UTC) | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260303-0047 | 2026-03-02T23:07:38.546Z | Production Playwright MCP QA v8.7.7 (13/13 PASS) | 13 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260303-0046 | 2026-03-02T15:45:41.261Z | Production Playwright MCP QA v8.7.6 (13/13 PASS) | 13 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260302-0045 | 2026-03-02T14:48:48.455Z | Production Playwright MCP QA v8.7.5 post-drift-threshold-standard | 13 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260302-0044 | 2026-03-02T14:29:50.264Z | metrics-drift-threshold-standard implementation verification | 4 | 4 | 0 | 0 | 0 | 0 |
@@ -224,5 +225,4 @@ Latest run: QA-20260303-0046 (2026-03-02T15:45:41.261Z)
 | QA-20260301-0030 | 2026-03-01T00:54:39.785Z | Vercel Playwright MCP QA - v8.7.1 post-release production validation | 12 | 0 | 0 | 0 | 12 | 0 |
 | QA-20260228-0029 | 2026-02-28T05:58:33.745Z | Critical E2E validation with local server | 11 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260228-0028 | 2026-02-28T05:16:29.599Z | Web Vitals integration log suppression + full validation | 5 | 5 | 0 | 0 | 0 | 0 |
-| QA-20260228-0027 | 2026-02-27T16:34:47.012Z | AI Math Tools & Routing Verification (Type-check + targeted tests) | 3 | 1 | 0 | 0 | 0 | 0 |
 
