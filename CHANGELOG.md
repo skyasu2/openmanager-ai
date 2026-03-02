@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.7.4](https://github.com/skyasu2/openmanager-ai/compare/v8.7.3...v8.7.4) (2026-03-02)
+
+
+### Bug Fixes
+
+* **storybook:** move sb.mock() to preview.ts and fix all story rendering errors ([8e8c0c8](https://github.com/skyasu2/openmanager-ai/commit/8e8c0c831a7b2ff781bb84afc89241b6ebe1a9de))
+
 ## [8.7.3](https://github.com/skyasu2/openmanager-ai/compare/v8.7.2...v8.7.3) (2026-03-02)
 
 
