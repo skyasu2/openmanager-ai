@@ -21,6 +21,7 @@ import { isRedisAvailable } from './lib/redis-client';
 import { getCurrentState, initOTelDataAsync } from './data/precomputed-state';
 import { setupIncidentRagBackfill } from './server-incident-rag-backfill';
 import { setupTopologyRagBackfill } from './server-topology-rag-backfill';
+import { buildApiNotReadyResponse, shouldBlockApiRequest } from './server-readiness';
 import { registerGracefulShutdownHandlers } from './server-shutdown';
 
 // Error handling
@@ -61,6 +62,15 @@ const defaultAllowedOrigin =
 app.use('*', cors({
   origin: process.env.ALLOWED_ORIGINS?.split(',') || [defaultAllowedOrigin],
 }));
+
+// Guard /api routes while lazy-loaded route modules are still initializing.
+app.use('/api/*', async (c: Context, next: Next) => {
+  if (shouldBlockApiRequest(c.req.path, routesReady)) {
+    const notReady = buildApiNotReadyResponse();
+    return c.json(notReady.body, notReady.status, notReady.headers);
+  }
+  await next();
+});
 
 /** Timing-safe API key verification (shared across all auth middlewares) */
 function verifyApiKey(c: Context): boolean {
