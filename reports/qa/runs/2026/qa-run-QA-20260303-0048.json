@@ -1,0 +1,32 @@
+{
+  "runId": "QA-20260303-0048",
+  "recordedAt": "2026-03-02T23:56:18.491Z",
+  "recordedAtKst": "2026-03-03 08:56:18 KST",
+  "runTitle": "Production Playwright MCP QA v8.7.8 (13/13 PASS)",
+  "owner": "claude",
+  "source": "playwright-mcp",
+  "environment": {
+    "frontend": "Vercel Production",
+    "backend": "Cloud Run Production",
+    "branch": "main"
+  },
+  "checks": {
+    "total": 13,
+    "passed": 13,
+    "failed": 0
+  },
+  "expertAssessments": [],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "v8.7.8: QA 기록 포함 릴리스, drift-threshold-standard 반영 확인",
+    "AI Chat: ~9초 응답, 서버 상태 요약 + 추세 감지 + 구체적 권고",
+    "Analyst: 이슈 2건 (api-was-dc1-01 CPU 85%, api-was-dc1-02 CPU 73%), 상승추세 경고 1건 (api-was-dc1-02 CPU 73%→97% 44분 후)",
+    "Reporter: ~3초 보고서 생성, 'API WAS 서버 CPU 과부하 경고', 영향서버 api-was-dc1-01, 신뢰도 80%",
+    "세션 타임아웃 다이얼로그 자동 해제 후 재접속 정상",
+    "전체 AI 기능 Cloud Run 경유 정상 동작 확인"
+  ],
+  "links": []
+}
