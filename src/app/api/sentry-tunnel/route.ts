@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
-import { logger } from '@/lib/logging';
 import { OBSERVABILITY } from '@/config/constants';
+import { logger } from '@/lib/logging';
 
 const DEFAULT_UPSTREAM_TIMEOUT_MS =
   OBSERVABILITY.SENTRY.TUNNEL_UPSTREAM_TIMEOUT_MS;
