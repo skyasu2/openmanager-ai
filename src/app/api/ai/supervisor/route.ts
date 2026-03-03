@@ -56,8 +56,8 @@ import { handleCloudRunJson, handleCloudRunStream } from './cloud-run-handler';
 import { handleSupervisorError } from './error-handler';
 import { extractAndValidateQuery } from './request-utils';
 import { requestSchema } from './schemas';
-import { resolveScopedSessionIds } from './session-owner';
 import { buildServerContextMessage } from './server-context';
+import { resolveScopedSessionIds } from './session-owner';
 
 // ============================================================================
 // ⚡ maxDuration - Vercel 빌드 타임 상수

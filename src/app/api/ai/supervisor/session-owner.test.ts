@@ -67,7 +67,9 @@ describe('session-owner', () => {
     expect(result.sessionId).toBe('session-12345678');
     expect(result.ownerKey.startsWith('user:')).toBe(true);
     expect(result.ownerKey.includes('user-123')).toBe(false);
-    expect(result.cacheSessionId).toBe(`${result.ownerKey}:${result.sessionId}`);
+    expect(result.cacheSessionId).toBe(
+      `${result.ownerKey}:${result.sessionId}`
+    );
   });
 
   it('유효하지 않은 sessionId는 fallback으로 대체한다', () => {
@@ -76,7 +78,11 @@ describe('session-owner', () => {
     });
 
     const req = makeReq({ headerSessionId: 'invalid with spaces' });
-    const result = resolveScopedSessionIds(req, undefined, 'session-fallback-123');
+    const result = resolveScopedSessionIds(
+      req,
+      undefined,
+      'session-fallback-123'
+    );
 
     expect(result.sessionId).toBe('session-fallback-123');
     expect(result.cacheSessionId.endsWith(':session-fallback-123')).toBe(true);
