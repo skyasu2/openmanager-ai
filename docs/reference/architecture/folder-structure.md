@@ -48,15 +48,17 @@ src/
 
 ```text
 src/app/api/
+├── admin/
 ├── ai/
+├── auth/
 ├── servers/
 ├── metrics/
 ├── monitoring/
-├── debug/
-└── ... (총 28 route.ts)
+├── security/
+└── ... (총 29 route.ts)
 ```
 
-> Source of truth (2026-03-03): `src/app/api/**/route.ts` (28).
+> Source of truth (2026-03-03): `src/app/api/**/route.ts` (29).
 
 상세 엔드포인트 목록은 [API Endpoints](../api/endpoints.md)를 참고합니다.
 

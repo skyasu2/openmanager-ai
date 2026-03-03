@@ -19,9 +19,9 @@
 |------|------|
 | UI 컴포넌트 | ~100+ `.tsx` |
 | Custom Hooks | ~35+ |
-| API Routes | 28 (`src/app/api/**/route.ts`, 테스트 라우트 포함) |
+| API Routes | 29 (`src/app/api/**/route.ts`, 테스트 라우트 포함) |
 | AI 실행 컴포넌트 | 8 (실행 에이전트 7 + Orchestrator 1) |
-| Zustand Stores | 4 |
+| Zustand Stores | 2 |
 | 모니터링 서버 | 15 (OnPrem DC1, synthetic) |
 | 데이터 소스 | `public/data/otel-data` 비동기 로딩 우선 + Cloud Run 호환 폴백 (`otel-processed`) |
 
@@ -39,7 +39,7 @@ graph TB
 
     subgraph Vercel["Vercel (Frontend & BFF)"]
         NextJS["Next.js 16.1.x<br/>App Router"]
-        API["API Routes (28)<br/>(/src/app/api/**/route.ts)"]
+        API["API Routes (29)<br/>(/src/app/api/**/route.ts)"]
         MP["MetricsProvider<br/>(Singleton)"]
         Providers["TanStack Query +<br/>Zustand Stores"]
     end
@@ -92,7 +92,7 @@ graph TB
 │  Vercel (Next.js 16.1.x, App Router)                                 │
 │  ┌─────────────┐  ┌──────────────────┐  ┌─────────────────────────┐ │
 │  │ API Routes   │  │ MetricsProvider  │  │ Auth (NextAuth/Supabase)│ │
-│  │ (28 routes)  │  │ (OTel→hourly)    │  │ Rate Limiter, CSRF     │ │
+│  │ (29 routes)  │  │ (OTel→hourly)    │  │ Rate Limiter, CSRF     │ │
 │  └──────┬──────┘  └──────────────────┘  └─────────────────────────┘ │
 └─────────┼────────────────────────────────────────────────────────────┘
           │ Proxy (X-API-Key)
@@ -114,7 +114,7 @@ graph TB
    └──────────────┘      └──────────────┘       └──────────────────┘
 ```
 
-> Source of truth (2026-03-03): `src/app/api/**/route.ts` (28), `cloud-run/ai-engine/src/server.ts` `app.route('/api/...')` (Cloud Run API mounts 9), `cloud-run/ai-engine/src/routes/*.ts` (route modules 10), `cloud-run/ai-engine/src/services/ai-sdk/agents/config/agent-configs.ts` (7 execution agents).
+> Source of truth (2026-03-03): `src/app/api/**/route.ts` (29), `cloud-run/ai-engine/src/server.ts` `app.route('/api/...')` (Cloud Run API mounts 9), `cloud-run/ai-engine/src/routes/*.ts` (route modules 10), `cloud-run/ai-engine/src/services/ai-sdk/agents/config/agent-configs.ts` (7 execution agents).
 
 ---
 
