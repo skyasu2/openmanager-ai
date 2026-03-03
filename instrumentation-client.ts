@@ -9,11 +9,10 @@
 
 import * as Sentry from '@sentry/nextjs';
 import { makeFetchTransport } from '@sentry/nextjs';
+import { OBSERVABILITY } from './src/config/constants';
 
-// Sentry DSN (Public Key - 전송만 가능, 읽기 불가)
 const SENTRY_DSN =
-  process.env.NEXT_PUBLIC_SENTRY_DSN ||
-  'https://c4cfe13cdda790d1d9a6c3f92c593f39@o4509732473667584.ingest.de.sentry.io/4510731369119824';
+  process.env.NEXT_PUBLIC_SENTRY_DSN || OBSERVABILITY.SENTRY.DEFAULT_DSN;
 
 Sentry.init({
   dsn: SENTRY_DSN,

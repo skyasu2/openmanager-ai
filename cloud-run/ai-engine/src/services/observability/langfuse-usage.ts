@@ -4,7 +4,15 @@ import { isLangfuseTestModeEnabled } from './langfuse-flags';
 
 const FREE_TIER_LIMIT = 50_000;
 const SAFETY_THRESHOLD = 0.9;
-const DEFAULT_SAMPLE_RATE = 1.0;
+
+/** 샘플링 비율: LANGFUSE_SAMPLE_RATE 환경변수로 조정 가능 (0.0~1.0, 기본 1.0) */
+const DEFAULT_SAMPLE_RATE = (() => {
+  const envRate = process.env.LANGFUSE_SAMPLE_RATE;
+  if (!envRate) return 1.0;
+  const parsed = Number.parseFloat(envRate);
+  if (!Number.isFinite(parsed) || parsed < 0 || parsed > 1) return 1.0;
+  return parsed;
+})();
 
 interface UsageState {
   eventCount: number;

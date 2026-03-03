@@ -1,12 +1,9 @@
 import { NextResponse } from 'next/server';
 import { logger } from '@/lib/logging';
+import { OBSERVABILITY } from '@/config/constants';
 
-// MIGRATED: Removed export const runtime = "nodejs" (default)
-// MIGRATED: Removed export const dynamic = "force-dynamic" (now default)
-
-const DEFAULT_SENTRY_DSN =
-  'https://c4cfe13cdda790d1d9a6c3f92c593f39@o4509732473667584.ingest.de.sentry.io/4510731369119824';
-const DEFAULT_UPSTREAM_TIMEOUT_MS = 1500;
+const DEFAULT_UPSTREAM_TIMEOUT_MS =
+  OBSERVABILITY.SENTRY.TUNNEL_UPSTREAM_TIMEOUT_MS;
 
 function getUpstreamTimeoutMs(): number {
   const configured = process.env.SENTRY_TUNNEL_UPSTREAM_TIMEOUT_MS;
@@ -24,7 +21,7 @@ function getTunnelEndpoint(): string | null {
   const dsn =
     process.env.NEXT_PUBLIC_SENTRY_DSN?.trim() ||
     process.env.SENTRY_DSN?.trim() ||
-    DEFAULT_SENTRY_DSN;
+    OBSERVABILITY.SENTRY.DEFAULT_DSN;
 
   try {
     const parsed = new URL(dsn);

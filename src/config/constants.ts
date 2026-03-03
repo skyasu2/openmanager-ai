@@ -222,6 +222,18 @@ export const ENVIRONMENT = {
   },
 } as const;
 
+// 🔍 Observability 설정
+export const OBSERVABILITY = {
+  SENTRY: {
+    /** Sentry DSN (Public Key — 전송 전용, 읽기 불가) */
+    DEFAULT_DSN:
+      'https://c4cfe13cdda790d1d9a6c3f92c593f39@o4509732473667584.ingest.de.sentry.io/4510731369119824',
+    TUNNEL_UPSTREAM_TIMEOUT_MS: 1500,
+    TRACES_SAMPLE_RATE_SERVER: 0.01,
+    TRACES_SAMPLE_RATE_CLIENT: 0.05,
+  },
+} as const;
+
 // 🔌 MCP 서버 설정 (SSOT - registry-core.yaml 기준)
 // 참조: config/ai/registry-core.yaml mcp-servers.development
 export const MCP_SERVERS = {
