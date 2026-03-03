@@ -54,37 +54,10 @@ import { runWithTraceId } from '@/lib/tracing/async-context';
 import { isStatusQuery, shouldSkipCache } from './cache-utils';
 import { handleCloudRunJson, handleCloudRunStream } from './cloud-run-handler';
 import { handleSupervisorError } from './error-handler';
-import { extractAndValidateQuery, resolveSessionId } from './request-utils';
+import { extractAndValidateQuery } from './request-utils';
 import { requestSchema } from './schemas';
+import { resolveScopedSessionIds } from './session-owner';
 import { buildServerContextMessage } from './server-context';
-
-// ============================================================================
-// 🔐 사용자 식별 헬퍼
-// ============================================================================
-
-function getUserId(req: NextRequest): string {
-  // 1. NextAuth 세션 쿠키에서 추출 (실제 인증된 사용자)
-  const cookieHeader = req.headers.get('cookie') || '';
-  const hasAuthSession =
-    cookieHeader.includes('next-auth.session-token') ||
-    cookieHeader.includes('__Secure-next-auth.session-token');
-
-  if (hasAuthSession) {
-    // 세션 토큰의 해시 prefix를 userId 대용으로 사용
-    const sessionMatch = cookieHeader.match(
-      /(?:__Secure-)?next-auth\.session-token=([^;]{16})/
-    );
-    return sessionMatch ? `user_${sessionMatch[1]}` : 'user_authenticated';
-  }
-
-  // 2. API 키 인증
-  if (req.headers.get('x-api-key')) {
-    return 'api_key';
-  }
-
-  // 3. Guest / 미인증
-  return 'guest';
-}
 
 // ============================================================================
 // ⚡ maxDuration - Vercel 빌드 타임 상수
@@ -150,8 +123,11 @@ export const POST = withRateLimit(
           enableRAG,
         } = parseResult.data;
 
-        // 2. sessionId 추출 (Header > Body > Query Param)
-        const clientSessionId = resolveSessionId(req, bodySessionId);
+        // 2. sessionId를 owner 스코프와 분리해 정규화
+        const { sessionId, cacheSessionId, ownerKey } = resolveScopedSessionIds(
+          req,
+          bodySessionId
+        );
 
         // 3. 사용자 쿼리 추출 + 보안 검사
         const queryResult = extractAndValidateQuery(
@@ -193,10 +169,6 @@ export const POST = withRateLimit(
         }
         const userQuery = queryResult.userQuery;
 
-        // C4: userId를 sessionId에 결합하여 사용자 간 캐시 충돌 방지
-        const userId = getUserId(req);
-        const sessionId = `${userId}_${clientSessionId || `session_${Date.now()}`}`;
-
         // 4. 동적 타임아웃 계산
         const dynamicTimeout = calculateDynamicTimeout(userQuery, {
           messageCount: messages.length,
@@ -205,7 +177,9 @@ export const POST = withRateLimit(
         });
 
         logger.info(`🚀 [Supervisor] Query: "${userQuery.slice(0, 50)}..."`);
-        logger.info(`📡 [Supervisor] Session: ${sessionId}`);
+        logger.info(
+          `📡 [Supervisor] Session: ${sessionId} (owner: ${ownerKey.slice(0, 16)}...)`
+        );
         logger.info(`⏱️ [Supervisor] Dynamic timeout: ${dynamicTimeout}ms`);
 
         // 5. 복잡도 기반 Job Queue 리다이렉트
@@ -247,7 +221,7 @@ export const POST = withRateLimit(
 
         if (!skipCache) {
           const cacheResult = await getAICache(
-            sessionId,
+            cacheSessionId,
             userQuery,
             cacheEndpoint
           );
@@ -337,6 +311,7 @@ export const POST = withRateLimit(
           const handlerParams = {
             messagesToSend,
             sessionId,
+            cacheSessionId,
             userQuery,
             dynamicTimeout,
             skipCache,

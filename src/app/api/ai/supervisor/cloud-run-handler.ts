@@ -27,7 +27,10 @@ import { cloudRunResponseSchema } from './schemas';
 
 interface CloudRunHandlerParams {
   messagesToSend: NormalizedMessage[];
+  /** Public session ID returned to client and forwarded to Cloud Run */
   sessionId: string;
+  /** Owner-scoped cache key session to avoid cross-principal cache collisions */
+  cacheSessionId: string;
   userQuery: string;
   dynamicTimeout: number;
   skipCache: boolean;
@@ -48,6 +51,7 @@ export async function handleCloudRunStream(
   const {
     messagesToSend,
     sessionId,
+    cacheSessionId,
     userQuery,
     dynamicTimeout,
     skipCache,
@@ -118,7 +122,7 @@ export async function handleCloudRunStream(
       if (data.success && data.response) {
         if (!skipCache) {
           setAICache(
-            sessionId,
+            cacheSessionId,
             userQuery,
             { success: true, response: data.response, source: 'cloud-run' },
             cacheEndpoint
@@ -191,6 +195,7 @@ export async function handleCloudRunJson(
   const {
     messagesToSend,
     sessionId,
+    cacheSessionId,
     userQuery,
     dynamicTimeout,
     skipCache,
@@ -288,7 +293,7 @@ export async function handleCloudRunJson(
     };
     if (responseData.success && responseData.response) {
       setAICache(
-        sessionId,
+        cacheSessionId,
         userQuery,
         { success: true, response: responseData.response, source: 'cloud-run' },
         cacheEndpoint

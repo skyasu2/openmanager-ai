@@ -3,11 +3,10 @@ import {
   createUIMessageStreamResponse,
   generateId,
 } from 'ai';
-import { createHash } from 'crypto';
 import type { NextRequest } from 'next/server';
 import { z } from 'zod';
 import type { HybridMessage } from '@/lib/ai/utils/message-normalizer';
-import { getAPIAuthContext } from '@/lib/auth/api-auth';
+import { getSessionOwnerKey } from '../../session-owner';
 
 export const UI_MESSAGE_STREAM_HEADERS = {
   'Content-Type': 'text/event-stream',
@@ -52,40 +51,8 @@ export const NORMALIZED_MESSAGES_SCHEMA = z
 
 const MAX_CONTEXT_MESSAGES = 24;
 
-function hashValue(value: string): string {
-  return createHash('sha256').update(value).digest('hex').slice(0, 20);
-}
-
 export function getStreamOwnerKey(req: NextRequest): string {
-  const authContext = getAPIAuthContext(req);
-  if (authContext?.userId) {
-    return `user:${hashValue(authContext.userId)}`;
-  }
-  if (authContext?.keyFingerprint) {
-    return `api:${authContext.keyFingerprint}`;
-  }
-
-  const authSessionId = req.cookies.get('auth_session_id')?.value;
-  if (authSessionId) return `guest:${hashValue(authSessionId)}`;
-
-  const supabaseTokenCookie = req.cookies
-    .getAll()
-    .find((cookie) => /^sb-.*-auth-token$/.test(cookie.name))?.value;
-  if (supabaseTokenCookie) return `supa:${hashValue(supabaseTokenCookie)}`;
-
-  const apiKey = req.headers.get('x-api-key');
-  if (apiKey) return `api:${hashValue(apiKey)}`;
-
-  const cookieHeader = req.headers.get('cookie');
-  if (cookieHeader) return `cookie:${hashValue(cookieHeader)}`;
-
-  const testSecret = req.headers.get('x-test-secret');
-  if (testSecret) return `test:${hashValue(testSecret)}`;
-
-  const ip =
-    req.headers.get('x-real-ip') || req.headers.get('x-forwarded-for') || '';
-  const ua = req.headers.get('user-agent') || '';
-  return `fp:${hashValue(`${ip}|${ua}`)}`;
+  return getSessionOwnerKey(req);
 }
 
 export function trimMessagesForContext(
