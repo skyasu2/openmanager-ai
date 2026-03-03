@@ -43,12 +43,9 @@ export interface CacheResult<T> {
 const CACHE_CONFIG = {
   /** AI 응답 캐시 TTL (1시간) */
   AI_RESPONSE_TTL_SECONDS: 3600,
-  /** 헬스 체크 캐시 TTL (5분) */
-  HEALTH_CHECK_TTL_SECONDS: 300,
   /** 캐시 키 prefix (v2: endpoint 격리 적용) */
   PREFIX: {
     AI_RESPONSE: 'v2:ai:response',
-    AI_HEALTH: 'ai:health',
     SESSION: 'session',
   },
 } as const;
@@ -241,83 +238,12 @@ export async function invalidateSessionCache(
 }
 
 // ==============================================
-// 🎯 헬스 체크 캐시
-// ==============================================
-
-export interface HealthCheckResult {
-  healthy: boolean;
-  latencyMs: number;
-  checkedAt: number;
-  service: string;
-}
-
-/**
- * 서비스 헬스 체크 결과 캐시 조회
- */
-export async function getHealthCache(
-  service: string
-): Promise<CacheResult<HealthCheckResult>> {
-  if (isRedisDisabled() || !isRedisEnabled()) {
-    return { hit: false, data: null };
-  }
-
-  const client = getRedisClient();
-  if (!client) {
-    return { hit: false, data: null };
-  }
-
-  const cacheKey = `${CACHE_CONFIG.PREFIX.AI_HEALTH}:${service}`;
-
-  try {
-    const cached = await client.get<HealthCheckResult>(cacheKey);
-
-    if (cached) {
-      return { hit: true, data: cached };
-    }
-
-    return { hit: false, data: null };
-  } catch (error) {
-    logger.error('[Health Cache] Get error:', error);
-    return { hit: false, data: null };
-  }
-}
-
-/**
- * 서비스 헬스 체크 결과 캐시 저장
- */
-export async function setHealthCache(
-  service: string,
-  result: HealthCheckResult,
-  ttlSeconds = CACHE_CONFIG.HEALTH_CHECK_TTL_SECONDS
-): Promise<boolean> {
-  if (isRedisDisabled() || !isRedisEnabled()) {
-    return false;
-  }
-
-  const client = getRedisClient();
-  if (!client) {
-    return false;
-  }
-
-  const cacheKey = `${CACHE_CONFIG.PREFIX.AI_HEALTH}:${service}`;
-
-  try {
-    await client.set(cacheKey, result, { ex: ttlSeconds });
-    return true;
-  } catch (error) {
-    logger.error('[Health Cache] Set error:', error);
-    return false;
-  }
-}
-
-// ==============================================
 // 🎯 캐시 통계
 // ==============================================
 
 export interface CacheStats {
   enabled: boolean;
   aiResponseKeys: number;
-  healthKeys: number;
 }
 
 /**
@@ -325,12 +251,12 @@ export interface CacheStats {
  */
 export async function getCacheStats(): Promise<CacheStats> {
   if (isRedisDisabled() || !isRedisEnabled()) {
-    return { enabled: false, aiResponseKeys: 0, healthKeys: 0 };
+    return { enabled: false, aiResponseKeys: 0 };
   }
 
   const client = getRedisClient();
   if (!client) {
-    return { enabled: false, aiResponseKeys: 0, healthKeys: 0 };
+    return { enabled: false, aiResponseKeys: 0 };
   }
 
   try {
@@ -338,18 +264,13 @@ export async function getCacheStats(): Promise<CacheStats> {
       client,
       `${CACHE_CONFIG.PREFIX.AI_RESPONSE}:*`
     );
-    const healthKeys = await scanKeys(
-      client,
-      `${CACHE_CONFIG.PREFIX.AI_HEALTH}:*`
-    );
 
     return {
       enabled: true,
       aiResponseKeys: aiKeys.length,
-      healthKeys: healthKeys.length,
     };
   } catch (error) {
     logger.error('[Cache Stats] Error:', error);
-    return { enabled: false, aiResponseKeys: 0, healthKeys: 0 };
+    return { enabled: false, aiResponseKeys: 0 };
   }
 }

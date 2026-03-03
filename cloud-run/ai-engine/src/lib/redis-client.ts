@@ -132,14 +132,6 @@ export async function redisDel(key: string): Promise<boolean> {
   return RedisClient.del(key);
 }
 
-/**
- * Upstash REST client does not provide key scan in this wrapper.
- * Keep signature for compatibility with legacy callers/tests.
- */
-export async function redisDelByPattern(_pattern: string): Promise<number> {
-  return 0;
-}
-
 export function resetRedisClient(): void {
   RedisClient.resetConfig();
 }

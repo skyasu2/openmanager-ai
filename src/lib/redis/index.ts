@@ -14,11 +14,8 @@ export {
   generateQueryHash,
   getAIResponseCache,
   getCacheStats,
-  getHealthCache,
-  type HealthCheckResult,
   invalidateSessionCache,
   setAIResponseCache,
-  setHealthCache,
 } from './ai-cache';
 // Circuit Breaker: Moved to @/lib/ai/circuit-breaker
 // Use: import { executeWithCircuitBreaker } from '@/lib/ai/circuit-breaker'
@@ -30,12 +27,10 @@ export {
   isRedisDisabled,
   isRedisEnabled,
   parseSystemRunningFlag,
-  reconnectRedis,
   redisDel,
   redisGet,
   redisMGet,
   redisSet,
-  safeRedisOp,
   setSystemRunningFlag,
 } from './client';
 // Rate Limiter

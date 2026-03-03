@@ -51,20 +51,6 @@ export function getSupabaseClient(): SupabaseClient {
   return globalThis.__supabaseInstance;
 }
 
-// Lazy initialization to prevent SSR errors during module evaluation
-let _supabase: SupabaseClient | null = null;
-
-/**
- * Default Supabase client instance with lazy initialization
- * @returns Singleton Supabase client instance
- */
-export function getDefaultSupabaseClient(): SupabaseClient {
-  if (!_supabase) {
-    _supabase = getSupabaseClient();
-  }
-  return _supabase;
-}
-
 /**
  * Lazy-initialized Supabase client getter
  * This is the RECOMMENDED way to access the Supabase client

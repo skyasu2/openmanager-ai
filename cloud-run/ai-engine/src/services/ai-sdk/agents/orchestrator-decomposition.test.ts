@@ -37,7 +37,6 @@ vi.mock('../../../lib/redis-client', async (importOriginal) => {
     redisGet: vi.fn(async () => null),
     redisSet: vi.fn(async () => false),
     redisDel: vi.fn(async () => false),
-    redisDelByPattern: vi.fn(async () => 0),
     resetRedisClient: vi.fn(),
   };
 });

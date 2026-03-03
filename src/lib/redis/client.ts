@@ -17,9 +17,6 @@ let isRedisAvailable = true;
 let lastHealthCheck = 0;
 const HEALTH_CHECK_INTERVAL = 60_000; // 1분
 
-// 자동 복구 관련
-let recoveryScheduled = false;
-const RECOVERY_DELAY_MS = 60_000; // 1분 후 복구 시도
 const SYSTEM_RUNNING_KEY = 'system:running';
 
 /**
@@ -133,76 +130,6 @@ export async function checkRedisHealth(
       error: error instanceof Error ? error.message : 'Unknown error',
     };
   }
-}
-
-/**
- * 안전한 Redis 연산 래퍼
- * 실패 시 undefined 반환 (서비스 중단 방지)
- *
- * @param operation Redis 연산 함수
- * @param fallback 폴백 값
- * @returns 연산 결과 또는 폴백 값
- */
-export async function safeRedisOp<T>(
-  operation: (client: Redis) => Promise<T>,
-  fallback: T
-): Promise<T> {
-  const client = getRedisClient();
-
-  if (!client || !isRedisAvailable) {
-    return fallback;
-  }
-
-  try {
-    return await operation(client);
-  } catch (error) {
-    logger.error('[Redis] Operation failed:', error);
-    // 연속 실패 시 Redis 비활성화 (Circuit Breaker 역할)
-    isRedisAvailable = false;
-    scheduleRecovery();
-    return fallback;
-  }
-}
-
-/**
- * Redis 자동 복구 스케줄러
- * safeRedisOp 실패 시 호출, 중복 스케줄 방지
- */
-function scheduleRecovery(): void {
-  if (recoveryScheduled) return;
-  recoveryScheduled = true;
-  setTimeout(async () => {
-    recoveryScheduled = false;
-    const status = await checkRedisHealth(true);
-    if (status.available) {
-      logger.info('[Redis] Auto-recovery succeeded');
-    } else {
-      logger.warn(
-        '[Redis] Auto-recovery failed, will retry on next operation failure'
-      );
-    }
-  }, RECOVERY_DELAY_MS);
-}
-
-/**
- * Redis 연결 재시도
- * 장애 복구 시 호출
- */
-export async function reconnectRedis(): Promise<boolean> {
-  // 기존 인스턴스 초기화
-  redisInstance = null;
-  isRedisAvailable = true;
-
-  // 새 인스턴스 생성 시도
-  const client = getRedisClient();
-
-  if (!client) {
-    return false;
-  }
-
-  // 헬스 체크
-  const status = await checkRedisHealth(true);
-  return status.available;
 }
 
 /**
