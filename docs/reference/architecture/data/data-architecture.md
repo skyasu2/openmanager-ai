@@ -3,11 +3,11 @@
 > Owner: platform-data
 > Status: Active Canonical
 > Doc type: Explanation
-> Last reviewed: 2026-02-17
+> Last reviewed: 2026-03-03
 > Canonical: docs/reference/architecture/data/data-architecture.md
 > Tags: data,architecture,otel,prometheus
 
-**최종 업데이트**: 2026-02-17
+**최종 업데이트**: 2026-03-03
 **프로젝트 버전**: v8.0.0
 
 ---
@@ -73,6 +73,8 @@ graph TD
 │  src/data/otel-data/index.ts              │  ← OTel loader (async)
 └────────────────────────────────────────────┘
 ```
+
+> Source of truth (2026-03-03): `public/data/otel-data/*`, `src/data/otel-data/index.ts`, `src/services/metrics/MetricsProvider.ts`, `scripts/data/otel-fix.ts`, `scripts/data/otel-verify.ts`.
 
 > **Note**: 이전 3-Tier의 `fixed-24h-metrics.ts` (Last Resort)는 v8.0.0에서 제거되었습니다. 현재는 `MetricsProvider.ensureDataLoaded()`를 통해 비동기 로딩을 선행하고, 실패 시 빈 값 반환 + 재시도를 수행합니다.
 

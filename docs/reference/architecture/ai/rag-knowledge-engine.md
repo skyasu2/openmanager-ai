@@ -4,11 +4,11 @@
 > Owner: platform-architecture
 > Status: Active
 > Doc type: Reference
-> Last reviewed: 2026-02-23
+> Last reviewed: 2026-03-03
 > Canonical: docs/reference/architecture/ai/rag-knowledge-engine.md
 > Tags: ai,rag,knowledge-engine,architecture
 >
-> **v1.2.0** | Updated 2026-02-23
+> **v1.2.0** | Updated 2026-03-03
 >
 > 검색 증강 생성(RAG) 및 지식 엔진 아키텍처 상세 문서입니다.
 
@@ -158,6 +158,8 @@ User Query
                                          ▼
                                   Final Context → LLM
 ```
+
+> Source of truth (2026-03-03): `cloud-run/ai-engine/src/services/rag/query-expansion.ts`, `cloud-run/ai-engine/src/services/rag/hybrid-text-search.ts`, `cloud-run/ai-engine/src/services/rag/tavily-hybrid-rag.ts`, `cloud-run/ai-engine/src/lib/rag-doc-policy.ts`.
 
 ### Data Flow
 

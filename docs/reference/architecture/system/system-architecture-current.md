@@ -2,10 +2,10 @@
 
 > Vercel + Cloud Run 하이브리드 시스템 구조의 기준 문서
 > Owner: platform-architecture
-> Last verified against code: 2026-02-27
+> Last verified against code: 2026-03-03
 > Status: Active Canonical (hybrid-split.md 통합됨)
 > Doc type: Explanation
-> Last reviewed: 2026-02-27
+> Last reviewed: 2026-03-03
 > Canonical: docs/reference/architecture/system/system-architecture-current.md
 > Tags: system,architecture,hybrid,cloud-run,vercel
 
@@ -19,7 +19,7 @@
 |------|------|
 | UI 컴포넌트 | ~100+ `.tsx` |
 | Custom Hooks | ~35+ |
-| API Routes | 34 (`src/app/api/**/route.ts`, 테스트 라우트 포함) |
+| API Routes | 28 (`src/app/api/**/route.ts`, 테스트 라우트 포함) |
 | AI 실행 컴포넌트 | 8 (실행 에이전트 7 + Orchestrator 1) |
 | Zustand Stores | 4 |
 | 모니터링 서버 | 15 (OnPrem DC1, synthetic) |
@@ -39,7 +39,7 @@ graph TB
 
     subgraph Vercel["Vercel (Frontend & BFF)"]
         NextJS["Next.js 16.1.x<br/>App Router"]
-        API["API Routes (34)<br/>(/src/app/api/**/route.ts)"]
+        API["API Routes (28)<br/>(/src/app/api/**/route.ts)"]
         MP["MetricsProvider<br/>(Singleton)"]
         Providers["TanStack Query +<br/>Zustand Stores"]
     end
@@ -92,7 +92,7 @@ graph TB
 │  Vercel (Next.js 16.1.x, App Router)                                 │
 │  ┌─────────────┐  ┌──────────────────┐  ┌─────────────────────────┐ │
 │  │ API Routes   │  │ MetricsProvider  │  │ Auth (NextAuth/Supabase)│ │
-│  │ (34 routes)  │  │ (OTel→hourly)    │  │ Rate Limiter, CSRF     │ │
+│  │ (28 routes)  │  │ (OTel→hourly)    │  │ Rate Limiter, CSRF     │ │
 │  └──────┬──────┘  └──────────────────┘  └─────────────────────────┘ │
 └─────────┼────────────────────────────────────────────────────────────┘
           │ Proxy (X-API-Key)
@@ -113,6 +113,8 @@ graph TB
    │ + pgvector   │      │ Rate Limit   │       │ Mistral/Gemini   │
    └──────────────┘      └──────────────┘       └──────────────────┘
 ```
+
+> Source of truth (2026-03-03): `src/app/api/**/route.ts` (28), `cloud-run/ai-engine/src/server.ts` `app.route('/api/...')` (Cloud Run API mounts 9), `cloud-run/ai-engine/src/routes/*.ts` (route modules 10), `cloud-run/ai-engine/src/services/ai-sdk/agents/config/agent-configs.ts` (7 execution agents).
 
 ---
 

@@ -4,11 +4,11 @@
 > Owner: platform-architecture
 > Status: Active Canonical
 > Doc type: Reference
-> Last reviewed: 2026-02-27
+> Last reviewed: 2026-03-03
 > Canonical: docs/reference/architecture/ai/ai-engine-architecture.md
 > Tags: ai,architecture,multi-agent,cloud-run
 >
-> **v8.5.0** | Updated 2026-02-27
+> **v8.5.0** | Updated 2026-03-03
 > (ai-model-policy.md 내용 통합됨, 2026-02-14)
 
 ## 1. Overview
@@ -44,7 +44,7 @@ Dual-Mode Supervisor 패턴으로 특화된 에이전트를 오케스트레이�
 │                                                              │
 │  ┌────────────────────────────────────────────────────────┐ │
 │  │ Supervisor (진입점) — "단순 vs 복잡?" [15개 regex]       │ │
-│  │  ├─ Single-Agent → streamText() + 30개 도구            │ │
+│  │  ├─ Single-Agent → streamText() + 도구 세트            │ │
 │  │  └─ Multi-Agent  → Orchestrator에 위임                 │ │
 │  ├────────────────────────────────────────────────────────┤ │
 │  │ Orchestrator (멀티에이전트 조율)                         │ │
@@ -54,7 +54,7 @@ Dual-Mode Supervisor 패턴으로 특화된 에이전트를 오케스트레이�
 │  │  ├─ 스트림 분기: executeMultiAgentStream (collect-then-stream) │ │
 │  │  └─ 배치 분기: executeMultiAgent (비스트리밍)            │ │
 │  ├────────────────────────────────────────────────────────┤ │
-│  │ 7 Agents × 30 Tools × 5 Providers                      │ │
+│  │ 7 Agents × Tool Set × 5 Providers                      │ │
 │  └────────────────────────────────────────────────────────┘ │
 │           │              │              │                     │
 │     ┌─────┴─────┐  ┌────┴────┐  ┌─────┴──────┐             │
@@ -63,6 +63,8 @@ Dual-Mode Supervisor 패턴으로 특화된 에이전트를 오케스트레이�
 │     └───────────┘  └─────────┘  └────────────┘             │
 └─────────────────────────────────────────────────────────────┘
 ```
+
+> Source of truth (2026-03-03): `cloud-run/ai-engine/src/services/ai-sdk/agents/config/agent-configs.ts` (execution agents 7), `cloud-run/ai-engine/src/server.ts` `app.route('/api/...')` (API mounts 9), `cloud-run/ai-engine/src/routes/*.ts` (route modules 10).
 
 ### Supervisor vs Orchestrator (분리 이유)
 
@@ -118,10 +120,11 @@ Dual-Mode Supervisor 패턴으로 특화된 에이전트를 오케스트레이�
 |---------|------|----------|-------------|
 | **NLQ** | 서버 메트릭 조회/요약 | getServerMetrics, filterServers, searchWeb | 서버, CPU, 메모리, 요약 |
 | **Analyst** | 이상 탐지, 예측, RCA | detectAnomalies, predictTrends, findRootCause | 이상, 예측, 원인 |
-| **Math (Math Assistant)** | 수식 계산, 통계 집계, 용량 성장 예측 | evaluateMathExpression, computeSeriesStats, estimateCapacityProjection | 계산, 평균, 분산, 성장률 |
 | **Reporter** | 장애 보고서 생성 | buildIncidentTimeline, correlateMetrics, searchWeb | 보고서, 장애, 인시던트 |
 | **Advisor** | 해결방안, CLI 추천 | searchKnowledgeBase, recommendCommands, searchWeb | 해결, 방법, 명령어 |
 | **Vision** | 스크린샷/로그 분석, Search Grounding | analyzeScreenshot, analyzeLargeLog, searchWithGrounding | 스크린샷, 로그, 최신, 문서 |
+
+> Note: `Math`는 독립 에이전트가 아니라 NLQ/Analyst가 사용하는 도구 세트(`evaluateMathExpression`, `computeSeriesStats`, `estimateCapacityProjection`)입니다.
 
 ### 내부 Pipeline 에이전트 (2개)
 
@@ -293,6 +296,8 @@ precomputed-state.ts → buildPrecomputedStates()
 | `/api/ai/providers` | GET | Provider 상태 + 쿼타 |
 | `/api/ai` | GET | 사용량 분석 |
 | `/api/jobs` | POST | 비동기 Job 관리 |
+
+> Source of truth (2026-03-03): `cloud-run/ai-engine/src/server.ts`의 `app.route('/api/...')` mount 9개.
 
 ## 10. Observability
 
