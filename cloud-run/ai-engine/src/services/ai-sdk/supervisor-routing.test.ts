@@ -3,6 +3,7 @@ import {
   createPrepareStep,
   getIntentCategory,
   selectExecutionMode,
+  shouldForceWebSearch,
 } from './supervisor-routing';
 
 // Mock Tavily availability for deterministic tests
@@ -319,5 +320,46 @@ describe('createPrepareStep', () => {
     expect(result.activeTools).toContain('searchWeb');
     expect(result.activeTools).toContain('searchKnowledgeBase');
     expect(result.toolChoice).toBe('required'); // anomaly 패턴은 원래 required
+  });
+
+  it('should force searchWeb toolChoice when web search ON + external info query', async () => {
+    const prepare = createPrepareStep('Redis 최신 보안 패치 알려줘', {
+      enableWebSearch: true,
+    });
+    const result = await prepare({ stepNumber: 0 });
+    expect(result.activeTools).toContain('searchWeb');
+    expect(result.toolChoice).toEqual({ type: 'tool', toolName: 'searchWeb' });
+  });
+
+  it('should not force searchWeb for internal monitoring queries even with toggle ON', async () => {
+    const prepare = createPrepareStep('서버 상태 확인', {
+      enableWebSearch: true,
+    });
+    const result = await prepare({ stepNumber: 0 });
+    expect(result.activeTools).toContain('searchWeb');
+    // 내부 모니터링 쿼리 → 강제 안 함, 기존 toolChoice 유지
+    expect(result.toolChoice).not.toEqual({ type: 'tool', toolName: 'searchWeb' });
+  });
+});
+
+// ============================================================================
+// shouldForceWebSearch
+// ============================================================================
+
+describe('shouldForceWebSearch', () => {
+  it('should return true for queries with external info indicators', () => {
+    expect(shouldForceWebSearch('최신 보안 패치')).toBe(true);
+    expect(shouldForceWebSearch('Redis latest version')).toBe(true);
+    expect(shouldForceWebSearch('CVE-2025-1234 확인')).toBe(true);
+    expect(shouldForceWebSearch('공식 문서 확인')).toBe(true);
+    expect(shouldForceWebSearch('2026 릴리스 노트')).toBe(true);
+    expect(shouldForceWebSearch('documentation for nginx')).toBe(true);
+  });
+
+  it('should return false for internal monitoring queries', () => {
+    expect(shouldForceWebSearch('서버 상태 확인')).toBe(false);
+    expect(shouldForceWebSearch('CPU 사용률 알려줘')).toBe(false);
+    expect(shouldForceWebSearch('메모리 분석해줘')).toBe(false);
+    expect(shouldForceWebSearch('디스크 용량')).toBe(false);
   });
 });

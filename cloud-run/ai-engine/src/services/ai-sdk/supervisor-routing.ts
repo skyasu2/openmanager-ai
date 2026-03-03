@@ -279,6 +279,22 @@ export function getIntentCategory(query: string): IntentCategory {
 
 const SIMPLE_CONVERSATION_PATTERNS = /^(안녕|감사|고마워|잘했어|hi|hello|thanks|thank you|bye|잘가)[\s!?.]*$/i;
 
+/**
+ * 웹 검색을 강제해야 하는 쿼리인지 판별.
+ * 사용자가 토글 ON + 이 함수가 true → step 0에서 searchWeb 강제 호출.
+ * 쿼타 보호: 내부 모니터링 쿼리는 강제하지 않음.
+ */
+export function shouldForceWebSearch(query: string): boolean {
+  const q = query.toLowerCase();
+  const FORCE_INDICATORS = [
+    '최신', 'latest', '2024', '2025', '2026',
+    'cve', 'security advisory', '보안 취약점',
+    '공식 문서', 'documentation',
+    '릴리스', 'release', '버전', 'version',
+  ];
+  return FORCE_INDICATORS.some(kw => q.includes(kw));
+}
+
 export function createPrepareStep(
   query: string,
   options?: {
@@ -300,7 +316,7 @@ export function createPrepareStep(
 
     // ── Step 1: 패턴 라우팅 — 쿼리 의도에 맞는 기본 도구 세트 결정 ──
     let activeTools: ToolName[];
-    let toolChoice: 'auto' | 'required';
+    let toolChoice: 'auto' | 'required' | { type: 'tool'; toolName: string };
 
     if (TOOL_ROUTING_PATTERNS.anomaly.test(q)) {
       activeTools = ['detectAnomalies', 'predictTrends', 'analyzePattern', 'getServerMetrics', 'finalAnswer'];
@@ -353,8 +369,10 @@ export function createPrepareStep(
       activeTools = activeTools.filter((t) => t !== 'searchKnowledgeBase');
     }
 
-    // ── Step 3: toolChoice는 유지 — LLM이 검색 도구 사용 여부를 자율적으로 결정 ──
-    // 상용 AI 표준 패턴: "도구를 제공하고, LLM이 판단" (ChatGPT, Claude API, Gemini 방식)
+    // ── Step 3: 웹 검색 강제 — 사용자 토글 ON + 외부 정보 필요 쿼리 시 강제 호출 ──
+    if (webSearchEnabled && activeTools.includes('searchWeb') && shouldForceWebSearch(q)) {
+      toolChoice = { type: 'tool', toolName: 'searchWeb' };
+    }
 
     return { activeTools, toolChoice };
   };
