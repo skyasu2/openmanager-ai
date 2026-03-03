@@ -109,6 +109,13 @@ vi.mock('../lib/ai/monitoring/SimpleAnomalyDetector', () => ({
         deviation: 0.1,
       },
     })),
+    detectBaselineDrift: vi.fn(() => ({
+      hasDrift: false,
+      direction: 'stable',
+      magnitude: 0,
+      magnitudeSigma: 0,
+      confidence: 0,
+    })),
   })),
 }));
 
