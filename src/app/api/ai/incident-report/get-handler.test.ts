@@ -5,34 +5,9 @@
 import { NextRequest } from 'next/server';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const {
-  mockSupabaseFrom,
-  mockSelect,
-  mockEq,
-  mockSingle,
-  mockGte,
-  mockOr,
-  mockOrder,
-  mockRange,
-} = vi.hoisted(() => {
-  const mockRange = vi.fn();
-  const mockOrder = vi.fn(() => ({ range: mockRange }));
-  const mockOr = vi.fn(() => ({ order: mockOrder }));
-  const mockGte = vi.fn(() => ({ order: mockOrder, or: mockOr }));
-  const mockEq = vi.fn();
-  const mockSingle = vi.fn();
-  const mockSelect = vi.fn();
+const { mockSupabaseFrom } = vi.hoisted(() => {
   const mockSupabaseFrom = vi.fn();
-  return {
-    mockSupabaseFrom,
-    mockSelect,
-    mockEq,
-    mockSingle,
-    mockGte,
-    mockOr,
-    mockOrder,
-    mockRange,
-  };
+  return { mockSupabaseFrom };
 });
 
 vi.mock('@/lib/supabase/admin', () => ({
