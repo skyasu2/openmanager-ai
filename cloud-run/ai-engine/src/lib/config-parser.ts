@@ -49,6 +49,7 @@ export interface AIProvidersConfig {
   mistral: string;
   cerebras: string;
   tavily: string;
+  tavilyBackup?: string; // Failover key
   gemini?: string; // Vision Agent - Gemini 2.5 Flash
   openrouter?: string; // Fallback Vision
 }
@@ -301,10 +302,12 @@ export function getTavilyApiKey(): string | null {
 
 /**
  * Get Tavily Backup API Key (Failover)
- * Used when primary key hits rate limit or fails
+ * Uses AI_PROVIDERS_CONFIG.tavilyBackup or falls back to individual env var
  * @added 2026-01-04
  */
 export function getTavilyApiKeyBackup(): string | null {
+  const providersConfig = getAIProvidersConfig();
+  if (providersConfig?.tavilyBackup) return providersConfig.tavilyBackup;
   return process.env.TAVILY_API_KEY_BACKUP || null;
 }
 
@@ -420,6 +423,7 @@ export function getConfigStatus(): {
   mistral: boolean;
   cerebras: boolean;
   tavily: boolean;
+  tavilyBackup: boolean;
   gemini: boolean;
   openrouter: boolean;
   langfuse: boolean;
@@ -432,6 +436,7 @@ export function getConfigStatus(): {
     mistral: getMistralApiKey() !== null,
     cerebras: getCerebrasApiKey() !== null,
     tavily: getTavilyApiKey() !== null,
+    tavilyBackup: getTavilyApiKeyBackup() !== null,
     gemini: getGeminiApiKey() !== null,
     openrouter: getOpenRouterApiKey() !== null,
     langfuse: getLangfuseConfig() !== null,

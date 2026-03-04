@@ -89,16 +89,34 @@ describe('Config Parser', () => {
   // 2. Tavily Backup API Key Tests
   // ============================================================================
   describe('getTavilyApiKeyBackup', () => {
-    it('should return backup key from env var', () => {
-      process.env.TAVILY_API_KEY_BACKUP = 'backup-key-123';
+    it('should return backup key from grouped secret', () => {
+      process.env.AI_PROVIDERS_CONFIG = JSON.stringify({
+        groq: 'g', mistral: 'm', cerebras: 'c', tavily: 't',
+        tavilyBackup: 'grouped-backup-key',
+      });
+      clearConfigCache();
 
       const result = getTavilyApiKeyBackup();
 
-      expect(result).toBe('backup-key-123');
+      expect(result).toBe('grouped-backup-key');
+    });
+
+    it('should fall back to env var when not in grouped secret', () => {
+      process.env.AI_PROVIDERS_CONFIG = JSON.stringify({
+        groq: 'g', mistral: 'm', cerebras: 'c', tavily: 't',
+      });
+      process.env.TAVILY_API_KEY_BACKUP = 'env-backup-key';
+      clearConfigCache();
+
+      const result = getTavilyApiKeyBackup();
+
+      expect(result).toBe('env-backup-key');
     });
 
     it('should return null when backup key not configured', () => {
       delete process.env.TAVILY_API_KEY_BACKUP;
+      delete process.env.AI_PROVIDERS_CONFIG;
+      clearConfigCache();
 
       const result = getTavilyApiKeyBackup();
 
@@ -162,6 +180,7 @@ describe('Config Parser', () => {
     it('should return all false when no config', () => {
       delete process.env.AI_PROVIDERS_CONFIG;
       delete process.env.TAVILY_API_KEY;
+      delete process.env.TAVILY_API_KEY_BACKUP;
       delete process.env.GROQ_API_KEY;
       delete process.env.CEREBRAS_API_KEY;
       delete process.env.MISTRAL_API_KEY;
@@ -169,6 +188,7 @@ describe('Config Parser', () => {
       const status = getConfigStatus();
 
       expect(status.tavily).toBe(false);
+      expect(status.tavilyBackup).toBe(false);
       expect(status.groq).toBe(false);
       expect(status.cerebras).toBe(false);
       expect(status.mistral).toBe(false);
