@@ -31,6 +31,7 @@ import {
 import { triggerAIWarmup } from '@/utils/ai-warmup';
 import { useChatFeedback } from './core/useChatFeedback';
 import { useChatHistory } from './core/useChatHistory';
+import { useChatQueue } from './core/useChatQueue';
 import { useChatSession } from './core/useChatSession';
 import {
   type SessionState,
@@ -156,20 +157,16 @@ export function useAIChatCore(
   const webSearchEnabled = useAISidebarStore((s) => s.webSearchEnabled);
   const ragEnabled = useAISidebarStore((s) => s.ragEnabled);
 
-  // 메시지 대기열 (Batching용)
-  const queueIdCounter = useRef(0);
-  const [queuedQueries, setQueuedQueries] = useState<
-    Array<{ id: number; text: string; attachments?: FileAttachment[] }>
-  >([]);
-  const queuedQueriesRef = useRef(queuedQueries);
-
-  const removeQueuedQuery = useCallback((index: number) => {
-    setQueuedQueries((prev) => {
-      const updated = prev.filter((_, i) => i !== index);
-      queuedQueriesRef.current = updated;
-      return updated;
-    });
-  }, []);
+  // 🧩 Chat Queue Hook (메시지 대기열 Batching)
+  const {
+    queuedQueries,
+    queuedQueriesRef,
+    addToQueue,
+    removeQueuedQuery,
+    popAndSendQueue,
+    clearQueue,
+    sendQueryRef,
+  } = useChatQueue();
 
   // 스트리밍 done 이벤트에서 수신한 ragSources (웹 검색 결과 등)
   const [streamRagSources, setStreamRagSources] = useState<
@@ -195,38 +192,6 @@ export function useAIChatCore(
   // ============================================================================
   // Hybrid AI Query Hook
   // ============================================================================
-
-  const sendQueryRef = useRef<
-    ((query: string, attachments?: FileAttachment[]) => void) | null
-  >(null);
-
-  const popAndSendQueue = useCallback(() => {
-    const sendFn = sendQueryRef.current;
-    if (queuedQueriesRef.current.length === 0 || !sendFn) return;
-
-    const queries = queuedQueriesRef.current;
-    queuedQueriesRef.current = [];
-    setQueuedQueries([]);
-
-    // 병합: 2개 이상이면 구분자로 연결, 1개면 그대로
-    const combinedText =
-      queries.length === 1
-        ? (queries[0]?.text ?? '')
-        : queries.map((q) => q.text).join('\n\n추가 질문:\n');
-    const combinedAttachments = queries.flatMap((q) => q.attachments || []);
-
-    logger.info(
-      `[ChatQueue] Flushing ${queries.length} queued message(s) as single query`
-    );
-
-    // React 상태 반영 후 전송 (queueMicrotask > setTimeout)
-    queueMicrotask(() => {
-      sendFn(
-        combinedText,
-        combinedAttachments.length > 0 ? combinedAttachments : undefined
-      );
-    });
-  }, []);
 
   const {
     sendQuery,
@@ -357,9 +322,8 @@ export function useAIChatCore(
     pendingQueryRef.current = '';
     lastAttachmentsRef.current = null;
     clearHistory();
-    setQueuedQueries([]);
-    queuedQueriesRef.current = [];
-  }, [resetHybridQuery, refreshSessionId, clearHistory]);
+    clearQueue();
+  }, [resetHybridQuery, refreshSessionId, clearHistory, clearQueue]);
 
   const clearError = useCallback(() => {
     setError(null);
@@ -447,13 +411,7 @@ export function useAIChatCore(
 
       // 🎯 Batching: 스트리밍 중이면 큐에 추가 (즉시 전송하지 않음)
       if (hybridIsLoading) {
-        const id = ++queueIdCounter.current;
-        const item = { id, text: effectiveText, attachments };
-        setQueuedQueries((prev) => {
-          const updated = [...prev, item];
-          queuedQueriesRef.current = updated;
-          return updated;
-        });
+        addToQueue(effectiveText, attachments);
         setInput('');
         return;
       }
@@ -468,7 +426,14 @@ export function useAIChatCore(
       // 🎯 파일 첨부와 함께 전송
       sendQuery(effectiveText, attachments);
     },
-    [input, disableSessionLimit, sessionState, hybridIsLoading, sendQuery]
+    [
+      input,
+      disableSessionLimit,
+      sessionState,
+      hybridIsLoading,
+      sendQuery,
+      addToQueue,
+    ]
   );
 
   // ============================================================================

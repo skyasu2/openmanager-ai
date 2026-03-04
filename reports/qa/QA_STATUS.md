@@ -13,8 +13,8 @@
 | Failed | 18 |
 | Completed Items | 95 |
 | Pending Items | 0 |
-| Deferred Items | 2 |
-| Wont-Fix Items | 30 |
+| Deferred Items | 0 |
+| Wont-Fix Items | 32 |
 | Expert Domains Tracked | 6 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 97.94% |
@@ -38,10 +38,14 @@ Latest run: QA-20260303-0049 (2026-03-03T05:03:51.275Z)
 
 ## Deferred Improvements
 
-- [P1] obs-fp-fn-weekly-report: 오탐/미탐 주간 리포트 자동 생성 (seen 3회, last QA-20260227-0013)
-- [P1] security-attack-regression-pack: 보안 공격 시나리오 회귀팩 구축 (seen 3회, last QA-20260227-0013)
+- None
 
 ## Wont-Fix Improvements
+
+- [P1] obs-fp-fn-weekly-report: 오탐/미탐 주간 리포트 자동 생성 (seen 3회, last QA-20260227-0013)
+  - note: 운영 프로세스 항목 — 프로덕트 QA 범위 외. 실운영 환경에서만 의미 있는 기능으로 데모/포트폴리오 프로젝트에서 제외 (v8.7.8 종합 점검)
+- [P1] security-attack-regression-pack: 보안 공격 시나리오 회귀팩 구축 (seen 3회, last QA-20260227-0013)
+  - note: 운영 프로세스 항목 — 프로덕트 QA 범위 외. 보안 회귀팩은 실운영 환경 전용으로 데모/포트폴리오 프로젝트에서 제외 (v8.7.8 종합 점검)
 
 - [P2] ai-chat-detail-expand: AI Chat 상세 분석 펼치기 (seen 1회, last QA-20260301-0030)
   - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)

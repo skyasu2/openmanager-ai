@@ -15,8 +15,8 @@
     "completionRate": 97.94,
     "completedItems": 95,
     "pendingItems": 0,
-    "deferredItems": 2,
-    "wontFixItems": 30,
+    "deferredItems": 0,
+    "wontFixItems": 32,
     "expertDomainsTracked": 6,
     "expertDomainsOpenGaps": 0,
     "lastRunId": "QA-20260303-0049",
@@ -129,7 +129,7 @@
       "id": "obs-fp-fn-weekly-report",
       "title": "오탐/미탐 주간 리포트 자동 생성",
       "priority": "P1",
-      "status": "deferred",
+      "status": "won't-fix",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
       "lastSeenRunId": "QA-20260227-0013",
@@ -140,14 +140,14 @@
       "deferredCount": 1,
       "owner": "",
       "lastEvidence": "",
-      "lastNote": "포트폴리오 범위 외 — 운영 프로세스 항목으로 스킵 (v8.5.0 릴리즈 기준)",
-      "lastStatusChangeAt": "2026-02-26T23:08:35.651Z"
+      "lastNote": "운영 프로세스 항목 — 프로덕트 QA 범위 외. 실운영 환경에서만 의미 있는 기능으로 데모/포트폴리오 프로젝트에서 제외 (v8.7.8 종합 점검)",
+      "lastStatusChangeAt": "2026-03-04T02:00:00.000Z"
     },
     "security-attack-regression-pack": {
       "id": "security-attack-regression-pack",
       "title": "보안 공격 시나리오 회귀팩 구축",
       "priority": "P1",
-      "status": "deferred",
+      "status": "won't-fix",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
       "lastSeenRunId": "QA-20260227-0013",
@@ -158,8 +158,8 @@
       "deferredCount": 1,
       "owner": "",
       "lastEvidence": "",
-      "lastNote": "포트폴리오 범위 외 — 운영 프로세스 항목으로 스킵 (v8.5.0 릴리즈 기준)",
-      "lastStatusChangeAt": "2026-02-26T23:08:35.651Z"
+      "lastNote": "운영 프로세스 항목 — 프로덕트 QA 범위 외. 보안 회귀팩은 실운영 환경 전용으로 데모/포트폴리오 프로젝트에서 제외 (v8.7.8 종합 점검)",
+      "lastStatusChangeAt": "2026-03-04T02:00:00.000Z"
     },
     "metrics-drift-threshold-standard": {
       "id": "metrics-drift-threshold-standard",
