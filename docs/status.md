@@ -4,11 +4,11 @@
 > Owner: documentation
 > Status: Active
 > Doc type: Status
-> Last reviewed: 2026-02-27
+> Last reviewed: 2026-03-04
 > Canonical: docs/status.md
 > Tags: status,changelog,release
 
-**마지막 업데이트**: 2026-02-27
+**마지막 업데이트**: 2026-03-04
 
 ---
 
@@ -21,6 +21,14 @@
 ---
 
 ## 🔄 Recent Changes
+
+- **v8.7.8** (2026-03-04)
+  - fix(ai-engine): force `searchWeb` tool call for external info queries
+  - fix(ai-engine): unify Tavily backup key into `AI_PROVIDERS_CONFIG` grouped secret (`tavilyBackup` field)
+  - feat(ai-engine): add server-readiness guard for `/api` routes
+  - test(ai-engine): add route tests for 9 Cloud Run endpoints (+71 tests, 총 648 tests)
+  - qa: Production QA run #50 (8/8 PASS, Playwright MCP) — 누적 97.94% pass rate
+  - style: apply Biome auto-format (import order, line wrapping)
 
 - **v8.5.0** (2026-02-27)
   - fix(ai-engine): Groq `json_schema` 미지원 에러 해결 — Orchestrator 모델 우선순위를 `['cerebras', 'mistral', 'groq']`로 재배치
@@ -247,7 +255,7 @@
 
 ---
 
-## 🏗️ Technical Stack (v8.5.0)
+## 🏗️ Technical Stack (v8.7.8)
 
 **Core Frameworks** (2025 Standard)
 - **Next.js**: `v16.1.6` (App Router, Server Components)
@@ -270,7 +278,7 @@
 
 ## 📚 Documentation Status
 
-**총 활성 문서 수**: 55개 (예산 55, `docs/archived/` 제외)
+**총 활성 문서 수**: 54개 (예산 60, `docs/archived/` 제외)
 
 **DRY 구조**:
 - `.claude/rules/` → Claude Code 전용 간략 규칙
@@ -479,12 +487,12 @@
 
 ---
 
-## 📊 품질 지표 (2026-02-22 기준)
+## 📊 품질 지표 (2026-03-04 기준)
 
 | Metric | Status | Detail |
 |:---:|:---:|---|
 | **Build** | ✅ Passing | `npm run build` (Next.js 16.1.6) 성공 |
-| **Test** | ✅ Passing | 196 tests PASS (`test:quick`), +37 unit tests (CSP 22 + CircuitBreaker 15) |
+| **Test** | ✅ Passing | 805 tests PASS (Vercel 157 + Cloud Run 648) |
 | **Lint** | ✅ Clean | Biome Check Pass (No Errors) |
 | **E2E** | ✅ 100% | 30/30 Scenarios Passing (Playwright) |
 | **MCP** | ✅ 9/9 | 모든 MCP 서버 정상 연결 |
@@ -513,7 +521,7 @@
 ## 📝 문서 관리 현황
 
 **관리 원칙 (Diataxis + Doc Budget)**
-- 활성 문서: 55개 (예산 55, `docs/archived/` 제외)
+- 활성 문서: 54개 (예산 60, `docs/archived/` 제외)
 - 병합 우선: 70%+ 중복 시 병합, Historical 문서는 `docs/archived/`로 이동
 - **Key Docs**:
   - `README.md`: 프로젝트 개요
