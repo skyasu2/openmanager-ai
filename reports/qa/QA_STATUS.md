@@ -1,15 +1,15 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-03 14:03:51 KST
+> Generated at: 2026-03-04 13:21:47 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 49 |
-| Total Checks | 351 |
-| Passed | 333 |
+| Total Runs | 50 |
+| Total Checks | 359 |
+| Passed | 341 |
 | Failed | 18 |
 | Completed Items | 95 |
 | Pending Items | 0 |
@@ -17,12 +17,12 @@
 | Wont-Fix Items | 32 |
 | Expert Domains Tracked | 6 |
 | Expert Open Gaps | 0 |
-| Completion Rate | 97.94% |
-| Last Run | QA-20260303-0049 (2026-03-03T05:03:51.275Z) |
+| Completion Rate | 100% |
+| Last Run | QA-20260304-0050 (2026-03-04T04:21:46.893Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260303-0049 (2026-03-03T05:03:51.275Z)
+Latest run: QA-20260304-0050 (2026-03-04T04:21:46.893Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -209,6 +209,7 @@ Latest run: QA-20260303-0049 (2026-03-03T05:03:51.275Z)
 
 | Run ID | Time (UTC) | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260304-0050 | 2026-03-04T04:21:46.893Z | Production QA v8.7.8 — Playwright MCP (2026-03-04) | 8 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260303-0049 | 2026-03-03T05:03:51.275Z | Production Playwright MCP QA v8.7.8 (13/13 PASS) | 0 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260303-0048 | 2026-03-02T23:56:18.491Z | Production Playwright MCP QA v8.7.8 (13/13 PASS) | 13 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260303-0047 | 2026-03-02T23:07:38.546Z | Production Playwright MCP QA v8.7.7 (13/13 PASS) | 13 | 0 | 0 | 0 | 0 | 0 |
@@ -228,5 +229,4 @@ Latest run: QA-20260303-0049 (2026-03-03T05:03:51.275Z)
 | QA-20260301-0033 | 2026-03-01T06:16:36.498Z | Production Playwright MCP QA | 0 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260301-0032 | 2026-03-01T03:33:12.090Z | Final QA Gate v8.7.1 — Static + Security + Build + Code Quality (18/18 PASS) | 18 | 14 | 0 | 0 | 0 | 0 |
 | QA-20260301-0031 | 2026-03-01T01:08:05.088Z | Comprehensive Button/Modal/UI QA - v8.7.1 post-release | 18 | 0 | 0 | 0 | 18 | 0 |
-| QA-20260301-0030 | 2026-03-01T00:54:39.785Z | Vercel Playwright MCP QA - v8.7.1 post-release production validation | 12 | 0 | 0 | 0 | 12 | 0 |
 

@@ -1,0 +1,21 @@
+{
+  "runId": "QA-20260304-0050",
+  "recordedAt": "2026-03-04T04:21:46.893Z",
+  "recordedAtKst": "2026-03-04 13:21:46 KST",
+  "runTitle": "Production QA v8.7.8 — Playwright MCP (2026-03-04)",
+  "owner": "claude",
+  "source": "",
+  "environment": "vercel-production",
+  "checks": {
+    "total": 8,
+    "passed": 8,
+    "failed": 0
+  },
+  "expertAssessments": [],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [],
+  "links": []
+}

@@ -2,25 +2,25 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-03-03T05:03:51.275Z"
+    "updatedAt": "2026-03-04T04:21:46.893Z"
   },
   "sequence": {
-    "nextRunNumber": 50
+    "nextRunNumber": 51
   },
   "summary": {
-    "totalRuns": 49,
-    "totalChecks": 351,
-    "totalPassed": 333,
+    "totalRuns": 50,
+    "totalChecks": 359,
+    "totalPassed": 341,
     "totalFailed": 18,
-    "completionRate": 97.94,
+    "completionRate": 100,
     "completedItems": 95,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 32,
     "expertDomainsTracked": 6,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260303-0049",
-    "lastRecordedAt": "2026-03-03T05:03:51.275Z"
+    "lastRunId": "QA-20260304-0050",
+    "lastRecordedAt": "2026-03-04T04:21:46.893Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -129,7 +129,7 @@
       "id": "obs-fp-fn-weekly-report",
       "title": "오탐/미탐 주간 리포트 자동 생성",
       "priority": "P1",
-      "status": "won't-fix",
+      "status": "wont-fix",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
       "lastSeenRunId": "QA-20260227-0013",
@@ -147,7 +147,7 @@
       "id": "security-attack-regression-pack",
       "title": "보안 공격 시나리오 회귀팩 구축",
       "priority": "P1",
-      "status": "won't-fix",
+      "status": "wont-fix",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
       "lastSeenRunId": "QA-20260227-0013",
@@ -4529,6 +4529,27 @@
       "checks": {
         "total": 0,
         "passed": 0,
+        "failed": 0
+      },
+      "expertAssessments": [],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260304-0050",
+      "recordedAt": "2026-03-04T04:21:46.893Z",
+      "recordedAtKst": "2026-03-04 13:21:46 KST",
+      "title": "Production QA v8.7.8 — Playwright MCP (2026-03-04)",
+      "owner": "claude",
+      "source": "",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260304-0050.json",
+      "checks": {
+        "total": 8,
+        "passed": 8,
         "failed": 0
       },
       "expertAssessments": [],
