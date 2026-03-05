@@ -55,8 +55,3 @@ query-filters:
 
 # 언어별 설정
 disable-default-path-filters: false
-
-# 고급 설정
-packs:
-  - codeql/javascript-queries:AlertSuppression.ql
-  - codeql/javascript-queries:Security.ql
