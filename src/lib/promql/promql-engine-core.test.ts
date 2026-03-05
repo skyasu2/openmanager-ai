@@ -4,6 +4,7 @@ vi.mock('@/lib/logging', () => ({
   logger: { info: vi.fn(), warn: vi.fn(), error: vi.fn() },
 }));
 
+import type { PromQLSample } from '@/types/processed-metrics';
 import {
   applyAggregation,
   applyComparison,
@@ -12,7 +13,6 @@ import {
   resolveOTelMetricName,
   validateQuery,
 } from './promql-engine-core';
-import type { PromQLSample } from '@/types/processed-metrics';
 
 // ---------------------------------------------------------------------------
 // validateQuery
@@ -92,9 +92,7 @@ describe('parsePromQL', () => {
     );
     expect(result.type).toBe('aggregate');
     expect(result.aggregateFunc).toBe('avg');
-    expect(result.matchers).toEqual([
-      { name: 'env', op: '=', value: 'prod' },
-    ]);
+    expect(result.matchers).toEqual([{ name: 'env', op: '=', value: 'prod' }]);
     expect(result.groupBy).toEqual(['host']);
   });
 
@@ -112,9 +110,7 @@ describe('parsePromQL', () => {
     expect(result.metricName).toBe('up');
     expect(result.comparisonOp).toBe('==');
     expect(result.comparisonValue).toBe(1);
-    expect(result.matchers).toEqual([
-      { name: 'job', op: '=', value: 'api' },
-    ]);
+    expect(result.matchers).toEqual([{ name: 'job', op: '=', value: 'api' }]);
   });
 
   it('parses comparison with decimal value: >=', () => {
@@ -152,9 +148,7 @@ describe('parseLabelMatchers (via parsePromQL)', () => {
 
   it('parses !~ negative regex matcher', () => {
     const { matchers } = parsePromQL('metric{dc!~"us-east-.*"}');
-    expect(matchers).toEqual([
-      { name: 'dc', op: '!~', value: 'us-east-.*' },
-    ]);
+    expect(matchers).toEqual([{ name: 'dc', op: '!~', value: 'us-east-.*' }]);
   });
 
   it('parses multiple matchers', () => {
@@ -205,9 +199,7 @@ describe('matchLabels', () => {
 
   it('= match fails', () => {
     expect(
-      matchLabels({ env: 'staging' }, [
-        { name: 'env', op: '=', value: 'prod' },
-      ])
+      matchLabels({ env: 'staging' }, [{ name: 'env', op: '=', value: 'prod' }])
     ).toBe(false);
   });
 
@@ -218,9 +210,7 @@ describe('matchLabels', () => {
       ])
     ).toBe(true);
     expect(
-      matchLabels({ env: 'prod' }, [
-        { name: 'env', op: '!=', value: 'prod' },
-      ])
+      matchLabels({ env: 'prod' }, [{ name: 'env', op: '!=', value: 'prod' }])
     ).toBe(false);
   });
 
@@ -251,12 +241,10 @@ describe('matchLabels', () => {
   });
 
   it('missing label treated as empty string', () => {
-    expect(
-      matchLabels({}, [{ name: 'env', op: '=', value: '' }])
-    ).toBe(true);
-    expect(
-      matchLabels({}, [{ name: 'env', op: '=', value: 'prod' }])
-    ).toBe(false);
+    expect(matchLabels({}, [{ name: 'env', op: '=', value: '' }])).toBe(true);
+    expect(matchLabels({}, [{ name: 'env', op: '=', value: 'prod' }])).toBe(
+      false
+    );
   });
 });
 

@@ -1,9 +1,11 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const { mockCalculateRelativeDateTime, mockGetMetricsAtTime } = vi.hoisted(() => ({
-  mockCalculateRelativeDateTime: vi.fn(),
-  mockGetMetricsAtTime: vi.fn(),
-}));
+const { mockCalculateRelativeDateTime, mockGetMetricsAtTime } = vi.hoisted(
+  () => ({
+    mockCalculateRelativeDateTime: vi.fn(),
+    mockGetMetricsAtTime: vi.fn(),
+  })
+);
 
 vi.mock('./kst-time', () => ({
   calculateRelativeDateTime: mockCalculateRelativeDateTime,
@@ -17,7 +19,10 @@ vi.mock('./MetricsProvider', () => ({
   },
 }));
 
-import { compareServerMetrics, getMetricsAtRelativeTime } from './time-comparison';
+import {
+  compareServerMetrics,
+  getMetricsAtRelativeTime,
+} from './time-comparison';
 
 function createMockMetrics(overrides = {}) {
   return {
@@ -130,12 +135,28 @@ describe('compareServerMetrics', () => {
         isYesterday: false,
       };
     });
-    mockGetMetricsAtTime.mockImplementation((_id: string, minuteOfDay: number) => {
-      if (minuteOfDay === 60) {
-        return Promise.resolve(createMockMetrics({ cpu: 55.55, memory: 62.33, disk: 41.17, network: 12.89 }));
+    mockGetMetricsAtTime.mockImplementation(
+      (_id: string, minuteOfDay: number) => {
+        if (minuteOfDay === 60) {
+          return Promise.resolve(
+            createMockMetrics({
+              cpu: 55.55,
+              memory: 62.33,
+              disk: 41.17,
+              network: 12.89,
+            })
+          );
+        }
+        return Promise.resolve(
+          createMockMetrics({
+            cpu: 50.11,
+            memory: 60.11,
+            disk: 40.11,
+            network: 10.11,
+          })
+        );
       }
-      return Promise.resolve(createMockMetrics({ cpu: 50.11, memory: 60.11, disk: 40.11, network: 10.11 }));
-    });
+    );
 
     const result = await compareServerMetrics('server-1', 60);
 
@@ -167,10 +188,12 @@ describe('compareServerMetrics', () => {
       timestamp: '2026-03-06T01:00:00+09:00',
       isYesterday: false,
     }));
-    mockGetMetricsAtTime.mockImplementation((_id: string, minuteOfDay: number) => {
-      if (minuteOfDay === 60) return Promise.resolve(createMockMetrics());
-      return Promise.resolve(null);
-    });
+    mockGetMetricsAtTime.mockImplementation(
+      (_id: string, minuteOfDay: number) => {
+        if (minuteOfDay === 60) return Promise.resolve(createMockMetrics());
+        return Promise.resolve(null);
+      }
+    );
 
     const result = await compareServerMetrics('server-1', 60);
 
@@ -184,12 +207,18 @@ describe('compareServerMetrics', () => {
       timestamp: '2026-03-06T01:00:00+09:00',
       isYesterday: false,
     }));
-    mockGetMetricsAtTime.mockImplementation((_id: string, minuteOfDay: number) => {
-      if (minuteOfDay === 60) {
-        return Promise.resolve(createMockMetrics({ cpu: 30, memory: 40, disk: 20, network: 5 }));
+    mockGetMetricsAtTime.mockImplementation(
+      (_id: string, minuteOfDay: number) => {
+        if (minuteOfDay === 60) {
+          return Promise.resolve(
+            createMockMetrics({ cpu: 30, memory: 40, disk: 20, network: 5 })
+          );
+        }
+        return Promise.resolve(
+          createMockMetrics({ cpu: 50, memory: 60, disk: 40, network: 10 })
+        );
       }
-      return Promise.resolve(createMockMetrics({ cpu: 50, memory: 60, disk: 40, network: 10 }));
-    });
+    );
 
     const result = await compareServerMetrics('server-1', 60);
 

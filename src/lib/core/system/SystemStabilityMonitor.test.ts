@@ -1,7 +1,12 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 const { mockSystemLogger } = vi.hoisted(() => ({
-  mockSystemLogger: { system: vi.fn(), info: vi.fn(), warn: vi.fn(), error: vi.fn() },
+  mockSystemLogger: {
+    system: vi.fn(),
+    info: vi.fn(),
+    warn: vi.fn(),
+    error: vi.fn(),
+  },
 }));
 
 vi.mock('@/lib/logger', () => ({
@@ -10,8 +15,8 @@ vi.mock('@/lib/logger', () => ({
 
 vi.mock('./process-types', () => ({}));
 
-import { SystemStabilityMonitor } from './SystemStabilityMonitor';
 import type { StabilityContext } from './SystemStabilityMonitor';
+import { SystemStabilityMonitor } from './SystemStabilityMonitor';
 
 describe('SystemStabilityMonitor', () => {
   const SHORT_TIMEOUT = 100;
@@ -26,7 +31,7 @@ describe('SystemStabilityMonitor', () => {
   });
 
   function makeCtx(
-    overrides: Partial<StabilityContext> = {},
+    overrides: Partial<StabilityContext> = {}
   ): StabilityContext {
     return {
       getSystemMetrics: vi.fn(() => ({
