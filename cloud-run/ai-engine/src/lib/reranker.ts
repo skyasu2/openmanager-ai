@@ -1,8 +1,8 @@
 /**
  * LLM-based Reranker Module
  *
- * Uses Mistral AI to rerank search results based on query relevance.
- * This provides cross-encoder-like quality without additional API costs.
+ * Uses Groq (primary) or Cerebras (fallback) to rerank search results.
+ * Groq is preferred to preserve Cerebras 1M TPD quota for main agents.
  *
  * Architecture:
  * 1. Initial retrieval (Vector + BM25 + Graph)
@@ -15,7 +15,7 @@
 
 import { generateText, type LanguageModel } from 'ai';
 import { logger } from './logger';
-import { getCerebrasModel } from '../services/ai-sdk/model-provider-core';
+import { getGroqModel, getCerebrasModel } from '../services/ai-sdk/model-provider-core';
 import { withTimeout } from './with-timeout';
 
 // ============================================================================
@@ -117,11 +117,10 @@ export async function rerankDocuments(
     }));
   }
 
-  let model: LanguageModel;
-  try {
-    model = getCerebrasModel('gpt-oss-120b');
-  } catch {
-    logger.warn('[Reranker] Cerebras unavailable, returning original order');
+  // Use Groq for reranking to preserve Cerebras 1M TPD for main agents
+  const model = getRerankModel();
+  if (!model) {
+    logger.warn('[Reranker] No model available, returning original order');
     return documents.map((doc) => ({
       ...doc,
       rerankScore: doc.originalScore,
@@ -249,12 +248,8 @@ export async function quickRelevanceScore(
   query: string,
   document: { title: string; content: string }
 ): Promise<number> {
-  let model: LanguageModel;
-  try {
-    model = getCerebrasModel('gpt-oss-120b');
-  } catch {
-    return 0.5; // Neutral score if unavailable
-  }
+  const model = getRerankModel();
+  if (!model) return 0.5; // Neutral score if unavailable
 
   try {
     const prompt = `Query: "${query}"
@@ -280,10 +275,21 @@ Rate relevance 0-1. Output ONLY a number.`;
  * Check if reranking is available
  */
 export function isRerankerAvailable(): boolean {
+  return getRerankModel() !== null;
+}
+
+/**
+ * Get model for reranking: Groq first (preserve Cerebras quota), Cerebras fallback
+ */
+function getRerankModel(): LanguageModel | null {
   try {
-    getCerebrasModel('gpt-oss-120b');
-    return true;
+    return getGroqModel('llama-3.3-70b-versatile');
   } catch {
-    return false;
+    // Groq unavailable, fall back to Cerebras
+  }
+  try {
+    return getCerebrasModel('gpt-oss-120b');
+  } catch {
+    return null;
   }
 }
