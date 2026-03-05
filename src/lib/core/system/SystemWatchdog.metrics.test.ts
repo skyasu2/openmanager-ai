@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const mocks = vi.hoisted(() => ({
   calculateErrorRate: vi.fn(() => 0),
@@ -10,7 +10,10 @@ vi.mock('./SystemWatchdog.helpers', () => ({
 
 vi.mock('./SystemWatchdog.types', () => ({}));
 
-import { trimMetricsHistory, syncMetricsFromSystemStatus } from './SystemWatchdog.metrics';
+import {
+  syncMetricsFromSystemStatus,
+  trimMetricsHistory,
+} from './SystemWatchdog.metrics';
 
 type SystemMetrics = {
   cpu: Array<{ timestamp: number; value: number }>;
@@ -119,7 +122,12 @@ describe('syncMetricsFromSystemStatus', () => {
   it('sets restartCount from totalRestarts', () => {
     const metrics = makeMetrics();
     const status = {
-      metrics: { uptime: 1000, totalProcesses: 2, activeConnections: 5, totalRestarts: 7 },
+      metrics: {
+        uptime: 1000,
+        totalProcesses: 2,
+        activeConnections: 5,
+        totalRestarts: 7,
+      },
     };
 
     syncMetricsFromSystemStatus(metrics, status);

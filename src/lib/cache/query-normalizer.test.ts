@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { normalizeSemanticCacheQuery } from '@/lib/cache/query-normalizer';
 
 describe('normalizeSemanticCacheQuery', () => {
@@ -27,9 +27,7 @@ describe('normalizeSemanticCacheQuery', () => {
 
   // 5. English synonyms canonicalize
   it('canonicalizes English synonyms: "RAM usage" → "memory utilization"', () => {
-    expect(normalizeSemanticCacheQuery('RAM usage')).toBe(
-      'memory utilization'
-    );
+    expect(normalizeSemanticCacheQuery('RAM usage')).toBe('memory utilization');
   });
 
   // 6. Mixed Korean/English
@@ -48,9 +46,7 @@ describe('normalizeSemanticCacheQuery', () => {
 
   // 8. Special characters removed
   it('removes special characters: "서버!!! @상태#"', () => {
-    expect(normalizeSemanticCacheQuery('서버!!! @상태#')).toBe(
-      'server status'
-    );
+    expect(normalizeSemanticCacheQuery('서버!!! @상태#')).toBe('server status');
   });
 
   // 9. Duplicate tokens deduplicated
@@ -60,7 +56,9 @@ describe('normalizeSemanticCacheQuery', () => {
 
   // 10. All-stopwords query returns normalized original
   it('returns normalized original when all tokens are stopwords', () => {
-    expect(normalizeSemanticCacheQuery('좀 부탁 please')).toBe('좀 부탁 please');
+    expect(normalizeSemanticCacheQuery('좀 부탁 please')).toBe(
+      '좀 부탁 please'
+    );
   });
 
   // 11. '씨피유' canonicalizes to 'cpu'

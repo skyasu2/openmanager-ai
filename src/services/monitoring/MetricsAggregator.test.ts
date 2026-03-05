@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import type { ServerMetrics } from '@/services/metrics/MetricsProvider';
 import { MetricsAggregator } from './MetricsAggregator';
 
@@ -91,9 +91,33 @@ describe('MetricsAggregator', () => {
   // 4. byServerType grouping
   it('groups servers by serverType with correct averages', () => {
     const servers = [
-      createServer({ serverId: 'w1', serverType: 'web', cpu: 60, memory: 70, disk: 30, network: 10, status: 'online' }),
-      createServer({ serverId: 'w2', serverType: 'web', cpu: 80, memory: 90, disk: 50, network: 30, status: 'warning' }),
-      createServer({ serverId: 'd1', serverType: 'db', cpu: 40, memory: 50, disk: 80, network: 5, status: 'online' }),
+      createServer({
+        serverId: 'w1',
+        serverType: 'web',
+        cpu: 60,
+        memory: 70,
+        disk: 30,
+        network: 10,
+        status: 'online',
+      }),
+      createServer({
+        serverId: 'w2',
+        serverType: 'web',
+        cpu: 80,
+        memory: 90,
+        disk: 50,
+        network: 30,
+        status: 'warning',
+      }),
+      createServer({
+        serverId: 'd1',
+        serverType: 'db',
+        cpu: 40,
+        memory: 50,
+        disk: 80,
+        network: 5,
+        status: 'online',
+      }),
     ];
     const result = aggregator.aggregate(servers);
 
@@ -122,7 +146,7 @@ describe('MetricsAggregator', () => {
   // 5. topCpu returns top 5 by CPU descending
   it('returns top 5 servers by CPU descending', () => {
     const servers = Array.from({ length: 7 }, (_, i) =>
-      createServer({ serverId: `srv-${i}`, cpu: (i + 1) * 10 }),
+      createServer({ serverId: `srv-${i}`, cpu: (i + 1) * 10 })
     );
     const result = aggregator.aggregate(servers);
 
@@ -137,7 +161,7 @@ describe('MetricsAggregator', () => {
   // 6. topMemory returns top 5 by memory descending
   it('returns top 5 servers by memory descending', () => {
     const servers = Array.from({ length: 7 }, (_, i) =>
-      createServer({ serverId: `srv-${i}`, memory: (i + 1) * 10 }),
+      createServer({ serverId: `srv-${i}`, memory: (i + 1) * 10 })
     );
     const result = aggregator.aggregate(servers);
 
@@ -164,9 +188,27 @@ describe('MetricsAggregator', () => {
   // 8. Averages are rounded to integers
   it('rounds averages to integers', () => {
     const servers = [
-      createServer({ serverId: 's1', cpu: 33, memory: 66, disk: 11, network: 7 }),
-      createServer({ serverId: 's2', cpu: 34, memory: 67, disk: 12, network: 8 }),
-      createServer({ serverId: 's3', cpu: 35, memory: 68, disk: 13, network: 9 }),
+      createServer({
+        serverId: 's1',
+        cpu: 33,
+        memory: 66,
+        disk: 11,
+        network: 7,
+      }),
+      createServer({
+        serverId: 's2',
+        cpu: 34,
+        memory: 67,
+        disk: 12,
+        network: 8,
+      }),
+      createServer({
+        serverId: 's3',
+        cpu: 35,
+        memory: 68,
+        disk: 13,
+        network: 9,
+      }),
     ];
     const result = aggregator.aggregate(servers);
 

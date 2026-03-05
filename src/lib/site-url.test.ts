@@ -9,7 +9,9 @@ describe('getSiteUrl', () => {
     vi.unstubAllEnvs();
   });
 
-  async function loadGetSiteUrl(): Promise<{ getSiteUrl: (...args: never) => unknown }> {
+  async function loadGetSiteUrl(): Promise<{
+    getSiteUrl: (...args: never) => unknown;
+  }> {
     const mod = await import('./site-url');
     return mod;
   }
@@ -60,7 +62,10 @@ describe('getSiteUrl', () => {
   });
 
   it('strips pathname, search, and hash from URL', async () => {
-    vi.stubEnv('NEXT_PUBLIC_SITE_URL', 'https://example.com/some/path?query=1#hash');
+    vi.stubEnv(
+      'NEXT_PUBLIC_SITE_URL',
+      'https://example.com/some/path?query=1#hash'
+    );
     const { getSiteUrl } = await loadGetSiteUrl();
     expect(getSiteUrl()).toBe('https://example.com');
   });

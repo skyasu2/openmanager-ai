@@ -1,11 +1,10 @@
 import { describe, expect, it } from 'vitest';
-
-import type { QueryPattern } from './unified-cache.types';
 import {
   getTopQueryPatterns,
   learnQueryPattern,
   normalizePatternKey,
 } from './unified-cache.patterns';
+import type { QueryPattern } from './unified-cache.types';
 
 describe('normalizePatternKey', () => {
   it('lowercases text', () => {

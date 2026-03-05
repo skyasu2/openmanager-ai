@@ -1,14 +1,16 @@
 import { describe, expect, it } from 'vitest';
 import type { UnifiedCacheStatsState } from './unified-cache.stats';
-import type { CacheItem } from './unified-cache.types';
 import {
   cleanupExpiredEntries,
   evictLeastRecentlyUsed,
   invalidateCacheEntries,
   touchCacheEntry,
 } from './unified-cache.store';
+import type { CacheItem } from './unified-cache.types';
 
-function createItem<T = string>(overrides: Partial<CacheItem<T>> = {}): CacheItem<T> {
+function createItem<T = string>(
+  overrides: Partial<CacheItem<T>> = {}
+): CacheItem<T> {
   return {
     value: 'default' as unknown as T,
     expires: Date.now() + 60_000,

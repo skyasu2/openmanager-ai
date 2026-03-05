@@ -1,4 +1,9 @@
 import { describe, expect, it } from 'vitest';
+import type {
+  SystemMetrics,
+  SystemStatus,
+  WatchdogAlerts,
+} from './SystemWatchdog.helpers';
 import {
   calculateErrorRate,
   calculatePerformanceScore,
@@ -7,7 +12,6 @@ import {
   detectMemoryLeak,
   getWatchdogRecommendation,
 } from './SystemWatchdog.helpers';
-import type { SystemMetrics, SystemStatus, WatchdogAlerts } from './SystemWatchdog.helpers';
 
 describe('createInitialSystemMetrics', () => {
   it('should return metrics with all defaults', () => {
@@ -115,22 +119,34 @@ describe('calculatePerformanceScore', () => {
 
 describe('detectMemoryLeak', () => {
   it('should return false with fewer than 10 data points', () => {
-    const memory = Array.from({ length: 9 }, (_, i) => ({ timestamp: i, value: i * 10 }));
+    const memory = Array.from({ length: 9 }, (_, i) => ({
+      timestamp: i,
+      value: i * 10,
+    }));
     expect(detectMemoryLeak(memory)).toBe(false);
   });
 
   it('should return true when all 10 points are consistently increasing', () => {
-    const memory = Array.from({ length: 10 }, (_, i) => ({ timestamp: i, value: i * 10 }));
+    const memory = Array.from({ length: 10 }, (_, i) => ({
+      timestamp: i,
+      value: i * 10,
+    }));
     expect(detectMemoryLeak(memory)).toBe(true);
   });
 
   it('should return false when values are flat', () => {
-    const memory = Array.from({ length: 10 }, (_, i) => ({ timestamp: i, value: 100 }));
+    const memory = Array.from({ length: 10 }, (_, i) => ({
+      timestamp: i,
+      value: 100,
+    }));
     expect(detectMemoryLeak(memory)).toBe(false);
   });
 
   it('should return false when values are decreasing', () => {
-    const memory = Array.from({ length: 10 }, (_, i) => ({ timestamp: i, value: 100 - i * 5 }));
+    const memory = Array.from({ length: 10 }, (_, i) => ({
+      timestamp: i,
+      value: 100 - i * 5,
+    }));
     expect(detectMemoryLeak(memory)).toBe(false);
   });
 
@@ -141,10 +157,10 @@ describe('detectMemoryLeak', () => {
     // Build: 7 increases, 2 non-increases
     const memory = [
       { timestamp: 0, value: 100 },
-      { timestamp: 1, value: 90 },  // decrease
-      { timestamp: 2, value: 85 },  // decrease
-      { timestamp: 3, value: 90 },  // increase (1)
-      { timestamp: 4, value: 95 },  // increase (2)
+      { timestamp: 1, value: 90 }, // decrease
+      { timestamp: 2, value: 85 }, // decrease
+      { timestamp: 3, value: 90 }, // increase (1)
+      { timestamp: 4, value: 95 }, // increase (2)
       { timestamp: 5, value: 100 }, // increase (3)
       { timestamp: 6, value: 105 }, // increase (4)
       { timestamp: 7, value: 110 }, // increase (5)
@@ -163,7 +179,10 @@ describe('calculateStabilityScore', () => {
   });
 
   it('should deduct 60 cumulatively for restartCount >10', () => {
-    const metrics: SystemMetrics = { ...createInitialSystemMetrics(), restartCount: 15 };
+    const metrics: SystemMetrics = {
+      ...createInitialSystemMetrics(),
+      restartCount: 15,
+    };
     expect(calculateStabilityScore(metrics, 0)).toBe(40);
   });
 
@@ -197,21 +216,23 @@ describe('getWatchdogRecommendation', () => {
   });
 
   it('should return high error rate message', () => {
-    expect(getWatchdogRecommendation({ ...noAlerts, highErrorRate: true })).toBe(
-      '오류율이 높습니다. 로그를 확인하고 문제를 해결하세요.'
-    );
+    expect(
+      getWatchdogRecommendation({ ...noAlerts, highErrorRate: true })
+    ).toBe('오류율이 높습니다. 로그를 확인하고 문제를 해결하세요.');
   });
 
   it('should return performance degradation message', () => {
-    expect(getWatchdogRecommendation({ ...noAlerts, performanceDegradation: true })).toBe(
+    expect(
+      getWatchdogRecommendation({ ...noAlerts, performanceDegradation: true })
+    ).toBe(
       '성능이 저하되었습니다. 리소스 사용량을 확인하고 최적화를 고려하세요.'
     );
   });
 
   it('should return frequent restarts message', () => {
-    expect(getWatchdogRecommendation({ ...noAlerts, frequentRestarts: true })).toBe(
-      '프로세스가 자주 재시작됩니다. 안정성 문제를 조사하세요.'
-    );
+    expect(
+      getWatchdogRecommendation({ ...noAlerts, frequentRestarts: true })
+    ).toBe('프로세스가 자주 재시작됩니다. 안정성 문제를 조사하세요.');
   });
 
   it('should return healthy message when no alerts', () => {

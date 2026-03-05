@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const mocks = vi.hoisted(() => ({
   detectMemoryLeak: vi.fn(() => false),
@@ -12,7 +12,10 @@ vi.mock('./SystemWatchdog.helpers', () => ({
   detectMemoryLeak: mocks.detectMemoryLeak,
 }));
 
-import { getCurrentWatchdogAlerts, buildWatchdogAlertPlans } from './SystemWatchdog.alerts';
+import {
+  buildWatchdogAlertPlans,
+  getCurrentWatchdogAlerts,
+} from './SystemWatchdog.alerts';
 
 type SystemMetrics = {
   cpu: Array<{ timestamp: number; value: number }>;
@@ -23,7 +26,9 @@ type SystemMetrics = {
   stabilityScore: number;
 };
 
-function makeHealthyMetrics(overrides: Partial<SystemMetrics> = {}): SystemMetrics {
+function makeHealthyMetrics(
+  overrides: Partial<SystemMetrics> = {}
+): SystemMetrics {
   return {
     cpu: [{ timestamp: Date.now(), value: 30 }],
     memory: [{ timestamp: Date.now(), value: 50 }],
@@ -50,19 +55,25 @@ describe('getCurrentWatchdogAlerts', () => {
   });
 
   it('should detect high error rate when errorRate > 25', () => {
-    const alerts = getCurrentWatchdogAlerts(makeHealthyMetrics({ errorRate: 30 }));
+    const alerts = getCurrentWatchdogAlerts(
+      makeHealthyMetrics({ errorRate: 30 })
+    );
 
     expect(alerts.highErrorRate).toBe(true);
   });
 
   it('should detect performance degradation when performanceScore < 60', () => {
-    const alerts = getCurrentWatchdogAlerts(makeHealthyMetrics({ performanceScore: 45 }));
+    const alerts = getCurrentWatchdogAlerts(
+      makeHealthyMetrics({ performanceScore: 45 })
+    );
 
     expect(alerts.performanceDegradation).toBe(true);
   });
 
   it('should detect frequent restarts when restartCount > 5', () => {
-    const alerts = getCurrentWatchdogAlerts(makeHealthyMetrics({ restartCount: 8 }));
+    const alerts = getCurrentWatchdogAlerts(
+      makeHealthyMetrics({ restartCount: 8 })
+    );
 
     expect(alerts.frequentRestarts).toBe(true);
   });
@@ -112,7 +123,9 @@ describe('buildWatchdogAlertPlans', () => {
     const metrics = makeHealthyMetrics({ performanceScore: 40 });
     const plans = buildWatchdogAlertPlans(metrics, 50);
 
-    const perfPlan = plans.find((p) => p.alertType === 'performance-degradation');
+    const perfPlan = plans.find(
+      (p) => p.alertType === 'performance-degradation'
+    );
     expect(perfPlan).toBeDefined();
     expect(perfPlan?.eventPayload.payload.severity).toBe('warning');
     expect(perfPlan?.eventPayload.payload.metrics.performanceScore).toBe(40);
@@ -126,7 +139,9 @@ describe('buildWatchdogAlertPlans', () => {
     expect(stabilityPlan).toBeDefined();
     expect(stabilityPlan?.message).toContain('55.3%');
     expect(stabilityPlan?.eventPayload.payload.severity).toBe('warning');
-    expect(stabilityPlan?.eventPayload.payload.metrics.stabilityScore).toBe(55.3);
+    expect(stabilityPlan?.eventPayload.payload.metrics.stabilityScore).toBe(
+      55.3
+    );
   });
 
   it('should include frequent-restarts plan with restart count in message', () => {

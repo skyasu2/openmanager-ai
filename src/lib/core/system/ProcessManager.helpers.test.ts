@@ -25,7 +25,7 @@ describe('calculateProcessStartupOrder', () => {
       ['c', { name: 'C' }],
     ]);
     const order = calculateProcessStartupOrder(
-      processes as unknown as Map<string, never>,
+      processes as unknown as Map<string, never>
     );
     expect(order).toEqual(['a', 'b', 'c']);
   });
@@ -36,7 +36,7 @@ describe('calculateProcessStartupOrder', () => {
       ['db', { name: 'Database' }],
     ]);
     const order = calculateProcessStartupOrder(
-      processes as unknown as Map<string, never>,
+      processes as unknown as Map<string, never>
     );
     expect(order.indexOf('db')).toBeLessThan(order.indexOf('app'));
   });
@@ -48,7 +48,7 @@ describe('calculateProcessStartupOrder', () => {
       ['c', { name: 'C' }],
     ]);
     const order = calculateProcessStartupOrder(
-      processes as unknown as Map<string, never>,
+      processes as unknown as Map<string, never>
     );
     expect(order).toEqual(['c', 'b', 'a']);
   });
@@ -61,7 +61,7 @@ describe('calculateProcessStartupOrder', () => {
       ['d', { name: 'D' }],
     ]);
     const order = calculateProcessStartupOrder(
-      processes as unknown as Map<string, never>,
+      processes as unknown as Map<string, never>
     );
     expect(order.indexOf('d')).toBe(0);
     expect(order.indexOf('b')).toBeLessThan(order.indexOf('a'));
@@ -88,14 +88,12 @@ describe('calculateSystemUptime', () => {
 
 describe('buildServiceStatuses', () => {
   const makeProcesses = (
-    entries: [string, MinimalProcessConfig][],
-  ): Map<string, never> =>
-    new Map(entries) as unknown as Map<string, never>;
+    entries: [string, MinimalProcessConfig][]
+  ): Map<string, never> => new Map(entries) as unknown as Map<string, never>;
 
   const makeStates = (
-    entries: [string, MinimalProcessState][],
-  ): Map<string, never> =>
-    new Map(entries) as unknown as Map<string, never>;
+    entries: [string, MinimalProcessState][]
+  ): Map<string, never> => new Map(entries) as unknown as Map<string, never>;
 
   it('should return "up" for running process with healthScore >= 70', () => {
     const processes = makeProcesses([['svc', { name: 'Service' }]]);

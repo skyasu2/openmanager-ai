@@ -2,14 +2,23 @@ import { describe, expect, it } from 'vitest';
 
 import {
   APP_LAYER_SOURCES,
-  SERVER_TYPE_SOURCES,
   inferServerType,
   matchRole,
+  SERVER_TYPE_SOURCES,
 } from './server-data-logs.helpers';
 
 describe('APP_LAYER_SOURCES', () => {
   it('contains expected application-layer sources', () => {
-    for (const src of ['java', 'nginx', 'haproxy', 'redis', 'mysql', 'postgres', 'docker', 'node']) {
+    for (const src of [
+      'java',
+      'nginx',
+      'haproxy',
+      'redis',
+      'mysql',
+      'postgres',
+      'docker',
+      'node',
+    ]) {
       expect(APP_LAYER_SOURCES.has(src)).toBe(true);
     }
   });
