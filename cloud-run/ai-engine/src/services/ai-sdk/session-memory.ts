@@ -38,7 +38,7 @@ export class SessionMemoryService {
     return await RedisClient.get<T>(cacheKey);
   }
 
-  static async setToolCache(toolName: string, queryKey: string, result: any, ttl = 60): Promise<void> {
+  static async setToolCache<T extends object>(toolName: string, queryKey: string, result: T, ttl = 60): Promise<void> {
     const cacheKey = `tool:cache:${toolName}:${queryKey}`;
     await RedisClient.set(cacheKey, result, ttl);
   }

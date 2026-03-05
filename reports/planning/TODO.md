@@ -6,7 +6,18 @@
 
 | Task | Priority | Status |
 |------|----------|--------|
-| *(활성 잔여 없음)* | — | — |
+| 테스트 커버리지 확대: API Routes (18%) | P2 | Planned |
+| 테스트 커버리지 확대: Hooks (30%) | P2 | Planned |
+| 테스트 커버리지 확대: Services (47%) | P3 | Planned |
+
+### Test Coverage Gap (2026-03-05 코드리뷰 결과)
+
+우선 테스트 대상:
+1. `/api/health/route.ts` — 프로덕션 모니터링 핵심
+2. `/api/servers-unified/route.ts` — 메인 데이터 엔드포인트 (494줄)
+3. `/api/servers/[id]/route.ts` — 서버 상세 (397줄)
+4. `src/services/code-interpreter/pyodide-service.ts` — 미테스트
+5. `src/services/notifications/BrowserNotificationService.ts` — 미테스트
 
 ### Completed (2026-02-22)
 - [x] P1: 이메일 Magic Link 로그인 추가 — Supabase OTP 기반, 소셜 로그인과 병행

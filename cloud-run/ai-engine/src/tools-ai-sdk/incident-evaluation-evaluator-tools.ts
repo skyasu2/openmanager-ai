@@ -112,9 +112,9 @@ export const validateReportStructure = tool({
       .object({
         title: z.string().optional(),
         summary: z.string().optional(),
-        affectedServers: z.array(z.any()).optional(),
-        timeline: z.array(z.any()).optional(),
-        rootCause: z.any().optional(),
+        affectedServers: z.array(z.object({ id: z.string(), name: z.string() }).passthrough()).optional(),
+        timeline: z.array(z.object({ time: z.string(), event: z.string() }).passthrough()).optional(),
+        rootCause: z.object({ description: z.string() }).passthrough().optional(),
         suggestedActions: z.array(z.string()).optional(),
       })
       .describe('검증할 보고서'),
@@ -163,10 +163,12 @@ export const validateReportStructure = tool({
           : '타임라인이 부족합니다 (최소 3개)',
     });
 
-    const hasValidRootCause =
-      report.rootCause &&
-      typeof report.rootCause.cause === 'string' &&
-      typeof report.rootCause.confidence === 'number';
+    const rootCause = report.rootCause as Record<string, unknown> | undefined;
+    const hasValidRootCause = Boolean(
+      rootCause &&
+      typeof rootCause.cause === 'string' &&
+      typeof rootCause.confidence === 'number'
+    );
     validationResults.push({
       field: 'rootCause',
       valid: hasValidRootCause,

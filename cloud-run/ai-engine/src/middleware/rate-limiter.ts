@@ -179,7 +179,8 @@ function extractClientKey(c: Context): string {
 
   const forwarded = c.req.header('X-Forwarded-For');
   if (forwarded) {
-    return `ip:${forwarded.split(',')[0].trim()}`;
+    const clientIp = forwarded.split(',')[0]?.trim();
+    if (clientIp) return `ip:${clientIp}`;
   }
 
   return 'ip:unknown';

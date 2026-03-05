@@ -59,8 +59,24 @@ const defaultAllowedOrigin =
   process.env.NEXT_PUBLIC_APP_URL ||
   'https://openmanager-ai.vercel.app';
 
+function isValidOrigin(origin: string): boolean {
+  try {
+    const url = new URL(origin.trim());
+    return url.protocol === 'http:' || url.protocol === 'https:';
+  } catch {
+    return false;
+  }
+}
+
+const allowedOrigins = (process.env.ALLOWED_ORIGINS?.split(',') || [defaultAllowedOrigin])
+  .filter(isValidOrigin);
+
+if (allowedOrigins.length === 0) {
+  allowedOrigins.push(defaultAllowedOrigin);
+}
+
 app.use('*', cors({
-  origin: process.env.ALLOWED_ORIGINS?.split(',') || [defaultAllowedOrigin],
+  origin: allowedOrigins,
 }));
 
 // Guard /api routes while lazy-loaded route modules are still initializing.
@@ -267,7 +283,7 @@ app.get('/monitoring/traces', async (c: Context) => {
       dashboardUrl: `${baseUrl}/project`,
       timestamp: new Date().toISOString(),
     });
-  } catch (error) {
+  } catch (error: unknown) {
     return c.json({
       error: 'Failed to fetch Langfuse traces',
       message: error instanceof Error ? error.message : 'Unknown error',

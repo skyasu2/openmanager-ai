@@ -12,7 +12,7 @@ export class RedisClient {
     this.config = getUpstashConfig();
   }
 
-  private static async fetchRedis(command: string[]): Promise<any> {
+  private static async fetchRedis<T = unknown>(command: string[]): Promise<T | null> {
     if (!this.config) {
       logger.warn('[Redis] Config not found, skipping operation');
       return null;
@@ -34,7 +34,7 @@ export class RedisClient {
         return null;
       }
 
-      const data = await response.json();
+      const data = (await response.json()) as { result: T | null };
       return data.result;
     } catch (err) {
       logger.error(`[Redis] Network error executing ${command[0]}:`, err);
@@ -43,7 +43,7 @@ export class RedisClient {
   }
 
   static async get<T>(key: string): Promise<T | null> {
-    const value = await this.fetchRedis(['GET', key]);
+    const value = await this.fetchRedis<string>(['GET', key]);
     if (value === null || value === undefined) return null;
     try {
       return JSON.parse(value) as T;
@@ -52,7 +52,7 @@ export class RedisClient {
     }
   }
 
-  static async set(key: string, value: any, ttlSeconds?: number): Promise<void> {
+  static async set<T extends string | number | object>(key: string, value: T, ttlSeconds?: number): Promise<void> {
     const stringValue = typeof value === 'string' ? value : JSON.stringify(value);
     const command = ttlSeconds 
       ? ['SET', key, stringValue, 'EX', ttlSeconds.toString()] 
@@ -86,7 +86,7 @@ export class RedisClient {
 
 export interface RedisLikeClient {
   get: <T>(key: string) => Promise<T | null>;
-  set: (key: string, value: unknown, ttlSeconds?: number) => Promise<void>;
+  set: <T extends string | number | object>(key: string, value: T, ttlSeconds?: number) => Promise<void>;
   del: (key: string) => Promise<boolean>;
   incr: (key: string) => Promise<number>;
   expire: (key: string, ttlSeconds: number) => Promise<void>;
@@ -117,9 +117,9 @@ export async function redisGet<T>(key: string): Promise<T | null> {
   return RedisClient.get<T>(key);
 }
 
-export async function redisSet(
+export async function redisSet<T extends string | number | object>(
   key: string,
-  value: unknown,
+  value: T,
   ttlSeconds?: number
 ): Promise<boolean> {
   if (!isRedisAvailable()) return false;

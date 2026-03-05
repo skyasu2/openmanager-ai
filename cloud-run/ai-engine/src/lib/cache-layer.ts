@@ -140,7 +140,7 @@ export class DataCacheLayer {
     this.setLocal(type, identifier, data);
 
     // 2. Set Global Redis (L2) - Async (do not await to minimize latency)
-    RedisClient.set(`global:cache:${key}`, data, Math.floor(ttlMs / 1000)).catch(err => {
+    RedisClient.set(`global:cache:${key}`, data as string | number | object, Math.floor(ttlMs / 1000)).catch(err => {
       logger.error(`[Cache] L2 Save failed: ${key}`, err);
     });
   }
