@@ -264,7 +264,7 @@
 - **Node.js**: `v24.x` (Current, engines: >=24.0.0 <25.0.0)
 
 **UI & Styling**
-- **Tailwind CSS**: `v4.2.0` (PostCSS optimized)
+- **Tailwind CSS**: `v4.2.1` (PostCSS optimized)
 - **Component Lib**: Radix UI (Latest), Lucide React `v0.575.0`
 - **Animation**: tailwindcss-animate (CSS-based, Framer Motion 제거됨)
 

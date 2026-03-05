@@ -19,8 +19,8 @@ export const TECH_STACK_ARCHITECTURE: ArchitectureDiagram = {
         },
         {
           id: 'tailwind',
-          label: 'Tailwind CSS 4.1',
-          sublabel: 'Oxides Engine',
+          label: 'Tailwind CSS 4.2',
+          sublabel: 'Oxide Engine',
           type: 'secondary',
           icon: '🎨',
         },
