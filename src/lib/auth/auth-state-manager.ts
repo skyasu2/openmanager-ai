@@ -141,8 +141,7 @@ export class AuthStateManager {
 
       logger.info('🔐 인증 데이터 정리 완료');
     } catch (error) {
-      logger.error('❌ 인증 데이터 정리 실패:', error);
-      throw error;
+      logger.error('❌ 인증 데이터 정리 실패 (비치명적):', error);
     }
   }
 

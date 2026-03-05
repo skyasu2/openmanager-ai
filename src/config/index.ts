@@ -241,7 +241,7 @@ export class ConfigLoader {
       return this.config;
     } catch (error) {
       logger.error('❌ Configuration validation failed:', error);
-      throw new Error('Invalid configuration');
+      throw new Error('Invalid configuration', { cause: error });
     }
   }
 

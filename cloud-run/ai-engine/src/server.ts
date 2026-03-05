@@ -404,7 +404,7 @@ app.get('/debug/prefilter', (c: Context) => {
  * This bypasses the supervisor to test the orchestrator's forced routing
  */
 app.post('/debug/multi-agent', async (c: Context) => {
-  const body = await c.req.json();
+  const body = (await c.req.json()) as { query?: string };
   const query = body.query || '서버 상태 요약해줘';
 
   const request: MultiAgentRequest = {

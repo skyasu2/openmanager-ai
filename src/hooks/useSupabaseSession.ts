@@ -280,7 +280,7 @@ export async function signIn(
       logger.info('✅ GitHub OAuth 요청 성공 - 리다이렉트 중...');
     }
   } catch (error) {
-    logger.error('로그인 오류:', error);
+    // sessionStorage 내부 catch에서 이미 처리됨. OAuth 에러는 상위로 전파.
     throw error;
   }
 }
