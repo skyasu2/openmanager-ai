@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-02-22 KST
+**Last Updated**: 2026-03-05 KST
 
 ## Active Tasks
 
@@ -9,6 +9,7 @@
 | 테스트 커버리지 확대: API Routes (18%) | P2 | Planned |
 | 테스트 커버리지 확대: Hooks (30%) | P2 | Planned |
 | 테스트 커버리지 확대: Services (47%) | P3 | Planned |
+| Cloud Run 대형 파일 리팩토링 Phase 2~3 | P3 | On Hold |
 
 ### Test Coverage Gap (2026-03-05 코드리뷰 결과)
 
@@ -18,6 +19,17 @@
 3. `/api/servers/[id]/route.ts` — 서버 상세 (397줄)
 4. `src/services/code-interpreter/pyodide-service.ts` — 미테스트
 5. `src/services/notifications/BrowserNotificationService.ts` — 미테스트
+
+### Completed (2026-03-05)
+- [x] P1: CI/CD 파이프라인 분석 및 개선
+  - CodeQL SAST 워크플로우 추가 (`codeql-analysis.yml`, v4)
+  - Hardcoded secrets 검사 hard-fail 전환 (`exit 1`)
+  - `npm audit --audit-level=high` CI code-quality job에 추가
+  - E2E 타임아웃 15분→20분 (Cloud Run cold start 대응)
+  - keep-alive 환경변수 `NEXT_PUBLIC_SUPABASE_URL`로 통일
+- [x] P1: `/api/version` 라우트 복원 — 삭제되어 E2E 연속 실패 원인이었음
+- [x] P1: CodeQL 설정 수정 — 존재하지 않는 `Security.ql` pack 참조 제거
+- [x] P3: GitLab 이전 가능성 분석 문서 작성 (`docs/reference/architecture/infrastructure/gitlab-migration-feasibility.md`)
 
 ### Completed (2026-02-22)
 - [x] P1: 이메일 Magic Link 로그인 추가 — Supabase OTP 기반, 소셜 로그인과 병행
