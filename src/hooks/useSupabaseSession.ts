@@ -235,52 +235,47 @@ export async function signIn(
   provider: string,
   options?: { callbackUrl?: string }
 ) {
-  try {
-    if (provider === 'github') {
-      const baseUrl = window.location.origin;
-      const finalRedirect = options?.callbackUrl || '/main';
+  if (provider === 'github') {
+    const baseUrl = window.location.origin;
+    const finalRedirect = options?.callbackUrl || '/main';
 
-      // 최종 목적지를 세션 스토리지에 저장 (Vercel Edge Runtime 안전성 강화)
-      if (finalRedirect) {
-        try {
-          sessionStorage.setItem('auth_redirect_to', finalRedirect);
-        } catch (error) {
-          logger.warn('sessionStorage 접근 오류 (무시됨):', error);
-        }
+    // 최종 목적지를 세션 스토리지에 저장 (Vercel Edge Runtime 안전성 강화)
+    if (finalRedirect) {
+      try {
+        sessionStorage.setItem('auth_redirect_to', finalRedirect);
+      } catch (error) {
+        logger.warn('sessionStorage 접근 오류 (무시됨):', error);
       }
-
-      // Supabase OAuth는 자체 콜백 URL을 사용
-      // redirectTo는 PKCE 코드 교환 후 리다이렉트될 애플리케이션 URL
-      // /auth/callback이 PKCE 처리를 담당하므로 이 경로로 통일
-      const redirectTo = `${baseUrl}/auth/callback`;
-
-      logger.info('🔐 GitHub OAuth 시작:', {
-        baseUrl,
-        finalRedirect,
-        redirectTo,
-        provider: 'github',
-        supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL,
-        environment: process.env.NEXT_PUBLIC_NODE_ENV || process.env.NODE_ENV,
-      });
-
-      const { error } = await getSupabase().auth.signInWithOAuth({
-        provider: 'github',
-        options: {
-          redirectTo,
-          scopes: 'read:user user:email',
-          // skipBrowserRedirect: false (기본값) - 브라우저 자동 리다이렉트
-        },
-      });
-
-      if (error) {
-        logger.error('GitHub 로그인 오류:', error);
-        throw error;
-      }
-
-      logger.info('✅ GitHub OAuth 요청 성공 - 리다이렉트 중...');
     }
-  } catch (error) {
-    // sessionStorage 내부 catch에서 이미 처리됨. OAuth 에러는 상위로 전파.
-    throw error;
+
+    // Supabase OAuth는 자체 콜백 URL을 사용
+    // redirectTo는 PKCE 코드 교환 후 리다이렉트될 애플리케이션 URL
+    // /auth/callback이 PKCE 처리를 담당하므로 이 경로로 통일
+    const redirectTo = `${baseUrl}/auth/callback`;
+
+    logger.info('🔐 GitHub OAuth 시작:', {
+      baseUrl,
+      finalRedirect,
+      redirectTo,
+      provider: 'github',
+      supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL,
+      environment: process.env.NEXT_PUBLIC_NODE_ENV || process.env.NODE_ENV,
+    });
+
+    const { error } = await getSupabase().auth.signInWithOAuth({
+      provider: 'github',
+      options: {
+        redirectTo,
+        scopes: 'read:user user:email',
+        // skipBrowserRedirect: false (기본값) - 브라우저 자동 리다이렉트
+      },
+    });
+
+    if (error) {
+      logger.error('GitHub 로그인 오류:', error);
+      throw error;
+    }
+
+    logger.info('✅ GitHub OAuth 요청 성공 - 리다이렉트 중...');
   }
 }
