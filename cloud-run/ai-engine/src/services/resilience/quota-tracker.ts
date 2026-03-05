@@ -52,20 +52,37 @@ export interface QuotaStatus {
 }
 
 // ============================================================================
-// Provider Quota 설정 (2026-01-27 기준)
+// Provider Quota 설정 (2026-03-06 기준)
 // ============================================================================
 
 export const PROVIDER_QUOTAS: Record<ProviderName, ProviderQuota> = {
+  /**
+   * Cerebras Free Tier (gpt-oss-120b)
+   * @see https://inference-docs.cerebras.ai/api-reference/rate-limits
+   * @updated 2026-03-06
+   *
+   * - 1M TPD (tokens per day)
+   * - 30 RPM, 60K TPM
+   * - Context: 8,192 tokens (Free Tier 제한)
+   */
   cerebras: {
-    dailyTokenLimit: 24_000_000,
-    requestsPerMinute: 60,
+    dailyTokenLimit: 1_000_000,
+    requestsPerMinute: 30,
     tokensPerMinute: 60_000,
     requestsPerDay: 1_000_000,
   },
+  /**
+   * Groq Free Tier (llama-3.3-70b-versatile)
+   * @see https://console.groq.com/docs/rate-limits
+   * @updated 2026-03-06
+   *
+   * - 500K TPD, 6K TPM, 30 RPM
+   * - Context: 128K tokens
+   */
   groq: {
-    dailyTokenLimit: 100_000,
+    dailyTokenLimit: 500_000,
     requestsPerMinute: 30,
-    tokensPerMinute: 12_000,
+    tokensPerMinute: 6_000,
     requestsPerDay: 1_000,
   },
   mistral: {
@@ -77,19 +94,18 @@ export const PROVIDER_QUOTAS: Record<ProviderName, ProviderQuota> = {
   /**
    * Gemini Flash-Lite (Vision Agent)
    * @see https://ai.google.dev/gemini-api/docs/models/gemini
-   * @added 2026-01-27
+   * @updated 2026-03-06
    *
-   * Free Tier Limits (gemini-2.0-flash-lite):
-   * - 250 RPD (requests per day) — 모델별 상이, flash-lite 기준
-   * - 15 RPM (requests per minute)
-   * - 250,000 TPM (tokens per minute)
+   * Free Tier Limits (gemini-2.5-flash):
+   * - 500 RPD, 10 RPM
+   * - 250,000 TPM
    * - 1M context window
    */
   gemini: {
     dailyTokenLimit: 250_000 * 60 * 24, // TPM * 60min * 24h (theoretical max)
-    requestsPerMinute: 15,
+    requestsPerMinute: 10,
     tokensPerMinute: 250_000,
-    requestsPerDay: 250,
+    requestsPerDay: 500,
   },
   /**
    * Tavily Web Search API

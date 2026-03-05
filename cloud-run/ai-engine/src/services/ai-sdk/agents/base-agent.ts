@@ -134,8 +134,13 @@ export abstract class BaseAgent {
 
   /**
    * Build complete context including Redis history
+   *
+   * Session history is limited to the last MAX_HISTORY_MESSAGES messages
+   * to prevent context window overflow — especially critical for
+   * Cerebras Free Tier (8,192 token context limit).
    */
   private async buildContext(query: string, options: AgentRunOptions): Promise<ModelMessage[]> {
+    const MAX_HISTORY_MESSAGES = 4; // 2 user-assistant turns
     const userContent = this.buildUserContent(query, options);
     const messages: ModelMessage[] = [];
 
@@ -144,7 +149,16 @@ export abstract class BaseAgent {
       try {
         const history = await SessionMemoryService.getHistory(options.sessionId);
         if (history && history.length > 0) {
-          messages.push(...history);
+          // Limit to last N messages to prevent context overflow
+          const trimmed = history.length > MAX_HISTORY_MESSAGES
+            ? history.slice(-MAX_HISTORY_MESSAGES)
+            : history;
+          if (trimmed.length < history.length) {
+            logger.info(
+              `[SessionMemory] Trimmed history ${history.length} → ${trimmed.length} messages`
+            );
+          }
+          messages.push(...trimmed);
         }
       } catch (err) {
         logger.error(`[SessionMemory] History recovery failed for ${options.sessionId}:`, err);

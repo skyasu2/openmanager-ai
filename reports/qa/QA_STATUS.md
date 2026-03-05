@@ -1,32 +1,33 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-04 13:21:47 KST
+> Generated at: 2026-03-06 03:26:18 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 50 |
-| Total Checks | 359 |
-| Passed | 341 |
+| Total Runs | 51 |
+| Total Checks | 366 |
+| Passed | 348 |
 | Failed | 18 |
-| Completed Items | 95 |
+| Completed Items | 96 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
-| Wont-Fix Items | 32 |
+| Wont-Fix Items | 34 |
 | Expert Domains Tracked | 6 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Run | QA-20260304-0050 (2026-03-04T04:21:46.893Z) |
+| Last Run | QA-20260306-0051 (2026-03-05T18:26:17.569Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260304-0050 (2026-03-04T04:21:46.893Z)
+Latest run: QA-20260306-0051 (2026-03-05T18:26:17.569Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| - | - | - | - |
+| AI Quality Assurance Specialist | appropriate | no | - |
+| Test Automation Architect | appropriate | no | - |
 
 ## Expert Domain Open Gaps
 
@@ -43,10 +44,7 @@ Latest run: QA-20260304-0050 (2026-03-04T04:21:46.893Z)
 ## Wont-Fix Improvements
 
 - [P1] obs-fp-fn-weekly-report: 오탐/미탐 주간 리포트 자동 생성 (seen 3회, last QA-20260227-0013)
-  - note: 운영 프로세스 항목 — 프로덕트 QA 범위 외. 실운영 환경에서만 의미 있는 기능으로 데모/포트폴리오 프로젝트에서 제외 (v8.7.8 종합 점검)
 - [P1] security-attack-regression-pack: 보안 공격 시나리오 회귀팩 구축 (seen 3회, last QA-20260227-0013)
-  - note: 운영 프로세스 항목 — 프로덕트 QA 범위 외. 보안 회귀팩은 실운영 환경 전용으로 데모/포트폴리오 프로젝트에서 제외 (v8.7.8 종합 점검)
-
 - [P2] ai-chat-detail-expand: AI Chat 상세 분석 펼치기 (seen 1회, last QA-20260301-0030)
   - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
 - [P2] ai-chat-sidebar-open: AI 사이드바 열기 (seen 1회, last QA-20260301-0030)
@@ -80,6 +78,10 @@ Latest run: QA-20260304-0050 (2026-03-04T04:21:46.893Z)
   - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
 - [P2] esc-모달-닫기: ESC 모달 닫기 (seen 3회, last QA-20260302-0042)
   - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
+- [P2] feature-dod-tsc-zero-error: tsc --noEmit 0 에러 (seen 8회, last QA-20260306-0051)
+  - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
+- [P2] feature-dod-unit-tests: 단위 테스트 커버리지 확장 (Batch 9-13) (seen 8회, last QA-20260306-0051)
+  - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
 - [P2] landing-feature-cards: 랜딩 피처카드 4개 모달 (seen 1회, last QA-20260301-0031)
   - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
 - [P2] landing-system-start: 시스템 시작 카운트다운 (seen 1회, last QA-20260301-0031)
@@ -110,11 +112,14 @@ Latest run: QA-20260304-0050 (2026-03-04T04:21:46.893Z)
 ## Completed Improvements
 
 - ai-chat-response: AI Chat 응답 (completed 1회, last QA-20260301-0035)
+- ai-chat-response-quality: AI Chat 핵심요약+상세분석+구체적 권고 응답 (completed 1회, last QA-20260306-0051)
 - ai-friendly-template-todo-marker: Template TODO marker 분리 (TEMPLATE_TODO 적용) (completed 1회, last QA-20260226-0006)
 - ai-math-tools: AI 계산 도구(수식/통계/용량) 셋업 완료 (completed 1회, last QA-20260228-0023)
 - ai-사이드바-토글-ai-엔진-ready-프리셋-5개-ai-기능-3개: AI 사이드바 토글 (AI 엔진 Ready, 프리셋 5개, AI 기능 3개) (completed 3회, last QA-20260302-0042)
+- anomaly-detection-prediction: 이상감지/예측 15서버 전체 분석 (completed 1회, last QA-20260306-0051)
 - api-인증-검증-401-확인: API 인증 검증 401 확인 (completed 1회, last QA-20260301-0032)
 - auth-error-provider-copy: 인증 에러 라우트 메시지를 제공자-중립 표현으로 전환 (completed 1회, last QA-20260227-0010)
+- auto-incident-report: 자동장애 보고서 생성 및 상세보기 (completed 1회, last QA-20260306-0051)
 - biome-lint-900-files-에러-0: Biome Lint 900 files 에러 0 (completed 1회, last QA-20260301-0032)
 - dashboard-server-card-selector-stabilization: 서버 카드 선택자 및 빈 상태 처리 안정화 (completed 2회, last QA-20260302-0039)
 - dashboard-server-cards: 대시보드 서버 카드 및 메트릭 (completed 2회, last QA-20260302-0038)
@@ -126,8 +131,6 @@ Latest run: QA-20260304-0050 (2026-03-04T04:21:46.893Z)
 - feature-dod-release-response-time-check: Feature/Release DoD: 핵심 응답시간 합격 (completed 1회, last QA-20260226-0005)
 - feature-dod-security-review: Feature DoD: 보안 검토(입력 검증/인증/OWASP) (completed 1회, last QA-20260226-0006)
 - feature-dod-system-start-guard: 비로그인 시스템 시작 가드 모달 동작 (completed 7회, last QA-20260227-0018)
-- feature-dod-tsc-zero-error: tsc --noEmit 0 에러 (completed 5회, last QA-20260302-0044)
-- feature-dod-unit-tests: 신규 로직 단위 테스트 추가 (completed 5회, last QA-20260302-0044)
 - feature-dod-validation-health-endpoints: 헬스/버전 API 검사 (Vercel) (completed 2회, last QA-20260227-0018)
 - feature-dod-vitals-integration: vitals:integration 통합 실행 통과 (completed 1회, last QA-20260228-0028)
 - guest-flow-server-card-and-startflow-resilience: 게스트 플로우 시스템 시작/AI 진입 내성 보강 (completed 3회, last QA-20260302-0039)
@@ -209,6 +212,7 @@ Latest run: QA-20260304-0050 (2026-03-04T04:21:46.893Z)
 
 | Run ID | Time (UTC) | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260306-0051 | 2026-03-05T18:26:17.569Z | Production QA - Full Feature Verification v8.7.8 | 7 | 3 | 0 | 0 | 2 | 0 |
 | QA-20260304-0050 | 2026-03-04T04:21:46.893Z | Production QA v8.7.8 — Playwright MCP (2026-03-04) | 8 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260303-0049 | 2026-03-03T05:03:51.275Z | Production Playwright MCP QA v8.7.8 (13/13 PASS) | 0 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260303-0048 | 2026-03-02T23:56:18.491Z | Production Playwright MCP QA v8.7.8 (13/13 PASS) | 13 | 0 | 0 | 0 | 0 | 0 |
@@ -228,5 +232,4 @@ Latest run: QA-20260304-0050 (2026-03-04T04:21:46.893Z)
 | QA-20260301-0034 | 2026-03-01T07:37:43.156Z | Production Playwright MCP QA — observability commit 6179e54 (8/8 PASS) | 8 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260301-0033 | 2026-03-01T06:16:36.498Z | Production Playwright MCP QA | 0 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260301-0032 | 2026-03-01T03:33:12.090Z | Final QA Gate v8.7.1 — Static + Security + Build + Code Quality (18/18 PASS) | 18 | 14 | 0 | 0 | 0 | 0 |
-| QA-20260301-0031 | 2026-03-01T01:08:05.088Z | Comprehensive Button/Modal/UI QA - v8.7.1 post-release | 18 | 0 | 0 | 0 | 18 | 0 |
 

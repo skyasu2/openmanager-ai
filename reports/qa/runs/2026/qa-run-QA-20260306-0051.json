@@ -1,0 +1,122 @@
+{
+  "runId": "QA-20260306-0051",
+  "recordedAt": "2026-03-05T18:26:17.569Z",
+  "recordedAtKst": "2026-03-06 03:26:17 KST",
+  "runTitle": "Production QA - Full Feature Verification v8.7.8",
+  "owner": "claude",
+  "source": "playwright-mcp",
+  "environment": {
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main"
+  },
+  "checks": {
+    "total": 7,
+    "passed": 7,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "AI Chat, Reporter, Analyst 전체 기능 검증 완료. 응답 품질 우수",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Playwright MCP 기반 7개 시나리오 자동화 검증 완료",
+      "nextAction": ""
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "ai-chat-response-quality",
+      "title": "AI Chat 핵심요약+상세분석+구체적 권고 응답",
+      "priority": "P0",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "Cloud Run AI ~6초 응답, 서버별 CPU/MEM/DISK 분석",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "auto-incident-report",
+      "title": "자동장애 보고서 생성 및 상세보기",
+      "priority": "P0",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "~4초, 이상항목/권장조치(우선순위)/감지패턴",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "anomaly-detection-prediction",
+      "title": "이상감지/예측 15서버 전체 분석",
+      "priority": "P0",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "~28초, 상승추세 예측(신뢰도 포함), 서버별 드릴다운",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [
+    {
+      "id": "feature-dod-tsc-zero-error",
+      "title": "tsc --noEmit 0 에러",
+      "priority": "P2",
+      "evidence": "reports/qa/runs/",
+      "note": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "owner": "claude",
+      "status": "wont-fix",
+      "policyNote": "이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)"
+    },
+    {
+      "id": "feature-dod-unit-tests",
+      "title": "단위 테스트 커버리지 확장 (Batch 9-13)",
+      "priority": "P2",
+      "evidence": "reports/qa/runs/",
+      "note": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "owner": "claude",
+      "status": "wont-fix",
+      "policyNote": "이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)"
+    }
+  ],
+  "notes": [
+    "QA-1: Landing Page - PASS (정상 로드)",
+    "QA-2: Health API - PASS (healthy, v8.7.8, 전체 서비스 연결)",
+    "QA-3: Guest Login → Dashboard - PASS (15서버, 13 online, 2 warning)",
+    "QA-4: AI Assistant Sidebar - PASS (Ready, 5 프리셋, 3 AI 기능)",
+    "QA-5: AI Chat Response - PASS (~6초, 핵심요약+상세분석+구체적 권고)",
+    "QA-6: Auto Incident Report - PASS (~4초, DB/WAS CPU 과부하 경고)",
+    "QA-7: Anomaly Detection/Prediction - PASS (~28초, 15서버, 상승추세 예측)"
+  ],
+  "links": [
+    {
+      "label": "Vercel Production",
+      "url": "https://openmanager-ai.vercel.app"
+    }
+  ]
+}
