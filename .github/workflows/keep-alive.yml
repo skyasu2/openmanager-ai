@@ -17,9 +17,8 @@ jobs:
     steps:
       - name: Ping Supabase Database
         env:
-          # Try both naming conventions
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL || secrets.NEXT_PUBLIC_SUPABASE_URL }}
-          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY || secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
         run: |
           # Debug: Check if secrets are set (show only length, not values)
           echo "🔍 Debug: SUPABASE_URL length = ${#SUPABASE_URL}"
