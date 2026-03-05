@@ -6,7 +6,7 @@
 
 | Task | Priority | Status |
 |------|----------|--------|
-| 테스트 커버리지 확대: API Routes (18%) | P2 | Planned |
+| 테스트 커버리지 확대: API Routes (18%) | P2 | In Progress (health, servers-unified, version 완료) |
 | 테스트 커버리지 확대: Hooks (30%) | P2 | Planned |
 | 테스트 커버리지 확대: Services (47%) | P3 | Planned |
 | Cloud Run 대형 파일 리팩토링 Phase 2~3 | P3 | On Hold |
