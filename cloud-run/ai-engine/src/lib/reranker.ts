@@ -80,7 +80,7 @@ const DEFAULT_MIN_SCORE = 0.4;
 // ============================================================================
 
 /**
- * Rerank documents using Mistral LLM
+ * Rerank documents using LLM (Groq primary, Cerebras fallback)
  *
  * @param query - User query for relevance scoring
  * @param documents - Documents to rerank
@@ -148,7 +148,7 @@ ${docSummaries}
 
 Rate relevance (0-1) for each document.`;
 
-    // Call Cerebras for scoring with timeout
+    // Call LLM for scoring with timeout
     const { text } = await withTimeout(
       generateText({
         model,
