@@ -84,4 +84,22 @@ describe('Feedback Routes', () => {
 
     expect(res.status).toBe(400);
   });
+
+  it('내부 예외 메시지를 그대로 노출하지 않는다', async () => {
+    vi.mocked(scoreByTraceId).mockImplementationOnce(() => {
+      throw new Error('langfuse provider secret leaked');
+    });
+
+    const res = await app.request('/feedback', {
+      method: 'POST',
+      body: JSON.stringify({ traceId: 'trace-500', score: 'positive' }),
+      headers: { 'Content-Type': 'application/json' },
+    });
+
+    expect(res.status).toBe(503);
+    const json = await res.json();
+    expect(json.success).toBe(false);
+    expect(json.error).toBe('Service unavailable');
+    expect(json.error).not.toContain('secret');
+  });
 });

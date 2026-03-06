@@ -10,7 +10,6 @@
  * @see https://cloud.google.com/logging/docs/structured-logging
  */
 
-import { createGcpLoggingPinoConfig } from '@google-cloud/pino-logging-gcp-config';
 import pino from 'pino';
 import { version as APP_VERSION } from '../../package.json';
 
@@ -18,12 +17,27 @@ import { version as APP_VERSION } from '../../package.json';
  * Create GCP-optimized Pino logger
  */
 function createLogger(): pino.Logger {
+  const isVitestProcess =
+    process.argv.some((arg) => arg.includes('vitest')) ||
+    process.env.npm_lifecycle_script?.includes('vitest') ||
+    process.env.npm_lifecycle_event === 'test';
+  const isTest =
+    process.env.NODE_ENV === 'test' ||
+    process.env.VITEST === 'true' ||
+    Boolean(process.env.VITEST_WORKER_ID) ||
+    isVitestProcess;
   const isDev = process.env.NODE_ENV === 'development';
+  const useLocalLogger = isDev || isTest;
   // Free Tier 최적화: Production에서 'warn' 레벨 사용
   // GCP Cloud Logging 비용 50%+ 절감 (info 로그 생략)
-  const logLevel = process.env.LOG_LEVEL || (isDev ? 'debug' : 'warn');
+  const logLevel =
+    process.env.LOG_LEVEL || (useLocalLogger ? (isTest ? 'error' : 'debug') : 'warn');
 
-  if (!isDev) {
+  if (!useLocalLogger) {
+    const { createGcpLoggingPinoConfig } = require(
+      '@google-cloud/pino-logging-gcp-config'
+    ) as typeof import('@google-cloud/pino-logging-gcp-config');
+
     // Production: 공식 GCP 패키지로 severity/insertId/stack_trace 자동 처리
     // GCP 패키지가 pino@10 타입 기준이므로 pino@9와 제네릭 불일치 → LoggerOptions 단언
     const gcpConfig = createGcpLoggingPinoConfig(
@@ -33,6 +47,17 @@ function createLogger(): pino.Logger {
       { level: logLevel }
     ) as unknown as pino.LoggerOptions;
     return pino(gcpConfig);
+  }
+
+  if (isTest) {
+    return pino({
+      enabled: false,
+      level: 'silent',
+      base: {
+        service: 'ai-engine',
+        version: APP_VERSION,
+      },
+    });
   }
 
   // Development: simple stdout output

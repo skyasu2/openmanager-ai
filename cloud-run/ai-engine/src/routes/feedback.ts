@@ -11,7 +11,11 @@ import { Hono } from 'hono';
 import type { Context } from 'hono';
 import { z } from 'zod';
 import { scoreByTraceId } from '../services/observability/langfuse';
-import { handleValidationError, jsonSuccess } from '../lib/error-handler';
+import {
+  handleApiError,
+  handleValidationError,
+  jsonSuccess,
+} from '../lib/error-handler';
 import { logger } from '../lib/logger';
 
 const feedbackSchema = z.object({
@@ -52,8 +56,6 @@ feedbackRouter.post('/', async (c: Context) => {
       score,
     });
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : String(error);
-    logger.error({ error: errorMessage }, 'Feedback recording failed');
-    return c.json({ success: false, error: errorMessage }, 500);
+    return handleApiError(c, error, 'Feedback');
   }
 });

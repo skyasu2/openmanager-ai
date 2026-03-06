@@ -39,7 +39,13 @@ vi.mock('../services/ai-sdk', () => ({
 }));
 
 import { jobsRouter } from './jobs';
-import { isJobNotifierAvailable, getJobResult, storeJobError } from '../lib/job-notifier';
+import {
+  getJobResult,
+  isJobNotifierAvailable,
+  markJobProcessing,
+  storeJobError,
+} from '../lib/job-notifier';
+import { executeSupervisor } from '../services/ai-sdk';
 
 const app = new Hono();
 app.route('/jobs', jobsRouter);
@@ -66,6 +72,7 @@ describe('Jobs Routes', () => {
       expect(json.success).toBe(true);
       expect(json.jobId).toBe('job-123');
       expect(json.status).toBe('processing');
+      await new Promise((resolve) => setImmediate(resolve));
     });
 
     it('jobId 누락 시 400을 반환한다', async () => {
@@ -131,6 +138,51 @@ describe('Jobs Routes', () => {
 
       expect(res.status).toBe(400);
       expect(storeJobError).toHaveBeenCalled();
+    });
+
+    it('process 예외 시 내부 메시지 대신 공개 메시지를 반환한다', async () => {
+      vi.mocked(markJobProcessing).mockRejectedValueOnce(
+        new Error('provider secret leaked')
+      );
+
+      const res = await app.request('/jobs/process', {
+        method: 'POST',
+        body: JSON.stringify({
+          jobId: 'job-process-error',
+          messages: [{ role: 'user', content: 'test' }],
+        }),
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      expect(res.status).toBe(503);
+      const json = await res.json();
+      expect(json.success).toBe(false);
+      expect(json.error).toBe('Service unavailable');
+      expect(json.error).not.toContain('secret');
+    });
+
+    it('background 예외를 저장할 때 내부 메시지 대신 공개 메시지를 사용한다', async () => {
+      vi.mocked(executeSupervisor).mockRejectedValueOnce(
+        new Error('provider secret leaked')
+      );
+
+      const res = await app.request('/jobs/process', {
+        method: 'POST',
+        body: JSON.stringify({
+          jobId: 'job-background-error',
+          messages: [{ role: 'user', content: 'test' }],
+        }),
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      expect(res.status).toBe(200);
+      await new Promise((resolve) => setImmediate(resolve));
+
+      expect(vi.mocked(storeJobError).mock.calls).toContainEqual([
+        'job-background-error',
+        'Service unavailable',
+        expect.any(String),
+      ]);
     });
   });
 

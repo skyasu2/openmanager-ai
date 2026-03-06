@@ -43,6 +43,7 @@ export class MainPageErrorBoundary extends Component<Props, State> {
   render() {
     if (this.state.hasError) {
       const { fallbackTitle, fallbackMessage } = this.props;
+      const showErrorDetails = process.env.NODE_ENV !== 'production';
 
       return (
         <div className="flex min-h-screen items-center justify-center bg-linear-to-br from-slate-900 via-slate-800 to-slate-900 p-6">
@@ -55,7 +56,7 @@ export class MainPageErrorBoundary extends Component<Props, State> {
               {fallbackMessage ||
                 '페이지 로딩 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.'}
             </p>
-            {this.state.error && (
+            {showErrorDetails && this.state.error && (
               <details className="mb-4 text-left">
                 <summary className="cursor-pointer text-xs text-gray-400 hover:text-gray-300">
                   오류 세부 정보

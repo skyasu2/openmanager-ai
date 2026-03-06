@@ -16,6 +16,7 @@
 import type { Context } from 'hono';
 import { Hono } from 'hono';
 
+import { getPublicErrorResponse, handleApiError } from '../lib/error-handler';
 import { logger } from '../lib/logger';
 import { logAPIKeyStatus, validateAPIKeys } from '../lib/model-config';
 import {
@@ -148,8 +149,9 @@ jobsRouter.post('/process', async (c: Context) => {
         const processingTime = Date.now() - startTime;
         logger.info(`[Jobs] Job ${jobId} completed in ${processingTime}ms (provider: ${result.metadata.provider})`);
       } catch (error) {
-        logger.error({ err: error }, `[Jobs] Job ${jobId} failed`);
-        await storeJobError(jobId, String(error), startedAt);
+        const publicError = getPublicErrorResponse(error);
+        logger.error({ err: error, code: publicError.code }, `[Jobs] Job ${jobId} failed`);
+        await storeJobError(jobId, publicError.message, startedAt);
       }
     });
 
@@ -161,8 +163,7 @@ jobsRouter.post('/process', async (c: Context) => {
       message: 'Job started, poll /api/jobs/:id for result',
     });
   } catch (error) {
-    logger.error({ err: error }, '[Jobs] Process error');
-    return c.json({ success: false, error: String(error) }, 500);
+    return handleApiError(c, error, 'Jobs');
   }
 });
 
