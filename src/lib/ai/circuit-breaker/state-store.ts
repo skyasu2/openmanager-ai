@@ -70,6 +70,7 @@ export class InMemoryStateStore implements IDistributedStateStore {
 
 let defaultStateStore: IDistributedStateStore = new InMemoryStateStore();
 let redisInitialized = false;
+let redisInitPromise: Promise<boolean> | null = null;
 
 export function setDistributedStateStore(store: IDistributedStateStore): void {
   defaultStateStore = store;
@@ -87,24 +88,33 @@ export function isRedisStateStoreInitialized(): boolean {
 /**
  * Redis Circuit Breaker Store 자동 초기화
  * Redis가 활성화되어 있으면 분산 상태 저장소로 자동 전환
+ *
+ * 동시 호출 시 중복 초기화 방지를 위해 promise 캐싱 적용
  */
 export async function ensureRedisStateStore(): Promise<boolean> {
   if (redisInitialized) return true;
+  if (redisInitPromise) return redisInitPromise;
 
-  try {
-    const { initializeRedisCircuitBreaker } = await import(
-      '@/lib/redis/circuit-breaker-store'
-    );
-    const result = await initializeRedisCircuitBreaker();
-    if (result) {
-      logger.info('[CircuitBreaker] Redis 분산 상태 저장소 초기화 성공');
+  redisInitPromise = (async () => {
+    try {
+      const { initializeRedisCircuitBreaker } = await import(
+        '@/lib/redis/circuit-breaker-store'
+      );
+      const result = await initializeRedisCircuitBreaker();
+      if (result) {
+        logger.info('[CircuitBreaker] Redis 분산 상태 저장소 초기화 성공');
+      }
+      return result;
+    } catch (error) {
+      logger.warn(
+        '[CircuitBreaker] Redis 초기화 실패, InMemory fallback 사용 (서버리스 인스턴스 간 상태 미공유)',
+        { error }
+      );
+      return false;
+    } finally {
+      redisInitPromise = null;
     }
-    return result;
-  } catch (error) {
-    logger.warn(
-      '[CircuitBreaker] Redis 초기화 실패, InMemory fallback 사용 (서버리스 인스턴스 간 상태 미공유)',
-      { error }
-    );
-    return false;
-  }
+  })();
+
+  return redisInitPromise;
 }
