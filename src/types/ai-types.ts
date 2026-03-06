@@ -6,6 +6,8 @@
  * ✅ 유지보수성 향상
  */
 
+import type { AIEngineType as CanonicalAIEngineType } from '@/schemas/ai.schema';
+
 // ==============================================
 // 🎯 AI 모드 타입 정의 (통합)
 // ==============================================
@@ -23,14 +25,7 @@ export type AIMode = 'UNIFIED';
  * AI 엔진 타입 정의
  * v5.84.0: google-ai → cloud-run-ai로 변경
  */
-export type AIEngineType =
-  | 'cloud-run-ai'
-  | 'supabase-rag'
-  | 'korean-ai'
-  | 'mcp-client'
-  | 'gcp-mcp'
-  | 'transformers'
-  | 'mcp-context';
+export type AIEngineType = CanonicalAIEngineType;
 
 /**
  * AI 어시스턴트 모드 (응답 깊이)

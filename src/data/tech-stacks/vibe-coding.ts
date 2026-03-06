@@ -84,7 +84,7 @@ export const VIBE_CODING_DATA: VibeCodeData = {
       icon: '✨',
       tags: ['Google', 'OpenSource', '1M-Context'],
       type: 'opensource',
-      aiType: 'google-api',
+      aiType: 'cloud-ai',
     },
     {
       name: 'Git + GitHub 통합',

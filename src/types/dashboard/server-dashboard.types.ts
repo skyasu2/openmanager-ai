@@ -3,9 +3,9 @@ import type {
   Server,
   ServerEnvironment,
   ServerRole,
+  ServerStatus,
   Service,
 } from '@/types/server';
-import type { ServerStatus } from '@/types/server-common';
 
 // 🏗️ Clean Architecture: 도메인 레이어 - 순수 비즈니스 로직
 export interface ServerStats {

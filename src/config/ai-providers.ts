@@ -29,24 +29,24 @@ export interface AIProviderConfig {
 export const AI_PROVIDERS: AIProviderConfig[] = [
   {
     name: 'Cerebras',
-    role: 'Primary',
-    model: 'llama-3.3-70b',
-    description: 'Primary AI 처리, 빠른 응답',
+    role: 'Supervisor/NLQ/Verifier',
+    model: 'gpt-oss-120b',
+    description: 'Primary reasoning, routing, and RAG-LLM tasks',
     color: 'bg-blue-500',
     dailyTokenLimit: '24M tokens/day',
   },
   {
     name: 'Groq',
-    role: 'NLQ Agent',
+    role: 'Analyst/Reporter',
     model: 'llama-3.3-70b-versatile',
-    description: 'Natural Language Query, Tool Calling',
+    description: 'Fast analysis and incident report generation',
     color: 'bg-purple-500',
   },
   {
     name: 'Mistral',
-    role: 'Verifier',
-    model: 'mistral-small-2506',
-    description: '응답 검증 및 품질 보장',
+    role: 'Advisor/Fallback',
+    model: 'mistral-large-latest',
+    description: 'Operational guidance, fallback, and embedding support',
     color: 'bg-amber-500',
   },
 ];

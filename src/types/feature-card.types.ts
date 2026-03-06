@@ -76,7 +76,7 @@ export type ProductType = 'custom' | 'opensource' | 'commercial';
 /**
  * AI 엔진 타입
  */
-export type AIEngineType = 'google-api' | 'local-engine' | 'hybrid';
+export type AIEngineType = 'cloud-ai' | 'local-ai' | 'hybrid';
 
 /**
  * 기술 스택 아이템

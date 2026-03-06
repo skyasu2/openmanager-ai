@@ -11,35 +11,32 @@ import {
  *
  * AI 엔진 및 분석에 사용되는 스키마들
  *
- * ## v5.84.0: Migrated from Google AI to Cloud Run (Mistral)
+ * ## v8.x: Cloud Run Multi-Agent + Gemini Vision 기준 스키마
  */
 
 // ===== AI 엔진 =====
 
 export const AIEngineTypeSchema = z.enum([
-  'cloud-run-ai', // Mistral via Cloud Run (v5.84.0)
-  'openai',
-  'anthropic',
-  'local-llm',
+  'cloud-run-ai',
   'supabase-rag',
-  'korean-nlp',
+  'korean-ai',
+  'mcp-client',
+  'gcp-mcp',
+  'transformers',
+  'mcp-context',
 ]);
 
 export const AIModelSchema = z.enum([
-  // Cloud Run models (Mistral)
-  'mistral-small-latest',
-  'mistral-embed',
-  // Agent models (Cerebras/Groq)
-  'llama-3.3-70b',
+  // Cloud Run multi-agent models
+  'gpt-oss-120b',
   'llama-3.3-70b-versatile',
-  // OpenAI models
-  'gpt-4',
-  'gpt-3.5-turbo',
-  // Anthropic models
-  'claude-3-opus',
-  'claude-3-sonnet',
-  // Other
-  'llama-2',
+  'mistral-large-latest',
+  'mistral-embed',
+  // Vision / auxiliary
+  'gemini-2.5-flash',
+  'gemini-2.5-flash-lite',
+  // Compatibility
+  'llama-3.3-70b',
   'custom',
 ]);
 

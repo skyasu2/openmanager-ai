@@ -51,6 +51,8 @@ export function isValidServiceStatus(status: string): status is ServiceStatus {
   const validStatuses: ServiceStatus[] = [
     'running',
     'stopped',
+    'warning',
+    'failed',
     'unknown',
     'error',
     'starting',

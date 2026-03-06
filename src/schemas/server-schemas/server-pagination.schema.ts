@@ -13,7 +13,16 @@ export const ServerPaginationQuerySchema = z.object({
   limit: z.coerce.number().default(10),
   sortBy: z.string().default('name'),
   order: z.enum(['asc', 'desc']).default('asc'),
-  status: z.enum(['online', 'warning', 'critical']).optional(),
+  status: z
+    .enum([
+      'online',
+      'offline',
+      'warning',
+      'critical',
+      'maintenance',
+      'unknown',
+    ])
+    .optional(),
 });
 
 // ===== 페이지네이션된 서버 =====
@@ -21,7 +30,14 @@ export const ServerPaginationQuerySchema = z.object({
 export const PaginatedServerSchema = z.object({
   id: z.string(),
   name: z.string(),
-  status: z.enum(['online', 'warning', 'critical']),
+  status: z.enum([
+    'online',
+    'offline',
+    'warning',
+    'critical',
+    'maintenance',
+    'unknown',
+  ]),
   type: z.string(),
   cpu: z.number().min(0).max(100),
   memory: z.number().min(0).max(100),
@@ -63,7 +79,16 @@ export const ServerPaginatedResponseSchema = z.object({
     servers: z.array(PaginatedServerSchema),
     pagination: ServerPaginationSchema,
     filters: z.object({
-      status: z.enum(['online', 'warning', 'critical']).nullable(),
+      status: z
+        .enum([
+          'online',
+          'offline',
+          'warning',
+          'critical',
+          'maintenance',
+          'unknown',
+        ])
+        .nullable(),
       sortBy: z.string(),
       order: z.enum(['asc', 'desc']),
     }),
@@ -98,7 +123,14 @@ export const ServerBatchResponseSchema = z.object({
     .array(
       z.object({
         serverId: z.string(),
-        status: z.enum(['online', 'warning', 'critical']),
+        status: z.enum([
+          'online',
+          'offline',
+          'warning',
+          'critical',
+          'maintenance',
+          'unknown',
+        ]),
         responseTime: z.number(),
         lastCheck: z.string(),
       })

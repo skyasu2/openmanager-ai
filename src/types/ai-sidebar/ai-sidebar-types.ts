@@ -96,7 +96,7 @@ export interface AISidebarState {
   isOpen: boolean;
   isLoading: boolean;
   error: string | null;
-  selectedEngine: AIMode;
+  selectedEngine?: AIMode;
   sessionId: string;
   messages: ChatMessage[];
 }
@@ -107,7 +107,7 @@ export interface AISidebarState {
 export interface ChatMessage {
   id: string;
   content: string;
-  role: 'user' | 'assistant' | 'system';
+  role: 'user' | 'assistant' | 'system' | 'thinking';
   timestamp: Date;
   engine?: string;
   isTyping?: boolean;

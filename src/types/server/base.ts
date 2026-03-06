@@ -11,21 +11,13 @@ import type { AlertSeverity } from '../common';
  */
 export interface ProcessInfo {
   pid: number;
-  name:
-    | 'kernel_task'
-    | 'System'
-    | 'svchost.exe'
-    | 'chrome.exe'
-    | 'node'
-    | 'nginx'
-    | 'python'
-    | 'java'
-    | 'spindump'
-    | 'WindowServer'
-    | 'launchd';
+  /**
+   * 프로세스 이름은 런타임/OS/데이터 소스마다 열려 있으므로 string으로 유지한다.
+   */
+  name: string;
   cpu: number;
   memory: number;
-  user: 'root' | 'system' | 'NETWORK SERVICE' | 'admin' | 'guest';
+  user: string;
 }
 
 /**
