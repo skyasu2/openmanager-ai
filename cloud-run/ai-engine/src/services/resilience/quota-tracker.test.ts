@@ -163,11 +163,11 @@ describe('QuotaTracker — getQuotaStatus', () => {
     await recordProviderUsage('groq', 50_000);
 
     const status = await getQuotaStatus('groq');
+    const groqQuota = PROVIDER_QUOTAS.groq;
 
-    // groq dailyTokenLimit = 100,000
-    expect(status.dailyTokenUsageRate).toBeCloseTo(0.5, 1);
-    expect(status.minuteRequestUsageRate).toBeCloseTo(1 / 30, 2);
-    expect(status.minuteTokenUsageRate).toBeCloseTo(50_000 / 12_000, 1);
+    expect(status.dailyTokenUsageRate).toBeCloseTo(50_000 / groqQuota.dailyTokenLimit, 2);
+    expect(status.minuteRequestUsageRate).toBeCloseTo(1 / groqQuota.requestsPerMinute, 2);
+    expect(status.minuteTokenUsageRate).toBeCloseTo(50_000 / groqQuota.tokensPerMinute, 2);
   });
 
   it('provider와 quota 정보 포함', async () => {
@@ -350,8 +350,8 @@ describe('QuotaTracker — getQuotaSummary', () => {
   });
 
   it('80%+ provider는 warning으로 카운트', async () => {
-    // groq daily 80%+ (100,000 * 0.85 = 85,000)
-    await recordProviderUsage('groq', 85_000);
+    const limit = PROVIDER_QUOTAS.groq.dailyTokenLimit;
+    await recordProviderUsage('groq', Math.ceil(limit * 0.85));
 
     const summary = await getQuotaSummary();
 
@@ -359,8 +359,8 @@ describe('QuotaTracker — getQuotaSummary', () => {
   });
 
   it('95%+ provider는 critical로 카운트', async () => {
-    // groq daily 95%+ (100,000 * 0.96 = 96,000)
-    await recordProviderUsage('groq', 96_000);
+    const limit = PROVIDER_QUOTAS.groq.dailyTokenLimit;
+    await recordProviderUsage('groq', Math.ceil(limit * 0.96));
 
     const summary = await getQuotaSummary();
 

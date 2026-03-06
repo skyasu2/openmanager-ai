@@ -56,6 +56,91 @@ function classifyError(error: unknown): { code: ErrorCode; status: ContentfulSta
   return { code: ErrorCodes.INTERNAL_ERROR, status: 500 };
 }
 
+const ERROR_STATUS_BY_CODE: Record<string, ContentfulStatusCode> = {
+  [ErrorCodes.AUTH_ERROR]: 401,
+  [ErrorCodes.UNAUTHORIZED]: 401,
+  [ErrorCodes.VALIDATION_ERROR]: 400,
+  [ErrorCodes.BAD_REQUEST]: 400,
+  [ErrorCodes.NOT_FOUND]: 404,
+  [ErrorCodes.RATE_LIMIT]: 429,
+  [ErrorCodes.TIMEOUT]: 504,
+  [ErrorCodes.MODEL_ERROR]: 503,
+  [ErrorCodes.PROVIDER_ERROR]: 503,
+  [ErrorCodes.SERVICE_UNAVAILABLE]: 503,
+  CIRCUIT_OPEN: 503,
+  NO_VISION_PROVIDER: 503,
+  HARD_TIMEOUT: 504,
+  STREAM_ERROR: 503,
+  PROMPT_INJECTION: 400,
+};
+
+const PUBLIC_ERROR_MESSAGES: Record<string, string> = {
+  [ErrorCodes.AUTH_ERROR]: 'Unauthorized',
+  [ErrorCodes.UNAUTHORIZED]: 'Unauthorized',
+  [ErrorCodes.VALIDATION_ERROR]: 'Invalid request',
+  [ErrorCodes.BAD_REQUEST]: 'Invalid request',
+  [ErrorCodes.NOT_FOUND]: 'Resource not found',
+  [ErrorCodes.RATE_LIMIT]: 'Rate limit exceeded',
+  [ErrorCodes.TIMEOUT]: 'Request timed out',
+  [ErrorCodes.MODEL_ERROR]: 'Service unavailable',
+  [ErrorCodes.PROVIDER_ERROR]: 'Service unavailable',
+  [ErrorCodes.SERVICE_UNAVAILABLE]: 'Service unavailable',
+  [ErrorCodes.INTERNAL_ERROR]: 'Internal Server Error',
+  CIRCUIT_OPEN: 'AI providers are temporarily unavailable',
+  NO_VISION_PROVIDER: 'Vision features are temporarily unavailable',
+  HARD_TIMEOUT: 'Request timed out',
+  STREAM_ERROR: 'Service unavailable',
+  STREAM_ERROR_OCCURRED: 'A streaming issue occurred during response generation',
+  UNKNOWN_ERROR: 'Internal Server Error',
+  PROMPT_INJECTION: 'Security: blocked input',
+};
+
+function isObjectRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null;
+}
+
+export function getStatusForErrorCode(code?: string): ContentfulStatusCode {
+  if (!code) {
+    return 500;
+  }
+  return ERROR_STATUS_BY_CODE[code] ?? 500;
+}
+
+export function getPublicErrorMessage(code?: string): string {
+  if (!code) {
+    return PUBLIC_ERROR_MESSAGES[ErrorCodes.INTERNAL_ERROR];
+  }
+  return PUBLIC_ERROR_MESSAGES[code] ?? PUBLIC_ERROR_MESSAGES[ErrorCodes.INTERNAL_ERROR];
+}
+
+export function getPublicErrorResponse(
+  error: unknown
+): { code: string; status: ContentfulStatusCode; message: string } {
+  const { code, status } = classifyError(error);
+  return {
+    code,
+    status,
+    message: getPublicErrorMessage(code),
+  };
+}
+
+export function sanitizeErrorData(data: unknown): Record<string, unknown> & { code: string } {
+  const payload = isObjectRecord(data) ? { ...data } : {};
+  const code = typeof payload.code === 'string' ? payload.code : ErrorCodes.INTERNAL_ERROR;
+  const publicMessage = getPublicErrorMessage(code);
+
+  if ('error' in payload) {
+    payload.error = publicMessage;
+  }
+
+  if ('message' in payload || !('error' in payload)) {
+    payload.message = publicMessage;
+  }
+
+  payload.code = code;
+  return payload as Record<string, unknown> & { code: string };
+}
+
 // ============================================================================
 // 2. Error Handler Functions
 // ============================================================================
@@ -71,14 +156,14 @@ export function handleApiError(
   error: unknown,
   logPrefix = 'API'
 ): Response {
-  const { code, status } = classifyError(error);
+  const { code, status, message } = getPublicErrorResponse(error);
   const errorMessage = error instanceof Error ? error.message : String(error);
 
   // Log error with prefix
   logger.error(`❌ [${logPrefix}] Error:`, errorMessage);
 
   // Return standardized error response
-  return c.json(createErrorResponse(errorMessage, code), status);
+  return c.json(createErrorResponse(message, code), status);
 }
 
 /**

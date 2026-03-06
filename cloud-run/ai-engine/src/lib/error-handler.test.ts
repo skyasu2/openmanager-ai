@@ -14,14 +14,24 @@ function createMockContext() {
 }
 
 // We need to test classifyError which is not exported, so we test via handleApiError
-import { handleApiError, handleNotFoundError, handleUnauthorizedError, handleValidationError, jsonSuccess, jsonSuccessData } from './error-handler';
+import {
+  getPublicErrorMessage,
+  getStatusForErrorCode,
+  handleApiError,
+  handleNotFoundError,
+  handleUnauthorizedError,
+  handleValidationError,
+  jsonSuccess,
+  jsonSuccessData,
+  sanitizeErrorData,
+} from './error-handler';
 
 describe('handleApiError (classifyError integration)', () => {
   it('should return 401 for auth-related errors', () => {
     const c = createMockContext();
     handleApiError(c, new Error('Invalid API key'));
     expect(c.json).toHaveBeenCalledWith(
-      expect.objectContaining({ success: false, code: 'AUTH_ERROR' }),
+      expect.objectContaining({ success: false, code: 'AUTH_ERROR', error: 'Unauthorized' }),
       401
     );
   });
@@ -30,7 +40,7 @@ describe('handleApiError (classifyError integration)', () => {
     const c = createMockContext();
     handleApiError(c, new Error('Rate limit exceeded'));
     expect(c.json).toHaveBeenCalledWith(
-      expect.objectContaining({ code: 'RATE_LIMIT' }),
+      expect.objectContaining({ code: 'RATE_LIMIT', error: 'Rate limit exceeded' }),
       429
     );
   });
@@ -39,7 +49,7 @@ describe('handleApiError (classifyError integration)', () => {
     const c = createMockContext();
     handleApiError(c, new Error('Quota exceeded, too many requests'));
     expect(c.json).toHaveBeenCalledWith(
-      expect.objectContaining({ code: 'RATE_LIMIT' }),
+      expect.objectContaining({ code: 'RATE_LIMIT', error: 'Rate limit exceeded' }),
       429
     );
   });
@@ -48,7 +58,7 @@ describe('handleApiError (classifyError integration)', () => {
     const c = createMockContext();
     handleApiError(c, new Error('Request timed out'));
     expect(c.json).toHaveBeenCalledWith(
-      expect.objectContaining({ code: 'TIMEOUT' }),
+      expect.objectContaining({ code: 'TIMEOUT', error: 'Request timed out' }),
       504
     );
   });
@@ -57,7 +67,7 @@ describe('handleApiError (classifyError integration)', () => {
     const c = createMockContext();
     handleApiError(c, new Error('Model provider unavailable'));
     expect(c.json).toHaveBeenCalledWith(
-      expect.objectContaining({ code: 'MODEL_ERROR' }),
+      expect.objectContaining({ code: 'MODEL_ERROR', error: 'Service unavailable' }),
       503
     );
   });
@@ -66,7 +76,7 @@ describe('handleApiError (classifyError integration)', () => {
     const c = createMockContext();
     handleApiError(c, new Error('Required field missing'));
     expect(c.json).toHaveBeenCalledWith(
-      expect.objectContaining({ code: 'VALIDATION_ERROR' }),
+      expect.objectContaining({ code: 'VALIDATION_ERROR', error: 'Invalid request' }),
       400
     );
   });
@@ -75,7 +85,7 @@ describe('handleApiError (classifyError integration)', () => {
     const c = createMockContext();
     handleApiError(c, new Error('Resource not found'));
     expect(c.json).toHaveBeenCalledWith(
-      expect.objectContaining({ code: 'NOT_FOUND' }),
+      expect.objectContaining({ code: 'NOT_FOUND', error: 'Resource not found' }),
       404
     );
   });
@@ -84,7 +94,7 @@ describe('handleApiError (classifyError integration)', () => {
     const c = createMockContext();
     handleApiError(c, new Error('Something unexpected happened'));
     expect(c.json).toHaveBeenCalledWith(
-      expect.objectContaining({ code: 'INTERNAL_ERROR' }),
+      expect.objectContaining({ code: 'INTERNAL_ERROR', error: 'Internal Server Error' }),
       500
     );
   });
@@ -93,9 +103,28 @@ describe('handleApiError (classifyError integration)', () => {
     const c = createMockContext();
     handleApiError(c, 'string error message');
     expect(c.json).toHaveBeenCalledWith(
-      expect.objectContaining({ success: false }),
+      expect.objectContaining({ success: false, error: 'Internal Server Error' }),
       500
     );
+  });
+});
+
+describe('public error helpers', () => {
+  it('maps known codes to public-safe messages and statuses', () => {
+    expect(getPublicErrorMessage('STREAM_ERROR')).toBe('Service unavailable');
+    expect(getStatusForErrorCode('HARD_TIMEOUT')).toBe(504);
+  });
+
+  it('sanitizes raw error payloads for stream clients', () => {
+    expect(sanitizeErrorData({
+      code: 'STREAM_ERROR',
+      message: 'raw provider stack',
+      metadata: { provider: 'groq' },
+    })).toEqual({
+      code: 'STREAM_ERROR',
+      message: 'Service unavailable',
+      metadata: { provider: 'groq' },
+    });
   });
 });
 

@@ -7,6 +7,7 @@ import {
 } from 'ai';
 import { TIMEOUT_CONFIG } from '../../config/timeout-config';
 import { extractRagSources, extractToolResultOutput, buildMultimodalContent, type RagSource } from '../../lib/ai-sdk-utils';
+import { getPublicErrorMessage, getPublicErrorResponse } from '../../lib/error-handler';
 import { isTavilyAvailable } from '../../lib/tavily-hybrid-rag';
 import { logger } from '../../lib/logger';
 import { allTools } from '../../tools-ai-sdk';
@@ -118,7 +119,7 @@ async function* streamSingleAgent(
         if (!visionModel) {
           yield {
             type: 'error',
-            data: { code: 'NO_VISION_PROVIDER', message: 'Gemini unavailable for image analysis. Vision features disabled.' },
+            data: { code: 'NO_VISION_PROVIDER', message: getPublicErrorMessage('NO_VISION_PROVIDER') },
           };
           return;
         }
@@ -174,7 +175,7 @@ async function* streamSingleAgent(
         type: 'error',
         data: {
           code: 'CIRCUIT_OPEN',
-          message: `All providers circuit breaker OPEN (last: ${provider})`,
+          message: getPublicErrorMessage('CIRCUIT_OPEN'),
           metadata: {
             provider,
             failures: cbStats.totalFailures,
@@ -294,7 +295,7 @@ async function* streamSingleAgent(
             type: 'error',
             data: {
               code: 'HARD_TIMEOUT',
-              error: `처리 시간이 ${SINGLE_AGENT_HARD_TIMEOUT / 1000}초를 초과했습니다.`,
+              error: getPublicErrorMessage('HARD_TIMEOUT'),
               elapsed,
               partialResponseLength: fullText.length,
               suggestion: fullText.length > 0
@@ -476,7 +477,7 @@ async function* streamSingleAgent(
           ...(capturedError && {
             warning: {
               code: 'STREAM_ERROR_OCCURRED',
-              message: capturedError.message,
+              message: getPublicErrorMessage('STREAM_ERROR_OCCURRED'),
             },
           }),
         },
@@ -485,6 +486,9 @@ async function* streamSingleAgent(
     } catch (error) {
       const durationMs = Date.now() - startTime;
       const errorMessage = error instanceof Error ? error.message : String(error);
+      const publicError = error instanceof CircuitOpenError
+        ? { code: 'CIRCUIT_OPEN', message: getPublicErrorMessage('CIRCUIT_OPEN') }
+        : getPublicErrorResponse(error);
 
       logger.error(`❌ [SupervisorStream] ${provider}/${modelId} error after ${durationMs}ms:`, errorMessage);
 
@@ -498,8 +502,8 @@ async function* streamSingleAgent(
       yield {
         type: 'error',
         data: {
-          code: error instanceof CircuitOpenError ? 'CIRCUIT_OPEN' : 'STREAM_ERROR',
-          message: errorMessage,
+          code: publicError.code,
+          message: publicError.message,
         },
       };
       return;

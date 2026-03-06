@@ -32,6 +32,7 @@ import {
 } from '../observability/langfuse';
 import { getCircuitBreaker, CircuitOpenError } from '../resilience/circuit-breaker';
 import { extractToolResultOutput, extractRagSources, type RagSource } from '../../lib/ai-sdk-utils';
+import { getPublicErrorMessage, getPublicErrorResponse } from '../../lib/error-handler';
 
 import type {
   SupervisorRequest,
@@ -441,20 +442,11 @@ async function executeSupervisorAttempt(
 
     finalizeTrace(trace, errorMessage, false, { durationMs });
 
-    let code = 'UNKNOWN_ERROR';
-    if (error instanceof CircuitOpenError) {
-      code = 'CIRCUIT_OPEN';
-    } else if (errorMessage.includes('API key')) {
-      code = 'AUTH_ERROR';
-    } else if (errorMessage.includes('rate limit')) {
-      code = 'RATE_LIMIT';
-    } else if (errorMessage.includes('timeout')) {
-      code = 'TIMEOUT';
-    } else if (errorMessage.includes('model')) {
-      code = 'MODEL_ERROR';
-    }
+    const publicError = error instanceof CircuitOpenError
+      ? { code: 'CIRCUIT_OPEN', message: getPublicErrorMessage('CIRCUIT_OPEN') }
+      : getPublicErrorResponse(error);
 
-    return { success: false, error: errorMessage, code, provider };
+    return { success: false, error: publicError.message, code: publicError.code, provider };
   }
 }
 

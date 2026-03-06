@@ -5,7 +5,6 @@
  * Refactored for maintainability and consistency.
  */
 
-import { timingSafeEqual } from 'node:crypto';
 import { serve } from '@hono/node-server';
 import { version as APP_VERSION } from '../package.json';
 import { Hono } from 'hono';
@@ -13,6 +12,7 @@ import type { Context, Next } from 'hono';
 import { cors } from 'hono/cors';
 import { logger as honoLogger } from 'hono/logger';
 import { logger } from './lib/logger';
+import { verifyApiKeyValue } from './lib/api-key-auth';
 
 // Configuration
 import { logAPIKeyStatus, validateAPIKeys } from './lib/model-config';
@@ -96,14 +96,7 @@ function verifyApiKey(c: Context): boolean {
     logger.error('[Security] CLOUD_RUN_API_SECRET is not configured — blocking request');
     return false;
   }
-  if (!apiKey) return false;
-  // Constant-time comparison: pad to same length to avoid length-based timing leak
-  const keyBuffer = Buffer.from(apiKey);
-  const validBuffer = Buffer.from(validKey);
-  const lengthMatch = keyBuffer.length === validBuffer.length;
-  // Always compare using the valid key length to prevent timing leak
-  const compareBuffer = lengthMatch ? keyBuffer : validBuffer;
-  return lengthMatch && timingSafeEqual(compareBuffer, validBuffer);
+  return verifyApiKeyValue(apiKey, validKey);
 }
 
 // Security Middleware (Skip for health/warmup) — fail-closed

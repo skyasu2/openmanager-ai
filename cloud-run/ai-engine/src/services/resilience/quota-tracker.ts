@@ -6,9 +6,9 @@
  * - 80% 임계값 도달 시 사전 전환 (Pre-emptive Fallback)
  * - Redis 기반 분산 상태 관리
  *
- * @version 1.1.0
+ * @version 1.2.0
  * @created 2026-01-04
- * @updated 2026-01-27 - Gemini Vision Agent 쿼터 추가
+ * @updated 2026-03-06 - Groq/Gemini/Cerebras 수치 공식 문서 기준 교정
  */
 
 import { getRedisClient } from '../../lib/redis-client';
@@ -58,31 +58,30 @@ export interface QuotaStatus {
 export const PROVIDER_QUOTAS: Record<ProviderName, ProviderQuota> = {
   /**
    * Cerebras Free Tier (gpt-oss-120b)
-   * @see https://inference-docs.cerebras.ai/api-reference/rate-limits
+   * @see https://inference-docs.cerebras.ai/support/rate-limits
    * @updated 2026-03-06
    *
-   * - 1M TPD (tokens per day)
-   * - 30 RPM, 60K TPM
+   * - 1M TPD, 64K TPM, 30 RPM, 14.4K RPD
    * - Context: 8,192 tokens (Free Tier 제한)
    */
   cerebras: {
     dailyTokenLimit: 1_000_000,
     requestsPerMinute: 30,
-    tokensPerMinute: 60_000,
-    requestsPerDay: 1_000_000,
+    tokensPerMinute: 64_000,
+    requestsPerDay: 14_400,
   },
   /**
    * Groq Free Tier (llama-3.3-70b-versatile)
    * @see https://console.groq.com/docs/rate-limits
    * @updated 2026-03-06
    *
-   * - 500K TPD, 6K TPM, 30 RPM
+   * - 100K TPD, 12K TPM, 30 RPM, 1K RPD
    * - Context: 128K tokens
    */
   groq: {
-    dailyTokenLimit: 500_000,
+    dailyTokenLimit: 100_000,
     requestsPerMinute: 30,
-    tokensPerMinute: 6_000,
+    tokensPerMinute: 12_000,
     requestsPerDay: 1_000,
   },
   mistral: {
@@ -97,7 +96,7 @@ export const PROVIDER_QUOTAS: Record<ProviderName, ProviderQuota> = {
    * @updated 2026-03-06
    *
    * Free Tier Limits (gemini-2.5-flash):
-   * - 500 RPD, 10 RPM
+   * - 250 RPD, 10 RPM
    * - 250,000 TPM
    * - 1M context window
    */
@@ -105,7 +104,7 @@ export const PROVIDER_QUOTAS: Record<ProviderName, ProviderQuota> = {
     dailyTokenLimit: 250_000 * 60 * 24, // TPM * 60min * 24h (theoretical max)
     requestsPerMinute: 10,
     tokensPerMinute: 250_000,
-    requestsPerDay: 500,
+    requestsPerDay: 250,
   },
   /**
    * Tavily Web Search API

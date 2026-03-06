@@ -16,6 +16,7 @@ import {
 import type { SupervisorRequest, SupervisorMode } from './supervisor-types';
 import { selectExecutionMode } from './supervisor-routing';
 import { executeSupervisorStream } from './supervisor-single-agent';
+import { getPublicErrorResponse, sanitizeErrorData } from '../../lib/error-handler';
 import { logger } from '../../lib/logger';
 import { flushLangfuse } from '../observability/langfuse';
 
@@ -335,9 +336,13 @@ export function createSupervisorStreamResponse(
               }
 
               const errorData = event.data as Record<string, unknown>;
+              const publicError = sanitizeErrorData(errorData);
               writer.write({
                 type: 'error',
-                errorText: (errorData.error as string) ?? (errorData.message as string) ?? 'Unknown error',
+                errorText:
+                  (publicError.error as string) ??
+                  (publicError.message as string) ??
+                  'Internal Server Error',
               });
               break;
 
@@ -350,6 +355,7 @@ export function createSupervisorStreamResponse(
         }
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
+        const publicError = getPublicErrorResponse(error);
         logger.error(`[UIMessageStream] Error:`, errorMessage);
 
         if (textPartStarted) {
@@ -361,7 +367,7 @@ export function createSupervisorStreamResponse(
 
         writer.write({
           type: 'error',
-          errorText: errorMessage,
+          errorText: publicError.message,
         });
       }
     },

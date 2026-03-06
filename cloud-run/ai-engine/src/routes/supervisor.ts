@@ -19,11 +19,19 @@ import {
   logProviderStatus,
   createSupervisorStreamResponse,
 } from '../services/ai-sdk';
-import { handleApiError, handleValidationError, jsonSuccess } from '../lib/error-handler';
+import {
+  getPublicErrorResponse,
+  getStatusForErrorCode,
+  handleApiError,
+  handleValidationError,
+  jsonSuccess,
+  sanitizeErrorData,
+} from '../lib/error-handler';
 import { sanitizeChineseCharacters } from '../lib/text-sanitizer';
 import { guardInput, filterMaliciousOutput } from '../lib/prompt-guard';
 import { logger } from '../lib/logger';
 import { flushLangfuse } from '../services/observability/langfuse';
+import { emitSupervisorStreamError } from './supervisor-stream-error';
 
 // ============================================================================
 // 📋 Stream Request Schema
@@ -175,12 +183,17 @@ supervisorRouter.post('/', async (c: Context) => {
     });
 
     if (!result.success) {
+      const publicError = sanitizeErrorData(result);
+      const errorMessage =
+        (typeof publicError.error === 'string' && publicError.error) ||
+        (typeof publicError.message === 'string' && publicError.message) ||
+        'Internal Server Error';
       return c.json({
         success: false,
-        error: 'error' in result ? result.error : 'Unknown error',
-        code: 'code' in result ? result.code : 'UNKNOWN',
+        error: errorMessage,
+        code: publicError.code,
         timestamp: new Date().toISOString(),
-      }, 500);
+      }, getStatusForErrorCode(publicError.code));
     }
 
     // Sanitize Chinese characters + malicious output filter
@@ -291,11 +304,14 @@ supervisorRouter.post('/stream', async (c: Context) => {
         };
 
         for await (const event of executeSupervisorStream(request)) {
+          const safeEventData = event.type === 'error'
+            ? sanitizeErrorData(event.data)
+            : event.data;
           const eventData = JSON.stringify({
             type: event.type,
             data: event.type === 'text_delta'
               ? filterMaliciousOutput(sanitizeChineseCharacters(event.data as string))
-              : event.data,
+              : safeEventData,
           });
 
           await stream.writeSSE({
@@ -312,18 +328,14 @@ supervisorRouter.post('/stream', async (c: Context) => {
 
         logger.info({ eventCount: messageId }, 'SupervisorStream completed');
       } catch (error) {
+        const publicError = getPublicErrorResponse(error);
         const errorMessage = error instanceof Error ? error.message : String(error);
-        logger.error({ error: errorMessage }, 'SupervisorStream error');
+        logger.error({ error: errorMessage, code: publicError.code }, 'SupervisorStream error');
 
-        try {
-          await stream.writeSSE({
-            id: String(messageId++),
-            event: 'error',
-            data: JSON.stringify({ type: 'error', data: { message: errorMessage } }),
-          });
-        } catch {
-          logger.warn('Failed to write error event to stream (connection lost)');
-        }
+        await emitSupervisorStreamError(stream, messageId++, {
+          code: publicError.code,
+          message: publicError.message,
+        });
       }
     });
   } catch (error) {
