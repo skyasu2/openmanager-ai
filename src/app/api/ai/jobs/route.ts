@@ -31,6 +31,7 @@ import type {
   TriggerStatus,
 } from '@/types/ai-jobs';
 import { getErrorMessage } from '@/types/type-utils';
+import { withCSRFProtection } from '@/utils/security/csrf';
 
 // ============================================
 // 상수 정의
@@ -175,7 +176,7 @@ async function handlePOST(request: NextRequest) {
 // Auth + Rate Limiting 적용
 export const POST = withRateLimit(
   rateLimiters.aiAnalysis,
-  withAuth(handlePOST)
+  withAuth(withCSRFProtection(handlePOST))
 );
 
 // ============================================

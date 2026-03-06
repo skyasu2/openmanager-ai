@@ -43,6 +43,16 @@ vi.mock('@/lib/security/rate-limiter', () => ({
 
 import { POST } from './route';
 
+const CSRF_TOKEN = 'csrf-token-1234567890abcdef123456';
+
+function createCSRFHeaders(): Record<string, string> {
+  return {
+    'Content-Type': 'application/json',
+    'X-CSRF-Token': CSRF_TOKEN,
+    Cookie: `csrf_token=${CSRF_TOKEN}`,
+  };
+}
+
 describe('POST /api/auth/guest-login', () => {
   const originalGuestPin = process.env.GUEST_LOGIN_PIN;
   const originalSessionSecret = process.env.SESSION_SECRET;
@@ -62,6 +72,27 @@ describe('POST /api/auth/guest-login', () => {
     process.env.SESSION_SECRET = originalSessionSecret;
   });
 
+  it('CSRF 토큰이 없으면 403을 반환한다', async () => {
+    const request = new NextRequest(
+      'https://openmanager.test/api/auth/guest-login',
+      {
+        method: 'POST',
+        body: JSON.stringify({
+          sessionId: 'guest-session-missing-csrf',
+          guestPin: '1234',
+        }),
+        headers: { 'Content-Type': 'application/json' },
+      }
+    );
+
+    const response = await POST(request);
+    const body = await response.json();
+
+    expect(response.status).toBe(403);
+    expect(body.error).toBe('Invalid CSRF token');
+    expect(mockRecordLoginEvent).not.toHaveBeenCalled();
+  });
+
   it('PIN이 없거나 불일치하면 403을 반환한다', async () => {
     const request = new NextRequest(
       'https://openmanager.test/api/auth/guest-login',
@@ -70,7 +101,7 @@ describe('POST /api/auth/guest-login', () => {
         body: JSON.stringify({
           sessionId: 'guest-session-dev-auth',
         }),
-        headers: { 'Content-Type': 'application/json' },
+        headers: createCSRFHeaders(),
       }
     );
 
@@ -91,7 +122,7 @@ describe('POST /api/auth/guest-login', () => {
           guestUserId: 'guest-user-lock',
           guestPin: '0000',
         }),
-        headers: { 'Content-Type': 'application/json' },
+        headers: createCSRFHeaders(),
       });
 
     for (let attempt = 1; attempt <= 4; attempt += 1) {
@@ -121,7 +152,7 @@ describe('POST /api/auth/guest-login', () => {
           guestEmail: 'guest@example.com',
           guestPin: '1234',
         }),
-        headers: { 'Content-Type': 'application/json' },
+        headers: createCSRFHeaders(),
       }
     );
 
@@ -143,7 +174,7 @@ describe('POST /api/auth/guest-login', () => {
           guestUserId: 'guest-user-2',
           guestPin: '1234',
         }),
-        headers: { 'Content-Type': 'application/json' },
+        headers: createCSRFHeaders(),
       }
     );
 
@@ -169,7 +200,7 @@ describe('POST /api/auth/guest-login', () => {
         body: JSON.stringify({
           sessionId: 'guest-session-full-access',
         }),
-        headers: { 'Content-Type': 'application/json' },
+        headers: createCSRFHeaders(),
       }
     );
 
@@ -188,7 +219,7 @@ describe('POST /api/auth/guest-login', () => {
           sessionId: 'guest-session-no-pin',
           guestPin: '1234',
         }),
-        headers: { 'Content-Type': 'application/json' },
+        headers: createCSRFHeaders(),
       }
     );
 

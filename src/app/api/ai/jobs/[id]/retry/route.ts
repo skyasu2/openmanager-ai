@@ -15,90 +15,93 @@ import { withAuth } from '@/lib/auth/api-auth';
 import { logger } from '@/lib/logging';
 import { redisGet, redisSet } from '@/lib/redis';
 import type { AIJob, TriggerStatus } from '@/types/ai-jobs';
+import { withCSRFProtection } from '@/utils/security/csrf';
 
 const MAX_RETRIES = 2;
 const JOB_TTL_SECONDS = 86400;
 const PROGRESS_TTL_SECONDS = 600;
 const TRIGGER_TIMEOUT_MS = 5000;
 
-export const POST = withAuth(async function POST(
-  _request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  try {
-    const { id: jobId } = await params;
+export const POST = withAuth(
+  withCSRFProtection(async function POST(
+    _request: NextRequest,
+    { params }: { params: Promise<{ id: string }> }
+  ) {
+    try {
+      const { id: jobId } = await params;
 
-    const job = await redisGet<AIJob>(`job:${jobId}`);
-    if (!job) {
-      return NextResponse.json({ error: 'Job not found' }, { status: 404 });
-    }
+      const job = await redisGet<AIJob>(`job:${jobId}`);
+      if (!job) {
+        return NextResponse.json({ error: 'Job not found' }, { status: 404 });
+      }
 
-    if (job.status !== 'failed') {
+      if (job.status !== 'failed') {
+        return NextResponse.json(
+          { error: `Job is not in failed state (current: ${job.status})` },
+          { status: 409 }
+        );
+      }
+
+      const retryCount = (job.metadata?.retryCount ?? 0) + 1;
+      if (retryCount > MAX_RETRIES) {
+        return NextResponse.json(
+          { error: `Maximum retry attempts (${MAX_RETRIES}) exceeded` },
+          { status: 429 }
+        );
+      }
+
+      // Job 리셋
+      const updatedJob: AIJob = {
+        ...job,
+        status: 'queued',
+        error: null,
+        result: null,
+        completedAt: null,
+        startedAt: null,
+        progress: 0,
+        currentStep: null,
+        metadata: { ...job.metadata, retryCount },
+      };
+
+      await redisSet(`job:${jobId}`, updatedJob, JOB_TTL_SECONDS);
+      await redisSet(
+        `job:progress:${jobId}`,
+        {
+          stage: 'retrying',
+          progress: 5,
+          message: `재시도 중... (${retryCount}/${MAX_RETRIES})`,
+          updatedAt: new Date().toISOString(),
+        },
+        PROGRESS_TTL_SECONDS
+      );
+
+      // Cloud Run Worker 트리거
+      const triggerStatus = await triggerWorkerRetry(
+        jobId,
+        job.query,
+        job.type,
+        job.sessionId ?? undefined
+      );
+
+      logger.info(
+        `[AI Jobs] Retry: ${jobId} | attempt=${retryCount} | trigger=${triggerStatus}`
+      );
+
+      return NextResponse.json({
+        jobId,
+        status: 'queued',
+        retryCount,
+        triggerStatus,
+      });
+    } catch (error) {
+      logger.error('[AI Jobs] Retry error:', error);
       return NextResponse.json(
-        { error: `Job is not in failed state (current: ${job.status})` },
-        { status: 409 }
+        { error: 'Internal server error' },
+        { status: 500 }
       );
     }
-
-    const retryCount = (job.metadata?.retryCount ?? 0) + 1;
-    if (retryCount > MAX_RETRIES) {
-      return NextResponse.json(
-        { error: `Maximum retry attempts (${MAX_RETRIES}) exceeded` },
-        { status: 429 }
-      );
-    }
-
-    // Job 리셋
-    const updatedJob: AIJob = {
-      ...job,
-      status: 'queued',
-      error: null,
-      result: null,
-      completedAt: null,
-      startedAt: null,
-      progress: 0,
-      currentStep: null,
-      metadata: { ...job.metadata, retryCount },
-    };
-
-    await redisSet(`job:${jobId}`, updatedJob, JOB_TTL_SECONDS);
-    await redisSet(
-      `job:progress:${jobId}`,
-      {
-        stage: 'retrying',
-        progress: 5,
-        message: `재시도 중... (${retryCount}/${MAX_RETRIES})`,
-        updatedAt: new Date().toISOString(),
-      },
-      PROGRESS_TTL_SECONDS
-    );
-
-    // Cloud Run Worker 트리거
-    const triggerStatus = await triggerWorkerRetry(
-      jobId,
-      job.query,
-      job.type,
-      job.sessionId ?? undefined
-    );
-
-    logger.info(
-      `[AI Jobs] Retry: ${jobId} | attempt=${retryCount} | trigger=${triggerStatus}`
-    );
-
-    return NextResponse.json({
-      jobId,
-      status: 'queued',
-      retryCount,
-      triggerStatus,
-    });
-  } catch (error) {
-    logger.error('[AI Jobs] Retry error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
-  }
-});
+  })
+);
 
 async function triggerWorkerRetry(
   jobId: string,

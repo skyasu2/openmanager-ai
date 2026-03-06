@@ -3,6 +3,7 @@
 import type { MutableRefObject } from 'react';
 import { useCallback } from 'react';
 import { logger } from '@/lib/logging';
+import { createCSRFHeaders } from '@/utils/security/csrf-client';
 
 /**
  * 피드백 API 호출 훅
@@ -19,7 +20,9 @@ export function useChatFeedback(sessionIdRef: MutableRefObject<string>) {
       try {
         const response = await fetch('/api/ai/feedback', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: await createCSRFHeaders({
+            'Content-Type': 'application/json',
+          }),
           body: JSON.stringify({
             messageId,
             type,

@@ -17,6 +17,7 @@ import {
 import { recordLoginEvent } from '@/lib/auth/login-audit';
 import { getRedisClient } from '@/lib/redis/client';
 import { rateLimiters, withRateLimit } from '@/lib/security/rate-limiter';
+import { withCSRFProtection } from '@/utils/security/csrf';
 
 const GuestLoginRequestSchema = z.object({
   sessionId: z.string().min(1).max(255).optional(),
@@ -467,4 +468,7 @@ async function handlePOST(request: NextRequest): Promise<NextResponse> {
   return response;
 }
 
-export const POST = withRateLimit(rateLimiters.default, handlePOST);
+export const POST = withRateLimit(
+  rateLimiters.default,
+  withCSRFProtection(handlePOST)
+);

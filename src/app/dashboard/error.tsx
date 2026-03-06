@@ -5,6 +5,7 @@ import { useMemo, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { logger } from '@/lib/logging';
+import { createCSRFHeaders } from '@/utils/security/csrf-client';
 
 interface DashboardErrorProps {
   error: Error & { digest?: string };
@@ -18,9 +19,12 @@ export default function DashboardError({ error, reset }: DashboardErrorProps) {
     setIsReporting(true);
     try {
       // 에러 리포팅 로직
+      const headers = await createCSRFHeaders({
+        'Content-Type': 'application/json',
+      });
       await fetch('/api/error-report', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify({
           error: error.message,
           digest: error.digest,

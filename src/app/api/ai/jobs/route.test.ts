@@ -23,7 +23,7 @@ vi.mock('@/lib/redis', () => ({
   redisMGet: mockRedisMGet,
 }));
 
-import { GET } from './route';
+import { GET, POST } from './route';
 
 describe('GET /api/ai/jobs', () => {
   const now = new Date().toISOString();
@@ -111,5 +111,21 @@ describe('GET /api/ai/jobs', () => {
     expect(payload.jobs).toHaveLength(1);
     expect(payload.total).toBe(2);
     expect(payload.hasMore).toBe(true);
+  });
+});
+
+describe('POST /api/ai/jobs', () => {
+  it('CSRF 토큰이 없으면 403을 반환한다', async () => {
+    const request = new NextRequest('http://localhost/api/ai/jobs', {
+      method: 'POST',
+      body: JSON.stringify({ query: 'server health' }),
+      headers: { 'Content-Type': 'application/json' },
+    });
+
+    const response = await POST(request);
+    const payload = (await response.json()) as { error: string };
+
+    expect(response.status).toBe(403);
+    expect(payload.error).toBe('Invalid CSRF token');
   });
 });

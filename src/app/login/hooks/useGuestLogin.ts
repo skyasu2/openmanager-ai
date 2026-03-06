@@ -15,6 +15,7 @@ import {
 } from '@/lib/auth/guest-session-utils';
 import { LOGIN_POLICY_COPY } from '@/lib/auth/login-policy-copy';
 import { triggerAIWarmup } from '@/utils/ai-warmup';
+import { createCSRFHeaders } from '@/utils/security/csrf-client';
 import debug from '@/utils/debug';
 import {
   DEFAULT_REDIRECT_PATH,
@@ -237,9 +238,12 @@ export function useGuestLogin(deps: {
       }
 
       try {
+        const headers = await createCSRFHeaders({
+          'Content-Type': 'application/json',
+        });
         const guestLoginAuditResponse = await fetch('/api/auth/guest-login', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers,
           body: JSON.stringify({
             sessionId,
             guestUserId: guestUser.id,

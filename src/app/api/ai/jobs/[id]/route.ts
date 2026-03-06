@@ -16,6 +16,7 @@ import type {
   JobStatusResponse,
   RedisJobProgress,
 } from '@/types/ai-jobs';
+import { withCSRFProtection } from '@/utils/security/csrf';
 
 // ============================================
 // GET /api/ai/jobs/:id - Job 상태 조회
@@ -84,68 +85,70 @@ export const GET = withAuth(async function GET(
 // DELETE /api/ai/jobs/:id - Job 취소
 // ============================================
 
-export const DELETE = withAuth(async function DELETE(
-  _request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  try {
-    const { id: jobId } = await params;
+export const DELETE = withAuth(
+  withCSRFProtection(async function DELETE(
+    _request: NextRequest,
+    { params }: { params: Promise<{ id: string }> }
+  ) {
+    try {
+      const { id: jobId } = await params;
 
-    if (!jobId) {
+      if (!jobId) {
+        return NextResponse.json(
+          { error: 'Job ID is required' },
+          { status: 400 }
+        );
+      }
+
+      // Redis에서 Job 조회
+      const job = await redisGet<AIJob>(`job:${jobId}`);
+
+      if (!job) {
+        return NextResponse.json(
+          { error: 'Job not found or expired' },
+          { status: 404 }
+        );
+      }
+
+      // 멱등 취소: 이미 종료/취소된 Job도 성공으로 처리해 클라이언트 stop 연타/지연응답 시
+      // 불필요한 4xx 콘솔 노이즈를 방지한다.
+      if (
+        job.status === 'completed' ||
+        job.status === 'failed' ||
+        job.status === 'cancelled'
+      ) {
+        return NextResponse.json(
+          {
+            message: `Job already ${job.status}`,
+            jobId,
+            status: job.status,
+          },
+          { status: 200 }
+        );
+      }
+
+      // Job 취소 처리
+      const updatedJob: AIJob = {
+        ...job,
+        status: 'cancelled',
+        completedAt: new Date().toISOString(),
+      };
+
+      await redisSet(`job:${jobId}`, updatedJob, 3600); // 1시간 유지 후 삭제
+
+      // Progress 정보 삭제
+      await redisDel(`job:progress:${jobId}`);
+
       return NextResponse.json(
-        { error: 'Job ID is required' },
-        { status: 400 }
-      );
-    }
-
-    // Redis에서 Job 조회
-    const job = await redisGet<AIJob>(`job:${jobId}`);
-
-    if (!job) {
-      return NextResponse.json(
-        { error: 'Job not found or expired' },
-        { status: 404 }
-      );
-    }
-
-    // 멱등 취소: 이미 종료/취소된 Job도 성공으로 처리해 클라이언트 stop 연타/지연응답 시
-    // 불필요한 4xx 콘솔 노이즈를 방지한다.
-    if (
-      job.status === 'completed' ||
-      job.status === 'failed' ||
-      job.status === 'cancelled'
-    ) {
-      return NextResponse.json(
-        {
-          message: `Job already ${job.status}`,
-          jobId,
-          status: job.status,
-        },
+        { message: 'Job cancelled successfully', jobId },
         { status: 200 }
       );
+    } catch (error) {
+      logger.error('[AI Jobs] Error cancelling job:', error);
+      return NextResponse.json(
+        { error: 'Internal server error' },
+        { status: 500 }
+      );
     }
-
-    // Job 취소 처리
-    const updatedJob: AIJob = {
-      ...job,
-      status: 'cancelled',
-      completedAt: new Date().toISOString(),
-    };
-
-    await redisSet(`job:${jobId}`, updatedJob, 3600); // 1시간 유지 후 삭제
-
-    // Progress 정보 삭제
-    await redisDel(`job:progress:${jobId}`);
-
-    return NextResponse.json(
-      { message: 'Job cancelled successfully', jobId },
-      { status: 200 }
-    );
-  } catch (error) {
-    logger.error('[AI Jobs] Error cancelling job:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
-  }
-});
+  })
+);

@@ -28,6 +28,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { logger } from '@/lib/logging';
 import { fetchWithRetry, RETRY_STANDARD } from '@/lib/utils/retry';
+import { createCSRFHeaders } from '@/utils/security/csrf-client';
 import {
   closeTrackedEventSource,
   connectAsyncQuerySSE,
@@ -154,7 +155,10 @@ export function useAsyncAIQuery(options: UseAsyncAIQueryOptions = {}) {
     const currentJobId = jobIdRef.current;
     if (currentJobId) {
       try {
-        await fetch(`/api/ai/jobs/${currentJobId}`, { method: 'DELETE' });
+        await fetch(`/api/ai/jobs/${currentJobId}`, {
+          method: 'DELETE',
+          headers: await createCSRFHeaders(),
+        });
       } catch (e) {
         logger.warn('[AsyncAI] Failed to cancel job:', e);
       }
@@ -225,37 +229,38 @@ export function useAsyncAIQuery(options: UseAsyncAIQueryOptions = {}) {
         // 🎯 P1 Fix: Create AbortController for this request
         abortControllerRef.current = new AbortController();
         const { signal } = abortControllerRef.current;
-
-        // Step 1: Create Job with Retry
-        fetchWithRetry(
-          '/api/ai/jobs',
-          {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              query,
-              options: { sessionId },
-            }),
-            signal, // 🎯 P1 Fix: Pass abort signal for cancellation
-          },
-          {
-            ...RETRY_STANDARD,
-            onRetry: (error, attempt, delayMs) => {
-              logger.info(
-                `[AsyncAI] Job creation retry ${attempt}, waiting ${delayMs}ms`,
-                error
-              );
-              setState((prev) => ({
-                ...prev,
-                progress: {
-                  stage: 'retrying',
-                  progress: 0,
-                  message: `재시도 중... (${attempt}/3)`,
+        void createCSRFHeaders({ 'Content-Type': 'application/json' })
+          .then((headers) =>
+            fetchWithRetry(
+              '/api/ai/jobs',
+              {
+                method: 'POST',
+                headers,
+                body: JSON.stringify({
+                  query,
+                  options: { sessionId },
+                }),
+                signal, // 🎯 P1 Fix: Pass abort signal for cancellation
+              },
+              {
+                ...RETRY_STANDARD,
+                onRetry: (error, attempt, delayMs) => {
+                  logger.info(
+                    `[AsyncAI] Job creation retry ${attempt}, waiting ${delayMs}ms`,
+                    error
+                  );
+                  setState((prev) => ({
+                    ...prev,
+                    progress: {
+                      stage: 'retrying',
+                      progress: 0,
+                      message: `재시도 중... (${attempt}/3)`,
+                    },
+                  }));
                 },
-              }));
-            },
-          }
-        )
+              }
+            )
+          )
           .then(async (response) => {
             if (response.status === 429) {
               let message = '요청이 너무 많습니다. 잠시 후 다시 시도해주세요.';
@@ -382,7 +387,13 @@ export function useAsyncAIQuery(options: UseAsyncAIQueryOptions = {}) {
           resolve(resultWithJobId);
         };
 
-        fetch(`/api/ai/jobs/${failedJobId}/retry`, { method: 'POST' })
+        void createCSRFHeaders()
+          .then((headers) =>
+            fetch(`/api/ai/jobs/${failedJobId}/retry`, {
+              method: 'POST',
+              headers,
+            })
+          )
           .then(async (res) => {
             if (!res.ok) {
               const body = await res.json().catch(() => ({}));

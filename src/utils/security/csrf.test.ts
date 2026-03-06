@@ -12,11 +12,13 @@
 import type { NextRequest, NextResponse } from 'next/server';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
+  createCSRFFailureResponse,
   generateCSRFToken,
   getCSRFTokenFromCookie,
   setCSRFCookie,
   setupCSRFProtection,
   verifyCSRFToken,
+  withCSRFProtection,
 } from './csrf';
 
 describe('generateCSRFToken', () => {
@@ -124,6 +126,58 @@ describe('verifyCSRFToken', () => {
 
     // Then
     expect(result).toBe(false);
+  });
+});
+
+describe('createCSRFFailureResponse', () => {
+  it('403과 고정 에러 메시지를 반환한다', async () => {
+    const response = createCSRFFailureResponse();
+    const body = await response.json();
+
+    expect(response.status).toBe(403);
+    expect(body.error).toBe('Invalid CSRF token');
+  });
+});
+
+describe('withCSRFProtection', () => {
+  const createMockRequest = (
+    headerToken: string | null,
+    cookieToken: string | null
+  ): NextRequest =>
+    ({
+      headers: {
+        get: (name: string) => (name === 'X-CSRF-Token' ? headerToken : null),
+      },
+      cookies: {
+        get: (name: string) =>
+          name === 'csrf_token' && cookieToken
+            ? { value: cookieToken }
+            : undefined,
+      },
+    }) as unknown as NextRequest;
+
+  it('검증 성공 시 원래 핸들러를 호출한다', async () => {
+    const handler = vi.fn(async () => new Response('ok', { status: 200 }));
+    const protectedHandler = withCSRFProtection(handler);
+
+    const response = await protectedHandler(
+      createMockRequest('valid-token', 'valid-token')
+    );
+
+    expect(handler).toHaveBeenCalledTimes(1);
+    expect(response.status).toBe(200);
+  });
+
+  it('검증 실패 시 403을 반환하고 핸들러를 호출하지 않는다', async () => {
+    const handler = vi.fn(async () => new Response('ok', { status: 200 }));
+    const protectedHandler = withCSRFProtection(handler);
+
+    const response = await protectedHandler(createMockRequest(null, null));
+    const body = await response.json();
+
+    expect(handler).not.toHaveBeenCalled();
+    expect(response.status).toBe(403);
+    expect(body.error).toBe('Invalid CSRF token');
   });
 });
 

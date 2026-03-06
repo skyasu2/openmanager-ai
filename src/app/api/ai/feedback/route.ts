@@ -8,6 +8,7 @@ import { withAuth } from '@/lib/auth/api-auth';
 import { aiLogger } from '@/lib/logger';
 import { rateLimiters, withRateLimit } from '@/lib/security/rate-limiter';
 import { supabaseAdmin } from '@/lib/supabase/admin';
+import { withCSRFProtection } from '@/utils/security/csrf';
 
 /**
  * AI 피드백 API 엔드포인트
@@ -140,7 +141,9 @@ async function handlePOST(request: NextRequest) {
 
 // 인증 + Rate Limiting 적용 (분당 20회)
 export const POST = withAuth((request: NextRequest) =>
-  withRateLimit(rateLimiters.default, handlePOST)(request)
+  withCSRFProtection((csrfRequest) =>
+    withRateLimit(rateLimiters.default, handlePOST)(csrfRequest)
+  )(request)
 );
 
 // GET: 피드백 통계 조회 (Supabase 기반)

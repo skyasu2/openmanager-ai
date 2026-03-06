@@ -7,7 +7,7 @@
  * - Secure 쿠키 설정
  */
 
-import type { NextRequest, NextResponse } from 'next/server';
+import { NextResponse, type NextRequest } from 'next/server';
 
 /**
  * CSRF 토큰 생성 (32자 랜덤)
@@ -40,6 +40,34 @@ export function verifyCSRFToken(request: NextRequest): boolean {
   }
 
   return headerToken === cookieToken;
+}
+
+/**
+ * CSRF 검증 실패 응답
+ */
+export function createCSRFFailureResponse(): NextResponse {
+  return NextResponse.json(
+    { error: 'Invalid CSRF token' },
+    { status: 403 }
+  );
+}
+
+/**
+ * mutating route에 선택적으로 적용하는 CSRF 래퍼
+ */
+export function withCSRFProtection<T extends unknown[] = []>(
+  handler: (
+    request: NextRequest,
+    ...args: T
+  ) => Promise<NextResponse | Response>
+) {
+  return async (request: NextRequest, ...args: T) => {
+    if (!verifyCSRFToken(request)) {
+      return createCSRFFailureResponse();
+    }
+
+    return handler(request, ...args);
+  };
 }
 
 /**
@@ -80,25 +108,12 @@ export function setupCSRFProtection(response: NextResponse): string {
  * 클라이언트 사이드에서 CSRF 토큰 가져오기
  *
  * @returns CSRF token from cookie, or empty string if not found
- *
- * @example
- * ```typescript
- * const csrfToken = getCSRFTokenFromCookie();
- * const response = await fetch('/api/admin/verify-pin', {
- *   method: 'POST',
- *   headers: {
- *     'Content-Type': 'application/json',
- *     'X-CSRF-Token': csrfToken
- *   },
- *   body: JSON.stringify({ password })
- * });
- * ```
  */
 export function getCSRFTokenFromCookie(): string {
   if (typeof document === 'undefined') return '';
 
-  const cookies = document.cookie.split(';').map((c) => c.trim());
-  const csrfCookie = cookies.find((c) => c.startsWith('csrf_token='));
+  const cookies = document.cookie.split(';').map((cookie) => cookie.trim());
+  const csrfCookie = cookies.find((cookie) => cookie.startsWith('csrf_token='));
 
   if (!csrfCookie) return '';
 

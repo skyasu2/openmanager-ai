@@ -34,16 +34,6 @@ import type { NextRequest } from 'next/server';
 import { logger } from '@/lib/logging';
 
 /**
- * Next.js 15 쿠키 객체 타입
- *
- * cookies.get()이 반환하는 실제 타입
- */
-export type NextCookie = {
-  name: string;
-  value: string;
-};
-
-/**
  * 쿠키 값을 타입 안전하게 추출
  *
  * Next.js 15 cookies.get() API를 타입 가드로 안전하게 처리합니다.
@@ -82,8 +72,7 @@ export function getCookieValue(
   request: NextRequest,
   name: string
 ): string | undefined {
-  // Next.js 15 API: returns { name, value } | undefined
-  const cookie = request.cookies.get(name) as NextCookie | undefined;
+  const cookie = request.cookies.get(name);
 
   // undefined 체크
   if (!cookie) {
@@ -91,7 +80,7 @@ export function getCookieValue(
   }
 
   // 런타임 검증 (방어적 프로그래밍)
-  if (typeof cookie.value !== 'string') {
+  if (typeof cookie !== 'object' || typeof cookie.value !== 'string') {
     logger.warn(
       `[safe-cookie-utils] Unexpected cookie format for "${name}":`,
       cookie

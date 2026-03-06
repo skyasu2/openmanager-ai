@@ -10,6 +10,10 @@ vi.mock('@/lib/logging', () => ({
   logger: { error: vi.fn(), info: vi.fn(), warn: vi.fn() },
 }));
 
+vi.mock('@/utils/security/csrf-client', () => ({
+  createCSRFHeaders: vi.fn(async (init?: HeadersInit) => new Headers(init)),
+}));
+
 describe('useChatFeedback', () => {
   const sessionIdRef = { current: 'session-123' };
 

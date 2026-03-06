@@ -2,6 +2,7 @@ import { type NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { withAuth } from '@/lib/auth/api-auth';
 import { logger } from '@/lib/logging';
+import { withCSRFProtection } from '@/utils/security/csrf';
 
 const errorReportSchema = z.object({
   error: z.string().min(1),
@@ -48,4 +49,4 @@ async function postHandler(request: NextRequest): Promise<NextResponse> {
   }
 }
 
-export const POST = withAuth(postHandler);
+export const POST = withAuth(withCSRFProtection(postHandler));

@@ -137,17 +137,6 @@
           }
         }
       }
-    },
-    {
-      "includes": ["src/polyfills.ts"],
-      "linter": {
-        "rules": {
-          "suspicious": {
-            "noExplicitAny": "off",
-            "noImplicitAnyLet": "off"
-          }
-        }
-      }
     }
   ]
 }

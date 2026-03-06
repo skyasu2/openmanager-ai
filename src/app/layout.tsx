@@ -3,9 +3,7 @@ import { Inter, Noto_Sans_KR } from 'next/font/google';
 import type { ReactNode } from 'react';
 import { ClientProviders } from '@/components/providers/ClientProviders';
 import './globals.css';
-import { AuthTokenHandler } from '@/components/auth/AuthTokenHandler';
 import { EmergencyBanner } from '@/components/emergency/EmergencyBanner';
-import { CSRFTokenProvider } from '@/components/security/CSRFTokenProvider';
 import { SystemBootstrap } from '@/components/system/SystemBootstrap';
 import { Toaster } from '@/components/ui/toaster';
 import { getSiteUrl } from '@/lib/site-url';
@@ -144,12 +142,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       >
         <EmergencyBanner />
         <ClientProviders>
-          <CSRFTokenProvider>
-            <AuthTokenHandler />
-            <SystemBootstrap />
-            <Toaster />
-            {children}
-          </CSRFTokenProvider>
+          <SystemBootstrap />
+          <Toaster />
+          {children}
         </ClientProviders>
         {/* Vercel Analytics 비활성화 - 무료 티어 최적화 (6개 404 에러 제거) */}
         {/* <SpeedInsights key="speed-insights" /> */}
