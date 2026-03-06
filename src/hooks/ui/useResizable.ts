@@ -64,6 +64,7 @@ export function useResizable({
   // 드래그 시작 위치 및 초기 너비 저장
   const startXRef = useRef(0);
   const startWidthRef = useRef(0);
+  const latestWidthRef = useRef(initialWidth);
 
   // 너비 클램핑 헬퍼
   const clampWidth = useCallback(
@@ -75,6 +76,7 @@ export function useResizable({
   const setWidth = useCallback(
     (newWidth: number) => {
       const clamped = clampWidth(newWidth);
+      latestWidthRef.current = clamped;
       setWidthState(clamped);
       onWidthChange?.(clamped);
     },
@@ -83,6 +85,7 @@ export function useResizable({
 
   // initialWidth 변경 시 동기화
   useEffect(() => {
+    latestWidthRef.current = initialWidth;
     setWidthState(initialWidth);
   }, [initialWidth]);
 
@@ -122,6 +125,7 @@ export function useResizable({
       // 오른쪽 사이드바이므로 왼쪽으로 드래그 = 너비 증가
       const delta = startXRef.current - e.clientX;
       const newWidth = clampWidth(startWidthRef.current + delta);
+      latestWidthRef.current = newWidth;
       setWidthState(newWidth);
       onWidthChange?.(newWidth);
     };
@@ -132,13 +136,14 @@ export function useResizable({
 
       const delta = startXRef.current - touch.clientX;
       const newWidth = clampWidth(startWidthRef.current + delta);
+      latestWidthRef.current = newWidth;
       setWidthState(newWidth);
       onWidthChange?.(newWidth);
     };
 
     const handleEnd = () => {
       setIsResizing(false);
-      onResizeEnd?.(width);
+      onResizeEnd?.(latestWidthRef.current);
     };
 
     // 이벤트 리스너 등록
@@ -163,7 +168,7 @@ export function useResizable({
       document.body.style.userSelect = '';
       document.body.style.cursor = '';
     };
-  }, [isResizing, clampWidth, onWidthChange, onResizeEnd, width]);
+  }, [isResizing, clampWidth, onWidthChange, onResizeEnd]);
 
   return {
     width,

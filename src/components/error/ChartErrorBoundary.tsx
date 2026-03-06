@@ -29,6 +29,8 @@ export class ChartErrorBoundary extends Component<
   ChartErrorBoundaryProps,
   ChartErrorBoundaryState
 > {
+  private static readonly isDevelopment = process.env.NODE_ENV !== 'production';
+
   constructor(props: ChartErrorBoundaryProps) {
     super(props);
     this.state = { hasError: false, error: null };
@@ -53,6 +55,7 @@ export class ChartErrorBoundary extends Component<
   render(): ReactNode {
     const { hasError, error } = this.state;
     const { children, fallback, height = 200, chartName } = this.props;
+    const isDevelopment = ChartErrorBoundary.isDevelopment;
 
     if (!hasError) {
       return children;
@@ -72,7 +75,9 @@ export class ChartErrorBoundary extends Component<
           {chartName ? `${chartName} ` : ''}차트 로드 실패
         </p>
         <p className="mb-3 text-xs text-amber-600">
-          {error?.message || '데이터 렌더링 중 오류가 발생했습니다'}
+          {isDevelopment
+            ? error?.message || '데이터 렌더링 중 오류가 발생했습니다'
+            : '차트 데이터를 불러오는 중 문제가 발생했습니다'}
         </p>
         <button
           type="button"

@@ -90,7 +90,7 @@ export const ClarificationDialog: FC<ClarificationDialogProps> = memo(
         </div>
 
         {/* 옵션 그리드 */}
-        <div className="grid grid-cols-2 gap-2 mb-3">
+        <div className="mb-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
           {clarification.options.map((option) => (
             <button
               key={option.id}

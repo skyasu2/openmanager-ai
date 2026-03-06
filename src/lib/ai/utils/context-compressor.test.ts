@@ -106,6 +106,26 @@ describe('context-compressor', () => {
         const systemMsgs = result.messages.filter((m) => m.role === 'system');
         expect(systemMsgs).toHaveLength(0);
       });
+
+      it('should still respect maxTotalMessages when system messages exceed the budget', () => {
+        const messages: CompressibleMessage[] = [
+          createMessage('system', 'System prompt 1'),
+          createMessage('system', 'System prompt 2'),
+          createMessage('system', 'System prompt 3'),
+          createMessage('user', 'Recent question'),
+          createMessage('assistant', 'Recent answer'),
+        ];
+
+        const result = compressContext(messages, {
+          keepSystemMessages: true,
+          keepRecentCount: 2,
+          maxTotalMessages: 3,
+        });
+
+        expect(result.messages).toHaveLength(3);
+        expect(result.messages.at(-1)?.content).toBe('Recent answer');
+        expect(result.messages.at(-2)?.content).toBe('Recent question');
+      });
     });
 
     describe('message truncation', () => {

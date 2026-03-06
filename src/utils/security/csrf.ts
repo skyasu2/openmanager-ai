@@ -7,7 +7,7 @@
  * - Secure 쿠키 설정
  */
 
-import { NextResponse, type NextRequest } from 'next/server';
+import { type NextRequest, NextResponse } from 'next/server';
 
 /**
  * CSRF 토큰 생성 (32자 랜덤)
@@ -46,10 +46,7 @@ export function verifyCSRFToken(request: NextRequest): boolean {
  * CSRF 검증 실패 응답
  */
 export function createCSRFFailureResponse(): NextResponse {
-  return NextResponse.json(
-    { error: 'Invalid CSRF token' },
-    { status: 403 }
-  );
+  return NextResponse.json({ error: 'Invalid CSRF token' }, { status: 403 });
 }
 
 /**

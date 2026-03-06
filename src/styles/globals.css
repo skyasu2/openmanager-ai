@@ -1,8 +1,5 @@
 @import 'tailwindcss';
 
-/* Material Design 3 토큰 시스템 Import */
-@import './material-tokens.css' layer(utilities);
-
 /* GPU-Accelerated Animation Utilities (120fps target) */
 @import './animations-gpu.css' layer(utilities);
 

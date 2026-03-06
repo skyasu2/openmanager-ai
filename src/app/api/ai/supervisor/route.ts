@@ -289,9 +289,10 @@ export const POST = withRateLimit(
 
           let messagesToSend = messagesWithContext;
           if (shouldCompress(normalizedMessages.length, 4)) {
+            const maxCompressedMessages = contextMessage ? 7 : 8;
             const compression = compressContext(normalizedMessages, {
               keepRecentCount: 4,
-              maxTotalMessages: 8,
+              maxTotalMessages: maxCompressedMessages,
               maxCharsPerMessage: 1000,
             });
             messagesToSend = contextMessage

@@ -18,17 +18,17 @@
  * 📅 생성일: 2025.06.14 (ServerDashboard 1522줄 분리 작업)
  */
 
+import type {
+  DashboardTab,
+  ViewMode,
+} from '@/types/dashboard/server-dashboard.types';
 import type { Server } from '@/types/server';
 
-// 🎯 탭 타입 정의
-export type DashboardTab = 'servers' | 'network' | 'clusters' | 'applications';
-
-// 🎯 뷰 모드 타입
-export type ViewMode = 'grid' | 'list';
+export type { DashboardTab, ViewMode };
 
 // 🎯 서버 필터 타입
 export interface ServerFilters {
-  status?: 'online' | 'offline' | 'warning' | 'all';
+  status?: 'online' | 'offline' | 'warning' | 'critical' | 'unknown' | 'all';
   location?: string;
   searchTerm?: string;
 }
@@ -47,7 +47,7 @@ export interface DashboardStats {
 export interface ServerInstance {
   id: string;
   name: string;
-  status: 'online' | 'offline' | 'warning';
+  status: 'online' | 'offline' | 'warning' | 'critical' | 'unknown';
   location: string;
   cpu: number;
   memory: number;

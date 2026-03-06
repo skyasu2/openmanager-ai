@@ -42,9 +42,7 @@ export async function ensureCSRFToken(): Promise<string> {
 /**
  * 기존 헤더를 보존하면서 CSRF 토큰을 추가한다.
  */
-export async function createCSRFHeaders(
-  init?: HeadersInit
-): Promise<Headers> {
+export async function createCSRFHeaders(init?: HeadersInit): Promise<Headers> {
   const headers = new Headers(init);
   const token = await ensureCSRFToken();
 

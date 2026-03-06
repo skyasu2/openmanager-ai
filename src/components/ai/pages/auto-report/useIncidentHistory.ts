@@ -1,11 +1,17 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import type { IncidentReport } from './types';
+import {
+  type IncidentReport,
+  type IncidentSeverity,
+  type IncidentStatus,
+  normalizeIncidentSeverity,
+  normalizeIncidentStatus,
+} from './types';
 
 export interface HistoryFilters {
-  severity: string;
-  status: string;
+  severity: 'all' | IncidentSeverity;
+  status: 'all' | IncidentStatus;
   dateRange: 'all' | '7d' | '30d' | '90d';
   search: string;
 }
@@ -58,11 +64,11 @@ function mapDBToIncidentReport(db: DBIncidentReport): IncidentReport {
   return {
     id: db.id,
     title: db.title,
-    severity: db.severity as IncidentReport['severity'],
+    severity: normalizeIncidentSeverity(db.severity),
     timestamp: new Date(db.created_at),
     affectedServers: db.affected_servers || [],
     description: db.root_cause_analysis?.primary_cause || '',
-    status: db.status as IncidentReport['status'],
+    status: normalizeIncidentStatus(db.status),
     pattern: db.pattern || undefined,
     recommendations: db.recommendations,
     systemSummary: db.system_summary

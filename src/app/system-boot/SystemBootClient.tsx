@@ -12,12 +12,7 @@ import {
   Zap,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import {
-  type FC,
-  useCallback,
-  useEffect,
-  useState,
-} from 'react';
+import { type FC, useCallback, useEffect, useState } from 'react';
 import { clearChatHistory } from '@/hooks/ai/utils/chat-history-storage';
 import { useAISidebarStore } from '@/stores/useAISidebarStore';
 import { useUnifiedAdminStore } from '@/stores/useUnifiedAdminStore';

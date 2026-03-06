@@ -65,6 +65,7 @@ type WorkerCallback = (result: unknown) => void;
 import { logger } from '@/lib/logging';
 
 type WorkerErrorCallback = (error: Error) => void;
+type WorkerTimeout = ReturnType<typeof setTimeout>;
 
 /**
  * 🔧 Web Worker 관리 Hook
@@ -77,10 +78,19 @@ export const useWorkerStats = () => {
       {
         resolve: WorkerCallback;
         reject: WorkerErrorCallback;
+        timeoutId: WorkerTimeout;
       }
     >
   >(new Map());
   const isInitializedRef = useRef(false);
+
+  const rejectPendingOperations = useCallback((message: string) => {
+    callbacksRef.current.forEach(({ reject, timeoutId }) => {
+      clearTimeout(timeoutId);
+      reject(new Error(message));
+    });
+    callbacksRef.current.clear();
+  }, []);
 
   // 🚀 Worker 초기화
   const initializeWorker = useCallback(() => {
@@ -105,6 +115,7 @@ export const useWorkerStats = () => {
         if (!callbacks) return;
 
         callbacksRef.current.delete(id);
+        clearTimeout(callbacks.timeoutId);
 
         if (type === 'SUCCESS') {
           callbacks.resolve(data);
@@ -122,17 +133,13 @@ export const useWorkerStats = () => {
       // 에러 핸들러 설정
       workerRef.current.onerror = (error) => {
         logger.error('🚨 Worker error:', error);
-        // 모든 대기 중인 콜백에 에러 전달
-        callbacksRef.current.forEach(({ reject }) => {
-          reject(new Error('Worker crashed'));
-        });
-        callbacksRef.current.clear();
+        rejectPendingOperations('Worker crashed');
       };
     } catch (error) {
       logger.error('🚨 Worker initialization failed:', error);
       isInitializedRef.current = false;
     }
-  }, []);
+  }, [rejectPendingOperations]);
 
   // 🔄 Worker 메시지 전송 (Promise 기반)
   const sendMessage = useCallback(
@@ -144,23 +151,23 @@ export const useWorkerStats = () => {
         }
 
         const id = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+        const timeoutId = setTimeout(() => {
+          const pending = callbacksRef.current.get(id);
+          if (!pending) return;
+
+          callbacksRef.current.delete(id);
+          reject(new Error('Worker calculation timeout'));
+        }, 30000);
 
         // 콜백 등록
         callbacksRef.current.set(id, {
           resolve: resolve as WorkerCallback,
           reject,
+          timeoutId,
         });
 
         // Worker에 메시지 전송
         workerRef.current.postMessage({ type, data, id });
-
-        // 타임아웃 설정 (30초)
-        setTimeout(() => {
-          if (callbacksRef.current.has(id)) {
-            callbacksRef.current.delete(id);
-            reject(new Error('Worker calculation timeout'));
-          }
-        }, 30000);
       });
     },
     []
@@ -261,13 +268,13 @@ export const useWorkerStats = () => {
   // 🔄 Worker 재시작
   const restartWorker = useCallback(() => {
     if (workerRef.current) {
+      rejectPendingOperations('Worker restarted');
       workerRef.current.terminate();
       workerRef.current = null;
       isInitializedRef.current = false;
-      callbacksRef.current.clear();
     }
     initializeWorker();
-  }, [initializeWorker]);
+  }, [initializeWorker, rejectPendingOperations]);
 
   // 🧹 정리
   useEffect(() => {
@@ -275,14 +282,13 @@ export const useWorkerStats = () => {
 
     return () => {
       if (workerRef.current) {
+        rejectPendingOperations('Worker terminated');
         workerRef.current.terminate();
         workerRef.current = null;
         isInitializedRef.current = false;
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        callbacksRef.current.clear();
       }
     };
-  }, [initializeWorker]);
+  }, [initializeWorker, rejectPendingOperations]);
 
   return {
     // 핵심 계산 함수들

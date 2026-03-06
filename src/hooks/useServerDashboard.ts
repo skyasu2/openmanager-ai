@@ -104,14 +104,8 @@ export function useServerDashboard(options: UseServerDashboardOptions = {}) {
     totalPages,
     currentPage,
     setCurrentPage,
-    setPageSize: setHookPageSize,
   } = useServerPagination(filteredServers, ITEMS_PER_PAGE);
   const previousStatusFilterRef = useRef<string | null>(statusFilter);
-
-  // 페이지 크기 변경 시 훅의 상태도 업데이트
-  useEffect(() => {
-    setHookPageSize(ITEMS_PER_PAGE);
-  }, [ITEMS_PER_PAGE, setHookPageSize]);
 
   // 상태 필터 변경 시 첫 페이지로 리셋
   useEffect(() => {

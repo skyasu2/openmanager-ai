@@ -6,6 +6,7 @@
 
 import { AlertTriangle, CheckCircle } from 'lucide-react';
 import { createElement } from 'react';
+import type { IncidentSeverity, IncidentStatus } from './types';
 
 /**
  * 숫자 값 추출 헬퍼
@@ -34,9 +35,7 @@ export function extractNumericValue(
 /**
  * API 심각도를 UI 심각도로 매핑
  */
-export function mapSeverity(
-  apiSeverity: string
-): 'critical' | 'warning' | 'info' {
+export function mapSeverity(apiSeverity: string): IncidentSeverity {
   switch (apiSeverity) {
     case 'critical':
     case 'high':
@@ -51,7 +50,7 @@ export function mapSeverity(
 /**
  * 심각도에 따른 아이콘 반환
  */
-export function getSeverityIcon(severity: string) {
+export function getSeverityIcon(severity: IncidentSeverity) {
   switch (severity) {
     case 'critical':
       return createElement(AlertTriangle, {
@@ -69,7 +68,7 @@ export function getSeverityIcon(severity: string) {
 /**
  * 심각도에 따른 색상 클래스 반환
  */
-export function getSeverityColor(severity: string): string {
+export function getSeverityColor(severity: IncidentSeverity): string {
   switch (severity) {
     case 'critical':
       return 'border-red-200 bg-red-50';
@@ -83,7 +82,7 @@ export function getSeverityColor(severity: string): string {
 /**
  * 상태에 따른 배지 스타일 반환
  */
-export function getStatusBadgeStyle(status: string): string {
+export function getStatusBadgeStyle(status: IncidentStatus): string {
   switch (status) {
     case 'active':
       return 'bg-red-100 text-red-700';
@@ -97,7 +96,7 @@ export function getStatusBadgeStyle(status: string): string {
 /**
  * 상태 라벨 반환
  */
-export function getStatusLabel(status: string): string {
+export function getStatusLabel(status: IncidentStatus): string {
   switch (status) {
     case 'active':
       return '활성';
@@ -111,7 +110,7 @@ export function getStatusLabel(status: string): string {
 /**
  * 심각도 라벨 반환
  */
-export function getSeverityLabel(severity: string): string {
+export function getSeverityLabel(severity: IncidentSeverity): string {
   switch (severity) {
     case 'critical':
       return '심각';

@@ -47,6 +47,8 @@ export class AIErrorBoundary extends Component<
   AIErrorBoundaryProps,
   AIErrorBoundaryState
 > {
+  private static readonly isDevelopment = process.env.NODE_ENV !== 'production';
+
   constructor(props: AIErrorBoundaryProps) {
     super(props);
     this.state = {
@@ -101,6 +103,7 @@ export class AIErrorBoundary extends Component<
   render(): ReactNode {
     const { hasError, error, copied } = this.state;
     const { children, fallback } = this.props;
+    const isDevelopment = AIErrorBoundary.isDevelopment;
 
     if (!hasError) {
       return children;
@@ -133,7 +136,9 @@ export class AIErrorBoundary extends Component<
           {/* 에러 메시지 */}
           <div className="mb-4 rounded-lg bg-white/60 p-3">
             <p className="text-sm text-gray-700">
-              {error?.message || '알 수 없는 오류가 발생했습니다.'}
+              {isDevelopment
+                ? error?.message || '알 수 없는 오류가 발생했습니다.'
+                : 'AI 처리 중 일시적인 문제가 발생했습니다. 다시 시도해주세요.'}
             </p>
           </div>
 
@@ -147,15 +152,17 @@ export class AIErrorBoundary extends Component<
               <RefreshCw className="h-4 w-4" />
               다시 시도
             </button>
-            <button
-              type="button"
-              onClick={this.handleCopyError}
-              className="flex items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
-              title="오류 정보 복사"
-            >
-              <Copy className="h-4 w-4" />
-              {copied ? '복사됨!' : '복사'}
-            </button>
+            {isDevelopment && (
+              <button
+                type="button"
+                onClick={this.handleCopyError}
+                className="flex items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
+                title="오류 정보 복사"
+              >
+                <Copy className="h-4 w-4" />
+                {copied ? '복사됨!' : '복사'}
+              </button>
+            )}
           </div>
 
           {/* 도움말 */}

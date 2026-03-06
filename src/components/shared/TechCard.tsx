@@ -99,12 +99,18 @@ export const TechCard = memo(function TechCard({ tech }: TechCardProps) {
         {tech.aiType && (
           <span
             className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
-              tech.aiType === 'google-api'
+              tech.aiType === 'cloud-ai'
                 ? 'border border-green-500/30 bg-green-500/20 text-green-300'
-                : 'border border-yellow-500/30 bg-yellow-500/20 text-yellow-300'
+                : tech.aiType === 'hybrid'
+                  ? 'border border-cyan-500/30 bg-cyan-500/20 text-cyan-300'
+                  : 'border border-yellow-500/30 bg-yellow-500/20 text-yellow-300'
             }`}
           >
-            {tech.aiType === 'google-api' ? '🌐 Cloud AI' : '💻 로컬 AI'}
+            {tech.aiType === 'cloud-ai'
+              ? '🌐 Cloud AI'
+              : tech.aiType === 'hybrid'
+                ? '🔀 Hybrid AI'
+                : '💻 로컬 AI'}
           </span>
         )}
       </div>

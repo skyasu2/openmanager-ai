@@ -3,7 +3,11 @@ import { NextResponse } from 'next/server';
 import { OTEL_METRIC } from '@/constants/otel-metric-names';
 import { getOTelTimeSeries } from '@/data/otel-data';
 import { withAuth } from '@/lib/auth/api-auth';
-import type { ServerHistory } from '@/schemas/server-schemas/server-details.schema';
+import type {
+  EnhancedServerResponse,
+  LegacyServerResponse,
+  ServerHistory,
+} from '@/schemas/server-schemas/server-details.schema';
 import { metricsProvider } from '@/services/metrics/MetricsProvider';
 import {
   normalizeNetworkUtilizationPercent,
@@ -102,7 +106,7 @@ export const GET = withAuth(
           memory: Math.round(metric.memory),
           disk: Math.round(metric.disk),
           uptime: formatUptime(uptimeSeconds, { includeMinutes: true }),
-          lastUpdate: new Date(metric.timestamp),
+          lastUpdate: new Date(metric.timestamp).toISOString(),
           alerts: 0,
           services: processed?.services ?? [],
           specs,
@@ -115,7 +119,7 @@ export const GET = withAuth(
             network_out: processed?.networkOut ?? 0,
             response_time: processed?.responseTimeMs ?? 0,
           },
-        };
+        } satisfies LegacyServerResponse['server'];
 
         // 히스토리 데이터 생성 (요청시)
         let history = null;
@@ -123,27 +127,26 @@ export const GET = withAuth(
           history = await generateServerHistoryFromTimeSeries(serverId, range);
         }
 
-        return NextResponse.json(
-          {
-            success: true,
-            server: legacyServer,
-            history,
-            meta: {
-              format: 'legacy',
-              include_history: includeHistory,
-              range,
-              timestamp: new Date().toISOString(),
-              processing_time_ms: Date.now() - startTime,
-            },
+        const legacyResponse = {
+          success: true,
+          server: legacyServer,
+          history,
+          meta: {
+            format: 'legacy',
+            include_history: includeHistory,
+            range,
+            timestamp: new Date().toISOString(),
+            processing_time_ms: Date.now() - startTime,
           },
-          {
-            headers: {
-              // 인증 응답: 공유 캐시 금지
-              'Cache-Control': 'private, no-store, max-age=0',
-              Pragma: 'no-cache',
-            },
-          }
-        );
+        } satisfies LegacyServerResponse;
+
+        return NextResponse.json(legacyResponse, {
+          headers: {
+            // 인증 응답: 공유 캐시 금지
+            'Cache-Control': 'private, no-store, max-age=0',
+            Pragma: 'no-cache',
+          },
+        });
       } else {
         // Enhanced 형식 (기본)
         const enhancedResponse = {
@@ -181,7 +184,7 @@ export const GET = withAuth(
 
           // 서비스 정보
           services: processed?.services ?? [],
-        };
+        } satisfies EnhancedServerResponse['data'];
 
         // 패턴 정보 포함 (요청시)
         let patternInfo: unknown;
@@ -220,7 +223,7 @@ export const GET = withAuth(
             correlation_metrics: correlationMetrics,
             history,
           },
-        };
+        } satisfies EnhancedServerResponse;
 
         return NextResponse.json(response, {
           headers: {

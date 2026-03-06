@@ -12,7 +12,7 @@ export function useProfileMenu() {
   });
 
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   /**
    * 메뉴 토글 (이벤트 버블링 방지 포함)
@@ -115,19 +115,6 @@ export function useProfileMenu() {
     };
   }, [menuState.showProfileMenu]); // closeMenu 함수 의존성 제거 - 안정적 참조 유지
 
-  // 🧹 메모리 누수 방지: 컴포넌트 언마운트 시 cleanup
-  useEffect(() => {
-    return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
-      // 혹시 남아있을 수 있는 이벤트 리스너들 정리
-      document.removeEventListener('mousedown', () => {});
-      document.removeEventListener('touchstart', () => {});
-      document.removeEventListener('keydown', () => {});
-    };
-  }, []);
-
   return {
     menuState,
     dropdownRef,
@@ -162,6 +149,9 @@ export function useProfileMenuKeyboard(
         case 'ArrowDown':
           e.preventDefault();
           setFocusedIndex((prev) => {
+            if (visibleIndices.length === 0) {
+              return -1;
+            }
             const currentPos = visibleIndices.indexOf(prev);
             const nextPos = (currentPos + 1) % visibleIndices.length;
             return visibleIndices[nextPos] ?? 0;
@@ -171,6 +161,9 @@ export function useProfileMenuKeyboard(
         case 'ArrowUp':
           e.preventDefault();
           setFocusedIndex((prev) => {
+            if (visibleIndices.length === 0) {
+              return -1;
+            }
             const currentPos = visibleIndices.indexOf(prev);
             const nextPos =
               currentPos <= 0 ? visibleIndices.length - 1 : currentPos - 1;
@@ -180,12 +173,12 @@ export function useProfileMenuKeyboard(
 
         case 'Home':
           e.preventDefault();
-          setFocusedIndex(visibleIndices[0] ?? 0);
+          setFocusedIndex(visibleIndices[0] ?? -1);
           break;
 
         case 'End':
           e.preventDefault();
-          setFocusedIndex(visibleIndices[visibleIndices.length - 1] ?? 0);
+          setFocusedIndex(visibleIndices[visibleIndices.length - 1] ?? -1);
           break;
       }
     };

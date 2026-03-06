@@ -5,18 +5,6 @@
  * 기존 import 경로를 유지하면서 중복 정의를 제거한다.
  */
 
-export {
-  AIBenchmarkRequestSchema,
-  AIEngineHealthSchema,
-  AIOptimizationStatusSchema,
-  AIPerformanceMetricsSchema,
-  AIPerformanceStatsResponseSchema,
-  BenchmarkResponseItemSchema,
-  CacheClearResponseSchema,
-  ComparisonBenchmarkResponseSchema,
-  LoadBenchmarkResponseSchema,
-} from '../api.ai.schema';
-
 export type {
   AIBenchmarkRequest,
   AIEngineHealth,
@@ -27,4 +15,15 @@ export type {
   CacheClearResponse,
   ComparisonBenchmarkResponse,
   LoadBenchmarkResponse,
+} from '../api.ai.schema';
+export {
+  AIBenchmarkRequestSchema,
+  AIEngineHealthSchema,
+  AIOptimizationStatusSchema,
+  AIPerformanceMetricsSchema,
+  AIPerformanceStatsResponseSchema,
+  BenchmarkResponseItemSchema,
+  CacheClearResponseSchema,
+  ComparisonBenchmarkResponseSchema,
+  LoadBenchmarkResponseSchema,
 } from '../api.ai.schema';

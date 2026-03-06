@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { calculatePagination } from '@/utils/dashboard/server-utils';
 
 export function useServerPagination<T>(
@@ -7,6 +7,15 @@ export function useServerPagination<T>(
 ) {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(initialPageSize);
+  const previousInitialPageSizeRef = useRef(initialPageSize);
+
+  useEffect(() => {
+    if (previousInitialPageSizeRef.current !== initialPageSize) {
+      previousInitialPageSizeRef.current = initialPageSize;
+      setPageSize(initialPageSize);
+      setCurrentPage(1);
+    }
+  }, [initialPageSize]);
 
   const { paginatedItems, totalPages } = useMemo(() => {
     return calculatePagination(items, currentPage, pageSize);

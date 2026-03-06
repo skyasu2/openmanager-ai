@@ -43,6 +43,13 @@ export default function AuthLoadingUI({
   authError,
   onRetry,
 }: AuthLoadingUIProps) {
+  const visibleAuthError =
+    process.env.NODE_ENV === 'development'
+      ? authError
+      : authError
+        ? '인증 확인 중 문제가 발생했습니다.'
+        : null;
+
   return (
     <FullScreenLayout>
       <div className="text-center">
@@ -52,9 +59,11 @@ export default function AuthLoadingUI({
         <p className="font-medium text-white/90" suppressHydrationWarning>
           {loadingMessage} ({envLabel} 환경)
         </p>
-        {authError && onRetry && (
+        {visibleAuthError && onRetry && (
           <div className="mx-auto mt-4 max-w-md">
-            <p className="mb-2 text-sm text-red-400">인증 오류: {authError}</p>
+            <p className="mb-2 text-sm text-red-400">
+              인증 오류: {visibleAuthError}
+            </p>
             <button
               type="button"
               onClick={onRetry}

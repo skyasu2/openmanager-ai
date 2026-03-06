@@ -126,12 +126,12 @@ export const ProcessesTab: FC<ProcessesTabProps> = ({ services }) => {
         {/* 서비스 카드 그리드 */}
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
           {services.length > 0 ? (
-            services.map((service, idx) => {
+            services.map((service) => {
               const statusStyle = getServiceStatusStyle(service.status);
 
               return (
                 <div
-                  key={idx}
+                  key={`${service.name}:${service.port}`}
                   className="rounded-xl border border-gray-100 bg-white p-4 shadow-sm transition-shadow hover:shadow-md"
                 >
                   {/* 서비스명 및 상태 */}

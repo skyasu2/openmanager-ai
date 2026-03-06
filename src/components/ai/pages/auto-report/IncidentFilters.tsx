@@ -2,7 +2,27 @@
 
 import { Search, X } from 'lucide-react';
 import { memo } from 'react';
+import { INCIDENT_REPORT_SEVERITIES, INCIDENT_REPORT_STATUSES } from './types';
 import type { HistoryFilters } from './useIncidentHistory';
+
+const SEVERITY_LABELS: Record<
+  (typeof INCIDENT_REPORT_SEVERITIES)[number],
+  string
+> = {
+  critical: '심각',
+  warning: '경고',
+  info: '정보',
+  high: '높음',
+  medium: '중간',
+  low: '낮음',
+};
+
+const STATUS_LABELS: Record<(typeof INCIDENT_REPORT_STATUSES)[number], string> =
+  {
+    active: '활성',
+    investigating: '조사중',
+    resolved: '해결됨',
+  };
 
 interface IncidentFiltersProps {
   searchInput: string;
@@ -43,10 +63,11 @@ export const IncidentFilters = memo(function IncidentFilters({
           className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
         >
           <option value="all">모든 심각도</option>
-          <option value="critical">심각</option>
-          <option value="high">높음</option>
-          <option value="medium">중간</option>
-          <option value="low">낮음</option>
+          {INCIDENT_REPORT_SEVERITIES.map((severity) => (
+            <option key={severity} value={severity}>
+              {SEVERITY_LABELS[severity]}
+            </option>
+          ))}
         </select>
 
         <select
@@ -55,10 +76,11 @@ export const IncidentFilters = memo(function IncidentFilters({
           className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
         >
           <option value="all">모든 상태</option>
-          <option value="open">열림</option>
-          <option value="investigating">조사중</option>
-          <option value="resolved">해결됨</option>
-          <option value="closed">종료</option>
+          {INCIDENT_REPORT_STATUSES.map((status) => (
+            <option key={status} value={status}>
+              {STATUS_LABELS[status]}
+            </option>
+          ))}
         </select>
 
         <select

@@ -1,14 +1,8 @@
 'use client';
 
 import { useMemo } from 'react';
+import type { SessionState } from '@/types/session';
 import { SESSION_LIMITS } from '@/types/session';
-
-export interface SessionState {
-  count: number;
-  remaining: number;
-  isWarning: boolean;
-  isLimitReached: boolean;
-}
 
 const SESSION_MESSAGE_LIMIT = SESSION_LIMITS.MESSAGE_LIMIT;
 const SESSION_WARNING_THRESHOLD = SESSION_LIMITS.WARNING_THRESHOLD;

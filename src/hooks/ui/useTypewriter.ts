@@ -55,7 +55,7 @@ export function useTypewriter(
 
   const textRef = useRef(text);
   const indexRef = useRef(0);
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // 텍스트가 변경되면 애니메이션 재시작
   useEffect(() => {

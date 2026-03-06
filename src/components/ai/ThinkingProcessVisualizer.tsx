@@ -5,6 +5,7 @@
 
 import {
   Activity,
+  AlertCircle,
   Brain,
   CheckCircle2,
   Cloud,
@@ -88,7 +89,7 @@ const stepStatusConfig: Record<
     borderColor: 'border-green-200',
   },
   failed: {
-    icon: CheckCircle2,
+    icon: AlertCircle,
     color: 'text-red-500',
     bgColor: 'bg-red-50',
     borderColor: 'border-red-200',

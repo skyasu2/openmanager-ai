@@ -142,15 +142,24 @@ export function compressContext(
   );
 
   // 1. 시스템 메시지 분리
-  const systemMessages = keepSystemMessages
+  const allSystemMessages = keepSystemMessages
     ? messages.filter((m) => m.role === 'system')
     : [];
   const conversationMessages = messages.filter((m) => m.role !== 'system');
 
   // 2. 최근 N개 메시지 유지
-  const recentMessages = conversationMessages.slice(-keepRecentCount);
+  const recentMessages = conversationMessages.slice(
+    -Math.min(keepRecentCount, maxTotalMessages)
+  );
 
-  // 3. 이전 메시지 처리
+  // 3. 총 메시지 상한을 넘기지 않는 범위에서 시스템 메시지 유지
+  const systemMessageBudget = Math.max(
+    0,
+    maxTotalMessages - recentMessages.length
+  );
+  const systemMessages = allSystemMessages.slice(0, systemMessageBudget);
+
+  // 4. 이전 메시지 처리
   const olderMessages = conversationMessages.slice(0, -keepRecentCount);
   let processedOlderMessages: CompressibleMessage[] = [];
 
@@ -183,14 +192,14 @@ export function compressContext(
     }
   }
 
-  // 4. 최종 메시지 조합
+  // 5. 최종 메시지 조합
   const compressedMessages = [
     ...systemMessages,
     ...processedOlderMessages,
     ...recentMessages,
-  ];
+  ].slice(-maxTotalMessages);
 
-  // 5. 통계 계산
+  // 6. 통계 계산
   const compressedTokens = compressedMessages.reduce(
     (sum, m) => sum + estimateTokens(m.content),
     0
