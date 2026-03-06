@@ -147,7 +147,7 @@ export async function executeReporterWithPipeline(
       trace.score({ name: 'report-final-score', value: pipelineResult.quality.finalScore });
       trace.score({ name: 'report-correction-rate', value: pipelineResult.quality.finalScore - pipelineResult.quality.initialScore });
     } catch (error) {
-      logger.warn(`⚠️ [ReporterPipeline] Langfuse score recording failed (non-blocking):`, error instanceof Error ? error.message : error);
+      logger.warn(`⚠️ [ReporterPipeline] Langfuse score recording failed (non-blocking):`, error instanceof Error ? error.message : String(error));
     }
 
     logger.info(
