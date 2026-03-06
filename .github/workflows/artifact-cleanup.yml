@@ -1,0 +1,91 @@
+name: Cleanup CI Artifacts
+
+# Playwright artifact 누적으로 Actions storage를 잠식하지 않도록
+# 오래된 진단 산출물만 주기적으로 정리한다.
+
+on:
+  schedule:
+    - cron: '0 10 * * 1'
+  workflow_dispatch:
+
+permissions:
+  actions: write
+  contents: read
+
+jobs:
+  cleanup-playwright-artifacts:
+    name: Cleanup Playwright Artifacts
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete old Playwright artifacts
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const prefixes = ['playwright-report-', 'playwright-results-'];
+            const cutoff = Date.now() - 7 * 24 * 60 * 60 * 1000;
+            let page = 1;
+            let scanned = 0;
+            const toDelete = [];
+
+            while (true) {
+              const { data } = await github.rest.actions.listArtifactsForRepo({
+                owner,
+                repo,
+                per_page: 100,
+                page,
+              });
+
+              if (data.artifacts.length === 0) {
+                break;
+              }
+
+              for (const artifact of data.artifacts) {
+                scanned += 1;
+
+                if (!prefixes.some((prefix) => artifact.name.startsWith(prefix))) {
+                  continue;
+                }
+
+                if (artifact.expired) {
+                  continue;
+                }
+
+                const createdAt = new Date(artifact.created_at).getTime();
+                if (Number.isNaN(createdAt) || createdAt >= cutoff) {
+                  continue;
+                }
+
+                toDelete.push({
+                  id: artifact.id,
+                  name: artifact.name,
+                });
+              }
+
+              page += 1;
+            }
+
+            for (const artifact of toDelete) {
+              await github.rest.actions.deleteArtifact({
+                owner,
+                repo,
+                artifact_id: artifact.id,
+              });
+
+              core.info(`Deleted ${artifact.name} (${artifact.id})`);
+            }
+
+            core.summary
+              .addHeading('Artifact Cleanup Summary')
+              .addTable([
+                [
+                  { data: 'Scanned', header: true },
+                  { data: 'Deleted', header: true },
+                  { data: 'Retention window', header: true },
+                ],
+                [String(scanned), String(toDelete.length), '7 days'],
+              ])
+              .write();
+
+            core.notice(`Scanned ${scanned} artifacts, deleted ${toDelete.length} old Playwright artifacts.`);

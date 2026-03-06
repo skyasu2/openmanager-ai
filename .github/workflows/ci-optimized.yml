@@ -164,19 +164,21 @@ jobs:
       - name: Run critical E2E suite
         run: npm run test:e2e:critical
       - name: Upload Playwright Report
-        if: always()
+        if: failure()
         uses: actions/upload-artifact@v4
         with:
           name: playwright-report-${{ github.run_id }}
           path: playwright-report
           if-no-files-found: ignore
+          retention-days: 3
       - name: Upload Playwright Test Results
-        if: always()
+        if: failure()
         uses: actions/upload-artifact@v4
         with:
           name: playwright-results-${{ github.run_id }}
           path: test-results
           if-no-files-found: ignore
+          retention-days: 3
 
   # 🔒 보안 검사 (main/pull_request 차단형)
   security-scan:
