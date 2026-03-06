@@ -258,7 +258,7 @@ async function* streamSingleAgent(
         },
       });
 
-      const SINGLE_AGENT_HARD_TIMEOUT = TIMEOUT_CONFIG.supervisor.hard;
+      const SINGLE_AGENT_HARD_TIMEOUT = TIMEOUT_CONFIG.supervisor.hardStreaming ?? TIMEOUT_CONFIG.supervisor.hard;
       const TIMEOUT_WARNING_THRESHOLD = TIMEOUT_CONFIG.supervisor.warning;
       let warningEmitted = false;
 

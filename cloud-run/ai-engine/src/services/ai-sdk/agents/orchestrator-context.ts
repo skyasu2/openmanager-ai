@@ -388,8 +388,14 @@ export function preFilterQuery(
       (hasCompositeSignal && (intentMatches >= 1 || query.length >= 70));
 
     if (likelyCompositeQuery) {
+      let fallbackAgent = 'NLQ Agent';
+      if (isReporterIntent) fallbackAgent = 'Reporter Agent';
+      else if (isAnalystIntent) fallbackAgent = 'Analyst Agent';
+      else if (isAdvisorIntent) fallbackAgent = 'Advisor Agent';
+
       return {
         shouldHandoff: true,
+        suggestedAgent: fallbackAgent,
         confidence: 0.68,
       };
     }

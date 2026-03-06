@@ -208,6 +208,8 @@ export function selectExecutionMode(query: string): SupervisorMode {
     /compared.*to.*(yesterday|last|previous)/i,
     /상관관계|연관.*분석|correlat|같이.*올라|함께.*증가/i,
     /이상.*원인|비정상.*이유|스파이크.*원인|급증.*이유/i,
+    /이상\s*(탐지|감지|확인|점검|있어|있나)/i,
+    /명령어.*추천|cli.*추천|커맨드.*알려/i,
   ];
 
   const compositeConnectors = [
@@ -237,7 +239,7 @@ export function selectExecutionMode(query: string): SupervisorMode {
     const connectorHits = compositeConnectors.filter((pattern) => pattern.test(q)).length;
     const intentHits = compositeIntentPatterns.filter((pattern) => pattern.test(q)).length;
 
-    if (intentHits >= 1 || connectorHits >= 2 || (connectorHits >= 1 && q.length >= 80)) {
+    if (intentHits >= 1 || connectorHits >= 2 || (connectorHits >= 1 && q.length >= 50)) {
       return 'multi';
     }
   }

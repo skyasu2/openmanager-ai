@@ -71,8 +71,10 @@ export const TIMEOUT_CONFIG = {
    * - Vercel proxy compliance (55s effective - 5s for cleanup)
    */
   supervisor: {
-    /** Hard timeout - abort execution */
+    /** Hard timeout - abort execution (non-streaming) */
     hard: 50_000,
+    /** Hard timeout - streaming responses (Cloud Run 300s limit) */
+    hardStreaming: 120_000,
     /** Warning threshold - emit warning event */
     warning: 40_000,
     /** Soft timeout - start graceful degradation */
@@ -86,10 +88,10 @@ export const TIMEOUT_CONFIG = {
    * - Parallel execution coordination
    */
   orchestrator: {
-    /** Hard timeout for entire orchestration (5s headroom before Supervisor 50s) */
-    hard: 45_000,
+    /** Hard timeout for entire orchestration (sequential multi-agent allowed) */
+    hard: 90_000,
     /** Warning threshold for slow operations */
-    warning: 30_000,
+    warning: 60_000,
     /** Soft timeout for LLM routing decisions */
     routingDecision: 10_000,
   },
@@ -115,9 +117,9 @@ export const TIMEOUT_CONFIG = {
    */
   subtask: {
     /** Hard timeout per subtask */
-    hard: 30_000,
+    hard: 35_000,
     /** Warning threshold */
-    warning: 25_000,
+    warning: 28_000,
   },
 
   /**

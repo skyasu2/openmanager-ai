@@ -26,11 +26,14 @@ const COMPLEXITY_INDICATORS = [
   /비교|차이|대비/,
   /분석.*보고서|보고서.*분석/,
   /전체.*상세|상세.*전체/,
+  /상태.*분석|분석.*상태/,
+  /이상.*해결|해결.*이상/,
+  /장애.*원인.*조치|원인.*조치/,
 ];
 
 function isComplexQuery(query: string): boolean {
   const matchCount = COMPLEXITY_INDICATORS.filter(pattern => pattern.test(query)).length;
-  return matchCount >= 2 || query.length > 100;
+  return matchCount >= 2 || (matchCount >= 1 && query.length >= 20) || query.length > 100;
 }
 
 export async function decomposeTask(query: string): Promise<TaskDecomposition | null> {

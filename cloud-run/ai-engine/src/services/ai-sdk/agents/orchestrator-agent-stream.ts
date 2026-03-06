@@ -21,6 +21,23 @@ import { filterToolsByWebSearch, filterToolsByRAG } from './orchestrator-web-sea
 import { evaluateAgentResponseQuality } from './response-quality';
 import { streamTextInChunks } from './orchestrator-decomposition';
 
+function getSuggestedFollowUp(agentName: string, responseText: string): string | null {
+  if (agentName === 'Analyst Agent') {
+    if (/이상|anomal|critical|경고|임계/i.test(responseText)) {
+      return '해결 방법과 권장 조치를 알려줘';
+    }
+  }
+  if (agentName === 'NLQ Agent') {
+    if (/[89]\d%|100%|임계|경고|critical/i.test(responseText)) {
+      return '이상 원인을 분석해줘';
+    }
+  }
+  if (agentName === 'Reporter Agent') {
+    return '재발 방지 방안을 알려줘';
+  }
+  return null;
+}
+
 export async function* executeAgentStream(
   query: string,
   agentName: string,
@@ -343,6 +360,8 @@ export async function* executeAgentStream(
       // Phase 2C: Save agent findings to context (non-blocking)
       try { await saveAgentFindingsToContext(sessionId, agentName, fullResponseText); } catch { /* non-blocking */ }
 
+      const followUp = getSuggestedFollowUp(agentName, fullResponseText);
+
       yield {
         type: 'done',
         data: {
@@ -363,6 +382,7 @@ export async function* executeAgentStream(
             qualityFlags: quality.qualityFlags,
             latencyTier: quality.latencyTier,
           },
+          ...(followUp && { suggestedFollowUp: followUp }),
         },
       };
       return; // Success — exit provider loop
