@@ -96,11 +96,14 @@ function verifyApiKey(c: Context): boolean {
     logger.error('[Security] CLOUD_RUN_API_SECRET is not configured — blocking request');
     return false;
   }
-  if (!apiKey || apiKey.length !== validKey.length ||
-      !timingSafeEqual(Buffer.from(apiKey), Buffer.from(validKey))) {
-    return false;
-  }
-  return true;
+  if (!apiKey) return false;
+  // Constant-time comparison: pad to same length to avoid length-based timing leak
+  const keyBuffer = Buffer.from(apiKey);
+  const validBuffer = Buffer.from(validKey);
+  const lengthMatch = keyBuffer.length === validBuffer.length;
+  // Always compare using the valid key length to prevent timing leak
+  const compareBuffer = lengthMatch ? keyBuffer : validBuffer;
+  return lengthMatch && timingSafeEqual(compareBuffer, validBuffer);
 }
 
 // Security Middleware (Skip for health/warmup) — fail-closed
@@ -121,7 +124,6 @@ app.onError((err: Error, c: Context) => {
   return c.json(
     {
       error: 'Internal Server Error',
-      message: err.message,
     },
     500
   );

@@ -315,11 +315,15 @@ supervisorRouter.post('/stream', async (c: Context) => {
         const errorMessage = error instanceof Error ? error.message : String(error);
         logger.error({ error: errorMessage }, 'SupervisorStream error');
 
-        await stream.writeSSE({
-          id: String(messageId++),
-          event: 'error',
-          data: JSON.stringify({ type: 'error', data: { message: errorMessage } }),
-        });
+        try {
+          await stream.writeSSE({
+            id: String(messageId++),
+            event: 'error',
+            data: JSON.stringify({ type: 'error', data: { message: errorMessage } }),
+          });
+        } catch {
+          logger.warn('Failed to write error event to stream (connection lost)');
+        }
       }
     });
   } catch (error) {
