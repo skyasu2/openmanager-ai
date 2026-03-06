@@ -59,19 +59,23 @@ describe('EmergencyMode', () => {
       });
     });
 
-    // Note: '/' is in allowedEndpoints and uses startsWith,
-    // so all paths starting with '/' are allowed (implementation quirk).
-    it('allows paths starting with / due to startsWith matching', () => {
+    it('allows only the root path in emergency mode', () => {
       withEmergency(() => {
         expect(em.shouldBlockAPI('/')).toBe(false);
-        // '/api/servers' also starts with '/', so not blocked
-        expect(em.shouldBlockAPI('/api/servers')).toBe(false);
       });
     });
 
-    it('blocks endpoints not starting with allowed prefixes', () => {
+    it('allows /api/health subpaths and querystrings in emergency mode', () => {
       withEmergency(() => {
-        // Only non-/ prefixed paths would be blocked
+        expect(em.shouldBlockAPI('/api/health/details')).toBe(false);
+        expect(em.shouldBlockAPI('/api/health?full=true')).toBe(false);
+      });
+    });
+
+    it('blocks non-essential endpoints in emergency mode', () => {
+      withEmergency(() => {
+        expect(em.shouldBlockAPI('/api/servers')).toBe(true);
+        expect(em.shouldBlockAPI('/dashboard')).toBe(true);
         expect(em.shouldBlockAPI('api/servers')).toBe(true);
         expect(em.shouldBlockAPI('custom-endpoint')).toBe(true);
       });

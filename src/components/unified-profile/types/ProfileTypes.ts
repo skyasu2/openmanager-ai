@@ -84,23 +84,11 @@ export interface AuthenticationState {
   showPassword: boolean;
 }
 
-// API 응답 타입들
-export interface ApiResponse<T = unknown> {
+export interface ProfileApiResponse<T = unknown> {
   success: boolean;
   data?: T;
   error?: string;
   message?: string;
-}
-
-export interface HealthCheckResponse {
-  status: 'healthy' | 'unhealthy';
-  services: {
-    database: boolean;
-    redis: boolean;
-    ai: boolean;
-  };
-  uptime: number;
-  version: string;
 }
 
 // 설정 액션 타입
@@ -164,7 +152,7 @@ export interface SettingsPanelProps {
   buttonRef?: RefObject<HTMLButtonElement | null>;
 }
 
-export type SettingsAPIResponse = ApiResponse;
+export type SettingsAPIResponse = ProfileApiResponse;
 
 export interface SystemStatus {
   isRunning: boolean;

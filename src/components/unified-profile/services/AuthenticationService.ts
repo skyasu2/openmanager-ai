@@ -8,7 +8,10 @@
  */
 
 import { logger } from '@/lib/logging';
-import type { ApiResponse, AuthenticationState } from '../types/ProfileTypes';
+import type {
+  AuthenticationState,
+  ProfileApiResponse,
+} from '../types/ProfileTypes';
 
 interface ProfileStore {
   authenticateAIAgent(
@@ -51,7 +54,7 @@ export class AuthenticationService {
   /**
    * 빠른 활성화 (개발 모드용)
    */
-  quickActivation(): Promise<ApiResponse> {
+  quickActivation(): Promise<ProfileApiResponse> {
     if (!DEVELOPMENT_MODE || !BYPASS_PASSWORD) {
       return Promise.resolve({
         success: false,
@@ -80,7 +83,7 @@ export class AuthenticationService {
   async authenticateAIAgent(
     password: string,
     store: ProfileStore
-  ): Promise<ApiResponse> {
+  ): Promise<ProfileApiResponse> {
     try {
       // 개발 모드에서 비밀번호 우회
       if (DEVELOPMENT_MODE && BYPASS_PASSWORD) {
@@ -139,7 +142,7 @@ export class AuthenticationService {
   /**
    * AI 에이전트 비활성화
    */
-  async disableAIAgent(store: ProfileStore): Promise<ApiResponse> {
+  async disableAIAgent(store: ProfileStore): Promise<ProfileApiResponse> {
     try {
       const result = await store.disableAIAgent();
 

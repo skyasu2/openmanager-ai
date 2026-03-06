@@ -6,6 +6,8 @@
 
 export class EmergencyMode {
   private static instance: EmergencyMode;
+  private readonly allowedExactEndpoints = new Set(['/', '/favicon.ico']);
+  private readonly allowedPrefixEndpoints = ['/api/health'];
 
   private constructor() {}
 
@@ -32,11 +34,18 @@ export class EmergencyMode {
    */
   public shouldBlockAPI(endpoint: string): boolean {
     if (!this.isEmergencyMode()) return false;
+    const normalizedEndpoint = endpoint.trim();
 
-    // 허용된 필수 엔드포인트만 통과
-    const allowedEndpoints = ['/api/health', '/', '/favicon.ico'];
+    if (this.allowedExactEndpoints.has(normalizedEndpoint)) {
+      return false;
+    }
 
-    return !allowedEndpoints.some((allowed) => endpoint.startsWith(allowed));
+    return !this.allowedPrefixEndpoints.some(
+      (allowed) =>
+        normalizedEndpoint === allowed ||
+        normalizedEndpoint.startsWith(`${allowed}/`) ||
+        normalizedEndpoint.startsWith(`${allowed}?`)
+    );
   }
 
   /**

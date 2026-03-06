@@ -6,13 +6,13 @@ import {
   Cpu,
   Database,
   Loader2,
+  type LucideIcon,
   Monitor,
   Server as ServerIcon,
   Zap,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import {
-  type ComponentType,
   type FC,
   useCallback,
   useEffect,
@@ -81,8 +81,7 @@ export default function SystemBootClient() {
   );
   const [currentStage, setCurrentStage] = useState<string>('시스템 초기화');
   const [progress, setProgress] = useState(0);
-  const [currentIcon, setCurrentIcon] =
-    useState<ComponentType<unknown>>(Loader2);
+  const [currentIcon, setCurrentIcon] = useState<LucideIcon>(Loader2);
   const [isClient, setIsClient] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
 
