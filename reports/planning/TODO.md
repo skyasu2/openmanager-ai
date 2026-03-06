@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-03-05 KST
+**Last Updated**: 2026-03-06 KST
 
 ## Active Tasks
 
@@ -19,6 +19,17 @@
 3. `/api/servers/[id]/route.ts` — 서버 상세 (397줄)
 4. `src/services/code-interpreter/pyodide-service.ts` — 미테스트
 5. `src/services/notifications/BrowserNotificationService.ts` — 미테스트
+
+### Completed (2026-03-06)
+- [x] P0: Provider quota-tracker 수치 교정 — Cerebras 24M→1M TPD, Groq 100K→500K TPD, Groq TPM 12K→6K, Gemini RPM 15→10
+- [x] P0: Cerebras 8K context 방어 — 세션 히스토리 4메시지 제한 (buildContext)
+- [x] P1: Reranker Groq 전환 — Cerebras 1M TPD 보존을 위해 reranker를 Groq으로 분리
+- [x] P0: v8.7.9 릴리스 (43커밋)
+- [x] P1: 보안 수정 — API key timing attack 방어 (length leak 제거), error message 내부 정보 노출 차단
+- [x] P2: SSE 스트림 에러 핸들링 — 연결 끊김 시 unhandled rejection 방지
+- [x] P2: Redis CB 초기화 race condition 수정 — promise 캐싱으로 중복 초기화 방지
+- [x] P2: 코드리뷰 4라운드 (AI Engine resilience, Vercel frontend AI, Data SSOT, Cloud Run pipeline) — 44건 발견, 7건 수정
+- [x] P2: Production QA 7/7 통과 (Playwright MCP, v8.7.8 → v8.7.9)
 
 ### Completed (2026-03-05)
 - [x] P1: CI/CD 파이프라인 분석 및 개선
