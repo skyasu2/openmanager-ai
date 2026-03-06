@@ -1,14 +1,10 @@
 /**
  * 📜 Privacy Policy Page
- * 포트폴리오 프로젝트용 최소 개인정보 처리방침
+ * OpenManager AI 최소 개인정보 처리방침
  */
 
 import Link from 'next/link';
-import {
-  APP_VERSION,
-  PORTFOLIO_PROJECT_SUMMARY,
-  PROJECT_EXPECTATION_NOTES,
-} from '@/config/app-meta';
+import { APP_VERSION } from '@/config/app-meta';
 
 export const metadata = {
   title: '개인정보 처리방침 | OpenManager AI',
@@ -34,18 +30,6 @@ export default function PrivacyPage() {
           <h1 className="text-2xl font-bold mb-6">개인정보 처리방침</h1>
 
           <p className="text-white/70 text-sm mb-8">최종 수정일: 2026년 1월</p>
-
-          <section className="mb-6">
-            <h2 className="text-lg font-semibold mb-3 text-white/90">
-              0. 서비스 성격
-            </h2>
-            <p className="text-white/70">{PORTFOLIO_PROJECT_SUMMARY}</p>
-            <ul className="list-disc list-inside text-white/70 space-y-1 mt-3">
-              {PROJECT_EXPECTATION_NOTES.map((note) => (
-                <li key={note}>{note}</li>
-              ))}
-            </ul>
-          </section>
 
           <section className="mb-6">
             <h2 className="text-lg font-semibold mb-3 text-white/90">

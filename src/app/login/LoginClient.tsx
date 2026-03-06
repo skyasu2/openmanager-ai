@@ -4,7 +4,6 @@
 
 import { type FormEvent, useState } from 'react';
 import { OpenManagerLogo } from '@/components/shared/OpenManagerLogo';
-import ProjectContextCard from '@/components/shared/ProjectContextCard';
 import UnifiedProfileHeader from '@/components/shared/UnifiedProfileHeader';
 import {
   Dialog,
@@ -13,7 +12,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { APP_VERSION, getGuestModeDisplayLabel } from '@/config/app-meta';
+import { APP_VERSION } from '@/config/app-meta';
 import {
   isGuestFullAccessEnabled,
   isGuestLoginButtonVisible,
@@ -244,25 +243,6 @@ export default function LoginClient() {
                     ? '다른 방법으로 로그인하세요'
                     : 'AI 서버 모니터링 시스템에 오신 것을 환영합니다'}
                 </p>
-                <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
-                  <span
-                    className={`rounded-full border px-2.5 py-1 text-[11px] font-medium ${
-                      isGuestFullAccessMode
-                        ? 'border-emerald-300/60 bg-emerald-400/20 text-emerald-100'
-                        : 'border-amber-300/60 bg-amber-400/20 text-amber-100'
-                    }`}
-                  >
-                    게스트 모드:{' '}
-                    {getGuestModeDisplayLabel(isGuestFullAccessMode)}
-                  </span>
-                  <span className="text-[11px] text-white/65">
-                    모드 변경 시 배포 재시작이 필요합니다.
-                  </span>
-                </div>
-                <ProjectContextCard
-                  className="mt-4 text-left"
-                  variant="compact"
-                />
               </div>
 
               {/* Actions */}
@@ -386,11 +366,6 @@ export default function LoginClient() {
                     guestLockRemainingSeconds > 0
                       ? `게스트 잠금 (${guestLockRemainingSeconds}초)`
                       : '게스트로 체험하기'
-                  }
-                  guestHelperText={
-                    isGuestFullAccessMode
-                      ? '현재 확장 체험 모드입니다. 포트폴리오 검증 목적에 한해 게스트 기능을 사용할 수 있습니다.'
-                      : '게스트 로그인은 포트폴리오 체험용입니다. PIN 입력 후 제한된 흐름을 확인할 수 있습니다.'
                   }
                   glassButtonBaseClass={glassButtonBaseClass}
                   providerOverlayClass={providerOverlayClass}

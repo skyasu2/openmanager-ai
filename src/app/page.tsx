@@ -22,7 +22,6 @@ import {
 import { useSystemStart } from '@/app/main/hooks';
 import AuthLoadingUI from '@/components/shared/AuthLoadingUI';
 import { OpenManagerLogo } from '@/components/shared/OpenManagerLogo';
-import ProjectContextCard from '@/components/shared/ProjectContextCard';
 import UnifiedProfileHeader from '@/components/shared/UnifiedProfileHeader';
 import { APP_VERSION } from '@/config/app-meta';
 import { isGuestSystemStartEnabled } from '@/config/guestMode';
@@ -244,8 +243,6 @@ function Home() {
             </span>
           </p>
         </div>
-
-        <ProjectContextCard className="mb-10" />
 
         {/* 시스템 시작/대시보드 섹션 */}
         <div className="mb-12">

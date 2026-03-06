@@ -17,7 +17,6 @@ type LoginButtonsProps = {
   showGuestLogin?: boolean;
   guestButtonDisabled?: boolean;
   guestButtonLabel?: string;
-  guestHelperText?: string;
   glassButtonBaseClass: string;
   providerOverlayClass: string;
   guestOverlayClass: string;
@@ -39,7 +38,6 @@ export function LoginButtons({
   showGuestLogin = true,
   guestButtonDisabled = false,
   guestButtonLabel = '게스트로 체험하기',
-  guestHelperText,
   glassButtonBaseClass,
   providerOverlayClass,
   guestOverlayClass,
@@ -197,10 +195,6 @@ export function LoginButtons({
           </span>
         </button>
       )}
-
-      {showGuestLogin && currentProvider !== 'guest' && guestHelperText ? (
-        <p className="px-1 text-xs text-cyan-100/75">{guestHelperText}</p>
-      ) : null}
     </>
   );
 }
