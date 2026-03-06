@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.7.9](https://github.com/skyasu2/openmanager-ai/compare/v8.7.8...v8.7.9) (2026-03-06)
+
+
+### Features
+
+* **ai-engine:** add server-readiness guard for /api routes ([90490a1](https://github.com/skyasu2/openmanager-ai/commit/90490a1989745929b54eefac1ac6f6925109ae3a))
+
+
+### Bug Fixes
+
+* **ai-engine:** add missing detectBaselineDrift mock in analyst-tools tests ([f02b489](https://github.com/skyasu2/openmanager-ai/commit/f02b4894818a1eef38b68510ad6c074d1c8960e8))
+* **ai-engine:** correct provider quota limits and add context overflow guard ([67d2df7](https://github.com/skyasu2/openmanager-ai/commit/67d2df727b13cf4343d5bee90ed0b0656f871db2))
+* **ai-engine:** force searchWeb tool call for external info queries ([18dcc3e](https://github.com/skyasu2/openmanager-ai/commit/18dcc3e7d877b6524962fdf437ccc49287bb50e0))
+* **ai-engine:** unify Tavily backup key config and add health status ([fd804db](https://github.com/skyasu2/openmanager-ai/commit/fd804db735335040c0fe22a306428d108678010b))
+* **ci:** restore /api/version route and fix CodeQL config ([d0f0b3f](https://github.com/skyasu2/openmanager-ai/commit/d0f0b3f427b1e97939415123f9c10de18bdcb630))
+* **diagrams:** sync architecture diagrams with actual code ([ae5bd6a](https://github.com/skyasu2/openmanager-ai/commit/ae5bd6a72f9433252e11745b96271131d1efde26))
+* resolve catch-hell patterns and add missing type annotation ([22a4443](https://github.com/skyasu2/openmanager-ai/commit/22a4443ec0b99dcf6b1f7c3940e2943dfe9d8901))
+
 ## [8.7.8](https://github.com/skyasu2/openmanager-ai/compare/v8.7.7...v8.7.8) (2026-03-02)
 
 ## [8.7.7](https://github.com/skyasu2/openmanager-ai/compare/v8.7.6...v8.7.7) (2026-03-02)
