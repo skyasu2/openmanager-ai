@@ -33,10 +33,8 @@ import { useChatFeedback } from './core/useChatFeedback';
 import { useChatHistory } from './core/useChatHistory';
 import { useChatQueue } from './core/useChatQueue';
 import { useChatSession } from './core/useChatSession';
-import {
-  type SessionState,
-  useChatSessionState,
-} from './core/useChatSessionState';
+import type { SessionState } from '@/types/session';
+import { useChatSessionState } from './core/useChatSessionState';
 import type { FileAttachment } from './useFileAttachments';
 import {
   convertThinkingStepsToUI,
