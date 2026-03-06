@@ -18,6 +18,7 @@ const maxForks = Math.min(configuredMaxForks ?? defaultForks, cpuCount);
 const minForks = Math.min(configuredMinForks ?? 1, maxForks);
 const ignoreUnhandledErrors =
   process.env.VITEST_IGNORE_UNHANDLED_ERRORS === 'true';
+const useLegacyEsbuild = process.env.VITEST_LEGACY_ESBUILD === 'true';
 
 export default defineConfig({
   test: {
@@ -136,11 +137,15 @@ export default defineConfig({
       ...testAliases,
     },
   },
-  esbuild: {
-    target: 'node14',
-    jsxInject: `import React from 'react'`, // Auto-import React for JSX
-    jsx: 'transform', // Transform JSX to React.createElement calls
-    jsxFactory: 'React.createElement',
-    jsxFragment: 'React.Fragment',
-  },
+  ...(useLegacyEsbuild
+    ? {
+        esbuild: {
+          target: 'node14',
+          jsxInject: `import React from 'react'`, // Auto-import React for JSX
+          jsx: 'transform', // Transform JSX to React.createElement calls
+          jsxFactory: 'React.createElement',
+          jsxFragment: 'React.Fragment',
+        },
+      }
+    : {}),
 });

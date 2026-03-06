@@ -5,10 +5,13 @@
 
 import React from 'react';
 import { expect, vi } from 'vitest';
-import '@testing-library/jest-dom';
 
 // React를 global에 추가 (jsdom 환경에서 JSX 지원)
 globalThis.React = React;
+
+if (typeof window !== 'undefined') {
+  await import('@testing-library/jest-dom');
+}
 
 import { toHaveNoViolations } from 'jest-axe';
 import {
