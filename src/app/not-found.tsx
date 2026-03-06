@@ -12,6 +12,7 @@ import type { Metadata } from 'next';
 
 import { AlertCircle, Home, Search } from 'lucide-react';
 import Link from 'next/link';
+import { APP_VERSION } from '@/config/app-meta';
 
 export const metadata: Metadata = {
   title: '404 - Page Not Found',
@@ -73,7 +74,7 @@ export default async function NotFound() {
               <Link href="/dashboard" className="block hover:text-blue-400">
                 • 서버 대시보드
               </Link>
-              <Link href="/auth/login" className="block hover:text-blue-400">
+              <Link href="/login" className="block hover:text-blue-400">
                 • 로그인
               </Link>
             </div>
@@ -88,7 +89,7 @@ export default async function NotFound() {
 
         {/* 시스템 정보 */}
         <div className="border-t border-gray-700 pt-4 text-xs text-gray-600">
-          <p>OpenManager AI v8</p>
+          <p>OpenManager AI v{APP_VERSION}</p>
           <p>Error ID: NOT_FOUND_404</p>
         </div>
       </div>

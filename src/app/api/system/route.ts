@@ -41,7 +41,7 @@ import debug from '@/utils/debug';
 const APP_VERSION =
   process.env.NEXT_PUBLIC_APP_VERSION ||
   process.env.npm_package_version ||
-  '8.3.4';
+  '0.0.0';
 
 // ============================================================================
 // ProcessManager Singleton

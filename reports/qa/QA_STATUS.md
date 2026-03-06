@@ -1,32 +1,33 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-06 03:26:18 KST
+> Generated at: 2026-03-06 13:43:09 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 51 |
-| Total Checks | 366 |
-| Passed | 348 |
+| Total Runs | 52 |
+| Total Checks | 375 |
+| Passed | 357 |
 | Failed | 18 |
-| Completed Items | 96 |
+| Completed Items | 101 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 34 |
 | Expert Domains Tracked | 6 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Run | QA-20260306-0051 (2026-03-05T18:26:17.569Z) |
+| Last Run | QA-20260306-0052 (2026-03-06T04:43:09.085Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260306-0051 (2026-03-05T18:26:17.569Z)
+Latest run: QA-20260306-0052 (2026-03-06T04:43:09.085Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
 | AI Quality Assurance Specialist | appropriate | no | - |
+| AI Security & Reliability Architect | appropriate | no | - |
 | Test Automation Architect | appropriate | no | - |
 
 ## Expert Domain Open Gaps
@@ -113,14 +114,17 @@ Latest run: QA-20260306-0051 (2026-03-05T18:26:17.569Z)
 
 - ai-chat-response: AI Chat 응답 (completed 1회, last QA-20260301-0035)
 - ai-chat-response-quality: AI Chat 핵심요약+상세분석+구체적 권고 응답 (completed 1회, last QA-20260306-0051)
+- ai-chat-response-quality-v879: AI Chat 스트리밍 응답 및 권고 검증 (completed 1회, last QA-20260306-0052)
 - ai-friendly-template-todo-marker: Template TODO marker 분리 (TEMPLATE_TODO 적용) (completed 1회, last QA-20260226-0006)
 - ai-math-tools: AI 계산 도구(수식/통계/용량) 셋업 완료 (completed 1회, last QA-20260228-0023)
 - ai-사이드바-토글-ai-엔진-ready-프리셋-5개-ai-기능-3개: AI 사이드바 토글 (AI 엔진 Ready, 프리셋 5개, AI 기능 3개) (completed 3회, last QA-20260302-0042)
+- analyst-full-analysis-v879: Analyst 전체 분석 및 드릴다운 (completed 1회, last QA-20260306-0052)
 - anomaly-detection-prediction: 이상감지/예측 15서버 전체 분석 (completed 1회, last QA-20260306-0051)
 - api-인증-검증-401-확인: API 인증 검증 401 확인 (completed 1회, last QA-20260301-0032)
 - auth-error-provider-copy: 인증 에러 라우트 메시지를 제공자-중립 표현으로 전환 (completed 1회, last QA-20260227-0010)
 - auto-incident-report: 자동장애 보고서 생성 및 상세보기 (completed 1회, last QA-20260306-0051)
 - biome-lint-900-files-에러-0: Biome Lint 900 files 에러 0 (completed 1회, last QA-20260301-0032)
+- dashboard-health-v879: 프로덕션 대시보드 및 Health API 검증 (completed 1회, last QA-20260306-0052)
 - dashboard-server-card-selector-stabilization: 서버 카드 선택자 및 빈 상태 처리 안정화 (completed 2회, last QA-20260302-0039)
 - dashboard-server-cards: 대시보드 서버 카드 및 메트릭 (completed 2회, last QA-20260302-0038)
 - feature-card-modal: 피처카드 모달 (completed 1회, last QA-20260301-0035)
@@ -134,6 +138,7 @@ Latest run: QA-20260306-0051 (2026-03-05T18:26:17.569Z)
 - feature-dod-validation-health-endpoints: 헬스/버전 API 검사 (Vercel) (completed 2회, last QA-20260227-0018)
 - feature-dod-vitals-integration: vitals:integration 통합 실행 통과 (completed 1회, last QA-20260228-0028)
 - guest-flow-server-card-and-startflow-resilience: 게스트 플로우 시스템 시작/AI 진입 내성 보강 (completed 3회, last QA-20260302-0039)
+- guest-login-pin-4231: 게스트 PIN 4231 로그인 및 세션 진입 (completed 1회, last QA-20260306-0052)
 - guest-login-visibility-toggle: 게스트 로그인 버튼 노출 옵션화 (completed 2회, last QA-20260227-0013)
 - guest-pin-login-flow: 게스트 PIN 인증 후 시스템 시작 버튼 노출 (completed 4회, last QA-20260227-0018)
 - health-api: Health API 검증 (completed 1회, last QA-20260301-0035)
@@ -155,6 +160,7 @@ Latest run: QA-20260306-0051 (2026-03-05T18:26:17.569Z)
 - release-dod-cost-gate: Release DoD: Cloud Run Free Tier 비용 가드 검증 (completed 1회, last QA-20260226-0008)
 - release-dod-doc-gate: Release DoD: 문서 게이트 90일 갱신·메타데이터·아카이빙 정책 (completed 1회, last QA-20260228-0025)
 - release-dod-test-gate: validate:all 0 에러 (completed 2회, last QA-20260302-0036)
+- reporter-generate-detail-v879: Reporter 보고서 생성 및 상세보기 (completed 1회, last QA-20260306-0052)
 - storybook-sb-mock-fix: sb.mock()을 preview.ts로 이동하여 Storybook v10 호환성 수정 (completed 1회, last QA-20260302-0043)
 - system-boot-api-checks: 시스템 부트 API 존재성/헬스 체크 (completed 2회, last QA-20260302-0039)
 - system-boot-redirect: 시스템 시작 대시보드 리다이렉트 (completed 1회, last QA-20260301-0035)
@@ -212,6 +218,7 @@ Latest run: QA-20260306-0051 (2026-03-05T18:26:17.569Z)
 
 | Run ID | Time (UTC) | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260306-0052 | 2026-03-06T04:43:09.085Z | Production Playwright MCP QA v8.7.9 - Guest PIN 4231 Full AI Flow | 9 | 5 | 0 | 0 | 0 | 0 |
 | QA-20260306-0051 | 2026-03-05T18:26:17.569Z | Production QA - Full Feature Verification v8.7.8 | 7 | 3 | 0 | 0 | 2 | 0 |
 | QA-20260304-0050 | 2026-03-04T04:21:46.893Z | Production QA v8.7.8 — Playwright MCP (2026-03-04) | 8 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260303-0049 | 2026-03-03T05:03:51.275Z | Production Playwright MCP QA v8.7.8 (13/13 PASS) | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -231,5 +238,4 @@ Latest run: QA-20260306-0051 (2026-03-05T18:26:17.569Z)
 | QA-20260301-0035 | 2026-03-01T13:45:21.162Z | Production Playwright MCP QA v8.7.2 — Full Functional Validation (6/6 PASS) | 6 | 6 | 0 | 0 | 0 | 0 |
 | QA-20260301-0034 | 2026-03-01T07:37:43.156Z | Production Playwright MCP QA — observability commit 6179e54 (8/8 PASS) | 8 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260301-0033 | 2026-03-01T06:16:36.498Z | Production Playwright MCP QA | 0 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260301-0032 | 2026-03-01T03:33:12.090Z | Final QA Gate v8.7.1 — Static + Security + Build + Code Quality (18/18 PASS) | 18 | 14 | 0 | 0 | 0 | 0 |
 

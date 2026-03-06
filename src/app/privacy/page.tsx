@@ -4,6 +4,11 @@
  */
 
 import Link from 'next/link';
+import {
+  APP_VERSION,
+  PORTFOLIO_PROJECT_SUMMARY,
+  PROJECT_EXPECTATION_NOTES,
+} from '@/config/app-meta';
 
 export const metadata = {
   title: '개인정보 처리방침 | OpenManager AI',
@@ -29,6 +34,18 @@ export default function PrivacyPage() {
           <h1 className="text-2xl font-bold mb-6">개인정보 처리방침</h1>
 
           <p className="text-white/70 text-sm mb-8">최종 수정일: 2026년 1월</p>
+
+          <section className="mb-6">
+            <h2 className="text-lg font-semibold mb-3 text-white/90">
+              0. 서비스 성격
+            </h2>
+            <p className="text-white/70">{PORTFOLIO_PROJECT_SUMMARY}</p>
+            <ul className="list-disc list-inside text-white/70 space-y-1 mt-3">
+              {PROJECT_EXPECTATION_NOTES.map((note) => (
+                <li key={note}>{note}</li>
+              ))}
+            </ul>
+          </section>
 
           <section className="mb-6">
             <h2 className="text-lg font-semibold mb-3 text-white/90">
@@ -78,9 +95,7 @@ export default function PrivacyPage() {
 
         {/* Footer */}
         <div className="mt-12 pt-6 border-t border-white/10 text-center">
-          <p className="text-xs text-white/40">
-            OpenManager AI v{process.env.NEXT_PUBLIC_APP_VERSION || '7.0.1'}
-          </p>
+          <p className="text-xs text-white/40">OpenManager AI v{APP_VERSION}</p>
         </div>
       </div>
     </div>

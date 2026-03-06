@@ -10,6 +10,7 @@
 
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useEffect, useState } from 'react';
+import { APP_VERSION } from '@/config/app-meta';
 
 // useSearchParams를 사용하는 컴포넌트를 별도로 분리
 function AuthErrorContent() {
@@ -182,7 +183,7 @@ function AuthErrorContent() {
           <div className="space-y-1 text-xs text-gray-500">
             <p>🔐 GitHub/Google/이메일 기반 인증</p>
             <p>🛠️ 문제가 계속되면 관리자에게 문의하세요</p>
-            <p>OpenManager AI v8.0.0</p>
+            <p>OpenManager AI v{APP_VERSION}</p>
           </div>
         </div>
       </div>

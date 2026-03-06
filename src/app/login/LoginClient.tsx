@@ -4,6 +4,7 @@
 
 import { type FormEvent, useState } from 'react';
 import { OpenManagerLogo } from '@/components/shared/OpenManagerLogo';
+import ProjectContextCard from '@/components/shared/ProjectContextCard';
 import UnifiedProfileHeader from '@/components/shared/UnifiedProfileHeader';
 import {
   Dialog,
@@ -12,6 +13,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { APP_VERSION, getGuestModeDisplayLabel } from '@/config/app-meta';
 import {
   isGuestFullAccessEnabled,
   isGuestLoginButtonVisible,
@@ -251,12 +253,16 @@ export default function LoginClient() {
                     }`}
                   >
                     게스트 모드:{' '}
-                    {isGuestFullAccessMode ? 'FULL ACCESS' : 'RESTRICTED'}
+                    {getGuestModeDisplayLabel(isGuestFullAccessMode)}
                   </span>
                   <span className="text-[11px] text-white/65">
                     모드 변경 시 배포 재시작이 필요합니다.
                   </span>
                 </div>
+                <ProjectContextCard
+                  className="mt-4 text-left"
+                  variant="compact"
+                />
               </div>
 
               {/* Actions */}
@@ -383,8 +389,8 @@ export default function LoginClient() {
                   }
                   guestHelperText={
                     isGuestFullAccessMode
-                      ? '현재 Full Access 모드입니다. 테스트 목적에 한해 게스트 기능을 사용할 수 있습니다.'
-                      : '게스트 로그인은 테스트 용도입니다. PIN을 입력해 제한된 체험을 진행하세요.'
+                      ? '현재 확장 체험 모드입니다. 포트폴리오 검증 목적에 한해 게스트 기능을 사용할 수 있습니다.'
+                      : '게스트 로그인은 포트폴리오 체험용입니다. PIN 입력 후 제한된 흐름을 확인할 수 있습니다.'
                   }
                   glassButtonBaseClass={glassButtonBaseClass}
                   providerOverlayClass={providerOverlayClass}
@@ -397,7 +403,7 @@ export default function LoginClient() {
           {/* Footer */}
           <div className="mt-6 text-center">
             <p className="text-xs text-white/60">
-              OpenManager AI v{process.env.NEXT_PUBLIC_APP_VERSION || '8.0.0'}
+              OpenManager AI v{APP_VERSION}
             </p>
             <a
               href="/privacy"

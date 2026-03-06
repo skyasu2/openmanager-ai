@@ -25,6 +25,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { AIFunctionPages } from '@/components/ai-sidebar/AIFunctionPages';
 import { EnhancedAIChat } from '@/components/ai-sidebar/EnhancedAIChat';
 import { AIErrorBoundary } from '@/components/error/AIErrorBoundary';
+import { APP_VERSION } from '@/config/app-meta';
 import { useAIChatCore } from '@/hooks/ai/useAIChatCore';
 import { useAISidebarStore } from '@/stores/useAISidebarStore';
 import { RealTimeDisplay } from '../dashboard/RealTimeDisplay';
@@ -328,9 +329,7 @@ export default function AIWorkspace({ mode, onClose }: AIWorkspaceProps) {
               <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
               <span>AI Engine Active</span>
             </div>
-            <span className="text-gray-400">
-              v{process.env.NEXT_PUBLIC_APP_VERSION || '5.83.14'}
-            </span>
+            <span className="text-gray-400">v{APP_VERSION}</span>
           </div>
         </div>
       </div>

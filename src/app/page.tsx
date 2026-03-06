@@ -22,7 +22,9 @@ import {
 import { useSystemStart } from '@/app/main/hooks';
 import AuthLoadingUI from '@/components/shared/AuthLoadingUI';
 import { OpenManagerLogo } from '@/components/shared/OpenManagerLogo';
+import ProjectContextCard from '@/components/shared/ProjectContextCard';
 import UnifiedProfileHeader from '@/components/shared/UnifiedProfileHeader';
+import { APP_VERSION } from '@/config/app-meta';
 import { isGuestSystemStartEnabled } from '@/config/guestMode';
 import { isVercel } from '@/env-client';
 import { useInitialAuth } from '@/hooks/useInitialAuth';
@@ -243,6 +245,8 @@ function Home() {
           </p>
         </div>
 
+        <ProjectContextCard className="mb-10" />
+
         {/* 시스템 시작/대시보드 섹션 */}
         <div className="mb-12">
           {shouldShowSystemStart ? (
@@ -279,7 +283,7 @@ function Home() {
             <div className="flex items-center gap-4 text-xs text-white/70">
               <span className="flex items-center gap-1.5">
                 <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                <span>v{process.env.NEXT_PUBLIC_APP_VERSION || '5.83.14'}</span>
+                <span>v{APP_VERSION}</span>
               </span>
               <span>Next.js 16 + React 19</span>
               <span className="hidden sm:inline">Quad-Provider AI</span>
