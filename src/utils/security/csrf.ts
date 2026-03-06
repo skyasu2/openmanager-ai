@@ -100,19 +100,3 @@ export function setupCSRFProtection(response: NextResponse): string {
   setCSRFCookie(response, token);
   return token;
 }
-
-/**
- * 클라이언트 사이드에서 CSRF 토큰 가져오기
- *
- * @returns CSRF token from cookie, or empty string if not found
- */
-export function getCSRFTokenFromCookie(): string {
-  if (typeof document === 'undefined') return '';
-
-  const cookies = document.cookie.split(';').map((cookie) => cookie.trim());
-  const csrfCookie = cookies.find((cookie) => cookie.startsWith('csrf_token='));
-
-  if (!csrfCookie) return '';
-
-  return csrfCookie.split('=')[1] || '';
-}

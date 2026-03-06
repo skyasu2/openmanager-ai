@@ -14,12 +14,12 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   createCSRFFailureResponse,
   generateCSRFToken,
-  getCSRFTokenFromCookie,
   setCSRFCookie,
   setupCSRFProtection,
   verifyCSRFToken,
   withCSRFProtection,
 } from './csrf';
+import { getCSRFTokenFromCookie } from './csrf-client';
 
 describe('generateCSRFToken', () => {
   it('32자 hex 문자열 생성', () => {
