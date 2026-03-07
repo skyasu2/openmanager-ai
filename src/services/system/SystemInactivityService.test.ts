@@ -32,7 +32,12 @@ describe('SystemInactivityService', () => {
 
   describe('registerBackgroundTask / unregisterBackgroundTask', () => {
     it('should register and list a background task', () => {
-      systemInactivityService.registerBackgroundTask('t1', 'Task 1', vi.fn(), 60000);
+      systemInactivityService.registerBackgroundTask(
+        't1',
+        'Task 1',
+        vi.fn(),
+        60000
+      );
 
       const tasks = systemInactivityService.getBackgroundTasks();
       expect(tasks).toHaveLength(1);
@@ -42,15 +47,30 @@ describe('SystemInactivityService', () => {
     });
 
     it('should unregister a task', () => {
-      systemInactivityService.registerBackgroundTask('t1', 'Task 1', vi.fn(), 60000);
+      systemInactivityService.registerBackgroundTask(
+        't1',
+        'Task 1',
+        vi.fn(),
+        60000
+      );
       systemInactivityService.unregisterBackgroundTask('t1');
 
       expect(systemInactivityService.getBackgroundTasks()).toHaveLength(0);
     });
 
     it('should replace existing task on re-register', () => {
-      systemInactivityService.registerBackgroundTask('t1', 'Task 1', vi.fn(), 60000);
-      systemInactivityService.registerBackgroundTask('t1', 'Task 1 v2', vi.fn(), 120000);
+      systemInactivityService.registerBackgroundTask(
+        't1',
+        'Task 1',
+        vi.fn(),
+        60000
+      );
+      systemInactivityService.registerBackgroundTask(
+        't1',
+        'Task 1 v2',
+        vi.fn(),
+        120000
+      );
 
       const tasks = systemInactivityService.getBackgroundTasks();
       expect(tasks).toHaveLength(1);
@@ -66,15 +86,23 @@ describe('SystemInactivityService', () => {
     });
 
     it('should safely unregister non-existent task', () => {
-      expect(() => systemInactivityService.unregisterBackgroundTask('nonexistent')).not.toThrow();
+      expect(() =>
+        systemInactivityService.unregisterBackgroundTask('nonexistent')
+      ).not.toThrow();
     });
   });
 
   describe('shouldMakeApiCall', () => {
     it('should allow all API calls when active', () => {
-      expect(systemInactivityService.shouldMakeApiCall('/api/servers')).toBe(true);
-      expect(systemInactivityService.shouldMakeApiCall('/api/health')).toBe(true);
-      expect(systemInactivityService.shouldMakeApiCall('/api/random')).toBe(true);
+      expect(systemInactivityService.shouldMakeApiCall('/api/servers')).toBe(
+        true
+      );
+      expect(systemInactivityService.shouldMakeApiCall('/api/health')).toBe(
+        true
+      );
+      expect(systemInactivityService.shouldMakeApiCall('/api/random')).toBe(
+        true
+      );
     });
 
     it('should only allow critical endpoints when inactive', () => {
@@ -114,7 +142,12 @@ describe('SystemInactivityService', () => {
     });
 
     it('should return task details', () => {
-      systemInactivityService.registerBackgroundTask('t1', 'Health Check', vi.fn(), 30000);
+      systemInactivityService.registerBackgroundTask(
+        't1',
+        'Health Check',
+        vi.fn(),
+        30000
+      );
 
       const tasks = systemInactivityService.getBackgroundTasks();
       expect(tasks[0]).toMatchObject({
