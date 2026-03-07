@@ -10,7 +10,7 @@
 | 테스트 커버리지 확대: Hooks (30%→~40%) | P2 | Done (useDashboardStats 12, useServerDataCache 7, useResizable 11) |
 | 테스트 커버리지 확대: Services (47%→~55%) | P3 | Done (BrowserNotificationService 13, PyodideService 7, SystemInactivityService 12) |
 | Cloud Run 대형 파일 리팩토링 Phase 2~3 | P3 | On Hold |
-| Cloud Run 배포 (Reporter 변경 반영) | P2 | Planned |
+| Cloud Run 배포 (Reporter 변경 반영) | P2 | Done (v8.8.0, faad6169f) |
 
 ### Test Coverage Gap (2026-03-05 코드리뷰 결과)
 
@@ -23,6 +23,7 @@
 
 ### Completed (2026-03-07)
 - [x] P0: v8.8.0 릴리스 (29커밋) — Reporter 품질 개선, CSRF 보안, 테스트 93개 추가
+- [x] P2: Cloud Run 배포 — v8.8.0 (faad6169f), 빌드 7분 13초, health check HTTP 200 통과
 - [x] P1: Reporter 파이프라인 품질 개선 — 임계값 SSOT 버그 수정(memory 85→80, disk 90→80), 근접 경고, 트렌드 예측, 서버 타입별 CLI 명령어
 - [x] P2: `/api/servers/[id]` 테스트 추가 (31 tests) — enhanced/legacy 포맷, history, 서버 검색, 404, 환경 매핑, 에러 핸들링
 - [x] P2: Services 테스트 추가 — BrowserNotificationService (13), PyodideService (7), SystemInactivityService (12)
