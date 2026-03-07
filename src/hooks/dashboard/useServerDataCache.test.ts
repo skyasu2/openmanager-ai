@@ -8,9 +8,8 @@
 
 import { renderHook } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
-
-import { useServerDataCache } from './useServerDataCache';
 import type { EnhancedServerData } from '@/types/dashboard/server-dashboard.types';
+import { useServerDataCache } from './useServerDataCache';
 
 function makeServerData(id: string): EnhancedServerData {
   return { id, name: `Server ${id}`, status: 'online' } as EnhancedServerData;
@@ -54,7 +53,10 @@ describe('useServerDataCache', () => {
       );
       expect(result.current.cachedServers).toHaveLength(1);
 
-      rerender({ data: [] as EnhancedServerData[], opts: { keepPreviousOnError: true } });
+      rerender({
+        data: [] as EnhancedServerData[],
+        opts: { keepPreviousOnError: true },
+      });
       expect(result.current.cachedServers).toHaveLength(1);
     });
 
@@ -63,11 +65,16 @@ describe('useServerDataCache', () => {
 
       const { result, rerender } = renderHook(
         ({ data, opts }) => useServerDataCache(data, opts),
-        { initialProps: { data: initial, opts: { keepPreviousOnError: false } } }
+        {
+          initialProps: { data: initial, opts: { keepPreviousOnError: false } },
+        }
       );
       expect(result.current.cachedServers).toHaveLength(1);
 
-      rerender({ data: [] as EnhancedServerData[], opts: { keepPreviousOnError: false } });
+      rerender({
+        data: [] as EnhancedServerData[],
+        opts: { keepPreviousOnError: false },
+      });
       expect(result.current.cachedServers).toEqual([]);
     });
   });

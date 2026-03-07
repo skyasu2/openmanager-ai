@@ -14,8 +14,8 @@ vi.mock('@/utils/debug', () => ({
   default: { log: vi.fn() },
 }));
 
-import { useDashboardStats } from './useDashboardStats';
 import type { Server } from '@/types/server';
+import { useDashboardStats } from './useDashboardStats';
 
 function makeServer(id: string, status: string): Server {
   return { id, name: `Server ${id}`, status } as Server;
@@ -28,7 +28,12 @@ describe('useDashboardStats', () => {
         useDashboardStats([makeServer('1', 'online')], undefined, true)
       );
       expect(result.current).toEqual({
-        total: 0, online: 0, offline: 0, warning: 0, critical: 0, unknown: 0,
+        total: 0,
+        online: 0,
+        offline: 0,
+        warning: 0,
+        critical: 0,
+        unknown: 0,
       });
     });
 
@@ -125,9 +130,7 @@ describe('useDashboardStats', () => {
 
     it('should fallback to servers when allServers is empty', () => {
       const servers = [makeServer('1', 'online'), makeServer('2', 'warning')];
-      const { result } = renderHook(() =>
-        useDashboardStats(servers, [])
-      );
+      const { result } = renderHook(() => useDashboardStats(servers, []));
       expect(result.current.total).toBe(2);
     });
   });

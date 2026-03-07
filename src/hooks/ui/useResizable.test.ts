@@ -14,9 +14,7 @@ import { useResizable } from './useResizable';
 describe('useResizable', () => {
   describe('initial state', () => {
     it('should initialize with given width', () => {
-      const { result } = renderHook(() =>
-        useResizable({ initialWidth: 600 })
-      );
+      const { result } = renderHook(() => useResizable({ initialWidth: 600 }));
       expect(result.current.width).toBe(600);
       expect(result.current.isResizing).toBe(false);
     });
@@ -63,9 +61,7 @@ describe('useResizable', () => {
 
   describe('mouse drag', () => {
     it('should set isResizing on mouse down', () => {
-      const { result } = renderHook(() =>
-        useResizable({ initialWidth: 600 })
-      );
+      const { result } = renderHook(() => useResizable({ initialWidth: 600 }));
 
       act(() => {
         result.current.handleMouseDown({
@@ -95,7 +91,12 @@ describe('useResizable', () => {
     it('should update width on mousemove and reset on mouseup', () => {
       const onResizeEnd = vi.fn();
       const { result } = renderHook(() =>
-        useResizable({ initialWidth: 600, minWidth: 400, maxWidth: 900, onResizeEnd })
+        useResizable({
+          initialWidth: 600,
+          minWidth: 400,
+          maxWidth: 900,
+          onResizeEnd,
+        })
       );
 
       // Start drag at x=500
@@ -123,9 +124,7 @@ describe('useResizable', () => {
 
   describe('touch drag', () => {
     it('should set isResizing on touch start', () => {
-      const { result } = renderHook(() =>
-        useResizable({ initialWidth: 600 })
-      );
+      const { result } = renderHook(() => useResizable({ initialWidth: 600 }));
 
       act(() => {
         result.current.handleTouchStart({
