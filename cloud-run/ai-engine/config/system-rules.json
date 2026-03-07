@@ -1,32 +1,37 @@
 {
   "$schema": "./system-rules.schema.json",
-  "version": "1.0.0",
-  "lastUpdated": "2025-12-19",
+  "version": "1.1.0",
+  "lastUpdated": "2026-03-02",
   "thresholds": {
     "cpu": {
       "warning": 80,
       "critical": 90,
-      "description": "CPU 사용률 임계값. 80% 이상 경고, 90% 이상 심각 (업계 표준)"
+      "recovery": 65,
+      "description": "CPU 사용률 임계값. 80% 이상 경고, 90% 이상 심각, 65% 이하 복구 (업계 표준)"
     },
     "memory": {
       "warning": 80,
       "critical": 90,
-      "description": "메모리 사용률 임계값. 80% 이상 경고, 90% 이상 심각 (업계 표준)"
+      "recovery": 75,
+      "description": "메모리 사용률 임계값. 80% 이상 경고, 90% 이상 심각, 75% 이하 복구 (업계 표준)"
     },
     "disk": {
       "warning": 80,
       "critical": 90,
-      "description": "디스크 사용률 임계값. 80% 이상 경고, 90% 이상 심각 (여유 10% 확보)"
+      "recovery": 75,
+      "description": "디스크 사용률 임계값. 80% 이상 경고, 90% 이상 심각, 75% 이하 복구 (여유 10% 확보)"
     },
     "network": {
       "warning": 70,
       "critical": 85,
-      "description": "네트워크 대역폭 사용률 임계값(%). 70% 이상 경고, 85% 이상 심각 (1Gbps 기준)"
+      "recovery": 60,
+      "description": "네트워크 대역폭 사용률 임계값(%). 70% 이상 경고, 85% 이상 심각, 60% 이하 복구 (1Gbps 기준)"
     },
     "responseTime": {
       "warning": 2000,
       "critical": 5000,
-      "description": "응답 시간 임계값(ms). 2초 이상 경고, 5초 이상 심각"
+      "recovery": 1500,
+      "description": "응답 시간 임계값(ms). 2초 이상 경고, 5초 이상 심각, 1.5초 이하 복구"
     }
   },
   "statusRules": [
@@ -140,6 +145,6 @@
   "metadata": {
     "description": "OpenManager AI 시스템 모니터링 규칙 설정",
     "maintainer": "OpenManager Team",
-    "aiInstructions": "이 규칙 파일은 서버 모니터링의 Single Source of Truth입니다. 임계값 관련 질문 시 이 설정을 참조하여 정확한 수치로 답변하세요. 예: 'CPU 85% 이상이면 심각(critical) 상태입니다.'"
+    "aiInstructions": "이 규칙 파일은 서버 모니터링의 Single Source of Truth입니다. 임계값 관련 질문 시 이 설정을 참조하여 정확한 수치로 답변하세요. recovery 임계값은 해당 값 이하로 떨어져야 정상(online) 복귀로 판정합니다 (히스테리시스). baseline drift는 6시간 윈도우의 전반/후반 평균 비교로 감지합니다."
   }
 }
