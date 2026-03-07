@@ -91,11 +91,26 @@ const TIMESERIES_DATA = {
   timestamps: [1706000000, 1706000600, 1706001200],
   serverIds: ['web-01', 'db-01'],
   metrics: {
-    [OTEL_METRIC.CPU]: [[0.5, 0.6, 0.7], [0.3, 0.4, 0.5]],
-    [OTEL_METRIC.MEMORY]: [[0.4, 0.5, 0.6], [0.6, 0.7, 0.8]],
-    [OTEL_METRIC.DISK]: [[0.3, 0.3, 0.3], [0.5, 0.5, 0.5]],
-    [OTEL_METRIC.NETWORK]: [[0.5, 0.4, 0.6], [0.2, 0.3, 0.1]],
-    [OTEL_METRIC.HTTP_DURATION]: [[0.123, 0.150, 0.100], [0.200, 0.250, 0.180]],
+    [OTEL_METRIC.CPU]: [
+      [0.5, 0.6, 0.7],
+      [0.3, 0.4, 0.5],
+    ],
+    [OTEL_METRIC.MEMORY]: [
+      [0.4, 0.5, 0.6],
+      [0.6, 0.7, 0.8],
+    ],
+    [OTEL_METRIC.DISK]: [
+      [0.3, 0.3, 0.3],
+      [0.5, 0.5, 0.5],
+    ],
+    [OTEL_METRIC.NETWORK]: [
+      [0.5, 0.4, 0.6],
+      [0.2, 0.3, 0.1],
+    ],
+    [OTEL_METRIC.HTTP_DURATION]: [
+      [0.123, 0.15, 0.1],
+      [0.2, 0.25, 0.18],
+    ],
   },
 };
 
@@ -157,7 +172,9 @@ describe('/api/servers/[id]', () => {
     it('should set private cache headers', async () => {
       const res = await callGET(makeRequest('/api/servers/web-01'), 'web-01');
 
-      expect(res.headers.get('Cache-Control')).toBe('private, no-store, max-age=0');
+      expect(res.headers.get('Cache-Control')).toBe(
+        'private, no-store, max-age=0'
+      );
       expect(res.headers.get('Pragma')).toBe('no-cache');
     });
 
@@ -174,7 +191,9 @@ describe('/api/servers/[id]', () => {
 
       expect(data.meta.request_info.server_id).toBe('web-01');
       expect(data.meta.request_info.format).toBe('enhanced');
-      expect(data.meta.request_info.processing_time_ms).toBeGreaterThanOrEqual(0);
+      expect(data.meta.request_info.processing_time_ms).toBeGreaterThanOrEqual(
+        0
+      );
     });
   });
 
@@ -348,10 +367,7 @@ describe('/api/servers/[id]', () => {
         { serverId: 'db-01', hostname: 'db-01.local' },
       ]);
 
-      const res = await callGET(
-        makeRequest('/api/servers/missing'),
-        'missing'
-      );
+      const res = await callGET(makeRequest('/api/servers/missing'), 'missing');
       const data = await res.json();
 
       expect(data.available_servers).toHaveLength(2);
@@ -414,7 +430,10 @@ describe('/api/servers/[id]', () => {
       ['idc', 'Seoul IDC', 'Internet Data Center'],
       ['onpremise', 'On-Premise Seoul DC1', 'On-Premise'],
     ])('should map %s environment correctly in legacy format', async (env, location, provider) => {
-      mockGetServerMetrics.mockReturnValue({ ...BASE_METRIC, environment: env });
+      mockGetServerMetrics.mockReturnValue({
+        ...BASE_METRIC,
+        environment: env,
+      });
 
       const res = await callGET(
         makeRequest('/api/servers/web-01?format=legacy'),
@@ -427,7 +446,10 @@ describe('/api/servers/[id]', () => {
     });
 
     it('should handle unknown environment gracefully', async () => {
-      mockGetServerMetrics.mockReturnValue({ ...BASE_METRIC, environment: 'unknown-env' });
+      mockGetServerMetrics.mockReturnValue({
+        ...BASE_METRIC,
+        environment: 'unknown-env',
+      });
 
       const res = await callGET(
         makeRequest('/api/servers/web-01?format=legacy'),
