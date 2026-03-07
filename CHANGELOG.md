@@ -2,6 +2,32 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.8.0](https://github.com/skyasu2/openmanager-ai/compare/v8.7.9...v8.8.0) (2026-03-07)
+
+
+### Features
+
+* **ai-engine:** activate multi-agent orchestration for complex queries ([a369ceb](https://github.com/skyasu2/openmanager-ai/commit/a369ceb0b054e1aa6cb1fc7fa090500ae111947c))
+* **security:** add client-driven CSRF protection and remove deprecated auth wrappers ([71a4b38](https://github.com/skyasu2/openmanager-ai/commit/71a4b38c4a367c334cff56a3679bdf77517de7b8))
+
+
+### Bug Fixes
+
+* **ai-engine:** correct stale JSDoc references in reranker ([19944a8](https://github.com/skyasu2/openmanager-ai/commit/19944a8ad750bf06bf54fe54947a2a320254bb40))
+* **ai-engine:** harden security and error handling in request pipeline ([a147e9f](https://github.com/skyasu2/openmanager-ai/commit/a147e9f9f13deaba2cb00676a2d567d0f2aa53e5))
+* **ai-engine:** sanitize error responses and correct provider quota limits ([25f1546](https://github.com/skyasu2/openmanager-ai/commit/25f15468519bd5a2d35cebe459a2865e637b22ea))
+* **ai-engine:** use String(error) pattern in Langfuse error logging ([00b26dd](https://github.com/skyasu2/openmanager-ai/commit/00b26ddefc01eeefbc24030fe6757d3f296d794f))
+* **build:** import SessionState from source module to fix Vercel build ([f102573](https://github.com/skyasu2/openmanager-ai/commit/f102573a86380292b45ce1d162fc61967d68dc08))
+* **ci:** reduce artifact retention and add cleanup ([efd6cdc](https://github.com/skyasu2/openmanager-ai/commit/efd6cdcad94f6a6fdecca6c461e0bfddcc4290d6))
+* **core:** tighten emergency mode and prune stale types ([e643bd3](https://github.com/skyasu2/openmanager-ai/commit/e643bd333dee7b0bb555ba3d1415ff49ef3c7417))
+* prevent duplicate Redis circuit breaker initialization ([e0ecb05](https://github.com/skyasu2/openmanager-ai/commit/e0ecb05533b6e2982b1bfadc0d78a07f83e6a386))
+* **reporter:** align thresholds to SSOT, add near-threshold warnings, trend predictions, and server-type CLI commands ([ce294bf](https://github.com/skyasu2/openmanager-ai/commit/ce294bf4231244b57ff05ec9c087b897ab3d56fd))
+* **security:** sanitize error responses and silence logger in tests ([f1c4819](https://github.com/skyasu2/openmanager-ai/commit/f1c481996630caed99754f8f84847cc9cd7ac194))
+* **test:** add vitest wrapper to prevent jsdom stall on local runs ([d3ea19d](https://github.com/skyasu2/openmanager-ai/commit/d3ea19da136825ed17e022c62b871e86dca4112a))
+* **test:** conditionally load jest-dom and esbuild config for node-only tests ([692f34e](https://github.com/skyasu2/openmanager-ai/commit/692f34e1f7e3566be7cf578750496b5a350e58ef))
+* **ui:** remove portfolio intro and guest helper copy ([52162ae](https://github.com/skyasu2/openmanager-ai/commit/52162ae2f12d7dab4bb131713cd3ca93196d7154))
+* **ui:** resolve race conditions, fix icons, and add comprehensive tests ([cff7be6](https://github.com/skyasu2/openmanager-ai/commit/cff7be66b3ccfadb7174b692d0fdd80767be9abb))
+
 ## [8.7.9](https://github.com/skyasu2/openmanager-ai/compare/v8.7.8...v8.7.9) (2026-03-06)
 
 
