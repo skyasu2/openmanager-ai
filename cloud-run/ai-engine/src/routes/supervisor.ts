@@ -85,16 +85,20 @@ const fileAttachmentSchema = z.object({
 
 const streamMessageSchema = z.object({
   role: z.enum(['user', 'assistant', 'system']),
-  content: z.string().min(1, 'Message content required'),
+  content: z.string().min(1, 'Message content required').max(50_000),
   /** Image attachments for Vision Agent */
-  images: z.array(imageAttachmentSchema).optional(),
+  images: z.array(imageAttachmentSchema).max(10).optional(),
   /** File attachments (PDF, audio, etc.) */
-  files: z.array(fileAttachmentSchema).optional(),
+  files: z.array(fileAttachmentSchema).max(5).optional(),
 });
 
 const streamRequestSchema = z.object({
-  messages: z.array(streamMessageSchema).min(1, 'At least one message required'),
-  sessionId: z.string().optional(),
+  messages: z.array(streamMessageSchema).min(1, 'At least one message required').max(50),
+  sessionId: z
+    .string()
+    .max(128)
+    .regex(/^[a-zA-Z0-9_-]+$/)
+    .optional(),
   enableWebSearch: z.union([z.boolean(), z.literal('auto')]).optional(),
   enableRAG: z.boolean().optional(),
   deviceType: z.enum(['mobile', 'desktop']).optional(),
@@ -153,8 +157,15 @@ async function flushLangfuseBestEffort(timeoutMs: number = 350): Promise<void> {
  */
 supervisorRouter.post('/', async (c: Context) => {
   try {
-    const { messages, sessionId, enableWebSearch, enableRAG, deviceType } =
-      (await c.req.json()) as StreamSupervisorRequest;
+    const body = await c.req.json();
+    const parseResult = streamRequestSchema.safeParse(body);
+
+    if (!parseResult.success) {
+      const errorDetails = parseResult.error.issues.map((i) => i.message).join(', ');
+      return handleValidationError(c, `Invalid request: ${errorDetails}`);
+    }
+
+    const { messages, sessionId, enableWebSearch, enableRAG, deviceType } = parseResult.data;
 
     // 🎯 W3C Trace Context: traceparent 헤더에서 trace-id 추출
     const traceparent = c.req.header('traceparent');
@@ -163,7 +174,7 @@ supervisorRouter.post('/', async (c: Context) => {
 
     // Validate input
     const lastUserMessage = messages
-      ?.filter((m: { role: string }) => m.role === 'user')
+      .filter((m) => m.role === 'user')
       .pop();
     const query = lastUserMessage?.content;
 

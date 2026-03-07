@@ -152,7 +152,7 @@ app.get('/warmup', (c: Context) => {
 
   return jsonSuccess(c, {
     status: 'warmed_up',
-    keys: status,
+    keysConfigured: Object.values(status).filter(Boolean).length,
     precomputed: {
       totalSlots: 144, // 24h * 6 (10-min intervals)
       currentSlot: state.slotIndex,
