@@ -6,7 +6,7 @@
 
 | Task | Priority | Status |
 |------|----------|--------|
-| 테스트 커버리지 확대: API Routes (18%) | P2 | In Progress (health, servers-unified, version 완료) |
+| 테스트 커버리지 확대: API Routes (18%) | P2 | In Progress (health, servers-unified, version, servers/[id] 완료) |
 | 테스트 커버리지 확대: Hooks (30%) | P2 | Planned |
 | 테스트 커버리지 확대: Services (47%) | P3 | Planned |
 | Cloud Run 대형 파일 리팩토링 Phase 2~3 | P3 | On Hold |
@@ -19,6 +19,10 @@
 3. `/api/servers/[id]/route.ts` — 서버 상세 (397줄)
 4. `src/services/code-interpreter/pyodide-service.ts` — 미테스트
 5. `src/services/notifications/BrowserNotificationService.ts` — 미테스트
+
+### Completed (2026-03-07)
+- [x] P1: Reporter 파이프라인 품질 개선 — 임계값 SSOT 버그 수정(memory 85→80, disk 90→80), 근접 경고, 트렌드 예측, 서버 타입별 CLI 명령어
+- [x] P2: `/api/servers/[id]` 테스트 추가 (31 tests) — enhanced/legacy 포맷, history, 서버 검색, 404, 환경 매핑, 에러 핸들링
 
 ### Completed (2026-03-06)
 - [x] P0: Provider quota-tracker 수치 교정 — Cerebras 24M→1M TPD, Groq 100K→500K TPD, Groq TPM 12K→6K, Gemini RPM 15→10
