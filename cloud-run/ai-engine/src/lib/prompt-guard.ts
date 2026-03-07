@@ -187,6 +187,34 @@ interface GuardResult {
   warning?: string;
 }
 
+export function applySanitizedQueryToMessages<
+  T extends { role: string; content: string }
+>(messages: T[], sanitizedQuery: string): T[] {
+  if (!sanitizedQuery) {
+    return messages;
+  }
+
+  let targetIndex = -1;
+  for (let i = messages.length - 1; i >= 0; i--) {
+    if (
+      messages[i]?.role === 'user' &&
+      typeof messages[i]?.content === 'string' &&
+      messages[i].content.trim().length > 0
+    ) {
+      targetIndex = i;
+      break;
+    }
+  }
+
+  if (targetIndex === -1) {
+    return messages;
+  }
+
+  return messages.map((message, index) =>
+    index === targetIndex ? { ...message, content: sanitizedQuery } : message
+  );
+}
+
 export function guardInput(query: string): GuardResult {
   const detection = detectPromptInjection(query);
   const sanitizedQuery = sanitizeForPrompt(query);

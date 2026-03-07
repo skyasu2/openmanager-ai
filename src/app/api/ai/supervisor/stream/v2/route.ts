@@ -32,7 +32,11 @@ import {
 import { withAuth } from '@/lib/auth/api-auth';
 import { logger } from '@/lib/logging';
 import { rateLimiters, withRateLimit } from '@/lib/security/rate-limiter';
-import { extractAndValidateQuery, resolveSessionId } from '../../request-utils';
+import {
+  applySanitizedQueryToMessages,
+  extractAndValidateQuery,
+  resolveSessionId,
+} from '../../request-utils';
 import { requestSchemaLoose } from '../../schemas';
 import {
   createStreamErrorResponse,
@@ -296,9 +300,11 @@ export const POST = withRateLimit(
       logger.info(`📡 [SupervisorStreamV2] Session: ${sessionId}`);
 
       // 4. Normalize messages for Cloud Run
-      const trimmedMessages = trimMessagesForContext(
-        messages as HybridMessage[]
+      const sanitizedMessages = applySanitizedQueryToMessages(
+        messages as HybridMessage[],
+        userQuery
       );
+      const trimmedMessages = trimMessagesForContext(sanitizedMessages);
       const normalizedMessages = normalizeMessagesForCloudRun(trimmedMessages);
       const normalizedParse =
         NORMALIZED_MESSAGES_SCHEMA.safeParse(normalizedMessages);

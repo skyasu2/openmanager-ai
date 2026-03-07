@@ -25,7 +25,7 @@ const NORMALIZED_MESSAGE_SCHEMA = z.object({
           .string()
           .min(1)
           .max(14 * 1024 * 1024),
-        mimeType: z.string().min(1).max(255),
+        mimeType: z.enum(['image/png', 'image/jpeg', 'image/gif', 'image/webp']),
         name: z.string().max(255).optional(),
       })
     )
@@ -37,7 +37,14 @@ const NORMALIZED_MESSAGE_SCHEMA = z.object({
           .string()
           .min(1)
           .max(14 * 1024 * 1024),
-        mimeType: z.string().min(1).max(255),
+        mimeType: z.enum([
+          'application/pdf',
+          'text/plain',
+          'text/markdown',
+          'audio/mpeg',
+          'audio/wav',
+          'audio/ogg',
+        ]),
         name: z.string().max(255).optional(),
       })
     )

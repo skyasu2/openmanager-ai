@@ -10,6 +10,7 @@
 import type { NextRequest } from 'next/server';
 import {
   extractLastUserQuery,
+  extractTextFromHybridMessage,
   type HybridMessage,
 } from '@/lib/ai/utils/message-normalizer';
 import type { InjectionDetectionResult } from './security';
@@ -74,4 +75,70 @@ export function extractAndValidateQuery(
   }
 
   return { ok: true, userQuery: sanitizedInput, inputCheck };
+}
+
+function replaceHybridMessageText(
+  message: HybridMessage,
+  sanitizedQuery: string
+): HybridMessage {
+  const nextMessage: HybridMessage = {
+    ...message,
+    content: sanitizedQuery,
+  };
+
+  if (!Array.isArray(message.parts)) {
+    return nextMessage;
+  }
+
+  const nextParts: HybridMessage['parts'] = [];
+  let textPartReplaced = false;
+
+  for (const part of message.parts) {
+    if (part?.type === 'text') {
+      if (!textPartReplaced) {
+        nextParts.push({ ...part, text: sanitizedQuery });
+        textPartReplaced = true;
+      }
+      continue;
+    }
+    nextParts.push(part);
+  }
+
+  if (!textPartReplaced) {
+    nextParts.unshift({ type: 'text', text: sanitizedQuery });
+  }
+
+  nextMessage.parts = nextParts;
+  return nextMessage;
+}
+
+export function applySanitizedQueryToMessages(
+  messages: HybridMessage[],
+  sanitizedQuery: string
+): HybridMessage[] {
+  if (!sanitizedQuery) {
+    return messages;
+  }
+
+  let targetIndex = -1;
+  for (let i = messages.length - 1; i >= 0; i--) {
+    const message = messages[i];
+    if (
+      message?.role === 'user' &&
+      extractTextFromHybridMessage(message).trim().length > 0
+    ) {
+      targetIndex = i;
+      break;
+    }
+  }
+
+  if (targetIndex === -1) {
+    return messages;
+  }
+
+  return messages.map((message, index) =>
+    index === targetIndex
+      ? replaceHybridMessageText(message, sanitizedQuery)
+      : message
+  );
 }

@@ -28,7 +28,11 @@ import {
   sanitizeErrorData,
 } from '../lib/error-handler';
 import { sanitizeChineseCharacters } from '../lib/text-sanitizer';
-import { guardInput, filterMaliciousOutput } from '../lib/prompt-guard';
+import {
+  applySanitizedQueryToMessages,
+  filterMaliciousOutput,
+  guardInput,
+} from '../lib/prompt-guard';
 import { logger } from '../lib/logger';
 import { flushLangfuse } from '../services/observability/langfuse';
 import { emitSupervisorStreamError } from './supervisor-stream-error';
@@ -41,13 +45,29 @@ import { emitSupervisorStreamError } from './supervisor-stream-error';
  * Image attachment schema for multimodal messages
  * @see https://ai-sdk.dev/docs/ai-sdk-core/prompts#image-parts
  */
+const imageMimeTypeSchema = z.enum([
+  'image/png',
+  'image/jpeg',
+  'image/gif',
+  'image/webp',
+]);
+
+const fileMimeTypeSchema = z.enum([
+  'application/pdf',
+  'text/plain',
+  'text/markdown',
+  'audio/mpeg',
+  'audio/wav',
+  'audio/ogg',
+]);
+
 const imageAttachmentSchema = z.object({
   /** Image data: Base64, Data URL, or HTTP(S) URL */
-  data: z.string(),
+  data: z.string().min(1).max(14 * 1024 * 1024),
   /** MIME type (e.g., 'image/png', 'image/jpeg') */
-  mimeType: z.string(),
+  mimeType: imageMimeTypeSchema,
   /** Optional filename */
-  name: z.string().optional(),
+  name: z.string().max(255).optional(),
 });
 
 /**
@@ -56,11 +76,11 @@ const imageAttachmentSchema = z.object({
  */
 const fileAttachmentSchema = z.object({
   /** File data: Base64 or HTTP(S) URL */
-  data: z.string(),
+  data: z.string().min(1).max(14 * 1024 * 1024),
   /** MIME type (e.g., 'application/pdf', 'text/plain') */
-  mimeType: z.string(),
+  mimeType: fileMimeTypeSchema,
   /** Optional filename */
-  name: z.string().optional(),
+  name: z.string().max(255).optional(),
 });
 
 const streamMessageSchema = z.object({
@@ -79,6 +99,8 @@ const streamRequestSchema = z.object({
   enableRAG: z.boolean().optional(),
   deviceType: z.enum(['mobile', 'desktop']).optional(),
 });
+
+type StreamSupervisorRequest = z.infer<typeof streamRequestSchema>;
 
 // ============================================================================
 // 🎯 W3C Trace Context Helper
@@ -131,7 +153,8 @@ async function flushLangfuseBestEffort(timeoutMs: number = 350): Promise<void> {
  */
 supervisorRouter.post('/', async (c: Context) => {
   try {
-    const { messages, sessionId, enableWebSearch, enableRAG, deviceType } = await c.req.json();
+    const { messages, sessionId, enableWebSearch, enableRAG, deviceType } =
+      (await c.req.json()) as StreamSupervisorRequest;
 
     // 🎯 W3C Trace Context: traceparent 헤더에서 trace-id 추출
     const traceparent = c.req.header('traceparent');
@@ -139,8 +162,10 @@ supervisorRouter.post('/', async (c: Context) => {
     const upstreamTraceId = extractTraceId(traceparent, legacyTraceId);
 
     // Validate input
-    const lastMessage = messages?.[messages.length - 1];
-    const query = lastMessage?.content;
+    const lastUserMessage = messages
+      ?.filter((m: { role: string }) => m.role === 'user')
+      .pop();
+    const query = lastUserMessage?.content;
 
     if (!query) {
       return handleValidationError(c, 'No query provided');
@@ -153,13 +178,20 @@ supervisorRouter.post('/', async (c: Context) => {
       return c.json({ success: false, error: 'Security: blocked input', code: 'PROMPT_INJECTION' }, 400);
     }
 
+    const sanitizedMessages = applySanitizedQueryToMessages(
+      messages,
+      guard.sanitizedQuery
+    );
+
     logger.info({ sessionId, traceId: upstreamTraceId }, 'Supervisor processing request');
     logProviderStatus();
 
     // Extract images/files from the last user message for multimodal support
-    const lastUserMessage = messages.filter((m: { role: string }) => m.role === 'user').pop();
-    const images = lastUserMessage?.images;
-    const files = lastUserMessage?.files;
+    const sanitizedLastUserMessage = sanitizedMessages
+      .filter((m: { role: string }) => m.role === 'user')
+      .pop();
+    const images = sanitizedLastUserMessage?.images;
+    const files = sanitizedLastUserMessage?.files;
 
     if (images?.length) {
       logger.info({ count: images.length }, 'Supervisor: images attached');
@@ -169,7 +201,7 @@ supervisorRouter.post('/', async (c: Context) => {
     }
 
     const result = await executeSupervisor({
-      messages: messages.map((m: { role: string; content: string }) => ({
+      messages: sanitizedMessages.map((m: { role: string; content: string }) => ({
         role: m.role as 'user' | 'assistant',
         content: m.content,
       })),
@@ -377,29 +409,44 @@ supervisorRouter.post('/stream/v2', async (c: Context) => {
       return handleValidationError(c, `Invalid request: ${errorDetails}`);
     }
 
-    const { messages, sessionId, enableWebSearch, enableRAG, deviceType } = parseResult.data;
+    const { messages, sessionId, enableWebSearch, enableRAG, deviceType } =
+      parseResult.data;
 
     // 2. Get last user query for logging
-    const lastMessage = messages[messages.length - 1];
-    const query = lastMessage.content;
+    const lastUserMessage = messages.filter((m) => m.role === 'user').pop();
+    const query = lastUserMessage?.content;
 
     // 🛡️ Prompt Injection 방어
+    if (!query) {
+      return handleValidationError(c, 'No query provided');
+    }
     const guardV2 = guardInput(query);
     if (guardV2.shouldBlock) {
       logger.warn({ patterns: guardV2.patterns }, 'SupervisorStreamV2: blocked injection attempt');
       return handleValidationError(c, 'Security: blocked input');
     }
 
+    const sanitizedMessages = applySanitizedQueryToMessages(
+      messages,
+      guardV2.sanitizedQuery
+    );
+
     logger.info(
-      { sessionId: sessionId || 'default', query: query.slice(0, 50), traceId: v2UpstreamTraceId },
+      {
+        sessionId: sessionId || 'default',
+        query: guardV2.sanitizedQuery.slice(0, 50),
+        traceId: v2UpstreamTraceId,
+      },
       'SupervisorStreamV2 starting (UIMessageStream)'
     );
     logProviderStatus();
 
     // 3. Extract images/files from the last user message for multimodal support
-    const lastUserMessage = messages.filter((m) => m.role === 'user').pop();
-    const images = lastUserMessage?.images;
-    const files = lastUserMessage?.files;
+    const sanitizedLastUserMessage = sanitizedMessages
+      .filter((m) => m.role === 'user')
+      .pop();
+    const images = sanitizedLastUserMessage?.images;
+    const files = sanitizedLastUserMessage?.files;
 
     if (images?.length) {
       logger.info({ count: images.length }, 'SupervisorStreamV2: images attached');
@@ -410,7 +457,7 @@ supervisorRouter.post('/stream/v2', async (c: Context) => {
 
     // 4. Create and return UIMessageStream response
     const response = createSupervisorStreamResponse({
-      messages: messages.map((m) => ({
+      messages: sanitizedMessages.map((m) => ({
         role: m.role as 'user' | 'assistant',
         content: m.content,
       })),

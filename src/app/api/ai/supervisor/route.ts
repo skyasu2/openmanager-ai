@@ -54,7 +54,10 @@ import { runWithTraceId } from '@/lib/tracing/async-context';
 import { isStatusQuery, shouldSkipCache } from './cache-utils';
 import { handleCloudRunJson, handleCloudRunStream } from './cloud-run-handler';
 import { handleSupervisorError } from './error-handler';
-import { extractAndValidateQuery } from './request-utils';
+import {
+  applySanitizedQueryToMessages,
+  extractAndValidateQuery,
+} from './request-utils';
 import { requestSchema } from './schemas';
 import { buildServerContextMessage } from './server-context';
 import { resolveScopedSessionIds } from './session-owner';
@@ -279,7 +282,12 @@ export const POST = withRateLimit(
             querySummary: userQuery.slice(0, 80),
           });
 
-          const normalizedMessages = normalizeMessagesForCloudRun(messages);
+          const sanitizedMessages = applySanitizedQueryToMessages(
+            messages as HybridMessage[],
+            userQuery
+          );
+          const normalizedMessages =
+            normalizeMessagesForCloudRun(sanitizedMessages);
 
           // 서버 메트릭 컨텍스트 주입 (alert 서버만, ~100-200 토큰)
           const contextMessage = await buildServerContextMessage();
@@ -304,7 +312,7 @@ export const POST = withRateLimit(
           }
 
           logger.info(
-            `📝 [Supervisor] Normalized ${messages.length} messages → ${messagesToSend.length} for Cloud Run`
+            `📝 [Supervisor] Normalized ${sanitizedMessages.length} messages → ${messagesToSend.length} for Cloud Run`
           );
 
           const deviceType = req.headers.get('X-Device-Type') || 'desktop';
