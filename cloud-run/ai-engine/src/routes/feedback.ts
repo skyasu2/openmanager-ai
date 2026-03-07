@@ -22,6 +22,7 @@ const feedbackSchema = z.object({
   traceId: z
     .string()
     .min(1, 'traceId is required')
+    .max(128, 'traceId exceeds maximum length')
     .regex(/^[a-zA-Z0-9_-]+$/, 'traceId contains invalid characters'),
   score: z.enum(['positive', 'negative']),
 });
