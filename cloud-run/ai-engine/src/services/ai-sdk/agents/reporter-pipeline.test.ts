@@ -10,6 +10,47 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
+// Mock status-thresholds
+vi.mock('../../../config/status-thresholds', () => ({
+  STATUS_THRESHOLDS: {
+    cpu: { warning: 80, critical: 90, recovery: 65 },
+    memory: { warning: 80, critical: 90, recovery: 75 },
+    disk: { warning: 80, critical: 90, recovery: 75 },
+    network: { warning: 70, critical: 85, recovery: 60 },
+    responseTime: { warning: 2000, critical: 5000, recovery: 1500 },
+  },
+}));
+
+// Mock TrendPredictor
+vi.mock('../../../lib/ai/monitoring/TrendPredictor', () => ({
+  getTrendPredictor: vi.fn(() => ({
+    predictEnhanced: vi.fn(() => ({
+      prediction: 87.5,
+      trend: 'increasing' as const,
+      confidence: 0.72,
+      thresholdBreach: {
+        willBreachCritical: false,
+        willBreachWarning: true,
+        humanReadable: '19분 후 warning 임계값 도달 예상',
+      },
+    })),
+  })),
+}));
+
+// Mock analyst-tools-shared
+vi.mock('../../../tools-ai-sdk/analyst-tools-shared', () => ({
+  getCurrentSlotIndex: vi.fn(() => 42),
+  getHistoryForMetric: vi.fn((_serverId: string, _metric: string, currentValue: number) =>
+    Array.from({ length: 36 }, (_, i) => ({
+      timestamp: Date.now() - (35 - i) * 600000,
+      value: currentValue + (i - 18) * 0.2,
+    }))
+  ),
+  toTrendDataPoints: vi.fn((points: Array<{ timestamp: number; value: number }>) =>
+    points.map((p) => ({ timestamp: p.timestamp, value: p.value }))
+  ),
+}));
+
 // Mock precomputed-state
 vi.mock('../../../data/precomputed-state', () => ({
   getCurrentState: vi.fn(() => ({

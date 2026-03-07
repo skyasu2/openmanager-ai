@@ -1,33 +1,34 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-06 13:43:09 KST
+> Generated at: 2026-03-07 09:14:12 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 52 |
-| Total Checks | 375 |
-| Passed | 357 |
+| Total Runs | 53 |
+| Total Checks | 384 |
+| Passed | 366 |
 | Failed | 18 |
-| Completed Items | 101 |
+| Completed Items | 104 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 34 |
 | Expert Domains Tracked | 6 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Run | QA-20260306-0052 (2026-03-06T04:43:09.085Z) |
+| Last Run | QA-20260307-0053 (2026-03-07T00:14:12.888Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260306-0052 (2026-03-06T04:43:09.085Z)
+Latest run: QA-20260307-0053 (2026-03-07T00:14:12.888Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
 | AI Quality Assurance Specialist | appropriate | no | - |
-| AI Security & Reliability Architect | appropriate | no | - |
+| IT Monitoring & Observability SME | appropriate | no | - |
+| DevOps / SRE Engineer | appropriate | no | - |
 | Test Automation Architect | appropriate | no | - |
 
 ## Expert Domain Open Gaps
@@ -79,9 +80,9 @@ Latest run: QA-20260306-0052 (2026-03-06T04:43:09.085Z)
   - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
 - [P2] esc-모달-닫기: ESC 모달 닫기 (seen 3회, last QA-20260302-0042)
   - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
-- [P2] feature-dod-tsc-zero-error: tsc --noEmit 0 에러 (seen 8회, last QA-20260306-0051)
+- [P2] feature-dod-tsc-zero-error: tsc --noEmit 0 에러 (seen 9회, last QA-20260307-0053)
   - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
-- [P2] feature-dod-unit-tests: 단위 테스트 커버리지 확장 (Batch 9-13) (seen 8회, last QA-20260306-0051)
+- [P2] feature-dod-unit-tests: 단위 테스트 158개 통과 (seen 9회, last QA-20260307-0053)
   - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
 - [P2] landing-feature-cards: 랜딩 피처카드 4개 모달 (seen 1회, last QA-20260301-0031)
   - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
@@ -124,6 +125,7 @@ Latest run: QA-20260306-0052 (2026-03-06T04:43:09.085Z)
 - auth-error-provider-copy: 인증 에러 라우트 메시지를 제공자-중립 표현으로 전환 (completed 1회, last QA-20260227-0010)
 - auto-incident-report: 자동장애 보고서 생성 및 상세보기 (completed 1회, last QA-20260306-0051)
 - biome-lint-900-files-에러-0: Biome Lint 900 files 에러 0 (completed 1회, last QA-20260301-0032)
+- csrf-duplicate-removal: CSRF getCSRFTokenFromCookie 중복 제거 (completed 1회, last QA-20260307-0053)
 - dashboard-health-v879: 프로덕션 대시보드 및 Health API 검증 (completed 1회, last QA-20260306-0052)
 - dashboard-server-card-selector-stabilization: 서버 카드 선택자 및 빈 상태 처리 안정화 (completed 2회, last QA-20260302-0039)
 - dashboard-server-cards: 대시보드 서버 카드 및 메트릭 (completed 2회, last QA-20260302-0038)
@@ -151,6 +153,7 @@ Latest run: QA-20260306-0052 (2026-03-06T04:43:09.085Z)
 - math-tool-implementation-validation: AI 계산 툴 라우팅/실행 검증 (completed 1회, last QA-20260228-0027)
 - metrics-drift-threshold-standard: 지표 드리프트 임계치 표준화 (completed 1회, last QA-20260302-0044)
 - modal-backdrop-close: 모달 백드롭 클릭 닫기 안정화 (completed 2회, last QA-20260226-0002)
+- multi-agent-orchestration: 멀티에이전트 오케스트레이션 활성화 (Steps A-E) (completed 1회, last QA-20260307-0053)
 - otel-데이터-무결성-24x15-완전: OTel 데이터 무결성 24x15 완전 (completed 1회, last QA-20260301-0032)
 - planning-backlog-clear: planning TODO 잔여 항목 정리 (completed 1회, last QA-20260226-0006)
 - qa-expert-domain-tracking: QA 런에서 전문가 영역 적합성 추적 체계 도입 (completed 1회, last QA-20260226-0003)
@@ -169,6 +172,7 @@ Latest run: QA-20260306-0052 (2026-03-06T04:43:09.085Z)
 - system-start-login-modal-redirect: 로그인 모달에서 로그인 페이지로 이동 (completed 1회, last QA-20260227-0022)
 - system-start-metrics-gate: 시스템 시작 KPI 계측 (completed 2회, last QA-20260302-0038)
 - typescript-무결성: TypeScript 무결성 (completed 1회, last QA-20260301-0032)
+- vercel-build-fix: SessionState import 수정으로 Vercel 빌드 복구 (completed 1회, last QA-20260307-0053)
 - vitals-log-suppression: Web Vitals 통합 테스트 로그 억제 옵션 추가 (completed 1회, last QA-20260228-0028)
 - 게스트-pin-로그인-후-시스템-시작-버튼-노출: 게스트 PIN 로그인 후 시스템 시작 버튼 노출 (completed 1회, last QA-20260227-0010)
 - 계약-테스트-20-tests-pass: 계약 테스트 20 tests PASS (completed 1회, last QA-20260301-0032)
@@ -218,6 +222,7 @@ Latest run: QA-20260306-0052 (2026-03-06T04:43:09.085Z)
 
 | Run ID | Time (UTC) | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260307-0053 | 2026-03-07T00:14:12.888Z | Production QA 2026-03-07 - Multi-Agent Orchestration Deployment | 9 | 3 | 0 | 0 | 2 | 0 |
 | QA-20260306-0052 | 2026-03-06T04:43:09.085Z | Production Playwright MCP QA v8.7.9 - Guest PIN 4231 Full AI Flow | 9 | 5 | 0 | 0 | 0 | 0 |
 | QA-20260306-0051 | 2026-03-05T18:26:17.569Z | Production QA - Full Feature Verification v8.7.8 | 7 | 3 | 0 | 0 | 2 | 0 |
 | QA-20260304-0050 | 2026-03-04T04:21:46.893Z | Production QA v8.7.8 — Playwright MCP (2026-03-04) | 8 | 0 | 0 | 0 | 0 | 0 |
@@ -237,5 +242,4 @@ Latest run: QA-20260306-0052 (2026-03-06T04:43:09.085Z)
 | QA-20260302-0036 | 2026-03-01T16:58:39.657Z | Local QA Improvement Run - Server Cards + Guest/System Start + RAG Smoke | 11 | 5 | 0 | 0 | 0 | 0 |
 | QA-20260301-0035 | 2026-03-01T13:45:21.162Z | Production Playwright MCP QA v8.7.2 — Full Functional Validation (6/6 PASS) | 6 | 6 | 0 | 0 | 0 | 0 |
 | QA-20260301-0034 | 2026-03-01T07:37:43.156Z | Production Playwright MCP QA — observability commit 6179e54 (8/8 PASS) | 8 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260301-0033 | 2026-03-01T06:16:36.498Z | Production Playwright MCP QA | 0 | 0 | 0 | 0 | 0 | 0 |
 

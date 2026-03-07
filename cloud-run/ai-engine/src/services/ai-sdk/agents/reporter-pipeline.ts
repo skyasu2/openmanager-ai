@@ -13,6 +13,9 @@
 // Data sources for direct tool execution
 import { getCurrentState, getRecentHistory } from '../../../data/precomputed-state';
 import { logger } from '../../../lib/logger';
+import { STATUS_THRESHOLDS } from '../../../config/status-thresholds';
+import { getTrendPredictor } from '../../../lib/ai/monitoring/TrendPredictor';
+import { getHistoryForMetric, toTrendDataPoints, getCurrentSlotIndex } from '../../../tools-ai-sdk/analyst-tools-shared';
 import {
   calculateActionabilityScore,
   calculateCompletenessScore,
@@ -76,6 +79,24 @@ interface ReportForEvaluation {
     actualUptime: number;
     slaViolation: boolean;
   };
+  warnings?: Array<{
+    serverId: string;
+    serverName: string;
+    metric: string;
+    currentValue: number;
+    threshold: number;
+    gap: number;
+  }>;
+  predictions?: Array<{
+    serverId: string;
+    serverName: string;
+    metric: string;
+    currentValue: number;
+    predictedValue: number;
+    trend: 'increasing' | 'decreasing' | 'stable';
+    confidence: number;
+    thresholdBreachHumanReadable: string | null;
+  }>;
   markdown?: string;
 }
 
@@ -97,11 +118,35 @@ const DEFAULT_CONFIG: PipelineConfig = {
 };
 
 const COMMAND_TEMPLATES: Record<string, string[]> = {
-  cpu: ['top -o %CPU -b -n 1 | head -20', 'ps aux --sort=-%cpu | head -10'],
-  memory: ['free -h', 'ps aux --sort=-%mem | head -10'],
-  disk: ['df -h', 'du -sh /* 2>/dev/null | sort -hr | head-10'],
+  cpu: ['top -o %CPU -b -n 1 | head -20', 'ps aux --sort=-%cpu | head -10', 'htop -d 1'],
+  memory: ['free -h', 'ps aux --sort=-%mem | head -10', 'vmstat 1 5'],
+  disk: ['df -h', 'du -sh /* 2>/dev/null | sort -hr | head -10'],
   network: ['netstat -tuln', 'ss -tuln'],
   general: ['systemctl status', 'journalctl -xe --no-pager | tail -50'],
+};
+
+const SERVER_TYPE_COMMANDS: Record<string, Record<string, string[]>> = {
+  database: {
+    cpu: ['SHOW FULL PROCESSLIST;', 'mysqladmin processlist'],
+    memory: ['redis-cli INFO memory', 'mysql -e "SHOW STATUS LIKE \'Innodb_buffer_pool%\'"'],
+    general: ['mysql -e "SHOW GLOBAL STATUS"'],
+  },
+  cache: {
+    cpu: ['redis-cli SLOWLOG GET 10'],
+    memory: ['redis-cli INFO memory', 'redis-cli CONFIG GET maxmemory*'],
+    general: ['redis-cli PING'],
+  },
+  application: {
+    cpu: ['jstack <PID>', 'top -H -p <PID>'],
+    memory: ['jmap -heap <PID>'],
+    general: ['journalctl -u app-server --since "1h ago"'],
+  },
+  web: {
+    general: ['systemctl status nginx', 'tail -100 /var/log/nginx/error.log'],
+  },
+  loadbalancer: {
+    general: ['haproxy -c -f /etc/haproxy/haproxy.cfg'],
+  },
 };
 
 // ============================================================================
@@ -272,7 +317,11 @@ function generateInitialReport(): ReportForEvaluation | null {
 
     // Build timeline
     const timeline: ReportForEvaluation['timeline'] = [];
-    const thresholds = { cpu: 80, memory: 85, disk: 90 };
+    const thresholds = {
+      cpu: STATUS_THRESHOLDS.cpu.warning,       // 80
+      memory: STATUS_THRESHOLDS.memory.warning, // 80 (SSOT)
+      disk: STATUS_THRESHOLDS.disk.warning,     // 80 (SSOT)
+    };
 
     for (const server of state.servers) {
       if (server.cpu >= thresholds.cpu) {
@@ -308,6 +357,38 @@ function generateInitialReport(): ReportForEvaluation | null {
       };
     }
 
+    // Near-threshold warnings (임계 근접 경고)
+    const NEAR_GAP = 5;
+    const softThresholds = {
+      cpu: thresholds.cpu - NEAR_GAP,       // 75
+      memory: thresholds.memory - NEAR_GAP, // 75
+    };
+
+    const warnings: NonNullable<ReportForEvaluation['warnings']> = [];
+    for (const server of state.servers) {
+      if (server.status !== 'online') continue;
+      for (const [metric, soft, hard] of [
+        ['cpu', softThresholds.cpu, thresholds.cpu] as const,
+        ['memory', softThresholds.memory, thresholds.memory] as const,
+      ]) {
+        const val = server[metric];
+        if (val >= soft && val < hard) {
+          warnings.push({
+            serverId: server.id, serverName: server.name,
+            metric, currentValue: val,
+            threshold: hard, gap: +(hard - val).toFixed(1),
+          });
+          timeline.push({
+            timestamp: now.toISOString(), eventType: 'near_threshold', severity: 'info',
+            description: `${server.name}: ${metric.toUpperCase()} ${val.toFixed(1)}% (임계 ${hard}%까지 ${(hard - val).toFixed(1)}%)`,
+          });
+        }
+      }
+    }
+
+    // Trend predictions (트렌드 예측)
+    const predictions = generatePredictions(affectedServers, state);
+
     // Suggested actions (generic to trigger optimization)
     const suggestedActions: string[] = [];
     if (affectedServers.some(s => s.primaryIssue.includes('CPU'))) {
@@ -329,6 +410,8 @@ function generateInitialReport(): ReportForEvaluation | null {
       timeline: timeline.slice(0, 10),
       rootCause,
       suggestedActions,
+      warnings: warnings.slice(0, 5),
+      predictions,
       sla: {
         targetUptime: 99.9,
         actualUptime: 99.5,
@@ -437,7 +520,13 @@ function optimizeReport(
   // Enhance suggested actions if too generic
   if (evaluation.issues.includes('권장 조치가 너무 일반적')) {
     const focusArea = determineFocusArea(report);
-    const commands = COMMAND_TEMPLATES[focusArea] || COMMAND_TEMPLATES.general;
+    const state = getCurrentState();
+    const serverType = state.servers.find(s => s.id === report.affectedServers[0]?.id)?.type;
+    const genericCmds = COMMAND_TEMPLATES[focusArea] || COMMAND_TEMPLATES.general;
+    const typeCmds = serverType
+      ? (SERVER_TYPE_COMMANDS[serverType]?.[focusArea] ?? SERVER_TYPE_COMMANDS[serverType]?.general ?? [])
+      : [];
+    const commands = [...genericCmds, ...typeCmds];
 
     optimizedReport.suggestedActions = optimizedReport.suggestedActions.map((action, i) => {
       const cmd = commands[i % commands.length];
@@ -447,6 +536,37 @@ function optimizeReport(
   }
 
   return { report: optimizedReport, optimizations };
+}
+
+function generatePredictions(
+  servers: ReportForEvaluation['affectedServers'],
+  state: ReturnType<typeof getCurrentState>
+): NonNullable<ReportForEvaluation['predictions']> {
+  if (servers.length === 0) return [];
+  const predictor = getTrendPredictor();
+  const fixedSlot = getCurrentSlotIndex();
+  const results: NonNullable<ReportForEvaluation['predictions']> = [];
+
+  for (const srv of servers.slice(0, 5)) {
+    const data = state.servers.find(s => s.id === srv.id);
+    if (!data) continue;
+    for (const metric of ['cpu', 'memory'] as const) {
+      if (data[metric] < 70) continue;
+      const history = getHistoryForMetric(srv.id, metric, data[metric], fixedSlot);
+      const prediction = predictor.predictEnhanced(toTrendDataPoints(history), metric);
+      results.push({
+        serverId: srv.id, serverName: srv.name, metric,
+        currentValue: data[metric],
+        predictedValue: Math.round(Math.max(0, Math.min(100, prediction.prediction)) * 10) / 10,
+        trend: prediction.trend,
+        confidence: Math.round(prediction.confidence * 100) / 100,
+        thresholdBreachHumanReadable:
+          prediction.thresholdBreach.willBreachCritical || prediction.thresholdBreach.willBreachWarning
+            ? prediction.thresholdBreach.humanReadable : null,
+      });
+    }
+  }
+  return results;
 }
 
 function determineFocusArea(report: ReportForEvaluation): keyof typeof COMMAND_TEMPLATES {

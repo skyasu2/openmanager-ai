@@ -116,6 +116,14 @@ export async function executeReporterWithPipeline(
         responseText += '\n';
       }
 
+      if (pipelineResult.report.warnings?.length) {
+        responseText += `## 임계 근접 경고\n`;
+        for (const w of pipelineResult.report.warnings) {
+          responseText += `- **${w.serverName}**: ${w.metric.toUpperCase()} ${w.currentValue.toFixed(1)}% (임계값 ${w.threshold}%까지 ${w.gap}%)\n`;
+        }
+        responseText += '\n';
+      }
+
       if (pipelineResult.report.rootCause) {
         responseText += `## 근본 원인 분석\n`;
         responseText += `- **원인**: ${pipelineResult.report.rootCause.cause}\n`;
@@ -127,6 +135,19 @@ export async function executeReporterWithPipeline(
         responseText += `## 권장 조치\n`;
         for (const action of pipelineResult.report.suggestedActions) {
           responseText += `- ${action}\n`;
+        }
+        responseText += '\n';
+      }
+
+      if (pipelineResult.report.predictions?.length) {
+        responseText += `## 예측 분석\n`;
+        for (const p of pipelineResult.report.predictions) {
+          const arrow = p.trend === 'increasing' ? '↑' : p.trend === 'decreasing' ? '↓' : '→';
+          responseText += `- **${p.serverName}** ${p.metric.toUpperCase()}: ${p.currentValue}% ${arrow} ${p.predictedValue}% (1시간 후, 신뢰도 ${(p.confidence * 100).toFixed(0)}%)`;
+          if (p.thresholdBreachHumanReadable) {
+            responseText += ` — ${p.thresholdBreachHumanReadable}`;
+          }
+          responseText += '\n';
         }
       }
     }

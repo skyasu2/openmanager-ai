@@ -5,6 +5,8 @@ interface ReportForScoreInput {
   timeline: unknown[];
   rootCause: unknown | null;
   suggestedActions: string[];
+  warnings?: unknown[];
+  predictions?: unknown[];
 }
 
 export function calculateStructureScore(report: ReportForScoreInput): number {
@@ -15,18 +17,23 @@ export function calculateStructureScore(report: ReportForScoreInput): number {
   if (report.timeline && report.timeline.length >= 3) score += 0.2;
   if (report.rootCause) score += 0.2;
   if (report.suggestedActions && report.suggestedActions.length >= 2) score += 0.15;
-  return score;
+  if (report.predictions && report.predictions.length > 0) score += 0.1;
+  return Math.min(score, 1.0);
 }
 
 export function calculateCompletenessScore(report: ReportForScoreInput): number {
   let filled = 0;
+  let total = 6;
   if (report.title.length > 0) filled++;
   if (report.summary.length > 0) filled++;
   if (report.affectedServers.length > 0) filled++;
   if (report.timeline.length > 0) filled++;
   if (report.rootCause !== null) filled++;
   if (report.suggestedActions.length > 0) filled++;
-  return filled / 6;
+  // Optional fields: reward if present, no penalty if absent
+  if (report.warnings && report.warnings.length > 0) { filled++; total++; }
+  if (report.predictions && report.predictions.length > 0) { filled++; total++; }
+  return filled / total;
 }
 
 export function calculateActionabilityScore(actions: string[]): number {
