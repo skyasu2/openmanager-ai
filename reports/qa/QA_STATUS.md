@@ -1,13 +1,13 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-07 21:45:02 KST
+> Generated at: 2026-03-07 23:44:38 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 54 |
+| Total Runs | 55 |
 | Total Checks | 384 |
 | Passed | 366 |
 | Failed | 18 |
@@ -18,11 +18,11 @@
 | Expert Domains Tracked | 6 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Run | QA-20260307-0054 (2026-03-07T12:45:02.397Z) |
+| Last Run | QA-20260307-0055 (2026-03-07T14:44:37.930Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260307-0054 (2026-03-07T12:45:02.397Z)
+Latest run: QA-20260307-0055 (2026-03-07T14:44:37.930Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -219,6 +219,7 @@ Latest run: QA-20260307-0054 (2026-03-07T12:45:02.397Z)
 
 | Run ID | Time (UTC) | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260307-0055 | 2026-03-07T14:44:37.930Z | Production Playwright MCP QA v8.8.0 - Post-Review Security Fix (7/7 PASS) | 0 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260307-0054 | 2026-03-07T12:45:02.397Z | Production Playwright MCP QA v8.8.0 - Full AI Feature Verification (7/7 PASS) | 0 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260307-0053 | 2026-03-07T00:14:12.888Z | Production QA 2026-03-07 - Multi-Agent Orchestration Deployment | 9 | 3 | 0 | 0 | 2 | 0 |
 | QA-20260306-0052 | 2026-03-06T04:43:09.085Z | Production Playwright MCP QA v8.7.9 - Guest PIN 4231 Full AI Flow | 9 | 5 | 0 | 0 | 0 | 0 |
@@ -238,5 +239,4 @@ Latest run: QA-20260307-0054 (2026-03-07T12:45:02.397Z)
 | QA-20260302-0038 | 2026-03-01T17:09:26.362Z | Local QA Improvement Run - system-start KPI + guest + server cards | 20 | 5 | 0 | 0 | 0 | 0 |
 | QA-20260302-0037 | 2026-03-01T17:02:04.585Z | Local QA Improvement Run - system-start KPI smoke | 1 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260302-0036 | 2026-03-01T16:58:39.657Z | Local QA Improvement Run - Server Cards + Guest/System Start + RAG Smoke | 11 | 5 | 0 | 0 | 0 | 0 |
-| QA-20260301-0035 | 2026-03-01T13:45:21.162Z | Production Playwright MCP QA v8.7.2 — Full Functional Validation (6/6 PASS) | 6 | 6 | 0 | 0 | 0 | 0 |
 

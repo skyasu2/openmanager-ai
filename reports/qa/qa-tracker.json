@@ -2,13 +2,13 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-03-07T12:45:02.397Z"
+    "updatedAt": "2026-03-07T14:44:37.930Z"
   },
   "sequence": {
-    "nextRunNumber": 55
+    "nextRunNumber": 56
   },
   "summary": {
-    "totalRuns": 54,
+    "totalRuns": 55,
     "totalChecks": 384,
     "totalPassed": 366,
     "totalFailed": 18,
@@ -19,8 +19,8 @@
     "wontFixItems": 34,
     "expertDomainsTracked": 6,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260307-0054",
-    "lastRecordedAt": "2026-03-07T12:45:02.397Z"
+    "lastRunId": "QA-20260307-0055",
+    "lastRecordedAt": "2026-03-07T14:44:37.930Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -4972,6 +4972,27 @@
       "owner": "claude",
       "source": "playwright-mcp",
       "file": "reports/qa/runs/2026/qa-run-QA-20260307-0054.json",
+      "checks": {
+        "total": 0,
+        "passed": 0,
+        "failed": 0
+      },
+      "expertAssessments": [],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260307-0055",
+      "recordedAt": "2026-03-07T14:44:37.930Z",
+      "recordedAtKst": "2026-03-07 23:44:37 KST",
+      "title": "Production Playwright MCP QA v8.8.0 - Post-Review Security Fix (7/7 PASS)",
+      "owner": "claude",
+      "source": "",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260307-0055.json",
       "checks": {
         "total": 0,
         "passed": 0,

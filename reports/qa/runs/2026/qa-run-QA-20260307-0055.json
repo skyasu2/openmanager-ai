@@ -1,0 +1,21 @@
+{
+  "runId": "QA-20260307-0055",
+  "recordedAt": "2026-03-07T14:44:37.930Z",
+  "recordedAtKst": "2026-03-07 23:44:37 KST",
+  "runTitle": "Production Playwright MCP QA v8.8.0 - Post-Review Security Fix (7/7 PASS)",
+  "owner": "claude",
+  "source": "",
+  "environment": {},
+  "checks": {
+    "total": 0,
+    "passed": 0,
+    "failed": 0
+  },
+  "expertAssessments": [],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [],
+  "links": []
+}
