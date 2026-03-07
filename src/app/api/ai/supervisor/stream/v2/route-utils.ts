@@ -25,7 +25,12 @@ const NORMALIZED_MESSAGE_SCHEMA = z.object({
           .string()
           .min(1)
           .max(14 * 1024 * 1024),
-        mimeType: z.enum(['image/png', 'image/jpeg', 'image/gif', 'image/webp']),
+        mimeType: z.enum([
+          'image/png',
+          'image/jpeg',
+          'image/gif',
+          'image/webp',
+        ]),
         name: z.string().max(255).optional(),
       })
     )
