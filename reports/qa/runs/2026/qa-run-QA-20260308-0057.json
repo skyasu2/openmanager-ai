@@ -1,0 +1,21 @@
+{
+  "runId": "QA-20260308-0057",
+  "recordedAt": "2026-03-08T02:25:49.786Z",
+  "recordedAtKst": "2026-03-08 11:25:49 KST",
+  "runTitle": "Production Playwright MCP QA v8.8.0 - Post-Security Hardening (7/7 PASS)",
+  "owner": "claude",
+  "source": "",
+  "environment": {},
+  "checks": {
+    "total": 0,
+    "passed": 0,
+    "failed": 0
+  },
+  "expertAssessments": [],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [],
+  "links": []
+}

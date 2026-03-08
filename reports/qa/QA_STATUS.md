@@ -1,13 +1,13 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-08 10:15:52 KST
+> Generated at: 2026-03-08 11:25:49 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 56 |
+| Total Runs | 57 |
 | Total Checks | 396 |
 | Passed | 376 |
 | Failed | 20 |
@@ -18,17 +18,15 @@
 | Expert Domains Tracked | 6 |
 | Expert Open Gaps | 2 |
 | Completion Rate | 99.09% |
-| Last Run | QA-20260308-0056 (2026-03-08T01:15:57.800Z) |
+| Last Run | QA-20260308-0057 (2026-03-08T02:25:49.786Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260308-0056 (2026-03-08T01:15:57.800Z)
+Latest run: QA-20260308-0057 (2026-03-08T02:25:49.786Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| AI Quality Assurance Specialist | appropriate | yes | Reporter 결과 상태를 탭 전환과 재마운트 이후에도 유지하도록 정리 |
-| AI Security & Reliability Architect | appropriate | yes | 보안 차단 시 사용자용 고정 카피만 노출하고 raw JSON payload는 숨김 |
-| Test Automation Architect | appropriate | no | - |
+| - | - | - | - |
 
 ## Expert Domain Open Gaps
 
@@ -231,6 +229,7 @@ Latest run: QA-20260308-0056 (2026-03-08T01:15:57.800Z)
 
 | Run ID | Time (UTC) | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260308-0057 | 2026-03-08T02:25:49.786Z | Production Playwright MCP QA v8.8.0 - Post-Security Hardening (7/7 PASS) | 0 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260308-0056 | 2026-03-08T01:15:57.800Z | Production Playwright MCP QA v8.8.0 - AI Assistant Performance and Guard Smoke | 12 | 5 | 1 | 0 | 1 | 2 |
 | QA-20260307-0055 | 2026-03-07T14:44:37.930Z | Production Playwright MCP QA v8.8.0 - Post-Review Security Fix (7/7 PASS) | 0 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260307-0054 | 2026-03-07T12:45:02.397Z | Production Playwright MCP QA v8.8.0 - Full AI Feature Verification (7/7 PASS) | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -250,5 +249,4 @@ Latest run: QA-20260308-0056 (2026-03-08T01:15:57.800Z)
 | QA-20260302-0040 | 2026-03-01T18:55:54.581Z | Production Playwright MCP QA v8.7.2 - Post Code Review (13/13 PASS) | 13 | 13 | 0 | 0 | 4 | 0 |
 | QA-20260302-0039 | 2026-03-01T17:31:03.533Z | Local QA Improvement Run - dashboard/guest/system-start continuity | 20 | 7 | 0 | 0 | 0 | 0 |
 | QA-20260302-0038 | 2026-03-01T17:09:26.362Z | Local QA Improvement Run - system-start KPI + guest + server cards | 20 | 5 | 0 | 0 | 0 | 0 |
-| QA-20260302-0037 | 2026-03-01T17:02:04.585Z | Local QA Improvement Run - system-start KPI smoke | 1 | 1 | 0 | 0 | 0 | 0 |
 

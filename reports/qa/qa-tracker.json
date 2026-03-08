@@ -2,13 +2,13 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-03-08T01:15:57.800Z"
+    "updatedAt": "2026-03-08T02:25:49.786Z"
   },
   "sequence": {
-    "nextRunNumber": 57
+    "nextRunNumber": 58
   },
   "summary": {
-    "totalRuns": 56,
+    "totalRuns": 57,
     "totalChecks": 396,
     "totalPassed": 376,
     "totalFailed": 20,
@@ -19,8 +19,8 @@
     "wontFixItems": 35,
     "expertDomainsTracked": 6,
     "expertDomainsOpenGaps": 2,
-    "lastRunId": "QA-20260308-0056",
-    "lastRecordedAt": "2026-03-08T01:15:57.800Z"
+    "lastRunId": "QA-20260308-0057",
+    "lastRecordedAt": "2026-03-08T02:25:49.786Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -5219,6 +5219,27 @@
       "pendingCount": 1,
       "deferredCount": 0,
       "wontFixCount": 1
+    },
+    {
+      "runId": "QA-20260308-0057",
+      "recordedAt": "2026-03-08T02:25:49.786Z",
+      "recordedAtKst": "2026-03-08 11:25:49 KST",
+      "title": "Production Playwright MCP QA v8.8.0 - Post-Security Hardening (7/7 PASS)",
+      "owner": "claude",
+      "source": "",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260308-0057.json",
+      "checks": {
+        "total": 0,
+        "passed": 0,
+        "failed": 0
+      },
+      "expertAssessments": [],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
