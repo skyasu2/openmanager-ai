@@ -215,53 +215,63 @@ export const AISidebarV4: FC<AISidebarV3Props> = ({
   }
 
   const renderFunctionPage = () => {
-    if (selectedFunction === 'chat') {
-      return (
-        <EnhancedAIChat
-          autoReportTrigger={{ shouldGenerate: false }}
-          allMessages={enhancedMessages}
-          limitedMessages={enhancedMessages}
-          messagesEndRef={messagesEndRef}
-          MessageComponent={MessageComponent}
-          inputValue={input}
-          setInputValue={setInput}
-          handleSendInput={handleSendInput}
-          sessionState={sessionState}
-          onNewSession={handleNewSession}
-          isGenerating={isLoading}
-          regenerateResponse={regenerateLastResponse}
-          onFeedback={handleFeedback}
-          onStopGeneration={stop}
-          jobProgress={hybridState.progress}
-          jobId={hybridState.jobId}
-          onCancelJob={cancel}
-          queryMode={currentMode}
-          error={error}
-          onClearError={clearError}
-          onRetry={retryLastQuery}
-          clarification={clarification}
-          onSelectClarification={selectClarification}
-          onSubmitCustomClarification={submitCustomClarification}
-          onSkipClarification={skipClarification}
-          onDismissClarification={dismissClarification}
-          currentAgentStatus={currentAgentStatus}
-          currentHandoff={currentHandoff}
-          webSearchEnabled={webSearchEnabled}
-          onToggleWebSearch={toggleWebSearch}
-          ragEnabled={ragEnabled}
-          onToggleRAG={toggleRAG}
-          warmingUp={warmingUp}
-          estimatedWaitSeconds={estimatedWaitSeconds}
-          queuedQueries={queuedQueries}
-          removeQueuedQuery={removeQueuedQuery}
-        />
-      );
-    }
     return (
-      <AIFunctionPages
-        selectedFunction={selectedFunction}
-        onFunctionChange={setSelectedFunction}
-      />
+      <>
+        {/* Chat - 항상 마운트, display:none으로 전환 (탭 상태 유지) */}
+        <div
+          className="h-full"
+          style={{ display: selectedFunction === 'chat' ? 'block' : 'none' }}
+        >
+          <EnhancedAIChat
+            autoReportTrigger={{ shouldGenerate: false }}
+            allMessages={enhancedMessages}
+            limitedMessages={enhancedMessages}
+            messagesEndRef={messagesEndRef}
+            MessageComponent={MessageComponent}
+            inputValue={input}
+            setInputValue={setInput}
+            handleSendInput={handleSendInput}
+            sessionState={sessionState}
+            onNewSession={handleNewSession}
+            isGenerating={isLoading}
+            regenerateResponse={regenerateLastResponse}
+            onFeedback={handleFeedback}
+            onStopGeneration={stop}
+            jobProgress={hybridState.progress}
+            jobId={hybridState.jobId}
+            onCancelJob={cancel}
+            queryMode={currentMode}
+            error={error}
+            onClearError={clearError}
+            onRetry={retryLastQuery}
+            clarification={clarification}
+            onSelectClarification={selectClarification}
+            onSubmitCustomClarification={submitCustomClarification}
+            onSkipClarification={skipClarification}
+            onDismissClarification={dismissClarification}
+            currentAgentStatus={currentAgentStatus}
+            currentHandoff={currentHandoff}
+            webSearchEnabled={webSearchEnabled}
+            onToggleWebSearch={toggleWebSearch}
+            ragEnabled={ragEnabled}
+            onToggleRAG={toggleRAG}
+            warmingUp={warmingUp}
+            estimatedWaitSeconds={estimatedWaitSeconds}
+            queuedQueries={queuedQueries}
+            removeQueuedQuery={removeQueuedQuery}
+          />
+        </div>
+        {/* Reporter/Analyst - 항상 마운트, display:none으로 전환 (탭 상태 유지) */}
+        <div
+          className="h-full"
+          style={{ display: selectedFunction !== 'chat' ? 'block' : 'none' }}
+        >
+          <AIFunctionPages
+            selectedFunction={selectedFunction}
+            onFunctionChange={setSelectedFunction}
+          />
+        </div>
+      </>
     );
   };
 
