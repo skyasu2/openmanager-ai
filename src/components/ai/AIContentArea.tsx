@@ -45,9 +45,7 @@ export default function AIContentArea({
       >
         <div>
           <div className="mb-2 text-2xl">💬</div>
-          <p className="text-gray-700">
-            채팅 인터페이스가 여기에 표시됩니다.
-          </p>
+          <p className="text-gray-700">채팅 인터페이스가 여기에 표시됩니다.</p>
           <span className="text-sm text-gray-500">
             (AIWorkspace 또는 Sidebar에서 ChatInterface를 렌더링해야 함)
           </span>
@@ -58,7 +56,9 @@ export default function AIContentArea({
       <div
         className="h-full"
         data-testid="auto-report-page"
-        style={{ display: selectedFunction === 'auto-report' ? 'block' : 'none' }}
+        style={{
+          display: selectedFunction === 'auto-report' ? 'block' : 'none',
+        }}
       >
         <Suspense fallback={<LoadingSpinner />}>
           <AutoReportPage />
@@ -69,7 +69,10 @@ export default function AIContentArea({
       <div
         className="h-full"
         data-testid="intelligent-monitoring-page"
-        style={{ display: selectedFunction === 'intelligent-monitoring' ? 'block' : 'none' }}
+        style={{
+          display:
+            selectedFunction === 'intelligent-monitoring' ? 'block' : 'none',
+        }}
       >
         <Suspense fallback={<LoadingSpinner />}>
           <IntelligentMonitoringPage />
