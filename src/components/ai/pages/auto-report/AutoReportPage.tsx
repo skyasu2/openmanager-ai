@@ -355,7 +355,9 @@ export default function AutoReportPage() {
             <button
               type="button"
               onClick={handleGenerateReport}
-              disabled={isGenerating || isServersLoading || servers.length === 0}
+              disabled={
+                isGenerating || isServersLoading || servers.length === 0
+              }
               className="flex items-center space-x-2 rounded-lg bg-red-500 px-4 py-2 text-white transition-all duration-200 hover:scale-105 hover:bg-red-600 active:scale-95 disabled:opacity-50"
             >
               <RefreshCw
@@ -467,14 +469,18 @@ export default function AutoReportPage() {
             <button
               type="button"
               onClick={handleGenerateReport}
-              disabled={isGenerating || isServersLoading || servers.length === 0}
+              disabled={
+                isGenerating || isServersLoading || servers.length === 0
+              }
               className="inline-flex items-center space-x-2 rounded-lg bg-red-500 px-4 py-2 text-sm text-white transition-all hover:scale-105 hover:bg-red-600 active:scale-95 disabled:opacity-50"
             >
               <RefreshCw
                 className={`h-4 w-4 ${isGenerating || isServersLoading ? 'animate-spin' : ''}`}
               />
               <span>
-                {isServersLoading ? '서버 데이터 로딩 중...' : '첫 보고서 생성하기'}
+                {isServersLoading
+                  ? '서버 데이터 로딩 중...'
+                  : '첫 보고서 생성하기'}
               </span>
             </button>
           </div>
