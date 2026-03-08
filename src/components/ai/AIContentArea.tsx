@@ -35,52 +35,62 @@ interface AIContentAreaProps {
 export default function AIContentArea({
   selectedFunction,
 }: AIContentAreaProps) {
-  switch (selectedFunction) {
-    // 🎨 화이트 모드 전환 (2025-12 업데이트)
-    case 'chat':
-      return (
-        <div
-          className="flex h-full items-center justify-center bg-white p-4 text-center text-gray-600"
-          data-testid="chat-placeholder"
-        >
-          <div>
-            <div className="mb-2 text-2xl">💬</div>
-            <p className="text-gray-700">
-              채팅 인터페이스가 여기에 표시됩니다.
-            </p>
-            <span className="text-sm text-gray-500">
-              (AIWorkspace 또는 Sidebar에서 ChatInterface를 렌더링해야 함)
-            </span>
-          </div>
+  return (
+    <>
+      {/* Chat placeholder - 실제 채팅은 AISidebarV4에서 렌더링 */}
+      <div
+        className="flex h-full items-center justify-center bg-white p-4 text-center text-gray-600"
+        data-testid="chat-placeholder"
+        style={{ display: selectedFunction === 'chat' ? 'flex' : 'none' }}
+      >
+        <div>
+          <div className="mb-2 text-2xl">💬</div>
+          <p className="text-gray-700">
+            채팅 인터페이스가 여기에 표시됩니다.
+          </p>
+          <span className="text-sm text-gray-500">
+            (AIWorkspace 또는 Sidebar에서 ChatInterface를 렌더링해야 함)
+          </span>
         </div>
-      );
+      </div>
 
-    case 'auto-report':
-      return (
-        <div className="h-full" data-testid="auto-report-page">
-          <Suspense fallback={<LoadingSpinner />}>
-            <AutoReportPage />
-          </Suspense>
-        </div>
-      );
+      {/* Reporter - 탭 전환 시 상태 유지 */}
+      <div
+        className="h-full"
+        data-testid="auto-report-page"
+        style={{ display: selectedFunction === 'auto-report' ? 'block' : 'none' }}
+      >
+        <Suspense fallback={<LoadingSpinner />}>
+          <AutoReportPage />
+        </Suspense>
+      </div>
 
-    case 'intelligent-monitoring':
-      return (
-        <div className="h-full" data-testid="intelligent-monitoring-page">
-          <Suspense fallback={<LoadingSpinner />}>
-            <IntelligentMonitoringPage />
-          </Suspense>
-        </div>
-      );
+      {/* Analyst - 탭 전환 시 상태 유지 */}
+      <div
+        className="h-full"
+        data-testid="intelligent-monitoring-page"
+        style={{ display: selectedFunction === 'intelligent-monitoring' ? 'block' : 'none' }}
+      >
+        <Suspense fallback={<LoadingSpinner />}>
+          <IntelligentMonitoringPage />
+        </Suspense>
+      </div>
 
-    default:
-      return (
-        <div
-          className="flex h-full items-center justify-center bg-white text-gray-600"
-          data-testid="default-page"
-        >
-          🤖 기능을 선택해주세요.
-        </div>
-      );
-  }
+      {/* Default placeholder */}
+      <div
+        className="flex h-full items-center justify-center bg-white text-gray-600"
+        data-testid="default-page"
+        style={{
+          display:
+            selectedFunction !== 'chat' &&
+            selectedFunction !== 'auto-report' &&
+            selectedFunction !== 'intelligent-monitoring'
+              ? 'flex'
+              : 'none',
+        }}
+      >
+        🤖 기능을 선택해주세요.
+      </div>
+    </>
+  );
 }
