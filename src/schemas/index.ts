@@ -20,38 +20,24 @@ export {
   type CachePerformance,
   CachePerformanceSchema,
   type CacheStats,
-  // Cache
   CacheStatsSchema,
+} from './api.cache.schema';
+export {
   type DashboardData,
   DashboardDataSchema,
   type DashboardResponse,
   DashboardResponseSchema,
   type DashboardStats,
-  // Dashboard
   DashboardStatsSchema,
-  type ErrorReport,
-  type ErrorReportRequest,
-  ErrorReportRequestSchema,
-  // Error Reporting
-  ErrorReportSchema,
-  // Types
   type HealthCheckResponse,
   HealthCheckResponseSchema,
-  // Health Check
   HealthCheckServiceSchema,
   type MCPQueryRequest,
-  // MCP
   MCPQueryRequestSchema,
   type MCPQueryResponse,
   MCPQueryResponseSchema,
   NetworkMetricsSchema as NetworkInfoSchema,
-  // Basic Server Types (missing aliases)
   ServerStatusSchema as ServerSchema,
-  type SystemOptimizeRequest,
-  // System Optimization
-  SystemOptimizeRequestSchema,
-  type SystemOptimizeResponse,
-  SystemOptimizeResponseSchema,
 } from './api.schema';
 
 // Auth schemas
