@@ -30,20 +30,20 @@ export const AIFunctionPages: FC<AIFunctionPagesProps> = ({
         />
       </div>
 
-      {/* 선택된 기능 페이지 (Chat은 Sidebar 부모에서 처리하므로 여기서는 플레이스홀더만 렌더링됨) */}
+      {/* 선택된 기능 페이지 - 탭 전환 시 상태 유지를 위해 모든 페이지 동시 마운트 */}
       <div className="flex-1 overflow-y-auto" data-testid="ai-function-content">
-        {selectedFunction === 'chat' ? (
-          <div
-            className="p-4 text-center text-white/70"
-            data-testid="chat-page"
-          >
-            💬 채팅 기능이 선택되었습니다.
-            <br />
-            <span className="text-sm">메인 채팅 인터페이스가 표시됩니다.</span>
-          </div>
-        ) : (
+        <div
+          className="p-4 text-center text-white/70"
+          data-testid="chat-page"
+          style={{ display: selectedFunction === 'chat' ? 'block' : 'none' }}
+        >
+          💬 채팅 기능이 선택되었습니다.
+          <br />
+          <span className="text-sm">메인 채팅 인터페이스가 표시됩니다.</span>
+        </div>
+        <div style={{ display: selectedFunction !== 'chat' ? 'block' : 'none' }}>
           <AIContentArea selectedFunction={selectedFunction} />
-        )}
+        </div>
       </div>
     </div>
   );
