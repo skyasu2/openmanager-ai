@@ -2,25 +2,25 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-03-08T07:28:38.016Z"
+    "updatedAt": "2026-03-08T11:51:11.029Z"
   },
   "sequence": {
-    "nextRunNumber": 60
+    "nextRunNumber": 61
   },
   "summary": {
-    "totalRuns": 59,
+    "totalRuns": 60,
     "totalChecks": 420,
     "totalPassed": 396,
     "totalFailed": 24,
-    "completionRate": 99.17,
-    "completedItems": 119,
-    "pendingItems": 1,
+    "completionRate": 100.0,
+    "completedItems": 120,
+    "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 36,
     "expertDomainsTracked": 6,
     "expertDomainsOpenGaps": 1,
-    "lastRunId": "QA-20260308-0059",
-    "lastRecordedAt": "2026-03-08T07:28:38.016Z"
+    "lastRunId": "QA-20260308-0060",
+    "lastRecordedAt": "2026-03-08T11:51:11.029Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -3093,7 +3093,7 @@
       "id": "reporter-state-loss-on-tab-switch",
       "title": "Reporter 탭 전환 시 생성 결과 상태 유지",
       "priority": "P1",
-      "status": "pending",
+      "status": "completed",
       "firstSeenRunId": "QA-20260308-0056",
       "firstSeenAt": "2026-03-08T01:15:57.800Z",
       "lastSeenRunId": "QA-20260308-0059",
@@ -5596,6 +5596,27 @@
       "pendingCount": 1,
       "deferredCount": 0,
       "wontFixCount": 1
+    },
+    {
+      "runId": "QA-20260308-0060",
+      "recordedAt": "2026-03-08T11:51:11.029Z",
+      "recordedAtKst": "2026-03-08 20:51:11 KST",
+      "title": "Production QA #61 v8.8.0 tab state preservation fix",
+      "owner": "claude-opus-4-6",
+      "source": "",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260308-0060.json",
+      "checks": {
+        "total": 0,
+        "passed": 0,
+        "failed": 0
+      },
+      "expertAssessments": [],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {

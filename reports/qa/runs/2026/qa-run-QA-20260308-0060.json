@@ -1,0 +1,21 @@
+{
+  "runId": "QA-20260308-0060",
+  "recordedAt": "2026-03-08T11:51:11.029Z",
+  "recordedAtKst": "2026-03-08 20:51:11 KST",
+  "runTitle": "Production QA #61 v8.8.0 tab state preservation fix",
+  "owner": "claude-opus-4-6",
+  "source": "",
+  "environment": "vercel-production",
+  "checks": {
+    "total": 0,
+    "passed": 0,
+    "failed": 0
+  },
+  "expertAssessments": [],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [],
+  "links": []
+}

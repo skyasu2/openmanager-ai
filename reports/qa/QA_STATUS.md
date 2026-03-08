@@ -1,13 +1,13 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-08 16:28:38 KST
+> Generated at: 2026-03-08 20:51:11 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 59 |
+| Total Runs | 60 |
 | Total Checks | 420 |
 | Passed | 396 |
 | Failed | 24 |
@@ -18,17 +18,15 @@
 | Expert Domains Tracked | 6 |
 | Expert Open Gaps | 1 |
 | Completion Rate | 99.17% |
-| Last Run | QA-20260308-0059 (2026-03-08T07:28:38.016Z) |
+| Last Run | QA-20260308-0060 (2026-03-08T11:51:11.029Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260308-0059 (2026-03-08T07:28:38.016Z)
+Latest run: QA-20260308-0060 (2026-03-08T11:51:11.029Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| AI Quality Assurance Specialist | appropriate | yes | Reporter 생성/상태 유지 정리 후 AI Chat 응답 시간 추세 재확인 |
-| AI Security & Reliability Architect | appropriate | no | - |
-| Test Automation Architect | appropriate | no | - |
+| - | - | - | - |
 
 ## Expert Domain Open Gaps
 
@@ -241,6 +239,7 @@ Latest run: QA-20260308-0059 (2026-03-08T07:28:38.016Z)
 
 | Run ID | Time (UTC) | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260308-0060 | 2026-03-08T11:51:11.029Z | Production QA #61 v8.8.0 tab state preservation fix | 0 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260308-0059 | 2026-03-08T07:28:38.016Z | Production Playwright MCP QA v8.8.0 - Frontend and AI Assistant Quality Analysis | 12 | 5 | 1 | 0 | 1 | 1 |
 | QA-20260308-0058 | 2026-03-08T05:17:03.949Z | Production Playwright MCP QA v8.8.0 - Frontend + AI Assistant Quality Recheck | 12 | 5 | 1 | 0 | 1 | 1 |
 | QA-20260308-0057 | 2026-03-08T02:25:49.786Z | Production Playwright MCP QA v8.8.0 - Post-Security Hardening (7/7 PASS) | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -260,5 +259,4 @@ Latest run: QA-20260308-0059 (2026-03-08T07:28:38.016Z)
 | QA-20260302-0043 | 2026-03-02T10:30:38.260Z | Production Playwright MCP QA v8.7.3 post-storybook-fix (13/13 PASS) | 13 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260302-0042 | 2026-03-02T01:28:03.340Z | Production Playwright MCP QA v8.7.3 (13/13 PASS) | 13 | 13 | 0 | 0 | 4 | 0 |
 | QA-20260302-0041 | 2026-03-01T19:22:04.972Z | Production Playwright MCP QA v8.7.2 Post-Deploy (13/13 PASS) | 13 | 13 | 0 | 0 | 4 | 0 |
-| QA-20260302-0040 | 2026-03-01T18:55:54.581Z | Production Playwright MCP QA v8.7.2 - Post Code Review (13/13 PASS) | 13 | 13 | 0 | 0 | 4 | 0 |
 
