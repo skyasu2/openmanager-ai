@@ -22,7 +22,6 @@ import {
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { AIFunctionPages } from '@/components/ai-sidebar/AIFunctionPages';
 import { EnhancedAIChat } from '@/components/ai-sidebar/EnhancedAIChat';
 import { AIErrorBoundary } from '@/components/error/AIErrorBoundary';
 import { APP_VERSION } from '@/config/app-meta';
@@ -191,10 +190,18 @@ export default function AIWorkspace({ mode, onClose }: AIWorkspaceProps) {
               removeQueuedQuery={removeQueuedQuery}
             />
           ) : (
-            <AIFunctionPages
-              selectedFunction={selectedFunction}
-              onFunctionChange={handleFunctionSelect}
-            />
+            <div className="flex h-full flex-col">
+              <div className="block shrink-0 sm:hidden">
+                <AIAssistantIconPanel
+                  selectedFunction={selectedFunction}
+                  onFunctionChange={handleFunctionSelect}
+                  isMobile={true}
+                />
+              </div>
+              <div className="flex-1 overflow-y-auto">
+                <AIContentArea selectedFunction={selectedFunction} />
+              </div>
+            </div>
           )}
         </div>
         {selectedFunction === 'chat' && (

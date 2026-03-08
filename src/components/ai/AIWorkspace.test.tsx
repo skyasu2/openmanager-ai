@@ -82,12 +82,6 @@ vi.mock('@/components/ai-sidebar/EnhancedAIChat', () => ({
   EnhancedAIChat: () => <div data-testid="enhanced-ai-chat">AI Chat</div>,
 }));
 
-vi.mock('@/components/ai-sidebar/AIFunctionPages', () => ({
-  AIFunctionPages: () => (
-    <div data-testid="ai-function-pages">Function Pages</div>
-  ),
-}));
-
 vi.mock('@/components/ai/AIAssistantIconPanel', () => ({
   default: () => <div data-testid="ai-icon-panel">Icon Panel</div>,
 }));

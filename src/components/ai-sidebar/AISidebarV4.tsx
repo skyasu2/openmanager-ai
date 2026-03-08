@@ -1,8 +1,17 @@
 'use client';
 
-import { type FC, memo, useCallback, useEffect, useRef, useState } from 'react';
+import {
+  Activity,
+  type FC,
+  memo,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import type { AIAssistantFunction } from '@/components/ai/AIAssistantIconPanel';
 import AIAssistantIconPanel from '@/components/ai/AIAssistantIconPanel';
+import AIContentArea from '@/components/ai/AIContentArea';
 // Components
 import { AIErrorBoundary } from '@/components/error/AIErrorBoundary';
 import { isGuestFullAccessEnabled } from '@/config/guestMode';
@@ -13,7 +22,6 @@ import { cn } from '@/lib/utils';
 import { useAISidebarStore } from '@/stores/useAISidebarStore';
 // Types
 import type { AISidebarV3Props } from '@/types/ai-sidebar/ai-sidebar-types';
-import { AIFunctionPages } from './AIFunctionPages';
 import { AISidebarHeader } from './AISidebarHeader';
 import { EnhancedAIChat } from './EnhancedAIChat';
 import { ResizeHandle } from './ResizeHandle';
@@ -217,11 +225,8 @@ export const AISidebarV4: FC<AISidebarV3Props> = ({
   const renderFunctionPage = () => {
     return (
       <>
-        {/* Chat - 항상 마운트, display:none으로 전환 (탭 상태 유지) */}
-        <div
-          className="h-full"
-          style={{ display: selectedFunction === 'chat' ? 'block' : 'none' }}
-        >
+        {/* Chat - Activity API로 상태 유지 */}
+        <Activity mode={selectedFunction === 'chat' ? 'visible' : 'hidden'}>
           <EnhancedAIChat
             autoReportTrigger={{ shouldGenerate: false }}
             allMessages={enhancedMessages}
@@ -260,17 +265,22 @@ export const AISidebarV4: FC<AISidebarV3Props> = ({
             queuedQueries={queuedQueries}
             removeQueuedQuery={removeQueuedQuery}
           />
-        </div>
-        {/* Reporter/Analyst - 항상 마운트, display:none으로 전환 (탭 상태 유지) */}
-        <div
-          className="h-full"
-          style={{ display: selectedFunction !== 'chat' ? 'block' : 'none' }}
-        >
-          <AIFunctionPages
-            selectedFunction={selectedFunction}
-            onFunctionChange={setSelectedFunction}
-          />
-        </div>
+        </Activity>
+        {/* Reporter/Analyst - Activity API로 상태 유지 */}
+        <Activity mode={selectedFunction !== 'chat' ? 'visible' : 'hidden'}>
+          <div className="flex h-full flex-col">
+            <div className="block shrink-0 sm:hidden">
+              <AIAssistantIconPanel
+                selectedFunction={selectedFunction}
+                onFunctionChange={setSelectedFunction}
+                isMobile={true}
+              />
+            </div>
+            <div className="flex-1 overflow-y-auto">
+              <AIContentArea selectedFunction={selectedFunction} />
+            </div>
+          </div>
+        </Activity>
       </>
     );
   };
