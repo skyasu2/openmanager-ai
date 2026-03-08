@@ -1,0 +1,163 @@
+{
+  "runId": "QA-20260308-0058",
+  "recordedAt": "2026-03-08T05:17:03.949Z",
+  "recordedAtKst": "2026-03-08 14:17:03 KST",
+  "runTitle": "Production Playwright MCP QA v8.8.0 - Frontend + AI Assistant Quality Recheck",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main"
+  },
+  "checks": {
+    "total": 12,
+    "passed": 10,
+    "failed": 2
+  },
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": true,
+      "rationale": "AI Chat와 Analyst는 정상이나 Reporter에서 생성 경로와 상태 유지 UX 결함이 재현됐습니다.",
+      "nextAction": "Reporter 생성 액션과 탭 전환 후 상태 유지 로직을 정리"
+    },
+    {
+      "domainId": "ai-security-reliability",
+      "domainName": "AI Security & Reliability Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Prompt injection 차단은 정상이고, 사용자에게는 정제된 보안 메시지만 노출됐습니다.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Playwright MCP로 랜딩, 대시보드, AI Chat, Reporter, Analyst, 보안 차단 UX까지 실브라우저에서 검증했습니다.",
+      "nextAction": ""
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "dashboard-health-v880-recheck",
+      "title": "프로덕션 대시보드 및 Health API 재검증",
+      "priority": "P0",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Dashboard 정상 렌더링, 전체 15/온라인 14/경고 1/위험 0/오프라인 0, /api/health 200 healthy, version 8.8.0",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "ai-chat-quality-v880-recheck",
+      "title": "AI Chat 응답 품질 및 완료 시간 재검증",
+      "priority": "P0",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "AI Chat 응답이 약 20초 내 완료됐고 전체 15대 서버 요약, cache-redis-dc1-01 메모리 82% 상승 추세 및 권고를 정확히 제시",
+      "note": "이전 QA 대비 느려졌지만 여전히 30초 목표 안",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "reporter-empty-cta-generate-v880",
+      "title": "Reporter 빈 상태 CTA 생성 경로 검증",
+      "priority": "P0",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "빈 상태의 '첫 보고서 생성하기' 버튼으로 경고 보고서 생성 성공, Cache Redis 서버 Memory 경고 보고서와 상세 액션 렌더링 확인",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "analyst-quality-v880-recheck",
+      "title": "Analyst 전체 분석 및 드릴다운 재검증",
+      "priority": "P0",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "전체 분석 후 15개 서버 상세가 렌더링됐고 cache-redis-dc1-01에서 메모리 82%→95%, 50분 후 심각 상태 예상 경고를 표시",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "blocked-prompt-ux-fixed-v880",
+      "title": "Prompt injection 차단 UX 정제 검증",
+      "priority": "P0",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "차단 시 raw JSON 대신 '요청을 처리할 수 없습니다 / 보안 정책에 의해 차단된 요청입니다.'만 노출",
+      "note": "콘솔에는 /api/ai/supervisor/stream/v2 400 1건만 기록",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [
+    {
+      "id": "reporter-state-loss-on-tab-switch",
+      "title": "Reporter 탭 전환 시 생성 결과 상태 유지",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "보고서 생성 후 AI Chat으로 이동했다가 Reporter로 돌아오면 전체/경고 카운트와 목록이 0으로 초기화됨",
+      "owner": "",
+      "status": "pending",
+      "policyNote": ""
+    }
+  ],
+  "deferredImprovements": [],
+  "wontFixImprovements": [
+    {
+      "id": "reporter-primary-generate-button-empty-state",
+      "title": "Reporter 상단 '보고서 생성' 버튼 empty state 동작 정합성",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "empty state에서 상단 '보고서 생성' 클릭은 UI 갱신이 없었고, '첫 보고서 생성하기' CTA로만 생성이 진행됨",
+      "owner": "",
+      "status": "wont-fix",
+      "policyNote": "이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (요청자 표시(isBlocking=true)로 즉시 개선 필요)"
+    }
+  ],
+  "notes": [
+    "QA-1: Landing/System Start - PASS (~8초 후 /dashboard 진입)",
+    "QA-2: Dashboard - PASS (전체 15, 온라인 14, 경고 1, 위험 0, 오프라인 0)",
+    "QA-3: Health API - PASS (200 healthy, version 8.8.0, DB/Cache/AI connected, fetch 약 225ms)",
+    "QA-4: AI Chat Completion - PASS (~20초, Cloud Run AI 응답 완료)",
+    "QA-5: AI Chat Quality - PASS (cache-redis-dc1-01 메모리 82% 상승 추세와 권고 일치)",
+    "QA-6: Reporter Primary Generate - FAIL (상단 '보고서 생성' 버튼 클릭 후 empty state 유지)",
+    "QA-7: Reporter Empty CTA Generate - PASS ('첫 보고서 생성하기'로 보고서 생성 성공)",
+    "QA-8: Reporter Persistence - FAIL (탭 전환 후 전체/경고 카운트와 목록이 0으로 초기화)",
+    "QA-9: Analyst Full Analysis - PASS (전체 시스템 상태, 주요 이슈, 상승 추세 경고 표시)",
+    "QA-10: Analyst Drilldown - PASS (cache-redis-dc1-01 메모리 82%→95%, 50분 후 심각 상태 예상)",
+    "QA-11: Security Block - PASS (prompt injection 시나리오 차단)",
+    "QA-12: Blocked Prompt UX - PASS (사용자용 메시지만 노출, raw JSON 미노출)",
+    "브라우저 콘솔 error는 차단 시나리오에서 /api/ai/supervisor/stream/v2 400 1건만 확인"
+  ],
+  "links": [
+    {
+      "label": "Vercel Production",
+      "url": "https://openmanager-ai.vercel.app"
+    }
+  ]
+}
