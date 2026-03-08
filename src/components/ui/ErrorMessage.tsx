@@ -5,7 +5,16 @@
  * 복구 가이드를 제공하는 컴포넌트
  */
 
-import { HelpCircle, Home, RefreshCw } from 'lucide-react';
+import {
+  BarChart3,
+  Bot,
+  Globe,
+  HelpCircle,
+  Home,
+  Lock,
+  RefreshCw,
+  Wrench,
+} from 'lucide-react';
 import type { FC, ReactNode } from 'react';
 
 export interface ErrorMessageProps {
@@ -39,7 +48,7 @@ const getErrorInfo = (type: ErrorMessageProps['type']) => {
       return {
         title: '네트워크 연결 문제',
         message: '인터넷 연결을 확인하고 다시 시도해주세요.',
-        icon: '🌐',
+        Icon: Globe,
         suggestions: [
           '인터넷 연결 상태를 확인해주세요',
           '잠시 후 다시 시도해주세요',
@@ -50,7 +59,7 @@ const getErrorInfo = (type: ErrorMessageProps['type']) => {
       return {
         title: '서버 연결 오류',
         message: '서버에 일시적인 문제가 발생했습니다.',
-        icon: '🔧',
+        Icon: Wrench,
         suggestions: [
           '잠시 후 다시 시도해주세요',
           '페이지를 새로고침해보세요',
@@ -61,7 +70,7 @@ const getErrorInfo = (type: ErrorMessageProps['type']) => {
       return {
         title: '데이터 로딩 실패',
         message: '데이터를 불러오는 중 문제가 발생했습니다.',
-        icon: '📊',
+        Icon: BarChart3,
         suggestions: [
           '페이지를 새로고침해보세요',
           '다른 메뉴로 이동 후 다시 시도해보세요',
@@ -72,7 +81,7 @@ const getErrorInfo = (type: ErrorMessageProps['type']) => {
       return {
         title: 'AI 엔진 오류',
         message: 'AI 분석 중 문제가 발생했습니다.',
-        icon: '🤖',
+        Icon: Bot,
         suggestions: [
           '다시 질문해보세요',
           '질문을 다르게 표현해보세요',
@@ -83,7 +92,7 @@ const getErrorInfo = (type: ErrorMessageProps['type']) => {
       return {
         title: '인증 오류',
         message: '로그인이 필요하거나 권한이 없습니다.',
-        icon: '🔐',
+        Icon: Lock,
         suggestions: [
           '로그인 상태를 확인해주세요',
           '페이지를 새로고침해보세요',
@@ -94,7 +103,7 @@ const getErrorInfo = (type: ErrorMessageProps['type']) => {
       return {
         title: '알 수 없는 오류',
         message: '예상치 못한 문제가 발생했습니다.',
-        icon: '❓',
+        Icon: HelpCircle,
         suggestions: [
           '페이지를 새로고침해보세요',
           '브라우저를 다시 시작해보세요',
@@ -139,7 +148,9 @@ export const ErrorMessage: FC<ErrorMessageProps> = ({
   const content = (
     <div className="mx-auto max-w-md space-y-6 text-center">
       {/* 에러 아이콘 */}
-      <div className="mb-4 text-6xl">{errorInfo.icon}</div>
+      <div className="mb-4">
+        <errorInfo.Icon className="mx-auto h-16 w-16 text-gray-400 dark:text-gray-500" />
+      </div>
 
       {/* 에러 제목 */}
       <div>
