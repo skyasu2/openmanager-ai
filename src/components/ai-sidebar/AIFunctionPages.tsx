@@ -41,7 +41,9 @@ export const AIFunctionPages: FC<AIFunctionPagesProps> = ({
           <br />
           <span className="text-sm">메인 채팅 인터페이스가 표시됩니다.</span>
         </div>
-        <div style={{ display: selectedFunction !== 'chat' ? 'block' : 'none' }}>
+        <div
+          style={{ display: selectedFunction !== 'chat' ? 'block' : 'none' }}
+        >
           <AIContentArea selectedFunction={selectedFunction} />
         </div>
       </div>
