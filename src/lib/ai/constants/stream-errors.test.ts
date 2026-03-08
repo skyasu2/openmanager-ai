@@ -1,38 +1,42 @@
 import { describe, expect, it } from 'vitest';
 import {
-  extractStreamError,
-  isColdStartRelatedError,
-  isModelConfigRelatedError,
+  isBlockedInputError,
+  sanitizeDisplayedErrorMessage,
 } from './stream-errors';
 
-describe('stream-errors', () => {
-  describe('extractStreamError', () => {
-    it('스트림 에러 마커에서 에러 메시지를 추출한다', () => {
-      const result = extractStreamError('\n\n⚠️ 오류: Stream error');
-      expect(result).toBe('Stream error');
-    });
+describe('isBlockedInputError', () => {
+  it('detects blocked input from json envelope', () => {
+    const error =
+      '{"success":false,"error":"Security: blocked input","message":"보안 정책에 의해 차단된 요청입니다."}';
 
-    it('에러 마커가 없으면 null을 반환한다', () => {
-      const result = extractStreamError('정상 응답');
-      expect(result).toBeNull();
-    });
+    expect(isBlockedInputError(error)).toBe(true);
   });
 
-  describe('isColdStartRelatedError', () => {
-    it('timeout 계열 에러를 cold start 관련으로 판정한다', () => {
-      expect(isColdStartRelatedError('Request timeout after 30s')).toBe(true);
-    });
+  it('returns false for regular network errors', () => {
+    expect(isBlockedInputError('fetch failed')).toBe(false);
+  });
+});
+
+describe('sanitizeDisplayedErrorMessage', () => {
+  it('returns a friendly message for blocked input json', () => {
+    const error =
+      '{"success":false,"error":"Security: blocked input","message":"보안 정책에 의해 차단된 요청입니다."}';
+
+    expect(sanitizeDisplayedErrorMessage(error)).toBe(
+      '보안 정책에 의해 차단된 요청입니다.'
+    );
   });
 
-  describe('isModelConfigRelatedError', () => {
-    it('모델 권한/존재 오류를 감지한다', () => {
-      const error =
-        'Error: Model llama-3.3-70b does not exist or you do not have access to it.';
-      expect(isModelConfigRelatedError(error)).toBe(true);
-    });
+  it('hides raw json envelopes for generic backend errors', () => {
+    const error =
+      '{"success":false,"error":"Internal server error","message":"some internal message"}';
 
-    it('일반 네트워크 오류는 모델 설정 오류로 판정하지 않는다', () => {
-      expect(isModelConfigRelatedError('fetch failed: ECONNRESET')).toBe(false);
-    });
+    expect(sanitizeDisplayedErrorMessage(error)).toBe(
+      '요청을 처리하는 중 오류가 발생했습니다.'
+    );
+  });
+
+  it('keeps plain-text errors unchanged', () => {
+    expect(sanitizeDisplayedErrorMessage('fetch failed')).toBe('fetch failed');
   });
 });

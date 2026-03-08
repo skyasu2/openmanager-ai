@@ -279,6 +279,35 @@ describe('requestSchemaLoose (V2 Proxy)', () => {
       const result = requestSchemaLoose.safeParse(input);
       expect(result.success).toBe(false);
     });
+
+    it('should reject message without content or parts', () => {
+      const input = {
+        messages: [{ role: 'user' }],
+      };
+
+      const result = requestSchemaLoose.safeParse(input);
+      expect(result.success).toBe(false);
+    });
+
+    it('should reject file parts with unsupported mediaType', () => {
+      const input = {
+        messages: [
+          {
+            role: 'user',
+            parts: [
+              {
+                type: 'file',
+                data: 'ZmFrZQ==',
+                mediaType: 'application/x-msdownload',
+              },
+            ],
+          },
+        ],
+      };
+
+      const result = requestSchemaLoose.safeParse(input);
+      expect(result.success).toBe(false);
+    });
   });
 
   describe('Edge cases', () => {

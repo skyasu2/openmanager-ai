@@ -16,6 +16,7 @@ import { useCallback, useEffect, useState } from 'react';
 import {
   isColdStartRelatedError,
   isModelConfigRelatedError,
+  sanitizeDisplayedErrorMessage,
 } from '@/lib/ai/constants/stream-errors';
 
 // Cold start 타임아웃 50s 증가로 1회 자동 재시도만 수행
@@ -37,6 +38,7 @@ export function ColdStartErrorBanner({
   onRetry,
   onClearError,
 }: ColdStartErrorBannerProps) {
+  const displayError = sanitizeDisplayedErrorMessage(error);
   const isColdStart = isColdStartRelatedError(error);
   const isModelConfigError = isModelConfigRelatedError(error);
   const [retryAttempt, setRetryAttempt] = useState(0);
@@ -214,7 +216,9 @@ export function ColdStartErrorBanner({
             <p className="text-sm font-medium text-red-800">
               요청을 처리할 수 없습니다
             </p>
-            <p className="mt-0.5 break-words text-xs text-red-600">{error}</p>
+            <p className="mt-0.5 break-words text-xs text-red-600">
+              {displayError}
+            </p>
           </div>
         </div>
         <div className="flex shrink-0 items-center space-x-2">

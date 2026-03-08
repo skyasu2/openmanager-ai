@@ -1,40 +1,45 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-07 23:44:38 KST
+> Generated at: 2026-03-08 10:15:52 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 55 |
-| Total Checks | 384 |
-| Passed | 366 |
-| Failed | 18 |
-| Completed Items | 104 |
-| Pending Items | 0 |
+| Total Runs | 56 |
+| Total Checks | 396 |
+| Passed | 376 |
+| Failed | 20 |
+| Completed Items | 109 |
+| Pending Items | 1 |
 | Deferred Items | 0 |
-| Wont-Fix Items | 34 |
+| Wont-Fix Items | 35 |
 | Expert Domains Tracked | 6 |
-| Expert Open Gaps | 0 |
-| Completion Rate | 100% |
-| Last Run | QA-20260307-0055 (2026-03-07T14:44:37.930Z) |
+| Expert Open Gaps | 2 |
+| Completion Rate | 99.09% |
+| Last Run | QA-20260308-0056 (2026-03-08T01:15:57.800Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260307-0055 (2026-03-07T14:44:37.930Z)
+Latest run: QA-20260308-0056 (2026-03-08T01:15:57.800Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| - | - | - | - |
+| AI Quality Assurance Specialist | appropriate | yes | Reporter 결과 상태를 탭 전환과 재마운트 이후에도 유지하도록 정리 |
+| AI Security & Reliability Architect | appropriate | yes | 보안 차단 시 사용자용 고정 카피만 노출하고 raw JSON payload는 숨김 |
+| Test Automation Architect | appropriate | no | - |
 
 ## Expert Domain Open Gaps
 
-- None
+- ai-quality-assurance: AI Quality Assurance Specialist (last QA-20260308-0056)
+  next: Reporter 결과 상태를 탭 전환과 재마운트 이후에도 유지하도록 정리
+- ai-security-reliability: AI Security & Reliability Architect (last QA-20260308-0056)
+  next: 보안 차단 시 사용자용 고정 카피만 노출하고 raw JSON payload는 숨김
 
 ## Pending Improvements
 
-- None
+- [P1] reporter-state-loss-on-tab-switch: Reporter 탭 전환 시 생성 결과 상태 유지 (seen 1회, last QA-20260308-0056)
 
 ## Deferred Improvements
 
@@ -67,6 +72,8 @@ Latest run: QA-20260307-0055 (2026-03-07T14:44:37.930Z)
   - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
 - [P2] analyst-full-analysis: Analyst 전체 분석 (seen 1회, last QA-20260301-0030)
   - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
+- [P2] blocked-prompt-raw-json-exposure: 보안 차단 시 raw JSON 노출 제거 (seen 1회, last QA-20260308-0056)
+  - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (요청자 표시(isBlocking=true)로 즉시 개선 필요)
 - [P2] dashboard-active-alerts: 활성 알림 모달 (seen 1회, last QA-20260301-0031)
   - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
 - [P2] dashboard-resources: 시스템 리소스 개요 (seen 1회, last QA-20260301-0030)
@@ -110,6 +117,7 @@ Latest run: QA-20260307-0055 (2026-03-07T14:44:37.930Z)
 
 ## Completed Improvements
 
+- ai-chat-performance-v880: AI Chat 응답 시간 및 요약 품질 검증 (completed 1회, last QA-20260308-0056)
 - ai-chat-response: AI Chat 응답 (completed 1회, last QA-20260301-0035)
 - ai-chat-response-quality: AI Chat 핵심요약+상세분석+구체적 권고 응답 (completed 1회, last QA-20260306-0051)
 - ai-chat-response-quality-v879: AI Chat 스트리밍 응답 및 권고 검증 (completed 1회, last QA-20260306-0052)
@@ -117,6 +125,7 @@ Latest run: QA-20260307-0055 (2026-03-07T14:44:37.930Z)
 - ai-math-tools: AI 계산 도구(수식/통계/용량) 셋업 완료 (completed 1회, last QA-20260228-0023)
 - ai-사이드바-토글-ai-엔진-ready-프리셋-5개-ai-기능-3개: AI 사이드바 토글 (AI 엔진 Ready, 프리셋 5개, AI 기능 3개) (completed 3회, last QA-20260302-0042)
 - analyst-full-analysis-v879: Analyst 전체 분석 및 드릴다운 (completed 1회, last QA-20260306-0052)
+- analyst-full-analysis-v880: Analyst 전체 분석 및 드릴다운 검증 (completed 1회, last QA-20260308-0056)
 - anomaly-detection-prediction: 이상감지/예측 15서버 전체 분석 (completed 1회, last QA-20260306-0051)
 - api-인증-검증-401-확인: API 인증 검증 401 확인 (completed 1회, last QA-20260301-0032)
 - auth-error-provider-copy: 인증 에러 라우트 메시지를 제공자-중립 표현으로 전환 (completed 1회, last QA-20260227-0010)
@@ -124,6 +133,7 @@ Latest run: QA-20260307-0055 (2026-03-07T14:44:37.930Z)
 - biome-lint-900-files-에러-0: Biome Lint 900 files 에러 0 (completed 1회, last QA-20260301-0032)
 - csrf-duplicate-removal: CSRF getCSRFTokenFromCookie 중복 제거 (completed 1회, last QA-20260307-0053)
 - dashboard-health-v879: 프로덕션 대시보드 및 Health API 검증 (completed 1회, last QA-20260306-0052)
+- dashboard-health-v880: 프로덕션 대시보드 및 Health API 검증 (completed 1회, last QA-20260308-0056)
 - dashboard-server-card-selector-stabilization: 서버 카드 선택자 및 빈 상태 처리 안정화 (completed 2회, last QA-20260302-0039)
 - dashboard-server-cards: 대시보드 서버 카드 및 메트릭 (completed 2회, last QA-20260302-0038)
 - feature-card-modal: 피처카드 모달 (completed 1회, last QA-20260301-0035)
@@ -153,6 +163,7 @@ Latest run: QA-20260307-0055 (2026-03-07T14:44:37.930Z)
 - multi-agent-orchestration: 멀티에이전트 오케스트레이션 활성화 (Steps A-E) (completed 1회, last QA-20260307-0053)
 - otel-데이터-무결성-24x15-완전: OTel 데이터 무결성 24x15 완전 (completed 1회, last QA-20260301-0032)
 - planning-backlog-clear: planning TODO 잔여 항목 정리 (completed 1회, last QA-20260226-0006)
+- prompt-injection-block-smoke-v880: Prompt injection 차단 스모크 검증 (completed 1회, last QA-20260308-0056)
 - qa-expert-domain-tracking: QA 런에서 전문가 영역 적합성 추적 체계 도입 (completed 1회, last QA-20260226-0003)
 - rag-engine-doc-link-repair: RAG, Vercel fair-use 문서 링크 경로 갱신 (completed 1회, last QA-20260228-0026)
 - rag-smoke-coverage: Redis+Supabase RAG 경로 스모크 강화 (completed 2회, last QA-20260302-0039)
@@ -161,6 +172,7 @@ Latest run: QA-20260307-0055 (2026-03-07T14:44:37.930Z)
 - release-dod-doc-gate: Release DoD: 문서 게이트 90일 갱신·메타데이터·아카이빙 정책 (completed 1회, last QA-20260228-0025)
 - release-dod-test-gate: validate:all 0 에러 (completed 2회, last QA-20260302-0036)
 - reporter-generate-detail-v879: Reporter 보고서 생성 및 상세보기 (completed 1회, last QA-20260306-0052)
+- reporter-generate-detail-v880: Reporter 생성 및 상세 렌더링 검증 (completed 1회, last QA-20260308-0056)
 - storybook-sb-mock-fix: sb.mock()을 preview.ts로 이동하여 Storybook v10 호환성 수정 (completed 1회, last QA-20260302-0043)
 - system-boot-api-checks: 시스템 부트 API 존재성/헬스 체크 (completed 2회, last QA-20260302-0039)
 - system-boot-redirect: 시스템 시작 대시보드 리다이렉트 (completed 1회, last QA-20260301-0035)
@@ -219,6 +231,7 @@ Latest run: QA-20260307-0055 (2026-03-07T14:44:37.930Z)
 
 | Run ID | Time (UTC) | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260308-0056 | 2026-03-08T01:15:57.800Z | Production Playwright MCP QA v8.8.0 - AI Assistant Performance and Guard Smoke | 12 | 5 | 1 | 0 | 1 | 2 |
 | QA-20260307-0055 | 2026-03-07T14:44:37.930Z | Production Playwright MCP QA v8.8.0 - Post-Review Security Fix (7/7 PASS) | 0 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260307-0054 | 2026-03-07T12:45:02.397Z | Production Playwright MCP QA v8.8.0 - Full AI Feature Verification (7/7 PASS) | 0 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260307-0053 | 2026-03-07T00:14:12.888Z | Production QA 2026-03-07 - Multi-Agent Orchestration Deployment | 9 | 3 | 0 | 0 | 2 | 0 |
@@ -238,5 +251,4 @@ Latest run: QA-20260307-0055 (2026-03-07T14:44:37.930Z)
 | QA-20260302-0039 | 2026-03-01T17:31:03.533Z | Local QA Improvement Run - dashboard/guest/system-start continuity | 20 | 7 | 0 | 0 | 0 | 0 |
 | QA-20260302-0038 | 2026-03-01T17:09:26.362Z | Local QA Improvement Run - system-start KPI + guest + server cards | 20 | 5 | 0 | 0 | 0 | 0 |
 | QA-20260302-0037 | 2026-03-01T17:02:04.585Z | Local QA Improvement Run - system-start KPI smoke | 1 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260302-0036 | 2026-03-01T16:58:39.657Z | Local QA Improvement Run - Server Cards + Guest/System Start + RAG Smoke | 11 | 5 | 0 | 0 | 0 | 0 |
 

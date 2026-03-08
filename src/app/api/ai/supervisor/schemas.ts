@@ -85,7 +85,19 @@ const imagePartSchema = z.object({
     .optional(),
 });
 
-// AI SDK v5+ 호환성: 모든 part 타입 허용 (union으로 유연성 확보)
+const RESERVED_PART_TYPES = [
+  'text',
+  'file',
+  'image',
+  'tool-invocation',
+  'tool-result',
+  'reasoning',
+  'source',
+  'step-start',
+  'step-finish',
+] as const;
+
+// AI SDK v5+ 호환성: 검증된 파트는 엄격히 검증하고, 미래 타입만 fallback 허용
 // discriminatedUnion은 알 수 없는 타입에서 실패하므로 union 사용
 const partSchema = z.union([
   textPartSchema,
@@ -97,8 +109,22 @@ const partSchema = z.union([
   z.object({ type: z.literal('source') }).passthrough(),
   z.object({ type: z.literal('step-start') }).passthrough(),
   z.object({ type: z.literal('step-finish') }).passthrough(),
-  // Fallback: 알 수 없는 타입도 허용 (AI SDK 업데이트 대응)
-  z.object({ type: z.string() }).passthrough(),
+  // Fallback: 미래 타입만 허용하고, 검증 실패한 예약 타입은 우회시키지 않음
+  z
+    .object({
+      type: z
+        .string()
+        .refine(
+          (type) =>
+            !RESERVED_PART_TYPES.includes(
+              type as (typeof RESERVED_PART_TYPES)[number]
+            ),
+          {
+            message: 'Unsupported reserved part type',
+          }
+        ),
+    })
+    .passthrough(),
 ]);
 
 // 하이브리드 메시지 스키마: AI SDK v5 (parts) + 레거시 (content) 모두 지원
@@ -133,18 +159,7 @@ export const requestSchema = z.object({
  * @see stream/v2/route.ts
  */
 export const requestSchemaLoose = z.object({
-  messages: z
-    .array(
-      z.object({
-        id: z.string().optional(),
-        role: z.enum(['user', 'assistant', 'system']),
-        parts: z.array(z.object({ type: z.string() }).passthrough()).optional(),
-        content: z.string().optional(),
-        createdAt: z.union([z.string(), z.date()]).optional(),
-      })
-    )
-    .min(1)
-    .max(50),
+  messages: z.array(messageSchema).min(1).max(50),
   sessionId: z.string().min(8).max(128).optional(),
   enableWebSearch: z.boolean().optional(),
   enableRAG: z.boolean().optional(),

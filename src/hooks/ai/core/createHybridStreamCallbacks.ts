@@ -6,7 +6,9 @@ import {
 } from '@/config/ai-proxy.config';
 import {
   extractStreamError,
+  isBlockedInputError,
   isColdStartRelatedError,
+  sanitizeDisplayedErrorMessage,
 } from '@/lib/ai/constants/stream-errors';
 import { logger } from '@/lib/logging';
 import type {
@@ -218,10 +220,19 @@ export function createHybridStreamCallbacks(
 
   const onError = async (error: Error) => {
     const errorMessage = error.message || 'Unknown error';
-    logger.error(
-      `[HybridAI] useChat error (trace: ${traceIdRef.current}):`,
-      errorMessage
-    );
+    const blockedInput = isBlockedInputError(errorMessage);
+    const displayError = sanitizeDisplayedErrorMessage(errorMessage);
+
+    if (blockedInput) {
+      logger.warn(
+        `[HybridAI] Blocked input (trace: ${traceIdRef.current}): ${displayError}`
+      );
+    } else {
+      logger.error(
+        `[HybridAI] useChat error (trace: ${traceIdRef.current}):`,
+        errorMessage
+      );
+    }
 
     const isResumeProbeWithoutUserQuery =
       !refs.currentQuery.current &&
@@ -243,7 +254,9 @@ export function createHybridStreamCallbacks(
     const isColdStart = isColdStartRelatedError(errorMessage);
     const retryLimit = isColdStart ? 1 : maxRetries;
     const canRetry =
-      isRetryableError(errorMessage) && refs.retryCount.current < retryLimit;
+      !blockedInput &&
+      isRetryableError(errorMessage) &&
+      refs.retryCount.current < retryLimit;
 
     if (canRetry && refs.currentQuery.current) {
       refs.retryCount.current += 1;
@@ -291,7 +304,7 @@ export function createHybridStreamCallbacks(
     setState((prev) => ({
       ...prev,
       isLoading: false,
-      error: errorMessage || 'AI 응답 중 오류가 발생했습니다.',
+      error: displayError,
       warning: null,
       processingTime: 0,
       warmingUp: false,

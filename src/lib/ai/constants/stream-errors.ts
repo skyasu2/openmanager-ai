@@ -45,6 +45,12 @@ export const MODEL_CONFIG_ERROR_PATTERNS = [
   'no access to model',
 ] as const;
 
+const BLOCKED_INPUT_ERROR_PATTERNS = [
+  'Security: blocked input',
+  'PROMPT_INJECTION',
+  '보안 정책에 의해 차단된 요청입니다.',
+] as const;
+
 // ============================================================================
 // Error Detection
 // ============================================================================
@@ -100,4 +106,64 @@ export function isModelConfigRelatedError(errorMessage: string): boolean {
   return MODEL_CONFIG_ERROR_PATTERNS.some((pattern) =>
     errorMessage.toLowerCase().includes(pattern.toLowerCase())
   );
+}
+
+function tryParseErrorEnvelope(
+  errorMessage: string
+): { message?: string; error?: string; code?: string } | null {
+  const trimmed = errorMessage.trim();
+  if (!trimmed.startsWith('{') || !trimmed.endsWith('}')) {
+    return null;
+  }
+
+  try {
+    const parsed = JSON.parse(trimmed) as {
+      message?: unknown;
+      error?: unknown;
+      code?: unknown;
+    };
+
+    return {
+      message: typeof parsed.message === 'string' ? parsed.message : undefined,
+      error: typeof parsed.error === 'string' ? parsed.error : undefined,
+      code: typeof parsed.code === 'string' ? parsed.code : undefined,
+    };
+  } catch {
+    return null;
+  }
+}
+
+export function isBlockedInputError(errorMessage: string): boolean {
+  if (!errorMessage?.trim()) return false;
+
+  const envelope = tryParseErrorEnvelope(errorMessage);
+  const candidates = [
+    errorMessage,
+    envelope?.message,
+    envelope?.error,
+    envelope?.code,
+  ].filter((value): value is string => typeof value === 'string');
+
+  return candidates.some((candidate) =>
+    BLOCKED_INPUT_ERROR_PATTERNS.some((pattern) =>
+      candidate.toLowerCase().includes(pattern.toLowerCase())
+    )
+  );
+}
+
+export function sanitizeDisplayedErrorMessage(errorMessage: string): string {
+  if (!errorMessage?.trim()) {
+    return 'AI 응답 중 오류가 발생했습니다.';
+  }
+
+  if (isBlockedInputError(errorMessage)) {
+    return '보안 정책에 의해 차단된 요청입니다.';
+  }
+
+  const envelope = tryParseErrorEnvelope(errorMessage);
+  if (envelope) {
+    return '요청을 처리하는 중 오류가 발생했습니다.';
+  }
+
+  return errorMessage;
 }
