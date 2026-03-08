@@ -6,6 +6,12 @@
 
 // AI schemas (중복 방지를 위해 선택적 export)
 export * from './ai-schemas/ai-performance.schema';
+export {
+  type CachePerformance,
+  CachePerformanceSchema,
+  type CacheStats,
+  CacheStatsSchema,
+} from './api.cache.schema';
 // API schemas - 중복 방지를 위해 필요한 것만 선택적 export
 export {
   type MonitoringReportApiResponse,
@@ -16,12 +22,6 @@ export {
   type MonitoringReportResponse,
   MonitoringReportResponseSchema,
 } from './api.monitoring-report.schema';
-export {
-  type CachePerformance,
-  CachePerformanceSchema,
-  type CacheStats,
-  CacheStatsSchema,
-} from './api.cache.schema';
 export {
   type DashboardData,
   DashboardDataSchema,
