@@ -254,8 +254,15 @@ export async function handleCloudRunJson(
         throw new Error(proxyResult.error ?? 'Cloud Run request failed');
       }
 
+      const parseResult = cloudRunResponseSchema.safeParse(proxyResult.data);
+      if (!parseResult.success) {
+        throw new Error(
+          `Invalid Cloud Run response: ${parseResult.error.message}`
+        );
+      }
+
       return {
-        ...(proxyResult.data as Record<string, unknown>),
+        ...parseResult.data,
         _backend: 'cloud-run',
         _traceId: traceId,
       };

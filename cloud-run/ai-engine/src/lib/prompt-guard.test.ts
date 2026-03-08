@@ -207,4 +207,33 @@ describe('applySanitizedQueryToMessages', () => {
     expect(result.at(-1)?.content).toBe('[blocked] and show CPU');
     expect(result[0]?.content).toBe('첫 번째 질문');
   });
+
+  it('should return original messages when sanitizedQuery is empty', () => {
+    const messages = [{ role: 'user', content: '질문' }];
+    const result = applySanitizedQueryToMessages(messages, '');
+    expect(result).toBe(messages);
+  });
+
+  it('should return original messages when no user messages exist', () => {
+    const messages = [{ role: 'assistant', content: '응답' }];
+    const result = applySanitizedQueryToMessages(messages, 'sanitized');
+    expect(result).toEqual(messages);
+  });
+
+  it('should return original messages for empty array', () => {
+    const result = applySanitizedQueryToMessages([], 'sanitized');
+    expect(result).toEqual([]);
+  });
+
+  it('should skip user messages with empty content', () => {
+    const result = applySanitizedQueryToMessages(
+      [
+        { role: 'user', content: '실제 질문' },
+        { role: 'user', content: '   ' },
+      ],
+      'sanitized'
+    );
+    expect(result[0]?.content).toBe('sanitized');
+    expect(result[1]?.content).toBe('   ');
+  });
 });

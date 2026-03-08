@@ -153,4 +153,43 @@ describe('applySanitizedQueryToMessages', () => {
       mediaType: 'application/pdf',
     });
   });
+
+  it('빈 배열은 그대로 반환한다', () => {
+    const result = applySanitizedQueryToMessages([], 'sanitized');
+    expect(result).toEqual([]);
+  });
+
+  it('user 메시지가 없으면 원본 반환한다', () => {
+    const messages = [{ role: 'assistant', content: '응답' }] as const;
+    const result = applySanitizedQueryToMessages([...messages], 'sanitized');
+    expect(result).toEqual([...messages]);
+  });
+
+  it('sanitizedQuery가 빈 문자열이면 원본 반환한다', () => {
+    const messages = [{ role: 'user', content: '질문' }] as const;
+    const result = applySanitizedQueryToMessages([...messages], '');
+    expect(result[0]?.content).toBe('질문');
+  });
+
+  it('text part 없는 file-only 메시지는 skip하고 이전 user 메시지를 치환한다', () => {
+    const result = applySanitizedQueryToMessages(
+      [
+        { role: 'user', content: '이전 질문' },
+        {
+          role: 'user',
+          parts: [
+            {
+              type: 'file',
+              url: 'data:application/pdf;base64,AAA',
+              mediaType: 'application/pdf',
+            },
+          ],
+        },
+      ],
+      'sanitized query'
+    );
+
+    // file-only 메시지는 텍스트가 없어서 skip, 이전 user 메시지가 치환됨
+    expect(result[0]?.content).toBe('sanitized query');
+  });
 });

@@ -41,4 +41,40 @@ describe('NORMALIZED_MESSAGES_SCHEMA', () => {
 
     expect(result.success).toBe(false);
   });
+
+  it.each([
+    'text/html',
+    'application/javascript',
+    'application/x-sh',
+    'image/svg+xml',
+    'application/zip',
+  ])('위험 MIME 타입 %s은 차단되어야 한다', (mimeType) => {
+    const asImage = NORMALIZED_MESSAGES_SCHEMA.safeParse([
+      { role: 'user', content: 'test', images: [{ data: 'AAA', mimeType }] },
+    ]);
+    const asFile = NORMALIZED_MESSAGES_SCHEMA.safeParse([
+      { role: 'user', content: 'test', files: [{ data: 'AAA', mimeType }] },
+    ]);
+    expect(asImage.success).toBe(false);
+    expect(asFile.success).toBe(false);
+  });
+
+  it('빈 배열은 최소 1개 메시지 필요로 실패해야 한다', () => {
+    const result = NORMALIZED_MESSAGES_SCHEMA.safeParse([]);
+    expect(result.success).toBe(false);
+  });
+
+  it('빈 content는 실패해야 한다', () => {
+    const result = NORMALIZED_MESSAGES_SCHEMA.safeParse([
+      { role: 'user', content: '' },
+    ]);
+    expect(result.success).toBe(false);
+  });
+
+  it('허용되지 않은 role은 실패해야 한다', () => {
+    const result = NORMALIZED_MESSAGES_SCHEMA.safeParse([
+      { role: 'hacker', content: 'test' },
+    ]);
+    expect(result.success).toBe(false);
+  });
 });
