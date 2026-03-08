@@ -1,0 +1,21 @@
+{
+  "runId": "QA-20260308-0061",
+  "recordedAt": "2026-03-08T13:15:14.383Z",
+  "recordedAtKst": "2026-03-08 22:15:14 KST",
+  "runTitle": "Production QA #62 - React Activity API tab state verification",
+  "owner": "claude",
+  "source": "",
+  "environment": "production-vercel",
+  "checks": {
+    "total": 0,
+    "passed": 0,
+    "failed": 0
+  },
+  "expertAssessments": [],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [],
+  "links": []
+}

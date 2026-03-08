@@ -1,28 +1,28 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-08 20:51:11 KST
+> Generated at: 2026-03-08 22:15:14 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 60 |
+| Total Runs | 61 |
 | Total Checks | 420 |
 | Passed | 396 |
 | Failed | 24 |
-| Completed Items | 119 |
-| Pending Items | 1 |
+| Completed Items | 120 |
+| Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 36 |
 | Expert Domains Tracked | 6 |
 | Expert Open Gaps | 1 |
-| Completion Rate | 99.17% |
-| Last Run | QA-20260308-0060 (2026-03-08T11:51:11.029Z) |
+| Completion Rate | 100% |
+| Last Run | QA-20260308-0061 (2026-03-08T13:15:14.383Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260308-0060 (2026-03-08T11:51:11.029Z)
+Latest run: QA-20260308-0061 (2026-03-08T13:15:14.383Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -35,7 +35,7 @@ Latest run: QA-20260308-0060 (2026-03-08T11:51:11.029Z)
 
 ## Pending Improvements
 
-- [P1] reporter-state-loss-on-tab-switch: Reporter 탭 전환 시 생성 결과 상태 유지 (seen 3회, last QA-20260308-0059)
+- None
 
 ## Deferred Improvements
 
@@ -181,6 +181,7 @@ Latest run: QA-20260308-0060 (2026-03-08T11:51:11.029Z)
 - reporter-empty-cta-generate-v880-quality-recheck: Reporter 빈 상태 CTA 생성 경로 재검증 (completed 1회, last QA-20260308-0059)
 - reporter-generate-detail-v879: Reporter 보고서 생성 및 상세보기 (completed 1회, last QA-20260306-0052)
 - reporter-generate-detail-v880: Reporter 생성 및 상세 렌더링 검증 (completed 1회, last QA-20260308-0056)
+- reporter-state-loss-on-tab-switch: Reporter 탭 전환 시 생성 결과 상태 유지 (completed 0회, last QA-20260308-0059)
 - storybook-sb-mock-fix: sb.mock()을 preview.ts로 이동하여 Storybook v10 호환성 수정 (completed 1회, last QA-20260302-0043)
 - system-boot-api-checks: 시스템 부트 API 존재성/헬스 체크 (completed 2회, last QA-20260302-0039)
 - system-boot-redirect: 시스템 시작 대시보드 리다이렉트 (completed 1회, last QA-20260301-0035)
@@ -239,6 +240,7 @@ Latest run: QA-20260308-0060 (2026-03-08T11:51:11.029Z)
 
 | Run ID | Time (UTC) | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260308-0061 | 2026-03-08T13:15:14.383Z | Production QA #62 - React Activity API tab state verification | 0 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260308-0060 | 2026-03-08T11:51:11.029Z | Production QA #61 v8.8.0 tab state preservation fix | 0 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260308-0059 | 2026-03-08T07:28:38.016Z | Production Playwright MCP QA v8.8.0 - Frontend and AI Assistant Quality Analysis | 12 | 5 | 1 | 0 | 1 | 1 |
 | QA-20260308-0058 | 2026-03-08T05:17:03.949Z | Production Playwright MCP QA v8.8.0 - Frontend + AI Assistant Quality Recheck | 12 | 5 | 1 | 0 | 1 | 1 |
@@ -258,5 +260,4 @@ Latest run: QA-20260308-0060 (2026-03-08T11:51:11.029Z)
 | QA-20260302-0044 | 2026-03-02T14:29:50.264Z | metrics-drift-threshold-standard implementation verification | 4 | 4 | 0 | 0 | 0 | 0 |
 | QA-20260302-0043 | 2026-03-02T10:30:38.260Z | Production Playwright MCP QA v8.7.3 post-storybook-fix (13/13 PASS) | 13 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260302-0042 | 2026-03-02T01:28:03.340Z | Production Playwright MCP QA v8.7.3 (13/13 PASS) | 13 | 13 | 0 | 0 | 4 | 0 |
-| QA-20260302-0041 | 2026-03-01T19:22:04.972Z | Production Playwright MCP QA v8.7.2 Post-Deploy (13/13 PASS) | 13 | 13 | 0 | 0 | 4 | 0 |
 

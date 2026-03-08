@@ -2,25 +2,25 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-03-08T11:51:11.029Z"
+    "updatedAt": "2026-03-08T13:15:14.383Z"
   },
   "sequence": {
-    "nextRunNumber": 61
+    "nextRunNumber": 62
   },
   "summary": {
-    "totalRuns": 60,
+    "totalRuns": 61,
     "totalChecks": 420,
     "totalPassed": 396,
     "totalFailed": 24,
-    "completionRate": 100.0,
+    "completionRate": 100,
     "completedItems": 120,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 36,
     "expertDomainsTracked": 6,
     "expertDomainsOpenGaps": 1,
-    "lastRunId": "QA-20260308-0060",
-    "lastRecordedAt": "2026-03-08T11:51:11.029Z"
+    "lastRunId": "QA-20260308-0061",
+    "lastRecordedAt": "2026-03-08T13:15:14.383Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -5605,6 +5605,27 @@
       "owner": "claude-opus-4-6",
       "source": "",
       "file": "reports/qa/runs/2026/qa-run-QA-20260308-0060.json",
+      "checks": {
+        "total": 0,
+        "passed": 0,
+        "failed": 0
+      },
+      "expertAssessments": [],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260308-0061",
+      "recordedAt": "2026-03-08T13:15:14.383Z",
+      "recordedAtKst": "2026-03-08 22:15:14 KST",
+      "title": "Production QA #62 - React Activity API tab state verification",
+      "owner": "claude",
+      "source": "",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260308-0061.json",
       "checks": {
         "total": 0,
         "passed": 0,
