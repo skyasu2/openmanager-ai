@@ -135,6 +135,12 @@ describe('useHybridAIQuery - 쿼리 복잡도 기반 모드 선택', () => {
       expect(['simple', 'moderate']).toContain(result.level);
     });
 
+    it('전체 서버 상태 요약 → streaming', () => {
+      const result = analyzeQueryComplexity('현재 모든 서버의 상태를 요약해줘');
+      expect(result.level).toBe('simple');
+      expect(result.score).toBeLessThanOrEqual(20);
+    });
+
     it('전체 서버 비교 분석 → job-queue 권장', () => {
       const result = analyzeQueryComplexity(
         '모든 서버의 성능을 비교 분석하고 개선 방안을 제안해줘'

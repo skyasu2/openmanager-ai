@@ -149,6 +149,58 @@ const SIMPLE_PATTERNS = [
   /^(뭐|what)\s*(해|할)/i,
 ];
 
+const STREAMING_SUMMARY_KEYWORDS = ['상태', '현황', '개요', '요약'] as const;
+const DEEP_ANALYSIS_KEYWORDS = [
+  '분석',
+  '비교',
+  '예측',
+  '추천',
+  '원인',
+  '패턴',
+  '트렌드',
+  '상관관계',
+  '리포트',
+  '보고서',
+  '최적화',
+  '개선',
+  '이력',
+  '히스토리',
+  '기간',
+  '7일',
+  '30일',
+  '근본 원인',
+] as const;
+const MULTI_STEP_INTENT_KEYWORDS = [
+  '그리고',
+  '후에',
+  '다음에',
+  '기반으로',
+  '먼저',
+  '마지막으로',
+  '추가로',
+] as const;
+
+function shouldPreferStreamingSummaryQuery(query: string): boolean {
+  if (query.length > 80) return false;
+
+  const hasSummaryIntent = STREAMING_SUMMARY_KEYWORDS.some((keyword) =>
+    query.includes(keyword)
+  );
+  if (!hasSummaryIntent) return false;
+
+  const hasDeepAnalysisIntent = DEEP_ANALYSIS_KEYWORDS.some((keyword) =>
+    query.includes(keyword)
+  );
+  if (hasDeepAnalysisIntent) return false;
+
+  const hasMultiStepIntent = MULTI_STEP_INTENT_KEYWORDS.some((keyword) =>
+    query.includes(keyword)
+  );
+  if (hasMultiStepIntent) return false;
+
+  return /(알려줘|보여줘|정리해줘|요약해줘|확인해줘|체크해줘)/.test(query);
+}
+
 // ============================================================================
 // 복잡도 분석 함수
 // ============================================================================
@@ -163,6 +215,15 @@ export function analyzeQueryComplexity(query: string): ComplexityAnalysis {
   const normalizedQuery = query.toLowerCase().trim();
   let score = 0;
   const factors: string[] = [];
+
+  if (shouldPreferStreamingSummaryQuery(normalizedQuery)) {
+    return {
+      level: 'simple',
+      score: 15,
+      factors: ['streaming_summary_query'],
+      recommendedTimeout: 15000,
+    };
+  }
 
   // 1. 단순 패턴 체크
   for (const pattern of SIMPLE_PATTERNS) {
@@ -426,55 +487,6 @@ const JOB_DATA_HEAVY_KEYWORDS = [
   '전체 서버',
   '모든 서버',
 ];
-
-const JOB_STREAMING_SUMMARY_KEYWORDS = [
-  '상태',
-  '현황',
-  '개요',
-  '요약',
-] as const;
-
-const JOB_DEEP_ANALYSIS_KEYWORDS = [
-  '분석',
-  '비교',
-  '예측',
-  '추천',
-  '원인',
-  '패턴',
-  '트렌드',
-  '상관관계',
-  '리포트',
-  '보고서',
-  '최적화',
-  '개선',
-  '이력',
-  '히스토리',
-  '기간',
-  '7일',
-  '30일',
-  '근본 원인',
-] as const;
-
-function shouldPreferStreamingSummaryQuery(query: string): boolean {
-  if (query.length > 80) return false;
-
-  const hasSummaryIntent = JOB_STREAMING_SUMMARY_KEYWORDS.some((keyword) =>
-    query.includes(keyword)
-  );
-  if (!hasSummaryIntent) return false;
-
-  const hasDeepAnalysisIntent = JOB_DEEP_ANALYSIS_KEYWORDS.some((keyword) =>
-    query.includes(keyword)
-  );
-  if (hasDeepAnalysisIntent) return false;
-
-  const hasMultiStepIntent = JOB_MULTI_STEP_KEYWORDS.some((keyword) =>
-    query.includes(keyword)
-  );
-  if (hasMultiStepIntent) return false;
-
-  return /(알려줘|보여줘|정리해줘|요약해줘|확인해줘|체크해줘)/.test(query);
-}
 
 const JOB_ESTIMATED_TIMES: Record<JobQueryComplexity, number> = {
   simple: 5,

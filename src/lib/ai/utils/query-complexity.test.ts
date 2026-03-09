@@ -223,6 +223,15 @@ describe('query-complexity', () => {
     });
   });
 
+  describe('analyzeQueryComplexity', () => {
+    it('should keep broad summary queries on streaming path', () => {
+      const result = analyzeQueryComplexity('현재 모든 서버의 상태를 요약해줘');
+      expect(result.level).toBe('simple');
+      expect(result.score).toBeLessThanOrEqual(20);
+      expect(result.factors).toContain('streaming_summary_query');
+    });
+  });
+
   describe('analyzeJobQueryComplexity', () => {
     it('should classify simple status query as simple', () => {
       const result = analyzeJobQueryComplexity('현재 상태 알려줘');
