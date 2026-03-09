@@ -1,0 +1,118 @@
+{
+  "runId": "QA-20260309-0070",
+  "recordedAt": "2026-03-09T13:07:24.495Z",
+  "recordedAtKst": "2026-03-09 22:07:24 KST",
+  "runTitle": "Production Playwright MCP QA - Summary Streaming Routing & Timing Header Verification (2026-03-09)",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main"
+  },
+  "checks": {
+    "total": 6,
+    "passed": 5,
+    "failed": 1
+  },
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "프로덕션 배포 8c08cd448에서 '현재 모든 서버의 상태를 요약해줘' 질의가 정상 응답을 반환했고 UI에 Streaming AI로 표시됐습니다.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "incident-report와 intelligent-monitoring는 x-ai-latency-ms, x-ai-mode, x-ai-source, x-ai-cache-status를 노출했지만 Server-Timing 헤더는 프로덕션 응답에서 확인되지 않았습니다.",
+      "nextAction": "Vercel 프록시/Next Response 경로에서 Server-Timing 헤더가 제거되는지 확인하고, 실제 브라우저에서 가시화되는 형태로 응답 헤더 정책을 정리"
+    },
+    {
+      "domainId": "ai-security-reliability",
+      "domainName": "AI Security & Reliability Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "게스트 세션 기준 AI 요약 질의, incident-report, intelligent-monitoring가 모두 200으로 응답했고 브라우저 런타임 오류 징후는 보이지 않았습니다.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Playwright 네트워크 계측으로 잘못 수정된 analyzer 경로를 분리했고, 수정 후에는 /api/ai/jobs 없이 /api/ai/supervisor/stream/v2만 호출되는 것을 프로덕션에서 재확인했습니다.",
+      "nextAction": ""
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "ai-summary-chat-streaming-path",
+      "title": "AI summary chat query uses streaming path on production",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "Promoted deployment 8c08cd448에서 '현재 모든 서버의 상태를 요약해줘' 실행 시 POST /api/ai/supervisor/stream/v2만 관찰됐고 /api/ai/jobs 및 /api/ai/jobs/:id/stream 호출은 발생하지 않음",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "ai-timing-x-headers-production",
+      "title": "AI proxy responses expose production timing headers",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "incident-report와 intelligent-monitoring fetch 응답에서 x-ai-latency-ms, x-ai-mode, x-ai-source, x-ai-cache-status 헤더 확인",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [
+    {
+      "id": "ai-server-timing-header-production",
+      "title": "Server-Timing header visibility in production",
+      "priority": "P1",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "buildAITimingHeaders는 Server-Timing을 구성하지만 프로덕션 Playwright fetch 응답에서는 X-AI-* 헤더만 확인됨",
+      "owner": "",
+      "status": "deferred",
+      "policyNote": "P1 우선순위이나 현재 비차단으로 deferred 처리"
+    }
+  ],
+  "wontFixImprovements": [],
+  "notes": [
+    "초기 배포 4cb0a56ff에서는 요약 질의가 여전히 /api/ai/jobs + /api/ai/jobs/:id/stream으로 라우팅되어 수정 경로가 실제 AI Chat path와 불일치함을 확인",
+    "실제 chat 경로는 useQueryExecution/useHybridAIQuery가 analyzeQueryComplexity를 사용하는 구조였고, 이후 query-complexity.ts 수정과 테스트 보강 후 8c08cd448를 재배포",
+    "재배포된 프로덕션에서 같은 질의가 /api/ai/supervisor/stream/v2로 라우팅되고 UI에는 Streaming AI로 표시됨",
+    "summary route resource timing은 약 3.6초, incident-report x-ai-latency-ms는 1807ms, intelligent-monitoring x-ai-latency-ms는 774ms",
+    "증적 스크린샷: reports/qa/runs/2026/qa-20260309-0070-summary-streaming.png"
+  ],
+  "links": [
+    {
+      "label": "Vercel Production",
+      "url": "https://openmanager-ai.vercel.app/dashboard"
+    },
+    {
+      "label": "Promoted Alias Used In QA",
+      "url": "https://openmanager-ai-skyasus-projects.vercel.app"
+    },
+    {
+      "label": "QA Screenshot",
+      "url": "reports/qa/runs/2026/qa-20260309-0070-summary-streaming.png"
+    }
+  ]
+}
