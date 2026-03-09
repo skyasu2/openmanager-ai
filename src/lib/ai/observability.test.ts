@@ -1,5 +1,10 @@
 import { describe, expect, it, vi } from 'vitest';
-import { logAIRequest, logAIResponse, startAITimer } from './observability';
+import {
+  buildAITimingHeaders,
+  logAIRequest,
+  logAIResponse,
+  startAITimer,
+} from './observability';
 
 // Mock the logger module
 vi.mock('@/lib/logging', () => ({
@@ -84,5 +89,23 @@ describe('LLM Observability', () => {
         cacheHit: true,
       })
     ).not.toThrow();
+  });
+
+  it('buildAITimingHeaders가 QA용 타이밍 헤더를 생성한다', () => {
+    const headers = buildAITimingHeaders({
+      latencyMs: 2340,
+      processingTimeMs: 1987,
+      cacheStatus: 'MISS',
+      mode: 'job-queue',
+      source: 'cloud-run',
+    });
+
+    expect(headers['X-AI-Latency-Ms']).toBe('2340');
+    expect(headers['X-AI-Processing-Ms']).toBe('1987');
+    expect(headers['X-AI-Cache-Status']).toBe('MISS');
+    expect(headers['X-AI-Mode']).toBe('job-queue');
+    expect(headers['X-AI-Source']).toBe('cloud-run');
+    expect(headers['Server-Timing']).toContain('ai;dur=2340');
+    expect(headers['Server-Timing']).toContain('ai_processing;dur=1987');
   });
 });

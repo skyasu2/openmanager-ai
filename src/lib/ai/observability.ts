@@ -131,6 +131,47 @@ export function logAIResponse(event: AIResponseEvent): void {
   });
 }
 
+type AITimingHeaderOptions = {
+  latencyMs: number;
+  processingTimeMs?: number | null;
+  cacheStatus?: 'HIT' | 'MISS' | 'BYPASS';
+  mode?: 'streaming' | 'job-queue' | 'proxy';
+  source?: string;
+};
+
+/**
+ * 브라우저/QA가 AI 응답 시간을 헤더만으로 읽을 수 있도록 표준/커스텀 헤더를 생성한다.
+ */
+export function buildAITimingHeaders(
+  options: AITimingHeaderOptions
+): Record<string, string> {
+  const latencyMs = Math.max(0, Math.round(options.latencyMs));
+  const headers: Record<string, string> = {
+    'X-AI-Latency-Ms': String(latencyMs),
+    'Server-Timing': `ai;dur=${latencyMs}`,
+  };
+
+  if (options.processingTimeMs != null) {
+    const processingTimeMs = Math.max(0, Math.round(options.processingTimeMs));
+    headers['X-AI-Processing-Ms'] = String(processingTimeMs);
+    headers['Server-Timing'] += `, ai_processing;dur=${processingTimeMs}`;
+  }
+
+  if (options.cacheStatus) {
+    headers['X-AI-Cache-Status'] = options.cacheStatus;
+  }
+
+  if (options.mode) {
+    headers['X-AI-Mode'] = options.mode;
+  }
+
+  if (options.source) {
+    headers['X-AI-Source'] = options.source;
+  }
+
+  return headers;
+}
+
 /**
  * AI 요청-응답 사이클을 측정하는 헬퍼.
  * 시작 타임스탬프를 반환하며, 완료 시 logAIResponse에 latencyMs를 전달합니다.

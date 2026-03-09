@@ -63,6 +63,7 @@ export const GET = withAuth(async function GET(
       createdAt: job.createdAt,
       startedAt: job.startedAt,
       completedAt: job.completedAt,
+      processingTimeMs: job.processingTimeMs ?? null,
     };
 
     // Cache 헤더 설정 (폴링 최적화)
@@ -70,6 +71,9 @@ export const GET = withAuth(async function GET(
       headers: {
         'Cache-Control': 'no-cache, no-store, must-revalidate',
         'X-Job-Status': job.status,
+        ...(job.processingTimeMs != null && {
+          'X-AI-Processing-Ms': String(job.processingTimeMs),
+        }),
       },
     });
   } catch (error) {

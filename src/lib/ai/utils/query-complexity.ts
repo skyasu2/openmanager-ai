@@ -378,6 +378,10 @@ const JOB_SIMPLE_KEYWORDS = [
   '현재',
   '알려줘',
   '보여줘',
+  '요약',
+  '현황',
+  '개요',
+  '정리',
   '뭐야',
   '어때',
   '몇',
@@ -422,6 +426,56 @@ const JOB_DATA_HEAVY_KEYWORDS = [
   '전체 서버',
   '모든 서버',
 ];
+
+const JOB_STREAMING_SUMMARY_KEYWORDS = [
+  '상태',
+  '현황',
+  '개요',
+  '요약',
+] as const;
+
+const JOB_DEEP_ANALYSIS_KEYWORDS = [
+  '분석',
+  '비교',
+  '예측',
+  '추천',
+  '원인',
+  '패턴',
+  '트렌드',
+  '상관관계',
+  '리포트',
+  '보고서',
+  '최적화',
+  '개선',
+  '이력',
+  '히스토리',
+  '기간',
+  '7일',
+  '30일',
+  '근본 원인',
+] as const;
+
+function shouldPreferStreamingSummaryQuery(query: string): boolean {
+  if (query.length > 80) return false;
+
+  const hasSummaryIntent = JOB_STREAMING_SUMMARY_KEYWORDS.some((keyword) =>
+    query.includes(keyword)
+  );
+  if (!hasSummaryIntent) return false;
+
+  const hasDeepAnalysisIntent = JOB_DEEP_ANALYSIS_KEYWORDS.some((keyword) =>
+    query.includes(keyword)
+  );
+  if (hasDeepAnalysisIntent) return false;
+
+  const hasMultiStepIntent = JOB_MULTI_STEP_KEYWORDS.some((keyword) =>
+    query.includes(keyword)
+  );
+  if (hasMultiStepIntent) return false;
+
+  return /(알려줘|보여줘|정리해줘|요약해줘|확인해줘|체크해줘)/.test(query);
+}
+
 const JOB_ESTIMATED_TIMES: Record<JobQueryComplexity, number> = {
   simple: 5,
   medium: 30,
@@ -439,10 +493,30 @@ export function analyzeJobQueryComplexity(
   query: string
 ): JobComplexityAnalysis {
   const q = query.toLowerCase().trim();
+  const dataKeywordMatches = countKeywordMatches(q, JOB_DATA_HEAVY_KEYWORDS);
+  const broadScopeMatchCount = Number(
+    q.includes('전체 서버') || q.includes('모든 서버')
+  );
+
+  if (shouldPreferStreamingSummaryQuery(q)) {
+    return {
+      level: 'simple',
+      estimatedTime: 8,
+      factors: {
+        dataVolume:
+          dataKeywordMatches > broadScopeMatchCount ? 'medium' : 'low',
+        analysisDepth: 'shallow',
+        multiStep: false,
+        keywordCount: countKeywordMatches(q, JOB_SIMPLE_KEYWORDS),
+      },
+      useJobQueue: false,
+    };
+  }
+
   const s = countKeywordMatches(q, JOB_SIMPLE_KEYWORDS);
   const c = countKeywordMatches(q, JOB_COMPLEX_KEYWORDS);
   const m = countKeywordMatches(q, JOB_MULTI_STEP_KEYWORDS);
-  const d = countKeywordMatches(q, JOB_DATA_HEAVY_KEYWORDS);
+  const d = dataKeywordMatches;
   const score = c * 2 + m * 1.5 + d * 1.5 - s * 0.5;
   let level: JobQueryComplexity =
     score <= 0 ? 'simple' : score <= 3 ? 'medium' : 'complex';

@@ -18,6 +18,7 @@ import {
 import { executeWithCircuitBreakerAndFallback } from '@/lib/ai/circuit-breaker';
 import { createFallbackResponse } from '@/lib/ai/fallback/ai-fallback-handler';
 import {
+  buildAITimingHeaders,
   logAIRequest,
   logAIResponse,
   startAITimer,
@@ -220,11 +221,12 @@ async function postHandler(request: NextRequest) {
 
     // 4. 응답 반환
     if (isFallback) {
+      const latencyMs = aiTimer.elapsed();
       logAIResponse({
         operation: 'chat',
         system: 'cloud-run',
         model: 'multi-agent',
-        latencyMs: aiTimer.elapsed(),
+        latencyMs,
         success: false,
         errorMessage: 'fallback response',
       });
@@ -251,6 +253,12 @@ async function postHandler(request: NextRequest) {
             'X-Retry-Attempt': didGenerateRetry ? '1' : '0',
             'X-Direct-Retry-Attempt': attemptedDirectRetry ? '1' : '0',
             'X-Fallback-Reason': fallbackReasonCode,
+            ...buildAITimingHeaders({
+              latencyMs,
+              cacheStatus: 'BYPASS',
+              mode: 'proxy',
+              source: 'cloud-run',
+            }),
           }),
         }
       );
@@ -259,15 +267,24 @@ async function postHandler(request: NextRequest) {
     if (cacheResult.cached) {
       debug.info('[incident-report] Cache HIT');
       return NextResponse.json(responseData, {
-        headers: withNoStoreHeaders({ 'X-Cache': 'HIT' }),
+        headers: withNoStoreHeaders({
+          'X-Cache': 'HIT',
+          ...buildAITimingHeaders({
+            latencyMs: aiTimer.elapsed(),
+            cacheStatus: 'HIT',
+            mode: 'proxy',
+            source: 'cache',
+          }),
+        }),
       });
     }
 
+    const latencyMs = aiTimer.elapsed();
     logAIResponse({
       operation: 'chat',
       system: 'cloud-run',
       model: 'multi-agent',
-      latencyMs: aiTimer.elapsed(),
+      latencyMs,
       success: true,
     });
 
@@ -281,7 +298,15 @@ async function postHandler(request: NextRequest) {
     }
 
     return NextResponse.json(responseData, {
-      headers: withNoStoreHeaders(successHeaders),
+      headers: withNoStoreHeaders({
+        ...successHeaders,
+        ...buildAITimingHeaders({
+          latencyMs,
+          cacheStatus: 'MISS',
+          mode: 'proxy',
+          source: 'cloud-run',
+        }),
+      }),
     });
   } catch (error) {
     debug.error('Incident report proxy error:', error);
@@ -307,6 +332,12 @@ async function postHandler(request: NextRequest) {
           'X-Error': getErrorMessage(error),
           'X-Retry-After': String(retryAfterMs),
           'X-Fallback-Reason': 'handler_error',
+          ...buildAITimingHeaders({
+            latencyMs: 0,
+            cacheStatus: 'BYPASS',
+            mode: 'proxy',
+            source: 'fallback',
+          }),
         }),
       }
     );

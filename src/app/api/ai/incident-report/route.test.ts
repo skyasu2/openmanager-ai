@@ -179,6 +179,11 @@ describe('/api/ai/incident-report POST', () => {
 
     expect(response.status).toBe(200);
     expect(response.headers.get('X-Cache')).toBe('MISS');
+    expect(response.headers.get('X-AI-Cache-Status')).toBe('MISS');
+    expect(response.headers.get('X-AI-Mode')).toBe('proxy');
+    expect(response.headers.get('X-AI-Source')).toBe('cloud-run');
+    expect(response.headers.get('X-AI-Latency-Ms')).toMatch(/^\d+$/);
+    expect(response.headers.get('server-timing')).toContain('ai;dur=');
     expect(response.headers.get('cache-control')).toContain('no-store');
     expect(mockWithAICache).not.toHaveBeenCalled();
     expect(mockProxyToCloudRun).toHaveBeenCalledTimes(1);
@@ -234,6 +239,8 @@ describe('/api/ai/incident-report POST', () => {
 
     expect(response.status).toBe(200);
     expect(response.headers.get('X-Fallback-Response')).toBe('true');
+    expect(response.headers.get('X-AI-Cache-Status')).toBe('BYPASS');
+    expect(response.headers.get('X-AI-Mode')).toBe('proxy');
     expect(response.headers.get('X-Retry-After')).toBe('45000');
     expect(response.headers.get('X-Retry-Attempt')).toBe('1');
     expect(response.headers.get('X-Direct-Retry-Attempt')).toBe('1');
@@ -383,6 +390,9 @@ describe('/api/ai/incident-report POST', () => {
 
     expect(response.status).toBe(200);
     expect(response.headers.get('X-Cache')).toBe('HIT');
+    expect(response.headers.get('X-AI-Cache-Status')).toBe('HIT');
+    expect(response.headers.get('X-AI-Source')).toBe('cache');
+    expect(response.headers.get('server-timing')).toContain('ai;dur=');
     expect(response.headers.get('cache-control')).toContain('no-store');
     expect(mockWithAICache).toHaveBeenCalledTimes(1);
     expect(mockProxyToCloudRun).not.toHaveBeenCalled();

@@ -230,6 +230,15 @@ describe('query-complexity', () => {
       expect(result.useJobQueue).toBe(false);
     });
 
+    it('should keep broad summary queries on streaming path', () => {
+      const result = analyzeJobQueryComplexity(
+        '현재 모든 서버의 상태를 요약해줘'
+      );
+      expect(result.level).toBe('simple');
+      expect(result.useJobQueue).toBe(false);
+      expect(result.factors.analysisDepth).toBe('shallow');
+    });
+
     it('should classify complex analysis query as complex', () => {
       const result = analyzeJobQueryComplexity(
         '전체 서버 분석하고 최적화 방안 추천해줘 보고서도 작성'

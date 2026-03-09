@@ -161,9 +161,19 @@ async function handlePOST(request: NextRequest) {
       pollUrl: `/api/ai/jobs/${jobId}`,
       estimatedTime: complexity.estimatedTime,
       triggerStatus: triggerResult.status,
+      routingMode: 'job-queue',
+      complexity: complexity.level,
     };
 
-    return NextResponse.json(response, { status: 201 });
+    return NextResponse.json(response, {
+      status: 201,
+      headers: {
+        'X-AI-Mode': 'job-queue',
+        'X-AI-Job-Complexity': complexity.level,
+        'X-AI-Estimated-Time-Sec': String(complexity.estimatedTime),
+        'X-AI-Trigger-Status': triggerResult.status,
+      },
+    });
   } catch (error) {
     logger.error('[AI Jobs] Error creating job:', error);
     return NextResponse.json(
@@ -256,6 +266,7 @@ function mapJobToResponse(job: AIJob): JobStatusResponse {
     createdAt: job.createdAt,
     startedAt: job.startedAt,
     completedAt: job.completedAt,
+    processingTimeMs: job.processingTimeMs ?? null,
   };
 }
 

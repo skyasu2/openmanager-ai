@@ -18,6 +18,7 @@ import {
 import { executeWithCircuitBreakerAndFallback } from '@/lib/ai/circuit-breaker';
 import { createFallbackResponse } from '@/lib/ai/fallback/ai-fallback-handler';
 import {
+  buildAITimingHeaders,
   logAIRequest,
   logAIResponse,
   startAITimer,
@@ -151,16 +152,25 @@ async function postHandler(request: NextRequest) {
     if (cacheResult.cached) {
       debug.info('[intelligent-monitoring] Cache HIT');
       return NextResponse.json(responseData, {
-        headers: { 'X-Cache': 'HIT' },
+        headers: {
+          'X-Cache': 'HIT',
+          ...buildAITimingHeaders({
+            latencyMs: aiTimer.elapsed(),
+            cacheStatus: 'HIT',
+            mode: 'proxy',
+            source: 'cache',
+          }),
+        },
       });
     }
 
     if (isFallback) {
+      const latencyMs = aiTimer.elapsed();
       logAIResponse({
         operation: 'chat',
         system: 'cloud-run',
         model: 'multi-agent',
-        latencyMs: aiTimer.elapsed(),
+        latencyMs,
         success: false,
         errorMessage: 'fallback response',
       });
@@ -170,21 +180,36 @@ async function postHandler(request: NextRequest) {
         headers: {
           'X-Fallback-Response': 'true',
           'X-Retry-After': '30000',
+          ...buildAITimingHeaders({
+            latencyMs,
+            cacheStatus: 'BYPASS',
+            mode: 'proxy',
+            source: 'cloud-run',
+          }),
         },
       });
     }
 
+    const latencyMs = aiTimer.elapsed();
     logAIResponse({
       operation: 'chat',
       system: 'cloud-run',
       model: 'multi-agent',
-      latencyMs: aiTimer.elapsed(),
+      latencyMs,
       success: true,
     });
 
     debug.info('[intelligent-monitoring] Cloud Run success');
     return NextResponse.json(responseData, {
-      headers: { 'X-Cache': 'MISS' },
+      headers: {
+        'X-Cache': 'MISS',
+        ...buildAITimingHeaders({
+          latencyMs,
+          cacheStatus: 'MISS',
+          mode: 'proxy',
+          source: 'cloud-run',
+        }),
+      },
     });
   } catch (error) {
     debug.error('Intelligent monitoring proxy error:', error);
@@ -194,6 +219,12 @@ async function postHandler(request: NextRequest) {
       headers: {
         'X-Fallback-Response': 'true',
         'X-Error': getErrorMessage(error),
+        ...buildAITimingHeaders({
+          latencyMs: 0,
+          cacheStatus: 'BYPASS',
+          mode: 'proxy',
+          source: 'fallback',
+        }),
       },
     });
   }

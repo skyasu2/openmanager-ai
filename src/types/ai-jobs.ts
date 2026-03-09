@@ -51,6 +51,8 @@ export interface CreateJobResponse {
   estimatedTime: number; // seconds
   /** Worker 트리거 결과 (sent: 전송됨, timeout: 타임아웃, failed: 실패, skipped: 건너뜀) */
   triggerStatus?: TriggerStatus;
+  routingMode?: 'job-queue';
+  complexity?: QueryComplexity;
 }
 
 /** Job 상태 조회 응답 */
@@ -65,6 +67,7 @@ export interface JobStatusResponse {
   createdAt: string;
   startedAt: string | null;
   completedAt: string | null;
+  processingTimeMs?: number | null;
 }
 
 /** Job 목록 조회 응답 */
@@ -92,6 +95,7 @@ export interface AIJob {
   createdAt: string;
   startedAt: string | null;
   completedAt: string | null;
+  processingTimeMs?: number | null;
   metadata: {
     complexity: string;
     estimatedTime: number;
