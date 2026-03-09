@@ -1,37 +1,37 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-08 22:15:14 KST
+> Generated at: 2026-03-09 19:22:08 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 61 |
-| Total Checks | 420 |
-| Passed | 396 |
-| Failed | 24 |
-| Completed Items | 120 |
+| Total Runs | 64 |
+| Total Checks | 435 |
+| Passed | 410 |
+| Failed | 25 |
+| Completed Items | 124 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
-| Wont-Fix Items | 36 |
+| Wont-Fix Items | 35 |
 | Expert Domains Tracked | 6 |
-| Expert Open Gaps | 1 |
+| Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Run | QA-20260308-0061 (2026-03-08T13:15:14.383Z) |
+| Last Run | QA-20260309-0064 (2026-03-09T10:22:08.080Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260308-0061 (2026-03-08T13:15:14.383Z)
+Latest run: QA-20260309-0064 (2026-03-09T10:22:08.080Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| - | - | - | - |
+| AI Quality Assurance Specialist | appropriate | no | - |
+| Test Automation Architect | appropriate | no | - |
 
 ## Expert Domain Open Gaps
 
-- ai-quality-assurance: AI Quality Assurance Specialist (last QA-20260308-0059)
-  next: Reporter 생성/상태 유지 정리 후 AI Chat 응답 시간 추세 재확인
+- None
 
 ## Pending Improvements
 
@@ -94,8 +94,6 @@ Latest run: QA-20260308-0061 (2026-03-08T13:15:14.383Z)
   - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
 - [P2] reporter-generate: Reporter 보고서 생성 (seen 1회, last QA-20260301-0030)
   - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
-- [P2] reporter-primary-generate-button-empty-state: Reporter 상단 '보고서 생성' 버튼 empty state 동작 정합성 (seen 2회, last QA-20260308-0059)
-  - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (요청자 표시(isBlocking=true)로 즉시 개선 필요)
 - [P2] server-card-expand: 서버 카드 상세 펼치기/접기 (seen 1회, last QA-20260301-0031)
   - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
 - [P2] server-detail-log-tab: 로그 & 네트워크 탭 (seen 1회, last QA-20260301-0031)
@@ -121,11 +119,13 @@ Latest run: QA-20260308-0061 (2026-03-08T13:15:14.383Z)
 - ai-chat-response: AI Chat 응답 (completed 1회, last QA-20260301-0035)
 - ai-chat-response-quality: AI Chat 핵심요약+상세분석+구체적 권고 응답 (completed 1회, last QA-20260306-0051)
 - ai-chat-response-quality-v879: AI Chat 스트리밍 응답 및 권고 검증 (completed 1회, last QA-20260306-0052)
+- ai-chat-response-quality-v880-recheck-20260309: AI Chat 응답 품질 및 권고 재검증 (completed 1회, last QA-20260309-0063)
 - ai-friendly-template-todo-marker: Template TODO marker 분리 (TEMPLATE_TODO 적용) (completed 1회, last QA-20260226-0006)
 - ai-math-tools: AI 계산 도구(수식/통계/용량) 셋업 완료 (completed 1회, last QA-20260228-0023)
 - ai-사이드바-토글-ai-엔진-ready-프리셋-5개-ai-기능-3개: AI 사이드바 토글 (AI 엔진 Ready, 프리셋 5개, AI 기능 3개) (completed 3회, last QA-20260302-0042)
 - analyst-full-analysis-v879: Analyst 전체 분석 및 드릴다운 (completed 1회, last QA-20260306-0052)
 - analyst-full-analysis-v880: Analyst 전체 분석 및 드릴다운 검증 (completed 1회, last QA-20260308-0056)
+- analyst-full-analysis-v880-recheck-20260309: Analyst 전체 분석 경로 재검증 (completed 1회, last QA-20260309-0063)
 - analyst-quality-v880-quality-recheck: Analyst 전체 분석 및 드릴다운 품질 재검증 (completed 1회, last QA-20260308-0059)
 - analyst-quality-v880-recheck: Analyst 전체 분석 및 드릴다운 재검증 (completed 1회, last QA-20260308-0058)
 - anomaly-detection-prediction: 이상감지/예측 15서버 전체 분석 (completed 1회, last QA-20260306-0051)
@@ -139,7 +139,7 @@ Latest run: QA-20260308-0061 (2026-03-08T13:15:14.383Z)
 - dashboard-health-v879: 프로덕션 대시보드 및 Health API 검증 (completed 1회, last QA-20260306-0052)
 - dashboard-health-v880: 프로덕션 대시보드 및 Health API 검증 (completed 1회, last QA-20260308-0056)
 - dashboard-health-v880-quality-recheck: 프로덕션 대시보드/Health API 품질 재검증 (completed 1회, last QA-20260308-0059)
-- dashboard-health-v880-recheck: 프로덕션 대시보드 및 Health API 재검증 (completed 1회, last QA-20260308-0058)
+- dashboard-health-v880-recheck: 프로덕션 대시보드 및 Health API 재검증 (completed 2회, last QA-20260309-0063)
 - dashboard-server-card-selector-stabilization: 서버 카드 선택자 및 빈 상태 처리 안정화 (completed 2회, last QA-20260302-0039)
 - dashboard-server-cards: 대시보드 서버 카드 및 메트릭 (completed 2회, last QA-20260302-0038)
 - feature-card-modal: 피처카드 모달 (completed 1회, last QA-20260301-0035)
@@ -179,8 +179,10 @@ Latest run: QA-20260308-0061 (2026-03-08T13:15:14.383Z)
 - release-dod-test-gate: validate:all 0 에러 (completed 2회, last QA-20260302-0036)
 - reporter-empty-cta-generate-v880: Reporter 빈 상태 CTA 생성 경로 검증 (completed 1회, last QA-20260308-0058)
 - reporter-empty-cta-generate-v880-quality-recheck: Reporter 빈 상태 CTA 생성 경로 재검증 (completed 1회, last QA-20260308-0059)
+- reporter-empty-cta-generate-v880-recheck-20260309: Reporter empty state CTA 생성 경로 재검증 (completed 1회, last QA-20260309-0063)
 - reporter-generate-detail-v879: Reporter 보고서 생성 및 상세보기 (completed 1회, last QA-20260306-0052)
 - reporter-generate-detail-v880: Reporter 생성 및 상세 렌더링 검증 (completed 1회, last QA-20260308-0056)
+- reporter-primary-generate-button-empty-state: Reporter 상단 생성 버튼 empty state 동작 정합성 (completed 1회, last QA-20260309-0064)
 - reporter-state-loss-on-tab-switch: Reporter 탭 전환 시 생성 결과 상태 유지 (completed 0회, last QA-20260308-0059)
 - storybook-sb-mock-fix: sb.mock()을 preview.ts로 이동하여 Storybook v10 호환성 수정 (completed 1회, last QA-20260302-0043)
 - system-boot-api-checks: 시스템 부트 API 존재성/헬스 체크 (completed 2회, last QA-20260302-0039)
@@ -240,6 +242,9 @@ Latest run: QA-20260308-0061 (2026-03-08T13:15:14.383Z)
 
 | Run ID | Time (UTC) | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260309-0064 | 2026-03-09T10:22:08.080Z | Production Playwright MCP QA - Reporter Top Action Selector Correction (2026-03-09) | 4 | 1 | 0 | 0 | 0 | 0 |
+| QA-20260309-0063 | 2026-03-09T09:15:59.021Z | Production Playwright MCP QA v8.8.0 - Vercel Full Flow Recheck (2026-03-09) | 11 | 4 | 1 | 0 | 0 | 1 |
+| QA-20260309-0062 | 2026-03-09T06:00:52.043Z | Production Playwright MCP QA #63 v8.8.0 - Full AI Feature + Tab State Verification | 0 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260308-0061 | 2026-03-08T13:15:14.383Z | Production QA #62 - React Activity API tab state verification | 0 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260308-0060 | 2026-03-08T11:51:11.029Z | Production QA #61 v8.8.0 tab state preservation fix | 0 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260308-0059 | 2026-03-08T07:28:38.016Z | Production Playwright MCP QA v8.8.0 - Frontend and AI Assistant Quality Analysis | 12 | 5 | 1 | 0 | 1 | 1 |
@@ -257,7 +262,4 @@ Latest run: QA-20260308-0061 (2026-03-08T13:15:14.383Z)
 | QA-20260303-0047 | 2026-03-02T23:07:38.546Z | Production Playwright MCP QA v8.7.7 (13/13 PASS) | 13 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260303-0046 | 2026-03-02T15:45:41.261Z | Production Playwright MCP QA v8.7.6 (13/13 PASS) | 13 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260302-0045 | 2026-03-02T14:48:48.455Z | Production Playwright MCP QA v8.7.5 post-drift-threshold-standard | 13 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260302-0044 | 2026-03-02T14:29:50.264Z | metrics-drift-threshold-standard implementation verification | 4 | 4 | 0 | 0 | 0 | 0 |
-| QA-20260302-0043 | 2026-03-02T10:30:38.260Z | Production Playwright MCP QA v8.7.3 post-storybook-fix (13/13 PASS) | 13 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260302-0042 | 2026-03-02T01:28:03.340Z | Production Playwright MCP QA v8.7.3 (13/13 PASS) | 13 | 13 | 0 | 0 | 4 | 0 |
 
