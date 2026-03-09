@@ -155,10 +155,7 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
       const buildUserMessage = (): UIMessage => ({
         id: generateMessageId('user'),
         role: 'user' as const,
-        parts: [
-          { type: 'text' as const, text: trimmedQuery },
-          ...fileUIParts,
-        ],
+        parts: [{ type: 'text' as const, text: trimmedQuery }, ...fileUIParts],
       });
       const requestUserMessage = buildUserMessage();
 
@@ -308,9 +305,7 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
                 ...prev,
                 isLoading: false,
                 error:
-                  error instanceof Error
-                    ? error.message
-                    : '로컬 AI 응답 실패',
+                  error instanceof Error ? error.message : '로컬 AI 응답 실패',
                 warmingUp: false,
                 estimatedWaitSeconds: 0,
               }));

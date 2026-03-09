@@ -97,7 +97,9 @@ test.describe('AI 채팅 E2E 테스트', () => {
     });
 
     // Production에서는 data-testid가 strip되므로, starter prompt는 버튼 텍스트로 선택
-    const promptCard = sidebar.locator('button[data-prompt-title="서버 상태 확인"]');
+    const promptCard = sidebar.locator(
+      'button[data-prompt-title="서버 상태 확인"]'
+    );
     await expect(promptCard).toBeVisible({
       timeout: TIMEOUTS.COMPLEX_INTERACTION,
     });

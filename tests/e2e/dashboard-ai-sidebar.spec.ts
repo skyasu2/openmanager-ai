@@ -87,7 +87,9 @@ test.describe('대시보드 AI 사이드바 테스트', () => {
     }
 
     for (const promptTitle of promptTitles) {
-      const card = sidebar.locator(`button[data-prompt-title="${promptTitle}"]`);
+      const card = sidebar.locator(
+        `button[data-prompt-title="${promptTitle}"]`
+      );
       await expect(card).toBeVisible({
         timeout: TIMEOUTS.COMPLEX_INTERACTION,
       });
