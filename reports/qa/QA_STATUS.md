@@ -1,15 +1,15 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-09 19:22:08 KST
+> Generated at: 2026-03-09 19:53:18 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 64 |
-| Total Checks | 435 |
-| Passed | 410 |
+| Total Runs | 65 |
+| Total Checks | 443 |
+| Passed | 418 |
 | Failed | 25 |
 | Completed Items | 124 |
 | Pending Items | 0 |
@@ -18,15 +18,16 @@
 | Expert Domains Tracked | 6 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Run | QA-20260309-0064 (2026-03-09T10:22:08.080Z) |
+| Last Run | QA-20260309-0065 (2026-03-09T10:53:18.705Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260309-0064 (2026-03-09T10:22:08.080Z)
+Latest run: QA-20260309-0065 (2026-03-09T10:53:18.705Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
 | AI Quality Assurance Specialist | appropriate | no | - |
+| AI Security & Reliability Architect | appropriate | no | - |
 | Test Automation Architect | appropriate | no | - |
 
 ## Expert Domain Open Gaps
@@ -119,13 +120,13 @@ Latest run: QA-20260309-0064 (2026-03-09T10:22:08.080Z)
 - ai-chat-response: AI Chat 응답 (completed 1회, last QA-20260301-0035)
 - ai-chat-response-quality: AI Chat 핵심요약+상세분석+구체적 권고 응답 (completed 1회, last QA-20260306-0051)
 - ai-chat-response-quality-v879: AI Chat 스트리밍 응답 및 권고 검증 (completed 1회, last QA-20260306-0052)
-- ai-chat-response-quality-v880-recheck-20260309: AI Chat 응답 품질 및 권고 재검증 (completed 1회, last QA-20260309-0063)
+- ai-chat-response-quality-v880-recheck-20260309: AI Chat 응답 품질 및 권고 재검증 (completed 2회, last QA-20260309-0065)
 - ai-friendly-template-todo-marker: Template TODO marker 분리 (TEMPLATE_TODO 적용) (completed 1회, last QA-20260226-0006)
 - ai-math-tools: AI 계산 도구(수식/통계/용량) 셋업 완료 (completed 1회, last QA-20260228-0023)
 - ai-사이드바-토글-ai-엔진-ready-프리셋-5개-ai-기능-3개: AI 사이드바 토글 (AI 엔진 Ready, 프리셋 5개, AI 기능 3개) (completed 3회, last QA-20260302-0042)
 - analyst-full-analysis-v879: Analyst 전체 분석 및 드릴다운 (completed 1회, last QA-20260306-0052)
 - analyst-full-analysis-v880: Analyst 전체 분석 및 드릴다운 검증 (completed 1회, last QA-20260308-0056)
-- analyst-full-analysis-v880-recheck-20260309: Analyst 전체 분석 경로 재검증 (completed 1회, last QA-20260309-0063)
+- analyst-full-analysis-v880-recheck-20260309: Analyst 전체 분석 경로 재검증 (completed 2회, last QA-20260309-0065)
 - analyst-quality-v880-quality-recheck: Analyst 전체 분석 및 드릴다운 품질 재검증 (completed 1회, last QA-20260308-0059)
 - analyst-quality-v880-recheck: Analyst 전체 분석 및 드릴다운 재검증 (completed 1회, last QA-20260308-0058)
 - anomaly-detection-prediction: 이상감지/예측 15서버 전체 분석 (completed 1회, last QA-20260306-0051)
@@ -139,7 +140,7 @@ Latest run: QA-20260309-0064 (2026-03-09T10:22:08.080Z)
 - dashboard-health-v879: 프로덕션 대시보드 및 Health API 검증 (completed 1회, last QA-20260306-0052)
 - dashboard-health-v880: 프로덕션 대시보드 및 Health API 검증 (completed 1회, last QA-20260308-0056)
 - dashboard-health-v880-quality-recheck: 프로덕션 대시보드/Health API 품질 재검증 (completed 1회, last QA-20260308-0059)
-- dashboard-health-v880-recheck: 프로덕션 대시보드 및 Health API 재검증 (completed 2회, last QA-20260309-0063)
+- dashboard-health-v880-recheck: 프로덕션 대시보드 및 Health API 재검증 (completed 3회, last QA-20260309-0065)
 - dashboard-server-card-selector-stabilization: 서버 카드 선택자 및 빈 상태 처리 안정화 (completed 2회, last QA-20260302-0039)
 - dashboard-server-cards: 대시보드 서버 카드 및 메트릭 (completed 2회, last QA-20260302-0038)
 - feature-card-modal: 피처카드 모달 (completed 1회, last QA-20260301-0035)
@@ -179,7 +180,7 @@ Latest run: QA-20260309-0064 (2026-03-09T10:22:08.080Z)
 - release-dod-test-gate: validate:all 0 에러 (completed 2회, last QA-20260302-0036)
 - reporter-empty-cta-generate-v880: Reporter 빈 상태 CTA 생성 경로 검증 (completed 1회, last QA-20260308-0058)
 - reporter-empty-cta-generate-v880-quality-recheck: Reporter 빈 상태 CTA 생성 경로 재검증 (completed 1회, last QA-20260308-0059)
-- reporter-empty-cta-generate-v880-recheck-20260309: Reporter empty state CTA 생성 경로 재검증 (completed 1회, last QA-20260309-0063)
+- reporter-empty-cta-generate-v880-recheck-20260309: Reporter empty state CTA 생성 경로 재검증 (completed 2회, last QA-20260309-0065)
 - reporter-generate-detail-v879: Reporter 보고서 생성 및 상세보기 (completed 1회, last QA-20260306-0052)
 - reporter-generate-detail-v880: Reporter 생성 및 상세 렌더링 검증 (completed 1회, last QA-20260308-0056)
 - reporter-primary-generate-button-empty-state: Reporter 상단 생성 버튼 empty state 동작 정합성 (completed 1회, last QA-20260309-0064)
@@ -242,6 +243,7 @@ Latest run: QA-20260309-0064 (2026-03-09T10:22:08.080Z)
 
 | Run ID | Time (UTC) | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260309-0065 | 2026-03-09T10:53:18.705Z | Production Playwright MCP QA - Vercel AI Flow Recheck (2026-03-09) | 8 | 4 | 0 | 0 | 0 | 0 |
 | QA-20260309-0064 | 2026-03-09T10:22:08.080Z | Production Playwright MCP QA - Reporter Top Action Selector Correction (2026-03-09) | 4 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260309-0063 | 2026-03-09T09:15:59.021Z | Production Playwright MCP QA v8.8.0 - Vercel Full Flow Recheck (2026-03-09) | 11 | 4 | 1 | 0 | 0 | 1 |
 | QA-20260309-0062 | 2026-03-09T06:00:52.043Z | Production Playwright MCP QA #63 v8.8.0 - Full AI Feature + Tab State Verification | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -261,5 +263,4 @@ Latest run: QA-20260309-0064 (2026-03-09T10:22:08.080Z)
 | QA-20260303-0048 | 2026-03-02T23:56:18.491Z | Production Playwright MCP QA v8.7.8 (13/13 PASS) | 13 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260303-0047 | 2026-03-02T23:07:38.546Z | Production Playwright MCP QA v8.7.7 (13/13 PASS) | 13 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260303-0046 | 2026-03-02T15:45:41.261Z | Production Playwright MCP QA v8.7.6 (13/13 PASS) | 13 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260302-0045 | 2026-03-02T14:48:48.455Z | Production Playwright MCP QA v8.7.5 post-drift-threshold-standard | 13 | 0 | 0 | 0 | 0 | 0 |
 
