@@ -1,7 +1,7 @@
 {
-  "runId": "QA-20260310-0072",
-  "recordedAt": "2026-03-10T02:30:00.000Z",
-  "recordedAtKst": "2026-03-10 11:30:00 KST",
+  "runId": "QA-20260310-0076",
+  "recordedAt": "2026-03-09T21:55:34.919Z",
+  "recordedAtKst": "2026-03-10 06:55:34 KST",
   "runTitle": "Vercel Playwright QA - E2E Core Flow (2026-03-10)",
   "owner": "gemini",
   "source": "playwright-mcp",

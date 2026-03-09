@@ -105,7 +105,9 @@ test.describe('시스템 부트 테스트', () => {
       expect(response.status()).toBe(200);
 
       const data = await response.json();
-      expect(data).toHaveProperty('status');
+      expect(data).toHaveProperty('success', true);
+      expect(data).toHaveProperty('data');
+      expect(data.data).toHaveProperty('status');
     });
 
     test('시스템 헬스 뷰 API가 응답한다', async ({ page }) => {

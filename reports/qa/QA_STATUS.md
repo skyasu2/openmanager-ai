@@ -1,43 +1,43 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-10 06:00:33 KST
+> Generated at: 2026-03-10 07:17:55 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 75 |
-| Total Checks | 515 |
-| Passed | 485 |
-| Failed | 30 |
-| Completed Items | 131 |
-| Pending Items | 0 |
+| Total Runs | 78 |
+| Total Checks | 561 |
+| Passed | 527 |
+| Failed | 34 |
+| Completed Items | 133 |
+| Pending Items | 1 |
 | Deferred Items | 1 |
 | Wont-Fix Items | 35 |
 | Expert Domains Tracked | 6 |
-| Expert Open Gaps | 1 |
-| Completion Rate | 99.24% |
-| Last Run | QA-20260310-0075 (2026-03-09T21:00:32.975Z) |
+| Expert Open Gaps | 2 |
+| Completion Rate | 98.52% |
+| Last Run | QA-20260310-0078 (2026-03-09T22:17:55.510Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260310-0075 (2026-03-09T21:00:32.975Z)
+Latest run: QA-20260310-0078 (2026-03-09T22:17:55.510Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| AI Quality Assurance Specialist | appropriate | no | - |
 | Test Automation Architect | appropriate | no | - |
-| IT Monitoring & Observability SME | partially-appropriate | yes | Vercel/Next 응답 경로에서 Server-Timing 제거 지점을 확인하고, 필요 시 X-AI-Latency-Ms를 운영 SSOT로 문서화 |
 
 ## Expert Domain Open Gaps
 
+- ai-quality-assurance: AI Quality Assurance Specialist (last QA-20260310-0076)
+  next: AI 엔진 응답 최적화 및 Cloud Run 병목 해결
 - observability-monitoring: IT Monitoring & Observability SME (last QA-20260310-0075)
   next: Vercel/Next 응답 경로에서 Server-Timing 제거 지점을 확인하고, 필요 시 X-AI-Latency-Ms를 운영 SSOT로 문서화
 
 ## Pending Improvements
 
-- None
+- [P1] ai-chat-performance-v880: AI Chat 응답 시간 및 요약 품질 검증 (seen 4회, last QA-20260310-0076)
 
 ## Deferred Improvements
 
@@ -117,7 +117,6 @@ Latest run: QA-20260310-0075 (2026-03-09T21:00:32.975Z)
 ## Completed Improvements
 
 - ai-chat-latency-regression-recheck-20260310: AI Chat latency regression claim rechecked on production (completed 1회, last QA-20260310-0071)
-- ai-chat-performance-v880: AI Chat 응답 시간 및 요약 품질 검증 (completed 2회, last QA-20260309-0069)
 - ai-chat-quality-v880-quality-recheck: AI Chat 응답 품질 재검증 (completed 1회, last QA-20260308-0059)
 - ai-chat-quality-v880-recheck: AI Chat 응답 품질 및 완료 시간 재검증 (completed 1회, last QA-20260308-0058)
 - ai-chat-response: AI Chat 응답 (completed 1회, last QA-20260301-0035)
@@ -150,6 +149,7 @@ Latest run: QA-20260310-0075 (2026-03-09T21:00:32.975Z)
 - dashboard-server-card-selector-stabilization: 서버 카드 선택자 및 빈 상태 처리 안정화 (completed 2회, last QA-20260302-0039)
 - dashboard-server-cards: 대시보드 서버 카드 및 메트릭 (completed 2회, last QA-20260302-0038)
 - e2e-ai-chat-production-selector-alignment: AI Chat/Sidebar E2E selectors aligned with production DOM (completed 1회, last QA-20260310-0073)
+- e2e-testid-production-fix: E2E 테스트 data-testid 의존성 제거 (completed 1회, last QA-20260310-0076)
 - feature-card-modal: 피처카드 모달 (completed 1회, last QA-20260301-0035)
 - feature-dod-e2e-critical: E2E 크리티컬 흐름 통과 (completed 1회, last QA-20260228-0029)
 - feature-dod-lint-zero-error: lint 0 에러 (completed 5회, last QA-20260302-0044)
@@ -160,12 +160,14 @@ Latest run: QA-20260310-0075 (2026-03-09T21:00:32.975Z)
 - feature-dod-system-start-guard: 비로그인 시스템 시작 가드 모달 동작 (completed 7회, last QA-20260227-0018)
 - feature-dod-validation-health-endpoints: 헬스/버전 API 검사 (Vercel) (completed 2회, last QA-20260227-0018)
 - feature-dod-vitals-integration: vitals:integration 통합 실행 통과 (completed 1회, last QA-20260228-0028)
+- guest-dashboard-auth-check: 게스트 대시보드 로컬 인증 체크 우회 보완 (completed 1회, last QA-20260310-0078)
 - guest-flow-server-card-and-startflow-resilience: 게스트 플로우 시스템 시작/AI 진입 내성 보강 (completed 3회, last QA-20260302-0039)
 - guest-login-pin-4231: 게스트 PIN 4231 로그인 및 세션 진입 (completed 1회, last QA-20260306-0052)
 - guest-login-visibility-toggle: 게스트 로그인 버튼 노출 옵션화 (completed 2회, last QA-20260227-0013)
 - guest-pin-login-flow: 게스트 PIN 인증 후 시스템 시작 버튼 노출 (completed 4회, last QA-20260227-0018)
 - health-api: Health API 검증 (completed 1회, last QA-20260301-0035)
 - health-api-200-healthy: Health API 200 healthy (completed 1회, last QA-20260301-0032)
+- health-api-response-format: Health API 응답 포맷 검증 스크립트 수정 (completed 1회, last QA-20260310-0077)
 - home-semantic-nav: 홈 페이지 nav 랜드마크 보강 (completed 1회, last QA-20260226-0009)
 - landing-copy-alignment: 랜딩/로그인 정책 카피 정합성 (completed 4회, last QA-20260227-0016)
 - landing-page-render: 랜딩 페이지 렌더링 (completed 1회, last QA-20260301-0035)
@@ -252,6 +254,9 @@ Latest run: QA-20260310-0075 (2026-03-09T21:00:32.975Z)
 
 | Run ID | Time (UTC) | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260310-0078 | 2026-03-09T22:17:55.510Z | Vercel Playwright QA - E2E Guest Bug Fix Check (2026-03-10) | 3 | 1 | 0 | 0 | 0 | 0 |
+| QA-20260310-0077 | 2026-03-09T22:15:43.664Z | Vercel Playwright QA - E2E Core Bug Fix Check (2026-03-10) | 9 | 1 | 0 | 0 | 0 | 0 |
+| QA-20260310-0076 | 2026-03-09T21:55:34.919Z | Vercel Playwright QA - E2E Core Flow (2026-03-10) | 34 | 1 | 3 | 0 | 0 | 1 |
 | QA-20260310-0075 | 2026-03-09T21:00:32.975Z | Production Playwright MCP QA - post-deploy final verification | 8 | 0 | 0 | 0 | 0 | 1 |
 | QA-20260310-0074 | 2026-03-09T20:03:05.077Z | Production Playwright QA - AI selector verification and Server-Timing diagnosis | 8 | 0 | 0 | 0 | 0 | 1 |
 | QA-20260310-0073 | 2026-03-09T19:06:04.775Z | Local Playwright QA - E2E selector alignment closure | 3 | 1 | 0 | 0 | 0 | 0 |
@@ -269,7 +274,4 @@ Latest run: QA-20260310-0075 (2026-03-09T21:00:32.975Z)
 | QA-20260308-0061 | 2026-03-08T13:15:14.383Z | Production QA #62 - React Activity API tab state verification | 0 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260308-0060 | 2026-03-08T11:51:11.029Z | Production QA #61 v8.8.0 tab state preservation fix | 0 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260308-0059 | 2026-03-08T07:28:38.016Z | Production Playwright MCP QA v8.8.0 - Frontend and AI Assistant Quality Analysis | 12 | 5 | 1 | 0 | 1 | 1 |
-| QA-20260308-0058 | 2026-03-08T05:17:03.949Z | Production Playwright MCP QA v8.8.0 - Frontend + AI Assistant Quality Recheck | 12 | 5 | 1 | 0 | 1 | 1 |
-| QA-20260308-0057 | 2026-03-08T02:25:49.786Z | Production Playwright MCP QA v8.8.0 - Post-Security Hardening (7/7 PASS) | 0 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260308-0056 | 2026-03-08T01:15:57.800Z | Production Playwright MCP QA v8.8.0 - AI Assistant Performance and Guard Smoke | 12 | 5 | 1 | 0 | 1 | 2 |
 

@@ -1,0 +1,50 @@
+{
+  "runId": "QA-20260310-0078",
+  "recordedAt": "2026-03-09T22:17:55.510Z",
+  "recordedAtKst": "2026-03-10 07:17:55 KST",
+  "runTitle": "Vercel Playwright QA - E2E Guest Bug Fix Check (2026-03-10)",
+  "owner": "gemini",
+  "source": "playwright-mcp",
+  "environment": {
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main"
+  },
+  "checks": {
+    "total": 3,
+    "passed": 3,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "guest 로그인 및 대시보드 접근과 AI 토글이 모두 안정적으로 통과했습니다.",
+      "nextAction": ""
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "guest-dashboard-auth-check",
+      "title": "게스트 대시보드 로컬 인증 체크 우회 보완",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "guest.spec.ts: 시스템 시작 없이도 게스트가 대시보드에 접근할 수 있다 통과",
+      "note": "일시적 레이스 컨디션 해결 및 정상 동작 확인",
+      "owner": "gemini",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "guest.spec.ts 단독 재수행 시 3개 테스트 모두 PASS."
+  ],
+  "links": []
+}
