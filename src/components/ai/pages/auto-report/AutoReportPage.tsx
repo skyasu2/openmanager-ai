@@ -244,15 +244,18 @@ export default function AutoReportPage() {
   }, [servers, ragEnabled, setReports]);
 
   // Event handlers
-  const handleResolve = useCallback((reportId: string) => {
-    setReports((prev) =>
-      prev.map((report) =>
-        report.id === reportId
-          ? { ...report, status: 'resolved' as const }
-          : report
-      )
-    );
-  }, [setReports]);
+  const handleResolve = useCallback(
+    (reportId: string) => {
+      setReports((prev) =>
+        prev.map((report) =>
+          report.id === reportId
+            ? { ...report, status: 'resolved' as const }
+            : report
+        )
+      );
+    },
+    [setReports]
+  );
 
   const toggleDetail = useCallback((reportId: string) => {
     setSelectedReport((prev) => (prev === reportId ? null : reportId));
