@@ -241,7 +241,7 @@ export default function AutoReportPage() {
     } finally {
       setIsGenerating(false);
     }
-  }, [servers, ragEnabled]);
+  }, [servers, ragEnabled, setReports]);
 
   // Event handlers
   const handleResolve = useCallback((reportId: string) => {
@@ -252,7 +252,7 @@ export default function AutoReportPage() {
           : report
       )
     );
-  }, []);
+  }, [setReports]);
 
   const toggleDetail = useCallback((reportId: string) => {
     setSelectedReport((prev) => (prev === reportId ? null : reportId));
