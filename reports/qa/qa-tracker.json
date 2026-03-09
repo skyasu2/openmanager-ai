@@ -2,15 +2,15 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-03-09T10:53:18.705Z"
+    "updatedAt": "2026-03-09T11:10:06.247Z"
   },
   "sequence": {
-    "nextRunNumber": 66
+    "nextRunNumber": 67
   },
   "summary": {
-    "totalRuns": 65,
-    "totalChecks": 443,
-    "totalPassed": 418,
+    "totalRuns": 66,
+    "totalChecks": 453,
+    "totalPassed": 428,
     "totalFailed": 25,
     "completionRate": 100,
     "completedItems": 124,
@@ -19,8 +19,8 @@
     "wontFixItems": 35,
     "expertDomainsTracked": 6,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260309-0065",
-    "lastRecordedAt": "2026-03-09T10:53:18.705Z"
+    "lastRunId": "QA-20260309-0066",
+    "lastRecordedAt": "2026-03-09T11:10:06.247Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -3144,22 +3144,22 @@
       "status": "completed",
       "firstSeenRunId": "QA-20260308-0058",
       "firstSeenAt": "2026-03-08T05:17:03.949Z",
-      "lastSeenRunId": "QA-20260309-0065",
-      "lastSeenAt": "2026-03-09T10:53:18.705Z",
-      "seenCount": 3,
-      "completedCount": 3,
+      "lastSeenRunId": "QA-20260309-0066",
+      "lastSeenAt": "2026-03-09T11:10:06.247Z",
+      "seenCount": 4,
+      "completedCount": 4,
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0,
       "aliases": [],
       "owner": "",
-      "lastEvidence": "브라우저 컨텍스트 fetch('/api/health') status 200, success/data/timestamp 키 확인",
+      "lastEvidence": "프로덕션 대시보드 렌더링 정상, /api/health 200 success=true version=8.8.0 확인",
       "lastNote": "",
       "isBlocking": true,
       "isBlockingExplicit": true,
       "overengineeringScope": "",
       "lastPolicyNote": "",
-      "lastStatusChangeAt": "2026-03-09T10:53:18.705Z"
+      "lastStatusChangeAt": "2026-03-09T11:10:06.247Z"
     },
     "ai-chat-quality-v880-recheck": {
       "id": "ai-chat-quality-v880-recheck",
@@ -3408,22 +3408,22 @@
       "status": "completed",
       "firstSeenRunId": "QA-20260309-0063",
       "firstSeenAt": "2026-03-09T09:15:59.021Z",
-      "lastSeenRunId": "QA-20260309-0065",
-      "lastSeenAt": "2026-03-09T10:53:18.705Z",
-      "seenCount": 2,
-      "completedCount": 2,
+      "lastSeenRunId": "QA-20260309-0066",
+      "lastSeenAt": "2026-03-09T11:10:06.247Z",
+      "seenCount": 3,
+      "completedCount": 3,
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0,
       "aliases": [],
       "owner": "",
-      "lastEvidence": "AI Chat starter prompt 전송 후 응답 본문과 분석 근거/재생성 액션 노출 확인",
+      "lastEvidence": "스타터 프롬프트 전송 후 서버 15대 요약, 주의 서버 lb-haproxy-dc1-01, 구체적 권고와 분석 근거 액션 노출 확인",
       "lastNote": "",
       "isBlocking": true,
       "isBlockingExplicit": true,
       "overengineeringScope": "",
       "lastPolicyNote": "",
-      "lastStatusChangeAt": "2026-03-09T10:53:18.705Z"
+      "lastStatusChangeAt": "2026-03-09T11:10:06.247Z"
     },
     "reporter-empty-cta-generate-v880-recheck-20260309": {
       "id": "reporter-empty-cta-generate-v880-recheck-20260309",
@@ -3432,22 +3432,22 @@
       "status": "completed",
       "firstSeenRunId": "QA-20260309-0063",
       "firstSeenAt": "2026-03-09T09:15:59.021Z",
-      "lastSeenRunId": "QA-20260309-0065",
-      "lastSeenAt": "2026-03-09T10:53:18.705Z",
-      "seenCount": 2,
-      "completedCount": 2,
+      "lastSeenRunId": "QA-20260309-0066",
+      "lastSeenAt": "2026-03-09T11:10:06.247Z",
+      "seenCount": 3,
+      "completedCount": 3,
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0,
       "aliases": [],
       "owner": "",
-      "lastEvidence": "Reporter 탭에서 새 보고서 생성 후 전체(1)/경고(1) 카운트와 상세보기 액션 노출 확인",
+      "lastEvidence": "Reporter 탭에서 상단 새 보고서 버튼으로 보고서 생성 후 전체(1)/경고(1) 카운트와 상세보기 액션 확인",
       "lastNote": "",
       "isBlocking": true,
       "isBlockingExplicit": true,
       "overengineeringScope": "",
       "lastPolicyNote": "",
-      "lastStatusChangeAt": "2026-03-09T10:53:18.705Z"
+      "lastStatusChangeAt": "2026-03-09T11:10:06.247Z"
     },
     "analyst-full-analysis-v880-recheck-20260309": {
       "id": "analyst-full-analysis-v880-recheck-20260309",
@@ -3456,22 +3456,22 @@
       "status": "completed",
       "firstSeenRunId": "QA-20260309-0063",
       "firstSeenAt": "2026-03-09T09:15:59.021Z",
-      "lastSeenRunId": "QA-20260309-0065",
-      "lastSeenAt": "2026-03-09T10:53:18.705Z",
-      "seenCount": 2,
-      "completedCount": 2,
+      "lastSeenRunId": "QA-20260309-0066",
+      "lastSeenAt": "2026-03-09T11:10:06.247Z",
+      "seenCount": 3,
+      "completedCount": 3,
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0,
       "aliases": [],
       "owner": "",
-      "lastEvidence": "전체 분석 실행 후 15개 서버 결과 생성, 주요 이슈/상승 추세/서버별 상세 분석 렌더링 확인",
+      "lastEvidence": "전체 분석 실행 후 15개 서버 결과, 주요 이슈와 상승 추세 경고, 서버별 상세 분석 렌더링 확인",
       "lastNote": "",
       "isBlocking": true,
       "isBlockingExplicit": true,
       "overengineeringScope": "",
       "lastPolicyNote": "",
-      "lastStatusChangeAt": "2026-03-09T10:53:18.705Z"
+      "lastStatusChangeAt": "2026-03-09T11:10:06.247Z"
     }
   },
   "runs": [
@@ -5861,6 +5861,52 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260309-0066",
+      "recordedAt": "2026-03-09T11:10:06.247Z",
+      "recordedAtKst": "2026-03-09 20:10:06 KST",
+      "title": "Production Playwright MCP QA - Post-Push Vercel Verification (2026-03-09)",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260309-0066.json",
+      "checks": {
+        "total": 10,
+        "passed": 10,
+        "failed": 0
+      },
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "랜딩 진입부터 AI Chat, Reporter, Analyst까지 최신 프로덕션 배포에서 핵심 사용자 경로가 모두 정상 동작했습니다.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "ai-security-reliability",
+          "domainName": "AI Security & Reliability Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "/api/health 200 응답과 브라우저 콘솔 에러 0건으로 기본 운영 안정성을 재확인했습니다.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Playwright MCP로 시스템 시작, AI 탭 전환, 생성/분석/드릴다운까지 실브라우저 검증을 완료했습니다.",
+          "nextAction": ""
+        }
+      ],
+      "expertCount": 3,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 4,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -5869,16 +5915,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 34,
-      "appropriateCount": 33,
+      "seenCount": 35,
+      "appropriateCount": 34,
       "partialCount": 1,
       "inappropriateCount": 0,
       "improvementNeededCount": 5,
-      "lastRunId": "QA-20260309-0065",
-      "lastSeenAt": "2026-03-09T10:53:18.705Z",
+      "lastRunId": "QA-20260309-0066",
+      "lastSeenAt": "2026-03-09T11:10:06.247Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "AI Chat, Reporter, Analyst 핵심 경로를 동일 세션에서 재검증했고 응답/렌더링이 안정적으로 확인됐습니다.",
+      "lastRationale": "랜딩 진입부터 AI Chat, Reporter, Analyst까지 최신 프로덕션 배포에서 핵심 사용자 경로가 모두 정상 동작했습니다.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -5903,16 +5949,16 @@
       "domainName": "AI Security & Reliability Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 18,
-      "appropriateCount": 13,
+      "seenCount": 19,
+      "appropriateCount": 14,
       "partialCount": 5,
       "inappropriateCount": 0,
       "improvementNeededCount": 5,
-      "lastRunId": "QA-20260309-0065",
-      "lastSeenAt": "2026-03-09T10:53:18.705Z",
+      "lastRunId": "QA-20260309-0066",
+      "lastSeenAt": "2026-03-09T11:10:06.247Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Vercel /api/health 200과 브라우저 콘솔 에러 0건으로 기본 운영 안정성을 재확인했습니다.",
+      "lastRationale": "/api/health 200 응답과 브라우저 콘솔 에러 0건으로 기본 운영 안정성을 재확인했습니다.",
       "lastNextAction": ""
     },
     "sre-devops": {
@@ -5937,16 +5983,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 32,
-      "appropriateCount": 29,
+      "seenCount": 33,
+      "appropriateCount": 30,
       "partialCount": 3,
       "inappropriateCount": 0,
       "improvementNeededCount": 4,
-      "lastRunId": "QA-20260309-0065",
-      "lastSeenAt": "2026-03-09T10:53:18.705Z",
+      "lastRunId": "QA-20260309-0066",
+      "lastSeenAt": "2026-03-09T11:10:06.247Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Playwright MCP 수동 검증으로 AI 탭 전환, 기능 실행, 결과 유지/드릴다운까지 실브라우저 기준 검증했습니다.",
+      "lastRationale": "Playwright MCP로 시스템 시작, AI 탭 전환, 생성/분석/드릴다운까지 실브라우저 검증을 완료했습니다.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {
