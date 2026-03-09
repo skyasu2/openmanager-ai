@@ -1,9 +1,17 @@
 # OpenManager AI v8.7.1 — Final QA Closing Report
 
+> Owner: qa
+> Status: Historical Reference
+> Doc type: Reference
+> Last reviewed: 2026-03-09
+> Canonical: reports/qa/FINAL_QA_REPORT_v8.7.1.md
+
 > **Date**: 2026-03-01
 > **QA Run**: QA-20260301-0033 (33rd cumulative run)
 > **Result**: 18/18 PASS | Build OK (46 pages) | 1704 unit tests PASS
 > **Production QA**: Playwright MCP — 15서버 표시, AI Chat 응답, 전체 UI 검증 완료
+
+> **Note**: 이 문서는 `v8.7.1` 시점의 마감 스냅샷입니다. 현재 릴리즈 상태와 최신 QA 누적 현황은 `reports/qa/qa-tracker.json` 및 `reports/qa/QA_STATUS.md`를 기준으로 판단합니다.
 
 ---
 

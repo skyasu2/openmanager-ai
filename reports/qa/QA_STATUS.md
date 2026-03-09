@@ -1,28 +1,28 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-09 20:10:06 KST
+> Generated at: 2026-03-09 20:42:50 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 66 |
-| Total Checks | 453 |
-| Passed | 428 |
+| Total Runs | 67 |
+| Total Checks | 459 |
+| Passed | 434 |
 | Failed | 25 |
-| Completed Items | 124 |
+| Completed Items | 126 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 35 |
 | Expert Domains Tracked | 6 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Run | QA-20260309-0066 (2026-03-09T11:10:06.247Z) |
+| Last Run | QA-20260309-0067 (2026-03-09T11:42:50.637Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260309-0066 (2026-03-09T11:10:06.247Z)
+Latest run: QA-20260309-0067 (2026-03-09T11:42:50.637Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -171,7 +171,9 @@ Latest run: QA-20260309-0066 (2026-03-09T11:10:06.247Z)
 - otel-데이터-무결성-24x15-완전: OTel 데이터 무결성 24x15 완전 (completed 1회, last QA-20260301-0032)
 - planning-backlog-clear: planning TODO 잔여 항목 정리 (completed 1회, last QA-20260226-0006)
 - prompt-injection-block-smoke-v880: Prompt injection 차단 스모크 검증 (completed 1회, last QA-20260308-0056)
+- qa-doc-roadmap-current-status-alignment: QA DoD 로드맵 현재 상태 정합성 갱신 (completed 1회, last QA-20260309-0067)
 - qa-expert-domain-tracking: QA 런에서 전문가 영역 적합성 추적 체계 도입 (completed 1회, last QA-20260226-0003)
+- qa-final-report-historical-positioning: v8.7.1 최종 QA 리포트의 historical 성격 명시 (completed 1회, last QA-20260309-0067)
 - rag-engine-doc-link-repair: RAG, Vercel fair-use 문서 링크 경로 갱신 (completed 1회, last QA-20260228-0026)
 - rag-smoke-coverage: Redis+Supabase RAG 경로 스모크 강화 (completed 2회, last QA-20260302-0039)
 - release-dod-contract-test: Release DoD: API contract test 통과 (completed 1회, last QA-20260226-0008)
@@ -243,6 +245,7 @@ Latest run: QA-20260309-0066 (2026-03-09T11:10:06.247Z)
 
 | Run ID | Time (UTC) | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260309-0067 | 2026-03-09T11:42:50.637Z | Production Playwright MCP QA - Documentation Alignment Smoke (2026-03-09) | 6 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260309-0066 | 2026-03-09T11:10:06.247Z | Production Playwright MCP QA - Post-Push Vercel Verification (2026-03-09) | 10 | 4 | 0 | 0 | 0 | 0 |
 | QA-20260309-0065 | 2026-03-09T10:53:18.705Z | Production Playwright MCP QA - Vercel AI Flow Recheck (2026-03-09) | 8 | 4 | 0 | 0 | 0 | 0 |
 | QA-20260309-0064 | 2026-03-09T10:22:08.080Z | Production Playwright MCP QA - Reporter Top Action Selector Correction (2026-03-09) | 4 | 1 | 0 | 0 | 0 | 0 |
@@ -262,5 +265,4 @@ Latest run: QA-20260309-0066 (2026-03-09T11:10:06.247Z)
 | QA-20260304-0050 | 2026-03-04T04:21:46.893Z | Production QA v8.7.8 — Playwright MCP (2026-03-04) | 8 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260303-0049 | 2026-03-03T05:03:51.275Z | Production Playwright MCP QA v8.7.8 (13/13 PASS) | 0 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260303-0048 | 2026-03-02T23:56:18.491Z | Production Playwright MCP QA v8.7.8 (13/13 PASS) | 13 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260303-0047 | 2026-03-02T23:07:38.546Z | Production Playwright MCP QA v8.7.7 (13/13 PASS) | 13 | 0 | 0 | 0 | 0 | 0 |
 

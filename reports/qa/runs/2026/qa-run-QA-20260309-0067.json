@@ -1,0 +1,86 @@
+{
+  "runId": "QA-20260309-0067",
+  "recordedAt": "2026-03-09T11:42:50.637Z",
+  "recordedAtKst": "2026-03-09 20:42:50 KST",
+  "runTitle": "Production Playwright MCP QA - Documentation Alignment Smoke (2026-03-09)",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main"
+  },
+  "checks": {
+    "total": 6,
+    "passed": 6,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "문서 정합성 개선 이후에도 최신 프로덕션 배포에서 랜딩, 시스템 시작, 대시보드, AI 사이드바 스모크 경로가 정상 동작했습니다.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "ai-security-reliability",
+      "domainName": "AI Security & Reliability Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "/api/health 200 응답과 브라우저 콘솔 에러 0건으로 기본 운영 안정성에 변화가 없음을 확인했습니다.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "문서 변경만 있었기 때문에 Vercel 실환경 Playwright 스모크 범위로 재검증했고, 불필요한 반복 QA를 줄이면서 핵심 경로를 확인했습니다.",
+      "nextAction": ""
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "qa-doc-roadmap-current-status-alignment",
+      "title": "QA DoD 로드맵 현재 상태 정합성 갱신",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "dod-closeout-roadmap.md를 최신 qa-tracker 기준(66 runs, pending 0, open gaps 0)으로 갱신하고 재오픈 조건 중심 문서로 정리",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "qa-final-report-historical-positioning",
+      "title": "v8.7.1 최종 QA 리포트의 historical 성격 명시",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "FINAL_QA_REPORT_v8.7.1.md에 메타데이터와 historical reference 안내를 추가하고 현재 SSOT가 qa-tracker/QA_STATUS임을 명시",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "문서 변경만 있었으므로 이번 런은 full AI regression이 아닌 Vercel Playwright smoke 범위로 제한",
+    "대상 배포: 9070f3c51 docs(qa): record post-push Vercel run #66",
+    "시각 증적: reports/qa/runs/2026/qa-20260309-0067-docs-smoke.png"
+  ],
+  "links": [
+    {
+      "label": "Vercel Production",
+      "url": "https://openmanager-ai.vercel.app/dashboard"
+    }
+  ]
+}

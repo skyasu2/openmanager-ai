@@ -2,25 +2,25 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-03-09T11:10:06.247Z"
+    "updatedAt": "2026-03-09T11:42:50.637Z"
   },
   "sequence": {
-    "nextRunNumber": 67
+    "nextRunNumber": 68
   },
   "summary": {
-    "totalRuns": 66,
-    "totalChecks": 453,
-    "totalPassed": 428,
+    "totalRuns": 67,
+    "totalChecks": 459,
+    "totalPassed": 434,
     "totalFailed": 25,
     "completionRate": 100,
-    "completedItems": 124,
+    "completedItems": 126,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 35,
     "expertDomainsTracked": 6,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260309-0066",
-    "lastRecordedAt": "2026-03-09T11:10:06.247Z"
+    "lastRunId": "QA-20260309-0067",
+    "lastRecordedAt": "2026-03-09T11:42:50.637Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -3472,6 +3472,54 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-03-09T11:10:06.247Z"
+    },
+    "qa-doc-roadmap-current-status-alignment": {
+      "id": "qa-doc-roadmap-current-status-alignment",
+      "title": "QA DoD 로드맵 현재 상태 정합성 갱신",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260309-0067",
+      "firstSeenAt": "2026-03-09T11:42:50.637Z",
+      "lastSeenRunId": "QA-20260309-0067",
+      "lastSeenAt": "2026-03-09T11:42:50.637Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "dod-closeout-roadmap.md를 최신 qa-tracker 기준(66 runs, pending 0, open gaps 0)으로 갱신하고 재오픈 조건 중심 문서로 정리",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-03-09T11:42:50.637Z"
+    },
+    "qa-final-report-historical-positioning": {
+      "id": "qa-final-report-historical-positioning",
+      "title": "v8.7.1 최종 QA 리포트의 historical 성격 명시",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260309-0067",
+      "firstSeenAt": "2026-03-09T11:42:50.637Z",
+      "lastSeenRunId": "QA-20260309-0067",
+      "lastSeenAt": "2026-03-09T11:42:50.637Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "FINAL_QA_REPORT_v8.7.1.md에 메타데이터와 historical reference 안내를 추가하고 현재 SSOT가 qa-tracker/QA_STATUS임을 명시",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-03-09T11:42:50.637Z"
     }
   },
   "runs": [
@@ -5907,6 +5955,52 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260309-0067",
+      "recordedAt": "2026-03-09T11:42:50.637Z",
+      "recordedAtKst": "2026-03-09 20:42:50 KST",
+      "title": "Production Playwright MCP QA - Documentation Alignment Smoke (2026-03-09)",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260309-0067.json",
+      "checks": {
+        "total": 6,
+        "passed": 6,
+        "failed": 0
+      },
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "문서 정합성 개선 이후에도 최신 프로덕션 배포에서 랜딩, 시스템 시작, 대시보드, AI 사이드바 스모크 경로가 정상 동작했습니다.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "ai-security-reliability",
+          "domainName": "AI Security & Reliability Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "/api/health 200 응답과 브라우저 콘솔 에러 0건으로 기본 운영 안정성에 변화가 없음을 확인했습니다.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "문서 변경만 있었기 때문에 Vercel 실환경 Playwright 스모크 범위로 재검증했고, 불필요한 반복 QA를 줄이면서 핵심 경로를 확인했습니다.",
+          "nextAction": ""
+        }
+      ],
+      "expertCount": 3,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 2,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -5915,16 +6009,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 35,
-      "appropriateCount": 34,
+      "seenCount": 36,
+      "appropriateCount": 35,
       "partialCount": 1,
       "inappropriateCount": 0,
       "improvementNeededCount": 5,
-      "lastRunId": "QA-20260309-0066",
-      "lastSeenAt": "2026-03-09T11:10:06.247Z",
+      "lastRunId": "QA-20260309-0067",
+      "lastSeenAt": "2026-03-09T11:42:50.637Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "랜딩 진입부터 AI Chat, Reporter, Analyst까지 최신 프로덕션 배포에서 핵심 사용자 경로가 모두 정상 동작했습니다.",
+      "lastRationale": "문서 정합성 개선 이후에도 최신 프로덕션 배포에서 랜딩, 시스템 시작, 대시보드, AI 사이드바 스모크 경로가 정상 동작했습니다.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -5949,16 +6043,16 @@
       "domainName": "AI Security & Reliability Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 19,
-      "appropriateCount": 14,
+      "seenCount": 20,
+      "appropriateCount": 15,
       "partialCount": 5,
       "inappropriateCount": 0,
       "improvementNeededCount": 5,
-      "lastRunId": "QA-20260309-0066",
-      "lastSeenAt": "2026-03-09T11:10:06.247Z",
+      "lastRunId": "QA-20260309-0067",
+      "lastSeenAt": "2026-03-09T11:42:50.637Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "/api/health 200 응답과 브라우저 콘솔 에러 0건으로 기본 운영 안정성을 재확인했습니다.",
+      "lastRationale": "/api/health 200 응답과 브라우저 콘솔 에러 0건으로 기본 운영 안정성에 변화가 없음을 확인했습니다.",
       "lastNextAction": ""
     },
     "sre-devops": {
@@ -5983,16 +6077,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 33,
-      "appropriateCount": 30,
+      "seenCount": 34,
+      "appropriateCount": 31,
       "partialCount": 3,
       "inappropriateCount": 0,
       "improvementNeededCount": 4,
-      "lastRunId": "QA-20260309-0066",
-      "lastSeenAt": "2026-03-09T11:10:06.247Z",
+      "lastRunId": "QA-20260309-0067",
+      "lastSeenAt": "2026-03-09T11:42:50.637Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Playwright MCP로 시스템 시작, AI 탭 전환, 생성/분석/드릴다운까지 실브라우저 검증을 완료했습니다.",
+      "lastRationale": "문서 변경만 있었기 때문에 Vercel 실환경 Playwright 스모크 범위로 재검증했고, 불필요한 반복 QA를 줄이면서 핵심 경로를 확인했습니다.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {
