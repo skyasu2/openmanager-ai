@@ -35,21 +35,36 @@ async function submitMessage(
   }
 }
 
-/** AI 응답 대기: data-testid="ai-message" 등장 확인 */
+/** AI 응답 대기: 프로덕션 렌더링 기준으로 로그 텍스트 변화 확인 */
 async function waitForAiResponse(
   sidebar: import('@playwright/test').Locator,
   page: import('@playwright/test').Page
 ) {
+  const conversationLog = sidebar.getByRole('log', { name: 'AI 대화 메시지' });
+  const previousText = (await conversationLog.textContent().catch(() => '')) ?? '';
+
   // Clarification 다이얼로그 처리
   await handleClarificationIfPresent(page);
 
-  // AI 응답 메시지가 나타날 때까지 대기
-  const aiMessage = sidebar.locator('[data-testid="ai-message"]').first();
-  await expect(aiMessage).toBeVisible({ timeout: TIMEOUTS.AI_RESPONSE });
-
-  // 응답 텍스트가 비어있지 않은지 확인
-  const text = await aiMessage.textContent();
-  expect(text && text.trim().length > 0).toBe(true);
+  // Production에서는 data-testid가 strip되고, 응답은 collapse view로 렌더링될 수 있음
+  await expect
+    .poll(
+      async () => {
+        const text = (await conversationLog.textContent().catch(() => '')) ?? '';
+        return text.trim();
+      },
+      { timeout: TIMEOUTS.AI_RESPONSE }
+    )
+    .toSatisfy((text) => {
+      if (!text || text.length <= previousText.trim().length) return false;
+      if (text.includes('응답을 생성하지 못했습니다')) return false;
+      return (
+        text.includes('Streaming AI') ||
+        text.includes('Job Queue AI') ||
+        text.includes('서버 현황 요약') ||
+        text.includes('전체 15대')
+      );
+    });
 }
 
 test.describe('AI 채팅 E2E 테스트', () => {
@@ -74,8 +89,10 @@ test.describe('AI 채팅 E2E 테스트', () => {
       timeout: TIMEOUTS.COMPLEX_INTERACTION,
     });
 
-    // 스타터 프롬프트 카드 클릭
-    const promptCards = page.locator('[data-testid="ai-starter-prompt-card"]');
+    // Production에서는 data-testid가 strip되므로, starter prompt는 버튼 텍스트로 선택
+    const promptCards = page.locator(
+      'button:has-text("서버 상태 확인"), button:has-text("장애 분석"), button:has-text("성능 예측")'
+    );
     await expect(promptCards.first()).toBeVisible({
       timeout: TIMEOUTS.COMPLEX_INTERACTION,
     });
@@ -105,8 +122,8 @@ test.describe('AI 채팅 E2E 테스트', () => {
     const input = page.getByRole('textbox', { name: 'AI 질문 입력' });
     await expect(input).toBeVisible({ timeout: TIMEOUTS.COMPLEX_INTERACTION });
 
-    // 짧은 테스트 메시지 입력 → 전송
-    await input.fill('서버 상태 요약');
+    // Clarification을 유도하지 않는 명시적 질의 사용
+    await input.fill('현재 모든 서버의 상태를 요약해줘');
     await submitMessage(page, input);
 
     // AI 응답 대기

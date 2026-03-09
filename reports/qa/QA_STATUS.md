@@ -1,44 +1,45 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-09 22:07:24 KST
+> Generated at: 2026-03-10 02:34:32 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 70 |
-| Total Checks | 481 |
-| Passed | 452 |
-| Failed | 29 |
-| Completed Items | 128 |
-| Pending Items | 0 |
+| Total Runs | 71 |
+| Total Checks | 487 |
+| Passed | 457 |
+| Failed | 30 |
+| Completed Items | 130 |
+| Pending Items | 1 |
 | Deferred Items | 1 |
 | Wont-Fix Items | 35 |
 | Expert Domains Tracked | 6 |
-| Expert Open Gaps | 1 |
-| Completion Rate | 99.22% |
-| Last Run | QA-20260309-0070 (2026-03-09T13:07:24.495Z) |
+| Expert Open Gaps | 2 |
+| Completion Rate | 98.48% |
+| Last Run | QA-20260310-0071 (2026-03-09T17:34:32.732Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260309-0070 (2026-03-09T13:07:24.495Z)
+Latest run: QA-20260310-0071 (2026-03-09T17:34:32.732Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
 | AI Quality Assurance Specialist | appropriate | no | - |
-| IT Monitoring & Observability SME | partially-appropriate | yes | Vercel 프록시/Next Response 경로에서 Server-Timing 헤더가 제거되는지 확인하고, 실제 브라우저에서 가시화되는 형태로 응답 헤더 정책을 정리 |
+| Test Automation Architect | partially-appropriate | yes | dashboard-ai-chat/dashboard-ai-sidebar를 role/log/text 기반으로 정렬하고 clarification 대기 시간을 production variance에 맞춰 상향 |
 | AI Security & Reliability Architect | appropriate | no | - |
-| Test Automation Architect | appropriate | no | - |
 
 ## Expert Domain Open Gaps
 
 - observability-monitoring: IT Monitoring & Observability SME (last QA-20260309-0070)
   next: Vercel 프록시/Next Response 경로에서 Server-Timing 헤더가 제거되는지 확인하고, 실제 브라우저에서 가시화되는 형태로 응답 헤더 정책을 정리
+- test-automation: Test Automation Architect (last QA-20260310-0071)
+  next: dashboard-ai-chat/dashboard-ai-sidebar를 role/log/text 기반으로 정렬하고 clarification 대기 시간을 production variance에 맞춰 상향
 
 ## Pending Improvements
 
-- None
+- [P1] e2e-ai-chat-production-selector-alignment: AI Chat/Sidebar E2E selectors aligned with production DOM (seen 1회, last QA-20260310-0071)
 
 ## Deferred Improvements
 
@@ -117,6 +118,7 @@ Latest run: QA-20260309-0070 (2026-03-09T13:07:24.495Z)
 
 ## Completed Improvements
 
+- ai-chat-latency-regression-recheck-20260310: AI Chat latency regression claim rechecked on production (completed 1회, last QA-20260310-0071)
 - ai-chat-performance-v880: AI Chat 응답 시간 및 요약 품질 검증 (completed 2회, last QA-20260309-0069)
 - ai-chat-quality-v880-quality-recheck: AI Chat 응답 품질 재검증 (completed 1회, last QA-20260308-0059)
 - ai-chat-quality-v880-recheck: AI Chat 응답 품질 및 완료 시간 재검증 (completed 1회, last QA-20260308-0058)
@@ -127,6 +129,7 @@ Latest run: QA-20260309-0070 (2026-03-09T13:07:24.495Z)
 - ai-friendly-template-todo-marker: Template TODO marker 분리 (TEMPLATE_TODO 적용) (completed 1회, last QA-20260226-0006)
 - ai-math-tools: AI 계산 도구(수식/통계/용량) 셋업 완료 (completed 1회, last QA-20260228-0023)
 - ai-summary-chat-streaming-path: AI summary chat query uses streaming path on production (completed 1회, last QA-20260309-0070)
+- ai-summary-query-clarification-skip-production: Explicit all-server summary query skips clarification in production (completed 1회, last QA-20260310-0071)
 - ai-timing-x-headers-production: AI proxy responses expose production timing headers (completed 1회, last QA-20260309-0070)
 - ai-사이드바-토글-ai-엔진-ready-프리셋-5개-ai-기능-3개: AI 사이드바 토글 (AI 엔진 Ready, 프리셋 5개, AI 기능 3개) (completed 3회, last QA-20260302-0042)
 - analyst-full-analysis-v879: Analyst 전체 분석 및 드릴다운 (completed 1회, last QA-20260306-0052)
@@ -250,6 +253,7 @@ Latest run: QA-20260309-0070 (2026-03-09T13:07:24.495Z)
 
 | Run ID | Time (UTC) | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260310-0071 | 2026-03-09T17:34:32.732Z | Production Playwright MCP QA - AI Chat Recheck (2026-03-10) | 6 | 2 | 1 | 0 | 0 | 1 |
 | QA-20260309-0070 | 2026-03-09T13:07:24.495Z | Production Playwright MCP QA - Summary Streaming Routing & Timing Header Verification (2026-03-09) | 6 | 2 | 0 | 1 | 0 | 1 |
 | QA-20260309-0069 | 2026-03-09T12:20:48.407Z | Production Playwright MCP QA - AI Assistant Timing Validation Correction (2026-03-09) | 6 | 3 | 0 | 0 | 0 | 0 |
 | QA-20260309-0068 | 2026-03-09T12:08:55.580Z | Production Playwright MCP QA - Vercel AI Assistant Performance Audit (2026-03-09) | 10 | 4 | 3 | 0 | 0 | 1 |
@@ -269,5 +273,4 @@ Latest run: QA-20260309-0070 (2026-03-09T13:07:24.495Z)
 | QA-20260307-0054 | 2026-03-07T12:45:02.397Z | Production Playwright MCP QA v8.8.0 - Full AI Feature Verification (7/7 PASS) | 0 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260307-0053 | 2026-03-07T00:14:12.888Z | Production QA 2026-03-07 - Multi-Agent Orchestration Deployment | 9 | 3 | 0 | 0 | 2 | 0 |
 | QA-20260306-0052 | 2026-03-06T04:43:09.085Z | Production Playwright MCP QA v8.7.9 - Guest PIN 4231 Full AI Flow | 9 | 5 | 0 | 0 | 0 | 0 |
-| QA-20260306-0051 | 2026-03-05T18:26:17.569Z | Production QA - Full Feature Verification v8.7.8 | 7 | 3 | 0 | 0 | 2 | 0 |
 

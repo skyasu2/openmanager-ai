@@ -2,25 +2,25 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-03-09T13:07:24.495Z"
+    "updatedAt": "2026-03-09T17:34:32.732Z"
   },
   "sequence": {
-    "nextRunNumber": 71
+    "nextRunNumber": 72
   },
   "summary": {
-    "totalRuns": 70,
-    "totalChecks": 481,
-    "totalPassed": 452,
-    "totalFailed": 29,
-    "completionRate": 99.22,
-    "completedItems": 128,
-    "pendingItems": 0,
+    "totalRuns": 71,
+    "totalChecks": 487,
+    "totalPassed": 457,
+    "totalFailed": 30,
+    "completionRate": 98.48,
+    "completedItems": 130,
+    "pendingItems": 1,
     "deferredItems": 1,
     "wontFixItems": 35,
     "expertDomainsTracked": 6,
-    "expertDomainsOpenGaps": 1,
-    "lastRunId": "QA-20260309-0070",
-    "lastRecordedAt": "2026-03-09T13:07:24.495Z"
+    "expertDomainsOpenGaps": 2,
+    "lastRunId": "QA-20260310-0071",
+    "lastRecordedAt": "2026-03-09T17:34:32.732Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -3592,6 +3592,78 @@
       "overengineeringScope": "",
       "lastPolicyNote": "P1 우선순위이나 현재 비차단으로 deferred 처리",
       "lastStatusChangeAt": "2026-03-09T13:07:24.495Z"
+    },
+    "ai-summary-query-clarification-skip-production": {
+      "id": "ai-summary-query-clarification-skip-production",
+      "title": "Explicit all-server summary query skips clarification in production",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260310-0071",
+      "firstSeenAt": "2026-03-09T17:34:32.732Z",
+      "lastSeenRunId": "QA-20260310-0071",
+      "lastSeenAt": "2026-03-09T17:34:32.732Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "'현재 모든 서버의 상태를 요약해줘' 질의 재검증에서 clarification modal 미관찰, 응답은 Streaming AI로 정상 렌더링",
+      "lastNote": "",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-03-09T17:34:32.732Z"
+    },
+    "ai-chat-latency-regression-recheck-20260310": {
+      "id": "ai-chat-latency-regression-recheck-20260310",
+      "title": "AI Chat latency regression claim rechecked on production",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260310-0071",
+      "firstSeenAt": "2026-03-09T17:34:32.732Z",
+      "lastSeenRunId": "QA-20260310-0071",
+      "lastSeenAt": "2026-03-09T17:34:32.732Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "브라우저 performance resource timing에서 /api/ai/supervisor/stream/v2 duration 7231ms 및 6023ms 확인, 66초 지연 미재현",
+      "lastNote": "",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-03-09T17:34:32.732Z"
+    },
+    "e2e-ai-chat-production-selector-alignment": {
+      "id": "e2e-ai-chat-production-selector-alignment",
+      "title": "AI Chat/Sidebar E2E selectors aligned with production DOM",
+      "priority": "P1",
+      "status": "pending",
+      "firstSeenRunId": "QA-20260310-0071",
+      "firstSeenAt": "2026-03-09T17:34:32.732Z",
+      "lastSeenRunId": "QA-20260310-0071",
+      "lastSeenAt": "2026-03-09T17:34:32.732Z",
+      "seenCount": 1,
+      "completedCount": 0,
+      "pendingCount": 1,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "",
+      "lastNote": "현재 production QA false fail 원인은 data-testid/.prose 의존 selector 및 wait condition 불일치. 로컬에서 tests/e2e/dashboard-ai-chat.spec.ts, dashboard-ai-sidebar.spec.ts, helpers/ui-flow.ts 보정 진행",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-03-09T17:34:32.732Z"
     }
   },
   "runs": [
@@ -6219,6 +6291,52 @@
       "pendingCount": 0,
       "deferredCount": 1,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260310-0071",
+      "recordedAt": "2026-03-09T17:34:32.732Z",
+      "recordedAtKst": "2026-03-10 02:34:32 KST",
+      "title": "Production Playwright MCP QA - AI Chat Recheck (2026-03-10)",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260310-0071.json",
+      "checks": {
+        "total": 6,
+        "passed": 5,
+        "failed": 1
+      },
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "2026-03-10 KST 재검증에서 '현재 모든 서버의 상태를 요약해줘' 질의는 프로덕션에서 정상 요약 응답을 반환했고, resource timing 기준 약 6.0~7.2초로 66초 지연은 재현되지 않았습니다.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "partially-appropriate",
+          "improvementNeeded": true,
+          "rationale": "production 빌드에서 data-testid 의존 셀렉터와 .prose 대기 조건이 false fail을 유발했습니다. 실제 AI 응답은 collapse view 텍스트로 렌더링되므로 현재 E2E 대기 전략 보정이 필요합니다.",
+          "nextAction": "dashboard-ai-chat/dashboard-ai-sidebar를 role/log/text 기반으로 정렬하고 clarification 대기 시간을 production variance에 맞춰 상향"
+        },
+        {
+          "domainId": "ai-security-reliability",
+          "domainName": "AI Security & Reliability Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "재검증 중 AI 요청은 /api/ai/supervisor/stream/v2 200으로 처리됐고 브라우저 콘솔 에러는 없었습니다.",
+          "nextAction": ""
+        }
+      ],
+      "expertCount": 3,
+      "expertNeedsImprovementCount": 1,
+      "completedCount": 2,
+      "pendingCount": 1,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -6227,16 +6345,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 39,
-      "appropriateCount": 38,
+      "seenCount": 40,
+      "appropriateCount": 39,
       "partialCount": 1,
       "inappropriateCount": 0,
       "improvementNeededCount": 6,
-      "lastRunId": "QA-20260309-0070",
-      "lastSeenAt": "2026-03-09T13:07:24.495Z",
+      "lastRunId": "QA-20260310-0071",
+      "lastSeenAt": "2026-03-09T17:34:32.732Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "프로덕션 배포 8c08cd448에서 '현재 모든 서버의 상태를 요약해줘' 질의가 정상 응답을 반환했고 UI에 Streaming AI로 표시됐습니다.",
+      "lastRationale": "2026-03-10 KST 재검증에서 '현재 모든 서버의 상태를 요약해줘' 질의는 프로덕션에서 정상 요약 응답을 반환했고, resource timing 기준 약 6.0~7.2초로 66초 지연은 재현되지 않았습니다.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -6261,16 +6379,16 @@
       "domainName": "AI Security & Reliability Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 23,
-      "appropriateCount": 18,
+      "seenCount": 24,
+      "appropriateCount": 19,
       "partialCount": 5,
       "inappropriateCount": 0,
       "improvementNeededCount": 5,
-      "lastRunId": "QA-20260309-0070",
-      "lastSeenAt": "2026-03-09T13:07:24.495Z",
+      "lastRunId": "QA-20260310-0071",
+      "lastSeenAt": "2026-03-09T17:34:32.732Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "게스트 세션 기준 AI 요약 질의, incident-report, intelligent-monitoring가 모두 200으로 응답했고 브라우저 런타임 오류 징후는 보이지 않았습니다.",
+      "lastRationale": "재검증 중 AI 요청은 /api/ai/supervisor/stream/v2 200으로 처리됐고 브라우저 콘솔 에러는 없었습니다.",
       "lastNextAction": ""
     },
     "sre-devops": {
@@ -6295,17 +6413,17 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 37,
+      "seenCount": 38,
       "appropriateCount": 34,
-      "partialCount": 3,
+      "partialCount": 4,
       "inappropriateCount": 0,
-      "improvementNeededCount": 4,
-      "lastRunId": "QA-20260309-0070",
-      "lastSeenAt": "2026-03-09T13:07:24.495Z",
-      "lastFit": "appropriate",
-      "lastImprovementNeeded": false,
-      "lastRationale": "Playwright 네트워크 계측으로 잘못 수정된 analyzer 경로를 분리했고, 수정 후에는 /api/ai/jobs 없이 /api/ai/supervisor/stream/v2만 호출되는 것을 프로덕션에서 재확인했습니다.",
-      "lastNextAction": ""
+      "improvementNeededCount": 5,
+      "lastRunId": "QA-20260310-0071",
+      "lastSeenAt": "2026-03-09T17:34:32.732Z",
+      "lastFit": "partially-appropriate",
+      "lastImprovementNeeded": true,
+      "lastRationale": "production 빌드에서 data-testid 의존 셀렉터와 .prose 대기 조건이 false fail을 유발했습니다. 실제 AI 응답은 collapse view 텍스트로 렌더링되므로 현재 E2E 대기 전략 보정이 필요합니다.",
+      "lastNextAction": "dashboard-ai-chat/dashboard-ai-sidebar를 role/log/text 기반으로 정렬하고 clarification 대기 시간을 production variance에 맞춰 상향"
     },
     "data-metrics-quality": {
       "domainId": "data-metrics-quality",

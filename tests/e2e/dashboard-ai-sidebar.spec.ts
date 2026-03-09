@@ -54,7 +54,9 @@ test.describe('대시보드 AI 사이드바 테스트', () => {
     const input = page.getByRole('textbox', { name: 'AI 질문 입력' });
     await expect(input).toBeVisible({ timeout: TIMEOUTS.COMPLEX_INTERACTION });
 
-    const promptCards = page.locator('[data-testid="ai-starter-prompt-card"]');
+    const promptCards = page.locator(
+      'button:has-text("서버 상태 확인"), button:has-text("장애 분석"), button:has-text("성능 예측"), button:has-text("보고서 생성"), button:has-text("시각 분석")'
+    );
     const hasVisiblePromptCard = await promptCards
       .first()
       .isVisible({ timeout: TIMEOUTS.MODAL_DISPLAY })

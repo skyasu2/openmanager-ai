@@ -145,7 +145,7 @@ export async function handleClarificationIfPresent(
   // Production에서는 data-testid가 strip됨 → aria-label 기반 감지
   const dismissBtn = page.locator('button[aria-label="명확화 취소"]').first();
   const hasClarification = await dismissBtn
-    .isVisible({ timeout: 5000 })
+    .isVisible({ timeout: TIMEOUTS.API_RESPONSE * 2 })
     .catch(() => false);
 
   if (!hasClarification) return false;

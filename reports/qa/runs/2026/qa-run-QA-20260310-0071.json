@@ -1,0 +1,105 @@
+{
+  "runId": "QA-20260310-0071",
+  "recordedAt": "2026-03-09T17:34:32.732Z",
+  "recordedAtKst": "2026-03-10 02:34:32 KST",
+  "runTitle": "Production Playwright MCP QA - AI Chat Recheck (2026-03-10)",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main"
+  },
+  "checks": {
+    "total": 6,
+    "passed": 5,
+    "failed": 1
+  },
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "2026-03-10 KST 재검증에서 '현재 모든 서버의 상태를 요약해줘' 질의는 프로덕션에서 정상 요약 응답을 반환했고, resource timing 기준 약 6.0~7.2초로 66초 지연은 재현되지 않았습니다.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "production 빌드에서 data-testid 의존 셀렉터와 .prose 대기 조건이 false fail을 유발했습니다. 실제 AI 응답은 collapse view 텍스트로 렌더링되므로 현재 E2E 대기 전략 보정이 필요합니다.",
+      "nextAction": "dashboard-ai-chat/dashboard-ai-sidebar를 role/log/text 기반으로 정렬하고 clarification 대기 시간을 production variance에 맞춰 상향"
+    },
+    {
+      "domainId": "ai-security-reliability",
+      "domainName": "AI Security & Reliability Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "재검증 중 AI 요청은 /api/ai/supervisor/stream/v2 200으로 처리됐고 브라우저 콘솔 에러는 없었습니다.",
+      "nextAction": ""
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "ai-summary-query-clarification-skip-production",
+      "title": "Explicit all-server summary query skips clarification in production",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "'현재 모든 서버의 상태를 요약해줘' 질의 재검증에서 clarification modal 미관찰, 응답은 Streaming AI로 정상 렌더링",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "ai-chat-latency-regression-recheck-20260310",
+      "title": "AI Chat latency regression claim rechecked on production",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "브라우저 performance resource timing에서 /api/ai/supervisor/stream/v2 duration 7231ms 및 6023ms 확인, 66초 지연 미재현",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [
+    {
+      "id": "e2e-ai-chat-production-selector-alignment",
+      "title": "AI Chat/Sidebar E2E selectors aligned with production DOM",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "현재 production QA false fail 원인은 data-testid/.prose 의존 selector 및 wait condition 불일치. 로컬에서 tests/e2e/dashboard-ai-chat.spec.ts, dashboard-ai-sidebar.spec.ts, helpers/ui-flow.ts 보정 진행",
+      "owner": "",
+      "status": "pending",
+      "policyNote": ""
+    }
+  ],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "초기 수동 시도에서 generic failure 문구를 1회 관찰했으나, 같은 세션의 새 대화 재시도에서는 정상 요약 응답이 반환됐습니다.",
+    "정상 응답 본문에는 '전체 15대: 정상 14대, 경고 1대'와 db-mysql-dc1-primary 경고/권고가 포함됐습니다.",
+    "이번 재검증 기준으로 문제의 핵심은 상시 초고지연보다 production DOM과 맞지 않는 E2E 대기/선택자 조건입니다.",
+    "증적 스크린샷: reports/qa/runs/2026/qa-20260310-0071-ai-chat-recheck.png"
+  ],
+  "links": [
+    {
+      "label": "Vercel Production",
+      "url": "https://openmanager-ai.vercel.app/dashboard"
+    },
+    {
+      "label": "QA Screenshot",
+      "url": "reports/qa/runs/2026/qa-20260310-0071-ai-chat-recheck.png"
+    }
+  ]
+}
