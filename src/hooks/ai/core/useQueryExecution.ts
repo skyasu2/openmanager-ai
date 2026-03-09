@@ -53,6 +53,7 @@ export interface QueryExecutionDeps {
   asyncQuery: AsyncQueryLike;
   sendMessage: SendMessageLike;
   onBeforeStreamingSend?: () => void;
+  getMessages: () => UIMessage[];
   setMessages: SetMessagesLike;
   setState: StateSetter;
   /** AI SDK useChat의 chatStatus — 동시 요청 방지에 사용 */
@@ -75,6 +76,7 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
     asyncQuery,
     sendMessage,
     onBeforeStreamingSend,
+    getMessages,
     setMessages,
     setState,
     chatStatus,
@@ -150,14 +152,35 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
           }))
         : [];
 
+      const buildUserMessage = (): UIMessage => ({
+        id: generateMessageId('user'),
+        role: 'user' as const,
+        parts: [
+          { type: 'text' as const, text: trimmedQuery },
+          ...fileUIParts,
+        ],
+      });
+      const requestUserMessage = buildUserMessage();
+
       // 사용자 메시지 생성 (UI 표시용) - isRetry=true일 때는 건너뛰기
-      const userMessage: UIMessage | null = isRetry
-        ? null
-        : {
-            id: generateMessageId('user'),
-            role: 'user' as const,
-            parts: [{ type: 'text' as const, text: trimmedQuery }],
-          };
+      const userMessage: UIMessage | null = isRetry ? null : requestUserMessage;
+
+      const getSanitizedMessagesForSend = () => {
+        let cleaned = sanitizeMessages(getMessages());
+        if (isRetry && cleaned.length >= 1) {
+          let lastUserIdx = -1;
+          for (let i = cleaned.length - 1; i >= 0; i--) {
+            if (cleaned[i]?.role === 'user') {
+              lastUserIdx = i;
+              break;
+            }
+          }
+          if (lastUserIdx !== -1) {
+            cleaned = cleaned.slice(0, lastUserIdx);
+          }
+        }
+        return cleaned;
+      };
 
       // 2. 모드별 처리
       if (isComplex) {
@@ -213,25 +236,91 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
           estimatedWaitSeconds: 60,
         }));
 
+        const isLocalDevelopmentHost =
+          typeof window !== 'undefined' &&
+          ['localhost', '127.0.0.1', '[::1]'].includes(
+            window.location.hostname
+          );
+
+        const shouldUseLocalDevLegacyFallback =
+          process.env.NODE_ENV === 'development' &&
+          isLocalDevelopmentHost &&
+          !hasAttachments;
+
+        if (shouldUseLocalDevLegacyFallback) {
+          const sanitizedMessages = getSanitizedMessagesForSend();
+          const nextMessages = [...sanitizedMessages, requestUserMessage];
+
+          setMessages(nextMessages);
+
+          void fetch('/api/ai/supervisor', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Accept: 'application/json',
+            },
+            body: JSON.stringify({ messages: nextMessages }),
+          })
+            .then(async (response) => {
+              if (!response.ok) {
+                throw new Error(`로컬 AI 응답 실패 (${response.status})`);
+              }
+
+              const data = (await response.json()) as {
+                response?: string;
+                message?: string;
+                error?: string;
+              };
+              const responseText =
+                data.response?.trim() ||
+                data.message?.trim() ||
+                data.error?.trim() ||
+                '';
+
+              if (!responseText) {
+                throw new Error('로컬 AI 응답이 비어 있습니다.');
+              }
+
+              setMessages((prev) => [
+                ...prev,
+                {
+                  id: generateMessageId('assistant'),
+                  role: 'assistant',
+                  parts: [{ type: 'text', text: responseText }],
+                },
+              ]);
+
+              setState((prev) => ({
+                ...prev,
+                isLoading: false,
+                warning: null,
+                processingTime: 0,
+                warmingUp: false,
+                estimatedWaitSeconds: 0,
+              }));
+            })
+            .catch((error) => {
+              logger.error(
+                '[HybridAI] Local dev supervisor fallback failed:',
+                error
+              );
+              setState((prev) => ({
+                ...prev,
+                isLoading: false,
+                error:
+                  error instanceof Error
+                    ? error.message
+                    : '로컬 AI 응답 실패',
+                warmingUp: false,
+                estimatedWaitSeconds: 0,
+              }));
+            });
+          return;
+        }
+
         // P1-11 Fix: flushSync 제거 — React 19 concurrent mode 충돌 방지
         // sanitize 후 queueMicrotask로 sendMessage 호출하여 상태 반영 보장
-        setMessages((prev) => {
-          let cleaned = sanitizeMessages(prev);
-          // Retry Fix: 재시도 시 이전 실패한 user+assistant 메시지 제거
-          if (isRetry && cleaned.length >= 1) {
-            let lastUserIdx = -1;
-            for (let i = cleaned.length - 1; i >= 0; i--) {
-              if (cleaned[i]?.role === 'user') {
-                lastUserIdx = i;
-                break;
-              }
-            }
-            if (lastUserIdx !== -1) {
-              cleaned = cleaned.slice(0, lastUserIdx);
-            }
-          }
-          return cleaned;
-        });
+        setMessages(getSanitizedMessagesForSend());
 
         // AI SDK v6: sendMessage({ text, files? }) 형식
         const messagePayload = hasAttachments
@@ -257,6 +346,7 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
       asyncQuery,
       sendMessage,
       onBeforeStreamingSend,
+      getMessages,
       setMessages,
       setState,
       chatStatus,

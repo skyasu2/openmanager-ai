@@ -212,6 +212,10 @@ export function useHybridAIQuery(
     onError: streamCallbacks.onError,
   });
   stopChatRef.current = stopChat;
+  const messagesRef = useRef<UIMessage[]>(messages);
+  useEffect(() => {
+    messagesRef.current = messages;
+  }, [messages]);
 
   const asyncQuery = useAsyncAIQuery({
     sessionId: sessionIdRef.current,
@@ -265,6 +269,7 @@ export function useHybridAIQuery(
     complexityThreshold,
     asyncQuery,
     sendMessage,
+    getMessages: () => messagesRef.current,
     setMessages,
     setState,
     chatStatus,

@@ -54,11 +54,25 @@ test.describe('대시보드 AI 사이드바 테스트', () => {
     const input = page.getByRole('textbox', { name: 'AI 질문 입력' });
     await expect(input).toBeVisible({ timeout: TIMEOUTS.COMPLEX_INTERACTION });
 
-    const promptCards = page.locator(
-      'button:has-text("서버 상태 확인"), button:has-text("장애 분석"), button:has-text("성능 예측"), button:has-text("보고서 생성"), button:has-text("시각 분석")'
+    const promptTitles = [
+      '서버 상태 확인',
+      '장애 분석',
+      '성능 예측',
+      '보고서 생성',
+      '시각 분석',
+    ] as const;
+    const promptExpectations = {
+      '서버 상태 확인': '현재 모든 서버의 상태를 요약해줘',
+      '장애 분석': 'CPU 사용률이 높은 서버를 찾아줘',
+      '성능 예측': '다음 24시간 트래픽 패턴을 예측해줘',
+      '보고서 생성': '오늘의 시스템 요약 보고서를 만들어줘',
+      '시각 분석': '대시보드 스크린샷을 분석해줘. 이미지를 첨부할게',
+    } as const;
+
+    const firstPromptCard = sidebar.locator(
+      `button[data-prompt-title="${promptTitles[0]}"]`
     );
-    const hasVisiblePromptCard = await promptCards
-      .first()
+    const hasVisiblePromptCard = await firstPromptCard
       .isVisible({ timeout: TIMEOUTS.MODAL_DISPLAY })
       .catch(() => false);
 
@@ -72,22 +86,14 @@ test.describe('대시보드 AI 사이드바 테스트', () => {
       return;
     }
 
-    const cardCount = await promptCards.count();
-    expect(cardCount).toBeGreaterThan(0);
-
-    for (let i = 0; i < cardCount; i++) {
-      const card = promptCards.nth(i);
+    for (const promptTitle of promptTitles) {
+      const card = sidebar.locator(`button[data-prompt-title="${promptTitle}"]`);
       await expect(card).toBeVisible({
         timeout: TIMEOUTS.COMPLEX_INTERACTION,
       });
       await card.click();
 
-      await expect
-        .poll(async () => {
-          const value = await input.inputValue();
-          return value.trim().length > 0;
-        })
-        .toBe(true);
+      await expect(input).toHaveValue(promptExpectations[promptTitle]);
 
       await input.fill('');
     }

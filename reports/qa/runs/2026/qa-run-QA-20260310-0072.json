@@ -1,0 +1,31 @@
+{
+  "runId": "QA-20260310-0072",
+  "recordedAt": "2026-03-09T19:05:19.630Z",
+  "recordedAtKst": "2026-03-10 04:05:19 KST",
+  "runTitle": "Local Playwright QA - AI chat fallback and dashboard flow",
+  "owner": "codex",
+  "source": "playwright-local",
+  "environment": {
+    "frontend": "Local Dev",
+    "backend": "Cloud Run",
+    "branch": "main"
+  },
+  "checks": {
+    "total": 9,
+    "passed": 9,
+    "failed": 0
+  },
+  "expertAssessments": [],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Local Next dev server restarted after clearing .next to recover stale route/HMR state.",
+    "Targeted Playwright reruns passed: dashboard-ai-sidebar.spec.ts 4/4, dashboard-ai-chat.spec.ts 2/2.",
+    "AI chat locally routed through /api/ai/supervisor JSON fallback on localhost development; /api/ai/supervisor/stream/v2 404 was avoided.",
+    "npm run type-check passed, npm run test:quick passed, changed-file biome lint passed.",
+    "Full repository npm run lint still reports pre-existing unrelated warnings in .storybook/middleware.js, src/lib/promql/promql-engine-core.test.ts, and src/hooks/ai/useAIChatCore.ts."
+  ],
+  "links": []
+}

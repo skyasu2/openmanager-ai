@@ -9,7 +9,7 @@
 
 import { BarChart3, Loader2, Play, X } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 import { useSystemStatus } from '@/hooks/useSystemStatus';
 import { logger } from '@/lib/logging';
@@ -73,10 +73,9 @@ export function useSystemStart(options: UseSystemStartOptions) {
   } = useSystemStatus();
 
   const [systemStartCountdown, setSystemStartCountdown] = useState(0);
-  const [countdownTimer, setCountdownTimer] = useState<NodeJS.Timeout | null>(
-    null
-  );
   const [isSystemStarting, setIsSystemStarting] = useState(false);
+  const countdownTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const countdownValueRef = useRef(0);
 
   // 네비게이션 펜딩 상태 (렌더링 중 router.push 방지)
   const [pendingNavigation, setPendingNavigation] = useState<string | null>(
@@ -101,14 +100,20 @@ export function useSystemStart(options: UseSystemStartOptions) {
     setShowGuestRestriction(true);
   }, []);
 
+  const clearCountdownTimer = useCallback(() => {
+    if (countdownTimerRef.current) {
+      clearInterval(countdownTimerRef.current);
+      countdownTimerRef.current = null;
+    }
+  }, []);
+
   // 🔧 카운트다운 취소 함수 (setState 배칭 최적화)
   const cancelCountdown = useCallback(() => {
-    if (countdownTimer) clearInterval(countdownTimer);
-    // React 18+ 자동 배칭: 동일 이벤트 핸들러 내 setState는 배칭됨
-    setCountdownTimer(null);
+    clearCountdownTimer();
+    countdownValueRef.current = 0;
     setSystemStartCountdown(0);
     setIsSystemStarting(false);
-  }, [countdownTimer]);
+  }, [clearCountdownTimer]);
 
   // ESC 키로 카운트다운 취소
   useEffect(() => {
@@ -127,9 +132,9 @@ export function useSystemStart(options: UseSystemStartOptions) {
   // 타이머 클린업
   useEffect(() => {
     return () => {
-      if (countdownTimer) clearInterval(countdownTimer);
+      clearCountdownTimer();
     };
-  }, [countdownTimer]);
+  }, [clearCountdownTimer]);
 
   // 시스템 시작 상태 동기화
   useEffect(() => {
@@ -250,32 +255,35 @@ export function useSystemStart(options: UseSystemStartOptions) {
       if (pathname !== '/dashboard') router.push('/dashboard');
     } else {
       // 카운트다운 시작
+      clearCountdownTimer();
+      countdownValueRef.current = SYSTEM_START_COUNTDOWN_SECONDS;
       setSystemStartCountdown(SYSTEM_START_COUNTDOWN_SECONDS);
       setIsSystemStarting(false);
       // 🚀 AI 엔진 웜업 (중복 요청 자동 방지)
       void triggerAIWarmup('system-start-button');
-      const timer = setInterval(() => {
-        setSystemStartCountdown((prev) => {
-          if (prev <= 1) {
-            clearInterval(timer);
-            debug.log('🚀 카운트다운 완료 - 로딩 페이지로 이동');
-            void (async () => {
-              try {
-                await startMultiUserSystem();
-                await startSystem();
-              } catch (error) {
-                debug.error('❌ 시스템 시작 실패:', error);
-                setIsSystemStarting(false);
-              }
-            })();
-            // 렌더링 외부에서 네비게이션 실행 (React 규칙 준수)
-            setPendingNavigation(SYSTEM_BOOT_PATH);
-            return 0;
+      countdownTimerRef.current = setInterval(() => {
+        const nextCountdown = Math.max(0, countdownValueRef.current - 1);
+        countdownValueRef.current = nextCountdown;
+        setSystemStartCountdown(nextCountdown);
+
+        if (nextCountdown > 0) {
+          return;
+        }
+
+        clearCountdownTimer();
+        debug.log('🚀 카운트다운 완료 - 로딩 페이지로 이동');
+        void (async () => {
+          try {
+            await startMultiUserSystem();
+            await startSystem();
+          } catch (error) {
+            debug.error('❌ 시스템 시작 실패:', error);
+            setIsSystemStarting(false);
           }
-          return prev - 1;
-        });
+        })();
+        // 렌더링 외부에서 네비게이션 실행 (React 규칙 준수)
+        setPendingNavigation(SYSTEM_BOOT_PATH);
       }, COUNTDOWN_INTERVAL_MS);
-      setCountdownTimer(timer);
     }
   }, [
     isSystemStarting,
@@ -288,6 +296,7 @@ export function useSystemStart(options: UseSystemStartOptions) {
     authLoading,
     statusLoading,
     cancelCountdown, // 🔧 countdownTimer → cancelCountdown으로 최적화
+    clearCountdownTimer,
     openGuestRestriction,
     isGuestSystemStartEnabled,
     isGuestUser,

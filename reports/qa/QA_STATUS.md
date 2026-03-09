@@ -1,45 +1,41 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-10 02:34:32 KST
+> Generated at: 2026-03-10 05:03:05 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 71 |
-| Total Checks | 487 |
-| Passed | 457 |
+| Total Runs | 74 |
+| Total Checks | 507 |
+| Passed | 477 |
 | Failed | 30 |
-| Completed Items | 130 |
-| Pending Items | 1 |
+| Completed Items | 131 |
+| Pending Items | 0 |
 | Deferred Items | 1 |
 | Wont-Fix Items | 35 |
 | Expert Domains Tracked | 6 |
-| Expert Open Gaps | 2 |
-| Completion Rate | 98.48% |
-| Last Run | QA-20260310-0071 (2026-03-09T17:34:32.732Z) |
+| Expert Open Gaps | 1 |
+| Completion Rate | 99.24% |
+| Last Run | QA-20260310-0074 (2026-03-09T20:03:05.077Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260310-0071 (2026-03-09T17:34:32.732Z)
+Latest run: QA-20260310-0074 (2026-03-09T20:03:05.077Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| AI Quality Assurance Specialist | appropriate | no | - |
-| Test Automation Architect | partially-appropriate | yes | dashboard-ai-chat/dashboard-ai-sidebar를 role/log/text 기반으로 정렬하고 clarification 대기 시간을 production variance에 맞춰 상향 |
-| AI Security & Reliability Architect | appropriate | no | - |
+| IT Monitoring & Observability SME | partially-appropriate | yes | Vercel/Next 응답 경로에서 Server-Timing이 제거되는 지점을 확인하고, 필요 시 X-AI-Latency-Ms 중심 정책으로 QA/관측 기준을 표준화 |
 
 ## Expert Domain Open Gaps
 
-- observability-monitoring: IT Monitoring & Observability SME (last QA-20260309-0070)
-  next: Vercel 프록시/Next Response 경로에서 Server-Timing 헤더가 제거되는지 확인하고, 실제 브라우저에서 가시화되는 형태로 응답 헤더 정책을 정리
-- test-automation: Test Automation Architect (last QA-20260310-0071)
-  next: dashboard-ai-chat/dashboard-ai-sidebar를 role/log/text 기반으로 정렬하고 clarification 대기 시간을 production variance에 맞춰 상향
+- observability-monitoring: IT Monitoring & Observability SME (last QA-20260310-0074)
+  next: Vercel/Next 응답 경로에서 Server-Timing이 제거되는 지점을 확인하고, 필요 시 X-AI-Latency-Ms 중심 정책으로 QA/관측 기준을 표준화
 
 ## Pending Improvements
 
-- [P1] e2e-ai-chat-production-selector-alignment: AI Chat/Sidebar E2E selectors aligned with production DOM (seen 1회, last QA-20260310-0071)
+- None
 
 ## Deferred Improvements
 
@@ -151,6 +147,7 @@ Latest run: QA-20260310-0071 (2026-03-09T17:34:32.732Z)
 - dashboard-health-v880-recheck: 프로덕션 대시보드 및 Health API 재검증 (completed 5회, last QA-20260309-0068)
 - dashboard-server-card-selector-stabilization: 서버 카드 선택자 및 빈 상태 처리 안정화 (completed 2회, last QA-20260302-0039)
 - dashboard-server-cards: 대시보드 서버 카드 및 메트릭 (completed 2회, last QA-20260302-0038)
+- e2e-ai-chat-production-selector-alignment: AI Chat/Sidebar E2E selectors aligned with production DOM (completed 1회, last QA-20260310-0073)
 - feature-card-modal: 피처카드 모달 (completed 1회, last QA-20260301-0035)
 - feature-dod-e2e-critical: E2E 크리티컬 흐름 통과 (completed 1회, last QA-20260228-0029)
 - feature-dod-lint-zero-error: lint 0 에러 (completed 5회, last QA-20260302-0044)
@@ -253,6 +250,9 @@ Latest run: QA-20260310-0071 (2026-03-09T17:34:32.732Z)
 
 | Run ID | Time (UTC) | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260310-0074 | 2026-03-09T20:03:05.077Z | Production Playwright QA - AI selector verification and Server-Timing diagnosis | 8 | 0 | 0 | 0 | 0 | 1 |
+| QA-20260310-0073 | 2026-03-09T19:06:04.775Z | Local Playwright QA - E2E selector alignment closure | 3 | 1 | 0 | 0 | 0 | 0 |
+| QA-20260310-0072 | 2026-03-09T19:05:19.630Z | Local Playwright QA - AI chat fallback and dashboard flow | 9 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260310-0071 | 2026-03-09T17:34:32.732Z | Production Playwright MCP QA - AI Chat Recheck (2026-03-10) | 6 | 2 | 1 | 0 | 0 | 1 |
 | QA-20260309-0070 | 2026-03-09T13:07:24.495Z | Production Playwright MCP QA - Summary Streaming Routing & Timing Header Verification (2026-03-09) | 6 | 2 | 0 | 1 | 0 | 1 |
 | QA-20260309-0069 | 2026-03-09T12:20:48.407Z | Production Playwright MCP QA - AI Assistant Timing Validation Correction (2026-03-09) | 6 | 3 | 0 | 0 | 0 | 0 |
@@ -270,7 +270,4 @@ Latest run: QA-20260310-0071 (2026-03-09T17:34:32.732Z)
 | QA-20260308-0057 | 2026-03-08T02:25:49.786Z | Production Playwright MCP QA v8.8.0 - Post-Security Hardening (7/7 PASS) | 0 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260308-0056 | 2026-03-08T01:15:57.800Z | Production Playwright MCP QA v8.8.0 - AI Assistant Performance and Guard Smoke | 12 | 5 | 1 | 0 | 1 | 2 |
 | QA-20260307-0055 | 2026-03-07T14:44:37.930Z | Production Playwright MCP QA v8.8.0 - Post-Review Security Fix (7/7 PASS) | 0 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260307-0054 | 2026-03-07T12:45:02.397Z | Production Playwright MCP QA v8.8.0 - Full AI Feature Verification (7/7 PASS) | 0 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260307-0053 | 2026-03-07T00:14:12.888Z | Production QA 2026-03-07 - Multi-Agent Orchestration Deployment | 9 | 3 | 0 | 0 | 2 | 0 |
-| QA-20260306-0052 | 2026-03-06T04:43:09.085Z | Production Playwright MCP QA v8.7.9 - Guest PIN 4231 Full AI Flow | 9 | 5 | 0 | 0 | 0 | 0 |
 

@@ -53,20 +53,25 @@ async function waitForAiResponse(
       async () => {
         const text =
           (await conversationLog.textContent().catch(() => '')) ?? '';
-        return text.trim();
+        const normalizedText = text.trim();
+        if (
+          !normalizedText ||
+          normalizedText.length <= previousText.trim().length ||
+          normalizedText.includes('응답을 생성하지 못했습니다')
+        ) {
+          return false;
+        }
+
+        return (
+          normalizedText.includes('Streaming AI') ||
+          normalizedText.includes('Job Queue AI') ||
+          normalizedText.includes('서버 현황 요약') ||
+          normalizedText.includes('전체 15대')
+        );
       },
       { timeout: TIMEOUTS.AI_RESPONSE }
     )
-    .toSatisfy((text) => {
-      if (!text || text.length <= previousText.trim().length) return false;
-      if (text.includes('응답을 생성하지 못했습니다')) return false;
-      return (
-        text.includes('Streaming AI') ||
-        text.includes('Job Queue AI') ||
-        text.includes('서버 현황 요약') ||
-        text.includes('전체 15대')
-      );
-    });
+    .toBe(true);
 }
 
 test.describe('AI 채팅 E2E 테스트', () => {
@@ -92,19 +97,15 @@ test.describe('AI 채팅 E2E 테스트', () => {
     });
 
     // Production에서는 data-testid가 strip되므로, starter prompt는 버튼 텍스트로 선택
-    const promptCards = page.locator(
-      'button:has-text("서버 상태 확인"), button:has-text("장애 분석"), button:has-text("성능 예측")'
-    );
-    await expect(promptCards.first()).toBeVisible({
+    const promptCard = sidebar.locator('button[data-prompt-title="서버 상태 확인"]');
+    await expect(promptCard).toBeVisible({
       timeout: TIMEOUTS.COMPLEX_INTERACTION,
     });
-    await promptCards.first().click();
+    await promptCard.click();
 
     // 입력 필드에 값이 채워졌는지 확인
     const input = page.getByRole('textbox', { name: 'AI 질문 입력' });
-    await expect
-      .poll(async () => (await input.inputValue()).trim().length > 0)
-      .toBe(true);
+    await expect(input).toHaveValue('현재 모든 서버의 상태를 요약해줘');
 
     // 전송
     await submitMessage(page, input);

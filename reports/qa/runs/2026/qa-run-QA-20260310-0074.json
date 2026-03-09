@@ -1,0 +1,43 @@
+{
+  "runId": "QA-20260310-0074",
+  "recordedAt": "2026-03-09T20:03:05.077Z",
+  "recordedAtKst": "2026-03-10 05:03:05 KST",
+  "runTitle": "Production Playwright QA - AI selector verification and Server-Timing diagnosis",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main"
+  },
+  "checks": {
+    "total": 8,
+    "passed": 8,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "2026-03-10 KST 프로덕션 재검증에서 dashboard-ai-chat/dashboard-ai-sidebar 6개 Playwright 케이스는 모두 통과했습니다. same-origin browser fetch와 raw curl 모두 X-AI-* 헤더는 확인되지만 Server-Timing 헤더는 실제 HTTP 응답에 존재하지 않았습니다.",
+      "nextAction": "Vercel/Next 응답 경로에서 Server-Timing이 제거되는 지점을 확인하고, 필요 시 X-AI-Latency-Ms 중심 정책으로 QA/관측 기준을 표준화"
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Production Playwright result: dashboard-ai-chat.spec.ts 2/2 PASS, dashboard-ai-sidebar.spec.ts 4/4 PASS.",
+    "Browser fetch on production showed x-ai-latency-ms/x-ai-mode/x-ai-source/x-ai-cache-status present, but no server-timing header.",
+    "Raw curl with guest session cookies also returned no Server-Timing header for /api/ai/intelligent-monitoring, confirming this is not a browser header visibility artifact."
+  ],
+  "links": [
+    {
+      "label": "Vercel Production",
+      "url": "https://openmanager-ai.vercel.app"
+    }
+  ]
+}

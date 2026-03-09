@@ -1,0 +1,51 @@
+{
+  "runId": "QA-20260310-0073",
+  "recordedAt": "2026-03-09T19:06:04.775Z",
+  "recordedAtKst": "2026-03-10 04:06:04 KST",
+  "runTitle": "Local Playwright QA - E2E selector alignment closure",
+  "owner": "codex",
+  "source": "playwright-local",
+  "environment": {
+    "frontend": "Local Dev",
+    "backend": "Cloud Run",
+    "branch": "main"
+  },
+  "checks": {
+    "total": 3,
+    "passed": 3,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "dashboard-ai-chat/dashboard-ai-sidebar를 production DOM 기준 role/log/text 및 sidebar-scoped prompt selector로 정렬했고, localhost dev rerun에서 chat 2/2, sidebar 4/4가 통과했습니다.",
+      "nextAction": ""
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "e2e-ai-chat-production-selector-alignment",
+      "title": "AI Chat/Sidebar E2E selectors aligned with production DOM",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "tests/e2e/dashboard-ai-chat.spec.ts, tests/e2e/dashboard-ai-sidebar.spec.ts, tests/e2e/helpers/ui-flow.ts 보정 후 localhost Playwright rerun PASS",
+      "note": "starter prompt/data-testid 의존 제거, role/log/text 대기 조건 적용, clarification 대기 시간 상향",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Local Playwright rerun evidence: dashboard-ai-sidebar.spec.ts 4/4 PASS, dashboard-ai-chat.spec.ts 2/2 PASS.",
+    "This run closes the pending automation gap opened by QA-20260310-0071."
+  ],
+  "links": []
+}
