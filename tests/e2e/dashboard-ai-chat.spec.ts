@@ -41,7 +41,8 @@ async function waitForAiResponse(
   page: import('@playwright/test').Page
 ) {
   const conversationLog = sidebar.getByRole('log', { name: 'AI 대화 메시지' });
-  const previousText = (await conversationLog.textContent().catch(() => '')) ?? '';
+  const previousText =
+    (await conversationLog.textContent().catch(() => '')) ?? '';
 
   // Clarification 다이얼로그 처리
   await handleClarificationIfPresent(page);
@@ -50,7 +51,8 @@ async function waitForAiResponse(
   await expect
     .poll(
       async () => {
-        const text = (await conversationLog.textContent().catch(() => '')) ?? '';
+        const text =
+          (await conversationLog.textContent().catch(() => '')) ?? '';
         return text.trim();
       },
       { timeout: TIMEOUTS.AI_RESPONSE }
