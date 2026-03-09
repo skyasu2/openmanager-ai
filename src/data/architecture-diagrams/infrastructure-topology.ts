@@ -197,9 +197,22 @@ export const INFRASTRUCTURE_TOPOLOGY_ARCHITECTURE: ArchitectureDiagram = {
       label: 'Async Repl.',
       type: 'dashed',
     },
+    // Redis Replication
+    {
+      from: 'cache-redis-dc1-01',
+      to: 'cache-redis-dc1-02',
+      label: 'Replication',
+      type: 'dashed',
+    },
     // API -> Storage
     {
       from: 'api-was-dc1-01',
+      to: 'storage-nfs-dc1-01',
+      label: 'File I/O',
+      type: 'dashed',
+    },
+    {
+      from: 'api-was-dc1-02',
       to: 'storage-nfs-dc1-01',
       label: 'File I/O',
       type: 'dashed',

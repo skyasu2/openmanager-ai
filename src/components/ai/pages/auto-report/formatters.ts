@@ -2,10 +2,412 @@
  * Auto Report Formatters
  *
  * 보고서 다운로드를 위한 포맷터 함수들
+ * - ITIL v4 Major Incident Report 구조
+ * - 탐지 방법 / 해결 절차 / 토폴로지 영향 분석 포함
  */
 
 import { APP_VERSION } from '@/config/app-meta';
+import { INFRASTRUCTURE_TOPOLOGY_ARCHITECTURE } from '@/data/architecture-diagrams/infrastructure-topology';
 import type { IncidentReport } from './types';
+
+// ============================================================================
+// 🔍 탐지 방법 (Detection) — system-rules.json 기준 임계값
+// ============================================================================
+
+const DETECTION_THRESHOLDS = {
+  cpu: { warning: 80, critical: 90, unit: '%' },
+  memory: { warning: 80, critical: 90, unit: '%' },
+  disk: { warning: 80, critical: 90, unit: '%' },
+  network: { warning: 70, critical: 85, unit: '%' },
+} as const;
+
+function buildDetectionSection(report: IncidentReport): string {
+  if (!report.anomalies || report.anomalies.length === 0) return '';
+
+  const detectedMetrics = report.anomalies.map((a) => {
+    const metricKey = a.metric.toLowerCase().replace(/[^a-z]/g, '');
+    const threshold =
+      DETECTION_THRESHOLDS[metricKey as keyof typeof DETECTION_THRESHOLDS];
+    const thresholdInfo = threshold
+      ? `임계값: Warning ${threshold.warning}${threshold.unit} / Critical ${threshold.critical}${threshold.unit}`
+      : '커스텀 규칙';
+    const level =
+      threshold && typeof a.value === 'number'
+        ? a.value >= threshold.critical
+          ? 'Critical'
+          : a.value >= threshold.warning
+            ? 'Warning'
+            : 'Normal'
+        : a.severity;
+
+    return `| ${a.server_name || a.server_id} | ${a.metric} | ${typeof a.value === 'number' ? a.value.toFixed(1) : a.value} | ${level} | ${thresholdInfo} |`;
+  });
+
+  return `## 🔍 탐지 방법 (Detection)
+
+### 감지 방식
+- **모니터링**: OpenTelemetry 기반 메트릭 수집 (10분 간격)
+- **분석 엔진**: AI 패턴 분석 + 임계값 기반 이상 탐지
+- **감지 시점**: ${report.timestamp instanceof Date ? report.timestamp.toLocaleString('ko-KR') : new Date().toLocaleString('ko-KR')}
+
+### 적용 임계값 (system-rules.json)
+
+| 메트릭 | Warning | Critical | 비고 |
+|--------|:-------:|:--------:|------|
+| CPU | 80% | 90% | 5분 이상 지속 시 alert |
+| Memory | 80% | 90% | OOM 위험 사전 경고 |
+| Disk | 80% | 90% | 여유 10% 확보 기준 |
+| Network | 70% | 85% | 1Gbps 기준 대역폭 |
+
+### 감지된 이상 항목
+
+| 서버 | 메트릭 | 측정값 | 판정 | 기준 |
+|------|--------|--------|------|------|
+${detectedMetrics.join('\n')}
+
+`;
+}
+
+// ============================================================================
+// 🛠️ 해결 절차 (Resolution Steps) — 서버 Role별 CLI 명령어
+// ============================================================================
+
+const ROLE_RESOLUTION_COMMANDS: Record<
+  string,
+  Array<{ step: string; command: string; description: string }>
+> = {
+  web: [
+    {
+      step: '상태 확인',
+      command: 'systemctl status nginx && nginx -t',
+      description: 'Nginx 프로세스 상태 및 설정 검증',
+    },
+    {
+      step: '로그 확인',
+      command: 'tail -100 /var/log/nginx/error.log',
+      description: '최근 에러 로그 확인',
+    },
+    {
+      step: '커넥션 확인',
+      command: 'ss -tlnp | grep :80',
+      description: '포트 바인딩 및 연결 상태',
+    },
+    {
+      step: '서비스 재시작',
+      command: 'systemctl restart nginx',
+      description: '설정 변경 적용 또는 복구',
+    },
+  ],
+  application: [
+    {
+      step: '상태 확인',
+      command: 'systemctl status tomcat && curl -s localhost:8080/health',
+      description: 'WAS 프로세스 및 헬스체크',
+    },
+    {
+      step: 'JVM 점검',
+      command: 'jcmd $(pgrep java) GC.heap_info',
+      description: 'JVM 힙 메모리 사용량 확인',
+    },
+    {
+      step: '스레드 덤프',
+      command: 'jcmd $(pgrep java) Thread.print > /tmp/thread-dump.txt',
+      description: '데드락/병목 스레드 분석',
+    },
+    {
+      step: '서비스 재시작',
+      command: 'systemctl restart tomcat',
+      description: '메모리 누수 또는 장애 복구',
+    },
+  ],
+  database: [
+    {
+      step: '상태 확인',
+      command: 'mysqladmin -u root status && mysqladmin processlist',
+      description: 'MySQL 상태 및 활성 커넥션',
+    },
+    {
+      step: '슬로우 쿼리',
+      command:
+        'mysql -e "SELECT * FROM sys.statements_with_runtimes_in_95th_percentile LIMIT 10;"',
+      description: '95%ile 이상 느린 쿼리 확인',
+    },
+    {
+      step: '디스크 확인',
+      command: 'du -sh /var/lib/mysql/ && df -h /var/lib/mysql',
+      description: '데이터 디렉토리 용량 확인',
+    },
+    {
+      step: '복제 상태',
+      command: 'mysql -e "SHOW REPLICA STATUS\\G"',
+      description: 'Replication lag 확인',
+    },
+  ],
+  cache: [
+    {
+      step: '상태 확인',
+      command: 'redis-cli ping && redis-cli info memory',
+      description: 'Redis 연결 및 메모리 사용량',
+    },
+    {
+      step: '키 분석',
+      command: 'redis-cli --bigkeys --memkeys',
+      description: '대용량 키 탐지 (메모리 최적화)',
+    },
+    {
+      step: '슬로우 로그',
+      command: 'redis-cli slowlog get 10',
+      description: '느린 명령어 확인',
+    },
+    {
+      step: 'AOF 재작성',
+      command: 'redis-cli bgrewriteaof',
+      description: 'AOF 파일 크기 최적화',
+    },
+  ],
+  storage: [
+    {
+      step: '마운트 확인',
+      command: 'mount | grep nfs && showmount -e localhost',
+      description: 'NFS 마운트 상태 및 공유 목록',
+    },
+    {
+      step: 'IOPS 확인',
+      command: 'iostat -x 1 3',
+      description: '디스크 I/O 성능 측정',
+    },
+    {
+      step: '용량 확인',
+      command: 'df -h && du -sh /data/*',
+      description: '파티션별 사용량 확인',
+    },
+    {
+      step: '권한 검사',
+      command: 'exportfs -v',
+      description: 'NFS 내보내기 설정 확인',
+    },
+  ],
+  loadbalancer: [
+    {
+      step: '상태 확인',
+      command:
+        'systemctl status haproxy && echo "show stat" | socat /var/run/haproxy.sock stdio',
+      description: 'HAProxy 상태 및 백엔드 통계',
+    },
+    {
+      step: '백엔드 헬스',
+      command: 'echo "show servers state" | socat /var/run/haproxy.sock stdio',
+      description: '백엔드 서버 활성 상태',
+    },
+    {
+      step: '로그 확인',
+      command: 'journalctl -u haproxy --since "1 hour ago" | tail -50',
+      description: '최근 1시간 HAProxy 로그',
+    },
+    {
+      step: '설정 검증',
+      command: 'haproxy -c -f /etc/haproxy/haproxy.cfg',
+      description: '설정 파일 문법 검사',
+    },
+  ],
+};
+
+function getServerRole(serverId: string): string {
+  const topology = INFRASTRUCTURE_TOPOLOGY_ARCHITECTURE;
+  for (const layer of topology.layers) {
+    for (const node of layer.nodes) {
+      if (node.id === serverId) {
+        const title = layer.title.toLowerCase();
+        if (title.includes('load balancer')) return 'loadbalancer';
+        if (title.includes('web')) return 'web';
+        if (title.includes('api')) return 'application';
+        if (title.includes('storage')) return 'storage';
+        // Data tier — distinguish DB vs Cache
+        if (serverId.includes('redis') || serverId.includes('cache'))
+          return 'cache';
+        if (
+          serverId.includes('mysql') ||
+          serverId.includes('db') ||
+          serverId.includes('postgres')
+        )
+          return 'database';
+        return 'application';
+      }
+    }
+  }
+  // Fallback by server ID pattern
+  if (serverId.includes('web') || serverId.includes('nginx')) return 'web';
+  if (serverId.includes('api') || serverId.includes('was'))
+    return 'application';
+  if (serverId.includes('db') || serverId.includes('mysql')) return 'database';
+  if (serverId.includes('redis') || serverId.includes('cache')) return 'cache';
+  if (serverId.includes('storage') || serverId.includes('nfs'))
+    return 'storage';
+  if (serverId.includes('lb') || serverId.includes('haproxy'))
+    return 'loadbalancer';
+  return 'application';
+}
+
+function buildResolutionSection(report: IncidentReport): string {
+  if (!report.affectedServers || report.affectedServers.length === 0) return '';
+
+  const roleGroups = new Map<string, string[]>();
+  for (const server of report.affectedServers) {
+    const role = getServerRole(server);
+    const existing = roleGroups.get(role) || [];
+    existing.push(server);
+    roleGroups.set(role, existing);
+  }
+
+  const ROLE_LABELS: Record<string, string> = {
+    web: 'Web Tier (Nginx)',
+    application: 'API Tier (WAS)',
+    database: 'Data Tier (MySQL)',
+    cache: 'Data Tier (Redis)',
+    storage: 'Storage Tier (NFS/S3)',
+    loadbalancer: 'Load Balancer (HAProxy)',
+  };
+
+  const sections: string[] = [];
+  for (const [role, servers] of roleGroups) {
+    const commands = ROLE_RESOLUTION_COMMANDS[role];
+    if (!commands) continue;
+
+    sections.push(`### ${ROLE_LABELS[role] || role} — ${servers.map((s) => `\`${s}\``).join(', ')}
+
+${commands
+  .map(
+    (c, i) => `**Step ${i + 1}: ${c.step}**
+\`\`\`bash
+${c.command}
+\`\`\`
+> ${c.description}`
+  )
+  .join('\n\n')}`);
+  }
+
+  if (sections.length === 0) return '';
+
+  return `## 🔧 해결 절차 (Resolution Steps)
+
+> 아래 절차는 영향받는 서버의 역할(Role)에 따라 자동 생성된 복구 가이드입니다.
+
+${sections.join('\n\n---\n\n')}
+
+`;
+}
+
+// ============================================================================
+// 🌐 토폴로지 영향 분석 — infrastructure-topology.ts 기반
+// ============================================================================
+
+function buildTopologyImpactSection(report: IncidentReport): string {
+  if (!report.affectedServers || report.affectedServers.length === 0) return '';
+
+  const topology = INFRASTRUCTURE_TOPOLOGY_ARCHITECTURE;
+  const connections = topology.connections || [];
+
+  // Build adjacency: upstream (who depends on this) and downstream (what this depends on)
+  const upstreamMap = new Map<string, Array<{ from: string; label: string }>>();
+  const downstreamMap = new Map<string, Array<{ to: string; label: string }>>();
+
+  for (const conn of connections) {
+    // from -> to means "from" depends on "to" (from sends traffic to "to")
+    const existing = downstreamMap.get(conn.from) || [];
+    existing.push({ to: conn.to, label: conn.label || '' });
+    downstreamMap.set(conn.from, existing);
+
+    const upstream = upstreamMap.get(conn.to) || [];
+    upstream.push({ from: conn.from, label: conn.label || '' });
+    upstreamMap.set(conn.to, upstream);
+  }
+
+  // Find node label by id
+  const nodeLabels = new Map<string, string>();
+  const nodeLayers = new Map<string, string>();
+  for (const layer of topology.layers) {
+    for (const node of layer.nodes) {
+      nodeLabels.set(node.id, node.label);
+      nodeLayers.set(node.id, layer.title);
+    }
+  }
+
+  const impactChains: string[] = [];
+
+  for (const serverId of report.affectedServers) {
+    const serverLabel = nodeLabels.get(serverId) || serverId;
+    const serverLayer = nodeLayers.get(serverId) || '알 수 없음';
+
+    // Trace upstream impact (who is affected if this server goes down)
+    const upstreamImpact: string[] = [];
+    const visited = new Set<string>();
+    const queue = [serverId];
+    visited.add(serverId);
+
+    while (queue.length > 0) {
+      const current = queue.shift()!;
+      const upstreams = upstreamMap.get(current) || [];
+      for (const u of upstreams) {
+        if (!visited.has(u.from)) {
+          visited.add(u.from);
+          const label = nodeLabels.get(u.from) || u.from;
+          const layer = nodeLayers.get(u.from) || '';
+          upstreamImpact.push(
+            `  - \`${u.from}\` (${label}) — ${layer}${u.label ? ` [${u.label}]` : ''}`
+          );
+          queue.push(u.from);
+        }
+      }
+    }
+
+    // Trace downstream dependencies (what this server depends on)
+    const downstreamDeps: string[] = [];
+    const visitedDown = new Set<string>();
+    visitedDown.add(serverId);
+    const downQueue = [serverId];
+
+    while (downQueue.length > 0) {
+      const current = downQueue.shift()!;
+      const downstreams = downstreamMap.get(current) || [];
+      for (const d of downstreams) {
+        if (!visitedDown.has(d.to)) {
+          visitedDown.add(d.to);
+          const label = nodeLabels.get(d.to) || d.to;
+          const layer = nodeLayers.get(d.to) || '';
+          downstreamDeps.push(
+            `  - \`${d.to}\` (${label}) — ${layer}${d.label ? ` [${d.label}]` : ''}`
+          );
+          downQueue.push(d.to);
+        }
+      }
+    }
+
+    let chain = `### \`${serverId}\` — ${serverLabel} (${serverLayer})\n`;
+    if (upstreamImpact.length > 0) {
+      chain += `\n**영향받는 상위 계층** (이 서버 장애 시 영향):\n${upstreamImpact.join('\n')}\n`;
+    } else {
+      chain += '\n**영향받는 상위 계층**: 없음 (최상위 노드)\n';
+    }
+    if (downstreamDeps.length > 0) {
+      chain += `\n**의존하는 하위 계층** (이 서버가 의존):\n${downstreamDeps.join('\n')}\n`;
+    } else {
+      chain += '\n**의존하는 하위 계층**: 없음 (최하위 노드)\n';
+    }
+
+    impactChains.push(chain);
+  }
+
+  if (impactChains.length === 0) return '';
+
+  return `## 🌐 토폴로지 영향 분석
+
+> 인프라 토폴로지 기반 의존성 체인 분석. 장애 서버의 상위/하위 영향 범위를 추적합니다.
+> 토폴로지: ${topology.description}
+
+${impactChains.join('\n---\n\n')}
+
+`;
+}
 
 /**
  * 심각도 한글 매핑
@@ -144,7 +546,7 @@ ${report.description}
 
 ${report.affectedServers.length > 0 ? report.affectedServers.map((s) => `- \`${s}\``).join('\n') : '- 없음'}
 
-${systemSummarySection}${timelineSection}${anomaliesSection}${patternSection}${recommendationsSection}---
+${systemSummarySection}${timelineSection}${anomaliesSection}${buildDetectionSection(report)}${patternSection}${recommendationsSection}${buildResolutionSection(report)}${buildTopologyImpactSection(report)}---
 
 ## 📎 부록
 
@@ -157,6 +559,118 @@ ${systemSummarySection}${timelineSection}${anomaliesSection}${patternSection}${r
 ---
 *자동 생성 — OpenManager AI*
 *${timestamp}*
+`;
+}
+
+// ============================================================================
+// TXT 포맷용 헬퍼 함수들
+// ============================================================================
+
+function buildDetectionSectionText(report: IncidentReport): string {
+  if (!report.anomalies || report.anomalies.length === 0) return '';
+
+  const lines = report.anomalies.map((a) => {
+    const metricKey = a.metric.toLowerCase().replace(/[^a-z]/g, '');
+    const threshold =
+      DETECTION_THRESHOLDS[metricKey as keyof typeof DETECTION_THRESHOLDS];
+    const level =
+      threshold && typeof a.value === 'number'
+        ? a.value >= threshold.critical
+          ? 'Critical'
+          : a.value >= threshold.warning
+            ? 'Warning'
+            : 'Normal'
+        : a.severity;
+    return `- ${a.server_name || a.server_id}: ${a.metric} = ${typeof a.value === 'number' ? a.value.toFixed(1) : a.value} → ${level}`;
+  });
+
+  return `
+탐지 방법
+---------
+감지 방식: OTel 메트릭 수집 (10분 간격) + AI 패턴 분석
+임계값: CPU/Memory/Disk Warning=80% Critical=90%, Network Warning=70% Critical=85%
+감지 항목:
+${lines.join('\n')}
+`;
+}
+
+function buildResolutionSectionText(report: IncidentReport): string {
+  if (!report.affectedServers || report.affectedServers.length === 0) return '';
+
+  const roleGroups = new Map<string, string[]>();
+  for (const server of report.affectedServers) {
+    const role = getServerRole(server);
+    const existing = roleGroups.get(role) || [];
+    existing.push(server);
+    roleGroups.set(role, existing);
+  }
+
+  const sections: string[] = [];
+  for (const [role, servers] of roleGroups) {
+    const commands = ROLE_RESOLUTION_COMMANDS[role];
+    if (!commands) continue;
+    sections.push(
+      `[${role.toUpperCase()}] ${servers.join(', ')}\n${commands.map((c, i) => `  ${i + 1}. ${c.step}: ${c.command}`).join('\n')}`
+    );
+  }
+
+  if (sections.length === 0) return '';
+  return `해결 절차
+---------
+${sections.join('\n\n')}
+`;
+}
+
+function buildTopologyImpactSectionText(report: IncidentReport): string {
+  if (!report.affectedServers || report.affectedServers.length === 0) return '';
+
+  const topology = INFRASTRUCTURE_TOPOLOGY_ARCHITECTURE;
+  const connections = topology.connections || [];
+
+  const upstreamMap = new Map<string, Array<{ from: string; label: string }>>();
+  for (const conn of connections) {
+    const upstream = upstreamMap.get(conn.to) || [];
+    upstream.push({ from: conn.from, label: conn.label || '' });
+    upstreamMap.set(conn.to, upstream);
+  }
+
+  const nodeLabels = new Map<string, string>();
+  for (const layer of topology.layers) {
+    for (const node of layer.nodes) {
+      nodeLabels.set(node.id, node.label);
+    }
+  }
+
+  const chains: string[] = [];
+  for (const serverId of report.affectedServers) {
+    const visited = new Set<string>();
+    const queue = [serverId];
+    visited.add(serverId);
+    const impacted: string[] = [];
+
+    while (queue.length > 0) {
+      const current = queue.shift()!;
+      const upstreams = upstreamMap.get(current) || [];
+      for (const u of upstreams) {
+        if (!visited.has(u.from)) {
+          visited.add(u.from);
+          impacted.push(`  → ${u.from} (${nodeLabels.get(u.from) || u.from})`);
+          queue.push(u.from);
+        }
+      }
+    }
+
+    if (impacted.length > 0) {
+      chains.push(
+        `${serverId} (${nodeLabels.get(serverId) || serverId}) 장애 시 영향:\n${impacted.join('\n')}`
+      );
+    }
+  }
+
+  if (chains.length === 0) return '';
+  return `토폴로지 영향 분석
+------------------
+${chains.join('\n\n')}
 `;
 }
 
@@ -237,8 +751,8 @@ ${report.description}
 영향받는 서버
 ------------
 ${report.affectedServers.length > 0 ? report.affectedServers.join(', ') : '없음'}
-${systemSummaryTxt}${timelineTxt}${anomaliesTxt}${patternTxt}
-${recommendationsTxt}
+${systemSummaryTxt}${timelineTxt}${anomaliesTxt}${buildDetectionSectionText(report)}${patternTxt}
+${recommendationsTxt}${buildResolutionSectionText(report)}${buildTopologyImpactSectionText(report)}
 ---
 자동 생성된 장애 보고서 - OpenManager AI v${APP_VERSION}
 문서 형식: ITIL Major Incident Report Template

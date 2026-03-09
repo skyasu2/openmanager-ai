@@ -38,8 +38,9 @@ import type { IncidentReport, ServerMetric } from './types';
 import { extractNumericValue, mapSeverity } from './utils';
 
 // ============================================================================
-// Component
+// Module-level cache — survives Activity hide/show and potential remounts
 // ============================================================================
+let reportsCache: IncidentReport[] = [];
 
 type TabType = 'generate' | 'history';
 
@@ -50,8 +51,20 @@ export default function AutoReportPage() {
   // Server data (React Query)
   const { data: servers = [], isLoading: isServersLoading } = useServerQuery();
 
-  // Reports state
-  const [reports, setReports] = useState<IncidentReport[]>([]);
+  // Reports state — initialized from module-level cache
+  const [reports, setReportsState] = useState<IncidentReport[]>(reportsCache);
+  const setReports = useCallback(
+    (
+      updater: IncidentReport[] | ((prev: IncidentReport[]) => IncidentReport[])
+    ) => {
+      setReportsState((prev) => {
+        const next = typeof updater === 'function' ? updater(prev) : updater;
+        reportsCache = next;
+        return next;
+      });
+    },
+    []
+  );
   const [isGenerating, setIsGenerating] = useState(false);
   const [selectedSeverity, setSelectedSeverity] = useState<string>('all');
   const [selectedReport, setSelectedReport] = useState<string | null>(null);
@@ -61,6 +74,10 @@ export default function AutoReportPage() {
 
   // Generate new report
   const handleGenerateReport = useCallback(async () => {
+    if (servers.length === 0) {
+      setError('서버 데이터를 불러오는 중입니다. 잠시 후 다시 시도해주세요.');
+      return;
+    }
     setIsGenerating(true);
     setError(null);
 
@@ -354,10 +371,9 @@ export default function AutoReportPage() {
             </button>
             <button
               type="button"
+              data-testid="report-generate-btn"
               onClick={handleGenerateReport}
-              disabled={
-                isGenerating || isServersLoading || servers.length === 0
-              }
+              disabled={isGenerating || isServersLoading}
               className="flex items-center space-x-2 rounded-lg bg-red-500 px-4 py-2 text-white transition-all duration-200 hover:scale-105 hover:bg-red-600 active:scale-95 disabled:opacity-50"
             >
               <RefreshCw
@@ -468,10 +484,9 @@ export default function AutoReportPage() {
             </p>
             <button
               type="button"
+              data-testid="report-generate-cta"
               onClick={handleGenerateReport}
-              disabled={
-                isGenerating || isServersLoading || servers.length === 0
-              }
+              disabled={isGenerating || isServersLoading}
               className="inline-flex items-center space-x-2 rounded-lg bg-red-500 px-4 py-2 text-sm text-white transition-all hover:scale-105 hover:bg-red-600 active:scale-95 disabled:opacity-50"
             >
               <RefreshCw
