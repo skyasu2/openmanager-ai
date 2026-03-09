@@ -2,15 +2,15 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-03-09T20:03:05.077Z"
+    "updatedAt": "2026-03-09T21:00:32.975Z"
   },
   "sequence": {
-    "nextRunNumber": 75
+    "nextRunNumber": 76
   },
   "summary": {
-    "totalRuns": 74,
-    "totalChecks": 507,
-    "totalPassed": 477,
+    "totalRuns": 75,
+    "totalChecks": 515,
+    "totalPassed": 485,
     "totalFailed": 30,
     "completionRate": 99.24,
     "completedItems": 131,
@@ -19,8 +19,8 @@
     "wontFixItems": 35,
     "expertDomainsTracked": 6,
     "expertDomainsOpenGaps": 1,
-    "lastRunId": "QA-20260310-0074",
-    "lastRecordedAt": "2026-03-09T20:03:05.077Z"
+    "lastRunId": "QA-20260310-0075",
+    "lastRecordedAt": "2026-03-09T21:00:32.975Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -6418,6 +6418,52 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260310-0075",
+      "recordedAt": "2026-03-09T21:00:32.975Z",
+      "recordedAtKst": "2026-03-10 06:00:32 KST",
+      "title": "Production Playwright MCP QA - post-deploy final verification",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260310-0075.json",
+      "checks": {
+        "total": 8,
+        "passed": 8,
+        "failed": 0
+      },
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "2026-03-10 KST 최신 production 배포(421a514ff)에서 AI Chat summary streaming, Reporter 생성, Analyst 전체 분석이 모두 정상 동작했습니다.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "production DOM 기준으로 보정한 AI sidebar/chat 흐름이 최신 Vercel 배포에서도 안정적으로 재현됐고, MCP 수동 QA에서 selector 회귀가 재발하지 않았습니다.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "observability-monitoring",
+          "domainName": "IT Monitoring & Observability SME",
+          "fit": "partially-appropriate",
+          "improvementNeeded": true,
+          "rationale": "실제 UI가 발생시킨 /api/ai/intelligent-monitoring 응답 200에서 X-AI-Latency-Ms/X-AI-Mode/X-AI-Source/X-AI-Cache-Status는 확인됐지만 Server-Timing 헤더는 여전히 null이었습니다.",
+          "nextAction": "Vercel/Next 응답 경로에서 Server-Timing 제거 지점을 확인하고, 필요 시 X-AI-Latency-Ms를 운영 SSOT로 문서화"
+        }
+      ],
+      "expertCount": 3,
+      "expertNeedsImprovementCount": 1,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -6426,16 +6472,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 40,
-      "appropriateCount": 39,
+      "seenCount": 41,
+      "appropriateCount": 40,
       "partialCount": 1,
       "inappropriateCount": 0,
       "improvementNeededCount": 6,
-      "lastRunId": "QA-20260310-0071",
-      "lastSeenAt": "2026-03-09T17:34:32.732Z",
+      "lastRunId": "QA-20260310-0075",
+      "lastSeenAt": "2026-03-09T21:00:32.975Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "2026-03-10 KST 재검증에서 '현재 모든 서버의 상태를 요약해줘' 질의는 프로덕션에서 정상 요약 응답을 반환했고, resource timing 기준 약 6.0~7.2초로 66초 지연은 재현되지 않았습니다.",
+      "lastRationale": "2026-03-10 KST 최신 production 배포(421a514ff)에서 AI Chat summary streaming, Reporter 생성, Analyst 전체 분석이 모두 정상 동작했습니다.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -6443,17 +6489,17 @@
       "domainName": "IT Monitoring & Observability SME",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 20,
+      "seenCount": 21,
       "appropriateCount": 5,
-      "partialCount": 15,
+      "partialCount": 16,
       "inappropriateCount": 0,
-      "improvementNeededCount": 15,
-      "lastRunId": "QA-20260310-0074",
-      "lastSeenAt": "2026-03-09T20:03:05.077Z",
+      "improvementNeededCount": 16,
+      "lastRunId": "QA-20260310-0075",
+      "lastSeenAt": "2026-03-09T21:00:32.975Z",
       "lastFit": "partially-appropriate",
       "lastImprovementNeeded": true,
-      "lastRationale": "2026-03-10 KST 프로덕션 재검증에서 dashboard-ai-chat/dashboard-ai-sidebar 6개 Playwright 케이스는 모두 통과했습니다. same-origin browser fetch와 raw curl 모두 X-AI-* 헤더는 확인되지만 Server-Timing 헤더는 실제 HTTP 응답에 존재하지 않았습니다.",
-      "lastNextAction": "Vercel/Next 응답 경로에서 Server-Timing이 제거되는 지점을 확인하고, 필요 시 X-AI-Latency-Ms 중심 정책으로 QA/관측 기준을 표준화"
+      "lastRationale": "실제 UI가 발생시킨 /api/ai/intelligent-monitoring 응답 200에서 X-AI-Latency-Ms/X-AI-Mode/X-AI-Source/X-AI-Cache-Status는 확인됐지만 Server-Timing 헤더는 여전히 null이었습니다.",
+      "lastNextAction": "Vercel/Next 응답 경로에서 Server-Timing 제거 지점을 확인하고, 필요 시 X-AI-Latency-Ms를 운영 SSOT로 문서화"
     },
     "ai-security-reliability": {
       "domainId": "ai-security-reliability",
@@ -6494,16 +6540,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 39,
-      "appropriateCount": 35,
+      "seenCount": 40,
+      "appropriateCount": 36,
       "partialCount": 4,
       "inappropriateCount": 0,
       "improvementNeededCount": 5,
-      "lastRunId": "QA-20260310-0073",
-      "lastSeenAt": "2026-03-09T19:06:04.775Z",
+      "lastRunId": "QA-20260310-0075",
+      "lastSeenAt": "2026-03-09T21:00:32.975Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "dashboard-ai-chat/dashboard-ai-sidebar를 production DOM 기준 role/log/text 및 sidebar-scoped prompt selector로 정렬했고, localhost dev rerun에서 chat 2/2, sidebar 4/4가 통과했습니다.",
+      "lastRationale": "production DOM 기준으로 보정한 AI sidebar/chat 흐름이 최신 Vercel 배포에서도 안정적으로 재현됐고, MCP 수동 QA에서 selector 회귀가 재발하지 않았습니다.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {
