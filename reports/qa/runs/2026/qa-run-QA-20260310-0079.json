@@ -1,0 +1,54 @@
+{
+  "runId": "QA-20260310-0079",
+  "recordedAt": "2026-03-10T00:19:24.666Z",
+  "recordedAtKst": "2026-03-10 09:19:24 KST",
+  "runTitle": "Production AI latency remeasurement - no severe regression reproduced",
+  "owner": "codex",
+  "source": "playwright-cli",
+  "environment": {
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main"
+  },
+  "checks": {
+    "total": 4,
+    "passed": 4,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "2026-03-10 KST clean browser session에서 guest PIN(4231) -> 시스템 시작 -> dashboard -> AI 실경로를 재측정한 결과, AI Chat summary는 first visible 4.3초 / stream complete 4.6초, Analyst 전체 분석은 first visible 7.4초 / 마지막 요청 완료 7.2초로 severe latency regression(50~66초)은 재현되지 않았습니다.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "Analyst proxy 응답에서는 x-ai-latency-ms/x-ai-mode/x-ai-source/x-ai-cache-status를 확인했지만 server-timing은 null이었고, Chat streaming route(/api/ai/supervisor/stream/v2)에는 timing headers가 노출되지 않았습니다. 성능 문제보다 계측 표준 미비가 남아 있습니다.",
+      "nextAction": "Server-Timing 제거 지점을 확인하고 stream/v2 포함 공통 timing header 정책을 정리"
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "QA-0078은 guest flow/E2E bug fix 확인 런으로, AI latency claim의 직접 근거로 사용하지 않음.",
+    "AI Chat measurement: route=/api/ai/supervisor/stream/v2, requestHeaderMs=584, firstVisibleMs=4344, requestFinishedMs=4647.",
+    "Analyst measurement: route=/api/ai/intelligent-monitoring, firstVisibleMs=7377, requestFinishedMs=7188, final x-ai-latency-ms=612, x-ai-mode=proxy, x-ai-source=cloud-run, x-ai-cache-status=MISS.",
+    "Analyst fan-out observed: 15 requests in 3 batches, early batch x-ai-latency-ms 2015~4289, later batches 506~815.",
+    "Chat response content confirmed streaming summary: 전체 15대 정상 14/경고 1 with api-was-dc1-01 CPU 83% warning.",
+    "Analyst response content confirmed major issues/trend warnings for api-was-dc1-01, web-nginx-dc1-01, web-nginx-dc1-02, lb-haproxy-dc1-01."
+  ],
+  "links": [
+    {
+      "label": "Vercel Production",
+      "url": "https://openmanager-ai.vercel.app"
+    }
+  ]
+}

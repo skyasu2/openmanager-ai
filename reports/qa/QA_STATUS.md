@@ -1,39 +1,38 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-10 07:17:55 KST
+> Generated at: 2026-03-10 09:19:24 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 78 |
-| Total Checks | 561 |
-| Passed | 527 |
+| Total Runs | 79 |
+| Total Checks | 565 |
+| Passed | 531 |
 | Failed | 34 |
 | Completed Items | 133 |
 | Pending Items | 1 |
 | Deferred Items | 1 |
 | Wont-Fix Items | 35 |
 | Expert Domains Tracked | 6 |
-| Expert Open Gaps | 2 |
+| Expert Open Gaps | 1 |
 | Completion Rate | 98.52% |
-| Last Run | QA-20260310-0078 (2026-03-09T22:17:55.510Z) |
+| Last Run | QA-20260310-0079 (2026-03-10T00:19:24.666Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260310-0078 (2026-03-09T22:17:55.510Z)
+Latest run: QA-20260310-0079 (2026-03-10T00:19:24.666Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| Test Automation Architect | appropriate | no | - |
+| AI Quality Assurance Specialist | appropriate | no | - |
+| IT Monitoring & Observability SME | partially-appropriate | yes | Server-Timing 제거 지점을 확인하고 stream/v2 포함 공통 timing header 정책을 정리 |
 
 ## Expert Domain Open Gaps
 
-- ai-quality-assurance: AI Quality Assurance Specialist (last QA-20260310-0076)
-  next: AI 엔진 응답 최적화 및 Cloud Run 병목 해결
-- observability-monitoring: IT Monitoring & Observability SME (last QA-20260310-0075)
-  next: Vercel/Next 응답 경로에서 Server-Timing 제거 지점을 확인하고, 필요 시 X-AI-Latency-Ms를 운영 SSOT로 문서화
+- observability-monitoring: IT Monitoring & Observability SME (last QA-20260310-0079)
+  next: Server-Timing 제거 지점을 확인하고 stream/v2 포함 공통 timing header 정책을 정리
 
 ## Pending Improvements
 
@@ -254,6 +253,7 @@ Latest run: QA-20260310-0078 (2026-03-09T22:17:55.510Z)
 
 | Run ID | Time (UTC) | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260310-0079 | 2026-03-10T00:19:24.666Z | Production AI latency remeasurement - no severe regression reproduced | 4 | 0 | 0 | 0 | 0 | 1 |
 | QA-20260310-0078 | 2026-03-09T22:17:55.510Z | Vercel Playwright QA - E2E Guest Bug Fix Check (2026-03-10) | 3 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260310-0077 | 2026-03-09T22:15:43.664Z | Vercel Playwright QA - E2E Core Bug Fix Check (2026-03-10) | 9 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260310-0076 | 2026-03-09T21:55:34.919Z | Vercel Playwright QA - E2E Core Flow (2026-03-10) | 34 | 1 | 3 | 0 | 0 | 1 |
@@ -273,5 +273,4 @@ Latest run: QA-20260310-0078 (2026-03-09T22:17:55.510Z)
 | QA-20260309-0062 | 2026-03-09T06:00:52.043Z | Production Playwright MCP QA #63 v8.8.0 - Full AI Feature + Tab State Verification | 0 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260308-0061 | 2026-03-08T13:15:14.383Z | Production QA #62 - React Activity API tab state verification | 0 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260308-0060 | 2026-03-08T11:51:11.029Z | Production QA #61 v8.8.0 tab state preservation fix | 0 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260308-0059 | 2026-03-08T07:28:38.016Z | Production Playwright MCP QA v8.8.0 - Frontend and AI Assistant Quality Analysis | 12 | 5 | 1 | 0 | 1 | 1 |
 

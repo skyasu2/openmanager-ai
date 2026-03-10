@@ -26,6 +26,10 @@ import {
   getRouteMaxExecutionMs,
 } from '@/config/ai-proxy.config';
 import {
+  buildAITimingHeaders,
+  startAITimer,
+} from '@/lib/ai/observability';
+import {
   type HybridMessage,
   normalizeMessagesForCloudRun,
 } from '@/lib/ai/utils/message-normalizer';
@@ -88,6 +92,13 @@ function parseWarmupStartedAt(value: string | null): number | null {
   const parsed = Number(value);
   if (!Number.isFinite(parsed) || parsed <= 0) return null;
   return Math.floor(parsed);
+}
+
+function parseOptionalDurationHeader(value: string | null): number | undefined {
+  if (!value) return undefined;
+  const parsed = Number(value);
+  if (!Number.isFinite(parsed) || parsed < 0) return undefined;
+  return Math.round(parsed);
 }
 
 // ============================================================================
@@ -359,6 +370,7 @@ export const POST = withRateLimit(
         () => controller.abort(),
         getSupervisorStreamAbortTimeoutMs()
       );
+      const aiTimer = startAITimer();
 
       try {
         const cloudRunResponse = await fetch(streamUrl, {
@@ -410,6 +422,9 @@ export const POST = withRateLimit(
         logger.info(`✅ [SupervisorStreamV2] Stream started (resumable)`);
 
         // 10. Return resumable stream response
+        const processingTimeMs = parseOptionalDurationHeader(
+          cloudRunResponse.headers.get('x-ai-latency-ms')
+        );
         return new Response(resumableStream, {
           headers: {
             ...UI_MESSAGE_STREAM_HEADERS,
@@ -418,6 +433,13 @@ export const POST = withRateLimit(
             'X-Backend': 'cloud-run-stream-v2',
             'X-Stream-Protocol': 'ui-message-stream',
             'X-Resumable': 'true',
+            ...buildAITimingHeaders({
+              latencyMs: aiTimer.elapsed(),
+              processingTimeMs,
+              cacheStatus: 'BYPASS',
+              mode: 'streaming',
+              source: 'cloud-run',
+            }),
           },
         });
       } catch (error) {

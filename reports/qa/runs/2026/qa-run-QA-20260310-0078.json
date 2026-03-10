@@ -43,8 +43,6 @@
   "pendingImprovements": [],
   "deferredImprovements": [],
   "wontFixImprovements": [],
-  "notes": [
-    "guest.spec.ts 단독 재수행 시 3개 테스트 모두 PASS."
-  ],
+  "notes": ["guest.spec.ts 단독 재수행 시 3개 테스트 모두 PASS."],
   "links": []
 }

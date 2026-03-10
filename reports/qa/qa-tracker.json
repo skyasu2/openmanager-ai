@@ -2,15 +2,15 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-03-09T22:17:55.510Z"
+    "updatedAt": "2026-03-10T00:19:24.666Z"
   },
   "sequence": {
-    "nextRunNumber": 79
+    "nextRunNumber": 80
   },
   "summary": {
-    "totalRuns": 78,
-    "totalChecks": 561,
-    "totalPassed": 527,
+    "totalRuns": 79,
+    "totalChecks": 565,
+    "totalPassed": 531,
     "totalFailed": 34,
     "completionRate": 98.52,
     "completedItems": 133,
@@ -18,9 +18,9 @@
     "deferredItems": 1,
     "wontFixItems": 35,
     "expertDomainsTracked": 6,
-    "expertDomainsOpenGaps": 2,
-    "lastRunId": "QA-20260310-0078",
-    "lastRecordedAt": "2026-03-09T22:17:55.510Z"
+    "expertDomainsOpenGaps": 1,
+    "lastRunId": "QA-20260310-0079",
+    "lastRecordedAt": "2026-03-10T00:19:24.666Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -6626,6 +6626,44 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260310-0079",
+      "recordedAt": "2026-03-10T00:19:24.666Z",
+      "recordedAtKst": "2026-03-10 09:19:24 KST",
+      "title": "Production AI latency remeasurement - no severe regression reproduced",
+      "owner": "codex",
+      "source": "playwright-cli",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260310-0079.json",
+      "checks": {
+        "total": 4,
+        "passed": 4,
+        "failed": 0
+      },
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "2026-03-10 KST clean browser session에서 guest PIN(4231) -> 시스템 시작 -> dashboard -> AI 실경로를 재측정한 결과, AI Chat summary는 first visible 4.3초 / stream complete 4.6초, Analyst 전체 분석은 first visible 7.4초 / 마지막 요청 완료 7.2초로 severe latency regression(50~66초)은 재현되지 않았습니다.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "observability-monitoring",
+          "domainName": "IT Monitoring & Observability SME",
+          "fit": "partially-appropriate",
+          "improvementNeeded": true,
+          "rationale": "Analyst proxy 응답에서는 x-ai-latency-ms/x-ai-mode/x-ai-source/x-ai-cache-status를 확인했지만 server-timing은 null이었고, Chat streaming route(/api/ai/supervisor/stream/v2)에는 timing headers가 노출되지 않았습니다. 성능 문제보다 계측 표준 미비가 남아 있습니다.",
+          "nextAction": "Server-Timing 제거 지점을 확인하고 stream/v2 포함 공통 timing header 정책을 정리"
+        }
+      ],
+      "expertCount": 2,
+      "expertNeedsImprovementCount": 1,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -6634,34 +6672,34 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 42,
-      "appropriateCount": 41,
+      "seenCount": 43,
+      "appropriateCount": 42,
       "partialCount": 1,
       "inappropriateCount": 0,
       "improvementNeededCount": 7,
-      "lastRunId": "QA-20260310-0076",
-      "lastSeenAt": "2026-03-09T21:55:34.919Z",
+      "lastRunId": "QA-20260310-0079",
+      "lastSeenAt": "2026-03-10T00:19:24.666Z",
       "lastFit": "appropriate",
-      "lastImprovementNeeded": true,
-      "lastRationale": "AI Chat 기능은 동작하나 프로덕션 환경에서의 극심한 응답 지연(최대 66초)이 지속되고 있습니다. 또한, 프로덕션 빌드 시 data-testid가 제거되어 일부 테스트가 실패하는 문제가 수정되었음에도 불구하고 응답 지연 이슈가 여전히 남아있습니다.",
-      "lastNextAction": "AI 엔진 응답 최적화 및 Cloud Run 병목 해결"
+      "lastImprovementNeeded": false,
+      "lastRationale": "2026-03-10 KST clean browser session에서 guest PIN(4231) -> 시스템 시작 -> dashboard -> AI 실경로를 재측정한 결과, AI Chat summary는 first visible 4.3초 / stream complete 4.6초, Analyst 전체 분석은 first visible 7.4초 / 마지막 요청 완료 7.2초로 severe latency regression(50~66초)은 재현되지 않았습니다.",
+      "lastNextAction": ""
     },
     "observability-monitoring": {
       "domainId": "observability-monitoring",
       "domainName": "IT Monitoring & Observability SME",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 21,
+      "seenCount": 22,
       "appropriateCount": 5,
-      "partialCount": 16,
+      "partialCount": 17,
       "inappropriateCount": 0,
-      "improvementNeededCount": 16,
-      "lastRunId": "QA-20260310-0075",
-      "lastSeenAt": "2026-03-09T21:00:32.975Z",
+      "improvementNeededCount": 17,
+      "lastRunId": "QA-20260310-0079",
+      "lastSeenAt": "2026-03-10T00:19:24.666Z",
       "lastFit": "partially-appropriate",
       "lastImprovementNeeded": true,
-      "lastRationale": "실제 UI가 발생시킨 /api/ai/intelligent-monitoring 응답 200에서 X-AI-Latency-Ms/X-AI-Mode/X-AI-Source/X-AI-Cache-Status는 확인됐지만 Server-Timing 헤더는 여전히 null이었습니다.",
-      "lastNextAction": "Vercel/Next 응답 경로에서 Server-Timing 제거 지점을 확인하고, 필요 시 X-AI-Latency-Ms를 운영 SSOT로 문서화"
+      "lastRationale": "Analyst proxy 응답에서는 x-ai-latency-ms/x-ai-mode/x-ai-source/x-ai-cache-status를 확인했지만 server-timing은 null이었고, Chat streaming route(/api/ai/supervisor/stream/v2)에는 timing headers가 노출되지 않았습니다. 성능 문제보다 계측 표준 미비가 남아 있습니다.",
+      "lastNextAction": "Server-Timing 제거 지점을 확인하고 stream/v2 포함 공통 timing header 정책을 정리"
     },
     "ai-security-reliability": {
       "domainId": "ai-security-reliability",

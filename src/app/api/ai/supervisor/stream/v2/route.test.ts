@@ -11,6 +11,7 @@ const {
   mockCreateNewResumableStream,
   mockClearStream,
   mockExtractLastUserQuery,
+  mockExtractTextFromHybridMessage,
   mockNormalizeMessagesForCloudRun,
   mockSecurityCheck,
   mockGetMaxTimeout,
@@ -27,6 +28,7 @@ const {
   mockCreateNewResumableStream: vi.fn(),
   mockClearStream: vi.fn(),
   mockExtractLastUserQuery: vi.fn(),
+  mockExtractTextFromHybridMessage: vi.fn(),
   mockNormalizeMessagesForCloudRun: vi.fn(),
   mockSecurityCheck: vi.fn(),
   mockGetMaxTimeout: vi.fn(),
@@ -55,10 +57,17 @@ vi.mock('@/lib/logging', () => ({
     error: vi.fn(),
     debug: vi.fn(),
   },
+  createModuleLogger: vi.fn(() => ({
+    info: vi.fn(),
+    warn: vi.fn(),
+    error: vi.fn(),
+    debug: vi.fn(),
+  })),
 }));
 
 vi.mock('@/lib/ai/utils/message-normalizer', () => ({
   extractLastUserQuery: mockExtractLastUserQuery,
+  extractTextFromHybridMessage: mockExtractTextFromHybridMessage,
   normalizeMessagesForCloudRun: mockNormalizeMessagesForCloudRun,
 }));
 
@@ -107,6 +116,15 @@ describe('Supervisor Stream V2 Route', () => {
     vi.stubGlobal('fetch', mockFetch);
 
     mockExtractLastUserQuery.mockReturnValue('서버 상태 알려줘');
+    mockExtractTextFromHybridMessage.mockImplementation(
+      (message: { content?: string; parts?: Array<{ type?: string; text?: string }> }) =>
+        message.content ??
+        message.parts
+          ?.filter((part) => part?.type === 'text' && typeof part.text === 'string')
+          .map((part) => part.text)
+          .join('\n') ??
+        ''
+    );
     mockNormalizeMessagesForCloudRun.mockImplementation((messages) => messages);
     mockSecurityCheck.mockReturnValue({
       shouldBlock: false,
@@ -268,6 +286,16 @@ describe('Supervisor Stream V2 Route', () => {
     });
 
     it('Cloud Run v2로 프록시 후 resumable 응답을 반환해야 함', async () => {
+      mockFetch.mockResolvedValueOnce(
+        new Response(createSseStream(), {
+          status: 200,
+          headers: {
+            'Content-Type': 'text/event-stream',
+            'X-AI-Latency-Ms': '1987',
+          },
+        })
+      );
+
       const request = new NextRequest(
         'http://localhost/api/ai/supervisor/stream/v2',
         {
@@ -289,6 +317,15 @@ describe('Supervisor Stream V2 Route', () => {
       expect(response.headers.get('x-vercel-ai-ui-message-stream')).toBe('v1');
       expect(response.headers.get('X-Resumable')).toBe('true');
       expect(response.headers.get('X-Session-Id')).toBe('session-1234');
+      expect(response.headers.get('X-AI-Mode')).toBe('streaming');
+      expect(response.headers.get('X-AI-Source')).toBe('cloud-run');
+      expect(response.headers.get('X-AI-Cache-Status')).toBe('BYPASS');
+      expect(response.headers.get('X-AI-Latency-Ms')).toMatch(/^\d+$/);
+      expect(response.headers.get('X-AI-Processing-Ms')).toBe('1987');
+      expect(response.headers.get('Server-Timing')).toContain('ai;dur=');
+      expect(response.headers.get('Server-Timing')).toContain(
+        'ai_processing;dur=1987'
+      );
 
       expect(mockFetch).toHaveBeenCalledTimes(1);
       expect(mockFetch.mock.calls[0]?.[0]).toBe(
