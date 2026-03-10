@@ -1,0 +1,80 @@
+{
+  "runId": "QA-20260310-0080",
+  "recordedAt": "2026-03-10T00:50:11.433Z",
+  "recordedAtKst": "2026-03-10 09:50:11 KST",
+  "runTitle": "Vercel Playwright QA - stream/v2 timing header verification",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main"
+  },
+  "checks": {
+    "total": 5,
+    "passed": 4,
+    "failed": 1
+  },
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Production deployment dd64e7d15에서 guest flow 후 AI Chat summary query를 재검증한 결과, /api/ai/supervisor/stream/v2 경로로 정상 응답했고 UI에는 Streaming AI 배지와 15대 서버 요약이 노출되었습니다.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "stream/v2 응답에서 x-ai-latency-ms=215, x-ai-mode=streaming, x-ai-source=cloud-run, x-ai-cache-status=BYPASS는 노출됐지만 server-timing은 여전히 null이었습니다. stream timing observability는 부분 개선됐지만 production header visibility gap이 남아 있습니다.",
+      "nextAction": "Vercel/Next response path에서 Server-Timing이 제거되는 지점을 추가 진단하고, QA 기준은 우선 X-AI-Latency-Ms를 SSOT로 사용"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "ai-stream-timing-x-headers-production",
+      "title": "AI Chat streaming route exposes X-AI timing headers on production",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "stream/v2 response headers: x-ai-latency-ms=215, x-ai-mode=streaming, x-ai-source=cloud-run, x-ai-cache-status=BYPASS",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "ai-summary-chat-streaming-path",
+      "title": "AI summary chat query uses streaming path on production",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "AI Chat summary starter query used /api/ai/supervisor/stream/v2 and rendered Streaming AI badge with production summary response",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Deployment verified via Vercel MCP: dpl_4BXJMbrpaLiRnUDCEQSYkHvquFyt, commit dd64e7d15, READY/PROMOTED.",
+    "Browser fetch instrumentation on production captured /api/ai/supervisor/stream/v2 status=200, durationMs=2093.",
+    "Response content confirmed production summary: 전체 15대 정상 13대, 경고 1대, 비상 1대, 오프라인 0대 with api-was-dc1-01 / api-was-dc1-02 warning guidance.",
+    "UI showed Streaming AI badge and 일반 대화 응답 metadata for the summary query.",
+    "This run closes the missing X-AI header gap for Chat stream but keeps Server-Timing visibility as deferred."
+  ],
+  "links": [
+    {
+      "label": "Vercel Production",
+      "url": "https://openmanager-ai.vercel.app"
+    }
+  ]
+}

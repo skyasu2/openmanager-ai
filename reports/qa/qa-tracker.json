@@ -2,25 +2,25 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-03-10T00:19:24.666Z"
+    "updatedAt": "2026-03-10T00:50:11.433Z"
   },
   "sequence": {
-    "nextRunNumber": 80
+    "nextRunNumber": 81
   },
   "summary": {
-    "totalRuns": 79,
-    "totalChecks": 565,
-    "totalPassed": 531,
-    "totalFailed": 34,
-    "completionRate": 98.52,
-    "completedItems": 133,
+    "totalRuns": 80,
+    "totalChecks": 570,
+    "totalPassed": 535,
+    "totalFailed": 35,
+    "completionRate": 98.53,
+    "completedItems": 134,
     "pendingItems": 1,
     "deferredItems": 1,
     "wontFixItems": 35,
     "expertDomainsTracked": 6,
     "expertDomainsOpenGaps": 1,
-    "lastRunId": "QA-20260310-0079",
-    "lastRecordedAt": "2026-03-10T00:19:24.666Z"
+    "lastRunId": "QA-20260310-0080",
+    "lastRecordedAt": "2026-03-10T00:50:11.433Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -3528,22 +3528,22 @@
       "status": "completed",
       "firstSeenRunId": "QA-20260309-0070",
       "firstSeenAt": "2026-03-09T13:07:24.495Z",
-      "lastSeenRunId": "QA-20260309-0070",
-      "lastSeenAt": "2026-03-09T13:07:24.495Z",
-      "seenCount": 1,
-      "completedCount": 1,
+      "lastSeenRunId": "QA-20260310-0080",
+      "lastSeenAt": "2026-03-10T00:50:11.433Z",
+      "seenCount": 2,
+      "completedCount": 2,
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0,
       "aliases": [],
       "owner": "",
-      "lastEvidence": "Promoted deployment 8c08cd448에서 '현재 모든 서버의 상태를 요약해줘' 실행 시 POST /api/ai/supervisor/stream/v2만 관찰됐고 /api/ai/jobs 및 /api/ai/jobs/:id/stream 호출은 발생하지 않음",
+      "lastEvidence": "AI Chat summary starter query used /api/ai/supervisor/stream/v2 and rendered Streaming AI badge with production summary response",
       "lastNote": "",
       "isBlocking": true,
       "isBlockingExplicit": false,
       "overengineeringScope": "",
       "lastPolicyNote": "",
-      "lastStatusChangeAt": "2026-03-09T13:07:24.495Z"
+      "lastStatusChangeAt": "2026-03-10T00:50:11.433Z"
     },
     "ai-timing-x-headers-production": {
       "id": "ai-timing-x-headers-production",
@@ -3736,6 +3736,30 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-03-09T22:15:43.664Z"
+    },
+    "ai-stream-timing-x-headers-production": {
+      "id": "ai-stream-timing-x-headers-production",
+      "title": "AI Chat streaming route exposes X-AI timing headers on production",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260310-0080",
+      "firstSeenAt": "2026-03-10T00:50:11.433Z",
+      "lastSeenRunId": "QA-20260310-0080",
+      "lastSeenAt": "2026-03-10T00:50:11.433Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "stream/v2 response headers: x-ai-latency-ms=215, x-ai-mode=streaming, x-ai-source=cloud-run, x-ai-cache-status=BYPASS",
+      "lastNote": "",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-03-10T00:50:11.433Z"
     }
   },
   "runs": [
@@ -6664,6 +6688,44 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260310-0080",
+      "recordedAt": "2026-03-10T00:50:11.433Z",
+      "recordedAtKst": "2026-03-10 09:50:11 KST",
+      "title": "Vercel Playwright QA - stream/v2 timing header verification",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260310-0080.json",
+      "checks": {
+        "total": 5,
+        "passed": 4,
+        "failed": 1
+      },
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Production deployment dd64e7d15에서 guest flow 후 AI Chat summary query를 재검증한 결과, /api/ai/supervisor/stream/v2 경로로 정상 응답했고 UI에는 Streaming AI 배지와 15대 서버 요약이 노출되었습니다.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "observability-monitoring",
+          "domainName": "IT Monitoring & Observability SME",
+          "fit": "partially-appropriate",
+          "improvementNeeded": true,
+          "rationale": "stream/v2 응답에서 x-ai-latency-ms=215, x-ai-mode=streaming, x-ai-source=cloud-run, x-ai-cache-status=BYPASS는 노출됐지만 server-timing은 여전히 null이었습니다. stream timing observability는 부분 개선됐지만 production header visibility gap이 남아 있습니다.",
+          "nextAction": "Vercel/Next response path에서 Server-Timing이 제거되는 지점을 추가 진단하고, QA 기준은 우선 X-AI-Latency-Ms를 SSOT로 사용"
+        }
+      ],
+      "expertCount": 2,
+      "expertNeedsImprovementCount": 1,
+      "completedCount": 2,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -6672,16 +6734,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 43,
-      "appropriateCount": 42,
+      "seenCount": 44,
+      "appropriateCount": 43,
       "partialCount": 1,
       "inappropriateCount": 0,
       "improvementNeededCount": 7,
-      "lastRunId": "QA-20260310-0079",
-      "lastSeenAt": "2026-03-10T00:19:24.666Z",
+      "lastRunId": "QA-20260310-0080",
+      "lastSeenAt": "2026-03-10T00:50:11.433Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "2026-03-10 KST clean browser session에서 guest PIN(4231) -> 시스템 시작 -> dashboard -> AI 실경로를 재측정한 결과, AI Chat summary는 first visible 4.3초 / stream complete 4.6초, Analyst 전체 분석은 first visible 7.4초 / 마지막 요청 완료 7.2초로 severe latency regression(50~66초)은 재현되지 않았습니다.",
+      "lastRationale": "Production deployment dd64e7d15에서 guest flow 후 AI Chat summary query를 재검증한 결과, /api/ai/supervisor/stream/v2 경로로 정상 응답했고 UI에는 Streaming AI 배지와 15대 서버 요약이 노출되었습니다.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -6689,17 +6751,17 @@
       "domainName": "IT Monitoring & Observability SME",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 22,
+      "seenCount": 23,
       "appropriateCount": 5,
-      "partialCount": 17,
+      "partialCount": 18,
       "inappropriateCount": 0,
-      "improvementNeededCount": 17,
-      "lastRunId": "QA-20260310-0079",
-      "lastSeenAt": "2026-03-10T00:19:24.666Z",
+      "improvementNeededCount": 18,
+      "lastRunId": "QA-20260310-0080",
+      "lastSeenAt": "2026-03-10T00:50:11.433Z",
       "lastFit": "partially-appropriate",
       "lastImprovementNeeded": true,
-      "lastRationale": "Analyst proxy 응답에서는 x-ai-latency-ms/x-ai-mode/x-ai-source/x-ai-cache-status를 확인했지만 server-timing은 null이었고, Chat streaming route(/api/ai/supervisor/stream/v2)에는 timing headers가 노출되지 않았습니다. 성능 문제보다 계측 표준 미비가 남아 있습니다.",
-      "lastNextAction": "Server-Timing 제거 지점을 확인하고 stream/v2 포함 공통 timing header 정책을 정리"
+      "lastRationale": "stream/v2 응답에서 x-ai-latency-ms=215, x-ai-mode=streaming, x-ai-source=cloud-run, x-ai-cache-status=BYPASS는 노출됐지만 server-timing은 여전히 null이었습니다. stream timing observability는 부분 개선됐지만 production header visibility gap이 남아 있습니다.",
+      "lastNextAction": "Vercel/Next response path에서 Server-Timing이 제거되는 지점을 추가 진단하고, QA 기준은 우선 X-AI-Latency-Ms를 SSOT로 사용"
     },
     "ai-security-reliability": {
       "domainId": "ai-security-reliability",
