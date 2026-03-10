@@ -112,8 +112,11 @@ interface StreamFallbackResponseOptions {
 export function createStreamFallbackResponse(
   options: StreamFallbackResponseOptions
 ): Response {
-  const { message, reason = 'upstream_unavailable', retryAfterMs = 30_000 } =
-    options;
+  const {
+    message,
+    reason = 'upstream_unavailable',
+    retryAfterMs = 30_000,
+  } = options;
 
   const stream = createUIMessageStream({
     execute: async ({ writer }) => {

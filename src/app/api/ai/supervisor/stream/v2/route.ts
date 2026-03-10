@@ -25,8 +25,8 @@ import {
   getMaxTimeout,
   getRouteMaxExecutionMs,
 } from '@/config/ai-proxy.config';
-import { buildAITimingHeaders, startAITimer } from '@/lib/ai/observability';
 import { createFallbackResponse } from '@/lib/ai/fallback/ai-fallback-handler';
+import { buildAITimingHeaders, startAITimer } from '@/lib/ai/observability';
 import {
   type HybridMessage,
   normalizeMessagesForCloudRun,
@@ -41,8 +41,8 @@ import {
 } from '../../request-utils';
 import { requestSchemaLoose } from '../../schemas';
 import {
-  createStreamFallbackResponse,
   createStreamErrorResponse,
+  createStreamFallbackResponse,
   getStreamOwnerKey,
   NORMALIZED_MESSAGES_SCHEMA,
   trimMessagesForContext,
@@ -303,7 +303,9 @@ export const POST = withRateLimit(
         );
       }
       const userQuery = queryResult.userQuery;
-      const fallback = createFallbackResponse('supervisor', { query: userQuery });
+      const fallback = createFallbackResponse('supervisor', {
+        query: userQuery,
+      });
       const fallbackText = fallback.data?.response ?? fallback.message;
 
       logger.info(
@@ -460,7 +462,9 @@ export const POST = withRateLimit(
         await cleanupContext.clearStream(streamId);
 
         if (error instanceof Error && error.name === 'AbortError') {
-          logger.error('❌ [SupervisorStreamV2] Request timeout, using fallback');
+          logger.error(
+            '❌ [SupervisorStreamV2] Request timeout, using fallback'
+          );
           return createStreamFallbackResponse({
             message: fallbackText,
             reason: 'cloud_run_timeout',
@@ -468,7 +472,9 @@ export const POST = withRateLimit(
           });
         }
 
-        logger.error('❌ [SupervisorStreamV2] Upstream fetch failed, using fallback');
+        logger.error(
+          '❌ [SupervisorStreamV2] Upstream fetch failed, using fallback'
+        );
         return createStreamFallbackResponse({
           message: fallbackText,
           reason: 'cloud_run_fetch_failed',
