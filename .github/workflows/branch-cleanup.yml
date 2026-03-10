@@ -1,19 +1,19 @@
 name: Branch & PR Cleanup
 
 # 🧹 스케줄 기반 브랜치/PR 정리 자동화
-# - 매월 1일 오전 9시 (KST) 실행
+# - 매주 월요일 오전 9시 (KST) 실행
 # - 수동 실행 가능 (workflow_dispatch)
 # - 보안: 외부 입력(github.event.*) 사용하지 않음
 
 on:
   schedule:
-    # 매월 1일 00:00 UTC (09:00 KST)
-    - cron: '0 0 1 * *'
+    # 매주 월요일 00:00 UTC (09:00 KST)
+    - cron: '0 0 * * 1'
   workflow_dispatch: # 수동 실행 버튼
 
 permissions:
-  contents: write
-  pull-requests: write
+  contents: read
+  pull-requests: read
 
 jobs:
   cleanup-stale-branches:

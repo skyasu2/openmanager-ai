@@ -14,6 +14,7 @@ on:
 
 permissions:
   contents: write
+  issues: write
   pull-requests: write
 
 concurrency:
@@ -63,25 +64,91 @@ jobs:
           echo "🔀 Enable auto-merge (wait handled by GitHub merge queue/checks): $DEP_NAMES"
           gh pr merge --auto --squash "$PR_URL"
 
-      - name: Add label for manual review
+      - name: Ensure manual review label exists
         if: steps.check.outputs.should_merge == 'false'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+
+            try {
+              await github.rest.issues.getLabel({
+                owner,
+                repo,
+                name: 'needs-review',
+              });
+            } catch (error) {
+              if (error.status !== 404) {
+                throw error;
+              }
+
+              await github.rest.issues.createLabel({
+                owner,
+                repo,
+                name: 'needs-review',
+                color: 'fbca04',
+                description: 'Manual review required before merge',
+              });
+            }
+
+      - name: Add label and comment for manual review
+        if: steps.check.outputs.should_merge == 'false'
+        uses: actions/github-script@v7
         env:
-          PR_URL: ${{ github.event.pull_request.html_url }}
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           UPDATE_TYPE: ${{ steps.metadata.outputs.update-type }}
           DEP_NAMES: ${{ steps.metadata.outputs.dependency-names }}
           NEW_VERSION: ${{ steps.metadata.outputs.new-version }}
-        run: |
-          gh pr edit "$PR_URL" --add-label "needs-review"
+        with:
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const issue_number = context.issue.number;
+            const marker = '<!-- dependabot-manual-review -->';
+            const body = [
+              marker,
+              '⚠️ **Manual review required**',
+              '',
+              `This is a **${process.env.UPDATE_TYPE}** update.`,
+              '',
+              `- Package: \`${process.env.DEP_NAMES}\``,
+              `- Version: \`${process.env.NEW_VERSION}\``,
+              '',
+              'Please review the changelog before merging.',
+            ].join('\n');
 
-          # Compose message safely
-          MESSAGE="⚠️ **Manual review required**
+            await github.rest.issues.addLabels({
+              owner,
+              repo,
+              issue_number,
+              labels: ['needs-review'],
+            });
 
-          This is a **$UPDATE_TYPE** update.
+            const { data: comments } = await github.rest.issues.listComments({
+              owner,
+              repo,
+              issue_number,
+              per_page: 100,
+            });
 
-          - Package: \`$DEP_NAMES\`
-          - Version: \`$NEW_VERSION\`
+            const existing = comments.find(
+              (comment) =>
+                comment.user?.login === 'github-actions[bot]' &&
+                comment.body?.includes(marker)
+            );
 
-          Please review the changelog before merging."
-
-          gh pr comment "$PR_URL" --body "$MESSAGE"
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner,
+                repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner,
+                repo,
+                issue_number,
+                body,
+              });
+            }
