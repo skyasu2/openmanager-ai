@@ -25,10 +25,7 @@ import {
   getMaxTimeout,
   getRouteMaxExecutionMs,
 } from '@/config/ai-proxy.config';
-import {
-  buildAITimingHeaders,
-  startAITimer,
-} from '@/lib/ai/observability';
+import { buildAITimingHeaders, startAITimer } from '@/lib/ai/observability';
 import {
   type HybridMessage,
   normalizeMessagesForCloudRun,

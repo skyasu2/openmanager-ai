@@ -117,10 +117,15 @@ describe('Supervisor Stream V2 Route', () => {
 
     mockExtractLastUserQuery.mockReturnValue('서버 상태 알려줘');
     mockExtractTextFromHybridMessage.mockImplementation(
-      (message: { content?: string; parts?: Array<{ type?: string; text?: string }> }) =>
+      (message: {
+        content?: string;
+        parts?: Array<{ type?: string; text?: string }>;
+      }) =>
         message.content ??
         message.parts
-          ?.filter((part) => part?.type === 'text' && typeof part.text === 'string')
+          ?.filter(
+            (part) => part?.type === 'text' && typeof part.text === 'string'
+          )
           .map((part) => part.text)
           .join('\n') ??
         ''
