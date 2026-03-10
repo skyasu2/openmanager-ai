@@ -103,10 +103,7 @@ function getSupervisorStreamAbortTimeoutMs(options?: {
 
   return Math.max(
     getMaxTimeout('supervisor'),
-    Math.min(
-      targetTimeout,
-      getSupervisorStreamRequestTimeoutMs()
-    )
+    Math.min(targetTimeout, getSupervisorStreamRequestTimeoutMs())
   );
 }
 
