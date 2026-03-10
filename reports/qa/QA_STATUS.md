@@ -1,42 +1,42 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-10 15:39:47 KST
+> Generated at: 2026-03-10 16:41:30 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 84 |
-| Total Checks | 601 |
-| Passed | 566 |
+| Total Runs | 85 |
+| Total Checks | 602 |
+| Passed | 567 |
 | Failed | 35 |
 | Completed Items | 137 |
-| Pending Items | 0 |
+| Pending Items | 1 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 36 |
 | Expert Domains Tracked | 6 |
-| Expert Open Gaps | 0 |
-| Completion Rate | 100% |
-| Last Run | QA-20260310-0084 (2026-03-10T06:39:47.611Z) |
+| Expert Open Gaps | 1 |
+| Completion Rate | 99.28% |
+| Last Run | QA-20260310-0085 (2026-03-10T07:41:30.014Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260310-0084 (2026-03-10T06:39:47.611Z)
+Latest run: QA-20260310-0085 (2026-03-10T07:41:30.014Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| AI Quality Assurance Specialist | appropriate | no | - |
-| IT Monitoring & Observability SME | appropriate | no | - |
+| AI Quality Assurance Specialist | partially-appropriate | yes | 로컬 또는 Vercel에서 정상 서버/경고 서버 드릴다운을 다시 재현해 expected fallback인지 실제 결함인지 판정 |
 | Test Automation Architect | appropriate | no | - |
 
 ## Expert Domain Open Gaps
 
-- None
+- ai-quality-assurance: AI Quality Assurance Specialist (last QA-20260310-0085)
+  next: 로컬 또는 Vercel에서 정상 서버/경고 서버 드릴다운을 다시 재현해 expected fallback인지 실제 결함인지 판정
 
 ## Pending Improvements
 
-- None
+- [P2] analyst-normal-server-empty-state: Analyst 정상 서버 드릴다운 empty-state 의도/재현 판정 (seen 1회, last QA-20260310-0085)
 
 ## Deferred Improvements
 
@@ -258,6 +258,7 @@ Latest run: QA-20260310-0084 (2026-03-10T06:39:47.611Z)
 
 | Run ID | Time (UTC) | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260310-0085 | 2026-03-10T07:41:30.014Z | QA governance correction - track Analyst empty-state observation from run #84 | 1 | 0 | 1 | 0 | 0 | 1 |
 | QA-20260310-0084 | 2026-03-10T06:39:47.611Z | Vercel Playwright QA - Production gate after dependency merges | 11 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260310-0083 | 2026-03-10T02:03:05.427Z | Vercel Playwright QA - Full release gate recheck after issue closeout | 11 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260310-0082 | 2026-03-10T01:43:44.521Z | Vercel production AI Chat performance closeout | 5 | 1 | 0 | 0 | 0 | 0 |
@@ -277,5 +278,4 @@ Latest run: QA-20260310-0084 (2026-03-10T06:39:47.611Z)
 | QA-20260309-0068 | 2026-03-09T12:08:55.580Z | Production Playwright MCP QA - Vercel AI Assistant Performance Audit (2026-03-09) | 10 | 4 | 3 | 0 | 0 | 1 |
 | QA-20260309-0067 | 2026-03-09T11:42:50.637Z | Production Playwright MCP QA - Documentation Alignment Smoke (2026-03-09) | 6 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260309-0066 | 2026-03-09T11:10:06.247Z | Production Playwright MCP QA - Post-Push Vercel Verification (2026-03-09) | 10 | 4 | 0 | 0 | 0 | 0 |
-| QA-20260309-0065 | 2026-03-09T10:53:18.705Z | Production Playwright MCP QA - Vercel AI Flow Recheck (2026-03-09) | 8 | 4 | 0 | 0 | 0 | 0 |
 

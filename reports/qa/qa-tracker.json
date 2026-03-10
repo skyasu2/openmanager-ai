@@ -2,25 +2,25 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-03-10T06:39:47.611Z"
+    "updatedAt": "2026-03-10T07:41:30.014Z"
   },
   "sequence": {
-    "nextRunNumber": 85
+    "nextRunNumber": 86
   },
   "summary": {
-    "totalRuns": 84,
-    "totalChecks": 601,
-    "totalPassed": 566,
+    "totalRuns": 85,
+    "totalChecks": 602,
+    "totalPassed": 567,
     "totalFailed": 35,
-    "completionRate": 100,
+    "completionRate": 99.28,
     "completedItems": 137,
-    "pendingItems": 0,
+    "pendingItems": 1,
     "deferredItems": 0,
     "wontFixItems": 36,
     "expertDomainsTracked": 6,
-    "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260310-0084",
-    "lastRecordedAt": "2026-03-10T06:39:47.611Z"
+    "expertDomainsOpenGaps": 1,
+    "lastRunId": "QA-20260310-0085",
+    "lastRecordedAt": "2026-03-10T07:41:30.014Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -3808,6 +3808,30 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-03-10T01:30:32.172Z"
+    },
+    "analyst-normal-server-empty-state": {
+      "id": "analyst-normal-server-empty-state",
+      "title": "Analyst 정상 서버 드릴다운 empty-state 의도/재현 판정",
+      "priority": "P2",
+      "status": "pending",
+      "firstSeenRunId": "QA-20260310-0085",
+      "firstSeenAt": "2026-03-10T07:41:30.014Z",
+      "lastSeenRunId": "QA-20260310-0085",
+      "lastSeenAt": "2026-03-10T07:41:30.014Z",
+      "seenCount": 1,
+      "completedCount": 0,
+      "pendingCount": 1,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "codex",
+      "lastEvidence": "QA-20260310-0084 Vercel production Analyst drilldown note and screenshot",
+      "lastNote": "tracking-only pending; release-blocking 아님. cache-redis-dc1-01 선택 시 empty-state가 보였고, cache-redis-dc1-02는 상세 데이터가 정상 노출됨",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-03-10T07:41:30.014Z"
     }
   },
   "runs": [
@@ -6942,6 +6966,44 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260310-0085",
+      "recordedAt": "2026-03-10T07:41:30.014Z",
+      "recordedAtKst": "2026-03-10 16:41:30 KST",
+      "title": "QA governance correction - track Analyst empty-state observation from run #84",
+      "owner": "codex",
+      "source": "qa-governance",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260310-0085.json",
+      "checks": {
+        "total": 1,
+        "passed": 1,
+        "failed": 0
+      },
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "partially-appropriate",
+          "improvementNeeded": true,
+          "rationale": "QA-20260310-0084에서 Analyst 정상 서버 드릴다운 선택 시 empty-state가 관찰됐습니다. 경고 서버 드릴다운은 정상 동작했지만, 정상 서버 fallback이 의도인지 간헐 결함인지 아직 판정되지 않아 추적이 필요합니다.",
+          "nextAction": "로컬 또는 Vercel에서 정상 서버/경고 서버 드릴다운을 다시 재현해 expected fallback인지 실제 결함인지 판정"
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "이번 런은 런타임 회귀가 아니라 QA SSOT 정합성 보정 목적이며, stable ID를 부여해 후속 재현/종결이 가능하도록 정리합니다.",
+          "nextAction": ""
+        }
+      ],
+      "expertCount": 2,
+      "expertNeedsImprovementCount": 1,
+      "completedCount": 0,
+      "pendingCount": 1,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -6950,17 +7012,17 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 48,
+      "seenCount": 49,
       "appropriateCount": 47,
-      "partialCount": 1,
+      "partialCount": 2,
       "inappropriateCount": 0,
-      "improvementNeededCount": 7,
-      "lastRunId": "QA-20260310-0084",
-      "lastSeenAt": "2026-03-10T06:39:47.611Z",
-      "lastFit": "appropriate",
-      "lastImprovementNeeded": false,
-      "lastRationale": "Dependency merge 이후 Vercel production에서 AI Chat, Reporter, Analyst를 실제 사용자 플로우로 재검증한 결과 기능 회귀 없이 모두 정상 동작했습니다. AI Chat은 Streaming AI 경로로 응답했고, Reporter 생성/상세 보기와 Analyst 전체 분석 및 경고 서버 드릴다운도 정상 완료됐습니다.",
-      "lastNextAction": ""
+      "improvementNeededCount": 8,
+      "lastRunId": "QA-20260310-0085",
+      "lastSeenAt": "2026-03-10T07:41:30.014Z",
+      "lastFit": "partially-appropriate",
+      "lastImprovementNeeded": true,
+      "lastRationale": "QA-20260310-0084에서 Analyst 정상 서버 드릴다운 선택 시 empty-state가 관찰됐습니다. 경고 서버 드릴다운은 정상 동작했지만, 정상 서버 fallback이 의도인지 간헐 결함인지 아직 판정되지 않아 추적이 필요합니다.",
+      "lastNextAction": "로컬 또는 Vercel에서 정상 서버/경고 서버 드릴다운을 다시 재현해 expected fallback인지 실제 결함인지 판정"
     },
     "observability-monitoring": {
       "domainId": "observability-monitoring",
@@ -7018,16 +7080,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 44,
-      "appropriateCount": 40,
+      "seenCount": 45,
+      "appropriateCount": 41,
       "partialCount": 4,
       "inappropriateCount": 0,
       "improvementNeededCount": 5,
-      "lastRunId": "QA-20260310-0084",
-      "lastSeenAt": "2026-03-10T06:39:47.611Z",
+      "lastRunId": "QA-20260310-0085",
+      "lastSeenAt": "2026-03-10T07:41:30.014Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Playwright MCP 기반으로 랜딩, 시스템 시작, 대시보드, AI 사이드바, AI 3개 기능, health, console을 한 세션에서 다시 재현했고 evidence screenshot까지 확보했습니다.",
+      "lastRationale": "이번 런은 런타임 회귀가 아니라 QA SSOT 정합성 보정 목적이며, stable ID를 부여해 후속 재현/종결이 가능하도록 정리합니다.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {

@@ -48,6 +48,8 @@ reports/qa/
 - 오버엔지니어링 방지 규칙(미확정 항목 자동 WONT-FIX):
   - `isBlocking` 미지정 시 `P0/P1`은 기본 `true`, `P2`는 기본 `false`
   - `P2` 기본 비차단 항목은 `pending` 전달 시 `wont-fix`로 자동 기록(완료 지표에서 제외)
+  - 단, 재현 여부나 제품 의도 판정이 끝나지 않은 조사성 관찰은 추적 손실 방지를 위해 `pendingImprovements`에 `isBlocking: true`로 일시 유지할 수 있음
+  - 이 예외를 사용할 때는 `note`에 `release-blocking 아님` 또는 `tracking-only`를 명시해 실제 릴리즈 차단 여부를 분리해 적는다
   - 과도 항목은 템플릿의 `overengineeringScope`에 근거를 남겨 다음 런에서도 의도 추적 가능
   - 예외적으로 개선 우선순위가 높다고 판단되면 `isBlocking: true`로 명시
 - `QA_STATUS.md`는 기록 시마다 자동 재생성됩니다.

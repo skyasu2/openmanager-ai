@@ -1,0 +1,65 @@
+{
+  "runId": "QA-20260310-0085",
+  "recordedAt": "2026-03-10T07:41:30.014Z",
+  "recordedAtKst": "2026-03-10 16:41:30 KST",
+  "runTitle": "QA governance correction - track Analyst empty-state observation from run #84",
+  "owner": "codex",
+  "source": "qa-governance",
+  "environment": {
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main"
+  },
+  "checks": {
+    "total": 1,
+    "passed": 1,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "QA-20260310-0084에서 Analyst 정상 서버 드릴다운 선택 시 empty-state가 관찰됐습니다. 경고 서버 드릴다운은 정상 동작했지만, 정상 서버 fallback이 의도인지 간헐 결함인지 아직 판정되지 않아 추적이 필요합니다.",
+      "nextAction": "로컬 또는 Vercel에서 정상 서버/경고 서버 드릴다운을 다시 재현해 expected fallback인지 실제 결함인지 판정"
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "이번 런은 런타임 회귀가 아니라 QA SSOT 정합성 보정 목적이며, stable ID를 부여해 후속 재현/종결이 가능하도록 정리합니다.",
+      "nextAction": ""
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [
+    {
+      "id": "analyst-normal-server-empty-state",
+      "title": "Analyst 정상 서버 드릴다운 empty-state 의도/재현 판정",
+      "priority": "P2",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "QA-20260310-0084 Vercel production Analyst drilldown note and screenshot",
+      "note": "tracking-only pending; release-blocking 아님. cache-redis-dc1-01 선택 시 empty-state가 보였고, cache-redis-dc1-02는 상세 데이터가 정상 노출됨",
+      "owner": "codex",
+      "status": "pending",
+      "policyNote": ""
+    }
+  ],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Purpose: align QA tracker/status with the observed Analyst empty-state note from QA-20260310-0084.",
+    "No application runtime code changed in this run; this is a QA governance correction only.",
+    "Observation remains open until normal-server drilldown behavior is reproduced and classified as expected fallback or defect."
+  ],
+  "links": [
+    {
+      "label": "Vercel Production",
+      "url": "https://openmanager-ai.vercel.app"
+    }
+  ]
+}
