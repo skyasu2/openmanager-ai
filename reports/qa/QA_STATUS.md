@@ -1,41 +1,40 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-10 21:14:07 KST
+> Generated at: 2026-03-10 22:27:23 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 89 |
-| Total Checks | 658 |
-| Passed | 618 |
-| Failed | 36 |
+| Total Runs | 90 |
+| Total Checks | 665 |
+| Passed | 624 |
+| Failed | 37 |
 | Completed Items | 139 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
-| Wont-Fix Items | 37 |
+| Wont-Fix Items | 38 |
 | Expert Domains Tracked | 6 |
 | Expert Open Gaps | 1 |
 | Completion Rate | 100% |
-| Last Run | QA-20260310-0089 (2026-03-10T12:14:07.497Z) |
+| Last Run | QA-20260310-0090 (2026-03-10T13:27:23.276Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260310-0089 (2026-03-10T12:14:07.497Z)
+Latest run: QA-20260310-0090 (2026-03-10T13:27:23.276Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
 | AI Quality Assurance Specialist | appropriate | no | - |
 | IT Monitoring & Observability SME | appropriate | no | - |
-| DevOps / SRE Engineer | partially-appropriate | yes | Cloud Run min-instances=1 검토 또는 Streaming AI fallback 강화 |
+| DevOps / SRE Engineer | partially-appropriate | yes | Streaming AI fallback 시 Cloud Run 미응답 처리 개선 검토 |
 | Test Automation Architect | appropriate | no | - |
-| Data Quality & Metrics Analyst | appropriate | no | - |
 
 ## Expert Domain Open Gaps
 
-- sre-devops: DevOps / SRE Engineer (last QA-20260310-0089)
-  next: Cloud Run min-instances=1 검토 또는 Streaming AI fallback 강화
+- sre-devops: DevOps / SRE Engineer (last QA-20260310-0090)
+  next: Streaming AI fallback 시 Cloud Run 미응답 처리 개선 검토
 
 ## Pending Improvements
 
@@ -110,6 +109,8 @@ Latest run: QA-20260310-0089 (2026-03-10T12:14:07.497Z)
   - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
 - [P2] show-more-servers: 12개 더 보기 버튼 (seen 1회, last QA-20260301-0031)
   - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
+- [P2] streaming-ai-fallback-cold-start: Streaming AI fallback에서 Cloud Run 콜드스타트 시 프리셋 질문 실패 (seen 1회, last QA-20260310-0090)
+  - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (요청자 표시(isBlocking=true)로 즉시 개선 필요)
 - [P2] top5-server-detail: Top5 서버 상세 모달 (3탭) (seen 1회, last QA-20260301-0031)
   - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
 - [P2] ui-esc-close: ESC 사이드바 닫기 (seen 1회, last QA-20260301-0030)
@@ -265,6 +266,7 @@ Latest run: QA-20260310-0089 (2026-03-10T12:14:07.497Z)
 
 | Run ID | Time (UTC) | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260310-0090 | 2026-03-10T13:27:23.276Z | Vercel Production 종합 QA #90 - UI/UX + AI Chat + Reporter + Analyst 재검증 | 7 | 0 | 0 | 0 | 1 | 1 |
 | QA-20260310-0089 | 2026-03-10T12:14:07.497Z | Vercel Production 종합 QA #89 - AI Chat Cloud Run 응답 성공 + 전체 AI 기능 재검증 | 18 | 1 | 0 | 0 | 1 | 1 |
 | QA-20260310-0088 | 2026-03-10T11:33:28.088Z | Vercel Production 종합 QA #88 - UI/UX + AI 어시스턴트 성능/답변수준 평가 | 21 | 0 | 1 | 0 | 0 | 2 |
 | QA-20260310-0087 | 2026-03-10T08:55:16.945Z | Vercel Playwright QA - production recheck after QA closure | 12 | 0 | 0 | 0 | 0 | 0 |
@@ -284,5 +286,4 @@ Latest run: QA-20260310-0089 (2026-03-10T12:14:07.497Z)
 | QA-20260310-0073 | 2026-03-09T19:06:04.775Z | Local Playwright QA - E2E selector alignment closure | 3 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260310-0072 | 2026-03-09T19:05:19.630Z | Local Playwright QA - AI chat fallback and dashboard flow | 9 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260310-0071 | 2026-03-09T17:34:32.732Z | Production Playwright MCP QA - AI Chat Recheck (2026-03-10) | 6 | 2 | 1 | 0 | 0 | 1 |
-| QA-20260309-0070 | 2026-03-09T13:07:24.495Z | Production Playwright MCP QA - Summary Streaming Routing & Timing Header Verification (2026-03-09) | 6 | 2 | 0 | 1 | 0 | 1 |
 

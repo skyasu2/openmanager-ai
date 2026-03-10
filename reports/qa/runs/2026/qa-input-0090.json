@@ -1,0 +1,73 @@
+{
+  "runTitle": "Vercel Production 종합 QA #90 - UI/UX + AI Chat + Reporter + Analyst 재검증",
+  "owner": "claude-opus-4-6",
+  "source": "playwright-mcp",
+  "environment": {
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main"
+  },
+  "checks": {
+    "total": 7,
+    "passed": 6,
+    "failed": 1
+  },
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "AI Chat Cloud Run 응답 품질 우수. 핵심요약+상세분석 2단계 구조, 예측분석(CPU 73%→95.6% 1시간 후), 근본원인(뒤 서버 지연, 신뢰도 85%), 즉시/장기 권장조치(HAProxy socat, sar 모니터링) 포함. Analyst 15서버 분석 정상.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Analyst가 주의 1대(lb-haproxy-dc1-01 network 71%) 정확 식별. 상승추세 2건: web-nginx-dc1-03 CPU(안전), cache-redis-dc1-01 메모리 72%→79%(1시간15분 후 Critical). 시간대별 데이터 변동 정확 반영.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "Cloud Run 콜드스타트 지속. 첫 프리셋 질문 Streaming AI fallback 실패. 자유입력 질문은 3회 재시도 후 성공(~5분). 최종 응답 품질은 우수하나 초기 대기시간 과도.",
+      "nextAction": "Streaming AI fallback 시 Cloud Run 미응답 처리 개선 검토"
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Playwright MCP 기반 Chat/Reporter/Analyst 전체 + 탭 전환 상태 유지 검증 완료.",
+      "nextAction": ""
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [
+    {
+      "id": "streaming-ai-fallback-cold-start",
+      "title": "Streaming AI fallback에서 Cloud Run 콜드스타트 시 프리셋 질문 실패",
+      "priority": "P2",
+      "isBlocking": false,
+      "note": "첫 질문이 Streaming AI 라우트로 가면서 Cloud Run 미응답 시 빈 응답 반환. 자유입력은 Cloud Run AI 라우트 직접 사용하여 재시도 후 성공."
+    }
+  ],
+  "notes": [
+    "대시보드 정상: 전체 15대, 온라인 14, 경고 1, CPU 36%, MEM 48%, Disk 32%",
+    "AI Chat 프리셋(서버상태요약) Streaming AI fallback 실패 → 자유입력(lb-haproxy CPU 분석) Cloud Run AI 성공",
+    "AI Chat 응답 품질 5/5: 핵심요약 + 상세분석(CPU 95.6% 예측, 네트워크 상관관계, 기준선 드리프트 32%) + 근본원인(신뢰도 85%) + bash 명령어(socat, sar, haproxy 튜닝)",
+    "Reporter Agent: 로드밸런서 CPU 경고, 즉시생성, 영향서버 2대 식별",
+    "Analyst Agent: 정상14/주의1/위험0, 상승추세 2건(cache-redis 메모리 1h15m후 Critical)",
+    "탭 전환 상태 유지: Chat(4/20), Reporter(1건), Analyst(15서버) 모두 PASS"
+  ],
+  "links": [
+    {
+      "label": "Vercel Production",
+      "url": "https://openmanager-ai.vercel.app"
+    }
+  ]
+}
