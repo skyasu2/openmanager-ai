@@ -2,15 +2,15 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-03-10T02:03:05.427Z"
+    "updatedAt": "2026-03-10T06:39:47.611Z"
   },
   "sequence": {
-    "nextRunNumber": 84
+    "nextRunNumber": 85
   },
   "summary": {
-    "totalRuns": 83,
-    "totalChecks": 590,
-    "totalPassed": 555,
+    "totalRuns": 84,
+    "totalChecks": 601,
+    "totalPassed": 566,
     "totalFailed": 35,
     "completionRate": 100,
     "completedItems": 137,
@@ -19,8 +19,8 @@
     "wontFixItems": 36,
     "expertDomainsTracked": 6,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260310-0083",
-    "lastRecordedAt": "2026-03-10T02:03:05.427Z"
+    "lastRunId": "QA-20260310-0084",
+    "lastRecordedAt": "2026-03-10T06:39:47.611Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -6896,6 +6896,52 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260310-0084",
+      "recordedAt": "2026-03-10T06:39:47.611Z",
+      "recordedAtKst": "2026-03-10 15:39:47 KST",
+      "title": "Vercel Playwright QA - Production gate after dependency merges",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260310-0084.json",
+      "checks": {
+        "total": 11,
+        "passed": 11,
+        "failed": 0
+      },
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Dependency merge 이후 Vercel production에서 AI Chat, Reporter, Analyst를 실제 사용자 플로우로 재검증한 결과 기능 회귀 없이 모두 정상 동작했습니다. AI Chat은 Streaming AI 경로로 응답했고, Reporter 생성/상세 보기와 Analyst 전체 분석 및 경고 서버 드릴다운도 정상 완료됐습니다.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "observability-monitoring",
+          "domainName": "IT Monitoring & Observability SME",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "브라우저 resource timing 기준 Chat 약 5.2초, Reporter 약 2.7초, Analyst fan-out 요청은 약 0.7초~17.1초 범위로 관찰됐고 전체 UI 플로우는 릴리즈 허용 범위 내에서 완료됐습니다. /api/health는 healthy, 브라우저 콘솔 에러는 0이었습니다.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Playwright MCP 기반으로 랜딩, 시스템 시작, 대시보드, AI 사이드바, AI 3개 기능, health, console을 한 세션에서 다시 재현했고 evidence screenshot까지 확보했습니다.",
+          "nextAction": ""
+        }
+      ],
+      "expertCount": 3,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -6904,16 +6950,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 47,
-      "appropriateCount": 46,
+      "seenCount": 48,
+      "appropriateCount": 47,
       "partialCount": 1,
       "inappropriateCount": 0,
       "improvementNeededCount": 7,
-      "lastRunId": "QA-20260310-0083",
-      "lastSeenAt": "2026-03-10T02:03:05.427Z",
+      "lastRunId": "QA-20260310-0084",
+      "lastSeenAt": "2026-03-10T06:39:47.611Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Vercel production에서 AI Chat, Reporter, Analyst를 실제 사용자 플로우로 재검증한 결과 기능 회귀 없이 모두 정상 동작했습니다. AI Chat은 Streaming AI 경로로 15대 서버 요약을 반환했고, Reporter 보고서 생성과 Analyst 전체 분석/드릴다운도 모두 정상 완료됐습니다.",
+      "lastRationale": "Dependency merge 이후 Vercel production에서 AI Chat, Reporter, Analyst를 실제 사용자 플로우로 재검증한 결과 기능 회귀 없이 모두 정상 동작했습니다. AI Chat은 Streaming AI 경로로 응답했고, Reporter 생성/상세 보기와 Analyst 전체 분석 및 경고 서버 드릴다운도 정상 완료됐습니다.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -6921,16 +6967,16 @@
       "domainName": "IT Monitoring & Observability SME",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 26,
-      "appropriateCount": 8,
+      "seenCount": 27,
+      "appropriateCount": 9,
       "partialCount": 18,
       "inappropriateCount": 0,
       "improvementNeededCount": 18,
-      "lastRunId": "QA-20260310-0083",
-      "lastSeenAt": "2026-03-10T02:03:05.427Z",
+      "lastRunId": "QA-20260310-0084",
+      "lastSeenAt": "2026-03-10T06:39:47.611Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "운영 timing SSOT인 X-AI-Latency-Ms 기준으로 Chat=137ms, Reporter=2025ms, Analyst=600ms를 확인했습니다. production에서 Server-Timing은 여전히 null이지만 이미 wont-fix로 정리된 플랫폼 제약이며, 이번 재QA에서 추가 회귀는 없었습니다.",
+      "lastRationale": "브라우저 resource timing 기준 Chat 약 5.2초, Reporter 약 2.7초, Analyst fan-out 요청은 약 0.7초~17.1초 범위로 관찰됐고 전체 UI 플로우는 릴리즈 허용 범위 내에서 완료됐습니다. /api/health는 healthy, 브라우저 콘솔 에러는 0이었습니다.",
       "lastNextAction": ""
     },
     "ai-security-reliability": {
@@ -6972,16 +7018,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 43,
-      "appropriateCount": 39,
+      "seenCount": 44,
+      "appropriateCount": 40,
       "partialCount": 4,
       "inappropriateCount": 0,
       "improvementNeededCount": 5,
-      "lastRunId": "QA-20260310-0083",
-      "lastSeenAt": "2026-03-10T02:03:05.427Z",
+      "lastRunId": "QA-20260310-0084",
+      "lastSeenAt": "2026-03-10T06:39:47.611Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Playwright MCP 기반 실환경 풀 게이트를 다시 수행했고 랜딩, 대시보드, AI 사이드바, AI 3개 기능, health, console까지 모두 재현 가능하게 검증했습니다.",
+      "lastRationale": "Playwright MCP 기반으로 랜딩, 시스템 시작, 대시보드, AI 사이드바, AI 3개 기능, health, console을 한 세션에서 다시 재현했고 evidence screenshot까지 확보했습니다.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {

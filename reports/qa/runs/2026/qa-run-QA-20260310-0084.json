@@ -1,0 +1,64 @@
+{
+  "runId": "QA-20260310-0084",
+  "recordedAt": "2026-03-10T06:39:47.611Z",
+  "recordedAtKst": "2026-03-10 15:39:47 KST",
+  "runTitle": "Vercel Playwright QA - Production gate after dependency merges",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main"
+  },
+  "checks": {
+    "total": 11,
+    "passed": 11,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Dependency merge 이후 Vercel production에서 AI Chat, Reporter, Analyst를 실제 사용자 플로우로 재검증한 결과 기능 회귀 없이 모두 정상 동작했습니다. AI Chat은 Streaming AI 경로로 응답했고, Reporter 생성/상세 보기와 Analyst 전체 분석 및 경고 서버 드릴다운도 정상 완료됐습니다.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "브라우저 resource timing 기준 Chat 약 5.2초, Reporter 약 2.7초, Analyst fan-out 요청은 약 0.7초~17.1초 범위로 관찰됐고 전체 UI 플로우는 릴리즈 허용 범위 내에서 완료됐습니다. /api/health는 healthy, 브라우저 콘솔 에러는 0이었습니다.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Playwright MCP 기반으로 랜딩, 시스템 시작, 대시보드, AI 사이드바, AI 3개 기능, health, console을 한 세션에서 다시 재현했고 evidence screenshot까지 확보했습니다.",
+      "nextAction": ""
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Latest production deployment verified via Vercel MCP: dpl_9FfovKHUbqXGzpfYdYCLLZLsjdnu, commit 805e6889f, READY/PROMOTED.",
+    "Dashboard smoke passed: landing load, system start redirect to /dashboard, 15 servers rendered, online 14 / warning 1 / danger 0 / offline 0, AI sidebar/menu visible.",
+    "AI Chat passed: starter prompt for current all-server summary returned Streaming AI response on /api/ai/supervisor/stream/v2. Browser resource timing for the stream request was about 5216ms.",
+    "Reporter passed: 새 보고서 created successfully and detail view opened for 캐시 서버 메모리 사용률 경고. Browser resource timing for /api/ai/incident-report was about 2722ms.",
+    "Analyst passed: full analysis over 15 servers completed with overall status 정상 15 / 주의 0 / 위험 0. Warning trend for cache-redis-dc1-02 memory 72% -> 84% was shown, and drilldown on cache-redis-dc1-02 exposed current state, one-hour prediction, and AI insights.",
+    "Observation: selecting normal server cache-redis-dc1-01 showed a temporary fallback empty-state message instead of detail payload, while the warning-target drilldown worked normally. Treated as non-blocking because primary analysis flow and anomaly drilldown completed successfully.",
+    "Health check passed: /api/health returned 200 with status healthy and version 8.8.0.",
+    "Browser console errors were 0 in the verification session."
+  ],
+  "links": [
+    {
+      "label": "Vercel Production",
+      "url": "https://openmanager-ai.vercel.app"
+    }
+  ]
+}
