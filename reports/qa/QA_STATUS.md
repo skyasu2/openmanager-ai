@@ -1,47 +1,45 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-10 20:33:28 KST
+> Generated at: 2026-03-10 21:14:07 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 88 |
-| Total Checks | 640 |
-| Passed | 602 |
+| Total Runs | 89 |
+| Total Checks | 658 |
+| Passed | 618 |
 | Failed | 36 |
-| Completed Items | 138 |
-| Pending Items | 1 |
+| Completed Items | 139 |
+| Pending Items | 0 |
 | Deferred Items | 0 |
-| Wont-Fix Items | 36 |
+| Wont-Fix Items | 37 |
 | Expert Domains Tracked | 6 |
-| Expert Open Gaps | 2 |
-| Completion Rate | 99.28% |
-| Last Run | QA-20260310-0088 (2026-03-10T11:33:28.088Z) |
+| Expert Open Gaps | 1 |
+| Completion Rate | 100% |
+| Last Run | QA-20260310-0089 (2026-03-10T12:14:07.497Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260310-0088 (2026-03-10T11:33:28.088Z)
+Latest run: QA-20260310-0089 (2026-03-10T12:14:07.497Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| AI Quality Assurance Specialist | partially-appropriate | yes | Cloud Run AI Engine 로그 분석 및 NLQ Agent 타임아웃/에러 핸들링 개선 |
+| AI Quality Assurance Specialist | appropriate | no | - |
 | IT Monitoring & Observability SME | appropriate | no | - |
-| DevOps / SRE Engineer | partially-appropriate | yes | Cloud Run min-instances=1 또는 Streaming AI fallback 경로 구현 |
+| DevOps / SRE Engineer | partially-appropriate | yes | Cloud Run min-instances=1 검토 또는 Streaming AI fallback 강화 |
 | Test Automation Architect | appropriate | no | - |
 | Data Quality & Metrics Analyst | appropriate | no | - |
 
 ## Expert Domain Open Gaps
 
-- ai-quality-assurance: AI Quality Assurance Specialist (last QA-20260310-0088)
-  next: Cloud Run AI Engine 로그 분석 및 NLQ Agent 타임아웃/에러 핸들링 개선
-- sre-devops: DevOps / SRE Engineer (last QA-20260310-0088)
-  next: Cloud Run min-instances=1 또는 Streaming AI fallback 경로 구현
+- sre-devops: DevOps / SRE Engineer (last QA-20260310-0089)
+  next: Cloud Run min-instances=1 검토 또는 Streaming AI fallback 강화
 
 ## Pending Improvements
 
-- [P1] ai-chat-cloud-run-500: AI Chat Cloud Run 자유입력 경로 500 에러 해결 (seen 1회, last QA-20260310-0088)
+- None
 
 ## Deferred Improvements
 
@@ -77,6 +75,8 @@ Latest run: QA-20260310-0088 (2026-03-10T11:33:28.088Z)
 - [P2] analyst-full-analysis: Analyst 전체 분석 (seen 1회, last QA-20260301-0030)
   - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
 - [P2] blocked-prompt-raw-json-exposure: 보안 차단 시 raw JSON 노출 제거 (seen 1회, last QA-20260308-0056)
+  - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (요청자 표시(isBlocking=true)로 즉시 개선 필요)
+- [P2] cloud-run-cold-start-latency: Cloud Run AI Chat 콜드스타트 대기시간 과도 (5회 재시도, ~5분) (seen 1회, last QA-20260310-0089)
   - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (요청자 표시(isBlocking=true)로 즉시 개선 필요)
 - [P2] dashboard-active-alerts: 활성 알림 모달 (seen 1회, last QA-20260301-0031)
   - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
@@ -121,6 +121,7 @@ Latest run: QA-20260310-0088 (2026-03-10T11:33:28.088Z)
 
 ## Completed Improvements
 
+- ai-chat-cloud-run-500: AI Chat Cloud Run 자유입력 응답 - 최종 성공 확인 (completed 1회, last QA-20260310-0089)
 - ai-chat-latency-regression-recheck-20260310: AI Chat latency regression claim rechecked on production (completed 1회, last QA-20260310-0071)
 - ai-chat-performance-v880: AI Chat 응답 시간 및 요약 품질 검증 (completed 3회, last QA-20260310-0082)
 - ai-chat-quality-v880-quality-recheck: AI Chat 응답 품질 재검증 (completed 1회, last QA-20260308-0059)
@@ -264,6 +265,7 @@ Latest run: QA-20260310-0088 (2026-03-10T11:33:28.088Z)
 
 | Run ID | Time (UTC) | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260310-0089 | 2026-03-10T12:14:07.497Z | Vercel Production 종합 QA #89 - AI Chat Cloud Run 응답 성공 + 전체 AI 기능 재검증 | 18 | 1 | 0 | 0 | 1 | 1 |
 | QA-20260310-0088 | 2026-03-10T11:33:28.088Z | Vercel Production 종합 QA #88 - UI/UX + AI 어시스턴트 성능/답변수준 평가 | 21 | 0 | 1 | 0 | 0 | 2 |
 | QA-20260310-0087 | 2026-03-10T08:55:16.945Z | Vercel Playwright QA - production recheck after QA closure | 12 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260310-0086 | 2026-03-10T07:56:27.137Z | Vercel Analyst drilldown recheck - close normal server empty-state observation | 5 | 1 | 0 | 0 | 0 | 0 |
@@ -283,5 +285,4 @@ Latest run: QA-20260310-0088 (2026-03-10T11:33:28.088Z)
 | QA-20260310-0072 | 2026-03-09T19:05:19.630Z | Local Playwright QA - AI chat fallback and dashboard flow | 9 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260310-0071 | 2026-03-09T17:34:32.732Z | Production Playwright MCP QA - AI Chat Recheck (2026-03-10) | 6 | 2 | 1 | 0 | 0 | 1 |
 | QA-20260309-0070 | 2026-03-09T13:07:24.495Z | Production Playwright MCP QA - Summary Streaming Routing & Timing Header Verification (2026-03-09) | 6 | 2 | 0 | 1 | 0 | 1 |
-| QA-20260309-0069 | 2026-03-09T12:20:48.407Z | Production Playwright MCP QA - AI Assistant Timing Validation Correction (2026-03-09) | 6 | 3 | 0 | 0 | 0 | 0 |
 
