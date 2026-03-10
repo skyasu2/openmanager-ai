@@ -1,0 +1,64 @@
+{
+  "runId": "QA-20260310-0083",
+  "recordedAt": "2026-03-10T02:03:05.427Z",
+  "recordedAtKst": "2026-03-10 11:03:05 KST",
+  "runTitle": "Vercel Playwright QA - Full release gate recheck after issue closeout",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main"
+  },
+  "checks": {
+    "total": 11,
+    "passed": 11,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Vercel production에서 AI Chat, Reporter, Analyst를 실제 사용자 플로우로 재검증한 결과 기능 회귀 없이 모두 정상 동작했습니다. AI Chat은 Streaming AI 경로로 15대 서버 요약을 반환했고, Reporter 보고서 생성과 Analyst 전체 분석/드릴다운도 모두 정상 완료됐습니다.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "운영 timing SSOT인 X-AI-Latency-Ms 기준으로 Chat=137ms, Reporter=2025ms, Analyst=600ms를 확인했습니다. production에서 Server-Timing은 여전히 null이지만 이미 wont-fix로 정리된 플랫폼 제약이며, 이번 재QA에서 추가 회귀는 없었습니다.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Playwright MCP 기반 실환경 풀 게이트를 다시 수행했고 랜딩, 대시보드, AI 사이드바, AI 3개 기능, health, console까지 모두 재현 가능하게 검증했습니다.",
+      "nextAction": ""
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Latest production deployment verified via Vercel MCP: dpl_EnDfy831ZVKzgRGtZec4gC3izsyU, commit c638e9b22, READY/PROMOTED.",
+    "Dashboard smoke passed: landing load, system start redirect to /dashboard, 15 servers rendered, AI sidebar/menu visible.",
+    "AI Chat UI passed: starter prompt summary returned Streaming AI response with 서버 현황 요약. Resource timing for /api/ai/supervisor/stream/v2 was about 2887ms in UI flow.",
+    "Reporter UI passed: new report generated successfully. Resource timing for /api/ai/incident-report was about 2386ms in UI flow.",
+    "Analyst UI passed: full analysis over 15 servers completed with wall-clock resource timing about 9240ms and drilldown on api-was-dc1-01 opened successfully.",
+    "Direct header checks from clean session: Chat status 200 elapsed 2791ms x-ai-latency-ms=137 mode=streaming source=cloud-run cache=BYPASS; Reporter status 200 elapsed 2214ms x-ai-latency-ms=2025 mode=proxy source=cloud-run cache=MISS; Analyst status 200 elapsed 702ms x-ai-latency-ms=600 mode=proxy source=cloud-run cache=MISS.",
+    "Health check passed: /api/health returned 200 with status healthy and version 8.8.0.",
+    "Browser console errors were 0 in the clean verification session."
+  ],
+  "links": [
+    {
+      "label": "Vercel Production",
+      "url": "https://openmanager-ai.vercel.app"
+    }
+  ]
+}

@@ -1,15 +1,15 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-10 10:43:44 KST
+> Generated at: 2026-03-10 11:03:05 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 82 |
-| Total Checks | 579 |
-| Passed | 544 |
+| Total Runs | 83 |
+| Total Checks | 590 |
+| Passed | 555 |
 | Failed | 35 |
 | Completed Items | 137 |
 | Pending Items | 0 |
@@ -18,16 +18,17 @@
 | Expert Domains Tracked | 6 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Run | QA-20260310-0082 (2026-03-10T01:43:44.521Z) |
+| Last Run | QA-20260310-0083 (2026-03-10T02:03:05.427Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260310-0082 (2026-03-10T01:43:44.521Z)
+Latest run: QA-20260310-0083 (2026-03-10T02:03:05.427Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
 | AI Quality Assurance Specialist | appropriate | no | - |
 | IT Monitoring & Observability SME | appropriate | no | - |
+| Test Automation Architect | appropriate | no | - |
 
 ## Expert Domain Open Gaps
 
@@ -257,6 +258,7 @@ Latest run: QA-20260310-0082 (2026-03-10T01:43:44.521Z)
 
 | Run ID | Time (UTC) | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260310-0083 | 2026-03-10T02:03:05.427Z | Vercel Playwright QA - Full release gate recheck after issue closeout | 11 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260310-0082 | 2026-03-10T01:43:44.521Z | Vercel production AI Chat performance closeout | 5 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260310-0081 | 2026-03-10T01:30:32.172Z | Server-Timing hosting-path diagnosis and QA policy update | 4 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260310-0080 | 2026-03-10T00:50:11.433Z | Vercel Playwright QA - stream/v2 timing header verification | 5 | 2 | 0 | 0 | 0 | 1 |
@@ -276,5 +278,4 @@ Latest run: QA-20260310-0082 (2026-03-10T01:43:44.521Z)
 | QA-20260309-0066 | 2026-03-09T11:10:06.247Z | Production Playwright MCP QA - Post-Push Vercel Verification (2026-03-09) | 10 | 4 | 0 | 0 | 0 | 0 |
 | QA-20260309-0065 | 2026-03-09T10:53:18.705Z | Production Playwright MCP QA - Vercel AI Flow Recheck (2026-03-09) | 8 | 4 | 0 | 0 | 0 | 0 |
 | QA-20260309-0064 | 2026-03-09T10:22:08.080Z | Production Playwright MCP QA - Reporter Top Action Selector Correction (2026-03-09) | 4 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260309-0063 | 2026-03-09T09:15:59.021Z | Production Playwright MCP QA v8.8.0 - Vercel Full Flow Recheck (2026-03-09) | 11 | 4 | 1 | 0 | 0 | 1 |
 
