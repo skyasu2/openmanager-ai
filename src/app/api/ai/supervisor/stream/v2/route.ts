@@ -26,6 +26,7 @@ import {
   getRouteMaxExecutionMs,
 } from '@/config/ai-proxy.config';
 import { buildAITimingHeaders, startAITimer } from '@/lib/ai/observability';
+import { createFallbackResponse } from '@/lib/ai/fallback/ai-fallback-handler';
 import {
   type HybridMessage,
   normalizeMessagesForCloudRun,
@@ -40,6 +41,7 @@ import {
 } from '../../request-utils';
 import { requestSchemaLoose } from '../../schemas';
 import {
+  createStreamFallbackResponse,
   createStreamErrorResponse,
   getStreamOwnerKey,
   NORMALIZED_MESSAGES_SCHEMA,
@@ -301,6 +303,8 @@ export const POST = withRateLimit(
         );
       }
       const userQuery = queryResult.userQuery;
+      const fallback = createFallbackResponse('supervisor', { query: userQuery });
+      const fallbackText = fallback.data?.response ?? fallback.message;
 
       logger.info(
         `🌊 [SupervisorStreamV2] Query: "${userQuery.slice(0, 50)}..."`
@@ -390,12 +394,22 @@ export const POST = withRateLimit(
 
         if (!cloudRunResponse.ok) {
           const errorText = await cloudRunResponse.text();
+          const status = cloudRunResponse.status;
           logger.error(
-            `❌ [SupervisorStreamV2] Cloud Run error: ${cloudRunResponse.status} - ${errorText}`
+            `❌ [SupervisorStreamV2] Cloud Run error: ${status} - ${errorText}`
           );
 
+          // Graceful degradation for upstream instability (avoid surfacing 5xx to chat UI)
+          if (status >= 500 || status === 408 || status === 504) {
+            return createStreamFallbackResponse({
+              message: fallbackText,
+              reason: `cloud_run_${status}`,
+              retryAfterMs: fallback.retryAfter,
+            });
+          }
+
           return createStreamErrorResponse(
-            `AI 엔진 오류 (${cloudRunResponse.status}). 잠시 후 다시 시도해주세요.`
+            `AI 엔진 오류 (${status}). 잠시 후 다시 시도해주세요.`
           );
         }
 
@@ -446,13 +460,20 @@ export const POST = withRateLimit(
         await cleanupContext.clearStream(streamId);
 
         if (error instanceof Error && error.name === 'AbortError') {
-          logger.error('❌ [SupervisorStreamV2] Request timeout');
-          return createStreamErrorResponse(
-            'AI 응답 시간이 초과되었습니다. 잠시 후 다시 시도해주세요.'
-          );
+          logger.error('❌ [SupervisorStreamV2] Request timeout, using fallback');
+          return createStreamFallbackResponse({
+            message: fallbackText,
+            reason: 'cloud_run_timeout',
+            retryAfterMs: fallback.retryAfter,
+          });
         }
 
-        throw error;
+        logger.error('❌ [SupervisorStreamV2] Upstream fetch failed, using fallback');
+        return createStreamFallbackResponse({
+          message: fallbackText,
+          reason: 'cloud_run_fetch_failed',
+          retryAfterMs: fallback.retryAfter,
+        });
       } finally {
         clearTimeout(timeout);
       }

@@ -549,10 +549,45 @@ describe('Supervisor Stream V2 Route', () => {
 
       const response = await POST(request);
 
-      // AbortError returns a UIMessageStream error response (status 200 with error content)
+      // AbortError now returns graceful fallback stream (status 200)
       expect(response.status).toBe(200);
+      expect(response.headers.get('X-Fallback-Response')).toBe('true');
       expect(mockClearActiveStreamId).toHaveBeenCalled();
       expect(mockClearStream).toHaveBeenCalled();
+    });
+
+    it('Cloud Run 5xx 응답 시 fallback 스트림을 반환해야 함', async () => {
+      mockFetch.mockResolvedValueOnce(
+        new Response('Internal Server Error', {
+          status: 500,
+          headers: { 'Content-Type': 'text/plain' },
+        })
+      );
+
+      const request = new NextRequest(
+        'http://localhost/api/ai/supervisor/stream/v2',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Session-Id': 'session-5000',
+          },
+          body: JSON.stringify({
+            messages: [{ role: 'user', content: '메모리 사용량 원인 분석' }],
+            sessionId: 'session-5000',
+          }),
+        }
+      );
+
+      const response = await POST(request);
+
+      expect(response.status).toBe(200);
+      expect(response.headers.get('X-Fallback-Response')).toBe('true');
+      expect(response.headers.get('X-AI-Source')).toBe('fallback');
+
+      const streamText = await response.text();
+      expect(streamText).toContain('AI 분석 서비스가 일시적으로 불안정합니다');
+      expect(streamText).not.toContain('⚠️ 오류:');
     });
   });
 });

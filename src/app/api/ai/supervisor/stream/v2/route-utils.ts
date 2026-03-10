@@ -98,3 +98,57 @@ export function createStreamErrorResponse(errorMessage: string): Response {
 
   return createUIMessageStreamResponse({ stream });
 }
+
+interface StreamFallbackResponseOptions {
+  message: string;
+  reason?: string;
+  retryAfterMs?: number;
+}
+
+/**
+ * Fallback text response for temporary upstream failures.
+ * Emits a normal assistant text block (no stream error marker) so UI can recover gracefully.
+ */
+export function createStreamFallbackResponse(
+  options: StreamFallbackResponseOptions
+): Response {
+  const { message, reason = 'upstream_unavailable', retryAfterMs = 30_000 } =
+    options;
+
+  const stream = createUIMessageStream({
+    execute: async ({ writer }) => {
+      const fallbackId = `fallback-${generateId()}`;
+      writer.write({ type: 'text-start', id: fallbackId });
+      writer.write({ type: 'text-delta', id: fallbackId, delta: message });
+      writer.write({ type: 'text-end', id: fallbackId });
+      writer.write({
+        type: 'data-warning',
+        data: {
+          code: 'FALLBACK_RESPONSE',
+          message: 'AI 엔진 지연으로 기본 응답을 제공합니다.',
+          reason,
+          retryAfterMs,
+        },
+      });
+      writer.write({
+        type: 'data-done',
+        data: {
+          success: true,
+          fallback: true,
+          fallbackReason: reason,
+        },
+      });
+    },
+  });
+
+  return createUIMessageStreamResponse({
+    stream,
+    headers: {
+      'X-Fallback-Response': 'true',
+      'X-Retry-After': String(retryAfterMs),
+      'X-AI-Source': 'fallback',
+      'X-AI-Mode': 'streaming',
+      'X-AI-Cache-Status': 'BYPASS',
+    },
+  });
+}

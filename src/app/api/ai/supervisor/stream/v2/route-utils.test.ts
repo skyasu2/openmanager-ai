@@ -1,5 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { NORMALIZED_MESSAGES_SCHEMA } from './route-utils';
+import {
+  createStreamFallbackResponse,
+  NORMALIZED_MESSAGES_SCHEMA,
+} from './route-utils';
 
 describe('NORMALIZED_MESSAGES_SCHEMA', () => {
   it('허용된 normalized image/file mimeType은 통과해야 한다', () => {
@@ -76,5 +79,21 @@ describe('NORMALIZED_MESSAGES_SCHEMA', () => {
       { role: 'hacker', content: 'test' },
     ]);
     expect(result.success).toBe(false);
+  });
+
+  it('fallback 스트림은 에러 마커 없이 일반 텍스트를 반환해야 한다', async () => {
+    const response = createStreamFallbackResponse({
+      message: '기본 응답입니다.',
+      reason: 'test_fallback',
+      retryAfterMs: 5000,
+    });
+
+    expect(response.status).toBe(200);
+    expect(response.headers.get('X-Fallback-Response')).toBe('true');
+    expect(response.headers.get('X-Retry-After')).toBe('5000');
+
+    const bodyText = await response.text();
+    expect(bodyText).toContain('기본 응답입니다.');
+    expect(bodyText).not.toContain('⚠️ 오류:');
   });
 });
