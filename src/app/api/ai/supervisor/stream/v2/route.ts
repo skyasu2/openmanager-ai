@@ -66,6 +66,10 @@ export const maxDuration = 60;
 const SUPERVISOR_STREAM_ROUTE_MAX_DURATION_SECONDS = maxDuration;
 const AI_WARMUP_STARTED_AT_HEADER = 'x-ai-warmup-started-at';
 const AI_FIRST_QUERY_HEADER = 'x-ai-first-query';
+const WARMUP_SIGNAL_MAX_AGE_MS = 10 * 60 * 1000; // 10분
+const STREAM_SOFT_TARGET_TIMEOUT_MS = 50_000;
+const STREAM_COLD_START_FIRST_ATTEMPT_TIMEOUT_MS = 20_000;
+const STREAM_COLD_START_RETRY_TIMEOUT_MS = 18_000;
 
 function getSupervisorStreamRequestTimeoutMs(): number {
   const routeBudgetMs = getRouteMaxExecutionMs(
@@ -74,13 +78,33 @@ function getSupervisorStreamRequestTimeoutMs(): number {
   return Math.max(0, routeBudgetMs - getFunctionTimeoutReserveMs());
 }
 
-function getSupervisorStreamAbortTimeoutMs(): number {
-  // Cold start(15-40s) 대응: 짧은 타임아웃으로 인한 잦은 abort/resume churn 방지
-  const STREAM_SOFT_TARGET_TIMEOUT_MS = 50_000;
+function isWarmupAwareFirstQuery(
+  warmupStartedAt: number | null,
+  isFirstQuery: boolean
+): boolean {
+  if (!isFirstQuery || !warmupStartedAt) return false;
+  const elapsed = Date.now() - warmupStartedAt;
+  return elapsed >= 0 && elapsed <= WARMUP_SIGNAL_MAX_AGE_MS;
+}
+
+function getSupervisorStreamAbortTimeoutMs(options?: {
+  isFirstQuery?: boolean;
+  warmupStartedAt?: number | null;
+}): number {
+  // Cold start(15-40s) 상황의 첫 질의는 더 공격적인 timeout으로 전환해
+  // fallback/retry까지의 사용자 대기 시간을 단축한다.
+  const isFirstWarmupQuery = isWarmupAwareFirstQuery(
+    options?.warmupStartedAt ?? null,
+    options?.isFirstQuery === true
+  );
+  const targetTimeout = isFirstWarmupQuery
+    ? STREAM_COLD_START_FIRST_ATTEMPT_TIMEOUT_MS
+    : STREAM_SOFT_TARGET_TIMEOUT_MS;
+
   return Math.max(
     getMaxTimeout('supervisor'),
     Math.min(
-      STREAM_SOFT_TARGET_TIMEOUT_MS,
+      targetTimeout,
       getSupervisorStreamRequestTimeoutMs()
     )
   );
@@ -249,6 +273,10 @@ export const POST = withRateLimit(
         req.headers.get(AI_WARMUP_STARTED_AT_HEADER)
       );
       const isFirstQuery = req.headers.get(AI_FIRST_QUERY_HEADER) === '1';
+      const isFirstWarmupQuery = isWarmupAwareFirstQuery(
+        warmupStartedAt,
+        isFirstQuery
+      );
 
       if (isFirstQuery && warmupStartedAt) {
         const latencyMs = Date.now() - warmupStartedAt;
@@ -312,6 +340,9 @@ export const POST = withRateLimit(
         `🌊 [SupervisorStreamV2] Query: "${userQuery.slice(0, 50)}..."`
       );
       logger.info(`📡 [SupervisorStreamV2] Session: ${sessionId}`);
+      logger.info(
+        `[SupervisorStreamV2] Warmup-aware first query: ${isFirstWarmupQuery}`
+      );
 
       // 4. Normalize messages for Cloud Run
       const sanitizedMessages = applySanitizedQueryToMessages(
@@ -367,52 +398,138 @@ export const POST = withRateLimit(
 
       logger.info(`🔗 [SupervisorStreamV2] Connecting to: ${streamUrl}`);
       logger.info(`🆔 [SupervisorStreamV2] Stream ID: ${streamId}`);
-
-      const controller = new AbortController();
-      const timeout = setTimeout(
-        () => controller.abort(),
-        getSupervisorStreamAbortTimeoutMs()
-      );
       const aiTimer = startAITimer();
 
       try {
-        const cloudRunResponse = await fetch(streamUrl, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Accept: 'text/event-stream',
-            // NOTE: API secret in header is safe in transit (HTTPS) but may appear
-            // in Cloud Run access logs. Accept this trade-off for standard auth header usage.
-            ...(apiSecret && { 'X-API-Key': apiSecret }),
-          },
-          body: JSON.stringify({
-            messages: normalizedMessages,
-            sessionId,
-            enableWebSearch,
-            enableRAG,
-          }),
-          signal: controller.signal,
+        const primaryTimeoutMs = getSupervisorStreamAbortTimeoutMs({
+          isFirstQuery,
+          warmupStartedAt,
         });
+        const retryTimeoutMs = Math.max(
+          getMaxTimeout('supervisor'),
+          Math.min(STREAM_COLD_START_RETRY_TIMEOUT_MS, primaryTimeoutMs)
+        );
+        const attemptTimeouts = isFirstWarmupQuery
+          ? [primaryTimeoutMs, retryTimeoutMs]
+          : [primaryTimeoutMs];
 
-        if (!cloudRunResponse.ok) {
-          const errorText = await cloudRunResponse.text();
-          const status = cloudRunResponse.status;
-          logger.error(
-            `❌ [SupervisorStreamV2] Cloud Run error: ${status} - ${errorText}`
-          );
+        let cloudRunResponse: Response | null = null;
+        let lastError: unknown = null;
 
-          // Graceful degradation for upstream instability (avoid surfacing 5xx to chat UI)
-          if (status >= 500 || status === 408 || status === 504) {
+        for (let i = 0; i < attemptTimeouts.length; i++) {
+          const attempt = i + 1;
+          const timeoutMs = attemptTimeouts[i];
+          const hasNextAttempt = i < attemptTimeouts.length - 1;
+          const controller = new AbortController();
+          const timeout = setTimeout(() => controller.abort(), timeoutMs);
+
+          try {
+            logger.info(
+              `[SupervisorStreamV2] Cloud Run attempt ${attempt}/${attemptTimeouts.length} (timeout=${timeoutMs}ms)`
+            );
+            const response = await fetch(streamUrl, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                Accept: 'text/event-stream',
+                // NOTE: API secret in header is safe in transit (HTTPS) but may appear
+                // in Cloud Run access logs. Accept this trade-off for standard auth header usage.
+                ...(apiSecret && { 'X-API-Key': apiSecret }),
+              },
+              body: JSON.stringify({
+                messages: normalizedMessages,
+                sessionId,
+                enableWebSearch,
+                enableRAG,
+              }),
+              signal: controller.signal,
+            });
+
+            if (response.ok) {
+              cloudRunResponse = response;
+              break;
+            }
+
+            const errorText = await response.text();
+            const status = response.status;
+            const isRetryableStatus =
+              status >= 500 || status === 408 || status === 504;
+
+            logger.error(
+              `❌ [SupervisorStreamV2] Cloud Run error (attempt ${attempt}): ${status} - ${errorText}`
+            );
+
+            if (isRetryableStatus && hasNextAttempt) {
+              logger.warn(
+                `[SupervisorStreamV2] Retrying after upstream ${status} (attempt ${attempt + 1}/${attemptTimeouts.length})`
+              );
+              continue;
+            }
+
+            if (isRetryableStatus) {
+              return createStreamFallbackResponse({
+                message: fallbackText,
+                reason: `cloud_run_${status}`,
+                retryAfterMs: fallback.retryAfter,
+              });
+            }
+
+            return createStreamErrorResponse(
+              `AI 엔진 오류 (${status}). 잠시 후 다시 시도해주세요.`
+            );
+          } catch (error) {
+            lastError = error;
+            const isAbortError =
+              error instanceof Error && error.name === 'AbortError';
+
+            if (isAbortError && hasNextAttempt) {
+              logger.warn(
+                `[SupervisorStreamV2] Attempt ${attempt} timeout; retrying (${attempt + 1}/${attemptTimeouts.length})`
+              );
+              continue;
+            }
+
+            if (!isAbortError && hasNextAttempt) {
+              logger.warn(
+                `[SupervisorStreamV2] Attempt ${attempt} failed; retrying (${attempt + 1}/${attemptTimeouts.length})`
+              );
+              continue;
+            }
+
+            if (isAbortError) {
+              logger.error(
+                '❌ [SupervisorStreamV2] Request timeout, using fallback'
+              );
+              return createStreamFallbackResponse({
+                message: fallbackText,
+                reason: 'cloud_run_timeout',
+                retryAfterMs: fallback.retryAfter,
+              });
+            }
+
+            logger.error(
+              '❌ [SupervisorStreamV2] Upstream fetch failed, using fallback'
+            );
             return createStreamFallbackResponse({
               message: fallbackText,
-              reason: `cloud_run_${status}`,
+              reason: 'cloud_run_fetch_failed',
               retryAfterMs: fallback.retryAfter,
             });
+          } finally {
+            clearTimeout(timeout);
           }
+        }
 
-          return createStreamErrorResponse(
-            `AI 엔진 오류 (${status}). 잠시 후 다시 시도해주세요.`
+        if (!cloudRunResponse) {
+          logger.error(
+            '[SupervisorStreamV2] No Cloud Run response after retries, using fallback',
+            lastError
           );
+          return createStreamFallbackResponse({
+            message: fallbackText,
+            reason: 'cloud_run_unavailable',
+            retryAfterMs: fallback.retryAfter,
+          });
         }
 
         if (!cloudRunResponse.body) {
@@ -460,28 +577,7 @@ export const POST = withRateLimit(
         await clearActiveStreamId(sessionId, ownerKey);
         const cleanupContext = createUpstashResumableContext();
         await cleanupContext.clearStream(streamId);
-
-        if (error instanceof Error && error.name === 'AbortError') {
-          logger.error(
-            '❌ [SupervisorStreamV2] Request timeout, using fallback'
-          );
-          return createStreamFallbackResponse({
-            message: fallbackText,
-            reason: 'cloud_run_timeout',
-            retryAfterMs: fallback.retryAfter,
-          });
-        }
-
-        logger.error(
-          '❌ [SupervisorStreamV2] Upstream fetch failed, using fallback'
-        );
-        return createStreamFallbackResponse({
-          message: fallbackText,
-          reason: 'cloud_run_fetch_failed',
-          retryAfterMs: fallback.retryAfter,
-        });
-      } finally {
-        clearTimeout(timeout);
+        throw error;
       }
     } catch (error) {
       logger.error('❌ [SupervisorStreamV2] Error:', error);

@@ -584,10 +584,51 @@ describe('Supervisor Stream V2 Route', () => {
       expect(response.status).toBe(200);
       expect(response.headers.get('X-Fallback-Response')).toBe('true');
       expect(response.headers.get('X-AI-Source')).toBe('fallback');
+      expect(mockFetch).toHaveBeenCalledTimes(1);
 
       const streamText = await response.text();
       expect(streamText).toContain('AI 분석 서비스가 일시적으로 불안정합니다');
       expect(streamText).not.toContain('⚠️ 오류:');
+    });
+
+    it('첫 질의(warmup 헤더)에서 Cloud Run 5xx면 1회 재시도 후 성공할 수 있어야 함', async () => {
+      mockFetch
+        .mockResolvedValueOnce(
+          new Response('Service Unavailable', {
+            status: 503,
+            headers: { 'Content-Type': 'text/plain' },
+          })
+        )
+        .mockResolvedValueOnce(
+          new Response(createSseStream(), {
+            status: 200,
+            headers: { 'Content-Type': 'text/event-stream' },
+          })
+        );
+
+      const request = new NextRequest(
+        'http://localhost/api/ai/supervisor/stream/v2',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Session-Id': 'session-retry-1',
+            'X-AI-First-Query': '1',
+            'X-AI-Warmup-Started-At': String(Date.now()),
+          },
+          body: JSON.stringify({
+            messages: [{ role: 'user', content: '서버 상태 요약해줘' }],
+            sessionId: 'session-retry-1',
+          }),
+        }
+      );
+
+      const response = await POST(request);
+
+      expect(response.status).toBe(200);
+      expect(response.headers.get('X-Fallback-Response')).toBeNull();
+      expect(response.headers.get('X-AI-Source')).toBe('cloud-run');
+      expect(mockFetch).toHaveBeenCalledTimes(2);
     });
   });
 });
