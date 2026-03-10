@@ -2,25 +2,25 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-03-10T01:32:25.671Z"
+    "updatedAt": "2026-03-10T01:43:44.521Z"
   },
   "sequence": {
-    "nextRunNumber": 82
+    "nextRunNumber": 83
   },
   "summary": {
-    "totalRuns": 81,
-    "totalChecks": 574,
-    "totalPassed": 539,
+    "totalRuns": 82,
+    "totalChecks": 579,
+    "totalPassed": 544,
     "totalFailed": 35,
-    "completionRate": 99.27,
-    "completedItems": 136,
-    "pendingItems": 1,
+    "completionRate": 100,
+    "completedItems": 137,
+    "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 36,
     "expertDomainsTracked": 6,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260310-0081",
-    "lastRecordedAt": "2026-03-10T01:30:32.172Z"
+    "lastRunId": "QA-20260310-0082",
+    "lastRecordedAt": "2026-03-10T01:43:44.521Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -2997,25 +2997,25 @@
       "id": "ai-chat-performance-v880",
       "title": "AI Chat 응답 시간 및 요약 품질 검증",
       "priority": "P1",
-      "status": "pending",
+      "status": "completed",
       "firstSeenRunId": "QA-20260308-0056",
       "firstSeenAt": "2026-03-08T01:15:57.800Z",
-      "lastSeenRunId": "QA-20260310-0076",
-      "lastSeenAt": "2026-03-09T21:55:34.919Z",
-      "seenCount": 4,
-      "completedCount": 2,
+      "lastSeenRunId": "QA-20260310-0082",
+      "lastSeenAt": "2026-03-10T01:43:44.521Z",
+      "seenCount": 5,
+      "completedCount": 3,
       "pendingCount": 2,
       "deferredCount": 0,
       "wontFixCount": 0,
       "aliases": [],
       "owner": "",
-      "lastEvidence": "Vercel prod starter prompt 기준 전체 응답 완료 지연",
+      "lastEvidence": "Production direct fetch on /api/ai/supervisor/stream/v2 finished in 11056ms with x-ai-latency-ms=190; response included 서버 현황 요약, 전체 15대, warning/critical signal, and recommendation text",
       "lastNote": "Cloud Run hop 병목 여부 지속 확인",
       "isBlocking": true,
-      "isBlockingExplicit": true,
+      "isBlockingExplicit": false,
       "overengineeringScope": "",
       "lastPolicyNote": "",
-      "lastStatusChangeAt": "2026-03-09T21:55:34.919Z"
+      "lastStatusChangeAt": "2026-03-10T01:43:44.521Z"
     },
     "reporter-generate-detail-v880": {
       "id": "reporter-generate-detail-v880",
@@ -6812,6 +6812,44 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260310-0082",
+      "recordedAt": "2026-03-10T01:43:44.521Z",
+      "recordedAtKst": "2026-03-10 10:43:44 KST",
+      "title": "Vercel production AI Chat performance closeout",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260310-0082.json",
+      "checks": {
+        "total": 5,
+        "passed": 5,
+        "failed": 0
+      },
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Production deployment 1c876ecb4에서 AI Chat summary query를 재측정한 결과, /api/ai/supervisor/stream/v2가 status 200으로 정상 응답했고 전체 스트림 완료 시간은 약 11.1초로 release target(<30s) 안에 들어왔습니다. 응답에는 15대 서버 요약, 경고/비상 서버 식별, 권고 조치가 모두 포함됐습니다.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "observability-monitoring",
+          "domainName": "IT Monitoring & Observability SME",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "같은 요청에서 x-ai-latency-ms=190, x-ai-mode=streaming, x-ai-source=cloud-run, x-ai-cache-status=BYPASS를 확인했습니다. 운영 timing SSOT인 X-AI-Latency-Ms 기준으로는 관측성이 충분합니다.",
+          "nextAction": ""
+        }
+      ],
+      "expertCount": 2,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -6820,16 +6858,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 45,
-      "appropriateCount": 44,
+      "seenCount": 46,
+      "appropriateCount": 45,
       "partialCount": 1,
       "inappropriateCount": 0,
       "improvementNeededCount": 7,
-      "lastRunId": "QA-20260310-0081",
-      "lastSeenAt": "2026-03-10T01:30:32.172Z",
+      "lastRunId": "QA-20260310-0082",
+      "lastSeenAt": "2026-03-10T01:43:44.521Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "같은 /api/ai/supervisor/stream/v2 요청을 production과 localhost에서 직접 fetch 비교해 timing header 전달 경로를 분리 검증했습니다.",
+      "lastRationale": "Production deployment 1c876ecb4에서 AI Chat summary query를 재측정한 결과, /api/ai/supervisor/stream/v2가 status 200으로 정상 응답했고 전체 스트림 완료 시간은 약 11.1초로 release target(<30s) 안에 들어왔습니다. 응답에는 15대 서버 요약, 경고/비상 서버 식별, 권고 조치가 모두 포함됐습니다.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -6837,16 +6875,16 @@
       "domainName": "IT Monitoring & Observability SME",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 24,
-      "appropriateCount": 6,
+      "seenCount": 25,
+      "appropriateCount": 7,
       "partialCount": 18,
       "inappropriateCount": 0,
       "improvementNeededCount": 18,
-      "lastRunId": "QA-20260310-0081",
-      "lastSeenAt": "2026-03-10T01:30:32.172Z",
+      "lastRunId": "QA-20260310-0082",
+      "lastSeenAt": "2026-03-10T01:43:44.521Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "localhost:3000에서는 Server-Timing과 performance.serverTiming이 모두 보였고, production에서는 X-AI-* 헤더는 유지되지만 Server-Timing만 비었습니다. 앱 코드가 아니라 Vercel production 응답 경로 차이로 판단되며, QA SSOT를 X-AI-Latency-Ms로 정리했습니다.",
+      "lastRationale": "같은 요청에서 x-ai-latency-ms=190, x-ai-mode=streaming, x-ai-source=cloud-run, x-ai-cache-status=BYPASS를 확인했습니다. 운영 timing SSOT인 X-AI-Latency-Ms 기준으로는 관측성이 충분합니다.",
       "lastNextAction": ""
     },
     "ai-security-reliability": {

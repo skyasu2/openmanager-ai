@@ -1,0 +1,67 @@
+{
+  "runId": "QA-20260310-0082",
+  "recordedAt": "2026-03-10T01:43:44.521Z",
+  "recordedAtKst": "2026-03-10 10:43:44 KST",
+  "runTitle": "Vercel production AI Chat performance closeout",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main"
+  },
+  "checks": {
+    "total": 5,
+    "passed": 5,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Production deployment 1c876ecb4에서 AI Chat summary query를 재측정한 결과, /api/ai/supervisor/stream/v2가 status 200으로 정상 응답했고 전체 스트림 완료 시간은 약 11.1초로 release target(<30s) 안에 들어왔습니다. 응답에는 15대 서버 요약, 경고/비상 서버 식별, 권고 조치가 모두 포함됐습니다.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "같은 요청에서 x-ai-latency-ms=190, x-ai-mode=streaming, x-ai-source=cloud-run, x-ai-cache-status=BYPASS를 확인했습니다. 운영 timing SSOT인 X-AI-Latency-Ms 기준으로는 관측성이 충분합니다.",
+      "nextAction": ""
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "ai-chat-performance-v880",
+      "title": "AI Chat 응답 시간 및 요약 품질 검증",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "Production direct fetch on /api/ai/supervisor/stream/v2 finished in 11056ms with x-ai-latency-ms=190; response included 서버 현황 요약, 전체 15대, warning/critical signal, and recommendation text",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Deployment verified via Vercel MCP: dpl_9NNDJ5JfL26auJ6F3h7AZJXF6cAQ, commit 1c876ecb4, READY/PROMOTED.",
+    "Production direct fetch measurement: status=200, elapsedMs=11056, x-ai-latency-ms=190, x-ai-mode=streaming, x-ai-source=cloud-run, x-ai-cache-status=BYPASS.",
+    "Quality checks passed: hasSummaryTitle=true, hasTotal15Servers=true, hasRecommendation=true, hasWarningSignal=true, hasStreamingEvents=true.",
+    "Resource timing for the same request was duration=10804ms. This remains well below the release target of <30s from production-qa-2026-02-25 baseline.",
+    "This closes the stale pending item introduced by QA-20260310-0076 latency claim."
+  ],
+  "links": [
+    {
+      "label": "Vercel Production",
+      "url": "https://openmanager-ai.vercel.app"
+    }
+  ]
+}

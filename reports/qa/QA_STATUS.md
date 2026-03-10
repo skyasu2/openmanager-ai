@@ -1,28 +1,28 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-10 10:32:25 KST
+> Generated at: 2026-03-10 10:43:44 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 81 |
-| Total Checks | 574 |
-| Passed | 539 |
+| Total Runs | 82 |
+| Total Checks | 579 |
+| Passed | 544 |
 | Failed | 35 |
-| Completed Items | 136 |
-| Pending Items | 1 |
+| Completed Items | 137 |
+| Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 36 |
 | Expert Domains Tracked | 6 |
 | Expert Open Gaps | 0 |
-| Completion Rate | 99.27% |
-| Last Run | QA-20260310-0081 (2026-03-10T01:30:32.172Z) |
+| Completion Rate | 100% |
+| Last Run | QA-20260310-0082 (2026-03-10T01:43:44.521Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260310-0081 (2026-03-10T01:30:32.172Z)
+Latest run: QA-20260310-0082 (2026-03-10T01:43:44.521Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -35,7 +35,7 @@ Latest run: QA-20260310-0081 (2026-03-10T01:30:32.172Z)
 
 ## Pending Improvements
 
-- [P1] ai-chat-performance-v880: AI Chat 응답 시간 및 요약 품질 검증 (seen 4회, last QA-20260310-0076)
+- None
 
 ## Deferred Improvements
 
@@ -43,6 +43,10 @@ Latest run: QA-20260310-0081 (2026-03-10T01:30:32.172Z)
 
 ## Wont-Fix Improvements
 
+- [P1] ai-server-timing-header-production: Server-Timing header visibility in production (seen 2회, last QA-20260310-0081)
+  - note: 플랫폼 제약으로 인한 비차단 항목: Vercel production에서는 Server-Timing 대신 X-AI-Latency-Ms를 운영 SSOT로 사용
+- [P1] obs-fp-fn-weekly-report: 오탐/미탐 주간 리포트 자동 생성 (seen 3회, last QA-20260227-0013)
+- [P1] security-attack-regression-pack: 보안 공격 시나리오 회귀팩 구축 (seen 3회, last QA-20260227-0013)
 - [P2] ai-chat-detail-expand: AI Chat 상세 분석 펼치기 (seen 1회, last QA-20260301-0030)
   - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
 - [P2] ai-chat-sidebar-open: AI 사이드바 열기 (seen 1회, last QA-20260301-0030)
@@ -50,8 +54,6 @@ Latest run: QA-20260310-0081 (2026-03-10T01:30:32.172Z)
 - [P2] ai-code-gate-input-policy: AI Code Gate: Prompt 패턴 15개 방어 점검 (seen 1회, last QA-20260226-0005)
 - [P2] ai-engine-status: AI 엔진 상태 표시 (seen 1회, last QA-20260301-0031)
   - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
-- [P1] ai-server-timing-header-production: Server-Timing header visibility in production (seen 2회, last QA-20260310-0081)
-  - note: 플랫폼 제약으로 인한 비차단 항목: Vercel production에서는 Server-Timing 대신 X-AI-Latency-Ms를 운영 SSOT로 사용
 - [P2] ai-sidebar-open: AI 사이드바 열기/닫기 (seen 1회, last QA-20260301-0031)
   - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
 - [P2] ai-sidebar-right-panel: AI 우측 패널 기능 메뉴 (seen 1회, last QA-20260301-0031)
@@ -90,12 +92,10 @@ Latest run: QA-20260310-0081 (2026-03-10T01:30:32.172Z)
   - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
 - [P2] log-explorer-modal: 로그 탐색기 모달 (seen 1회, last QA-20260301-0031)
   - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
-- [P1] obs-fp-fn-weekly-report: 오탐/미탐 주간 리포트 자동 생성 (seen 3회, last QA-20260227-0013)
 - [P2] profile-menu: 프로필 메뉴 드롭다운 (seen 1회, last QA-20260301-0031)
   - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
 - [P2] reporter-generate: Reporter 보고서 생성 (seen 1회, last QA-20260301-0030)
   - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
-- [P1] security-attack-regression-pack: 보안 공격 시나리오 회귀팩 구축 (seen 3회, last QA-20260227-0013)
 - [P2] server-card-expand: 서버 카드 상세 펼치기/접기 (seen 1회, last QA-20260301-0031)
   - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
 - [P2] server-detail-log-tab: 로그 & 네트워크 탭 (seen 1회, last QA-20260301-0031)
@@ -116,6 +116,7 @@ Latest run: QA-20260310-0081 (2026-03-10T01:30:32.172Z)
 ## Completed Improvements
 
 - ai-chat-latency-regression-recheck-20260310: AI Chat latency regression claim rechecked on production (completed 1회, last QA-20260310-0071)
+- ai-chat-performance-v880: AI Chat 응답 시간 및 요약 품질 검증 (completed 3회, last QA-20260310-0082)
 - ai-chat-quality-v880-quality-recheck: AI Chat 응답 품질 재검증 (completed 1회, last QA-20260308-0059)
 - ai-chat-quality-v880-recheck: AI Chat 응답 품질 및 완료 시간 재검증 (completed 1회, last QA-20260308-0058)
 - ai-chat-response: AI Chat 응답 (completed 1회, last QA-20260301-0035)
@@ -256,6 +257,7 @@ Latest run: QA-20260310-0081 (2026-03-10T01:30:32.172Z)
 
 | Run ID | Time (UTC) | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260310-0082 | 2026-03-10T01:43:44.521Z | Vercel production AI Chat performance closeout | 5 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260310-0081 | 2026-03-10T01:30:32.172Z | Server-Timing hosting-path diagnosis and QA policy update | 4 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260310-0080 | 2026-03-10T00:50:11.433Z | Vercel Playwright QA - stream/v2 timing header verification | 5 | 2 | 0 | 0 | 0 | 1 |
 | QA-20260310-0079 | 2026-03-10T00:19:24.666Z | Production AI latency remeasurement - no severe regression reproduced | 4 | 0 | 0 | 0 | 0 | 1 |
@@ -275,4 +277,4 @@ Latest run: QA-20260310-0081 (2026-03-10T01:30:32.172Z)
 | QA-20260309-0065 | 2026-03-09T10:53:18.705Z | Production Playwright MCP QA - Vercel AI Flow Recheck (2026-03-09) | 8 | 4 | 0 | 0 | 0 | 0 |
 | QA-20260309-0064 | 2026-03-09T10:22:08.080Z | Production Playwright MCP QA - Reporter Top Action Selector Correction (2026-03-09) | 4 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260309-0063 | 2026-03-09T09:15:59.021Z | Production Playwright MCP QA v8.8.0 - Vercel Full Flow Recheck (2026-03-09) | 11 | 4 | 1 | 0 | 0 | 1 |
-| QA-20260309-0062 | 2026-03-09T06:00:52.043Z | Production Playwright MCP QA #63 v8.8.0 - Full AI Feature + Tab State Verification | 0 | 0 | 0 | 0 | 0 | 0 |
+
