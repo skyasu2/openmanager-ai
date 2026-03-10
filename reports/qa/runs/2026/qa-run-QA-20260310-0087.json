@@ -1,0 +1,66 @@
+{
+  "runId": "QA-20260310-0087",
+  "recordedAt": "2026-03-10T08:55:16.945Z",
+  "recordedAtKst": "2026-03-10 17:55:16 KST",
+  "runTitle": "Vercel Playwright QA - production recheck after QA closure",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main"
+  },
+  "checks": {
+    "total": 12,
+    "passed": 12,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Vercel production에서 AI Chat, Reporter, Analyst의 실제 사용자 플로우를 다시 검증한 결과 기능 회귀 없이 모두 정상 동작했습니다. Chat은 전체 15대 서버 요약을 반환했고, Reporter는 보고서 생성과 상세보기, Analyst는 전체 분석과 경고 서버 드릴다운을 정상 완료했습니다.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Health check는 healthy, 콘솔 에러는 0이었고, direct fetch 기준 intelligent-monitoring은 x-ai-latency-ms=631 / mode=proxy / source=cloud-run / cache-status=MISS를 반환했습니다. Chat stream direct fetch도 x-ai-latency-ms=200 / mode=streaming / source=cloud-run / cache-status=BYPASS를 반환했습니다.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Playwright MCP로 랜딩, 시스템 시작, 대시보드, AI 사이드바, AI 3개 기능, health, console을 한 세션에서 재현했고 run screenshot까지 확보했습니다.",
+      "nextAction": ""
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Latest production deployment verified via Vercel MCP: dpl_J2SCk34mDT4kdxxdhYCYQMM2mUVe, commit c58fa5123, READY/PROMOTED.",
+    "Landing and system start passed: landing page rendered normally, system start completed, and /dashboard loaded successfully.",
+    "Dashboard smoke passed: 15 servers rendered with online 14 / warning 1 / danger 0 / offline 0 and AI sidebar/menu visible.",
+    "AI Chat UI passed: starter prompt for current all-server summary returned a Streaming AI answer on /api/ai/supervisor/stream/v2 with cache-redis-dc1-01 warning and actionable recommendation. Browser resource timing for the UI stream request was about 25024ms.",
+    "AI Chat direct fetch passed: POST /api/ai/supervisor/stream/v2 returned 200 in about 24194ms with x-ai-latency-ms=200, x-ai-mode=streaming, x-ai-source=cloud-run, x-ai-cache-status=BYPASS, server-timing=null.",
+    "Reporter passed: 새 보고서 created successfully, counts updated to 전체 (1) / 경고 (1), and 상세보기 exposed detected anomaly, recommendations, and pattern sections. Browser resource timing for /api/ai/incident-report was about 2822ms.",
+    "Analyst passed: full analysis over 15 servers completed with overall status 정상 14 / 주의 1 / 위험 0 and drilldown on cache-redis-dc1-01 exposed current state, one-hour prediction, and AI insights. Browser resource timings for /api/ai/intelligent-monitoring ranged about 2288ms to 8351ms across the fan-out requests.",
+    "Analyst direct fetch passed: POST /api/ai/intelligent-monitoring for cache-redis-dc1-01 returned 200 in about 745ms with x-ai-latency-ms=631, x-ai-mode=proxy, x-ai-source=cloud-run, x-ai-cache-status=MISS, server-timing=null, and anomaly/trend/pattern data all present.",
+    "Health check passed: /api/health returned 200 with status healthy and version 8.8.0.",
+    "Browser console errors were 0 in the verification session."
+  ],
+  "links": [
+    {
+      "label": "Vercel Production",
+      "url": "https://openmanager-ai.vercel.app"
+    }
+  ]
+}

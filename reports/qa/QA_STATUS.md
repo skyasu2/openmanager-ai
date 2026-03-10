@@ -1,42 +1,47 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-10 16:56:27 KST
+> Generated at: 2026-03-10 20:33:28 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 86 |
-| Total Checks | 607 |
-| Passed | 572 |
-| Failed | 35 |
+| Total Runs | 88 |
+| Total Checks | 640 |
+| Passed | 602 |
+| Failed | 36 |
 | Completed Items | 138 |
-| Pending Items | 0 |
+| Pending Items | 1 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 36 |
 | Expert Domains Tracked | 6 |
-| Expert Open Gaps | 0 |
-| Completion Rate | 100% |
-| Last Run | QA-20260310-0086 (2026-03-10T07:56:27.137Z) |
+| Expert Open Gaps | 2 |
+| Completion Rate | 99.28% |
+| Last Run | QA-20260310-0088 (2026-03-10T11:33:28.088Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260310-0086 (2026-03-10T07:56:27.137Z)
+Latest run: QA-20260310-0088 (2026-03-10T11:33:28.088Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| AI Quality Assurance Specialist | appropriate | no | - |
+| AI Quality Assurance Specialist | partially-appropriate | yes | Cloud Run AI Engine 로그 분석 및 NLQ Agent 타임아웃/에러 핸들링 개선 |
 | IT Monitoring & Observability SME | appropriate | no | - |
+| DevOps / SRE Engineer | partially-appropriate | yes | Cloud Run min-instances=1 또는 Streaming AI fallback 경로 구현 |
 | Test Automation Architect | appropriate | no | - |
+| Data Quality & Metrics Analyst | appropriate | no | - |
 
 ## Expert Domain Open Gaps
 
-- None
+- ai-quality-assurance: AI Quality Assurance Specialist (last QA-20260310-0088)
+  next: Cloud Run AI Engine 로그 분석 및 NLQ Agent 타임아웃/에러 핸들링 개선
+- sre-devops: DevOps / SRE Engineer (last QA-20260310-0088)
+  next: Cloud Run min-instances=1 또는 Streaming AI fallback 경로 구현
 
 ## Pending Improvements
 
-- None
+- [P1] ai-chat-cloud-run-500: AI Chat Cloud Run 자유입력 경로 500 에러 해결 (seen 1회, last QA-20260310-0088)
 
 ## Deferred Improvements
 
@@ -259,6 +264,8 @@ Latest run: QA-20260310-0086 (2026-03-10T07:56:27.137Z)
 
 | Run ID | Time (UTC) | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260310-0088 | 2026-03-10T11:33:28.088Z | Vercel Production 종합 QA #88 - UI/UX + AI 어시스턴트 성능/답변수준 평가 | 21 | 0 | 1 | 0 | 0 | 2 |
+| QA-20260310-0087 | 2026-03-10T08:55:16.945Z | Vercel Playwright QA - production recheck after QA closure | 12 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260310-0086 | 2026-03-10T07:56:27.137Z | Vercel Analyst drilldown recheck - close normal server empty-state observation | 5 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260310-0085 | 2026-03-10T07:41:30.014Z | QA governance correction - track Analyst empty-state observation from run #84 | 1 | 0 | 1 | 0 | 0 | 1 |
 | QA-20260310-0084 | 2026-03-10T06:39:47.611Z | Vercel Playwright QA - Production gate after dependency merges | 11 | 0 | 0 | 0 | 0 | 0 |
@@ -277,6 +284,4 @@ Latest run: QA-20260310-0086 (2026-03-10T07:56:27.137Z)
 | QA-20260310-0071 | 2026-03-09T17:34:32.732Z | Production Playwright MCP QA - AI Chat Recheck (2026-03-10) | 6 | 2 | 1 | 0 | 0 | 1 |
 | QA-20260309-0070 | 2026-03-09T13:07:24.495Z | Production Playwright MCP QA - Summary Streaming Routing & Timing Header Verification (2026-03-09) | 6 | 2 | 0 | 1 | 0 | 1 |
 | QA-20260309-0069 | 2026-03-09T12:20:48.407Z | Production Playwright MCP QA - AI Assistant Timing Validation Correction (2026-03-09) | 6 | 3 | 0 | 0 | 0 | 0 |
-| QA-20260309-0068 | 2026-03-09T12:08:55.580Z | Production Playwright MCP QA - Vercel AI Assistant Performance Audit (2026-03-09) | 10 | 4 | 3 | 0 | 0 | 1 |
-| QA-20260309-0067 | 2026-03-09T11:42:50.637Z | Production Playwright MCP QA - Documentation Alignment Smoke (2026-03-09) | 6 | 2 | 0 | 0 | 0 | 0 |
 

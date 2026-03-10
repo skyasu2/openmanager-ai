@@ -1,0 +1,91 @@
+{
+  "runId": "QA-20260310-0088",
+  "recordedAt": "2026-03-10T11:33:28.088Z",
+  "recordedAtKst": "2026-03-10 20:33:28 KST",
+  "runTitle": "Vercel Production 종합 QA #88 - UI/UX + AI 어시스턴트 성능/답변수준 평가",
+  "owner": "claude-opus-4-6",
+  "source": "playwright-mcp",
+  "environment": {
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main"
+  },
+  "checks": {
+    "total": 21,
+    "passed": 18,
+    "failed": 1
+  },
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "AI Chat 프리셋 응답 품질 우수하나, Cloud Run AI Engine 자유입력 경로에서 500 에러 발생. NLQ Agent 안정성 개선 필요.",
+      "nextAction": "Cloud Run AI Engine 로그 분석 및 NLQ Agent 타임아웃/에러 핸들링 개선"
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Analyst Agent의 15개 서버 전체 분석, 이상감지(Threshold+Statistical+Enhanced), 1시간 예측(신뢰도 포함)이 관측 가능성 요건을 충분히 충족",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "Cloud Run 콜드스타트 시 AI Chat 60초 타임아웃 + 500 에러. min-instances 설정 또는 fallback 경로 필요",
+      "nextAction": "Cloud Run min-instances=1 또는 Streaming AI fallback 경로 구현"
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Playwright MCP 기반 E2E QA가 전체 AI 기능(Chat/Reporter/Analyst)을 커버",
+      "nextAction": ""
+    },
+    {
+      "domainId": "data-metrics-quality",
+      "domainName": "Data Quality & Metrics Analyst",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Analyst Agent가 15개 서버 메트릭을 정확히 반영(CPU/MEM/Disk/Network), 예측 신뢰도 제공",
+      "nextAction": ""
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [
+    {
+      "id": "ai-chat-cloud-run-500",
+      "title": "AI Chat Cloud Run 자유입력 경로 500 에러 해결",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "프리셋(Streaming AI)은 정상, 자유입력(Cloud Run 라우팅)은 콜드스타트 후에도 500 반환",
+      "owner": "",
+      "status": "pending",
+      "policyNote": ""
+    }
+  ],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "AI Chat 첫 응답(Streaming AI): ~3초, 구조화된 분석(요약/주의/추세/권고) 우수",
+    "Reporter Agent 보고서 즉시 생성(~1초), 추정원인(신뢰도 80%) 포함",
+    "Analyst Agent 15서버 전체분석 ~18초, 이상감지(2개)+예측(CPU 65%→87%, 1h25m후 Critical) 상세",
+    "탭 전환 시 Chat/Reporter/Analyst 상태 완벽 유지",
+    "AI Chat 자유입력 시 Cloud Run 콜드스타트(~60초) + Internal Server Error 발생"
+  ],
+  "links": [
+    {
+      "label": "Vercel Production",
+      "url": "https://openmanager-ai.vercel.app"
+    }
+  ]
+}

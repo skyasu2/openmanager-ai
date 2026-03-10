@@ -2,25 +2,25 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-03-10T07:56:27.137Z"
+    "updatedAt": "2026-03-10T11:33:28.088Z"
   },
   "sequence": {
-    "nextRunNumber": 87
+    "nextRunNumber": 89
   },
   "summary": {
-    "totalRuns": 86,
-    "totalChecks": 607,
-    "totalPassed": 572,
-    "totalFailed": 35,
-    "completionRate": 100,
+    "totalRuns": 88,
+    "totalChecks": 640,
+    "totalPassed": 602,
+    "totalFailed": 36,
+    "completionRate": 99.28,
     "completedItems": 138,
-    "pendingItems": 0,
+    "pendingItems": 1,
     "deferredItems": 0,
     "wontFixItems": 36,
     "expertDomainsTracked": 6,
-    "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260310-0086",
-    "lastRecordedAt": "2026-03-10T07:56:27.137Z"
+    "expertDomainsOpenGaps": 2,
+    "lastRunId": "QA-20260310-0088",
+    "lastRecordedAt": "2026-03-10T11:33:28.088Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -3832,6 +3832,30 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-03-10T07:56:27.137Z"
+    },
+    "ai-chat-cloud-run-500": {
+      "id": "ai-chat-cloud-run-500",
+      "title": "AI Chat Cloud Run 자유입력 경로 500 에러 해결",
+      "priority": "P1",
+      "status": "pending",
+      "firstSeenRunId": "QA-20260310-0088",
+      "firstSeenAt": "2026-03-10T11:33:28.088Z",
+      "lastSeenRunId": "QA-20260310-0088",
+      "lastSeenAt": "2026-03-10T11:33:28.088Z",
+      "seenCount": 1,
+      "completedCount": 0,
+      "pendingCount": 1,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "",
+      "lastNote": "프리셋(Streaming AI)은 정상, 자유입력(Cloud Run 라우팅)은 콜드스타트 후에도 500 반환",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-03-10T11:33:28.088Z"
     }
   },
   "runs": [
@@ -7050,6 +7074,114 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260310-0087",
+      "recordedAt": "2026-03-10T08:55:16.945Z",
+      "recordedAtKst": "2026-03-10 17:55:16 KST",
+      "title": "Vercel Playwright QA - production recheck after QA closure",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260310-0087.json",
+      "checks": {
+        "total": 12,
+        "passed": 12,
+        "failed": 0
+      },
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Vercel production에서 AI Chat, Reporter, Analyst의 실제 사용자 플로우를 다시 검증한 결과 기능 회귀 없이 모두 정상 동작했습니다. Chat은 전체 15대 서버 요약을 반환했고, Reporter는 보고서 생성과 상세보기, Analyst는 전체 분석과 경고 서버 드릴다운을 정상 완료했습니다.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "observability-monitoring",
+          "domainName": "IT Monitoring & Observability SME",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Health check는 healthy, 콘솔 에러는 0이었고, direct fetch 기준 intelligent-monitoring은 x-ai-latency-ms=631 / mode=proxy / source=cloud-run / cache-status=MISS를 반환했습니다. Chat stream direct fetch도 x-ai-latency-ms=200 / mode=streaming / source=cloud-run / cache-status=BYPASS를 반환했습니다.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Playwright MCP로 랜딩, 시스템 시작, 대시보드, AI 사이드바, AI 3개 기능, health, console을 한 세션에서 재현했고 run screenshot까지 확보했습니다.",
+          "nextAction": ""
+        }
+      ],
+      "expertCount": 3,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260310-0088",
+      "recordedAt": "2026-03-10T11:33:28.088Z",
+      "recordedAtKst": "2026-03-10 20:33:28 KST",
+      "title": "Vercel Production 종합 QA #88 - UI/UX + AI 어시스턴트 성능/답변수준 평가",
+      "owner": "claude-opus-4-6",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260310-0088.json",
+      "checks": {
+        "total": 21,
+        "passed": 18,
+        "failed": 1
+      },
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "partially-appropriate",
+          "improvementNeeded": true,
+          "rationale": "AI Chat 프리셋 응답 품질 우수하나, Cloud Run AI Engine 자유입력 경로에서 500 에러 발생. NLQ Agent 안정성 개선 필요.",
+          "nextAction": "Cloud Run AI Engine 로그 분석 및 NLQ Agent 타임아웃/에러 핸들링 개선"
+        },
+        {
+          "domainId": "observability-monitoring",
+          "domainName": "IT Monitoring & Observability SME",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Analyst Agent의 15개 서버 전체 분석, 이상감지(Threshold+Statistical+Enhanced), 1시간 예측(신뢰도 포함)이 관측 가능성 요건을 충분히 충족",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "partially-appropriate",
+          "improvementNeeded": true,
+          "rationale": "Cloud Run 콜드스타트 시 AI Chat 60초 타임아웃 + 500 에러. min-instances 설정 또는 fallback 경로 필요",
+          "nextAction": "Cloud Run min-instances=1 또는 Streaming AI fallback 경로 구현"
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Playwright MCP 기반 E2E QA가 전체 AI 기능(Chat/Reporter/Analyst)을 커버",
+          "nextAction": ""
+        },
+        {
+          "domainId": "data-metrics-quality",
+          "domainName": "Data Quality & Metrics Analyst",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Analyst Agent가 15개 서버 메트릭을 정확히 반영(CPU/MEM/Disk/Network), 예측 신뢰도 제공",
+          "nextAction": ""
+        }
+      ],
+      "expertCount": 5,
+      "expertNeedsImprovementCount": 2,
+      "completedCount": 0,
+      "pendingCount": 1,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -7058,33 +7190,33 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 50,
-      "appropriateCount": 48,
-      "partialCount": 2,
+      "seenCount": 52,
+      "appropriateCount": 49,
+      "partialCount": 3,
       "inappropriateCount": 0,
-      "improvementNeededCount": 8,
-      "lastRunId": "QA-20260310-0086",
-      "lastSeenAt": "2026-03-10T07:56:27.137Z",
-      "lastFit": "appropriate",
-      "lastImprovementNeeded": false,
-      "lastRationale": "최신 Vercel production에서 Analyst 전체 분석 후 정상 서버(web-nginx-dc1-01)와 위험 서버(cache-redis-dc1-01) 드릴다운 모두 상세 데이터가 정상 노출됐습니다. 이전 empty-state 관찰은 최신 상태에서 재현되지 않았습니다.",
-      "lastNextAction": ""
+      "improvementNeededCount": 9,
+      "lastRunId": "QA-20260310-0088",
+      "lastSeenAt": "2026-03-10T11:33:28.088Z",
+      "lastFit": "partially-appropriate",
+      "lastImprovementNeeded": true,
+      "lastRationale": "AI Chat 프리셋 응답 품질 우수하나, Cloud Run AI Engine 자유입력 경로에서 500 에러 발생. NLQ Agent 안정성 개선 필요.",
+      "lastNextAction": "Cloud Run AI Engine 로그 분석 및 NLQ Agent 타임아웃/에러 핸들링 개선"
     },
     "observability-monitoring": {
       "domainId": "observability-monitoring",
       "domainName": "IT Monitoring & Observability SME",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 28,
-      "appropriateCount": 10,
+      "seenCount": 30,
+      "appropriateCount": 12,
       "partialCount": 18,
       "inappropriateCount": 0,
       "improvementNeededCount": 18,
-      "lastRunId": "QA-20260310-0086",
-      "lastSeenAt": "2026-03-10T07:56:27.137Z",
+      "lastRunId": "QA-20260310-0088",
+      "lastSeenAt": "2026-03-10T11:33:28.088Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "동일 세션 direct fetch 기준 cache-redis-dc1-01, cache-redis-dc1-02 모두 X-Fallback-Response 없이 full data(anomaly/trend/pattern present)를 반환했습니다. 상시 폴백 상태는 확인되지 않았습니다.",
+      "lastRationale": "Analyst Agent의 15개 서버 전체 분석, 이상감지(Threshold+Statistical+Enhanced), 1시간 예측(신뢰도 포함)이 관측 가능성 요건을 충분히 충족",
       "lastNextAction": ""
     },
     "ai-security-reliability": {
@@ -7109,33 +7241,33 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 14,
+      "seenCount": 15,
       "appropriateCount": 14,
-      "partialCount": 0,
+      "partialCount": 1,
       "inappropriateCount": 0,
-      "improvementNeededCount": 0,
-      "lastRunId": "QA-20260307-0053",
-      "lastSeenAt": "2026-03-07T00:14:12.888Z",
-      "lastFit": "appropriate",
-      "lastImprovementNeeded": false,
-      "lastRationale": "Vercel 배포 정상, Cloud Run AI Engine 연동 확인",
-      "lastNextAction": ""
+      "improvementNeededCount": 1,
+      "lastRunId": "QA-20260310-0088",
+      "lastSeenAt": "2026-03-10T11:33:28.088Z",
+      "lastFit": "partially-appropriate",
+      "lastImprovementNeeded": true,
+      "lastRationale": "Cloud Run 콜드스타트 시 AI Chat 60초 타임아웃 + 500 에러. min-instances 설정 또는 fallback 경로 필요",
+      "lastNextAction": "Cloud Run min-instances=1 또는 Streaming AI fallback 경로 구현"
     },
     "test-automation": {
       "domainId": "test-automation",
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 46,
-      "appropriateCount": 42,
+      "seenCount": 48,
+      "appropriateCount": 44,
       "partialCount": 4,
       "inappropriateCount": 0,
       "improvementNeededCount": 5,
-      "lastRunId": "QA-20260310-0086",
-      "lastSeenAt": "2026-03-10T07:56:27.137Z",
+      "lastRunId": "QA-20260310-0088",
+      "lastSeenAt": "2026-03-10T11:33:28.088Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Vercel Playwright MCP로 세션 재생성 후 시스템 시작, Analyst 전체 분석, 정상/위험 서버 드릴다운, direct API 확인을 같은 브라우저 컨텍스트에서 재현했습니다.",
+      "lastRationale": "Playwright MCP 기반 E2E QA가 전체 AI 기능(Chat/Reporter/Analyst)을 커버",
       "lastNextAction": ""
     },
     "data-metrics-quality": {
@@ -7143,16 +7275,16 @@
       "domainName": "Data Quality & Metrics Analyst",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 15,
-      "appropriateCount": 3,
+      "seenCount": 16,
+      "appropriateCount": 4,
       "partialCount": 12,
       "inappropriateCount": 0,
       "improvementNeededCount": 12,
-      "lastRunId": "QA-20260302-0039",
-      "lastSeenAt": "2026-03-01T17:31:03.533Z",
+      "lastRunId": "QA-20260310-0088",
+      "lastSeenAt": "2026-03-10T11:33:28.088Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "시스템 시작 호출 지연/성공률을 3회 샘플 기준으로 수집하고 임계치 내 동작을 검증했습니다.",
+      "lastRationale": "Analyst Agent가 15개 서버 메트릭을 정확히 반영(CPU/MEM/Disk/Network), 예측 신뢰도 제공",
       "lastNextAction": ""
     }
   }
