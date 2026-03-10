@@ -141,6 +141,11 @@ type AITimingHeaderOptions = {
 
 /**
  * 브라우저/QA가 AI 응답 시간을 헤더만으로 읽을 수 있도록 표준/커스텀 헤더를 생성한다.
+ *
+ * 참고:
+ * - `X-AI-Latency-Ms` / `X-AI-Processing-Ms`가 운영 SSOT이다.
+ * - `Server-Timing`은 로컬/일부 호스팅 경로에서는 보이지만, Vercel production 응답에서는
+ *   스트리밍/프록시 경로에서 제거될 수 있으므로 보조 진단 신호로만 사용한다.
  */
 export function buildAITimingHeaders(
   options: AITimingHeaderOptions

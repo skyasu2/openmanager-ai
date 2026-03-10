@@ -2,25 +2,25 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-03-10T00:50:11.433Z"
+    "updatedAt": "2026-03-10T01:32:25.671Z"
   },
   "sequence": {
-    "nextRunNumber": 81
+    "nextRunNumber": 82
   },
   "summary": {
-    "totalRuns": 80,
-    "totalChecks": 570,
-    "totalPassed": 535,
+    "totalRuns": 81,
+    "totalChecks": 574,
+    "totalPassed": 539,
     "totalFailed": 35,
-    "completionRate": 98.53,
-    "completedItems": 134,
+    "completionRate": 99.27,
+    "completedItems": 136,
     "pendingItems": 1,
-    "deferredItems": 1,
-    "wontFixItems": 35,
+    "deferredItems": 0,
+    "wontFixItems": 36,
     "expertDomainsTracked": 6,
-    "expertDomainsOpenGaps": 1,
-    "lastRunId": "QA-20260310-0080",
-    "lastRecordedAt": "2026-03-10T00:50:11.433Z"
+    "expertDomainsOpenGaps": 0,
+    "lastRunId": "QA-20260310-0081",
+    "lastRecordedAt": "2026-03-10T01:30:32.172Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -3573,25 +3573,25 @@
       "id": "ai-server-timing-header-production",
       "title": "Server-Timing header visibility in production",
       "priority": "P1",
-      "status": "deferred",
+      "status": "wont-fix",
       "firstSeenRunId": "QA-20260309-0070",
       "firstSeenAt": "2026-03-09T13:07:24.495Z",
-      "lastSeenRunId": "QA-20260309-0070",
-      "lastSeenAt": "2026-03-09T13:07:24.495Z",
-      "seenCount": 1,
+      "lastSeenRunId": "QA-20260310-0081",
+      "lastSeenAt": "2026-03-10T01:30:32.172Z",
+      "seenCount": 2,
       "completedCount": 0,
       "pendingCount": 0,
       "deferredCount": 1,
-      "wontFixCount": 0,
+      "wontFixCount": 1,
       "aliases": [],
       "owner": "",
-      "lastEvidence": "",
-      "lastNote": "buildAITimingHeaders는 Server-Timing을 구성하지만 프로덕션 Playwright fetch 응답에서는 X-AI-* 헤더만 확인됨",
+      "lastEvidence": "Production fetch omitted Server-Timing while localhost:3000 preserved Server-Timing and performance.serverTiming for the same stream/v2 request",
+      "lastNote": "Vercel production response path drops Server-Timing on stream/proxy routes; use X-AI-Latency-Ms and X-AI-Processing-Ms as QA SSOT",
       "isBlocking": false,
       "isBlockingExplicit": true,
       "overengineeringScope": "",
-      "lastPolicyNote": "P1 우선순위이나 현재 비차단으로 deferred 처리",
-      "lastStatusChangeAt": "2026-03-09T13:07:24.495Z"
+      "lastPolicyNote": "플랫폼 제약으로 인한 비차단 항목: Vercel production에서는 Server-Timing 대신 X-AI-Latency-Ms를 운영 SSOT로 사용",
+      "lastStatusChangeAt": "2026-03-10T01:30:32.172Z"
     },
     "ai-summary-query-clarification-skip-production": {
       "id": "ai-summary-query-clarification-skip-production",
@@ -3760,6 +3760,54 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-03-10T00:50:11.433Z"
+    },
+    "ai-server-timing-hosting-path-diagnosed": {
+      "id": "ai-server-timing-hosting-path-diagnosed",
+      "title": "Server-Timing production/local hosting path difference diagnosed",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260310-0081",
+      "firstSeenAt": "2026-03-10T01:30:32.172Z",
+      "lastSeenRunId": "QA-20260310-0081",
+      "lastSeenAt": "2026-03-10T01:30:32.172Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "localhost:3000 stream/v2 returned Server-Timing=ai;dur=302 and performance.serverTiming[ai=302], while production stream/v2 returned serverTiming=null with X-AI-Latency-Ms still present",
+      "lastNote": "",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-03-10T01:30:32.172Z"
+    },
+    "ai-timing-header-ssot-policy": {
+      "id": "ai-timing-header-ssot-policy",
+      "title": "QA timing header SSOT standardized to X-AI-Latency-Ms",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260310-0081",
+      "firstSeenAt": "2026-03-10T01:30:32.172Z",
+      "lastSeenRunId": "QA-20260310-0081",
+      "lastSeenAt": "2026-03-10T01:30:32.172Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "reports/qa/README.md updated: X-AI-Latency-Ms and X-AI-Processing-Ms are production QA SSOT, Server-Timing is best-effort only",
+      "lastNote": "",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-03-10T01:30:32.172Z"
     }
   },
   "runs": [
@@ -6726,6 +6774,44 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260310-0081",
+      "recordedAt": "2026-03-10T01:30:32.172Z",
+      "recordedAtKst": "2026-03-10 10:30:32 KST",
+      "title": "Server-Timing hosting-path diagnosis and QA policy update",
+      "owner": "codex",
+      "source": "playwright-mcp+local-dev",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260310-0081.json",
+      "checks": {
+        "total": 4,
+        "passed": 4,
+        "failed": 0
+      },
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "같은 /api/ai/supervisor/stream/v2 요청을 production과 localhost에서 직접 fetch 비교해 timing header 전달 경로를 분리 검증했습니다.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "observability-monitoring",
+          "domainName": "IT Monitoring & Observability SME",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "localhost:3000에서는 Server-Timing과 performance.serverTiming이 모두 보였고, production에서는 X-AI-* 헤더는 유지되지만 Server-Timing만 비었습니다. 앱 코드가 아니라 Vercel production 응답 경로 차이로 판단되며, QA SSOT를 X-AI-Latency-Ms로 정리했습니다.",
+          "nextAction": ""
+        }
+      ],
+      "expertCount": 2,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 2,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -6734,16 +6820,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 44,
-      "appropriateCount": 43,
+      "seenCount": 45,
+      "appropriateCount": 44,
       "partialCount": 1,
       "inappropriateCount": 0,
       "improvementNeededCount": 7,
-      "lastRunId": "QA-20260310-0080",
-      "lastSeenAt": "2026-03-10T00:50:11.433Z",
+      "lastRunId": "QA-20260310-0081",
+      "lastSeenAt": "2026-03-10T01:30:32.172Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Production deployment dd64e7d15에서 guest flow 후 AI Chat summary query를 재검증한 결과, /api/ai/supervisor/stream/v2 경로로 정상 응답했고 UI에는 Streaming AI 배지와 15대 서버 요약이 노출되었습니다.",
+      "lastRationale": "같은 /api/ai/supervisor/stream/v2 요청을 production과 localhost에서 직접 fetch 비교해 timing header 전달 경로를 분리 검증했습니다.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -6751,17 +6837,17 @@
       "domainName": "IT Monitoring & Observability SME",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 23,
-      "appropriateCount": 5,
+      "seenCount": 24,
+      "appropriateCount": 6,
       "partialCount": 18,
       "inappropriateCount": 0,
       "improvementNeededCount": 18,
-      "lastRunId": "QA-20260310-0080",
-      "lastSeenAt": "2026-03-10T00:50:11.433Z",
-      "lastFit": "partially-appropriate",
-      "lastImprovementNeeded": true,
-      "lastRationale": "stream/v2 응답에서 x-ai-latency-ms=215, x-ai-mode=streaming, x-ai-source=cloud-run, x-ai-cache-status=BYPASS는 노출됐지만 server-timing은 여전히 null이었습니다. stream timing observability는 부분 개선됐지만 production header visibility gap이 남아 있습니다.",
-      "lastNextAction": "Vercel/Next response path에서 Server-Timing이 제거되는 지점을 추가 진단하고, QA 기준은 우선 X-AI-Latency-Ms를 SSOT로 사용"
+      "lastRunId": "QA-20260310-0081",
+      "lastSeenAt": "2026-03-10T01:30:32.172Z",
+      "lastFit": "appropriate",
+      "lastImprovementNeeded": false,
+      "lastRationale": "localhost:3000에서는 Server-Timing과 performance.serverTiming이 모두 보였고, production에서는 X-AI-* 헤더는 유지되지만 Server-Timing만 비었습니다. 앱 코드가 아니라 Vercel production 응답 경로 차이로 판단되며, QA SSOT를 X-AI-Latency-Ms로 정리했습니다.",
+      "lastNextAction": ""
     },
     "ai-security-reliability": {
       "domainId": "ai-security-reliability",

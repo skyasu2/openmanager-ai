@@ -1,0 +1,84 @@
+{
+  "runId": "QA-20260310-0081",
+  "recordedAt": "2026-03-10T01:30:32.172Z",
+  "recordedAtKst": "2026-03-10 10:30:32 KST",
+  "runTitle": "Server-Timing hosting-path diagnosis and QA policy update",
+  "owner": "codex",
+  "source": "playwright-mcp+local-dev",
+  "environment": {
+    "frontend": "Vercel+LocalDev",
+    "backend": "Cloud Run",
+    "branch": "main"
+  },
+  "checks": {
+    "total": 4,
+    "passed": 4,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "같은 /api/ai/supervisor/stream/v2 요청을 production과 localhost에서 직접 fetch 비교해 timing header 전달 경로를 분리 검증했습니다.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "localhost:3000에서는 Server-Timing과 performance.serverTiming이 모두 보였고, production에서는 X-AI-* 헤더는 유지되지만 Server-Timing만 비었습니다. 앱 코드가 아니라 Vercel production 응답 경로 차이로 판단되며, QA SSOT를 X-AI-Latency-Ms로 정리했습니다.",
+      "nextAction": ""
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "ai-server-timing-hosting-path-diagnosed",
+      "title": "Server-Timing production/local hosting path difference diagnosed",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "localhost:3000 stream/v2 returned Server-Timing=ai;dur=302 and performance.serverTiming[ai=302], while production stream/v2 returned serverTiming=null with X-AI-Latency-Ms still present",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "ai-timing-header-ssot-policy",
+      "title": "QA timing header SSOT standardized to X-AI-Latency-Ms",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "reports/qa/README.md updated: X-AI-Latency-Ms and X-AI-Processing-Ms are production QA SSOT, Server-Timing is best-effort only",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Production direct fetch: /api/ai/supervisor/stream/v2 status=200, x-ai-latency-ms=237, x-ai-mode=streaming, x-ai-source=cloud-run, x-ai-cache-status=BYPASS, server-timing=null.",
+    "Production performance entry: serverTiming=[] for the same request.",
+    "Local direct fetch: /api/ai/supervisor/stream/v2 status=200, Server-Timing=ai;dur=302, X-AI-Latency-Ms=302.",
+    "Local performance entry: serverTiming contains metric ai dur=302.",
+    "QA policy updated so production timing assertions rely on X-AI-Latency-Ms / X-AI-Processing-Ms as SSOT."
+  ],
+  "links": [
+    {
+      "label": "Vercel Production",
+      "url": "https://openmanager-ai.vercel.app"
+    },
+    {
+      "label": "Local Dev",
+      "url": "http://localhost:3000"
+    }
+  ]
+}

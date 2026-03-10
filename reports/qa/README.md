@@ -52,6 +52,12 @@ reports/qa/
   - 예외적으로 개선 우선순위가 높다고 판단되면 `isBlocking: true`로 명시
 - `QA_STATUS.md`는 기록 시마다 자동 재생성됩니다.
 
+## AI Timing Header Rule
+
+- Vercel production에서 AI timing 검증 시 운영 SSOT는 `X-AI-Latency-Ms`와 `X-AI-Processing-Ms`입니다.
+- `Server-Timing`은 로컬 Next.js dev에서는 확인될 수 있지만, Vercel production의 스트리밍/프록시 응답에서는 제거될 수 있으므로 릴리즈 게이트의 필수 조건으로 사용하지 않습니다.
+- `Server-Timing`은 가능하면 함께 기록하되, 값이 비어 있어도 `X-AI-*` 헤더가 있으면 timing observability는 합격으로 판정합니다.
+
 ## DoD Closeout Playbook
 
 - 기준선:

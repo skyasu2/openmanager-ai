@@ -1,38 +1,37 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-10 09:50:11 KST
+> Generated at: 2026-03-10 10:32:25 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 80 |
-| Total Checks | 570 |
-| Passed | 535 |
+| Total Runs | 81 |
+| Total Checks | 574 |
+| Passed | 539 |
 | Failed | 35 |
-| Completed Items | 134 |
+| Completed Items | 136 |
 | Pending Items | 1 |
-| Deferred Items | 1 |
-| Wont-Fix Items | 35 |
+| Deferred Items | 0 |
+| Wont-Fix Items | 36 |
 | Expert Domains Tracked | 6 |
-| Expert Open Gaps | 1 |
-| Completion Rate | 98.53% |
-| Last Run | QA-20260310-0080 (2026-03-10T00:50:11.433Z) |
+| Expert Open Gaps | 0 |
+| Completion Rate | 99.27% |
+| Last Run | QA-20260310-0081 (2026-03-10T01:30:32.172Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260310-0080 (2026-03-10T00:50:11.433Z)
+Latest run: QA-20260310-0081 (2026-03-10T01:30:32.172Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
 | AI Quality Assurance Specialist | appropriate | no | - |
-| IT Monitoring & Observability SME | partially-appropriate | yes | Vercel/Next response path에서 Server-Timing이 제거되는 지점을 추가 진단하고, QA 기준은 우선 X-AI-Latency-Ms를 SSOT로 사용 |
+| IT Monitoring & Observability SME | appropriate | no | - |
 
 ## Expert Domain Open Gaps
 
-- observability-monitoring: IT Monitoring & Observability SME (last QA-20260310-0080)
-  next: Vercel/Next response path에서 Server-Timing이 제거되는 지점을 추가 진단하고, QA 기준은 우선 X-AI-Latency-Ms를 SSOT로 사용
+- None
 
 ## Pending Improvements
 
@@ -40,13 +39,10 @@ Latest run: QA-20260310-0080 (2026-03-10T00:50:11.433Z)
 
 ## Deferred Improvements
 
-- [P1] ai-server-timing-header-production: Server-Timing header visibility in production (seen 1회, last QA-20260309-0070)
-  - note: P1 우선순위이나 현재 비차단으로 deferred 처리
+- None
 
 ## Wont-Fix Improvements
 
-- [P1] obs-fp-fn-weekly-report: 오탐/미탐 주간 리포트 자동 생성 (seen 3회, last QA-20260227-0013)
-- [P1] security-attack-regression-pack: 보안 공격 시나리오 회귀팩 구축 (seen 3회, last QA-20260227-0013)
 - [P2] ai-chat-detail-expand: AI Chat 상세 분석 펼치기 (seen 1회, last QA-20260301-0030)
   - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
 - [P2] ai-chat-sidebar-open: AI 사이드바 열기 (seen 1회, last QA-20260301-0030)
@@ -54,6 +50,8 @@ Latest run: QA-20260310-0080 (2026-03-10T00:50:11.433Z)
 - [P2] ai-code-gate-input-policy: AI Code Gate: Prompt 패턴 15개 방어 점검 (seen 1회, last QA-20260226-0005)
 - [P2] ai-engine-status: AI 엔진 상태 표시 (seen 1회, last QA-20260301-0031)
   - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
+- [P1] ai-server-timing-header-production: Server-Timing header visibility in production (seen 2회, last QA-20260310-0081)
+  - note: 플랫폼 제약으로 인한 비차단 항목: Vercel production에서는 Server-Timing 대신 X-AI-Latency-Ms를 운영 SSOT로 사용
 - [P2] ai-sidebar-open: AI 사이드바 열기/닫기 (seen 1회, last QA-20260301-0031)
   - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
 - [P2] ai-sidebar-right-panel: AI 우측 패널 기능 메뉴 (seen 1회, last QA-20260301-0031)
@@ -92,10 +90,12 @@ Latest run: QA-20260310-0080 (2026-03-10T00:50:11.433Z)
   - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
 - [P2] log-explorer-modal: 로그 탐색기 모달 (seen 1회, last QA-20260301-0031)
   - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
+- [P1] obs-fp-fn-weekly-report: 오탐/미탐 주간 리포트 자동 생성 (seen 3회, last QA-20260227-0013)
 - [P2] profile-menu: 프로필 메뉴 드롭다운 (seen 1회, last QA-20260301-0031)
   - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
 - [P2] reporter-generate: Reporter 보고서 생성 (seen 1회, last QA-20260301-0030)
   - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
+- [P1] security-attack-regression-pack: 보안 공격 시나리오 회귀팩 구축 (seen 3회, last QA-20260227-0013)
 - [P2] server-card-expand: 서버 카드 상세 펼치기/접기 (seen 1회, last QA-20260301-0031)
   - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
 - [P2] server-detail-log-tab: 로그 & 네트워크 탭 (seen 1회, last QA-20260301-0031)
@@ -124,9 +124,11 @@ Latest run: QA-20260310-0080 (2026-03-10T00:50:11.433Z)
 - ai-chat-response-quality-v880-recheck-20260309: AI Chat 응답 품질 및 권고 재검증 (completed 4회, last QA-20260309-0068)
 - ai-friendly-template-todo-marker: Template TODO marker 분리 (TEMPLATE_TODO 적용) (completed 1회, last QA-20260226-0006)
 - ai-math-tools: AI 계산 도구(수식/통계/용량) 셋업 완료 (completed 1회, last QA-20260228-0023)
+- ai-server-timing-hosting-path-diagnosed: Server-Timing production/local hosting path difference diagnosed (completed 1회, last QA-20260310-0081)
 - ai-stream-timing-x-headers-production: AI Chat streaming route exposes X-AI timing headers on production (completed 1회, last QA-20260310-0080)
 - ai-summary-chat-streaming-path: AI summary chat query uses streaming path on production (completed 2회, last QA-20260310-0080)
 - ai-summary-query-clarification-skip-production: Explicit all-server summary query skips clarification in production (completed 1회, last QA-20260310-0071)
+- ai-timing-header-ssot-policy: QA timing header SSOT standardized to X-AI-Latency-Ms (completed 1회, last QA-20260310-0081)
 - ai-timing-x-headers-production: AI proxy responses expose production timing headers (completed 1회, last QA-20260309-0070)
 - ai-사이드바-토글-ai-엔진-ready-프리셋-5개-ai-기능-3개: AI 사이드바 토글 (AI 엔진 Ready, 프리셋 5개, AI 기능 3개) (completed 3회, last QA-20260302-0042)
 - analyst-full-analysis-v879: Analyst 전체 분석 및 드릴다운 (completed 1회, last QA-20260306-0052)
@@ -254,6 +256,7 @@ Latest run: QA-20260310-0080 (2026-03-10T00:50:11.433Z)
 
 | Run ID | Time (UTC) | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260310-0081 | 2026-03-10T01:30:32.172Z | Server-Timing hosting-path diagnosis and QA policy update | 4 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260310-0080 | 2026-03-10T00:50:11.433Z | Vercel Playwright QA - stream/v2 timing header verification | 5 | 2 | 0 | 0 | 0 | 1 |
 | QA-20260310-0079 | 2026-03-10T00:19:24.666Z | Production AI latency remeasurement - no severe regression reproduced | 4 | 0 | 0 | 0 | 0 | 1 |
 | QA-20260310-0078 | 2026-03-09T22:17:55.510Z | Vercel Playwright QA - E2E Guest Bug Fix Check (2026-03-10) | 3 | 1 | 0 | 0 | 0 | 0 |
@@ -273,5 +276,3 @@ Latest run: QA-20260310-0080 (2026-03-10T00:50:11.433Z)
 | QA-20260309-0064 | 2026-03-09T10:22:08.080Z | Production Playwright MCP QA - Reporter Top Action Selector Correction (2026-03-09) | 4 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260309-0063 | 2026-03-09T09:15:59.021Z | Production Playwright MCP QA v8.8.0 - Vercel Full Flow Recheck (2026-03-09) | 11 | 4 | 1 | 0 | 0 | 1 |
 | QA-20260309-0062 | 2026-03-09T06:00:52.043Z | Production Playwright MCP QA #63 v8.8.0 - Full AI Feature + Tab State Verification | 0 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260308-0061 | 2026-03-08T13:15:14.383Z | Production QA #62 - React Activity API tab state verification | 0 | 0 | 0 | 0 | 0 | 0 |
-
