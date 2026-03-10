@@ -1,0 +1,76 @@
+{
+  "runId": "QA-20260310-0086",
+  "recordedAt": "2026-03-10T07:56:27.137Z",
+  "recordedAtKst": "2026-03-10 16:56:27 KST",
+  "runTitle": "Vercel Analyst drilldown recheck - close normal server empty-state observation",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main"
+  },
+  "checks": {
+    "total": 5,
+    "passed": 5,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "최신 Vercel production에서 Analyst 전체 분석 후 정상 서버(web-nginx-dc1-01)와 위험 서버(cache-redis-dc1-01) 드릴다운 모두 상세 데이터가 정상 노출됐습니다. 이전 empty-state 관찰은 최신 상태에서 재현되지 않았습니다.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "동일 세션 direct fetch 기준 cache-redis-dc1-01, cache-redis-dc1-02 모두 X-Fallback-Response 없이 full data(anomaly/trend/pattern present)를 반환했습니다. 상시 폴백 상태는 확인되지 않았습니다.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Vercel Playwright MCP로 세션 재생성 후 시스템 시작, Analyst 전체 분석, 정상/위험 서버 드릴다운, direct API 확인을 같은 브라우저 컨텍스트에서 재현했습니다.",
+      "nextAction": ""
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "analyst-normal-server-empty-state",
+      "title": "Analyst 정상 서버 드릴다운 empty-state 의도/재현 판정",
+      "priority": "P2",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "QA-20260310-0086 Vercel recheck: web-nginx-dc1-01 detail UI normal, cache-redis-dc1-01 detail UI normal, direct /api/ai/intelligent-monitoring responses for cache-redis-dc1-01 and cache-redis-dc1-02 returned full data without X-Fallback-Response",
+      "note": "이전 QA-20260310-0084의 empty-state 관찰은 최신 production에서 재현되지 않았고, 현재 기준 활성 결함으로 보지 않음",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Latest production deployment verified via Vercel MCP: dpl_2mn88CdN173gPzxioEhC5RFMNfXP, commit 009442ed7, READY/PROMOTED.",
+    "UI recheck: Analyst full analysis completed with overall status 13 normal / 1 warning / 1 critical.",
+    "Normal server drilldown passed: web-nginx-dc1-01 opened current status, one-hour prediction, and AI insights without empty-state.",
+    "Critical server drilldown passed: cache-redis-dc1-01 opened current anomaly state, prediction, and AI insights.",
+    "Direct API recheck passed: cache-redis-dc1-01 elapsed about 6589ms with x-ai-latency-ms=5978, no X-Fallback-Response, anomaly/trend/pattern all present; cache-redis-dc1-02 elapsed about 1895ms with x-ai-latency-ms=1831, no X-Fallback-Response, anomaly/trend/pattern all present.",
+    "Conclusion: analyst-normal-server-empty-state is closed as a non-reproducible transient observation, not an active production defect."
+  ],
+  "links": [
+    {
+      "label": "Vercel Production",
+      "url": "https://openmanager-ai.vercel.app"
+    }
+  ]
+}

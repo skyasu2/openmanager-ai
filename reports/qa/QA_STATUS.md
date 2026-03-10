@@ -1,42 +1,42 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-10 16:41:30 KST
+> Generated at: 2026-03-10 16:56:27 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 85 |
-| Total Checks | 602 |
-| Passed | 567 |
+| Total Runs | 86 |
+| Total Checks | 607 |
+| Passed | 572 |
 | Failed | 35 |
-| Completed Items | 137 |
-| Pending Items | 1 |
+| Completed Items | 138 |
+| Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 36 |
 | Expert Domains Tracked | 6 |
-| Expert Open Gaps | 1 |
-| Completion Rate | 99.28% |
-| Last Run | QA-20260310-0085 (2026-03-10T07:41:30.014Z) |
+| Expert Open Gaps | 0 |
+| Completion Rate | 100% |
+| Last Run | QA-20260310-0086 (2026-03-10T07:56:27.137Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260310-0085 (2026-03-10T07:41:30.014Z)
+Latest run: QA-20260310-0086 (2026-03-10T07:56:27.137Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| AI Quality Assurance Specialist | partially-appropriate | yes | 로컬 또는 Vercel에서 정상 서버/경고 서버 드릴다운을 다시 재현해 expected fallback인지 실제 결함인지 판정 |
+| AI Quality Assurance Specialist | appropriate | no | - |
+| IT Monitoring & Observability SME | appropriate | no | - |
 | Test Automation Architect | appropriate | no | - |
 
 ## Expert Domain Open Gaps
 
-- ai-quality-assurance: AI Quality Assurance Specialist (last QA-20260310-0085)
-  next: 로컬 또는 Vercel에서 정상 서버/경고 서버 드릴다운을 다시 재현해 expected fallback인지 실제 결함인지 판정
+- None
 
 ## Pending Improvements
 
-- [P2] analyst-normal-server-empty-state: Analyst 정상 서버 드릴다운 empty-state 의도/재현 판정 (seen 1회, last QA-20260310-0085)
+- None
 
 ## Deferred Improvements
 
@@ -136,6 +136,7 @@ Latest run: QA-20260310-0085 (2026-03-10T07:41:30.014Z)
 - analyst-full-analysis-v879: Analyst 전체 분석 및 드릴다운 (completed 1회, last QA-20260306-0052)
 - analyst-full-analysis-v880: Analyst 전체 분석 및 드릴다운 검증 (completed 2회, last QA-20260309-0069)
 - analyst-full-analysis-v880-recheck-20260309: Analyst 전체 분석 경로 재검증 (completed 4회, last QA-20260309-0068)
+- analyst-normal-server-empty-state: Analyst 정상 서버 드릴다운 empty-state 의도/재현 판정 (completed 1회, last QA-20260310-0086)
 - analyst-quality-v880-quality-recheck: Analyst 전체 분석 및 드릴다운 품질 재검증 (completed 1회, last QA-20260308-0059)
 - analyst-quality-v880-recheck: Analyst 전체 분석 및 드릴다운 재검증 (completed 1회, last QA-20260308-0058)
 - anomaly-detection-prediction: 이상감지/예측 15서버 전체 분석 (completed 1회, last QA-20260306-0051)
@@ -258,6 +259,7 @@ Latest run: QA-20260310-0085 (2026-03-10T07:41:30.014Z)
 
 | Run ID | Time (UTC) | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260310-0086 | 2026-03-10T07:56:27.137Z | Vercel Analyst drilldown recheck - close normal server empty-state observation | 5 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260310-0085 | 2026-03-10T07:41:30.014Z | QA governance correction - track Analyst empty-state observation from run #84 | 1 | 0 | 1 | 0 | 0 | 1 |
 | QA-20260310-0084 | 2026-03-10T06:39:47.611Z | Vercel Playwright QA - Production gate after dependency merges | 11 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260310-0083 | 2026-03-10T02:03:05.427Z | Vercel Playwright QA - Full release gate recheck after issue closeout | 11 | 0 | 0 | 0 | 0 | 0 |
@@ -277,5 +279,4 @@ Latest run: QA-20260310-0085 (2026-03-10T07:41:30.014Z)
 | QA-20260309-0069 | 2026-03-09T12:20:48.407Z | Production Playwright MCP QA - AI Assistant Timing Validation Correction (2026-03-09) | 6 | 3 | 0 | 0 | 0 | 0 |
 | QA-20260309-0068 | 2026-03-09T12:08:55.580Z | Production Playwright MCP QA - Vercel AI Assistant Performance Audit (2026-03-09) | 10 | 4 | 3 | 0 | 0 | 1 |
 | QA-20260309-0067 | 2026-03-09T11:42:50.637Z | Production Playwright MCP QA - Documentation Alignment Smoke (2026-03-09) | 6 | 2 | 0 | 0 | 0 | 0 |
-| QA-20260309-0066 | 2026-03-09T11:10:06.247Z | Production Playwright MCP QA - Post-Push Vercel Verification (2026-03-09) | 10 | 4 | 0 | 0 | 0 | 0 |
 

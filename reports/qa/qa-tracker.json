@@ -2,25 +2,25 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-03-10T07:41:30.014Z"
+    "updatedAt": "2026-03-10T07:56:27.137Z"
   },
   "sequence": {
-    "nextRunNumber": 86
+    "nextRunNumber": 87
   },
   "summary": {
-    "totalRuns": 85,
-    "totalChecks": 602,
-    "totalPassed": 567,
+    "totalRuns": 86,
+    "totalChecks": 607,
+    "totalPassed": 572,
     "totalFailed": 35,
-    "completionRate": 99.28,
-    "completedItems": 137,
-    "pendingItems": 1,
+    "completionRate": 100,
+    "completedItems": 138,
+    "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 36,
     "expertDomainsTracked": 6,
-    "expertDomainsOpenGaps": 1,
-    "lastRunId": "QA-20260310-0085",
-    "lastRecordedAt": "2026-03-10T07:41:30.014Z"
+    "expertDomainsOpenGaps": 0,
+    "lastRunId": "QA-20260310-0086",
+    "lastRecordedAt": "2026-03-10T07:56:27.137Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -3813,25 +3813,25 @@
       "id": "analyst-normal-server-empty-state",
       "title": "Analyst 정상 서버 드릴다운 empty-state 의도/재현 판정",
       "priority": "P2",
-      "status": "pending",
+      "status": "completed",
       "firstSeenRunId": "QA-20260310-0085",
       "firstSeenAt": "2026-03-10T07:41:30.014Z",
-      "lastSeenRunId": "QA-20260310-0085",
-      "lastSeenAt": "2026-03-10T07:41:30.014Z",
-      "seenCount": 1,
-      "completedCount": 0,
+      "lastSeenRunId": "QA-20260310-0086",
+      "lastSeenAt": "2026-03-10T07:56:27.137Z",
+      "seenCount": 2,
+      "completedCount": 1,
       "pendingCount": 1,
       "deferredCount": 0,
       "wontFixCount": 0,
       "aliases": [],
       "owner": "codex",
-      "lastEvidence": "QA-20260310-0084 Vercel production Analyst drilldown note and screenshot",
-      "lastNote": "tracking-only pending; release-blocking 아님. cache-redis-dc1-01 선택 시 empty-state가 보였고, cache-redis-dc1-02는 상세 데이터가 정상 노출됨",
+      "lastEvidence": "QA-20260310-0086 Vercel recheck: web-nginx-dc1-01 detail UI normal, cache-redis-dc1-01 detail UI normal, direct /api/ai/intelligent-monitoring responses for cache-redis-dc1-01 and cache-redis-dc1-02 returned full data without X-Fallback-Response",
+      "lastNote": "이전 QA-20260310-0084의 empty-state 관찰은 최신 production에서 재현되지 않았고, 현재 기준 활성 결함으로 보지 않음",
       "isBlocking": true,
       "isBlockingExplicit": true,
       "overengineeringScope": "",
       "lastPolicyNote": "",
-      "lastStatusChangeAt": "2026-03-10T07:41:30.014Z"
+      "lastStatusChangeAt": "2026-03-10T07:56:27.137Z"
     }
   },
   "runs": [
@@ -7004,6 +7004,52 @@
       "pendingCount": 1,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260310-0086",
+      "recordedAt": "2026-03-10T07:56:27.137Z",
+      "recordedAtKst": "2026-03-10 16:56:27 KST",
+      "title": "Vercel Analyst drilldown recheck - close normal server empty-state observation",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260310-0086.json",
+      "checks": {
+        "total": 5,
+        "passed": 5,
+        "failed": 0
+      },
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "최신 Vercel production에서 Analyst 전체 분석 후 정상 서버(web-nginx-dc1-01)와 위험 서버(cache-redis-dc1-01) 드릴다운 모두 상세 데이터가 정상 노출됐습니다. 이전 empty-state 관찰은 최신 상태에서 재현되지 않았습니다.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "observability-monitoring",
+          "domainName": "IT Monitoring & Observability SME",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "동일 세션 direct fetch 기준 cache-redis-dc1-01, cache-redis-dc1-02 모두 X-Fallback-Response 없이 full data(anomaly/trend/pattern present)를 반환했습니다. 상시 폴백 상태는 확인되지 않았습니다.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Vercel Playwright MCP로 세션 재생성 후 시스템 시작, Analyst 전체 분석, 정상/위험 서버 드릴다운, direct API 확인을 같은 브라우저 컨텍스트에서 재현했습니다.",
+          "nextAction": ""
+        }
+      ],
+      "expertCount": 3,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -7012,33 +7058,33 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 49,
-      "appropriateCount": 47,
+      "seenCount": 50,
+      "appropriateCount": 48,
       "partialCount": 2,
       "inappropriateCount": 0,
       "improvementNeededCount": 8,
-      "lastRunId": "QA-20260310-0085",
-      "lastSeenAt": "2026-03-10T07:41:30.014Z",
-      "lastFit": "partially-appropriate",
-      "lastImprovementNeeded": true,
-      "lastRationale": "QA-20260310-0084에서 Analyst 정상 서버 드릴다운 선택 시 empty-state가 관찰됐습니다. 경고 서버 드릴다운은 정상 동작했지만, 정상 서버 fallback이 의도인지 간헐 결함인지 아직 판정되지 않아 추적이 필요합니다.",
-      "lastNextAction": "로컬 또는 Vercel에서 정상 서버/경고 서버 드릴다운을 다시 재현해 expected fallback인지 실제 결함인지 판정"
+      "lastRunId": "QA-20260310-0086",
+      "lastSeenAt": "2026-03-10T07:56:27.137Z",
+      "lastFit": "appropriate",
+      "lastImprovementNeeded": false,
+      "lastRationale": "최신 Vercel production에서 Analyst 전체 분석 후 정상 서버(web-nginx-dc1-01)와 위험 서버(cache-redis-dc1-01) 드릴다운 모두 상세 데이터가 정상 노출됐습니다. 이전 empty-state 관찰은 최신 상태에서 재현되지 않았습니다.",
+      "lastNextAction": ""
     },
     "observability-monitoring": {
       "domainId": "observability-monitoring",
       "domainName": "IT Monitoring & Observability SME",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 27,
-      "appropriateCount": 9,
+      "seenCount": 28,
+      "appropriateCount": 10,
       "partialCount": 18,
       "inappropriateCount": 0,
       "improvementNeededCount": 18,
-      "lastRunId": "QA-20260310-0084",
-      "lastSeenAt": "2026-03-10T06:39:47.611Z",
+      "lastRunId": "QA-20260310-0086",
+      "lastSeenAt": "2026-03-10T07:56:27.137Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "브라우저 resource timing 기준 Chat 약 5.2초, Reporter 약 2.7초, Analyst fan-out 요청은 약 0.7초~17.1초 범위로 관찰됐고 전체 UI 플로우는 릴리즈 허용 범위 내에서 완료됐습니다. /api/health는 healthy, 브라우저 콘솔 에러는 0이었습니다.",
+      "lastRationale": "동일 세션 direct fetch 기준 cache-redis-dc1-01, cache-redis-dc1-02 모두 X-Fallback-Response 없이 full data(anomaly/trend/pattern present)를 반환했습니다. 상시 폴백 상태는 확인되지 않았습니다.",
       "lastNextAction": ""
     },
     "ai-security-reliability": {
@@ -7080,16 +7126,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 45,
-      "appropriateCount": 41,
+      "seenCount": 46,
+      "appropriateCount": 42,
       "partialCount": 4,
       "inappropriateCount": 0,
       "improvementNeededCount": 5,
-      "lastRunId": "QA-20260310-0085",
-      "lastSeenAt": "2026-03-10T07:41:30.014Z",
+      "lastRunId": "QA-20260310-0086",
+      "lastSeenAt": "2026-03-10T07:56:27.137Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "이번 런은 런타임 회귀가 아니라 QA SSOT 정합성 보정 목적이며, stable ID를 부여해 후속 재현/종결이 가능하도록 정리합니다.",
+      "lastRationale": "Vercel Playwright MCP로 세션 재생성 후 시스템 시작, Analyst 전체 분석, 정상/위험 서버 드릴다운, direct API 확인을 같은 브라우저 컨텍스트에서 재현했습니다.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {
