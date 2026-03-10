@@ -68,8 +68,7 @@ const AI_WARMUP_STARTED_AT_HEADER = 'x-ai-warmup-started-at';
 const AI_FIRST_QUERY_HEADER = 'x-ai-first-query';
 const WARMUP_SIGNAL_MAX_AGE_MS = 10 * 60 * 1000; // 10분
 const STREAM_SOFT_TARGET_TIMEOUT_MS = 50_000;
-const STREAM_COLD_START_FIRST_ATTEMPT_TIMEOUT_MS = 20_000;
-const STREAM_COLD_START_RETRY_TIMEOUT_MS = 18_000;
+const STREAM_COLD_START_FIRST_ATTEMPT_TIMEOUT_MS = 45_000;
 
 function getSupervisorStreamRequestTimeoutMs(): number {
   const routeBudgetMs = getRouteMaxExecutionMs(
@@ -91,8 +90,8 @@ function getSupervisorStreamAbortTimeoutMs(options?: {
   isFirstQuery?: boolean;
   warmupStartedAt?: number | null;
 }): number {
-  // Cold start(15-40s) 상황의 첫 질의는 더 공격적인 timeout으로 전환해
-  // fallback/retry까지의 사용자 대기 시간을 단축한다.
+  // Cold start(30-40s) 상황의 첫 질의는 단일 45초 timeout으로 콜드스타트를
+  // 충분히 커버한다. UI에 "최대 1분 소요" 안내가 표시되므로 UX 일관성 유지.
   const isFirstWarmupQuery = isWarmupAwareFirstQuery(
     options?.warmupStartedAt ?? null,
     options?.isFirstQuery === true
@@ -402,13 +401,7 @@ export const POST = withRateLimit(
           isFirstQuery,
           warmupStartedAt,
         });
-        const retryTimeoutMs = Math.max(
-          getMaxTimeout('supervisor'),
-          Math.min(STREAM_COLD_START_RETRY_TIMEOUT_MS, primaryTimeoutMs)
-        );
-        const attemptTimeouts = isFirstWarmupQuery
-          ? [primaryTimeoutMs, retryTimeoutMs]
-          : [primaryTimeoutMs];
+        const attemptTimeouts = [primaryTimeoutMs];
 
         let cloudRunResponse: Response | null = null;
         let lastError: unknown = null;
