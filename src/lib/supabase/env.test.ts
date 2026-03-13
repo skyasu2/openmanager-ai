@@ -14,7 +14,10 @@ describe('supabase env helpers', () => {
   }
 
   it('reads public URL from NEXT_PUBLIC_SUPABASE_URL', async () => {
-    vi.stubEnv('NEXT_PUBLIC_SUPABASE_URL', ' https://public.example.supabase.co ');
+    vi.stubEnv(
+      'NEXT_PUBLIC_SUPABASE_URL',
+      ' https://public.example.supabase.co '
+    );
 
     const { getSupabasePublicUrl } = await loadHelpers();
 
