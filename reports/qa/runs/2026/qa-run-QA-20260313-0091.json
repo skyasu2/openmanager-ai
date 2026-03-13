@@ -1,0 +1,93 @@
+{
+  "runId": "QA-20260313-0091",
+  "recordedAt": "2026-03-13T12:15:43.286Z",
+  "recordedAtKst": "2026-03-13 21:15:43 KST",
+  "runTitle": "Vercel Production 종합 QA #91 - 프론트엔드 전기능 + UI/UX + AI Assistant + 성능 평가",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main"
+  },
+  "checks": {
+    "total": 18,
+    "passed": 18,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "AI Chat, 자동장애 보고서, 이상감지/예측 3개 기능을 Vercel 실환경에서 실제 호출해 모두 정상 응답과 UI 상태 반영을 확인했다.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "대시보드 상태 요약, 활성 알림, 알림 이력, 로그 탐색기, 서버 상세 모달, Analyst 결과가 15대 서버 기준으로 일관되게 연결됐다. 운영 헤더 X-AI-*도 실측됐다.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "ai-security-reliability",
+      "domainName": "AI Security & Reliability Architect",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "인증/게스트 세션, 프로덕션 API 200, 브라우저 콘솔 오류 0건은 확인했지만 prompt injection 및 악성 입력 회귀 시나리오는 이번 프론트엔드 QA 범위에 포함하지 않았다.",
+      "nextAction": "스트리밍 채팅에 대한 악성 입력/보안 회귀 시나리오를 별도 릴리즈 QA 세트로 유지"
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Vercel 프론트엔드와 Cloud Run AI 연동이 실환경에서 안정적으로 동작했고, 스트리밍/프록시 AI 경로 모두 200 응답과 timing header를 반환했다.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Playwright MCP로 랜딩, 인증, 대시보드 상호작용, AI 사이드바, Chat/Reporter/Analyst, 모달과 탭 전환을 실제 브라우저 기준으로 종단 검증했다.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "data-metrics-quality",
+      "domainName": "Data Quality & Metrics Analyst",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "대시보드 집계값, 알림 상태, Reporter 생성 결과, Analyst 서버별 분석 결과가 서로 모순 없이 연결됐고 위험 서버(lb-haproxy-dc1-01) 드릴다운도 정상 노출됐다.",
+      "nextAction": ""
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "랜딩 -> 로그인 -> 게스트 PIN(4231) -> 시스템 시작 -> /dashboard 리다이렉트 전체 플로우 PASS",
+    "대시보드 핵심 UI PASS: 상태 카드, 필터, 활성 알림, 알림 이력, 로그 탐색기, 토폴로지 맵, 서버 카드 확장(6->15), 서버 상세 3탭 전환",
+    "AI Sidebar PASS: Ready 상태, 프리셋 질문, 도구 메뉴, 전체 화면, Chat/Reporter/Analyst 기능 버튼 정상",
+    "AI Chat PASS: 실제 응답 본문 렌더, 분석 근거 상세 보기, 도움 평가 버튼 정상. UI 상 첫 응답 체감은 약 5.6초, direct fetch 기준 X-AI-Latency-Ms=171ms, 전체 SSE 종료까지 10.5초",
+    "Reporter PASS: 보고서 생성 POST 200, 상세보기/해결 완료/MD 복사/다운로드 액션 노출, MD 복사 버튼 상태 변경 확인",
+    "Analyst PASS: 전체 분석 시 15개 intelligent-monitoring 요청 200, 요약(정상 11 / 주의 1 / 위험 3) 및 위험/정상 서버 드릴다운 모두 정상",
+    "성능 실측: 랜딩 DCL 587ms / load 727ms / FCP 744ms, 대시보드 DCL 654ms / load 655ms / FCP 740ms",
+    "AI API 실측: incident-report X-AI-Latency-Ms=1449ms(elapsed 1403ms), intelligent-monitoring X-AI-Latency-Ms=666ms(elapsed 989ms), Analyst 15개 fan-out 평균 2361ms / 최대 7385ms",
+    "브라우저 콘솔 error 0건. 토폴로지 맵은 시각 동작 정상이나 노드 라벨이 DOM textContent 기준으로 충분히 드러나지 않아 접근성/자동화 관측성 보강 여지는 있음"
+  ],
+  "links": [
+    {
+      "label": "Vercel Production",
+      "url": "https://openmanager-ai.vercel.app"
+    },
+    {
+      "label": "Latest Vercel Deployment",
+      "url": "https://openmanager-nxfeaxqz9-skyasus-projects.vercel.app"
+    }
+  ]
+}

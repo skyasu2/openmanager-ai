@@ -1,4 +1,5 @@
 import { type NextRequest, NextResponse } from 'next/server';
+import { getSupabaseServerUrl } from '@/lib/supabase/env';
 import { createClient } from '@/lib/supabase/server';
 import { getErrorMessage } from '@/types/type-utils';
 
@@ -73,7 +74,7 @@ async function getDatabaseHealth(): Promise<{
 }
 
 function getDatabaseHost(): string {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
+  const url = getSupabaseServerUrl();
   if (!url) return 'supabase';
 
   try {

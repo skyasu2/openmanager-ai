@@ -86,11 +86,17 @@ describe('NORMALIZED_MESSAGES_SCHEMA', () => {
       message: '기본 응답입니다.',
       reason: 'test_fallback',
       retryAfterMs: 5000,
+      headers: {
+        'X-AI-Latency-Ms': '1234',
+        'Server-Timing': 'ai;dur=1234',
+      },
     });
 
     expect(response.status).toBe(200);
     expect(response.headers.get('X-Fallback-Response')).toBe('true');
     expect(response.headers.get('X-Retry-After')).toBe('5000');
+    expect(response.headers.get('X-AI-Latency-Ms')).toBe('1234');
+    expect(response.headers.get('Server-Timing')).toBe('ai;dur=1234');
 
     const bodyText = await response.text();
     expect(bodyText).toContain('기본 응답입니다.');

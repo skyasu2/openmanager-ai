@@ -7,12 +7,13 @@
 
 import { createClient } from '@supabase/supabase-js';
 import { logger } from '@/lib/logging';
+import { getSupabaseServerUrl } from './env';
 
 if (typeof window !== 'undefined') {
   throw new Error('supabase/admin.ts should only be imported on the server.');
 }
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseUrl = getSupabaseServerUrl();
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 if (!supabaseUrl || !supabaseServiceKey) {

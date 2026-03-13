@@ -14,6 +14,13 @@ REQUIRED_VARS=(
   "CLOUD_RUN_ENABLED"
   "CLOUD_RUN_AI_URL"
   "CLOUD_RUN_API_SECRET"
+  "SESSION_SECRET"
+  "NEXT_PUBLIC_SUPABASE_URL"
+  "NEXT_PUBLIC_SUPABASE_ANON_KEY"
+)
+
+OPTIONAL_VARS=(
+  "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY"
 )
 
 # 색상 코드
@@ -28,25 +35,54 @@ if [ ! -f "$ENV_FILE" ]; then
   exit 1
 fi
 
+get_env_value() {
+  local key="$1"
+  local raw
+
+  raw=$(grep "^$key=" "$ENV_FILE" | head -n 1 | cut -d '=' -f2-)
+  raw="${raw%\"}"
+  raw="${raw#\"}"
+
+  printf '%s' "$raw"
+}
+
+sync_var() {
+  local key="$1"
+  local required="${2:-true}"
+  local value
+
+  value=$(get_env_value "$key")
+
+  if [ -z "$value" ]; then
+    if [ "$required" = "true" ]; then
+      echo -e "${YELLOW}⚠️  $key: 로컬에 값이 없음${NC}"
+    else
+      echo -e "${YELLOW}ℹ️  $key: 선택 변수, 로컬에 값이 없어 건너뜀${NC}"
+    fi
+    return 0
+  fi
+
+  vercel env rm "$key" "$ENV" -y > /dev/null 2>&1 || true
+
+  if printf '%s\n' "$value" | vercel env add "$key" "$ENV" > /dev/null 2>&1; then
+    echo -e "${GREEN}✅ $key: 동기화 완료${NC}"
+  else
+    echo -e "${RED}❌ $key: 동기화 실패${NC}"
+    return 1
+  fi
+}
+
 # 필수 변수 동기화
 echo ""
 echo "📋 필수 환경변수 동기화:"
 for VAR in "${REQUIRED_VARS[@]}"; do
-  VALUE=$(grep "^$VAR=" "$ENV_FILE" | cut -d '=' -f2-)
+  sync_var "$VAR" true
+done
 
-  if [ -z "$VALUE" ]; then
-    echo -e "${YELLOW}⚠️  $VAR: 로컬에 값이 없음${NC}"
-    continue
-  fi
-
-  # Vercel에 동기화
-  echo "$VALUE" | vercel env add "$VAR" "$ENV" --force > /dev/null 2>&1
-
-  if [ $? -eq 0 ]; then
-    echo -e "${GREEN}✅ $VAR: 동기화 완료${NC}"
-  else
-    echo -e "${RED}❌ $VAR: 동기화 실패${NC}"
-  fi
+echo ""
+echo "📋 선택 환경변수 동기화:"
+for VAR in "${OPTIONAL_VARS[@]}"; do
+  sync_var "$VAR" false
 done
 
 echo ""

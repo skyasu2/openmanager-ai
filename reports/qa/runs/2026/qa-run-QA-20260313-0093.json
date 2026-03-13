@@ -1,0 +1,108 @@
+{
+  "runId": "QA-20260313-0093",
+  "recordedAt": "2026-03-13T13:21:04.712Z",
+  "recordedAtKst": "2026-03-13 22:21:04 KST",
+  "runTitle": "Vercel Preview QA - stream/v2 smoke after env recovery",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "frontend": "Vercel Preview",
+    "backend": "Cloud Run",
+    "branch": "main"
+  },
+  "checks": {
+    "total": 1,
+    "passed": 1,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Preview에서 AI streaming route의 실제 응답과 헤더를 직접 확인했다.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "X-AI-Latency-Ms와 source=cloud-run을 통해 운영 timing 관측성을 확인했다.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "ai-security-reliability",
+      "domainName": "AI Security & Reliability Architect",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "스트리밍 스모크는 통과했지만 악성 입력/보안 회귀팩은 이번 런 범위 밖이다.",
+      "nextAction": "스트리밍 채팅에 대한 악성 입력/보안 회귀 시나리오를 별도 릴리즈 QA 세트로 유지"
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "preview recovery 이후 Cloud Run source로 직접 응답하는지 검증했다.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "브라우저 세션 쿠키와 CSRF 토큰을 사용한 실제 route smoke를 자동화했다.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "data-metrics-quality",
+      "domainName": "Data Quality & Metrics Analyst",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "스트리밍 첫 청크가 data-start/data-mode 이벤트로 정상 형식임을 확인했다.",
+      "nextAction": ""
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "preview-stream-v2-smoke",
+      "title": "Preview stream/v2 smoke verified after env recovery",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "status 200, content-type text/event-stream, x-ai-latency-ms=282, x-ai-source=cloud-run",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "preview-stream-v2-smoke-20260313",
+      "title": "Preview stream/v2 smoke returns 200 event-stream with X-AI-Latency-Ms",
+      "priority": "P2",
+      "evidence": "https://openmanager-932q72rxp-skyasus-projects.vercel.app/dashboard",
+      "note": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Guest dashboard session에서 stream/v2를 직접 호출해 첫 SSE 청크와 timing header를 확인했다"
+  ],
+  "links": [
+    {
+      "label": "Preview URL",
+      "url": "https://openmanager-932q72rxp-skyasus-projects.vercel.app"
+    }
+  ]
+}

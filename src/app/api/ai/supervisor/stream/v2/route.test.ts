@@ -552,6 +552,7 @@ describe('Supervisor Stream V2 Route', () => {
       // AbortError now returns graceful fallback stream (status 200)
       expect(response.status).toBe(200);
       expect(response.headers.get('X-Fallback-Response')).toBe('true');
+      expect(response.headers.get('X-AI-Latency-Ms')).toMatch(/^\d+$/);
       expect(mockClearActiveStreamId).toHaveBeenCalled();
       expect(mockClearStream).toHaveBeenCalled();
     });
@@ -584,6 +585,7 @@ describe('Supervisor Stream V2 Route', () => {
       expect(response.status).toBe(200);
       expect(response.headers.get('X-Fallback-Response')).toBe('true');
       expect(response.headers.get('X-AI-Source')).toBe('fallback');
+      expect(response.headers.get('X-AI-Latency-Ms')).toMatch(/^\d+$/);
       expect(mockFetch).toHaveBeenCalledTimes(1);
 
       const streamText = await response.text();

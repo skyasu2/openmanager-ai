@@ -1,0 +1,162 @@
+{
+  "runId": "QA-20260313-0092",
+  "recordedAt": "2026-03-13T13:18:38.830Z",
+  "recordedAtKst": "2026-03-13 22:18:38 KST",
+  "runTitle": "Vercel Preview Recovery QA - Env Sync and Guest Flow",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "frontend": "Vercel Preview",
+    "backend": "Cloud Run",
+    "branch": "main"
+  },
+  "checks": {
+    "total": 8,
+    "passed": 8,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Preview 배포 복구 후 핵심 사용자 경로를 브라우저 기준으로 재검증했다.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Preview /api/health 200과 서비스 latency를 다시 확인했다.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "ai-security-reliability",
+      "domainName": "AI Security & Reliability Architect",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "이번 런은 preview recovery 범위라 스트리밍 채팅 악성 입력/보안 회귀 시나리오는 포함하지 않았다.",
+      "nextAction": "스트리밍 채팅에 대한 악성 입력/보안 회귀 시나리오를 별도 릴리즈 QA 세트로 유지"
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Vercel preview/prod env drift를 재현했고 sync 스크립트로 복구했다.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "curl + Playwright로 health, guest flow, dashboard 진입을 자동 확인했다.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "data-metrics-quality",
+      "domainName": "Data Quality & Metrics Analyst",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Dashboard 렌더링에서 서버 수, 상태 카운트, 시스템 리소스 요약이 정상 노출됐다.",
+      "nextAction": ""
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "preview-public-supabase-env-sync",
+      "title": "Preview runtime env sync for NEXT_PUBLIC_SUPABASE_URL/NEXT_PUBLIC_SUPABASE_ANON_KEY",
+      "priority": "P0",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "missing public Supabase vars added to Vercel preview and production envs",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "preview-guest-session-secret-sync",
+      "title": "SESSION_SECRET synced for guest session proof issuance",
+      "priority": "P0",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "guest login recovered from guest_session_issue_failed to successful guest session",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "preview-recovery-dashboard-verification",
+      "title": "Preview guest flow and dashboard recovery verified",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "landing -> login -> guest -> system-boot -> dashboard on preview",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "preview-health-200-20260313",
+      "title": "Preview /api/health 200 recovered",
+      "priority": "P2",
+      "evidence": "https://openmanager-932q72rxp-skyasus-projects.vercel.app/api/health",
+      "note": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "preview-guest-login-recovered-20260313",
+      "title": "Preview guest login recovered after SESSION_SECRET sync",
+      "priority": "P2",
+      "evidence": "https://openmanager-932q72rxp-skyasus-projects.vercel.app/login",
+      "note": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "preview-dashboard-entry-20260313",
+      "title": "Preview guest -> system start -> dashboard",
+      "priority": "P2",
+      "evidence": "https://openmanager-932q72rxp-skyasus-projects.vercel.app/dashboard",
+      "note": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Initial preview failure root cause: missing NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY in Vercel preview env",
+    "Second preview failure root cause: missing SESSION_SECRET for guest session proof generation",
+    "Production env was also synced to prevent the same failure on the next production deployment"
+  ],
+  "links": [
+    {
+      "label": "Preview URL",
+      "url": "https://openmanager-932q72rxp-skyasus-projects.vercel.app"
+    }
+  ]
+}

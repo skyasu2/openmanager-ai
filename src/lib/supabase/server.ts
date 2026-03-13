@@ -8,14 +8,15 @@ import { createServerClient } from '@supabase/ssr';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { ResponseCookie } from 'next/dist/compiled/@edge-runtime/cookies';
 import { cookies } from 'next/headers';
+import {
+  getSupabaseServerPublishableKey,
+  getSupabaseServerUrl,
+} from './env';
 
 export async function createClient(): Promise<SupabaseClient> {
   const cookieStore = await cookies();
-  // trim()으로 환경 변수의 불필요한 공백/줄바꿈 제거
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
-  const supabaseKey =
-    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY?.trim() ||
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim();
+  const supabaseUrl = getSupabaseServerUrl();
+  const supabaseKey = getSupabaseServerPublishableKey();
 
   if (!supabaseUrl || !supabaseKey) {
     throw new Error('Missing Supabase environment variables');

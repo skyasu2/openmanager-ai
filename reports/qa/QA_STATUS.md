@@ -1,40 +1,41 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-10 22:27:23 KST
+> Generated at: 2026-03-13 23:05:31 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 90 |
-| Total Checks | 665 |
-| Passed | 624 |
+| Total Runs | 95 |
+| Total Checks | 703 |
+| Passed | 662 |
 | Failed | 37 |
-| Completed Items | 139 |
+| Completed Items | 155 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 38 |
 | Expert Domains Tracked | 6 |
-| Expert Open Gaps | 1 |
+| Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Run | QA-20260310-0090 (2026-03-10T13:27:23.276Z) |
+| Last Run | QA-20260313-0095 (2026-03-13T14:05:31.044Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260310-0090 (2026-03-10T13:27:23.276Z)
+Latest run: QA-20260313-0095 (2026-03-13T14:05:31.044Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
 | AI Quality Assurance Specialist | appropriate | no | - |
 | IT Monitoring & Observability SME | appropriate | no | - |
-| DevOps / SRE Engineer | partially-appropriate | yes | Streaming AI fallback 시 Cloud Run 미응답 처리 개선 검토 |
+| AI Security & Reliability Architect | appropriate | no | - |
+| DevOps / SRE Engineer | appropriate | no | - |
 | Test Automation Architect | appropriate | no | - |
+| Data Quality & Metrics Analyst | appropriate | no | - |
 
 ## Expert Domain Open Gaps
 
-- sre-devops: DevOps / SRE Engineer (last QA-20260310-0090)
-  next: Streaming AI fallback 시 Cloud Run 미응답 처리 개선 검토
+- None
 
 ## Pending Improvements
 
@@ -191,6 +192,22 @@ Latest run: QA-20260310-0090 (2026-03-10T13:27:23.276Z)
 - multi-agent-orchestration: 멀티에이전트 오케스트레이션 활성화 (Steps A-E) (completed 1회, last QA-20260307-0053)
 - otel-데이터-무결성-24x15-완전: OTel 데이터 무결성 24x15 완전 (completed 1회, last QA-20260301-0032)
 - planning-backlog-clear: planning TODO 잔여 항목 정리 (completed 1회, last QA-20260226-0006)
+- preview-dashboard-entry-20260313: Preview guest -> system start -> dashboard (completed 1회, last QA-20260313-0092)
+- preview-guest-login-recovered-20260313: Preview guest login recovered after SESSION_SECRET sync (completed 1회, last QA-20260313-0092)
+- preview-guest-session-secret-sync: SESSION_SECRET synced for guest session proof issuance (completed 1회, last QA-20260313-0092)
+- preview-health-200-20260313: Preview /api/health 200 recovered (completed 1회, last QA-20260313-0092)
+- preview-public-supabase-env-sync: Preview runtime env sync for NEXT_PUBLIC_SUPABASE_URL/NEXT_PUBLIC_SUPABASE_ANON_KEY (completed 1회, last QA-20260313-0092)
+- preview-recovery-dashboard-verification: Preview guest flow and dashboard recovery verified (completed 1회, last QA-20260313-0092)
+- preview-stream-v2-smoke: Preview stream/v2 smoke verified after env recovery (completed 1회, last QA-20260313-0093)
+- preview-stream-v2-smoke-20260313: Preview stream/v2 smoke returns 200 event-stream with X-AI-Latency-Ms (completed 1회, last QA-20260313-0093)
+- prod-ai-sidebar-open-20260313: Production AI assistant sidebar opens with starter prompts (completed 1회, last QA-20260313-0094)
+- prod-guest-flow-20260313: Production landing -> login -> guest PIN -> system start -> dashboard (completed 1회, last QA-20260313-0094)
+- prod-health-200-20260313: Production /api/health 200 healthy after live deploy (completed 1회, last QA-20260313-0094)
+- prod-security-block-api-contract-20260313: Production stream/v2 returns 400 security contract for blocked input (completed 1회, last QA-20260313-0095)
+- prod-security-block-en-20260313: Production AI Chat blocks English prompt injection request (completed 1회, last QA-20260313-0095)
+- prod-security-block-ko-20260313: Production AI Chat blocks Korean system prompt exposure request (completed 1회, last QA-20260313-0095)
+- prod-security-block-no-raw-json-20260313: Blocked prompt UX hides raw JSON and security error internals (completed 1회, last QA-20260313-0095)
+- prod-stream-v2-smoke-20260313: Production stream/v2 smoke returns 200 event-stream with cloud-run source (completed 1회, last QA-20260313-0094)
 - prompt-injection-block-smoke-v880: Prompt injection 차단 스모크 검증 (completed 1회, last QA-20260308-0056)
 - qa-doc-roadmap-current-status-alignment: QA DoD 로드맵 현재 상태 정합성 갱신 (completed 1회, last QA-20260309-0067)
 - qa-expert-domain-tracking: QA 런에서 전문가 영역 적합성 추적 체계 도입 (completed 1회, last QA-20260226-0003)
@@ -266,6 +283,11 @@ Latest run: QA-20260310-0090 (2026-03-10T13:27:23.276Z)
 
 | Run ID | Time (UTC) | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260313-0095 | 2026-03-13T14:05:31.044Z | Vercel Production QA - AI security block regression smoke | 4 | 4 | 0 | 0 | 0 | 0 |
+| QA-20260313-0094 | 2026-03-13T13:59:24.100Z | Vercel Production QA - post-deploy smoke after env recovery and release | 7 | 4 | 0 | 0 | 0 | 1 |
+| QA-20260313-0093 | 2026-03-13T13:21:04.712Z | Vercel Preview QA - stream/v2 smoke after env recovery | 1 | 2 | 0 | 0 | 0 | 1 |
+| QA-20260313-0092 | 2026-03-13T13:18:38.830Z | Vercel Preview Recovery QA - Env Sync and Guest Flow | 8 | 6 | 0 | 0 | 0 | 1 |
+| QA-20260313-0091 | 2026-03-13T12:15:43.286Z | Vercel Production 종합 QA #91 - 프론트엔드 전기능 + UI/UX + AI Assistant + 성능 평가 | 18 | 0 | 0 | 0 | 0 | 1 |
 | QA-20260310-0090 | 2026-03-10T13:27:23.276Z | Vercel Production 종합 QA #90 - UI/UX + AI Chat + Reporter + Analyst 재검증 | 7 | 0 | 0 | 0 | 1 | 1 |
 | QA-20260310-0089 | 2026-03-10T12:14:07.497Z | Vercel Production 종합 QA #89 - AI Chat Cloud Run 응답 성공 + 전체 AI 기능 재검증 | 18 | 1 | 0 | 0 | 1 | 1 |
 | QA-20260310-0088 | 2026-03-10T11:33:28.088Z | Vercel Production 종합 QA #88 - UI/UX + AI 어시스턴트 성능/답변수준 평가 | 21 | 0 | 1 | 0 | 0 | 2 |
@@ -281,9 +303,4 @@ Latest run: QA-20260310-0090 (2026-03-10T13:27:23.276Z)
 | QA-20260310-0078 | 2026-03-09T22:17:55.510Z | Vercel Playwright QA - E2E Guest Bug Fix Check (2026-03-10) | 3 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260310-0077 | 2026-03-09T22:15:43.664Z | Vercel Playwright QA - E2E Core Bug Fix Check (2026-03-10) | 9 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260310-0076 | 2026-03-09T21:55:34.919Z | Vercel Playwright QA - E2E Core Flow (2026-03-10) | 34 | 1 | 3 | 0 | 0 | 1 |
-| QA-20260310-0075 | 2026-03-09T21:00:32.975Z | Production Playwright MCP QA - post-deploy final verification | 8 | 0 | 0 | 0 | 0 | 1 |
-| QA-20260310-0074 | 2026-03-09T20:03:05.077Z | Production Playwright QA - AI selector verification and Server-Timing diagnosis | 8 | 0 | 0 | 0 | 0 | 1 |
-| QA-20260310-0073 | 2026-03-09T19:06:04.775Z | Local Playwright QA - E2E selector alignment closure | 3 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260310-0072 | 2026-03-09T19:05:19.630Z | Local Playwright QA - AI chat fallback and dashboard flow | 9 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260310-0071 | 2026-03-09T17:34:32.732Z | Production Playwright MCP QA - AI Chat Recheck (2026-03-10) | 6 | 2 | 1 | 0 | 0 | 1 |
 

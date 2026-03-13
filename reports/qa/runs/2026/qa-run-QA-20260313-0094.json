@@ -1,0 +1,135 @@
+{
+  "runId": "QA-20260313-0094",
+  "recordedAt": "2026-03-13T13:59:24.100Z",
+  "recordedAtKst": "2026-03-13 22:59:24 KST",
+  "runTitle": "Vercel Production QA - post-deploy smoke after env recovery and release",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "frontend": "Vercel Production",
+    "backend": "Cloud Run",
+    "branch": "main"
+  },
+  "checks": {
+    "total": 7,
+    "passed": 7,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Production 재배포 직후 게스트 진입, 대시보드, AI 스트리밍까지 실제 사용자 기준 smoke를 완료했다.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Production /api/health 200과 서비스 latency, stream/v2의 X-AI-Latency-Ms를 다시 확인했다.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "ai-security-reliability",
+      "domainName": "AI Security & Reliability Architect",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "이번 런은 release smoke 범위라 악성 입력과 보안 회귀 시나리오는 포함하지 않았다.",
+      "nextAction": "스트리밍 채팅에 대한 악성 입력/보안 회귀 시나리오를 별도 릴리즈 QA 세트로 유지"
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "새 production 배포가 live alias에 반영된 뒤 health와 핵심 게이트를 바로 검증했다.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Playwright 브라우저 세션으로 로그인, 게스트 PIN, 시스템 시작, AI sidebar, SSE smoke를 자동 확인했다.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "data-metrics-quality",
+      "domainName": "Data Quality & Metrics Analyst",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Dashboard에서 서버 15대, 온라인 14/경고 1, 시스템 리소스 요약이 정상 노출됐다.",
+      "nextAction": ""
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "prod-health-200-20260313",
+      "title": "Production /api/health 200 healthy after live deploy",
+      "priority": "P0",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "https://openmanager-ai.vercel.app/api/health returned healthy with database 7ms, cache 5ms, ai 5ms",
+      "note": "",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "prod-guest-flow-20260313",
+      "title": "Production landing -> login -> guest PIN -> system start -> dashboard",
+      "priority": "P0",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Playwright browser flow reached /dashboard and rendered guest session timer plus dashboard cards",
+      "note": "",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "prod-ai-sidebar-open-20260313",
+      "title": "Production AI assistant sidebar opens with starter prompts",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "AI 어시스턴트 dialog opened with AI Chat, Reporter, Analyst menu and starter prompts",
+      "note": "",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "prod-stream-v2-smoke-20260313",
+      "title": "Production stream/v2 smoke returns 200 event-stream with cloud-run source",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "status 200, content-type text/event-stream, x-ai-latency-ms=289, x-ai-source=cloud-run, first chunk data-start/data-mode",
+      "note": "",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Production smoke was run after the live alias was updated to the latest deployment",
+    "One initial manual stream smoke attempt used an invalid payload and returned 400; the corrected payload immediately returned 200 and is the recorded product result"
+  ],
+  "links": [
+    {
+      "label": "Production URL",
+      "url": "https://openmanager-ai.vercel.app"
+    }
+  ]
+}

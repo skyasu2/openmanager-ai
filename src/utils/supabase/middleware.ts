@@ -2,6 +2,10 @@ import { createServerClient } from '@supabase/ssr';
 import type { SupabaseClient, User } from '@supabase/supabase-js';
 import { type NextRequest, NextResponse } from 'next/server';
 import { logger } from '@/lib/logging';
+import {
+  getSupabaseServerPublishableKey,
+  getSupabaseServerUrl,
+} from '@/lib/supabase/env';
 import { getCookieValue } from '@/utils/cookies/safe-cookie-utils';
 
 // 🔧 타입 정의: Next.js 16 Response의 cookies 인터페이스
@@ -22,15 +26,11 @@ interface SessionUpdateResult {
 }
 
 function getSupabaseUrl(): string {
-  return process.env.NEXT_PUBLIC_SUPABASE_URL?.trim() || '';
+  return getSupabaseServerUrl();
 }
 
 function getSupabasePublishableKey(): string {
-  return (
-    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY?.trim() ||
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim() ||
-    ''
-  );
+  return getSupabaseServerPublishableKey();
 }
 
 /**

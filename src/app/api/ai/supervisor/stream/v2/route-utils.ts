@@ -103,6 +103,7 @@ interface StreamFallbackResponseOptions {
   message: string;
   reason?: string;
   retryAfterMs?: number;
+  headers?: Record<string, string>;
 }
 
 /**
@@ -116,6 +117,7 @@ export function createStreamFallbackResponse(
     message,
     reason = 'upstream_unavailable',
     retryAfterMs = 30_000,
+    headers = {},
   } = options;
 
   const stream = createUIMessageStream({
@@ -152,6 +154,7 @@ export function createStreamFallbackResponse(
       'X-AI-Source': 'fallback',
       'X-AI-Mode': 'streaming',
       'X-AI-Cache-Status': 'BYPASS',
+      ...headers,
     },
   });
 }

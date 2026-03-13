@@ -69,6 +69,7 @@ const AI_FIRST_QUERY_HEADER = 'x-ai-first-query';
 const WARMUP_SIGNAL_MAX_AGE_MS = 10 * 60 * 1000; // 10분
 const STREAM_SOFT_TARGET_TIMEOUT_MS = 50_000;
 const STREAM_COLD_START_FIRST_ATTEMPT_TIMEOUT_MS = 45_000;
+const STREAM_COLD_START_RETRY_TIMEOUT_MS = 18_000;
 
 function getSupervisorStreamRequestTimeoutMs(): number {
   const routeBudgetMs = getRouteMaxExecutionMs(
@@ -101,9 +102,29 @@ function getSupervisorStreamAbortTimeoutMs(options?: {
     : STREAM_SOFT_TARGET_TIMEOUT_MS;
 
   return Math.max(
-    getMaxTimeout('supervisor'),
-    Math.min(targetTimeout, getSupervisorStreamRequestTimeoutMs())
+    0,
+    Math.min(
+      targetTimeout,
+      getMaxTimeout('supervisor'),
+      getSupervisorStreamRequestTimeoutMs()
+    )
   );
+}
+
+function getSupervisorStreamRetryTimeoutMs(
+  primaryTimeoutMs: number
+): number | null {
+  const remainingBudgetMs = Math.max(
+    0,
+    getSupervisorStreamRequestTimeoutMs() - primaryTimeoutMs
+  );
+  const retryTimeoutMs = Math.min(
+    STREAM_COLD_START_RETRY_TIMEOUT_MS,
+    getMaxTimeout('supervisor'),
+    remainingBudgetMs
+  );
+
+  return retryTimeoutMs > 0 ? retryTimeoutMs : null;
 }
 
 function parseWarmupStartedAt(value: string | null): number | null {
@@ -401,7 +422,13 @@ export const POST = withRateLimit(
           isFirstQuery,
           warmupStartedAt,
         });
-        const attemptTimeouts = [primaryTimeoutMs];
+        const retryTimeoutMs = isFirstWarmupQuery
+          ? getSupervisorStreamRetryTimeoutMs(primaryTimeoutMs)
+          : null;
+        const attemptTimeouts = [
+          primaryTimeoutMs,
+          ...(retryTimeoutMs ? [retryTimeoutMs] : []),
+        ];
 
         let cloudRunResponse: Response | null = null;
         let lastError: unknown = null;
@@ -461,6 +488,12 @@ export const POST = withRateLimit(
                 message: fallbackText,
                 reason: `cloud_run_${status}`,
                 retryAfterMs: fallback.retryAfter,
+                headers: buildAITimingHeaders({
+                  latencyMs: aiTimer.elapsed(),
+                  cacheStatus: 'BYPASS',
+                  mode: 'streaming',
+                  source: 'fallback',
+                }),
               });
             }
 
@@ -494,6 +527,12 @@ export const POST = withRateLimit(
                 message: fallbackText,
                 reason: 'cloud_run_timeout',
                 retryAfterMs: fallback.retryAfter,
+                headers: buildAITimingHeaders({
+                  latencyMs: aiTimer.elapsed(),
+                  cacheStatus: 'BYPASS',
+                  mode: 'streaming',
+                  source: 'fallback',
+                }),
               });
             }
 
@@ -504,6 +543,12 @@ export const POST = withRateLimit(
               message: fallbackText,
               reason: 'cloud_run_fetch_failed',
               retryAfterMs: fallback.retryAfter,
+              headers: buildAITimingHeaders({
+                latencyMs: aiTimer.elapsed(),
+                cacheStatus: 'BYPASS',
+                mode: 'streaming',
+                source: 'fallback',
+              }),
             });
           } finally {
             clearTimeout(timeout);
@@ -519,6 +564,12 @@ export const POST = withRateLimit(
             message: fallbackText,
             reason: 'cloud_run_unavailable',
             retryAfterMs: fallback.retryAfter,
+            headers: buildAITimingHeaders({
+              latencyMs: aiTimer.elapsed(),
+              cacheStatus: 'BYPASS',
+              mode: 'streaming',
+              source: 'fallback',
+            }),
           });
         }
 

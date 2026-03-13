@@ -17,6 +17,10 @@ import {
   recordLoginEvent,
 } from '@/lib/auth/login-audit';
 import { logger } from '@/lib/logging';
+import {
+  getSupabaseServerPublishableKey,
+  getSupabaseServerUrl,
+} from '@/lib/supabase/env';
 
 function sanitizeRedirectPath(path: string | null): string | null {
   if (!path) return null;
@@ -100,12 +104,8 @@ export async function GET(request: NextRequest) {
 
   try {
     const cookieStore = await cookies();
-    // trim()으로 환경 변수의 불필요한 공백/줄바꿈 제거
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim() || '';
-    const supabaseKey =
-      process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY?.trim() ||
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim() ||
-      '';
+    const supabaseUrl = getSupabaseServerUrl();
+    const supabaseKey = getSupabaseServerPublishableKey();
 
     if (!supabaseUrl || !supabaseKey) {
       logger.error('❌ Supabase 환경 변수 누락');
