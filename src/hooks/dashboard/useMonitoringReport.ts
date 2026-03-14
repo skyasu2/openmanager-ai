@@ -17,7 +17,8 @@ import {
 // Storybook vitest mock 변환기가 type 재내보내기를 런타임 값으로 취급하므로 제거
 
 function getMonitoringErrorMessageByStatus(status: number): string {
-  if (status === 401) return '로그인이 필요합니다. 게스트 로그인 후 이용해주세요.';
+  if (status === 401)
+    return '로그인이 필요합니다. 게스트 로그인 후 이용해주세요.';
   if (status === 403) return '모니터링 리포트 접근이 차단되었습니다.';
   if (status === 404) return '모니터링 리포트 API를 찾을 수 없습니다.';
   if (status >= 500) return '모니터링 서버 오류가 발생했습니다.';

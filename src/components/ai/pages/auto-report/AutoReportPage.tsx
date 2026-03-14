@@ -440,17 +440,32 @@ export default function AutoReportPage() {
 
       {/* Error Message */}
       {error && (
-        <div className={`mx-4 mt-3 rounded-lg border p-3 ${error.includes('로그인이 필요합니다') ? 'border-blue-200 bg-blue-50' : 'border-red-200 bg-red-50'}`}>
+        <div
+          className={`mx-4 mt-3 rounded-lg border p-3 ${error.includes('로그인이 필요합니다') ? 'border-blue-200 bg-blue-50' : 'border-red-200 bg-red-50'}`}
+        >
           <div className="flex items-start justify-between gap-3">
             <div className="flex items-start space-x-2">
-              <AlertCircle className={`mt-0.5 h-5 w-5 shrink-0 ${error.includes('로그인이 필요합니다') ? 'text-blue-500' : 'text-red-500'}`} />
+              <AlertCircle
+                className={`mt-0.5 h-5 w-5 shrink-0 ${error.includes('로그인이 필요합니다') ? 'text-blue-500' : 'text-red-500'}`}
+              />
               <div>
-                <p className={`text-sm font-medium ${error.includes('로그인이 필요합니다') ? 'text-blue-800' : 'text-red-800'}`}>
-                  {error.includes('로그인이 필요합니다') ? '로그인이 필요합니다' : '보고서 생성 실패'}
+                <p
+                  className={`text-sm font-medium ${error.includes('로그인이 필요합니다') ? 'text-blue-800' : 'text-red-800'}`}
+                >
+                  {error.includes('로그인이 필요합니다')
+                    ? '로그인이 필요합니다'
+                    : '보고서 생성 실패'}
                 </p>
-                <p className={`mt-0.5 text-xs ${error.includes('로그인이 필요합니다') ? 'text-blue-600' : 'text-red-600'}`}>{error}</p>
+                <p
+                  className={`mt-0.5 text-xs ${error.includes('로그인이 필요합니다') ? 'text-blue-600' : 'text-red-600'}`}
+                >
+                  {error}
+                </p>
                 {error.includes('로그인이 필요합니다') && (
-                  <a href="/login" className="mt-2 inline-flex items-center gap-1 rounded bg-blue-600 px-3 py-1 text-xs font-medium text-white hover:bg-blue-700">
+                  <a
+                    href="/login"
+                    className="mt-2 inline-flex items-center gap-1 rounded bg-blue-600 px-3 py-1 text-xs font-medium text-white hover:bg-blue-700"
+                  >
                     로그인하기
                   </a>
                 )}

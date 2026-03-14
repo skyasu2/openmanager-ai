@@ -106,11 +106,17 @@ export default function AnalysisResultsCard({
   if (error) {
     const isLoginRequired = error.includes('로그인이 필요합니다');
     return (
-      <div className={`rounded-xl border p-4 ${isLoginRequired ? 'border-blue-200 bg-blue-50' : 'border-red-200 bg-red-50'}`}>
+      <div
+        className={`rounded-xl border p-4 ${isLoginRequired ? 'border-blue-200 bg-blue-50' : 'border-red-200 bg-red-50'}`}
+      >
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <XCircle className={`h-5 w-5 ${isLoginRequired ? 'text-blue-600' : 'text-red-600'}`} />
-            <span className={`font-medium ${isLoginRequired ? 'text-blue-800' : 'text-red-800'}`}>
+            <XCircle
+              className={`h-5 w-5 ${isLoginRequired ? 'text-blue-600' : 'text-red-600'}`}
+            />
+            <span
+              className={`font-medium ${isLoginRequired ? 'text-blue-800' : 'text-red-800'}`}
+            >
               {isLoginRequired ? '로그인이 필요합니다' : '분석 실패'}
             </span>
           </div>
@@ -131,7 +137,11 @@ export default function AnalysisResultsCard({
             </button>
           ) : null}
         </div>
-        <p className={`mt-2 text-sm ${isLoginRequired ? 'text-blue-700' : 'text-red-700'}`}>{error}</p>
+        <p
+          className={`mt-2 text-sm ${isLoginRequired ? 'text-blue-700' : 'text-red-700'}`}
+        >
+          {error}
+        </p>
       </div>
     );
   }

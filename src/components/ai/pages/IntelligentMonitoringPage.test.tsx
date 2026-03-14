@@ -72,8 +72,9 @@ describe('IntelligentMonitoringPage', () => {
       ).toBeInTheDocument();
     });
 
-    expect(
-      screen.getByRole('link', { name: '로그인하기' })
-    ).toHaveAttribute('href', '/login');
+    expect(screen.getByRole('link', { name: '로그인하기' })).toHaveAttribute(
+      'href',
+      '/login'
+    );
   });
 });

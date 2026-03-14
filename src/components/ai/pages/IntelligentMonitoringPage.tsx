@@ -85,7 +85,9 @@ export default function IntelligentMonitoringPage() {
 
         if (!response.ok) {
           if (response.status === 401) {
-            throw new Error('로그인이 필요합니다. 게스트 로그인 후 이용해주세요.');
+            throw new Error(
+              '로그인이 필요합니다. 게스트 로그인 후 이용해주세요.'
+            );
           }
           logger.error(`[${serverName}] API 요청 실패: ${response.status}`);
           return null;
