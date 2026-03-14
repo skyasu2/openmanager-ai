@@ -49,17 +49,17 @@
   - `npm run qa:record -- --input <json>`
   - `npm run qa:status`
 
-## 🧰 Project Custom Commands
+## 🧰 Project Custom Skills
 
-Gemini CLI의 프로젝트 반복 워크플로우는 공식 `custom commands` 형식에 맞춰 개발자 로컬의 `<project>/.gemini/commands/**/*.toml` 에 둡니다. 이 경로는 현재 git 추적 대상이 아니므로, 저장소에는 규칙만 남기고 실제 command 파일은 각 로컬 환경에서 관리합니다.
+Gemini CLI의 프로젝트 반복 워크플로우는 공식 `Skills` 형식에 맞춰 개발자 로컬의 `<project>/.gemini/skills/**/*.md` 에 둡니다. 이 경로는 현재 git 추적 대상이 아니므로, 저장소에는 규칙만 남기고 실제 skill 파일은 각 로컬 환경에서 관리합니다.
 
-권장 로컬 command 이름:
-- `/openmanager:state-triage` - 최근 QA/런타임/배포 상태 분석 후 다음 액션 결정
-- `/openmanager:env-sync` - `.env.local` ↔ Vercel preview/production env drift 진단 및 동기화
-- `/openmanager:qa-ops` - Vercel + Playwright MCP 최종 QA 및 `reports/qa` 누적 기록
-- `/openmanager:cloud-run` - Cloud Run deploy, free-tier guard, GCP 비용 점검
+로컬 환경에 탑재된 스킬 셋은 다음과 같습니다:
+- `openmanager-state-triage` - 최근 QA/런타임/배포 상태 분석 후 다음 액션 결정
+- `openmanager-env-sync` - `.env.local` ↔ Vercel preview/production env drift 진단 및 동기화
+- `openmanager-qa-ops` - Vercel + Playwright MCP 최종 QA 및 `reports/qa` 누적 기록
+- `openmanager-cloud-run` - Cloud Run deploy, free-tier guard, GCP 비용 점검
 
-로컬 명령 파일을 수정한 뒤에는 `/commands reload` 로 즉시 반영합니다.
+해당 스킬 문서들(`SKILL.md`)이 발견되면 에이전트는 상황에 따라 능동적으로 지침을 읽고 실행합니다.
 
 ## 🛠 Technical Principles
 When writing or analyzing code, ALWAYS adhere to the following principles:
