@@ -42,10 +42,31 @@ describe('supabase env helpers', () => {
     expect(getSupabaseServerUrl()).toBe('https://server.example.supabase.co');
   });
 
+  it('prefers SUPABASE_URL over NEXT_PUBLIC_SUPABASE_URL on server runtime', async () => {
+    vi.stubEnv('NEXT_PUBLIC_SUPABASE_URL', ' https://public.example.supabase.co ');
+    vi.stubEnv('SUPABASE_URL', ' https://server-first.example.supabase.co ');
+
+    const { getSupabaseServerUrl } = await loadHelpers();
+
+    expect(getSupabaseServerUrl()).toBe(
+      'https://server-first.example.supabase.co'
+    );
+  });
+
   it('falls back to SUPABASE_ANON_KEY for server runtime paths', async () => {
     vi.stubEnv('NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY', '');
     vi.stubEnv('NEXT_PUBLIC_SUPABASE_ANON_KEY', '');
     vi.stubEnv('SUPABASE_ANON_KEY', ' server-anon-key ');
+
+    const { getSupabaseServerPublishableKey } = await loadHelpers();
+
+    expect(getSupabaseServerPublishableKey()).toBe('server-anon-key');
+  });
+
+  it('prefers server key over NEXT_PUBLIC keys on server runtime', async () => {
+    vi.stubEnv('SUPABASE_ANON_KEY', ' server-anon-key ');
+    vi.stubEnv('NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY', ' public-publishable ');
+    vi.stubEnv('NEXT_PUBLIC_SUPABASE_ANON_KEY', ' public-anon ');
 
     const { getSupabaseServerPublishableKey } = await loadHelpers();
 
@@ -57,6 +78,7 @@ describe('supabase env helpers', () => {
     vi.stubEnv('NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY', '');
     vi.stubEnv('NEXT_PUBLIC_SUPABASE_ANON_KEY', '');
     vi.stubEnv('SUPABASE_URL', '');
+    vi.stubEnv('SUPABASE_PUBLISHABLE_KEY', '');
     vi.stubEnv('SUPABASE_ANON_KEY', '');
 
     const {

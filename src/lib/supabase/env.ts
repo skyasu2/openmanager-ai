@@ -23,13 +23,14 @@ export function getSupabasePublicPublishableKey(): string {
 }
 
 export function getSupabaseServerUrl(): string {
-  return getFirstDefinedEnvValue(['NEXT_PUBLIC_SUPABASE_URL', 'SUPABASE_URL']);
+  return getFirstDefinedEnvValue(['SUPABASE_URL', 'NEXT_PUBLIC_SUPABASE_URL']);
 }
 
 export function getSupabaseServerPublishableKey(): string {
   return getFirstDefinedEnvValue([
+    'SUPABASE_PUBLISHABLE_KEY',
+    'SUPABASE_ANON_KEY',
     'NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY',
     'NEXT_PUBLIC_SUPABASE_ANON_KEY',
-    'SUPABASE_ANON_KEY',
   ]);
 }

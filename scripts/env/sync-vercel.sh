@@ -6,6 +6,7 @@ set -e
 
 ENV="${1:-production}"
 ENV_FILE=".env.local"
+VERCEL_BIN="${VERCEL_BIN:-vercel}"
 
 echo "🔄 Vercel $ENV 환경변수 동기화 시작..."
 
@@ -55,16 +56,15 @@ sync_var() {
 
   if [ -z "$value" ]; then
     if [ "$required" = "true" ]; then
-      echo -e "${YELLOW}⚠️  $key: 로컬에 값이 없음${NC}"
+      echo -e "${RED}❌ $key: 필수 변수인데 로컬에 값이 없습니다${NC}"
+      return 1
     else
       echo -e "${YELLOW}ℹ️  $key: 선택 변수, 로컬에 값이 없어 건너뜀${NC}"
     fi
     return 0
   fi
 
-  vercel env rm "$key" "$ENV" -y > /dev/null 2>&1 || true
-
-  if printf '%s\n' "$value" | vercel env add "$key" "$ENV" > /dev/null 2>&1; then
+  if printf '%s\n' "$value" | "$VERCEL_BIN" env add "$key" "$ENV" --force > /dev/null 2>&1; then
     echo -e "${GREEN}✅ $key: 동기화 완료${NC}"
   else
     echo -e "${RED}❌ $key: 동기화 실패${NC}"
@@ -76,13 +76,13 @@ sync_var() {
 echo ""
 echo "📋 필수 환경변수 동기화:"
 for VAR in "${REQUIRED_VARS[@]}"; do
-  sync_var "$VAR" true
+  sync_var "$VAR" true || exit 1
 done
 
 echo ""
 echo "📋 선택 환경변수 동기화:"
 for VAR in "${OPTIONAL_VARS[@]}"; do
-  sync_var "$VAR" false
+  sync_var "$VAR" false || exit 1
 done
 
 echo ""
