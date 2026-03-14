@@ -11,9 +11,10 @@
  * @extracted-from EnhancedAIChat.tsx
  */
 
-import { AlertCircle, RefreshCw, X, Zap } from 'lucide-react';
+import { AlertCircle, LogIn, RefreshCw, X, Zap } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 import {
+  isAuthRelatedError,
   isColdStartRelatedError,
   isModelConfigRelatedError,
   sanitizeDisplayedErrorMessage,
@@ -39,6 +40,7 @@ export function ColdStartErrorBanner({
   onClearError,
 }: ColdStartErrorBannerProps) {
   const displayError = sanitizeDisplayedErrorMessage(error);
+  const isAuthError = isAuthRelatedError(error);
   const isColdStart = isColdStartRelatedError(error);
   const isModelConfigError = isModelConfigRelatedError(error);
   const [retryAttempt, setRetryAttempt] = useState(0);
@@ -94,6 +96,35 @@ export function ColdStartErrorBanner({
     setIsAutoRetrying(false);
     setCountdown(0);
   }, []);
+
+  // 인증 에러용 UI (로그인 필요)
+  if (isAuthError) {
+    return (
+      <div className="border-t border-blue-200 bg-linear-to-r from-blue-50 to-indigo-50 p-4">
+        <div className="flex items-start gap-3">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-100">
+            <LogIn className="h-5 w-5 text-blue-600" />
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="text-sm font-semibold text-blue-800">
+              로그인이 필요합니다
+            </p>
+            <p className="mt-1 text-xs text-blue-700">
+              AI 기능을 사용하려면 게스트 로그인이 필요합니다. 로그인 페이지에서
+              게스트 모드로 체험해보세요.
+            </p>
+          </div>
+          <a
+            href="/login"
+            className="flex shrink-0 items-center gap-1.5 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-blue-700"
+          >
+            <LogIn className="h-4 w-4" />
+            <span>로그인</span>
+          </a>
+        </div>
+      </div>
+    );
+  }
 
   // Cold Start 에러용 UI
   if (isColdStart) {

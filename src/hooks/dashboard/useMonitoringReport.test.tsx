@@ -159,6 +159,33 @@ describe('useMonitoringReport', () => {
     queryClient.clear();
   });
 
+  it('HTTP 401이면 로그인 필요 메시지를 노출한다', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: false,
+      status: 401,
+      json: async () => ({
+        success: false,
+        error: 'Unauthorized',
+      }),
+    });
+
+    const { queryClient, Wrapper } = createWrapper();
+    const { result, unmount } = renderHook(() => useMonitoringReport(), {
+      wrapper: Wrapper,
+    });
+
+    await waitFor(() => {
+      expect(result.current.isError).toBe(true);
+    });
+
+    expect((result.current.error as Error).message).toBe(
+      '로그인이 필요합니다. 게스트 로그인 후 이용해주세요.'
+    );
+
+    unmount();
+    queryClient.clear();
+  });
+
   it('HTTP 200이라도 success=false면 에러로 처리한다', async () => {
     mockFetch.mockResolvedValueOnce({
       ok: true,

@@ -45,6 +45,19 @@ export const MODEL_CONFIG_ERROR_PATTERNS = [
   'no access to model',
 ] as const;
 
+/**
+ * Patterns indicating authentication / authorization errors (401/403).
+ * These errors should show a login prompt instead of a generic error.
+ */
+export const AUTH_ERROR_PATTERNS = [
+  '401',
+  'Unauthorized',
+  '인증',
+  '권한이 없습니다',
+  'auth_proof',
+  '로그인이 필요합니다',
+] as const;
+
 const BLOCKED_INPUT_ERROR_PATTERNS = [
   'Security: blocked input',
   'PROMPT_INJECTION',
@@ -95,6 +108,15 @@ export function extractStreamError(content: string): string | null {
  */
 export function isColdStartRelatedError(errorMessage: string): boolean {
   return COLD_START_ERROR_PATTERNS.some((pattern) =>
+    errorMessage.toLowerCase().includes(pattern.toLowerCase())
+  );
+}
+
+/**
+ * Checks if an error message indicates an authentication/authorization error (401/403)
+ */
+export function isAuthRelatedError(errorMessage: string): boolean {
+  return AUTH_ERROR_PATTERNS.some((pattern) =>
     errorMessage.toLowerCase().includes(pattern.toLowerCase())
   );
 }

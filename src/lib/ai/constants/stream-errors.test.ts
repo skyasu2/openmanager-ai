@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  isAuthRelatedError,
   isBlockedInputError,
   sanitizeDisplayedErrorMessage,
 } from './stream-errors';
@@ -38,5 +39,17 @@ describe('sanitizeDisplayedErrorMessage', () => {
 
   it('keeps plain-text errors unchanged', () => {
     expect(sanitizeDisplayedErrorMessage('fetch failed')).toBe('fetch failed');
+  });
+});
+
+describe('isAuthRelatedError', () => {
+  it('detects login-required errors', () => {
+    expect(
+      isAuthRelatedError('401 Unauthorized: auth_proof validation failed')
+    ).toBe(true);
+  });
+
+  it('does not flag generic backend failures as auth errors', () => {
+    expect(isAuthRelatedError('Stream error: upstream timeout')).toBe(false);
   });
 });
