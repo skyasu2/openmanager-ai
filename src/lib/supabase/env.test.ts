@@ -43,7 +43,10 @@ describe('supabase env helpers', () => {
   });
 
   it('prefers SUPABASE_URL over NEXT_PUBLIC_SUPABASE_URL on server runtime', async () => {
-    vi.stubEnv('NEXT_PUBLIC_SUPABASE_URL', ' https://public.example.supabase.co ');
+    vi.stubEnv(
+      'NEXT_PUBLIC_SUPABASE_URL',
+      ' https://public.example.supabase.co '
+    );
     vi.stubEnv('SUPABASE_URL', ' https://server-first.example.supabase.co ');
 
     const { getSupabaseServerUrl } = await loadHelpers();

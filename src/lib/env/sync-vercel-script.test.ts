@@ -2,6 +2,7 @@
  * @vitest-environment node
  */
 
+import { spawnSync } from 'node:child_process';
 import {
   chmodSync,
   existsSync,
@@ -10,7 +11,6 @@ import {
   rmSync,
   writeFileSync,
 } from 'node:fs';
-import { spawnSync } from 'node:child_process';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -90,12 +90,14 @@ afterEach(() => {
 
 describe('sync-vercel.sh', () => {
   it('fails fast when a required variable is missing locally', () => {
-    const { status, stdout, stderr, logPath } = runSyncScript(`
+    const { status, stdout, stderr, logPath } = runSyncScript(
+      `
 CLOUD_RUN_AI_URL=https://example.run.app
 CLOUD_RUN_API_SECRET=cloud-secret
 NEXT_PUBLIC_SUPABASE_URL=https://project.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=anon-key
-`.trim());
+`.trim()
+    );
 
     expect(status).toBe(1);
     expect(`${stdout}${stderr}`).toContain(
