@@ -20,6 +20,7 @@ import { ORCHESTRATOR_CONFIG } from './orchestrator-types';
 import { filterToolsByWebSearch, filterToolsByRAG } from './orchestrator-web-search';
 import { evaluateAgentResponseQuality } from './response-quality';
 import { streamTextInChunks } from './orchestrator-decomposition';
+import { buildDeterministicSummaryFallback } from './orchestrator-summary-fallback';
 
 function getSuggestedFollowUp(agentName: string, responseText: string): string | null {
   if (agentName === 'Analyst Agent') {
@@ -133,7 +134,9 @@ export async function* executeAgentStream(
     providerAttempts.push(modelResult);
   }
 
-  for (const { model, provider, modelId } of providerAttempts) {
+  providerLoop:
+  for (let attemptIndex = 0; attemptIndex < providerAttempts.length; attemptIndex++) {
+    const { model, provider, modelId } = providerAttempts[attemptIndex];
     if (excludedProviders.includes(provider)) continue;
     logger.debug(`[Stream ${agentName}] Attempting ${provider}/${modelId}`);
 
@@ -224,8 +227,10 @@ export async function* executeAgentStream(
 
         const sanitized = sanitizeChineseCharacters(textChunk);
         if (sanitized) {
-          textEmitted = true;
           fullResponseText += sanitized;
+          if (sanitized.trim().length > 0) {
+            textEmitted = true;
+          }
           yield { type: 'text_delta', data: sanitized };
         }
       }
@@ -287,6 +292,21 @@ export async function* executeAgentStream(
         }
       }
 
+      const deterministicSummary = buildDeterministicSummaryFallback(
+        query,
+        agentName,
+        collectedToolResults
+      );
+
+      if (!textEmitted && deterministicSummary) {
+        textEmitted = true;
+        fullResponseText += deterministicSummary;
+        yield { type: 'text_delta', data: deterministicSummary };
+        logger.info(
+          `[Stream ${agentName}] Deterministic summary fallback succeeded (${deterministicSummary.length} chars)`
+        );
+      }
+
       // Summarization Fallback
       if (!textEmitted && collectedToolResults.length > 0) {
         logger.warn(
@@ -335,6 +355,15 @@ export async function* executeAgentStream(
             summaryError instanceof Error ? summaryError.message : String(summaryError)
           );
         }
+      }
+
+      if (!textEmitted && attemptIndex < providerAttempts.length - 1) {
+        excludedProviders.push(provider);
+        lastError = 'EMPTY_RESPONSE';
+        logger.warn(
+          `[Stream ${agentName}] Empty response from ${provider}/${modelId}; trying next provider...`
+        );
+        continue providerLoop;
       }
 
       if (!textEmitted) {
@@ -392,6 +421,16 @@ export async function* executeAgentStream(
       const isNoOutput = errorMessage.includes('No output generated');
 
       if (isNoOutput) {
+        excludedProviders.push(provider);
+        lastError = errorMessage;
+
+        if (attemptIndex < providerAttempts.length - 1) {
+          logger.warn(
+            `[Stream ${agentName}] No output from ${provider}/${modelId}, trying next provider...`
+          );
+          continue providerLoop;
+        }
+
         logger.warn(`[Stream ${agentName}] No output from model (${provider}), providing fallback`);
         yield { type: 'text_delta', data: '모델이 응답을 생성하지 못했습니다. 다시 시도해 주세요.' };
         const quality = evaluateAgentResponseQuality(agentName, '모델이 응답을 생성하지 못했습니다. 다시 시도해 주세요.', {

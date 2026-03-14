@@ -23,6 +23,7 @@ import { TIMEOUT_CONFIG } from '../../../config/timeout-config';
 import type { MultiAgentResponse } from './orchestrator-types';
 import { filterToolsByWebSearch, filterToolsByRAG } from './orchestrator-web-search';
 import { evaluateAgentResponseQuality } from './response-quality';
+import { buildDeterministicSummaryFallback } from './orchestrator-summary-fallback';
 import { logger } from '../../../lib/logger';
 // ============================================================================
 // Handoff Event Tracking — Ring Buffer (Cloud Run Memory Safety)
@@ -315,6 +316,7 @@ export async function executeForcedRouting(
     const durationMs = Date.now() - startTime;
 
     const toolsCalled: string[] = [];
+    const collectedToolResults: Array<{ toolName: string; result: unknown }> = [];
     let finalAnswerResult: { answer: string } | null = null;
     const ragSources: Array<{
       title: string;
@@ -331,6 +333,10 @@ export async function executeForcedRouting(
       if (step.toolResults) {
         for (const tr of step.toolResults) {
           const trOutput = extractToolResultOutput(tr);
+          collectedToolResults.push({
+            toolName: tr.toolName,
+            result: trOutput,
+          });
 
           if (tr.toolName === 'finalAnswer' && trOutput && typeof trOutput === 'object') {
             finalAnswerResult = trOutput as { answer: string };
@@ -371,10 +377,27 @@ export async function executeForcedRouting(
     }
 
     let response = finalAnswerResult?.answer ?? result.text;
+    const hasMeaningfulResponse =
+      typeof response === 'string' && response.trim().length > 0;
+
+    if (!hasMeaningfulResponse) {
+      const deterministicSummary = buildDeterministicSummaryFallback(
+        query,
+        suggestedAgentName,
+        collectedToolResults
+      );
+
+      if (deterministicSummary) {
+        response = deterministicSummary;
+        logger.info(
+          `[Forced Routing] Deterministic summary fallback succeeded (${response.length} chars)`
+        );
+      }
+    }
 
     // Summarization Fallback: if model called tools but produced no text,
     // re-run generateText without tools to summarize tool results.
-    if (!response && toolsCalled.length > 0) {
+    if ((!response || response.trim().length === 0) && toolsCalled.length > 0) {
       logger.warn(`[Forced Routing] ${suggestedAgentName}: Empty response with ${toolsCalled.length} tool calls — summarization fallback`);
 
       try {
