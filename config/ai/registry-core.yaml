@@ -121,20 +121,23 @@ mcp-servers:
 # 상세 정보: .mcp.json 참조
 
 # ============================================================================
-# 4. Claude Code Skills (Phase 1.5)
+# 4. Claude Code Skills (Phase 1.6)
 # ============================================================================
 skills:
   active:
     - git-workflow    # Git 커밋/푸시/PR + clean_gone (v1.0.0)
     - cloud-run       # Cloud Run 배포 + GCP 비용 점검 (v1.0.0)
-    - lint-smoke      # Lint + 테스트 스모크 체크 (v1.1.0)
-    - doc-management  # 문서 현황 점검, 예산 관리 (v1.0.0)
+    - lint-smoke      # Lint + 테스트 스모크 체크 (v1.5.0)
+    - doc-management  # 문서 현황 점검, 예산 관리 (v1.2.0)
+    - qa-ops          # Vercel + Playwright MCP 최종 QA 및 누적 기록 (v1.1.0)
+    - state-triage    # 최근 QA/런타임 증거 기반 원인 분류 및 다음 단계 결정 (v1.0.0)
+    - env-sync        # preview/production env drift 진단 및 동기화 (v1.0.0)
 
   builtin:
     - review           # PR 기반 코드리뷰
     - frontend-design  # UI 생성
 
-  status: "✅ 4 Active Skills + 2 Built-in"
+  status: "✅ 7 Active Skills + 2 Built-in"
 
 # 상세 정보: .claude/skills/*/*.md 참조
 
