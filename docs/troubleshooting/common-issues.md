@@ -2,10 +2,10 @@
 
 > 자주 발생하는 빌드/API 문제의 증상별 해결 가이드
 > Owner: documentation
-> Last verified against code: 2026-02-17
+> Last verified against code: 2026-03-14
 > Status: Active Canonical
 > Doc type: How-to
-> Last reviewed: 2026-02-17
+> Last reviewed: 2026-03-14
 > Canonical: docs/troubleshooting/common-issues.md
 > Tags: troubleshooting,issues,debugging
 
@@ -88,10 +88,41 @@ sudo sh -c 'echo ":WSLInterop:M::MZ::/init:PF" > /proc/sys/fs/binfmt_misc/regist
 cat /proc/sys/fs/binfmt_misc/WSLInterop  # enabled 출력되면 정상
 ```
 
-**대안**: 브라우저 방식 대신 PAT 토큰으로 인증:
+**대안 1 (권장)**: 브라우저 자동 열기 실패 시 디바이스 코드를 수동 입력:
 ```bash
-gh auth login -h github.com -p https --insecure-storage
+gh auth login -h github.com -p ssh --web
+# 터미널 코드 복사 → https://github.com/login/device 직접 열어 입력
+```
+
+**대안 2**: 브라우저 인증이 불가하면 Classic PAT 사용:
+```bash
+gh auth login -h github.com -p ssh --insecure-storage
 # → "Paste an authentication token" 선택
+```
+
+### `gh auth status` 실패인데 `gh api user`는 성공
+
+```
+증상: gh auth status -> token invalid
+      gh api user -q .login -> 계정명 정상 출력
+```
+
+**원인**: 셸의 `GITHUB_PERSONAL_ACCESS_TOKEN`이 `gh` 저장 자격증명(`~/.config/gh/hosts.yml`)보다 우선 사용되어 상태가 엇갈림.
+
+**해결**:
+```bash
+# 1) 환경변수 영향 제거 후 실제 저장 자격증명 확인
+env -u GITHUB_PERSONAL_ACCESS_TOKEN gh auth status -h github.com
+env -u GITHUB_PERSONAL_ACCESS_TOKEN gh api user -q .login
+
+# 2) 현재 셸에서 혼입 제거
+unset GITHUB_PERSONAL_ACCESS_TOKEN
+
+# 3) 셸 시작 스크립트에서 자동 export 제거
+rg -n "GITHUB_PERSONAL_ACCESS_TOKEN" ~/.bashrc ~/.profile ~/.zshrc 2>/dev/null
+
+# 4) 원격 URL도 SSH로 통일 (권장)
+git remote set-url origin git@github.com:<owner>/<repo>.git
 ```
 
 ## Docker / Container Issues

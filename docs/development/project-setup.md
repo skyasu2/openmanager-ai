@@ -4,7 +4,7 @@
 > Owner: dev-experience
 > Status: Active Canonical
 > Doc type: How-to
-> Last reviewed: 2026-02-28
+> Last reviewed: 2026-03-14
 > Canonical: docs/development/project-setup.md
 > Tags: wsl,github-auth,project-setup
 
@@ -15,7 +15,7 @@
 1. Windows 11 업데이트 + WSL 2 설치
 2. Ubuntu 초기 설정 (`apt update && apt upgrade`)
 3. Git/Node.js 24/nvm 설치
-4. `gh auth login` + `gh auth setup-git`
+4. `gh auth login` + `gh auth status`
 
 제로베이스 부트스트랩 기준은 본 문서를 Canonical로 유지합니다.
 
@@ -23,26 +23,31 @@
 
 | 방식 | 장점 | 단점 | 권장도 |
 |------|------|------|------|
-| HTTPS + `gh auth login` | WSL/Windows 혼합 환경에서 안정적, credential helper 연동 쉬움 | 최초 브라우저 인증 필요 | 권장 |
-| SSH 키 | 키 기반 인증, 토큰 불필요 | 초기 설정/키 관리 부담 | 선택 |
-| Classic PAT + `gh auth login` | 즉시 사용, push 권한 확실 | 토큰 만료 관리 부담 | WSL 대안 |
+| SSH + `gh auth login` | WSL Interop 비의존(디바이스 코드 수동 입력 가능), Git credential helper 혼선 최소화 | SSH 키 1회 등록 필요 | 권장 |
+| HTTPS + `gh auth login` | 기존 credential helper와 호환 | helper/토큰 혼입 시 진단 복잡 | 선택 |
+| Classic PAT + `gh auth login` | 브라우저 인증이 막힌 환경에서도 즉시 사용 | 토큰 만료/회전 관리 부담 | 대안 |
 
 권장 절차:
 ```bash
-# 방법 1: 브라우저 로그인 (WSL Interop 필요)
-gh auth login -h github.com -p https -w
-gh auth status -h github.com
-gh auth setup-git
+# 방법 1: SSH + 디바이스 인증 (권장)
+gh auth login -h github.com -p ssh --web
+# WSL에서 브라우저 자동 열기가 실패하면:
+# 1) 터미널에 출력된 1회 코드를 복사
+# 2) https://github.com/login/device 를 직접 열어 코드 입력
 
-# 방법 2: Classic PAT (WSL에서 브라우저 안 열릴 때)
+# 저장된 gh 인증 기준 검증 (환경변수 토큰 영향 제거)
+env -u GITHUB_PERSONAL_ACCESS_TOKEN gh auth status -h github.com
+env -u GITHUB_PERSONAL_ACCESS_TOKEN gh api user -q .login
+
+# 방법 2: Classic PAT (브라우저 인증이 불가능할 때)
 # GitHub → Settings → Tokens → Classic → repo, read:org, workflow 스코프
-gh auth login -h github.com -p https  # "Paste an authentication token" 선택
-gh auth setup-git
+gh auth login -h github.com -p ssh --insecure-storage
+# → "Paste an authentication token" 선택
 ```
 
-> **WSL 주의**: `-w`(브라우저) 방식은 `/etc/wsl.conf`에 `[interop] enabled=true`가 필요합니다.
-> 브라우저가 안 열리면 Classic PAT 방식을 사용하세요.
-> **Fine-grained PAT**은 `git push`가 403으로 실패할 수 있으므로 **Classic PAT** 권장.
+> **토큰 혼입 방지**: `~/.bashrc` 등에 `GITHUB_PERSONAL_ACCESS_TOKEN` 상시 `export`를 두지 마세요.  
+> 필요 시 임시로만 사용하고 즉시 `unset GITHUB_PERSONAL_ACCESS_TOKEN` 하세요.
+> **Fine-grained PAT**은 `git push`에서 403이 발생할 수 있으므로 **Classic PAT**을 대안으로 권장합니다.
 
 비교 기준(공식 문서):
 - GitHub CLI 인증/credential helper: https://cli.github.com/manual/gh_auth_login, https://cli.github.com/manual/gh_auth_setup-git
@@ -51,11 +56,11 @@ gh auth setup-git
 ## 프로젝트 클론
 
 ```bash
-# 권장: HTTPS + gh auth
-git clone https://github.com/skyasu2/openmanager-ai.git
+# 권장: SSH
+git clone git@github.com:skyasu2/openmanager-ai.git
 
-# 선택: SSH
-# git clone git@github.com:skyasu2/openmanager-ai.git
+# 기존 HTTPS clone을 SSH로 전환할 때
+# git remote set-url origin git@github.com:skyasu2/openmanager-ai.git
 
 cd openmanager-ai
 ```

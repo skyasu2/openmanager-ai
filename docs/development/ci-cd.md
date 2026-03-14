@@ -4,7 +4,7 @@
 > Owner: platform-devops
 > Status: Active
 > Doc type: How-to
-> Last reviewed: 2026-02-22
+> Last reviewed: 2026-03-14
 > Canonical: docs/development/ci-cd.md
 > Tags: ci,cd,github-actions,dependabot,automation
 
@@ -259,6 +259,14 @@ main 브랜치 push → Vercel Git Integration → 자동 빌드 + 배포
 - CI/CD Core Gates가 품질 게이트 역할
 - Vercel이 자체적으로 빌드하므로 GitHub Actions에서 별도 빌드 불필요
 - `SKIP_ENV_VALIDATION=true`로 환경변수 없이도 빌드 성공 보장
+- Git push 경로는 SSH 원격(`git@github.com:...`) 사용을 권장
+
+배포 트리거 전 인증 체크(혼입 방지):
+```bash
+env -u GITHUB_PERSONAL_ACCESS_TOKEN gh auth status -h github.com
+env -u GITHUB_PERSONAL_ACCESS_TOKEN gh api user -q .login
+git remote -v | head -n 2
+```
 
 ### Cloud Run (AI Engine) — 수동 배포
 
