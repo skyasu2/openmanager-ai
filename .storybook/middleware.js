@@ -76,9 +76,7 @@ module.exports = function manifestCacheMiddleware(app) {
     console.log(`[manifest-cache] MISS ${key} — proxying`);
 
     const port =
-      req.socket.localPort ||
-      req.headers.host?.split(':')[1] ||
-      6006;
+      req.socket.localPort || req.headers.host?.split(':')[1] || 6006;
 
     const proxyReq = http.request(
       {
