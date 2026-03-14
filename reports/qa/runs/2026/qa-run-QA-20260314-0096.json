@@ -1,0 +1,219 @@
+{
+  "runId": "QA-20260314-0096",
+  "recordedAt": "2026-03-14T00:10:58.614Z",
+  "recordedAtKst": "2026-03-14 09:10:58 KST",
+  "runTitle": "Production 종합 QA - Frontend/AI/Performance/FreeTier 검증",
+  "owner": "claude",
+  "source": "playwright-mcp",
+  "environment": {
+    "frontend": "Vercel Production",
+    "backend": "Cloud Run",
+    "branch": "main"
+  },
+  "checks": {
+    "total": 17,
+    "passed": 16,
+    "failed": 1
+  },
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": true,
+      "rationale": "Reporter(보고서 생성 성공, 신뢰도 80%)와 Analyst(이상감지/예측 성공, 신뢰도 74-97%)는 정상이나, Chat(서버 상태 요약)은 빈 응답 반환. Streaming AI 일반 대화 모드에서 응답 생성 실패.",
+      "nextAction": "AI Chat supervisor stream v2의 일반 대화 응답 품질 개선 필요"
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Health API 전체 healthy(DB 2ms, Cache 1ms, AI 1ms). 15대 서버 메트릭 실시간 갱신 정상. 토폴로지 맵 5 Layers/15 Nodes/20 Edges 정상.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Vercel 최근 3건 모두 READY. 번들 219KB, FCP 1704ms, JS Heap 26MB. AI wake-up 6.5s(Cold Start)는 45s timeout으로 대응 중. Free Tier 규칙 준수 확인.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "ai-security-reliability",
+      "domainName": "AI Security & Reliability Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "게스트 PIN 로그인 후 auth_proof httpOnly 쿠키 정상 발급, AI API 인증 통과. RESTRICTED 모드에서 정식 게스트 로그인 없이 메인→시스템시작 경로 진입 시 401은 의도된 보안 동작.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Playwright MCP로 전체 사용자 흐름(메인→로그인→PIN→대시보드→AI Chat/Reporter/Analyst) E2E 검증 완료. 17개 체크 포인트 커버.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "data-metrics-quality",
+      "domainName": "Data Quality & Metrics Analyst",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "OTel 데이터(hour-09.json, timeseries.json) 200 OK로 정상 로딩. 15대 서버 메트릭 값 현실적(CPU 23-91%, MEM 38-77%). 리소스 경고 Top 5 정확.",
+      "nextAction": ""
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "frontend-landing-v880",
+      "title": "Landing page v8.8.0 정상 렌더링",
+      "priority": "P1",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "FCP 1704ms, 피처 카드 4개 모달 정상, v8.8.0 표시",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "dashboard-15-servers",
+      "title": "대시보드 15대 서버 모니터링 정상",
+      "priority": "P0",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "온라인 13, 경고 1, 위험 1, 오프라인 0. 서버 카드 메트릭/상세정보 정상",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "topology-map-render",
+      "title": "토폴로지 맵 완벽 렌더링",
+      "priority": "P1",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "5 Layers, 15 Nodes, 20 Edges, 줌/미니맵 컨트롤 정상",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "guest-auth-proof-cookie",
+      "title": "게스트 PIN 로그인 후 auth_proof 쿠키 발급 정상",
+      "priority": "P0",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "로그인→PIN 4231→auth_proof httpOnly 쿠키→AI API 401 해소",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "ai-reporter-success",
+      "title": "Reporter Agent 보고서 생성 성공",
+      "priority": "P0",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "API WAS 서버 CPU 과부하 경고, 추정원인 스레드풀 고갈, 신뢰도 80%",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "ai-analyst-success",
+      "title": "Analyst Agent 이상감지/예측 성공",
+      "priority": "P0",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "CPU 91% high 이상감지, MEM 77%→84% 1h50m Critical ETA, 신뢰도 74-97%",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "health-all-connected",
+      "title": "Health API 전체 서비스 connected",
+      "priority": "P0",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "DB 2ms, Cache 1ms, AI 1ms, uptime 259s",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "performance-bundle-excellent",
+      "title": "번들 성능 우수",
+      "priority": "P1",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "총 219KB, JS 50파일 190KB, CSS 5파일, FCP 1704ms, Heap 26MB",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "vercel-deployment-ready",
+      "title": "Vercel 배포 3건 모두 READY",
+      "priority": "P1",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "최근 3배포 READY, Turbopack bundler, ~75초 빌드",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [
+    {
+      "id": "ai-chat-empty-response",
+      "title": "AI Chat 서버 상태 요약 질문에 빈 응답 반환",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "현재 모든 서버의 상태를 요약해줘 → 응답을 생성하지 못했습니다. Streaming AI 일반 대화 응답 모드",
+      "note": "Reporter/Analyst는 정상 동작하므로 Chat supervisor의 일반 대화 라우팅 문제로 추정",
+      "owner": "",
+      "status": "wont-fix",
+      "policyNote": "이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (요청자 표시(isBlocking=true)로 즉시 개선 필요)"
+    }
+  ],
+  "notes": [
+    "게스트 로그인 없이 메인→시스템시작 경로로 진입하면 auth_proof 쿠키 미발급으로 AI API 401 발생 - 이는 RESTRICTED 모드의 의도된 보안 동작",
+    "정식 게스트 로그인(PIN 입력) 후에는 모든 AI 기능(Chat/Reporter/Analyst) 인증 통과",
+    "AI Chat만 빈 응답 반환 - Reporter/Analyst는 정상 응답"
+  ],
+  "links": [
+    {
+      "label": "Production URL",
+      "url": "https://openmanager-ai.vercel.app"
+    },
+    {
+      "label": "Vercel Deploy",
+      "url": "https://vercel.com/skyasus-projects/openmanager-ai/CihtrfM4kq2UdY9XiCjoe4XFvAu4"
+    }
+  ]
+}
