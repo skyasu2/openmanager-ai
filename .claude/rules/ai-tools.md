@@ -14,7 +14,7 @@
 | `playwright` | E2E 테스트 | 중간 |
 | `github` | 저장소/PR 관리 | 중간 |
 
-## Skills (4개)
+## Skills (7개)
 
 | Skill | 설명 |
 |-------|------|
@@ -22,6 +22,9 @@
 | `cloud-run` | Cloud Run 배포 + GCP 비용 점검 |
 | `lint-smoke` | Lint + 테스트 스모크 체크 |
 | `doc-management` | 문서 현황 점검, 예산 관리 |
+| `qa-ops` | Vercel + Playwright MCP 기반 최종 QA 및 누적 기록 |
+| `state-triage` | 최신 QA/런타임 증거 기반 원인 분석과 다음 단계 결정 |
+| `env-sync` | preview/production 환경변수 drift 진단 및 동기화 |
 
 > Built-in skills: `review` (PR 기반 코드리뷰), `frontend-design` (UI 생성)
 

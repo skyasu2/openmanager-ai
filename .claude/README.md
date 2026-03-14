@@ -19,25 +19,29 @@
 │   └── documentation.md
 ├── skills/                # 커스텀 스킬 정의
 │   └── */SKILL.md
-└── commands/              # 커스텀 슬래시 명령어
-    └── review.md
+└── commands/              # 커스텀 슬래시 명령어 (현재 placeholder)
+    └── .gitkeep
 ```
 
-## 커스텀 스킬 (4개)
+## 커스텀 스킬 (7개)
 
 | 스킬 | 버전 | 용도 |
 |------|------|------|
 | `git-workflow` | v1.0.0 | Git 커밋/푸시/PR 워크플로우 (commit, clean_gone) |
 | `cloud-run` | v1.0.0 | Cloud Run 배포 + GCP 비용 점검 |
-| `lint-smoke` | v1.4.0 | Lint + 테스트 스모크 체크 |
+| `lint-smoke` | v1.5.0 | Lint + 테스트 스모크 체크 |
 | `doc-management` | v1.2.0 | 문서 현황 점검, 예산 관리 |
+| `qa-ops` | v1.1.0 | Vercel + Playwright MCP 최종 QA 및 `reports/qa` 누적 기록 |
+| `state-triage` | v1.0.0 | 최근 QA/런타임 증거 기반 원인 분류 및 다음 액션 결정 |
+| `env-sync` | v1.0.0 | `.env.local` ↔ Vercel preview/production env drift 진단/동기화 |
 
-## MCP 서버 (8개)
+## MCP 서버 (9개, 규칙 기준)
 
 | MCP 서버 | 주요 기능 | 우선순위 |
 |----------|----------|---------|
 | **context7** | 라이브러리 공식 문서 | 높음 |
 | **sequential-thinking** | 복잡한 리팩토링, 아키텍처 설계 | 높음 |
+| **storybook** | 컴포넌트 문서 조회·스토리 자동 생성 | 높음 |
 | **supabase-db** | PostgreSQL 관리 | 중간 |
 | **vercel** | 배포 관리 | 중간 |
 | **playwright** | E2E 테스트 | 중간 |

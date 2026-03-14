@@ -1,7 +1,7 @@
 ---
 name: qa-ops
 description: Final QA workflow for OpenManager with Vercel+Playwright MCP default, local-dev fallback for non-AI checks, and mandatory cumulative logging to reports/qa.
-version: v1.0.0
+version: v1.1.0
 user-invocable: true
 allowed-tools: Bash, Read, Grep, mcp__playwright__browser_navigate, mcp__playwright__browser_snapshot, mcp__playwright__browser_click, mcp__playwright__browser_type, mcp__playwright__browser_wait_for, mcp__playwright__browser_console_messages, mcp__playwright__browser_network_requests
 disable-model-invocation: true
@@ -10,6 +10,11 @@ disable-model-invocation: true
 # QA Ops
 
 최종 QA를 표준 절차로 수행하고 결과를 누적 추적합니다.
+
+## Use with other skills
+
+- 실패 원인, 무료 티어 적합성, 다음 액션 분석이 먼저 필요하면 `state-triage`를 선행합니다.
+- preview/production env drift 가능성이 보이면 `env-sync`를 먼저 실행하고 QA를 재개합니다.
 
 ## Trigger Keywords
 
@@ -56,3 +61,4 @@ QA Ops Summary
 ## Changelog
 
 - 2026-02-26: v1.0.0 - 최종 QA 운영/누적 추적 스킬 신설
+- 2026-03-14: v1.1.0 - `state-triage`, `env-sync` 선행 규칙 추가
