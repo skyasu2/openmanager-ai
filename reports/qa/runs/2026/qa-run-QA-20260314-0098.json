@@ -1,0 +1,70 @@
+{
+  "runId": "QA-20260314-0098",
+  "recordedAt": "2026-03-14T12:29:00.552Z",
+  "recordedAtKst": "2026-03-14 21:29:00 KST",
+  "runTitle": "Vercel Production QA - Frontend/AI Active QA",
+  "owner": "gemini",
+  "source": "playwright-mcp",
+  "environment": {
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "url": "https://openmanager-ai.vercel.app"
+  },
+  "checks": {
+    "total": 3,
+    "passed": 3,
+    "failed": 0
+  },
+  "expertAssessments": [],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [
+    {
+      "id": "vercel-prod-frontend-boot",
+      "title": "Vercel 프로덕션 시스템 시작 부팅 플로우 정상 동작",
+      "priority": "P2",
+      "evidence": "Playwright MCP 직접 수행",
+      "note": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "owner": "gemini",
+      "status": "wont-fix",
+      "policyNote": "이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)"
+    },
+    {
+      "id": "vercel-prod-ai-sidebar",
+      "title": "대시보드 AI 어시스턴트 사이드바 열기/닫기 정상",
+      "priority": "P2",
+      "evidence": "Playwright MCP 직접 수행",
+      "note": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "owner": "gemini",
+      "status": "wont-fix",
+      "policyNote": "이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)"
+    },
+    {
+      "id": "vercel-prod-ai-clarification",
+      "title": "AI 질의 모호성 해소 UI(전체 서버 현황) 정상 렌더링 및 Fallback 응답 확인",
+      "priority": "P2",
+      "evidence": "Playwright MCP 직접 수행",
+      "note": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "owner": "gemini",
+      "status": "wont-fix",
+      "policyNote": "이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)"
+    }
+  ],
+  "notes": [
+    "Vercel Production (openmanager-ai.vercel.app) 타겟으로 Playwright MCP 수동 E2E 진행",
+    "시스템 부트, 대시보드 진입, AI 어시스턴트 호출 정상 동작",
+    "AI 모호성 해소 버튼(전체 서버 현황) 클릭 후 응답 fallback 처리(WONT-FIX 항목) 재확인됨. 렌더링 및 UI 흐름은 매우 안정적임."
+  ],
+  "links": []
+}

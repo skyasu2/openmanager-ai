@@ -1,37 +1,32 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-14 12:21:46 KST
+> Generated at: 2026-03-14 21:29:01 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 97 |
-| Total Checks | 733 |
-| Passed | 690 |
+| Total Runs | 98 |
+| Total Checks | 736 |
+| Passed | 693 |
 | Failed | 39 |
 | Completed Items | 164 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
-| Wont-Fix Items | 39 |
+| Wont-Fix Items | 42 |
 | Expert Domains Tracked | 6 |
 | Expert Open Gaps | 1 |
 | Completion Rate | 100% |
-| Last Run | QA-20260314-0097 (2026-03-14T03:21:46.717Z) |
+| Last Run | QA-20260314-0098 (2026-03-14T12:29:00.552Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260314-0097 (2026-03-14T03:21:46.717Z)
+Latest run: QA-20260314-0098 (2026-03-14T12:29:00.552Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| AI Quality Assurance Specialist | appropriate | yes | AI Chat supervisor stream v2의 일반 대화 응답 품질 개선 필요 |
-| IT Monitoring & Observability SME | appropriate | no | - |
-| DevOps / SRE Engineer | appropriate | no | - |
-| AI Security & Reliability Architect | appropriate | no | - |
-| Test Automation Architect | appropriate | no | - |
-| Data Quality & Metrics Analyst | appropriate | no | - |
+| - | - | - | - |
 
 ## Expert Domain Open Gaps
 
@@ -118,6 +113,12 @@ Latest run: QA-20260314-0097 (2026-03-14T03:21:46.717Z)
 - [P2] top5-server-detail: Top5 서버 상세 모달 (3탭) (seen 1회, last QA-20260301-0031)
   - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
 - [P2] ui-esc-close: ESC 사이드바 닫기 (seen 1회, last QA-20260301-0030)
+  - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
+- [P2] vercel-prod-ai-clarification: AI 질의 모호성 해소 UI(전체 서버 현황) 정상 렌더링 및 Fallback 응답 확인 (seen 1회, last QA-20260314-0098)
+  - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
+- [P2] vercel-prod-ai-sidebar: 대시보드 AI 어시스턴트 사이드바 열기/닫기 정상 (seen 1회, last QA-20260314-0098)
+  - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
+- [P2] vercel-prod-frontend-boot: Vercel 프로덕션 시스템 시작 부팅 플로우 정상 동작 (seen 1회, last QA-20260314-0098)
   - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
 - [P2] 서버-모달-3탭-전환: 서버 모달 3탭 전환 (seen 3회, last QA-20260302-0042)
   - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
@@ -295,6 +296,7 @@ Latest run: QA-20260314-0097 (2026-03-14T03:21:46.717Z)
 
 | Run ID | Time (UTC) | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260314-0098 | 2026-03-14T12:29:00.552Z | Vercel Production QA - Frontend/AI Active QA | 3 | 0 | 0 | 0 | 3 | 0 |
 | QA-20260314-0097 | 2026-03-14T03:21:46.717Z | Vercel Production QA - Frontend/AI/Performance/Free Tier policy review | 13 | 7 | 0 | 0 | 1 | 1 |
 | QA-20260314-0096 | 2026-03-14T00:10:58.614Z | Production 종합 QA - Frontend/AI/Performance/FreeTier 검증 | 17 | 9 | 0 | 0 | 1 | 1 |
 | QA-20260313-0095 | 2026-03-13T14:05:31.044Z | Vercel Production QA - AI security block regression smoke | 4 | 4 | 0 | 0 | 0 | 0 |
@@ -314,5 +316,4 @@ Latest run: QA-20260314-0097 (2026-03-14T03:21:46.717Z)
 | QA-20260310-0081 | 2026-03-10T01:30:32.172Z | Server-Timing hosting-path diagnosis and QA policy update | 4 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260310-0080 | 2026-03-10T00:50:11.433Z | Vercel Playwright QA - stream/v2 timing header verification | 5 | 2 | 0 | 0 | 0 | 1 |
 | QA-20260310-0079 | 2026-03-10T00:19:24.666Z | Production AI latency remeasurement - no severe regression reproduced | 4 | 0 | 0 | 0 | 0 | 1 |
-| QA-20260310-0078 | 2026-03-09T22:17:55.510Z | Vercel Playwright QA - E2E Guest Bug Fix Check (2026-03-10) | 3 | 1 | 0 | 0 | 0 | 0 |
 
