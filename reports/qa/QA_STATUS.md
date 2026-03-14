@@ -1,16 +1,16 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-14 09:10:58 KST
+> Generated at: 2026-03-14 12:21:46 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 96 |
-| Total Checks | 720 |
-| Passed | 678 |
-| Failed | 38 |
+| Total Runs | 97 |
+| Total Checks | 733 |
+| Passed | 690 |
+| Failed | 39 |
 | Completed Items | 164 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
@@ -18,11 +18,11 @@
 | Expert Domains Tracked | 6 |
 | Expert Open Gaps | 1 |
 | Completion Rate | 100% |
-| Last Run | QA-20260314-0096 (2026-03-14T00:10:58.614Z) |
+| Last Run | QA-20260314-0097 (2026-03-14T03:21:46.717Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260314-0096 (2026-03-14T00:10:58.614Z)
+Latest run: QA-20260314-0097 (2026-03-14T03:21:46.717Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -35,7 +35,7 @@ Latest run: QA-20260314-0096 (2026-03-14T00:10:58.614Z)
 
 ## Expert Domain Open Gaps
 
-- ai-quality-assurance: AI Quality Assurance Specialist (last QA-20260314-0096)
+- ai-quality-assurance: AI Quality Assurance Specialist (last QA-20260314-0097)
   next: AI Chat supervisor stream v2의 일반 대화 응답 품질 개선 필요
 
 ## Pending Improvements
@@ -54,8 +54,8 @@ Latest run: QA-20260314-0096 (2026-03-14T00:10:58.614Z)
 - [P1] security-attack-regression-pack: 보안 공격 시나리오 회귀팩 구축 (seen 3회, last QA-20260227-0013)
 - [P2] ai-chat-detail-expand: AI Chat 상세 분석 펼치기 (seen 1회, last QA-20260301-0030)
   - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
-- [P2] ai-chat-empty-response: AI Chat 서버 상태 요약 질문에 빈 응답 반환 (seen 1회, last QA-20260314-0096)
-  - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (요청자 표시(isBlocking=true)로 즉시 개선 필요)
+- [P2] ai-chat-empty-response: AI Chat 서버 상태 요약 질문에 빈 응답 반환 (seen 2회, last QA-20260314-0097)
+  - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
 - [P2] ai-chat-sidebar-open: AI 사이드바 열기 (seen 1회, last QA-20260301-0030)
   - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
 - [P2] ai-code-gate-input-policy: AI Code Gate: Prompt 패턴 15개 방어 점검 (seen 1회, last QA-20260226-0005)
@@ -126,7 +126,7 @@ Latest run: QA-20260314-0096 (2026-03-14T00:10:58.614Z)
 
 ## Completed Improvements
 
-- ai-analyst-success: Analyst Agent 이상감지/예측 성공 (completed 1회, last QA-20260314-0096)
+- ai-analyst-success: Analyst Agent 이상감지/예측 성공 (completed 2회, last QA-20260314-0097)
 - ai-chat-cloud-run-500: AI Chat Cloud Run 자유입력 응답 - 최종 성공 확인 (completed 1회, last QA-20260310-0089)
 - ai-chat-latency-regression-recheck-20260310: AI Chat latency regression claim rechecked on production (completed 1회, last QA-20260310-0071)
 - ai-chat-performance-v880: AI Chat 응답 시간 및 요약 품질 검증 (completed 3회, last QA-20260310-0082)
@@ -138,7 +138,7 @@ Latest run: QA-20260314-0096 (2026-03-14T00:10:58.614Z)
 - ai-chat-response-quality-v880-recheck-20260309: AI Chat 응답 품질 및 권고 재검증 (completed 4회, last QA-20260309-0068)
 - ai-friendly-template-todo-marker: Template TODO marker 분리 (TEMPLATE_TODO 적용) (completed 1회, last QA-20260226-0006)
 - ai-math-tools: AI 계산 도구(수식/통계/용량) 셋업 완료 (completed 1회, last QA-20260228-0023)
-- ai-reporter-success: Reporter Agent 보고서 생성 성공 (completed 1회, last QA-20260314-0096)
+- ai-reporter-success: Reporter Agent 보고서 생성 성공 (completed 2회, last QA-20260314-0097)
 - ai-server-timing-hosting-path-diagnosed: Server-Timing production/local hosting path difference diagnosed (completed 1회, last QA-20260310-0081)
 - ai-stream-timing-x-headers-production: AI Chat streaming route exposes X-AI timing headers on production (completed 1회, last QA-20260310-0080)
 - ai-summary-chat-streaming-path: AI summary chat query uses streaming path on production (completed 2회, last QA-20260310-0080)
@@ -160,7 +160,7 @@ Latest run: QA-20260314-0096 (2026-03-14T00:10:58.614Z)
 - blocked-prompt-ux-fixed-v880: Prompt injection 차단 UX 정제 검증 (completed 1회, last QA-20260308-0058)
 - blocked-prompt-ux-v880-quality-recheck: 보안 차단 UX 재검증 (completed 1회, last QA-20260308-0059)
 - csrf-duplicate-removal: CSRF getCSRFTokenFromCookie 중복 제거 (completed 1회, last QA-20260307-0053)
-- dashboard-15-servers: 대시보드 15대 서버 모니터링 정상 (completed 1회, last QA-20260314-0096)
+- dashboard-15-servers: 대시보드 15대 서버 모니터링 정상 (completed 2회, last QA-20260314-0097)
 - dashboard-health-v879: 프로덕션 대시보드 및 Health API 검증 (completed 1회, last QA-20260306-0052)
 - dashboard-health-v880: 프로덕션 대시보드 및 Health API 검증 (completed 1회, last QA-20260308-0056)
 - dashboard-health-v880-quality-recheck: 프로덕션 대시보드/Health API 품질 재검증 (completed 1회, last QA-20260308-0059)
@@ -179,14 +179,14 @@ Latest run: QA-20260314-0096 (2026-03-14T00:10:58.614Z)
 - feature-dod-system-start-guard: 비로그인 시스템 시작 가드 모달 동작 (completed 7회, last QA-20260227-0018)
 - feature-dod-validation-health-endpoints: 헬스/버전 API 검사 (Vercel) (completed 2회, last QA-20260227-0018)
 - feature-dod-vitals-integration: vitals:integration 통합 실행 통과 (completed 1회, last QA-20260228-0028)
-- frontend-landing-v880: Landing page v8.8.0 정상 렌더링 (completed 1회, last QA-20260314-0096)
-- guest-auth-proof-cookie: 게스트 PIN 로그인 후 auth_proof 쿠키 발급 정상 (completed 1회, last QA-20260314-0096)
+- frontend-landing-v880: Landing page v8.8.0 정상 렌더링 (completed 2회, last QA-20260314-0097)
+- guest-auth-proof-cookie: 게스트 PIN 로그인 후 auth_proof 쿠키 발급 정상 (completed 2회, last QA-20260314-0097)
 - guest-dashboard-auth-check: 게스트 대시보드 로컬 인증 체크 우회 보완 (completed 1회, last QA-20260310-0078)
 - guest-flow-server-card-and-startflow-resilience: 게스트 플로우 시스템 시작/AI 진입 내성 보강 (completed 3회, last QA-20260302-0039)
 - guest-login-pin-4231: 게스트 PIN 4231 로그인 및 세션 진입 (completed 1회, last QA-20260306-0052)
 - guest-login-visibility-toggle: 게스트 로그인 버튼 노출 옵션화 (completed 2회, last QA-20260227-0013)
 - guest-pin-login-flow: 게스트 PIN 인증 후 시스템 시작 버튼 노출 (completed 4회, last QA-20260227-0018)
-- health-all-connected: Health API 전체 서비스 connected (completed 1회, last QA-20260314-0096)
+- health-all-connected: Health API 전체 서비스 connected (completed 2회, last QA-20260314-0097)
 - health-api: Health API 검증 (completed 1회, last QA-20260301-0035)
 - health-api-200-healthy: Health API 200 healthy (completed 1회, last QA-20260301-0032)
 - health-api-response-format: Health API 응답 포맷 검증 스크립트 수정 (completed 1회, last QA-20260310-0077)
@@ -242,7 +242,7 @@ Latest run: QA-20260314-0096 (2026-03-14T00:10:58.614Z)
 - system-start-login-modal: 비로그인 상태에서 시스템 시작 클릭 시 로그인 모달 노출 (completed 1회, last QA-20260227-0021)
 - system-start-login-modal-redirect: 로그인 모달에서 로그인 페이지로 이동 (completed 1회, last QA-20260227-0022)
 - system-start-metrics-gate: 시스템 시작 KPI 계측 (completed 2회, last QA-20260302-0038)
-- topology-map-render: 토폴로지 맵 완벽 렌더링 (completed 1회, last QA-20260314-0096)
+- topology-map-render: 토폴로지 맵 완벽 렌더링 (completed 2회, last QA-20260314-0097)
 - typescript-무결성: TypeScript 무결성 (completed 1회, last QA-20260301-0032)
 - vercel-build-fix: SessionState import 수정으로 Vercel 빌드 복구 (completed 1회, last QA-20260307-0053)
 - vercel-deployment-ready: Vercel 배포 3건 모두 READY (completed 1회, last QA-20260314-0096)
@@ -295,6 +295,7 @@ Latest run: QA-20260314-0096 (2026-03-14T00:10:58.614Z)
 
 | Run ID | Time (UTC) | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260314-0097 | 2026-03-14T03:21:46.717Z | Vercel Production QA - Frontend/AI/Performance/Free Tier policy review | 13 | 7 | 0 | 0 | 1 | 1 |
 | QA-20260314-0096 | 2026-03-14T00:10:58.614Z | Production 종합 QA - Frontend/AI/Performance/FreeTier 검증 | 17 | 9 | 0 | 0 | 1 | 1 |
 | QA-20260313-0095 | 2026-03-13T14:05:31.044Z | Vercel Production QA - AI security block regression smoke | 4 | 4 | 0 | 0 | 0 | 0 |
 | QA-20260313-0094 | 2026-03-13T13:59:24.100Z | Vercel Production QA - post-deploy smoke after env recovery and release | 7 | 4 | 0 | 0 | 0 | 1 |
@@ -314,5 +315,4 @@ Latest run: QA-20260314-0096 (2026-03-14T00:10:58.614Z)
 | QA-20260310-0080 | 2026-03-10T00:50:11.433Z | Vercel Playwright QA - stream/v2 timing header verification | 5 | 2 | 0 | 0 | 0 | 1 |
 | QA-20260310-0079 | 2026-03-10T00:19:24.666Z | Production AI latency remeasurement - no severe regression reproduced | 4 | 0 | 0 | 0 | 0 | 1 |
 | QA-20260310-0078 | 2026-03-09T22:17:55.510Z | Vercel Playwright QA - E2E Guest Bug Fix Check (2026-03-10) | 3 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260310-0077 | 2026-03-09T22:15:43.664Z | Vercel Playwright QA - E2E Core Bug Fix Check (2026-03-10) | 9 | 1 | 0 | 0 | 0 | 0 |
 

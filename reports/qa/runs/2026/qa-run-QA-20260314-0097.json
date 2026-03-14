@@ -1,0 +1,195 @@
+{
+  "runId": "QA-20260314-0097",
+  "recordedAt": "2026-03-14T03:21:46.717Z",
+  "recordedAtKst": "2026-03-14 12:21:46 KST",
+  "runTitle": "Vercel Production QA - Frontend/AI/Performance/Free Tier policy review",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "frontend": "Vercel Production",
+    "backend": "Cloud Run",
+    "branch": "main"
+  },
+  "checks": {
+    "total": 13,
+    "passed": 12,
+    "failed": 1
+  },
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": true,
+      "rationale": "AI Chat 스타터 프롬프트 '현재 모든 서버의 상태를 요약해줘'가 production에서 다시 실패했다. Reporter와 Analyst는 정상이며 Chat만 일반 대화 응답 품질 문제가 남아 있다.",
+      "nextAction": "AI Chat supervisor stream v2의 일반 대화 응답 품질 개선 필요"
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Health API healthy, 15대 서버 카드/리소스/토폴로지/활성 알림 모달이 정상이다. OTel hourly/timeseries fetch가 모두 200으로 확인됐다.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "최신 production 배포는 READY이며 plan=pro 메타데이터가 확인됐다. wake-up 4541ms, /api/health DB 2ms/Cache 2ms/AI 1ms로 운영 상태는 안정적이다.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "ai-security-reliability",
+      "domainName": "AI Security & Reliability Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "게스트 PIN 로그인 후 dashboard와 AI API 접근이 모두 정상이다. 콘솔 기준 신규 런타임 에러는 없고, auth/session 흐름은 의도대로 동작했다.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Playwright MCP로 landing -> login -> guest PIN -> dashboard -> AI Chat/Reporter/Analyst -> topology/alerts까지 실브라우저로 검증했다.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "data-metrics-quality",
+      "domainName": "Data Quality & Metrics Analyst",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "대시보드 메트릭과 Analyst 결과가 동일한 synthetic OTel 데이터셋을 반영했다. 15대 서버 분포와 Top 5 리소스 경고가 일관된다.",
+      "nextAction": ""
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "frontend-landing-v880",
+      "title": "Landing page v8.8.0 정상 렌더링",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "랜딩 렌더링 정상, feature cards 노출, console error 0 (fresh navigation 기준)",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "guest-auth-proof-cookie",
+      "title": "게스트 PIN 로그인 후 auth_proof 쿠키 발급 정상",
+      "priority": "P0",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "PIN 4231 로그인 후 /dashboard 진입 및 AI API 접근 정상",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "dashboard-15-servers",
+      "title": "대시보드 15대 서버 모니터링 정상",
+      "priority": "P0",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "온라인 14, 경고 1, 위험 0, 오프라인 0. 시스템 리소스 CPU 37%, Memory 46%, Disk 32%",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "topology-map-render",
+      "title": "토폴로지 맵 완벽 렌더링",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "5 Layers, 15 Nodes, 20 Edges, Zoom/Fit/Mini Map 컨트롤 정상",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "ai-reporter-success",
+      "title": "Reporter Agent 보고서 생성 성공",
+      "priority": "P0",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "API WAS 서버 CPU 과부하 경고, 추정 원인/영향 서버/MD 복사 버튼 노출, /api/ai/incident-report 200",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "ai-analyst-success",
+      "title": "Analyst Agent 이상감지/예측 성공",
+      "priority": "P0",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "15개 intelligent-monitoring 호출 모두 200, 12 정상/2 주의/1 위험, 상승 추세 경고 2건",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "health-all-connected",
+      "title": "Health API 전체 서비스 connected",
+      "priority": "P0",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "status=healthy, DB 2ms, Cache 2ms, AI 1ms",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [
+    {
+      "id": "ai-chat-empty-response",
+      "title": "AI Chat 서버 상태 요약 질문에 빈 응답 반환",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "\"현재 모든 서버의 상태를 요약해줘\" -> \"응답을 생성하지 못했습니다. 질문을 더 구체적으로 다시 시도해 주세요.\" / Streaming AI · 일반 대화 응답 / network 200",
+      "note": "Reporter/Analyst는 정상이며 Chat 일반 대화 경로만 품질 실패",
+      "owner": "",
+      "status": "wont-fix",
+      "policyNote": "이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)"
+    }
+  ],
+  "notes": [
+    "Dashboard navigation timing: DCL 423ms, load 595ms, responseEnd 305ms, heap 35MB, JS transfer 779KB, CSS transfer 138KB (PerformanceResourceTiming 기준)",
+    "API timing: wake-up 4541ms, stream/v2 2080ms, incident-report 2888ms, intelligent-monitoring 15회 avg 628ms max 1478ms, monitoring-report 296ms, health?service=ai 53-273ms",
+    "Vercel deployment metadata: latest production READY, OIDC plan=pro, bundler=turbopack, recent production deployments 3건 모두 READY",
+    "Free-tier policy review: Vercel은 프로젝트 정책상 Pro 허용, Cloud Run free-tier guard는 deploy.sh/cloudbuild.yaml에서 1 vCPU/512Mi와 machine-type 금지를 강제한다. 런타임 메타데이터만으로 Vercel build machine class(Standard)는 직접 확인할 수 없으므로 이 항목은 설정/문서 기준 판정이다.",
+    "OTel SSOT review: dashboard는 public/data/otel-data/hourly/hour-12.json 및 timeseries.json을 200으로 로드했고, AI Engine은 precomputed-state 경로를 사용하도록 코드/문서가 정리돼 있다."
+  ],
+  "links": [
+    {
+      "label": "Production URL",
+      "url": "https://openmanager-ai.vercel.app"
+    },
+    {
+      "label": "Vercel Deployment",
+      "url": "https://vercel.com/skyasus-projects/openmanager-ai/FBCS2v3ESyNB2hNfgBc1qXouFv8Z"
+    }
+  ]
+}
