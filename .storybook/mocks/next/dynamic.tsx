@@ -1,9 +1,9 @@
 import {
-  lazy,
-  Suspense,
   type ComponentType,
+  lazy,
   type ReactElement,
   type ReactNode,
+  Suspense,
 } from 'react';
 
 type DynamicImportResult<P> =
