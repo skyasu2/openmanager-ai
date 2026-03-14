@@ -311,8 +311,8 @@ describe('applyAggregation', () => {
     const result = applyAggregation(samples, 'sum', ['env']);
     expect(result).toHaveLength(2);
 
-    const prodGroup = result.find((r) => r.labels['env'] === 'prod');
-    const stagingGroup = result.find((r) => r.labels['env'] === 'staging');
+    const prodGroup = result.find((r) => r.labels.env === 'prod');
+    const stagingGroup = result.find((r) => r.labels.env === 'staging');
     expect(prodGroup?.value).toBe(30); // 10 + 20
     expect(stagingGroup?.value).toBe(30);
   });

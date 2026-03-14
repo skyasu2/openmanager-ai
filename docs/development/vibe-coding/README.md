@@ -51,14 +51,14 @@
 | [Claude Code](./claude-code.md) | Claude CLI 전용 사용법 |
 | [AI 도구들](./multi-agent-tools.md) | 3-CLI 협업 개발 운영 가이드 |
 | [MCP 서버](./mcp-servers.md) | 에이전트별 MCP 구성/운영/문제해결 |
-| [Skills](./skills.md) | Codex/Claude 스킬과 Gemini custom command 구성 |
+| [Skills](./skills.md) | Codex/Claude/Gemini 스킬 카탈로그와 호출 방식 |
 | [워크플로우](./workflows.md) | 실전 개발 워크플로우 |
 
 ## 범위 경계 (중복 최소화)
 
 - 설치/로그인 상세: [setup.md](./setup.md)
 - MCP 구성/토큰/권한 상세: [mcp-servers.md](./mcp-servers.md)
-- 스킬/커맨드 카탈로그 상세: [skills.md](./skills.md)
+- 스킬 카탈로그 상세: [skills.md](./skills.md)
 - 이 문서는 허브/내비게이션 중심으로 유지
 
 ## 빠른 시작

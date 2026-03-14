@@ -3,9 +3,9 @@
 > Owner: team
 > Status: Active Canonical
 > Doc type: Reference
-> Last reviewed: 2026-02-16
+> Last reviewed: 2026-03-14
 
-프로젝트 자동화 및 유틸리티 스크립트 (53개 파일, 16개 디렉토리).
+프로젝트 자동화 및 유틸리티 스크립트 모음.
 
 ## 디렉토리 구조
 
@@ -24,8 +24,6 @@ scripts/
 │   ├── lint-changed.sh        # 변경 파일만 린트
 │   ├── tsc-wrapper.js         # TypeScript 체크 래퍼
 │   └── typecheck-changed.sh   # 변경 파일만 타입 체크
-├── diagnostics/       # 디버깅 도구
-│   └── claude-json-sanitize.js
 ├── docs/              # 문서 품질 관리
 │   ├── check-docs.sh          # 문서 품질 점검
 │   ├── doc-budget-report.js   # 문서 예산 리포트

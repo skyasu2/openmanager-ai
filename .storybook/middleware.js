@@ -15,7 +15,7 @@ try {
 } catch {}
 
 function getCachePath(key) {
-  return path.join(CACHE_DIR, key.replace(/[^a-z0-9.-]/gi, '_') + '.cache');
+  return path.join(CACHE_DIR, `${key.replace(/[^a-z0-9.-]/gi, '_')}.cache`);
 }
 
 function readCache(key) {
@@ -77,7 +77,7 @@ module.exports = function manifestCacheMiddleware(app) {
 
     const port =
       req.socket.localPort ||
-      (req.headers.host && req.headers.host.split(':')[1]) ||
+      req.headers.host?.split(':')[1] ||
       6006;
 
     const proxyReq = http.request(

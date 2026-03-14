@@ -158,7 +158,6 @@ export function useAIChatCore(
   // 🧩 Chat Queue Hook (메시지 대기열 Batching)
   const {
     queuedQueries,
-    queuedQueriesRef,
     addToQueue,
     removeQueuedQuery,
     popAndSendQueue,
@@ -252,15 +251,17 @@ export function useAIChatCore(
 
   useEffect(() => {
     sendQueryRef.current = sendQuery;
-  }, [sendQuery]);
+  }, [sendQuery, sendQueryRef]);
+
+  const hasQueuedQueries = queuedQueries.length > 0;
 
   // 🎯 대기열 쿼리 발송 Effect: 응답이 완전히 끝났을 때(hybridIsLoading false 전환 시)
   // 단, 에러가 없을 때만 발송(에러 발생 시엔 재시도 등 대비해 큐 유지/또는 별도 처리)
   useEffect(() => {
-    if (!hybridIsLoading && queuedQueriesRef.current.length > 0 && !error) {
+    if (!hybridIsLoading && hasQueuedQueries && !error) {
       popAndSendQueue();
     }
-  }, [hybridIsLoading, error, popAndSendQueue]);
+  }, [hybridIsLoading, hasQueuedQueries, error, popAndSendQueue]);
 
   // ============================================================================
   // Message Transformation
