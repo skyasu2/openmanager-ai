@@ -1,4 +1,4 @@
-import type { Preview } from '@storybook/nextjs-vite';
+import type { Preview } from '@storybook/react-vite';
 import { sb } from 'storybook/test';
 
 import '../src/styles/globals.css';
@@ -43,9 +43,6 @@ sb.mock(import('../src/services/system/SystemInactivityService.ts'));
 
 const preview: Preview = {
   parameters: {
-    nextjs: {
-      appDirectory: true,
-    },
     backgrounds: {
       default: 'dark',
       values: [

@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/nextjs-vite';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import { Activity, Cpu, Globe, ScrollText, Settings } from 'lucide-react';
 import { fn } from 'storybook/test';
 import type { TabInfo } from './EnhancedServerModal.types';

@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/nextjs-vite';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import { ProcessesTab } from './EnhancedServerModal.ProcessesTab';
 import type { ServerService } from './EnhancedServerModal.types';
 

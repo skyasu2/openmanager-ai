@@ -1,32 +1,33 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-14 21:29:01 KST
+> Generated at: 2026-03-15 02:14:40 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 98 |
-| Total Checks | 736 |
-| Passed | 693 |
+| Total Runs | 99 |
+| Total Checks | 740 |
+| Passed | 697 |
 | Failed | 39 |
-| Completed Items | 164 |
+| Completed Items | 167 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 42 |
 | Expert Domains Tracked | 6 |
 | Expert Open Gaps | 1 |
 | Completion Rate | 100% |
-| Last Run | QA-20260314-0098 (2026-03-14T12:29:00.552Z) |
+| Last Run | QA-20260315-0099 (2026-03-14T17:14:40.772Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260314-0098 (2026-03-14T12:29:00.552Z)
+Latest run: QA-20260315-0099 (2026-03-14T17:14:40.772Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| - | - | - | - |
+| Test Automation Architect | appropriate | no | - |
+| DevOps / SRE Engineer | appropriate | no | - |
 
 ## Expert Domain Open Gaps
 
@@ -236,6 +237,9 @@ Latest run: QA-20260314-0098 (2026-03-14T12:29:00.552Z)
 - reporter-generate-detail-v880: Reporter 생성 및 상세 렌더링 검증 (completed 2회, last QA-20260309-0069)
 - reporter-primary-generate-button-empty-state: Reporter 상단 생성 버튼 empty state 동작 정합성 (completed 1회, last QA-20260309-0064)
 - reporter-state-loss-on-tab-switch: Reporter 탭 전환 시 생성 결과 상태 유지 (completed 0회, last QA-20260308-0059)
+- storybook-build-dev-smoke-pass: storybook build 및 dev smoke-test 통과 (completed 1회, last QA-20260315-0099)
+- storybook-next-module-shims: next/navigation/link/image/dynamic 등 Storybook shim 추가 (completed 1회, last QA-20260315-0099)
+- storybook-react-vite-migration: Storybook Next.js preset 제거 및 react-vite 전환 (completed 1회, last QA-20260315-0099)
 - storybook-sb-mock-fix: sb.mock()을 preview.ts로 이동하여 Storybook v10 호환성 수정 (completed 1회, last QA-20260302-0043)
 - system-boot-api-checks: 시스템 부트 API 존재성/헬스 체크 (completed 2회, last QA-20260302-0039)
 - system-boot-redirect: 시스템 시작 대시보드 리다이렉트 (completed 1회, last QA-20260301-0035)
@@ -296,6 +300,7 @@ Latest run: QA-20260314-0098 (2026-03-14T12:29:00.552Z)
 
 | Run ID | Time (UTC) | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260315-0099 | 2026-03-14T17:14:40.772Z | Storybook QA - react-vite migration verification | 4 | 3 | 0 | 0 | 0 | 0 |
 | QA-20260314-0098 | 2026-03-14T12:29:00.552Z | Vercel Production QA - Frontend/AI Active QA | 3 | 0 | 0 | 0 | 3 | 0 |
 | QA-20260314-0097 | 2026-03-14T03:21:46.717Z | Vercel Production QA - Frontend/AI/Performance/Free Tier policy review | 13 | 7 | 0 | 0 | 1 | 1 |
 | QA-20260314-0096 | 2026-03-14T00:10:58.614Z | Production 종합 QA - Frontend/AI/Performance/FreeTier 검증 | 17 | 9 | 0 | 0 | 1 | 1 |
@@ -315,5 +320,4 @@ Latest run: QA-20260314-0098 (2026-03-14T12:29:00.552Z)
 | QA-20260310-0082 | 2026-03-10T01:43:44.521Z | Vercel production AI Chat performance closeout | 5 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260310-0081 | 2026-03-10T01:30:32.172Z | Server-Timing hosting-path diagnosis and QA policy update | 4 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260310-0080 | 2026-03-10T00:50:11.433Z | Vercel Playwright QA - stream/v2 timing header verification | 5 | 2 | 0 | 0 | 0 | 1 |
-| QA-20260310-0079 | 2026-03-10T00:19:24.666Z | Production AI latency remeasurement - no severe regression reproduced | 4 | 0 | 0 | 0 | 0 | 1 |
 

@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/nextjs-vite';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import { fn } from 'storybook/test';
 import type { AsyncQueryProgress } from '../../hooks/ai/useAsyncAIQuery';
 import { JobProgressIndicator } from './JobProgressIndicator';

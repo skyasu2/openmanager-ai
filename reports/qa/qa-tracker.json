@@ -2,25 +2,25 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-03-14T12:29:00.552Z"
+    "updatedAt": "2026-03-14T17:14:40.772Z"
   },
   "sequence": {
-    "nextRunNumber": 99
+    "nextRunNumber": 100
   },
   "summary": {
-    "totalRuns": 98,
-    "totalChecks": 736,
-    "totalPassed": 693,
+    "totalRuns": 99,
+    "totalChecks": 740,
+    "totalPassed": 697,
     "totalFailed": 39,
     "completionRate": 100,
-    "completedItems": 164,
+    "completedItems": 167,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 42,
     "expertDomainsTracked": 6,
     "expertDomainsOpenGaps": 1,
-    "lastRunId": "QA-20260314-0098",
-    "lastRecordedAt": "2026-03-14T12:29:00.552Z"
+    "lastRunId": "QA-20260315-0099",
+    "lastRecordedAt": "2026-03-14T17:14:40.772Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -4600,6 +4600,78 @@
       "overengineeringScope": "",
       "lastPolicyNote": "이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)",
       "lastStatusChangeAt": "2026-03-14T12:29:00.552Z"
+    },
+    "storybook-react-vite-migration": {
+      "id": "storybook-react-vite-migration",
+      "title": "Storybook Next.js preset 제거 및 react-vite 전환",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260315-0099",
+      "firstSeenAt": "2026-03-14T17:14:40.772Z",
+      "lastSeenRunId": "QA-20260315-0099",
+      "lastSeenAt": "2026-03-14T17:14:40.772Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "package.json/.storybook/main.ts 업데이트",
+      "lastNote": "",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-03-14T17:14:40.772Z"
+    },
+    "storybook-next-module-shims": {
+      "id": "storybook-next-module-shims",
+      "title": "next/navigation/link/image/dynamic 등 Storybook shim 추가",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260315-0099",
+      "firstSeenAt": "2026-03-14T17:14:40.772Z",
+      "lastSeenRunId": "QA-20260315-0099",
+      "lastSeenAt": "2026-03-14T17:14:40.772Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": ".storybook/mocks/next/* 추가 및 alias 적용",
+      "lastNote": "",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-03-14T17:14:40.772Z"
+    },
+    "storybook-build-dev-smoke-pass": {
+      "id": "storybook-build-dev-smoke-pass",
+      "title": "storybook build 및 dev smoke-test 통과",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260315-0099",
+      "firstSeenAt": "2026-03-14T17:14:40.772Z",
+      "lastSeenRunId": "QA-20260315-0099",
+      "lastSeenAt": "2026-03-14T17:14:40.772Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "npm run storybook:build -- --quiet / dispatcher dev --port 6006 --smoke-test",
+      "lastNote": "",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-03-14T17:14:40.772Z"
     }
   },
   "runs": [
@@ -8553,6 +8625,44 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 3
+    },
+    {
+      "runId": "QA-20260315-0099",
+      "recordedAt": "2026-03-14T17:14:40.772Z",
+      "recordedAtKst": "2026-03-15 02:14:40 KST",
+      "title": "Storybook QA - react-vite migration verification",
+      "owner": "codex",
+      "source": "storybook-cli",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260315-0099.json",
+      "checks": {
+        "total": 4,
+        "passed": 4,
+        "failed": 0
+      },
+      "expertAssessments": [
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Storybook build/dev smoke-test와 lint/type-check를 함께 검증함",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "로컬 실행 안정성과 MCP 상태 점검까지 완료",
+          "nextAction": ""
+        }
+      ],
+      "expertCount": 2,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 3,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -8612,16 +8722,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 24,
-      "appropriateCount": 21,
+      "seenCount": 25,
+      "appropriateCount": 22,
       "partialCount": 3,
       "inappropriateCount": 0,
       "improvementNeededCount": 3,
-      "lastRunId": "QA-20260314-0097",
-      "lastSeenAt": "2026-03-14T03:21:46.717Z",
+      "lastRunId": "QA-20260315-0099",
+      "lastSeenAt": "2026-03-14T17:14:40.772Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "최신 production 배포는 READY이며 plan=pro 메타데이터가 확인됐다. wake-up 4541ms, /api/health DB 2ms/Cache 2ms/AI 1ms로 운영 상태는 안정적이다.",
+      "lastRationale": "로컬 실행 안정성과 MCP 상태 점검까지 완료",
       "lastNextAction": ""
     },
     "test-automation": {
@@ -8629,16 +8739,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 57,
-      "appropriateCount": 53,
+      "seenCount": 58,
+      "appropriateCount": 54,
       "partialCount": 4,
       "inappropriateCount": 0,
       "improvementNeededCount": 5,
-      "lastRunId": "QA-20260314-0097",
-      "lastSeenAt": "2026-03-14T03:21:46.717Z",
+      "lastRunId": "QA-20260315-0099",
+      "lastSeenAt": "2026-03-14T17:14:40.772Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Playwright MCP로 landing -> login -> guest PIN -> dashboard -> AI Chat/Reporter/Analyst -> topology/alerts까지 실브라우저로 검증했다.",
+      "lastRationale": "Storybook build/dev smoke-test와 lint/type-check를 함께 검증함",
       "lastNextAction": ""
     },
     "data-metrics-quality": {

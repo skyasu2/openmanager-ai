@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/nextjs-vite';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import { fn, mocked } from 'storybook/test';
 
 import { useAISidebarStore } from '../../stores/useAISidebarStore';

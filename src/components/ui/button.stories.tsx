@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/nextjs-vite';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import { ChevronRight, Mail } from 'lucide-react';
 import { expect, fn, userEvent, within } from 'storybook/test';
 import { Button } from './button';

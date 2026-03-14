@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/nextjs-vite';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import { OverviewTab } from './EnhancedServerModal.OverviewTab';
 import type { ServerData, StatusTheme } from './EnhancedServerModal.types';
 

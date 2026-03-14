@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/nextjs-vite';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import { fn } from 'storybook/test';
 import type { ServerData } from './EnhancedServerModal.types';
 import { ServerModalHeader } from './ServerModalHeader';

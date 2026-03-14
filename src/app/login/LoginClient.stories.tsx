@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/nextjs-vite';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import { fn, mocked, userEvent } from 'storybook/test';
 
 import { useProfileAuth } from '../../components/unified-profile/hooks/useProfileAuth';

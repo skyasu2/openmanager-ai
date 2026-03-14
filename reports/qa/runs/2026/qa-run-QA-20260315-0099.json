@@ -1,0 +1,90 @@
+{
+  "runId": "QA-20260315-0099",
+  "recordedAt": "2026-03-14T17:14:40.772Z",
+  "recordedAtKst": "2026-03-15 02:14:40 KST",
+  "runTitle": "Storybook QA - react-vite migration verification",
+  "owner": "codex",
+  "source": "storybook-cli",
+  "environment": {
+    "frontend": "Local",
+    "backend": "N/A",
+    "branch": "main"
+  },
+  "checks": {
+    "total": 4,
+    "passed": 4,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Storybook build/dev smoke-test와 lint/type-check를 함께 검증함",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "로컬 실행 안정성과 MCP 상태 점검까지 완료",
+      "nextAction": ""
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "storybook-react-vite-migration",
+      "title": "Storybook Next.js preset 제거 및 react-vite 전환",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "package.json/.storybook/main.ts 업데이트",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "storybook-next-module-shims",
+      "title": "next/navigation/link/image/dynamic 등 Storybook shim 추가",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": ".storybook/mocks/next/* 추가 및 alias 적용",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "storybook-build-dev-smoke-pass",
+      "title": "storybook build 및 dev smoke-test 통과",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "npm run storybook:build -- --quiet / dispatcher dev --port 6006 --smoke-test",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "storybook build는 node:fs/promises, node:path externalized 경고가 있으나 비차단",
+    "type-check/lint 통과 확인"
+  ],
+  "links": [
+    {
+      "label": "Storybook Static Output",
+      "url": "storybook-static"
+    }
+  ]
+}

@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/nextjs-vite';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import { type AgentStep, InlineAgentStatus } from './InlineAgentStatus';
 
 const meta = {
