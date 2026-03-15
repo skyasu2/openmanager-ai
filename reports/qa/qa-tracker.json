@@ -2,25 +2,25 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-03-14T17:14:40.772Z"
+    "updatedAt": "2026-03-15T05:59:40.849Z"
   },
   "sequence": {
-    "nextRunNumber": 100
+    "nextRunNumber": 101
   },
   "summary": {
-    "totalRuns": 99,
-    "totalChecks": 740,
-    "totalPassed": 697,
+    "totalRuns": 100,
+    "totalChecks": 746,
+    "totalPassed": 703,
     "totalFailed": 39,
     "completionRate": 100,
-    "completedItems": 167,
+    "completedItems": 168,
     "pendingItems": 0,
     "deferredItems": 0,
-    "wontFixItems": 42,
+    "wontFixItems": 41,
     "expertDomainsTracked": 6,
-    "expertDomainsOpenGaps": 1,
-    "lastRunId": "QA-20260315-0099",
-    "lastRecordedAt": "2026-03-14T17:14:40.772Z"
+    "expertDomainsOpenGaps": 0,
+    "lastRunId": "QA-20260315-0100",
+    "lastRecordedAt": "2026-03-15T05:59:40.849Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -4509,25 +4509,25 @@
       "id": "ai-chat-empty-response",
       "title": "AI Chat 서버 상태 요약 질문에 빈 응답 반환",
       "priority": "P2",
-      "status": "wont-fix",
+      "status": "completed",
       "firstSeenRunId": "QA-20260314-0096",
       "firstSeenAt": "2026-03-14T00:10:58.614Z",
-      "lastSeenRunId": "QA-20260314-0097",
-      "lastSeenAt": "2026-03-14T03:21:46.717Z",
-      "seenCount": 2,
-      "completedCount": 0,
+      "lastSeenRunId": "QA-20260315-0100",
+      "lastSeenAt": "2026-03-15T05:59:40.849Z",
+      "seenCount": 3,
+      "completedCount": 1,
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 2,
       "aliases": [],
       "owner": "",
-      "lastEvidence": "\"현재 모든 서버의 상태를 요약해줘\" -> \"응답을 생성하지 못했습니다. 질문을 더 구체적으로 다시 시도해 주세요.\" / Streaming AI · 일반 대화 응답 / network 200",
-      "lastNote": "Reporter/Analyst는 정상이며 Chat 일반 대화 경로만 품질 실패",
+      "lastEvidence": "Playwright MCP production 검증에서 동일 질문에 요약 응답 생성 확인(전체 15, 정상 14, 경고 1, 주의 서버 cache-redis-dc1-01)",
+      "lastNote": "Cloud Run ai-engine-00248-psh 배포 후 재검증",
       "isBlocking": false,
       "isBlockingExplicit": false,
       "overengineeringScope": "",
-      "lastPolicyNote": "이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)",
-      "lastStatusChangeAt": "2026-03-14T03:21:46.717Z"
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-03-15T05:59:40.849Z"
     },
     "vercel-prod-frontend-boot": {
       "id": "vercel-prod-frontend-boot",
@@ -8663,6 +8663,76 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260315-0100",
+      "recordedAt": "2026-03-15T05:59:40.849Z",
+      "recordedAtKst": "2026-03-15 14:59:40 KST",
+      "title": "Vercel Production QA - AI Chat summary response recovery validation",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260315-0100.json",
+      "checks": {
+        "total": 6,
+        "passed": 6,
+        "failed": 0
+      },
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Production AI Chat에서 '현재 모든 서버의 상태를 요약해줘' 질의를 실행해 비어있지 않은 요약 응답을 확인했다.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "observability-monitoring",
+          "domainName": "IT Monitoring & Observability SME",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "대시보드 지표(15대 서버, 온라인 14/경고 1)와 AI 요약 응답의 핵심 수치가 일치했다.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "ai-security-reliability",
+          "domainName": "AI Security & Reliability Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "게스트 세션 기반 대화 경로에서 오류/빈 응답 없이 정상 스트리밍 응답이 완료됐다.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Vercel production 실환경에서 landing->boot->dashboard->AI chat 핵심 경로를 재검증했다.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Playwright MCP 브라우저 세션으로 스타터 프롬프트 실행과 응답 렌더링까지 end-to-end 확인했다.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "data-metrics-quality",
+          "domainName": "Data Quality & Metrics Analyst",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "응답 텍스트에 전체/정상/경고 수치와 주의 서버가 포함되어 데이터 기반 요약 품질을 충족했다.",
+          "nextAction": ""
+        }
+      ],
+      "expertCount": 6,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -8671,33 +8741,33 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 61,
-      "appropriateCount": 58,
+      "seenCount": 62,
+      "appropriateCount": 59,
       "partialCount": 3,
       "inappropriateCount": 0,
       "improvementNeededCount": 11,
-      "lastRunId": "QA-20260314-0097",
-      "lastSeenAt": "2026-03-14T03:21:46.717Z",
+      "lastRunId": "QA-20260315-0100",
+      "lastSeenAt": "2026-03-15T05:59:40.849Z",
       "lastFit": "appropriate",
-      "lastImprovementNeeded": true,
-      "lastRationale": "AI Chat 스타터 프롬프트 '현재 모든 서버의 상태를 요약해줘'가 production에서 다시 실패했다. Reporter와 Analyst는 정상이며 Chat만 일반 대화 응답 품질 문제가 남아 있다.",
-      "lastNextAction": "AI Chat supervisor stream v2의 일반 대화 응답 품질 개선 필요"
+      "lastImprovementNeeded": false,
+      "lastRationale": "Production AI Chat에서 '현재 모든 서버의 상태를 요약해줘' 질의를 실행해 비어있지 않은 요약 응답을 확인했다.",
+      "lastNextAction": ""
     },
     "observability-monitoring": {
       "domainId": "observability-monitoring",
       "domainName": "IT Monitoring & Observability SME",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 39,
-      "appropriateCount": 21,
+      "seenCount": 40,
+      "appropriateCount": 22,
       "partialCount": 18,
       "inappropriateCount": 0,
       "improvementNeededCount": 18,
-      "lastRunId": "QA-20260314-0097",
-      "lastSeenAt": "2026-03-14T03:21:46.717Z",
+      "lastRunId": "QA-20260315-0100",
+      "lastSeenAt": "2026-03-15T05:59:40.849Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Health API healthy, 15대 서버 카드/리소스/토폴로지/활성 알림 모달이 정상이다. OTel hourly/timeseries fetch가 모두 200으로 확인됐다.",
+      "lastRationale": "대시보드 지표(15대 서버, 온라인 14/경고 1)와 AI 요약 응답의 핵심 수치가 일치했다.",
       "lastNextAction": ""
     },
     "ai-security-reliability": {
@@ -8705,16 +8775,16 @@
       "domainName": "AI Security & Reliability Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 31,
-      "appropriateCount": 22,
+      "seenCount": 32,
+      "appropriateCount": 23,
       "partialCount": 9,
       "inappropriateCount": 0,
       "improvementNeededCount": 9,
-      "lastRunId": "QA-20260314-0097",
-      "lastSeenAt": "2026-03-14T03:21:46.717Z",
+      "lastRunId": "QA-20260315-0100",
+      "lastSeenAt": "2026-03-15T05:59:40.849Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "게스트 PIN 로그인 후 dashboard와 AI API 접근이 모두 정상이다. 콘솔 기준 신규 런타임 에러는 없고, auth/session 흐름은 의도대로 동작했다.",
+      "lastRationale": "게스트 세션 기반 대화 경로에서 오류/빈 응답 없이 정상 스트리밍 응답이 완료됐다.",
       "lastNextAction": ""
     },
     "sre-devops": {
@@ -8722,16 +8792,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 25,
-      "appropriateCount": 22,
+      "seenCount": 26,
+      "appropriateCount": 23,
       "partialCount": 3,
       "inappropriateCount": 0,
       "improvementNeededCount": 3,
-      "lastRunId": "QA-20260315-0099",
-      "lastSeenAt": "2026-03-14T17:14:40.772Z",
+      "lastRunId": "QA-20260315-0100",
+      "lastSeenAt": "2026-03-15T05:59:40.849Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "로컬 실행 안정성과 MCP 상태 점검까지 완료",
+      "lastRationale": "Vercel production 실환경에서 landing->boot->dashboard->AI chat 핵심 경로를 재검증했다.",
       "lastNextAction": ""
     },
     "test-automation": {
@@ -8739,16 +8809,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 58,
-      "appropriateCount": 54,
+      "seenCount": 59,
+      "appropriateCount": 55,
       "partialCount": 4,
       "inappropriateCount": 0,
       "improvementNeededCount": 5,
-      "lastRunId": "QA-20260315-0099",
-      "lastSeenAt": "2026-03-14T17:14:40.772Z",
+      "lastRunId": "QA-20260315-0100",
+      "lastSeenAt": "2026-03-15T05:59:40.849Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Storybook build/dev smoke-test와 lint/type-check를 함께 검증함",
+      "lastRationale": "Playwright MCP 브라우저 세션으로 스타터 프롬프트 실행과 응답 렌더링까지 end-to-end 확인했다.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {
@@ -8756,16 +8826,16 @@
       "domainName": "Data Quality & Metrics Analyst",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 24,
-      "appropriateCount": 12,
+      "seenCount": 25,
+      "appropriateCount": 13,
       "partialCount": 12,
       "inappropriateCount": 0,
       "improvementNeededCount": 12,
-      "lastRunId": "QA-20260314-0097",
-      "lastSeenAt": "2026-03-14T03:21:46.717Z",
+      "lastRunId": "QA-20260315-0100",
+      "lastSeenAt": "2026-03-15T05:59:40.849Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "대시보드 메트릭과 Analyst 결과가 동일한 synthetic OTel 데이터셋을 반영했다. 15대 서버 분포와 Top 5 리소스 경고가 일관된다.",
+      "lastRationale": "응답 텍스트에 전체/정상/경고 수치와 주의 서버가 포함되어 데이터 기반 요약 품질을 충족했다.",
       "lastNextAction": ""
     }
   }

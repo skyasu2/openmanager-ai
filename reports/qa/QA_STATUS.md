@@ -1,38 +1,41 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-15 02:14:40 KST
+> Generated at: 2026-03-15 14:59:41 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 99 |
-| Total Checks | 740 |
-| Passed | 697 |
+| Total Runs | 100 |
+| Total Checks | 746 |
+| Passed | 703 |
 | Failed | 39 |
-| Completed Items | 167 |
+| Completed Items | 168 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
-| Wont-Fix Items | 42 |
+| Wont-Fix Items | 41 |
 | Expert Domains Tracked | 6 |
-| Expert Open Gaps | 1 |
+| Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Run | QA-20260315-0099 (2026-03-14T17:14:40.772Z) |
+| Last Run | QA-20260315-0100 (2026-03-15T05:59:40.849Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260315-0099 (2026-03-14T17:14:40.772Z)
+Latest run: QA-20260315-0100 (2026-03-15T05:59:40.849Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| Test Automation Architect | appropriate | no | - |
+| AI Quality Assurance Specialist | appropriate | no | - |
+| IT Monitoring & Observability SME | appropriate | no | - |
+| AI Security & Reliability Architect | appropriate | no | - |
 | DevOps / SRE Engineer | appropriate | no | - |
+| Test Automation Architect | appropriate | no | - |
+| Data Quality & Metrics Analyst | appropriate | no | - |
 
 ## Expert Domain Open Gaps
 
-- ai-quality-assurance: AI Quality Assurance Specialist (last QA-20260314-0097)
-  next: AI Chat supervisor stream v2의 일반 대화 응답 품질 개선 필요
+- None
 
 ## Pending Improvements
 
@@ -49,8 +52,6 @@ Latest run: QA-20260315-0099 (2026-03-14T17:14:40.772Z)
 - [P1] obs-fp-fn-weekly-report: 오탐/미탐 주간 리포트 자동 생성 (seen 3회, last QA-20260227-0013)
 - [P1] security-attack-regression-pack: 보안 공격 시나리오 회귀팩 구축 (seen 3회, last QA-20260227-0013)
 - [P2] ai-chat-detail-expand: AI Chat 상세 분석 펼치기 (seen 1회, last QA-20260301-0030)
-  - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
-- [P2] ai-chat-empty-response: AI Chat 서버 상태 요약 질문에 빈 응답 반환 (seen 2회, last QA-20260314-0097)
   - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
 - [P2] ai-chat-sidebar-open: AI 사이드바 열기 (seen 1회, last QA-20260301-0030)
   - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
@@ -130,6 +131,7 @@ Latest run: QA-20260315-0099 (2026-03-14T17:14:40.772Z)
 
 - ai-analyst-success: Analyst Agent 이상감지/예측 성공 (completed 2회, last QA-20260314-0097)
 - ai-chat-cloud-run-500: AI Chat Cloud Run 자유입력 응답 - 최종 성공 확인 (completed 1회, last QA-20260310-0089)
+- ai-chat-empty-response: AI Chat 서버 상태 요약 질문에 빈 응답 반환 (completed 1회, last QA-20260315-0100)
 - ai-chat-latency-regression-recheck-20260310: AI Chat latency regression claim rechecked on production (completed 1회, last QA-20260310-0071)
 - ai-chat-performance-v880: AI Chat 응답 시간 및 요약 품질 검증 (completed 3회, last QA-20260310-0082)
 - ai-chat-quality-v880-quality-recheck: AI Chat 응답 품질 재검증 (completed 1회, last QA-20260308-0059)
@@ -300,6 +302,7 @@ Latest run: QA-20260315-0099 (2026-03-14T17:14:40.772Z)
 
 | Run ID | Time (UTC) | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260315-0100 | 2026-03-15T05:59:40.849Z | Vercel Production QA - AI Chat summary response recovery validation | 6 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260315-0099 | 2026-03-14T17:14:40.772Z | Storybook QA - react-vite migration verification | 4 | 3 | 0 | 0 | 0 | 0 |
 | QA-20260314-0098 | 2026-03-14T12:29:00.552Z | Vercel Production QA - Frontend/AI Active QA | 3 | 0 | 0 | 0 | 3 | 0 |
 | QA-20260314-0097 | 2026-03-14T03:21:46.717Z | Vercel Production QA - Frontend/AI/Performance/Free Tier policy review | 13 | 7 | 0 | 0 | 1 | 1 |
@@ -319,5 +322,4 @@ Latest run: QA-20260315-0099 (2026-03-14T17:14:40.772Z)
 | QA-20260310-0083 | 2026-03-10T02:03:05.427Z | Vercel Playwright QA - Full release gate recheck after issue closeout | 11 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260310-0082 | 2026-03-10T01:43:44.521Z | Vercel production AI Chat performance closeout | 5 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260310-0081 | 2026-03-10T01:30:32.172Z | Server-Timing hosting-path diagnosis and QA policy update | 4 | 2 | 0 | 0 | 0 | 0 |
-| QA-20260310-0080 | 2026-03-10T00:50:11.433Z | Vercel Playwright QA - stream/v2 timing header verification | 5 | 2 | 0 | 0 | 0 | 1 |
 
