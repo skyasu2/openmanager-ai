@@ -476,6 +476,26 @@
   - `bash -n cloud-run/ai-engine/deploy.sh` 통과
   - `cd cloud-run/ai-engine && DOCKER_BUILD_TIMEOUT_SECONDS=300 SKIP_RUN=true npm run docker:preflight` 재확인 통과
 
+## 실행 결과 추가 (2026-03-15, 실배포 검증)
+- 실행:
+  - `cd cloud-run/ai-engine && bash deploy.sh`
+- 로컬 사전 검증:
+  - 기본 경로에서 build-only Docker preflight 통과
+  - free-tier guardrails 통과
+- Cloud Build:
+  - Build ID: `9cdc5c74-97ae-4752-b532-365f8c69fd7f`
+  - Image: `asia-northeast1-docker.pkg.dev/openmanager-free-tier/cloud-run/ai-engine:v-20260315-205920-fd0381f81`
+  - Status: `SUCCESS`
+- Cloud Run:
+  - Revision: `ai-engine-00249-tg7`
+  - Traffic: `100%`
+  - URL: `https://ai-engine-jdhrhws7ia-an.a.run.app`
+- 검증:
+  - deploy.sh 내부 health check: HTTP 200
+  - 외부 `/health` 확인: `status=ok`, `version=8.8.0`, `redis=true`
+  - 외부 `/monitoring` 무인증 확인: HTTP 403
+  - cleanup summary: images 1, sources 1, revisions 1 삭제
+
 ## 남은 500+ Cloud Run 우선 작업
 - 핵심 런타임 경로(우선):
   - 현재 핵심 런타임 경로 500+ 없음 (단일 파일 기준, 정적 데이터 제외)
