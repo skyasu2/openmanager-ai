@@ -22,23 +22,15 @@ import {
   recordModelUsage,
   type ProviderName,
 } from './model-provider';
-import { createPrepareStep, createSystemPrompt, selectExecutionMode } from './supervisor-routing';
+import { createPrepareStep, createSystemPrompt } from './supervisor-routing';
+import { resolveSupervisorMode } from './supervisor-mode';
 import type { StreamEvent, SupervisorRequest } from './supervisor-types';
-
-function resolveStreamMode(request: SupervisorRequest): 'single' | 'multi' {
-  let mode = request.mode || 'auto';
-  if (mode === 'auto') {
-    const lastUserMessage = request.messages.filter((m) => m.role === 'user').pop();
-    mode = lastUserMessage ? selectExecutionMode(lastUserMessage.content) : 'single';
-  }
-  return mode === 'multi' ? 'multi' : 'single';
-}
 
 export async function* executeSupervisorStream(
   request: SupervisorRequest
 ): AsyncGenerator<StreamEvent> {
   const startTime = Date.now();
-  const mode = resolveStreamMode(request);
+  const mode = resolveSupervisorMode(request);
 
   logger.info(`[SupervisorStream] Mode: ${mode}`);
 

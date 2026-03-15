@@ -14,11 +14,11 @@ import {
 } from 'ai';
 
 import type { SupervisorRequest, SupervisorMode } from './supervisor-types';
-import { selectExecutionMode } from './supervisor-routing';
+import { resolveSupervisorMode } from './supervisor-mode';
 import { executeSupervisorStream } from './supervisor-single-agent';
 import { getPublicErrorResponse, sanitizeErrorData } from '../../lib/error-handler';
 import { logger } from '../../lib/logger';
-import { flushLangfuse } from '../observability/langfuse';
+import { flushLangfuseBestEffort } from '../observability/langfuse-flush';
 
 // ============================================================================
 // UIMessageStream Response
@@ -167,20 +167,6 @@ function getStructuredResponseSummary(
   };
 }
 
-async function flushLangfuseBestEffort(timeoutMs: number = 350): Promise<void> {
-  await Promise.race([
-    flushLangfuse(),
-    new Promise<void>((resolve) => {
-      setTimeout(resolve, timeoutMs);
-    }),
-  ]).catch((error) => {
-    logger.warn(
-      { error: error instanceof Error ? error.message : String(error) },
-      'UIMessageStream: Langfuse flush skipped'
-    );
-  });
-}
-
 export function createSupervisorStreamResponse(
   request: SupervisorRequest
 ): Response {
@@ -206,11 +192,7 @@ export function createSupervisorStreamResponse(
           },
         });
 
-        let mode: SupervisorMode = request.mode || 'auto';
-        if (mode === 'auto') {
-          const lastUserMessage = request.messages.filter((m) => m.role === 'user').pop();
-          mode = lastUserMessage ? selectExecutionMode(lastUserMessage.content) : 'single';
-        }
+        const mode: SupervisorMode = resolveSupervisorMode(request);
 
         writer.write({
           type: 'data-mode',
@@ -323,7 +305,7 @@ export function createSupervisorStreamResponse(
               });
 
               // Cloud Run cpu-throttling 환경에서 stream trace 지연 업로드를 완화.
-              await flushLangfuseBestEffort();
+              await flushLangfuseBestEffort('UIMessageStream');
               break;
 
             case 'error':

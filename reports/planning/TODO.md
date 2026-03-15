@@ -6,13 +6,13 @@
 
 | Task | Priority | Status |
 |------|----------|--------|
-| 진행 중 항목 없음 | - | - |
+| Cloud Run 대형 파일 리팩토링 Phase 2~3 | P3 | In Progress |
 
 ## On Hold
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| Cloud Run 대형 파일 리팩토링 Phase 2~3 | P3 | On Hold | 유지보수 단계에서 기능/QA 우선 작업 완료 후 재개 |
+| 진행 중 보류 항목 없음 | - | - | - |
 
 ### Completed (2026-03-15)
 - [x] P3: Semantic Caching — exact miss 시 token-hash embedding 기반 유사 쿼리 캐시 fallback 추가, 저장 메타데이터/유사도 계산/단위 테스트 반영

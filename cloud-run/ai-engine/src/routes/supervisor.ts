@@ -34,7 +34,8 @@ import {
   guardInput,
 } from '../lib/prompt-guard';
 import { logger } from '../lib/logger';
-import { flushLangfuse } from '../services/observability/langfuse';
+import { flushLangfuseBestEffort } from '../services/observability/langfuse-flush';
+import { extractTraceId } from './supervisor-trace';
 import { emitSupervisorStreamError } from './supervisor-stream-error';
 
 // ============================================================================
@@ -106,47 +107,7 @@ const streamRequestSchema = z.object({
 
 type StreamSupervisorRequest = z.infer<typeof streamRequestSchema>;
 
-// ============================================================================
-// 🎯 W3C Trace Context Helper
-// ============================================================================
-
-/**
- * traceparent 또는 X-Trace-Id에서 trace ID 추출
- * @param traceparent - W3C traceparent 헤더 (format: 00-{trace-id}-{parent-id}-{flags})
- * @param legacyTraceId - 레거시 X-Trace-Id 헤더 (UUID 또는 커스텀 형식)
- * @returns trace ID 문자열 또는 undefined
- */
-function extractTraceId(
-  traceparent: string | undefined,
-  legacyTraceId: string | undefined,
-): string | undefined {
-  if (traceparent) {
-    const match = traceparent.match(
-      /^00-([0-9a-f]{32})-[0-9a-f]{16}-[0-9a-f]{2}$/,
-    );
-    if (match) {
-      const hex = match[1];
-      return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
-    }
-  }
-  return legacyTraceId || undefined;
-}
-
 export const supervisorRouter = new Hono();
-
-async function flushLangfuseBestEffort(timeoutMs: number = 350): Promise<void> {
-  await Promise.race([
-    flushLangfuse(),
-    new Promise<void>((resolve) => {
-      setTimeout(resolve, timeoutMs);
-    }),
-  ]).catch((error) => {
-    logger.warn(
-      { error: error instanceof Error ? error.message : String(error) },
-      'Supervisor: Langfuse flush skipped'
-    );
-  });
-}
 
 /**
  * POST /supervisor - Main AI Supervisor Endpoint
@@ -253,7 +214,7 @@ supervisorRouter.post('/', async (c: Context) => {
     }
 
     // Cloud Run cpu-throttling 환경에서 trace 누락을 줄이기 위해 응답 직전 짧게 flush.
-    await flushLangfuseBestEffort();
+    await flushLangfuseBestEffort('Supervisor');
 
     return jsonSuccess(c, {
       response: sanitizedResponse,

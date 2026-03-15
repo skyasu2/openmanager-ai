@@ -216,8 +216,29 @@
     - `cloud-run/ai-engine/src/lib/ai/monitoring/UnifiedAnomalyEngine.ts` 818 → 340
     - 신규 `cloud-run/ai-engine/src/lib/ai/monitoring/UnifiedAnomalyEngine.types.ts` 113줄
     - 신규 `cloud-run/ai-engine/src/lib/ai/monitoring/UnifiedAnomalyEngine.helpers.ts` 338줄
-  - 기존 public API 유지:
-    - `getUnifiedAnomalyEngine`, `resetUnifiedAnomalyEngine` 경로/이름 동일
+- 기존 public API 유지:
+  - `getUnifiedAnomalyEngine`, `resetUnifiedAnomalyEngine` 경로/이름 동일
+
+## 실행 결과 추가 (2026-03-15, Phase 2 재개)
+- 리팩토링:
+  - Supervisor 진입/보조 책임 분리:
+    - `cloud-run/ai-engine/src/routes/supervisor.ts` 502 → 463
+    - 신규 `cloud-run/ai-engine/src/routes/supervisor-trace.ts` 21줄
+    - 신규 `cloud-run/ai-engine/src/services/ai-sdk/supervisor-mode.ts` 20줄
+    - 신규 `cloud-run/ai-engine/src/services/observability/langfuse-flush.ts` 18줄
+  - 중복 제거 범위:
+    - W3C trace ID 파싱 로직 공용화
+    - `mode=auto` 해석 로직 공용화 (`executeSupervisor`, `executeSupervisorStream`, `createSupervisorStreamResponse`)
+    - Langfuse best-effort flush 로직 공용화
+  - 라인 수 변화:
+    - `cloud-run/ai-engine/src/services/ai-sdk/supervisor-single-agent.ts` 476 → 471
+    - `cloud-run/ai-engine/src/services/ai-sdk/supervisor-stream.ts` 512 → 504
+- 검증:
+  - `cd cloud-run/ai-engine && npm run type-check` 통과
+  - `cd cloud-run/ai-engine && npm run line-guard` 통과
+  - `cd cloud-run/ai-engine && npx vitest run src/services/ai-sdk/supervisor-mode.test.ts src/services/ai-sdk/supervisor-routing.test.ts src/services/ai-sdk/supervisor-quality-retry.test.ts src/routes/supervisor-trace.test.ts` 통과 (56 passed)
+- 메모:
+  - `supervisor-stream.ts`는 505줄 경고 수준으로 남아 있어 다음 분리 후보로 유지
     - 기존 export type은 `UnifiedAnomalyEngine.ts`에서 재export
 - 검증:
   - `cd cloud-run/ai-engine && npm run type-check` 통과

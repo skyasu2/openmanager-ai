@@ -41,10 +41,10 @@ import type {
   SupervisorHealth,
 } from './supervisor-types';
 import { logger } from '../../lib/logger';
+import { resolveSupervisorMode } from './supervisor-mode';
 import {
   createSystemPrompt,
   RETRY_CONFIG,
-  selectExecutionMode,
   getIntentCategory,
   createPrepareStep,
 } from './supervisor-routing';
@@ -61,12 +61,7 @@ export async function executeSupervisor(
   request: SupervisorRequest
 ): Promise<SupervisorResponse | SupervisorError> {
   const startTime = Date.now();
-
-  let mode = request.mode || 'auto';
-  if (mode === 'auto') {
-    const lastUserMessage = request.messages.filter((m) => m.role === 'user').pop();
-    mode = lastUserMessage ? selectExecutionMode(lastUserMessage.content) : 'single';
-  }
+  const mode = resolveSupervisorMode(request);
 
   logger.info(`[Supervisor] Mode: ${mode}`);
 
