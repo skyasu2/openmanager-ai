@@ -1,18 +1,22 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-03-07 KST
+**Last Updated**: 2026-03-15 KST
 
 ## Active Tasks
 
 | Task | Priority | Status |
 |------|----------|--------|
-| 테스트 커버리지 확대: API Routes (18%) | P2 | Done (health, servers-unified, version, servers/[id] — 31 tests) |
-| 테스트 커버리지 확대: Hooks (30%→~40%) | P2 | Done (useDashboardStats 12, useServerDataCache 7, useResizable 11) |
-| 테스트 커버리지 확대: Services (47%→~55%) | P3 | Done (BrowserNotificationService 13, PyodideService 7, SystemInactivityService 12) |
-| Cloud Run 대형 파일 리팩토링 Phase 2~3 | P3 | On Hold |
-| Cloud Run 배포 (Reporter 변경 반영) | P2 | Done (v8.8.0, faad6169f) |
+| 진행 중 항목 없음 | - | - |
 
-### Test Coverage Gap (2026-03-05 코드리뷰 결과)
+## On Hold
+
+| Task | Priority | Status | Notes |
+|------|----------|--------|-------|
+| Cloud Run 대형 파일 리팩토링 Phase 2~3 | P3 | On Hold | 유지보수 단계에서 기능/QA 우선 작업 완료 후 재개 |
+
+### Test Coverage Gap (Closed)
+
+2026-03-05 코드리뷰에서 식별된 우선 테스트 대상 5건은 모두 완료되어 `Completed (2026-03-07)`에 이관됨.
 
 우선 테스트 대상:
 1. `/api/health/route.ts` — 프로덕션 모니터링 핵심
@@ -223,9 +227,11 @@
 
 ## Low Priority (Backlog)
 
-| Task | Description | Status |
-|------|-------------|--------|
-| Semantic Caching | 해시 기반 → 임베딩 기반 유사 쿼리 캐시 매칭 | P3 |
+| Task | Priority | Status | Description |
+|------|----------|--------|-------------|
+| Semantic Caching | P3 | Backlog | 해시 기반 → 임베딩 기반 유사 쿼리 캐시 매칭 |
+| security-attack-regression-pack | P1 | Deferred | 보안 QA 체계 구축 (실운영형 공격 회귀팩) |
+| ai-code-gate-input-policy | P1 | Deferred | Prompt 패턴 15개 방어 정책 운영화 |
 
 ## Completed Archive
 
