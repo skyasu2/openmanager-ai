@@ -23,19 +23,19 @@ import {
   stepCountIs,
   type ToolSet,
   type LanguageModel,
-  type ModelMessage,
 } from 'ai';
 import { sanitizeChineseCharacters } from '../../../lib/text-sanitizer';
 import { extractToolResultOutput } from '../../../lib/ai-sdk-utils';
 import type { AgentConfig, ModelResult } from './config';
 import { logger } from '../../../lib/logger';
 import { buildUserContent } from './base-agent-multimodal';
-import { SessionMemoryService } from '../session-memory';
 import {
   filterTools,
   getEmptyResponseFallbackMessage,
   resolveMaxOutputTokens,
 } from './base-agent-tooling';
+import { buildAgentContext, persistAgentHistory } from './base-agent-session';
+import { waitForStreamField } from './base-agent-stream';
 import {
   classifyLatencyTier,
   evaluateAgentResponseQuality,
@@ -133,45 +133,6 @@ export abstract class BaseAgent {
   }
 
   /**
-   * Build complete context including Redis history
-   *
-   * Session history is limited to the last MAX_HISTORY_MESSAGES messages
-   * to prevent context window overflow — especially critical for
-   * Cerebras Free Tier (8,192 token context limit).
-   */
-  private async buildContext(query: string, options: AgentRunOptions): Promise<ModelMessage[]> {
-    const MAX_HISTORY_MESSAGES = 4; // 2 user-assistant turns
-    const userContent = this.buildUserContent(query, options);
-    const messages: ModelMessage[] = [];
-
-    // 1. Recover history from Redis if sessionId provided
-    if (options.sessionId) {
-      try {
-        const history = await SessionMemoryService.getHistory(options.sessionId);
-        if (history && history.length > 0) {
-          // Limit to last N messages to prevent context overflow
-          const trimmed = history.length > MAX_HISTORY_MESSAGES
-            ? history.slice(-MAX_HISTORY_MESSAGES)
-            : history;
-          if (trimmed.length < history.length) {
-            logger.info(
-              `[SessionMemory] Trimmed history ${history.length} → ${trimmed.length} messages`
-            );
-          }
-          messages.push(...trimmed);
-        }
-      } catch (err) {
-        logger.error(`[SessionMemory] History recovery failed for ${options.sessionId}:`, err);
-      }
-    }
-
-    // 2. Add current user message
-    messages.push({ role: 'user', content: userContent });
-
-    return messages;
-  }
-
-  /**
    * Execute agent with query and return complete result
    *
    * @param query - User query to process
@@ -242,8 +203,12 @@ export abstract class BaseAgent {
     logger.info(`[${agentName}] Using ${provider}/${modelId}`);
 
     try {
-      // Build context (History + User Content)
-      const messages = await this.buildContext(query, opts);
+      const messages = await buildAgentContext(
+        agentName,
+        query,
+        opts,
+        this.buildUserContent.bind(this)
+      );
 
       // Create ToolLoopAgent with resolved configuration
       const agent = this.createToolLoopAgent({
@@ -299,15 +264,7 @@ export abstract class BaseAgent {
       }
 
       // Persist session history in Redis (Async)
-      if (opts.sessionId && sanitizedText) {
-        const updatedMessages: ModelMessage[] = [
-          ...messages,
-          { role: 'assistant', content: sanitizedText }
-        ];
-        SessionMemoryService.saveHistory(opts.sessionId, updatedMessages).catch(err => {
-          logger.error(`[SessionMemory] Failed to save history for ${opts.sessionId}:`, err);
-        });
-      }
+      persistAgentHistory(opts.sessionId, messages, sanitizedText);
 
       const durationMs = Date.now() - startTime;
       const quality = evaluateAgentResponseQuality(agentName, sanitizedText, {
@@ -391,7 +348,12 @@ export abstract class BaseAgent {
     const filteredTools = filterTools(config.tools, opts, provider, agentName);
 
     try {
-      const messages = await this.buildContext(query, opts);
+      const messages = await buildAgentContext(
+        agentName,
+        query,
+        opts,
+        this.buildUserContent.bind(this)
+      );
       const agent = this.createToolLoopAgent({
         model,
         instructions: config.instructions,
@@ -424,39 +386,19 @@ export abstract class BaseAgent {
         }
       }
 
-      const waitForStreamField = async <T>(
-        value: T | Promise<T> | PromiseLike<T>,
-        fieldName: string
-      ): Promise<T | null> => {
-        const timeoutMs = Math.max(1_000, (opts.timeoutMs ?? DEFAULT_OPTIONS.timeoutMs) * 0.5);
-        let timeoutHandle: ReturnType<typeof setTimeout> | null = null;
-        const timeout = new Promise<T | null>((resolve) => {
-          timeoutHandle = setTimeout(() => {
-            logger.warn(
-              `[${agentName}] Stream ${fieldName} not ready within ${timeoutMs}ms; continuing without it.`
-            );
-            resolve(null);
-          }, timeoutMs);
-        });
-        try {
-          const resolved = await Promise.race([Promise.resolve(value), timeout]);
-          return resolved;
-        } catch (error) {
-          logger.warn(
-            `[${agentName}] Failed to read stream ${fieldName}:`,
-            error instanceof Error ? error.message : String(error)
-          );
-          return null;
-        } finally {
-          if (timeoutHandle) {
-            clearTimeout(timeoutHandle);
-          }
-        }
-      };
-
       const [steps, usage] = await Promise.all([
-        waitForStreamField(streamResult.steps, 'steps'),
-        waitForStreamField(streamResult.usage, 'usage'),
+        waitForStreamField(
+          agentName,
+          'steps',
+          streamResult.steps,
+          Math.max(1_000, (opts.timeoutMs ?? DEFAULT_OPTIONS.timeoutMs) * 0.5)
+        ),
+        waitForStreamField(
+          agentName,
+          'usage',
+          streamResult.usage,
+          Math.max(1_000, (opts.timeoutMs ?? DEFAULT_OPTIONS.timeoutMs) * 0.5)
+        ),
       ]);
 
       let finalAnswerText: string | null = null;
@@ -499,15 +441,7 @@ export abstract class BaseAgent {
         yield { type: 'text_delta', data: fallbackText };
       }
 
-      if (opts.sessionId && fullResponseText) {
-        const updatedMessages: ModelMessage[] = [
-          ...messages,
-          { role: 'assistant', content: fullResponseText }
-        ];
-        SessionMemoryService.saveHistory(opts.sessionId, updatedMessages).catch(err => {
-          logger.error(`[SessionMemory] Failed to save history for ${opts.sessionId}:`, err);
-        });
-      }
+      persistAgentHistory(opts.sessionId, messages, fullResponseText);
 
       const durationMs = Date.now() - startTime;
       const quality = evaluateAgentResponseQuality(agentName, fullResponseText, {

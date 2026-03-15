@@ -308,6 +308,26 @@
   - `reporter-pipeline.ts`는 warning threshold(500줄) 아래로 내려가 line-guard 경고 목록에서 제외됨
   - 남은 500줄 초과 파일: `base-agent.ts`, `orchestrator-execution.ts`, `server.ts`
 
+## 실행 결과 추가 (2026-03-15, Phase 2 계속 4)
+- 리팩토링:
+  - BaseAgent 세션/스트림 보조 로직 분리:
+    - `cloud-run/ai-engine/src/services/ai-sdk/agents/base-agent.ts` 546 → 480
+    - 신규 `cloud-run/ai-engine/src/services/ai-sdk/agents/base-agent-session.ts` 71줄
+    - 신규 `cloud-run/ai-engine/src/services/ai-sdk/agents/base-agent-stream.ts` 33줄
+  - 기존 public API 유지:
+    - `BaseAgent`, `AgentResult`, `AgentRunOptions`, `AgentStreamEvent`, `ImageAttachment`, `FileAttachment` 경로/이름 동일
+  - 분리 범위:
+    - 세션 히스토리 복구/trim/저장 helper
+    - stream `steps`/`usage` 지연 필드 대기 helper
+- 검증:
+  - `cd cloud-run/ai-engine && npm run type-check` 통과
+  - `cd cloud-run/ai-engine && npx vitest run src/services/ai-sdk/agents/base-agent.test.ts src/services/ai-sdk/agents/base-agent.stream.test.ts src/services/ai-sdk/agents/base-agent.utils.test.ts` 통과 (36 passed)
+  - `cd cloud-run/ai-engine && npm run test` 통과 (56 files, 652 tests)
+  - `cd cloud-run/ai-engine && npm run line-guard` 통과
+- 메모:
+  - `base-agent.ts`는 warning threshold(500줄) 아래로 내려가 line-guard 경고 목록에서 제외됨
+  - 남은 500줄 초과 파일: `orchestrator-execution.ts`, `server.ts`
+
 ## 실행 결과 추가 (2026-02-20, 12차 분리 계속)
 - 리팩토링:
   - 추세 예측 엔진 책임 분리:
