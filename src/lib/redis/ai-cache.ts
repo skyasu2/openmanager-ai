@@ -2,7 +2,8 @@
  * AI Response Cache
  *
  * Cloud Run 호출 최소화 & Google AI RPD 절감
- * - 쿼리 해시 기반 캐싱
+ * - 쿼리 해시 기반 exact 캐싱
+ * - exact miss 시 semantic fallback 매칭 (token-hash embedding)
  * - TTL: 1시간 (신선도 유지)
  * - 캐시 히트 시 Cloud Run 호출 생략
  *
@@ -34,6 +35,7 @@ export interface CacheResult<T> {
   data: T | null;
   latencyMs?: number;
   ttlRemaining?: number;
+  semanticScore?: number;
 }
 
 // ==============================================
@@ -48,7 +50,250 @@ const CACHE_CONFIG = {
     AI_RESPONSE: 'v2:ai:response',
     SESSION: 'session',
   },
+  SEMANTIC_CACHE: {
+    EMBEDDING_DIMENSION: 64,
+    MAX_SCAN_CANDIDATES: 12,
+    MIN_COMPOSITE_SCORE: 0.82,
+    TOKEN_OVERLAP_WEIGHT: 0.2,
+    COSINE_WEIGHT: 0.8,
+  },
 } as const;
+
+type SemanticAlgorithm = 'token-hash-v1';
+
+interface SemanticCacheMetadata {
+  algorithm: SemanticAlgorithm;
+  normalizedQuery: string;
+  embedding: number[];
+  createdAt: number;
+}
+
+export interface SemanticQueryEmbedding {
+  algorithm: SemanticAlgorithm;
+  normalizedQuery: string;
+  vector: number[];
+}
+
+function hashToInt(input: string): number {
+  let hash = 0x811c9dc5;
+  for (let i = 0; i < input.length; i++) {
+    hash ^= input.charCodeAt(i);
+    hash = Math.imul(hash, 0x01000193);
+  }
+  return hash >>> 0;
+}
+
+function normalizeVector(vector: number[]): number[] {
+  const magnitude = Math.sqrt(
+    vector.reduce((sum, value) => sum + value * value, 0)
+  );
+  if (magnitude === 0) {
+    return vector;
+  }
+  return vector.map((value) => value / magnitude);
+}
+
+function addHashedFeature(
+  vector: number[],
+  feature: string,
+  weight: number
+): void {
+  const dimension = vector.length;
+  const index = hashToInt(feature) % dimension;
+  const current = vector[index] ?? 0;
+  vector[index] = current + weight;
+}
+
+export function cosineSimilarity(a: number[], b: number[]): number {
+  if (a.length === 0 || b.length === 0 || a.length !== b.length) {
+    return 0;
+  }
+  let dot = 0;
+  for (let i = 0; i < a.length; i++) {
+    dot += a[i]! * b[i]!;
+  }
+  return Math.max(0, Math.min(1, dot));
+}
+
+export function tokenOverlapRatio(a: string, b: string): number {
+  const tokensA = new Set(a.split(' ').filter(Boolean));
+  const tokensB = new Set(b.split(' ').filter(Boolean));
+
+  if (tokensA.size === 0 || tokensB.size === 0) {
+    return 0;
+  }
+
+  let intersection = 0;
+  for (const token of tokensA) {
+    if (tokensB.has(token)) {
+      intersection += 1;
+    }
+  }
+
+  return intersection / Math.max(tokensA.size, tokensB.size);
+}
+
+export function buildSemanticQueryEmbedding(query: string): SemanticQueryEmbedding {
+  const normalizedQuery = normalizeQueryForCache(query);
+  const vector = new Array<number>(
+    CACHE_CONFIG.SEMANTIC_CACHE.EMBEDDING_DIMENSION
+  ).fill(0);
+
+  if (!normalizedQuery) {
+    return {
+      algorithm: 'token-hash-v1',
+      normalizedQuery,
+      vector,
+    };
+  }
+
+  const tokens = normalizedQuery.split(' ').filter(Boolean);
+
+  for (const token of tokens) {
+    addHashedFeature(vector, `tok:${token}`, 1);
+    addHashedFeature(vector, `len:${token.length}`, 0.2);
+  }
+
+  for (let i = 0; i < tokens.length - 1; i++) {
+    const left = tokens[i]!;
+    const right = tokens[i + 1]!;
+    addHashedFeature(vector, `bi:${left}_${right}`, 0.6);
+  }
+
+  for (let i = 0; i < normalizedQuery.length - 2; i++) {
+    const triGram = normalizedQuery.slice(i, i + 3);
+    addHashedFeature(vector, `tri:${triGram}`, 0.1);
+  }
+
+  return {
+    algorithm: 'token-hash-v1',
+    normalizedQuery,
+    vector: normalizeVector(vector),
+  };
+}
+
+function extractSemanticMetadata(
+  response: CachedAIResponse | null
+): SemanticCacheMetadata | null {
+  const metadata =
+    response?.metadata && typeof response.metadata === 'object'
+      ? response.metadata
+      : null;
+
+  if (!metadata) {
+    return null;
+  }
+
+  const semantic = metadata.__semanticCache;
+  if (!semantic || typeof semantic !== 'object') {
+    return null;
+  }
+
+  const algorithm = (semantic as { algorithm?: string }).algorithm;
+  const normalizedQuery = (semantic as { normalizedQuery?: string })
+    .normalizedQuery;
+  const embedding = (semantic as { embedding?: unknown }).embedding;
+  const createdAt = (semantic as { createdAt?: number }).createdAt;
+
+  if (
+    algorithm !== 'token-hash-v1' ||
+    typeof normalizedQuery !== 'string' ||
+    !Array.isArray(embedding) ||
+    embedding.some((value) => typeof value !== 'number') ||
+    typeof createdAt !== 'number'
+  ) {
+    return null;
+  }
+
+  return {
+    algorithm,
+    normalizedQuery,
+    embedding: embedding as number[],
+    createdAt,
+  };
+}
+
+function getSemanticScanPattern(sessionId: string, endpoint?: string): string {
+  const sessionHash = hashString(sessionId);
+  const prefix = CACHE_CONFIG.PREFIX.AI_RESPONSE;
+
+  if (endpoint) {
+    return `${prefix}:${endpoint}:${sessionHash}:*`;
+  }
+
+  return `${prefix}:${sessionHash}:*`;
+}
+
+async function findSemanticMatch(
+  client: Redis,
+  sessionId: string,
+  query: string,
+  endpoint: string | undefined,
+  exactCacheKey: string
+): Promise<{ response: CachedAIResponse; score: number } | null> {
+  const target = buildSemanticQueryEmbedding(query);
+  if (!target.normalizedQuery) {
+    return null;
+  }
+
+  const pattern = getSemanticScanPattern(sessionId, endpoint);
+  const keys = await scanKeys(client, pattern);
+  const candidates = keys
+    .filter((key) => key !== exactCacheKey)
+    .slice(0, CACHE_CONFIG.SEMANTIC_CACHE.MAX_SCAN_CANDIDATES);
+
+  if (candidates.length === 0) {
+    return null;
+  }
+
+  const responses = await Promise.all(
+    candidates.map((key) => client.get<CachedAIResponse>(key))
+  );
+
+  let bestScore = 0;
+  let bestResponse: CachedAIResponse | null = null;
+
+  for (const response of responses) {
+    if (!response) {
+      continue;
+    }
+
+    const semantic = extractSemanticMetadata(response);
+    if (!semantic) {
+      continue;
+    }
+
+    const overlap = tokenOverlapRatio(
+      target.normalizedQuery,
+      semantic.normalizedQuery
+    );
+    if (overlap === 0) {
+      continue;
+    }
+
+    const cosine = cosineSimilarity(target.vector, semantic.embedding);
+    const compositeScore =
+      cosine * CACHE_CONFIG.SEMANTIC_CACHE.COSINE_WEIGHT +
+      overlap * CACHE_CONFIG.SEMANTIC_CACHE.TOKEN_OVERLAP_WEIGHT;
+
+    if (compositeScore > bestScore) {
+      bestScore = compositeScore;
+      bestResponse = response;
+    }
+  }
+
+  if (
+    !bestResponse ||
+    bestScore < CACHE_CONFIG.SEMANTIC_CACHE.MIN_COMPOSITE_SCORE
+  ) {
+    return null;
+  }
+
+  return {
+    response: bestResponse,
+    score: bestScore,
+  };
+}
 
 // ==============================================
 /**
@@ -129,9 +374,9 @@ export async function getAIResponseCache(
 
   try {
     const cached = await client.get<CachedAIResponse>(cacheKey);
-    const latencyMs = Math.round(performance.now() - startTime);
 
     if (cached) {
+      const latencyMs = Math.round(performance.now() - startTime);
       // 🎯 Free Tier 최적화: TTL 조회 제거 (Redis 커맨드 ~30% 절약)
       // Note: Production(LOG_LEVEL=warn)에서는 이 로그가 보이지 않음
       logger.info(
@@ -146,6 +391,29 @@ export async function getAIResponseCache(
       };
     }
 
+    const semanticMatch = await findSemanticMatch(
+      client,
+      sessionId,
+      query,
+      endpoint,
+      cacheKey
+    );
+
+    if (semanticMatch) {
+      const latencyMs = Math.round(performance.now() - startTime);
+      logger.info(
+        `[AI Cache] SEMANTIC HIT - Score: ${semanticMatch.score.toFixed(3)}, Latency: ${latencyMs}ms`
+      );
+
+      return {
+        hit: true,
+        data: semanticMatch.response,
+        latencyMs,
+        semanticScore: Number(semanticMatch.score.toFixed(3)),
+      };
+    }
+
+    const latencyMs = Math.round(performance.now() - startTime);
     logger.info(`[AI Cache] MISS - Key: ${queryHash}, Latency: ${latencyMs}ms`);
     return { hit: false, data: null, latencyMs };
   } catch (error) {
@@ -183,7 +451,23 @@ export async function setAIResponseCache(
   const cacheKey = `${CACHE_CONFIG.PREFIX.AI_RESPONSE}:${queryHash}`;
 
   try {
-    await client.set(cacheKey, response, { ex: ttlSeconds });
+    const semantic = buildSemanticQueryEmbedding(query);
+    const responseWithSemanticMetadata: CachedAIResponse = {
+      ...response,
+      metadata: {
+        ...(response.metadata ?? {}),
+        __semanticCache: {
+          algorithm: semantic.algorithm,
+          normalizedQuery: semantic.normalizedQuery,
+          embedding: semantic.vector,
+          createdAt: Date.now(),
+        } satisfies SemanticCacheMetadata,
+      },
+    };
+
+    await client.set(cacheKey, responseWithSemanticMetadata, {
+      ex: ttlSeconds,
+    });
 
     logger.info(`[AI Cache] SET - Key: ${queryHash}, TTL: ${ttlSeconds}s`);
 
