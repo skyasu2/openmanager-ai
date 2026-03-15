@@ -1,6 +1,6 @@
 # Cloud Run Large File Refactor Plan
 
-- 상태: Active (Phase 0~2 완료, Phase 3 진행 중 — BFF 연계 파일 책임 분리)
+- 상태: Completed (Phase 0~5 완료, Cloud Run/BFF 대형 파일 리팩토링 마감)
 - 작성일: 2026-02-20
 - 갱신일: 2026-03-15
 - 목표: `cloud-run/ai-engine` 중심의 500+ 라인 파일을 단계적으로 분할해 유지보수성을 높이고, 최종적으로 Docker/Cloud Run 배포까지 안전하게 연결한다.
@@ -31,7 +31,7 @@
 - [x] Phase 2: Cloud Run 2차 분할 리팩토링 (핵심 경로)
   - 모델 선택/폴백/헬스체크 책임을 모듈 단위로 분리
   - 단위 테스트/스냅샷 테스트 보강
-- [ ] Phase 3: BFF 연계 파일 정리 (In Progress)
+- [x] Phase 3: BFF 연계 파일 정리
   - route handler에서 정책/파싱/fallback 로직 분리
   - Zod 스키마/응답 타입 경계 명확화
 - [x] Phase 4: 배포 전 검증
@@ -511,6 +511,22 @@
   - `npm run type-check` 통과
   - `npm run lint` 통과
   - `npm run test:quick` 통과 (160 tests)
+
+## 실행 결과 추가 (2026-03-15, Phase 3 계속 - ai-proxy config facade 분리)
+- 변경:
+  - `src/config/ai-proxy.config.ts` 325 → 146
+  - 신규 `src/config/ai-proxy/config-loader.ts` 183
+  - env 파싱 + raw config 조립 + Zod 검증 책임을 `config-loader.ts`로 이동
+  - `ai-proxy.config.ts`는 cached singleton, accessor, tracing re-export만 유지
+  - 신규 `src/config/ai-proxy.config.test.ts`로 free/pro/retry helper 회귀 테스트 추가
+- 목적:
+  - BFF 경계에서 설정 조립 책임과 런타임 accessor 책임 분리
+  - `incident-report` route 분리 이후 남은 Phase 3 설정 경계 정리
+- 검증:
+  - `npx vitest run --config config/testing/vitest.config.main.ts src/config/ai-proxy.config.test.ts src/app/api/ai/incident-report/route.test.ts src/app/api/ai/incident-report/get-handler.test.ts src/app/api/ai/incident-report/retry-handler.test.ts`
+  - `npm run type-check`
+  - `npm run lint`
+  - `npm run test:quick`
 
 ## 남은 500+ Cloud Run 우선 작업
 - 핵심 런타임 경로(우선):
