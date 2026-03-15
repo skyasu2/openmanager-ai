@@ -37,6 +37,13 @@ import { TIMEOUT_CONFIG } from '../../../config/timeout-config';
 import { evaluateAgentResponseQuality } from './response-quality';
 import { logger } from '../../../lib/logger';
 import {
+  buildFastPathResponse,
+  executeVisionOrFallback,
+  getLastUserQuery,
+  mapOrchestratorErrorCode,
+  streamFastPathResponse,
+} from './orchestrator-execution-helpers';
+import {
   decomposeTask,
   executeParallelSubtasks,
   executeParallelSubtasksStream,
@@ -48,25 +55,6 @@ import { generateObjectWithFallback } from './orchestrator-object-fallback';
 export { getRecentHandoffs };
 
 // ============================================================================
-// Vision Agent Helper (DRY: Gemini → Analyst fallback)
-// ============================================================================
-
-async function executeVisionOrFallback(
-  query: string,
-  startTime: number,
-  webSearchEnabled: boolean,
-  ragEnabled: boolean,
-  images?: Parameters<typeof executeWithAgentFactory>[5],
-  files?: Parameters<typeof executeWithAgentFactory>[6]
-): Promise<MultiAgentResponse | null> {
-  const result = await executeWithAgentFactory(query, 'vision', startTime, webSearchEnabled, ragEnabled, images, files);
-  if (result) return result;
-
-  logger.warn('⚠️ [Vision] Gemini unavailable, falling back to Analyst Agent');
-  return executeForcedRouting(query, 'Analyst Agent', startTime, webSearchEnabled, ragEnabled, images, files);
-}
-
-// ============================================================================
 // Main Execution Functions
 // ============================================================================
 
@@ -75,15 +63,10 @@ export async function executeMultiAgent(
 ): Promise<MultiAgentResponse | MultiAgentError> {
   const startTime = Date.now();
 
-  const lastUserMessage = request.messages
-    .filter((m) => m.role === 'user')
-    .pop();
-
-  if (!lastUserMessage) {
+  const query = getLastUserQuery(request);
+  if (!query) {
     return { success: false, error: 'No user message found', code: 'INVALID_REQUEST' };
   }
-
-  const query = lastUserMessage.content;
 
   const webSearchEnabled = resolveWebSearchSetting(request.enableWebSearch, query);
   const ragEnabled = request.enableRAG !== false; // default: true
@@ -101,32 +84,11 @@ export async function executeMultiAgent(
   logger.debug(`[PreFilter] Query: "${query.substring(0, 50)}..." → Suggested: ${preFilterResult.suggestedAgent || 'none'} (confidence: ${preFilterResult.confidence})`);
 
   if (!preFilterResult.shouldHandoff && preFilterResult.directResponse) {
-    const durationMs = Date.now() - startTime;
-    const quality = evaluateAgentResponseQuality(
-      'Orchestrator',
-      preFilterResult.directResponse,
-      { durationMs }
+    const response = buildFastPathResponse(preFilterResult.directResponse, startTime);
+    logger.info(
+      `[Fast Path] Direct response in ${response.metadata.durationMs}ms (confidence: ${preFilterResult.confidence})`
     );
-    logger.info(`[Fast Path] Direct response in ${durationMs}ms (confidence: ${preFilterResult.confidence})`);
-
-    return {
-      success: true,
-      response: preFilterResult.directResponse,
-      handoffs: [],
-      finalAgent: 'Orchestrator (Fast Path)',
-      toolsCalled: [],
-      usage: { promptTokens: 0, completionTokens: 0, totalTokens: 0 },
-      metadata: {
-        provider: 'rule-based',
-        modelId: 'prefilter',
-        totalRounds: 1,
-        durationMs,
-        responseChars: quality.responseChars,
-        formatCompliance: quality.formatCompliance,
-        qualityFlags: quality.qualityFlags,
-        latencyTier: quality.latencyTier,
-      },
-    };
+    return response;
   }
 
   // Task Decomposition
@@ -316,14 +278,11 @@ export async function executeMultiAgent(
     const errorMessage = error instanceof Error ? error.message : String(error);
 
     logger.error(`❌ [Orchestrator] Error after ${durationMs}ms:`, errorMessage);
-
-    let code = 'UNKNOWN_ERROR';
-    if (errorMessage.includes('API key')) code = 'AUTH_ERROR';
-    else if (errorMessage.includes('rate limit')) code = 'RATE_LIMIT';
-    else if (errorMessage.includes('timeout')) code = 'TIMEOUT';
-    else if (errorMessage.includes('model')) code = 'MODEL_ERROR';
-
-    return { success: false, error: errorMessage, code };
+    return {
+      success: false,
+      error: errorMessage,
+      code: mapOrchestratorErrorCode(errorMessage),
+    };
   }
 }
 
@@ -336,16 +295,11 @@ export async function* executeMultiAgentStream(
 ): AsyncGenerator<StreamEvent> {
   const startTime = Date.now();
 
-  const lastUserMessage = request.messages
-    .filter((m) => m.role === 'user')
-    .pop();
-
-  if (!lastUserMessage) {
+  const query = getLastUserQuery(request);
+  if (!query) {
     yield { type: 'error', data: { code: 'INVALID_REQUEST', error: 'No user message found' } };
     return;
   }
-
-  const query = lastUserMessage.content;
 
   const webSearchEnabled = resolveWebSearchSetting(request.enableWebSearch, query);
   const ragEnabled = request.enableRAG !== false; // default: true
@@ -363,20 +317,7 @@ export async function* executeMultiAgentStream(
   logger.debug(`[Stream PreFilter] Query: "${query.substring(0, 50)}..." → Suggested: ${preFilterResult.suggestedAgent || 'none'} (confidence: ${preFilterResult.confidence})`);
 
   if (!preFilterResult.shouldHandoff && preFilterResult.directResponse) {
-    const durationMs = Date.now() - startTime;
-    logger.info(`[Stream Fast Path] Direct response in ${durationMs}ms`);
-
-    yield { type: 'text_delta', data: preFilterResult.directResponse };
-    yield {
-      type: 'done',
-      data: {
-        success: true,
-        finalAgent: 'Orchestrator (Fast Path)',
-        toolsCalled: [],
-        usage: { promptTokens: 0, completionTokens: 0 },
-        metadata: { durationMs, provider: 'rule-based' }
-      }
-    };
+    yield* streamFastPathResponse(preFilterResult.directResponse, startTime);
     return;
   }
 
@@ -531,13 +472,12 @@ export async function* executeMultiAgentStream(
     const errorMessage = error instanceof Error ? error.message : String(error);
 
     logger.error(`❌ [Stream Orchestrator] Error after ${durationMs}ms:`, errorMessage);
-
-    let code = 'UNKNOWN_ERROR';
-    if (errorMessage.includes('API key')) code = 'AUTH_ERROR';
-    else if (errorMessage.includes('rate limit')) code = 'RATE_LIMIT';
-    else if (errorMessage.includes('timeout')) code = 'TIMEOUT';
-    else if (errorMessage.includes('model')) code = 'MODEL_ERROR';
-
-    yield { type: 'error', data: { code, error: errorMessage } };
+    yield {
+      type: 'error',
+      data: {
+        code: mapOrchestratorErrorCode(errorMessage),
+        error: errorMessage,
+      },
+    };
   }
 }

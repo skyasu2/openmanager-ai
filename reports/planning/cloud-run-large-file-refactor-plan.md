@@ -328,6 +328,27 @@
   - `base-agent.ts`는 warning threshold(500줄) 아래로 내려가 line-guard 경고 목록에서 제외됨
   - 남은 500줄 초과 파일: `orchestrator-execution.ts`, `server.ts`
 
+## 실행 결과 추가 (2026-03-15, Phase 2 계속 5)
+- 리팩토링:
+  - Orchestrator execution 공용 helper 분리:
+    - `cloud-run/ai-engine/src/services/ai-sdk/agents/orchestrator-execution.ts` 543 → 483
+    - 신규 `cloud-run/ai-engine/src/services/ai-sdk/agents/orchestrator-execution-helpers.ts` 120줄
+  - 기존 public API 유지:
+    - `executeMultiAgent`, `executeMultiAgentStream`, `getRecentHandoffs` 경로/이름 동일
+  - 분리 범위:
+    - Vision fallback helper
+    - 마지막 사용자 메시지 추출 helper
+    - fast path 응답/stream 응답 builder
+    - orchestrator 에러 코드 분류 helper
+- 검증:
+  - `cd cloud-run/ai-engine && npm run type-check` 통과
+  - `cd cloud-run/ai-engine && npx vitest run src/services/ai-sdk/agents/orchestrator.test.ts src/services/ai-sdk/agents/orchestrator-decomposition.test.ts src/services/ai-sdk/agents/orchestrator-routing.test.ts src/services/ai-sdk/agents/orchestrator-agent-stream.test.ts` 통과 (44 passed)
+  - `cd cloud-run/ai-engine && npm run test` 통과 (56 files, 652 tests)
+  - `cd cloud-run/ai-engine && npm run line-guard` 통과
+- 메모:
+  - `orchestrator-execution.ts`는 warning threshold(500줄) 아래로 내려가 line-guard 경고 목록에서 제외됨
+  - 남은 500줄 초과 파일: `server.ts`
+
 ## 실행 결과 추가 (2026-02-20, 12차 분리 계속)
 - 리팩토링:
   - 추세 예측 엔진 책임 분리:
