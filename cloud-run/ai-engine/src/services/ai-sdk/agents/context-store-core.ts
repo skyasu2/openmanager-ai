@@ -15,6 +15,7 @@ export const CONTEXT_CONFIG = {
 } as const;
 
 const inMemoryStore = new Map<string, { context: AgentContext; expiresAt: number }>();
+const REDIS_TIMEOUT_MS = 1_000;
 
 function cleanExpiredEntries(): void {
   const now = Date.now();
@@ -55,7 +56,7 @@ export async function getSessionContext(sessionId: string): Promise<AgentContext
 
   if (redis) {
     try {
-      const data = await redis.get(key);
+      const data = await redis.get(key, { timeoutMs: REDIS_TIMEOUT_MS });
       if (data) {
         const context = typeof data === 'string' ? JSON.parse(data) : data;
         return context as AgentContext;
@@ -82,8 +83,12 @@ export async function saveSessionContext(context: AgentContext): Promise<void> {
 
   if (redis) {
     try {
-      await redis.set(key, JSON.stringify(context));
-      await redis.expire(key, CONTEXT_CONFIG.ttlSeconds);
+      await redis.set(key, JSON.stringify(context), undefined, {
+        timeoutMs: REDIS_TIMEOUT_MS,
+      });
+      await redis.expire(key, CONTEXT_CONFIG.ttlSeconds, {
+        timeoutMs: REDIS_TIMEOUT_MS,
+      });
     } catch (error) {
       logger.warn(`[ContextStore] Redis save error for ${context.sessionId}:`, error);
     }
@@ -143,7 +148,7 @@ export async function deleteSessionContext(sessionId: string): Promise<void> {
 
   if (redis) {
     try {
-      await redis.del(key);
+      await redis.del(key, { timeoutMs: REDIS_TIMEOUT_MS });
     } catch (error) {
       logger.warn(`[ContextStore] Redis delete error for ${sessionId}:`, error);
     }

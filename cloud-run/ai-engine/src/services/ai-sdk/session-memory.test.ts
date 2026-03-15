@@ -27,18 +27,18 @@ describe('SessionMemoryService.getHistory', () => {
     await expect(SessionMemoryService.getHistory('session-1')).resolves.toEqual(
       history
     );
+    expect(RedisClient.get).toHaveBeenCalledWith('chat:history:session-1', {
+      timeoutMs: 1_500,
+    });
   });
 
-  it('returns empty history when Redis stalls past timeout', async () => {
-    vi.useFakeTimers();
-    vi.mocked(RedisClient.get).mockImplementation(
-      () => new Promise<ModelMessage[] | null>(() => undefined)
+  it('returns empty history when Redis lookup times out or returns null', async () => {
+    vi.mocked(RedisClient.get).mockResolvedValueOnce(null);
+
+    await expect(SessionMemoryService.getHistory('session-timeout')).resolves.toEqual([]);
+    expect(RedisClient.get).toHaveBeenCalledWith(
+      'chat:history:session-timeout',
+      { timeoutMs: 1_500 }
     );
-
-    const pending = SessionMemoryService.getHistory('session-timeout');
-    await vi.advanceTimersByTimeAsync(1_500);
-
-    await expect(pending).resolves.toEqual([]);
-    vi.useRealTimers();
   });
 });

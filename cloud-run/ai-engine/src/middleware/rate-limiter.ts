@@ -42,6 +42,7 @@ interface RateLimitResult {
  */
 const inMemoryStore = new Map<string, { count: number; resetAt: number }>();
 const MAX_STORE_SIZE = 1000;
+const REDIS_TIMEOUT_MS = 500;
 
 function cleanupInMemoryStore(): void {
   const now = Date.now();
@@ -108,14 +109,16 @@ async function checkRedisLimit(
 
   try {
     // Sliding window: increment counter with expiry
-    const count = await redis.incr(redisKey);
+    const count = await redis.incr(redisKey, { timeoutMs: REDIS_TIMEOUT_MS });
 
     if (count === 1) {
       // First request in window: set expiry
-      await redis.pexpire(redisKey, config.windowMs);
+      await redis.pexpire(redisKey, config.windowMs, {
+        timeoutMs: REDIS_TIMEOUT_MS,
+      });
     }
 
-    const ttl = await redis.pttl(redisKey);
+    const ttl = await redis.pttl(redisKey, { timeoutMs: REDIS_TIMEOUT_MS });
     const resetTime = ttl > 0 ? now + ttl : now + config.windowMs;
 
     return {

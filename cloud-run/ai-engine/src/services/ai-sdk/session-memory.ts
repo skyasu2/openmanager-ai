@@ -1,6 +1,5 @@
 import { RedisClient } from '../../lib/redis-client';
 import { logger } from '../../lib/logger';
-import { withTimeout } from '../../lib/with-timeout';
 import type { ModelMessage } from 'ai';
 
 /**
@@ -12,15 +11,15 @@ import type { ModelMessage } from 'ai';
 export class SessionMemoryService {
   private static TTL = 3600; // 1 Hour
   private static HISTORY_TIMEOUT_MS = 1_500;
+  private static WRITE_TIMEOUT_MS = 1_500;
 
   static async getHistory(sessionId: string): Promise<ModelMessage[]> {
     if (!sessionId) return [];
 
     try {
-      const history = await withTimeout(
-        RedisClient.get<ModelMessage[]>(`chat:history:${sessionId}`),
-        this.HISTORY_TIMEOUT_MS,
-        `Session history lookup timed out after ${this.HISTORY_TIMEOUT_MS}ms`
+      const history = await RedisClient.get<ModelMessage[]>(
+        `chat:history:${sessionId}`,
+        { timeoutMs: this.HISTORY_TIMEOUT_MS }
       );
 
       if (history) {
@@ -44,7 +43,12 @@ export class SessionMemoryService {
     
     // Keep only last 20 messages to prevent token bloat
     const limitedMessages = messages.slice(-20);
-    await RedisClient.set(`chat:history:${sessionId}`, limitedMessages, this.TTL);
+    await RedisClient.set(
+      `chat:history:${sessionId}`,
+      limitedMessages,
+      this.TTL,
+      { timeoutMs: this.WRITE_TIMEOUT_MS }
+    );
     logger.debug(`[SessionMemory] Saved ${limitedMessages.length} messages for ${sessionId}`);
   }
 
@@ -53,11 +57,15 @@ export class SessionMemoryService {
    */
   static async getToolCache<T>(toolName: string, queryKey: string): Promise<T | null> {
     const cacheKey = `tool:cache:${toolName}:${queryKey}`;
-    return await RedisClient.get<T>(cacheKey);
+    return await RedisClient.get<T>(cacheKey, {
+      timeoutMs: this.HISTORY_TIMEOUT_MS,
+    });
   }
 
   static async setToolCache<T extends object>(toolName: string, queryKey: string, result: T, ttl = 60): Promise<void> {
     const cacheKey = `tool:cache:${toolName}:${queryKey}`;
-    await RedisClient.set(cacheKey, result, ttl);
+    await RedisClient.set(cacheKey, result, ttl, {
+      timeoutMs: this.WRITE_TIMEOUT_MS,
+    });
   }
 }

@@ -22,6 +22,7 @@ function mockFetch(result: unknown, ok = true): void {
 
 describe('RedisClient.get', () => {
   afterEach(() => {
+    vi.useRealTimers();
     vi.restoreAllMocks();
   });
 
@@ -62,6 +63,34 @@ describe('RedisClient.get', () => {
     } as never);
 
     expect(await RedisClient.get('error')).toBeNull();
+  });
+
+  it('returns null when opt-in timeout aborts a stalled request', async () => {
+    vi.useFakeTimers();
+    const fetchSpy = vi.spyOn(globalThis, 'fetch').mockImplementationOnce(
+      (_input, init) =>
+        new Promise((_, reject) => {
+          const abortError = new Error('Aborted');
+          abortError.name = 'AbortError';
+          const signal = init?.signal as AbortSignal | undefined;
+          signal?.addEventListener(
+            'abort',
+            () => reject(abortError),
+            { once: true }
+          );
+        }) as never
+    );
+
+    const pending = RedisClient.get('slow', { timeoutMs: 50 });
+    await vi.advanceTimersByTimeAsync(50);
+
+    await expect(pending).resolves.toBeNull();
+    expect(fetchSpy).toHaveBeenCalledWith(
+      'https://example.com/redis',
+      expect.objectContaining({
+        signal: expect.any(Object),
+      })
+    );
   });
 });
 

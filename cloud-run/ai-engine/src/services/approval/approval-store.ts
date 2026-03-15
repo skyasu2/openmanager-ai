@@ -52,6 +52,7 @@ interface ApprovalEntry {
 // Redis key prefix
 const REDIS_PREFIX = 'approval:';
 const REDIS_TTL_SECONDS = 5 * 60; // 5 minutes
+const REDIS_TIMEOUT_MS = 1_500;
 const IS_TEST_RUNTIME = process.env.NODE_ENV === 'test' || Boolean(process.env.VITEST);
 
 // ============================================================================
@@ -92,7 +93,8 @@ class ApprovalStore {
       await redisSet(
         `${REDIS_PREFIX}${approval.sessionId}`,
         redisEntry,
-        REDIS_TTL_SECONDS
+        REDIS_TTL_SECONDS,
+        { timeoutMs: REDIS_TIMEOUT_MS }
       );
     }
 
@@ -127,7 +129,8 @@ class ApprovalStore {
     // L2: Fallback to Redis (for multi-instance scenarios)
     if (!IS_TEST_RUNTIME && isRedisAvailable()) {
       const redisEntry = await redisGet<RedisApprovalEntry>(
-        `${REDIS_PREFIX}${sessionId}`
+        `${REDIS_PREFIX}${sessionId}`,
+        { timeoutMs: REDIS_TIMEOUT_MS }
       );
 
       if (redisEntry && !redisEntry.decision) {
@@ -169,7 +172,8 @@ class ApprovalStore {
     // L2: If not in memory, try to load from Redis
     if (!entry && !IS_TEST_RUNTIME && isRedisAvailable()) {
       const redisEntry = await redisGet<RedisApprovalEntry>(
-        `${REDIS_PREFIX}${sessionId}`
+        `${REDIS_PREFIX}${sessionId}`,
+        { timeoutMs: REDIS_TIMEOUT_MS }
       );
       if (redisEntry && !redisEntry.decision) {
         // Restore to L1
@@ -216,7 +220,8 @@ class ApprovalStore {
       await redisSet(
         `${REDIS_PREFIX}${sessionId}`,
         redisEntry,
-        REDIS_TTL_SECONDS
+        REDIS_TTL_SECONDS,
+        { timeoutMs: REDIS_TIMEOUT_MS }
       );
     }
 
@@ -262,7 +267,8 @@ class ApprovalStore {
     // L2: Fallback to Redis
     if (!IS_TEST_RUNTIME && isRedisAvailable()) {
       const redisEntry = await redisGet<RedisApprovalEntry>(
-        `${REDIS_PREFIX}${sessionId}`
+        `${REDIS_PREFIX}${sessionId}`,
+        { timeoutMs: REDIS_TIMEOUT_MS }
       );
       if (redisEntry?.decision) {
         return {
@@ -329,7 +335,9 @@ class ApprovalStore {
 
     // L2: Delete from Redis
     if (!IS_TEST_RUNTIME && isRedisAvailable()) {
-      await redisDel(`${REDIS_PREFIX}${sessionId}`).catch((e) => {
+      await redisDel(`${REDIS_PREFIX}${sessionId}`, {
+        timeoutMs: REDIS_TIMEOUT_MS,
+      }).catch((e) => {
         logger.warn(`[Approval] Redis cleanup failed for ${sessionId}:`, e);
       });
     }

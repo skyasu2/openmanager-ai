@@ -162,6 +162,8 @@ function getRedisKey(provider: ProviderName): string {
   return `ai:quota:${provider}:${today}`;
 }
 
+const REDIS_TIMEOUT_MS = 1_000;
+
 // ============================================================================
 // Core Functions
 // ============================================================================
@@ -178,15 +180,17 @@ export async function getProviderUsage(
   if (redis) {
     try {
       const key = getRedisKey(provider);
-      const data = await redis.get(key);
+      const data = await redis.get(key, { timeoutMs: REDIS_TIMEOUT_MS });
 
       if (data) {
         const usage = typeof data === 'string' ? JSON.parse(data) : data;
 
         if (usage.date !== today) {
           const reset = getDefaultUsage();
-          await redis.set(key, JSON.stringify(reset));
-          await redis.expire(key, 86400);
+          await redis.set(key, JSON.stringify(reset), undefined, {
+            timeoutMs: REDIS_TIMEOUT_MS,
+          });
+          await redis.expire(key, 86400, { timeoutMs: REDIS_TIMEOUT_MS });
           return reset;
         }
 
@@ -195,15 +199,19 @@ export async function getProviderUsage(
           usage.minuteRequests = 0;
           usage.minuteTokens = 0;
           usage.lastMinuteReset = now;
-          await redis.set(key, JSON.stringify(usage));
+          await redis.set(key, JSON.stringify(usage), undefined, {
+            timeoutMs: REDIS_TIMEOUT_MS,
+          });
         }
 
         return usage;
       }
 
       const usage = getDefaultUsage();
-      await redis.set(key, JSON.stringify(usage));
-      await redis.expire(key, 86400);
+      await redis.set(key, JSON.stringify(usage), undefined, {
+        timeoutMs: REDIS_TIMEOUT_MS,
+      });
+      await redis.expire(key, 86400, { timeoutMs: REDIS_TIMEOUT_MS });
       return usage;
     } catch (error) {
       logger.warn(`[QuotaTracker] Redis error for ${provider}:`, error);
@@ -245,8 +253,10 @@ export async function recordProviderUsage(
   if (redis) {
     try {
       const key = getRedisKey(provider);
-      await redis.set(key, JSON.stringify(usage));
-      await redis.expire(key, 86400);
+      await redis.set(key, JSON.stringify(usage), undefined, {
+        timeoutMs: REDIS_TIMEOUT_MS,
+      });
+      await redis.expire(key, 86400, { timeoutMs: REDIS_TIMEOUT_MS });
     } catch (error) {
       logger.warn(`[QuotaTracker] Redis save error for ${provider}:`, error);
     }
