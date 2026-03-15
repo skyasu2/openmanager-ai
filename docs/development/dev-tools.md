@@ -85,6 +85,37 @@ npm run test:e2e:mobile    # 모바일 반응형 회귀 (mobile 프로젝트만)
 npm run test:e2e:responsive # 데스크톱+모바일 통합 회귀
 ```
 
+### Next.js 로컬 API QA 주의사항
+
+`next dev` 기준으로 일부 **중첩 App Router API route**가 로컬에서 `404`를 반환할 수 있습니다.
+
+- 확인 일시: `2026-03-16`
+- 로컬 `nextjs_index` 기준 route 목록에는 존재하지만, 실제 요청은 `_not-found` HTML로 응답할 수 있음
+- 재현 예:
+  - `/api/ai/supervisor`
+  - `/api/ai/supervisor/stream/v2`
+  - `/api/ai/jobs`
+  - `/api/servers/next`
+  - `/api/ai/incident-report`
+  - `/api/security/csp-report`
+
+반대로 아래처럼 **1-depth API**는 같은 로컬 세션에서 정상 응답이 확인되었습니다.
+
+- `/api/system`
+- `/api/health`
+- `/api/database`
+- `/api/csrf-token`
+- `/api/error-report`
+
+운영 기준:
+
+- 중첩 App Route API의 로컬 `404`는 **즉시 제품 회귀로 판정하지 않음**
+- AI 경로/릴리즈 게이트는 기존 원칙대로 **Vercel + Playwright MCP**를 우선 사용
+- 로컬에서는 `vitest` 계약 테스트와 route unit test를 먼저 확인
+- 필요 시 `npm run build && npm run start` 같은 production-like 경로로 추가 검증
+
+이 메모는 로컬 dev 서버의 관찰 결과를 기록한 것이며, Vercel production 동작을 대체하지 않습니다.
+
 ### Lighthouse (성능 점수 자동 측정)
 
 ```bash
