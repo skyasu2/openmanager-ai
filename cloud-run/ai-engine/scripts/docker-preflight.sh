@@ -9,7 +9,9 @@ IMAGE_TAG="${IMAGE_TAG:-openmanager-ai-engine:preflight}"
 CONTAINER_NAME="${CONTAINER_NAME:-ai-engine-preflight}"
 HEALTH_PORT="${HEALTH_PORT:-18080}"
 SKIP_RUN="${SKIP_RUN:-false}"
-DOCKER_BUILD_TIMEOUT_SECONDS="${DOCKER_BUILD_TIMEOUT_SECONDS:-180}"
+# WSL + cold Docker cache 기준으로 production image build가 5분을 넘길 수 있어
+# 기본값을 여유 있게 잡고, 필요하면 env로 더 낮추거나 높일 수 있게 둔다.
+DOCKER_BUILD_TIMEOUT_SECONDS="${DOCKER_BUILD_TIMEOUT_SECONDS:-420}"
 
 DOCKER_MODE=""
 
