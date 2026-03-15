@@ -23,6 +23,7 @@ import {
   getFunctionTimeoutReserveMs,
   getRouteMaxExecutionMs,
 } from '@/config/ai-proxy.config';
+import { getRedisTimeoutMs } from '@/config/redis-timeouts';
 import { checkAPIAuth } from '@/lib/auth/api-auth';
 import { logger } from '@/lib/logging';
 import { getRedisClient, getSystemRunningFlag, redisGet } from '@/lib/redis';
@@ -82,7 +83,7 @@ const getJobStreamMaxWaitTimeMs = (): number => {
   );
 }; // 런타임 최대 실행시간 기준 여유 버퍼 적용
 const PROGRESS_INTERVAL_MS = 2000; // 진행 상황 업데이트 간격
-const REDIS_TIMEOUT_MS = 1_000;
+const REDIS_TIMEOUT_MS = getRedisTimeoutMs('standard');
 
 export function getPollIntervalFromEnv(
   envName: string,

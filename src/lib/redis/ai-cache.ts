@@ -11,6 +11,7 @@
  */
 
 import type { Redis } from '@upstash/redis';
+import { getRedisTimeoutConfig } from '@/config/redis-timeouts';
 import { hashString, normalizeQueryForCache } from '@/lib/cache/cache-helpers';
 import { logger } from '@/lib/logging';
 import {
@@ -64,13 +65,16 @@ const CACHE_CONFIG = {
   },
 } as const;
 
-const REDIS_TIMEOUTS = {
-  GET: 800,
-  SET: 1_200,
-  SCAN: 1_500,
-  DELETE: 1_500,
-  BATCH_READ: 1_500,
-} as const;
+const REDIS_TIMEOUTS = (() => {
+  const timeouts = getRedisTimeoutConfig();
+  return {
+    GET: timeouts.fast,
+    SET: timeouts.write,
+    SCAN: timeouts.scan,
+    DELETE: timeouts.batch,
+    BATCH_READ: timeouts.batch,
+  } as const;
+})();
 
 type SemanticAlgorithm = 'token-hash-v1';
 

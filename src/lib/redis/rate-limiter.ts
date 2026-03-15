@@ -11,6 +11,7 @@
 
 import { Ratelimit } from '@upstash/ratelimit';
 import type { NextRequest } from 'next/server';
+import { getRedisTimeoutMs } from '@/config/redis-timeouts';
 import { logger } from '@/lib/logging';
 import {
   getRedisClient,
@@ -57,7 +58,7 @@ export interface RateLimitConfig {
 const minuteLimiters = new Map<string, Ratelimit>();
 // 일일 제한 인스턴스 캐시
 const dailyLimiters = new Map<string, Ratelimit>();
-const REDIS_TIMEOUT_MS = 1_000;
+const REDIS_TIMEOUT_MS = getRedisTimeoutMs('standard');
 
 /**
  * Rate Limiter 인스턴스 생성 또는 캐시에서 반환

@@ -2,6 +2,7 @@ import { createHash, randomUUID } from 'node:crypto';
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
+import { getRedisTimeoutMs } from '@/config/redis-timeouts';
 import { isGuestFullAccessEnabledServer } from '@/config/guestMode.server';
 import {
   getRequestCountryCode,
@@ -35,7 +36,7 @@ const GUEST_PIN_FAILURE_WINDOW_SECONDS = 15 * 60;
 const GUEST_PIN_FAIL_PREFIX = 'auth:guest:pin:fail';
 const GUEST_PIN_LOCK_PREFIX = 'auth:guest:pin:lock';
 const GUEST_SESSION_COOKIE_MAX_AGE_SECONDS = 7 * 24 * 60 * 60;
-const REDIS_TIMEOUT_MS = 800;
+const REDIS_TIMEOUT_MS = getRedisTimeoutMs('fast');
 
 interface LocalPinFailureState {
   count: number;

@@ -14,11 +14,12 @@ import {
   isRedisEnabled,
   runRedisWithTimeout,
 } from '@/lib/redis/client';
+import { getRedisTimeoutMs } from '@/config/redis-timeouts';
 
 const STREAM_KEY_PREFIX = 'ai:stream:v2:';
 /** Active stream TTL: 10 minutes (supports complex analysis queries) */
 const STREAM_TTL_SECONDS = 600;
-const REDIS_TIMEOUT_MS = 1_000;
+const REDIS_TIMEOUT_MS = getRedisTimeoutMs('standard');
 
 function buildStreamStateKey(sessionId: string, ownerKey: string): string {
   return `${STREAM_KEY_PREFIX}${ownerKey}:${sessionId}`;

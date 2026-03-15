@@ -13,6 +13,7 @@
  * @created 2026-01-24
  */
 
+import { getRedisTimeoutMs } from '@/config/redis-timeouts';
 import { logger } from '@/lib/logging';
 import {
   getRedisClient,
@@ -22,7 +23,7 @@ import {
 
 const STREAM_PREFIX = 'ai:resumable:';
 const STREAM_TTL_SECONDS = 600; // 10 minutes
-const REDIS_TIMEOUT_MS = 1_000;
+const REDIS_TIMEOUT_MS = getRedisTimeoutMs('standard');
 
 interface StreamMetadata {
   status: 'active' | 'completed' | 'error';

@@ -9,6 +9,7 @@
  */
 
 import { Redis } from '@upstash/redis';
+import { getRedisTimeoutMs } from '@/config/redis-timeouts';
 import { logger } from '@/lib/logging';
 
 // Redis 클라이언트 인스턴스 (싱글톤)
@@ -16,10 +17,6 @@ let redisInstance: Redis | null = null;
 let isRedisAvailable = true;
 let lastHealthCheck = 0;
 const HEALTH_CHECK_INTERVAL = 60_000; // 1분
-const DEFAULT_REDIS_OPERATION_TIMEOUT_MS = parseRedisTimeoutMs(
-  process.env.UPSTASH_REDIS_OPERATION_TIMEOUT_MS,
-  1_200
-);
 
 const SYSTEM_RUNNING_KEY = 'system:running';
 
@@ -36,23 +33,12 @@ export interface RedisTimeoutOptions {
   timeoutMs?: number;
 }
 
-function parseRedisTimeoutMs(
-  value: string | undefined,
-  fallback: number
-): number {
-  const parsed = Number(value);
-  if (!Number.isFinite(parsed) || parsed <= 0) {
-    return fallback;
-  }
-  return Math.floor(parsed);
-}
-
 export async function runRedisWithTimeout<T>(
   operation: string,
   promiseFactory: () => Promise<T>,
   options?: RedisTimeoutOptions
 ): Promise<T> {
-  const timeoutMs = options?.timeoutMs ?? DEFAULT_REDIS_OPERATION_TIMEOUT_MS;
+  const timeoutMs = options?.timeoutMs ?? getRedisTimeoutMs('operation');
 
   if (timeoutMs <= 0) {
     return promiseFactory();

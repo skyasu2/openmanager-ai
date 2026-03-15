@@ -16,6 +16,7 @@
  */
 
 import type { Redis } from '@upstash/redis';
+import { getRedisTimeoutMs } from '@/config/redis-timeouts';
 import type {
   CircuitState,
   IDistributedStateStore,
@@ -29,7 +30,7 @@ import { getRedisClient, isRedisEnabled, runRedisWithTimeout } from './client';
 
 const CIRCUIT_KEY_PREFIX = 'circuit:';
 const CIRCUIT_TTL_SECONDS = 300; // 5분 (Circuit Breaker 리셋 시간)
-const REDIS_TIMEOUT_MS = 1_000;
+const REDIS_TIMEOUT_MS = getRedisTimeoutMs('standard');
 const DEFAULT_STATE: CircuitState = {
   state: 'CLOSED',
   failures: 0,
