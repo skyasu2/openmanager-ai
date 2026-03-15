@@ -21,7 +21,11 @@ import type {
   IDistributedStateStore,
 } from '@/lib/ai/circuit-breaker';
 import { logger } from '@/lib/logging';
-import { getRedisClient, isRedisEnabled } from './client';
+import {
+  getRedisClient,
+  isRedisEnabled,
+  runRedisWithTimeout,
+} from './client';
 
 // ============================================================================
 // Constants
@@ -29,6 +33,7 @@ import { getRedisClient, isRedisEnabled } from './client';
 
 const CIRCUIT_KEY_PREFIX = 'circuit:';
 const CIRCUIT_TTL_SECONDS = 300; // 5분 (Circuit Breaker 리셋 시간)
+const REDIS_TIMEOUT_MS = 1_000;
 const DEFAULT_STATE: CircuitState = {
   state: 'CLOSED',
   failures: 0,
@@ -71,7 +76,11 @@ export class RedisCircuitBreakerStore implements IDistributedStateStore {
 
     try {
       const key = this.getKey(serviceName);
-      const data = await redis.hgetall<Record<string, string>>(key);
+      const data = await runRedisWithTimeout(
+        `HGETALL ${key}`,
+        () => redis.hgetall<Record<string, string>>(key),
+        { timeoutMs: REDIS_TIMEOUT_MS }
+      );
 
       if (!data || Object.keys(data).length === 0) {
         return null;
@@ -102,7 +111,11 @@ export class RedisCircuitBreakerStore implements IDistributedStateStore {
       const pipeline = redis.pipeline();
       pipeline.hset(key, data);
       pipeline.expire(key, this.ttlSeconds);
-      await pipeline.exec();
+      await runRedisWithTimeout(
+        `PIPELINE setState ${key}`,
+        () => pipeline.exec(),
+        { timeoutMs: REDIS_TIMEOUT_MS }
+      );
 
       logger.debug(
         `[CircuitBreakerStore] setState: ${serviceName} → ${state.state}`
@@ -132,7 +145,11 @@ export class RedisCircuitBreakerStore implements IDistributedStateStore {
       pipeline.hset(key, { lastFailTime: now.toString() });
       pipeline.expire(key, this.ttlSeconds);
 
-      const results = await pipeline.exec<[number, number, number]>();
+      const results = await runRedisWithTimeout(
+        `PIPELINE incrementFailures ${key}`,
+        () => pipeline.exec<[number, number, number]>(),
+        { timeoutMs: REDIS_TIMEOUT_MS }
+      );
       const newFailures = results[0];
 
       logger.debug(
@@ -157,7 +174,9 @@ export class RedisCircuitBreakerStore implements IDistributedStateStore {
 
     try {
       const key = this.getKey(serviceName);
-      await redis.del(key);
+      await runRedisWithTimeout(`DEL ${key}`, () => redis.del(key), {
+        timeoutMs: REDIS_TIMEOUT_MS,
+      });
       logger.debug(`[CircuitBreakerStore] resetState: ${serviceName}`);
     } catch (error) {
       logger.warn(

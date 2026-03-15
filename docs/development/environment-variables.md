@@ -128,8 +128,10 @@ curl -X POST https://openmanager-ai.vercel.app/api/auth/guest-login \
 |------|------|--------|
 | `UPSTASH_REDIS_REST_URL` | Upstash Redis URL | — |
 | `UPSTASH_REDIS_REST_TOKEN` | Upstash Redis 토큰 | — |
+| `UPSTASH_REDIS_OPERATION_TIMEOUT_MS` | Redis 작업 타임아웃 (ms) | `1200` |
 
 > Redis 환경변수가 없으면 InMemory 캐시로 자동 폴백됩니다.
+> `UPSTASH_REDIS_OPERATION_TIMEOUT_MS`가 없거나 잘못된 값이면 기본값 `1200ms`를 사용합니다.
 
 ### 빌드 전용
 
