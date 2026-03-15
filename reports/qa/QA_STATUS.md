@@ -1,15 +1,15 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-15 16:15:29 KST
+> Generated at: 2026-03-15 21:13:45 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 102 |
-| Total Checks | 752 |
-| Passed | 709 |
+| Total Runs | 103 |
+| Total Checks | 760 |
+| Passed | 717 |
 | Failed | 39 |
 | Completed Items | 172 |
 | Pending Items | 0 |
@@ -18,16 +18,17 @@
 | Expert Domains Tracked | 6 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 98.85% |
-| Last Run | QA-20260315-0102 (2026-03-15T07:15:29.358Z) |
+| Last Run | QA-20260315-0103 (2026-03-15T12:13:45.149Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260315-0102 (2026-03-15T07:15:29.358Z)
+Latest run: QA-20260315-0103 (2026-03-15T12:13:45.149Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
 | Test Automation Architect | appropriate | no | - |
 | DevOps / SRE Engineer | appropriate | no | - |
+| AI Quality Assurance Specialist | appropriate | no | - |
 
 ## Expert Domain Open Gaps
 
@@ -301,6 +302,7 @@ Latest run: QA-20260315-0102 (2026-03-15T07:15:29.358Z)
 
 | Run ID | Time (UTC) | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260315-0103 | 2026-03-15T12:13:45.149Z | Production Playwright MCP QA - Post-Cloud-Run Deploy Validation (2026-03-15) | 8 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260315-0102 | 2026-03-15T07:15:29.358Z | Storybook QA - lock sync + smoke/build validation | 3 | 3 | 0 | 0 | 0 | 0 |
 | QA-20260315-0101 | 2026-03-15T06:21:02.856Z | QA governance - close resolved security gap and split security backlog | 3 | 1 | 0 | 2 | 0 | 0 |
 | QA-20260315-0100 | 2026-03-15T05:59:40.849Z | Vercel Production QA - AI Chat summary response recovery validation | 6 | 1 | 0 | 0 | 0 | 0 |
@@ -320,5 +322,4 @@ Latest run: QA-20260315-0102 (2026-03-15T07:15:29.358Z)
 | QA-20260310-0086 | 2026-03-10T07:56:27.137Z | Vercel Analyst drilldown recheck - close normal server empty-state observation | 5 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260310-0085 | 2026-03-10T07:41:30.014Z | QA governance correction - track Analyst empty-state observation from run #84 | 1 | 0 | 1 | 0 | 0 | 1 |
 | QA-20260310-0084 | 2026-03-10T06:39:47.611Z | Vercel Playwright QA - Production gate after dependency merges | 11 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260310-0083 | 2026-03-10T02:03:05.427Z | Vercel Playwright QA - Full release gate recheck after issue closeout | 11 | 0 | 0 | 0 | 0 | 0 |
 

@@ -1,0 +1,73 @@
+{
+  "runId": "QA-20260315-0103",
+  "recordedAt": "2026-03-15T12:13:45.149Z",
+  "recordedAtKst": "2026-03-15 21:13:45 KST",
+  "runTitle": "Production Playwright MCP QA - Post-Cloud-Run Deploy Validation (2026-03-15)",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "frontendUrl": "https://openmanager-ai.vercel.app",
+    "backendUrl": "https://ai-engine-jdhrhws7ia-an.a.run.app",
+    "cloudRunRevision": "ai-engine-00249-tg7"
+  },
+  "checks": {
+    "total": 8,
+    "passed": 8,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Playwright MCP로 실배포 후 사용자 경로와 AI 응답 경로를 재현 가능하게 검증했다.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Cloud Run 실배포 직후 Vercel 프런트엔드와 헬스 엔드포인트를 연계 검증해 운영 게이트를 충족했다.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "AI 사이드바, 스타터 프롬프트, 요약 응답 품질을 프로덕션 환경에서 직접 확인했다.",
+      "nextAction": ""
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Landing에서 시스템 시작 후 /dashboard 진입 정상 확인",
+    "AI 어시스턴트 사이드바 오픈 및 스타터 프롬프트 렌더링 정상 확인",
+    "질의 '현재 모든 서버의 상태를 요약해줘' 에 대해 Streaming AI 응답 정상 확인",
+    "Vercel /api/health healthy, /api/version 200 확인",
+    "브라우저 console error 0건 확인",
+    "Cloud Run revision ai-engine-00249-tg7와 연동된 프로덕션 경로 검증"
+  ],
+  "links": [
+    {
+      "label": "Vercel URL",
+      "url": "https://openmanager-ai.vercel.app"
+    },
+    {
+      "label": "Cloud Run URL",
+      "url": "https://ai-engine-jdhrhws7ia-an.a.run.app"
+    },
+    {
+      "label": "Cloud Build",
+      "url": "https://console.cloud.google.com/cloud-build/builds/9cdc5c74-97ae-4752-b532-365f8c69fd7f?project=490817238363"
+    }
+  ]
+}

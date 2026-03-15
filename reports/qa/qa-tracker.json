@@ -2,15 +2,15 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-03-15T07:15:29.358Z"
+    "updatedAt": "2026-03-15T12:13:45.149Z"
   },
   "sequence": {
-    "nextRunNumber": 103
+    "nextRunNumber": 104
   },
   "summary": {
-    "totalRuns": 102,
-    "totalChecks": 752,
-    "totalPassed": 709,
+    "totalRuns": 103,
+    "totalChecks": 760,
+    "totalPassed": 717,
     "totalFailed": 39,
     "completionRate": 98.85,
     "completedItems": 172,
@@ -19,8 +19,8 @@
     "wontFixItems": 38,
     "expertDomainsTracked": 6,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260315-0102",
-    "lastRecordedAt": "2026-03-15T07:15:29.358Z"
+    "lastRunId": "QA-20260315-0103",
+    "lastRecordedAt": "2026-03-15T12:13:45.149Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -8892,6 +8892,52 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260315-0103",
+      "recordedAt": "2026-03-15T12:13:45.149Z",
+      "recordedAtKst": "2026-03-15 21:13:45 KST",
+      "title": "Production Playwright MCP QA - Post-Cloud-Run Deploy Validation (2026-03-15)",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260315-0103.json",
+      "checks": {
+        "total": 8,
+        "passed": 8,
+        "failed": 0
+      },
+      "expertAssessments": [
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Playwright MCP로 실배포 후 사용자 경로와 AI 응답 경로를 재현 가능하게 검증했다.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Cloud Run 실배포 직후 Vercel 프런트엔드와 헬스 엔드포인트를 연계 검증해 운영 게이트를 충족했다.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "AI 사이드바, 스타터 프롬프트, 요약 응답 품질을 프로덕션 환경에서 직접 확인했다.",
+          "nextAction": ""
+        }
+      ],
+      "expertCount": 3,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -8900,16 +8946,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 62,
-      "appropriateCount": 59,
+      "seenCount": 63,
+      "appropriateCount": 60,
       "partialCount": 3,
       "inappropriateCount": 0,
       "improvementNeededCount": 11,
-      "lastRunId": "QA-20260315-0100",
-      "lastSeenAt": "2026-03-15T05:59:40.849Z",
+      "lastRunId": "QA-20260315-0103",
+      "lastSeenAt": "2026-03-15T12:13:45.149Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Production AI Chat에서 '현재 모든 서버의 상태를 요약해줘' 질의를 실행해 비어있지 않은 요약 응답을 확인했다.",
+      "lastRationale": "AI 사이드바, 스타터 프롬프트, 요약 응답 품질을 프로덕션 환경에서 직접 확인했다.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -8951,16 +8997,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 27,
-      "appropriateCount": 24,
+      "seenCount": 28,
+      "appropriateCount": 25,
       "partialCount": 3,
       "inappropriateCount": 0,
       "improvementNeededCount": 3,
-      "lastRunId": "QA-20260315-0102",
-      "lastSeenAt": "2026-03-15T07:15:29.358Z",
+      "lastRunId": "QA-20260315-0103",
+      "lastSeenAt": "2026-03-15T12:13:45.149Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "storybook build는 약 6분 소요 후 성공 완료되어 장시간 빌드 특성을 기준선으로 확인했다.",
+      "lastRationale": "Cloud Run 실배포 직후 Vercel 프런트엔드와 헬스 엔드포인트를 연계 검증해 운영 게이트를 충족했다.",
       "lastNextAction": ""
     },
     "test-automation": {
@@ -8968,16 +9014,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 61,
-      "appropriateCount": 57,
+      "seenCount": 62,
+      "appropriateCount": 58,
       "partialCount": 4,
       "inappropriateCount": 0,
       "improvementNeededCount": 5,
-      "lastRunId": "QA-20260315-0102",
-      "lastSeenAt": "2026-03-15T07:15:29.358Z",
+      "lastRunId": "QA-20260315-0103",
+      "lastSeenAt": "2026-03-15T12:13:45.149Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "storybook:smoke 스크립트를 동적 포트/비대화형으로 추가하고 정상 기동을 확인했다.",
+      "lastRationale": "Playwright MCP로 실배포 후 사용자 경로와 AI 응답 경로를 재현 가능하게 검증했다.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {
