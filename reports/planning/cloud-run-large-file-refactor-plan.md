@@ -227,20 +227,23 @@
     - 신규 `cloud-run/ai-engine/src/services/ai-sdk/supervisor-mode.ts` 20줄
     - 신규 `cloud-run/ai-engine/src/services/observability/langfuse-flush.ts` 18줄
     - 신규 `cloud-run/ai-engine/src/services/ai-sdk/supervisor-stream-messages.ts` 38줄
+    - 신규 `cloud-run/ai-engine/src/services/ai-sdk/agents/orchestrator-decomposition-output.ts` 33줄
   - 중복 제거 범위:
     - W3C trace ID 파싱 로직 공용화
     - `mode=auto` 해석 로직 공용화 (`executeSupervisor`, `executeSupervisorStream`, `createSupervisorStreamResponse`)
     - Langfuse best-effort flush 로직 공용화
     - Supervisor 스트림용 system/multimodal 메시지 조립 로직 공용화
+    - Orchestrator decomposition 결과 조립/청크 스트리밍 로직 공용화
   - 라인 수 변화:
     - `cloud-run/ai-engine/src/services/ai-sdk/supervisor-single-agent.ts` 476 → 471
     - `cloud-run/ai-engine/src/services/ai-sdk/supervisor-stream.ts` 512 → 485
+    - `cloud-run/ai-engine/src/services/ai-sdk/agents/orchestrator-decomposition.ts` 515 → 485
 - 검증:
   - `cd cloud-run/ai-engine && npm run type-check` 통과
   - `cd cloud-run/ai-engine && npm run line-guard` 통과
-  - `cd cloud-run/ai-engine && npx vitest run src/services/ai-sdk/supervisor-stream-messages.test.ts src/services/ai-sdk/supervisor-mode.test.ts src/services/ai-sdk/supervisor-routing.test.ts src/services/ai-sdk/supervisor-quality-retry.test.ts src/routes/supervisor-trace.test.ts` 통과 (60 passed)
+  - `cd cloud-run/ai-engine && npx vitest run src/services/ai-sdk/agents/orchestrator-decomposition.test.ts src/services/ai-sdk/supervisor-stream-messages.test.ts src/services/ai-sdk/supervisor-mode.test.ts src/services/ai-sdk/supervisor-routing.test.ts src/services/ai-sdk/supervisor-quality-retry.test.ts src/routes/supervisor-trace.test.ts` 통과 (68 passed)
 - 메모:
-  - `supervisor-stream.ts`는 warning threshold(500줄) 아래로 내려가 line-guard 경고 목록에서 제외됨
+  - `supervisor-stream.ts`, `orchestrator-decomposition.ts`는 warning threshold(500줄) 아래로 내려가 line-guard 경고 목록에서 제외됨
     - 기존 export type은 `UnifiedAnomalyEngine.ts`에서 재export
 - 검증:
   - `cd cloud-run/ai-engine && npm run type-check` 통과
