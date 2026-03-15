@@ -2,11 +2,9 @@ import {
   hasToolCall,
   stepCountIs,
   streamText,
-  type ModelMessage,
-  type UserContent,
 } from 'ai';
 import { TIMEOUT_CONFIG } from '../../config/timeout-config';
-import { extractRagSources, extractToolResultOutput, buildMultimodalContent, type RagSource } from '../../lib/ai-sdk-utils';
+import { extractRagSources, extractToolResultOutput, type RagSource } from '../../lib/ai-sdk-utils';
 import { getPublicErrorMessage, getPublicErrorResponse } from '../../lib/error-handler';
 import { isTavilyAvailable } from '../../lib/tavily-hybrid-rag';
 import { logger } from '../../lib/logger';
@@ -22,8 +20,12 @@ import {
   recordModelUsage,
   type ProviderName,
 } from './model-provider';
-import { createPrepareStep, createSystemPrompt } from './supervisor-routing';
+import { createPrepareStep } from './supervisor-routing';
 import { resolveSupervisorMode } from './supervisor-mode';
+import {
+  buildSupervisorStreamMessages,
+  getLastUserQueryText,
+} from './supervisor-stream-messages';
 import type { StreamEvent, SupervisorRequest } from './supervisor-types';
 
 export async function* executeSupervisorStream(
@@ -59,29 +61,8 @@ async function* streamSingleAgent(
   const MAX_PROVIDER_ATTEMPTS = 3;
 
   // Provider-independent setup (hoisted outside retry loop)
-  const lastUserMessage = request.messages.filter((m) => m.role === 'user').pop();
-  const queryText = lastUserMessage?.content || '';
-
-  const modelMessages: ModelMessage[] = [
-    { role: 'system', content: createSystemPrompt(request.deviceType) },
-    ...request.messages.map((m, idx): ModelMessage => {
-      const isLastUserMessage =
-        m.role === 'user' &&
-        idx === request.messages.length - 1;
-
-      if (isLastUserMessage) {
-        return {
-          role: m.role as 'user',
-          content: buildMultimodalContent(m.content, request.images, request.files) as UserContent,
-        };
-      }
-
-      return {
-        role: m.role as 'user' | 'assistant',
-        content: m.content,
-      };
-    }),
-  ];
+  const queryText = getLastUserQueryText(request.messages);
+  const modelMessages = buildSupervisorStreamMessages(request);
 
   let webSearchEnabled = resolveWebSearchSetting(request.enableWebSearch, queryText);
   if (webSearchEnabled && !isTavilyAvailable()) {
@@ -418,7 +399,7 @@ async function* streamSingleAgent(
       logGeneration(trace, {
         model: modelId,
         provider,
-        input: lastUserMessage?.content || '',
+        input: queryText,
         output: fullText,
         usage: {
           inputTokens: usage?.inputTokens ?? 0,
