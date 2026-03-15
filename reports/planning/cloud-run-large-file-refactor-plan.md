@@ -249,6 +249,26 @@
   - `cd cloud-run/ai-engine && npm run type-check` 통과
   - `cd cloud-run/ai-engine && npx vitest run src/tools-ai-sdk/analyst-tools.test.ts src/services/ai-sdk/agents/base-agent.test.ts src/lib/rag-merge-planner.test.ts src/services/approval/approval-store.test.ts src/services/ai-sdk/model-provider.compatibility.test.ts src/services/ai-sdk/supervisor-routing.test.ts src/services/ai-sdk/agents/orchestrator-web-search.test.ts` 통과 (118 passed)
 
+## 실행 결과 추가 (2026-03-15, Phase 2 계속)
+- 리팩토링:
+  - Calculation Tools core 분리:
+    - `cloud-run/ai-engine/src/tools-ai-sdk/calculation-tools.ts` 711 → 321
+    - 신규 `cloud-run/ai-engine/src/tools-ai-sdk/calculation-tools-core.ts` 415줄
+  - 기존 public API 유지:
+    - `evaluateMathExpression`, `computeSeriesStats`, `estimateCapacityProjection`, `calculationTools` 경로/이름 동일
+  - 분리 범위:
+    - 수식 토크나이저/재귀 하강 파서
+    - 반올림/정렬/percentile 계산 helper
+    - 계산 도구 입력 한도 상수
+- 검증:
+  - `cd cloud-run/ai-engine && npm run type-check` 통과
+  - `cd cloud-run/ai-engine && npx vitest run src/tools-ai-sdk/calculation-tools.test.ts` 통과 (13 passed)
+  - `cd cloud-run/ai-engine && npm run test` 통과 (56 files, 652 tests)
+  - `cd cloud-run/ai-engine && npm run line-guard` 통과
+- 메모:
+  - `calculation-tools.ts`는 warning threshold(500줄) 아래로 내려가 line-guard 경고 목록에서 제외됨
+  - 남은 500줄 초과 파일: `orchestrator-routing.ts`, `reporter-pipeline.ts`, `base-agent.ts`, `orchestrator-execution.ts`, `server.ts`
+
 ## 실행 결과 추가 (2026-02-20, 12차 분리 계속)
 - 리팩토링:
   - 추세 예측 엔진 책임 분리:
