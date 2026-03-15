@@ -69,12 +69,14 @@ describe('upstash-resumable timeout wiring', () => {
     );
     const context = createUpstashResumableContext();
 
-    await context.createNewResumableStream('stream-1', () =>
-      new ReadableStream<Uint8Array>({
-        start(controller) {
-          controller.close();
-        },
-      })
+    await context.createNewResumableStream(
+      'stream-1',
+      () =>
+        new ReadableStream<Uint8Array>({
+          start(controller) {
+            controller.close();
+          },
+        })
     );
 
     expect(mockRunRedisWithTimeout).toHaveBeenCalledWith(
@@ -89,16 +91,14 @@ describe('upstash-resumable timeout wiring', () => {
       set: vi.fn(),
       rpush: vi.fn(),
       expire: vi.fn(),
-      get: vi
-        .fn()
-        .mockResolvedValueOnce(
-          JSON.stringify({
-            status: 'completed',
-            totalChunks: 1,
-            startedAt: Date.now(),
-            completedAt: Date.now(),
-          })
-        ),
+      get: vi.fn().mockResolvedValueOnce(
+        JSON.stringify({
+          status: 'completed',
+          totalChunks: 1,
+          startedAt: Date.now(),
+          completedAt: Date.now(),
+        })
+      ),
       lrange: vi.fn().mockResolvedValue(['chunk-1']),
       del: vi.fn(),
     };
