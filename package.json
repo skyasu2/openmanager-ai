@@ -164,7 +164,8 @@
     "env:check": "ts-node scripts/env/check-env.ts",
     "dev:tmux:clean": "tmux kill-session -t openmanager-dev",
     "storybook": "storybook dev -p 6006",
-    "storybook:build": "storybook build"
+    "storybook:build": "storybook build",
+    "storybook:smoke": "bash scripts/storybook/smoke.sh"
   },
   "dependencies": {
     "@ai-sdk/mistral": "^3.0.24",

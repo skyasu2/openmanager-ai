@@ -104,6 +104,9 @@ npm run storybook
 # CI/상태 확인 기준
 npm run storybook:build
 
+# 빠른 기동 스모크(동적 포트, 비대화형)
+npm run storybook:smoke
+
 # 실행 중 응답 확인
 curl -I http://127.0.0.1:6006
 ```
