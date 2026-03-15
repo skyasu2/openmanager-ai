@@ -13,6 +13,13 @@ DOCKER_BUILD_TIMEOUT_SECONDS="${DOCKER_BUILD_TIMEOUT_SECONDS:-180}"
 
 DOCKER_MODE=""
 
+validate_timeout_config() {
+  if ! [[ "$DOCKER_BUILD_TIMEOUT_SECONDS" =~ ^[0-9]+$ ]]; then
+    log "DOCKER_BUILD_TIMEOUT_SECONDS must be a non-negative integer (received: ${DOCKER_BUILD_TIMEOUT_SECONDS})"
+    exit 1
+  fi
+}
+
 ensure_build_assets() {
   # Ensure config exists
   if [ ! -f "${ENGINE_DIR}/config/system-rules.json" ]; then
@@ -87,6 +94,7 @@ cleanup() {
 }
 
 trap cleanup EXIT
+validate_timeout_config
 
 if docker ps >/dev/null 2>&1; then
   DOCKER_MODE="wsl"

@@ -15,6 +15,44 @@ import {
 import { getLangfuseUsageStatus } from './services/observability/langfuse';
 
 let logLevelResetTimer: ReturnType<typeof setTimeout> | null = null;
+const DEFAULT_LANGFUSE_TRACES_TIMEOUT_MS = 5_000;
+
+function getLangfuseTracesTimeoutMs(): number {
+  const raw = process.env.LANGFUSE_TRACES_TIMEOUT_MS;
+  if (!raw) {
+    return DEFAULT_LANGFUSE_TRACES_TIMEOUT_MS;
+  }
+
+  const parsed = Number.parseInt(raw, 10);
+  return Number.isFinite(parsed) && parsed >= 100
+    ? parsed
+    : DEFAULT_LANGFUSE_TRACES_TIMEOUT_MS;
+}
+
+function isAbortError(error: unknown): boolean {
+  return error instanceof Error && error.name === 'AbortError';
+}
+
+async function fetchLangfuseTraces(
+  baseUrl: string,
+  authToken: string,
+  timeoutMs = getLangfuseTracesTimeoutMs()
+) {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    return await fetch(`${baseUrl}/api/public/traces?limit=10`, {
+      headers: {
+        Authorization: `Basic ${authToken}`,
+        'Content-Type': 'application/json',
+      },
+      signal: controller.signal,
+    });
+  } finally {
+    clearTimeout(timeoutId);
+  }
+}
 
 export function registerAdminRoutes(
   app: Hono,
@@ -67,13 +105,8 @@ export function registerAdminRoutes(
       const authToken = Buffer.from(`${publicKey}:${secretKey}`).toString(
         'base64'
       );
-
-      const response = await fetch(`${baseUrl}/api/public/traces?limit=10`, {
-        headers: {
-          Authorization: `Basic ${authToken}`,
-          'Content-Type': 'application/json',
-        },
-      });
+      const timeoutMs = getLangfuseTracesTimeoutMs();
+      const response = await fetchLangfuseTraces(baseUrl, authToken, timeoutMs);
 
       if (!response.ok) {
         const errorText = await response.text();
@@ -126,6 +159,16 @@ export function registerAdminRoutes(
         timestamp: new Date().toISOString(),
       });
     } catch (error: unknown) {
+      if (isAbortError(error)) {
+        return c.json(
+          {
+            error: 'Langfuse API timeout',
+            message: `Langfuse traces request timed out after ${getLangfuseTracesTimeoutMs()}ms`,
+          },
+          504
+        );
+      }
+
       return c.json(
         {
           error: 'Failed to fetch Langfuse traces',

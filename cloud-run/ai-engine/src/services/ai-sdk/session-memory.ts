@@ -1,5 +1,6 @@
 import { RedisClient } from '../../lib/redis-client';
 import { logger } from '../../lib/logger';
+import { withTimeout } from '../../lib/with-timeout';
 import type { ModelMessage } from 'ai';
 
 /**
@@ -10,14 +11,31 @@ import type { ModelMessage } from 'ai';
  */
 export class SessionMemoryService {
   private static TTL = 3600; // 1 Hour
+  private static HISTORY_TIMEOUT_MS = 1_500;
 
   static async getHistory(sessionId: string): Promise<ModelMessage[]> {
     if (!sessionId) return [];
-    const history = await RedisClient.get<ModelMessage[]>(`chat:history:${sessionId}`);
-    if (history) {
-      logger.debug(`[SessionMemory] Retrieved ${history.length} messages for ${sessionId}`);
-      return history;
+
+    try {
+      const history = await withTimeout(
+        RedisClient.get<ModelMessage[]>(`chat:history:${sessionId}`),
+        this.HISTORY_TIMEOUT_MS,
+        `Session history lookup timed out after ${this.HISTORY_TIMEOUT_MS}ms`
+      );
+
+      if (history) {
+        logger.debug(
+          `[SessionMemory] Retrieved ${history.length} messages for ${sessionId}`
+        );
+        return history;
+      }
+    } catch (error) {
+      logger.warn(
+        `[SessionMemory] History lookup failed for ${sessionId}:`,
+        error
+      );
     }
+
     return [];
   }
 
