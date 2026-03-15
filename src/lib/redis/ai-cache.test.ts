@@ -142,4 +142,47 @@ describe('AI response Redis cache', () => {
     expect(result.semanticScore).toBeDefined();
     expect(result.semanticScore).toBeGreaterThanOrEqual(0.82);
   });
+
+  it('limits semantic scans once enough candidates are collected', async () => {
+    const sessionId = 'session-scan-limit';
+    const endpoint = 'supervisor';
+    const query = '서버 상태 요약';
+    const exactHash = generateQueryHash(sessionId, query, endpoint);
+    const exactKey = `v2:ai:response:${exactHash}`;
+    const [, sessionHash] = exactHash.split(':');
+
+    const candidateKeys = [
+      exactKey,
+      ...Array.from({ length: 12 }, (_, index) =>
+        `v2:ai:response:${endpoint}:${sessionHash}:candidate-${index + 1}`
+      ),
+    ];
+    const embedding = buildSemanticQueryEmbedding(query);
+
+    mockRedisScan
+      .mockResolvedValueOnce([1, candidateKeys])
+      .mockRejectedValueOnce(new Error('unexpected extra scan'));
+    mockRedisGet.mockImplementation(async (key: string) => {
+      if (key === exactKey) {
+        return null;
+      }
+
+      return {
+        content: 'semantic-cached',
+        metadata: {
+          __semanticCache: {
+            algorithm: 'token-hash-v1',
+            normalizedQuery: embedding.normalizedQuery,
+            embedding: embedding.vector,
+            createdAt: Date.now(),
+          },
+        },
+      };
+    });
+
+    const result = await getAIResponseCache(sessionId, query, endpoint);
+
+    expect(result.hit).toBe(true);
+    expect(mockRedisScan).toHaveBeenCalledOnce();
+  });
 });

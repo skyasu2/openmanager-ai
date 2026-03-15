@@ -239,7 +239,11 @@ async function findSemanticMatch(
   }
 
   const pattern = getSemanticScanPattern(sessionId, endpoint);
-  const keys = await scanKeys(client, pattern);
+  const keys = await scanKeys(
+    client,
+    pattern,
+    CACHE_CONFIG.SEMANTIC_CACHE.MAX_SCAN_CANDIDATES + 1
+  );
   const candidates = keys
     .filter((key) => key !== exactCacheKey)
     .slice(0, CACHE_CONFIG.SEMANTIC_CACHE.MAX_SCAN_CANDIDATES);
@@ -319,16 +323,25 @@ export function generateQueryHash(
 /**
  * SCAN으로 키 패턴 조회 (Upstash O(N) KEYS 블로킹 방지)
  */
-async function scanKeys(client: Redis, pattern: string): Promise<string[]> {
+async function scanKeys(
+  client: Redis,
+  pattern: string,
+  limit?: number
+): Promise<string[]> {
   const keys: string[] = [];
   let cursor = 0;
   do {
+    const remaining =
+      typeof limit === 'number' ? Math.max(limit - keys.length, 0) : undefined;
     const [nextCursor, batch] = await client.scan(cursor, {
       match: pattern,
-      count: 100,
+      count: remaining ? Math.min(100, remaining) : 100,
     });
     cursor = Number(nextCursor);
     keys.push(...batch);
+    if (typeof limit === 'number' && keys.length >= limit) {
+      return keys.slice(0, limit);
+    }
   } while (cursor !== 0);
   return keys;
 }

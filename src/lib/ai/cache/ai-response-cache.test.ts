@@ -192,6 +192,36 @@ describe('getAICache', () => {
     expect(mockUnifiedCacheSet).toHaveBeenCalledOnce();
   });
 
+  it('Redis 히트 시 내부 semantic 메타데이터를 숨긴다', async () => {
+    mockUnifiedCacheGet.mockResolvedValue(null);
+    mockGetAIResponseCache.mockResolvedValue({
+      hit: true,
+      data: {
+        content: 'redis answer',
+        metadata: {
+          source: 'test',
+          __semanticCache: {
+            algorithm: 'token-hash-v1',
+            normalizedQuery: 'server status',
+            embedding: [0.1, 0.2],
+          },
+        },
+      },
+    });
+
+    const result = await getAICache('session1', 'test query');
+
+    expect(result.hit).toBe(true);
+    expect(result.data?.data).toEqual({ source: 'test' });
+    expect(mockUnifiedCacheSet).toHaveBeenCalledWith(
+      expect.any(String),
+      expect.objectContaining({
+        data: { source: 'test' },
+      }),
+      expect.any(Object)
+    );
+  });
+
   it('양쪽 미스 → hit=false, source=none', async () => {
     // Given: Memory, Redis 모두 미스
     mockUnifiedCacheGet.mockResolvedValue(null);

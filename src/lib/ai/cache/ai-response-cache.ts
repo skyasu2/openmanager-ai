@@ -55,6 +55,20 @@ export interface AIResponseCacheResult {
   latencyMs?: number;
 }
 
+function sanitizePublicMetadata(
+  metadata: Record<string, unknown> | undefined
+): Record<string, unknown> | undefined {
+  if (!metadata) {
+    return undefined;
+  }
+
+  const publicEntries = Object.entries(metadata).filter(
+    ([key]) => !key.startsWith('__')
+  );
+
+  return publicEntries.length > 0 ? Object.fromEntries(publicEntries) : undefined;
+}
+
 /**
  * 엔드포인트별 TTL 설정 (초)
  */
@@ -151,12 +165,13 @@ export async function getAICache(
 
     if (redisResult.hit && redisResult.data) {
       const latencyMs = Math.round(performance.now() - startTime);
+      const publicMetadata = sanitizePublicMetadata(redisResult.data.metadata);
 
       // Redis 히트 → Memory에 복사 (다음 조회 가속)
       const cacheableData: CacheableAIResponse = {
         success: true,
         response: redisResult.data.content,
-        data: redisResult.data.metadata,
+        ...(publicMetadata ? { data: publicMetadata } : {}),
         source: 'redis-cache',
       };
 
