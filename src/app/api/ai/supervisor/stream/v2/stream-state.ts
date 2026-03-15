@@ -8,13 +8,13 @@
  * @created 2026-01-24
  */
 
+import { getRedisTimeoutMs } from '@/config/redis-timeouts';
 import { logger } from '@/lib/logging';
 import {
   getRedisClient,
   isRedisEnabled,
   runRedisWithTimeout,
 } from '@/lib/redis/client';
-import { getRedisTimeoutMs } from '@/config/redis-timeouts';
 
 const STREAM_KEY_PREFIX = 'ai:stream:v2:';
 /** Active stream TTL: 10 minutes (supports complex analysis queries) */
