@@ -1,5 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { buildDeterministicSummaryFallback } from './orchestrator-summary-fallback';
+import {
+  buildDeterministicSummaryFallback,
+  buildDeterministicSummaryFromCurrentState,
+} from './orchestrator-summary-fallback';
 
 describe('buildDeterministicSummaryFallback', () => {
   it('builds a deterministic NLQ summary from getServerMetrics results', () => {
@@ -52,5 +55,16 @@ describe('buildDeterministicSummaryFallback', () => {
     );
 
     expect(summary).toBeNull();
+  });
+
+  it('builds deterministic summary from current state when tool results are absent', () => {
+    const summary = buildDeterministicSummaryFromCurrentState(
+      '현재 모든 서버의 상태를 요약해줘',
+      'NLQ Agent'
+    );
+
+    expect(summary).toBeTruthy();
+    expect(summary).toContain('📊 **서버 현황 요약**');
+    expect(summary).toContain('💡 **권고**');
   });
 });

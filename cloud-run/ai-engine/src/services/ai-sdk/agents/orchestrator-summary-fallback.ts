@@ -35,6 +35,11 @@ interface MetricsToolPayload {
   alertServers?: AlertServerSnapshot[];
 }
 
+import {
+  get24hTrendSummaries,
+  getCurrentState,
+} from '../../../tools-ai-sdk/server-metrics/data';
+
 const SUMMARY_QUERY_PATTERN =
   /(서버|인프라|시스템|server|system|monitoring).*(요약|현황|상태|간단히|핵심|summary|overview|tldr)|((모든|전체|all).*(서버|server))/i;
 
@@ -223,21 +228,7 @@ function buildTrendSummary(alertServers: AlertServerSnapshot[]): string {
     .join('\n');
 }
 
-// Deterministic fallback avoids another LLM call when metrics data is already available.
-export function buildDeterministicSummaryFallback(
-  query: string,
-  agentName: string,
-  toolResults: CollectedToolResult[]
-): string | null {
-  if (agentName !== 'NLQ Agent' || !SUMMARY_QUERY_PATTERN.test(query)) {
-    return null;
-  }
-
-  const payload = getMetricsPayload(toolResults);
-  if (!payload) {
-    return null;
-  }
-
+function buildSummaryFromPayload(payload: MetricsToolPayload): string {
   const totalServers = payload.servers.length;
   const onlineCount = payload.servers.filter(
     (server) => server.status === 'online'
@@ -306,4 +297,117 @@ export function buildDeterministicSummaryFallback(
   lines.push(buildRecommendation(alertServers));
 
   return lines.join('\n');
+}
+
+function buildSummaryPayloadFromCurrentState(): MetricsToolPayload | null {
+  const state = getCurrentState();
+  if (!state?.servers || state.servers.length === 0) {
+    return null;
+  }
+
+  const trendMap = new Map(
+    get24hTrendSummaries().map((trend) => [trend.serverId, trend])
+  );
+
+  const servers: ServerSnapshot[] = state.servers.map((server) => {
+    const trend = trendMap.get(server.id);
+    return {
+      id: server.id,
+      status: server.status,
+      cpu: server.cpu,
+      memory: server.memory,
+      disk: server.disk,
+      ...(trend && {
+        dailyTrend: {
+          cpu: trend.cpu,
+          memory: trend.memory,
+          disk: trend.disk,
+        },
+      }),
+    };
+  });
+
+  const alertServers: AlertServerSnapshot[] = servers
+    .filter((server) =>
+      ['warning', 'critical', 'offline'].includes(server.status)
+    )
+    .map((server) => {
+      const trend = trendMap.get(server.id);
+      const cpu = toNumber(server.cpu);
+      const memory = toNumber(server.memory);
+
+      const cpuTrend =
+        cpu !== null && trend
+          ? cpu > trend.cpu.avg * 1.1
+            ? 'rising'
+            : cpu < trend.cpu.avg * 0.9
+              ? 'falling'
+              : 'stable'
+          : 'stable';
+
+      const memoryTrend =
+        memory !== null && trend
+          ? memory > trend.memory.avg * 1.1
+            ? 'rising'
+            : memory < trend.memory.avg * 0.9
+              ? 'falling'
+              : 'stable'
+          : 'stable';
+
+      return {
+        id: server.id,
+        status: server.status,
+        cpu: server.cpu,
+        memory: server.memory,
+        disk: server.disk,
+        cpuTrend,
+        memoryTrend,
+        ...(trend && {
+          dailyAvg: {
+            cpu: trend.cpu.avg,
+            memory: trend.memory.avg,
+          },
+        }),
+      };
+    });
+
+  return {
+    servers,
+    ...(alertServers.length > 0 && { alertServers }),
+  };
+}
+
+// Deterministic fallback avoids another LLM call when metrics data is already available.
+export function buildDeterministicSummaryFallback(
+  query: string,
+  agentName: string,
+  toolResults: CollectedToolResult[]
+): string | null {
+  if (agentName !== 'NLQ Agent' || !SUMMARY_QUERY_PATTERN.test(query)) {
+    return null;
+  }
+
+  const payload = getMetricsPayload(toolResults);
+  if (!payload) {
+    return null;
+  }
+
+  return buildSummaryFromPayload(payload);
+}
+
+// Final fallback for summary prompts when model emits no text and skips all tool calls.
+export function buildDeterministicSummaryFromCurrentState(
+  query: string,
+  agentName: string
+): string | null {
+  if (agentName !== 'NLQ Agent' || !SUMMARY_QUERY_PATTERN.test(query)) {
+    return null;
+  }
+
+  const payload = buildSummaryPayloadFromCurrentState();
+  if (!payload) {
+    return null;
+  }
+
+  return buildSummaryFromPayload(payload);
 }

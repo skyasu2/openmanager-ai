@@ -20,7 +20,10 @@ import { ORCHESTRATOR_CONFIG } from './orchestrator-types';
 import { filterToolsByWebSearch, filterToolsByRAG } from './orchestrator-web-search';
 import { evaluateAgentResponseQuality } from './response-quality';
 import { streamTextInChunks } from './orchestrator-decomposition';
-import { buildDeterministicSummaryFallback } from './orchestrator-summary-fallback';
+import {
+  buildDeterministicSummaryFallback,
+  buildDeterministicSummaryFromCurrentState,
+} from './orchestrator-summary-fallback';
 
 function getSuggestedFollowUp(agentName: string, responseText: string): string | null {
   if (agentName === 'Analyst Agent') {
@@ -353,6 +356,21 @@ export async function* executeAgentStream(
           logger.warn(
             `[Stream ${agentName}] Summarization fallback failed:`,
             summaryError instanceof Error ? summaryError.message : String(summaryError)
+          );
+        }
+      }
+
+      if (!textEmitted) {
+        const stateSummary = buildDeterministicSummaryFromCurrentState(
+          query,
+          agentName
+        );
+        if (stateSummary) {
+          textEmitted = true;
+          fullResponseText += stateSummary;
+          yield { type: 'text_delta', data: stateSummary };
+          logger.info(
+            `[Stream ${agentName}] Current-state deterministic fallback succeeded (${stateSummary.length} chars)`
           );
         }
       }
