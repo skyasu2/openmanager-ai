@@ -66,7 +66,9 @@ function sanitizePublicMetadata(
     ([key]) => !key.startsWith('__')
   );
 
-  return publicEntries.length > 0 ? Object.fromEntries(publicEntries) : undefined;
+  return publicEntries.length > 0
+    ? Object.fromEntries(publicEntries)
+    : undefined;
 }
 
 /**

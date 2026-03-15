@@ -153,8 +153,10 @@ describe('AI response Redis cache', () => {
 
     const candidateKeys = [
       exactKey,
-      ...Array.from({ length: 12 }, (_, index) =>
-        `v2:ai:response:${endpoint}:${sessionHash}:candidate-${index + 1}`
+      ...Array.from(
+        { length: 12 },
+        (_, index) =>
+          `v2:ai:response:${endpoint}:${sessionHash}:candidate-${index + 1}`
       ),
     ];
     const embedding = buildSemanticQueryEmbedding(query);
