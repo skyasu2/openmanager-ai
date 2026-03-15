@@ -46,7 +46,7 @@
 
 ## Cloud Run 운영 체크리스트
 - [x] Docker daemon 접근 가능 (`docker ps`)
-- [ ] 로컬 Docker prebuild 성공
+- [x] 로컬 Docker prebuild 성공
 - [x] 유료 머신 타입 설정 없음 (`--machine-type`, `E2_HIGHCPU_8`, `N1_HIGHCPU_8`)
 - [x] Cloud Run 리소스 제한(CPU 1, Memory 512Mi) 유지
 - [x] 배포 후 `/health` 응답 정상
@@ -54,9 +54,9 @@
 ## 완료 기준
 - [x] 선택한 Cloud Run 대형 파일 최소 1개가 500라인 이하 또는 책임 분리 완료
 - [x] 관련 타입체크/테스트 통과
-- [ ] Docker preflight 통과
+- [x] Docker preflight 통과
 - [x] Cloud Run 배포 검증 로그(health 포함) 확보
-- [ ] 변경 이유/검증/롤백 경로가 최종 보고에 포함
+- [x] 변경 이유/검증/롤백 경로가 최종 보고에 포함
 
 ## 실행 결과 (2026-02-20)
 - 리팩토링:
@@ -447,6 +447,22 @@
   - `bash -n cloud-run/ai-engine/scripts/docker-preflight.sh` 통과
   - `cd cloud-run/ai-engine && DOCKER_BUILD_TIMEOUT_SECONDS=45 SKIP_RUN=true npm run docker:preflight` 종료 코드 `124`
   - 로그: `docker build timed out after 45s`
+
+## 실행 결과 추가 (2026-03-15, Docker preflight 복구)
+- 구조 변경:
+  - `cloud-run/ai-engine/Dockerfile`
+  - `builder` 단계의 `npm prune --production --legacy-peer-deps` 제거
+  - 신규 `prod-deps` stage에서 `npm ci --omit=dev --legacy-peer-deps --ignore-scripts`로 production 의존성만 별도 설치
+  - `runner`는 `prod-deps` stage의 `node_modules`만 복사
+- 결과:
+  - `npm prune` 정체 경로 제거
+  - `docker:preflight` build-only/full run 모두 성공
+- 검증:
+  - `cd cloud-run/ai-engine && DOCKER_BUILD_TIMEOUT_SECONDS=300 SKIP_RUN=true npm run docker:preflight` 통과
+  - `cd cloud-run/ai-engine && DOCKER_BUILD_TIMEOUT_SECONDS=300 npm run docker:preflight` 통과
+  - `health check passed: {"status":"ok","service":"ai-engine","version":"8.8.0",...}`
+  - `cd cloud-run/ai-engine && npm run type-check` 통과
+  - `cd cloud-run/ai-engine && npm run test` 통과 (56 files, 652 tests)
 
 ## 남은 500+ Cloud Run 우선 작업
 - 핵심 런타임 경로(우선):

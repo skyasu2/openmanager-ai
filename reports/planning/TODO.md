@@ -16,6 +16,7 @@
 | 진행 중 보류 항목 없음 | - | - | - |
 
 ### Completed (2026-03-15)
+- [x] P2: Cloud Run `docker:preflight` 복구 — `npm prune --production` 정체 제거, `prod-deps` stage 도입, local build-only/full preflight + `/health` 확인
 - [x] P3: Semantic Caching — exact miss 시 token-hash embedding 기반 유사 쿼리 캐시 fallback 추가, 저장 메타데이터/유사도 계산/단위 테스트 반영
 
 ### Test Coverage Gap (Closed)

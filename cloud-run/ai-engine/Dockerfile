@@ -48,6 +48,18 @@ RUN npm ci --legacy-peer-deps --ignore-scripts && \
     npm cache clean --force
 
 # ============================================================================
+# Stage 1.5: Production dependencies (avoid prune hang on Alpine/BuildKit path)
+# ============================================================================
+FROM node:${NODE_VERSION}-alpine${ALPINE_VERSION} AS prod-deps
+
+WORKDIR /app
+
+COPY package.json package-lock.json ./
+
+RUN npm ci --omit=dev --legacy-peer-deps --ignore-scripts && \
+    npm cache clean --force
+
+# ============================================================================
 # Stage 2: Build
 # ============================================================================
 FROM node:${NODE_VERSION}-alpine${ALPINE_VERSION} AS builder
@@ -65,9 +77,6 @@ COPY src/ ./src/
 
 # Build TypeScript
 RUN npm run build
-
-# Prune dev dependencies after build
-RUN npm prune --production --legacy-peer-deps
 
 # ============================================================================
 # Stage 3: Production (minimal)
@@ -115,8 +124,8 @@ COPY --from=deps /usr/bin/dumb-init /usr/bin/dumb-init
 RUN addgroup --system --gid 1001 nodejs && \
     adduser --system --uid 1001 --ingroup nodejs --home /app appuser
 
-# Copy only production dependencies from builder
-COPY --from=builder /app/node_modules ./node_modules
+# Copy only production dependencies from dedicated prod-deps stage
+COPY --from=prod-deps /app/node_modules ./node_modules
 COPY --from=builder /app/package.json ./
 
 # Copy built files
