@@ -163,8 +163,8 @@
     "ai-tools:check": "bash scripts/ai/health/check-ai-tools-updates.sh",
     "env:check": "ts-node scripts/env/check-env.ts",
     "dev:tmux:clean": "tmux kill-session -t openmanager-dev",
-    "storybook": "node node_modules/storybook/dist/bin/dispatcher.js dev -p 6006",
-    "storybook:build": "node node_modules/storybook/dist/bin/dispatcher.js build"
+    "storybook": "storybook dev -p 6006",
+    "storybook:build": "storybook build"
   },
   "dependencies": {
     "@ai-sdk/mistral": "^3.0.24",
@@ -223,7 +223,7 @@
     "@opentelemetry/sdk-node": "^0.212.0",
     "@playwright/test": "^1.58.2",
     "@storybook/addon-mcp": "^0.2.3",
-    "@storybook/addon-vitest": "^10.2.13",
+    "@storybook/addon-vitest": "^10.2.10",
     "@storybook/nextjs-vite": "^10.2.10",
     "@tailwindcss/postcss": "^4.2.1",
     "@tanstack/react-query-devtools": "^5.91.3",
@@ -252,7 +252,7 @@
     "postcss": "^8.5.8",
     "prettier-plugin-tailwindcss": "^0.7.2",
     "shadcn": "^3.8.5",
-    "storybook": "^10.2.19",
+    "storybook": "^10.2.10",
     "tailwindcss": "^4.2.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3",

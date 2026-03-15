@@ -4,7 +4,7 @@
 > Owner: dev-experience
 > Status: Active
 > Doc type: Reference
-> Last reviewed: 2026-03-02
+> Last reviewed: 2026-03-15
 > Canonical: docs/development/dev-tools.md
 > Tags: tooling,nodejs,biome
 
@@ -112,6 +112,34 @@ curl -I http://127.0.0.1:6006
 # Codex/Gemini에서 Storybook 작업이 필요할 때
 bash scripts/ai/agent-bridge.sh --to claude --mode query "스토리북 실행/점검 진행"
 ```
+
+#### 프레임워크 선택: `@storybook/nextjs-vite`
+
+`react-vite` 대신 `nextjs-vite`를 사용하는 이유:
+
+- Next.js App Router의 `useRouter`, `useSearchParams`, `usePathname` 등 내비게이션 훅을 **내장 mock으로 자동 지원** — 커스텀 mock 파일 불필요
+- `next/image`, `next/link`, `next/dynamic` 등 Next.js 특수 컴포넌트를 별도 설정 없이 렌더링 가능
+- `preview.ts`에서 `nextjs: { appDirectory: true }` 명시 불필요 (App Router가 기본값)
+
+#### navigation mock 설계: `queryEntries`
+
+query 상태를 `Record<string, string>` 대신 `Array<[string, string]>` 튜플 배열로 관리하는 이유:
+
+- `?tag=a&tag=b` 처럼 동일 키 중복값을 `Record`는 마지막 값만 보존 → 손실 발생
+- `URLSearchParams` 생성자가 튜플 배열을 직접 수락 — 변환 없이 전달 가능
+- `useSearchParams()` 반환값이 실제 Next.js 동작과 동일한 중복 키 의미론 유지
+
+#### AI가 수정 시 주의할 설정 (회귀 방지)
+
+| 항목 | 올바른 설정 | 잘못된 변형 |
+|------|------------|-------------|
+| storybook 실행 명령 | `storybook dev -p 6006` | `node node_modules/storybook/dist/bin/dispatcher.js dev -p 6006` |
+| 패키지 버전 기준 (2026-03-15) | `storybook@^10.2.10`, `@storybook/nextjs-vite@^10.2.10`, `@storybook/addon-vitest@^10.2.10` | npm 미배포 버전 지정 (`^10.2.19` 등) |
+| addon-mcp 버전 | `@storybook/addon-mcp@^0.2.3` (npm 공개 최신) | 존재하지 않는 버전 지정 (`^0.3.3`) |
+| query 타입 | `Array<[string, string]>` | `Record<string, string>` |
+| framework 설정 | `@storybook/nextjs-vite` | `@storybook/react-vite` (Next.js mock 미지원) |
+
+> **배경**: 2026-03-15 Codex가 nextjs-vite 마이그레이션 중 (1) storybook 명령을 `node_modules` 직접 경로로 변경, (2) 패키지 버전을 임의 수정한 이력이 있음. 이후 `storybook/@storybook/nextjs-vite/@storybook/addon-vitest`의 `^10.2.19` 및 `addon-mcp`의 `^0.3.3`를 지정하려다 npm `ETARGET/E404`가 발생했다. 위 표의 패턴을 의도적으로 유지할 것.
 
 ## Git Hooks
 
