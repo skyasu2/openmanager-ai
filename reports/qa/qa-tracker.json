@@ -2,15 +2,15 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-03-15T13:04:19.799Z"
+    "updatedAt": "2026-03-15T13:44:26.529Z"
   },
   "sequence": {
-    "nextRunNumber": 105
+    "nextRunNumber": 106
   },
   "summary": {
-    "totalRuns": 104,
-    "totalChecks": 766,
-    "totalPassed": 723,
+    "totalRuns": 105,
+    "totalChecks": 774,
+    "totalPassed": 731,
     "totalFailed": 39,
     "completionRate": 98.85,
     "completedItems": 172,
@@ -19,8 +19,8 @@
     "wontFixItems": 38,
     "expertDomainsTracked": 6,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260315-0104",
-    "lastRecordedAt": "2026-03-15T13:04:19.799Z"
+    "lastRunId": "QA-20260315-0105",
+    "lastRecordedAt": "2026-03-15T13:44:26.529Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -8992,6 +8992,60 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260315-0105",
+      "recordedAt": "2026-03-15T13:44:26.529Z",
+      "recordedAtKst": "2026-03-15 22:44:26 KST",
+      "title": "Production Playwright MCP QA - v8.9.0 Release Alignment Validation (2026-03-15)",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260315-0105.json",
+      "checks": {
+        "total": 8,
+        "passed": 8,
+        "failed": 0
+      },
+      "expertAssessments": [
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Playwright MCP 실브라우저로 landing, system boot, dashboard, AI streaming 경로를 프로덕션에서 재현 검증했다.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Cloud Run ai-engine-00250-56j 배포 직후 /health version 8.9.0, monitoring 403(unauthed expected), Vercel /api/health?service=ai 200을 교차 확인했다.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "AI 사이드바에서 '현재 모든 서버의 상태를 요약해줘' 질의에 Streaming 응답이 즉시 반환되고 서버 수/경고 서버 요약이 정상 표시됐다.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "observability-monitoring",
+          "domainName": "IT Monitoring & Observability SME",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "브라우저 network에서 /api/ai/supervisor/stream/v2 200, backend health 200, browser console error 0을 확인해 운영 경로 이상이 없음을 검증했다.",
+          "nextAction": ""
+        }
+      ],
+      "expertCount": 4,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -9000,16 +9054,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 64,
-      "appropriateCount": 61,
+      "seenCount": 65,
+      "appropriateCount": 62,
       "partialCount": 3,
       "inappropriateCount": 0,
       "improvementNeededCount": 11,
-      "lastRunId": "QA-20260315-0104",
-      "lastSeenAt": "2026-03-15T13:04:19.799Z",
+      "lastRunId": "QA-20260315-0105",
+      "lastSeenAt": "2026-03-15T13:44:26.529Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Reporter 경로에서 상단 새 보고서 버튼으로 incident-report 생성이 성공했고 제목, 추정 원인, 영향 서버, 권장 조치, 감지 패턴이 정상 렌더링됐다.",
+      "lastRationale": "AI 사이드바에서 '현재 모든 서버의 상태를 요약해줘' 질의에 Streaming 응답이 즉시 반환되고 서버 수/경고 서버 요약이 정상 표시됐다.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -9017,16 +9071,16 @@
       "domainName": "IT Monitoring & Observability SME",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 41,
-      "appropriateCount": 23,
+      "seenCount": 42,
+      "appropriateCount": 24,
       "partialCount": 18,
       "inappropriateCount": 0,
       "improvementNeededCount": 18,
-      "lastRunId": "QA-20260315-0104",
-      "lastSeenAt": "2026-03-15T13:04:19.799Z",
+      "lastRunId": "QA-20260315-0105",
+      "lastSeenAt": "2026-03-15T13:44:26.529Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "브라우저 network 기준 /api/ai/incident-report POST 200과 resource timing 약 2.6초, /api/health?service=ai 200이 함께 확인되어 운영 경로가 정상 응답했다.",
+      "lastRationale": "브라우저 network에서 /api/ai/supervisor/stream/v2 200, backend health 200, browser console error 0을 확인해 운영 경로 이상이 없음을 검증했다.",
       "lastNextAction": ""
     },
     "ai-security-reliability": {
@@ -9051,16 +9105,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 29,
-      "appropriateCount": 26,
+      "seenCount": 30,
+      "appropriateCount": 27,
       "partialCount": 3,
       "inappropriateCount": 0,
       "improvementNeededCount": 3,
-      "lastRunId": "QA-20260315-0104",
-      "lastSeenAt": "2026-03-15T13:04:19.799Z",
+      "lastRunId": "QA-20260315-0105",
+      "lastSeenAt": "2026-03-15T13:44:26.529Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "fresh landing -> system boot -> dashboard -> AI sidebar -> Reporter 생성 -> detail 확인 -> 탭 전환 복귀까지 실환경 사용자 흐름이 회귀 없이 완료됐다.",
+      "lastRationale": "Cloud Run ai-engine-00250-56j 배포 직후 /health version 8.9.0, monitoring 403(unauthed expected), Vercel /api/health?service=ai 200을 교차 확인했다.",
       "lastNextAction": ""
     },
     "test-automation": {
@@ -9068,16 +9122,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 63,
-      "appropriateCount": 59,
+      "seenCount": 64,
+      "appropriateCount": 60,
       "partialCount": 4,
       "inappropriateCount": 0,
       "improvementNeededCount": 5,
-      "lastRunId": "QA-20260315-0104",
-      "lastSeenAt": "2026-03-15T13:04:19.799Z",
+      "lastRunId": "QA-20260315-0105",
+      "lastSeenAt": "2026-03-15T13:44:26.529Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Playwright MCP 실브라우저 세션으로 Reporter 상단 액션, 상세 렌더링, 탭 전환 후 상태 유지, console error 0까지 재현 검증했다.",
+      "lastRationale": "Playwright MCP 실브라우저로 landing, system boot, dashboard, AI streaming 경로를 프로덕션에서 재현 검증했다.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {

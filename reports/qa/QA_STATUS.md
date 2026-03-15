@@ -1,15 +1,15 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-15 22:04:19 KST
+> Generated at: 2026-03-15 22:44:26 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 104 |
-| Total Checks | 766 |
-| Passed | 723 |
+| Total Runs | 105 |
+| Total Checks | 774 |
+| Passed | 731 |
 | Failed | 39 |
 | Completed Items | 172 |
 | Pending Items | 0 |
@@ -18,18 +18,18 @@
 | Expert Domains Tracked | 6 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 98.85% |
-| Last Run | QA-20260315-0104 (2026-03-15T13:04:19.799Z) |
+| Last Run | QA-20260315-0105 (2026-03-15T13:44:26.529Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260315-0104 (2026-03-15T13:04:19.799Z)
+Latest run: QA-20260315-0105 (2026-03-15T13:44:26.529Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
+| Test Automation Architect | appropriate | no | - |
+| DevOps / SRE Engineer | appropriate | no | - |
 | AI Quality Assurance Specialist | appropriate | no | - |
 | IT Monitoring & Observability SME | appropriate | no | - |
-| DevOps / SRE Engineer | appropriate | no | - |
-| Test Automation Architect | appropriate | no | - |
 
 ## Expert Domain Open Gaps
 
@@ -303,6 +303,7 @@ Latest run: QA-20260315-0104 (2026-03-15T13:04:19.799Z)
 
 | Run ID | Time (UTC) | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260315-0105 | 2026-03-15T13:44:26.529Z | Production Playwright MCP QA - v8.9.0 Release Alignment Validation (2026-03-15) | 8 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260315-0104 | 2026-03-15T13:04:19.799Z | Vercel Production QA - Incident Report route regression validation (2026-03-15) | 6 | 3 | 0 | 0 | 0 | 0 |
 | QA-20260315-0103 | 2026-03-15T12:13:45.149Z | Production Playwright MCP QA - Post-Cloud-Run Deploy Validation (2026-03-15) | 8 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260315-0102 | 2026-03-15T07:15:29.358Z | Storybook QA - lock sync + smoke/build validation | 3 | 3 | 0 | 0 | 0 | 0 |
@@ -322,5 +323,4 @@ Latest run: QA-20260315-0104 (2026-03-15T13:04:19.799Z)
 | QA-20260310-0088 | 2026-03-10T11:33:28.088Z | Vercel Production 종합 QA #88 - UI/UX + AI 어시스턴트 성능/답변수준 평가 | 21 | 0 | 1 | 0 | 0 | 2 |
 | QA-20260310-0087 | 2026-03-10T08:55:16.945Z | Vercel Playwright QA - production recheck after QA closure | 12 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260310-0086 | 2026-03-10T07:56:27.137Z | Vercel Analyst drilldown recheck - close normal server empty-state observation | 5 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260310-0085 | 2026-03-10T07:41:30.014Z | QA governance correction - track Analyst empty-state observation from run #84 | 1 | 0 | 1 | 0 | 0 | 1 |
 
