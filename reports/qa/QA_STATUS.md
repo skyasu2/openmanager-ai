@@ -1,15 +1,15 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-15 21:13:45 KST
+> Generated at: 2026-03-15 22:04:19 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 103 |
-| Total Checks | 760 |
-| Passed | 717 |
+| Total Runs | 104 |
+| Total Checks | 766 |
+| Passed | 723 |
 | Failed | 39 |
 | Completed Items | 172 |
 | Pending Items | 0 |
@@ -18,17 +18,18 @@
 | Expert Domains Tracked | 6 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 98.85% |
-| Last Run | QA-20260315-0103 (2026-03-15T12:13:45.149Z) |
+| Last Run | QA-20260315-0104 (2026-03-15T13:04:19.799Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260315-0103 (2026-03-15T12:13:45.149Z)
+Latest run: QA-20260315-0104 (2026-03-15T13:04:19.799Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| Test Automation Architect | appropriate | no | - |
-| DevOps / SRE Engineer | appropriate | no | - |
 | AI Quality Assurance Specialist | appropriate | no | - |
+| IT Monitoring & Observability SME | appropriate | no | - |
+| DevOps / SRE Engineer | appropriate | no | - |
+| Test Automation Architect | appropriate | no | - |
 
 ## Expert Domain Open Gaps
 
@@ -138,7 +139,7 @@ Latest run: QA-20260315-0103 (2026-03-15T12:13:45.149Z)
 - ai-chat-response-quality-v880-recheck-20260309: AI Chat 응답 품질 및 권고 재검증 (completed 4회, last QA-20260309-0068)
 - ai-friendly-template-todo-marker: Template TODO marker 분리 (TEMPLATE_TODO 적용) (completed 1회, last QA-20260226-0006)
 - ai-math-tools: AI 계산 도구(수식/통계/용량) 셋업 완료 (completed 1회, last QA-20260228-0023)
-- ai-reporter-success: Reporter Agent 보고서 생성 성공 (completed 2회, last QA-20260314-0097)
+- ai-reporter-success: Reporter Agent 보고서 생성 성공 (completed 3회, last QA-20260315-0104)
 - ai-server-timing-hosting-path-diagnosed: Server-Timing production/local hosting path difference diagnosed (completed 1회, last QA-20260310-0081)
 - ai-stream-timing-x-headers-production: AI Chat streaming route exposes X-AI timing headers on production (completed 1회, last QA-20260310-0080)
 - ai-summary-chat-streaming-path: AI summary chat query uses streaming path on production (completed 2회, last QA-20260310-0080)
@@ -234,8 +235,8 @@ Latest run: QA-20260315-0103 (2026-03-15T12:13:45.149Z)
 - reporter-empty-cta-generate-v880-recheck-20260309: Reporter empty state CTA 생성 경로 재검증 (completed 4회, last QA-20260309-0068)
 - reporter-generate-detail-v879: Reporter 보고서 생성 및 상세보기 (completed 1회, last QA-20260306-0052)
 - reporter-generate-detail-v880: Reporter 생성 및 상세 렌더링 검증 (completed 2회, last QA-20260309-0069)
-- reporter-primary-generate-button-empty-state: Reporter 상단 생성 버튼 empty state 동작 정합성 (completed 1회, last QA-20260309-0064)
-- reporter-state-loss-on-tab-switch: Reporter 탭 전환 시 생성 결과 상태 유지 (completed 0회, last QA-20260308-0059)
+- reporter-primary-generate-button-empty-state: Reporter 상단 생성 버튼 empty state 동작 정합성 (completed 2회, last QA-20260315-0104)
+- reporter-state-loss-on-tab-switch: Reporter 탭 전환 시 생성 결과 상태 유지 (completed 1회, last QA-20260315-0104)
 - storybook-build-dev-smoke-pass: storybook build 및 dev smoke-test 통과 (completed 1회, last QA-20260315-0099)
 - storybook-build-longrun-success: Storybook build 장시간 실행 성공 확인 (completed 1회, last QA-20260315-0102)
 - storybook-lock-sync-10-2-10: Storybook lockfile 버전 동기화 (completed 1회, last QA-20260315-0102)
@@ -302,6 +303,7 @@ Latest run: QA-20260315-0103 (2026-03-15T12:13:45.149Z)
 
 | Run ID | Time (UTC) | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260315-0104 | 2026-03-15T13:04:19.799Z | Vercel Production QA - Incident Report route regression validation (2026-03-15) | 6 | 3 | 0 | 0 | 0 | 0 |
 | QA-20260315-0103 | 2026-03-15T12:13:45.149Z | Production Playwright MCP QA - Post-Cloud-Run Deploy Validation (2026-03-15) | 8 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260315-0102 | 2026-03-15T07:15:29.358Z | Storybook QA - lock sync + smoke/build validation | 3 | 3 | 0 | 0 | 0 | 0 |
 | QA-20260315-0101 | 2026-03-15T06:21:02.856Z | QA governance - close resolved security gap and split security backlog | 3 | 1 | 0 | 2 | 0 | 0 |
@@ -321,5 +323,4 @@ Latest run: QA-20260315-0103 (2026-03-15T12:13:45.149Z)
 | QA-20260310-0087 | 2026-03-10T08:55:16.945Z | Vercel Playwright QA - production recheck after QA closure | 12 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260310-0086 | 2026-03-10T07:56:27.137Z | Vercel Analyst drilldown recheck - close normal server empty-state observation | 5 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260310-0085 | 2026-03-10T07:41:30.014Z | QA governance correction - track Analyst empty-state observation from run #84 | 1 | 0 | 1 | 0 | 0 | 1 |
-| QA-20260310-0084 | 2026-03-10T06:39:47.611Z | Vercel Playwright QA - Production gate after dependency merges | 11 | 0 | 0 | 0 | 0 | 0 |
 

@@ -2,15 +2,15 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-03-15T12:13:45.149Z"
+    "updatedAt": "2026-03-15T13:04:19.799Z"
   },
   "sequence": {
-    "nextRunNumber": 104
+    "nextRunNumber": 105
   },
   "summary": {
-    "totalRuns": 103,
-    "totalChecks": 760,
-    "totalPassed": 717,
+    "totalRuns": 104,
+    "totalChecks": 766,
+    "totalPassed": 723,
     "totalFailed": 39,
     "completionRate": 98.85,
     "completedItems": 172,
@@ -19,8 +19,8 @@
     "wontFixItems": 38,
     "expertDomainsTracked": 6,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260315-0103",
-    "lastRecordedAt": "2026-03-15T12:13:45.149Z"
+    "lastRunId": "QA-20260315-0104",
+    "lastRecordedAt": "2026-03-15T13:04:19.799Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -3107,22 +3107,22 @@
       "status": "completed",
       "firstSeenRunId": "QA-20260308-0056",
       "firstSeenAt": "2026-03-08T01:15:57.800Z",
-      "lastSeenRunId": "QA-20260308-0059",
-      "lastSeenAt": "2026-03-08T07:28:38.016Z",
-      "seenCount": 3,
-      "completedCount": 0,
+      "lastSeenRunId": "QA-20260315-0104",
+      "lastSeenAt": "2026-03-15T13:04:19.799Z",
+      "seenCount": 4,
+      "completedCount": 1,
       "pendingCount": 3,
       "deferredCount": 0,
       "wontFixCount": 0,
       "aliases": [],
       "owner": "",
-      "lastEvidence": "",
+      "lastEvidence": "Reporter 생성 후 AI Chat으로 전환했다가 복귀해도 카운트와 상세 펼침 상태가 유지됨",
       "lastNote": "Reporter에서 생성 후 AI Chat으로 이동했다가 돌아오면 목록/카운트가 0으로 초기화됨",
       "isBlocking": true,
-      "isBlockingExplicit": true,
+      "isBlockingExplicit": false,
       "overengineeringScope": "",
       "lastPolicyNote": "",
-      "lastStatusChangeAt": "2026-03-08T07:28:38.016Z"
+      "lastStatusChangeAt": "2026-03-15T13:04:19.799Z"
     },
     "blocked-prompt-raw-json-exposure": {
       "id": "blocked-prompt-raw-json-exposure",
@@ -3275,22 +3275,22 @@
       "status": "completed",
       "firstSeenRunId": "QA-20260308-0058",
       "firstSeenAt": "2026-03-08T05:17:03.949Z",
-      "lastSeenRunId": "QA-20260309-0064",
-      "lastSeenAt": "2026-03-09T10:22:08.080Z",
-      "seenCount": 4,
-      "completedCount": 1,
+      "lastSeenRunId": "QA-20260315-0104",
+      "lastSeenAt": "2026-03-15T13:04:19.799Z",
+      "seenCount": 5,
+      "completedCount": 2,
       "pendingCount": 1,
       "deferredCount": 0,
       "wontFixCount": 2,
       "aliases": [],
       "owner": "",
-      "lastEvidence": "2026-03-09 Vercel 실환경에서 Reporter 상단 '새 보고서' 버튼 클릭 시 즉시 보고서가 생성되고 전체/경고 카운트가 0->1로 증가함",
+      "lastEvidence": "빈 상태에서 상단 '새 보고서' 버튼 클릭 직후 전체(1)/경고(1)로 증가하고 보고서 카드가 렌더링됨",
       "lastNote": "empty state에서 상단 '보고서 생성' 클릭 시 결과가 생성되지 않고, '첫 보고서 생성하기' CTA에서만 생성됨",
       "isBlocking": true,
-      "isBlockingExplicit": true,
+      "isBlockingExplicit": false,
       "overengineeringScope": "",
       "lastPolicyNote": "",
-      "lastStatusChangeAt": "2026-03-09T10:22:08.080Z"
+      "lastStatusChangeAt": "2026-03-15T13:04:19.799Z"
     },
     "dashboard-health-v880-quality-recheck": {
       "id": "dashboard-health-v880-quality-recheck",
@@ -4403,22 +4403,22 @@
       "status": "completed",
       "firstSeenRunId": "QA-20260314-0096",
       "firstSeenAt": "2026-03-14T00:10:58.614Z",
-      "lastSeenRunId": "QA-20260314-0097",
-      "lastSeenAt": "2026-03-14T03:21:46.717Z",
-      "seenCount": 2,
-      "completedCount": 2,
+      "lastSeenRunId": "QA-20260315-0104",
+      "lastSeenAt": "2026-03-15T13:04:19.799Z",
+      "seenCount": 3,
+      "completedCount": 3,
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0,
       "aliases": [],
       "owner": "",
-      "lastEvidence": "API WAS 서버 CPU 과부하 경고, 추정 원인/영향 서버/MD 복사 버튼 노출, /api/ai/incident-report 200",
+      "lastEvidence": "상단 '새 보고서' 버튼으로 '웹 및 API 서버 CPU 사용률 경고' 보고서 생성 성공, /api/ai/incident-report 200",
       "lastNote": "",
       "isBlocking": true,
       "isBlockingExplicit": false,
       "overengineeringScope": "",
       "lastPolicyNote": "",
-      "lastStatusChangeAt": "2026-03-14T03:21:46.717Z"
+      "lastStatusChangeAt": "2026-03-15T13:04:19.799Z"
     },
     "ai-analyst-success": {
       "id": "ai-analyst-success",
@@ -8938,6 +8938,60 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260315-0104",
+      "recordedAt": "2026-03-15T13:04:19.799Z",
+      "recordedAtKst": "2026-03-15 22:04:19 KST",
+      "title": "Vercel Production QA - Incident Report route regression validation (2026-03-15)",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260315-0104.json",
+      "checks": {
+        "total": 6,
+        "passed": 6,
+        "failed": 0
+      },
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Reporter 경로에서 상단 새 보고서 버튼으로 incident-report 생성이 성공했고 제목, 추정 원인, 영향 서버, 권장 조치, 감지 패턴이 정상 렌더링됐다.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "observability-monitoring",
+          "domainName": "IT Monitoring & Observability SME",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "브라우저 network 기준 /api/ai/incident-report POST 200과 resource timing 약 2.6초, /api/health?service=ai 200이 함께 확인되어 운영 경로가 정상 응답했다.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "fresh landing -> system boot -> dashboard -> AI sidebar -> Reporter 생성 -> detail 확인 -> 탭 전환 복귀까지 실환경 사용자 흐름이 회귀 없이 완료됐다.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Playwright MCP 실브라우저 세션으로 Reporter 상단 액션, 상세 렌더링, 탭 전환 후 상태 유지, console error 0까지 재현 검증했다.",
+          "nextAction": ""
+        }
+      ],
+      "expertCount": 4,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 3,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -8946,16 +9000,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 63,
-      "appropriateCount": 60,
+      "seenCount": 64,
+      "appropriateCount": 61,
       "partialCount": 3,
       "inappropriateCount": 0,
       "improvementNeededCount": 11,
-      "lastRunId": "QA-20260315-0103",
-      "lastSeenAt": "2026-03-15T12:13:45.149Z",
+      "lastRunId": "QA-20260315-0104",
+      "lastSeenAt": "2026-03-15T13:04:19.799Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "AI 사이드바, 스타터 프롬프트, 요약 응답 품질을 프로덕션 환경에서 직접 확인했다.",
+      "lastRationale": "Reporter 경로에서 상단 새 보고서 버튼으로 incident-report 생성이 성공했고 제목, 추정 원인, 영향 서버, 권장 조치, 감지 패턴이 정상 렌더링됐다.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -8963,16 +9017,16 @@
       "domainName": "IT Monitoring & Observability SME",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 40,
-      "appropriateCount": 22,
+      "seenCount": 41,
+      "appropriateCount": 23,
       "partialCount": 18,
       "inappropriateCount": 0,
       "improvementNeededCount": 18,
-      "lastRunId": "QA-20260315-0100",
-      "lastSeenAt": "2026-03-15T05:59:40.849Z",
+      "lastRunId": "QA-20260315-0104",
+      "lastSeenAt": "2026-03-15T13:04:19.799Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "대시보드 지표(15대 서버, 온라인 14/경고 1)와 AI 요약 응답의 핵심 수치가 일치했다.",
+      "lastRationale": "브라우저 network 기준 /api/ai/incident-report POST 200과 resource timing 약 2.6초, /api/health?service=ai 200이 함께 확인되어 운영 경로가 정상 응답했다.",
       "lastNextAction": ""
     },
     "ai-security-reliability": {
@@ -8997,16 +9051,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 28,
-      "appropriateCount": 25,
+      "seenCount": 29,
+      "appropriateCount": 26,
       "partialCount": 3,
       "inappropriateCount": 0,
       "improvementNeededCount": 3,
-      "lastRunId": "QA-20260315-0103",
-      "lastSeenAt": "2026-03-15T12:13:45.149Z",
+      "lastRunId": "QA-20260315-0104",
+      "lastSeenAt": "2026-03-15T13:04:19.799Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Cloud Run 실배포 직후 Vercel 프런트엔드와 헬스 엔드포인트를 연계 검증해 운영 게이트를 충족했다.",
+      "lastRationale": "fresh landing -> system boot -> dashboard -> AI sidebar -> Reporter 생성 -> detail 확인 -> 탭 전환 복귀까지 실환경 사용자 흐름이 회귀 없이 완료됐다.",
       "lastNextAction": ""
     },
     "test-automation": {
@@ -9014,16 +9068,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 62,
-      "appropriateCount": 58,
+      "seenCount": 63,
+      "appropriateCount": 59,
       "partialCount": 4,
       "inappropriateCount": 0,
       "improvementNeededCount": 5,
-      "lastRunId": "QA-20260315-0103",
-      "lastSeenAt": "2026-03-15T12:13:45.149Z",
+      "lastRunId": "QA-20260315-0104",
+      "lastSeenAt": "2026-03-15T13:04:19.799Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Playwright MCP로 실배포 후 사용자 경로와 AI 응답 경로를 재현 가능하게 검증했다.",
+      "lastRationale": "Playwright MCP 실브라우저 세션으로 Reporter 상단 액션, 상세 렌더링, 탭 전환 후 상태 유지, console error 0까지 재현 검증했다.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {
