@@ -104,6 +104,11 @@ npm run storybook
 # CI/상태 확인 기준
 npm run storybook:build
 
+# CI 안정화 빌드 (비대화형 + 타임아웃)
+npm run storybook:build:ci
+# 타임아웃 조정 (초 단위, 기본 900)
+STORYBOOK_BUILD_TIMEOUT_SEC=480 npm run storybook:build:ci
+
 # 빠른 기동 스모크(동적 포트, 비대화형)
 npm run storybook:smoke
 

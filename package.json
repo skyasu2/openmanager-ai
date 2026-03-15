@@ -165,6 +165,7 @@
     "dev:tmux:clean": "tmux kill-session -t openmanager-dev",
     "storybook": "storybook dev -p 6006",
     "storybook:build": "storybook build",
+    "storybook:build:ci": "bash scripts/storybook/build-ci.sh",
     "storybook:smoke": "bash scripts/storybook/smoke.sh"
   },
   "dependencies": {
