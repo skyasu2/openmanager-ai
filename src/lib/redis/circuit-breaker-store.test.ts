@@ -2,8 +2,8 @@
  * @vitest-environment node
  */
 
-import type { CircuitState } from '@/lib/ai/circuit-breaker';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import type { CircuitState } from '@/lib/ai/circuit-breaker';
 
 const {
   mockGetRedisClient,
@@ -57,7 +57,9 @@ describe('RedisCircuitBreakerStore', () => {
     mockGetRedisClient.mockReturnValue(redis);
     mockRunRedisWithTimeout.mockRejectedValueOnce(new Error('timed out'));
 
-    const { RedisCircuitBreakerStore } = await import('./circuit-breaker-store');
+    const { RedisCircuitBreakerStore } = await import(
+      './circuit-breaker-store'
+    );
     const store = new RedisCircuitBreakerStore();
 
     await expect(store.getState('groq')).resolves.toBeNull();
@@ -84,7 +86,9 @@ describe('RedisCircuitBreakerStore', () => {
     mockGetRedisClient.mockReturnValue(redis);
     mockRunRedisWithTimeout.mockRejectedValueOnce(new Error('timed out'));
 
-    const { RedisCircuitBreakerStore } = await import('./circuit-breaker-store');
+    const { RedisCircuitBreakerStore } = await import(
+      './circuit-breaker-store'
+    );
     const store = new RedisCircuitBreakerStore();
 
     await expect(store.setState('groq', BASE_STATE)).resolves.toBeUndefined();
@@ -120,11 +124,17 @@ describe('RedisCircuitBreakerStore', () => {
     mockGetRedisClient.mockReturnValue(redis);
     mockRunRedisWithTimeout.mockRejectedValueOnce(new Error('timed out'));
 
-    const { RedisCircuitBreakerStore } = await import('./circuit-breaker-store');
+    const { RedisCircuitBreakerStore } = await import(
+      './circuit-breaker-store'
+    );
     const store = new RedisCircuitBreakerStore();
 
     await expect(store.incrementFailures('groq')).resolves.toBe(0);
-    expect(pipeline.hincrby).toHaveBeenCalledWith('circuit:groq', 'failures', 1);
+    expect(pipeline.hincrby).toHaveBeenCalledWith(
+      'circuit:groq',
+      'failures',
+      1
+    );
     expect(pipeline.expire).toHaveBeenCalledWith('circuit:groq', 300);
     expect(mockRunRedisWithTimeout).toHaveBeenCalledWith(
       'PIPELINE incrementFailures circuit:groq',
@@ -144,7 +154,9 @@ describe('RedisCircuitBreakerStore', () => {
     mockGetRedisClient.mockReturnValue(redis);
     mockRunRedisWithTimeout.mockRejectedValueOnce(new Error('timed out'));
 
-    const { RedisCircuitBreakerStore } = await import('./circuit-breaker-store');
+    const { RedisCircuitBreakerStore } = await import(
+      './circuit-breaker-store'
+    );
     const store = new RedisCircuitBreakerStore();
 
     await expect(store.resetState('groq')).resolves.toBeUndefined();

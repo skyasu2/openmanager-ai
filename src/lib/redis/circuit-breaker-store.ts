@@ -21,11 +21,7 @@ import type {
   IDistributedStateStore,
 } from '@/lib/ai/circuit-breaker';
 import { logger } from '@/lib/logging';
-import {
-  getRedisClient,
-  isRedisEnabled,
-  runRedisWithTimeout,
-} from './client';
+import { getRedisClient, isRedisEnabled, runRedisWithTimeout } from './client';
 
 // ============================================================================
 // Constants
