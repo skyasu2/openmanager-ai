@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-03-15 KST
+**Last Updated**: 2026-03-16 KST
 
 ## Active Tasks
 
@@ -13,6 +13,12 @@
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
 | 진행 중 보류 항목 없음 | - | - | - |
+
+## Backlog
+
+| Task | Priority | Notes |
+|------|----------|-------|
+| Next.js dev/Turbopack 중첩 App Router 404 재현 조사 | P3 | `next dev`에서 `/api/ai/*` 등 2-depth+ route가 `_not-found` HTML로 응답. 1-depth는 정상. `NEXT_PRIVATE_TURBOPACK=false` 비교 + 재현 최소 케이스 분리 → 재현 시 Next.js GitHub 이슈 리포트 검토 |
 
 ### Completed (2026-03-15)
 - [x] P3: Cloud Run 대형 파일 리팩토링 Phase 3 완료 — `incident-report` route + `ai-proxy.config.ts` 책임 분리 마감

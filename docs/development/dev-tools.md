@@ -112,7 +112,37 @@ npm run test:e2e:responsive # 데스크톱+모바일 통합 회귀
 - 중첩 App Route API의 로컬 `404`는 **즉시 제품 회귀로 판정하지 않음**
 - AI 경로/릴리즈 게이트는 기존 원칙대로 **Vercel + Playwright MCP**를 우선 사용
 - 로컬에서는 `vitest` 계약 테스트와 route unit test를 먼저 확인
-- 필요 시 `npm run build && npm run start` 같은 production-like 경로로 추가 검증
+
+로컬 production-like 검증이 필요한 경우 아래 스모크 스크립트를 사용합니다.
+
+### 로컬 API 스모크 (`local:smoke`)
+
+`next build` + `next start` 기반으로 nested route 404를 검증합니다.
+`next dev`에서만 재현되는 오탐을 걸러내는 목적입니다.
+
+```bash
+# .next 빌드가 이미 있으면 스킵 (빠름)
+npm run local:smoke
+
+# 강제 재빌드 후 검증 (느림, ~2~3분)
+npm run local:smoke:rebuild
+
+# 개별 옵션
+bash scripts/dev/local-api-smoke.sh --port=3099 --timeout=10
+```
+
+검사 항목:
+
+| 구분 | 경로 | 기대 결과 |
+|------|------|----------|
+| Baseline | `/api/health` | 200 |
+| Baseline | `/api/system`, `/api/csrf-token`, `/api/database` | non-404 |
+| Nested (주의) | `/api/ai/supervisor` | non-404 |
+| Nested (주의) | `/api/ai/supervisor/stream/v2` | non-404 |
+| Nested (주의) | `/api/ai/jobs`, `/api/servers/next` | non-404 |
+| Nested (주의) | `/api/ai/incident-report`, `/api/security/csp-report` | non-404 |
+
+> **판정 기준**: `404` = route 미존재(실패), `4xx/5xx` = route 존재하나 인증·메서드 오류(정상)
 
 이 메모는 로컬 dev 서버의 관찰 결과를 기록한 것이며, Vercel production 동작을 대체하지 않습니다.
 

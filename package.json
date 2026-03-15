@@ -166,7 +166,9 @@
     "storybook": "storybook dev -p 6006",
     "storybook:build": "storybook build",
     "storybook:build:ci": "bash scripts/storybook/build-ci.sh",
-    "storybook:smoke": "bash scripts/storybook/smoke.sh"
+    "storybook:smoke": "bash scripts/storybook/smoke.sh",
+    "local:smoke": "bash scripts/dev/local-api-smoke.sh",
+    "local:smoke:rebuild": "bash scripts/dev/local-api-smoke.sh --rebuild"
   },
   "dependencies": {
     "@ai-sdk/mistral": "^3.0.24",
