@@ -9,6 +9,7 @@ IMAGE_TAG="${IMAGE_TAG:-openmanager-ai-engine:preflight}"
 CONTAINER_NAME="${CONTAINER_NAME:-ai-engine-preflight}"
 HEALTH_PORT="${HEALTH_PORT:-18080}"
 SKIP_RUN="${SKIP_RUN:-false}"
+DOCKER_BUILD_TIMEOUT_SECONDS="${DOCKER_BUILD_TIMEOUT_SECONDS:-180}"
 
 DOCKER_MODE=""
 
@@ -57,6 +58,18 @@ log() {
   echo "[docker-preflight] $*"
 }
 
+run_with_timeout() {
+  local timeout_seconds="$1"
+  shift
+
+  if [ "$timeout_seconds" -le 0 ] || ! command -v timeout >/dev/null 2>&1; then
+    "$@"
+    return $?
+  fi
+
+  timeout --foreground "${timeout_seconds}s" "$@"
+}
+
 cleanup() {
   if [ "$SKIP_RUN" = "true" ]; then
     return
@@ -89,11 +102,23 @@ fi
 cd "$ENGINE_DIR"
 ensure_build_assets
 
+log "building image with timeout ${DOCKER_BUILD_TIMEOUT_SECONDS}s"
+set +e
 if [ "$DOCKER_MODE" = "wsl" ]; then
-  docker build -t "$IMAGE_TAG" .
+  run_with_timeout "$DOCKER_BUILD_TIMEOUT_SECONDS" docker build -t "$IMAGE_TAG" .
+  build_status=$?
 else
   WINDOWS_ENGINE_DIR="$(wslpath -w "$ENGINE_DIR")"
-  cmd.exe /c docker build -t "$IMAGE_TAG" "$WINDOWS_ENGINE_DIR"
+  run_with_timeout "$DOCKER_BUILD_TIMEOUT_SECONDS" cmd.exe /c docker build -t "$IMAGE_TAG" "$WINDOWS_ENGINE_DIR"
+  build_status=$?
+fi
+set -e
+
+if [ "$build_status" -ne 0 ]; then
+  if [ "$build_status" -eq 124 ]; then
+    log "docker build timed out after ${DOCKER_BUILD_TIMEOUT_SECONDS}s"
+  fi
+  exit "$build_status"
 fi
 
 if [ "$SKIP_RUN" = "true" ]; then

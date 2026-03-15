@@ -2,7 +2,7 @@
 
 - 상태: Active (Phase 0~2 완료, Phase 3 보류 — Cloud Run ai-engine 500+ 경고 해소)
 - 작성일: 2026-02-20
-- 갱신일: 2026-03-05
+- 갱신일: 2026-03-15
 - 목표: `cloud-run/ai-engine` 중심의 500+ 라인 파일을 단계적으로 분할해 유지보수성을 높이고, 최종적으로 Docker/Cloud Run 배포까지 안전하게 연결한다.
 
 ## 배경
@@ -28,10 +28,10 @@
 - [x] Phase 1: Cloud Run 1차 분할 리팩토링 (저위험)
   - 대상 1개 파일에서 순수 유틸/상수/헬퍼를 별도 모듈로 분리
   - 공개 인터페이스 유지(호출부 변경 최소화)
-- [ ] Phase 2: Cloud Run 2차 분할 리팩토링 (핵심 경로)
+- [x] Phase 2: Cloud Run 2차 분할 리팩토링 (핵심 경로)
   - 모델 선택/폴백/헬스체크 책임을 모듈 단위로 분리
   - 단위 테스트/스냅샷 테스트 보강
-- [ ] Phase 3: BFF 연계 파일 정리
+- [ ] Phase 3: BFF 연계 파일 정리 (On Hold)
   - route handler에서 정책/파싱/fallback 로직 분리
   - Zod 스키마/응답 타입 경계 명확화
 - [x] Phase 4: 배포 전 검증
@@ -431,6 +431,22 @@
   - Revision: `ai-engine-00219-jv9` (traffic 100%)
   - URL: `https://ai-engine-jdhrhws7ia-an.a.run.app`
   - health check: HTTP 200
+
+## 실행 결과 추가 (2026-03-15, Docker preflight 재검증)
+- 사전 점검:
+  - `gcloud config get-value project` = `openmanager-free-tier`
+  - `docker ps` 성공 (WSL에서 daemon 접근 가능)
+  - `test -f public/data/otel-data/resource-catalog.json` 확인
+- 재현:
+  - `cd cloud-run/ai-engine && SKIP_RUN=true npm run docker:preflight` 재실행 시 `npm prune --production --legacy-peer-deps` 이후 반환 지연 재현
+- 대응:
+  - `cloud-run/ai-engine/scripts/docker-preflight.sh`에 `DOCKER_BUILD_TIMEOUT_SECONDS` 추가 (기본 `180`, `0`이면 비활성화)
+  - Docker build가 timeout에 걸리면 exit `124`와 명시 로그를 남기도록 변경
+  - 운영 배포 우회 정책은 유지: `LOCAL_DOCKER_PREFLIGHT=false`
+- 검증:
+  - `bash -n cloud-run/ai-engine/scripts/docker-preflight.sh` 통과
+  - `cd cloud-run/ai-engine && DOCKER_BUILD_TIMEOUT_SECONDS=45 SKIP_RUN=true npm run docker:preflight` 종료 코드 `124`
+  - 로그: `docker build timed out after 45s`
 
 ## 남은 500+ Cloud Run 우선 작업
 - 핵심 런타임 경로(우선):
