@@ -9,13 +9,13 @@ type AppRouterInstance = {
 
 type NavigationState = {
   pathname: string;
-  query: Record<string, string>;
+  queryEntries: Array<[string, string]>;
   segments: Array<string | [string, string]>;
 };
 
 const DEFAULT_NAVIGATION_STATE: NavigationState = {
   pathname: '/',
-  query: {},
+  queryEntries: [],
   segments: [],
 };
 
@@ -31,17 +31,25 @@ function getNavigationState(): NavigationState {
 }
 
 function setPathnameFromHref(href: string): void {
-  const [pathnameWithQuery, hashFragment] = href.split('#');
-  const [pathname, queryString] = (pathnameWithQuery ?? '').split('?');
-  const nextQuery = new URLSearchParams(queryString ?? '');
-  if (hashFragment) {
-    nextQuery.set('#', hashFragment);
+  let pathname = '/';
+  let queryEntries: Array<[string, string]> = [];
+
+  try {
+    const parsed = new URL(href, 'https://storybook.local');
+    pathname = parsed.pathname || '/';
+    queryEntries = Array.from(parsed.searchParams.entries());
+  } catch {
+    const [pathnameWithQuery] = href.split('#');
+    const [fallbackPathname, queryString] = (pathnameWithQuery ?? '').split('?');
+    pathname =
+      fallbackPathname && fallbackPathname.length > 0 ? fallbackPathname : '/';
+    queryEntries = Array.from(new URLSearchParams(queryString ?? '').entries());
   }
 
   globalThis.__STORYBOOK_NEXT_NAVIGATION__ = {
     ...getNavigationState(),
-    pathname: pathname && pathname.length > 0 ? pathname : '/',
-    query: Object.fromEntries(nextQuery.entries()),
+    pathname,
+    queryEntries,
   };
 }
 
@@ -62,7 +70,7 @@ export function usePathname(): string {
 
 export function useSearchParams(): URLSearchParams {
   const state = getNavigationState();
-  return new URLSearchParams(state.query);
+  return new URLSearchParams(state.queryEntries);
 }
 
 export function useParams<T extends Record<string, string | string[]>>(): T {

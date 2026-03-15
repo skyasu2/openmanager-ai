@@ -43,7 +43,7 @@ sb.mock(import('../src/services/system/SystemInactivityService.ts'));
 
 type NextjsNavigationParam = {
   pathname?: string;
-  query?: Record<string, string>;
+  query?: Record<string, string | string[]>;
   segments?: Array<string | [string, string]>;
 };
 
@@ -56,9 +56,28 @@ declare global {
   // eslint-disable-next-line no-var
   var __STORYBOOK_NEXT_NAVIGATION__: {
     pathname: string;
-    query: Record<string, string>;
+    queryEntries: Array<[string, string]>;
     segments: Array<string | [string, string]>;
   };
+}
+
+function toQueryEntries(
+  query: Record<string, string | string[]> | undefined
+): Array<[string, string]> {
+  if (!query) return [];
+
+  const entries: Array<[string, string]> = [];
+  Object.entries(query).forEach(([key, value]) => {
+    if (Array.isArray(value)) {
+      value.forEach((item) => {
+        entries.push([key, item]);
+      });
+      return;
+    }
+    entries.push([key, value]);
+  });
+
+  return entries;
 }
 
 const withNextjsNavigationParameters: Decorator = (Story, context) => {
@@ -67,7 +86,7 @@ const withNextjsNavigationParameters: Decorator = (Story, context) => {
 
   globalThis.__STORYBOOK_NEXT_NAVIGATION__ = {
     pathname: navigation.pathname ?? '/',
-    query: navigation.query ?? {},
+    queryEntries: toQueryEntries(navigation.query),
     segments: navigation.segments ?? [],
   };
 
