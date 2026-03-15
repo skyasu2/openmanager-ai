@@ -15,7 +15,7 @@ import {
   LEGACY_GUEST_SESSION_COOKIE_KEY,
 } from '@/lib/auth/guest-session-utils';
 import { recordLoginEvent } from '@/lib/auth/login-audit';
-import { getRedisClient } from '@/lib/redis/client';
+import { getRedisClient, runRedisWithTimeout } from '@/lib/redis/client';
 import { rateLimiters, withRateLimit } from '@/lib/security/rate-limiter';
 import { withCSRFProtection } from '@/utils/security/csrf';
 
@@ -35,6 +35,7 @@ const GUEST_PIN_FAILURE_WINDOW_SECONDS = 15 * 60;
 const GUEST_PIN_FAIL_PREFIX = 'auth:guest:pin:fail';
 const GUEST_PIN_LOCK_PREFIX = 'auth:guest:pin:lock';
 const GUEST_SESSION_COOKIE_MAX_AGE_SECONDS = 7 * 24 * 60 * 60;
+const REDIS_TIMEOUT_MS = 800;
 
 interface LocalPinFailureState {
   count: number;
@@ -97,7 +98,13 @@ async function getPinLockRemaining(identity: string): Promise<number> {
 
   if (redis) {
     try {
-      const ttl = Number(await redis.ttl(lockKey));
+      const ttl = Number(
+        await runRedisWithTimeout(
+          `guest-login TTL ${lockKey}`,
+          () => redis.ttl(lockKey),
+          { timeoutMs: REDIS_TIMEOUT_MS }
+        )
+      );
       if (Number.isFinite(ttl) && ttl > 0) {
         return ttl;
       }
@@ -121,19 +128,37 @@ async function registerPinFailure(identity: string): Promise<{
 
   if (redis) {
     try {
-      const count = Number(await redis.incr(failKey));
+      const count = Number(
+        await runRedisWithTimeout(
+          `guest-login INCR ${failKey}`,
+          () => redis.incr(failKey),
+          { timeoutMs: REDIS_TIMEOUT_MS }
+        )
+      );
       if (!Number.isFinite(count) || count <= 0) {
         throw new Error('Invalid redis INCR result');
       }
 
       // 연속 실패는 유한 관찰 윈도우(15분)에서만 누적
       if (count <= 1) {
-        await redis.expire(failKey, GUEST_PIN_FAILURE_WINDOW_SECONDS);
+        await runRedisWithTimeout(
+          `guest-login EXPIRE ${failKey}`,
+          () => redis.expire(failKey, GUEST_PIN_FAILURE_WINDOW_SECONDS),
+          { timeoutMs: REDIS_TIMEOUT_MS }
+        );
       }
 
       if (count >= GUEST_PIN_MAX_FAILURES) {
-        await redis.set(lockKey, '1', { ex: GUEST_PIN_LOCK_SECONDS });
-        await redis.del(failKey);
+        await runRedisWithTimeout(
+          `guest-login SET ${lockKey}`,
+          () => redis.set(lockKey, '1', { ex: GUEST_PIN_LOCK_SECONDS }),
+          { timeoutMs: REDIS_TIMEOUT_MS }
+        );
+        await runRedisWithTimeout(
+          `guest-login DEL ${failKey}`,
+          () => redis.del(failKey),
+          { timeoutMs: REDIS_TIMEOUT_MS }
+        );
 
         return {
           count,
@@ -143,9 +168,19 @@ async function registerPinFailure(identity: string): Promise<{
         };
       }
 
-      const ttl = Number(await redis.ttl(failKey));
+      const ttl = Number(
+        await runRedisWithTimeout(
+          `guest-login TTL ${failKey}`,
+          () => redis.ttl(failKey),
+          { timeoutMs: REDIS_TIMEOUT_MS }
+        )
+      );
       if (!Number.isFinite(ttl) || ttl <= 0) {
-        await redis.expire(failKey, GUEST_PIN_FAILURE_WINDOW_SECONDS);
+        await runRedisWithTimeout(
+          `guest-login EXPIRE ${failKey}`,
+          () => redis.expire(failKey, GUEST_PIN_FAILURE_WINDOW_SECONDS),
+          { timeoutMs: REDIS_TIMEOUT_MS }
+        );
       }
 
       return {
@@ -196,7 +231,18 @@ async function clearPinFailureState(identity: string): Promise<void> {
 
   if (redis) {
     try {
-      await Promise.all([redis.del(failKey), redis.del(lockKey)]);
+      await Promise.all([
+        runRedisWithTimeout(
+          `guest-login DEL ${failKey}`,
+          () => redis.del(failKey),
+          { timeoutMs: REDIS_TIMEOUT_MS }
+        ),
+        runRedisWithTimeout(
+          `guest-login DEL ${lockKey}`,
+          () => redis.del(lockKey),
+          { timeoutMs: REDIS_TIMEOUT_MS }
+        ),
+      ]);
       return;
     } catch {
       // Redis 장애 시 메모리 폴백 사용

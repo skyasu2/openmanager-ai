@@ -9,11 +9,16 @@
  */
 
 import { logger } from '@/lib/logging';
-import { getRedisClient, isRedisEnabled } from '@/lib/redis/client';
+import {
+  getRedisClient,
+  isRedisEnabled,
+  runRedisWithTimeout,
+} from '@/lib/redis/client';
 
 const STREAM_KEY_PREFIX = 'ai:stream:v2:';
 /** Active stream TTL: 10 minutes (supports complex analysis queries) */
 const STREAM_TTL_SECONDS = 600;
+const REDIS_TIMEOUT_MS = 1_000;
 
 function buildStreamStateKey(sessionId: string, ownerKey: string): string {
   return `${STREAM_KEY_PREFIX}${ownerKey}:${sessionId}`;
@@ -37,9 +42,14 @@ export async function saveActiveStreamId(
   if (!redis) return;
 
   try {
-    await redis.set(buildStreamStateKey(sessionId, ownerKey), streamId, {
-      ex: STREAM_TTL_SECONDS,
-    });
+    await runRedisWithTimeout(
+      `stream-state SET ${sessionId}`,
+      () =>
+        redis.set(buildStreamStateKey(sessionId, ownerKey), streamId, {
+          ex: STREAM_TTL_SECONDS,
+        }),
+      { timeoutMs: REDIS_TIMEOUT_MS }
+    );
     logger.debug(
       `[StreamState] Saved streamId ${streamId} for session ${sessionId} (owner: ${ownerKey.slice(0, 20)})`
     );
@@ -64,8 +74,10 @@ export async function getActiveStreamId(
   if (!redis) return null;
 
   try {
-    const streamId = await redis.get<string>(
-      buildStreamStateKey(sessionId, ownerKey)
+    const streamId = await runRedisWithTimeout(
+      `stream-state GET ${sessionId}`,
+      () => redis.get<string>(buildStreamStateKey(sessionId, ownerKey)),
+      { timeoutMs: REDIS_TIMEOUT_MS }
     );
     if (streamId) {
       logger.debug(
@@ -89,7 +101,11 @@ export async function clearActiveStreamId(
   if (!redis) return;
 
   try {
-    await redis.del(buildStreamStateKey(sessionId, ownerKey));
+    await runRedisWithTimeout(
+      `stream-state DEL ${sessionId}`,
+      () => redis.del(buildStreamStateKey(sessionId, ownerKey)),
+      { timeoutMs: REDIS_TIMEOUT_MS }
+    );
     logger.debug(
       `[StreamState] Cleared stream state for session ${sessionId} (owner: ${ownerKey.slice(0, 20)})`
     );

@@ -16,6 +16,10 @@ let redisInstance: Redis | null = null;
 let isRedisAvailable = true;
 let lastHealthCheck = 0;
 const HEALTH_CHECK_INTERVAL = 60_000; // 1분
+const DEFAULT_REDIS_OPERATION_TIMEOUT_MS = parseRedisTimeoutMs(
+  process.env.UPSTASH_REDIS_OPERATION_TIMEOUT_MS,
+  1_200
+);
 
 const SYSTEM_RUNNING_KEY = 'system:running';
 
@@ -26,6 +30,48 @@ interface RedisStatus {
   available: boolean;
   lastCheck: number;
   error?: string;
+}
+
+export interface RedisTimeoutOptions {
+  timeoutMs?: number;
+}
+
+function parseRedisTimeoutMs(
+  value: string | undefined,
+  fallback: number
+): number {
+  const parsed = Number(value);
+  if (!Number.isFinite(parsed) || parsed <= 0) {
+    return fallback;
+  }
+  return Math.floor(parsed);
+}
+
+export async function runRedisWithTimeout<T>(
+  operation: string,
+  promiseFactory: () => Promise<T>,
+  options?: RedisTimeoutOptions
+): Promise<T> {
+  const timeoutMs = options?.timeoutMs ?? DEFAULT_REDIS_OPERATION_TIMEOUT_MS;
+
+  if (timeoutMs <= 0) {
+    return promiseFactory();
+  }
+
+  let timeoutId: ReturnType<typeof setTimeout> | undefined;
+  const timeoutPromise = new Promise<never>((_, reject) => {
+    timeoutId = setTimeout(() => {
+      reject(new Error(`[Redis] ${operation} timed out after ${timeoutMs}ms`));
+    }, timeoutMs);
+  });
+
+  try {
+    return await Promise.race([promiseFactory(), timeoutPromise]);
+  } finally {
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+    }
+  }
 }
 
 /**
@@ -88,7 +134,8 @@ export function isRedisEnabled(): boolean {
  * @returns Redis 상태 정보
  */
 export async function checkRedisHealth(
-  forceCheck = false
+  forceCheck = false,
+  options?: RedisTimeoutOptions
 ): Promise<RedisStatus> {
   const now = Date.now();
 
@@ -112,7 +159,11 @@ export async function checkRedisHealth(
 
   try {
     // PING 명령어로 연결 확인
-    const pong = await client.ping();
+    const pong = await runRedisWithTimeout(
+      'PING',
+      () => client.ping(),
+      options
+    );
     isRedisAvailable = pong === 'PONG';
     lastHealthCheck = now;
 
@@ -170,13 +221,18 @@ export function parseSystemRunningFlag(value: unknown): boolean | null {
  * 시스템 실행 상태 플래그 저장 (SSOT)
  */
 export async function setSystemRunningFlag(
-  isRunning: boolean
+  isRunning: boolean,
+  options?: RedisTimeoutOptions
 ): Promise<boolean> {
   const client = getRedisClient();
   if (!client || !isRedisAvailable) return false;
 
   try {
-    await client.set(SYSTEM_RUNNING_KEY, isRunning ? '1' : '0');
+    await runRedisWithTimeout(
+      'SET system running flag',
+      () => client.set(SYSTEM_RUNNING_KEY, isRunning ? '1' : '0'),
+      options
+    );
     return true;
   } catch (e) {
     logger.warn('[Redis] Failed to set system running flag:', e);
@@ -189,12 +245,18 @@ export async function setSystemRunningFlag(
  * - true/false: Redis에서 명시적으로 확인됨
  * - null: Redis 사용 불가 또는 값 미존재/파싱 실패 (unknown)
  */
-export async function getSystemRunningFlag(): Promise<boolean | null> {
+export async function getSystemRunningFlag(
+  options?: RedisTimeoutOptions
+): Promise<boolean | null> {
   const client = getRedisClient();
   if (!client || !isRedisAvailable) return null;
 
   try {
-    const raw = await client.get<unknown>(SYSTEM_RUNNING_KEY);
+    const raw = await runRedisWithTimeout(
+      'GET system running flag',
+      () => client.get<unknown>(SYSTEM_RUNNING_KEY),
+      options
+    );
     return parseSystemRunningFlag(raw);
   } catch (e) {
     logger.warn('[Redis] Failed to read system running flag:', e);
@@ -209,12 +271,19 @@ export async function getSystemRunningFlag(): Promise<boolean | null> {
 /**
  * Safe Redis GET with automatic JSON parsing
  */
-export async function redisGet<T>(key: string): Promise<T | null> {
+export async function redisGet<T>(
+  key: string,
+  options?: RedisTimeoutOptions
+): Promise<T | null> {
   const client = getRedisClient();
   if (!client || !isRedisAvailable) return null;
 
   try {
-    const value = await client.get<T>(key);
+    const value = await runRedisWithTimeout(
+      `GET ${key}`,
+      () => client.get<T>(key),
+      options
+    );
     return value;
   } catch (e) {
     logger.warn(`[Redis] GET failed for ${key}:`, e);
@@ -229,13 +298,18 @@ export async function redisGet<T>(key: string): Promise<T | null> {
 export async function redisSet<T>(
   key: string,
   value: T,
-  ttlSeconds: number
+  ttlSeconds: number,
+  options?: RedisTimeoutOptions
 ): Promise<boolean> {
   const client = getRedisClient();
   if (!client || !isRedisAvailable) return false;
 
   try {
-    await client.set(key, value, { ex: ttlSeconds });
+    await runRedisWithTimeout(
+      `SET ${key}`,
+      () => client.set(key, value, { ex: ttlSeconds }),
+      options
+    );
     return true;
   } catch (e) {
     logger.warn(`[Redis] SET failed for ${key}:`, e);
@@ -246,12 +320,15 @@ export async function redisSet<T>(
 /**
  * Safe Redis DELETE
  */
-export async function redisDel(key: string): Promise<boolean> {
+export async function redisDel(
+  key: string,
+  options?: RedisTimeoutOptions
+): Promise<boolean> {
   const client = getRedisClient();
   if (!client || !isRedisAvailable) return false;
 
   try {
-    await client.del(key);
+    await runRedisWithTimeout(`DEL ${key}`, () => client.del(key), options);
     return true;
   } catch (e) {
     logger.warn(`[Redis] DEL failed for ${key}:`, e);
@@ -264,14 +341,21 @@ export async function redisDel(key: string): Promise<boolean> {
  * @param keys - Array of keys to fetch
  * @returns Array of values (null for missing keys)
  */
-export async function redisMGet<T>(keys: string[]): Promise<(T | null)[]> {
+export async function redisMGet<T>(
+  keys: string[],
+  options?: RedisTimeoutOptions
+): Promise<(T | null)[]> {
   const client = getRedisClient();
   if (!client || !isRedisAvailable || keys.length === 0) {
     return keys.map(() => null);
   }
 
   try {
-    const values = await client.mget<(T | null)[]>(...keys);
+    const values = await runRedisWithTimeout(
+      `MGET ${keys.length} keys`,
+      () => client.mget<(T | null)[]>(...keys),
+      options
+    );
     return values;
   } catch (e) {
     logger.warn(`[Redis] MGET failed for ${keys.length} keys:`, e);

@@ -33,6 +33,10 @@ vi.mock('@/lib/redis/client', () => ({
   getRedisClient: vi.fn(() => mockRedisClient),
   isRedisDisabled: vi.fn(() => false),
   isRedisEnabled: vi.fn(() => true),
+  runRedisWithTimeout: vi.fn(
+    async (_operation: string, promiseFactory: () => Promise<unknown>) =>
+      promiseFactory()
+  ),
 }));
 
 vi.mock('@/lib/logging', () => ({

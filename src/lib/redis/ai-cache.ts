@@ -13,7 +13,12 @@
 import type { Redis } from '@upstash/redis';
 import { hashString, normalizeQueryForCache } from '@/lib/cache/cache-helpers';
 import { logger } from '@/lib/logging';
-import { getRedisClient, isRedisDisabled, isRedisEnabled } from './client';
+import {
+  getRedisClient,
+  isRedisDisabled,
+  isRedisEnabled,
+  runRedisWithTimeout,
+} from './client';
 
 // ==============================================
 // 🎯 타입 정의
@@ -57,6 +62,14 @@ const CACHE_CONFIG = {
     TOKEN_OVERLAP_WEIGHT: 0.2,
     COSINE_WEIGHT: 0.8,
   },
+} as const;
+
+const REDIS_TIMEOUTS = {
+  GET: 800,
+  SET: 1_200,
+  SCAN: 1_500,
+  DELETE: 1_500,
+  BATCH_READ: 1_500,
 } as const;
 
 type SemanticAlgorithm = 'token-hash-v1';
@@ -253,7 +266,13 @@ async function findSemanticMatch(
   }
 
   const responses = await Promise.all(
-    candidates.map((key) => client.get<CachedAIResponse>(key))
+    candidates.map((key) =>
+      runRedisWithTimeout(
+        `AI cache GET ${key}`,
+        () => client.get<CachedAIResponse>(key),
+        { timeoutMs: REDIS_TIMEOUTS.BATCH_READ }
+      )
+    )
   );
 
   let bestScore = 0;
@@ -333,10 +352,15 @@ async function scanKeys(
   do {
     const remaining =
       typeof limit === 'number' ? Math.max(limit - keys.length, 0) : undefined;
-    const [nextCursor, batch] = await client.scan(cursor, {
-      match: pattern,
-      count: remaining ? Math.min(100, remaining) : 100,
-    });
+    const [nextCursor, batch] = await runRedisWithTimeout(
+      `AI cache SCAN ${pattern}`,
+      () =>
+        client.scan(cursor, {
+          match: pattern,
+          count: remaining ? Math.min(100, remaining) : 100,
+        }),
+      { timeoutMs: REDIS_TIMEOUTS.SCAN }
+    );
     cursor = Number(nextCursor);
     keys.push(...batch);
     if (typeof limit === 'number' && keys.length >= limit) {
@@ -388,7 +412,11 @@ export async function getAIResponseCache(
   const cacheKey = `${CACHE_CONFIG.PREFIX.AI_RESPONSE}:${queryHash}`;
 
   try {
-    const cached = await client.get<CachedAIResponse>(cacheKey);
+    const cached = await runRedisWithTimeout(
+      `AI cache GET ${cacheKey}`,
+      () => client.get<CachedAIResponse>(cacheKey),
+      { timeoutMs: REDIS_TIMEOUTS.GET }
+    );
 
     if (cached) {
       const latencyMs = Math.round(performance.now() - startTime);
@@ -480,9 +508,14 @@ export async function setAIResponseCache(
       },
     };
 
-    await client.set(cacheKey, responseWithSemanticMetadata, {
-      ex: ttlSeconds,
-    });
+    await runRedisWithTimeout(
+      `AI cache SET ${cacheKey}`,
+      () =>
+        client.set(cacheKey, responseWithSemanticMetadata, {
+          ex: ttlSeconds,
+        }),
+      { timeoutMs: REDIS_TIMEOUTS.SET }
+    );
 
     logger.info(`[AI Cache] SET - Key: ${queryHash}, TTL: ${ttlSeconds}s`);
 
@@ -524,7 +557,11 @@ export async function invalidateSessionCache(
     }
 
     // 일괄 삭제
-    await client.del(...keys);
+    await runRedisWithTimeout(
+      `AI cache DEL ${keys.length} keys`,
+      () => client.del(...keys),
+      { timeoutMs: REDIS_TIMEOUTS.DELETE }
+    );
 
     logger.info(
       `[AI Cache] Invalidated ${keys.length} keys for session: ${sessionId}`

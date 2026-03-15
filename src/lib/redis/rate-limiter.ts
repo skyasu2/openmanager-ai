@@ -12,7 +12,12 @@
 import { Ratelimit } from '@upstash/ratelimit';
 import type { NextRequest } from 'next/server';
 import { logger } from '@/lib/logging';
-import { getRedisClient, isRedisDisabled, isRedisEnabled } from './client';
+import {
+  getRedisClient,
+  isRedisDisabled,
+  isRedisEnabled,
+  runRedisWithTimeout,
+} from './client';
 
 // ==============================================
 // 🎯 타입 정의
@@ -52,6 +57,7 @@ export interface RateLimitConfig {
 const minuteLimiters = new Map<string, Ratelimit>();
 // 일일 제한 인스턴스 캐시
 const dailyLimiters = new Map<string, Ratelimit>();
+const REDIS_TIMEOUT_MS = 1_000;
 
 /**
  * Rate Limiter 인스턴스 생성 또는 캐시에서 반환
@@ -136,7 +142,11 @@ export async function checkRedisRateLimit(
       return null;
     }
 
-    const minuteResult = await minuteLimiter.limit(identifier);
+    const minuteResult = await runRedisWithTimeout(
+      `rate-limit minute ${identifier}`,
+      () => minuteLimiter.limit(identifier),
+      { timeoutMs: REDIS_TIMEOUT_MS }
+    );
     const latencyMs = Math.round(performance.now() - startTime);
 
     // 분당 제한 초과
@@ -160,7 +170,11 @@ export async function checkRedisRateLimit(
       );
 
       if (dailyLimiter) {
-        const dailyResult = await dailyLimiter.limit(identifier);
+        const dailyResult = await runRedisWithTimeout(
+          `rate-limit daily ${identifier}`,
+          () => dailyLimiter.limit(identifier),
+          { timeoutMs: REDIS_TIMEOUT_MS }
+        );
 
         if (!dailyResult.success) {
           return {

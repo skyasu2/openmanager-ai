@@ -26,6 +26,7 @@ import {
 import { checkAPIAuth } from '@/lib/auth/api-auth';
 import { logger } from '@/lib/logging';
 import { getRedisClient, getSystemRunningFlag, redisGet } from '@/lib/redis';
+import { runRedisWithTimeout } from '@/lib/redis/client';
 import type { RedisJobProgress } from '@/types/ai-jobs';
 
 // ============================================================================
@@ -81,6 +82,7 @@ const getJobStreamMaxWaitTimeMs = (): number => {
   );
 }; // 런타임 최대 실행시간 기준 여유 버퍼 적용
 const PROGRESS_INTERVAL_MS = 2000; // 진행 상황 업데이트 간격
+const REDIS_TIMEOUT_MS = 1_000;
 
 export function getPollIntervalFromEnv(
   envName: string,
@@ -231,9 +233,10 @@ export async function GET(
           }
 
           // Redis에서 결과/진행률을 1회 명령(MGET)으로 조회 (명령어 절감)
-          const [jobState, progressState] = (await redis.mget(
-            `job:${jobId}`,
-            `job:progress:${jobId}`
+          const [jobState, progressState] = (await runRedisWithTimeout(
+            `job-stream MGET ${jobId}`,
+            () => redis.mget(`job:${jobId}`, `job:progress:${jobId}`),
+            { timeoutMs: REDIS_TIMEOUT_MS }
           )) as [JobResult | null, RedisJobProgress | null];
           const result = jobState ?? null;
           const progress = progressState ?? null;

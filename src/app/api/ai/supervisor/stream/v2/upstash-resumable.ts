@@ -14,10 +14,15 @@
  */
 
 import { logger } from '@/lib/logging';
-import { getRedisClient, isRedisEnabled } from '@/lib/redis/client';
+import {
+  getRedisClient,
+  isRedisEnabled,
+  runRedisWithTimeout,
+} from '@/lib/redis/client';
 
 const STREAM_PREFIX = 'ai:resumable:';
 const STREAM_TTL_SECONDS = 600; // 10 minutes
+const REDIS_TIMEOUT_MS = 1_000;
 
 interface StreamMetadata {
   status: 'active' | 'completed' | 'error';
@@ -51,9 +56,14 @@ export function createUpstashResumableContext() {
           totalChunks: 0,
           startedAt: Date.now(),
         };
-        await redis.set(metaKey, JSON.stringify(metadata), {
-          ex: STREAM_TTL_SECONDS,
-        });
+        await runRedisWithTimeout(
+          `resumable SET ${metaKey}`,
+          () =>
+            redis.set(metaKey, JSON.stringify(metadata), {
+              ex: STREAM_TTL_SECONDS,
+            }),
+          { timeoutMs: REDIS_TIMEOUT_MS }
+        );
       }
 
       const sourceStream = makeStream();
@@ -76,8 +86,16 @@ export function createUpstashResumableContext() {
               if (redis) {
                 const flush = decoder.decode(); // 빈 인자로 호출하면 버퍼 flush
                 if (flush) {
-                  await redis.rpush(dataKey, flush);
-                  await redis.expire(dataKey, STREAM_TTL_SECONDS);
+                  await runRedisWithTimeout(
+                    `resumable RPUSH ${dataKey}`,
+                    () => redis.rpush(dataKey, flush),
+                    { timeoutMs: REDIS_TIMEOUT_MS }
+                  );
+                  await runRedisWithTimeout(
+                    `resumable EXPIRE ${dataKey}`,
+                    () => redis.expire(dataKey, STREAM_TTL_SECONDS),
+                    { timeoutMs: REDIS_TIMEOUT_MS }
+                  );
                   chunkIndex++;
                 }
                 // 🎯 CODEX Review Fix: 원래 startedAt 유지
@@ -87,9 +105,14 @@ export function createUpstashResumableContext() {
                   startedAt: initialStartedAt,
                   completedAt: Date.now(),
                 };
-                await redis.set(metaKey, JSON.stringify(metadata), {
-                  ex: STREAM_TTL_SECONDS,
-                });
+                await runRedisWithTimeout(
+                  `resumable SET ${metaKey}`,
+                  () =>
+                    redis.set(metaKey, JSON.stringify(metadata), {
+                      ex: STREAM_TTL_SECONDS,
+                    }),
+                  { timeoutMs: REDIS_TIMEOUT_MS }
+                );
               }
               controller.close();
               return;
@@ -99,9 +122,17 @@ export function createUpstashResumableContext() {
             if (redis && value) {
               // 🎯 CODEX Review Fix: stream: true로 UTF-8 멀티바이트 경계 손상 방지
               const chunkStr = decoder.decode(value, { stream: true });
-              await redis.rpush(dataKey, chunkStr);
+              await runRedisWithTimeout(
+                `resumable RPUSH ${dataKey}`,
+                () => redis.rpush(dataKey, chunkStr),
+                { timeoutMs: REDIS_TIMEOUT_MS }
+              );
               // Refresh TTL
-              await redis.expire(dataKey, STREAM_TTL_SECONDS);
+              await runRedisWithTimeout(
+                `resumable EXPIRE ${dataKey}`,
+                () => redis.expire(dataKey, STREAM_TTL_SECONDS),
+                { timeoutMs: REDIS_TIMEOUT_MS }
+              );
               chunkIndex++;
             }
 
@@ -117,9 +148,14 @@ export function createUpstashResumableContext() {
                 totalChunks: chunkIndex,
                 startedAt: initialStartedAt,
               };
-              await redis.set(metaKey, JSON.stringify(metadata), {
-                ex: STREAM_TTL_SECONDS,
-              });
+              await runRedisWithTimeout(
+                `resumable SET ${metaKey}`,
+                () =>
+                  redis.set(metaKey, JSON.stringify(metadata), {
+                    ex: STREAM_TTL_SECONDS,
+                  }),
+                { timeoutMs: REDIS_TIMEOUT_MS }
+              );
             }
 
             controller.error(error);
@@ -148,7 +184,11 @@ export function createUpstashResumableContext() {
       const metaKey = `${STREAM_PREFIX}${streamId}:meta`;
 
       // Check metadata
-      const metaStr = await redis.get<string>(metaKey);
+      const metaStr = await runRedisWithTimeout(
+        `resumable GET ${metaKey}`,
+        () => redis.get<string>(metaKey),
+        { timeoutMs: REDIS_TIMEOUT_MS }
+      );
       if (!metaStr) {
         logger.debug(`[UpstashResumable] No stream found: ${streamId}`);
         return null;
@@ -171,7 +211,11 @@ export function createUpstashResumableContext() {
       const isCompleted = metadata.status === 'completed';
 
       // Get all chunks from skip position
-      const chunks = await redis.lrange(dataKey, skipChunks, -1);
+      const chunks = await runRedisWithTimeout(
+        `resumable LRANGE ${dataKey}`,
+        () => redis.lrange(dataKey, skipChunks, -1),
+        { timeoutMs: REDIS_TIMEOUT_MS }
+      );
       const encoder = new TextEncoder();
 
       let currentIndex = 0;
@@ -202,10 +246,10 @@ export function createUpstashResumableContext() {
           }
 
           // Poll for new chunks (only for active streams)
-          const newChunks = await redis.lrange(
-            dataKey,
-            skipChunks + currentIndex,
-            -1
+          const newChunks = await runRedisWithTimeout(
+            `resumable LRANGE ${dataKey}`,
+            () => redis.lrange(dataKey, skipChunks + currentIndex, -1),
+            { timeoutMs: REDIS_TIMEOUT_MS }
           );
 
           if (newChunks.length > 0) {
@@ -218,7 +262,11 @@ export function createUpstashResumableContext() {
           }
 
           // Check if stream is still active
-          const latestMeta = await redis.get<string>(metaKey);
+          const latestMeta = await runRedisWithTimeout(
+            `resumable GET ${metaKey}`,
+            () => redis.get<string>(metaKey),
+            { timeoutMs: REDIS_TIMEOUT_MS }
+          );
           if (latestMeta) {
             try {
               const latest: StreamMetadata = JSON.parse(latestMeta);
@@ -251,7 +299,11 @@ export function createUpstashResumableContext() {
       if (!redis) return null;
 
       const metaKey = `${STREAM_PREFIX}${streamId}:meta`;
-      const metaStr = await redis.get<string>(metaKey);
+      const metaStr = await runRedisWithTimeout(
+        `resumable GET ${metaKey}`,
+        () => redis.get<string>(metaKey),
+        { timeoutMs: REDIS_TIMEOUT_MS }
+      );
 
       if (!metaStr) return null;
 
@@ -272,7 +324,18 @@ export function createUpstashResumableContext() {
       const dataKey = `${STREAM_PREFIX}${streamId}:data`;
       const metaKey = `${STREAM_PREFIX}${streamId}:meta`;
 
-      await Promise.all([redis.del(dataKey), redis.del(metaKey)]);
+      await Promise.all([
+        runRedisWithTimeout(
+          `resumable DEL ${dataKey}`,
+          () => redis.del(dataKey),
+          { timeoutMs: REDIS_TIMEOUT_MS }
+        ),
+        runRedisWithTimeout(
+          `resumable DEL ${metaKey}`,
+          () => redis.del(metaKey),
+          { timeoutMs: REDIS_TIMEOUT_MS }
+        ),
+      ]);
     },
   };
 }
