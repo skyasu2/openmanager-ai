@@ -6,13 +6,18 @@ import type { RollupLog } from 'rollup';
 const SUPPRESSED_CODES = new Set(['MODULE_LEVEL_DIRECTIVE', 'SOURCEMAP_ERROR']);
 
 const SUPPRESSED_MESSAGES = ['vite-inject-mocker-entry.js'];
+const isStorybookVitest =
+  process.env.VITEST === 'true' || process.env.VITEST_STORYBOOK === 'true';
 const storybookDir = path.dirname(fileURLToPath(import.meta.url));
 const projectRoot = path.resolve(storybookDir, '..');
 
 const config: StorybookConfig = {
   stories: ['../src/**/*.stories.@(ts|tsx)'],
   framework: '@storybook/nextjs-vite',
-  addons: ['@storybook/addon-mcp'],
+  addons: [
+    ...(isStorybookVitest ? [] : ['@storybook/addon-mcp']),
+    '@storybook/addon-vitest',
+  ],
   features: {
     experimentalComponentsManifest: true,
   },
