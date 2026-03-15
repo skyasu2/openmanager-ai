@@ -1,0 +1,90 @@
+{
+  "runId": "QA-20260315-0102",
+  "recordedAt": "2026-03-15T07:15:29.358Z",
+  "recordedAtKst": "2026-03-15 16:15:29 KST",
+  "runTitle": "Storybook QA - lock sync + smoke/build validation",
+  "owner": "codex",
+  "source": "storybook-cli",
+  "environment": {
+    "frontend": "Local",
+    "backend": "N/A",
+    "branch": "main"
+  },
+  "checks": {
+    "total": 3,
+    "passed": 3,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "storybook:smoke 스크립트를 동적 포트/비대화형으로 추가하고 정상 기동을 확인했다.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "storybook build는 약 6분 소요 후 성공 완료되어 장시간 빌드 특성을 기준선으로 확인했다.",
+      "nextAction": ""
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "storybook-lock-sync-10-2-10",
+      "title": "Storybook lockfile 버전 동기화",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "package-lock.json storybook 10.2.19 -> 10.2.10",
+      "note": "npm dist-tag latest 기준과 lock 해상 버전 정렬",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "storybook-smoke-script-stable-port",
+      "title": "Storybook smoke 테스트 스크립트 안정화",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "npm run storybook:smoke (dynamic port + --ci + --smoke-test)",
+      "note": "포트 점유 시 대화형 프롬프트 회피",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "storybook-build-longrun-success",
+      "title": "Storybook build 장시간 실행 성공 확인",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "storybook build --disable-telemetry --quiet completed (real 6m9s)",
+      "note": "타임아웃 240초는 과도하게 짧아 false-fail 가능",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "storybook build output indicates vite built in 4m49s, full command real 6m9s",
+    "storybook:smoke added to package scripts and dev-tools docs"
+  ],
+  "links": [
+    {
+      "label": "Storybook Static Output",
+      "url": "storybook-static"
+    }
+  ]
+}

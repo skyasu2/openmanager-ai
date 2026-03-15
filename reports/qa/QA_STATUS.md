@@ -1,33 +1,33 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-15 15:21:02 KST
+> Generated at: 2026-03-15 16:15:29 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 101 |
-| Total Checks | 749 |
-| Passed | 706 |
+| Total Runs | 102 |
+| Total Checks | 752 |
+| Passed | 709 |
 | Failed | 39 |
-| Completed Items | 169 |
+| Completed Items | 172 |
 | Pending Items | 0 |
 | Deferred Items | 2 |
 | Wont-Fix Items | 38 |
 | Expert Domains Tracked | 6 |
 | Expert Open Gaps | 0 |
-| Completion Rate | 98.83% |
-| Last Run | QA-20260315-0101 (2026-03-15T06:21:02.856Z) |
+| Completion Rate | 98.85% |
+| Last Run | QA-20260315-0102 (2026-03-15T07:15:29.358Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260315-0101 (2026-03-15T06:21:02.856Z)
+Latest run: QA-20260315-0102 (2026-03-15T07:15:29.358Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| AI Security & Reliability Architect | appropriate | no | - |
 | Test Automation Architect | appropriate | no | - |
+| DevOps / SRE Engineer | appropriate | no | - |
 
 ## Expert Domain Open Gaps
 
@@ -236,9 +236,12 @@ Latest run: QA-20260315-0101 (2026-03-15T06:21:02.856Z)
 - reporter-primary-generate-button-empty-state: Reporter 상단 생성 버튼 empty state 동작 정합성 (completed 1회, last QA-20260309-0064)
 - reporter-state-loss-on-tab-switch: Reporter 탭 전환 시 생성 결과 상태 유지 (completed 0회, last QA-20260308-0059)
 - storybook-build-dev-smoke-pass: storybook build 및 dev smoke-test 통과 (completed 1회, last QA-20260315-0099)
+- storybook-build-longrun-success: Storybook build 장시간 실행 성공 확인 (completed 1회, last QA-20260315-0102)
+- storybook-lock-sync-10-2-10: Storybook lockfile 버전 동기화 (completed 1회, last QA-20260315-0102)
 - storybook-next-module-shims: next/navigation/link/image/dynamic 등 Storybook shim 추가 (completed 1회, last QA-20260315-0099)
 - storybook-react-vite-migration: Storybook Next.js preset 제거 및 react-vite 전환 (completed 1회, last QA-20260315-0099)
 - storybook-sb-mock-fix: sb.mock()을 preview.ts로 이동하여 Storybook v10 호환성 수정 (completed 1회, last QA-20260302-0043)
+- storybook-smoke-script-stable-port: Storybook smoke 테스트 스크립트 안정화 (completed 1회, last QA-20260315-0102)
 - system-boot-api-checks: 시스템 부트 API 존재성/헬스 체크 (completed 2회, last QA-20260302-0039)
 - system-boot-redirect: 시스템 시작 대시보드 리다이렉트 (completed 1회, last QA-20260301-0035)
 - system-start-auth-modal-guard-stability: 시스템 시작 로그인 모달 노출 경로 검증 보강 (completed 2회, last QA-20260302-0038)
@@ -298,6 +301,7 @@ Latest run: QA-20260315-0101 (2026-03-15T06:21:02.856Z)
 
 | Run ID | Time (UTC) | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260315-0102 | 2026-03-15T07:15:29.358Z | Storybook QA - lock sync + smoke/build validation | 3 | 3 | 0 | 0 | 0 | 0 |
 | QA-20260315-0101 | 2026-03-15T06:21:02.856Z | QA governance - close resolved security gap and split security backlog | 3 | 1 | 0 | 2 | 0 | 0 |
 | QA-20260315-0100 | 2026-03-15T05:59:40.849Z | Vercel Production QA - AI Chat summary response recovery validation | 6 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260315-0099 | 2026-03-14T17:14:40.772Z | Storybook QA - react-vite migration verification | 4 | 3 | 0 | 0 | 0 | 0 |
@@ -317,5 +321,4 @@ Latest run: QA-20260315-0101 (2026-03-15T06:21:02.856Z)
 | QA-20260310-0085 | 2026-03-10T07:41:30.014Z | QA governance correction - track Analyst empty-state observation from run #84 | 1 | 0 | 1 | 0 | 0 | 1 |
 | QA-20260310-0084 | 2026-03-10T06:39:47.611Z | Vercel Playwright QA - Production gate after dependency merges | 11 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260310-0083 | 2026-03-10T02:03:05.427Z | Vercel Playwright QA - Full release gate recheck after issue closeout | 11 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260310-0082 | 2026-03-10T01:43:44.521Z | Vercel production AI Chat performance closeout | 5 | 1 | 0 | 0 | 0 | 0 |
 

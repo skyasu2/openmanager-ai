@@ -2,25 +2,25 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-03-15T06:21:02.856Z"
+    "updatedAt": "2026-03-15T07:15:29.358Z"
   },
   "sequence": {
-    "nextRunNumber": 102
+    "nextRunNumber": 103
   },
   "summary": {
-    "totalRuns": 101,
-    "totalChecks": 749,
-    "totalPassed": 706,
+    "totalRuns": 102,
+    "totalChecks": 752,
+    "totalPassed": 709,
     "totalFailed": 39,
-    "completionRate": 98.83,
-    "completedItems": 169,
+    "completionRate": 98.85,
+    "completedItems": 172,
     "pendingItems": 0,
     "deferredItems": 2,
     "wontFixItems": 38,
     "expertDomainsTracked": 6,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260315-0101",
-    "lastRecordedAt": "2026-03-15T06:21:02.856Z"
+    "lastRunId": "QA-20260315-0102",
+    "lastRecordedAt": "2026-03-15T07:15:29.358Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -4683,6 +4683,78 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-03-14T17:14:40.772Z"
+    },
+    "storybook-lock-sync-10-2-10": {
+      "id": "storybook-lock-sync-10-2-10",
+      "title": "Storybook lockfile 버전 동기화",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260315-0102",
+      "firstSeenAt": "2026-03-15T07:15:29.358Z",
+      "lastSeenRunId": "QA-20260315-0102",
+      "lastSeenAt": "2026-03-15T07:15:29.358Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "package-lock.json storybook 10.2.19 -> 10.2.10",
+      "lastNote": "npm dist-tag latest 기준과 lock 해상 버전 정렬",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-03-15T07:15:29.358Z"
+    },
+    "storybook-smoke-script-stable-port": {
+      "id": "storybook-smoke-script-stable-port",
+      "title": "Storybook smoke 테스트 스크립트 안정화",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260315-0102",
+      "firstSeenAt": "2026-03-15T07:15:29.358Z",
+      "lastSeenRunId": "QA-20260315-0102",
+      "lastSeenAt": "2026-03-15T07:15:29.358Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "npm run storybook:smoke (dynamic port + --ci + --smoke-test)",
+      "lastNote": "포트 점유 시 대화형 프롬프트 회피",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-03-15T07:15:29.358Z"
+    },
+    "storybook-build-longrun-success": {
+      "id": "storybook-build-longrun-success",
+      "title": "Storybook build 장시간 실행 성공 확인",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260315-0102",
+      "firstSeenAt": "2026-03-15T07:15:29.358Z",
+      "lastSeenRunId": "QA-20260315-0102",
+      "lastSeenAt": "2026-03-15T07:15:29.358Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "storybook build --disable-telemetry --quiet completed (real 6m9s)",
+      "lastNote": "타임아웃 240초는 과도하게 짧아 false-fail 가능",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-03-15T07:15:29.358Z"
     }
   },
   "runs": [
@@ -8782,6 +8854,44 @@
       "pendingCount": 0,
       "deferredCount": 2,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260315-0102",
+      "recordedAt": "2026-03-15T07:15:29.358Z",
+      "recordedAtKst": "2026-03-15 16:15:29 KST",
+      "title": "Storybook QA - lock sync + smoke/build validation",
+      "owner": "codex",
+      "source": "storybook-cli",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260315-0102.json",
+      "checks": {
+        "total": 3,
+        "passed": 3,
+        "failed": 0
+      },
+      "expertAssessments": [
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "storybook:smoke 스크립트를 동적 포트/비대화형으로 추가하고 정상 기동을 확인했다.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "storybook build는 약 6분 소요 후 성공 완료되어 장시간 빌드 특성을 기준선으로 확인했다.",
+          "nextAction": ""
+        }
+      ],
+      "expertCount": 2,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 3,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -8841,16 +8951,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 26,
-      "appropriateCount": 23,
+      "seenCount": 27,
+      "appropriateCount": 24,
       "partialCount": 3,
       "inappropriateCount": 0,
       "improvementNeededCount": 3,
-      "lastRunId": "QA-20260315-0100",
-      "lastSeenAt": "2026-03-15T05:59:40.849Z",
+      "lastRunId": "QA-20260315-0102",
+      "lastSeenAt": "2026-03-15T07:15:29.358Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Vercel production 실환경에서 landing->boot->dashboard->AI chat 핵심 경로를 재검증했다.",
+      "lastRationale": "storybook build는 약 6분 소요 후 성공 완료되어 장시간 빌드 특성을 기준선으로 확인했다.",
       "lastNextAction": ""
     },
     "test-automation": {
@@ -8858,16 +8968,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 60,
-      "appropriateCount": 56,
+      "seenCount": 61,
+      "appropriateCount": 57,
       "partialCount": 4,
       "inappropriateCount": 0,
       "improvementNeededCount": 5,
-      "lastRunId": "QA-20260315-0101",
-      "lastSeenAt": "2026-03-15T06:21:02.856Z",
+      "lastRunId": "QA-20260315-0102",
+      "lastSeenAt": "2026-03-15T07:15:29.358Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "보안 운영 항목 2건은 기능 결함이 아닌 QA 체계 백로그로 분리해 추적성을 유지했다.",
+      "lastRationale": "storybook:smoke 스크립트를 동적 포트/비대화형으로 추가하고 정상 기동을 확인했다.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {
