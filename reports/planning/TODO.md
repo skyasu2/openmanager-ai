@@ -14,6 +14,9 @@
 |------|----------|--------|-------|
 | Cloud Run 대형 파일 리팩토링 Phase 2~3 | P3 | On Hold | 유지보수 단계에서 기능/QA 우선 작업 완료 후 재개 |
 
+### Completed (2026-03-15)
+- [x] P3: Semantic Caching — exact miss 시 token-hash embedding 기반 유사 쿼리 캐시 fallback 추가, 저장 메타데이터/유사도 계산/단위 테스트 반영
+
 ### Test Coverage Gap (Closed)
 
 2026-03-05 코드리뷰에서 식별된 우선 테스트 대상 5건은 모두 완료되어 `Completed (2026-03-07)`에 이관됨.
@@ -229,7 +232,6 @@
 
 | Task | Priority | Status | Description |
 |------|----------|--------|-------------|
-| Semantic Caching | P3 | Backlog | 해시 기반 → 임베딩 기반 유사 쿼리 캐시 매칭 |
 | security-attack-regression-pack | P1 | Deferred | 보안 QA 체계 구축 (실운영형 공격 회귀팩) |
 | ai-code-gate-input-policy | P1 | Deferred | Prompt 패턴 15개 방어 정책 운영화 |
 
