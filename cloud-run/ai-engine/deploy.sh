@@ -3,6 +3,9 @@
 # ==============================================================================
 # Cloud Run Deployment Script (AI Engine)
 #
+# v7.4 - 2026-03-15 (Docker Preflight Default Restore)
+#   - Restored local Docker preflight as default now that build flow is stable again
+#   - Uses build-only mode by default to catch Docker regressions without mandatory local run
 # v7.3 - 2026-03-01 (Deployment Simplification)
 #   - Defaulted local Docker preflight to opt-in mode to avoid mandatory local builds
 # v7.2 - 2026-02-27 (Cleanup Reliability Improvements)
@@ -62,8 +65,8 @@ FREE_TIER_CONCURRENCY="80"
 FREE_TIER_CPU="1"
 FREE_TIER_MEMORY="512Mi"
 FREE_TIER_TIMEOUT="300"
-LOCAL_DOCKER_PREFLIGHT="${LOCAL_DOCKER_PREFLIGHT:-false}"
-LOCAL_DOCKER_PREFLIGHT_SKIP_RUN="${LOCAL_DOCKER_PREFLIGHT_SKIP_RUN:-false}"
+LOCAL_DOCKER_PREFLIGHT="${LOCAL_DOCKER_PREFLIGHT:-true}"
+LOCAL_DOCKER_PREFLIGHT_SKIP_RUN="${LOCAL_DOCKER_PREFLIGHT_SKIP_RUN:-true}"
 DEFAULT_ORIGIN="${DEFAULT_ORIGIN:-https://openmanager-ai.vercel.app}"
 ALLOWED_ORIGINS="${ALLOWED_ORIGINS:-https://openmanager-ai.vercel.app}"
 CLEANUP_ENABLED="${CLEANUP_ENABLED:-true}"
@@ -401,7 +404,11 @@ echo "   ✅ otel-data synced from public/ (resource-catalog + $(ls -1 data/otel
 
 if [ "${LOCAL_DOCKER_PREFLIGHT}" = "true" ]; then
   echo ""
-  echo "🐳 Running local Docker preflight..."
+  if [ "${LOCAL_DOCKER_PREFLIGHT_SKIP_RUN}" = "true" ]; then
+    echo "🐳 Running local Docker preflight (build-only)..."
+  else
+    echo "🐳 Running local Docker preflight (build + local health check)..."
+  fi
   if [ "${LOCAL_DOCKER_PREFLIGHT_SKIP_RUN}" = "true" ]; then
     SKIP_RUN=true bash scripts/docker-preflight.sh
   else

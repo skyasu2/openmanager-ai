@@ -464,6 +464,18 @@
   - `cd cloud-run/ai-engine && npm run type-check` 통과
   - `cd cloud-run/ai-engine && npm run test` 통과 (56 files, 652 tests)
 
+## 실행 결과 추가 (2026-03-15, deploy.sh 기본값 복원)
+- 변경:
+  - `cloud-run/ai-engine/deploy.sh`
+  - `LOCAL_DOCKER_PREFLIGHT` 기본값을 `true`로 복원
+  - `LOCAL_DOCKER_PREFLIGHT_SKIP_RUN` 기본값을 `true`로 설정해 기본 경로는 build-only preflight로 동작
+  - full local runtime check가 필요할 때만 `LOCAL_DOCKER_PREFLIGHT_SKIP_RUN=false bash deploy.sh` 사용
+- 문서:
+  - `cloud-run/ai-engine/README.md` 배포 예시를 새 기본 경로에 맞게 갱신
+- 검증:
+  - `bash -n cloud-run/ai-engine/deploy.sh` 통과
+  - `cd cloud-run/ai-engine && DOCKER_BUILD_TIMEOUT_SECONDS=300 SKIP_RUN=true npm run docker:preflight` 재확인 통과
+
 ## 남은 500+ Cloud Run 우선 작업
 - 핵심 런타임 경로(우선):
   - 현재 핵심 런타임 경로 500+ 없음 (단일 파일 기준, 정적 데이터 제외)

@@ -259,13 +259,15 @@ npm run prompt:redteam
 ## Deployment
 
 ```bash
-# Recommended deployment (includes free-tier guard)
+# Recommended deployment
+# - includes free-tier guard
+# - runs local Docker preflight in build-only mode by default
 bash deploy.sh
 
-# Enable local Docker preflight only when you want an extra local runtime check
-LOCAL_DOCKER_PREFLIGHT=true bash deploy.sh
+# Enable full local runtime check before Cloud Build
+LOCAL_DOCKER_PREFLIGHT_SKIP_RUN=false bash deploy.sh
 
-# Disable explicitly when needed (default false)
+# Disable local Docker preflight explicitly when needed
 LOCAL_DOCKER_PREFLIGHT=false bash deploy.sh
 
 # Service URL (dynamic lookup)
@@ -284,6 +286,7 @@ SKIP_RUN=true npm run docker:preflight
 
 Notes:
 - In WSL environments, the preflight script automatically falls back to `cmd.exe /c docker ...` when `/var/run/docker.sock` is unavailable.
+- `bash deploy.sh` now uses build-only preflight by default; set `LOCAL_DOCKER_PREFLIGHT_SKIP_RUN=false` when you want the local container `/health` check too.
 - If build fails due to lock mismatch, sync dependencies in `cloud-run/ai-engine` and retry.
 
 ## Version
