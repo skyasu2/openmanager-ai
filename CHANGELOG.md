@@ -2,6 +2,50 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.9.0](https://github.com/skyasu2/openmanager-ai/compare/v8.8.0...v8.9.0) (2026-03-15)
+
+
+### Features
+
+* **auto-report:** add detection, resolution steps, and topology impact analysis ([69f15bc](https://github.com/skyasu2/openmanager-ai/commit/69f15bcef56e612a46bf510b171ac57e16c5e35d))
+* **cache:** add semantic fallback for ai response cache ([7c11194](https://github.com/skyasu2/openmanager-ai/commit/7c1119435b3936e5d3039ef551a5a80467789364))
+
+
+### Bug Fixes
+
+* **ai-engine:** add timeout guards for admin and session paths ([9932836](https://github.com/skyasu2/openmanager-ai/commit/99328369478e7ff12277357caf5b885a656c6f18))
+* **ai-engine:** fail fast on docker preflight hangs ([c1202e1](https://github.com/skyasu2/openmanager-ai/commit/c1202e1381c96d9e9949833131d165b7f7ea88d1))
+* **ai-engine:** harden NLQ summary fallback for empty stream output ([c72a39b](https://github.com/skyasu2/openmanager-ai/commit/c72a39b623a3c615168c16f60585711e00469b29))
+* **ai-engine:** restore deploy preflight defaults ([fd0381f](https://github.com/skyasu2/openmanager-ai/commit/fd0381f812f4681f06d3c8ef4bd64a497917ce99))
+* **ai-engine:** restore docker preflight build flow ([e80dbdc](https://github.com/skyasu2/openmanager-ai/commit/e80dbdc65f896ebeba3bcb5e51e194b2dca9e101))
+* **ai-sidebar:** preserve Reporter/Analyst state on tab switch ([281c651](https://github.com/skyasu2/openmanager-ai/commit/281c651c1fae14efcb05bda157c18c7037695de7))
+* **ai-sidebar:** preserve tab state by always mounting Chat and AIFunctionPages ([a4e295e](https://github.com/skyasu2/openmanager-ai/commit/a4e295edb3bc0ebbd57844083677bc379fea6c61))
+* **ai-sidebar:** prevent AIContentArea unmount on chat tab switch ([45af451](https://github.com/skyasu2/openmanager-ai/commit/45af4514ea55f636a1d04d7e01ab8ac727bf611b))
+* **ai:** add stream v2 fallback for cloud run failures ([aa5f0ba](https://github.com/skyasu2/openmanager-ai/commit/aa5f0ba52fc238b0ee1cd558c6b00c5e1c0a9f7f))
+* **ai:** expose stream timing headers ([dd64e7d](https://github.com/skyasu2/openmanager-ai/commit/dd64e7d15b84933acf17f2d2d003bac6a1976e3e))
+* **ai:** increase stream v2 cold-start timeout from 20s to 45s ([72f37ef](https://github.com/skyasu2/openmanager-ai/commit/72f37efc8c688ce373c4fb5712b8384a6be71314))
+* **ai:** keep summary chat on streaming path ([8c08cd4](https://github.com/skyasu2/openmanager-ai/commit/8c08cd448a990c5bb78c482e6be0611fea11fe16))
+* **ai:** prefer streaming summaries and expose timing ([4cb0a56](https://github.com/skyasu2/openmanager-ai/commit/4cb0a56ffb52552d93ac652dc07f390ef6c0fbee))
+* **ai:** recover nlq summary fallback responses ([9a413b8](https://github.com/skyasu2/openmanager-ai/commit/9a413b8ad553ae2c154d379f81b188361f424777))
+* **ai:** shorten cold-start wait with warmup-aware retry ([d644e16](https://github.com/skyasu2/openmanager-ai/commit/d644e1681dac75064d6ce4075d79f8e9db9a73db))
+* **ai:** stabilize local chat QA flow ([5a8a4e3](https://github.com/skyasu2/openmanager-ai/commit/5a8a4e3224dd80ec2a189acf560252d949c4c11b))
+* **ai:** surface auth-required errors in monitoring flows ([6ea7887](https://github.com/skyasu2/openmanager-ai/commit/6ea7887673655b5c52dd4e75fa1a5bbd289f6eab))
+* **auto-report:** add setReports to useCallback dependency arrays ([4c655a3](https://github.com/skyasu2/openmanager-ai/commit/4c655a386cbd7476b72e2a3dc228f53140b162f6))
+* **cache:** hide semantic metadata and cap redis scans ([3925efd](https://github.com/skyasu2/openmanager-ai/commit/3925efdc36841ac8bf3c1c4fddfd1486b623ec5d))
+* **env:** harden vercel sync and server supabase fallback ([4ab7591](https://github.com/skyasu2/openmanager-ai/commit/4ab759125a97db2d734ad7aa6dc151be281b88fe))
+* **reporter:** disable generate button until server data is loaded ([8aed7c6](https://github.com/skyasu2/openmanager-ai/commit/8aed7c6daa030dd279e2156748b2a2fd7f280672))
+* **schemas:** resolve Vercel build failure from missing re-exports ([a3bb104](https://github.com/skyasu2/openmanager-ai/commit/a3bb1040bb635d29aa72e2f2a563bb1d8c8d39e6))
+* **security:** add traceId max length validation (128 chars) ([c84adb8](https://github.com/skyasu2/openmanager-ai/commit/c84adb8be044c3d4dc9290318c143f1eec759099))
+* **security:** add Zod validation to non-stream supervisor + schema hardening ([be66bb1](https://github.com/skyasu2/openmanager-ai/commit/be66bb1f732ac3e5792a430c204590acc1baddb8))
+* **security:** propagate sanitized query to LLM messages + MIME allowlist ([66c2386](https://github.com/skyasu2/openmanager-ai/commit/66c2386c8fdb124251c0b5179e442e49f3e512b4))
+* **security:** unify V2 schema validation + sanitize error display ([514f4b3](https://github.com/skyasu2/openmanager-ai/commit/514f4b3b03703eb1159a46a7cd6655085ded07c9)), closes [#56](https://github.com/skyasu2/openmanager-ai/issues/56)
+* **security:** validate Cloud Run JSON response + add edge-case tests ([16d9afe](https://github.com/skyasu2/openmanager-ai/commit/16d9afe85edf7713925b611708734559ef91a79d))
+* **storybook:** map story nextjs params into navigation mock ([43abbcb](https://github.com/skyasu2/openmanager-ai/commit/43abbcb8f8cd00a054bdea79d5cd06351d1b2601))
+* **storybook:** preserve next navigation query semantics ([d2c2cbf](https://github.com/skyasu2/openmanager-ai/commit/d2c2cbf0d7b430037560178907bf855b14026c32))
+* **storybook:** stabilize react-vite runtime and qa tracking ([ab55819](https://github.com/skyasu2/openmanager-ai/commit/ab5581917e37189e04bc44841816f7177343a098))
+* **tooling:** sync skills docs and clear lint debt ([e94412e](https://github.com/skyasu2/openmanager-ai/commit/e94412e508bb21c2de93aa51fedf15b20113ecc6))
+* **vercel:** harden env fallback and close qa gate ([76baa2f](https://github.com/skyasu2/openmanager-ai/commit/76baa2f3a7fe58c8592ecda54839b1e7b9ca51b5))
+
 ## [8.8.0](https://github.com/skyasu2/openmanager-ai/compare/v8.7.9...v8.8.0) (2026-03-07)
 
 
