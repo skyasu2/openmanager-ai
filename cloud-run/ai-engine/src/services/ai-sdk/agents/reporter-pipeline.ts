@@ -10,17 +10,19 @@
  * @created 2026-01-18
  */
 
-// Data sources for direct tool execution
 import { getCurrentState, getRecentHistory } from '../../../data/precomputed-state';
 import { logger } from '../../../lib/logger';
-import { STATUS_THRESHOLDS } from '../../../config/status-thresholds';
-import { getTrendPredictor } from '../../../lib/ai/monitoring/TrendPredictor';
-import { getHistoryForMetric, toTrendDataPoints, getCurrentSlotIndex } from '../../../tools-ai-sdk/analyst-tools-shared';
 import {
   calculateActionabilityScore,
   calculateCompletenessScore,
   calculateStructureScore,
 } from './reporter-pipeline-score-utils';
+import {
+  determineFocusArea,
+  generateInitialReport,
+  getSuggestedCommands,
+  type ReportForEvaluation,
+} from './reporter-pipeline-report';
 
 // ============================================================================
 // Types
@@ -51,55 +53,6 @@ export interface PipelineResult {
   error?: string;
 }
 
-interface ReportForEvaluation {
-  title: string;
-  summary: string;
-  affectedServers: Array<{
-    id: string;
-    name: string;
-    status: string;
-    primaryIssue: string;
-  }>;
-  timeline: Array<{
-    timestamp: string;
-    eventType: string;
-    severity: 'info' | 'warning' | 'critical';
-    description: string;
-  }>;
-  rootCause: {
-    cause: string;
-    confidence: number;
-    evidence: string[];
-    suggestedFix: string;
-  } | null;
-  suggestedActions: string[];
-  similarCases?: string[];
-  sla?: {
-    targetUptime: number;
-    actualUptime: number;
-    slaViolation: boolean;
-  };
-  warnings?: Array<{
-    serverId: string;
-    serverName: string;
-    metric: string;
-    currentValue: number;
-    threshold: number;
-    gap: number;
-  }>;
-  predictions?: Array<{
-    serverId: string;
-    serverName: string;
-    metric: string;
-    currentValue: number;
-    predictedValue: number;
-    trend: 'increasing' | 'decreasing' | 'stable';
-    confidence: number;
-    thresholdBreachHumanReadable: string | null;
-  }>;
-  markdown?: string;
-}
-
 interface EvaluationScores {
   structure: number;
   completeness: number;
@@ -115,38 +68,6 @@ const DEFAULT_CONFIG: PipelineConfig = {
   maxIterations: 2, // Increased from 1 for quality improvement via optimization pass
   qualityThreshold: 0.75, // Slightly raised to trigger optimization
   timeout: 40_000, // Increased from 25s for complex report generation (Job Queue has 120s)
-};
-
-const COMMAND_TEMPLATES: Record<string, string[]> = {
-  cpu: ['top -o %CPU -b -n 1 | head -20', 'ps aux --sort=-%cpu | head -10', 'htop -d 1'],
-  memory: ['free -h', 'ps aux --sort=-%mem | head -10', 'vmstat 1 5'],
-  disk: ['df -h', 'du -sh /* 2>/dev/null | sort -hr | head -10'],
-  network: ['netstat -tuln', 'ss -tuln'],
-  general: ['systemctl status', 'journalctl -xe --no-pager | tail -50'],
-};
-
-const SERVER_TYPE_COMMANDS: Record<string, Record<string, string[]>> = {
-  database: {
-    cpu: ['SHOW FULL PROCESSLIST;', 'mysqladmin processlist'],
-    memory: ['redis-cli INFO memory', 'mysql -e "SHOW STATUS LIKE \'Innodb_buffer_pool%\'"'],
-    general: ['mysql -e "SHOW GLOBAL STATUS"'],
-  },
-  cache: {
-    cpu: ['redis-cli SLOWLOG GET 10'],
-    memory: ['redis-cli INFO memory', 'redis-cli CONFIG GET maxmemory*'],
-    general: ['redis-cli PING'],
-  },
-  application: {
-    cpu: ['jstack <PID>', 'top -H -p <PID>'],
-    memory: ['jmap -heap <PID>'],
-    general: ['journalctl -u app-server --since "1h ago"'],
-  },
-  web: {
-    general: ['systemctl status nginx', 'tail -100 /var/log/nginx/error.log'],
-  },
-  loadbalancer: {
-    general: ['haproxy -c -f /etc/haproxy/haproxy.cfg'],
-  },
 };
 
 // ============================================================================
@@ -284,147 +205,6 @@ export async function executeReporterPipeline(
   }
 }
 
-// ============================================================================
-// Stage Functions (Direct Implementation)
-// ============================================================================
-
-/**
- * Generate initial report using current server state
- */
-function generateInitialReport(): ReportForEvaluation | null {
-  try {
-    const state = getCurrentState();
-    const now = new Date();
-
-    // Collect affected servers
-    const affectedServers = state.servers
-      .filter(s => s.status === 'warning' || s.status === 'critical')
-      .map(s => {
-        let primaryIssue = '정상';
-        if (s.cpu >= 90) primaryIssue = `CPU ${s.cpu.toFixed(1)}%`;
-        else if (s.memory >= 90) primaryIssue = `Memory ${s.memory.toFixed(1)}%`;
-        else if (s.disk >= 90) primaryIssue = `Disk ${s.disk.toFixed(1)}%`;
-        else if (s.status === 'warning') primaryIssue = '경고 상태';
-        else if (s.status === 'critical') primaryIssue = '위험 상태';
-
-        return {
-          id: s.id,
-          name: s.name,
-          status: s.status,
-          primaryIssue,
-        };
-      });
-
-    // Build timeline
-    const timeline: ReportForEvaluation['timeline'] = [];
-    const thresholds = {
-      cpu: STATUS_THRESHOLDS.cpu.warning,       // 80
-      memory: STATUS_THRESHOLDS.memory.warning, // 80 (SSOT)
-      disk: STATUS_THRESHOLDS.disk.warning,     // 80 (SSOT)
-    };
-
-    for (const server of state.servers) {
-      if (server.cpu >= thresholds.cpu) {
-        timeline.push({
-          timestamp: now.toISOString(),
-          eventType: 'threshold_breach',
-          severity: server.cpu >= 90 ? 'critical' : 'warning',
-          description: `${server.name}: CPU ${server.cpu.toFixed(1)}%`,
-        });
-      }
-      if (server.memory >= thresholds.memory) {
-        timeline.push({
-          timestamp: now.toISOString(),
-          eventType: 'threshold_breach',
-          severity: server.memory >= 90 ? 'critical' : 'warning',
-          description: `${server.name}: Memory ${server.memory.toFixed(1)}%`,
-        });
-      }
-    }
-
-    // Root cause analysis
-    let rootCause: ReportForEvaluation['rootCause'] = null;
-    if (affectedServers.length > 0) {
-      const primaryServer = affectedServers[0];
-      rootCause = {
-        cause: `${primaryServer.name}의 ${primaryServer.primaryIssue}`,
-        confidence: 0.65, // Start with lower confidence to trigger optimization
-        evidence: [
-          `영향받은 서버 ${affectedServers.length}대`,
-          `타임라인 이벤트 ${timeline.length}건`,
-        ],
-        suggestedFix: '리소스 사용량 점검 및 부하 분산 검토',
-      };
-    }
-
-    // Near-threshold warnings (임계 근접 경고)
-    const NEAR_GAP = 5;
-    const softThresholds = {
-      cpu: thresholds.cpu - NEAR_GAP,       // 75
-      memory: thresholds.memory - NEAR_GAP, // 75
-    };
-
-    const warnings: NonNullable<ReportForEvaluation['warnings']> = [];
-    for (const server of state.servers) {
-      if (server.status !== 'online') continue;
-      for (const [metric, soft, hard] of [
-        ['cpu', softThresholds.cpu, thresholds.cpu] as const,
-        ['memory', softThresholds.memory, thresholds.memory] as const,
-      ]) {
-        const val = server[metric];
-        if (val >= soft && val < hard) {
-          warnings.push({
-            serverId: server.id, serverName: server.name,
-            metric, currentValue: val,
-            threshold: hard, gap: +(hard - val).toFixed(1),
-          });
-          timeline.push({
-            timestamp: now.toISOString(), eventType: 'near_threshold', severity: 'info',
-            description: `${server.name}: ${metric.toUpperCase()} ${val.toFixed(1)}% (임계 ${hard}%까지 ${(hard - val).toFixed(1)}%)`,
-          });
-        }
-      }
-    }
-
-    // Trend predictions (트렌드 예측)
-    const predictions = generatePredictions(affectedServers, state);
-
-    // Suggested actions (generic to trigger optimization)
-    const suggestedActions: string[] = [];
-    if (affectedServers.some(s => s.primaryIssue.includes('CPU'))) {
-      suggestedActions.push('CPU 사용량 점검');
-    }
-    if (affectedServers.some(s => s.primaryIssue.includes('Memory'))) {
-      suggestedActions.push('메모리 사용량 확인');
-    }
-    if (suggestedActions.length === 0) {
-      suggestedActions.push('시스템 모니터링 유지');
-    }
-
-    return {
-      title: `${now.toISOString().slice(0, 10)} 시스템 상태 보고서`,
-      summary: affectedServers.length > 0
-        ? `${affectedServers.length}대 서버에서 이상 감지됨. 주요 이슈: ${affectedServers[0]?.primaryIssue || '확인 필요'}`
-        : '모든 서버 정상 운영 중',
-      affectedServers,
-      timeline: timeline.slice(0, 10),
-      rootCause,
-      suggestedActions,
-      warnings: warnings.slice(0, 5),
-      predictions,
-      sla: {
-        targetUptime: 99.9,
-        actualUptime: 99.5,
-        slaViolation: false,
-      },
-    };
-
-  } catch (error) {
-    logger.error('[generateInitialReport] Error:', error);
-    return null;
-  }
-}
-
 /**
  * Evaluate report quality
  */
@@ -522,11 +302,7 @@ function optimizeReport(
     const focusArea = determineFocusArea(report);
     const state = getCurrentState();
     const serverType = state.servers.find(s => s.id === report.affectedServers[0]?.id)?.type;
-    const genericCmds = COMMAND_TEMPLATES[focusArea] || COMMAND_TEMPLATES.general;
-    const typeCmds = serverType
-      ? (SERVER_TYPE_COMMANDS[serverType]?.[focusArea] ?? SERVER_TYPE_COMMANDS[serverType]?.general ?? [])
-      : [];
-    const commands = [...genericCmds, ...typeCmds];
+    const commands = getSuggestedCommands(focusArea, serverType);
 
     optimizedReport.suggestedActions = optimizedReport.suggestedActions.map((action, i) => {
       const cmd = commands[i % commands.length];
@@ -536,49 +312,6 @@ function optimizeReport(
   }
 
   return { report: optimizedReport, optimizations };
-}
-
-function generatePredictions(
-  servers: ReportForEvaluation['affectedServers'],
-  state: ReturnType<typeof getCurrentState>
-): NonNullable<ReportForEvaluation['predictions']> {
-  if (servers.length === 0) return [];
-  const predictor = getTrendPredictor();
-  const fixedSlot = getCurrentSlotIndex();
-  const results: NonNullable<ReportForEvaluation['predictions']> = [];
-
-  for (const srv of servers.slice(0, 5)) {
-    const data = state.servers.find(s => s.id === srv.id);
-    if (!data) continue;
-    for (const metric of ['cpu', 'memory'] as const) {
-      if (data[metric] < 70) continue;
-      const history = getHistoryForMetric(srv.id, metric, data[metric], fixedSlot);
-      const prediction = predictor.predictEnhanced(toTrendDataPoints(history), metric);
-      results.push({
-        serverId: srv.id, serverName: srv.name, metric,
-        currentValue: data[metric],
-        predictedValue: Math.round(Math.max(0, Math.min(100, prediction.prediction)) * 10) / 10,
-        trend: prediction.trend,
-        confidence: Math.round(prediction.confidence * 100) / 100,
-        thresholdBreachHumanReadable:
-          prediction.thresholdBreach.willBreachCritical || prediction.thresholdBreach.willBreachWarning
-            ? prediction.thresholdBreach.humanReadable : null,
-      });
-    }
-  }
-  return results;
-}
-
-function determineFocusArea(report: ReportForEvaluation): keyof typeof COMMAND_TEMPLATES {
-  if (!report.affectedServers || report.affectedServers.length === 0) {
-    return 'general';
-  }
-  const issues = report.affectedServers.map(s => s.primaryIssue.toLowerCase()).join(' ');
-  if (issues.includes('cpu')) return 'cpu';
-  if (issues.includes('memory') || issues.includes('메모리')) return 'memory';
-  if (issues.includes('disk') || issues.includes('디스크')) return 'disk';
-  if (issues.includes('network') || issues.includes('네트워크')) return 'network';
-  return 'general';
 }
 
 // calculateQuickScore removed - using evaluateReport for consistent initial/final scoring
