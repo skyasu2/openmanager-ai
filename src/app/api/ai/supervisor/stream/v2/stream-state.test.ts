@@ -71,9 +71,9 @@ describe('stream-state timeout wiring', () => {
     mockGetRedisClient.mockReturnValue(redis);
 
     const { getActiveStreamId } = await import('./stream-state');
-    await expect(
-      getActiveStreamId('session-1234', 'owner-key')
-    ).resolves.toBe('stream-1');
+    await expect(getActiveStreamId('session-1234', 'owner-key')).resolves.toBe(
+      'stream-1'
+    );
 
     expect(mockRunRedisWithTimeout).toHaveBeenCalledWith(
       'stream-state GET session-1234',
