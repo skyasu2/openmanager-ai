@@ -1,37 +1,33 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-15 14:59:41 KST
+> Generated at: 2026-03-15 15:21:02 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 100 |
-| Total Checks | 746 |
-| Passed | 703 |
+| Total Runs | 101 |
+| Total Checks | 749 |
+| Passed | 706 |
 | Failed | 39 |
-| Completed Items | 168 |
+| Completed Items | 169 |
 | Pending Items | 0 |
-| Deferred Items | 0 |
-| Wont-Fix Items | 41 |
+| Deferred Items | 2 |
+| Wont-Fix Items | 38 |
 | Expert Domains Tracked | 6 |
 | Expert Open Gaps | 0 |
-| Completion Rate | 100% |
-| Last Run | QA-20260315-0100 (2026-03-15T05:59:40.849Z) |
+| Completion Rate | 98.83% |
+| Last Run | QA-20260315-0101 (2026-03-15T06:21:02.856Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260315-0100 (2026-03-15T05:59:40.849Z)
+Latest run: QA-20260315-0101 (2026-03-15T06:21:02.856Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| AI Quality Assurance Specialist | appropriate | no | - |
-| IT Monitoring & Observability SME | appropriate | no | - |
 | AI Security & Reliability Architect | appropriate | no | - |
-| DevOps / SRE Engineer | appropriate | no | - |
 | Test Automation Architect | appropriate | no | - |
-| Data Quality & Metrics Analyst | appropriate | no | - |
 
 ## Expert Domain Open Gaps
 
@@ -43,19 +39,20 @@ Latest run: QA-20260315-0100 (2026-03-15T05:59:40.849Z)
 
 ## Deferred Improvements
 
-- None
+- [P1] ai-code-gate-input-policy: AI Code Gate: Prompt 패턴 15개 방어 점검 (seen 2회, last QA-20260315-0101)
+  - note: P1 우선순위이나 현재 비차단으로 deferred 처리
+- [P1] security-attack-regression-pack: 보안 공격 시나리오 회귀팩 구축 (seen 4회, last QA-20260315-0101)
+  - note: P1 우선순위이나 현재 비차단으로 deferred 처리
 
 ## Wont-Fix Improvements
 
 - [P1] ai-server-timing-header-production: Server-Timing header visibility in production (seen 2회, last QA-20260310-0081)
   - note: 플랫폼 제약으로 인한 비차단 항목: Vercel production에서는 Server-Timing 대신 X-AI-Latency-Ms를 운영 SSOT로 사용
 - [P1] obs-fp-fn-weekly-report: 오탐/미탐 주간 리포트 자동 생성 (seen 3회, last QA-20260227-0013)
-- [P1] security-attack-regression-pack: 보안 공격 시나리오 회귀팩 구축 (seen 3회, last QA-20260227-0013)
 - [P2] ai-chat-detail-expand: AI Chat 상세 분석 펼치기 (seen 1회, last QA-20260301-0030)
   - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
 - [P2] ai-chat-sidebar-open: AI 사이드바 열기 (seen 1회, last QA-20260301-0030)
   - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
-- [P2] ai-code-gate-input-policy: AI Code Gate: Prompt 패턴 15개 방어 점검 (seen 1회, last QA-20260226-0005)
 - [P2] ai-engine-status: AI 엔진 상태 표시 (seen 1회, last QA-20260301-0031)
   - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
 - [P2] ai-sidebar-open: AI 사이드바 열기/닫기 (seen 1회, last QA-20260301-0031)
@@ -74,8 +71,6 @@ Latest run: QA-20260315-0100 (2026-03-15T05:59:40.849Z)
   - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
 - [P2] analyst-full-analysis: Analyst 전체 분석 (seen 1회, last QA-20260301-0030)
   - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
-- [P2] blocked-prompt-raw-json-exposure: 보안 차단 시 raw JSON 노출 제거 (seen 1회, last QA-20260308-0056)
-  - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (요청자 표시(isBlocking=true)로 즉시 개선 필요)
 - [P2] cloud-run-cold-start-latency: Cloud Run AI Chat 콜드스타트 대기시간 과도 (5회 재시도, ~5분) (seen 1회, last QA-20260310-0089)
   - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (요청자 표시(isBlocking=true)로 즉시 개선 필요)
 - [P2] dashboard-active-alerts: 활성 알림 모달 (seen 1회, last QA-20260301-0031)
@@ -161,6 +156,7 @@ Latest run: QA-20260315-0100 (2026-03-15T05:59:40.849Z)
 - auth-error-provider-copy: 인증 에러 라우트 메시지를 제공자-중립 표현으로 전환 (completed 1회, last QA-20260227-0010)
 - auto-incident-report: 자동장애 보고서 생성 및 상세보기 (completed 1회, last QA-20260306-0051)
 - biome-lint-900-files-에러-0: Biome Lint 900 files 에러 0 (completed 1회, last QA-20260301-0032)
+- blocked-prompt-raw-json-exposure: 보안 차단 시 raw JSON 노출 제거 (completed 1회, last QA-20260315-0101)
 - blocked-prompt-ux-fixed-v880: Prompt injection 차단 UX 정제 검증 (completed 1회, last QA-20260308-0058)
 - blocked-prompt-ux-v880-quality-recheck: 보안 차단 UX 재검증 (completed 1회, last QA-20260308-0059)
 - csrf-duplicate-removal: CSRF getCSRFTokenFromCookie 중복 제거 (completed 1회, last QA-20260307-0053)
@@ -302,6 +298,7 @@ Latest run: QA-20260315-0100 (2026-03-15T05:59:40.849Z)
 
 | Run ID | Time (UTC) | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260315-0101 | 2026-03-15T06:21:02.856Z | QA governance - close resolved security gap and split security backlog | 3 | 1 | 0 | 2 | 0 | 0 |
 | QA-20260315-0100 | 2026-03-15T05:59:40.849Z | Vercel Production QA - AI Chat summary response recovery validation | 6 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260315-0099 | 2026-03-14T17:14:40.772Z | Storybook QA - react-vite migration verification | 4 | 3 | 0 | 0 | 0 | 0 |
 | QA-20260314-0098 | 2026-03-14T12:29:00.552Z | Vercel Production QA - Frontend/AI Active QA | 3 | 0 | 0 | 0 | 3 | 0 |
@@ -321,5 +318,4 @@ Latest run: QA-20260315-0100 (2026-03-15T05:59:40.849Z)
 | QA-20260310-0084 | 2026-03-10T06:39:47.611Z | Vercel Playwright QA - Production gate after dependency merges | 11 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260310-0083 | 2026-03-10T02:03:05.427Z | Vercel Playwright QA - Full release gate recheck after issue closeout | 11 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260310-0082 | 2026-03-10T01:43:44.521Z | Vercel production AI Chat performance closeout | 5 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260310-0081 | 2026-03-10T01:30:32.172Z | Server-Timing hosting-path diagnosis and QA policy update | 4 | 2 | 0 | 0 | 0 | 0 |
 

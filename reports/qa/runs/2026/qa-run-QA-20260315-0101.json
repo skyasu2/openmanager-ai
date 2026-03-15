@@ -1,0 +1,92 @@
+{
+  "runId": "QA-20260315-0101",
+  "recordedAt": "2026-03-15T06:21:02.856Z",
+  "recordedAtKst": "2026-03-15 15:21:02 KST",
+  "runTitle": "QA governance - close resolved security gap and split security backlog",
+  "owner": "codex",
+  "source": "qa-tracker-maintenance",
+  "environment": {
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main"
+  },
+  "checks": {
+    "total": 3,
+    "passed": 3,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "ai-security-reliability",
+      "domainName": "AI Security & Reliability Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "보안 차단 UX raw JSON 노출 항목은 2026-03-13 production security smoke에서 미노출로 통과가 확인됐다.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "보안 운영 항목 2건은 기능 결함이 아닌 QA 체계 백로그로 분리해 추적성을 유지했다.",
+      "nextAction": ""
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "blocked-prompt-raw-json-exposure",
+      "title": "보안 차단 시 raw JSON 노출 제거",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "QA-20260313-0095 completed: prod-security-block-no-raw-json-20260313",
+      "note": "최신 production security smoke에서 raw JSON/보안 내부 오류 문자열 미노출 확인",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [
+    {
+      "id": "security-attack-regression-pack",
+      "title": "보안 공격 시나리오 회귀팩 구축",
+      "priority": "P1",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "실운영 전환 전까지는 제품 결함 트래커가 아닌 보안 QA 운영 백로그로 관리",
+      "evidence": "reports/qa/security-qa-backlog.md",
+      "note": "WONT-FIX에서 분리하여 Deferred 백로그로 이관",
+      "owner": "",
+      "status": "deferred",
+      "policyNote": "P1 우선순위이나 현재 비차단으로 deferred 처리"
+    },
+    {
+      "id": "ai-code-gate-input-policy",
+      "title": "AI Code Gate: Prompt 패턴 15개 방어 점검",
+      "priority": "P1",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "15패턴 운영 자동화는 현 릴리즈 핵심 경로 범위를 초과",
+      "evidence": "reports/qa/security-qa-backlog.md",
+      "note": "WONT-FIX에서 분리하여 Deferred 백로그로 이관",
+      "owner": "",
+      "status": "deferred",
+      "policyNote": "P1 우선순위이나 현재 비차단으로 deferred 처리"
+    }
+  ],
+  "wontFixImprovements": [],
+  "notes": [
+    "resolved security gap 1건 종료: blocked-prompt-raw-json-exposure",
+    "security governance backlog 2건 분리: security-attack-regression-pack, ai-code-gate-input-policy",
+    "backlog doc: reports/qa/security-qa-backlog.md"
+  ],
+  "links": [
+    {
+      "label": "Security Backlog Doc",
+      "url": "reports/qa/security-qa-backlog.md"
+    }
+  ]
+}

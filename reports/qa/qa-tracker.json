@@ -2,25 +2,25 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-03-15T05:59:40.849Z"
+    "updatedAt": "2026-03-15T06:21:02.856Z"
   },
   "sequence": {
-    "nextRunNumber": 101
+    "nextRunNumber": 102
   },
   "summary": {
-    "totalRuns": 100,
-    "totalChecks": 746,
-    "totalPassed": 703,
+    "totalRuns": 101,
+    "totalChecks": 749,
+    "totalPassed": 706,
     "totalFailed": 39,
-    "completionRate": 100,
-    "completedItems": 168,
+    "completionRate": 98.83,
+    "completedItems": 169,
     "pendingItems": 0,
-    "deferredItems": 0,
-    "wontFixItems": 41,
+    "deferredItems": 2,
+    "wontFixItems": 38,
     "expertDomainsTracked": 6,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260315-0100",
-    "lastRecordedAt": "2026-03-15T05:59:40.849Z"
+    "lastRunId": "QA-20260315-0101",
+    "lastRecordedAt": "2026-03-15T06:21:02.856Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -147,19 +147,24 @@
       "id": "security-attack-regression-pack",
       "title": "보안 공격 시나리오 회귀팩 구축",
       "priority": "P1",
-      "status": "wont-fix",
+      "status": "deferred",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "lastSeenRunId": "QA-20260227-0013",
-      "lastSeenAt": "2026-02-26T17:50:54.243Z",
-      "seenCount": 3,
+      "lastSeenRunId": "QA-20260315-0101",
+      "lastSeenAt": "2026-03-15T06:21:02.856Z",
+      "seenCount": 4,
       "completedCount": 0,
       "pendingCount": 3,
-      "deferredCount": 1,
+      "deferredCount": 2,
       "owner": "",
-      "lastEvidence": "",
-      "lastNote": "운영 프로세스 항목 — 프로덕트 QA 범위 외. 보안 회귀팩은 실운영 환경 전용으로 데모/포트폴리오 프로젝트에서 제외 (v8.7.8 종합 점검)",
-      "lastStatusChangeAt": "2026-03-04T02:00:00.000Z"
+      "lastEvidence": "reports/qa/security-qa-backlog.md",
+      "lastNote": "WONT-FIX에서 분리하여 Deferred 백로그로 이관",
+      "lastStatusChangeAt": "2026-03-15T06:21:02.856Z",
+      "aliases": [],
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "실운영 전환 전까지는 제품 결함 트래커가 아닌 보안 QA 운영 백로그로 관리",
+      "lastPolicyNote": "P1 우선순위이나 현재 비차단으로 deferred 처리"
     },
     "metrics-drift-threshold-standard": {
       "id": "metrics-drift-threshold-standard",
@@ -382,19 +387,25 @@
     "ai-code-gate-input-policy": {
       "id": "ai-code-gate-input-policy",
       "title": "AI Code Gate: Prompt 패턴 15개 방어 점검",
-      "priority": "P2",
-      "status": "wont-fix",
+      "priority": "P1",
+      "status": "deferred",
       "firstSeenRunId": "QA-20260226-0005",
       "firstSeenAt": "2026-02-26T11:25:45.950Z",
-      "lastSeenRunId": "QA-20260226-0005",
-      "lastSeenAt": "2026-02-26T11:25:45.950Z",
-      "seenCount": 1,
+      "lastSeenRunId": "QA-20260315-0101",
+      "lastSeenAt": "2026-03-15T06:21:02.856Z",
+      "seenCount": 2,
       "completedCount": 0,
       "pendingCount": 1,
       "owner": "",
-      "lastEvidence": "",
-      "lastNote": "포트폴리오 범위 외 — 운영 프로세스 항목으로 스킵 (v8.5.0 릴리즈 기준)",
-      "lastStatusChangeAt": "2026-02-26T23:08:35.651Z"
+      "lastEvidence": "reports/qa/security-qa-backlog.md",
+      "lastNote": "WONT-FIX에서 분리하여 Deferred 백로그로 이관",
+      "lastStatusChangeAt": "2026-03-15T06:21:02.856Z",
+      "aliases": [],
+      "deferredCount": 1,
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "15패턴 운영 자동화는 현 릴리즈 핵심 경로 범위를 초과",
+      "lastPolicyNote": "P1 우선순위이나 현재 비차단으로 deferred 처리"
     },
     "ai-friendly-template-todo-marker": {
       "id": "ai-friendly-template-todo-marker",
@@ -3117,25 +3128,25 @@
       "id": "blocked-prompt-raw-json-exposure",
       "title": "보안 차단 시 raw JSON 노출 제거",
       "priority": "P2",
-      "status": "wont-fix",
+      "status": "completed",
       "firstSeenRunId": "QA-20260308-0056",
       "firstSeenAt": "2026-03-08T01:15:57.800Z",
-      "lastSeenRunId": "QA-20260308-0056",
-      "lastSeenAt": "2026-03-08T01:15:57.800Z",
-      "seenCount": 1,
-      "completedCount": 0,
+      "lastSeenRunId": "QA-20260315-0101",
+      "lastSeenAt": "2026-03-15T06:21:02.856Z",
+      "seenCount": 2,
+      "completedCount": 1,
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 1,
       "aliases": [],
       "owner": "",
-      "lastEvidence": "",
-      "lastNote": "차단 자체는 정상이나 사용자 UI와 콘솔에 {\"success\":false,...} JSON 문자열이 그대로 표시됨",
+      "lastEvidence": "QA-20260313-0095 completed: prod-security-block-no-raw-json-20260313",
+      "lastNote": "최신 production security smoke에서 raw JSON/보안 내부 오류 문자열 미노출 확인",
       "isBlocking": false,
-      "isBlockingExplicit": true,
+      "isBlockingExplicit": false,
       "overengineeringScope": "",
-      "lastPolicyNote": "이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (요청자 표시(isBlocking=true)로 즉시 개선 필요)",
-      "lastStatusChangeAt": "2026-03-08T01:15:57.800Z"
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-03-15T06:21:02.856Z"
     },
     "dashboard-health-v880-recheck": {
       "id": "dashboard-health-v880-recheck",
@@ -8733,6 +8744,44 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260315-0101",
+      "recordedAt": "2026-03-15T06:21:02.856Z",
+      "recordedAtKst": "2026-03-15 15:21:02 KST",
+      "title": "QA governance - close resolved security gap and split security backlog",
+      "owner": "codex",
+      "source": "qa-tracker-maintenance",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260315-0101.json",
+      "checks": {
+        "total": 3,
+        "passed": 3,
+        "failed": 0
+      },
+      "expertAssessments": [
+        {
+          "domainId": "ai-security-reliability",
+          "domainName": "AI Security & Reliability Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "보안 차단 UX raw JSON 노출 항목은 2026-03-13 production security smoke에서 미노출로 통과가 확인됐다.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "보안 운영 항목 2건은 기능 결함이 아닌 QA 체계 백로그로 분리해 추적성을 유지했다.",
+          "nextAction": ""
+        }
+      ],
+      "expertCount": 2,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 2,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -8775,16 +8824,16 @@
       "domainName": "AI Security & Reliability Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 32,
-      "appropriateCount": 23,
+      "seenCount": 33,
+      "appropriateCount": 24,
       "partialCount": 9,
       "inappropriateCount": 0,
       "improvementNeededCount": 9,
-      "lastRunId": "QA-20260315-0100",
-      "lastSeenAt": "2026-03-15T05:59:40.849Z",
+      "lastRunId": "QA-20260315-0101",
+      "lastSeenAt": "2026-03-15T06:21:02.856Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "게스트 세션 기반 대화 경로에서 오류/빈 응답 없이 정상 스트리밍 응답이 완료됐다.",
+      "lastRationale": "보안 차단 UX raw JSON 노출 항목은 2026-03-13 production security smoke에서 미노출로 통과가 확인됐다.",
       "lastNextAction": ""
     },
     "sre-devops": {
@@ -8809,16 +8858,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 59,
-      "appropriateCount": 55,
+      "seenCount": 60,
+      "appropriateCount": 56,
       "partialCount": 4,
       "inappropriateCount": 0,
       "improvementNeededCount": 5,
-      "lastRunId": "QA-20260315-0100",
-      "lastSeenAt": "2026-03-15T05:59:40.849Z",
+      "lastRunId": "QA-20260315-0101",
+      "lastSeenAt": "2026-03-15T06:21:02.856Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Playwright MCP 브라우저 세션으로 스타터 프롬프트 실행과 응답 렌더링까지 end-to-end 확인했다.",
+      "lastRationale": "보안 운영 항목 2건은 기능 결함이 아닌 QA 체계 백로그로 분리해 추적성을 유지했다.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {
