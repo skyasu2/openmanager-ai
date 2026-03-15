@@ -133,7 +133,9 @@ export function tokenOverlapRatio(a: string, b: string): number {
   return intersection / Math.max(tokensA.size, tokensB.size);
 }
 
-export function buildSemanticQueryEmbedding(query: string): SemanticQueryEmbedding {
+export function buildSemanticQueryEmbedding(
+  query: string
+): SemanticQueryEmbedding {
   const normalizedQuery = normalizeQueryForCache(query);
   const vector = new Array<number>(
     CACHE_CONFIG.SEMANTIC_CACHE.EMBEDDING_DIMENSION
