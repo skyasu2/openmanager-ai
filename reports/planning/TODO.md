@@ -6,7 +6,8 @@
 
 | Task | Priority | Status |
 |------|----------|--------|
-| Cloud Run 대형 파일 리팩토링 Phase 2~3 | P3 | In Progress |
+| Cloud Run 대형 파일 리팩토링 Phase 2 | P3 | Done |
+| Cloud Run 대형 파일 리팩토링 Phase 3 | P3 | On Hold |
 
 ## On Hold
 

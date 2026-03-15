@@ -1,6 +1,6 @@
 # Cloud Run Large File Refactor Plan
 
-- 상태: On Hold (Phase 0~1 완료, Phase 2~3 보류 — 운영 안정성 우선)
+- 상태: Active (Phase 0~2 완료, Phase 3 보류 — Cloud Run ai-engine 500+ 경고 해소)
 - 작성일: 2026-02-20
 - 갱신일: 2026-03-05
 - 목표: `cloud-run/ai-engine` 중심의 500+ 라인 파일을 단계적으로 분할해 유지보수성을 높이고, 최종적으로 Docker/Cloud Run 배포까지 안전하게 연결한다.
@@ -348,6 +348,25 @@
 - 메모:
   - `orchestrator-execution.ts`는 warning threshold(500줄) 아래로 내려가 line-guard 경고 목록에서 제외됨
   - 남은 500줄 초과 파일: `server.ts`
+
+## 실행 결과 추가 (2026-03-15, Phase 2 마무리)
+- 리팩토링:
+  - Server admin/debug/monitoring 라우트 분리:
+    - `cloud-run/ai-engine/src/server.ts` 541 → 290
+    - 신규 `cloud-run/ai-engine/src/server-admin-routes.ts` 268줄
+  - 기존 public API 유지:
+    - `/health`, `/warmup`, `/ready`, `/monitoring/*`, `/debug/*` 엔드포인트 경로/동작 유지
+  - 분리 범위:
+    - monitoring 인증/상태/리셋/trace 조회
+    - debug 인증/로그레벨/prefilter/multi-agent 테스트 엔드포인트
+- 검증:
+  - `cd cloud-run/ai-engine && npm run type-check` 통과
+  - `cd cloud-run/ai-engine && npx vitest run src/server-readiness.test.ts` 통과 (4 passed)
+  - `cd cloud-run/ai-engine && npm run test` 통과 (56 files, 652 tests)
+  - `cd cloud-run/ai-engine && npm run line-guard` 통과
+- 메모:
+  - `server.ts`는 warning threshold(500줄) 아래로 내려가 line-guard 경고 목록에서 제외됨
+  - `cloud-run/ai-engine` 기준 500줄 초과 파일이 더 이상 없음
 
 ## 실행 결과 추가 (2026-02-20, 12차 분리 계속)
 - 리팩토링:
