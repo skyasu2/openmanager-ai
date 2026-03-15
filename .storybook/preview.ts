@@ -1,4 +1,4 @@
-import type { Decorator, Preview } from '@storybook/react-vite';
+import type { Preview } from '@storybook/nextjs-vite';
 import { sb } from 'storybook/test';
 
 import '../src/styles/globals.css';
@@ -41,60 +41,7 @@ sb.mock(import('../src/services/system/SystemInactivityService.ts'));
 
 // ─── Preview Config ─────────────────────────────────────────
 
-type NextjsNavigationParam = {
-  pathname?: string;
-  query?: Record<string, string | string[]>;
-  segments?: Array<string | [string, string]>;
-};
-
-type NextjsParameter = {
-  appDirectory?: boolean;
-  navigation?: NextjsNavigationParam;
-};
-
-declare global {
-  // eslint-disable-next-line no-var
-  var __STORYBOOK_NEXT_NAVIGATION__: {
-    pathname: string;
-    queryEntries: Array<[string, string]>;
-    segments: Array<string | [string, string]>;
-  };
-}
-
-function toQueryEntries(
-  query: Record<string, string | string[]> | undefined
-): Array<[string, string]> {
-  if (!query) return [];
-
-  const entries: Array<[string, string]> = [];
-  Object.entries(query).forEach(([key, value]) => {
-    if (Array.isArray(value)) {
-      value.forEach((item) => {
-        entries.push([key, item]);
-      });
-      return;
-    }
-    entries.push([key, value]);
-  });
-
-  return entries;
-}
-
-const withNextjsNavigationParameters: Decorator = (Story, context) => {
-  const nextjs = context.parameters?.nextjs as NextjsParameter | undefined;
-  const navigation = nextjs?.navigation ?? {};
-
-  globalThis.__STORYBOOK_NEXT_NAVIGATION__ = {
-    pathname: navigation.pathname ?? '/',
-    queryEntries: toQueryEntries(navigation.query),
-    segments: navigation.segments ?? [],
-  };
-
-  return Story();
-};
-
 const preview: Preview = {
-  decorators: [withNextjsNavigationParameters],
   parameters: {
     backgrounds: {
       default: 'dark',
