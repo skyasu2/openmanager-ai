@@ -1,6 +1,6 @@
 # Cloud Run Large File Refactor Plan
 
-- 상태: Active (Phase 0~2 완료, Phase 3 보류 — Cloud Run ai-engine 500+ 경고 해소)
+- 상태: Active (Phase 0~2 완료, Phase 3 진행 중 — BFF 연계 파일 책임 분리)
 - 작성일: 2026-02-20
 - 갱신일: 2026-03-15
 - 목표: `cloud-run/ai-engine` 중심의 500+ 라인 파일을 단계적으로 분할해 유지보수성을 높이고, 최종적으로 Docker/Cloud Run 배포까지 안전하게 연결한다.
@@ -31,7 +31,7 @@
 - [x] Phase 2: Cloud Run 2차 분할 리팩토링 (핵심 경로)
   - 모델 선택/폴백/헬스체크 책임을 모듈 단위로 분리
   - 단위 테스트/스냅샷 테스트 보강
-- [ ] Phase 3: BFF 연계 파일 정리 (On Hold)
+- [ ] Phase 3: BFF 연계 파일 정리 (In Progress)
   - route handler에서 정책/파싱/fallback 로직 분리
   - Zod 스키마/응답 타입 경계 명확화
 - [x] Phase 4: 배포 전 검증
@@ -495,6 +495,22 @@
   - 외부 `/health` 확인: `status=ok`, `version=8.8.0`, `redis=true`
   - 외부 `/monitoring` 무인증 확인: HTTP 403
   - cleanup summary: images 1, sources 1, revisions 1 삭제
+
+## 실행 결과 추가 (2026-03-15, Phase 3 재개 - incident-report route 분리)
+- 변경:
+  - `src/app/api/ai/incident-report/route.ts` 349 → 48
+  - 신규 `src/app/api/ai/incident-report/post-handler.ts` 372
+  - `route.ts`는 입력 파싱/검증 + auth export만 담당
+  - Cloud Run proxy, circuit breaker, cache, retry, response 조합 로직은 `post-handler.ts`로 이동
+  - `route-helpers.ts`에서 `IncidentReportRequest` 타입 export
+- 목적:
+  - BFF route handler의 다중 책임 축소
+  - Phase 3 목표인 정책/파싱/응답 경계 분리 시작
+- 검증:
+  - `npx vitest run --config config/testing/vitest.config.main.ts src/app/api/ai/incident-report/route.test.ts src/app/api/ai/incident-report/get-handler.test.ts src/app/api/ai/incident-report/retry-handler.test.ts` 통과 (20 tests)
+  - `npm run type-check` 통과
+  - `npm run lint` 통과
+  - `npm run test:quick` 통과 (160 tests)
 
 ## 남은 500+ Cloud Run 우선 작업
 - 핵심 런타임 경로(우선):

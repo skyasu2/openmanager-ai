@@ -7,7 +7,7 @@
 | Task | Priority | Status |
 |------|----------|--------|
 | Cloud Run 대형 파일 리팩토링 Phase 2 | P3 | Done |
-| Cloud Run 대형 파일 리팩토링 Phase 3 | P3 | On Hold |
+| Cloud Run 대형 파일 리팩토링 Phase 3 | P3 | In Progress |
 
 ## On Hold
 
@@ -16,6 +16,7 @@
 | 진행 중 보류 항목 없음 | - | - | - |
 
 ### Completed (2026-03-15)
+- [x] P3: `incident-report` route 분리 시작 — `route.ts`를 thin handler로 축소(349→48), Cloud Run proxy/cache/retry/response 조합은 `post-handler.ts`로 분리
 - [x] P2: Cloud Run 실배포 검증 — `bash deploy.sh` 기본 경로 성공, Cloud Build `9cdc5c74-97ae-4752-b532-365f8c69fd7f`, revision `ai-engine-00249-tg7`, `/health` 200, `/monitoring` 403
 - [x] P2: Cloud Run 배포 기본값 복원 — `deploy.sh`가 build-only Docker preflight를 기본 수행하도록 복원, full local `/health` 검사는 opt-in으로 유지
 - [x] P2: Cloud Run `docker:preflight` 복구 — `npm prune --production` 정체 제거, `prod-deps` stage 도입, local build-only/full preflight + `/health` 확인

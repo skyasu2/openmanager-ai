@@ -16,6 +16,8 @@ export const IncidentReportRequestSchema = z
   })
   .passthrough();
 
+export type IncidentReportRequest = z.infer<typeof IncidentReportRequestSchema>;
+
 interface AffectedServer {
   serverId: string;
   hostname?: string;
