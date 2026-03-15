@@ -7,12 +7,18 @@ const {
   mockRedisGet,
   mockGetSystemRunningFlag,
   mockRedisMGet,
+  mockRunRedisWithTimeout,
+  mockGetRedisTimeoutMs,
 } = vi.hoisted(() => ({
   mockCheckAPIAuth: vi.fn(),
   mockGetRedisClient: vi.fn(),
   mockRedisGet: vi.fn(),
   mockGetSystemRunningFlag: vi.fn(),
   mockRedisMGet: vi.fn(),
+  mockRunRedisWithTimeout: vi.fn(),
+  mockGetRedisTimeoutMs: vi.fn((profile: string) =>
+    profile === 'standard' ? 987 : 1200
+  ),
 }));
 
 vi.mock('@/lib/auth/api-auth', () => ({
@@ -23,6 +29,14 @@ vi.mock('@/lib/redis', () => ({
   getRedisClient: mockGetRedisClient,
   getSystemRunningFlag: mockGetSystemRunningFlag,
   redisGet: mockRedisGet,
+}));
+
+vi.mock('@/lib/redis/client', () => ({
+  runRedisWithTimeout: mockRunRedisWithTimeout,
+}));
+
+vi.mock('@/config/redis-timeouts', () => ({
+  getRedisTimeoutMs: mockGetRedisTimeoutMs,
 }));
 
 vi.mock('@/lib/logging', () => ({
@@ -39,6 +53,13 @@ describe('AI Job Stream Route', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockCheckAPIAuth.mockResolvedValue(null);
+    mockGetRedisTimeoutMs.mockImplementation((profile: string) =>
+      profile === 'standard' ? 987 : 1200
+    );
+    mockRunRedisWithTimeout.mockImplementation(
+      async (_operation: string, promiseFactory: () => Promise<unknown>) =>
+        promiseFactory()
+    );
     mockGetRedisClient.mockReturnValue({
       mget: mockRedisMGet,
     });
@@ -115,5 +136,11 @@ describe('AI Job Stream Route', () => {
 
     expect(response.status).toBe(200);
     expect(response.headers.get('Content-Type')).toContain('text/event-stream');
+    await response.text();
+    expect(mockRunRedisWithTimeout).toHaveBeenCalledWith(
+      'job-stream MGET job-2',
+      expect.any(Function),
+      { timeoutMs: 987 }
+    );
   });
 });
