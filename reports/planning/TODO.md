@@ -18,7 +18,7 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| Next.js dev/Turbopack 중첩 App Router 404 재현 조사 | P3 | probe 기준 최신 상태: `npm run dev:readiness`(Turbopack)는 `/api/version` 준비까지 약 `96s`, 준비 후 `/api/ai/*` nested route는 `non-404` 확인. `NEXT_DEV_TRACE_TIMEOUT_S=150 npm run dev:trace:turbopack`로 `.next/dev/trace-turbopack` 확보 완료(`~3.4MB`). 반면 `npm run dev:readiness:webpack`은 `Ready in 70.7s` 로그 후에도 `/api/version` compile이 길어 `120s` timeout. 다음 단계는 Turbopack trace 해석(`npx next internal trace .next/dev/trace-turbopack`)과 별도로 **webpack readiness 지연 최소 재현** + `proxy`/`/api/version` compile 경로 분리 |
+| Next.js dev/Turbopack 중첩 App Router 404 재현 조사 | P3 | probe 기준 최신 상태: `npm run dev:readiness`(Turbopack)는 `/api/version` 준비까지 약 `96s`, 준비 후 `/api/ai/*` nested route는 `non-404` 확인. `NEXT_DEV_TRACE_TIMEOUT_S=150 npm run dev:trace:turbopack`로 최신 `.next/dev/trace-turbopack` 확보 완료(`~69.8MB`). 반면 webpack은 `/`, `/api/health`, `/api/version` 모두 `120s` timeout이며 로그 패턴이 `✓ Ready in ... -> ○ Compiling proxy ... -> ○ Compiling <target-path> ...`로 동일함. 다음 단계는 Turbopack trace 해석(`npx next internal trace .next/dev/trace-turbopack`)과 별도로 **webpack first-request compile 최소 재현** + `proxy` 영향 분리 |
 
 ### Completed (2026-03-15)
 - [x] P3: Cloud Run 대형 파일 리팩토링 Phase 3 완료 — `incident-report` route + `ai-proxy.config.ts` 책임 분리 마감

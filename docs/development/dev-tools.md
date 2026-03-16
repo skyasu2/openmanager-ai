@@ -125,8 +125,10 @@ npm run test:e2e:responsive # 데스크톱+모바일 통합 회귀
 > **재확인 (`2026-03-16`)**:
 > - `npm run dev:readiness` (Turbopack): `/api/version` 준비 완료까지 약 `96s`
 > - Turbopack 준비 후 spot-check: `/api/ai/jobs`, `/api/ai/supervisor`, `/api/ai/supervisor/stream/v2` 모두 `non-404`
-> - `npm run dev:readiness:webpack`: 서버 자체는 `Ready in 70.7s`를 출력했지만, `/api/version`은 `120s` 시점에도 compile 중이어서 probe timeout
-> - 따라서 현재 로컬 dev 이슈는 **중첩 route 404**보다는 **webpack 경로의 늦은 `/api/version` compile / readiness 지연**에 더 가깝다
+> - `npm run dev:readiness:webpack`: 서버 자체는 `Ready in ~60-70s`를 출력하지만, 첫 요청에서 `proxy` 후 target route compile이 길게 이어짐
+> - `--path=/`, `--path=/api/health`, `--path=/api/version` 모두 `120s` timeout이 재현됨
+> - webpack 로그 공통 패턴: `✓ Ready in ...` -> `○ Compiling proxy ...` -> `○ Compiling <target-path> ...`
+> - 따라서 현재 로컬 dev 이슈는 **중첩 route 404**보다는 **webpack 경로의 첫 요청 compile / readiness 지연**에 더 가깝다
 
 로컬 production-like 검증이 필요한 경우 아래 스모크 스크립트를 사용합니다.
 
@@ -169,6 +171,7 @@ npx next internal trace .next/dev/trace-turbopack
 - trace 수집은 **Turbopack 전용**입니다. webpack 지연 원인 분리는 별도 최소 재현이 필요합니다.
 - trace 수집 전에는 `npm run dev:readiness`로 기본 준비 시간을 먼저 확인하는 편이 낫습니다.
 - `2026-03-16` 검증 기준으로 `NEXT_DEV_TRACE_TIMEOUT_S=150 npm run dev:trace:turbopack`가 성공했고, `.next/dev/trace-turbopack` 파일(`~3.4MB`)이 생성됨
+- 같은 날 재검증 기준으로 trace 재수집도 성공했고, 최신 `.next/dev/trace-turbopack` 크기는 약 `69.8MB`
 
 ### 로컬 API 스모크 (`local:smoke`)
 
