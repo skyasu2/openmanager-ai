@@ -32,6 +32,7 @@ const SKIP_BUILD = process.env.SKIP_BUILD === 'true';
 const SKIP_NODE_CHECK = process.env.SKIP_NODE_CHECK === 'true';
 const STRICT_PUSH_ENV = process.env.STRICT_PUSH_ENV === 'true'; // 기본값: false (env 검증은 CI/Vercel에서 수행, 로컬은 opt-in)
 const FORCE_CLOUD_BUILD_GUARD = process.env.FORCE_CLOUD_BUILD_GUARD === 'true';
+const PRE_PUSH_CHANGED_FILES_OVERRIDE = process.env.PRE_PUSH_CHANGED_FILES || '';
 
 // Windows = limited validation mode (TypeScript + Lint only)
 // WSL with Linux node_modules = full validation mode
@@ -39,6 +40,7 @@ const isLimitedMode = isWindows;
 
 let testStatus = 'pending';
 let typeCheckStatus = 'pending';
+let validationMode = 'standard';
 
 function runNpm(args) {
   const result = spawnSync(npmCmd, args, {
@@ -188,6 +190,14 @@ function collectChangedFilesFromPrePushUpdates(updates) {
 }
 
 function getChangedFilesForPush() {
+  if (PRE_PUSH_CHANGED_FILES_OVERRIDE.trim()) {
+    const files = PRE_PUSH_CHANGED_FILES_OVERRIDE
+      .split(/[,\n]/)
+      .map((file) => file.trim())
+      .filter(Boolean);
+    return { files, isKnown: files.length > 0 };
+  }
+
   const prePushUpdates = readPrePushUpdatesFromStdin();
   if (prePushUpdates.length > 0) {
     const filesFromUpdates = collectChangedFilesFromPrePushUpdates(prePushUpdates);
@@ -389,6 +399,83 @@ function checkWSLPerformance() {
   }
 }
 
+function isLightweightArtifactFile(filePath) {
+  const normalized = String(filePath || '').replace(/\\/g, '/');
+  if (!normalized) return false;
+
+  if (normalized.endsWith('.md')) {
+    return true;
+  }
+
+  if (normalized.endsWith('.json')) {
+    return normalized.startsWith('docs/') || normalized.startsWith('reports/');
+  }
+
+  return false;
+}
+
+function isDocsArtifactOnlyPush(changedFilesResult) {
+  if (!changedFilesResult.isKnown || changedFilesResult.files.length === 0) {
+    return false;
+  }
+
+  return changedFilesResult.files.every((filePath) => isLightweightArtifactFile(filePath));
+}
+
+function validateChangedJsonArtifacts(changedFiles) {
+  const jsonFiles = changedFiles.filter((filePath) => filePath.endsWith('.json'));
+
+  if (jsonFiles.length === 0) {
+    console.log('⚪ JSON artifact validation skipped (no changed JSON files)');
+    return;
+  }
+
+  for (const relativePath of jsonFiles) {
+    const absolutePath = path.join(cwd, relativePath);
+
+    if (!fs.existsSync(absolutePath)) {
+      console.log(`❌ JSON artifact missing: ${relativePath}`);
+      console.log('');
+      console.log('💡 Fix: restore or remove the stale JSON path from the push range');
+      process.exit(1);
+    }
+
+    try {
+      JSON.parse(fs.readFileSync(absolutePath, 'utf8'));
+    } catch (error) {
+      console.log(`❌ Invalid JSON artifact: ${relativePath}`);
+      console.log(`   ${error.message}`);
+      process.exit(1);
+    }
+  }
+
+  console.log(`✅ JSON artifact validation passed (${jsonFiles.length} files)`);
+}
+
+function runDocsArtifactValidation(changedFilesResult) {
+  validationMode = 'docs-artifacts';
+  testStatus = 'skipped-docs-only';
+  typeCheckStatus = 'skipped-docs-only';
+
+  console.log('📝 Docs/report-only push detected');
+  console.log('   Skipping test:quick and type-check');
+
+  const hasMarkdown = changedFilesResult.files.some((filePath) => filePath.endsWith('.md'));
+  if (hasMarkdown) {
+    const success = runNpm(['run', 'docs:lint:changed']);
+    if (!success) {
+      console.log('❌ Markdown docs lint failed - push blocked');
+      console.log('');
+      console.log('💡 Fix: npm run docs:lint:changed');
+      process.exit(1);
+    }
+  } else {
+    console.log('⚪ Markdown docs lint skipped (no changed markdown files)');
+  }
+
+  validateChangedJsonArtifacts(changedFilesResult.files);
+}
+
 // Tests
 function runTests() {
   console.log('🧪 Running quick tests...');
@@ -524,16 +611,26 @@ function printSummary(duration) {
   console.log('🚀 Ready to push!');
   console.log('');
   console.log('📊 Summary:');
-  if (isLimitedMode) {
+  if (validationMode === 'docs-artifacts') {
+    console.log('  📝 Mode: Docs/Reports artifacts only');
+  } else if (isLimitedMode) {
     console.log('  🔧 Mode: Windows Limited');
   } else if (QUICK_PUSH) {
     console.log('  ⚡ Mode: Quick (TypeScript only)');
   } else {
     console.log('  🐢 Mode: Full Build');
   }
-  console.log(`  ${testStatus === 'passed' ? '✅' : '⚪'} Tests ${testStatus}`);
+  if (testStatus === 'passed') {
+    console.log('  ✅ Tests passed');
+  } else if (testStatus === 'skipped-docs-only') {
+    console.log('  ⚪ Tests skipped (docs/report-only push)');
+  } else {
+    console.log(`  ⚪ Tests ${testStatus}`);
+  }
   if (typeCheckStatus === 'passed') {
     console.log('  ✅ TypeScript check passed');
+  } else if (typeCheckStatus === 'skipped-docs-only') {
+    console.log('  ⚪ TypeScript skipped (docs/report-only push)');
   } else if (typeCheckStatus === 'skipped') {
     console.log('  ⚪ TypeScript skipped (SKIP_BUILD=true)');
   } else if (typeCheckStatus === 'delegated') {
@@ -583,10 +680,15 @@ function main() {
 
   const changedFilesResult = getChangedFilesForPush();
   checkCloudBuildFreeTierGuard(changedFilesResult);
-  runTests();
-  runBuildValidation();
-  if (STRICT_PUSH_ENV) {
-    checkEnvironment();
+
+  if (isDocsArtifactOnlyPush(changedFilesResult)) {
+    runDocsArtifactValidation(changedFilesResult);
+  } else {
+    runTests();
+    runBuildValidation();
+    if (STRICT_PUSH_ENV) {
+      checkEnvironment();
+    }
   }
 
   const duration = Math.round((Date.now() - startTime) / 1000);
