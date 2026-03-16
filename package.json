@@ -172,7 +172,8 @@
     "storybook:build:ci": "bash scripts/storybook/build-ci.sh",
     "storybook:smoke": "bash scripts/storybook/smoke.sh",
     "local:smoke": "bash scripts/dev/local-api-smoke.sh",
-    "local:smoke:rebuild": "bash scripts/dev/local-api-smoke.sh --rebuild"
+    "local:smoke:rebuild": "bash scripts/dev/local-api-smoke.sh --rebuild",
+    "test:security:smoke": "node scripts/test/security-smoke.mjs"
   },
   "dependencies": {
     "@ai-sdk/mistral": "^3.0.24",

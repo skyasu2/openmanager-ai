@@ -21,6 +21,7 @@
 | 백로그 항목 없음 | - | - |
 
 ### Completed (2026-03-16)
+- [x] P1: 보안 회귀팩 자동화 (`QA-20260316-0108`) — `scripts/test/security-smoke.mjs` 구현. Playwright 없이 API 직접 POST로 5패턴 자동 검증. `npm run test:security:smoke`로 실행. `security-attack-regression-pack` deferred 종결
 - [x] P2: AI Code Gate Prompt Injection 5패턴 검증 (`QA-20260316-0107`) — EN 지시 무시, DAN/bypass, KO 지시 무시, 역할 변경+노출, 정상 쿼리 통과 모두 PASS. 차단 메시지 일관 동작 확인. `ai-code-gate-input-policy` deferred 기준(5패턴) 충족
 - [x] P1: v8.9.1 릴리즈 정렬 완료 — `v8.9.1` 태그/GitHub Release 생성, Cloud Run `ai-engine-00251-8qt` 배포, Vercel `/api/version` + Cloud Run `/health` 모두 `8.9.1` 확인, Production QA `QA-20260316-0106` 8/8 PASS
 - [x] P3: Next.js dev 로컬 QA 혼선 조사 종결 — Turbopack: nested route non-404 확인, 96s 콜드스타트 정상. webpack: 120s first-request timeout은 "Compiling proxy + target" 패턴으로 Next.js 고유 동작임, 우리 코드 버그 아님. 미사용 dev-only rewrites(`/test-tools/*`, `/dev/*`) 제거로 proxy 컴파일 경로 단순화. 진단 스크립트(`dev:readiness`, `dev:probe:webpack`, `dev:trace:turbopack`, `local:smoke`) 도구화 완료.
