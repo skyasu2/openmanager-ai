@@ -2,25 +2,25 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-03-16T09:03:40.061Z"
+    "updatedAt": "2026-03-16T10:23:14.962Z"
   },
   "sequence": {
-    "nextRunNumber": 109
+    "nextRunNumber": 110
   },
   "summary": {
-    "totalRuns": 108,
-    "totalChecks": 795,
-    "totalPassed": 752,
+    "totalRuns": 109,
+    "totalChecks": 800,
+    "totalPassed": 757,
     "totalFailed": 39,
-    "completionRate": 99.43,
-    "completedItems": 173,
+    "completionRate": 100,
+    "completedItems": 174,
     "pendingItems": 0,
-    "deferredItems": 1,
+    "deferredItems": 0,
     "wontFixItems": 38,
     "expertDomainsTracked": 6,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260316-0108",
-    "lastRecordedAt": "2026-03-16T09:03:40.061Z"
+    "lastRunId": "QA-20260316-0109",
+    "lastRecordedAt": "2026-03-16T10:23:14.962Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -147,24 +147,24 @@
       "id": "security-attack-regression-pack",
       "title": "보안 공격 시나리오 회귀팩 구축",
       "priority": "P1",
-      "status": "deferred",
+      "status": "completed",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "lastSeenRunId": "QA-20260315-0101",
-      "lastSeenAt": "2026-03-15T06:21:02.856Z",
-      "seenCount": 4,
-      "completedCount": 0,
+      "lastSeenRunId": "QA-20260316-0109",
+      "lastSeenAt": "2026-03-16T10:23:14.962Z",
+      "seenCount": 5,
+      "completedCount": 1,
       "pendingCount": 3,
       "deferredCount": 2,
-      "owner": "",
-      "lastEvidence": "reports/qa/security-qa-backlog.md",
-      "lastNote": "WONT-FIX에서 분리하여 Deferred 백로그로 이관",
-      "lastStatusChangeAt": "2026-03-15T06:21:02.856Z",
+      "owner": "claude",
+      "lastEvidence": "QA-20260316-0109: npm run test:security:smoke 5/5 PASS. scripts/test/security-smoke.mjs 구현. EN/KO prompt injection, DAN bypass, 역할 변경, 정상 쿼리 false-positive 포함.",
+      "lastNote": "API 수준 경량 회귀팩 구현 완료. 인증 없이도 401로 차단되고, 인증 세션에서는 prompt guard 400으로 차단됨을 QA-20260316-0107에서 함께 검증. 운영 전환 시점 패턴 확장 예정.",
+      "lastStatusChangeAt": "2026-03-16T10:23:14.962Z",
       "aliases": [],
       "isBlocking": false,
       "isBlockingExplicit": true,
       "overengineeringScope": "실운영 전환 전까지는 제품 결함 트래커가 아닌 보안 QA 운영 백로그로 관리",
-      "lastPolicyNote": "P1 우선순위이나 현재 비차단으로 deferred 처리"
+      "lastPolicyNote": ""
     },
     "metrics-drift-threshold-standard": {
       "id": "metrics-drift-threshold-standard",
@@ -9184,6 +9184,36 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260316-0109",
+      "recordedAt": "2026-03-16T10:23:14.962Z",
+      "recordedAtKst": "2026-03-16 19:23:14 KST",
+      "title": "Security Regression Smoke - security-attack-regression-pack closure",
+      "owner": "claude",
+      "source": "node-fetch-smoke",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260316-0109.json",
+      "checks": {
+        "total": 5,
+        "passed": 5,
+        "failed": 0
+      },
+      "expertAssessments": [
+        {
+          "domainId": "ai-security-reliability",
+          "domainName": "AI Security & Reliability Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Playwright 없이 Node.js fetch 기반으로 직접 /api/ai/supervisor에 POST하여 5패턴 자동 검증 완료. 인증 레이어(401)와 prompt guard(400) 양쪽 모두 injection을 차단함을 확인. security-attack-regression-pack deferred 항목의 자동화 기준을 충족한다.",
+          "nextAction": ""
+        }
+      ],
+      "expertCount": 1,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -9226,16 +9256,16 @@
       "domainName": "AI Security & Reliability Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 34,
-      "appropriateCount": 25,
+      "seenCount": 35,
+      "appropriateCount": 26,
       "partialCount": 9,
       "inappropriateCount": 0,
       "improvementNeededCount": 9,
-      "lastRunId": "QA-20260316-0107",
-      "lastSeenAt": "2026-03-16T08:30:19.073Z",
+      "lastRunId": "QA-20260316-0109",
+      "lastSeenAt": "2026-03-16T10:23:14.962Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "OWASP LLM Top 10 기준 5개 핵심 패턴(영어 지시 무시, DAN/bypass, 한국어 지시 무시, 역할 변경+노출, 정상 쿼리 통과)을 실 프로덕션에서 검증했다. 모든 인젝션 패턴은 보안 정책으로 차단되고, 정상 쿼리는 올바른 서버 데이터를 반환했다.",
+      "lastRationale": "Playwright 없이 Node.js fetch 기반으로 직접 /api/ai/supervisor에 POST하여 5패턴 자동 검증 완료. 인증 레이어(401)와 prompt guard(400) 양쪽 모두 injection을 차단함을 확인. security-attack-regression-pack deferred 항목의 자동화 기준을 충족한다.",
       "lastNextAction": ""
     },
     "sre-devops": {

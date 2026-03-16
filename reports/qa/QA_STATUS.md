@@ -1,35 +1,32 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-16 18:03:40 KST
+> Generated at: 2026-03-16 19:23:15 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 108 |
-| Total Checks | 795 |
-| Passed | 752 |
+| Total Runs | 109 |
+| Total Checks | 800 |
+| Passed | 757 |
 | Failed | 39 |
-| Completed Items | 173 |
+| Completed Items | 174 |
 | Pending Items | 0 |
-| Deferred Items | 1 |
+| Deferred Items | 0 |
 | Wont-Fix Items | 38 |
 | Expert Domains Tracked | 6 |
 | Expert Open Gaps | 0 |
-| Completion Rate | 99.43% |
-| Last Run | QA-20260316-0108 (2026-03-16T09:03:40.061Z) |
+| Completion Rate | 100% |
+| Last Run | QA-20260316-0109 (2026-03-16T10:23:14.962Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260316-0108 (2026-03-16T09:03:40.061Z)
+Latest run: QA-20260316-0109 (2026-03-16T10:23:14.962Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| AI Quality Assurance Specialist | appropriate | no | - |
-| IT Monitoring & Observability SME | appropriate | no | - |
-| DevOps / SRE Engineer | appropriate | no | - |
-| Test Automation Architect | appropriate | no | - |
+| AI Security & Reliability Architect | appropriate | no | - |
 
 ## Expert Domain Open Gaps
 
@@ -41,8 +38,7 @@ Latest run: QA-20260316-0108 (2026-03-16T09:03:40.061Z)
 
 ## Deferred Improvements
 
-- [P1] security-attack-regression-pack: 보안 공격 시나리오 회귀팩 구축 (seen 4회, last QA-20260315-0101)
-  - note: P1 우선순위이나 현재 비차단으로 deferred 처리
+- None
 
 ## Wont-Fix Improvements
 
@@ -236,6 +232,7 @@ Latest run: QA-20260316-0108 (2026-03-16T09:03:40.061Z)
 - reporter-generate-detail-v880: Reporter 생성 및 상세 렌더링 검증 (completed 2회, last QA-20260309-0069)
 - reporter-primary-generate-button-empty-state: Reporter 상단 생성 버튼 empty state 동작 정합성 (completed 2회, last QA-20260315-0104)
 - reporter-state-loss-on-tab-switch: Reporter 탭 전환 시 생성 결과 상태 유지 (completed 1회, last QA-20260315-0104)
+- security-attack-regression-pack: 보안 공격 시나리오 회귀팩 구축 (completed 1회, last QA-20260316-0109)
 - storybook-build-dev-smoke-pass: storybook build 및 dev smoke-test 통과 (completed 1회, last QA-20260315-0099)
 - storybook-build-longrun-success: Storybook build 장시간 실행 성공 확인 (completed 1회, last QA-20260315-0102)
 - storybook-lock-sync-10-2-10: Storybook lockfile 버전 동기화 (completed 1회, last QA-20260315-0102)
@@ -302,6 +299,7 @@ Latest run: QA-20260316-0108 (2026-03-16T09:03:40.061Z)
 
 | Run ID | Time (UTC) | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260316-0109 | 2026-03-16T10:23:14.962Z | Security Regression Smoke - security-attack-regression-pack closure | 5 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260316-0108 | 2026-03-16T09:03:40.061Z | Vercel Production QA - Frontend and AI Assistant regression validation | 8 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260316-0107 | 2026-03-16T08:30:19.073Z | Security QA - AI Code Gate Input Policy (Prompt Injection 5패턴) | 5 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260316-0106 | 2026-03-16T07:11:09.946Z | Production Playwright MCP QA - v8.9.1 Release Alignment Validation (2026-03-16) | 8 | 0 | 0 | 0 | 0 | 0 |
@@ -321,5 +319,4 @@ Latest run: QA-20260316-0108 (2026-03-16T09:03:40.061Z)
 | QA-20260313-0092 | 2026-03-13T13:18:38.830Z | Vercel Preview Recovery QA - Env Sync and Guest Flow | 8 | 6 | 0 | 0 | 0 | 1 |
 | QA-20260313-0091 | 2026-03-13T12:15:43.286Z | Vercel Production 종합 QA #91 - 프론트엔드 전기능 + UI/UX + AI Assistant + 성능 평가 | 18 | 0 | 0 | 0 | 0 | 1 |
 | QA-20260310-0090 | 2026-03-10T13:27:23.276Z | Vercel Production 종합 QA #90 - UI/UX + AI Chat + Reporter + Analyst 재검증 | 7 | 0 | 0 | 0 | 1 | 1 |
-| QA-20260310-0089 | 2026-03-10T12:14:07.497Z | Vercel Production 종합 QA #89 - AI Chat Cloud Run 응답 성공 + 전체 AI 기능 재검증 | 18 | 1 | 0 | 0 | 1 | 1 |
 
