@@ -47,6 +47,7 @@
     "dev:readiness": "bash scripts/dev/check-next-dev-readiness.sh",
     "dev:readiness:webpack": "bash scripts/dev/check-next-dev-readiness.sh --webpack",
     "dev:trace:turbopack": "bash scripts/dev/collect-next-dev-trace.sh",
+    "dev:probe:webpack": "bash scripts/dev/check-next-webpack-first-request.sh",
     "dev:gemini": "cross-env NODE_OPTIONS='--max-old-space-size=4096' next dev -p 3004",
     "dev:ag": "cross-env NODE_OPTIONS='--max-old-space-size=4096' next dev -p 3005",
     "dev:network": "cross-env NODE_OPTIONS='--max-old-space-size=4096' next dev -p 3000 --hostname 0.0.0.0",
