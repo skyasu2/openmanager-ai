@@ -2,7 +2,7 @@
 
 > Owner: codex
 > Status: Active
-> Last reviewed: 2026-03-15
+> Last reviewed: 2026-03-16
 
 ## Scope
 
@@ -14,7 +14,7 @@
 | ID | Title | Priority | Type | Status | Rationale | Next Action |
 |---|---|---|---|---|---|---|
 | `security-attack-regression-pack` | 보안 공격 시나리오 회귀팩 구축 | P1 | 운영 체계 | Deferred | 실운영형 보안 회귀팩은 데모/포트폴리오 기본 QA 범위를 초과 | 운영 전환 시점에 공격 시나리오 세트(EN/KO prompt injection, jailbreak, data exfiltration)를 정기 스모크에 편입 |
-| `ai-code-gate-input-policy` | AI Code Gate: Prompt 패턴 15개 방어 점검 | P2 | 운영 체계 | Deferred | 정책 운영화/자동화 파이프라인은 현재 릴리즈 핵심 경로 밖 | QA 템플릿에 최소 5패턴 샘플을 우선 반영하고, 추후 15패턴 풀세트 자동화 |
+| `ai-code-gate-input-policy` | AI Code Gate: Prompt 패턴 15개 방어 점검 | P2 | 운영 체계 | **Completed (5/15)** | 정책 운영화/자동화 파이프라인은 현재 릴리즈 핵심 경로 밖 | `QA-20260316-0107`: 5패턴 Playwright MCP 검증 완료. 15패턴 풀세트 자동화는 운영 전환 시점 |
 
 ## Out of Scope
 
