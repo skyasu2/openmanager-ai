@@ -151,15 +151,20 @@ bash scripts/dev/check-next-dev-readiness.sh --timeout=60
 bash scripts/dev/check-next-dev-readiness.sh --webpack --timeout=60
 ```
 
-### webpack first-request probe
+### webpack first-request probe (진단 전용)
+
+> **결론 (`2026-03-16`)**: `next dev --webpack`의 120s first-request timeout은
+> Next.js webpack 고유 동작(`Compiling proxy → Compiling <route>`)이며 우리 코드 버그가 아님.
+> **일반 개발은 Turbopack(기본 `npm run dev`)을 사용할 것.**
+> webpack 모드는 Turbopack 미지원 기능 디버깅 시에만 opt-in.
+> 미사용 dev rewrites(`/test-tools/*`, `/dev/*`)는 proxy 컴파일 경로 단순화를 위해 제거됨.
 
 `next dev --webpack`에서 **서버 ready 시점**과 **첫 요청 응답 시점**을 분리해서 측정합니다.
-webpack 지연이 route 자체 문제인지, `proxy + target route` compile 문제인지 최소 재현으로 남길 때 사용합니다.
+webpack 첫 요청 지연이 route 문제인지 compile 지연인지 구분할 때 사용합니다.
 
 ```bash
 npm run dev:probe:webpack -- --path=/
 npm run dev:probe:webpack -- --path=/api/health
-npm run dev:probe:webpack -- --path=/api/version
 
 # 개별 옵션
 bash scripts/dev/check-next-webpack-first-request.sh --path=/api/version --ready-timeout=120 --request-timeout=120
@@ -169,13 +174,13 @@ bash scripts/dev/check-next-webpack-first-request.sh --path=/api/version --ready
 
 - `server ready in ...` : webpack dev 서버가 Ready 로그를 찍기까지의 wall-clock
 - `first-request http=... wall=...` : 첫 요청 자체의 응답 시간
-- `proxy-log`, `target-log` : 로그에 `Compiling proxy`, `Compiling <path>`가 실제로 찍혔는지
+- `proxy-log`, `target-log` : 로그에 `Compiling proxy`, `Compiling <path>`가 찍혔는지
 - 종료 코드: `0` = 첫 요청 응답 확보, `1` = `404` 또는 `000 timeout` 재현
 
 운영 메모:
 
 - `404`는 route 누락으로 보고 실패 처리
-- `000`은 route 결함이 아니라 **첫 요청 compile timeout / dev 미응답**으로 해석
+- `000`은 route 결함이 아니라 **첫 요청 compile timeout / webpack 특성**으로 해석
 - 종료 시 `.next/dev/types`를 정리해 후속 `npm run type-check` 오염을 방지
 
 ### Turbopack trace 수집

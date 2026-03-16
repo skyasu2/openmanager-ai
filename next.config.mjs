@@ -182,21 +182,12 @@ const nextConfig = {
 
   // 🚧 리라이트 설정 (개발 환경 전용 파일 보호)
   async rewrites() {
-    return [
-      // 개발 환경에서만 테스트 도구 접근 허용
-      ...(process.env.NODE_ENV === 'development'
-        ? [
-            {
-              source: '/test-tools/:path*',
-              destination: '/tests/browser/:path*',
-            },
-            {
-              source: '/dev/:path*',
-              destination: '/api/dev/:path*',
-            },
-          ]
-        : []),
-    ];
+    // 미사용 dev-only rewrites 제거 (2026-03-16):
+    // /test-tools/:path* → /tests/browser/:path* 및 /dev/:path* → /api/dev/:path* 는
+    // 대상 라우트(src/app/tests/browser/, src/app/api/dev/)가 존재하지 않아 dead code였음.
+    // next dev --webpack 모드에서 rewrites가 있으면 첫 요청 시 "Compiling proxy" 단계가
+    // 추가되므로 불필요한 진입점을 제거해 라우팅 경로를 단순화함.
+    return [];
   },
 
   // 🔄 리다이렉트 설정 (BF-Cache 최적화)

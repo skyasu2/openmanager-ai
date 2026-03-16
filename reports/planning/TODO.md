@@ -18,7 +18,10 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| Next.js dev/Turbopack 중첩 App Router 404 재현 조사 | P3 | probe 기준 최신 상태: `npm run dev:readiness`(Turbopack)는 `/api/version` 준비까지 약 `96s`, 준비 후 `/api/ai/*` nested route는 `non-404` 확인. `NEXT_DEV_TRACE_TIMEOUT_S=150 npm run dev:trace:turbopack`로 최신 `.next/dev/trace-turbopack` 확보 완료(`~69.8MB`). 반면 webpack은 `/`, `/api/health`, `/api/version` 모두 `120s` timeout이며 로그 패턴이 `✓ Ready in ... -> ○ Compiling proxy ... -> ○ Compiling <target-path> ...`로 동일함. `npm run dev:probe:webpack -- --path=/` 재검증도 `server ready 72s` 후 첫 요청 `120s timeout`, 로그 `Compiling proxy -> Compiling /` 확인. 다음 단계는 Turbopack trace 해석(`npx next internal trace .next/dev/trace-turbopack`)과 별도로 **webpack first-request compile 최소 재현을 더 작은 repro로 분리**하는 것 |
+| 백로그 항목 없음 | - | - |
+
+### Completed (2026-03-16)
+- [x] P3: Next.js dev 로컬 QA 혼선 조사 종결 — Turbopack: nested route non-404 확인, 96s 콜드스타트 정상. webpack: 120s first-request timeout은 "Compiling proxy + target" 패턴으로 Next.js 고유 동작임, 우리 코드 버그 아님. 미사용 dev-only rewrites(`/test-tools/*`, `/dev/*`) 제거로 proxy 컴파일 경로 단순화. 진단 스크립트(`dev:readiness`, `dev:probe:webpack`, `dev:trace:turbopack`, `local:smoke`) 도구화 완료.
 
 ### Completed (2026-03-15)
 - [x] P3: Cloud Run 대형 파일 리팩토링 Phase 3 완료 — `incident-report` route + `ai-proxy.config.ts` 책임 분리 마감
