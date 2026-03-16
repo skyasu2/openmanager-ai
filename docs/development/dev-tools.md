@@ -172,6 +172,7 @@ npx next internal trace .next/dev/trace-turbopack
 - trace 수집 전에는 `npm run dev:readiness`로 기본 준비 시간을 먼저 확인하는 편이 낫습니다.
 - `2026-03-16` 검증 기준으로 `NEXT_DEV_TRACE_TIMEOUT_S=150 npm run dev:trace:turbopack`가 성공했고, `.next/dev/trace-turbopack` 파일(`~3.4MB`)이 생성됨
 - 같은 날 재검증 기준으로 trace 재수집도 성공했고, 최신 `.next/dev/trace-turbopack` 크기는 약 `69.8MB`
+- readiness/trace 스크립트는 종료 시 `.next/dev/types`를 정리해 이후 `npm run type-check`가 깨진 dev route 타입에 오염되지 않게 함
 
 ### 로컬 API 스모크 (`local:smoke`)
 

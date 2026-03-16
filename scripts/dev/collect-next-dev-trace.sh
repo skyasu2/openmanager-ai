@@ -56,6 +56,8 @@ cleanup() {
     fi
     wait "$SERVER_PID" 2>/dev/null || true
   fi
+  # Keep the trace file, but drop generated dev route types so later type-checks stay clean.
+  rm -rf .next/dev/types 2>/dev/null || true
   rm -f "$NEXT_LOG_FILE"
 }
 trap cleanup EXIT INT TERM

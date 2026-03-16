@@ -67,6 +67,8 @@ cleanup() {
     fi
     wait "$SERVER_PID" 2>/dev/null || true
   fi
+  # Avoid broken .next/dev route types from poisoning subsequent `npm run type-check`.
+  rm -rf .next/dev/types 2>/dev/null || true
   rm -f "$NEXT_LOG_FILE"
 }
 trap cleanup EXIT INT TERM
