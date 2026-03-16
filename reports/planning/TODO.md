@@ -250,7 +250,6 @@
 | Task | Priority | Status | Description |
 |------|----------|--------|-------------|
 | security-attack-regression-pack | P1 | Deferred | 보안 QA 체계 구축 (실운영형 공격 회귀팩) |
-| ai-code-gate-input-policy | P1 | Deferred | Prompt 패턴 15개 방어 정책 운영화 |
 
 ## Completed Archive
 
