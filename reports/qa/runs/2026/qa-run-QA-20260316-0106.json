@@ -1,0 +1,83 @@
+{
+  "runId": "QA-20260316-0106",
+  "recordedAt": "2026-03-16T07:11:09.946Z",
+  "recordedAtKst": "2026-03-16 16:11:09 KST",
+  "runTitle": "Production Playwright MCP QA - v8.9.1 Release Alignment Validation (2026-03-16)",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "frontendUrl": "https://openmanager-ai.vercel.app",
+    "backendUrl": "https://ai-engine-jdhrhws7ia-an.a.run.app",
+    "cloudRunRevision": "ai-engine-00251-8qt"
+  },
+  "checks": {
+    "total": 8,
+    "passed": 8,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Playwright MCP 실브라우저로 landing, dashboard, AI sidebar, streaming 응답 경로를 프로덕션에서 재현 검증했다.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Cloud Run ai-engine-00251-8qt 배포 직후 /health version 8.9.1, /monitoring 403(unauthed expected), Vercel /api/health?service=ai 200을 교차 확인했다.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "AI 사이드바에서 '현재 모든 서버의 상태를 요약해줘' 질의에 Streaming 응답이 즉시 반환되고 서버 수/위험 서버 요약이 정상 표시됐다.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "브라우저 network에서 /api/ai/supervisor/stream/v2 200, browser console error 0, Vercel /api/version 8.9.1을 확인해 운영 경로 이상이 없음을 검증했다.",
+      "nextAction": ""
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Landing PASS: 홈 화면 footer에 v8.9.1 노출 확인",
+    "Flow PASS: 시스템 시작 -> /dashboard 진입 정상",
+    "Dashboard PASS: 전체 15대, 온라인 14대, 위험 1대 렌더링 정상",
+    "AI PASS: AI 어시스턴트 오픈 후 '현재 모든 서버의 상태를 요약해줘' 응답 정상",
+    "AI response PASS: 전체 15대 / 정상 14대 / 비상 1대 / 주의 서버 cache-redis-dc1-01 메모리 90% 확인",
+    "Network PASS: /api/ai/supervisor/stream/v2 200, /api/health?service=ai 200, /api/version 200",
+    "Cloud Run PASS: /health version 8.9.1, /monitoring 403 (인증 없을 때 예상 동작)",
+    "Browser console error 0건"
+  ],
+  "links": [
+    {
+      "label": "Vercel URL",
+      "url": "https://openmanager-ai.vercel.app"
+    },
+    {
+      "label": "Cloud Run URL",
+      "url": "https://ai-engine-jdhrhws7ia-an.a.run.app"
+    },
+    {
+      "label": "Cloud Build",
+      "url": "https://console.cloud.google.com/cloud-build/builds/4c190085-b04f-4d90-b644-66f25817bb06?project=490817238363"
+    }
+  ]
+}
