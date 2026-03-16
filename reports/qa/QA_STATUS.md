@@ -1,15 +1,15 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-16 17:30:19 KST
+> Generated at: 2026-03-16 18:03:40 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 107 |
-| Total Checks | 787 |
-| Passed | 744 |
+| Total Runs | 108 |
+| Total Checks | 795 |
+| Passed | 752 |
 | Failed | 39 |
 | Completed Items | 173 |
 | Pending Items | 0 |
@@ -18,15 +18,18 @@
 | Expert Domains Tracked | 6 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 99.43% |
-| Last Run | QA-20260316-0107 (2026-03-16T08:30:19.073Z) |
+| Last Run | QA-20260316-0108 (2026-03-16T09:03:40.061Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260316-0107 (2026-03-16T08:30:19.073Z)
+Latest run: QA-20260316-0108 (2026-03-16T09:03:40.061Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| AI Security & Reliability Architect | appropriate | no | - |
+| AI Quality Assurance Specialist | appropriate | no | - |
+| IT Monitoring & Observability SME | appropriate | no | - |
+| DevOps / SRE Engineer | appropriate | no | - |
+| Test Automation Architect | appropriate | no | - |
 
 ## Expert Domain Open Gaps
 
@@ -299,6 +302,7 @@ Latest run: QA-20260316-0107 (2026-03-16T08:30:19.073Z)
 
 | Run ID | Time (UTC) | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260316-0108 | 2026-03-16T09:03:40.061Z | Vercel Production QA - Frontend and AI Assistant regression validation | 8 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260316-0107 | 2026-03-16T08:30:19.073Z | Security QA - AI Code Gate Input Policy (Prompt Injection 5패턴) | 5 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260316-0106 | 2026-03-16T07:11:09.946Z | Production Playwright MCP QA - v8.9.1 Release Alignment Validation (2026-03-16) | 8 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260315-0105 | 2026-03-15T13:44:26.529Z | Production Playwright MCP QA - v8.9.0 Release Alignment Validation (2026-03-15) | 8 | 0 | 0 | 0 | 0 | 0 |
@@ -318,5 +322,4 @@ Latest run: QA-20260316-0107 (2026-03-16T08:30:19.073Z)
 | QA-20260313-0091 | 2026-03-13T12:15:43.286Z | Vercel Production 종합 QA #91 - 프론트엔드 전기능 + UI/UX + AI Assistant + 성능 평가 | 18 | 0 | 0 | 0 | 0 | 1 |
 | QA-20260310-0090 | 2026-03-10T13:27:23.276Z | Vercel Production 종합 QA #90 - UI/UX + AI Chat + Reporter + Analyst 재검증 | 7 | 0 | 0 | 0 | 1 | 1 |
 | QA-20260310-0089 | 2026-03-10T12:14:07.497Z | Vercel Production 종합 QA #89 - AI Chat Cloud Run 응답 성공 + 전체 AI 기능 재검증 | 18 | 1 | 0 | 0 | 1 | 1 |
-| QA-20260310-0088 | 2026-03-10T11:33:28.088Z | Vercel Production 종합 QA #88 - UI/UX + AI 어시스턴트 성능/답변수준 평가 | 21 | 0 | 1 | 0 | 0 | 2 |
 

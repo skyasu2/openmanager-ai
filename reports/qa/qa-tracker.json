@@ -2,15 +2,15 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-03-16T08:30:19.073Z"
+    "updatedAt": "2026-03-16T09:03:40.061Z"
   },
   "sequence": {
-    "nextRunNumber": 108
+    "nextRunNumber": 109
   },
   "summary": {
-    "totalRuns": 107,
-    "totalChecks": 787,
-    "totalPassed": 744,
+    "totalRuns": 108,
+    "totalChecks": 795,
+    "totalPassed": 752,
     "totalFailed": 39,
     "completionRate": 99.43,
     "completedItems": 173,
@@ -19,8 +19,8 @@
     "wontFixItems": 38,
     "expertDomainsTracked": 6,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260316-0107",
-    "lastRecordedAt": "2026-03-16T08:30:19.073Z"
+    "lastRunId": "QA-20260316-0108",
+    "lastRecordedAt": "2026-03-16T09:03:40.061Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -9130,6 +9130,60 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260316-0108",
+      "recordedAt": "2026-03-16T09:03:40.061Z",
+      "recordedAtKst": "2026-03-16 18:03:40 KST",
+      "title": "Vercel Production QA - Frontend and AI Assistant regression validation",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260316-0108.json",
+      "checks": {
+        "total": 8,
+        "passed": 8,
+        "failed": 0
+      },
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "랜딩부터 대시보드 진입, AI 사이드바 오픈, 질의 전송, 스트리밍 응답 품질까지 실브라우저로 연속 검증했다.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "observability-monitoring",
+          "domainName": "IT Monitoring & Observability SME",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "브라우저 콘솔 오류 0건, Vercel API health 200, AI stream 경로 200을 함께 확인해 사용자 경로와 운영 신호를 교차 검증했다.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "실서비스 Vercel 환경에서 버전 8.9.1과 AI health 상태를 확인했고, Cloud Run 연동 경로가 사용자 세션에서 정상 응답했다.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Playwright MCP로 랜딩, 시스템 시작, 대시보드, AI 사이드바, 질의 전송, 응답 유지, 재오픈 히스토리까지 회귀 검증했다.",
+          "nextAction": ""
+        }
+      ],
+      "expertCount": 4,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -9138,16 +9192,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 66,
-      "appropriateCount": 63,
+      "seenCount": 67,
+      "appropriateCount": 64,
       "partialCount": 3,
       "inappropriateCount": 0,
       "improvementNeededCount": 11,
-      "lastRunId": "QA-20260316-0106",
-      "lastSeenAt": "2026-03-16T07:11:09.946Z",
+      "lastRunId": "QA-20260316-0108",
+      "lastSeenAt": "2026-03-16T09:03:40.061Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "AI 사이드바에서 '현재 모든 서버의 상태를 요약해줘' 질의에 Streaming 응답이 즉시 반환되고 서버 수/위험 서버 요약이 정상 표시됐다.",
+      "lastRationale": "랜딩부터 대시보드 진입, AI 사이드바 오픈, 질의 전송, 스트리밍 응답 품질까지 실브라우저로 연속 검증했다.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -9155,16 +9209,16 @@
       "domainName": "IT Monitoring & Observability SME",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 43,
-      "appropriateCount": 25,
+      "seenCount": 44,
+      "appropriateCount": 26,
       "partialCount": 18,
       "inappropriateCount": 0,
       "improvementNeededCount": 18,
-      "lastRunId": "QA-20260316-0106",
-      "lastSeenAt": "2026-03-16T07:11:09.946Z",
+      "lastRunId": "QA-20260316-0108",
+      "lastSeenAt": "2026-03-16T09:03:40.061Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "브라우저 network에서 /api/ai/supervisor/stream/v2 200, browser console error 0, Vercel /api/version 8.9.1을 확인해 운영 경로 이상이 없음을 검증했다.",
+      "lastRationale": "브라우저 콘솔 오류 0건, Vercel API health 200, AI stream 경로 200을 함께 확인해 사용자 경로와 운영 신호를 교차 검증했다.",
       "lastNextAction": ""
     },
     "ai-security-reliability": {
@@ -9189,16 +9243,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 31,
-      "appropriateCount": 28,
+      "seenCount": 32,
+      "appropriateCount": 29,
       "partialCount": 3,
       "inappropriateCount": 0,
       "improvementNeededCount": 3,
-      "lastRunId": "QA-20260316-0106",
-      "lastSeenAt": "2026-03-16T07:11:09.946Z",
+      "lastRunId": "QA-20260316-0108",
+      "lastSeenAt": "2026-03-16T09:03:40.061Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Cloud Run ai-engine-00251-8qt 배포 직후 /health version 8.9.1, /monitoring 403(unauthed expected), Vercel /api/health?service=ai 200을 교차 확인했다.",
+      "lastRationale": "실서비스 Vercel 환경에서 버전 8.9.1과 AI health 상태를 확인했고, Cloud Run 연동 경로가 사용자 세션에서 정상 응답했다.",
       "lastNextAction": ""
     },
     "test-automation": {
@@ -9206,16 +9260,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 65,
-      "appropriateCount": 61,
+      "seenCount": 66,
+      "appropriateCount": 62,
       "partialCount": 4,
       "inappropriateCount": 0,
       "improvementNeededCount": 5,
-      "lastRunId": "QA-20260316-0106",
-      "lastSeenAt": "2026-03-16T07:11:09.946Z",
+      "lastRunId": "QA-20260316-0108",
+      "lastSeenAt": "2026-03-16T09:03:40.061Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Playwright MCP 실브라우저로 landing, dashboard, AI sidebar, streaming 응답 경로를 프로덕션에서 재현 검증했다.",
+      "lastRationale": "Playwright MCP로 랜딩, 시스템 시작, 대시보드, AI 사이드바, 질의 전송, 응답 유지, 재오픈 히스토리까지 회귀 검증했다.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {
