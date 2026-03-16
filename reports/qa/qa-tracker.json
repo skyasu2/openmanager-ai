@@ -2,15 +2,15 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-03-16T10:23:14.962Z"
+    "updatedAt": "2026-03-16T10:33:55.207Z"
   },
   "sequence": {
-    "nextRunNumber": 110
+    "nextRunNumber": 111
   },
   "summary": {
-    "totalRuns": 109,
-    "totalChecks": 800,
-    "totalPassed": 757,
+    "totalRuns": 110,
+    "totalChecks": 812,
+    "totalPassed": 769,
     "totalFailed": 39,
     "completionRate": 100,
     "completedItems": 174,
@@ -19,8 +19,8 @@
     "wontFixItems": 38,
     "expertDomainsTracked": 6,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260316-0109",
-    "lastRecordedAt": "2026-03-16T10:23:14.962Z"
+    "lastRunId": "QA-20260316-0110",
+    "lastRecordedAt": "2026-03-16T10:33:55.207Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -9214,6 +9214,52 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260316-0110",
+      "recordedAt": "2026-03-16T10:33:55.207Z",
+      "recordedAtKst": "2026-03-16 19:33:55 KST",
+      "title": "Vercel Production QA - Full regression (랜딩~AI 응답~이력 유지)",
+      "owner": "claude",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260316-0110.json",
+      "checks": {
+        "total": 12,
+        "passed": 12,
+        "failed": 0
+      },
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "랜딩부터 대시보드 진입, AI 사이드바 오픈, 스타터 프롬프트 클릭, 스트리밍 응답, 닫기 후 이력 유지까지 실브라우저로 전체 흐름 검증. 응답 내용이 실제 서버 데이터(lb-haproxy-dc1-01 CPU 61%)와 일치.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "observability-monitoring",
+          "domainName": "IT Monitoring & Observability SME",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "콘솔 에러 0건, POST /api/ai/supervisor/stream/v2 200, GET /api/health?service=ai 200 (latency 135ms, backend cloud-run) 모두 정상.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "version 8.9.1, nextjs 16.1.6 production 환경 확인. Cloud Run AI Engine 연동 135ms 응답.",
+          "nextAction": ""
+        }
+      ],
+      "expertCount": 3,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -9222,16 +9268,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 67,
-      "appropriateCount": 64,
+      "seenCount": 68,
+      "appropriateCount": 65,
       "partialCount": 3,
       "inappropriateCount": 0,
       "improvementNeededCount": 11,
-      "lastRunId": "QA-20260316-0108",
-      "lastSeenAt": "2026-03-16T09:03:40.061Z",
+      "lastRunId": "QA-20260316-0110",
+      "lastSeenAt": "2026-03-16T10:33:55.207Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "랜딩부터 대시보드 진입, AI 사이드바 오픈, 질의 전송, 스트리밍 응답 품질까지 실브라우저로 연속 검증했다.",
+      "lastRationale": "랜딩부터 대시보드 진입, AI 사이드바 오픈, 스타터 프롬프트 클릭, 스트리밍 응답, 닫기 후 이력 유지까지 실브라우저로 전체 흐름 검증. 응답 내용이 실제 서버 데이터(lb-haproxy-dc1-01 CPU 61%)와 일치.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -9239,16 +9285,16 @@
       "domainName": "IT Monitoring & Observability SME",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 44,
-      "appropriateCount": 26,
+      "seenCount": 45,
+      "appropriateCount": 27,
       "partialCount": 18,
       "inappropriateCount": 0,
       "improvementNeededCount": 18,
-      "lastRunId": "QA-20260316-0108",
-      "lastSeenAt": "2026-03-16T09:03:40.061Z",
+      "lastRunId": "QA-20260316-0110",
+      "lastSeenAt": "2026-03-16T10:33:55.207Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "브라우저 콘솔 오류 0건, Vercel API health 200, AI stream 경로 200을 함께 확인해 사용자 경로와 운영 신호를 교차 검증했다.",
+      "lastRationale": "콘솔 에러 0건, POST /api/ai/supervisor/stream/v2 200, GET /api/health?service=ai 200 (latency 135ms, backend cloud-run) 모두 정상.",
       "lastNextAction": ""
     },
     "ai-security-reliability": {
@@ -9273,16 +9319,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 32,
-      "appropriateCount": 29,
+      "seenCount": 33,
+      "appropriateCount": 30,
       "partialCount": 3,
       "inappropriateCount": 0,
       "improvementNeededCount": 3,
-      "lastRunId": "QA-20260316-0108",
-      "lastSeenAt": "2026-03-16T09:03:40.061Z",
+      "lastRunId": "QA-20260316-0110",
+      "lastSeenAt": "2026-03-16T10:33:55.207Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "실서비스 Vercel 환경에서 버전 8.9.1과 AI health 상태를 확인했고, Cloud Run 연동 경로가 사용자 세션에서 정상 응답했다.",
+      "lastRationale": "version 8.9.1, nextjs 16.1.6 production 환경 확인. Cloud Run AI Engine 연동 135ms 응답.",
       "lastNextAction": ""
     },
     "test-automation": {

@@ -1,15 +1,15 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-16 19:23:15 KST
+> Generated at: 2026-03-16 19:33:55 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 109 |
-| Total Checks | 800 |
-| Passed | 757 |
+| Total Runs | 110 |
+| Total Checks | 812 |
+| Passed | 769 |
 | Failed | 39 |
 | Completed Items | 174 |
 | Pending Items | 0 |
@@ -18,15 +18,17 @@
 | Expert Domains Tracked | 6 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Run | QA-20260316-0109 (2026-03-16T10:23:14.962Z) |
+| Last Run | QA-20260316-0110 (2026-03-16T10:33:55.207Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260316-0109 (2026-03-16T10:23:14.962Z)
+Latest run: QA-20260316-0110 (2026-03-16T10:33:55.207Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| AI Security & Reliability Architect | appropriate | no | - |
+| AI Quality Assurance Specialist | appropriate | no | - |
+| IT Monitoring & Observability SME | appropriate | no | - |
+| DevOps / SRE Engineer | appropriate | no | - |
 
 ## Expert Domain Open Gaps
 
@@ -299,6 +301,7 @@ Latest run: QA-20260316-0109 (2026-03-16T10:23:14.962Z)
 
 | Run ID | Time (UTC) | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260316-0110 | 2026-03-16T10:33:55.207Z | Vercel Production QA - Full regression (랜딩~AI 응답~이력 유지) | 12 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260316-0109 | 2026-03-16T10:23:14.962Z | Security Regression Smoke - security-attack-regression-pack closure | 5 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260316-0108 | 2026-03-16T09:03:40.061Z | Vercel Production QA - Frontend and AI Assistant regression validation | 8 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260316-0107 | 2026-03-16T08:30:19.073Z | Security QA - AI Code Gate Input Policy (Prompt Injection 5패턴) | 5 | 1 | 0 | 0 | 0 | 0 |
@@ -318,5 +321,4 @@ Latest run: QA-20260316-0109 (2026-03-16T10:23:14.962Z)
 | QA-20260313-0093 | 2026-03-13T13:21:04.712Z | Vercel Preview QA - stream/v2 smoke after env recovery | 1 | 2 | 0 | 0 | 0 | 1 |
 | QA-20260313-0092 | 2026-03-13T13:18:38.830Z | Vercel Preview Recovery QA - Env Sync and Guest Flow | 8 | 6 | 0 | 0 | 0 | 1 |
 | QA-20260313-0091 | 2026-03-13T12:15:43.286Z | Vercel Production 종합 QA #91 - 프론트엔드 전기능 + UI/UX + AI Assistant + 성능 평가 | 18 | 0 | 0 | 0 | 0 | 1 |
-| QA-20260310-0090 | 2026-03-10T13:27:23.276Z | Vercel Production 종합 QA #90 - UI/UX + AI Chat + Reporter + Analyst 재검증 | 7 | 0 | 0 | 0 | 1 | 1 |
 

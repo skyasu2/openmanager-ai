@@ -1,0 +1,72 @@
+{
+  "runId": "QA-20260316-0110",
+  "recordedAt": "2026-03-16T10:33:55.207Z",
+  "recordedAtKst": "2026-03-16 19:33:55 KST",
+  "runTitle": "Vercel Production QA - Full regression (랜딩~AI 응답~이력 유지)",
+  "owner": "claude",
+  "source": "playwright-mcp",
+  "environment": {
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "frontendUrl": "https://openmanager-ai.vercel.app",
+    "version": "8.9.1"
+  },
+  "checks": {
+    "total": 12,
+    "passed": 12,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "랜딩부터 대시보드 진입, AI 사이드바 오픈, 스타터 프롬프트 클릭, 스트리밍 응답, 닫기 후 이력 유지까지 실브라우저로 전체 흐름 검증. 응답 내용이 실제 서버 데이터(lb-haproxy-dc1-01 CPU 61%)와 일치.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "콘솔 에러 0건, POST /api/ai/supervisor/stream/v2 200, GET /api/health?service=ai 200 (latency 135ms, backend cloud-run) 모두 정상.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "version 8.9.1, nextjs 16.1.6 production 환경 확인. Cloud Run AI Engine 연동 135ms 응답.",
+      "nextAction": ""
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "PASS: 랜딩 페이지 정상 렌더링, footer v8.9.1 확인",
+    "PASS: 시스템 시작 → /dashboard 정상 진입",
+    "PASS: 대시보드 서버 현황 — 전체 15, 온라인 14, 경고 1, 위험 0, 오프라인 0",
+    "PASS: AI 어시스턴트 사이드바 오픈, 엔진 상태 Ready",
+    "PASS: 스타터 프롬프트 5개 표시",
+    "PASS: 스타터 '서버 상태 확인' 클릭 → 질의 전송 → 스트리밍 응답 수신",
+    "PASS: AI 응답 내용 — 전체 15대: 정상 14, 경고 1 / 주의 서버: lb-haproxy-dc1-01 CPU 61% (상승 추세)",
+    "PASS: 서버 카드 상세 펼치기/접기 정상",
+    "PASS: AI 사이드바 닫기 후 재오픈 시 대화 이력 유지 (2/20)",
+    "PASS: 브라우저 콘솔 에러 0건",
+    "PASS: POST /api/ai/supervisor/stream/v2 → 200",
+    "PASS: GET /api/version → 200, version=8.9.1, nextjs=16.1.6",
+    "PASS: GET /api/health?service=ai → 200, status=ok, backend=cloud-run, latency=135ms",
+    "초기 ERR_ABORTED 2건(sentry-tunnel, /api/system)은 세션 만료 다이얼로그 처리 중 발생한 것으로 이후 정상 복구됨"
+  ],
+  "links": [
+    {
+      "label": "Vercel URL",
+      "url": "https://openmanager-ai.vercel.app"
+    }
+  ]
+}
