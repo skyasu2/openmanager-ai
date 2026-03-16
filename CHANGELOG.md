@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.9.1](https://github.com/skyasu2/openmanager-ai/compare/v8.9.0...v8.9.1) (2026-03-16)
+
+
+### Features
+
+* **dev:** add local:smoke script for production-like API route validation ([9c74247](https://github.com/skyasu2/openmanager-ai/commit/9c74247ab5209faf9e906a5761fb07378bf842f1))
+* **dev:** add next dev readiness probe ([28c3c50](https://github.com/skyasu2/openmanager-ai/commit/28c3c503618bdbaf24c4ce075ec3bd255c6c9078))
+* **dev:** add turbopack trace collector ([61e9c76](https://github.com/skyasu2/openmanager-ai/commit/61e9c76acc584fc7fd1db6a9e1019424ee004b81))
+* **dev:** add webpack first-request probe ([6f9ad0b](https://github.com/skyasu2/openmanager-ai/commit/6f9ad0b116e4198d58d08984f32aea41a189400c))
+
+
+### Bug Fixes
+
+* **ai-engine:** add opt-in redis timeouts ([b7d52a8](https://github.com/skyasu2/openmanager-ai/commit/b7d52a807dda458f701d079f8b5bbd7f5239e62b))
+* **ai-engine:** raise docker preflight timeout budget ([644cfbb](https://github.com/skyasu2/openmanager-ai/commit/644cfbbecf0c7a3d289c07a76151fff337865f2b))
+* **config:** remove dead-code dev rewrites and close webpack latency investigation ([795dbea](https://github.com/skyasu2/openmanager-ai/commit/795dbea41b6fd7fe529e2eb88e93a50751bad527))
+* **dev:** clean next dev types after diagnostics ([95f663a](https://github.com/skyasu2/openmanager-ai/commit/95f663a4c1b8332b14f6436fddab3de4143f33d0))
+* **dev:** fix next dev readiness probe port binding bug ([5281e28](https://github.com/skyasu2/openmanager-ai/commit/5281e282befb16b795153902cd802de087429b23))
+* **dev:** harden local api smoke startup checks ([fc632be](https://github.com/skyasu2/openmanager-ai/commit/fc632beec45f5d7e6b1dd20a9529a22150b9b31f))
+* **dev:** harden next dev readiness probe ([6a7ef93](https://github.com/skyasu2/openmanager-ai/commit/6a7ef93068c0a4fbb3abca6d0cd849b3cf7b207f))
+* **redis:** bound circuit breaker store waits ([2184482](https://github.com/skyasu2/openmanager-ai/commit/2184482e48bf2c17d735a3cf73316f4089e48276))
+* **redis:** bound root app upstash waits ([6d7c99e](https://github.com/skyasu2/openmanager-ai/commit/6d7c99e009056a01f8959f21cf52fc1b1755711f))
+
 ## [8.9.0](https://github.com/skyasu2/openmanager-ai/compare/v8.8.0...v8.9.0) (2026-03-15)
 
 
