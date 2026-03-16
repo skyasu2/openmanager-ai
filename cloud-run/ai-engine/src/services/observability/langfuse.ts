@@ -14,6 +14,7 @@ export {
 
 export {
   getLangfuse,
+  isLangfuseOperational,
   initializeLangfuseClient,
   enableLangfuseTestMode,
   disableLangfuseTestMode,

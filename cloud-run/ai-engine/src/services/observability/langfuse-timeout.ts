@@ -1,12 +1,16 @@
 import { logger } from '../../lib/logger';
 import type { TimeoutEventContext, TimeoutSpanHandle } from './langfuse-contracts';
-import { getLangfuse } from './langfuse-client';
-import { shouldTrackLangfuseEvent } from './langfuse-usage';
+import { getLangfuse, isLangfuseOperational } from './langfuse-client';
+import { isLangfuseUsageReady, shouldTrackLangfuseEvent } from './langfuse-usage';
 
 export function logTimeoutEvent(
   type: 'warning' | 'error',
   context: TimeoutEventContext
 ): void {
+  if (!isLangfuseOperational() || !isLangfuseUsageReady()) {
+    return;
+  }
+
   if (!shouldTrackLangfuseEvent(context.sessionId)) {
     return;
   }
@@ -43,6 +47,12 @@ export function createTimeoutSpan(
   operation: string,
   timeout: number
 ): TimeoutSpanHandle {
+  if (!isLangfuseOperational() || !isLangfuseUsageReady()) {
+    return {
+      complete: () => {},
+    };
+  }
+
   if (!shouldTrackLangfuseEvent(traceId)) {
     return {
       complete: () => {},

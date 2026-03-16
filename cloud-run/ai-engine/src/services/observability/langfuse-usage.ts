@@ -5,12 +5,12 @@ import { isLangfuseTestModeEnabled } from './langfuse-flags';
 const FREE_TIER_LIMIT = 50_000;
 const SAFETY_THRESHOLD = 0.9;
 
-/** 샘플링 비율: LANGFUSE_SAMPLE_RATE 환경변수로 조정 가능 (0.0~1.0, 기본 1.0) */
+/** 샘플링 비율: LANGFUSE_SAMPLE_RATE 환경변수로 조정 가능 (0.0~1.0, 기본 0.1) */
 const DEFAULT_SAMPLE_RATE = (() => {
   const envRate = process.env.LANGFUSE_SAMPLE_RATE;
-  if (!envRate) return 1.0;
+  if (!envRate) return 0.1;
   const parsed = Number.parseFloat(envRate);
-  if (!Number.isFinite(parsed) || parsed < 0 || parsed > 1) return 1.0;
+  if (!Number.isFinite(parsed) || parsed < 0 || parsed > 1) return 0.1;
   return parsed;
 })();
 
@@ -30,6 +30,7 @@ let usageState: UsageState = {
   isDisabled: false,
   lastWarning: null,
 };
+let usageStateReady = false;
 
 interface SamplingContext {
   sampled: boolean;
@@ -154,10 +155,17 @@ export function getSamplingContext(sessionId: string): boolean {
 }
 
 export function consumeLangfuseQuota(count: number = 1): boolean {
+  if (!usageStateReady) {
+    return false;
+  }
   return incrementUsage(count);
 }
 
 export function shouldTrackLangfuseEvent(sessionId?: string): boolean {
+  if (!usageStateReady) {
+    return false;
+  }
+
   if (!shouldSampleWithContext(sessionId)) {
     return false;
   }
@@ -176,7 +184,13 @@ export async function restoreUsageFromRedis(): Promise<void> {
     }
   } catch {
     logger.warn('[Langfuse] Redis 복원 실패, 인메모리 카운터 사용');
+  } finally {
+    usageStateReady = true;
   }
+}
+
+export function isLangfuseUsageReady(): boolean {
+  return usageStateReady;
 }
 
 export function getLangfuseUsageStatus(): {
@@ -184,6 +198,7 @@ export function getLangfuseUsageStatus(): {
   limit: number;
   usagePercent: number;
   isDisabled: boolean;
+  isReady: boolean;
   monthKey: string;
   testMode: boolean;
   sampleRate: string;
@@ -194,6 +209,7 @@ export function getLangfuseUsageStatus(): {
     limit: FREE_TIER_LIMIT,
     usagePercent: Math.round((usageState.eventCount / FREE_TIER_LIMIT) * 100),
     isDisabled: usageState.isDisabled,
+    isReady: usageStateReady,
     monthKey: usageState.monthKey,
     testMode: isLangfuseTestModeEnabled(),
     sampleRate: isLangfuseTestModeEnabled() ? '100%' : `${DEFAULT_SAMPLE_RATE * 100}%`,

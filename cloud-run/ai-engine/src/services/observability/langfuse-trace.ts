@@ -4,11 +4,19 @@ import type {
   LangfuseTrace,
   TraceMetadata,
 } from './langfuse-contracts';
-import { getLangfuse } from './langfuse-client';
+import { getLangfuse, isLangfuseOperational } from './langfuse-client';
 import { createNoOpTrace } from './langfuse-noop';
-import { consumeLangfuseQuota, shouldTrackLangfuseEvent } from './langfuse-usage';
+import {
+  consumeLangfuseQuota,
+  isLangfuseUsageReady,
+  shouldTrackLangfuseEvent,
+} from './langfuse-usage';
 
 export function createSupervisorTrace(metadata: TraceMetadata): LangfuseTrace {
+  if (!isLangfuseOperational() || !isLangfuseUsageReady()) {
+    return createNoOpTrace();
+  }
+
   if (!shouldTrackLangfuseEvent(metadata.sessionId)) {
     return createNoOpTrace();
   }
@@ -115,6 +123,10 @@ export function finalizeTrace(
 }
 
 export function scoreByTraceId(traceId: string, name: string, value: number): boolean {
+  if (!isLangfuseOperational() || !isLangfuseUsageReady()) {
+    return false;
+  }
+
   if (!consumeLangfuseQuota(1)) {
     return false;
   }

@@ -47,7 +47,18 @@ feedbackRouter.post('/', async (c: Context) => {
     const { traceId, score } = parseResult.data;
     const value = score === 'positive' ? 1 : 0;
 
-    scoreByTraceId(traceId, 'user-feedback', value);
+    const recorded = scoreByTraceId(traceId, 'user-feedback', value);
+
+    if (!recorded) {
+      logger.warn({ traceId, score, value }, 'User feedback not recorded to Langfuse');
+      return c.json(
+        {
+          success: false,
+          error: 'Service unavailable',
+        },
+        503
+      );
+    }
 
     logger.info({ traceId, score, value }, 'User feedback recorded to Langfuse');
 

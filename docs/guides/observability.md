@@ -90,7 +90,7 @@ curl -H "X-API-Key: $CLOUD_RUN_API_SECRET" \
     "isDisabled": false,
     "monthKey": "2026-02",
     "testMode": false,
-    "sampleRate": "100%"
+    "sampleRate": "10%"
   },
   "circuits": { ... },
   "agents": { ... }
@@ -353,6 +353,7 @@ curl -H "x-api-key: $KEY" \
 | `LANGFUSE_SECRET_KEY` | ✅ | Langfuse Secret Key (`sk-lf-...`) |
 | `LANGFUSE_PUBLIC_KEY` | ✅ | Langfuse Public Key (`pk-lf-...`) |
 | `LANGFUSE_BASE_URL` | - | 기본값: `https://us.cloud.langfuse.com` |
+| `LANGFUSE_SAMPLE_RATE` | - | 기본값: `0.1` (10% 샘플링) |
 | `LANGFUSE_TEST_MODE` | - | `true` 설정 시 100% 트레이싱 + 즉시 flush |
 
 ### Sentry (Vercel Frontend)

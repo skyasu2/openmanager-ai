@@ -24,6 +24,7 @@ app.route('/feedback', feedbackRouter);
 describe('Feedback Routes', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.mocked(scoreByTraceId).mockReturnValue(true);
   });
 
   it('positive 피드백을 score 1로 기록한다', async () => {
@@ -83,6 +84,21 @@ describe('Feedback Routes', () => {
     });
 
     expect(res.status).toBe(400);
+  });
+
+  it('Langfuse 기록이 거부되면 503을 반환한다', async () => {
+    vi.mocked(scoreByTraceId).mockReturnValueOnce(false);
+
+    const res = await app.request('/feedback', {
+      method: 'POST',
+      body: JSON.stringify({ traceId: 'trace-guard', score: 'positive' }),
+      headers: { 'Content-Type': 'application/json' },
+    });
+
+    expect(res.status).toBe(503);
+    const json = await res.json();
+    expect(json.success).toBe(false);
+    expect(json.error).toBe('Service unavailable');
   });
 
   it('내부 예외 메시지를 그대로 노출하지 않는다', async () => {

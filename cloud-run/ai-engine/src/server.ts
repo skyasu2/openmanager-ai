@@ -230,31 +230,23 @@ initOTelDataAsync().catch((err) => {
 });
 
 // ----------------------------------------------------------------------------
-// Deferred Services Initialization (triggered on first API request)
-// Langfuse + Redis restore are network-bound — deferring saves 2-5s on cold start
+// Background Observability Initialization
+// Start early to shrink cold-start trace gaps without blocking startup.
 // ----------------------------------------------------------------------------
-let servicesInitialized = false;
-app.use('/api/*', async (c: Context, next: Next) => {
-  if (!servicesInitialized) {
-    servicesInitialized = true;
+const langfuseConfig = getLangfuseConfig();
+if (langfuseConfig) {
+  logger.info({ baseUrl: langfuseConfig.baseUrl }, 'Langfuse init (background)');
+  void initializeLangfuseClient().catch((error) => {
+    logger.warn(
+      { error: error instanceof Error ? error.message : String(error) },
+      'Langfuse prewarm failed (non-blocking)'
+    );
+  });
 
-    const langfuseConfig = getLangfuseConfig();
-    if (langfuseConfig) {
-      logger.info({ baseUrl: langfuseConfig.baseUrl }, 'Langfuse init (deferred)');
-      void initializeLangfuseClient().catch((error) => {
-        logger.warn(
-          { error: error instanceof Error ? error.message : String(error) },
-          'Langfuse prewarm failed (non-blocking)'
-        );
-      });
-    } else {
-      logger.warn('Langfuse not configured - observability disabled');
-    }
-
-    void restoreUsageFromRedis().catch(() => {});
-  }
-  await next();
-});
+  void restoreUsageFromRedis().catch(() => {});
+} else {
+  logger.warn('Langfuse not configured - observability disabled');
+}
 
 // Start server BEFORE loading routes — /health, /warmup, /ready available immediately
 serve(

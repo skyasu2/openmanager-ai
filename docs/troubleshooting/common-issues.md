@@ -211,7 +211,7 @@ curl -H "X-API-Key: $CLOUD_RUN_API_SECRET" \
 
 ### Langfuse 사용량 급증
 
-- 기본 샘플링: 100% (사용량 낮아 안전하지만, 트래픽 급증 시 위험)
+- 기본 샘플링: 10% (무료 티어 기준 안전, 필요 시 `LANGFUSE_SAMPLE_RATE`로 조정)
 - 대응: `LANGFUSE_TEST_MODE` 환경변수 제거 확인, Cloud Run 로그에서 `⚠️ [Langfuse]` 경고 확인
 
 ## Sentry Issues

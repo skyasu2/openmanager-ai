@@ -12,6 +12,7 @@ let loadAttempted = false;
 
 let langfuseClient: LangfuseClient | null = null;
 let initPromise: Promise<LangfuseClient> | null = null;
+let langfuseOperational = false;
 
 async function loadLangfuse(): Promise<LangfuseConstructor | null> {
   if (loadAttempted) {
@@ -24,6 +25,7 @@ async function loadLangfuse(): Promise<LangfuseConstructor | null> {
     LangfuseClass = module.Langfuse;
     return LangfuseClass;
   } catch {
+    langfuseOperational = false;
     logger.warn('[Langfuse] Module not installed, observability disabled');
     return null;
   }
@@ -41,6 +43,7 @@ async function initLangfuse(): Promise<LangfuseClient> {
   const Langfuse = await loadLangfuse();
 
   if (!Langfuse) {
+    langfuseOperational = false;
     return createNoOpLangfuse();
   }
 
@@ -49,6 +52,7 @@ async function initLangfuse(): Promise<LangfuseClient> {
   const baseUrl = process.env.LANGFUSE_BASE_URL || 'https://us.cloud.langfuse.com';
 
   if (!secretKey || !publicKey) {
+    langfuseOperational = false;
     logger.warn('[Langfuse] Missing API keys, observability disabled');
     return createNoOpLangfuse();
   }
@@ -61,6 +65,7 @@ async function initLangfuse(): Promise<LangfuseClient> {
     ...flushConfig,
   });
 
+  langfuseOperational = true;
   logger.info(`[Langfuse] Initialized with ${baseUrl} (flushAt: ${flushConfig.flushAt})`);
   return client;
 }
@@ -82,6 +87,7 @@ async function reinitializeLangfuse(): Promise<void> {
     await langfuseClient.shutdownAsync();
     langfuseClient = null;
     initPromise = null;
+    langfuseOperational = false;
   }
 
   await ensureInitPromise();
@@ -94,6 +100,10 @@ export function getLangfuse(): LangfuseClient {
   }
 
   return langfuseClient;
+}
+
+export function isLangfuseOperational(): boolean {
+  return langfuseClient !== null && langfuseOperational;
 }
 
 export async function initializeLangfuseClient(): Promise<void> {
@@ -112,7 +122,7 @@ export async function enableLangfuseTestMode(): Promise<void> {
 
 export async function disableLangfuseTestMode(): Promise<void> {
   setLangfuseTestModeEnabled(false);
-  logger.info('[Langfuse] 테스트 모드 비활성화 - 100% 샘플링, 배치 플러시 복귀');
+  logger.info('[Langfuse] 테스트 모드 비활성화 - 기본 샘플링, 배치 플러시 복귀');
   await reinitializeLangfuse();
 }
 
@@ -127,5 +137,6 @@ export async function shutdownLangfuse(): Promise<void> {
     await langfuseClient.shutdownAsync();
     langfuseClient = null;
     initPromise = null;
+    langfuseOperational = false;
   }
 }
