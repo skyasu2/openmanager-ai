@@ -18,7 +18,7 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| Next.js dev/Turbopack 중첩 App Router 404 재현 조사 | P3 | `next dev`에서 `/api/ai/*` 등 2-depth+ route가 `_not-found` HTML로 응답. 1-depth는 정상. `NEXT_PRIVATE_TURBOPACK=false` 비교 + 재현 최소 케이스 분리 → 재현 시 Next.js GitHub 이슈 리포트 검토 |
+| Next.js dev/Turbopack 중첩 App Router 404 재현 조사 | P3 | 우선 `next dev` readiness(`/api/version`)부터 확인. `2026-03-16` 기준 현재 워크스페이스에서는 `Turbopack 기본`과 `--webpack` 모두 20초 내 응답 실패. readiness 확보 후 `/api/ai/*` 등 2-depth+ route의 `_not-found` HTML 여부를 다시 분리하고, 필요 시 최소 재현 케이스 + Next.js GitHub 이슈 검토 |
 
 ### Completed (2026-03-15)
 - [x] P3: Cloud Run 대형 파일 리팩토링 Phase 3 완료 — `incident-report` route + `ai-proxy.config.ts` 책임 분리 마감

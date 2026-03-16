@@ -112,6 +112,8 @@ npm run test:e2e:responsive # 데스크톱+모바일 통합 회귀
 - 중첩 App Route API의 로컬 `404`는 **즉시 제품 회귀로 판정하지 않음**
 - AI 경로/릴리즈 게이트는 기존 원칙대로 **Vercel + Playwright MCP**를 우선 사용
 - 로컬에서는 `vitest` 계약 테스트와 route unit test를 먼저 확인
+- route별 원인 분석 전에 `next dev` 자체가 `/api/version`에 응답하는지 먼저 확인
+- `2026-03-16` 추가 확인 기준으로 현재 워크스페이스에서는 `Turbopack 기본`과 `--webpack` 모두 `/api/version` 20초 내 응답을 주지 못해, route-specific 404 재현은 아직 확정되지 않음
 
 로컬 production-like 검증이 필요한 경우 아래 스모크 스크립트를 사용합니다.
 
