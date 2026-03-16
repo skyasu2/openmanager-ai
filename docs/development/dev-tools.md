@@ -148,6 +148,28 @@ bash scripts/dev/check-next-dev-readiness.sh --timeout=60
 bash scripts/dev/check-next-dev-readiness.sh --webpack --timeout=60
 ```
 
+### Turbopack trace 수집
+
+Turbopack compile 지연 원인을 실제 trace 파일로 남깁니다.
+Next.js 공식 문서 기준으로 `NEXT_TURBOPACK_TRACING=1`을 사용하며, trace 파일은 `.next/dev/trace-turbopack`에 생성됩니다.
+
+```bash
+npm run dev:trace:turbopack
+
+# 타임아웃/대상 route 조정
+NEXT_DEV_TRACE_TIMEOUT_S=180 npm run dev:trace:turbopack
+bash scripts/dev/collect-next-dev-trace.sh --path=/api/version --timeout=180
+
+# 생성 후 해석
+npx next internal trace .next/dev/trace-turbopack
+```
+
+운영 메모:
+
+- trace 수집은 **Turbopack 전용**입니다. webpack 지연 원인 분리는 별도 최소 재현이 필요합니다.
+- trace 수집 전에는 `npm run dev:readiness`로 기본 준비 시간을 먼저 확인하는 편이 낫습니다.
+- `2026-03-16` 검증 기준으로 `NEXT_DEV_TRACE_TIMEOUT_S=150 npm run dev:trace:turbopack`가 성공했고, `.next/dev/trace-turbopack` 파일(`~3.4MB`)이 생성됨
+
 ### 로컬 API 스모크 (`local:smoke`)
 
 `next build` + `next start` 기반으로 nested route 404를 검증합니다.
