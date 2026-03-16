@@ -20,6 +20,7 @@ CURL_TIMEOUT_S="${NEXT_DEV_READY_CURL_TIMEOUT_S:-2}"
 LOG_TAIL_LINES="${NEXT_DEV_READY_LOG_TAIL_LINES:-60}"
 NEXT_LOG_FILE="$(mktemp -t openmanager-next-dev-ready-XXXX.log)"
 SERVER_PID=""
+ROUTE_FAIL=0
 
 for arg in "$@"; do
   case "$arg" in
@@ -54,12 +55,34 @@ BASE_URL="http://127.0.0.1:${PORT}"
 # ─── Cleanup ──────────────────────────────────────────────────────────────────
 cleanup() {
   if [ -n "$SERVER_PID" ] && kill -0 "$SERVER_PID" 2>/dev/null; then
-    kill -9 "$SERVER_PID" 2>/dev/null || true
+    kill "$SERVER_PID" 2>/dev/null || true
+    for _ in $(seq 1 5); do
+      if ! kill -0 "$SERVER_PID" 2>/dev/null; then
+        break
+      fi
+      sleep 1
+    done
+    if kill -0 "$SERVER_PID" 2>/dev/null; then
+      kill -9 "$SERVER_PID" 2>/dev/null || true
+    fi
     wait "$SERVER_PID" 2>/dev/null || true
   fi
   rm -f "$NEXT_LOG_FILE"
 }
 trap cleanup EXIT INT TERM
+
+probe_http_code() {
+  local url="$1"
+  local max_time="$2"
+  local code=""
+
+  code="$(curl --max-time "$max_time" -s -o /dev/null -w '%{http_code}' "$url" 2>/dev/null || true)"
+
+  case "$code" in
+    [0-9][0-9][0-9]) printf '%s\n' "$code" ;;
+    *) printf '000\n' ;;
+  esac
+}
 
 # ─── Build command ────────────────────────────────────────────────────────────
 # Call next dev directly — NOT via `npm run dev` — to avoid the hardcoded
@@ -89,14 +112,19 @@ SERVER_PID=$!
 READY_CODE="000"
 READY_ELAPSED=""
 LAST_LOG_LINE=""
+START_TS="$(date +%s)"
+DEADLINE_TS="$((START_TS + READY_TIMEOUT_S))"
 
 echo -n "[dev:readiness] waiting"
-for i in $(seq 1 "$READY_TIMEOUT_S"); do
+while [ "$(date +%s)" -lt "$DEADLINE_TS" ]; do
+  NOW_TS="$(date +%s)"
+  ELAPSED_TS="$((NOW_TS - START_TS))"
+
   # Print a progress dot every 5s, and show latest log line every 10s
-  if [ $((i % 5)) -eq 0 ]; then
+  if [ "$ELAPSED_TS" -gt 0 ] && [ $((ELAPSED_TS % 5)) -eq 0 ]; then
     echo -n "."
   fi
-  if [ $((i % 10)) -eq 0 ]; then
+  if [ "$ELAPSED_TS" -gt 0 ] && [ $((ELAPSED_TS % 10)) -eq 0 ]; then
     LAST_LOG_LINE="$(tail -n1 "$NEXT_LOG_FILE" 2>/dev/null || true)"
     [ -n "$LAST_LOG_LINE" ] && echo -n " [${LAST_LOG_LINE:0:60}]"
   fi
@@ -110,9 +138,9 @@ for i in $(seq 1 "$READY_TIMEOUT_S"); do
     exit 1
   fi
 
-  READY_CODE="$(curl --max-time "$CURL_TIMEOUT_S" -s -o /dev/null -w '%{http_code}' "${BASE_URL}${READY_PATH}" 2>/dev/null || echo "000")"
+  READY_CODE="$(probe_http_code "${BASE_URL}${READY_PATH}" "$CURL_TIMEOUT_S")"
   if [ "$READY_CODE" != "000" ]; then
-    READY_ELAPSED="$i"
+    READY_ELAPSED="$ELAPSED_TS"
     break
   fi
 
@@ -144,11 +172,21 @@ for path in \
   /api/ai/supervisor/stream/v2 \
   /api/ai/incident-report \
   /api/security/csp-report; do
-  http_code="$(curl --max-time 3 -s -o /dev/null -w '%{http_code}' "${BASE_URL}${path}" 2>/dev/null || echo "000")"
-  # 404 = route missing, anything else = route exists (auth/method errors expected)
+  http_code="$(probe_http_code "${BASE_URL}${path}" 3)"
+  # 404 = route missing, 000 = probe/network failure, anything else = route exists.
   if [ "$http_code" = "404" ]; then
-    printf '[dev:readiness] ✗ %s  %s  ← route missing!\n' "$http_code" "$path"
+    printf '[dev:readiness] ✗ %s  %s  ← route missing\n' "$http_code" "$path"
+    ROUTE_FAIL=$((ROUTE_FAIL + 1))
+  elif [ "$http_code" = "000" ]; then
+    printf '[dev:readiness] ✗ %s  %s  ← probe failed\n' "$http_code" "$path"
+    ROUTE_FAIL=$((ROUTE_FAIL + 1))
   else
     printf '[dev:readiness] ✓ %s  %s\n' "$http_code" "$path"
   fi
 done
+
+if [ "$ROUTE_FAIL" -gt 0 ]; then
+  echo ""
+  echo "[dev:readiness] ❌ route spot-check failed (${ROUTE_FAIL})"
+  exit 1
+fi

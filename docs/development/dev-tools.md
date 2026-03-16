@@ -114,12 +114,19 @@ npm run test:e2e:responsive # 데스크톱+모바일 통합 회귀
 - 로컬에서는 `vitest` 계약 테스트와 route unit test를 먼저 확인
 - route별 원인 분석 전에 `next dev` 자체가 `/api/version`에 응답하는지 먼저 확인
 - 이를 위해 `npm run dev:readiness`, `npm run dev:readiness:webpack` 스크립트를 사용
+- probe 결과에서 `000`은 route 존재 여부가 아니라 **dev server 미응답 / compile 지연**으로 해석
 
 > **버그 수정 (`2026-03-16`)**: 초기 스크립트가 `npm run dev -- --port $PORT`를 사용해
 > `next dev -p 3000 --port $PORT`로 실행됐고, Next.js가 포트 3000으로 바인딩하면서
 > probe가 동적 포트를 체크해 HTTP 000이 발생했음.
 > 현재는 `node_modules/.bin/next dev --port $PORT`를 직접 호출하도록 수정됨.
-> 기본 타임아웃도 15s → 90s로 조정 (WSL2 콜드 스타트 대응).
+> 이후 `curl` 실패를 `000000`으로 오인하는 후속 버그와 `SIGKILL` cleanup로 `.next/dev/lock`을 남기던 문제도 수정됨.
+
+> **재확인 (`2026-03-16`)**:
+> - `npm run dev:readiness` (Turbopack): `/api/version` 준비 완료까지 약 `96s`
+> - Turbopack 준비 후 spot-check: `/api/ai/jobs`, `/api/ai/supervisor`, `/api/ai/supervisor/stream/v2` 모두 `non-404`
+> - `npm run dev:readiness:webpack`: 서버 자체는 `Ready in 70.7s`를 출력했지만, `/api/version`은 `120s` 시점에도 compile 중이어서 probe timeout
+> - 따라서 현재 로컬 dev 이슈는 **중첩 route 404**보다는 **webpack 경로의 늦은 `/api/version` compile / readiness 지연**에 더 가깝다
 
 로컬 production-like 검증이 필요한 경우 아래 스모크 스크립트를 사용합니다.
 

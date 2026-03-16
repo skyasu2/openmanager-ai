@@ -18,7 +18,7 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| Next.js dev/Turbopack 중첩 App Router 404 재현 조사 | P3 | 우선 `npm run dev:readiness`, `npm run dev:readiness:webpack`으로 `next dev` readiness(`/api/version`)부터 확인. `2026-03-16` 기준 현재 워크스페이스에서는 두 모드 모두 15초 내 `HTTP 000`이며 startup log도 npm script 헤더 외 추가 출력이 없었음. readiness 확보 후 `/api/ai/*` 등 2-depth+ route의 `_not-found` HTML 여부를 다시 분리하고, 필요 시 최소 재현 케이스 + Next.js GitHub 이슈 검토 |
+| Next.js dev/Turbopack 중첩 App Router 404 재현 조사 | P3 | probe 기준 최신 상태: `npm run dev:readiness`(Turbopack)는 `/api/version` 준비까지 약 `96s`, 준비 후 `/api/ai/*` nested route는 `non-404` 확인. 반면 `npm run dev:readiness:webpack`은 `Ready in 70.7s` 로그 후에도 `/api/version` compile이 길어 `120s` timeout. 다음 단계는 route 404 재현보다 **webpack readiness 지연 최소 재현**과 `proxy`/`/api/version` compile 경로 분리 |
 
 ### Completed (2026-03-15)
 - [x] P3: Cloud Run 대형 파일 리팩토링 Phase 3 완료 — `incident-report` route + `ai-proxy.config.ts` 책임 분리 마감
