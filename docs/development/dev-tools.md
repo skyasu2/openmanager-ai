@@ -119,9 +119,10 @@ npm run test:e2e:responsive # 데스크톱+모바일 통합 회귀
 
 `next build` + `next start` 기반으로 nested route 404를 검증합니다.
 `next dev`에서만 재현되는 오탐을 걸러내는 목적입니다.
+서버 준비 판정은 기본적으로 경량 endpoint인 `/api/version`을 사용합니다.
 
 ```bash
-# .next 빌드가 이미 있으면 스킵 (빠름)
+# production build(.next/BUILD_ID)가 이미 있으면 스킵 (빠름)
 npm run local:smoke
 
 # 강제 재빌드 후 검증 (느림, ~2~3분)
@@ -129,6 +130,9 @@ npm run local:smoke:rebuild
 
 # 개별 옵션
 bash scripts/dev/local-api-smoke.sh --port=3099 --timeout=10
+
+# 준비 대기 상향이 필요할 때
+LOCAL_SMOKE_READY_TIMEOUT_S=90 bash scripts/dev/local-api-smoke.sh
 ```
 
 검사 항목:

@@ -19,9 +19,12 @@ set -euo pipefail
 REBUILD=false
 PORT="${LOCAL_SMOKE_PORT:-}"
 TIMEOUT_S="${LOCAL_SMOKE_TIMEOUT_S:-7}"
+READY_TIMEOUT_S="${LOCAL_SMOKE_READY_TIMEOUT_S:-60}"
+READY_PATH="${LOCAL_SMOKE_READY_PATH:-/api/version}"
 PASS=0
 FAIL=0
 SKIP=0
+NEXT_LOG_FILE="$(mktemp -t openmanager-local-smoke-next-XXXX.log)"
 
 # ─── Args ───────────────────────────────────────────────────────────────────
 for arg in "$@"; do
@@ -59,32 +62,36 @@ cleanup() {
     kill "$SERVER_PID" 2>/dev/null || true
     wait "$SERVER_PID" 2>/dev/null || true
   fi
+  rm -f "$NEXT_LOG_FILE"
 }
 trap cleanup EXIT INT TERM
 
 # ─── Build ──────────────────────────────────────────────────────────────────
-if [ "$REBUILD" = "true" ] || [ ! -d ".next" ]; then
+if [ "$REBUILD" = "true" ] || [ ! -f ".next/BUILD_ID" ]; then
   echo "[local:smoke] Building production bundle (next build)..."
   npm run build:prod
 else
-  echo "[local:smoke] Skipping build (.next exists). Use --rebuild to force."
+  echo "[local:smoke] Skipping build (.next/BUILD_ID exists). Use --rebuild to force."
 fi
 
 # ─── Start server ────────────────────────────────────────────────────────────
 echo "[local:smoke] Starting next start on port ${PORT}..."
-npm run start -- -p "$PORT" &>/dev/null &
+npm run start -- -p "$PORT" >"$NEXT_LOG_FILE" 2>&1 &
 SERVER_PID=$!
 
-# Wait until server is ready (max 30s)
+# Wait until server is ready
 echo -n "[local:smoke] Waiting for server"
-for i in $(seq 1 30); do
-  if curl -sf "${BASE_URL}/api/health" -o /dev/null 2>/dev/null; then
+for i in $(seq 1 "$READY_TIMEOUT_S"); do
+  if curl -sf "${BASE_URL}${READY_PATH}" -o /dev/null 2>/dev/null; then
     echo " ready (${i}s)"
     break
   fi
-  if [ "$i" -eq 30 ]; then
+  if [ "$i" -eq "$READY_TIMEOUT_S" ]; then
     echo ""
-    echo "[local:smoke] ❌ Server did not start within 30s."
+    echo "[local:smoke] ❌ Server did not start within ${READY_TIMEOUT_S}s."
+    echo "[local:smoke]    readiness probe: ${READY_PATH}"
+    echo "[local:smoke]    startup log: ${NEXT_LOG_FILE}"
+    tail -n 40 "$NEXT_LOG_FILE" 2>/dev/null || true
     exit 1
   fi
   echo -n "."
