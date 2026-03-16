@@ -113,9 +113,24 @@ npm run test:e2e:responsive # 데스크톱+모바일 통합 회귀
 - AI 경로/릴리즈 게이트는 기존 원칙대로 **Vercel + Playwright MCP**를 우선 사용
 - 로컬에서는 `vitest` 계약 테스트와 route unit test를 먼저 확인
 - route별 원인 분석 전에 `next dev` 자체가 `/api/version`에 응답하는지 먼저 확인
-- `2026-03-16` 추가 확인 기준으로 현재 워크스페이스에서는 `Turbopack 기본`과 `--webpack` 모두 `/api/version` 20초 내 응답을 주지 못해, route-specific 404 재현은 아직 확정되지 않음
+- 이를 위해 `npm run dev:readiness`, `npm run dev:readiness:webpack` 스크립트를 사용
+- `2026-03-16` 추가 확인 기준으로 현재 워크스페이스에서는 `Turbopack 기본`과 `--webpack` 모두 `/api/version` 15초 내 `HTTP 000`이었고, startup log도 npm script 헤더 외 추가 출력이 없었음. 따라서 route-specific 404 재현은 아직 확정되지 않음
 
 로컬 production-like 검증이 필요한 경우 아래 스모크 스크립트를 사용합니다.
+
+### next dev readiness probe
+
+`next dev`가 실제로 준비 상태에 들어가는지 먼저 확인합니다.
+중첩 route 404 조사 전에 선행해야 하는 체크입니다.
+
+```bash
+npm run dev:readiness
+npm run dev:readiness:webpack
+
+# 개별 옵션
+bash scripts/dev/check-next-dev-readiness.sh --timeout=30
+bash scripts/dev/check-next-dev-readiness.sh --webpack --timeout=30
+```
 
 ### 로컬 API 스모크 (`local:smoke`)
 
