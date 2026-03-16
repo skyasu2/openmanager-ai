@@ -202,7 +202,7 @@ updates:
   - package-ecosystem: 'npm'
     directory: '/'
     schedule:
-      interval: 'weekly'          # 1인 개발: 주 1회 적절
+      interval: 'daily'           # 유지보수 모드: patch 부채 방지
     open-pull-requests-limit: 5   # PR 폭탄 방지
     assignees: ['skyasu2']
     reviewers: ['skyasu2']
@@ -214,10 +214,12 @@ updates:
 
 | 그룹명 | 패턴 | 예시 |
 |--------|------|------|
-| `typescript-types` | `typescript`, `@types/*` | TypeScript 코어 + 타입 정의 |
+| `typescript-core` | `typescript` | TypeScript 코어 |
+| `types` | `@types/*` | 일반 타입 정의 |
 | `testing` | `vitest`, `@vitest/*`, `playwright`, `@playwright/*` | 테스트 도구 |
 | `linting` | `@biomejs/*` | 린팅/포매팅 |
-| `react` | `react`, `react-dom`, `@types/react*` | React 생태계 |
+| `react` | `react`, `react-dom` | React 런타임 |
+| `react-types` | `@types/react*` | React 타입 정의 |
 | `ai-sdk` | `ai`, `@ai-sdk/*` | Vercel AI SDK |
 
 ### Auto-Merge 워크플로우
@@ -239,9 +241,9 @@ Dependabot PR 생성
 
 | 정책 | 이유 |
 |------|------|
-| Patch 자동 머지 | Semantic Versioning에서 patch는 하위 호환 버그 수정만 포함 |
+| Patch 자동 머지 | 유지보수 모드에서 patch를 매일 흡수해 기술 부채 누적을 막음 |
 | Minor/Major 수동 리뷰 | Breaking change, API 변경 가능성 → 수동 검증 필요 |
-| 주 1회 실행 | 1인 개발 환경에서 매일 업데이트는 과도한 부담 |
+| 매일 실행 | patch는 빨리 흡수하고, 큰 변경은 review label로 자동 분리 |
 | 최대 5 PR | Dependabot PR이 쌓여 리뷰 부담이 되는 것 방지 |
 
 ---
