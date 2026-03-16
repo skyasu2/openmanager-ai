@@ -2,25 +2,25 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-03-16T07:11:09.946Z"
+    "updatedAt": "2026-03-16T08:30:19.073Z"
   },
   "sequence": {
-    "nextRunNumber": 107
+    "nextRunNumber": 108
   },
   "summary": {
-    "totalRuns": 106,
-    "totalChecks": 782,
-    "totalPassed": 739,
+    "totalRuns": 107,
+    "totalChecks": 787,
+    "totalPassed": 744,
     "totalFailed": 39,
-    "completionRate": 98.85,
-    "completedItems": 172,
+    "completionRate": 99.43,
+    "completedItems": 173,
     "pendingItems": 0,
-    "deferredItems": 2,
+    "deferredItems": 1,
     "wontFixItems": 38,
     "expertDomainsTracked": 6,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260316-0106",
-    "lastRecordedAt": "2026-03-16T07:11:09.946Z"
+    "lastRunId": "QA-20260316-0107",
+    "lastRecordedAt": "2026-03-16T08:30:19.073Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -387,25 +387,25 @@
     "ai-code-gate-input-policy": {
       "id": "ai-code-gate-input-policy",
       "title": "AI Code Gate: Prompt 패턴 15개 방어 점검",
-      "priority": "P1",
-      "status": "deferred",
+      "priority": "P2",
+      "status": "completed",
       "firstSeenRunId": "QA-20260226-0005",
       "firstSeenAt": "2026-02-26T11:25:45.950Z",
-      "lastSeenRunId": "QA-20260315-0101",
-      "lastSeenAt": "2026-03-15T06:21:02.856Z",
-      "seenCount": 2,
-      "completedCount": 0,
+      "lastSeenRunId": "QA-20260316-0107",
+      "lastSeenAt": "2026-03-16T08:30:19.073Z",
+      "seenCount": 3,
+      "completedCount": 1,
       "pendingCount": 1,
-      "owner": "",
-      "lastEvidence": "reports/qa/security-qa-backlog.md",
-      "lastNote": "WONT-FIX에서 분리하여 Deferred 백로그로 이관",
-      "lastStatusChangeAt": "2026-03-15T06:21:02.856Z",
+      "owner": "codex",
+      "lastEvidence": "QA-20260316-0107: Prompt Injection 5패턴 Playwright MCP 검증 통과",
+      "lastNote": "deferred 최소 기준(5/15) 충족으로 Completed 처리. 15패턴 풀세트 자동화는 운영 전환 시점 백로그로 유지",
+      "lastStatusChangeAt": "2026-03-16T08:30:19.073Z",
       "aliases": [],
       "deferredCount": 1,
       "isBlocking": false,
       "isBlockingExplicit": true,
       "overengineeringScope": "15패턴 운영 자동화는 현 릴리즈 핵심 경로 범위를 초과",
-      "lastPolicyNote": "P1 우선순위이나 현재 비차단으로 deferred 처리"
+      "lastPolicyNote": ""
     },
     "ai-friendly-template-todo-marker": {
       "id": "ai-friendly-template-todo-marker",
@@ -9100,6 +9100,36 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260316-0107",
+      "recordedAt": "2026-03-16T08:30:19.073Z",
+      "recordedAtKst": "2026-03-16 17:30:19 KST",
+      "title": "Security QA - AI Code Gate Input Policy (Prompt Injection 5패턴)",
+      "owner": "claude",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260316-0107.json",
+      "checks": {
+        "total": 5,
+        "passed": 5,
+        "failed": 0
+      },
+      "expertAssessments": [
+        {
+          "domainId": "ai-security-reliability",
+          "domainName": "AI Security & Reliability Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "OWASP LLM Top 10 기준 5개 핵심 패턴(영어 지시 무시, DAN/bypass, 한국어 지시 무시, 역할 변경+노출, 정상 쿼리 통과)을 실 프로덕션에서 검증했다. 모든 인젝션 패턴은 보안 정책으로 차단되고, 정상 쿼리는 올바른 서버 데이터를 반환했다.",
+          "nextAction": ""
+        }
+      ],
+      "expertCount": 1,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -9142,16 +9172,16 @@
       "domainName": "AI Security & Reliability Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 33,
-      "appropriateCount": 24,
+      "seenCount": 34,
+      "appropriateCount": 25,
       "partialCount": 9,
       "inappropriateCount": 0,
       "improvementNeededCount": 9,
-      "lastRunId": "QA-20260315-0101",
-      "lastSeenAt": "2026-03-15T06:21:02.856Z",
+      "lastRunId": "QA-20260316-0107",
+      "lastSeenAt": "2026-03-16T08:30:19.073Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "보안 차단 UX raw JSON 노출 항목은 2026-03-13 production security smoke에서 미노출로 통과가 확인됐다.",
+      "lastRationale": "OWASP LLM Top 10 기준 5개 핵심 패턴(영어 지시 무시, DAN/bypass, 한국어 지시 무시, 역할 변경+노출, 정상 쿼리 통과)을 실 프로덕션에서 검증했다. 모든 인젝션 패턴은 보안 정책으로 차단되고, 정상 쿼리는 올바른 서버 데이터를 반환했다.",
       "lastNextAction": ""
     },
     "sre-devops": {

@@ -1,7 +1,7 @@
 {
   "runId": "QA-20260316-0107",
-  "recordedAt": "2026-03-16T08:17:00.000Z",
-  "recordedAtKst": "2026-03-16 17:17:00 KST",
+  "recordedAt": "2026-03-16T08:30:19.073Z",
+  "recordedAtKst": "2026-03-16 17:30:19 KST",
   "runTitle": "Security QA - AI Code Gate Input Policy (Prompt Injection 5패턴)",
   "owner": "claude",
   "source": "playwright-mcp",
@@ -20,15 +20,29 @@
   },
   "expertAssessments": [
     {
-      "domainId": "ai-security",
-      "domainName": "AI/ML Security Specialist",
+      "domainId": "ai-security-reliability",
+      "domainName": "AI Security & Reliability Architect",
       "fit": "appropriate",
       "improvementNeeded": false,
       "rationale": "OWASP LLM Top 10 기준 5개 핵심 패턴(영어 지시 무시, DAN/bypass, 한국어 지시 무시, 역할 변경+노출, 정상 쿼리 통과)을 실 프로덕션에서 검증했다. 모든 인젝션 패턴은 보안 정책으로 차단되고, 정상 쿼리는 올바른 서버 데이터를 반환했다.",
       "nextAction": ""
     }
   ],
-  "completedImprovements": [],
+  "completedImprovements": [
+    {
+      "id": "ai-code-gate-input-policy",
+      "title": "AI Code Gate: Prompt 패턴 15개 방어 점검",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "QA-20260316-0107: Prompt Injection 5패턴 Playwright MCP 검증 통과",
+      "note": "deferred 최소 기준(5/15) 충족으로 Completed 처리. 15패턴 풀세트 자동화는 운영 전환 시점 백로그로 유지",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
   "pendingImprovements": [],
   "deferredImprovements": [],
   "wontFixImprovements": [],

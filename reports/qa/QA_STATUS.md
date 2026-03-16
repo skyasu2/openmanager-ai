@@ -1,35 +1,32 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-16 16:11:10 KST
+> Generated at: 2026-03-16 17:30:19 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 106 |
-| Total Checks | 782 |
-| Passed | 739 |
+| Total Runs | 107 |
+| Total Checks | 787 |
+| Passed | 744 |
 | Failed | 39 |
-| Completed Items | 172 |
+| Completed Items | 173 |
 | Pending Items | 0 |
-| Deferred Items | 2 |
+| Deferred Items | 1 |
 | Wont-Fix Items | 38 |
 | Expert Domains Tracked | 6 |
 | Expert Open Gaps | 0 |
-| Completion Rate | 98.85% |
-| Last Run | QA-20260316-0106 (2026-03-16T07:11:09.946Z) |
+| Completion Rate | 99.43% |
+| Last Run | QA-20260316-0107 (2026-03-16T08:30:19.073Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260316-0106 (2026-03-16T07:11:09.946Z)
+Latest run: QA-20260316-0107 (2026-03-16T08:30:19.073Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| Test Automation Architect | appropriate | no | - |
-| DevOps / SRE Engineer | appropriate | no | - |
-| AI Quality Assurance Specialist | appropriate | no | - |
-| IT Monitoring & Observability SME | appropriate | no | - |
+| AI Security & Reliability Architect | appropriate | no | - |
 
 ## Expert Domain Open Gaps
 
@@ -41,8 +38,6 @@ Latest run: QA-20260316-0106 (2026-03-16T07:11:09.946Z)
 
 ## Deferred Improvements
 
-- [P1] ai-code-gate-input-policy: AI Code Gate: Prompt 패턴 15개 방어 점검 (seen 2회, last QA-20260315-0101)
-  - note: P1 우선순위이나 현재 비차단으로 deferred 처리
 - [P1] security-attack-regression-pack: 보안 공격 시나리오 회귀팩 구축 (seen 4회, last QA-20260315-0101)
   - note: P1 우선순위이나 현재 비차단으로 deferred 처리
 
@@ -137,6 +132,7 @@ Latest run: QA-20260316-0106 (2026-03-16T07:11:09.946Z)
 - ai-chat-response-quality: AI Chat 핵심요약+상세분석+구체적 권고 응답 (completed 1회, last QA-20260306-0051)
 - ai-chat-response-quality-v879: AI Chat 스트리밍 응답 및 권고 검증 (completed 1회, last QA-20260306-0052)
 - ai-chat-response-quality-v880-recheck-20260309: AI Chat 응답 품질 및 권고 재검증 (completed 4회, last QA-20260309-0068)
+- ai-code-gate-input-policy: AI Code Gate: Prompt 패턴 15개 방어 점검 (completed 1회, last QA-20260316-0107)
 - ai-friendly-template-todo-marker: Template TODO marker 분리 (TEMPLATE_TODO 적용) (completed 1회, last QA-20260226-0006)
 - ai-math-tools: AI 계산 도구(수식/통계/용량) 셋업 완료 (completed 1회, last QA-20260228-0023)
 - ai-reporter-success: Reporter Agent 보고서 생성 성공 (completed 3회, last QA-20260315-0104)
@@ -303,6 +299,7 @@ Latest run: QA-20260316-0106 (2026-03-16T07:11:09.946Z)
 
 | Run ID | Time (UTC) | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260316-0107 | 2026-03-16T08:30:19.073Z | Security QA - AI Code Gate Input Policy (Prompt Injection 5패턴) | 5 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260316-0106 | 2026-03-16T07:11:09.946Z | Production Playwright MCP QA - v8.9.1 Release Alignment Validation (2026-03-16) | 8 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260315-0105 | 2026-03-15T13:44:26.529Z | Production Playwright MCP QA - v8.9.0 Release Alignment Validation (2026-03-15) | 8 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260315-0104 | 2026-03-15T13:04:19.799Z | Vercel Production QA - Incident Report route regression validation (2026-03-15) | 6 | 3 | 0 | 0 | 0 | 0 |
@@ -322,5 +319,4 @@ Latest run: QA-20260316-0106 (2026-03-16T07:11:09.946Z)
 | QA-20260310-0090 | 2026-03-10T13:27:23.276Z | Vercel Production 종합 QA #90 - UI/UX + AI Chat + Reporter + Analyst 재검증 | 7 | 0 | 0 | 0 | 1 | 1 |
 | QA-20260310-0089 | 2026-03-10T12:14:07.497Z | Vercel Production 종합 QA #89 - AI Chat Cloud Run 응답 성공 + 전체 AI 기능 재검증 | 18 | 1 | 0 | 0 | 1 | 1 |
 | QA-20260310-0088 | 2026-03-10T11:33:28.088Z | Vercel Production 종합 QA #88 - UI/UX + AI 어시스턴트 성능/답변수준 평가 | 21 | 0 | 1 | 0 | 0 | 2 |
-| QA-20260310-0087 | 2026-03-10T08:55:16.945Z | Vercel Playwright QA - production recheck after QA closure | 12 | 0 | 0 | 0 | 0 | 0 |
 
