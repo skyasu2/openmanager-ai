@@ -1,37 +1,39 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-17 17:11:12 KST
+> Generated at: 2026-03-17 17:41:53 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 118 |
-| Total Checks | 893 |
-| Passed | 848 |
-| Failed | 41 |
-| Completed Items | 214 |
+| Total Runs | 119 |
+| Total Checks | 903 |
+| Passed | 857 |
+| Failed | 42 |
+| Completed Items | 215 |
 | Pending Items | 0 |
-| Deferred Items | 0 |
+| Deferred Items | 1 |
 | Wont-Fix Items | 8 |
 | Expert Domains Tracked | 6 |
-| Expert Open Gaps | 0 |
-| Completion Rate | 100% |
-| Last Run | QA-20260317-0118 (2026-03-17T08:11:11.594Z) |
+| Expert Open Gaps | 1 |
+| Completion Rate | 99.54% |
+| Last Run | QA-20260317-0119 (2026-03-17T08:41:53.635Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260317-0118 (2026-03-17T08:11:11.594Z)
+Latest run: QA-20260317-0119 (2026-03-17T08:41:53.635Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
+| AI Quality Assurance Specialist | appropriate | no | - |
+| Test Automation Architect | appropriate | yes | 랜딩 첫 paint auth badge coherence를 Playwright 회귀 체크로 상시 편입 |
 | DevOps / SRE Engineer | appropriate | no | - |
-| IT Monitoring & Observability SME | appropriate | no | - |
 
 ## Expert Domain Open Gaps
 
-- None
+- test-automation: Test Automation Architect (last QA-20260317-0119)
+  next: 랜딩 첫 paint auth badge coherence를 Playwright 회귀 체크로 상시 편입
 
 ## Pending Improvements
 
@@ -39,7 +41,8 @@ Latest run: QA-20260317-0118 (2026-03-17T08:11:11.594Z)
 
 ## Deferred Improvements
 
-- None
+- [P1] landing-profile-bootstrap-state: 랜딩 초기 프로필 상태 텍스트 일관성 개선 (seen 1회, last QA-20260317-0119)
+  - note: P1 우선순위이나 현재 비차단으로 deferred 처리
 
 ## Wont-Fix Improvements
 
@@ -227,6 +230,7 @@ Latest run: QA-20260317-0118 (2026-03-17T08:11:11.594Z)
 - vercel-build-fix: SessionState import 수정으로 Vercel 빌드 복구 (completed 1회, last QA-20260307-0053)
 - vercel-deployment-ready: Vercel 배포 3건 모두 READY (completed 1회, last QA-20260314-0096)
 - vercel-prod-ai-clarification: AI 질의 모호성 해소 UI 정상 렌더링 및 Fallback 응답 확인 (completed 1회, last QA-20260317-0114)
+- vercel-prod-ai-guest-flow-v892: Vercel 프로덕션 게스트 부팅 + 대시보드 + AI 응답 + 피드백 경로 실측 (completed 1회, last QA-20260317-0119)
 - vercel-prod-ai-sidebar: 대시보드 AI 어시스턴트 사이드바 열기/닫기 정상 (completed 1회, last QA-20260317-0114)
 - vercel-prod-frontend-boot: Vercel 프로덕션 시스템 시작 부팅 플로우 정상 동작 (completed 1회, last QA-20260317-0114)
 - vitals-log-suppression: Web Vitals 통합 테스트 로그 억제 옵션 추가 (completed 1회, last QA-20260228-0028)
@@ -280,6 +284,7 @@ Latest run: QA-20260317-0118 (2026-03-17T08:11:11.594Z)
 
 | Run ID | Time (UTC) | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260317-0119 | 2026-03-17T08:41:53.635Z | Vercel Playwright QA - guest boot, dashboard, AI stream, feedback, landing bootstrap state | 10 | 1 | 0 | 1 | 0 | 1 |
 | QA-20260317-0118 | 2026-03-17T08:11:11.594Z | Cloud Run Deploy Verification - v8.9.2 manual deploy (2026-03-17) | 6 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260317-0117 | 2026-03-17T04:33:27.878Z | Cloud Run Observability Ops - monitoring traces search + auxiliary filtering validation (2026-03-17) | 8 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260317-0116 | 2026-03-17T04:00:14.984Z | Cloud Run Observability Ops - Multi-agent traceId live proof + Langfuse runtime visibility (2026-03-17) | 10 | 2 | 0 | 0 | 0 | 0 |
@@ -299,5 +304,4 @@ Latest run: QA-20260317-0118 (2026-03-17T08:11:11.594Z)
 | QA-20260315-0102 | 2026-03-15T07:15:29.358Z | Storybook QA - lock sync + smoke/build validation | 3 | 3 | 0 | 0 | 0 | 0 |
 | QA-20260315-0101 | 2026-03-15T06:21:02.856Z | QA governance - close resolved security gap and split security backlog | 3 | 1 | 0 | 2 | 0 | 0 |
 | QA-20260315-0100 | 2026-03-15T05:59:40.849Z | Vercel Production QA - AI Chat summary response recovery validation | 6 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260315-0099 | 2026-03-14T17:14:40.772Z | Storybook QA - react-vite migration verification | 4 | 3 | 0 | 0 | 0 | 0 |
 

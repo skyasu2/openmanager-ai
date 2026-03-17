@@ -1,0 +1,94 @@
+{
+  "runId": "QA-20260317-0119",
+  "recordedAt": "2026-03-17T08:41:53.635Z",
+  "recordedAtKst": "2026-03-17 17:41:53 KST",
+  "runTitle": "Vercel Playwright QA - guest boot, dashboard, AI stream, feedback, landing bootstrap state",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "version": "8.9.2"
+  },
+  "checks": {
+    "total": 10,
+    "passed": 9,
+    "failed": 1
+  },
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Vercel 실환경에서 게스트 부팅 후 AI Chat 스트리밍 응답과 피드백 저장까지 정상 동작을 확인했다.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": true,
+      "rationale": "랜딩 첫 진입 0~200ms 구간에서 프로필 메뉴가 '? / 로딩 중 / 확인 중...' 임시 텍스트를 노출하는 회귀 체크가 기존 기준선에 없었다.",
+      "nextAction": "랜딩 첫 paint auth badge coherence를 Playwright 회귀 체크로 상시 편입"
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "프로덕션 Vercel과 Cloud Run 조합에서 dashboard, AI API, feedback API가 모두 200 응답으로 확인됐다.",
+      "nextAction": ""
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "vercel-prod-ai-guest-flow-v892",
+      "title": "Vercel 프로덕션 게스트 부팅 + 대시보드 + AI 응답 + 피드백 경로 실측",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "Landing -> 시스템 시작 -> /dashboard -> AI sidebar open -> POST /api/ai/supervisor/stream/v2 200 -> POST /api/ai/feedback 200",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [
+    {
+      "id": "landing-profile-bootstrap-state",
+      "title": "랜딩 초기 프로필 상태 텍스트 일관성 개선",
+      "priority": "P1",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "첫 진입 0~200ms 구간에 '?로딩 중...확인 중...' 임시 텍스트가 보인다. guest/user 최종 상태 또는 skeleton만 노출하도록 정리 필요",
+      "owner": "",
+      "status": "deferred",
+      "policyNote": "P1 우선순위이나 현재 비차단으로 deferred 처리"
+    }
+  ],
+  "wontFixImprovements": [],
+  "notes": [
+    "PASS: landing 렌더 및 시스템 시작 후 /dashboard 정상 진입",
+    "PASS: 대시보드 요약 15대(온라인 14, 경고 1)와 Top5 경고 카드 정상 표시",
+    "PASS: AI 어시스턴트 Ready, starter prompt 기반 질의 응답 정상",
+    "PASS: AI 응답 내용이 대시보드 수치와 일치 (전체 15대, 평균 CPU 38%, Memory 49%, Disk 33%)",
+    "PASS: Active Alerts 모달 정상 렌더",
+    "PASS: 브라우저 console error 0",
+    "PASS: POST /api/ai/supervisor/stream/v2 200",
+    "PASS: POST /api/ai/feedback 200",
+    "OBSERVED: 랜딩 프로필 메뉴 텍스트 샘플링 결과 0ms='?로딩 중...확인 중...', 200ms='?로딩 중...확인 중...', 500ms 이후='GU게스트 사용자게스트 로그인'"
+  ],
+  "links": [
+    {
+      "label": "Vercel URL",
+      "url": "https://openmanager-ai.vercel.app"
+    }
+  ]
+}

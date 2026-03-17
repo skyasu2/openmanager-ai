@@ -2,25 +2,25 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-03-17T08:11:11.594Z"
+    "updatedAt": "2026-03-17T08:41:53.635Z"
   },
   "sequence": {
-    "nextRunNumber": 119
+    "nextRunNumber": 120
   },
   "summary": {
-    "totalRuns": 118,
-    "totalChecks": 893,
-    "totalPassed": 848,
-    "totalFailed": 41,
-    "completionRate": 100,
-    "completedItems": 214,
+    "totalRuns": 119,
+    "totalChecks": 903,
+    "totalPassed": 857,
+    "totalFailed": 42,
+    "completionRate": 99.54,
+    "completedItems": 215,
     "pendingItems": 0,
-    "deferredItems": 0,
+    "deferredItems": 1,
     "wontFixItems": 8,
     "expertDomainsTracked": 6,
-    "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260317-0118",
-    "lastRecordedAt": "2026-03-17T08:11:11.594Z"
+    "expertDomainsOpenGaps": 1,
+    "lastRunId": "QA-20260317-0119",
+    "lastRecordedAt": "2026-03-17T08:41:53.635Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -4834,7 +4834,9 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0,
-      "aliases": ["esc-모달-닫기"],
+      "aliases": [
+        "esc-모달-닫기"
+      ],
       "owner": "",
       "lastEvidence": "Playwright MCP: ESC 키로 모달 닫기 동작 확인",
       "lastNote": "",
@@ -4858,7 +4860,9 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0,
-      "aliases": ["ai-chat-sidebar-open"],
+      "aliases": [
+        "ai-chat-sidebar-open"
+      ],
       "owner": "",
       "lastEvidence": "Playwright MCP: AI 어시스턴트 사이드바 열기/닫기 동작 확인",
       "lastNote": "",
@@ -4882,7 +4886,9 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0,
-      "aliases": ["프로덕션-대시보드-렌더링"],
+      "aliases": [
+        "프로덕션-대시보드-렌더링"
+      ],
       "owner": "",
       "lastEvidence": "Playwright MCP: 대시보드 전체 정상 렌더링 확인",
       "lastNote": "",
@@ -4906,7 +4912,9 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0,
-      "aliases": ["서버-모달-3탭-전환"],
+      "aliases": [
+        "서버-모달-3탭-전환"
+      ],
       "owner": "",
       "lastEvidence": "Playwright MCP: 종합상황/성능분석/로그&네트워크 3탭 전환 동작 확인",
       "lastNote": "",
@@ -5035,6 +5043,54 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-03-17T08:11:11.594Z"
+    },
+    "vercel-prod-ai-guest-flow-v892": {
+      "id": "vercel-prod-ai-guest-flow-v892",
+      "title": "Vercel 프로덕션 게스트 부팅 + 대시보드 + AI 응답 + 피드백 경로 실측",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260317-0119",
+      "firstSeenAt": "2026-03-17T08:41:53.635Z",
+      "lastSeenRunId": "QA-20260317-0119",
+      "lastSeenAt": "2026-03-17T08:41:53.635Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "Landing -> 시스템 시작 -> /dashboard -> AI sidebar open -> POST /api/ai/supervisor/stream/v2 200 -> POST /api/ai/feedback 200",
+      "lastNote": "",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-03-17T08:41:53.635Z"
+    },
+    "landing-profile-bootstrap-state": {
+      "id": "landing-profile-bootstrap-state",
+      "title": "랜딩 초기 프로필 상태 텍스트 일관성 개선",
+      "priority": "P1",
+      "status": "deferred",
+      "firstSeenRunId": "QA-20260317-0119",
+      "firstSeenAt": "2026-03-17T08:41:53.635Z",
+      "lastSeenRunId": "QA-20260317-0119",
+      "lastSeenAt": "2026-03-17T08:41:53.635Z",
+      "seenCount": 1,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 1,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "",
+      "lastNote": "첫 진입 0~200ms 구간에 '?로딩 중...확인 중...' 임시 텍스트가 보인다. guest/user 최종 상태 또는 skeleton만 노출하도록 정리 필요",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "P1 우선순위이나 현재 비차단으로 deferred 처리",
+      "lastStatusChangeAt": "2026-03-17T08:41:53.635Z"
     }
   },
   "runs": [
@@ -9924,6 +9980,52 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260317-0119",
+      "recordedAt": "2026-03-17T08:41:53.635Z",
+      "recordedAtKst": "2026-03-17 17:41:53 KST",
+      "title": "Vercel Playwright QA - guest boot, dashboard, AI stream, feedback, landing bootstrap state",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260317-0119.json",
+      "checks": {
+        "total": 10,
+        "passed": 9,
+        "failed": 1
+      },
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Vercel 실환경에서 게스트 부팅 후 AI Chat 스트리밍 응답과 피드백 저장까지 정상 동작을 확인했다.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": true,
+          "rationale": "랜딩 첫 진입 0~200ms 구간에서 프로필 메뉴가 '? / 로딩 중 / 확인 중...' 임시 텍스트를 노출하는 회귀 체크가 기존 기준선에 없었다.",
+          "nextAction": "랜딩 첫 paint auth badge coherence를 Playwright 회귀 체크로 상시 편입"
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "프로덕션 Vercel과 Cloud Run 조합에서 dashboard, AI API, feedback API가 모두 200 응답으로 확인됐다.",
+          "nextAction": ""
+        }
+      ],
+      "expertCount": 3,
+      "expertNeedsImprovementCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 1,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -9932,16 +10034,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 75,
-      "appropriateCount": 72,
+      "seenCount": 76,
+      "appropriateCount": 73,
       "partialCount": 3,
       "inappropriateCount": 0,
       "improvementNeededCount": 11,
-      "lastRunId": "QA-20260317-0117",
-      "lastSeenAt": "2026-03-17T04:33:27.878Z",
+      "lastRunId": "QA-20260317-0119",
+      "lastSeenAt": "2026-03-17T08:41:53.635Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "기존 sampled multi-agent sessionId를 사용해 production diagnostics path가 supervisor trace 본문을 즉시 반환하는 것을 확인했다.",
+      "lastRationale": "Vercel 실환경에서 게스트 부팅 후 AI Chat 스트리밍 응답과 피드백 저장까지 정상 동작을 확인했다.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -9983,16 +10085,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 41,
-      "appropriateCount": 38,
+      "seenCount": 42,
+      "appropriateCount": 39,
       "partialCount": 3,
       "inappropriateCount": 0,
       "improvementNeededCount": 3,
-      "lastRunId": "QA-20260317-0118",
-      "lastSeenAt": "2026-03-17T08:11:11.594Z",
+      "lastRunId": "QA-20260317-0119",
+      "lastSeenAt": "2026-03-17T08:41:53.635Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Cloud Run 수동 배포와 post-deploy health/monitoring 검증이 모두 통과했고 free-tier guard와 Docker preflight도 사전 통과했다.",
+      "lastRationale": "프로덕션 Vercel과 Cloud Run 조합에서 dashboard, AI API, feedback API가 모두 200 응답으로 확인됐다.",
       "lastNextAction": ""
     },
     "test-automation": {
@@ -10000,17 +10102,17 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 67,
-      "appropriateCount": 63,
+      "seenCount": 68,
+      "appropriateCount": 64,
       "partialCount": 4,
       "inappropriateCount": 0,
-      "improvementNeededCount": 5,
-      "lastRunId": "QA-20260317-0114",
-      "lastSeenAt": "2026-03-17T02:03:41.807Z",
+      "improvementNeededCount": 6,
+      "lastRunId": "QA-20260317-0119",
+      "lastSeenAt": "2026-03-17T08:41:53.635Z",
       "lastFit": "appropriate",
-      "lastImprovementNeeded": false,
-      "lastRationale": "Playwright MCP 기반 실측으로 30개 wont-fix → completed 전환",
-      "lastNextAction": ""
+      "lastImprovementNeeded": true,
+      "lastRationale": "랜딩 첫 진입 0~200ms 구간에서 프로필 메뉴가 '? / 로딩 중 / 확인 중...' 임시 텍스트를 노출하는 회귀 체크가 기존 기준선에 없었다.",
+      "lastNextAction": "랜딩 첫 paint auth badge coherence를 Playwright 회귀 체크로 상시 편입"
     },
     "data-metrics-quality": {
       "domainId": "data-metrics-quality",
