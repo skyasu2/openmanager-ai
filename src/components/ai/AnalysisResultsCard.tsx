@@ -14,11 +14,13 @@
 'use client';
 
 import { RefreshCw, Server, TrendingUp, XCircle } from 'lucide-react';
+import { useMemo, useState } from 'react';
 import { formatDateTime } from '@/lib/format-date';
 import type {
   AnalysisResponse,
   CloudRunAnalysisResponse,
   MultiServerAnalysisResponse,
+  ServerAnalysisResult,
 } from '@/types/intelligent-monitoring.types';
 import { isMultiServerResponse } from '@/types/intelligent-monitoring.types';
 import {
@@ -36,8 +38,46 @@ interface AnalysisResultsCardProps {
   onRetry?: () => void;
 }
 
+type MultiServerFilter = 'all' | 'issues' | 'healthy';
+
+const STATUS_PRIORITY: Record<ServerAnalysisResult['overallStatus'], number> = {
+  critical: 0,
+  warning: 1,
+  online: 2,
+};
+
 // 다중 서버 결과 표시
 function MultiServerResults({ data }: { data: MultiServerAnalysisResponse }) {
+  const [filter, setFilter] = useState<MultiServerFilter>('all');
+
+  const sortedServers = useMemo(
+    () =>
+      [...data.servers].sort((a, b) => {
+        const statusOrder =
+          STATUS_PRIORITY[a.overallStatus] - STATUS_PRIORITY[b.overallStatus];
+
+        if (statusOrder !== 0) {
+          return statusOrder;
+        }
+
+        return a.serverName.localeCompare(b.serverName, 'ko');
+      }),
+    [data.servers]
+  );
+
+  const filteredServers = useMemo(() => {
+    switch (filter) {
+      case 'issues':
+        return sortedServers.filter((server) => server.overallStatus !== 'online');
+      case 'healthy':
+        return sortedServers.filter((server) => server.overallStatus === 'online');
+      default:
+        return sortedServers;
+    }
+  }, [filter, sortedServers]);
+
+  const issueCount = data.summary.warningServers + data.summary.criticalServers;
+
   return (
     <div className="space-y-4">
       {/* 종합 요약 */}
@@ -45,14 +85,67 @@ function MultiServerResults({ data }: { data: MultiServerAnalysisResponse }) {
 
       {/* 개별 서버 결과 */}
       <div className="rounded-xl border border-gray-200 bg-white p-4">
-        <h3 className="mb-3 flex items-center gap-2 font-semibold text-gray-800">
-          <Server className="h-5 w-5 text-blue-500" />
-          서버별 상세 분석 ({data.servers.length}개)
-        </h3>
+        <div className="mb-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h3 className="flex items-center gap-2 font-semibold text-gray-800">
+              <Server className="h-5 w-5 text-blue-500" />
+              서버별 상세 분석 ({data.servers.length}개)
+            </h3>
+            <p className="mt-1 text-sm text-gray-500">
+              문제 서버를 먼저 보여주고, 서버 카드를 열면 이상 감지와 예측 근거를
+              바로 확인할 수 있습니다.
+            </p>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setFilter('all')}
+              className={`rounded-full px-3 py-1.5 text-sm font-medium transition-colors ${
+                filter === 'all'
+                  ? 'bg-slate-900 text-white'
+                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+              }`}
+            >
+              전체 {data.servers.length}
+            </button>
+            <button
+              type="button"
+              onClick={() => setFilter('issues')}
+              className={`rounded-full px-3 py-1.5 text-sm font-medium transition-colors ${
+                filter === 'issues'
+                  ? 'bg-amber-500 text-white'
+                  : 'bg-amber-50 text-amber-700 hover:bg-amber-100'
+              }`}
+            >
+              이슈 서버 {issueCount}
+            </button>
+            <button
+              type="button"
+              onClick={() => setFilter('healthy')}
+              className={`rounded-full px-3 py-1.5 text-sm font-medium transition-colors ${
+                filter === 'healthy'
+                  ? 'bg-emerald-600 text-white'
+                  : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
+              }`}
+            >
+              정상 서버 {data.summary.healthyServers}
+            </button>
+          </div>
+        </div>
         <div className="space-y-2">
-          {data.servers.map((server) => (
-            <ServerResultCard key={server.serverId} server={server} />
-          ))}
+          {filteredServers.length > 0 ? (
+            filteredServers.map((server) => (
+              <ServerResultCard
+                key={server.serverId}
+                server={server}
+                defaultExpanded={server.overallStatus !== 'online'}
+              />
+            ))
+          ) : (
+            <div className="rounded-lg border border-dashed border-gray-200 bg-gray-50 px-4 py-6 text-center text-sm text-gray-500">
+              현재 선택한 필터에 해당하는 서버가 없습니다.
+            </div>
+          )}
         </div>
       </div>
 
