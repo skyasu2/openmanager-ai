@@ -1,0 +1,67 @@
+{
+  "runId": "QA-20260317-0120",
+  "recordedAt": "2026-03-17T10:36:51.489Z",
+  "recordedAtKst": "2026-03-17 19:36:51 KST",
+  "runTitle": "Vercel Playwright QA - landing profile bootstrap flicker recheck",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "version": "8.9.2"
+  },
+  "checks": {
+    "total": 4,
+    "passed": 4,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "프로덕션 첫 paint 구간을 세밀하게 샘플링해 auth resolving 동안 skeleton만 노출되고 placeholder 텍스트가 사라진 것을 확인했다.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "최신 production deployment가 fix(auth): avoid profile menu loading text flicker 커밋을 가리키고 있고, 실측 결과도 해당 수정과 일치한다.",
+      "nextAction": ""
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "landing-profile-bootstrap-state",
+      "title": "랜딩 초기 프로필 상태 텍스트 일관성 개선",
+      "priority": "P1",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Vercel production first-paint sampling: 100ms/200ms aria-busy=true skeleton with empty text, 500ms+ guest state rendered as 'GU 게스트 사용자 게스트 로그인'",
+      "note": "기존 '? / 로딩 중 / 확인 중...' placeholder 텍스트는 더 이상 관찰되지 않음",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "PASS: latest Vercel production deployment points to commit 67f2ed06b fix(auth): avoid profile menu loading text flicker",
+    "PASS: domcontentloaded 직후 프로필 메뉴 미존재, 100ms/200ms 구간 disabled skeleton 렌더",
+    "PASS: 500ms 이후 게스트 상태 텍스트 정상 렌더",
+    "PASS: browser console error 0"
+  ],
+  "links": [
+    {
+      "label": "Vercel URL",
+      "url": "https://openmanager-ai.vercel.app"
+    }
+  ]
+}
