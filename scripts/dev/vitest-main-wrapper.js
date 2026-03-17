@@ -11,11 +11,19 @@
  */
 
 const fs = require('fs');
+const os = require('os');
 const path = require('path');
 const { spawn, spawnSync } = require('child_process');
 
 const args = process.argv.slice(2);
 const projectRoot = path.resolve(__dirname, '../..');
+const DEFAULT_JSDOM_HEALTHCHECK_TIMEOUT_MS = 5000;
+const SLOW_ENV_JSDOM_HEALTHCHECK_TIMEOUT_MS = 90000;
+const JSDOM_HEALTHCHECK_CACHE_TTL_MS = 7 * 24 * 60 * 60 * 1000;
+const jsdomHealthCachePath = path.join(
+  os.tmpdir(),
+  'openmanager-vitest-jsdom-health.json'
+);
 
 function resolveVitestCli() {
   const pkgPath = require.resolve('vitest/package.json');
@@ -58,21 +66,119 @@ function getTargetFiles(argv) {
   return files;
 }
 
-function fileLikelyNeedsDom(filePath) {
+function isWsl() {
+  if (process.platform !== 'linux') return false;
+  if (process.env.WSL_DISTRO_NAME || process.env.WSL_INTEROP) return true;
+
   try {
-    const source = fs.readFileSync(filePath, 'utf8');
-
-    if (source.includes('@vitest-environment jsdom')) return true;
-    if (source.includes('@vitest-environment happy-dom')) return true;
-
-    return /\.(test|spec)\.tsx$/u.test(filePath);
+    return fs.readFileSync('/proc/version', 'utf8').toLowerCase().includes('microsoft');
   } catch {
     return false;
   }
 }
 
+function isWindowsMountedWorkspace() {
+  return /^\/mnt\/[a-z]\//iu.test(projectRoot);
+}
+
+function isSlowJsdomEnvironment() {
+  return isWsl() && isWindowsMountedWorkspace();
+}
+
+function getJsdomVersion() {
+  try {
+    return require('jsdom/package.json').version;
+  } catch {
+    return 'unknown';
+  }
+}
+
+function getLockfileMtimeMs() {
+  for (const candidate of ['package-lock.json', 'npm-shrinkwrap.json']) {
+    try {
+      return fs.statSync(path.join(projectRoot, candidate)).mtimeMs;
+    } catch {
+      continue;
+    }
+  }
+
+  return 0;
+}
+
+function getJsdomHealthCacheKey() {
+  return JSON.stringify({
+    projectRoot,
+    node: process.version,
+    jsdomVersion: getJsdomVersion(),
+    lockfileMtimeMs: getLockfileMtimeMs(),
+  });
+}
+
+function readJsdomHealthCache() {
+  try {
+    const raw = fs.readFileSync(jsdomHealthCachePath, 'utf8');
+    const parsed = JSON.parse(raw);
+    if (parsed.cacheKey !== getJsdomHealthCacheKey()) return null;
+    if (Date.now() - parsed.recordedAtMs > JSDOM_HEALTHCHECK_CACHE_TTL_MS) {
+      return null;
+    }
+
+    return parsed;
+  } catch {
+    return null;
+  }
+}
+
+function writeJsdomHealthCache(durationMs) {
+  try {
+    fs.writeFileSync(
+      jsdomHealthCachePath,
+      JSON.stringify(
+        {
+          cacheKey: getJsdomHealthCacheKey(),
+          durationMs,
+          recordedAtMs: Date.now(),
+        },
+        null,
+        2
+      )
+    );
+  } catch {
+    // Cache write failure should not block test execution.
+  }
+}
+
+function getJsdomHealthCheckTimeoutMs() {
+  const override = Number.parseInt(
+    process.env.VITEST_JSDOM_HEALTHCHECK_TIMEOUT_MS || '',
+    10
+  );
+  if (Number.isFinite(override) && override > 0) {
+    return override;
+  }
+
+  return isSlowJsdomEnvironment()
+    ? SLOW_ENV_JSDOM_HEALTHCHECK_TIMEOUT_MS
+    : DEFAULT_JSDOM_HEALTHCHECK_TIMEOUT_MS;
+}
+
 function runJsdomHealthCheck() {
-  return spawnSync(
+  const cached = readJsdomHealthCache();
+  const timeoutMs = getJsdomHealthCheckTimeoutMs();
+
+  if (cached) {
+    return {
+      status: 0,
+      stdout: 'ok',
+      stderr: '',
+      durationMs: cached.durationMs,
+      timeoutMs,
+      cached: true,
+    };
+  }
+
+  const startedAt = Date.now();
+  const result = spawnSync(
     process.execPath,
     [
       '-e',
@@ -85,10 +191,23 @@ function runJsdomHealthCheck() {
     {
       cwd: projectRoot,
       encoding: 'utf8',
-      timeout: 5000,
+      timeout: timeoutMs,
       stdio: ['ignore', 'pipe', 'pipe'],
     }
   );
+
+  const durationMs = Date.now() - startedAt;
+
+  if (result.status === 0) {
+    writeJsdomHealthCache(durationMs);
+  }
+
+  return {
+    ...result,
+    durationMs,
+    timeoutMs,
+    cached: false,
+  };
 }
 
 function shouldCheckJsdom(argv) {
@@ -98,7 +217,10 @@ function shouldCheckJsdom(argv) {
   const files = getTargetFiles(argv);
   if (files.length === 0) return true;
 
-  return files.some(fileLikelyNeedsDom);
+  // Explicit targeted runs should proceed directly. The full-suite guard exists
+  // to prevent accidental stalls before any tests start, while targeted DOM
+  // tests can rely on `npm run test:jsdom:health` for an explicit local check.
+  return false;
 }
 
 function printFailureAndExit(result) {
@@ -112,21 +234,28 @@ function printFailureAndExit(result) {
   console.error('❌ Vitest main wrapper blocked a hanging DOM test startup.');
   console.error(`   node: ${version}`);
   console.error(`   reason: ${reason}`);
+  console.error(`   timeout: ${result.timeoutMs}ms`);
   console.error('   impact: jsdom tests stall in queue with 0 tests started.');
   console.error('');
   console.error('Next steps:');
   console.error('1. Use `npm run test:quick` for node-only smoke checks.');
-  console.error('2. Reinstall dependencies or rerun from a faster local filesystem.');
+  console.error('2. Run `npm run test:jsdom:health` to warm/verify local DOM startup.');
   console.error(
-    '3. If you intentionally want to try anyway, set `VITEST_SKIP_JSDOM_HEALTHCHECK=true`.'
+    '3. Reinstall dependencies or rerun from a faster local filesystem if startup stays too slow.'
+  );
+  console.error(
+    '4. If you intentionally want to try anyway, set `VITEST_SKIP_JSDOM_HEALTHCHECK=true`.'
   );
   process.exit(1);
 }
 
 if (args.includes('--healthcheck-only')) {
   const result = runJsdomHealthCheck();
-  if (result.status === 0 && result.stdout.trim() === 'ok') {
-    console.log('✅ jsdom import health check passed');
+  if (result.status === 0) {
+    const cachedLabel = result.cached ? 'cached' : 'fresh';
+    console.log(
+      `✅ jsdom import health check passed (${cachedLabel}, ${(result.durationMs / 1000).toFixed(1)}s)`
+    );
     process.exit(0);
   }
 
@@ -135,7 +264,7 @@ if (args.includes('--healthcheck-only')) {
 
 if (shouldCheckJsdom(args)) {
   const result = runJsdomHealthCheck();
-  if (!(result.status === 0 && result.stdout.trim() === 'ok')) {
+  if (result.status !== 0) {
     printFailureAndExit(result);
   }
 }
