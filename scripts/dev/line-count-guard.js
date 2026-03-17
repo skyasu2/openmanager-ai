@@ -100,7 +100,7 @@ function walk(dirPath, relBase, opts, out) {
     } catch {
       continue;
     }
-    const lines = content.length === 0 ? 0 : content.split('\n').length;
+    const lines = content.length === 0 ? 0 : content.trimEnd().split('\n').length;
     if (lines >= opts.warn) {
       out.push({ path: relPosix, lines });
     }
