@@ -4,10 +4,36 @@
  */
 
 import React from 'react';
+import {
+  ReadableStream as NodeReadableStream,
+  TransformStream as NodeTransformStream,
+  WritableStream as NodeWritableStream,
+} from 'node:stream/web';
 import { expect, vi } from 'vitest';
 
 // React를 global에 추가 (jsdom 환경에서 JSX 지원)
 globalThis.React = React;
+
+if (typeof globalThis.ReadableStream === 'undefined') {
+  Object.defineProperty(globalThis, 'ReadableStream', {
+    value: NodeReadableStream,
+    writable: true,
+  });
+}
+
+if (typeof globalThis.WritableStream === 'undefined') {
+  Object.defineProperty(globalThis, 'WritableStream', {
+    value: NodeWritableStream,
+    writable: true,
+  });
+}
+
+if (typeof globalThis.TransformStream === 'undefined') {
+  Object.defineProperty(globalThis, 'TransformStream', {
+    value: NodeTransformStream,
+    writable: true,
+  });
+}
 
 if (typeof window !== 'undefined') {
   await import('@testing-library/jest-dom');

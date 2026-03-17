@@ -1,8 +1,4 @@
 /**
- * @vitest-environment jsdom
- */
-
-/**
  * AuthStateManager Tests
  * 인증 상태 관리 싱글톤 테스트
  *

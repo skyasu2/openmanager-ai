@@ -4,7 +4,6 @@
  * 백그라운드 작업 등록/해제, API 호출 제한, 상태 관리 검증.
  * Singleton의 내부 setInterval은 real timer 사용, 테스트는 상태 메서드 중심.
  *
- * @vitest-environment jsdom
  */
 
 import { afterEach, describe, expect, it, vi } from 'vitest';

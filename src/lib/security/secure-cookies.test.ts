@@ -1,6 +1,4 @@
 /**
- * @vitest-environment jsdom
- *
  * 보안 쿠키 유틸리티 테스트
  *
  * @description
