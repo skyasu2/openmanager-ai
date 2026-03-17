@@ -1,0 +1,82 @@
+{
+  "runId": "QA-20260317-0112",
+  "recordedAt": "2026-03-17T00:10:17.328Z",
+  "recordedAtKst": "2026-03-17 09:10:17 KST",
+  "runTitle": "Cloud Run Observability Ops Check - Langfuse readiness and traces endpoint validation (2026-03-17)",
+  "owner": "codex",
+  "source": "cloud-run+langfuse-api",
+  "environment": {
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "serviceUrl": "https://ai-engine-jdhrhws7ia-an.a.run.app",
+    "version": "8.9.1",
+    "aiEngineRevision": "ai-engine-00252-kcd"
+  },
+  "checks": {
+    "total": 4,
+    "passed": 3,
+    "failed": 1
+  },
+  "expertAssessments": [
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "Langfuse readiness와 direct API reachability는 확인됐지만, 운영 진단용 /monitoring/traces가 production에서 504 timeout으로 실패했다.",
+      "nextAction": "LANGFUSE_TRACES_TIMEOUT_MS 상향 또는 endpoint fetch 최적화로 traces 조회 경로 복구"
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "새 Cloud Run revision에서 startup 이후 health와 stream 요청은 정상 처리되며, authenticated monitoring도 응답한다.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "실운영 stream 요청 1건이 481ms에 성공했고 응답 품질도 정상 범위였다. 다만 10% sampling 정책상 해당 세션 trace 미포착은 허용 범위다.",
+      "nextAction": ""
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [
+    {
+      "id": "langfuse-monitoring-traces-timeout",
+      "title": "Authenticated /monitoring/traces endpoint times out in production",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "Cloud Run /monitoring 는 langfuse.isReady=true 로 정상이나 /monitoring/traces 는 504 timeout(5000ms). Direct Langfuse API call from local credentials succeeds, so timeout budget or endpoint robustness issue로 분류.",
+      "owner": "codex",
+      "status": "wont-fix",
+      "policyNote": "이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (요청자 표시(isBlocking=true)로 즉시 개선 필요)"
+    }
+  ],
+  "notes": [
+    "PASS: authenticated /monitoring -> status=ok, langfuse.isReady=true, isDisabled=false, eventCount=51, sampleRate=10%",
+    "PASS: direct Langfuse API -> recent traces 100건 조회 성공",
+    "PASS: live Cloud Run stream/v2 request (sessionId=codexLangfuseCheck1) -> success, durationMs=481, provider=cerebras, modelId=gpt-oss-120b",
+    "FAIL: authenticated /monitoring/traces -> 504 Langfuse API timeout after 5000ms",
+    "NOTE: sessionId=codexLangfuseCheck1 trace는 recent 100 traces에서 미검출. current sampling 10% 정책상 미샘플링 가능성으로 해석"
+  ],
+  "links": [
+    {
+      "label": "Cloud Run URL",
+      "url": "https://ai-engine-jdhrhws7ia-an.a.run.app"
+    },
+    {
+      "label": "QA baseline tracker",
+      "url": "https://openmanager-ai.vercel.app"
+    }
+  ]
+}

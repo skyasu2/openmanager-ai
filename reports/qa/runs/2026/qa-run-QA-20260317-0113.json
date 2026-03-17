@@ -1,0 +1,82 @@
+{
+  "runId": "QA-20260317-0113",
+  "recordedAt": "2026-03-17T00:20:29.019Z",
+  "recordedAtKst": "2026-03-17 09:20:29 KST",
+  "runTitle": "Cloud Run Observability Ops Fix - Langfuse traces endpoint restored (2026-03-17)",
+  "owner": "codex",
+  "source": "cloud-run+langfuse-api",
+  "environment": {
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "serviceUrl": "https://ai-engine-jdhrhws7ia-an.a.run.app",
+    "version": "8.9.1",
+    "aiEngineRevision": "ai-engine-00253-h79",
+    "aiEngineImageTag": "v-20260317-091441-c366f2aee"
+  },
+  "checks": {
+    "total": 5,
+    "passed": 5,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Langfuse readiness와 traces 조회 경로를 운영 엔드포인트와 direct API 양쪽에서 재검증했다. 이전 504 timeout은 timeout 상향 후 200으로 회복됐다.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "ai-engine 코드 수정 후 type-check, 관련 테스트, 전체 테스트, Cloud Run 재배포, live endpoint 검증까지 완료했다.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "실운영 sessionId=codexLangfuseCheck1 trace가 /monitoring/traces 결과에 나타나 end-to-end observability 경로가 복구됐음을 확인했다.",
+      "nextAction": ""
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "langfuse-monitoring-traces-timeout",
+      "title": "Authenticated /monitoring/traces endpoint times out in production",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "DEFAULT_LANGFUSE_TRACES_TIMEOUT_MS 5s -> 10s 상향 후 ai-engine-00253-h79에서 /monitoring/traces 200 복구, sessionId=codexLangfuseCheck1 trace 확인",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "PASS: server-admin-routes.ts 기본 Langfuse traces timeout 10000ms로 상향",
+    "PASS: cloud-run/ai-engine npm run type-check 통과",
+    "PASS: npx vitest run src/server-admin-routes.test.ts 통과",
+    "PASS: cloud-run/ai-engine npm run test -> 60 files, 662 tests passed",
+    "PASS: Cloud Run revision ai-engine-00253-h79 배포, image tag=v-20260317-091441-c366f2aee",
+    "PASS: authenticated /monitoring -> langfuse.isReady=true, eventCount=52",
+    "PASS: authenticated /monitoring/traces -> 200, count=10",
+    "PASS: traces payload에 sessionId=codexLangfuseCheck1 포함"
+  ],
+  "links": [
+    {
+      "label": "Cloud Run URL",
+      "url": "https://ai-engine-jdhrhws7ia-an.a.run.app"
+    }
+  ]
+}

@@ -15,7 +15,8 @@ import {
 import { getLangfuseUsageStatus } from './services/observability/langfuse';
 
 let logLevelResetTimer: ReturnType<typeof setTimeout> | null = null;
-const DEFAULT_LANGFUSE_TRACES_TIMEOUT_MS = 5_000;
+// Cloud Run egress to Langfuse can exceed 5s on cold network paths.
+const DEFAULT_LANGFUSE_TRACES_TIMEOUT_MS = 10_000;
 
 function getLangfuseTracesTimeoutMs(): number {
   const raw = process.env.LANGFUSE_TRACES_TIMEOUT_MS;

@@ -1,34 +1,34 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-16 19:33:55 KST
+> Generated at: 2026-03-17 09:20:29 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 110 |
-| Total Checks | 812 |
-| Passed | 769 |
-| Failed | 39 |
-| Completed Items | 174 |
+| Total Runs | 113 |
+| Total Checks | 830 |
+| Passed | 786 |
+| Failed | 40 |
+| Completed Items | 175 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 38 |
 | Expert Domains Tracked | 6 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Run | QA-20260316-0110 (2026-03-16T10:33:55.207Z) |
+| Last Run | QA-20260317-0113 (2026-03-17T00:20:29.019Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260316-0110 (2026-03-16T10:33:55.207Z)
+Latest run: QA-20260317-0113 (2026-03-17T00:20:29.019Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| AI Quality Assurance Specialist | appropriate | no | - |
 | IT Monitoring & Observability SME | appropriate | no | - |
 | DevOps / SRE Engineer | appropriate | no | - |
+| AI Quality Assurance Specialist | appropriate | no | - |
 
 ## Expert Domain Open Gaps
 
@@ -192,6 +192,7 @@ Latest run: QA-20260316-0110 (2026-03-16T10:33:55.207Z)
 - home-semantic-nav: 홈 페이지 nav 랜드마크 보강 (completed 1회, last QA-20260226-0009)
 - landing-copy-alignment: 랜딩/로그인 정책 카피 정합성 (completed 4회, last QA-20260227-0016)
 - landing-page-render: 랜딩 페이지 렌더링 (completed 1회, last QA-20260301-0035)
+- langfuse-monitoring-traces-timeout: Authenticated /monitoring/traces endpoint times out in production (completed 1회, last QA-20260317-0113)
 - login-copy-neutral: 로그인 정책 카피 중립성 개선 (completed 1회, last QA-20260227-0014)
 - login-pin-form-structure: 게스트 PIN 입력 폼 구조 정리 (completed 1회, last QA-20260226-0001)
 - math-tool-implementation-validation: AI 계산 툴 라우팅/실행 검증 (completed 1회, last QA-20260228-0027)
@@ -301,6 +302,9 @@ Latest run: QA-20260316-0110 (2026-03-16T10:33:55.207Z)
 
 | Run ID | Time (UTC) | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260317-0113 | 2026-03-17T00:20:29.019Z | Cloud Run Observability Ops Fix - Langfuse traces endpoint restored (2026-03-17) | 5 | 1 | 0 | 0 | 0 | 0 |
+| QA-20260317-0112 | 2026-03-17T00:10:17.328Z | Cloud Run Observability Ops Check - Langfuse readiness and traces endpoint validation (2026-03-17) | 4 | 0 | 0 | 0 | 1 | 1 |
+| QA-20260317-0111 | 2026-03-16T23:03:47.665Z | Production Playwright MCP QA - ai-engine Langfuse cold-start hardening deploy validation (2026-03-16) | 9 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260316-0110 | 2026-03-16T10:33:55.207Z | Vercel Production QA - Full regression (랜딩~AI 응답~이력 유지) | 12 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260316-0109 | 2026-03-16T10:23:14.962Z | Security Regression Smoke - security-attack-regression-pack closure | 5 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260316-0108 | 2026-03-16T09:03:40.061Z | Vercel Production QA - Frontend and AI Assistant regression validation | 8 | 0 | 0 | 0 | 0 | 0 |
@@ -318,7 +322,4 @@ Latest run: QA-20260316-0110 (2026-03-16T10:33:55.207Z)
 | QA-20260314-0096 | 2026-03-14T00:10:58.614Z | Production 종합 QA - Frontend/AI/Performance/FreeTier 검증 | 17 | 9 | 0 | 0 | 1 | 1 |
 | QA-20260313-0095 | 2026-03-13T14:05:31.044Z | Vercel Production QA - AI security block regression smoke | 4 | 4 | 0 | 0 | 0 | 0 |
 | QA-20260313-0094 | 2026-03-13T13:59:24.100Z | Vercel Production QA - post-deploy smoke after env recovery and release | 7 | 4 | 0 | 0 | 0 | 1 |
-| QA-20260313-0093 | 2026-03-13T13:21:04.712Z | Vercel Preview QA - stream/v2 smoke after env recovery | 1 | 2 | 0 | 0 | 0 | 1 |
-| QA-20260313-0092 | 2026-03-13T13:18:38.830Z | Vercel Preview Recovery QA - Env Sync and Guest Flow | 8 | 6 | 0 | 0 | 0 | 1 |
-| QA-20260313-0091 | 2026-03-13T12:15:43.286Z | Vercel Production 종합 QA #91 - 프론트엔드 전기능 + UI/UX + AI Assistant + 성능 평가 | 18 | 0 | 0 | 0 | 0 | 1 |
 

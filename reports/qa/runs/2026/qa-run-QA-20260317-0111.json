@@ -1,0 +1,75 @@
+{
+  "runId": "QA-20260317-0111",
+  "recordedAt": "2026-03-16T23:03:47.665Z",
+  "recordedAtKst": "2026-03-17 08:03:47 KST",
+  "runTitle": "Production Playwright MCP QA - ai-engine Langfuse cold-start hardening deploy validation (2026-03-16)",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "frontendUrl": "https://openmanager-ai.vercel.app",
+    "serviceUrl": "https://ai-engine-jdhrhws7ia-an.a.run.app",
+    "version": "8.9.1",
+    "aiEngineRevision": "ai-engine-00252-kcd",
+    "aiEngineImageTag": "v-20260316-222640-c366f2aee"
+  },
+  "checks": {
+    "total": 9,
+    "passed": 9,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "프로덕션에서 시스템 시작, 대시보드 진입, AI 사이드바 오픈, 스타터 프롬프트 전송, 응답 수신, 피드백 제출까지 실브라우저로 검증했다.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Cloud Run ai-engine를 c366f2aee로 재배포했고 /health 200, /monitoring 403(expected), revision label version=c366f2aee 확인으로 운영 반영을 검증했다.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "로컬 Docker preflight 통과 후 Cloud Build SUCCESS, Cloud Run revision ai-engine-00252-kcd 100% traffic 전환, cleanup 완료까지 확인했다.",
+      "nextAction": ""
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "PASS: ai-engine deploy.sh 실행으로 Cloud Run revision ai-engine-00252-kcd 배포, image tag=v-20260316-222640-c366f2aee, version=c366f2aee",
+    "PASS: Cloud Build c1e3b8bd-9763-456a-853f-b88c5883b877 SUCCESS",
+    "PASS: Cloud Run /health -> 200, config.langfuse=true, redis=true",
+    "PASS: Cloud Run /monitoring -> 403 (unauthorized expected)",
+    "PASS: 프로덕션 랜딩에서 시스템 시작 -> /dashboard 정상 진입",
+    "PASS: 대시보드 서버 현황 확인 - 전체 15, 온라인 14, 경고 1, 위험 0, 오프라인 0",
+    "PASS: AI 어시스턴트 오픈, AI 엔진 상태 Ready, 스타터 프롬프트 5개 표시",
+    "PASS: 스타터 '서버 상태 확인' 전송 -> POST /api/ai/supervisor/stream/v2 200, 응답 내용에 api-was-dc1-01 CPU 82% 포함",
+    "PASS: '도움이 됐어요' 클릭 후 POST /api/ai/feedback 200",
+    "PASS: 브라우저 콘솔 에러 0건"
+  ],
+  "links": [
+    {
+      "label": "Vercel URL",
+      "url": "https://openmanager-ai.vercel.app"
+    },
+    {
+      "label": "Cloud Run URL",
+      "url": "https://ai-engine-jdhrhws7ia-an.a.run.app"
+    }
+  ]
+}
