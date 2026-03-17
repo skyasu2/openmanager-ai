@@ -32,6 +32,7 @@ export default function UnifiedProfileHeader({
     userInfo,
     userType,
     status,
+    isLoading: isProfileLoading,
     handleLogout,
     navigateToLogin,
     navigateToDashboard,
@@ -39,6 +40,7 @@ export default function UnifiedProfileHeader({
 
   const { menuState, dropdownRef, toggleMenu, closeMenu } = useProfileMenu();
   const [isHydrated, setIsHydrated] = useState(false);
+  const isAuthResolving = status === 'loading' || isProfileLoading;
 
   useEffect(() => {
     setIsHydrated(true);
@@ -196,7 +198,7 @@ export default function UnifiedProfileHeader({
             : '게스트 사용자')
       );
     }
-    return status === 'loading' ? '로딩 중...' : '사용자';
+    return '사용자';
   };
 
   if (!isHydrated) {
@@ -213,7 +215,7 @@ export default function UnifiedProfileHeader({
   }
 
   // 비로그인 상태: 로그인 버튼만 표시
-  if (userType === 'unknown' && status !== 'loading') {
+  if (userType === 'unknown' && !isAuthResolving) {
     return (
       <div ref={dropdownRef} className={`relative z-50 ${className}`}>
         <button
@@ -239,47 +241,67 @@ export default function UnifiedProfileHeader({
       <button
         type="button"
         onClick={() => {
+          if (isAuthResolving) {
+            return;
+          }
           logger.info('👤 프로필 버튼 클릭됨');
           toggleMenu();
         }}
-        className="group pointer-events-auto relative z-50 flex cursor-pointer items-center space-x-3 rounded-lg p-3 transition-all duration-200 hover:bg-gray-100"
+        disabled={isAuthResolving}
+        className="group pointer-events-auto relative z-50 flex items-center space-x-3 rounded-lg p-3 transition-all duration-200 hover:bg-gray-100 disabled:cursor-wait disabled:hover:bg-transparent"
         aria-label="프로필 메뉴"
         aria-expanded={menuState.showProfileMenu}
         aria-haspopup="true"
+        aria-busy={isAuthResolving}
         id="profile-menu-button"
         data-testid="profile-dropdown-trigger"
       >
-        {/* 프로필 아바타 */}
-        <ProfileAvatar userInfo={userInfo} userType={userType} size="medium" />
+        {isAuthResolving ? (
+          <>
+            <div
+              aria-hidden="true"
+              className="h-8 w-8 animate-pulse rounded-full bg-gray-200"
+            />
+            <div aria-hidden="true" className="hidden space-y-1 sm:block">
+              <div className="h-3 w-20 animate-pulse rounded bg-gray-200" />
+              <div className="h-2.5 w-16 animate-pulse rounded bg-gray-100" />
+            </div>
+            <ChevronDown className="h-4 w-4 text-gray-300" />
+          </>
+        ) : (
+          <>
+            {/* 프로필 아바타 */}
+            <ProfileAvatar
+              userInfo={userInfo}
+              userType={userType}
+              size="medium"
+            />
 
-        {/* 사용자 정보 */}
-        <div className="hidden text-left sm:block">
-          <div className="flex items-center gap-1 text-sm font-medium text-gray-900">
-            {getUserName()}
-            <UserTypeIcon userType={userType} className="h-3 w-3" />
-          </div>
-          <div className="flex items-center gap-1 text-xs text-gray-500">
-            {userType === 'github'
-              ? 'GitHub 로그인'
-              : userType === 'google'
-                ? 'Google 로그인'
-                : userType === 'guest'
-                  ? '게스트 로그인'
-                  : status === 'loading'
-                    ? '확인 중...'
-                    : '로그인 필요'}
-            {status === 'loading' && (
-              <div className="animate-pulse h-2 w-2 rounded-full bg-gray-400" />
-            )}
-          </div>
-        </div>
+            {/* 사용자 정보 */}
+            <div className="hidden text-left sm:block">
+              <div className="flex items-center gap-1 text-sm font-medium text-gray-900">
+                {getUserName()}
+                <UserTypeIcon userType={userType} className="h-3 w-3" />
+              </div>
+              <div className="flex items-center gap-1 text-xs text-gray-500">
+                {userType === 'github'
+                  ? 'GitHub 로그인'
+                  : userType === 'google'
+                    ? 'Google 로그인'
+                    : userType === 'guest'
+                      ? '게스트 로그인'
+                      : '로그인 필요'}
+              </div>
+            </div>
 
-        {/* 드롭다운 화살표 */}
-        <ChevronDown
-          className={`h-4 w-4 text-gray-400 transition-transform duration-200 ${
-            menuState.showProfileMenu ? 'rotate-180' : ''
-          }`}
-        />
+            {/* 드롭다운 화살표 */}
+            <ChevronDown
+              className={`h-4 w-4 text-gray-400 transition-transform duration-200 ${
+                menuState.showProfileMenu ? 'rotate-180' : ''
+              }`}
+            />
+          </>
+        )}
       </button>
 
       {/* 프로필 드롭다운 메뉴 */}
