@@ -88,4 +88,98 @@ describe('server-admin-routes', () => {
       },
     });
   });
+
+  it('sorts and filters traces for diagnostics queries', async () => {
+    const fetchSpy = vi.spyOn(globalThis, 'fetch').mockResolvedValue(
+      new Response(JSON.stringify({
+        data: [
+          {
+            id: 'trace-aux',
+            name: 'timeout_monitor_NLQ Agent_stream',
+            sessionId: 'session-old',
+            input: 'older input',
+            output: 'older output',
+            metadata: { sampled: true },
+            createdAt: '2026-03-17T03:06:00.000Z',
+            updatedAt: '2026-03-17T03:06:01.000Z',
+          },
+          {
+            id: 'trace-new',
+            name: 'supervisor-execution',
+            sessionId: 'session-target',
+            input: 'newer input',
+            output: 'newer output',
+            metadata: { sampled: true },
+            createdAt: '2026-03-17T03:05:00.000Z',
+            updatedAt: '2026-03-17T03:05:01.000Z',
+          },
+        ],
+      }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      })
+    );
+
+    const res = await createApp().request('/monitoring/traces?limit=1&q=session-target');
+
+    expect(fetchSpy).toHaveBeenCalledWith(
+      'https://langfuse.example.com/api/public/traces?limit=100',
+      expect.objectContaining({
+        headers: expect.objectContaining({
+          Authorization: expect.stringContaining('Basic '),
+        }),
+      })
+    );
+    expect(res.status).toBe(200);
+    await expect(res.json()).resolves.toMatchObject({
+      count: 1,
+      fetchedCount: 2,
+      requestedLimit: 1,
+      query: 'session-target',
+      includeAuxiliary: false,
+      traces: [
+        {
+          id: 'trace-new',
+          sessionId: 'session-target',
+          createdAt: '2026-03-17T03:05:00.000Z',
+        },
+      ],
+    });
+  });
+
+  it('can include auxiliary timeout traces when explicitly requested', async () => {
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue(
+      new Response(JSON.stringify({
+        data: [
+          {
+            id: 'trace-aux',
+            name: 'timeout_monitor_NLQ Agent_stream',
+            sessionId: 'session-target',
+            input: 'input',
+            output: 'output',
+            metadata: { sampled: true },
+            createdAt: '2026-03-17T03:06:00.000Z',
+            updatedAt: '2026-03-17T03:06:01.000Z',
+          },
+        ],
+      }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      })
+    );
+
+    const res = await createApp().request('/monitoring/traces?limit=1&q=session-target&includeAuxiliary=true');
+
+    expect(res.status).toBe(200);
+    await expect(res.json()).resolves.toMatchObject({
+      count: 1,
+      includeAuxiliary: true,
+      traces: [
+        {
+          id: 'trace-aux',
+          name: 'timeout_monitor_NLQ Agent_stream',
+        },
+      ],
+    });
+  });
 });

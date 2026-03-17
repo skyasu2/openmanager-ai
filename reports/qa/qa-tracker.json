@@ -2,25 +2,25 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-03-17T04:00:14.984Z"
+    "updatedAt": "2026-03-17T04:33:27.878Z"
   },
   "sequence": {
-    "nextRunNumber": 117
+    "nextRunNumber": 118
   },
   "summary": {
-    "totalRuns": 116,
-    "totalChecks": 879,
-    "totalPassed": 834,
+    "totalRuns": 117,
+    "totalChecks": 887,
+    "totalPassed": 842,
     "totalFailed": 41,
     "completionRate": 100,
-    "completedItems": 212,
+    "completedItems": 213,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 8,
     "expertDomainsTracked": 6,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260317-0116",
-    "lastRecordedAt": "2026-03-17T04:00:14.984Z"
+    "lastRunId": "QA-20260317-0117",
+    "lastRecordedAt": "2026-03-17T04:33:27.878Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -4834,7 +4834,9 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0,
-      "aliases": ["esc-모달-닫기"],
+      "aliases": [
+        "esc-모달-닫기"
+      ],
       "owner": "",
       "lastEvidence": "Playwright MCP: ESC 키로 모달 닫기 동작 확인",
       "lastNote": "",
@@ -4858,7 +4860,9 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0,
-      "aliases": ["ai-chat-sidebar-open"],
+      "aliases": [
+        "ai-chat-sidebar-open"
+      ],
       "owner": "",
       "lastEvidence": "Playwright MCP: AI 어시스턴트 사이드바 열기/닫기 동작 확인",
       "lastNote": "",
@@ -4882,7 +4886,9 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0,
-      "aliases": ["프로덕션-대시보드-렌더링"],
+      "aliases": [
+        "프로덕션-대시보드-렌더링"
+      ],
       "owner": "",
       "lastEvidence": "Playwright MCP: 대시보드 전체 정상 렌더링 확인",
       "lastNote": "",
@@ -4906,7 +4912,9 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0,
-      "aliases": ["서버-모달-3탭-전환"],
+      "aliases": [
+        "서버-모달-3탭-전환"
+      ],
       "owner": "",
       "lastEvidence": "Playwright MCP: 종합상황/성능분석/로그&네트워크 3탭 전환 동작 확인",
       "lastNote": "",
@@ -4987,6 +4995,30 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-03-17T04:00:14.984Z"
+    },
+    "langfuse-monitoring-traces-search": {
+      "id": "langfuse-monitoring-traces-search",
+      "title": "Langfuse monitoring traces search and auxiliary filtering",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260317-0117",
+      "firstSeenAt": "2026-03-17T04:33:27.878Z",
+      "lastSeenRunId": "QA-20260317-0117",
+      "lastSeenAt": "2026-03-17T04:33:27.878Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "codex",
+      "lastEvidence": "production /monitoring/traces?limit=1&q=multi-trace-check-1773719926-op-1 -> supervisor-execution traceId=8a2b88fa-ca85-46c2-82bf-15515313b49a 즉시 반환, includeAuxiliary=true 시 timeout_monitor trace 동시 노출",
+      "lastNote": "운영 기본값은 본 trace 우선, 필요 시 보조 trace 확장 조회 가능",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-03-17T04:33:27.878Z"
     }
   },
   "runs": [
@@ -9792,6 +9824,52 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260317-0117",
+      "recordedAt": "2026-03-17T04:33:27.878Z",
+      "recordedAtKst": "2026-03-17 13:33:27 KST",
+      "title": "Cloud Run Observability Ops - monitoring traces search + auxiliary filtering validation (2026-03-17)",
+      "owner": "codex",
+      "source": "cloud-run+langfuse-api",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260317-0117.json",
+      "checks": {
+        "total": 8,
+        "passed": 8,
+        "failed": 0
+      },
+      "expertAssessments": [
+        {
+          "domainId": "observability-monitoring",
+          "domainName": "IT Monitoring & Observability SME",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "production /monitoring/traces가 limit/q 지원과 auxiliary trace 기본 숨김으로 운영자가 원하는 supervisor trace를 바로 찾을 수 있게 됐다.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "ai-engine type-check, 전체 npm run test 60 files 667 tests, Cloud Build SUCCESS, Cloud Run ai-engine-00258-7w4 100% 전환까지 완료했다.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "기존 sampled multi-agent sessionId를 사용해 production diagnostics path가 supervisor trace 본문을 즉시 반환하는 것을 확인했다.",
+          "nextAction": ""
+        }
+      ],
+      "expertCount": 3,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -9800,16 +9878,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 74,
-      "appropriateCount": 71,
+      "seenCount": 75,
+      "appropriateCount": 72,
       "partialCount": 3,
       "inappropriateCount": 0,
       "improvementNeededCount": 11,
-      "lastRunId": "QA-20260317-0116",
-      "lastSeenAt": "2026-03-17T04:00:14.984Z",
+      "lastRunId": "QA-20260317-0117",
+      "lastSeenAt": "2026-03-17T04:33:27.878Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "production multi-agent stream/v2 sampled 응답에서 finalAgent=NLQ Agent와 metadata.traceId를 함께 확인했고 응답 요약 품질도 정상이다.",
+      "lastRationale": "기존 sampled multi-agent sessionId를 사용해 production diagnostics path가 supervisor trace 본문을 즉시 반환하는 것을 확인했다.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -9817,16 +9895,16 @@
       "domainName": "IT Monitoring & Observability SME",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 51,
-      "appropriateCount": 31,
+      "seenCount": 52,
+      "appropriateCount": 32,
       "partialCount": 20,
       "inappropriateCount": 0,
       "improvementNeededCount": 20,
-      "lastRunId": "QA-20260317-0116",
-      "lastSeenAt": "2026-03-17T04:00:14.984Z",
+      "lastRunId": "QA-20260317-0117",
+      "lastSeenAt": "2026-03-17T04:33:27.878Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "운영 진단 blind spot을 줄이기 위해 /monitoring에 isOperational/clientInitialized/loadAttempted/hasKeysConfigured를 노출했고, production sampled multi-agent 응답에서 data-done.metadata.traceId 실물을 캡처했다.",
+      "lastRationale": "production /monitoring/traces가 limit/q 지원과 auxiliary trace 기본 숨김으로 운영자가 원하는 supervisor trace를 바로 찾을 수 있게 됐다.",
       "lastNextAction": ""
     },
     "ai-security-reliability": {
@@ -9851,16 +9929,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 39,
-      "appropriateCount": 36,
+      "seenCount": 40,
+      "appropriateCount": 37,
       "partialCount": 3,
       "inappropriateCount": 0,
       "improvementNeededCount": 3,
-      "lastRunId": "QA-20260317-0116",
-      "lastSeenAt": "2026-03-17T04:00:14.984Z",
+      "lastRunId": "QA-20260317-0117",
+      "lastSeenAt": "2026-03-17T04:33:27.878Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "ai-engine type-check, 관련 Vitest, 전체 npm run test 60 files 665 tests, Cloud Build SUCCESS, Cloud Run ai-engine-00256-72m 100% 전환까지 완료했다.",
+      "lastRationale": "ai-engine type-check, 전체 npm run test 60 files 667 tests, Cloud Build SUCCESS, Cloud Run ai-engine-00258-7w4 100% 전환까지 완료했다.",
       "lastNextAction": ""
     },
     "test-automation": {

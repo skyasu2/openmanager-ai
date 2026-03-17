@@ -1,28 +1,28 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-17 13:00:15 KST
+> Generated at: 2026-03-17 13:33:28 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 116 |
-| Total Checks | 879 |
-| Passed | 834 |
+| Total Runs | 117 |
+| Total Checks | 887 |
+| Passed | 842 |
 | Failed | 41 |
-| Completed Items | 212 |
+| Completed Items | 213 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 8 |
 | Expert Domains Tracked | 6 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Run | QA-20260317-0116 (2026-03-17T04:00:14.984Z) |
+| Last Run | QA-20260317-0117 (2026-03-17T04:33:27.878Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260317-0116 (2026-03-17T04:00:14.984Z)
+Latest run: QA-20260317-0117 (2026-03-17T04:33:27.878Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -150,6 +150,7 @@ Latest run: QA-20260317-0116 (2026-03-17T04:00:14.984Z)
 - landing-page-render: 랜딩 페이지 렌더링 (completed 1회, last QA-20260301-0035)
 - landing-system-start: 시스템 시작 카운트다운 (completed 1회, last QA-20260317-0114)
 - langfuse-monitoring-runtime-visibility: Langfuse runtime visibility on /monitoring (completed 1회, last QA-20260317-0116)
+- langfuse-monitoring-traces-search: Langfuse monitoring traces search and auxiliary filtering (completed 1회, last QA-20260317-0117)
 - langfuse-monitoring-traces-timeout: Authenticated /monitoring/traces endpoint times out in production (completed 1회, last QA-20260317-0113)
 - langfuse-multi-agent-traceid-live-proof: 멀티에이전트 sampled traceId 실운영 실측 (completed 1회, last QA-20260317-0116)
 - langfuse-multi-agent-traceid-propagation: 멀티에이전트 stream done metadata traceId 전파 (completed 1회, last QA-20260317-0115)
@@ -279,6 +280,7 @@ Latest run: QA-20260317-0116 (2026-03-17T04:00:14.984Z)
 
 | Run ID | Time (UTC) | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260317-0117 | 2026-03-17T04:33:27.878Z | Cloud Run Observability Ops - monitoring traces search + auxiliary filtering validation (2026-03-17) | 8 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260317-0116 | 2026-03-17T04:00:14.984Z | Cloud Run Observability Ops - Multi-agent traceId live proof + Langfuse runtime visibility (2026-03-17) | 10 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260317-0115 | 2026-03-17T02:06:09.588Z | Cloud Run Observability Ops - Multi-agent traceId propagation validation (2026-03-17) | 9 | 1 | 0 | 0 | 1 | 1 |
 | QA-20260317-0114 | 2026-03-17T02:03:41.807Z | WONT-FIX 실측 재평가 - Playwright MCP 30개 UI 동작 확인 → completed 전환 | 30 | 27 | 0 | 0 | 0 | 0 |
@@ -298,5 +300,4 @@ Latest run: QA-20260317-0116 (2026-03-17T04:00:14.984Z)
 | QA-20260315-0100 | 2026-03-15T05:59:40.849Z | Vercel Production QA - AI Chat summary response recovery validation | 6 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260315-0099 | 2026-03-14T17:14:40.772Z | Storybook QA - react-vite migration verification | 4 | 3 | 0 | 0 | 0 | 0 |
 | QA-20260314-0098 | 2026-03-14T12:29:00.552Z | Vercel Production QA - Frontend/AI Active QA | 3 | 0 | 0 | 0 | 3 | 0 |
-| QA-20260314-0097 | 2026-03-14T03:21:46.717Z | Vercel Production QA - Frontend/AI/Performance/Free Tier policy review | 13 | 7 | 0 | 0 | 1 | 1 |
 

@@ -20,6 +20,9 @@ import {
 let logLevelResetTimer: ReturnType<typeof setTimeout> | null = null;
 // Cloud Run egress to Langfuse can exceed 5s on cold network paths.
 const DEFAULT_LANGFUSE_TRACES_TIMEOUT_MS = 10_000;
+const DEFAULT_LANGFUSE_TRACES_LIMIT = 10;
+const MAX_LANGFUSE_TRACES_LIMIT = 100;
+const FILTERED_LANGFUSE_TRACES_FETCH_LIMIT = 100;
 
 function getLangfuseTracesTimeoutMs(): number {
   const raw = process.env.LANGFUSE_TRACES_TIMEOUT_MS;
@@ -37,16 +40,34 @@ function isAbortError(error: unknown): boolean {
   return error instanceof Error && error.name === 'AbortError';
 }
 
+function isAuxiliaryLangfuseTrace(name: string): boolean {
+  return name.startsWith('timeout_monitor_');
+}
+
+function getLangfuseTracesLimit(rawLimit?: string): number {
+  if (!rawLimit) {
+    return DEFAULT_LANGFUSE_TRACES_LIMIT;
+  }
+
+  const parsed = Number.parseInt(rawLimit, 10);
+  if (!Number.isFinite(parsed) || parsed < 1) {
+    return DEFAULT_LANGFUSE_TRACES_LIMIT;
+  }
+
+  return Math.min(parsed, MAX_LANGFUSE_TRACES_LIMIT);
+}
+
 async function fetchLangfuseTraces(
   baseUrl: string,
   authToken: string,
+  limit: number,
   timeoutMs = getLangfuseTracesTimeoutMs()
 ) {
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
   try {
-    return await fetch(`${baseUrl}/api/public/traces?limit=10`, {
+    return await fetch(`${baseUrl}/api/public/traces?limit=${limit}`, {
       headers: {
         Authorization: `Basic ${authToken}`,
         'Content-Type': 'application/json',
@@ -114,7 +135,18 @@ export function registerAdminRoutes(
         'base64'
       );
       const timeoutMs = getLangfuseTracesTimeoutMs();
-      const response = await fetchLangfuseTraces(baseUrl, authToken, timeoutMs);
+      const requestedLimit = getLangfuseTracesLimit(c.req.query('limit'));
+      const query = c.req.query('q')?.trim().toLowerCase();
+      const includeAuxiliary = c.req.query('includeAuxiliary') === 'true';
+      const fetchLimit = query
+        ? Math.max(requestedLimit, FILTERED_LANGFUSE_TRACES_FETCH_LIMIT)
+        : requestedLimit;
+      const response = await fetchLangfuseTraces(
+        baseUrl,
+        authToken,
+        fetchLimit,
+        timeoutMs
+      );
 
       if (!response.ok) {
         const errorText = await response.text();
@@ -129,7 +161,17 @@ export function registerAdminRoutes(
       }
 
       const data = await response.json();
-      const traces = (data.data || []).map(
+      const traces = ((data.data || []) as Array<{
+        id: string;
+        name: string;
+        sessionId?: string;
+        input?: string;
+        output?: string;
+        metadata?: Record<string, unknown>;
+        createdAt: string;
+        updatedAt: string;
+      }>)
+        .map(
         (trace: {
           id: string;
           name: string;
@@ -157,12 +199,34 @@ export function registerAdminRoutes(
           createdAt: trace.createdAt,
           updatedAt: trace.updatedAt,
         })
-      );
+        )
+        .sort(
+          (a, b) =>
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        );
+
+      const visibleBaseTraces = includeAuxiliary
+        ? traces
+        : traces.filter((trace) => !isAuxiliaryLangfuseTrace(trace.name));
+
+      const filteredTraces = query
+        ? visibleBaseTraces.filter((trace) =>
+            [trace.id, trace.name, trace.sessionId]
+              .filter((value): value is string => typeof value === 'string')
+              .some((value) => value.toLowerCase().includes(query))
+          )
+        : visibleBaseTraces;
+
+      const visibleTraces = filteredTraces.slice(0, requestedLimit);
 
       return c.json({
         status: 'ok',
-        count: traces.length,
-        traces,
+        count: visibleTraces.length,
+        fetchedCount: traces.length,
+        requestedLimit,
+        query: query || null,
+        includeAuxiliary,
+        traces: visibleTraces,
         dashboardUrl: `${baseUrl}/project`,
         timestamp: new Date().toISOString(),
       });

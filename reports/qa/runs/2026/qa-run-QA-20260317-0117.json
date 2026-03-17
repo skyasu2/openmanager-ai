@@ -1,0 +1,82 @@
+{
+  "runId": "QA-20260317-0117",
+  "recordedAt": "2026-03-17T04:33:27.878Z",
+  "recordedAtKst": "2026-03-17 13:33:27 KST",
+  "runTitle": "Cloud Run Observability Ops - monitoring traces search + auxiliary filtering validation (2026-03-17)",
+  "owner": "codex",
+  "source": "cloud-run+langfuse-api",
+  "environment": {
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "serviceUrl": "https://ai-engine-jdhrhws7ia-an.a.run.app",
+    "version": "8.9.1",
+    "aiEngineRevision": "ai-engine-00258-7w4",
+    "aiEngineImageTag": "v-20260317-132732-d424d7adf"
+  },
+  "checks": {
+    "total": 8,
+    "passed": 8,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "production /monitoring/traces가 limit/q 지원과 auxiliary trace 기본 숨김으로 운영자가 원하는 supervisor trace를 바로 찾을 수 있게 됐다.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "ai-engine type-check, 전체 npm run test 60 files 667 tests, Cloud Build SUCCESS, Cloud Run ai-engine-00258-7w4 100% 전환까지 완료했다.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "기존 sampled multi-agent sessionId를 사용해 production diagnostics path가 supervisor trace 본문을 즉시 반환하는 것을 확인했다.",
+      "nextAction": ""
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "langfuse-monitoring-traces-search",
+      "title": "Langfuse monitoring traces search and auxiliary filtering",
+      "priority": "P1",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "production /monitoring/traces?limit=1&q=multi-trace-check-1773719926-op-1 -> supervisor-execution traceId=8a2b88fa-ca85-46c2-82bf-15515313b49a 즉시 반환, includeAuxiliary=true 시 timeout_monitor trace 동시 노출",
+      "note": "운영 기본값은 본 trace 우선, 필요 시 보조 trace 확장 조회 가능",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "PASS: cloud-run/ai-engine npx vitest run src/server-admin-routes.test.ts",
+    "PASS: cloud-run/ai-engine npm run type-check",
+    "PASS: cloud-run/ai-engine npm run test -> 60 files, 667 tests passed",
+    "PASS: Cloud Build 127eb0d7-a855-4ad8-85b2-78b93adc2759 SUCCESS",
+    "PASS: Cloud Run revision ai-engine-00258-7w4 배포, image tag=v-20260317-132732-d424d7adf",
+    "PASS: authenticated /monitoring/traces?limit=1&q=multi-trace-check-1773719926-op-1 -> supervisor-execution trace 직접 반환",
+    "PASS: authenticated /monitoring/traces?limit=2&q=multi-trace-check-1773719926-op-1&includeAuxiliary=true -> timeout_monitor + supervisor-execution 동시 반환",
+    "INFO: fetchedCount=100, requestedLimit/query/includeAuxiliary 메타데이터 노출로 진단 가시성 강화"
+  ],
+  "links": [
+    {
+      "label": "Cloud Run URL",
+      "url": "https://ai-engine-jdhrhws7ia-an.a.run.app"
+    }
+  ]
+}
