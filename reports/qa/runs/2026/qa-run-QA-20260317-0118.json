@@ -1,0 +1,73 @@
+{
+  "runId": "QA-20260317-0118",
+  "recordedAt": "2026-03-17T08:11:11.594Z",
+  "recordedAtKst": "2026-03-17 17:11:11 KST",
+  "runTitle": "Cloud Run Deploy Verification - v8.9.2 manual deploy (2026-03-17)",
+  "owner": "codex",
+  "source": "cloud-run-manual-deploy",
+  "environment": {
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "serviceUrl": "https://ai-engine-jdhrhws7ia-an.a.run.app",
+    "version": "8.9.2",
+    "aiEngineRevision": "ai-engine-00259-fpw",
+    "aiEngineImageTag": "v-20260317-170523-1e6aa6dc2"
+  },
+  "checks": {
+    "total": 6,
+    "passed": 6,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Cloud Run 수동 배포와 post-deploy health/monitoring 검증이 모두 통과했고 free-tier guard와 Docker preflight도 사전 통과했다.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "v8.9.2 배포 후 monitoring에서 Langfuse usage/runtime 상태가 정상 노출되고 있다.",
+      "nextAction": ""
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "cloud-run-v892-manual-deploy",
+      "title": "Cloud Run v8.9.2 manual deploy verification",
+      "priority": "P1",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "ai-engine-00259-fpw 100% 배포, /health 200, /monitoring 200, version=8.9.2, langfuse.isOperational=true",
+      "note": "Vercel 자동 배포와 별도로 Cloud Run 수동 배포 완료",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "PASS: git status clean, HEAD tag v8.9.2",
+    "PASS: cloud-run/ai-engine npm run type-check",
+    "PASS: build-only Docker preflight (SKIP_RUN=true)",
+    "PASS: Cloud Build f714011d-f5a1-432d-bd43-6a3a1b0cacef SUCCESS",
+    "PASS: Cloud Run revision ai-engine-00259-fpw deployed 100%",
+    "PASS: /health 200, version=8.9.2",
+    "PASS: authenticated /monitoring 200, langfuse.isOperational=true, isReady=true, eventCount=54"
+  ],
+  "links": [
+    {
+      "label": "Cloud Run URL",
+      "url": "https://ai-engine-jdhrhws7ia-an.a.run.app"
+    }
+  ]
+}

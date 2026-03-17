@@ -2,25 +2,25 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-03-17T04:33:27.878Z"
+    "updatedAt": "2026-03-17T08:11:11.594Z"
   },
   "sequence": {
-    "nextRunNumber": 118
+    "nextRunNumber": 119
   },
   "summary": {
-    "totalRuns": 117,
-    "totalChecks": 887,
-    "totalPassed": 842,
+    "totalRuns": 118,
+    "totalChecks": 893,
+    "totalPassed": 848,
     "totalFailed": 41,
     "completionRate": 100,
-    "completedItems": 213,
+    "completedItems": 214,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 8,
     "expertDomainsTracked": 6,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260317-0117",
-    "lastRecordedAt": "2026-03-17T04:33:27.878Z"
+    "lastRunId": "QA-20260317-0118",
+    "lastRecordedAt": "2026-03-17T08:11:11.594Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -5011,6 +5011,30 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-03-17T04:33:27.878Z"
+    },
+    "cloud-run-v892-manual-deploy": {
+      "id": "cloud-run-v892-manual-deploy",
+      "title": "Cloud Run v8.9.2 manual deploy verification",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260317-0118",
+      "firstSeenAt": "2026-03-17T08:11:11.594Z",
+      "lastSeenRunId": "QA-20260317-0118",
+      "lastSeenAt": "2026-03-17T08:11:11.594Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "codex",
+      "lastEvidence": "ai-engine-00259-fpw 100% 배포, /health 200, /monitoring 200, version=8.9.2, langfuse.isOperational=true",
+      "lastNote": "Vercel 자동 배포와 별도로 Cloud Run 수동 배포 완료",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-03-17T08:11:11.594Z"
     }
   },
   "runs": [
@@ -9862,6 +9886,44 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260317-0118",
+      "recordedAt": "2026-03-17T08:11:11.594Z",
+      "recordedAtKst": "2026-03-17 17:11:11 KST",
+      "title": "Cloud Run Deploy Verification - v8.9.2 manual deploy (2026-03-17)",
+      "owner": "codex",
+      "source": "cloud-run-manual-deploy",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260317-0118.json",
+      "checks": {
+        "total": 6,
+        "passed": 6,
+        "failed": 0
+      },
+      "expertAssessments": [
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Cloud Run 수동 배포와 post-deploy health/monitoring 검증이 모두 통과했고 free-tier guard와 Docker preflight도 사전 통과했다.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "observability-monitoring",
+          "domainName": "IT Monitoring & Observability SME",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "v8.9.2 배포 후 monitoring에서 Langfuse usage/runtime 상태가 정상 노출되고 있다.",
+          "nextAction": ""
+        }
+      ],
+      "expertCount": 2,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -9887,16 +9949,16 @@
       "domainName": "IT Monitoring & Observability SME",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 52,
-      "appropriateCount": 32,
+      "seenCount": 53,
+      "appropriateCount": 33,
       "partialCount": 20,
       "inappropriateCount": 0,
       "improvementNeededCount": 20,
-      "lastRunId": "QA-20260317-0117",
-      "lastSeenAt": "2026-03-17T04:33:27.878Z",
+      "lastRunId": "QA-20260317-0118",
+      "lastSeenAt": "2026-03-17T08:11:11.594Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "production /monitoring/traces가 limit/q 지원과 auxiliary trace 기본 숨김으로 운영자가 원하는 supervisor trace를 바로 찾을 수 있게 됐다.",
+      "lastRationale": "v8.9.2 배포 후 monitoring에서 Langfuse usage/runtime 상태가 정상 노출되고 있다.",
       "lastNextAction": ""
     },
     "ai-security-reliability": {
@@ -9921,16 +9983,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 40,
-      "appropriateCount": 37,
+      "seenCount": 41,
+      "appropriateCount": 38,
       "partialCount": 3,
       "inappropriateCount": 0,
       "improvementNeededCount": 3,
-      "lastRunId": "QA-20260317-0117",
-      "lastSeenAt": "2026-03-17T04:33:27.878Z",
+      "lastRunId": "QA-20260317-0118",
+      "lastSeenAt": "2026-03-17T08:11:11.594Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "ai-engine type-check, 전체 npm run test 60 files 667 tests, Cloud Build SUCCESS, Cloud Run ai-engine-00258-7w4 100% 전환까지 완료했다.",
+      "lastRationale": "Cloud Run 수동 배포와 post-deploy health/monitoring 검증이 모두 통과했고 free-tier guard와 Docker preflight도 사전 통과했다.",
       "lastNextAction": ""
     },
     "test-automation": {

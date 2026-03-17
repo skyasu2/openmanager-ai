@@ -1,34 +1,33 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-17 13:33:28 KST
+> Generated at: 2026-03-17 17:11:12 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 117 |
-| Total Checks | 887 |
-| Passed | 842 |
+| Total Runs | 118 |
+| Total Checks | 893 |
+| Passed | 848 |
 | Failed | 41 |
-| Completed Items | 213 |
+| Completed Items | 214 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 8 |
 | Expert Domains Tracked | 6 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Run | QA-20260317-0117 (2026-03-17T04:33:27.878Z) |
+| Last Run | QA-20260317-0118 (2026-03-17T08:11:11.594Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260317-0117 (2026-03-17T04:33:27.878Z)
+Latest run: QA-20260317-0118 (2026-03-17T08:11:11.594Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| IT Monitoring & Observability SME | appropriate | no | - |
 | DevOps / SRE Engineer | appropriate | no | - |
-| AI Quality Assurance Specialist | appropriate | no | - |
+| IT Monitoring & Observability SME | appropriate | no | - |
 
 ## Expert Domain Open Gaps
 
@@ -108,6 +107,7 @@ Latest run: QA-20260317-0117 (2026-03-17T04:33:27.878Z)
 - blocked-prompt-raw-json-exposure: 보안 차단 시 raw JSON 노출 제거 (completed 1회, last QA-20260315-0101)
 - blocked-prompt-ux-fixed-v880: Prompt injection 차단 UX 정제 검증 (completed 1회, last QA-20260308-0058)
 - blocked-prompt-ux-v880-quality-recheck: 보안 차단 UX 재검증 (completed 1회, last QA-20260308-0059)
+- cloud-run-v892-manual-deploy: Cloud Run v8.9.2 manual deploy verification (completed 1회, last QA-20260317-0118)
 - csrf-duplicate-removal: CSRF getCSRFTokenFromCookie 중복 제거 (completed 1회, last QA-20260307-0053)
 - dashboard-15-servers: 대시보드 15대 서버 모니터링 정상 (completed 2회, last QA-20260314-0097)
 - dashboard-active-alerts: 활성 알림 모달 (completed 1회, last QA-20260317-0114)
@@ -280,6 +280,7 @@ Latest run: QA-20260317-0117 (2026-03-17T04:33:27.878Z)
 
 | Run ID | Time (UTC) | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260317-0118 | 2026-03-17T08:11:11.594Z | Cloud Run Deploy Verification - v8.9.2 manual deploy (2026-03-17) | 6 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260317-0117 | 2026-03-17T04:33:27.878Z | Cloud Run Observability Ops - monitoring traces search + auxiliary filtering validation (2026-03-17) | 8 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260317-0116 | 2026-03-17T04:00:14.984Z | Cloud Run Observability Ops - Multi-agent traceId live proof + Langfuse runtime visibility (2026-03-17) | 10 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260317-0115 | 2026-03-17T02:06:09.588Z | Cloud Run Observability Ops - Multi-agent traceId propagation validation (2026-03-17) | 9 | 1 | 0 | 0 | 1 | 1 |
@@ -299,5 +300,4 @@ Latest run: QA-20260317-0117 (2026-03-17T04:33:27.878Z)
 | QA-20260315-0101 | 2026-03-15T06:21:02.856Z | QA governance - close resolved security gap and split security backlog | 3 | 1 | 0 | 2 | 0 | 0 |
 | QA-20260315-0100 | 2026-03-15T05:59:40.849Z | Vercel Production QA - AI Chat summary response recovery validation | 6 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260315-0099 | 2026-03-14T17:14:40.772Z | Storybook QA - react-vite migration verification | 4 | 3 | 0 | 0 | 0 | 0 |
-| QA-20260314-0098 | 2026-03-14T12:29:00.552Z | Vercel Production QA - Frontend/AI Active QA | 3 | 0 | 0 | 0 | 3 | 0 |
 
