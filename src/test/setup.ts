@@ -8,6 +8,7 @@ import {
   TransformStream as NodeTransformStream,
   WritableStream as NodeWritableStream,
 } from 'node:stream/web';
+import '@testing-library/jest-dom/vitest';
 import React from 'react';
 import { expect, vi } from 'vitest';
 
@@ -33,10 +34,6 @@ if (typeof globalThis.TransformStream === 'undefined') {
     value: NodeTransformStream,
     writable: true,
   });
-}
-
-if (typeof window !== 'undefined') {
-  await import('@testing-library/jest-dom');
 }
 
 import { toHaveNoViolations } from 'jest-axe';

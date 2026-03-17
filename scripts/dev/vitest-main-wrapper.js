@@ -66,6 +66,19 @@ function getTargetFiles(argv) {
   return files;
 }
 
+function getConfigFile(argv) {
+  for (let index = 0; index < argv.length; index += 1) {
+    if (argv[index] !== '--config') continue;
+    const candidate = argv[index + 1];
+    if (!candidate) return null;
+
+    const resolved = normalizePath(candidate);
+    return isExistingFile(resolved) ? resolved : null;
+  }
+
+  return null;
+}
+
 function isWsl() {
   if (process.platform !== 'linux') return false;
   if (process.env.WSL_DISTRO_NAME || process.env.WSL_INTEROP) return true;
@@ -210,9 +223,23 @@ function runJsdomHealthCheck() {
   };
 }
 
+function configLikelyNeedsDom(configFile) {
+  if (!configFile) return false;
+
+  try {
+    const source = fs.readFileSync(configFile, 'utf8');
+    return /environment:\s*['"](jsdom|happy-dom)['"]/u.test(source);
+  } catch {
+    return false;
+  }
+}
+
 function shouldCheckJsdom(argv) {
   if (process.env.CI === 'true') return false;
   if (process.env.VITEST_SKIP_JSDOM_HEALTHCHECK === 'true') return false;
+
+  const configFile = getConfigFile(argv);
+  if (configLikelyNeedsDom(configFile)) return true;
 
   const files = getTargetFiles(argv);
   if (files.length === 0) return true;

@@ -7,6 +7,10 @@
  */
 
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import {
+  AUTH_SESSION_ID_KEY,
+  LEGACY_GUEST_SESSION_COOKIE_KEY,
+} from './guest-session-utils';
 
 // ============================================================================
 // Mock 설정 (static - 모듈 재로드 없음)
@@ -74,6 +78,27 @@ import { AuthStateManager } from './auth-state-manager';
 // 테스트
 // ============================================================================
 
+const AUTH_TEST_COOKIE_KEYS = [
+  AUTH_SESSION_ID_KEY,
+  LEGACY_GUEST_SESSION_COOKIE_KEY,
+  'auth_type',
+  'test_mode',
+  'vercel_test_token',
+];
+
+function clearAuthTestCookies() {
+  if (typeof document === 'undefined') return;
+
+  for (const key of AUTH_TEST_COOKIE_KEYS) {
+    document.cookie = `${key}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
+  }
+}
+
+function setAuthTestCookie(key: string, value: string) {
+  if (typeof document === 'undefined') return;
+  document.cookie = `${key}=${value}; path=/`;
+}
+
 describe('AuthStateManager', () => {
   beforeEach(() => {
     // Reset mocks
@@ -89,17 +114,14 @@ describe('AuthStateManager', () => {
     Object.defineProperty(globalThis, 'localStorage', {
       value: localStorageMock,
       writable: true,
+      configurable: true,
     });
     Object.defineProperty(globalThis, 'sessionStorage', {
       value: sessionStorageMock,
       writable: true,
+      configurable: true,
     });
-    Object.defineProperty(globalThis, 'document', {
-      value: {
-        cookie: '',
-      },
-      writable: true,
-    });
+    clearAuthTestCookies();
 
     // Default Supabase mock - no session
     mockSupabaseClient.auth.getSession.mockResolvedValue({
@@ -172,12 +194,7 @@ describe('AuthStateManager', () => {
     });
 
     it('쿠키 fallback 게스트 사용자명은 한국어 기본값을 사용해야 함', async () => {
-      Object.defineProperty(globalThis, 'document', {
-        value: {
-          cookie: 'auth_session_id=cookie-session-abc',
-        },
-        writable: true,
-      });
+      setAuthTestCookie(AUTH_SESSION_ID_KEY, 'cookie-session-abc');
 
       const manager = AuthStateManager.getInstance();
       const state = await manager.getAuthState();
