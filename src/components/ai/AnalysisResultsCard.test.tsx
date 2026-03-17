@@ -4,8 +4,8 @@
 
 import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
-import AnalysisResultsCard from './AnalysisResultsCard';
 import type { MultiServerAnalysisResponse } from '@/types/intelligent-monitoring.types';
+import AnalysisResultsCard from './AnalysisResultsCard';
 
 vi.mock('@/lib/format-date', () => ({
   formatDateTime: () => '2026-03-17 17:55:00',
@@ -179,11 +179,9 @@ describe('AnalysisResultsCard', () => {
 
     const headings = screen.getAllByRole('button');
     const serverButtons = headings.filter((button) =>
-      [
-        'cache-redis-dc1-01',
-        'api-was-dc1-01',
-        'web-nginx-dc1-01',
-      ].some((name) => button.textContent?.includes(name))
+      ['cache-redis-dc1-01', 'api-was-dc1-01', 'web-nginx-dc1-01'].some(
+        (name) => button.textContent?.includes(name)
+      )
     );
 
     expect(serverButtons[0]).toHaveTextContent('cache-redis-dc1-01');

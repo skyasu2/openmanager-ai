@@ -68,9 +68,13 @@ function MultiServerResults({ data }: { data: MultiServerAnalysisResponse }) {
   const filteredServers = useMemo(() => {
     switch (filter) {
       case 'issues':
-        return sortedServers.filter((server) => server.overallStatus !== 'online');
+        return sortedServers.filter(
+          (server) => server.overallStatus !== 'online'
+        );
       case 'healthy':
-        return sortedServers.filter((server) => server.overallStatus === 'online');
+        return sortedServers.filter(
+          (server) => server.overallStatus === 'online'
+        );
       default:
         return sortedServers;
     }
@@ -92,8 +96,8 @@ function MultiServerResults({ data }: { data: MultiServerAnalysisResponse }) {
               서버별 상세 분석 ({data.servers.length}개)
             </h3>
             <p className="mt-1 text-sm text-gray-500">
-              문제 서버를 먼저 보여주고, 서버 카드를 열면 이상 감지와 예측 근거를
-              바로 확인할 수 있습니다.
+              문제 서버를 먼저 보여주고, 서버 카드를 열면 이상 감지와 예측
+              근거를 바로 확인할 수 있습니다.
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-2">

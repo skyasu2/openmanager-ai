@@ -4834,9 +4834,7 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0,
-      "aliases": [
-        "esc-모달-닫기"
-      ],
+      "aliases": ["esc-모달-닫기"],
       "owner": "",
       "lastEvidence": "Playwright MCP: ESC 키로 모달 닫기 동작 확인",
       "lastNote": "",
@@ -4860,9 +4858,7 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0,
-      "aliases": [
-        "ai-chat-sidebar-open"
-      ],
+      "aliases": ["ai-chat-sidebar-open"],
       "owner": "",
       "lastEvidence": "Playwright MCP: AI 어시스턴트 사이드바 열기/닫기 동작 확인",
       "lastNote": "",
@@ -4886,9 +4882,7 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0,
-      "aliases": [
-        "프로덕션-대시보드-렌더링"
-      ],
+      "aliases": ["프로덕션-대시보드-렌더링"],
       "owner": "",
       "lastEvidence": "Playwright MCP: 대시보드 전체 정상 렌더링 확인",
       "lastNote": "",
@@ -4912,9 +4906,7 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0,
-      "aliases": [
-        "서버-모달-3탭-전환"
-      ],
+      "aliases": ["서버-모달-3탭-전환"],
       "owner": "",
       "lastEvidence": "Playwright MCP: 종합상황/성능분석/로그&네트워크 3탭 전환 동작 확인",
       "lastNote": "",
