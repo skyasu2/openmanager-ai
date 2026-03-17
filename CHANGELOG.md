@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.9.2](https://github.com/skyasu2/openmanager-ai/compare/v8.9.1...v8.9.2) (2026-03-17)
+
+
+### Features
+
+* **ai-engine:** integrate Langfuse tracing into multi-agent orchestrator + wont-fix QA revalidation ([a7ccd60](https://github.com/skyasu2/openmanager-ai/commit/a7ccd60ce8dd80241e6a730b7ac2fc3da18a5191))
+* **security:** add API-level security regression smoke test ([8403ecb](https://github.com/skyasu2/openmanager-ai/commit/8403ecb869a07a719a0795389286d6579516489c))
+
+
+### Bug Fixes
+
+* **ai-engine:** harden langfuse cold-start paths ([c366f2a](https://github.com/skyasu2/openmanager-ai/commit/c366f2aeefc352e370fceaee13aaac525789fa02))
+* **ai-engine:** harden langfuse trace diagnostics ([8ba0cca](https://github.com/skyasu2/openmanager-ai/commit/8ba0cca02e1c76f3a5bc4cf31129c975c08c9dc3))
+* **ai-engine:** improve langfuse trace diagnostics search ([cf4e9aa](https://github.com/skyasu2/openmanager-ai/commit/cf4e9aa4d59c910c417f447805e779cd4b3e6c41))
+* **ai-engine:** restore langfuse traces diagnostics ([b79b526](https://github.com/skyasu2/openmanager-ai/commit/b79b52638f3b9e15a888dc53e528ab50080eca3d))
+* **ci:** keep patch dependencies current ([6299a9c](https://github.com/skyasu2/openmanager-ai/commit/6299a9ca44f6a07e72cc4f47b74f0dfd65425171))
+* **line-guard:** exclude trailing newline from line count + split formatters.ts ([295e01b](https://github.com/skyasu2/openmanager-ai/commit/295e01b43b6726efe4fe3f44cd900e43d02a1608))
+
 ## [8.9.1](https://github.com/skyasu2/openmanager-ai/compare/v8.9.0...v8.9.1) (2026-03-16)
 
 
