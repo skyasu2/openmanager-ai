@@ -1,0 +1,99 @@
+{
+  "runId": "QA-20260317-0115",
+  "recordedAt": "2026-03-17T02:06:09.588Z",
+  "recordedAtKst": "2026-03-17 11:06:09 KST",
+  "runTitle": "Cloud Run Observability Ops - Multi-agent traceId propagation validation (2026-03-17)",
+  "owner": "codex",
+  "source": "cloud-run+langfuse-api",
+  "environment": {
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "serviceUrl": "https://ai-engine-jdhrhws7ia-an.a.run.app",
+    "version": "8.9.1",
+    "aiEngineRevision": "ai-engine-00254-jdz",
+    "aiEngineImageTag": "v-20260317-105517-b79b52638"
+  },
+  "checks": {
+    "total": 9,
+    "passed": 8,
+    "failed": 1
+  },
+  "expertAssessments": [
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "멀티에이전트 traceId 전파 코드와 배포는 완료됐고 Langfuse readiness도 정상이다. 다만 production 10% sampling과 supervisor rate limit 때문에 이번 run에서는 data-done.metadata.traceId 실물을 캡처하지 못했다.",
+      "nextAction": "sampled 세션 실측을 위해 저빈도 재시도 또는 일시적 샘플링 상향/진단 훅으로 traceId 응답을 1회 확정 캡처"
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "ai-engine type-check, 전체 테스트, Docker build-only preflight, Cloud Build SUCCESS, Cloud Run ai-engine-00254-jdz 100% 전환까지 완료했다.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "프로덕션 multi-agent stream/v2 응답 자체는 반복적으로 200 성공했고 done payload 구조, mode=multi, finalAgent=NLQ Agent, 응답 품질은 정상 범위였다.",
+      "nextAction": ""
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "langfuse-multi-agent-traceid-propagation",
+      "title": "멀티에이전트 stream done metadata traceId 전파",
+      "priority": "P1",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "supervisor -> executeMultiAgent(Stream) -> data-done metadata traceId 경로 패치, orchestrator.test traceId 검증 추가, ai-engine 60 files 663 tests PASS, Cloud Run ai-engine-00254-jdz 배포 완료",
+      "note": "sampled trace의 live 응답 캡처는 별도 운영 실측 필요",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [
+    {
+      "id": "langfuse-multi-agent-traceid-live-proof",
+      "title": "멀티에이전트 sampled traceId 실운영 실측",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "10% sampling 정책을 유지한 상태에서 응답 payload 실측은 확률적이라 반복 검증 비용이 커질 수 있음",
+      "evidence": "",
+      "note": "이번 run에서 10회 실제 stream 호출은 모두 200 성공했지만 traceId가 비었고, 이후 추가 호출은 supervisor rate limit(10/min)에 걸렸다.",
+      "owner": "codex",
+      "status": "wont-fix",
+      "policyNote": "이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 10% sampling 정책을 유지한 상태에서 응답 payload 실측은 확률적이라 반복 검증 비용이 커질 수 있음 (요청자 표시(isBlocking=true)로 즉시 개선 필요)"
+    }
+  ],
+  "notes": [
+    "PASS: cloud-run/ai-engine npm run type-check 통과",
+    "PASS: cloud-run/ai-engine npm run test -> 60 files, 663 tests passed",
+    "PASS: Docker build-only preflight(SKIP_RUN=true) 통과",
+    "INFO: docker-preflight full run은 localhost health smoke에서 curl 52(empty reply)였지만 이미지 빌드는 성공했고 deploy는 정상 완료",
+    "PASS: Cloud Build d2741a37-28af-4c6b-a029-40ccb97874bd SUCCESS",
+    "PASS: Cloud Run revision ai-engine-00254-jdz 배포, image tag=v-20260317-105517-b79b52638",
+    "PASS: /health 200",
+    "PASS: authenticated /monitoring -> langfuse.isReady=true, sampleRate=10%, eventCount=52",
+    "PASS: multi-agent stream/v2 10회 200 성공, done payload에 mode=multi/finalAgent=NLQ Agent 확인",
+    "FAIL: sampled traceId는 이번 run에서 payload에 나타나지 않았고 direct Langfuse API 최근 100건에도 multi-trace-check sessionId가 없었다",
+    "INFO: 11번째 호출부터 supervisor rate limit(10/min) 429 발생"
+  ],
+  "links": [
+    {
+      "label": "Cloud Run URL",
+      "url": "https://ai-engine-jdhrhws7ia-an.a.run.app"
+    }
+  ]
+}

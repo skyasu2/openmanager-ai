@@ -40,6 +40,7 @@ export async function* executeSupervisorStream(
     yield* executeMultiAgentStream({
       messages: request.messages,
       sessionId: request.sessionId,
+      traceId: request.traceId,
       enableTracing: request.enableTracing,
       enableWebSearch: request.enableWebSearch,
       enableRAG: request.enableRAG,

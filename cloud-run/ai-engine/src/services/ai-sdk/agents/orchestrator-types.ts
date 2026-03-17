@@ -37,6 +37,8 @@ export const ORCHESTRATOR_CONFIG = {
 export interface MultiAgentRequest {
   messages: Array<{ role: 'user' | 'assistant'; content: string }>;
   sessionId: string;
+  /** Upstream trace ID (W3C traceparent에서 추출). Langfuse 연동에 사용. */
+  traceId?: string;
   enableTracing?: boolean;
   /**
    * Web search control:
@@ -86,6 +88,7 @@ export interface MultiAgentResponse {
     modelId: string;
     totalRounds: number;
     durationMs: number;
+    traceId?: string;
     responseChars?: number;
     formatCompliance?: boolean;
     qualityFlags?: string[];

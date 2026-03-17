@@ -51,8 +51,147 @@ import {
 } from './orchestrator-decomposition';
 import { executeAgentStream } from './orchestrator-agent-stream';
 import { generateObjectWithFallback } from './orchestrator-object-fallback';
+import {
+  createSupervisorTrace,
+  finalizeTrace,
+  type LangfuseTrace,
+} from '../../observability/langfuse';
 
 export { getRecentHandoffs };
+
+type StreamDoneData = {
+  success?: boolean;
+  finalAgent?: string;
+  toolsCalled?: string[];
+  metadata?: Record<string, unknown>;
+};
+
+function getTraceId(trace: LangfuseTrace): string | undefined {
+  const traceId = (trace as { id?: unknown }).id;
+  return typeof traceId === 'string' && traceId.length > 0 ? traceId : undefined;
+}
+
+function attachTraceIdToResponse(
+  response: MultiAgentResponse,
+  traceId: string | undefined
+): MultiAgentResponse {
+  if (!traceId) {
+    return response;
+  }
+
+  return {
+    ...response,
+    metadata: {
+      ...response.metadata,
+      traceId,
+    },
+  };
+}
+
+function finalizeMultiAgentResponse(
+  trace: LangfuseTrace,
+  response: MultiAgentResponse
+): MultiAgentResponse {
+  const traceId = getTraceId(trace);
+  const tracedResponse = attachTraceIdToResponse(response, traceId);
+
+  finalizeTrace(trace, tracedResponse.response, true, {
+    mode: 'multi',
+    traceId,
+    finalAgent: tracedResponse.finalAgent,
+    toolsCalled: tracedResponse.toolsCalled,
+    totalRounds: tracedResponse.metadata.totalRounds,
+    durationMs: tracedResponse.metadata.durationMs,
+  });
+
+  return tracedResponse;
+}
+
+function finalizeMultiAgentError(
+  trace: LangfuseTrace,
+  error: MultiAgentError,
+  durationMs: number
+): MultiAgentError {
+  finalizeTrace(trace, error.error, false, {
+    mode: 'multi',
+    code: error.code,
+    durationMs,
+  });
+
+  return error;
+}
+
+async function* streamWithTrace(
+  trace: LangfuseTrace,
+  startTime: number,
+  stream: AsyncGenerator<StreamEvent>
+): AsyncGenerator<StreamEvent> {
+  const traceId = getTraceId(trace);
+  let fullText = '';
+  let terminalSeen = false;
+
+  for await (const event of stream) {
+    if (event.type === 'text_delta' && typeof event.data === 'string') {
+      fullText += event.data;
+    }
+
+    if (event.type === 'done') {
+      terminalSeen = true;
+      const doneData = event.data as StreamDoneData;
+      const durationMs = typeof doneData.metadata?.durationMs === 'number'
+        ? doneData.metadata.durationMs
+        : Date.now() - startTime;
+      const enrichedEvent = traceId
+        ? {
+            ...event,
+            data: {
+              ...doneData,
+              metadata: {
+                ...(doneData.metadata ?? {}),
+                traceId,
+              },
+            },
+          }
+        : event;
+
+      finalizeTrace(trace, fullText || 'Stream completed', doneData.success !== false, {
+        mode: 'multi',
+        traceId,
+        finalAgent: doneData.finalAgent,
+        toolsCalled: doneData.toolsCalled,
+        durationMs,
+      });
+
+      yield enrichedEvent;
+      return;
+    }
+
+    if (event.type === 'error') {
+      terminalSeen = true;
+      const errorData = event.data as { code?: string; error?: string; message?: string };
+      finalizeTrace(trace, fullText || errorData.error || errorData.message || 'Stream failed', false, {
+        mode: 'multi',
+        traceId,
+        code: errorData.code,
+        durationMs: Date.now() - startTime,
+      });
+
+      yield event;
+      return;
+    }
+
+    yield event;
+  }
+
+  if (!terminalSeen) {
+    finalizeTrace(trace, fullText || 'Stream terminated unexpectedly', false, {
+      mode: 'multi',
+      traceId,
+      code: 'STREAM_TERMINATED',
+      durationMs: Date.now() - startTime,
+    });
+  }
+}
 
 // ============================================================================
 // Main Execution Functions
@@ -67,6 +206,13 @@ export async function executeMultiAgent(
   if (!query) {
     return { success: false, error: 'No user message found', code: 'INVALID_REQUEST' };
   }
+
+  const trace = createSupervisorTrace({
+    sessionId: request.sessionId,
+    mode: 'multi',
+    query,
+    upstreamTraceId: request.traceId,
+  });
 
   const webSearchEnabled = resolveWebSearchSetting(request.enableWebSearch, query);
   const ragEnabled = request.enableRAG !== false; // default: true
@@ -88,7 +234,7 @@ export async function executeMultiAgent(
     logger.info(
       `[Fast Path] Direct response in ${response.metadata.durationMs}ms (confidence: ${preFilterResult.confidence})`
     );
-    return response;
+    return finalizeMultiAgentResponse(trace, response);
   }
 
   // Task Decomposition
@@ -111,7 +257,7 @@ export async function executeMultiAgent(
       }
 
       if (lastResult) {
-        return lastResult;
+        return finalizeMultiAgentResponse(trace, lastResult);
       }
     } else {
       const parallelResult = await executeParallelSubtasks(
@@ -119,7 +265,7 @@ export async function executeMultiAgent(
       );
 
       if (parallelResult) {
-        return parallelResult;
+        return finalizeMultiAgentResponse(trace, parallelResult);
       }
     }
 
@@ -148,7 +294,7 @@ export async function executeMultiAgent(
     if (forcedResult) {
       logger.info(`[Orchestrator] Forced routing succeeded`);
       await saveAgentFindingsToContext(request.sessionId, suggestedAgentName, forcedResult.response);
-      return forcedResult;
+      return finalizeMultiAgentResponse(trace, forcedResult);
     }
     logger.warn('[Orchestrator] Forced routing failed, falling back to LLM routing');
   } else {
@@ -159,7 +305,11 @@ export async function executeMultiAgent(
   const orchestratorModelConfig = getOrchestratorModel();
 
   if (!orchestratorModelConfig) {
-    return { success: false, error: 'Orchestrator not available (no AI provider configured)', code: 'MODEL_UNAVAILABLE' };
+    return finalizeMultiAgentError(
+      trace,
+      { success: false, error: 'Orchestrator not available (no AI provider configured)', code: 'MODEL_UNAVAILABLE' },
+      Date.now() - startTime
+    );
   }
 
   try {
@@ -220,14 +370,14 @@ export async function executeMultiAgent(
       if (agentResult) {
         await saveAgentFindingsToContext(request.sessionId, selectedAgent, agentResult.response);
 
-        return {
+        return finalizeMultiAgentResponse(trace, {
           ...agentResult,
           handoffs: [{
             from: 'Orchestrator',
             to: selectedAgent,
             reason: 'LLM routing decision',
           }],
-        };
+        });
       }
     }
 
@@ -240,14 +390,14 @@ export async function executeMultiAgent(
       if (fallbackResult) {
         await saveAgentFindingsToContext(request.sessionId, suggestedAgent, fallbackResult.response);
 
-        return {
+        return finalizeMultiAgentResponse(trace, {
           ...fallbackResult,
           handoffs: [{
             from: 'Orchestrator',
             to: suggestedAgent,
             reason: 'Fallback routing (LLM inconclusive)',
           }],
-        };
+        });
       }
     }
 
@@ -255,7 +405,7 @@ export async function executeMultiAgent(
     const fallbackResponse = routingDecision.reasoning || '죄송합니다. 질문을 처리할 적절한 에이전트를 찾지 못했습니다.';
     const quality = evaluateAgentResponseQuality('Orchestrator', fallbackResponse, { durationMs });
 
-    return {
+    return finalizeMultiAgentResponse(trace, {
       success: true,
       response: fallbackResponse,
       handoffs: [],
@@ -272,17 +422,17 @@ export async function executeMultiAgent(
         qualityFlags: quality.qualityFlags,
         latencyTier: quality.latencyTier,
       },
-    };
+    });
   } catch (error) {
     const durationMs = Date.now() - startTime;
     const errorMessage = error instanceof Error ? error.message : String(error);
 
     logger.error(`❌ [Orchestrator] Error after ${durationMs}ms:`, errorMessage);
-    return {
+    return finalizeMultiAgentError(trace, {
       success: false,
       error: errorMessage,
       code: mapOrchestratorErrorCode(errorMessage),
-    };
+    }, durationMs);
   }
 }
 
@@ -301,6 +451,13 @@ export async function* executeMultiAgentStream(
     return;
   }
 
+  const trace = createSupervisorTrace({
+    sessionId: request.sessionId,
+    mode: 'multi',
+    query,
+    upstreamTraceId: request.traceId,
+  });
+
   const webSearchEnabled = resolveWebSearchSetting(request.enableWebSearch, query);
   const ragEnabled = request.enableRAG !== false; // default: true
   logger.debug(`[Stream WebSearch] Setting resolved: ${webSearchEnabled} (request: ${request.enableWebSearch})`);
@@ -317,7 +474,7 @@ export async function* executeMultiAgentStream(
   logger.debug(`[Stream PreFilter] Query: "${query.substring(0, 50)}..." → Suggested: ${preFilterResult.suggestedAgent || 'none'} (confidence: ${preFilterResult.confidence})`);
 
   if (!preFilterResult.shouldHandoff && preFilterResult.directResponse) {
-    yield* streamFastPathResponse(preFilterResult.directResponse, startTime);
+    yield* streamWithTrace(trace, startTime, streamFastPathResponse(preFilterResult.directResponse, startTime));
     return;
   }
 
@@ -328,13 +485,13 @@ export async function* executeMultiAgentStream(
     logger.info(`[Stream] Complex query detected, using Orchestrator-Worker stream pattern (${decomposition.subtasks.length} subtasks)`);
 
     if (decomposition.requiresSequential) {
-      yield* executeSequentialSubtasksStream(
+      yield* streamWithTrace(trace, startTime, executeSequentialSubtasksStream(
         decomposition.subtasks, startTime, webSearchEnabled, ragEnabled, request.sessionId, request.images, request.files
-      );
+      ));
     } else {
-      yield* executeParallelSubtasksStream(
+      yield* streamWithTrace(trace, startTime, executeParallelSubtasksStream(
         decomposition.subtasks, startTime, webSearchEnabled, ragEnabled, request.sessionId, request.images, request.files
-      );
+      ));
     }
     return;
   }
@@ -352,16 +509,16 @@ export async function* executeMultiAgentStream(
       if (!visionConfig || !visionConfig.getModel()) {
         logger.warn('[Stream] Vision Agent model unavailable, falling back to Analyst Agent');
         yield { type: 'agent_status', data: { status: 'vision_fallback', message: 'Vision Agent 사용 불가, Analyst Agent로 전환 중...' } };
-        yield* executeAgentStream(
+        yield* streamWithTrace(trace, startTime, executeAgentStream(
           query, 'Analyst Agent', startTime, request.sessionId, webSearchEnabled, ragEnabled, request.images, request.files
-        );
+        ));
         return;
       }
     }
 
-    yield* executeAgentStream(
+    yield* streamWithTrace(trace, startTime, executeAgentStream(
       query, preFilterResult.suggestedAgent, startTime, request.sessionId, webSearchEnabled, ragEnabled, request.images, request.files
-    );
+    ));
     return;
   }
 
@@ -369,6 +526,11 @@ export async function* executeMultiAgentStream(
   const orchestratorModelConfig = getOrchestratorModel();
 
   if (!orchestratorModelConfig) {
+    finalizeTrace(trace, 'Orchestrator not available', false, {
+      mode: 'multi',
+      code: 'MODEL_UNAVAILABLE',
+      durationMs: Date.now() - startTime,
+    });
     yield { type: 'error', data: { code: 'MODEL_UNAVAILABLE', error: 'Orchestrator not available' } };
     return;
   }
@@ -408,7 +570,11 @@ export async function* executeMultiAgentStream(
       if (suggestedAgent && preFilterResult.confidence >= ORCHESTRATOR_CONFIG.fallbackRoutingConfidence) {
         logger.info(`[Stream] Routing timeout fallback to ${suggestedAgent}`);
         yield { type: 'agent_status', data: { status: 'routing_fallback', message: `라우팅 타임아웃, ${suggestedAgent}로 전환...` } };
-        yield* executeAgentStream(query, suggestedAgent, startTime, request.sessionId, webSearchEnabled, ragEnabled, request.images, request.files);
+        yield* streamWithTrace(
+          trace,
+          startTime,
+          executeAgentStream(query, suggestedAgent, startTime, request.sessionId, webSearchEnabled, ragEnabled, request.images, request.files)
+        );
         return;
       }
       throw routingError;
@@ -431,12 +597,20 @@ export async function* executeMultiAgentStream(
         const visionConfig = getAgentConfig(selectedAgent);
         if (!visionConfig || !visionConfig.getModel()) {
           logger.warn('[Stream] Vision Agent model unavailable (LLM routing), falling back to Analyst Agent');
-          yield* executeAgentStream(query, 'Analyst Agent', startTime, request.sessionId, webSearchEnabled, ragEnabled, request.images, request.files);
+          yield* streamWithTrace(
+            trace,
+            startTime,
+            executeAgentStream(query, 'Analyst Agent', startTime, request.sessionId, webSearchEnabled, ragEnabled, request.images, request.files)
+          );
           return;
         }
       }
 
-      yield* executeAgentStream(query, selectedAgent, startTime, request.sessionId, webSearchEnabled, ragEnabled, request.images, request.files);
+      yield* streamWithTrace(
+        trace,
+        startTime,
+        executeAgentStream(query, selectedAgent, startTime, request.sessionId, webSearchEnabled, ragEnabled, request.images, request.files)
+      );
       return;
     }
 
@@ -447,12 +621,24 @@ export async function* executeMultiAgentStream(
       await recordHandoffEvent(request.sessionId, 'Orchestrator', suggestedAgent, 'Fallback routing');
       yield { type: 'handoff', data: { from: 'Orchestrator', to: suggestedAgent, reason: 'Fallback' } };
 
-      yield* executeAgentStream(query, suggestedAgent, startTime, request.sessionId, webSearchEnabled, ragEnabled, request.images, request.files);
+      yield* streamWithTrace(
+        trace,
+        startTime,
+        executeAgentStream(query, suggestedAgent, startTime, request.sessionId, webSearchEnabled, ragEnabled, request.images, request.files)
+      );
       return;
     }
 
     const durationMs = Date.now() - startTime;
     yield { type: 'text_delta', data: '죄송합니다. 질문을 처리할 적절한 에이전트를 찾지 못했습니다. 서버 상태, 분석, 보고서, 해결 방법 등에 대해 질문해 주세요.' };
+    const traceId = getTraceId(trace);
+    finalizeTrace(trace, '죄송합니다. 질문을 처리할 적절한 에이전트를 찾지 못했습니다. 서버 상태, 분석, 보고서, 해결 방법 등에 대해 질문해 주세요.', true, {
+      mode: 'multi',
+      traceId,
+      finalAgent: 'Orchestrator',
+      toolsCalled: [],
+      durationMs,
+    });
     yield {
       type: 'done',
       data: {
@@ -464,7 +650,7 @@ export async function* executeMultiAgentStream(
           promptTokens: routingResult.usage?.inputTokens ?? 0,
           completionTokens: routingResult.usage?.outputTokens ?? 0,
         },
-        metadata: { provider, modelId, durationMs },
+        metadata: { provider, modelId, durationMs, ...(traceId ? { traceId } : {}) },
       },
     };
   } catch (error) {
@@ -472,6 +658,11 @@ export async function* executeMultiAgentStream(
     const errorMessage = error instanceof Error ? error.message : String(error);
 
     logger.error(`❌ [Stream Orchestrator] Error after ${durationMs}ms:`, errorMessage);
+    finalizeTrace(trace, errorMessage, false, {
+      mode: 'multi',
+      code: mapOrchestratorErrorCode(errorMessage),
+      durationMs,
+    });
     yield {
       type: 'error',
       data: {

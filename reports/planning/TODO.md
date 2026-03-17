@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-03-16 KST
+**Last Updated**: 2026-03-17 KST
 
 ## Active Tasks
 
@@ -19,6 +19,9 @@
 | Task | Priority | Notes |
 |------|----------|-------|
 | 백로그 항목 없음 | - | - |
+
+### Completed (2026-03-17)
+- [x] P2: WONT-FIX 실측 재평가 (`QA-20260317-0114`) — Playwright MCP로 38개 wont-fix 항목 중 30개 Production Vercel 동작 확인 → completed 전환. 잔여 wont-fix 8개(코드/인프라 레벨 6개 + AI 실응답 필요 2개)
 
 ### Completed (2026-03-16)
 - [x] P1: 보안 회귀팩 자동화 (`QA-20260316-0108`) — `scripts/test/security-smoke.mjs` 구현. Playwright 없이 API 직접 POST로 5패턴 자동 검증. `npm run test:security:smoke`로 실행. `security-attack-regression-pack` deferred 종결

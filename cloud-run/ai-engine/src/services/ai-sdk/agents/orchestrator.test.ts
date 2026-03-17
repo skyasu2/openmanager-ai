@@ -9,6 +9,21 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
+const {
+  mockCreateSupervisorTrace,
+  mockFinalizeTrace,
+} = vi.hoisted(() => ({
+  mockCreateSupervisorTrace: vi.fn(() => ({
+    id: 'lf-trace-test-123',
+    update: vi.fn(),
+    score: vi.fn(),
+    generation: vi.fn(),
+    span: vi.fn(),
+    event: vi.fn(),
+  })),
+  mockFinalizeTrace: vi.fn(),
+}));
+
 // Mock model-provider before imports
 vi.mock('../model-provider', () => ({
   checkProviderStatus: vi.fn(() => ({
@@ -117,6 +132,15 @@ vi.mock('../../../tools-ai-sdk', () => ({
   visionToolDescriptions: {},
 }));
 
+vi.mock('../../observability/langfuse', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('../../observability/langfuse')>();
+  return {
+    ...actual,
+    createSupervisorTrace: mockCreateSupervisorTrace,
+    finalizeTrace: mockFinalizeTrace,
+  };
+});
+
 // ============================================================================
 // Tests for AI SDK v6 Native Architecture
 // ============================================================================
@@ -199,7 +223,7 @@ describe('Multi-Agent Orchestrator (AI SDK v6 Native)', { timeout: 90000 }, () =
       }
     });
 
-    it('should track usage metrics', async () => {
+  it('should track usage metrics', async () => {
       const { executeMultiAgent } = await import('./orchestrator');
 
       const result = await executeMultiAgent({
@@ -213,6 +237,21 @@ describe('Multi-Agent Orchestrator (AI SDK v6 Native)', { timeout: 90000 }, () =
         expect(result.usage.promptTokens).toBeGreaterThanOrEqual(0);
         expect(result.usage.completionTokens).toBeGreaterThanOrEqual(0);
         expect(result.usage.totalTokens).toBeGreaterThanOrEqual(0);
+      }
+    });
+
+    it('should include traceId in metadata when Langfuse trace is created', async () => {
+      const { executeMultiAgent } = await import('./orchestrator');
+
+      const result = await executeMultiAgent({
+        messages: [{ role: 'user', content: 'CPU 상태 확인' }],
+        sessionId: 'test-session-trace',
+        traceId: 'upstream-trace-123',
+      });
+
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.metadata.traceId).toBe('lf-trace-test-123');
       }
     });
 
@@ -430,10 +469,11 @@ describe('executeMultiAgentStream', () => {
 
     const doneData = doneEvent?.data as {
       success: boolean;
-      metadata?: { durationMs: number };
+      metadata?: { durationMs: number; traceId?: string };
     };
     expect(doneData.success).toBe(true);
     expect(doneData.metadata?.durationMs).toBeGreaterThanOrEqual(0);
+    expect(doneData.metadata?.traceId).toBe('lf-trace-test-123');
   });
 });
 

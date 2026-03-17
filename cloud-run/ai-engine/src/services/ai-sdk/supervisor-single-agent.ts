@@ -84,6 +84,7 @@ async function executeMultiAgentMode(
     const multiAgentRequest: MultiAgentRequest = {
       messages: request.messages,
       sessionId: request.sessionId,
+      traceId: request.traceId,
       enableTracing: request.enableTracing,
       enableWebSearch: request.enableWebSearch,
       enableRAG: request.enableRAG,
@@ -119,6 +120,7 @@ async function executeMultiAgentMode(
         modelId: multiResult.metadata.modelId,
         stepsExecuted: multiResult.metadata.totalRounds,
         durationMs: multiResult.metadata.durationMs,
+        traceId: multiResult.metadata.traceId,
         responseChars: multiResult.metadata.responseChars,
         formatCompliance: multiResult.metadata.formatCompliance,
         qualityFlags: multiResult.metadata.qualityFlags,

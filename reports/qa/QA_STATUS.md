@@ -1,38 +1,39 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-17 09:20:29 KST
+> Generated at: 2026-03-17 11:06:09 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 113 |
-| Total Checks | 830 |
-| Passed | 786 |
-| Failed | 40 |
-| Completed Items | 175 |
+| Total Runs | 115 |
+| Total Checks | 869 |
+| Passed | 824 |
+| Failed | 41 |
+| Completed Items | 210 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
-| Wont-Fix Items | 38 |
+| Wont-Fix Items | 9 |
 | Expert Domains Tracked | 6 |
-| Expert Open Gaps | 0 |
+| Expert Open Gaps | 1 |
 | Completion Rate | 100% |
-| Last Run | QA-20260317-0113 (2026-03-17T00:20:29.019Z) |
+| Last Run | QA-20260317-0115 (2026-03-17T02:06:09.588Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260317-0113 (2026-03-17T00:20:29.019Z)
+Latest run: QA-20260317-0115 (2026-03-17T02:06:09.588Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| IT Monitoring & Observability SME | appropriate | no | - |
+| IT Monitoring & Observability SME | partially-appropriate | yes | sampled 세션 실측을 위해 저빈도 재시도 또는 일시적 샘플링 상향/진단 훅으로 traceId 응답을 1회 확정 캡처 |
 | DevOps / SRE Engineer | appropriate | no | - |
 | AI Quality Assurance Specialist | appropriate | no | - |
 
 ## Expert Domain Open Gaps
 
-- None
+- observability-monitoring: IT Monitoring & Observability SME (last QA-20260317-0115)
+  next: sampled 세션 실측을 위해 저빈도 재시도 또는 일시적 샘플링 상향/진단 훅으로 traceId 응답을 1회 확정 캡처
 
 ## Pending Improvements
 
@@ -49,76 +50,18 @@ Latest run: QA-20260317-0113 (2026-03-17T00:20:29.019Z)
 - [P1] obs-fp-fn-weekly-report: 오탐/미탐 주간 리포트 자동 생성 (seen 3회, last QA-20260227-0013)
 - [P2] ai-chat-detail-expand: AI Chat 상세 분석 펼치기 (seen 1회, last QA-20260301-0030)
   - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
-- [P2] ai-chat-sidebar-open: AI 사이드바 열기 (seen 1회, last QA-20260301-0030)
-  - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
-- [P2] ai-engine-status: AI 엔진 상태 표시 (seen 1회, last QA-20260301-0031)
-  - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
-- [P2] ai-sidebar-open: AI 사이드바 열기/닫기 (seen 1회, last QA-20260301-0031)
-  - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
-- [P2] ai-sidebar-right-panel: AI 우측 패널 기능 메뉴 (seen 1회, last QA-20260301-0031)
-  - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
-- [P2] ai-sidebar-starters: AI 스타터 프롬프트 5개 (seen 1회, last QA-20260301-0031)
-  - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
-- [P2] ai-sidebar-tools-menu: AI 도구 메뉴 (seen 1회, last QA-20260301-0031)
-  - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
-- [P2] ai-사이드바-열기닫기: AI 사이드바 열기/닫기 (seen 3회, last QA-20260302-0042)
-  - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
-- [P2] alert-history-modal: 알림 이력 모달 (seen 1회, last QA-20260301-0031)
-  - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
 - [P2] analyst-drilldown: Analyst 서버별 드릴다운 (seen 1회, last QA-20260301-0030)
-  - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
-- [P2] analyst-full-analysis: Analyst 전체 분석 (seen 1회, last QA-20260301-0030)
   - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
 - [P2] cloud-run-cold-start-latency: Cloud Run AI Chat 콜드스타트 대기시간 과도 (5회 재시도, ~5분) (seen 1회, last QA-20260310-0089)
   - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (요청자 표시(isBlocking=true)로 즉시 개선 필요)
-- [P2] dashboard-active-alerts: 활성 알림 모달 (seen 1회, last QA-20260301-0031)
-  - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
-- [P2] dashboard-resources: 시스템 리소스 개요 (seen 1회, last QA-20260301-0030)
-  - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
-- [P2] dashboard-status-filter: 상태 필터 토글 (seen 1회, last QA-20260301-0031)
-  - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
-- [P2] dashboard-topology-map: 토폴로지 맵 모달 (seen 1회, last QA-20260301-0031)
-  - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
-- [P2] esc-모달-닫기: ESC 모달 닫기 (seen 3회, last QA-20260302-0042)
-  - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
 - [P2] feature-dod-tsc-zero-error: tsc --noEmit 0 에러 (seen 9회, last QA-20260307-0053)
   - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
 - [P2] feature-dod-unit-tests: 단위 테스트 158개 통과 (seen 9회, last QA-20260307-0053)
   - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
-- [P2] landing-feature-cards: 랜딩 피처카드 4개 모달 (seen 1회, last QA-20260301-0031)
-  - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
-- [P2] landing-system-start: 시스템 시작 카운트다운 (seen 1회, last QA-20260301-0031)
-  - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
-- [P2] log-explorer-modal: 로그 탐색기 모달 (seen 1회, last QA-20260301-0031)
-  - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
-- [P2] profile-menu: 프로필 메뉴 드롭다운 (seen 1회, last QA-20260301-0031)
-  - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
-- [P2] reporter-generate: Reporter 보고서 생성 (seen 1회, last QA-20260301-0030)
-  - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
-- [P2] server-card-expand: 서버 카드 상세 펼치기/접기 (seen 1회, last QA-20260301-0031)
-  - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
-- [P2] server-detail-log-tab: 로그 & 네트워크 탭 (seen 1회, last QA-20260301-0031)
-  - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
-- [P2] server-detail-perf-tab: 성능 분석 탭 (seen 1회, last QA-20260301-0031)
-  - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
-- [P2] show-more-servers: 12개 더 보기 버튼 (seen 1회, last QA-20260301-0031)
-  - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
+- [P2] langfuse-multi-agent-traceid-live-proof: 멀티에이전트 sampled traceId 실운영 실측 (seen 1회, last QA-20260317-0115)
+  - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 10% sampling 정책을 유지한 상태에서 응답 payload 실측은 확률적이라 반복 검증 비용이 커질 수 있음 (요청자 표시(isBlocking=true)로 즉시 개선 필요)
 - [P2] streaming-ai-fallback-cold-start: Streaming AI fallback에서 Cloud Run 콜드스타트 시 프리셋 질문 실패 (seen 1회, last QA-20260310-0090)
   - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (요청자 표시(isBlocking=true)로 즉시 개선 필요)
-- [P2] top5-server-detail: Top5 서버 상세 모달 (3탭) (seen 1회, last QA-20260301-0031)
-  - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
-- [P2] ui-esc-close: ESC 사이드바 닫기 (seen 1회, last QA-20260301-0030)
-  - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
-- [P2] vercel-prod-ai-clarification: AI 질의 모호성 해소 UI(전체 서버 현황) 정상 렌더링 및 Fallback 응답 확인 (seen 1회, last QA-20260314-0098)
-  - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
-- [P2] vercel-prod-ai-sidebar: 대시보드 AI 어시스턴트 사이드바 열기/닫기 정상 (seen 1회, last QA-20260314-0098)
-  - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
-- [P2] vercel-prod-frontend-boot: Vercel 프로덕션 시스템 시작 부팅 플로우 정상 동작 (seen 1회, last QA-20260314-0098)
-  - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
-- [P2] 서버-모달-3탭-전환: 서버 모달 3탭 전환 (seen 3회, last QA-20260302-0042)
-  - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
-- [P2] 프로덕션-대시보드-렌더링: 프로덕션 대시보드 렌더링 (seen 3회, last QA-20260302-0042)
-  - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
 
 ## Completed Improvements
 
@@ -133,17 +76,27 @@ Latest run: QA-20260317-0113 (2026-03-17T00:20:29.019Z)
 - ai-chat-response-quality: AI Chat 핵심요약+상세분석+구체적 권고 응답 (completed 1회, last QA-20260306-0051)
 - ai-chat-response-quality-v879: AI Chat 스트리밍 응답 및 권고 검증 (completed 1회, last QA-20260306-0052)
 - ai-chat-response-quality-v880-recheck-20260309: AI Chat 응답 품질 및 권고 재검증 (completed 4회, last QA-20260309-0068)
+- ai-chat-sidebar-open: AI 사이드바 열기 (completed 1회, last QA-20260317-0114)
 - ai-code-gate-input-policy: AI Code Gate: Prompt 패턴 15개 방어 점검 (completed 1회, last QA-20260316-0107)
+- ai-engine-status: AI 엔진 상태 표시 (completed 1회, last QA-20260317-0114)
 - ai-friendly-template-todo-marker: Template TODO marker 분리 (TEMPLATE_TODO 적용) (completed 1회, last QA-20260226-0006)
 - ai-math-tools: AI 계산 도구(수식/통계/용량) 셋업 완료 (completed 1회, last QA-20260228-0023)
 - ai-reporter-success: Reporter Agent 보고서 생성 성공 (completed 3회, last QA-20260315-0104)
 - ai-server-timing-hosting-path-diagnosed: Server-Timing production/local hosting path difference diagnosed (completed 1회, last QA-20260310-0081)
+- ai-sidebar-open: AI 사이드바 열기/닫기 (completed 1회, last QA-20260317-0114)
+- ai-sidebar-right-panel: AI 우측 패널 기능 메뉴 (completed 1회, last QA-20260317-0114)
+- ai-sidebar-starters: AI 스타터 프롬프트 5개 (completed 1회, last QA-20260317-0114)
+- ai-sidebar-toggle: AI 사이드바 열기 (completed 1회, last QA-20260317-0114)
+- ai-sidebar-tools-menu: AI 도구 메뉴 (completed 1회, last QA-20260317-0114)
 - ai-stream-timing-x-headers-production: AI Chat streaming route exposes X-AI timing headers on production (completed 1회, last QA-20260310-0080)
 - ai-summary-chat-streaming-path: AI summary chat query uses streaming path on production (completed 2회, last QA-20260310-0080)
 - ai-summary-query-clarification-skip-production: Explicit all-server summary query skips clarification in production (completed 1회, last QA-20260310-0071)
 - ai-timing-header-ssot-policy: QA timing header SSOT standardized to X-AI-Latency-Ms (completed 1회, last QA-20260310-0081)
 - ai-timing-x-headers-production: AI proxy responses expose production timing headers (completed 1회, last QA-20260309-0070)
+- ai-사이드바-열기닫기: AI 사이드바 열기/닫기 (completed 1회, last QA-20260317-0114)
 - ai-사이드바-토글-ai-엔진-ready-프리셋-5개-ai-기능-3개: AI 사이드바 토글 (AI 엔진 Ready, 프리셋 5개, AI 기능 3개) (completed 3회, last QA-20260302-0042)
+- alert-history-modal: 알림 이력 모달 (completed 1회, last QA-20260317-0114)
+- analyst-full-analysis: Analyst 전체 분석 (completed 1회, last QA-20260317-0114)
 - analyst-full-analysis-v879: Analyst 전체 분석 및 드릴다운 (completed 1회, last QA-20260306-0052)
 - analyst-full-analysis-v880: Analyst 전체 분석 및 드릴다운 검증 (completed 2회, last QA-20260309-0069)
 - analyst-full-analysis-v880-recheck-20260309: Analyst 전체 분석 경로 재검증 (completed 4회, last QA-20260309-0068)
@@ -160,14 +113,19 @@ Latest run: QA-20260317-0113 (2026-03-17T00:20:29.019Z)
 - blocked-prompt-ux-v880-quality-recheck: 보안 차단 UX 재검증 (completed 1회, last QA-20260308-0059)
 - csrf-duplicate-removal: CSRF getCSRFTokenFromCookie 중복 제거 (completed 1회, last QA-20260307-0053)
 - dashboard-15-servers: 대시보드 15대 서버 모니터링 정상 (completed 2회, last QA-20260314-0097)
+- dashboard-active-alerts: 활성 알림 모달 (completed 1회, last QA-20260317-0114)
 - dashboard-health-v879: 프로덕션 대시보드 및 Health API 검증 (completed 1회, last QA-20260306-0052)
 - dashboard-health-v880: 프로덕션 대시보드 및 Health API 검증 (completed 1회, last QA-20260308-0056)
 - dashboard-health-v880-quality-recheck: 프로덕션 대시보드/Health API 품질 재검증 (completed 1회, last QA-20260308-0059)
 - dashboard-health-v880-recheck: 프로덕션 대시보드 및 Health API 재검증 (completed 5회, last QA-20260309-0068)
+- dashboard-resources: 시스템 리소스 개요 (completed 1회, last QA-20260317-0114)
 - dashboard-server-card-selector-stabilization: 서버 카드 선택자 및 빈 상태 처리 안정화 (completed 2회, last QA-20260302-0039)
 - dashboard-server-cards: 대시보드 서버 카드 및 메트릭 (completed 2회, last QA-20260302-0038)
+- dashboard-status-filter: 상태 필터 토글 (completed 1회, last QA-20260317-0114)
+- dashboard-topology-map: 토폴로지 맵 모달 (completed 1회, last QA-20260317-0114)
 - e2e-ai-chat-production-selector-alignment: AI Chat/Sidebar E2E selectors aligned with production DOM (completed 1회, last QA-20260310-0073)
 - e2e-testid-production-fix: E2E 테스트 data-testid 의존성 제거 (completed 1회, last QA-20260310-0076)
+- esc-모달-닫기: ESC 모달 닫기 (completed 1회, last QA-20260317-0114)
 - feature-card-modal: 피처카드 모달 (completed 1회, last QA-20260301-0035)
 - feature-dod-e2e-critical: E2E 크리티컬 흐름 통과 (completed 1회, last QA-20260228-0029)
 - feature-dod-lint-zero-error: lint 0 에러 (completed 5회, last QA-20260302-0044)
@@ -191,13 +149,18 @@ Latest run: QA-20260317-0113 (2026-03-17T00:20:29.019Z)
 - health-api-response-format: Health API 응답 포맷 검증 스크립트 수정 (completed 1회, last QA-20260310-0077)
 - home-semantic-nav: 홈 페이지 nav 랜드마크 보강 (completed 1회, last QA-20260226-0009)
 - landing-copy-alignment: 랜딩/로그인 정책 카피 정합성 (completed 4회, last QA-20260227-0016)
+- landing-feature-cards: 랜딩 피처카드 4개 모달 (completed 1회, last QA-20260317-0114)
 - landing-page-render: 랜딩 페이지 렌더링 (completed 1회, last QA-20260301-0035)
+- landing-system-start: 시스템 시작 카운트다운 (completed 1회, last QA-20260317-0114)
 - langfuse-monitoring-traces-timeout: Authenticated /monitoring/traces endpoint times out in production (completed 1회, last QA-20260317-0113)
+- langfuse-multi-agent-traceid-propagation: 멀티에이전트 stream done metadata traceId 전파 (completed 1회, last QA-20260317-0115)
+- log-explorer-modal: 로그 탐색기 모달 (completed 1회, last QA-20260317-0114)
 - login-copy-neutral: 로그인 정책 카피 중립성 개선 (completed 1회, last QA-20260227-0014)
 - login-pin-form-structure: 게스트 PIN 입력 폼 구조 정리 (completed 1회, last QA-20260226-0001)
 - math-tool-implementation-validation: AI 계산 툴 라우팅/실행 검증 (completed 1회, last QA-20260228-0027)
 - metrics-drift-threshold-standard: 지표 드리프트 임계치 표준화 (completed 1회, last QA-20260302-0044)
 - modal-backdrop-close: 모달 백드롭 클릭 닫기 안정화 (completed 2회, last QA-20260226-0002)
+- modal-esc-close: ESC 모달 닫기 (completed 1회, last QA-20260317-0114)
 - multi-agent-orchestration: 멀티에이전트 오케스트레이션 활성화 (Steps A-E) (completed 1회, last QA-20260307-0053)
 - otel-데이터-무결성-24x15-완전: OTel 데이터 무결성 24x15 완전 (completed 1회, last QA-20260301-0032)
 - performance-bundle-excellent: 번들 성능 우수 (completed 1회, last QA-20260314-0096)
@@ -218,6 +181,8 @@ Latest run: QA-20260317-0113 (2026-03-17T00:20:29.019Z)
 - prod-security-block-ko-20260313: Production AI Chat blocks Korean system prompt exposure request (completed 1회, last QA-20260313-0095)
 - prod-security-block-no-raw-json-20260313: Blocked prompt UX hides raw JSON and security error internals (completed 1회, last QA-20260313-0095)
 - prod-stream-v2-smoke-20260313: Production stream/v2 smoke returns 200 event-stream with cloud-run source (completed 1회, last QA-20260313-0094)
+- production-dashboard-render: 프로덕션 대시보드 렌더링 (completed 1회, last QA-20260317-0114)
+- profile-menu: 프로필 메뉴 드롭다운 (completed 1회, last QA-20260317-0114)
 - prompt-injection-block-smoke-v880: Prompt injection 차단 스모크 검증 (completed 1회, last QA-20260308-0056)
 - qa-doc-roadmap-current-status-alignment: QA DoD 로드맵 현재 상태 정합성 갱신 (completed 1회, last QA-20260309-0067)
 - qa-expert-domain-tracking: QA 런에서 전문가 영역 적합성 추적 체계 도입 (completed 1회, last QA-20260226-0003)
@@ -231,11 +196,17 @@ Latest run: QA-20260317-0113 (2026-03-17T00:20:29.019Z)
 - reporter-empty-cta-generate-v880: Reporter 빈 상태 CTA 생성 경로 검증 (completed 1회, last QA-20260308-0058)
 - reporter-empty-cta-generate-v880-quality-recheck: Reporter 빈 상태 CTA 생성 경로 재검증 (completed 1회, last QA-20260308-0059)
 - reporter-empty-cta-generate-v880-recheck-20260309: Reporter empty state CTA 생성 경로 재검증 (completed 4회, last QA-20260309-0068)
+- reporter-generate: Reporter 보고서 생성 (completed 1회, last QA-20260317-0114)
 - reporter-generate-detail-v879: Reporter 보고서 생성 및 상세보기 (completed 1회, last QA-20260306-0052)
 - reporter-generate-detail-v880: Reporter 생성 및 상세 렌더링 검증 (completed 2회, last QA-20260309-0069)
 - reporter-primary-generate-button-empty-state: Reporter 상단 생성 버튼 empty state 동작 정합성 (completed 2회, last QA-20260315-0104)
 - reporter-state-loss-on-tab-switch: Reporter 탭 전환 시 생성 결과 상태 유지 (completed 1회, last QA-20260315-0104)
 - security-attack-regression-pack: 보안 공격 시나리오 회귀팩 구축 (completed 1회, last QA-20260316-0109)
+- server-card-expand: 서버 카드 상세 펼치기/접기 (completed 1회, last QA-20260317-0114)
+- server-detail-log-tab: 로그 & 네트워크 탭 (completed 1회, last QA-20260317-0114)
+- server-detail-perf-tab: 성능 분석 탭 (completed 1회, last QA-20260317-0114)
+- server-modal-3tab-switch: 서버 모달 3탭 전환 (completed 1회, last QA-20260317-0114)
+- show-more-servers: 12개 더 보기 버튼 (completed 1회, last QA-20260317-0114)
 - storybook-build-dev-smoke-pass: storybook build 및 dev smoke-test 통과 (completed 1회, last QA-20260315-0099)
 - storybook-build-longrun-success: Storybook build 장시간 실행 성공 확인 (completed 1회, last QA-20260315-0102)
 - storybook-lock-sync-10-2-10: Storybook lockfile 버전 동기화 (completed 1회, last QA-20260315-0102)
@@ -249,10 +220,15 @@ Latest run: QA-20260317-0113 (2026-03-17T00:20:29.019Z)
 - system-start-login-modal: 비로그인 상태에서 시스템 시작 클릭 시 로그인 모달 노출 (completed 1회, last QA-20260227-0021)
 - system-start-login-modal-redirect: 로그인 모달에서 로그인 페이지로 이동 (completed 1회, last QA-20260227-0022)
 - system-start-metrics-gate: 시스템 시작 KPI 계측 (completed 2회, last QA-20260302-0038)
+- top5-server-detail: Top5 서버 상세 모달 (3탭) (completed 1회, last QA-20260317-0114)
 - topology-map-render: 토폴로지 맵 완벽 렌더링 (completed 2회, last QA-20260314-0097)
 - typescript-무결성: TypeScript 무결성 (completed 1회, last QA-20260301-0032)
+- ui-esc-close: ESC 사이드바 닫기 (completed 1회, last QA-20260317-0114)
 - vercel-build-fix: SessionState import 수정으로 Vercel 빌드 복구 (completed 1회, last QA-20260307-0053)
 - vercel-deployment-ready: Vercel 배포 3건 모두 READY (completed 1회, last QA-20260314-0096)
+- vercel-prod-ai-clarification: AI 질의 모호성 해소 UI 정상 렌더링 및 Fallback 응답 확인 (completed 1회, last QA-20260317-0114)
+- vercel-prod-ai-sidebar: 대시보드 AI 어시스턴트 사이드바 열기/닫기 정상 (completed 1회, last QA-20260317-0114)
+- vercel-prod-frontend-boot: Vercel 프로덕션 시스템 시작 부팅 플로우 정상 동작 (completed 1회, last QA-20260317-0114)
 - vitals-log-suppression: Web Vitals 통합 테스트 로그 억제 옵션 추가 (completed 1회, last QA-20260228-0028)
 - 게스트-pin-로그인-후-시스템-시작-버튼-노출: 게스트 PIN 로그인 후 시스템 시작 버튼 노출 (completed 1회, last QA-20260227-0010)
 - 계약-테스트-20-tests-pass: 계약 테스트 20 tests PASS (completed 1회, last QA-20260301-0032)
@@ -276,6 +252,7 @@ Latest run: QA-20260317-0113 (2026-03-17T00:20:29.019Z)
 - 상태-필터-온라인-13경고-1위험-1오프라인-0: 상태 필터 (온라인 13/경고 1/위험 1/오프라인 0) (completed 1회, last QA-20260302-0042)
 - 상태-필터-온라인-13경고-2위험-0오프라인-0: 상태 필터 (온라인 13/경고 2/위험 0/오프라인 0) (completed 1회, last QA-20260302-0040)
 - 상태-필터-온라인-14경고-1위험-0오프라인-0: 상태 필터 (온라인 14/경고 1/위험 0/오프라인 0) (completed 1회, last QA-20260302-0041)
+- 서버-모달-3탭-전환: 서버 모달 3탭 전환 (completed 1회, last QA-20260317-0114)
 - 서버-모달-로그-네트워크-탭-syslogalertsstreams-네트워크-상태: 서버 모달 로그 & 네트워크 탭 (Syslog/Alerts/Streams, 네트워크 상태) (completed 1회, last QA-20260302-0040)
 - 서버-모달-로그-네트워크-탭-syslogalertsstreams-필터-네트워크-양호-1gbps-연결-정보: 서버 모달 로그 & 네트워크 탭 (Syslog/Alerts/Streams 필터, 네트워크 양호 1Gbps, 연결 정보) (completed 2회, last QA-20260302-0042)
 - 서버-모달-성능-분석-탭-cpumemorydisknetwork-실시간-차트-서비스-mysql3306-exporter9104: 서버 모달 성능 분석 탭 (CPU/Memory/Disk/Network 실시간 차트, 서비스 MySQL:3306 + Exporter:9104) (completed 1회, last QA-20260302-0041)
@@ -295,6 +272,7 @@ Latest run: QA-20260317-0113 (2026-03-17T00:20:29.019Z)
 - 코드-품질-리뷰-5-핵심파일: 코드 품질 리뷰 5 핵심파일 (completed 1회, last QA-20260301-0032)
 - 통합-검증-validateall-통과: 통합 검증 validate:all 통과 (completed 1회, last QA-20260301-0032)
 - 패턴-위반-검사-any-0-todo-0: 패턴 위반 검사 any 0 TODO 0 (completed 1회, last QA-20260301-0032)
+- 프로덕션-대시보드-렌더링: 프로덕션 대시보드 렌더링 (completed 1회, last QA-20260317-0114)
 - 프로덕션-빌드-46-pages-성공: 프로덕션 빌드 46 pages 성공 (completed 1회, last QA-20260301-0032)
 - 프로필-메뉴-게스트-사용자-게스트-모드-표시: 프로필 메뉴 (게스트 사용자, 게스트 모드 표시) (completed 3회, last QA-20260302-0042)
 
@@ -302,6 +280,8 @@ Latest run: QA-20260317-0113 (2026-03-17T00:20:29.019Z)
 
 | Run ID | Time (UTC) | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260317-0115 | 2026-03-17T02:06:09.588Z | Cloud Run Observability Ops - Multi-agent traceId propagation validation (2026-03-17) | 9 | 1 | 0 | 0 | 1 | 1 |
+| QA-20260317-0114 | 2026-03-17T02:03:41.807Z | WONT-FIX 실측 재평가 - Playwright MCP 30개 UI 동작 확인 → completed 전환 | 30 | 27 | 0 | 0 | 0 | 0 |
 | QA-20260317-0113 | 2026-03-17T00:20:29.019Z | Cloud Run Observability Ops Fix - Langfuse traces endpoint restored (2026-03-17) | 5 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260317-0112 | 2026-03-17T00:10:17.328Z | Cloud Run Observability Ops Check - Langfuse readiness and traces endpoint validation (2026-03-17) | 4 | 0 | 0 | 0 | 1 | 1 |
 | QA-20260317-0111 | 2026-03-16T23:03:47.665Z | Production Playwright MCP QA - ai-engine Langfuse cold-start hardening deploy validation (2026-03-16) | 9 | 0 | 0 | 0 | 0 | 0 |
@@ -320,6 +300,4 @@ Latest run: QA-20260317-0113 (2026-03-17T00:20:29.019Z)
 | QA-20260314-0098 | 2026-03-14T12:29:00.552Z | Vercel Production QA - Frontend/AI Active QA | 3 | 0 | 0 | 0 | 3 | 0 |
 | QA-20260314-0097 | 2026-03-14T03:21:46.717Z | Vercel Production QA - Frontend/AI/Performance/Free Tier policy review | 13 | 7 | 0 | 0 | 1 | 1 |
 | QA-20260314-0096 | 2026-03-14T00:10:58.614Z | Production 종합 QA - Frontend/AI/Performance/FreeTier 검증 | 17 | 9 | 0 | 0 | 1 | 1 |
-| QA-20260313-0095 | 2026-03-13T14:05:31.044Z | Vercel Production QA - AI security block regression smoke | 4 | 4 | 0 | 0 | 0 | 0 |
-| QA-20260313-0094 | 2026-03-13T13:59:24.100Z | Vercel Production QA - post-deploy smoke after env recovery and release | 7 | 4 | 0 | 0 | 0 | 1 |
 
