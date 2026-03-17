@@ -41,6 +41,20 @@ const isLimitedMode = isWindows;
 let testStatus = 'pending';
 let typeCheckStatus = 'pending';
 let validationMode = 'standard';
+let selectedTestMode = 'quick';
+
+const DOM_TEST_FILE_PREFIXES = [
+  'src/components/',
+  'src/hooks/',
+  'tests/ai-sidebar/',
+];
+
+const DOM_TEST_FILE_EXACT = new Set([
+  'src/lib/auth/auth-state-manager.test.ts',
+  'src/lib/auth/supabase-auth-oauth.test.ts',
+  'src/services/system/SystemInactivityService.test.ts',
+  'src/stores/useAISidebarStore.test.ts',
+]);
 
 function runNpm(args) {
   const result = spawnSync(npmCmd, args, {
@@ -78,6 +92,21 @@ function parseChangedFiles(output) {
     .split('\n')
     .map((line) => line.trim())
     .filter(Boolean);
+}
+
+function normalizeFilePath(filePath) {
+  return String(filePath || '').replace(/\\/g, '/');
+}
+
+function isVitestTestFile(filePath) {
+  return /\.(test|spec)\.(js|ts|tsx)$/u.test(normalizeFilePath(filePath));
+}
+
+function isDomTestFile(filePath) {
+  const normalized = normalizeFilePath(filePath);
+  if (!isVitestTestFile(normalized)) return false;
+  if (DOM_TEST_FILE_EXACT.has(normalized)) return true;
+  return DOM_TEST_FILE_PREFIXES.some((prefix) => normalized.startsWith(prefix));
 }
 
 function isZeroOid(oid) {
@@ -476,9 +505,48 @@ function runDocsArtifactValidation(changedFilesResult) {
   validateChangedJsonArtifacts(changedFilesResult.files);
 }
 
+function classifyChangedTestRun(changedFilesResult) {
+  if (!changedFilesResult?.isKnown || changedFilesResult.files.length === 0) {
+    return null;
+  }
+
+  const testFiles = changedFilesResult.files
+    .map(normalizeFilePath)
+    .filter((filePath) => isVitestTestFile(filePath));
+
+  if (testFiles.length === 0) {
+    return null;
+  }
+
+  const domTestFiles = testFiles.filter((filePath) => isDomTestFile(filePath));
+  const nodeTestFiles = testFiles.filter((filePath) => !isDomTestFile(filePath));
+
+  if (domTestFiles.length === testFiles.length) {
+    return {
+      mode: 'dom-targeted',
+      files: domTestFiles,
+      npmArgs: ['run', 'test:dom', '--', ...domTestFiles],
+    };
+  }
+
+  if (nodeTestFiles.length === testFiles.length) {
+    return {
+      mode: 'node-targeted',
+      files: nodeTestFiles,
+      npmArgs: ['run', 'test:node', '--', ...nodeTestFiles],
+    };
+  }
+
+  return {
+    mode: 'quick',
+    files: testFiles,
+    npmArgs: ['run', 'test:super-fast'],
+  };
+}
+
 // Tests
-function runTests() {
-  console.log('🧪 Running quick tests...');
+function runTests(changedFilesResult) {
+  selectedTestMode = 'quick';
 
   // Windows: skip tests (run full validation in WSL)
   if (isLimitedMode) {
@@ -495,14 +563,39 @@ function runTests() {
     return;
   }
 
-  const success = runNpm(['run', 'test:super-fast']);
+  const targetedRun = classifyChangedTestRun(changedFilesResult);
+  let npmArgs = ['run', 'test:super-fast'];
+
+  if (targetedRun?.mode === 'node-targeted') {
+    selectedTestMode = 'node-targeted';
+    npmArgs = targetedRun.npmArgs;
+    console.log(
+      `🧪 Running targeted node tests for changed files (${targetedRun.files.length})...`
+    );
+  } else if (targetedRun?.mode === 'dom-targeted') {
+    selectedTestMode = 'dom-targeted';
+    npmArgs = targetedRun.npmArgs;
+    console.log(
+      `🧪 Running targeted DOM tests for changed files (${targetedRun.files.length})...`
+    );
+  } else {
+    console.log('🧪 Running quick tests...');
+  }
+
+  const success = runNpm(npmArgs);
   if (success) {
     testStatus = 'passed';
   } else {
     testStatus = 'failed';
     console.log('❌ Tests failed - push blocked');
     console.log('');
-    console.log('💡 Fix: npm run test:super-fast');
+    if (selectedTestMode === 'node-targeted') {
+      console.log('💡 Fix: npm run test:node -- <changed test files>');
+    } else if (selectedTestMode === 'dom-targeted') {
+      console.log('💡 Fix: npm run test:dom -- <changed test files>');
+    } else {
+      console.log('💡 Fix: npm run test:super-fast');
+    }
     console.log('');
     console.log('⚠️  Bypass options:');
     console.log('   • SKIP_TESTS=true git push   (Skip tests only)');
@@ -621,7 +714,13 @@ function printSummary(duration) {
     console.log('  🐢 Mode: Full Build');
   }
   if (testStatus === 'passed') {
-    console.log('  ✅ Tests passed');
+    if (selectedTestMode === 'node-targeted') {
+      console.log('  ✅ Tests passed (targeted node)');
+    } else if (selectedTestMode === 'dom-targeted') {
+      console.log('  ✅ Tests passed (targeted DOM)');
+    } else {
+      console.log('  ✅ Tests passed');
+    }
   } else if (testStatus === 'skipped-docs-only') {
     console.log('  ⚪ Tests skipped (docs/report-only push)');
   } else {
@@ -684,7 +783,7 @@ function main() {
   if (isDocsArtifactOnlyPush(changedFilesResult)) {
     runDocsArtifactValidation(changedFilesResult);
   } else {
-    runTests();
+    runTests(changedFilesResult);
     runBuildValidation();
     if (STRICT_PUSH_ENV) {
       checkEnvironment();
