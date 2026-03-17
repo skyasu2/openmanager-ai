@@ -2,25 +2,25 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-03-17T02:06:09.588Z"
+    "updatedAt": "2026-03-17T04:00:14.984Z"
   },
   "sequence": {
-    "nextRunNumber": 116
+    "nextRunNumber": 117
   },
   "summary": {
-    "totalRuns": 115,
-    "totalChecks": 869,
-    "totalPassed": 824,
+    "totalRuns": 116,
+    "totalChecks": 879,
+    "totalPassed": 834,
     "totalFailed": 41,
     "completionRate": 100,
-    "completedItems": 210,
+    "completedItems": 212,
     "pendingItems": 0,
     "deferredItems": 0,
-    "wontFixItems": 9,
+    "wontFixItems": 8,
     "expertDomainsTracked": 6,
-    "expertDomainsOpenGaps": 1,
-    "lastRunId": "QA-20260317-0115",
-    "lastRecordedAt": "2026-03-17T02:06:09.588Z"
+    "expertDomainsOpenGaps": 0,
+    "lastRunId": "QA-20260317-0116",
+    "lastRecordedAt": "2026-03-17T04:00:14.984Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -4951,26 +4951,50 @@
     "langfuse-multi-agent-traceid-live-proof": {
       "id": "langfuse-multi-agent-traceid-live-proof",
       "title": "멀티에이전트 sampled traceId 실운영 실측",
-      "priority": "P2",
-      "status": "wont-fix",
+      "priority": "P1",
+      "status": "completed",
       "firstSeenRunId": "QA-20260317-0115",
       "firstSeenAt": "2026-03-17T02:06:09.588Z",
-      "lastSeenRunId": "QA-20260317-0115",
-      "lastSeenAt": "2026-03-17T02:06:09.588Z",
-      "seenCount": 1,
-      "completedCount": 0,
+      "lastSeenRunId": "QA-20260317-0116",
+      "lastSeenAt": "2026-03-17T04:00:14.984Z",
+      "seenCount": 2,
+      "completedCount": 1,
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 1,
       "aliases": [],
       "owner": "codex",
-      "lastEvidence": "",
-      "lastNote": "이번 run에서 10회 실제 stream 호출은 모두 200 성공했지만 traceId가 비었고, 이후 추가 호출은 supervisor rate limit(10/min)에 걸렸다.",
+      "lastEvidence": "Cloud Run ai-engine-00256-72m에서 multi-agent stream/v2 첫 sampled 응답의 data-done.metadata.traceId=8a2b88fa-ca85-46c2-82bf-15515313b49a 실측, /monitoring eventCount 52->54 증가 확인",
+      "lastNote": "10% sampling 정책 유지 상태에서 실측 확보 완료",
       "isBlocking": false,
       "isBlockingExplicit": true,
       "overengineeringScope": "10% sampling 정책을 유지한 상태에서 응답 payload 실측은 확률적이라 반복 검증 비용이 커질 수 있음",
-      "lastPolicyNote": "이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 10% sampling 정책을 유지한 상태에서 응답 payload 실측은 확률적이라 반복 검증 비용이 커질 수 있음 (요청자 표시(isBlocking=true)로 즉시 개선 필요)",
-      "lastStatusChangeAt": "2026-03-17T02:06:09.588Z"
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-03-17T04:00:14.984Z"
+    },
+    "langfuse-monitoring-runtime-visibility": {
+      "id": "langfuse-monitoring-runtime-visibility",
+      "title": "Langfuse runtime visibility on /monitoring",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260317-0116",
+      "firstSeenAt": "2026-03-17T04:00:14.984Z",
+      "lastSeenRunId": "QA-20260317-0116",
+      "lastSeenAt": "2026-03-17T04:00:14.984Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "codex",
+      "lastEvidence": "/monitoring.langfuse 에 isOperational=true, clientInitialized=true, loadAttempted=true, hasKeysConfigured=true 노출",
+      "lastNote": "usage 상태만으로는 운영 원인 판정이 어려운 blind spot 제거",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-03-17T04:00:14.984Z"
     }
   },
   "runs": [
@@ -9730,6 +9754,52 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 1
+    },
+    {
+      "runId": "QA-20260317-0116",
+      "recordedAt": "2026-03-17T04:00:14.984Z",
+      "recordedAtKst": "2026-03-17 13:00:14 KST",
+      "title": "Cloud Run Observability Ops - Multi-agent traceId live proof + Langfuse runtime visibility (2026-03-17)",
+      "owner": "codex",
+      "source": "cloud-run+langfuse-api",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260317-0116.json",
+      "checks": {
+        "total": 10,
+        "passed": 10,
+        "failed": 0
+      },
+      "expertAssessments": [
+        {
+          "domainId": "observability-monitoring",
+          "domainName": "IT Monitoring & Observability SME",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "운영 진단 blind spot을 줄이기 위해 /monitoring에 isOperational/clientInitialized/loadAttempted/hasKeysConfigured를 노출했고, production sampled multi-agent 응답에서 data-done.metadata.traceId 실물을 캡처했다.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "ai-engine type-check, 관련 Vitest, 전체 npm run test 60 files 665 tests, Cloud Build SUCCESS, Cloud Run ai-engine-00256-72m 100% 전환까지 완료했다.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "production multi-agent stream/v2 sampled 응답에서 finalAgent=NLQ Agent와 metadata.traceId를 함께 확인했고 응답 요약 품질도 정상이다.",
+          "nextAction": ""
+        }
+      ],
+      "expertCount": 3,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 2,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -9738,16 +9808,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 73,
-      "appropriateCount": 70,
+      "seenCount": 74,
+      "appropriateCount": 71,
       "partialCount": 3,
       "inappropriateCount": 0,
       "improvementNeededCount": 11,
-      "lastRunId": "QA-20260317-0115",
-      "lastSeenAt": "2026-03-17T02:06:09.588Z",
+      "lastRunId": "QA-20260317-0116",
+      "lastSeenAt": "2026-03-17T04:00:14.984Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "프로덕션 multi-agent stream/v2 응답 자체는 반복적으로 200 성공했고 done payload 구조, mode=multi, finalAgent=NLQ Agent, 응답 품질은 정상 범위였다.",
+      "lastRationale": "production multi-agent stream/v2 sampled 응답에서 finalAgent=NLQ Agent와 metadata.traceId를 함께 확인했고 응답 요약 품질도 정상이다.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -9755,17 +9825,17 @@
       "domainName": "IT Monitoring & Observability SME",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 50,
-      "appropriateCount": 30,
+      "seenCount": 51,
+      "appropriateCount": 31,
       "partialCount": 20,
       "inappropriateCount": 0,
       "improvementNeededCount": 20,
-      "lastRunId": "QA-20260317-0115",
-      "lastSeenAt": "2026-03-17T02:06:09.588Z",
-      "lastFit": "partially-appropriate",
-      "lastImprovementNeeded": true,
-      "lastRationale": "멀티에이전트 traceId 전파 코드와 배포는 완료됐고 Langfuse readiness도 정상이다. 다만 production 10% sampling과 supervisor rate limit 때문에 이번 run에서는 data-done.metadata.traceId 실물을 캡처하지 못했다.",
-      "lastNextAction": "sampled 세션 실측을 위해 저빈도 재시도 또는 일시적 샘플링 상향/진단 훅으로 traceId 응답을 1회 확정 캡처"
+      "lastRunId": "QA-20260317-0116",
+      "lastSeenAt": "2026-03-17T04:00:14.984Z",
+      "lastFit": "appropriate",
+      "lastImprovementNeeded": false,
+      "lastRationale": "운영 진단 blind spot을 줄이기 위해 /monitoring에 isOperational/clientInitialized/loadAttempted/hasKeysConfigured를 노출했고, production sampled multi-agent 응답에서 data-done.metadata.traceId 실물을 캡처했다.",
+      "lastNextAction": ""
     },
     "ai-security-reliability": {
       "domainId": "ai-security-reliability",
@@ -9789,16 +9859,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 38,
-      "appropriateCount": 35,
+      "seenCount": 39,
+      "appropriateCount": 36,
       "partialCount": 3,
       "inappropriateCount": 0,
       "improvementNeededCount": 3,
-      "lastRunId": "QA-20260317-0115",
-      "lastSeenAt": "2026-03-17T02:06:09.588Z",
+      "lastRunId": "QA-20260317-0116",
+      "lastSeenAt": "2026-03-17T04:00:14.984Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "ai-engine type-check, 전체 테스트, Docker build-only preflight, Cloud Build SUCCESS, Cloud Run ai-engine-00254-jdz 100% 전환까지 완료했다.",
+      "lastRationale": "ai-engine type-check, 관련 Vitest, 전체 npm run test 60 files 665 tests, Cloud Build SUCCESS, Cloud Run ai-engine-00256-72m 100% 전환까지 완료했다.",
       "lastNextAction": ""
     },
     "test-automation": {

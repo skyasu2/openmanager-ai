@@ -26,6 +26,12 @@ vi.mock('./services/resilience/circuit-breaker', () => ({
 
 vi.mock('./services/observability/langfuse', () => ({
   getLangfuseUsageStatus: vi.fn(() => ({ enabled: true })),
+  getLangfuseClientStatus: vi.fn(() => ({
+    isOperational: true,
+    clientInitialized: true,
+    loadAttempted: true,
+    hasKeysConfigured: true,
+  })),
 }));
 
 import { registerAdminRoutes } from './server-admin-routes';
@@ -65,6 +71,21 @@ describe('server-admin-routes', () => {
     expect(res.status).toBe(504);
     await expect(res.json()).resolves.toMatchObject({
       error: 'Langfuse API timeout',
+    });
+  });
+
+  it('exposes Langfuse runtime state on monitoring', async () => {
+    const res = await createApp().request('/monitoring');
+
+    expect(res.status).toBe(200);
+    await expect(res.json()).resolves.toMatchObject({
+      langfuse: {
+        enabled: true,
+        isOperational: true,
+        clientInitialized: true,
+        loadAttempted: true,
+        hasKeysConfigured: true,
+      },
     });
   });
 });

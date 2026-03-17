@@ -82,4 +82,23 @@ describe('langfuse-trace', () => {
     expect(consumeLangfuseQuota).not.toHaveBeenCalled();
     expect(getLangfuse).not.toHaveBeenCalled();
   });
+
+  it('assigns a fallback trace id when SDK trace object does not expose one', () => {
+    mockTrace.id = undefined;
+
+    const trace = createSupervisorTrace({
+      sessionId: 'session-2',
+      userId: 'user-2',
+      mode: 'multi',
+      query: 'server summary',
+      upstreamTraceId: 'upstream-trace-1',
+    });
+
+    expect(mockLangfuse.trace).toHaveBeenCalledTimes(1);
+    const traceCall = mockLangfuse.trace.mock.calls[0]?.[0] as { id?: string };
+    expect(traceCall.id).toMatch(
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
+    );
+    expect(trace.id).toBe(traceCall.id);
+  });
 });

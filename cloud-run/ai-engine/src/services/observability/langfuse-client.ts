@@ -106,6 +106,22 @@ export function isLangfuseOperational(): boolean {
   return langfuseClient !== null && langfuseOperational;
 }
 
+export function getLangfuseClientStatus(): {
+  isOperational: boolean;
+  clientInitialized: boolean;
+  loadAttempted: boolean;
+  hasKeysConfigured: boolean;
+} {
+  return {
+    isOperational: isLangfuseOperational(),
+    clientInitialized: langfuseClient !== null,
+    loadAttempted,
+    hasKeysConfigured: Boolean(
+      process.env.LANGFUSE_PUBLIC_KEY && process.env.LANGFUSE_SECRET_KEY
+    ),
+  };
+}
+
 export async function initializeLangfuseClient(): Promise<void> {
   if (langfuseClient) {
     return;

@@ -1,0 +1,97 @@
+{
+  "runId": "QA-20260317-0116",
+  "recordedAt": "2026-03-17T04:00:14.984Z",
+  "recordedAtKst": "2026-03-17 13:00:14 KST",
+  "runTitle": "Cloud Run Observability Ops - Multi-agent traceId live proof + Langfuse runtime visibility (2026-03-17)",
+  "owner": "codex",
+  "source": "cloud-run+langfuse-api",
+  "environment": {
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "serviceUrl": "https://ai-engine-jdhrhws7ia-an.a.run.app",
+    "version": "8.9.1",
+    "aiEngineRevision": "ai-engine-00256-72m",
+    "aiEngineImageTag": "v-20260317-125256-a7ccd60ce"
+  },
+  "checks": {
+    "total": 10,
+    "passed": 10,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "운영 진단 blind spot을 줄이기 위해 /monitoring에 isOperational/clientInitialized/loadAttempted/hasKeysConfigured를 노출했고, production sampled multi-agent 응답에서 data-done.metadata.traceId 실물을 캡처했다.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "ai-engine type-check, 관련 Vitest, 전체 npm run test 60 files 665 tests, Cloud Build SUCCESS, Cloud Run ai-engine-00256-72m 100% 전환까지 완료했다.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "production multi-agent stream/v2 sampled 응답에서 finalAgent=NLQ Agent와 metadata.traceId를 함께 확인했고 응답 요약 품질도 정상이다.",
+      "nextAction": ""
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "langfuse-multi-agent-traceid-live-proof",
+      "title": "멀티에이전트 sampled traceId 실운영 실측",
+      "priority": "P1",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Cloud Run ai-engine-00256-72m에서 multi-agent stream/v2 첫 sampled 응답의 data-done.metadata.traceId=8a2b88fa-ca85-46c2-82bf-15515313b49a 실측, /monitoring eventCount 52->54 증가 확인",
+      "note": "10% sampling 정책 유지 상태에서 실측 확보 완료",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "langfuse-monitoring-runtime-visibility",
+      "title": "Langfuse runtime visibility on /monitoring",
+      "priority": "P1",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "/monitoring.langfuse 에 isOperational=true, clientInitialized=true, loadAttempted=true, hasKeysConfigured=true 노출",
+      "note": "usage 상태만으로는 운영 원인 판정이 어려운 blind spot 제거",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "PASS: cloud-run/ai-engine npx vitest run src/server-admin-routes.test.ts src/services/observability/langfuse-trace.test.ts",
+    "PASS: cloud-run/ai-engine npm run type-check",
+    "PASS: cloud-run/ai-engine npm run test -> 60 files, 665 tests passed",
+    "PASS: Cloud Build 45d9f837-67aa-42c8-8a1c-64a0b8e3a0f5 SUCCESS",
+    "PASS: Cloud Run revision ai-engine-00256-72m 배포, image tag=v-20260317-125256-a7ccd60ce",
+    "PASS: authenticated /health 200, config.langfuse=true",
+    "PASS: authenticated /monitoring -> langfuse.isReady=true, sampleRate=10%, isOperational=true, clientInitialized=true, loadAttempted=true, hasKeysConfigured=true",
+    "PASS: multi-agent stream/v2 sampled 응답에서 data-done.metadata.traceId=8a2b88fa-ca85-46c2-82bf-15515313b49a 확인",
+    "PASS: /monitoring eventCount 52 -> 54 증가로 sampled trace 생성 확인",
+    "INFO: /monitoring/traces latest 10은 방금 생성한 trace를 즉시 보여주지 않아 ordering/diagnostic 품질은 여전히 제한적"
+  ],
+  "links": [
+    {
+      "label": "Cloud Run URL",
+      "url": "https://ai-engine-jdhrhws7ia-an.a.run.app"
+    }
+  ]
+}

@@ -1,39 +1,38 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-17 11:06:09 KST
+> Generated at: 2026-03-17 13:00:15 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 115 |
-| Total Checks | 869 |
-| Passed | 824 |
+| Total Runs | 116 |
+| Total Checks | 879 |
+| Passed | 834 |
 | Failed | 41 |
-| Completed Items | 210 |
+| Completed Items | 212 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
-| Wont-Fix Items | 9 |
+| Wont-Fix Items | 8 |
 | Expert Domains Tracked | 6 |
-| Expert Open Gaps | 1 |
+| Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Run | QA-20260317-0115 (2026-03-17T02:06:09.588Z) |
+| Last Run | QA-20260317-0116 (2026-03-17T04:00:14.984Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260317-0115 (2026-03-17T02:06:09.588Z)
+Latest run: QA-20260317-0116 (2026-03-17T04:00:14.984Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| IT Monitoring & Observability SME | partially-appropriate | yes | sampled 세션 실측을 위해 저빈도 재시도 또는 일시적 샘플링 상향/진단 훅으로 traceId 응답을 1회 확정 캡처 |
+| IT Monitoring & Observability SME | appropriate | no | - |
 | DevOps / SRE Engineer | appropriate | no | - |
 | AI Quality Assurance Specialist | appropriate | no | - |
 
 ## Expert Domain Open Gaps
 
-- observability-monitoring: IT Monitoring & Observability SME (last QA-20260317-0115)
-  next: sampled 세션 실측을 위해 저빈도 재시도 또는 일시적 샘플링 상향/진단 훅으로 traceId 응답을 1회 확정 캡처
+- None
 
 ## Pending Improvements
 
@@ -58,8 +57,6 @@ Latest run: QA-20260317-0115 (2026-03-17T02:06:09.588Z)
   - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
 - [P2] feature-dod-unit-tests: 단위 테스트 158개 통과 (seen 9회, last QA-20260307-0053)
   - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
-- [P2] langfuse-multi-agent-traceid-live-proof: 멀티에이전트 sampled traceId 실운영 실측 (seen 1회, last QA-20260317-0115)
-  - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 10% sampling 정책을 유지한 상태에서 응답 payload 실측은 확률적이라 반복 검증 비용이 커질 수 있음 (요청자 표시(isBlocking=true)로 즉시 개선 필요)
 - [P2] streaming-ai-fallback-cold-start: Streaming AI fallback에서 Cloud Run 콜드스타트 시 프리셋 질문 실패 (seen 1회, last QA-20260310-0090)
   - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (요청자 표시(isBlocking=true)로 즉시 개선 필요)
 
@@ -152,7 +149,9 @@ Latest run: QA-20260317-0115 (2026-03-17T02:06:09.588Z)
 - landing-feature-cards: 랜딩 피처카드 4개 모달 (completed 1회, last QA-20260317-0114)
 - landing-page-render: 랜딩 페이지 렌더링 (completed 1회, last QA-20260301-0035)
 - landing-system-start: 시스템 시작 카운트다운 (completed 1회, last QA-20260317-0114)
+- langfuse-monitoring-runtime-visibility: Langfuse runtime visibility on /monitoring (completed 1회, last QA-20260317-0116)
 - langfuse-monitoring-traces-timeout: Authenticated /monitoring/traces endpoint times out in production (completed 1회, last QA-20260317-0113)
+- langfuse-multi-agent-traceid-live-proof: 멀티에이전트 sampled traceId 실운영 실측 (completed 1회, last QA-20260317-0116)
 - langfuse-multi-agent-traceid-propagation: 멀티에이전트 stream done metadata traceId 전파 (completed 1회, last QA-20260317-0115)
 - log-explorer-modal: 로그 탐색기 모달 (completed 1회, last QA-20260317-0114)
 - login-copy-neutral: 로그인 정책 카피 중립성 개선 (completed 1회, last QA-20260227-0014)
@@ -280,6 +279,7 @@ Latest run: QA-20260317-0115 (2026-03-17T02:06:09.588Z)
 
 | Run ID | Time (UTC) | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260317-0116 | 2026-03-17T04:00:14.984Z | Cloud Run Observability Ops - Multi-agent traceId live proof + Langfuse runtime visibility (2026-03-17) | 10 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260317-0115 | 2026-03-17T02:06:09.588Z | Cloud Run Observability Ops - Multi-agent traceId propagation validation (2026-03-17) | 9 | 1 | 0 | 0 | 1 | 1 |
 | QA-20260317-0114 | 2026-03-17T02:03:41.807Z | WONT-FIX 실측 재평가 - Playwright MCP 30개 UI 동작 확인 → completed 전환 | 30 | 27 | 0 | 0 | 0 | 0 |
 | QA-20260317-0113 | 2026-03-17T00:20:29.019Z | Cloud Run Observability Ops Fix - Langfuse traces endpoint restored (2026-03-17) | 5 | 1 | 0 | 0 | 0 | 0 |
@@ -299,5 +299,4 @@ Latest run: QA-20260317-0115 (2026-03-17T02:06:09.588Z)
 | QA-20260315-0099 | 2026-03-14T17:14:40.772Z | Storybook QA - react-vite migration verification | 4 | 3 | 0 | 0 | 0 | 0 |
 | QA-20260314-0098 | 2026-03-14T12:29:00.552Z | Vercel Production QA - Frontend/AI Active QA | 3 | 0 | 0 | 0 | 3 | 0 |
 | QA-20260314-0097 | 2026-03-14T03:21:46.717Z | Vercel Production QA - Frontend/AI/Performance/Free Tier policy review | 13 | 7 | 0 | 0 | 1 | 1 |
-| QA-20260314-0096 | 2026-03-14T00:10:58.614Z | Production 종합 QA - Frontend/AI/Performance/FreeTier 검증 | 17 | 9 | 0 | 0 | 1 | 1 |
 

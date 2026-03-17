@@ -12,7 +12,10 @@ import {
   getAllCircuitStats,
   resetAllCircuitBreakers,
 } from './services/resilience/circuit-breaker';
-import { getLangfuseUsageStatus } from './services/observability/langfuse';
+import {
+  getLangfuseClientStatus,
+  getLangfuseUsageStatus,
+} from './services/observability/langfuse';
 
 let logLevelResetTimer: ReturnType<typeof setTimeout> | null = null;
 // Cloud Run egress to Langfuse can exceed 5s on cold network paths.
@@ -72,12 +75,16 @@ export function registerAdminRoutes(
   app.get('/monitoring', (c: Context) => {
     const circuitStats = getAllCircuitStats();
     const langfuseStatus = getLangfuseUsageStatus();
+    const langfuseClientStatus = getLangfuseClientStatus();
     const agentsStatus = getAvailableAgentsStatus();
 
     return c.json({
       status: 'ok',
       circuits: circuitStats,
-      langfuse: langfuseStatus,
+      langfuse: {
+        ...langfuseStatus,
+        ...langfuseClientStatus,
+      },
       agents: agentsStatus,
       timestamp: new Date().toISOString(),
     });

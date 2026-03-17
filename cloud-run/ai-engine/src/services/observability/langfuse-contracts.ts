@@ -29,6 +29,7 @@ export interface LangfuseTrace {
 
 export interface LangfuseClient {
   trace: (params: {
+    id?: string;
     name: string;
     sessionId?: string;
     userId?: string;

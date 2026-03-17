@@ -1,3 +1,5 @@
+import { randomUUID } from 'node:crypto';
+
 import { logger } from '../../lib/logger';
 import type {
   GenerationParams,
@@ -22,8 +24,10 @@ export function createSupervisorTrace(metadata: TraceMetadata): LangfuseTrace {
   }
 
   const langfuse = getLangfuse();
+  const traceId = randomUUID();
 
   const trace = langfuse.trace({
+    id: traceId,
     name: 'supervisor-execution',
     sessionId: metadata.sessionId,
     userId: metadata.userId,
@@ -42,7 +46,9 @@ export function createSupervisorTrace(metadata: TraceMetadata): LangfuseTrace {
   if (traceWithId.id) {
     return traceWithId;
   }
-  return trace;
+
+  traceWithId.id = traceId;
+  return traceWithId;
 }
 
 export function logGeneration(trace: LangfuseTrace, params: GenerationParams): void {
