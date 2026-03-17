@@ -3,12 +3,12 @@
  * DOM testing 환경 설정
  */
 
-import React from 'react';
 import {
   ReadableStream as NodeReadableStream,
   TransformStream as NodeTransformStream,
   WritableStream as NodeWritableStream,
 } from 'node:stream/web';
+import React from 'react';
 import { expect, vi } from 'vitest';
 
 // React를 global에 추가 (jsdom 환경에서 JSX 지원)
