@@ -1,15 +1,15 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-17 19:36:51 KST
+> Generated at: 2026-03-18 13:59:58 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 120 |
-| Total Checks | 907 |
-| Passed | 861 |
+| Total Runs | 121 |
+| Total Checks | 912 |
+| Passed | 866 |
 | Failed | 42 |
 | Completed Items | 216 |
 | Pending Items | 0 |
@@ -18,16 +18,16 @@
 | Expert Domains Tracked | 6 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Run | QA-20260317-0120 (2026-03-17T10:36:51.489Z) |
+| Last Run | QA-20260318-0121 (2026-03-18T04:59:58.502Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260317-0120 (2026-03-17T10:36:51.489Z)
+Latest run: QA-20260318-0121 (2026-03-18T04:59:58.502Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
+| AI Quality Assurance Specialist | appropriate | no | - |
 | Test Automation Architect | appropriate | no | - |
-| DevOps / SRE Engineer | appropriate | no | - |
 
 ## Expert Domain Open Gaps
 
@@ -282,6 +282,7 @@ Latest run: QA-20260317-0120 (2026-03-17T10:36:51.489Z)
 
 | Run ID | Time (UTC) | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260318-0121 | 2026-03-18T04:59:58.502Z | Vercel Production QA - Frontend and AI Assistant Full Page Validation | 5 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260317-0120 | 2026-03-17T10:36:51.489Z | Vercel Playwright QA - landing profile bootstrap flicker recheck | 4 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260317-0119 | 2026-03-17T08:41:53.635Z | Vercel Playwright QA - guest boot, dashboard, AI stream, feedback, landing bootstrap state | 10 | 1 | 0 | 1 | 0 | 1 |
 | QA-20260317-0118 | 2026-03-17T08:11:11.594Z | Cloud Run Deploy Verification - v8.9.2 manual deploy (2026-03-17) | 6 | 1 | 0 | 0 | 0 | 0 |
@@ -301,5 +302,4 @@ Latest run: QA-20260317-0120 (2026-03-17T10:36:51.489Z)
 | QA-20260315-0104 | 2026-03-15T13:04:19.799Z | Vercel Production QA - Incident Report route regression validation (2026-03-15) | 6 | 3 | 0 | 0 | 0 | 0 |
 | QA-20260315-0103 | 2026-03-15T12:13:45.149Z | Production Playwright MCP QA - Post-Cloud-Run Deploy Validation (2026-03-15) | 8 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260315-0102 | 2026-03-15T07:15:29.358Z | Storybook QA - lock sync + smoke/build validation | 3 | 3 | 0 | 0 | 0 | 0 |
-| QA-20260315-0101 | 2026-03-15T06:21:02.856Z | QA governance - close resolved security gap and split security backlog | 3 | 1 | 0 | 2 | 0 | 0 |
 

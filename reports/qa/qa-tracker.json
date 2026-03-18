@@ -2,15 +2,15 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-03-17T10:36:51.489Z"
+    "updatedAt": "2026-03-18T04:59:58.502Z"
   },
   "sequence": {
-    "nextRunNumber": 121
+    "nextRunNumber": 122
   },
   "summary": {
-    "totalRuns": 120,
-    "totalChecks": 907,
-    "totalPassed": 861,
+    "totalRuns": 121,
+    "totalChecks": 912,
+    "totalPassed": 866,
     "totalFailed": 42,
     "completionRate": 100,
     "completedItems": 216,
@@ -19,8 +19,8 @@
     "wontFixItems": 8,
     "expertDomainsTracked": 6,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260317-0120",
-    "lastRecordedAt": "2026-03-17T10:36:51.489Z"
+    "lastRunId": "QA-20260318-0121",
+    "lastRecordedAt": "2026-03-18T04:59:58.502Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -4834,7 +4834,9 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0,
-      "aliases": ["esc-모달-닫기"],
+      "aliases": [
+        "esc-모달-닫기"
+      ],
       "owner": "",
       "lastEvidence": "Playwright MCP: ESC 키로 모달 닫기 동작 확인",
       "lastNote": "",
@@ -4858,7 +4860,9 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0,
-      "aliases": ["ai-chat-sidebar-open"],
+      "aliases": [
+        "ai-chat-sidebar-open"
+      ],
       "owner": "",
       "lastEvidence": "Playwright MCP: AI 어시스턴트 사이드바 열기/닫기 동작 확인",
       "lastNote": "",
@@ -4882,7 +4886,9 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0,
-      "aliases": ["프로덕션-대시보드-렌더링"],
+      "aliases": [
+        "프로덕션-대시보드-렌더링"
+      ],
       "owner": "",
       "lastEvidence": "Playwright MCP: 대시보드 전체 정상 렌더링 확인",
       "lastNote": "",
@@ -4906,7 +4912,9 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0,
-      "aliases": ["서버-모달-3탭-전환"],
+      "aliases": [
+        "서버-모달-3탭-전환"
+      ],
       "owner": "",
       "lastEvidence": "Playwright MCP: 종합상황/성능분석/로그&네트워크 3탭 전환 동작 확인",
       "lastNote": "",
@@ -10056,6 +10064,44 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260318-0121",
+      "recordedAt": "2026-03-18T04:59:58.502Z",
+      "recordedAtKst": "2026-03-18 13:59:58 KST",
+      "title": "Vercel Production QA - Frontend and AI Assistant Full Page Validation",
+      "owner": "gemini",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260318-0121.json",
+      "checks": {
+        "total": 5,
+        "passed": 5,
+        "failed": 0
+      },
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "랜딩 페이지의 기술 스택 및 아키텍처 모달(4종), 게스트 시스템 시작, 대시보드 진입, AI Assistant Full Page 진입 및 NLQ 에이전트 스트리밍 질의 기능을 Vercel 실 프로덕션 환경에서 모두 성공적으로 검증함.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Playwright MCP 실브라우저 세션을 통해 랜딩 페이지부터 AI Assistant 전체 화면 질의응답에 이르는 E2E 핵심 사용자 흐름이 정상 동작함을 확인했다.",
+          "nextAction": ""
+        }
+      ],
+      "expertCount": 2,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -10064,16 +10110,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 76,
-      "appropriateCount": 73,
+      "seenCount": 77,
+      "appropriateCount": 74,
       "partialCount": 3,
       "inappropriateCount": 0,
       "improvementNeededCount": 11,
-      "lastRunId": "QA-20260317-0119",
-      "lastSeenAt": "2026-03-17T08:41:53.635Z",
+      "lastRunId": "QA-20260318-0121",
+      "lastSeenAt": "2026-03-18T04:59:58.502Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Vercel 실환경에서 게스트 부팅 후 AI Chat 스트리밍 응답과 피드백 저장까지 정상 동작을 확인했다.",
+      "lastRationale": "랜딩 페이지의 기술 스택 및 아키텍처 모달(4종), 게스트 시스템 시작, 대시보드 진입, AI Assistant Full Page 진입 및 NLQ 에이전트 스트리밍 질의 기능을 Vercel 실 프로덕션 환경에서 모두 성공적으로 검증함.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -10132,16 +10178,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 69,
-      "appropriateCount": 65,
+      "seenCount": 70,
+      "appropriateCount": 66,
       "partialCount": 4,
       "inappropriateCount": 0,
       "improvementNeededCount": 6,
-      "lastRunId": "QA-20260317-0120",
-      "lastSeenAt": "2026-03-17T10:36:51.489Z",
+      "lastRunId": "QA-20260318-0121",
+      "lastSeenAt": "2026-03-18T04:59:58.502Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "프로덕션 첫 paint 구간을 세밀하게 샘플링해 auth resolving 동안 skeleton만 노출되고 placeholder 텍스트가 사라진 것을 확인했다.",
+      "lastRationale": "Playwright MCP 실브라우저 세션을 통해 랜딩 페이지부터 AI Assistant 전체 화면 질의응답에 이르는 E2E 핵심 사용자 흐름이 정상 동작함을 확인했다.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {

@@ -1,0 +1,38 @@
+{
+  "runId": "QA-20260318-0121",
+  "recordedAt": "2026-03-18T04:59:58.502Z",
+  "recordedAtKst": "2026-03-18 13:59:58 KST",
+  "runTitle": "Vercel Production QA - Frontend and AI Assistant Full Page Validation",
+  "owner": "gemini",
+  "source": "playwright-mcp",
+  "environment": {},
+  "checks": {
+    "total": 5,
+    "passed": 5,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "랜딩 페이지의 기술 스택 및 아키텍처 모달(4종), 게스트 시스템 시작, 대시보드 진입, AI Assistant Full Page 진입 및 NLQ 에이전트 스트리밍 질의 기능을 Vercel 실 프로덕션 환경에서 모두 성공적으로 검증함.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Playwright MCP 실브라우저 세션을 통해 랜딩 페이지부터 AI Assistant 전체 화면 질의응답에 이르는 E2E 핵심 사용자 흐름이 정상 동작함을 확인했다.",
+      "nextAction": ""
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [],
+  "links": []
+}
