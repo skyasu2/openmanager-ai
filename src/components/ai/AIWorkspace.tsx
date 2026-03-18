@@ -21,7 +21,7 @@ import {
   Plus,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { Activity, useCallback, useEffect, useRef, useState } from 'react';
 import { EnhancedAIChat } from '@/components/ai-sidebar/EnhancedAIChat';
 import { AIErrorBoundary } from '@/components/error/AIErrorBoundary';
 import { APP_VERSION } from '@/config/app-meta';
@@ -177,7 +177,7 @@ export default function AIWorkspace({ mode, onClose }: AIWorkspaceProps) {
           </div>
         </div>
         <div className="flex-1 overflow-hidden">
-          {selectedFunction === 'chat' ? (
+          <Activity mode={selectedFunction === 'chat' ? 'visible' : 'hidden'}>
             <EnhancedAIChat
               autoReportTrigger={{ shouldGenerate: false }}
               allMessages={enhancedMessages}
@@ -216,7 +216,8 @@ export default function AIWorkspace({ mode, onClose }: AIWorkspaceProps) {
               queuedQueries={queuedQueries}
               removeQueuedQuery={removeQueuedQuery}
             />
-          ) : (
+          </Activity>
+          <Activity mode={selectedFunction !== 'chat' ? 'visible' : 'hidden'}>
             <div className="flex h-full flex-col">
               <div className="block shrink-0 sm:hidden">
                 <AIAssistantIconPanel
@@ -229,7 +230,7 @@ export default function AIWorkspace({ mode, onClose }: AIWorkspaceProps) {
                 <AIContentArea selectedFunction={selectedFunction} />
               </div>
             </div>
-          )}
+          </Activity>
         </div>
         {selectedFunction === 'chat' && (
           <div className="shrink-0 border-t border-gray-200 bg-gray-50 p-2">
@@ -466,7 +467,7 @@ export default function AIWorkspace({ mode, onClose }: AIWorkspaceProps) {
                 handleNewSession();
               }}
             >
-              {selectedFunction === 'chat' ? (
+              <Activity mode={selectedFunction === 'chat' ? 'visible' : 'hidden'}>
                 <EnhancedAIChat
                   autoReportTrigger={{ shouldGenerate: false }}
                   allMessages={enhancedMessages}
@@ -505,11 +506,12 @@ export default function AIWorkspace({ mode, onClose }: AIWorkspaceProps) {
                   queuedQueries={queuedQueries}
                   removeQueuedQuery={removeQueuedQuery}
                 />
-              ) : (
+              </Activity>
+              <Activity mode={selectedFunction !== 'chat' ? 'visible' : 'hidden'}>
                 <div className="h-full p-0">
                   <AIContentArea selectedFunction={selectedFunction} />
                 </div>
-              )}
+              </Activity>
             </AIErrorBoundary>
           </div>
         </div>

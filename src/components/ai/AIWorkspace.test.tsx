@@ -3,6 +3,7 @@
  */
 
 import { fireEvent, render, screen } from '@testing-library/react';
+import { useState } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import AIWorkspace from '@/components/ai/AIWorkspace';
 
@@ -95,7 +96,18 @@ vi.mock('@/components/ai/AIAssistantIconPanel', () => ({
 }));
 
 vi.mock('@/components/ai/AIContentArea', () => ({
-  default: () => <div data-testid="ai-content-area">Content Area</div>,
+  default: ({ selectedFunction }: { selectedFunction: string }) => {
+    const [count, setCount] = useState(0);
+
+    return (
+      <div data-testid="ai-content-area">
+        <div data-testid="ai-content-function">{selectedFunction}</div>
+        <button type="button" onClick={() => setCount((value) => value + 1)}>
+          content-count:{count}
+        </button>
+      </div>
+    );
+  },
 }));
 
 vi.mock('@/components/ai/ThinkingProcessVisualizer', () => ({
@@ -305,5 +317,31 @@ describe('AIWorkspace', () => {
     expect(lastCall?.webSearchEnabled).toBe(true);
     expect(lastCall?.ragEnabled).toBe(true);
     expect(lastCall?.queuedQueries).toEqual([{ id: 1, text: 'queued' }]);
+  });
+
+  it('preserves fullscreen Analyst state when switching to chat and back', () => {
+    render(<AIWorkspace mode="fullscreen" />);
+
+    fireEvent.click(
+      screen.getByRole('button', { name: /이상감지\/예측\s+Analyst Agent/i })
+    );
+    fireEvent.click(
+      screen.getByRole('button', { name: 'content-count:0' })
+    );
+
+    expect(screen.getByTestId('ai-content-function')).toHaveTextContent(
+      'intelligent-monitoring'
+    );
+    expect(screen.getByRole('button', { name: 'content-count:1' })).toBeDefined();
+
+    fireEvent.click(screen.getByRole('button', { name: /AI Chat\s+NLQ Agent/i }));
+    fireEvent.click(
+      screen.getByRole('button', { name: /이상감지\/예측\s+Analyst Agent/i })
+    );
+
+    expect(screen.getByTestId('ai-content-function')).toHaveTextContent(
+      'intelligent-monitoring'
+    );
+    expect(screen.getByRole('button', { name: 'content-count:1' })).toBeDefined();
   });
 });
