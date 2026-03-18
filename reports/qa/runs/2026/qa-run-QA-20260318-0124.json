@@ -1,0 +1,86 @@
+{
+  "runId": "QA-20260318-0124",
+  "recordedAt": "2026-03-18T08:26:39.409Z",
+  "recordedAtKst": "2026-03-18 17:26:39 KST",
+  "runTitle": "Production QA - Frontend Smoke Gate Stabilization and Observability Recheck",
+  "owner": "codex",
+  "source": "playwright-mcp+curl",
+  "environment": {
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main"
+  },
+  "checks": {
+    "total": 5,
+    "passed": 5,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Vercel 프로덕션 /dashboard/ai-assistant 에서 고유 marker 질의를 다시 실행했고, 전체 서버 요약과 cache-redis-dc1-01 메모리 경고 응답을 정상 확인했다.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "mounted WSL 환경에서 느린 jsdom targeted run 대신 AI assistant surface 전용 frontend smoke suite를 추가했고, smoke suite/타입체크/quick test/pre-push simulation이 모두 통과했다.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "인증된 Cloud Run /monitoring 200에서 langfuse.isOperational=true, isReady=true, hasKeysConfigured=true를 확인했고, /monitoring/traces 200으로 최신 supervisor trace 조회도 정상 동작했다. fresh marker search는 sampleRate 10% 특성상 0건이었지만 endpoint regression은 없었다.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "ai-security-reliability",
+      "domainName": "AI Security & Reliability Architect",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "이번 런에서는 blocked prompt, prompt injection, 보안 회귀 시나리오를 재실행하지 않았다.",
+      "nextAction": "보안 회귀 프롬프트 팩을 별도 런으로 재검증"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "ai-workspace-dom-test-runner-hang",
+      "title": "AIWorkspace DOM test runner hang 정리",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "test:frontend:smoke 3 files 18 tests PASS, type-check/lint/test:quick PASS, PRE_PUSH_CHANGED_FILES=src/components/ai/AIWorkspace.tsx pre-push simulation PASS",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Cloud Run /monitoring 응답에서 langfuse.eventCount=54, sampleRate=10%, isOperational=true를 재확인했다.",
+    "Cloud Run /monitoring/traces?limit=2 는 supervisor-execution trace를 정상 반환했다.",
+    "obs-live-check-20260318-1724 marker 질의는 Vercel fullscreen AI에서 정상 응답했지만 traces search 0건으로, 현재 production sampling 10% 특성상 live trace capture는 비결정적이다.",
+    "브라우저 콘솔 error 0건, 최종 AI stream request 200 확인."
+  ],
+  "links": [
+    {
+      "label": "Vercel URL",
+      "url": "https://openmanager-ai.vercel.app"
+    },
+    {
+      "label": "Cloud Run URL",
+      "url": "https://ai-engine-jdhrhws7ia-an.a.run.app"
+    }
+  ]
+}

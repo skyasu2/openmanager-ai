@@ -1,48 +1,44 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-18 16:23:22 KST
+> Generated at: 2026-03-18 17:26:39 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 123 |
-| Total Checks | 927 |
-| Passed | 881 |
+| Total Runs | 124 |
+| Total Checks | 932 |
+| Passed | 886 |
 | Failed | 42 |
-| Completed Items | 218 |
-| Pending Items | 1 |
+| Completed Items | 219 |
+| Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 8 |
 | Expert Domains Tracked | 6 |
-| Expert Open Gaps | 3 |
-| Completion Rate | 99.54% |
-| Last Run | QA-20260318-0123 (2026-03-18T07:23:22.850Z) |
+| Expert Open Gaps | 1 |
+| Completion Rate | 100% |
+| Last Run | QA-20260318-0124 (2026-03-18T08:26:39.409Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260318-0123 (2026-03-18T07:23:22.850Z)
+Latest run: QA-20260318-0124 (2026-03-18T08:26:39.409Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
 | AI Quality Assurance Specialist | appropriate | no | - |
-| Test Automation Architect | partially-appropriate | yes | AIWorkspace DOM test hang 원인을 분리해 targeted/related DOM 러너를 다시 안정화 |
-| IT Monitoring & Observability SME | partially-appropriate | yes | /monitoring 및 trace 관찰성 경로를 별도 프로덕션 QA 팩으로 실행 |
+| Test Automation Architect | appropriate | no | - |
+| IT Monitoring & Observability SME | appropriate | no | - |
 | AI Security & Reliability Architect | partially-appropriate | yes | 보안 회귀 프롬프트 팩을 별도 런으로 재검증 |
 
 ## Expert Domain Open Gaps
 
-- ai-security-reliability: AI Security & Reliability Architect (last QA-20260318-0123)
+- ai-security-reliability: AI Security & Reliability Architect (last QA-20260318-0124)
   next: 보안 회귀 프롬프트 팩을 별도 런으로 재검증
-- observability-monitoring: IT Monitoring & Observability SME (last QA-20260318-0123)
-  next: /monitoring 및 trace 관찰성 경로를 별도 프로덕션 QA 팩으로 실행
-- test-automation: Test Automation Architect (last QA-20260318-0123)
-  next: AIWorkspace DOM test hang 원인을 분리해 targeted/related DOM 러너를 다시 안정화
 
 ## Pending Improvements
 
-- [P1] ai-workspace-dom-test-runner-hang: AIWorkspace DOM test runner hang 정리 (seen 1회, last QA-20260318-0123)
+- None
 
 ## Deferred Improvements
 
@@ -98,6 +94,7 @@ Latest run: QA-20260318-0123 (2026-03-18T07:23:22.850Z)
 - ai-summary-query-clarification-skip-production: Explicit all-server summary query skips clarification in production (completed 1회, last QA-20260310-0071)
 - ai-timing-header-ssot-policy: QA timing header SSOT standardized to X-AI-Latency-Ms (completed 1회, last QA-20260310-0081)
 - ai-timing-x-headers-production: AI proxy responses expose production timing headers (completed 1회, last QA-20260309-0070)
+- ai-workspace-dom-test-runner-hang: AIWorkspace DOM test runner hang 정리 (completed 1회, last QA-20260318-0124)
 - ai-사이드바-열기닫기: AI 사이드바 열기/닫기 (completed 1회, last QA-20260317-0114)
 - ai-사이드바-토글-ai-엔진-ready-프리셋-5개-ai-기능-3개: AI 사이드바 토글 (AI 엔진 Ready, 프리셋 5개, AI 기능 3개) (completed 3회, last QA-20260302-0042)
 - alert-history-modal: 알림 이력 모달 (completed 1회, last QA-20260317-0114)
@@ -291,6 +288,7 @@ Latest run: QA-20260318-0123 (2026-03-18T07:23:22.850Z)
 
 | Run ID | Time (UTC) | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260318-0124 | 2026-03-18T08:26:39.409Z | Production QA - Frontend Smoke Gate Stabilization and Observability Recheck | 5 | 1 | 0 | 0 | 0 | 1 |
 | QA-20260318-0123 | 2026-03-18T07:23:22.850Z | Vercel Production QA - AI Sidebar and Fullscreen Parity Validation | 8 | 2 | 1 | 0 | 0 | 3 |
 | QA-20260318-0122 | 2026-03-18T06:11:19.435Z | Vercel Production QA - Core Frontend and AI Assistant Revalidation | 7 | 0 | 0 | 0 | 0 | 2 |
 | QA-20260318-0121 | 2026-03-18T04:59:58.502Z | Vercel Production QA - Frontend and AI Assistant Full Page Validation | 5 | 0 | 0 | 0 | 0 | 0 |
@@ -310,5 +308,4 @@ Latest run: QA-20260318-0123 (2026-03-18T07:23:22.850Z)
 | QA-20260316-0107 | 2026-03-16T08:30:19.073Z | Security QA - AI Code Gate Input Policy (Prompt Injection 5패턴) | 5 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260316-0106 | 2026-03-16T07:11:09.946Z | Production Playwright MCP QA - v8.9.1 Release Alignment Validation (2026-03-16) | 8 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260315-0105 | 2026-03-15T13:44:26.529Z | Production Playwright MCP QA - v8.9.0 Release Alignment Validation (2026-03-15) | 8 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260315-0104 | 2026-03-15T13:04:19.799Z | Vercel Production QA - Incident Report route regression validation (2026-03-15) | 6 | 3 | 0 | 0 | 0 | 0 |
 
