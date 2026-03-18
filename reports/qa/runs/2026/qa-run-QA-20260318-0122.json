@@ -1,0 +1,69 @@
+{
+  "runId": "QA-20260318-0122",
+  "recordedAt": "2026-03-18T06:11:19.435Z",
+  "recordedAtKst": "2026-03-18 15:11:19 KST",
+  "runTitle": "Vercel Production QA - Core Frontend and AI Assistant Revalidation",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main"
+  },
+  "checks": {
+    "total": 7,
+    "passed": 7,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Vercel 프로덕션에서 랜딩 초기화, 설명 모달 4종, 게스트 시스템 시작, /system-boot에서 /dashboard 전환, AI 어시스턴트 사이드바 및 전체 화면 진입, 핵심 NLQ 질의 응답을 실브라우저로 재검증했다.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Playwright MCP 세션으로 핵심 사용자 흐름을 끝까지 실행했고, 브라우저 콘솔 에러 0건과 주요 네트워크 요청 200/202 응답을 함께 확인했다.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "이번 런은 코어 프런트엔드 및 AI 질의 재검증 중심이었고 /monitoring, /monitoring/traces, Langfuse trace 확인은 범위에 포함하지 않았다.",
+      "nextAction": "/monitoring 및 trace 관찰성 경로를 별도 프로덕션 QA 팩으로 실행"
+    },
+    {
+      "domainId": "ai-security-reliability",
+      "domainName": "AI Security & Reliability Architect",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "이번 런에서는 blocked prompt, prompt injection, 보안 회귀 시나리오를 재실행하지 않았다.",
+      "nextAction": "보안 회귀 프롬프트 팩을 별도 런으로 재검증"
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "랜딩 페이지 설명 모달 4종이 모두 정상적으로 열리고 닫혔다.",
+    "게스트 시스템 시작 후 /system-boot에서 /dashboard로 정상 전환되었다.",
+    "대시보드에서 총 15대, 온라인 14대, 경고 1대, 위험 0대, 오프라인 0대가 렌더링되었다.",
+    "AI 어시스턴트가 전체 서버 상태 요약 질의에 대해 cache-redis-dc1-01 메모리 83% 경고를 포함한 응답을 반환했다.",
+    "이번 런은 observability/security 보강 팩 없이 코어 경로 재검증에 집중했다."
+  ],
+  "links": [
+    {
+      "label": "Vercel URL",
+      "url": "https://openmanager-ai.vercel.app"
+    }
+  ]
+}

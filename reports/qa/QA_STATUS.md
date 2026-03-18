@@ -1,41 +1,48 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-18 13:59:58 KST
+> Generated at: 2026-03-18 16:23:22 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 121 |
-| Total Checks | 912 |
-| Passed | 866 |
+| Total Runs | 123 |
+| Total Checks | 927 |
+| Passed | 881 |
 | Failed | 42 |
-| Completed Items | 216 |
-| Pending Items | 0 |
+| Completed Items | 218 |
+| Pending Items | 1 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 8 |
 | Expert Domains Tracked | 6 |
-| Expert Open Gaps | 0 |
-| Completion Rate | 100% |
-| Last Run | QA-20260318-0121 (2026-03-18T04:59:58.502Z) |
+| Expert Open Gaps | 3 |
+| Completion Rate | 99.54% |
+| Last Run | QA-20260318-0123 (2026-03-18T07:23:22.850Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260318-0121 (2026-03-18T04:59:58.502Z)
+Latest run: QA-20260318-0123 (2026-03-18T07:23:22.850Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
 | AI Quality Assurance Specialist | appropriate | no | - |
-| Test Automation Architect | appropriate | no | - |
+| Test Automation Architect | partially-appropriate | yes | AIWorkspace DOM test hang 원인을 분리해 targeted/related DOM 러너를 다시 안정화 |
+| IT Monitoring & Observability SME | partially-appropriate | yes | /monitoring 및 trace 관찰성 경로를 별도 프로덕션 QA 팩으로 실행 |
+| AI Security & Reliability Architect | partially-appropriate | yes | 보안 회귀 프롬프트 팩을 별도 런으로 재검증 |
 
 ## Expert Domain Open Gaps
 
-- None
+- ai-security-reliability: AI Security & Reliability Architect (last QA-20260318-0123)
+  next: 보안 회귀 프롬프트 팩을 별도 런으로 재검증
+- observability-monitoring: IT Monitoring & Observability SME (last QA-20260318-0123)
+  next: /monitoring 및 trace 관찰성 경로를 별도 프로덕션 QA 팩으로 실행
+- test-automation: Test Automation Architect (last QA-20260318-0123)
+  next: AIWorkspace DOM test hang 원인을 분리해 targeted/related DOM 러너를 다시 안정화
 
 ## Pending Improvements
 
-- None
+- [P1] ai-workspace-dom-test-runner-hang: AIWorkspace DOM test runner hang 정리 (seen 1회, last QA-20260318-0123)
 
 ## Deferred Improvements
 
@@ -62,6 +69,8 @@ Latest run: QA-20260318-0121 (2026-03-18T04:59:58.502Z)
 ## Completed Improvements
 
 - ai-analyst-success: Analyst Agent 이상감지/예측 성공 (completed 2회, last QA-20260314-0097)
+- ai-assistant-fullscreen-query-path: AI 전체 화면 핵심 서버 상태 요약 질의 검증 (completed 1회, last QA-20260318-0123)
+- ai-assistant-fullscreen-tools-parity: AI 전체 화면 도구 메뉴 parity 검증 (completed 1회, last QA-20260318-0123)
 - ai-chat-cloud-run-500: AI Chat Cloud Run 자유입력 응답 - 최종 성공 확인 (completed 1회, last QA-20260310-0089)
 - ai-chat-empty-response: AI Chat 서버 상태 요약 질문에 빈 응답 반환 (completed 1회, last QA-20260315-0100)
 - ai-chat-latency-regression-recheck-20260310: AI Chat latency regression claim rechecked on production (completed 1회, last QA-20260310-0071)
@@ -282,6 +291,8 @@ Latest run: QA-20260318-0121 (2026-03-18T04:59:58.502Z)
 
 | Run ID | Time (UTC) | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260318-0123 | 2026-03-18T07:23:22.850Z | Vercel Production QA - AI Sidebar and Fullscreen Parity Validation | 8 | 2 | 1 | 0 | 0 | 3 |
+| QA-20260318-0122 | 2026-03-18T06:11:19.435Z | Vercel Production QA - Core Frontend and AI Assistant Revalidation | 7 | 0 | 0 | 0 | 0 | 2 |
 | QA-20260318-0121 | 2026-03-18T04:59:58.502Z | Vercel Production QA - Frontend and AI Assistant Full Page Validation | 5 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260317-0120 | 2026-03-17T10:36:51.489Z | Vercel Playwright QA - landing profile bootstrap flicker recheck | 4 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260317-0119 | 2026-03-17T08:41:53.635Z | Vercel Playwright QA - guest boot, dashboard, AI stream, feedback, landing bootstrap state | 10 | 1 | 0 | 1 | 0 | 1 |
@@ -300,6 +311,4 @@ Latest run: QA-20260318-0121 (2026-03-18T04:59:58.502Z)
 | QA-20260316-0106 | 2026-03-16T07:11:09.946Z | Production Playwright MCP QA - v8.9.1 Release Alignment Validation (2026-03-16) | 8 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260315-0105 | 2026-03-15T13:44:26.529Z | Production Playwright MCP QA - v8.9.0 Release Alignment Validation (2026-03-15) | 8 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260315-0104 | 2026-03-15T13:04:19.799Z | Vercel Production QA - Incident Report route regression validation (2026-03-15) | 6 | 3 | 0 | 0 | 0 | 0 |
-| QA-20260315-0103 | 2026-03-15T12:13:45.149Z | Production Playwright MCP QA - Post-Cloud-Run Deploy Validation (2026-03-15) | 8 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260315-0102 | 2026-03-15T07:15:29.358Z | Storybook QA - lock sync + smoke/build validation | 3 | 3 | 0 | 0 | 0 | 0 |
 
