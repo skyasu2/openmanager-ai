@@ -25,6 +25,9 @@ npm run test:e2e
 
 # 외부 의존 시나리오만 분리 실행 (@external 태그)
 npm run test:e2e:external
+
+# 수동 parity 검증 (sidebar + fullscreen state retention)
+npm run test:vercel:ai-retention
 ```
 
 > `test:e2e:external`는 `--pass-with-no-tests` 설정으로, `@external` 케이스가 없으면 0건 통과로 종료됩니다.
@@ -40,6 +43,8 @@ npm run test:e2e:external
 - 120~180초 이상 대기를 전제로 한 테스트
 
 필요 시 해당 검증은 운영 점검 창구에서 수동 1회 스모크로 수행합니다.
+
+`npm run test:vercel:ai-retention` 는 이 수동 스모크 경로를 자동화한 전용 스크립트입니다.
 
 ---
 
