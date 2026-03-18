@@ -1,45 +1,41 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-18 23:50:18 KST
+> Generated at: 2026-03-19 00:35:06 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 126 |
-| Total Checks | 947 |
-| Passed | 900 |
+| Total Runs | 127 |
+| Total Checks | 952 |
+| Passed | 905 |
 | Failed | 43 |
-| Completed Items | 222 |
-| Pending Items | 1 |
+| Completed Items | 223 |
+| Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 8 |
 | Expert Domains Tracked | 6 |
-| Expert Open Gaps | 2 |
-| Completion Rate | 99.55% |
-| Last Run | QA-20260318-0126 (2026-03-18T14:50:18.155Z) |
+| Expert Open Gaps | 0 |
+| Completion Rate | 100% |
+| Last Run | QA-20260319-0127 (2026-03-18T15:35:06.423Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260318-0126 (2026-03-18T14:50:18.155Z)
+Latest run: QA-20260319-0127 (2026-03-18T15:35:06.423Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| AI Quality Assurance Specialist | partially-appropriate | yes | AIWorkspace/AIContentArea 경로에서 chat 왕복 후 Analyst state persistence를 유지하도록 수정하고 재검증 |
-| Test Automation Architect | partially-appropriate | yes | workspace-level DOM 또는 Playwright 회귀 테스트로 chat 전환 후 Analyst/Reporter 상태 보존을 추가 |
-| AI Security & Reliability Architect | appropriate | no | - |
+| AI Quality Assurance Specialist | appropriate | no | - |
+| Test Automation Architect | appropriate | no | - |
 
 ## Expert Domain Open Gaps
 
-- ai-quality-assurance: AI Quality Assurance Specialist (last QA-20260318-0126)
-  next: AIWorkspace/AIContentArea 경로에서 chat 왕복 후 Analyst state persistence를 유지하도록 수정하고 재검증
-- test-automation: Test Automation Architect (last QA-20260318-0126)
-  next: workspace-level DOM 또는 Playwright 회귀 테스트로 chat 전환 후 Analyst/Reporter 상태 보존을 추가
+- None
 
 ## Pending Improvements
 
-- [P1] analyst-state-loss-on-chat-switch: Analyst 선택 서버와 결과가 chat 전환 후 초기화 (seen 1회, last QA-20260318-0126)
+- None
 
 ## Deferred Improvements
 
@@ -107,6 +103,7 @@ Latest run: QA-20260318-0126 (2026-03-18T14:50:18.155Z)
 - analyst-normal-server-empty-state: Analyst 정상 서버 드릴다운 empty-state 의도/재현 판정 (completed 1회, last QA-20260310-0086)
 - analyst-quality-v880-quality-recheck: Analyst 전체 분석 및 드릴다운 품질 재검증 (completed 1회, last QA-20260308-0059)
 - analyst-quality-v880-recheck: Analyst 전체 분석 및 드릴다운 재검증 (completed 1회, last QA-20260308-0058)
+- analyst-state-loss-on-chat-switch: Analyst 선택 서버와 결과가 chat 전환 후 유지 (completed 1회, last QA-20260319-0127)
 - anomaly-detection-prediction: 이상감지/예측 15서버 전체 분석 (completed 1회, last QA-20260306-0051)
 - api-인증-검증-401-확인: API 인증 검증 401 확인 (completed 1회, last QA-20260301-0032)
 - auth-error-provider-copy: 인증 에러 라우트 메시지를 제공자-중립 표현으로 전환 (completed 1회, last QA-20260227-0010)
@@ -292,6 +289,7 @@ Latest run: QA-20260318-0126 (2026-03-18T14:50:18.155Z)
 
 | Run ID | Time (UTC) | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260319-0127 | 2026-03-18T15:35:06.423Z | Vercel Playwright QA - Analyst fullscreen chat retention recheck | 5 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260318-0126 | 2026-03-18T14:50:18.155Z | Vercel Playwright QA - Reporter and Analyst fullscreen state retention | 6 | 3 | 1 | 0 | 0 | 2 |
 | QA-20260318-0125 | 2026-03-18T10:29:22.769Z | Security QA - AI Code Gate Input Policy production recheck | 9 | 3 | 0 | 0 | 0 | 0 |
 | QA-20260318-0124 | 2026-03-18T08:26:39.409Z | Production QA - Frontend Smoke Gate Stabilization and Observability Recheck | 5 | 1 | 0 | 0 | 0 | 1 |
@@ -311,5 +309,4 @@ Latest run: QA-20260318-0126 (2026-03-18T14:50:18.155Z)
 | QA-20260316-0110 | 2026-03-16T10:33:55.207Z | Vercel Production QA - Full regression (랜딩~AI 응답~이력 유지) | 12 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260316-0109 | 2026-03-16T10:23:14.962Z | Security Regression Smoke - security-attack-regression-pack closure | 5 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260316-0108 | 2026-03-16T09:03:40.061Z | Vercel Production QA - Frontend and AI Assistant regression validation | 8 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260316-0107 | 2026-03-16T08:30:19.073Z | Security QA - AI Code Gate Input Policy (Prompt Injection 5패턴) | 5 | 1 | 0 | 0 | 0 | 0 |
 

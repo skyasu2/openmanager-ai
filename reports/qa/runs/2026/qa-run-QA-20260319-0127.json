@@ -1,0 +1,69 @@
+{
+  "runId": "QA-20260319-0127",
+  "recordedAt": "2026-03-18T15:35:06.423Z",
+  "recordedAtKst": "2026-03-19 00:35:06 KST",
+  "runTitle": "Vercel Playwright QA - Analyst fullscreen chat retention recheck",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "frontendUrl": "https://openmanager-ai.vercel.app"
+  },
+  "checks": {
+    "total": 5,
+    "passed": 5,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Vercel 프로덕션 전체 화면 AI Workspace에서 Analyst 단일 서버 선택, RAG 활성화, 분석 실행, chat 왕복 후 상태 유지까지 실제 사용자 경로를 재검증했고 회귀가 재현되지 않았다.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "workspace-level DOM 회귀 테스트 추가 후 동일 시나리오를 Playwright로 재검증해 Analyst state persistence 계약이 코드와 프로덕션 양쪽에서 일치함을 확인했다.",
+      "nextAction": ""
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "analyst-state-loss-on-chat-switch",
+      "title": "Analyst 선택 서버와 결과가 chat 전환 후 유지",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Playwright MCP: /dashboard/ai-assistant Analyst에서 api-was-dc1-01 선택 + RAG on + 분석 완료 후 chat으로 이동했다가 복귀해도 선택값, 결과 카드, 활성 RAG 상태가 유지됨",
+      "note": "AIWorkspace에서 chat/non-chat 영역을 Activity로 유지하도록 변경한 뒤 프로덕션에서 재검증 통과",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "PASS: Analyst에서 api-was-dc1-01 선택 후 chat 왕복에도 선택값이 유지됨",
+    "PASS: Analyst 분석 결과 카드가 chat 왕복 후에도 유지됨",
+    "PASS: RAG 활성 상태가 유지됨 (active class 확인)",
+    "PASS: browser console error 0건",
+    "PASS: 핵심 API /api/ai/intelligent-monitoring 200, /api/health?service=ai 200",
+    "NOTE: /api/sentry-tunnel 초기 abort 로그가 있었지만 사용자 경로와 기능 결과에는 영향 없음"
+  ],
+  "links": [
+    {
+      "label": "Vercel URL",
+      "url": "https://openmanager-ai.vercel.app"
+    }
+  ]
+}
