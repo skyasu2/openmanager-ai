@@ -2,6 +2,7 @@ name: Cleanup CI Artifacts
 
 # Playwright artifact 누적으로 Actions storage를 잠식하지 않도록
 # 오래된 진단 산출물만 주기적으로 정리한다.
+# schedule 실행은 리포지토리 변수 ENABLE_ACTIONS_SCHEDULES=true 일 때만 허용
 
 on:
   schedule:
@@ -16,6 +17,7 @@ jobs:
   cleanup-playwright-artifacts:
     name: Cleanup Playwright Artifacts
     runs-on: ubuntu-latest
+    if: github.event_name != 'schedule' || vars.ENABLE_ACTIONS_SCHEDULES == 'true'
     steps:
       - name: Delete old Playwright artifacts
         uses: actions/github-script@v7

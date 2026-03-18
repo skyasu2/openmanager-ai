@@ -16,6 +16,7 @@ import ThinkingProcessVisualizer from './ThinkingProcessVisualizer';
 // Lucide 아이콘 mock
 vi.mock('lucide-react', () => ({
   Activity: () => <div data-testid="icon-activity">Activity</div>,
+  AlertCircle: () => <div data-testid="icon-alert-circle">AlertCircle</div>,
   Brain: () => <div data-testid="icon-brain">Brain</div>,
   CheckCircle2: () => <div data-testid="icon-check-circle">CheckCircle</div>,
   Cloud: () => <div data-testid="icon-cloud">Cloud</div>,

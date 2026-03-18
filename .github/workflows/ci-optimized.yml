@@ -52,6 +52,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       ai_engine_changed: ${{ steps.scope.outputs.ai_engine_changed }}
+      frontend_changed: ${{ steps.scope.outputs.frontend_changed }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -61,6 +62,7 @@ jobs:
         run: |
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             echo "ai_engine_changed=true" >> "$GITHUB_OUTPUT"
+            echo "frontend_changed=true" >> "$GITHUB_OUTPUT"
             exit 0
           fi
 
@@ -81,6 +83,12 @@ jobs:
             echo "ai_engine_changed=true" >> "$GITHUB_OUTPUT"
           else
             echo "ai_engine_changed=false" >> "$GITHUB_OUTPUT"
+          fi
+
+          if echo "$CHANGED_FILES" | grep -Eq '^(src/|public/|tests/e2e/|playwright\.config\.(ts|js)|next\.config\.(ts|js|mjs)|tailwind\.config\.(ts|js)|postcss\.config\.(js|mjs)|package\.json|package-lock\.json|\.github/workflows/ci-optimized\.yml)'; then
+            echo "frontend_changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "frontend_changed=false" >> "$GITHUB_OUTPUT"
           fi
 
   # 🔍 정적 분석 (병렬 실행 1)
@@ -136,8 +144,13 @@ jobs:
   e2e-critical:
     name: E2E Critical
     runs-on: ubuntu-latest
-    needs: [code-quality, unit-tests]
-    if: ${{ github.event_name != 'push' || !contains(github.event.head_commit.message, '[skip ci]') }}
+    needs: [detect-scope, code-quality, unit-tests]
+    if: >-
+      (github.event_name != 'push' || !contains(github.event.head_commit.message, '[skip ci]')) &&
+      (
+        github.event_name == 'workflow_dispatch' ||
+        needs.detect-scope.outputs.frontend_changed == 'true'
+      )
     timeout-minutes: 20
     env:
       CI: true
@@ -215,6 +228,7 @@ jobs:
           SECURITY_RESULT="${{ needs.security-scan.result }}"
           CLOUD_RUN_UNIT_RESULT="${{ needs.cloud-run-unit.result }}"
           AI_ENGINE_CHANGED="${{ needs.detect-scope.outputs.ai_engine_changed }}"
+          FRONTEND_CHANGED="${{ needs.detect-scope.outputs.frontend_changed }}"
 
           failures=0
 
@@ -230,7 +244,11 @@ jobs:
           require_success "Detect Scope" "$DETECT_SCOPE_RESULT"
           require_success "Code Quality (Lint & Type)" "$CODE_QUALITY_RESULT"
           require_success "Unit Tests" "$UNIT_TEST_RESULT"
-          require_success "E2E Critical" "$E2E_RESULT"
+          if [ "$FRONTEND_CHANGED" = "true" ]; then
+            require_success "E2E Critical" "$E2E_RESULT"
+          else
+            echo "ℹ️ frontend_changed=false -> e2e-critical optional (result='$E2E_RESULT')"
+          fi
 
           if [ "$SECURITY_RESULT" != "success" ] && [ "$SECURITY_RESULT" != "skipped" ]; then
             echo "::error::Security Scan must be success or skipped, got '$SECURITY_RESULT'"
@@ -253,7 +271,7 @@ jobs:
         run: |
           echo "📊 CI/CD 결과 요약"
           echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-          echo "🔎 Scope 감지: ${{ needs.detect-scope.result }} (ai_engine_changed=${{ needs.detect-scope.outputs.ai_engine_changed }})"
+          echo "🔎 Scope 감지: ${{ needs.detect-scope.result }} (ai_engine_changed=${{ needs.detect-scope.outputs.ai_engine_changed }}, frontend_changed=${{ needs.detect-scope.outputs.frontend_changed }})"
           echo "🔍 정적 분석: ${{ needs.code-quality.result }}"
           echo "🧪 유닛 테스트: ${{ needs.unit-tests.result }}"
           echo "🎭 E2E 핵심 플로우: ${{ needs.e2e-critical.result }}"

@@ -21,7 +21,7 @@ vi.mock('./analysis', () => ({
     defaultExpanded?: boolean;
   }) => (
     <div>
-      <div>{server.serverName}</div>
+      <button type="button">{server.serverName}</button>
       <div>{defaultExpanded ? '상세 분석 접기' : '상세 분석 보기'}</div>
     </div>
   ),

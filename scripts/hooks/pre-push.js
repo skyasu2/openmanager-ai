@@ -42,6 +42,21 @@ let testStatus = 'pending';
 let typeCheckStatus = 'pending';
 let validationMode = 'standard';
 let selectedTestMode = 'quick';
+const DOM_INFRA_SMOKE_SENTINEL = 'src/test/setup.ts';
+
+const DOM_TEST_INFRA_PREFIXES = [
+  'config/testing/',
+];
+
+const DOM_TEST_INFRA_EXACT = new Set([
+  'package.json',
+  'scripts/dev/vitest-main-wrapper.js',
+  DOM_INFRA_SMOKE_SENTINEL,
+]);
+
+const HOOK_TEST_INFRA_EXACT = new Set([
+  'scripts/hooks/pre-push.js',
+]);
 
 function loadDomTestManifest() {
   const manifestPath = path.join(cwd, 'config/testing/dom-test-manifest.json');
@@ -135,6 +150,16 @@ function isRelatedSourceFile(filePath) {
   if (!normalized.startsWith('src/')) return false;
   if (!isJavaScriptSourceFile(normalized)) return false;
   return !isVitestTestFile(normalized);
+}
+
+function isDomTestInfraFile(filePath) {
+  const normalized = normalizeFilePath(filePath);
+  if (DOM_TEST_INFRA_EXACT.has(normalized)) return true;
+  return DOM_TEST_INFRA_PREFIXES.some((prefix) => normalized.startsWith(prefix));
+}
+
+function isHookTestInfraFile(filePath) {
+  return HOOK_TEST_INFRA_EXACT.has(normalizeFilePath(filePath));
 }
 
 function isZeroOid(oid) {
@@ -540,50 +565,96 @@ function classifyChangedTestRun(changedFilesResult) {
 
   const normalizedFiles = changedFilesResult.files.map(normalizeFilePath);
   const testFiles = normalizedFiles.filter((filePath) => isVitestTestFile(filePath));
+  const relatedSourceFiles = normalizedFiles.filter((filePath) =>
+    isRelatedSourceFile(filePath)
+  );
+  const domInfraFiles = normalizedFiles.filter((filePath) => isDomTestInfraFile(filePath));
+  const hookInfraFiles = normalizedFiles.filter((filePath) => isHookTestInfraFile(filePath));
+  const steps = [];
+  const summaryParts = [];
+  const guidance = [];
+  const scopeFiles = [];
 
   if (testFiles.length > 0) {
     const domTestFiles = testFiles.filter((filePath) => isDomTestFile(filePath));
     const nodeTestFiles = testFiles.filter((filePath) => !isDomTestFile(filePath));
 
     if (domTestFiles.length === testFiles.length) {
-      return {
-        mode: 'dom-targeted',
-        files: domTestFiles,
-        npmArgs: ['run', 'test:dom', '--', ...domTestFiles],
-      };
+      steps.push({
+        label: `Targeted DOM suite (${domTestFiles.length} file${domTestFiles.length > 1 ? 's' : ''})`,
+        args: ['run', 'test:dom', '--', ...domTestFiles],
+      });
+      summaryParts.push('targeted DOM');
+      guidance.push('npm run test:dom -- <changed test files>');
+      scopeFiles.push(...domTestFiles);
+    } else if (nodeTestFiles.length === testFiles.length) {
+      steps.push({
+        label: `Targeted node suite (${nodeTestFiles.length} file${nodeTestFiles.length > 1 ? 's' : ''})`,
+        args: ['run', 'test:node', '--', ...nodeTestFiles],
+      });
+      summaryParts.push('targeted node');
+      guidance.push('npm run test:node -- <changed test files>');
+      scopeFiles.push(...nodeTestFiles);
+    } else {
+      steps.push({
+        label: 'Quick smoke for mixed DOM/node test changes',
+        args: ['run', 'test:super-fast'],
+      });
+      summaryParts.push('mixed test quick smoke');
+      guidance.push('npm run test:super-fast');
+      scopeFiles.push(...testFiles);
     }
-
-    if (nodeTestFiles.length === testFiles.length) {
-      return {
-        mode: 'node-targeted',
-        files: nodeTestFiles,
-        npmArgs: ['run', 'test:node', '--', ...nodeTestFiles],
-      };
-    }
-
-    return {
-      mode: 'quick',
-      files: testFiles,
-      npmArgs: ['run', 'test:super-fast'],
-    };
   }
-
-  const relatedSourceFiles = normalizedFiles.filter((filePath) =>
-    isRelatedSourceFile(filePath)
-  );
 
   if (relatedSourceFiles.length > 0) {
-    return {
-      mode: 'source-related',
-      files: relatedSourceFiles,
-      npmArgsList: [
-        ['run', 'test:related:node', '--', ...relatedSourceFiles],
-        ['run', 'test:related:dom', '--', ...relatedSourceFiles],
-      ],
-    };
+    steps.push({
+      label: `Related node suite (${relatedSourceFiles.length} source file${relatedSourceFiles.length > 1 ? 's' : ''})`,
+      args: ['run', 'test:related:node', '--', ...relatedSourceFiles],
+    });
+    steps.push({
+      label: `Related DOM suite (${relatedSourceFiles.length} source file${relatedSourceFiles.length > 1 ? 's' : ''})`,
+      args: ['run', 'test:related:dom', '--', ...relatedSourceFiles],
+    });
+    summaryParts.push('source-related node + DOM');
+    guidance.push('npm run test:related:node -- <changed source files>');
+    guidance.push('npm run test:related:dom -- <changed source files>');
+    scopeFiles.push(...relatedSourceFiles);
+  } else if (
+    domInfraFiles.length > 0 &&
+    !scopeFiles.includes(DOM_INFRA_SMOKE_SENTINEL)
+  ) {
+    steps.push({
+      label: 'DOM infrastructure smoke',
+      args: ['run', 'test:related:dom', '--', DOM_INFRA_SMOKE_SENTINEL],
+    });
+    summaryParts.push('DOM infra smoke');
+    guidance.push(`npm run test:related:dom -- ${DOM_INFRA_SMOKE_SENTINEL}`);
+    scopeFiles.push(...domInfraFiles);
   }
 
-  return null;
+  if (
+    hookInfraFiles.length > 0 &&
+    steps.length === 0
+  ) {
+    steps.push({
+      label: 'Quick smoke for hook infrastructure changes',
+      args: ['run', 'test:quick'],
+    });
+    summaryParts.push('hook infra quick smoke');
+    guidance.push('npm run test:quick');
+    scopeFiles.push(...hookInfraFiles);
+  }
+
+  if (steps.length === 0) {
+    return null;
+  }
+
+  return {
+    mode: summaryParts.join(' + '),
+    files: Array.from(new Set(scopeFiles)),
+    steps,
+    guidance: Array.from(new Set(guidance)),
+  };
 }
 
 // Tests
@@ -606,50 +677,37 @@ function runTests(changedFilesResult) {
   }
 
   const targetedRun = classifyChangedTestRun(changedFilesResult);
-  let npmArgs = ['run', 'test:super-fast'];
-  let npmArgsList = null;
+  let steps = [
+    {
+      label: 'Quick smoke',
+      args: ['run', 'test:super-fast'],
+    },
+  ];
 
-  if (targetedRun?.mode === 'node-targeted') {
-    selectedTestMode = 'node-targeted';
-    npmArgs = targetedRun.npmArgs;
-    console.log(
-      `🧪 Running targeted node tests for changed files (${targetedRun.files.length})...`
-    );
-  } else if (targetedRun?.mode === 'dom-targeted') {
-    selectedTestMode = 'dom-targeted';
-    npmArgs = targetedRun.npmArgs;
-    console.log(
-      `🧪 Running targeted DOM tests for changed files (${targetedRun.files.length})...`
-    );
-  } else if (targetedRun?.mode === 'source-related') {
-    selectedTestMode = 'source-related';
-    npmArgsList = targetedRun.npmArgsList;
-    console.log(
-      `🧪 Running related Vitest checks for changed source files (${targetedRun.files.length})...`
-    );
+  if (targetedRun) {
+    selectedTestMode = targetedRun.mode;
+    steps = targetedRun.steps;
+    console.log(`🧪 Running ${targetedRun.mode} checks...`);
   } else {
     console.log('🧪 Running quick tests...');
   }
 
-  const success = Array.isArray(npmArgsList)
-    ? npmArgsList.every((args, index) => {
-        console.log(index === 0 ? '   → Related node suite' : '   → Related DOM suite');
-        return runNpm(args);
-      })
-    : runNpm(npmArgs);
+  const success = steps.every(({ args, label }) => {
+    if (label) {
+      console.log(`   → ${label}`);
+    }
+    return runNpm(args);
+  });
   if (success) {
     testStatus = 'passed';
   } else {
     testStatus = 'failed';
     console.log('❌ Tests failed - push blocked');
     console.log('');
-    if (selectedTestMode === 'node-targeted') {
-      console.log('💡 Fix: npm run test:node -- <changed test files>');
-    } else if (selectedTestMode === 'dom-targeted') {
-      console.log('💡 Fix: npm run test:dom -- <changed test files>');
-    } else if (selectedTestMode === 'source-related') {
-      console.log('💡 Fix: npm run test:related:node -- <changed source files>');
-      console.log('        npm run test:related:dom -- <changed source files>');
+    if (targetedRun?.guidance?.length) {
+      for (const guidance of targetedRun.guidance) {
+        console.log(`💡 Fix: ${guidance}`);
+      }
     } else {
       console.log('💡 Fix: npm run test:super-fast');
     }
@@ -771,12 +829,8 @@ function printSummary(duration) {
     console.log('  🐢 Mode: Full Build');
   }
   if (testStatus === 'passed') {
-    if (selectedTestMode === 'node-targeted') {
-      console.log('  ✅ Tests passed (targeted node)');
-    } else if (selectedTestMode === 'dom-targeted') {
-      console.log('  ✅ Tests passed (targeted DOM)');
-    } else if (selectedTestMode === 'source-related') {
-      console.log('  ✅ Tests passed (related node + DOM)');
+    if (selectedTestMode !== 'quick') {
+      console.log(`  ✅ Tests passed (${selectedTestMode})`);
     } else {
       console.log('  ✅ Tests passed');
     }

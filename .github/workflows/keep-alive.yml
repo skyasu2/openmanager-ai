@@ -2,6 +2,7 @@ name: Keep Services Alive
 
 # Supabase 무료 티어: 1주일 미사용 시 자동 Pause
 # 주 2회 ping으로 비활성화 방지
+# schedule 실행은 리포지토리 변수 ENABLE_ACTIONS_SCHEDULES=true 일 때만 허용
 
 on:
   schedule:
@@ -13,6 +14,7 @@ jobs:
   keep-alive:
     runs-on: ubuntu-latest
     timeout-minutes: 2
+    if: github.event_name != 'schedule' || vars.ENABLE_ACTIONS_SCHEDULES == 'true'
 
     steps:
       - name: Ping Supabase Database

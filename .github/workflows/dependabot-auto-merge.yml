@@ -4,6 +4,7 @@ name: Dependabot Auto-Merge
 # - 패치(patch) 업데이트만 자동 병합
 # - 마이너/메이저는 수동 승인 필요
 # - 기존 open PR도 주기적으로 backfill
+# - schedule backfill은 리포지토리 변수 ENABLE_ACTIONS_SCHEDULES=true 일 때만 허용
 #
 # 보안 참고:
 # - pull_request 경로: dependabot/fetch-metadata outputs 사용
@@ -162,7 +163,9 @@ jobs:
   reconcile-open-dependabot-prs:
     name: 🔁 Reconcile Open Dependabot PRs
     runs-on: ubuntu-latest
-    if: github.event_name != 'pull_request'
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'schedule' && vars.ENABLE_ACTIONS_SCHEDULES == 'true')
     timeout-minutes: 5
 
     steps:

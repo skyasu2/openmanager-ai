@@ -1,5 +1,7 @@
 name: Release Manual
 
+# schedule freshness check는 리포지토리 변수 ENABLE_ACTIONS_SCHEDULES=true 일 때만 허용
+
 on:
   schedule:
     # Weekly freshness check: Monday 09:00 UTC (18:00 KST)
@@ -31,7 +33,7 @@ concurrency:
 jobs:
   check-freshness:
     name: Release Freshness Check
-    if: github.event_name == 'schedule'
+    if: github.event_name == 'schedule' && vars.ENABLE_ACTIONS_SCHEDULES == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

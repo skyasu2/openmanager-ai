@@ -1,116 +1,80 @@
-# 🚀 Fast Track 배포 가이드
+# Fast Track CI Guide
 
 ## 개요
 
-개발 속도 향상을 위한 유연한 CI/CD 옵션들입니다. 급할 때는 검증을 스킵하고 즉시 배포 가능합니다.
+빠른 배포보다 중요한 것은 **불필요한 GitHub Actions 사용량을 늘리지 않는 것**입니다.
 
-## 🚀 New! 항상 성공하는 CI/CD
+- 표준 경로: 로컬 hook + scope-based GitHub Actions + Vercel 자동 배포
+- 비용 민감 작업: 수동 실행 우선
+- 비필수 schedule: 기본 off
 
-**중요 변경사항**: 이제 **모든 검증이 항상 성공**합니다! GitHub Actions도 항상 초록색 ✅ 표시!
+## 기본 원칙
 
-### 1. 완전 CI 스킵 (가장 빠름)
+- GitHub Actions를 "항상 성공하는 참고용 배경 작업"으로 취급하지 않습니다.
+- 필요한 게이트는 실제로 실패할 수 있어야 합니다.
+- 공개 저장소 무료 조건이 바뀌더라도 과도한 자동 실행량이 쌓이지 않도록 설계합니다.
+
+## 권장 경로
+
+### 1. 일반 개발
+
 ```bash
-git commit -m "fix: 긴급 수정 [skip ci]"
-```
-- GitHub Actions 완전 스킵
-- Vercel 배포만 실행  
-- **시간: 2-3분**
-
-### 2. 표준 배포 (기본, 권장)
-```bash
-git commit -m "feat: 새 기능 추가"  # 특별한 플래그 불필요
-```
-- 모든 검증 실행하되 **절대 실패하지 않음**
-- TypeScript, ESLint, 테스트, 빌드 모두 Non-blocking
-- **시간: 5-8분** (백그라운드 품질 체크)
-
-## 🎯 새로운 특징
-
-| 검증 항목 | 상태 | 실패 시 동작 | GitHub 표시 |
-|-----------|------|-------------|-------------|
-| TypeScript | ✅ 항상 성공 | 참고용 로그만 출력 | 💚 초록색 |
-| ESLint | ✅ 항상 성공 | 참고용 로그만 출력 | 💚 초록색 |
-| 테스트 | ✅ 항상 성공 | 참고용 로그만 출력 | 💚 초록색 |
-| 빌드 | ✅ 항상 성공 | 참고용 로그만 출력 | 💚 초록색 |
-
-## 배포 전략
-
-### 🎯 Primary: Vercel 배포
-- 실제 배포 플랫폼
-- 환경 변수 완전 지원
-- 즉시 반영
-
-### 🔄 Secondary: GitHub Actions
-- 품질 체크 (백그라운드)
-- 배포 차단하지 않음
-- 결과는 알림만
-
-### 📊 Monitoring
-- Vercel Analytics로 성능 모니터링
-- GitHub Actions 결과는 참고용
-- 실제 문제는 Vercel 로그 확인
-
-## ✨ 간소화된 사용법
-
-### 🚀 일반 개발 (권장)
-```bash
-# 그냥 평상시처럼 커밋하세요 - 절대 실패하지 않습니다!
-git commit -m "feat: 새 기능 추가"
-git push origin main  # ✅ 항상 성공
+git commit -m "feat: change"
+git push origin <branch>
 ```
 
-### ⚡ 초고속 배포 (긴급 시)
+- `ci-optimized.yml`가 scope 기반으로 필요한 job만 실행
+- 프런트엔드 변경이 있을 때만 `E2E Critical` 실행
+- AI Engine 변경이 있을 때만 Cloud Run unit/smoke 경로 실행
+
+### 2. 수동 고비용 검증
+
+다음은 필요할 때만 `workflow_dispatch`로 실행합니다.
+
+- `quality-gates.yml`
+- `prompt-eval.yml`
+- `release-manual.yml`
+- `keep-alive.yml`
+- `artifact-cleanup.yml`
+
+### 3. `[skip ci]` 사용 기준
+
 ```bash
-# CI 완전 스킵으로 2-3분 내 배포
-git commit -m "hotfix: 긴급 수정 [skip ci]"
-git push origin main  # 🚀 초고속
+git commit -m "docs: wording update [skip ci]"
 ```
 
-### 💡 핵심 철학 변화
-- **이전**: 검증 실패 → Push 차단 😤
-- **현재**: 검증 실패 → 경고만, 배포 계속 😎
-- **결과**: 스트레스 제로, 개발 속도 100% 향상
+허용 범위:
+- 문서/메타데이터만 바뀐 경우
+- 이미 로컬/수동 검증이 끝난 긴급 운영성 변경
 
-## 🎉 완벽한 초록색 CI/CD!
+지양:
+- 동작 변경이 포함된 일반 기능/버그 수정
+- E2E나 계약 테스트를 봐야 하는 변경
 
-### GitHub Actions는 이제 항상 성공 ✅
-- 💚 모든 단계가 초록색 표시
-- 📝 에러가 있어도 참고용 로그만 출력
-- ✅ GitHub에서도 성공으로 표시
-- 🚀 Vercel 배포는 당연히 진행
+## 비용 가드
 
-### Vercel 배포 실패 시 (드문 경우)
-- 환경 변수 안전 래퍼로 자동 처리
-- Mock 모드로 graceful fallback  
-- 실제 에러만 표시 (대부분 해결됨)
+### schedule 기본값
 
-## 📊 개선 효과
+비필수 스케줄 워크플로는 기본적으로 자동 실행되지 않습니다.
 
-### 완벽한 성공률
-- **GitHub Actions**: 100% 성공 (항상 초록색) 💚
-- **Push 성공률**: 100% (절대 차단 없음) ✅
-- **혼란 제거**: 빨간 X 표시 완전 제거 🎯
+활성화 조건:
+- Repository Variables → `ENABLE_ACTIONS_SCHEDULES=true`
 
-### 개발자 경험  
-- **스트레스**: 0% (모든 게 초록색) 😎
-- **배포 속도**: 최대 속도 유지 🚀  
-- **혼란**: 완전 제거 (Vercel과 일치) 💚
-- **생산성**: 최고 수준 달성 📈
+영향 받는 워크플로:
+- `codeql-analysis.yml`
+- `dependabot-auto-merge.yml`의 backfill job
+- `branch-cleanup.yml`
+- `keep-alive.yml`
+- `release-manual.yml` freshness check
+- `artifact-cleanup.yml`
 
-## 🛡️ 안전 장치는 유지
+### 중복 실행 방지
 
-✅ **여전히 보장되는 것들:**
-- Vercel 자체 빌드 검증 (진짜 에러만 차단)
-- 환경 변수 안전 래퍼 시스템
-- Mock 모드 자동 fallback
-- 품질 체크는 백그라운드에서 계속
+- `ci-optimized.yml`는 `concurrency.cancel-in-progress: true`
+- 같은 ref에서 새 푸시가 오면 이전 실행을 취소
 
-⚠️ **주의사항:**
-- 심각한 TypeScript 에러는 여전히 Vercel에서 차단 가능
-- 품질 체크 결과는 참고용으로 확인 권장
+## 운영 메모
 
----
-
-🎯 **완성된 철학**: "GitHub도 초록색, Vercel도 성공, 개발자도 행복"
-
-GitHub Actions의 빨간 X로 인한 혼란을 완전히 제거했습니다. 이제 GitHub과 Vercel 모두 성공 표시를 보여주므로, 개발자는 오직 코드에만 집중할 수 있습니다!
+- Vercel이 프런트엔드 배포의 권위 있는 빌드 경로입니다.
+- GitHub Actions는 배포와 별개로 품질/보안 게이트를 담당합니다.
+- larger runner, 상시 스케줄, 무차별 E2E 상시 실행은 추가하지 않습니다.

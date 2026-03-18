@@ -6,8 +6,10 @@ import { render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { EmergencyBanner } from './EmergencyBanner';
 
-const isEmergencyMode = vi.fn();
-const getEmergencyMessage = vi.fn();
+const { isEmergencyMode, getEmergencyMessage } = vi.hoisted(() => ({
+  isEmergencyMode: vi.fn(),
+  getEmergencyMessage: vi.fn(),
+}));
 
 vi.mock('@/lib/emergency-mode', () => ({
   emergencyMode: {

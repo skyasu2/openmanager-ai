@@ -3,6 +3,7 @@ name: CodeQL Analysis
 # SAST(Static Application Security Testing) 자동 분석
 # - PR/push 시 보안 취약점 감지
 # - 주 1회 정기 스캔
+# - 스케줄 실행은 리포지토리 변수 ENABLE_ACTIONS_SCHEDULES=true 일 때만 허용
 
 on:
   push:
@@ -30,6 +31,7 @@ jobs:
   analyze:
     name: CodeQL Analyze
     runs-on: ubuntu-latest
+    if: github.event_name != 'schedule' || vars.ENABLE_ACTIONS_SCHEDULES == 'true'
     steps:
       - uses: actions/checkout@v4
 
