@@ -1,7 +1,7 @@
 'use client';
 
 import { Bot, Cpu, User } from 'lucide-react';
-import { memo, useMemo } from 'react';
+import { memo, useMemo, useState } from 'react';
 import { AnalysisBasisBadge } from '@/components/ai/AnalysisBasisBadge';
 import { MessageActions } from '@/components/ai/MessageActions';
 import { WebSourceCards } from '@/components/ai/WebSourceCards';
@@ -32,6 +32,7 @@ export const MessageComponent = memo<{
   ) => Promise<boolean>;
   isLastMessage?: boolean;
 }>(({ message, onRegenerateResponse, onFeedback, isLastMessage }) => {
+  const [isDetailExpanded, setIsDetailExpanded] = useState(false);
   const agentSteps = useMemo(
     () => convertToAgentSteps(message.thinkingSteps),
     [message.thinkingSteps]
@@ -46,6 +47,12 @@ export const MessageComponent = memo<{
     }
     return resolveAssistantResponseView(message.content, message.metadata);
   }, [message.content, message.metadata, message.isStreaming, message.role]);
+  const isCollapsibleAssistantResponse = Boolean(
+    assistantResponseView?.shouldCollapse && assistantResponseView.details
+  );
+  const collapsibleResponse = isCollapsibleAssistantResponse
+    ? assistantResponseView
+    : null;
 
   // thinking 메시지일 경우 간소화된 인라인 상태 표시
   if (message.role === 'thinking' && message.thinkingSteps) {
@@ -104,37 +111,41 @@ export const MessageComponent = memo<{
             >
               {message.role === 'assistant' ? (
                 <div className="relative">
-                  {assistantResponseView?.shouldCollapse ? (
+                  {collapsibleResponse ? (
                     <div className="space-y-3">
                       <div className="rounded-xl border border-indigo-100 bg-indigo-50/40 p-3">
                         <p className="mb-2 text-2xs font-semibold uppercase tracking-wide text-indigo-500">
                           핵심 요약
                         </p>
                         <RenderMarkdownContent
-                          content={assistantResponseView.summary}
+                          content={collapsibleResponse.summary}
                           className="text-chat leading-relaxed break-words [overflow-wrap:anywhere]"
                         />
                       </div>
 
-                      <details className="group rounded-xl border border-slate-200 bg-slate-50/60 p-3">
-                        <summary className="flex cursor-pointer list-none items-center justify-between text-xs font-semibold text-slate-600 hover:text-slate-800">
+                      <div className="rounded-xl border border-slate-200 bg-slate-50/60 p-3">
+                        <button
+                          type="button"
+                          aria-expanded={isDetailExpanded}
+                          onClick={() =>
+                            setIsDetailExpanded((previousState) => !previousState)
+                          }
+                          className="flex w-full items-center justify-between text-left text-xs font-semibold text-slate-600 hover:text-slate-800"
+                        >
                           <span>상세 분석 보기</span>
-                          <span className="text-2xs text-slate-500 group-open:hidden">
-                            펼치기
+                          <span className="text-2xs text-slate-500">
+                            {isDetailExpanded ? '접기' : '펼치기'}
                           </span>
-                          <span className="hidden text-2xs text-slate-500 group-open:inline">
-                            접기
-                          </span>
-                        </summary>
-                        {assistantResponseView.details && (
+                        </button>
+                        {collapsibleResponse.details && isDetailExpanded && (
                           <div className="mt-3 border-t border-slate-200 pt-3">
                             <RenderMarkdownContent
-                              content={assistantResponseView.details}
+                              content={collapsibleResponse.details}
                               className="text-chat leading-relaxed break-words [overflow-wrap:anywhere]"
                             />
                           </div>
                         )}
-                      </details>
+                      </div>
                     </div>
                   ) : (
                     <div className="min-h-[44px] break-words [overflow-wrap:anywhere]">
