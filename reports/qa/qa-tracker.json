@@ -2,25 +2,25 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-03-18T15:35:06.423Z"
+    "updatedAt": "2026-03-18T16:45:23.733Z"
   },
   "sequence": {
-    "nextRunNumber": 128
+    "nextRunNumber": 129
   },
   "summary": {
-    "totalRuns": 127,
-    "totalChecks": 952,
-    "totalPassed": 905,
+    "totalRuns": 128,
+    "totalChecks": 958,
+    "totalPassed": 911,
     "totalFailed": 43,
     "completionRate": 100,
-    "completedItems": 223,
+    "completedItems": 225,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 8,
     "expertDomainsTracked": 6,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260319-0127",
-    "lastRecordedAt": "2026-03-18T15:35:06.423Z"
+    "lastRunId": "QA-20260319-0128",
+    "lastRecordedAt": "2026-03-18T16:45:23.733Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -4834,7 +4834,9 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0,
-      "aliases": ["esc-모달-닫기"],
+      "aliases": [
+        "esc-모달-닫기"
+      ],
       "owner": "",
       "lastEvidence": "Playwright MCP: ESC 키로 모달 닫기 동작 확인",
       "lastNote": "",
@@ -4858,7 +4860,9 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0,
-      "aliases": ["ai-chat-sidebar-open"],
+      "aliases": [
+        "ai-chat-sidebar-open"
+      ],
       "owner": "",
       "lastEvidence": "Playwright MCP: AI 어시스턴트 사이드바 열기/닫기 동작 확인",
       "lastNote": "",
@@ -4882,7 +4886,9 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0,
-      "aliases": ["프로덕션-대시보드-렌더링"],
+      "aliases": [
+        "프로덕션-대시보드-렌더링"
+      ],
       "owner": "",
       "lastEvidence": "Playwright MCP: 대시보드 전체 정상 렌더링 확인",
       "lastNote": "",
@@ -4906,7 +4912,9 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0,
-      "aliases": ["서버-모달-3탭-전환"],
+      "aliases": [
+        "서버-모달-3탭-전환"
+      ],
       "owner": "",
       "lastEvidence": "Playwright MCP: 종합상황/성능분석/로그&네트워크 3탭 전환 동작 확인",
       "lastNote": "",
@@ -5251,6 +5259,54 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-03-18T15:35:06.423Z"
+    },
+    "reporter-sidebar-state-retention-chat-switch": {
+      "id": "reporter-sidebar-state-retention-chat-switch",
+      "title": "Reporter 생성 결과가 sidebar chat 전환 후 유지",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260319-0128",
+      "firstSeenAt": "2026-03-18T16:45:23.733Z",
+      "lastSeenRunId": "QA-20260319-0128",
+      "lastSeenAt": "2026-03-18T16:45:23.733Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "codex",
+      "lastEvidence": "Playwright MCP: /dashboard 사이드바에서 Reporter로 보고서를 생성한 뒤 chat으로 이동했다가 Reporter로 복귀해도 보고서 카드와 카운트가 유지됨",
+      "lastNote": "실제 sidebar overlay 경로 parity 검증 통과",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-03-18T16:45:23.733Z"
+    },
+    "analyst-sidebar-state-retention-chat-switch": {
+      "id": "analyst-sidebar-state-retention-chat-switch",
+      "title": "Analyst 선택 서버와 결과가 sidebar chat 전환 후 유지",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260319-0128",
+      "firstSeenAt": "2026-03-18T16:45:23.733Z",
+      "lastSeenRunId": "QA-20260319-0128",
+      "lastSeenAt": "2026-03-18T16:45:23.733Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "codex",
+      "lastEvidence": "Playwright MCP: /dashboard 사이드바 Analyst에서 api-was-dc1-01 선택 + RAG on + 분석 완료 후 chat으로 이동했다가 복귀해도 선택값, 결과 카드, 활성 RAG 상태가 유지됨",
+      "lastNote": "실제 sidebar overlay 경로 parity 검증 통과",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-03-18T16:45:23.733Z"
     }
   },
   "runs": [
@@ -10554,6 +10610,44 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260319-0128",
+      "recordedAt": "2026-03-18T16:45:23.733Z",
+      "recordedAtKst": "2026-03-19 01:45:23 KST",
+      "title": "Vercel Playwright QA - Sidebar Reporter and Analyst chat retention parity",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260319-0128.json",
+      "checks": {
+        "total": 6,
+        "passed": 6,
+        "failed": 0
+      },
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "실제 대시보드 사이드바 오버레이 경로에서 Reporter와 Analyst가 chat 왕복 후에도 상태를 유지하는지 검증했고, 양쪽 모두 회귀가 재현되지 않았다.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "AISidebarV4 DOM 회귀 테스트 추가 후 동일 시나리오를 Playwright로 재검증해 sidebar와 fullscreen 모두 상태 유지 계약이 일치함을 확인했다.",
+          "nextAction": ""
+        }
+      ],
+      "expertCount": 2,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 2,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -10562,16 +10656,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 83,
-      "appropriateCount": 79,
+      "seenCount": 84,
+      "appropriateCount": 80,
       "partialCount": 4,
       "inappropriateCount": 0,
       "improvementNeededCount": 12,
-      "lastRunId": "QA-20260319-0127",
-      "lastSeenAt": "2026-03-18T15:35:06.423Z",
+      "lastRunId": "QA-20260319-0128",
+      "lastSeenAt": "2026-03-18T16:45:23.733Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Vercel 프로덕션 전체 화면 AI Workspace에서 Analyst 단일 서버 선택, RAG 활성화, 분석 실행, chat 왕복 후 상태 유지까지 실제 사용자 경로를 재검증했고 회귀가 재현되지 않았다.",
+      "lastRationale": "실제 대시보드 사이드바 오버레이 경로에서 Reporter와 Analyst가 chat 왕복 후에도 상태를 유지하는지 검증했고, 양쪽 모두 회귀가 재현되지 않았다.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -10630,16 +10724,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 76,
-      "appropriateCount": 70,
+      "seenCount": 77,
+      "appropriateCount": 71,
       "partialCount": 6,
       "inappropriateCount": 0,
       "improvementNeededCount": 8,
-      "lastRunId": "QA-20260319-0127",
-      "lastSeenAt": "2026-03-18T15:35:06.423Z",
+      "lastRunId": "QA-20260319-0128",
+      "lastSeenAt": "2026-03-18T16:45:23.733Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "workspace-level DOM 회귀 테스트 추가 후 동일 시나리오를 Playwright로 재검증해 Analyst state persistence 계약이 코드와 프로덕션 양쪽에서 일치함을 확인했다.",
+      "lastRationale": "AISidebarV4 DOM 회귀 테스트 추가 후 동일 시나리오를 Playwright로 재검증해 sidebar와 fullscreen 모두 상태 유지 계약이 일치함을 확인했다.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {

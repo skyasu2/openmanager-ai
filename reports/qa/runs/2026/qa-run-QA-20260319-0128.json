@@ -1,0 +1,82 @@
+{
+  "runId": "QA-20260319-0128",
+  "recordedAt": "2026-03-18T16:45:23.733Z",
+  "recordedAtKst": "2026-03-19 01:45:23 KST",
+  "runTitle": "Vercel Playwright QA - Sidebar Reporter and Analyst chat retention parity",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "frontendUrl": "https://openmanager-ai.vercel.app"
+  },
+  "checks": {
+    "total": 6,
+    "passed": 6,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "실제 대시보드 사이드바 오버레이 경로에서 Reporter와 Analyst가 chat 왕복 후에도 상태를 유지하는지 검증했고, 양쪽 모두 회귀가 재현되지 않았다.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "AISidebarV4 DOM 회귀 테스트 추가 후 동일 시나리오를 Playwright로 재검증해 sidebar와 fullscreen 모두 상태 유지 계약이 일치함을 확인했다.",
+      "nextAction": ""
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "reporter-sidebar-state-retention-chat-switch",
+      "title": "Reporter 생성 결과가 sidebar chat 전환 후 유지",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Playwright MCP: /dashboard 사이드바에서 Reporter로 보고서를 생성한 뒤 chat으로 이동했다가 Reporter로 복귀해도 보고서 카드와 카운트가 유지됨",
+      "note": "실제 sidebar overlay 경로 parity 검증 통과",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "analyst-sidebar-state-retention-chat-switch",
+      "title": "Analyst 선택 서버와 결과가 sidebar chat 전환 후 유지",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Playwright MCP: /dashboard 사이드바 Analyst에서 api-was-dc1-01 선택 + RAG on + 분석 완료 후 chat으로 이동했다가 복귀해도 선택값, 결과 카드, 활성 RAG 상태가 유지됨",
+      "note": "실제 sidebar overlay 경로 parity 검증 통과",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "PASS: Reporter 사이드바에서 첫 보고서 생성 후 chat 왕복에도 보고서 카드가 유지됨",
+    "PASS: Analyst 사이드바에서 api-was-dc1-01 선택 후 chat 왕복에도 선택값이 유지됨",
+    "PASS: Analyst 분석 결과 카드가 chat 왕복 후에도 유지됨",
+    "PASS: RAG 활성 상태가 유지됨 (active class 확인)",
+    "PASS: browser console error 0건",
+    "PASS: 핵심 API /api/ai/incident-report 200, /api/ai/intelligent-monitoring 200"
+  ],
+  "links": [
+    {
+      "label": "Vercel URL",
+      "url": "https://openmanager-ai.vercel.app"
+    }
+  ]
+}
