@@ -101,12 +101,13 @@ function loadDomTestManifest() {
 
 const DOM_TEST_MANIFEST = loadDomTestManifest();
 
-function runNpm(args) {
+function runNpm(args, envOverrides = null) {
   const result = spawnSync(npmCmd, args, {
     encoding: 'utf8',
     stdio: 'inherit',
     cwd,
     shell: isWindows,
+    env: envOverrides || process.env,
   });
   return result.status === 0;
 }
@@ -149,6 +150,15 @@ function isVitestTestFile(filePath) {
 
 function isJavaScriptSourceFile(filePath) {
   return /\.(js|jsx|ts|tsx)$/u.test(normalizeFilePath(filePath));
+}
+
+function isTypeCheckRelevantFile(filePath) {
+  const normalized = normalizeFilePath(filePath);
+  if (!/\.(ts|tsx)$/u.test(normalized)) return false;
+  return (
+    normalized === 'next-env.d.ts' ||
+    normalized.startsWith('src/')
+  );
 }
 
 function isDomTestFile(filePath) {
@@ -782,7 +792,7 @@ function runTests(changedFilesResult) {
 }
 
 // Build validation
-function runBuildValidation() {
+function runBuildValidation(changedFilesResult) {
   console.log('🏗️ Build validation...');
 
   if (SKIP_BUILD) {
@@ -819,13 +829,36 @@ function runBuildValidation() {
   }
 
   if (QUICK_PUSH) {
-    console.log('⚡ TypeScript 검증 (기본 모드)...');
-    const success = runNpm(['run', 'type-check']);
+    const typeCheckRelevantFiles = changedFilesResult.files.filter((filePath) =>
+      isTypeCheckRelevantFile(filePath)
+    );
+    const useChangedTypeCheck =
+      changedFilesResult.isKnown && typeCheckRelevantFiles.length > 0;
+
+    console.log(
+      useChangedTypeCheck
+        ? '⚡ TypeScript 증분 검증 (변경 범위)...'
+        : '⚡ TypeScript 검증 (기본 모드)...'
+    );
+
+    const extraEnv = useChangedTypeCheck
+      ? {
+          ...process.env,
+          PRE_PUSH_CHANGED_FILES: typeCheckRelevantFiles.join('\n'),
+        }
+      : null;
+
+    const success = runNpm(
+      useChangedTypeCheck ? ['run', 'type-check:changed'] : ['run', 'type-check'],
+      extraEnv
+    );
     if (!success) {
       typeCheckStatus = 'failed';
       console.log('❌ TypeScript 에러 - push blocked');
       console.log('');
-      console.log('💡 Fix: npm run type-check');
+      console.log(
+        `💡 Fix: ${useChangedTypeCheck ? 'npm run type-check:changed' : 'npm run type-check'}`
+      );
       console.log('');
       console.log('⚠️  Bypass: HUSKY=0 git push');
       process.exit(1);
@@ -959,7 +992,7 @@ function main() {
     runDocsArtifactValidation(changedFilesResult);
   } else {
     runTests(changedFilesResult);
-    runBuildValidation();
+    runBuildValidation(changedFilesResult);
     if (STRICT_PUSH_ENV) {
       checkEnvironment();
     }

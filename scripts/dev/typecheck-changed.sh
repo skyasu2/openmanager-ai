@@ -6,11 +6,16 @@ set -euo pipefail
 
 echo "🔍 Checking TypeScript project status..."
 
-# Git에서 변경된 파일 확인 (참고용)
-CHANGED_FILES=$(git diff --name-only --diff-filter=ACM HEAD 2>/dev/null | grep -E '\.(ts|tsx)$' || true)
-STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM 2>/dev/null | grep -E '\.(ts|tsx)$' || true)
+PRESET_FILES="${TYPECHECK_CHANGED_FILES:-${PRE_PUSH_CHANGED_FILES:-}}"
 
-ALL_CHANGED=$(echo -e "$CHANGED_FILES\n$STAGED_FILES" | sort -u | grep -v '^$' || true)
+if [ -n "$PRESET_FILES" ]; then
+  ALL_CHANGED=$(printf '%s\n' "$PRESET_FILES" | grep -E '\.(ts|tsx)$' | sort -u || true)
+else
+  # Git에서 변경된 파일 확인 (참고용)
+  CHANGED_FILES=$(git diff --name-only --diff-filter=ACM HEAD 2>/dev/null | grep -E '\.(ts|tsx)$' || true)
+  STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM 2>/dev/null | grep -E '\.(ts|tsx)$' || true)
+  ALL_CHANGED=$(echo -e "$CHANGED_FILES\n$STAGED_FILES" | sort -u | grep -v '^$' || true)
+fi
 
 if [ -z "$ALL_CHANGED" ]; then
   echo "✅ No TypeScript files changed. Skipping incremental check."
