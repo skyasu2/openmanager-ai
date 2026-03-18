@@ -23,7 +23,7 @@ scripts/
 │   ├── biome-wrapper.sh       # Biome 포맷터 래퍼
 │   ├── lint-changed.sh        # 변경 파일만 린트
 │   ├── tsc-wrapper.js         # TypeScript 체크 래퍼
-│   └── typecheck-changed.sh   # 변경 파일만 타입 체크
+│   └── typecheck-changed.sh   # 변경 감지 기반 증분 project 타입체크
 ├── docs/              # 문서 품질 관리
 │   ├── check-docs.sh          # 문서 품질 점검
 │   ├── doc-budget-report.js   # 문서 예산 리포트
@@ -78,7 +78,7 @@ bash scripts/ai/agent-bridge.sh --to codex "프롬프트"
 ### 개발 워크플로우
 
 ```bash
-# 변경 파일만 린트/타입체크 (빠른 피드백)
+# 변경 감지 기반 증분 린트/타입체크 (빠른 피드백)
 bash scripts/dev/lint-changed.sh
 bash scripts/dev/typecheck-changed.sh
 
