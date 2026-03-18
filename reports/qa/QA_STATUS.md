@@ -1,42 +1,45 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-18 19:29:24 KST
+> Generated at: 2026-03-18 23:50:18 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 125 |
-| Total Checks | 941 |
-| Passed | 895 |
-| Failed | 42 |
-| Completed Items | 219 |
-| Pending Items | 0 |
+| Total Runs | 126 |
+| Total Checks | 947 |
+| Passed | 900 |
+| Failed | 43 |
+| Completed Items | 222 |
+| Pending Items | 1 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 8 |
 | Expert Domains Tracked | 6 |
-| Expert Open Gaps | 0 |
-| Completion Rate | 100% |
-| Last Run | QA-20260318-0125 (2026-03-18T10:29:22.769Z) |
+| Expert Open Gaps | 2 |
+| Completion Rate | 99.55% |
+| Last Run | QA-20260318-0126 (2026-03-18T14:50:18.155Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260318-0125 (2026-03-18T10:29:22.769Z)
+Latest run: QA-20260318-0126 (2026-03-18T14:50:18.155Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
+| AI Quality Assurance Specialist | partially-appropriate | yes | AIWorkspace/AIContentArea 경로에서 chat 왕복 후 Analyst state persistence를 유지하도록 수정하고 재검증 |
+| Test Automation Architect | partially-appropriate | yes | workspace-level DOM 또는 Playwright 회귀 테스트로 chat 전환 후 Analyst/Reporter 상태 보존을 추가 |
 | AI Security & Reliability Architect | appropriate | no | - |
-| AI Quality Assurance Specialist | appropriate | no | - |
-| Test Automation Architect | appropriate | no | - |
 
 ## Expert Domain Open Gaps
 
-- None
+- ai-quality-assurance: AI Quality Assurance Specialist (last QA-20260318-0126)
+  next: AIWorkspace/AIContentArea 경로에서 chat 왕복 후 Analyst state persistence를 유지하도록 수정하고 재검증
+- test-automation: Test Automation Architect (last QA-20260318-0126)
+  next: workspace-level DOM 또는 Playwright 회귀 테스트로 chat 전환 후 Analyst/Reporter 상태 보존을 추가
 
 ## Pending Improvements
 
-- None
+- [P1] analyst-state-loss-on-chat-switch: Analyst 선택 서버와 결과가 chat 전환 후 초기화 (seen 1회, last QA-20260318-0126)
 
 ## Deferred Improvements
 
@@ -100,6 +103,7 @@ Latest run: QA-20260318-0125 (2026-03-18T10:29:22.769Z)
 - analyst-full-analysis-v879: Analyst 전체 분석 및 드릴다운 (completed 1회, last QA-20260306-0052)
 - analyst-full-analysis-v880: Analyst 전체 분석 및 드릴다운 검증 (completed 2회, last QA-20260309-0069)
 - analyst-full-analysis-v880-recheck-20260309: Analyst 전체 분석 경로 재검증 (completed 4회, last QA-20260309-0068)
+- analyst-fullscreen-single-server-rag: Analyst 단일 서버 + RAG 분석 경로 검증 (completed 1회, last QA-20260318-0126)
 - analyst-normal-server-empty-state: Analyst 정상 서버 드릴다운 empty-state 의도/재현 판정 (completed 1회, last QA-20260310-0086)
 - analyst-quality-v880-quality-recheck: Analyst 전체 분석 및 드릴다운 품질 재검증 (completed 1회, last QA-20260308-0059)
 - analyst-quality-v880-recheck: Analyst 전체 분석 및 드릴다운 재검증 (completed 1회, last QA-20260308-0058)
@@ -201,11 +205,13 @@ Latest run: QA-20260318-0125 (2026-03-18T10:29:22.769Z)
 - reporter-empty-cta-generate-v880: Reporter 빈 상태 CTA 생성 경로 검증 (completed 1회, last QA-20260308-0058)
 - reporter-empty-cta-generate-v880-quality-recheck: Reporter 빈 상태 CTA 생성 경로 재검증 (completed 1회, last QA-20260308-0059)
 - reporter-empty-cta-generate-v880-recheck-20260309: Reporter empty state CTA 생성 경로 재검증 (completed 4회, last QA-20260309-0068)
+- reporter-fullscreen-generate-path: Reporter 전체 화면 생성 경로 검증 (completed 1회, last QA-20260318-0126)
 - reporter-generate: Reporter 보고서 생성 (completed 1회, last QA-20260317-0114)
 - reporter-generate-detail-v879: Reporter 보고서 생성 및 상세보기 (completed 1회, last QA-20260306-0052)
 - reporter-generate-detail-v880: Reporter 생성 및 상세 렌더링 검증 (completed 2회, last QA-20260309-0069)
 - reporter-primary-generate-button-empty-state: Reporter 상단 생성 버튼 empty state 동작 정합성 (completed 2회, last QA-20260315-0104)
 - reporter-state-loss-on-tab-switch: Reporter 탭 전환 시 생성 결과 상태 유지 (completed 1회, last QA-20260315-0104)
+- reporter-state-retention-chat-switch: Reporter 생성 결과가 chat 전환 후 유지 (completed 1회, last QA-20260318-0126)
 - security-attack-regression-pack: 보안 공격 시나리오 회귀팩 구축 (completed 2회, last QA-20260318-0125)
 - server-card-expand: 서버 카드 상세 펼치기/접기 (completed 1회, last QA-20260317-0114)
 - server-detail-log-tab: 로그 & 네트워크 탭 (completed 1회, last QA-20260317-0114)
@@ -286,6 +292,7 @@ Latest run: QA-20260318-0125 (2026-03-18T10:29:22.769Z)
 
 | Run ID | Time (UTC) | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260318-0126 | 2026-03-18T14:50:18.155Z | Vercel Playwright QA - Reporter and Analyst fullscreen state retention | 6 | 3 | 1 | 0 | 0 | 2 |
 | QA-20260318-0125 | 2026-03-18T10:29:22.769Z | Security QA - AI Code Gate Input Policy production recheck | 9 | 3 | 0 | 0 | 0 | 0 |
 | QA-20260318-0124 | 2026-03-18T08:26:39.409Z | Production QA - Frontend Smoke Gate Stabilization and Observability Recheck | 5 | 1 | 0 | 0 | 0 | 1 |
 | QA-20260318-0123 | 2026-03-18T07:23:22.850Z | Vercel Production QA - AI Sidebar and Fullscreen Parity Validation | 8 | 2 | 1 | 0 | 0 | 3 |
@@ -305,5 +312,4 @@ Latest run: QA-20260318-0125 (2026-03-18T10:29:22.769Z)
 | QA-20260316-0109 | 2026-03-16T10:23:14.962Z | Security Regression Smoke - security-attack-regression-pack closure | 5 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260316-0108 | 2026-03-16T09:03:40.061Z | Vercel Production QA - Frontend and AI Assistant regression validation | 8 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260316-0107 | 2026-03-16T08:30:19.073Z | Security QA - AI Code Gate Input Policy (Prompt Injection 5패턴) | 5 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260316-0106 | 2026-03-16T07:11:09.946Z | Production Playwright MCP QA - v8.9.1 Release Alignment Validation (2026-03-16) | 8 | 0 | 0 | 0 | 0 | 0 |
 

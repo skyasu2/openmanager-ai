@@ -1,0 +1,117 @@
+{
+  "runId": "QA-20260318-0126",
+  "recordedAt": "2026-03-18T14:50:18.155Z",
+  "recordedAtKst": "2026-03-18 23:50:18 KST",
+  "runTitle": "Vercel Playwright QA - Reporter and Analyst fullscreen state retention",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "frontendUrl": "https://openmanager-ai.vercel.app"
+  },
+  "checks": {
+    "total": 6,
+    "passed": 5,
+    "failed": 1
+  },
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "Vercel 프로덕션 전체 화면 AI Workspace에서 Reporter/Analyst 실제 사용자 경로를 검증해 Reporter 생성 및 Analyst 분석 실행은 통과했지만, Analyst는 chat 전환 후 선택 서버와 결과가 초기화되는 상태 손실 회귀가 확인됐다.",
+      "nextAction": "AIWorkspace/AIContentArea 경로에서 chat 왕복 후 Analyst state persistence를 유지하도록 수정하고 재검증"
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "최근 DOM 테스트는 page-level state 계약을 잘 잡았지만, fullscreen workspace에서 chat 탭 왕복 시 Analyst state loss는 아직 자동 회귀로 잡지 못했다.",
+      "nextAction": "workspace-level DOM 또는 Playwright 회귀 테스트로 chat 전환 후 Analyst/Reporter 상태 보존을 추가"
+    },
+    {
+      "domainId": "ai-security-reliability",
+      "domainName": "AI Security & Reliability Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "이번 런의 범위는 보안이 아니라 fullscreen AI workflow 상태 유지였고, 브라우저 콘솔 error 0건과 핵심 API 200 응답으로 기능 경로 자체는 안정적으로 동작했다.",
+      "nextAction": ""
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "reporter-fullscreen-generate-path",
+      "title": "Reporter 전체 화면 생성 경로 검증",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Playwright MCP: /dashboard/ai-assistant Reporter에서 새 보고서 생성 후 보고서 카드와 영향 서버가 정상 렌더링됨",
+      "note": "실제 Vercel 프로덕션 전체 화면 경로 재검증 통과",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "reporter-state-retention-chat-switch",
+      "title": "Reporter 생성 결과가 chat 전환 후 유지",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Playwright MCP: Reporter에서 생성한 보고서 카드가 chat 왕복 후에도 그대로 유지됨",
+      "note": "module cache + workspace 경로에서 실제 유지 확인",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "analyst-fullscreen-single-server-rag",
+      "title": "Analyst 단일 서버 + RAG 분석 경로 검증",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Playwright MCP: api-was-dc1-01 선택, RAG on, 분석 시작 후 현재 상태/1시간 후 예측/AI 인사이트 렌더링 확인",
+      "note": "실제 Vercel 프로덕션 전체 화면 경로 재검증 통과",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [
+    {
+      "id": "analyst-state-loss-on-chat-switch",
+      "title": "Analyst 선택 서버와 결과가 chat 전환 후 초기화",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "Playwright MCP에서 fullscreen AI Workspace 기준으로 Analyst에서 api-was-dc1-01 선택 + RAG on + 분석 완료 후 chat으로 이동했다가 Analyst로 돌아오면 선택값이 전체 시스템으로 리셋되고 결과 카드가 사라짐",
+      "owner": "codex",
+      "status": "pending",
+      "policyNote": ""
+    }
+  ],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "PASS: /dashboard/ai-assistant Reporter에서 새 보고서 생성 후 카드와 영향 서버 정보가 정상 렌더링됨",
+    "PASS: Reporter 생성 결과는 chat 왕복 후에도 유지됨",
+    "PASS: Analyst에서 api-was-dc1-01 선택 + RAG on + 분석 시작 경로가 정상 동작하고 결과 카드가 렌더링됨",
+    "FAIL: Analyst는 chat 왕복 후 selected server가 전체 시스템으로 리셋되고 결과가 사라짐",
+    "PASS: browser console error 0건",
+    "PASS: 핵심 API /api/ai/incident-report 200, /api/ai/intelligent-monitoring 200"
+  ],
+  "links": [
+    {
+      "label": "Vercel URL",
+      "url": "https://openmanager-ai.vercel.app"
+    }
+  ]
+}

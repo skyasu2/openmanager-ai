@@ -2,25 +2,25 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-03-18T10:29:22.769Z"
+    "updatedAt": "2026-03-18T14:50:18.155Z"
   },
   "sequence": {
-    "nextRunNumber": 126
+    "nextRunNumber": 127
   },
   "summary": {
-    "totalRuns": 125,
-    "totalChecks": 941,
-    "totalPassed": 895,
-    "totalFailed": 42,
-    "completionRate": 100,
-    "completedItems": 219,
-    "pendingItems": 0,
+    "totalRuns": 126,
+    "totalChecks": 947,
+    "totalPassed": 900,
+    "totalFailed": 43,
+    "completionRate": 99.55,
+    "completedItems": 222,
+    "pendingItems": 1,
     "deferredItems": 0,
     "wontFixItems": 8,
     "expertDomainsTracked": 6,
-    "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260318-0125",
-    "lastRecordedAt": "2026-03-18T10:29:22.769Z"
+    "expertDomainsOpenGaps": 2,
+    "lastRunId": "QA-20260318-0126",
+    "lastRecordedAt": "2026-03-18T14:50:18.155Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -4834,7 +4834,9 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0,
-      "aliases": ["esc-모달-닫기"],
+      "aliases": [
+        "esc-모달-닫기"
+      ],
       "owner": "",
       "lastEvidence": "Playwright MCP: ESC 키로 모달 닫기 동작 확인",
       "lastNote": "",
@@ -4858,7 +4860,9 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0,
-      "aliases": ["ai-chat-sidebar-open"],
+      "aliases": [
+        "ai-chat-sidebar-open"
+      ],
       "owner": "",
       "lastEvidence": "Playwright MCP: AI 어시스턴트 사이드바 열기/닫기 동작 확인",
       "lastNote": "",
@@ -4882,7 +4886,9 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0,
-      "aliases": ["프로덕션-대시보드-렌더링"],
+      "aliases": [
+        "프로덕션-대시보드-렌더링"
+      ],
       "owner": "",
       "lastEvidence": "Playwright MCP: 대시보드 전체 정상 렌더링 확인",
       "lastNote": "",
@@ -4906,7 +4912,9 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0,
-      "aliases": ["서버-모달-3탭-전환"],
+      "aliases": [
+        "서버-모달-3탭-전환"
+      ],
       "owner": "",
       "lastEvidence": "Playwright MCP: 종합상황/성능분석/로그&네트워크 3탭 전환 동작 확인",
       "lastNote": "",
@@ -5155,6 +5163,102 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-03-18T08:26:39.409Z"
+    },
+    "reporter-fullscreen-generate-path": {
+      "id": "reporter-fullscreen-generate-path",
+      "title": "Reporter 전체 화면 생성 경로 검증",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260318-0126",
+      "firstSeenAt": "2026-03-18T14:50:18.155Z",
+      "lastSeenRunId": "QA-20260318-0126",
+      "lastSeenAt": "2026-03-18T14:50:18.155Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "codex",
+      "lastEvidence": "Playwright MCP: /dashboard/ai-assistant Reporter에서 새 보고서 생성 후 보고서 카드와 영향 서버가 정상 렌더링됨",
+      "lastNote": "실제 Vercel 프로덕션 전체 화면 경로 재검증 통과",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-03-18T14:50:18.155Z"
+    },
+    "reporter-state-retention-chat-switch": {
+      "id": "reporter-state-retention-chat-switch",
+      "title": "Reporter 생성 결과가 chat 전환 후 유지",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260318-0126",
+      "firstSeenAt": "2026-03-18T14:50:18.155Z",
+      "lastSeenRunId": "QA-20260318-0126",
+      "lastSeenAt": "2026-03-18T14:50:18.155Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "codex",
+      "lastEvidence": "Playwright MCP: Reporter에서 생성한 보고서 카드가 chat 왕복 후에도 그대로 유지됨",
+      "lastNote": "module cache + workspace 경로에서 실제 유지 확인",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-03-18T14:50:18.155Z"
+    },
+    "analyst-fullscreen-single-server-rag": {
+      "id": "analyst-fullscreen-single-server-rag",
+      "title": "Analyst 단일 서버 + RAG 분석 경로 검증",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260318-0126",
+      "firstSeenAt": "2026-03-18T14:50:18.155Z",
+      "lastSeenRunId": "QA-20260318-0126",
+      "lastSeenAt": "2026-03-18T14:50:18.155Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "codex",
+      "lastEvidence": "Playwright MCP: api-was-dc1-01 선택, RAG on, 분석 시작 후 현재 상태/1시간 후 예측/AI 인사이트 렌더링 확인",
+      "lastNote": "실제 Vercel 프로덕션 전체 화면 경로 재검증 통과",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-03-18T14:50:18.155Z"
+    },
+    "analyst-state-loss-on-chat-switch": {
+      "id": "analyst-state-loss-on-chat-switch",
+      "title": "Analyst 선택 서버와 결과가 chat 전환 후 초기화",
+      "priority": "P1",
+      "status": "pending",
+      "firstSeenRunId": "QA-20260318-0126",
+      "firstSeenAt": "2026-03-18T14:50:18.155Z",
+      "lastSeenRunId": "QA-20260318-0126",
+      "lastSeenAt": "2026-03-18T14:50:18.155Z",
+      "seenCount": 1,
+      "completedCount": 0,
+      "pendingCount": 1,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "codex",
+      "lastEvidence": "",
+      "lastNote": "Playwright MCP에서 fullscreen AI Workspace 기준으로 Analyst에서 api-was-dc1-01 선택 + RAG on + 분석 완료 후 chat으로 이동했다가 Analyst로 돌아오면 선택값이 전체 시스템으로 리셋되고 결과 카드가 사라짐",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-03-18T14:50:18.155Z"
     }
   },
   "runs": [
@@ -10374,6 +10478,52 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260318-0126",
+      "recordedAt": "2026-03-18T14:50:18.155Z",
+      "recordedAtKst": "2026-03-18 23:50:18 KST",
+      "title": "Vercel Playwright QA - Reporter and Analyst fullscreen state retention",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260318-0126.json",
+      "checks": {
+        "total": 6,
+        "passed": 5,
+        "failed": 1
+      },
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "partially-appropriate",
+          "improvementNeeded": true,
+          "rationale": "Vercel 프로덕션 전체 화면 AI Workspace에서 Reporter/Analyst 실제 사용자 경로를 검증해 Reporter 생성 및 Analyst 분석 실행은 통과했지만, Analyst는 chat 전환 후 선택 서버와 결과가 초기화되는 상태 손실 회귀가 확인됐다.",
+          "nextAction": "AIWorkspace/AIContentArea 경로에서 chat 왕복 후 Analyst state persistence를 유지하도록 수정하고 재검증"
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "partially-appropriate",
+          "improvementNeeded": true,
+          "rationale": "최근 DOM 테스트는 page-level state 계약을 잘 잡았지만, fullscreen workspace에서 chat 탭 왕복 시 Analyst state loss는 아직 자동 회귀로 잡지 못했다.",
+          "nextAction": "workspace-level DOM 또는 Playwright 회귀 테스트로 chat 전환 후 Analyst/Reporter 상태 보존을 추가"
+        },
+        {
+          "domainId": "ai-security-reliability",
+          "domainName": "AI Security & Reliability Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "이번 런의 범위는 보안이 아니라 fullscreen AI workflow 상태 유지였고, 브라우저 콘솔 error 0건과 핵심 API 200 응답으로 기능 경로 자체는 안정적으로 동작했다.",
+          "nextAction": ""
+        }
+      ],
+      "expertCount": 3,
+      "expertNeedsImprovementCount": 2,
+      "completedCount": 3,
+      "pendingCount": 1,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -10382,17 +10532,17 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 81,
+      "seenCount": 82,
       "appropriateCount": 78,
-      "partialCount": 3,
+      "partialCount": 4,
       "inappropriateCount": 0,
-      "improvementNeededCount": 11,
-      "lastRunId": "QA-20260318-0125",
-      "lastSeenAt": "2026-03-18T10:29:22.769Z",
-      "lastFit": "appropriate",
-      "lastImprovementNeeded": false,
-      "lastRationale": "실브라우저 기반 프로덕션 사용자 경로와 API smoke를 함께 검증해 보안 차단 UX와 정상 질의 응답 경로를 동시에 확인했다.",
-      "lastNextAction": ""
+      "improvementNeededCount": 12,
+      "lastRunId": "QA-20260318-0126",
+      "lastSeenAt": "2026-03-18T14:50:18.155Z",
+      "lastFit": "partially-appropriate",
+      "lastImprovementNeeded": true,
+      "lastRationale": "Vercel 프로덕션 전체 화면 AI Workspace에서 Reporter/Analyst 실제 사용자 경로를 검증해 Reporter 생성 및 Analyst 분석 실행은 통과했지만, Analyst는 chat 전환 후 선택 서버와 결과가 초기화되는 상태 손실 회귀가 확인됐다.",
+      "lastNextAction": "AIWorkspace/AIContentArea 경로에서 chat 왕복 후 Analyst state persistence를 유지하도록 수정하고 재검증"
     },
     "observability-monitoring": {
       "domainId": "observability-monitoring",
@@ -10416,16 +10566,16 @@
       "domainName": "AI Security & Reliability Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 40,
-      "appropriateCount": 28,
+      "seenCount": 41,
+      "appropriateCount": 29,
       "partialCount": 12,
       "inappropriateCount": 0,
       "improvementNeededCount": 12,
-      "lastRunId": "QA-20260318-0125",
-      "lastSeenAt": "2026-03-18T10:29:22.769Z",
+      "lastRunId": "QA-20260318-0126",
+      "lastSeenAt": "2026-03-18T14:50:18.155Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Vercel 프로덕션 전체 화면 AI Assistant에서 영어 지시 무시, 한국어 지시 무시, 역할 변경+지침 노출 패턴이 모두 차단됐고, 차단 UX는 raw JSON/internal security 문자열을 노출하지 않았다. 추가로 supervisor API smoke 5패턴(EN/KO/DAN/role-change/정상 질의)도 5/5 통과해 false positive 없이 회귀가 재발하지 않음을 확인했다.",
+      "lastRationale": "이번 런의 범위는 보안이 아니라 fullscreen AI workflow 상태 유지였고, 브라우저 콘솔 error 0건과 핵심 API 200 응답으로 기능 경로 자체는 안정적으로 동작했다.",
       "lastNextAction": ""
     },
     "sre-devops": {
@@ -10450,17 +10600,17 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 74,
+      "seenCount": 75,
       "appropriateCount": 69,
-      "partialCount": 5,
+      "partialCount": 6,
       "inappropriateCount": 0,
-      "improvementNeededCount": 7,
-      "lastRunId": "QA-20260318-0125",
-      "lastSeenAt": "2026-03-18T10:29:22.769Z",
-      "lastFit": "appropriate",
-      "lastImprovementNeeded": false,
-      "lastRationale": "Playwright MCP UI 검증과 npm 기반 supervisor smoke를 결합해 보안 회귀팩을 재현 가능하게 유지했다.",
-      "lastNextAction": ""
+      "improvementNeededCount": 8,
+      "lastRunId": "QA-20260318-0126",
+      "lastSeenAt": "2026-03-18T14:50:18.155Z",
+      "lastFit": "partially-appropriate",
+      "lastImprovementNeeded": true,
+      "lastRationale": "최근 DOM 테스트는 page-level state 계약을 잘 잡았지만, fullscreen workspace에서 chat 탭 왕복 시 Analyst state loss는 아직 자동 회귀로 잡지 못했다.",
+      "lastNextAction": "workspace-level DOM 또는 Playwright 회귀 테스트로 chat 전환 후 Analyst/Reporter 상태 보존을 추가"
     },
     "data-metrics-quality": {
       "domainId": "data-metrics-quality",
