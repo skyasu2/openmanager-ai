@@ -114,7 +114,9 @@ vi.mock('@/components/ai/AIAssistantIconPanel', () => ({
   default: ({
     onFunctionChange,
   }: {
-    onFunctionChange: (value: 'chat' | 'auto-report' | 'intelligent-monitoring') => void;
+    onFunctionChange: (
+      value: 'chat' | 'auto-report' | 'intelligent-monitoring'
+    ) => void;
   }) => (
     <div data-testid="ai-icon-panel">
       <button type="button" onClick={() => onFunctionChange('chat')}>
@@ -172,7 +174,9 @@ describe('AISidebarV4', () => {
     });
   };
 
-  const clickFunctionSwitch = (name: 'switch-chat' | 'switch-reporter' | 'switch-analyst') => {
+  const clickFunctionSwitch = (
+    name: 'switch-chat' | 'switch-reporter' | 'switch-analyst'
+  ) => {
     fireEvent.click(screen.getAllByRole('button', { name })[0]);
   };
 
