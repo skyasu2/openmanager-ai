@@ -325,16 +325,18 @@ describe('AIWorkspace', () => {
     fireEvent.click(
       screen.getByRole('button', { name: /이상감지\/예측\s+Analyst Agent/i })
     );
-    fireEvent.click(
-      screen.getByRole('button', { name: 'content-count:0' })
-    );
+    fireEvent.click(screen.getByRole('button', { name: 'content-count:0' }));
 
     expect(screen.getByTestId('ai-content-function')).toHaveTextContent(
       'intelligent-monitoring'
     );
-    expect(screen.getByRole('button', { name: 'content-count:1' })).toBeDefined();
+    expect(
+      screen.getByRole('button', { name: 'content-count:1' })
+    ).toBeDefined();
 
-    fireEvent.click(screen.getByRole('button', { name: /AI Chat\s+NLQ Agent/i }));
+    fireEvent.click(
+      screen.getByRole('button', { name: /AI Chat\s+NLQ Agent/i })
+    );
     fireEvent.click(
       screen.getByRole('button', { name: /이상감지\/예측\s+Analyst Agent/i })
     );
@@ -342,6 +344,8 @@ describe('AIWorkspace', () => {
     expect(screen.getByTestId('ai-content-function')).toHaveTextContent(
       'intelligent-monitoring'
     );
-    expect(screen.getByRole('button', { name: 'content-count:1' })).toBeDefined();
+    expect(
+      screen.getByRole('button', { name: 'content-count:1' })
+    ).toBeDefined();
   });
 });

@@ -467,7 +467,9 @@ export default function AIWorkspace({ mode, onClose }: AIWorkspaceProps) {
                 handleNewSession();
               }}
             >
-              <Activity mode={selectedFunction === 'chat' ? 'visible' : 'hidden'}>
+              <Activity
+                mode={selectedFunction === 'chat' ? 'visible' : 'hidden'}
+              >
                 <EnhancedAIChat
                   autoReportTrigger={{ shouldGenerate: false }}
                   allMessages={enhancedMessages}
@@ -507,7 +509,9 @@ export default function AIWorkspace({ mode, onClose }: AIWorkspaceProps) {
                   removeQueuedQuery={removeQueuedQuery}
                 />
               </Activity>
-              <Activity mode={selectedFunction !== 'chat' ? 'visible' : 'hidden'}>
+              <Activity
+                mode={selectedFunction !== 'chat' ? 'visible' : 'hidden'}
+              >
                 <div className="h-full p-0">
                   <AIContentArea selectedFunction={selectedFunction} />
                 </div>
