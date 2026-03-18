@@ -57,6 +57,8 @@ function isTerminalStatus(
   return status === 'completed' || status === 'failed';
 }
 
+type ActiveJobStatus = Extract<JobResult['status'], 'pending' | 'processing' | 'queued'>;
+
 // ============================================================================
 // Constants
 // ============================================================================
@@ -84,6 +86,49 @@ const getJobStreamMaxWaitTimeMs = (): number => {
 }; // 런타임 최대 실행시간 기준 여유 버퍼 적용
 const PROGRESS_INTERVAL_MS = 2000; // 진행 상황 업데이트 간격
 const REDIS_TIMEOUT_MS = getRedisTimeoutMs('standard');
+const DEFAULT_STAGE_BY_STATUS: Record<ActiveJobStatus, string> = {
+  queued: 'init',
+  pending: 'initializing',
+  processing: 'processing',
+};
+const DEFAULT_PROGRESS_BY_STATUS: Record<ActiveJobStatus, number> = {
+  queued: 0,
+  pending: 5,
+  processing: 15,
+};
+const DEFAULT_MESSAGE_BY_STATUS: Record<ActiveJobStatus, string> = {
+  queued: '요청 대기열에 추가됨...',
+  pending: 'AI 에이전트 초기화 중...',
+  processing: 'AI 에이전트 처리 중...',
+};
+const DEFAULT_PROGRESS_BY_STAGE: Record<string, number> = {
+  init: 0,
+  initializing: 5,
+  routing: 20,
+  analyzing: 35,
+  processing: 60,
+  supervisor: 55,
+  nlq: 60,
+  analyst: 70,
+  reporter: 80,
+  finalizing: 95,
+  retrying: 0,
+  reconnecting: 0,
+};
+const DEFAULT_MESSAGE_BY_STAGE: Record<string, string> = {
+  init: '요청 대기열에 추가됨...',
+  initializing: 'AI 에이전트 초기화 중...',
+  routing: 'Supervisor가 적절한 에이전트 선택 중...',
+  analyzing: '쿼리 분석 중...',
+  processing: 'AI 에이전트 처리 중...',
+  supervisor: 'Supervisor 분석 중...',
+  nlq: 'NLQ Agent가 자연어 쿼리 처리 중...',
+  analyst: 'Analyst Agent가 패턴 분석 중...',
+  reporter: 'Reporter Agent가 보고서 생성 중...',
+  finalizing: '응답 완료 처리 중...',
+  retrying: '재시도 중...',
+  reconnecting: '재연결 중...',
+};
 
 export function getPollIntervalFromEnv(
   envName: string,
@@ -105,6 +150,55 @@ function getPollIntervalByStatus(
     return QUEUED_POLL_INTERVAL_MS;
   }
   return ACTIVE_POLL_INTERVAL_MS;
+}
+
+function getNonEmptyString(value: unknown): string | null {
+  if (typeof value !== 'string') {
+    return null;
+  }
+
+  const trimmed = value.trim();
+  return trimmed.length > 0 ? trimmed : null;
+}
+
+function normalizeProgressValue(value: unknown): number | null {
+  if (typeof value !== 'number' || !Number.isFinite(value)) {
+    return null;
+  }
+
+  return Math.min(100, Math.max(0, Math.round(value)));
+}
+
+export function buildProgressEventData({
+  jobId,
+  status,
+  progressState,
+  elapsedMs,
+}: {
+  jobId: string;
+  status: ActiveJobStatus;
+  progressState: RedisJobProgress | null;
+  elapsedMs: number;
+}) {
+  const stage =
+    getNonEmptyString(progressState?.stage) ?? DEFAULT_STAGE_BY_STATUS[status];
+  const progress =
+    normalizeProgressValue(progressState?.progress) ??
+    DEFAULT_PROGRESS_BY_STAGE[stage] ??
+    DEFAULT_PROGRESS_BY_STATUS[status];
+  const message =
+    getNonEmptyString(progressState?.message) ??
+    DEFAULT_MESSAGE_BY_STAGE[stage] ??
+    DEFAULT_MESSAGE_BY_STATUS[status];
+
+  return {
+    jobId,
+    status,
+    progress,
+    stage,
+    message,
+    elapsedMs,
+  };
 }
 
 async function sleepWithAbort(
@@ -284,14 +378,15 @@ export async function GET(
             ) {
               const now = Date.now();
               if (now - lastProgressUpdate >= PROGRESS_INTERVAL_MS) {
-                sendEvent('progress', {
-                  jobId,
-                  status: result.status,
-                  progress: progress?.progress ?? 0,
-                  stage: progress?.stage ?? 'initializing',
-                  message: progress?.message ?? 'AI 에이전트 준비 중...',
-                  elapsedMs: elapsed,
-                });
+                sendEvent(
+                  'progress',
+                  buildProgressEventData({
+                    jobId,
+                    status: result.status,
+                    progressState: progress,
+                    elapsedMs: elapsed,
+                  })
+                );
 
                 lastProgressUpdate = now;
               }
@@ -300,14 +395,15 @@ export async function GET(
             // Redis에 아직 결과가 없는 경우 - 초기 대기 상태 전송
             const now = Date.now();
             if (now - lastProgressUpdate >= PROGRESS_INTERVAL_MS) {
-              sendEvent('progress', {
-                jobId,
-                status: 'queued',
-                progress: 0,
-                stage: 'init',
-                message: '요청 대기열에 추가됨...',
-                elapsedMs: elapsed,
-              });
+              sendEvent(
+                'progress',
+                buildProgressEventData({
+                  jobId,
+                  status: 'queued',
+                  progressState: null,
+                  elapsedMs: elapsed,
+                })
+              );
               lastProgressUpdate = now;
             }
           }
