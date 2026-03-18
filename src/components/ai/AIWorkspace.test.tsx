@@ -6,6 +6,12 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import AIWorkspace from '@/components/ai/AIWorkspace';
 
+const mockEnhancedAIChat = vi.fn(() => (
+  <div data-testid="enhanced-ai-chat">AI Chat</div>
+));
+
+let mockSidebarState: Record<string, unknown>;
+
 // Mock next/navigation
 const mockBack = vi.fn();
 const mockPush = vi.fn();
@@ -54,23 +60,25 @@ vi.mock('@/hooks/ai/useAIChatCore', () => ({
     cancel: vi.fn(),
     // 통합 입력 핸들러
     handleSendInput: vi.fn(),
+    clarification: null,
+    selectClarification: vi.fn(),
+    submitCustomClarification: vi.fn(),
+    skipClarification: vi.fn(),
+    dismissClarification: vi.fn(),
+    currentAgentStatus: null,
+    currentHandoff: null,
+    warmingUp: false,
+    estimatedWaitSeconds: 0,
+    queuedQueries: [],
+    removeQueuedQuery: vi.fn(),
   })),
 }));
 
 // Mock Zustand store with selector support
 vi.mock('@/stores/useAISidebarStore', () => ({
-  useAISidebarStore: vi.fn((selector) => {
-    const state = {
-      isOpen: true,
-      toggleSidebar: vi.fn(),
-      setIsOpen: vi.fn(),
-      messages: [],
-      addMessage: vi.fn(),
-      webSearchEnabled: false,
-      setWebSearchEnabled: vi.fn(),
-    };
-    return selector ? selector(state) : state;
-  }),
+  useAISidebarStore: vi.fn((selector) =>
+    selector ? selector(mockSidebarState) : mockSidebarState
+  ),
 }));
 
 // Mock child components to simplify testing
@@ -79,7 +87,7 @@ vi.mock('@/components/shared/OpenManagerLogo', () => ({
 }));
 
 vi.mock('@/components/ai-sidebar/EnhancedAIChat', () => ({
-  EnhancedAIChat: () => <div data-testid="enhanced-ai-chat">AI Chat</div>,
+  EnhancedAIChat: (props: unknown) => mockEnhancedAIChat(props),
 }));
 
 vi.mock('@/components/ai/AIAssistantIconPanel', () => ({
@@ -131,6 +139,17 @@ vi.mock('@/components/error/AIErrorBoundary', () => ({
 describe('AIWorkspace', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockSidebarState = {
+      isOpen: true,
+      toggleSidebar: vi.fn(),
+      setIsOpen: vi.fn(),
+      messages: [],
+      addMessage: vi.fn(),
+      webSearchEnabled: false,
+      setWebSearchEnabled: vi.fn(),
+      ragEnabled: false,
+      setRagEnabled: vi.fn(),
+    };
   });
 
   it('renders AI workspace interface', () => {
@@ -190,6 +209,17 @@ describe('AIWorkspace', () => {
       stop: vi.fn(),
       cancel: vi.fn(),
       handleSendInput: vi.fn(),
+      clarification: null,
+      selectClarification: vi.fn(),
+      submitCustomClarification: vi.fn(),
+      skipClarification: vi.fn(),
+      dismissClarification: vi.fn(),
+      currentAgentStatus: null,
+      currentHandoff: null,
+      warmingUp: false,
+      estimatedWaitSeconds: 0,
+      queuedQueries: [],
+      removeQueuedQuery: vi.fn(),
     } as unknown as ReturnType<typeof useAIChatCore>);
 
     render(<AIWorkspace />);
@@ -207,5 +237,73 @@ describe('AIWorkspace', () => {
     expect(aiChatElements.length).toBeGreaterThanOrEqual(1);
     expect(screen.getByText('장애 보고서')).toBeInTheDocument();
     expect(screen.getByText('이상감지/예측')).toBeInTheDocument();
+  });
+
+  it('forwards sidebar parity props to fullscreen chat', async () => {
+    const { useAIChatCore } = await import('@/hooks/ai/useAIChatCore');
+
+    mockSidebarState = {
+      ...mockSidebarState,
+      webSearchEnabled: true,
+      ragEnabled: true,
+    };
+
+    vi.mocked(useAIChatCore).mockReturnValue({
+      input: '',
+      setInput: vi.fn(),
+      messages: [],
+      isLoading: true,
+      hybridState: {
+        progress: null,
+        jobId: null,
+      },
+      currentMode: 'streaming',
+      error: null,
+      clearError: vi.fn(),
+      sessionState: {
+        messagesRemaining: 10,
+        isLimited: false,
+      },
+      handleNewSession: vi.fn(),
+      handleFeedback: vi.fn(),
+      regenerateLastResponse: vi.fn(),
+      retryLastQuery: vi.fn(),
+      stop: vi.fn(),
+      cancel: vi.fn(),
+      handleSendInput: vi.fn(),
+      clarification: { question: '확인', options: [] },
+      selectClarification: vi.fn(),
+      submitCustomClarification: vi.fn(),
+      skipClarification: vi.fn(),
+      dismissClarification: vi.fn(),
+      currentAgentStatus: { agent: 'supervisor', status: 'running' },
+      currentHandoff: { from: 'supervisor', to: 'advisor', reason: 'detail' },
+      warmingUp: true,
+      estimatedWaitSeconds: 30,
+      queuedQueries: [{ id: 1, text: 'queued' }],
+      removeQueuedQuery: vi.fn(),
+    } as unknown as ReturnType<typeof useAIChatCore>);
+
+    render(<AIWorkspace mode="fullscreen" />);
+
+    const lastCall = mockEnhancedAIChat.mock.calls.at(-1)?.[0] as
+      | Record<string, unknown>
+      | undefined;
+
+    expect(lastCall?.clarification).toEqual({ question: '확인', options: [] });
+    expect(lastCall?.currentAgentStatus).toEqual({
+      agent: 'supervisor',
+      status: 'running',
+    });
+    expect(lastCall?.currentHandoff).toEqual({
+      from: 'supervisor',
+      to: 'advisor',
+      reason: 'detail',
+    });
+    expect(lastCall?.warmingUp).toBe(true);
+    expect(lastCall?.estimatedWaitSeconds).toBe(30);
+    expect(lastCall?.webSearchEnabled).toBe(true);
+    expect(lastCall?.ragEnabled).toBe(true);
+    expect(lastCall?.queuedQueries).toEqual([{ id: 1, text: 'queued' }]);
   });
 });

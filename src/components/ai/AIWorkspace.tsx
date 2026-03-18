@@ -82,10 +82,15 @@ export default function AIWorkspace({ mode, onClose }: AIWorkspaceProps) {
   const toggleWebSearch = useCallback(() => {
     setWebSearchEnabled(!webSearchEnabled);
   }, [webSearchEnabled, setWebSearchEnabled]);
+  const ragEnabled = useAISidebarStore((s) => s.ragEnabled);
+  const setRagEnabled = useAISidebarStore((s) => s.setRagEnabled);
+  const toggleRAG = useCallback(() => {
+    setRagEnabled(!ragEnabled);
+  }, [ragEnabled, setRagEnabled]);
 
   // ============================================================================
   // 🎯 공통 AI 채팅 로직 (useAIChatCore 훅 사용)
-  // 전체화면에서는 세션 제한 비활성화 (더 큰 화면에서 더 많은 대화 가능)
+  // 사이드바/전체화면 모두 동일한 대화 엔진을 사용한다.
   // ============================================================================
   const {
     // 입력 상태
@@ -111,6 +116,17 @@ export default function AIWorkspace({ mode, onClose }: AIWorkspaceProps) {
     cancel,
     // 통합 입력 핸들러
     handleSendInput,
+    // 명확화 기능
+    clarification,
+    selectClarification,
+    submitCustomClarification,
+    skipClarification,
+    dismissClarification,
+    // 실시간 상태 표시
+    currentAgentStatus,
+    currentHandoff,
+    warmingUp,
+    estimatedWaitSeconds,
     // 대기열
     queuedQueries,
     removeQueuedQuery,
@@ -184,8 +200,19 @@ export default function AIWorkspace({ mode, onClose }: AIWorkspaceProps) {
               error={error}
               onClearError={clearError}
               onRetry={retryLastQuery}
+              clarification={clarification}
+              onSelectClarification={selectClarification}
+              onSubmitCustomClarification={submitCustomClarification}
+              onSkipClarification={skipClarification}
+              onDismissClarification={dismissClarification}
+              currentAgentStatus={currentAgentStatus}
+              currentHandoff={currentHandoff}
               webSearchEnabled={webSearchEnabled}
               onToggleWebSearch={toggleWebSearch}
+              ragEnabled={ragEnabled}
+              onToggleRAG={toggleRAG}
+              warmingUp={warmingUp}
+              estimatedWaitSeconds={estimatedWaitSeconds}
               queuedQueries={queuedQueries}
               removeQueuedQuery={removeQueuedQuery}
             />
@@ -462,8 +489,19 @@ export default function AIWorkspace({ mode, onClose }: AIWorkspaceProps) {
                   error={error}
                   onClearError={clearError}
                   onRetry={retryLastQuery}
+                  clarification={clarification}
+                  onSelectClarification={selectClarification}
+                  onSubmitCustomClarification={submitCustomClarification}
+                  onSkipClarification={skipClarification}
+                  onDismissClarification={dismissClarification}
+                  currentAgentStatus={currentAgentStatus}
+                  currentHandoff={currentHandoff}
                   webSearchEnabled={webSearchEnabled}
                   onToggleWebSearch={toggleWebSearch}
+                  ragEnabled={ragEnabled}
+                  onToggleRAG={toggleRAG}
+                  warmingUp={warmingUp}
+                  estimatedWaitSeconds={estimatedWaitSeconds}
                   queuedQueries={queuedQueries}
                   removeQueuedQuery={removeQueuedQuery}
                 />
