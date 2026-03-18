@@ -108,13 +108,13 @@ async function assertReporterRetained(root: Page | Locator) {
 
 async function ensureRagEnabled(root: Page | Locator) {
   const ragButton = root.getByRole('button', { name: /^RAG$/ }).first();
-  const currentClass = (await ragButton.getAttribute('class')) ?? '';
+  const isPressed = await ragButton.getAttribute('aria-pressed');
 
-  if (!currentClass.includes('bg-purple-100')) {
+  if (isPressed !== 'true') {
     await ragButton.click();
   }
 
-  await expect(ragButton).toHaveClass(/bg-purple-100/);
+  await expect(ragButton).toHaveAttribute('aria-pressed', 'true');
 }
 
 async function runAnalystAnalysis(root: Page | Locator) {
@@ -162,8 +162,9 @@ async function assertAnalystRetained(root: Page | Locator) {
   ).toBeVisible({
     timeout: TIMEOUTS.COMPLEX_INTERACTION,
   });
-  await expect(root.getByRole('button', { name: /^RAG$/ }).first()).toHaveClass(
-    /bg-purple-100/
+  await expect(root.getByRole('button', { name: /^RAG$/ }).first()).toHaveAttribute(
+    'aria-pressed',
+    'true'
   );
 }
 

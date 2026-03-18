@@ -153,8 +153,8 @@ describe('IntelligentMonitoringPage', () => {
     expect(screen.getByText('empty')).toBeInTheDocument();
     expect(screen.getByLabelText('분석 대상')).toHaveValue('server-1');
     expect(screen.getByRole('button', { name: /RAG/i })).toHaveAttribute(
-      'title',
-      'RAG 검색 끄기'
+      'aria-pressed',
+      'true'
     );
   });
 });
