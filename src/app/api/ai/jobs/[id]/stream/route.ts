@@ -57,7 +57,10 @@ function isTerminalStatus(
   return status === 'completed' || status === 'failed';
 }
 
-type ActiveJobStatus = Extract<JobResult['status'], 'pending' | 'processing' | 'queued'>;
+type ActiveJobStatus = Extract<
+  JobResult['status'],
+  'pending' | 'processing' | 'queued'
+>;
 
 // ============================================================================
 // Constants
