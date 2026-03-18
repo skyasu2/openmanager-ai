@@ -23,6 +23,7 @@ scripts/
 │   ├── biome-wrapper.sh       # Biome 포맷터 래퍼
 │   ├── lint-changed.sh        # 변경 파일만 린트
 │   ├── tsc-wrapper.js         # TypeScript 체크 래퍼
+│   ├── typecheck-scope.js     # 증분 type-check 대상 파일 판정
 │   └── typecheck-changed.sh   # 변경 감지 기반 증분 project 타입체크
 ├── docs/              # 문서 품질 관리
 │   ├── check-docs.sh          # 문서 품질 점검

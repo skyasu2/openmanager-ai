@@ -14,6 +14,7 @@ const fs = require('fs');
 const isWindows = os.platform() === 'win32';
 const isWSL = !isWindows && fs.existsSync('/proc/version') &&
   fs.readFileSync('/proc/version', 'utf8').toLowerCase().includes('microsoft');
+const { filterTypeCheckRelevantFiles } = require('../dev/typecheck-scope');
 const npmCmd = isWindows ? 'npm.cmd' : 'npm';
 const gitCmd = isWindows ? 'git.exe' : 'git';
 const cwd = process.cwd();
@@ -150,17 +151,6 @@ function isVitestTestFile(filePath) {
 
 function isJavaScriptSourceFile(filePath) {
   return /\.(js|jsx|ts|tsx)$/u.test(normalizeFilePath(filePath));
-}
-
-function isTypeCheckRelevantFile(filePath) {
-  const normalized = normalizeFilePath(filePath);
-  if (!/\.(ts|tsx)$/u.test(normalized)) return false;
-  if (isVitestTestFile(normalized)) return false;
-  if (normalized.startsWith('src/test/')) return false;
-  return (
-    normalized === 'next-env.d.ts' ||
-    normalized.startsWith('src/')
-  );
 }
 
 function isDomTestFile(filePath) {
@@ -831,9 +821,7 @@ function runBuildValidation(changedFilesResult) {
   }
 
   if (QUICK_PUSH) {
-    const typeCheckRelevantFiles = changedFilesResult.files.filter((filePath) =>
-      isTypeCheckRelevantFile(filePath)
-    );
+    const typeCheckRelevantFiles = filterTypeCheckRelevantFiles(changedFilesResult.files);
     const skipTypeCheck =
       changedFilesResult.isKnown && changedFilesResult.files.length > 0 && typeCheckRelevantFiles.length === 0;
     const useChangedTypeCheck =
