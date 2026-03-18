@@ -60,6 +60,7 @@ test-results.json
 playwright-test.png
 bundle-before.txt
 project-structure.txt
+sloc_report.txt
 
 # Next.js
 /.next/
