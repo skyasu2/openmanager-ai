@@ -60,7 +60,9 @@ describe('AIContentArea', () => {
       <AIContentArea selectedFunction="auto-report" />
     );
 
-    fireEvent.click(await screen.findByRole('button', { name: 'report-count:0' }));
+    fireEvent.click(
+      await screen.findByRole('button', { name: 'report-count:0' })
+    );
     expect(screen.getByText('report-count:1')).toBeInTheDocument();
 
     rerender(<AIContentArea selectedFunction="intelligent-monitoring" />);
