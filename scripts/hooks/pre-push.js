@@ -155,6 +155,8 @@ function isJavaScriptSourceFile(filePath) {
 function isTypeCheckRelevantFile(filePath) {
   const normalized = normalizeFilePath(filePath);
   if (!/\.(ts|tsx)$/u.test(normalized)) return false;
+  if (isVitestTestFile(normalized)) return false;
+  if (normalized.startsWith('src/test/')) return false;
   return (
     normalized === 'next-env.d.ts' ||
     normalized.startsWith('src/')
