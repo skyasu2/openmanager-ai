@@ -68,7 +68,9 @@ async function generateReporterResult(root: Page | Locator) {
   const emptyCreateButton = root
     .getByRole('button', { name: '첫 보고서 생성하기' })
     .first();
-  const createButton = root.getByRole('button', { name: '보고서 생성' }).first();
+  const createButton = root
+    .getByRole('button', { name: '보고서 생성' })
+    .first();
 
   if (
     await emptyCreateButton
@@ -86,7 +88,9 @@ async function generateReporterResult(root: Page | Locator) {
   await expect(
     root.getByText('영향받는 서버:', { exact: false }).first()
   ).toBeVisible({ timeout: TIMEOUTS.AI_RESPONSE });
-  await expect(root.getByRole('button', { name: '상세보기' }).first()).toBeVisible({
+  await expect(
+    root.getByRole('button', { name: '상세보기' }).first()
+  ).toBeVisible({
     timeout: TIMEOUTS.AI_RESPONSE,
   });
 }
@@ -95,7 +99,9 @@ async function assertReporterRetained(root: Page | Locator) {
   await expect(
     root.getByText('영향받는 서버:', { exact: false }).first()
   ).toBeVisible({ timeout: TIMEOUTS.COMPLEX_INTERACTION });
-  await expect(root.getByRole('button', { name: '상세보기' }).first()).toBeVisible({
+  await expect(
+    root.getByRole('button', { name: '상세보기' }).first()
+  ).toBeVisible({
     timeout: TIMEOUTS.COMPLEX_INTERACTION,
   });
 }
@@ -130,7 +136,9 @@ async function runAnalystAnalysis(root: Page | Locator) {
   });
   await analyzeButton.click();
 
-  await expect(root.getByRole('heading', { name: '현재 상태' }).first()).toBeVisible({
+  await expect(
+    root.getByRole('heading', { name: '현재 상태' }).first()
+  ).toBeVisible({
     timeout: TIMEOUTS.AI_RESPONSE,
   });
 }
@@ -149,7 +157,9 @@ async function assertAnalystRetained(root: Page | Locator) {
     )
     .toBe(TARGET_SERVER);
 
-  await expect(root.getByRole('heading', { name: '현재 상태' }).first()).toBeVisible({
+  await expect(
+    root.getByRole('heading', { name: '현재 상태' }).first()
+  ).toBeVisible({
     timeout: TIMEOUTS.COMPLEX_INTERACTION,
   });
   await expect(root.getByRole('button', { name: /^RAG$/ }).first()).toHaveClass(
@@ -178,7 +188,9 @@ test.describe('AI retention parity manual', () => {
       waitTimeout: TIMEOUTS.COMPLEX_INTERACTION,
     });
 
-    await expect(sidebar).toBeVisible({ timeout: TIMEOUTS.COMPLEX_INTERACTION });
+    await expect(sidebar).toBeVisible({
+      timeout: TIMEOUTS.COMPLEX_INTERACTION,
+    });
 
     await generateReporterResult(sidebar);
     await switchFunction(sidebar, 'chat');

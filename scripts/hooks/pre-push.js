@@ -146,7 +146,9 @@ function normalizeFilePath(filePath) {
 }
 
 function isVitestTestFile(filePath) {
-  return /\.(test|spec)\.(js|ts|tsx)$/u.test(normalizeFilePath(filePath));
+  const normalized = normalizeFilePath(filePath);
+  if (normalized.startsWith('tests/manual/')) return false;
+  return /\.(test|spec)\.(js|ts|tsx)$/u.test(normalized);
 }
 
 function isJavaScriptSourceFile(filePath) {
