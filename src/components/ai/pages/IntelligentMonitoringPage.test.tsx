@@ -14,13 +14,7 @@ vi.mock('@/hooks/useServerQuery', () => ({
 }));
 
 vi.mock('@/components/ai/AnalysisResultsCard', () => ({
-  default: ({
-    error,
-    result,
-  }: {
-    error: string | null;
-    result: unknown;
-  }) =>
+  default: ({ error, result }: { error: string | null; result: unknown }) =>
     error ? (
       <div>
         <p>{error}</p>
