@@ -110,9 +110,7 @@ vi.mock('@/components/ai/WebSourceCards', () => ({
 }));
 
 vi.mock('@/components/error/AIErrorBoundary', () => ({
-  AIErrorBoundary: ({ children }: { children: ReactNode }) => (
-    <>{children}</>
-  ),
+  AIErrorBoundary: ({ children }: { children: ReactNode }) => <>{children}</>,
 }));
 
 vi.mock('@/utils/markdown-parser', () => ({
