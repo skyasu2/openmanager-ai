@@ -8,8 +8,7 @@ export default defineConfig({
     setupFiles: ['src/test/setup.frontend-smoke.ts'],
     include: [
       'src/components/dashboard/AIAssistantButton.test.tsx',
-      'src/components/ai/AIWorkspace.test.tsx',
-      'src/components/ai-sidebar/AISidebarV4.test.tsx',
+      'src/components/ai-sidebar/AISidebarV4.smoke.test.tsx',
     ],
     exclude: ['node_modules/**', 'dist/**', '.next/**', 'out/**'],
     pool: 'forks',

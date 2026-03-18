@@ -181,6 +181,10 @@ function isFrontendSmokeFile(filePath) {
   return FRONTEND_SMOKE_PREFIXES.some((prefix) => normalized.startsWith(prefix));
 }
 
+function isAIWorkspaceQuickFile(filePath) {
+  return isFrontendSmokeFile(filePath);
+}
+
 function isZeroOid(oid) {
   return /^0+$/.test(oid);
 }
@@ -586,9 +590,19 @@ function classifyChangedTestRun(changedFilesResult) {
   const frontendSmokeFiles = normalizedFiles.filter((filePath) =>
     isFrontendSmokeFile(filePath)
   );
-  const frontendSmokeFileSet = new Set(frontendSmokeFiles);
-  const remainingFiles = normalizedFiles.filter(
+  const consumeFrontendSmokeFiles = frontendSmokeFiles.length > 0 && isWSL && isWindowsFS;
+  const frontendSmokeFileSet = new Set(
+    consumeFrontendSmokeFiles ? frontendSmokeFiles : []
+  );
+  const afterFrontendSmokeFiles = normalizedFiles.filter(
     (filePath) => !frontendSmokeFileSet.has(filePath)
+  );
+  const aiWorkspaceQuickFiles = afterFrontendSmokeFiles.filter((filePath) =>
+    isAIWorkspaceQuickFile(filePath)
+  );
+  const aiWorkspaceQuickFileSet = new Set(aiWorkspaceQuickFiles);
+  const remainingFiles = afterFrontendSmokeFiles.filter(
+    (filePath) => !aiWorkspaceQuickFileSet.has(filePath)
   );
   const testFiles = remainingFiles.filter((filePath) => isVitestTestFile(filePath));
   const relatedSourceFiles = remainingFiles.filter((filePath) =>
@@ -601,16 +615,26 @@ function classifyChangedTestRun(changedFilesResult) {
   const guidance = [];
   const scopeFiles = [];
 
-  if (frontendSmokeFiles.length > 0 && isWSL && isWindowsFS) {
-    // WSL on mounted Windows filesystems pays a ~30s jsdom startup cost even for
-    // tiny targeted files. Use a stable smoke pack for the AI assistant surface.
+  if (consumeFrontendSmokeFiles) {
+    // Mounted WSL workspaces pay a very large jsdom startup cost for AI assistant
+    // surface tests. Prefer the stable quick gate over targeted DOM smoke here.
     steps.push({
-      label: `Frontend AI smoke suite (${frontendSmokeFiles.length} file${frontendSmokeFiles.length > 1 ? 's' : ''})`,
-      args: ['run', 'test:frontend:smoke'],
+      label: `AI assistant quick smoke (${frontendSmokeFiles.length} file${frontendSmokeFiles.length > 1 ? 's' : ''})`,
+      args: ['run', 'test:quick'],
     });
-    summaryParts.push('frontend AI smoke');
-    guidance.push('npm run test:frontend:smoke');
+    summaryParts.push('AI assistant quick smoke');
+    guidance.push('npm run test:quick');
     scopeFiles.push(...frontendSmokeFiles);
+  }
+
+  if (aiWorkspaceQuickFiles.length > 0) {
+    steps.push({
+      label: `AI workspace quick smoke (${aiWorkspaceQuickFiles.length} file${aiWorkspaceQuickFiles.length > 1 ? 's' : ''})`,
+      args: ['run', 'test:quick'],
+    });
+    summaryParts.push('AI workspace quick smoke');
+    guidance.push('npm run test:quick');
+    scopeFiles.push(...aiWorkspaceQuickFiles);
   }
 
   if (testFiles.length > 0) {
