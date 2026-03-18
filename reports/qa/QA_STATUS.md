@@ -1,40 +1,38 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-18 17:26:39 KST
+> Generated at: 2026-03-18 19:29:24 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 124 |
-| Total Checks | 932 |
-| Passed | 886 |
+| Total Runs | 125 |
+| Total Checks | 941 |
+| Passed | 895 |
 | Failed | 42 |
 | Completed Items | 219 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 8 |
 | Expert Domains Tracked | 6 |
-| Expert Open Gaps | 1 |
+| Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Run | QA-20260318-0124 (2026-03-18T08:26:39.409Z) |
+| Last Run | QA-20260318-0125 (2026-03-18T10:29:22.769Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260318-0124 (2026-03-18T08:26:39.409Z)
+Latest run: QA-20260318-0125 (2026-03-18T10:29:22.769Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
+| AI Security & Reliability Architect | appropriate | no | - |
 | AI Quality Assurance Specialist | appropriate | no | - |
 | Test Automation Architect | appropriate | no | - |
-| IT Monitoring & Observability SME | appropriate | no | - |
-| AI Security & Reliability Architect | partially-appropriate | yes | 보안 회귀 프롬프트 팩을 별도 런으로 재검증 |
 
 ## Expert Domain Open Gaps
 
-- ai-security-reliability: AI Security & Reliability Architect (last QA-20260318-0124)
-  next: 보안 회귀 프롬프트 팩을 별도 런으로 재검증
+- None
 
 ## Pending Improvements
 
@@ -78,7 +76,7 @@ Latest run: QA-20260318-0124 (2026-03-18T08:26:39.409Z)
 - ai-chat-response-quality-v879: AI Chat 스트리밍 응답 및 권고 검증 (completed 1회, last QA-20260306-0052)
 - ai-chat-response-quality-v880-recheck-20260309: AI Chat 응답 품질 및 권고 재검증 (completed 4회, last QA-20260309-0068)
 - ai-chat-sidebar-open: AI 사이드바 열기 (completed 1회, last QA-20260317-0114)
-- ai-code-gate-input-policy: AI Code Gate: Prompt 패턴 15개 방어 점검 (completed 1회, last QA-20260316-0107)
+- ai-code-gate-input-policy: AI Code Gate: Prompt 패턴 15개 방어 점검 (completed 2회, last QA-20260318-0125)
 - ai-engine-status: AI 엔진 상태 표시 (completed 1회, last QA-20260317-0114)
 - ai-friendly-template-todo-marker: Template TODO marker 분리 (TEMPLATE_TODO 적용) (completed 1회, last QA-20260226-0006)
 - ai-math-tools: AI 계산 도구(수식/통계/용량) 셋업 완료 (completed 1회, last QA-20260228-0023)
@@ -110,7 +108,7 @@ Latest run: QA-20260318-0124 (2026-03-18T08:26:39.409Z)
 - auth-error-provider-copy: 인증 에러 라우트 메시지를 제공자-중립 표현으로 전환 (completed 1회, last QA-20260227-0010)
 - auto-incident-report: 자동장애 보고서 생성 및 상세보기 (completed 1회, last QA-20260306-0051)
 - biome-lint-900-files-에러-0: Biome Lint 900 files 에러 0 (completed 1회, last QA-20260301-0032)
-- blocked-prompt-raw-json-exposure: 보안 차단 시 raw JSON 노출 제거 (completed 1회, last QA-20260315-0101)
+- blocked-prompt-raw-json-exposure: 보안 차단 시 raw JSON 노출 제거 (completed 2회, last QA-20260318-0125)
 - blocked-prompt-ux-fixed-v880: Prompt injection 차단 UX 정제 검증 (completed 1회, last QA-20260308-0058)
 - blocked-prompt-ux-v880-quality-recheck: 보안 차단 UX 재검증 (completed 1회, last QA-20260308-0059)
 - cloud-run-v892-manual-deploy: Cloud Run v8.9.2 manual deploy verification (completed 1회, last QA-20260317-0118)
@@ -208,7 +206,7 @@ Latest run: QA-20260318-0124 (2026-03-18T08:26:39.409Z)
 - reporter-generate-detail-v880: Reporter 생성 및 상세 렌더링 검증 (completed 2회, last QA-20260309-0069)
 - reporter-primary-generate-button-empty-state: Reporter 상단 생성 버튼 empty state 동작 정합성 (completed 2회, last QA-20260315-0104)
 - reporter-state-loss-on-tab-switch: Reporter 탭 전환 시 생성 결과 상태 유지 (completed 1회, last QA-20260315-0104)
-- security-attack-regression-pack: 보안 공격 시나리오 회귀팩 구축 (completed 1회, last QA-20260316-0109)
+- security-attack-regression-pack: 보안 공격 시나리오 회귀팩 구축 (completed 2회, last QA-20260318-0125)
 - server-card-expand: 서버 카드 상세 펼치기/접기 (completed 1회, last QA-20260317-0114)
 - server-detail-log-tab: 로그 & 네트워크 탭 (completed 1회, last QA-20260317-0114)
 - server-detail-perf-tab: 성능 분석 탭 (completed 1회, last QA-20260317-0114)
@@ -288,6 +286,7 @@ Latest run: QA-20260318-0124 (2026-03-18T08:26:39.409Z)
 
 | Run ID | Time (UTC) | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260318-0125 | 2026-03-18T10:29:22.769Z | Security QA - AI Code Gate Input Policy production recheck | 9 | 3 | 0 | 0 | 0 | 0 |
 | QA-20260318-0124 | 2026-03-18T08:26:39.409Z | Production QA - Frontend Smoke Gate Stabilization and Observability Recheck | 5 | 1 | 0 | 0 | 0 | 1 |
 | QA-20260318-0123 | 2026-03-18T07:23:22.850Z | Vercel Production QA - AI Sidebar and Fullscreen Parity Validation | 8 | 2 | 1 | 0 | 0 | 3 |
 | QA-20260318-0122 | 2026-03-18T06:11:19.435Z | Vercel Production QA - Core Frontend and AI Assistant Revalidation | 7 | 0 | 0 | 0 | 0 | 2 |
@@ -307,5 +306,4 @@ Latest run: QA-20260318-0124 (2026-03-18T08:26:39.409Z)
 | QA-20260316-0108 | 2026-03-16T09:03:40.061Z | Vercel Production QA - Frontend and AI Assistant regression validation | 8 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260316-0107 | 2026-03-16T08:30:19.073Z | Security QA - AI Code Gate Input Policy (Prompt Injection 5패턴) | 5 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260316-0106 | 2026-03-16T07:11:09.946Z | Production Playwright MCP QA - v8.9.1 Release Alignment Validation (2026-03-16) | 8 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260315-0105 | 2026-03-15T13:44:26.529Z | Production Playwright MCP QA - v8.9.0 Release Alignment Validation (2026-03-15) | 8 | 0 | 0 | 0 | 0 | 0 |
 

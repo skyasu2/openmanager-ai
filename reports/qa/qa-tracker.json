@@ -2,15 +2,15 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-03-18T08:26:39.409Z"
+    "updatedAt": "2026-03-18T10:29:22.769Z"
   },
   "sequence": {
-    "nextRunNumber": 125
+    "nextRunNumber": 126
   },
   "summary": {
-    "totalRuns": 124,
-    "totalChecks": 932,
-    "totalPassed": 886,
+    "totalRuns": 125,
+    "totalChecks": 941,
+    "totalPassed": 895,
     "totalFailed": 42,
     "completionRate": 100,
     "completedItems": 219,
@@ -18,9 +18,9 @@
     "deferredItems": 0,
     "wontFixItems": 8,
     "expertDomainsTracked": 6,
-    "expertDomainsOpenGaps": 1,
-    "lastRunId": "QA-20260318-0124",
-    "lastRecordedAt": "2026-03-18T08:26:39.409Z"
+    "expertDomainsOpenGaps": 0,
+    "lastRunId": "QA-20260318-0125",
+    "lastRecordedAt": "2026-03-18T10:29:22.769Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -150,18 +150,18 @@
       "status": "completed",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "lastSeenRunId": "QA-20260316-0109",
-      "lastSeenAt": "2026-03-16T10:23:14.962Z",
-      "seenCount": 5,
-      "completedCount": 1,
+      "lastSeenRunId": "QA-20260318-0125",
+      "lastSeenAt": "2026-03-18T10:29:22.769Z",
+      "seenCount": 6,
+      "completedCount": 2,
       "pendingCount": 3,
       "deferredCount": 2,
-      "owner": "claude",
-      "lastEvidence": "QA-20260316-0109: npm run test:security:smoke 5/5 PASS. scripts/test/security-smoke.mjs 구현. EN/KO prompt injection, DAN bypass, 역할 변경, 정상 쿼리 false-positive 포함.",
-      "lastNote": "API 수준 경량 회귀팩 구현 완료. 인증 없이도 401로 차단되고, 인증 세션에서는 prompt guard 400으로 차단됨을 QA-20260316-0107에서 함께 검증. 운영 전환 시점 패턴 확장 예정.",
-      "lastStatusChangeAt": "2026-03-16T10:23:14.962Z",
+      "owner": "codex",
+      "lastEvidence": "QA-20260318-0125: Playwright MCP + security smoke 조합으로 production recheck",
+      "lastNote": "운영 회귀팩 최신 증거 갱신",
+      "lastStatusChangeAt": "2026-03-18T10:29:22.769Z",
       "aliases": [],
-      "isBlocking": false,
+      "isBlocking": true,
       "isBlockingExplicit": true,
       "overengineeringScope": "실운영 전환 전까지는 제품 결함 트래커가 아닌 보안 QA 운영 백로그로 관리",
       "lastPolicyNote": ""
@@ -391,15 +391,15 @@
       "status": "completed",
       "firstSeenRunId": "QA-20260226-0005",
       "firstSeenAt": "2026-02-26T11:25:45.950Z",
-      "lastSeenRunId": "QA-20260316-0107",
-      "lastSeenAt": "2026-03-16T08:30:19.073Z",
-      "seenCount": 3,
-      "completedCount": 1,
+      "lastSeenRunId": "QA-20260318-0125",
+      "lastSeenAt": "2026-03-18T10:29:22.769Z",
+      "seenCount": 4,
+      "completedCount": 2,
       "pendingCount": 1,
       "owner": "codex",
-      "lastEvidence": "QA-20260316-0107: Prompt Injection 5패턴 Playwright MCP 검증 통과",
-      "lastNote": "deferred 최소 기준(5/15) 충족으로 Completed 처리. 15패턴 풀세트 자동화는 운영 전환 시점 백로그로 유지",
-      "lastStatusChangeAt": "2026-03-16T08:30:19.073Z",
+      "lastEvidence": "QA-20260318-0125: Vercel Playwright UI 차단 3패턴 + supervisor API smoke 5패턴 통과",
+      "lastNote": "최소 운영 회귀팩을 최신 production 상태로 재검증",
+      "lastStatusChangeAt": "2026-03-18T10:29:22.769Z",
       "aliases": [],
       "deferredCount": 1,
       "isBlocking": false,
@@ -3167,26 +3167,26 @@
     "blocked-prompt-raw-json-exposure": {
       "id": "blocked-prompt-raw-json-exposure",
       "title": "보안 차단 시 raw JSON 노출 제거",
-      "priority": "P2",
+      "priority": "P1",
       "status": "completed",
       "firstSeenRunId": "QA-20260308-0056",
       "firstSeenAt": "2026-03-08T01:15:57.800Z",
-      "lastSeenRunId": "QA-20260315-0101",
-      "lastSeenAt": "2026-03-15T06:21:02.856Z",
-      "seenCount": 2,
-      "completedCount": 1,
+      "lastSeenRunId": "QA-20260318-0125",
+      "lastSeenAt": "2026-03-18T10:29:22.769Z",
+      "seenCount": 3,
+      "completedCount": 2,
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 1,
       "aliases": [],
-      "owner": "",
-      "lastEvidence": "QA-20260313-0095 completed: prod-security-block-no-raw-json-20260313",
-      "lastNote": "최신 production security smoke에서 raw JSON/보안 내부 오류 문자열 미노출 확인",
-      "isBlocking": false,
-      "isBlockingExplicit": false,
+      "owner": "codex",
+      "lastEvidence": "QA-20260318-0125: blocked prompt UX에서 raw JSON/internal error string 미노출 확인",
+      "lastNote": "영어/한국어/role-change 차단 프롬프트 모두 사용자 친화적 메시지 유지",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
       "overengineeringScope": "",
       "lastPolicyNote": "",
-      "lastStatusChangeAt": "2026-03-15T06:21:02.856Z"
+      "lastStatusChangeAt": "2026-03-18T10:29:22.769Z"
     },
     "dashboard-health-v880-recheck": {
       "id": "dashboard-health-v880-recheck",
@@ -4834,7 +4834,9 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0,
-      "aliases": ["esc-모달-닫기"],
+      "aliases": [
+        "esc-모달-닫기"
+      ],
       "owner": "",
       "lastEvidence": "Playwright MCP: ESC 키로 모달 닫기 동작 확인",
       "lastNote": "",
@@ -4858,7 +4860,9 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0,
-      "aliases": ["ai-chat-sidebar-open"],
+      "aliases": [
+        "ai-chat-sidebar-open"
+      ],
       "owner": "",
       "lastEvidence": "Playwright MCP: AI 어시스턴트 사이드바 열기/닫기 동작 확인",
       "lastNote": "",
@@ -4882,7 +4886,9 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0,
-      "aliases": ["프로덕션-대시보드-렌더링"],
+      "aliases": [
+        "프로덕션-대시보드-렌더링"
+      ],
       "owner": "",
       "lastEvidence": "Playwright MCP: 대시보드 전체 정상 렌더링 확인",
       "lastNote": "",
@@ -4906,7 +4912,9 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0,
-      "aliases": ["서버-모달-3탭-전환"],
+      "aliases": [
+        "서버-모달-3탭-전환"
+      ],
       "owner": "",
       "lastEvidence": "Playwright MCP: 종합상황/성능분석/로그&네트워크 3탭 전환 동작 확인",
       "lastNote": "",
@@ -10328,6 +10336,52 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260318-0125",
+      "recordedAt": "2026-03-18T10:29:22.769Z",
+      "recordedAtKst": "2026-03-18 19:29:22 KST",
+      "title": "Security QA - AI Code Gate Input Policy production recheck",
+      "owner": "codex",
+      "source": "playwright-mcp+security-smoke",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260318-0125.json",
+      "checks": {
+        "total": 9,
+        "passed": 9,
+        "failed": 0
+      },
+      "expertAssessments": [
+        {
+          "domainId": "ai-security-reliability",
+          "domainName": "AI Security & Reliability Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Vercel 프로덕션 전체 화면 AI Assistant에서 영어 지시 무시, 한국어 지시 무시, 역할 변경+지침 노출 패턴이 모두 차단됐고, 차단 UX는 raw JSON/internal security 문자열을 노출하지 않았다. 추가로 supervisor API smoke 5패턴(EN/KO/DAN/role-change/정상 질의)도 5/5 통과해 false positive 없이 회귀가 재발하지 않음을 확인했다.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "실브라우저 기반 프로덕션 사용자 경로와 API smoke를 함께 검증해 보안 차단 UX와 정상 질의 응답 경로를 동시에 확인했다.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Playwright MCP UI 검증과 npm 기반 supervisor smoke를 결합해 보안 회귀팩을 재현 가능하게 유지했다.",
+          "nextAction": ""
+        }
+      ],
+      "expertCount": 3,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 3,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -10336,16 +10390,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 80,
-      "appropriateCount": 77,
+      "seenCount": 81,
+      "appropriateCount": 78,
       "partialCount": 3,
       "inappropriateCount": 0,
       "improvementNeededCount": 11,
-      "lastRunId": "QA-20260318-0124",
-      "lastSeenAt": "2026-03-18T08:26:39.409Z",
+      "lastRunId": "QA-20260318-0125",
+      "lastSeenAt": "2026-03-18T10:29:22.769Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Vercel 프로덕션 /dashboard/ai-assistant 에서 고유 marker 질의를 다시 실행했고, 전체 서버 요약과 cache-redis-dc1-01 메모리 경고 응답을 정상 확인했다.",
+      "lastRationale": "실브라우저 기반 프로덕션 사용자 경로와 API smoke를 함께 검증해 보안 차단 UX와 정상 질의 응답 경로를 동시에 확인했다.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -10370,17 +10424,17 @@
       "domainName": "AI Security & Reliability Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 39,
-      "appropriateCount": 27,
+      "seenCount": 40,
+      "appropriateCount": 28,
       "partialCount": 12,
       "inappropriateCount": 0,
       "improvementNeededCount": 12,
-      "lastRunId": "QA-20260318-0124",
-      "lastSeenAt": "2026-03-18T08:26:39.409Z",
-      "lastFit": "partially-appropriate",
-      "lastImprovementNeeded": true,
-      "lastRationale": "이번 런에서는 blocked prompt, prompt injection, 보안 회귀 시나리오를 재실행하지 않았다.",
-      "lastNextAction": "보안 회귀 프롬프트 팩을 별도 런으로 재검증"
+      "lastRunId": "QA-20260318-0125",
+      "lastSeenAt": "2026-03-18T10:29:22.769Z",
+      "lastFit": "appropriate",
+      "lastImprovementNeeded": false,
+      "lastRationale": "Vercel 프로덕션 전체 화면 AI Assistant에서 영어 지시 무시, 한국어 지시 무시, 역할 변경+지침 노출 패턴이 모두 차단됐고, 차단 UX는 raw JSON/internal security 문자열을 노출하지 않았다. 추가로 supervisor API smoke 5패턴(EN/KO/DAN/role-change/정상 질의)도 5/5 통과해 false positive 없이 회귀가 재발하지 않음을 확인했다.",
+      "lastNextAction": ""
     },
     "sre-devops": {
       "domainId": "sre-devops",
@@ -10404,16 +10458,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 73,
-      "appropriateCount": 68,
+      "seenCount": 74,
+      "appropriateCount": 69,
       "partialCount": 5,
       "inappropriateCount": 0,
       "improvementNeededCount": 7,
-      "lastRunId": "QA-20260318-0124",
-      "lastSeenAt": "2026-03-18T08:26:39.409Z",
+      "lastRunId": "QA-20260318-0125",
+      "lastSeenAt": "2026-03-18T10:29:22.769Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "mounted WSL 환경에서 느린 jsdom targeted run 대신 AI assistant surface 전용 frontend smoke suite를 추가했고, smoke suite/타입체크/quick test/pre-push simulation이 모두 통과했다.",
+      "lastRationale": "Playwright MCP UI 검증과 npm 기반 supervisor smoke를 결합해 보안 회귀팩을 재현 가능하게 유지했다.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {
