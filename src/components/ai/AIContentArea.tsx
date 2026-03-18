@@ -35,7 +35,19 @@ interface AIContentAreaProps {
 export default function AIContentArea({
   selectedFunction,
 }: AIContentAreaProps) {
-  const [mountedTabs, setMountedTabs] = useState<Set<string>>(new Set());
+  const [mountedTabs, setMountedTabs] = useState<Set<string>>(() => {
+    if (selectedFunction === 'chat') {
+      return new Set();
+    }
+
+    return new Set([selectedFunction]);
+  });
+
+  const shouldRenderAutoReport =
+    selectedFunction === 'auto-report' || mountedTabs.has('auto-report');
+  const shouldRenderIntelligentMonitoring =
+    selectedFunction === 'intelligent-monitoring' ||
+    mountedTabs.has('intelligent-monitoring');
 
   useEffect(() => {
     if (selectedFunction === 'chat') return;
@@ -47,7 +59,7 @@ export default function AIContentArea({
 
   return (
     <>
-      {mountedTabs.has('auto-report') && (
+      {shouldRenderAutoReport && (
         <Activity
           mode={selectedFunction === 'auto-report' ? 'visible' : 'hidden'}
         >
@@ -58,7 +70,7 @@ export default function AIContentArea({
           </div>
         </Activity>
       )}
-      {mountedTabs.has('intelligent-monitoring') && (
+      {shouldRenderIntelligentMonitoring && (
         <Activity
           mode={
             selectedFunction === 'intelligent-monitoring' ? 'visible' : 'hidden'
