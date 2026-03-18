@@ -20,7 +20,9 @@ vi.mock('@/components/ai/WebSourceCards', () => ({
 }));
 
 vi.mock('@/utils/markdown-parser', () => ({
-  RenderMarkdownContent: ({ content }: { content: string }) => <div>{content}</div>,
+  RenderMarkdownContent: ({ content }: { content: string }) => (
+    <div>{content}</div>
+  ),
 }));
 
 function createAssistantMessage(): EnhancedChatMessage {
@@ -41,14 +43,19 @@ function createAssistantMessage(): EnhancedChatMessage {
 describe('SidebarMessage detail expand', () => {
   it('hides detailed analysis until the toggle is clicked', () => {
     render(
-      <MessageComponent message={createAssistantMessage()} isLastMessage={true} />
+      <MessageComponent
+        message={createAssistantMessage()}
+        isLastMessage={true}
+      />
     );
 
     expect(screen.getByText('핵심 요약')).toBeInTheDocument();
     expect(screen.getByText('핵심 요약 문장')).toBeInTheDocument();
     expect(screen.queryByText('상세 분석 첫 줄')).not.toBeInTheDocument();
 
-    const toggleButton = screen.getByRole('button', { name: /상세 분석 보기/i });
+    const toggleButton = screen.getByRole('button', {
+      name: /상세 분석 보기/i,
+    });
     expect(toggleButton).toHaveAttribute('aria-expanded', 'false');
 
     fireEvent.click(toggleButton);

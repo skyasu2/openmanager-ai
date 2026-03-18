@@ -121,7 +121,9 @@ describe('ServerResultCard', () => {
   });
 
   it('respects defaultExpanded for issue-first drilldown UX', () => {
-    render(<ServerResultCard server={createServerResult()} defaultExpanded={true} />);
+    render(
+      <ServerResultCard server={createServerResult()} defaultExpanded={true} />
+    );
 
     const toggleButton = screen.getByRole('button', {
       name: /cache-redis-dc1-01/i,

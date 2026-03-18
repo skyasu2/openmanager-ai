@@ -128,7 +128,9 @@ export const MessageComponent = memo<{
                           type="button"
                           aria-expanded={isDetailExpanded}
                           onClick={() =>
-                            setIsDetailExpanded((previousState) => !previousState)
+                            setIsDetailExpanded(
+                              (previousState) => !previousState
+                            )
                           }
                           className="flex w-full items-center justify-between text-left text-xs font-semibold text-slate-600 hover:text-slate-800"
                         >
