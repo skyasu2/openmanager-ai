@@ -832,8 +832,17 @@ function runBuildValidation(changedFilesResult) {
     const typeCheckRelevantFiles = changedFilesResult.files.filter((filePath) =>
       isTypeCheckRelevantFile(filePath)
     );
+    const skipTypeCheck =
+      changedFilesResult.isKnown && changedFilesResult.files.length > 0 && typeCheckRelevantFiles.length === 0;
     const useChangedTypeCheck =
       changedFilesResult.isKnown && typeCheckRelevantFiles.length > 0;
+
+    if (skipTypeCheck) {
+      typeCheckStatus = 'skipped-no-relevant-ts';
+      console.log('⚪ TypeScript 검증 스킵 (push 범위에 관련 TS 파일 없음)');
+      console.log('ℹ️  Full build/type-check는 GitHub CI + Vercel에서 계속 검증됨');
+      return;
+    }
 
     console.log(
       useChangedTypeCheck
@@ -938,6 +947,8 @@ function printSummary(duration) {
     console.log('  ✅ TypeScript check passed');
   } else if (typeCheckStatus === 'skipped-docs-only') {
     console.log('  ⚪ TypeScript skipped (docs/report-only push)');
+  } else if (typeCheckStatus === 'skipped-no-relevant-ts') {
+    console.log('  ⚪ TypeScript skipped (no relevant TS files in push range)');
   } else if (typeCheckStatus === 'skipped') {
     console.log('  ⚪ TypeScript skipped (SKIP_BUILD=true)');
   } else if (typeCheckStatus === 'delegated') {
