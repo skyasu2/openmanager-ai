@@ -3,6 +3,7 @@
  */
 
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { useState } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import AISidebarV4 from '@/components/ai-sidebar/AISidebarV4';
 
@@ -70,6 +71,8 @@ vi.mock('@/stores/useAISidebarStore', () => ({
       addMessage: vi.fn(),
       webSearchEnabled: false,
       setWebSearchEnabled: vi.fn(),
+      ragEnabled: false,
+      setRagEnabled: vi.fn(),
     };
     return selector ? selector(state) : state;
   }),
@@ -85,7 +88,18 @@ vi.mock('@/components/ai-sidebar/EnhancedAIChat', () => ({
 }));
 
 vi.mock('@/components/ai/AIContentArea', () => ({
-  default: () => <div data-testid="ai-content-area">Content Area</div>,
+  default: ({ selectedFunction }: { selectedFunction: string }) => {
+    const [count, setCount] = useState(0);
+
+    return (
+      <div data-testid="ai-content-area">
+        <div data-testid="ai-content-function">{selectedFunction}</div>
+        <button type="button" onClick={() => setCount((value) => value + 1)}>
+          content-count:{count}
+        </button>
+      </div>
+    );
+  },
 }));
 
 vi.mock('@/components/ai-sidebar/ResizeHandle', () => ({
@@ -97,7 +111,26 @@ vi.mock('@/components/ai-sidebar/InlineAgentStatus', () => ({
 }));
 
 vi.mock('@/components/ai/AIAssistantIconPanel', () => ({
-  default: () => <div data-testid="ai-icon-panel">Icon Panel</div>,
+  default: ({
+    onFunctionChange,
+  }: {
+    onFunctionChange: (value: 'chat' | 'auto-report' | 'intelligent-monitoring') => void;
+  }) => (
+    <div data-testid="ai-icon-panel">
+      <button type="button" onClick={() => onFunctionChange('chat')}>
+        switch-chat
+      </button>
+      <button type="button" onClick={() => onFunctionChange('auto-report')}>
+        switch-reporter
+      </button>
+      <button
+        type="button"
+        onClick={() => onFunctionChange('intelligent-monitoring')}
+      >
+        switch-analyst
+      </button>
+    </div>
+  ),
 }));
 
 vi.mock('@/components/ai/AnalysisBasisBadge', () => ({
@@ -139,6 +172,10 @@ describe('AISidebarV4', () => {
     });
   };
 
+  const clickFunctionSwitch = (name: 'switch-chat' | 'switch-reporter' | 'switch-analyst') => {
+    fireEvent.click(screen.getAllByRole('button', { name })[0]);
+  };
+
   beforeEach(() => {
     vi.clearAllMocks();
     mockPermissions.canToggleAI = true;
@@ -178,6 +215,54 @@ describe('AISidebarV4', () => {
   it('renders chat view by default', () => {
     render(<AISidebarV4 {...defaultProps} />);
     expect(screen.getByTestId('enhanced-ai-chat')).toBeInTheDocument();
+  });
+
+  it('preserves sidebar Analyst state when switching to chat and back', () => {
+    render(<AISidebarV4 {...defaultProps} />);
+
+    clickFunctionSwitch('switch-analyst');
+    fireEvent.click(screen.getByRole('button', { name: 'content-count:0' }));
+
+    expect(screen.getByTestId('ai-content-function')).toHaveTextContent(
+      'intelligent-monitoring'
+    );
+    expect(
+      screen.getByRole('button', { name: 'content-count:1' })
+    ).toBeDefined();
+
+    clickFunctionSwitch('switch-chat');
+    clickFunctionSwitch('switch-analyst');
+
+    expect(screen.getByTestId('ai-content-function')).toHaveTextContent(
+      'intelligent-monitoring'
+    );
+    expect(
+      screen.getByRole('button', { name: 'content-count:1' })
+    ).toBeDefined();
+  });
+
+  it('preserves sidebar Reporter state when switching to chat and back', () => {
+    render(<AISidebarV4 {...defaultProps} />);
+
+    clickFunctionSwitch('switch-reporter');
+    fireEvent.click(screen.getByRole('button', { name: 'content-count:0' }));
+
+    expect(screen.getByTestId('ai-content-function')).toHaveTextContent(
+      'auto-report'
+    );
+    expect(
+      screen.getByRole('button', { name: 'content-count:1' })
+    ).toBeDefined();
+
+    clickFunctionSwitch('switch-chat');
+    clickFunctionSwitch('switch-reporter');
+
+    expect(screen.getByTestId('ai-content-function')).toHaveTextContent(
+      'auto-report'
+    );
+    expect(
+      screen.getByRole('button', { name: 'content-count:1' })
+    ).toBeDefined();
   });
 
   it('renders mobile backdrop and closes when clicked', () => {
