@@ -162,10 +162,9 @@ async function assertAnalystRetained(root: Page | Locator) {
   ).toBeVisible({
     timeout: TIMEOUTS.COMPLEX_INTERACTION,
   });
-  await expect(root.getByRole('button', { name: /^RAG$/ }).first()).toHaveAttribute(
-    'aria-pressed',
-    'true'
-  );
+  await expect(
+    root.getByRole('button', { name: /^RAG$/ }).first()
+  ).toHaveAttribute('aria-pressed', 'true');
 }
 
 test.describe('AI retention parity manual', () => {
