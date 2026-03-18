@@ -89,6 +89,7 @@
     "test:coverage": "vitest run --config config/testing/vitest.config.simple.ts --coverage",
     "test:coverage:full": "node scripts/dev/vitest-main-wrapper.js run --config config/testing/vitest.config.main.ts --coverage.enabled=true",
     "test:watch": "vitest --config config/testing/vitest.config.simple.ts",
+    "test:frontend:smoke": "vitest run --config config/testing/vitest.config.frontend-smoke.ts",
     "test:perf:vitest": "RUN_SLOW_TESTS=true node scripts/dev/vitest-main-wrapper.js run --config config/testing/vitest.config.main.ts tests/performance/web-vitals-integration.test.ts",
     "test:external-connectivity": "RUN_EXTERNAL_CONNECTIVITY_TESTS=true node scripts/dev/vitest-main-wrapper.js run --config config/testing/vitest.config.main.ts tests/integration/external-services-connection.test.ts",
     "test:cloud-contract": "node scripts/dev/vitest-main-wrapper.js run --config config/testing/vitest.config.main.ts tests/api/cloud-run-contract.test.ts",

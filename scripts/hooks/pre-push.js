@@ -58,6 +58,19 @@ const HOOK_TEST_INFRA_EXACT = new Set([
   'scripts/hooks/pre-push.js',
 ]);
 
+const FRONTEND_SMOKE_PREFIXES = [
+  'src/components/ai/',
+  'src/components/ai-sidebar/',
+  'src/app/dashboard/ai-assistant/',
+];
+
+const FRONTEND_SMOKE_EXACT = new Set([
+  'src/app/dashboard/DashboardClient.tsx',
+  'src/app/dashboard/dashboard-client-helpers.tsx',
+  'src/components/dashboard/AIAssistantButton.tsx',
+  'src/components/dashboard/AIAssistantButton.test.tsx',
+]);
+
 function loadDomTestManifest() {
   const manifestPath = path.join(cwd, 'config/testing/dom-test-manifest.json');
 
@@ -160,6 +173,12 @@ function isDomTestInfraFile(filePath) {
 
 function isHookTestInfraFile(filePath) {
   return HOOK_TEST_INFRA_EXACT.has(normalizeFilePath(filePath));
+}
+
+function isFrontendSmokeFile(filePath) {
+  const normalized = normalizeFilePath(filePath);
+  if (FRONTEND_SMOKE_EXACT.has(normalized)) return true;
+  return FRONTEND_SMOKE_PREFIXES.some((prefix) => normalized.startsWith(prefix));
 }
 
 function isZeroOid(oid) {
@@ -564,16 +583,35 @@ function classifyChangedTestRun(changedFilesResult) {
   }
 
   const normalizedFiles = changedFilesResult.files.map(normalizeFilePath);
-  const testFiles = normalizedFiles.filter((filePath) => isVitestTestFile(filePath));
-  const relatedSourceFiles = normalizedFiles.filter((filePath) =>
+  const frontendSmokeFiles = normalizedFiles.filter((filePath) =>
+    isFrontendSmokeFile(filePath)
+  );
+  const frontendSmokeFileSet = new Set(frontendSmokeFiles);
+  const remainingFiles = normalizedFiles.filter(
+    (filePath) => !frontendSmokeFileSet.has(filePath)
+  );
+  const testFiles = remainingFiles.filter((filePath) => isVitestTestFile(filePath));
+  const relatedSourceFiles = remainingFiles.filter((filePath) =>
     isRelatedSourceFile(filePath)
   );
-  const domInfraFiles = normalizedFiles.filter((filePath) => isDomTestInfraFile(filePath));
-  const hookInfraFiles = normalizedFiles.filter((filePath) => isHookTestInfraFile(filePath));
+  const domInfraFiles = remainingFiles.filter((filePath) => isDomTestInfraFile(filePath));
+  const hookInfraFiles = remainingFiles.filter((filePath) => isHookTestInfraFile(filePath));
   const steps = [];
   const summaryParts = [];
   const guidance = [];
   const scopeFiles = [];
+
+  if (frontendSmokeFiles.length > 0 && isWSL && isWindowsFS) {
+    // WSL on mounted Windows filesystems pays a ~30s jsdom startup cost even for
+    // tiny targeted files. Use a stable smoke pack for the AI assistant surface.
+    steps.push({
+      label: `Frontend AI smoke suite (${frontendSmokeFiles.length} file${frontendSmokeFiles.length > 1 ? 's' : ''})`,
+      args: ['run', 'test:frontend:smoke'],
+    });
+    summaryParts.push('frontend AI smoke');
+    guidance.push('npm run test:frontend:smoke');
+    scopeFiles.push(...frontendSmokeFiles);
+  }
 
   if (testFiles.length > 0) {
     const domTestFiles = testFiles.filter((filePath) => isDomTestFile(filePath));
