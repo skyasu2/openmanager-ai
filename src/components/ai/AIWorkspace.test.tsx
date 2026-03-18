@@ -348,4 +348,34 @@ describe('AIWorkspace', () => {
       screen.getByRole('button', { name: 'content-count:1' })
     ).toBeDefined();
   });
+
+  it('preserves fullscreen Reporter state when switching to chat and back', () => {
+    render(<AIWorkspace mode="fullscreen" />);
+
+    fireEvent.click(
+      screen.getByRole('button', { name: /장애 보고서\s+Reporter Agent/i })
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'content-count:0' }));
+
+    expect(screen.getByTestId('ai-content-function')).toHaveTextContent(
+      'auto-report'
+    );
+    expect(
+      screen.getByRole('button', { name: 'content-count:1' })
+    ).toBeDefined();
+
+    fireEvent.click(
+      screen.getByRole('button', { name: /AI Chat\s+NLQ Agent/i })
+    );
+    fireEvent.click(
+      screen.getByRole('button', { name: /장애 보고서\s+Reporter Agent/i })
+    );
+
+    expect(screen.getByTestId('ai-content-function')).toHaveTextContent(
+      'auto-report'
+    );
+    expect(
+      screen.getByRole('button', { name: 'content-count:1' })
+    ).toBeDefined();
+  });
 });
