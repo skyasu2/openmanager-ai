@@ -1,15 +1,15 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-19 19:23:33 KST
+> Generated at: 2026-03-19 21:56:22 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 130 |
-| Total Checks | 969 |
-| Passed | 922 |
+| Total Runs | 131 |
+| Total Checks | 978 |
+| Passed | 931 |
 | Failed | 43 |
 | Completed Items | 225 |
 | Pending Items | 0 |
@@ -18,21 +18,23 @@
 | Expert Domains Tracked | 6 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Run | QA-20260319-0130 (2026-03-19T03:58:04.054Z) |
+| Last Run | QA-20260319-0131 (2026-03-19T12:56:21.932Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260319-0130 (2026-03-19T03:58:04.054Z)
+Latest run: QA-20260319-0131 (2026-03-19T12:56:21.932Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| - | - | - | - |
+| AI Quality Assurance Specialist | appropriate | no | - |
+| DevOps / SRE Engineer | appropriate | no | - |
+| Test Automation Architect | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Status | Summary |
 |---|---|---|---|
-| - | - | - | - |
+| vercel | cli | skipped | Local CLI usage fetch was unavailable in-session; manual dashboard verification remains required. This run used one low-volume Playwright pass only (guest + dashboard + AI sidebar/chat). |
 
 ## Expert Domain Open Gaps
 
@@ -296,6 +298,7 @@ Latest run: QA-20260319-0130 (2026-03-19T03:58:04.054Z)
 
 | Run ID | Time (UTC) | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260319-0131 | 2026-03-19T12:56:21.932Z | Vercel Production QA - Core Route and AI Sidebar Broad Validation | 9 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260319-0130 | 2026-03-19T03:58:04.054Z | Vercel Playwright QA - Frontend and AI Assistant Full Validation | 6 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260319-0129 | 2026-03-19T00:13:33.724Z | Vercel Production QA - Core Frontend and AI Sidebar Partial Validation | 5 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260319-0128 | 2026-03-18T16:45:23.733Z | Vercel Playwright QA - Sidebar Reporter and Analyst chat retention parity | 6 | 2 | 0 | 0 | 0 | 0 |
@@ -315,5 +318,4 @@ Latest run: QA-20260319-0130 (2026-03-19T03:58:04.054Z)
 | QA-20260317-0114 | 2026-03-17T02:03:41.807Z | WONT-FIX 실측 재평가 - Playwright MCP 30개 UI 동작 확인 → completed 전환 | 30 | 27 | 0 | 0 | 0 | 0 |
 | QA-20260317-0113 | 2026-03-17T00:20:29.019Z | Cloud Run Observability Ops Fix - Langfuse traces endpoint restored (2026-03-17) | 5 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260317-0112 | 2026-03-17T00:10:17.328Z | Cloud Run Observability Ops Check - Langfuse readiness and traces endpoint validation (2026-03-17) | 4 | 0 | 0 | 0 | 1 | 1 |
-| QA-20260317-0111 | 2026-03-16T23:03:47.665Z | Production Playwright MCP QA - ai-engine Langfuse cold-start hardening deploy validation (2026-03-16) | 9 | 0 | 0 | 0 | 0 | 0 |
 

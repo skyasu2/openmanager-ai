@@ -1,0 +1,72 @@
+{
+  "runId": "QA-20260319-0131",
+  "recordedAt": "2026-03-19T12:56:21.932Z",
+  "recordedAtKst": "2026-03-19 21:56:21 KST",
+  "runTitle": "Vercel Production QA - Core Route and AI Sidebar Broad Validation",
+  "owner": "codex",
+  "source": "playwright-cli",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main"
+  },
+  "checks": {
+    "total": 9,
+    "passed": 9,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Vercel production에서 guest/dashboard/AI sidebar/AI chat core flow 9개가 모두 통과했다.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "이번 런은 mobile matrix나 고부하 루프 없이 단일 low-volume Playwright pass로 제한했고, free-tier compatible 운영 원칙을 유지했다.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "기존 production Playwright 스펙(guest, dashboard-ai-sidebar, dashboard-ai-chat)을 그대로 재사용해 핵심 경로를 검증했다.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "skipped",
+      "checkedAt": "",
+      "summary": "Local CLI usage fetch was unavailable in-session; manual dashboard verification remains required. This run used one low-volume Playwright pass only (guest + dashboard + AI sidebar/chat).",
+      "evidence": "npm run check:usage:vercel (CLI unavailable in current environment)",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Covered packs: landing/login(guest), dashboard, AI sidebar, AI chat streaming path.",
+    "Skipped packs: observability/security, analyst/reporter retention.",
+    "Retention manual suite attempted separately but current playwright.manual.config.ts launcher path was excluded from this run."
+  ],
+  "links": [
+    {
+      "label": "Vercel URL",
+      "url": "https://openmanager-ai.vercel.app"
+    }
+  ]
+}
