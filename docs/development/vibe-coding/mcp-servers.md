@@ -26,8 +26,9 @@
 | MCP | 용도 | 기본 활성 (Codex) | 비고 |
 |-----|------|:-----------------:|------|
 | **context7** | 라이브러리 공식 문서 검색 | ✅ | 공식 문서 우선 참조 |
+| **diagram-converter** | Mermaid 다이어그램 렌더/검증 | ✅ | 다이어그램 편집/검증 |
 | **sequential-thinking** | 복잡한 추론/설계 분해 | ✅ | 다단계 분석 |
-| **stitch** | UI 디자인 생성/변형 | ✅ | Google Stitch 연동 |
+| **stitch** | UI 디자인 생성/변형 | ✅ | 선택적 UI 프로토타이핑/증분 개선 |
 | **supabase-db** | PostgreSQL 조회/SQL/마이그레이션 | ✅ | Supabase MCP |
 | **vercel** | 배포 상태/이벤트 확인 | ✅ | Vercel MCP |
 | **playwright** | 브라우저 자동화/E2E | ✅ | 로컬 QA |
@@ -35,7 +36,8 @@
 | **github** | 저장소/PR/이슈 관리 | ✅ | GitHub MCP |
 | **storybook** | 컴포넌트 문서/스토리 기반 작업 | 선택 | Claude 전담 운영 시 사용 |
 
-- Codex 기준 SSOT: `.codex/config.toml` (현재 8개 활성, `storybook` 제외)
+- Codex 기준 SSOT: `.codex/config.toml` (현재 기본 9개 활성, `storybook` 제외)
+- `stitch`는 현재 연동되어 있지만 기본 QA/배포 루프에서 상시 사용하는 도구는 아닙니다. 명시적인 UI 개선/프로토타이핑 요청이 있을 때만 사용하는 온디맨드 도구로 해석합니다.
 - Claude 기준 로컬 구성은 `.mcp.json`/`.claude/settings.local.json` 정책에 따릅니다.
 
 ---
@@ -84,17 +86,18 @@
   - `bash scripts/mcp/mcp-health-check-codex.sh`
 - 실제 동작 검증은 서버별 도구 1회 이상 호출로 확인합니다.
 
-### 현재 Codex MCP 구성 요약 (2026-02-25)
+### 현재 Codex MCP 구성 요약 (2026-03-19)
 
 | Server ID | 실행 방식(요약) | Timeout (startup/tool) | 적용 목적 |
 |---|---|---:|---|
 | `supabase-db` | `node .../mcp-server-supabase/dist/transports/stdio.js` | `30/120` | DB 조회/SQL/마이그레이션 |
 | `context7` | `npx -y @upstash/context7-mcp` | `120/120` | 최신 공식 문서 검색 |
+| `diagram-converter` | `npx -y diagram-converter-mcp@0.2.6` | `120/180` | Mermaid 렌더/검증 |
 | `playwright` | `npx -y @playwright/mcp --output-dir .playwright-mcp/screenshots` | `180/180` | 브라우저 자동화 QA |
 | `next-devtools` | `npx -y next-devtools-mcp@latest` | `75/120` | Next.js 런타임 진단 |
 | `github` | `npx -y @modelcontextprotocol/server-github` | `120/120` | PR/Issue/파일 조회 |
 | `sequential-thinking` | `npx -y @modelcontextprotocol/server-sequential-thinking` | `120/90` | 복잡한 추론/계획 |
-| `stitch` | `bash -lc ./scripts/mcp/start-stitch-mcp.sh` | `120/180` | UI 생성/변형 |
+| `stitch` | `bash -lc ./scripts/mcp/start-stitch-mcp.sh` | `120/180` | 선택적 UI 생성/변형 |
 | `vercel` | `bash -lc npx -y vercel-mcp ...` | `180/120` | 배포 상태/로그 확인 |
 
 ### Codex에 MCP 추가/수정하는 방법
@@ -211,20 +214,22 @@ npm run mcp:playwright:mode:stdio
   "permissions": {
     "allow": [
       "mcp__context7__*",
+      "mcp__diagram-converter__*",
       "mcp__supabase__*",
       "mcp__vercel__*",
       "mcp__playwright__*",
       "mcp__next-devtools__*",
       "mcp__github__*",
       "mcp__sequential-thinking__*",
-      "mcp__stitch__*",
-      "mcp__storybook__*"
+      "mcp__stitch__*"
+      // optional: "mcp__storybook__*"
     ]
   },
   "enableAllProjectMcpServers": true,
   "enabledMcpjsonServers": [
-    "vercel", "supabase", "context7",
-    "playwright", "next-devtools", "github", "sequential-thinking", "stitch", "storybook"
+    "vercel", "supabase", "context7", "diagram-converter",
+    "playwright", "next-devtools", "github", "sequential-thinking", "stitch"
+    // optional: "storybook"
   ]
 }
 ```

@@ -13,6 +13,7 @@ SESSIONS_ROOT=""
 DAY_FILTER=""
 TOP_N=20
 USE_ALL_ROOTS=true
+INCLUDE_LEGACY=false
 
 if [ -n "${CODEX_SESSIONS_ROOT:-}" ]; then
   SESSIONS_ROOT="$CODEX_SESSIONS_ROOT"
@@ -38,6 +39,7 @@ Options:
   --root-only          Scan only --root (or resolved default root)
   --day <YYYY-MM-DD>   Count only one day (event timestamp filter)
   --top <N>            Show top N tools (default: 20)
+  --include-legacy     Include retired/legacy MCP servers from old sessions
   -h, --help           Show this help
 EOF
 }
@@ -63,6 +65,10 @@ while [ $# -gt 0 ]; do
     --top)
       TOP_N="${2:-}"
       shift 2
+      ;;
+    --include-legacy)
+      INCLUDE_LEGACY=true
+      shift
       ;;
     -h|--help)
       usage
@@ -132,7 +138,8 @@ files=("${all_files[@]}")
 
 tmp_lines="$(mktemp)"
 tmp_calls="$(mktemp)"
-trap 'rm -f "$tmp_lines" "$tmp_calls"' EXIT
+tmp_normalized="$(mktemp)"
+trap 'rm -f "$tmp_lines" "$tmp_calls" "$tmp_normalized"' EXIT
 
 # Pattern A: direct function_call to mcp__*
 rg -N '"type":"function_call".*"name":"mcp__[A-Za-z0-9._-]+__[A-Za-z0-9._-]+"' "${files[@]}" >"$tmp_lines" || true
@@ -148,10 +155,31 @@ fi
 sed -nE 's/.*"name":"(mcp__[A-Za-z0-9._-]+__[A-Za-z0-9._-]+)".*/\1/p' "$tmp_lines" >"$tmp_calls" || true
 sed -nE 's/.*"recipient_name":"functions\.(mcp__[A-Za-z0-9._-]+__[A-Za-z0-9._-]+)".*/\1/p' "$tmp_lines" >>"$tmp_calls" || true
 
+awk -v include_legacy="$INCLUDE_LEGACY" '
+function normalize_server(server) {
+  if (server == "supabase" || server == "supabase_db") return "supabase-db"
+  if (server == "next_devtools") return "next-devtools"
+  return server
+}
+{
+  split($0, parts, "__")
+  if (length(parts) < 3) next
+  server = normalize_server(parts[2])
+  tool = parts[3]
+  if (include_legacy != "true" && (server == "serena" || server == "tavily")) next
+  print "mcp__" server "__" tool
+}
+' "$tmp_calls" >"$tmp_normalized"
+
+mv "$tmp_normalized" "$tmp_calls"
+
 total_calls="$(wc -l <"$tmp_calls" | tr -d '[:space:]')"
 echo "Total MCP calls: $total_calls"
 if [ -n "$DAY_FILTER" ]; then
   echo "Day filter: $DAY_FILTER"
+fi
+if [ "$INCLUDE_LEGACY" = false ]; then
+  echo "Legacy servers filtered: serena, tavily"
 fi
 echo "Sessions roots:"
 for root in "${unique_roots[@]}"; do

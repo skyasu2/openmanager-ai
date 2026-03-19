@@ -4,12 +4,12 @@
 > Owner: dev-experience
 > Status: Active
 > Doc type: How-to
-> Last reviewed: 2026-02-14
+> Last reviewed: 2026-03-19
 > Canonical: docs/development/stitch-guide.md
 > Tags: stitch,ui,workflow
 >
 > stitch-improvement-workflow + stitch-sync-policy 병합
-> Last updated: 2026-02-14
+> Last updated: 2026-03-19
 
 ## 1. 핵심 원칙
 
@@ -17,6 +17,7 @@
 - Stitch 제안이 현재 구현과 충돌하면 **코드 기준 우선**.
 - 반영 단위는 "페이지 전체"가 아니라 **컴포넌트 단위**(1~2개)로 제한한다.
 - 기존 컴포넌트 경계, 상태 관리(TanStack Query/Zustand), API 계약을 유지한다.
+- Stitch는 현재 **상시 개발 루프의 기본 도구가 아니다**. 명시적인 UI 개선/프로토타이핑 요청이 있을 때만 온디맨드로 사용한다.
 
 ## 2. 운영 정책
 
@@ -30,6 +31,7 @@
 
 - active 프로젝트의 `mappedFiles`는 항상 최신 상태를 유지한다.
 - UI 변경 PR에서 active 프로젝트 변경 여부를 명시한다.
+- QA, 배포, 버그 수정, 런타임 진단만 필요한 작업에서는 Stitch를 기본적으로 사용하지 않는다.
 
 ## 3. 개선 워크플로우 (6단계)
 
