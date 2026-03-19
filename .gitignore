@@ -254,6 +254,7 @@ reports/*
 !reports/ai-review/**/.gitkeep
 !reports/qa/
 !reports/qa/**
+reports/qa/latest-qa-result.json
 reports/history/*
 !reports/history/README.md
 # AI 코드 리뷰 파일 (로컬 전용, GitHub 제외)
