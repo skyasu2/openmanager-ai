@@ -2,15 +2,15 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-03-18T16:45:23.733Z"
+    "updatedAt": "2026-03-19T00:13:33.724Z"
   },
   "sequence": {
-    "nextRunNumber": 129
+    "nextRunNumber": 130
   },
   "summary": {
-    "totalRuns": 128,
-    "totalChecks": 958,
-    "totalPassed": 911,
+    "totalRuns": 129,
+    "totalChecks": 963,
+    "totalPassed": 916,
     "totalFailed": 43,
     "completionRate": 100,
     "completedItems": 225,
@@ -19,8 +19,8 @@
     "wontFixItems": 8,
     "expertDomainsTracked": 6,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260319-0128",
-    "lastRecordedAt": "2026-03-18T16:45:23.733Z"
+    "lastRunId": "QA-20260319-0129",
+    "lastRecordedAt": "2026-03-19T00:13:33.724Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -4834,7 +4834,9 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0,
-      "aliases": ["esc-모달-닫기"],
+      "aliases": [
+        "esc-모달-닫기"
+      ],
       "owner": "",
       "lastEvidence": "Playwright MCP: ESC 키로 모달 닫기 동작 확인",
       "lastNote": "",
@@ -4858,7 +4860,9 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0,
-      "aliases": ["ai-chat-sidebar-open"],
+      "aliases": [
+        "ai-chat-sidebar-open"
+      ],
       "owner": "",
       "lastEvidence": "Playwright MCP: AI 어시스턴트 사이드바 열기/닫기 동작 확인",
       "lastNote": "",
@@ -4882,7 +4886,9 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0,
-      "aliases": ["프로덕션-대시보드-렌더링"],
+      "aliases": [
+        "프로덕션-대시보드-렌더링"
+      ],
       "owner": "",
       "lastEvidence": "Playwright MCP: 대시보드 전체 정상 렌더링 확인",
       "lastNote": "",
@@ -4906,7 +4912,9 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0,
-      "aliases": ["서버-모달-3탭-전환"],
+      "aliases": [
+        "서버-모달-3탭-전환"
+      ],
       "owner": "",
       "lastEvidence": "Playwright MCP: 종합상황/성능분석/로그&네트워크 3탭 전환 동작 확인",
       "lastNote": "",
@@ -10640,6 +10648,44 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260319-0129",
+      "recordedAt": "2026-03-19T00:13:33.724Z",
+      "recordedAtKst": "2026-03-19 09:13:33 KST",
+      "title": "Vercel Production QA - Core Frontend and AI Sidebar Partial Validation",
+      "owner": "gemini",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260319-0129.json",
+      "checks": {
+        "total": 5,
+        "passed": 5,
+        "failed": 0
+      },
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "랜딩, 게스트 PIN 로그인, system-boot에서 dashboard 전환, AI 사이드바 오픈, 스타터 프롬프트 기반 스트리밍 응답까지 핵심 사용자 경로를 실환경에서 검증했습니다. 이 런은 fullscreen, observability, security 회귀를 포함한 전체 QA 팩은 아닙니다.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Playwright MCP 실브라우저 세션으로 랜딩, 로그인 모달, 대시보드 초기화, AI 사이드바, 스트리밍 응답 렌더링 등 핵심 UI 상호작용을 확인했습니다. 전체 플랫폼 안정성 평가는 누적 QA 런과 함께 해석해야 합니다.",
+          "nextAction": ""
+        }
+      ],
+      "expertCount": 2,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -10648,16 +10694,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 84,
-      "appropriateCount": 80,
+      "seenCount": 85,
+      "appropriateCount": 81,
       "partialCount": 4,
       "inappropriateCount": 0,
       "improvementNeededCount": 12,
-      "lastRunId": "QA-20260319-0128",
-      "lastSeenAt": "2026-03-18T16:45:23.733Z",
+      "lastRunId": "QA-20260319-0129",
+      "lastSeenAt": "2026-03-19T00:13:33.724Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "실제 대시보드 사이드바 오버레이 경로에서 Reporter와 Analyst가 chat 왕복 후에도 상태를 유지하는지 검증했고, 양쪽 모두 회귀가 재현되지 않았다.",
+      "lastRationale": "랜딩, 게스트 PIN 로그인, system-boot에서 dashboard 전환, AI 사이드바 오픈, 스타터 프롬프트 기반 스트리밍 응답까지 핵심 사용자 경로를 실환경에서 검증했습니다. 이 런은 fullscreen, observability, security 회귀를 포함한 전체 QA 팩은 아닙니다.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -10716,16 +10762,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 77,
-      "appropriateCount": 71,
+      "seenCount": 78,
+      "appropriateCount": 72,
       "partialCount": 6,
       "inappropriateCount": 0,
       "improvementNeededCount": 8,
-      "lastRunId": "QA-20260319-0128",
-      "lastSeenAt": "2026-03-18T16:45:23.733Z",
+      "lastRunId": "QA-20260319-0129",
+      "lastSeenAt": "2026-03-19T00:13:33.724Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "AISidebarV4 DOM 회귀 테스트 추가 후 동일 시나리오를 Playwright로 재검증해 sidebar와 fullscreen 모두 상태 유지 계약이 일치함을 확인했다.",
+      "lastRationale": "Playwright MCP 실브라우저 세션으로 랜딩, 로그인 모달, 대시보드 초기화, AI 사이드바, 스트리밍 응답 렌더링 등 핵심 UI 상호작용을 확인했습니다. 전체 플랫폼 안정성 평가는 누적 QA 런과 함께 해석해야 합니다.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {

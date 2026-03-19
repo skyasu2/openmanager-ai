@@ -1,15 +1,15 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-19 01:45:23 KST
+> Generated at: 2026-03-19 09:13:33 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 128 |
-| Total Checks | 958 |
-| Passed | 911 |
+| Total Runs | 129 |
+| Total Checks | 963 |
+| Passed | 916 |
 | Failed | 43 |
 | Completed Items | 225 |
 | Pending Items | 0 |
@@ -18,11 +18,11 @@
 | Expert Domains Tracked | 6 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Run | QA-20260319-0128 (2026-03-18T16:45:23.733Z) |
+| Last Run | QA-20260319-0129 (2026-03-19T00:13:33.724Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260319-0128 (2026-03-18T16:45:23.733Z)
+Latest run: QA-20260319-0129 (2026-03-19T00:13:33.724Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -291,6 +291,7 @@ Latest run: QA-20260319-0128 (2026-03-18T16:45:23.733Z)
 
 | Run ID | Time (UTC) | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260319-0129 | 2026-03-19T00:13:33.724Z | Vercel Production QA - Frontend and AI Assistant Partial Validation | 5 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260319-0128 | 2026-03-18T16:45:23.733Z | Vercel Playwright QA - Sidebar Reporter and Analyst chat retention parity | 6 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260319-0127 | 2026-03-18T15:35:06.423Z | Vercel Playwright QA - Analyst fullscreen chat retention recheck | 5 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260318-0126 | 2026-03-18T14:50:18.155Z | Vercel Playwright QA - Reporter and Analyst fullscreen state retention | 6 | 3 | 1 | 0 | 0 | 2 |
@@ -310,5 +311,4 @@ Latest run: QA-20260319-0128 (2026-03-18T16:45:23.733Z)
 | QA-20260317-0112 | 2026-03-17T00:10:17.328Z | Cloud Run Observability Ops Check - Langfuse readiness and traces endpoint validation (2026-03-17) | 4 | 0 | 0 | 0 | 1 | 1 |
 | QA-20260317-0111 | 2026-03-16T23:03:47.665Z | Production Playwright MCP QA - ai-engine Langfuse cold-start hardening deploy validation (2026-03-16) | 9 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260316-0110 | 2026-03-16T10:33:55.207Z | Vercel Production QA - Full regression (랜딩~AI 응답~이력 유지) | 12 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260316-0109 | 2026-03-16T10:23:14.962Z | Security Regression Smoke - security-attack-regression-pack closure | 5 | 1 | 0 | 0 | 0 | 0 |
 

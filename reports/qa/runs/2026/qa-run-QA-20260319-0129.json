@@ -1,0 +1,49 @@
+{
+  "runId": "QA-20260319-0129",
+  "recordedAt": "2026-03-19T00:13:33.724Z",
+  "recordedAtKst": "2026-03-19 09:13:33 KST",
+  "runTitle": "Vercel Production QA - Core Frontend and AI Sidebar Partial Validation",
+  "owner": "gemini",
+  "source": "playwright-mcp",
+  "environment": {},
+  "checks": {
+    "total": 5,
+    "passed": 5,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "랜딩, 게스트 PIN 로그인, system-boot에서 dashboard 전환, AI 사이드바 오픈, 스타터 프롬프트 기반 스트리밍 응답까지 핵심 사용자 경로를 실환경에서 검증했습니다. 이 런은 fullscreen, observability, security 회귀를 포함한 전체 QA 팩은 아닙니다.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Playwright MCP 실브라우저 세션으로 랜딩, 로그인 모달, 대시보드 초기화, AI 사이드바, 스트리밍 응답 렌더링 등 핵심 UI 상호작용을 확인했습니다. 전체 플랫폼 안정성 평가는 누적 QA 런과 함께 해석해야 합니다.",
+      "nextAction": ""
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "PASS: 랜딩 요약 정보와 기술 스택/아키텍처 카피 정상 노출",
+    "PASS: 게스트 PIN 로그인 후 system-boot를 거쳐 dashboard 진입",
+    "PASS: AI 사이드바 오픈 후 스타터 프롬프트 기반 스트리밍 응답 정상 수신",
+    "SCOPE: 이 런은 fullscreen assistant, observability, security 회귀까지 포함한 전체 QA 팩은 아님",
+    "INTERPRETATION: overall green 판단은 QA-20260318-0125~QA-20260319-0129 누적 런 기준"
+  ],
+  "links": [
+    {
+      "label": "Vercel URL",
+      "url": "https://openmanager-ai.vercel.app"
+    }
+  ]
+}
