@@ -107,6 +107,8 @@ npm run qa:record -- --input <qa-run-input.json>
 }
 ```
 
+- Vercel Production broad/full QA(`checks.total >= 5`)면 `expertAssessments`를 최소 1건 반드시 남겨야 합니다.
+
 | domainId | domainName | 평가 기준 |
 |----------|-----------|----------|
 | `ai-quality-assurance` | AI Quality Assurance Specialist | AI Chat/Reporter/Analyst 응답 품질, 신뢰도 |

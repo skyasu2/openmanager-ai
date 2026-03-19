@@ -41,6 +41,7 @@ reports/qa/
   - Vercel Production QA/배포면 `platform: "vercel"` 항목이 최소 1건 필수
   - 권장 상태: `checked` | `skipped` | `failed`
 - 전문가 영역 평가는 `expertAssessments`에 기록합니다.
+  - Vercel Production broad/full QA(`checks.total >= 5`)면 최소 1건 필수
   - 핵심 필드: `domainId`, `fit`, `improvementNeeded`, `nextAction`
   - 권장 6개 도메인:
     - `ai-quality-assurance`

@@ -398,6 +398,10 @@ function isVercelProductionEnvironment(environment) {
   );
 }
 
+function requiresExpertAssessments(environment, totalChecks) {
+  return isVercelProductionEnvironment(environment) && Number(totalChecks || 0) >= 5;
+}
+
 function initializeTracker(nowIso) {
   return {
     version: '1.0.0',
@@ -842,6 +846,12 @@ function run() {
   if (requiresVercelUsageCheck && !hasVercelUsageCheck) {
     throw new Error(
       'Vercel production QA/deploy run에는 usageChecks에 platform="vercel" 항목이 최소 1건 필요합니다. npm run check:usage:vercel 또는 수동 대시보드 확인 결과를 기록하세요.'
+    );
+  }
+
+  if (requiresExpertAssessments(payload.environment, total) && expertAssessments.length === 0) {
+    throw new Error(
+      'Vercel production broad/full QA run(checks.total >= 5)에는 expertAssessments가 최소 1건 필요합니다.'
     );
   }
 
