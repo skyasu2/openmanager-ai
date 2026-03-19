@@ -12,6 +12,17 @@
     "passed": 10,
     "failed": 2
   },
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "checkedAt": "2026-03-19T09:20:00+09:00",
+      "summary": "Current billing period reviewed after production QA; no unexpected build/function/bandwidth spike.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
   "expertAssessments": [
     {
       "domainId": "ai-quality-assurance",

@@ -28,10 +28,18 @@ reports/qa/
 - `npm run qa:status`
 - `reports/qa/QA_STATUS.md` 확인
 
+4. Vercel 실환경 QA/배포 뒤 사용량 확인
+- `npm run check:usage` 또는 `npm run check:usage:vercel`
+- CLI 확인이 불가하면 Vercel Usage 대시보드를 수동 확인
+- 확인 결과는 QA 입력 JSON의 `usageChecks`에 기록
+
 ## Tracking Rules
 
 - `qa-tracker.json`이 상태 추적 SSOT입니다.
 - 개선 항목은 `id` 기준으로 누적됩니다.
+- `usageChecks`는 실환경 QA/배포 후 사용량 확인 근거를 남기는 필드입니다.
+  - 권장 플랫폼: `vercel`
+  - 권장 상태: `checked` | `skipped` | `failed`
 - 전문가 영역 평가는 `expertAssessments`에 기록합니다.
   - 핵심 필드: `domainId`, `fit`, `improvementNeeded`, `nextAction`
   - 권장 6개 도메인:

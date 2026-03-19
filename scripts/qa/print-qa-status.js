@@ -21,6 +21,8 @@ function run() {
   const recentRuns = (tracker.runs || []).slice(-5).reverse();
   const experts = Object.values(tracker.experts || {});
   const openExpertGaps = experts.filter((expert) => expert.lastImprovementNeeded);
+  const latestRun = tracker.runs?.[tracker.runs.length - 1] || null;
+  const latestUsageChecks = latestRun?.usageChecks || [];
 
   console.log('QA Tracker Summary');
   console.log(`- total runs: ${summary.totalRuns || 0}`);
@@ -33,6 +35,15 @@ function run() {
     `- expert domains tracked/open-gaps: ${experts.length}/${openExpertGaps.length}`
   );
   console.log(`- last run: ${summary.lastRunId || '-'} @ ${summary.lastRecordedAt || '-'}`);
+
+  if (latestUsageChecks.length > 0) {
+    console.log('\nLatest Usage Checks');
+    for (const usageCheck of latestUsageChecks) {
+      console.log(
+        `- ${usageCheck.platform}: ${usageCheck.status} via ${usageCheck.method}${usageCheck.summary ? ` - ${usageCheck.summary}` : ''}`
+      );
+    }
+  }
 
   if (pending.length > 0) {
     console.log('\nPending Improvements');

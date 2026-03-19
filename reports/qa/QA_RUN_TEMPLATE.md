@@ -41,6 +41,17 @@ npm run qa:record -- --input <qa-run-input.json>
     "backend": "Cloud Run",
     "branch": "main"
   },
+  "usageChecks": [               // 실환경 사용량 확인 근거
+    {
+      "platform": "vercel",
+      "method": "cli",           // "cli" | "manual-dashboard" | "api"
+      "status": "checked",       // "checked" | "skipped" | "failed"
+      "checkedAt": "ISO-8601",
+      "summary": "빌드/함수/대역폭 급증 없음",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
   "completedImprovements": [],   // 완료된 개선 항목
   "pendingImprovements": [],     // 미완료 개선 항목
   "dodChecks": [],               // DoD 체크리스트 (grouped items 지원)
@@ -105,6 +116,27 @@ npm run qa:record -- --input <qa-run-input.json>
 | `test-automation` | Test Automation Architect | E2E 커버리지, 테스트 안정성 |
 | `data-metrics-quality` | Data Quality & Metrics Analyst | OTel 데이터 무결성, 메트릭 현실성 |
 
+## Usage Check 스키마
+
+```jsonc
+{
+  "usageChecks": [
+    {
+      "platform": "vercel",              // 필수
+      "method": "cli",                   // 선택, 기본 "manual-dashboard"
+      "status": "checked",               // 선택, "checked" | "skipped" | "failed"
+      "checkedAt": "2026-03-19T09:20:00+09:00",
+      "summary": "빌드/함수/대역폭 급증 없음",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ]
+}
+```
+
+- Vercel 실환경 QA/배포 뒤에는 `usageChecks`에 최소 1건 남기는 것을 권장합니다.
+- CLI가 불가능하면 `method: "manual-dashboard"`로 수동 확인 결과를 기록합니다.
+
 ## Normalization 규칙 (스크립트 자동 처리)
 
 - **id**: title에서 slugify. KNOWN_VERIFICATIONS 패턴 매칭 시 stable id로 통합
@@ -120,6 +152,14 @@ npm run qa:record -- --input <qa-run-input.json>
   "runTitle": "Production smoke test",
   "owner": "codex",
   "checks": { "passed": 5, "failed": 0 },
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "manual-dashboard",
+      "status": "checked",
+      "summary": "실환경 smoke 후 추가 비용 징후 없음"
+    }
+  ],
   "completedImprovements": [
     { "title": "Health API 200 정상" },
     { "title": "대시보드 15서버 렌더링" }
@@ -140,6 +180,15 @@ npm run qa:record -- --input <qa-run-input.json>
     "branch": "main"
   },
   "checks": { "total": 17, "passed": 16, "failed": 1 },
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "summary": "현재 billing period 기준 추가 비용 징후 없음",
+      "evidence": "npm run check:usage:vercel"
+    }
+  ],
   "expertAssessments": [
     {
       "domainId": "ai-quality-assurance",

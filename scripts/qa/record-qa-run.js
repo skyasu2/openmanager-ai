@@ -358,6 +358,33 @@ function normalizeExpertAssessment(rawItem, index) {
   };
 }
 
+function normalizeUsageCheck(rawItem, index) {
+  if (!rawItem || typeof rawItem !== 'object') {
+    throw new Error(`usageChecks[${index}] 항목이 비어있거나 객체가 아닙니다.`);
+  }
+
+  const platform = String(rawItem.platform || '').trim().toLowerCase();
+  if (!platform) {
+    throw new Error(`usageChecks[${index}] platform이 필요합니다.`);
+  }
+
+  const method = String(rawItem.method || 'manual-dashboard').trim().toLowerCase();
+  const statusRaw = String(rawItem.status || 'checked').trim().toLowerCase();
+  const status = ['checked', 'skipped', 'failed'].includes(statusRaw)
+    ? statusRaw
+    : 'checked';
+
+  return {
+    platform,
+    method,
+    status,
+    checkedAt: rawItem.checkedAt ? String(rawItem.checkedAt) : '',
+    summary: rawItem.summary ? String(rawItem.summary) : '',
+    evidence: rawItem.evidence ? String(rawItem.evidence) : '',
+    url: rawItem.url ? String(rawItem.url) : '',
+  };
+}
+
 function initializeTracker(nowIso) {
   return {
     version: '1.0.0',
@@ -595,6 +622,7 @@ function statusMarkdown(tracker) {
   );
   const latestRun = tracker.runs[tracker.runs.length - 1] || null;
   const latestRunExperts = latestRun?.expertAssessments || [];
+  const latestRunUsageChecks = latestRun?.usageChecks || [];
 
   lines.push('# QA Status Dashboard');
   lines.push('');
@@ -634,6 +662,20 @@ function statusMarkdown(tracker) {
     for (const expert of latestRunExperts) {
       lines.push(
         `| ${expert.domainName} | ${expert.fit} | ${expert.improvementNeeded ? 'yes' : 'no'} | ${expert.nextAction || '-'} |`
+      );
+    }
+  }
+  lines.push('');
+  lines.push('## Usage Checks (Latest Run)');
+  lines.push('');
+  lines.push('| Platform | Method | Status | Summary |');
+  lines.push('|---|---|---|---|');
+  if (latestRunUsageChecks.length === 0) {
+    lines.push('| - | - | - | - |');
+  } else {
+    for (const usageCheck of latestRunUsageChecks) {
+      lines.push(
+        `| ${usageCheck.platform} | ${usageCheck.method} | ${usageCheck.status} | ${usageCheck.summary || '-'} |`
       );
     }
   }
@@ -777,6 +819,10 @@ function run() {
   const expertAssessments = expertAssessmentsRaw.map((item, index) =>
     normalizeExpertAssessment(item, index)
   );
+  const usageChecksRaw = Array.isArray(payload.usageChecks) ? payload.usageChecks : [];
+  const usageChecks = usageChecksRaw.map((item, index) =>
+    normalizeUsageCheck(item, index)
+  );
 
   const finalItemMap = new Map();
   const addItem = (item, sourceStatus) => {
@@ -856,6 +902,7 @@ function run() {
       failed,
     },
     expertAssessments,
+    usageChecks,
     completedImprovements: finalCompletedImprovements,
     pendingImprovements: finalPendingImprovements,
     deferredImprovements: finalDeferredImprovements,
@@ -925,6 +972,7 @@ function run() {
     file: runFileRelative,
     checks: runRecord.checks,
     expertAssessments,
+    usageChecks,
     expertCount: expertAssessments.length,
     expertNeedsImprovementCount,
     completedCount: finalCompletedImprovements.length,
