@@ -1,0 +1,76 @@
+{
+  "runId": "QA-20260320-0134",
+  "recordedAt": "2026-03-19T17:35:25.072Z",
+  "recordedAtKst": "2026-03-20 02:35:25 KST",
+  "runTitle": "Vercel Production QA - Core/Auth/AI Sidebar Smoke Validation",
+  "owner": "codex",
+  "source": "playwright-cli",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main"
+  },
+  "checks": {
+    "total": 15,
+    "passed": 15,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Production smoke covered guest entry, login CTA, AI sidebar open/input/starter prompts/ESC flow, and core API responsiveness.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Latest Vercel production deployment was verified as READY before running the smoke pack, and all selected production user journeys completed successfully.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The release smoke used existing Playwright production config and stable E2E specs for core/auth/sidebar coverage without local server dependency.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli-unavailable + mcp-deployment-check",
+      "status": "skipped",
+      "checkedAt": "",
+      "summary": "Production deployment readiness was confirmed via Vercel MCP (READY), but billing usage could not be reviewed from the local CLI in this session. Manual Vercel Usage dashboard review is still required if this run is used as a release-facing gate.",
+      "evidence": "mcp__vercel__getDeployments(app=openmanager-ai,target=production,limit=1); PLAYWRIGHT_VERCEL_WORKERS=1 npx playwright test tests/e2e/smoke.spec.ts tests/e2e/critical-auth.spec.ts tests/e2e/dashboard-ai-sidebar.spec.ts --grep-invert '@external' --config playwright.config.vercel.ts",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Covered surfaces: landing, login, 404, health/version/server APIs, guest session creation, dashboard AI sidebar open/input/starter prompts/ESC close.",
+    "Selected smoke command passed on Vercel production: 15 passed (2.4m).",
+    "Deployment check context: current production deployment is READY on Vercel, but it still points to commit a3f6a6912721a29a7191fa3b7bb5e7a8eb6612c2. Local QA-only commits 30a2ff0d6 and 2168644d9 were not pushed/deployed in this run."
+  ],
+  "links": [
+    {
+      "label": "Vercel URL",
+      "url": "https://openmanager-ai.vercel.app"
+    },
+    {
+      "label": "Vercel Deployment Inspector",
+      "url": "https://vercel.com/skyasus-projects/openmanager-ai/BXvzCKd4r4nwf37xGvBu5ZbMScuU"
+    }
+  ]
+}

@@ -2,15 +2,15 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-03-19T17:08:28.344Z"
+    "updatedAt": "2026-03-19T17:35:25.072Z"
   },
   "sequence": {
-    "nextRunNumber": 134
+    "nextRunNumber": 135
   },
   "summary": {
-    "totalRuns": 133,
-    "totalChecks": 982,
-    "totalPassed": 935,
+    "totalRuns": 134,
+    "totalChecks": 997,
+    "totalPassed": 950,
     "totalFailed": 43,
     "completionRate": 100,
     "completedItems": 225,
@@ -19,8 +19,8 @@
     "wontFixItems": 8,
     "expertDomainsTracked": 6,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260320-0133",
-    "lastRecordedAt": "2026-03-19T17:08:28.344Z"
+    "lastRunId": "QA-20260320-0134",
+    "lastRecordedAt": "2026-03-19T17:35:25.072Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -4834,7 +4834,9 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0,
-      "aliases": ["esc-모달-닫기"],
+      "aliases": [
+        "esc-모달-닫기"
+      ],
       "owner": "",
       "lastEvidence": "Playwright MCP: ESC 키로 모달 닫기 동작 확인",
       "lastNote": "",
@@ -4858,7 +4860,9 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0,
-      "aliases": ["ai-chat-sidebar-open"],
+      "aliases": [
+        "ai-chat-sidebar-open"
+      ],
       "owner": "",
       "lastEvidence": "Playwright MCP: AI 어시스턴트 사이드바 열기/닫기 동작 확인",
       "lastNote": "",
@@ -4882,7 +4886,9 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0,
-      "aliases": ["프로덕션-대시보드-렌더링"],
+      "aliases": [
+        "프로덕션-대시보드-렌더링"
+      ],
       "owner": "",
       "lastEvidence": "Playwright MCP: 대시보드 전체 정상 렌더링 확인",
       "lastNote": "",
@@ -4906,7 +4912,9 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0,
-      "aliases": ["서버-모달-3탭-전환"],
+      "aliases": [
+        "서버-모달-3탭-전환"
+      ],
       "owner": "",
       "lastEvidence": "Playwright MCP: 종합상황/성능분석/로그&네트워크 3탭 전환 동작 확인",
       "lastNote": "",
@@ -10821,6 +10829,63 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260320-0134",
+      "recordedAt": "2026-03-19T17:35:25.072Z",
+      "recordedAtKst": "2026-03-20 02:35:25 KST",
+      "title": "Vercel Production QA - Core/Auth/AI Sidebar Smoke Validation",
+      "owner": "codex",
+      "source": "playwright-cli",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260320-0134.json",
+      "checks": {
+        "total": 15,
+        "passed": 15,
+        "failed": 0
+      },
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Production smoke covered guest entry, login CTA, AI sidebar open/input/starter prompts/ESC flow, and core API responsiveness.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Latest Vercel production deployment was verified as READY before running the smoke pack, and all selected production user journeys completed successfully.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The release smoke used existing Playwright production config and stable E2E specs for core/auth/sidebar coverage without local server dependency.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli-unavailable + mcp-deployment-check",
+          "status": "skipped",
+          "checkedAt": "",
+          "summary": "Production deployment readiness was confirmed via Vercel MCP (READY), but billing usage could not be reviewed from the local CLI in this session. Manual Vercel Usage dashboard review is still required if this run is used as a release-facing gate.",
+          "evidence": "mcp__vercel__getDeployments(app=openmanager-ai,target=production,limit=1); PLAYWRIGHT_VERCEL_WORKERS=1 npx playwright test tests/e2e/smoke.spec.ts tests/e2e/critical-auth.spec.ts tests/e2e/dashboard-ai-sidebar.spec.ts --grep-invert '@external' --config playwright.config.vercel.ts",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "expertCount": 3,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -10829,16 +10894,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 86,
-      "appropriateCount": 82,
+      "seenCount": 87,
+      "appropriateCount": 83,
       "partialCount": 4,
       "inappropriateCount": 0,
       "improvementNeededCount": 12,
-      "lastRunId": "QA-20260319-0131",
-      "lastSeenAt": "2026-03-19T12:56:21.932Z",
+      "lastRunId": "QA-20260320-0134",
+      "lastSeenAt": "2026-03-19T17:35:25.072Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Vercel production에서 guest/dashboard/AI sidebar/AI chat core flow 9개가 모두 통과했다.",
+      "lastRationale": "Production smoke covered guest entry, login CTA, AI sidebar open/input/starter prompts/ESC flow, and core API responsiveness.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -10880,16 +10945,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 44,
-      "appropriateCount": 41,
+      "seenCount": 45,
+      "appropriateCount": 42,
       "partialCount": 3,
       "inappropriateCount": 0,
       "improvementNeededCount": 3,
-      "lastRunId": "QA-20260319-0131",
-      "lastSeenAt": "2026-03-19T12:56:21.932Z",
+      "lastRunId": "QA-20260320-0134",
+      "lastSeenAt": "2026-03-19T17:35:25.072Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "이번 런은 mobile matrix나 고부하 루프 없이 단일 low-volume Playwright pass로 제한했고, free-tier compatible 운영 원칙을 유지했다.",
+      "lastRationale": "Latest Vercel production deployment was verified as READY before running the smoke pack, and all selected production user journeys completed successfully.",
       "lastNextAction": ""
     },
     "test-automation": {
@@ -10897,16 +10962,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 79,
-      "appropriateCount": 73,
+      "seenCount": 80,
+      "appropriateCount": 74,
       "partialCount": 6,
       "inappropriateCount": 0,
       "improvementNeededCount": 8,
-      "lastRunId": "QA-20260319-0131",
-      "lastSeenAt": "2026-03-19T12:56:21.932Z",
+      "lastRunId": "QA-20260320-0134",
+      "lastSeenAt": "2026-03-19T17:35:25.072Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "기존 production Playwright 스펙(guest, dashboard-ai-sidebar, dashboard-ai-chat)을 그대로 재사용해 핵심 경로를 검증했다.",
+      "lastRationale": "The release smoke used existing Playwright production config and stable E2E specs for core/auth/sidebar coverage without local server dependency.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {
