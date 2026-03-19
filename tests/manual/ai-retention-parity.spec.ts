@@ -87,7 +87,9 @@ async function generateReporterResult(root: Page | Locator) {
 
   for (const candidate of emptyCreateCandidates) {
     if (
-      await candidate.isVisible({ timeout: TIMEOUTS.DOM_UPDATE }).catch(() => false)
+      await candidate
+        .isVisible({ timeout: TIMEOUTS.DOM_UPDATE })
+        .catch(() => false)
     ) {
       await candidate.click();
       didTriggerGeneration = true;
