@@ -3,6 +3,8 @@
   "owner": "codex",
   "source": "playwright-mcp",
   "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
     "frontend": "Vercel",
     "backend": "Cloud Run",
     "branch": "main"
