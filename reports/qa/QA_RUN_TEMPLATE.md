@@ -134,7 +134,7 @@ npm run qa:record -- --input <qa-run-input.json>
 }
 ```
 
-- Vercel 실환경 QA/배포 뒤에는 `usageChecks`에 최소 1건 남기는 것을 권장합니다.
+- Vercel 실환경 QA/배포 뒤에는 `usageChecks`에 `platform: "vercel"` 항목을 최소 1건 반드시 남겨야 합니다.
 - CLI가 불가능하면 `method: "manual-dashboard"`로 수동 확인 결과를 기록합니다.
 
 ## Normalization 규칙 (스크립트 자동 처리)

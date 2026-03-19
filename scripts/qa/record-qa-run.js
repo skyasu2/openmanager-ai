@@ -385,6 +385,19 @@ function normalizeUsageCheck(rawItem, index) {
   };
 }
 
+function isVercelProductionEnvironment(environment) {
+  if (!environment || typeof environment !== 'object') return false;
+
+  const target = String(environment.target || '').trim().toLowerCase();
+  const url = String(environment.url || '').trim().toLowerCase();
+
+  return (
+    target === 'vercel-production' ||
+    url.includes('.vercel.app') ||
+    url.includes('vercel.com')
+  );
+}
+
 function initializeTracker(nowIso) {
   return {
     version: '1.0.0',
@@ -823,6 +836,14 @@ function run() {
   const usageChecks = usageChecksRaw.map((item, index) =>
     normalizeUsageCheck(item, index)
   );
+  const requiresVercelUsageCheck = isVercelProductionEnvironment(payload.environment);
+  const hasVercelUsageCheck = usageChecks.some((item) => item.platform === 'vercel');
+
+  if (requiresVercelUsageCheck && !hasVercelUsageCheck) {
+    throw new Error(
+      'Vercel production QA/deploy run에는 usageChecks에 platform="vercel" 항목이 최소 1건 필요합니다. npm run check:usage:vercel 또는 수동 대시보드 확인 결과를 기록하세요.'
+    );
+  }
 
   const finalItemMap = new Map();
   const addItem = (item, sourceStatus) => {

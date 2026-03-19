@@ -38,7 +38,7 @@ reports/qa/
 - `qa-tracker.json`이 상태 추적 SSOT입니다.
 - 개선 항목은 `id` 기준으로 누적됩니다.
 - `usageChecks`는 실환경 QA/배포 후 사용량 확인 근거를 남기는 필드입니다.
-  - 권장 플랫폼: `vercel`
+  - Vercel Production QA/배포면 `platform: "vercel"` 항목이 최소 1건 필수
   - 권장 상태: `checked` | `skipped` | `failed`
 - 전문가 영역 평가는 `expertAssessments`에 기록합니다.
   - 핵심 필드: `domainId`, `fit`, `improvementNeeded`, `nextAction`
