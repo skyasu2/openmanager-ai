@@ -37,9 +37,9 @@ disable-model-invocation: true
 - 성공/실패 명령 분리
 - 실패 시 다음 조치 명령을 한 줄로 제시
 
-5. 리뷰 요청이 있으면 빌트인 `review` 스킬로 연결.
+5. 리뷰 요청이 있으면 `code-review` 스킬로 연결.
 - 스모크 체크는 결함 분석이 아님
-- 리뷰 요청 시 빌트인 `review` 스킬로 위임
+- 리뷰 요청 시 `code-review` 스킬로 위임 (6관점 심각도 우선 분석)
 
 ## Output Format
 
@@ -54,6 +54,8 @@ Lint Smoke Summary
 
 ## Related Skills
 
+- `code-review` - 6관점 심각도 우선 코드 리뷰 (리뷰 요청 시 스모크 후 연계)
+- `git-workflow` - 스모크 통과 후 커밋/푸시
 - `qa-ops` - Vercel/local 최종 QA + `reports/qa` 누적 기록
 
 ## Changelog
