@@ -998,9 +998,15 @@ function run() {
   );
 }
 
-try {
-  run();
-} catch (error) {
-  console.error(`❌ ${error.message}`);
-  process.exit(1);
+module.exports = {
+  statusMarkdown,
+};
+
+if (require.main === module) {
+  try {
+    run();
+  } catch (error) {
+    console.error(`❌ ${error.message}`);
+    process.exit(1);
+  }
 }

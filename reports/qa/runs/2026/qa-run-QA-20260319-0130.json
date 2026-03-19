@@ -1,0 +1,65 @@
+{
+  "runId": "QA-20260319-0130",
+  "recordedAt": "2026-03-19T03:58:04.054Z",
+  "recordedAtKst": "2026-03-19 12:58:04 KST",
+  "runTitle": "Vercel Playwright QA - Frontend and AI Assistant Full Validation",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app"
+  },
+  "checks": {
+    "total": 6,
+    "passed": 6,
+    "failed": 0
+  },
+  "items": [
+    {
+      "id": "landing-guest-auth",
+      "title": "랜딩 페이지 & 게스트 인증",
+      "status": "passed",
+      "notes": "초기 랜딩 페이지 정상 렌더링(에러 오버레이 없음). PIN(4231) 입력 후 대시보드 리다이렉트 정상"
+    },
+    {
+      "id": "dashboard-metrics",
+      "title": "대시보드 메트릭 로드",
+      "status": "passed",
+      "notes": "서버 15대 상태(온라인 14, 경고 1) 로드 확인. CPU/Memory/Disk 리소스 경고 Top 5 카드 및 Live Metrics 정상 렌더링"
+    },
+    {
+      "id": "ai-chat-clarification",
+      "title": "AI Chat Clarification 기능",
+      "status": "passed",
+      "notes": "'캐시 서버 상태 어때?' 질의에 불명확한 타겟에 대한 추가 컨텍스트 요청(Clarification) 정상 동작"
+    },
+    {
+      "id": "analyst-agent",
+      "title": "Analyst Agent 이상 감지/예측",
+      "status": "passed",
+      "notes": "전체 분석 약 5초 내 정상 응답. api-was-dc1-01 등 문제 서버 선별 및 향후 예측(심각 상태 도달 시간) 경고 리포팅 검증"
+    },
+    {
+      "id": "reporter-agent-generation",
+      "title": "Reporter Agent 보고서 생성",
+      "status": "passed",
+      "notes": "'첫 보고서 생성하기'로 활성 이슈 기반 보고서 생성 성공(API WAS 서버 CPU 과부하 경고)"
+    },
+    {
+      "id": "reporter-agent-md-copy",
+      "title": "Reporter Agent MD 복사 기능",
+      "status": "passed",
+      "notes": "[MD로 복사] 버튼 클릭 시 'MD 복사됨' 피드백 UI 상태 변경 렌더링 확인"
+    }
+  ],
+  "expertAssessments": [],
+  "usageChecks": [],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "스킬 개선 작업 병행 세션: Claude code-review/stitch-incremental 스킬 신규 추가, Codex 9개 스킬 메타(version/user-invocable) 통일화 완료"
+  ],
+  "links": []
+}

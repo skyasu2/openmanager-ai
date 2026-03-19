@@ -2,8 +2,10 @@
 
 const fs = require('node:fs');
 const path = require('node:path');
+const { statusMarkdown } = require('./record-qa-run.js');
 
 const TRACKER_PATH = path.resolve(process.cwd(), 'reports/qa/qa-tracker.json');
+const STATUS_PATH = path.resolve(process.cwd(), 'reports/qa/QA_STATUS.md');
 
 function run() {
   if (!fs.existsSync(TRACKER_PATH)) {
@@ -12,6 +14,7 @@ function run() {
   }
 
   const tracker = JSON.parse(fs.readFileSync(TRACKER_PATH, 'utf8'));
+  fs.writeFileSync(STATUS_PATH, statusMarkdown(tracker), 'utf8');
   const summary = tracker.summary || {};
   const items = Object.values(tracker.items || {});
   const completed = items.filter((item) => item.status === 'completed');
@@ -35,6 +38,7 @@ function run() {
     `- expert domains tracked/open-gaps: ${experts.length}/${openExpertGaps.length}`
   );
   console.log(`- last run: ${summary.lastRunId || '-'} @ ${summary.lastRecordedAt || '-'}`);
+  console.log(`- dashboard synced: ${path.relative(process.cwd(), STATUS_PATH)}`);
 
   if (latestUsageChecks.length > 0) {
     console.log('\nLatest Usage Checks');

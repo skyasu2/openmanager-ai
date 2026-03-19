@@ -2,15 +2,15 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-03-19T00:13:33.724Z"
+    "updatedAt": "2026-03-19T03:58:04.054Z"
   },
   "sequence": {
-    "nextRunNumber": 130
+    "nextRunNumber": 131
   },
   "summary": {
-    "totalRuns": 129,
-    "totalChecks": 963,
-    "totalPassed": 916,
+    "totalRuns": 130,
+    "totalChecks": 969,
+    "totalPassed": 922,
     "totalFailed": 43,
     "completionRate": 100,
     "completedItems": 225,
@@ -19,8 +19,8 @@
     "wontFixItems": 8,
     "expertDomainsTracked": 6,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260319-0129",
-    "lastRecordedAt": "2026-03-19T00:13:33.724Z"
+    "lastRunId": "QA-20260319-0130",
+    "lastRecordedAt": "2026-03-19T03:58:04.054Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -4834,7 +4834,9 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0,
-      "aliases": ["esc-모달-닫기"],
+      "aliases": [
+        "esc-모달-닫기"
+      ],
       "owner": "",
       "lastEvidence": "Playwright MCP: ESC 키로 모달 닫기 동작 확인",
       "lastNote": "",
@@ -4858,7 +4860,9 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0,
-      "aliases": ["ai-chat-sidebar-open"],
+      "aliases": [
+        "ai-chat-sidebar-open"
+      ],
       "owner": "",
       "lastEvidence": "Playwright MCP: AI 어시스턴트 사이드바 열기/닫기 동작 확인",
       "lastNote": "",
@@ -4882,7 +4886,9 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0,
-      "aliases": ["프로덕션-대시보드-렌더링"],
+      "aliases": [
+        "프로덕션-대시보드-렌더링"
+      ],
       "owner": "",
       "lastEvidence": "Playwright MCP: 대시보드 전체 정상 렌더링 확인",
       "lastNote": "",
@@ -4906,7 +4912,9 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0,
-      "aliases": ["서버-모달-3탭-전환"],
+      "aliases": [
+        "서버-모달-3탭-전환"
+      ],
       "owner": "",
       "lastEvidence": "Playwright MCP: 종합상황/성능분석/로그&네트워크 3탭 전환 동작 확인",
       "lastNote": "",
@@ -10673,6 +10681,28 @@
         }
       ],
       "expertCount": 2,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260319-0130",
+      "recordedAt": "2026-03-19T03:58:04.054Z",
+      "recordedAtKst": "2026-03-19 12:58:04 KST",
+      "title": "Vercel Playwright QA - Frontend and AI Assistant Full Validation",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260319-0130.json",
+      "checks": {
+        "total": 6,
+        "passed": 6,
+        "failed": 0
+      },
+      "expertAssessments": [],
+      "usageChecks": [],
+      "expertCount": 0,
       "expertNeedsImprovementCount": 0,
       "completedCount": 0,
       "pendingCount": 0,
