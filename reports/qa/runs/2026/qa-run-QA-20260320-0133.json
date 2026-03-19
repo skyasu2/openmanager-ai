@@ -1,0 +1,47 @@
+{
+  "runId": "QA-20260320-0133",
+  "recordedAt": "2026-03-19T17:08:28.344Z",
+  "recordedAtKst": "2026-03-20 02:08:28 KST",
+  "runTitle": "Vercel Playwright QA - AI Retention Parity Validation (Chrome Channel)",
+  "owner": "codex",
+  "source": "playwright-cli",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main"
+  },
+  "checks": {
+    "total": 2,
+    "passed": 2,
+    "failed": 0
+  },
+  "expertAssessments": [],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "manual-scope-note",
+      "status": "skipped",
+      "checkedAt": "",
+      "summary": "Chrome channel cross-validation used a single low-volume Playwright pass only (sidebar + fullscreen). Separate Vercel usage dashboard verification remains required if this run is used as a release-facing gate.",
+      "evidence": "PLAYWRIGHT_CHANNEL=chrome npm run test:vercel:ai-retention",
+      "url": ""
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Covered surfaces: guest dashboard entry, AI sidebar retention, fullscreen AI workspace retention.",
+    "Validated Reporter and Analyst state persistence across chat switching in both sidebar and fullscreen contexts on the chrome launch channel.",
+    "Skipped surfaces: general auth UI pack, observability/security pack, analyst/reporter non-retention workflows."
+  ],
+  "links": [
+    {
+      "label": "Vercel URL",
+      "url": "https://openmanager-ai.vercel.app"
+    }
+  ]
+}

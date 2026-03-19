@@ -1,15 +1,15 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-19 21:56:22 KST
+> Generated at: 2026-03-20 02:08:37 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 131 |
-| Total Checks | 978 |
-| Passed | 931 |
+| Total Runs | 133 |
+| Total Checks | 982 |
+| Passed | 935 |
 | Failed | 43 |
 | Completed Items | 225 |
 | Pending Items | 0 |
@@ -18,23 +18,21 @@
 | Expert Domains Tracked | 6 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Run | QA-20260319-0131 (2026-03-19T12:56:21.932Z) |
+| Last Run | QA-20260320-0133 (2026-03-19T17:08:28.344Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260319-0131 (2026-03-19T12:56:21.932Z)
+Latest run: QA-20260320-0133 (2026-03-19T17:08:28.344Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| AI Quality Assurance Specialist | appropriate | no | - |
-| DevOps / SRE Engineer | appropriate | no | - |
-| Test Automation Architect | appropriate | no | - |
+| - | - | - | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Status | Summary |
 |---|---|---|---|
-| vercel | cli | skipped | Local CLI usage fetch was unavailable in-session; manual dashboard verification remains required. This run used one low-volume Playwright pass only (guest + dashboard + AI sidebar/chat). |
+| vercel | manual-scope-note | skipped | Chrome channel cross-validation used a single low-volume Playwright pass only (sidebar + fullscreen). Separate Vercel usage dashboard verification remains required if this run is used as a release-facing gate. |
 
 ## Expert Domain Open Gaps
 
@@ -298,6 +296,8 @@ Latest run: QA-20260319-0131 (2026-03-19T12:56:21.932Z)
 
 | Run ID | Time (UTC) | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260320-0133 | 2026-03-19T17:08:28.344Z | Vercel Playwright QA - AI Retention Parity Validation (Chrome Channel) | 2 | 0 | 0 | 0 | 0 | 0 |
+| QA-20260320-0132 | 2026-03-19T16:55:35.018Z | Vercel Playwright QA - AI Retention Parity Validation | 2 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260319-0131 | 2026-03-19T12:56:21.932Z | Vercel Production QA - Core Route and AI Sidebar Broad Validation | 9 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260319-0130 | 2026-03-19T03:58:04.054Z | Vercel Playwright QA - Frontend and AI Assistant Full Validation | 6 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260319-0129 | 2026-03-19T00:13:33.724Z | Vercel Production QA - Core Frontend and AI Sidebar Partial Validation | 5 | 0 | 0 | 0 | 0 | 0 |
@@ -316,6 +316,4 @@ Latest run: QA-20260319-0131 (2026-03-19T12:56:21.932Z)
 | QA-20260317-0116 | 2026-03-17T04:00:14.984Z | Cloud Run Observability Ops - Multi-agent traceId live proof + Langfuse runtime visibility (2026-03-17) | 10 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260317-0115 | 2026-03-17T02:06:09.588Z | Cloud Run Observability Ops - Multi-agent traceId propagation validation (2026-03-17) | 9 | 1 | 0 | 0 | 1 | 1 |
 | QA-20260317-0114 | 2026-03-17T02:03:41.807Z | WONT-FIX 실측 재평가 - Playwright MCP 30개 UI 동작 확인 → completed 전환 | 30 | 27 | 0 | 0 | 0 | 0 |
-| QA-20260317-0113 | 2026-03-17T00:20:29.019Z | Cloud Run Observability Ops Fix - Langfuse traces endpoint restored (2026-03-17) | 5 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260317-0112 | 2026-03-17T00:10:17.328Z | Cloud Run Observability Ops Check - Langfuse readiness and traces endpoint validation (2026-03-17) | 4 | 0 | 0 | 0 | 1 | 1 |
 

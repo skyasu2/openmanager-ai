@@ -2,15 +2,15 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-03-19T12:56:21.932Z"
+    "updatedAt": "2026-03-19T17:08:28.344Z"
   },
   "sequence": {
-    "nextRunNumber": 132
+    "nextRunNumber": 134
   },
   "summary": {
-    "totalRuns": 131,
-    "totalChecks": 978,
-    "totalPassed": 931,
+    "totalRuns": 133,
+    "totalChecks": 982,
+    "totalPassed": 935,
     "totalFailed": 43,
     "completionRate": 100,
     "completedItems": 225,
@@ -19,8 +19,8 @@
     "wontFixItems": 8,
     "expertDomainsTracked": 6,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260319-0131",
-    "lastRecordedAt": "2026-03-19T12:56:21.932Z"
+    "lastRunId": "QA-20260320-0133",
+    "lastRecordedAt": "2026-03-19T17:08:28.344Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -10760,6 +10760,70 @@
         }
       ],
       "expertCount": 3,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260320-0132",
+      "recordedAt": "2026-03-19T16:55:35.018Z",
+      "recordedAtKst": "2026-03-20 01:55:35 KST",
+      "title": "Vercel Playwright QA - AI Retention Parity Validation",
+      "owner": "codex",
+      "source": "playwright-cli",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260320-0132.json",
+      "checks": {
+        "total": 2,
+        "passed": 2,
+        "failed": 0
+      },
+      "expertAssessments": [],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "manual-scope-note",
+          "status": "skipped",
+          "checkedAt": "",
+          "summary": "Retention parity validation used a single low-volume Playwright pass only (sidebar + fullscreen). Separate Vercel usage dashboard verification remains required if this run is used as a release-facing gate.",
+          "evidence": "npm run test:vercel:ai-retention",
+          "url": ""
+        }
+      ],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260320-0133",
+      "recordedAt": "2026-03-19T17:08:28.344Z",
+      "recordedAtKst": "2026-03-20 02:08:28 KST",
+      "title": "Vercel Playwright QA - AI Retention Parity Validation (Chrome Channel)",
+      "owner": "codex",
+      "source": "playwright-cli",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260320-0133.json",
+      "checks": {
+        "total": 2,
+        "passed": 2,
+        "failed": 0
+      },
+      "expertAssessments": [],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "manual-scope-note",
+          "status": "skipped",
+          "checkedAt": "",
+          "summary": "Chrome channel cross-validation used a single low-volume Playwright pass only (sidebar + fullscreen). Separate Vercel usage dashboard verification remains required if this run is used as a release-facing gate.",
+          "evidence": "PLAYWRIGHT_CHANNEL=chrome npm run test:vercel:ai-retention",
+          "url": ""
+        }
+      ],
+      "expertCount": 0,
       "expertNeedsImprovementCount": 0,
       "completedCount": 0,
       "pendingCount": 0,

@@ -27,8 +27,9 @@ export default function globalSetup() {
     }
   }
 
-  // Validate critical environment variables
-  const requiredVars = ['VERCEL_AUTOMATION_BYPASS_SECRET', 'TEST_SECRET_KEY'];
+  // Validate critical environment variables.
+  // Vercel bypass is optional because some production deployments are public.
+  const requiredVars = ['TEST_SECRET_KEY'];
   const missing = requiredVars.filter((v) => !process.env[v]);
 
   if (missing.length > 0) {

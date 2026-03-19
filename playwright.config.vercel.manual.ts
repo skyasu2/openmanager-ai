@@ -11,8 +11,6 @@ const chromiumLaunchArgs = [
   '--no-sandbox',
   '--disable-setuid-sandbox',
   '--disable-dev-shm-usage',
-  '--disable-crash-reporter',
-  '--disable-crashpad-for-testing',
 ];
 
 export default defineConfig({
@@ -31,7 +29,7 @@ export default defineConfig({
     baseURL:
       process.env.PLAYWRIGHT_BASE_URL || 'https://openmanager-ai.vercel.app',
     extraHTTPHeaders,
-    trace: 'retain-on-failure',
+    trace: 'off',
     actionTimeout: 30_000,
     navigationTimeout: 60_000,
   },

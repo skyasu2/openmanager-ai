@@ -1,5 +1,5 @@
 import { expect, type Locator, type Page, test } from '@playwright/test';
-import { openAiSidebar, resetGuestState } from '../e2e/helpers/guest';
+import { openAiSidebar } from '../e2e/helpers/guest';
 import { skipIfSecurityCheckpoint } from '../e2e/helpers/security';
 import { TIMEOUTS } from '../e2e/helpers/timeouts';
 import { navigateToDashboard } from '../e2e/helpers/ui-flow';
@@ -64,22 +64,52 @@ async function openFullscreenWorkspace(page: Page) {
 
 async function generateReporterResult(root: Page | Locator) {
   await switchFunction(root, 'reporter');
+  await root
+    .getByText('로딩 중...')
+    .first()
+    .waitFor({ state: 'hidden', timeout: TIMEOUTS.COMPLEX_INTERACTION })
+    .catch(() => undefined);
+  await expect(
+    root.getByRole('heading', { name: '자동 장애보고서' }).first()
+  ).toBeVisible({
+    timeout: TIMEOUTS.COMPLEX_INTERACTION,
+  });
 
-  const emptyCreateButton = root.getByTestId('report-generate-cta').first();
-  const createButton = root.getByTestId('report-generate-btn').first();
+  const emptyCreateCandidates = [
+    root.getByTestId('report-generate-cta').first(),
+    root.getByRole('button', { name: '첫 보고서 생성하기' }).first(),
+  ];
+  const createCandidates = [
+    root.getByTestId('report-generate-btn').first(),
+    root.getByRole('button', { name: '새 보고서' }).first(),
+  ];
+  let didTriggerGeneration = false;
 
-  if (
-    await emptyCreateButton
-      .isVisible({ timeout: TIMEOUTS.DOM_UPDATE })
-      .catch(() => false)
-  ) {
-    await emptyCreateButton.click();
-  } else {
-    await expect(createButton).toBeVisible({
-      timeout: TIMEOUTS.COMPLEX_INTERACTION,
-    });
-    await createButton.click();
+  for (const candidate of emptyCreateCandidates) {
+    if (
+      await candidate.isVisible({ timeout: TIMEOUTS.DOM_UPDATE }).catch(() => false)
+    ) {
+      await candidate.click();
+      didTriggerGeneration = true;
+      break;
+    }
   }
+
+  if (!didTriggerGeneration) {
+    for (const candidate of createCandidates) {
+      if (
+        await candidate
+          .isVisible({ timeout: TIMEOUTS.COMPLEX_INTERACTION })
+          .catch(() => false)
+      ) {
+        await candidate.click();
+        didTriggerGeneration = true;
+        break;
+      }
+    }
+  }
+
+  expect(didTriggerGeneration).toBe(true);
 
   await expect(
     root.getByRole('button', { name: '상세보기' }).first()
@@ -167,12 +197,7 @@ test.describe('AI retention parity manual', () => {
   test.describe.configure({ mode: 'serial' });
 
   test.beforeEach(async ({ page }) => {
-    await resetGuestState(page);
     await navigateToDashboard(page);
-  });
-
-  test.afterEach(async ({ page }) => {
-    await resetGuestState(page);
   });
 
   test('sidebar retains Reporter and Analyst state across chat switch', async ({

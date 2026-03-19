@@ -1,4 +1,5 @@
 import type { Locator, Page } from '@playwright/test';
+import { getTestBaseUrl } from './config';
 import { ensureVercelBypassCookie } from './security';
 import { TIMEOUTS } from './timeouts';
 
@@ -194,14 +195,17 @@ export async function navigateToLoginPage(
   options: { direct?: boolean } = {}
 ): Promise<void> {
   const { direct = false } = options;
+  const baseUrl = getTestBaseUrl();
+  const loginUrl = new URL('/login', baseUrl).toString();
+  const rootUrl = new URL('/', baseUrl).toString();
 
   await ensureVercelBypassCookie(page);
 
   if (direct) {
-    await page.goto('/login', { waitUntil: 'domcontentloaded' });
+    await page.goto(loginUrl, { waitUntil: 'domcontentloaded' });
   } else {
     // 메인 페이지에서 로그인 버튼 클릭
-    await page.goto('/', { waitUntil: 'domcontentloaded' });
+    await page.goto(rootUrl, { waitUntil: 'domcontentloaded' });
 
     // 로그인 버튼 찾기
     let loginButton: Locator | null = null;
@@ -218,7 +222,7 @@ export async function navigateToLoginPage(
 
     if (!loginButton) {
       // 로그인 버튼이 없으면 이미 로그인 페이지이거나 직접 이동
-      await page.goto('/login', { waitUntil: 'domcontentloaded' });
+      await page.goto(loginUrl, { waitUntil: 'domcontentloaded' });
       return;
     }
 
