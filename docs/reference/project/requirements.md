@@ -138,8 +138,8 @@
 
 | 항목 | 기준 |
 |------|------|
-| 운영 비용 | ₩0 (프로덕션 호스팅 한정 Free Tier Guard Rails 강제) |
-| Cloud Build | e2-medium만 허용 (120분/일) |
+| 운영 비용 | Vercel Pro 고정비를 제외한 가변 운영비 ₩0 (나머지 Free Tier Guard Rails 강제) |
+| Cloud Build | 기본 머신/기본 풀만 허용 (커스텀 machineType 금지) |
 | Cloud Run | 1 vCPU, 512Mi (180K vCPU-sec/월) |
 | Vercel Build | Standard 머신만 ($0.014/min) |
 

@@ -59,6 +59,7 @@
 - [ ] Cloud Build: `e2-medium` 기본 머신만 (machineType 옵션 금지)
 - [ ] Cloud Run: 1 vCPU, 512Mi (Free Tier 한도 내)
 - [ ] Vercel Build: Standard 머신 ($0.014/min, Turbo 금지)
+- [ ] Vercel Pro 사용 시에도 Free-tier compatible profile 유지 (Pro 전용 기능 의존 금지, Free 전환 시 핵심 경로 유지)
 - [ ] Cron Jobs: 비활성화 (`DISABLE_CRON_JOBS=true`)
 - [ ] GPU/고사양 인스턴스: 추가 금지
 - [ ] 비용 영향 커밋에 `[COST]` 태그
