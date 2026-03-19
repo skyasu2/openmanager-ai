@@ -107,7 +107,7 @@
     "test:e2e:visual:update": "playwright test tests/e2e/visual.spec.ts --config playwright.config.ts --update-snapshots",
     "test:e2e:with-server": "PORT=3000 npm run dev:stable & sleep 5 && playwright test --config playwright.config.ts; kill %1",
     "test:e2e:ai-retention:manual": "playwright test tests/manual/ai-retention-parity.spec.ts --config playwright.manual.config.ts",
-    "test:vercel:ai-retention": "cross-env PLAYWRIGHT_BASE_URL=https://openmanager-ai.vercel.app PLAYWRIGHT_SKIP_SERVER=1 playwright test tests/manual/ai-retention-parity.spec.ts --config playwright.manual.config.ts",
+    "test:vercel:ai-retention": "bash scripts/test/vercel-ai-retention.sh",
     "test:contract": "vitest run --config config/testing/vitest.config.contract.ts",
     "test:storybook:experimental": "vitest run --config config/testing/vitest.config.storybook.ts --project storybook",
     "test:cloud:essential": "node scripts/test/cloud-deploy-essential-smoke.mjs",

@@ -65,12 +65,8 @@ async function openFullscreenWorkspace(page: Page) {
 async function generateReporterResult(root: Page | Locator) {
   await switchFunction(root, 'reporter');
 
-  const emptyCreateButton = root
-    .getByRole('button', { name: '첫 보고서 생성하기' })
-    .first();
-  const createButton = root
-    .getByRole('button', { name: '보고서 생성' })
-    .first();
+  const emptyCreateButton = root.getByTestId('report-generate-cta').first();
+  const createButton = root.getByTestId('report-generate-btn').first();
 
   if (
     await emptyCreateButton
@@ -86,10 +82,10 @@ async function generateReporterResult(root: Page | Locator) {
   }
 
   await expect(
-    root.getByText('영향받는 서버:', { exact: false }).first()
+    root.getByRole('button', { name: '상세보기' }).first()
   ).toBeVisible({ timeout: TIMEOUTS.AI_RESPONSE });
   await expect(
-    root.getByRole('button', { name: '상세보기' }).first()
+    root.getByRole('button', { name: /MD로 복사|MD 복사됨/ }).first()
   ).toBeVisible({
     timeout: TIMEOUTS.AI_RESPONSE,
   });
@@ -97,10 +93,10 @@ async function generateReporterResult(root: Page | Locator) {
 
 async function assertReporterRetained(root: Page | Locator) {
   await expect(
-    root.getByText('영향받는 서버:', { exact: false }).first()
+    root.getByRole('button', { name: '상세보기' }).first()
   ).toBeVisible({ timeout: TIMEOUTS.COMPLEX_INTERACTION });
   await expect(
-    root.getByRole('button', { name: '상세보기' }).first()
+    root.getByRole('button', { name: /MD로 복사|MD 복사됨/ }).first()
   ).toBeVisible({
     timeout: TIMEOUTS.COMPLEX_INTERACTION,
   });
