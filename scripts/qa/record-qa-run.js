@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+const { execFileSync } = require('node:child_process');
 const fs = require('node:fs');
 const path = require('node:path');
 
@@ -7,6 +8,7 @@ const QA_ROOT = path.resolve(process.cwd(), 'reports/qa');
 const RUNS_ROOT = path.join(QA_ROOT, 'runs');
 const TRACKER_PATH = path.join(QA_ROOT, 'qa-tracker.json');
 const STATUS_PATH = path.join(QA_ROOT, 'QA_STATUS.md');
+const BIOME_WRAPPER_PATH = path.resolve(__dirname, '../dev/biome-wrapper.sh');
 
 const KNOWN_VERIFICATIONS = [
   { pattern: /^랜딩-페이지-v[\d.]+-로드/, baseId: 'landing-page-load-guest-login' },
@@ -76,6 +78,35 @@ function readJsonFile(filePath) {
 function writeJsonFile(filePath, data) {
   const output = `${JSON.stringify(data, null, 2)}\n`;
   fs.writeFileSync(filePath, output, 'utf8');
+}
+
+function formatGeneratedFiles(filePaths) {
+  const uniquePaths = Array.from(
+    new Set(
+      filePaths
+        .filter(Boolean)
+        .map((filePath) => path.resolve(filePath))
+    )
+  );
+
+  if (uniquePaths.length === 0) {
+    return;
+  }
+
+  const bashCmd = process.platform === 'win32' ? 'bash.exe' : 'bash';
+
+  try {
+    execFileSync(
+      bashCmd,
+      [BIOME_WRAPPER_PATH, 'format', '--write', ...uniquePaths],
+      {
+        stdio: 'ignore',
+      }
+    );
+  } catch (error) {
+    const reason = error instanceof Error ? error.message : String(error);
+    console.warn(`⚠️ Generated QA files written, but Biome format was skipped: ${reason}`);
+  }
 }
 
 function ensureDir(dirPath) {
@@ -1006,6 +1037,7 @@ function run() {
 
   writeJsonFile(TRACKER_PATH, tracker);
   fs.writeFileSync(STATUS_PATH, statusMarkdown(tracker), 'utf8');
+  formatGeneratedFiles([runFilePath, TRACKER_PATH, STATUS_PATH]);
 
   console.log(`✅ QA run recorded: ${runId}`);
   console.log(`- run file: ${runFileRelative}`);

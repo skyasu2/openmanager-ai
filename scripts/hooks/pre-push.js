@@ -147,7 +147,14 @@ function normalizeFilePath(filePath) {
 
 function isVitestTestFile(filePath) {
   const normalized = normalizeFilePath(filePath);
+  if (normalized.startsWith('tests/e2e/')) return false;
   if (normalized.startsWith('tests/manual/')) return false;
+  return /\.(test|spec)\.(js|ts|tsx)$/u.test(normalized);
+}
+
+function isPlaywrightTestFile(filePath) {
+  const normalized = normalizeFilePath(filePath);
+  if (!normalized.startsWith('tests/e2e/')) return false;
   return /\.(test|spec)\.(js|ts|tsx)$/u.test(normalized);
 }
 
@@ -605,8 +612,15 @@ function classifyChangedTestRun(changedFilesResult) {
     isAIWorkspaceQuickFile(filePath)
   );
   const aiWorkspaceQuickFileSet = new Set(aiWorkspaceQuickFiles);
-  const remainingFiles = afterFrontendSmokeFiles.filter(
+  const afterAiWorkspaceQuickFiles = afterFrontendSmokeFiles.filter(
     (filePath) => !aiWorkspaceQuickFileSet.has(filePath)
+  );
+  const playwrightTestFiles = afterAiWorkspaceQuickFiles.filter((filePath) =>
+    isPlaywrightTestFile(filePath)
+  );
+  const playwrightTestFileSet = new Set(playwrightTestFiles);
+  const remainingFiles = afterAiWorkspaceQuickFiles.filter(
+    (filePath) => !playwrightTestFileSet.has(filePath)
   );
   const testFiles = remainingFiles.filter((filePath) => isVitestTestFile(filePath));
   const relatedSourceFiles = remainingFiles.filter((filePath) =>
@@ -639,6 +653,18 @@ function classifyChangedTestRun(changedFilesResult) {
     summaryParts.push('AI workspace quick smoke');
     guidance.push('npm run test:quick');
     scopeFiles.push(...aiWorkspaceQuickFiles);
+  }
+
+  if (playwrightTestFiles.length > 0) {
+    // E2E specs are Playwright-owned and are excluded from the Vitest node suite.
+    // Keep pre-push fast and avoid misrouting them into `npm run test:node`.
+    steps.push({
+      label: `Playwright spec quick smoke (${playwrightTestFiles.length} file${playwrightTestFiles.length > 1 ? 's' : ''})`,
+      args: ['run', 'test:quick'],
+    });
+    summaryParts.push('playwright spec quick smoke');
+    guidance.push('npm run test:quick');
+    scopeFiles.push(...playwrightTestFiles);
   }
 
   if (testFiles.length > 0) {
