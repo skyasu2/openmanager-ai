@@ -1,15 +1,15 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-20 21:57:55 KST
+> Generated at: 2026-03-20 23:54:25 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 141 |
-| Total Checks | 1114 |
-| Passed | 1063 |
+| Total Runs | 142 |
+| Total Checks | 1125 |
+| Passed | 1074 |
 | Failed | 47 |
 | Completed Items | 228 |
 | Pending Items | 0 |
@@ -18,33 +18,29 @@
 | Expert Domains Tracked | 6 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Run | QA-20260320-0142 (2026-03-20T12:57:48.587Z) |
+| Last Run | QA-20260320-0143 (2026-03-20T14:54:14.012Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260320-0142 (2026-03-20T12:57:48.587Z)
+Latest run: QA-20260320-0143 (2026-03-20T14:54:14.012Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| AI Quality Assurance Specialist | appropriate | no | - |
-| IT Monitoring & Observability SME | appropriate | no | - |
-| AI Security & Reliability Architect | appropriate | no | - |
-| DevOps / SRE Engineer | appropriate | no | - |
 | Test Automation Architect | appropriate | no | - |
-| Data Quality & Metrics Analyst | appropriate | no | - |
+| IT Monitoring & Observability SME | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period usage reviewed after production QA; effectiveCost about $15.28 and billedCost remained 0 with no meaningful overage spike. |
+| vercel | reference | checked | unknown | Prior run QA-20260320-0142 usage: effectiveCost ~$15.28, billedCost 0. No spike from this run. |
 
 ## Coverage (Latest Run)
 
-- Scope: targeted
-- Release-Facing: no
-- Covered Surfaces: /, /login, /dashboard, guest PIN login, system start -> dashboard, AI sidebar, stream/v2 timing headers, sampled stream traceId, feedback persistence, Langfuse feedback forwarding, authenticated Cloud Run /monitoring
-- Skipped Surfaces: /system-boot route direct check, Reporter flow, Analyst flow, /dashboard/ai-assistant fullscreen, alerts/topology/log explorer pack, security blocked-prompt pack
+- Scope: broad
+- Release-Facing: yes
+- Covered Surfaces: /, /login, /api/health, /api/version, 404, system-boot → /dashboard redirect, dashboard render, AI sidebar open/chat, server modal 3-tab switch, ESC modal close, production console cleanliness
+- Skipped Surfaces: Reporter flow, Analyst flow, /dashboard/ai-assistant fullscreen, alerts/topology/log explorer pack, security blocked-prompt pack, Langfuse trace visibility
 
 ## Expert Domain Open Gaps
 
@@ -311,6 +307,7 @@ Latest run: QA-20260320-0142 (2026-03-20T12:57:48.587Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260320-0143 | 2026-03-20T14:54:14.012Z | broad | yes | Vercel Playwright QA - Broad Smoke Post-Push (SHA cf0b1119) | 11 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260320-0142 | 2026-03-20T12:57:48.587Z | targeted | no | Vercel Playwright QA - Langfuse Feedback Trace Recovery | 11 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260320-0141 | 2026-03-20T11:35:03.459Z | broad | yes | Vercel Playwright QA - Frontend and AI Assistant Broad Evaluation | 11 | 0 | 1 | 0 | 0 | 2 |
 | QA-20260320-0140 | 2026-03-20T11:04:59.928Z | smoke | yes | Vercel Production Smoke - Post Push Usage Evidence Green Recheck | 8 | 3 | 0 | 0 | 0 | 0 |
@@ -330,5 +327,4 @@ Latest run: QA-20260320-0142 (2026-03-20T12:57:48.587Z)
 | QA-20260318-0125 | 2026-03-18T10:29:22.769Z | legacy | no | Security QA - AI Code Gate Input Policy production recheck | 9 | 3 | 0 | 0 | 0 | 0 |
 | QA-20260318-0124 | 2026-03-18T08:26:39.409Z | legacy | no | Production QA - Frontend Smoke Gate Stabilization and Observability Recheck | 5 | 1 | 0 | 0 | 0 | 1 |
 | QA-20260318-0123 | 2026-03-18T07:23:22.850Z | legacy | no | Vercel Production QA - AI Sidebar and Fullscreen Parity Validation | 8 | 2 | 1 | 0 | 0 | 3 |
-| QA-20260318-0122 | 2026-03-18T06:11:19.435Z | legacy | no | Vercel Production QA - Core Frontend and AI Assistant Revalidation | 7 | 0 | 0 | 0 | 0 | 2 |
 

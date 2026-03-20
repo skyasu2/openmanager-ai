@@ -1,0 +1,79 @@
+{
+  "runId": "QA-20260320-0143",
+  "recordedAt": "2026-03-20T14:54:14.012Z",
+  "recordedAtKst": "2026-03-20 23:54:14 KST",
+  "runTitle": "Vercel Playwright QA - Broad Smoke Post-Push (SHA cf0b1119)",
+  "owner": "claude",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main"
+  },
+  "scope": "broad",
+  "releaseFacing": true,
+  "coveredSurfaces": [
+    "/",
+    "/login",
+    "/api/health",
+    "/api/version",
+    "404",
+    "system-boot → /dashboard redirect",
+    "dashboard render",
+    "AI sidebar open/chat",
+    "server modal 3-tab switch",
+    "ESC modal close",
+    "production console cleanliness"
+  ],
+  "skippedSurfaces": [
+    "Reporter flow",
+    "Analyst flow",
+    "/dashboard/ai-assistant fullscreen",
+    "alerts/topology/log explorer pack",
+    "security blocked-prompt pack",
+    "Langfuse trace visibility"
+  ],
+  "checks": {
+    "total": 11,
+    "passed": 11,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Playwright MCP 전구간 검증, 콘솔 에러 0, 핵심 라우트 모두 정상.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "서버 15대 대시보드, AI Stable 분석, 실시간 메트릭 정상.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "reference",
+      "status": "checked",
+      "result": "unknown",
+      "checkedAt": "",
+      "summary": "Prior run QA-20260320-0142 usage: effectiveCost ~$15.28, billedCost 0. No spike from this run.",
+      "evidence": "",
+      "url": ""
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [],
+  "links": []
+}
