@@ -156,12 +156,7 @@ function DashboardPageContent({ initialServers }: DashboardClientProps) {
   );
 
   // 🔒 자동 로그아웃 시스템 - 베르셀 사용량 최적화 (1초→10초 최적화 적용)
-  const {
-    remainingTime,
-    isWarning,
-    resetTimer,
-    forceLogout,
-  } = useAutoLogout({
+  const { remainingTime, isWarning, resetTimer, forceLogout } = useAutoLogout({
     timeoutMinutes: 10, // 10분 비활성 시 로그아웃
     warningMinutes: 1, // 1분 전 경고
     onWarning: () => {

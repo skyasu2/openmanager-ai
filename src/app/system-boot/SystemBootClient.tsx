@@ -19,9 +19,9 @@ import { useUnifiedAdminStore } from '@/stores/useUnifiedAdminStore';
 import { PAGE_BACKGROUNDS } from '@/styles/design-constants';
 import { triggerAIWarmup } from '@/utils/ai-warmup';
 import debug from '@/utils/debug';
-import { createTrackedTimeoutScheduler } from './timeout-scheduler';
 import { BootProgressBar } from './components/BootProgressBar';
 import { SmoothLoadingSpinner } from './components/SmoothLoadingSpinner';
+import { createTrackedTimeoutScheduler } from './timeout-scheduler';
 
 // 로딩 단계 정의 (정적 데이터 - 컴포넌트 외부)
 const BOOT_STAGES = [

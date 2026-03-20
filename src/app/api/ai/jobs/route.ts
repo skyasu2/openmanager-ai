@@ -147,9 +147,8 @@ async function handlePOST(request: NextRequest) {
     after(async () => {
       const finalTriggerStatus =
         initialTriggerStatus === 'scheduled'
-          ? (
-              await triggerWorker(jobId, query, jobType, options?.sessionId)
-            ).status
+          ? (await triggerWorker(jobId, query, jobType, options?.sessionId))
+              .status
           : initialTriggerStatus;
 
       await logJobCreation(

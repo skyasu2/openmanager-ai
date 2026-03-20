@@ -39,16 +39,10 @@ describe('job-ownership', () => {
     const request = new NextRequest('http://localhost/api/ai/jobs');
 
     expect(
-      isJobOwnedByRequester(
-        { metadata: { ownerKey: 'owner-key-1' } },
-        request
-      )
+      isJobOwnedByRequester({ metadata: { ownerKey: 'owner-key-1' } }, request)
     ).toBe(true);
     expect(
-      isJobOwnedByRequester(
-        { metadata: { ownerKey: 'owner-key-2' } },
-        request
-      )
+      isJobOwnedByRequester({ metadata: { ownerKey: 'owner-key-2' } }, request)
     ).toBe(false);
     expect(isJobOwnedByRequester({ metadata: {} }, request)).toBe(false);
   });
