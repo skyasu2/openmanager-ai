@@ -11,10 +11,7 @@
     "modal interactions",
     "login/policy copy"
   ],
-  "skippedSurfaces": [
-    "AI sidebar",
-    "observability pack"
-  ],
+  "skippedSurfaces": ["AI sidebar", "observability pack"],
   "environment": {
     "target": "vercel-production",
     "url": "https://openmanager-ai.vercel.app",
