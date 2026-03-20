@@ -2,25 +2,25 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-03-20T00:00:15.480Z"
+    "updatedAt": "2026-03-20T07:49:25.161Z"
   },
   "sequence": {
-    "nextRunNumber": 137
+    "nextRunNumber": 139
   },
   "summary": {
-    "totalRuns": 135,
-    "totalChecks": 1012,
-    "totalPassed": 965,
-    "totalFailed": 43,
+    "totalRuns": 137,
+    "totalChecks": 1076,
+    "totalPassed": 1026,
+    "totalFailed": 46,
     "completionRate": 100,
-    "completedItems": 225,
+    "completedItems": 227,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 8,
     "expertDomainsTracked": 6,
-    "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260320-0136",
-    "lastRecordedAt": "2026-03-20T00:00:15.480Z"
+    "expertDomainsOpenGaps": 1,
+    "lastRunId": "QA-20260320-0138",
+    "lastRecordedAt": "2026-03-20T07:49:25.161Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -150,19 +150,19 @@
       "status": "completed",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "lastSeenRunId": "QA-20260318-0125",
-      "lastSeenAt": "2026-03-18T10:29:22.769Z",
-      "seenCount": 6,
-      "completedCount": 2,
+      "lastSeenRunId": "QA-20260320-0138",
+      "lastSeenAt": "2026-03-20T07:49:25.161Z",
+      "seenCount": 8,
+      "completedCount": 4,
       "pendingCount": 3,
       "deferredCount": 2,
       "owner": "codex",
-      "lastEvidence": "QA-20260318-0125: Playwright MCP + security smoke 조합으로 production recheck",
+      "lastEvidence": "Authenticated security smoke passed 6/6 on production after the runtime safety follow-up.",
       "lastNote": "운영 회귀팩 최신 증거 갱신",
-      "lastStatusChangeAt": "2026-03-18T10:29:22.769Z",
+      "lastStatusChangeAt": "2026-03-20T07:49:25.161Z",
       "aliases": [],
       "isBlocking": true,
-      "isBlockingExplicit": true,
+      "isBlockingExplicit": false,
       "overengineeringScope": "실운영 전환 전까지는 제품 결함 트래커가 아닌 보안 QA 운영 백로그로 관리",
       "lastPolicyNote": ""
     },
@@ -4834,7 +4834,9 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0,
-      "aliases": ["esc-모달-닫기"],
+      "aliases": [
+        "esc-모달-닫기"
+      ],
       "owner": "",
       "lastEvidence": "Playwright MCP: ESC 키로 모달 닫기 동작 확인",
       "lastNote": "",
@@ -4858,7 +4860,9 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0,
-      "aliases": ["ai-chat-sidebar-open"],
+      "aliases": [
+        "ai-chat-sidebar-open"
+      ],
       "owner": "",
       "lastEvidence": "Playwright MCP: AI 어시스턴트 사이드바 열기/닫기 동작 확인",
       "lastNote": "",
@@ -4882,7 +4886,9 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0,
-      "aliases": ["프로덕션-대시보드-렌더링"],
+      "aliases": [
+        "프로덕션-대시보드-렌더링"
+      ],
       "owner": "",
       "lastEvidence": "Playwright MCP: 대시보드 전체 정상 렌더링 확인",
       "lastNote": "",
@@ -4906,7 +4912,9 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0,
-      "aliases": ["서버-모달-3탭-전환"],
+      "aliases": [
+        "서버-모달-3탭-전환"
+      ],
       "owner": "",
       "lastEvidence": "Playwright MCP: 종합상황/성능분석/로그&네트워크 3탭 전환 동작 확인",
       "lastNote": "",
@@ -5259,22 +5267,22 @@
       "status": "completed",
       "firstSeenRunId": "QA-20260319-0128",
       "firstSeenAt": "2026-03-18T16:45:23.733Z",
-      "lastSeenRunId": "QA-20260319-0128",
-      "lastSeenAt": "2026-03-18T16:45:23.733Z",
-      "seenCount": 1,
-      "completedCount": 1,
+      "lastSeenRunId": "QA-20260320-0138",
+      "lastSeenAt": "2026-03-20T07:49:25.161Z",
+      "seenCount": 3,
+      "completedCount": 3,
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0,
       "aliases": [],
       "owner": "codex",
-      "lastEvidence": "Playwright MCP: /dashboard 사이드바에서 Reporter로 보고서를 생성한 뒤 chat으로 이동했다가 Reporter로 복귀해도 보고서 카드와 카운트가 유지됨",
+      "lastEvidence": "Production AI retention parity passed for sidebar and fullscreen Reporter state on commit 159dce5b2.",
       "lastNote": "실제 sidebar overlay 경로 parity 검증 통과",
       "isBlocking": true,
-      "isBlockingExplicit": true,
+      "isBlockingExplicit": false,
       "overengineeringScope": "",
       "lastPolicyNote": "",
-      "lastStatusChangeAt": "2026-03-18T16:45:23.733Z"
+      "lastStatusChangeAt": "2026-03-20T07:49:25.161Z"
     },
     "analyst-sidebar-state-retention-chat-switch": {
       "id": "analyst-sidebar-state-retention-chat-switch",
@@ -5283,22 +5291,70 @@
       "status": "completed",
       "firstSeenRunId": "QA-20260319-0128",
       "firstSeenAt": "2026-03-18T16:45:23.733Z",
-      "lastSeenRunId": "QA-20260319-0128",
-      "lastSeenAt": "2026-03-18T16:45:23.733Z",
-      "seenCount": 1,
-      "completedCount": 1,
+      "lastSeenRunId": "QA-20260320-0138",
+      "lastSeenAt": "2026-03-20T07:49:25.161Z",
+      "seenCount": 3,
+      "completedCount": 3,
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0,
       "aliases": [],
       "owner": "codex",
-      "lastEvidence": "Playwright MCP: /dashboard 사이드바 Analyst에서 api-was-dc1-01 선택 + RAG on + 분석 완료 후 chat으로 이동했다가 복귀해도 선택값, 결과 카드, 활성 RAG 상태가 유지됨",
+      "lastEvidence": "Production AI retention parity passed for sidebar and fullscreen Analyst state on commit 159dce5b2.",
       "lastNote": "실제 sidebar overlay 경로 parity 검증 통과",
       "isBlocking": true,
-      "isBlockingExplicit": true,
+      "isBlockingExplicit": false,
       "overengineeringScope": "",
       "lastPolicyNote": "",
-      "lastStatusChangeAt": "2026-03-18T16:45:23.733Z"
+      "lastStatusChangeAt": "2026-03-20T07:49:25.161Z"
+    },
+    "system-boot-vercel-auth-expectation-alignment": {
+      "id": "system-boot-vercel-auth-expectation-alignment",
+      "title": "Production system-boot Playwright auth 기대값 정렬",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260320-0137",
+      "firstSeenAt": "2026-03-20T07:13:57.777Z",
+      "lastSeenRunId": "QA-20260320-0138",
+      "lastSeenAt": "2026-03-20T07:49:25.161Z",
+      "seenCount": 2,
+      "completedCount": 1,
+      "pendingCount": 1,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "Production Vercel system-boot spec now accepts 401 for hardened unauthenticated /api/system views, and the full pack reran green.",
+      "lastNote": "tracking-only, release-blocking 아님. /api/system?view=status 와 /api/system?view=health 는 보안 하드닝 후 401이 정상인데 current Vercel spec은 200/503만 허용한다.",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-03-20T07:49:25.161Z"
+    },
+    "production-smoke-console-401-cleanliness": {
+      "id": "production-smoke-console-401-cleanliness",
+      "title": "Production smoke console 401 resource noise 정리",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260320-0137",
+      "firstSeenAt": "2026-03-20T07:13:57.777Z",
+      "lastSeenRunId": "QA-20260320-0138",
+      "lastSeenAt": "2026-03-20T07:49:25.161Z",
+      "seenCount": 2,
+      "completedCount": 1,
+      "pendingCount": 1,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "Production smoke console check now ignores expected auth-probe 401 noise and reran green on the deployed SHA.",
+      "lastNote": "tracking-only, release-blocking 아님. 기능 실패는 아니지만 browser console clean check가 401 resource error 한 건으로 깨진다.",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-03-20T07:49:25.161Z"
     }
   },
   "runs": [
@@ -10935,6 +10991,120 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260320-0137",
+      "recordedAt": "2026-03-20T07:13:57.777Z",
+      "recordedAtKst": "2026-03-20 16:13:57 KST",
+      "title": "Vercel Production QA - Runtime Safety Follow-up Validation (SHA 159dce5b2)",
+      "owner": "codex",
+      "source": "playwright-cli + vercel-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260320-0137.json",
+      "checks": {
+        "total": 32,
+        "passed": 29,
+        "failed": 3
+      },
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Production AI retention parity and authenticated security smoke both passed on the deployed SHA.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": true,
+          "rationale": "The production deployment for commit 159dce5b2 reached READY, but fresh Vercel usage evidence could not be retrieved from the local CLI environment.",
+          "nextAction": "Confirm usage in the Vercel dashboard or restore CLI usage access before the next release-facing QA run."
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "partially-appropriate",
+          "improvementNeeded": true,
+          "rationale": "Production Playwright still contains stale expectations for unauthenticated /api/system views after auth hardening, and smoke console cleanliness now reports a 401 resource error.",
+          "nextAction": "Align the production E2E expectations with the hardened auth contract and isolate the console 401 source."
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "failed",
+          "checkedAt": "2026-03-20T16:10:00+09:00",
+          "summary": "Local Vercel CLI usage lookup failed in this environment, so this run does not have a fresh billed-usage confirmation.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "expertCount": 3,
+      "expertNeedsImprovementCount": 2,
+      "completedCount": 3,
+      "pendingCount": 2,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260320-0138",
+      "recordedAt": "2026-03-20T07:49:25.161Z",
+      "recordedAtKst": "2026-03-20 16:49:25 KST",
+      "title": "Vercel Production QA - Runtime Safety Follow-up Validation Green Recheck (SHA 159dce5b2)",
+      "owner": "codex",
+      "source": "playwright-cli + vercel-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260320-0138.json",
+      "checks": {
+        "total": 32,
+        "passed": 32,
+        "failed": 0
+      },
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Production core smoke, system-boot pack, AI retention parity, and authenticated security smoke all passed on the deployed SHA.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": true,
+          "rationale": "The production deployment stayed READY on commit 159dce5b2, but local CLI usage evidence is still unavailable for the release-facing QA trail.",
+          "nextAction": "Confirm usage in the Vercel dashboard or restore CLI usage access before the next release-facing QA run."
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The stale production E2E expectations were aligned with the hardened auth contract and the same production pack reran fully green.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "failed",
+          "checkedAt": "2026-03-20T16:20:00+09:00",
+          "summary": "Local Vercel CLI usage lookup still failed in this environment, so fresh billed-usage confirmation remains unavailable for this recheck.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "expertCount": 3,
+      "expertNeedsImprovementCount": 1,
+      "completedCount": 5,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -10943,16 +11113,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 88,
-      "appropriateCount": 84,
+      "seenCount": 90,
+      "appropriateCount": 86,
       "partialCount": 4,
       "inappropriateCount": 0,
       "improvementNeededCount": 12,
-      "lastRunId": "QA-20260320-0136",
-      "lastSeenAt": "2026-03-20T00:00:15.480Z",
+      "lastRunId": "QA-20260320-0138",
+      "lastSeenAt": "2026-03-20T07:49:25.161Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The deployed production build preserved guest entry, login CTA, AI sidebar open/input/starter prompts/ESC flow, and core API responsiveness after the push.",
+      "lastRationale": "Production core smoke, system-boot pack, AI retention parity, and authenticated security smoke all passed on the deployed SHA.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -10994,33 +11164,33 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 46,
-      "appropriateCount": 43,
+      "seenCount": 48,
+      "appropriateCount": 45,
       "partialCount": 3,
       "inappropriateCount": 0,
-      "improvementNeededCount": 3,
-      "lastRunId": "QA-20260320-0136",
-      "lastSeenAt": "2026-03-20T00:00:15.480Z",
+      "improvementNeededCount": 5,
+      "lastRunId": "QA-20260320-0138",
+      "lastSeenAt": "2026-03-20T07:49:25.161Z",
       "lastFit": "appropriate",
-      "lastImprovementNeeded": false,
-      "lastRationale": "The Vercel production alias was confirmed on commit 8bf843ad1 in READY state, and usage review did not show an unexpected billed overage spike during this release validation window.",
-      "lastNextAction": ""
+      "lastImprovementNeeded": true,
+      "lastRationale": "The production deployment stayed READY on commit 159dce5b2, but local CLI usage evidence is still unavailable for the release-facing QA trail.",
+      "lastNextAction": "Confirm usage in the Vercel dashboard or restore CLI usage access before the next release-facing QA run."
     },
     "test-automation": {
       "domainId": "test-automation",
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 81,
-      "appropriateCount": 75,
-      "partialCount": 6,
+      "seenCount": 83,
+      "appropriateCount": 76,
+      "partialCount": 7,
       "inappropriateCount": 0,
-      "improvementNeededCount": 8,
-      "lastRunId": "QA-20260320-0136",
-      "lastSeenAt": "2026-03-20T00:00:15.480Z",
+      "improvementNeededCount": 9,
+      "lastRunId": "QA-20260320-0138",
+      "lastSeenAt": "2026-03-20T07:49:25.161Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The same stable Playwright production config and core/auth/sidebar smoke pack passed again on the deployed SHA, providing post-deploy regression confirmation.",
+      "lastRationale": "The stale production E2E expectations were aligned with the hardened auth contract and the same production pack reran fully green.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {

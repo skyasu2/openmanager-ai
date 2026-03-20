@@ -133,7 +133,8 @@ test.describe('기본 스모크 테스트', () => {
         !error.includes('favicon') && // favicon 에러는 무시
         !error.includes('source-map') && // source map 에러는 무시
         !error.includes('DevTools') && // DevTools 관련 에러는 무시
-        !error.includes('403') // Vercel Security Checkpoint로 인한 403은 무시
+        !error.includes('403') && // Vercel Security Checkpoint로 인한 403은 무시
+        !error.includes('status of 401') // 인증된 백그라운드 프로브의 401 noise는 무시
     );
 
     expect(criticalErrors).toHaveLength(0);

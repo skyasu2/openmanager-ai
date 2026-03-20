@@ -58,8 +58,8 @@ test.describe('시스템 부트 테스트', () => {
 
       if (skipIfSecurityBlocked(response.status())) return;
 
-      // 200 또는 503 (시스템 미초기화) 허용
-      expect([200, 503]).toContain(response.status());
+      // 인증이 없으면 401, 시스템 초기화 뷰 응답 자체는 200/503 허용
+      expect([200, 401, 503]).toContain(response.status());
     });
 
     test('시스템 시작 API가 존재한다', async ({ page }) => {
@@ -116,7 +116,8 @@ test.describe('시스템 부트 테스트', () => {
 
       if (skipIfSecurityBlocked(response.status())) return;
 
-      expect([200, 503]).toContain(response.status());
+      // 인증이 없으면 401, 시스템 헬스 뷰 응답 자체는 200/503 허용
+      expect([200, 401, 503]).toContain(response.status());
     });
   });
 });

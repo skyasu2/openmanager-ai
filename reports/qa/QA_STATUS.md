@@ -1,44 +1,45 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-20 09:13:46 KST
+> Generated at: 2026-03-20 16:49:25 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 135 |
-| Total Checks | 1012 |
-| Passed | 965 |
-| Failed | 43 |
-| Completed Items | 225 |
+| Total Runs | 137 |
+| Total Checks | 1076 |
+| Passed | 1026 |
+| Failed | 46 |
+| Completed Items | 227 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 8 |
 | Expert Domains Tracked | 6 |
-| Expert Open Gaps | 0 |
+| Expert Open Gaps | 1 |
 | Completion Rate | 100% |
-| Last Run | QA-20260320-0136 (2026-03-20T00:00:15.480Z) |
+| Last Run | QA-20260320-0138 (2026-03-20T07:49:25.161Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260320-0136 (2026-03-20T00:00:15.480Z)
+Latest run: QA-20260320-0138 (2026-03-20T07:49:25.161Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
 | AI Quality Assurance Specialist | appropriate | no | - |
-| DevOps / SRE Engineer | appropriate | no | - |
+| DevOps / SRE Engineer | appropriate | yes | Confirm usage in the Vercel dashboard or restore CLI usage access before the next release-facing QA run. |
 | Test Automation Architect | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Status | Summary |
 |---|---|---|---|
-| vercel | cli + mcp-deployment-check | checked | Vercel production deployment for commit 8bf843ad12719f66d6864eebc6284586f396a1eb was READY, and billing usage review showed no meaningful billed overage spike during this QA window. Current billing-period effectiveCost is about USD 14.62, while billedCost remains effectively zero. |
+| vercel | cli | failed | Local Vercel CLI usage lookup still failed in this environment, so fresh billed-usage confirmation remains unavailable for this recheck. |
 
 ## Expert Domain Open Gaps
 
-- None
+- sre-devops: DevOps / SRE Engineer (last QA-20260320-0138)
+  next: Confirm usage in the Vercel dashboard or restore CLI usage access before the next release-facing QA run.
 
 ## Pending Improvements
 
@@ -110,7 +111,7 @@ Latest run: QA-20260320-0136 (2026-03-20T00:00:15.480Z)
 - analyst-normal-server-empty-state: Analyst 정상 서버 드릴다운 empty-state 의도/재현 판정 (completed 1회, last QA-20260310-0086)
 - analyst-quality-v880-quality-recheck: Analyst 전체 분석 및 드릴다운 품질 재검증 (completed 1회, last QA-20260308-0059)
 - analyst-quality-v880-recheck: Analyst 전체 분석 및 드릴다운 재검증 (completed 1회, last QA-20260308-0058)
-- analyst-sidebar-state-retention-chat-switch: Analyst 선택 서버와 결과가 sidebar chat 전환 후 유지 (completed 1회, last QA-20260319-0128)
+- analyst-sidebar-state-retention-chat-switch: Analyst 선택 서버와 결과가 sidebar chat 전환 후 유지 (completed 3회, last QA-20260320-0138)
 - analyst-state-loss-on-chat-switch: Analyst 선택 서버와 결과가 chat 전환 후 유지 (completed 1회, last QA-20260319-0127)
 - anomaly-detection-prediction: 이상감지/예측 15서버 전체 분석 (completed 1회, last QA-20260306-0051)
 - api-인증-검증-401-확인: API 인증 검증 401 확인 (completed 1회, last QA-20260301-0032)
@@ -196,6 +197,7 @@ Latest run: QA-20260320-0136 (2026-03-20T00:00:15.480Z)
 - prod-security-block-no-raw-json-20260313: Blocked prompt UX hides raw JSON and security error internals (completed 1회, last QA-20260313-0095)
 - prod-stream-v2-smoke-20260313: Production stream/v2 smoke returns 200 event-stream with cloud-run source (completed 1회, last QA-20260313-0094)
 - production-dashboard-render: 프로덕션 대시보드 렌더링 (completed 1회, last QA-20260317-0114)
+- production-smoke-console-401-cleanliness: Production smoke console 401 resource noise 정리 (completed 1회, last QA-20260320-0138)
 - profile-menu: 프로필 메뉴 드롭다운 (completed 1회, last QA-20260317-0114)
 - prompt-injection-block-smoke-v880: Prompt injection 차단 스모크 검증 (completed 1회, last QA-20260308-0056)
 - qa-doc-roadmap-current-status-alignment: QA DoD 로드맵 현재 상태 정합성 갱신 (completed 1회, last QA-20260309-0067)
@@ -215,10 +217,10 @@ Latest run: QA-20260320-0136 (2026-03-20T00:00:15.480Z)
 - reporter-generate-detail-v879: Reporter 보고서 생성 및 상세보기 (completed 1회, last QA-20260306-0052)
 - reporter-generate-detail-v880: Reporter 생성 및 상세 렌더링 검증 (completed 2회, last QA-20260309-0069)
 - reporter-primary-generate-button-empty-state: Reporter 상단 생성 버튼 empty state 동작 정합성 (completed 2회, last QA-20260315-0104)
-- reporter-sidebar-state-retention-chat-switch: Reporter 생성 결과가 sidebar chat 전환 후 유지 (completed 1회, last QA-20260319-0128)
+- reporter-sidebar-state-retention-chat-switch: Reporter 생성 결과가 sidebar chat 전환 후 유지 (completed 3회, last QA-20260320-0138)
 - reporter-state-loss-on-tab-switch: Reporter 탭 전환 시 생성 결과 상태 유지 (completed 1회, last QA-20260315-0104)
 - reporter-state-retention-chat-switch: Reporter 생성 결과가 chat 전환 후 유지 (completed 1회, last QA-20260318-0126)
-- security-attack-regression-pack: 보안 공격 시나리오 회귀팩 구축 (completed 2회, last QA-20260318-0125)
+- security-attack-regression-pack: 보안 공격 시나리오 회귀팩 구축 (completed 4회, last QA-20260320-0138)
 - server-card-expand: 서버 카드 상세 펼치기/접기 (completed 1회, last QA-20260317-0114)
 - server-detail-log-tab: 로그 & 네트워크 탭 (completed 1회, last QA-20260317-0114)
 - server-detail-perf-tab: 성능 분석 탭 (completed 1회, last QA-20260317-0114)
@@ -233,6 +235,7 @@ Latest run: QA-20260320-0136 (2026-03-20T00:00:15.480Z)
 - storybook-smoke-script-stable-port: Storybook smoke 테스트 스크립트 안정화 (completed 1회, last QA-20260315-0102)
 - system-boot-api-checks: 시스템 부트 API 존재성/헬스 체크 (completed 2회, last QA-20260302-0039)
 - system-boot-redirect: 시스템 시작 대시보드 리다이렉트 (completed 1회, last QA-20260301-0035)
+- system-boot-vercel-auth-expectation-alignment: Production system-boot Playwright auth 기대값 정렬 (completed 1회, last QA-20260320-0138)
 - system-start-auth-modal-guard-stability: 시스템 시작 로그인 모달 노출 경로 검증 보강 (completed 2회, last QA-20260302-0038)
 - system-start-login-modal: 비로그인 상태에서 시스템 시작 클릭 시 로그인 모달 노출 (completed 1회, last QA-20260227-0021)
 - system-start-login-modal-redirect: 로그인 모달에서 로그인 페이지로 이동 (completed 1회, last QA-20260227-0022)
@@ -298,6 +301,8 @@ Latest run: QA-20260320-0136 (2026-03-20T00:00:15.480Z)
 
 | Run ID | Time (UTC) | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260320-0138 | 2026-03-20T07:49:25.161Z | Vercel Production QA - Runtime Safety Follow-up Validation Green Recheck (SHA 159dce5b2) | 32 | 5 | 0 | 0 | 0 | 1 |
+| QA-20260320-0137 | 2026-03-20T07:13:57.777Z | Vercel Production QA - Runtime Safety Follow-up Validation (SHA 159dce5b2) | 32 | 3 | 2 | 0 | 0 | 2 |
 | QA-20260320-0136 | 2026-03-20T00:00:15.480Z | Vercel Production QA - Core/Auth/AI Sidebar Smoke Validation (Deployed SHA 8bf843ad1, Usage Checked) | 15 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260320-0134 | 2026-03-19T17:35:25.072Z | Vercel Production QA - Core/Auth/AI Sidebar Smoke Validation | 15 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260320-0133 | 2026-03-19T17:08:28.344Z | Vercel Playwright QA - AI Retention Parity Validation (Chrome Channel) | 2 | 0 | 0 | 0 | 0 | 0 |
@@ -316,6 +321,4 @@ Latest run: QA-20260320-0136 (2026-03-20T00:00:15.480Z)
 | QA-20260317-0120 | 2026-03-17T10:36:51.489Z | Vercel Playwright QA - landing profile bootstrap flicker recheck | 4 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260317-0119 | 2026-03-17T08:41:53.635Z | Vercel Playwright QA - guest boot, dashboard, AI stream, feedback, landing bootstrap state | 10 | 1 | 0 | 1 | 0 | 1 |
 | QA-20260317-0118 | 2026-03-17T08:11:11.594Z | Cloud Run Deploy Verification - v8.9.2 manual deploy (2026-03-17) | 6 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260317-0117 | 2026-03-17T04:33:27.878Z | Cloud Run Observability Ops - monitoring traces search + auxiliary filtering validation (2026-03-17) | 8 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260317-0116 | 2026-03-17T04:00:14.984Z | Cloud Run Observability Ops - Multi-agent traceId live proof + Langfuse runtime visibility (2026-03-17) | 10 | 2 | 0 | 0 | 0 | 0 |
 

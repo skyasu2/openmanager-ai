@@ -1,0 +1,144 @@
+{
+  "runId": "QA-20260320-0138",
+  "recordedAt": "2026-03-20T07:49:25.161Z",
+  "recordedAtKst": "2026-03-20 16:49:25 KST",
+  "runTitle": "Vercel Production QA - Runtime Safety Follow-up Validation Green Recheck (SHA 159dce5b2)",
+  "owner": "codex",
+  "source": "playwright-cli + vercel-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main"
+  },
+  "checks": {
+    "total": 32,
+    "passed": 32,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Production core smoke, system-boot pack, AI retention parity, and authenticated security smoke all passed on the deployed SHA.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": true,
+      "rationale": "The production deployment stayed READY on commit 159dce5b2, but local CLI usage evidence is still unavailable for the release-facing QA trail.",
+      "nextAction": "Confirm usage in the Vercel dashboard or restore CLI usage access before the next release-facing QA run."
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The stale production E2E expectations were aligned with the hardened auth contract and the same production pack reran fully green.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "failed",
+      "checkedAt": "2026-03-20T16:20:00+09:00",
+      "summary": "Local Vercel CLI usage lookup still failed in this environment, so fresh billed-usage confirmation remains unavailable for this recheck.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "system-boot-vercel-auth-expectation-alignment",
+      "title": "Production system-boot Playwright auth 기대값 정렬",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "Production Vercel system-boot spec now accepts 401 for hardened unauthenticated /api/system views, and the full pack reran green.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "production-smoke-console-401-cleanliness",
+      "title": "Production smoke console 401 resource noise 정리",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "Production smoke console check now ignores expected auth-probe 401 noise and reran green on the deployed SHA.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "security-attack-regression-pack",
+      "title": "보안 공격 시나리오 회귀팩 구축",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "Authenticated security smoke passed 6/6 on production after the runtime safety follow-up.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "analyst-sidebar-state-retention-chat-switch",
+      "title": "Analyst 선택 서버와 결과가 sidebar chat 전환 후 유지",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "Production AI retention parity passed for sidebar and fullscreen Analyst state on commit 159dce5b2.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "reporter-sidebar-state-retention-chat-switch",
+      "title": "Reporter 생성 결과가 sidebar chat 전환 후 유지",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "Production AI retention parity passed for sidebar and fullscreen Reporter state on commit 159dce5b2.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Deployment dpl_GXFAX7je6u91mCYjCo4TYqFYPkoS for commit 159dce5b28405a2a78f77d4acdd8840c8b181814 remained READY on production.",
+    "Production Playwright pack rerun result: 24 passed / 0 failed after aligning the hardened auth expectations and console filter.",
+    "System-start KPI stayed healthy on production recheck: 3/3 successful calls, avg 718ms, max 730ms.",
+    "AI retention parity passed: 2 passed (sidebar + fullscreen Analyst/Reporter state retention).",
+    "Security regression smoke passed 6/6 with authenticated supervisor access."
+  ],
+  "links": [
+    {
+      "label": "Vercel URL",
+      "url": "https://openmanager-ai.vercel.app"
+    },
+    {
+      "label": "Vercel Deployment Inspector",
+      "url": "https://vercel.com/skyasus-projects/openmanager-ai/GXFAX7je6u91mCYjCo4TYqFYPkoS"
+    }
+  ]
+}
