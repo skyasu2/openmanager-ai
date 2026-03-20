@@ -1,0 +1,130 @@
+{
+  "runId": "QA-20260320-0141",
+  "recordedAt": "2026-03-20T11:35:03.459Z",
+  "recordedAtKst": "2026-03-20 20:35:03 KST",
+  "runTitle": "Vercel Playwright QA - Frontend and AI Assistant Broad Evaluation",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main"
+  },
+  "scope": "broad",
+  "releaseFacing": true,
+  "coveredSurfaces": [
+    "/",
+    "/system-boot",
+    "/dashboard",
+    "AI sidebar",
+    "AI chat starter prompt",
+    "Reporter flow",
+    "Analyst flow",
+    "/dashboard/ai-assistant",
+    "stream/v2 timing headers",
+    "feedback persistence",
+    "Langfuse feedback forwarding"
+  ],
+  "skippedSurfaces": [
+    "alerts/topology/log explorer pack",
+    "auth secondary routes",
+    "authenticated Cloud Run /monitoring direct verification"
+  ],
+  "checks": {
+    "total": 11,
+    "passed": 10,
+    "failed": 1
+  },
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Production UI and AI assistant flows were exercised end-to-end across sidebar and fullscreen surfaces.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "AI feedback is stored successfully, but Langfuse forwarding is skipped because the production feedback request does not carry a traceId.",
+      "nextAction": "Restore traceId propagation from streamed assistant responses into client feedback requests, then verify langfuseStatus=success on production."
+    },
+    {
+      "domainId": "ai-security-reliability",
+      "domainName": "AI Security & Reliability Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Streaming production path returned cloud-run headers and the feedback endpoint persisted ratings without auth/runtime failures during QA.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Latest production deployment was READY/PROMOTED and Cloud Run-backed streaming responses were observed from the live Vercel deployment.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Playwright MCP covered landing, dashboard, AI sidebar, fullscreen assistant, and feedback flow in one production session.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "data-metrics-quality",
+      "domainName": "Data Quality & Metrics Analyst",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "Trace linkage is incomplete on the feedback path, so some production AI evaluations cannot currently be tied back to Langfuse traces.",
+      "nextAction": "Ensure trace metadata survives from stream payload to feedback request and verify trace-linked scoring downstream."
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-03-20T20:19:56+09:00",
+      "summary": "Current billing period usage reviewed after production QA; effectiveCost about $15.28 and billedCost effectively 0 with no meaningful overage spike.",
+      "evidence": "XDG_CACHE_HOME=/tmp vercel usage --format json --non-interactive && XDG_CACHE_HOME=/tmp vercel usage --format json --non-interactive --breakdown daily",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [
+    {
+      "id": "langfuse-feedback-trace-propagation",
+      "title": "AI feedback traceId propagation to Langfuse",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "Production feedback API returned success with stored=database but langfuseStatus=skipped because traceId was absent from the feedback request payload.",
+      "owner": "",
+      "status": "pending",
+      "policyNote": ""
+    }
+  ],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Guest entry, dashboard KPIs, AI sidebar, Reporter, Analyst, and fullscreen assistant all worked on production.",
+    "Public /monitoring route is not exposed from the frontend app; direct authenticated Cloud Run monitoring verification was out of scope for this run."
+  ],
+  "links": [
+    {
+      "label": "Vercel URL",
+      "url": "https://openmanager-ai.vercel.app"
+    }
+  ]
+}

@@ -1,0 +1,138 @@
+{
+  "runId": "QA-20260320-0142",
+  "recordedAt": "2026-03-20T12:57:48.587Z",
+  "recordedAtKst": "2026-03-20 21:57:48 KST",
+  "runTitle": "Vercel Playwright QA - Langfuse Feedback Trace Recovery",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "coveredSurfaces": [
+    "/",
+    "/login",
+    "/dashboard",
+    "guest PIN login",
+    "system start -> dashboard",
+    "AI sidebar",
+    "stream/v2 timing headers",
+    "sampled stream traceId",
+    "feedback persistence",
+    "Langfuse feedback forwarding",
+    "authenticated Cloud Run /monitoring"
+  ],
+  "skippedSurfaces": [
+    "/system-boot route direct check",
+    "Reporter flow",
+    "Analyst flow",
+    "/dashboard/ai-assistant fullscreen",
+    "alerts/topology/log explorer pack",
+    "security blocked-prompt pack"
+  ],
+  "checks": {
+    "total": 11,
+    "passed": 11,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Production landing, guest entry, dashboard, sidebar chat, and feedback loop were replayed successfully on the deployed fix.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Sampled production stream payload exposed traceId, feedback request carried the same traceId, and Cloud Run /monitoring reported Langfuse ready with sampleRate 10%.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "ai-security-reliability",
+      "domainName": "AI Security & Reliability Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Feedback path completed without auth/runtime errors and continued to persist ratings in the production database while forwarding to Langfuse.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Deployment d3dfa842b was READY/PROMOTED on production and the live Vercel app continued to serve Cloud Run streaming responses with expected X-AI headers.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Playwright MCP reproduced the sampled-trace scenario in 3 attempts and captured the exact feedback request/response payload needed for regression proof.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "data-metrics-quality",
+      "domainName": "Data Quality & Metrics Analyst",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The trace-linked feedback path is restored, so production AI evaluations can again be tied to Langfuse traces for downstream scoring and analysis.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-03-20T21:56:52+09:00",
+      "summary": "Current billing period usage reviewed after production QA; effectiveCost about $15.28 and billedCost remained 0 with no meaningful overage spike.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "langfuse-feedback-trace-propagation",
+      "title": "AI feedback traceId propagation to Langfuse",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "On production commit d3dfa842b, Playwright MCP observed a sampled stream traceId on attempt 3, the feedback request body included the same traceId, and /api/ai/feedback returned langfuseStatus=success. Cloud Run /monitoring also reported Langfuse ready and operational.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Guest PIN login with 4231 succeeded and system start redirected to /dashboard normally.",
+    "The sampled production trace was observed on attempt 3; previous attempts had no traceId because Langfuse sampling is configured at 10%.",
+    "Cloud Run /monitoring returned langfuse.eventCount=61, sampleRate=10%, isOperational=true, and isReady=true."
+  ],
+  "links": [
+    {
+      "label": "Vercel URL",
+      "url": "https://openmanager-ai.vercel.app"
+    },
+    {
+      "label": "Deployment Inspector",
+      "url": "https://vercel.com/skyasus-projects/openmanager-ai/JDNhvFWXXG29GBNc9GqhdmiCpEkW"
+    }
+  ]
+}

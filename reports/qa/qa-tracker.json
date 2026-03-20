@@ -2,25 +2,25 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-03-20T11:04:59.928Z"
+    "updatedAt": "2026-03-20T12:57:48.587Z"
   },
   "sequence": {
-    "nextRunNumber": 141
+    "nextRunNumber": 143
   },
   "summary": {
-    "totalRuns": 139,
-    "totalChecks": 1092,
-    "totalPassed": 1042,
-    "totalFailed": 46,
+    "totalRuns": 141,
+    "totalChecks": 1114,
+    "totalPassed": 1063,
+    "totalFailed": 47,
     "completionRate": 100,
-    "completedItems": 227,
+    "completedItems": 228,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 8,
     "expertDomainsTracked": 6,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260320-0140",
-    "lastRecordedAt": "2026-03-20T11:04:59.928Z"
+    "lastRunId": "QA-20260320-0142",
+    "lastRecordedAt": "2026-03-20T12:57:48.587Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -5351,6 +5351,30 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-03-20T11:04:59.928Z"
+    },
+    "langfuse-feedback-trace-propagation": {
+      "id": "langfuse-feedback-trace-propagation",
+      "title": "AI feedback traceId propagation to Langfuse",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260320-0141",
+      "firstSeenAt": "2026-03-20T11:35:03.459Z",
+      "lastSeenRunId": "QA-20260320-0142",
+      "lastSeenAt": "2026-03-20T12:57:48.587Z",
+      "seenCount": 2,
+      "completedCount": 1,
+      "pendingCount": 1,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "On production commit d3dfa842b, Playwright MCP observed a sampled stream traceId on attempt 3, the feedback request body included the same traceId, and /api/ai/feedback returned langfuseStatus=success. Cloud Run /monitoring also reported Langfuse ready and operational.",
+      "lastNote": "Production feedback API returned success with stored=database but langfuseStatus=skipped because traceId was absent from the feedback request payload.",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-03-20T12:57:48.587Z"
     }
   },
   "runs": [
@@ -11255,6 +11279,213 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260320-0141",
+      "recordedAt": "2026-03-20T11:35:03.459Z",
+      "recordedAtKst": "2026-03-20 20:35:03 KST",
+      "title": "Vercel Playwright QA - Frontend and AI Assistant Broad Evaluation",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260320-0141.json",
+      "scope": "broad",
+      "releaseFacing": true,
+      "coveredSurfaces": [
+        "/",
+        "/system-boot",
+        "/dashboard",
+        "AI sidebar",
+        "AI chat starter prompt",
+        "Reporter flow",
+        "Analyst flow",
+        "/dashboard/ai-assistant",
+        "stream/v2 timing headers",
+        "feedback persistence",
+        "Langfuse feedback forwarding"
+      ],
+      "skippedSurfaces": [
+        "alerts/topology/log explorer pack",
+        "auth secondary routes",
+        "authenticated Cloud Run /monitoring direct verification"
+      ],
+      "checks": {
+        "total": 11,
+        "passed": 10,
+        "failed": 1
+      },
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Production UI and AI assistant flows were exercised end-to-end across sidebar and fullscreen surfaces.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "observability-monitoring",
+          "domainName": "IT Monitoring & Observability SME",
+          "fit": "partially-appropriate",
+          "improvementNeeded": true,
+          "rationale": "AI feedback is stored successfully, but Langfuse forwarding is skipped because the production feedback request does not carry a traceId.",
+          "nextAction": "Restore traceId propagation from streamed assistant responses into client feedback requests, then verify langfuseStatus=success on production."
+        },
+        {
+          "domainId": "ai-security-reliability",
+          "domainName": "AI Security & Reliability Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Streaming production path returned cloud-run headers and the feedback endpoint persisted ratings without auth/runtime failures during QA.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Latest production deployment was READY/PROMOTED and Cloud Run-backed streaming responses were observed from the live Vercel deployment.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Playwright MCP covered landing, dashboard, AI sidebar, fullscreen assistant, and feedback flow in one production session.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "data-metrics-quality",
+          "domainName": "Data Quality & Metrics Analyst",
+          "fit": "partially-appropriate",
+          "improvementNeeded": true,
+          "rationale": "Trace linkage is incomplete on the feedback path, so some production AI evaluations cannot currently be tied back to Langfuse traces.",
+          "nextAction": "Ensure trace metadata survives from stream payload to feedback request and verify trace-linked scoring downstream."
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-03-20T20:19:56+09:00",
+          "summary": "Current billing period usage reviewed after production QA; effectiveCost about $15.28 and billedCost effectively 0 with no meaningful overage spike.",
+          "evidence": "XDG_CACHE_HOME=/tmp vercel usage --format json --non-interactive && XDG_CACHE_HOME=/tmp vercel usage --format json --non-interactive --breakdown daily",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "expertCount": 6,
+      "expertNeedsImprovementCount": 2,
+      "completedCount": 0,
+      "pendingCount": 1,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260320-0142",
+      "recordedAt": "2026-03-20T12:57:48.587Z",
+      "recordedAtKst": "2026-03-20 21:57:48 KST",
+      "title": "Vercel Playwright QA - Langfuse Feedback Trace Recovery",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260320-0142.json",
+      "scope": "targeted",
+      "releaseFacing": false,
+      "coveredSurfaces": [
+        "/",
+        "/login",
+        "/dashboard",
+        "guest PIN login",
+        "system start -> dashboard",
+        "AI sidebar",
+        "stream/v2 timing headers",
+        "sampled stream traceId",
+        "feedback persistence",
+        "Langfuse feedback forwarding",
+        "authenticated Cloud Run /monitoring"
+      ],
+      "skippedSurfaces": [
+        "/system-boot route direct check",
+        "Reporter flow",
+        "Analyst flow",
+        "/dashboard/ai-assistant fullscreen",
+        "alerts/topology/log explorer pack",
+        "security blocked-prompt pack"
+      ],
+      "checks": {
+        "total": 11,
+        "passed": 11,
+        "failed": 0
+      },
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Production landing, guest entry, dashboard, sidebar chat, and feedback loop were replayed successfully on the deployed fix.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "observability-monitoring",
+          "domainName": "IT Monitoring & Observability SME",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Sampled production stream payload exposed traceId, feedback request carried the same traceId, and Cloud Run /monitoring reported Langfuse ready with sampleRate 10%.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "ai-security-reliability",
+          "domainName": "AI Security & Reliability Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Feedback path completed without auth/runtime errors and continued to persist ratings in the production database while forwarding to Langfuse.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Deployment d3dfa842b was READY/PROMOTED on production and the live Vercel app continued to serve Cloud Run streaming responses with expected X-AI headers.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Playwright MCP reproduced the sampled-trace scenario in 3 attempts and captured the exact feedback request/response payload needed for regression proof.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "data-metrics-quality",
+          "domainName": "Data Quality & Metrics Analyst",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The trace-linked feedback path is restored, so production AI evaluations can again be tied to Langfuse traces for downstream scoring and analysis.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-03-20T21:56:52+09:00",
+          "summary": "Current billing period usage reviewed after production QA; effectiveCost about $15.28 and billedCost remained 0 with no meaningful overage spike.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "expertCount": 6,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -11263,16 +11494,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 92,
-      "appropriateCount": 88,
+      "seenCount": 94,
+      "appropriateCount": 90,
       "partialCount": 4,
       "inappropriateCount": 0,
       "improvementNeededCount": 12,
-      "lastRunId": "QA-20260320-0140",
-      "lastSeenAt": "2026-03-20T11:04:59.928Z",
+      "lastRunId": "QA-20260320-0142",
+      "lastSeenAt": "2026-03-20T12:57:48.587Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The latest production smoke pack passed again on the promoted deployment and the tested guest-facing baseline remains stable.",
+      "lastRationale": "Production landing, guest entry, dashboard, sidebar chat, and feedback loop were replayed successfully on the deployed fix.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -11280,16 +11511,16 @@
       "domainName": "IT Monitoring & Observability SME",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 56,
-      "appropriateCount": 34,
-      "partialCount": 22,
+      "seenCount": 58,
+      "appropriateCount": 35,
+      "partialCount": 23,
       "inappropriateCount": 0,
-      "improvementNeededCount": 22,
-      "lastRunId": "QA-20260318-0124",
-      "lastSeenAt": "2026-03-18T08:26:39.409Z",
+      "improvementNeededCount": 23,
+      "lastRunId": "QA-20260320-0142",
+      "lastSeenAt": "2026-03-20T12:57:48.587Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "인증된 Cloud Run /monitoring 200에서 langfuse.isOperational=true, isReady=true, hasKeysConfigured=true를 확인했고, /monitoring/traces 200으로 최신 supervisor trace 조회도 정상 동작했다. fresh marker search는 sampleRate 10% 특성상 0건이었지만 endpoint regression은 없었다.",
+      "lastRationale": "Sampled production stream payload exposed traceId, feedback request carried the same traceId, and Cloud Run /monitoring reported Langfuse ready with sampleRate 10%.",
       "lastNextAction": ""
     },
     "ai-security-reliability": {
@@ -11297,16 +11528,16 @@
       "domainName": "AI Security & Reliability Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 41,
-      "appropriateCount": 29,
+      "seenCount": 43,
+      "appropriateCount": 31,
       "partialCount": 12,
       "inappropriateCount": 0,
       "improvementNeededCount": 12,
-      "lastRunId": "QA-20260318-0126",
-      "lastSeenAt": "2026-03-18T14:50:18.155Z",
+      "lastRunId": "QA-20260320-0142",
+      "lastSeenAt": "2026-03-20T12:57:48.587Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "이번 런의 범위는 보안이 아니라 fullscreen AI workflow 상태 유지였고, 브라우저 콘솔 error 0건과 핵심 API 200 응답으로 기능 경로 자체는 안정적으로 동작했다.",
+      "lastRationale": "Feedback path completed without auth/runtime errors and continued to persist ratings in the production database while forwarding to Langfuse.",
       "lastNextAction": ""
     },
     "sre-devops": {
@@ -11314,16 +11545,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 50,
-      "appropriateCount": 47,
+      "seenCount": 52,
+      "appropriateCount": 49,
       "partialCount": 3,
       "inappropriateCount": 0,
       "improvementNeededCount": 6,
-      "lastRunId": "QA-20260320-0140",
-      "lastSeenAt": "2026-03-20T11:04:59.928Z",
+      "lastRunId": "QA-20260320-0142",
+      "lastSeenAt": "2026-03-20T12:57:48.587Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The latest production deployment is READY/PROMOTED and fresh Vercel usage evidence was collected through the CLI without showing a meaningful billed overage spike.",
+      "lastRationale": "Deployment d3dfa842b was READY/PROMOTED on production and the live Vercel app continued to serve Cloud Run streaming responses with expected X-AI headers.",
       "lastNextAction": ""
     },
     "test-automation": {
@@ -11331,16 +11562,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 85,
-      "appropriateCount": 78,
+      "seenCount": 87,
+      "appropriateCount": 80,
       "partialCount": 7,
       "inappropriateCount": 0,
       "improvementNeededCount": 9,
-      "lastRunId": "QA-20260320-0140",
-      "lastSeenAt": "2026-03-20T11:04:59.928Z",
+      "lastRunId": "QA-20260320-0142",
+      "lastSeenAt": "2026-03-20T12:57:48.587Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The production smoke spec passed cleanly on the latest promoted deployment after the QA-log push.",
+      "lastRationale": "Playwright MCP reproduced the sampled-trace scenario in 3 attempts and captured the exact feedback request/response payload needed for regression proof.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {
@@ -11348,16 +11579,16 @@
       "domainName": "Data Quality & Metrics Analyst",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 26,
-      "appropriateCount": 14,
-      "partialCount": 12,
+      "seenCount": 28,
+      "appropriateCount": 15,
+      "partialCount": 13,
       "inappropriateCount": 0,
-      "improvementNeededCount": 12,
-      "lastRunId": "QA-20260317-0114",
-      "lastSeenAt": "2026-03-17T02:03:41.807Z",
+      "improvementNeededCount": 13,
+      "lastRunId": "QA-20260320-0142",
+      "lastSeenAt": "2026-03-20T12:57:48.587Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "시스템 리소스/Top5 지표 실측 확인",
+      "lastRationale": "The trace-linked feedback path is restored, so production AI evaluations can again be tied to Langfuse traces for downstream scoring and analysis.",
       "lastNextAction": ""
     }
   }
