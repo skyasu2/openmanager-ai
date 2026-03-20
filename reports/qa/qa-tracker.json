@@ -2,15 +2,15 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-03-20T07:49:25.161Z"
+    "updatedAt": "2026-03-20T09:49:43.445Z"
   },
   "sequence": {
-    "nextRunNumber": 139
+    "nextRunNumber": 140
   },
   "summary": {
-    "totalRuns": 137,
-    "totalChecks": 1076,
-    "totalPassed": 1026,
+    "totalRuns": 138,
+    "totalChecks": 1084,
+    "totalPassed": 1034,
     "totalFailed": 46,
     "completionRate": 100,
     "completedItems": 227,
@@ -19,8 +19,8 @@
     "wontFixItems": 8,
     "expertDomainsTracked": 6,
     "expertDomainsOpenGaps": 1,
-    "lastRunId": "QA-20260320-0138",
-    "lastRecordedAt": "2026-03-20T07:49:25.161Z"
+    "lastRunId": "QA-20260320-0139",
+    "lastRecordedAt": "2026-03-20T09:49:43.445Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -873,20 +873,22 @@
       "status": "completed",
       "firstSeenRunId": "QA-20260301-0030",
       "firstSeenAt": "2026-03-01T00:54:39.785Z",
-      "lastSeenRunId": "QA-20260301-0035",
-      "lastSeenAt": "2026-03-01T13:45:21.162Z",
-      "seenCount": 2,
-      "completedCount": 1,
+      "lastSeenRunId": "QA-20260320-0139",
+      "lastSeenAt": "2026-03-20T09:49:43.445Z",
+      "seenCount": 3,
+      "completedCount": 2,
       "pendingCount": 0,
       "wontFixCount": 1,
       "owner": "",
-      "lastEvidence": "타이틀, 서브타이틀, 시스템 시작 버튼, 피처카드 4개, v8.7.2, 게스트 프로필, 푸터 정상",
+      "lastEvidence": "Playwright smoke.spec on production: latest deployed SHA rendered / successfully.",
       "lastNote": "",
       "isBlocking": true,
       "isBlockingExplicit": false,
       "overengineeringScope": "",
       "lastPolicyNote": "",
-      "lastStatusChangeAt": "2026-03-01T13:45:21.162Z"
+      "lastStatusChangeAt": "2026-03-20T09:49:43.445Z",
+      "aliases": [],
+      "deferredCount": 0
     },
     "system-boot-redirect": {
       "id": "system-boot-redirect",
@@ -1745,24 +1747,26 @@
     "health-api-200-healthy": {
       "id": "health-api-200-healthy",
       "title": "Health API 200 healthy",
-      "priority": "P2",
+      "priority": "P1",
       "status": "completed",
       "firstSeenRunId": "QA-20260301-0032",
       "firstSeenAt": "2026-03-01T03:33:12.090Z",
-      "lastSeenRunId": "QA-20260301-0032",
-      "lastSeenAt": "2026-03-01T03:33:12.090Z",
-      "seenCount": 1,
-      "completedCount": 1,
+      "lastSeenRunId": "QA-20260320-0139",
+      "lastSeenAt": "2026-03-20T09:49:43.445Z",
+      "seenCount": 2,
+      "completedCount": 2,
       "pendingCount": 0,
       "wontFixCount": 0,
       "owner": "",
-      "lastEvidence": "",
+      "lastEvidence": "Playwright smoke.spec on production: /api/health responded successfully on latest deployed SHA.",
       "lastNote": "",
-      "isBlocking": false,
+      "isBlocking": true,
       "isBlockingExplicit": false,
       "overengineeringScope": "",
       "lastPolicyNote": "",
-      "lastStatusChangeAt": "2026-03-01T03:33:12.090Z"
+      "lastStatusChangeAt": "2026-03-20T09:49:43.445Z",
+      "aliases": [],
+      "deferredCount": 0
     },
     "otel-데이터-무결성-24x15-완전": {
       "id": "otel-데이터-무결성-24x15-완전",
@@ -5327,26 +5331,26 @@
     "production-smoke-console-401-cleanliness": {
       "id": "production-smoke-console-401-cleanliness",
       "title": "Production smoke console 401 resource noise 정리",
-      "priority": "P2",
+      "priority": "P1",
       "status": "completed",
       "firstSeenRunId": "QA-20260320-0137",
       "firstSeenAt": "2026-03-20T07:13:57.777Z",
-      "lastSeenRunId": "QA-20260320-0138",
-      "lastSeenAt": "2026-03-20T07:49:25.161Z",
-      "seenCount": 2,
-      "completedCount": 1,
+      "lastSeenRunId": "QA-20260320-0139",
+      "lastSeenAt": "2026-03-20T09:49:43.445Z",
+      "seenCount": 3,
+      "completedCount": 2,
       "pendingCount": 1,
       "deferredCount": 0,
       "wontFixCount": 0,
       "aliases": [],
       "owner": "",
-      "lastEvidence": "Production smoke console check now ignores expected auth-probe 401 noise and reran green on the deployed SHA.",
+      "lastEvidence": "Playwright smoke.spec console gate passed again on the latest deployed SHA after workflow follow-up push.",
       "lastNote": "tracking-only, release-blocking 아님. 기능 실패는 아니지만 browser console clean check가 401 resource error 한 건으로 깨진다.",
-      "isBlocking": false,
+      "isBlocking": true,
       "isBlockingExplicit": false,
       "overengineeringScope": "",
       "lastPolicyNote": "",
-      "lastStatusChangeAt": "2026-03-20T07:49:25.161Z"
+      "lastStatusChangeAt": "2026-03-20T09:49:43.445Z"
     }
   },
   "runs": [
@@ -11097,6 +11101,83 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260320-0139",
+      "recordedAt": "2026-03-20T09:49:43.445Z",
+      "recordedAtKst": "2026-03-20 18:49:43 KST",
+      "title": "Vercel Production Smoke - Post Workflow Push Verification",
+      "owner": "codex",
+      "source": "playwright-cli",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260320-0139.json",
+      "checks": {
+        "total": 8,
+        "passed": 8,
+        "failed": 0
+      },
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Production smoke on the latest deployed SHA covered the core guest-facing routes and baseline API responses without regression.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": true,
+          "rationale": "Deployment reached READY on the target SHA, but fresh usage evidence could not be collected through the local CLI.",
+          "nextAction": "Confirm billed usage in the Vercel dashboard or restore CLI usage access before the next release-facing QA run."
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The production smoke spec passed on the latest deployed commit after the workflow hardening changes.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "failed",
+          "checkedAt": "2026-03-20T17:42:00+09:00",
+          "summary": "Local Vercel CLI usage lookup still failed in this environment during the post-push production smoke recheck.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard",
+          "result": "unknown"
+        }
+      ],
+      "expertCount": 3,
+      "expertNeedsImprovementCount": 1,
+      "completedCount": 3,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "scope": "smoke",
+      "releaseFacing": true,
+      "coveredSurfaces": [
+        "/",
+        "/login",
+        "404",
+        "/api/health",
+        "server API",
+        "/api/version",
+        "static assets",
+        "production console cleanliness"
+      ],
+      "skippedSurfaces": [
+        "dashboard AI/sidebar",
+        "system-boot",
+        "retention parity",
+        "security pack",
+        "observability pack"
+      ]
     }
   ],
   "experts": {
@@ -11105,16 +11186,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 90,
-      "appropriateCount": 86,
+      "seenCount": 91,
+      "appropriateCount": 87,
       "partialCount": 4,
       "inappropriateCount": 0,
       "improvementNeededCount": 12,
-      "lastRunId": "QA-20260320-0138",
-      "lastSeenAt": "2026-03-20T07:49:25.161Z",
+      "lastRunId": "QA-20260320-0139",
+      "lastSeenAt": "2026-03-20T09:49:43.445Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Production core smoke, system-boot pack, AI retention parity, and authenticated security smoke all passed on the deployed SHA.",
+      "lastRationale": "Production smoke on the latest deployed SHA covered the core guest-facing routes and baseline API responses without regression.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -11156,33 +11237,33 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 48,
-      "appropriateCount": 45,
+      "seenCount": 49,
+      "appropriateCount": 46,
       "partialCount": 3,
       "inappropriateCount": 0,
-      "improvementNeededCount": 5,
-      "lastRunId": "QA-20260320-0138",
-      "lastSeenAt": "2026-03-20T07:49:25.161Z",
+      "improvementNeededCount": 6,
+      "lastRunId": "QA-20260320-0139",
+      "lastSeenAt": "2026-03-20T09:49:43.445Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": true,
-      "lastRationale": "The production deployment stayed READY on commit 159dce5b2, but local CLI usage evidence is still unavailable for the release-facing QA trail.",
-      "lastNextAction": "Confirm usage in the Vercel dashboard or restore CLI usage access before the next release-facing QA run."
+      "lastRationale": "Deployment reached READY on the target SHA, but fresh usage evidence could not be collected through the local CLI.",
+      "lastNextAction": "Confirm billed usage in the Vercel dashboard or restore CLI usage access before the next release-facing QA run."
     },
     "test-automation": {
       "domainId": "test-automation",
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 83,
-      "appropriateCount": 76,
+      "seenCount": 84,
+      "appropriateCount": 77,
       "partialCount": 7,
       "inappropriateCount": 0,
       "improvementNeededCount": 9,
-      "lastRunId": "QA-20260320-0138",
-      "lastSeenAt": "2026-03-20T07:49:25.161Z",
+      "lastRunId": "QA-20260320-0139",
+      "lastSeenAt": "2026-03-20T09:49:43.445Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The stale production E2E expectations were aligned with the hardened auth contract and the same production pack reran fully green.",
+      "lastRationale": "The production smoke spec passed on the latest deployed commit after the workflow hardening changes.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {

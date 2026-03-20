@@ -1,0 +1,137 @@
+{
+  "runId": "QA-20260320-0139",
+  "recordedAt": "2026-03-20T09:49:43.445Z",
+  "recordedAtKst": "2026-03-20 18:49:43 KST",
+  "runTitle": "Vercel Production Smoke - Post Workflow Push Verification",
+  "owner": "codex",
+  "source": "playwright-cli",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main"
+  },
+  "checks": {
+    "total": 8,
+    "passed": 8,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Production smoke on the latest deployed SHA covered the core guest-facing routes and baseline API responses without regression.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": true,
+      "rationale": "Deployment reached READY on the target SHA, but fresh usage evidence could not be collected through the local CLI.",
+      "nextAction": "Confirm billed usage in the Vercel dashboard or restore CLI usage access before the next release-facing QA run."
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The production smoke spec passed on the latest deployed commit after the workflow hardening changes.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "failed",
+      "checkedAt": "2026-03-20T17:42:00+09:00",
+      "summary": "Local Vercel CLI usage lookup still failed in this environment during the post-push production smoke recheck.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard",
+      "result": "unknown"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "landing-page-render",
+      "title": "랜딩 페이지 렌더링",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "Playwright smoke.spec on production: latest deployed SHA rendered / successfully.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "health-api-200-healthy",
+      "title": "Health API 200 healthy",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "Playwright smoke.spec on production: /api/health responded successfully on latest deployed SHA.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "production-smoke-console-401-cleanliness",
+      "title": "Production smoke console 401 resource noise 정리",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "Playwright smoke.spec console gate passed again on the latest deployed SHA after workflow follow-up push.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Latest production deployment: dpl_7evkRHwWojgkTUW886w255s5VtnY",
+    "Latest production commit: 79b32d232150445b62ccc7304fd4af8cd330f280",
+    "Smoke command: PLAYWRIGHT_VERCEL_WORKERS=1 npx playwright test tests/e2e/smoke.spec.ts --grep-invert '@external' --config playwright.config.vercel.ts",
+    "Covered surfaces: /, /login, 404, /api/health, server API, /api/version, static assets, production console cleanliness"
+  ],
+  "links": [
+    {
+      "label": "Production URL",
+      "url": "https://openmanager-ai.vercel.app"
+    },
+    {
+      "label": "Vercel Deployment",
+      "url": "https://vercel.com/skyasus-projects/openmanager-ai/7evkRHwWojgkTUW886w255s5VtnY"
+    }
+  ],
+  "scope": "smoke",
+  "releaseFacing": true,
+  "coveredSurfaces": [
+    "/",
+    "/login",
+    "404",
+    "/api/health",
+    "server API",
+    "/api/version",
+    "static assets",
+    "production console cleanliness"
+  ],
+  "skippedSurfaces": [
+    "dashboard AI/sidebar",
+    "system-boot",
+    "retention parity",
+    "security pack",
+    "observability pack"
+  ]
+}
