@@ -10,6 +10,8 @@ export type ResponseSourceData = {
   shouldCollapse?: unknown;
   assistantResponseView?: unknown;
   ragSources?: unknown;
+  traceId?: unknown;
+  metadata?: unknown;
 };
 
 export function normalizeRagSources(sources: unknown): Array<{

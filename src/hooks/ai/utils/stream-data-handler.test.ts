@@ -148,6 +148,55 @@ describe('handleStreamDataPart', () => {
       ).toBeDefined();
     });
 
+    it('should inject traceId from done metadata into last assistant message metadata', () => {
+      const part: StreamDataPart = {
+        type: 'data-done',
+        data: {
+          metadata: {
+            traceId: 'trace-stream-123',
+          },
+        },
+      };
+
+      handleStreamDataPart(part, callbacks);
+
+      expect(callbacks.setMessages).toHaveBeenCalled();
+
+      const updatedMessages = callbacks.setMessages.mock.calls[0][0];
+      const lastAssistant = updatedMessages.find(
+        (m: UIMessage) => m.role === 'assistant'
+      );
+      expect(lastAssistant?.metadata).toBeDefined();
+      expect((lastAssistant?.metadata as Record<string, unknown>).traceId).toBe(
+        'trace-stream-123'
+      );
+    });
+
+    it('should preserve both traceId and structuredView when both are present', () => {
+      const part: StreamDataPart = {
+        type: 'data-done',
+        data: {
+          responseSummary: '서버 상태 요약',
+          responseDetails: '상세 분석 내용',
+          responseShouldCollapse: true,
+          metadata: {
+            traceId: 'trace-stream-456',
+          },
+        },
+      };
+
+      handleStreamDataPart(part, callbacks);
+
+      const updatedMessages = callbacks.setMessages.mock.calls[0][0];
+      const lastAssistant = updatedMessages.find(
+        (m: UIMessage) => m.role === 'assistant'
+      );
+      const metadata = lastAssistant?.metadata as Record<string, unknown>;
+
+      expect(metadata.traceId).toBe('trace-stream-456');
+      expect(metadata.assistantResponseView).toBeDefined();
+    });
+
     it('should not set messages when no structured view available', () => {
       const part: StreamDataPart = {
         type: 'data-done',

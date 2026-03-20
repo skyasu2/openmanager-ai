@@ -27,6 +27,23 @@ type StreamDataCallbacks = {
   setMessages: (messages: UIMessage[]) => void;
 };
 
+function extractTraceIdFromDoneData(
+  doneData: ResponseSourceData | undefined
+): string | undefined {
+  if (!doneData) return undefined;
+
+  const directTraceId =
+    typeof doneData.traceId === 'string' ? doneData.traceId : undefined;
+  if (directTraceId) return directTraceId;
+
+  const metadata =
+    typeof doneData.metadata === 'object' && doneData.metadata !== null
+      ? (doneData.metadata as Record<string, unknown>)
+      : undefined;
+
+  return typeof metadata?.traceId === 'string' ? metadata.traceId : undefined;
+}
+
 export function handleStreamDataPart(
   dataPart: StreamDataPart,
   callbacks: StreamDataCallbacks
@@ -62,7 +79,9 @@ export function handleStreamDataPart(
     }
 
     const structuredView = buildStructuredResponseView(doneData);
-    if (structuredView) {
+    const traceId = extractTraceIdFromDoneData(doneData);
+
+    if (structuredView || traceId) {
       const currentMessages = [...callbacks.getMessages()];
       const lastAssistantIndex = currentMessages
         .map((message) => message.role)
@@ -84,7 +103,10 @@ export function handleStreamDataPart(
               ...message,
               metadata: {
                 ...prevMetadata,
-                assistantResponseView: structuredView,
+                ...(traceId && { traceId }),
+                ...(structuredView && {
+                  assistantResponseView: structuredView,
+                }),
               },
             };
           }
