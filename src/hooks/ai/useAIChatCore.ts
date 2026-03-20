@@ -175,6 +175,9 @@ export function useAIChatCore(
       url?: string;
     }>
   >([]);
+  const [streamTraceIds, setStreamTraceIds] = useState<Record<string, string>>(
+    {}
+  );
 
   // Refs
   const lastQueryRef = useRef<string>('');
@@ -242,6 +245,13 @@ export function useAIChatCore(
       handleStreamDataPart(dataPart, {
         setCurrentAgentStatus,
         setCurrentHandoff,
+        setMessageTraceId: (messageId, traceId) => {
+          setStreamTraceIds((prev) =>
+            prev[messageId] === traceId
+              ? prev
+              : { ...prev, [messageId]: traceId }
+          );
+        },
         setStreamRagSources,
         getMessages: () => messages,
         setMessages,
@@ -271,11 +281,19 @@ export function useAIChatCore(
     return transformMessages(messages, {
       isLoading: hybridIsLoading,
       currentMode: currentMode ?? undefined,
+      traceIdByMessageId: streamTraceIds,
       streamRagSources:
         streamRagSources.length > 0 ? streamRagSources : undefined,
       ragEnabled,
     });
-  }, [messages, hybridIsLoading, currentMode, streamRagSources, ragEnabled]);
+  }, [
+    messages,
+    hybridIsLoading,
+    currentMode,
+    streamTraceIds,
+    streamRagSources,
+    ragEnabled,
+  ]);
 
   // 🧩 History Hook (Needs messages from hybrid query)
   const { clearHistory } = useChatHistory({
@@ -316,6 +334,7 @@ export function useAIChatCore(
     setInput('');
     setError(null);
     setStreamRagSources([]);
+    setStreamTraceIds({});
     setCurrentAgentStatus(null);
     setCurrentHandoff(null);
     pendingQueryRef.current = '';

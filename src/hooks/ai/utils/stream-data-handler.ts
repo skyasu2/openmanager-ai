@@ -14,6 +14,7 @@ import {
 type StreamDataCallbacks = {
   setCurrentAgentStatus: (status: AgentStatusEventData | null) => void;
   setCurrentHandoff: (handoff: HandoffEventData | null) => void;
+  setMessageTraceId: (messageId: string, traceId: string) => void;
   setStreamRagSources: (
     sources: Array<{
       title: string;
@@ -89,9 +90,13 @@ export function handleStreamDataPart(
       if (lastAssistantIndex < 0) return;
 
       const targetMessage = currentMessages[lastAssistantIndex];
+      if (!targetMessage) return;
+      if (traceId) {
+        callbacks.setMessageTraceId(targetMessage.id, traceId);
+      }
       const prevMetadata =
-        typeof targetMessage?.metadata === 'object' &&
-        targetMessage?.metadata !== null
+        typeof targetMessage.metadata === 'object' &&
+        targetMessage.metadata !== null
           ? (targetMessage.metadata as Record<string, unknown>)
           : {};
 

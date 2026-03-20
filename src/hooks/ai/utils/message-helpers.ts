@@ -81,6 +81,7 @@ export function convertThinkingStepsToUI(thinkingSteps?: AIThinkingStep[]) {
 interface TransformOptions {
   isLoading: boolean;
   currentMode?: 'streaming' | 'job-queue';
+  traceIdByMessageId?: Record<string, string>;
   /** 스트리밍 done 이벤트에서 수신한 ragSources (웹 검색 결과 등) */
   streamRagSources?: RagSource[];
   /** 사용자가 RAG 토글을 켰는지 여부 */
@@ -97,7 +98,13 @@ export function transformUIMessageToEnhanced(
   options: TransformOptions,
   isLastMessage: boolean
 ): EnhancedChatMessage {
-  const { isLoading, currentMode, streamRagSources, ragEnabled } = options;
+  const {
+    isLoading,
+    currentMode,
+    traceIdByMessageId,
+    streamRagSources,
+    ragEnabled,
+  } = options;
   const rawText = extractTextFromUIMessage(message);
   // 단일 정규화 지점: Cloud Run Agent가 { answer, confidence } JSON을 반환할 때
   // answer 필드만 추출. Streaming/Job Queue 양쪽 경로 모두 여기서 처리.
@@ -142,7 +149,7 @@ export function transformUIMessageToEnhanced(
 
   // Extract traceId from message metadata (available for all roles)
   const metadata = getMessageMetadata(message);
-  const traceId = metadata?.traceId;
+  const traceId = metadata?.traceId ?? traceIdByMessageId?.[message.id];
 
   // 분석 근거 생성 (assistant 메시지에만)
   let analysisBasis: AnalysisBasis | undefined;

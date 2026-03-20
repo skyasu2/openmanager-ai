@@ -127,6 +127,25 @@ describe('transformMessages', () => {
       streamRagSources
     );
   });
+
+  it('uses traceIdByMessageId fallback when UIMessage metadata is missing', () => {
+    const messages = transformMessages(
+      [
+        createMessage({ id: 'u1', role: 'user', text: 'test query' }),
+        createMessage({ id: 'a1', role: 'assistant', text: 'sampled answer' }),
+      ],
+      {
+        isLoading: false,
+        currentMode: 'streaming',
+        traceIdByMessageId: {
+          a1: 'trace-fallback-123',
+        },
+      }
+    );
+
+    const assistant = messages.find((m) => m.id === 'a1');
+    expect(assistant?.metadata?.traceId).toBe('trace-fallback-123');
+  });
 });
 
 describe('normalizeAIResponse', () => {

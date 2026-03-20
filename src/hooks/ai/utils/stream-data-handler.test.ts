@@ -27,6 +27,7 @@ function createMockCallbacks() {
   return {
     setCurrentAgentStatus: vi.fn(),
     setCurrentHandoff: vi.fn(),
+    setMessageTraceId: vi.fn(),
     setStreamRagSources: vi.fn(),
     getMessages: vi.fn(() => messages),
     setMessages: vi.fn(),
@@ -167,6 +168,10 @@ describe('handleStreamDataPart', () => {
         (m: UIMessage) => m.role === 'assistant'
       );
       expect(lastAssistant?.metadata).toBeDefined();
+      expect(callbacks.setMessageTraceId).toHaveBeenCalledWith(
+        'msg-2',
+        'trace-stream-123'
+      );
       expect((lastAssistant?.metadata as Record<string, unknown>).traceId).toBe(
         'trace-stream-123'
       );
@@ -193,6 +198,10 @@ describe('handleStreamDataPart', () => {
       );
       const metadata = lastAssistant?.metadata as Record<string, unknown>;
 
+      expect(callbacks.setMessageTraceId).toHaveBeenCalledWith(
+        'msg-2',
+        'trace-stream-456'
+      );
       expect(metadata.traceId).toBe('trace-stream-456');
       expect(metadata.assistantResponseView).toBeDefined();
     });
