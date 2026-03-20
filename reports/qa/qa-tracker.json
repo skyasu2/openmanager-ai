@@ -2,15 +2,15 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-03-20T14:54:14.012Z"
+    "updatedAt": "2026-03-20T22:01:41.259Z"
   },
   "sequence": {
-    "nextRunNumber": 144
+    "nextRunNumber": 145
   },
   "summary": {
-    "totalRuns": 142,
-    "totalChecks": 1125,
-    "totalPassed": 1074,
+    "totalRuns": 143,
+    "totalChecks": 1134,
+    "totalPassed": 1083,
     "totalFailed": 47,
     "completionRate": 100,
     "completedItems": 228,
@@ -19,8 +19,8 @@
     "wontFixItems": 8,
     "expertDomainsTracked": 6,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260320-0143",
-    "lastRecordedAt": "2026-03-20T14:54:14.012Z"
+    "lastRunId": "QA-20260321-0144",
+    "lastRecordedAt": "2026-03-20T22:01:41.259Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -11559,6 +11559,79 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260321-0144",
+      "recordedAt": "2026-03-20T22:01:41.259Z",
+      "recordedAtKst": "2026-03-21 07:01:41 KST",
+      "title": "Vercel Playwright QA - Reporter/Analyst/Fullscreen Follow-up (SHA 818871b86)",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260321-0144.json",
+      "scope": "targeted",
+      "releaseFacing": true,
+      "coveredSurfaces": [
+        "/login",
+        "guest PIN login",
+        "system-boot → /dashboard redirect",
+        "dashboard",
+        "AI sidebar",
+        "Reporter flow",
+        "Analyst flow",
+        "/dashboard/ai-assistant fullscreen"
+      ],
+      "skippedSurfaces": [
+        "/",
+        "/api/health",
+        "/api/version",
+        "404",
+        "server modal/detail pack",
+        "alerts/topology/log explorer pack",
+        "security blocked-prompt pack",
+        "Langfuse trace visibility",
+        "AI sidebar free-text chat send"
+      ],
+      "checks": {
+        "total": 9,
+        "passed": 9,
+        "failed": 0
+      },
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Reporter/Analyst/sidebar/fullscreen AI surface를 Playwright MCP로 실동작 검증했고 incident-report/intelligent-monitoring 200 응답을 확인했다.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "게스트 로그인부터 fullscreen workspace까지 실제 production 경로를 자동화해 콘솔 에러 없이 재현했다.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-03-21T07:00:49+09:00",
+          "summary": "Current billing period reviewed after targeted production QA; effectiveCost about $15.2754, billedCost $0.0000, no meaningful overage spike.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "expertCount": 2,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -11567,16 +11640,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 94,
-      "appropriateCount": 90,
+      "seenCount": 95,
+      "appropriateCount": 91,
       "partialCount": 4,
       "inappropriateCount": 0,
       "improvementNeededCount": 12,
-      "lastRunId": "QA-20260320-0142",
-      "lastSeenAt": "2026-03-20T12:57:48.587Z",
+      "lastRunId": "QA-20260321-0144",
+      "lastSeenAt": "2026-03-20T22:01:41.259Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Production landing, guest entry, dashboard, sidebar chat, and feedback loop were replayed successfully on the deployed fix.",
+      "lastRationale": "Reporter/Analyst/sidebar/fullscreen AI surface를 Playwright MCP로 실동작 검증했고 incident-report/intelligent-monitoring 200 응답을 확인했다.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -11635,16 +11708,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 88,
-      "appropriateCount": 81,
+      "seenCount": 89,
+      "appropriateCount": 82,
       "partialCount": 7,
       "inappropriateCount": 0,
       "improvementNeededCount": 9,
-      "lastRunId": "QA-20260320-0143",
-      "lastSeenAt": "2026-03-20T14:54:14.012Z",
+      "lastRunId": "QA-20260321-0144",
+      "lastSeenAt": "2026-03-20T22:01:41.259Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Playwright MCP 전구간 검증, 콘솔 에러 0, 핵심 라우트 모두 정상.",
+      "lastRationale": "게스트 로그인부터 fullscreen workspace까지 실제 production 경로를 자동화해 콘솔 에러 없이 재현했다.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {

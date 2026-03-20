@@ -1,0 +1,89 @@
+{
+  "runId": "QA-20260321-0144",
+  "recordedAt": "2026-03-20T22:01:41.259Z",
+  "recordedAtKst": "2026-03-21 07:01:41 KST",
+  "runTitle": "Vercel Playwright QA - Reporter/Analyst/Fullscreen Follow-up (SHA 818871b86)",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "coveredSurfaces": [
+    "/login",
+    "guest PIN login",
+    "system-boot → /dashboard redirect",
+    "dashboard",
+    "AI sidebar",
+    "Reporter flow",
+    "Analyst flow",
+    "/dashboard/ai-assistant fullscreen"
+  ],
+  "skippedSurfaces": [
+    "/",
+    "/api/health",
+    "/api/version",
+    "404",
+    "server modal/detail pack",
+    "alerts/topology/log explorer pack",
+    "security blocked-prompt pack",
+    "Langfuse trace visibility",
+    "AI sidebar free-text chat send"
+  ],
+  "checks": {
+    "total": 9,
+    "passed": 9,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Reporter/Analyst/sidebar/fullscreen AI surface를 Playwright MCP로 실동작 검증했고 incident-report/intelligent-monitoring 200 응답을 확인했다.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "게스트 로그인부터 fullscreen workspace까지 실제 production 경로를 자동화해 콘솔 에러 없이 재현했다.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-03-21T07:00:49+09:00",
+      "summary": "Current billing period reviewed after targeted production QA; effectiveCost about $15.2754, billedCost $0.0000, no meaningful overage spike.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "This run complements QA-20260320-0143 by covering the previously skipped Reporter, Analyst, and fullscreen AI workspace surfaces on deployment dpl_5dFjBc9RBNSJLd2zfEUto6Zik7oj.",
+    "Sidebar reporter detail and MD copy controls were visible after generation.",
+    "Analyst selected target api-was-dc1-01 with RAG enabled and rendered the 현재 상태 section in both sidebar and fullscreen.",
+    "Console errors were empty during the exercised surfaces."
+  ],
+  "links": [
+    {
+      "label": "Vercel URL",
+      "url": "https://openmanager-ai.vercel.app"
+    }
+  ]
+}
