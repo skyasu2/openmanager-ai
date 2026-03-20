@@ -1,40 +1,40 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-20 19:34:59 KST
+> Generated at: 2026-03-20 20:05:02 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 138 |
-| Total Checks | 1084 |
-| Passed | 1034 |
+| Total Runs | 139 |
+| Total Checks | 1092 |
+| Passed | 1042 |
 | Failed | 46 |
 | Completed Items | 227 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 8 |
 | Expert Domains Tracked | 6 |
-| Expert Open Gaps | 1 |
+| Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Run | QA-20260320-0139 (2026-03-20T09:49:43.445Z) |
+| Last Run | QA-20260320-0140 (2026-03-20T11:04:59.928Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260320-0139 (2026-03-20T09:49:43.445Z)
+Latest run: QA-20260320-0140 (2026-03-20T11:04:59.928Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
 | AI Quality Assurance Specialist | appropriate | no | - |
-| DevOps / SRE Engineer | appropriate | yes | Confirm billed usage in the Vercel dashboard or restore CLI usage access before the next release-facing QA run. |
+| DevOps / SRE Engineer | appropriate | no | - |
 | Test Automation Architect | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | failed | unknown | Local Vercel CLI usage lookup still failed in this environment during the post-push production smoke recheck. |
+| vercel | cli | checked | normal | Current billing period reviewed via Vercel CLI after the latest production smoke. Billed cost remains effectively zero and there is no meaningful billed overage spike. Effective cost is about USD 15.28 with Pro about 13.43, Build Minutes 1.05, and Function Invocations 0.60. |
 
 ## Coverage (Latest Run)
 
@@ -45,8 +45,7 @@ Latest run: QA-20260320-0139 (2026-03-20T09:49:43.445Z)
 
 ## Expert Domain Open Gaps
 
-- sre-devops: DevOps / SRE Engineer (last QA-20260320-0139)
-  next: Confirm billed usage in the Vercel dashboard or restore CLI usage access before the next release-facing QA run.
+- None
 
 ## Pending Improvements
 
@@ -163,12 +162,12 @@ Latest run: QA-20260320-0139 (2026-03-20T09:49:43.445Z)
 - guest-pin-login-flow: 게스트 PIN 인증 후 시스템 시작 버튼 노출 (completed 4회, last QA-20260227-0018)
 - health-all-connected: Health API 전체 서비스 connected (completed 2회, last QA-20260314-0097)
 - health-api: Health API 검증 (completed 1회, last QA-20260301-0035)
-- health-api-200-healthy: Health API 200 healthy (completed 2회, last QA-20260320-0139)
+- health-api-200-healthy: Health API 200 healthy (completed 3회, last QA-20260320-0140)
 - health-api-response-format: Health API 응답 포맷 검증 스크립트 수정 (completed 1회, last QA-20260310-0077)
 - home-semantic-nav: 홈 페이지 nav 랜드마크 보강 (completed 1회, last QA-20260226-0009)
 - landing-copy-alignment: 랜딩/로그인 정책 카피 정합성 (completed 4회, last QA-20260227-0016)
 - landing-feature-cards: 랜딩 피처카드 4개 모달 (completed 1회, last QA-20260317-0114)
-- landing-page-render: 랜딩 페이지 렌더링 (completed 2회, last QA-20260320-0139)
+- landing-page-render: 랜딩 페이지 렌더링 (completed 3회, last QA-20260320-0140)
 - landing-profile-bootstrap-state: 랜딩 초기 프로필 상태 텍스트 일관성 개선 (completed 1회, last QA-20260317-0120)
 - landing-system-start: 시스템 시작 카운트다운 (completed 1회, last QA-20260317-0114)
 - langfuse-monitoring-runtime-visibility: Langfuse runtime visibility on /monitoring (completed 1회, last QA-20260317-0116)
@@ -204,7 +203,7 @@ Latest run: QA-20260320-0139 (2026-03-20T09:49:43.445Z)
 - prod-security-block-no-raw-json-20260313: Blocked prompt UX hides raw JSON and security error internals (completed 1회, last QA-20260313-0095)
 - prod-stream-v2-smoke-20260313: Production stream/v2 smoke returns 200 event-stream with cloud-run source (completed 1회, last QA-20260313-0094)
 - production-dashboard-render: 프로덕션 대시보드 렌더링 (completed 1회, last QA-20260317-0114)
-- production-smoke-console-401-cleanliness: Production smoke console 401 resource noise 정리 (completed 2회, last QA-20260320-0139)
+- production-smoke-console-401-cleanliness: Production smoke console 401 resource noise 정리 (completed 3회, last QA-20260320-0140)
 - profile-menu: 프로필 메뉴 드롭다운 (completed 1회, last QA-20260317-0114)
 - prompt-injection-block-smoke-v880: Prompt injection 차단 스모크 검증 (completed 1회, last QA-20260308-0056)
 - qa-doc-roadmap-current-status-alignment: QA DoD 로드맵 현재 상태 정합성 갱신 (completed 1회, last QA-20260309-0067)
@@ -308,6 +307,7 @@ Latest run: QA-20260320-0139 (2026-03-20T09:49:43.445Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260320-0140 | 2026-03-20T11:04:59.928Z | smoke | yes | Vercel Production Smoke - Post Push Usage Evidence Green Recheck | 8 | 3 | 0 | 0 | 0 | 0 |
 | QA-20260320-0139 | 2026-03-20T09:49:43.445Z | smoke | yes | Vercel Production Smoke - Post Workflow Push Verification | 8 | 3 | 0 | 0 | 0 | 1 |
 | QA-20260320-0138 | 2026-03-20T07:49:25.161Z | legacy | no | Vercel Production QA - Runtime Safety Follow-up Validation Green Recheck (SHA 159dce5b2) | 32 | 5 | 0 | 0 | 0 | 1 |
 | QA-20260320-0137 | 2026-03-20T07:13:57.777Z | legacy | no | Vercel Production QA - Runtime Safety Follow-up Validation (SHA 159dce5b2) | 32 | 3 | 2 | 0 | 0 | 2 |
@@ -327,5 +327,4 @@ Latest run: QA-20260320-0139 (2026-03-20T09:49:43.445Z)
 | QA-20260318-0122 | 2026-03-18T06:11:19.435Z | legacy | no | Vercel Production QA - Core Frontend and AI Assistant Revalidation | 7 | 0 | 0 | 0 | 0 | 2 |
 | QA-20260318-0121 | 2026-03-18T04:59:58.502Z | legacy | no | Vercel Production QA - Frontend and AI Assistant Full Page Validation | 5 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260317-0120 | 2026-03-17T10:36:51.489Z | legacy | no | Vercel Playwright QA - landing profile bootstrap flicker recheck | 4 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260317-0119 | 2026-03-17T08:41:53.635Z | legacy | no | Vercel Playwright QA - guest boot, dashboard, AI stream, feedback, landing bootstrap state | 10 | 1 | 0 | 1 | 0 | 1 |
 

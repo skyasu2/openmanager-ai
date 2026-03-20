@@ -2,15 +2,15 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-03-20T09:49:43.445Z"
+    "updatedAt": "2026-03-20T11:04:59.928Z"
   },
   "sequence": {
-    "nextRunNumber": 140
+    "nextRunNumber": 141
   },
   "summary": {
-    "totalRuns": 138,
-    "totalChecks": 1084,
-    "totalPassed": 1034,
+    "totalRuns": 139,
+    "totalChecks": 1092,
+    "totalPassed": 1042,
     "totalFailed": 46,
     "completionRate": 100,
     "completedItems": 227,
@@ -18,9 +18,9 @@
     "deferredItems": 0,
     "wontFixItems": 8,
     "expertDomainsTracked": 6,
-    "expertDomainsOpenGaps": 1,
-    "lastRunId": "QA-20260320-0139",
-    "lastRecordedAt": "2026-03-20T09:49:43.445Z"
+    "expertDomainsOpenGaps": 0,
+    "lastRunId": "QA-20260320-0140",
+    "lastRecordedAt": "2026-03-20T11:04:59.928Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -873,20 +873,20 @@
       "status": "completed",
       "firstSeenRunId": "QA-20260301-0030",
       "firstSeenAt": "2026-03-01T00:54:39.785Z",
-      "lastSeenRunId": "QA-20260320-0139",
-      "lastSeenAt": "2026-03-20T09:49:43.445Z",
-      "seenCount": 3,
-      "completedCount": 2,
+      "lastSeenRunId": "QA-20260320-0140",
+      "lastSeenAt": "2026-03-20T11:04:59.928Z",
+      "seenCount": 4,
+      "completedCount": 3,
       "pendingCount": 0,
       "wontFixCount": 1,
       "owner": "",
-      "lastEvidence": "Playwright smoke.spec on production: latest deployed SHA rendered / successfully.",
+      "lastEvidence": "Playwright smoke.spec on production: latest promoted deployment rendered / successfully.",
       "lastNote": "",
       "isBlocking": true,
-      "isBlockingExplicit": false,
+      "isBlockingExplicit": true,
       "overengineeringScope": "",
       "lastPolicyNote": "",
-      "lastStatusChangeAt": "2026-03-20T09:49:43.445Z",
+      "lastStatusChangeAt": "2026-03-20T11:04:59.928Z",
       "aliases": [],
       "deferredCount": 0
     },
@@ -1751,20 +1751,20 @@
       "status": "completed",
       "firstSeenRunId": "QA-20260301-0032",
       "firstSeenAt": "2026-03-01T03:33:12.090Z",
-      "lastSeenRunId": "QA-20260320-0139",
-      "lastSeenAt": "2026-03-20T09:49:43.445Z",
-      "seenCount": 2,
-      "completedCount": 2,
+      "lastSeenRunId": "QA-20260320-0140",
+      "lastSeenAt": "2026-03-20T11:04:59.928Z",
+      "seenCount": 3,
+      "completedCount": 3,
       "pendingCount": 0,
       "wontFixCount": 0,
       "owner": "",
-      "lastEvidence": "Playwright smoke.spec on production: /api/health responded successfully on latest deployed SHA.",
+      "lastEvidence": "Playwright smoke.spec on production: /api/health responded successfully on the latest promoted deployment.",
       "lastNote": "",
       "isBlocking": true,
-      "isBlockingExplicit": false,
+      "isBlockingExplicit": true,
       "overengineeringScope": "",
       "lastPolicyNote": "",
-      "lastStatusChangeAt": "2026-03-20T09:49:43.445Z",
+      "lastStatusChangeAt": "2026-03-20T11:04:59.928Z",
       "aliases": [],
       "deferredCount": 0
     },
@@ -5335,22 +5335,22 @@
       "status": "completed",
       "firstSeenRunId": "QA-20260320-0137",
       "firstSeenAt": "2026-03-20T07:13:57.777Z",
-      "lastSeenRunId": "QA-20260320-0139",
-      "lastSeenAt": "2026-03-20T09:49:43.445Z",
-      "seenCount": 3,
-      "completedCount": 2,
+      "lastSeenRunId": "QA-20260320-0140",
+      "lastSeenAt": "2026-03-20T11:04:59.928Z",
+      "seenCount": 4,
+      "completedCount": 3,
       "pendingCount": 1,
       "deferredCount": 0,
       "wontFixCount": 0,
       "aliases": [],
       "owner": "",
-      "lastEvidence": "Playwright smoke.spec console gate passed again on the latest deployed SHA after workflow follow-up push.",
+      "lastEvidence": "Playwright smoke.spec console gate passed on the latest promoted deployment during the usage-evidence follow-up recheck.",
       "lastNote": "tracking-only, release-blocking 아님. 기능 실패는 아니지만 browser console clean check가 401 resource error 한 건으로 깨진다.",
       "isBlocking": true,
-      "isBlockingExplicit": false,
+      "isBlockingExplicit": true,
       "overengineeringScope": "",
       "lastPolicyNote": "",
-      "lastStatusChangeAt": "2026-03-20T09:49:43.445Z"
+      "lastStatusChangeAt": "2026-03-20T11:04:59.928Z"
     }
   },
   "runs": [
@@ -11178,6 +11178,83 @@
         "security pack",
         "observability pack"
       ]
+    },
+    {
+      "runId": "QA-20260320-0140",
+      "recordedAt": "2026-03-20T11:04:59.928Z",
+      "recordedAtKst": "2026-03-20 20:04:59 KST",
+      "title": "Vercel Production Smoke - Post Push Usage Evidence Green Recheck",
+      "owner": "codex",
+      "source": "playwright-cli",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260320-0140.json",
+      "scope": "smoke",
+      "releaseFacing": true,
+      "coveredSurfaces": [
+        "/",
+        "/login",
+        "404",
+        "/api/health",
+        "server API",
+        "/api/version",
+        "static assets",
+        "production console cleanliness"
+      ],
+      "skippedSurfaces": [
+        "dashboard AI/sidebar",
+        "system-boot",
+        "retention parity",
+        "security pack",
+        "observability pack"
+      ],
+      "checks": {
+        "total": 8,
+        "passed": 8,
+        "failed": 0
+      },
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The latest production smoke pack passed again on the promoted deployment and the tested guest-facing baseline remains stable.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The latest production deployment is READY/PROMOTED and fresh Vercel usage evidence was collected through the CLI without showing a meaningful billed overage spike.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The production smoke spec passed cleanly on the latest promoted deployment after the QA-log push.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-03-20T20:04:15+09:00",
+          "summary": "Current billing period reviewed via Vercel CLI after the latest production smoke. Billed cost remains effectively zero and there is no meaningful billed overage spike. Effective cost is about USD 15.28 with Pro about 13.43, Build Minutes 1.05, and Function Invocations 0.60.",
+          "evidence": "XDG_CACHE_HOME=/tmp vercel usage --format json --non-interactive; XDG_CACHE_HOME=/tmp vercel usage --breakdown daily --format json --non-interactive",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "expertCount": 3,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 3,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -11186,16 +11263,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 91,
-      "appropriateCount": 87,
+      "seenCount": 92,
+      "appropriateCount": 88,
       "partialCount": 4,
       "inappropriateCount": 0,
       "improvementNeededCount": 12,
-      "lastRunId": "QA-20260320-0139",
-      "lastSeenAt": "2026-03-20T09:49:43.445Z",
+      "lastRunId": "QA-20260320-0140",
+      "lastSeenAt": "2026-03-20T11:04:59.928Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Production smoke on the latest deployed SHA covered the core guest-facing routes and baseline API responses without regression.",
+      "lastRationale": "The latest production smoke pack passed again on the promoted deployment and the tested guest-facing baseline remains stable.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -11237,33 +11314,33 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 49,
-      "appropriateCount": 46,
+      "seenCount": 50,
+      "appropriateCount": 47,
       "partialCount": 3,
       "inappropriateCount": 0,
       "improvementNeededCount": 6,
-      "lastRunId": "QA-20260320-0139",
-      "lastSeenAt": "2026-03-20T09:49:43.445Z",
+      "lastRunId": "QA-20260320-0140",
+      "lastSeenAt": "2026-03-20T11:04:59.928Z",
       "lastFit": "appropriate",
-      "lastImprovementNeeded": true,
-      "lastRationale": "Deployment reached READY on the target SHA, but fresh usage evidence could not be collected through the local CLI.",
-      "lastNextAction": "Confirm billed usage in the Vercel dashboard or restore CLI usage access before the next release-facing QA run."
+      "lastImprovementNeeded": false,
+      "lastRationale": "The latest production deployment is READY/PROMOTED and fresh Vercel usage evidence was collected through the CLI without showing a meaningful billed overage spike.",
+      "lastNextAction": ""
     },
     "test-automation": {
       "domainId": "test-automation",
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 84,
-      "appropriateCount": 77,
+      "seenCount": 85,
+      "appropriateCount": 78,
       "partialCount": 7,
       "inappropriateCount": 0,
       "improvementNeededCount": 9,
-      "lastRunId": "QA-20260320-0139",
-      "lastSeenAt": "2026-03-20T09:49:43.445Z",
+      "lastRunId": "QA-20260320-0140",
+      "lastSeenAt": "2026-03-20T11:04:59.928Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The production smoke spec passed on the latest deployed commit after the workflow hardening changes.",
+      "lastRationale": "The production smoke spec passed cleanly on the latest promoted deployment after the QA-log push.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {

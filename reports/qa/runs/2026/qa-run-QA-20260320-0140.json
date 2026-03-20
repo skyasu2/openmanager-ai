@@ -1,0 +1,137 @@
+{
+  "runId": "QA-20260320-0140",
+  "recordedAt": "2026-03-20T11:04:59.928Z",
+  "recordedAtKst": "2026-03-20 20:04:59 KST",
+  "runTitle": "Vercel Production Smoke - Post Push Usage Evidence Green Recheck",
+  "owner": "codex",
+  "source": "playwright-cli",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main"
+  },
+  "scope": "smoke",
+  "releaseFacing": true,
+  "coveredSurfaces": [
+    "/",
+    "/login",
+    "404",
+    "/api/health",
+    "server API",
+    "/api/version",
+    "static assets",
+    "production console cleanliness"
+  ],
+  "skippedSurfaces": [
+    "dashboard AI/sidebar",
+    "system-boot",
+    "retention parity",
+    "security pack",
+    "observability pack"
+  ],
+  "checks": {
+    "total": 8,
+    "passed": 8,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The latest production smoke pack passed again on the promoted deployment and the tested guest-facing baseline remains stable.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The latest production deployment is READY/PROMOTED and fresh Vercel usage evidence was collected through the CLI without showing a meaningful billed overage spike.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The production smoke spec passed cleanly on the latest promoted deployment after the QA-log push.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-03-20T20:04:15+09:00",
+      "summary": "Current billing period reviewed via Vercel CLI after the latest production smoke. Billed cost remains effectively zero and there is no meaningful billed overage spike. Effective cost is about USD 15.28 with Pro about 13.43, Build Minutes 1.05, and Function Invocations 0.60.",
+      "evidence": "XDG_CACHE_HOME=/tmp vercel usage --format json --non-interactive; XDG_CACHE_HOME=/tmp vercel usage --breakdown daily --format json --non-interactive",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "landing-page-render",
+      "title": "랜딩 페이지 렌더링",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Playwright smoke.spec on production: latest promoted deployment rendered / successfully.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "health-api-200-healthy",
+      "title": "Health API 200 healthy",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Playwright smoke.spec on production: /api/health responded successfully on the latest promoted deployment.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "production-smoke-console-401-cleanliness",
+      "title": "Production smoke console 401 resource noise 정리",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Playwright smoke.spec console gate passed on the latest promoted deployment during the usage-evidence follow-up recheck.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Latest production deployment: dpl_AoSAVKS6xv9xvduVUNpMpCntigYM",
+    "Latest production commit: 327509241fe10d4d3456262031872fe2a0451e99",
+    "Smoke command: PLAYWRIGHT_VERCEL_WORKERS=1 npx playwright test tests/e2e/smoke.spec.ts --grep-invert '@external' --config playwright.config.vercel.ts",
+    "Usage commands: XDG_CACHE_HOME=/tmp vercel usage --format json --non-interactive; XDG_CACHE_HOME=/tmp vercel usage --breakdown daily --format json --non-interactive"
+  ],
+  "links": [
+    {
+      "label": "Production URL",
+      "url": "https://openmanager-ai.vercel.app"
+    },
+    {
+      "label": "Vercel Deployment",
+      "url": "https://vercel.com/skyasus-projects/openmanager-ai/AoSAVKS6xv9xvduVUNpMpCntigYM"
+    }
+  ]
+}
