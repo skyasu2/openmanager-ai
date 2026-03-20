@@ -2,6 +2,19 @@
   "runTitle": "Vercel Playwright QA - Login/Modal/Copy Alignment",
   "owner": "codex",
   "source": "playwright-mcp",
+  "scope": "broad",
+  "releaseFacing": true,
+  "coveredSurfaces": [
+    "/",
+    "/login",
+    "/dashboard",
+    "modal interactions",
+    "login/policy copy"
+  ],
+  "skippedSurfaces": [
+    "AI sidebar",
+    "observability pack"
+  ],
   "environment": {
     "target": "vercel-production",
     "url": "https://openmanager-ai.vercel.app",
@@ -19,6 +32,7 @@
       "platform": "vercel",
       "method": "cli",
       "status": "checked",
+      "result": "normal",
       "checkedAt": "2026-03-19T09:20:00+09:00",
       "summary": "Current billing period reviewed after production QA; no unexpected build/function/bandwidth spike.",
       "evidence": "npm run check:usage:vercel",

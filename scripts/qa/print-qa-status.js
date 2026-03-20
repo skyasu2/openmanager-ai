@@ -38,13 +38,21 @@ function run() {
     `- expert domains tracked/open-gaps: ${experts.length}/${openExpertGaps.length}`
   );
   console.log(`- last run: ${summary.lastRunId || '-'} @ ${summary.lastRecordedAt || '-'}`);
+  if (latestRun) {
+    console.log(
+      `- latest scope/release-facing: ${latestRun.scope || 'legacy'}/${latestRun.releaseFacing ? 'yes' : 'no'}`
+    );
+    console.log(
+      `- latest covered/skipped surfaces: ${(latestRun.coveredSurfaces || []).length}/${(latestRun.skippedSurfaces || []).length}`
+    );
+  }
   console.log(`- dashboard synced: ${path.relative(process.cwd(), STATUS_PATH)}`);
 
   if (latestUsageChecks.length > 0) {
     console.log('\nLatest Usage Checks');
     for (const usageCheck of latestUsageChecks) {
       console.log(
-        `- ${usageCheck.platform}: ${usageCheck.status} via ${usageCheck.method}${usageCheck.summary ? ` - ${usageCheck.summary}` : ''}`
+        `- ${usageCheck.platform}: ${usageCheck.status}/${usageCheck.result || 'unknown'} via ${usageCheck.method}${usageCheck.summary ? ` - ${usageCheck.summary}` : ''}`
       );
     }
   }
@@ -85,7 +93,7 @@ function run() {
     console.log('\nRecent Runs');
     for (const runRecord of recentRuns) {
       console.log(
-        `- ${runRecord.runId}: ${runRecord.title} (checks ${runRecord.checks.total}, completed ${runRecord.completedCount}, pending ${runRecord.pendingCount || 0}, wont-fix ${runRecord.wontFixCount || 0})`
+        `- ${runRecord.runId}: ${runRecord.title} (scope ${runRecord.scope || 'legacy'}, checks ${runRecord.checks.total}, completed ${runRecord.completedCount}, pending ${runRecord.pendingCount || 0}, wont-fix ${runRecord.wontFixCount || 0})`
       );
     }
   }

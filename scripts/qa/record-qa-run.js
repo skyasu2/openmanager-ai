@@ -37,6 +37,9 @@ const EXPERT_DOMAIN_CATALOG = [
   { id: 'data-metrics-quality', name: 'Data Quality & Metrics Analyst' },
 ];
 
+const RUN_SCOPE_VALUES = new Set(['smoke', 'targeted', 'broad', 'release-gate']);
+const USAGE_RESULT_VALUES = new Set(['normal', 'concern', 'unknown']);
+
 function parseArgs(argv) {
   const args = {
     input: '',
@@ -392,16 +395,50 @@ function normalizeUsageCheck(rawItem, index) {
   const status = ['checked', 'skipped', 'failed'].includes(statusRaw)
     ? statusRaw
     : 'checked';
+  const resultRaw = String(
+    rawItem.result || (status === 'checked' ? 'unknown' : 'unknown')
+  )
+    .trim()
+    .toLowerCase();
+  const result = USAGE_RESULT_VALUES.has(resultRaw) ? resultRaw : 'unknown';
 
   return {
     platform,
     method,
     status,
+    result,
     checkedAt: rawItem.checkedAt ? String(rawItem.checkedAt) : '',
     summary: rawItem.summary ? String(rawItem.summary) : '',
     evidence: rawItem.evidence ? String(rawItem.evidence) : '',
     url: rawItem.url ? String(rawItem.url) : '',
   };
+}
+
+function normalizeRunScope(rawValue, environment) {
+  const normalized = String(rawValue || '')
+    .trim()
+    .toLowerCase();
+
+  if (RUN_SCOPE_VALUES.has(normalized)) {
+    return normalized;
+  }
+
+  // Backward-compatible default: historical production QA runs were typically broad.
+  if (isVercelProductionEnvironment(environment)) {
+    return 'broad';
+  }
+
+  return 'targeted';
+}
+
+function normalizeStringList(rawValue) {
+  if (!Array.isArray(rawValue)) return [];
+
+  const items = rawValue
+    .map((entry) => String(entry || '').trim())
+    .filter(Boolean);
+
+  return Array.from(new Set(items));
 }
 
 function isVercelProductionEnvironment(environment) {
@@ -417,8 +454,28 @@ function isVercelProductionEnvironment(environment) {
   );
 }
 
-function requiresExpertAssessments(environment, totalChecks) {
-  return isVercelProductionEnvironment(environment) && Number(totalChecks || 0) >= 5;
+function inferReleaseFacing(rawValue, environment, scope) {
+  if (rawValue !== undefined) {
+    return toBoolean(rawValue, false);
+  }
+
+  if (!isVercelProductionEnvironment(environment)) {
+    return false;
+  }
+
+  return scope === 'broad' || scope === 'release-gate';
+}
+
+function requiresVercelUsageCheck(environment, scope, releaseFacing) {
+  if (!isVercelProductionEnvironment(environment)) {
+    return false;
+  }
+
+  return releaseFacing || scope === 'broad' || scope === 'release-gate';
+}
+
+function requiresExpertAssessments(environment, scope, releaseFacing) {
+  return requiresVercelUsageCheck(environment, scope, releaseFacing);
 }
 
 function initializeTracker(nowIso) {
@@ -659,6 +716,10 @@ function statusMarkdown(tracker) {
   const latestRun = tracker.runs[tracker.runs.length - 1] || null;
   const latestRunExperts = latestRun?.expertAssessments || [];
   const latestRunUsageChecks = latestRun?.usageChecks || [];
+  const latestRunScope = latestRun?.scope || 'legacy';
+  const latestRunReleaseFacing = latestRun?.releaseFacing === true;
+  const latestRunCoveredSurfaces = latestRun?.coveredSurfaces || [];
+  const latestRunSkippedSurfaces = latestRun?.skippedSurfaces || [];
 
   lines.push('# QA Status Dashboard');
   lines.push('');
@@ -704,17 +765,28 @@ function statusMarkdown(tracker) {
   lines.push('');
   lines.push('## Usage Checks (Latest Run)');
   lines.push('');
-  lines.push('| Platform | Method | Status | Summary |');
-  lines.push('|---|---|---|---|');
+  lines.push('| Platform | Method | Collection | Result | Summary |');
+  lines.push('|---|---|---|---|---|');
   if (latestRunUsageChecks.length === 0) {
-    lines.push('| - | - | - | - |');
+    lines.push('| - | - | - | - | - |');
   } else {
     for (const usageCheck of latestRunUsageChecks) {
       lines.push(
-        `| ${usageCheck.platform} | ${usageCheck.method} | ${usageCheck.status} | ${usageCheck.summary || '-'} |`
+        `| ${usageCheck.platform} | ${usageCheck.method} | ${usageCheck.status} | ${usageCheck.result || 'unknown'} | ${usageCheck.summary || '-'} |`
       );
     }
   }
+  lines.push('');
+  lines.push('## Coverage (Latest Run)');
+  lines.push('');
+  lines.push(`- Scope: ${latestRunScope}`);
+  lines.push(`- Release-Facing: ${latestRunReleaseFacing ? 'yes' : 'no'}`);
+  lines.push(
+    `- Covered Surfaces: ${latestRunCoveredSurfaces.length > 0 ? latestRunCoveredSurfaces.join(', ') : '-'}`
+  );
+  lines.push(
+    `- Skipped Surfaces: ${latestRunSkippedSurfaces.length > 0 ? latestRunSkippedSurfaces.join(', ') : '-'}`
+  );
   lines.push('');
   lines.push('## Expert Domain Open Gaps');
   lines.push('');
@@ -788,14 +860,14 @@ function statusMarkdown(tracker) {
   lines.push('');
   lines.push('## Recent Runs');
   lines.push('');
-  lines.push('| Run ID | Time (UTC) | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |');
-  lines.push('|---|---|---|---:|---:|---:|---:|---:|---:|');
+  lines.push('| Run ID | Time (UTC) | Scope | Release-Facing | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |');
+  lines.push('|---|---|---|---|---|---:|---:|---:|---:|---:|---:|');
   if (recentRuns.length === 0) {
-    lines.push('| - | - | - | 0 | 0 | 0 | 0 | 0 | 0 |');
+    lines.push('| - | - | - | - | - | 0 | 0 | 0 | 0 | 0 | 0 |');
   } else {
     for (const run of recentRuns) {
       lines.push(
-        `| ${run.runId} | ${run.recordedAt} | ${run.title} | ${run.checks.total} | ${run.completedCount} | ${run.pendingCount || 0} | ${run.deferredCount || 0} | ${run.wontFixCount || 0} | ${run.expertNeedsImprovementCount || 0} |`
+        `| ${run.runId} | ${run.recordedAt} | ${run.scope || 'legacy'} | ${run.releaseFacing ? 'yes' : 'no'} | ${run.title} | ${run.checks.total} | ${run.completedCount} | ${run.pendingCount || 0} | ${run.deferredCount || 0} | ${run.wontFixCount || 0} | ${run.expertNeedsImprovementCount || 0} |`
       );
     }
   }
@@ -815,6 +887,11 @@ function run() {
   const payload = readJsonFile(inputPath);
   const now = new Date();
   const nowIso = now.toISOString();
+  const environment = payload.environment || {};
+  const scope = normalizeRunScope(payload.scope, environment);
+  const releaseFacing = inferReleaseFacing(payload.releaseFacing, environment, scope);
+  const coveredSurfaces = normalizeStringList(payload.coveredSurfaces);
+  const skippedSurfaces = normalizeStringList(payload.skippedSurfaces);
 
   const runTitle = String(payload.runTitle || '').trim();
   const owner = String(payload.owner || '').trim();
@@ -859,18 +936,22 @@ function run() {
   const usageChecks = usageChecksRaw.map((item, index) =>
     normalizeUsageCheck(item, index)
   );
-  const requiresVercelUsageCheck = isVercelProductionEnvironment(payload.environment);
+  const requiresUsageEvidence = requiresVercelUsageCheck(
+    environment,
+    scope,
+    releaseFacing
+  );
   const hasVercelUsageCheck = usageChecks.some((item) => item.platform === 'vercel');
 
-  if (requiresVercelUsageCheck && !hasVercelUsageCheck) {
+  if (requiresUsageEvidence && !hasVercelUsageCheck) {
     throw new Error(
-      'Vercel production QA/deploy run에는 usageChecks에 platform="vercel" 항목이 최소 1건 필요합니다. npm run check:usage:vercel 또는 수동 대시보드 확인 결과를 기록하세요.'
+      'Vercel production broad/release-facing run에는 usageChecks에 platform="vercel" 항목이 최소 1건 필요합니다. npm run check:usage:vercel 또는 수동 대시보드 확인 결과를 기록하세요.'
     );
   }
 
-  if (requiresExpertAssessments(payload.environment, total) && expertAssessments.length === 0) {
+  if (requiresExpertAssessments(environment, scope, releaseFacing) && expertAssessments.length === 0) {
     throw new Error(
-      'Vercel production broad/full QA run(checks.total >= 5)에는 expertAssessments가 최소 1건 필요합니다.'
+      'Vercel production broad/release-facing run에는 expertAssessments가 최소 1건 필요합니다.'
     );
   }
 
@@ -945,7 +1026,11 @@ function run() {
     runTitle,
     owner,
     source: payload.source ? String(payload.source) : '',
-    environment: payload.environment || {},
+    environment,
+    scope,
+    releaseFacing,
+    coveredSurfaces,
+    skippedSurfaces,
     checks: {
       total,
       passed,
@@ -1020,6 +1105,10 @@ function run() {
     owner,
     source: runRecord.source,
     file: runFileRelative,
+    scope,
+    releaseFacing,
+    coveredSurfaces,
+    skippedSurfaces,
     checks: runRecord.checks,
     expertAssessments,
     usageChecks,

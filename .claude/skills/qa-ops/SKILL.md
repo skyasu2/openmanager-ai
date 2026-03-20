@@ -37,25 +37,38 @@ disable-model-invocation: true
 - 공통: landing/login/dashboard/modal
 - AI 필수: AI assistant/chat/분석 응답 경로
 - 비AI: UI/카피/레이아웃/기본 인증 동선 중심
+- run 입력에는 `scope`, `releaseFacing`, `coveredSurfaces`, `skippedSurfaces`를 기록합니다.
 
 4. 결과 기록(필수).
 - `cp reports/qa/templates/qa-run-input.example.json /tmp/qa-run-input.json`
 - `npm run qa:record -- --input /tmp/qa-run-input.json`
 - `npm run qa:status`
+- Vercel production의 `broad`/`release-gate` run 또는 `releaseFacing=true` run은 `expertAssessments`와 `usageChecks`를 포함합니다.
 
 5. 결과 보고.
-- run id, pass/fail, 완료/미완료 개선항목, 다음 우선순위
+- 항상: target, run id, scope, checks, release decision
+- 관련 있을 때만: covered/skipped surfaces, usage, expert gaps, completed/pending, next priority
 
 ## Output Format
 
 ```text
-QA Ops Summary
+QA Summary
+- result: go | conditional | no-go
 - target: vercel|local-dev
 - run id: QA-YYYYMMDD-XXXX
+- scope: smoke|targeted|broad|release-gate
 - checks: <total> (pass <n> / fail <n>)
+
+Optional when relevant:
+- covered surfaces: <list>
+- skipped surfaces: <list|none>
+- usage: <collection/result summary>
 - completed: <count>
 - pending: <count>
+- expert gaps: <count>
 - next priority: <item id>
+
+End with one short operator note for the highest remaining risk or `none in tested scope`.
 ```
 
 ## Changelog

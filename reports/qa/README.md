@@ -20,6 +20,7 @@ reports/qa/
 
 1. 템플릿 복사 후 입력값 작성
 - `cp reports/qa/templates/qa-run-input.example.json /tmp/qa-run-input.json`
+- `scope`, `releaseFacing`, `coveredSurfaces`, `skippedSurfaces`를 현재 QA 범위에 맞게 채운다.
 
 2. QA 결과 기록
 - `npm run qa:record -- --input /tmp/qa-run-input.json`
@@ -32,16 +33,22 @@ reports/qa/
 - `npm run check:usage` 또는 `npm run check:usage:vercel`
 - CLI 확인이 불가하면 Vercel Usage 대시보드를 수동 확인
 - 확인 결과는 QA 입력 JSON의 `usageChecks`에 기록
+- `usageChecks.status`는 **수집 상태**(`checked` | `skipped` | `failed`)를 의미한다.
+- `usageChecks.result`는 **해석 결과**(`normal` | `concern` | `unknown`)를 의미한다.
 
 ## Tracking Rules
 
 - `qa-tracker.json`이 상태 추적 SSOT입니다.
 - 개선 항목은 `id` 기준으로 누적됩니다.
 - `usageChecks`는 실환경 QA/배포 후 사용량 확인 근거를 남기는 필드입니다.
-  - Vercel Production QA/배포면 `platform: "vercel"` 항목이 최소 1건 필수
-  - 권장 상태: `checked` | `skipped` | `failed`
+  - Vercel Production의 `broad`/`release-gate` 또는 `releaseFacing: true` run이면 `platform: "vercel"` 항목이 최소 1건 필수
+  - `status`는 수집 상태를 의미합니다: `checked` | `skipped` | `failed`
+  - `result`는 비용/사용량 판정 결과를 의미합니다: `normal` | `concern` | `unknown`
+- `scope`는 QA 범위를 의미합니다: `smoke` | `targeted` | `broad` | `release-gate`
+- `releaseFacing`은 이 run이 실제 릴리즈 게이트 성격인지 명시합니다.
+- `coveredSurfaces` / `skippedSurfaces`는 사용자 보고 텍스트가 아니라 run SSOT에도 저장해야 합니다.
 - 전문가 영역 평가는 `expertAssessments`에 기록합니다.
-  - Vercel Production broad/full QA(`checks.total >= 5`)면 최소 1건 필수
+  - Vercel Production의 `broad`/`release-gate` 또는 `releaseFacing: true` run이면 최소 1건 필수
   - 핵심 필드: `domainId`, `fit`, `improvementNeeded`, `nextAction`
   - 권장 6개 도메인:
     - `ai-quality-assurance`
@@ -62,6 +69,18 @@ reports/qa/
   - 과도 항목은 템플릿의 `overengineeringScope`에 근거를 남겨 다음 런에서도 의도 추적 가능
   - 예외적으로 개선 우선순위가 높다고 판단되면 `isBlocking: true`로 명시
 - `QA_STATUS.md`는 기록 시마다 자동 재생성됩니다.
+
+## Reporting Style
+
+- QA run 데이터는 상세하게 저장하되, 사용자 응답은 상황에 맞게 요약합니다.
+- 항상 필요한 최소 정보:
+  - `target`, `run id`, `scope`, `checks`, 최종 판정
+- 다음 항목은 관련 있을 때만 답변에 포함합니다.
+  - `coveredSurfaces`, `skippedSurfaces`
+  - `usageChecks`
+  - `expertAssessments` / open gaps
+  - `next priority`
+- smoke/targeted 재검증 결과는 broad release QA와 동일한 무게로 서술하지 않습니다.
 
 ## AI Timing Header Rule
 
