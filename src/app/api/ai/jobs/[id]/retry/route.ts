@@ -10,21 +10,22 @@
 
 export const maxDuration = 30;
 
-import { type NextRequest, NextResponse } from 'next/server';
+import { after, type NextRequest, NextResponse } from 'next/server';
 import { withAuth } from '@/lib/auth/api-auth';
 import { logger } from '@/lib/logging';
 import { redisGet, redisSet } from '@/lib/redis';
 import type { AIJob, TriggerStatus } from '@/types/ai-jobs';
 import { withCSRFProtection } from '@/utils/security/csrf';
+import { isJobOwnedByRequester } from '../../job-ownership';
 
 const MAX_RETRIES = 2;
 const JOB_TTL_SECONDS = 86400;
 const PROGRESS_TTL_SECONDS = 600;
-const TRIGGER_TIMEOUT_MS = 5000;
+const TRIGGER_TIMEOUT_MS = 280000;
 
 export const POST = withAuth(
   withCSRFProtection(async function POST(
-    _request: NextRequest,
+    request: NextRequest,
     { params }: { params: Promise<{ id: string }> }
   ) {
     try {
@@ -32,6 +33,10 @@ export const POST = withAuth(
 
       const job = await redisGet<AIJob>(`job:${jobId}`);
       if (!job) {
+        return NextResponse.json({ error: 'Job not found' }, { status: 404 });
+      }
+
+      if (!isJobOwnedByRequester(job as unknown, request)) {
         return NextResponse.json({ error: 'Job not found' }, { status: 404 });
       }
 
@@ -75,23 +80,44 @@ export const POST = withAuth(
         PROGRESS_TTL_SECONDS
       );
 
-      // Cloud Run Worker 트리거
-      const triggerStatus = await triggerWorkerRetry(
-        jobId,
-        job.query,
-        job.type,
-        job.sessionId ?? undefined
-      );
+      const initialTriggerStatus: TriggerStatus = process.env.CLOUD_RUN_AI_URL
+        ? 'scheduled'
+        : 'skipped';
 
-      logger.info(
-        `[AI Jobs] Retry: ${jobId} | attempt=${retryCount} | trigger=${triggerStatus}`
-      );
+      after(async () => {
+        const finalTriggerStatus =
+          initialTriggerStatus === 'scheduled'
+            ? await triggerWorkerRetry(
+                jobId,
+                job.query,
+                job.type,
+                job.sessionId ?? undefined
+              )
+            : initialTriggerStatus;
+
+        logger.info(
+          `[AI Jobs] Retry: ${jobId} | attempt=${retryCount} | trigger=${finalTriggerStatus}`
+        );
+
+        if (finalTriggerStatus !== 'sent') {
+          await redisSet(
+            `job:${jobId}`,
+            {
+              ...updatedJob,
+              status: 'failed',
+              error: getRetryFailureMessage(finalTriggerStatus),
+              completedAt: new Date().toISOString(),
+            },
+            JOB_TTL_SECONDS
+          );
+        }
+      });
 
       return NextResponse.json({
         jobId,
         status: 'queued',
         retryCount,
-        triggerStatus,
+        triggerStatus: initialTriggerStatus,
       });
     } catch (error) {
       logger.error('[AI Jobs] Retry error:', error);
@@ -139,5 +165,16 @@ async function triggerWorkerRetry(
     clearTimeout(timeoutId);
     if (error instanceof Error && error.name === 'AbortError') return 'timeout';
     return 'failed';
+  }
+}
+
+function getRetryFailureMessage(triggerStatus: TriggerStatus): string {
+  switch (triggerStatus) {
+    case 'timeout':
+      return 'Worker retry timed out. Please retry again.';
+    case 'skipped':
+      return 'Worker target not configured. Please retry later.';
+    default:
+      return 'Worker retry failed. Please retry again.';
   }
 }

@@ -39,16 +39,66 @@ export function useAutoLogout({
   redirectPath = '/login',
   onWarning,
   onLogout,
-  timeoutMinutes: _timeoutMinutes = 30,
-  warningMinutes: _warningMinutes = 5,
+  timeoutMinutes,
+  warningMinutes,
 }: UseAutoLogoutOptions = {}) {
   const router = useRouter();
+  const resolvedInactivityTimeoutMs = Math.max(
+    1000,
+    timeoutMinutes != null ? timeoutMinutes * 60 * 1000 : inactivityTimeout
+  );
+  const resolvedWarningLeadMs = Math.max(
+    0,
+    warningMinutes != null ? warningMinutes * 60 * 1000 : warningTimeout
+  );
+  const effectiveWarningLeadMs = Math.min(
+    resolvedWarningLeadMs,
+    Math.max(0, resolvedInactivityTimeoutMs - 1000)
+  );
+  const warningDelayMs = Math.max(
+    0,
+    resolvedInactivityTimeoutMs - effectiveWarningLeadMs
+  );
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [remainingTime, setRemainingTime] = useState(inactivityTimeout);
+  const [remainingTime, setRemainingTime] = useState(
+    Math.ceil(effectiveWarningLeadMs / 1000)
+  );
   const [isWarning, setIsWarning] = useState(false);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const warningTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const countdownIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const lastActivityRef = useRef<number>(Date.now());
+  const logoutDeadlineRef = useRef<number | null>(null);
+
+  const clearCountdownInterval = useCallback(() => {
+    if (countdownIntervalRef.current) {
+      clearInterval(countdownIntervalRef.current);
+      countdownIntervalRef.current = null;
+    }
+  }, []);
+
+  const updateCountdown = useCallback(() => {
+    if (!logoutDeadlineRef.current) {
+      setRemainingTime(Math.ceil(effectiveWarningLeadMs / 1000));
+      return;
+    }
+
+    const nextRemainingSeconds = Math.max(
+      0,
+      Math.ceil((logoutDeadlineRef.current - Date.now()) / 1000)
+    );
+    setRemainingTime(nextRemainingSeconds);
+
+    if (nextRemainingSeconds === 0) {
+      clearCountdownInterval();
+    }
+  }, [clearCountdownInterval, effectiveWarningLeadMs]);
+
+  const startCountdown = useCallback(() => {
+    clearCountdownInterval();
+    updateCountdown();
+    countdownIntervalRef.current = setInterval(updateCountdown, 1000);
+  }, [clearCountdownInterval, updateCountdown]);
 
   // 자동 로그아웃 처리 (resetTimers보다 먼저 정의)
   const handleAutoLogout = useCallback(async () => {
@@ -80,29 +130,38 @@ export function useAutoLogout({
     if (warningTimeoutRef.current) {
       clearTimeout(warningTimeoutRef.current);
     }
+    clearCountdownInterval();
+    logoutDeadlineRef.current = null;
 
     setIsWarning(false);
-    setRemainingTime(inactivityTimeout);
+    setRemainingTime(Math.ceil(effectiveWarningLeadMs / 1000));
 
     // 로그인된 사용자만 타이머 설정
     if (isLoggedIn) {
-      // 경고 타이머
-      warningTimeoutRef.current = setTimeout(() => {
-        setIsWarning(true);
-        onWarning?.();
-      }, inactivityTimeout - warningTimeout);
+      if (effectiveWarningLeadMs > 0) {
+        warningTimeoutRef.current = setTimeout(() => {
+          logoutDeadlineRef.current = Date.now() + effectiveWarningLeadMs;
+          setIsWarning(true);
+          setRemainingTime(Math.ceil(effectiveWarningLeadMs / 1000));
+          startCountdown();
+          onWarning?.();
+        }, warningDelayMs);
+      }
 
       // 로그아웃 타이머
       timeoutRef.current = setTimeout(() => {
         void handleAutoLogout();
-      }, inactivityTimeout);
+      }, resolvedInactivityTimeoutMs);
     }
   }, [
-    inactivityTimeout,
-    warningTimeout,
+    clearCountdownInterval,
+    effectiveWarningLeadMs,
+    warningDelayMs,
     isLoggedIn,
     onWarning,
     handleAutoLogout,
+    resolvedInactivityTimeoutMs,
+    startCountdown,
   ]);
 
   // 활동 업데이트
@@ -121,7 +180,7 @@ export function useAutoLogout({
   }, [handleAutoLogout]);
 
   // 수동 로그아웃
-  const logout = async () => {
+  const logout = useCallback(async () => {
     try {
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
@@ -129,12 +188,13 @@ export function useAutoLogout({
       if (warningTimeoutRef.current) {
         clearTimeout(warningTimeoutRef.current);
       }
+      clearCountdownInterval();
 
       await handleAutoLogout();
     } catch (error) {
       logger.error('❌ 수동 로그아웃 실패:', error);
     }
-  };
+  }, [clearCountdownInterval, handleAutoLogout]);
 
   // 활동 감지 이벤트 리스너
   useEffect(() => {
@@ -175,12 +235,14 @@ export function useAutoLogout({
       if (warningTimeoutRef.current) {
         clearTimeout(warningTimeoutRef.current);
       }
+      clearCountdownInterval();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     // 초기 타이머 설정
     resetTimers,
     updateActivity,
+    clearCountdownInterval,
   ]); // resetTimers, updateActivity는 ref 기반으로 안정적
 
   // 로그인 상태 확인

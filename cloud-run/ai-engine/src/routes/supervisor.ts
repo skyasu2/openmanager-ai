@@ -85,7 +85,7 @@ const fileAttachmentSchema = z.object({
 });
 
 const streamMessageSchema = z.object({
-  role: z.enum(['user', 'assistant', 'system']),
+  role: z.enum(['user', 'assistant']),
   content: z.string().min(1, 'Message content required').max(50_000),
   /** Image attachments for Vision Agent */
   images: z.array(imageAttachmentSchema).max(10).optional(),

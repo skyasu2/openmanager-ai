@@ -12,13 +12,14 @@ import {
   Zap,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { type FC, useCallback, useEffect, useState } from 'react';
+import { type FC, useCallback, useEffect, useMemo, useState } from 'react';
 import { clearChatHistory } from '@/hooks/ai/utils/chat-history-storage';
 import { useAISidebarStore } from '@/stores/useAISidebarStore';
 import { useUnifiedAdminStore } from '@/stores/useUnifiedAdminStore';
 import { PAGE_BACKGROUNDS } from '@/styles/design-constants';
 import { triggerAIWarmup } from '@/utils/ai-warmup';
 import debug from '@/utils/debug';
+import { createTrackedTimeoutScheduler } from './timeout-scheduler';
 import { BootProgressBar } from './components/BootProgressBar';
 import { SmoothLoadingSpinner } from './components/SmoothLoadingSpinner';
 
@@ -68,6 +69,10 @@ const BOOT_STAGES = [
   },
 ] as const;
 
+const STAGE_FADE_DELAY_MS = 150;
+const BOOT_COMPLETE_DELAY_MS = 500;
+const DASHBOARD_REDIRECT_DELAY_MS = 1000;
+
 export default function SystemBootClient() {
   const router = useRouter();
   const { isSystemStarted } = useUnifiedAdminStore();
@@ -79,6 +84,18 @@ export default function SystemBootClient() {
   const [currentIcon, setCurrentIcon] = useState<LucideIcon>(Loader2);
   const [isClient, setIsClient] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const timeoutScheduler = useMemo(() => createTrackedTimeoutScheduler(), []);
+
+  const clearScheduledTimeouts = useCallback(() => {
+    timeoutScheduler.clearAll();
+  }, [timeoutScheduler]);
+
+  const scheduleTimeout = useCallback(
+    (callback: () => void, delay: number) => {
+      return timeoutScheduler.schedule(callback, delay);
+    },
+    [timeoutScheduler]
+  );
 
   useEffect(() => {
     setIsClient(true);
@@ -103,10 +120,10 @@ export default function SystemBootClient() {
     setIsTransitioning(false);
 
     // 부드러운 전환을 위해 잠시 대기 후 이동
-    setTimeout(() => {
+    scheduleTimeout(() => {
       router.push('/dashboard');
-    }, 1000);
-  }, [router]);
+    }, DASHBOARD_REDIRECT_DELAY_MS);
+  }, [router, scheduleTimeout]);
 
   // 🚀 순수 타이머 기반 로딩 로직 (시간 벌기 용도)
   useEffect(() => {
@@ -124,43 +141,43 @@ export default function SystemBootClient() {
     // 🚀 AI 엔진 웜업 요청 (중복 요청 자동 방지)
     void triggerAIWarmup('system-boot');
 
-    const timeouts: NodeJS.Timeout[] = [];
-
     // 로딩 애니메이션 실행 (순수 타이머 방식)
     BOOT_STAGES.forEach(({ name, delay, icon }, index) => {
-      const timeout = setTimeout(() => {
+      scheduleTimeout(() => {
         // 페이드 트랜지션 시작
         setIsTransitioning(true);
 
-        setTimeout(() => {
+        scheduleTimeout(() => {
           setCurrentStage(name);
           setCurrentIcon(icon);
           const newProgress = ((index + 1) / BOOT_STAGES.length) * 100;
           setProgress(newProgress);
 
           // 페이드 트랜지션 종료
-          setTimeout(() => {
+          scheduleTimeout(() => {
             setIsTransitioning(false);
-          }, 150);
+          }, STAGE_FADE_DELAY_MS);
 
           // 마지막 단계 완료 → 대시보드로 이동
           if (index === BOOT_STAGES.length - 1) {
             debug.log('🎬 로딩 애니메이션 완료');
-            setTimeout(() => handleBootComplete(), 500);
+            scheduleTimeout(() => handleBootComplete(), BOOT_COMPLETE_DELAY_MS);
           }
-        }, 150);
+        }, STAGE_FADE_DELAY_MS);
       }, delay);
-
-      timeouts.push(timeout);
     });
 
     // 컴포넌트 언마운트 시 정리
     return () => {
-      for (const t of timeouts) {
-        clearTimeout(t);
-      }
+      clearScheduledTimeouts();
     };
-  }, [isClient, isSystemStarted, handleBootComplete]);
+  }, [
+    clearScheduledTimeouts,
+    handleBootComplete,
+    isClient,
+    isSystemStarted,
+    scheduleTimeout,
+  ]);
 
   const currentStageData = BOOT_STAGES.find((s) => s.name === currentStage) ||
     BOOT_STAGES[0] || {

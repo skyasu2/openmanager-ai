@@ -32,13 +32,14 @@ import type {
 } from '@/types/ai-jobs';
 import { getErrorMessage } from '@/types/type-utils';
 import { withCSRFProtection } from '@/utils/security/csrf';
+import { buildScopedJobListKey, resolveJobOwnerKey } from './job-ownership';
 
 // ============================================
 // 상수 정의
 // ============================================
 
-/** Cloud Run 트리거 타임아웃 (ms) */
-const TRIGGER_TIMEOUT_MS = 5000;
+/** Cloud Run worker 처리 완료 대기 타임아웃 (ms) */
+const TRIGGER_TIMEOUT_MS = 280000;
 
 /** Job TTL (24시간) */
 const JOB_TTL_SECONDS = 86400;
@@ -57,6 +58,7 @@ async function handlePOST(request: NextRequest) {
   try {
     const body = (await request.json()) as CreateJobRequest;
     const { query, options } = body;
+    const ownerKey = resolveJobOwnerKey(request);
 
     // 입력 검증
     if (!query || query.trim().length === 0) {
@@ -103,6 +105,7 @@ async function handlePOST(request: NextRequest) {
         complexity: complexity.level,
         estimatedTime: complexity.estimatedTime,
         factors: complexity.factors,
+        ownerKey,
       },
     };
 
@@ -130,27 +133,29 @@ async function handlePOST(request: NextRequest) {
 
     // Session별 Job 목록에 추가 (선택적)
     if (options?.sessionId) {
-      const listKey = `job:list:${options.sessionId}`;
+      const listKey = buildScopedJobListKey(ownerKey, options.sessionId);
       const existingList = (await redisGet<string[]>(listKey)) || [];
       existingList.unshift(jobId);
       // 최근 50개만 유지
       await redisSet(listKey, existingList.slice(0, 50), JOB_LIST_TTL_SECONDS);
     }
 
-    // Cloud Run Worker에 Job 처리 요청
-    const triggerResult = await triggerWorker(
-      jobId,
-      query,
-      jobType,
-      options?.sessionId
-    );
+    const initialTriggerStatus: TriggerStatus = process.env.CLOUD_RUN_AI_URL
+      ? 'scheduled'
+      : 'skipped';
 
-    // 비동기 로깅
     after(async () => {
+      const finalTriggerStatus =
+        initialTriggerStatus === 'scheduled'
+          ? (
+              await triggerWorker(jobId, query, jobType, options?.sessionId)
+            ).status
+          : initialTriggerStatus;
+
       await logJobCreation(
         jobId,
         jobType,
-        triggerResult.status,
+        finalTriggerStatus,
         complexity.level
       );
     });
@@ -160,7 +165,7 @@ async function handlePOST(request: NextRequest) {
       status: 'queued',
       pollUrl: `/api/ai/jobs/${jobId}`,
       estimatedTime: complexity.estimatedTime,
-      triggerStatus: triggerResult.status,
+      triggerStatus: initialTriggerStatus,
       routingMode: 'job-queue',
       complexity: complexity.level,
     };
@@ -171,7 +176,7 @@ async function handlePOST(request: NextRequest) {
         'X-AI-Mode': 'job-queue',
         'X-AI-Job-Complexity': complexity.level,
         'X-AI-Estimated-Time-Sec': String(complexity.estimatedTime),
-        'X-AI-Trigger-Status': triggerResult.status,
+        'X-AI-Trigger-Status': initialTriggerStatus,
       },
     });
   } catch (error) {
@@ -197,6 +202,7 @@ async function handleGET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const sessionId = searchParams.get('sessionId');
+    const ownerKey = resolveJobOwnerKey(request);
     // sessionId 필수 (Redis는 복잡한 쿼리 불가)
     if (!sessionId) {
       return NextResponse.json(
@@ -216,7 +222,7 @@ async function handleGET(request: NextRequest) {
     }
 
     // Session의 Job 목록 조회
-    const listKey = `job:list:${sessionId}`;
+    const listKey = buildScopedJobListKey(ownerKey, sessionId);
     const jobIds = (await redisGet<string[]>(listKey)) || [];
 
     // 🔧 N+1 쿼리 방지: MGET으로 일괄 조회
@@ -374,16 +380,13 @@ async function logJobCreation(
         {
           status: triggerStatus,
           timestamp: new Date().toISOString(),
-          message:
-            triggerStatus === 'timeout'
-              ? 'Worker 연결 지연 - 잠시 후 자동 처리됩니다'
-              : 'Worker 연결 실패 - 재시도 중입니다',
+          message: getTriggerStatusMessage(triggerStatus),
         },
-        triggerStatus === 'timeout' ? 300 : 60
+        triggerStatus === 'scheduled' ? 300 : 60
       );
 
-      // Worker 연결 완전 실패 — 원본 Job을 failed로 마킹
-      if (triggerStatus === 'failed') {
+      // Worker dispatch가 완료되지 않으면 원본 Job을 failed로 마킹
+      if (triggerStatus !== 'scheduled') {
         const existingJob = await redisGet<AIJob>(`job:${jobId}`);
         if (existingJob && existingJob.status === 'queued') {
           await redisSet(
@@ -391,7 +394,7 @@ async function logJobCreation(
             {
               ...existingJob,
               status: 'failed' as JobStatus,
-              error: 'Worker connection failed. Please retry.',
+              error: getTriggerFailureMessage(triggerStatus),
               completedAt: new Date().toISOString(),
             },
             JOB_TTL_SECONDS
@@ -401,5 +404,31 @@ async function logJobCreation(
     }
   } catch (error) {
     logger.warn('[AI Jobs] Log failed:', error);
+  }
+}
+
+function getTriggerStatusMessage(triggerStatus: TriggerStatus): string {
+  switch (triggerStatus) {
+    case 'scheduled':
+      return 'Worker dispatch scheduled';
+    case 'timeout':
+      return 'Worker processing timed out';
+    case 'skipped':
+      return 'Worker target not configured';
+    case 'failed':
+      return 'Worker request failed';
+    default:
+      return 'Worker request completed';
+  }
+}
+
+function getTriggerFailureMessage(triggerStatus: TriggerStatus): string {
+  switch (triggerStatus) {
+    case 'timeout':
+      return 'Worker processing timed out. Please retry.';
+    case 'skipped':
+      return 'Worker target not configured. Please retry later.';
+    default:
+      return 'Worker request failed. Please retry.';
   }
 }

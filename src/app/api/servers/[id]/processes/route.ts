@@ -1,4 +1,5 @@
-import { NextResponse } from 'next/server';
+import { type NextRequest, NextResponse } from 'next/server';
+import { withAuth } from '@/lib/auth/api-auth';
 import debug from '@/utils/debug';
 
 // 프로세스 타입 정의
@@ -47,8 +48,11 @@ function generateMockProcesses(_serverId: string): ServerProcess[] {
   return processes;
 }
 
-export function GET(_request: Request, { params }: { params: { id: string } }) {
-  const serverId = params.id;
+export const GET = withAuth(async function GET(
+  _request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id: serverId } = await params;
 
   if (!serverId) {
     return NextResponse.json(
@@ -78,7 +82,8 @@ export function GET(_request: Request, { params }: { params: { id: string } }) {
       {
         headers: {
           'X-Storage': 'Memory-based',
-          'Cache-Control': 'public, max-age=30',
+          'Cache-Control': 'private, no-store, max-age=0',
+          Pragma: 'no-cache',
         },
       }
     );
@@ -96,4 +101,4 @@ export function GET(_request: Request, { params }: { params: { id: string } }) {
       { status: 500 }
     );
   }
-}
+});

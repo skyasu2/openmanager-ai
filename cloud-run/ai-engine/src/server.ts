@@ -42,6 +42,8 @@ import { getAvailableAgentsStatus, preFilterQuery, executeMultiAgent, type Multi
 
 // Routes — lazy loaded after server starts listening
 let routesReady = false;
+let routeRegistrationFailed = false;
+let routeRegistrationFailureReason: string | null = null;
 
 // ============================================================================
 // App Initialization
@@ -131,14 +133,24 @@ app.onError((err: Error, c: Context) => {
  * GET /health - Health Check
  */
 app.get('/health', (c: Context) =>
-  c.json({
-    status: 'ok',
-    service: 'ai-engine',
-    version: APP_VERSION,
-    config: getConfigStatus(),
-    redis: isRedisAvailable(),
-    timestamp: new Date().toISOString(),
-  })
+  c.json(
+    {
+      status: routeRegistrationFailed ? 'degraded' : 'ok',
+      service: 'ai-engine',
+      version: APP_VERSION,
+      config: getConfigStatus(),
+      redis: isRedisAvailable(),
+      api: {
+        routesReady,
+        routeRegistrationFailed,
+        ...(routeRegistrationFailureReason && {
+          failureReason: routeRegistrationFailureReason,
+        }),
+      },
+      timestamp: new Date().toISOString(),
+    },
+    routeRegistrationFailed ? 503 : 200
+  )
 );
 
 /**
@@ -269,6 +281,9 @@ serve(
 
 // Lazy load API routes after server is already listening
 registerRoutes().catch((err) => {
+  routeRegistrationFailed = true;
+  routeRegistrationFailureReason =
+    err instanceof Error ? err.message : String(err);
   logger.error({ err }, 'Failed to register API routes');
 });
 

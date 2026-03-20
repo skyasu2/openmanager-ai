@@ -64,7 +64,6 @@ function DashboardPageContent({ initialServers }: DashboardClientProps) {
 
   // 🔧 레거시 정리 (2026-01-17): selectedServer, isServerModalOpen 제거
   // - ServerDashboard 내부에서 EnhancedServerModal로 직접 관리
-  const [showLogoutWarning, setShowLogoutWarning] = useState(false);
   const isResizing = false;
 
   // 🔒 새로운 권한 시스템 사용
@@ -159,14 +158,13 @@ function DashboardPageContent({ initialServers }: DashboardClientProps) {
   // 🔒 자동 로그아웃 시스템 - 베르셀 사용량 최적화 (1초→10초 최적화 적용)
   const {
     remainingTime,
-    // isWarning - 미사용 (showLogoutWarning 상태로 대체됨)
+    isWarning,
     resetTimer,
     forceLogout,
   } = useAutoLogout({
     timeoutMinutes: 10, // 10분 비활성 시 로그아웃
     warningMinutes: 1, // 1분 전 경고
     onWarning: () => {
-      setShowLogoutWarning(true);
       debug.log('⚠️ 자동 로그아웃 경고 표시 - 베르셀 사용량 최적화');
     },
     onLogout: () => {
@@ -278,7 +276,6 @@ function DashboardPageContent({ initialServers }: DashboardClientProps) {
   // 🔄 세션 연장 처리
   const handleExtendSession = useCallback(() => {
     resetTimer();
-    setShowLogoutWarning(false);
     systemInactivityService.resumeSystem();
     debug.log('🔄 사용자가 세션을 연장했습니다 - 베르셀 사용량 최적화');
   }, [resetTimer]);
@@ -286,7 +283,6 @@ function DashboardPageContent({ initialServers }: DashboardClientProps) {
   // 🔒 즉시 로그아웃 처리
   const handleLogoutNow = useCallback(() => {
     void forceLogout();
-    setShowLogoutWarning(false);
     debug.log('🔒 사용자가 즉시 로그아웃을 선택했습니다');
   }, [forceLogout]);
 
@@ -405,7 +401,7 @@ function DashboardPageContent({ initialServers }: DashboardClientProps) {
         {/* 🔒 자동 로그아웃 경고 모달 - 베르셀 사용량 최적화 */}
         <AutoLogoutWarning
           remainingTime={remainingTime}
-          isWarning={showLogoutWarning}
+          isWarning={isWarning}
           onExtendSession={handleExtendSession}
           onLogoutNow={handleLogoutNow}
         />

@@ -6,6 +6,13 @@ const { mockRedisGet, mockRedisMGet } = vi.hoisted(() => ({
   mockRedisMGet: vi.fn(),
 }));
 
+const { mockResolveJobOwnerKey, mockBuildScopedJobListKey } = vi.hoisted(() => ({
+  mockResolveJobOwnerKey: vi.fn(() => 'owner-key-1'),
+  mockBuildScopedJobListKey: vi.fn(
+    (ownerKey: string, sessionId: string) => `job:list:${ownerKey}:${sessionId}`
+  ),
+}));
+
 vi.mock('@/lib/security/rate-limiter', () => ({
   rateLimiters: {
     default: {},
@@ -21,6 +28,11 @@ vi.mock('@/lib/auth/api-auth', () => ({
 vi.mock('@/lib/redis', () => ({
   redisGet: mockRedisGet,
   redisMGet: mockRedisMGet,
+}));
+
+vi.mock('./job-ownership', () => ({
+  resolveJobOwnerKey: mockResolveJobOwnerKey,
+  buildScopedJobListKey: mockBuildScopedJobListKey,
 }));
 
 import { GET, POST } from './route';
@@ -111,6 +123,11 @@ describe('GET /api/ai/jobs', () => {
     expect(payload.jobs).toHaveLength(1);
     expect(payload.total).toBe(2);
     expect(payload.hasMore).toBe(true);
+    expect(mockBuildScopedJobListKey).toHaveBeenCalledWith(
+      'owner-key-1',
+      'session-1'
+    );
+    expect(mockRedisGet).toHaveBeenCalledWith('job:list:owner-key-1:session-1');
   });
 });
 

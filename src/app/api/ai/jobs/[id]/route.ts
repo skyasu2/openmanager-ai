@@ -17,13 +17,14 @@ import type {
   RedisJobProgress,
 } from '@/types/ai-jobs';
 import { withCSRFProtection } from '@/utils/security/csrf';
+import { isJobOwnedByRequester } from '../job-ownership';
 
 // ============================================
 // GET /api/ai/jobs/:id - Job 상태 조회
 // ============================================
 
 export const GET = withAuth(async function GET(
-  _request: NextRequest,
+  request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
@@ -40,6 +41,13 @@ export const GET = withAuth(async function GET(
     const job = await redisGet<AIJob>(`job:${jobId}`);
 
     if (!job) {
+      return NextResponse.json(
+        { error: 'Job not found or expired' },
+        { status: 404 }
+      );
+    }
+
+    if (!isJobOwnedByRequester(job as unknown, request)) {
       return NextResponse.json(
         { error: 'Job not found or expired' },
         { status: 404 }
@@ -91,7 +99,7 @@ export const GET = withAuth(async function GET(
 
 export const DELETE = withAuth(
   withCSRFProtection(async function DELETE(
-    _request: NextRequest,
+    request: NextRequest,
     { params }: { params: Promise<{ id: string }> }
   ) {
     try {
@@ -108,6 +116,13 @@ export const DELETE = withAuth(
       const job = await redisGet<AIJob>(`job:${jobId}`);
 
       if (!job) {
+        return NextResponse.json(
+          { error: 'Job not found or expired' },
+          { status: 404 }
+        );
+      }
+
+      if (!isJobOwnedByRequester(job as unknown, request)) {
         return NextResponse.json(
           { error: 'Job not found or expired' },
           { status: 404 }

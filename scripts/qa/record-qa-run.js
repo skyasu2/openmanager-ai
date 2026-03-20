@@ -278,22 +278,10 @@ function normalizePendingPolicy(item, sourceStatus) {
     };
   }
 
-  if (item.priority === 'P0' || item.priority === 'P1') {
-    return {
-      status: 'deferred',
-      policyNote: `${item.priority} 우선순위이나 현재 비차단으로 deferred 처리`,
-    };
-  }
-
-  const scopeNote =
-    item.overengineeringScope ||
-    '포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리';
-  const sourcePolicy = item.isBlockingExplicit
-    ? '요청자 표시(isBlocking=true)로 즉시 개선 필요'
-    : '기본 규칙(P2 기본 비차단) 적용';
   return {
-    status: 'wont-fix',
-    policyNote: `이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: ${scopeNote} (${sourcePolicy})`,
+    status: 'pending',
+    policyNote:
+      '명시적인 reviewer 결정 전에는 pending 상태를 유지해 릴리즈 리스크를 숨기지 않습니다.',
   };
 }
 

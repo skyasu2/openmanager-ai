@@ -29,6 +29,7 @@ import { logger } from '@/lib/logging';
 import { getRedisClient, getSystemRunningFlag, redisGet } from '@/lib/redis';
 import { runRedisWithTimeout } from '@/lib/redis/client';
 import type { RedisJobProgress } from '@/types/ai-jobs';
+import { isJobOwnedByRequester } from '../../job-ownership';
 
 // ============================================================================
 // Types
@@ -263,6 +264,13 @@ export async function GET(
   // Job 존재 여부 확인 (SSE 연결 전)
   const initialCheck = await redisGet<JobResult>(`job:${jobId}`);
   if (!initialCheck) {
+    return new Response(JSON.stringify({ error: 'Job not found', jobId }), {
+      status: 404,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
+  if (!isJobOwnedByRequester(initialCheck as unknown, request)) {
     return new Response(JSON.stringify({ error: 'Job not found', jobId }), {
       status: 404,
       headers: { 'Content-Type': 'application/json' },

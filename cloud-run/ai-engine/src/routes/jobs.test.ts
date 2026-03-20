@@ -56,7 +56,7 @@ describe('Jobs Routes', () => {
   });
 
   describe('POST /jobs/process', () => {
-    it('유효한 요청으로 job 처리를 시작한다', async () => {
+    it('유효한 요청으로 job 처리를 완료한다', async () => {
       const res = await app.request('/jobs/process', {
         method: 'POST',
         body: JSON.stringify({
@@ -71,8 +71,8 @@ describe('Jobs Routes', () => {
       const json = await res.json();
       expect(json.success).toBe(true);
       expect(json.jobId).toBe('job-123');
-      expect(json.status).toBe('processing');
-      await new Promise((resolve) => setImmediate(resolve));
+      expect(json.status).toBe('completed');
+      expect(vi.mocked(executeSupervisor)).toHaveBeenCalledTimes(1);
     });
 
     it('jobId 누락 시 400을 반환한다', async () => {
@@ -161,7 +161,7 @@ describe('Jobs Routes', () => {
       expect(json.error).not.toContain('secret');
     });
 
-    it('background 예외를 저장할 때 내부 메시지 대신 공개 메시지를 사용한다', async () => {
+    it('동기 처리 예외를 저장할 때 내부 메시지 대신 공개 메시지를 사용한다', async () => {
       vi.mocked(executeSupervisor).mockRejectedValueOnce(
         new Error('provider secret leaked')
       );
@@ -176,7 +176,9 @@ describe('Jobs Routes', () => {
       });
 
       expect(res.status).toBe(200);
-      await new Promise((resolve) => setImmediate(resolve));
+      const json = await res.json();
+      expect(json.success).toBe(false);
+      expect(json.status).toBe('failed');
 
       expect(vi.mocked(storeJobError).mock.calls).toContainEqual([
         'job-background-error',

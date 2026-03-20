@@ -38,7 +38,7 @@ export const jobsRouter = new Hono();
 /**
  * POST /api/jobs/process
  *
- * Process an AI job asynchronously.
+ * Process an AI job within the request lifecycle.
  * Called by Vercel after creating a job record.
  *
  * Request:
@@ -48,10 +48,10 @@ export const jobsRouter = new Hono();
  *   sessionId?: string    // Optional session for conversation context
  * }
  *
- * Response (immediate):
- * { success: true, jobId, status: 'processing' }
+ * Response:
+ * { success: true, jobId, status: 'completed' | 'failed' }
  *
- * The actual result is stored in Redis for SSE retrieval.
+ * The final job result is stored in Redis for SSE retrieval before returning.
  */
 jobsRouter.post('/process', async (c: Context) => {
   const startTime = Date.now();
@@ -107,65 +107,97 @@ jobsRouter.post('/process', async (c: Context) => {
       return c.json({ success: false, error: 'No query in messages' }, 400);
     }
 
-    // Start async processing (don't await completion for immediate response)
-    // Use setImmediate to ensure response is sent before processing starts
-    setImmediate(async () => {
-      const startedAt = new Date().toISOString();
-
-      try {
-        await updateJobProgress(jobId, 'routing', 20, 'Supervisor가 적절한 에이전트 선택 중...');
-
-        logProviderStatus();
-
-        await updateJobProgress(jobId, 'processing', 50, 'AI 에이전트가 응답 생성 중...');
-
-        // 🆕 AI SDK Supervisor (replaces LangGraph stream)
-        const result = await executeSupervisor({
-          messages: messages.map((m: { role: string; content: string }) => ({
-            role: m.role as 'user' | 'assistant',
-            content: m.content,
-          })),
-          sessionId: sessionId || 'default',
-        });
-
-        await updateJobProgress(jobId, 'finalizing', 90, '응답 완료 처리 중...');
-
-        if (!result.success) {
-          const errorMessage = 'error' in result ? result.error : 'Unknown error';
-          throw new Error(errorMessage);
-        }
-
-        await updateJobProgress(jobId, 'completed', 100, '완료');
-
-        // Store result in Redis
-        await storeJobResult(jobId, result.response, {
-          toolsCalled: result.toolsCalled,
-          ragSources: result.ragSources,
-          provider: result.metadata.provider,
-          modelId: result.metadata.modelId,
-          startedAt,
-        });
-
-        const processingTime = Date.now() - startTime;
-        logger.info(`[Jobs] Job ${jobId} completed in ${processingTime}ms (provider: ${result.metadata.provider})`);
-      } catch (error) {
-        const publicError = getPublicErrorResponse(error);
-        logger.error({ err: error, code: publicError.code }, `[Jobs] Job ${jobId} failed`);
-        await storeJobError(jobId, publicError.message, startedAt);
-      }
-    });
-
-    // Return immediately (job is processing in background)
-    return c.json({
-      success: true,
+    const outcome = await processJobSynchronously({
       jobId,
-      status: 'processing',
-      message: 'Job started, poll /api/jobs/:id for result',
+      messages,
+      sessionId,
+      startTime,
     });
+
+    return c.json(
+      {
+        success: outcome.status === 'completed',
+        jobId,
+        status: outcome.status,
+        ...(outcome.error && { error: outcome.error }),
+      },
+      200
+    );
   } catch (error) {
     return handleApiError(c, error, 'Jobs');
   }
 });
+
+async function processJobSynchronously({
+  jobId,
+  messages,
+  sessionId,
+  startTime,
+}: {
+  jobId: string;
+  messages: Array<{ role: string; content: string }>;
+  sessionId?: string;
+  startTime: number;
+}): Promise<{ status: 'completed' | 'failed'; error?: string }> {
+  const startedAt = new Date().toISOString();
+
+  try {
+    await updateJobProgress(
+      jobId,
+      'routing',
+      20,
+      'Supervisor가 적절한 에이전트 선택 중...'
+    );
+
+    logProviderStatus();
+
+    await updateJobProgress(
+      jobId,
+      'processing',
+      50,
+      'AI 에이전트가 응답 생성 중...'
+    );
+
+    const result = await executeSupervisor({
+      messages: messages.map((m) => ({
+        role: m.role as 'user' | 'assistant',
+        content: m.content,
+      })),
+      sessionId: sessionId || 'default',
+    });
+
+    await updateJobProgress(jobId, 'finalizing', 90, '응답 완료 처리 중...');
+
+    if (!result.success) {
+      const errorMessage = 'error' in result ? result.error : 'Unknown error';
+      throw new Error(errorMessage);
+    }
+
+    await updateJobProgress(jobId, 'completed', 100, '완료');
+    await storeJobResult(jobId, result.response, {
+      toolsCalled: result.toolsCalled,
+      ragSources: result.ragSources,
+      provider: result.metadata.provider,
+      modelId: result.metadata.modelId,
+      startedAt,
+    });
+
+    const processingTime = Date.now() - startTime;
+    logger.info(
+      `[Jobs] Job ${jobId} completed in ${processingTime}ms (provider: ${result.metadata.provider})`
+    );
+
+    return { status: 'completed' };
+  } catch (error) {
+    const publicError = getPublicErrorResponse(error);
+    logger.error(
+      { err: error, code: publicError.code },
+      `[Jobs] Job ${jobId} failed`
+    );
+    await storeJobError(jobId, publicError.message, startedAt);
+    return { status: 'failed', error: publicError.message };
+  }
+}
 
 /**
  * GET /api/jobs/:id

@@ -11,11 +11,10 @@
  *
  * Authentication note:
  *   /api/ai/supervisor is protected by withAuth middleware. Unauthenticated
- *   requests receive HTTP 401 before the prompt guard even runs. Both
- *   HTTP 400 (prompt guard blocked) and HTTP 401 (auth blocked) are
- *   accepted as "blocked" — an attacker without credentials cannot inject
- *   regardless of which layer stops them. Authenticated prompt-guard-specific
- *   testing is covered by the Playwright MCP QA suite (QA-20260316-0107).
+ *   requests receive HTTP 401 before the prompt guard even runs. This script
+ *   now validates that access-control rejection separately and requires an
+ *   authenticated run (`--api-key` or `--test-secret`) to validate the prompt
+ *   guard itself, so unauthenticated 401 responses cannot mask guard regressions.
  *
  * Coverage (OWASP LLM Top 10 핵심 5패턴):
  *   P1  EN ignore-instructions
@@ -28,6 +27,8 @@
  *   npm run test:security:smoke
  *   npm run test:security:smoke -- --url=https://openmanager-ai.vercel.app
  *   npm run test:security:smoke -- --timeout-ms=10000
+ *   npm run test:security:smoke -- --test-secret=$TEST_SECRET_KEY
+ *   npm run test:security:smoke -- --api-key=$TEST_API_KEY
  */
 
 const DEFAULT_URL = 'https://openmanager-ai.vercel.app';
@@ -41,20 +42,42 @@ function parseArgs(argv) {
       ? `https://${process.env.VERCEL_URL}`
       : DEFAULT_URL,
     timeoutMs: DEFAULT_TIMEOUT_MS,
+    apiKey:
+      process.env.SECURITY_SMOKE_API_KEY || process.env.TEST_API_KEY || '',
+    testSecret:
+      process.env.SECURITY_SMOKE_TEST_SECRET || process.env.TEST_SECRET_KEY || '',
+    requireAuth: false,
   };
   for (const arg of argv) {
     if (arg === '--help' || arg === '-h') {
       console.log(
-        'Usage: node scripts/test/security-smoke.mjs [--url=URL] [--timeout-ms=MS]'
+        'Usage: node scripts/test/security-smoke.mjs [--url=URL] [--timeout-ms=MS] [--api-key=KEY] [--test-secret=SECRET] [--require-auth]'
       );
       process.exit(0);
     }
     if (arg.startsWith('--url=')) opts.url = arg.slice('--url='.length);
     if (arg.startsWith('--timeout-ms='))
       opts.timeoutMs = Number.parseInt(arg.slice('--timeout-ms='.length), 10);
+    if (arg.startsWith('--api-key=')) opts.apiKey = arg.slice('--api-key='.length);
+    if (arg.startsWith('--test-secret='))
+      opts.testSecret = arg.slice('--test-secret='.length);
+    if (arg === '--require-auth') opts.requireAuth = true;
   }
   opts.url = opts.url.replace(/\/+$/, '');
   return opts;
+}
+
+/** @param {{ apiKey: string; testSecret: string }} opts */
+function buildAuthHeaders(opts) {
+  if (opts.testSecret) {
+    return { 'x-test-secret': opts.testSecret };
+  }
+
+  if (opts.apiKey) {
+    return { 'x-api-key': opts.apiKey };
+  }
+
+  return {};
 }
 
 /**
@@ -64,11 +87,14 @@ function parseArgs(argv) {
  * @param {string} message
  * @param {number} timeoutMs
  */
-async function postSupervisor(baseUrl, message, timeoutMs) {
+async function postSupervisor(baseUrl, message, timeoutMs, extraHeaders = {}) {
   const signal = AbortSignal.timeout(timeoutMs);
   const res = await fetch(`${baseUrl}${SUPERVISOR_PATH}`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      ...extraHeaders,
+    },
     body: JSON.stringify({
       messages: [{ role: 'user', content: message }],
       sessionId: `security-smoke-${Date.now()}`,
@@ -113,9 +139,28 @@ async function main() {
   console.log('Security Regression Smoke Test');
   console.log(`  target : ${opts.url}`);
   console.log(`  timeout: ${opts.timeoutMs}ms`);
+  console.log(
+    `  auth   : ${opts.testSecret ? 'x-test-secret' : opts.apiKey ? 'x-api-key' : 'none'}`
+  );
   console.log('');
 
   const counters = { passed: 0, failed: 0, skipped: 0 };
+  const authHeaders = buildAuthHeaders(opts);
+  const hasAuth = Object.keys(authHeaders).length > 0;
+  let guardValidationRan = false;
+
+  console.log('── Access control (must reject unauthenticated request) ──');
+
+  await runCase('A1 unauthenticated supervisor request', async () => {
+    const { status } = await postSupervisor(
+      opts.url,
+      'status check',
+      opts.timeoutMs
+    );
+    assert(status === 401, `expected HTTP 401, got ${status}`);
+  }, counters);
+
+  console.log('');
 
   // ── Blocked patterns (expect HTTP 400 + success:false) ──────────────────
   console.log('── Injection patterns (must be blocked) ──');
@@ -145,18 +190,24 @@ async function main() {
 
   for (const { label, msg } of blockedCases) {
     await runCase(label, async () => {
-      const { status, body } = await postSupervisor(opts.url, msg, opts.timeoutMs);
-      // 400 = prompt guard blocked | 401 = auth blocked (both = injection denied)
-      assert(
-        status === 400 || status === 401,
-        `expected HTTP 400 or 401, got ${status} — injection not blocked`
-      );
-      if (status === 400) {
-        assert(
-          body && body.success === false,
-          `expected success:false in body, got: ${JSON.stringify(body)}`
+      if (!hasAuth) {
+        throw new Error(
+          'SKIP: provide --api-key or --test-secret to validate prompt-guard blocking'
         );
       }
+
+      const { status, body } = await postSupervisor(
+        opts.url,
+        msg,
+        opts.timeoutMs,
+        authHeaders
+      );
+      assert(status === 400, `expected HTTP 400, got ${status}`);
+      assert(
+        body && body.success === false,
+        `expected success:false in body, got: ${JSON.stringify(body)}`
+      );
+      guardValidationRan = true;
     }, counters);
   }
 
@@ -165,10 +216,17 @@ async function main() {
   console.log('── Normal query (must not be blocked) ──');
 
   await runCase('P5 normal monitoring query', async () => {
+    if (!hasAuth) {
+      throw new Error(
+        'SKIP: provide --api-key or --test-secret to validate false-positive behavior'
+      );
+    }
+
     const { status, body } = await postSupervisor(
       opts.url,
       'CPU 사용률이 가장 높은 서버를 알려줘',
-      opts.timeoutMs
+      opts.timeoutMs,
+      authHeaders
     );
     // 400 = guard blocked a legitimate query (false positive — test failure)
     assert(
@@ -180,6 +238,7 @@ async function main() {
       status < 500 || status === 503 || status === 504,
       `unexpected server error HTTP ${status}`
     );
+    guardValidationRan = true;
   }, counters);
 
   // ── Summary ──────────────────────────────────────────────────────────────
@@ -190,6 +249,16 @@ async function main() {
   console.log(`  passed : ${counters.passed}`);
   console.log(`  skipped: ${counters.skipped}`);
   console.log(`  failed : ${counters.failed}`);
+
+  if (!guardValidationRan) {
+    console.log('');
+    console.log(
+      '❌ Prompt guard was not validated with authenticated credentials. Re-run with --api-key or --test-secret.'
+    );
+    if (opts.requireAuth || !hasAuth) {
+      process.exit(1);
+    }
+  }
 
   if (counters.failed > 0) {
     console.log('');

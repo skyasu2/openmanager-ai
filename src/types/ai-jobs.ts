@@ -41,7 +41,12 @@ export interface CreateJobRequest {
 }
 
 /** Worker 트리거 상태 */
-export type TriggerStatus = 'sent' | 'timeout' | 'failed' | 'skipped';
+export type TriggerStatus =
+  | 'scheduled'
+  | 'sent'
+  | 'timeout'
+  | 'failed'
+  | 'skipped';
 
 /** Job 생성 응답 */
 export interface CreateJobResponse {
@@ -100,6 +105,7 @@ export interface AIJob {
     complexity: string;
     estimatedTime: number;
     factors: Record<string, unknown>;
+    ownerKey: string;
     retryCount?: number;
   };
 }

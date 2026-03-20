@@ -352,6 +352,10 @@ export const useAISidebarStore = create<AISidebarState>()(
   )
 );
 
+if (typeof window !== 'undefined' && !useAISidebarStore.persist.hasHydrated()) {
+  void useAISidebarStore.persist.rehydrate();
+}
+
 // 🎛️ 선택적 훅들 (성능 최적화 - useShallow로 불필요한 리렌더링 방지)
 export const useAISidebarUI = () => {
   return useAISidebarStore(

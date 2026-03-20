@@ -10,6 +10,7 @@ const {
   mockRedisMGet,
   mockRunRedisWithTimeout,
   mockGetRedisTimeoutMs,
+  mockIsJobOwnedByRequester,
 } = vi.hoisted(() => ({
   mockCheckAPIAuth: vi.fn(),
   mockGetRedisClient: vi.fn(),
@@ -20,6 +21,7 @@ const {
   mockGetRedisTimeoutMs: vi.fn((profile: string) =>
     profile === 'standard' ? 987 : 1200
   ),
+  mockIsJobOwnedByRequester: vi.fn(() => true),
 }));
 
 vi.mock('@/lib/auth/api-auth', () => ({
@@ -48,12 +50,17 @@ vi.mock('@/lib/logging', () => ({
   },
 }));
 
+vi.mock('../../job-ownership', () => ({
+  isJobOwnedByRequester: mockIsJobOwnedByRequester,
+}));
+
 import { buildProgressEventData, GET, getPollIntervalFromEnv } from './route';
 
 describe('AI Job Stream Route', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockCheckAPIAuth.mockResolvedValue(null);
+    mockIsJobOwnedByRequester.mockReturnValue(true);
     mockGetRedisTimeoutMs.mockImplementation((profile: string) =>
       profile === 'standard' ? 987 : 1200
     );
@@ -198,6 +205,25 @@ describe('AI Job Stream Route', () => {
     };
     expect(payload.error).toBe('System is not running');
     expect(payload.message).toContain('시스템 시작 후 다시 시도');
+  });
+
+  it('should reject stream connection when job owner does not match', async () => {
+    mockIsJobOwnedByRequester.mockReturnValue(false);
+
+    const request = new NextRequest(
+      'http://localhost/api/ai/jobs/job-0/stream'
+    );
+    const response = await GET(request, {
+      params: Promise.resolve({ id: 'job-0' }),
+    });
+
+    expect(response.status).toBe(404);
+    const payload = (await response.json()) as {
+      error: string;
+      jobId: string;
+    };
+    expect(payload.error).toBe('Job not found');
+    expect(payload.jobId).toBe('job-0');
   });
 
   it('should allow completed job stream even when Redis system flag is stopped', async () => {
