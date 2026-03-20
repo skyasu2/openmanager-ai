@@ -2,15 +2,15 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-03-19T17:35:25.072Z"
+    "updatedAt": "2026-03-20T00:00:15.480Z"
   },
   "sequence": {
-    "nextRunNumber": 135
+    "nextRunNumber": 137
   },
   "summary": {
-    "totalRuns": 134,
-    "totalChecks": 997,
-    "totalPassed": 950,
+    "totalRuns": 135,
+    "totalChecks": 1012,
+    "totalPassed": 965,
     "totalFailed": 43,
     "completionRate": 100,
     "completedItems": 225,
@@ -19,8 +19,8 @@
     "wontFixItems": 8,
     "expertDomainsTracked": 6,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260320-0134",
-    "lastRecordedAt": "2026-03-19T17:35:25.072Z"
+    "lastRunId": "QA-20260320-0136",
+    "lastRecordedAt": "2026-03-20T00:00:15.480Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -4834,7 +4834,9 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0,
-      "aliases": ["esc-모달-닫기"],
+      "aliases": [
+        "esc-모달-닫기"
+      ],
       "owner": "",
       "lastEvidence": "Playwright MCP: ESC 키로 모달 닫기 동작 확인",
       "lastNote": "",
@@ -4858,7 +4860,9 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0,
-      "aliases": ["ai-chat-sidebar-open"],
+      "aliases": [
+        "ai-chat-sidebar-open"
+      ],
       "owner": "",
       "lastEvidence": "Playwright MCP: AI 어시스턴트 사이드바 열기/닫기 동작 확인",
       "lastNote": "",
@@ -4882,7 +4886,9 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0,
-      "aliases": ["프로덕션-대시보드-렌더링"],
+      "aliases": [
+        "프로덕션-대시보드-렌더링"
+      ],
       "owner": "",
       "lastEvidence": "Playwright MCP: 대시보드 전체 정상 렌더링 확인",
       "lastNote": "",
@@ -4906,7 +4912,9 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0,
-      "aliases": ["서버-모달-3탭-전환"],
+      "aliases": [
+        "서버-모달-3탭-전환"
+      ],
       "owner": "",
       "lastEvidence": "Playwright MCP: 종합상황/성능분석/로그&네트워크 3탭 전환 동작 확인",
       "lastNote": "",
@@ -10878,6 +10886,63 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260320-0136",
+      "recordedAt": "2026-03-20T00:00:15.480Z",
+      "recordedAtKst": "2026-03-20 09:00:15 KST",
+      "title": "Vercel Production QA - Core/Auth/AI Sidebar Smoke Validation (Deployed SHA 8bf843ad1, Usage Checked)",
+      "owner": "codex",
+      "source": "playwright-cli",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260320-0136.json",
+      "checks": {
+        "total": 15,
+        "passed": 15,
+        "failed": 0
+      },
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The deployed production build preserved guest entry, login CTA, AI sidebar open/input/starter prompts/ESC flow, and core API responsiveness after the push.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The Vercel production alias was confirmed on commit 8bf843ad1 in READY state, and usage review did not show an unexpected billed overage spike during this release validation window.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The same stable Playwright production config and core/auth/sidebar smoke pack passed again on the deployed SHA, providing post-deploy regression confirmation.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli + mcp-deployment-check",
+          "status": "checked",
+          "checkedAt": "2026-03-20T02:52:00+09:00",
+          "summary": "Vercel production deployment for commit 8bf843ad12719f66d6864eebc6284586f396a1eb was READY, and billing usage review showed no meaningful billed overage spike during this QA window. Current billing-period effectiveCost is about USD 14.62, while billedCost remains effectively zero.",
+          "evidence": "XDG_CACHE_HOME=/tmp vercel usage --format json --non-interactive; XDG_CACHE_HOME=/tmp vercel usage --breakdown daily --format json --non-interactive; mcp__vercel__getDeployments(app=openmanager-ai,target=production,limit=2)",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "expertCount": 3,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -10886,16 +10951,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 87,
-      "appropriateCount": 83,
+      "seenCount": 88,
+      "appropriateCount": 84,
       "partialCount": 4,
       "inappropriateCount": 0,
       "improvementNeededCount": 12,
-      "lastRunId": "QA-20260320-0134",
-      "lastSeenAt": "2026-03-19T17:35:25.072Z",
+      "lastRunId": "QA-20260320-0136",
+      "lastSeenAt": "2026-03-20T00:00:15.480Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Production smoke covered guest entry, login CTA, AI sidebar open/input/starter prompts/ESC flow, and core API responsiveness.",
+      "lastRationale": "The deployed production build preserved guest entry, login CTA, AI sidebar open/input/starter prompts/ESC flow, and core API responsiveness after the push.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -10937,16 +11002,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 45,
-      "appropriateCount": 42,
+      "seenCount": 46,
+      "appropriateCount": 43,
       "partialCount": 3,
       "inappropriateCount": 0,
       "improvementNeededCount": 3,
-      "lastRunId": "QA-20260320-0134",
-      "lastSeenAt": "2026-03-19T17:35:25.072Z",
+      "lastRunId": "QA-20260320-0136",
+      "lastSeenAt": "2026-03-20T00:00:15.480Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Latest Vercel production deployment was verified as READY before running the smoke pack, and all selected production user journeys completed successfully.",
+      "lastRationale": "The Vercel production alias was confirmed on commit 8bf843ad1 in READY state, and usage review did not show an unexpected billed overage spike during this release validation window.",
       "lastNextAction": ""
     },
     "test-automation": {
@@ -10954,16 +11019,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 80,
-      "appropriateCount": 74,
+      "seenCount": 81,
+      "appropriateCount": 75,
       "partialCount": 6,
       "inappropriateCount": 0,
       "improvementNeededCount": 8,
-      "lastRunId": "QA-20260320-0134",
-      "lastSeenAt": "2026-03-19T17:35:25.072Z",
+      "lastRunId": "QA-20260320-0136",
+      "lastSeenAt": "2026-03-20T00:00:15.480Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The release smoke used existing Playwright production config and stable E2E specs for core/auth/sidebar coverage without local server dependency.",
+      "lastRationale": "The same stable Playwright production config and core/auth/sidebar smoke pack passed again on the deployed SHA, providing post-deploy regression confirmation.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {

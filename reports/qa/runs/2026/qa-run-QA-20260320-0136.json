@@ -1,0 +1,76 @@
+{
+  "runId": "QA-20260320-0136",
+  "recordedAt": "2026-03-20T00:00:15.480Z",
+  "recordedAtKst": "2026-03-20 09:00:15 KST",
+  "runTitle": "Vercel Production QA - Core/Auth/AI Sidebar Smoke Validation (Deployed SHA 8bf843ad1, Usage Checked)",
+  "owner": "codex",
+  "source": "playwright-cli",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main"
+  },
+  "checks": {
+    "total": 15,
+    "passed": 15,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The deployed production build preserved guest entry, login CTA, AI sidebar open/input/starter prompts/ESC flow, and core API responsiveness after the push.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The Vercel production alias was confirmed on commit 8bf843ad1 in READY state, and usage review did not show an unexpected billed overage spike during this release validation window.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The same stable Playwright production config and core/auth/sidebar smoke pack passed again on the deployed SHA, providing post-deploy regression confirmation.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli + mcp-deployment-check",
+      "status": "checked",
+      "checkedAt": "2026-03-20T02:52:00+09:00",
+      "summary": "Vercel production deployment for commit 8bf843ad12719f66d6864eebc6284586f396a1eb was READY, and billing usage review showed no meaningful billed overage spike during this QA window. Current billing-period effectiveCost is about USD 14.62, while billedCost remains effectively zero.",
+      "evidence": "XDG_CACHE_HOME=/tmp vercel usage --format json --non-interactive; XDG_CACHE_HOME=/tmp vercel usage --breakdown daily --format json --non-interactive; mcp__vercel__getDeployments(app=openmanager-ai,target=production,limit=2)",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Covered surfaces: landing, login, 404, health/version/server APIs, guest session creation, dashboard AI sidebar open/input/starter prompts/ESC close.",
+    "Post-deploy smoke on production alias passed: 15 passed (2.4m).",
+    "Usage review summary: effectiveCost USD 14.6154, billedCost approximately zero, no obvious QA-induced overage spike observed in the current billing period."
+  ],
+  "links": [
+    {
+      "label": "Vercel URL",
+      "url": "https://openmanager-ai.vercel.app"
+    },
+    {
+      "label": "Vercel Deployment Inspector",
+      "url": "https://vercel.com/skyasus-projects/openmanager-ai/BwVRexLBpmTzTQdQ6omKYsYA4UzF"
+    }
+  ]
+}

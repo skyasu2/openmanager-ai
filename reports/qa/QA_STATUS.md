@@ -1,15 +1,15 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-20 02:35:49 KST
+> Generated at: 2026-03-20 09:13:46 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 134 |
-| Total Checks | 997 |
-| Passed | 950 |
+| Total Runs | 135 |
+| Total Checks | 1012 |
+| Passed | 965 |
 | Failed | 43 |
 | Completed Items | 225 |
 | Pending Items | 0 |
@@ -18,11 +18,11 @@
 | Expert Domains Tracked | 6 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Run | QA-20260320-0134 (2026-03-19T17:35:25.072Z) |
+| Last Run | QA-20260320-0136 (2026-03-20T00:00:15.480Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260320-0134 (2026-03-19T17:35:25.072Z)
+Latest run: QA-20260320-0136 (2026-03-20T00:00:15.480Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -34,7 +34,7 @@ Latest run: QA-20260320-0134 (2026-03-19T17:35:25.072Z)
 
 | Platform | Method | Status | Summary |
 |---|---|---|---|
-| vercel | cli-unavailable + mcp-deployment-check | skipped | Production deployment readiness was confirmed via Vercel MCP (READY), but billing usage could not be reviewed from the local CLI in this session. Manual Vercel Usage dashboard review is still required if this run is used as a release-facing gate. |
+| vercel | cli + mcp-deployment-check | checked | Vercel production deployment for commit 8bf843ad12719f66d6864eebc6284586f396a1eb was READY, and billing usage review showed no meaningful billed overage spike during this QA window. Current billing-period effectiveCost is about USD 14.62, while billedCost remains effectively zero. |
 
 ## Expert Domain Open Gaps
 
@@ -298,6 +298,7 @@ Latest run: QA-20260320-0134 (2026-03-19T17:35:25.072Z)
 
 | Run ID | Time (UTC) | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260320-0136 | 2026-03-20T00:00:15.480Z | Vercel Production QA - Core/Auth/AI Sidebar Smoke Validation (Deployed SHA 8bf843ad1, Usage Checked) | 15 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260320-0134 | 2026-03-19T17:35:25.072Z | Vercel Production QA - Core/Auth/AI Sidebar Smoke Validation | 15 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260320-0133 | 2026-03-19T17:08:28.344Z | Vercel Playwright QA - AI Retention Parity Validation (Chrome Channel) | 2 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260320-0132 | 2026-03-19T16:55:35.018Z | Vercel Playwright QA - AI Retention Parity Validation | 2 | 0 | 0 | 0 | 0 | 0 |
@@ -317,5 +318,4 @@ Latest run: QA-20260320-0134 (2026-03-19T17:35:25.072Z)
 | QA-20260317-0118 | 2026-03-17T08:11:11.594Z | Cloud Run Deploy Verification - v8.9.2 manual deploy (2026-03-17) | 6 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260317-0117 | 2026-03-17T04:33:27.878Z | Cloud Run Observability Ops - monitoring traces search + auxiliary filtering validation (2026-03-17) | 8 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260317-0116 | 2026-03-17T04:00:14.984Z | Cloud Run Observability Ops - Multi-agent traceId live proof + Langfuse runtime visibility (2026-03-17) | 10 | 2 | 0 | 0 | 0 | 0 |
-| QA-20260317-0115 | 2026-03-17T02:06:09.588Z | Cloud Run Observability Ops - Multi-agent traceId propagation validation (2026-03-17) | 9 | 1 | 0 | 0 | 1 | 1 |
 
