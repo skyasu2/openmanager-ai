@@ -1,0 +1,72 @@
+{
+  "runId": "QA-20260321-0145",
+  "recordedAt": "2026-03-20T22:28:54.515Z",
+  "recordedAtKst": "2026-03-21 07:28:54 KST",
+  "runTitle": "Vercel Playwright QA - Modal Detail Pack Coverage Fill (SHA 386aa7acd)",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "coveredSurfaces": [
+    "/login",
+    "guest PIN login",
+    "dashboard",
+    "active alerts modal",
+    "alert history modal",
+    "log explorer modal",
+    "topology modal"
+  ],
+  "skippedSurfaces": [
+    "/",
+    "/api/health",
+    "/api/version",
+    "404",
+    "AI sidebar/chat",
+    "Reporter flow",
+    "Analyst flow",
+    "/dashboard/ai-assistant fullscreen",
+    "security blocked-prompt pack",
+    "Langfuse trace visibility"
+  ],
+  "checks": {
+    "total": 8,
+    "passed": 8,
+    "failed": 0
+  },
+  "expertAssessments": [],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-03-21T07:28:18+09:00",
+      "summary": "Current billing period reviewed after targeted modal/detail QA; effectiveCost about $15.2754, billedCost $0.0000, no meaningful overage spike.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "This run covers the repeatedly skipped alerts/topology/log explorer modal pack on production deployment dpl_29htc32mVBRis5LxZmGRtRZohQXe.",
+    "Active Alerts, Alert History, and Log Explorer opened successfully with expected headings and filters visible.",
+    "Topology modal rendered 온프레미스 DC1 서비스 토폴로지 with footer counters and close control visible.",
+    "Observed API responses: /api/monitoring/report 200, /api/servers-unified?action=logs 200, keyword-filtered logs 200. Console errors were empty."
+  ],
+  "links": [
+    {
+      "label": "Vercel URL",
+      "url": "https://openmanager-ai.vercel.app"
+    }
+  ]
+}

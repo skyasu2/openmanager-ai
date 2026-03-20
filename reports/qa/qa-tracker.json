@@ -2,15 +2,15 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-03-20T22:01:41.259Z"
+    "updatedAt": "2026-03-20T22:28:54.515Z"
   },
   "sequence": {
-    "nextRunNumber": 145
+    "nextRunNumber": 146
   },
   "summary": {
-    "totalRuns": 143,
-    "totalChecks": 1134,
-    "totalPassed": 1083,
+    "totalRuns": 144,
+    "totalChecks": 1142,
+    "totalPassed": 1091,
     "totalFailed": 47,
     "completionRate": 100,
     "completedItems": 228,
@@ -19,8 +19,8 @@
     "wontFixItems": 8,
     "expertDomainsTracked": 6,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260321-0144",
-    "lastRecordedAt": "2026-03-20T22:01:41.259Z"
+    "lastRunId": "QA-20260321-0145",
+    "lastRecordedAt": "2026-03-20T22:28:54.515Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -11627,6 +11627,62 @@
         }
       ],
       "expertCount": 2,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260321-0145",
+      "recordedAt": "2026-03-20T22:28:54.515Z",
+      "recordedAtKst": "2026-03-21 07:28:54 KST",
+      "title": "Vercel Playwright QA - Modal Detail Pack Coverage Fill (SHA 386aa7acd)",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260321-0145.json",
+      "scope": "targeted",
+      "releaseFacing": false,
+      "coveredSurfaces": [
+        "/login",
+        "guest PIN login",
+        "dashboard",
+        "active alerts modal",
+        "alert history modal",
+        "log explorer modal",
+        "topology modal"
+      ],
+      "skippedSurfaces": [
+        "/",
+        "/api/health",
+        "/api/version",
+        "404",
+        "AI sidebar/chat",
+        "Reporter flow",
+        "Analyst flow",
+        "/dashboard/ai-assistant fullscreen",
+        "security blocked-prompt pack",
+        "Langfuse trace visibility"
+      ],
+      "checks": {
+        "total": 8,
+        "passed": 8,
+        "failed": 0
+      },
+      "expertAssessments": [],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-03-21T07:28:18+09:00",
+          "summary": "Current billing period reviewed after targeted modal/detail QA; effectiveCost about $15.2754, billedCost $0.0000, no meaningful overage spike.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "expertCount": 0,
       "expertNeedsImprovementCount": 0,
       "completedCount": 0,
       "pendingCount": 0,

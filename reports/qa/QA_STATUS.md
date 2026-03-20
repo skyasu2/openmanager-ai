@@ -1,15 +1,15 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-21 07:01:44 KST
+> Generated at: 2026-03-21 07:28:57 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 143 |
-| Total Checks | 1134 |
-| Passed | 1083 |
+| Total Runs | 144 |
+| Total Checks | 1142 |
+| Passed | 1091 |
 | Failed | 47 |
 | Completed Items | 228 |
 | Pending Items | 0 |
@@ -18,29 +18,28 @@
 | Expert Domains Tracked | 6 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Run | QA-20260321-0144 (2026-03-20T22:01:41.259Z) |
+| Last Run | QA-20260321-0145 (2026-03-20T22:28:54.515Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260321-0144 (2026-03-20T22:01:41.259Z)
+Latest run: QA-20260321-0145 (2026-03-20T22:28:54.515Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| AI Quality Assurance Specialist | appropriate | no | - |
-| Test Automation Architect | appropriate | no | - |
+| - | - | - | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period reviewed after targeted production QA; effectiveCost about $15.2754, billedCost $0.0000, no meaningful overage spike. |
+| vercel | cli | checked | normal | Current billing period reviewed after targeted modal/detail QA; effectiveCost about $15.2754, billedCost $0.0000, no meaningful overage spike. |
 
 ## Coverage (Latest Run)
 
 - Scope: targeted
-- Release-Facing: yes
-- Covered Surfaces: /login, guest PIN login, system-boot → /dashboard redirect, dashboard, AI sidebar, Reporter flow, Analyst flow, /dashboard/ai-assistant fullscreen
-- Skipped Surfaces: /, /api/health, /api/version, 404, server modal/detail pack, alerts/topology/log explorer pack, security blocked-prompt pack, Langfuse trace visibility, AI sidebar free-text chat send
+- Release-Facing: no
+- Covered Surfaces: /login, guest PIN login, dashboard, active alerts modal, alert history modal, log explorer modal, topology modal
+- Skipped Surfaces: /, /api/health, /api/version, 404, AI sidebar/chat, Reporter flow, Analyst flow, /dashboard/ai-assistant fullscreen, security blocked-prompt pack, Langfuse trace visibility
 
 ## Expert Domain Open Gaps
 
@@ -307,6 +306,7 @@ Latest run: QA-20260321-0144 (2026-03-20T22:01:41.259Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260321-0145 | 2026-03-20T22:28:54.515Z | targeted | no | Vercel Playwright QA - Modal Detail Pack Coverage Fill (SHA 386aa7acd) | 8 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260321-0144 | 2026-03-20T22:01:41.259Z | targeted | yes | Vercel Playwright QA - Reporter/Analyst/Fullscreen Follow-up (SHA 818871b86) | 9 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260320-0143 | 2026-03-20T14:54:14.012Z | broad | yes | Vercel Playwright QA - Broad Smoke Post-Push (SHA cf0b1119) | 11 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260320-0142 | 2026-03-20T12:57:48.587Z | targeted | no | Vercel Playwright QA - Langfuse Feedback Trace Recovery | 11 | 1 | 0 | 0 | 0 | 0 |
@@ -326,5 +326,4 @@ Latest run: QA-20260321-0144 (2026-03-20T22:01:41.259Z)
 | QA-20260319-0127 | 2026-03-18T15:35:06.423Z | legacy | no | Vercel Playwright QA - Analyst fullscreen chat retention recheck | 5 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260318-0126 | 2026-03-18T14:50:18.155Z | legacy | no | Vercel Playwright QA - Reporter and Analyst fullscreen state retention | 6 | 3 | 1 | 0 | 0 | 2 |
 | QA-20260318-0125 | 2026-03-18T10:29:22.769Z | legacy | no | Security QA - AI Code Gate Input Policy production recheck | 9 | 3 | 0 | 0 | 0 | 0 |
-| QA-20260318-0124 | 2026-03-18T08:26:39.409Z | legacy | no | Production QA - Frontend Smoke Gate Stabilization and Observability Recheck | 5 | 1 | 0 | 0 | 0 | 1 |
 
