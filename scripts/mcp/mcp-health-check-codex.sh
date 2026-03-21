@@ -240,10 +240,11 @@ record_live_probe_status() {
   if [ -z "$LIVE_PROBE_STATUS_FILE" ]; then
     return 0
   fi
-  printf '%s\t%s\t%s\n' \
+  printf '%s\t%s\t%s\t%s\n' \
     "$(normalize_record_field "$1")" \
     "$(normalize_record_field "$2")" \
-    "$(normalize_record_field "$3")" >> "$LIVE_PROBE_STATUS_FILE"
+    "$(normalize_record_field "$3")" \
+    "$(normalize_record_field "$4")" >> "$LIVE_PROBE_STATUS_FILE"
 }
 
 record_warning() {
@@ -309,8 +310,9 @@ const serverRows = parseTsv(serverFile, 3).map(([name, status, detail]) => ({
   detail,
 }));
 
-const liveProbeRows = parseTsv(probeFile, 3).map(([server, status, detail]) => ({
+const liveProbeRows = parseTsv(probeFile, 4).map(([server, stage, status, detail]) => ({
   server,
+  stage: stage || null,
   status,
   detail,
 }));
@@ -451,6 +453,7 @@ const payload = {
   liveProbes: liveProbeRows.map((row) => ({
     ...probeTargetMap.get(row.server),
     server: row.server,
+    stage: row.stage,
     status: row.status,
     detail: row.detail,
   })),
@@ -668,17 +671,23 @@ get_server_probe_timeout_sec() {
 
 run_live_probe() {
   local server="$1"
-  local transport_command="$2"
-  local transport_args_json="$3"
-  local call_tool="$4"
-  local probe_timeout_sec="$5"
-  shift 5
+  local stage="$2"
+  local transport_command="$3"
+  local transport_args_json="$4"
+  local call_tool="$5"
+  local probe_timeout_sec="$6"
+  shift 6
   local probe_env=("$@")
   local probe_output=""
   local probe_status=0
+  local probe_label="$server"
 
-  echo "  - ${server}: probing (timeout ${probe_timeout_sec}s)"
-  echo "  - ${server}: probing (timeout ${probe_timeout_sec}s)" >> "$LOG_FILE"
+  if [ -n "$stage" ]; then
+    probe_label="${server}/${stage}"
+  fi
+
+  echo "  - ${probe_label}: probing (timeout ${probe_timeout_sec}s)"
+  echo "  - ${probe_label}: probing (timeout ${probe_timeout_sec}s)" >> "$LOG_FILE"
 
   set +e
   probe_output=$(env "${probe_env[@]}" \
@@ -733,24 +742,24 @@ NODE
   set -e
 
   if [ "$probe_status" -eq 0 ] && printf '%s\n' "$probe_output" | grep -q '"ok":true'; then
-    echo -e "${GREEN}OK${NC}   ${server}: live probe"
-    echo "OK   ${server}: live probe" >> "$LOG_FILE"
-    record_live_probe_status "$server" "ok" "success (timeout ${probe_timeout_sec}s)"
+    echo -e "${GREEN}OK${NC}   ${probe_label}: live probe"
+    echo "OK   ${probe_label}: live probe" >> "$LOG_FILE"
+    record_live_probe_status "$server" "$stage" "ok" "success (timeout ${probe_timeout_sec}s)"
     return 0
   fi
 
   if [ "$probe_status" -eq 124 ]; then
-    echo -e "${YELLOW}WARN${NC} ${server}: live probe timed out (${probe_timeout_sec}s)"
-    echo "WARN ${server}: live probe timed out (${probe_timeout_sec}s)" >> "$LOG_FILE"
-    record_live_probe_status "$server" "warn" "timed out (${probe_timeout_sec}s)"
+    echo -e "${YELLOW}WARN${NC} ${probe_label}: live probe timed out (${probe_timeout_sec}s)"
+    echo "WARN ${probe_label}: live probe timed out (${probe_timeout_sec}s)" >> "$LOG_FILE"
+    record_live_probe_status "$server" "$stage" "warn" "timed out (${probe_timeout_sec}s)"
     return 1
   fi
 
-  echo -e "${YELLOW}WARN${NC} ${server}: live probe failed"
-  echo "WARN ${server}: live probe failed" >> "$LOG_FILE"
+  echo -e "${YELLOW}WARN${NC} ${probe_label}: live probe failed"
+  echo "WARN ${probe_label}: live probe failed" >> "$LOG_FILE"
   printf '%s\n' "$probe_output" | sed 's/^/  - /' | sed -n '1,4p'
   printf '%s\n' "$probe_output" | sed 's/^/  - /' | sed -n '1,4p' >> "$LOG_FILE"
-  record_live_probe_status "$server" "warn" "$(printf '%s\n' "$probe_output" | sed -n '1p')"
+  record_live_probe_status "$server" "$stage" "warn" "$(printf '%s\n' "$probe_output" | sed -n '1p')"
   return 1
 }
 
@@ -855,16 +864,17 @@ else
     if [ -z "$SUPABASE_TOKEN" ]; then
       echo -e "${YELLOW}WARN${NC} supabase-db: live probe skipped (SUPABASE_ACCESS_TOKEN missing)"
       echo "WARN supabase-db: live probe skipped (SUPABASE_ACCESS_TOKEN missing)" >> "$LOG_FILE"
-      record_live_probe_status "supabase-db" "warn" "skipped (SUPABASE_ACCESS_TOKEN missing)"
+      record_live_probe_status "supabase-db" "preflight" "warn" "skipped (SUPABASE_ACCESS_TOKEN missing)"
       LIVE_PROBE_FAIL_COUNT=$((LIVE_PROBE_FAIL_COUNT + 1))
     elif [ -z "$SUPABASE_COMMAND" ] || [ -z "$SUPABASE_ARGS_JSON" ]; then
       echo -e "${YELLOW}WARN${NC} supabase-db: live probe skipped (launch config missing)"
       echo "WARN supabase-db: live probe skipped (launch config missing)" >> "$LOG_FILE"
-      record_live_probe_status "supabase-db" "warn" "skipped (launch config missing)"
+      record_live_probe_status "supabase-db" "preflight" "warn" "skipped (launch config missing)"
       LIVE_PROBE_FAIL_COUNT=$((LIVE_PROBE_FAIL_COUNT + 1))
     else
       if ! run_live_probe \
         "supabase-db" \
+        "full" \
         "$SUPABASE_COMMAND" \
         "$SUPABASE_ARGS_JSON" \
         "list_projects" \
@@ -884,16 +894,28 @@ else
     if [ -z "$STITCH_PROJECT_ID" ] || [ -z "$STITCH_USE_SYSTEM_GCLOUD" ]; then
       echo -e "${YELLOW}WARN${NC} stitch: live probe skipped (stitch env missing)"
       echo "WARN stitch: live probe skipped (stitch env missing)" >> "$LOG_FILE"
-      record_live_probe_status "stitch" "warn" "skipped (stitch env missing)"
+      record_live_probe_status "stitch" "preflight" "warn" "skipped (stitch env missing)"
       LIVE_PROBE_FAIL_COUNT=$((LIVE_PROBE_FAIL_COUNT + 1))
     elif [ -z "$STITCH_COMMAND" ] || [ -z "$STITCH_ARGS_JSON" ]; then
       echo -e "${YELLOW}WARN${NC} stitch: live probe skipped (launch config missing)"
       echo "WARN stitch: live probe skipped (launch config missing)" >> "$LOG_FILE"
-      record_live_probe_status "stitch" "warn" "skipped (launch config missing)"
+      record_live_probe_status "stitch" "preflight" "warn" "skipped (launch config missing)"
       LIVE_PROBE_FAIL_COUNT=$((LIVE_PROBE_FAIL_COUNT + 1))
     else
       if ! run_live_probe \
         "stitch" \
+        "readiness" \
+        "$STITCH_COMMAND" \
+        "$STITCH_ARGS_JSON" \
+        "" \
+        "$STITCH_TIMEOUT_SEC" \
+        "STITCH_PROJECT_ID=$STITCH_PROJECT_ID" \
+        "STITCH_USE_SYSTEM_GCLOUD=$STITCH_USE_SYSTEM_GCLOUD" \
+        "CLOUDSDK_CONFIG=${CLOUDSDK_CONFIG:-$HOME/.config/gcloud}"; then
+        LIVE_PROBE_FAIL_COUNT=$((LIVE_PROBE_FAIL_COUNT + 1))
+      elif ! run_live_probe \
+        "stitch" \
+        "tool-call" \
         "$STITCH_COMMAND" \
         "$STITCH_ARGS_JSON" \
         "list_projects" \

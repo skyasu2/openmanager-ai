@@ -124,7 +124,7 @@ bash scripts/mcp/mcp-health-report-codex.sh --no-live-probe --allow-missing-code
 
 # JSON report에는 probeTargets / liveProbes metadata 포함
 # - probeTargets: command, args, configuredTimeoutSec, timeoutSec, callTool, selected
-# - liveProbes: 실행 결과(status/detail) + probe metadata
+# - liveProbes: 실행 결과(status/detail) + probe metadata + stage(readiness/tool-call/full/preflight)
 
 # Storybook CI 빌드(비대화형, 타임아웃)
 npm run storybook:build:ci

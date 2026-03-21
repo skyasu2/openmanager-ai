@@ -121,6 +121,7 @@ bash scripts/mcp/mcp-health-report-codex.sh --no-live-probe --allow-missing-code
 - `--json` 출력은 `probeTargets`와 `liveProbes`를 함께 제공합니다.
 - `probeTargets`에는 config 기준 `command`, `args`, `configuredTimeoutSec`, 실제 적용 `timeoutSec`, `callTool`, `selected`가 포함됩니다.
 - `liveProbes`에는 실행 결과(`status`, `detail`)와 해당 probe metadata가 병합되어 들어갑니다.
+- `liveProbes[*].stage`로 readiness / tool-call / full / preflight 단계를 구분할 수 있습니다.
 
 ### GitHub MCP 토큰 자동 동기화 (2026-02-17)
 
