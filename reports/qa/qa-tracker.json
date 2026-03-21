@@ -4838,7 +4838,9 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0,
-      "aliases": ["esc-모달-닫기"],
+      "aliases": [
+        "esc-모달-닫기"
+      ],
       "owner": "",
       "lastEvidence": "Playwright MCP: ESC 키로 모달 닫기 동작 확인",
       "lastNote": "",
@@ -4862,7 +4864,9 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0,
-      "aliases": ["ai-chat-sidebar-open"],
+      "aliases": [
+        "ai-chat-sidebar-open"
+      ],
       "owner": "",
       "lastEvidence": "Playwright MCP: AI 어시스턴트 사이드바 열기/닫기 동작 확인",
       "lastNote": "",
@@ -4886,7 +4890,9 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0,
-      "aliases": ["프로덕션-대시보드-렌더링"],
+      "aliases": [
+        "프로덕션-대시보드-렌더링"
+      ],
       "owner": "",
       "lastEvidence": "Playwright MCP: 대시보드 전체 정상 렌더링 확인",
       "lastNote": "",
@@ -4910,7 +4916,9 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0,
-      "aliases": ["서버-모달-3탭-전환"],
+      "aliases": [
+        "서버-모달-3탭-전환"
+      ],
       "owner": "",
       "lastEvidence": "Playwright MCP: 종합상황/성능분석/로그&네트워크 3탭 전환 동작 확인",
       "lastNote": "",
@@ -11558,7 +11566,22 @@
       "completedCount": 0,
       "pendingCount": 0,
       "deferredCount": 0,
-      "wontFixCount": 0
+      "wontFixCount": 0,
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_DgAdfFzVhLmCrQwnxrzWDLPQo6A3",
+        "deploymentUrl": "https://openmanager-5pkwdjybf-skyasus-projects.vercel.app",
+        "commitSha": "cf0b1119a677a7e0cd5583dd3bdf1d3e5aa0e165"
+      },
+      "coveragePacks": [
+        "core-routes-smoke",
+        "dashboard-core",
+        "ai-core"
+      ]
     },
     {
       "runId": "QA-20260321-0144",
@@ -11631,7 +11654,21 @@
       "completedCount": 0,
       "pendingCount": 0,
       "deferredCount": 0,
-      "wontFixCount": 0
+      "wontFixCount": 0,
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_5dFjBc9RBNSJLd2zfEUto6Zik7oj",
+        "deploymentUrl": "https://openmanager-q1hof1gwy-skyasus-projects.vercel.app",
+        "commitSha": "818871b86bb4c0851c072a96b7c14632fb53cba1"
+      },
+      "coveragePacks": [
+        "ai-core",
+        "ai-advanced-surface"
+      ]
     },
     {
       "runId": "QA-20260321-0145",
@@ -11687,7 +11724,20 @@
       "completedCount": 0,
       "pendingCount": 0,
       "deferredCount": 0,
-      "wontFixCount": 0
+      "wontFixCount": 0,
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_29htc32mVBRis5LxZmGRtRZohQXe",
+        "deploymentUrl": "https://openmanager-d0fn15lwl-skyasus-projects.vercel.app",
+        "commitSha": "386aa7acd3ea86e8c1cc4ccba7555f99277e8d24"
+      },
+      "coveragePacks": [
+        "modal-detail-pack"
+      ]
     }
   ],
   "experts": {

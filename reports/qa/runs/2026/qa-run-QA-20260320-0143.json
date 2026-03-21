@@ -10,7 +10,10 @@
     "url": "https://openmanager-ai.vercel.app",
     "frontend": "Vercel",
     "backend": "Cloud Run",
-    "branch": "main"
+    "branch": "main",
+    "deploymentId": "dpl_DgAdfFzVhLmCrQwnxrzWDLPQo6A3",
+    "deploymentUrl": "https://openmanager-5pkwdjybf-skyasus-projects.vercel.app",
+    "commitSha": "cf0b1119a677a7e0cd5583dd3bdf1d3e5aa0e165"
   },
   "scope": "broad",
   "releaseFacing": true,
@@ -75,5 +78,10 @@
   "deferredImprovements": [],
   "wontFixImprovements": [],
   "notes": [],
-  "links": []
+  "links": [],
+  "coveragePacks": [
+    "core-routes-smoke",
+    "dashboard-core",
+    "ai-core"
+  ]
 }

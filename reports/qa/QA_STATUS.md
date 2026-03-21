@@ -1,7 +1,7 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-21 07:28:57 KST
+> Generated at: 2026-03-21 14:03:00 KST
 
 ## Summary
 
@@ -38,6 +38,8 @@ Latest run: QA-20260321-0145 (2026-03-20T22:28:54.515Z)
 
 - Scope: targeted
 - Release-Facing: no
+- Deployment: dpl_29htc32mVBRis5LxZmGRtRZohQXe / SHA 386aa7ac
+- Coverage Packs: modal-detail-pack
 - Covered Surfaces: /login, guest PIN login, dashboard, active alerts modal, alert history modal, log explorer modal, topology modal
 - Skipped Surfaces: /, /api/health, /api/version, 404, AI sidebar/chat, Reporter flow, Analyst flow, /dashboard/ai-assistant fullscreen, security blocked-prompt pack, Langfuse trace visibility
 
