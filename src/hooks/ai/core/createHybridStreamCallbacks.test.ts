@@ -34,10 +34,7 @@ function createDeps() {
     persistTraceIdFallback: vi.fn(),
     onStreamFinish: vi.fn(),
     setState: vi.fn((updater) => {
-      state =
-        typeof updater === 'function'
-          ? updater(state)
-          : updater;
+      state = typeof updater === 'function' ? updater(state) : updater;
     }),
     getState: () => state,
     deps: {
@@ -48,10 +45,7 @@ function createDeps() {
       onData: vi.fn(),
       persistTraceIdFallback: vi.fn(),
       setState: vi.fn((updater) => {
-        state =
-          typeof updater === 'function'
-            ? updater(state)
-            : updater;
+        state = typeof updater === 'function' ? updater(state) : updater;
       }),
       refs: {
         retryCount: { current: 1 },
