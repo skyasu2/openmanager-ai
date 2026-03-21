@@ -4,7 +4,7 @@
  * POST /feedback 엔드포인트 (Langfuse score 기록) 테스트.
  */
 
-import { describe, expect, it, vi, beforeEach } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { Hono } from 'hono';
 
 vi.mock('../services/observability/langfuse', () => ({
@@ -22,9 +22,16 @@ const app = new Hono();
 app.route('/feedback', feedbackRouter);
 
 describe('Feedback Routes', () => {
+  const originalBaseUrl = process.env.LANGFUSE_BASE_URL;
+
   beforeEach(() => {
     vi.clearAllMocks();
     vi.mocked(scoreByTraceId).mockReturnValue(true);
+    process.env.LANGFUSE_BASE_URL = 'https://langfuse.example.com';
+  });
+
+  afterEach(() => {
+    process.env.LANGFUSE_BASE_URL = originalBaseUrl;
   });
 
   it('positive 피드백을 score 1로 기록한다', async () => {
@@ -41,6 +48,13 @@ describe('Feedback Routes', () => {
     const json = await res.json();
     expect(json.success).toBe(true);
     expect(json.score).toBe('positive');
+    expect(json.traceApiUrl).toBe(
+      'https://langfuse.example.com/api/public/traces/1234567890abcdef1234567890abcdef'
+    );
+    expect(json.dashboardUrl).toBe('https://langfuse.example.com/project');
+    expect(json.monitoringLookupUrl).toBe(
+      'http://localhost/monitoring/traces?q=1234567890abcdef1234567890abcdef&limit=5&includeAuxiliary=true'
+    );
     expect(scoreByTraceId).toHaveBeenCalledWith(
       '1234567890abcdef1234567890abcdef',
       'user-feedback',

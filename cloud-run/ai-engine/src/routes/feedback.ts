@@ -12,6 +12,10 @@ import type { Context } from 'hono';
 import { z } from 'zod';
 import { scoreByTraceId } from '../services/observability/langfuse';
 import {
+  buildLangfuseDashboardUrl,
+  buildLangfuseTraceApiUrl,
+} from '../services/observability/langfuse-url';
+import {
   handleApiError,
   handleValidationError,
   jsonSuccess,
@@ -69,10 +73,20 @@ feedbackRouter.post('/', async (c: Context) => {
 
     logger.info({ traceId, score, value }, 'User feedback recorded to Langfuse');
 
+    const baseUrl =
+      process.env.LANGFUSE_BASE_URL || 'https://us.cloud.langfuse.com';
+    const monitoringLookupUrl = new URL('/monitoring/traces', c.req.url);
+    monitoringLookupUrl.searchParams.set('q', traceId);
+    monitoringLookupUrl.searchParams.set('limit', '5');
+    monitoringLookupUrl.searchParams.set('includeAuxiliary', 'true');
+
     return jsonSuccess(c, {
       message: 'Feedback recorded',
       traceId,
       score,
+      traceApiUrl: buildLangfuseTraceApiUrl(traceId, baseUrl),
+      dashboardUrl: buildLangfuseDashboardUrl(baseUrl),
+      monitoringLookupUrl: monitoringLookupUrl.toString(),
     });
   } catch (error) {
     return handleApiError(c, error, 'Feedback');

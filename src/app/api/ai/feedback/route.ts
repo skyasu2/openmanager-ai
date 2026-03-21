@@ -90,6 +90,9 @@ async function handlePOST(request: NextRequest) {
 
     // Forward to Cloud Run Langfuse if traceId is present
     let langfuseStatus: 'skipped' | 'success' | 'error' = 'skipped';
+    let traceApiUrl: string | undefined;
+    let dashboardUrl: string | undefined;
+    let monitoringLookupUrl: string | undefined;
     if (
       body.traceId &&
       process.env.CLOUD_RUN_AI_URL &&
@@ -111,7 +114,24 @@ async function handlePOST(request: NextRequest) {
             signal: AbortSignal.timeout(FEEDBACK_PROXY_TIMEOUT_MS),
           }
         );
+        const payload = await res
+          .json()
+          .catch(() => null as Record<string, unknown> | null);
         langfuseStatus = res.ok ? 'success' : 'error';
+        if (res.ok && payload) {
+          traceApiUrl =
+            typeof payload.traceApiUrl === 'string'
+              ? payload.traceApiUrl
+              : undefined;
+          dashboardUrl =
+            typeof payload.dashboardUrl === 'string'
+              ? payload.dashboardUrl
+              : undefined;
+          monitoringLookupUrl =
+            typeof payload.monitoringLookupUrl === 'string'
+              ? payload.monitoringLookupUrl
+              : undefined;
+        }
         if (!res.ok) {
           aiLogger.error(
             `Cloud Run feedback proxy failed: ${res.status} ${res.statusText}`
@@ -129,6 +149,10 @@ async function handlePOST(request: NextRequest) {
       feedbackId: `fb_${Date.now()}`,
       stored: dbSaved ? 'database' : 'log_only',
       langfuseStatus,
+      ...(body.traceId && { traceId: body.traceId }),
+      ...(traceApiUrl && { traceApiUrl }),
+      ...(dashboardUrl && { dashboardUrl }),
+      ...(monitoringLookupUrl && { monitoringLookupUrl }),
     });
   } catch (error) {
     aiLogger.error('Feedback processing failed', error);
