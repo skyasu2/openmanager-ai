@@ -40,7 +40,11 @@ function writeInputFile(tempDir: string, payload: unknown) {
   return inputPath;
 }
 
-function writeWorkspaceFile(tempDir: string, relativePath: string, content = 'artifact') {
+function writeWorkspaceFile(
+  tempDir: string,
+  relativePath: string,
+  content = 'artifact'
+) {
   const filePath = join(tempDir, relativePath);
   mkdirSync(dirname(filePath), { recursive: true });
   writeFileSync(filePath, content, 'utf8');
@@ -295,9 +299,21 @@ describe('QA scripts', () => {
 
   it('auto-detects recent Playwright report/test-results artifacts', () => {
     const tempDir = createTempWorkspace();
-    writeWorkspaceFile(tempDir, 'playwright-report/index.html', '<html>report</html>');
-    writeWorkspaceFile(tempDir, 'test-results/smoke-chromium/trace.zip', 'trace');
-    writeWorkspaceFile(tempDir, 'test-results/smoke-chromium/dashboard.png', 'png');
+    writeWorkspaceFile(
+      tempDir,
+      'playwright-report/index.html',
+      '<html>report</html>'
+    );
+    writeWorkspaceFile(
+      tempDir,
+      'test-results/smoke-chromium/trace.zip',
+      'trace'
+    );
+    writeWorkspaceFile(
+      tempDir,
+      'test-results/smoke-chromium/dashboard.png',
+      'png'
+    );
 
     const oldTracePath = writeWorkspaceFile(
       tempDir,
