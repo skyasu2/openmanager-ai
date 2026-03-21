@@ -9,6 +9,7 @@ import {
   getServerStatus as getMetricBasedStatus,
   SERVERS,
 } from './mockScenarios';
+
 export type { ScenarioPoint };
 
 import type { Server } from '@/types/server';

@@ -2,9 +2,9 @@
 # biome-wrapper.sh - Cross-platform Biome runner (Windows + WSL)
 #
 # 우선순위:
-# 1. WSL 전역 설치 (~/.npm-global/bin/biome) - WSL 환경에서 가장 안정적
-# 2. 시스템 PATH biome
-# 3. 로컬 node_modules (Windows에서만 작동)
+# 1. 프로젝트 로컬 node_modules - CI와 동일한 버전 보장
+# 2. WSL 전역 설치 (~/.npm-global/bin/biome)
+# 3. 시스템 PATH biome
 # 4. 자동 설치 후 실행
 
 set -e
@@ -17,27 +17,26 @@ PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 export PATH="$HOME/.npm-global/bin:$PATH"
 
 find_working_biome() {
-    # 1. WSL 전역 설치 확인 (WSL에서 가장 안정적)
+    # 1. 프로젝트 로컬 설치 확인 (CI와 동일한 버전 우선)
+    if [ -x "$PROJECT_ROOT/node_modules/.bin/biome" ]; then
+        if "$PROJECT_ROOT/node_modules/.bin/biome" --version &>/dev/null; then
+            echo "$PROJECT_ROOT/node_modules/.bin/biome"
+            return 0
+        fi
+    fi
+
+    # 2. WSL 전역 설치 확인
     if [ -x "$HOME/.npm-global/bin/biome" ]; then
-        # 실제 실행 가능한지 테스트
         if "$HOME/.npm-global/bin/biome" --version &>/dev/null; then
             echo "$HOME/.npm-global/bin/biome"
             return 0
         fi
     fi
 
-    # 2. 시스템 PATH에서 확인
+    # 3. 시스템 PATH에서 확인
     if command -v biome &>/dev/null; then
         if biome --version &>/dev/null; then
             command -v biome
-            return 0
-        fi
-    fi
-
-    # 3. 로컬 node_modules 확인 (Windows 환경)
-    if [ -x "$PROJECT_ROOT/node_modules/.bin/biome" ]; then
-        if "$PROJECT_ROOT/node_modules/.bin/biome" --version &>/dev/null; then
-            echo "$PROJECT_ROOT/node_modules/.bin/biome"
             return 0
         fi
     fi

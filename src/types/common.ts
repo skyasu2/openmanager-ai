@@ -27,6 +27,7 @@ export type ServiceStatus =
 // 🎯 서버 상태 타입 (2025-09-30 타입 통합)
 // Single Source of Truth: src/types/server-enums.ts
 import type { ServerStatus } from './server-enums';
+
 export type { ServerStatus };
 
 // 알림 심각도 타입

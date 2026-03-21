@@ -292,8 +292,7 @@ export function normalizeMetrics(
   };
 }
 
-// Backward-compatible alias
-export type { FlexibleServerMetrics as ServerMetrics };
-
 // Re-export 관련 타입들
 export type { ServerStatus } from '@/types/common';
+// Backward-compatible alias
+export type { FlexibleServerMetrics as ServerMetrics };

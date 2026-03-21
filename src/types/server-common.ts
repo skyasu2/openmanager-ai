@@ -2,8 +2,8 @@
 // Single Source of Truth: src/types/server-enums.ts
 import type { ServerAlert } from './server/base';
 import type { ServerStatus } from './server-enums';
-export type { ServerStatus };
-export type { ServerAlert };
+
+export type { ServerAlert, ServerStatus };
 
 export interface ServerHealth {
   score: number;

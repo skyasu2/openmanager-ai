@@ -326,5 +326,5 @@ export function createErrorBoundaryInfo(error: unknown, errorInfo?: unknown) {
   };
 }
 
-export { classifyErrorType, createSafeError };
 export type { ErrorType } from './error-handler-core';
+export { classifyErrorType, createSafeError };

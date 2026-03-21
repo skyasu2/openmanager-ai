@@ -74,12 +74,13 @@ import type {
   UseHybridAIQueryReturn,
 } from './types/hybrid-query.types';
 import type { FileAttachment } from './useFileAttachments';
+
 export {
-  STREAM_ERROR_MARKER,
   COLD_START_ERROR_PATTERNS,
-  STREAM_ERROR_REGEX,
   extractStreamError,
   isColdStartRelatedError,
+  STREAM_ERROR_MARKER,
+  STREAM_ERROR_REGEX,
 };
 
 export function useHybridAIQuery(

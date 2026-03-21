@@ -1,4 +1,5 @@
 import type { ServerStatus } from '@/types/server-enums';
+
 export type { ServerStatus };
 
 export interface ScenarioPoint {

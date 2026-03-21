@@ -6,6 +6,7 @@
  */
 
 import type { ServerStatus } from '../types/server-enums'; // 🔧 수정: 상대 경로로 변경 (모듈 해결)
+
 export type { ServerStatus }; // 🔧 re-export (타입 통합)
 
 // ===== 서버 상태별 색상 시스템 =====

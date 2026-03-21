@@ -413,4 +413,4 @@ export function useSystemStart(options: UseSystemStartOptions) {
   };
 }
 
-export type { GuestRestrictionReason, StatusInfo, ButtonConfig };
+export type { ButtonConfig, GuestRestrictionReason, StatusInfo };

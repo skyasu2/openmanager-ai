@@ -276,5 +276,5 @@ export default function AIAssistantIconPanel({
   );
 }
 
-export { AI_ASSISTANT_ICONS };
 export type { AIAssistantIcon };
+export { AI_ASSISTANT_ICONS };

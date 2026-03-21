@@ -15,7 +15,7 @@ import type { LogEntry, NetworkInfo, Service, SystemInfo } from './entities';
 import type { ServerAlert } from './metrics';
 import type { ServerEnvironment, ServerRole } from './types';
 
-export type { ServerStatus, ServerHealth, ServerMetrics, ServerSpecs };
+export type { ServerHealth, ServerMetrics, ServerSpecs, ServerStatus };
 
 /**
  * 서버 인스턴스 (대시보드용 확장 타입)

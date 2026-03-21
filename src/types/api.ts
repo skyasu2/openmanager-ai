@@ -46,6 +46,14 @@ export type ApiResponse<T = unknown> = {
   readonly metadata?: Readonly<Record<string, string>>;
 };
 
+export type {
+  DashboardData,
+  HealthCheckResponse,
+  MCPQueryRequest,
+  MCPQueryResponse,
+  ServerMetrics,
+  ServerStatus,
+};
 // 중앙화된 schema/type 재수출
 export {
   DashboardDataSchema,
@@ -54,15 +62,6 @@ export {
   MCPQueryResponseSchema,
   ServerMetricsSchema,
   ServerStatusSchema,
-};
-
-export type {
-  DashboardData,
-  HealthCheckResponse,
-  MCPQueryRequest,
-  MCPQueryResponse,
-  ServerMetrics,
-  ServerStatus,
 };
 
 // 🔧 페이지네이션 스키마

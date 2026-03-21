@@ -14,7 +14,7 @@ import type { AsyncQueryProgress, AsyncQueryResult } from '../useAsyncAIQuery';
 import type { FileAttachment } from '../useFileAttachments';
 
 // Re-export clarification types for convenience
-export type { ClarificationRequest, ClarificationOption };
+export type { ClarificationOption, ClarificationRequest };
 
 export type QueryMode = 'streaming' | 'job-queue';
 
