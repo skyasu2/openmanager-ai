@@ -610,10 +610,27 @@ function isRecentFile(filePath, cutoffMs) {
   return stats.mtimeMs >= cutoffMs;
 }
 
+function normalizeOptionalDir(rawValue, fallbackValue) {
+  if (rawValue === false) {
+    return '';
+  }
+
+  if (rawValue == null) {
+    return fallbackValue;
+  }
+
+  return String(rawValue).trim();
+}
+
 function normalizePlaywrightArtifactOptions(rawValue, source) {
   const sourceText = String(source || '').trim().toLowerCase();
-  const shouldAutoDetectBySource =
-    sourceText === 'playwright' || sourceText === 'playwright-cli';
+  const shouldAutoDetectBySource = sourceText.includes('playwright');
+  const defaults = {
+    reportDir: 'playwright-report',
+    resultsDir: 'test-results',
+    screenshotsDir: '.playwright-mcp/screenshots',
+    recentMinutes: 180,
+  };
 
   if (rawValue === false) {
     return null;
@@ -624,20 +641,20 @@ function normalizePlaywrightArtifactOptions(rawValue, source) {
       return null;
     }
 
-    return {
-      reportDir: 'playwright-report',
-      resultsDir: 'test-results',
-      recentMinutes: 180,
-    };
+    return defaults;
   }
 
   return {
-    reportDir: rawValue.reportDir ? String(rawValue.reportDir).trim() : 'playwright-report',
-    resultsDir: rawValue.resultsDir ? String(rawValue.resultsDir).trim() : 'test-results',
+    reportDir: normalizeOptionalDir(rawValue.reportDir, defaults.reportDir),
+    resultsDir: normalizeOptionalDir(rawValue.resultsDir, defaults.resultsDir),
+    screenshotsDir: normalizeOptionalDir(
+      rawValue.screenshotsDir,
+      defaults.screenshotsDir
+    ),
     recentMinutes:
       Number.isFinite(Number(rawValue.recentMinutes)) && Number(rawValue.recentMinutes) > 0
         ? Number(rawValue.recentMinutes)
-        : 180,
+        : defaults.recentMinutes,
   };
 }
 
@@ -648,9 +665,11 @@ function detectPlaywrightArtifacts(options, now) {
 
   const cutoffMs = now.getTime() - options.recentMinutes * 60 * 1000;
   const artifacts = [];
-  const reportIndexPath = path.resolve(process.cwd(), options.reportDir, 'index.html');
+  const reportIndexPath = options.reportDir
+    ? path.resolve(process.cwd(), options.reportDir, 'index.html')
+    : '';
 
-  if (fs.existsSync(reportIndexPath) && isRecentFile(reportIndexPath, cutoffMs)) {
+  if (reportIndexPath && fs.existsSync(reportIndexPath) && isRecentFile(reportIndexPath, cutoffMs)) {
     artifacts.push({
       type: 'playwright-report',
       label: 'Playwright HTML report',
@@ -658,38 +677,60 @@ function detectPlaywrightArtifacts(options, now) {
     });
   }
 
-  const resultsRoot = path.resolve(process.cwd(), options.resultsDir);
-  for (const filePath of collectFilesRecursively(resultsRoot)) {
-    if (!isRecentFile(filePath, cutoffMs)) {
-      continue;
+  if (options.resultsDir) {
+    const resultsRoot = path.resolve(process.cwd(), options.resultsDir);
+    for (const filePath of collectFilesRecursively(resultsRoot)) {
+      if (!isRecentFile(filePath, cutoffMs)) {
+        continue;
+      }
+
+      const ext = path.extname(filePath).toLowerCase();
+      const relativePath = toPosixRelativePath(filePath);
+
+      if (path.basename(filePath) === 'trace.zip') {
+        artifacts.push({
+          type: 'playwright-trace',
+          label: path.basename(path.dirname(filePath)) || 'Playwright trace',
+          path: relativePath,
+        });
+        continue;
+      }
+
+      if (['.png', '.jpg', '.jpeg'].includes(ext)) {
+        artifacts.push({
+          type: 'playwright-screenshot',
+          label: path.basename(filePath),
+          path: relativePath,
+        });
+        continue;
+      }
+
+      if (['.webm', '.mp4'].includes(ext)) {
+        artifacts.push({
+          type: 'playwright-video',
+          label: path.basename(filePath),
+          path: relativePath,
+        });
+      }
     }
+  }
 
-    const ext = path.extname(filePath).toLowerCase();
-    const relativePath = toPosixRelativePath(filePath);
+  if (options.screenshotsDir) {
+    const screenshotsRoot = path.resolve(process.cwd(), options.screenshotsDir);
+    for (const filePath of collectFilesRecursively(screenshotsRoot)) {
+      if (!isRecentFile(filePath, cutoffMs)) {
+        continue;
+      }
 
-    if (path.basename(filePath) === 'trace.zip') {
-      artifacts.push({
-        type: 'playwright-trace',
-        label: path.basename(path.dirname(filePath)) || 'Playwright trace',
-        path: relativePath,
-      });
-      continue;
-    }
+      const ext = path.extname(filePath).toLowerCase();
+      if (!['.png', '.jpg', '.jpeg'].includes(ext)) {
+        continue;
+      }
 
-    if (['.png', '.jpg', '.jpeg'].includes(ext)) {
       artifacts.push({
         type: 'playwright-screenshot',
         label: path.basename(filePath),
-        path: relativePath,
-      });
-      continue;
-    }
-
-    if (['.webm', '.mp4'].includes(ext)) {
-      artifacts.push({
-        type: 'playwright-video',
-        label: path.basename(filePath),
-        path: relativePath,
+        path: toPosixRelativePath(filePath),
       });
     }
   }

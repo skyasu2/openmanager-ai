@@ -61,6 +61,7 @@
   "playwrightArtifacts": {
     "reportDir": "playwright-report",
     "resultsDir": "test-results",
+    "screenshotsDir": ".playwright-mcp/screenshots",
     "recentMinutes": 180
   },
   "expertAssessments": [

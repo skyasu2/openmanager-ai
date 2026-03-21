@@ -368,4 +368,56 @@ describe('QA scripts', () => {
       },
     ]);
   });
+
+  it('auto-detects recent Playwright MCP screenshots', () => {
+    const tempDir = createTempWorkspace();
+    writeWorkspaceFile(
+      tempDir,
+      '.playwright-mcp/screenshots/dashboard-overview.png',
+      'png'
+    );
+
+    const oldScreenshotPath = writeWorkspaceFile(
+      tempDir,
+      '.playwright-mcp/screenshots/old-run.png',
+      'old-png'
+    );
+    const oldDate = new Date(Date.now() - 5 * 60 * 60 * 1000);
+    utimesSync(oldScreenshotPath, oldDate, oldDate);
+
+    const inputPath = writeInputFile(
+      tempDir,
+      createValidPayload({
+        source: 'playwright-mcp',
+      })
+    );
+
+    const recordResult = runNodeScript(
+      RECORD_QA_RUN_SCRIPT,
+      ['--input', inputPath],
+      {
+        cwd: tempDir,
+        env: {
+          VERCEL_DEPLOYMENT_ID: 'dpl_mcpartifact123',
+          VERCEL_GIT_COMMIT_SHA: 'abcdefabcdefabcdefabcdefabcdefabcdefabcd',
+          VERCEL_GIT_COMMIT_REF: 'main',
+          VERCEL_TARGET_ENV: 'production',
+          VERCEL_PROJECT_PRODUCTION_URL: 'openmanager-ai.vercel.app',
+        },
+      }
+    );
+
+    expect(recordResult.status).toBe(0);
+
+    const runFilePath = findGeneratedRunFile(tempDir);
+    const runRecord = JSON.parse(readFileSync(runFilePath, 'utf8'));
+
+    expect(runRecord.artifacts).toEqual([
+      {
+        type: 'playwright-screenshot',
+        label: 'dashboard-overview.png',
+        path: '.playwright-mcp/screenshots/dashboard-overview.png',
+      },
+    ]);
+  });
 });

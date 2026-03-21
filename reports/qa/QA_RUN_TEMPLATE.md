@@ -63,6 +63,7 @@ npm run qa:record -- --input <qa-run-input.json>
   "playwrightArtifacts": {      // 로컬 Playwright 산출물 자동 수집 옵션 (선택)
     "reportDir": "playwright-report",
     "resultsDir": "test-results",
+    "screenshotsDir": ".playwright-mcp/screenshots",
     "recentMinutes": 180
   },
   "completedImprovements": [],   // 완료된 개선 항목
@@ -185,17 +186,19 @@ npm run qa:record -- --input <qa-run-input.json>
   "playwrightArtifacts": {
     "reportDir": "playwright-report",
     "resultsDir": "test-results",
+    "screenshotsDir": ".playwright-mcp/screenshots",
     "recentMinutes": 180
   }
 }
 ```
 
-- `source`가 `playwright` 또는 `playwright-cli`이면 위 옵션이 없어도 기본값으로 자동 수집을 시도합니다.
+- `source`가 `playwright`, `playwright-cli`, `playwright-mcp` 계열이면 위 옵션이 없어도 기본값으로 자동 수집을 시도합니다.
 - 수집 대상
   - `playwright-report/index.html` → `playwright-report`
   - `test-results/**/trace.zip` → `playwright-trace`
   - `test-results/**/*.{png,jpg,jpeg}` → `playwright-screenshot`
   - `test-results/**/*.{webm,mp4}` → `playwright-video`
+  - `.playwright-mcp/screenshots/**/*.{png,jpg,jpeg}` → `playwright-screenshot`
 - `recentMinutes` 안에 수정된 파일만 수집해 오래된 잔재를 기본적으로 제외합니다.
 
 ## Normalization 규칙 (스크립트 자동 처리)
