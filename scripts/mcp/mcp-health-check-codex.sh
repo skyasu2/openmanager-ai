@@ -22,7 +22,8 @@ GITHUB_MCP_AUTH_SYNC="$REPO_ROOT/scripts/mcp/sync-github-mcp-auth.sh"
 USAGE_COUNTER="$REPO_ROOT/scripts/mcp/count-codex-mcp-usage.sh"
 EXPECTED_SERVERS=()
 CONFIG_FILE="$REPO_ROOT/.codex/config.toml"
-LIVE_PROBE_TIMEOUT_SEC="${MCP_LIVE_PROBE_TIMEOUT_SEC:-45}"
+DEFAULT_LIVE_PROBE_TIMEOUT_SEC=45
+LIVE_PROBE_TIMEOUT_SEC="${MCP_LIVE_PROBE_TIMEOUT_SEC:-}"
 RUN_LIVE_PROBE=1
 SELECTED_PROBES=()
 AVAILABLE_LIVE_PROBE_SERVERS=("supabase-db" "stitch")
@@ -515,20 +516,76 @@ get_server_env_value() {
   ' "$CONFIG_FILE"
 }
 
+get_server_config_value() {
+  local server="$1"
+  local key="$2"
+  awk -v section="[mcp_servers.${server}]" -v target="$key" '
+    BEGIN { in_section = 0 }
+    $0 ~ /^\[.*\]$/ {
+      in_section = ($0 == section)
+      next
+    }
+    in_section {
+      pattern = "^[[:space:]]*" target "[[:space:]]*="
+      if ($0 ~ pattern) {
+        line = $0
+        sub("^[[:space:]]*" target "[[:space:]]*=[[:space:]]*", "", line)
+        print line
+        exit
+      }
+    }
+  ' "$CONFIG_FILE"
+}
+
+get_server_command() {
+  local raw=""
+  raw="$(get_server_config_value "$1" "command")"
+  printf '%s\n' "$raw" | sed -E 's/^[[:space:]]*"//; s/"[[:space:]]*$//'
+}
+
+get_server_args_json() {
+  get_server_config_value "$1" "args"
+}
+
+get_server_probe_timeout_sec() {
+  local server="$1"
+  local raw=""
+
+  if [ -n "$LIVE_PROBE_TIMEOUT_SEC" ]; then
+    printf '%s\n' "$LIVE_PROBE_TIMEOUT_SEC"
+    return 0
+  fi
+
+  raw="$(get_server_config_value "$server" "startup_timeout_sec" | tr -d '[:space:]')"
+  if printf '%s' "$raw" | grep -Eq '^[0-9]+$' && [ "$raw" -gt 0 ]; then
+    printf '%s\n' "$raw"
+    return 0
+  fi
+
+  printf '%s\n' "$DEFAULT_LIVE_PROBE_TIMEOUT_SEC"
+}
+
 run_live_probe() {
   local server="$1"
-  local _transport_command="$2"
-  local _transport_args_json="$3"
-  local _call_tool="$4"
-  local env_prefix="$5"
+  local transport_command="$2"
+  local transport_args_json="$3"
+  local call_tool="$4"
+  local probe_timeout_sec="$5"
+  shift 5
+  local probe_env=("$@")
   local probe_output=""
   local probe_status=0
 
-  echo "  - ${server}: probing (timeout ${LIVE_PROBE_TIMEOUT_SEC}s)"
-  echo "  - ${server}: probing (timeout ${LIVE_PROBE_TIMEOUT_SEC}s)" >> "$LOG_FILE"
+  echo "  - ${server}: probing (timeout ${probe_timeout_sec}s)"
+  echo "  - ${server}: probing (timeout ${probe_timeout_sec}s)" >> "$LOG_FILE"
 
   set +e
-  probe_output=$(eval "$env_prefix" timeout "$LIVE_PROBE_TIMEOUT_SEC" node --input-type=module <<'NODE' 2>&1
+  probe_output=$(env "${probe_env[@]}" \
+    MCP_PROBE_SERVER="$server" \
+    MCP_PROBE_COMMAND="$transport_command" \
+    MCP_PROBE_ARGS_JSON="$transport_args_json" \
+    MCP_PROBE_CALL_TOOL="$call_tool" \
+    timeout "$probe_timeout_sec" node --input-type=module <<'NODE' 2>&1
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js';
 import { CallToolResultSchema, ListToolsResultSchema } from '@modelcontextprotocol/sdk/types.js';
@@ -577,14 +634,14 @@ NODE
   if [ "$probe_status" -eq 0 ] && printf '%s\n' "$probe_output" | grep -q '"ok":true'; then
     echo -e "${GREEN}OK${NC}   ${server}: live probe"
     echo "OK   ${server}: live probe" >> "$LOG_FILE"
-    record_live_probe_status "$server" "ok" "success"
+    record_live_probe_status "$server" "ok" "success (timeout ${probe_timeout_sec}s)"
     return 0
   fi
 
   if [ "$probe_status" -eq 124 ]; then
-    echo -e "${YELLOW}WARN${NC} ${server}: live probe timed out (${LIVE_PROBE_TIMEOUT_SEC}s)"
-    echo "WARN ${server}: live probe timed out (${LIVE_PROBE_TIMEOUT_SEC}s)" >> "$LOG_FILE"
-    record_live_probe_status "$server" "warn" "timed out (${LIVE_PROBE_TIMEOUT_SEC}s)"
+    echo -e "${YELLOW}WARN${NC} ${server}: live probe timed out (${probe_timeout_sec}s)"
+    echo "WARN ${server}: live probe timed out (${probe_timeout_sec}s)" >> "$LOG_FILE"
+    record_live_probe_status "$server" "warn" "timed out (${probe_timeout_sec}s)"
     return 1
   fi
 
@@ -691,18 +748,27 @@ elif [ ! -d "$REPO_ROOT/node_modules/@modelcontextprotocol/sdk" ]; then
 else
   if should_probe_server "supabase-db"; then
     SUPABASE_TOKEN=$(get_server_env_value "supabase-db" "SUPABASE_ACCESS_TOKEN")
+    SUPABASE_COMMAND="$(get_server_command "supabase-db")"
+    SUPABASE_ARGS_JSON="$(get_server_args_json "supabase-db")"
+    SUPABASE_TIMEOUT_SEC="$(get_server_probe_timeout_sec "supabase-db")"
     if [ -z "$SUPABASE_TOKEN" ]; then
       echo -e "${YELLOW}WARN${NC} supabase-db: live probe skipped (SUPABASE_ACCESS_TOKEN missing)"
       echo "WARN supabase-db: live probe skipped (SUPABASE_ACCESS_TOKEN missing)" >> "$LOG_FILE"
       record_live_probe_status "supabase-db" "warn" "skipped (SUPABASE_ACCESS_TOKEN missing)"
       LIVE_PROBE_FAIL_COUNT=$((LIVE_PROBE_FAIL_COUNT + 1))
+    elif [ -z "$SUPABASE_COMMAND" ] || [ -z "$SUPABASE_ARGS_JSON" ]; then
+      echo -e "${YELLOW}WARN${NC} supabase-db: live probe skipped (launch config missing)"
+      echo "WARN supabase-db: live probe skipped (launch config missing)" >> "$LOG_FILE"
+      record_live_probe_status "supabase-db" "warn" "skipped (launch config missing)"
+      LIVE_PROBE_FAIL_COUNT=$((LIVE_PROBE_FAIL_COUNT + 1))
     else
       if ! run_live_probe \
         "supabase-db" \
-        "npx" \
-        "[\"-y\",\"@supabase/mcp-server-supabase@0.5.9\"]" \
+        "$SUPABASE_COMMAND" \
+        "$SUPABASE_ARGS_JSON" \
         "list_projects" \
-        "SUPABASE_ACCESS_TOKEN=\"$SUPABASE_TOKEN\" MCP_PROBE_SERVER=\"supabase-db\" MCP_PROBE_COMMAND=\"npx\" MCP_PROBE_ARGS_JSON='[\"-y\",\"@supabase/mcp-server-supabase@0.5.9\"]' MCP_PROBE_CALL_TOOL=\"list_projects\""; then
+        "$SUPABASE_TIMEOUT_SEC" \
+        "SUPABASE_ACCESS_TOKEN=$SUPABASE_TOKEN"; then
         LIVE_PROBE_FAIL_COUNT=$((LIVE_PROBE_FAIL_COUNT + 1))
       fi
     fi
@@ -711,18 +777,29 @@ else
   if should_probe_server "stitch"; then
     STITCH_PROJECT_ID=$(get_server_env_value "stitch" "STITCH_PROJECT_ID")
     STITCH_USE_SYSTEM_GCLOUD=$(get_server_env_value "stitch" "STITCH_USE_SYSTEM_GCLOUD")
+    STITCH_COMMAND="$(get_server_command "stitch")"
+    STITCH_ARGS_JSON="$(get_server_args_json "stitch")"
+    STITCH_TIMEOUT_SEC="$(get_server_probe_timeout_sec "stitch")"
     if [ -z "$STITCH_PROJECT_ID" ] || [ -z "$STITCH_USE_SYSTEM_GCLOUD" ]; then
       echo -e "${YELLOW}WARN${NC} stitch: live probe skipped (stitch env missing)"
       echo "WARN stitch: live probe skipped (stitch env missing)" >> "$LOG_FILE"
       record_live_probe_status "stitch" "warn" "skipped (stitch env missing)"
       LIVE_PROBE_FAIL_COUNT=$((LIVE_PROBE_FAIL_COUNT + 1))
+    elif [ -z "$STITCH_COMMAND" ] || [ -z "$STITCH_ARGS_JSON" ]; then
+      echo -e "${YELLOW}WARN${NC} stitch: live probe skipped (launch config missing)"
+      echo "WARN stitch: live probe skipped (launch config missing)" >> "$LOG_FILE"
+      record_live_probe_status "stitch" "warn" "skipped (launch config missing)"
+      LIVE_PROBE_FAIL_COUNT=$((LIVE_PROBE_FAIL_COUNT + 1))
     else
       if ! run_live_probe \
         "stitch" \
-        "bash" \
-        "[\"-lc\",\"CLOUDSDK_CONFIG=\\\"\\${CLOUDSDK_CONFIG:-\\$HOME/.config/gcloud}\\\" npx -y @_davideast/stitch-mcp proxy\"]" \
+        "$STITCH_COMMAND" \
+        "$STITCH_ARGS_JSON" \
         "list_projects" \
-        "STITCH_PROJECT_ID=\"$STITCH_PROJECT_ID\" STITCH_USE_SYSTEM_GCLOUD=\"$STITCH_USE_SYSTEM_GCLOUD\" CLOUDSDK_CONFIG=\"${CLOUDSDK_CONFIG:-$HOME/.config/gcloud}\" MCP_PROBE_SERVER=\"stitch\" MCP_PROBE_COMMAND=\"bash\" MCP_PROBE_ARGS_JSON='[\"-lc\",\"CLOUDSDK_CONFIG=\\\"\\${CLOUDSDK_CONFIG:-\\$HOME/.config/gcloud}\\\" npx -y @_davideast/stitch-mcp proxy\"]' MCP_PROBE_CALL_TOOL=\"list_projects\""; then
+        "$STITCH_TIMEOUT_SEC" \
+        "STITCH_PROJECT_ID=$STITCH_PROJECT_ID" \
+        "STITCH_USE_SYSTEM_GCLOUD=$STITCH_USE_SYSTEM_GCLOUD" \
+        "CLOUDSDK_CONFIG=${CLOUDSDK_CONFIG:-$HOME/.config/gcloud}"; then
         LIVE_PROBE_FAIL_COUNT=$((LIVE_PROBE_FAIL_COUNT + 1))
       fi
     fi
