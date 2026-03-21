@@ -676,14 +676,20 @@ run_live_probe() {
   local transport_args_json="$4"
   local call_tool="$5"
   local probe_timeout_sec="$6"
-  shift 6
+  local probe_log_path="$7"
+  shift 7
   local probe_env=("$@")
   local probe_output=""
   local probe_status=0
   local probe_label="$server"
+  local detail_suffix=""
 
   if [ -n "$stage" ]; then
     probe_label="${server}/${stage}"
+  fi
+
+  if [ -n "$probe_log_path" ]; then
+    : > "$probe_log_path"
   fi
 
   echo "  - ${probe_label}: probing (timeout ${probe_timeout_sec}s)"
@@ -748,10 +754,19 @@ NODE
     return 0
   fi
 
+  if [ -n "$probe_log_path" ] && [ -s "$probe_log_path" ]; then
+    local relative_probe_log_path="${probe_log_path#$REPO_ROOT/}"
+    detail_suffix="; log=${relative_probe_log_path}"
+  fi
+
   if [ "$probe_status" -eq 124 ]; then
     echo -e "${YELLOW}WARN${NC} ${probe_label}: live probe timed out (${probe_timeout_sec}s)"
     echo "WARN ${probe_label}: live probe timed out (${probe_timeout_sec}s)" >> "$LOG_FILE"
-    record_live_probe_status "$server" "$stage" "warn" "timed out (${probe_timeout_sec}s)"
+    if [ -n "$probe_log_path" ] && [ -s "$probe_log_path" ]; then
+      tail -n 4 "$probe_log_path" | sed 's/^/  - /'
+      tail -n 4 "$probe_log_path" | sed 's/^/  - /' >> "$LOG_FILE"
+    fi
+    record_live_probe_status "$server" "$stage" "warn" "timed out (${probe_timeout_sec}s)${detail_suffix}"
     return 1
   fi
 
@@ -759,7 +774,11 @@ NODE
   echo "WARN ${probe_label}: live probe failed" >> "$LOG_FILE"
   printf '%s\n' "$probe_output" | sed 's/^/  - /' | sed -n '1,4p'
   printf '%s\n' "$probe_output" | sed 's/^/  - /' | sed -n '1,4p' >> "$LOG_FILE"
-  record_live_probe_status "$server" "$stage" "warn" "$(printf '%s\n' "$probe_output" | sed -n '1p')"
+  if [ -n "$probe_log_path" ] && [ -s "$probe_log_path" ]; then
+    tail -n 4 "$probe_log_path" | sed 's/^/  - /'
+    tail -n 4 "$probe_log_path" | sed 's/^/  - /' >> "$LOG_FILE"
+  fi
+  record_live_probe_status "$server" "$stage" "warn" "$(printf '%s\n' "$probe_output" | sed -n '1p')${detail_suffix}"
   return 1
 }
 
@@ -879,6 +898,7 @@ else
         "$SUPABASE_ARGS_JSON" \
         "list_projects" \
         "$SUPABASE_TIMEOUT_SEC" \
+        "" \
         "SUPABASE_ACCESS_TOKEN=$SUPABASE_TOKEN"; then
         LIVE_PROBE_FAIL_COUNT=$((LIVE_PROBE_FAIL_COUNT + 1))
       fi
@@ -891,6 +911,8 @@ else
     STITCH_COMMAND="$(get_server_command "stitch")"
     STITCH_ARGS_JSON="$(get_server_args_json "stitch")"
     STITCH_TIMEOUT_SEC="$(get_server_probe_timeout_sec "stitch")"
+    STITCH_READINESS_LOG_PATH="$LOG_DIR/stitch-startup-readiness-latest.log"
+    STITCH_TOOL_CALL_LOG_PATH="$LOG_DIR/stitch-startup-tool-call-latest.log"
     if [ -z "$STITCH_PROJECT_ID" ] || [ -z "$STITCH_USE_SYSTEM_GCLOUD" ]; then
       echo -e "${YELLOW}WARN${NC} stitch: live probe skipped (stitch env missing)"
       echo "WARN stitch: live probe skipped (stitch env missing)" >> "$LOG_FILE"
@@ -909,8 +931,10 @@ else
         "$STITCH_ARGS_JSON" \
         "" \
         "$STITCH_TIMEOUT_SEC" \
+        "$STITCH_READINESS_LOG_PATH" \
         "STITCH_PROJECT_ID=$STITCH_PROJECT_ID" \
         "STITCH_USE_SYSTEM_GCLOUD=$STITCH_USE_SYSTEM_GCLOUD" \
+        "OPENMANAGER_STITCH_STARTUP_LOG=$STITCH_READINESS_LOG_PATH" \
         "CLOUDSDK_CONFIG=${CLOUDSDK_CONFIG:-$HOME/.config/gcloud}"; then
         LIVE_PROBE_FAIL_COUNT=$((LIVE_PROBE_FAIL_COUNT + 1))
       elif ! run_live_probe \
@@ -920,8 +944,10 @@ else
         "$STITCH_ARGS_JSON" \
         "list_projects" \
         "$STITCH_TIMEOUT_SEC" \
+        "$STITCH_TOOL_CALL_LOG_PATH" \
         "STITCH_PROJECT_ID=$STITCH_PROJECT_ID" \
         "STITCH_USE_SYSTEM_GCLOUD=$STITCH_USE_SYSTEM_GCLOUD" \
+        "OPENMANAGER_STITCH_STARTUP_LOG=$STITCH_TOOL_CALL_LOG_PATH" \
         "CLOUDSDK_CONFIG=${CLOUDSDK_CONFIG:-$HOME/.config/gcloud}"; then
         LIVE_PROBE_FAIL_COUNT=$((LIVE_PROBE_FAIL_COUNT + 1))
       fi
