@@ -126,6 +126,7 @@ bash scripts/mcp/mcp-health-report-codex.sh --no-live-probe --allow-missing-code
 # - probeTargets: command, args, configuredTimeoutSec, timeoutSec, callTool, selected
 # - liveProbes: 실행 결과(status/detail) + probe metadata + stage(readiness/tool-call/full/preflight)
 # - summary-file 사용 시 비정상 live probe는 GitHub job summary의 Live Probe Issues 섹션에 표시
+# - GitHub Actions artifact는 JSON + *-codex.log + stitch-startup-*.log 패턴을 함께 업로드
 
 # Storybook CI 빌드(비대화형, 타임아웃)
 npm run storybook:build:ci

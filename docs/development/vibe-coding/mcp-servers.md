@@ -123,6 +123,7 @@ bash scripts/mcp/mcp-health-report-codex.sh --no-live-probe --allow-missing-code
 - `liveProbes`에는 실행 결과(`status`, `detail`)와 해당 probe metadata가 병합되어 들어갑니다.
 - `liveProbes[*].stage`로 readiness / tool-call / full / preflight 단계를 구분할 수 있습니다.
 - `mcp-health-report-codex.sh --summary-file ...`는 비정상 `liveProbes`를 `Live Probe Issues` 섹션으로 요약해 GitHub Actions job summary에 바로 노출합니다.
+- CI artifact는 `codex-health-latest.json`뿐 아니라 daily `*-codex.log`와 `stitch-startup-*.log`까지 함께 업로드합니다.
 
 ### GitHub MCP 토큰 자동 동기화 (2026-02-17)
 

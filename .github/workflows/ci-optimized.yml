@@ -163,7 +163,10 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: codex-mcp-health-${{ github.run_id }}
-          path: logs/mcp-health/codex-health-latest.json
+          path: |
+            logs/mcp-health/codex-health-latest.json
+            logs/mcp-health/*-codex.log
+            logs/mcp-health/stitch-startup-*.log
           if-no-files-found: error
           retention-days: 3
 
