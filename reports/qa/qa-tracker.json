@@ -2,15 +2,15 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-03-21T11:48:31.418Z"
+    "updatedAt": "2026-03-21T14:51:43.204Z"
   },
   "sequence": {
-    "nextRunNumber": 150
+    "nextRunNumber": 152
   },
   "summary": {
-    "totalRuns": 148,
-    "totalChecks": 1166,
-    "totalPassed": 1115,
+    "totalRuns": 150,
+    "totalChecks": 1174,
+    "totalPassed": 1123,
     "totalFailed": 47,
     "completionRate": 100,
     "completedItems": 228,
@@ -19,8 +19,8 @@
     "wontFixItems": 8,
     "expertDomainsTracked": 6,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260321-0149",
-    "lastRecordedAt": "2026-03-21T11:48:31.418Z"
+    "lastRunId": "QA-20260321-0151",
+    "lastRecordedAt": "2026-03-21T14:51:43.204Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -12050,6 +12050,125 @@
           "type": "playwright-screenshot",
           "label": "qa-20260321-ai-freetext.png",
           "path": ".playwright-mcp/screenshots/qa-20260321-ai-freetext.png"
+        }
+      ],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260321-0150",
+      "recordedAt": "2026-03-21T14:47:41.493Z",
+      "recordedAtKst": "2026-03-21 23:47:41 KST",
+      "title": "CI Manual E2E + QA Script Validation (run #23381598925)",
+      "owner": "claude",
+      "source": "github-actions",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260321-0150.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "72ab0cbc41642c61d994646af3549e8562b84a57"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "coveragePacks": [],
+      "coveredSurfaces": ["qa-scripts", "e2e-manual-workflow", "biome-lint"],
+      "skippedSurfaces": [],
+      "checks": {
+        "total": 3,
+        "passed": 3,
+        "failed": 0
+      },
+      "expertAssessments": [],
+      "usageChecks": [],
+      "artifacts": [],
+      "links": [
+        {
+          "type": "github-actions-artifact",
+          "label": "Playwright Console Logs",
+          "url": "https://github.com/skyasu2/openmanager-ai/actions/runs/23381598925",
+          "note": "artifact=playwright-console; download/open from the workflow run page"
+        },
+        {
+          "type": "github-actions-artifact",
+          "label": "Playwright Screenshots",
+          "url": "https://github.com/skyasu2/openmanager-ai/actions/runs/23381598925",
+          "note": "artifact=playwright-screenshot; download/open from the workflow run page"
+        },
+        {
+          "type": "github-actions-run",
+          "label": "GitHub Actions: Manual E2E #23381598925",
+          "url": "https://github.com/skyasu2/openmanager-ai/actions/runs/23381598925",
+          "note": "branch=main, sha=72ab0cbc41642c61d994646af3549e8562b84a57"
+        }
+      ],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260321-0151",
+      "recordedAt": "2026-03-21T14:51:43.204Z",
+      "recordedAtKst": "2026-03-21 23:51:43 KST",
+      "title": "Vercel Playwright QA - Observability Dashboard Pack (SHA 72ab0bc)",
+      "owner": "claude",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260321-0151.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "72ab0cbc41642c61d994646af3549e8562b84a57"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "coveragePacks": ["observability-pack"],
+      "coveredSurfaces": [
+        "dashboard server-status summary",
+        "system resource panel (CPU/Memory/Disk)",
+        "resource alert top5",
+        "notification badge",
+        "/api/health response"
+      ],
+      "skippedSurfaces": [
+        "Server-Timing header (wont-fix: platform constraint)",
+        "AI supervisor latency header (auth required)"
+      ],
+      "checks": {
+        "total": 5,
+        "passed": 5,
+        "failed": 0
+      },
+      "expertAssessments": [],
+      "usageChecks": [],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "Dashboard observability panel - 15 servers, 1 warning",
+          "path": "artifacts/playwright/observability-dashboard-2026-03-21.png"
+        }
+      ],
+      "links": [
+        {
+          "type": "github-actions-run",
+          "label": "GitHub Actions: Manual E2E #23381598925",
+          "url": "https://github.com/skyasu2/openmanager-ai/actions/runs/23381598925",
+          "note": "branch=main, sha=72ab0cbc41642c61d994646af3549e8562b84a57"
         }
       ],
       "expertCount": 0,

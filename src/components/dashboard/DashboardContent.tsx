@@ -245,7 +245,6 @@ export default memo(function DashboardContent({
             </Suspense>
           </>
         ) : (
-          // biome-ignore lint/a11y/useSemanticElements: <output> is form-associated per HTML spec; role="status" on <div> is the correct WCAG 4.1.3 pattern for non-form status regions
           <div
             role="status"
             className="rounded-xl border border-gray-200 bg-white p-6 shadow-lg"

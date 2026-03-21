@@ -422,7 +422,6 @@ export const AccessibilityProvider: React.FC<AccessibilityProviderProps> = ({
     <AccessibilityContext.Provider value={value}>
       {children}
       {/* 🔊 ARIA Live 영역 - 항상 렌더링 (깜빡임 방지, sr-only로 숨김) */}
-      {/* biome-ignore lint/a11y/useSemanticElements: role="status" is intentional for screen reader announcements */}
       <div
         aria-live={state.ariaLive}
         aria-atomic="true"

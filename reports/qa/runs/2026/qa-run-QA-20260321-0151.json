@@ -1,0 +1,59 @@
+{
+  "runId": "QA-20260321-0151",
+  "recordedAt": "2026-03-21T14:51:43.204Z",
+  "recordedAtKst": "2026-03-21 23:51:43 KST",
+  "runTitle": "Vercel Playwright QA - Observability Dashboard Pack (SHA 72ab0bc)",
+  "owner": "claude",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "72ab0cbc41642c61d994646af3549e8562b84a57"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "coveragePacks": ["observability-pack"],
+  "coveredSurfaces": [
+    "dashboard server-status summary",
+    "system resource panel (CPU/Memory/Disk)",
+    "resource alert top5",
+    "notification badge",
+    "/api/health response"
+  ],
+  "skippedSurfaces": [
+    "Server-Timing header (wont-fix: platform constraint)",
+    "AI supervisor latency header (auth required)"
+  ],
+  "checks": {
+    "total": 5,
+    "passed": 5,
+    "failed": 0
+  },
+  "expertAssessments": [],
+  "usageChecks": [],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "Dashboard observability panel - 15 servers, 1 warning",
+      "path": "artifacts/playwright/observability-dashboard-2026-03-21.png"
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [],
+  "links": [
+    {
+      "type": "github-actions-run",
+      "label": "GitHub Actions: Manual E2E #23381598925",
+      "url": "https://github.com/skyasu2/openmanager-ai/actions/runs/23381598925",
+      "note": "branch=main, sha=72ab0cbc41642c61d994646af3549e8562b84a57"
+    }
+  ]
+}

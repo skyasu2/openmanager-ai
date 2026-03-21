@@ -1,15 +1,15 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-21 20:48:32 KST
+> Generated at: 2026-03-21 23:51:44 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 148 |
-| Total Checks | 1166 |
-| Passed | 1115 |
+| Total Runs | 150 |
+| Total Checks | 1174 |
+| Passed | 1123 |
 | Failed | 47 |
 | Completed Items | 228 |
 | Pending Items | 0 |
@@ -18,11 +18,11 @@
 | Expert Domains Tracked | 6 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Run | QA-20260321-0149 (2026-03-21T11:48:31.418Z) |
+| Last Run | QA-20260321-0151 (2026-03-21T14:51:43.204Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260321-0149 (2026-03-21T11:48:31.418Z)
+Latest run: QA-20260321-0151 (2026-03-21T14:51:43.204Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -32,23 +32,28 @@ Latest run: QA-20260321-0149 (2026-03-21T11:48:31.418Z)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period reviewed after sidebar free-text QA; effectiveCost $15.9423, billedCost $0.0000, no meaningful overage spike. |
+| - | - | - | - | - |
 
 ## Coverage (Latest Run)
 
 - Scope: targeted
 - Release-Facing: no
-- Deployment: dpl_C5RdEaAU2GQd9ucsUhX5RhgB13bA / SHA fd9346ab
-- Coverage Packs: ai-core
-- Covered Surfaces: /login, guest PIN login, system-boot → /dashboard redirect, AI sidebar open, AI sidebar free-text chat send
-- Skipped Surfaces: /, /api/health, /api/version, 404, Reporter flow, Analyst flow, /dashboard/ai-assistant fullscreen, server modal/detail pack, alerts/topology/log explorer pack, security blocked-prompt pack, Langfuse trace visibility
+- Deployment: SHA 72ab0cbc
+- Coverage Packs: observability-pack
+- Covered Surfaces: dashboard server-status summary, system resource panel (CPU/Memory/Disk), resource alert top5, notification badge, /api/health response
+- Skipped Surfaces: Server-Timing header (wont-fix: platform constraint), AI supervisor latency header (auth required)
+
+## Links (Latest Run)
+
+| Type | Label | URL | Note |
+|---|---|---|---|
+| github-actions-run | GitHub Actions: Manual E2E #23381598925 | [link](https://github.com/skyasu2/openmanager-ai/actions/runs/23381598925) | branch=main, sha=72ab0cbc41642c61d994646af3549e8562b84a57 |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-console | qa-20260321-ai-freetext-console-errors.log | `.playwright-mcp/screenshots/qa-20260321-ai-freetext-console-errors.log` | - |
-| playwright-screenshot | qa-20260321-ai-freetext.png | `.playwright-mcp/screenshots/qa-20260321-ai-freetext.png` | - |
+| playwright-screenshot | Dashboard observability panel - 15 servers, 1 warning | `artifacts/playwright/observability-dashboard-2026-03-21.png` | - |
 
 ## Expert Domain Open Gaps
 
@@ -315,6 +320,8 @@ Latest run: QA-20260321-0149 (2026-03-21T11:48:31.418Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260321-0151 | 2026-03-21T14:51:43.204Z | targeted | no | Vercel Playwright QA - Observability Dashboard Pack (SHA 72ab0bc) | 5 | 0 | 0 | 0 | 0 | 0 |
+| QA-20260321-0150 | 2026-03-21T14:47:41.493Z | targeted | no | CI Manual E2E + QA Script Validation (run #23381598925) | 3 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260321-0149 | 2026-03-21T11:48:31.418Z | targeted | no | Vercel Playwright QA - AI Sidebar Free-Text Proof (SHA fd9346ab2) | 5 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260321-0148 | 2026-03-21T11:41:43.931Z | targeted | no | Vercel Playwright QA - Fullscreen AI Workspace Proof (SHA 8a7fe8769) | 6 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260321-0147 | 2026-03-21T11:36:14.761Z | targeted | no | Vercel Playwright QA - AI Sidebar Reporter Analyst Proof (SHA d802241fb) | 7 | 0 | 0 | 0 | 0 | 0 |
@@ -333,6 +340,4 @@ Latest run: QA-20260321-0149 (2026-03-21T11:48:31.418Z)
 | QA-20260320-0133 | 2026-03-19T17:08:28.344Z | legacy | no | Vercel Playwright QA - AI Retention Parity Validation (Chrome Channel) | 2 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260320-0132 | 2026-03-19T16:55:35.018Z | legacy | no | Vercel Playwright QA - AI Retention Parity Validation | 2 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260319-0131 | 2026-03-19T12:56:21.932Z | legacy | no | Vercel Production QA - Core Route and AI Sidebar Broad Validation | 9 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260319-0130 | 2026-03-19T03:58:04.054Z | legacy | no | Vercel Playwright QA - Frontend and AI Assistant Full Validation | 6 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260319-0129 | 2026-03-19T00:13:33.724Z | legacy | no | Vercel Production QA - Core Frontend and AI Sidebar Partial Validation | 5 | 0 | 0 | 0 | 0 | 0 |
 

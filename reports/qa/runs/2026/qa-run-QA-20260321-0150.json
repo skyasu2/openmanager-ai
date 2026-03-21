@@ -1,0 +1,56 @@
+{
+  "runId": "QA-20260321-0150",
+  "recordedAt": "2026-03-21T14:47:41.493Z",
+  "recordedAtKst": "2026-03-21 23:47:41 KST",
+  "runTitle": "CI Manual E2E + QA Script Validation (run #23381598925)",
+  "owner": "claude",
+  "source": "github-actions",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "72ab0cbc41642c61d994646af3549e8562b84a57"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "coveragePacks": [],
+  "coveredSurfaces": ["qa-scripts", "e2e-manual-workflow", "biome-lint"],
+  "skippedSurfaces": [],
+  "checks": {
+    "total": 3,
+    "passed": 3,
+    "failed": 0
+  },
+  "expertAssessments": [],
+  "usageChecks": [],
+  "artifacts": [],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [],
+  "links": [
+    {
+      "type": "github-actions-artifact",
+      "label": "Playwright Console Logs",
+      "url": "https://github.com/skyasu2/openmanager-ai/actions/runs/23381598925",
+      "note": "artifact=playwright-console; download/open from the workflow run page"
+    },
+    {
+      "type": "github-actions-artifact",
+      "label": "Playwright Screenshots",
+      "url": "https://github.com/skyasu2/openmanager-ai/actions/runs/23381598925",
+      "note": "artifact=playwright-screenshot; download/open from the workflow run page"
+    },
+    {
+      "type": "github-actions-run",
+      "label": "GitHub Actions: Manual E2E #23381598925",
+      "url": "https://github.com/skyasu2/openmanager-ai/actions/runs/23381598925",
+      "note": "branch=main, sha=72ab0cbc41642c61d994646af3549e8562b84a57"
+    }
+  ]
+}
