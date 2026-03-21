@@ -1,7 +1,7 @@
 #!/bin/bash
 # Codex MCP Health Check Script
 # 목적: Codex MCP 서버 설정 상태 점검 (설정 파일 기반 SSOT)
-# 사용: ./scripts/mcp/mcp-health-check-codex.sh
+# 사용: ./scripts/mcp/mcp-health-check-codex.sh [--no-live-probe] [--probe <server>]
 
 set -uo pipefail
 
@@ -23,6 +23,56 @@ USAGE_COUNTER="$REPO_ROOT/scripts/mcp/count-codex-mcp-usage.sh"
 EXPECTED_SERVERS=()
 CONFIG_FILE="$REPO_ROOT/.codex/config.toml"
 LIVE_PROBE_TIMEOUT_SEC="${MCP_LIVE_PROBE_TIMEOUT_SEC:-45}"
+RUN_LIVE_PROBE=1
+SELECTED_PROBES=()
+AVAILABLE_LIVE_PROBE_SERVERS=("supabase-db" "stitch")
+
+print_usage() {
+  cat <<EOF
+Usage: bash scripts/mcp/mcp-health-check-codex.sh [options]
+
+Options:
+  --no-live-probe     Skip live MCP tool probes and check config/enabled state only
+  --probe <server>    Run live probe only for the selected server
+  -h, --help          Show this help message
+
+Available live probes:
+  ${AVAILABLE_LIVE_PROBE_SERVERS[*]}
+EOF
+}
+
+parse_args() {
+  while [ "$#" -gt 0 ]; do
+    case "$1" in
+      --no-live-probe)
+        RUN_LIVE_PROBE=0
+        shift
+        ;;
+      --probe)
+        if [ $# -lt 2 ]; then
+          echo -e "${RED}--probe requires a server name${NC}"
+          exit 2
+        fi
+        SELECTED_PROBES+=("$2")
+        shift 2
+        ;;
+      -h|--help)
+        print_usage
+        exit 0
+        ;;
+      *)
+        echo -e "${RED}Unknown option: $1${NC}"
+        print_usage
+        exit 2
+        ;;
+    esac
+  done
+
+  if [ "$RUN_LIVE_PROBE" -eq 0 ] && [ "${#SELECTED_PROBES[@]}" -gt 0 ]; then
+    echo -e "${RED}--no-live-probe and --probe cannot be used together${NC}"
+    exit 2
+  fi
+}
 
 # OPENMANAGER_STORYBOOK_MCP_MODE:
 # - auto (default): Storybook MCP endpoint가 살아있을 때만 expected 대상에 포함
@@ -120,6 +170,51 @@ adjust_expected_servers_for_storybook_mode() {
   echo "  - Storybook MCP expected list excluded (mode: $mode)"
   echo "  - Storybook MCP expected list excluded (mode: $mode)" >> "$LOG_FILE"
 }
+
+array_contains() {
+  local target="$1"
+  shift
+  local item=""
+  for item in "$@"; do
+    if [ "$item" = "$target" ]; then
+      return 0
+    fi
+  done
+  return 1
+}
+
+validate_selected_probes() {
+  local server=""
+
+  if [ "${#SELECTED_PROBES[@]}" -eq 0 ]; then
+    return 0
+  fi
+
+  for server in "${SELECTED_PROBES[@]}"; do
+    if ! array_contains "$server" "${AVAILABLE_LIVE_PROBE_SERVERS[@]}"; then
+      echo -e "${RED}Unsupported live probe target: ${server}${NC}"
+      echo "Supported live probes: ${AVAILABLE_LIVE_PROBE_SERVERS[*]}"
+      exit 2
+    fi
+    if ! has_server "$server"; then
+      echo -e "${RED}Selected live probe server not found in config: ${server}${NC}"
+      exit 2
+    fi
+  done
+}
+
+should_probe_server() {
+  local server="$1"
+  if [ "$RUN_LIVE_PROBE" -ne 1 ]; then
+    return 1
+  fi
+  if [ "${#SELECTED_PROBES[@]}" -eq 0 ]; then
+    return 0
+  fi
+  array_contains "$server" "${SELECTED_PROBES[@]}"
+}
+
+parse_args "$@"
 
 echo -e "${BLUE}Codex MCP Health Check${NC}"
 echo -e "${BLUE}======================${NC}"
@@ -302,6 +397,7 @@ NODE
 
 load_expected_servers
 adjust_expected_servers_for_storybook_mode
+validate_selected_probes
 
 echo -e "${BLUE}Runtime Paths${NC}"
 echo "  - CODEX_HOME: $CODEX_HOME (${OPENMANAGER_CODEX_HOME_SOURCE})"
@@ -377,11 +473,14 @@ echo ""
 echo -e "${BLUE}실동작 프로브:${NC}"
 echo "실동작 프로브:" >> "$LOG_FILE"
 
-if [ ! -d "$REPO_ROOT/node_modules/@modelcontextprotocol/sdk" ]; then
+if [ "$RUN_LIVE_PROBE" -ne 1 ]; then
+  echo "  - skipped (--no-live-probe)"
+  echo "  - skipped (--no-live-probe)" >> "$LOG_FILE"
+elif [ ! -d "$REPO_ROOT/node_modules/@modelcontextprotocol/sdk" ]; then
   echo -e "${YELLOW}WARN${NC} live probe skipped: @modelcontextprotocol/sdk 미설치"
   echo "WARN live probe skipped: @modelcontextprotocol/sdk 미설치" >> "$LOG_FILE"
 else
-  if has_server "supabase-db"; then
+  if should_probe_server "supabase-db"; then
     SUPABASE_TOKEN=$(get_server_env_value "supabase-db" "SUPABASE_ACCESS_TOKEN")
     if [ -z "$SUPABASE_TOKEN" ]; then
       echo -e "${YELLOW}WARN${NC} supabase-db: live probe skipped (SUPABASE_ACCESS_TOKEN missing)"
@@ -399,7 +498,7 @@ else
     fi
   fi
 
-  if has_server "stitch"; then
+  if should_probe_server "stitch"; then
     STITCH_PROJECT_ID=$(get_server_env_value "stitch" "STITCH_PROJECT_ID")
     STITCH_USE_SYSTEM_GCLOUD=$(get_server_env_value "stitch" "STITCH_USE_SYSTEM_GCLOUD")
     if [ -z "$STITCH_PROJECT_ID" ] || [ -z "$STITCH_USE_SYSTEM_GCLOUD" ]; then
@@ -427,7 +526,11 @@ echo -e "${BLUE}요약:${NC}"
 echo "  - 성공: ${SUCCESS_COUNT}/${TOTAL_SERVERS}"
 echo "  - 실패: ${FAIL_COUNT}/${TOTAL_SERVERS}"
 echo "  - 성공률: ${SUCCESS_RATE}%"
-echo "  - 실동작 프로브 실패: ${LIVE_PROBE_FAIL_COUNT}"
+if [ "$RUN_LIVE_PROBE" -eq 1 ]; then
+  echo "  - 실동작 프로브 실패: ${LIVE_PROBE_FAIL_COUNT}"
+else
+  echo "  - 실동작 프로브: skipped"
+fi
 if [ -n "$PERMISSION_WARNINGS" ]; then
   echo "  - 환경 경고: 1 (권한 제한, 비치명)"
 fi
@@ -438,7 +541,11 @@ fi
   echo "  - 성공: ${SUCCESS_COUNT}/${TOTAL_SERVERS}"
   echo "  - 실패: ${FAIL_COUNT}/${TOTAL_SERVERS}"
   echo "  - 성공률: ${SUCCESS_RATE}%"
-  echo "  - 실동작 프로브 실패: ${LIVE_PROBE_FAIL_COUNT}"
+  if [ "$RUN_LIVE_PROBE" -eq 1 ]; then
+    echo "  - 실동작 프로브 실패: ${LIVE_PROBE_FAIL_COUNT}"
+  else
+    echo "  - 실동작 프로브: skipped"
+  fi
   if [ -n "$PERMISSION_WARNINGS" ]; then
     echo "  - 환경 경고: 1 (권한 제한, 비치명)"
   fi
@@ -463,7 +570,7 @@ if [ -x "$USAGE_COUNTER" ]; then
   fi
 fi
 
-if [ "$FAIL_COUNT" -eq 0 ] && [ "$LIVE_PROBE_FAIL_COUNT" -eq 0 ]; then
+if [ "$FAIL_COUNT" -eq 0 ] && { [ "$RUN_LIVE_PROBE" -ne 1 ] || [ "$LIVE_PROBE_FAIL_COUNT" -eq 0 ]; }; then
   exit 0
 fi
 
@@ -472,11 +579,11 @@ if [ "$WARNING_THRESHOLD" -lt 0 ]; then
   WARNING_THRESHOLD=0
 fi
 
-if [ "$FAIL_COUNT" -eq 0 ] && [ "$LIVE_PROBE_FAIL_COUNT" -gt 0 ]; then
+if [ "$RUN_LIVE_PROBE" -eq 1 ] && [ "$FAIL_COUNT" -eq 0 ] && [ "$LIVE_PROBE_FAIL_COUNT" -gt 0 ]; then
   exit 1
 fi
 
-if [ "$SUCCESS_COUNT" -ge "$WARNING_THRESHOLD" ] && [ "$LIVE_PROBE_FAIL_COUNT" -eq 0 ]; then
+if [ "$SUCCESS_COUNT" -ge "$WARNING_THRESHOLD" ] && { [ "$RUN_LIVE_PROBE" -ne 1 ] || [ "$LIVE_PROBE_FAIL_COUNT" -eq 0 ]; }; then
   exit 1
 fi
 

@@ -15,14 +15,12 @@ OPENMANAGER_GCLOUD_CONFIG_SOURCE="unresolved"
 can_write_dir() {
   local dir="$1"
   mkdir -p "$dir" 2>/dev/null || return 1
-  local probe_file="$dir/.openmanager-write-test-$$"
+  local probe_file=""
 
-  if (: >"$probe_file") >/dev/null 2>&1; then
-    rm -f "$probe_file" >/dev/null 2>&1 || true
-    return 0
-  fi
+  probe_file="$(mktemp "$dir/.openmanager-write-test.XXXXXX" 2>/dev/null)" || return 1
+  rm -f "$probe_file" >/dev/null 2>&1 || true
+  return 0
 
-  return 1
 }
 
 require_config_file() {

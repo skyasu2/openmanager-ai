@@ -84,6 +84,7 @@
 - 설정 변경 후 최소 점검:
   - `bash scripts/mcp/codex-local.sh mcp list`
   - `bash scripts/mcp/mcp-health-check-codex.sh`
+  - 빠른 설정 점검만 필요하면 `bash scripts/mcp/mcp-health-check-codex.sh --no-live-probe`
 - 실제 동작 검증은 서버별 도구 1회 이상 호출로 확인합니다.
 
 ### 현재 Codex MCP 구성 요약 (2026-03-19)
@@ -109,6 +110,8 @@
 ```bash
 bash scripts/mcp/codex-local.sh mcp list
 bash scripts/mcp/mcp-health-check-codex.sh
+bash scripts/mcp/mcp-health-check-codex.sh --no-live-probe
+bash scripts/mcp/mcp-health-check-codex.sh --probe supabase-db
 ```
 1. 서버별 최소 1회 도구 호출로 실동작을 확인합니다.
 
