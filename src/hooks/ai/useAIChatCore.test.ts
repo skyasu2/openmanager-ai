@@ -1,0 +1,228 @@
+/**
+ * @vitest-environment jsdom
+ */
+import type { UIMessage } from 'ai';
+import { act, renderHook, waitFor } from '@testing-library/react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+
+const mocks = vi.hoisted(() => {
+  const handleFeedback = vi.fn(async () => true);
+  const clearHistory = vi.fn();
+  const addToQueue = vi.fn();
+  const removeQueuedQuery = vi.fn();
+  const popAndSendQueue = vi.fn();
+  const clearQueue = vi.fn();
+  const sendQuery = vi.fn();
+  const executeQuery = vi.fn();
+  const stop = vi.fn();
+  const cancel = vi.fn();
+  const reset = vi.fn();
+  const clearError = vi.fn();
+  const triggerAIWarmup = vi.fn(async () => undefined);
+  const hybridSetMessagesSpy = vi.fn();
+
+  let latestHybridOptions: Record<string, unknown> | null = null;
+  let seedHybridMessages:
+    | ((next: UIMessage[] | ((prev: UIMessage[]) => UIMessage[])) => void)
+    | null = null;
+
+  return {
+    handleFeedback,
+    clearHistory,
+    addToQueue,
+    removeQueuedQuery,
+    popAndSendQueue,
+    clearQueue,
+    sendQuery,
+    executeQuery,
+    stop,
+    cancel,
+    reset,
+    clearError,
+    triggerAIWarmup,
+    hybridSetMessagesSpy,
+    getLatestHybridOptions: () => latestHybridOptions,
+    setLatestHybridOptions: (options: Record<string, unknown>) => {
+      latestHybridOptions = options;
+    },
+    setSeedHybridMessages: (
+      setter: (next: UIMessage[] | ((prev: UIMessage[]) => UIMessage[])) => void
+    ) => {
+      seedHybridMessages = setter;
+    },
+    getSeedHybridMessages: () => seedHybridMessages,
+  };
+});
+
+vi.mock('@/stores/useAISidebarStore', () => ({
+  useAISidebarStore: (
+    selector: (state: { webSearchEnabled: boolean; ragEnabled: boolean }) => unknown
+  ) =>
+    selector({
+      webSearchEnabled: false,
+      ragEnabled: false,
+    }),
+}));
+
+vi.mock('@/utils/ai-warmup', () => ({
+  triggerAIWarmup: mocks.triggerAIWarmup,
+}));
+
+vi.mock('./core/useChatFeedback', () => ({
+  useChatFeedback: () => ({
+    handleFeedback: mocks.handleFeedback,
+  }),
+}));
+
+vi.mock('./core/useChatHistory', () => ({
+  useChatHistory: () => ({
+    clearHistory: mocks.clearHistory,
+  }),
+}));
+
+vi.mock('./core/useChatQueue', () => ({
+  useChatQueue: () => ({
+    queuedQueries: [],
+    addToQueue: mocks.addToQueue,
+    removeQueuedQuery: mocks.removeQueuedQuery,
+    popAndSendQueue: mocks.popAndSendQueue,
+    clearQueue: mocks.clearQueue,
+    sendQueryRef: { current: null },
+  }),
+}));
+
+vi.mock('./core/useChatSession', () => ({
+  useChatSession: () => ({
+    sessionId: 'session-test',
+    sessionIdRef: { current: 'session-test' },
+    refreshSessionId: vi.fn(),
+    setSessionId: vi.fn(),
+  }),
+}));
+
+vi.mock('./core/useChatSessionState', () => ({
+  useChatSessionState: () => ({
+    count: 0,
+    remaining: 50,
+    isWarning: false,
+    isLimitReached: false,
+  }),
+}));
+
+vi.mock('@/hooks/ai/useHybridAIQuery', async () => {
+  const React = await import('react');
+
+  return {
+    useHybridAIQuery: (options: Record<string, unknown> = {}) => {
+      mocks.setLatestHybridOptions(options);
+      const [messages, setMessagesState] = React.useState<UIMessage[]>([]);
+
+      React.useEffect(() => {
+        mocks.setSeedHybridMessages((next) => {
+          setMessagesState((prev) =>
+            typeof next === 'function' ? next(prev) : next
+          );
+        });
+      }, []);
+
+      const setMessages = (
+        next: UIMessage[] | ((prev: UIMessage[]) => UIMessage[])
+      ) => {
+        mocks.hybridSetMessagesSpy(next);
+        setMessagesState((prev) =>
+          typeof next === 'function' ? next(prev) : next
+        );
+      };
+
+      return {
+        sendQuery: mocks.sendQuery,
+        executeQuery: mocks.executeQuery,
+        messages,
+        setMessages,
+        state: {
+          progress: null,
+          jobId: null,
+          error: null,
+          clarification: null,
+          warmingUp: false,
+          estimatedWaitSeconds: 0,
+        },
+        isLoading: false,
+        stop: mocks.stop,
+        cancel: mocks.cancel,
+        reset: mocks.reset,
+        clearError: mocks.clearError,
+        currentMode: 'streaming' as const,
+        selectClarification: vi.fn(),
+        submitCustomClarification: vi.fn(),
+        skipClarification: vi.fn(),
+        dismissClarification: vi.fn(),
+      };
+    },
+  };
+});
+
+import { useAIChatCore } from './useAIChatCore';
+
+describe('useAIChatCore', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('stale onData callback also injects traceId into the latest assistant message', async () => {
+    const traceId = '1234567890abcdef1234567890abcdef';
+    const { result } = renderHook(() => useAIChatCore());
+
+    const initialOnData = mocks.getLatestHybridOptions()?.onData as
+      | ((part: { type: string; data?: unknown }) => void)
+      | undefined;
+
+    expect(typeof initialOnData).toBe('function');
+    expect(mocks.getSeedHybridMessages()).toBeTypeOf('function');
+
+    await act(async () => {
+      mocks.getSeedHybridMessages()?.([
+        {
+          id: 'user-1',
+          role: 'user',
+          parts: [{ type: 'text', text: 'CPU 상태 알려줘' }],
+        },
+        {
+          id: 'assistant-1',
+          role: 'assistant',
+          parts: [{ type: 'text', text: '확인 중입니다.' }],
+        },
+      ]);
+    });
+
+    await waitFor(() => {
+      expect(result.current.messages).toHaveLength(2);
+    });
+
+    act(() => {
+      initialOnData?.({
+        type: 'data-done',
+        data: {
+          metadata: {
+            traceId,
+          },
+        },
+      });
+    });
+
+    await waitFor(() => {
+      expect(result.current.messages[1]?.metadata?.traceId).toBe(traceId);
+    });
+
+    const lastSetMessagesArg = mocks.hybridSetMessagesSpy.mock.calls.at(-1)?.[0];
+    expect(Array.isArray(lastSetMessagesArg)).toBe(true);
+
+    const assistantMessage = (lastSetMessagesArg as UIMessage[]).find(
+      (message) => message.id === 'assistant-1'
+    );
+
+    expect(
+      (assistantMessage?.metadata as { traceId?: string } | undefined)?.traceId
+    ).toBe(traceId);
+  });
+});

@@ -253,11 +253,16 @@ export function useAIChatCore(
           );
         },
         setStreamRagSources,
-        getMessages: () => messages,
+        getMessages: () => messagesRef.current,
         setMessages,
       });
     },
   });
+
+  const messagesRef = useRef(messages);
+  useEffect(() => {
+    messagesRef.current = messages;
+  }, [messages]);
 
   useEffect(() => {
     sendQueryRef.current = sendQuery;
