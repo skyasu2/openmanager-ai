@@ -5,19 +5,14 @@
 import { NextRequest } from 'next/server';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-const {
-  mockSupabaseFrom,
-  mockInsert,
-  mockInfo,
-  mockWarn,
-  mockError,
-} = vi.hoisted(() => ({
-  mockSupabaseFrom: vi.fn(),
-  mockInsert: vi.fn(),
-  mockInfo: vi.fn(),
-  mockWarn: vi.fn(),
-  mockError: vi.fn(),
-}));
+const { mockSupabaseFrom, mockInsert, mockInfo, mockWarn, mockError } =
+  vi.hoisted(() => ({
+    mockSupabaseFrom: vi.fn(),
+    mockInsert: vi.fn(),
+    mockInfo: vi.fn(),
+    mockWarn: vi.fn(),
+    mockError: vi.fn(),
+  }));
 
 vi.mock('@/lib/auth/api-auth', () => ({
   withAuth: (handler: unknown) => handler,
@@ -36,9 +31,7 @@ vi.mock('@/lib/security/rate-limiter', () => ({
 
 vi.mock('@/utils/security/csrf', () => ({
   withCSRFProtection:
-    (
-      handler: (request: NextRequest) => Promise<Response>
-    ) =>
+    (handler: (request: NextRequest) => Promise<Response>) =>
     (request: NextRequest) =>
       handler(request),
 }));
