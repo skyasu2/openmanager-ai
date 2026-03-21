@@ -25,6 +25,7 @@ reports/qa/
 - `source`가 `playwright`, `playwright-cli`, `playwright-mcp` 계열이면 `qa:record`는 최근 Playwright artifact를 자동 수집한다.
 - 기본 디렉토리나 시간 창을 바꾸려면 `playwrightArtifacts.reportDir/resultsDir/screenshotsDir/recentMinutes/pathIncludes`를 입력 JSON에 명시한다.
 - 수동 MCP QA는 shared `.playwright-mcp/screenshots`를 쓰므로, run별 파일 prefix를 붙이고 `pathIncludes`로 함께 좁혀 fresh artifact only 원칙을 지킨다.
+- GitHub Actions `workflow_dispatch`로 실행한 `E2E Critical`은 성공해도 `playwright-report-${run_id}`, `playwright-results-${run_id}` artifact를 3일간 보존하므로, CI 기반 QA 증거 링크로 재사용할 수 있다.
 - Vercel production의 `broad`/`release-gate` 또는 `releaseFacing: true` run이면 `environment.deploymentId`, `environment.commitSha`를 함께 기록한다.
 - `qa:record`는 누락 시 현재 Git의 `branch`/`HEAD SHA`를 자동 보강하고, `VERCEL_*` system env가 있으면 `deploymentId`/`deploymentUrl`/`url`도 함께 보강한다.
 
