@@ -21,8 +21,8 @@ RUNTIME_ENV_RESOLVER="$REPO_ROOT/scripts/mcp/resolve-runtime-env.sh"
 GITHUB_MCP_AUTH_SYNC="$REPO_ROOT/scripts/mcp/sync-github-mcp-auth.sh"
 USAGE_COUNTER="$REPO_ROOT/scripts/mcp/count-codex-mcp-usage.sh"
 EXPECTED_SERVERS=()
-CONFIG_FILE=""
-LIVE_PROBE_TIMEOUT_SEC="${MCP_LIVE_PROBE_TIMEOUT_SEC:-120}"
+CONFIG_FILE="$REPO_ROOT/.codex/config.toml"
+LIVE_PROBE_TIMEOUT_SEC="${MCP_LIVE_PROBE_TIMEOUT_SEC:-45}"
 
 # OPENMANAGER_STORYBOOK_MCP_MODE:
 # - auto (default): Storybook MCP endpoint가 살아있을 때만 expected 대상에 포함
@@ -145,17 +145,19 @@ if [ ! -f "$RUNTIME_ENV_RESOLVER" ]; then
   exit 2
 fi
 
-# shellcheck source=/dev/null
-: "${OPENMANAGER_CODEX_HOME_MODE:=project}"
+# project .codex/config.toml is the SSOT, but the diagnostic runtime path can
+# fall back to a writable home CODEX_HOME when the project directory is not
+# writable in the current shell environment.
+: "${OPENMANAGER_CODEX_HOME_MODE:=auto}"
 export OPENMANAGER_CODEX_HOME_MODE
+# shellcheck source=/dev/null
 source "$RUNTIME_ENV_RESOLVER"
 
 if [ -x "$GITHUB_MCP_AUTH_SYNC" ]; then
-  "$GITHUB_MCP_AUTH_SYNC" || true
+  CODEX_HOME="$REPO_ROOT/.codex" "$GITHUB_MCP_AUTH_SYNC" || true
 fi
 
 load_expected_servers() {
-  CONFIG_FILE="$CODEX_HOME/config.toml"
   if [ ! -f "$CONFIG_FILE" ]; then
     echo -e "${RED}Codex 설정 파일 누락: $CONFIG_FILE${NC}"
     echo "Codex 설정 파일 누락: $CONFIG_FILE" >> "$LOG_FILE"
@@ -227,7 +229,12 @@ run_live_probe() {
   local _call_tool="$4"
   local env_prefix="$5"
   local probe_output=""
+  local probe_status=0
 
+  echo "  - ${server}: probing (timeout ${LIVE_PROBE_TIMEOUT_SEC}s)"
+  echo "  - ${server}: probing (timeout ${LIVE_PROBE_TIMEOUT_SEC}s)" >> "$LOG_FILE"
+
+  set +e
   probe_output=$(eval "$env_prefix" timeout "$LIVE_PROBE_TIMEOUT_SEC" node --input-type=module <<'NODE' 2>&1
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js';
@@ -271,10 +278,19 @@ try {
 }
 NODE
 )
-  if printf '%s\n' "$probe_output" | grep -q '"ok":true'; then
+  probe_status=$?
+  set -e
+
+  if [ "$probe_status" -eq 0 ] && printf '%s\n' "$probe_output" | grep -q '"ok":true'; then
     echo -e "${GREEN}OK${NC}   ${server}: live probe"
     echo "OK   ${server}: live probe" >> "$LOG_FILE"
     return 0
+  fi
+
+  if [ "$probe_status" -eq 124 ]; then
+    echo -e "${YELLOW}WARN${NC} ${server}: live probe timed out (${LIVE_PROBE_TIMEOUT_SEC}s)"
+    echo "WARN ${server}: live probe timed out (${LIVE_PROBE_TIMEOUT_SEC}s)" >> "$LOG_FILE"
+    return 1
   fi
 
   echo -e "${YELLOW}WARN${NC} ${server}: live probe failed"
@@ -365,19 +381,19 @@ if [ ! -d "$REPO_ROOT/node_modules/@modelcontextprotocol/sdk" ]; then
   echo -e "${YELLOW}WARN${NC} live probe skipped: @modelcontextprotocol/sdk 미설치"
   echo "WARN live probe skipped: @modelcontextprotocol/sdk 미설치" >> "$LOG_FILE"
 else
-  if has_server "supabase"; then
-    SUPABASE_TOKEN=$(get_server_env_value "supabase" "SUPABASE_ACCESS_TOKEN")
+  if has_server "supabase-db"; then
+    SUPABASE_TOKEN=$(get_server_env_value "supabase-db" "SUPABASE_ACCESS_TOKEN")
     if [ -z "$SUPABASE_TOKEN" ]; then
-      echo -e "${YELLOW}WARN${NC} supabase: live probe skipped (SUPABASE_ACCESS_TOKEN missing)"
-      echo "WARN supabase: live probe skipped (SUPABASE_ACCESS_TOKEN missing)" >> "$LOG_FILE"
+      echo -e "${YELLOW}WARN${NC} supabase-db: live probe skipped (SUPABASE_ACCESS_TOKEN missing)"
+      echo "WARN supabase-db: live probe skipped (SUPABASE_ACCESS_TOKEN missing)" >> "$LOG_FILE"
       LIVE_PROBE_FAIL_COUNT=$((LIVE_PROBE_FAIL_COUNT + 1))
     else
       if ! run_live_probe \
-        "supabase" \
+        "supabase-db" \
         "npx" \
         "[\"-y\",\"@supabase/mcp-server-supabase@0.5.9\"]" \
         "list_projects" \
-        "SUPABASE_ACCESS_TOKEN=\"$SUPABASE_TOKEN\" MCP_PROBE_SERVER=\"supabase\" MCP_PROBE_COMMAND=\"npx\" MCP_PROBE_ARGS_JSON='[\"-y\",\"@supabase/mcp-server-supabase@0.5.9\"]' MCP_PROBE_CALL_TOOL=\"list_projects\""; then
+        "SUPABASE_ACCESS_TOKEN=\"$SUPABASE_TOKEN\" MCP_PROBE_SERVER=\"supabase-db\" MCP_PROBE_COMMAND=\"npx\" MCP_PROBE_ARGS_JSON='[\"-y\",\"@supabase/mcp-server-supabase@0.5.9\"]' MCP_PROBE_CALL_TOOL=\"list_projects\""; then
         LIVE_PROBE_FAIL_COUNT=$((LIVE_PROBE_FAIL_COUNT + 1))
       fi
     fi
