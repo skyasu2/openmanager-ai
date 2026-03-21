@@ -2,25 +2,25 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-03-21T16:33:49.267Z"
+    "updatedAt": "2026-03-21T17:32:57.012Z"
   },
   "sequence": {
-    "nextRunNumber": 155
+    "nextRunNumber": 156
   },
   "summary": {
-    "totalRuns": 153,
-    "totalChecks": 1188,
-    "totalPassed": 1137,
+    "totalRuns": 154,
+    "totalChecks": 1193,
+    "totalPassed": 1142,
     "totalFailed": 47,
     "completionRate": 100,
-    "completedItems": 228,
+    "completedItems": 229,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 8,
     "expertDomainsTracked": 6,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260322-0154",
-    "lastRecordedAt": "2026-03-21T16:33:49.267Z"
+    "lastRunId": "QA-20260322-0155",
+    "lastRecordedAt": "2026-03-21T17:32:57.012Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -5375,6 +5375,30 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-03-20T12:57:48.587Z"
+    },
+    "negative-feedback-trace-preserved": {
+      "id": "negative-feedback-trace-preserved",
+      "title": "Negative feedback traceId preserved through feedback submission",
+      "priority": "P0",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260322-0155",
+      "firstSeenAt": "2026-03-21T17:32:57.012Z",
+      "lastSeenRunId": "QA-20260322-0155",
+      "lastSeenAt": "2026-03-21T17:32:57.012Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "Production feedback POST body now contains traceId 3bcee9e677877ddd61faed5543c577ad and returns langfuseStatus=success.",
+      "lastNote": "",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-03-21T17:32:57.012Z"
     }
   },
   "runs": [
@@ -12433,6 +12457,110 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260322-0155",
+      "recordedAt": "2026-03-21T17:32:57.012Z",
+      "recordedAtKst": "2026-03-22 02:32:57 KST",
+      "title": "Production AI Negative Feedback Trace E2E - TraceId Preserved + Feedback Success",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260322-0155.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_5AgRNkPedhToqvgeh8bwzWowB7am",
+        "deploymentUrl": "https://openmanager-blb4pmloa-skyasus-projects.vercel.app",
+        "commitSha": "46a27fef80264e5ac990e9630848c4865c62adf1"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "coveragePacks": ["ai-core", "observability-pack"],
+      "coveredSurfaces": [
+        "guest PIN login",
+        "system-boot -> /dashboard redirect",
+        "AI sidebar free-text chat send",
+        "AI feedback negative button",
+        "/api/ai/feedback proxy with traceId + langfuseStatus=success"
+      ],
+      "skippedSurfaces": [
+        "Cloud Run /monitoring/traces?q=<negative feedback traceId> exact match (sampling 10% caused same-run miss)",
+        "fullscreen AI assistant",
+        "Langfuse direct traceUrl/htmlPath deep link"
+      ],
+      "checks": {
+        "total": 5,
+        "passed": 5,
+        "failed": 0
+      },
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Production AI sidebar free-text query 이후 negative feedback click까지 수행했고 브라우저 캡처 기준 feedback POST body에 32-hex traceId가 포함되며 응답 langfuseStatus=success를 확인했다.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "observability-monitoring",
+          "domainName": "IT Monitoring & Observability SME",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "동일 traceId로 Cloud Run /monitoring/traces?q=<traceId>를 즉시 및 25초 후 재조회했지만 count=0이었다. 이는 현재 sampleRate 10% 특성상 same-run correlation이 비결정적이라는 기존 운영 제약과 일치한다.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "",
+          "summary": "effectiveCost $15.9423 / billedCost $0.0000",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "feedback-negative-trace-2026-03-22.png",
+          "path": "artifacts/playwright/feedback-negative-trace-2026-03-22.png"
+        },
+        {
+          "type": "playwright-console",
+          "label": "feedback-negative-trace-2026-03-22-console.log",
+          "path": "artifacts/playwright/feedback-negative-trace-2026-03-22-console.log"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "qa-20260322-feedback-trace-success.png",
+          "path": ".playwright-mcp/screenshots/qa-20260322-feedback-trace-success.png"
+        }
+      ],
+      "links": [
+        {
+          "type": "monitoring",
+          "label": "Cloud Run monitoring trace lookup for negative feedback traceId",
+          "url": "https://ai-engine-490817238363.asia-northeast1.run.app/monitoring/traces?q=3bcee9e677877ddd61faed5543c577ad&limit=5&includeAuxiliary=true"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Production deployment dpl_5AgRNkPedhToqvgeh8bwzWowB7am",
+          "url": "https://openmanager-blb4pmloa-skyasus-projects.vercel.app/"
+        }
+      ],
+      "expertCount": 2,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -12441,16 +12569,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 96,
-      "appropriateCount": 92,
+      "seenCount": 97,
+      "appropriateCount": 93,
       "partialCount": 4,
       "inappropriateCount": 0,
       "improvementNeededCount": 12,
-      "lastRunId": "QA-20260322-0153",
-      "lastSeenAt": "2026-03-21T16:10:40.348Z",
+      "lastRunId": "QA-20260322-0155",
+      "lastSeenAt": "2026-03-21T17:32:57.012Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Production AI sidebar free-text query 이후 실제 feedback click까지 수행했고 feedback API body에 traceId가 포함되는 것을 브라우저에서 직접 캡처했다.",
+      "lastRationale": "Production AI sidebar free-text query 이후 negative feedback click까지 수행했고 브라우저 캡처 기준 feedback POST body에 32-hex traceId가 포함되며 응답 langfuseStatus=success를 확인했다.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -12458,16 +12586,16 @@
       "domainName": "IT Monitoring & Observability SME",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 62,
-      "appropriateCount": 39,
+      "seenCount": 63,
+      "appropriateCount": 40,
       "partialCount": 23,
       "inappropriateCount": 0,
       "improvementNeededCount": 23,
-      "lastRunId": "QA-20260322-0154",
-      "lastSeenAt": "2026-03-21T16:33:49.267Z",
+      "lastRunId": "QA-20260322-0155",
+      "lastSeenAt": "2026-03-21T17:32:57.012Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Stale Cloud Run revision ai-engine-00259-fpw(version=1e6aa6dc2, 2026-03-17)을 ai-engine-00260-qn8(version=1cd337067)로 교체한 뒤, 동일 traceId 조회에서 htmlPath, traceUrl, apiUrl가 모두 복구됨을 직접 확인했다.",
+      "lastRationale": "동일 traceId로 Cloud Run /monitoring/traces?q=<traceId>를 즉시 및 25초 후 재조회했지만 count=0이었다. 이는 현재 sampleRate 10% 특성상 same-run correlation이 비결정적이라는 기존 운영 제약과 일치한다.",
       "lastNextAction": ""
     },
     "ai-security-reliability": {

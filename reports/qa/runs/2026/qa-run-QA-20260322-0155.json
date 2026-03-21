@@ -1,0 +1,120 @@
+{
+  "runId": "QA-20260322-0155",
+  "recordedAt": "2026-03-21T17:32:57.012Z",
+  "recordedAtKst": "2026-03-22 02:32:57 KST",
+  "runTitle": "Production AI Negative Feedback Trace E2E - TraceId Preserved + Feedback Success",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_5AgRNkPedhToqvgeh8bwzWowB7am",
+    "deploymentUrl": "https://openmanager-blb4pmloa-skyasus-projects.vercel.app",
+    "commitSha": "46a27fef80264e5ac990e9630848c4865c62adf1"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "coveragePacks": ["ai-core", "observability-pack"],
+  "coveredSurfaces": [
+    "guest PIN login",
+    "system-boot -> /dashboard redirect",
+    "AI sidebar free-text chat send",
+    "AI feedback negative button",
+    "/api/ai/feedback proxy with traceId + langfuseStatus=success"
+  ],
+  "skippedSurfaces": [
+    "Cloud Run /monitoring/traces?q=<negative feedback traceId> exact match (sampling 10% caused same-run miss)",
+    "fullscreen AI assistant",
+    "Langfuse direct traceUrl/htmlPath deep link"
+  ],
+  "checks": {
+    "total": 5,
+    "passed": 5,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Production AI sidebar free-text query 이후 negative feedback click까지 수행했고 브라우저 캡처 기준 feedback POST body에 32-hex traceId가 포함되며 응답 langfuseStatus=success를 확인했다.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "동일 traceId로 Cloud Run /monitoring/traces?q=<traceId>를 즉시 및 25초 후 재조회했지만 count=0이었다. 이는 현재 sampleRate 10% 특성상 same-run correlation이 비결정적이라는 기존 운영 제약과 일치한다.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "",
+      "summary": "effectiveCost $15.9423 / billedCost $0.0000",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "feedback-negative-trace-2026-03-22.png",
+      "path": "artifacts/playwright/feedback-negative-trace-2026-03-22.png"
+    },
+    {
+      "type": "playwright-console",
+      "label": "feedback-negative-trace-2026-03-22-console.log",
+      "path": "artifacts/playwright/feedback-negative-trace-2026-03-22-console.log"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "qa-20260322-feedback-trace-success.png",
+      "path": ".playwright-mcp/screenshots/qa-20260322-feedback-trace-success.png"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "negative-feedback-trace-preserved",
+      "title": "Negative feedback traceId preserved through feedback submission",
+      "priority": "P0",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "Production feedback POST body now contains traceId 3bcee9e677877ddd61faed5543c577ad and returns langfuseStatus=success.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Browser-captured POST /api/ai/feedback body included traceId 3bcee9e677877ddd61faed5543c577ad for negative feedback and returned langfuseStatus=success.",
+    "Cloud Run /monitoring/traces?q=3bcee9e677877ddd61faed5543c577ad&limit=5&includeAuxiliary=true returned count=0 both immediately and after ~25 seconds.",
+    "This run confirms feedback trace preservation and Langfuse scoring recovery for the negative path, but does not claim same-run monitoring correlation because sampling remains non-deterministic."
+  ],
+  "links": [
+    {
+      "type": "monitoring",
+      "label": "Cloud Run monitoring trace lookup for negative feedback traceId",
+      "url": "https://ai-engine-490817238363.asia-northeast1.run.app/monitoring/traces?q=3bcee9e677877ddd61faed5543c577ad&limit=5&includeAuxiliary=true"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Production deployment dpl_5AgRNkPedhToqvgeh8bwzWowB7am",
+      "url": "https://openmanager-blb4pmloa-skyasus-projects.vercel.app/"
+    }
+  ]
+}
