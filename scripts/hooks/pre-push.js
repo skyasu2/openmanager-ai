@@ -16,9 +16,12 @@ const isWSL = !isWindows && fs.existsSync('/proc/version') &&
   fs.readFileSync('/proc/version', 'utf8').toLowerCase().includes('microsoft');
 const { filterTypeCheckRelevantFiles } = require('../dev/typecheck-scope');
 const npmCmd = isWindows ? 'npm.cmd' : 'npm';
+const npxCmd = isWindows ? 'npx.cmd' : 'npx';
 const gitCmd = isWindows ? 'git.exe' : 'git';
 const cwd = process.cwd();
 const isWindowsFS = cwd.startsWith('/mnt/');
+const CLOUD_RUN_ROOT = 'cloud-run/ai-engine';
+const cloudRunCwd = path.join(cwd, CLOUD_RUN_ROOT);
 
 // Environment flags
 // 🎯 2025 Best Practice: Pre-push는 빠르게, Full Build는 CI/Vercel에서
@@ -102,15 +105,29 @@ function loadDomTestManifest() {
 
 const DOM_TEST_MANIFEST = loadDomTestManifest();
 
-function runNpm(args, envOverrides = null) {
-  const result = spawnSync(npmCmd, args, {
+function runCommand(command, args, options = {}) {
+  const result = spawnSync(command, args, {
     encoding: 'utf8',
     stdio: 'inherit',
-    cwd,
-    shell: isWindows,
-    env: envOverrides || process.env,
+    cwd: options.cwd || cwd,
+    shell: options.shell ?? isWindows,
+    env: options.env || process.env,
   });
   return result.status === 0;
+}
+
+function runNpm(args, envOverrides = null, runCwd = cwd) {
+  return runCommand(npmCmd, args, {
+    cwd: runCwd,
+    env: envOverrides || process.env,
+  });
+}
+
+function runNpx(args, runCwd = cwd, envOverrides = null) {
+  return runCommand(npxCmd, args, {
+    cwd: runCwd,
+    env: envOverrides || process.env,
+  });
 }
 
 function runGit(args) {
@@ -160,6 +177,33 @@ function isPlaywrightTestFile(filePath) {
 
 function isJavaScriptSourceFile(filePath) {
   return /\.(js|jsx|ts|tsx)$/u.test(normalizeFilePath(filePath));
+}
+
+function isCloudRunFile(filePath) {
+  return normalizeFilePath(filePath).startsWith(`${CLOUD_RUN_ROOT}/`);
+}
+
+function isCloudRunVitestTestFile(filePath) {
+  const normalized = normalizeFilePath(filePath);
+  return isCloudRunFile(normalized) && isVitestTestFile(normalized);
+}
+
+function isCloudRunRelatedSourceFile(filePath) {
+  const normalized = normalizeFilePath(filePath);
+  if (!normalized.startsWith(`${CLOUD_RUN_ROOT}/src/`)) return false;
+  if (!isJavaScriptSourceFile(normalized)) return false;
+  return !isVitestTestFile(normalized);
+}
+
+function isCloudRunTypeCheckRelevantFile(filePath) {
+  const normalized = normalizeFilePath(filePath);
+  if (!normalized.startsWith(`${CLOUD_RUN_ROOT}/src/`)) return false;
+  if (!/\.(ts|tsx)$/u.test(normalized)) return false;
+  return !isVitestTestFile(normalized);
+}
+
+function toCloudRunRelativePath(filePath) {
+  return normalizeFilePath(filePath).replace(`${CLOUD_RUN_ROOT}/`, '');
 }
 
 function isDomTestFile(filePath) {
@@ -619,8 +663,22 @@ function classifyChangedTestRun(changedFilesResult) {
     isPlaywrightTestFile(filePath)
   );
   const playwrightTestFileSet = new Set(playwrightTestFiles);
-  const remainingFiles = afterAiWorkspaceQuickFiles.filter(
+  const afterPlaywrightTestFiles = afterAiWorkspaceQuickFiles.filter(
     (filePath) => !playwrightTestFileSet.has(filePath)
+  );
+  const cloudRunTestFiles = afterPlaywrightTestFiles.filter((filePath) =>
+    isCloudRunVitestTestFile(filePath)
+  );
+  const cloudRunTestFileSet = new Set(cloudRunTestFiles);
+  const afterCloudRunTestFiles = afterPlaywrightTestFiles.filter(
+    (filePath) => !cloudRunTestFileSet.has(filePath)
+  );
+  const cloudRunSourceFiles = afterCloudRunTestFiles.filter((filePath) =>
+    isCloudRunRelatedSourceFile(filePath)
+  );
+  const cloudRunSourceFileSet = new Set(cloudRunSourceFiles);
+  const remainingFiles = afterCloudRunTestFiles.filter(
+    (filePath) => !cloudRunSourceFileSet.has(filePath)
   );
   const testFiles = remainingFiles.filter((filePath) => isVitestTestFile(filePath));
   const relatedSourceFiles = remainingFiles.filter((filePath) =>
@@ -665,6 +723,38 @@ function classifyChangedTestRun(changedFilesResult) {
     summaryParts.push('playwright spec quick smoke');
     guidance.push('npm run test:quick');
     scopeFiles.push(...playwrightTestFiles);
+  }
+
+  if (cloudRunTestFiles.length > 0) {
+    steps.push({
+      label: `Cloud Run targeted node suite (${cloudRunTestFiles.length} file${cloudRunTestFiles.length > 1 ? 's' : ''})`,
+      runner: 'npx',
+      cwd: cloudRunCwd,
+      args: ['vitest', 'run', ...cloudRunTestFiles.map(toCloudRunRelativePath)],
+    });
+    summaryParts.push('cloud-run targeted node');
+    guidance.push('cd cloud-run/ai-engine && npx vitest run <changed test files>');
+    scopeFiles.push(...cloudRunTestFiles);
+  }
+
+  if (cloudRunSourceFiles.length > 0) {
+    steps.push({
+      label: `Cloud Run related node suite (${cloudRunSourceFiles.length} source file${cloudRunSourceFiles.length > 1 ? 's' : ''})`,
+      runner: 'npx',
+      cwd: cloudRunCwd,
+      args: [
+        'vitest',
+        'related',
+        '--run',
+        '--passWithNoTests',
+        ...cloudRunSourceFiles.map(toCloudRunRelativePath),
+      ],
+    });
+    summaryParts.push('cloud-run related node');
+    guidance.push(
+      'cd cloud-run/ai-engine && npx vitest related --run --passWithNoTests <changed source files>'
+    );
+    scopeFiles.push(...cloudRunSourceFiles);
   }
 
   if (testFiles.length > 0) {
@@ -784,11 +874,14 @@ function runTests(changedFilesResult) {
     console.log('🧪 Running quick tests...');
   }
 
-  const success = steps.every(({ args, label }) => {
+  const success = steps.every(({ args, label, runner, cwd: stepCwd }) => {
     if (label) {
       console.log(`   → ${label}`);
     }
-    return runNpm(args);
+    const runCwd = stepCwd || cwd;
+    return runner === 'npx'
+      ? runNpx(args, runCwd)
+      : runNpm(args, null, runCwd);
   });
   if (success) {
     testStatus = 'passed';
@@ -849,49 +942,76 @@ function runBuildValidation(changedFilesResult) {
   }
 
   if (QUICK_PUSH) {
-    const typeCheckRelevantFiles = filterTypeCheckRelevantFiles(changedFilesResult.files);
-    const skipTypeCheck =
-      changedFilesResult.isKnown && changedFilesResult.files.length > 0 && typeCheckRelevantFiles.length === 0;
+    const rootTypeCheckRelevantFiles = filterTypeCheckRelevantFiles(changedFilesResult.files);
+    const cloudRunTypeCheckRelevantFiles = changedFilesResult.files.filter((filePath) =>
+      isCloudRunTypeCheckRelevantFile(filePath)
+    );
+    const skipRootTypeCheck =
+      changedFilesResult.isKnown &&
+      changedFilesResult.files.length > 0 &&
+      rootTypeCheckRelevantFiles.length === 0;
+    const skipCloudRunTypeCheck =
+      changedFilesResult.isKnown &&
+      changedFilesResult.files.length > 0 &&
+      cloudRunTypeCheckRelevantFiles.length === 0;
     const useChangedTypeCheck =
-      changedFilesResult.isKnown && typeCheckRelevantFiles.length > 0;
+      changedFilesResult.isKnown && rootTypeCheckRelevantFiles.length > 0;
 
-    if (skipTypeCheck) {
+    if (skipRootTypeCheck && skipCloudRunTypeCheck) {
       typeCheckStatus = 'skipped-no-relevant-ts';
       console.log('⚪ TypeScript 검증 스킵 (push 범위에 관련 TS 파일 없음)');
       console.log('ℹ️  Full build/type-check는 GitHub CI + Vercel에서 계속 검증됨');
       return;
     }
 
-    console.log(
-      useChangedTypeCheck
-        ? '⚡ TypeScript 증분 검증 (변경 범위)...'
-        : '⚡ TypeScript 검증 (기본 모드)...'
-    );
-
-    const extraEnv = useChangedTypeCheck
-      ? {
-          ...process.env,
-          PRE_PUSH_CHANGED_FILES: typeCheckRelevantFiles.join('\n'),
-        }
-      : null;
-
-    const success = runNpm(
-      useChangedTypeCheck ? ['run', 'type-check:changed'] : ['run', 'type-check'],
-      extraEnv
-    );
-    if (!success) {
-      typeCheckStatus = 'failed';
-      console.log('❌ TypeScript 에러 - push blocked');
-      console.log('');
+    if (!skipRootTypeCheck) {
       console.log(
-        `💡 Fix: ${useChangedTypeCheck ? 'npm run type-check:changed' : 'npm run type-check'}`
+        useChangedTypeCheck
+          ? '⚡ Root TypeScript 증분 검증 (변경 범위)...'
+          : '⚡ Root TypeScript 검증 (기본 모드)...'
       );
-      console.log('');
-      console.log('⚠️  Bypass: HUSKY=0 git push');
-      process.exit(1);
+
+      const extraEnv = useChangedTypeCheck
+        ? {
+            ...process.env,
+            PRE_PUSH_CHANGED_FILES: rootTypeCheckRelevantFiles.join('\n'),
+          }
+        : null;
+
+      const rootSuccess = runNpm(
+        useChangedTypeCheck ? ['run', 'type-check:changed'] : ['run', 'type-check'],
+        extraEnv
+      );
+      if (!rootSuccess) {
+        typeCheckStatus = 'failed';
+        console.log('❌ Root TypeScript 에러 - push blocked');
+        console.log('');
+        console.log(
+          `💡 Fix: ${useChangedTypeCheck ? 'npm run type-check:changed' : 'npm run type-check'}`
+        );
+        console.log('');
+        console.log('⚠️  Bypass: HUSKY=0 git push');
+        process.exit(1);
+      }
+      console.log('✅ Root TypeScript 검증 통과');
     }
+
+    if (!skipCloudRunTypeCheck) {
+      console.log('⚡ Cloud Run TypeScript 검증...');
+      const cloudRunSuccess = runNpm(['run', 'type-check'], null, cloudRunCwd);
+      if (!cloudRunSuccess) {
+        typeCheckStatus = 'failed';
+        console.log('❌ Cloud Run TypeScript 에러 - push blocked');
+        console.log('');
+        console.log('💡 Fix: cd cloud-run/ai-engine && npm run type-check');
+        console.log('');
+        console.log('⚠️  Bypass: HUSKY=0 git push');
+        process.exit(1);
+      }
+      console.log('✅ Cloud Run TypeScript 검증 통과');
+    }
+
     typeCheckStatus = 'passed';
-    console.log('✅ TypeScript 검증 통과');
     console.log('ℹ️  Full build는 GitHub CI + Vercel에서 실행됨');
   } else {
     typeCheckStatus = 'delegated';
