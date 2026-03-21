@@ -1,0 +1,103 @@
+{
+  "runId": "QA-20260322-0153",
+  "recordedAt": "2026-03-21T16:10:40.348Z",
+  "recordedAtKst": "2026-03-22 01:10:40 KST",
+  "runTitle": "Production AI Feedback Trace E2E - Feedback Success + Monitoring Match",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_4Kz7HjneqzRJ1jhP3wDYxJ7zfshW",
+    "deploymentUrl": "https://openmanager-mdavk4e2j-skyasus-projects.vercel.app",
+    "commitSha": "733afd4b01e1a16e30d29f533169d23e3c0ad0ec"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "coveragePacks": ["ai-core", "observability-pack"],
+  "coveredSurfaces": [
+    "guest PIN login",
+    "system-boot -> /dashboard redirect",
+    "AI sidebar free-text chat send",
+    "AI feedback positive button",
+    "/api/ai/feedback proxy with langfuseStatus=success",
+    "Cloud Run /monitoring/traces?q=<feedback traceId> lookup"
+  ],
+  "skippedSurfaces": [
+    "negative feedback button",
+    "fullscreen AI assistant",
+    "Langfuse direct traceUrl/htmlPath deep link (monitoring payload still omitted direct traceUrl)"
+  ],
+  "checks": {
+    "total": 6,
+    "passed": 6,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Production AI sidebar free-text query 이후 실제 feedback click까지 수행했고 feedback API body에 traceId가 포함되는 것을 브라우저에서 직접 캡처했다.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "동일 feedback traceId(UUID 형식)로 Cloud Run /monitoring/traces?q=<traceId> 조회가 count=1로 매칭되어 supervisor-execution trace를 확인했다.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "",
+      "summary": "effectiveCost $15.9423 / billedCost $0.0000",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "qa-20260322-feedback-trace-success.png",
+      "path": ".playwright-mcp/screenshots/qa-20260322-feedback-trace-success.png"
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Browser-captured POST /api/ai/feedback body included traceId c92418ce-c612-4889-af61-7ee54c96f47a and returned langfuseStatus=success.",
+    "Cloud Run /monitoring/traces?q=c92418ce-c612-4889-af61-7ee54c96f47a&limit=5&includeAuxiliary=true returned count=1 with supervisor-execution trace for the same query.",
+    "The matched monitoring trace id remained UUID-formatted (not 32-hex), so direct lookup should continue using the raw UUID currently exposed to the UI.",
+    "Current /monitoring/traces payload still did not expose a direct traceUrl/htmlPath link; trace lookup itself succeeded without it."
+  ],
+  "links": [
+    {
+      "type": "monitoring",
+      "label": "Cloud Run monitoring trace lookup for feedback traceId",
+      "url": "https://ai-engine-490817238363.asia-northeast1.run.app/monitoring/traces?q=c92418ce-c612-4889-af61-7ee54c96f47a&limit=5&includeAuxiliary=true"
+    },
+    {
+      "type": "monitoring",
+      "label": "Langfuse Dashboard",
+      "url": "https://us.cloud.langfuse.com/project"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Production deployment dpl_4Kz7HjneqzRJ1jhP3wDYxJ7zfshW",
+      "url": "https://openmanager-mdavk4e2j-skyasus-projects.vercel.app/"
+    }
+  ]
+}

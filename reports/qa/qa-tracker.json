@@ -2,15 +2,15 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-03-21T15:25:16.179Z"
+    "updatedAt": "2026-03-21T16:10:40.348Z"
   },
   "sequence": {
-    "nextRunNumber": 153
+    "nextRunNumber": 154
   },
   "summary": {
-    "totalRuns": 151,
-    "totalChecks": 1178,
-    "totalPassed": 1127,
+    "totalRuns": 152,
+    "totalChecks": 1184,
+    "totalPassed": 1133,
     "totalFailed": 47,
     "completionRate": 100,
     "completedItems": 228,
@@ -19,8 +19,8 @@
     "wontFixItems": 8,
     "expertDomainsTracked": 6,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260322-0152",
-    "lastRecordedAt": "2026-03-21T15:25:16.179Z"
+    "lastRunId": "QA-20260322-0153",
+    "lastRecordedAt": "2026-03-21T16:10:40.348Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -12260,6 +12260,106 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260322-0153",
+      "recordedAt": "2026-03-21T16:10:40.348Z",
+      "recordedAtKst": "2026-03-22 01:10:40 KST",
+      "title": "Production AI Feedback Trace E2E - Feedback Success + Monitoring Match",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260322-0153.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_4Kz7HjneqzRJ1jhP3wDYxJ7zfshW",
+        "deploymentUrl": "https://openmanager-mdavk4e2j-skyasus-projects.vercel.app",
+        "commitSha": "733afd4b01e1a16e30d29f533169d23e3c0ad0ec"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "coveragePacks": ["ai-core", "observability-pack"],
+      "coveredSurfaces": [
+        "guest PIN login",
+        "system-boot -> /dashboard redirect",
+        "AI sidebar free-text chat send",
+        "AI feedback positive button",
+        "/api/ai/feedback proxy with langfuseStatus=success",
+        "Cloud Run /monitoring/traces?q=<feedback traceId> lookup"
+      ],
+      "skippedSurfaces": [
+        "negative feedback button",
+        "fullscreen AI assistant",
+        "Langfuse direct traceUrl/htmlPath deep link (monitoring payload still omitted direct traceUrl)"
+      ],
+      "checks": {
+        "total": 6,
+        "passed": 6,
+        "failed": 0
+      },
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Production AI sidebar free-text query 이후 실제 feedback click까지 수행했고 feedback API body에 traceId가 포함되는 것을 브라우저에서 직접 캡처했다.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "observability-monitoring",
+          "domainName": "IT Monitoring & Observability SME",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "동일 feedback traceId(UUID 형식)로 Cloud Run /monitoring/traces?q=<traceId> 조회가 count=1로 매칭되어 supervisor-execution trace를 확인했다.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "",
+          "summary": "effectiveCost $15.9423 / billedCost $0.0000",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "qa-20260322-feedback-trace-success.png",
+          "path": ".playwright-mcp/screenshots/qa-20260322-feedback-trace-success.png"
+        }
+      ],
+      "links": [
+        {
+          "type": "monitoring",
+          "label": "Cloud Run monitoring trace lookup for feedback traceId",
+          "url": "https://ai-engine-490817238363.asia-northeast1.run.app/monitoring/traces?q=c92418ce-c612-4889-af61-7ee54c96f47a&limit=5&includeAuxiliary=true"
+        },
+        {
+          "type": "monitoring",
+          "label": "Langfuse Dashboard",
+          "url": "https://us.cloud.langfuse.com/project"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Production deployment dpl_4Kz7HjneqzRJ1jhP3wDYxJ7zfshW",
+          "url": "https://openmanager-mdavk4e2j-skyasus-projects.vercel.app/"
+        }
+      ],
+      "expertCount": 2,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -12268,16 +12368,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 95,
-      "appropriateCount": 91,
+      "seenCount": 96,
+      "appropriateCount": 92,
       "partialCount": 4,
       "inappropriateCount": 0,
       "improvementNeededCount": 12,
-      "lastRunId": "QA-20260321-0144",
-      "lastSeenAt": "2026-03-20T22:01:41.259Z",
+      "lastRunId": "QA-20260322-0153",
+      "lastSeenAt": "2026-03-21T16:10:40.348Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Reporter/Analyst/sidebar/fullscreen AI surface를 Playwright MCP로 실동작 검증했고 incident-report/intelligent-monitoring 200 응답을 확인했다.",
+      "lastRationale": "Production AI sidebar free-text query 이후 실제 feedback click까지 수행했고 feedback API body에 traceId가 포함되는 것을 브라우저에서 직접 캡처했다.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -12285,16 +12385,16 @@
       "domainName": "IT Monitoring & Observability SME",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 60,
-      "appropriateCount": 37,
+      "seenCount": 61,
+      "appropriateCount": 38,
       "partialCount": 23,
       "inappropriateCount": 0,
       "improvementNeededCount": 23,
-      "lastRunId": "QA-20260322-0152",
-      "lastSeenAt": "2026-03-21T15:25:16.179Z",
+      "lastRunId": "QA-20260322-0153",
+      "lastSeenAt": "2026-03-21T16:10:40.348Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Authenticated Cloud Run /monitoring returned 200 with langfuse.isOperational=true, sampleRate=10%, and /monitoring/traces returned 200 on the direct run.app host. Vercel /monitoring/traces 404 is therefore a host mismatch, not an endpoint regression.",
+      "lastRationale": "동일 feedback traceId(UUID 형식)로 Cloud Run /monitoring/traces?q=<traceId> 조회가 count=1로 매칭되어 supervisor-execution trace를 확인했다.",
       "lastNextAction": ""
     },
     "ai-security-reliability": {
