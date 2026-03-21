@@ -122,6 +122,10 @@ bash scripts/mcp/mcp-health-check-codex.sh --no-live-probe --json
 bash scripts/mcp/mcp-health-report-codex.sh --no-live-probe
 bash scripts/mcp/mcp-health-report-codex.sh --no-live-probe --allow-missing-codex --summary-file "$GITHUB_STEP_SUMMARY"
 
+# JSON report에는 probeTargets / liveProbes metadata 포함
+# - probeTargets: command, args, configuredTimeoutSec, timeoutSec, callTool, selected
+# - liveProbes: 실행 결과(status/detail) + probe metadata
+
 # Storybook CI 빌드(비대화형, 타임아웃)
 npm run storybook:build:ci
 ```

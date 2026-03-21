@@ -274,6 +274,9 @@ emit_json() {
   JSON_RUN_LIVE_PROBE="$RUN_LIVE_PROBE" \
   JSON_SELECTED_PROBES="$selected_probes_csv" \
   JSON_LIVE_PROBE_TIMEOUT_SEC="$LIVE_PROBE_TIMEOUT_SEC" \
+  JSON_DEFAULT_LIVE_PROBE_TIMEOUT_SEC="$DEFAULT_LIVE_PROBE_TIMEOUT_SEC" \
+  JSON_AVAILABLE_LIVE_PROBE_SERVERS="$(IFS=,; printf '%s' "${AVAILABLE_LIVE_PROBE_SERVERS[*]}")" \
+  JSON_PROBE_CALL_TOOLS='{"supabase-db":"list_projects","stitch":"list_projects"}' \
   JSON_TOTAL_SERVERS="${#EXPECTED_SERVERS[@]}" \
   JSON_SUCCESS_COUNT="$SUCCESS_COUNT" \
   JSON_FAIL_COUNT="$FAIL_COUNT" \
@@ -321,9 +324,100 @@ const selectedProbes = (process.env.JSON_SELECTED_PROBES || '')
   .split(',')
   .map((value) => value.trim())
   .filter(Boolean);
+const availableLiveProbeServers = (process.env.JSON_AVAILABLE_LIVE_PROBE_SERVERS || '')
+  .split(',')
+  .map((value) => value.trim())
+  .filter(Boolean);
+const defaultLiveProbeTimeoutSec = Number(process.env.JSON_DEFAULT_LIVE_PROBE_TIMEOUT_SEC || '45');
+const liveProbeTimeoutOverrideRaw = (process.env.JSON_LIVE_PROBE_TIMEOUT_SEC || '').trim();
+const liveProbeTimeoutOverride = liveProbeTimeoutOverrideRaw === ''
+  ? null
+  : Number(liveProbeTimeoutOverrideRaw);
+const runLiveProbe = process.env.JSON_RUN_LIVE_PROBE === '1';
+const probeCallTools = (() => {
+  try {
+    return JSON.parse(process.env.JSON_PROBE_CALL_TOOLS || '{}');
+  } catch {
+    return {};
+  }
+})();
 
 const todayCallsRaw = process.env.JSON_TODAY_CALLS || '';
 const todayCalls = todayCallsRaw === '' ? null : Number(todayCallsRaw);
+
+function parseProbeTargets(configFile, probeServers) {
+  if (!configFile || !fs.existsSync(configFile) || probeServers.length === 0) {
+    return [];
+  }
+
+  const sectionMap = new Map();
+  let activeServer = null;
+
+  for (const rawLine of fs.readFileSync(configFile, 'utf8').split('\n')) {
+    const line = rawLine.trim();
+    const sectionMatch = line.match(/^\[mcp_servers\.([A-Za-z0-9._-]+)\]$/);
+    if (sectionMatch) {
+      activeServer = probeServers.includes(sectionMatch[1]) ? sectionMatch[1] : null;
+      if (activeServer && !sectionMap.has(activeServer)) {
+        sectionMap.set(activeServer, {
+          command: null,
+          args: [],
+          startupTimeoutSec: null,
+        });
+      }
+      continue;
+    }
+
+    if (!activeServer || line === '' || line.startsWith('#')) {
+      continue;
+    }
+
+    const target = sectionMap.get(activeServer);
+    const commandMatch = line.match(/^command\s*=\s*"([^"]+)"\s*$/);
+    if (commandMatch) {
+      target.command = commandMatch[1];
+      continue;
+    }
+
+    const argsMatch = line.match(/^args\s*=\s*(\[[^\n]*\])\s*$/);
+    if (argsMatch) {
+      try {
+        const args = JSON.parse(argsMatch[1]);
+        target.args = Array.isArray(args) ? args : [];
+      } catch {
+        target.args = [];
+      }
+      continue;
+    }
+
+    const timeoutMatch = line.match(/^startup_timeout_sec\s*=\s*(\d+)\s*$/);
+    if (timeoutMatch) {
+      target.startupTimeoutSec = Number(timeoutMatch[1]);
+    }
+  }
+
+  return probeServers.map((server) => {
+    const target = sectionMap.get(server) || {};
+    const configuredTimeoutSec = typeof target.startupTimeoutSec === 'number'
+      ? target.startupTimeoutSec
+      : null;
+    const timeoutSec = liveProbeTimeoutOverride ?? configuredTimeoutSec ?? defaultLiveProbeTimeoutSec;
+    const selected = runLiveProbe && (selectedProbes.length === 0 || selectedProbes.includes(server));
+
+    return {
+      server,
+      selected,
+      command: target.command ?? null,
+      args: Array.isArray(target.args) ? target.args : [],
+      configuredTimeoutSec,
+      timeoutSec,
+      callTool: probeCallTools[server] ?? null,
+    };
+  });
+}
+
+const probeTargets = parseProbeTargets(process.env.JSON_CONFIG_FILE, availableLiveProbeServers);
+const probeTargetMap = new Map(probeTargets.map((target) => [target.server, target]));
 
 const payload = {
   timestamp: process.env.JSON_TIMESTAMP || null,
@@ -332,9 +426,10 @@ const payload = {
   logFile: process.env.JSON_LOG_FILE || null,
   options: {
     format: 'json',
-    runLiveProbe: process.env.JSON_RUN_LIVE_PROBE === '1',
+    runLiveProbe,
     selectedProbes,
-    liveProbeTimeoutSec: Number(process.env.JSON_LIVE_PROBE_TIMEOUT_SEC || '0'),
+    liveProbeTimeoutSec: liveProbeTimeoutOverride ?? defaultLiveProbeTimeoutSec,
+    usesConfigTimeouts: liveProbeTimeoutOverride == null,
   },
   runtime: {
     codexHome: process.env.JSON_CODEX_HOME || null,
@@ -352,7 +447,13 @@ const payload = {
     todayMcpCalls: Number.isNaN(todayCalls) ? null : todayCalls,
   },
   servers: serverRows,
-  liveProbes: liveProbeRows,
+  probeTargets,
+  liveProbes: liveProbeRows.map((row) => ({
+    ...probeTargetMap.get(row.server),
+    server: row.server,
+    status: row.status,
+    detail: row.detail,
+  })),
   warnings: warningRows,
   error: process.env.JSON_LAST_ERROR || null,
 };

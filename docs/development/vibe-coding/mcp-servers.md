@@ -118,6 +118,10 @@ bash scripts/mcp/mcp-health-report-codex.sh --no-live-probe --allow-missing-code
 ```
 1. 서버별 최소 1회 도구 호출로 실동작을 확인합니다.
 
+- `--json` 출력은 `probeTargets`와 `liveProbes`를 함께 제공합니다.
+- `probeTargets`에는 config 기준 `command`, `args`, `configuredTimeoutSec`, 실제 적용 `timeoutSec`, `callTool`, `selected`가 포함됩니다.
+- `liveProbes`에는 실행 결과(`status`, `detail`)와 해당 probe metadata가 병합되어 들어갑니다.
+
 ### GitHub MCP 토큰 자동 동기화 (2026-02-17)
 
 - `scripts/mcp/codex-local.sh`와 `scripts/mcp/mcp-health-check-codex.sh`는 실행 전에 `scripts/mcp/sync-github-mcp-auth.sh`를 자동 호출합니다.

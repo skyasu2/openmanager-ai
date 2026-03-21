@@ -137,6 +137,7 @@ const payload = {
     todayMcpCalls: null,
   },
   servers: [],
+  probeTargets: [],
   liveProbes: [],
   warnings: [
     {
@@ -225,6 +226,9 @@ const lines = [
   report.options?.runLiveProbe
     ? `- Live probe failures: ${report.summary?.liveProbeFailCount ?? 0}`
     : '- Live probe: skipped',
+  Array.isArray(report.probeTargets) && report.probeTargets.length > 0
+    ? `- Probe targets: ${report.probeTargets.map((target) => `${target.server} (${target.timeoutSec}s)`).join(', ')}`
+    : '- Probe targets: none',
   `- Report: \`${process.env.JSON_REPORT_PATH}\``,
 ];
 
