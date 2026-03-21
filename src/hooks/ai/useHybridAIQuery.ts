@@ -163,6 +163,9 @@ export function useHybridAIQuery(
     [apiEndpoint, observabilityConfig.traceIdHeader]
   );
   const asyncQueryRef = useRef<ReturnType<typeof useAsyncAIQuery>>(null!);
+  const persistTraceIdFallbackRef = useRef(
+    (_message: UIMessage, _traceId: string) => {}
+  );
   const streamCallbacks = useMemo(
     () =>
       createHybridStreamCallbacks({
@@ -171,6 +174,8 @@ export function useHybridAIQuery(
         maxRetries: streamRetryConfig.maxRetries,
         onStreamFinish,
         onData,
+        persistTraceIdFallback: (message, traceId) =>
+          persistTraceIdFallbackRef.current(message, traceId),
         setState,
         refs: {
           retryCount: retryCountRef,
@@ -217,6 +222,77 @@ export function useHybridAIQuery(
   useEffect(() => {
     messagesRef.current = messages;
   }, [messages]);
+  persistTraceIdFallbackRef.current = (message: UIMessage, traceId: string) => {
+    if (message.role !== 'assistant') {
+      return;
+    }
+
+    setMessages((prev: UIMessage[]) => {
+      let matchedMessage = false;
+      const nextMessages = prev.map((prevMessage: UIMessage) => {
+        if (prevMessage.id !== message.id) {
+          return prevMessage;
+        }
+
+        matchedMessage = true;
+        const prevMetadata =
+          typeof prevMessage.metadata === 'object' &&
+          prevMessage.metadata !== null
+            ? (prevMessage.metadata as Record<string, unknown>)
+            : {};
+
+        if (typeof prevMetadata.traceId === 'string') {
+          return prevMessage;
+        }
+
+        return {
+          ...prevMessage,
+          metadata: {
+            ...prevMetadata,
+            traceId,
+          },
+        };
+      });
+
+      if (matchedMessage) {
+        return nextMessages;
+      }
+
+      const lastAssistantIndex = nextMessages
+        .map((prevMessage: UIMessage) => prevMessage.role)
+        .lastIndexOf('assistant');
+      if (lastAssistantIndex < 0) {
+        return prev;
+      }
+
+      const fallbackMessage = nextMessages[lastAssistantIndex];
+      if (!fallbackMessage) {
+        return prev;
+      }
+
+      const fallbackMetadata =
+        typeof fallbackMessage.metadata === 'object' &&
+        fallbackMessage.metadata !== null
+          ? (fallbackMessage.metadata as Record<string, unknown>)
+          : {};
+
+      if (typeof fallbackMetadata.traceId === 'string') {
+        return nextMessages;
+      }
+
+      return nextMessages.map((prevMessage: UIMessage, index: number) =>
+        index === lastAssistantIndex
+          ? {
+              ...prevMessage,
+              metadata: {
+                ...fallbackMetadata,
+                traceId,
+              },
+            }
+          : prevMessage
+      );
+    });
+  };
 
   const asyncQuery = useAsyncAIQuery({
     sessionId: sessionIdRef.current,
@@ -270,6 +346,11 @@ export function useHybridAIQuery(
     complexityThreshold,
     asyncQuery,
     sendMessage,
+    onBeforeStreamingSend: (isRetry) => {
+      if (!isRetry) {
+        traceIdRef.current = generateTraceId();
+      }
+    },
     getMessages: () => messagesRef.current,
     setMessages,
     setState,

@@ -52,7 +52,7 @@ export interface QueryExecutionDeps {
   complexityThreshold: number;
   asyncQuery: AsyncQueryLike;
   sendMessage: SendMessageLike;
-  onBeforeStreamingSend?: () => void;
+  onBeforeStreamingSend?: (isRetry: boolean) => void;
   getMessages: () => UIMessage[];
   setMessages: SetMessagesLike;
   setState: StateSetter;
@@ -217,7 +217,7 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
           });
       } else {
         // Streaming 모드: 빠른 응답
-        onBeforeStreamingSend?.();
+        onBeforeStreamingSend?.(isRetry);
         setState((prev) => ({
           ...prev,
           mode: 'streaming',
