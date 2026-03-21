@@ -23,9 +23,9 @@ import {
   getMaxTimeout,
   getMinTimeout,
   getObservabilityConfig,
+  normalizeTraceId,
   parseTraceparentTraceId,
   TRACEPARENT_HEADER,
-  traceIdToUUID,
 } from '@/config/ai-proxy.config';
 import { type AIEndpoint, getAICache } from '@/lib/ai/cache/ai-response-cache';
 import { createFallbackResponse } from '@/lib/ai/fallback/ai-fallback-handler';
@@ -81,13 +81,9 @@ export const POST = withRateLimit(
     // 🎯 W3C Trace Context: traceparent 헤더 우선, X-Trace-Id 폴백
     const observabilityConfig = getObservabilityConfig();
     const traceparent = req.headers.get(TRACEPARENT_HEADER);
-    const upstreamTraceId = traceparent
-      ? parseTraceparentTraceId(traceparent)
-      : null;
+    const upstreamTraceId = traceparent ? parseTraceparentTraceId(traceparent) : null;
     const legacyTraceId = req.headers.get(observabilityConfig.traceIdHeader);
-    const traceId = upstreamTraceId
-      ? traceIdToUUID(upstreamTraceId)
-      : legacyTraceId || generateTraceId();
+    const traceId = upstreamTraceId ?? normalizeTraceId(legacyTraceId) ?? generateTraceId();
 
     // 🎯 AsyncLocalStorage: traceId를 요청 컨텍스트에 저장 → logger 자동 주입
     return runWithTraceId(traceId, async () => {

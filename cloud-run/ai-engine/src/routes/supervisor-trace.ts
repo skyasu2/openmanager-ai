@@ -2,6 +2,22 @@
  * Supervisor trace helpers
  */
 
+const TRACE_ID_HEX_REGEX = /^[0-9a-f]{32}$/;
+const INVALID_TRACE_ID = '0'.repeat(32);
+
+function normalizeTraceId(traceId?: string): string | undefined {
+  if (typeof traceId !== 'string') {
+    return undefined;
+  }
+
+  const normalized = traceId.trim().toLowerCase().replace(/-/g, '');
+  if (!TRACE_ID_HEX_REGEX.test(normalized) || normalized === INVALID_TRACE_ID) {
+    return undefined;
+  }
+
+  return normalized;
+}
+
 /**
  * Extract trace ID from W3C `traceparent` or legacy `x-trace-id` header.
  */
@@ -14,10 +30,9 @@ export function extractTraceId(
       /^00-([0-9a-f]{32})-[0-9a-f]{16}-[0-9a-f]{2}$/,
     );
     if (match) {
-      const hex = match[1];
-      return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
+      return normalizeTraceId(match[1]);
     }
   }
 
-  return legacyTraceId || undefined;
+  return normalizeTraceId(legacyTraceId) ?? legacyTraceId ?? undefined;
 }

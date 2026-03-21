@@ -96,9 +96,30 @@ describe('langfuse-trace', () => {
 
     expect(mockLangfuse.trace).toHaveBeenCalledTimes(1);
     const traceCall = mockLangfuse.trace.mock.calls[0]?.[0] as { id?: string };
-    expect(traceCall.id).toMatch(
-      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
-    );
+    expect(traceCall.id).toMatch(/^[0-9a-f]{32}$/);
     expect(trace.id).toBe(traceCall.id);
+  });
+
+  it('normalizes UUID trace ids before scoring', () => {
+    const recorded = scoreByTraceId(
+      '12345678-90ab-cdef-1234-567890abcdef',
+      'user-feedback',
+      1
+    );
+
+    expect(recorded).toBe(true);
+    expect(mockLangfuse.score).toHaveBeenCalledWith({
+      traceId: '1234567890abcdef1234567890abcdef',
+      name: 'user-feedback',
+      value: 1,
+    });
+  });
+
+  it('rejects non-hex trace ids during scoring', () => {
+    const recorded = scoreByTraceId('trace-not-hex', 'user-feedback', 1);
+
+    expect(recorded).toBe(false);
+    expect(consumeLangfuseQuota).not.toHaveBeenCalled();
+    expect(mockLangfuse.score).not.toHaveBeenCalled();
   });
 });

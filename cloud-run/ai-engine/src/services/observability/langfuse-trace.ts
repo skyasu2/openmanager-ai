@@ -1,4 +1,4 @@
-import { randomUUID } from 'node:crypto';
+import { randomBytes } from 'node:crypto';
 
 import { logger } from '../../lib/logger';
 import type {
@@ -14,6 +14,26 @@ import {
   shouldTrackLangfuseEvent,
 } from './langfuse-usage';
 
+const TRACE_ID_HEX_REGEX = /^[0-9a-f]{32}$/;
+const INVALID_TRACE_ID = '0'.repeat(32);
+
+function generateLangfuseTraceId(): string {
+  return randomBytes(16).toString('hex');
+}
+
+function normalizeLangfuseTraceId(traceId?: string | null): string | null {
+  if (typeof traceId !== 'string') {
+    return null;
+  }
+
+  const normalized = traceId.trim().toLowerCase().replace(/-/g, '');
+  if (!TRACE_ID_HEX_REGEX.test(normalized) || normalized === INVALID_TRACE_ID) {
+    return null;
+  }
+
+  return normalized;
+}
+
 export function createSupervisorTrace(metadata: TraceMetadata): LangfuseTrace {
   if (!isLangfuseOperational() || !isLangfuseUsageReady()) {
     return createNoOpTrace();
@@ -24,7 +44,7 @@ export function createSupervisorTrace(metadata: TraceMetadata): LangfuseTrace {
   }
 
   const langfuse = getLangfuse();
-  const traceId = randomUUID();
+  const traceId = generateLangfuseTraceId();
 
   const trace = langfuse.trace({
     id: traceId,
@@ -133,17 +153,24 @@ export function scoreByTraceId(traceId: string, name: string, value: number): bo
     return false;
   }
 
+  const normalizedTraceId = normalizeLangfuseTraceId(traceId);
+  if (!normalizedTraceId) {
+    return false;
+  }
+
   if (!consumeLangfuseQuota(1)) {
     return false;
   }
 
   try {
     const langfuse = getLangfuse();
-    langfuse.score({ traceId, name, value });
+    langfuse.score({ traceId: normalizedTraceId, name, value });
     return true;
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
-    logger.error(`❌ [Langfuse] scoreByTraceId failed for trace ${traceId}: ${errorMessage}`);
+    logger.error(
+      `❌ [Langfuse] scoreByTraceId failed for trace ${normalizedTraceId}: ${errorMessage}`
+    );
     return false;
   }
 }

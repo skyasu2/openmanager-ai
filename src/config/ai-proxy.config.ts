@@ -139,6 +139,7 @@ export function getComplexityCategoryWeight(
 
 export {
   generateTraceId,
+  normalizeTraceId,
   generateTraceparent,
   parseTraceparentTraceId,
   TRACEPARENT_HEADER,

@@ -18,12 +18,19 @@ import {
 } from '../lib/error-handler';
 import { logger } from '../lib/logger';
 
+const TRACE_ID_HEX_REGEX = /^[0-9a-f]{32}$/;
+const INVALID_TRACE_ID = '0'.repeat(32);
+
 const feedbackSchema = z.object({
   traceId: z
     .string()
     .min(1, 'traceId is required')
     .max(128, 'traceId exceeds maximum length')
-    .regex(/^[a-zA-Z0-9_-]+$/, 'traceId contains invalid characters'),
+    .transform((value) => value.trim().toLowerCase().replace(/-/g, ''))
+    .refine(
+      (value) => TRACE_ID_HEX_REGEX.test(value) && value !== INVALID_TRACE_ID,
+      'traceId must be a 32-character lowercase hex string'
+    ),
   score: z.enum(['positive', 'negative']),
 });
 

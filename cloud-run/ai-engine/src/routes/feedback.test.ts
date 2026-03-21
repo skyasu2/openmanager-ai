@@ -30,7 +30,10 @@ describe('Feedback Routes', () => {
   it('positive 피드백을 score 1로 기록한다', async () => {
     const res = await app.request('/feedback', {
       method: 'POST',
-      body: JSON.stringify({ traceId: 'trace-123', score: 'positive' }),
+      body: JSON.stringify({
+        traceId: '12345678-90ab-cdef-1234-567890abcdef',
+        score: 'positive',
+      }),
       headers: { 'Content-Type': 'application/json' },
     });
 
@@ -38,20 +41,31 @@ describe('Feedback Routes', () => {
     const json = await res.json();
     expect(json.success).toBe(true);
     expect(json.score).toBe('positive');
-    expect(scoreByTraceId).toHaveBeenCalledWith('trace-123', 'user-feedback', 1);
+    expect(scoreByTraceId).toHaveBeenCalledWith(
+      '1234567890abcdef1234567890abcdef',
+      'user-feedback',
+      1
+    );
   });
 
   it('negative 피드백을 score 0으로 기록한다', async () => {
     const res = await app.request('/feedback', {
       method: 'POST',
-      body: JSON.stringify({ traceId: 'trace-456', score: 'negative' }),
+      body: JSON.stringify({
+        traceId: 'ABCDEFAB-CDEF-ABCD-EFAB-CDEFABCDEFAB',
+        score: 'negative',
+      }),
       headers: { 'Content-Type': 'application/json' },
     });
 
     expect(res.status).toBe(200);
     const json = await res.json();
     expect(json.score).toBe('negative');
-    expect(scoreByTraceId).toHaveBeenCalledWith('trace-456', 'user-feedback', 0);
+    expect(scoreByTraceId).toHaveBeenCalledWith(
+      'abcdefabcdefabcdefabcdefabcdefab',
+      'user-feedback',
+      0
+    );
   });
 
   it('traceId 누락 시 400을 반환한다', async () => {
@@ -69,14 +83,17 @@ describe('Feedback Routes', () => {
   it('잘못된 score 값 시 400을 반환한다', async () => {
     const res = await app.request('/feedback', {
       method: 'POST',
-      body: JSON.stringify({ traceId: 'trace-789', score: 'invalid' }),
+      body: JSON.stringify({
+        traceId: '1234567890abcdef1234567890abcdef',
+        score: 'invalid',
+      }),
       headers: { 'Content-Type': 'application/json' },
     });
 
     expect(res.status).toBe(400);
   });
 
-  it('traceId에 특수문자가 포함되면 400을 반환한다', async () => {
+  it('traceId가 32-hex 형식이 아니면 400을 반환한다', async () => {
     const res = await app.request('/feedback', {
       method: 'POST',
       body: JSON.stringify({ traceId: 'trace<script>', score: 'positive' }),
@@ -91,7 +108,10 @@ describe('Feedback Routes', () => {
 
     const res = await app.request('/feedback', {
       method: 'POST',
-      body: JSON.stringify({ traceId: 'trace-guard', score: 'positive' }),
+      body: JSON.stringify({
+        traceId: '1234567890abcdef1234567890abcdef',
+        score: 'positive',
+      }),
       headers: { 'Content-Type': 'application/json' },
     });
 
@@ -108,7 +128,10 @@ describe('Feedback Routes', () => {
 
     const res = await app.request('/feedback', {
       method: 'POST',
-      body: JSON.stringify({ traceId: 'trace-500', score: 'positive' }),
+      body: JSON.stringify({
+        traceId: '1234567890abcdef1234567890abcdef',
+        score: 'positive',
+      }),
       headers: { 'Content-Type': 'application/json' },
     });
 
