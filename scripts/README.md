@@ -119,6 +119,7 @@ bash scripts/mcp/mcp-health-check-codex.sh
 bash scripts/mcp/mcp-health-check-codex.sh --no-live-probe
 bash scripts/mcp/mcp-health-check-codex.sh --probe supabase-db
 bash scripts/mcp/mcp-health-check-codex.sh --no-live-probe --json
+bash scripts/mcp/mcp-health-report-codex.sh --no-live-probe
 
 # Storybook CI 빌드(비대화형, 타임아웃)
 npm run storybook:build:ci
