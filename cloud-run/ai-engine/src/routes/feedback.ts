@@ -40,6 +40,23 @@ const feedbackSchema = z.object({
 
 export const feedbackRouter = new Hono();
 
+function getPublicRequestOrigin(c: Context): string {
+  const forwardedProto = c.req.header('x-forwarded-proto')?.split(',')[0]?.trim();
+  const forwardedHost = c.req.header('x-forwarded-host')?.split(',')[0]?.trim();
+  const host = forwardedHost || c.req.header('host')?.split(',')[0]?.trim();
+
+  if (host) {
+    return `${forwardedProto || 'https'}://${host}`;
+  }
+
+  const fallbackUrl = new URL(c.req.url);
+  if (fallbackUrl.protocol === 'http:' && /\.run\.app$/i.test(fallbackUrl.hostname)) {
+    fallbackUrl.protocol = 'https:';
+  }
+
+  return fallbackUrl.origin;
+}
+
 /**
  * POST /feedback - Record user feedback as Langfuse score
  *
@@ -75,7 +92,10 @@ feedbackRouter.post('/', async (c: Context) => {
 
     const baseUrl =
       process.env.LANGFUSE_BASE_URL || 'https://us.cloud.langfuse.com';
-    const monitoringLookupUrl = new URL('/monitoring/traces', c.req.url);
+    const monitoringLookupUrl = new URL(
+      '/monitoring/traces',
+      getPublicRequestOrigin(c)
+    );
     monitoringLookupUrl.searchParams.set('q', traceId);
     monitoringLookupUrl.searchParams.set('limit', '5');
     monitoringLookupUrl.searchParams.set('includeAuxiliary', 'true');

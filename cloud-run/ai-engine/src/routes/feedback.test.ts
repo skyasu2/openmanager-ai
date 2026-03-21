@@ -62,6 +62,27 @@ describe('Feedback Routes', () => {
     );
   });
 
+  it('forwarded proto/host 기준으로 public monitoring link를 만든다', async () => {
+    const res = await app.request('http://internal/feedback', {
+      method: 'POST',
+      body: JSON.stringify({
+        traceId: '1234567890abcdef1234567890abcdef',
+        score: 'positive',
+      }),
+      headers: {
+        'Content-Type': 'application/json',
+        'x-forwarded-proto': 'https',
+        'x-forwarded-host': 'ai-engine.example.run.app',
+      },
+    });
+
+    expect(res.status).toBe(200);
+    const json = await res.json();
+    expect(json.monitoringLookupUrl).toBe(
+      'https://ai-engine.example.run.app/monitoring/traces?q=1234567890abcdef1234567890abcdef&limit=5&includeAuxiliary=true'
+    );
+  });
+
   it('negative 피드백을 score 0으로 기록한다', async () => {
     const res = await app.request('/feedback', {
       method: 'POST',
