@@ -11559,6 +11559,14 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0,
+      "artifacts": [
+        {
+          "type": "playwright-console",
+          "label": "console-2026-03-20T21-44-14-550Z.log",
+          "path": ".playwright-mcp/screenshots/console-2026-03-20T21-44-14-550Z.log",
+          "note": "Backfilled from a retained local playwright-mcp console capture in the QA window; the log includes an intentional __qa-0144-not-found 404 probe outside the validated AI surfaces."
+        }
+      ],
       "environment": {
         "target": "vercel-production",
         "url": "https://openmanager-ai.vercel.app",
