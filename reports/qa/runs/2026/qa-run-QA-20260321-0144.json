@@ -89,8 +89,5 @@
       "url": "https://openmanager-ai.vercel.app"
     }
   ],
-  "coveragePacks": [
-    "ai-core",
-    "ai-advanced-surface"
-  ]
+  "coveragePacks": ["ai-core", "ai-advanced-surface"]
 }

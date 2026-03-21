@@ -79,9 +79,5 @@
   "wontFixImprovements": [],
   "notes": [],
   "links": [],
-  "coveragePacks": [
-    "core-routes-smoke",
-    "dashboard-core",
-    "ai-core"
-  ]
+  "coveragePacks": ["core-routes-smoke", "dashboard-core", "ai-core"]
 }

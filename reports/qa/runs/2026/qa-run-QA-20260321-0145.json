@@ -72,7 +72,5 @@
       "url": "https://openmanager-ai.vercel.app"
     }
   ],
-  "coveragePacks": [
-    "modal-detail-pack"
-  ]
+  "coveragePacks": ["modal-detail-pack"]
 }
