@@ -1,0 +1,93 @@
+{
+  "runId": "QA-20260321-0148",
+  "recordedAt": "2026-03-21T11:41:43.931Z",
+  "recordedAtKst": "2026-03-21 20:41:43 KST",
+  "runTitle": "Vercel Playwright QA - Fullscreen AI Workspace Proof (SHA 8a7fe8769)",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_AuzevjgfgqgB8H8aun9fReGmTR9X",
+    "deploymentUrl": "https://openmanager-npcexzk1o-skyasus-projects.vercel.app",
+    "commitSha": "8a7fe87698cf105b9d2c87c8c9d832712ada55e4"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "coveragePacks": ["ai-core", "ai-advanced-surface"],
+  "coveredSurfaces": [
+    "/login",
+    "guest PIN login",
+    "system-boot → /dashboard redirect",
+    "/dashboard/ai-assistant fullscreen route",
+    "fullscreen AI Chat render",
+    "fullscreen system context panel"
+  ],
+  "skippedSurfaces": [
+    "/",
+    "/api/health",
+    "/api/version",
+    "404",
+    "server modal/detail pack",
+    "alerts/topology/log explorer pack",
+    "security blocked-prompt pack",
+    "Langfuse trace visibility",
+    "Reporter flow",
+    "Analyst flow",
+    "AI sidebar free-text chat send"
+  ],
+  "checks": {
+    "total": 6,
+    "passed": 6,
+    "failed": 0
+  },
+  "expertAssessments": [],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-03-21T20:40:59+09:00",
+      "summary": "Current billing period reviewed after fullscreen AI workspace QA; effectiveCost $15.9423, billedCost $0.0000, no meaningful overage spike.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-console",
+      "label": "qa-20260321-ai-fullscreen-console-errors.log",
+      "path": ".playwright-mcp/screenshots/qa-20260321-ai-fullscreen-console-errors.log",
+      "note": "browser_console_messages capture after fullscreen AI workspace validation; Total messages: 0 (Errors: 0, Warnings: 0)."
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "qa-20260321-ai-fullscreen.png",
+      "path": ".playwright-mcp/screenshots/qa-20260321-ai-fullscreen.png"
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Fullscreen button switched the route from /dashboard to /dashboard/ai-assistant on the latest production deployment.",
+    "Fullscreen workspace rendered the persisted AI Chat exchange with the same server summary answer verified in the sidebar run.",
+    "System Context panel was visible with AI Providers, System Status, Quick Commands, and AI Engine Controls sections.",
+    "No browser console errors were captured during fullscreen rendering."
+  ],
+  "links": [
+    {
+      "label": "Vercel URL",
+      "url": "https://openmanager-ai.vercel.app/dashboard/ai-assistant"
+    },
+    {
+      "label": "Deployment Inspector",
+      "url": "https://vercel.com/skyasus-projects/openmanager-ai/AuzevjgfgqgB8H8aun9fReGmTR9X"
+    }
+  ]
+}

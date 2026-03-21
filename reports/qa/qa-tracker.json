@@ -2,15 +2,15 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-03-21T11:36:14.761Z"
+    "updatedAt": "2026-03-21T11:41:43.931Z"
   },
   "sequence": {
-    "nextRunNumber": 148
+    "nextRunNumber": 149
   },
   "summary": {
-    "totalRuns": 146,
-    "totalChecks": 1155,
-    "totalPassed": 1104,
+    "totalRuns": 147,
+    "totalChecks": 1161,
+    "totalPassed": 1110,
     "totalFailed": 47,
     "completionRate": 100,
     "completedItems": 228,
@@ -19,8 +19,8 @@
     "wontFixItems": 8,
     "expertDomainsTracked": 6,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260321-0147",
-    "lastRecordedAt": "2026-03-21T11:36:14.761Z"
+    "lastRunId": "QA-20260321-0148",
+    "lastRecordedAt": "2026-03-21T11:41:43.931Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -11891,6 +11891,86 @@
           "type": "playwright-screenshot",
           "label": "qa-20260321-ai-sidebar.png",
           "path": ".playwright-mcp/screenshots/qa-20260321-ai-sidebar.png"
+        }
+      ],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260321-0148",
+      "recordedAt": "2026-03-21T11:41:43.931Z",
+      "recordedAtKst": "2026-03-21 20:41:43 KST",
+      "title": "Vercel Playwright QA - Fullscreen AI Workspace Proof (SHA 8a7fe8769)",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260321-0148.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_AuzevjgfgqgB8H8aun9fReGmTR9X",
+        "deploymentUrl": "https://openmanager-npcexzk1o-skyasus-projects.vercel.app",
+        "commitSha": "8a7fe87698cf105b9d2c87c8c9d832712ada55e4"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "coveragePacks": ["ai-core", "ai-advanced-surface"],
+      "coveredSurfaces": [
+        "/login",
+        "guest PIN login",
+        "system-boot → /dashboard redirect",
+        "/dashboard/ai-assistant fullscreen route",
+        "fullscreen AI Chat render",
+        "fullscreen system context panel"
+      ],
+      "skippedSurfaces": [
+        "/",
+        "/api/health",
+        "/api/version",
+        "404",
+        "server modal/detail pack",
+        "alerts/topology/log explorer pack",
+        "security blocked-prompt pack",
+        "Langfuse trace visibility",
+        "Reporter flow",
+        "Analyst flow",
+        "AI sidebar free-text chat send"
+      ],
+      "checks": {
+        "total": 6,
+        "passed": 6,
+        "failed": 0
+      },
+      "expertAssessments": [],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-03-21T20:40:59+09:00",
+          "summary": "Current billing period reviewed after fullscreen AI workspace QA; effectiveCost $15.9423, billedCost $0.0000, no meaningful overage spike.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-console",
+          "label": "qa-20260321-ai-fullscreen-console-errors.log",
+          "path": ".playwright-mcp/screenshots/qa-20260321-ai-fullscreen-console-errors.log",
+          "note": "browser_console_messages capture after fullscreen AI workspace validation; Total messages: 0 (Errors: 0, Warnings: 0)."
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "qa-20260321-ai-fullscreen.png",
+          "path": ".playwright-mcp/screenshots/qa-20260321-ai-fullscreen.png"
         }
       ],
       "expertCount": 0,
