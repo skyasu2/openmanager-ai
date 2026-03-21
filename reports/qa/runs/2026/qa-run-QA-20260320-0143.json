@@ -77,7 +77,17 @@
   "pendingImprovements": [],
   "deferredImprovements": [],
   "wontFixImprovements": [],
-  "notes": [],
+  "artifacts": [
+    {
+      "type": "playwright-console",
+      "label": "console-2026-03-20T14-24-24-851Z.log",
+      "path": ".playwright-mcp/screenshots/console-2026-03-20T14-24-24-851Z.log",
+      "note": "Backfilled from a retained local playwright-mcp console capture recorded 29.8 minutes before the run record; association is inferred from the matching 404 surface and the lack of a nearer release-facing console capture."
+    }
+  ],
+  "notes": [
+    "Backfilled one retained local console artifact on 2026-03-21; the association is inferred from a matching nonexistent-page-404-test probe captured 29.8 minutes before QA-20260320-0143."
+  ],
   "links": [],
   "coveragePacks": ["core-routes-smoke", "dashboard-core", "ai-core"]
 }
