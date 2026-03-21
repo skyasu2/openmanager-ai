@@ -4,6 +4,11 @@
   "source": "playwright-mcp",
   "scope": "broad",
   "releaseFacing": true,
+  "coveragePacks": [
+    "core-routes-smoke",
+    "dashboard-core",
+    "ai-core"
+  ],
   "coveredSurfaces": [
     "/",
     "/login",
@@ -17,7 +22,10 @@
     "url": "https://openmanager-ai.vercel.app",
     "frontend": "Vercel",
     "backend": "Cloud Run",
-    "branch": "main"
+    "branch": "main",
+    "deploymentId": "dpl_example1234567890",
+    "deploymentUrl": "https://openmanager-ai-git-main-example.vercel.app",
+    "commitSha": "abcdef1234567890abcdef1234567890abcdef12"
   },
   "checks": {
     "total": 12,

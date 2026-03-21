@@ -20,7 +20,9 @@ reports/qa/
 
 1. 템플릿 복사 후 입력값 작성
 - `cp reports/qa/templates/qa-run-input.example.json /tmp/qa-run-input.json`
-- `scope`, `releaseFacing`, `coveredSurfaces`, `skippedSurfaces`를 현재 QA 범위에 맞게 채운다.
+- `scope`, `releaseFacing`, `coveragePacks`, `coveredSurfaces`, `skippedSurfaces`를 현재 QA 범위에 맞게 채운다.
+- Vercel production의 `broad`/`release-gate` 또는 `releaseFacing: true` run이면 `environment.deploymentId`, `environment.commitSha`를 함께 기록한다.
+- `qa:record`는 누락 시 현재 Git의 `branch`/`HEAD SHA`를 자동 보강하고, `VERCEL_*` system env가 있으면 `deploymentId`/`deploymentUrl`/`url`도 함께 보강한다.
 
 2. QA 결과 기록
 - `npm run qa:record -- --input /tmp/qa-run-input.json`
@@ -46,7 +48,13 @@ reports/qa/
   - `result`는 비용/사용량 판정 결과를 의미합니다: `normal` | `concern` | `unknown`
 - `scope`는 QA 범위를 의미합니다: `smoke` | `targeted` | `broad` | `release-gate`
 - `releaseFacing`은 이 run이 실제 릴리즈 게이트 성격인지 명시합니다.
+- `coveragePacks`는 표준화된 커버 묶음입니다.
+  - 허용 값: `core-routes-smoke`, `dashboard-core`, `ai-core`, `ai-advanced-surface`, `modal-detail-pack`, `security-pack`, `observability-pack`
+  - Vercel production의 `broad`/`release-gate` run이면 최소 `core-routes-smoke`, `dashboard-core`, `ai-core`가 필요합니다.
 - `coveredSurfaces` / `skippedSurfaces`는 사용자 보고 텍스트가 아니라 run SSOT에도 저장해야 합니다.
+- `environment.deploymentId` / `environment.commitSha`는 release-facing 실환경 QA의 배포 증거 필드입니다.
+  - Vercel production의 `broad`/`release-gate` 또는 `releaseFacing: true` run이면 둘 다 기록합니다.
+  - 누락 시 `qa:record`는 현재 Git/`VERCEL_*` 환경에서 자동 보강을 시도하지만, 해석 불가능한 경우에는 계속 오류로 막습니다.
 - 전문가 영역 평가는 `expertAssessments`에 기록합니다.
   - Vercel Production의 `broad`/`release-gate` 또는 `releaseFacing: true` run이면 최소 1건 필수
   - 핵심 필드: `domainId`, `fit`, `improvementNeeded`, `nextAction`
@@ -76,6 +84,8 @@ reports/qa/
 - 항상 필요한 최소 정보:
   - `target`, `run id`, `scope`, `checks`, 최종 판정
 - 다음 항목은 관련 있을 때만 답변에 포함합니다.
+  - `deploymentId`, `commitSha`
+  - `coveragePacks`
   - `coveredSurfaces`, `skippedSurfaces`
   - `usageChecks`
   - `expertAssessments` / open gaps

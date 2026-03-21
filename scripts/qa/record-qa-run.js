@@ -39,6 +39,20 @@ const EXPERT_DOMAIN_CATALOG = [
 
 const RUN_SCOPE_VALUES = new Set(['smoke', 'targeted', 'broad', 'release-gate']);
 const USAGE_RESULT_VALUES = new Set(['normal', 'concern', 'unknown']);
+const COVERAGE_PACK_VALUES = new Set([
+  'core-routes-smoke',
+  'dashboard-core',
+  'ai-core',
+  'ai-advanced-surface',
+  'modal-detail-pack',
+  'security-pack',
+  'observability-pack',
+]);
+const REQUIRED_VERCEL_BROAD_COVERAGE_PACKS = [
+  'core-routes-smoke',
+  'dashboard-core',
+  'ai-core',
+];
 
 function parseArgs(argv) {
   const args = {
@@ -441,6 +455,97 @@ function normalizeStringList(rawValue) {
   return Array.from(new Set(items));
 }
 
+function readTrimmedEnvValue(...keys) {
+  for (const key of keys) {
+    const value = process.env[key];
+    if (!value) continue;
+    const trimmed = String(value).trim();
+    if (trimmed) return trimmed;
+  }
+
+  return '';
+}
+
+function readGitValue(args) {
+  try {
+    return execFileSync('git', args, {
+      cwd: process.cwd(),
+      stdio: ['ignore', 'pipe', 'ignore'],
+      encoding: 'utf8',
+    }).trim();
+  } catch {
+    return '';
+  }
+}
+
+function buildHttpsUrl(hostname) {
+  const normalized = String(hostname || '').trim();
+  if (!normalized) return '';
+  if (/^https?:\/\//i.test(normalized)) return normalized;
+  return `https://${normalized}`;
+}
+
+function inferRuntimeEnvironmentFields() {
+  const vercelTarget =
+    readTrimmedEnvValue('VERCEL_TARGET_ENV') || readTrimmedEnvValue('VERCEL_ENV');
+  const vercelDeploymentUrl = buildHttpsUrl(
+    readTrimmedEnvValue('VERCEL_BRANCH_URL') || readTrimmedEnvValue('VERCEL_URL')
+  );
+  const vercelProductionUrl = buildHttpsUrl(
+    readTrimmedEnvValue('VERCEL_PROJECT_PRODUCTION_URL')
+  );
+  const gitBranch =
+    readTrimmedEnvValue('VERCEL_GIT_COMMIT_REF') ||
+    readGitValue(['branch', '--show-current']);
+  const gitCommitSha =
+    readTrimmedEnvValue('VERCEL_GIT_COMMIT_SHA') || readGitValue(['rev-parse', 'HEAD']);
+
+  return {
+    target: vercelTarget ? `vercel-${vercelTarget}` : '',
+    url:
+      vercelTarget === 'production'
+        ? vercelProductionUrl || vercelDeploymentUrl
+        : vercelDeploymentUrl || vercelProductionUrl,
+    branch: gitBranch,
+    deploymentId: readTrimmedEnvValue('VERCEL_DEPLOYMENT_ID'),
+    deploymentUrl: vercelDeploymentUrl,
+    commitSha: gitCommitSha,
+  };
+}
+
+function normalizeEnvironment(rawValue) {
+  const source = rawValue && typeof rawValue === 'object' ? rawValue : {};
+  const inferred = inferRuntimeEnvironmentFields();
+
+  return {
+    target: source.target ? String(source.target).trim() : inferred.target,
+    url: source.url ? String(source.url).trim() : inferred.url,
+    frontend: source.frontend ? String(source.frontend).trim() : '',
+    backend: source.backend ? String(source.backend).trim() : '',
+    branch: source.branch ? String(source.branch).trim() : inferred.branch,
+    deploymentId: source.deploymentId
+      ? String(source.deploymentId).trim()
+      : inferred.deploymentId,
+    deploymentUrl: source.deploymentUrl
+      ? String(source.deploymentUrl).trim()
+      : inferred.deploymentUrl,
+    commitSha: source.commitSha ? String(source.commitSha).trim() : inferred.commitSha,
+  };
+}
+
+function normalizeCoveragePacks(rawValue) {
+  const items = normalizeStringList(rawValue).map((entry) => entry.toLowerCase());
+  const invalid = items.filter((entry) => !COVERAGE_PACK_VALUES.has(entry));
+
+  if (invalid.length > 0) {
+    throw new Error(
+      `coveragePacks 값이 올바르지 않습니다: ${invalid.join(', ')}. 허용 값: ${Array.from(COVERAGE_PACK_VALUES).join(', ')}`
+    );
+  }
+
+  return Array.from(new Set(items));
+}
+
 function isVercelProductionEnvironment(environment) {
   if (!environment || typeof environment !== 'object') return false;
 
@@ -476,6 +581,22 @@ function requiresVercelUsageCheck(environment, scope, releaseFacing) {
 
 function requiresExpertAssessments(environment, scope, releaseFacing) {
   return requiresVercelUsageCheck(environment, scope, releaseFacing);
+}
+
+function requiresStructuredDeploymentEvidence(environment, scope, releaseFacing) {
+  if (!isVercelProductionEnvironment(environment)) {
+    return false;
+  }
+
+  return releaseFacing || scope === 'broad' || scope === 'release-gate';
+}
+
+function requiresBroadCoveragePacks(environment, scope) {
+  if (!isVercelProductionEnvironment(environment)) {
+    return false;
+  }
+
+  return scope === 'broad' || scope === 'release-gate';
 }
 
 function initializeTracker(nowIso) {
@@ -718,8 +839,11 @@ function statusMarkdown(tracker) {
   const latestRunUsageChecks = latestRun?.usageChecks || [];
   const latestRunScope = latestRun?.scope || 'legacy';
   const latestRunReleaseFacing = latestRun?.releaseFacing === true;
+  const latestRunCoveragePacks = latestRun?.coveragePacks || [];
   const latestRunCoveredSurfaces = latestRun?.coveredSurfaces || [];
   const latestRunSkippedSurfaces = latestRun?.skippedSurfaces || [];
+  const latestRunEnvironment =
+    latestRun && typeof latestRun.environment === 'object' ? latestRun.environment : {};
 
   lines.push('# QA Status Dashboard');
   lines.push('');
@@ -781,6 +905,19 @@ function statusMarkdown(tracker) {
   lines.push('');
   lines.push(`- Scope: ${latestRunScope}`);
   lines.push(`- Release-Facing: ${latestRunReleaseFacing ? 'yes' : 'no'}`);
+  if (latestRunEnvironment.deploymentId || latestRunEnvironment.commitSha) {
+    const deploymentParts = [];
+    if (latestRunEnvironment.deploymentId) {
+      deploymentParts.push(latestRunEnvironment.deploymentId);
+    }
+    if (latestRunEnvironment.commitSha) {
+      deploymentParts.push(`SHA ${latestRunEnvironment.commitSha.slice(0, 8)}`);
+    }
+    lines.push(`- Deployment: ${deploymentParts.join(' / ')}`);
+  }
+  if (latestRunCoveragePacks.length > 0) {
+    lines.push(`- Coverage Packs: ${latestRunCoveragePacks.join(', ')}`);
+  }
   lines.push(
     `- Covered Surfaces: ${latestRunCoveredSurfaces.length > 0 ? latestRunCoveredSurfaces.join(', ') : '-'}`
   );
@@ -887,11 +1024,12 @@ function run() {
   const payload = readJsonFile(inputPath);
   const now = new Date();
   const nowIso = now.toISOString();
-  const environment = payload.environment || {};
+  const environment = normalizeEnvironment(payload.environment);
   const scope = normalizeRunScope(payload.scope, environment);
   const releaseFacing = inferReleaseFacing(payload.releaseFacing, environment, scope);
   const coveredSurfaces = normalizeStringList(payload.coveredSurfaces);
   const skippedSurfaces = normalizeStringList(payload.skippedSurfaces);
+  const coveragePacks = normalizeCoveragePacks(payload.coveragePacks);
 
   const runTitle = String(payload.runTitle || '').trim();
   const owner = String(payload.owner || '').trim();
@@ -953,6 +1091,32 @@ function run() {
     throw new Error(
       'Vercel production broad/release-facing run에는 expertAssessments가 최소 1건 필요합니다.'
     );
+  }
+
+  if (requiresStructuredDeploymentEvidence(environment, scope, releaseFacing)) {
+    if (!environment.commitSha) {
+      throw new Error(
+        'Vercel production broad/release-facing run에는 environment.commitSha가 필요합니다.'
+      );
+    }
+
+    if (!environment.deploymentId) {
+      throw new Error(
+        'Vercel production broad/release-facing run에는 environment.deploymentId가 필요합니다.'
+      );
+    }
+  }
+
+  if (requiresBroadCoveragePacks(environment, scope)) {
+    const missingCoveragePacks = REQUIRED_VERCEL_BROAD_COVERAGE_PACKS.filter(
+      (pack) => !coveragePacks.includes(pack)
+    );
+
+    if (missingCoveragePacks.length > 0) {
+      throw new Error(
+        `Vercel production broad/release-gate run에는 coveragePacks에 ${missingCoveragePacks.join(', ')} 가 필요합니다.`
+      );
+    }
   }
 
   const finalItemMap = new Map();
@@ -1029,6 +1193,7 @@ function run() {
     environment,
     scope,
     releaseFacing,
+    coveragePacks,
     coveredSurfaces,
     skippedSurfaces,
     checks: {
@@ -1105,8 +1270,10 @@ function run() {
     owner,
     source: runRecord.source,
     file: runFileRelative,
+    environment,
     scope,
     releaseFacing,
+    coveragePacks,
     coveredSurfaces,
     skippedSurfaces,
     checks: runRecord.checks,

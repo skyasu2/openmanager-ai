@@ -42,6 +42,14 @@ function run() {
     console.log(
       `- latest scope/release-facing: ${latestRun.scope || 'legacy'}/${latestRun.releaseFacing ? 'yes' : 'no'}`
     );
+    if (latestRun.environment?.deploymentId || latestRun.environment?.commitSha) {
+      console.log(
+        `- latest deployment: ${latestRun.environment?.deploymentId || '-'} / ${latestRun.environment?.commitSha || '-'}`
+      );
+    }
+    if (Array.isArray(latestRun.coveragePacks) && latestRun.coveragePacks.length > 0) {
+      console.log(`- latest coverage packs: ${latestRun.coveragePacks.join(', ')}`);
+    }
     console.log(
       `- latest covered/skipped surfaces: ${(latestRun.coveredSurfaces || []).length}/${(latestRun.skippedSurfaces || []).length}`
     );
