@@ -2,15 +2,15 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-03-20T22:28:54.515Z"
+    "updatedAt": "2026-03-21T11:08:45.922Z"
   },
   "sequence": {
-    "nextRunNumber": 146
+    "nextRunNumber": 147
   },
   "summary": {
-    "totalRuns": 144,
-    "totalChecks": 1142,
-    "totalPassed": 1091,
+    "totalRuns": 145,
+    "totalChecks": 1148,
+    "totalPassed": 1097,
     "totalFailed": 47,
     "completionRate": 100,
     "completedItems": 228,
@@ -19,8 +19,8 @@
     "wontFixItems": 8,
     "expertDomainsTracked": 6,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260321-0145",
-    "lastRecordedAt": "2026-03-20T22:28:54.515Z"
+    "lastRunId": "QA-20260321-0146",
+    "lastRecordedAt": "2026-03-21T11:08:45.922Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -11737,6 +11737,88 @@
         "commitSha": "386aa7acd3ea86e8c1cc4ccba7555f99277e8d24"
       },
       "coveragePacks": ["modal-detail-pack"]
+    },
+    {
+      "runId": "QA-20260321-0146",
+      "recordedAt": "2026-03-21T11:08:45.922Z",
+      "recordedAtKst": "2026-03-21 20:08:45 KST",
+      "title": "Vercel Playwright QA - Targeted Topology Artifact Proof (SHA 54990e639)",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260321-0146.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_14tjJwQPhxk2xSsRB8UALpx3hXmB",
+        "deploymentUrl": "https://openmanager-ez15gd0w3-skyasus-projects.vercel.app",
+        "commitSha": "54990e6392645498c7dd623e67483a527897ce29"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "coveragePacks": ["dashboard-core", "modal-detail-pack"],
+      "coveredSurfaces": [
+        "/login",
+        "guest PIN login",
+        "system-boot → /dashboard redirect",
+        "dashboard render",
+        "topology modal",
+        "production console cleanliness"
+      ],
+      "skippedSurfaces": [
+        "/",
+        "/api/health",
+        "/api/version",
+        "404",
+        "AI sidebar/chat",
+        "Reporter flow",
+        "Analyst flow",
+        "/dashboard/ai-assistant fullscreen",
+        "active alerts modal",
+        "alert history modal",
+        "log explorer modal",
+        "security blocked-prompt pack",
+        "Langfuse trace visibility"
+      ],
+      "checks": {
+        "total": 6,
+        "passed": 6,
+        "failed": 0
+      },
+      "expertAssessments": [],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-03-21T20:07:29+09:00",
+          "summary": "Current billing period reviewed after targeted topology modal QA; effectiveCost $15.9423, billedCost $0.0000, no meaningful overage spike.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-console",
+          "label": "qa-20260321-topology-console-errors.log",
+          "path": ".playwright-mcp/screenshots/qa-20260321-topology-console-errors.log",
+          "note": "browser_console_messages capture after topology modal verification; Total messages: 0 (Errors: 0, Warnings: 0)."
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "qa-20260321-topology-modal.png",
+          "path": ".playwright-mcp/screenshots/qa-20260321-topology-modal.png"
+        }
+      ],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {

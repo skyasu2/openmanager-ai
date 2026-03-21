@@ -1,15 +1,15 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-21 14:03:00 KST
+> Generated at: 2026-03-21 20:08:46 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 144 |
-| Total Checks | 1142 |
-| Passed | 1091 |
+| Total Runs | 145 |
+| Total Checks | 1148 |
+| Passed | 1097 |
 | Failed | 47 |
 | Completed Items | 228 |
 | Pending Items | 0 |
@@ -18,11 +18,11 @@
 | Expert Domains Tracked | 6 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Run | QA-20260321-0145 (2026-03-20T22:28:54.515Z) |
+| Last Run | QA-20260321-0146 (2026-03-21T11:08:45.922Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260321-0145 (2026-03-20T22:28:54.515Z)
+Latest run: QA-20260321-0146 (2026-03-21T11:08:45.922Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -32,16 +32,23 @@ Latest run: QA-20260321-0145 (2026-03-20T22:28:54.515Z)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period reviewed after targeted modal/detail QA; effectiveCost about $15.2754, billedCost $0.0000, no meaningful overage spike. |
+| vercel | cli | checked | normal | Current billing period reviewed after targeted topology modal QA; effectiveCost $15.9423, billedCost $0.0000, no meaningful overage spike. |
 
 ## Coverage (Latest Run)
 
 - Scope: targeted
 - Release-Facing: no
-- Deployment: dpl_29htc32mVBRis5LxZmGRtRZohQXe / SHA 386aa7ac
-- Coverage Packs: modal-detail-pack
-- Covered Surfaces: /login, guest PIN login, dashboard, active alerts modal, alert history modal, log explorer modal, topology modal
-- Skipped Surfaces: /, /api/health, /api/version, 404, AI sidebar/chat, Reporter flow, Analyst flow, /dashboard/ai-assistant fullscreen, security blocked-prompt pack, Langfuse trace visibility
+- Deployment: dpl_14tjJwQPhxk2xSsRB8UALpx3hXmB / SHA 54990e63
+- Coverage Packs: dashboard-core, modal-detail-pack
+- Covered Surfaces: /login, guest PIN login, system-boot → /dashboard redirect, dashboard render, topology modal, production console cleanliness
+- Skipped Surfaces: /, /api/health, /api/version, 404, AI sidebar/chat, Reporter flow, Analyst flow, /dashboard/ai-assistant fullscreen, active alerts modal, alert history modal, log explorer modal, security blocked-prompt pack, Langfuse trace visibility
+
+## Artifacts (Latest Run)
+
+| Type | Label | Location | Viewer |
+|---|---|---|---|
+| playwright-console | qa-20260321-topology-console-errors.log | `.playwright-mcp/screenshots/qa-20260321-topology-console-errors.log` | - |
+| playwright-screenshot | qa-20260321-topology-modal.png | `.playwright-mcp/screenshots/qa-20260321-topology-modal.png` | - |
 
 ## Expert Domain Open Gaps
 
@@ -308,6 +315,7 @@ Latest run: QA-20260321-0145 (2026-03-20T22:28:54.515Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260321-0146 | 2026-03-21T11:08:45.922Z | targeted | no | Vercel Playwright QA - Targeted Topology Artifact Proof (SHA 54990e639) | 6 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260321-0145 | 2026-03-20T22:28:54.515Z | targeted | no | Vercel Playwright QA - Modal Detail Pack Coverage Fill (SHA 386aa7acd) | 8 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260321-0144 | 2026-03-20T22:01:41.259Z | targeted | yes | Vercel Playwright QA - Reporter/Analyst/Fullscreen Follow-up (SHA 818871b86) | 9 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260320-0143 | 2026-03-20T14:54:14.012Z | broad | yes | Vercel Playwright QA - Broad Smoke Post-Push (SHA cf0b1119) | 11 | 0 | 0 | 0 | 0 | 0 |
@@ -327,5 +335,4 @@ Latest run: QA-20260321-0145 (2026-03-20T22:28:54.515Z)
 | QA-20260319-0128 | 2026-03-18T16:45:23.733Z | legacy | no | Vercel Playwright QA - Sidebar Reporter and Analyst chat retention parity | 6 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260319-0127 | 2026-03-18T15:35:06.423Z | legacy | no | Vercel Playwright QA - Analyst fullscreen chat retention recheck | 5 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260318-0126 | 2026-03-18T14:50:18.155Z | legacy | no | Vercel Playwright QA - Reporter and Analyst fullscreen state retention | 6 | 3 | 1 | 0 | 0 | 2 |
-| QA-20260318-0125 | 2026-03-18T10:29:22.769Z | legacy | no | Security QA - AI Code Gate Input Policy production recheck | 9 | 3 | 0 | 0 | 0 | 0 |
 
