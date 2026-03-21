@@ -2,15 +2,15 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-03-21T11:08:45.922Z"
+    "updatedAt": "2026-03-21T11:36:14.761Z"
   },
   "sequence": {
-    "nextRunNumber": 147
+    "nextRunNumber": 148
   },
   "summary": {
-    "totalRuns": 145,
-    "totalChecks": 1148,
-    "totalPassed": 1097,
+    "totalRuns": 146,
+    "totalChecks": 1155,
+    "totalPassed": 1104,
     "totalFailed": 47,
     "completionRate": 100,
     "completedItems": 228,
@@ -19,8 +19,8 @@
     "wontFixItems": 8,
     "expertDomainsTracked": 6,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260321-0146",
-    "lastRecordedAt": "2026-03-21T11:08:45.922Z"
+    "lastRunId": "QA-20260321-0147",
+    "lastRecordedAt": "2026-03-21T11:36:14.761Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -11811,6 +11811,86 @@
           "type": "playwright-screenshot",
           "label": "qa-20260321-topology-modal.png",
           "path": ".playwright-mcp/screenshots/qa-20260321-topology-modal.png"
+        }
+      ],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260321-0147",
+      "recordedAt": "2026-03-21T11:36:14.761Z",
+      "recordedAtKst": "2026-03-21 20:36:14 KST",
+      "title": "Vercel Playwright QA - AI Sidebar Reporter Analyst Proof (SHA d802241fb)",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260321-0147.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_89d1GEiGhzqm9dBnF53jr6WiFofh",
+        "deploymentUrl": "https://openmanager-hn87hfct4-skyasus-projects.vercel.app",
+        "commitSha": "d802241fb4ba0a848f89b5cac0e8417afe489f35"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "coveragePacks": ["ai-core", "ai-advanced-surface"],
+      "coveredSurfaces": [
+        "/login",
+        "guest PIN login",
+        "system-boot → /dashboard redirect",
+        "AI sidebar open",
+        "AI Chat starter prompt",
+        "Reporter flow",
+        "Analyst flow"
+      ],
+      "skippedSurfaces": [
+        "/",
+        "/api/health",
+        "/api/version",
+        "404",
+        "server modal/detail pack",
+        "alerts/topology/log explorer pack",
+        "security blocked-prompt pack",
+        "Langfuse trace visibility",
+        "/dashboard/ai-assistant fullscreen",
+        "AI sidebar free-text chat send"
+      ],
+      "checks": {
+        "total": 7,
+        "passed": 7,
+        "failed": 0
+      },
+      "expertAssessments": [],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-03-21T20:35:59+09:00",
+          "summary": "Current billing period reviewed after targeted AI surface QA; effectiveCost $15.9423, billedCost $0.0000, no meaningful overage spike.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-console",
+          "label": "qa-20260321-ai-sidebar-console-errors.log",
+          "path": ".playwright-mcp/screenshots/qa-20260321-ai-sidebar-console-errors.log",
+          "note": "browser_console_messages capture after AI sidebar, Reporter, Analyst, and starter-prompt validation; Total messages: 0 (Errors: 0, Warnings: 0)."
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "qa-20260321-ai-sidebar.png",
+          "path": ".playwright-mcp/screenshots/qa-20260321-ai-sidebar.png"
         }
       ],
       "expertCount": 0,

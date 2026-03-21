@@ -1,0 +1,93 @@
+{
+  "runId": "QA-20260321-0147",
+  "recordedAt": "2026-03-21T11:36:14.761Z",
+  "recordedAtKst": "2026-03-21 20:36:14 KST",
+  "runTitle": "Vercel Playwright QA - AI Sidebar Reporter Analyst Proof (SHA d802241fb)",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_89d1GEiGhzqm9dBnF53jr6WiFofh",
+    "deploymentUrl": "https://openmanager-hn87hfct4-skyasus-projects.vercel.app",
+    "commitSha": "d802241fb4ba0a848f89b5cac0e8417afe489f35"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "coveragePacks": ["ai-core", "ai-advanced-surface"],
+  "coveredSurfaces": [
+    "/login",
+    "guest PIN login",
+    "system-boot → /dashboard redirect",
+    "AI sidebar open",
+    "AI Chat starter prompt",
+    "Reporter flow",
+    "Analyst flow"
+  ],
+  "skippedSurfaces": [
+    "/",
+    "/api/health",
+    "/api/version",
+    "404",
+    "server modal/detail pack",
+    "alerts/topology/log explorer pack",
+    "security blocked-prompt pack",
+    "Langfuse trace visibility",
+    "/dashboard/ai-assistant fullscreen",
+    "AI sidebar free-text chat send"
+  ],
+  "checks": {
+    "total": 7,
+    "passed": 7,
+    "failed": 0
+  },
+  "expertAssessments": [],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-03-21T20:35:59+09:00",
+      "summary": "Current billing period reviewed after targeted AI surface QA; effectiveCost $15.9423, billedCost $0.0000, no meaningful overage spike.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-console",
+      "label": "qa-20260321-ai-sidebar-console-errors.log",
+      "path": ".playwright-mcp/screenshots/qa-20260321-ai-sidebar-console-errors.log",
+      "note": "browser_console_messages capture after AI sidebar, Reporter, Analyst, and starter-prompt validation; Total messages: 0 (Errors: 0, Warnings: 0)."
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "qa-20260321-ai-sidebar.png",
+      "path": ".playwright-mcp/screenshots/qa-20260321-ai-sidebar.png"
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Guest PIN 4231 login succeeded and system start redirected through /system-boot to /dashboard on the latest production deployment.",
+    "AI Chat starter prompt '현재 모든 서버의 상태를 요약해줘' returned a Streaming AI answer with 15 total servers, 1 warning server, and lb-haproxy-dc1-01 guidance.",
+    "Reporter created a fresh incident card titled '로드밸런서 CPU 고부하 경고' with MD copy and download controls visible.",
+    "Analyst full-system analysis rendered 전체 시스템 상태 plus server-level sections including 현재 상태 and 1시간 후 예측."
+  ],
+  "links": [
+    {
+      "label": "Vercel URL",
+      "url": "https://openmanager-ai.vercel.app"
+    },
+    {
+      "label": "Deployment Inspector",
+      "url": "https://vercel.com/skyasus-projects/openmanager-ai/89d1GEiGhzqm9dBnF53jr6WiFofh"
+    }
+  ]
+}
