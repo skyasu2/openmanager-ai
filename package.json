@@ -115,6 +115,7 @@
     "test:cloud:essential:llm-once": "node scripts/test/cloud-deploy-essential-smoke.mjs --require-auth --with-supervisor-call",
     "qa:record": "node scripts/qa/record-qa-run.js",
     "qa:status": "node scripts/qa/print-qa-status.js",
+    "qa:status:sync": "node scripts/qa/print-qa-status.js --write",
     "test:fast": "npm run test",
     "test:super-fast": "npm run test:quick",
     "test:gate": "npm run test:quick && npm run type-check && npm run lint",

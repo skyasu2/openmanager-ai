@@ -32,6 +32,7 @@ reports/qa/
 
 3. 요약 확인
 - `npm run qa:status`
+- `npm run qa:status:sync` 또는 `npm run qa:status -- --write`
 - `reports/qa/QA_STATUS.md` 확인
 
 4. Vercel 실환경 QA/배포 뒤 사용량 확인
@@ -88,7 +89,9 @@ reports/qa/
   - 이 예외를 사용할 때는 `note`에 `release-blocking 아님` 또는 `tracking-only`를 명시해 실제 릴리즈 차단 여부를 분리해 적는다
   - 과도 항목은 템플릿의 `overengineeringScope`에 근거를 남겨 다음 런에서도 의도 추적 가능
   - 예외적으로 개선 우선순위가 높다고 판단되면 `isBlocking: true`로 명시
-- `QA_STATUS.md`는 기록 시마다 자동 재생성됩니다.
+- `QA_STATUS.md`는 `qa:record` 실행 시 자동 재생성됩니다.
+- `qa:status`는 기본적으로 `qa-tracker.json`만 읽는 read-only 요약 명령입니다.
+- 대시보드를 수동으로 다시 맞출 때만 `npm run qa:status:sync` 또는 `npm run qa:status -- --write`를 사용합니다.
 
 ## Reporting Style
 

@@ -10,6 +10,7 @@ import {
   readdirSync,
   readFileSync,
   rmSync,
+  statSync,
   utimesSync,
   writeFileSync,
 } from 'node:fs';
@@ -220,9 +221,61 @@ describe('QA scripts', () => {
     expect(statusResult.stdout).toContain(
       '- latest coverage packs: core-routes-smoke, dashboard-core, ai-core'
     );
+    expect(statusResult.stdout).toContain(
+      '- dashboard file: reports/qa/QA_STATUS.md (read-only)'
+    );
 
     const statusPath = join(tempDir, 'reports', 'qa', 'QA_STATUS.md');
     expect(existsSync(statusPath)).toBe(true);
+    expect(readFileSync(statusPath, 'utf8')).toContain(
+      'Coverage Packs: core-routes-smoke, dashboard-core, ai-core'
+    );
+  });
+
+  it('only syncs QA_STATUS.md when qa:status runs with --write', () => {
+    const tempDir = createTempWorkspace();
+    const inputPath = writeInputFile(tempDir, createValidPayload());
+
+    const recordResult = runNodeScript(
+      RECORD_QA_RUN_SCRIPT,
+      ['--input', inputPath],
+      {
+        cwd: tempDir,
+        env: {
+          VERCEL_DEPLOYMENT_ID: 'dpl_sync123',
+          VERCEL_GIT_COMMIT_SHA: 'abcdefabcdefabcdefabcdefabcdefabcdefabcd',
+          VERCEL_GIT_COMMIT_REF: 'main',
+          VERCEL_TARGET_ENV: 'production',
+          VERCEL_PROJECT_PRODUCTION_URL: 'openmanager-ai.vercel.app',
+        },
+      }
+    );
+
+    expect(recordResult.status).toBe(0);
+
+    const statusPath = join(tempDir, 'reports', 'qa', 'QA_STATUS.md');
+    writeFileSync(statusPath, 'stale dashboard\n', 'utf8');
+    const staleMtime = statSync(statusPath).mtimeMs;
+
+    const readOnlyResult = runNodeScript(PRINT_QA_STATUS_SCRIPT, [], {
+      cwd: tempDir,
+    });
+
+    expect(readOnlyResult.status).toBe(0);
+    expect(readOnlyResult.stdout).toContain(
+      '- dashboard file: reports/qa/QA_STATUS.md (read-only)'
+    );
+    expect(readFileSync(statusPath, 'utf8')).toBe('stale dashboard\n');
+    expect(statSync(statusPath).mtimeMs).toBe(staleMtime);
+
+    const syncResult = runNodeScript(PRINT_QA_STATUS_SCRIPT, ['--write'], {
+      cwd: tempDir,
+    });
+
+    expect(syncResult.status).toBe(0);
+    expect(syncResult.stdout).toContain(
+      '- dashboard synced: reports/qa/QA_STATUS.md'
+    );
     expect(readFileSync(statusPath, 'utf8')).toContain(
       'Coverage Packs: core-routes-smoke, dashboard-core, ai-core'
     );

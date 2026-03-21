@@ -7,14 +7,29 @@ const { statusMarkdown } = require('./record-qa-run.js');
 const TRACKER_PATH = path.resolve(process.cwd(), 'reports/qa/qa-tracker.json');
 const STATUS_PATH = path.resolve(process.cwd(), 'reports/qa/QA_STATUS.md');
 
+function printUsage() {
+  console.log('Usage: npm run qa:status [-- --write]');
+  console.log('  default: read-only summary from qa-tracker.json');
+  console.log('  --write: regenerate reports/qa/QA_STATUS.md before printing');
+}
+
 function run() {
+  const args = new Set(process.argv.slice(2));
+  if (args.has('--help') || args.has('-h')) {
+    printUsage();
+    process.exit(0);
+  }
+
   if (!fs.existsSync(TRACKER_PATH)) {
     console.log('qa-tracker.json not found. Run `npm run qa:record` first.');
     process.exit(0);
   }
 
   const tracker = JSON.parse(fs.readFileSync(TRACKER_PATH, 'utf8'));
-  fs.writeFileSync(STATUS_PATH, statusMarkdown(tracker), 'utf8');
+  const shouldWrite = args.has('--write') || args.has('--sync');
+  if (shouldWrite) {
+    fs.writeFileSync(STATUS_PATH, statusMarkdown(tracker), 'utf8');
+  }
   const summary = tracker.summary || {};
   const items = Object.values(tracker.items || {});
   const completed = items.filter((item) => item.status === 'completed');
@@ -61,7 +76,14 @@ function run() {
       `- latest covered/skipped surfaces: ${(latestRun.coveredSurfaces || []).length}/${(latestRun.skippedSurfaces || []).length}`
     );
   }
-  console.log(`- dashboard synced: ${path.relative(process.cwd(), STATUS_PATH)}`);
+  const statusFileRelativePath = path.relative(process.cwd(), STATUS_PATH);
+  if (shouldWrite) {
+    console.log(`- dashboard synced: ${statusFileRelativePath}`);
+  } else if (fs.existsSync(STATUS_PATH)) {
+    console.log(`- dashboard file: ${statusFileRelativePath} (read-only)`);
+  } else {
+    console.log(`- dashboard file missing: ${statusFileRelativePath} (--write to sync)`);
+  }
 
   if (latestUsageChecks.length > 0) {
     console.log('\nLatest Usage Checks');

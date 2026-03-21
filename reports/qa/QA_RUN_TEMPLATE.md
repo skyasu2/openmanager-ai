@@ -8,9 +8,12 @@
 ```bash
 npm run qa:record -- --input <qa-run-input.json>
 # 예: npm run qa:record -- --input /tmp/qa-run.json
+npm run qa:status
+npm run qa:status:sync
 ```
 
-실행 후 자동 생성: run JSON (`reports/qa/runs/YYYY/qa-run-QA-YYYYMMDD-NNNN.json`), tracker 갱신, `QA_STATUS.md` 갱신.
+`qa:record` 실행 후 자동 생성: run JSON (`reports/qa/runs/YYYY/qa-run-QA-YYYYMMDD-NNNN.json`), tracker 갱신, `QA_STATUS.md` 갱신.
+`qa:status`는 read-only 요약 조회이고, `qa:status:sync`는 `QA_STATUS.md`를 수동 재생성합니다.
 
 ## 환경 요구사항
 
