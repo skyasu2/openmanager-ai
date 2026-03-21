@@ -65,6 +65,22 @@
     "recentMinutes": 180,
     "pathIncludes": ["qa-20260321-login-modal"]
   },
+  "ciEvidence": {
+    "provider": "github-actions",
+    "workflowName": "CI/CD Core Gates",
+    "runId": "23381598925",
+    "owner": "skyasu2",
+    "repo": "openmanager-ai",
+    "branch": "main",
+    "commitSha": "03fa41be562ff2cacffe58c5c0b45ad476e7e184",
+    "artifacts": [
+      "playwright-results-23381598925",
+      {
+        "name": "playwright-report-23381598925",
+        "url": "https://example.com/playwright-report.zip"
+      }
+    ]
+  },
   "expertAssessments": [
     {
       "domainId": "ai-quality-assurance",
@@ -232,6 +248,7 @@
   ],
   "links": [
     {
+      "type": "general",
       "label": "Vercel URL",
       "url": "https://openmanager-ai.vercel.app"
     }

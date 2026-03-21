@@ -350,6 +350,87 @@ describe('QA scripts', () => {
     expect(statusMarkdown).toContain('artifacts/dashboard.png');
   });
 
+  it('expands GitHub Actions CI evidence into structured links', () => {
+    const tempDir = createTempWorkspace();
+    const inputPath = writeInputFile(
+      tempDir,
+      createValidPayload({
+        ciEvidence: {
+          provider: 'github-actions',
+          owner: 'skyasu2',
+          repo: 'openmanager-ai',
+          workflowName: 'CI/CD Core Gates',
+          runId: '23381598925',
+          branch: 'main',
+          commitSha: '03fa41be562ff2cacffe58c5c0b45ad476e7e184',
+          artifacts: [
+            'playwright-results-23381598925',
+            {
+              name: 'playwright-report-23381598925',
+              url: 'https://example.com/playwright-report.zip',
+            },
+          ],
+        },
+      })
+    );
+
+    const recordResult = runNodeScript(
+      RECORD_QA_RUN_SCRIPT,
+      ['--input', inputPath],
+      {
+        cwd: tempDir,
+        env: {
+          VERCEL_DEPLOYMENT_ID: 'dpl_ci123',
+          VERCEL_GIT_COMMIT_SHA: 'abcdefabcdefabcdefabcdefabcdefabcdefabcd',
+          VERCEL_GIT_COMMIT_REF: 'main',
+          VERCEL_TARGET_ENV: 'production',
+          VERCEL_PROJECT_PRODUCTION_URL: 'openmanager-ai.vercel.app',
+        },
+      }
+    );
+
+    expect(recordResult.status).toBe(0);
+
+    const runFilePath = findGeneratedRunFile(tempDir);
+    const runRecord = JSON.parse(readFileSync(runFilePath, 'utf8'));
+    expect(runRecord.links).toEqual([
+      {
+        type: 'github-actions-artifact',
+        label: 'GitHub Artifact: playwright-report-23381598925',
+        url: 'https://example.com/playwright-report.zip',
+      },
+      {
+        type: 'github-actions-artifact',
+        label: 'GitHub Artifact: playwright-results-23381598925',
+        url: 'https://github.com/skyasu2/openmanager-ai/actions/runs/23381598925',
+        note: 'artifact=playwright-results-23381598925; download/open from the workflow run page',
+      },
+      {
+        type: 'github-actions-run',
+        label: 'GitHub Actions: CI/CD Core Gates #23381598925',
+        url: 'https://github.com/skyasu2/openmanager-ai/actions/runs/23381598925',
+        note: 'branch=main, sha=03fa41be562ff2cacffe58c5c0b45ad476e7e184',
+      },
+    ]);
+
+    const statusResult = runNodeScript(PRINT_QA_STATUS_SCRIPT, [], {
+      cwd: tempDir,
+    });
+
+    expect(statusResult.status).toBe(0);
+    expect(statusResult.stdout).toContain(
+      '- latest links: 3 (github-actions-artifact, github-actions-run)'
+    );
+
+    const statusPath = join(tempDir, 'reports', 'qa', 'QA_STATUS.md');
+    const statusMarkdown = readFileSync(statusPath, 'utf8');
+    expect(statusMarkdown).toContain('## Links (Latest Run)');
+    expect(statusMarkdown).toContain(
+      'https://github.com/skyasu2/openmanager-ai/actions/runs/23381598925'
+    );
+    expect(statusMarkdown).toContain('playwright-results-23381598925');
+  });
+
   it('auto-detects recent Playwright report/test-results artifacts', () => {
     const tempDir = createTempWorkspace();
     writeWorkspaceFile(

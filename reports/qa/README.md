@@ -26,6 +26,7 @@ reports/qa/
 - 기본 디렉토리나 시간 창을 바꾸려면 `playwrightArtifacts.reportDir/resultsDir/screenshotsDir/recentMinutes/pathIncludes`를 입력 JSON에 명시한다.
 - 수동 MCP QA는 shared `.playwright-mcp/screenshots`를 쓰므로, run별 파일 prefix를 붙이고 `pathIncludes`로 함께 좁혀 fresh artifact only 원칙을 지킨다.
 - GitHub Actions `workflow_dispatch`로 실행한 `E2E Critical`은 성공해도 `playwright-report-${run_id}`, `playwright-results-${run_id}` artifact를 3일간 보존하므로, CI 기반 QA 증거 링크로 재사용할 수 있다.
+- CI 근거를 재사용할 때는 `ciEvidence`에 `workflowName`, `runId`, `artifacts[]`를 넣어 `GitHub Actions run/artifact` 링크를 표준 라벨로 자동 생성한다.
 - Vercel production의 `broad`/`release-gate` 또는 `releaseFacing: true` run이면 `environment.deploymentId`, `environment.commitSha`를 함께 기록한다.
 - `qa:record`는 누락 시 현재 Git의 `branch`/`HEAD SHA`를 자동 보강하고, `VERCEL_*` system env가 있으면 `deploymentId`/`deploymentUrl`/`url`도 함께 보강한다.
 
@@ -61,6 +62,15 @@ reports/qa/
   - 허용 값: `playwright-trace`, `playwright-report`, `playwright-screenshot`, `playwright-video`, `playwright-console`, `playwright-network`
   - 각 항목은 `type`, `label`, `url|path`를 가집니다.
   - `playwright-trace`에 `url`이 있으면 `qa:record`가 `trace.playwright.dev` viewer URL을 자동 생성합니다.
+- `links`는 사람이 보는 관련 링크 필드입니다.
+  - 허용 값: `general`, `vercel-deployment`, `github-actions-run`, `github-actions-artifact`, `monitoring`, `langfuse-trace`
+  - `qa:record`는 `ciEvidence`가 있으면 `links`에 GitHub Actions run/artifact 링크를 자동 병합합니다.
+- `ciEvidence`는 GitHub Actions 기반 QA 증거를 표준화하는 필드입니다.
+  - 현재 지원 provider: `github-actions`
+  - 필수: `runId`
+  - 선택: `workflowName`, `owner`, `repo`, `runUrl`, `branch`, `commitSha`, `artifacts[]`
+  - `owner`/`repo`를 비우면 `GITHUB_REPOSITORY` 또는 `git origin`에서 추론합니다.
+  - artifact URL이 없으면 workflow run URL로 연결하고, note에 artifact 이름을 남깁니다.
 - `playwrightArtifacts`는 로컬 Playwright 산출물을 자동 수집하는 옵션입니다.
   - 기본값: `reportDir=playwright-report`, `resultsDir=test-results`, `screenshotsDir=.playwright-mcp/screenshots`, `recentMinutes=180`, `pathIncludes=[]`
   - `source`가 `playwright`, `playwright-cli`, `playwright-mcp` 계열이면 옵션이 없어도 기본값으로 자동 수집을 시도합니다.

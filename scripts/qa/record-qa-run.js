@@ -56,6 +56,14 @@ const ARTIFACT_TYPE_VALUES = new Set([
   'playwright-console',
   'playwright-network',
 ]);
+const LINK_TYPE_VALUES = new Set([
+  'general',
+  'vercel-deployment',
+  'github-actions-run',
+  'github-actions-artifact',
+  'monitoring',
+  'langfuse-trace',
+]);
 const REQUIRED_VERCEL_BROAD_COVERAGE_PACKS = [
   'core-routes-smoke',
   'dashboard-core',
@@ -578,6 +586,35 @@ function buildPlaywrightTraceViewerUrl(traceUrl) {
   return `https://trace.playwright.dev/?trace=${encodeURIComponent(traceUrl)}`;
 }
 
+function inferGitHubRepository() {
+  const repoEnv = readTrimmedEnvValue('GITHUB_REPOSITORY');
+  if (/^[^/\s]+\/[^/\s]+$/.test(repoEnv)) {
+    const [owner, repo] = repoEnv.split('/');
+    return { owner, repo };
+  }
+
+  const remoteUrl = readGitValue(['config', '--get', 'remote.origin.url']);
+  const match = remoteUrl.match(
+    /github\.com[:/]([^/\s]+)\/([^/\s]+?)(?:\.git)?$/
+  );
+  if (!match) {
+    return { owner: '', repo: '' };
+  }
+
+  return {
+    owner: match[1],
+    repo: match[2],
+  };
+}
+
+function buildGitHubActionsRunUrl(owner, repo, runId) {
+  if (!owner || !repo || !runId) {
+    return '';
+  }
+
+  return `https://github.com/${owner}/${repo}/actions/runs/${runId}`;
+}
+
 function toPosixRelativePath(filePath) {
   return path.relative(process.cwd(), filePath).split(path.sep).join('/');
 }
@@ -826,6 +863,148 @@ function mergeArtifacts(manualArtifacts, detectedArtifacts) {
   }
 
   return merged;
+}
+
+function normalizeLinks(rawValue) {
+  if (!Array.isArray(rawValue)) {
+    return [];
+  }
+
+  return rawValue.map((rawLink, index) => {
+    if (!rawLink || typeof rawLink !== 'object') {
+      throw new Error(`links[${index}] 항목이 비어있거나 객체가 아닙니다.`);
+    }
+
+    const label = String(rawLink.label || '').trim();
+    if (!label) {
+      throw new Error(`links[${index}].label이 필요합니다.`);
+    }
+
+    const type = String(rawLink.type || 'general')
+      .trim()
+      .toLowerCase();
+    if (!LINK_TYPE_VALUES.has(type)) {
+      throw new Error(
+        `links[${index}].type 값이 올바르지 않습니다: ${type || '(empty)'}. 허용 값: ${Array.from(LINK_TYPE_VALUES).join(', ')}`
+      );
+    }
+
+    return {
+      type,
+      label,
+      url: normalizeUrl(rawLink.url, `links[${index}].url`),
+      ...(rawLink.note ? { note: String(rawLink.note).trim() } : {}),
+    };
+  });
+}
+
+function normalizeCiEvidence(rawValue) {
+  if (!rawValue) {
+    return [];
+  }
+
+  if (typeof rawValue !== 'object') {
+    throw new Error('ciEvidence는 객체여야 합니다.');
+  }
+
+  const provider = String(rawValue.provider || 'github-actions')
+    .trim()
+    .toLowerCase();
+  if (provider !== 'github-actions') {
+    throw new Error('ciEvidence.provider는 github-actions만 지원합니다.');
+  }
+
+  const runId = String(rawValue.runId || '').trim();
+  if (!/^\d+$/.test(runId)) {
+    throw new Error('ciEvidence.runId는 숫자 문자열이어야 합니다.');
+  }
+
+  const inferredRepo = inferGitHubRepository();
+  const owner = String(rawValue.owner || inferredRepo.owner || '').trim();
+  const repo = String(rawValue.repo || inferredRepo.repo || '').trim();
+  const runUrl = rawValue.runUrl
+    ? normalizeUrl(rawValue.runUrl, 'ciEvidence.runUrl')
+    : buildGitHubActionsRunUrl(owner, repo, runId);
+
+  if (!runUrl) {
+    throw new Error(
+      'ciEvidence.runUrl이 없으면 ciEvidence.owner/repo 또는 git origin/GITHUB_REPOSITORY에서 저장소를 추론할 수 있어야 합니다.'
+    );
+  }
+
+  const workflowName = String(rawValue.workflowName || 'GitHub Actions').trim();
+  const branch = String(rawValue.branch || '').trim();
+  const commitSha = String(rawValue.commitSha || '').trim();
+  const runLinkNote = [branch ? `branch=${branch}` : '', commitSha ? `sha=${commitSha}` : '']
+    .filter(Boolean)
+    .join(', ');
+
+  const links = [
+    {
+      type: 'github-actions-run',
+      label: `GitHub Actions: ${workflowName} #${runId}`,
+      url: runUrl,
+      ...(runLinkNote ? { note: runLinkNote } : {}),
+    },
+  ];
+
+  const ciArtifacts = Array.isArray(rawValue.artifacts) ? rawValue.artifacts : [];
+  ciArtifacts.forEach((rawArtifact, index) => {
+    const artifact =
+      typeof rawArtifact === 'string' ? { name: rawArtifact } : rawArtifact;
+
+    if (!artifact || typeof artifact !== 'object') {
+      throw new Error(`ciEvidence.artifacts[${index}] 항목이 비어있거나 객체가 아닙니다.`);
+    }
+
+    const name = String(artifact.name || '').trim();
+    if (!name) {
+      throw new Error(`ciEvidence.artifacts[${index}].name이 필요합니다.`);
+    }
+
+    const artifactUrl = artifact.url
+      ? normalizeUrl(artifact.url, `ciEvidence.artifacts[${index}].url`)
+      : runUrl;
+    const artifactNote = artifact.url
+      ? String(artifact.note || '').trim()
+      : [
+          `artifact=${name}`,
+          'download/open from the workflow run page',
+          artifact.note ? String(artifact.note).trim() : '',
+        ]
+          .filter(Boolean)
+          .join('; ');
+
+    links.push({
+      type: 'github-actions-artifact',
+      label: String(artifact.label || `GitHub Artifact: ${name}`).trim(),
+      url: artifactUrl,
+      ...(artifactNote ? { note: artifactNote } : {}),
+    });
+  });
+
+  return links;
+}
+
+function mergeLinks(manualLinks, detectedLinks) {
+  const merged = [];
+  const seen = new Set();
+
+  for (const link of [...manualLinks, ...detectedLinks]) {
+    const key = `${link.type}|${link.label}|${link.url}`;
+    if (seen.has(key)) {
+      continue;
+    }
+
+    seen.add(key);
+    merged.push(link);
+  }
+
+  return merged.sort((a, b) => {
+    const aKey = `${a.type}|${a.label}|${a.url}`;
+    const bKey = `${b.type}|${b.label}|${b.url}`;
+    return aKey.localeCompare(bKey);
+  });
 }
 
 function isVercelProductionEnvironment(environment) {
@@ -1124,6 +1303,7 @@ function statusMarkdown(tracker) {
   const latestRunCoveragePacks = latestRun?.coveragePacks || [];
   const latestRunCoveredSurfaces = latestRun?.coveredSurfaces || [];
   const latestRunSkippedSurfaces = latestRun?.skippedSurfaces || [];
+  const latestRunLinks = latestRun?.links || [];
   const latestRunArtifacts = latestRun?.artifacts || [];
   const latestRunEnvironment =
     latestRun && typeof latestRun.environment === 'object' ? latestRun.environment : {};
@@ -1207,6 +1387,20 @@ function statusMarkdown(tracker) {
   lines.push(
     `- Skipped Surfaces: ${latestRunSkippedSurfaces.length > 0 ? latestRunSkippedSurfaces.join(', ') : '-'}`
   );
+  lines.push('');
+  lines.push('## Links (Latest Run)');
+  lines.push('');
+  lines.push('| Type | Label | URL | Note |');
+  lines.push('|---|---|---|---|');
+  if (latestRunLinks.length === 0) {
+    lines.push('| - | - | - | - |');
+  } else {
+    for (const link of latestRunLinks) {
+      lines.push(
+        `| ${link.type || 'general'} | ${link.label || '-'} | [link](${link.url}) | ${link.note || '-'} |`
+      );
+    }
+  }
   lines.push('');
   lines.push('## Artifacts (Latest Run)');
   lines.push('');
@@ -1339,6 +1533,10 @@ function run() {
   const artifacts = mergeArtifacts(
     normalizeArtifacts(payload.artifacts),
     detectPlaywrightArtifacts(playwrightArtifactOptions, now)
+  );
+  const links = mergeLinks(
+    normalizeLinks(payload.links),
+    normalizeCiEvidence(payload.ciEvidence)
   );
 
   const runTitle = String(payload.runTitle || '').trim();
@@ -1519,7 +1717,7 @@ function run() {
     deferredImprovements: finalDeferredImprovements,
     wontFixImprovements: finalWontFixImprovements,
     notes: Array.isArray(payload.notes) ? payload.notes.map(String) : [],
-    links: Array.isArray(payload.links) ? payload.links : [],
+    links,
   };
 
   writeJsonFile(runFilePath, runRecord);
@@ -1591,6 +1789,7 @@ function run() {
     expertAssessments,
     usageChecks,
     artifacts,
+    links,
     expertCount: expertAssessments.length,
     expertNeedsImprovementCount,
     completedCount: finalCompletedImprovements.length,

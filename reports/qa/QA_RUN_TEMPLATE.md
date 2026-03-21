@@ -70,12 +70,25 @@ npm run qa:status:sync
     "recentMinutes": 180,
     "pathIncludes": ["qa-20260321-login-modal"] // 선택: 최근 파일 중 run prefix/path가 일치하는 것만 수집
   },
+  "ciEvidence": {               // GitHub Actions 수동/CI 실행 근거 (선택)
+    "provider": "github-actions",
+    "workflowName": "CI/CD Core Gates",
+    "runId": "23381598925",
+    "owner": "skyasu2",         // 선택: 비우면 GITHUB_REPOSITORY 또는 origin remote에서 추론
+    "repo": "openmanager-ai",   // 선택
+    "branch": "main",
+    "commitSha": "03fa41be562ff2cacffe58c5c0b45ad476e7e184",
+    "artifacts": [
+      "playwright-results-23381598925",
+      { "name": "playwright-report-23381598925", "url": "https://example.com/playwright-report.zip" }
+    ]
+  },
   "completedImprovements": [],   // 완료된 개선 항목
   "pendingImprovements": [],     // 미완료 개선 항목
   "dodChecks": [],               // DoD 체크리스트 (grouped items 지원)
   "expertAssessments": [],       // 전문가 영역 평가 (6개 도메인)
   "notes": ["string"],           // 참고사항
-  "links": [{ "label": "", "url": "" }]  // 관련 링크
+  "links": [{ "type": "general", "label": "", "url": "" }]  // 관련 링크
 }
 ```
 
@@ -182,6 +195,35 @@ npm run qa:status:sync
   - `playwright-network`
 - `playwright-trace`에 `url`이 있으면 `qa:record`가 `trace.playwright.dev` viewer URL을 자동 생성합니다.
 - Playwright 공식 문서 기준으로 원격 `trace.zip` URL은 trace viewer에서 직접 열 수 있으므로, CI/스토리지 URL을 그대로 남기는 방식을 우선합니다.
+
+## Links / CI Evidence 스키마
+
+```jsonc
+{
+  "ciEvidence": {
+    "provider": "github-actions",
+    "workflowName": "CI/CD Core Gates",
+    "runId": "23381598925",
+    "owner": "skyasu2",
+    "repo": "openmanager-ai",
+    "branch": "main",
+    "commitSha": "03fa41be562ff2cacffe58c5c0b45ad476e7e184",
+    "artifacts": [
+      "playwright-results-23381598925",
+      { "name": "playwright-report-23381598925", "url": "https://example.com/playwright-report.zip" }
+    ]
+  },
+  "links": [
+    { "type": "general", "label": "Production", "url": "https://openmanager-ai.vercel.app" }
+  ]
+}
+```
+
+- `ciEvidence.provider`는 현재 `github-actions`만 지원합니다.
+- `ciEvidence.runId`는 필수이며, `owner`/`repo`를 비우면 `GITHUB_REPOSITORY` 또는 `origin` remote에서 추론합니다.
+- `ciEvidence`가 있으면 `qa:record`가 `links`에 `github-actions-run`/`github-actions-artifact` 항목을 자동 병합합니다.
+- artifact `url`이 없으면 workflow run URL로 연결하고 note에 artifact 이름을 남깁니다.
+- `links.type` 허용 값: `general`, `vercel-deployment`, `github-actions-run`, `github-actions-artifact`, `monitoring`, `langfuse-trace`
 
 ## Playwright 자동 수집 옵션
 
@@ -325,7 +367,7 @@ npm run qa:status:sync
   ],
   "notes": ["Chat만 빈 응답 - Reporter/Analyst는 정상"],
   "links": [
-    { "label": "Production", "url": "https://openmanager-ai.vercel.app" }
+    { "type": "general", "label": "Production", "url": "https://openmanager-ai.vercel.app" }
   ]
 }
 ```
