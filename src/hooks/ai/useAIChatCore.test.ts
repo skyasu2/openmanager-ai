@@ -1,8 +1,9 @@
 /**
  * @vitest-environment jsdom
  */
-import type { UIMessage } from 'ai';
+
 import { act, renderHook, waitFor } from '@testing-library/react';
+import type { UIMessage } from 'ai';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const mocks = vi.hoisted(() => {
@@ -56,7 +57,10 @@ const mocks = vi.hoisted(() => {
 
 vi.mock('@/stores/useAISidebarStore', () => ({
   useAISidebarStore: (
-    selector: (state: { webSearchEnabled: boolean; ragEnabled: boolean }) => unknown
+    selector: (state: {
+      webSearchEnabled: boolean;
+      ragEnabled: boolean;
+    }) => unknown
   ) =>
     selector({
       webSearchEnabled: false,
@@ -214,7 +218,8 @@ describe('useAIChatCore', () => {
       expect(result.current.messages[1]?.metadata?.traceId).toBe(traceId);
     });
 
-    const lastSetMessagesArg = mocks.hybridSetMessagesSpy.mock.calls.at(-1)?.[0];
+    const lastSetMessagesArg =
+      mocks.hybridSetMessagesSpy.mock.calls.at(-1)?.[0];
     expect(Array.isArray(lastSetMessagesArg)).toBe(true);
 
     const assistantMessage = (lastSetMessagesArg as UIMessage[]).find(
