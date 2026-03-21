@@ -27,6 +27,8 @@ reports/qa/
 - 수동 MCP QA는 shared `.playwright-mcp/screenshots`를 쓰므로, run별 파일 prefix를 붙이고 `pathIncludes`로 함께 좁혀 fresh artifact only 원칙을 지킨다.
 - GitHub Actions `workflow_dispatch`로 실행한 `E2E Critical`은 성공해도 `playwright-report-${run_id}`, `playwright-results-${run_id}` artifact를 3일간 보존하므로, CI 기반 QA 증거 링크로 재사용할 수 있다.
 - CI 근거를 재사용할 때는 `ciEvidence`에 `workflowName`, `runId`, `artifacts[]`를 넣어 `GitHub Actions run/artifact` 링크를 표준 라벨로 자동 생성한다.
+- observability pack에서 `/monitoring` / `/monitoring/traces`를 확인할 때는 `https://openmanager-ai.vercel.app/...`가 아니라 `CLOUD_RUN_AI_URL`의 direct `run.app` host를 사용한다.
+- Cloud Run admin observability endpoint는 `X-API-Key: $CLOUD_RUN_API_SECRET` 인증이 필요하므로, Vercel surface QA와 같은 기준으로 404를 해석하면 안 된다.
 - Vercel production의 `broad`/`release-gate` 또는 `releaseFacing: true` run이면 `environment.deploymentId`, `environment.commitSha`를 함께 기록한다.
 - `qa:record`는 누락 시 현재 Git의 `branch`/`HEAD SHA`를 자동 보강하고, `VERCEL_*` system env가 있으면 `deploymentId`/`deploymentUrl`/`url`도 함께 보강한다.
 
@@ -78,6 +80,10 @@ reports/qa/
   - 최근 수정된 파일만 수집하므로 오래된 실패 산출물은 기본적으로 제외됩니다.
   - `pathIncludes`를 주면 `test-results`와 `.playwright-mcp/screenshots`에서 경로에 해당 문자열이 포함된 artifact만 수집합니다.
 - `coveredSurfaces` / `skippedSurfaces`는 사용자 보고 텍스트가 아니라 run SSOT에도 저장해야 합니다.
+- `observability-pack`은 Vercel dashboard observability와 Cloud Run admin observability를 혼동하지 않도록 기록합니다.
+  - Vercel-side 예: dashboard server-status summary, system resource panel, resource alert top5, notification badge, `/api/health`
+  - Cloud Run-side 예: `CLOUD_RUN_AI_URL/monitoring`, `CLOUD_RUN_AI_URL/monitoring/traces`
+  - Vercel-side만 확인한 런이면 Cloud Run admin surface를 `skippedSurfaces`에 명시합니다.
 - `environment.deploymentId` / `environment.commitSha`는 release-facing 실환경 QA의 배포 증거 필드입니다.
   - Vercel production의 `broad`/`release-gate` 또는 `releaseFacing: true` run이면 둘 다 기록합니다.
   - 누락 시 `qa:record`는 현재 Git/`VERCEL_*` 환경에서 자동 보강을 시도하지만, 해석 불가능한 경우에는 계속 오류로 막습니다.

@@ -92,6 +92,10 @@ npm run qa:status:sync
 }
 ```
 
+- observability 관련 Cloud Run admin endpoint는 `https://openmanager-ai.vercel.app/monitoring/*`가 아니라 `CLOUD_RUN_AI_URL/monitoring*`로 검증합니다.
+- `/monitoring` / `/monitoring/traces`는 `X-API-Key: $CLOUD_RUN_API_SECRET` 인증이 필요합니다.
+- Vercel-side observability만 확인한 run이면 `coveredSurfaces`에 dashboard panel을 쓰고, Cloud Run admin `/monitoring`, `/monitoring/traces`는 `skippedSurfaces`에 분리합니다.
+
 ## Improvement 항목 스키마
 
 `completedImprovements`, `pendingImprovements` 배열 내 각 항목:

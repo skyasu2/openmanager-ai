@@ -12146,6 +12146,8 @@
         "/api/health response"
       ],
       "skippedSurfaces": [
+        "Cloud Run /monitoring (direct run.app + X-API-Key, not exercised in this Vercel-only run)",
+        "Cloud Run /monitoring/traces (direct run.app + X-API-Key, not exercised in this Vercel-only run)",
         "Server-Timing header (wont-fix: platform constraint)",
         "AI supervisor latency header (auth required)"
       ],

@@ -1,7 +1,7 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-21 23:51:44 KST
+> Generated at: 2026-03-22 00:17:01 KST
 
 ## Summary
 
@@ -41,7 +41,7 @@ Latest run: QA-20260321-0151 (2026-03-21T14:51:43.204Z)
 - Deployment: SHA 72ab0cbc
 - Coverage Packs: observability-pack
 - Covered Surfaces: dashboard server-status summary, system resource panel (CPU/Memory/Disk), resource alert top5, notification badge, /api/health response
-- Skipped Surfaces: Server-Timing header (wont-fix: platform constraint), AI supervisor latency header (auth required)
+- Skipped Surfaces: Cloud Run /monitoring (direct run.app + X-API-Key, not exercised in this Vercel-only run), Cloud Run /monitoring/traces (direct run.app + X-API-Key, not exercised in this Vercel-only run), Server-Timing header (wont-fix: platform constraint), AI supervisor latency header (auth required)
 
 ## Links (Latest Run)
 
