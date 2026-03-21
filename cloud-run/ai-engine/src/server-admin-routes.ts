@@ -16,6 +16,11 @@ import {
   getLangfuseClientStatus,
   getLangfuseUsageStatus,
 } from './services/observability/langfuse';
+import {
+  buildLangfuseDashboardUrl,
+  buildLangfuseTraceApiUrl,
+  buildLangfuseTraceUrlFromHtmlPath,
+} from './services/observability/langfuse-url';
 
 let logLevelResetTimer: ReturnType<typeof setTimeout> | null = null;
 // Cloud Run egress to Langfuse can exceed 5s on cold network paths.
@@ -168,6 +173,7 @@ export function registerAdminRoutes(
         input?: string;
         output?: string;
         metadata?: Record<string, unknown>;
+        htmlPath?: string;
         createdAt: string;
         updatedAt: string;
       }>)
@@ -179,6 +185,7 @@ export function registerAdminRoutes(
           input?: string;
           output?: string;
           metadata?: Record<string, unknown>;
+          htmlPath?: string;
           createdAt: string;
           updatedAt: string;
         }) => ({
@@ -196,6 +203,9 @@ export function registerAdminRoutes(
                 (trace.output.length > 200 ? '...' : '')
               : '[object]',
           metadata: trace.metadata,
+          htmlPath: trace.htmlPath,
+          apiUrl: buildLangfuseTraceApiUrl(trace.id, baseUrl),
+          traceUrl: buildLangfuseTraceUrlFromHtmlPath(trace.htmlPath, baseUrl),
           createdAt: trace.createdAt,
           updatedAt: trace.updatedAt,
         })
@@ -227,7 +237,7 @@ export function registerAdminRoutes(
         query: query || null,
         includeAuxiliary,
         traces: visibleTraces,
-        dashboardUrl: `${baseUrl}/project`,
+        dashboardUrl: buildLangfuseDashboardUrl(baseUrl),
         timestamp: new Date().toISOString(),
       });
     } catch (error: unknown) {

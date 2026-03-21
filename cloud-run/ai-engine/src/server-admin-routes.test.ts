@@ -100,6 +100,7 @@ describe('server-admin-routes', () => {
             input: 'older input',
             output: 'older output',
             metadata: { sampled: true },
+            htmlPath: '/project/project-old/traces/trace-aux',
             createdAt: '2026-03-17T03:06:00.000Z',
             updatedAt: '2026-03-17T03:06:01.000Z',
           },
@@ -110,6 +111,7 @@ describe('server-admin-routes', () => {
             input: 'newer input',
             output: 'newer output',
             metadata: { sampled: true },
+            htmlPath: '/project/project-new/traces/trace-new',
             createdAt: '2026-03-17T03:05:00.000Z',
             updatedAt: '2026-03-17T03:05:01.000Z',
           },
@@ -141,9 +143,13 @@ describe('server-admin-routes', () => {
         {
           id: 'trace-new',
           sessionId: 'session-target',
+          htmlPath: '/project/project-new/traces/trace-new',
+          apiUrl: 'https://langfuse.example.com/api/public/traces/trace-new',
+          traceUrl: 'https://langfuse.example.com/project/project-new/traces/trace-new',
           createdAt: '2026-03-17T03:05:00.000Z',
         },
       ],
+      dashboardUrl: 'https://langfuse.example.com/project',
     });
   });
 
@@ -158,6 +164,7 @@ describe('server-admin-routes', () => {
             input: 'input',
             output: 'output',
             metadata: { sampled: true },
+            htmlPath: '/project/project-aux/traces/trace-aux',
             createdAt: '2026-03-17T03:06:00.000Z',
             updatedAt: '2026-03-17T03:06:01.000Z',
           },
@@ -178,8 +185,45 @@ describe('server-admin-routes', () => {
         {
           id: 'trace-aux',
           name: 'timeout_monitor_NLQ Agent_stream',
+          traceUrl: 'https://langfuse.example.com/project/project-aux/traces/trace-aux',
         },
       ],
     });
+  });
+
+  it('exposes API url even when htmlPath is missing', async () => {
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue(
+      new Response(JSON.stringify({
+        data: [
+          {
+            id: 'trace-no-html-path',
+            name: 'supervisor-execution',
+            sessionId: 'session-no-html-path',
+            input: 'input',
+            output: 'output',
+            metadata: { sampled: true },
+            createdAt: '2026-03-17T03:05:00.000Z',
+            updatedAt: '2026-03-17T03:05:01.000Z',
+          },
+        ],
+      }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      })
+    );
+
+    const res = await createApp().request('/monitoring/traces?limit=1');
+
+    expect(res.status).toBe(200);
+    const data = await res.json();
+    expect(data).toMatchObject({
+      traces: [
+        {
+          id: 'trace-no-html-path',
+          apiUrl: 'https://langfuse.example.com/api/public/traces/trace-no-html-path',
+        },
+      ],
+    });
+    expect(data.traces[0]).not.toHaveProperty('traceUrl');
   });
 });
