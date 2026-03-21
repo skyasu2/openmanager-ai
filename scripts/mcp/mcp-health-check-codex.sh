@@ -1,7 +1,7 @@
 #!/bin/bash
 # Codex MCP Health Check Script
 # 목적: Codex MCP 서버 설정 상태 점검 (설정 파일 기반 SSOT)
-# 사용: ./scripts/mcp/mcp-health-check-codex.sh [--no-live-probe] [--probe <server>]
+# 사용: ./scripts/mcp/mcp-health-check-codex.sh [--json] [--no-live-probe] [--probe <server>]
 
 set -uo pipefail
 
@@ -26,12 +26,25 @@ LIVE_PROBE_TIMEOUT_SEC="${MCP_LIVE_PROBE_TIMEOUT_SEC:-45}"
 RUN_LIVE_PROBE=1
 SELECTED_PROBES=()
 AVAILABLE_LIVE_PROBE_SERVERS=("supabase-db" "stitch")
+OUTPUT_FORMAT="text"
+JSON_STATE_DIR=""
+SERVER_STATUS_FILE=""
+LIVE_PROBE_STATUS_FILE=""
+WARNING_STATUS_FILE=""
+JSON_EMITTED=0
+LAST_ERROR=""
+TODAY_CALLS=""
+SUCCESS_COUNT=0
+FAIL_COUNT=0
+LIVE_PROBE_FAIL_COUNT=0
+PERMISSION_WARNING_COUNT=0
 
 print_usage() {
   cat <<EOF
 Usage: bash scripts/mcp/mcp-health-check-codex.sh [options]
 
 Options:
+  --json              Emit machine-readable JSON to stdout (text logs go to stderr)
   --no-live-probe     Skip live MCP tool probes and check config/enabled state only
   --probe <server>    Run live probe only for the selected server
   -h, --help          Show this help message
@@ -44,12 +57,17 @@ EOF
 parse_args() {
   while [ "$#" -gt 0 ]; do
     case "$1" in
+      --json)
+        OUTPUT_FORMAT="json"
+        shift
+        ;;
       --no-live-probe)
         RUN_LIVE_PROBE=0
         shift
         ;;
       --probe)
         if [ $# -lt 2 ]; then
+          LAST_ERROR="--probe requires a server name"
           echo -e "${RED}--probe requires a server name${NC}"
           exit 2
         fi
@@ -61,6 +79,7 @@ parse_args() {
         exit 0
         ;;
       *)
+        LAST_ERROR="Unknown option: $1"
         echo -e "${RED}Unknown option: $1${NC}"
         print_usage
         exit 2
@@ -69,6 +88,7 @@ parse_args() {
   done
 
   if [ "$RUN_LIVE_PROBE" -eq 0 ] && [ "${#SELECTED_PROBES[@]}" -gt 0 ]; then
+    LAST_ERROR="--no-live-probe and --probe cannot be used together"
     echo -e "${RED}--no-live-probe and --probe cannot be used together${NC}"
     exit 2
   fi
@@ -183,6 +203,172 @@ array_contains() {
   return 1
 }
 
+normalize_record_field() {
+  printf '%s' "$1" | tr '\t\r\n' '   '
+}
+
+init_json_state() {
+  if [ "$OUTPUT_FORMAT" != "json" ]; then
+    return 0
+  fi
+
+  JSON_STATE_DIR="$(mktemp -d "${TMPDIR:-/tmp}/openmanager-mcp-health.XXXXXX" 2>/dev/null)" || {
+    LAST_ERROR="Unable to initialize JSON state directory"
+    echo -e "${RED}Unable to initialize JSON state directory${NC}"
+    exit 2
+  }
+  SERVER_STATUS_FILE="$JSON_STATE_DIR/server-status.tsv"
+  LIVE_PROBE_STATUS_FILE="$JSON_STATE_DIR/live-probe-status.tsv"
+  WARNING_STATUS_FILE="$JSON_STATE_DIR/warnings.tsv"
+  : > "$SERVER_STATUS_FILE"
+  : > "$LIVE_PROBE_STATUS_FILE"
+  : > "$WARNING_STATUS_FILE"
+}
+
+record_server_status() {
+  if [ -z "$SERVER_STATUS_FILE" ]; then
+    return 0
+  fi
+  printf '%s\t%s\t%s\n' \
+    "$(normalize_record_field "$1")" \
+    "$(normalize_record_field "$2")" \
+    "$(normalize_record_field "$3")" >> "$SERVER_STATUS_FILE"
+}
+
+record_live_probe_status() {
+  if [ -z "$LIVE_PROBE_STATUS_FILE" ]; then
+    return 0
+  fi
+  printf '%s\t%s\t%s\n' \
+    "$(normalize_record_field "$1")" \
+    "$(normalize_record_field "$2")" \
+    "$(normalize_record_field "$3")" >> "$LIVE_PROBE_STATUS_FILE"
+}
+
+record_warning() {
+  if [ -z "$WARNING_STATUS_FILE" ]; then
+    return 0
+  fi
+  printf '%s\t%s\n' \
+    "$(normalize_record_field "$1")" \
+    "$(normalize_record_field "$2")" >> "$WARNING_STATUS_FILE"
+}
+
+emit_json() {
+  if [ "$OUTPUT_FORMAT" != "json" ] || [ "$JSON_EMITTED" -eq 1 ]; then
+    return 0
+  fi
+
+  local selected_probes_csv=""
+  selected_probes_csv="$(IFS=,; printf '%s' "${SELECTED_PROBES[*]:-}")"
+
+  JSON_EXIT_CODE="${1:-0}" \
+  JSON_TIMESTAMP="$TIMESTAMP" \
+  JSON_CONFIG_FILE="$CONFIG_FILE" \
+  JSON_LOG_FILE="$LOG_FILE" \
+  JSON_CODEX_HOME="${CODEX_HOME:-}" \
+  JSON_CODEX_HOME_SOURCE="${OPENMANAGER_CODEX_HOME_SOURCE:-}" \
+  JSON_CLOUDSDK_CONFIG="${CLOUDSDK_CONFIG:-}" \
+  JSON_CLOUDSDK_CONFIG_SOURCE="${OPENMANAGER_GCLOUD_CONFIG_SOURCE:-}" \
+  JSON_RUN_LIVE_PROBE="$RUN_LIVE_PROBE" \
+  JSON_SELECTED_PROBES="$selected_probes_csv" \
+  JSON_LIVE_PROBE_TIMEOUT_SEC="$LIVE_PROBE_TIMEOUT_SEC" \
+  JSON_TOTAL_SERVERS="${#EXPECTED_SERVERS[@]}" \
+  JSON_SUCCESS_COUNT="$SUCCESS_COUNT" \
+  JSON_FAIL_COUNT="$FAIL_COUNT" \
+  JSON_SUCCESS_RATE="${SUCCESS_RATE:-0}" \
+  JSON_LIVE_PROBE_FAIL_COUNT="$LIVE_PROBE_FAIL_COUNT" \
+  JSON_PERMISSION_WARNING_COUNT="$PERMISSION_WARNING_COUNT" \
+  JSON_TODAY_CALLS="$TODAY_CALLS" \
+  JSON_LAST_ERROR="$LAST_ERROR" \
+  node - "$SERVER_STATUS_FILE" "$LIVE_PROBE_STATUS_FILE" "$WARNING_STATUS_FILE" <<'NODE' >&3
+const fs = require('node:fs');
+
+const [serverFile, probeFile, warningFile] = process.argv.slice(2);
+
+function parseTsv(file, width) {
+  if (!file || !fs.existsSync(file)) return [];
+  return fs
+    .readFileSync(file, 'utf8')
+    .split('\n')
+    .filter(Boolean)
+    .map((line) => {
+      const parts = line.split('\t');
+      while (parts.length < width) parts.push('');
+      return parts.slice(0, width);
+    });
+}
+
+const serverRows = parseTsv(serverFile, 3).map(([name, status, detail]) => ({
+  name,
+  status,
+  detail,
+}));
+
+const liveProbeRows = parseTsv(probeFile, 3).map(([server, status, detail]) => ({
+  server,
+  status,
+  detail,
+}));
+
+const warningRows = parseTsv(warningFile, 2).map(([category, message]) => ({
+  category,
+  message,
+}));
+
+const selectedProbes = (process.env.JSON_SELECTED_PROBES || '')
+  .split(',')
+  .map((value) => value.trim())
+  .filter(Boolean);
+
+const todayCallsRaw = process.env.JSON_TODAY_CALLS || '';
+const todayCalls = todayCallsRaw === '' ? null : Number(todayCallsRaw);
+
+const payload = {
+  timestamp: process.env.JSON_TIMESTAMP || null,
+  exitCode: Number(process.env.JSON_EXIT_CODE || '0'),
+  configFile: process.env.JSON_CONFIG_FILE || null,
+  logFile: process.env.JSON_LOG_FILE || null,
+  options: {
+    format: 'json',
+    runLiveProbe: process.env.JSON_RUN_LIVE_PROBE === '1',
+    selectedProbes,
+    liveProbeTimeoutSec: Number(process.env.JSON_LIVE_PROBE_TIMEOUT_SEC || '0'),
+  },
+  runtime: {
+    codexHome: process.env.JSON_CODEX_HOME || null,
+    codexHomeSource: process.env.JSON_CODEX_HOME_SOURCE || null,
+    cloudsdkConfig: process.env.JSON_CLOUDSDK_CONFIG || null,
+    cloudsdkConfigSource: process.env.JSON_CLOUDSDK_CONFIG_SOURCE || null,
+  },
+  summary: {
+    totalServers: Number(process.env.JSON_TOTAL_SERVERS || '0'),
+    successCount: Number(process.env.JSON_SUCCESS_COUNT || '0'),
+    failCount: Number(process.env.JSON_FAIL_COUNT || '0'),
+    successRate: Number(process.env.JSON_SUCCESS_RATE || '0'),
+    liveProbeFailCount: Number(process.env.JSON_LIVE_PROBE_FAIL_COUNT || '0'),
+    permissionWarningCount: Number(process.env.JSON_PERMISSION_WARNING_COUNT || '0'),
+    todayMcpCalls: Number.isNaN(todayCalls) ? null : todayCalls,
+  },
+  servers: serverRows,
+  liveProbes: liveProbeRows,
+  warnings: warningRows,
+  error: process.env.JSON_LAST_ERROR || null,
+};
+
+process.stdout.write(`${JSON.stringify(payload, null, 2)}\n`);
+NODE
+  JSON_EMITTED=1
+}
+
+cleanup_on_exit() {
+  local exit_code=$?
+  emit_json "$exit_code"
+  if [ -n "$JSON_STATE_DIR" ] && [ -d "$JSON_STATE_DIR" ]; then
+    rm -rf "$JSON_STATE_DIR"
+  fi
+}
+
 validate_selected_probes() {
   local server=""
 
@@ -192,11 +378,13 @@ validate_selected_probes() {
 
   for server in "${SELECTED_PROBES[@]}"; do
     if ! array_contains "$server" "${AVAILABLE_LIVE_PROBE_SERVERS[@]}"; then
+      LAST_ERROR="Unsupported live probe target: ${server}"
       echo -e "${RED}Unsupported live probe target: ${server}${NC}"
       echo "Supported live probes: ${AVAILABLE_LIVE_PROBE_SERVERS[*]}"
       exit 2
     fi
     if ! has_server "$server"; then
+      LAST_ERROR="Selected live probe server not found in config: ${server}"
       echo -e "${RED}Selected live probe server not found in config: ${server}${NC}"
       exit 2
     fi
@@ -215,6 +403,12 @@ should_probe_server() {
 }
 
 parse_args "$@"
+if [ "$OUTPUT_FORMAT" = "json" ]; then
+  exec 3>&1
+  exec 1>&2
+fi
+init_json_state
+trap cleanup_on_exit EXIT
 
 echo -e "${BLUE}Codex MCP Health Check${NC}"
 echo -e "${BLUE}======================${NC}"
@@ -229,12 +423,14 @@ echo ""
 } >> "$LOG_FILE"
 
 if [ ! -x "$CODEX_LOCAL_RUNNER" ]; then
+  LAST_ERROR="프로젝트 Codex 실행기 누락: $CODEX_LOCAL_RUNNER"
   echo -e "${RED}프로젝트 Codex 실행기 누락: $CODEX_LOCAL_RUNNER${NC}"
   echo "프로젝트 Codex 실행기 누락: $CODEX_LOCAL_RUNNER" >> "$LOG_FILE"
   exit 2
 fi
 
 if [ ! -f "$RUNTIME_ENV_RESOLVER" ]; then
+  LAST_ERROR="런타임 환경 해석기 누락: $RUNTIME_ENV_RESOLVER"
   echo -e "${RED}런타임 환경 해석기 누락: $RUNTIME_ENV_RESOLVER${NC}"
   echo "런타임 환경 해석기 누락: $RUNTIME_ENV_RESOLVER" >> "$LOG_FILE"
   exit 2
@@ -254,6 +450,7 @@ fi
 
 load_expected_servers() {
   if [ ! -f "$CONFIG_FILE" ]; then
+    LAST_ERROR="Codex 설정 파일 누락: $CONFIG_FILE"
     echo -e "${RED}Codex 설정 파일 누락: $CONFIG_FILE${NC}"
     echo "Codex 설정 파일 누락: $CONFIG_FILE" >> "$LOG_FILE"
     exit 2
@@ -273,6 +470,7 @@ load_expected_servers() {
   )
 
   if [ "${#EXPECTED_SERVERS[@]}" -eq 0 ]; then
+    LAST_ERROR="MCP 서버 설정 파싱 실패: $CONFIG_FILE"
     echo -e "${RED}MCP 서버 설정 파싱 실패: $CONFIG_FILE${NC}"
     echo "MCP 서버 설정 파싱 실패: $CONFIG_FILE" >> "$LOG_FILE"
     exit 2
@@ -379,12 +577,14 @@ NODE
   if [ "$probe_status" -eq 0 ] && printf '%s\n' "$probe_output" | grep -q '"ok":true'; then
     echo -e "${GREEN}OK${NC}   ${server}: live probe"
     echo "OK   ${server}: live probe" >> "$LOG_FILE"
+    record_live_probe_status "$server" "ok" "success"
     return 0
   fi
 
   if [ "$probe_status" -eq 124 ]; then
     echo -e "${YELLOW}WARN${NC} ${server}: live probe timed out (${LIVE_PROBE_TIMEOUT_SEC}s)"
     echo "WARN ${server}: live probe timed out (${LIVE_PROBE_TIMEOUT_SEC}s)" >> "$LOG_FILE"
+    record_live_probe_status "$server" "warn" "timed out (${LIVE_PROBE_TIMEOUT_SEC}s)"
     return 1
   fi
 
@@ -392,6 +592,7 @@ NODE
   echo "WARN ${server}: live probe failed" >> "$LOG_FILE"
   printf '%s\n' "$probe_output" | sed 's/^/  - /' | sed -n '1,4p'
   printf '%s\n' "$probe_output" | sed 's/^/  - /' | sed -n '1,4p' >> "$LOG_FILE"
+  record_live_probe_status "$server" "warn" "$(printf '%s\n' "$probe_output" | sed -n '1p')"
   return 1
 }
 
@@ -415,6 +616,7 @@ MCP_OUTPUT=$(timeout 15 "$CODEX_LOCAL_RUNNER" mcp list 2>&1)
 MCP_EXIT_CODE=$?
 
 if [ "$MCP_EXIT_CODE" -ne 0 ]; then
+  LAST_ERROR="project codex mcp list 실행 실패 (exit: $MCP_EXIT_CODE)"
   echo -e "${RED}project codex mcp list 실행 실패 (exit: $MCP_EXIT_CODE)${NC}"
   echo "project codex mcp list 실행 실패 (exit: $MCP_EXIT_CODE)" >> "$LOG_FILE"
   echo "$MCP_OUTPUT" >> "$LOG_FILE"
@@ -426,21 +628,24 @@ PERMISSION_WARNINGS=$(printf '%s\n' "$MCP_OUTPUT" | grep -E "$PERMISSION_WARNING
 MCP_TABLE=$(printf '%s\n' "$MCP_OUTPUT" | awk 'BEGIN { in_table=0 } /^Name[[:space:]]+Command[[:space:]]+Args/ { in_table=1 } in_table { print }')
 
 if [ -z "$MCP_TABLE" ]; then
+  LAST_ERROR="project codex mcp list 출력 파싱 실패 (서버 테이블 없음)"
   echo -e "${RED}project codex mcp list 출력 파싱 실패 (서버 테이블 없음)${NC}"
   echo "project codex mcp list 출력 파싱 실패 (서버 테이블 없음)" >> "$LOG_FILE"
   echo "$MCP_OUTPUT" >> "$LOG_FILE"
   exit 2
 fi
 
-SUCCESS_COUNT=0
-FAIL_COUNT=0
-LIVE_PROBE_FAIL_COUNT=0
-
 if [ -n "$PERMISSION_WARNINGS" ]; then
+  PERMISSION_WARNING_COUNT=$(printf '%s\n' "$PERMISSION_WARNINGS" | grep -c . || true)
   echo -e "${YELLOW}환경 경고${NC}: 샌드박스 권한 제한으로 일부 정리 작업이 실패했습니다."
   echo "환경 경고: 샌드박스 권한 제한으로 일부 정리 작업이 실패했습니다." >> "$LOG_FILE"
   printf '%s\n' "$PERMISSION_WARNINGS" | sed 's/^/  - /'
   printf '%s\n' "$PERMISSION_WARNINGS" | sed 's/^/  - /' >> "$LOG_FILE"
+  while IFS= read -r warning_line; do
+    if [ -n "$warning_line" ]; then
+      record_warning "permission" "$warning_line"
+    fi
+  done <<< "$PERMISSION_WARNINGS"
   echo ""
 fi
 
@@ -454,6 +659,7 @@ for server in "${EXPECTED_SERVERS[@]}"; do
   if [ -z "$SERVER_ROW" ]; then
     echo -e "${RED}FAIL${NC} $server: 목록에 없음"
     echo "FAIL $server: 목록에 없음" >> "$LOG_FILE"
+    record_server_status "$server" "fail" "missing"
     FAIL_COUNT=$((FAIL_COUNT + 1))
     continue
   fi
@@ -461,10 +667,12 @@ for server in "${EXPECTED_SERVERS[@]}"; do
   if printf '%s\n' "$SERVER_ROW" | grep -q " enabled "; then
     echo -e "${GREEN}OK${NC}   $server: enabled"
     echo "OK   $server: enabled" >> "$LOG_FILE"
+    record_server_status "$server" "ok" "enabled"
     SUCCESS_COUNT=$((SUCCESS_COUNT + 1))
   else
     echo -e "${YELLOW}WARN${NC} $server: disabled"
     echo "WARN $server: disabled" >> "$LOG_FILE"
+    record_server_status "$server" "warn" "disabled"
     FAIL_COUNT=$((FAIL_COUNT + 1))
   fi
 done
@@ -479,12 +687,14 @@ if [ "$RUN_LIVE_PROBE" -ne 1 ]; then
 elif [ ! -d "$REPO_ROOT/node_modules/@modelcontextprotocol/sdk" ]; then
   echo -e "${YELLOW}WARN${NC} live probe skipped: @modelcontextprotocol/sdk 미설치"
   echo "WARN live probe skipped: @modelcontextprotocol/sdk 미설치" >> "$LOG_FILE"
+  record_warning "live-probe" "@modelcontextprotocol/sdk 미설치"
 else
   if should_probe_server "supabase-db"; then
     SUPABASE_TOKEN=$(get_server_env_value "supabase-db" "SUPABASE_ACCESS_TOKEN")
     if [ -z "$SUPABASE_TOKEN" ]; then
       echo -e "${YELLOW}WARN${NC} supabase-db: live probe skipped (SUPABASE_ACCESS_TOKEN missing)"
       echo "WARN supabase-db: live probe skipped (SUPABASE_ACCESS_TOKEN missing)" >> "$LOG_FILE"
+      record_live_probe_status "supabase-db" "warn" "skipped (SUPABASE_ACCESS_TOKEN missing)"
       LIVE_PROBE_FAIL_COUNT=$((LIVE_PROBE_FAIL_COUNT + 1))
     else
       if ! run_live_probe \
@@ -504,6 +714,7 @@ else
     if [ -z "$STITCH_PROJECT_ID" ] || [ -z "$STITCH_USE_SYSTEM_GCLOUD" ]; then
       echo -e "${YELLOW}WARN${NC} stitch: live probe skipped (stitch env missing)"
       echo "WARN stitch: live probe skipped (stitch env missing)" >> "$LOG_FILE"
+      record_live_probe_status "stitch" "warn" "skipped (stitch env missing)"
       LIVE_PROBE_FAIL_COUNT=$((LIVE_PROBE_FAIL_COUNT + 1))
     else
       if ! run_live_probe \

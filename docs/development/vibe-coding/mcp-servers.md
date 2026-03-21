@@ -112,6 +112,7 @@ bash scripts/mcp/codex-local.sh mcp list
 bash scripts/mcp/mcp-health-check-codex.sh
 bash scripts/mcp/mcp-health-check-codex.sh --no-live-probe
 bash scripts/mcp/mcp-health-check-codex.sh --probe supabase-db
+bash scripts/mcp/mcp-health-check-codex.sh --no-live-probe --json
 ```
 1. 서버별 최소 1회 도구 호출로 실동작을 확인합니다.
 
