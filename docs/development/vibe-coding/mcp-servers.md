@@ -117,6 +117,7 @@ bash scripts/mcp/mcp-health-report-codex.sh --no-live-probe
 bash scripts/mcp/mcp-health-report-codex.sh --no-live-probe --allow-missing-codex --summary-file "$GITHUB_STEP_SUMMARY"
 ```
 1. 서버별 최소 1회 도구 호출로 실동작을 확인합니다.
+1. GitHub Actions `CI/CD Core Gates`를 수동 실행할 때 `run_codex_live_probe=true`로 `stitch` live probe를 non-blocking 관찰용으로 켤 수 있습니다.
 
 - `--json` 출력은 `probeTargets`와 `liveProbes`를 함께 제공합니다.
 - `probeTargets`에는 config 기준 `command`, `args`, `configuredTimeoutSec`, 실제 적용 `timeoutSec`, `callTool`, `selected`가 포함됩니다.

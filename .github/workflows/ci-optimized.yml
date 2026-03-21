@@ -19,6 +19,11 @@ on:
       - '.github/workflows/docs-quality.yml'
   workflow_dispatch:
     inputs:
+      run_codex_live_probe:
+        description: 'Codex MCP live probe(stitch) 실행'
+        required: false
+        type: boolean
+        default: false
       run_cloud_run_checks:
         description: 'Cloud Run smoke/contract tests 실행'
         required: false
@@ -154,10 +159,17 @@ jobs:
       - name: Generate Codex MCP health report
         shell: bash
         run: |
-          bash scripts/mcp/mcp-health-report-codex.sh \
-            --no-live-probe \
-            --allow-missing-codex \
-            --summary-file "$GITHUB_STEP_SUMMARY"
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ inputs.run_codex_live_probe }}" = "true" ]; then
+            bash scripts/mcp/mcp-health-report-codex.sh \
+              --probe stitch \
+              --allow-missing-codex \
+              --summary-file "$GITHUB_STEP_SUMMARY"
+          else
+            bash scripts/mcp/mcp-health-report-codex.sh \
+              --no-live-probe \
+              --allow-missing-codex \
+              --summary-file "$GITHUB_STEP_SUMMARY"
+          fi
       - name: Upload Codex MCP health artifact
         if: always()
         uses: actions/upload-artifact@v4

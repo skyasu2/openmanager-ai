@@ -121,6 +121,7 @@ bash scripts/mcp/mcp-health-check-codex.sh --probe supabase-db
 bash scripts/mcp/mcp-health-check-codex.sh --no-live-probe --json
 bash scripts/mcp/mcp-health-report-codex.sh --no-live-probe
 bash scripts/mcp/mcp-health-report-codex.sh --no-live-probe --allow-missing-codex --summary-file "$GITHUB_STEP_SUMMARY"
+# GitHub Actions workflow_dispatch에서 run_codex_live_probe=true면 stitch live probe 실행
 
 # JSON report에는 probeTargets / liveProbes metadata 포함
 # - probeTargets: command, args, configuredTimeoutSec, timeoutSec, callTool, selected
