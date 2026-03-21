@@ -23,6 +23,31 @@ const extraHTTPHeaders = bypassSecret
   : undefined;
 const includeMobileProjects = process.env.PLAYWRIGHT_INCLUDE_MOBILE === '1';
 const mobileOnly = process.env.PLAYWRIGHT_MOBILE_ONLY === '1';
+type PlaywrightTraceMode =
+  | 'on'
+  | 'off'
+  | 'on-first-retry'
+  | 'on-all-retries'
+  | 'retain-on-failure'
+  | 'retain-on-first-failure';
+
+function resolveTraceMode(): PlaywrightTraceMode {
+  const override = process.env.PLAYWRIGHT_TRACE_MODE as
+    | PlaywrightTraceMode
+    | undefined;
+
+  if (override) {
+    return override;
+  }
+
+  // Keep push/PR runs lean, but make manual workflow_dispatch runs preserve
+  // trace outputs so the uploaded test-results artifact is useful on success.
+  return process.env.GITHUB_EVENT_NAME === 'workflow_dispatch'
+    ? 'on'
+    : 'retain-on-failure';
+}
+
+const traceMode = resolveTraceMode();
 const chromiumLaunchOptions = {
   args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
 };
@@ -63,8 +88,9 @@ const projects = mobileOnly
 
 export default defineConfig({
   // Load environment variables globally before any tests run
-  globalSetup: require.resolve('./tests/support/globalSetup'),
+  globalSetup: path.resolve(__dirname, 'tests/support/globalSetup'),
   testDir: './tests/e2e',
+  outputDir: 'test-results',
   /* Run tests in files in parallel */
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
@@ -83,7 +109,7 @@ export default defineConfig({
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     /* Phase 17.1: 'retain-on-failure'로 변경 - 실패 시 항상 trace 생성 (로컬 환경에서도) */
-    trace: 'retain-on-failure',
+    trace: traceMode,
 
     /* 타임아웃 설정 최적화 (2025-09-28) */
     actionTimeout: 30000, // 30초 (기존 15초에서 증가)
