@@ -218,6 +218,10 @@ const status = skipped
     : report.exitCode === 1
       ? 'warn'
       : 'fail';
+const liveProbeIssues = Array.isArray(report.liveProbes)
+  ? report.liveProbes.filter((probe) => probe?.status && probe.status !== 'ok')
+  : [];
+const explicitWarnings = Array.isArray(report.warnings) ? report.warnings : [];
 
 const lines = [
   '## Codex MCP Health',
@@ -238,6 +242,35 @@ if (report.logFile) {
 
 if (skipped) {
   lines.push('- Note: codex CLI unavailable on runner, placeholder report emitted');
+}
+
+if (liveProbeIssues.length > 0) {
+  lines.push('');
+  lines.push('### Live Probe Issues');
+  for (const probe of liveProbeIssues) {
+    const stage = probe?.stage ? `/${probe.stage}` : '';
+    const detail = probe?.detail || 'unknown';
+    lines.push(`- ${probe?.server || 'unknown'}${stage}: ${detail}`);
+  }
+}
+
+if (explicitWarnings.length > 0) {
+  const filteredWarnings = explicitWarnings.filter(
+    (warning) =>
+      !(
+        warning?.category === 'codex'
+        && typeof warning.message === 'string'
+        && warning.message.includes('report skipped')
+      )
+  );
+
+  if (filteredWarnings.length > 0) {
+    lines.push('');
+    lines.push('### Warnings');
+    for (const warning of filteredWarnings) {
+      lines.push(`- ${warning?.category || 'warning'}: ${warning?.message || 'unknown'}`);
+    }
+  }
 }
 
 fs.appendFileSync(summaryPath, `${lines.join('\n')}\n\n`);
