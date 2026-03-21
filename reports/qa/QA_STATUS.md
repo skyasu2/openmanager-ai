@@ -1,15 +1,15 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-22 00:17:01 KST
+> Generated at: 2026-03-22 00:25:16 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 150 |
-| Total Checks | 1174 |
-| Passed | 1123 |
+| Total Runs | 151 |
+| Total Checks | 1178 |
+| Passed | 1127 |
 | Failed | 47 |
 | Completed Items | 228 |
 | Pending Items | 0 |
@@ -18,15 +18,16 @@
 | Expert Domains Tracked | 6 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Run | QA-20260321-0151 (2026-03-21T14:51:43.204Z) |
+| Last Run | QA-20260322-0152 (2026-03-21T15:25:16.179Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260321-0151 (2026-03-21T14:51:43.204Z)
+Latest run: QA-20260322-0152 (2026-03-21T15:25:16.179Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| - | - | - | - |
+| IT Monitoring & Observability SME | appropriate | no | - |
+| AI Security & Reliability Architect | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
@@ -38,22 +39,24 @@ Latest run: QA-20260321-0151 (2026-03-21T14:51:43.204Z)
 
 - Scope: targeted
 - Release-Facing: no
-- Deployment: SHA 72ab0cbc
+- Deployment: SHA 793064fc
 - Coverage Packs: observability-pack
-- Covered Surfaces: dashboard server-status summary, system resource panel (CPU/Memory/Disk), resource alert top5, notification badge, /api/health response
-- Skipped Surfaces: Cloud Run /monitoring (direct run.app + X-API-Key, not exercised in this Vercel-only run), Cloud Run /monitoring/traces (direct run.app + X-API-Key, not exercised in this Vercel-only run), Server-Timing header (wont-fix: platform constraint), AI supervisor latency header (auth required)
+- Covered Surfaces: Cloud Run /monitoring (authenticated direct run.app), Cloud Run /monitoring auth gate (403 without X-API-Key), Cloud Run /monitoring/traces?limit=1 (authenticated direct run.app), Cloud Run /monitoring/traces?limit=2&includeAuxiliary=true (supervisor + timeout monitor visibility)
+- Skipped Surfaces: Vercel dashboard observability panel (covered in QA-20260321-0151), fresh marker trace search (sampling 10% makes same-run capture non-deterministic), Langfuse htmlPath/traceUrl deep link (current trace payload had no htmlPath field)
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| github-actions-run | GitHub Actions: Manual E2E #23381598925 | [link](https://github.com/skyasu2/openmanager-ai/actions/runs/23381598925) | branch=main, sha=72ab0cbc41642c61d994646af3549e8562b84a57 |
+| monitoring | Cloud Run /monitoring/traces?limit=2&includeAuxiliary=true | [link](https://ai-engine-490817238363.asia-northeast1.run.app/monitoring/traces?limit=2&includeAuxiliary=true) | - |
+| monitoring | Cloud Run /monitoring | [link](https://ai-engine-490817238363.asia-northeast1.run.app/monitoring) | - |
+| monitoring | Langfuse Dashboard | [link](https://us.cloud.langfuse.com/project) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | Dashboard observability panel - 15 servers, 1 warning | `artifacts/playwright/observability-dashboard-2026-03-21.png` | - |
+| - | - | - | - |
 
 ## Expert Domain Open Gaps
 
@@ -320,6 +323,7 @@ Latest run: QA-20260321-0151 (2026-03-21T14:51:43.204Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260322-0152 | 2026-03-21T15:25:16.179Z | targeted | no | Cloud Run Admin Observability Pack - Monitoring + Traces Direct Check | 4 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260321-0151 | 2026-03-21T14:51:43.204Z | targeted | no | Vercel Playwright QA - Observability Dashboard Pack (SHA 72ab0bc) | 5 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260321-0150 | 2026-03-21T14:47:41.493Z | targeted | no | CI Manual E2E + QA Script Validation (run #23381598925) | 3 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260321-0149 | 2026-03-21T11:48:31.418Z | targeted | no | Vercel Playwright QA - AI Sidebar Free-Text Proof (SHA fd9346ab2) | 5 | 0 | 0 | 0 | 0 | 0 |
@@ -339,5 +343,4 @@ Latest run: QA-20260321-0151 (2026-03-21T14:51:43.204Z)
 | QA-20260320-0134 | 2026-03-19T17:35:25.072Z | legacy | no | Vercel Production QA - Core/Auth/AI Sidebar Smoke Validation | 15 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260320-0133 | 2026-03-19T17:08:28.344Z | legacy | no | Vercel Playwright QA - AI Retention Parity Validation (Chrome Channel) | 2 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260320-0132 | 2026-03-19T16:55:35.018Z | legacy | no | Vercel Playwright QA - AI Retention Parity Validation | 2 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260319-0131 | 2026-03-19T12:56:21.932Z | legacy | no | Vercel Production QA - Core Route and AI Sidebar Broad Validation | 9 | 0 | 0 | 0 | 0 | 0 |
 

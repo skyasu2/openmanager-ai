@@ -1,0 +1,84 @@
+{
+  "runId": "QA-20260322-0152",
+  "recordedAt": "2026-03-21T15:25:16.179Z",
+  "recordedAtKst": "2026-03-22 00:25:16 KST",
+  "runTitle": "Cloud Run Admin Observability Pack - Monitoring + Traces Direct Check",
+  "owner": "codex",
+  "source": "curl",
+  "environment": {
+    "target": "cloud-run-production",
+    "url": "https://ai-engine-490817238363.asia-northeast1.run.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "793064fc759f701216cb094601380c7ac640632f"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "coveragePacks": ["observability-pack"],
+  "coveredSurfaces": [
+    "Cloud Run /monitoring (authenticated direct run.app)",
+    "Cloud Run /monitoring auth gate (403 without X-API-Key)",
+    "Cloud Run /monitoring/traces?limit=1 (authenticated direct run.app)",
+    "Cloud Run /monitoring/traces?limit=2&includeAuxiliary=true (supervisor + timeout monitor visibility)"
+  ],
+  "skippedSurfaces": [
+    "Vercel dashboard observability panel (covered in QA-20260321-0151)",
+    "fresh marker trace search (sampling 10% makes same-run capture non-deterministic)",
+    "Langfuse htmlPath/traceUrl deep link (current trace payload had no htmlPath field)"
+  ],
+  "checks": {
+    "total": 4,
+    "passed": 4,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Authenticated Cloud Run /monitoring returned 200 with langfuse.isOperational=true, sampleRate=10%, and /monitoring/traces returned 200 on the direct run.app host. Vercel /monitoring/traces 404 is therefore a host mismatch, not an endpoint regression.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "ai-security-reliability",
+      "domainName": "AI Security & Reliability Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Cloud Run admin monitoring endpoints still enforce X-API-Key. Unauthenticated /monitoring returned 403 while authenticated requests succeeded.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [],
+  "artifacts": [],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Authenticated /monitoring returned langfuse.eventCount=63, sampleRate=10%, isOperational=true, hasKeysConfigured=true.",
+    "Authenticated /monitoring/traces?limit=1 returned 200 with count=0, fetchedCount=1, includeAuxiliary=false.",
+    "Authenticated /monitoring/traces?limit=2&includeAuxiliary=true returned 200 with auxiliary timeout_monitor and supervisor-execution traces for sessionId kZ1CiM18T9FgC4qc.",
+    "Vercel host https://openmanager-ai.vercel.app/monitoring/traces returned 404, which matches the direct-host split documented in QA docs."
+  ],
+  "links": [
+    {
+      "type": "monitoring",
+      "label": "Cloud Run /monitoring/traces?limit=2&includeAuxiliary=true",
+      "url": "https://ai-engine-490817238363.asia-northeast1.run.app/monitoring/traces?limit=2&includeAuxiliary=true"
+    },
+    {
+      "type": "monitoring",
+      "label": "Cloud Run /monitoring",
+      "url": "https://ai-engine-490817238363.asia-northeast1.run.app/monitoring"
+    },
+    {
+      "type": "monitoring",
+      "label": "Langfuse Dashboard",
+      "url": "https://us.cloud.langfuse.com/project"
+    }
+  ]
+}
