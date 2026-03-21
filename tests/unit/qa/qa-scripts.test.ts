@@ -473,4 +473,74 @@ describe('QA scripts', () => {
       },
     ]);
   });
+
+  it('filters recent Playwright artifacts by pathIncludes', () => {
+    const tempDir = createTempWorkspace();
+    writeWorkspaceFile(
+      tempDir,
+      'test-results/qa-20260321-ai-free-text/trace.zip',
+      'trace'
+    );
+    writeWorkspaceFile(
+      tempDir,
+      'test-results/unrelated-run/trace.zip',
+      'trace'
+    );
+    writeWorkspaceFile(
+      tempDir,
+      '.playwright-mcp/screenshots/qa-20260321-ai-free-text.png',
+      'png'
+    );
+    writeWorkspaceFile(
+      tempDir,
+      '.playwright-mcp/screenshots/another-recent-run.png',
+      'png'
+    );
+
+    const inputPath = writeInputFile(
+      tempDir,
+      createValidPayload({
+        source: 'playwright-mcp',
+        playwrightArtifacts: {
+          resultsDir: 'test-results',
+          screenshotsDir: '.playwright-mcp/screenshots',
+          recentMinutes: 180,
+          pathIncludes: ['qa-20260321-ai-free-text'],
+        },
+      })
+    );
+
+    const recordResult = runNodeScript(
+      RECORD_QA_RUN_SCRIPT,
+      ['--input', inputPath],
+      {
+        cwd: tempDir,
+        env: {
+          VERCEL_DEPLOYMENT_ID: 'dpl_pathfilter123',
+          VERCEL_GIT_COMMIT_SHA: 'abcdefabcdefabcdefabcdefabcdefabcdefabcd',
+          VERCEL_GIT_COMMIT_REF: 'main',
+          VERCEL_TARGET_ENV: 'production',
+          VERCEL_PROJECT_PRODUCTION_URL: 'openmanager-ai.vercel.app',
+        },
+      }
+    );
+
+    expect(recordResult.status).toBe(0);
+
+    const runFilePath = findGeneratedRunFile(tempDir);
+    const runRecord = JSON.parse(readFileSync(runFilePath, 'utf8'));
+
+    expect(runRecord.artifacts).toEqual([
+      {
+        type: 'playwright-screenshot',
+        label: 'qa-20260321-ai-free-text.png',
+        path: '.playwright-mcp/screenshots/qa-20260321-ai-free-text.png',
+      },
+      {
+        type: 'playwright-trace',
+        label: 'qa-20260321-ai-free-text',
+        path: 'test-results/qa-20260321-ai-free-text/trace.zip',
+      },
+    ]);
+  });
 });

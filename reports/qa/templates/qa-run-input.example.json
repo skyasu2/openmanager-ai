@@ -62,7 +62,8 @@
     "reportDir": "playwright-report",
     "resultsDir": "test-results",
     "screenshotsDir": ".playwright-mcp/screenshots",
-    "recentMinutes": 180
+    "recentMinutes": 180,
+    "pathIncludes": ["qa-20260321-login-modal"]
   },
   "expertAssessments": [
     {

@@ -23,7 +23,8 @@ reports/qa/
 - `scope`, `releaseFacing`, `coveragePacks`, `coveredSurfaces`, `skippedSurfaces`를 현재 QA 범위에 맞게 채운다.
 - Playwright/CI 증거가 있으면 `artifacts`에 `trace/report/screenshot/video`를 구조화해 남긴다.
 - `source`가 `playwright`, `playwright-cli`, `playwright-mcp` 계열이면 `qa:record`는 최근 Playwright artifact를 자동 수집한다.
-- 기본 디렉토리나 시간 창을 바꾸려면 `playwrightArtifacts.reportDir/resultsDir/screenshotsDir/recentMinutes`를 입력 JSON에 명시한다.
+- 기본 디렉토리나 시간 창을 바꾸려면 `playwrightArtifacts.reportDir/resultsDir/screenshotsDir/recentMinutes/pathIncludes`를 입력 JSON에 명시한다.
+- 수동 MCP QA는 shared `.playwright-mcp/screenshots`를 쓰므로, run별 파일 prefix를 붙이고 `pathIncludes`로 함께 좁혀 fresh artifact only 원칙을 지킨다.
 - Vercel production의 `broad`/`release-gate` 또는 `releaseFacing: true` run이면 `environment.deploymentId`, `environment.commitSha`를 함께 기록한다.
 - `qa:record`는 누락 시 현재 Git의 `branch`/`HEAD SHA`를 자동 보강하고, `VERCEL_*` system env가 있으면 `deploymentId`/`deploymentUrl`/`url`도 함께 보강한다.
 
@@ -60,10 +61,11 @@ reports/qa/
   - 각 항목은 `type`, `label`, `url|path`를 가집니다.
   - `playwright-trace`에 `url`이 있으면 `qa:record`가 `trace.playwright.dev` viewer URL을 자동 생성합니다.
 - `playwrightArtifacts`는 로컬 Playwright 산출물을 자동 수집하는 옵션입니다.
-  - 기본값: `reportDir=playwright-report`, `resultsDir=test-results`, `screenshotsDir=.playwright-mcp/screenshots`, `recentMinutes=180`
+  - 기본값: `reportDir=playwright-report`, `resultsDir=test-results`, `screenshotsDir=.playwright-mcp/screenshots`, `recentMinutes=180`, `pathIncludes=[]`
   - `source`가 `playwright`, `playwright-cli`, `playwright-mcp` 계열이면 옵션이 없어도 기본값으로 자동 수집을 시도합니다.
   - `playwright-mcp`는 MCP server `--output-dir .playwright-mcp/screenshots`에 저장된 최신 screenshot을 `playwright-screenshot`으로 자동 연결합니다.
   - 최근 수정된 파일만 수집하므로 오래된 실패 산출물은 기본적으로 제외됩니다.
+  - `pathIncludes`를 주면 `test-results`와 `.playwright-mcp/screenshots`에서 경로에 해당 문자열이 포함된 artifact만 수집합니다.
 - `coveredSurfaces` / `skippedSurfaces`는 사용자 보고 텍스트가 아니라 run SSOT에도 저장해야 합니다.
 - `environment.deploymentId` / `environment.commitSha`는 release-facing 실환경 QA의 배포 증거 필드입니다.
   - Vercel production의 `broad`/`release-gate` 또는 `releaseFacing: true` run이면 둘 다 기록합니다.

@@ -67,7 +67,8 @@ npm run qa:status:sync
     "reportDir": "playwright-report",
     "resultsDir": "test-results",
     "screenshotsDir": ".playwright-mcp/screenshots",
-    "recentMinutes": 180
+    "recentMinutes": 180,
+    "pathIncludes": ["qa-20260321-login-modal"] // 선택: 최근 파일 중 run prefix/path가 일치하는 것만 수집
   },
   "completedImprovements": [],   // 완료된 개선 항목
   "pendingImprovements": [],     // 미완료 개선 항목
@@ -190,7 +191,8 @@ npm run qa:status:sync
     "reportDir": "playwright-report",
     "resultsDir": "test-results",
     "screenshotsDir": ".playwright-mcp/screenshots",
-    "recentMinutes": 180
+    "recentMinutes": 180,
+    "pathIncludes": ["qa-20260321-login-modal"]
   }
 }
 ```
@@ -203,6 +205,8 @@ npm run qa:status:sync
   - `test-results/**/*.{webm,mp4}` → `playwright-video`
   - `.playwright-mcp/screenshots/**/*.{png,jpg,jpeg}` → `playwright-screenshot`
 - `recentMinutes` 안에 수정된 파일만 수집해 오래된 잔재를 기본적으로 제외합니다.
+- `pathIncludes`를 주면 `test-results`와 `.playwright-mcp/screenshots`에서 해당 문자열이 경로에 포함된 산출물만 수집합니다.
+- 수동 MCP QA는 shared screenshot 디렉터리를 쓰므로, Playwright의 per-test output isolation에 가깝게 운영하려면 run별 파일 prefix를 붙이고 `pathIncludes`로 함께 좁히는 방식을 권장합니다.
 
 ## Normalization 규칙 (스크립트 자동 처리)
 

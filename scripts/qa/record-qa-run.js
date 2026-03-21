@@ -630,6 +630,7 @@ function normalizePlaywrightArtifactOptions(rawValue, source) {
     resultsDir: 'test-results',
     screenshotsDir: '.playwright-mcp/screenshots',
     recentMinutes: 180,
+    pathIncludes: [],
   };
 
   if (rawValue === false) {
@@ -655,7 +656,23 @@ function normalizePlaywrightArtifactOptions(rawValue, source) {
       Number.isFinite(Number(rawValue.recentMinutes)) && Number(rawValue.recentMinutes) > 0
         ? Number(rawValue.recentMinutes)
         : defaults.recentMinutes,
+    pathIncludes: normalizeStringList(rawValue.pathIncludes),
   };
+}
+
+function matchesArtifactPathIncludes(relativePath, pathIncludes) {
+  if (!Array.isArray(pathIncludes) || pathIncludes.length === 0) {
+    return true;
+  }
+
+  const normalizedPath = String(relativePath || '').trim().toLowerCase();
+  if (!normalizedPath) {
+    return false;
+  }
+
+  return pathIncludes.some((entry) =>
+    normalizedPath.includes(String(entry || '').trim().toLowerCase())
+  );
 }
 
 function detectPlaywrightArtifacts(options, now) {
@@ -686,6 +703,9 @@ function detectPlaywrightArtifacts(options, now) {
 
       const ext = path.extname(filePath).toLowerCase();
       const relativePath = toPosixRelativePath(filePath);
+      if (!matchesArtifactPathIncludes(relativePath, options.pathIncludes)) {
+        continue;
+      }
 
       if (path.basename(filePath) === 'trace.zip') {
         artifacts.push({
@@ -727,10 +747,15 @@ function detectPlaywrightArtifacts(options, now) {
         continue;
       }
 
+      const relativePath = toPosixRelativePath(filePath);
+      if (!matchesArtifactPathIncludes(relativePath, options.pathIncludes)) {
+        continue;
+      }
+
       artifacts.push({
         type: 'playwright-screenshot',
         label: path.basename(filePath),
-        path: toPosixRelativePath(filePath),
+        path: relativePath,
       });
     }
   }
