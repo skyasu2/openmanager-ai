@@ -1,15 +1,15 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-22 01:10:41 KST
+> Generated at: 2026-03-22 01:33:49 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 152 |
-| Total Checks | 1184 |
-| Passed | 1133 |
+| Total Runs | 153 |
+| Total Checks | 1188 |
+| Passed | 1137 |
 | Failed | 47 |
 | Completed Items | 228 |
 | Pending Items | 0 |
@@ -18,45 +18,44 @@
 | Expert Domains Tracked | 6 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Run | QA-20260322-0153 (2026-03-21T16:10:40.348Z) |
+| Last Run | QA-20260322-0154 (2026-03-21T16:33:49.267Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260322-0153 (2026-03-21T16:10:40.348Z)
+Latest run: QA-20260322-0154 (2026-03-21T16:33:49.267Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| AI Quality Assurance Specialist | appropriate | no | - |
 | IT Monitoring & Observability SME | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | effectiveCost $15.9423 / billedCost $0.0000 |
+| - | - | - | - | - |
 
 ## Coverage (Latest Run)
 
 - Scope: targeted
 - Release-Facing: no
-- Deployment: dpl_4Kz7HjneqzRJ1jhP3wDYxJ7zfshW / SHA 733afd4b
-- Coverage Packs: ai-core, observability-pack
-- Covered Surfaces: guest PIN login, system-boot -> /dashboard redirect, AI sidebar free-text chat send, AI feedback positive button, /api/ai/feedback proxy with langfuseStatus=success, Cloud Run /monitoring/traces?q=<feedback traceId> lookup
-- Skipped Surfaces: negative feedback button, fullscreen AI assistant, Langfuse direct traceUrl/htmlPath deep link (monitoring payload still omitted direct traceUrl)
+- Deployment: SHA 1cd33706
+- Coverage Packs: observability-pack
+- Covered Surfaces: Cloud Run ai-engine revision rollout (ai-engine-00260-qn8, 100% traffic), Cloud Run /health after deploy, Cloud Run /monitoring/traces?q=<feedback traceId> lookup, Langfuse htmlPath + traceUrl + apiUrl exposure via monitoring payload
+- Skipped Surfaces: fresh feedback generation (used retained traceId c92418ce-c612-4889-af61-7ee54c96f47a from QA-20260322-0153), Vercel frontend feedback button flow (already covered in QA-20260322-0153), negative feedback button
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| monitoring | Cloud Run monitoring trace lookup for feedback traceId | [link](https://ai-engine-490817238363.asia-northeast1.run.app/monitoring/traces?q=c92418ce-c612-4889-af61-7ee54c96f47a&limit=5&includeAuxiliary=true) | - |
-| monitoring | Langfuse Dashboard | [link](https://us.cloud.langfuse.com/project) | - |
-| vercel-deployment | Production deployment dpl_4Kz7HjneqzRJ1jhP3wDYxJ7zfshW | [link](https://openmanager-mdavk4e2j-skyasus-projects.vercel.app/) | - |
+| monitoring | Cloud Run monitoring trace lookup after ai-engine redeploy | [link](https://ai-engine-490817238363.asia-northeast1.run.app/monitoring/traces?q=c92418ce-c612-4889-af61-7ee54c96f47a&limit=5&includeAuxiliary=true) | - |
+| monitoring | Langfuse trace API URL recovered via monitoring payload | [link](https://us.cloud.langfuse.com/api/public/traces/c92418ce-c612-4889-af61-7ee54c96f47a) | - |
+| monitoring | Langfuse trace URL recovered via monitoring payload | [link](https://us.cloud.langfuse.com/project/cmjk0fm8u045gad07tf8xaptk/traces/c92418ce-c612-4889-af61-7ee54c96f47a) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | qa-20260322-feedback-trace-success.png | `.playwright-mcp/screenshots/qa-20260322-feedback-trace-success.png` | - |
+| - | - | - | - |
 
 ## Expert Domain Open Gaps
 
@@ -323,6 +322,7 @@ Latest run: QA-20260322-0153 (2026-03-21T16:10:40.348Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260322-0154 | 2026-03-21T16:33:49.267Z | targeted | no | Cloud Run Trace Link Recovery - Monitoring Trace URL Restored | 4 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260322-0153 | 2026-03-21T16:10:40.348Z | targeted | no | Production AI Feedback Trace E2E - Feedback Success + Monitoring Match | 6 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260322-0152 | 2026-03-21T15:25:16.179Z | targeted | no | Cloud Run Admin Observability Pack - Monitoring + Traces Direct Check | 4 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260321-0151 | 2026-03-21T14:51:43.204Z | targeted | no | Vercel Playwright QA - Observability Dashboard Pack (SHA 72ab0bc) | 5 | 0 | 0 | 0 | 0 | 0 |
@@ -342,5 +342,4 @@ Latest run: QA-20260322-0153 (2026-03-21T16:10:40.348Z)
 | QA-20260320-0137 | 2026-03-20T07:13:57.777Z | legacy | no | Vercel Production QA - Runtime Safety Follow-up Validation (SHA 159dce5b2) | 32 | 3 | 2 | 0 | 0 | 2 |
 | QA-20260320-0136 | 2026-03-20T00:00:15.480Z | legacy | no | Vercel Production QA - Core/Auth/AI Sidebar Smoke Validation (Deployed SHA 8bf843ad1, Usage Checked) | 15 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260320-0134 | 2026-03-19T17:35:25.072Z | legacy | no | Vercel Production QA - Core/Auth/AI Sidebar Smoke Validation | 15 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260320-0133 | 2026-03-19T17:08:28.344Z | legacy | no | Vercel Playwright QA - AI Retention Parity Validation (Chrome Channel) | 2 | 0 | 0 | 0 | 0 | 0 |
 

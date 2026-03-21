@@ -2,15 +2,15 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-03-21T16:10:40.348Z"
+    "updatedAt": "2026-03-21T16:33:49.267Z"
   },
   "sequence": {
-    "nextRunNumber": 154
+    "nextRunNumber": 155
   },
   "summary": {
-    "totalRuns": 152,
-    "totalChecks": 1184,
-    "totalPassed": 1133,
+    "totalRuns": 153,
+    "totalChecks": 1188,
+    "totalPassed": 1137,
     "totalFailed": 47,
     "completionRate": 100,
     "completedItems": 228,
@@ -19,8 +19,8 @@
     "wontFixItems": 8,
     "expertDomainsTracked": 6,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260322-0153",
-    "lastRecordedAt": "2026-03-21T16:10:40.348Z"
+    "lastRunId": "QA-20260322-0154",
+    "lastRecordedAt": "2026-03-21T16:33:49.267Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -12360,6 +12360,79 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260322-0154",
+      "recordedAt": "2026-03-21T16:33:49.267Z",
+      "recordedAtKst": "2026-03-22 01:33:49 KST",
+      "title": "Cloud Run Trace Link Recovery - Monitoring Trace URL Restored",
+      "owner": "codex",
+      "source": "curl",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260322-0154.json",
+      "environment": {
+        "target": "cloud-run-production",
+        "url": "https://ai-engine-490817238363.asia-northeast1.run.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "1cd337067af7318201d75db3e2e6651904ba0bc8"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "coveragePacks": ["observability-pack"],
+      "coveredSurfaces": [
+        "Cloud Run ai-engine revision rollout (ai-engine-00260-qn8, 100% traffic)",
+        "Cloud Run /health after deploy",
+        "Cloud Run /monitoring/traces?q=<feedback traceId> lookup",
+        "Langfuse htmlPath + traceUrl + apiUrl exposure via monitoring payload"
+      ],
+      "skippedSurfaces": [
+        "fresh feedback generation (used retained traceId c92418ce-c612-4889-af61-7ee54c96f47a from QA-20260322-0153)",
+        "Vercel frontend feedback button flow (already covered in QA-20260322-0153)",
+        "negative feedback button"
+      ],
+      "checks": {
+        "total": 4,
+        "passed": 4,
+        "failed": 0
+      },
+      "expertAssessments": [
+        {
+          "domainId": "observability-monitoring",
+          "domainName": "IT Monitoring & Observability SME",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Stale Cloud Run revision ai-engine-00259-fpw(version=1e6aa6dc2, 2026-03-17)을 ai-engine-00260-qn8(version=1cd337067)로 교체한 뒤, 동일 traceId 조회에서 htmlPath, traceUrl, apiUrl가 모두 복구됨을 직접 확인했다.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [],
+      "artifacts": [],
+      "links": [
+        {
+          "type": "monitoring",
+          "label": "Cloud Run monitoring trace lookup after ai-engine redeploy",
+          "url": "https://ai-engine-490817238363.asia-northeast1.run.app/monitoring/traces?q=c92418ce-c612-4889-af61-7ee54c96f47a&limit=5&includeAuxiliary=true"
+        },
+        {
+          "type": "monitoring",
+          "label": "Langfuse trace API URL recovered via monitoring payload",
+          "url": "https://us.cloud.langfuse.com/api/public/traces/c92418ce-c612-4889-af61-7ee54c96f47a"
+        },
+        {
+          "type": "monitoring",
+          "label": "Langfuse trace URL recovered via monitoring payload",
+          "url": "https://us.cloud.langfuse.com/project/cmjk0fm8u045gad07tf8xaptk/traces/c92418ce-c612-4889-af61-7ee54c96f47a"
+        }
+      ],
+      "expertCount": 1,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -12385,16 +12458,16 @@
       "domainName": "IT Monitoring & Observability SME",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 61,
-      "appropriateCount": 38,
+      "seenCount": 62,
+      "appropriateCount": 39,
       "partialCount": 23,
       "inappropriateCount": 0,
       "improvementNeededCount": 23,
-      "lastRunId": "QA-20260322-0153",
-      "lastSeenAt": "2026-03-21T16:10:40.348Z",
+      "lastRunId": "QA-20260322-0154",
+      "lastSeenAt": "2026-03-21T16:33:49.267Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "동일 feedback traceId(UUID 형식)로 Cloud Run /monitoring/traces?q=<traceId> 조회가 count=1로 매칭되어 supervisor-execution trace를 확인했다.",
+      "lastRationale": "Stale Cloud Run revision ai-engine-00259-fpw(version=1e6aa6dc2, 2026-03-17)을 ai-engine-00260-qn8(version=1cd337067)로 교체한 뒤, 동일 traceId 조회에서 htmlPath, traceUrl, apiUrl가 모두 복구됨을 직접 확인했다.",
       "lastNextAction": ""
     },
     "ai-security-reliability": {
