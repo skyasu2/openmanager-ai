@@ -5,10 +5,10 @@
 import { spawnSync } from 'node:child_process';
 import {
   existsSync,
-  mkdtempSync,
   mkdirSync,
-  readFileSync,
+  mkdtempSync,
   readdirSync,
+  readFileSync,
   rmSync,
   writeFileSync,
 } from 'node:fs';
@@ -127,20 +127,16 @@ describe('QA scripts', () => {
     const tempDir = createTempWorkspace();
     const inputPath = writeInputFile(tempDir, createValidPayload());
 
-    const result = runNodeScript(
-      RECORD_QA_RUN_SCRIPT,
-      ['--input', inputPath],
-      {
-        cwd: tempDir,
-        env: {
-          VERCEL_DEPLOYMENT_ID: 'dpl_regression123',
-          VERCEL_GIT_COMMIT_SHA: '1234567890abcdef1234567890abcdef12345678',
-          VERCEL_GIT_COMMIT_REF: 'main',
-          VERCEL_TARGET_ENV: 'production',
-          VERCEL_PROJECT_PRODUCTION_URL: 'openmanager-ai.vercel.app',
-        },
-      }
-    );
+    const result = runNodeScript(RECORD_QA_RUN_SCRIPT, ['--input', inputPath], {
+      cwd: tempDir,
+      env: {
+        VERCEL_DEPLOYMENT_ID: 'dpl_regression123',
+        VERCEL_GIT_COMMIT_SHA: '1234567890abcdef1234567890abcdef12345678',
+        VERCEL_GIT_COMMIT_REF: 'main',
+        VERCEL_TARGET_ENV: 'production',
+        VERCEL_PROJECT_PRODUCTION_URL: 'openmanager-ai.vercel.app',
+      },
+    });
 
     expect(result.status).toBe(0);
     expect(`${result.stdout}${result.stderr}`).toContain('QA run recorded');
@@ -165,17 +161,13 @@ describe('QA scripts', () => {
     const tempDir = createTempWorkspace();
     const inputPath = writeInputFile(tempDir, createValidPayload());
 
-    const result = runNodeScript(
-      RECORD_QA_RUN_SCRIPT,
-      ['--input', inputPath],
-      {
-        cwd: tempDir,
-        env: {
-          VERCEL_TARGET_ENV: 'production',
-          VERCEL_GIT_COMMIT_SHA: '1234567890abcdef1234567890abcdef12345678',
-        },
-      }
-    );
+    const result = runNodeScript(RECORD_QA_RUN_SCRIPT, ['--input', inputPath], {
+      cwd: tempDir,
+      env: {
+        VERCEL_TARGET_ENV: 'production',
+        VERCEL_GIT_COMMIT_SHA: '1234567890abcdef1234567890abcdef12345678',
+      },
+    });
 
     expect(result.status).toBe(1);
     expect(`${result.stdout}${result.stderr}`).toContain(
@@ -218,6 +210,8 @@ describe('QA scripts', () => {
 
     const statusPath = join(tempDir, 'reports', 'qa', 'QA_STATUS.md');
     expect(existsSync(statusPath)).toBe(true);
-    expect(readFileSync(statusPath, 'utf8')).toContain('Coverage Packs: core-routes-smoke, dashboard-core, ai-core');
+    expect(readFileSync(statusPath, 'utf8')).toContain(
+      'Coverage Packs: core-routes-smoke, dashboard-core, ai-core'
+    );
   });
 });

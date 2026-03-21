@@ -4,11 +4,7 @@
   "source": "playwright-mcp",
   "scope": "broad",
   "releaseFacing": true,
-  "coveragePacks": [
-    "core-routes-smoke",
-    "dashboard-core",
-    "ai-core"
-  ],
+  "coveragePacks": ["core-routes-smoke", "dashboard-core", "ai-core"],
   "coveredSurfaces": [
     "/",
     "/login",
