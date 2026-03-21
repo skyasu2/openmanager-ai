@@ -1,0 +1,91 @@
+{
+  "runId": "QA-20260321-0149",
+  "recordedAt": "2026-03-21T11:48:31.418Z",
+  "recordedAtKst": "2026-03-21 20:48:31 KST",
+  "runTitle": "Vercel Playwright QA - AI Sidebar Free-Text Proof (SHA fd9346ab2)",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_C5RdEaAU2GQd9ucsUhX5RhgB13bA",
+    "deploymentUrl": "https://openmanager-dtg0tz0op-skyasus-projects.vercel.app",
+    "commitSha": "fd9346ab2e6fdf76b2c31fc46df106ad6753c1a7"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "coveragePacks": ["ai-core"],
+  "coveredSurfaces": [
+    "/login",
+    "guest PIN login",
+    "system-boot → /dashboard redirect",
+    "AI sidebar open",
+    "AI sidebar free-text chat send"
+  ],
+  "skippedSurfaces": [
+    "/",
+    "/api/health",
+    "/api/version",
+    "404",
+    "Reporter flow",
+    "Analyst flow",
+    "/dashboard/ai-assistant fullscreen",
+    "server modal/detail pack",
+    "alerts/topology/log explorer pack",
+    "security blocked-prompt pack",
+    "Langfuse trace visibility"
+  ],
+  "checks": {
+    "total": 5,
+    "passed": 5,
+    "failed": 0
+  },
+  "expertAssessments": [],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-03-21T20:47:39+09:00",
+      "summary": "Current billing period reviewed after sidebar free-text QA; effectiveCost $15.9423, billedCost $0.0000, no meaningful overage spike.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-console",
+      "label": "qa-20260321-ai-freetext-console-errors.log",
+      "path": ".playwright-mcp/screenshots/qa-20260321-ai-freetext-console-errors.log",
+      "note": "browser_console_messages capture after AI sidebar free-text validation; Total messages: 0 (Errors: 0, Warnings: 0)."
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "qa-20260321-ai-freetext.png",
+      "path": ".playwright-mcp/screenshots/qa-20260321-ai-freetext.png"
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Production AI sidebar accepted a custom free-text prompt for lb-haproxy-dc1-01 and completed a streaming response without fallback failure.",
+    "The answer summarized the current warning state at CPU 73%, cited the rising trend and daily average CPU 48.9%, and listed three immediate action items.",
+    "No browser console errors were captured during the free-text chat send and response render."
+  ],
+  "links": [
+    {
+      "label": "Vercel URL",
+      "url": "https://openmanager-ai.vercel.app/dashboard"
+    },
+    {
+      "label": "Deployment Inspector",
+      "url": "https://vercel.com/skyasus-projects/openmanager-ai/C5RdEaAU2GQd9ucsUhX5RhgB13bA"
+    }
+  ]
+}

@@ -1,15 +1,15 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-21 20:41:44 KST
+> Generated at: 2026-03-21 20:48:32 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 147 |
-| Total Checks | 1161 |
-| Passed | 1110 |
+| Total Runs | 148 |
+| Total Checks | 1166 |
+| Passed | 1115 |
 | Failed | 47 |
 | Completed Items | 228 |
 | Pending Items | 0 |
@@ -18,11 +18,11 @@
 | Expert Domains Tracked | 6 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Run | QA-20260321-0148 (2026-03-21T11:41:43.931Z) |
+| Last Run | QA-20260321-0149 (2026-03-21T11:48:31.418Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260321-0148 (2026-03-21T11:41:43.931Z)
+Latest run: QA-20260321-0149 (2026-03-21T11:48:31.418Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -32,23 +32,23 @@ Latest run: QA-20260321-0148 (2026-03-21T11:41:43.931Z)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period reviewed after fullscreen AI workspace QA; effectiveCost $15.9423, billedCost $0.0000, no meaningful overage spike. |
+| vercel | cli | checked | normal | Current billing period reviewed after sidebar free-text QA; effectiveCost $15.9423, billedCost $0.0000, no meaningful overage spike. |
 
 ## Coverage (Latest Run)
 
 - Scope: targeted
 - Release-Facing: no
-- Deployment: dpl_AuzevjgfgqgB8H8aun9fReGmTR9X / SHA 8a7fe876
-- Coverage Packs: ai-core, ai-advanced-surface
-- Covered Surfaces: /login, guest PIN login, system-boot → /dashboard redirect, /dashboard/ai-assistant fullscreen route, fullscreen AI Chat render, fullscreen system context panel
-- Skipped Surfaces: /, /api/health, /api/version, 404, server modal/detail pack, alerts/topology/log explorer pack, security blocked-prompt pack, Langfuse trace visibility, Reporter flow, Analyst flow, AI sidebar free-text chat send
+- Deployment: dpl_C5RdEaAU2GQd9ucsUhX5RhgB13bA / SHA fd9346ab
+- Coverage Packs: ai-core
+- Covered Surfaces: /login, guest PIN login, system-boot → /dashboard redirect, AI sidebar open, AI sidebar free-text chat send
+- Skipped Surfaces: /, /api/health, /api/version, 404, Reporter flow, Analyst flow, /dashboard/ai-assistant fullscreen, server modal/detail pack, alerts/topology/log explorer pack, security blocked-prompt pack, Langfuse trace visibility
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-console | qa-20260321-ai-fullscreen-console-errors.log | `.playwright-mcp/screenshots/qa-20260321-ai-fullscreen-console-errors.log` | - |
-| playwright-screenshot | qa-20260321-ai-fullscreen.png | `.playwright-mcp/screenshots/qa-20260321-ai-fullscreen.png` | - |
+| playwright-console | qa-20260321-ai-freetext-console-errors.log | `.playwright-mcp/screenshots/qa-20260321-ai-freetext-console-errors.log` | - |
+| playwright-screenshot | qa-20260321-ai-freetext.png | `.playwright-mcp/screenshots/qa-20260321-ai-freetext.png` | - |
 
 ## Expert Domain Open Gaps
 
@@ -315,6 +315,7 @@ Latest run: QA-20260321-0148 (2026-03-21T11:41:43.931Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260321-0149 | 2026-03-21T11:48:31.418Z | targeted | no | Vercel Playwright QA - AI Sidebar Free-Text Proof (SHA fd9346ab2) | 5 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260321-0148 | 2026-03-21T11:41:43.931Z | targeted | no | Vercel Playwright QA - Fullscreen AI Workspace Proof (SHA 8a7fe8769) | 6 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260321-0147 | 2026-03-21T11:36:14.761Z | targeted | no | Vercel Playwright QA - AI Sidebar Reporter Analyst Proof (SHA d802241fb) | 7 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260321-0146 | 2026-03-21T11:08:45.922Z | targeted | no | Vercel Playwright QA - Targeted Topology Artifact Proof (SHA 54990e639) | 6 | 0 | 0 | 0 | 0 | 0 |
@@ -334,5 +335,4 @@ Latest run: QA-20260321-0148 (2026-03-21T11:41:43.931Z)
 | QA-20260319-0131 | 2026-03-19T12:56:21.932Z | legacy | no | Vercel Production QA - Core Route and AI Sidebar Broad Validation | 9 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260319-0130 | 2026-03-19T03:58:04.054Z | legacy | no | Vercel Playwright QA - Frontend and AI Assistant Full Validation | 6 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260319-0129 | 2026-03-19T00:13:33.724Z | legacy | no | Vercel Production QA - Core Frontend and AI Sidebar Partial Validation | 5 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260319-0128 | 2026-03-18T16:45:23.733Z | legacy | no | Vercel Playwright QA - Sidebar Reporter and Analyst chat retention parity | 6 | 2 | 0 | 0 | 0 | 0 |
 
