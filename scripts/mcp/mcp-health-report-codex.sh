@@ -68,8 +68,8 @@ while [ "$#" -gt 0 ]; do
   esac
 done
 
-if [ ! -x "$HEALTH_CHECK_SCRIPT" ]; then
-  echo "Missing executable health check script: $HEALTH_CHECK_SCRIPT" >&2
+if [ ! -f "$HEALTH_CHECK_SCRIPT" ]; then
+  echo "Missing health check script: $HEALTH_CHECK_SCRIPT" >&2
   exit 2
 fi
 

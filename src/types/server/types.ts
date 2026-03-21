@@ -12,9 +12,9 @@ import type {
 
 // 타입 충돌 방지를 위해 타입 이름 변경
 export type {
-  EnumServerStatus as ServerStatusEnum,
   EnumServerEnvironment as ServerEnvironmentEnum,
   EnumServerRole as ServerRoleEnum,
+  EnumServerStatus as ServerStatusEnum,
 };
 
 // 기존 타입들과의 호환성을 위해 재정의

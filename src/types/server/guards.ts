@@ -14,7 +14,7 @@ import type { Server } from './core';
 import type { EnhancedServerMetrics } from './metrics';
 
 // Re-export enum validators
-export { isValidServerStatus, isValidServerEnvironment, isValidServerRole };
+export { isValidServerEnvironment, isValidServerRole, isValidServerStatus };
 
 /**
  * Server 타입 가드
