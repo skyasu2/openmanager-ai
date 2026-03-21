@@ -26,6 +26,7 @@ function run() {
   const openExpertGaps = experts.filter((expert) => expert.lastImprovementNeeded);
   const latestRun = tracker.runs?.[tracker.runs.length - 1] || null;
   const latestUsageChecks = latestRun?.usageChecks || [];
+  const latestArtifacts = latestRun?.artifacts || [];
 
   console.log('QA Tracker Summary');
   console.log(`- total runs: ${summary.totalRuns || 0}`);
@@ -49,6 +50,12 @@ function run() {
     }
     if (Array.isArray(latestRun.coveragePacks) && latestRun.coveragePacks.length > 0) {
       console.log(`- latest coverage packs: ${latestRun.coveragePacks.join(', ')}`);
+    }
+    if (latestArtifacts.length > 0) {
+      const artifactTypes = Array.from(new Set(latestArtifacts.map((item) => item.type)));
+      console.log(
+        `- latest artifacts: ${latestArtifacts.length} (${artifactTypes.join(', ')})`
+      );
     }
     console.log(
       `- latest covered/skipped surfaces: ${(latestRun.coveredSurfaces || []).length}/${(latestRun.skippedSurfaces || []).length}`

@@ -48,6 +48,14 @@ const COVERAGE_PACK_VALUES = new Set([
   'security-pack',
   'observability-pack',
 ]);
+const ARTIFACT_TYPE_VALUES = new Set([
+  'playwright-trace',
+  'playwright-report',
+  'playwright-screenshot',
+  'playwright-video',
+  'playwright-console',
+  'playwright-network',
+]);
 const REQUIRED_VERCEL_BROAD_COVERAGE_PACKS = [
   'core-routes-smoke',
   'dashboard-core',
@@ -546,6 +554,214 @@ function normalizeCoveragePacks(rawValue) {
   return Array.from(new Set(items));
 }
 
+function normalizeUrl(value, fieldName) {
+  const text = String(value || '').trim();
+  if (!text) {
+    return '';
+  }
+
+  let parsed;
+  try {
+    parsed = new URL(text);
+  } catch (error) {
+    throw new Error(`${fieldName} URL이 올바르지 않습니다.`);
+  }
+
+  if (!['http:', 'https:'].includes(parsed.protocol)) {
+    throw new Error(`${fieldName} URL은 http 또는 https 여야 합니다.`);
+  }
+
+  return parsed.toString();
+}
+
+function buildPlaywrightTraceViewerUrl(traceUrl) {
+  return `https://trace.playwright.dev/?trace=${encodeURIComponent(traceUrl)}`;
+}
+
+function toPosixRelativePath(filePath) {
+  return path.relative(process.cwd(), filePath).split(path.sep).join('/');
+}
+
+function collectFilesRecursively(rootDir) {
+  if (!fs.existsSync(rootDir)) {
+    return [];
+  }
+
+  const entries = fs.readdirSync(rootDir, { withFileTypes: true });
+  const files = [];
+
+  for (const entry of entries) {
+    const fullPath = path.join(rootDir, entry.name);
+    if (entry.isDirectory()) {
+      files.push(...collectFilesRecursively(fullPath));
+      continue;
+    }
+
+    if (entry.isFile()) {
+      files.push(fullPath);
+    }
+  }
+
+  return files;
+}
+
+function isRecentFile(filePath, cutoffMs) {
+  const stats = fs.statSync(filePath);
+  return stats.mtimeMs >= cutoffMs;
+}
+
+function normalizePlaywrightArtifactOptions(rawValue, source) {
+  const sourceText = String(source || '').trim().toLowerCase();
+  const shouldAutoDetectBySource =
+    sourceText === 'playwright' || sourceText === 'playwright-cli';
+
+  if (rawValue === false) {
+    return null;
+  }
+
+  if (!rawValue || typeof rawValue !== 'object') {
+    if (!shouldAutoDetectBySource) {
+      return null;
+    }
+
+    return {
+      reportDir: 'playwright-report',
+      resultsDir: 'test-results',
+      recentMinutes: 180,
+    };
+  }
+
+  return {
+    reportDir: rawValue.reportDir ? String(rawValue.reportDir).trim() : 'playwright-report',
+    resultsDir: rawValue.resultsDir ? String(rawValue.resultsDir).trim() : 'test-results',
+    recentMinutes:
+      Number.isFinite(Number(rawValue.recentMinutes)) && Number(rawValue.recentMinutes) > 0
+        ? Number(rawValue.recentMinutes)
+        : 180,
+  };
+}
+
+function detectPlaywrightArtifacts(options, now) {
+  if (!options) {
+    return [];
+  }
+
+  const cutoffMs = now.getTime() - options.recentMinutes * 60 * 1000;
+  const artifacts = [];
+  const reportIndexPath = path.resolve(process.cwd(), options.reportDir, 'index.html');
+
+  if (fs.existsSync(reportIndexPath) && isRecentFile(reportIndexPath, cutoffMs)) {
+    artifacts.push({
+      type: 'playwright-report',
+      label: 'Playwright HTML report',
+      path: toPosixRelativePath(reportIndexPath),
+    });
+  }
+
+  const resultsRoot = path.resolve(process.cwd(), options.resultsDir);
+  for (const filePath of collectFilesRecursively(resultsRoot)) {
+    if (!isRecentFile(filePath, cutoffMs)) {
+      continue;
+    }
+
+    const ext = path.extname(filePath).toLowerCase();
+    const relativePath = toPosixRelativePath(filePath);
+
+    if (path.basename(filePath) === 'trace.zip') {
+      artifacts.push({
+        type: 'playwright-trace',
+        label: path.basename(path.dirname(filePath)) || 'Playwright trace',
+        path: relativePath,
+      });
+      continue;
+    }
+
+    if (['.png', '.jpg', '.jpeg'].includes(ext)) {
+      artifacts.push({
+        type: 'playwright-screenshot',
+        label: path.basename(filePath),
+        path: relativePath,
+      });
+      continue;
+    }
+
+    if (['.webm', '.mp4'].includes(ext)) {
+      artifacts.push({
+        type: 'playwright-video',
+        label: path.basename(filePath),
+        path: relativePath,
+      });
+    }
+  }
+
+  return artifacts.sort((a, b) => {
+    const aKey = `${a.type}|${a.path || a.url || ''}`;
+    const bKey = `${b.type}|${b.path || b.url || ''}`;
+    return aKey.localeCompare(bKey);
+  });
+}
+
+function normalizeArtifacts(rawValue) {
+  if (!Array.isArray(rawValue)) {
+    return [];
+  }
+
+  return rawValue.map((rawArtifact, index) => {
+    if (!rawArtifact || typeof rawArtifact !== 'object') {
+      throw new Error(`artifacts[${index}] 항목이 비어있거나 객체가 아닙니다.`);
+    }
+
+    const type = String(rawArtifact.type || '')
+      .trim()
+      .toLowerCase();
+    if (!ARTIFACT_TYPE_VALUES.has(type)) {
+      throw new Error(
+        `artifacts[${index}].type 값이 올바르지 않습니다: ${type || '(empty)'}. 허용 값: ${Array.from(ARTIFACT_TYPE_VALUES).join(', ')}`
+      );
+    }
+
+    const label = String(rawArtifact.label || type).trim();
+    const url = rawArtifact.url
+      ? normalizeUrl(rawArtifact.url, `artifacts[${index}].url`)
+      : '';
+    const filePath = rawArtifact.path ? String(rawArtifact.path).trim() : '';
+
+    if (!url && !filePath) {
+      throw new Error(`artifacts[${index}]에는 url 또는 path가 필요합니다.`);
+    }
+
+    const normalizedArtifact = {
+      type,
+      label,
+      ...(url ? { url } : {}),
+      ...(filePath ? { path: filePath } : {}),
+      ...(rawArtifact.note ? { note: String(rawArtifact.note) } : {}),
+    };
+
+    if (type === 'playwright-trace' && url) {
+      normalizedArtifact.viewerUrl = buildPlaywrightTraceViewerUrl(url);
+    }
+
+    return normalizedArtifact;
+  });
+}
+
+function mergeArtifacts(manualArtifacts, detectedArtifacts) {
+  const merged = [];
+  const seen = new Set();
+
+  for (const artifact of [...manualArtifacts, ...detectedArtifacts]) {
+    const key = `${artifact.type}|${artifact.url || ''}|${artifact.path || ''}`;
+    if (seen.has(key)) {
+      continue;
+    }
+    seen.add(key);
+    merged.push(artifact);
+  }
+
+  return merged;
+}
+
 function isVercelProductionEnvironment(environment) {
   if (!environment || typeof environment !== 'object') return false;
 
@@ -842,6 +1058,7 @@ function statusMarkdown(tracker) {
   const latestRunCoveragePacks = latestRun?.coveragePacks || [];
   const latestRunCoveredSurfaces = latestRun?.coveredSurfaces || [];
   const latestRunSkippedSurfaces = latestRun?.skippedSurfaces || [];
+  const latestRunArtifacts = latestRun?.artifacts || [];
   const latestRunEnvironment =
     latestRun && typeof latestRun.environment === 'object' ? latestRun.environment : {};
 
@@ -924,6 +1141,24 @@ function statusMarkdown(tracker) {
   lines.push(
     `- Skipped Surfaces: ${latestRunSkippedSurfaces.length > 0 ? latestRunSkippedSurfaces.join(', ') : '-'}`
   );
+  lines.push('');
+  lines.push('## Artifacts (Latest Run)');
+  lines.push('');
+  lines.push('| Type | Label | Location | Viewer |');
+  lines.push('|---|---|---|---|');
+  if (latestRunArtifacts.length === 0) {
+    lines.push('| - | - | - | - |');
+  } else {
+    for (const artifact of latestRunArtifacts) {
+      const location = artifact.url
+        ? `[link](${artifact.url})`
+        : artifact.path
+          ? `\`${artifact.path}\``
+          : '-';
+      const viewer = artifact.viewerUrl ? `[trace viewer](${artifact.viewerUrl})` : '-';
+      lines.push(`| ${artifact.type} | ${artifact.label || '-'} | ${location} | ${viewer} |`);
+    }
+  }
   lines.push('');
   lines.push('## Expert Domain Open Gaps');
   lines.push('');
@@ -1024,12 +1259,21 @@ function run() {
   const payload = readJsonFile(inputPath);
   const now = new Date();
   const nowIso = now.toISOString();
+  const source = payload.source ? String(payload.source).trim() : '';
   const environment = normalizeEnvironment(payload.environment);
   const scope = normalizeRunScope(payload.scope, environment);
   const releaseFacing = inferReleaseFacing(payload.releaseFacing, environment, scope);
   const coveredSurfaces = normalizeStringList(payload.coveredSurfaces);
   const skippedSurfaces = normalizeStringList(payload.skippedSurfaces);
   const coveragePacks = normalizeCoveragePacks(payload.coveragePacks);
+  const playwrightArtifactOptions = normalizePlaywrightArtifactOptions(
+    payload.playwrightArtifacts,
+    source
+  );
+  const artifacts = mergeArtifacts(
+    normalizeArtifacts(payload.artifacts),
+    detectPlaywrightArtifacts(playwrightArtifactOptions, now)
+  );
 
   const runTitle = String(payload.runTitle || '').trim();
   const owner = String(payload.owner || '').trim();
@@ -1189,7 +1433,7 @@ function run() {
     recordedAtKst: nowInSeoulText(now),
     runTitle,
     owner,
-    source: payload.source ? String(payload.source) : '',
+    source,
     environment,
     scope,
     releaseFacing,
@@ -1203,6 +1447,7 @@ function run() {
     },
     expertAssessments,
     usageChecks,
+    artifacts,
     completedImprovements: finalCompletedImprovements,
     pendingImprovements: finalPendingImprovements,
     deferredImprovements: finalDeferredImprovements,
@@ -1279,6 +1524,7 @@ function run() {
     checks: runRecord.checks,
     expertAssessments,
     usageChecks,
+    artifacts,
     expertCount: expertAssessments.length,
     expertNeedsImprovementCount,
     completedCount: finalCompletedImprovements.length,

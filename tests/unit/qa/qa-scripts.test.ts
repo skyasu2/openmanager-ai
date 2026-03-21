@@ -10,10 +10,11 @@ import {
   readdirSync,
   readFileSync,
   rmSync,
+  utimesSync,
   writeFileSync,
 } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { afterEach, describe, expect, it } from 'vitest';
 
@@ -37,6 +38,13 @@ function writeInputFile(tempDir: string, payload: unknown) {
   const inputPath = join(tempDir, 'qa-run-input.json');
   writeFileSync(inputPath, `${JSON.stringify(payload, null, 2)}\n`, 'utf8');
   return inputPath;
+}
+
+function writeWorkspaceFile(tempDir: string, relativePath: string, content = 'artifact') {
+  const filePath = join(tempDir, relativePath);
+  mkdirSync(dirname(filePath), { recursive: true });
+  writeFileSync(filePath, content, 'utf8');
+  return filePath;
 }
 
 function runNodeScript(
@@ -112,6 +120,7 @@ function createValidPayload(overrides?: Record<string, unknown>) {
         summary: 'qa script regression smoke',
       },
     ],
+    artifacts: [],
     ...overrides,
   };
 }
@@ -213,5 +222,134 @@ describe('QA scripts', () => {
     expect(readFileSync(statusPath, 'utf8')).toContain(
       'Coverage Packs: core-routes-smoke, dashboard-core, ai-core'
     );
+  });
+
+  it('records structured Playwright artifacts and prints artifact summary', () => {
+    const tempDir = createTempWorkspace();
+    const traceUrl = 'https://storage.example.com/playwright/trace.zip';
+    const inputPath = writeInputFile(
+      tempDir,
+      createValidPayload({
+        artifacts: [
+          {
+            type: 'playwright-trace',
+            label: 'Broad smoke trace',
+            url: traceUrl,
+          },
+          {
+            type: 'playwright-report',
+            label: 'HTML report',
+            url: 'https://storage.example.com/playwright/index.html',
+          },
+          {
+            type: 'playwright-screenshot',
+            label: 'Dashboard screenshot',
+            path: 'artifacts/dashboard.png',
+          },
+        ],
+      })
+    );
+
+    const recordResult = runNodeScript(
+      RECORD_QA_RUN_SCRIPT,
+      ['--input', inputPath],
+      {
+        cwd: tempDir,
+        env: {
+          VERCEL_DEPLOYMENT_ID: 'dpl_artifact123',
+          VERCEL_GIT_COMMIT_SHA: 'abcdefabcdefabcdefabcdefabcdefabcdefabcd',
+          VERCEL_GIT_COMMIT_REF: 'main',
+          VERCEL_TARGET_ENV: 'production',
+          VERCEL_PROJECT_PRODUCTION_URL: 'openmanager-ai.vercel.app',
+        },
+      }
+    );
+
+    expect(recordResult.status).toBe(0);
+
+    const runFilePath = findGeneratedRunFile(tempDir);
+    const runRecord = JSON.parse(readFileSync(runFilePath, 'utf8'));
+    expect(runRecord.artifacts).toHaveLength(3);
+    expect(runRecord.artifacts[0]).toEqual({
+      type: 'playwright-trace',
+      label: 'Broad smoke trace',
+      url: traceUrl,
+      viewerUrl: `https://trace.playwright.dev/?trace=${encodeURIComponent(traceUrl)}`,
+    });
+
+    const statusResult = runNodeScript(PRINT_QA_STATUS_SCRIPT, [], {
+      cwd: tempDir,
+    });
+
+    expect(statusResult.status).toBe(0);
+    expect(statusResult.stdout).toContain(
+      '- latest artifacts: 3 (playwright-trace, playwright-report, playwright-screenshot)'
+    );
+
+    const statusPath = join(tempDir, 'reports', 'qa', 'QA_STATUS.md');
+    const statusMarkdown = readFileSync(statusPath, 'utf8');
+    expect(statusMarkdown).toContain('## Artifacts (Latest Run)');
+    expect(statusMarkdown).toContain('trace.playwright.dev/?trace=');
+    expect(statusMarkdown).toContain('artifacts/dashboard.png');
+  });
+
+  it('auto-detects recent Playwright report/test-results artifacts', () => {
+    const tempDir = createTempWorkspace();
+    writeWorkspaceFile(tempDir, 'playwright-report/index.html', '<html>report</html>');
+    writeWorkspaceFile(tempDir, 'test-results/smoke-chromium/trace.zip', 'trace');
+    writeWorkspaceFile(tempDir, 'test-results/smoke-chromium/dashboard.png', 'png');
+
+    const oldTracePath = writeWorkspaceFile(
+      tempDir,
+      'test-results/old-run/trace.zip',
+      'old-trace'
+    );
+    const oldDate = new Date(Date.now() - 5 * 60 * 60 * 1000);
+    utimesSync(oldTracePath, oldDate, oldDate);
+
+    const inputPath = writeInputFile(
+      tempDir,
+      createValidPayload({
+        source: 'playwright',
+      })
+    );
+
+    const recordResult = runNodeScript(
+      RECORD_QA_RUN_SCRIPT,
+      ['--input', inputPath],
+      {
+        cwd: tempDir,
+        env: {
+          VERCEL_DEPLOYMENT_ID: 'dpl_autocollect123',
+          VERCEL_GIT_COMMIT_SHA: 'abcdefabcdefabcdefabcdefabcdefabcdefabcd',
+          VERCEL_GIT_COMMIT_REF: 'main',
+          VERCEL_TARGET_ENV: 'production',
+          VERCEL_PROJECT_PRODUCTION_URL: 'openmanager-ai.vercel.app',
+        },
+      }
+    );
+
+    expect(recordResult.status).toBe(0);
+
+    const runFilePath = findGeneratedRunFile(tempDir);
+    const runRecord = JSON.parse(readFileSync(runFilePath, 'utf8'));
+
+    expect(runRecord.artifacts).toEqual([
+      {
+        type: 'playwright-report',
+        label: 'Playwright HTML report',
+        path: 'playwright-report/index.html',
+      },
+      {
+        type: 'playwright-screenshot',
+        label: 'dashboard.png',
+        path: 'test-results/smoke-chromium/dashboard.png',
+      },
+      {
+        type: 'playwright-trace',
+        label: 'smoke-chromium',
+        path: 'test-results/smoke-chromium/trace.zip',
+      },
+    ]);
   });
 });

@@ -21,6 +21,9 @@ reports/qa/
 1. 템플릿 복사 후 입력값 작성
 - `cp reports/qa/templates/qa-run-input.example.json /tmp/qa-run-input.json`
 - `scope`, `releaseFacing`, `coveragePacks`, `coveredSurfaces`, `skippedSurfaces`를 현재 QA 범위에 맞게 채운다.
+- Playwright/CI 증거가 있으면 `artifacts`에 `trace/report/screenshot/video`를 구조화해 남긴다.
+- `source`가 `playwright` 또는 `playwright-cli`이고 최근 결과 파일이 남아 있으면 `qa:record`는 `playwright-report`와 `test-results`에서 artifact를 자동 수집한다.
+- 기본 디렉토리나 시간 창을 바꾸려면 `playwrightArtifacts.reportDir/resultsDir/recentMinutes`를 입력 JSON에 명시한다.
 - Vercel production의 `broad`/`release-gate` 또는 `releaseFacing: true` run이면 `environment.deploymentId`, `environment.commitSha`를 함께 기록한다.
 - `qa:record`는 누락 시 현재 Git의 `branch`/`HEAD SHA`를 자동 보강하고, `VERCEL_*` system env가 있으면 `deploymentId`/`deploymentUrl`/`url`도 함께 보강한다.
 
@@ -51,6 +54,14 @@ reports/qa/
 - `coveragePacks`는 표준화된 커버 묶음입니다.
   - 허용 값: `core-routes-smoke`, `dashboard-core`, `ai-core`, `ai-advanced-surface`, `modal-detail-pack`, `security-pack`, `observability-pack`
   - Vercel production의 `broad`/`release-gate` run이면 최소 `core-routes-smoke`, `dashboard-core`, `ai-core`가 필요합니다.
+- `artifacts`는 Playwright/CI 증거를 위한 구조화 필드입니다.
+  - 허용 값: `playwright-trace`, `playwright-report`, `playwright-screenshot`, `playwright-video`, `playwright-console`, `playwright-network`
+  - 각 항목은 `type`, `label`, `url|path`를 가집니다.
+  - `playwright-trace`에 `url`이 있으면 `qa:record`가 `trace.playwright.dev` viewer URL을 자동 생성합니다.
+- `playwrightArtifacts`는 로컬 Playwright 산출물을 자동 수집하는 옵션입니다.
+  - 기본값: `reportDir=playwright-report`, `resultsDir=test-results`, `recentMinutes=180`
+  - `source`가 `playwright` 또는 `playwright-cli`이면 옵션이 없어도 기본값으로 자동 수집을 시도합니다.
+  - 최근 수정된 파일만 수집하므로 오래된 실패 산출물은 기본적으로 제외됩니다.
 - `coveredSurfaces` / `skippedSurfaces`는 사용자 보고 텍스트가 아니라 run SSOT에도 저장해야 합니다.
 - `environment.deploymentId` / `environment.commitSha`는 release-facing 실환경 QA의 배포 증거 필드입니다.
   - Vercel production의 `broad`/`release-gate` 또는 `releaseFacing: true` run이면 둘 다 기록합니다.
@@ -86,6 +97,7 @@ reports/qa/
 - 다음 항목은 관련 있을 때만 답변에 포함합니다.
   - `deploymentId`, `commitSha`
   - `coveragePacks`
+  - `artifacts`
   - `coveredSurfaces`, `skippedSurfaces`
   - `usageChecks`
   - `expertAssessments` / open gaps

@@ -40,6 +40,29 @@
       "url": "https://vercel.com/dashboard"
     }
   ],
+  "artifacts": [
+    {
+      "type": "playwright-trace",
+      "label": "Broad smoke trace",
+      "url": "https://storage.example.com/playwright/qa-broad-smoke-trace.zip",
+      "note": "Remote trace URL for trace.playwright.dev"
+    },
+    {
+      "type": "playwright-report",
+      "label": "HTML report",
+      "url": "https://storage.example.com/playwright/index.html"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Dashboard landing screenshot",
+      "path": "artifacts/playwright/dashboard-landing.png"
+    }
+  ],
+  "playwrightArtifacts": {
+    "reportDir": "playwright-report",
+    "resultsDir": "test-results",
+    "recentMinutes": 180
+  },
   "expertAssessments": [
     {
       "domainId": "ai-quality-assurance",

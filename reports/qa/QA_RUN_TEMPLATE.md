@@ -52,6 +52,19 @@ npm run qa:record -- --input <qa-run-input.json>
       "url": "https://vercel.com/dashboard"
     }
   ],
+  "artifacts": [                // Playwright/CI 증거 (선택)
+    {
+      "type": "playwright-trace",
+      "label": "Broad smoke trace",
+      "url": "https://storage.example.com/playwright/trace.zip",
+      "note": "원격 trace.zip URL"
+    }
+  ],
+  "playwrightArtifacts": {      // 로컬 Playwright 산출물 자동 수집 옵션 (선택)
+    "reportDir": "playwright-report",
+    "resultsDir": "test-results",
+    "recentMinutes": 180
+  },
   "completedImprovements": [],   // 완료된 개선 항목
   "pendingImprovements": [],     // 미완료 개선 항목
   "dodChecks": [],               // DoD 체크리스트 (grouped items 지원)
@@ -138,6 +151,52 @@ npm run qa:record -- --input <qa-run-input.json>
 
 - Vercel 실환경 QA/배포 뒤에는 `usageChecks`에 `platform: "vercel"` 항목을 최소 1건 반드시 남겨야 합니다.
 - CLI가 불가능하면 `method: "manual-dashboard"`로 수동 확인 결과를 기록합니다.
+
+## Artifact 스키마
+
+```jsonc
+{
+  "artifacts": [
+    {
+      "type": "playwright-trace",      // 필수
+      "label": "Broad smoke trace",    // 선택, 기본 type
+      "url": "https://.../trace.zip",  // url 또는 path 중 하나 필수
+      "path": "artifacts/trace.zip",   // 로컬/워크스페이스 경로
+      "note": "추가 설명"               // 선택
+    }
+  ]
+}
+```
+
+- 허용 `type`
+  - `playwright-trace`
+  - `playwright-report`
+  - `playwright-screenshot`
+  - `playwright-video`
+  - `playwright-console`
+  - `playwright-network`
+- `playwright-trace`에 `url`이 있으면 `qa:record`가 `trace.playwright.dev` viewer URL을 자동 생성합니다.
+- Playwright 공식 문서 기준으로 원격 `trace.zip` URL은 trace viewer에서 직접 열 수 있으므로, CI/스토리지 URL을 그대로 남기는 방식을 우선합니다.
+
+## Playwright 자동 수집 옵션
+
+```jsonc
+{
+  "playwrightArtifacts": {
+    "reportDir": "playwright-report",
+    "resultsDir": "test-results",
+    "recentMinutes": 180
+  }
+}
+```
+
+- `source`가 `playwright` 또는 `playwright-cli`이면 위 옵션이 없어도 기본값으로 자동 수집을 시도합니다.
+- 수집 대상
+  - `playwright-report/index.html` → `playwright-report`
+  - `test-results/**/trace.zip` → `playwright-trace`
+  - `test-results/**/*.{png,jpg,jpeg}` → `playwright-screenshot`
+  - `test-results/**/*.{webm,mp4}` → `playwright-video`
+- `recentMinutes` 안에 수정된 파일만 수집해 오래된 잔재를 기본적으로 제외합니다.
 
 ## Normalization 규칙 (스크립트 자동 처리)
 
