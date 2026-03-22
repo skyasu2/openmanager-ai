@@ -6,12 +6,13 @@
 
 'use client';
 
-import Link from 'next/link';
 import { Bot } from 'lucide-react';
+import Link from 'next/link';
 import type { ButtonConfig, StatusInfo } from '../hooks/useSystemStart';
 
 const PRODUCTION_QA_STATUS_PATH = '/reports/qa/QA_STATUS.md';
-const PRODUCTION_QA_PROOF_RUN_PATH = '/reports/qa/runs/2026/qa-run-QA-20260322-0160.json';
+const PRODUCTION_QA_PROOF_RUN_PATH =
+  '/reports/qa/runs/2026/qa-run-QA-20260322-0160.json';
 const PRODUCTION_QA_CI_RUN_URL =
   'https://github.com/skyasu2/openmanager-ai/actions/runs/23398040200';
 
@@ -110,9 +111,7 @@ export function SystemStartSection({
             </span>
           </div>
           <div className="mt-3 border-t border-white/10 pt-3 text-xs text-white/75">
-            <p className="text-center">
-              실환경 검증 기준 · 2026-03-22
-            </p>
+            <p className="text-center">실환경 검증 기준 · 2026-03-22</p>
             <div className="mt-2 flex flex-wrap items-center justify-center gap-2">
               <Link
                 href={PRODUCTION_QA_STATUS_PATH}
