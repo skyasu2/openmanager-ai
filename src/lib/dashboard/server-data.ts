@@ -34,6 +34,12 @@ export type DashboardStats = {
   offline: number;
 };
 
+export type DashboardTimeInfo = {
+  hour: number;
+  slotIndex: number;
+  minuteOfDay: number;
+};
+
 // ============================================================================
 // EnhancedServerMetrics → Server 변환
 // ============================================================================
@@ -79,7 +85,7 @@ function toServer(em: EnhancedServerMetrics): Server {
 export type OTelDashboardData = {
   servers: Server[];
   stats: DashboardStats;
-  timeInfo: { hour: number; slotIndex: number; minuteOfDay: number };
+  timeInfo: DashboardTimeInfo;
 };
 
 /**

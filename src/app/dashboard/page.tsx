@@ -20,7 +20,13 @@ export const metadata: Metadata = {
 
 export default async function DashboardPage() {
   await connection();
-  const { servers, stats } = await getOTelDashboardData();
+  const { servers, stats, timeInfo } = await getOTelDashboardData();
 
-  return <DashboardClient initialServers={servers} initialStats={stats} />;
+  return (
+    <DashboardClient
+      initialServers={servers}
+      initialStats={stats}
+      initialTimeInfo={timeInfo}
+    />
+  );
 }

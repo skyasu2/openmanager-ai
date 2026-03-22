@@ -25,6 +25,12 @@ export const serverInfoSchema = z.object({
   disk: z.number().describe('디스크 사용률 (%)'),
 });
 
+export const dataSlotSchema = z.object({
+  slotIndex: z.number().describe('현재 KST 10분 슬롯 인덱스 (0-143)'),
+  minuteOfDay: z.number().describe('현재 KST minuteOfDay (0-1430, 10분 단위)'),
+  timeLabel: z.string().describe('현재 synthetic OTel 데이터 슬롯 라벨 (HH:MM KST)'),
+});
+
 /**
  * getServerMetrics response schema
  */
@@ -35,6 +41,7 @@ export const getServerMetricsResponseSchema = z.object({
     total: z.number().describe('전체 서버 수'),
     alertCount: z.number().describe('경고/위험 상태 서버 수'),
   }),
+  dataSlot: dataSlotSchema.describe('대시보드와 AI가 함께 참조하는 현재 synthetic OTel 데이터 슬롯'),
   timestamp: z.string().describe('조회 시간 (ISO 8601)'),
 });
 

@@ -12,11 +12,13 @@ import {
 } from 'lucide-react';
 import type React from 'react';
 import { memo } from 'react';
+import type { DashboardTimeInfo } from '@/lib/dashboard/server-data';
 import { cn } from '@/lib/utils';
 import type { DashboardStats } from './types/dashboard.types';
 
 interface DashboardSummaryProps {
   stats: DashboardStats;
+  dataSlotInfo?: DashboardTimeInfo;
   activeFilter?: string | null;
   onFilterChange?: (filter: string | null) => void;
   onOpenAlertHistory?: () => void;
@@ -27,6 +29,15 @@ interface DashboardSummaryProps {
   activeAlertsCount?: number;
   /** Active Alerts 모달 열기 */
   onOpenActiveAlerts?: () => void;
+}
+
+function formatSlotLabel(dataSlotInfo: DashboardTimeInfo): string {
+  const hours = String(Math.floor(dataSlotInfo.minuteOfDay / 60)).padStart(
+    2,
+    '0'
+  );
+  const minutes = String(dataSlotInfo.minuteOfDay % 60).padStart(2, '0');
+  return `${hours}:${minutes} KST (slot ${dataSlotInfo.slotIndex}/143)`;
 }
 
 // 🎨 상태별 그라데이션 설정 (ImprovedServerCard와 통일)
@@ -161,6 +172,7 @@ function StatusCard({
 export const DashboardSummary: React.FC<DashboardSummaryProps> = memo(
   function DashboardSummary({
     stats,
+    dataSlotInfo,
     activeFilter,
     onFilterChange,
     onOpenAlertHistory,
@@ -214,6 +226,11 @@ export const DashboardSummary: React.FC<DashboardSummaryProps> = memo(
                 {safeStats.total}
               </span>
             </div>
+            {dataSlotInfo && (
+              <p className="mt-2 text-[11px] font-medium text-gray-500">
+                Synthetic OTel snapshot · {formatSlotLabel(dataSlotInfo)}
+              </p>
+            )}
           </div>
           {/* 그라데이션 아이콘 박스 */}
           <div

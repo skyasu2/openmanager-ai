@@ -143,6 +143,11 @@ export const getServerMetrics = tool({
           total: servers.length,
           alertCount: alertServersList.length,
         },
+        dataSlot: {
+          slotIndex: state.slotIndex,
+          minuteOfDay: state.minuteOfDay,
+          timeLabel: `${state.timeLabel} KST`,
+        },
         requestedMetric: metric,
         alertServers: alertServersList.length > 0 ? alertServersList : undefined,
         timestamp: new Date().toISOString(),

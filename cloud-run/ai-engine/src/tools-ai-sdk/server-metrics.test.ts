@@ -105,6 +105,9 @@ vi.mock('../data/precomputed-state', () => {
   ];
 
   const state = {
+    slotIndex: 74,
+    minuteOfDay: 740,
+    timeLabel: '12:20',
     timestamp: new Date().toISOString(),
     servers,
     systemHealth: {
@@ -360,6 +363,11 @@ describe('getServerMetrics', () => {
     expect(result.success).toBe(true);
     expect(result.servers).toHaveLength(9);
     expect(result.summary.total).toBe(9);
+    expect(result.dataSlot).toEqual({
+      slotIndex: 74,
+      minuteOfDay: 740,
+      timeLabel: '12:20 KST',
+    });
   });
 
   it('should return specific server when serverId specified', async () => {

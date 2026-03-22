@@ -136,4 +136,17 @@ describe('DashboardSummary status filter cards', () => {
     render(<DashboardSummary stats={mockStats} />);
     expect(screen.getAllByText('오프라인').length).toBeGreaterThanOrEqual(2);
   });
+
+  it('synthetic OTel data slot 메타데이터를 표시한다', () => {
+    render(
+      <DashboardSummary
+        stats={mockStats}
+        dataSlotInfo={{ hour: 12, slotIndex: 74, minuteOfDay: 740 }}
+      />
+    );
+
+    expect(
+      screen.getByText('Synthetic OTel snapshot · 12:20 KST (slot 74/143)')
+    ).toBeInTheDocument();
+  });
 });

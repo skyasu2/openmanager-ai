@@ -23,7 +23,10 @@ import { useServerDashboard } from '@/hooks/useServerDashboard';
 import { useSystemAutoShutdown } from '@/hooks/useSystemAutoShutdown';
 import { useUserPermissions } from '@/hooks/useUserPermissions';
 import { LOGIN_POLICY_COPY } from '@/lib/auth/login-policy-copy';
-import type { DashboardStats } from '@/lib/dashboard/server-data';
+import type {
+  DashboardStats,
+  DashboardTimeInfo,
+} from '@/lib/dashboard/server-data';
 import { cn } from '@/lib/utils';
 import { systemInactivityService } from '@/services/system/SystemInactivityService';
 import { useAISidebarStore } from '@/stores/useAISidebarStore';
@@ -44,6 +47,8 @@ type DashboardClientProps = {
   initialServers?: Server[];
   /** Pre-calculated stats from Server Component */
   initialStats?: DashboardStats;
+  /** Pre-calculated data slot metadata from Server Component */
+  initialTimeInfo?: DashboardTimeInfo;
 };
 
 // 🔧 레거시 정리 (2026-01-17): EnhancedServerModal은 ServerDashboard 내부에서 직접 사용
@@ -52,7 +57,10 @@ type DashboardClientProps = {
 // - ServerDashboard 내부에서 EnhancedServerModal 직접 렌더링
 // - 중복 모달 시스템 제거로 번들 크기 최적화
 
-function DashboardPageContent({ initialServers }: DashboardClientProps) {
+function DashboardPageContent({
+  initialServers,
+  initialTimeInfo,
+}: DashboardClientProps) {
   // 🔒 Hydration 불일치 방지를 위한 클라이언트 전용 상태
   const [isMounted, setIsMounted] = useState(false);
 
@@ -364,6 +372,7 @@ function DashboardPageContent({ initialServers }: DashboardClientProps) {
               showSequentialGeneration={false}
               servers={realServers}
               allServers={allServers}
+              dataSlotInfo={initialTimeInfo}
               totalServers={filteredTotal}
               currentPage={currentPage}
               totalPages={totalPages}
@@ -411,12 +420,14 @@ function DashboardPageContent({ initialServers }: DashboardClientProps) {
 export default function DashboardClient({
   initialServers,
   initialStats,
+  initialTimeInfo,
 }: DashboardClientProps) {
   return (
     <Suspense fallback={<ContentLoadingSkeleton />}>
       <DashboardPageContent
         initialServers={initialServers}
         initialStats={initialStats}
+        initialTimeInfo={initialTimeInfo}
       />
     </Suspense>
   );
