@@ -3,6 +3,7 @@
  *
  * 서버 메트릭 기반 AI 분석 결과를 배지로 표시
  * - Stable: 모든 메트릭 정상
+ * - Warning: 현재 수치 주의 필요
  * - Rising: 사용량 증가 추세
  * - Unusual: 비정상 패턴 감지
  * - Critical: 즉시 조치 필요
@@ -14,6 +15,7 @@ import { useMemo } from 'react';
 
 export type InsightType =
   | 'stable'
+  | 'warning'
   | 'rising'
   | 'declining'
   | 'unusual'
@@ -23,6 +25,7 @@ interface AIInsightBadgeProps {
   cpu: number;
   memory: number;
   disk?: number;
+  status?: string;
   historyData?: Array<{ cpu: number; memory: number }>;
   className?: string;
 }
@@ -62,10 +65,24 @@ function determineInsight(
   cpu: number,
   memory: number,
   disk: number,
+  status: string | undefined,
   historyData?: Array<{ cpu: number; memory: number }>
 ): InsightResult {
-  // Critical: 임계치 초과
-  if (cpu > 90 || memory > 95 || disk > 95) {
+  const cpuCritical = cpu >= 85;
+  const memoryCritical = memory >= 90;
+  const diskCritical = disk >= 95;
+  const cpuWarning = cpu >= 70;
+  const memoryWarning = memory >= 80;
+  const diskWarning = disk >= 80;
+
+  // 서버 상태가 이미 critical/offline이면 카드의 핵심 상태와 모순되지 않게 맞춘다.
+  if (
+    status === 'critical' ||
+    status === 'offline' ||
+    cpuCritical ||
+    memoryCritical ||
+    diskCritical
+  ) {
     return {
       type: 'critical',
       label: 'Critical',
@@ -82,10 +99,12 @@ function determineInsight(
   // 트렌드 분석
   const cpuTrend = analyzeTrend(historyData?.map((h) => h.cpu) || []);
   const memoryTrend = analyzeTrend(historyData?.map((h) => h.memory) || []);
+  const hasWarningLevel =
+    status === 'warning' || cpuWarning || memoryWarning || diskWarning;
 
   // Unusual: Warning 임계치 + 상승 추세
   if (
-    (cpu > 75 || memory > 80) &&
+    hasWarningLevel &&
     (cpuTrend === 'rising' || memoryTrend === 'rising')
   ) {
     return {
@@ -96,6 +115,20 @@ function determineInsight(
       colors: {
         bg: 'bg-amber-100',
         text: 'text-amber-700',
+        border: 'border-amber-300',
+      },
+    };
+  }
+
+  if (hasWarningLevel) {
+    return {
+      type: 'warning',
+      label: 'Warning',
+      description: '주의 필요',
+      icon: <Brain className="h-3 w-3" />,
+      colors: {
+        bg: 'bg-amber-50',
+        text: 'text-amber-800',
         border: 'border-amber-300',
       },
     };
@@ -149,12 +182,13 @@ export const AIInsightBadge: React.FC<AIInsightBadgeProps> = ({
   cpu,
   memory,
   disk = 30,
+  status,
   historyData,
   className = '',
 }) => {
   const insight = useMemo(
-    () => determineInsight(cpu, memory, disk, historyData),
-    [cpu, memory, disk, historyData]
+    () => determineInsight(cpu, memory, disk, status, historyData),
+    [cpu, memory, disk, status, historyData]
   );
 
   return (

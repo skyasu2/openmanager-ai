@@ -134,14 +134,16 @@ export const useSafeServer = (server: ServerType | undefined | null) => {
   // OS 짧은 이름 (UI 표시용)
   const osShortName = useMemo(() => {
     const os = safeServer.os || '';
+    const normalizedOs = os.trim().toLowerCase();
     // 버전 번호 제거하고 핵심 이름만 추출
-    if (os.toLowerCase().includes('ubuntu')) return 'Ubuntu';
-    if (os.toLowerCase().includes('rocky')) return 'Rocky';
-    if (os.toLowerCase().includes('oracle')) return 'Oracle';
-    if (os.toLowerCase().includes('debian')) return 'Debian';
-    if (os.toLowerCase().includes('centos')) return 'CentOS';
-    if (os.toLowerCase().includes('red hat')) return 'RHEL';
-    if (os.toLowerCase().includes('windows')) return 'Windows';
+    if (normalizedOs.includes('ubuntu')) return 'Ubuntu';
+    if (normalizedOs.includes('rocky')) return 'Rocky';
+    if (normalizedOs.includes('oracle')) return 'Oracle';
+    if (normalizedOs.includes('debian')) return 'Debian';
+    if (normalizedOs.includes('centos')) return 'CentOS';
+    if (normalizedOs.includes('red hat')) return 'RHEL';
+    if (normalizedOs.includes('windows')) return 'Windows';
+    if (normalizedOs === 'linux') return 'Linux';
     return os.split(' ')[0] || 'Linux';
   }, [safeServer.os]);
 

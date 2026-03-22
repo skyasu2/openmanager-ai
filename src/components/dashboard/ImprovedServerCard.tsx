@@ -342,12 +342,14 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
               <div className="hidden sm:block">
                 <AIInsightBadge
                   {...realtimeMetrics}
+                  status={safeServer.status}
                   historyData={metricsHistory}
                 />
               </div>
             ) : (
               <AIInsightBadge
                 {...realtimeMetrics}
+                status={safeServer.status}
                 historyData={metricsHistory}
               />
             )}

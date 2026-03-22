@@ -24,9 +24,11 @@ interface AlertServerSnapshot {
   disk?: number;
   cpuTrend?: string;
   memoryTrend?: string;
+  diskTrend?: string;
   dailyAvg?: {
     cpu?: number;
     memory?: number;
+    disk?: number;
   };
 }
 
@@ -112,11 +114,13 @@ function deriveAlertServers(payload: MetricsToolPayload): AlertServerSnapshot[] 
       dailyAvg: {
         cpu: toNumber(server.dailyTrend?.cpu?.avg ?? null) ?? undefined,
         memory: toNumber(server.dailyTrend?.memory?.avg ?? null) ?? undefined,
+        disk: toNumber(server.dailyTrend?.disk?.avg ?? null) ?? undefined,
       },
     }));
 }
 
 function getDominantMetric(alertServer: AlertServerSnapshot): {
+  metricKey: 'cpu' | 'memory' | 'disk' | 'status';
   metricLabel: string;
   metricValue: number | null;
   trendLabel: string;
@@ -139,6 +143,7 @@ function getDominantMetric(alertServer: AlertServerSnapshot): {
 
   if (!dominantMetric) {
     return {
+      metricKey: 'status',
       metricLabel: '상태',
       metricValue: null,
       trendLabel: 'stable',
@@ -147,6 +152,7 @@ function getDominantMetric(alertServer: AlertServerSnapshot): {
 
   if (dominantMetric.key === 'cpu') {
     return {
+      metricKey: 'cpu',
       metricLabel: dominantMetric.label,
       metricValue: dominantMetric.value,
       trendLabel: alertServer.cpuTrend ?? 'stable',
@@ -155,6 +161,7 @@ function getDominantMetric(alertServer: AlertServerSnapshot): {
 
   if (dominantMetric.key === 'memory') {
     return {
+      metricKey: 'memory',
       metricLabel: dominantMetric.label,
       metricValue: dominantMetric.value,
       trendLabel: alertServer.memoryTrend ?? 'stable',
@@ -162,9 +169,10 @@ function getDominantMetric(alertServer: AlertServerSnapshot): {
   }
 
   return {
+    metricKey: 'disk',
     metricLabel: dominantMetric.label,
     metricValue: dominantMetric.value,
-    trendLabel: 'stable',
+    trendLabel: alertServer.diskTrend ?? 'stable',
   };
 }
 
@@ -189,42 +197,74 @@ function buildRecommendation(alertServers: AlertServerSnapshot[]): string {
   const dominantMetric = getDominantMetric(primaryAlert);
 
   if (dominantMetric.metricLabel === 'CPU') {
-    return `• ${primaryAlert.id}: CPU 상위 프로세스와 최근 배치/배포 작업을 점검하세요.`;
+    if (primaryAlert.status === 'critical') {
+      return `• ${primaryAlert.id}: 최근 15분 상위 프로세스, 직전 배포/배치, LB 트래픽 급증 여부를 우선 확인하세요.`;
+    }
+    return `• ${primaryAlert.id}: 상위 프로세스와 예약 작업을 확인하고, 10분 이상 같은 추세가 이어지면 요청 분산을 검토하세요.`;
   }
 
   if (dominantMetric.metricLabel === '메모리') {
-    return `• ${primaryAlert.id}: 메모리 상위 프로세스와 OOM 또는 eviction 징후를 확인하세요.`;
+    return `• ${primaryAlert.id}: 메모리 상위 프로세스, OOM/GC 로그, cache eviction 또는 누수 징후를 우선 확인하세요.`;
   }
 
   if (dominantMetric.metricLabel === '디스크') {
-    return `• ${primaryAlert.id}: 디스크 사용량 증가 경로와 로그 적체 여부를 확인하세요.`;
+    return `• ${primaryAlert.id}: 로그 적체, 백업 산출물, tmp 디렉터리 증가 경로를 우선 점검하세요.`;
   }
 
   return `• ${primaryAlert.id}: 최근 상태 변화 원인과 관련 로그를 점검하세요.`;
 }
 
 function buildTrendSummary(alertServers: AlertServerSnapshot[]): string {
-  const risingServers = alertServers
-    .map((alertServer) => ({
-      id: alertServer.id,
-      dominantMetric: getDominantMetric(alertServer),
-    }))
+  const notableTrendServers = alertServers
+    .map((alertServer) => {
+      const dominantMetric = getDominantMetric(alertServer);
+      const dailyAvg =
+        dominantMetric.metricKey === 'cpu'
+          ? toNumber(alertServer.dailyAvg?.cpu ?? null)
+          : dominantMetric.metricKey === 'memory'
+            ? toNumber(alertServer.dailyAvg?.memory ?? null)
+            : dominantMetric.metricKey === 'disk'
+              ? toNumber(alertServer.dailyAvg?.disk ?? null)
+              : null;
+
+      return {
+        id: alertServer.id,
+        dominantMetric,
+        dailyAvg,
+      };
+    })
     .filter(
       (entry) =>
-        entry.dominantMetric.trendLabel === 'rising' &&
+        entry.dominantMetric.trendLabel !== 'stable' &&
         entry.dominantMetric.metricValue !== null
     )
+    .sort((left, right) => {
+      const leftDelta =
+        left.dailyAvg === null || left.dominantMetric.metricValue === null
+          ? 0
+          : Math.abs(left.dominantMetric.metricValue - left.dailyAvg);
+      const rightDelta =
+        right.dailyAvg === null || right.dominantMetric.metricValue === null
+          ? 0
+          : Math.abs(right.dominantMetric.metricValue - right.dailyAvg);
+      return rightDelta - leftDelta;
+    })
     .slice(0, 2);
 
-  if (risingServers.length === 0) {
+  if (notableTrendServers.length === 0) {
     return '• 전체 서버는 평균 대비 큰 변동 없이 안정적입니다.';
   }
 
-  return risingServers
-    .map(
-      (entry) =>
-        `• ${entry.id}: ${entry.dominantMetric.metricLabel} ${roundPercent(entry.dominantMetric.metricValue)} (${formatTrendLabel(entry.dominantMetric.trendLabel)})`
-    )
+  return notableTrendServers
+    .map((entry) => {
+      if (entry.dailyAvg === null || entry.dominantMetric.metricValue === null) {
+        return `• ${entry.id}: ${entry.dominantMetric.metricLabel} ${roundPercent(entry.dominantMetric.metricValue)} (${formatTrendLabel(entry.dominantMetric.trendLabel)})`;
+      }
+
+      const delta = Math.round(entry.dominantMetric.metricValue - entry.dailyAvg);
+      const signedDelta = delta > 0 ? `+${delta}` : `${delta}`;
+      return `• ${entry.id}: ${entry.dominantMetric.metricLabel} 평균 ${roundPercent(entry.dailyAvg)} → 현재 ${roundPercent(entry.dominantMetric.metricValue)} (${signedDelta}%p, ${formatTrendLabel(entry.dominantMetric.trendLabel)})`;
+    })
     .join('\n');
 }
 
@@ -351,6 +391,15 @@ function buildSummaryPayloadFromCurrentState(): MetricsToolPayload | null {
             ? 'rising'
             : memory < trend.memory.avg * 0.9
               ? 'falling'
+            : 'stable'
+          : 'stable';
+      const disk = toNumber(server.disk);
+      const diskTrend =
+        disk !== null && trend
+          ? disk > trend.disk.avg * 1.1
+            ? 'rising'
+            : disk < trend.disk.avg * 0.9
+              ? 'falling'
               : 'stable'
           : 'stable';
 
@@ -362,10 +411,12 @@ function buildSummaryPayloadFromCurrentState(): MetricsToolPayload | null {
         disk: server.disk,
         cpuTrend,
         memoryTrend,
+        diskTrend,
         ...(trend && {
           dailyAvg: {
             cpu: trend.cpu.avg,
             memory: trend.memory.avg,
+            disk: trend.disk.avg,
           },
         }),
       };
