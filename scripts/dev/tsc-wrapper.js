@@ -21,7 +21,7 @@ try {
 }
 
 const tsc = spawn(process.execPath, [tscPath, ...args], {
-  stdio: 'inherit',
+  stdio: ['ignore', 'inherit', 'inherit'],
   shell: false,
 });
 

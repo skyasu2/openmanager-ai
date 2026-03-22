@@ -975,6 +975,9 @@ function runBuildValidation(changedFilesResult) {
         ? {
             ...process.env,
             PRE_PUSH_CHANGED_FILES: rootTypeCheckRelevantFiles.join('\n'),
+            TYPECHECK_CHANGED_SOFT_TIMEOUT: 'true',
+            TYPECHECK_CHANGED_TIMEOUT_SECONDS:
+              process.env.TYPECHECK_CHANGED_TIMEOUT_SECONDS || '60',
           }
         : null;
 

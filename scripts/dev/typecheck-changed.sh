@@ -25,9 +25,42 @@ fi
 FILE_COUNT=$(echo "$ALL_CHANGED" | wc -l)
 echo "📝 $FILE_COUNT TypeScript file(s) modified. Running incremental project type-check..."
 
+TYPECHECK_CHANGED_TIMEOUT_SECONDS="${TYPECHECK_CHANGED_TIMEOUT_SECONDS:-60}"
+TYPECHECK_CHANGED_SOFT_TIMEOUT="${TYPECHECK_CHANGED_SOFT_TIMEOUT:-false}"
+
 # TypeScript는 파일 단위가 아니라 project graph 기준으로 타입을 해석한다.
-# 여기서는 "변경 파일이 있을 때만" 증분 project check를 트리거해 빠른 피드백을 유지한다.
-node scripts/dev/tsc-wrapper.js --noEmit --incremental --pretty false --project tsconfig.json
+# pre-push에서는 응답성 보장을 위해 timeout을 두고, 시간 초과 시 CI/Vercel 검증으로 이관한다.
+TYPECHECK_CMD=(
+  node
+  scripts/dev/tsc-wrapper.js
+  --noEmit
+  --pretty
+  false
+  --project
+  tsconfig.json
+)
+
+if command -v timeout >/dev/null 2>&1; then
+  set +e
+  timeout "${TYPECHECK_CHANGED_TIMEOUT_SECONDS}s" "${TYPECHECK_CMD[@]}"
+  TYPECHECK_EXIT_CODE=$?
+  set -e
+
+  if [ "$TYPECHECK_EXIT_CODE" -eq 124 ]; then
+    echo "⚠️ Incremental type-check timed out after ${TYPECHECK_CHANGED_TIMEOUT_SECONDS}s."
+    if [ "$TYPECHECK_CHANGED_SOFT_TIMEOUT" = "true" ]; then
+      echo "ℹ️ Pre-push에서는 해당 검증을 soft-skip하고 CI/Vercel 전체 타입체크에 위임합니다."
+      exit 0
+    fi
+    exit 124
+  fi
+
+  if [ "$TYPECHECK_EXIT_CODE" -ne 0 ]; then
+    exit "$TYPECHECK_EXIT_CODE"
+  fi
+else
+  "${TYPECHECK_CMD[@]}"
+fi
 
 echo ""
 echo "✅ Incremental type-check passed!"
