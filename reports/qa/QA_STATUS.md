@@ -1,7 +1,7 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-22 23:52:54 KST
+> Generated at: 2026-03-23 00:13:26 KST
 
 ## Summary
 
@@ -40,7 +40,7 @@ Latest run: QA-20260322-0161 (2026-03-22T14:52:53.194Z)
 - Release-Facing: no
 - Deployment: SHA 41e8888d
 - Coverage Packs: dashboard-core, ai-core
-- Covered Surfaces: dashboard dataSourceInfo label (Dataset v1.0.0 · catalog 2026-02-15 03:56Z), dashboard dataSlotInfo label (Synthetic OTel snapshot · 23:50 KST slot 143/143), AI getServerMetrics dataSlot field (2026-03-22T14:50:00Z), AI getServerMetrics dataSource field (Prometheus + Telegraf), server status badge (storage-nfs-dc1-01 Warning/DISK 82%), OS label Linux normalization
+- Covered Surfaces: dashboard dataSourceInfo label (Dataset v1.0.0 · catalog 2026-02-15 03:56Z), dashboard dataSlotInfo label (Synthetic OTel snapshot · 23:50 KST slot 143/143), AI getServerMetrics dataSlot field ({ slotIndex: 143, minuteOfDay: 1430, timeLabel: 23:50 KST }), AI getServerMetrics dataSource field ({ scopeName: openmanager-ai-otel-pipeline, scopeVersion: 1.0.0, catalogGeneratedAt: 2026-02-15T03:56:41.821Z, hour: 23 }), server status badge (storage-nfs-dc1-01 Warning/DISK 82%), OS label Linux normalization
 - Skipped Surfaces: -
 
 ## Links (Latest Run)
@@ -54,7 +54,7 @@ Latest run: QA-20260322-0161 (2026-03-22T14:52:53.194Z)
 | Type | Label | Location | Viewer |
 |---|---|---|---|
 | playwright-screenshot | Dashboard dataSource metadata - Dataset v1.0.0 · catalog 2026-02-15 03:56Z | `artifacts/playwright/datasource-parity-metadata-2026-03-22.png` | - |
-| playwright-screenshot | AI sidebar - dataSlot 2026-03-22T14:50:00Z + dataSource Prometheus+Telegraf | `artifacts/playwright/datasource-ai-metadata-2026-03-22.png` | - |
+| playwright-screenshot | AI sidebar - dataSlot { slotIndex: 143, minuteOfDay: 1430, timeLabel: 23:50 KST } + dataSource { scopeName: openmanager-ai-otel-pipeline, scopeVersion: 1.0.0, catalogGeneratedAt: 2026-02-15T03:56:41.821Z, hour: 23 } | `artifacts/playwright/datasource-ai-metadata-2026-03-22.png` | - |
 
 ## Expert Domain Open Gaps
 

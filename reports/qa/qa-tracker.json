@@ -13156,8 +13156,8 @@
       "coveredSurfaces": [
         "dashboard dataSourceInfo label (Dataset v1.0.0 · catalog 2026-02-15 03:56Z)",
         "dashboard dataSlotInfo label (Synthetic OTel snapshot · 23:50 KST slot 143/143)",
-        "AI getServerMetrics dataSlot field (2026-03-22T14:50:00Z)",
-        "AI getServerMetrics dataSource field (Prometheus + Telegraf)",
+        "AI getServerMetrics dataSlot field ({ slotIndex: 143, minuteOfDay: 1430, timeLabel: 23:50 KST })",
+        "AI getServerMetrics dataSource field ({ scopeName: openmanager-ai-otel-pipeline, scopeVersion: 1.0.0, catalogGeneratedAt: 2026-02-15T03:56:41.821Z, hour: 23 })",
         "server status badge (storage-nfs-dc1-01 Warning/DISK 82%)",
         "OS label Linux normalization"
       ],
@@ -13177,7 +13177,7 @@
         },
         {
           "type": "playwright-screenshot",
-          "label": "AI sidebar - dataSlot 2026-03-22T14:50:00Z + dataSource Prometheus+Telegraf",
+          "label": "AI sidebar - dataSlot { slotIndex: 143, minuteOfDay: 1430, timeLabel: 23:50 KST } + dataSource { scopeName: openmanager-ai-otel-pipeline, scopeVersion: 1.0.0, catalogGeneratedAt: 2026-02-15T03:56:41.821Z, hour: 23 }",
           "path": "artifacts/playwright/datasource-ai-metadata-2026-03-22.png"
         }
       ],
