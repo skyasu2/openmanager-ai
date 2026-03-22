@@ -8,6 +8,10 @@ import { withAuth } from '@/lib/auth/api-auth';
 import { aiLogger } from '@/lib/logger';
 import { rateLimiters, withRateLimit } from '@/lib/security/rate-limiter';
 import { supabaseAdmin } from '@/lib/supabase/admin';
+import {
+  aiFeedbackResponseSchema,
+  cloudRunFeedbackProxyPayloadSchema,
+} from '@/schemas/ai-feedback';
 import { withCSRFProtection } from '@/utils/security/csrf';
 
 /**
@@ -121,25 +125,25 @@ async function handlePOST(request: NextRequest) {
           .catch(() => null as Record<string, unknown> | null);
         langfuseStatus = res.ok ? 'success' : 'error';
         if (res.ok && payload) {
-          traceApiUrl =
-            typeof payload.traceApiUrl === 'string'
-              ? payload.traceApiUrl
-              : undefined;
-          dashboardUrl =
-            typeof payload.dashboardUrl === 'string'
-              ? payload.dashboardUrl
-              : undefined;
-          traceUrl =
-            typeof payload.traceUrl === 'string' ? payload.traceUrl : undefined;
-          traceUrlStatus =
-            payload.traceUrlStatus === 'available' ||
-            payload.traceUrlStatus === 'unavailable'
-              ? payload.traceUrlStatus
-              : undefined;
-          monitoringLookupUrl =
-            typeof payload.monitoringLookupUrl === 'string'
-              ? payload.monitoringLookupUrl
-              : undefined;
+          const parsedPayload =
+            cloudRunFeedbackProxyPayloadSchema.safeParse(payload);
+
+          if (parsedPayload.success) {
+            traceApiUrl = parsedPayload.data.traceApiUrl;
+            dashboardUrl = parsedPayload.data.dashboardUrl;
+            traceUrl = parsedPayload.data.traceUrl;
+            traceUrlStatus = parsedPayload.data.traceUrlStatus;
+            monitoringLookupUrl = parsedPayload.data.monitoringLookupUrl;
+          } else {
+            aiLogger.warn(
+              'Cloud Run feedback proxy returned invalid link payload',
+              {
+                issues: parsedPayload.error.issues.map(
+                  (issue) => issue.message
+                ),
+              }
+            );
+          }
         }
         if (!res.ok) {
           aiLogger.error(
@@ -152,7 +156,7 @@ async function handlePOST(request: NextRequest) {
       }
     }
 
-    return NextResponse.json({
+    const responseBody = aiFeedbackResponseSchema.parse({
       success: true,
       message: 'Feedback recorded',
       feedbackId: `fb_${Date.now()}`,
@@ -165,6 +169,8 @@ async function handlePOST(request: NextRequest) {
       ...(traceUrl && { traceUrl }),
       ...(monitoringLookupUrl && { monitoringLookupUrl }),
     });
+
+    return NextResponse.json(responseBody);
   } catch (error) {
     aiLogger.error('Feedback processing failed', error);
     return NextResponse.json(

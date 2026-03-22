@@ -26,6 +26,17 @@ import { logger } from '../lib/logger';
 const TRACE_ID_HEX_REGEX = /^[0-9a-f]{32}$/;
 const INVALID_TRACE_ID = '0'.repeat(32);
 const DEFAULT_TRACE_LINK_LOOKUP_TIMEOUT_MS = 1500;
+type FeedbackTraceUrlStatus = 'available' | 'unavailable';
+type FeedbackSuccessPayload = {
+  message: 'Feedback recorded';
+  traceId: string;
+  score: 'positive' | 'negative';
+  traceApiUrl: string;
+  dashboardUrl: string;
+  traceUrlStatus: FeedbackTraceUrlStatus;
+  traceUrl?: string;
+  monitoringLookupUrl: string;
+};
 
 const feedbackSchema = z.object({
   traceId: z
@@ -164,7 +175,7 @@ feedbackRouter.post('/', async (c: Context) => {
     monitoringLookupUrl.searchParams.set('limit', '5');
     monitoringLookupUrl.searchParams.set('includeAuxiliary', 'true');
 
-    return jsonSuccess(c, {
+    const responseBody: FeedbackSuccessPayload = {
       message: 'Feedback recorded',
       traceId,
       score,
@@ -173,7 +184,9 @@ feedbackRouter.post('/', async (c: Context) => {
       traceUrlStatus: traceUrl ? 'available' : 'unavailable',
       ...(traceUrl && { traceUrl }),
       monitoringLookupUrl: monitoringLookupUrl.toString(),
-    });
+    };
+
+    return jsonSuccess(c, responseBody);
   } catch (error) {
     return handleApiError(c, error, 'Feedback');
   }

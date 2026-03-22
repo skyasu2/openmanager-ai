@@ -155,6 +155,44 @@ describe('POST /api/ai/feedback', () => {
     expect(body).not.toHaveProperty('monitoringLookupUrl');
   });
 
+  it('Cloud Run이 잘못된 trace link payload를 보내면 링크 필드를 버리고 핵심 응답만 유지한다', async () => {
+    global.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: vi.fn().mockResolvedValue({
+        success: true,
+        traceApiUrl: 'not-a-url',
+        traceUrlStatus: 'available',
+      }),
+    });
+
+    const response = await POST(
+      createRequest({
+        messageId: 'msg-2b',
+        type: 'negative',
+        traceId: 'abcdefabcdefabcdefabcdefabcdefab',
+      })
+    );
+    const body = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(body.langfuseStatus).toBe('success');
+    expect(body.traceId).toBe('abcdefabcdefabcdefabcdefabcdefab');
+    expect(body).not.toHaveProperty('traceApiUrl');
+    expect(body).not.toHaveProperty('dashboardUrl');
+    expect(body).not.toHaveProperty('traceUrlStatus');
+    expect(body).not.toHaveProperty('traceUrl');
+    expect(body).not.toHaveProperty('monitoringLookupUrl');
+    expect(mockWarn).toHaveBeenCalledWith(
+      'Cloud Run feedback proxy returned invalid link payload',
+      expect.objectContaining({
+        issues: expect.arrayContaining([
+          'Invalid URL',
+          'traceUrlStatus=available requires traceUrl',
+        ]),
+      })
+    );
+  });
+
   it('traceId가 없으면 Langfuse 프록시를 건너뛴다', async () => {
     global.fetch = vi.fn();
 
