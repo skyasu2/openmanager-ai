@@ -103,10 +103,7 @@ function determineInsight(
     status === 'warning' || cpuWarning || memoryWarning || diskWarning;
 
   // Unusual: Warning 임계치 + 상승 추세
-  if (
-    hasWarningLevel &&
-    (cpuTrend === 'rising' || memoryTrend === 'rising')
-  ) {
+  if (hasWarningLevel && (cpuTrend === 'rising' || memoryTrend === 'rising')) {
     return {
       type: 'unusual',
       label: 'Unusual',
