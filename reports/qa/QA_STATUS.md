@@ -1,32 +1,32 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-22 12:21:02 KST
+> Generated at: 2026-03-22 13:24:55 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 156 |
-| Total Checks | 1205 |
-| Passed | 1154 |
-| Failed | 47 |
+| Total Runs | 157 |
+| Total Checks | 1210 |
+| Passed | 1158 |
+| Failed | 48 |
 | Completed Items | 233 |
-| Pending Items | 0 |
+| Pending Items | 1 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 8 |
 | Expert Domains Tracked | 6 |
-| Expert Open Gaps | 0 |
-| Completion Rate | 100% |
-| Last Run | QA-20260322-0157 (2026-03-22T03:21:01.682Z) |
+| Expert Open Gaps | 1 |
+| Completion Rate | 99.57% |
+| Last Run | QA-20260322-0158 (2026-03-22T04:24:54.377Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260322-0157 (2026-03-22T03:21:01.682Z)
+Latest run: QA-20260322-0158 (2026-03-22T04:24:54.377Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| - | - | - | - |
+| IT Monitoring & Observability SME | partially-appropriate | yes | traceUrl을 best-effort optional 필드로 유지할지, sampled/unavailable 상태를 명시하는 contract로 바꿀지 결정 |
 
 ## Usage Checks (Latest Run)
 
@@ -38,31 +38,35 @@ Latest run: QA-20260322-0157 (2026-03-22T03:21:01.682Z)
 
 - Scope: targeted
 - Release-Facing: no
-- Deployment: dpl_EQyssh4eyfDEj8y12v2UHec2dmoC / SHA 9a5f877f
-- Coverage Packs: dashboard-core, ai-core
-- Covered Surfaces: /dashboard, high-cpu dashboard card shows Warning instead of Stable, dashboard OS labels use Linux instead of raw linux, AI sidebar starter prompt summary response, trend summary shows daily average delta instead of repeating current-state bullets, recommendation copy uses concrete operator actions
-- Skipped Surfaces: landing positioning / tech-first messaging (user requested no change), system-start theatrical flow (user requested no change), public observability visibility / monitoring route exposure (user requested no change)
+- Deployment: dpl_8GmvqPyN5bmfo9TmyuHYu5wbgUFE / SHA 820979e3
+- Coverage Packs: ai-core, observability-pack
+- Covered Surfaces: guest PIN login, system-boot -> /dashboard redirect, AI sidebar free-text summary query, AI feedback negative button, /api/ai/feedback returns langfuseStatus=success + traceId + traceApiUrl + dashboardUrl + monitoringLookupUrl after deploy
+- Skipped Surfaces: Cloud Run /monitoring/traces?q=<traceId> authenticated exact-match recheck, fullscreen AI assistant, positive feedback button
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| - | - | - | - |
+| general | Langfuse project dashboard | [link](https://us.cloud.langfuse.com/project) | - |
+| langfuse-trace | Feedback trace API URL | [link](https://us.cloud.langfuse.com/api/public/traces/3a83c5e47753b4aa947a75b238811272) | - |
+| monitoring | Cloud Run monitoring lookup for feedback traceId | [link](https://ai-engine-490817238363.asia-northeast1.run.app/monitoring/traces?q=3a83c5e47753b4aa947a75b238811272&limit=5&includeAuxiliary=true) | - |
+| vercel-deployment | Production deployment dpl_8GmvqPyN5bmfo9TmyuHYu5wbgUFE | [link](https://openmanager-4feysgyx1-skyasus-projects.vercel.app/) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | Portfolio negative impression fixes proof | `artifacts/playwright/portfolio-negative-impression-fixes-2026-03-22.png` | - |
-| playwright-console | Portfolio negative impression fixes console | `artifacts/playwright/portfolio-negative-impression-fixes-2026-03-22-console.log` | - |
+| playwright-screenshot | Feedback trace UI link proof | `artifacts/playwright/feedback-trace-ui-link-2026-03-22.png` | - |
+| playwright-console | Feedback trace UI link response | `artifacts/playwright/feedback-trace-ui-link-2026-03-22-response.json` | - |
 
 ## Expert Domain Open Gaps
 
-- None
+- observability-monitoring: IT Monitoring & Observability SME (last QA-20260322-0158)
+  next: traceUrl을 best-effort optional 필드로 유지할지, sampled/unavailable 상태를 명시하는 contract로 바꿀지 결정
 
 ## Pending Improvements
 
-- None
+- [P1] feedback-trace-ui-link-runtime-availability: Feedback API direct trace UI link runtime availability (seen 1회, last QA-20260322-0158)
 
 ## Deferred Improvements
 
@@ -326,6 +330,7 @@ Latest run: QA-20260322-0157 (2026-03-22T03:21:01.682Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260322-0158 | 2026-03-22T04:24:54.377Z | targeted | no | Production Feedback Trace UI Link E2E - Direct Trace URL Still Unavailable | 5 | 0 | 1 | 0 | 0 | 1 |
 | QA-20260322-0157 | 2026-03-22T03:21:01.682Z | targeted | no | Production QA - Portfolio Negative Impression Fixes (3,4,6) | 6 | 3 | 0 | 0 | 0 | 0 |
 | QA-20260322-0156 | 2026-03-22T00:09:47.421Z | targeted | no | Production AI Feedback Trace Links E2E - Direct Trace URLs Returned | 6 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260322-0155 | 2026-03-21T17:32:57.012Z | targeted | no | Production AI Negative Feedback Trace E2E - TraceId Preserved + Feedback Success | 5 | 1 | 0 | 0 | 0 | 0 |
@@ -345,5 +350,4 @@ Latest run: QA-20260322-0157 (2026-03-22T03:21:01.682Z)
 | QA-20260320-0141 | 2026-03-20T11:35:03.459Z | broad | yes | Vercel Playwright QA - Frontend and AI Assistant Broad Evaluation | 11 | 0 | 1 | 0 | 0 | 2 |
 | QA-20260320-0140 | 2026-03-20T11:04:59.928Z | smoke | yes | Vercel Production Smoke - Post Push Usage Evidence Green Recheck | 8 | 3 | 0 | 0 | 0 | 0 |
 | QA-20260320-0139 | 2026-03-20T09:49:43.445Z | smoke | yes | Vercel Production Smoke - Post Workflow Push Verification | 8 | 3 | 0 | 0 | 0 | 1 |
-| QA-20260320-0138 | 2026-03-20T07:49:25.161Z | legacy | no | Vercel Production QA - Runtime Safety Follow-up Validation Green Recheck (SHA 159dce5b2) | 32 | 5 | 0 | 0 | 0 | 1 |
 

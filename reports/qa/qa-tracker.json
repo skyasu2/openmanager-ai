@@ -2,25 +2,25 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-03-22T03:21:01.682Z"
+    "updatedAt": "2026-03-22T04:24:54.377Z"
   },
   "sequence": {
-    "nextRunNumber": 158
+    "nextRunNumber": 159
   },
   "summary": {
-    "totalRuns": 156,
-    "totalChecks": 1205,
-    "totalPassed": 1154,
-    "totalFailed": 47,
-    "completionRate": 100,
+    "totalRuns": 157,
+    "totalChecks": 1210,
+    "totalPassed": 1158,
+    "totalFailed": 48,
+    "completionRate": 99.57,
     "completedItems": 233,
-    "pendingItems": 0,
+    "pendingItems": 1,
     "deferredItems": 0,
     "wontFixItems": 8,
     "expertDomainsTracked": 6,
-    "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260322-0157",
-    "lastRecordedAt": "2026-03-22T03:21:01.682Z"
+    "expertDomainsOpenGaps": 1,
+    "lastRunId": "QA-20260322-0158",
+    "lastRecordedAt": "2026-03-22T04:24:54.377Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -5495,6 +5495,30 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-03-22T03:21:01.682Z"
+    },
+    "feedback-trace-ui-link-runtime-availability": {
+      "id": "feedback-trace-ui-link-runtime-availability",
+      "title": "Feedback API direct trace UI link runtime availability",
+      "priority": "P1",
+      "status": "pending",
+      "firstSeenRunId": "QA-20260322-0158",
+      "firstSeenAt": "2026-03-22T04:24:54.377Z",
+      "lastSeenRunId": "QA-20260322-0158",
+      "lastSeenAt": "2026-03-22T04:24:54.377Z",
+      "seenCount": 1,
+      "completedCount": 0,
+      "pendingCount": 1,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "",
+      "lastNote": "best-effort traceUrl lookup code는 배포됐지만, production same-request 응답에서는 여전히 traceUrl이 비어 있다",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "명시적인 reviewer 결정 전에는 pending 상태를 유지해 릴리즈 리스크를 숨기지 않습니다.",
+      "lastStatusChangeAt": "2026-03-22T04:24:54.377Z"
     }
   },
   "runs": [
@@ -12839,6 +12863,107 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260322-0158",
+      "recordedAt": "2026-03-22T04:24:54.377Z",
+      "recordedAtKst": "2026-03-22 13:24:54 KST",
+      "title": "Production Feedback Trace UI Link E2E - Direct Trace URL Still Unavailable",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260322-0158.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_8GmvqPyN5bmfo9TmyuHYu5wbgUFE",
+        "deploymentUrl": "https://openmanager-4feysgyx1-skyasus-projects.vercel.app",
+        "commitSha": "820979e3b31668569f285aaef254663807eb2833"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "coveragePacks": ["ai-core", "observability-pack"],
+      "coveredSurfaces": [
+        "guest PIN login",
+        "system-boot -> /dashboard redirect",
+        "AI sidebar free-text summary query",
+        "AI feedback negative button",
+        "/api/ai/feedback returns langfuseStatus=success + traceId + traceApiUrl + dashboardUrl + monitoringLookupUrl after deploy"
+      ],
+      "skippedSurfaces": [
+        "Cloud Run /monitoring/traces?q=<traceId> authenticated exact-match recheck",
+        "fullscreen AI assistant",
+        "positive feedback button"
+      ],
+      "checks": {
+        "total": 5,
+        "passed": 4,
+        "failed": 1
+      },
+      "expertAssessments": [
+        {
+          "domainId": "observability-monitoring",
+          "domainName": "IT Monitoring & Observability SME",
+          "fit": "partially-appropriate",
+          "improvementNeeded": true,
+          "rationale": "Vercel production + Cloud Run deploy 이후에도 feedback 응답은 traceApiUrl/dashboardUrl/monitoringLookupUrl까지만 반환했고 traceUrl은 비어 있었다. same-request 시점의 Langfuse trace detail availability가 보장되지 않는 것으로 보인다.",
+          "nextAction": "traceUrl을 best-effort optional 필드로 유지할지, sampled/unavailable 상태를 명시하는 contract로 바꿀지 결정"
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-03-22T13:23:00+09:00",
+          "summary": "effectiveCost $15.9423 / billedCost $0.0000",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "Feedback trace UI link proof",
+          "path": "artifacts/playwright/feedback-trace-ui-link-2026-03-22.png"
+        },
+        {
+          "type": "playwright-console",
+          "label": "Feedback trace UI link response",
+          "path": "artifacts/playwright/feedback-trace-ui-link-2026-03-22-response.json"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "Langfuse project dashboard",
+          "url": "https://us.cloud.langfuse.com/project"
+        },
+        {
+          "type": "langfuse-trace",
+          "label": "Feedback trace API URL",
+          "url": "https://us.cloud.langfuse.com/api/public/traces/3a83c5e47753b4aa947a75b238811272"
+        },
+        {
+          "type": "monitoring",
+          "label": "Cloud Run monitoring lookup for feedback traceId",
+          "url": "https://ai-engine-490817238363.asia-northeast1.run.app/monitoring/traces?q=3a83c5e47753b4aa947a75b238811272&limit=5&includeAuxiliary=true"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Production deployment dpl_8GmvqPyN5bmfo9TmyuHYu5wbgUFE",
+          "url": "https://openmanager-4feysgyx1-skyasus-projects.vercel.app/"
+        }
+      ],
+      "expertCount": 1,
+      "expertNeedsImprovementCount": 1,
+      "completedCount": 0,
+      "pendingCount": 1,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -12864,17 +12989,17 @@
       "domainName": "IT Monitoring & Observability SME",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 64,
+      "seenCount": 65,
       "appropriateCount": 41,
-      "partialCount": 23,
+      "partialCount": 24,
       "inappropriateCount": 0,
-      "improvementNeededCount": 23,
-      "lastRunId": "QA-20260322-0156",
-      "lastSeenAt": "2026-03-22T00:09:47.421Z",
-      "lastFit": "appropriate",
-      "lastImprovementNeeded": false,
-      "lastRationale": "같은 피드백 응답에서 monitoringLookupUrl이 Cloud Run direct host의 https URL로 반환되는 것을 확인했다. sampled /monitoring/traces 검색 상관관계는 direct trace link 증거와 분리해 본 run 범위에서 제외했다.",
-      "lastNextAction": ""
+      "improvementNeededCount": 24,
+      "lastRunId": "QA-20260322-0158",
+      "lastSeenAt": "2026-03-22T04:24:54.377Z",
+      "lastFit": "partially-appropriate",
+      "lastImprovementNeeded": true,
+      "lastRationale": "Vercel production + Cloud Run deploy 이후에도 feedback 응답은 traceApiUrl/dashboardUrl/monitoringLookupUrl까지만 반환했고 traceUrl은 비어 있었다. same-request 시점의 Langfuse trace detail availability가 보장되지 않는 것으로 보인다.",
+      "lastNextAction": "traceUrl을 best-effort optional 필드로 유지할지, sampled/unavailable 상태를 명시하는 contract로 바꿀지 결정"
     },
     "ai-security-reliability": {
       "domainId": "ai-security-reliability",
