@@ -26,6 +26,7 @@ import { OpenManagerLogo } from '@/components/shared/OpenManagerLogo';
 import UnifiedProfileHeader from '@/components/shared/UnifiedProfileHeader';
 import { APP_VERSION } from '@/config/app-meta';
 import { isGuestSystemStartEnabled } from '@/config/guestMode';
+import { QA_EVIDENCE, QA_EVIDENCE_CTA_LINKS } from '@/data/qa-evidence';
 import { isVercel } from '@/env-client';
 import { useInitialAuth } from '@/hooks/useInitialAuth';
 import { useUnifiedAdminStore } from '@/stores/useUnifiedAdminStore';
@@ -246,22 +247,22 @@ function Home() {
           </p>
           <div className="mt-4 flex flex-wrap items-center justify-center gap-2 text-xs sm:text-sm">
             <span className="rounded-full border border-emerald-400/30 bg-emerald-500/10 px-3 py-1 text-emerald-200">
-              Validated on Production · 2026-03-22
+              Validated on Production · {QA_EVIDENCE.validatedOnShort}
             </span>
             <Link
-              href="/reports/qa/QA_STATUS.md"
+              href={QA_EVIDENCE_CTA_LINKS.statusHref}
               className="rounded-full border border-white/15 bg-white/5 px-3 py-1 text-white/80 transition-colors hover:border-white/30 hover:bg-white/10 hover:text-white"
             >
               QA Status
             </Link>
             <Link
-              href="/reports/qa/runs/2026/qa-run-QA-20260322-0160.json"
+              href={QA_EVIDENCE_CTA_LINKS.proofHref}
               className="rounded-full border border-white/15 bg-white/5 px-3 py-1 text-white/80 transition-colors hover:border-white/30 hover:bg-white/10 hover:text-white"
             >
               Latest Proof Run
             </Link>
             <a
-              href="https://github.com/skyasu2/openmanager-ai/actions/runs/23398040200"
+              href={QA_EVIDENCE_CTA_LINKS.ciHref}
               target="_blank"
               rel="noreferrer"
               className="rounded-full border border-sky-400/20 bg-sky-500/10 px-3 py-1 text-sky-200 transition-colors hover:border-sky-300/40 hover:bg-sky-500/15"
