@@ -8,10 +8,7 @@
 
 import { Bot } from 'lucide-react';
 import Link from 'next/link';
-import {
-  QA_EVIDENCE_CTA_LINKS,
-  QA_EVIDENCE_LABELS,
-} from '@/data/qa-evidence';
+import { QA_EVIDENCE_CTA_LINKS, QA_EVIDENCE_LABELS } from '@/data/qa-evidence';
 import type { ButtonConfig, StatusInfo } from '../hooks/useSystemStart';
 
 interface SystemStartSectionProps {
@@ -109,9 +106,7 @@ export function SystemStartSection({
             </span>
           </div>
           <div className="mt-3 border-t border-white/10 pt-3 text-xs text-white/75">
-            <p className="text-center">
-              {QA_EVIDENCE_LABELS.criteria}
-            </p>
+            <p className="text-center">{QA_EVIDENCE_LABELS.criteria}</p>
             <div className="mt-2 flex flex-wrap items-center justify-center gap-2">
               <Link
                 href={QA_EVIDENCE_CTA_LINKS.statusHref}

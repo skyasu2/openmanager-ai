@@ -154,7 +154,7 @@
     "bundle:analyze": "cross-env ANALYZE=true NODE_OPTIONS='--max-old-space-size=2048' next build --webpack",
     "git:pre-commit": "lint-staged",
     "git:pre-push": "npm run validate",
-    "hook:pre-commit": "bash scripts/dev/biome-wrapper.sh check --write --staged --no-errors-on-unmatched",
+    "hook:pre-commit": "node scripts/hooks/pre-commit.js",
     "hook:pre-push": "node scripts/hooks/pre-push.js",
     "hook:post-commit": "node scripts/hooks/post-commit.js",
     "review:show": "npm run lint && npm run type-check && echo '✅ All checks pass. Use /review in Claude Code for full analysis.'",

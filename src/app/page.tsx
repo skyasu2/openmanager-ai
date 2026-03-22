@@ -26,10 +26,7 @@ import { OpenManagerLogo } from '@/components/shared/OpenManagerLogo';
 import UnifiedProfileHeader from '@/components/shared/UnifiedProfileHeader';
 import { APP_VERSION } from '@/config/app-meta';
 import { isGuestSystemStartEnabled } from '@/config/guestMode';
-import {
-  QA_EVIDENCE_CTA_LINKS,
-  QA_EVIDENCE_LABELS,
-} from '@/data/qa-evidence';
+import { QA_EVIDENCE_CTA_LINKS, QA_EVIDENCE_LABELS } from '@/data/qa-evidence';
 import { isVercel } from '@/env-client';
 import { useInitialAuth } from '@/hooks/useInitialAuth';
 import { useUnifiedAdminStore } from '@/stores/useUnifiedAdminStore';

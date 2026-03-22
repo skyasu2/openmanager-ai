@@ -1,10 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { OpenManagerLogo } from '@/components/shared/OpenManagerLogo';
-import {
-  QA_EVIDENCE_ANCHORS,
-  QA_EVIDENCE_LABELS,
-} from '@/data/qa-evidence';
+import { QA_EVIDENCE_ANCHORS, QA_EVIDENCE_LABELS } from '@/data/qa-evidence';
 import { PAGE_BACKGROUNDS } from '@/styles/design-constants';
 import qaTrackerJson from '../../../reports/qa/qa-tracker.json';
 
@@ -230,8 +227,7 @@ export default function ValidationEvidencePage() {
           </div>
 
           <p className="mt-5 text-sm text-white/65">
-            Source of truth in repository:{' '}
-            <code>reports/qa/QA_STATUS.md</code>
+            Source of truth in repository: <code>reports/qa/QA_STATUS.md</code>
           </p>
         </section>
 
@@ -292,7 +288,9 @@ export default function ValidationEvidencePage() {
                   className="rounded-xl bg-white/5 px-3 py-2"
                 >
                   artifact:{' '}
-                  <code>{artifact.label ?? artifact.note ?? 'download from run'}</code>
+                  <code>
+                    {artifact.label ?? artifact.note ?? 'download from run'}
+                  </code>
                 </li>
               ))}
             </ul>
