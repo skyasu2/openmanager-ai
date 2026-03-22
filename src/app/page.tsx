@@ -26,7 +26,10 @@ import { OpenManagerLogo } from '@/components/shared/OpenManagerLogo';
 import UnifiedProfileHeader from '@/components/shared/UnifiedProfileHeader';
 import { APP_VERSION } from '@/config/app-meta';
 import { isGuestSystemStartEnabled } from '@/config/guestMode';
-import { QA_EVIDENCE, QA_EVIDENCE_CTA_LINKS } from '@/data/qa-evidence';
+import {
+  QA_EVIDENCE_CTA_LINKS,
+  QA_EVIDENCE_LABELS,
+} from '@/data/qa-evidence';
 import { isVercel } from '@/env-client';
 import { useInitialAuth } from '@/hooks/useInitialAuth';
 import { useUnifiedAdminStore } from '@/stores/useUnifiedAdminStore';
@@ -247,7 +250,7 @@ function Home() {
           </p>
           <div className="mt-4 flex flex-wrap items-center justify-center gap-2 text-xs sm:text-sm">
             <span className="rounded-full border border-emerald-400/30 bg-emerald-500/10 px-3 py-1 text-emerald-200">
-              Validated on Production · {QA_EVIDENCE.validatedOnShort}
+              {QA_EVIDENCE_LABELS.badge}
             </span>
             <Link
               href={QA_EVIDENCE_CTA_LINKS.statusHref}
@@ -261,14 +264,12 @@ function Home() {
             >
               Latest Proof Run
             </Link>
-            <a
-              href={QA_EVIDENCE_CTA_LINKS.ciHref}
-              target="_blank"
-              rel="noreferrer"
+            <Link
+              href={QA_EVIDENCE_CTA_LINKS.overviewHref}
               className="rounded-full border border-sky-400/20 bg-sky-500/10 px-3 py-1 text-sky-200 transition-colors hover:border-sky-300/40 hover:bg-sky-500/15"
             >
-              CI Artifact Evidence
-            </a>
+              {QA_EVIDENCE_LABELS.validationPage}
+            </Link>
           </div>
         </div>
 

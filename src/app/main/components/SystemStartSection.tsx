@@ -8,7 +8,10 @@
 
 import { Bot } from 'lucide-react';
 import Link from 'next/link';
-import { QA_EVIDENCE, QA_EVIDENCE_CTA_LINKS } from '@/data/qa-evidence';
+import {
+  QA_EVIDENCE_CTA_LINKS,
+  QA_EVIDENCE_LABELS,
+} from '@/data/qa-evidence';
 import type { ButtonConfig, StatusInfo } from '../hooks/useSystemStart';
 
 interface SystemStartSectionProps {
@@ -107,7 +110,7 @@ export function SystemStartSection({
           </div>
           <div className="mt-3 border-t border-white/10 pt-3 text-xs text-white/75">
             <p className="text-center">
-              실환경 검증 기준 · {QA_EVIDENCE.validatedOnShort}
+              {QA_EVIDENCE_LABELS.criteria}
             </p>
             <div className="mt-2 flex flex-wrap items-center justify-center gap-2">
               <Link
@@ -122,14 +125,12 @@ export function SystemStartSection({
               >
                 증거 run
               </Link>
-              <a
-                href={QA_EVIDENCE_CTA_LINKS.ciHref}
-                target="_blank"
-                rel="noreferrer"
+              <Link
+                href={QA_EVIDENCE_CTA_LINKS.overviewHref}
                 className="rounded-full border border-purple-400/25 bg-purple-400/10 px-2.5 py-1 text-purple-200 transition hover:bg-purple-400/15"
               >
-                CI artifact
-              </a>
+                검증 기준
+              </Link>
             </div>
           </div>
         </div>

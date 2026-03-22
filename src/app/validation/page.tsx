@@ -1,12 +1,12 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { OpenManagerLogo } from '@/components/shared/OpenManagerLogo';
-import { PAGE_BACKGROUNDS } from '@/styles/design-constants';
 import {
-  QA_EVIDENCE,
   QA_EVIDENCE_ANCHORS,
-  QA_EVIDENCE_CTA_LINKS,
+  QA_EVIDENCE_LABELS,
 } from '@/data/qa-evidence';
+import { PAGE_BACKGROUNDS } from '@/styles/design-constants';
+import qaTrackerJson from '../../../reports/qa/qa-tracker.json';
 
 export const metadata: Metadata = {
   title: 'Validation Evidence | OpenManager AI',
@@ -30,7 +30,90 @@ function EvidencePill({
   );
 }
 
+type QATrackerSummary = {
+  totalRuns: number;
+  totalChecks: number;
+  completedItems: number;
+  expertDomainsOpenGaps: number;
+  wontFixItems: number;
+  lastRecordedAt?: string;
+};
+
+type QATrackerLink = {
+  type?: string;
+  label?: string;
+  url?: string;
+  note?: string;
+};
+
+type QATrackerRun = {
+  runId?: string;
+  title?: string;
+  scope?: string;
+  environment?: {
+    commitSha?: string;
+  };
+  links?: QATrackerLink[];
+};
+
+function getValidationEvidence() {
+  const tracker = qaTrackerJson as {
+    summary?: QATrackerSummary;
+    runs?: QATrackerRun[];
+  };
+
+  const summary = tracker.summary;
+  const latestProofRun = [...(tracker.runs ?? [])]
+    .reverse()
+    .find((run) =>
+      run.links?.some((link) => link.type?.startsWith('github-actions'))
+    );
+
+  if (!summary || !latestProofRun?.runId) {
+    throw new Error('QA validation evidence summary is unavailable');
+  }
+
+  const lastRecordedAt = summary.lastRecordedAt
+    ? new Date(summary.lastRecordedAt)
+    : null;
+  const validatedOnShort = lastRecordedAt
+    ? lastRecordedAt.toISOString().slice(0, 10)
+    : 'latest';
+  const validatedOnLong = lastRecordedAt
+    ? lastRecordedAt.toLocaleDateString('en-US', {
+        month: 'long',
+        day: 'numeric',
+        year: 'numeric',
+        timeZone: 'UTC',
+      })
+    : 'Latest';
+  const runYear = latestProofRun.runId.slice(3, 7);
+  const githubRunLink = latestProofRun.links?.find(
+    (link) => link.type === 'github-actions-run'
+  );
+  const githubArtifactLinks = latestProofRun.links?.filter(
+    (link) => link.type === 'github-actions-artifact'
+  );
+
+  return {
+    summary,
+    validatedOnShort,
+    validatedOnLong,
+    latestProofRun: {
+      runId: latestProofRun.runId,
+      title: latestProofRun.title ?? latestProofRun.runId,
+      scope: latestProofRun.scope ?? 'targeted',
+      commitSha: latestProofRun.environment?.commitSha ?? '',
+      repoPath: `reports/qa/runs/${runYear}/qa-run-${latestProofRun.runId}.json`,
+      ciRunLink: githubRunLink ?? null,
+      ciArtifactLinks: githubArtifactLinks ?? [],
+    },
+  };
+}
+
 export default function ValidationEvidencePage() {
+  const evidence = getValidationEvidence();
+
   return (
     <div className={`min-h-screen ${PAGE_BACKGROUNDS.DARK_PAGE_BG}`}>
       <div className="wave-particles" />
@@ -54,13 +137,13 @@ export default function ValidationEvidencePage() {
         <section className="rounded-3xl border border-white/10 bg-white/5 p-6 shadow-2xl backdrop-blur-sm sm:p-8">
           <div className="flex flex-wrap items-center gap-2">
             <EvidencePill className="border-emerald-400/30 bg-emerald-500/10 text-emerald-200">
-              Validated on Production · {QA_EVIDENCE.validatedOnShort}
+              {QA_EVIDENCE_LABELS.badge} · {evidence.validatedOnShort}
             </EvidencePill>
             <EvidencePill className="border-sky-400/25 bg-sky-500/10 text-sky-200">
-              QA completed {QA_EVIDENCE.qaSummary.completedItems}
+              QA completed {evidence.summary.completedItems}
             </EvidencePill>
             <EvidencePill className="border-purple-400/25 bg-purple-500/10 text-purple-200">
-              open-gaps {QA_EVIDENCE.qaSummary.expertOpenGaps}
+              open-gaps {evidence.summary.expertDomainsOpenGaps}
             </EvidencePill>
           </div>
 
@@ -69,20 +152,23 @@ export default function ValidationEvidencePage() {
           </h1>
           <p className="mt-3 max-w-3xl text-sm leading-relaxed text-white/75 sm:text-base">
             이 페이지는 첫 화면에서 보이는 production validation CTA의 실제
-            근거를 모아 둔 internal evidence summary입니다. 외부 방문자가 404 없이
-            검증 기준을 이해할 수 있도록 요약만 노출하고, 세부 증거는 CI run과
-            in-repo SSOT 경로로 설명합니다.
+            근거를 모아 둔 internal evidence summary입니다. 외부 방문자가 404
+            없이 검증 기준을 이해할 수 있도록 요약만 노출하고, 세부 증거는 CI
+            run과 in-repo SSOT 경로로 설명합니다. 현재 기준선은{' '}
+            {evidence.validatedOnLong}에 기록된 QA tracker를 따릅니다.
           </p>
 
           <div className="mt-6 flex flex-wrap gap-3">
-            <a
-              href={QA_EVIDENCE_CTA_LINKS.ciHref}
-              target="_blank"
-              rel="noreferrer"
-              className="rounded-full border border-sky-400/25 bg-sky-500/10 px-4 py-2 text-sm text-sky-200 transition hover:border-sky-300/40 hover:bg-sky-500/15"
-            >
-              GitHub Actions evidence run
-            </a>
+            {evidence.latestProofRun.ciRunLink?.url && (
+              <a
+                href={evidence.latestProofRun.ciRunLink.url}
+                target="_blank"
+                rel="noreferrer"
+                className="rounded-full border border-sky-400/25 bg-sky-500/10 px-4 py-2 text-sm text-sky-200 transition hover:border-sky-300/40 hover:bg-sky-500/15"
+              >
+                GitHub Actions evidence run
+              </a>
+            )}
             <Link
               href={`#${QA_EVIDENCE_ANCHORS.qaStatus}`}
               className="rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm text-white/80 transition hover:border-white/30 hover:bg-white/10 hover:text-white"
@@ -114,7 +200,7 @@ export default function ValidationEvidencePage() {
                 Total runs
               </p>
               <p className="mt-2 text-2xl font-semibold text-white">
-                {QA_EVIDENCE.qaSummary.totalRuns}
+                {evidence.summary.totalRuns}
               </p>
             </div>
             <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
@@ -122,7 +208,7 @@ export default function ValidationEvidencePage() {
                 Total checks
               </p>
               <p className="mt-2 text-2xl font-semibold text-white">
-                {QA_EVIDENCE.qaSummary.totalChecks}
+                {evidence.summary.totalChecks}
               </p>
             </div>
             <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
@@ -130,7 +216,7 @@ export default function ValidationEvidencePage() {
                 Completed
               </p>
               <p className="mt-2 text-2xl font-semibold text-emerald-300">
-                {QA_EVIDENCE.qaSummary.completedItems}
+                {evidence.summary.completedItems}
               </p>
             </div>
             <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
@@ -138,14 +224,14 @@ export default function ValidationEvidencePage() {
                 Wont-fix
               </p>
               <p className="mt-2 text-2xl font-semibold text-amber-300">
-                {QA_EVIDENCE.qaSummary.wontFixItems}
+                {evidence.summary.wontFixItems}
               </p>
             </div>
           </div>
 
           <p className="mt-5 text-sm text-white/65">
             Source of truth in repository:{' '}
-            <code>{QA_EVIDENCE.repoEvidence.qaStatusPath}</code>
+            <code>reports/qa/QA_STATUS.md</code>
           </p>
         </section>
 
@@ -153,10 +239,12 @@ export default function ValidationEvidencePage() {
           id={QA_EVIDENCE_ANCHORS.latestProofRun}
           className="mt-8 rounded-3xl border border-white/10 bg-black/20 p-6 sm:p-8"
         >
-          <h2 className="text-2xl font-semibold text-white">Latest Proof Run</h2>
+          <h2 className="text-2xl font-semibold text-white">
+            Latest Proof Run
+          </h2>
           <p className="mt-2 text-sm text-white/70">
             가장 최근의 CI-backed feedback trace proof는 manual workflow run과
-            연결되어 있습니다.
+            연결되어 있습니다. 이 값은 현재 QA tracker SSOT에서 직접 읽습니다.
           </p>
 
           <div className="mt-5 rounded-2xl border border-white/10 bg-white/5 p-5">
@@ -164,47 +252,54 @@ export default function ValidationEvidencePage() {
               Run ID
             </p>
             <p className="mt-2 text-2xl font-semibold text-white">
-              {QA_EVIDENCE.latestProofRun.runId}
+              {evidence.latestProofRun.runId}
             </p>
             <p className="mt-3 text-sm text-white/75">
-              {QA_EVIDENCE.latestProofRun.title}
+              {evidence.latestProofRun.title}
             </p>
 
             <dl className="mt-5 grid gap-4 text-sm text-white/75 sm:grid-cols-2">
               <div>
                 <dt className="text-white/45">Scope</dt>
-                <dd className="mt-1">{QA_EVIDENCE.latestProofRun.scope}</dd>
+                <dd className="mt-1">{evidence.latestProofRun.scope}</dd>
               </div>
               <div>
                 <dt className="text-white/45">Commit</dt>
                 <dd className="mt-1 font-mono">
-                  {QA_EVIDENCE.latestProofRun.commitSha}
+                  {evidence.latestProofRun.commitSha}
                 </dd>
               </div>
             </dl>
 
-            <div className="mt-5 flex flex-wrap gap-3">
-              <a
-                href={QA_EVIDENCE.latestProofRun.ciRunUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="rounded-full border border-sky-400/25 bg-sky-500/10 px-4 py-2 text-sm text-sky-200 transition hover:border-sky-300/40 hover:bg-sky-500/15"
-              >
-                Actions run #{QA_EVIDENCE.latestProofRun.ciRunId}
-              </a>
-            </div>
+            {evidence.latestProofRun.ciRunLink?.url && (
+              <div className="mt-5 flex flex-wrap gap-3">
+                <a
+                  href={evidence.latestProofRun.ciRunLink.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="rounded-full border border-sky-400/25 bg-sky-500/10 px-4 py-2 text-sm text-sky-200 transition hover:border-sky-300/40 hover:bg-sky-500/15"
+                >
+                  {evidence.latestProofRun.ciRunLink.label ??
+                    'GitHub Actions evidence run'}
+                </a>
+              </div>
+            )}
 
             <ul className="mt-5 space-y-2 text-sm text-white/70">
-              {QA_EVIDENCE.latestProofRun.ciArtifacts.map((artifact) => (
-                <li key={artifact} className="rounded-xl bg-white/5 px-3 py-2">
-                  artifact: <code>{artifact}</code>
+              {evidence.latestProofRun.ciArtifactLinks.map((artifact) => (
+                <li
+                  key={artifact.note ?? artifact.label ?? 'artifact'}
+                  className="rounded-xl bg-white/5 px-3 py-2"
+                >
+                  artifact:{' '}
+                  <code>{artifact.label ?? artifact.note ?? 'download from run'}</code>
                 </li>
               ))}
             </ul>
 
             <p className="mt-5 text-sm text-white/65">
               Source of truth in repository:{' '}
-              <code>{QA_EVIDENCE.repoEvidence.latestProofRunPath}</code>
+              <code>{evidence.latestProofRun.repoPath}</code>
             </p>
           </div>
         </section>
