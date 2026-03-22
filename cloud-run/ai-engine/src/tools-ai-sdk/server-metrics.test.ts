@@ -9,6 +9,13 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
+const getMetricsMock = vi.fn(
+  (_key: string, compute: () => Promise<unknown>) => compute()
+);
+const getOrComputeMock = vi.fn(
+  (_type: string, _key: string, compute: () => Promise<unknown>) => compute()
+);
+
 // Mock precomputed-state
 vi.mock('../data/precomputed-state', () => {
   const servers = [
@@ -136,8 +143,8 @@ vi.mock('../data/precomputed-state', () => {
 // Mock cache-layer
 vi.mock('../lib/cache-layer', () => ({
   getDataCache: vi.fn(() => ({
-    getMetrics: vi.fn((_key: string, compute: () => Promise<unknown>) => compute()),
-    getOrCompute: vi.fn((_type: string, _key: string, compute: () => Promise<unknown>) => compute()),
+    getMetrics: getMetricsMock,
+    getOrCompute: getOrComputeMock,
   })),
 }));
 
@@ -368,6 +375,10 @@ describe('getServerMetrics', () => {
       minuteOfDay: 740,
       timeLabel: '12:20 KST',
     });
+    expect(getMetricsMock).toHaveBeenCalledWith(
+      'slot:74:all:all',
+      expect.any(Function)
+    );
   });
 
   it('should return specific server when serverId specified', async () => {

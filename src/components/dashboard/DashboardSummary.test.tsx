@@ -7,6 +7,19 @@ import { describe, expect, it, vi } from 'vitest';
 import { DashboardSummary } from './DashboardSummary';
 import type { DashboardStats } from './types/dashboard.types';
 
+vi.mock('@/config/server-data-polling', () => ({
+  getMsUntilNextServerDataSlot: () => 60_000,
+}));
+
+vi.mock('@/services/metrics/kst-time', () => ({
+  getKSTDateTime: () => ({
+    date: '2026-03-22',
+    time: '12:20',
+    slotIndex: 74,
+    minuteOfDay: 740,
+  }),
+}));
+
 vi.mock('lucide-react', () => {
   const MockIcon = () => <svg aria-hidden="true" />;
 

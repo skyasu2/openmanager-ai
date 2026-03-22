@@ -71,12 +71,11 @@ export const getServerMetrics = tool({
     metric: 'cpu' | 'memory' | 'disk' | 'all';
   }) => {
     const cache = getDataCache();
-    const cacheKey = `${serverId || 'all'}:${metric}`;
+    const state = getCurrentState();
+    const cacheKey = `slot:${state.slotIndex}:${serverId || 'all'}:${metric}`;
 
     // Best Practice: Use cache.getMetrics with lazy computation
     return cache.getMetrics(cacheKey, async () => {
-      const state = getCurrentState();
-
       const servers: ServerSnapshot[] = serverId
         ? state.servers.filter((s) => s.id === serverId)
         : state.servers;
