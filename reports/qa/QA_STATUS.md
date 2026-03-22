@@ -1,28 +1,28 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-23 00:56:09 KST
+> Generated at: 2026-03-23 01:53:56 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 162 |
-| Total Checks | 1231 |
-| Passed | 1178 |
+| Total Runs | 163 |
+| Total Checks | 1237 |
+| Passed | 1184 |
 | Failed | 49 |
-| Completed Items | 234 |
-| Pending Items | 1 |
+| Completed Items | 235 |
+| Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 8 |
 | Expert Domains Tracked | 6 |
 | Expert Open Gaps | 0 |
-| Completion Rate | 99.57% |
-| Last Run | QA-20260323-0163 (2026-03-22T15:56:07.978Z) |
+| Completion Rate | 100% |
+| Last Run | QA-20260323-0164 (2026-03-22T16:53:54.714Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260323-0163 (2026-03-22T15:56:07.978Z)
+Latest run: QA-20260323-0164 (2026-03-22T16:53:54.714Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -38,10 +38,10 @@ Latest run: QA-20260323-0163 (2026-03-22T15:56:07.978Z)
 
 - Scope: targeted
 - Release-Facing: no
-- Deployment: SHA 34f764ca
-- Coverage Packs: dashboard-core
-- Covered Surfaces: server card metric label: CPU / MEM / Disk (no overlap), db-mysql-dc1-primary: CPU56% MEM69% Disk83%, web-nginx-dc1-01: CPU36% MEM47% Disk28%, web-nginx-dc1-02: CPU28% MEM40% Disk30%, web-nginx-dc1-03: CPU17% MEM38% Disk25%
-- Skipped Surfaces: -
+- Deployment: SHA 011fe20b
+- Coverage Packs: dashboard-core, ai-core, observability-pack
+- Covered Surfaces: dashboard raw metric (db-mysql-dc1-primary DISK 83% Warning), dashboard dataSlotInfo label (Synthetic OTel snapshot · 01:50 KST slot 11/143), dashboard dataSourceInfo label (Dataset v1.0.0 · catalog 2026-02-15 03:56Z), AI sidebar detailed analysis renders typed dataSlot JSON, AI sidebar detailed analysis renders typed dataSource JSON, AI sidebar detailed analysis no longer exposes legacy _dataSlot/_dataSource wording
+- Skipped Surfaces: /dashboard/ai-assistant fullscreen, Reporter/Analyst parity
 
 ## Links (Latest Run)
 
@@ -53,7 +53,7 @@ Latest run: QA-20260323-0163 (2026-03-22T15:56:07.978Z)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | Server cards - MEM label no overlap (4 cards visible) | `artifacts/playwright/mem-label-no-overlap-2026-03-23.png` | - |
+| playwright-screenshot | AI sidebar parity metadata contract rendered with typed dataSlot/dataSource | `artifacts/playwright/ai-sidebar-parity-contract-2026-03-23.png` | - |
 
 ## Expert Domain Open Gaps
 
@@ -61,7 +61,7 @@ Latest run: QA-20260323-0163 (2026-03-22T15:56:07.978Z)
 
 ## Pending Improvements
 
-- [P1] ai-sidebar-parity-contract-rendering: AI sidebar 상세 분석에 실제 parity metadata contract 노출 (seen 1회, last QA-20260323-0162)
+- None
 
 ## Deferred Improvements
 
@@ -108,6 +108,7 @@ Latest run: QA-20260323-0163 (2026-03-22T15:56:07.978Z)
 - ai-reporter-success: Reporter Agent 보고서 생성 성공 (completed 3회, last QA-20260315-0104)
 - ai-server-timing-hosting-path-diagnosed: Server-Timing production/local hosting path difference diagnosed (completed 1회, last QA-20260310-0081)
 - ai-sidebar-open: AI 사이드바 열기/닫기 (completed 1회, last QA-20260317-0114)
+- ai-sidebar-parity-contract-rendering: AI sidebar 상세 분석에 실제 parity metadata contract 노출 (completed 1회, last QA-20260323-0164)
 - ai-sidebar-right-panel: AI 우측 패널 기능 메뉴 (completed 1회, last QA-20260317-0114)
 - ai-sidebar-starters: AI 스타터 프롬프트 5개 (completed 1회, last QA-20260317-0114)
 - ai-sidebar-toggle: AI 사이드바 열기 (completed 1회, last QA-20260317-0114)
@@ -326,6 +327,7 @@ Latest run: QA-20260323-0163 (2026-03-22T15:56:07.978Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260323-0164 | 2026-03-22T16:53:54.714Z | targeted | no | Production QA - AI sidebar parity contract rendering fixed | 6 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260323-0163 | 2026-03-22T15:56:07.978Z | targeted | no | Vercel Playwright QA - MEM label no-overlap on server cards (SHA 34f764ca0) | 4 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260323-0162 | 2026-03-22T15:34:58.470Z | targeted | no | Production QA - Dashboard/AI parity metadata user-facing recheck | 5 | 0 | 1 | 0 | 0 | 0 |
 | QA-20260322-0161 | 2026-03-22T14:52:53.194Z | targeted | no | Vercel Playwright QA - Data Source Parity Metadata (SHA 41e8888d4) | 6 | 0 | 0 | 0 | 0 | 0 |
@@ -345,5 +347,4 @@ Latest run: QA-20260323-0163 (2026-03-22T15:56:07.978Z)
 | QA-20260321-0147 | 2026-03-21T11:36:14.761Z | targeted | no | Vercel Playwright QA - AI Sidebar Reporter Analyst Proof (SHA d802241fb) | 7 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260321-0146 | 2026-03-21T11:08:45.922Z | targeted | no | Vercel Playwright QA - Targeted Topology Artifact Proof (SHA 54990e639) | 6 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260321-0145 | 2026-03-20T22:28:54.515Z | targeted | no | Vercel Playwright QA - Modal Detail Pack Coverage Fill (SHA 386aa7acd) | 8 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260321-0144 | 2026-03-20T22:01:41.259Z | targeted | yes | Vercel Playwright QA - Reporter/Analyst/Fullscreen Follow-up (SHA 818871b86) | 9 | 0 | 0 | 0 | 0 | 0 |
 

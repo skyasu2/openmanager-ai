@@ -1,0 +1,71 @@
+{
+  "runId": "QA-20260323-0164",
+  "recordedAt": "2026-03-22T16:53:54.714Z",
+  "recordedAtKst": "2026-03-23 01:53:54 KST",
+  "runTitle": "Production QA - AI sidebar parity contract rendering fixed",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "011fe20bb"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "coveragePacks": ["dashboard-core", "ai-core", "observability-pack"],
+  "coveredSurfaces": [
+    "dashboard raw metric (db-mysql-dc1-primary DISK 83% Warning)",
+    "dashboard dataSlotInfo label (Synthetic OTel snapshot · 01:50 KST slot 11/143)",
+    "dashboard dataSourceInfo label (Dataset v1.0.0 · catalog 2026-02-15 03:56Z)",
+    "AI sidebar detailed analysis renders typed dataSlot JSON",
+    "AI sidebar detailed analysis renders typed dataSource JSON",
+    "AI sidebar detailed analysis no longer exposes legacy _dataSlot/_dataSource wording"
+  ],
+  "skippedSurfaces": [
+    "/dashboard/ai-assistant fullscreen",
+    "Reporter/Analyst parity"
+  ],
+  "checks": {
+    "total": 6,
+    "passed": 6,
+    "failed": 0
+  },
+  "expertAssessments": [],
+  "usageChecks": [],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "AI sidebar parity metadata contract rendered with typed dataSlot/dataSource",
+      "path": "artifacts/playwright/ai-sidebar-parity-contract-2026-03-23.png"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "ai-sidebar-parity-contract-rendering",
+      "title": "AI sidebar 상세 분석에 실제 parity metadata contract 노출",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "Production AI sidebar detailed analysis now renders typed dataSlot/dataSource JSON blocks and no longer shows legacy _dataSlot/_dataSource wording.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Cloud Run ai-engine redeployed to revision ai-engine-00266-5j2 before the passing production recheck.",
+    "Frontend normalization fix plus latest ai-engine runtime together removed the user-facing legacy parity wording.",
+    "Root npm run type-check still times out in scripts/dev/tsc-wrapper.js and remains the next CI hygiene task, but it did not block this targeted runtime proof."
+  ],
+  "links": []
+}

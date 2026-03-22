@@ -2,25 +2,25 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-03-22T15:56:07.978Z"
+    "updatedAt": "2026-03-22T16:53:54.714Z"
   },
   "sequence": {
-    "nextRunNumber": 164
+    "nextRunNumber": 165
   },
   "summary": {
-    "totalRuns": 162,
-    "totalChecks": 1231,
-    "totalPassed": 1178,
+    "totalRuns": 163,
+    "totalChecks": 1237,
+    "totalPassed": 1184,
     "totalFailed": 49,
-    "completionRate": 99.57,
-    "completedItems": 234,
-    "pendingItems": 1,
+    "completionRate": 100,
+    "completedItems": 235,
+    "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 8,
     "expertDomainsTracked": 6,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260323-0163",
-    "lastRecordedAt": "2026-03-22T15:56:07.978Z"
+    "lastRunId": "QA-20260323-0164",
+    "lastRecordedAt": "2026-03-22T16:53:54.714Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -5524,25 +5524,25 @@
       "id": "ai-sidebar-parity-contract-rendering",
       "title": "AI sidebar 상세 분석에 실제 parity metadata contract 노출",
       "priority": "P1",
-      "status": "pending",
+      "status": "completed",
       "firstSeenRunId": "QA-20260323-0162",
       "firstSeenAt": "2026-03-22T15:34:58.470Z",
-      "lastSeenRunId": "QA-20260323-0162",
-      "lastSeenAt": "2026-03-22T15:34:58.470Z",
-      "seenCount": 1,
-      "completedCount": 0,
+      "lastSeenRunId": "QA-20260323-0164",
+      "lastSeenAt": "2026-03-22T16:53:54.714Z",
+      "seenCount": 2,
+      "completedCount": 1,
       "pendingCount": 1,
       "deferredCount": 0,
       "wontFixCount": 0,
       "aliases": [],
       "owner": "codex",
-      "lastEvidence": "Production parity QA screenshot shows legacy _dataSlot/_dataSource wording instead of current dataSlot/dataSource contract.",
+      "lastEvidence": "Production AI sidebar detailed analysis now renders typed dataSlot/dataSource JSON blocks and no longer shows legacy _dataSlot/_dataSource wording.",
       "lastNote": "Dashboard slot/dataSource labels are correct, but AI user-facing detailed analysis still renders legacy-style metadata explanation. No literal stale key string was found in repo search, so the mismatch is likely prompt/rendering-path output rather than backend schema drift.",
       "isBlocking": true,
-      "isBlockingExplicit": true,
+      "isBlockingExplicit": false,
       "overengineeringScope": "",
       "lastPolicyNote": "",
-      "lastStatusChangeAt": "2026-03-22T15:34:58.470Z"
+      "lastStatusChangeAt": "2026-03-22T16:53:54.714Z"
     }
   },
   "runs": [
@@ -13331,6 +13331,61 @@
       "expertCount": 0,
       "expertNeedsImprovementCount": 0,
       "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260323-0164",
+      "recordedAt": "2026-03-22T16:53:54.714Z",
+      "recordedAtKst": "2026-03-23 01:53:54 KST",
+      "title": "Production QA - AI sidebar parity contract rendering fixed",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260323-0164.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "011fe20bb"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "coveragePacks": ["dashboard-core", "ai-core", "observability-pack"],
+      "coveredSurfaces": [
+        "dashboard raw metric (db-mysql-dc1-primary DISK 83% Warning)",
+        "dashboard dataSlotInfo label (Synthetic OTel snapshot · 01:50 KST slot 11/143)",
+        "dashboard dataSourceInfo label (Dataset v1.0.0 · catalog 2026-02-15 03:56Z)",
+        "AI sidebar detailed analysis renders typed dataSlot JSON",
+        "AI sidebar detailed analysis renders typed dataSource JSON",
+        "AI sidebar detailed analysis no longer exposes legacy _dataSlot/_dataSource wording"
+      ],
+      "skippedSurfaces": [
+        "/dashboard/ai-assistant fullscreen",
+        "Reporter/Analyst parity"
+      ],
+      "checks": {
+        "total": 6,
+        "passed": 6,
+        "failed": 0
+      },
+      "expertAssessments": [],
+      "usageChecks": [],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "AI sidebar parity metadata contract rendered with typed dataSlot/dataSource",
+          "path": "artifacts/playwright/ai-sidebar-parity-contract-2026-03-23.png"
+        }
+      ],
+      "links": [],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
