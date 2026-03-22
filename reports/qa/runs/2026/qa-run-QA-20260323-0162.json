@@ -1,0 +1,88 @@
+{
+  "runId": "QA-20260323-0162",
+  "recordedAt": "2026-03-22T15:34:58.470Z",
+  "recordedAtKst": "2026-03-23 00:34:58 KST",
+  "runTitle": "Production QA - Dashboard/AI parity metadata user-facing recheck",
+  "owner": "codex",
+  "source": "manual",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "436808e69156a3e0df889f2b31b3d94a87a15f7c"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "coveragePacks": ["dashboard-core", "ai-core", "observability-pack"],
+  "coveredSurfaces": [
+    "dashboard raw metric (db-mysql-dc1-primary DISK 80% Warning)",
+    "dashboard dataSlotInfo label (Synthetic OTel snapshot · 00:30 KST slot 3/143)",
+    "dashboard dataSourceInfo label (Dataset v1.0.0 · catalog 2026-02-15 03:56Z)",
+    "AI sidebar detailed analysis shows legacy metadata fields (_dataSlot/_dataSource)",
+    "browser console errors (0)"
+  ],
+  "skippedSurfaces": [
+    "/dashboard/ai-assistant fullscreen",
+    "Cloud Run /monitoring parity cross-check",
+    "Reporter/Analyst parity"
+  ],
+  "checks": {
+    "total": 5,
+    "passed": 4,
+    "failed": 1
+  },
+  "expertAssessments": [],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-03-23T00:32:00+09:00",
+      "summary": "Current billing period reviewed after production parity QA; no unexpected billed usage.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "Dashboard raw metric + data source parity metadata",
+      "path": "artifacts/playwright/parity-dashboard-raw-metric-2026-03-23.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "AI sidebar detailed analysis still showing _dataSlot/_dataSource",
+      "path": "artifacts/playwright/parity-ai-metadata-detail-2026-03-23.png"
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [
+    {
+      "id": "ai-sidebar-parity-contract-rendering",
+      "title": "AI sidebar 상세 분석에 실제 parity metadata contract 노출",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Production parity QA screenshot shows legacy _dataSlot/_dataSource wording instead of current dataSlot/dataSource contract.",
+      "note": "Dashboard slot/dataSource labels are correct, but AI user-facing detailed analysis still renders legacy-style metadata explanation. No literal stale key string was found in repo search, so the mismatch is likely prompt/rendering-path output rather than backend schema drift.",
+      "owner": "codex",
+      "status": "pending",
+      "policyNote": ""
+    }
+  ],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Dashboard parity surface is correct on production for slot and dataset metadata.",
+    "AI detailed analysis for the same server still exposes legacy-style metadata keys (_dataSlot/_dataSource) and a YYYYMMDD_HHMM slot string instead of the new structured dataSlot/dataSource contract.",
+    "Repo search found no literal _dataSlot/_dataSource strings in src or cloud-run/ai-engine, so the mismatch is most likely in prompt/rendered explanation rather than the typed backend payload.",
+    "Console errors remained 0 during the run."
+  ],
+  "links": []
+}

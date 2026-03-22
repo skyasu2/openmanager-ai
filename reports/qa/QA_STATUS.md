@@ -1,28 +1,28 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-23 00:13:26 KST
+> Generated at: 2026-03-23 00:34:58 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 160 |
-| Total Checks | 1222 |
-| Passed | 1170 |
-| Failed | 48 |
+| Total Runs | 161 |
+| Total Checks | 1227 |
+| Passed | 1174 |
+| Failed | 49 |
 | Completed Items | 234 |
-| Pending Items | 0 |
+| Pending Items | 1 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 8 |
 | Expert Domains Tracked | 6 |
 | Expert Open Gaps | 0 |
-| Completion Rate | 100% |
-| Last Run | QA-20260322-0161 (2026-03-22T14:52:53.194Z) |
+| Completion Rate | 99.57% |
+| Last Run | QA-20260323-0162 (2026-03-22T15:34:58.470Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260322-0161 (2026-03-22T14:52:53.194Z)
+Latest run: QA-20260323-0162 (2026-03-22T15:34:58.470Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -32,16 +32,16 @@ Latest run: QA-20260322-0161 (2026-03-22T14:52:53.194Z)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| - | - | - | - | - |
+| vercel | cli | checked | normal | Current billing period reviewed after production parity QA; no unexpected billed usage. |
 
 ## Coverage (Latest Run)
 
 - Scope: targeted
 - Release-Facing: no
-- Deployment: SHA 41e8888d
-- Coverage Packs: dashboard-core, ai-core
-- Covered Surfaces: dashboard dataSourceInfo label (Dataset v1.0.0 · catalog 2026-02-15 03:56Z), dashboard dataSlotInfo label (Synthetic OTel snapshot · 23:50 KST slot 143/143), AI getServerMetrics dataSlot field ({ slotIndex: 143, minuteOfDay: 1430, timeLabel: 23:50 KST }), AI getServerMetrics dataSource field ({ scopeName: openmanager-ai-otel-pipeline, scopeVersion: 1.0.0, catalogGeneratedAt: 2026-02-15T03:56:41.821Z, hour: 23 }), server status badge (storage-nfs-dc1-01 Warning/DISK 82%), OS label Linux normalization
-- Skipped Surfaces: -
+- Deployment: SHA 436808e6
+- Coverage Packs: dashboard-core, ai-core, observability-pack
+- Covered Surfaces: dashboard raw metric (db-mysql-dc1-primary DISK 80% Warning), dashboard dataSlotInfo label (Synthetic OTel snapshot · 00:30 KST slot 3/143), dashboard dataSourceInfo label (Dataset v1.0.0 · catalog 2026-02-15 03:56Z), AI sidebar detailed analysis shows legacy metadata fields (_dataSlot/_dataSource), browser console errors (0)
+- Skipped Surfaces: /dashboard/ai-assistant fullscreen, Cloud Run /monitoring parity cross-check, Reporter/Analyst parity
 
 ## Links (Latest Run)
 
@@ -53,8 +53,8 @@ Latest run: QA-20260322-0161 (2026-03-22T14:52:53.194Z)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | Dashboard dataSource metadata - Dataset v1.0.0 · catalog 2026-02-15 03:56Z | `artifacts/playwright/datasource-parity-metadata-2026-03-22.png` | - |
-| playwright-screenshot | AI sidebar - dataSlot { slotIndex: 143, minuteOfDay: 1430, timeLabel: 23:50 KST } + dataSource { scopeName: openmanager-ai-otel-pipeline, scopeVersion: 1.0.0, catalogGeneratedAt: 2026-02-15T03:56:41.821Z, hour: 23 } | `artifacts/playwright/datasource-ai-metadata-2026-03-22.png` | - |
+| playwright-screenshot | Dashboard raw metric + data source parity metadata | `artifacts/playwright/parity-dashboard-raw-metric-2026-03-23.png` | - |
+| playwright-screenshot | AI sidebar detailed analysis still showing _dataSlot/_dataSource | `artifacts/playwright/parity-ai-metadata-detail-2026-03-23.png` | - |
 
 ## Expert Domain Open Gaps
 
@@ -62,7 +62,7 @@ Latest run: QA-20260322-0161 (2026-03-22T14:52:53.194Z)
 
 ## Pending Improvements
 
-- None
+- [P1] ai-sidebar-parity-contract-rendering: AI sidebar 상세 분석에 실제 parity metadata contract 노출 (seen 1회, last QA-20260323-0162)
 
 ## Deferred Improvements
 
@@ -327,6 +327,7 @@ Latest run: QA-20260322-0161 (2026-03-22T14:52:53.194Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260323-0162 | 2026-03-22T15:34:58.470Z | targeted | no | Production QA - Dashboard/AI parity metadata user-facing recheck | 5 | 0 | 1 | 0 | 0 | 0 |
 | QA-20260322-0161 | 2026-03-22T14:52:53.194Z | targeted | no | Vercel Playwright QA - Data Source Parity Metadata (SHA 41e8888d4) | 6 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260322-0160 | 2026-03-22T07:26:30.735Z | targeted | no | CI Manual Feedback Trace Status QA (run #23398040200) | 1 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260322-0159 | 2026-03-22T05:18:39.374Z | targeted | no | Production Feedback Trace URL Status E2E - Runtime Availability Explicit | 5 | 1 | 0 | 0 | 0 | 0 |
@@ -346,5 +347,4 @@ Latest run: QA-20260322-0161 (2026-03-22T14:52:53.194Z)
 | QA-20260321-0145 | 2026-03-20T22:28:54.515Z | targeted | no | Vercel Playwright QA - Modal Detail Pack Coverage Fill (SHA 386aa7acd) | 8 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260321-0144 | 2026-03-20T22:01:41.259Z | targeted | yes | Vercel Playwright QA - Reporter/Analyst/Fullscreen Follow-up (SHA 818871b86) | 9 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260320-0143 | 2026-03-20T14:54:14.012Z | broad | yes | Vercel Playwright QA - Broad Smoke Post-Push (SHA cf0b1119) | 11 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260320-0142 | 2026-03-20T12:57:48.587Z | targeted | no | Vercel Playwright QA - Langfuse Feedback Trace Recovery | 11 | 1 | 0 | 0 | 0 | 0 |
 

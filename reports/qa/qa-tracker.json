@@ -2,25 +2,25 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-03-22T14:52:53.194Z"
+    "updatedAt": "2026-03-22T15:34:58.470Z"
   },
   "sequence": {
-    "nextRunNumber": 162
+    "nextRunNumber": 163
   },
   "summary": {
-    "totalRuns": 160,
-    "totalChecks": 1222,
-    "totalPassed": 1170,
-    "totalFailed": 48,
-    "completionRate": 100,
+    "totalRuns": 161,
+    "totalChecks": 1227,
+    "totalPassed": 1174,
+    "totalFailed": 49,
+    "completionRate": 99.57,
     "completedItems": 234,
-    "pendingItems": 0,
+    "pendingItems": 1,
     "deferredItems": 0,
     "wontFixItems": 8,
     "expertDomainsTracked": 6,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260322-0161",
-    "lastRecordedAt": "2026-03-22T14:52:53.194Z"
+    "lastRunId": "QA-20260323-0162",
+    "lastRecordedAt": "2026-03-22T15:34:58.470Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -5519,6 +5519,30 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-03-22T05:18:39.374Z"
+    },
+    "ai-sidebar-parity-contract-rendering": {
+      "id": "ai-sidebar-parity-contract-rendering",
+      "title": "AI sidebar 상세 분석에 실제 parity metadata contract 노출",
+      "priority": "P1",
+      "status": "pending",
+      "firstSeenRunId": "QA-20260323-0162",
+      "firstSeenAt": "2026-03-22T15:34:58.470Z",
+      "lastSeenRunId": "QA-20260323-0162",
+      "lastSeenAt": "2026-03-22T15:34:58.470Z",
+      "seenCount": 1,
+      "completedCount": 0,
+      "pendingCount": 1,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "codex",
+      "lastEvidence": "Production parity QA screenshot shows legacy _dataSlot/_dataSource wording instead of current dataSlot/dataSource contract.",
+      "lastNote": "Dashboard slot/dataSource labels are correct, but AI user-facing detailed analysis still renders legacy-style metadata explanation. No literal stale key string was found in repo search, so the mismatch is likely prompt/rendering-path output rather than backend schema drift.",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-03-22T15:34:58.470Z"
     }
   },
   "runs": [
@@ -13186,6 +13210,77 @@
       "expertNeedsImprovementCount": 0,
       "completedCount": 0,
       "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260323-0162",
+      "recordedAt": "2026-03-22T15:34:58.470Z",
+      "recordedAtKst": "2026-03-23 00:34:58 KST",
+      "title": "Production QA - Dashboard/AI parity metadata user-facing recheck",
+      "owner": "codex",
+      "source": "manual",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260323-0162.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "436808e69156a3e0df889f2b31b3d94a87a15f7c"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "coveragePacks": ["dashboard-core", "ai-core", "observability-pack"],
+      "coveredSurfaces": [
+        "dashboard raw metric (db-mysql-dc1-primary DISK 80% Warning)",
+        "dashboard dataSlotInfo label (Synthetic OTel snapshot · 00:30 KST slot 3/143)",
+        "dashboard dataSourceInfo label (Dataset v1.0.0 · catalog 2026-02-15 03:56Z)",
+        "AI sidebar detailed analysis shows legacy metadata fields (_dataSlot/_dataSource)",
+        "browser console errors (0)"
+      ],
+      "skippedSurfaces": [
+        "/dashboard/ai-assistant fullscreen",
+        "Cloud Run /monitoring parity cross-check",
+        "Reporter/Analyst parity"
+      ],
+      "checks": {
+        "total": 5,
+        "passed": 4,
+        "failed": 1
+      },
+      "expertAssessments": [],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-03-23T00:32:00+09:00",
+          "summary": "Current billing period reviewed after production parity QA; no unexpected billed usage.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "Dashboard raw metric + data source parity metadata",
+          "path": "artifacts/playwright/parity-dashboard-raw-metric-2026-03-23.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "AI sidebar detailed analysis still showing _dataSlot/_dataSource",
+          "path": "artifacts/playwright/parity-ai-metadata-detail-2026-03-23.png"
+        }
+      ],
+      "links": [],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 1,
       "deferredCount": 0,
       "wontFixCount": 0
     }
