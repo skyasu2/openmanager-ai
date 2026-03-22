@@ -26,6 +26,7 @@ reports/qa/
 - 기본 디렉토리나 시간 창을 바꾸려면 `playwrightArtifacts.reportDir/resultsDir/screenshotsDir/recentMinutes/pathIncludes`를 입력 JSON에 명시한다.
 - 수동 MCP QA는 shared `.playwright-mcp/screenshots`를 쓰므로, run별 파일 prefix를 붙이고 `pathIncludes`로 함께 좁혀 fresh artifact only 원칙을 지킨다.
 - GitHub Actions `workflow_dispatch`로 실행한 `E2E Critical`은 성공해도 `playwright-report-${run_id}`, `playwright-results-${run_id}` artifact를 3일간 보존하므로, CI 기반 QA 증거 링크로 재사용할 수 있다.
+- 로컬 Playwright browser launch가 막히는 환경에서는 GitHub Actions `workflow_dispatch`의 `run_manual_feedback_trace_status=true`를 사용해 production feedback trace QA를 원격에서 실행하고, `manual-feedback-trace-report-${run_id}` / `manual-feedback-trace-results-${run_id}` artifact를 증거로 재사용한다.
 - CI 근거를 재사용할 때는 `ciEvidence`에 `workflowName`, `runId`, `artifacts[]`를 넣어 `GitHub Actions run/artifact` 링크를 표준 라벨로 자동 생성한다.
 - feedback observability QA에서는 `/api/ai/feedback` 응답의 `traceUrlStatus`를 1차 runtime contract로 기록한다.
 - `traceUrlStatus=available`이면 `traceUrl`을 direct Langfuse UI 증거로 함께 남기고, `traceUrlStatus=unavailable`이면 `traceApiUrl`/`monitoringLookupUrl`를 운영 증거로 남긴다.
