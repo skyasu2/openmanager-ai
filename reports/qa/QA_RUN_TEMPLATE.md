@@ -95,7 +95,9 @@ npm run qa:status:sync
 - observability 관련 Cloud Run admin endpoint는 `https://openmanager-ai.vercel.app/monitoring/*`가 아니라 `CLOUD_RUN_AI_URL/monitoring*`로 검증합니다.
 - `/monitoring` / `/monitoring/traces`는 `X-API-Key: $CLOUD_RUN_API_SECRET` 인증이 필요합니다.
 - Vercel-side observability만 확인한 run이면 `coveredSurfaces`에 dashboard panel을 쓰고, Cloud Run admin `/monitoring`, `/monitoring/traces`는 `skippedSurfaces`에 분리합니다.
-- feedback trace observability run에서는 `/api/ai/feedback` 응답의 `traceApiUrl`/`monitoringLookupUrl`를 먼저 확보하고, sampled `/monitoring/traces?q=<traceId>` 검색은 보조 증거로 분리합니다.
+- feedback trace observability run에서는 `/api/ai/feedback` 응답의 `traceUrlStatus`를 먼저 기록합니다.
+- `traceUrlStatus=available`이면 `traceUrl`을 direct Langfuse UI 증거로 남기고, `traceUrlStatus=unavailable`이면 `traceApiUrl`/`monitoringLookupUrl`를 운영 증거로 남깁니다.
+- sampled `/monitoring/traces?q=<traceId>` 검색은 `traceUrlStatus`와 별개의 보조 증거로 분리합니다.
 
 ## Improvement 항목 스키마
 
@@ -230,7 +232,8 @@ npm run qa:status:sync
 - artifact `url`이 없으면 workflow run URL로 연결하고 note에 artifact 이름을 남깁니다.
 - `links.type` 허용 값: `general`, `vercel-deployment`, `github-actions-run`, `github-actions-artifact`, `monitoring`, `langfuse-trace`
 - feedback trace run 예시:
-  - `{ "type": "langfuse-trace", "label": "Feedback trace API URL", "url": "https://us.cloud.langfuse.com/api/public/traces/<traceId>" }`
+  - `traceUrlStatus=available`: `{ "type": "langfuse-trace", "label": "Feedback trace UI URL", "url": "https://us.cloud.langfuse.com/trace/<traceId>" }`
+  - `traceUrlStatus=unavailable`: `{ "type": "langfuse-trace", "label": "Feedback trace API URL", "url": "https://us.cloud.langfuse.com/api/public/traces/<traceId>" }`
   - `{ "type": "monitoring", "label": "Cloud Run monitoring lookup for feedback traceId", "url": "https://ai-engine-...run.app/monitoring/traces?q=<traceId>&limit=5&includeAuxiliary=true" }`
 
 ## Playwright 자동 수집 옵션
