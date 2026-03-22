@@ -239,7 +239,8 @@ function Home() {
               운영 데이터를 질문, 분석, 조치안으로 바꾸는 서버 모니터링 AI
             </span>
             <span className="mt-2 block text-sm text-white/60">
-              그래프를 직접 읽는 대신 현재 메트릭을 바탕으로 바로 질문하고 답을 받습니다
+              그래프를 직접 읽는 대신 현재 메트릭을 바탕으로 바로 질문하고 답을
+              받습니다
             </span>
           </p>
         </div>
