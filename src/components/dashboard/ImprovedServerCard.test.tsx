@@ -316,9 +316,9 @@ describe('ImprovedServerCard - User Event 테스트', () => {
       expect(screen.getByText('CPU')).toBeInTheDocument();
     });
 
-    it('Memory 메트릭 레이블이 표시된다', () => {
+    it('MEM 메트릭 레이블이 표시된다', () => {
       render(<ImprovedServerCard server={mockServer} onClick={mockOnClick} />);
-      expect(screen.getByText('Memory')).toBeInTheDocument();
+      expect(screen.getByText('MEM')).toBeInTheDocument();
     });
 
     it('Live Metrics 섹션이 표시된다', () => {

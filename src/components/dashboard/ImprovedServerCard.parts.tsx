@@ -12,7 +12,7 @@ interface MetricItemProps {
 export const MetricItem = ({ type, value, history }: MetricItemProps) => {
   const labels = {
     cpu: 'CPU',
-    memory: 'Memory',
+    memory: 'MEM',
     disk: 'Disk',
     network: 'Network',
   };
