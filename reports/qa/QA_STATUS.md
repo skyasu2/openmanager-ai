@@ -1,33 +1,32 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-22 09:09:46 KST
+> Generated at: 2026-03-22 12:21:02 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 155 |
-| Total Checks | 1199 |
-| Passed | 1148 |
+| Total Runs | 156 |
+| Total Checks | 1205 |
+| Passed | 1154 |
 | Failed | 47 |
-| Completed Items | 230 |
+| Completed Items | 233 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 8 |
 | Expert Domains Tracked | 6 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Run | QA-20260322-0156 (2026-03-22T00:09:47.421Z) |
+| Last Run | QA-20260322-0157 (2026-03-22T03:21:01.682Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260322-0156 (2026-03-22T00:09:47.421Z)
+Latest run: QA-20260322-0157 (2026-03-22T03:21:01.682Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| AI Quality Assurance Specialist | appropriate | no | - |
-| IT Monitoring & Observability SME | appropriate | no | - |
+| - | - | - | - |
 
 ## Usage Checks (Latest Run)
 
@@ -39,26 +38,23 @@ Latest run: QA-20260322-0156 (2026-03-22T00:09:47.421Z)
 
 - Scope: targeted
 - Release-Facing: no
-- Deployment: dpl_Aa1jNCf6wT2BP7CZmYSVyKurfPeF / SHA fef9edc5
-- Coverage Packs: ai-core, observability-pack
-- Covered Surfaces: guest PIN login, system-boot -> /dashboard redirect, AI sidebar free-text chat send, AI feedback negative button, /api/ai/feedback proxy returns traceId + langfuseStatus=success + traceApiUrl + dashboardUrl + monitoringLookupUrl, monitoringLookupUrl uses https run.app origin
-- Skipped Surfaces: Cloud Run /monitoring/traces?q=<traceId> exact-match correlation recheck, Langfuse trace UI deep link via htmlPath/traceUrl, fullscreen AI assistant
+- Deployment: dpl_EQyssh4eyfDEj8y12v2UHec2dmoC / SHA 9a5f877f
+- Coverage Packs: dashboard-core, ai-core
+- Covered Surfaces: /dashboard, high-cpu dashboard card shows Warning instead of Stable, dashboard OS labels use Linux instead of raw linux, AI sidebar starter prompt summary response, trend summary shows daily average delta instead of repeating current-state bullets, recommendation copy uses concrete operator actions
+- Skipped Surfaces: landing positioning / tech-first messaging (user requested no change), system-start theatrical flow (user requested no change), public observability visibility / monitoring route exposure (user requested no change)
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | Langfuse project dashboard | [link](https://us.cloud.langfuse.com/project) | - |
-| langfuse-trace | Feedback trace API URL | [link](https://us.cloud.langfuse.com/api/public/traces/cc7309c453c6951a23ce55ff11bd9f08) | - |
-| monitoring | Cloud Run monitoring lookup for feedback traceId | [link](https://ai-engine-490817238363.asia-northeast1.run.app/monitoring/traces?q=cc7309c453c6951a23ce55ff11bd9f08&limit=5&includeAuxiliary=true) | - |
-| vercel-deployment | Production deployment dpl_Aa1jNCf6wT2BP7CZmYSVyKurfPeF | [link](https://openmanager-ferguhe6g-skyasus-projects.vercel.app/) | - |
+| - | - | - | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | feedback-trace-links-2026-03-22.png | `artifacts/playwright/feedback-trace-links-2026-03-22.png` | - |
-| playwright-console | feedback-trace-links-2026-03-22-console.log | `artifacts/playwright/feedback-trace-links-2026-03-22-console.log` | - |
+| playwright-screenshot | Portfolio negative impression fixes proof | `artifacts/playwright/portfolio-negative-impression-fixes-2026-03-22.png` | - |
+| playwright-console | Portfolio negative impression fixes console | `artifacts/playwright/portfolio-negative-impression-fixes-2026-03-22-console.log` | - |
 
 ## Expert Domain Open Gaps
 
@@ -119,6 +115,7 @@ Latest run: QA-20260322-0156 (2026-03-22T00:09:47.421Z)
 - ai-sidebar-tools-menu: AI 도구 메뉴 (completed 1회, last QA-20260317-0114)
 - ai-stream-timing-x-headers-production: AI Chat streaming route exposes X-AI timing headers on production (completed 1회, last QA-20260310-0080)
 - ai-summary-chat-streaming-path: AI summary chat query uses streaming path on production (completed 2회, last QA-20260310-0080)
+- ai-summary-delta-guidance: AI 요약이 평균 대비 변화량과 구체적 권고를 표시 (completed 1회, last QA-20260322-0157)
 - ai-summary-query-clarification-skip-production: Explicit all-server summary query skips clarification in production (completed 1회, last QA-20260310-0071)
 - ai-timing-header-ssot-policy: QA timing header SSOT standardized to X-AI-Latency-Ms (completed 1회, last QA-20260310-0081)
 - ai-timing-x-headers-production: AI proxy responses expose production timing headers (completed 1회, last QA-20260309-0070)
@@ -148,6 +145,7 @@ Latest run: QA-20260322-0156 (2026-03-22T00:09:47.421Z)
 - csrf-duplicate-removal: CSRF getCSRFTokenFromCookie 중복 제거 (completed 1회, last QA-20260307-0053)
 - dashboard-15-servers: 대시보드 15대 서버 모니터링 정상 (completed 2회, last QA-20260314-0097)
 - dashboard-active-alerts: 활성 알림 모달 (completed 1회, last QA-20260317-0114)
+- dashboard-health-badge-warning-consistency: 고부하 카드가 Stable 대신 Warning으로 정렬됨 (completed 1회, last QA-20260322-0157)
 - dashboard-health-v879: 프로덕션 대시보드 및 Health API 검증 (completed 1회, last QA-20260306-0052)
 - dashboard-health-v880: 프로덕션 대시보드 및 Health API 검증 (completed 1회, last QA-20260308-0056)
 - dashboard-health-v880-quality-recheck: 프로덕션 대시보드/Health API 품질 재검증 (completed 1회, last QA-20260308-0059)
@@ -194,6 +192,7 @@ Latest run: QA-20260322-0156 (2026-03-22T00:09:47.421Z)
 - langfuse-monitoring-traces-timeout: Authenticated /monitoring/traces endpoint times out in production (completed 1회, last QA-20260317-0113)
 - langfuse-multi-agent-traceid-live-proof: 멀티에이전트 sampled traceId 실운영 실측 (completed 1회, last QA-20260317-0116)
 - langfuse-multi-agent-traceid-propagation: 멀티에이전트 stream done metadata traceId 전파 (completed 1회, last QA-20260317-0115)
+- linux-label-normalization: 대시보드 카드 OS 표기를 Linux로 정규화 (completed 1회, last QA-20260322-0157)
 - log-explorer-modal: 로그 탐색기 모달 (completed 1회, last QA-20260317-0114)
 - login-copy-neutral: 로그인 정책 카피 중립성 개선 (completed 1회, last QA-20260227-0014)
 - login-pin-form-structure: 게스트 PIN 입력 폼 구조 정리 (completed 1회, last QA-20260226-0001)
@@ -327,6 +326,7 @@ Latest run: QA-20260322-0156 (2026-03-22T00:09:47.421Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260322-0157 | 2026-03-22T03:21:01.682Z | targeted | no | Production QA - Portfolio Negative Impression Fixes (3,4,6) | 6 | 3 | 0 | 0 | 0 | 0 |
 | QA-20260322-0156 | 2026-03-22T00:09:47.421Z | targeted | no | Production AI Feedback Trace Links E2E - Direct Trace URLs Returned | 6 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260322-0155 | 2026-03-21T17:32:57.012Z | targeted | no | Production AI Negative Feedback Trace E2E - TraceId Preserved + Feedback Success | 5 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260322-0154 | 2026-03-21T16:33:49.267Z | targeted | no | Cloud Run Trace Link Recovery - Monitoring Trace URL Restored | 4 | 0 | 0 | 0 | 0 | 0 |
@@ -346,5 +346,4 @@ Latest run: QA-20260322-0156 (2026-03-22T00:09:47.421Z)
 | QA-20260320-0140 | 2026-03-20T11:04:59.928Z | smoke | yes | Vercel Production Smoke - Post Push Usage Evidence Green Recheck | 8 | 3 | 0 | 0 | 0 | 0 |
 | QA-20260320-0139 | 2026-03-20T09:49:43.445Z | smoke | yes | Vercel Production Smoke - Post Workflow Push Verification | 8 | 3 | 0 | 0 | 0 | 1 |
 | QA-20260320-0138 | 2026-03-20T07:49:25.161Z | legacy | no | Vercel Production QA - Runtime Safety Follow-up Validation Green Recheck (SHA 159dce5b2) | 32 | 5 | 0 | 0 | 0 | 1 |
-| QA-20260320-0137 | 2026-03-20T07:13:57.777Z | legacy | no | Vercel Production QA - Runtime Safety Follow-up Validation (SHA 159dce5b2) | 32 | 3 | 2 | 0 | 0 | 2 |
 

@@ -2,25 +2,25 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-03-22T00:09:47.421Z"
+    "updatedAt": "2026-03-22T03:21:01.682Z"
   },
   "sequence": {
-    "nextRunNumber": 157
+    "nextRunNumber": 158
   },
   "summary": {
-    "totalRuns": 155,
-    "totalChecks": 1199,
-    "totalPassed": 1148,
+    "totalRuns": 156,
+    "totalChecks": 1205,
+    "totalPassed": 1154,
     "totalFailed": 47,
     "completionRate": 100,
-    "completedItems": 230,
+    "completedItems": 233,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 8,
     "expertDomainsTracked": 6,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260322-0156",
-    "lastRecordedAt": "2026-03-22T00:09:47.421Z"
+    "lastRunId": "QA-20260322-0157",
+    "lastRecordedAt": "2026-03-22T03:21:01.682Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -5423,6 +5423,78 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-03-22T00:09:47.421Z"
+    },
+    "dashboard-health-badge-warning-consistency": {
+      "id": "dashboard-health-badge-warning-consistency",
+      "title": "고부하 카드가 Stable 대신 Warning으로 정렬됨",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260322-0157",
+      "firstSeenAt": "2026-03-22T03:21:01.682Z",
+      "lastSeenRunId": "QA-20260322-0157",
+      "lastSeenAt": "2026-03-22T03:21:01.682Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "api-was-dc1-01 카드가 CPU 81%에서 Warning 배지를 표시",
+      "lastNote": "",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-03-22T03:21:01.682Z"
+    },
+    "ai-summary-delta-guidance": {
+      "id": "ai-summary-delta-guidance",
+      "title": "AI 요약이 평균 대비 변화량과 구체적 권고를 표시",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260322-0157",
+      "firstSeenAt": "2026-03-22T03:21:01.682Z",
+      "lastSeenRunId": "QA-20260322-0157",
+      "lastSeenAt": "2026-03-22T03:21:01.682Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "CPU 평균 63% → 현재 81% (+18%p) / 상위 프로세스·예약 작업·요청 분산 권고",
+      "lastNote": "",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-03-22T03:21:01.682Z"
+    },
+    "linux-label-normalization": {
+      "id": "linux-label-normalization",
+      "title": "대시보드 카드 OS 표기를 Linux로 정규화",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260322-0157",
+      "firstSeenAt": "2026-03-22T03:21:01.682Z",
+      "lastSeenRunId": "QA-20260322-0157",
+      "lastSeenAt": "2026-03-22T03:21:01.682Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "운영체제 배지와 상세 메타 모두 Linux로 일치",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-03-22T03:21:01.682Z"
     }
   },
   "runs": [
@@ -12692,6 +12764,78 @@
       "expertCount": 2,
       "expertNeedsImprovementCount": 0,
       "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260322-0157",
+      "recordedAt": "2026-03-22T03:21:01.682Z",
+      "recordedAtKst": "2026-03-22 12:21:01 KST",
+      "title": "Production QA - Portfolio Negative Impression Fixes (3,4,6)",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260322-0157.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_EQyssh4eyfDEj8y12v2UHec2dmoC",
+        "deploymentUrl": "https://openmanager-hap7yoiv7-skyasus-projects.vercel.app",
+        "commitSha": "9a5f877fb5ffeda5b4cacd7a8ed569364bb39c7f"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "coveragePacks": ["dashboard-core", "ai-core"],
+      "coveredSurfaces": [
+        "/dashboard",
+        "high-cpu dashboard card shows Warning instead of Stable",
+        "dashboard OS labels use Linux instead of raw linux",
+        "AI sidebar starter prompt summary response",
+        "trend summary shows daily average delta instead of repeating current-state bullets",
+        "recommendation copy uses concrete operator actions"
+      ],
+      "skippedSurfaces": [
+        "landing positioning / tech-first messaging (user requested no change)",
+        "system-start theatrical flow (user requested no change)",
+        "public observability visibility / monitoring route exposure (user requested no change)"
+      ],
+      "checks": {
+        "total": 6,
+        "passed": 6,
+        "failed": 0
+      },
+      "expertAssessments": [],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-03-22T12:20:39+09:00",
+          "summary": "effectiveCost $15.9423 / billedCost $0.0000",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "Portfolio negative impression fixes proof",
+          "path": "artifacts/playwright/portfolio-negative-impression-fixes-2026-03-22.png"
+        },
+        {
+          "type": "playwright-console",
+          "label": "Portfolio negative impression fixes console",
+          "path": "artifacts/playwright/portfolio-negative-impression-fixes-2026-03-22-console.log"
+        }
+      ],
+      "links": [],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 3,
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
