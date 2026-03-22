@@ -9,6 +9,7 @@
  */
 
 import {
+  getCurrentDataSourceInfo,
   getCurrentState,
   getStateBySlot,
   getSlots,
@@ -23,6 +24,8 @@ import {
   SERVER_GROUP_DESCRIPTION_LIST,
   normalizeServerType,
 } from '../../config/server-types';
+
+export { getCurrentDataSourceInfo };
 
 // ============================================================================
 // Cache Key Utilities

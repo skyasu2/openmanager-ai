@@ -14,6 +14,13 @@ import type {
 } from './precomputed-state.types';
 export { LOG_PRIORITY_ORDER } from './precomputed-state-slot';
 
+export type OTelDataSourceInfo = {
+  scopeName: string;
+  scopeVersion: string;
+  catalogGeneratedAt: string | null;
+  hour: number;
+};
+
 // ============================================================================
 // Thresholds (from system-rules.json - Single Source of Truth)
 // ============================================================================
@@ -130,6 +137,22 @@ function loadOTelHourly(hour: number): OTelHourlyFile | null {
     }
   }
   return null;
+}
+
+export function getOTelDataSourceInfo(hour: number): OTelDataSourceInfo | null {
+  const hourlyData = loadOTelHourly(hour);
+  if (!hourlyData) {
+    return null;
+  }
+
+  const catalog = getOTelResourceCatalog();
+
+  return {
+    scopeName: hourlyData.scope.name,
+    scopeVersion: hourlyData.scope.version,
+    catalogGeneratedAt: catalog?.generatedAt ?? null,
+    hour: hourlyData.hour,
+  };
 }
 
 /** Async cache for parallel hourly file loading */

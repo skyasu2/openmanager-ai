@@ -155,11 +155,20 @@ describe('DashboardSummary status filter cards', () => {
       <DashboardSummary
         stats={mockStats}
         dataSlotInfo={{ hour: 12, slotIndex: 74, minuteOfDay: 740 }}
+        dataSourceInfo={{
+          scopeName: 'openmanager-ai-otel-pipeline',
+          scopeVersion: '1.0.0',
+          catalogGeneratedAt: '2026-02-15T03:56:41.821Z',
+          hour: 12,
+        }}
       />
     );
 
     expect(
       screen.getByText('Synthetic OTel snapshot · 12:20 KST (slot 74/143)')
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText('Dataset v1.0.0 · catalog 2026-02-15 03:56Z')
     ).toBeInTheDocument();
   });
 });

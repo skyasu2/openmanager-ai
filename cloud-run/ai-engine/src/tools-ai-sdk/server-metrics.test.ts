@@ -134,6 +134,12 @@ vi.mock('../data/precomputed-state', () => {
   }));
 
   return {
+    getCurrentDataSourceInfo: vi.fn(() => ({
+      scopeName: 'openmanager-ai-otel-pipeline',
+      scopeVersion: '1.0.0',
+      catalogGeneratedAt: '2026-02-15T03:56:41.821Z',
+      hour: 12,
+    })),
     getCurrentState: vi.fn(() => state),
     getSlots: vi.fn(() => slots),
     getStateBySlot: vi.fn((slot: number) => slots[((slot % 144) + 144) % 144]),
@@ -374,6 +380,12 @@ describe('getServerMetrics', () => {
       slotIndex: 74,
       minuteOfDay: 740,
       timeLabel: '12:20 KST',
+    });
+    expect(result.dataSource).toEqual({
+      scopeName: 'openmanager-ai-otel-pipeline',
+      scopeVersion: '1.0.0',
+      catalogGeneratedAt: '2026-02-15T03:56:41.821Z',
+      hour: 12,
     });
     expect(getMetricsMock).toHaveBeenCalledWith(
       'slot:74:all:all',

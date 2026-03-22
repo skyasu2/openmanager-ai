@@ -13,7 +13,10 @@ import {
 import type React from 'react';
 import { memo, useEffect, useState } from 'react';
 import { getMsUntilNextServerDataSlot } from '@/config/server-data-polling';
-import type { DashboardTimeInfo } from '@/lib/dashboard/server-data';
+import type {
+  DashboardDataSourceInfo,
+  DashboardTimeInfo,
+} from '@/lib/dashboard/server-data';
 import { cn } from '@/lib/utils';
 import { getKSTDateTime } from '@/services/metrics/kst-time';
 import type { DashboardStats } from './types/dashboard.types';
@@ -21,6 +24,7 @@ import type { DashboardStats } from './types/dashboard.types';
 interface DashboardSummaryProps {
   stats: DashboardStats;
   dataSlotInfo?: DashboardTimeInfo;
+  dataSourceInfo?: DashboardDataSourceInfo | null;
   activeFilter?: string | null;
   onFilterChange?: (filter: string | null) => void;
   onOpenAlertHistory?: () => void;
@@ -40,6 +44,15 @@ function formatSlotLabel(dataSlotInfo: DashboardTimeInfo): string {
   );
   const minutes = String(dataSlotInfo.minuteOfDay % 60).padStart(2, '0');
   return `${hours}:${minutes} KST (slot ${dataSlotInfo.slotIndex}/143)`;
+}
+
+function formatDataSourceLabel(
+  dataSourceInfo: DashboardDataSourceInfo
+): string {
+  const generatedAt = dataSourceInfo.catalogGeneratedAt
+    ? `${dataSourceInfo.catalogGeneratedAt.slice(0, 16).replace('T', ' ')}Z`
+    : 'unknown';
+  return `Dataset v${dataSourceInfo.scopeVersion} · catalog ${generatedAt}`;
 }
 
 function getCurrentDashboardTimeInfo(
@@ -190,6 +203,7 @@ export const DashboardSummary: React.FC<DashboardSummaryProps> = memo(
   function DashboardSummary({
     stats,
     dataSlotInfo,
+    dataSourceInfo,
     activeFilter,
     onFilterChange,
     onOpenAlertHistory,
@@ -274,6 +288,11 @@ export const DashboardSummary: React.FC<DashboardSummaryProps> = memo(
             {liveDataSlotInfo && (
               <p className="mt-2 text-[11px] font-medium text-gray-500">
                 Synthetic OTel snapshot · {formatSlotLabel(liveDataSlotInfo)}
+              </p>
+            )}
+            {dataSourceInfo && (
+              <p className="mt-1 text-[11px] font-medium text-gray-400">
+                {formatDataSourceLabel(dataSourceInfo)}
               </p>
             )}
           </div>

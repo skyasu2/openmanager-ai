@@ -24,6 +24,7 @@ import { useSystemAutoShutdown } from '@/hooks/useSystemAutoShutdown';
 import { useUserPermissions } from '@/hooks/useUserPermissions';
 import { LOGIN_POLICY_COPY } from '@/lib/auth/login-policy-copy';
 import type {
+  DashboardDataSourceInfo,
   DashboardStats,
   DashboardTimeInfo,
 } from '@/lib/dashboard/server-data';
@@ -49,6 +50,8 @@ type DashboardClientProps = {
   initialStats?: DashboardStats;
   /** Pre-calculated data slot metadata from Server Component */
   initialTimeInfo?: DashboardTimeInfo;
+  /** Current synthetic OTel data source metadata from Server Component */
+  initialDataSourceInfo?: DashboardDataSourceInfo | null;
 };
 
 // 🔧 레거시 정리 (2026-01-17): EnhancedServerModal은 ServerDashboard 내부에서 직접 사용
@@ -60,6 +63,7 @@ type DashboardClientProps = {
 function DashboardPageContent({
   initialServers,
   initialTimeInfo,
+  initialDataSourceInfo,
 }: DashboardClientProps) {
   // 🔒 Hydration 불일치 방지를 위한 클라이언트 전용 상태
   const [isMounted, setIsMounted] = useState(false);
@@ -373,6 +377,7 @@ function DashboardPageContent({
               servers={realServers}
               allServers={allServers}
               dataSlotInfo={initialTimeInfo}
+              dataSourceInfo={initialDataSourceInfo}
               totalServers={filteredTotal}
               currentPage={currentPage}
               totalPages={totalPages}
@@ -421,6 +426,7 @@ export default function DashboardClient({
   initialServers,
   initialStats,
   initialTimeInfo,
+  initialDataSourceInfo,
 }: DashboardClientProps) {
   return (
     <Suspense fallback={<ContentLoadingSkeleton />}>
@@ -428,6 +434,7 @@ export default function DashboardClient({
         initialServers={initialServers}
         initialStats={initialStats}
         initialTimeInfo={initialTimeInfo}
+        initialDataSourceInfo={initialDataSourceInfo}
       />
     </Suspense>
   );

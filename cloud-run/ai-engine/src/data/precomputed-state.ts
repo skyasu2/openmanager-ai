@@ -15,9 +15,11 @@ import { logger } from '../lib/logger';
 import { generateLogs, type GeneratedLog } from './log-generator';
 import {
   buildPrecomputedStates,
+  getOTelDataSourceInfo,
   initOTelDataAsync,
   LOG_PRIORITY_ORDER,
   THRESHOLDS,
+  type OTelDataSourceInfo,
 } from './precomputed-state-core';
 import {
   buildCompactContext as buildCompactContextFromState,
@@ -43,6 +45,7 @@ export { buildPrecomputedStates, initOTelDataAsync };
 export type {
   ActivePattern,
   CompactContext,
+  OTelDataSourceInfo,
   PrecomputedSlot,
   ServerAlert,
   ServerSnapshot,
@@ -225,6 +228,12 @@ export function getCurrentState(): PrecomputedSlot {
   const slots = getSlots();
   const index = getCurrentSlotIndex();
   return getSlotOrFallback(slots, index);
+}
+
+export function getCurrentDataSourceInfo(): OTelDataSourceInfo | null {
+  const state = getCurrentState();
+  const hour = Math.floor(state.minuteOfDay / 60);
+  return getOTelDataSourceInfo(hour);
 }
 
 /**

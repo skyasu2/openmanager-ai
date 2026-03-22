@@ -40,6 +40,13 @@ export type DashboardTimeInfo = {
   minuteOfDay: number;
 };
 
+export type DashboardDataSourceInfo = {
+  scopeName: string;
+  scopeVersion: string;
+  catalogGeneratedAt: string | null;
+  hour: number;
+};
+
 // ============================================================================
 // EnhancedServerMetrics → Server 변환
 // ============================================================================
@@ -86,6 +93,7 @@ export type OTelDashboardData = {
   servers: Server[];
   stats: DashboardStats;
   timeInfo: DashboardTimeInfo;
+  dataSourceInfo: DashboardDataSourceInfo | null;
 };
 
 /**
@@ -93,7 +101,7 @@ export type OTelDashboardData = {
  */
 export async function getOTelDashboardData(): Promise<OTelDashboardData> {
   try {
-    const { servers, hour, slotIndex, minuteOfDay } =
+    const { servers, hour, slotIndex, minuteOfDay, dataSource } =
       await loadCurrentOTelServers();
 
     // EnhancedServerMetrics → Server 변환 + 상태 우선순위 정렬
@@ -116,6 +124,7 @@ export async function getOTelDashboardData(): Promise<OTelDashboardData> {
       servers: sortedServers,
       stats,
       timeInfo: { hour, slotIndex, minuteOfDay },
+      dataSourceInfo: dataSource,
     };
   } catch (error) {
     logger.error('[server-data] OTel dashboard data load failed:', error);
@@ -123,6 +132,7 @@ export async function getOTelDashboardData(): Promise<OTelDashboardData> {
       servers: [],
       stats: { total: 0, online: 0, warning: 0, critical: 0, offline: 0 },
       timeInfo: { hour: 0, slotIndex: 0, minuteOfDay: 0 },
+      dataSourceInfo: null,
     };
   }
 }

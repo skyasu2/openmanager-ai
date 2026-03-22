@@ -4,7 +4,10 @@ import dynamic from 'next/dynamic';
 import { memo, Suspense, useEffect, useRef, useState } from 'react';
 import { useDashboardStats } from '@/hooks/dashboard/useDashboardStats';
 import { useMonitoringReport } from '@/hooks/dashboard/useMonitoringReport';
-import type { DashboardTimeInfo } from '@/lib/dashboard/server-data';
+import type {
+  DashboardDataSourceInfo,
+  DashboardTimeInfo,
+} from '@/lib/dashboard/server-data';
 import type { Server } from '@/types/server';
 import debug from '@/utils/debug';
 import { safeErrorMessage } from '@/utils/utils-functions';
@@ -59,6 +62,8 @@ interface DashboardContentProps {
   allServers?: Server[];
   /** 현재 synthetic OTel 데이터 슬롯 메타데이터 */
   dataSlotInfo?: DashboardTimeInfo;
+  /** 현재 synthetic OTel 데이터 소스 메타데이터 */
+  dataSourceInfo?: DashboardDataSourceInfo | null;
   /** 전체 서버 수 (페이지네이션 계산용) */
   totalServers: number;
   /** 현재 페이지 */
@@ -85,6 +90,7 @@ export default memo(function DashboardContent({
   servers,
   allServers,
   dataSlotInfo,
+  dataSourceInfo,
   totalServers,
   currentPage,
   totalPages,
@@ -206,6 +212,7 @@ export default memo(function DashboardContent({
         <DashboardSummary
           stats={serverStats}
           dataSlotInfo={dataSlotInfo}
+          dataSourceInfo={dataSourceInfo}
           activeFilter={statusFilter}
           onFilterChange={onStatusFilterChange}
           onOpenAlertHistory={() => setAlertHistoryOpen(true)}

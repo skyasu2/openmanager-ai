@@ -31,6 +31,16 @@ export const dataSlotSchema = z.object({
   timeLabel: z.string().describe('현재 synthetic OTel 데이터 슬롯 라벨 (HH:MM KST)'),
 });
 
+export const dataSourceSchema = z.object({
+  scopeName: z.string().describe('synthetic OTel 데이터 파이프라인 scope 이름'),
+  scopeVersion: z.string().describe('synthetic OTel 데이터 파이프라인 버전'),
+  catalogGeneratedAt: z
+    .string()
+    .nullable()
+    .describe('resource-catalog.json generatedAt 값 (없으면 null)'),
+  hour: z.number().describe('현재 조회 중인 hourly 파일의 hour 값'),
+});
+
 /**
  * getServerMetrics response schema
  */
@@ -42,6 +52,9 @@ export const getServerMetricsResponseSchema = z.object({
     alertCount: z.number().describe('경고/위험 상태 서버 수'),
   }),
   dataSlot: dataSlotSchema.describe('대시보드와 AI가 함께 참조하는 현재 synthetic OTel 데이터 슬롯'),
+  dataSource: dataSourceSchema
+    .nullable()
+    .describe('대시보드와 AI가 함께 참조하는 synthetic OTel 데이터 소스 메타데이터'),
   timestamp: z.string().describe('조회 시간 (ISO 8601)'),
 });
 

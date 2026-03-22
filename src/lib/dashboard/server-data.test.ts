@@ -55,6 +55,12 @@ describe('getOTelDashboardData', () => {
         hour: 10,
         slotIndex: 3,
         minuteOfDay: 630,
+        dataSource: {
+          scopeName: 'openmanager-ai-otel-pipeline',
+          scopeVersion: '1.0.0',
+          catalogGeneratedAt: '2026-02-15T03:56:41.821Z',
+          hour: 10,
+        },
       });
 
       const result = await getOTelDashboardData();
@@ -167,6 +173,12 @@ describe('getOTelDashboardData', () => {
         hour: 14,
         slotIndex: 5,
         minuteOfDay: 870,
+        dataSource: {
+          scopeName: 'openmanager-ai-otel-pipeline',
+          scopeVersion: '1.0.0',
+          catalogGeneratedAt: '2026-02-15T03:56:41.821Z',
+          hour: 14,
+        },
       });
 
       const result = await getOTelDashboardData();
@@ -175,6 +187,12 @@ describe('getOTelDashboardData', () => {
         hour: 14,
         slotIndex: 5,
         minuteOfDay: 870,
+      });
+      expect(result.dataSourceInfo).toEqual({
+        scopeName: 'openmanager-ai-otel-pipeline',
+        scopeVersion: '1.0.0',
+        catalogGeneratedAt: '2026-02-15T03:56:41.821Z',
+        hour: 14,
       });
     });
 
@@ -218,6 +236,7 @@ describe('getOTelDashboardData', () => {
         servers: [],
         stats: { total: 0, online: 0, warning: 0, critical: 0, offline: 0 },
         timeInfo: { hour: 0, slotIndex: 0, minuteOfDay: 0 },
+        dataSourceInfo: null,
       });
     });
 

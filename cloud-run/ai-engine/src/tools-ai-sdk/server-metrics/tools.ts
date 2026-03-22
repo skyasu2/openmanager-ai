@@ -11,6 +11,7 @@ import { tool } from 'ai';
 import { z } from 'zod';
 import { logger } from '../../lib/logger';
 import {
+  getCurrentDataSourceInfo,
   getCurrentState,
   get24hTrendSummaries,
   getDataCache,
@@ -147,6 +148,7 @@ export const getServerMetrics = tool({
           minuteOfDay: state.minuteOfDay,
           timeLabel: `${state.timeLabel} KST`,
         },
+        dataSource: getCurrentDataSourceInfo(),
         requestedMetric: metric,
         alertServers: alertServersList.length > 0 ? alertServersList : undefined,
         timestamp: new Date().toISOString(),

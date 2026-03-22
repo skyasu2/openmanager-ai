@@ -394,6 +394,12 @@ export async function loadCurrentOTelServers(): Promise<{
   hour: number;
   slotIndex: number;
   minuteOfDay: number;
+  dataSource: {
+    scopeName: string;
+    scopeVersion: string;
+    catalogGeneratedAt: string | null;
+    hour: number;
+  } | null;
 }> {
   const minuteOfDay = getKSTMinuteOfDay();
   const hour = Math.floor(minuteOfDay / 60);
@@ -401,24 +407,31 @@ export async function loadCurrentOTelServers(): Promise<{
 
   const hourlyData = await getOTelHourlyData(hour);
   if (!hourlyData) {
-    return { servers: [], hour, slotIndex, minuteOfDay };
+    return { servers: [], hour, slotIndex, minuteOfDay, dataSource: null };
   }
+
+  const catalog = await getOTelResourceCatalog();
+  const dataSource = {
+    scopeName: hourlyData.scope.name,
+    scopeVersion: hourlyData.scope.version,
+    catalogGeneratedAt: catalog?.generatedAt ?? null,
+    hour: hourlyData.hour,
+  };
 
   const slot =
     hourlyData.slots[slotIndex] ??
     hourlyData.slots[hourlyData.slots.length - 1];
   if (!slot) {
-    return { servers: [], hour, slotIndex, minuteOfDay };
+    return { servers: [], hour, slotIndex, minuteOfDay, dataSource };
   }
 
-  const catalog = await getOTelResourceCatalog();
   if (!catalog) {
-    return { servers: [], hour, slotIndex, minuteOfDay };
+    return { servers: [], hour, slotIndex, minuteOfDay, dataSource };
   }
   const timestamp = new Date().toISOString();
   const servers = otelSlotToServers(slot, catalog, timestamp);
 
-  return { servers, hour, slotIndex, minuteOfDay };
+  return { servers, hour, slotIndex, minuteOfDay, dataSource };
 }
 
 // ============================================================================
