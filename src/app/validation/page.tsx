@@ -153,6 +153,9 @@ export default function ValidationEvidencePage() {
             <EvidencePill className="border-indigo-400/25 bg-indigo-500/10 text-indigo-200">
               Latest CI proof {evidence.latestProofRecorded.short}
             </EvidencePill>
+            <EvidencePill className="border-amber-400/25 bg-amber-500/10 text-amber-200">
+              Deployed snapshot
+            </EvidencePill>
             <EvidencePill className="border-cyan-400/25 bg-cyan-500/10 text-cyan-200">
               QA completed {evidence.summary.completedItems}
             </EvidencePill>
@@ -168,7 +171,9 @@ export default function ValidationEvidencePage() {
             이 페이지는 첫 화면에서 보이는 production validation CTA의 실제
             근거를 모아 둔 internal evidence summary입니다. 외부 방문자가 404
             없이 검증 기준을 이해할 수 있도록 요약만 노출하고, 세부 증거는 CI
-            run과 in-repo SSOT 경로로 설명합니다. 현재 화면은{' '}
+            run과 in-repo SSOT 경로로 설명합니다. 현재 화면은 live 배포에 함께
+            포함된 QA tracker snapshot을 읽으며, 저장소의 더 최신 QA 기록은 다음
+            재배포 전까지 자동 반영되지 않습니다. 현재 화면은{' '}
             {evidence.trackerUpdated.long} 기준 QA tracker snapshot과{' '}
             {evidence.latestProofRecorded.long} 기준 CI-backed proof run을 함께
             보여줍니다.
@@ -207,7 +212,8 @@ export default function ValidationEvidencePage() {
           <h2 className="text-2xl font-semibold text-white">QA Status</h2>
           <p className="mt-2 text-sm text-white/70">
             QA SSOT는 저장소 내 `reports/qa/QA_STATUS.md`와 `qa-tracker.json`
-            입니다. live 사이트에서는 핵심 운영 수치만 요약합니다.
+            입니다. live 사이트에서는 현재 배포에 포함된 snapshot 기준 핵심 운영
+            수치만 요약합니다.
           </p>
 
           <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
