@@ -13,37 +13,21 @@
 
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
-import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   DashboardSection,
   GuestRestrictionModal,
   MainPageErrorBoundary,
   SystemStartSection,
 } from '@/app/main/components';
-import { useSystemStart } from '@/app/main/hooks';
+import { useLandingPageState } from '@/app/main/hooks';
 import AuthLoadingUI from '@/components/shared/AuthLoadingUI';
 import { OpenManagerLogo } from '@/components/shared/OpenManagerLogo';
 import UnifiedProfileHeader from '@/components/shared/UnifiedProfileHeader';
 import { APP_VERSION } from '@/config/app-meta';
-import { isGuestSystemStartEnabled } from '@/config/guestMode';
 import { QA_EVIDENCE_CTA_LINKS, QA_EVIDENCE_LABELS } from '@/data/qa-evidence';
-import { isVercel } from '@/env-client';
-import { useInitialAuth } from '@/hooks/useInitialAuth';
-import { useUnifiedAdminStore } from '@/stores/useUnifiedAdminStore';
 import { PAGE_BACKGROUNDS } from '@/styles/design-constants';
-import debug from '@/utils/debug';
 import { renderAIGradientWithAnimation } from '@/utils/text-rendering';
-import {
-  authRetryDelay,
-  debugWithEnv,
-  envLabel,
-  mountDelay,
-  syncDebounce,
-} from '@/utils/vercel-env-utils';
-import {
-  performanceTracker,
-  preloadCriticalResources,
-} from '@/utils/vercel-optimization';
+import { envLabel } from '@/utils/vercel-env-utils';
 
 // Phase 2: Lazy loading with skeleton (깜빡임 방지)
 const FeatureCardsGridSkeleton = () => (
@@ -63,136 +47,27 @@ const FeatureCardsGrid = dynamic(
 );
 
 function Home() {
-  // 인증 상태
   const {
-    isLoading: authLoading,
-    isAuthenticated,
-    user: currentUser,
-    isGitHubConnected: isGitHubUser,
-    error: authError,
-    isReady: authReady,
+    authError,
+    canAccessDashboard,
+    buttonConfig,
+    dismissGuestRestriction,
     getLoadingMessage,
-    retry: retryAuth,
-  } = useInitialAuth();
-
-  // 마운트 상태
-  const [isMounted, setIsMounted] = useState(false);
-
-  // 시스템 시작 훅
-  const isGuestUser = useMemo(
-    () => currentUser?.provider === 'guest',
-    [currentUser]
-  );
-  const isGuestSystemStartEnabledValue = useMemo(
-    () => isGuestSystemStartEnabled(),
-    []
-  );
-
-  const canAccessDashboard = useMemo(
-    () => isAuthenticated && (!isGuestUser || isGuestSystemStartEnabledValue),
-    [isAuthenticated, isGuestUser, isGuestSystemStartEnabledValue]
-  );
-
-  const {
+    guestRestrictionReason,
+    handleSystemToggle,
+    isMounted,
+    isSystemStarted,
     systemStartCountdown,
     isSystemStarting,
-    isSystemStarted,
     multiUserStatus,
-    guestRestrictionReason,
-    showGuestRestriction,
-    dismissGuestRestriction,
-    statusInfo,
-    buttonConfig,
-    handleSystemToggle,
     navigateToDashboard,
-  } = useSystemStart({
-    isAuthenticated,
-    isGitHubUser,
-    isGuestUser,
-    isGuestSystemStartEnabled: isGuestSystemStartEnabledValue,
-    authLoading,
-    isMounted,
-  });
-  const shouldShowSystemStart = !isSystemStarted || !isAuthenticated;
-
-  // 시스템 상태 동기화
-  const { startSystem, stopSystem, getSystemRemainingTime } =
-    useUnifiedAdminStore();
-  const syncTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const prevRunningRef = useRef<boolean | null>(null);
-
-  // 시스템 남은 시간 (UI 표시용)
-  const [_systemTimeRemaining, setSystemTimeRemaining] = useState(0);
-
-  // 클라이언트 마운트
-  useEffect(() => {
-    if (isVercel) performanceTracker.start('page-mount');
-
-    const mountTimer = setTimeout(() => {
-      setIsMounted(true);
-      debug.log(debugWithEnv('✅ 클라이언트 마운트 완료'), { isVercel });
-      if (isVercel) {
-        void preloadCriticalResources();
-        performanceTracker.end('page-mount');
-      }
-    }, mountDelay);
-    return () => clearTimeout(mountTimer);
-  }, []);
-
-  // 다중 사용자 시스템 상태 동기화
-  useEffect(() => {
-    if (!authReady || !multiUserStatus) return;
-    const currentRunning = multiUserStatus.isRunning;
-    if (prevRunningRef.current !== currentRunning) {
-      prevRunningRef.current = currentRunning;
-      if (syncTimeoutRef.current) clearTimeout(syncTimeoutRef.current);
-      syncTimeoutRef.current = setTimeout(() => {
-        const needsStart = multiUserStatus.isRunning && !isSystemStarted;
-        const needsStop = !multiUserStatus.isRunning && isSystemStarted;
-        if (needsStart) {
-          debug.log(debugWithEnv('🔄 시스템이 다른 사용자에 의해 시작됨'));
-          startSystem();
-        } else if (needsStop) {
-          debug.log(debugWithEnv('🔄 시스템이 다른 사용자에 의해 정지됨'));
-          stopSystem();
-        }
-      }, syncDebounce);
-    }
-    return () => {
-      if (syncTimeoutRef.current) clearTimeout(syncTimeoutRef.current);
-    };
-  }, [authReady, multiUserStatus, isSystemStarted, startSystem, stopSystem]);
-
-  // 인증 에러 재시도
-  useEffect(() => {
-    if (!authError || !authReady) return;
-    debug.error(debugWithEnv('❌ 인증 에러 발생'), authError);
-    const authRetryTimeout = setTimeout(() => {
-      debug.log(
-        debugWithEnv(`🔄 인증 재시도 시작 (${authRetryDelay / 1000}초 후)`)
-      );
-      retryAuth();
-    }, authRetryDelay);
-    return () => clearTimeout(authRetryTimeout);
-  }, [authError, authReady, retryAuth]);
-
-  // 시스템 남은 시간 업데이트 - 시스템 시작 시에만 인터벌 실행 (불필요한 리렌더 방지)
-  useEffect(() => {
-    if (!isSystemStarted) {
-      setSystemTimeRemaining(0);
-      return; // 시스템 미시작 시 인터벌 없음
-    }
-
-    const timerInterval = setInterval(() => {
-      setSystemTimeRemaining(getSystemRemainingTime());
-    }, 1000);
-
-    return () => clearInterval(timerInterval);
-  }, [isSystemStarted, getSystemRemainingTime]);
-
-  // 로딩 상태 - authReady 단일 조건 (깜빡임 방지)
-  // isMounted는 성능 추적용으로만 사용, 로딩 조건에서 제거
-  const shouldShowLoading = !authReady;
+    retryAuth,
+    shouldShowLoading,
+    shouldShowSystemStart,
+    showGuestRestriction,
+    statusInfo,
+    stopSystem,
+  } = useLandingPageState();
 
   if (shouldShowLoading) {
     return (
