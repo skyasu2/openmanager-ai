@@ -1,15 +1,15 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-22 16:26:31 KST
+> Generated at: 2026-03-22 23:52:54 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 159 |
-| Total Checks | 1216 |
-| Passed | 1164 |
+| Total Runs | 160 |
+| Total Checks | 1222 |
+| Passed | 1170 |
 | Failed | 48 |
 | Completed Items | 234 |
 | Pending Items | 0 |
@@ -18,11 +18,11 @@
 | Expert Domains Tracked | 6 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Run | QA-20260322-0160 (2026-03-22T07:26:30.735Z) |
+| Last Run | QA-20260322-0161 (2026-03-22T14:52:53.194Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260322-0160 (2026-03-22T07:26:30.735Z)
+Latest run: QA-20260322-0161 (2026-03-22T14:52:53.194Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -38,24 +38,23 @@ Latest run: QA-20260322-0160 (2026-03-22T07:26:30.735Z)
 
 - Scope: targeted
 - Release-Facing: no
-- Deployment: SHA ba7b15d7
-- Coverage Packs: ai-core
-- Covered Surfaces: feedback-trace-status contract (traceUrlStatus), Manual Feedback Trace Status CI job
+- Deployment: SHA 41e8888d
+- Coverage Packs: dashboard-core, ai-core
+- Covered Surfaces: dashboard dataSourceInfo label (Dataset v1.0.0 · catalog 2026-02-15 03:56Z), dashboard dataSlotInfo label (Synthetic OTel snapshot · 23:50 KST slot 143/143), AI getServerMetrics dataSlot field (2026-03-22T14:50:00Z), AI getServerMetrics dataSource field (Prometheus + Telegraf), server status badge (storage-nfs-dc1-01 Warning/DISK 82%), OS label Linux normalization
 - Skipped Surfaces: -
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| github-actions-artifact | Feedback Trace HTML Report | [link](https://github.com/skyasu2/openmanager-ai/actions/runs/23398040200) | artifact=manual-feedback-trace-report-23398040200; download/open from the workflow run page |
-| github-actions-artifact | Feedback Trace Playwright Results (trace/screenshot/video) | [link](https://github.com/skyasu2/openmanager-ai/actions/runs/23398040200) | artifact=manual-feedback-trace-results-23398040200; download/open from the workflow run page |
-| github-actions-run | GitHub Actions: CI/CD Core Gates #23398040200 | [link](https://github.com/skyasu2/openmanager-ai/actions/runs/23398040200) | branch=main, sha=ba7b15d70 |
+| - | - | - | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| - | - | - | - |
+| playwright-screenshot | Dashboard dataSource metadata - Dataset v1.0.0 · catalog 2026-02-15 03:56Z | `artifacts/playwright/datasource-parity-metadata-2026-03-22.png` | - |
+| playwright-screenshot | AI sidebar - dataSlot 2026-03-22T14:50:00Z + dataSource Prometheus+Telegraf | `artifacts/playwright/datasource-ai-metadata-2026-03-22.png` | - |
 
 ## Expert Domain Open Gaps
 
@@ -328,6 +327,7 @@ Latest run: QA-20260322-0160 (2026-03-22T07:26:30.735Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260322-0161 | 2026-03-22T14:52:53.194Z | targeted | no | Vercel Playwright QA - Data Source Parity Metadata (SHA 41e8888d4) | 6 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260322-0160 | 2026-03-22T07:26:30.735Z | targeted | no | CI Manual Feedback Trace Status QA (run #23398040200) | 1 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260322-0159 | 2026-03-22T05:18:39.374Z | targeted | no | Production Feedback Trace URL Status E2E - Runtime Availability Explicit | 5 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260322-0158 | 2026-03-22T04:24:54.377Z | targeted | no | Production Feedback Trace UI Link E2E - Direct Trace URL Still Unavailable | 5 | 0 | 1 | 0 | 0 | 1 |
@@ -347,5 +347,4 @@ Latest run: QA-20260322-0160 (2026-03-22T07:26:30.735Z)
 | QA-20260321-0144 | 2026-03-20T22:01:41.259Z | targeted | yes | Vercel Playwright QA - Reporter/Analyst/Fullscreen Follow-up (SHA 818871b86) | 9 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260320-0143 | 2026-03-20T14:54:14.012Z | broad | yes | Vercel Playwright QA - Broad Smoke Post-Push (SHA cf0b1119) | 11 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260320-0142 | 2026-03-20T12:57:48.587Z | targeted | no | Vercel Playwright QA - Langfuse Feedback Trace Recovery | 11 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260320-0141 | 2026-03-20T11:35:03.459Z | broad | yes | Vercel Playwright QA - Frontend and AI Assistant Broad Evaluation | 11 | 0 | 1 | 0 | 0 | 2 |
 

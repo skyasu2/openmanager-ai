@@ -1,0 +1,55 @@
+{
+  "runId": "QA-20260322-0161",
+  "recordedAt": "2026-03-22T14:52:53.194Z",
+  "recordedAtKst": "2026-03-22 23:52:53 KST",
+  "runTitle": "Vercel Playwright QA - Data Source Parity Metadata (SHA 41e8888d4)",
+  "owner": "claude",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "41e8888d4"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "coveragePacks": ["dashboard-core", "ai-core"],
+  "coveredSurfaces": [
+    "dashboard dataSourceInfo label (Dataset v1.0.0 · catalog 2026-02-15 03:56Z)",
+    "dashboard dataSlotInfo label (Synthetic OTel snapshot · 23:50 KST slot 143/143)",
+    "AI getServerMetrics dataSlot field (2026-03-22T14:50:00Z)",
+    "AI getServerMetrics dataSource field (Prometheus + Telegraf)",
+    "server status badge (storage-nfs-dc1-01 Warning/DISK 82%)",
+    "OS label Linux normalization"
+  ],
+  "skippedSurfaces": [],
+  "checks": {
+    "total": 6,
+    "passed": 6,
+    "failed": 0
+  },
+  "expertAssessments": [],
+  "usageChecks": [],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "Dashboard dataSource metadata - Dataset v1.0.0 · catalog 2026-02-15 03:56Z",
+      "path": "artifacts/playwright/datasource-parity-metadata-2026-03-22.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "AI sidebar - dataSlot 2026-03-22T14:50:00Z + dataSource Prometheus+Telegraf",
+      "path": "artifacts/playwright/datasource-ai-metadata-2026-03-22.png"
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [],
+  "links": []
+}
