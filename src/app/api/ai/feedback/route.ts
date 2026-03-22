@@ -92,6 +92,7 @@ async function handlePOST(request: NextRequest) {
     let langfuseStatus: 'skipped' | 'success' | 'error' = 'skipped';
     let traceApiUrl: string | undefined;
     let dashboardUrl: string | undefined;
+    let traceUrl: string | undefined;
     let monitoringLookupUrl: string | undefined;
     if (
       body.traceId &&
@@ -127,6 +128,10 @@ async function handlePOST(request: NextRequest) {
             typeof payload.dashboardUrl === 'string'
               ? payload.dashboardUrl
               : undefined;
+          traceUrl =
+            typeof payload.traceUrl === 'string'
+              ? payload.traceUrl
+              : undefined;
           monitoringLookupUrl =
             typeof payload.monitoringLookupUrl === 'string'
               ? payload.monitoringLookupUrl
@@ -152,6 +157,7 @@ async function handlePOST(request: NextRequest) {
       ...(body.traceId && { traceId: body.traceId }),
       ...(traceApiUrl && { traceApiUrl }),
       ...(dashboardUrl && { dashboardUrl }),
+      ...(traceUrl && { traceUrl }),
       ...(monitoringLookupUrl && { monitoringLookupUrl }),
     });
   } catch (error) {

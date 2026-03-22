@@ -86,6 +86,8 @@ describe('POST /api/ai/feedback', () => {
         traceApiUrl:
           'https://langfuse.example.com/api/public/traces/1234567890abcdef1234567890abcdef',
         dashboardUrl: 'https://langfuse.example.com/project',
+        traceUrl:
+          'https://langfuse.example.com/project/project-feedback/traces/1234567890abcdef1234567890abcdef',
         monitoringLookupUrl:
           'https://ai-engine.example.run.app/monitoring/traces?q=1234567890abcdef1234567890abcdef&limit=5&includeAuxiliary=true',
       }),
@@ -108,6 +110,9 @@ describe('POST /api/ai/feedback', () => {
       'https://langfuse.example.com/api/public/traces/1234567890abcdef1234567890abcdef'
     );
     expect(body.dashboardUrl).toBe('https://langfuse.example.com/project');
+    expect(body.traceUrl).toBe(
+      'https://langfuse.example.com/project/project-feedback/traces/1234567890abcdef1234567890abcdef'
+    );
     expect(body.monitoringLookupUrl).toBe(
       'https://ai-engine.example.run.app/monitoring/traces?q=1234567890abcdef1234567890abcdef&limit=5&includeAuxiliary=true'
     );
@@ -143,6 +148,7 @@ describe('POST /api/ai/feedback', () => {
     expect(body.traceId).toBe('abcdefabcdefabcdefabcdefabcdefab');
     expect(body).not.toHaveProperty('traceApiUrl');
     expect(body).not.toHaveProperty('dashboardUrl');
+    expect(body).not.toHaveProperty('traceUrl');
     expect(body).not.toHaveProperty('monitoringLookupUrl');
   });
 

@@ -14,6 +14,7 @@ import { scoreByTraceId } from '../services/observability/langfuse';
 import {
   buildLangfuseDashboardUrl,
   buildLangfuseTraceApiUrl,
+  buildLangfuseTraceUrlFromHtmlPath,
 } from '../services/observability/langfuse-url';
 import {
   handleApiError,
@@ -24,6 +25,7 @@ import { logger } from '../lib/logger';
 
 const TRACE_ID_HEX_REGEX = /^[0-9a-f]{32}$/;
 const INVALID_TRACE_ID = '0'.repeat(32);
+const DEFAULT_TRACE_LINK_LOOKUP_TIMEOUT_MS = 1500;
 
 const feedbackSchema = z.object({
   traceId: z
@@ -39,6 +41,67 @@ const feedbackSchema = z.object({
 });
 
 export const feedbackRouter = new Hono();
+
+function getTraceLinkLookupTimeoutMs(): number {
+  const raw = process.env.LANGFUSE_TRACE_LINK_TIMEOUT_MS;
+  if (!raw) {
+    return DEFAULT_TRACE_LINK_LOOKUP_TIMEOUT_MS;
+  }
+
+  const parsed = Number.parseInt(raw, 10);
+  return Number.isFinite(parsed) && parsed >= 100
+    ? parsed
+    : DEFAULT_TRACE_LINK_LOOKUP_TIMEOUT_MS;
+}
+
+async function fetchLangfuseTraceUrl(
+  traceId: string,
+  baseUrl: string
+): Promise<string | undefined> {
+  const publicKey = process.env.LANGFUSE_PUBLIC_KEY;
+  const secretKey = process.env.LANGFUSE_SECRET_KEY;
+
+  if (!publicKey || !secretKey) {
+    return undefined;
+  }
+
+  const controller = new AbortController();
+  const timeoutId = setTimeout(
+    () => controller.abort(),
+    getTraceLinkLookupTimeoutMs()
+  );
+
+  try {
+    const authToken = Buffer.from(`${publicKey}:${secretKey}`).toString('base64');
+    const response = await fetch(
+      `${baseUrl}/api/public/traces/${encodeURIComponent(traceId)}`,
+      {
+        headers: {
+          Authorization: `Basic ${authToken}`,
+          'Content-Type': 'application/json',
+        },
+        signal: controller.signal,
+      }
+    );
+
+    if (!response.ok) {
+      return undefined;
+    }
+
+    const payload = (await response.json().catch(
+      () => null as { htmlPath?: unknown } | null
+    )) as { htmlPath?: unknown } | null;
+
+    return buildLangfuseTraceUrlFromHtmlPath(
+      typeof payload?.htmlPath === 'string' ? payload.htmlPath : undefined,
+      baseUrl
+    );
+  } catch {
+    return undefined;
+  } finally {
+    clearTimeout(timeoutId);
+  }
+}
 
 function getPublicRequestOrigin(c: Context): string {
   const forwardedProto = c.req.header('x-forwarded-proto')?.split(',')[0]?.trim();
@@ -92,6 +155,7 @@ feedbackRouter.post('/', async (c: Context) => {
 
     const baseUrl =
       process.env.LANGFUSE_BASE_URL || 'https://us.cloud.langfuse.com';
+    const traceUrl = await fetchLangfuseTraceUrl(traceId, baseUrl);
     const monitoringLookupUrl = new URL(
       '/monitoring/traces',
       getPublicRequestOrigin(c)
@@ -106,6 +170,7 @@ feedbackRouter.post('/', async (c: Context) => {
       score,
       traceApiUrl: buildLangfuseTraceApiUrl(traceId, baseUrl),
       dashboardUrl: buildLangfuseDashboardUrl(baseUrl),
+      ...(traceUrl && { traceUrl }),
       monitoringLookupUrl: monitoringLookupUrl.toString(),
     });
   } catch (error) {

@@ -23,15 +23,28 @@ app.route('/feedback', feedbackRouter);
 
 describe('Feedback Routes', () => {
   const originalBaseUrl = process.env.LANGFUSE_BASE_URL;
+  const originalPublicKey = process.env.LANGFUSE_PUBLIC_KEY;
+  const originalSecretKey = process.env.LANGFUSE_SECRET_KEY;
 
   beforeEach(() => {
     vi.clearAllMocks();
     vi.mocked(scoreByTraceId).mockReturnValue(true);
     process.env.LANGFUSE_BASE_URL = 'https://langfuse.example.com';
+    process.env.LANGFUSE_PUBLIC_KEY = 'pk-test';
+    process.env.LANGFUSE_SECRET_KEY = 'sk-test';
+    global.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: vi.fn().mockResolvedValue({
+        htmlPath:
+          '/project/project-feedback/traces/1234567890abcdef1234567890abcdef',
+      }),
+    }) as unknown as typeof fetch;
   });
 
   afterEach(() => {
     process.env.LANGFUSE_BASE_URL = originalBaseUrl;
+    process.env.LANGFUSE_PUBLIC_KEY = originalPublicKey;
+    process.env.LANGFUSE_SECRET_KEY = originalSecretKey;
   });
 
   it('positive 피드백을 score 1로 기록한다', async () => {
@@ -52,6 +65,9 @@ describe('Feedback Routes', () => {
       'https://langfuse.example.com/api/public/traces/1234567890abcdef1234567890abcdef'
     );
     expect(json.dashboardUrl).toBe('https://langfuse.example.com/project');
+    expect(json.traceUrl).toBe(
+      'https://langfuse.example.com/project/project-feedback/traces/1234567890abcdef1234567890abcdef'
+    );
     expect(json.monitoringLookupUrl).toBe(
       'http://localhost/monitoring/traces?q=1234567890abcdef1234567890abcdef&limit=5&includeAuxiliary=true'
     );
@@ -81,6 +97,30 @@ describe('Feedback Routes', () => {
     expect(json.monitoringLookupUrl).toBe(
       'https://ai-engine.example.run.app/monitoring/traces?q=1234567890abcdef1234567890abcdef&limit=5&includeAuxiliary=true'
     );
+  });
+
+  it('trace detail lookup가 실패해도 feedback 성공 응답은 유지한다', async () => {
+    global.fetch = vi.fn().mockResolvedValue({
+      ok: false,
+      json: vi.fn().mockResolvedValue({}),
+    }) as unknown as typeof fetch;
+
+    const res = await app.request('/feedback', {
+      method: 'POST',
+      body: JSON.stringify({
+        traceId: '1234567890abcdef1234567890abcdef',
+        score: 'positive',
+      }),
+      headers: { 'Content-Type': 'application/json' },
+    });
+
+    expect(res.status).toBe(200);
+    const json = await res.json();
+    expect(json.success).toBe(true);
+    expect(json.traceApiUrl).toBe(
+      'https://langfuse.example.com/api/public/traces/1234567890abcdef1234567890abcdef'
+    );
+    expect(json).not.toHaveProperty('traceUrl');
   });
 
   it('negative 피드백을 score 0으로 기록한다', async () => {
