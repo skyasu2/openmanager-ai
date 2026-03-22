@@ -27,6 +27,8 @@ reports/qa/
 - 수동 MCP QA는 shared `.playwright-mcp/screenshots`를 쓰므로, run별 파일 prefix를 붙이고 `pathIncludes`로 함께 좁혀 fresh artifact only 원칙을 지킨다.
 - GitHub Actions `workflow_dispatch`로 실행한 `E2E Critical`은 성공해도 `playwright-report-${run_id}`, `playwright-results-${run_id}` artifact를 3일간 보존하므로, CI 기반 QA 증거 링크로 재사용할 수 있다.
 - CI 근거를 재사용할 때는 `ciEvidence`에 `workflowName`, `runId`, `artifacts[]`를 넣어 `GitHub Actions run/artifact` 링크를 표준 라벨로 자동 생성한다.
+- feedback observability QA에서는 `/api/ai/feedback` 응답의 `traceApiUrl`/`monitoringLookupUrl`를 1차 증거로 기록한다.
+- 같은 run에서 `/monitoring/traces?q=<traceId>` 검색 결과가 비어 있어도, sampling 특성상 non-blocking일 수 있으므로 direct trace link 증거와 분리해 해석한다.
 - observability pack에서 `/monitoring` / `/monitoring/traces`를 확인할 때는 `https://openmanager-ai.vercel.app/...`가 아니라 `CLOUD_RUN_AI_URL`의 direct `run.app` host를 사용한다.
 - Cloud Run admin observability endpoint는 `X-API-Key: $CLOUD_RUN_API_SECRET` 인증이 필요하므로, Vercel surface QA와 같은 기준으로 404를 해석하면 안 된다.
 - Vercel production의 `broad`/`release-gate` 또는 `releaseFacing: true` run이면 `environment.deploymentId`, `environment.commitSha`를 함께 기록한다.
@@ -67,6 +69,7 @@ reports/qa/
 - `links`는 사람이 보는 관련 링크 필드입니다.
   - 허용 값: `general`, `vercel-deployment`, `github-actions-run`, `github-actions-artifact`, `monitoring`, `langfuse-trace`
   - `qa:record`는 `ciEvidence`가 있으면 `links`에 GitHub Actions run/artifact 링크를 자동 병합합니다.
+  - feedback trace QA에서는 `traceApiUrl`를 `langfuse-trace`로, `monitoringLookupUrl`를 `monitoring`으로 기록하는 방식을 우선합니다.
 - `ciEvidence`는 GitHub Actions 기반 QA 증거를 표준화하는 필드입니다.
   - 현재 지원 provider: `github-actions`
   - 필수: `runId`

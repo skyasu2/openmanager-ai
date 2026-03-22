@@ -1,0 +1,4 @@
+POST /api/ai/feedback capture
+requestBody={"messageId":"9RLSFB6IWsRz8pZu","type":"negative","sessionId":"session-0d204b80-b26f-4d7d-b24c-ad875391308d","timestamp":"2026-03-22T00:06:03.914Z","traceId":"cc7309c453c6951a23ce55ff11bd9f08"}
+responseStatus=200
+responseText={"success":true,"message":"Feedback recorded","feedbackId":"fb_1774137963531","stored":"database","langfuseStatus":"success","traceId":"cc7309c453c6951a23ce55ff11bd9f08","traceApiUrl":"https://us.cloud.langfuse.com/api/public/traces/cc7309c453c6951a23ce55ff11bd9f08","dashboardUrl":"https://us.cloud.langfuse.com/project","monitoringLookupUrl":"https://ai-engine-490817238363.asia-northeast1.run.app/monitoring/traces?q=cc7309c453c6951a23ce55ff11bd9f08&limit=5&includeAuxiliary=true"}

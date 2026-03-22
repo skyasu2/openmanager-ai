@@ -1,0 +1,127 @@
+{
+  "runId": "QA-20260322-0156",
+  "recordedAt": "2026-03-22T00:09:47.421Z",
+  "recordedAtKst": "2026-03-22 09:09:47 KST",
+  "runTitle": "Production AI Feedback Trace Links E2E - Direct Trace URLs Returned",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_Aa1jNCf6wT2BP7CZmYSVyKurfPeF",
+    "deploymentUrl": "https://openmanager-ferguhe6g-skyasus-projects.vercel.app",
+    "commitSha": "fef9edc531f5a8bb0711866f3a1c378f5b735d6c"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "coveragePacks": ["ai-core", "observability-pack"],
+  "coveredSurfaces": [
+    "guest PIN login",
+    "system-boot -> /dashboard redirect",
+    "AI sidebar free-text chat send",
+    "AI feedback negative button",
+    "/api/ai/feedback proxy returns traceId + langfuseStatus=success + traceApiUrl + dashboardUrl + monitoringLookupUrl",
+    "monitoringLookupUrl uses https run.app origin"
+  ],
+  "skippedSurfaces": [
+    "Cloud Run /monitoring/traces?q=<traceId> exact-match correlation recheck",
+    "Langfuse trace UI deep link via htmlPath/traceUrl",
+    "fullscreen AI assistant"
+  ],
+  "checks": {
+    "total": 6,
+    "passed": 6,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Production AI sidebar free-text query 이후 negative feedback click까지 수행했고 브라우저 캡처 기준 /api/ai/feedback 응답이 traceId, langfuseStatus=success, traceApiUrl, dashboardUrl, monitoringLookupUrl를 모두 반환했다.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "같은 피드백 응답에서 monitoringLookupUrl이 Cloud Run direct host의 https URL로 반환되는 것을 확인했다. sampled /monitoring/traces 검색 상관관계는 direct trace link 증거와 분리해 본 run 범위에서 제외했다.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "",
+      "summary": "effectiveCost $15.9423 / billedCost $0.0000",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "feedback-trace-links-2026-03-22.png",
+      "path": "artifacts/playwright/feedback-trace-links-2026-03-22.png"
+    },
+    {
+      "type": "playwright-console",
+      "label": "feedback-trace-links-2026-03-22-console.log",
+      "path": "artifacts/playwright/feedback-trace-links-2026-03-22-console.log"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "feedback-trace-links-exposed",
+      "title": "Feedback API direct trace links exposed for operator follow-up",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Production /api/ai/feedback response for traceId cc7309c453c6951a23ce55ff11bd9f08 returned traceApiUrl, dashboardUrl, and https monitoringLookupUrl.",
+      "note": "Direct trace links are now the primary observability evidence for feedback QA; sampled monitoring search remains secondary.",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Browser-captured POST /api/ai/feedback body included traceId cc7309c453c6951a23ce55ff11bd9f08 for negative feedback on production.",
+    "Response status was 200 with langfuseStatus=success and direct trace links present.",
+    "monitoringLookupUrl was returned as https://ai-engine-490817238363.asia-northeast1.run.app/... after the forwarded-host/proto fix.",
+    "This run treats direct trace links as primary evidence and does not block on same-run sampling visibility in /monitoring/traces?q=<traceId>."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Langfuse project dashboard",
+      "url": "https://us.cloud.langfuse.com/project"
+    },
+    {
+      "type": "langfuse-trace",
+      "label": "Feedback trace API URL",
+      "url": "https://us.cloud.langfuse.com/api/public/traces/cc7309c453c6951a23ce55ff11bd9f08"
+    },
+    {
+      "type": "monitoring",
+      "label": "Cloud Run monitoring lookup for feedback traceId",
+      "url": "https://ai-engine-490817238363.asia-northeast1.run.app/monitoring/traces?q=cc7309c453c6951a23ce55ff11bd9f08&limit=5&includeAuxiliary=true"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Production deployment dpl_Aa1jNCf6wT2BP7CZmYSVyKurfPeF",
+      "url": "https://openmanager-ferguhe6g-skyasus-projects.vercel.app/"
+    }
+  ]
+}

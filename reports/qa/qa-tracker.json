@@ -2,25 +2,25 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-03-21T17:32:57.012Z"
+    "updatedAt": "2026-03-22T00:09:47.421Z"
   },
   "sequence": {
-    "nextRunNumber": 156
+    "nextRunNumber": 157
   },
   "summary": {
-    "totalRuns": 154,
-    "totalChecks": 1193,
-    "totalPassed": 1142,
+    "totalRuns": 155,
+    "totalChecks": 1199,
+    "totalPassed": 1148,
     "totalFailed": 47,
     "completionRate": 100,
-    "completedItems": 229,
+    "completedItems": 230,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 8,
     "expertDomainsTracked": 6,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260322-0155",
-    "lastRecordedAt": "2026-03-21T17:32:57.012Z"
+    "lastRunId": "QA-20260322-0156",
+    "lastRecordedAt": "2026-03-22T00:09:47.421Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -5399,6 +5399,30 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-03-21T17:32:57.012Z"
+    },
+    "feedback-trace-links-exposed": {
+      "id": "feedback-trace-links-exposed",
+      "title": "Feedback API direct trace links exposed for operator follow-up",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260322-0156",
+      "firstSeenAt": "2026-03-22T00:09:47.421Z",
+      "lastSeenRunId": "QA-20260322-0156",
+      "lastSeenAt": "2026-03-22T00:09:47.421Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "Production /api/ai/feedback response for traceId cc7309c453c6951a23ce55ff11bd9f08 returned traceApiUrl, dashboardUrl, and https monitoringLookupUrl.",
+      "lastNote": "Direct trace links are now the primary observability evidence for feedback QA; sampled monitoring search remains secondary.",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-03-22T00:09:47.421Z"
     }
   },
   "runs": [
@@ -12561,6 +12585,116 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260322-0156",
+      "recordedAt": "2026-03-22T00:09:47.421Z",
+      "recordedAtKst": "2026-03-22 09:09:47 KST",
+      "title": "Production AI Feedback Trace Links E2E - Direct Trace URLs Returned",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260322-0156.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_Aa1jNCf6wT2BP7CZmYSVyKurfPeF",
+        "deploymentUrl": "https://openmanager-ferguhe6g-skyasus-projects.vercel.app",
+        "commitSha": "fef9edc531f5a8bb0711866f3a1c378f5b735d6c"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "coveragePacks": ["ai-core", "observability-pack"],
+      "coveredSurfaces": [
+        "guest PIN login",
+        "system-boot -> /dashboard redirect",
+        "AI sidebar free-text chat send",
+        "AI feedback negative button",
+        "/api/ai/feedback proxy returns traceId + langfuseStatus=success + traceApiUrl + dashboardUrl + monitoringLookupUrl",
+        "monitoringLookupUrl uses https run.app origin"
+      ],
+      "skippedSurfaces": [
+        "Cloud Run /monitoring/traces?q=<traceId> exact-match correlation recheck",
+        "Langfuse trace UI deep link via htmlPath/traceUrl",
+        "fullscreen AI assistant"
+      ],
+      "checks": {
+        "total": 6,
+        "passed": 6,
+        "failed": 0
+      },
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Production AI sidebar free-text query 이후 negative feedback click까지 수행했고 브라우저 캡처 기준 /api/ai/feedback 응답이 traceId, langfuseStatus=success, traceApiUrl, dashboardUrl, monitoringLookupUrl를 모두 반환했다.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "observability-monitoring",
+          "domainName": "IT Monitoring & Observability SME",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "같은 피드백 응답에서 monitoringLookupUrl이 Cloud Run direct host의 https URL로 반환되는 것을 확인했다. sampled /monitoring/traces 검색 상관관계는 direct trace link 증거와 분리해 본 run 범위에서 제외했다.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "",
+          "summary": "effectiveCost $15.9423 / billedCost $0.0000",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "feedback-trace-links-2026-03-22.png",
+          "path": "artifacts/playwright/feedback-trace-links-2026-03-22.png"
+        },
+        {
+          "type": "playwright-console",
+          "label": "feedback-trace-links-2026-03-22-console.log",
+          "path": "artifacts/playwright/feedback-trace-links-2026-03-22-console.log"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "Langfuse project dashboard",
+          "url": "https://us.cloud.langfuse.com/project"
+        },
+        {
+          "type": "langfuse-trace",
+          "label": "Feedback trace API URL",
+          "url": "https://us.cloud.langfuse.com/api/public/traces/cc7309c453c6951a23ce55ff11bd9f08"
+        },
+        {
+          "type": "monitoring",
+          "label": "Cloud Run monitoring lookup for feedback traceId",
+          "url": "https://ai-engine-490817238363.asia-northeast1.run.app/monitoring/traces?q=cc7309c453c6951a23ce55ff11bd9f08&limit=5&includeAuxiliary=true"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Production deployment dpl_Aa1jNCf6wT2BP7CZmYSVyKurfPeF",
+          "url": "https://openmanager-ferguhe6g-skyasus-projects.vercel.app/"
+        }
+      ],
+      "expertCount": 2,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -12569,16 +12703,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 97,
-      "appropriateCount": 93,
+      "seenCount": 98,
+      "appropriateCount": 94,
       "partialCount": 4,
       "inappropriateCount": 0,
       "improvementNeededCount": 12,
-      "lastRunId": "QA-20260322-0155",
-      "lastSeenAt": "2026-03-21T17:32:57.012Z",
+      "lastRunId": "QA-20260322-0156",
+      "lastSeenAt": "2026-03-22T00:09:47.421Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Production AI sidebar free-text query 이후 negative feedback click까지 수행했고 브라우저 캡처 기준 feedback POST body에 32-hex traceId가 포함되며 응답 langfuseStatus=success를 확인했다.",
+      "lastRationale": "Production AI sidebar free-text query 이후 negative feedback click까지 수행했고 브라우저 캡처 기준 /api/ai/feedback 응답이 traceId, langfuseStatus=success, traceApiUrl, dashboardUrl, monitoringLookupUrl를 모두 반환했다.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -12586,16 +12720,16 @@
       "domainName": "IT Monitoring & Observability SME",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 63,
-      "appropriateCount": 40,
+      "seenCount": 64,
+      "appropriateCount": 41,
       "partialCount": 23,
       "inappropriateCount": 0,
       "improvementNeededCount": 23,
-      "lastRunId": "QA-20260322-0155",
-      "lastSeenAt": "2026-03-21T17:32:57.012Z",
+      "lastRunId": "QA-20260322-0156",
+      "lastSeenAt": "2026-03-22T00:09:47.421Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "동일 traceId로 Cloud Run /monitoring/traces?q=<traceId>를 즉시 및 25초 후 재조회했지만 count=0이었다. 이는 현재 sampleRate 10% 특성상 same-run correlation이 비결정적이라는 기존 운영 제약과 일치한다.",
+      "lastRationale": "같은 피드백 응답에서 monitoringLookupUrl이 Cloud Run direct host의 https URL로 반환되는 것을 확인했다. sampled /monitoring/traces 검색 상관관계는 direct trace link 증거와 분리해 본 run 범위에서 제외했다.",
       "lastNextAction": ""
     },
     "ai-security-reliability": {
