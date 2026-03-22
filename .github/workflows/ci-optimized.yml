@@ -252,6 +252,10 @@ jobs:
       CI: true
       PLAYWRIGHT_BASE_URL: https://openmanager-ai.vercel.app
       PLAYWRIGHT_CHANNEL: chromium
+      VERCEL_AUTOMATION_BYPASS_SECRET: local-e2e-secret
+      TEST_SECRET_KEY: local-e2e-secret
+      NEXT_PUBLIC_GUEST_MODE: restricted
+      NEXT_PUBLIC_GUEST_FULL_ACCESS: false
       PLAYWRIGHT_GUEST_PIN: 4231
       GUEST_LOGIN_PIN: 4231
     steps:
