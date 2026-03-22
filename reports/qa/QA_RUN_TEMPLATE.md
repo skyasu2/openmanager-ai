@@ -98,6 +98,12 @@ npm run qa:status:sync
 - feedback trace observability run에서는 `/api/ai/feedback` 응답의 `traceUrlStatus`를 먼저 기록합니다.
 - `traceUrlStatus=available`이면 `traceUrl`을 direct Langfuse UI 증거로 남기고, `traceUrlStatus=unavailable`이면 `traceApiUrl`/`monitoringLookupUrl`를 운영 증거로 남깁니다.
 - sampled `/monitoring/traces?q=<traceId>` 검색은 `traceUrlStatus`와 별개의 보조 증거로 분리합니다.
+- dashboard/AI parity run에서는 최소 1개 서버 기준으로 `dashboard raw metric`과 `AI getServerMetrics metadata`를 같은 run에 함께 기록합니다.
+- parity 기록 최소 항목:
+  - dashboard: `serverId`, raw metric 값, 상태 badge, `dataSlotInfo`, `dataSourceInfo`
+  - AI: `getServerMetrics.dataSlot`, `getServerMetrics.dataSource`
+  - pass 기준: 같은 슬롯(`slotIndex`/`timeLabel`)과 같은 데이터 묶음(`scopeVersion`/`catalogGeneratedAt`/`hour`)을 가리킬 것
+- AI 응답 문장이 raw metric과 다르게 보여도 `24h trend`/`daily average`/권고가 섞인 설명이면 mismatch로 기록하지 않고 notes에 해석 차이를 남깁니다.
 
 ## Improvement 항목 스키마
 

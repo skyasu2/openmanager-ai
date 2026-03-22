@@ -33,6 +33,14 @@ reports/qa/
 - 같은 run에서 `/monitoring/traces?q=<traceId>` 검색 결과가 비어 있어도, sampling 특성상 non-blocking일 수 있으므로 `traceUrlStatus`/direct link 증거와 분리해 해석한다.
 - observability pack에서 `/monitoring` / `/monitoring/traces`를 확인할 때는 `https://openmanager-ai.vercel.app/...`가 아니라 `CLOUD_RUN_AI_URL`의 direct `run.app` host를 사용한다.
 - Cloud Run admin observability endpoint는 `X-API-Key: $CLOUD_RUN_API_SECRET` 인증이 필요하므로, Vercel surface QA와 같은 기준으로 404를 해석하면 안 된다.
+- dashboard/AI parity QA에서는 최소 1개 서버를 잡아 `dashboard raw metric`과 `AI getServerMetrics`를 같은 run에 같이 기록한다.
+- parity run covered surface 권장 형식:
+  - `dashboard raw metric (storage-nfs-dc1-01 DISK 82% Warning)`
+  - `dashboard dataSlotInfo label (Synthetic OTel snapshot · 23:50 KST slot 143/143)`
+  - `dashboard dataSourceInfo label (Dataset v1.0.0 · catalog 2026-02-15 03:56Z)`
+  - `AI getServerMetrics dataSlot field ({ slotIndex: 143, minuteOfDay: 1430, timeLabel: 23:50 KST })`
+  - `AI getServerMetrics dataSource field ({ scopeName: openmanager-ai-otel-pipeline, scopeVersion: 1.0.0, catalogGeneratedAt: 2026-02-15T03:56:41.821Z, hour: 23 })`
+- parity 판정은 raw 숫자와 AI의 전체 요약 문장을 1:1로 비교하지 않고, 같은 슬롯/같은 데이터 묶음인지부터 먼저 확인한다.
 - Vercel production의 `broad`/`release-gate` 또는 `releaseFacing: true` run이면 `environment.deploymentId`, `environment.commitSha`를 함께 기록한다.
 - `qa:record`는 누락 시 현재 Git의 `branch`/`HEAD SHA`를 자동 보강하고, `VERCEL_*` system env가 있으면 `deploymentId`/`deploymentUrl`/`url`도 함께 보강한다.
 
