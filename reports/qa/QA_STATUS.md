@@ -1,15 +1,15 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-23 00:34:58 KST
+> Generated at: 2026-03-23 00:56:09 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 161 |
-| Total Checks | 1227 |
-| Passed | 1174 |
+| Total Runs | 162 |
+| Total Checks | 1231 |
+| Passed | 1178 |
 | Failed | 49 |
 | Completed Items | 234 |
 | Pending Items | 1 |
@@ -18,11 +18,11 @@
 | Expert Domains Tracked | 6 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 99.57% |
-| Last Run | QA-20260323-0162 (2026-03-22T15:34:58.470Z) |
+| Last Run | QA-20260323-0163 (2026-03-22T15:56:07.978Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260323-0162 (2026-03-22T15:34:58.470Z)
+Latest run: QA-20260323-0163 (2026-03-22T15:56:07.978Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -32,16 +32,16 @@ Latest run: QA-20260323-0162 (2026-03-22T15:34:58.470Z)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period reviewed after production parity QA; no unexpected billed usage. |
+| - | - | - | - | - |
 
 ## Coverage (Latest Run)
 
 - Scope: targeted
 - Release-Facing: no
-- Deployment: SHA 436808e6
-- Coverage Packs: dashboard-core, ai-core, observability-pack
-- Covered Surfaces: dashboard raw metric (db-mysql-dc1-primary DISK 80% Warning), dashboard dataSlotInfo label (Synthetic OTel snapshot · 00:30 KST slot 3/143), dashboard dataSourceInfo label (Dataset v1.0.0 · catalog 2026-02-15 03:56Z), AI sidebar detailed analysis shows legacy metadata fields (_dataSlot/_dataSource), browser console errors (0)
-- Skipped Surfaces: /dashboard/ai-assistant fullscreen, Cloud Run /monitoring parity cross-check, Reporter/Analyst parity
+- Deployment: SHA 34f764ca
+- Coverage Packs: dashboard-core
+- Covered Surfaces: server card metric label: CPU / MEM / Disk (no overlap), db-mysql-dc1-primary: CPU56% MEM69% Disk83%, web-nginx-dc1-01: CPU36% MEM47% Disk28%, web-nginx-dc1-02: CPU28% MEM40% Disk30%, web-nginx-dc1-03: CPU17% MEM38% Disk25%
+- Skipped Surfaces: -
 
 ## Links (Latest Run)
 
@@ -53,8 +53,7 @@ Latest run: QA-20260323-0162 (2026-03-22T15:34:58.470Z)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | Dashboard raw metric + data source parity metadata | `artifacts/playwright/parity-dashboard-raw-metric-2026-03-23.png` | - |
-| playwright-screenshot | AI sidebar detailed analysis still showing _dataSlot/_dataSource | `artifacts/playwright/parity-ai-metadata-detail-2026-03-23.png` | - |
+| playwright-screenshot | Server cards - MEM label no overlap (4 cards visible) | `artifacts/playwright/mem-label-no-overlap-2026-03-23.png` | - |
 
 ## Expert Domain Open Gaps
 
@@ -327,6 +326,7 @@ Latest run: QA-20260323-0162 (2026-03-22T15:34:58.470Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260323-0163 | 2026-03-22T15:56:07.978Z | targeted | no | Vercel Playwright QA - MEM label no-overlap on server cards (SHA 34f764ca0) | 4 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260323-0162 | 2026-03-22T15:34:58.470Z | targeted | no | Production QA - Dashboard/AI parity metadata user-facing recheck | 5 | 0 | 1 | 0 | 0 | 0 |
 | QA-20260322-0161 | 2026-03-22T14:52:53.194Z | targeted | no | Vercel Playwright QA - Data Source Parity Metadata (SHA 41e8888d4) | 6 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260322-0160 | 2026-03-22T07:26:30.735Z | targeted | no | CI Manual Feedback Trace Status QA (run #23398040200) | 1 | 0 | 0 | 0 | 0 | 0 |
@@ -346,5 +346,4 @@ Latest run: QA-20260323-0162 (2026-03-22T15:34:58.470Z)
 | QA-20260321-0146 | 2026-03-21T11:08:45.922Z | targeted | no | Vercel Playwright QA - Targeted Topology Artifact Proof (SHA 54990e639) | 6 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260321-0145 | 2026-03-20T22:28:54.515Z | targeted | no | Vercel Playwright QA - Modal Detail Pack Coverage Fill (SHA 386aa7acd) | 8 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260321-0144 | 2026-03-20T22:01:41.259Z | targeted | yes | Vercel Playwright QA - Reporter/Analyst/Fullscreen Follow-up (SHA 818871b86) | 9 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260320-0143 | 2026-03-20T14:54:14.012Z | broad | yes | Vercel Playwright QA - Broad Smoke Post-Push (SHA cf0b1119) | 11 | 0 | 0 | 0 | 0 | 0 |
 

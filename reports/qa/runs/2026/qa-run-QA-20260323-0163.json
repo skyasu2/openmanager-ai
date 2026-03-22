@@ -1,0 +1,49 @@
+{
+  "runId": "QA-20260323-0163",
+  "recordedAt": "2026-03-22T15:56:07.978Z",
+  "recordedAtKst": "2026-03-23 00:56:07 KST",
+  "runTitle": "Vercel Playwright QA - MEM label no-overlap on server cards (SHA 34f764ca0)",
+  "owner": "claude",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "34f764ca0"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "coveragePacks": ["dashboard-core"],
+  "coveredSurfaces": [
+    "server card metric label: CPU / MEM / Disk (no overlap)",
+    "db-mysql-dc1-primary: CPU56% MEM69% Disk83%",
+    "web-nginx-dc1-01: CPU36% MEM47% Disk28%",
+    "web-nginx-dc1-02: CPU28% MEM40% Disk30%",
+    "web-nginx-dc1-03: CPU17% MEM38% Disk25%"
+  ],
+  "skippedSurfaces": [],
+  "checks": {
+    "total": 4,
+    "passed": 4,
+    "failed": 0
+  },
+  "expertAssessments": [],
+  "usageChecks": [],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "Server cards - MEM label no overlap (4 cards visible)",
+      "path": "artifacts/playwright/mem-label-no-overlap-2026-03-23.png"
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [],
+  "links": []
+}
