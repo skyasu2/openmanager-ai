@@ -108,8 +108,7 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
       osDisplayName,
       osIcon,
       osShortName,
-    } =
-      useSafeServer(server);
+    } = useSafeServer(server);
     // 🎨 White Mode with Glassmorphism + Status Colors
     const statusTheme = getServerStatusTheme(safeServer.status);
 

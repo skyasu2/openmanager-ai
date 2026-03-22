@@ -8,12 +8,12 @@ import {
   Server,
 } from 'lucide-react';
 import { useMemo } from 'react';
+import { getServerStatusTheme } from '../styles/design-constants';
+import type { Server as ServerType } from '../types/server';
 import {
   formatServerOsLabel,
   getServerOsShortName,
 } from '../utils/serverUtils';
-import { getServerStatusTheme } from '../styles/design-constants';
-import type { Server as ServerType } from '../types/server';
 
 /**
  * 🛠️ View Model Hook for Server Objects
