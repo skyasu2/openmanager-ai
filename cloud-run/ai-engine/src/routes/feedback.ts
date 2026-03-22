@@ -170,6 +170,7 @@ feedbackRouter.post('/', async (c: Context) => {
       score,
       traceApiUrl: buildLangfuseTraceApiUrl(traceId, baseUrl),
       dashboardUrl: buildLangfuseDashboardUrl(baseUrl),
+      traceUrlStatus: traceUrl ? 'available' : 'unavailable',
       ...(traceUrl && { traceUrl }),
       monitoringLookupUrl: monitoringLookupUrl.toString(),
     });

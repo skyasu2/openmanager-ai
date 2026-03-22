@@ -93,6 +93,7 @@ async function handlePOST(request: NextRequest) {
     let traceApiUrl: string | undefined;
     let dashboardUrl: string | undefined;
     let traceUrl: string | undefined;
+    let traceUrlStatus: 'available' | 'unavailable' | undefined;
     let monitoringLookupUrl: string | undefined;
     if (
       body.traceId &&
@@ -130,6 +131,11 @@ async function handlePOST(request: NextRequest) {
               : undefined;
           traceUrl =
             typeof payload.traceUrl === 'string' ? payload.traceUrl : undefined;
+          traceUrlStatus =
+            payload.traceUrlStatus === 'available' ||
+            payload.traceUrlStatus === 'unavailable'
+              ? payload.traceUrlStatus
+              : undefined;
           monitoringLookupUrl =
             typeof payload.monitoringLookupUrl === 'string'
               ? payload.monitoringLookupUrl
@@ -155,6 +161,7 @@ async function handlePOST(request: NextRequest) {
       ...(body.traceId && { traceId: body.traceId }),
       ...(traceApiUrl && { traceApiUrl }),
       ...(dashboardUrl && { dashboardUrl }),
+      ...(traceUrlStatus && { traceUrlStatus }),
       ...(traceUrl && { traceUrl }),
       ...(monitoringLookupUrl && { monitoringLookupUrl }),
     });

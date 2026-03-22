@@ -65,6 +65,7 @@ describe('Feedback Routes', () => {
       'https://langfuse.example.com/api/public/traces/1234567890abcdef1234567890abcdef'
     );
     expect(json.dashboardUrl).toBe('https://langfuse.example.com/project');
+    expect(json.traceUrlStatus).toBe('available');
     expect(json.traceUrl).toBe(
       'https://langfuse.example.com/project/project-feedback/traces/1234567890abcdef1234567890abcdef'
     );
@@ -120,6 +121,7 @@ describe('Feedback Routes', () => {
     expect(json.traceApiUrl).toBe(
       'https://langfuse.example.com/api/public/traces/1234567890abcdef1234567890abcdef'
     );
+    expect(json.traceUrlStatus).toBe('unavailable');
     expect(json).not.toHaveProperty('traceUrl');
   });
 
