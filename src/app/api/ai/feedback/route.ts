@@ -129,9 +129,7 @@ async function handlePOST(request: NextRequest) {
               ? payload.dashboardUrl
               : undefined;
           traceUrl =
-            typeof payload.traceUrl === 'string'
-              ? payload.traceUrl
-              : undefined;
+            typeof payload.traceUrl === 'string' ? payload.traceUrl : undefined;
           monitoringLookupUrl =
             typeof payload.monitoringLookupUrl === 'string'
               ? payload.monitoringLookupUrl
