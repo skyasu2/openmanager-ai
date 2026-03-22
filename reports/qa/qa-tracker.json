@@ -2,15 +2,15 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-03-22T05:18:39.374Z"
+    "updatedAt": "2026-03-22T07:26:30.735Z"
   },
   "sequence": {
-    "nextRunNumber": 160
+    "nextRunNumber": 161
   },
   "summary": {
-    "totalRuns": 158,
-    "totalChecks": 1215,
-    "totalPassed": 1163,
+    "totalRuns": 159,
+    "totalChecks": 1216,
+    "totalPassed": 1164,
     "totalFailed": 48,
     "completionRate": 100,
     "completedItems": 234,
@@ -19,8 +19,8 @@
     "wontFixItems": 8,
     "expertDomainsTracked": 6,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260322-0159",
-    "lastRecordedAt": "2026-03-22T05:18:39.374Z"
+    "lastRunId": "QA-20260322-0160",
+    "lastRecordedAt": "2026-03-22T07:26:30.735Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -13067,6 +13067,67 @@
       "expertCount": 1,
       "expertNeedsImprovementCount": 0,
       "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260322-0160",
+      "recordedAt": "2026-03-22T07:26:30.735Z",
+      "recordedAtKst": "2026-03-22 16:26:30 KST",
+      "title": "CI Manual Feedback Trace Status QA (run #23398040200)",
+      "owner": "claude",
+      "source": "github-actions",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260322-0160.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "ba7b15d70"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "coveragePacks": ["ai-core"],
+      "coveredSurfaces": [
+        "feedback-trace-status contract (traceUrlStatus)",
+        "Manual Feedback Trace Status CI job"
+      ],
+      "skippedSurfaces": [],
+      "checks": {
+        "total": 1,
+        "passed": 1,
+        "failed": 0
+      },
+      "expertAssessments": [],
+      "usageChecks": [],
+      "artifacts": [],
+      "links": [
+        {
+          "type": "github-actions-artifact",
+          "label": "Feedback Trace HTML Report",
+          "url": "https://github.com/skyasu2/openmanager-ai/actions/runs/23398040200",
+          "note": "artifact=manual-feedback-trace-report-23398040200; download/open from the workflow run page"
+        },
+        {
+          "type": "github-actions-artifact",
+          "label": "Feedback Trace Playwright Results (trace/screenshot/video)",
+          "url": "https://github.com/skyasu2/openmanager-ai/actions/runs/23398040200",
+          "note": "artifact=manual-feedback-trace-results-23398040200; download/open from the workflow run page"
+        },
+        {
+          "type": "github-actions-run",
+          "label": "GitHub Actions: CI/CD Core Gates #23398040200",
+          "url": "https://github.com/skyasu2/openmanager-ai/actions/runs/23398040200",
+          "note": "branch=main, sha=ba7b15d70"
+        }
+      ],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
