@@ -89,7 +89,7 @@ export function SystemStartSection({
             <span className="font-semibold">AI 어시스턴트</span>
           </div>
           <p className="text-center text-white/90">
-            시스템 시작 후 대시보드에서 AI 사이드바 이용 가능
+            시스템 시작 후 현재 메트릭을 바탕으로 질문, 분석, 조치안을 바로 확인할 수 있습니다
           </p>
           <div className="mt-2 flex items-center justify-center gap-2">
             <span className="rounded-full bg-purple-500/15 px-2 py-0.5 text-xs text-purple-300">

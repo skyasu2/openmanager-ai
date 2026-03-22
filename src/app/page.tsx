@@ -236,10 +236,10 @@ function Home() {
           </h1>
           <p className="mx-auto max-w-3xl text-base leading-relaxed text-white/85 md:text-lg">
             <span className="block font-medium text-white/90">
-              서버 관리자의 의사결정을 돕는 지능형 모니터링 AI 어시스턴트
+              운영 데이터를 질문, 분석, 조치안으로 바꾸는 서버 모니터링 AI
             </span>
             <span className="mt-2 block text-sm text-white/60">
-              멀티 에이전트 아키텍처 · 실시간 메트릭 RAG · 장애 자동 분석
+              그래프를 직접 읽는 대신 현재 메트릭을 바탕으로 바로 질문하고 답을 받습니다
             </span>
           </p>
         </div>
