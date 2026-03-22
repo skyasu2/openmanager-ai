@@ -19,9 +19,11 @@
 
 ## Overview
 
-OpenManager AI는 **AI 어시스턴트**가 내장된 서버 모니터링 플랫폼입니다.
+OpenManager AI는 운영자가 **그래프를 읽는 시간**을 줄이고, 서버 상태를 **질문 -> 분석 -> 조치안** 흐름으로 바꾸기 위해 만든 AI 기반 서버 모니터링 플랫폼입니다.
 
-기존 대시보드에서 그래프를 읽고 해석하는 대신, **"서버 상태 어때?"** 라고 물어보면 AI가 분석하고 답변합니다.
+기존 대시보드처럼 CPU, 메모리, 디스크 차트를 직접 해석하는 대신, 사용자는 **"서버 상태 어때?"**, **"왜 느려졌어?"**, **"지금 무엇을 먼저 조치해야 해?"** 같은 질문을 던지고, 시스템은 현재 메트릭과 맥락을 바탕으로 답변합니다.
+
+포트폴리오 관점에서 이 프로젝트는 단순 UI 데모가 아니라, **Next.js + Cloud Run + multi-agent AI + production QA evidence**를 실제 운영 흐름으로 묶은 결과물입니다.
 
 ### Key Features
 
@@ -33,7 +35,7 @@ OpenManager AI는 **AI 어시스턴트**가 내장된 서버 모니터링 플랫
 
 ### Technical Highlights
 
-이 프로젝트는 단순한 모니터링 대시보드를 넘어, **Multi-Agent Orchestration**과 **Real-time Data Streaming**을 결합한 기술적 챌린지를 해결했습니다.
+이 프로젝트의 핵심은 "AI를 붙인 대시보드"가 아니라, **운영 데이터를 자연어 인터페이스와 실행 가능한 결과로 연결하는 흐름**을 구현한 점입니다.
 
 - **🤖 Multi-Agent Orchestrator**: 사용자 의도를 파악(Intent Classification)하고, NLQ(Natural Language Query)를 SQL/PromQL로 변환하거나 진단 에이전트를 호출하는 지능형 라우팅 시스템 구현.
 - **⚡ Hybrid Compute Architecture**: UI 렌더링은 **Vercel Edge Network**에서 처리하고, 무거운 AI 연산과 데이터 분석은 **Google Cloud Run**의 컨테이너 환경에서 처리하여 Latency와 비용 최적화.
