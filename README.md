@@ -220,6 +220,24 @@ Job Queue SSE 폴링은 Redis 명령어 예산 보호를 위해 기본값을 아
 
 **Live**: [openmanager-ai.vercel.app](https://openmanager-ai.vercel.app)
 
+## Validation Evidence
+
+As of **March 22, 2026**, this project is not documented only with screenshots. It is backed by tracked QA runs and CI artifacts.
+
+- **QA SSOT**: [reports/qa/QA_STATUS.md](reports/qa/QA_STATUS.md)
+- **Latest production feedback trace proof**: [QA-20260322-0159](reports/qa/runs/2026/qa-run-QA-20260322-0159.json)
+- **Latest CI-backed manual feedback trace proof**: [QA-20260322-0160](reports/qa/runs/2026/qa-run-QA-20260322-0160.json)
+- **GitHub Actions evidence run**: [CI/CD Core Gates #23398040200](https://github.com/skyasu2/openmanager-ai/actions/runs/23398040200)
+  - job: `Manual Feedback Trace Status`
+  - artifacts: `manual-feedback-trace-report-23398040200`, `manual-feedback-trace-results-23398040200`
+
+This means the portfolio evidence includes:
+
+- real Vercel production browser checks
+- tracked QA SSOT in-repo
+- downloadable Playwright HTML report and test-results artifacts from CI
+- explicit feedback observability contract verification (`traceUrlStatus`)
+
 ### Sample Queries
 
 ```
