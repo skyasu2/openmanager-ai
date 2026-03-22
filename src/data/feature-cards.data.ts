@@ -12,11 +12,11 @@ export const FEATURE_CARDS_DATA: FeatureCard[] = [
     id: 'ai-assistant',
     title: '🧠 AI Assistant',
     description:
-      '4개 AI 프로바이더 + 7개 전문 에이전트로 서버 장애를 실시간 분석. Vision Agent로 대시보드 스크린샷 분석, 대용량 로그 처리 지원.',
+      '현재 메트릭을 바탕으로 질문, 분석, 조치안을 바로 연결하는 운영형 AI 어시스턴트. 장애 분석, 스크린샷 이해, 대용량 로그 처리까지 지원합니다.',
     icon: Bot,
     gradient: 'from-indigo-500 via-purple-500 to-pink-500',
     detailedContent: {
-      overview: `4개의 AI Provider(Cerebras, Groq, Mistral, Gemini)와 Vercel AI SDK 6.0 네이티브 ToolLoopAgent 기반 5-Agent + Evaluator-Optimizer 파이프라인 시스템입니다. Vision Agent로 대시보드 스크린샷 분석, 1M 토큰 대용량 로그 분석, Google Search Grounding 지원. 경량 커스텀 TypeScript ML(통계 이상 탐지 + 추세 예측)과 Native GraphRAG + Tavily 하이브리드 검색을 함께 사용합니다.`,
+      overview: `운영자가 메트릭 그래프를 직접 해석하지 않아도, 질문 하나로 현재 상태, 원인 분석, 다음 조치안을 받을 수 있도록 설계한 AI 실행 계층입니다. 4개의 AI Provider(Cerebras, Groq, Mistral, Gemini)와 Vercel AI SDK 6.0 네이티브 ToolLoopAgent 기반 5-Agent + Evaluator-Optimizer 파이프라인을 사용하며, Vision Agent의 대시보드 스크린샷 분석, 1M 토큰 로그 분석, Google Search Grounding을 지원합니다. 경량 커스텀 TypeScript ML(통계 이상 탐지 + 추세 예측)과 Native GraphRAG + Tavily 하이브리드 검색을 함께 사용합니다.`,
       features: [
         '🧠 Cerebras Inference: WSE-3 칩 기반 1M 토큰/일 초고속 추론 (gpt-oss-120b) — NLQ/Analyst/Supervisor 1순위, 최저 지연 우선',
         '⚡ Groq Cloud: LPU 기반 500 Tokens/s 초고속 추론 (llama-3.3-70b-versatile) — Reporter/Orchestrator 1순위 모델',
@@ -53,11 +53,11 @@ export const FEATURE_CARDS_DATA: FeatureCard[] = [
     id: 'cloud-platform',
     title: '🏗️ 클라우드 플랫폼 활용',
     description:
-      'Vercel(Frontend) + Cloud Run(Backend) 분산 아키텍처. 4개 플랫폼을 연동해 하나의 시스템으로 동작시킨 통합 구현.',
+      '질문은 빠르게 받고, 무거운 분석은 분리 처리하도록 설계한 하이브리드 런타임. Vercel, Cloud Run, Supabase, Upstash를 한 흐름으로 연결했습니다.',
     icon: Database,
     gradient: 'from-emerald-500 to-teal-600',
     detailedContent: {
-      overview: `4개의 서로 다른 클라우드 플랫폼을 연동하여 하나의 시스템으로 동작시킨 하이브리드 아키텍처입니다. Vercel(Frontend) + Cloud Run(Backend AI Engine) 분리 설계로 프론트엔드와 백엔드를 독립적으로 스케일링합니다. Supabase(DB+Vector)와 Upstash(Cache)가 데이터 계층을 담당합니다.`,
+      overview: `사용자는 빠른 UI 응답을 받고, AI 분석은 별도 런타임에서 안정적으로 처리하도록 설계한 하이브리드 아키텍처입니다. Vercel(Frontend) + Cloud Run(Backend AI Engine) 분리 설계로 프론트엔드와 백엔드를 독립적으로 스케일링하며, Supabase(DB+Vector)와 Upstash(Cache)가 데이터 계층을 담당합니다.`,
       features: [
         '▲ Vercel: Next.js 16 최적화 호스팅, 글로벌 CDN, Edge Runtime, 자동 스케일링 — 프론트엔드 전담, 글로벌 저지연',
         '🐘 Supabase: PostgreSQL + pgVector(AI 벡터 검색) + RLS(행 수준 보안) — DB+벡터+인증을 단일 플랫폼으로 통합',
@@ -82,11 +82,11 @@ export const FEATURE_CARDS_DATA: FeatureCard[] = [
     id: 'tech-stack',
     title: '💻 기술 스택',
     description:
-      'Next.js 16 · React 19 · TypeScript 5.9 기반. 최신 기술을 선제적으로 도입한 Next-Gen 웹 아키텍처',
+      '실시간 모니터링 UI, 자연어 질의, AI 응답 스트리밍을 안정적으로 묶기 위해 선택한 최신 웹 스택과 데이터 계층입니다.',
     icon: Sparkles,
     gradient: 'from-blue-500 to-purple-600',
     detailedContent: {
-      overview: `실제 사용 중인 Next-Gen 기술 스택! Next.js 16, React 19, TypeScript 5.9 등 최신 안정화 버전을 도입하여 최고의 성능과 개발 경험을 제공합니다.`,
+      overview: `실시간 대시보드, 자연어 질의, AI 응답 스트리밍을 하나의 제품 경험으로 묶기 위해 선택한 실제 운영 스택입니다. Next.js 16, React 19, TypeScript 5.9 등 최신 안정화 버전을 도입해 성능과 개발 경험을 함께 확보했습니다.`,
       features: [
         '⚛️ React 19: Concurrent Rendering, Server Components 등 최신 기능 적용 — 대시보드 초기 로딩 최적화',
         '▲ Next.js 16: Server Actions, Partial Prerendering, Edge Runtime 지원 — API Routes로 SSOT 데이터 제공',
@@ -120,11 +120,11 @@ export const FEATURE_CARDS_DATA: FeatureCard[] = [
     id: 'vibe-coding',
     title: '🔥 Vibe Coding',
     description:
-      '본 모니터링 플랫폼을 구축하기 위해 실제 적용한 Vibe Coding(AI 협업) 방법론. 4단계 진화를 거친 에이전틱 워크플로우를 증명합니다.',
+      '아이디어 수준이 아니라 배포, QA, 운영 증거까지 이어지게 만든 AI 협업 개발 방식입니다. 이 프로젝트의 실제 제작 과정을 그대로 보여줍니다.',
     icon: Zap,
     gradient: 'from-amber-600 via-orange-600 to-amber-700',
     detailedContent: {
-      overview: `이 프로덕트가 탄생한 개발 방법론입니다. 단순 AI 챗봇이 아닌, 서비스 아키텍처 전체를 AI(ChatGPT/Claude/Gemini)와 페어 프로그래밍하여 E2E로 구축했습니다.`,
+      overview: `이 프로덕트가 탄생한 개발 방법론입니다. 단순 AI 챗봇 시연이 아니라, 서비스 아키텍처 전체를 AI(ChatGPT/Claude/Gemini)와 페어 프로그래밍하고 실제 배포, QA, 운영 증거까지 연결해 E2E로 구축했습니다.`,
       features: [
         '1️⃣ Stage 1 (Manual): GPT/Gemini 창에서 수동 코딩 → [Netlify 목업](https://openmanager-vibe-v2.netlify.app/) — 초기 프로토타이핑',
         '2️⃣ Stage 2 (Auto): Cursor의 등장, "IDE 자동 개발"의 시작 — GUI 기반 AI 코딩 도입',
