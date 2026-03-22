@@ -30,6 +30,41 @@ type MessageMetadata = {
   assistantResponseView?: StructuredAssistantResponse;
 };
 
+type ToolPartWithCallId = {
+  type: string;
+  toolCallId: string;
+  output?: unknown;
+  result?: unknown;
+  state?: string;
+};
+
+type ServerMetricsDataSlot = {
+  slotIndex: number;
+  minuteOfDay: number;
+  timeLabel: string;
+};
+
+type ServerMetricsDataSource = {
+  scopeName: string;
+  scopeVersion: string;
+  catalogGeneratedAt: string;
+  hour: number;
+};
+
+type ServerMetricsParityMetadata = {
+  dataSlot: ServerMetricsDataSlot;
+  dataSource: ServerMetricsDataSource;
+};
+
+const LEGACY_PARITY_PATTERNS = [
+  /getServerMetrics의 원본 데이터 필드/i,
+  /_dataSlot/i,
+  /_dataSource/i,
+  /YYYYMMDD_HHMM/i,
+  /메트릭 수집 소스/i,
+  /전체 응답의 기준 시간 슬롯/i,
+];
+
 function getMessageMetadata(message: UIMessage): MessageMetadata | undefined {
   if (
     'metadata' in message &&
@@ -39,6 +74,109 @@ function getMessageMetadata(message: UIMessage): MessageMetadata | undefined {
     return message.metadata as MessageMetadata;
   }
   return undefined;
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null;
+}
+
+function isDataSlot(value: unknown): value is ServerMetricsDataSlot {
+  return (
+    isRecord(value) &&
+    typeof value.slotIndex === 'number' &&
+    typeof value.minuteOfDay === 'number' &&
+    typeof value.timeLabel === 'string'
+  );
+}
+
+function isDataSource(value: unknown): value is ServerMetricsDataSource {
+  return (
+    isRecord(value) &&
+    typeof value.scopeName === 'string' &&
+    typeof value.scopeVersion === 'string' &&
+    typeof value.catalogGeneratedAt === 'string' &&
+    typeof value.hour === 'number'
+  );
+}
+
+function extractToolOutput(toolPart: ToolPartWithCallId): unknown {
+  return toolPart.output ?? toolPart.result;
+}
+
+function extractServerMetricsParityMetadata(
+  toolParts: ToolPartWithCallId[]
+): ServerMetricsParityMetadata | null {
+  const metricsToolPart = [...toolParts]
+    .reverse()
+    .find((part) => part.type === 'tool-getServerMetrics');
+
+  if (!metricsToolPart) return null;
+
+  const output = extractToolOutput(metricsToolPart);
+  if (!isRecord(output)) return null;
+  if (!isDataSlot(output.dataSlot) || !isDataSource(output.dataSource)) {
+    return null;
+  }
+
+  return {
+    dataSlot: output.dataSlot,
+    dataSource: output.dataSource,
+  };
+}
+
+function stripLegacyParityDetails(
+  details: string | null | undefined
+): string | null {
+  if (typeof details !== 'string' || !details.trim()) return null;
+
+  const filteredParagraphs = details
+    .split(/\n\s*\n/)
+    .map((paragraph) => paragraph.trim())
+    .filter(Boolean)
+    .filter(
+      (paragraph) =>
+        !LEGACY_PARITY_PATTERNS.some((pattern) => pattern.test(paragraph))
+    );
+
+  const normalized = filteredParagraphs.join('\n\n').trim();
+  return normalized.length > 0 ? normalized : null;
+}
+
+function formatParityMetadataDetails(
+  parity: ServerMetricsParityMetadata
+): string {
+  return [
+    '### Parity Metadata Contract',
+    '```json',
+    JSON.stringify(
+      {
+        dataSlot: parity.dataSlot,
+        dataSource: parity.dataSource,
+      },
+      null,
+      2
+    ),
+    '```',
+  ].join('\n');
+}
+
+function buildParityAwareAssistantResponseView(
+  structured: StructuredAssistantResponse | undefined,
+  parity: ServerMetricsParityMetadata | null
+): StructuredAssistantResponse | undefined {
+  if (!structured || !parity) return structured;
+
+  const normalizedParityDetails = formatParityMetadataDetails(parity);
+  const sanitizedExistingDetails = stripLegacyParityDetails(structured.details);
+  const details = sanitizedExistingDetails
+    ? `${sanitizedExistingDetails}\n\n${normalizedParityDetails}`
+    : normalizedParityDetails;
+
+  return {
+    ...structured,
+    details,
+    shouldCollapse: true,
+  };
 }
 
 // ============================================================================
@@ -114,7 +252,7 @@ export function transformUIMessageToEnhanced(
   // Tool parts 추출 (null/undefined 방어 코드 추가)
   const toolParts =
     message.parts?.filter(
-      (part): part is typeof part & { toolCallId: string } =>
+      (part): part is ToolPartWithCallId =>
         part != null &&
         typeof part.type === 'string' &&
         part.type.startsWith('tool-') &&
@@ -150,6 +288,14 @@ export function transformUIMessageToEnhanced(
   // Extract traceId from message metadata (available for all roles)
   const metadata = getMessageMetadata(message);
   const traceId = metadata?.traceId ?? traceIdByMessageId?.[message.id];
+  const parityMetadata =
+    message.role === 'assistant'
+      ? extractServerMetricsParityMetadata(toolParts)
+      : null;
+  const assistantResponseView = buildParityAwareAssistantResponseView(
+    metadata?.assistantResponseView,
+    parityMetadata
+  );
 
   // 분석 근거 생성 (assistant 메시지에만)
   let analysisBasis: AnalysisBasis | undefined;
@@ -200,12 +346,12 @@ export function transformUIMessageToEnhanced(
     isStreaming: isLoading && isLastMessage,
     thinkingSteps: thinkingSteps.length > 0 ? thinkingSteps : undefined,
     metadata:
-      analysisBasis || traceId || metadata?.assistantResponseView
+      analysisBasis || traceId || assistantResponseView
         ? {
             ...(analysisBasis && { analysisBasis }),
             ...(traceId && { traceId }),
-            ...(metadata?.assistantResponseView && {
-              assistantResponseView: metadata.assistantResponseView,
+            ...(assistantResponseView && {
+              assistantResponseView,
             }),
           }
         : undefined,

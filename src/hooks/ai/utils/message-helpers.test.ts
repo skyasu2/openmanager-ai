@@ -18,12 +18,18 @@ function createMessage(params: {
   metadata?: {
     traceId?: string;
     ragSources?: RagSource[];
+    assistantResponseView?: {
+      summary: string;
+      details?: string | null;
+      shouldCollapse?: boolean;
+    };
   };
+  parts?: unknown[];
 }): UIMessage {
   return {
     id: params.id,
     role: params.role,
-    parts: [{ type: 'text', text: params.text }],
+    parts: params.parts ?? [{ type: 'text', text: params.text }],
     ...(params.metadata ? { metadata: params.metadata } : {}),
   } as unknown as UIMessage;
 }
@@ -145,6 +151,64 @@ describe('transformMessages', () => {
 
     const assistant = messages.find((m) => m.id === 'a1');
     expect(assistant?.metadata?.traceId).toBe('trace-fallback-123');
+  });
+
+  it('replaces legacy parity metadata wording with the typed getServerMetrics contract', () => {
+    const messages = transformMessages(
+      [
+        createMessage({
+          id: 'u1',
+          role: 'user',
+          text: 'db 디스크 상태 알려줘',
+        }),
+        createMessage({
+          id: 'a1',
+          role: 'assistant',
+          text: '응답 본문',
+          metadata: {
+            assistantResponseView: {
+              summary: 'db 디스크 상태 요약',
+              details:
+                '일반 설명 문단\n\n---\n\n**getServerMetrics의 원본 데이터 필드 (`dataSlot` 및 `dataSource` 포함)**:\n```json\n{ "_dataSlot": "20260322_1530", "_dataSource": "prometheus" }\n```',
+              shouldCollapse: true,
+            },
+          },
+          parts: [
+            { type: 'text', text: '응답 본문' },
+            {
+              type: 'tool-getServerMetrics',
+              toolCallId: 'tool-1',
+              output: {
+                success: true,
+                dataSlot: {
+                  slotIndex: 3,
+                  minuteOfDay: 30,
+                  timeLabel: '00:30 KST',
+                },
+                dataSource: {
+                  scopeName: 'openmanager-ai-otel-pipeline',
+                  scopeVersion: '1.0.0',
+                  catalogGeneratedAt: '2026-02-15T03:56:41.821Z',
+                  hour: 0,
+                },
+              },
+            },
+          ],
+        }),
+      ],
+      { isLoading: false, currentMode: 'streaming' }
+    );
+
+    const assistant = messages.find((m) => m.id === 'a1');
+    const details = assistant?.metadata?.assistantResponseView?.details ?? '';
+
+    expect(details).toContain('일반 설명 문단');
+    expect(details).toContain('Parity Metadata Contract');
+    expect(details).toContain('"dataSlot"');
+    expect(details).toContain('"dataSource"');
+    expect(details).not.toContain('_dataSlot');
+    expect(details).not.toContain('_dataSource');
+    expect(details).not.toContain('YYYYMMDD_HHMM');
   });
 });
 
