@@ -13,6 +13,9 @@
   <i>Real-time Server Monitoring Dashboard</i>
 </div>
 
+> **Validated on Production (March 22, 2026)**
+> Latest QA evidence: [QA-20260322-0160](reports/qa/runs/2026/qa-run-QA-20260322-0160.json) and [QA Status Dashboard](reports/qa/QA_STATUS.md)
+> CI artifact evidence: [GitHub Actions run #23398040200](https://github.com/skyasu2/openmanager-ai/actions/runs/23398040200)
 
 ## Overview
 
