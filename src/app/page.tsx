@@ -12,6 +12,7 @@
 'use client';
 
 import dynamic from 'next/dynamic';
+import Link from 'next/link';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   DashboardSection,
@@ -243,6 +244,31 @@ function Home() {
               받습니다
             </span>
           </p>
+          <div className="mt-4 flex flex-wrap items-center justify-center gap-2 text-xs sm:text-sm">
+            <span className="rounded-full border border-emerald-400/30 bg-emerald-500/10 px-3 py-1 text-emerald-200">
+              Validated on Production · 2026-03-22
+            </span>
+            <Link
+              href="/reports/qa/QA_STATUS.md"
+              className="rounded-full border border-white/15 bg-white/5 px-3 py-1 text-white/80 transition-colors hover:border-white/30 hover:bg-white/10 hover:text-white"
+            >
+              QA Status
+            </Link>
+            <Link
+              href="/reports/qa/runs/2026/qa-run-QA-20260322-0160.json"
+              className="rounded-full border border-white/15 bg-white/5 px-3 py-1 text-white/80 transition-colors hover:border-white/30 hover:bg-white/10 hover:text-white"
+            >
+              Latest Proof Run
+            </Link>
+            <a
+              href="https://github.com/skyasu2/openmanager-ai/actions/runs/23398040200"
+              target="_blank"
+              rel="noreferrer"
+              className="rounded-full border border-sky-400/20 bg-sky-500/10 px-3 py-1 text-sky-200 transition-colors hover:border-sky-300/40 hover:bg-sky-500/15"
+            >
+              CI Artifact Evidence
+            </a>
+          </div>
         </div>
 
         {/* 시스템 시작/대시보드 섹션 */}
