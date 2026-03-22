@@ -6,8 +6,14 @@
 
 'use client';
 
+import Link from 'next/link';
 import { Bot } from 'lucide-react';
 import type { ButtonConfig, StatusInfo } from '../hooks/useSystemStart';
+
+const PRODUCTION_QA_STATUS_PATH = '/reports/qa/QA_STATUS.md';
+const PRODUCTION_QA_PROOF_RUN_PATH = '/reports/qa/runs/2026/qa-run-QA-20260322-0160.json';
+const PRODUCTION_QA_CI_RUN_URL =
+  'https://github.com/skyasu2/openmanager-ai/actions/runs/23398040200';
 
 interface SystemStartSectionProps {
   isMounted: boolean;
@@ -102,6 +108,33 @@ export function SystemStartSection({
             <span className="rounded-full bg-emerald-500/15 px-2 py-0.5 text-xs text-emerald-300">
               보고서 생성
             </span>
+          </div>
+          <div className="mt-3 border-t border-white/10 pt-3 text-xs text-white/75">
+            <p className="text-center">
+              실환경 검증 기준 · 2026-03-22
+            </p>
+            <div className="mt-2 flex flex-wrap items-center justify-center gap-2">
+              <Link
+                href={PRODUCTION_QA_STATUS_PATH}
+                className="rounded-full border border-cyan-400/25 bg-cyan-400/10 px-2.5 py-1 text-cyan-200 transition hover:bg-cyan-400/15"
+              >
+                QA 현황
+              </Link>
+              <Link
+                href={PRODUCTION_QA_PROOF_RUN_PATH}
+                className="rounded-full border border-emerald-400/25 bg-emerald-400/10 px-2.5 py-1 text-emerald-200 transition hover:bg-emerald-400/15"
+              >
+                증거 run
+              </Link>
+              <a
+                href={PRODUCTION_QA_CI_RUN_URL}
+                target="_blank"
+                rel="noreferrer"
+                className="rounded-full border border-purple-400/25 bg-purple-400/10 px-2.5 py-1 text-purple-200 transition hover:bg-purple-400/15"
+              >
+                CI artifact
+              </a>
+            </div>
           </div>
         </div>
       </div>
