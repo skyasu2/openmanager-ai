@@ -1,32 +1,32 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-22 13:24:55 KST
+> Generated at: 2026-03-22 14:18:39 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 157 |
-| Total Checks | 1210 |
-| Passed | 1158 |
+| Total Runs | 158 |
+| Total Checks | 1215 |
+| Passed | 1163 |
 | Failed | 48 |
-| Completed Items | 233 |
-| Pending Items | 1 |
+| Completed Items | 234 |
+| Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 8 |
 | Expert Domains Tracked | 6 |
-| Expert Open Gaps | 1 |
-| Completion Rate | 99.57% |
-| Last Run | QA-20260322-0158 (2026-03-22T04:24:54.377Z) |
+| Expert Open Gaps | 0 |
+| Completion Rate | 100% |
+| Last Run | QA-20260322-0159 (2026-03-22T05:18:39.374Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260322-0158 (2026-03-22T04:24:54.377Z)
+Latest run: QA-20260322-0159 (2026-03-22T05:18:39.374Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| IT Monitoring & Observability SME | partially-appropriate | yes | traceUrl을 best-effort optional 필드로 유지할지, sampled/unavailable 상태를 명시하는 contract로 바꿀지 결정 |
+| IT Monitoring & Observability SME | appropriate | no | traceUrl은 optional evidence로 유지하고, operators는 traceUrlStatus를 1차 판단 기준으로 사용 |
 
 ## Usage Checks (Latest Run)
 
@@ -38,35 +38,35 @@ Latest run: QA-20260322-0158 (2026-03-22T04:24:54.377Z)
 
 - Scope: targeted
 - Release-Facing: no
-- Deployment: dpl_8GmvqPyN5bmfo9TmyuHYu5wbgUFE / SHA 820979e3
+- Deployment: dpl_CVQZeAegxhrPFMxgZjPnHBSVnF7r / SHA f7ade654
 - Coverage Packs: ai-core, observability-pack
-- Covered Surfaces: guest PIN login, system-boot -> /dashboard redirect, AI sidebar free-text summary query, AI feedback negative button, /api/ai/feedback returns langfuseStatus=success + traceId + traceApiUrl + dashboardUrl + monitoringLookupUrl after deploy
-- Skipped Surfaces: Cloud Run /monitoring/traces?q=<traceId> authenticated exact-match recheck, fullscreen AI assistant, positive feedback button
+- Covered Surfaces: guest PIN login, system-boot -> /dashboard redirect, AI sidebar free-text summary query, AI feedback negative button, /api/ai/feedback returns langfuseStatus=success + traceId + traceApiUrl + dashboardUrl + traceUrlStatus + monitoringLookupUrl
+- Skipped Surfaces: Cloud Run /monitoring/traces?q=<traceId> exact-match follow-up, positive feedback button, fullscreen AI assistant
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
 | general | Langfuse project dashboard | [link](https://us.cloud.langfuse.com/project) | - |
-| langfuse-trace | Feedback trace API URL | [link](https://us.cloud.langfuse.com/api/public/traces/3a83c5e47753b4aa947a75b238811272) | - |
-| monitoring | Cloud Run monitoring lookup for feedback traceId | [link](https://ai-engine-490817238363.asia-northeast1.run.app/monitoring/traces?q=3a83c5e47753b4aa947a75b238811272&limit=5&includeAuxiliary=true) | - |
-| vercel-deployment | Production deployment dpl_8GmvqPyN5bmfo9TmyuHYu5wbgUFE | [link](https://openmanager-4feysgyx1-skyasus-projects.vercel.app/) | - |
+| langfuse-trace | Feedback trace API URL | [link](https://us.cloud.langfuse.com/api/public/traces/774aa0e2fed4f129a0db583e40f6f9e9) | - |
+| monitoring | Cloud Run monitoring lookup for feedback traceId | [link](https://ai-engine-490817238363.asia-northeast1.run.app/monitoring/traces?q=774aa0e2fed4f129a0db583e40f6f9e9&limit=5&includeAuxiliary=true) | - |
+| vercel-deployment | Production deployment dpl_CVQZeAegxhrPFMxgZjPnHBSVnF7r | [link](https://openmanager-k13baeqo2-skyasus-projects.vercel.app/) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | Feedback trace UI link proof | `artifacts/playwright/feedback-trace-ui-link-2026-03-22.png` | - |
-| playwright-console | Feedback trace UI link response | `artifacts/playwright/feedback-trace-ui-link-2026-03-22-response.json` | - |
+| playwright-screenshot | Feedback trace URL status proof | `artifacts/playwright/feedback-trace-url-status-2026-03-22.png` | - |
+| playwright-console | Feedback trace URL status console | `artifacts/playwright/feedback-trace-url-status-2026-03-22-console.log` | - |
+| playwright-network | Feedback trace URL status response body | `artifacts/playwright/feedback-trace-url-status-2026-03-22-response.json` | - |
 
 ## Expert Domain Open Gaps
 
-- observability-monitoring: IT Monitoring & Observability SME (last QA-20260322-0158)
-  next: traceUrl을 best-effort optional 필드로 유지할지, sampled/unavailable 상태를 명시하는 contract로 바꿀지 결정
+- None
 
 ## Pending Improvements
 
-- [P1] feedback-trace-ui-link-runtime-availability: Feedback API direct trace UI link runtime availability (seen 1회, last QA-20260322-0158)
+- None
 
 ## Deferred Improvements
 
@@ -173,6 +173,7 @@ Latest run: QA-20260322-0158 (2026-03-22T04:24:54.377Z)
 - feature-dod-validation-health-endpoints: 헬스/버전 API 검사 (Vercel) (completed 2회, last QA-20260227-0018)
 - feature-dod-vitals-integration: vitals:integration 통합 실행 통과 (completed 1회, last QA-20260228-0028)
 - feedback-trace-links-exposed: Feedback API direct trace links exposed for operator follow-up (completed 1회, last QA-20260322-0156)
+- feedback-trace-ui-link-runtime-availability: Feedback API direct trace UI link runtime availability (completed 1회, last QA-20260322-0159)
 - frontend-landing-v880: Landing page v8.8.0 정상 렌더링 (completed 2회, last QA-20260314-0097)
 - guest-auth-proof-cookie: 게스트 PIN 로그인 후 auth_proof 쿠키 발급 정상 (completed 2회, last QA-20260314-0097)
 - guest-dashboard-auth-check: 게스트 대시보드 로컬 인증 체크 우회 보완 (completed 1회, last QA-20260310-0078)
@@ -330,6 +331,7 @@ Latest run: QA-20260322-0158 (2026-03-22T04:24:54.377Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260322-0159 | 2026-03-22T05:18:39.374Z | targeted | no | Production Feedback Trace URL Status E2E - Runtime Availability Explicit | 5 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260322-0158 | 2026-03-22T04:24:54.377Z | targeted | no | Production Feedback Trace UI Link E2E - Direct Trace URL Still Unavailable | 5 | 0 | 1 | 0 | 0 | 1 |
 | QA-20260322-0157 | 2026-03-22T03:21:01.682Z | targeted | no | Production QA - Portfolio Negative Impression Fixes (3,4,6) | 6 | 3 | 0 | 0 | 0 | 0 |
 | QA-20260322-0156 | 2026-03-22T00:09:47.421Z | targeted | no | Production AI Feedback Trace Links E2E - Direct Trace URLs Returned | 6 | 1 | 0 | 0 | 0 | 0 |
@@ -349,5 +351,4 @@ Latest run: QA-20260322-0158 (2026-03-22T04:24:54.377Z)
 | QA-20260320-0142 | 2026-03-20T12:57:48.587Z | targeted | no | Vercel Playwright QA - Langfuse Feedback Trace Recovery | 11 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260320-0141 | 2026-03-20T11:35:03.459Z | broad | yes | Vercel Playwright QA - Frontend and AI Assistant Broad Evaluation | 11 | 0 | 1 | 0 | 0 | 2 |
 | QA-20260320-0140 | 2026-03-20T11:04:59.928Z | smoke | yes | Vercel Production Smoke - Post Push Usage Evidence Green Recheck | 8 | 3 | 0 | 0 | 0 | 0 |
-| QA-20260320-0139 | 2026-03-20T09:49:43.445Z | smoke | yes | Vercel Production Smoke - Post Workflow Push Verification | 8 | 3 | 0 | 0 | 0 | 1 |
 

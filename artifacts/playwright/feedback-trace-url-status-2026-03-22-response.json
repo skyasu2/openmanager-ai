@@ -1,0 +1,23 @@
+{
+  "status": 200,
+  "url": "https://openmanager-ai.vercel.app/api/ai/feedback",
+  "requestBody": {
+    "messageId": "J2e6UoQmVt7AIKo8",
+    "type": "negative",
+    "sessionId": "session-7aa0d495-210c-4124-9d6f-9e8907f4c86f",
+    "timestamp": "2026-03-22T05:16:37.258Z",
+    "traceId": "774aa0e2fed4f129a0db583e40f6f9e9"
+  },
+  "responseBody": {
+    "success": true,
+    "message": "Feedback recorded",
+    "feedbackId": "fb_1774156597450",
+    "stored": "database",
+    "langfuseStatus": "success",
+    "traceId": "774aa0e2fed4f129a0db583e40f6f9e9",
+    "traceApiUrl": "https://us.cloud.langfuse.com/api/public/traces/774aa0e2fed4f129a0db583e40f6f9e9",
+    "dashboardUrl": "https://us.cloud.langfuse.com/project",
+    "traceUrlStatus": "unavailable",
+    "monitoringLookupUrl": "https://ai-engine-490817238363.asia-northeast1.run.app/monitoring/traces?q=774aa0e2fed4f129a0db583e40f6f9e9&limit=5&includeAuxiliary=true"
+  }
+}

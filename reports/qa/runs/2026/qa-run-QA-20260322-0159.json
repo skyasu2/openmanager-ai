@@ -1,0 +1,122 @@
+{
+  "runId": "QA-20260322-0159",
+  "recordedAt": "2026-03-22T05:18:39.374Z",
+  "recordedAtKst": "2026-03-22 14:18:39 KST",
+  "runTitle": "Production Feedback Trace URL Status E2E - Runtime Availability Explicit",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_CVQZeAegxhrPFMxgZjPnHBSVnF7r",
+    "deploymentUrl": "https://openmanager-k13baeqo2-skyasus-projects.vercel.app",
+    "commitSha": "f7ade654723b1c0eda83332f33402e6bce919456"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "coveragePacks": ["ai-core", "observability-pack"],
+  "coveredSurfaces": [
+    "guest PIN login",
+    "system-boot -> /dashboard redirect",
+    "AI sidebar free-text summary query",
+    "AI feedback negative button",
+    "/api/ai/feedback returns langfuseStatus=success + traceId + traceApiUrl + dashboardUrl + traceUrlStatus + monitoringLookupUrl"
+  ],
+  "skippedSurfaces": [
+    "Cloud Run /monitoring/traces?q=<traceId> exact-match follow-up",
+    "positive feedback button",
+    "fullscreen AI assistant"
+  ],
+  "checks": {
+    "total": 5,
+    "passed": 5,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "production feedback 응답이 traceUrl 유무와 별개로 traceUrlStatus=unavailable을 명시해 same-request trace detail availability ambiguity를 제거했다.",
+      "nextAction": "traceUrl은 optional evidence로 유지하고, operators는 traceUrlStatus를 1차 판단 기준으로 사용"
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-03-22T14:18:00+09:00",
+      "summary": "effectiveCost $15.9423 / billedCost $0.0000",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "Feedback trace URL status proof",
+      "path": "artifacts/playwright/feedback-trace-url-status-2026-03-22.png"
+    },
+    {
+      "type": "playwright-console",
+      "label": "Feedback trace URL status console",
+      "path": "artifacts/playwright/feedback-trace-url-status-2026-03-22-console.log"
+    },
+    {
+      "type": "playwright-network",
+      "label": "Feedback trace URL status response body",
+      "path": "artifacts/playwright/feedback-trace-url-status-2026-03-22-response.json"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "feedback-trace-ui-link-runtime-availability",
+      "title": "Feedback API direct trace UI link runtime availability",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "production /api/ai/feedback response now returns traceUrlStatus=unavailable alongside traceApiUrl/dashboardUrl/monitoringLookupUrl",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Vercel production deployment dpl_CVQZeAegxhrPFMxgZjPnHBSVnF7r reached READY on commit f7ade6547.",
+    "Cloud Run revision ai-engine-00265-lmk deployed successfully and /health returned 200.",
+    "Browser-captured POST /api/ai/feedback response body contained langfuseStatus=success, traceId 774aa0e2fed4f129a0db583e40f6f9e9, traceApiUrl, dashboardUrl, traceUrlStatus=unavailable, monitoringLookupUrl."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Langfuse project dashboard",
+      "url": "https://us.cloud.langfuse.com/project"
+    },
+    {
+      "type": "langfuse-trace",
+      "label": "Feedback trace API URL",
+      "url": "https://us.cloud.langfuse.com/api/public/traces/774aa0e2fed4f129a0db583e40f6f9e9"
+    },
+    {
+      "type": "monitoring",
+      "label": "Cloud Run monitoring lookup for feedback traceId",
+      "url": "https://ai-engine-490817238363.asia-northeast1.run.app/monitoring/traces?q=774aa0e2fed4f129a0db583e40f6f9e9&limit=5&includeAuxiliary=true"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Production deployment dpl_CVQZeAegxhrPFMxgZjPnHBSVnF7r",
+      "url": "https://openmanager-k13baeqo2-skyasus-projects.vercel.app/"
+    }
+  ]
+}
