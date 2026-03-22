@@ -47,11 +47,33 @@ type QATrackerRun = {
   runId?: string;
   title?: string;
   scope?: string;
+  recordedAt?: string;
   environment?: {
     commitSha?: string;
   };
   links?: QATrackerLink[];
 };
+
+function formatEvidenceDate(dateString?: string | null) {
+  if (!dateString) {
+    return {
+      short: 'latest',
+      long: 'Latest',
+    };
+  }
+
+  const date = new Date(dateString);
+
+  return {
+    short: date.toISOString().slice(0, 10),
+    long: date.toLocaleDateString('en-US', {
+      month: 'long',
+      day: 'numeric',
+      year: 'numeric',
+      timeZone: 'UTC',
+    }),
+  };
+}
 
 function getValidationEvidence() {
   const tracker = qaTrackerJson as {
@@ -70,20 +92,8 @@ function getValidationEvidence() {
     throw new Error('QA validation evidence summary is unavailable');
   }
 
-  const lastRecordedAt = summary.lastRecordedAt
-    ? new Date(summary.lastRecordedAt)
-    : null;
-  const validatedOnShort = lastRecordedAt
-    ? lastRecordedAt.toISOString().slice(0, 10)
-    : 'latest';
-  const validatedOnLong = lastRecordedAt
-    ? lastRecordedAt.toLocaleDateString('en-US', {
-        month: 'long',
-        day: 'numeric',
-        year: 'numeric',
-        timeZone: 'UTC',
-      })
-    : 'Latest';
+  const trackerUpdated = formatEvidenceDate(summary.lastRecordedAt);
+  const latestProofRecorded = formatEvidenceDate(latestProofRun.recordedAt);
   const runYear = latestProofRun.runId.slice(3, 7);
   const githubRunLink = latestProofRun.links?.find(
     (link) => link.type === 'github-actions-run'
@@ -94,12 +104,13 @@ function getValidationEvidence() {
 
   return {
     summary,
-    validatedOnShort,
-    validatedOnLong,
+    trackerUpdated,
+    latestProofRecorded,
     latestProofRun: {
       runId: latestProofRun.runId,
       title: latestProofRun.title ?? latestProofRun.runId,
       scope: latestProofRun.scope ?? 'targeted',
+      recordedAt: latestProofRun.recordedAt ?? '',
       commitSha: latestProofRun.environment?.commitSha ?? '',
       repoPath: `reports/qa/runs/${runYear}/qa-run-${latestProofRun.runId}.json`,
       ciRunLink: githubRunLink ?? null,
@@ -134,9 +145,15 @@ export default function ValidationEvidencePage() {
         <section className="rounded-3xl border border-white/10 bg-white/5 p-6 shadow-2xl backdrop-blur-sm sm:p-8">
           <div className="flex flex-wrap items-center gap-2">
             <EvidencePill className="border-emerald-400/30 bg-emerald-500/10 text-emerald-200">
-              {QA_EVIDENCE_LABELS.badge} · {evidence.validatedOnShort}
+              {QA_EVIDENCE_LABELS.badge}
             </EvidencePill>
             <EvidencePill className="border-sky-400/25 bg-sky-500/10 text-sky-200">
+              Tracker updated {evidence.trackerUpdated.short}
+            </EvidencePill>
+            <EvidencePill className="border-indigo-400/25 bg-indigo-500/10 text-indigo-200">
+              Latest CI proof {evidence.latestProofRecorded.short}
+            </EvidencePill>
+            <EvidencePill className="border-cyan-400/25 bg-cyan-500/10 text-cyan-200">
               QA completed {evidence.summary.completedItems}
             </EvidencePill>
             <EvidencePill className="border-purple-400/25 bg-purple-500/10 text-purple-200">
@@ -151,8 +168,10 @@ export default function ValidationEvidencePage() {
             이 페이지는 첫 화면에서 보이는 production validation CTA의 실제
             근거를 모아 둔 internal evidence summary입니다. 외부 방문자가 404
             없이 검증 기준을 이해할 수 있도록 요약만 노출하고, 세부 증거는 CI
-            run과 in-repo SSOT 경로로 설명합니다. 현재 기준선은{' '}
-            {evidence.validatedOnLong}에 기록된 QA tracker를 따릅니다.
+            run과 in-repo SSOT 경로로 설명합니다. 현재 화면은{' '}
+            {evidence.trackerUpdated.long} 기준 QA tracker snapshot과{' '}
+            {evidence.latestProofRecorded.long} 기준 CI-backed proof run을 함께
+            보여줍니다.
           </p>
 
           <div className="mt-6 flex flex-wrap gap-3">
@@ -258,6 +277,10 @@ export default function ValidationEvidencePage() {
               <div>
                 <dt className="text-white/45">Scope</dt>
                 <dd className="mt-1">{evidence.latestProofRun.scope}</dd>
+              </div>
+              <div>
+                <dt className="text-white/45">Recorded at</dt>
+                <dd className="mt-1">{evidence.latestProofRecorded.long}</dd>
               </div>
               <div>
                 <dt className="text-white/45">Commit</dt>
