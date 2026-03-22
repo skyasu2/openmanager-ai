@@ -71,6 +71,32 @@ export type UptimeFormatOptions = {
   includeMinutes?: boolean;
 };
 
+export function formatServerOsLabel(os?: string | null): string {
+  const rawOs = os?.trim() ?? '';
+  if (!rawOs) return 'Linux';
+
+  if (rawOs.toLowerCase() === 'linux') {
+    return 'Linux';
+  }
+
+  return rawOs;
+}
+
+export function getServerOsShortName(os?: string | null): string {
+  const displayOs = formatServerOsLabel(os);
+  const normalizedOs = displayOs.toLowerCase();
+
+  if (normalizedOs.includes('ubuntu')) return 'Ubuntu';
+  if (normalizedOs.includes('rocky')) return 'Rocky';
+  if (normalizedOs.includes('oracle')) return 'Oracle';
+  if (normalizedOs.includes('debian')) return 'Debian';
+  if (normalizedOs.includes('centos')) return 'CentOS';
+  if (normalizedOs.includes('red hat')) return 'RHEL';
+  if (normalizedOs.includes('windows')) return 'Windows';
+  if (normalizedOs === 'linux') return 'Linux';
+  return displayOs.split(' ')[0] || 'Linux';
+}
+
 export function formatUptime(
   uptime?: number | string,
   options?: UptimeFormatOptions
@@ -183,7 +209,7 @@ export function normalizeServerData(server: unknown): Server {
     uptime: getNumber('uptime', 0),
     location: getString('location', 'Unknown'),
     ip: getString('ip', '192.168.1.1'),
-    os: getString('os', 'Ubuntu 22.04 LTS'),
+    os: formatServerOsLabel(getString('os', 'Ubuntu 22.04 LTS')),
     role: getString('type', getString('role', 'worker')) as ServerRole,
     environment: getString('environment', 'production') as ServerEnvironment,
     provider: getString('provider', 'On-Premise'),

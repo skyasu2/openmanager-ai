@@ -9,6 +9,7 @@
  */
 import { Activity, Server as ServerIcon } from 'lucide-react';
 import type { FC } from 'react';
+import { formatServerOsLabel } from '@/utils/serverUtils';
 import { ServerModal3DGauge } from '../shared/UnifiedCircularGauge';
 import { StatusLED } from './EnhancedServerModal.components';
 import type { ServerData, StatusTheme } from './EnhancedServerModal.types';
@@ -114,7 +115,7 @@ export const OverviewTab: FC<OverviewTabProps> = ({ server, statusTheme }) => {
                 {[
                   {
                     label: '운영체제',
-                    value: server.os || 'Ubuntu 22.04',
+                    value: formatServerOsLabel(server.os || 'Ubuntu 22.04'),
                     icon: '🐧',
                   },
                   {

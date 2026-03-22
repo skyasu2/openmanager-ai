@@ -101,7 +101,14 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
     enableProgressiveDisclosure = true,
   }) => {
     // Basic data preparation
-    const { safeServer, serverIcon, serverTypeLabel, osIcon, osShortName } =
+    const {
+      safeServer,
+      serverIcon,
+      serverTypeLabel,
+      osDisplayName,
+      osIcon,
+      osShortName,
+    } =
       useSafeServer(server);
     // 🎨 White Mode with Glassmorphism + Status Colors
     const statusTheme = getServerStatusTheme(safeServer.status);
@@ -405,7 +412,7 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
               <DetailRow
                 icon={<Globe className="h-3 w-3" />}
                 label="OS"
-                value={safeServer.os}
+                value={osDisplayName}
               />
               <DetailRow
                 icon={<Clock className="h-3 w-3" />}

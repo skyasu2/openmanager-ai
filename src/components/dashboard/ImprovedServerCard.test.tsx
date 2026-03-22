@@ -70,8 +70,15 @@ vi.mock('../../hooks/useSafeServer', () => ({
       },
       serverIcon: null,
       serverTypeLabel: '웹서버',
+      osDisplayName:
+        typeof server?.os === 'string' && server.os.toLowerCase() === 'linux'
+          ? 'Linux'
+          : (server?.os as string) || 'Ubuntu 22.04',
       osIcon: '🐧',
-      osShortName: 'Ubuntu',
+      osShortName:
+        typeof server?.os === 'string' && server.os.toLowerCase() === 'linux'
+          ? 'Linux'
+          : 'Ubuntu',
     })
   ),
 }));
@@ -317,6 +324,20 @@ describe('ImprovedServerCard - User Event 테스트', () => {
     it('Live Metrics 섹션이 표시된다', () => {
       render(<ImprovedServerCard server={mockServer} onClick={mockOnClick} />);
       expect(screen.getByText('Live Metrics')).toBeInTheDocument();
+    });
+
+    it('상세 OS 메타에서도 정규화된 Linux 표기를 사용한다', () => {
+      const linuxServer = { ...mockServer, os: 'linux' };
+
+      const { container } = render(
+        <ImprovedServerCard server={linuxServer} onClick={mockOnClick} />
+      );
+
+      const card = getCardContainer(container);
+      fireEvent.mouseEnter(card);
+
+      expect(screen.getAllByText('Linux')).toHaveLength(2);
+      expect(screen.queryByText(/^linux$/)).not.toBeInTheDocument();
     });
   });
 

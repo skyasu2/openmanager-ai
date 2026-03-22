@@ -20,6 +20,7 @@ describe('useSafeServer', () => {
     );
 
     expect(result.current.osShortName).toBe('Linux');
+    expect(result.current.osDisplayName).toBe('Linux');
   });
 
   it('Ubuntu 계열은 기존 표시를 유지한다', () => {
@@ -35,5 +36,6 @@ describe('useSafeServer', () => {
     );
 
     expect(result.current.osShortName).toBe('Ubuntu');
+    expect(result.current.osDisplayName).toBe('Ubuntu 22.04 LTS');
   });
 });
