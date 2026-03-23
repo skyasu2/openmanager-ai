@@ -1,0 +1,92 @@
+{
+  "runId": "QA-20260323-0168",
+  "recordedAt": "2026-03-23T04:52:42.651Z",
+  "recordedAtKst": "2026-03-23 13:52:42 KST",
+  "runTitle": "Vercel Production QA - validation evidence public snapshot smoke",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_44uiucaK3SPXrqN2wbqL54tb9oVC",
+    "deploymentUrl": "https://openmanager-3lemiljin-skyasus-projects.vercel.app",
+    "commitSha": "5839155acae61d95cc4e8571119de58a33f2223b"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "coveragePacks": ["core-routes-smoke", "modal-detail-pack"],
+  "coveredSurfaces": [
+    "/validation",
+    "validation evidence badges",
+    "public snapshot JSON link",
+    "/data/qa/validation-evidence.json",
+    "latest proof run evidence card"
+  ],
+  "skippedSurfaces": [
+    "GitHub Actions external page navigation",
+    "anchor link intra-page navigation"
+  ],
+  "checks": {
+    "total": 5,
+    "passed": 5,
+    "failed": 0
+  },
+  "expertAssessments": [],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-03-23T13:47:00+09:00",
+      "summary": "Current billing period reviewed before validation smoke; effective total 16.6220 USD and billed cost 0.0000.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "Validation evidence page with public snapshot badge and proof run summary",
+      "path": "artifacts/playwright/validation-evidence-public-snapshot-2026-03-23.png"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "validation-public-snapshot-artifact",
+      "title": "Validation evidence public snapshot artifact 분리",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Production /validation rendered build-time public snapshot data and the /data/qa/validation-evidence.json endpoint returned the same snapshot payload on deployment dpl_44uiucaK3SPXrqN2wbqL54tb9oVC.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Verified the production Validation Evidence page rendered badge values from the deployed public snapshot artifact: Tracker updated 2026-03-23, Latest CI proof 2026-03-22, QA completed 238, open-gaps 0.",
+    "Verified the Public snapshot JSON link resolved to /data/qa/validation-evidence.json and returned the same deployed snapshot payload.",
+    "Verified the Latest Proof Run card rendered QA-20260322-0160 and the GitHub Actions evidence run link from the public snapshot artifact."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Public snapshot JSON",
+      "url": "https://openmanager-ai.vercel.app/data/qa/validation-evidence.json"
+    },
+    {
+      "type": "general",
+      "label": "Validation Evidence page",
+      "url": "https://openmanager-ai.vercel.app/validation"
+    }
+  ]
+}

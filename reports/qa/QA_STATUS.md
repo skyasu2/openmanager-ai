@@ -1,28 +1,28 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-23 11:31:46 KST
+> Generated at: 2026-03-23 13:52:43 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 166 |
-| Total Checks | 1249 |
-| Passed | 1196 |
+| Total Runs | 167 |
+| Total Checks | 1254 |
+| Passed | 1201 |
 | Failed | 49 |
-| Completed Items | 238 |
+| Completed Items | 239 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 8 |
 | Expert Domains Tracked | 6 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Run | QA-20260323-0167 (2026-03-23T02:31:45.018Z) |
+| Last Run | QA-20260323-0168 (2026-03-23T04:52:42.651Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260323-0167 (2026-03-23T02:31:45.018Z)
+Latest run: QA-20260323-0168 (2026-03-23T04:52:42.651Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -32,28 +32,29 @@ Latest run: QA-20260323-0167 (2026-03-23T02:31:45.018Z)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period reviewed before production QA; effective total 16.6220 USD and billed cost 0.0000. |
+| vercel | cli | checked | normal | Current billing period reviewed before validation smoke; effective total 16.6220 USD and billed cost 0.0000. |
 
 ## Coverage (Latest Run)
 
 - Scope: targeted
 - Release-Facing: no
-- Deployment: dpl_AqPtZHFNs7a1y67sPt5pmdDhYBu6 / SHA bbee211f
-- Coverage Packs: dashboard-core, ai-core, modal-detail-pack
-- Covered Surfaces: /dashboard, alert history modal, alert history AI prefill button rendering, AI sidebar prefill input
-- Skipped Surfaces: resolved alert history promptOverride path (live history contained only current firing alert during this run), AI message send/response execution
+- Deployment: dpl_44uiucaK3SPXrqN2wbqL54tb9oVC / SHA 5839155a
+- Coverage Packs: core-routes-smoke, modal-detail-pack
+- Covered Surfaces: /validation, validation evidence badges, public snapshot JSON link, /data/qa/validation-evidence.json, latest proof run evidence card
+- Skipped Surfaces: GitHub Actions external page navigation, anchor link intra-page navigation
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | Production deployment | [link](https://openmanager-c6r9tzxk1-skyasus-projects.vercel.app/) | - |
+| general | Public snapshot JSON | [link](https://openmanager-ai.vercel.app/data/qa/validation-evidence.json) | - |
+| general | Validation Evidence page | [link](https://openmanager-ai.vercel.app/validation) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | Alert history modal prefill opens AI sidebar with selected alert context | `artifacts/playwright/active-alert-history-ai-prefill-2026-03-23.png` | - |
+| playwright-screenshot | Validation evidence page with public snapshot badge and proof run summary | `artifacts/playwright/validation-evidence-public-snapshot-2026-03-23.png` | - |
 
 ## Expert Domain Open Gaps
 
@@ -273,6 +274,7 @@ Latest run: QA-20260323-0167 (2026-03-23T02:31:45.018Z)
 - topology-map-render: 토폴로지 맵 완벽 렌더링 (completed 2회, last QA-20260314-0097)
 - typescript-무결성: TypeScript 무결성 (completed 1회, last QA-20260301-0032)
 - ui-esc-close: ESC 사이드바 닫기 (completed 1회, last QA-20260317-0114)
+- validation-public-snapshot-artifact: Validation evidence public snapshot artifact 분리 (completed 1회, last QA-20260323-0168)
 - vercel-build-fix: SessionState import 수정으로 Vercel 빌드 복구 (completed 1회, last QA-20260307-0053)
 - vercel-deployment-ready: Vercel 배포 3건 모두 READY (completed 1회, last QA-20260314-0096)
 - vercel-prod-ai-clarification: AI 질의 모호성 해소 UI 정상 렌더링 및 Fallback 응답 확인 (completed 1회, last QA-20260317-0114)
@@ -330,6 +332,7 @@ Latest run: QA-20260323-0167 (2026-03-23T02:31:45.018Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260323-0168 | 2026-03-23T04:52:42.651Z | targeted | no | Vercel Production QA - validation evidence public snapshot smoke | 5 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260323-0167 | 2026-03-23T02:31:45.018Z | targeted | no | Production QA - alert history modal AI prefill | 4 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260323-0166 | 2026-03-23T01:50:31.435Z | targeted | no | Production QA - active alerts modal AI prefill | 4 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260323-0165 | 2026-03-23T01:29:13.300Z | targeted | no | Production QA - server card alert badge AI prefill | 4 | 1 | 0 | 0 | 0 | 0 |
@@ -349,5 +352,4 @@ Latest run: QA-20260323-0167 (2026-03-23T02:31:45.018Z)
 | QA-20260321-0151 | 2026-03-21T14:51:43.204Z | targeted | no | Vercel Playwright QA - Observability Dashboard Pack (SHA 72ab0bc) | 5 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260321-0150 | 2026-03-21T14:47:41.493Z | targeted | no | CI Manual E2E + QA Script Validation (run #23381598925) | 3 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260321-0149 | 2026-03-21T11:48:31.418Z | targeted | no | Vercel Playwright QA - AI Sidebar Free-Text Proof (SHA fd9346ab2) | 5 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260321-0148 | 2026-03-21T11:41:43.931Z | targeted | no | Vercel Playwright QA - Fullscreen AI Workspace Proof (SHA 8a7fe8769) | 6 | 0 | 0 | 0 | 0 | 0 |
 
