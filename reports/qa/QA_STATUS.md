@@ -1,28 +1,28 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-23 10:50:32 KST
+> Generated at: 2026-03-23 11:31:46 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 165 |
-| Total Checks | 1245 |
-| Passed | 1192 |
+| Total Runs | 166 |
+| Total Checks | 1249 |
+| Passed | 1196 |
 | Failed | 49 |
-| Completed Items | 237 |
+| Completed Items | 238 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 8 |
 | Expert Domains Tracked | 6 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Run | QA-20260323-0166 (2026-03-23T01:50:31.435Z) |
+| Last Run | QA-20260323-0167 (2026-03-23T02:31:45.018Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260323-0166 (2026-03-23T01:50:31.435Z)
+Latest run: QA-20260323-0167 (2026-03-23T02:31:45.018Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -38,22 +38,22 @@ Latest run: QA-20260323-0166 (2026-03-23T01:50:31.435Z)
 
 - Scope: targeted
 - Release-Facing: no
-- Deployment: dpl_DUELZt7C8X1YBTwoTa6RwwLAxPsT / SHA 9d2fcedb
+- Deployment: dpl_AqPtZHFNs7a1y67sPt5pmdDhYBu6 / SHA bbee211f
 - Coverage Packs: dashboard-core, ai-core, modal-detail-pack
-- Covered Surfaces: /dashboard, active alerts modal, active alert AI prefill button rendering, AI sidebar prefill input
-- Skipped Surfaces: unsupported alert metric read-only path (no network/filesystem firing alert in live dataset), AI message send/response execution
+- Covered Surfaces: /dashboard, alert history modal, alert history AI prefill button rendering, AI sidebar prefill input
+- Skipped Surfaces: resolved alert history promptOverride path (live history contained only current firing alert during this run), AI message send/response execution
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | Production deployment | [link](https://openmanager-9wyzuisgf-skyasus-projects.vercel.app/) | - |
+| general | Production deployment | [link](https://openmanager-c6r9tzxk1-skyasus-projects.vercel.app/) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | Active alerts modal prefill opens AI sidebar with selected alert context | `artifacts/playwright/active-alerts-ai-prefill-2026-03-23.png` | - |
+| playwright-screenshot | Alert history modal prefill opens AI sidebar with selected alert context | `artifacts/playwright/active-alert-history-ai-prefill-2026-03-23.png` | - |
 
 ## Expert Domain Open Gaps
 
@@ -124,6 +124,7 @@ Latest run: QA-20260323-0166 (2026-03-23T01:50:31.435Z)
 - ai-사이드바-열기닫기: AI 사이드바 열기/닫기 (completed 1회, last QA-20260317-0114)
 - ai-사이드바-토글-ai-엔진-ready-프리셋-5개-ai-기능-3개: AI 사이드바 토글 (AI 엔진 Ready, 프리셋 5개, AI 기능 3개) (completed 3회, last QA-20260302-0042)
 - alert-history-modal: 알림 이력 모달 (completed 1회, last QA-20260317-0114)
+- alert-history-modal-ai-prefill: 알림 이력 모달에서 AI 사이드바 컨텍스트 자동 주입 (completed 1회, last QA-20260323-0167)
 - analyst-full-analysis: Analyst 전체 분석 (completed 1회, last QA-20260317-0114)
 - analyst-full-analysis-v879: Analyst 전체 분석 및 드릴다운 (completed 1회, last QA-20260306-0052)
 - analyst-full-analysis-v880: Analyst 전체 분석 및 드릴다운 검증 (completed 2회, last QA-20260309-0069)
@@ -329,6 +330,7 @@ Latest run: QA-20260323-0166 (2026-03-23T01:50:31.435Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260323-0167 | 2026-03-23T02:31:45.018Z | targeted | no | Production QA - alert history modal AI prefill | 4 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260323-0166 | 2026-03-23T01:50:31.435Z | targeted | no | Production QA - active alerts modal AI prefill | 4 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260323-0165 | 2026-03-23T01:29:13.300Z | targeted | no | Production QA - server card alert badge AI prefill | 4 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260323-0164 | 2026-03-22T16:53:54.714Z | targeted | no | Production QA - AI sidebar parity contract rendering fixed | 6 | 1 | 0 | 0 | 0 | 0 |
@@ -348,5 +350,4 @@ Latest run: QA-20260323-0166 (2026-03-23T01:50:31.435Z)
 | QA-20260321-0150 | 2026-03-21T14:47:41.493Z | targeted | no | CI Manual E2E + QA Script Validation (run #23381598925) | 3 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260321-0149 | 2026-03-21T11:48:31.418Z | targeted | no | Vercel Playwright QA - AI Sidebar Free-Text Proof (SHA fd9346ab2) | 5 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260321-0148 | 2026-03-21T11:41:43.931Z | targeted | no | Vercel Playwright QA - Fullscreen AI Workspace Proof (SHA 8a7fe8769) | 6 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260321-0147 | 2026-03-21T11:36:14.761Z | targeted | no | Vercel Playwright QA - AI Sidebar Reporter Analyst Proof (SHA d802241fb) | 7 | 0 | 0 | 0 | 0 | 0 |
 

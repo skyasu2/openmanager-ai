@@ -1,0 +1,86 @@
+{
+  "runId": "QA-20260323-0167",
+  "recordedAt": "2026-03-23T02:31:45.018Z",
+  "recordedAtKst": "2026-03-23 11:31:45 KST",
+  "runTitle": "Production QA - alert history modal AI prefill",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_AqPtZHFNs7a1y67sPt5pmdDhYBu6",
+    "deploymentUrl": "https://openmanager-c6r9tzxk1-skyasus-projects.vercel.app",
+    "commitSha": "bbee211fa1b008f5a2c2ac89f017d9c333a7b253"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "coveragePacks": ["dashboard-core", "ai-core", "modal-detail-pack"],
+  "coveredSurfaces": [
+    "/dashboard",
+    "alert history modal",
+    "alert history AI prefill button rendering",
+    "AI sidebar prefill input"
+  ],
+  "skippedSurfaces": [
+    "resolved alert history promptOverride path (live history contained only current firing alert during this run)",
+    "AI message send/response execution"
+  ],
+  "checks": {
+    "total": 4,
+    "passed": 4,
+    "failed": 0
+  },
+  "expertAssessments": [],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-03-23T11:31:20+09:00",
+      "summary": "Current billing period reviewed before production QA; effective total 16.6220 USD and billed cost 0.0000.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "Alert history modal prefill opens AI sidebar with selected alert context",
+      "path": "artifacts/playwright/active-alert-history-ai-prefill-2026-03-23.png"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "alert-history-modal-ai-prefill",
+      "title": "알림 이력 모달에서 AI 사이드바 컨텍스트 자동 주입",
+      "priority": "P1",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Production alert history modal rendered an AI button for the live firing CPU alert, and clicking api-was-dc1-01:9100 CPU opened the AI sidebar with the selected alert context prefilled.",
+      "note": "Live alert history contained only one current firing CPU alert during this run, so resolved-history promptOverride wording was not exercised on production.",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Verified the live alert history modal rendered 'AI에게 api-was-dc1-01:9100 CPU 알림 분석 요청' for the current firing alert.",
+    "Verified clicking the button opened the AI sidebar and prefilled 'api-was-dc1-01:9100 서버의 CPU 사용률이 82%입니다. 현재 원인과 우선 조치 방법을 분석해줘.' in the input.",
+    "Resolved-history promptOverride behavior remains covered by local DOM tests because the live history set did not include a resolved CPU/MEM/DISK alert during this run."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Production deployment",
+      "url": "https://openmanager-c6r9tzxk1-skyasus-projects.vercel.app/"
+    }
+  ]
+}
