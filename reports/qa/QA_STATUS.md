@@ -1,15 +1,15 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-23 13:52:43 KST
+> Generated at: 2026-03-23 16:36:32 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 167 |
-| Total Checks | 1254 |
-| Passed | 1201 |
+| Total Runs | 168 |
+| Total Checks | 1255 |
+| Passed | 1202 |
 | Failed | 49 |
 | Completed Items | 239 |
 | Pending Items | 0 |
@@ -18,11 +18,11 @@
 | Expert Domains Tracked | 6 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Run | QA-20260323-0168 (2026-03-23T04:52:42.651Z) |
+| Last Run | QA-20260323-0169 (2026-03-23T07:36:31.950Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260323-0168 (2026-03-23T04:52:42.651Z)
+Latest run: QA-20260323-0169 (2026-03-23T07:36:31.950Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -32,29 +32,28 @@ Latest run: QA-20260323-0168 (2026-03-23T04:52:42.651Z)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period reviewed before validation smoke; effective total 16.6220 USD and billed cost 0.0000. |
+| - | - | - | - | - |
 
 ## Coverage (Latest Run)
 
 - Scope: targeted
 - Release-Facing: no
-- Deployment: dpl_44uiucaK3SPXrqN2wbqL54tb9oVC / SHA 5839155a
-- Coverage Packs: core-routes-smoke, modal-detail-pack
-- Covered Surfaces: /validation, validation evidence badges, public snapshot JSON link, /data/qa/validation-evidence.json, latest proof run evidence card
-- Skipped Surfaces: GitHub Actions external page navigation, anchor link intra-page navigation
+- Deployment: SHA 3e9416ee
+- Coverage Packs: modal-detail-pack
+- Covered Surfaces: alert history resolved promptOverride contract, dashboard alert ai context helper
+- Skipped Surfaces: vercel-production resolved alert history live path (no resolved alerts in current dataset), AI sidebar send/response execution
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | Public snapshot JSON | [link](https://openmanager-ai.vercel.app/data/qa/validation-evidence.json) | - |
-| general | Validation Evidence page | [link](https://openmanager-ai.vercel.app/validation) | - |
+| - | - | - | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | Validation evidence page with public snapshot badge and proof run summary | `artifacts/playwright/validation-evidence-public-snapshot-2026-03-23.png` | - |
+| - | - | - | - |
 
 ## Expert Domain Open Gaps
 
@@ -332,6 +331,7 @@ Latest run: QA-20260323-0168 (2026-03-23T04:52:42.651Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260323-0169 | 2026-03-23T07:36:31.950Z | targeted | no | Resolved alert history promptOverride local contract verification | 1 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260323-0168 | 2026-03-23T04:52:42.651Z | targeted | no | Vercel Production QA - validation evidence public snapshot smoke | 5 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260323-0167 | 2026-03-23T02:31:45.018Z | targeted | no | Production QA - alert history modal AI prefill | 4 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260323-0166 | 2026-03-23T01:50:31.435Z | targeted | no | Production QA - active alerts modal AI prefill | 4 | 1 | 0 | 0 | 0 | 0 |
@@ -351,5 +351,4 @@ Latest run: QA-20260323-0168 (2026-03-23T04:52:42.651Z)
 | QA-20260322-0152 | 2026-03-21T15:25:16.179Z | targeted | no | Cloud Run Admin Observability Pack - Monitoring + Traces Direct Check | 4 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260321-0151 | 2026-03-21T14:51:43.204Z | targeted | no | Vercel Playwright QA - Observability Dashboard Pack (SHA 72ab0bc) | 5 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260321-0150 | 2026-03-21T14:47:41.493Z | targeted | no | CI Manual E2E + QA Script Validation (run #23381598925) | 3 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260321-0149 | 2026-03-21T11:48:31.418Z | targeted | no | Vercel Playwright QA - AI Sidebar Free-Text Proof (SHA fd9346ab2) | 5 | 0 | 0 | 0 | 0 | 0 |
 

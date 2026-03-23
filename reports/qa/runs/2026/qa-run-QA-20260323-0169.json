@@ -1,0 +1,46 @@
+{
+  "runId": "QA-20260323-0169",
+  "recordedAt": "2026-03-23T07:36:31.950Z",
+  "recordedAtKst": "2026-03-23 16:36:31 KST",
+  "runTitle": "Resolved alert history promptOverride local contract verification",
+  "owner": "codex",
+  "source": "local-validation",
+  "environment": {
+    "target": "local-dev",
+    "url": "",
+    "frontend": "Local",
+    "backend": "Local",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "3e9416ee0a0257f035a3e323a68e610621e9b249"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "coveragePacks": ["modal-detail-pack"],
+  "coveredSurfaces": [
+    "alert history resolved promptOverride contract",
+    "dashboard alert ai context helper"
+  ],
+  "skippedSurfaces": [
+    "vercel-production resolved alert history live path (no resolved alerts in current dataset)",
+    "AI sidebar send/response execution"
+  ],
+  "checks": {
+    "total": 1,
+    "passed": 1,
+    "failed": 0
+  },
+  "expertAssessments": [],
+  "usageChecks": [],
+  "artifacts": [],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "npx -y tsx direct evaluation confirmed resolved alert normalization returns DISK 91 and a promptOverride containing both '해소된 알림 이력' and '재발 방지'.",
+    "This run closes the remaining evidence gap for the helper contract only; production live proof still depends on a dataset window that actually contains a resolved CPU/MEM/DISK alert."
+  ],
+  "links": []
+}
