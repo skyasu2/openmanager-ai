@@ -81,8 +81,42 @@ type ValidationEvidenceSnapshot = {
   latestProofRun: QATrackerRun;
 };
 
+function buildProofGapLabel(
+  trackerUpdatedIso?: string | null,
+  latestProofIso?: string | null
+): string {
+  if (!trackerUpdatedIso || !latestProofIso) {
+    return '현재 배포에는 tracker snapshot과 latest CI proof가 함께 포함됩니다.';
+  }
+
+  const trackerUpdated = new Date(trackerUpdatedIso).getTime();
+  const latestProof = new Date(latestProofIso).getTime();
+
+  if (
+    Number.isNaN(trackerUpdated) ||
+    Number.isNaN(latestProof) ||
+    trackerUpdated === latestProof
+  ) {
+    return '현재 배포에는 tracker snapshot과 latest CI proof가 같은 기준 시점으로 포함됩니다.';
+  }
+
+  const diffDays = Math.abs(
+    Math.round((trackerUpdated - latestProof) / (1000 * 60 * 60 * 24))
+  );
+
+  if (trackerUpdated > latestProof) {
+    return `Tracker snapshot이 latest CI proof보다 ${diffDays}일 더 최신입니다. 최신 저장소 기록은 다음 재배포 때 반영됩니다.`;
+  }
+
+  return `Latest CI proof가 tracker snapshot보다 ${diffDays}일 더 최신입니다. 현재 배포에는 직전 snapshot 기준 요약이 포함돼 있습니다.`;
+}
+
 export default function ValidationEvidencePage() {
   const evidence = validationEvidenceJson as ValidationEvidenceSnapshot;
+  const proofGapLabel = buildProofGapLabel(
+    evidence.trackerUpdated.iso,
+    evidence.latestProofRecorded.iso
+  );
 
   return (
     <div className={`min-h-screen ${PAGE_BACKGROUNDS.DARK_PAGE_BG}`}>
@@ -111,20 +145,17 @@ export default function ValidationEvidencePage() {
             <EvidencePill className="border-emerald-400/30 bg-emerald-500/10 text-emerald-200">
               {QA_EVIDENCE_LABELS.badge}
             </EvidencePill>
-            <EvidencePill className="border-sky-400/25 bg-sky-500/10 text-sky-200">
-              Tracker updated {evidence.trackerUpdated.short}
+            <EvidencePill className="border-emerald-300/20 bg-emerald-500/5 text-emerald-100">
+              Snapshot updated {evidence.trackerUpdated.short}
             </EvidencePill>
             <EvidencePill className="border-indigo-400/25 bg-indigo-500/10 text-indigo-200">
               Latest CI proof {evidence.latestProofRecorded.short}
             </EvidencePill>
-            <EvidencePill className="border-amber-400/25 bg-amber-500/10 text-amber-200">
-              Deployed snapshot
-            </EvidencePill>
             <EvidencePill className="border-cyan-400/25 bg-cyan-500/10 text-cyan-200">
-              QA completed {evidence.summary.completedItems}
+              Status: production-backed
             </EvidencePill>
             <EvidencePill className="border-purple-400/25 bg-purple-500/10 text-purple-200">
-              open-gaps {evidence.summary.expertDomainsOpenGaps}
+              Open gaps {evidence.summary.expertDomainsOpenGaps}
             </EvidencePill>
           </div>
 
@@ -132,16 +163,21 @@ export default function ValidationEvidencePage() {
             Validation Evidence
           </h1>
           <p className="mt-3 max-w-3xl text-sm leading-relaxed text-white/75 sm:text-base">
-            이 페이지는 첫 화면에서 보이는 production validation CTA의 실제
-            근거를 모아 둔 internal evidence summary입니다. 외부 방문자가 404
-            없이 검증 기준을 이해할 수 있도록 요약만 노출하고, 세부 증거는 CI
-            run과 public snapshot artifact로 설명합니다. 현재 화면은 live 배포에
-            함께 포함된 QA evidence JSON을 읽으며, 저장소의 더 최신 QA 기록은
-            다음 재배포 전까지 자동 반영되지 않습니다. 현재 화면은{' '}
-            {evidence.trackerUpdated.long} 기준 QA tracker snapshot과{' '}
-            {evidence.latestProofRecorded.long} 기준 CI-backed proof run을 함께
-            보여줍니다.
+            이 페이지는 production validation CTA의 근거를 요약해서 보여주는
+            evidence summary입니다. 현재 배포에 포함된 public QA snapshot을 읽어
+            핵심 운영 수치와 최신 CI-backed proof run을 함께 노출합니다.
           </p>
+          <p className="mt-3 max-w-3xl text-sm leading-relaxed text-white/65">
+            저장소의 더 최신 QA 기록은 다음 재배포 전까지 자동 반영되지
+            않습니다. 현재 화면은 {evidence.trackerUpdated.long} 기준 tracker
+            snapshot과 {evidence.latestProofRecorded.long} 기준 CI-backed
+            proof를 함께 보여줍니다.
+          </p>
+
+          <div className="mt-4 rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-sm text-white/75">
+            <span className="font-medium text-white/90">Snapshot note:</span>{' '}
+            {proofGapLabel}
+          </div>
 
           <div className="mt-6 flex flex-wrap gap-3">
             {evidence.latestProofRun.ciRunLink?.url && (
@@ -191,6 +227,14 @@ export default function ValidationEvidencePage() {
           <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
               <p className="text-xs uppercase tracking-wide text-white/50">
+                Snapshot updated
+              </p>
+              <p className="mt-2 text-2xl font-semibold text-white">
+                {evidence.trackerUpdated.short}
+              </p>
+            </div>
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+              <p className="text-xs uppercase tracking-wide text-white/50">
                 Total runs
               </p>
               <p className="mt-2 text-2xl font-semibold text-white">
@@ -213,17 +257,14 @@ export default function ValidationEvidencePage() {
                 {evidence.summary.completedItems}
               </p>
             </div>
-            <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-              <p className="text-xs uppercase tracking-wide text-white/50">
-                Wont-fix
-              </p>
-              <p className="mt-2 text-2xl font-semibold text-amber-300">
-                {evidence.summary.wontFixItems}
-              </p>
-            </div>
           </div>
 
-          <p className="mt-5 text-sm text-white/65">
+          <p className="mt-4 text-sm text-white/60">
+            Known limitations tracked separately:{' '}
+            {evidence.summary.wontFixItems} items
+          </p>
+
+          <p className="mt-3 text-sm text-white/65">
             Public snapshot artifact: <code>{evidence.source.publicPath}</code>
           </p>
         </section>
