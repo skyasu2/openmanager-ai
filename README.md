@@ -243,6 +243,17 @@ This means the portfolio evidence includes:
 - downloadable Playwright HTML report and test-results artifacts from CI
 - explicit feedback observability contract verification (`traceUrlStatus`)
 
+## Known Limitations
+
+This project documents known non-blocking constraints explicitly instead of hiding them behind idealized screenshots.
+
+- **Cloud Run cold start on AI paths**: the first AI request can be noticeably slower when the free-tier-oriented Cloud Run revision is cold. In the worst case, preset-question fallback can also feel delayed until the container is warm.
+- **Production timing headers**: Vercel production does not expose `Server-Timing` consistently across all streaming and proxy paths. Operational latency evidence therefore uses `X-AI-Latency-Ms` and `X-AI-Processing-Ms` as the production SSOT.
+- **Intentional portfolio scope cuts**: the repo does not currently optimize for secondary surfaces such as AI chat detail expand, analyst per-server drilldown, or automatic weekly false-positive/false-negative reporting.
+- **Quality gate policy**: release confidence is based on targeted type/lint/test checks plus recorded production QA evidence, not on claiming an arbitrary unit-test count or a historical `tsc --noEmit zero error` tracker target.
+
+The latest non-blocking limitations are tracked in [reports/qa/QA_STATUS.md](reports/qa/QA_STATUS.md) under `Wont-Fix Improvements`.
+
 ### Sample Queries
 
 ```
