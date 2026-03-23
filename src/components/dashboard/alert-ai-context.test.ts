@@ -34,6 +34,57 @@ describe('alert-ai-context', () => {
     });
   });
 
+  it('동점 상황에서 CPU를 우선 선택해야 한다', () => {
+    // reduce는 strictly greater 조건이므로 첫 번째 최댓값(CPU)을 유지
+    const result = getHighestServerAlertMetric({
+      cpu: 90,
+      memory: 90,
+      disk: 90,
+    });
+    expect(result).toEqual({ metricLabel: 'CPU', metricValue: 90 });
+  });
+
+  it('모든 메트릭이 0일 때 CPU를 반환해야 한다', () => {
+    const result = getHighestServerAlertMetric({ cpu: 0, memory: 0, disk: 0 });
+    expect(result).toEqual({ metricLabel: 'CPU', metricValue: 0 });
+  });
+
+  it('null/undefined 메트릭은 0으로 처리해야 한다', () => {
+    const result = getHighestServerAlertMetric({
+      cpu: undefined as unknown as number,
+      memory: 55,
+      disk: undefined as unknown as number,
+    });
+    expect(result).toEqual({ metricLabel: 'MEM', metricValue: 55 });
+  });
+
+  it('지원하지 않는 메트릭은 null을 반환해야 한다', () => {
+    expect(
+      toDashboardAlertContext({
+        serverId: 's1',
+        instance: 'server-1',
+        metric: 'network_bytes',
+        value: 99,
+      })
+    ).toBeNull();
+  });
+
+  it('active(non-resolved) alert는 promptOverride 없이 반환해야 한다', () => {
+    const ctx = toDashboardAlertContext({
+      serverId: 's2',
+      instance: 'server-2',
+      metric: 'cpu_usage',
+      value: 78.6,
+    });
+    expect(ctx).toEqual({
+      serverId: 's2',
+      serverName: 'server-2',
+      metricLabel: 'CPU',
+      metricValue: 79,
+    });
+    expect(ctx?.promptOverride).toBeUndefined();
+  });
+
   it('resolved alert는 재발 방지 promptOverride를 포함해야 한다', () => {
     expect(
       toDashboardAlertContext({

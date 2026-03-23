@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # scripts/dev/typecheck-changed.sh
-# 변경 범위를 기준으로 증분 project type-check 실행
+# 변경 범위를 기준으로 project type-check 실행
+# tsconfig.check.json 사용: incremental 비활성화로 WSL Windows FS hang 방지
 
 set -euo pipefail
 
@@ -23,13 +24,14 @@ if [ -z "$ALL_CHANGED" ]; then
 fi
 
 FILE_COUNT=$(echo "$ALL_CHANGED" | wc -l)
-echo "📝 $FILE_COUNT TypeScript file(s) modified. Running incremental project type-check..."
+echo "📝 $FILE_COUNT TypeScript file(s) modified. Running project type-check..."
 
 TYPECHECK_CHANGED_TIMEOUT_SECONDS="${TYPECHECK_CHANGED_TIMEOUT_SECONDS:-60}"
 TYPECHECK_CHANGED_SOFT_TIMEOUT="${TYPECHECK_CHANGED_SOFT_TIMEOUT:-false}"
 
 # TypeScript는 파일 단위가 아니라 project graph 기준으로 타입을 해석한다.
 # pre-push에서는 응답성 보장을 위해 timeout을 두고, 시간 초과 시 CI/Vercel 검증으로 이관한다.
+# tsconfig.check.json: incremental=false로 WSL에서 .next/cache/tsbuildinfo Windows FS 접근 방지
 TYPECHECK_CMD=(
   node
   scripts/dev/tsc-wrapper.js
@@ -37,7 +39,7 @@ TYPECHECK_CMD=(
   --pretty
   false
   --project
-  tsconfig.json
+  tsconfig.check.json
 )
 
 if command -v timeout >/dev/null 2>&1; then
@@ -47,7 +49,7 @@ if command -v timeout >/dev/null 2>&1; then
   set -e
 
   if [ "$TYPECHECK_EXIT_CODE" -eq 124 ]; then
-    echo "⚠️ Incremental type-check timed out after ${TYPECHECK_CHANGED_TIMEOUT_SECONDS}s."
+    echo "⚠️ Type-check timed out after ${TYPECHECK_CHANGED_TIMEOUT_SECONDS}s."
     if [ "$TYPECHECK_CHANGED_SOFT_TIMEOUT" = "true" ]; then
       echo "ℹ️ Pre-push에서는 해당 검증을 soft-skip하고 CI/Vercel 전체 타입체크에 위임합니다."
       exit 0
@@ -63,4 +65,4 @@ else
 fi
 
 echo ""
-echo "✅ Incremental type-check passed!"
+echo "✅ Type-check passed!"

@@ -80,12 +80,28 @@ type ValidationEvidenceSnapshot = {
   latestProofRun: QATrackerRun;
 };
 
+function getSnapshotAgeDays(generatedAt: string): number {
+  const now = Date.now();
+  const generated = new Date(generatedAt).getTime();
+  return Math.floor((now - generated) / (1000 * 60 * 60 * 24));
+}
+
 export default function ValidationEvidencePage() {
   const evidence = validationEvidenceJson as ValidationEvidenceSnapshot;
+  const snapshotAgeDays = getSnapshotAgeDays(evidence.generatedAt);
+  const isStale = snapshotAgeDays >= 7;
 
   return (
     <div className={`min-h-screen ${PAGE_BACKGROUNDS.DARK_PAGE_BG}`}>
       <div className="wave-particles" />
+
+      {isStale && (
+        <div className="relative z-50 border-b border-amber-500/30 bg-amber-500/10 px-4 py-2 text-center text-xs text-amber-300">
+          ⚠️ 이 스냅샷은 {snapshotAgeDays}일 전 빌드 기준입니다. 최신 QA 기록은
+          저장소의 <code className="font-mono">reports/qa/QA_STATUS.md</code>를
+          참조하세요.
+        </div>
+      )}
 
       <header className="relative z-50 flex items-center justify-between p-4 sm:p-6">
         <OpenManagerLogo
