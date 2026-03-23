@@ -1,9 +1,13 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { OpenManagerLogo } from '@/components/shared/OpenManagerLogo';
-import { QA_EVIDENCE_ANCHORS, QA_EVIDENCE_LABELS } from '@/data/qa-evidence';
+import {
+  QA_EVIDENCE_ANCHORS,
+  QA_EVIDENCE_CTA_LINKS,
+  QA_EVIDENCE_LABELS,
+} from '@/data/qa-evidence';
 import { PAGE_BACKGROUNDS } from '@/styles/design-constants';
-import qaTrackerJson from '../../../reports/qa/qa-tracker.json';
+import validationEvidenceJson from '../../../public/data/qa/validation-evidence.json';
 
 export const metadata: Metadata = {
   title: 'Validation Evidence | OpenManager AI',
@@ -27,7 +31,7 @@ function EvidencePill({
   );
 }
 
-type QATrackerSummary = {
+type ValidationEvidenceSummary = {
   totalRuns: number;
   totalChecks: number;
   completedItems: number;
@@ -44,83 +48,40 @@ type QATrackerLink = {
 };
 
 type QATrackerRun = {
-  runId?: string;
-  title?: string;
-  scope?: string;
-  recordedAt?: string;
-  environment?: {
-    commitSha?: string;
-  };
-  links?: QATrackerLink[];
+  runId: string;
+  title: string;
+  scope: string;
+  recordedAt?: string | null;
+  commitSha: string;
+  repoPath: string;
+  ciRunLink: QATrackerLink | null;
+  ciArtifactLinks: QATrackerLink[];
 };
 
-function formatEvidenceDate(dateString?: string | null) {
-  if (!dateString) {
-    return {
-      short: 'latest',
-      long: 'Latest',
-    };
-  }
+type ValidationEvidenceDate = {
+  iso?: string | null;
+  short: string;
+  long: string;
+};
 
-  const date = new Date(dateString);
-
-  return {
-    short: date.toISOString().slice(0, 10),
-    long: date.toLocaleDateString('en-US', {
-      month: 'long',
-      day: 'numeric',
-      year: 'numeric',
-      timeZone: 'UTC',
-    }),
+type ValidationEvidenceSnapshot = {
+  version: string;
+  generatedAt: string;
+  source: {
+    trackerPath: string;
+    statusPath: string;
+    publicPath: string;
+    publicHref: string;
+    latestRunId: string;
   };
-}
-
-function getValidationEvidence() {
-  const tracker = qaTrackerJson as {
-    summary?: QATrackerSummary;
-    runs?: QATrackerRun[];
-  };
-
-  const summary = tracker.summary;
-  const latestProofRun = [...(tracker.runs ?? [])]
-    .reverse()
-    .find((run) =>
-      run.links?.some((link) => link.type?.startsWith('github-actions'))
-    );
-
-  if (!summary || !latestProofRun?.runId) {
-    throw new Error('QA validation evidence summary is unavailable');
-  }
-
-  const trackerUpdated = formatEvidenceDate(summary.lastRecordedAt);
-  const latestProofRecorded = formatEvidenceDate(latestProofRun.recordedAt);
-  const runYear = latestProofRun.runId.slice(3, 7);
-  const githubRunLink = latestProofRun.links?.find(
-    (link) => link.type === 'github-actions-run'
-  );
-  const githubArtifactLinks = latestProofRun.links?.filter(
-    (link) => link.type === 'github-actions-artifact'
-  );
-
-  return {
-    summary,
-    trackerUpdated,
-    latestProofRecorded,
-    latestProofRun: {
-      runId: latestProofRun.runId,
-      title: latestProofRun.title ?? latestProofRun.runId,
-      scope: latestProofRun.scope ?? 'targeted',
-      recordedAt: latestProofRun.recordedAt ?? '',
-      commitSha: latestProofRun.environment?.commitSha ?? '',
-      repoPath: `reports/qa/runs/${runYear}/qa-run-${latestProofRun.runId}.json`,
-      ciRunLink: githubRunLink ?? null,
-      ciArtifactLinks: githubArtifactLinks ?? [],
-    },
-  };
-}
+  summary: ValidationEvidenceSummary;
+  trackerUpdated: ValidationEvidenceDate;
+  latestProofRecorded: ValidationEvidenceDate;
+  latestProofRun: QATrackerRun;
+};
 
 export default function ValidationEvidencePage() {
-  const evidence = getValidationEvidence();
+  const evidence = validationEvidenceJson as ValidationEvidenceSnapshot;
 
   return (
     <div className={`min-h-screen ${PAGE_BACKGROUNDS.DARK_PAGE_BG}`}>
@@ -171,9 +132,9 @@ export default function ValidationEvidencePage() {
             이 페이지는 첫 화면에서 보이는 production validation CTA의 실제
             근거를 모아 둔 internal evidence summary입니다. 외부 방문자가 404
             없이 검증 기준을 이해할 수 있도록 요약만 노출하고, 세부 증거는 CI
-            run과 in-repo SSOT 경로로 설명합니다. 현재 화면은 live 배포에 함께
-            포함된 QA tracker snapshot을 읽으며, 저장소의 더 최신 QA 기록은 다음
-            재배포 전까지 자동 반영되지 않습니다. 현재 화면은{' '}
+            run과 public snapshot artifact로 설명합니다. 현재 화면은 live 배포에
+            함께 포함된 QA evidence JSON을 읽으며, 저장소의 더 최신 QA 기록은
+            다음 재배포 전까지 자동 반영되지 않습니다. 현재 화면은{' '}
             {evidence.trackerUpdated.long} 기준 QA tracker snapshot과{' '}
             {evidence.latestProofRecorded.long} 기준 CI-backed proof run을 함께
             보여줍니다.
@@ -190,6 +151,14 @@ export default function ValidationEvidencePage() {
                 GitHub Actions evidence run
               </a>
             )}
+            <a
+              href={QA_EVIDENCE_CTA_LINKS.publicSnapshotHref}
+              target="_blank"
+              rel="noreferrer"
+              className="rounded-full border border-emerald-400/25 bg-emerald-500/10 px-4 py-2 text-sm text-emerald-200 transition hover:border-emerald-300/40 hover:bg-emerald-500/15"
+            >
+              Public snapshot JSON
+            </a>
             <Link
               href={`#${QA_EVIDENCE_ANCHORS.qaStatus}`}
               className="rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm text-white/80 transition hover:border-white/30 hover:bg-white/10 hover:text-white"
@@ -212,8 +181,8 @@ export default function ValidationEvidencePage() {
           <h2 className="text-2xl font-semibold text-white">QA Status</h2>
           <p className="mt-2 text-sm text-white/70">
             QA SSOT는 저장소 내 `reports/qa/QA_STATUS.md`와 `qa-tracker.json`
-            입니다. live 사이트에서는 현재 배포에 포함된 snapshot 기준 핵심 운영
-            수치만 요약합니다.
+            입니다. live 사이트에서는 현재 배포에 포함된 public snapshot 기준
+            핵심 운영 수치만 요약합니다.
           </p>
 
           <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -252,7 +221,7 @@ export default function ValidationEvidencePage() {
           </div>
 
           <p className="mt-5 text-sm text-white/65">
-            Source of truth in repository: <code>reports/qa/QA_STATUS.md</code>
+            Public snapshot artifact: <code>{evidence.source.publicPath}</code>
           </p>
         </section>
 
@@ -265,7 +234,8 @@ export default function ValidationEvidencePage() {
           </h2>
           <p className="mt-2 text-sm text-white/70">
             가장 최근의 CI-backed feedback trace proof는 manual workflow run과
-            연결되어 있습니다. 이 값은 현재 QA tracker SSOT에서 직접 읽습니다.
+            연결되어 있습니다. 이 값도 현재 배포에 포함된 public snapshot
+            artifact 기준으로 렌더링됩니다.
           </p>
 
           <div className="mt-5 rounded-2xl border border-white/10 bg-white/5 p-5">

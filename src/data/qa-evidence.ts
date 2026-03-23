@@ -7,6 +7,7 @@ export const QA_EVIDENCE_CTA_LINKS = {
   overviewHref: '/validation',
   statusHref: `/validation#${QA_EVIDENCE_ANCHORS.qaStatus}`,
   proofHref: `/validation#${QA_EVIDENCE_ANCHORS.latestProofRun}`,
+  publicSnapshotHref: '/data/qa/validation-evidence.json',
 } as const;
 
 export const QA_EVIDENCE_LABELS = {

@@ -114,6 +114,7 @@
     "test:cloud:essential": "node scripts/test/cloud-deploy-essential-smoke.mjs",
     "test:cloud:essential:strict": "node scripts/test/cloud-deploy-essential-smoke.mjs --require-auth",
     "test:cloud:essential:llm-once": "node scripts/test/cloud-deploy-essential-smoke.mjs --require-auth --with-supervisor-call",
+    "qa:evidence:build": "node scripts/qa/build-validation-evidence.js",
     "qa:record": "node scripts/qa/record-qa-run.js",
     "qa:status": "node scripts/qa/print-qa-status.js",
     "qa:status:sync": "node scripts/qa/print-qa-status.js --write",

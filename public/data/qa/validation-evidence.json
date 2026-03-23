@@ -1,0 +1,57 @@
+{
+  "version": "1.0.0",
+  "generatedAt": "2026-03-23T04:40:50.025Z",
+  "source": {
+    "trackerPath": "reports/qa/qa-tracker.json",
+    "statusPath": "reports/qa/QA_STATUS.md",
+    "publicPath": "public/data/qa/validation-evidence.json",
+    "publicHref": "/data/qa/validation-evidence.json",
+    "latestRunId": "QA-20260323-0167"
+  },
+  "summary": {
+    "totalRuns": 166,
+    "totalChecks": 1249,
+    "completedItems": 238,
+    "expertDomainsOpenGaps": 0,
+    "wontFixItems": 8,
+    "lastRecordedAt": "2026-03-23T02:31:45.018Z"
+  },
+  "trackerUpdated": {
+    "iso": "2026-03-23T02:31:45.018Z",
+    "short": "2026-03-23",
+    "long": "March 23, 2026"
+  },
+  "latestProofRecorded": {
+    "iso": "2026-03-22T07:26:30.735Z",
+    "short": "2026-03-22",
+    "long": "March 22, 2026"
+  },
+  "latestProofRun": {
+    "runId": "QA-20260322-0160",
+    "title": "CI Manual Feedback Trace Status QA (run #23398040200)",
+    "scope": "targeted",
+    "recordedAt": "2026-03-22T07:26:30.735Z",
+    "commitSha": "ba7b15d70",
+    "repoPath": "reports/qa/runs/2026/qa-run-QA-20260322-0160.json",
+    "ciRunLink": {
+      "type": "github-actions-run",
+      "label": "GitHub Actions: CI/CD Core Gates #23398040200",
+      "url": "https://github.com/skyasu2/openmanager-ai/actions/runs/23398040200",
+      "note": "branch=main, sha=ba7b15d70"
+    },
+    "ciArtifactLinks": [
+      {
+        "type": "github-actions-artifact",
+        "label": "Feedback Trace HTML Report",
+        "url": "https://github.com/skyasu2/openmanager-ai/actions/runs/23398040200",
+        "note": "artifact=manual-feedback-trace-report-23398040200; download/open from the workflow run page"
+      },
+      {
+        "type": "github-actions-artifact",
+        "label": "Feedback Trace Playwright Results (trace/screenshot/video)",
+        "url": "https://github.com/skyasu2/openmanager-ai/actions/runs/23398040200",
+        "note": "artifact=manual-feedback-trace-results-23398040200; download/open from the workflow run page"
+      }
+    ]
+  }
+}

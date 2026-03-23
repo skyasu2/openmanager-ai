@@ -3,6 +3,10 @@
 const { execFileSync } = require('node:child_process');
 const fs = require('node:fs');
 const path = require('node:path');
+const {
+  OUTPUT_PATH: VALIDATION_EVIDENCE_OUTPUT_PATH,
+  writeValidationEvidenceSnapshot,
+} = require('./build-validation-evidence');
 
 const QA_ROOT = path.resolve(process.cwd(), 'reports/qa');
 const RUNS_ROOT = path.join(QA_ROOT, 'runs');
@@ -1804,7 +1808,13 @@ function run() {
 
   writeJsonFile(TRACKER_PATH, tracker);
   fs.writeFileSync(STATUS_PATH, statusMarkdown(tracker), 'utf8');
-  formatGeneratedFiles([runFilePath, TRACKER_PATH, STATUS_PATH]);
+  writeValidationEvidenceSnapshot({ trackerPath: TRACKER_PATH });
+  formatGeneratedFiles([
+    runFilePath,
+    TRACKER_PATH,
+    STATUS_PATH,
+    VALIDATION_EVIDENCE_OUTPUT_PATH,
+  ]);
 
   console.log(`✅ QA run recorded: ${runId}`);
   console.log(`- run file: ${runFileRelative}`);
