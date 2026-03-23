@@ -2,25 +2,25 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-03-22T16:53:54.714Z"
+    "updatedAt": "2026-03-23T01:29:13.300Z"
   },
   "sequence": {
-    "nextRunNumber": 165
+    "nextRunNumber": 166
   },
   "summary": {
-    "totalRuns": 163,
-    "totalChecks": 1237,
-    "totalPassed": 1184,
+    "totalRuns": 164,
+    "totalChecks": 1241,
+    "totalPassed": 1188,
     "totalFailed": 49,
     "completionRate": 100,
-    "completedItems": 235,
+    "completedItems": 236,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 8,
     "expertDomainsTracked": 6,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260323-0164",
-    "lastRecordedAt": "2026-03-22T16:53:54.714Z"
+    "lastRunId": "QA-20260323-0165",
+    "lastRecordedAt": "2026-03-23T01:29:13.300Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -5543,6 +5543,30 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-03-22T16:53:54.714Z"
+    },
+    "server-card-badge-ai-prefill": {
+      "id": "server-card-badge-ai-prefill",
+      "title": "서버 카드 경고 배지 클릭 시 AI 사이드바 컨텍스트 자동 주입",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260323-0165",
+      "firstSeenAt": "2026-03-23T01:29:13.300Z",
+      "lastSeenRunId": "QA-20260323-0165",
+      "lastSeenAt": "2026-03-23T01:29:13.300Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "codex",
+      "lastEvidence": "Production dashboard warning badge now opens AI sidebar and prefills the alert question for the selected server card.",
+      "lastNote": "warning/critical badges are clickable, stable badges remain read-only.",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-03-23T01:29:13.300Z"
     }
   },
   "runs": [
@@ -13383,6 +13407,76 @@
         }
       ],
       "links": [],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260323-0165",
+      "recordedAt": "2026-03-23T01:29:13.300Z",
+      "recordedAtKst": "2026-03-23 10:29:13 KST",
+      "title": "Production QA - server card alert badge AI prefill",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260323-0165.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_2edXD5ofuA1CWUNMA8ErnZs3Moze",
+        "deploymentUrl": "https://openmanager-lzzeax81n-skyasus-projects.vercel.app",
+        "commitSha": "a2ba7eb2c"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "coveragePacks": ["dashboard-core", "ai-core"],
+      "coveredSurfaces": [
+        "/dashboard",
+        "warning/critical server card AI badges",
+        "AI sidebar prefill input",
+        "stable server card badge remains read-only"
+      ],
+      "skippedSurfaces": [
+        "AI message send/response execution",
+        "fullscreen AI workspace"
+      ],
+      "checks": {
+        "total": 4,
+        "passed": 4,
+        "failed": 0
+      },
+      "expertAssessments": [],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-03-23T10:13:00+09:00",
+          "summary": "Current billing period reviewed before production recheck; effective total 16.6220 USD and billed cost 0.0000.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "Server card warning badge opens AI sidebar with prefilled alert context",
+          "path": "artifacts/playwright/server-card-alert-badge-ai-prefill-2026-03-23.png"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "Production deployment",
+          "url": "https://openmanager-lzzeax81n-skyasus-projects.vercel.app/"
+        }
+      ],
       "expertCount": 0,
       "expertNeedsImprovementCount": 0,
       "completedCount": 1,

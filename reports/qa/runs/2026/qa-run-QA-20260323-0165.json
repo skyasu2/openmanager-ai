@@ -1,0 +1,86 @@
+{
+  "runId": "QA-20260323-0165",
+  "recordedAt": "2026-03-23T01:29:13.300Z",
+  "recordedAtKst": "2026-03-23 10:29:13 KST",
+  "runTitle": "Production QA - server card alert badge AI prefill",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_2edXD5ofuA1CWUNMA8ErnZs3Moze",
+    "deploymentUrl": "https://openmanager-lzzeax81n-skyasus-projects.vercel.app",
+    "commitSha": "a2ba7eb2c"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "coveragePacks": ["dashboard-core", "ai-core"],
+  "coveredSurfaces": [
+    "/dashboard",
+    "warning/critical server card AI badges",
+    "AI sidebar prefill input",
+    "stable server card badge remains read-only"
+  ],
+  "skippedSurfaces": [
+    "AI message send/response execution",
+    "fullscreen AI workspace"
+  ],
+  "checks": {
+    "total": 4,
+    "passed": 4,
+    "failed": 0
+  },
+  "expertAssessments": [],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-03-23T10:13:00+09:00",
+      "summary": "Current billing period reviewed before production recheck; effective total 16.6220 USD and billed cost 0.0000.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "Server card warning badge opens AI sidebar with prefilled alert context",
+      "path": "artifacts/playwright/server-card-alert-badge-ai-prefill-2026-03-23.png"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "server-card-badge-ai-prefill",
+      "title": "서버 카드 경고 배지 클릭 시 AI 사이드바 컨텍스트 자동 주입",
+      "priority": "P1",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Production dashboard warning badge now opens AI sidebar and prefills the alert question for the selected server card.",
+      "note": "warning/critical badges are clickable, stable badges remain read-only.",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Production deployment dpl_2edXD5ofuA1CWUNMA8ErnZs3Moze reached READY after fixing the message-helpers tool part predicate type error.",
+    "Verified live card badge behavior on api-was-dc1-01: click opened AI sidebar and prefilled 'api-was-dc1-01 서버의 CPU 사용률이 91%입니다. 현재 원인과 우선 조치 방법을 분석해줘.'",
+    "Verified stable card web-nginx-dc1-01 still renders a read-only Stable badge instead of an AI button."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Production deployment",
+      "url": "https://openmanager-lzzeax81n-skyasus-projects.vercel.app/"
+    }
+  ]
+}

@@ -1,28 +1,28 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-23 01:53:56 KST
+> Generated at: 2026-03-23 10:29:14 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 163 |
-| Total Checks | 1237 |
-| Passed | 1184 |
+| Total Runs | 164 |
+| Total Checks | 1241 |
+| Passed | 1188 |
 | Failed | 49 |
-| Completed Items | 235 |
+| Completed Items | 236 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 8 |
 | Expert Domains Tracked | 6 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Run | QA-20260323-0164 (2026-03-22T16:53:54.714Z) |
+| Last Run | QA-20260323-0165 (2026-03-23T01:29:13.300Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260323-0164 (2026-03-22T16:53:54.714Z)
+Latest run: QA-20260323-0165 (2026-03-23T01:29:13.300Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -32,28 +32,28 @@ Latest run: QA-20260323-0164 (2026-03-22T16:53:54.714Z)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| - | - | - | - | - |
+| vercel | cli | checked | normal | Current billing period reviewed before production recheck; effective total 16.6220 USD and billed cost 0.0000. |
 
 ## Coverage (Latest Run)
 
 - Scope: targeted
 - Release-Facing: no
-- Deployment: SHA 011fe20b
-- Coverage Packs: dashboard-core, ai-core, observability-pack
-- Covered Surfaces: dashboard raw metric (db-mysql-dc1-primary DISK 83% Warning), dashboard dataSlotInfo label (Synthetic OTel snapshot · 01:50 KST slot 11/143), dashboard dataSourceInfo label (Dataset v1.0.0 · catalog 2026-02-15 03:56Z), AI sidebar detailed analysis renders typed dataSlot JSON, AI sidebar detailed analysis renders typed dataSource JSON, AI sidebar detailed analysis no longer exposes legacy _dataSlot/_dataSource wording
-- Skipped Surfaces: /dashboard/ai-assistant fullscreen, Reporter/Analyst parity
+- Deployment: dpl_2edXD5ofuA1CWUNMA8ErnZs3Moze / SHA a2ba7eb2
+- Coverage Packs: dashboard-core, ai-core
+- Covered Surfaces: /dashboard, warning/critical server card AI badges, AI sidebar prefill input, stable server card badge remains read-only
+- Skipped Surfaces: AI message send/response execution, fullscreen AI workspace
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| - | - | - | - |
+| general | Production deployment | [link](https://openmanager-lzzeax81n-skyasus-projects.vercel.app/) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | AI sidebar parity metadata contract rendered with typed dataSlot/dataSource | `artifacts/playwright/ai-sidebar-parity-contract-2026-03-23.png` | - |
+| playwright-screenshot | Server card warning badge opens AI sidebar with prefilled alert context | `artifacts/playwright/server-card-alert-badge-ai-prefill-2026-03-23.png` | - |
 
 ## Expert Domain Open Gaps
 
@@ -247,6 +247,7 @@ Latest run: QA-20260323-0164 (2026-03-22T16:53:54.714Z)
 - reporter-state-loss-on-tab-switch: Reporter 탭 전환 시 생성 결과 상태 유지 (completed 1회, last QA-20260315-0104)
 - reporter-state-retention-chat-switch: Reporter 생성 결과가 chat 전환 후 유지 (completed 1회, last QA-20260318-0126)
 - security-attack-regression-pack: 보안 공격 시나리오 회귀팩 구축 (completed 4회, last QA-20260320-0138)
+- server-card-badge-ai-prefill: 서버 카드 경고 배지 클릭 시 AI 사이드바 컨텍스트 자동 주입 (completed 1회, last QA-20260323-0165)
 - server-card-expand: 서버 카드 상세 펼치기/접기 (completed 1회, last QA-20260317-0114)
 - server-detail-log-tab: 로그 & 네트워크 탭 (completed 1회, last QA-20260317-0114)
 - server-detail-perf-tab: 성능 분석 탭 (completed 1회, last QA-20260317-0114)
@@ -327,6 +328,7 @@ Latest run: QA-20260323-0164 (2026-03-22T16:53:54.714Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260323-0165 | 2026-03-23T01:29:13.300Z | targeted | no | Production QA - server card alert badge AI prefill | 4 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260323-0164 | 2026-03-22T16:53:54.714Z | targeted | no | Production QA - AI sidebar parity contract rendering fixed | 6 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260323-0163 | 2026-03-22T15:56:07.978Z | targeted | no | Vercel Playwright QA - MEM label no-overlap on server cards (SHA 34f764ca0) | 4 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260323-0162 | 2026-03-22T15:34:58.470Z | targeted | no | Production QA - Dashboard/AI parity metadata user-facing recheck | 5 | 0 | 1 | 0 | 0 | 0 |
@@ -346,5 +348,4 @@ Latest run: QA-20260323-0164 (2026-03-22T16:53:54.714Z)
 | QA-20260321-0148 | 2026-03-21T11:41:43.931Z | targeted | no | Vercel Playwright QA - Fullscreen AI Workspace Proof (SHA 8a7fe8769) | 6 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260321-0147 | 2026-03-21T11:36:14.761Z | targeted | no | Vercel Playwright QA - AI Sidebar Reporter Analyst Proof (SHA d802241fb) | 7 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260321-0146 | 2026-03-21T11:08:45.922Z | targeted | no | Vercel Playwright QA - Targeted Topology Artifact Proof (SHA 54990e639) | 6 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260321-0145 | 2026-03-20T22:28:54.515Z | targeted | no | Vercel Playwright QA - Modal Detail Pack Coverage Fill (SHA 386aa7acd) | 8 | 0 | 0 | 0 | 0 | 0 |
 
