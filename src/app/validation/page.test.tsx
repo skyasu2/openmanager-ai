@@ -54,17 +54,50 @@ const baseEvidence = {
   },
 };
 
+type MockEvidence = typeof baseEvidence;
+type MockEvidenceOverrides = Partial<MockEvidence> & {
+  source?: Partial<MockEvidence['source']>;
+  summary?: Partial<MockEvidence['summary']>;
+  trackerUpdated?: Partial<MockEvidence['trackerUpdated']>;
+  latestProofRecorded?: Partial<MockEvidence['latestProofRecorded']>;
+  latestProofRun?: Partial<MockEvidence['latestProofRun']>;
+};
+
 function daysAgo(days: number) {
   return new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString();
 }
 
-async function renderPageWithGeneratedAt(generatedAt: string) {
+function buildEvidence(overrides: MockEvidenceOverrides = {}): MockEvidence {
+  return {
+    ...baseEvidence,
+    ...overrides,
+    source: {
+      ...baseEvidence.source,
+      ...overrides.source,
+    },
+    summary: {
+      ...baseEvidence.summary,
+      ...overrides.summary,
+    },
+    trackerUpdated: {
+      ...baseEvidence.trackerUpdated,
+      ...overrides.trackerUpdated,
+    },
+    latestProofRecorded: {
+      ...baseEvidence.latestProofRecorded,
+      ...overrides.latestProofRecorded,
+    },
+    latestProofRun: {
+      ...baseEvidence.latestProofRun,
+      ...overrides.latestProofRun,
+    },
+  };
+}
+
+async function renderPageWithEvidence(overrides: MockEvidenceOverrides = {}) {
   vi.resetModules();
   vi.doMock('../../../public/data/qa/validation-evidence.json', () => ({
-    default: {
-      ...baseEvidence,
-      generatedAt,
-    },
+    default: buildEvidence(overrides),
   }));
 
   const { default: ValidationEvidencePage } = await import('./page');
@@ -79,7 +112,9 @@ afterEach(() => {
 
 describe('ValidationEvidencePage', () => {
   it('snapshot이 7일 이상 오래되면 stale 배너를 보여준다', async () => {
-    await renderPageWithGeneratedAt(daysAgo(8));
+    await renderPageWithEvidence({
+      generatedAt: daysAgo(8),
+    });
 
     expect(
       screen.getByText(/이 스냅샷은 .*일 전 빌드 기준입니다\./)
@@ -88,10 +123,65 @@ describe('ValidationEvidencePage', () => {
   });
 
   it('snapshot이 7일 미만이면 stale 배너를 숨긴다', async () => {
-    await renderPageWithGeneratedAt(daysAgo(2));
+    await renderPageWithEvidence({
+      generatedAt: daysAgo(2),
+    });
 
     expect(
       screen.queryByText(/이 스냅샷은 .*일 전 빌드 기준입니다\./)
     ).not.toBeInTheDocument();
+  });
+
+  it('tracker snapshot이 latest proof보다 최신이면 차이를 설명한다', async () => {
+    await renderPageWithEvidence({
+      trackerUpdated: {
+        iso: '2026-03-23T07:36:31.950Z',
+        short: '2026-03-23',
+        long: 'March 23, 2026',
+      },
+      latestProofRecorded: {
+        iso: '2026-03-22T03:00:00.000Z',
+        short: '2026-03-22',
+        long: 'March 22, 2026',
+      },
+    });
+
+    expect(
+      screen.getByText(
+        /Tracker snapshot이 latest CI proof보다 1일 더 최신입니다\./
+      )
+    ).toBeInTheDocument();
+  });
+
+  it('tracker snapshot과 latest proof가 같은 기준이면 동일 시점으로 설명한다', async () => {
+    await renderPageWithEvidence({
+      trackerUpdated: {
+        iso: '2026-03-23T07:36:31.950Z',
+      },
+      latestProofRecorded: {
+        iso: '2026-03-23T07:36:31.950Z',
+      },
+    });
+
+    expect(
+      screen.getByText(/tracker snapshot과 latest CI proof가 같은 기준 시점/)
+    ).toBeInTheDocument();
+  });
+
+  it('latest proof가 더 최신이면 반대 방향 차이를 설명한다', async () => {
+    await renderPageWithEvidence({
+      trackerUpdated: {
+        iso: '2026-03-22T03:00:00.000Z',
+      },
+      latestProofRecorded: {
+        iso: '2026-03-23T07:36:31.950Z',
+      },
+    });
+
+    expect(
+      screen.getByText(
+        /Latest CI proof가 tracker snapshot보다 1일 더 최신입니다\./
+      )
+    ).toBeInTheDocument();
   });
 });
