@@ -21,6 +21,7 @@ import {
   formatRotatingTimestamp,
 } from '@/utils/dashboard/rotating-timestamp';
 import { formatMetricName, formatMetricValue } from '@/utils/metric-formatters';
+import { supportsDashboardAlertAIPrefill } from '../alert-ai-context';
 import { FilterChip } from '../shared/FilterChip';
 import { StatCell } from '../shared/StatCell';
 import type { AlertHistoryModalProps } from './alert-history.types';
@@ -46,16 +47,6 @@ function formatDuration(seconds: number): string {
 
 const INITIAL_DISPLAY = 50;
 const LOAD_MORE_COUNT = 50;
-
-function supportsAlertHistoryAIPrefill(metric: string): boolean {
-  const normalized = metric.toLowerCase();
-  return (
-    normalized.includes('cpu') ||
-    normalized.includes('memory') ||
-    normalized.includes('disk') ||
-    normalized.includes('filesystem')
-  );
-}
 
 export function AlertHistoryModal({
   open,
@@ -364,7 +355,7 @@ export function AlertHistoryRow({
   const isResolved = alert.state === 'resolved';
   const canAskAI =
     typeof onAskAIAboutAlert === 'function' &&
-    supportsAlertHistoryAIPrefill(alert.metric);
+    supportsDashboardAlertAIPrefill(alert.metric);
   const rowClassName = cn(
     'rounded-lg border border-gray-200/80 bg-white p-3 border-l-4 shadow-sm',
     canAskAI

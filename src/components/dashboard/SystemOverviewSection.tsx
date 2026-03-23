@@ -2,6 +2,10 @@ import { CheckCircle2 } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import { useCallback, useMemo, useState } from 'react';
 import type { Server } from '@/types/server';
+import {
+  type DashboardAlertContext,
+  getHighestServerAlertMetric,
+} from './alert-ai-context';
 
 const EnhancedServerModal = dynamic(() => import('./EnhancedServerModal'), {
   ssr: false,
@@ -12,14 +16,6 @@ const GAUGE_COLORS = {
   memory: '#818cf8',
   disk: '#a78bfa',
 } as const;
-
-export interface DashboardAlertContext {
-  serverId: string;
-  serverName: string;
-  metricLabel: 'CPU' | 'MEM' | 'DISK';
-  metricValue: number;
-  promptOverride?: string;
-}
 
 interface SystemOverviewSectionProps {
   servers: Server[];
@@ -74,17 +70,12 @@ export function SystemOverviewSection({
     if (!servers || servers.length === 0) return [];
     return [...servers]
       .map((s) => {
-        const metrics = [
-          { label: 'CPU', value: s.cpu ?? 0 },
-          { label: 'MEM', value: s.memory ?? 0 },
-          { label: 'DISK', value: s.disk ?? 0 },
-        ];
-        const top = metrics.reduce((a, b) => (b.value > a.value ? b : a));
+        const top = getHighestServerAlertMetric(s);
         return {
           id: s.id ?? s.name,
           name: s.name,
-          maxUsage: top.value,
-          maxMetric: top.label,
+          maxUsage: top.metricValue,
+          maxMetric: top.metricLabel,
           status: s.status,
         };
       })

@@ -11,6 +11,7 @@ import {
 import { cn } from '@/lib/utils';
 import type { MonitoringAlert } from '@/schemas/api.monitoring-report.schema';
 import { formatMetricName, formatMetricValue } from '@/utils/metric-formatters';
+import { supportsDashboardAlertAIPrefill } from './alert-ai-context';
 import { StatCell } from './shared/StatCell';
 
 const severityBadge: Record<MonitoringAlert['severity'], string> = {
@@ -23,16 +24,6 @@ interface ActiveAlertsModalProps {
   onClose: () => void;
   alerts: MonitoringAlert[];
   onAskAIAboutAlert?: (alert: MonitoringAlert) => void;
-}
-
-function supportsAlertAIPrefill(metric: string): boolean {
-  const normalized = metric.toLowerCase();
-  return (
-    normalized.includes('cpu') ||
-    normalized.includes('memory') ||
-    normalized.includes('disk') ||
-    normalized.includes('filesystem')
-  );
 }
 
 export function ActiveAlertsModal({
@@ -133,7 +124,7 @@ function AlertRow({
 }) {
   const canAskAI =
     typeof onAskAIAboutAlert === 'function' &&
-    supportsAlertAIPrefill(alert.metric);
+    supportsDashboardAlertAIPrefill(alert.metric);
   const rowClassName = cn(
     'flex w-full items-center justify-between rounded-lg border border-gray-200/80 bg-white px-4 py-3 text-left shadow-sm',
     canAskAI

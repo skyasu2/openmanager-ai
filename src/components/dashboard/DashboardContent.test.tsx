@@ -6,7 +6,8 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import type { ComponentProps } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import type { Server } from '@/types/server';
-import DashboardContent, { toDashboardAlertContext } from './DashboardContent';
+import { toDashboardAlertContext } from './alert-ai-context';
+import DashboardContent from './DashboardContent';
 
 vi.mock('next/dynamic', () => ({
   default: () => () => <div data-testid="dynamic-component" />,

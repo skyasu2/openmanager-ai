@@ -8,80 +8,19 @@ import type {
   DashboardDataSourceInfo,
   DashboardTimeInfo,
 } from '@/lib/dashboard/server-data';
-import type { MonitoringAlert } from '@/schemas/api.monitoring-report.schema';
-import type { Alert } from '@/services/monitoring/AlertManager';
 import type { Server } from '@/types/server';
 import debug from '@/utils/debug';
 import { safeErrorMessage } from '@/utils/utils-functions';
+import {
+  type DashboardAlertContext,
+  getHighestServerAlertMetric,
+  toDashboardAlertContext,
+} from './alert-ai-context';
 import { DashboardSummary } from './DashboardSummary';
 import { resolveDashboardEmptyState } from './dashboard-empty-state';
 import ServerDashboard from './ServerDashboard';
-import {
-  type DashboardAlertContext,
-  SystemOverviewSection,
-} from './SystemOverviewSection';
+import { SystemOverviewSection } from './SystemOverviewSection';
 import type { DashboardStats } from './types/dashboard.types';
-
-function getHighestAlertMetric(server: Server): {
-  metricLabel: 'CPU' | 'MEM' | 'DISK';
-  metricValue: number;
-} {
-  const metrics: Array<{
-    metricLabel: 'CPU' | 'MEM' | 'DISK';
-    metricValue: number;
-  }> = [
-    { metricLabel: 'CPU', metricValue: Number(server.cpu ?? 0) },
-    { metricLabel: 'MEM', metricValue: Number(server.memory ?? 0) },
-    { metricLabel: 'DISK', metricValue: Number(server.disk ?? 0) },
-  ];
-
-  return metrics.reduce((best, current) =>
-    current.metricValue > best.metricValue ? current : best
-  );
-}
-
-function getAlertMetricLabel(
-  metric: string
-): DashboardAlertContext['metricLabel'] | null {
-  const normalized = metric.toLowerCase();
-
-  if (normalized.includes('cpu')) return 'CPU';
-  if (normalized.includes('memory')) return 'MEM';
-  if (normalized.includes('disk') || normalized.includes('filesystem')) {
-    return 'DISK';
-  }
-
-  return null;
-}
-
-export function toDashboardAlertContext(
-  alert: Pick<MonitoringAlert, 'serverId' | 'instance' | 'metric' | 'value'> &
-    Partial<Pick<Alert, 'state'>>
-): DashboardAlertContext | null {
-  const metricLabel = getAlertMetricLabel(alert.metric);
-  if (!metricLabel) {
-    return null;
-  }
-
-  const context: DashboardAlertContext = {
-    serverId: alert.serverId,
-    serverName: alert.instance,
-    metricLabel,
-    metricValue: Math.round(alert.value),
-  };
-
-  if (alert.state === 'resolved') {
-    const metricKoreanLabel =
-      metricLabel === 'CPU'
-        ? 'CPU'
-        : metricLabel === 'MEM'
-          ? '메모리'
-          : '디스크';
-    context.promptOverride = `${alert.instance} 서버에서 ${metricKoreanLabel} 사용률이 ${Math.round(alert.value)}%까지 상승했다가 해소된 알림 이력이 있습니다. 발생 원인과 재발 방지 조치를 분석해줘.`;
-  }
-
-  return context;
-}
 
 // Lazy load modals for better initial load performance
 const ActiveAlertsModal = dynamic(
@@ -236,7 +175,7 @@ export default memo(function DashboardContent({
       return;
     }
 
-    const { metricLabel, metricValue } = getHighestAlertMetric(server);
+    const { metricLabel, metricValue } = getHighestServerAlertMetric(server);
     onAskAIAboutAlert({
       serverId: server.id ?? server.name,
       serverName: server.name,
