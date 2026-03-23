@@ -32,6 +32,11 @@ const baseEvidence = {
     short: '2026-03-23',
     long: 'March 23, 2026',
   },
+  publicEvidenceUpdated: {
+    iso: '2026-03-23T07:36:31.950Z',
+    short: '2026-03-23',
+    long: 'March 23, 2026',
+  },
   latestProofRecorded: {
     iso: '2026-03-22T03:00:00.000Z',
     short: '2026-03-22',
@@ -59,6 +64,7 @@ type MockEvidenceOverrides = Partial<MockEvidence> & {
   source?: Partial<MockEvidence['source']>;
   summary?: Partial<MockEvidence['summary']>;
   trackerUpdated?: Partial<MockEvidence['trackerUpdated']>;
+  publicEvidenceUpdated?: Partial<MockEvidence['publicEvidenceUpdated']>;
   latestProofRecorded?: Partial<MockEvidence['latestProofRecorded']>;
   latestProofRun?: Partial<MockEvidence['latestProofRun']>;
 };
@@ -82,6 +88,10 @@ function buildEvidence(overrides: MockEvidenceOverrides = {}): MockEvidence {
     trackerUpdated: {
       ...baseEvidence.trackerUpdated,
       ...overrides.trackerUpdated,
+    },
+    publicEvidenceUpdated: {
+      ...baseEvidence.publicEvidenceUpdated,
+      ...overrides.publicEvidenceUpdated,
     },
     latestProofRecorded: {
       ...baseEvidence.latestProofRecorded,
@@ -132,9 +142,9 @@ describe('ValidationEvidencePage', () => {
     ).not.toBeInTheDocument();
   });
 
-  it('tracker snapshot이 latest proof보다 최신이면 차이를 설명한다', async () => {
+  it('public validation snapshot이 latest proof보다 최신이면 차이를 설명한다', async () => {
     await renderPageWithEvidence({
-      trackerUpdated: {
+      publicEvidenceUpdated: {
         iso: '2026-03-23T07:36:31.950Z',
         short: '2026-03-23',
         long: 'March 23, 2026',
@@ -148,14 +158,14 @@ describe('ValidationEvidencePage', () => {
 
     expect(
       screen.getByText(
-        /Tracker snapshot이 latest CI proof보다 1일 더 최신입니다\./
+        /Public validation snapshot이 latest CI proof보다 1일 더 최신입니다\./
       )
     ).toBeInTheDocument();
   });
 
-  it('tracker snapshot과 latest proof가 같은 기준이면 동일 시점으로 설명한다', async () => {
+  it('public validation snapshot과 latest proof가 같은 기준이면 동일 시점으로 설명한다', async () => {
     await renderPageWithEvidence({
-      trackerUpdated: {
+      publicEvidenceUpdated: {
         iso: '2026-03-23T07:36:31.950Z',
       },
       latestProofRecorded: {
@@ -164,13 +174,15 @@ describe('ValidationEvidencePage', () => {
     });
 
     expect(
-      screen.getByText(/tracker snapshot과 latest CI proof가 같은 기준 시점/)
+      screen.getByText(
+        /public validation snapshot과 latest CI proof가 같은 기준 시점/
+      )
     ).toBeInTheDocument();
   });
 
   it('latest proof가 더 최신이면 반대 방향 차이를 설명한다', async () => {
     await renderPageWithEvidence({
-      trackerUpdated: {
+      publicEvidenceUpdated: {
         iso: '2026-03-22T03:00:00.000Z',
       },
       latestProofRecorded: {
@@ -180,8 +192,39 @@ describe('ValidationEvidencePage', () => {
 
     expect(
       screen.getByText(
-        /Latest CI proof가 tracker snapshot보다 1일 더 최신입니다\./
+        /Latest CI proof가 public validation snapshot보다 1일 더 최신입니다\./
       )
     ).toBeInTheDocument();
+  });
+
+  it('표시 날짜가 다르면 24시간 미만 차이도 최소 1일로 설명한다', async () => {
+    await renderPageWithEvidence({
+      publicEvidenceUpdated: {
+        iso: '2026-03-24T00:10:00.000Z',
+        short: '2026-03-24',
+        long: 'March 24, 2026',
+      },
+      latestProofRecorded: {
+        iso: '2026-03-23T23:55:00.000Z',
+        short: '2026-03-23',
+        long: 'March 23, 2026',
+      },
+    });
+
+    expect(
+      screen.getByText(
+        /Public validation snapshot이 latest CI proof보다 1일 더 최신입니다\./
+      )
+    ).toBeInTheDocument();
+  });
+
+  it('generatedAt이 잘못되면 stale 배너를 숨긴다', async () => {
+    await renderPageWithEvidence({
+      generatedAt: 'not-a-date',
+    });
+
+    expect(
+      screen.queryByText(/이 스냅샷은 .*일 전 빌드 기준입니다\./)
+    ).not.toBeInTheDocument();
   });
 });

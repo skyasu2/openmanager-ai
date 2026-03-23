@@ -44,6 +44,14 @@ function readJsonFile(filePath) {
 function buildValidationEvidenceSnapshot(tracker) {
   const summary = tracker?.summary;
   const runs = Array.isArray(tracker?.runs) ? tracker.runs : [];
+  const latestPublicEvidenceRun = [...runs].reverse().find((run) => {
+    const target = run?.environment?.target;
+    const hasGithubActionsLink = Array.isArray(run?.links)
+      ? run.links.some((link) => link?.type?.startsWith('github-actions'))
+      : false;
+
+    return target === 'vercel-production' || hasGithubActionsLink;
+  });
   const latestProofRun = [...runs]
     .reverse()
     .find((run) =>
@@ -52,7 +60,7 @@ function buildValidationEvidenceSnapshot(tracker) {
         : false
     );
 
-  if (!summary || !latestProofRun?.runId) {
+  if (!summary || !latestProofRun?.runId || !latestPublicEvidenceRun?.runId) {
     throw new Error('QA validation evidence summary is unavailable');
   }
 
@@ -72,7 +80,7 @@ function buildValidationEvidenceSnapshot(tracker) {
       statusPath: 'reports/qa/QA_STATUS.md',
       publicPath: 'public/data/qa/validation-evidence.json',
       publicHref: '/data/qa/validation-evidence.json',
-      latestRunId: summary.lastRunId ?? latestProofRun.runId,
+      latestRunId: latestPublicEvidenceRun.runId,
     },
     summary: {
       totalRuns: summary.totalRuns,
@@ -83,6 +91,7 @@ function buildValidationEvidenceSnapshot(tracker) {
       lastRecordedAt: summary.lastRecordedAt ?? null,
     },
     trackerUpdated: formatEvidenceDate(summary.lastRecordedAt),
+    publicEvidenceUpdated: formatEvidenceDate(latestPublicEvidenceRun.recordedAt),
     latestProofRecorded: formatEvidenceDate(latestProofRun.recordedAt),
     latestProofRun: {
       runId: latestProofRun.runId,

@@ -77,44 +77,53 @@ type ValidationEvidenceSnapshot = {
   };
   summary: ValidationEvidenceSummary;
   trackerUpdated: ValidationEvidenceDate;
+  publicEvidenceUpdated: ValidationEvidenceDate;
   latestProofRecorded: ValidationEvidenceDate;
   latestProofRun: QATrackerRun;
 };
 
 function buildProofGapLabel(
-  trackerUpdatedIso?: string | null,
+  publicEvidenceUpdatedIso?: string | null,
   latestProofIso?: string | null
 ): string {
-  if (!trackerUpdatedIso || !latestProofIso) {
-    return '현재 배포에는 tracker snapshot과 latest CI proof가 함께 포함됩니다.';
+  if (!publicEvidenceUpdatedIso || !latestProofIso) {
+    return '현재 배포에는 public validation snapshot과 latest CI proof가 함께 포함됩니다.';
   }
 
-  const trackerUpdated = new Date(trackerUpdatedIso).getTime();
+  const publicEvidenceUpdated = new Date(publicEvidenceUpdatedIso).getTime();
   const latestProof = new Date(latestProofIso).getTime();
 
   if (
-    Number.isNaN(trackerUpdated) ||
+    Number.isNaN(publicEvidenceUpdated) ||
     Number.isNaN(latestProof) ||
-    trackerUpdated === latestProof
+    publicEvidenceUpdated === latestProof
   ) {
-    return '현재 배포에는 tracker snapshot과 latest CI proof가 같은 기준 시점으로 포함됩니다.';
+    return '현재 배포에는 public validation snapshot과 latest CI proof가 같은 기준 시점으로 포함됩니다.';
   }
 
-  const diffDays = Math.abs(
-    Math.round((trackerUpdated - latestProof) / (1000 * 60 * 60 * 24))
+  const publicEvidenceDate = new Date(publicEvidenceUpdatedIso)
+    .toISOString()
+    .slice(0, 10);
+  const latestProofDate = new Date(latestProofIso).toISOString().slice(0, 10);
+  const rawDiffDays = Math.abs(
+    Math.round((publicEvidenceUpdated - latestProof) / (1000 * 60 * 60 * 24))
   );
+  const diffDays =
+    rawDiffDays === 0 && publicEvidenceDate !== latestProofDate
+      ? 1
+      : rawDiffDays;
 
-  if (trackerUpdated > latestProof) {
-    return `Tracker snapshot이 latest CI proof보다 ${diffDays}일 더 최신입니다. 최신 저장소 기록은 다음 재배포 때 반영됩니다.`;
+  if (publicEvidenceUpdated > latestProof) {
+    return `Public validation snapshot이 latest CI proof보다 ${diffDays}일 더 최신입니다. 저장소 전체 QA tracker는 더 자주 갱신될 수 있습니다.`;
   }
 
-  return `Latest CI proof가 tracker snapshot보다 ${diffDays}일 더 최신입니다. 현재 배포에는 직전 snapshot 기준 요약이 포함돼 있습니다.`;
+  return `Latest CI proof가 public validation snapshot보다 ${diffDays}일 더 최신입니다. 현재 배포에는 직전 public snapshot 기준 요약이 포함돼 있습니다.`;
 }
 
 export default function ValidationEvidencePage() {
   const evidence = validationEvidenceJson as ValidationEvidenceSnapshot;
   const proofGapLabel = buildProofGapLabel(
-    evidence.trackerUpdated.iso,
+    evidence.publicEvidenceUpdated.iso,
     evidence.latestProofRecorded.iso
   );
 
@@ -146,7 +155,7 @@ export default function ValidationEvidencePage() {
               {QA_EVIDENCE_LABELS.badge}
             </EvidencePill>
             <EvidencePill className="border-emerald-300/20 bg-emerald-500/5 text-emerald-100">
-              Snapshot updated {evidence.trackerUpdated.short}
+              Snapshot updated {evidence.publicEvidenceUpdated.short}
             </EvidencePill>
             <EvidencePill className="border-indigo-400/25 bg-indigo-500/10 text-indigo-200">
               Latest CI proof {evidence.latestProofRecorded.short}
@@ -169,9 +178,9 @@ export default function ValidationEvidencePage() {
           </p>
           <p className="mt-3 max-w-3xl text-sm leading-relaxed text-white/65">
             저장소의 더 최신 QA 기록은 다음 재배포 전까지 자동 반영되지
-            않습니다. 현재 화면은 {evidence.trackerUpdated.long} 기준 tracker
-            snapshot과 {evidence.latestProofRecorded.long} 기준 CI-backed
-            proof를 함께 보여줍니다.
+            않습니다. 현재 화면은 {evidence.publicEvidenceUpdated.long} 기준
+            public validation snapshot과 {evidence.latestProofRecorded.long}{' '}
+            기준 CI-backed proof를 함께 보여줍니다.
           </p>
 
           <div className="mt-4 rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-sm text-white/75">
@@ -230,7 +239,7 @@ export default function ValidationEvidencePage() {
                 Snapshot updated
               </p>
               <p className="mt-2 text-2xl font-semibold text-white">
-                {evidence.trackerUpdated.short}
+                {evidence.publicEvidenceUpdated.short}
               </p>
             </div>
             <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
@@ -260,8 +269,9 @@ export default function ValidationEvidencePage() {
           </div>
 
           <p className="mt-4 text-sm text-white/60">
-            Known limitations tracked separately:{' '}
-            {evidence.summary.wontFixItems} items
+            Tracker aggregate updated {evidence.trackerUpdated.short}. Known
+            limitations tracked separately: {evidence.summary.wontFixItems}{' '}
+            items
           </p>
 
           <p className="mt-3 text-sm text-white/65">

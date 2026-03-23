@@ -3,6 +3,11 @@
 function getSnapshotAgeDays(generatedAt: string): number {
   const now = Date.now();
   const generated = new Date(generatedAt).getTime();
+
+  if (Number.isNaN(generated)) {
+    return Number.NaN;
+  }
+
   return Math.floor((now - generated) / (1000 * 60 * 60 * 24));
 }
 
@@ -13,7 +18,7 @@ export function ValidationSnapshotStaleBanner({
 }) {
   const snapshotAgeDays = getSnapshotAgeDays(generatedAt);
 
-  if (snapshotAgeDays < 7) {
+  if (Number.isNaN(snapshotAgeDays) || snapshotAgeDays < 7) {
     return null;
   }
 

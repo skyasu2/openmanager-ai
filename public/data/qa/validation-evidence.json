@@ -1,12 +1,12 @@
 {
   "version": "1.0.0",
-  "generatedAt": "2026-03-23T17:00:59.993Z",
+  "generatedAt": "2026-03-23T23:06:09.150Z",
   "source": {
     "trackerPath": "reports/qa/qa-tracker.json",
     "statusPath": "reports/qa/QA_STATUS.md",
     "publicPath": "public/data/qa/validation-evidence.json",
     "publicHref": "/data/qa/validation-evidence.json",
-    "latestRunId": "QA-20260324-0172"
+    "latestRunId": "QA-20260324-0171"
   },
   "summary": {
     "totalRuns": 171,
@@ -18,6 +18,11 @@
   },
   "trackerUpdated": {
     "iso": "2026-03-23T17:00:59.400Z",
+    "short": "2026-03-23",
+    "long": "March 23, 2026"
+  },
+  "publicEvidenceUpdated": {
+    "iso": "2026-03-23T16:41:18.533Z",
     "short": "2026-03-23",
     "long": "March 23, 2026"
   },
