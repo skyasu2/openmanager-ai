@@ -7,11 +7,15 @@ import { useState } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import AISidebarV4 from '@/components/ai-sidebar/AISidebarV4';
 
+const mockSetInput = vi.fn();
+const mockConsumePendingPrefillMessage = vi.fn();
+let mockPendingPrefillMessage: string | null = null;
+
 // Mock useAIChatCore
 vi.mock('@/hooks/ai/useAIChatCore', () => ({
   useAIChatCore: vi.fn(() => ({
     input: '',
-    setInput: vi.fn(),
+    setInput: mockSetInput,
     messages: [],
     isLoading: false,
     hybridState: { progress: null, jobId: null },
@@ -67,6 +71,8 @@ vi.mock('@/stores/useAISidebarStore', () => ({
       setIsOpen: vi.fn(),
       sidebarWidth: 600,
       setSidebarWidth: vi.fn(),
+      pendingPrefillMessage: mockPendingPrefillMessage,
+      consumePendingPrefillMessage: mockConsumePendingPrefillMessage,
       messages: [],
       addMessage: vi.fn(),
       webSearchEnabled: false,
@@ -183,6 +189,7 @@ describe('AISidebarV4', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockPermissions.canToggleAI = true;
+    mockPendingPrefillMessage = null;
     originalInnerWidth = window.innerWidth;
     setViewportWidth(1024);
   });
@@ -219,6 +226,20 @@ describe('AISidebarV4', () => {
   it('renders chat view by default', () => {
     render(<AISidebarV4 {...defaultProps} />);
     expect(screen.getByTestId('enhanced-ai-chat')).toBeInTheDocument();
+  });
+
+  it('consumes pending prefill message when sidebar opens', async () => {
+    mockPendingPrefillMessage =
+      'storage-nfs-dc1-01 서버의 디스크 사용률이 85%입니다.';
+
+    render(<AISidebarV4 {...defaultProps} />);
+
+    await waitFor(() => {
+      expect(mockSetInput).toHaveBeenCalledWith(
+        'storage-nfs-dc1-01 서버의 디스크 사용률이 85%입니다.'
+      );
+      expect(mockConsumePendingPrefillMessage).toHaveBeenCalled();
+    });
   });
 
   it('preserves sidebar Analyst state when switching to chat and back', () => {

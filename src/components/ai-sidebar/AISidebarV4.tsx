@@ -57,6 +57,12 @@ export const AISidebarV4: FC<AISidebarV3Props> = ({
   // 📐 사이드바 너비 상태 (Zustand Store)
   const sidebarWidth = useAISidebarStore((state) => state.sidebarWidth);
   const setSidebarWidth = useAISidebarStore((state) => state.setSidebarWidth);
+  const pendingPrefillMessage = useAISidebarStore(
+    (state) => state.pendingPrefillMessage
+  );
+  const consumePendingPrefillMessage = useAISidebarStore(
+    (state) => state.consumePendingPrefillMessage
+  );
   const webSearchEnabled = useAISidebarStore((state) => state.webSearchEnabled);
   const setWebSearchEnabled = useAISidebarStore(
     (state) => state.setWebSearchEnabled
@@ -172,6 +178,16 @@ export const AISidebarV4: FC<AISidebarV3Props> = ({
       messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }
   }, [messageCount]);
+
+  useEffect(() => {
+    if (!isOpen || !pendingPrefillMessage) {
+      return;
+    }
+
+    setSelectedFunction('chat');
+    setInput(pendingPrefillMessage);
+    consumePendingPrefillMessage();
+  }, [consumePendingPrefillMessage, isOpen, pendingPrefillMessage, setInput]);
 
   // ESC 키로 사이드바 닫기
   useEffect(() => {

@@ -14,7 +14,10 @@ import { safeErrorMessage } from '@/utils/utils-functions';
 import { DashboardSummary } from './DashboardSummary';
 import { resolveDashboardEmptyState } from './dashboard-empty-state';
 import ServerDashboard from './ServerDashboard';
-import { SystemOverviewSection } from './SystemOverviewSection';
+import {
+  type DashboardAlertContext,
+  SystemOverviewSection,
+} from './SystemOverviewSection';
 import type { DashboardStats } from './types/dashboard.types';
 
 // Lazy load modals for better initial load performance
@@ -83,6 +86,8 @@ interface DashboardContentProps {
   statusFilter?: string | null;
   /** 상태 필터 변경 핸들러 */
   onStatusFilterChange?: (filter: string | null) => void;
+  /** 리소스 경고 Top 5 항목에서 AI 분석 요청 */
+  onAskAIAboutAlert?: (context: DashboardAlertContext) => void;
 }
 
 export default memo(function DashboardContent({
@@ -102,6 +107,7 @@ export default memo(function DashboardContent({
   onShowSequentialChange,
   statusFilter,
   onStatusFilterChange,
+  onAskAIAboutAlert,
 }: DashboardContentProps) {
   // 🛡️ P1-8 Fix: onStatsUpdate를 ref에 저장하여 useEffect 무한 루프 방지
   const onStatsUpdateRef = useRef(onStatsUpdate);
@@ -227,7 +233,10 @@ export default memo(function DashboardContent({
         {servers.length > 0 ? (
           <>
             {/* ======== System Overview: 리소스 평균 + 주요 경고 통합 ======== */}
-            <SystemOverviewSection servers={servers} />
+            <SystemOverviewSection
+              servers={servers}
+              onAskAIAboutAlert={onAskAIAboutAlert}
+            />
 
             {/* 서버 카드 목록 */}
             <Suspense

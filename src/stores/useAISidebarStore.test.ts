@@ -110,6 +110,36 @@ describe('useAISidebarStore', () => {
 
       expect(result.current.isMinimized).toBe(false);
     });
+
+    it('openWithPrefill로 사이드바를 열고 입력 초안을 큐잉해야 함', () => {
+      const { result } = renderHook(() => useAISidebarStore());
+
+      act(() => {
+        result.current.openWithPrefill('storage-nfs-dc1-01 디스크 원인 분석');
+      });
+
+      expect(result.current.isOpen).toBe(true);
+      expect(result.current.activeTab).toBe('chat');
+      expect(result.current.pendingPrefillMessage).toBe(
+        'storage-nfs-dc1-01 디스크 원인 분석'
+      );
+    });
+
+    it('consumePendingPrefillMessage가 입력 초안을 1회 소비해야 함', () => {
+      const { result } = renderHook(() => useAISidebarStore());
+
+      act(() => {
+        result.current.openWithPrefill('db-mysql-dc1-primary CPU 분석');
+      });
+
+      let consumed: string | null = null;
+      act(() => {
+        consumed = result.current.consumePendingPrefillMessage();
+      });
+
+      expect(consumed).toBe('db-mysql-dc1-primary CPU 분석');
+      expect(result.current.pendingPrefillMessage).toBeNull();
+    });
   });
 
   describe('최소화', () => {

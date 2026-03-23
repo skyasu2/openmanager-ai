@@ -13,6 +13,7 @@ import { useShallow } from 'zustand/react/shallow';
 import { AutoLogoutWarning } from '@/components/auth/AutoLogoutWarning';
 import DashboardContent from '@/components/dashboard/DashboardContent';
 import DashboardHeader from '@/components/dashboard/DashboardHeader';
+import type { DashboardAlertContext } from '@/components/dashboard/SystemOverviewSection';
 import AuthLoadingUI from '@/components/shared/AuthLoadingUI';
 import UnauthorizedAccessUI from '@/components/shared/UnauthorizedAccessUI';
 import { NotificationToast } from '@/components/system/NotificationToast';
@@ -84,8 +85,16 @@ function DashboardPageContent({
   const permissions = useUserPermissions();
 
   // 🎯 AI 사이드바 상태 (중앙 관리)
-  const { isOpen: isAgentOpen, setOpen: setIsAgentOpen } = useAISidebarStore(
-    useShallow((state) => ({ isOpen: state.isOpen, setOpen: state.setOpen }))
+  const {
+    isOpen: isAgentOpen,
+    setOpen: setIsAgentOpen,
+    openWithPrefill,
+  } = useAISidebarStore(
+    useShallow((state) => ({
+      isOpen: state.isOpen,
+      setOpen: state.setOpen,
+      openWithPrefill: state.openWithPrefill,
+    }))
   );
   const [authLoading, setAuthLoading] = useState(() => {
     if (checkTestMode()) {
@@ -306,6 +315,26 @@ function DashboardPageContent({
     []
   );
 
+  const handleAskAIAboutAlert = useCallback(
+    (context: DashboardAlertContext) => {
+      if (!permissions.canToggleAI && !isGuestFullAccessEnabled()) {
+        return;
+      }
+
+      const metricLabel =
+        context.metricLabel === 'CPU'
+          ? 'CPU'
+          : context.metricLabel === 'MEM'
+            ? '메모리'
+            : '디스크';
+      const prompt = `${context.serverName} 서버의 ${metricLabel} 사용률이 ${context.metricValue}%입니다. 현재 원인과 우선 조치 방법을 분석해줘.`;
+
+      void triggerAIWarmup('dashboard-alert-prefill');
+      openWithPrefill(prompt);
+    },
+    [openWithPrefill, permissions.canToggleAI]
+  );
+
   // 🔧 레거시 정리 (2026-01-17): handleServerClick, handleServerModalClose 제거
   // - ServerDashboard가 useServerDashboard hook에서 직접 클릭/모달 핸들링
   // - 외부에서 서버 클릭/모달 핸들러를 주입할 필요 없음
@@ -389,6 +418,11 @@ function DashboardPageContent({
               onShowSequentialChange={() => {}}
               statusFilter={statusFilter}
               onStatusFilterChange={setStatusFilter}
+              onAskAIAboutAlert={
+                permissions.canToggleAI || isGuestFullAccessEnabled()
+                  ? handleAskAIAboutAlert
+                  : undefined
+              }
             />
           </Suspense>
         </div>

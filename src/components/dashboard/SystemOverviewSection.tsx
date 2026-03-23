@@ -13,15 +13,36 @@ const GAUGE_COLORS = {
   disk: '#a78bfa',
 } as const;
 
-export function SystemOverviewSection({ servers }: { servers: Server[] }) {
+export interface DashboardAlertContext {
+  serverId: string;
+  serverName: string;
+  metricLabel: 'CPU' | 'MEM' | 'DISK';
+  metricValue: number;
+}
+
+interface SystemOverviewSectionProps {
+  servers: Server[];
+  onAskAIAboutAlert?: (context: DashboardAlertContext) => void;
+}
+
+export function SystemOverviewSection({
+  servers,
+  onAskAIAboutAlert,
+}: SystemOverviewSectionProps) {
   const [selectedServer, setSelectedServer] = useState<Server | null>(null);
 
   const handleAlertClick = useCallback(
-    (serverId: string) => {
+    (context: DashboardAlertContext) => {
+      if (onAskAIAboutAlert) {
+        onAskAIAboutAlert(context);
+        return;
+      }
+
+      const serverId = context.serverId;
       const server = servers.find((s) => (s.id ?? s.name) === serverId);
       if (server) setSelectedServer(server);
     },
-    [servers]
+    [onAskAIAboutAlert, servers]
   );
 
   const handleModalClose = useCallback(() => {
@@ -113,7 +134,14 @@ export function SystemOverviewSection({ servers }: { servers: Server[] }) {
                 <button
                   type="button"
                   key={alert.id}
-                  onClick={() => handleAlertClick(alert.id)}
+                  onClick={() =>
+                    handleAlertClick({
+                      serverId: alert.id,
+                      serverName: alert.name,
+                      metricLabel: alert.maxMetric as 'CPU' | 'MEM' | 'DISK',
+                      metricValue: alert.maxUsage,
+                    })
+                  }
                   className={`flex w-full min-w-0 cursor-pointer items-center justify-between gap-2 px-2 py-2 transition-colors hover:bg-slate-50 ${
                     idx < topAlerts.length - 1 ? 'border-b border-gray-100' : ''
                   }`}

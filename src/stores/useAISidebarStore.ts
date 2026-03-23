@@ -186,6 +186,8 @@ interface AISidebarState {
   activeTab: 'chat' | 'presets' | 'thinking' | 'settings' | 'functions';
   /** 사이드바 너비 (px) - 드래그 리사이즈용 */
   sidebarWidth: number;
+  /** 외부 UI 액션에서 주입하는 입력 초안 */
+  pendingPrefillMessage: string | null;
 
   // 채팅 관련 상태
   messages: EnhancedChatMessage[];
@@ -207,6 +209,8 @@ interface AISidebarState {
 
   // 액션들
   setOpen: (open: boolean) => void;
+  openWithPrefill: (message: string) => void;
+  consumePendingPrefillMessage: () => string | null;
   setMinimized: (minimized: boolean) => void;
   toggleSidebar: () => void;
   setSidebarWidth: (width: number) => void;
@@ -238,12 +242,13 @@ interface AISidebarState {
 export const useAISidebarStore = create<AISidebarState>()(
   devtools(
     persist(
-      (set, _get) => ({
+      (set, get) => ({
         // 초기 상태
         isOpen: false,
         isMinimized: false,
         activeTab: 'chat',
         sidebarWidth: 600, // 기본 너비 600px
+        pendingPrefillMessage: null,
         webSearchEnabled: false,
         ragEnabled: false,
         restoreBannerDismissed: false,
@@ -262,6 +267,20 @@ export const useAISidebarStore = create<AISidebarState>()(
             isOpen: open,
             isMinimized: open ? false : state.isMinimized,
           })),
+
+        openWithPrefill: (message) =>
+          set({
+            isOpen: true,
+            isMinimized: false,
+            activeTab: 'chat',
+            pendingPrefillMessage: message,
+          }),
+
+        consumePendingPrefillMessage: () => {
+          const message = get().pendingPrefillMessage;
+          set({ pendingPrefillMessage: null });
+          return message;
+        },
 
         setMinimized: (minimized) => set({ isMinimized: minimized }),
 
@@ -307,6 +326,7 @@ export const useAISidebarStore = create<AISidebarState>()(
             isMinimized: false,
             activeTab: 'chat',
             sidebarWidth: 600, // 기본 너비로 리셋
+            pendingPrefillMessage: null,
             webSearchEnabled: false,
             ragEnabled: false,
             restoreBannerDismissed: false,
