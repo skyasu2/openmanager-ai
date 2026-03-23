@@ -461,8 +461,8 @@ describe('ImprovedServerCard - User Event 테스트', () => {
       expect(osBadge).toHaveClass('sm:inline-flex');
       expect(locationText.closest('div')).toHaveClass('hidden');
       expect(locationText.closest('div')).toHaveClass('sm:flex');
-      expect(aiBadge.parentElement).toHaveClass('hidden');
-      expect(aiBadge.parentElement).toHaveClass('sm:block');
+      expect(aiBadge.closest('div.hidden')).toHaveClass('hidden');
+      expect(aiBadge.closest('div.hidden')).toHaveClass('sm:block');
     });
 
     it('compact variant에서 모바일 핵심 메트릭 칩을 렌더링한다', () => {
