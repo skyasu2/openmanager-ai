@@ -20,6 +20,24 @@ import {
 } from './SystemOverviewSection';
 import type { DashboardStats } from './types/dashboard.types';
 
+function getHighestAlertMetric(server: Server): {
+  metricLabel: 'CPU' | 'MEM' | 'DISK';
+  metricValue: number;
+} {
+  const metrics: Array<{
+    metricLabel: 'CPU' | 'MEM' | 'DISK';
+    metricValue: number;
+  }> = [
+    { metricLabel: 'CPU', metricValue: Number(server.cpu ?? 0) },
+    { metricLabel: 'MEM', metricValue: Number(server.memory ?? 0) },
+    { metricLabel: 'DISK', metricValue: Number(server.disk ?? 0) },
+  ];
+
+  return metrics.reduce((best, current) =>
+    current.metricValue > best.metricValue ? current : best
+  );
+}
+
 // Lazy load modals for better initial load performance
 const ActiveAlertsModal = dynamic(
   () => import('./ActiveAlertsModal').then((mod) => mod.ActiveAlertsModal),
@@ -168,6 +186,20 @@ export default memo(function DashboardContent({
             ? '오프라인'
             : statusFilter;
 
+  const handleAskAIAboutServer = (server: Server) => {
+    if (!onAskAIAboutAlert) {
+      return;
+    }
+
+    const { metricLabel, metricValue } = getHighestAlertMetric(server);
+    onAskAIAboutAlert({
+      serverId: server.id ?? server.name,
+      serverName: server.name,
+      metricLabel,
+      metricValue: Math.round(metricValue),
+    });
+  };
+
   // F04 fix: isClient 상태 제거 — 'use client' 컴포넌트에서 불필요한 이중 렌더링
   // F05 fix: renderError 상태 제거 — Error Boundary로 위임
 
@@ -262,6 +294,7 @@ export default memo(function DashboardContent({
                 onPageChange={onPageChange}
                 onPageSizeChange={onPageSizeChange}
                 onStatsUpdate={onStatsUpdate}
+                onAskAI={onAskAIAboutAlert ? handleAskAIAboutServer : undefined}
               />
             </Suspense>
           </>

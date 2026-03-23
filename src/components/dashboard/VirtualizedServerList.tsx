@@ -20,6 +20,7 @@ import type { Server } from '@/types/server';
 interface VirtualizedServerListProps {
   servers: Server[];
   handleServerSelect: (server: Server) => void;
+  onAskAI?: (server: Server) => void;
 }
 
 const GRID_STYLE: CSSProperties = {
@@ -29,6 +30,7 @@ const GRID_STYLE: CSSProperties = {
 export default function VirtualizedServerList({
   servers,
   handleServerSelect,
+  onAskAI,
 }: VirtualizedServerListProps) {
   const [expanded, setExpanded] = useState(false);
   const [cardsPerRow, setCardsPerRow] = useState(4);
@@ -87,11 +89,12 @@ export default function VirtualizedServerList({
             showRealTimeUpdates={true}
             index={index}
             onClick={handleServerSelect}
+            onAskAI={onAskAI}
           />
         </ServerCardErrorBoundary>
       );
     },
-    [handleServerSelect]
+    [handleServerSelect, onAskAI]
   );
 
   return (

@@ -42,6 +42,7 @@ import {
 export interface ImprovedServerCardProps {
   server: ServerType;
   onClick: (server: ServerType) => void;
+  onAskAI?: (server: ServerType) => void;
   variant?: 'compact' | 'standard' | 'detailed';
   showRealTimeUpdates?: boolean;
   index?: number;
@@ -96,6 +97,7 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
   ({
     server,
     onClick,
+    onAskAI,
     variant = 'standard',
     showRealTimeUpdates = true,
     enableProgressiveDisclosure = true,
@@ -191,6 +193,20 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
       [onClick, safeServer]
     );
 
+    const isAIActionable =
+      safeServer.status === 'warning' || safeServer.status === 'critical';
+
+    const handleAskAI = useCallback(
+      (e: React.MouseEvent | React.KeyboardEvent) => {
+        e.stopPropagation();
+        if (!isAIActionable || !onAskAI) {
+          return;
+        }
+        onAskAI(safeServer);
+      },
+      [isAIActionable, onAskAI, safeServer]
+    );
+
     // 🔧 인라인 화살표 함수를 useCallback으로 최적화
     const handleMouseEnter = useCallback(() => {
       if (enableProgressiveDisclosure) setShowSecondaryInfo(true);
@@ -203,6 +219,14 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
 
     const currentHoverShadow =
       hoverShadowClasses[safeServer.status] || hoverShadowClasses.online;
+
+    const insightBadge = (
+      <AIInsightBadge
+        {...realtimeMetrics}
+        status={safeServer.status}
+        historyData={metricsHistory}
+      />
+    );
 
     return (
       // biome-ignore lint/a11y/noStaticElementInteractions: Container div with mouse hover for progressive disclosure — inner buttons handle keyboard interaction.
@@ -346,18 +370,30 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
             </div>
             {isCompactVariant ? (
               <div className="hidden sm:block">
-                <AIInsightBadge
-                  {...realtimeMetrics}
-                  status={safeServer.status}
-                  historyData={metricsHistory}
-                />
+                {isAIActionable ? (
+                  <button
+                    type="button"
+                    onClick={handleAskAI}
+                    aria-label={`AI에게 ${safeServer.name} 경고 분석 요청`}
+                    className="cursor-pointer rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/70"
+                  >
+                    {insightBadge}
+                  </button>
+                ) : (
+                  <div className="cursor-default">{insightBadge}</div>
+                )}
               </div>
+            ) : isAIActionable ? (
+              <button
+                type="button"
+                onClick={handleAskAI}
+                aria-label={`AI에게 ${safeServer.name} 경고 분석 요청`}
+                className="cursor-pointer rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/70"
+              >
+                {insightBadge}
+              </button>
             ) : (
-              <AIInsightBadge
-                {...realtimeMetrics}
-                status={safeServer.status}
-                historyData={metricsHistory}
-              />
+              <div className="cursor-default">{insightBadge}</div>
             )}
           </div>
 

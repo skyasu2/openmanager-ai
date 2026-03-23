@@ -57,6 +57,8 @@ interface ServerDashboardProps {
     offline: number;
     unknown: number;
   }) => void;
+  /** 서버 카드 경고 배지에서 AI 분석 요청 */
+  onAskAI?: (server: Server) => void;
 }
 
 export default function ServerDashboard({
@@ -68,6 +70,7 @@ export default function ServerDashboard({
   onPageChange,
   onPageSizeChange,
   onStatsUpdate: _onStatsUpdate, // Reserved for future stats callback
+  onAskAI,
 }: ServerDashboardProps) {
   // 🚀 성능 추적 활성화
   const performanceStats = usePerformanceTracking('ServerDashboard');
@@ -239,6 +242,7 @@ export default function ServerDashboard({
               <VirtualizedServerList
                 servers={sortedServers}
                 handleServerSelect={handleServerSelect}
+                onAskAI={onAskAI}
               />
             ) : (
               // 📊 일반 보기 (3/6/9/12개): 그리드 레이아웃
@@ -269,6 +273,7 @@ export default function ServerDashboard({
                           showRealTimeUpdates={true}
                           index={index}
                           onClick={handleServerSelect}
+                          onAskAI={onAskAI}
                         />
                       </ServerCardErrorBoundary>
                     );

@@ -83,7 +83,28 @@ vi.mock('./SystemOverviewSection', () => ({
 }));
 
 vi.mock('./ServerDashboard', () => ({
-  default: vi.fn(() => <div data-testid="server-dashboard" />),
+  default: vi.fn(({ onAskAI }: { onAskAI?: (server: Server) => void }) => (
+    <div data-testid="server-dashboard">
+      {onAskAI && (
+        <button
+          type="button"
+          aria-label="ask ai about server"
+          onClick={() =>
+            onAskAI({
+              id: 's1',
+              name: 'server-1',
+              status: 'warning',
+              cpu: 81,
+              memory: 64,
+              disk: 77,
+            } as Server)
+          }
+        >
+          ask ai
+        </button>
+      )}
+    </div>
+  )),
 }));
 
 vi.mock('./ActiveAlertsModal', () => ({
@@ -192,5 +213,35 @@ describe('DashboardContent empty state', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'open topology' }));
     expect(screen.queryAllByTestId('dynamic-component')).toHaveLength(4);
+  });
+
+  it('서버 카드 AI 요청을 최고 사용률 메트릭으로 변환해 브리지해야 한다', () => {
+    const onAskAIAboutAlert = vi.fn();
+
+    render(
+      <DashboardContent
+        {...createProps({
+          servers: [
+            { id: 's1', name: 'server-1', status: 'warning' } as Server,
+          ],
+          allServers: [
+            { id: 's1', name: 'server-1', status: 'warning' } as Server,
+          ],
+          totalServers: 1,
+          onAskAIAboutAlert,
+        })}
+      />
+    );
+
+    fireEvent.click(
+      screen.getByRole('button', { name: 'ask ai about server' })
+    );
+
+    expect(onAskAIAboutAlert).toHaveBeenCalledWith({
+      serverId: 's1',
+      serverName: 'server-1',
+      metricLabel: 'CPU',
+      metricValue: 81,
+    });
   });
 });

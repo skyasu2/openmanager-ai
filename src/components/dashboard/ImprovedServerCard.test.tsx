@@ -143,6 +143,7 @@ import ImprovedServerCard from './ImprovedServerCard';
 
 describe('ImprovedServerCard - User Event 테스트', () => {
   const mockOnClick = vi.fn();
+  const mockOnAskAI = vi.fn();
 
   const mockServer: Server = {
     id: 'server-1',
@@ -608,6 +609,47 @@ describe('ImprovedServerCard - User Event 테스트', () => {
       render(<ImprovedServerCard server={mockServer} onClick={mockOnClick} />);
       expect(screen.getByText('45.2%')).toBeInTheDocument();
       expect(screen.getByText('62.8%')).toBeInTheDocument();
+    });
+  });
+
+  describe('AI prefill 진입점', () => {
+    it('warning 배지 클릭 시 서버 상세 클릭과 분리되어 AI 요청만 호출해야 한다', () => {
+      const warningServer = { ...mockServer, status: 'warning' as const };
+
+      render(
+        <ImprovedServerCard
+          server={warningServer}
+          onClick={mockOnClick}
+          onAskAI={mockOnAskAI}
+        />
+      );
+
+      fireEvent.click(
+        screen.getByRole('button', {
+          name: `AI에게 ${warningServer.name} 경고 분석 요청`,
+        })
+      );
+
+      expect(mockOnAskAI).toHaveBeenCalledWith(
+        expect.objectContaining({ id: warningServer.id })
+      );
+      expect(mockOnClick).not.toHaveBeenCalled();
+    });
+
+    it('online 서버는 AI 요청 배지를 노출하지 않아야 한다', () => {
+      render(
+        <ImprovedServerCard
+          server={mockServer}
+          onClick={mockOnClick}
+          onAskAI={mockOnAskAI}
+        />
+      );
+
+      expect(
+        screen.queryByRole('button', {
+          name: `AI에게 ${mockServer.name} 경고 분석 요청`,
+        })
+      ).not.toBeInTheDocument();
     });
   });
 });
