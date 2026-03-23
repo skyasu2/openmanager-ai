@@ -43,7 +43,7 @@ describe('SystemOverviewSection', () => {
 
     fireEvent.click(
       screen.getByRole('button', {
-        name: /storage-nfs-dc1-01\s+DISK\s+85%/i,
+        name: /storage-nfs-dc1-01DISK 85%/i,
       })
     );
 
