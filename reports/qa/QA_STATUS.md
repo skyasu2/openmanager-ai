@@ -1,28 +1,28 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-23 10:29:14 KST
+> Generated at: 2026-03-23 10:50:32 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 164 |
-| Total Checks | 1241 |
-| Passed | 1188 |
+| Total Runs | 165 |
+| Total Checks | 1245 |
+| Passed | 1192 |
 | Failed | 49 |
-| Completed Items | 236 |
+| Completed Items | 237 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 8 |
 | Expert Domains Tracked | 6 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Run | QA-20260323-0165 (2026-03-23T01:29:13.300Z) |
+| Last Run | QA-20260323-0166 (2026-03-23T01:50:31.435Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260323-0165 (2026-03-23T01:29:13.300Z)
+Latest run: QA-20260323-0166 (2026-03-23T01:50:31.435Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -32,28 +32,28 @@ Latest run: QA-20260323-0165 (2026-03-23T01:29:13.300Z)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period reviewed before production recheck; effective total 16.6220 USD and billed cost 0.0000. |
+| vercel | cli | checked | normal | Current billing period reviewed before production QA; effective total 16.6220 USD and billed cost 0.0000. |
 
 ## Coverage (Latest Run)
 
 - Scope: targeted
 - Release-Facing: no
-- Deployment: dpl_2edXD5ofuA1CWUNMA8ErnZs3Moze / SHA a2ba7eb2
-- Coverage Packs: dashboard-core, ai-core
-- Covered Surfaces: /dashboard, warning/critical server card AI badges, AI sidebar prefill input, stable server card badge remains read-only
-- Skipped Surfaces: AI message send/response execution, fullscreen AI workspace
+- Deployment: dpl_DUELZt7C8X1YBTwoTa6RwwLAxPsT / SHA 9d2fcedb
+- Coverage Packs: dashboard-core, ai-core, modal-detail-pack
+- Covered Surfaces: /dashboard, active alerts modal, active alert AI prefill button rendering, AI sidebar prefill input
+- Skipped Surfaces: unsupported alert metric read-only path (no network/filesystem firing alert in live dataset), AI message send/response execution
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | Production deployment | [link](https://openmanager-lzzeax81n-skyasus-projects.vercel.app/) | - |
+| general | Production deployment | [link](https://openmanager-9wyzuisgf-skyasus-projects.vercel.app/) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | Server card warning badge opens AI sidebar with prefilled alert context | `artifacts/playwright/server-card-alert-badge-ai-prefill-2026-03-23.png` | - |
+| playwright-screenshot | Active alerts modal prefill opens AI sidebar with selected alert context | `artifacts/playwright/active-alerts-ai-prefill-2026-03-23.png` | - |
 
 ## Expert Domain Open Gaps
 
@@ -87,6 +87,7 @@ Latest run: QA-20260323-0165 (2026-03-23T01:29:13.300Z)
 
 ## Completed Improvements
 
+- active-alerts-modal-ai-prefill: 활성 알림 모달에서 AI 사이드바 컨텍스트 자동 주입 (completed 1회, last QA-20260323-0166)
 - ai-analyst-success: Analyst Agent 이상감지/예측 성공 (completed 2회, last QA-20260314-0097)
 - ai-assistant-fullscreen-query-path: AI 전체 화면 핵심 서버 상태 요약 질의 검증 (completed 1회, last QA-20260318-0123)
 - ai-assistant-fullscreen-tools-parity: AI 전체 화면 도구 메뉴 parity 검증 (completed 1회, last QA-20260318-0123)
@@ -328,6 +329,7 @@ Latest run: QA-20260323-0165 (2026-03-23T01:29:13.300Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260323-0166 | 2026-03-23T01:50:31.435Z | targeted | no | Production QA - active alerts modal AI prefill | 4 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260323-0165 | 2026-03-23T01:29:13.300Z | targeted | no | Production QA - server card alert badge AI prefill | 4 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260323-0164 | 2026-03-22T16:53:54.714Z | targeted | no | Production QA - AI sidebar parity contract rendering fixed | 6 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260323-0163 | 2026-03-22T15:56:07.978Z | targeted | no | Vercel Playwright QA - MEM label no-overlap on server cards (SHA 34f764ca0) | 4 | 0 | 0 | 0 | 0 | 0 |
@@ -347,5 +349,4 @@ Latest run: QA-20260323-0165 (2026-03-23T01:29:13.300Z)
 | QA-20260321-0149 | 2026-03-21T11:48:31.418Z | targeted | no | Vercel Playwright QA - AI Sidebar Free-Text Proof (SHA fd9346ab2) | 5 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260321-0148 | 2026-03-21T11:41:43.931Z | targeted | no | Vercel Playwright QA - Fullscreen AI Workspace Proof (SHA 8a7fe8769) | 6 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260321-0147 | 2026-03-21T11:36:14.761Z | targeted | no | Vercel Playwright QA - AI Sidebar Reporter Analyst Proof (SHA d802241fb) | 7 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260321-0146 | 2026-03-21T11:08:45.922Z | targeted | no | Vercel Playwright QA - Targeted Topology Artifact Proof (SHA 54990e639) | 6 | 0 | 0 | 0 | 0 | 0 |
 

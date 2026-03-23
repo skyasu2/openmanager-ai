@@ -2,25 +2,25 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-03-23T01:29:13.300Z"
+    "updatedAt": "2026-03-23T01:50:31.435Z"
   },
   "sequence": {
-    "nextRunNumber": 166
+    "nextRunNumber": 167
   },
   "summary": {
-    "totalRuns": 164,
-    "totalChecks": 1241,
-    "totalPassed": 1188,
+    "totalRuns": 165,
+    "totalChecks": 1245,
+    "totalPassed": 1192,
     "totalFailed": 49,
     "completionRate": 100,
-    "completedItems": 236,
+    "completedItems": 237,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 8,
     "expertDomainsTracked": 6,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260323-0165",
-    "lastRecordedAt": "2026-03-23T01:29:13.300Z"
+    "lastRunId": "QA-20260323-0166",
+    "lastRecordedAt": "2026-03-23T01:50:31.435Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -5567,6 +5567,30 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-03-23T01:29:13.300Z"
+    },
+    "active-alerts-modal-ai-prefill": {
+      "id": "active-alerts-modal-ai-prefill",
+      "title": "활성 알림 모달에서 AI 사이드바 컨텍스트 자동 주입",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260323-0166",
+      "firstSeenAt": "2026-03-23T01:50:31.435Z",
+      "lastSeenRunId": "QA-20260323-0166",
+      "lastSeenAt": "2026-03-23T01:50:31.435Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "codex",
+      "lastEvidence": "Production active alerts modal rendered AI buttons for firing CPU/Memory alerts and clicking api-was-dc1-01 CPU alert opened AI sidebar with prefilled remediation question.",
+      "lastNote": "Live modal showed 3 firing alerts and all were supported CPU/Memory metrics.",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-03-23T01:50:31.435Z"
     }
   },
   "runs": [
@@ -13475,6 +13499,76 @@
           "type": "general",
           "label": "Production deployment",
           "url": "https://openmanager-lzzeax81n-skyasus-projects.vercel.app/"
+        }
+      ],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260323-0166",
+      "recordedAt": "2026-03-23T01:50:31.435Z",
+      "recordedAtKst": "2026-03-23 10:50:31 KST",
+      "title": "Production QA - active alerts modal AI prefill",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260323-0166.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_DUELZt7C8X1YBTwoTa6RwwLAxPsT",
+        "deploymentUrl": "https://openmanager-9wyzuisgf-skyasus-projects.vercel.app",
+        "commitSha": "9d2fcedb7"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "coveragePacks": ["dashboard-core", "ai-core", "modal-detail-pack"],
+      "coveredSurfaces": [
+        "/dashboard",
+        "active alerts modal",
+        "active alert AI prefill button rendering",
+        "AI sidebar prefill input"
+      ],
+      "skippedSurfaces": [
+        "unsupported alert metric read-only path (no network/filesystem firing alert in live dataset)",
+        "AI message send/response execution"
+      ],
+      "checks": {
+        "total": 4,
+        "passed": 4,
+        "failed": 0
+      },
+      "expertAssessments": [],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-03-23T10:49:00+09:00",
+          "summary": "Current billing period reviewed before production QA; effective total 16.6220 USD and billed cost 0.0000.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "Active alerts modal prefill opens AI sidebar with selected alert context",
+          "path": "artifacts/playwright/active-alerts-ai-prefill-2026-03-23.png"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "Production deployment",
+          "url": "https://openmanager-9wyzuisgf-skyasus-projects.vercel.app/"
         }
       ],
       "expertCount": 0,

@@ -1,0 +1,86 @@
+{
+  "runId": "QA-20260323-0166",
+  "recordedAt": "2026-03-23T01:50:31.435Z",
+  "recordedAtKst": "2026-03-23 10:50:31 KST",
+  "runTitle": "Production QA - active alerts modal AI prefill",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_DUELZt7C8X1YBTwoTa6RwwLAxPsT",
+    "deploymentUrl": "https://openmanager-9wyzuisgf-skyasus-projects.vercel.app",
+    "commitSha": "9d2fcedb7"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "coveragePacks": ["dashboard-core", "ai-core", "modal-detail-pack"],
+  "coveredSurfaces": [
+    "/dashboard",
+    "active alerts modal",
+    "active alert AI prefill button rendering",
+    "AI sidebar prefill input"
+  ],
+  "skippedSurfaces": [
+    "unsupported alert metric read-only path (no network/filesystem firing alert in live dataset)",
+    "AI message send/response execution"
+  ],
+  "checks": {
+    "total": 4,
+    "passed": 4,
+    "failed": 0
+  },
+  "expertAssessments": [],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-03-23T10:49:00+09:00",
+      "summary": "Current billing period reviewed before production QA; effective total 16.6220 USD and billed cost 0.0000.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "Active alerts modal prefill opens AI sidebar with selected alert context",
+      "path": "artifacts/playwright/active-alerts-ai-prefill-2026-03-23.png"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "active-alerts-modal-ai-prefill",
+      "title": "활성 알림 모달에서 AI 사이드바 컨텍스트 자동 주입",
+      "priority": "P1",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Production active alerts modal rendered AI buttons for firing CPU/Memory alerts and clicking api-was-dc1-01 CPU alert opened AI sidebar with prefilled remediation question.",
+      "note": "Live modal showed 3 firing alerts and all were supported CPU/Memory metrics.",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Verified live modal rows rendered as AI buttons: api-was-dc1-01:9100 CPU, api-was-dc1-02:9100 CPU, api-was-dc1-01:9100 Memory.",
+    "Verified clicked alert prefilled 'api-was-dc1-01:9100 서버의 CPU 사용률이 94%입니다. 현재 원인과 우선 조치 방법을 분석해줘.' in the AI sidebar input.",
+    "Unsupported metric read-only fallback was not exercised because the live firing alerts set contained only supported CPU/Memory metrics during this run."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Production deployment",
+      "url": "https://openmanager-9wyzuisgf-skyasus-projects.vercel.app/"
+    }
+  ]
+}
