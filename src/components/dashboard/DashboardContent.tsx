@@ -8,6 +8,7 @@ import type {
   DashboardDataSourceInfo,
   DashboardTimeInfo,
 } from '@/lib/dashboard/server-data';
+import type { MonitoringAlert } from '@/schemas/api.monitoring-report.schema';
 import type { Server } from '@/types/server';
 import debug from '@/utils/debug';
 import { safeErrorMessage } from '@/utils/utils-functions';
@@ -36,6 +37,36 @@ function getHighestAlertMetric(server: Server): {
   return metrics.reduce((best, current) =>
     current.metricValue > best.metricValue ? current : best
   );
+}
+
+function getAlertMetricLabel(
+  metric: string
+): DashboardAlertContext['metricLabel'] | null {
+  const normalized = metric.toLowerCase();
+
+  if (normalized.includes('cpu')) return 'CPU';
+  if (normalized.includes('memory')) return 'MEM';
+  if (normalized.includes('disk') || normalized.includes('filesystem')) {
+    return 'DISK';
+  }
+
+  return null;
+}
+
+export function toDashboardAlertContext(
+  alert: Pick<MonitoringAlert, 'serverId' | 'instance' | 'metric' | 'value'>
+): DashboardAlertContext | null {
+  const metricLabel = getAlertMetricLabel(alert.metric);
+  if (!metricLabel) {
+    return null;
+  }
+
+  return {
+    serverId: alert.serverId,
+    serverName: alert.instance,
+    metricLabel,
+    metricValue: Math.round(alert.value),
+  };
 }
 
 // Lazy load modals for better initial load performance
@@ -200,6 +231,20 @@ export default memo(function DashboardContent({
     });
   };
 
+  const handleAskAIAboutMonitoringAlert = (alert: MonitoringAlert) => {
+    if (!onAskAIAboutAlert) {
+      return;
+    }
+
+    const alertContext = toDashboardAlertContext(alert);
+    if (!alertContext) {
+      return;
+    }
+
+    setActiveAlertsOpen(false);
+    onAskAIAboutAlert(alertContext);
+  };
+
   // F04 fix: isClient 상태 제거 — 'use client' 컴포넌트에서 불필요한 이중 렌더링
   // F05 fix: renderError 상태 제거 — Error Boundary로 위임
 
@@ -346,6 +391,9 @@ export default memo(function DashboardContent({
             open={activeAlertsOpen}
             onClose={() => setActiveAlertsOpen(false)}
             alerts={monitoringReport?.firingAlerts ?? []}
+            onAskAIAboutAlert={
+              onAskAIAboutAlert ? handleAskAIAboutMonitoringAlert : undefined
+            }
           />
         )}
 

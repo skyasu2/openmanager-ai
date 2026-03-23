@@ -22,12 +22,24 @@ interface ActiveAlertsModalProps {
   open: boolean;
   onClose: () => void;
   alerts: MonitoringAlert[];
+  onAskAIAboutAlert?: (alert: MonitoringAlert) => void;
+}
+
+function supportsAlertAIPrefill(metric: string): boolean {
+  const normalized = metric.toLowerCase();
+  return (
+    normalized.includes('cpu') ||
+    normalized.includes('memory') ||
+    normalized.includes('disk') ||
+    normalized.includes('filesystem')
+  );
 }
 
 export function ActiveAlertsModal({
   open,
   onClose,
   alerts,
+  onAskAIAboutAlert,
 }: ActiveAlertsModalProps) {
   const sorted = [...alerts].sort((a, b) => {
     if (a.severity === 'critical' && b.severity !== 'critical') return -1;
@@ -83,35 +95,11 @@ export function ActiveAlertsModal({
           ) : (
             <div className="space-y-2">
               {sorted.map((alert) => (
-                <div
+                <AlertRow
                   key={alert.id}
-                  className="flex items-center justify-between rounded-lg border border-gray-200/80 bg-white px-4 py-3 transition-colors hover:bg-gray-50/50 shadow-sm"
-                >
-                  <div className="flex items-center gap-3 min-w-0">
-                    <span
-                      className={cn(
-                        'inline-flex shrink-0 rounded-md border px-2 py-0.5 text-[10px] font-bold uppercase',
-                        severityBadge[alert.severity]
-                      )}
-                    >
-                      {alert.severity}
-                    </span>
-                    <div className="min-w-0">
-                      <div className="truncate text-sm font-medium text-gray-800">
-                        {alert.instance}
-                      </div>
-                      <div className="truncate text-xs text-gray-500">
-                        {formatMetricName(alert.metric)} ={' '}
-                        {formatMetricValue(alert.metric, alert.value)}
-                      </div>
-                    </div>
-                  </div>
-                  <span className="shrink-0 text-xs text-gray-400 ml-3 tabular-nums">
-                    {alert.duration > 0
-                      ? `${Math.round(alert.duration / 60)}m elapsed`
-                      : 'just now'}
-                  </span>
-                </div>
+                  alert={alert}
+                  onAskAIAboutAlert={onAskAIAboutAlert}
+                />
               ))}
             </div>
           )}
@@ -133,5 +121,66 @@ export function ActiveAlertsModal({
         </div>
       </DialogContent>
     </Dialog>
+  );
+}
+
+function AlertRow({
+  alert,
+  onAskAIAboutAlert,
+}: {
+  alert: MonitoringAlert;
+  onAskAIAboutAlert?: (alert: MonitoringAlert) => void;
+}) {
+  const canAskAI =
+    typeof onAskAIAboutAlert === 'function' &&
+    supportsAlertAIPrefill(alert.metric);
+  const rowClassName = cn(
+    'flex w-full items-center justify-between rounded-lg border border-gray-200/80 bg-white px-4 py-3 text-left shadow-sm',
+    canAskAI
+      ? 'cursor-pointer transition-colors hover:bg-gray-50/50'
+      : 'cursor-default'
+  );
+  const content = (
+    <>
+      <div className="flex min-w-0 items-center gap-3">
+        <span
+          className={cn(
+            'inline-flex shrink-0 rounded-md border px-2 py-0.5 text-[10px] font-bold uppercase',
+            severityBadge[alert.severity]
+          )}
+        >
+          {alert.severity}
+        </span>
+        <div className="min-w-0">
+          <div className="truncate text-sm font-medium text-gray-800">
+            {alert.instance}
+          </div>
+          <div className="truncate text-xs text-gray-500">
+            {formatMetricName(alert.metric)} ={' '}
+            {formatMetricValue(alert.metric, alert.value)}
+          </div>
+        </div>
+      </div>
+      <span className="ml-3 shrink-0 tabular-nums text-xs text-gray-400">
+        {alert.duration > 0
+          ? `${Math.round(alert.duration / 60)}m elapsed`
+          : 'just now'}
+      </span>
+    </>
+  );
+
+  if (!canAskAI) {
+    return <div className={rowClassName}>{content}</div>;
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={() => onAskAIAboutAlert(alert)}
+      aria-label={`AI에게 ${alert.instance} ${formatMetricName(alert.metric)} 경고 분석 요청`}
+      className={rowClassName}
+    >
+      {content}
+    </button>
   );
 }

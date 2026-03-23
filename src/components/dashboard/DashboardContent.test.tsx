@@ -6,7 +6,7 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import type { ComponentProps } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import type { Server } from '@/types/server';
-import DashboardContent from './DashboardContent';
+import DashboardContent, { toDashboardAlertContext } from './DashboardContent';
 
 vi.mock('next/dynamic', () => ({
   default: () => () => <div data-testid="dynamic-component" />,
@@ -243,5 +243,30 @@ describe('DashboardContent empty state', () => {
       metricLabel: 'CPU',
       metricValue: 81,
     });
+  });
+
+  it('활성 알림을 DashboardAlertContext로 정규화해야 한다', () => {
+    expect(
+      toDashboardAlertContext({
+        serverId: 's1',
+        instance: 'server-1',
+        metric: 'memory',
+        value: 78.2,
+      })
+    ).toEqual({
+      serverId: 's1',
+      serverName: 'server-1',
+      metricLabel: 'MEM',
+      metricValue: 78,
+    });
+
+    expect(
+      toDashboardAlertContext({
+        serverId: 's2',
+        instance: 'server-2',
+        metric: 'network',
+        value: 82,
+      })
+    ).toBeNull();
   });
 });
