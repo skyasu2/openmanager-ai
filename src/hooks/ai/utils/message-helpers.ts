@@ -30,12 +30,15 @@ type MessageMetadata = {
   assistantResponseView?: StructuredAssistantResponse;
 };
 
-type ToolPartWithCallId = {
-  type: string;
+type UIMessagePart = NonNullable<UIMessage['parts']>[number];
+
+type ToolPartWithCallId = UIMessagePart & {
+  type: `tool-${string}`;
   toolCallId: string;
   output?: unknown;
   result?: unknown;
   state?: string;
+  errorText?: string;
 };
 
 type ServerMetricsDataSlot = {
@@ -96,6 +99,18 @@ function isDataSource(value: unknown): value is ServerMetricsDataSource {
     typeof value.scopeVersion === 'string' &&
     typeof value.catalogGeneratedAt === 'string' &&
     typeof value.hour === 'number'
+  );
+}
+
+function isToolPartWithCallId(
+  part: UIMessagePart | null | undefined
+): part is ToolPartWithCallId {
+  return (
+    part != null &&
+    typeof part.type === 'string' &&
+    part.type.startsWith('tool-') &&
+    'toolCallId' in part &&
+    typeof part.toolCallId === 'string'
   );
 }
 
@@ -250,14 +265,7 @@ export function transformUIMessageToEnhanced(
     message.role === 'assistant' ? normalizeAIResponse(rawText) : rawText;
 
   // Tool parts 추출 (null/undefined 방어 코드 추가)
-  const toolParts =
-    message.parts?.filter(
-      (part): part is ToolPartWithCallId =>
-        part != null &&
-        typeof part.type === 'string' &&
-        part.type.startsWith('tool-') &&
-        'toolCallId' in part
-    ) ?? [];
+  const toolParts = message.parts?.filter(isToolPartWithCallId) ?? [];
 
   // ThinkingSteps 생성
   const thinkingSteps = toolParts.map((toolPart) => {
