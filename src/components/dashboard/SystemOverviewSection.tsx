@@ -18,6 +18,7 @@ export interface DashboardAlertContext {
   serverName: string;
   metricLabel: 'CPU' | 'MEM' | 'DISK';
   metricValue: number;
+  promptOverride?: string;
 }
 
 interface SystemOverviewSectionProps {

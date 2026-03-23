@@ -1,4 +1,5 @@
 import type {
+  Alert,
   AlertSeverity,
   AlertState,
 } from '@/services/monitoring/AlertManager';
@@ -14,6 +15,7 @@ export type AlertHistoryModalProps = {
   open: boolean;
   onClose: () => void;
   serverIds: string[];
+  onAskAIAboutAlert?: (alert: Alert) => void;
 };
 
 export const TIME_RANGE_OPTIONS = [

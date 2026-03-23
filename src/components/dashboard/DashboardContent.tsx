@@ -9,6 +9,7 @@ import type {
   DashboardTimeInfo,
 } from '@/lib/dashboard/server-data';
 import type { MonitoringAlert } from '@/schemas/api.monitoring-report.schema';
+import type { Alert } from '@/services/monitoring/AlertManager';
 import type { Server } from '@/types/server';
 import debug from '@/utils/debug';
 import { safeErrorMessage } from '@/utils/utils-functions';
@@ -54,19 +55,32 @@ function getAlertMetricLabel(
 }
 
 export function toDashboardAlertContext(
-  alert: Pick<MonitoringAlert, 'serverId' | 'instance' | 'metric' | 'value'>
+  alert: Pick<MonitoringAlert, 'serverId' | 'instance' | 'metric' | 'value'> &
+    Partial<Pick<Alert, 'state'>>
 ): DashboardAlertContext | null {
   const metricLabel = getAlertMetricLabel(alert.metric);
   if (!metricLabel) {
     return null;
   }
 
-  return {
+  const context: DashboardAlertContext = {
     serverId: alert.serverId,
     serverName: alert.instance,
     metricLabel,
     metricValue: Math.round(alert.value),
   };
+
+  if (alert.state === 'resolved') {
+    const metricKoreanLabel =
+      metricLabel === 'CPU'
+        ? 'CPU'
+        : metricLabel === 'MEM'
+          ? '메모리'
+          : '디스크';
+    context.promptOverride = `${alert.instance} 서버에서 ${metricKoreanLabel} 사용률이 ${Math.round(alert.value)}%까지 상승했다가 해소된 알림 이력이 있습니다. 발생 원인과 재발 방지 조치를 분석해줘.`;
+  }
+
+  return context;
 }
 
 // Lazy load modals for better initial load performance
@@ -245,6 +259,20 @@ export default memo(function DashboardContent({
     onAskAIAboutAlert(alertContext);
   };
 
+  const handleAskAIAboutAlertHistory = (alert: Alert) => {
+    if (!onAskAIAboutAlert) {
+      return;
+    }
+
+    const alertContext = toDashboardAlertContext(alert);
+    if (!alertContext) {
+      return;
+    }
+
+    setAlertHistoryOpen(false);
+    onAskAIAboutAlert(alertContext);
+  };
+
   // F04 fix: isClient 상태 제거 — 'use client' 컴포넌트에서 불필요한 이중 렌더링
   // F05 fix: renderError 상태 제거 — Error Boundary로 위임
 
@@ -414,6 +442,9 @@ export default memo(function DashboardContent({
             serverIds={(allServers?.length ? allServers : servers).map(
               (s) => s.id
             )}
+            onAskAIAboutAlert={
+              onAskAIAboutAlert ? handleAskAIAboutAlertHistory : undefined
+            }
           />
         )}
 

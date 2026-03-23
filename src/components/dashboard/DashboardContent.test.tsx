@@ -269,4 +269,24 @@ describe('DashboardContent empty state', () => {
       })
     ).toBeNull();
   });
+
+  it('resolved 알림 이력은 재발 방지 promptOverride로 정규화해야 한다', () => {
+    expect(
+      toDashboardAlertContext({
+        serverId: 's3',
+        instance: 'server-3',
+        metric: 'disk',
+        value: 91.4,
+        state: 'resolved',
+      })
+    ).toEqual(
+      expect.objectContaining({
+        serverId: 's3',
+        serverName: 'server-3',
+        metricLabel: 'DISK',
+        metricValue: 91,
+        promptOverride: expect.stringContaining('해소된 알림 이력'),
+      })
+    );
+  });
 });

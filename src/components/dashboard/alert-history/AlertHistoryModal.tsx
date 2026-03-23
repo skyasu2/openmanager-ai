@@ -12,6 +12,7 @@ import {
 import { useAlertHistory } from '@/hooks/dashboard/useAlertHistory';
 import { cn } from '@/lib/utils';
 import type {
+  Alert,
   AlertSeverity,
   AlertState,
 } from '@/services/monitoring/AlertManager';
@@ -19,6 +20,7 @@ import {
   formatDashboardDateTime,
   formatRotatingTimestamp,
 } from '@/utils/dashboard/rotating-timestamp';
+import { formatMetricName, formatMetricValue } from '@/utils/metric-formatters';
 import { FilterChip } from '../shared/FilterChip';
 import { StatCell } from '../shared/StatCell';
 import type { AlertHistoryModalProps } from './alert-history.types';
@@ -45,10 +47,21 @@ function formatDuration(seconds: number): string {
 const INITIAL_DISPLAY = 50;
 const LOAD_MORE_COUNT = 50;
 
+function supportsAlertHistoryAIPrefill(metric: string): boolean {
+  const normalized = metric.toLowerCase();
+  return (
+    normalized.includes('cpu') ||
+    normalized.includes('memory') ||
+    normalized.includes('disk') ||
+    normalized.includes('filesystem')
+  );
+}
+
 export function AlertHistoryModal({
   open,
   onClose,
   serverIds,
+  onAskAIAboutAlert,
 }: AlertHistoryModalProps) {
   const [severity, setSeverity] = useState<AlertSeverity | 'all'>('all');
   const [state, setState] = useState<AlertState | 'all'>('all');
@@ -278,70 +291,15 @@ export function AlertHistoryModal({
             >
               {displayAlerts.map((alert) => {
                 const colors = severityColors[alert.severity];
-                const isResolved = alert.state === 'resolved';
-
                 return (
-                  <div
+                  <AlertHistoryRow
                     key={`${alert.id}-${alert.firedAt}`}
-                    className={cn(
-                      'rounded-lg border border-gray-200/80 bg-white p-3 border-l-4 transition-colors hover:bg-gray-50/50 shadow-sm',
-                      colors.border,
-                      isResolved && 'opacity-60 shadow-none'
-                    )}
-                  >
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                      <div className="flex items-center gap-2.5 min-w-0">
-                        <span
-                          className={cn(
-                            'inline-flex shrink-0 rounded-md border px-1.5 py-0.5 text-[10px] font-bold uppercase',
-                            colors.badge
-                          )}
-                        >
-                          {alert.severity}
-                        </span>
-                        <span className="text-sm font-medium text-gray-800 truncate">
-                          {alert.serverId}
-                        </span>
-                        <span className="text-xs text-gray-500 truncate">
-                          {alert.metric} = {alert.value?.toFixed(1) ?? 'N/A'}%
-                        </span>
-                        <span className="text-xs text-gray-400 shrink-0">
-                          (threshold: {alert.threshold}%)
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-2 shrink-0 self-end sm:self-auto">
-                        <span
-                          className={cn(
-                            'inline-flex rounded-full px-2 py-0.5 text-[10px] font-semibold',
-                            isResolved
-                              ? 'bg-green-100 text-green-700'
-                              : 'bg-red-100 text-red-700'
-                          )}
-                        >
-                          {alert.state}
-                        </span>
-                        <span className="text-xs text-gray-400 tabular-nums">
-                          {formatDuration(alert.duration)}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="mt-1.5 flex items-center gap-3 text-[11px] text-gray-400">
-                      <span>
-                        Fired:{' '}
-                        {formatRotatingTimestamp(alert.firedAt, {
-                          anchorDate: sessionAnchorRef.current,
-                        })}
-                      </span>
-                      {alert.resolvedAt && (
-                        <span>
-                          Resolved:{' '}
-                          {formatRotatingTimestamp(alert.resolvedAt, {
-                            anchorDate: sessionAnchorRef.current,
-                          })}
-                        </span>
-                      )}
-                    </div>
-                  </div>
+                    alert={alert}
+                    badgeClassName={colors.badge}
+                    borderClassName={colors.border}
+                    anchorDate={sessionAnchorRef.current}
+                    onAskAIAboutAlert={onAskAIAboutAlert}
+                  />
                 );
               })}
               {hasMore && (
@@ -387,5 +345,104 @@ export function AlertHistoryModal({
         </div>
       </DialogContent>
     </Dialog>
+  );
+}
+
+export function AlertHistoryRow({
+  alert,
+  badgeClassName,
+  borderClassName,
+  anchorDate,
+  onAskAIAboutAlert,
+}: {
+  alert: Alert;
+  badgeClassName: string;
+  borderClassName: string;
+  anchorDate: Date;
+  onAskAIAboutAlert?: (alert: Alert) => void;
+}) {
+  const isResolved = alert.state === 'resolved';
+  const canAskAI =
+    typeof onAskAIAboutAlert === 'function' &&
+    supportsAlertHistoryAIPrefill(alert.metric);
+  const rowClassName = cn(
+    'rounded-lg border border-gray-200/80 bg-white p-3 border-l-4 shadow-sm',
+    canAskAI
+      ? 'cursor-pointer transition-colors hover:bg-gray-50/50'
+      : 'cursor-default',
+    borderClassName,
+    isResolved && 'opacity-60 shadow-none'
+  );
+  const content = (
+    <>
+      <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
+        <div className="flex min-w-0 items-center gap-2.5">
+          <span
+            className={cn(
+              'inline-flex shrink-0 rounded-md border px-1.5 py-0.5 text-[10px] font-bold uppercase',
+              badgeClassName
+            )}
+          >
+            {alert.severity}
+          </span>
+          <span className="truncate text-sm font-medium text-gray-800">
+            {alert.serverId}
+          </span>
+          <span className="truncate text-xs text-gray-500">
+            {formatMetricName(alert.metric)} ={' '}
+            {formatMetricValue(alert.metric, alert.value)}
+          </span>
+          <span className="shrink-0 text-xs text-gray-400">
+            (threshold: {alert.threshold}%)
+          </span>
+        </div>
+        <div className="flex shrink-0 items-center gap-2 self-end sm:self-auto">
+          <span
+            className={cn(
+              'inline-flex rounded-full px-2 py-0.5 text-[10px] font-semibold',
+              isResolved
+                ? 'bg-green-100 text-green-700'
+                : 'bg-red-100 text-red-700'
+            )}
+          >
+            {alert.state}
+          </span>
+          <span className="tabular-nums text-xs text-gray-400">
+            {formatDuration(alert.duration)}
+          </span>
+        </div>
+      </div>
+      <div className="mt-1.5 flex items-center gap-3 text-[11px] text-gray-400">
+        <span>
+          Fired:{' '}
+          {formatRotatingTimestamp(alert.firedAt, {
+            anchorDate,
+          })}
+        </span>
+        {alert.resolvedAt && (
+          <span>
+            Resolved:{' '}
+            {formatRotatingTimestamp(alert.resolvedAt, {
+              anchorDate,
+            })}
+          </span>
+        )}
+      </div>
+    </>
+  );
+
+  if (!canAskAI) {
+    return <div className={rowClassName}>{content}</div>;
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={() => onAskAIAboutAlert(alert)}
+      aria-label={`AI에게 ${alert.instance} ${formatMetricName(alert.metric)} 알림 분석 요청`}
+      className={cn(rowClassName, 'w-full text-left')}
+    >
+      {content}
+    </button>
   );
 }

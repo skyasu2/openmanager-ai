@@ -327,7 +327,9 @@ function DashboardPageContent({
           : context.metricLabel === 'MEM'
             ? '메모리'
             : '디스크';
-      const prompt = `${context.serverName} 서버의 ${metricLabel} 사용률이 ${context.metricValue}%입니다. 현재 원인과 우선 조치 방법을 분석해줘.`;
+      const prompt =
+        context.promptOverride ??
+        `${context.serverName} 서버의 ${metricLabel} 사용률이 ${context.metricValue}%입니다. 현재 원인과 우선 조치 방법을 분석해줘.`;
 
       void triggerAIWarmup('dashboard-alert-prefill');
       openWithPrefill(prompt);
