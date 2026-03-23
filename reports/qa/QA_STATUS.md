@@ -1,15 +1,15 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-24 01:41:19 KST
+> Generated at: 2026-03-24 02:00:59 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 170 |
-| Total Checks | 1265 |
-| Passed | 1212 |
+| Total Runs | 171 |
+| Total Checks | 1266 |
+| Passed | 1213 |
 | Failed | 49 |
 | Completed Items | 241 |
 | Pending Items | 0 |
@@ -18,11 +18,11 @@
 | Expert Domains Tracked | 6 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Run | QA-20260324-0171 (2026-03-23T16:41:18.533Z) |
+| Last Run | QA-20260324-0172 (2026-03-23T17:00:59.400Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260324-0171 (2026-03-23T16:41:18.533Z)
+Latest run: QA-20260324-0172 (2026-03-23T17:00:59.400Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -32,29 +32,28 @@ Latest run: QA-20260324-0171 (2026-03-23T16:41:18.533Z)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period reviewed after production validation clarity smoke; effective total 17.2903 USD and billed cost 0.0000. |
+| - | - | - | - | - |
 
 ## Coverage (Latest Run)
 
 - Scope: targeted
 - Release-Facing: no
-- Deployment: dpl_FSdGujnENWd6xtGrX4ZjaoSBP3VX / SHA 4b7987a7
+- Deployment: SHA 8e162a75
 - Coverage Packs: core-routes-smoke
-- Covered Surfaces: /validation, validation hero copy simplification, validation snapshot note rendering, validation KPI priority (Snapshot updated / Total runs / Total checks / Completed), validation CTA row (GitHub Actions / Public snapshot JSON / anchors)
-- Skipped Surfaces: stale banner visible path on production (fresh snapshot only), GitHub Actions external page navigation
+- Covered Surfaces: validation stale banner visible path (mocked aged snapshot), ValidationEvidencePage stale warning text, validation page DOM render with generatedAt >= 7 days
+- Skipped Surfaces: vercel-production stale banner live path (fresh snapshot on current deployment), Public snapshot JSON fetch and external navigation
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | Production deployment preview URL | [link](https://openmanager-6nj4n92i6-skyasus-projects.vercel.app/) | - |
-| general | Validation Evidence page | [link](https://openmanager-ai.vercel.app/validation) | - |
+| - | - | - | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | Validation Evidence page with clarified hero copy and snapshot note | `artifacts/playwright/validation-evidence-clarified-2026-03-24.png` | - |
+| - | - | - | - |
 
 ## Expert Domain Open Gaps
 
@@ -334,6 +333,7 @@ Latest run: QA-20260324-0171 (2026-03-23T16:41:18.533Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260324-0172 | 2026-03-23T17:00:59.400Z | targeted | no | Validation stale banner visible path local proof | 1 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260324-0171 | 2026-03-23T16:41:18.533Z | targeted | no | Vercel Production QA - validation evidence clarity smoke | 5 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260324-0170 | 2026-03-23T15:09:36.687Z | targeted | no | Vercel Production QA - validation stale banner smoke after client-side fix | 5 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260323-0169 | 2026-03-23T07:36:31.950Z | targeted | no | Resolved alert history promptOverride local contract verification | 1 | 0 | 0 | 0 | 0 | 0 |
@@ -353,5 +353,4 @@ Latest run: QA-20260324-0171 (2026-03-23T16:41:18.533Z)
 | QA-20260322-0155 | 2026-03-21T17:32:57.012Z | targeted | no | Production AI Negative Feedback Trace E2E - TraceId Preserved + Feedback Success | 5 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260322-0154 | 2026-03-21T16:33:49.267Z | targeted | no | Cloud Run Trace Link Recovery - Monitoring Trace URL Restored | 4 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260322-0153 | 2026-03-21T16:10:40.348Z | targeted | no | Production AI Feedback Trace E2E - Feedback Success + Monitoring Match | 6 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260322-0152 | 2026-03-21T15:25:16.179Z | targeted | no | Cloud Run Admin Observability Pack - Monitoring + Traces Direct Check | 4 | 0 | 0 | 0 | 0 | 0 |
 

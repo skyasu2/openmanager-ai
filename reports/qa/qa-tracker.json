@@ -2,15 +2,15 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-03-23T16:41:18.533Z"
+    "updatedAt": "2026-03-23T17:00:59.400Z"
   },
   "sequence": {
-    "nextRunNumber": 172
+    "nextRunNumber": 173
   },
   "summary": {
-    "totalRuns": 170,
-    "totalChecks": 1265,
-    "totalPassed": 1212,
+    "totalRuns": 171,
+    "totalChecks": 1266,
+    "totalPassed": 1213,
     "totalFailed": 49,
     "completionRate": 100,
     "completedItems": 241,
@@ -19,8 +19,8 @@
     "wontFixItems": 8,
     "expertDomainsTracked": 6,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260324-0171",
-    "lastRecordedAt": "2026-03-23T16:41:18.533Z"
+    "lastRunId": "QA-20260324-0172",
+    "lastRecordedAt": "2026-03-23T17:00:59.400Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -14013,6 +14013,52 @@
       "expertCount": 0,
       "expertNeedsImprovementCount": 0,
       "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260324-0172",
+      "recordedAt": "2026-03-23T17:00:59.400Z",
+      "recordedAtKst": "2026-03-24 02:00:59 KST",
+      "title": "Validation stale banner visible path local proof",
+      "owner": "codex",
+      "source": "local-validation",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260324-0172.json",
+      "environment": {
+        "target": "local-dev",
+        "url": "",
+        "frontend": "Local",
+        "backend": "Local",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "8e162a755dd61dc3142b05c8805dbba1f9e9e677"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "coveragePacks": ["core-routes-smoke"],
+      "coveredSurfaces": [
+        "validation stale banner visible path (mocked aged snapshot)",
+        "ValidationEvidencePage stale warning text",
+        "validation page DOM render with generatedAt >= 7 days"
+      ],
+      "skippedSurfaces": [
+        "vercel-production stale banner live path (fresh snapshot on current deployment)",
+        "Public snapshot JSON fetch and external navigation"
+      ],
+      "checks": {
+        "total": 1,
+        "passed": 1,
+        "failed": 0
+      },
+      "expertAssessments": [],
+      "usageChecks": [],
+      "artifacts": [],
+      "links": [],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0

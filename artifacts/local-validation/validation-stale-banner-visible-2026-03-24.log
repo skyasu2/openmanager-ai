@@ -1,0 +1,14 @@
+
+ RUN  v4.0.18 /mnt/d/dev/openmanager-ai
+
+ ✓ src/app/validation/page.test.tsx > ValidationEvidencePage > snapshot이 7일 이상 오래되면 stale 배너를 보여준다 3334ms
+ ↓ src/app/validation/page.test.tsx > ValidationEvidencePage > snapshot이 7일 미만이면 stale 배너를 숨긴다
+ ↓ src/app/validation/page.test.tsx > ValidationEvidencePage > tracker snapshot이 latest proof보다 최신이면 차이를 설명한다
+ ↓ src/app/validation/page.test.tsx > ValidationEvidencePage > tracker snapshot과 latest proof가 같은 기준이면 동일 시점으로 설명한다
+ ↓ src/app/validation/page.test.tsx > ValidationEvidencePage > latest proof가 더 최신이면 반대 방향 차이를 설명한다
+
+ Test Files  1 passed (1)
+      Tests  1 passed | 4 skipped (5)
+   Start at  01:59:16
+   Duration  70.88s (transform 2.55s, setup 19.88s, import 3.64s, tests 3.35s, environment 38.14s)
+
