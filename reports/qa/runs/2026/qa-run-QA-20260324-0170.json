@@ -1,0 +1,92 @@
+{
+  "runId": "QA-20260324-0170",
+  "recordedAt": "2026-03-23T15:09:36.687Z",
+  "recordedAtKst": "2026-03-24 00:09:36 KST",
+  "runTitle": "Vercel Production QA - validation stale banner smoke after client-side fix",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_2NRUYUW9pVmFKYVk6wJCycBpDrem",
+    "deploymentUrl": "https://openmanager-ipttoddr4-skyasus-projects.vercel.app",
+    "commitSha": "64f6b521b39ee718fa8fc20e96df0400f26c9034"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "coveragePacks": ["core-routes-smoke"],
+  "coveredSurfaces": [
+    "/validation",
+    "validation evidence badges",
+    "fresh snapshot stale banner absence",
+    "Public snapshot JSON CTA presence",
+    "Latest Proof Run card"
+  ],
+  "skippedSurfaces": [
+    "stale banner visible path on production (fresh snapshot only)",
+    "GitHub Actions external page navigation"
+  ],
+  "checks": {
+    "total": 5,
+    "passed": 5,
+    "failed": 0
+  },
+  "expertAssessments": [],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-03-23T23:56:00+09:00",
+      "summary": "Current billing period reviewed after production validation smoke; effective total 17.2903 USD and billed cost 0.0000.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "Validation page without stale banner on fresh deployed snapshot",
+      "path": "artifacts/playwright/validation-stale-banner-smoke-2026-03-23.png"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "validation-stale-banner-client-side-fix",
+      "title": "Validation stale banner client-side age check fix",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Production deployment dpl_2NRUYUW9pVmFKYVk6wJCycBpDrem for commit 64f6b521b reached READY after moving Date.now()-based snapshot age calculation out of the server prerender path, and /validation rendered without a false stale banner for the fresh deployed snapshot.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Verified the latest production deployment for commit 64f6b521b is READY and promoted to openmanager-ai.vercel.app after the previous server-prerender Date.now() build failure was removed.",
+    "Verified the /validation page renders badge values from the deployed snapshot and does not show the amber stale warning when the snapshot is still fresh.",
+    "Verified the Public snapshot JSON CTA remains present on the page; this run focused on the page rendering contract rather than re-fetching the JSON endpoint payload itself."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Production deployment preview URL",
+      "url": "https://openmanager-ipttoddr4-skyasus-projects.vercel.app/"
+    },
+    {
+      "type": "general",
+      "label": "Validation Evidence page",
+      "url": "https://openmanager-ai.vercel.app/validation"
+    }
+  ]
+}

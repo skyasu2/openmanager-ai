@@ -2,25 +2,25 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-03-23T07:36:31.950Z"
+    "updatedAt": "2026-03-23T15:09:36.687Z"
   },
   "sequence": {
-    "nextRunNumber": 170
+    "nextRunNumber": 171
   },
   "summary": {
-    "totalRuns": 168,
-    "totalChecks": 1255,
-    "totalPassed": 1202,
+    "totalRuns": 169,
+    "totalChecks": 1260,
+    "totalPassed": 1207,
     "totalFailed": 49,
     "completionRate": 100,
-    "completedItems": 239,
+    "completedItems": 240,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 8,
     "expertDomainsTracked": 6,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260323-0169",
-    "lastRecordedAt": "2026-03-23T07:36:31.950Z"
+    "lastRunId": "QA-20260324-0170",
+    "lastRecordedAt": "2026-03-23T15:09:36.687Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -5639,6 +5639,30 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-03-23T04:52:42.651Z"
+    },
+    "validation-stale-banner-client-side-fix": {
+      "id": "validation-stale-banner-client-side-fix",
+      "title": "Validation stale banner client-side age check fix",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260324-0170",
+      "firstSeenAt": "2026-03-23T15:09:36.687Z",
+      "lastSeenRunId": "QA-20260324-0170",
+      "lastSeenAt": "2026-03-23T15:09:36.687Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "Production deployment dpl_2NRUYUW9pVmFKYVk6wJCycBpDrem for commit 64f6b521b reached READY after moving Date.now()-based snapshot age calculation out of the server prerender path, and /validation rendered without a false stale banner for the fresh deployed snapshot.",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-03-23T15:09:36.687Z"
     }
   },
   "runs": [
@@ -13813,6 +13837,82 @@
       "expertCount": 0,
       "expertNeedsImprovementCount": 0,
       "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260324-0170",
+      "recordedAt": "2026-03-23T15:09:36.687Z",
+      "recordedAtKst": "2026-03-24 00:09:36 KST",
+      "title": "Vercel Production QA - validation stale banner smoke after client-side fix",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260324-0170.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_2NRUYUW9pVmFKYVk6wJCycBpDrem",
+        "deploymentUrl": "https://openmanager-ipttoddr4-skyasus-projects.vercel.app",
+        "commitSha": "64f6b521b39ee718fa8fc20e96df0400f26c9034"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "coveragePacks": ["core-routes-smoke"],
+      "coveredSurfaces": [
+        "/validation",
+        "validation evidence badges",
+        "fresh snapshot stale banner absence",
+        "Public snapshot JSON CTA presence",
+        "Latest Proof Run card"
+      ],
+      "skippedSurfaces": [
+        "stale banner visible path on production (fresh snapshot only)",
+        "GitHub Actions external page navigation"
+      ],
+      "checks": {
+        "total": 5,
+        "passed": 5,
+        "failed": 0
+      },
+      "expertAssessments": [],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-03-23T23:56:00+09:00",
+          "summary": "Current billing period reviewed after production validation smoke; effective total 17.2903 USD and billed cost 0.0000.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "Validation page without stale banner on fresh deployed snapshot",
+          "path": "artifacts/playwright/validation-stale-banner-smoke-2026-03-23.png"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "Production deployment preview URL",
+          "url": "https://openmanager-ipttoddr4-skyasus-projects.vercel.app/"
+        },
+        {
+          "type": "general",
+          "label": "Validation Evidence page",
+          "url": "https://openmanager-ai.vercel.app/validation"
+        }
+      ],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
