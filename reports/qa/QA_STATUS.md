@@ -1,28 +1,28 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-24 00:09:37 KST
+> Generated at: 2026-03-24 01:41:19 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 169 |
-| Total Checks | 1260 |
-| Passed | 1207 |
+| Total Runs | 170 |
+| Total Checks | 1265 |
+| Passed | 1212 |
 | Failed | 49 |
-| Completed Items | 240 |
+| Completed Items | 241 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 8 |
 | Expert Domains Tracked | 6 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Run | QA-20260324-0170 (2026-03-23T15:09:36.687Z) |
+| Last Run | QA-20260324-0171 (2026-03-23T16:41:18.533Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260324-0170 (2026-03-23T15:09:36.687Z)
+Latest run: QA-20260324-0171 (2026-03-23T16:41:18.533Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -32,29 +32,29 @@ Latest run: QA-20260324-0170 (2026-03-23T15:09:36.687Z)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period reviewed after production validation smoke; effective total 17.2903 USD and billed cost 0.0000. |
+| vercel | cli | checked | normal | Current billing period reviewed after production validation clarity smoke; effective total 17.2903 USD and billed cost 0.0000. |
 
 ## Coverage (Latest Run)
 
 - Scope: targeted
 - Release-Facing: no
-- Deployment: dpl_2NRUYUW9pVmFKYVk6wJCycBpDrem / SHA 64f6b521
+- Deployment: dpl_FSdGujnENWd6xtGrX4ZjaoSBP3VX / SHA 4b7987a7
 - Coverage Packs: core-routes-smoke
-- Covered Surfaces: /validation, validation evidence badges, fresh snapshot stale banner absence, Public snapshot JSON CTA presence, Latest Proof Run card
+- Covered Surfaces: /validation, validation hero copy simplification, validation snapshot note rendering, validation KPI priority (Snapshot updated / Total runs / Total checks / Completed), validation CTA row (GitHub Actions / Public snapshot JSON / anchors)
 - Skipped Surfaces: stale banner visible path on production (fresh snapshot only), GitHub Actions external page navigation
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | Production deployment preview URL | [link](https://openmanager-ipttoddr4-skyasus-projects.vercel.app/) | - |
+| general | Production deployment preview URL | [link](https://openmanager-6nj4n92i6-skyasus-projects.vercel.app/) | - |
 | general | Validation Evidence page | [link](https://openmanager-ai.vercel.app/validation) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | Validation page without stale banner on fresh deployed snapshot | `artifacts/playwright/validation-stale-banner-smoke-2026-03-23.png` | - |
+| playwright-screenshot | Validation Evidence page with clarified hero copy and snapshot note | `artifacts/playwright/validation-evidence-clarified-2026-03-24.png` | - |
 
 ## Expert Domain Open Gaps
 
@@ -274,6 +274,7 @@ Latest run: QA-20260324-0170 (2026-03-23T15:09:36.687Z)
 - topology-map-render: 토폴로지 맵 완벽 렌더링 (completed 2회, last QA-20260314-0097)
 - typescript-무결성: TypeScript 무결성 (completed 1회, last QA-20260301-0032)
 - ui-esc-close: ESC 사이드바 닫기 (completed 1회, last QA-20260317-0114)
+- validation-evidence-summary-clarity: Validation evidence summary 카피와 정보 우선순위 정리 (completed 1회, last QA-20260324-0171)
 - validation-public-snapshot-artifact: Validation evidence public snapshot artifact 분리 (completed 1회, last QA-20260323-0168)
 - validation-stale-banner-client-side-fix: Validation stale banner client-side age check fix (completed 1회, last QA-20260324-0170)
 - vercel-build-fix: SessionState import 수정으로 Vercel 빌드 복구 (completed 1회, last QA-20260307-0053)
@@ -333,6 +334,7 @@ Latest run: QA-20260324-0170 (2026-03-23T15:09:36.687Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260324-0171 | 2026-03-23T16:41:18.533Z | targeted | no | Vercel Production QA - validation evidence clarity smoke | 5 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260324-0170 | 2026-03-23T15:09:36.687Z | targeted | no | Vercel Production QA - validation stale banner smoke after client-side fix | 5 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260323-0169 | 2026-03-23T07:36:31.950Z | targeted | no | Resolved alert history promptOverride local contract verification | 1 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260323-0168 | 2026-03-23T04:52:42.651Z | targeted | no | Vercel Production QA - validation evidence public snapshot smoke | 5 | 1 | 0 | 0 | 0 | 0 |
@@ -352,5 +354,4 @@ Latest run: QA-20260324-0170 (2026-03-23T15:09:36.687Z)
 | QA-20260322-0154 | 2026-03-21T16:33:49.267Z | targeted | no | Cloud Run Trace Link Recovery - Monitoring Trace URL Restored | 4 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260322-0153 | 2026-03-21T16:10:40.348Z | targeted | no | Production AI Feedback Trace E2E - Feedback Success + Monitoring Match | 6 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260322-0152 | 2026-03-21T15:25:16.179Z | targeted | no | Cloud Run Admin Observability Pack - Monitoring + Traces Direct Check | 4 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260321-0151 | 2026-03-21T14:51:43.204Z | targeted | no | Vercel Playwright QA - Observability Dashboard Pack (SHA 72ab0bc) | 5 | 0 | 0 | 0 | 0 | 0 |
 

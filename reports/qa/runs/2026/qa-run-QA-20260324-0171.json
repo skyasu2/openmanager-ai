@@ -1,0 +1,92 @@
+{
+  "runId": "QA-20260324-0171",
+  "recordedAt": "2026-03-23T16:41:18.533Z",
+  "recordedAtKst": "2026-03-24 01:41:18 KST",
+  "runTitle": "Vercel Production QA - validation evidence clarity smoke",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_FSdGujnENWd6xtGrX4ZjaoSBP3VX",
+    "deploymentUrl": "https://openmanager-6nj4n92i6-skyasus-projects.vercel.app",
+    "commitSha": "4b7987a78fbfda48bd2de1cb077b697848ef29a0"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "coveragePacks": ["core-routes-smoke"],
+  "coveredSurfaces": [
+    "/validation",
+    "validation hero copy simplification",
+    "validation snapshot note rendering",
+    "validation KPI priority (Snapshot updated / Total runs / Total checks / Completed)",
+    "validation CTA row (GitHub Actions / Public snapshot JSON / anchors)"
+  ],
+  "skippedSurfaces": [
+    "stale banner visible path on production (fresh snapshot only)",
+    "GitHub Actions external page navigation"
+  ],
+  "checks": {
+    "total": 5,
+    "passed": 5,
+    "failed": 0
+  },
+  "expertAssessments": [],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-03-24T01:06:00+09:00",
+      "summary": "Current billing period reviewed after production validation clarity smoke; effective total 17.2903 USD and billed cost 0.0000.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "Validation Evidence page with clarified hero copy and snapshot note",
+      "path": "artifacts/playwright/validation-evidence-clarified-2026-03-24.png"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "validation-evidence-summary-clarity",
+      "title": "Validation evidence summary 카피와 정보 우선순위 정리",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Production deployment dpl_FSdGujnENWd6xtGrX4ZjaoSBP3VX renders simplified hero copy, a snapshot gap note, and KPI cards reordered around freshness and completion instead of wont-fix emphasis.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Verified the new hero copy is shorter and reads as a public-facing evidence summary rather than an internal-only explanation block.",
+    "Verified the page now explains the March 23 tracker snapshot vs March 22 latest CI proof relationship via a dedicated Snapshot note.",
+    "Verified Wont-fix was demoted from a primary KPI card to a lower-priority known limitations line without removing the underlying count from the page."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Production deployment preview URL",
+      "url": "https://openmanager-6nj4n92i6-skyasus-projects.vercel.app/"
+    },
+    {
+      "type": "general",
+      "label": "Validation Evidence page",
+      "url": "https://openmanager-ai.vercel.app/validation"
+    }
+  ]
+}
