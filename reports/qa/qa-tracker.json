@@ -14707,26 +14707,6 @@
           "type": "playwright-screenshot",
           "label": "PR #200 preview AI smoke",
           "path": "artifacts/playwright/pr200-preview-ai-smoke-2026-03-24.png"
-        },
-        {
-          "type": "playwright-trace",
-          "label": "PR #200 preview AI smoke trace",
-          "path": "artifacts/playwright/pr200-preview-ai-smoke-trace-2026-03-24.zip"
-        },
-        {
-          "type": "playwright-screenshot",
-          "label": "preview-ai-smoke-5f65815b7842022a35e44b801d30f24859653f54.png",
-          "path": "test-results/manual-vercel/tmp-pr200-preview-ai-smoke-5d35a-nd-exposes-analysis-details-chromium/attachments/preview-ai-smoke-5f65815b7842022a35e44b801d30f24859653f54.png"
-        },
-        {
-          "type": "playwright-screenshot",
-          "label": "pr200-preview-ai-smoke.png",
-          "path": "test-results/manual-vercel/tmp-pr200-preview-ai-smoke-5d35a-nd-exposes-analysis-details-chromium/pr200-preview-ai-smoke.png"
-        },
-        {
-          "type": "playwright-trace",
-          "label": "tmp-pr200-preview-ai-smoke-5d35a-nd-exposes-analysis-details-chromium",
-          "path": "test-results/manual-vercel/tmp-pr200-preview-ai-smoke-5d35a-nd-exposes-analysis-details-chromium/trace.zip"
         }
       ],
       "links": [

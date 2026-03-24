@@ -1,7 +1,7 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-24 20:22:07 KST
+> Generated at: 2026-03-24 20:28:12 KST
 
 ## Summary
 
@@ -56,10 +56,6 @@ Latest run: QA-20260324-0180 (2026-03-24T11:22:06.967Z)
 | Type | Label | Location | Viewer |
 |---|---|---|---|
 | playwright-screenshot | PR #200 preview AI smoke | `artifacts/playwright/pr200-preview-ai-smoke-2026-03-24.png` | - |
-| playwright-trace | PR #200 preview AI smoke trace | `artifacts/playwright/pr200-preview-ai-smoke-trace-2026-03-24.zip` | - |
-| playwright-screenshot | preview-ai-smoke-5f65815b7842022a35e44b801d30f24859653f54.png | `test-results/manual-vercel/tmp-pr200-preview-ai-smoke-5d35a-nd-exposes-analysis-details-chromium/attachments/preview-ai-smoke-5f65815b7842022a35e44b801d30f24859653f54.png` | - |
-| playwright-screenshot | pr200-preview-ai-smoke.png | `test-results/manual-vercel/tmp-pr200-preview-ai-smoke-5d35a-nd-exposes-analysis-details-chromium/pr200-preview-ai-smoke.png` | - |
-| playwright-trace | tmp-pr200-preview-ai-smoke-5d35a-nd-exposes-analysis-details-chromium | `test-results/manual-vercel/tmp-pr200-preview-ai-smoke-5d35a-nd-exposes-analysis-details-chromium/trace.zip` | - |
 
 ## Expert Domain Open Gaps
 
