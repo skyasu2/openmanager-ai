@@ -31,6 +31,7 @@ import {
   type HealthCheckResponse,
   HealthCheckResponseSchema,
 } from '@/schemas/api.schema';
+import { getKSTDateTime } from '@/services/metrics/kst-time';
 import { getErrorMessage } from '@/types/type-utils';
 import debug from '@/utils/debug';
 
@@ -311,7 +312,32 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  // 2. Service-specific health check (?service=cloudrun|ai) - /api/ai/health 대체
+  // 2a. Data parity check (?service=parity) — dashboard/AI 동일 슬롯 참조 검증용
+  if (service === 'parity') {
+    const { slotIndex: globalSlotIndex, minuteOfDay } = getKSTDateTime();
+    const hour = Math.floor(minuteOfDay / 60);
+    const slotInHour = globalSlotIndex % 6;
+    return NextResponse.json(
+      {
+        contract: 'frontend-ai-data-parity',
+        description:
+          'Dashboard와 AI 엔진은 동일한 KST 10분 슬롯 계산식을 공유합니다. ' +
+          '이 응답의 globalSlotIndex가 AI 응답 dataSlot.slotIndex와 ±1 이내여야 합니다.',
+        slot: {
+          globalSlotIndex, // 0-143: AI 엔진 dataSlot.slotIndex와 직접 비교 가능
+          slotInHour, // 0-5: hour-XX.json slots[] 배열 인덱스
+          hour, // 0-23: 로드 중인 hourly JSON 파일 번호
+          minuteOfDay, // 0-1430 (10분 단위): 두 사이드 모두 동일 기준
+        },
+        toleranceSlots: 1,
+        formula: 'Math.floor(KST_minutes_of_day / 10)',
+        timestamp: new Date().toISOString(),
+      },
+      { headers: { 'Cache-Control': 'no-store' } }
+    );
+  }
+
+  // 2b. Service-specific health check (?service=cloudrun|ai) - /api/ai/health 대체
   if (service === 'cloudrun' || service === 'ai') {
     const result = await checkCloudRunHealth();
     if (result.healthy) {

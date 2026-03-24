@@ -393,6 +393,7 @@ export async function loadCurrentOTelServers(): Promise<{
   servers: EnhancedServerMetrics[];
   hour: number;
   slotIndex: number;
+  globalSlotIndex: number;
   minuteOfDay: number;
   dataSource: {
     scopeName: string;
@@ -403,11 +404,21 @@ export async function loadCurrentOTelServers(): Promise<{
 }> {
   const minuteOfDay = getKSTMinuteOfDay();
   const hour = Math.floor(minuteOfDay / 60);
+  // 시간 내 슬롯 (0-5): hourly JSON slots[] 배열 인덱싱용
   const slotIndex = Math.floor((minuteOfDay % 60) / 10);
+  // 전역 슬롯 (0-143): AI 엔진과 동일 스케일, parity 검증 및 표시용
+  const globalSlotIndex = Math.floor(minuteOfDay / 10);
 
   const hourlyData = await getOTelHourlyData(hour);
   if (!hourlyData) {
-    return { servers: [], hour, slotIndex, minuteOfDay, dataSource: null };
+    return {
+      servers: [],
+      hour,
+      slotIndex,
+      globalSlotIndex,
+      minuteOfDay,
+      dataSource: null,
+    };
   }
 
   const catalog = await getOTelResourceCatalog();
@@ -422,16 +433,30 @@ export async function loadCurrentOTelServers(): Promise<{
     hourlyData.slots[slotIndex] ??
     hourlyData.slots[hourlyData.slots.length - 1];
   if (!slot) {
-    return { servers: [], hour, slotIndex, minuteOfDay, dataSource };
+    return {
+      servers: [],
+      hour,
+      slotIndex,
+      globalSlotIndex,
+      minuteOfDay,
+      dataSource,
+    };
   }
 
   if (!catalog) {
-    return { servers: [], hour, slotIndex, minuteOfDay, dataSource };
+    return {
+      servers: [],
+      hour,
+      slotIndex,
+      globalSlotIndex,
+      minuteOfDay,
+      dataSource,
+    };
   }
   const timestamp = new Date().toISOString();
   const servers = otelSlotToServers(slot, catalog, timestamp);
 
-  return { servers, hour, slotIndex, minuteOfDay, dataSource };
+  return { servers, hour, slotIndex, globalSlotIndex, minuteOfDay, dataSource };
 }
 
 // ============================================================================

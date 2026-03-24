@@ -43,7 +43,7 @@ function formatSlotLabel(dataSlotInfo: DashboardTimeInfo): string {
     '0'
   );
   const minutes = String(dataSlotInfo.minuteOfDay % 60).padStart(2, '0');
-  return `${hours}:${minutes} KST (slot ${dataSlotInfo.slotIndex}/143)`;
+  return `${hours}:${minutes} KST (slot ${dataSlotInfo.globalSlotIndex}/143)`;
 }
 
 function formatDataSourceLabel(
@@ -63,9 +63,11 @@ function getCurrentDashboardTimeInfo(
   }
 
   const { slotIndex, minuteOfDay } = getKSTDateTime();
+  // getKSTDateTime().slotIndex = Math.floor(minuteOfDay / 10) = global 0-143
   return {
     hour: Math.floor(minuteOfDay / 60),
-    slotIndex,
+    slotIndex: slotIndex % 6, // within-hour 0-5 (데이터 조회 호환)
+    globalSlotIndex: slotIndex, // global 0-143 (표시 및 parity 검증용)
     minuteOfDay,
   };
 }

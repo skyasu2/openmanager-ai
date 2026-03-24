@@ -36,7 +36,10 @@ export type DashboardStats = {
 
 export type DashboardTimeInfo = {
   hour: number;
+  /** 시간 내 슬롯 인덱스 (0-5) — hourly JSON 데이터 조회용 */
   slotIndex: number;
+  /** 전역 슬롯 인덱스 (0-143) — AI 엔진과 동일 스케일, parity 검증 및 표시용 */
+  globalSlotIndex: number;
   minuteOfDay: number;
 };
 
@@ -101,8 +104,14 @@ export type OTelDashboardData = {
  */
 export async function getOTelDashboardData(): Promise<OTelDashboardData> {
   try {
-    const { servers, hour, slotIndex, minuteOfDay, dataSource } =
-      await loadCurrentOTelServers();
+    const {
+      servers,
+      hour,
+      slotIndex,
+      globalSlotIndex,
+      minuteOfDay,
+      dataSource,
+    } = await loadCurrentOTelServers();
 
     // EnhancedServerMetrics → Server 변환 + 상태 우선순위 정렬
     const converted = servers.map(toServer);
@@ -123,7 +132,7 @@ export async function getOTelDashboardData(): Promise<OTelDashboardData> {
     return {
       servers: sortedServers,
       stats,
-      timeInfo: { hour, slotIndex, minuteOfDay },
+      timeInfo: { hour, slotIndex, globalSlotIndex, minuteOfDay },
       dataSourceInfo: dataSource,
     };
   } catch (error) {
@@ -131,7 +140,7 @@ export async function getOTelDashboardData(): Promise<OTelDashboardData> {
     return {
       servers: [],
       stats: { total: 0, online: 0, warning: 0, critical: 0, offline: 0 },
-      timeInfo: { hour: 0, slotIndex: 0, minuteOfDay: 0 },
+      timeInfo: { hour: 0, slotIndex: 0, globalSlotIndex: 0, minuteOfDay: 0 },
       dataSourceInfo: null,
     };
   }
