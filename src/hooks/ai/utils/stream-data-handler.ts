@@ -11,6 +11,13 @@ import {
   type ResponseSourceData,
 } from './response-view-helpers';
 
+type SyntheticToolPart = Extract<
+  UIMessage['parts'][number],
+  {
+    type: `tool-${string}`;
+  }
+>;
+
 type PendingStreamToolResult = {
   toolName: string;
   result: unknown;
@@ -76,15 +83,16 @@ function extractPendingToolResult(
   };
 }
 
-function createSyntheticToolParts(
+export function createSyntheticToolParts(
   toolResults: PendingStreamToolResult[]
-): UIMessage['parts'] {
+): SyntheticToolPart[] {
   return toolResults.map((entry, index) => ({
-    type: `tool-${entry.toolName}`,
+    type: `tool-${entry.toolName}` as `tool-${string}`,
     toolCallId: `stream-tool-${entry.toolName}-${index}`,
+    input: undefined,
     output: entry.result,
     state: 'output-available',
-  })) as UIMessage['parts'];
+  }));
 }
 
 export function handleStreamDataPart(

@@ -40,7 +40,10 @@ import {
   convertThinkingStepsToUI,
   transformMessages,
 } from './utils/message-helpers';
-import { handleStreamDataPart } from './utils/stream-data-handler';
+import {
+  createSyntheticToolParts,
+  handleStreamDataPart,
+} from './utils/stream-data-handler';
 
 // Re-export for backwards compatibility
 export { convertThinkingStepsToUI };
@@ -301,17 +304,11 @@ export function useAIChatCore(
     const existingParts = Array.isArray(targetMessage.parts)
       ? targetMessage.parts
       : [];
-    const syntheticToolParts = pendingToolResults
-      .map((entry, index) => ({
-        type: `tool-${entry.toolName}`,
-        toolCallId: `stream-tool-${entry.toolName}-${index}`,
-        output: entry.result,
-        state: 'output-available',
-      }))
-      .filter(
-        (part) =>
-          !existingParts.some((existing) => existing?.type === part.type)
-      );
+    const syntheticToolParts = createSyntheticToolParts(
+      pendingToolResults
+    ).filter(
+      (part) => !existingParts.some((existing) => existing?.type === part.type)
+    );
 
     pendingStreamToolResultsRef.current = [];
     pendingStreamMessageMetadataRef.current = {};
