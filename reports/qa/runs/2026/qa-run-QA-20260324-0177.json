@@ -1,0 +1,92 @@
+{
+  "runId": "QA-20260324-0177",
+  "recordedAt": "2026-03-24T07:57:28.735Z",
+  "recordedAtKst": "2026-03-24 16:57:28 KST",
+  "runTitle": "Vercel Production QA - false realtime-analysis badge removed but parity mismatch remains",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_57ta8t6AHtXrhZPWXWdzM7np8SQs",
+    "deploymentUrl": "https://openmanager-d3fwdyat2-skyasus-projects.vercel.app",
+    "commitSha": "a4c37c8c1a8f6843039e367d3a58c7a8f0e2052a"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "coveragePacks": ["dashboard-core", "ai-core"],
+  "coveredSurfaces": [
+    "/dashboard",
+    "production deploy readiness for false realtime-analysis fix",
+    "dashboard raw metric label and slot",
+    "AI sidebar fresh streaming query",
+    "assistant response data-source badge honesty",
+    "analysis detail state after fresh query"
+  ],
+  "skippedSurfaces": [],
+  "checks": {
+    "total": 6,
+    "passed": 5,
+    "failed": 1
+  },
+  "expertAssessments": [],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-03-24T16:56:40+09:00",
+      "summary": "Current billing period reviewed after the false realtime-analysis fix deploy; effective total 17.9596 USD and billed cost 0.0000.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "False realtime-analysis badge removed but AI/dashboard parity mismatch remains",
+      "path": "artifacts/playwright/parity-badge-honest-but-mismatch-2026-03-24.png"
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [
+    {
+      "id": "frontend-ai-data-parity-gate",
+      "title": "프론트엔드 표시 상태와 AI 분석 상태 동일 슬롯 참조 검증",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "After commit a4c37c8 and deployment dpl_57ta8t6AHtXrhZPWXWdzM7np8SQs reached READY, the false '서버 실시간 데이터 분석' badge was removed for a fresh query, but cache-redis-dc1-01 still answered 85% while the dashboard card showed MEM 93% at slot 101/143. The detail panel now honestly reports 일반 대화 응답, confirming the remaining blocker is upstream AI/data parity rather than frontend badge promotion.",
+      "owner": "",
+      "status": "pending",
+      "policyNote": ""
+    }
+  ],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Verified the latest Vercel production deployment dpl_57ta8t6AHtXrhZPWXWdzM7np8SQs for commit a4c37c8 reached READY and was promoted to openmanager-ai.vercel.app.",
+    "Verified /dashboard rendered 'Synthetic OTel snapshot · 16:50 KST (slot 101/143)' and the cache-redis-dc1-01 server card showed MEM 93.0%.",
+    "Verified a fresh AI sidebar query 'cache-redis-dc1-01 메모리 사용률 몇 %야?' returned a successful streaming answer on production.",
+    "Verified the assistant response badge is now 'Streaming AI · 일반 대화 응답', so the false realtime-analysis promotion was removed.",
+    "Observed that the fresh AI answer still returned 85% instead of the dashboard raw MEM 93%, and the detail panel now honestly shows only 일반 대화 응답 / Streaming AI without any parity contract block."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Dashboard URL",
+      "url": "https://openmanager-ai.vercel.app/dashboard"
+    },
+    {
+      "type": "general",
+      "label": "Production deployment preview URL",
+      "url": "https://openmanager-d3fwdyat2-skyasus-projects.vercel.app/"
+    }
+  ]
+}

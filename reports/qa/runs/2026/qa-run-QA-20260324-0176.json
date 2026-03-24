@@ -1,0 +1,92 @@
+{
+  "runId": "QA-20260324-0176",
+  "recordedAt": "2026-03-24T07:35:13.658Z",
+  "recordedAtKst": "2026-03-24 16:35:13 KST",
+  "runTitle": "Vercel Production QA - parity gate still open after analysis detail patch",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_Hk17GH2Dq5ef5uWA1MubTeqNGj6C",
+    "deploymentUrl": "https://openmanager-gbdo56e5d-skyasus-projects.vercel.app",
+    "commitSha": "963142462ad4556ead287fe6cecded71b8b4dade"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "coveragePacks": ["dashboard-core", "ai-core"],
+  "coveredSurfaces": [
+    "/dashboard",
+    "production deploy readiness for analysis detail patch",
+    "dashboard raw metric label and slot",
+    "AI sidebar fresh streaming query",
+    "assistant response data-source badge",
+    "analysis detail parity metadata visibility"
+  ],
+  "skippedSurfaces": [],
+  "checks": {
+    "total": 6,
+    "passed": 4,
+    "failed": 2
+  },
+  "expertAssessments": [],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-03-24T16:33:30+09:00",
+      "summary": "Current billing period reviewed after the analysis-detail patch deploy; effective total 17.9596 USD and billed cost 0.0000.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "Production parity gate regression after analysis detail patch",
+      "path": "artifacts/playwright/parity-gate-regression-2026-03-24.png"
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [
+    {
+      "id": "frontend-ai-data-parity-gate",
+      "title": "프론트엔드 표시 상태와 AI 분석 상태 동일 슬롯 참조 검증",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "After commit 963142462 and deployment dpl_Hk17GH2Dq5ef5uWA1MubTeqNGj6C reached READY, a fresh streaming query still returned cache-redis-dc1-01 memory usage as 32% while the dashboard card showed MEM 91% at slot 99/143, and '분석 근거 상세 보기' still did not render the slot/dataSource parity contract block.",
+      "owner": "",
+      "status": "pending",
+      "policyNote": ""
+    }
+  ],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Verified the latest Vercel production deployment dpl_Hk17GH2Dq5ef5uWA1MubTeqNGj6C for commit 963142462 reached READY and was promoted to openmanager-ai.vercel.app.",
+    "Verified /dashboard rendered 'Synthetic OTel snapshot · 16:30 KST (slot 99/143)' and the cache-redis-dc1-01 server card showed MEM 91%.",
+    "Verified a fresh AI sidebar query 'cache-redis-dc1-01 메모리 사용률 몇 %야?' returned a successful streaming answer on production.",
+    "Verified the assistant response badge still renders 'Streaming AI · 서버 실시간 데이터 분석'.",
+    "Observed that the fresh AI answer returned 32% instead of the dashboard raw MEM 91%, and '분석 근거 상세 보기' still rendered only data/engine/period rows without the parity metadata contract block."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Dashboard URL",
+      "url": "https://openmanager-ai.vercel.app/dashboard"
+    },
+    {
+      "type": "general",
+      "label": "Production deployment preview URL",
+      "url": "https://openmanager-gbdo56e5d-skyasus-projects.vercel.app/"
+    }
+  ]
+}
