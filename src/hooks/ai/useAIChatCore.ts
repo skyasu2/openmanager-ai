@@ -41,6 +41,7 @@ import { useChatHistory } from './core/useChatHistory';
 import { useChatQueue } from './core/useChatQueue';
 import { useChatSession } from './core/useChatSession';
 import { useChatSessionState } from './core/useChatSessionState';
+import type { StreamRagSource } from './types/stream-rag.types';
 import { useAIChatHybridCallbacks } from './useAIChatHybridCallbacks';
 import { useDeferredMessageMetadata } from './useDeferredMessageMetadata';
 import { useEnhancedChatMessages } from './useEnhancedChatMessages';
@@ -171,15 +172,9 @@ export function useAIChatCore(
   } = useChatQueue();
 
   // 스트리밍 done 이벤트에서 수신한 ragSources (웹 검색 결과 등)
-  const [streamRagSources, setStreamRagSources] = useState<
-    Array<{
-      title: string;
-      similarity: number;
-      sourceType: string;
-      category?: string;
-      url?: string;
-    }>
-  >([]);
+  const [streamRagSources, setStreamRagSources] = useState<StreamRagSource[]>(
+    []
+  );
 
   // Refs
   const lastQueryRef = useRef<string>('');
@@ -203,12 +198,22 @@ export function useAIChatCore(
   >(null);
 
   const messagesRef = useRef<UIMessage[]>([]);
+  const getPendingQuery = useCallback(() => pendingQueryRef.current, []);
+  const clearPendingQuery = useCallback(() => {
+    pendingQueryRef.current = '';
+  }, []);
+  const getDeferredHandlers = useCallback(
+    () => deferredHandlersRef.current,
+    []
+  );
+  const getMessages = useCallback(() => messagesRef.current, []);
 
   const hybridCallbacks = useAIChatHybridCallbacks({
     onMessageSend,
-    pendingQueryRef,
-    deferredHandlersRef,
-    messagesRef,
+    getPendingQuery,
+    clearPendingQuery,
+    getDeferredHandlers,
+    getMessages,
     setError,
     setCurrentAgentStatus,
     setCurrentHandoff,

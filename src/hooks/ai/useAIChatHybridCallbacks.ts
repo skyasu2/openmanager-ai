@@ -1,34 +1,23 @@
 'use client';
 
 import type { UIMessage } from '@ai-sdk/react';
-import {
-  type Dispatch,
-  type MutableRefObject,
-  type SetStateAction,
-  useMemo,
-} from 'react';
+import { type Dispatch, type SetStateAction, useMemo } from 'react';
 import type {
   AgentStatusEventData,
   HandoffEventData,
   StreamDataPart,
 } from '@/hooks/ai/useHybridAIQuery';
 import { logger } from '@/lib/logging';
+import type { StreamRagSource } from './types/stream-rag.types';
 import type { DeferredMetadataHandlers } from './useDeferredMessageMetadata';
 import { handleStreamDataPart } from './utils/stream-data-handler';
 
-type StreamRagSource = {
-  title: string;
-  similarity: number;
-  sourceType: string;
-  category?: string;
-  url?: string;
-};
-
 interface UseAIChatHybridCallbacksOptions {
   onMessageSend?: (message: string) => void;
-  pendingQueryRef: MutableRefObject<string>;
-  deferredHandlersRef: MutableRefObject<DeferredMetadataHandlers | null>;
-  messagesRef: MutableRefObject<UIMessage[]>;
+  getPendingQuery: () => string;
+  clearPendingQuery: () => void;
+  getDeferredHandlers: () => DeferredMetadataHandlers | null;
+  getMessages: () => UIMessage[];
   setError: Dispatch<SetStateAction<string | null>>;
   setCurrentAgentStatus: Dispatch<SetStateAction<AgentStatusEventData | null>>;
   setCurrentHandoff: Dispatch<SetStateAction<HandoffEventData | null>>;
@@ -37,9 +26,10 @@ interface UseAIChatHybridCallbacksOptions {
 
 export function useAIChatHybridCallbacks({
   onMessageSend,
-  pendingQueryRef,
-  deferredHandlersRef,
-  messagesRef,
+  getPendingQuery,
+  clearPendingQuery,
+  getDeferredHandlers,
+  getMessages,
   setError,
   setCurrentAgentStatus,
   setCurrentHandoff,
@@ -48,20 +38,20 @@ export function useAIChatHybridCallbacks({
   return useMemo(
     () => ({
       onStreamFinish: () => {
-        onMessageSend?.(pendingQueryRef.current);
+        onMessageSend?.(getPendingQuery());
         setError(null);
-        pendingQueryRef.current = '';
+        clearPendingQuery();
         setCurrentAgentStatus(null);
         setCurrentHandoff(null);
       },
       onJobResult: (result: { success: boolean; error?: string | null }) => {
-        onMessageSend?.(pendingQueryRef.current);
+        onMessageSend?.(getPendingQuery());
         if (result.success) {
           setError(null);
         } else if (result.error) {
           setError(result.error);
         }
-        pendingQueryRef.current = '';
+        clearPendingQuery();
         if (process.env.NODE_ENV === 'development') {
           logger.info('📦 [Job Queue] Result received:', result.success);
         }
@@ -74,7 +64,7 @@ export function useAIChatHybridCallbacks({
         }
       },
       onData: (dataPart: StreamDataPart) => {
-        const dh = deferredHandlersRef.current;
+        const dh = getDeferredHandlers();
         if (!dh) return;
 
         handleStreamDataPart(dataPart, {
@@ -88,15 +78,16 @@ export function useAIChatHybridCallbacks({
           setPendingMessageMetadata: dh.setPendingMessageMetadata,
           setDeferredAssistantMetadata: dh.setDeferredAssistantMetadata,
           setDeferredAssistantToolResults: dh.setDeferredAssistantToolResults,
-          getMessages: () => messagesRef.current,
+          getMessages,
         });
       },
     }),
     [
+      clearPendingQuery,
+      getDeferredHandlers,
+      getMessages,
+      getPendingQuery,
       onMessageSend,
-      pendingQueryRef,
-      deferredHandlersRef,
-      messagesRef,
       setError,
       setCurrentAgentStatus,
       setCurrentHandoff,

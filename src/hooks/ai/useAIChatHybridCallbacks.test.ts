@@ -46,15 +46,18 @@ describe('useAIChatHybridCallbacks', () => {
     const setCurrentHandoff = vi.fn();
     const setStreamRagSources = vi.fn();
     const pendingQueryRef = { current: '서버 상태 알려줘' };
-    const deferredHandlersRef = { current: null };
-    const messagesRef = { current: [] as UIMessage[] };
+    const deferredHandlers = { current: null };
+    const messages = { current: [] as UIMessage[] };
 
     const { result } = renderHook(() =>
       useAIChatHybridCallbacks({
         onMessageSend,
-        pendingQueryRef,
-        deferredHandlersRef,
-        messagesRef,
+        getPendingQuery: () => pendingQueryRef.current,
+        clearPendingQuery: () => {
+          pendingQueryRef.current = '';
+        },
+        getDeferredHandlers: () => deferredHandlers.current,
+        getMessages: () => messages.current,
         setError,
         setCurrentAgentStatus,
         setCurrentHandoff,
@@ -79,9 +82,12 @@ describe('useAIChatHybridCallbacks', () => {
     const { result } = renderHook(() =>
       useAIChatHybridCallbacks({
         onMessageSend,
-        pendingQueryRef,
-        deferredHandlersRef: { current: null },
-        messagesRef: { current: [] as UIMessage[] },
+        getPendingQuery: () => pendingQueryRef.current,
+        clearPendingQuery: () => {
+          pendingQueryRef.current = '';
+        },
+        getDeferredHandlers: () => null,
+        getMessages: () => [],
         setError,
         setCurrentAgentStatus: vi.fn(),
         setCurrentHandoff: vi.fn(),
@@ -120,9 +126,10 @@ describe('useAIChatHybridCallbacks', () => {
     const { result } = renderHook(() =>
       useAIChatHybridCallbacks({
         onMessageSend: vi.fn(),
-        pendingQueryRef: { current: '' },
-        deferredHandlersRef: { current: handlers },
-        messagesRef,
+        getPendingQuery: () => '',
+        clearPendingQuery: vi.fn(),
+        getDeferredHandlers: () => handlers,
+        getMessages: () => messagesRef.current,
         setError: vi.fn(),
         setCurrentAgentStatus: vi.fn(),
         setCurrentHandoff: vi.fn(),
@@ -156,9 +163,10 @@ describe('useAIChatHybridCallbacks', () => {
     const { result } = renderHook(() =>
       useAIChatHybridCallbacks({
         onMessageSend: vi.fn(),
-        pendingQueryRef: { current: '' },
-        deferredHandlersRef: { current: null },
-        messagesRef: { current: [] as UIMessage[] },
+        getPendingQuery: () => '',
+        clearPendingQuery: vi.fn(),
+        getDeferredHandlers: () => null,
+        getMessages: () => [],
         setError: vi.fn(),
         setCurrentAgentStatus: vi.fn(),
         setCurrentHandoff: vi.fn(),

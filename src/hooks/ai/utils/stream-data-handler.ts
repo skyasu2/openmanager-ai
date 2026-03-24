@@ -5,6 +5,7 @@ import type {
   StreamDataPart,
 } from '@/hooks/ai/useHybridAIQuery';
 import { logger } from '@/lib/logging';
+import type { StreamRagSource } from '../types/stream-rag.types';
 import {
   buildStructuredResponseView,
   normalizeRagSources,
@@ -27,15 +28,7 @@ type StreamDataCallbacks = {
   setCurrentAgentStatus: (status: AgentStatusEventData | null) => void;
   setCurrentHandoff: (handoff: HandoffEventData | null) => void;
   setMessageTraceId: (messageId: string, traceId: string) => void;
-  setStreamRagSources: (
-    sources: Array<{
-      title: string;
-      similarity: number;
-      sourceType: string;
-      category?: string;
-      url?: string;
-    }>
-  ) => void;
+  setStreamRagSources: (sources: StreamRagSource[]) => void;
   getPendingToolResults: () => PendingStreamToolResult[];
   setPendingToolResults: (results: PendingStreamToolResult[]) => void;
   getPendingMessageMetadata: () => Record<string, unknown>;

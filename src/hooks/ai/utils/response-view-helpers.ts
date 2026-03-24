@@ -1,5 +1,6 @@
 import type { StructuredAssistantResponse } from '@/lib/ai/utils/assistant-response-view';
 import { resolveAssistantResponseView } from '@/lib/ai/utils/assistant-response-view';
+import type { StreamRagSource } from '../types/stream-rag.types';
 
 export type ResponseSourceData = {
   responseSummary?: unknown;
@@ -14,21 +15,11 @@ export type ResponseSourceData = {
   metadata?: unknown;
 };
 
-export function normalizeRagSources(sources: unknown): Array<{
-  title: string;
-  similarity: number;
-  sourceType: string;
-  category?: string;
-  url?: string;
-}> | null {
+export function normalizeRagSources(
+  sources: unknown
+): StreamRagSource[] | null {
   if (!Array.isArray(sources)) return null;
-  return sources as Array<{
-    title: string;
-    similarity: number;
-    sourceType: string;
-    category?: string;
-    url?: string;
-  }>;
+  return sources as StreamRagSource[];
 }
 
 export function buildStructuredResponseView(

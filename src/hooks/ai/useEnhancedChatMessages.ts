@@ -3,16 +3,9 @@
 import type { UIMessage } from '@ai-sdk/react';
 import { useMemo } from 'react';
 import type { EnhancedChatMessage } from '@/stores/useAISidebarStore';
+import type { StreamRagSource } from './types/stream-rag.types';
 import { transformMessages } from './utils/message-helpers';
 import type { PendingStreamToolResult } from './utils/stream-data-handler';
-
-type StreamRagSource = {
-  title: string;
-  similarity: number;
-  sourceType: string;
-  category?: string;
-  url?: string;
-};
 
 interface UseEnhancedChatMessagesOptions {
   messages: UIMessage[];
