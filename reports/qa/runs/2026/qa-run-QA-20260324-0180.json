@@ -1,0 +1,82 @@
+{
+  "runId": "QA-20260324-0180",
+  "recordedAt": "2026-03-24T11:22:06.967Z",
+  "recordedAtKst": "2026-03-24 20:22:06 KST",
+  "runTitle": "Vercel Preview QA - PR #200 AI deferred metadata smoke",
+  "owner": "codex",
+  "source": "playwright-manual",
+  "environment": {
+    "target": "vercel-preview",
+    "url": "https://openmanager-1itl9jdo6-skyasus-projects.vercel.app",
+    "frontend": "Vercel Preview",
+    "backend": "Cloud Run",
+    "branch": "refactor/ai-deferred-metadata-hook",
+    "deploymentId": "dpl_52mZ4sXvPNXNTazAqxdg6NcMu7Jq",
+    "deploymentUrl": "https://openmanager-1itl9jdo6-skyasus-projects.vercel.app",
+    "commitSha": "7a37d8c2180ddf51235e0a37ae97ba4436c93aa0"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "coveragePacks": ["ai-core"],
+  "coveredSurfaces": [
+    "PR #200 preview /dashboard access",
+    "AI sidebar 신규 질의",
+    "deferred metadata 보존",
+    "응답 카드 상세 분석 보기",
+    "분석 근거 상세 보기"
+  ],
+  "skippedSurfaces": [],
+  "checks": {
+    "total": 5,
+    "passed": 5,
+    "failed": 0
+  },
+  "expertAssessments": [],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-03-24T20:21:23+09:00",
+      "summary": "Current billing period remains normal during PR #200 preview QA; effective total 17.9600 USD and billed cost 0.0000.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "PR #200 preview AI smoke",
+      "path": "artifacts/playwright/pr200-preview-ai-smoke-2026-03-24.png"
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Local preview bypass drift was resolved by syncing VERCEL_AUTOMATION_BYPASS_SECRET from preview env into local .env.local.",
+    "Preview smoke was executed against the explicit preview URL, not production.",
+    "Prompt: cache-redis-dc1-01 메모리 사용률 몇 %야?",
+    "Preview response rendered dataSourceLabel=서버 실시간 데이터 분석 and exposed Parity Metadata Contract through the assistant response detail panel.",
+    "Analysis Basis panel also showed 데이터/엔진/도구/기간 information for the same response."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "PR #200",
+      "url": "https://github.com/skyasu2/openmanager-ai/pull/200"
+    },
+    {
+      "type": "general",
+      "label": "Preview URL",
+      "url": "https://openmanager-1itl9jdo6-skyasus-projects.vercel.app/"
+    },
+    {
+      "type": "general",
+      "label": "Vercel deployment inspector",
+      "url": "https://vercel.com/skyasus-projects/openmanager-ai/52mZ4sXvPNXNTazAqxdg6NcMu7Jq"
+    }
+  ]
+}

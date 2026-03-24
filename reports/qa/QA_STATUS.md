@@ -1,15 +1,15 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-24 19:48:15 KST
+> Generated at: 2026-03-24 20:22:07 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 178 |
-| Total Checks | 1302 |
-| Passed | 1242 |
+| Total Runs | 179 |
+| Total Checks | 1307 |
+| Passed | 1247 |
 | Failed | 56 |
 | Completed Items | 244 |
 | Pending Items | 0 |
@@ -18,11 +18,11 @@
 | Expert Domains Tracked | 6 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Run | QA-20260324-0179 (2026-03-24T10:48:15.267Z) |
+| Last Run | QA-20260324-0180 (2026-03-24T11:22:06.967Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260324-0179 (2026-03-24T10:48:15.267Z)
+Latest run: QA-20260324-0180 (2026-03-24T11:22:06.967Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -32,7 +32,7 @@ Latest run: QA-20260324-0179 (2026-03-24T10:48:15.267Z)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period reviewed during PR #200 preview QA attempt; effective total 17.9600 USD and billed cost 0.0000. |
+| vercel | cli | checked | normal | Current billing period remains normal during PR #200 preview QA; effective total 17.9600 USD and billed cost 0.0000. |
 
 ## Coverage (Latest Run)
 
@@ -40,8 +40,8 @@ Latest run: QA-20260324-0179 (2026-03-24T10:48:15.267Z)
 - Release-Facing: no
 - Deployment: dpl_52mZ4sXvPNXNTazAqxdg6NcMu7Jq / SHA 7a37d8c2
 - Coverage Packs: ai-core
-- Covered Surfaces: PR #200 preview deployment readiness, preview deployment access policy redirect to Vercel login
-- Skipped Surfaces: AI sidebar 신규 질의, deferred metadata 보존, 분석 근거 상세 보기 노출
+- Covered Surfaces: PR #200 preview /dashboard access, AI sidebar 신규 질의, deferred metadata 보존, 응답 카드 상세 분석 보기, 분석 근거 상세 보기
+- Skipped Surfaces: -
 
 ## Links (Latest Run)
 
@@ -55,7 +55,11 @@ Latest run: QA-20260324-0179 (2026-03-24T10:48:15.267Z)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | PR #200 preview redirected to Vercel login | `preview-pr200-vercel-sso-block-2026-03-24.png` | - |
+| playwright-screenshot | PR #200 preview AI smoke | `artifacts/playwright/pr200-preview-ai-smoke-2026-03-24.png` | - |
+| playwright-trace | PR #200 preview AI smoke trace | `artifacts/playwright/pr200-preview-ai-smoke-trace-2026-03-24.zip` | - |
+| playwright-screenshot | preview-ai-smoke-5f65815b7842022a35e44b801d30f24859653f54.png | `test-results/manual-vercel/tmp-pr200-preview-ai-smoke-5d35a-nd-exposes-analysis-details-chromium/attachments/preview-ai-smoke-5f65815b7842022a35e44b801d30f24859653f54.png` | - |
+| playwright-screenshot | pr200-preview-ai-smoke.png | `test-results/manual-vercel/tmp-pr200-preview-ai-smoke-5d35a-nd-exposes-analysis-details-chromium/pr200-preview-ai-smoke.png` | - |
+| playwright-trace | tmp-pr200-preview-ai-smoke-5d35a-nd-exposes-analysis-details-chromium | `test-results/manual-vercel/tmp-pr200-preview-ai-smoke-5d35a-nd-exposes-analysis-details-chromium/trace.zip` | - |
 
 ## Expert Domain Open Gaps
 
@@ -338,6 +342,7 @@ Latest run: QA-20260324-0179 (2026-03-24T10:48:15.267Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260324-0180 | 2026-03-24T11:22:06.967Z | targeted | no | Vercel Preview QA - PR #200 AI deferred metadata smoke | 5 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260324-0179 | 2026-03-24T10:48:15.267Z | targeted | no | Vercel Preview QA - PR #200 blocked by preview SSO | 2 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260324-0178 | 2026-03-24T09:06:55.843Z | targeted | no | Vercel Production QA - frontend/AI parity gate closed after snapshot label pin | 6 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260324-0177 | 2026-03-24T07:57:28.735Z | targeted | no | Vercel Production QA - false realtime-analysis badge removed but parity mismatch remains | 6 | 0 | 1 | 0 | 0 | 0 |
@@ -357,5 +362,4 @@ Latest run: QA-20260324-0179 (2026-03-24T10:48:15.267Z)
 | QA-20260323-0163 | 2026-03-22T15:56:07.978Z | targeted | no | Vercel Playwright QA - MEM label no-overlap on server cards (SHA 34f764ca0) | 4 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260323-0162 | 2026-03-22T15:34:58.470Z | targeted | no | Production QA - Dashboard/AI parity metadata user-facing recheck | 5 | 0 | 1 | 0 | 0 | 0 |
 | QA-20260322-0161 | 2026-03-22T14:52:53.194Z | targeted | no | Vercel Playwright QA - Data Source Parity Metadata (SHA 41e8888d4) | 6 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260322-0160 | 2026-03-22T07:26:30.735Z | targeted | no | CI Manual Feedback Trace Status QA (run #23398040200) | 1 | 0 | 0 | 0 | 0 | 0 |
 
