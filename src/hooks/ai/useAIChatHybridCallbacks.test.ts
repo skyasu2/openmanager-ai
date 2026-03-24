@@ -159,6 +159,78 @@ describe('useAIChatHybridCallbacks', () => {
     expect(callbackArg?.getMessages()).toEqual(messagesRef.current);
   });
 
+  it('onData는 호출 시점의 최신 handlers와 messages를 읽는다', () => {
+    const initialHandlers = {
+      setMessageTraceId: vi.fn(),
+      getPendingToolResults: vi.fn(() => []),
+      setPendingToolResults: vi.fn(),
+      getPendingMessageMetadata: vi.fn(() => ({})),
+      setPendingMessageMetadata: vi.fn(),
+      setDeferredAssistantMetadata: vi.fn(),
+      setDeferredAssistantToolResults: vi.fn(),
+    };
+    const latestHandlers = {
+      setMessageTraceId: vi.fn(),
+      getPendingToolResults: vi.fn(() => [
+        { toolName: 'getServerMetrics', result: { ok: true } },
+      ]),
+      setPendingToolResults: vi.fn(),
+      getPendingMessageMetadata: vi.fn(() => ({
+        responseSummary: '최신 요약',
+      })),
+      setPendingMessageMetadata: vi.fn(),
+      setDeferredAssistantMetadata: vi.fn(),
+      setDeferredAssistantToolResults: vi.fn(),
+    };
+    let currentHandlers = initialHandlers;
+    const messagesRef = {
+      current: [
+        createMessage('assistant-1', 'assistant', '이전 응답'),
+      ] as UIMessage[],
+    };
+    const latestMessages = [
+      createMessage('assistant-2', 'assistant', '최신 응답'),
+    ] as UIMessage[];
+    const part = { type: 'data-done', data: { responseSummary: '요약' } };
+
+    const { result } = renderHook(() =>
+      useAIChatHybridCallbacks({
+        onMessageSend: vi.fn(),
+        getPendingQuery: () => '',
+        clearPendingQuery: vi.fn(),
+        getDeferredHandlers: () => currentHandlers,
+        getMessages: () => messagesRef.current,
+        setError: vi.fn(),
+        setCurrentAgentStatus: vi.fn(),
+        setCurrentHandoff: vi.fn(),
+        setStreamRagSources: vi.fn(),
+      })
+    );
+
+    currentHandlers = latestHandlers;
+    messagesRef.current = latestMessages;
+
+    result.current.onData(part);
+
+    expect(mocks.handleStreamDataPart).toHaveBeenCalledWith(
+      part,
+      expect.objectContaining({
+        setMessageTraceId: latestHandlers.setMessageTraceId,
+        getPendingToolResults: latestHandlers.getPendingToolResults,
+        setPendingToolResults: latestHandlers.setPendingToolResults,
+        getPendingMessageMetadata: latestHandlers.getPendingMessageMetadata,
+        setPendingMessageMetadata: latestHandlers.setPendingMessageMetadata,
+        setDeferredAssistantMetadata:
+          latestHandlers.setDeferredAssistantMetadata,
+        setDeferredAssistantToolResults:
+          latestHandlers.setDeferredAssistantToolResults,
+      })
+    );
+
+    const callbackArg = mocks.handleStreamDataPart.mock.calls.at(-1)?.[1];
+    expect(callbackArg?.getMessages()).toEqual(latestMessages);
+  });
+
   it('onData는 handlers ref가 비어 있으면 no-op이다', () => {
     const { result } = renderHook(() =>
       useAIChatHybridCallbacks({
