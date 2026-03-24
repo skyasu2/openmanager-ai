@@ -13,6 +13,7 @@ const {
   buildValidationEvidenceSnapshot,
   findLatestProofRun,
   findLatestPublicEvidenceRun,
+  formatEvidenceDate,
   hasGitHubActionsLink,
   shouldWriteValidationEvidenceSnapshot,
   writeValidationEvidenceSnapshot,
@@ -33,6 +34,19 @@ afterEach(() => {
 });
 
 describe('build-validation-evidence', () => {
+  it('formats empty and concrete evidence dates predictably', () => {
+    expect(formatEvidenceDate('')).toEqual({
+      iso: null,
+      short: 'latest',
+      long: 'Latest',
+    });
+
+    const formatted = formatEvidenceDate('2026-03-25T00:00:00.000Z');
+    expect(formatted.iso).toBe('2026-03-25T00:00:00.000Z');
+    expect(formatted.short).toBe('2026-03-25');
+    expect(formatted.long).toBe('March 25, 2026');
+  });
+
   it('detects GitHub Actions links defensively', () => {
     expect(
       hasGitHubActionsLink({

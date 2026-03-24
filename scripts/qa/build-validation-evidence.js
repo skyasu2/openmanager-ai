@@ -136,6 +136,7 @@ module.exports = {
   buildValidationEvidenceSnapshot,
   findLatestProofRun,
   findLatestPublicEvidenceRun,
+  formatEvidenceDate,
   hasGitHubActionsLink,
   shouldWriteValidationEvidenceSnapshot,
   writeValidationEvidenceSnapshot,
