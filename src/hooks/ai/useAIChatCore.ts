@@ -35,15 +35,13 @@ import { useChatHistory } from './core/useChatHistory';
 import { useChatQueue } from './core/useChatQueue';
 import { useChatSession } from './core/useChatSession';
 import { useChatSessionState } from './core/useChatSessionState';
+import { useDeferredMessageMetadata } from './useDeferredMessageMetadata';
 import type { FileAttachment } from './useFileAttachments';
 import {
   convertThinkingStepsToUI,
   transformMessages,
 } from './utils/message-helpers';
-import {
-  handleStreamDataPart,
-  type PendingStreamToolResult,
-} from './utils/stream-data-handler';
+import { handleStreamDataPart } from './utils/stream-data-handler';
 
 // Re-export for backwards compatibility
 export { convertThinkingStepsToUI };
@@ -178,17 +176,6 @@ export function useAIChatCore(
       url?: string;
     }>
   >([]);
-  const [streamTraceIds, setStreamTraceIds] = useState<Record<string, string>>(
-    {}
-  );
-  const [
-    deferredAssistantMetadataByMessageId,
-    setDeferredAssistantMetadataByMessageId,
-  ] = useState<Record<string, Record<string, unknown>>>({});
-  const [deferredToolResultsByMessageId, setDeferredToolResultsByMessageId] =
-    useState<Record<string, PendingStreamToolResult[]>>({});
-  const pendingStreamToolResultsRef = useRef<PendingStreamToolResult[]>([]);
-  const pendingStreamMessageMetadataRef = useRef<Record<string, unknown>>({});
 
   // Refs
   const lastQueryRef = useRef<string>('');
@@ -203,6 +190,13 @@ export function useAIChatCore(
   // ============================================================================
   // Hybrid AI Query Hook
   // ============================================================================
+
+  // Deferred metadata handlers ref: populated after useDeferredMessageMetadata call below.
+  // onData fires asynchronously (never during the first render), so the ref is always
+  // populated before it's first invoked.
+  const deferredHandlersRef = useRef<
+    import('./useDeferredMessageMetadata').DeferredMetadataHandlers | null
+  >(null);
 
   const {
     sendQuery,
@@ -253,41 +247,19 @@ export function useAIChatCore(
     },
     // 🎯 실시간 SSE 이벤트 처리 (agent_status, handoff)
     onData: (dataPart: StreamDataPart) => {
+      const dh = deferredHandlersRef.current;
+      if (!dh) return;
       handleStreamDataPart(dataPart, {
         setCurrentAgentStatus,
         setCurrentHandoff,
-        setMessageTraceId: (messageId, traceId) => {
-          setStreamTraceIds((prev) =>
-            prev[messageId] === traceId
-              ? prev
-              : { ...prev, [messageId]: traceId }
-          );
-        },
+        setMessageTraceId: dh.setMessageTraceId,
         setStreamRagSources,
-        getPendingToolResults: () => pendingStreamToolResultsRef.current,
-        setPendingToolResults: (results) => {
-          pendingStreamToolResultsRef.current = results;
-        },
-        getPendingMessageMetadata: () =>
-          pendingStreamMessageMetadataRef.current,
-        setPendingMessageMetadata: (metadata) => {
-          pendingStreamMessageMetadataRef.current = metadata;
-        },
-        setDeferredAssistantMetadata: (messageId, metadata) => {
-          setDeferredAssistantMetadataByMessageId((prev) => ({
-            ...prev,
-            [messageId]: {
-              ...(prev[messageId] ?? {}),
-              ...metadata,
-            },
-          }));
-        },
-        setDeferredAssistantToolResults: (messageId, toolResults) => {
-          setDeferredToolResultsByMessageId((prev) => ({
-            ...prev,
-            [messageId]: toolResults,
-          }));
-        },
+        getPendingToolResults: dh.getPendingToolResults,
+        setPendingToolResults: dh.setPendingToolResults,
+        getPendingMessageMetadata: dh.getPendingMessageMetadata,
+        setPendingMessageMetadata: dh.setPendingMessageMetadata,
+        setDeferredAssistantMetadata: dh.setDeferredAssistantMetadata,
+        setDeferredAssistantToolResults: dh.setDeferredAssistantToolResults,
         getMessages: () => messagesRef.current,
       });
     },
@@ -298,52 +270,20 @@ export function useAIChatCore(
     messagesRef.current = messages;
   }, [messages]);
 
-  useEffect(() => {
-    const pendingToolResults = pendingStreamToolResultsRef.current;
-    const pendingMessageMetadata = pendingStreamMessageMetadataRef.current;
-    const hasPendingMessageMetadata =
-      Object.keys(pendingMessageMetadata).length > 0;
+  // ============================================================================
+  // Deferred Metadata Hook (flush effect runs inside this hook)
+  // ============================================================================
 
-    if (pendingToolResults.length === 0 && !hasPendingMessageMetadata) {
-      return;
-    }
+  const {
+    streamTraceIds,
+    deferredAssistantMetadataByMessageId,
+    deferredToolResultsByMessageId,
+    handlers: deferredHandlers,
+    resetDeferredMetadata,
+  } = useDeferredMessageMetadata(messages);
 
-    const lastAssistantIndex = messages
-      .map((message) => message.role)
-      .lastIndexOf('assistant');
-    if (lastAssistantIndex < 0) return;
-
-    const targetMessage = messages[lastAssistantIndex];
-    if (!targetMessage) return;
-    if (typeof pendingMessageMetadata.traceId === 'string') {
-      const traceId = pendingMessageMetadata.traceId;
-      setStreamTraceIds((prev) =>
-        prev[targetMessage.id] === traceId
-          ? prev
-          : { ...prev, [targetMessage.id]: traceId }
-      );
-    }
-
-    if (hasPendingMessageMetadata) {
-      setDeferredAssistantMetadataByMessageId((prev) => ({
-        ...prev,
-        [targetMessage.id]: {
-          ...(prev[targetMessage.id] ?? {}),
-          ...pendingMessageMetadata,
-        },
-      }));
-    }
-
-    if (pendingToolResults.length > 0) {
-      setDeferredToolResultsByMessageId((prev) => ({
-        ...prev,
-        [targetMessage.id]: pendingToolResults,
-      }));
-    }
-
-    pendingStreamToolResultsRef.current = [];
-    pendingStreamMessageMetadataRef.current = {};
-  }, [messages]);
+  // Keep ref in sync so onData closure can always reach the latest handlers
+  deferredHandlersRef.current = deferredHandlers;
 
   useEffect(() => {
     sendQueryRef.current = sendQuery;
@@ -424,14 +364,20 @@ export function useAIChatCore(
     setInput('');
     setError(null);
     setStreamRagSources([]);
-    setStreamTraceIds({});
+    resetDeferredMetadata();
     setCurrentAgentStatus(null);
     setCurrentHandoff(null);
     pendingQueryRef.current = '';
     lastAttachmentsRef.current = null;
     clearHistory();
     clearQueue();
-  }, [resetHybridQuery, refreshSessionId, clearHistory, clearQueue]);
+  }, [
+    resetHybridQuery,
+    refreshSessionId,
+    resetDeferredMetadata,
+    clearHistory,
+    clearQueue,
+  ]);
 
   const clearError = useCallback(() => {
     setError(null);
