@@ -31,8 +31,15 @@ vi.mock('../services/ai-sdk', () => ({
     success: true,
     response: 'AI 응답',
     toolsCalled: ['detectAnomalies'],
+    toolResults: [{ toolName: 'getServerMetrics', dataSlot: { slotIndex: 57 } }],
     ragSources: [],
-    metadata: { provider: 'cerebras', modelId: 'gpt-oss-120b', stepsExecuted: 2, durationMs: 500 },
+    metadata: {
+      provider: 'cerebras',
+      modelId: 'gpt-oss-120b',
+      stepsExecuted: 2,
+      durationMs: 500,
+      finalAgent: 'NLQ Agent',
+    },
     usage: { promptTokens: 100, completionTokens: 50, totalTokens: 150 },
   })),
   logProviderStatus: vi.fn(),
@@ -44,6 +51,7 @@ import {
   isJobNotifierAvailable,
   markJobProcessing,
   storeJobError,
+  storeJobResult,
 } from '../lib/job-notifier';
 import { executeSupervisor } from '../services/ai-sdk';
 
@@ -73,6 +81,16 @@ describe('Jobs Routes', () => {
       expect(json.jobId).toBe('job-123');
       expect(json.status).toBe('completed');
       expect(vi.mocked(executeSupervisor)).toHaveBeenCalledTimes(1);
+      expect(vi.mocked(storeJobResult)).toHaveBeenCalledWith(
+        'job-123',
+        'AI 응답',
+        expect.objectContaining({
+          targetAgent: 'NLQ Agent',
+          toolResults: [
+            { toolName: 'getServerMetrics', dataSlot: { slotIndex: 57 } },
+          ],
+        })
+      );
     });
 
     it('jobId 누락 시 400을 반환한다', async () => {

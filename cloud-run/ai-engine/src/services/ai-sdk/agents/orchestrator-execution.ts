@@ -32,6 +32,7 @@ import {
   executeWithAgentFactory,
   recordHandoff,
   getRecentHandoffs,
+  ORCHESTRATOR_PROVIDER_ORDER,
 } from './orchestrator-routing';
 import { TIMEOUT_CONFIG } from '../../../config/timeout-config';
 import { evaluateAgentResponseQuality } from './response-quality';
@@ -342,6 +343,13 @@ export async function executeMultiAgent(
           prompt: routingPrompt,
           temperature: 0.1,
           operation: 'orchestrator-routing',
+          provider,
+          modelId,
+          providerFallback: {
+            agentLabel: 'Orchestrator',
+            providerOrder: ORCHESTRATOR_PROVIDER_ORDER,
+            cbPrefix: 'orchestrator',
+          },
         }),
         timeoutPromise,
       ]);
@@ -556,6 +564,13 @@ export async function* executeMultiAgentStream(
           prompt: routingPrompt,
           temperature: 0.1,
           operation: 'orchestrator-routing',
+          provider,
+          modelId,
+          providerFallback: {
+            agentLabel: 'Orchestrator',
+            providerOrder: ORCHESTRATOR_PROVIDER_ORDER,
+            cbPrefix: 'orchestrator',
+          },
         }),
         new Promise<never>((_, reject) => {
           routingTimeoutId = setTimeout(() => reject(new Error(`Routing decision timeout after ${routingTimeout}ms`)), routingTimeout);

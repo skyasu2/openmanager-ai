@@ -12,7 +12,12 @@ import { TIMEOUT_CONFIG } from '../../../config/timeout-config';
 import type { StreamEvent } from '../supervisor';
 import type { FileAttachment, ImageAttachment } from './base-agent';
 import type { MultiAgentResponse } from './orchestrator-types';
-import { getOrchestratorModel, getAgentConfig, executeForcedRouting } from './orchestrator-routing';
+import {
+  getOrchestratorModel,
+  getAgentConfig,
+  executeForcedRouting,
+  ORCHESTRATOR_PROVIDER_ORDER,
+} from './orchestrator-routing';
 import { saveAgentFindingsToContext } from './orchestrator-context';
 import { logger } from '../../../lib/logger';
 import { generateObjectWithFallback } from './orchestrator-object-fallback';
@@ -52,7 +57,7 @@ export async function decomposeTask(query: string): Promise<TaskDecomposition | 
     return null;
   }
 
-  const { model } = modelConfig;
+  const { model, provider, modelId } = modelConfig;
 
   try {
     logger.info('[Decompose] Analyzing complex query for task decomposition...');
@@ -82,6 +87,13 @@ ${query}
       prompt: decomposePrompt,
       temperature: 0.2,
       operation: 'orchestrator-decomposition',
+      provider,
+      modelId,
+      providerFallback: {
+        agentLabel: 'Orchestrator',
+        providerOrder: ORCHESTRATOR_PROVIDER_ORDER,
+        cbPrefix: 'orchestrator',
+      },
     });
 
     const decomposition = result.object;

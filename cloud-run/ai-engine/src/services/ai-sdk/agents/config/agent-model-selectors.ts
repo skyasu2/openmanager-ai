@@ -14,7 +14,7 @@ import type { ProviderName } from '../../model-provider.types';
 
 export interface ModelResult {
   model: LanguageModel;
-  provider: string;
+  provider: ProviderName;
   modelId: string;
 }
 

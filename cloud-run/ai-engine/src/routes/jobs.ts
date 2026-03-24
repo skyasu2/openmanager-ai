@@ -175,6 +175,8 @@ async function processJobSynchronously({
 
     await updateJobProgress(jobId, 'completed', 100, '완료');
     await storeJobResult(jobId, result.response, {
+      targetAgent: result.metadata.finalAgent,
+      toolResults: result.toolResults,
       toolsCalled: result.toolsCalled,
       ragSources: result.ragSources,
       provider: result.metadata.provider,

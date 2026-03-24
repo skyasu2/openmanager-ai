@@ -7,10 +7,15 @@ vi.mock('../../../lib/logger', () => ({
 
 const mockGenerateObject = vi.fn();
 const mockGenerateText = vi.fn();
+const mockSelectTextModel = vi.fn();
 
 vi.mock('ai', () => ({
   generateObject: (...args: unknown[]) => mockGenerateObject(...args),
   generateText: (...args: unknown[]) => mockGenerateText(...args),
+}));
+
+vi.mock('./config/agent-model-selectors', () => ({
+  selectTextModel: (...args: unknown[]) => mockSelectTextModel(...args),
 }));
 
 import { generateObjectWithFallback } from './orchestrator-object-fallback';
@@ -30,11 +35,19 @@ const baseOptions = {
   prompt: 'Test prompt',
   temperature: 0.1,
   operation: 'test-operation',
+  provider: 'cerebras' as const,
+  modelId: 'gpt-oss-120b',
+  providerFallback: {
+    agentLabel: 'Orchestrator',
+    providerOrder: ['cerebras', 'mistral', 'groq'] as const,
+    cbPrefix: 'orchestrator',
+  },
 };
 
 describe('generateObjectWithFallback', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockSelectTextModel.mockReset();
   });
 
   it('should return object from generateObject on success', async () => {
@@ -113,6 +126,60 @@ describe('generateObjectWithFallback', () => {
     );
 
     expect(mockGenerateText).not.toHaveBeenCalled();
+  });
+
+  it('should fall back to next provider on model access error', async () => {
+    const primaryModel = { name: 'primary' } as Parameters<typeof mockGenerateObject>[0]['model'];
+    const fallbackModel = { name: 'fallback' } as Parameters<typeof mockGenerateObject>[0]['model'];
+    const expected: TestSchema = {
+      selectedAgent: 'Analyst Agent',
+      confidence: 0.88,
+      reasoning: 'Fallback provider succeeded',
+    };
+
+    mockGenerateObject.mockImplementation(async ({ model }: { model: unknown }) => {
+      if (model === primaryModel) {
+        throw new Error('Model gpt-oss-120b does not exist or you do not have access to it.');
+      }
+
+      return {
+        object: expected,
+        usage: { inputTokens: 120, outputTokens: 40, totalTokens: 160 },
+      };
+    });
+
+    mockSelectTextModel.mockReturnValue({
+      model: fallbackModel,
+      provider: 'mistral',
+      modelId: 'mistral-large-latest',
+    });
+
+    const result = await generateObjectWithFallback({
+      ...baseOptions,
+      model: primaryModel,
+    });
+
+    expect(result.object).toEqual(expected);
+    expect(mockSelectTextModel).toHaveBeenCalledWith(
+      'Orchestrator',
+      ['cerebras', 'mistral', 'groq'],
+      {
+        excludeProviders: ['cerebras'],
+        cbPrefix: 'orchestrator',
+      }
+    );
+    expect(mockGenerateText).not.toHaveBeenCalled();
+  });
+
+  it('should rethrow provider error when no fallback model is available', async () => {
+    mockGenerateObject.mockRejectedValue(
+      new Error('Model gpt-oss-120b does not exist or you do not have access to it.')
+    );
+    mockSelectTextModel.mockReturnValue(null);
+
+    await expect(generateObjectWithFallback(baseOptions)).rejects.toThrow(
+      'Model gpt-oss-120b does not exist or you do not have access to it.'
+    );
   });
 
   it('should throw combined error when fallback text also fails parsing', async () => {

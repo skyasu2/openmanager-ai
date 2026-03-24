@@ -13,7 +13,11 @@ import { generateTextWithRetry } from '../../resilience/retry-with-fallback';
 import { sanitizeChineseCharacters } from '../../../lib/text-sanitizer';
 import { extractToolResultOutput } from '../../../lib/ai-sdk-utils';
 import { AGENT_CONFIGS, type AgentConfig } from './config';
-import { selectTextModel } from './config/agent-model-selectors';
+import {
+  selectTextModel,
+  type TextProvider,
+  type ModelResult,
+} from './config/agent-model-selectors';
 import { AgentFactory, type AgentType } from './agent-factory';
 import type { ImageAttachment, FileAttachment } from './base-agent';
 import { TIMEOUT_CONFIG } from '../../../config/timeout-config';
@@ -32,11 +36,19 @@ export { executeReporterWithPipeline } from './orchestrator-reporter-pipeline';
 // Orchestrator Model (3-way fallback)
 // ============================================================================
 
-export function getOrchestratorModel() {
+export const ORCHESTRATOR_PROVIDER_ORDER: TextProvider[] = [
+  'cerebras',
+  'mistral',
+  'groq',
+];
+
+export function getOrchestratorModel(): ModelResult | null {
   // Orchestrator uses generateObject (requires json_schema support).
   // Groq llama-3.3-70b-versatile does NOT support json_schema,
   // so prefer Cerebras/Mistral first.
-  return selectTextModel('Orchestrator', ['cerebras', 'mistral', 'groq']);
+  return selectTextModel('Orchestrator', ORCHESTRATOR_PROVIDER_ORDER, {
+    cbPrefix: 'orchestrator',
+  });
 }
 
 // Log available agents from AGENT_CONFIGS
