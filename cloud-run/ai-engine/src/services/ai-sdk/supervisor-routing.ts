@@ -280,6 +280,12 @@ export function getIntentCategory(query: string): IntentCategory {
 }
 
 const SIMPLE_CONVERSATION_PATTERNS = /^(안녕|감사|고마워|잘했어|hi|hello|thanks|thank you|bye|잘가)[\s!?.]*$/i;
+const DIRECT_SERVER_ID_PATTERN =
+  /\b(?:lb-haproxy|web-nginx|api-was|db-mysql|cache-redis|storage-(?:nfs|s3gw))-dc1-(?:\d{2}|primary|replica|backup)\b/i;
+const CURRENT_METRIC_VALUE_PATTERNS =
+  /(사용률|몇\s*%|몇퍼센트|퍼센트|얼마|수치|값|상태|어때|어떻|알려|보여|확인|usage|percent|percentage|status)/i;
+const NON_CURRENT_METRIC_PATTERNS =
+  /(지난|최근|평균|최대|최소|합계|추세|트렌드|예측|비교|대비|변화|last1h|last6h|last24h|last\s+\d+\s*h|avg|max|min|trend|forecast|compare)/i;
 
 /**
  * 웹 검색을 강제해야 하는 쿼리인지 판별.
@@ -295,6 +301,17 @@ export function shouldForceWebSearch(query: string): boolean {
     '릴리스', 'release', '버전', 'version',
   ];
   return FORCE_INDICATORS.some(kw => q.includes(kw));
+}
+
+function shouldForceRealtimeServerMetricTool(query: string): boolean {
+  const q = query.toLowerCase();
+
+  return (
+    DIRECT_SERVER_ID_PATTERN.test(q) &&
+    TOOL_ROUTING_PATTERNS.metrics.test(q) &&
+    CURRENT_METRIC_VALUE_PATTERNS.test(q) &&
+    !NON_CURRENT_METRIC_PATTERNS.test(q)
+  );
 }
 
 export function createPrepareStep(
@@ -314,6 +331,14 @@ export function createPrepareStep(
     if (SIMPLE_CONVERSATION_PATTERNS.test(query.trim())) {
       logger.debug('[PrepareStep] Simple conversation detected, toolChoice: none');
       return { toolChoice: 'none' as const };
+    }
+
+    if (shouldForceRealtimeServerMetricTool(q)) {
+      logger.debug('[PrepareStep] Direct realtime server metric query detected, forcing getServerMetrics');
+      return {
+        activeTools: ['getServerMetrics', 'finalAnswer'] as ToolName[],
+        toolChoice: { type: 'tool', toolName: 'getServerMetrics' } as const,
+      };
     }
 
     // ── Step 1: 패턴 라우팅 — 쿼리 의도에 맞는 기본 도구 세트 결정 ──

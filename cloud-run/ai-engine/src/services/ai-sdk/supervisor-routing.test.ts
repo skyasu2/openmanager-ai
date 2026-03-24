@@ -271,6 +271,26 @@ describe('createPrepareStep', () => {
     expect(result.toolChoice).toBe('auto');
   });
 
+  it('should force getServerMetrics for direct current metric queries on a specific server', async () => {
+    const prepare = createPrepareStep('cache-redis-dc1-01 메모리 사용률 몇 %야?');
+    const result = await prepare({ stepNumber: 0 });
+    expect(result.activeTools).toEqual(['getServerMetrics', 'finalAnswer']);
+    expect(result.toolChoice).toEqual({
+      type: 'tool',
+      toolName: 'getServerMetrics',
+    });
+  });
+
+  it('should not force getServerMetrics for historical metric aggregation queries', async () => {
+    const prepare = createPrepareStep('cache-redis-dc1-01 지난 6시간 메모리 평균 알려줘');
+    const result = await prepare({ stepNumber: 0 });
+    expect(result.activeTools).not.toEqual(['getServerMetrics', 'finalAnswer']);
+    expect(result.toolChoice).not.toEqual({
+      type: 'tool',
+      toolName: 'getServerMetrics',
+    });
+  });
+
   it('should inject searchWeb into pattern tools when enableWebSearch is true', async () => {
     const prepare = createPrepareStep('CPU 상태', { enableWebSearch: true });
     const result = await prepare({ stepNumber: 0 });
