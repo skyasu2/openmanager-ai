@@ -5,8 +5,13 @@ const fs = require('node:fs');
 const path = require('node:path');
 const {
   OUTPUT_PATH: VALIDATION_EVIDENCE_OUTPUT_PATH,
+  TRACKER_PATH: VALIDATION_EVIDENCE_TRACKER_PATH,
   writeValidationEvidenceSnapshot,
 } = require('./build-validation-evidence');
+const {
+  recalculateSummary,
+  repairTrackerDerivedFields,
+} = require('./qa-tracker-utils');
 
 const QA_ROOT = path.resolve(process.cwd(), 'reports/qa');
 const RUNS_ROOT = path.join(QA_ROOT, 'runs');
@@ -144,6 +149,10 @@ function formatGeneratedFiles(filePaths) {
     const reason = error instanceof Error ? error.message : String(error);
     console.warn(`⚠️ Generated QA files written, but Biome format was skipped: ${reason}`);
   }
+}
+
+function shouldWriteValidationEvidenceSnapshot() {
+  return path.resolve(TRACKER_PATH) === path.resolve(VALIDATION_EVIDENCE_TRACKER_PATH);
 }
 
 function ensureDir(dirPath) {
@@ -1220,82 +1229,6 @@ function upsertTrackerExpert({
   tracker.experts[assessment.domainId] = next;
 }
 
-function recalculateSummary(tracker) {
-  const totalRuns = tracker.runs.length;
-  const totalChecks = tracker.runs.reduce(
-    (sum, run) => sum + (run.checks?.total || 0),
-    0
-  );
-  const totalPassed = tracker.runs.reduce(
-    (sum, run) => sum + (run.checks?.passed || 0),
-    0
-  );
-  const totalFailed = tracker.runs.reduce(
-    (sum, run) => sum + (run.checks?.failed || 0),
-    0
-  );
-
-  const itemList = Object.values(tracker.items);
-  const completedItems = itemList.filter((item) => item.status === 'completed').length;
-  const pendingItems = itemList.filter((item) => item.status === 'pending').length;
-  const deferredItems = itemList.filter((item) => item.status === 'deferred').length;
-  const wontFixItems = itemList.filter((item) => item.status === 'wont-fix').length;
-  const completionRateBase = completedItems + pendingItems + deferredItems;
-  const completionRate =
-    completionRateBase === 0
-      ? 0
-      : Number(((completedItems / completionRateBase) * 100).toFixed(2));
-
-  const expertList = Object.values(tracker.experts || {});
-  const expertDomainsTracked = expertList.length;
-  const expertDomainsOpenGaps = expertList.filter(
-    (expert) => expert.lastImprovementNeeded
-  ).length;
-
-  const lastRun = tracker.runs[tracker.runs.length - 1] || null;
-  tracker.summary = {
-    totalRuns,
-    totalChecks,
-    totalPassed,
-    totalFailed,
-    completionRate,
-    completedItems,
-    pendingItems,
-    deferredItems,
-    wontFixItems,
-    expertDomainsTracked,
-    expertDomainsOpenGaps,
-    lastRunId: lastRun ? lastRun.runId : null,
-    lastRecordedAt: lastRun ? lastRun.recordedAt : null,
-  };
-}
-
-function extractRunNumber(runId) {
-  const match = String(runId || '').match(/-(\d+)$/);
-  return match ? Number(match[1]) : 0;
-}
-
-function repairTrackerDerivedFields(tracker) {
-  tracker.meta = tracker.meta || {};
-  tracker.sequence = tracker.sequence || {};
-  tracker.runs = Array.isArray(tracker.runs) ? tracker.runs : [];
-
-  const lastRun = tracker.runs[tracker.runs.length - 1] || null;
-  const maxRunNumber = tracker.runs.reduce((max, run) => {
-    return Math.max(max, extractRunNumber(run?.runId));
-  }, 0);
-
-  tracker.sequence.nextRunNumber = maxRunNumber > 0 ? maxRunNumber + 1 : 1;
-  if (!tracker.meta.createdAt) {
-    tracker.meta.createdAt = lastRun?.recordedAt || new Date().toISOString();
-  }
-  tracker.meta.updatedAt =
-    lastRun?.recordedAt || tracker.meta.updatedAt || new Date().toISOString();
-
-  recalculateSummary(tracker);
-  return tracker;
-}
-
 function statusMarkdown(tracker) {
   const lines = [];
   const generatedAt = nowInSeoulText(new Date());
@@ -1834,12 +1767,13 @@ function run() {
 
   writeJsonFile(TRACKER_PATH, tracker);
   fs.writeFileSync(STATUS_PATH, statusMarkdown(tracker), 'utf8');
-  writeValidationEvidenceSnapshot({ trackerPath: TRACKER_PATH });
+  const generatedFiles = [runFilePath, TRACKER_PATH, STATUS_PATH];
+  if (shouldWriteValidationEvidenceSnapshot()) {
+    writeValidationEvidenceSnapshot({ trackerPath: TRACKER_PATH });
+    generatedFiles.push(VALIDATION_EVIDENCE_OUTPUT_PATH);
+  }
   formatGeneratedFiles([
-    runFilePath,
-    TRACKER_PATH,
-    STATUS_PATH,
-    VALIDATION_EVIDENCE_OUTPUT_PATH,
+    ...generatedFiles,
   ]);
 
   console.log(`✅ QA run recorded: ${runId}`);
@@ -1853,7 +1787,6 @@ function run() {
 }
 
 module.exports = {
-  repairTrackerDerivedFields,
   statusMarkdown,
 };
 

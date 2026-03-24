@@ -281,6 +281,68 @@ describe('QA scripts', () => {
     );
   });
 
+  it('repairs stale tracker summary and sequence when qa:status runs with --write', () => {
+    const tempDir = createTempWorkspace();
+    const inputPath = writeInputFile(tempDir, createValidPayload());
+
+    const recordResult = runNodeScript(
+      RECORD_QA_RUN_SCRIPT,
+      ['--input', inputPath],
+      {
+        cwd: tempDir,
+        env: {
+          VERCEL_DEPLOYMENT_ID: 'dpl_repair123',
+          VERCEL_GIT_COMMIT_SHA: 'abcdefabcdefabcdefabcdefabcdefabcdefabcd',
+          VERCEL_GIT_COMMIT_REF: 'main',
+          VERCEL_TARGET_ENV: 'production',
+          VERCEL_PROJECT_PRODUCTION_URL: 'openmanager-ai.vercel.app',
+        },
+      }
+    );
+
+    expect(recordResult.status).toBe(0);
+
+    const trackerPath = join(tempDir, 'reports', 'qa', 'qa-tracker.json');
+    const staleTracker = JSON.parse(readFileSync(trackerPath, 'utf8'));
+    staleTracker.summary = {
+      totalRuns: 0,
+      totalChecks: 0,
+      totalPassed: 0,
+      totalFailed: 0,
+      completionRate: 0,
+      completedItems: 0,
+      pendingItems: 0,
+      deferredItems: 0,
+      wontFixItems: 0,
+      expertDomainsTracked: 0,
+      expertDomainsOpenGaps: 0,
+      lastRunId: null,
+      lastRecordedAt: null,
+    };
+    staleTracker.sequence = { nextRunNumber: 1 };
+    staleTracker.meta = {
+      createdAt: staleTracker.meta.createdAt,
+      updatedAt: 'stale',
+    };
+    writeFileSync(
+      trackerPath,
+      `${JSON.stringify(staleTracker, null, 2)}\n`,
+      'utf8'
+    );
+
+    const syncResult = runNodeScript(PRINT_QA_STATUS_SCRIPT, ['--write'], {
+      cwd: tempDir,
+    });
+
+    expect(syncResult.status).toBe(0);
+    const repairedTracker = JSON.parse(readFileSync(trackerPath, 'utf8'));
+    expect(repairedTracker.summary.totalRuns).toBe(1);
+    expect(repairedTracker.summary.totalChecks).toBe(8);
+    expect(repairedTracker.summary.lastRunId).toMatch(/^QA-\d{8}-\d+$/);
+    expect(repairedTracker.sequence.nextRunNumber).toBeGreaterThan(1);
+    expect(repairedTracker.meta.updatedAt).not.toBe('stale');
+  });
+
   it('records structured Playwright artifacts and prints artifact summary', () => {
     const tempDir = createTempWorkspace();
     const traceUrl = 'https://storage.example.com/playwright/trace.zip';

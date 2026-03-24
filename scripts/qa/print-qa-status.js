@@ -2,8 +2,8 @@
 
 const fs = require('node:fs');
 const path = require('node:path');
+const { repairTrackerDerivedFields } = require('./qa-tracker-utils');
 const {
-  repairTrackerDerivedFields,
   statusMarkdown,
 } = require('./record-qa-run.js');
 
