@@ -1,0 +1,81 @@
+{
+  "runId": "QA-20260324-0179",
+  "recordedAt": "2026-03-24T10:48:15.267Z",
+  "recordedAtKst": "2026-03-24 19:48:15 KST",
+  "runTitle": "Vercel Preview QA - PR #200 blocked by preview SSO",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-preview",
+    "url": "https://openmanager-1itl9jdo6-skyasus-projects.vercel.app",
+    "frontend": "Vercel Preview",
+    "backend": "Cloud Run",
+    "branch": "refactor/ai-deferred-metadata-hook",
+    "deploymentId": "dpl_52mZ4sXvPNXNTazAqxdg6NcMu7Jq",
+    "deploymentUrl": "https://openmanager-1itl9jdo6-skyasus-projects.vercel.app",
+    "commitSha": "7a37d8c2180ddf51235e0a37ae97ba4436c93aa0"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "coveragePacks": ["ai-core"],
+  "coveredSurfaces": [
+    "PR #200 preview deployment readiness",
+    "preview deployment access policy redirect to Vercel login"
+  ],
+  "skippedSurfaces": [
+    "AI sidebar 신규 질의",
+    "deferred metadata 보존",
+    "분석 근거 상세 보기 노출"
+  ],
+  "checks": {
+    "total": 2,
+    "passed": 1,
+    "failed": 1
+  },
+  "expertAssessments": [],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-03-24T19:00:00+09:00",
+      "summary": "Current billing period reviewed during PR #200 preview QA attempt; effective total 17.9600 USD and billed cost 0.0000.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "PR #200 preview redirected to Vercel login",
+      "path": "artifacts/playwright/preview-pr200-vercel-sso-block-2026-03-24.png"
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "GitHub PR #200 Vercel status was success and deployment dpl_52mZ4sXvPNXNTazAqxdg6NcMu7Jq reached READY.",
+    "Navigating to the preview /dashboard redirected to vercel.com/login with SSO auth instead of serving the app.",
+    "This blocked browser verification of the three intended AI preview checks, so the run is tracking-only and not treated as a product regression."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "PR #200",
+      "url": "https://github.com/skyasu2/openmanager-ai/pull/200"
+    },
+    {
+      "type": "general",
+      "label": "Preview URL",
+      "url": "https://openmanager-1itl9jdo6-skyasus-projects.vercel.app/"
+    },
+    {
+      "type": "general",
+      "label": "Vercel deployment inspector",
+      "url": "https://vercel.com/skyasus-projects/openmanager-ai/52mZ4sXvPNXNTazAqxdg6NcMu7Jq"
+    }
+  ]
+}

@@ -1,16 +1,16 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-24 18:06:57 KST
+> Generated at: 2026-03-24 19:48:15 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 177 |
-| Total Checks | 1300 |
-| Passed | 1241 |
-| Failed | 55 |
+| Total Runs | 178 |
+| Total Checks | 1302 |
+| Passed | 1242 |
+| Failed | 56 |
 | Completed Items | 244 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
@@ -18,11 +18,11 @@
 | Expert Domains Tracked | 6 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Run | QA-20260324-0178 (2026-03-24T09:06:55.843Z) |
+| Last Run | QA-20260324-0179 (2026-03-24T10:48:15.267Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260324-0178 (2026-03-24T09:06:55.843Z)
+Latest run: QA-20260324-0179 (2026-03-24T10:48:15.267Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -32,29 +32,30 @@ Latest run: QA-20260324-0178 (2026-03-24T09:06:55.843Z)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period reviewed after the snapshot-label parity fix deploy; effective total 17.9600 USD and billed cost 0.0000. |
+| vercel | cli | checked | normal | Current billing period reviewed during PR #200 preview QA attempt; effective total 17.9600 USD and billed cost 0.0000. |
 
 ## Coverage (Latest Run)
 
 - Scope: targeted
 - Release-Facing: no
-- Deployment: dpl_yBz3f9acR8Ghnybs9yXwrrxBmCEH / SHA 63b6bf34
-- Coverage Packs: dashboard-core, ai-core
-- Covered Surfaces: /dashboard, production deploy readiness for dashboard snapshot label pin, dashboard dataSlotInfo label (Synthetic OTel snapshot · 18:00 KST slot 108/143), dashboard raw metric (cache-redis-dc1-01 MEM 82%), parity health API ({ globalSlotIndex: 108, minuteOfDay: 1080 }), AI fresh query answer (cache-redis-dc1-01 memory 82%), AI getServerMetrics parity contract ({ slotIndex: 108, minuteOfDay: 1080, timeLabel: 18:00 KST })
-- Skipped Surfaces: -
+- Deployment: dpl_52mZ4sXvPNXNTazAqxdg6NcMu7Jq / SHA 7a37d8c2
+- Coverage Packs: ai-core
+- Covered Surfaces: PR #200 preview deployment readiness, preview deployment access policy redirect to Vercel login
+- Skipped Surfaces: AI sidebar 신규 질의, deferred metadata 보존, 분석 근거 상세 보기 노출
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | Dashboard URL | [link](https://openmanager-ai.vercel.app/dashboard) | - |
-| general | Production deployment preview URL | [link](https://openmanager-5n4idmkkh-skyasus-projects.vercel.app/) | - |
+| general | PR #200 | [link](https://github.com/skyasu2/openmanager-ai/pull/200) | - |
+| general | Preview URL | [link](https://openmanager-1itl9jdo6-skyasus-projects.vercel.app/) | - |
+| general | Vercel deployment inspector | [link](https://vercel.com/skyasus-projects/openmanager-ai/52mZ4sXvPNXNTazAqxdg6NcMu7Jq) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | Production parity gate closed with slot 108 and MEM 82% | `artifacts/playwright/parity-gate-closed-production-2026-03-24.png` | - |
+| playwright-screenshot | PR #200 preview redirected to Vercel login | `preview-pr200-vercel-sso-block-2026-03-24.png` | - |
 
 ## Expert Domain Open Gaps
 
@@ -337,6 +338,7 @@ Latest run: QA-20260324-0178 (2026-03-24T09:06:55.843Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260324-0179 | 2026-03-24T10:48:15.267Z | targeted | no | Vercel Preview QA - PR #200 blocked by preview SSO | 2 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260324-0178 | 2026-03-24T09:06:55.843Z | targeted | no | Vercel Production QA - frontend/AI parity gate closed after snapshot label pin | 6 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260324-0177 | 2026-03-24T07:57:28.735Z | targeted | no | Vercel Production QA - false realtime-analysis badge removed but parity mismatch remains | 6 | 0 | 1 | 0 | 0 | 0 |
 | QA-20260324-0176 | 2026-03-24T07:35:13.658Z | targeted | no | Vercel Production QA - parity gate still open after analysis detail patch | 6 | 0 | 1 | 0 | 0 | 0 |
@@ -356,5 +358,4 @@ Latest run: QA-20260324-0178 (2026-03-24T09:06:55.843Z)
 | QA-20260323-0162 | 2026-03-22T15:34:58.470Z | targeted | no | Production QA - Dashboard/AI parity metadata user-facing recheck | 5 | 0 | 1 | 0 | 0 | 0 |
 | QA-20260322-0161 | 2026-03-22T14:52:53.194Z | targeted | no | Vercel Playwright QA - Data Source Parity Metadata (SHA 41e8888d4) | 6 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260322-0160 | 2026-03-22T07:26:30.735Z | targeted | no | CI Manual Feedback Trace Status QA (run #23398040200) | 1 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260322-0159 | 2026-03-22T05:18:39.374Z | targeted | no | Production Feedback Trace URL Status E2E - Runtime Availability Explicit | 5 | 1 | 0 | 0 | 0 | 0 |
 
