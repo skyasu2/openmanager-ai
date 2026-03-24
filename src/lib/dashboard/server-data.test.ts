@@ -235,7 +235,7 @@ describe('getOTelDashboardData', () => {
       expect(result).toEqual({
         servers: [],
         stats: { total: 0, online: 0, warning: 0, critical: 0, offline: 0 },
-        timeInfo: { hour: 0, slotIndex: 0, minuteOfDay: 0 },
+        timeInfo: { hour: 0, slotIndex: 0, globalSlotIndex: 0, minuteOfDay: 0 },
         dataSourceInfo: null,
       });
     });
