@@ -11,6 +11,9 @@ import { afterEach, describe, expect, it } from 'vitest';
 const require = createRequire(import.meta.url);
 const {
   buildValidationEvidenceSnapshot,
+  findLatestProofRun,
+  findLatestPublicEvidenceRun,
+  hasGitHubActionsLink,
   shouldWriteValidationEvidenceSnapshot,
   writeValidationEvidenceSnapshot,
 } = require('../../../scripts/qa/build-validation-evidence.js');
@@ -30,6 +33,38 @@ afterEach(() => {
 });
 
 describe('build-validation-evidence', () => {
+  it('detects GitHub Actions links defensively', () => {
+    expect(
+      hasGitHubActionsLink({
+        links: [{ type: 'github-actions-run' }],
+      })
+    ).toBe(true);
+    expect(
+      hasGitHubActionsLink({
+        links: [{ type: 'general' }],
+      })
+    ).toBe(false);
+    expect(hasGitHubActionsLink({ links: null })).toBe(false);
+  });
+
+  it('finds latest public evidence run and latest proof run with separate rules', () => {
+    const runs = [
+      {
+        runId: 'QA-20260320-0100',
+        environment: { target: 'github-actions' },
+        links: [{ type: 'github-actions-run' }],
+      },
+      {
+        runId: 'QA-20260321-0101',
+        environment: { target: 'vercel-production' },
+        links: [],
+      },
+    ];
+
+    expect(findLatestPublicEvidenceRun(runs)?.runId).toBe('QA-20260321-0101');
+    expect(findLatestProofRun(runs)?.runId).toBe('QA-20260320-0100');
+  });
+
   it('keeps latest public evidence run separate from latest github proof run', () => {
     const snapshot = buildValidationEvidenceSnapshot({
       summary: {

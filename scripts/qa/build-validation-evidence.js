@@ -45,24 +45,28 @@ function shouldWriteValidationEvidenceSnapshot(trackerPath = TRACKER_PATH) {
   return path.resolve(trackerPath) === path.resolve(TRACKER_PATH);
 }
 
+function hasGitHubActionsLink(run) {
+  return Array.isArray(run?.links)
+    ? run.links.some((link) => link?.type?.startsWith('github-actions'))
+    : false;
+}
+
+function findLatestPublicEvidenceRun(runs) {
+  return [...runs].reverse().find((run) => {
+    const target = run?.environment?.target;
+    return target === 'vercel-production' || hasGitHubActionsLink(run);
+  });
+}
+
+function findLatestProofRun(runs) {
+  return [...runs].reverse().find((run) => hasGitHubActionsLink(run));
+}
+
 function buildValidationEvidenceSnapshot(tracker) {
   const summary = tracker?.summary;
   const runs = Array.isArray(tracker?.runs) ? tracker.runs : [];
-  const latestPublicEvidenceRun = [...runs].reverse().find((run) => {
-    const target = run?.environment?.target;
-    const hasGithubActionsLink = Array.isArray(run?.links)
-      ? run.links.some((link) => link?.type?.startsWith('github-actions'))
-      : false;
-
-    return target === 'vercel-production' || hasGithubActionsLink;
-  });
-  const latestProofRun = [...runs]
-    .reverse()
-    .find((run) =>
-      Array.isArray(run?.links)
-        ? run.links.some((link) => link?.type?.startsWith('github-actions'))
-        : false
-    );
+  const latestPublicEvidenceRun = findLatestPublicEvidenceRun(runs);
+  const latestProofRun = findLatestProofRun(runs);
 
   if (!summary || !latestProofRun?.runId || !latestPublicEvidenceRun?.runId) {
     throw new Error('QA validation evidence summary is unavailable');
@@ -130,6 +134,9 @@ module.exports = {
   OUTPUT_PATH,
   TRACKER_PATH,
   buildValidationEvidenceSnapshot,
+  findLatestProofRun,
+  findLatestPublicEvidenceRun,
+  hasGitHubActionsLink,
   shouldWriteValidationEvidenceSnapshot,
   writeValidationEvidenceSnapshot,
 };
