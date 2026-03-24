@@ -7,19 +7,6 @@ import { describe, expect, it, vi } from 'vitest';
 import { DashboardSummary } from './DashboardSummary';
 import type { DashboardStats } from './types/dashboard.types';
 
-vi.mock('@/config/server-data-polling', () => ({
-  getMsUntilNextServerDataSlot: () => 60_000,
-}));
-
-vi.mock('@/services/metrics/kst-time', () => ({
-  getKSTDateTime: () => ({
-    date: '2026-03-22',
-    time: '12:20',
-    slotIndex: 74,
-    minuteOfDay: 740,
-  }),
-}));
-
 vi.mock('lucide-react', () => {
   const MockIcon = () => <svg aria-hidden="true" />;
 
@@ -154,7 +141,12 @@ describe('DashboardSummary status filter cards', () => {
     render(
       <DashboardSummary
         stats={mockStats}
-        dataSlotInfo={{ hour: 12, slotIndex: 74, minuteOfDay: 740 }}
+        dataSlotInfo={{
+          hour: 12,
+          slotIndex: 2,
+          globalSlotIndex: 74,
+          minuteOfDay: 740,
+        }}
         dataSourceInfo={{
           scopeName: 'openmanager-ai-otel-pipeline',
           scopeVersion: '1.0.0',
@@ -170,5 +162,26 @@ describe('DashboardSummary status filter cards', () => {
     expect(
       screen.getByText('Dataset v1.0.0 · catalog 2026-02-15 03:56Z')
     ).toBeInTheDocument();
+  });
+
+  it('snapshot slot 라벨은 현재 시각이 아니라 전달된 데이터 슬롯을 유지한다', () => {
+    render(
+      <DashboardSummary
+        stats={mockStats}
+        dataSlotInfo={{
+          hour: 17,
+          slotIndex: 2,
+          globalSlotIndex: 104,
+          minuteOfDay: 1040,
+        }}
+      />
+    );
+
+    expect(
+      screen.getByText('Synthetic OTel snapshot · 17:20 KST (slot 104/143)')
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText('Synthetic OTel snapshot · 17:30 KST (slot 105/143)')
+    ).not.toBeInTheDocument();
   });
 });

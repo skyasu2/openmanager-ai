@@ -11,14 +11,12 @@ import {
   XCircle,
 } from 'lucide-react';
 import type React from 'react';
-import { memo, useEffect, useState } from 'react';
-import { getMsUntilNextServerDataSlot } from '@/config/server-data-polling';
+import { memo } from 'react';
 import type {
   DashboardDataSourceInfo,
   DashboardTimeInfo,
 } from '@/lib/dashboard/server-data';
 import { cn } from '@/lib/utils';
-import { getKSTDateTime } from '@/services/metrics/kst-time';
 import type { DashboardStats } from './types/dashboard.types';
 
 interface DashboardSummaryProps {
@@ -53,23 +51,6 @@ function formatDataSourceLabel(
     ? `${dataSourceInfo.catalogGeneratedAt.slice(0, 16).replace('T', ' ')}Z`
     : 'unknown';
   return `Dataset v${dataSourceInfo.scopeVersion} · catalog ${generatedAt}`;
-}
-
-function getCurrentDashboardTimeInfo(
-  fallback?: DashboardTimeInfo
-): DashboardTimeInfo | undefined {
-  if (typeof window === 'undefined') {
-    return fallback;
-  }
-
-  const { slotIndex, minuteOfDay } = getKSTDateTime();
-  // getKSTDateTime().slotIndex = Math.floor(minuteOfDay / 10) = global 0-143
-  return {
-    hour: Math.floor(minuteOfDay / 60),
-    slotIndex: slotIndex % 6, // within-hour 0-5 (데이터 조회 호환)
-    globalSlotIndex: slotIndex, // global 0-143 (표시 및 parity 검증용)
-    minuteOfDay,
-  };
 }
 
 // 🎨 상태별 그라데이션 설정 (ImprovedServerCard와 통일)
@@ -215,34 +196,6 @@ export const DashboardSummary: React.FC<DashboardSummaryProps> = memo(
     activeAlertsCount = 0,
     onOpenActiveAlerts,
   }) {
-    const [liveDataSlotInfo, setLiveDataSlotInfo] = useState<
-      DashboardTimeInfo | undefined
-    >(dataSlotInfo);
-
-    useEffect(() => {
-      let timeoutId: number | undefined;
-
-      const syncSlotInfo = () => {
-        setLiveDataSlotInfo(getCurrentDashboardTimeInfo(dataSlotInfo));
-      };
-
-      const scheduleNextSync = () => {
-        timeoutId = window.setTimeout(() => {
-          syncSlotInfo();
-          scheduleNextSync();
-        }, getMsUntilNextServerDataSlot());
-      };
-
-      syncSlotInfo();
-      scheduleNextSync();
-
-      return () => {
-        if (timeoutId !== undefined) {
-          window.clearTimeout(timeoutId);
-        }
-      };
-    }, [dataSlotInfo]);
-
     // Null-safe 처리
     const safeStats = {
       total: stats?.total ?? 0,
@@ -287,9 +240,9 @@ export const DashboardSummary: React.FC<DashboardSummaryProps> = memo(
                 {safeStats.total}
               </span>
             </div>
-            {liveDataSlotInfo && (
+            {dataSlotInfo && (
               <p className="mt-2 text-[11px] font-medium text-gray-500">
-                Synthetic OTel snapshot · {formatSlotLabel(liveDataSlotInfo)}
+                Synthetic OTel snapshot · {formatSlotLabel(dataSlotInfo)}
               </p>
             )}
             {dataSourceInfo && (
