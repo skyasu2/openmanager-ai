@@ -11,6 +11,11 @@ import {
   type ResponseSourceData,
 } from './response-view-helpers';
 
+type PendingStreamToolResult = {
+  toolName: string;
+  result: unknown;
+};
+
 type StreamDataCallbacks = {
   setCurrentAgentStatus: (status: AgentStatusEventData | null) => void;
   setCurrentHandoff: (handoff: HandoffEventData | null) => void;
@@ -24,6 +29,8 @@ type StreamDataCallbacks = {
       url?: string;
     }>
   ) => void;
+  getPendingToolResults: () => PendingStreamToolResult[];
+  setPendingToolResults: (results: PendingStreamToolResult[]) => void;
   getMessages: () => UIMessage[];
   setMessages: (messages: UIMessage[]) => void;
 };
@@ -45,12 +52,47 @@ function extractTraceIdFromDoneData(
   return typeof metadata?.traceId === 'string' ? metadata.traceId : undefined;
 }
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null;
+}
+
+function extractPendingToolResult(
+  data: unknown
+): PendingStreamToolResult | null {
+  if (!isRecord(data) || typeof data.toolName !== 'string') {
+    return null;
+  }
+
+  const result =
+    'result' in data ? data.result : 'output' in data ? data.output : undefined;
+
+  if (result === undefined) return null;
+
+  return {
+    toolName: data.toolName,
+    result,
+  };
+}
+
+function createSyntheticToolParts(
+  toolResults: PendingStreamToolResult[]
+): UIMessage['parts'] {
+  return toolResults.map((entry, index) => ({
+    type: `tool-${entry.toolName}`,
+    toolCallId: `stream-tool-${entry.toolName}-${index}`,
+    output: entry.result,
+    state: 'output-available',
+  })) as UIMessage['parts'];
+}
+
 export function handleStreamDataPart(
   dataPart: StreamDataPart,
   callbacks: StreamDataCallbacks
 ): void {
   const partType = dataPart.type;
-  if (partType === 'data-agent-status' && dataPart.data) {
+  if (partType === 'data-start') {
+    callbacks.setPendingToolResults([]);
+  } else if (partType === 'data-agent-status' && dataPart.data) {
     const agentStatus = dataPart.data as AgentStatusEventData;
     callbacks.setCurrentAgentStatus(agentStatus);
     if (process.env.NODE_ENV === 'development') {
@@ -64,11 +106,20 @@ export function handleStreamDataPart(
     if (process.env.NODE_ENV === 'development') {
       logger.info(`🔄 [Handoff] ${handoff.from} → ${handoff.to}`);
     }
+  } else if (partType === 'data-tool-result' && dataPart.data) {
+    const pendingToolResult = extractPendingToolResult(dataPart.data);
+    if (!pendingToolResult) return;
+
+    callbacks.setPendingToolResults([
+      ...callbacks.getPendingToolResults(),
+      pendingToolResult,
+    ]);
   } else if (partType === 'data-done') {
     callbacks.setCurrentAgentStatus(null);
     callbacks.setCurrentHandoff(null);
 
     const doneData = dataPart.data as ResponseSourceData | undefined;
+    const pendingToolResults = callbacks.getPendingToolResults();
 
     if (doneData?.ragSources) {
       const parsedRagSources = normalizeRagSources(doneData.ragSources);
@@ -81,16 +132,23 @@ export function handleStreamDataPart(
 
     const structuredView = buildStructuredResponseView(doneData);
     const traceId = extractTraceIdFromDoneData(doneData);
+    const syntheticToolParts = createSyntheticToolParts(pendingToolResults);
 
-    if (structuredView || traceId) {
+    if (structuredView || traceId || syntheticToolParts?.length) {
       const currentMessages = [...callbacks.getMessages()];
       const lastAssistantIndex = currentMessages
         .map((message) => message.role)
         .lastIndexOf('assistant');
-      if (lastAssistantIndex < 0) return;
+      if (lastAssistantIndex < 0) {
+        callbacks.setPendingToolResults([]);
+        return;
+      }
 
       const targetMessage = currentMessages[lastAssistantIndex];
-      if (!targetMessage) return;
+      if (!targetMessage) {
+        callbacks.setPendingToolResults([]);
+        return;
+      }
       if (traceId) {
         callbacks.setMessageTraceId(targetMessage.id, traceId);
       }
@@ -106,6 +164,10 @@ export function handleStreamDataPart(
             if (index !== lastAssistantIndex) return message;
             return {
               ...message,
+              parts: [
+                ...(Array.isArray(message.parts) ? message.parts : []),
+                ...(syntheticToolParts ?? []),
+              ],
               metadata: {
                 ...prevMetadata,
                 ...(traceId && { traceId }),
@@ -118,5 +180,7 @@ export function handleStreamDataPart(
         )
       );
     }
+
+    callbacks.setPendingToolResults([]);
   }
 }

@@ -178,6 +178,12 @@ export function useAIChatCore(
   const [streamTraceIds, setStreamTraceIds] = useState<Record<string, string>>(
     {}
   );
+  const pendingStreamToolResultsRef = useRef<
+    Array<{
+      toolName: string;
+      result: unknown;
+    }>
+  >([]);
 
   // Refs
   const lastQueryRef = useRef<string>('');
@@ -253,6 +259,10 @@ export function useAIChatCore(
           );
         },
         setStreamRagSources,
+        getPendingToolResults: () => pendingStreamToolResultsRef.current,
+        setPendingToolResults: (results) => {
+          pendingStreamToolResultsRef.current = results;
+        },
         getMessages: () => messagesRef.current,
         setMessages,
       });
