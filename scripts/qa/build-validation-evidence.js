@@ -2,6 +2,7 @@
 
 const fs = require('node:fs');
 const path = require('node:path');
+const { repairTrackerDerivedFields } = require('./qa-tracker-utils');
 
 const PROJECT_ROOT = path.resolve(__dirname, '..', '..');
 const QA_ROOT = path.join(PROJECT_ROOT, 'reports', 'qa');
@@ -71,8 +72,9 @@ function findLatestProofRun(runs) {
 }
 
 function buildValidationEvidenceSnapshot(tracker) {
-  const summary = tracker?.summary;
-  const runs = Array.isArray(tracker?.runs) ? tracker.runs : [];
+  const normalizedTracker = repairTrackerDerivedFields({ ...(tracker || {}) });
+  const summary = normalizedTracker.summary;
+  const runs = normalizedTracker.runs;
   const latestPublicEvidenceRun = findLatestPublicEvidenceRun(runs);
   const latestProofRun = findLatestProofRun(runs);
 
