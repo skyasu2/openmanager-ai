@@ -14,6 +14,7 @@
  * @updated 2026-01-28 - 재시도 시 파일 첨부 보존 (lastAttachmentsRef)
  */
 
+import type { UIMessage } from '@ai-sdk/react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   type AgentStatusEventData,
@@ -195,9 +196,7 @@ export function useAIChatCore(
     import('./useDeferredMessageMetadata').DeferredMetadataHandlers | null
   >(null);
 
-  const messagesRef = useRef<ReturnType<typeof useHybridAIQuery>['messages']>(
-    []
-  );
+  const messagesRef = useRef<UIMessage[]>([]);
 
   const hybridCallbacks = useAIChatHybridCallbacks({
     onMessageSend,
@@ -233,8 +232,6 @@ export function useAIChatCore(
     ...hybridCallbacks,
   });
 
-  messagesRef.current = messages;
-
   const {
     streamTraceIds,
     deferredAssistantMetadataByMessageId,
@@ -243,11 +240,14 @@ export function useAIChatCore(
     resetDeferredMetadata,
   } = useDeferredMessageMetadata(messages);
 
-  deferredHandlersRef.current = deferredHandlers;
-
   useEffect(() => {
     sendQueryRef.current = sendQuery;
   }, [sendQuery, sendQueryRef]);
+
+  useEffect(() => {
+    messagesRef.current = messages;
+    deferredHandlersRef.current = deferredHandlers;
+  }, [messages, deferredHandlers]);
 
   const hasQueuedQueries = queuedQueries.length > 0;
 
