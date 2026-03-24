@@ -298,6 +298,109 @@ describe('useAIChatCore', () => {
     );
   });
 
+  it('keeps metadata pending until the newest assistant message arrives when the latest message is user', async () => {
+    const traceId = 'trace-latest-assistant-abcdef';
+    const { result } = renderHook(() => useAIChatCore());
+
+    const initialOnData = mocks.getLatestHybridOptions()?.onData as
+      | ((part: { type: string; data?: unknown }) => void)
+      | undefined;
+
+    expect(typeof initialOnData).toBe('function');
+    expect(mocks.getSeedHybridMessages()).toBeTypeOf('function');
+
+    await act(async () => {
+      mocks.getSeedHybridMessages()?.([
+        {
+          id: 'user-1',
+          role: 'user',
+          parts: [{ type: 'text', text: '첫 질문' }],
+        },
+        {
+          id: 'assistant-1',
+          role: 'assistant',
+          parts: [{ type: 'text', text: '이전 응답' }],
+        },
+        {
+          id: 'user-2',
+          role: 'user',
+          parts: [{ type: 'text', text: '추가 질문' }],
+        },
+      ]);
+    });
+
+    await waitFor(() => {
+      expect(result.current.messages).toHaveLength(3);
+    });
+
+    act(() => {
+      initialOnData?.({
+        type: 'data-tool-result',
+        data: {
+          toolName: 'getServerMetrics',
+          result: {
+            success: true,
+            dataSlot: {
+              slotIndex: 108,
+              minuteOfDay: 1080,
+              timeLabel: '18:00 KST',
+            },
+          },
+        },
+      });
+      initialOnData?.({
+        type: 'data-done',
+        data: {
+          responseSummary: '최신 응답 요약',
+          metadata: {
+            traceId,
+          },
+        },
+      });
+    });
+
+    expect(result.current.messages[1]?.metadata?.traceId).toBeUndefined();
+
+    await act(async () => {
+      mocks.getSeedHybridMessages()?.([
+        {
+          id: 'user-1',
+          role: 'user',
+          parts: [{ type: 'text', text: '첫 질문' }],
+        },
+        {
+          id: 'assistant-1',
+          role: 'assistant',
+          parts: [{ type: 'text', text: '이전 응답' }],
+        },
+        {
+          id: 'user-2',
+          role: 'user',
+          parts: [{ type: 'text', text: '추가 질문' }],
+        },
+        {
+          id: 'assistant-2',
+          role: 'assistant',
+          parts: [{ type: 'text', text: '최신 응답 본문' }],
+        },
+      ]);
+    });
+
+    await waitFor(() => {
+      expect(result.current.messages[3]?.metadata?.traceId).toBe(traceId);
+    });
+
+    expect(result.current.messages[1]?.metadata?.traceId).toBeUndefined();
+    expect(
+      result.current.messages[3]?.metadata?.assistantResponseView?.summary
+    ).toBe('최신 응답 요약');
+    expect(
+      result.current.messages[3]?.thinkingSteps?.some(
+        (step) => step.step === 'getServerMetrics'
+      )
+    ).toBe(true);
+  });
+
   it('preserves deferred stream parity metadata even if the assistant message is overwritten later', async () => {
     const traceId = 'trace-race-1234567890abcdef';
     const { result } = renderHook(() => useAIChatCore());

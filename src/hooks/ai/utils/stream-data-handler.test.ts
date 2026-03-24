@@ -358,5 +358,70 @@ describe('handleStreamDataPart', () => {
         },
       });
     });
+
+    it('should keep pending metadata when the latest message is user even if an older assistant exists', () => {
+      callbacks.getMessages.mockReturnValue([
+        {
+          id: 'msg-1',
+          role: 'user',
+          parts: [{ type: 'text', text: '첫 질문' }],
+        },
+        {
+          id: 'msg-2',
+          role: 'assistant',
+          parts: [{ type: 'text', text: '이전 응답' }],
+        },
+        {
+          id: 'msg-3',
+          role: 'user',
+          parts: [{ type: 'text', text: '추가 질문' }],
+        },
+      ]);
+
+      handleStreamDataPart(
+        {
+          type: 'data-tool-result',
+          data: {
+            toolName: 'getServerMetrics',
+            result: {
+              dataSlot: {
+                slotIndex: 108,
+                minuteOfDay: 1080,
+                timeLabel: '18:00 KST',
+              },
+            },
+          },
+        },
+        callbacks
+      );
+
+      handleStreamDataPart(
+        {
+          type: 'data-done',
+          data: {
+            responseSummary: '최신 응답 요약',
+            metadata: {
+              traceId: 'trace-latest-assistant',
+            },
+          },
+        },
+        callbacks
+      );
+
+      expect(callbacks.setMessageTraceId).not.toHaveBeenCalledWith(
+        'msg-2',
+        'trace-latest-assistant'
+      );
+      expect(callbacks.setDeferredAssistantMetadata).not.toHaveBeenCalled();
+      expect(callbacks.setDeferredAssistantToolResults).not.toHaveBeenCalled();
+      expect(callbacks.setPendingMessageMetadata).toHaveBeenCalledWith({
+        traceId: 'trace-latest-assistant',
+        assistantResponseView: {
+          summary: '최신 응답 요약',
+          details: null,
+          shouldCollapse: false,
+        },
+      });
+    });
   });
 });

@@ -159,19 +159,8 @@ export function handleStreamDataPart(
 
     if (structuredView || traceId || pendingToolResults.length > 0) {
       const currentMessages = [...callbacks.getMessages()];
-      const lastAssistantIndex = currentMessages
-        .map((message) => message.role)
-        .lastIndexOf('assistant');
-      if (lastAssistantIndex < 0) {
-        callbacks.setPendingMessageMetadata({
-          ...callbacks.getPendingMessageMetadata(),
-          ...nextMessageMetadata,
-        });
-        return;
-      }
-
-      const targetMessage = currentMessages[lastAssistantIndex];
-      if (!targetMessage) {
+      const targetMessage = currentMessages.at(-1);
+      if (!targetMessage || targetMessage.role !== 'assistant') {
         callbacks.setPendingMessageMetadata({
           ...callbacks.getPendingMessageMetadata(),
           ...nextMessageMetadata,
