@@ -184,6 +184,7 @@ export function useAIChatCore(
       result: unknown;
     }>
   >([]);
+  const pendingStreamMessageMetadataRef = useRef<Record<string, unknown>>({});
 
   // Refs
   const lastQueryRef = useRef<string>('');
@@ -263,6 +264,11 @@ export function useAIChatCore(
         setPendingToolResults: (results) => {
           pendingStreamToolResultsRef.current = results;
         },
+        getPendingMessageMetadata: () =>
+          pendingStreamMessageMetadataRef.current,
+        setPendingMessageMetadata: (metadata) => {
+          pendingStreamMessageMetadataRef.current = metadata;
+        },
         getMessages: () => messagesRef.current,
         setMessages,
       });
@@ -273,6 +279,66 @@ export function useAIChatCore(
   useEffect(() => {
     messagesRef.current = messages;
   }, [messages]);
+
+  useEffect(() => {
+    const pendingToolResults = pendingStreamToolResultsRef.current;
+    const pendingMessageMetadata = pendingStreamMessageMetadataRef.current;
+    const hasPendingMessageMetadata =
+      Object.keys(pendingMessageMetadata).length > 0;
+
+    if (pendingToolResults.length === 0 && !hasPendingMessageMetadata) {
+      return;
+    }
+
+    const lastAssistantIndex = messages
+      .map((message) => message.role)
+      .lastIndexOf('assistant');
+    if (lastAssistantIndex < 0) return;
+
+    const targetMessage = messages[lastAssistantIndex];
+    if (!targetMessage) return;
+
+    const existingParts = Array.isArray(targetMessage.parts)
+      ? targetMessage.parts
+      : [];
+    const syntheticToolParts = pendingToolResults
+      .map((entry, index) => ({
+        type: `tool-${entry.toolName}`,
+        toolCallId: `stream-tool-${entry.toolName}-${index}`,
+        output: entry.result,
+        state: 'output-available',
+      }))
+      .filter(
+        (part) =>
+          !existingParts.some((existing) => existing?.type === part.type)
+      );
+
+    pendingStreamToolResultsRef.current = [];
+    pendingStreamMessageMetadataRef.current = {};
+
+    if (syntheticToolParts.length === 0 && !hasPendingMessageMetadata) {
+      return;
+    }
+
+    const nextMessages = messages.map((message, index) => {
+      if (index !== lastAssistantIndex) return message;
+      const prevMetadata =
+        typeof message.metadata === 'object' && message.metadata !== null
+          ? (message.metadata as Record<string, unknown>)
+          : {};
+
+      return {
+        ...message,
+        parts: [...existingParts, ...syntheticToolParts],
+        metadata: {
+          ...prevMetadata,
+          ...pendingMessageMetadata,
+        },
+      };
+    });
+
+    setMessages(nextMessages);
+  }, [messages, setMessages]);
 
   useEffect(() => {
     sendQueryRef.current = sendQuery;

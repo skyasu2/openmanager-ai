@@ -12,6 +12,7 @@ import { handleStreamDataPart } from './stream-data-handler';
 
 function createMockCallbacks() {
   let pendingToolResults: Array<{ toolName: string; result: unknown }> = [];
+  let pendingMessageMetadata: Record<string, unknown> = {};
   const messages: UIMessage[] = [
     {
       id: 'msg-1',
@@ -34,6 +35,10 @@ function createMockCallbacks() {
     setPendingToolResults: vi.fn((results) => {
       pendingToolResults = results;
     }),
+    getPendingMessageMetadata: vi.fn(() => pendingMessageMetadata),
+    setPendingMessageMetadata: vi.fn((metadata) => {
+      pendingMessageMetadata = metadata;
+    }),
     getMessages: vi.fn(() => messages),
     setMessages: vi.fn(),
   };
@@ -55,6 +60,7 @@ describe('handleStreamDataPart', () => {
       handleStreamDataPart({ type: 'data-start', data: {} }, callbacks);
 
       expect(callbacks.setPendingToolResults).toHaveBeenLastCalledWith([]);
+      expect(callbacks.setPendingMessageMetadata).toHaveBeenLastCalledWith({});
     });
 
     it('should accumulate pending tool results on data-tool-result', () => {
@@ -260,6 +266,7 @@ describe('handleStreamDataPart', () => {
         timeLabel: '09:30 KST',
       });
       expect(callbacks.setPendingToolResults).toHaveBeenLastCalledWith([]);
+      expect(callbacks.setPendingMessageMetadata).toHaveBeenLastCalledWith({});
     });
 
     it('should inject traceId from done metadata into last assistant message metadata', () => {
@@ -349,6 +356,13 @@ describe('handleStreamDataPart', () => {
       handleStreamDataPart(part, callbacks);
 
       expect(callbacks.setMessages).not.toHaveBeenCalled();
+      expect(callbacks.setPendingMessageMetadata).toHaveBeenCalledWith({
+        assistantResponseView: {
+          summary: '요약',
+          details: null,
+          shouldCollapse: false,
+        },
+      });
     });
   });
 });

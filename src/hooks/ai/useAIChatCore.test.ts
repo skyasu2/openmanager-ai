@@ -230,4 +230,81 @@ describe('useAIChatCore', () => {
       (assistantMessage?.metadata as { traceId?: string } | undefined)?.traceId
     ).toBe(traceId);
   });
+
+  it('flushes pending stream tool results and response metadata after assistant message arrives', async () => {
+    const traceId = 'abcdef1234567890abcdef1234567890';
+    const { result } = renderHook(() => useAIChatCore());
+
+    const initialOnData = mocks.getLatestHybridOptions()?.onData as
+      | ((part: { type: string; data?: unknown }) => void)
+      | undefined;
+
+    expect(typeof initialOnData).toBe('function');
+    expect(mocks.getSeedHybridMessages()).toBeTypeOf('function');
+
+    act(() => {
+      initialOnData?.({
+        type: 'data-tool-result',
+        data: {
+          toolName: 'getServerMetrics',
+          result: {
+            success: true,
+            dataSlot: {
+              slotIndex: 82,
+              minuteOfDay: 820,
+              timeLabel: '13:40 KST',
+            },
+            dataSource: {
+              scopeName: 'openmanager-ai-otel-pipeline',
+              scopeVersion: '1.0.0',
+              catalogGeneratedAt: '2026-02-15T03:56:41.821Z',
+              hour: 13,
+            },
+          },
+        },
+      });
+      initialOnData?.({
+        type: 'data-done',
+        data: {
+          responseSummary: '서버 상태 요약',
+          responseDetails: '상세 분석',
+          responseShouldCollapse: true,
+          metadata: {
+            traceId,
+          },
+        },
+      });
+    });
+
+    await act(async () => {
+      mocks.getSeedHybridMessages()?.([
+        {
+          id: 'user-1',
+          role: 'user',
+          parts: [{ type: 'text', text: '메모리 사용률 알려줘' }],
+        },
+        {
+          id: 'assistant-1',
+          role: 'assistant',
+          parts: [{ type: 'text', text: '응답 본문' }],
+        },
+      ]);
+    });
+
+    await waitFor(() => {
+      const assistant = result.current.messages[1];
+      expect(assistant?.metadata?.traceId).toBe(traceId);
+      expect(assistant?.metadata?.assistantResponseView).toBeDefined();
+      expect(
+        assistant?.thinkingSteps?.some(
+          (step) => step.step === 'getServerMetrics'
+        )
+      ).toBe(true);
+    });
+
+    const assistant = result.current.messages[1];
+    expect(assistant?.metadata?.assistantResponseView?.summary).toBe(
+      '서버 상태 요약'
+    );
+  });
 });

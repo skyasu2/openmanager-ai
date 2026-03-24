@@ -31,6 +31,8 @@ type StreamDataCallbacks = {
   ) => void;
   getPendingToolResults: () => PendingStreamToolResult[];
   setPendingToolResults: (results: PendingStreamToolResult[]) => void;
+  getPendingMessageMetadata: () => Record<string, unknown>;
+  setPendingMessageMetadata: (metadata: Record<string, unknown>) => void;
   getMessages: () => UIMessage[];
   setMessages: (messages: UIMessage[]) => void;
 };
@@ -92,6 +94,7 @@ export function handleStreamDataPart(
   const partType = dataPart.type;
   if (partType === 'data-start') {
     callbacks.setPendingToolResults([]);
+    callbacks.setPendingMessageMetadata({});
   } else if (partType === 'data-agent-status' && dataPart.data) {
     const agentStatus = dataPart.data as AgentStatusEventData;
     callbacks.setCurrentAgentStatus(agentStatus);
@@ -133,6 +136,12 @@ export function handleStreamDataPart(
     const structuredView = buildStructuredResponseView(doneData);
     const traceId = extractTraceIdFromDoneData(doneData);
     const syntheticToolParts = createSyntheticToolParts(pendingToolResults);
+    const nextMessageMetadata = {
+      ...(traceId && { traceId }),
+      ...(structuredView && {
+        assistantResponseView: structuredView,
+      }),
+    };
 
     if (structuredView || traceId || syntheticToolParts?.length) {
       const currentMessages = [...callbacks.getMessages()];
@@ -140,13 +149,19 @@ export function handleStreamDataPart(
         .map((message) => message.role)
         .lastIndexOf('assistant');
       if (lastAssistantIndex < 0) {
-        callbacks.setPendingToolResults([]);
+        callbacks.setPendingMessageMetadata({
+          ...callbacks.getPendingMessageMetadata(),
+          ...nextMessageMetadata,
+        });
         return;
       }
 
       const targetMessage = currentMessages[lastAssistantIndex];
       if (!targetMessage) {
-        callbacks.setPendingToolResults([]);
+        callbacks.setPendingMessageMetadata({
+          ...callbacks.getPendingMessageMetadata(),
+          ...nextMessageMetadata,
+        });
         return;
       }
       if (traceId) {
@@ -157,6 +172,7 @@ export function handleStreamDataPart(
         targetMessage.metadata !== null
           ? (targetMessage.metadata as Record<string, unknown>)
           : {};
+      const pendingMessageMetadata = callbacks.getPendingMessageMetadata();
 
       callbacks.setMessages(
         currentMessages.map(
@@ -170,10 +186,8 @@ export function handleStreamDataPart(
               ],
               metadata: {
                 ...prevMetadata,
-                ...(traceId && { traceId }),
-                ...(structuredView && {
-                  assistantResponseView: structuredView,
-                }),
+                ...pendingMessageMetadata,
+                ...nextMessageMetadata,
               },
             };
           }
@@ -182,5 +196,6 @@ export function handleStreamDataPart(
     }
 
     callbacks.setPendingToolResults([]);
+    callbacks.setPendingMessageMetadata({});
   }
 }
