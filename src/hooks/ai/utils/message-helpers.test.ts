@@ -271,6 +271,68 @@ describe('transformMessages', () => {
     expect(assistant?.metadata?.assistantResponseView?.summary).toBe(
       '메모리 상태 요약'
     );
+    expect(assistant?.metadata?.assistantResponseView?.details).toContain(
+      'Parity Metadata Contract'
+    );
+    expect(assistant?.metadata?.assistantResponseView?.details).toContain(
+      '"slotIndex": 85'
+    );
+  });
+
+  it('creates parity details for short assistant answers without structured metadata', () => {
+    const messages = transformMessages(
+      [
+        createMessage({
+          id: 'u1',
+          role: 'user',
+          text: 'cache 메모리 사용률 몇 %야?',
+        }),
+        createMessage({
+          id: 'a1',
+          role: 'assistant',
+          text: 'cache-redis-dc1-01의 메모리 사용률은 75%입니다.',
+          parts: [
+            {
+              type: 'text',
+              text: 'cache-redis-dc1-01의 메모리 사용률은 75%입니다.',
+            },
+            {
+              type: 'tool-getServerMetrics',
+              toolCallId: 'tool-1',
+              output: {
+                success: true,
+                dataSlot: {
+                  slotIndex: 88,
+                  minuteOfDay: 880,
+                  timeLabel: '14:40 KST',
+                },
+                dataSource: {
+                  scopeName: 'openmanager-ai-otel-pipeline',
+                  scopeVersion: '1.0.0',
+                  catalogGeneratedAt: '2026-02-15T03:56:41.821Z',
+                  hour: 14,
+                },
+              },
+            },
+          ],
+        }),
+      ],
+      { isLoading: false, currentMode: 'streaming' }
+    );
+
+    const assistant = messages.find((m) => m.id === 'a1');
+    expect(assistant?.metadata?.assistantResponseView?.summary).toBe(
+      'cache-redis-dc1-01의 메모리 사용률은 75%입니다.'
+    );
+    expect(assistant?.metadata?.assistantResponseView?.shouldCollapse).toBe(
+      false
+    );
+    expect(assistant?.metadata?.assistantResponseView?.details).toContain(
+      'Parity Metadata Contract'
+    );
+    expect(assistant?.metadata?.assistantResponseView?.details).toContain(
+      '"slotIndex": 88'
+    );
   });
 });
 

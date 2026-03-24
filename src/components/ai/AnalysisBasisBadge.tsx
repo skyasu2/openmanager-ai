@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { type FC, useState } from 'react';
 import type { AnalysisBasis } from '@/stores/useAISidebarStore';
+import { RenderMarkdownContent } from '@/utils/markdown-parser';
 
 function extractDomain(url: string): string {
   try {
@@ -46,6 +47,7 @@ function getToolLabel(toolName: string): string {
 
 interface AnalysisBasisBadgeProps {
   basis: AnalysisBasis;
+  details?: string | null;
   className?: string;
 }
 
@@ -60,6 +62,7 @@ interface AnalysisBasisBadgeProps {
  */
 export const AnalysisBasisBadge: FC<AnalysisBasisBadgeProps> = ({
   basis,
+  details,
   className = '',
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -151,6 +154,23 @@ export const AnalysisBasisBadge: FC<AnalysisBasisBadgeProps> = ({
             <div className="flex items-center gap-2">
               <span className="ml-5 text-gray-500">분석 서버:</span>
               <span className="text-gray-700">{basis.serverCount}개</span>
+            </div>
+          )}
+
+          {details && (
+            <div className="mt-2 border-t border-gray-200 pt-2">
+              <div className="mb-1.5 flex items-center gap-2">
+                <Database className="h-3.5 w-3.5 text-gray-400" />
+                <span className="text-gray-600 font-medium text-xs">
+                  추가 메타데이터
+                </span>
+              </div>
+              <div className="ml-5 rounded-md border border-slate-200 bg-white p-2">
+                <RenderMarkdownContent
+                  content={details}
+                  className="text-chat leading-relaxed break-words [overflow-wrap:anywhere]"
+                />
+              </div>
             </div>
           )}
 

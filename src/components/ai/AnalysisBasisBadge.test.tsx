@@ -4,11 +4,17 @@
 
 import { fireEvent, render, screen } from '@testing-library/react';
 import React from 'react';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import type { AnalysisBasis } from '@/stores/useAISidebarStore';
 import { AnalysisBasisBadge } from './AnalysisBasisBadge';
 
 void React;
+
+vi.mock('@/utils/markdown-parser', () => ({
+  RenderMarkdownContent: ({ content }: { content: string }) => (
+    <div>{content}</div>
+  ),
+}));
 
 describe('AnalysisBasisBadge', () => {
   const basis: AnalysisBasis = {
@@ -54,5 +60,22 @@ describe('AnalysisBasisBadge', () => {
       'https://redis.io/docs/latest/operate/oss_and_stack/management/'
     );
     expect(screen.getByText('redis.io')).toBeInTheDocument();
+  });
+
+  it('renders supplemental parity details when provided', () => {
+    render(
+      <AnalysisBasisBadge
+        basis={basis}
+        details={`### Parity Metadata Contract\n\`\`\`json\n{ "dataSlot": { "slotIndex": 88 } }\n\`\`\``}
+      />
+    );
+
+    fireEvent.click(
+      screen.getByRole('button', { name: '분석 근거 상세 보기' })
+    );
+
+    expect(screen.getByText('추가 메타데이터')).toBeInTheDocument();
+    expect(screen.getByText(/Parity Metadata Contract/)).toBeInTheDocument();
+    expect(screen.getByText(/slotIndex/)).toBeInTheDocument();
   });
 });

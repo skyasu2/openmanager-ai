@@ -53,6 +53,10 @@ export const MessageComponent = memo<{
   const collapsibleResponse = isCollapsibleAssistantResponse
     ? assistantResponseView
     : null;
+  const analysisBasisDetails =
+    !collapsibleResponse && assistantResponseView?.details
+      ? assistantResponseView.details
+      : null;
 
   // thinking 메시지일 경우 간소화된 인라인 상태 표시
   if (message.role === 'thinking' && message.thinkingSteps) {
@@ -215,7 +219,10 @@ export const MessageComponent = memo<{
                       s.sourceType === 'web' && !!s.url
                   )}
                 />
-                <AnalysisBasisBadge basis={message.metadata.analysisBasis} />
+                <AnalysisBasisBadge
+                  basis={message.metadata.analysisBasis}
+                  details={analysisBasisDetails}
+                />
               </>
             )}
 

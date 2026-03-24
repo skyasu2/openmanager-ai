@@ -206,12 +206,23 @@ function formatParityMetadataDetails(
 }
 
 function buildParityAwareAssistantResponseView(
+  content: string,
   structured: StructuredAssistantResponse | undefined,
   parity: ServerMetricsParityMetadata | null
 ): StructuredAssistantResponse | undefined {
-  if (!structured || !parity) return structured;
+  if (!parity) return structured;
 
   const normalizedParityDetails = formatParityMetadataDetails(parity);
+
+  if (!structured) {
+    return {
+      summary: content.trim(),
+      details: normalizedParityDetails,
+      // Keep the main message rendering unchanged for short parity answers.
+      shouldCollapse: false,
+    };
+  }
+
   const sanitizedExistingDetails = stripLegacyParityDetails(structured.details);
   const details = sanitizedExistingDetails
     ? `${sanitizedExistingDetails}\n\n${normalizedParityDetails}`
@@ -358,6 +369,7 @@ export function transformUIMessageToEnhanced(
       ? extractServerMetricsParityMetadata(toolParts)
       : null;
   const assistantResponseView = buildParityAwareAssistantResponseView(
+    textContent,
     metadata?.assistantResponseView,
     parityMetadata
   );
