@@ -14,13 +14,12 @@
  * @updated 2026-01-28 - 재시도 시 파일 첨부 보존 (lastAttachmentsRef)
  */
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   type AgentStatusEventData,
   type ClarificationOption,
   type ClarificationRequest,
   type HandoffEventData,
-  type StreamDataPart,
   useHybridAIQuery,
 } from '@/hooks/ai/useHybridAIQuery';
 import { logger } from '@/lib/logging';
@@ -35,13 +34,11 @@ import { useChatHistory } from './core/useChatHistory';
 import { useChatQueue } from './core/useChatQueue';
 import { useChatSession } from './core/useChatSession';
 import { useChatSessionState } from './core/useChatSessionState';
+import { useAIChatHybridCallbacks } from './useAIChatHybridCallbacks';
 import { useDeferredMessageMetadata } from './useDeferredMessageMetadata';
+import { useEnhancedChatMessages } from './useEnhancedChatMessages';
 import type { FileAttachment } from './useFileAttachments';
-import {
-  convertThinkingStepsToUI,
-  transformMessages,
-} from './utils/message-helpers';
-import { handleStreamDataPart } from './utils/stream-data-handler';
+import { convertThinkingStepsToUI } from './utils/message-helpers';
 
 // Re-export for backwards compatibility
 export { convertThinkingStepsToUI };
@@ -198,6 +195,21 @@ export function useAIChatCore(
     import('./useDeferredMessageMetadata').DeferredMetadataHandlers | null
   >(null);
 
+  const messagesRef = useRef<ReturnType<typeof useHybridAIQuery>['messages']>(
+    []
+  );
+
+  const hybridCallbacks = useAIChatHybridCallbacks({
+    onMessageSend,
+    pendingQueryRef,
+    deferredHandlersRef,
+    messagesRef,
+    setError,
+    setCurrentAgentStatus,
+    setCurrentHandoff,
+    setStreamRagSources,
+  });
+
   const {
     sendQuery,
     executeQuery,
@@ -215,64 +227,13 @@ export function useAIChatCore(
     skipClarification,
     dismissClarification,
   } = useHybridAIQuery({
-    sessionId: sessionId,
+    sessionId,
     webSearchEnabled,
     ragEnabled,
-    onStreamFinish: () => {
-      onMessageSend?.(pendingQueryRef.current);
-      setError(null);
-      pendingQueryRef.current = '';
-      // 🎯 스트리밍 완료 시 상태 초기화
-      setCurrentAgentStatus(null);
-      setCurrentHandoff(null);
-    },
-    onJobResult: (result) => {
-      onMessageSend?.(pendingQueryRef.current);
-      if (result.success) {
-        setError(null);
-      } else if (result.error) {
-        setError(result.error);
-      }
-      pendingQueryRef.current = '';
-      if (process.env.NODE_ENV === 'development') {
-        logger.info('📦 [Job Queue] Result received:', result.success);
-      }
-    },
-    onProgress: (progress) => {
-      if (process.env.NODE_ENV === 'development') {
-        logger.info(
-          `📊 [Job Queue] Progress: ${progress.progress}% - ${progress.stage}`
-        );
-      }
-    },
-    // 🎯 실시간 SSE 이벤트 처리 (agent_status, handoff)
-    onData: (dataPart: StreamDataPart) => {
-      const dh = deferredHandlersRef.current;
-      if (!dh) return;
-      handleStreamDataPart(dataPart, {
-        setCurrentAgentStatus,
-        setCurrentHandoff,
-        setMessageTraceId: dh.setMessageTraceId,
-        setStreamRagSources,
-        getPendingToolResults: dh.getPendingToolResults,
-        setPendingToolResults: dh.setPendingToolResults,
-        getPendingMessageMetadata: dh.getPendingMessageMetadata,
-        setPendingMessageMetadata: dh.setPendingMessageMetadata,
-        setDeferredAssistantMetadata: dh.setDeferredAssistantMetadata,
-        setDeferredAssistantToolResults: dh.setDeferredAssistantToolResults,
-        getMessages: () => messagesRef.current,
-      });
-    },
+    ...hybridCallbacks,
   });
 
-  const messagesRef = useRef(messages);
-  useEffect(() => {
-    messagesRef.current = messages;
-  }, [messages]);
-
-  // ============================================================================
-  // Deferred Metadata Hook (flush effect runs inside this hook)
-  // ============================================================================
+  messagesRef.current = messages;
 
   const {
     streamTraceIds,
@@ -282,7 +243,6 @@ export function useAIChatCore(
     resetDeferredMetadata,
   } = useDeferredMessageMetadata(messages);
 
-  // Keep ref in sync so onData closure can always reach the latest handlers
   deferredHandlersRef.current = deferredHandlers;
 
   useEffect(() => {
@@ -303,27 +263,17 @@ export function useAIChatCore(
   // Message Transformation
   // ============================================================================
 
-  const enhancedMessages = useMemo<EnhancedChatMessage[]>(() => {
-    return transformMessages(messages, {
-      isLoading: hybridIsLoading,
-      currentMode: currentMode ?? undefined,
-      traceIdByMessageId: streamTraceIds,
-      deferredAssistantMetadataByMessageId,
-      deferredToolResultsByMessageId,
-      streamRagSources:
-        streamRagSources.length > 0 ? streamRagSources : undefined,
-      ragEnabled,
-    });
-  }, [
+  const enhancedMessages = useEnhancedChatMessages({
     messages,
-    hybridIsLoading,
-    currentMode,
-    streamTraceIds,
+    isLoading: hybridIsLoading,
+    currentMode: currentMode ?? undefined,
+    traceIdByMessageId: streamTraceIds,
     deferredAssistantMetadataByMessageId,
     deferredToolResultsByMessageId,
-    streamRagSources,
+    streamRagSources:
+      streamRagSources.length > 0 ? streamRagSources : undefined,
     ragEnabled,
-  ]);
+  });
 
   // 🧩 History Hook (Needs messages from hybrid query)
   const { clearHistory } = useChatHistory({
