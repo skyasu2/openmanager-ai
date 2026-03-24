@@ -1,0 +1,105 @@
+{
+  "runId": "QA-20260324-0174",
+  "recordedAt": "2026-03-24T05:13:06.470Z",
+  "recordedAtKst": "2026-03-24 14:13:06 KST",
+  "runTitle": "Vercel Production QA - parity metadata after type-fix deploy",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_ANeQLU3AwWoRoZBN8P9BDUYfKgWB",
+    "deploymentUrl": "https://openmanager-9dkudg0e0-skyasus-projects.vercel.app",
+    "commitSha": "55959a00292e79d2516643aa290d01e87d0d5178"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "coveragePacks": ["dashboard-core", "ai-core"],
+  "coveredSurfaces": [
+    "/dashboard",
+    "/api/health?service=parity",
+    "Vercel production deploy readiness after streaming parity type fix",
+    "AI sidebar simple streaming query",
+    "analysis detail parity metadata visibility"
+  ],
+  "skippedSurfaces": [],
+  "checks": {
+    "total": 5,
+    "passed": 4,
+    "failed": 1
+  },
+  "expertAssessments": [],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-03-24T14:13:00+09:00",
+      "summary": "Current billing period reviewed after type-fix production QA; effective total 17.2913 USD and billed cost 0.0000.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "Production AI detail view after type-fix deploy still missing parity metadata block",
+      "path": "artifacts/playwright/parity-detail-metadata-missing-2026-03-24.png"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "streaming-parity-type-build-fix",
+      "title": "Streaming parity deferred metadata type mismatch fix builds on production",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "Vercel production deployment dpl_ANeQLU3AwWoRoZBN8P9BDUYfKgWB reached READY for commit 55959a002 after the previous 8adffda12 build failure.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [
+    {
+      "id": "frontend-ai-data-parity-gate",
+      "title": "프론트엔드 표시 상태와 AI 분석 상태 동일 슬롯 참조 검증",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "reports/qa/runs/2026/qa-run-QA-20260324-0173.json",
+      "note": "After commit 55959a002 and production deployment dpl_ANeQLU3AwWoRoZBN8P9BDUYfKgWB reached READY, dashboard slot label and /api/health?service=parity still aligned, but a fresh streaming AI answer for cache-redis-dc1-01 memory usage still rendered only '데이터: 일반 대화 응답 / 엔진: Streaming AI' in the analysis detail without the parity metadata contract block.",
+      "owner": "codex",
+      "status": "pending",
+      "policyNote": ""
+    }
+  ],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Verified the previous Vercel build blocker from commit 8adffda12 was removed: deployment dpl_ANeQLU3AwWoRoZBN8P9BDUYfKgWB for commit 55959a002 reached READY and was promoted to openmanager-ai.vercel.app.",
+    "Verified /dashboard rendered 'Synthetic OTel snapshot · 14:10 KST (slot 85/143)' after the new deployment became active.",
+    "Verified /api/health?service=parity returned globalSlotIndex=84 slightly before the query and the dashboard later advanced to slot 85 as the 10-minute boundary changed, which is within the documented tolerance window.",
+    "Verified a fresh AI sidebar query 'cache-redis-dc1-01 메모리 사용률 몇 %야?' returned a successful streaming answer on production after the Cloud Run fallback fix and frontend type-fix deployment.",
+    "Observed that '분석 근거 상세 보기' still shows only generic data/engine labels and does not render the parity metadata contract block for the new streaming response, so the frontend-ai-data-parity-gate remains open."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Dashboard URL",
+      "url": "https://openmanager-ai.vercel.app/dashboard"
+    },
+    {
+      "type": "general",
+      "label": "Production deployment preview URL",
+      "url": "https://openmanager-9dkudg0e0-skyasus-projects.vercel.app/"
+    }
+  ]
+}
