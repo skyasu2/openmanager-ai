@@ -1,28 +1,28 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-24 16:57:30 KST
+> Generated at: 2026-03-24 18:06:57 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 176 |
-| Total Checks | 1294 |
-| Passed | 1235 |
+| Total Runs | 177 |
+| Total Checks | 1300 |
+| Passed | 1241 |
 | Failed | 55 |
-| Completed Items | 243 |
-| Pending Items | 1 |
+| Completed Items | 244 |
+| Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 8 |
 | Expert Domains Tracked | 6 |
 | Expert Open Gaps | 0 |
-| Completion Rate | 99.59% |
-| Last Run | QA-20260324-0177 (2026-03-24T07:57:28.735Z) |
+| Completion Rate | 100% |
+| Last Run | QA-20260324-0178 (2026-03-24T09:06:55.843Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260324-0177 (2026-03-24T07:57:28.735Z)
+Latest run: QA-20260324-0178 (2026-03-24T09:06:55.843Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -32,15 +32,15 @@ Latest run: QA-20260324-0177 (2026-03-24T07:57:28.735Z)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period reviewed after the false realtime-analysis fix deploy; effective total 17.9596 USD and billed cost 0.0000. |
+| vercel | cli | checked | normal | Current billing period reviewed after the snapshot-label parity fix deploy; effective total 17.9600 USD and billed cost 0.0000. |
 
 ## Coverage (Latest Run)
 
 - Scope: targeted
 - Release-Facing: no
-- Deployment: dpl_57ta8t6AHtXrhZPWXWdzM7np8SQs / SHA a4c37c8c
+- Deployment: dpl_yBz3f9acR8Ghnybs9yXwrrxBmCEH / SHA 63b6bf34
 - Coverage Packs: dashboard-core, ai-core
-- Covered Surfaces: /dashboard, production deploy readiness for false realtime-analysis fix, dashboard raw metric label and slot, AI sidebar fresh streaming query, assistant response data-source badge honesty, analysis detail state after fresh query
+- Covered Surfaces: /dashboard, production deploy readiness for dashboard snapshot label pin, dashboard dataSlotInfo label (Synthetic OTel snapshot · 18:00 KST slot 108/143), dashboard raw metric (cache-redis-dc1-01 MEM 82%), parity health API ({ globalSlotIndex: 108, minuteOfDay: 1080 }), AI fresh query answer (cache-redis-dc1-01 memory 82%), AI getServerMetrics parity contract ({ slotIndex: 108, minuteOfDay: 1080, timeLabel: 18:00 KST })
 - Skipped Surfaces: -
 
 ## Links (Latest Run)
@@ -48,13 +48,13 @@ Latest run: QA-20260324-0177 (2026-03-24T07:57:28.735Z)
 | Type | Label | URL | Note |
 |---|---|---|---|
 | general | Dashboard URL | [link](https://openmanager-ai.vercel.app/dashboard) | - |
-| general | Production deployment preview URL | [link](https://openmanager-d3fwdyat2-skyasus-projects.vercel.app/) | - |
+| general | Production deployment preview URL | [link](https://openmanager-5n4idmkkh-skyasus-projects.vercel.app/) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | False realtime-analysis badge removed but AI/dashboard parity mismatch remains | `artifacts/playwright/parity-badge-honest-but-mismatch-2026-03-24.png` | - |
+| playwright-screenshot | Production parity gate closed with slot 108 and MEM 82% | `artifacts/playwright/parity-gate-closed-production-2026-03-24.png` | - |
 
 ## Expert Domain Open Gaps
 
@@ -62,7 +62,7 @@ Latest run: QA-20260324-0177 (2026-03-24T07:57:28.735Z)
 
 ## Pending Improvements
 
-- [P1] frontend-ai-data-parity-gate: 프론트엔드 표시 상태와 AI 분석 상태 동일 슬롯 참조 검증 (seen 6회, last QA-20260324-0177)
+- None
 
 ## Deferred Improvements
 
@@ -173,6 +173,7 @@ Latest run: QA-20260324-0177 (2026-03-24T07:57:28.735Z)
 - feature-dod-vitals-integration: vitals:integration 통합 실행 통과 (completed 1회, last QA-20260228-0028)
 - feedback-trace-links-exposed: Feedback API direct trace links exposed for operator follow-up (completed 1회, last QA-20260322-0156)
 - feedback-trace-ui-link-runtime-availability: Feedback API direct trace UI link runtime availability (completed 1회, last QA-20260322-0159)
+- frontend-ai-data-parity-gate: 프론트엔드 표시 상태와 AI 분석 상태 동일 슬롯 참조 검증 (completed 2회, last QA-20260324-0178)
 - frontend-landing-v880: Landing page v8.8.0 정상 렌더링 (completed 2회, last QA-20260314-0097)
 - guest-auth-proof-cookie: 게스트 PIN 로그인 후 auth_proof 쿠키 발급 정상 (completed 2회, last QA-20260314-0097)
 - guest-dashboard-auth-check: 게스트 대시보드 로컬 인증 체크 우회 보완 (completed 1회, last QA-20260310-0078)
@@ -336,6 +337,7 @@ Latest run: QA-20260324-0177 (2026-03-24T07:57:28.735Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260324-0178 | 2026-03-24T09:06:55.843Z | targeted | no | Vercel Production QA - frontend/AI parity gate closed after snapshot label pin | 6 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260324-0177 | 2026-03-24T07:57:28.735Z | targeted | no | Vercel Production QA - false realtime-analysis badge removed but parity mismatch remains | 6 | 0 | 1 | 0 | 0 | 0 |
 | QA-20260324-0176 | 2026-03-24T07:35:13.658Z | targeted | no | Vercel Production QA - parity gate still open after analysis detail patch | 6 | 0 | 1 | 0 | 0 | 0 |
 | QA-20260324-0175 | 2026-03-24T05:45:00.758Z | targeted | no | Vercel Production QA - deferred parity metadata preserved but detail contract still incomplete | 6 | 1 | 1 | 0 | 0 | 0 |
@@ -355,5 +357,4 @@ Latest run: QA-20260324-0177 (2026-03-24T07:57:28.735Z)
 | QA-20260322-0161 | 2026-03-22T14:52:53.194Z | targeted | no | Vercel Playwright QA - Data Source Parity Metadata (SHA 41e8888d4) | 6 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260322-0160 | 2026-03-22T07:26:30.735Z | targeted | no | CI Manual Feedback Trace Status QA (run #23398040200) | 1 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260322-0159 | 2026-03-22T05:18:39.374Z | targeted | no | Production Feedback Trace URL Status E2E - Runtime Availability Explicit | 5 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260322-0158 | 2026-03-22T04:24:54.377Z | targeted | no | Production Feedback Trace UI Link E2E - Direct Trace URL Still Unavailable | 5 | 0 | 1 | 0 | 0 | 1 |
 
