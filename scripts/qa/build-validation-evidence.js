@@ -24,10 +24,18 @@ function formatEvidenceDate(dateString) {
   }
 
   const date = new Date(dateString);
+  if (Number.isNaN(date.getTime())) {
+    return {
+      iso: null,
+      short: 'invalid',
+      long: 'Invalid date',
+    };
+  }
+  const iso = date.toISOString();
 
   return {
-    iso: date.toISOString(),
-    short: date.toISOString().slice(0, 10),
+    iso,
+    short: iso.slice(0, 10),
     long: date.toLocaleDateString('en-US', {
       month: 'long',
       day: 'numeric',

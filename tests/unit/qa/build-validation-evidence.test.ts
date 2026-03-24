@@ -41,6 +41,12 @@ describe('build-validation-evidence', () => {
       long: 'Latest',
     });
 
+    expect(formatEvidenceDate('not-a-date')).toEqual({
+      iso: null,
+      short: 'invalid',
+      long: 'Invalid date',
+    });
+
     const formatted = formatEvidenceDate('2026-03-25T00:00:00.000Z');
     expect(formatted.iso).toBe('2026-03-25T00:00:00.000Z');
     expect(formatted.short).toBe('2026-03-25');
