@@ -1,28 +1,28 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-24 14:13:07 KST
+> Generated at: 2026-03-24 14:45:01 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 173 |
-| Total Checks | 1276 |
-| Passed | 1221 |
-| Failed | 51 |
-| Completed Items | 242 |
+| Total Runs | 174 |
+| Total Checks | 1282 |
+| Passed | 1226 |
+| Failed | 52 |
+| Completed Items | 243 |
 | Pending Items | 1 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 8 |
 | Expert Domains Tracked | 6 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 99.59% |
-| Last Run | QA-20260324-0174 (2026-03-24T05:13:06.470Z) |
+| Last Run | QA-20260324-0175 (2026-03-24T05:45:00.758Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260324-0174 (2026-03-24T05:13:06.470Z)
+Latest run: QA-20260324-0175 (2026-03-24T05:45:00.758Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -32,15 +32,15 @@ Latest run: QA-20260324-0174 (2026-03-24T05:13:06.470Z)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period reviewed after type-fix production QA; effective total 17.2913 USD and billed cost 0.0000. |
+| vercel | cli | checked | normal | Current billing period reviewed before production parity-detail recheck; effective total 17.2913 USD and billed cost 0.0000. |
 
 ## Coverage (Latest Run)
 
 - Scope: targeted
 - Release-Facing: no
-- Deployment: dpl_ANeQLU3AwWoRoZBN8P9BDUYfKgWB / SHA 55959a00
+- Deployment: dpl_FZkq9Qap3vNgz2SEo1VocAvitB9V / SHA f2358d86
 - Coverage Packs: dashboard-core, ai-core
-- Covered Surfaces: /dashboard, /api/health?service=parity, Vercel production deploy readiness after streaming parity type fix, AI sidebar simple streaming query, analysis detail parity metadata visibility
+- Covered Surfaces: /dashboard, production deploy readiness for deferred parity metadata fix, dashboard slot label global 0-143, AI sidebar fresh streaming query, assistant response data-source promotion, analysis detail parity metadata visibility
 - Skipped Surfaces: -
 
 ## Links (Latest Run)
@@ -48,13 +48,13 @@ Latest run: QA-20260324-0174 (2026-03-24T05:13:06.470Z)
 | Type | Label | URL | Note |
 |---|---|---|---|
 | general | Dashboard URL | [link](https://openmanager-ai.vercel.app/dashboard) | - |
-| general | Production deployment preview URL | [link](https://openmanager-9dkudg0e0-skyasus-projects.vercel.app/) | - |
+| general | Production deployment preview URL | [link](https://openmanager-cfk7fgqpy-skyasus-projects.vercel.app/) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | Production AI detail view after type-fix deploy still missing parity metadata block | `artifacts/playwright/parity-detail-metadata-missing-2026-03-24.png` | - |
+| playwright-screenshot | Production AI detail view after deferred parity metadata preserve fix | `artifacts/playwright/parity-detail-data-source-only-2026-03-24.png` | - |
 
 ## Expert Domain Open Gaps
 
@@ -62,7 +62,7 @@ Latest run: QA-20260324-0174 (2026-03-24T05:13:06.470Z)
 
 ## Pending Improvements
 
-- [P1] frontend-ai-data-parity-gate: 프론트엔드 표시 상태와 AI 분석 상태 동일 슬롯 참조 검증 (seen 3회, last QA-20260324-0174)
+- [P1] frontend-ai-data-parity-gate: 프론트엔드 표시 상태와 AI 분석 상태 동일 슬롯 참조 검증 (seen 4회, last QA-20260324-0175)
 
 ## Deferred Improvements
 
@@ -263,6 +263,7 @@ Latest run: QA-20260324-0174 (2026-03-24T05:13:06.470Z)
 - storybook-react-vite-migration: Storybook Next.js preset 제거 및 react-vite 전환 (completed 1회, last QA-20260315-0099)
 - storybook-sb-mock-fix: sb.mock()을 preview.ts로 이동하여 Storybook v10 호환성 수정 (completed 1회, last QA-20260302-0043)
 - storybook-smoke-script-stable-port: Storybook smoke 테스트 스크립트 안정화 (completed 1회, last QA-20260315-0102)
+- streaming-analysis-basis-data-source-promotion: 스트리밍 AI 응답의 데이터 소스 라벨을 실시간 데이터 분석으로 승격 (completed 1회, last QA-20260324-0175)
 - streaming-parity-type-build-fix: Streaming parity deferred metadata type mismatch fix builds on production (completed 1회, last QA-20260324-0174)
 - system-boot-api-checks: 시스템 부트 API 존재성/헬스 체크 (completed 2회, last QA-20260302-0039)
 - system-boot-redirect: 시스템 시작 대시보드 리다이렉트 (completed 1회, last QA-20260301-0035)
@@ -335,6 +336,7 @@ Latest run: QA-20260324-0174 (2026-03-24T05:13:06.470Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260324-0175 | 2026-03-24T05:45:00.758Z | targeted | no | Vercel Production QA - deferred parity metadata preserved but detail contract still incomplete | 6 | 1 | 1 | 0 | 0 | 0 |
 | QA-20260324-0174 | 2026-03-24T05:13:06.470Z | targeted | no | Vercel Production QA - parity metadata after type-fix deploy | 5 | 1 | 1 | 0 | 0 | 0 |
 | QA-20260324-0173 | 2026-03-24T00:33:16.954Z | targeted | no | Vercel Production QA - frontend/AI parity gate smoke | 5 | 0 | 1 | 0 | 0 | 0 |
 | QA-20260324-0172 | 2026-03-23T17:00:59.400Z | targeted | no | Validation stale banner visible path local proof | 1 | 0 | 0 | 0 | 0 | 0 |
@@ -354,5 +356,4 @@ Latest run: QA-20260324-0174 (2026-03-24T05:13:06.470Z)
 | QA-20260322-0158 | 2026-03-22T04:24:54.377Z | targeted | no | Production Feedback Trace UI Link E2E - Direct Trace URL Still Unavailable | 5 | 0 | 1 | 0 | 0 | 1 |
 | QA-20260322-0157 | 2026-03-22T03:21:01.682Z | targeted | no | Production QA - Portfolio Negative Impression Fixes (3,4,6) | 6 | 3 | 0 | 0 | 0 | 0 |
 | QA-20260322-0156 | 2026-03-22T00:09:47.421Z | targeted | no | Production AI Feedback Trace Links E2E - Direct Trace URLs Returned | 6 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260322-0155 | 2026-03-21T17:32:57.012Z | targeted | no | Production AI Negative Feedback Trace E2E - TraceId Preserved + Feedback Success | 5 | 1 | 0 | 0 | 0 | 0 |
 

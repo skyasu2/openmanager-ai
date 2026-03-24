@@ -1,0 +1,106 @@
+{
+  "runId": "QA-20260324-0175",
+  "recordedAt": "2026-03-24T05:45:00.758Z",
+  "recordedAtKst": "2026-03-24 14:45:00 KST",
+  "runTitle": "Vercel Production QA - deferred parity metadata preserved but detail contract still incomplete",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_FZkq9Qap3vNgz2SEo1VocAvitB9V",
+    "deploymentUrl": "https://openmanager-cfk7fgqpy-skyasus-projects.vercel.app",
+    "commitSha": "f2358d86edc1552f946551c6f199816eb4fbcbb3"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "coveragePacks": ["dashboard-core", "ai-core"],
+  "coveredSurfaces": [
+    "/dashboard",
+    "production deploy readiness for deferred parity metadata fix",
+    "dashboard slot label global 0-143",
+    "AI sidebar fresh streaming query",
+    "assistant response data-source promotion",
+    "analysis detail parity metadata visibility"
+  ],
+  "skippedSurfaces": [],
+  "checks": {
+    "total": 6,
+    "passed": 5,
+    "failed": 1
+  },
+  "expertAssessments": [],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-03-24T14:43:00+09:00",
+      "summary": "Current billing period reviewed before production parity-detail recheck; effective total 17.2913 USD and billed cost 0.0000.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "Production AI detail view after deferred parity metadata preserve fix",
+      "path": "artifacts/playwright/parity-detail-data-source-only-2026-03-24.png"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "streaming-analysis-basis-data-source-promotion",
+      "title": "스트리밍 AI 응답의 데이터 소스 라벨을 실시간 데이터 분석으로 승격",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Fresh production AI query for cache-redis-dc1-01 now renders '서버 실시간 데이터 분석' instead of the previous generic '일반 대화 응답' label after commit f2358d86e.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [
+    {
+      "id": "frontend-ai-data-parity-gate",
+      "title": "프론트엔드 표시 상태와 AI 분석 상태 동일 슬롯 참조 검증",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "After commit f2358d86e and deployment dpl_FZkq9Qap3vNgz2SEo1VocAvitB9V reached READY, a fresh streaming AI answer now promotes the analysis basis label to '서버 실시간 데이터 분석', but '분석 근거 상세 보기' still shows only data/engine/period rows without the slot/dataSource parity contract block.",
+      "owner": "",
+      "status": "pending",
+      "policyNote": ""
+    }
+  ],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Verified the latest Vercel production deployment dpl_FZkq9Qap3vNgz2SEo1VocAvitB9V for commit f2358d86e reached READY and was promoted to openmanager-ai.vercel.app.",
+    "Verified /dashboard rendered 'Synthetic OTel snapshot · 14:40 KST (slot 88/143)' during the production run.",
+    "Verified a fresh AI sidebar query 'cache-redis-dc1-01 메모리 사용률 몇 %야?' returned a successful streaming answer on production.",
+    "Verified the assistant response metadata badge now renders 'Streaming AI · 서버 실시간 데이터 분석'.",
+    "Observed that '분석 근거 상세 보기' still renders only data/engine/period rows and does not expose the slot/dataSource parity contract block, so the frontend-ai-data-parity-gate remains open."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Dashboard URL",
+      "url": "https://openmanager-ai.vercel.app/dashboard"
+    },
+    {
+      "type": "general",
+      "label": "Production deployment preview URL",
+      "url": "https://openmanager-cfk7fgqpy-skyasus-projects.vercel.app/"
+    }
+  ]
+}
