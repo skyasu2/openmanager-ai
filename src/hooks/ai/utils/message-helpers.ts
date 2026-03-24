@@ -73,6 +73,22 @@ const LEGACY_PARITY_PATTERNS = [
   /전체 응답의 기준 시간 슬롯/i,
 ];
 
+const SERVER_ANALYSIS_TOOL_NAMES = new Set([
+  'getServerMetrics',
+  'getServerMetricsAdvanced',
+  'getServerByGroup',
+  'getServerByGroupAdvanced',
+  'filterServers',
+  'getServerLogs',
+  'detectAnomalies',
+  'detectAnomaliesAllServers',
+  'predictTrends',
+  'analyzePattern',
+  'correlateMetrics',
+  'findRootCause',
+  'buildIncidentTimeline',
+]);
+
 function getMessageMetadata(message: UIMessage): MessageMetadata | undefined {
   if (
     'metadata' in message &&
@@ -132,6 +148,12 @@ function isToolPartWithCallId(
 
 function extractToolOutput(toolPart: ToolPartWithCallId): unknown {
   return toolPart.output ?? toolPart.result;
+}
+
+function getCompletedToolNames(toolParts: ToolPartWithCallId[]): string[] {
+  return toolParts
+    .filter((part) => extractToolOutput(part) !== undefined)
+    .map((part) => part.type.slice(5));
 }
 
 function createDeferredToolParts(
@@ -378,10 +400,13 @@ export function transformUIMessageToEnhanced(
   let analysisBasis: AnalysisBasis | undefined;
   if (message.role === 'assistant') {
     const isJobQueue = currentMode === 'job-queue';
-    const hasTools = toolParts.length > 0;
 
     // 실제 호출된 도구 이름 추출
     const calledToolNames = toolParts.map((p) => p.type.slice(5));
+    const completedToolNames = getCompletedToolNames(toolParts);
+    const hasServerAnalysisEvidence = completedToolNames.some((toolName) =>
+      SERVER_ANALYSIS_TOOL_NAMES.has(toolName)
+    );
 
     // RAG 출처 추출 (job-queue: metadata, streaming: streamRagSources fallback)
     const ragSources =
@@ -397,7 +422,7 @@ export function transformUIMessageToEnhanced(
       dataSource = `웹 검색 (${webSources.length}건)`;
     } else if (hasRag) {
       dataSource = `RAG 지식베이스 검색 (${ragSources.length}건)`;
-    } else if (hasTools) {
+    } else if (hasServerAnalysisEvidence) {
       dataSource = '서버 실시간 데이터 분석';
     } else if (ragEnabled) {
       dataSource = '일반 대화 응답 (RAG 활성)';
@@ -408,9 +433,9 @@ export function transformUIMessageToEnhanced(
     analysisBasis = {
       dataSource,
       engine: isJobQueue ? 'Cloud Run AI' : 'Streaming AI',
-      ragUsed: hasRag || hasTools || hasWebSearch,
+      ragUsed: hasRag || hasServerAnalysisEvidence || hasWebSearch,
       toolsCalled: calledToolNames.length > 0 ? calledToolNames : undefined,
-      timeRange: hasTools ? '최근 1시간' : undefined,
+      timeRange: hasServerAnalysisEvidence ? '최근 1시간' : undefined,
       ragSources: hasRag ? ragSources : undefined,
     };
   }

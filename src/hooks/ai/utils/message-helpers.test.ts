@@ -334,6 +334,45 @@ describe('transformMessages', () => {
       '"slotIndex": 88'
     );
   });
+
+  it('does not promote finalAnswer-only tool output to server realtime analysis', () => {
+    const messages = transformMessages(
+      [
+        createMessage({
+          id: 'u1',
+          role: 'user',
+          text: 'cache-redis-dc1-01 메모리 사용률 몇 %야?',
+        }),
+        createMessage({
+          id: 'a1',
+          role: 'assistant',
+          text: 'cache-redis-dc1-01의 메모리 사용률은 32%입니다.',
+          parts: [
+            {
+              type: 'text',
+              text: 'cache-redis-dc1-01의 메모리 사용률은 32%입니다.',
+            },
+            {
+              type: 'tool-finalAnswer',
+              toolCallId: 'tool-final-1',
+              output: {
+                answer: 'cache-redis-dc1-01의 메모리 사용률은 32%입니다.',
+              },
+            },
+          ],
+        }),
+      ],
+      { isLoading: false, currentMode: 'streaming' }
+    );
+
+    const assistant = messages.find((m) => m.id === 'a1');
+    expect(assistant?.metadata?.analysisBasis?.dataSource).toBe(
+      '일반 대화 응답'
+    );
+    expect(assistant?.metadata?.analysisBasis?.ragUsed).toBe(false);
+    expect(assistant?.metadata?.analysisBasis?.timeRange).toBeUndefined();
+    expect(assistant?.metadata?.assistantResponseView).toBeUndefined();
+  });
 });
 
 describe('normalizeAIResponse', () => {
