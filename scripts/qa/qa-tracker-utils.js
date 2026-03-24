@@ -1,4 +1,10 @@
 function recalculateSummary(tracker) {
+  tracker.runs = Array.isArray(tracker.runs) ? tracker.runs : [];
+  tracker.items =
+    tracker.items && typeof tracker.items === 'object' ? tracker.items : {};
+  tracker.experts =
+    tracker.experts && typeof tracker.experts === 'object' ? tracker.experts : {};
+
   const totalRuns = tracker.runs.length;
   const totalChecks = tracker.runs.reduce(
     (sum, run) => sum + (run.checks?.total || 0),
@@ -57,6 +63,10 @@ function repairTrackerDerivedFields(tracker) {
   tracker.meta = tracker.meta || {};
   tracker.sequence = tracker.sequence || {};
   tracker.runs = Array.isArray(tracker.runs) ? tracker.runs : [];
+  tracker.items =
+    tracker.items && typeof tracker.items === 'object' ? tracker.items : {};
+  tracker.experts =
+    tracker.experts && typeof tracker.experts === 'object' ? tracker.experts : {};
 
   const lastRun = tracker.runs[tracker.runs.length - 1] || null;
   const maxRunNumber = tracker.runs.reduce((max, run) => {
