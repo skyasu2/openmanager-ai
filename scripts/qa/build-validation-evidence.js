@@ -41,6 +41,10 @@ function readJsonFile(filePath) {
   return JSON.parse(fs.readFileSync(filePath, 'utf8'));
 }
 
+function shouldWriteValidationEvidenceSnapshot(trackerPath = TRACKER_PATH) {
+  return path.resolve(trackerPath) === path.resolve(TRACKER_PATH);
+}
+
 function buildValidationEvidenceSnapshot(tracker) {
   const summary = tracker?.summary;
   const runs = Array.isArray(tracker?.runs) ? tracker.runs : [];
@@ -126,6 +130,7 @@ module.exports = {
   OUTPUT_PATH,
   TRACKER_PATH,
   buildValidationEvidenceSnapshot,
+  shouldWriteValidationEvidenceSnapshot,
   writeValidationEvidenceSnapshot,
 };
 

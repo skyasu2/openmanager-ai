@@ -5,7 +5,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const {
   OUTPUT_PATH: VALIDATION_EVIDENCE_OUTPUT_PATH,
-  TRACKER_PATH: VALIDATION_EVIDENCE_TRACKER_PATH,
+  shouldWriteValidationEvidenceSnapshot,
   writeValidationEvidenceSnapshot,
 } = require('./build-validation-evidence');
 const {
@@ -149,10 +149,6 @@ function formatGeneratedFiles(filePaths) {
     const reason = error instanceof Error ? error.message : String(error);
     console.warn(`⚠️ Generated QA files written, but Biome format was skipped: ${reason}`);
   }
-}
-
-function shouldWriteValidationEvidenceSnapshot() {
-  return path.resolve(TRACKER_PATH) === path.resolve(VALIDATION_EVIDENCE_TRACKER_PATH);
 }
 
 function ensureDir(dirPath) {
@@ -1768,7 +1764,7 @@ function run() {
   writeJsonFile(TRACKER_PATH, tracker);
   fs.writeFileSync(STATUS_PATH, statusMarkdown(tracker), 'utf8');
   const generatedFiles = [runFilePath, TRACKER_PATH, STATUS_PATH];
-  if (shouldWriteValidationEvidenceSnapshot()) {
+  if (shouldWriteValidationEvidenceSnapshot(TRACKER_PATH)) {
     writeValidationEvidenceSnapshot({ trackerPath: TRACKER_PATH });
     generatedFiles.push(VALIDATION_EVIDENCE_OUTPUT_PATH);
   }

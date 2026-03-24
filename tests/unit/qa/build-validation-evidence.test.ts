@@ -11,6 +11,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 const require = createRequire(import.meta.url);
 const {
   buildValidationEvidenceSnapshot,
+  shouldWriteValidationEvidenceSnapshot,
   writeValidationEvidenceSnapshot,
 } = require('../../../scripts/qa/build-validation-evidence.js');
 
@@ -143,6 +144,18 @@ describe('build-validation-evidence', () => {
     expect(result.outputPath).toBe(outputPath);
     expect(writtenSnapshot.source.latestRunId).toBe('QA-20260325-0182');
     expect(writtenSnapshot.summary.totalChecks).toBe(8);
+  });
+
+  it('only writes public validation evidence for the canonical tracker path', () => {
+    const tempDir = createTempDir();
+    const canonicalTrackerPath =
+      require('../../../scripts/qa/build-validation-evidence.js').TRACKER_PATH;
+    const tempTrackerPath = join(tempDir, 'reports', 'qa', 'qa-tracker.json');
+
+    expect(shouldWriteValidationEvidenceSnapshot(canonicalTrackerPath)).toBe(
+      true
+    );
+    expect(shouldWriteValidationEvidenceSnapshot(tempTrackerPath)).toBe(false);
   });
 
   it('throws when tracker lacks the required proof/public evidence contract', () => {
