@@ -2,25 +2,25 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-03-23T17:00:59.400Z"
+    "updatedAt": "2026-03-24T00:33:16.954Z"
   },
   "sequence": {
-    "nextRunNumber": 173
+    "nextRunNumber": 174
   },
   "summary": {
-    "totalRuns": 171,
-    "totalChecks": 1266,
-    "totalPassed": 1213,
-    "totalFailed": 49,
-    "completionRate": 100,
-    "completedItems": 242,
-    "pendingItems": 0,
+    "totalRuns": 172,
+    "totalChecks": 1271,
+    "totalPassed": 1217,
+    "totalFailed": 50,
+    "completionRate": 99.59,
+    "completedItems": 241,
+    "pendingItems": 1,
     "deferredItems": 0,
     "wontFixItems": 8,
     "expertDomainsTracked": 6,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260324-0172",
-    "lastRecordedAt": "2026-03-23T17:00:59.400Z"
+    "lastRunId": "QA-20260324-0173",
+    "lastRecordedAt": "2026-03-24T00:33:16.954Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -5692,18 +5692,23 @@
       "id": "frontend-ai-data-parity-gate",
       "title": "프론트엔드 표시 상태와 AI 분석 상태 동일 슬롯 참조 검증",
       "priority": "P1",
-      "status": "completed",
+      "status": "pending",
       "firstSeenRunId": "standing-gate",
       "firstSeenAt": "2026-03-23T23:59:16.617287.000Z",
-      "lastSeenRunId": "standing-gate",
-      "lastSeenAt": "2026-03-23T23:59:16.617287.000Z",
-      "seenCount": 1,
+      "lastSeenRunId": "QA-20260324-0173",
+      "lastSeenAt": "2026-03-24T00:33:16.954Z",
+      "seenCount": 2,
       "completedCount": 1,
-      "pendingCount": 0,
+      "pendingCount": 1,
       "owner": "always-check",
       "lastEvidence": "Standing gate: GET /api/health?service=parity → slot.globalSlotIndex와 AI tool dataSlot.slotIndex 차이 ≤1 슬롯. formula=Math.floor(KST_minutes_of_day/10). 10분 경계 전후 ±1 허용. 문서: docs/guides/ai/ai-standards.md#data-parity-contract",
-      "lastNote": "QA 매 실행 시 반드시 확인. 슬롯 불일치 시 KST 변환 오류 또는 데이터 파일 문제 의심",
-      "lastStatusChangeAt": "2026-03-23T23:59:16.617287.000Z"
+      "lastNote": "Dashboard slot label and /api/health?service=parity matched globalSlotIndex=57 on production, but AI chat returned Service unavailable twice so tool dataSlot.slotIndex could not be verified in the same run.",
+      "lastStatusChangeAt": "2026-03-24T00:33:16.954Z",
+      "aliases": [],
+      "deferredCount": 0,
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "lastPolicyNote": ""
     }
   },
   "runs": [
@@ -14077,6 +14082,79 @@
       "expertNeedsImprovementCount": 0,
       "completedCount": 0,
       "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260324-0173",
+      "recordedAt": "2026-03-24T00:33:16.954Z",
+      "recordedAtKst": "2026-03-24 09:33:16 KST",
+      "title": "Vercel Production QA - frontend/AI parity gate smoke",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260324-0173.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_3Rf3DJQrTd9JB7bGAkBDeAkwVFDo",
+        "deploymentUrl": "https://openmanager-251xwxme9-skyasus-projects.vercel.app",
+        "commitSha": "9f6c31311981bf0db0d16c38ef17c5fe8c69f9dc"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "coveragePacks": ["dashboard-core", "ai-core"],
+      "coveredSurfaces": [
+        "/dashboard",
+        "dashboard slot label global 0-143 scale",
+        "/api/health?service=parity",
+        "server-card AI prefill path",
+        "AI chat parity validation attempt"
+      ],
+      "skippedSurfaces": [],
+      "checks": {
+        "total": 5,
+        "passed": 4,
+        "failed": 1
+      },
+      "expertAssessments": [],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-03-24T09:31:00+09:00",
+          "summary": "Current billing period reviewed after parity gate smoke; effective total 17.2913 USD and billed cost 0.0000.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "Dashboard slot label and AI sidebar service unavailable during parity gate check",
+          "path": "artifacts/playwright/parity-gate-ai-unavailable-2026-03-24.png"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "Dashboard URL",
+          "url": "https://openmanager-ai.vercel.app/dashboard"
+        },
+        {
+          "type": "general",
+          "label": "Production deployment preview URL",
+          "url": "https://openmanager-251xwxme9-skyasus-projects.vercel.app/"
+        }
+      ],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 1,
       "deferredCount": 0,
       "wontFixCount": 0
     }

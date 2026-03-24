@@ -1,0 +1,91 @@
+{
+  "runId": "QA-20260324-0173",
+  "recordedAt": "2026-03-24T00:33:16.954Z",
+  "recordedAtKst": "2026-03-24 09:33:16 KST",
+  "runTitle": "Vercel Production QA - frontend/AI parity gate smoke",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_3Rf3DJQrTd9JB7bGAkBDeAkwVFDo",
+    "deploymentUrl": "https://openmanager-251xwxme9-skyasus-projects.vercel.app",
+    "commitSha": "9f6c31311981bf0db0d16c38ef17c5fe8c69f9dc"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "coveragePacks": ["dashboard-core", "ai-core"],
+  "coveredSurfaces": [
+    "/dashboard",
+    "dashboard slot label global 0-143 scale",
+    "/api/health?service=parity",
+    "server-card AI prefill path",
+    "AI chat parity validation attempt"
+  ],
+  "skippedSurfaces": [],
+  "checks": {
+    "total": 5,
+    "passed": 4,
+    "failed": 1
+  },
+  "expertAssessments": [],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-03-24T09:31:00+09:00",
+      "summary": "Current billing period reviewed after parity gate smoke; effective total 17.2913 USD and billed cost 0.0000.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "Dashboard slot label and AI sidebar service unavailable during parity gate check",
+      "path": "artifacts/playwright/parity-gate-ai-unavailable-2026-03-24.png"
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [
+    {
+      "id": "frontend-ai-data-parity-gate",
+      "title": "프론트엔드 표시 상태와 AI 분석 상태 동일 슬롯 참조 검증",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "Dashboard slot label and /api/health?service=parity matched globalSlotIndex=57 on production, but AI chat returned Service unavailable twice so tool dataSlot.slotIndex could not be verified in the same run.",
+      "owner": "",
+      "status": "pending",
+      "policyNote": ""
+    }
+  ],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Verified dashboard summary rendered 'Synthetic OTel snapshot · 09:30 KST (slot 57/143)' on production after the parity slot display fix.",
+    "Verified /api/health?service=parity returned globalSlotIndex=57, slotInHour=3, hour=9, minuteOfDay=570, toleranceSlots=1, formula=Math.floor(KST_minutes_of_day / 10).",
+    "Verified server-card warning badge still opens the AI sidebar and prefills the parity check query.",
+    "Observed /api/health?service=ai => 200 and /api/ai/jobs => 201 from the browser, but the user-facing chat response still ended with 'Service unavailable' twice.",
+    "This run confirms dashboard/API parity alignment but leaves AI tool parity evidence unresolved in production."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Dashboard URL",
+      "url": "https://openmanager-ai.vercel.app/dashboard"
+    },
+    {
+      "type": "general",
+      "label": "Production deployment preview URL",
+      "url": "https://openmanager-251xwxme9-skyasus-projects.vercel.app/"
+    }
+  ]
+}

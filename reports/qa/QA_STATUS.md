@@ -1,28 +1,28 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-24 02:00:59 KST
+> Generated at: 2026-03-24 09:33:18 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 171 |
-| Total Checks | 1266 |
-| Passed | 1213 |
-| Failed | 49 |
+| Total Runs | 172 |
+| Total Checks | 1271 |
+| Passed | 1217 |
+| Failed | 50 |
 | Completed Items | 241 |
-| Pending Items | 0 |
+| Pending Items | 1 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 8 |
 | Expert Domains Tracked | 6 |
 | Expert Open Gaps | 0 |
-| Completion Rate | 100% |
-| Last Run | QA-20260324-0172 (2026-03-23T17:00:59.400Z) |
+| Completion Rate | 99.59% |
+| Last Run | QA-20260324-0173 (2026-03-24T00:33:16.954Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260324-0172 (2026-03-23T17:00:59.400Z)
+Latest run: QA-20260324-0173 (2026-03-24T00:33:16.954Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -32,28 +32,29 @@ Latest run: QA-20260324-0172 (2026-03-23T17:00:59.400Z)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| - | - | - | - | - |
+| vercel | cli | checked | normal | Current billing period reviewed after parity gate smoke; effective total 17.2913 USD and billed cost 0.0000. |
 
 ## Coverage (Latest Run)
 
 - Scope: targeted
 - Release-Facing: no
-- Deployment: SHA 8e162a75
-- Coverage Packs: core-routes-smoke
-- Covered Surfaces: validation stale banner visible path (mocked aged snapshot), ValidationEvidencePage stale warning text, validation page DOM render with generatedAt >= 7 days
-- Skipped Surfaces: vercel-production stale banner live path (fresh snapshot on current deployment), Public snapshot JSON fetch and external navigation
+- Deployment: dpl_3Rf3DJQrTd9JB7bGAkBDeAkwVFDo / SHA 9f6c3131
+- Coverage Packs: dashboard-core, ai-core
+- Covered Surfaces: /dashboard, dashboard slot label global 0-143 scale, /api/health?service=parity, server-card AI prefill path, AI chat parity validation attempt
+- Skipped Surfaces: -
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| - | - | - | - |
+| general | Dashboard URL | [link](https://openmanager-ai.vercel.app/dashboard) | - |
+| general | Production deployment preview URL | [link](https://openmanager-251xwxme9-skyasus-projects.vercel.app/) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| - | - | - | - |
+| playwright-screenshot | Dashboard slot label and AI sidebar service unavailable during parity gate check | `artifacts/playwright/parity-gate-ai-unavailable-2026-03-24.png` | - |
 
 ## Expert Domain Open Gaps
 
@@ -61,7 +62,7 @@ Latest run: QA-20260324-0172 (2026-03-23T17:00:59.400Z)
 
 ## Pending Improvements
 
-- None
+- [P1] frontend-ai-data-parity-gate: 프론트엔드 표시 상태와 AI 분석 상태 동일 슬롯 참조 검증 (seen 2회, last QA-20260324-0173)
 
 ## Deferred Improvements
 
@@ -333,6 +334,7 @@ Latest run: QA-20260324-0172 (2026-03-23T17:00:59.400Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260324-0173 | 2026-03-24T00:33:16.954Z | targeted | no | Vercel Production QA - frontend/AI parity gate smoke | 5 | 0 | 1 | 0 | 0 | 0 |
 | QA-20260324-0172 | 2026-03-23T17:00:59.400Z | targeted | no | Validation stale banner visible path local proof | 1 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260324-0171 | 2026-03-23T16:41:18.533Z | targeted | no | Vercel Production QA - validation evidence clarity smoke | 5 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260324-0170 | 2026-03-23T15:09:36.687Z | targeted | no | Vercel Production QA - validation stale banner smoke after client-side fix | 5 | 1 | 0 | 0 | 0 | 0 |
@@ -352,5 +354,4 @@ Latest run: QA-20260324-0172 (2026-03-23T17:00:59.400Z)
 | QA-20260322-0156 | 2026-03-22T00:09:47.421Z | targeted | no | Production AI Feedback Trace Links E2E - Direct Trace URLs Returned | 6 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260322-0155 | 2026-03-21T17:32:57.012Z | targeted | no | Production AI Negative Feedback Trace E2E - TraceId Preserved + Feedback Success | 5 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260322-0154 | 2026-03-21T16:33:49.267Z | targeted | no | Cloud Run Trace Link Recovery - Monitoring Trace URL Restored | 4 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260322-0153 | 2026-03-21T16:10:40.348Z | targeted | no | Production AI Feedback Trace E2E - Feedback Success + Monitoring Match | 6 | 0 | 0 | 0 | 0 | 0 |
 
