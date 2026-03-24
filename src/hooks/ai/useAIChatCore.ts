@@ -15,7 +15,13 @@
  */
 
 import type { UIMessage } from '@ai-sdk/react';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from 'react';
 import {
   type AgentStatusEventData,
   type ClarificationOption,
@@ -244,7 +250,8 @@ export function useAIChatCore(
     sendQueryRef.current = sendQuery;
   }, [sendQuery, sendQueryRef]);
 
-  useEffect(() => {
+  // Keep imperative refs aligned before async stream callbacks observe them.
+  useLayoutEffect(() => {
     messagesRef.current = messages;
     deferredHandlersRef.current = deferredHandlers;
   }, [messages, deferredHandlers]);

@@ -79,6 +79,65 @@ describe('useDeferredMessageMetadata', () => {
     expect(result.current.handlers.getPendingToolResults()).toEqual([]);
   });
 
+  it('기존 assistant가 있어도 새 assistant가 추가되면 pending metadata를 마지막 assistant에 flush한다', async () => {
+    const existingAssistant = createTextMessage(
+      'assistant-1',
+      'assistant',
+      '이전 응답'
+    );
+
+    const { result, rerender } = renderHook(
+      ({ messages }: { messages: UIMessage[] }) =>
+        useDeferredMessageMetadata(messages),
+      {
+        initialProps: {
+          messages: [
+            createTextMessage('user-1', 'user', '첫 질문'),
+            existingAssistant,
+            createTextMessage('user-2', 'user', '추가 질문'),
+          ],
+        },
+      }
+    );
+
+    act(() => {
+      result.current.handlers.setPendingMessageMetadata({
+        traceId: 'trace-flush-latest',
+        responseSummary: '최신 응답 요약',
+      });
+      result.current.handlers.setPendingToolResults(pendingToolResults);
+    });
+
+    rerender({
+      messages: [
+        createTextMessage('user-1', 'user', '첫 질문'),
+        existingAssistant,
+        createTextMessage('user-2', 'user', '추가 질문'),
+        createTextMessage('assistant-2', 'assistant', '최신 응답'),
+      ],
+    });
+
+    await waitFor(() => {
+      expect(result.current.streamTraceIds['assistant-2']).toBe(
+        'trace-flush-latest'
+      );
+    });
+
+    expect(result.current.streamTraceIds['assistant-1']).toBeUndefined();
+    expect(
+      result.current.deferredAssistantMetadataByMessageId['assistant-2']
+    ).toMatchObject({
+      traceId: 'trace-flush-latest',
+      responseSummary: '최신 응답 요약',
+    });
+    expect(
+      result.current.deferredAssistantMetadataByMessageId['assistant-1']
+    ).toBeUndefined();
+    expect(
+      result.current.deferredToolResultsByMessageId['assistant-2']
+    ).toEqual(pendingToolResults);
+  });
+
   it('기존 deferred metadata를 유지한 채 traceId와 신규 metadata를 merge한다', async () => {
     const assistantMessage = createTextMessage(
       'assistant-1',
