@@ -1,0 +1,56 @@
+{
+  "runId": "QA-20260324-0182",
+  "recordedAt": "2026-03-24T13:11:00.000Z",
+  "recordedAtKst": "2026-03-24 22:11:00 KST",
+  "runTitle": "Vercel Production QA - AI hook refactor smoke (useDeferredMessageMetadata + Codex follow-up)",
+  "owner": "claude",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "commitSha": "29f86d54ef12c808bc4b45004ae65348895e49af"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "coveragePacks": ["ai-core"],
+  "coveredSurfaces": [
+    "AI sidebar 신규 질의",
+    "deferred metadata 배지 보존",
+    "분석 근거 상세 보기 노출"
+  ],
+  "skippedSurfaces": [],
+  "checks": {
+    "total": 3,
+    "passed": 3,
+    "failed": 0
+  },
+  "expertAssessments": [],
+  "usageChecks": [],
+  "artifacts": [],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Prompt: 현재 CPU 사용률이 가장 높은 서버 3개를 알려줘",
+    "응답 정상: lb-haproxy-dc1-01(73%), api-was-dc1-01(58%), api-was-dc1-02(57%)",
+    "deferred metadata 배지 노출 확인: 'Streaming AI · 서버 실시간 데이터 분석'",
+    "분석 근거 상세 보기 클릭 후 데이터/엔진(Streaming AI RAG)/도구(서버 메트릭 상세 조회)/기간(최근 1시간) 4개 항목 모두 정상 노출",
+    "리팩토링(useDeferredMessageMetadata 분리 + useAIChatHybridCallbacks + useEnhancedChatMessages + useLayoutEffect ref 교정) 후 회귀 없음 확인"
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "PR #200",
+      "url": "https://github.com/skyasu2/openmanager-ai/pull/200"
+    },
+    {
+      "type": "general",
+      "label": "Production URL",
+      "url": "https://openmanager-ai.vercel.app/"
+    }
+  ]
+}

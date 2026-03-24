@@ -1,15 +1,15 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-24 20:45:08 KST
+> Generated at: 2026-03-24 22:48:03 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 180 |
-| Total Checks | 1313 |
-| Passed | 1253 |
+| Total Runs | 181 |
+| Total Checks | 1316 |
+| Passed | 1256 |
 | Failed | 56 |
 | Completed Items | 244 |
 | Pending Items | 0 |
@@ -18,11 +18,11 @@
 | Expert Domains Tracked | 6 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Run | QA-20260324-0181 (2026-03-24T11:45:07.871Z) |
+| Last Run | QA-20260324-0182 (2026-03-24T13:11:00.000Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260324-0181 (2026-03-24T11:45:07.871Z)
+Latest run: QA-20260324-0182 (2026-03-24T13:11:00.000Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -32,33 +32,28 @@ Latest run: QA-20260324-0181 (2026-03-24T11:45:07.871Z)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period remains normal during PR #200 post-merge production smoke; effective total 17.9600 USD and billed cost 0.0000. |
+| - | - | - | - | - |
 
 ## Coverage (Latest Run)
 
 - Scope: targeted
 - Release-Facing: no
-- Deployment: dpl_9F5TfqNdton6T8usg9P7XzH2m1nA / SHA 5bbf50c4
-- Coverage Packs: ai-core, dashboard-core
-- Covered Surfaces: main production /dashboard access, AI sidebar 신규 질의, assistant response realtime-analysis badge, assistant response detail parity contract, analysis basis detail panel, dashboard slot and parity slot consistency
+- Deployment: SHA 29f86d54
+- Coverage Packs: ai-core
+- Covered Surfaces: AI sidebar 신규 질의, deferred metadata 배지 보존, 분석 근거 상세 보기 노출
 - Skipped Surfaces: -
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | PR #200 | [link](https://github.com/skyasu2/openmanager-ai/pull/200) | - |
-| general | Production URL | [link](https://openmanager-ai.vercel.app/) | - |
-| general | Vercel deployment inspector | [link](https://vercel.com/skyasus-projects/openmanager-ai/9F5TfqNdton6T8usg9P7XzH2m1nA) | - |
+| - | - | - | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | PR #200 post-merge production AI smoke | `artifacts/playwright/production-pr200-postmerge-ai-smoke-2026-03-24.png` | - |
-| playwright-screenshot | preview-ai-smoke-5f65815b7842022a35e44b801d30f24859653f54.png | `test-results/manual-vercel/tmp-pr200-preview-ai-smoke-5d35a-nd-exposes-analysis-details-chromium/attachments/preview-ai-smoke-5f65815b7842022a35e44b801d30f24859653f54.png` | - |
-| playwright-screenshot | pr200-preview-ai-smoke.png | `test-results/manual-vercel/tmp-pr200-preview-ai-smoke-5d35a-nd-exposes-analysis-details-chromium/pr200-preview-ai-smoke.png` | - |
-| playwright-trace | tmp-pr200-preview-ai-smoke-5d35a-nd-exposes-analysis-details-chromium | `test-results/manual-vercel/tmp-pr200-preview-ai-smoke-5d35a-nd-exposes-analysis-details-chromium/trace.zip` | - |
+| - | - | - | - |
 
 ## Expert Domain Open Gaps
 
@@ -341,6 +336,7 @@ Latest run: QA-20260324-0181 (2026-03-24T11:45:07.871Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260324-0182 | 2026-03-24T13:11:00.000Z | targeted | no | Vercel Production QA - AI hook refactor smoke (useDeferredMessageMetadata + Codex follow-up) | 3 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260324-0181 | 2026-03-24T11:45:07.871Z | targeted | no | Vercel Production QA - PR #200 post-merge AI smoke | 6 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260324-0180 | 2026-03-24T11:22:06.967Z | targeted | no | Vercel Preview QA - PR #200 AI deferred metadata smoke | 5 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260324-0179 | 2026-03-24T10:48:15.267Z | targeted | no | Vercel Preview QA - PR #200 blocked by preview SSO | 2 | 0 | 0 | 0 | 0 | 0 |
@@ -360,5 +356,4 @@ Latest run: QA-20260324-0181 (2026-03-24T11:45:07.871Z)
 | QA-20260323-0165 | 2026-03-23T01:29:13.300Z | targeted | no | Production QA - server card alert badge AI prefill | 4 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260323-0164 | 2026-03-22T16:53:54.714Z | targeted | no | Production QA - AI sidebar parity contract rendering fixed | 6 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260323-0163 | 2026-03-22T15:56:07.978Z | targeted | no | Vercel Playwright QA - MEM label no-overlap on server cards (SHA 34f764ca0) | 4 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260323-0162 | 2026-03-22T15:34:58.470Z | targeted | no | Production QA - Dashboard/AI parity metadata user-facing recheck | 5 | 0 | 1 | 0 | 0 | 0 |
 

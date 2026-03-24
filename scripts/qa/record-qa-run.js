@@ -1270,6 +1270,32 @@ function recalculateSummary(tracker) {
   };
 }
 
+function extractRunNumber(runId) {
+  const match = String(runId || '').match(/-(\d+)$/);
+  return match ? Number(match[1]) : 0;
+}
+
+function repairTrackerDerivedFields(tracker) {
+  tracker.meta = tracker.meta || {};
+  tracker.sequence = tracker.sequence || {};
+  tracker.runs = Array.isArray(tracker.runs) ? tracker.runs : [];
+
+  const lastRun = tracker.runs[tracker.runs.length - 1] || null;
+  const maxRunNumber = tracker.runs.reduce((max, run) => {
+    return Math.max(max, extractRunNumber(run?.runId));
+  }, 0);
+
+  tracker.sequence.nextRunNumber = maxRunNumber > 0 ? maxRunNumber + 1 : 1;
+  if (!tracker.meta.createdAt) {
+    tracker.meta.createdAt = lastRun?.recordedAt || new Date().toISOString();
+  }
+  tracker.meta.updatedAt =
+    lastRun?.recordedAt || tracker.meta.updatedAt || new Date().toISOString();
+
+  recalculateSummary(tracker);
+  return tracker;
+}
+
 function statusMarkdown(tracker) {
   const lines = [];
   const generatedAt = nowInSeoulText(new Date());
@@ -1827,6 +1853,7 @@ function run() {
 }
 
 module.exports = {
+  repairTrackerDerivedFields,
   statusMarkdown,
 };
 

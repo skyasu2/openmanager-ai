@@ -2,7 +2,10 @@
 
 const fs = require('node:fs');
 const path = require('node:path');
-const { statusMarkdown } = require('./record-qa-run.js');
+const {
+  repairTrackerDerivedFields,
+  statusMarkdown,
+} = require('./record-qa-run.js');
 
 const TRACKER_PATH = path.resolve(process.cwd(), 'reports/qa/qa-tracker.json');
 const STATUS_PATH = path.resolve(process.cwd(), 'reports/qa/QA_STATUS.md');
@@ -27,7 +30,9 @@ function run() {
 
   const tracker = JSON.parse(fs.readFileSync(TRACKER_PATH, 'utf8'));
   const shouldWrite = args.has('--write') || args.has('--sync');
+  repairTrackerDerivedFields(tracker);
   if (shouldWrite) {
+    fs.writeFileSync(TRACKER_PATH, `${JSON.stringify(tracker, null, 2)}\n`, 'utf8');
     fs.writeFileSync(STATUS_PATH, statusMarkdown(tracker), 'utf8');
   }
   const summary = tracker.summary || {};

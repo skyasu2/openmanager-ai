@@ -2,15 +2,15 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-03-24T11:45:07.871Z"
+    "updatedAt": "2026-03-24T13:11:00.000Z"
   },
   "sequence": {
-    "nextRunNumber": 182
+    "nextRunNumber": 183
   },
   "summary": {
-    "totalRuns": 180,
-    "totalChecks": 1313,
-    "totalPassed": 1253,
+    "totalRuns": 181,
+    "totalChecks": 1316,
+    "totalPassed": 1256,
     "totalFailed": 56,
     "completionRate": 100,
     "completedItems": 244,
@@ -19,8 +19,8 @@
     "wontFixItems": 8,
     "expertDomainsTracked": 6,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260324-0181",
-    "lastRecordedAt": "2026-03-24T11:45:07.871Z"
+    "lastRunId": "QA-20260324-0182",
+    "lastRecordedAt": "2026-03-24T13:11:00.000Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -14820,6 +14820,46 @@
           "url": "https://vercel.com/skyasus-projects/openmanager-ai/9F5TfqNdton6T8usg9P7XzH2m1nA"
         }
       ],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260324-0182",
+      "recordedAt": "2026-03-24T13:11:00.000Z",
+      "recordedAtKst": "2026-03-24 22:11:00 KST",
+      "title": "Vercel Production QA - AI hook refactor smoke (useDeferredMessageMetadata + Codex follow-up)",
+      "owner": "claude",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260324-0182.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "commitSha": "29f86d54ef12c808bc4b45004ae65348895e49af"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "coveragePacks": ["ai-core"],
+      "coveredSurfaces": [
+        "AI sidebar 신규 질의",
+        "deferred metadata 배지 보존",
+        "분석 근거 상세 보기 노출"
+      ],
+      "skippedSurfaces": [],
+      "checks": {
+        "total": 3,
+        "passed": 3,
+        "failed": 0
+      },
+      "expertAssessments": [],
+      "usageChecks": [],
+      "artifacts": [],
       "expertCount": 0,
       "expertNeedsImprovementCount": 0,
       "completedCount": 0,
