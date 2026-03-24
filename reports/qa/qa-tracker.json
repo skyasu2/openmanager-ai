@@ -2,15 +2,15 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-03-24T11:22:06.967Z"
+    "updatedAt": "2026-03-24T11:45:07.871Z"
   },
   "sequence": {
-    "nextRunNumber": 181
+    "nextRunNumber": 182
   },
   "summary": {
-    "totalRuns": 179,
-    "totalChecks": 1307,
-    "totalPassed": 1247,
+    "totalRuns": 180,
+    "totalChecks": 1313,
+    "totalPassed": 1253,
     "totalFailed": 56,
     "completionRate": 100,
     "completedItems": 244,
@@ -19,8 +19,8 @@
     "wontFixItems": 8,
     "expertDomainsTracked": 6,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260324-0180",
-    "lastRecordedAt": "2026-03-24T11:22:06.967Z"
+    "lastRunId": "QA-20260324-0181",
+    "lastRecordedAt": "2026-03-24T11:45:07.871Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -14724,6 +14724,100 @@
           "type": "general",
           "label": "Vercel deployment inspector",
           "url": "https://vercel.com/skyasus-projects/openmanager-ai/52mZ4sXvPNXNTazAqxdg6NcMu7Jq"
+        }
+      ],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260324-0181",
+      "recordedAt": "2026-03-24T11:45:07.871Z",
+      "recordedAtKst": "2026-03-24 20:45:07 KST",
+      "title": "Vercel Production QA - PR #200 post-merge AI smoke",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260324-0181.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_9F5TfqNdton6T8usg9P7XzH2m1nA",
+        "deploymentUrl": "https://openmanager-3upbe71fs-skyasus-projects.vercel.app",
+        "commitSha": "5bbf50c4a59444204d1ed24960d293e8a808d6af"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "coveragePacks": ["ai-core", "dashboard-core"],
+      "coveredSurfaces": [
+        "main production /dashboard access",
+        "AI sidebar 신규 질의",
+        "assistant response realtime-analysis badge",
+        "assistant response detail parity contract",
+        "analysis basis detail panel",
+        "dashboard slot and parity slot consistency"
+      ],
+      "skippedSurfaces": [],
+      "checks": {
+        "total": 6,
+        "passed": 6,
+        "failed": 0
+      },
+      "expertAssessments": [],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-03-24T20:40:40+09:00",
+          "summary": "Current billing period remains normal during PR #200 post-merge production smoke; effective total 17.9600 USD and billed cost 0.0000.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "PR #200 post-merge production AI smoke",
+          "path": "artifacts/playwright/production-pr200-postmerge-ai-smoke-2026-03-24.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "preview-ai-smoke-5f65815b7842022a35e44b801d30f24859653f54.png",
+          "path": "test-results/manual-vercel/tmp-pr200-preview-ai-smoke-5d35a-nd-exposes-analysis-details-chromium/attachments/preview-ai-smoke-5f65815b7842022a35e44b801d30f24859653f54.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "pr200-preview-ai-smoke.png",
+          "path": "test-results/manual-vercel/tmp-pr200-preview-ai-smoke-5d35a-nd-exposes-analysis-details-chromium/pr200-preview-ai-smoke.png"
+        },
+        {
+          "type": "playwright-trace",
+          "label": "tmp-pr200-preview-ai-smoke-5d35a-nd-exposes-analysis-details-chromium",
+          "path": "test-results/manual-vercel/tmp-pr200-preview-ai-smoke-5d35a-nd-exposes-analysis-details-chromium/trace.zip"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "PR #200",
+          "url": "https://github.com/skyasu2/openmanager-ai/pull/200"
+        },
+        {
+          "type": "general",
+          "label": "Production URL",
+          "url": "https://openmanager-ai.vercel.app/"
+        },
+        {
+          "type": "general",
+          "label": "Vercel deployment inspector",
+          "url": "https://vercel.com/skyasus-projects/openmanager-ai/9F5TfqNdton6T8usg9P7XzH2m1nA"
         }
       ],
       "expertCount": 0,

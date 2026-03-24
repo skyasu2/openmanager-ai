@@ -1,0 +1,98 @@
+{
+  "runId": "QA-20260324-0181",
+  "recordedAt": "2026-03-24T11:45:07.871Z",
+  "recordedAtKst": "2026-03-24 20:45:07 KST",
+  "runTitle": "Vercel Production QA - PR #200 post-merge AI smoke",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_9F5TfqNdton6T8usg9P7XzH2m1nA",
+    "deploymentUrl": "https://openmanager-3upbe71fs-skyasus-projects.vercel.app",
+    "commitSha": "5bbf50c4a59444204d1ed24960d293e8a808d6af"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "coveragePacks": ["ai-core", "dashboard-core"],
+  "coveredSurfaces": [
+    "main production /dashboard access",
+    "AI sidebar 신규 질의",
+    "assistant response realtime-analysis badge",
+    "assistant response detail parity contract",
+    "analysis basis detail panel",
+    "dashboard slot and parity slot consistency"
+  ],
+  "skippedSurfaces": [],
+  "checks": {
+    "total": 6,
+    "passed": 6,
+    "failed": 0
+  },
+  "expertAssessments": [],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-03-24T20:40:40+09:00",
+      "summary": "Current billing period remains normal during PR #200 post-merge production smoke; effective total 17.9600 USD and billed cost 0.0000.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "PR #200 post-merge production AI smoke",
+      "path": "artifacts/playwright/production-pr200-postmerge-ai-smoke-2026-03-24.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "preview-ai-smoke-5f65815b7842022a35e44b801d30f24859653f54.png",
+      "path": "test-results/manual-vercel/tmp-pr200-preview-ai-smoke-5d35a-nd-exposes-analysis-details-chromium/attachments/preview-ai-smoke-5f65815b7842022a35e44b801d30f24859653f54.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "pr200-preview-ai-smoke.png",
+      "path": "test-results/manual-vercel/tmp-pr200-preview-ai-smoke-5d35a-nd-exposes-analysis-details-chromium/pr200-preview-ai-smoke.png"
+    },
+    {
+      "type": "playwright-trace",
+      "label": "tmp-pr200-preview-ai-smoke-5d35a-nd-exposes-analysis-details-chromium",
+      "path": "test-results/manual-vercel/tmp-pr200-preview-ai-smoke-5d35a-nd-exposes-analysis-details-chromium/trace.zip"
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Prompt: api-was-dc1-01 메모리 사용률 몇 %야?",
+    "Dashboard snapshot rendered Synthetic OTel snapshot 20:30 KST (slot 123/143).",
+    "The assistant answered api-was-dc1-01 current memory usage as 65% and labeled the response as 서버 실시간 데이터 분석.",
+    "Assistant response detail exposed Parity Metadata Contract with dataSlot.slotIndex=123, minuteOfDay=1230, timeLabel=20:30 KST.",
+    "Analysis Basis detail exposed 데이터/엔진/도구/기간 with 서버 메트릭 조회 and 최근 1시간."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "PR #200",
+      "url": "https://github.com/skyasu2/openmanager-ai/pull/200"
+    },
+    {
+      "type": "general",
+      "label": "Production URL",
+      "url": "https://openmanager-ai.vercel.app/"
+    },
+    {
+      "type": "general",
+      "label": "Vercel deployment inspector",
+      "url": "https://vercel.com/skyasus-projects/openmanager-ai/9F5TfqNdton6T8usg9P7XzH2m1nA"
+    }
+  ]
+}
