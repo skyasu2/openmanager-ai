@@ -39,8 +39,9 @@ function createMockCallbacks() {
     setPendingMessageMetadata: vi.fn((metadata) => {
       pendingMessageMetadata = metadata;
     }),
+    setDeferredAssistantMetadata: vi.fn(),
+    setDeferredAssistantToolResults: vi.fn(),
     getMessages: vi.fn(() => messages),
-    setMessages: vi.fn(),
   };
 }
 
@@ -179,7 +180,7 @@ describe('handleStreamDataPart', () => {
       expect(callbacks.setStreamRagSources).toHaveBeenCalledWith([]);
     });
 
-    it('should inject structuredView into last assistant message metadata', () => {
+    it('should store structuredView into deferred assistant metadata', () => {
       const part: StreamDataPart = {
         type: 'data-done',
         data: {
@@ -191,20 +192,19 @@ describe('handleStreamDataPart', () => {
 
       handleStreamDataPart(part, callbacks);
 
-      expect(callbacks.setMessages).toHaveBeenCalled();
-
-      const updatedMessages = callbacks.setMessages.mock.calls[0][0];
-      const lastAssistant = updatedMessages.find(
-        (m: UIMessage) => m.role === 'assistant'
+      expect(callbacks.setDeferredAssistantMetadata).toHaveBeenCalledWith(
+        'msg-2',
+        expect.objectContaining({
+          assistantResponseView: {
+            summary: '서버 상태 요약',
+            details: '상세 분석 내용',
+            shouldCollapse: true,
+          },
+        })
       );
-      expect(lastAssistant?.metadata).toBeDefined();
-      expect(
-        (lastAssistant?.metadata as Record<string, unknown>)
-          .assistantResponseView
-      ).toBeDefined();
     });
 
-    it('should inject pending tool results as synthetic tool parts', () => {
+    it('should store pending tool results for deferred assistant hydration', () => {
       handleStreamDataPart(
         {
           type: 'data-tool-result',
@@ -239,37 +239,33 @@ describe('handleStreamDataPart', () => {
         callbacks
       );
 
-      const updatedMessages =
-        callbacks.setMessages.mock.calls.at(-1)?.[0] ?? [];
-      const lastAssistant = updatedMessages.find(
-        (m: UIMessage) => m.role === 'assistant'
+      expect(callbacks.setDeferredAssistantToolResults).toHaveBeenCalledWith(
+        'msg-2',
+        [
+          {
+            toolName: 'getServerMetrics',
+            result: {
+              success: true,
+              dataSlot: {
+                slotIndex: 57,
+                minuteOfDay: 570,
+                timeLabel: '09:30 KST',
+              },
+              dataSource: {
+                scopeName: 'openmanager-ai-otel-pipeline',
+                scopeVersion: '1.0.0',
+                catalogGeneratedAt: '2026-03-24T00:00:00.000Z',
+                hour: 9,
+              },
+            },
+          },
+        ]
       );
-      const syntheticToolPart = lastAssistant?.parts?.find(
-        (part) => part.type === 'tool-getServerMetrics'
-      ) as
-        | {
-            type: string;
-            toolCallId?: string;
-            output?: Record<string, unknown>;
-            state?: string;
-          }
-        | undefined;
-
-      expect(syntheticToolPart).toBeDefined();
-      expect(syntheticToolPart?.toolCallId).toBe(
-        'stream-tool-getServerMetrics-0'
-      );
-      expect(syntheticToolPart?.state).toBe('output-available');
-      expect(syntheticToolPart?.output?.dataSlot).toEqual({
-        slotIndex: 57,
-        minuteOfDay: 570,
-        timeLabel: '09:30 KST',
-      });
       expect(callbacks.setPendingToolResults).toHaveBeenLastCalledWith([]);
       expect(callbacks.setPendingMessageMetadata).toHaveBeenLastCalledWith({});
     });
 
-    it('should inject traceId from done metadata into last assistant message metadata', () => {
+    it('should store traceId into deferred assistant metadata', () => {
       const part: StreamDataPart = {
         type: 'data-done',
         data: {
@@ -281,19 +277,15 @@ describe('handleStreamDataPart', () => {
 
       handleStreamDataPart(part, callbacks);
 
-      expect(callbacks.setMessages).toHaveBeenCalled();
-
-      const updatedMessages = callbacks.setMessages.mock.calls[0][0];
-      const lastAssistant = updatedMessages.find(
-        (m: UIMessage) => m.role === 'assistant'
-      );
-      expect(lastAssistant?.metadata).toBeDefined();
       expect(callbacks.setMessageTraceId).toHaveBeenCalledWith(
         'msg-2',
         'trace-stream-123'
       );
-      expect((lastAssistant?.metadata as Record<string, unknown>).traceId).toBe(
-        'trace-stream-123'
+      expect(callbacks.setDeferredAssistantMetadata).toHaveBeenCalledWith(
+        'msg-2',
+        expect.objectContaining({
+          traceId: 'trace-stream-123',
+        })
       );
     });
 
@@ -312,21 +304,22 @@ describe('handleStreamDataPart', () => {
 
       handleStreamDataPart(part, callbacks);
 
-      const updatedMessages = callbacks.setMessages.mock.calls[0][0];
-      const lastAssistant = updatedMessages.find(
-        (m: UIMessage) => m.role === 'assistant'
-      );
-      const metadata = lastAssistant?.metadata as Record<string, unknown>;
-
       expect(callbacks.setMessageTraceId).toHaveBeenCalledWith(
         'msg-2',
         'trace-stream-456'
       );
-      expect(metadata.traceId).toBe('trace-stream-456');
-      expect(metadata.assistantResponseView).toBeDefined();
+      expect(callbacks.setDeferredAssistantMetadata).toHaveBeenCalledWith(
+        'msg-2',
+        expect.objectContaining({
+          traceId: 'trace-stream-456',
+          assistantResponseView: expect.objectContaining({
+            summary: '서버 상태 요약',
+          }),
+        })
+      );
     });
 
-    it('should not set messages when no structured view available', () => {
+    it('should not persist assistant data when no structured view or tool data is available', () => {
       const part: StreamDataPart = {
         type: 'data-done',
         data: { ragSources: [] },
@@ -334,10 +327,11 @@ describe('handleStreamDataPart', () => {
 
       handleStreamDataPart(part, callbacks);
 
-      expect(callbacks.setMessages).not.toHaveBeenCalled();
+      expect(callbacks.setDeferredAssistantMetadata).not.toHaveBeenCalled();
+      expect(callbacks.setDeferredAssistantToolResults).not.toHaveBeenCalled();
     });
 
-    it('should not set messages when no assistant message exists', () => {
+    it('should keep pending metadata when no assistant message exists yet', () => {
       callbacks.getMessages.mockReturnValue([
         {
           id: 'msg-1',
@@ -355,7 +349,7 @@ describe('handleStreamDataPart', () => {
 
       handleStreamDataPart(part, callbacks);
 
-      expect(callbacks.setMessages).not.toHaveBeenCalled();
+      expect(callbacks.setDeferredAssistantMetadata).not.toHaveBeenCalled();
       expect(callbacks.setPendingMessageMetadata).toHaveBeenCalledWith({
         assistantResponseView: {
           summary: '요약',

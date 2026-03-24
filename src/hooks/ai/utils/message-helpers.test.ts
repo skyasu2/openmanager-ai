@@ -210,6 +210,68 @@ describe('transformMessages', () => {
     expect(details).not.toContain('_dataSource');
     expect(details).not.toContain('YYYYMMDD_HHMM');
   });
+
+  it('hydrates parity metadata from deferred stream state even when UIMessage parts are plain text only', () => {
+    const messages = transformMessages(
+      [
+        createMessage({
+          id: 'u1',
+          role: 'user',
+          text: 'cache 메모리 상태 알려줘',
+        }),
+        createMessage({
+          id: 'a1',
+          role: 'assistant',
+          text: '응답 본문',
+        }),
+      ],
+      {
+        isLoading: false,
+        currentMode: 'streaming',
+        deferredAssistantMetadataByMessageId: {
+          a1: {
+            assistantResponseView: {
+              summary: '메모리 상태 요약',
+              details: '상세 분석',
+              shouldCollapse: true,
+            },
+          },
+        },
+        deferredToolResultsByMessageId: {
+          a1: [
+            {
+              toolName: 'getServerMetrics',
+              result: {
+                success: true,
+                dataSlot: {
+                  slotIndex: 85,
+                  minuteOfDay: 850,
+                  timeLabel: '14:10 KST',
+                },
+                dataSource: {
+                  scopeName: 'openmanager-ai-otel-pipeline',
+                  scopeVersion: '1.0.0',
+                  catalogGeneratedAt: '2026-02-15T03:56:41.821Z',
+                  hour: 14,
+                },
+              },
+            },
+          ],
+        },
+      }
+    );
+
+    const assistant = messages.find((m) => m.id === 'a1');
+    expect(assistant?.metadata?.analysisBasis?.dataSource).toBe(
+      '서버 실시간 데이터 분석'
+    );
+    expect(
+      assistant?.thinkingSteps?.some((step) => step.step === 'getServerMetrics')
+    ).toBe(true);
+    expect(assistant?.metadata?.assistantResponseView?.summary).toBe(
+      '메모리 상태 요약'
+    );
+  });
 });
 
 describe('normalizeAIResponse', () => {

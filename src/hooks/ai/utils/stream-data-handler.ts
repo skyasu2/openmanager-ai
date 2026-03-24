@@ -18,7 +18,7 @@ type SyntheticToolPart = Extract<
   }
 >;
 
-type PendingStreamToolResult = {
+export type PendingStreamToolResult = {
   toolName: string;
   result: unknown;
 };
@@ -40,8 +40,15 @@ type StreamDataCallbacks = {
   setPendingToolResults: (results: PendingStreamToolResult[]) => void;
   getPendingMessageMetadata: () => Record<string, unknown>;
   setPendingMessageMetadata: (metadata: Record<string, unknown>) => void;
+  setDeferredAssistantMetadata: (
+    messageId: string,
+    metadata: Record<string, unknown>
+  ) => void;
+  setDeferredAssistantToolResults: (
+    messageId: string,
+    toolResults: PendingStreamToolResult[]
+  ) => void;
   getMessages: () => UIMessage[];
-  setMessages: (messages: UIMessage[]) => void;
 };
 
 function extractTraceIdFromDoneData(
@@ -143,7 +150,6 @@ export function handleStreamDataPart(
 
     const structuredView = buildStructuredResponseView(doneData);
     const traceId = extractTraceIdFromDoneData(doneData);
-    const syntheticToolParts = createSyntheticToolParts(pendingToolResults);
     const nextMessageMetadata = {
       ...(traceId && { traceId }),
       ...(structuredView && {
@@ -151,7 +157,7 @@ export function handleStreamDataPart(
       }),
     };
 
-    if (structuredView || traceId || syntheticToolParts?.length) {
+    if (structuredView || traceId || pendingToolResults.length > 0) {
       const currentMessages = [...callbacks.getMessages()];
       const lastAssistantIndex = currentMessages
         .map((message) => message.role)
@@ -175,32 +181,23 @@ export function handleStreamDataPart(
       if (traceId) {
         callbacks.setMessageTraceId(targetMessage.id, traceId);
       }
-      const prevMetadata =
-        typeof targetMessage.metadata === 'object' &&
-        targetMessage.metadata !== null
-          ? (targetMessage.metadata as Record<string, unknown>)
-          : {};
       const pendingMessageMetadata = callbacks.getPendingMessageMetadata();
-
-      callbacks.setMessages(
-        currentMessages.map(
-          (message: (typeof currentMessages)[number], index: number) => {
-            if (index !== lastAssistantIndex) return message;
-            return {
-              ...message,
-              parts: [
-                ...(Array.isArray(message.parts) ? message.parts : []),
-                ...(syntheticToolParts ?? []),
-              ],
-              metadata: {
-                ...prevMetadata,
-                ...pendingMessageMetadata,
-                ...nextMessageMetadata,
-              },
-            };
-          }
-        )
-      );
+      const mergedMetadata = {
+        ...pendingMessageMetadata,
+        ...nextMessageMetadata,
+      };
+      if (Object.keys(mergedMetadata).length > 0) {
+        callbacks.setDeferredAssistantMetadata(
+          targetMessage.id,
+          mergedMetadata
+        );
+      }
+      if (pendingToolResults.length > 0) {
+        callbacks.setDeferredAssistantToolResults(
+          targetMessage.id,
+          pendingToolResults
+        );
+      }
     }
 
     callbacks.setPendingToolResults([]);

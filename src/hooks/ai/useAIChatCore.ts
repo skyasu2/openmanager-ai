@@ -41,8 +41,8 @@ import {
   transformMessages,
 } from './utils/message-helpers';
 import {
-  createSyntheticToolParts,
   handleStreamDataPart,
+  type PendingStreamToolResult,
 } from './utils/stream-data-handler';
 
 // Re-export for backwards compatibility
@@ -181,12 +181,13 @@ export function useAIChatCore(
   const [streamTraceIds, setStreamTraceIds] = useState<Record<string, string>>(
     {}
   );
-  const pendingStreamToolResultsRef = useRef<
-    Array<{
-      toolName: string;
-      result: unknown;
-    }>
-  >([]);
+  const [
+    deferredAssistantMetadataByMessageId,
+    setDeferredAssistantMetadataByMessageId,
+  ] = useState<Record<string, Record<string, unknown>>>({});
+  const [deferredToolResultsByMessageId, setDeferredToolResultsByMessageId] =
+    useState<Record<string, PendingStreamToolResult[]>>({});
+  const pendingStreamToolResultsRef = useRef<PendingStreamToolResult[]>([]);
   const pendingStreamMessageMetadataRef = useRef<Record<string, unknown>>({});
 
   // Refs
@@ -272,8 +273,22 @@ export function useAIChatCore(
         setPendingMessageMetadata: (metadata) => {
           pendingStreamMessageMetadataRef.current = metadata;
         },
+        setDeferredAssistantMetadata: (messageId, metadata) => {
+          setDeferredAssistantMetadataByMessageId((prev) => ({
+            ...prev,
+            [messageId]: {
+              ...(prev[messageId] ?? {}),
+              ...metadata,
+            },
+          }));
+        },
+        setDeferredAssistantToolResults: (messageId, toolResults) => {
+          setDeferredToolResultsByMessageId((prev) => ({
+            ...prev,
+            [messageId]: toolResults,
+          }));
+        },
         getMessages: () => messagesRef.current,
-        setMessages,
       });
     },
   });
@@ -300,42 +315,35 @@ export function useAIChatCore(
 
     const targetMessage = messages[lastAssistantIndex];
     if (!targetMessage) return;
+    if (typeof pendingMessageMetadata.traceId === 'string') {
+      const traceId = pendingMessageMetadata.traceId;
+      setStreamTraceIds((prev) =>
+        prev[targetMessage.id] === traceId
+          ? prev
+          : { ...prev, [targetMessage.id]: traceId }
+      );
+    }
 
-    const existingParts = Array.isArray(targetMessage.parts)
-      ? targetMessage.parts
-      : [];
-    const syntheticToolParts = createSyntheticToolParts(
-      pendingToolResults
-    ).filter(
-      (part) => !existingParts.some((existing) => existing?.type === part.type)
-    );
+    if (hasPendingMessageMetadata) {
+      setDeferredAssistantMetadataByMessageId((prev) => ({
+        ...prev,
+        [targetMessage.id]: {
+          ...(prev[targetMessage.id] ?? {}),
+          ...pendingMessageMetadata,
+        },
+      }));
+    }
+
+    if (pendingToolResults.length > 0) {
+      setDeferredToolResultsByMessageId((prev) => ({
+        ...prev,
+        [targetMessage.id]: pendingToolResults,
+      }));
+    }
 
     pendingStreamToolResultsRef.current = [];
     pendingStreamMessageMetadataRef.current = {};
-
-    if (syntheticToolParts.length === 0 && !hasPendingMessageMetadata) {
-      return;
-    }
-
-    const nextMessages = messages.map((message, index) => {
-      if (index !== lastAssistantIndex) return message;
-      const prevMetadata =
-        typeof message.metadata === 'object' && message.metadata !== null
-          ? (message.metadata as Record<string, unknown>)
-          : {};
-
-      return {
-        ...message,
-        parts: [...existingParts, ...syntheticToolParts],
-        metadata: {
-          ...prevMetadata,
-          ...pendingMessageMetadata,
-        },
-      };
-    });
-
-    setMessages(nextMessages);
-  }, [messages, setMessages]);
+  }, [messages]);
 
   useEffect(() => {
     sendQueryRef.current = sendQuery;
@@ -360,6 +368,8 @@ export function useAIChatCore(
       isLoading: hybridIsLoading,
       currentMode: currentMode ?? undefined,
       traceIdByMessageId: streamTraceIds,
+      deferredAssistantMetadataByMessageId,
+      deferredToolResultsByMessageId,
       streamRagSources:
         streamRagSources.length > 0 ? streamRagSources : undefined,
       ragEnabled,
@@ -369,6 +379,8 @@ export function useAIChatCore(
     hybridIsLoading,
     currentMode,
     streamTraceIds,
+    deferredAssistantMetadataByMessageId,
+    deferredToolResultsByMessageId,
     streamRagSources,
     ragEnabled,
   ]);

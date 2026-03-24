@@ -218,17 +218,7 @@ describe('useAIChatCore', () => {
       expect(result.current.messages[1]?.metadata?.traceId).toBe(traceId);
     });
 
-    const lastSetMessagesArg =
-      mocks.hybridSetMessagesSpy.mock.calls.at(-1)?.[0];
-    expect(Array.isArray(lastSetMessagesArg)).toBe(true);
-
-    const assistantMessage = (lastSetMessagesArg as UIMessage[]).find(
-      (message) => message.id === 'assistant-1'
-    );
-
-    expect(
-      (assistantMessage?.metadata as { traceId?: string } | undefined)?.traceId
-    ).toBe(traceId);
+    expect(result.current.messages[1]?.metadata?.traceId).toBe(traceId);
   });
 
   it('flushes pending stream tool results and response metadata after assistant message arrives', async () => {
@@ -306,5 +296,97 @@ describe('useAIChatCore', () => {
     expect(assistant?.metadata?.assistantResponseView?.summary).toBe(
       '서버 상태 요약'
     );
+  });
+
+  it('preserves deferred stream parity metadata even if the assistant message is overwritten later', async () => {
+    const traceId = 'trace-race-1234567890abcdef';
+    const { result } = renderHook(() => useAIChatCore());
+
+    const initialOnData = mocks.getLatestHybridOptions()?.onData as
+      | ((part: { type: string; data?: unknown }) => void)
+      | undefined;
+
+    expect(typeof initialOnData).toBe('function');
+    expect(mocks.getSeedHybridMessages()).toBeTypeOf('function');
+
+    await act(async () => {
+      mocks.getSeedHybridMessages()?.([
+        {
+          id: 'user-1',
+          role: 'user',
+          parts: [{ type: 'text', text: '메모리 사용률 알려줘' }],
+        },
+        {
+          id: 'assistant-1',
+          role: 'assistant',
+          parts: [{ type: 'text', text: '중간 응답' }],
+        },
+      ]);
+    });
+
+    act(() => {
+      initialOnData?.({
+        type: 'data-tool-result',
+        data: {
+          toolName: 'getServerMetrics',
+          result: {
+            success: true,
+            dataSlot: {
+              slotIndex: 85,
+              minuteOfDay: 850,
+              timeLabel: '14:10 KST',
+            },
+            dataSource: {
+              scopeName: 'openmanager-ai-otel-pipeline',
+              scopeVersion: '1.0.0',
+              catalogGeneratedAt: '2026-02-15T03:56:41.821Z',
+              hour: 14,
+            },
+          },
+        },
+      });
+      initialOnData?.({
+        type: 'data-done',
+        data: {
+          responseSummary: '메모리 상태 요약',
+          responseDetails: '상세 분석',
+          responseShouldCollapse: true,
+          metadata: {
+            traceId,
+          },
+        },
+      });
+    });
+
+    await act(async () => {
+      mocks.getSeedHybridMessages()?.([
+        {
+          id: 'user-1',
+          role: 'user',
+          parts: [{ type: 'text', text: '메모리 사용률 알려줘' }],
+        },
+        {
+          id: 'assistant-1',
+          role: 'assistant',
+          parts: [{ type: 'text', text: '최종 응답 본문' }],
+        },
+      ]);
+    });
+
+    await waitFor(() => {
+      const assistant = result.current.messages[1];
+      expect(assistant?.metadata?.traceId).toBe(traceId);
+      expect(assistant?.metadata?.analysisBasis?.dataSource).toBe(
+        '서버 실시간 데이터 분석'
+      );
+      expect(
+        assistant?.thinkingSteps?.some(
+          (step) => step.step === 'getServerMetrics'
+        )
+      ).toBe(true);
+      expect(assistant?.metadata?.assistantResponseView?.summary).toBe(
+        '메모리 상태 요약'
+      );
+    });
   });
 });

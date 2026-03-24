@@ -30,6 +30,11 @@ type MessageMetadata = {
   assistantResponseView?: StructuredAssistantResponse;
 };
 
+type DeferredToolResult = {
+  toolName: string;
+  result: unknown;
+};
+
 type UIMessagePart = NonNullable<UIMessage['parts']>[number];
 
 type ToolPartWithCallId = UIMessagePart & {
@@ -79,6 +84,17 @@ function getMessageMetadata(message: UIMessage): MessageMetadata | undefined {
   return undefined;
 }
 
+function mergeMessageMetadata(
+  base: MessageMetadata | undefined,
+  deferred: Record<string, unknown> | undefined
+): MessageMetadata | undefined {
+  if (!base && !deferred) return undefined;
+  return {
+    ...(base ?? {}),
+    ...(deferred ?? {}),
+  } as MessageMetadata;
+}
+
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null;
 }
@@ -116,6 +132,20 @@ function isToolPartWithCallId(
 
 function extractToolOutput(toolPart: ToolPartWithCallId): unknown {
   return toolPart.output ?? toolPart.result;
+}
+
+function createDeferredToolParts(
+  toolResults: DeferredToolResult[] | undefined
+): ToolPartWithCallId[] {
+  if (!toolResults || toolResults.length === 0) return [];
+
+  return toolResults.map((entry, index) => ({
+    type: `tool-${entry.toolName}` as `tool-${string}`,
+    toolCallId: `stream-tool-${entry.toolName}-${index}`,
+    input: undefined,
+    output: entry.result,
+    state: 'output-available',
+  }));
 }
 
 function extractServerMetricsParityMetadata(
@@ -235,6 +265,11 @@ interface TransformOptions {
   isLoading: boolean;
   currentMode?: 'streaming' | 'job-queue';
   traceIdByMessageId?: Record<string, string>;
+  deferredAssistantMetadataByMessageId?: Record<
+    string,
+    Record<string, unknown>
+  >;
+  deferredToolResultsByMessageId?: Record<string, DeferredToolResult[]>;
   /** 스트리밍 done 이벤트에서 수신한 ragSources (웹 검색 결과 등) */
   streamRagSources?: RagSource[];
   /** 사용자가 RAG 토글을 켰는지 여부 */
@@ -264,8 +299,31 @@ export function transformUIMessageToEnhanced(
   const textContent =
     message.role === 'assistant' ? normalizeAIResponse(rawText) : rawText;
 
+  const deferredMessageMetadata =
+    message.role === 'assistant'
+      ? options.deferredAssistantMetadataByMessageId?.[message.id]
+      : undefined;
+  const metadata = mergeMessageMetadata(
+    getMessageMetadata(message),
+    deferredMessageMetadata
+  );
+  const messageToolParts = message.parts?.filter(isToolPartWithCallId) ?? [];
+  const deferredToolParts =
+    message.role === 'assistant'
+      ? createDeferredToolParts(
+          options.deferredToolResultsByMessageId?.[message.id]
+        ).filter(
+          (part) =>
+            !messageToolParts.some(
+              (existing) =>
+                existing.type === part.type &&
+                existing.toolCallId === part.toolCallId
+            )
+        )
+      : [];
+
   // Tool parts 추출 (null/undefined 방어 코드 추가)
-  const toolParts = message.parts?.filter(isToolPartWithCallId) ?? [];
+  const toolParts = [...messageToolParts, ...deferredToolParts];
 
   // ThinkingSteps 생성
   const thinkingSteps = toolParts.map((toolPart) => {
@@ -294,7 +352,6 @@ export function transformUIMessageToEnhanced(
   });
 
   // Extract traceId from message metadata (available for all roles)
-  const metadata = getMessageMetadata(message);
   const traceId = metadata?.traceId ?? traceIdByMessageId?.[message.id];
   const parityMetadata =
     message.role === 'assistant'
