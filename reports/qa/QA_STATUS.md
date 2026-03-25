@@ -1,28 +1,28 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-25 09:09:26 KST
+> Generated at: 2026-03-25 15:04:23 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 181 |
-| Total Checks | 1316 |
-| Passed | 1256 |
+| Total Runs | 182 |
+| Total Checks | 1320 |
+| Passed | 1260 |
 | Failed | 56 |
-| Completed Items | 244 |
+| Completed Items | 246 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 8 |
 | Expert Domains Tracked | 6 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Run | QA-20260324-0182 (2026-03-24T13:11:00.000Z) |
+| Last Run | QA-20260325-0183 (2026-03-25T06:04:23.514Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260324-0182 (2026-03-24T13:11:00.000Z)
+Latest run: QA-20260325-0183 (2026-03-25T06:04:23.514Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -38,10 +38,10 @@ Latest run: QA-20260324-0182 (2026-03-24T13:11:00.000Z)
 
 - Scope: targeted
 - Release-Facing: no
-- Deployment: SHA 29f86d54
-- Coverage Packs: ai-core
-- Covered Surfaces: AI sidebar 신규 질의, deferred metadata 배지 보존, 분석 근거 상세 보기 노출
-- Skipped Surfaces: -
+- Deployment: SHA 4e675a38
+- Coverage Packs: security-pack, observability-pack
+- Covered Surfaces: /api/health Supabase session probe timeout handling, /api/database Supabase session probe timeout handling, /api/admin/log-level admin-only access guard, health check policy and OpenAPI contract sync
+- Skipped Surfaces: vercel-production AI sidebar and fullscreen assistant flows, cloud-run observability endpoints, playwright browser verification
 
 ## Links (Latest Run)
 
@@ -88,6 +88,7 @@ Latest run: QA-20260324-0182 (2026-03-24T13:11:00.000Z)
 ## Completed Improvements
 
 - active-alerts-modal-ai-prefill: 활성 알림 모달에서 AI 사이드바 컨텍스트 자동 주입 (completed 1회, last QA-20260323-0166)
+- admin-log-level-admin-auth: 관리자 로그레벨 API 관리자 권한 강제 (completed 1회, last QA-20260325-0183)
 - ai-analyst-success: Analyst Agent 이상감지/예측 성공 (completed 2회, last QA-20260314-0097)
 - ai-assistant-fullscreen-query-path: AI 전체 화면 핵심 서버 상태 요약 질의 검증 (completed 1회, last QA-20260318-0123)
 - ai-assistant-fullscreen-tools-parity: AI 전체 화면 도구 메뉴 parity 검증 (completed 1회, last QA-20260318-0123)
@@ -184,6 +185,7 @@ Latest run: QA-20260324-0182 (2026-03-24T13:11:00.000Z)
 - health-api: Health API 검증 (completed 1회, last QA-20260301-0035)
 - health-api-200-healthy: Health API 200 healthy (completed 3회, last QA-20260320-0140)
 - health-api-response-format: Health API 응답 포맷 검증 스크립트 수정 (completed 1회, last QA-20260310-0077)
+- health-route-supabase-session-timeout: 헬스체크 Supabase 세션 프로브 타임아웃 강제 (completed 1회, last QA-20260325-0183)
 - home-semantic-nav: 홈 페이지 nav 랜드마크 보강 (completed 1회, last QA-20260226-0009)
 - landing-copy-alignment: 랜딩/로그인 정책 카피 정합성 (completed 4회, last QA-20260227-0016)
 - landing-feature-cards: 랜딩 피처카드 4개 모달 (completed 1회, last QA-20260317-0114)
@@ -336,6 +338,7 @@ Latest run: QA-20260324-0182 (2026-03-24T13:11:00.000Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260325-0183 | 2026-03-25T06:04:23.514Z | targeted | no | Local validation - health timeout and admin guard hardening | 4 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260324-0182 | 2026-03-24T13:11:00.000Z | targeted | no | Vercel Production QA - AI hook refactor smoke (useDeferredMessageMetadata + Codex follow-up) | 3 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260324-0181 | 2026-03-24T11:45:07.871Z | targeted | no | Vercel Production QA - PR #200 post-merge AI smoke | 6 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260324-0180 | 2026-03-24T11:22:06.967Z | targeted | no | Vercel Preview QA - PR #200 AI deferred metadata smoke | 5 | 0 | 0 | 0 | 0 | 0 |
@@ -355,5 +358,4 @@ Latest run: QA-20260324-0182 (2026-03-24T13:11:00.000Z)
 | QA-20260323-0166 | 2026-03-23T01:50:31.435Z | targeted | no | Production QA - active alerts modal AI prefill | 4 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260323-0165 | 2026-03-23T01:29:13.300Z | targeted | no | Production QA - server card alert badge AI prefill | 4 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260323-0164 | 2026-03-22T16:53:54.714Z | targeted | no | Production QA - AI sidebar parity contract rendering fixed | 6 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260323-0163 | 2026-03-22T15:56:07.978Z | targeted | no | Vercel Playwright QA - MEM label no-overlap on server cards (SHA 34f764ca0) | 4 | 0 | 0 | 0 | 0 | 0 |
 

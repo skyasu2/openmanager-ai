@@ -2,25 +2,25 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-03-24T13:11:00.000Z"
+    "updatedAt": "2026-03-25T06:04:23.514Z"
   },
   "sequence": {
-    "nextRunNumber": 183
+    "nextRunNumber": 184
   },
   "summary": {
-    "totalRuns": 181,
-    "totalChecks": 1316,
-    "totalPassed": 1256,
+    "totalRuns": 182,
+    "totalChecks": 1320,
+    "totalPassed": 1260,
     "totalFailed": 56,
     "completionRate": 100,
-    "completedItems": 244,
+    "completedItems": 246,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 8,
     "expertDomainsTracked": 6,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260324-0182",
-    "lastRecordedAt": "2026-03-24T13:11:00.000Z"
+    "lastRunId": "QA-20260325-0183",
+    "lastRecordedAt": "2026-03-25T06:04:23.514Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -5757,6 +5757,54 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-03-24T05:45:00.758Z"
+    },
+    "health-route-supabase-session-timeout": {
+      "id": "health-route-supabase-session-timeout",
+      "title": "헬스체크 Supabase 세션 프로브 타임아웃 강제",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260325-0183",
+      "firstSeenAt": "2026-03-25T06:04:23.514Z",
+      "lastSeenRunId": "QA-20260325-0183",
+      "lastSeenAt": "2026-03-25T06:04:23.514Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "probeSupabaseSession 공통 헬퍼 도입, health/database route timeout regression test 추가",
+      "lastNote": "",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-03-25T06:04:23.514Z"
+    },
+    "admin-log-level-admin-auth": {
+      "id": "admin-log-level-admin-auth",
+      "title": "관리자 로그레벨 API 관리자 권한 강제",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260325-0183",
+      "firstSeenAt": "2026-03-25T06:04:23.514Z",
+      "lastSeenRunId": "QA-20260325-0183",
+      "lastSeenAt": "2026-03-25T06:04:23.514Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "withAdminAuth 전환 및 비관리자 403/admin 200 회귀 테스트 추가",
+      "lastNote": "",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-03-25T06:04:23.514Z"
     }
   },
   "runs": [
@@ -14863,6 +14911,54 @@
       "expertCount": 0,
       "expertNeedsImprovementCount": 0,
       "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260325-0183",
+      "recordedAt": "2026-03-25T06:04:23.514Z",
+      "recordedAtKst": "2026-03-25 15:04:23 KST",
+      "title": "Local validation - health timeout and admin guard hardening",
+      "owner": "codex",
+      "source": "local-validation",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260325-0183.json",
+      "environment": {
+        "target": "local-dev",
+        "url": "",
+        "frontend": "Local",
+        "backend": "Local",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "4e675a38870debe723b695168f04bdc62dd2af69"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "coveragePacks": ["security-pack", "observability-pack"],
+      "coveredSurfaces": [
+        "/api/health Supabase session probe timeout handling",
+        "/api/database Supabase session probe timeout handling",
+        "/api/admin/log-level admin-only access guard",
+        "health check policy and OpenAPI contract sync"
+      ],
+      "skippedSurfaces": [
+        "vercel-production AI sidebar and fullscreen assistant flows",
+        "cloud-run observability endpoints",
+        "playwright browser verification"
+      ],
+      "checks": {
+        "total": 4,
+        "passed": 4,
+        "failed": 0
+      },
+      "expertAssessments": [],
+      "usageChecks": [],
+      "artifacts": [],
+      "links": [],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 2,
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0

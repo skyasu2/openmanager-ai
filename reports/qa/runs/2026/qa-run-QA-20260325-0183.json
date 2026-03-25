@@ -1,0 +1,77 @@
+{
+  "runId": "QA-20260325-0183",
+  "recordedAt": "2026-03-25T06:04:23.514Z",
+  "recordedAtKst": "2026-03-25 15:04:23 KST",
+  "runTitle": "Local validation - health timeout and admin guard hardening",
+  "owner": "codex",
+  "source": "local-validation",
+  "environment": {
+    "target": "local-dev",
+    "url": "",
+    "frontend": "Local",
+    "backend": "Local",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "4e675a38870debe723b695168f04bdc62dd2af69"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "coveragePacks": ["security-pack", "observability-pack"],
+  "coveredSurfaces": [
+    "/api/health Supabase session probe timeout handling",
+    "/api/database Supabase session probe timeout handling",
+    "/api/admin/log-level admin-only access guard",
+    "health check policy and OpenAPI contract sync"
+  ],
+  "skippedSurfaces": [
+    "vercel-production AI sidebar and fullscreen assistant flows",
+    "cloud-run observability endpoints",
+    "playwright browser verification"
+  ],
+  "checks": {
+    "total": 4,
+    "passed": 4,
+    "failed": 0
+  },
+  "expertAssessments": [],
+  "usageChecks": [],
+  "artifacts": [],
+  "completedImprovements": [
+    {
+      "id": "health-route-supabase-session-timeout",
+      "title": "헬스체크 Supabase 세션 프로브 타임아웃 강제",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "probeSupabaseSession 공통 헬퍼 도입, health/database route timeout regression test 추가",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "admin-log-level-admin-auth",
+      "title": "관리자 로그레벨 API 관리자 권한 강제",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "withAdminAuth 전환 및 비관리자 403/admin 200 회귀 테스트 추가",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Targeted route validation commands: npx vitest run tests/api/health-route.test.ts tests/api/database-route.test.ts src/app/api/admin/log-level/route.test.ts src/app/api/admin/log-level/route.auth.test.ts --config config/testing/vitest.config.node.ts",
+    "Repository gates passed: npm run type-check, npm run lint, npm run test:quick",
+    "This run focuses on API correctness/security hardening and documentation parity, not browser-level product flows."
+  ],
+  "links": []
+}
