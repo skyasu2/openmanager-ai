@@ -602,6 +602,7 @@ paths:
             type: string
             minLength: 8
             maxLength: 128
+            pattern: '^[A-Za-z0-9_-]{8,128}$'
         - in: query
           name: skip
           required: false
@@ -679,6 +680,14 @@ paths:
         - guestSessionCookie: []
         - apiKeyAuth: []
         - testSecretAuth: []
+      parameters:
+        - in: header
+          name: X-Device-Type
+          required: false
+          schema:
+            type: string
+            enum: [mobile, desktop]
+          description: Optional device hint forwarded to Cloud Run. Invalid values default to `desktop`.
       requestBody:
         required: true
         content:
@@ -1061,6 +1070,7 @@ components:
           type: string
           minLength: 8
           maxLength: 128
+          pattern: '^[A-Za-z0-9_-]{8,128}$'
         enableWebSearch:
           type: boolean
         enableRAG:

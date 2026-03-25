@@ -61,6 +61,7 @@ function createRequest(body: Record<string, unknown>): NextRequest {
 }
 
 describe('POST /api/ai/feedback', () => {
+  const originalCloudRunEnabled = process.env.CLOUD_RUN_ENABLED;
   const originalCloudRunUrl = process.env.CLOUD_RUN_AI_URL;
   const originalCloudRunSecret = process.env.CLOUD_RUN_API_SECRET;
 
@@ -68,11 +69,13 @@ describe('POST /api/ai/feedback', () => {
     vi.restoreAllMocks();
     mockSupabaseFrom.mockReturnValue({ insert: mockInsert });
     mockInsert.mockResolvedValue({ error: null });
+    process.env.CLOUD_RUN_ENABLED = 'true';
     process.env.CLOUD_RUN_AI_URL = 'https://ai-engine.example.run.app';
     process.env.CLOUD_RUN_API_SECRET = 'test-secret';
   });
 
   afterEach(() => {
+    process.env.CLOUD_RUN_ENABLED = originalCloudRunEnabled;
     process.env.CLOUD_RUN_AI_URL = originalCloudRunUrl;
     process.env.CLOUD_RUN_API_SECRET = originalCloudRunSecret;
   });
@@ -207,6 +210,24 @@ describe('POST /api/ai/feedback', () => {
     expect(response.status).toBe(200);
     expect(body.langfuseStatus).toBe('skipped');
     expect(body).not.toHaveProperty('traceId');
+    expect(global.fetch).not.toHaveBeenCalled();
+  });
+
+  it('CLOUD_RUN_ENABLED=false면 traceId가 있어도 Langfuse 프록시를 건너뛴다', async () => {
+    process.env.CLOUD_RUN_ENABLED = 'false';
+    global.fetch = vi.fn();
+
+    const response = await POST(
+      createRequest({
+        messageId: 'msg-4',
+        type: 'negative',
+        traceId: '1234567890abcdef1234567890abcdef',
+      })
+    );
+    const body = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(body.langfuseStatus).toBe('skipped');
     expect(global.fetch).not.toHaveBeenCalled();
   });
 });

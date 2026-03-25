@@ -148,6 +148,7 @@ describe('Supervisor Stream V2 Route', () => {
     );
     mockCreateNewResumableStream.mockResolvedValue(createSseStream());
 
+    process.env.CLOUD_RUN_ENABLED = 'true';
     process.env.CLOUD_RUN_AI_URL = 'https://example-ai.run.app';
     process.env.CLOUD_RUN_API_SECRET = 'test-secret';
   });
@@ -211,7 +212,8 @@ describe('Supervisor Stream V2 Route', () => {
 
     expect(response.status).toBe(400);
     await expect(response.json()).resolves.toEqual({
-      error: 'sessionId required (8-128 chars)',
+      error:
+        'sessionId must be 8-128 chars using only letters, numbers, underscore, or hyphen',
     });
   });
 
@@ -224,7 +226,8 @@ describe('Supervisor Stream V2 Route', () => {
 
     expect(response.status).toBe(400);
     await expect(response.json()).resolves.toEqual({
-      error: 'sessionId required (8-128 chars)',
+      error:
+        'sessionId must be 8-128 chars using only letters, numbers, underscore, or hyphen',
     });
   });
 
@@ -288,6 +291,57 @@ describe('Supervisor Stream V2 Route', () => {
         success: false,
         error: 'Streaming not available',
       });
+      expect(mockFetch).not.toHaveBeenCalled();
+    });
+
+    it('CLOUD_RUN_API_SECRET이 없으면 503을 반환해야 함', async () => {
+      delete process.env.CLOUD_RUN_API_SECRET;
+
+      const request = new NextRequest(
+        'http://localhost/api/ai/supervisor/stream/v2',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            messages: [{ role: 'user', content: '서버 상태 확인' }],
+            sessionId: 'session-1234',
+          }),
+        }
+      );
+
+      const response = await POST(request);
+
+      expect(response.status).toBe(503);
+      await expect(response.json()).resolves.toEqual({
+        success: false,
+        error: 'Streaming not available',
+      });
+      expect(mockFetch).not.toHaveBeenCalled();
+    });
+
+    it('CLOUD_RUN_ENABLED=false면 503을 반환해야 함', async () => {
+      process.env.CLOUD_RUN_ENABLED = 'false';
+
+      const request = new NextRequest(
+        'http://localhost/api/ai/supervisor/stream/v2',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            messages: [{ role: 'user', content: '서버 상태 확인' }],
+            sessionId: 'session-1234',
+          }),
+        }
+      );
+
+      const response = await POST(request);
+
+      expect(response.status).toBe(503);
+      await expect(response.json()).resolves.toEqual({
+        success: false,
+        error: 'Streaming not available',
+      });
+      expect(mockFetch).not.toHaveBeenCalled();
     });
 
     it('Cloud Run v2로 프록시 후 resumable 응답을 반환해야 함', async () => {
@@ -308,6 +362,7 @@ describe('Supervisor Stream V2 Route', () => {
           headers: {
             'Content-Type': 'application/json',
             'X-Session-Id': 'session-1234',
+            'X-Device-Type': 'mobile',
           },
           body: JSON.stringify({
             messages: [{ role: 'user', content: '서버 상태 확인' }],
@@ -341,6 +396,7 @@ describe('Supervisor Stream V2 Route', () => {
       const body = JSON.parse(String(fetchOptions.body));
       expect(body).toMatchObject({
         sessionId: 'session-1234',
+        deviceType: 'mobile',
         enableWebSearch: true,
       });
 
@@ -350,6 +406,57 @@ describe('Supervisor Stream V2 Route', () => {
         expect.any(String)
       );
       expect(mockCreateNewResumableStream).toHaveBeenCalledTimes(1);
+    });
+
+    it('유효하지 않은 X-Device-Type은 desktop으로 정규화해야 함', async () => {
+      const request = new NextRequest(
+        'http://localhost/api/ai/supervisor/stream/v2',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Session-Id': 'session-1234',
+            'X-Device-Type': 'tablet',
+          },
+          body: JSON.stringify({
+            messages: [{ role: 'user', content: '서버 상태 확인' }],
+          }),
+        }
+      );
+
+      const response = await POST(request);
+
+      expect(response.status).toBe(200);
+      const fetchOptions = mockFetch.mock.calls[0]?.[1] as RequestInit;
+      const body = JSON.parse(String(fetchOptions.body));
+      expect(body.deviceType).toBe('desktop');
+    });
+
+    it('유효하지 않은 헤더 sessionId는 fallback sessionId로 대체해야 함', async () => {
+      const request = new NextRequest(
+        'http://localhost/api/ai/supervisor/stream/v2',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Session-Id': 'short',
+          },
+          body: JSON.stringify({
+            messages: [{ role: 'user', content: '서버 상태 확인' }],
+          }),
+        }
+      );
+
+      const response = await POST(request);
+
+      expect(response.status).toBe(200);
+      const fetchOptions = mockFetch.mock.calls[0]?.[1] as RequestInit;
+      const body = JSON.parse(String(fetchOptions.body)) as {
+        sessionId: string;
+      };
+
+      expect(body.sessionId).toMatch(/^session-/);
+      expect(body.sessionId).not.toBe('short');
     });
 
     it('enableRAG 값도 Cloud Run으로 전달해야 함', async () => {

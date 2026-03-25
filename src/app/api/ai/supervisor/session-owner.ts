@@ -1,20 +1,15 @@
 import { createHash, randomUUID } from 'crypto';
 import type { NextRequest } from 'next/server';
 import { getAPIAuthContext } from '@/lib/auth/api-auth';
+import { normalizeSupervisorSessionId } from './request-contracts';
 import { resolveSessionId } from './request-utils';
-
-const SESSION_ID_PATTERN = /^[A-Za-z0-9._:-]{8,128}$/;
 
 function hashValue(value: string): string {
   return createHash('sha256').update(value).digest('hex').slice(0, 20);
 }
 
 function normalizeSessionId(value: string | null | undefined): string | null {
-  if (!value) return null;
-  const trimmed = value.trim();
-  if (!trimmed) return null;
-  if (!SESSION_ID_PATTERN.test(trimmed)) return null;
-  return trimmed;
+  return normalizeSupervisorSessionId(value);
 }
 
 export function createFallbackSessionId(): string {

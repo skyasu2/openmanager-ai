@@ -17,6 +17,7 @@ import {
   analyzeJobQueryComplexity,
   inferJobType,
 } from '@/lib/ai/utils/query-complexity';
+import { getRequiredCloudRunConfig } from '@/lib/ai-proxy/cloud-run-config';
 import { withAuth } from '@/lib/auth/api-auth';
 import { logger } from '@/lib/logging';
 import { getRedisClient, redisGet, redisMGet, redisSet } from '@/lib/redis';
@@ -140,7 +141,7 @@ async function handlePOST(request: NextRequest) {
       await redisSet(listKey, existingList.slice(0, 50), JOB_LIST_TTL_SECONDS);
     }
 
-    const initialTriggerStatus: TriggerStatus = process.env.CLOUD_RUN_AI_URL
+    const initialTriggerStatus: TriggerStatus = getRequiredCloudRunConfig().ok
       ? 'scheduled'
       : 'skipped';
 
@@ -294,12 +295,11 @@ async function triggerWorker(
   type: string,
   sessionId?: string
 ): Promise<TriggerResult> {
-  const cloudRunUrl = process.env.CLOUD_RUN_AI_URL;
-  const apiSecret = process.env.CLOUD_RUN_API_SECRET;
+  const cloudRunConfig = getRequiredCloudRunConfig();
 
-  if (!cloudRunUrl) {
-    logger.warn('[AI Jobs] CLOUD_RUN_AI_URL not configured');
-    return { status: 'skipped', error: 'URL not configured' };
+  if (!cloudRunConfig.ok) {
+    logger.warn(`[AI Jobs] ${cloudRunConfig.message}`);
+    return { status: 'skipped', error: cloudRunConfig.message };
   }
 
   const controller = new AbortController();
@@ -307,12 +307,12 @@ async function triggerWorker(
   const startTime = Date.now();
 
   try {
-    const res = await fetch(`${cloudRunUrl}/api/jobs/process`, {
+    const res = await fetch(`${cloudRunConfig.url}/api/jobs/process`, {
       method: 'POST',
       signal: controller.signal,
       headers: {
         'Content-Type': 'application/json',
-        ...(apiSecret && { 'X-API-Key': apiSecret }),
+        'X-API-Key': cloudRunConfig.apiSecret,
       },
       body: JSON.stringify({
         jobId,

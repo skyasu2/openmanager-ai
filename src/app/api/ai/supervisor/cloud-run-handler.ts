@@ -23,6 +23,7 @@ import type { NormalizedMessage } from '@/lib/ai/utils/message-normalizer';
 import { proxyToCloudRun } from '@/lib/ai-proxy/proxy';
 import { logger } from '@/lib/logging';
 import { getTraceId } from '@/lib/tracing/async-context';
+import type { SupervisorDeviceType } from './request-contracts';
 import { cloudRunResponseSchema } from './schemas';
 
 interface CloudRunHandlerParams {
@@ -36,7 +37,7 @@ interface CloudRunHandlerParams {
   skipCache: boolean;
   cacheEndpoint: AIEndpoint;
   securityWarning?: string;
-  deviceType?: string;
+  deviceType?: SupervisorDeviceType;
   enableWebSearch?: boolean;
   enableRAG?: boolean;
 }

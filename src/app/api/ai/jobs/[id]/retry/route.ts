@@ -11,6 +11,7 @@
 export const maxDuration = 30;
 
 import { after, type NextRequest, NextResponse } from 'next/server';
+import { getRequiredCloudRunConfig } from '@/lib/ai-proxy/cloud-run-config';
 import { withAuth } from '@/lib/auth/api-auth';
 import { logger } from '@/lib/logging';
 import { redisGet, redisSet } from '@/lib/redis';
@@ -80,7 +81,7 @@ export const POST = withAuth(
         PROGRESS_TTL_SECONDS
       );
 
-      const initialTriggerStatus: TriggerStatus = process.env.CLOUD_RUN_AI_URL
+      const initialTriggerStatus: TriggerStatus = getRequiredCloudRunConfig().ok
         ? 'scheduled'
         : 'skipped';
 
@@ -135,21 +136,23 @@ async function triggerWorkerRetry(
   type: string,
   sessionId?: string
 ): Promise<TriggerStatus> {
-  const cloudRunUrl = process.env.CLOUD_RUN_AI_URL;
-  const apiSecret = process.env.CLOUD_RUN_API_SECRET;
+  const cloudRunConfig = getRequiredCloudRunConfig();
 
-  if (!cloudRunUrl) return 'skipped';
+  if (!cloudRunConfig.ok) {
+    logger.warn(`[AI Jobs] Retry skipped: ${cloudRunConfig.message}`);
+    return 'skipped';
+  }
 
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), TRIGGER_TIMEOUT_MS);
 
   try {
-    const res = await fetch(`${cloudRunUrl}/api/jobs/process`, {
+    const res = await fetch(`${cloudRunConfig.url}/api/jobs/process`, {
       method: 'POST',
       signal: controller.signal,
       headers: {
         'Content-Type': 'application/json',
-        ...(apiSecret && { 'X-API-Key': apiSecret }),
+        'X-API-Key': cloudRunConfig.apiSecret,
       },
       body: JSON.stringify({
         jobId,

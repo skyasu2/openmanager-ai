@@ -88,6 +88,20 @@ describe('session-owner', () => {
     expect(result.cacheSessionId.endsWith(':session-fallback-123')).toBe(true);
   });
 
+  it('점과 콜론이 포함된 sessionId도 fallback으로 대체한다', () => {
+    vi.mocked(getAPIAuthContext).mockReturnValueOnce(null);
+
+    const req = makeReq({ headerSessionId: 'session.with:colon' });
+    const result = resolveScopedSessionIds(
+      req,
+      undefined,
+      'session-fallback-456'
+    );
+
+    expect(result.sessionId).toBe('session-fallback-456');
+    expect(result.cacheSessionId.endsWith(':session-fallback-456')).toBe(true);
+  });
+
   it('getSessionOwnerKey는 인증정보가 없으면 auth_session_id 쿠키를 사용한다', () => {
     vi.mocked(getAPIAuthContext).mockReturnValueOnce(null);
     const req = makeReq({ authSessionCookie: 'guest-session-id-123' });

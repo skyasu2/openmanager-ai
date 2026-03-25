@@ -9,6 +9,7 @@
  */
 
 import { z } from 'zod';
+import { SUPERVISOR_SESSION_ID_SCHEMA } from './request-contracts';
 
 // ============================================================================
 // Part Schemas
@@ -148,7 +149,7 @@ export const messageSchema = z
 
 export const requestSchema = z.object({
   messages: z.array(messageSchema).min(1).max(50),
-  sessionId: z.string().min(8).max(128).optional(),
+  sessionId: SUPERVISOR_SESSION_ID_SCHEMA.optional(),
   enableWebSearch: z.boolean().optional(),
   enableRAG: z.boolean().optional(),
 });
@@ -160,7 +161,7 @@ export const requestSchema = z.object({
  */
 export const requestSchemaLoose = z.object({
   messages: z.array(messageSchema).min(1).max(50),
-  sessionId: z.string().min(8).max(128).optional(),
+  sessionId: SUPERVISOR_SESSION_ID_SCHEMA.optional(),
   enableWebSearch: z.boolean().optional(),
   enableRAG: z.boolean().optional(),
 });

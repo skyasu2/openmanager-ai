@@ -19,7 +19,6 @@
 import { generateId } from 'ai';
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
-import { z } from 'zod';
 import {
   getFunctionTimeoutReserveMs,
   getMaxTimeout,
@@ -31,15 +30,21 @@ import {
   type HybridMessage,
   normalizeMessagesForCloudRun,
 } from '@/lib/ai/utils/message-normalizer';
+import { getRequiredCloudRunConfig } from '@/lib/ai-proxy/cloud-run-config';
 import { withAuth } from '@/lib/auth/api-auth';
 import { logger } from '@/lib/logging';
 import { rateLimiters, withRateLimit } from '@/lib/security/rate-limiter';
 import {
+  INVALID_SESSION_ID_MESSAGE,
+  normalizeSupervisorDeviceType,
+  normalizeSupervisorSessionId,
+} from '../../request-contracts';
+import {
   applySanitizedQueryToMessages,
   extractAndValidateQuery,
-  resolveSessionId,
 } from '../../request-utils';
 import { requestSchemaLoose } from '../../schemas';
+import { resolveScopedSessionIds } from '../../session-owner';
 import {
   createStreamErrorResponse,
   createStreamFallbackResponse,
@@ -159,14 +164,13 @@ const resumeStreamHandler = async (req: NextRequest) => {
     );
   }
 
-  const sessionIdResult = z.string().min(8).max(128).safeParse(rawSessionId);
-  if (!sessionIdResult.success) {
+  const sessionId = normalizeSupervisorSessionId(rawSessionId);
+  if (!sessionId) {
     return NextResponse.json(
-      { error: 'sessionId required (8-128 chars)' },
+      { error: INVALID_SESSION_ID_MESSAGE },
       { status: 400 }
     );
   }
-  const sessionId = sessionIdResult.data;
   const ownerKey = getStreamOwnerKey(req);
 
   logger.info(
@@ -279,13 +283,13 @@ export const POST = withRateLimit(
       } = parseResult.data;
 
       // 2. Extract session ID
-      const resolvedSessionId = resolveSessionId(
+      const { sessionId, ownerKey } = resolveScopedSessionIds(
         req,
-        bodySessionId,
-        generateId()
+        bodySessionId
       );
-      const sessionId = resolvedSessionId;
-      const ownerKey = getStreamOwnerKey(req);
+      const deviceType = normalizeSupervisorDeviceType(
+        req.headers.get('X-Device-Type')
+      );
       const warmupStartedAt = parseWarmupStartedAt(
         req.headers.get(AI_WARMUP_STARTED_AT_HEADER)
       );
@@ -382,9 +386,9 @@ export const POST = withRateLimit(
       }
 
       // 5. Get Cloud Run URL
-      const cloudRunUrl = process.env.CLOUD_RUN_AI_URL;
-      if (!cloudRunUrl) {
-        logger.error('❌ [SupervisorStreamV2] CLOUD_RUN_AI_URL not configured');
+      const cloudRunConfig = getRequiredCloudRunConfig();
+      if (!cloudRunConfig.ok) {
+        logger.error(`❌ [SupervisorStreamV2] ${cloudRunConfig.message}`);
         return NextResponse.json(
           { success: false, error: 'Streaming not available' },
           { status: 503 }
@@ -410,8 +414,7 @@ export const POST = withRateLimit(
       }
 
       // 7. Proxy to Cloud Run v2 endpoint
-      const apiSecret = process.env.CLOUD_RUN_API_SECRET;
-      const streamUrl = `${cloudRunUrl}/api/ai/supervisor/stream/v2`;
+      const streamUrl = `${cloudRunConfig.url}/api/ai/supervisor/stream/v2`;
 
       logger.info(`🔗 [SupervisorStreamV2] Connecting to: ${streamUrl}`);
       logger.info(`🆔 [SupervisorStreamV2] Stream ID: ${streamId}`);
@@ -451,11 +454,12 @@ export const POST = withRateLimit(
                 Accept: 'text/event-stream',
                 // NOTE: API secret in header is safe in transit (HTTPS) but may appear
                 // in Cloud Run access logs. Accept this trade-off for standard auth header usage.
-                ...(apiSecret && { 'X-API-Key': apiSecret }),
+                'X-API-Key': cloudRunConfig.apiSecret,
               },
               body: JSON.stringify({
                 messages: normalizedMessages,
                 sessionId,
+                deviceType,
                 enableWebSearch,
                 enableRAG,
               }),

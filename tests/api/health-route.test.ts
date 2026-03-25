@@ -54,10 +54,17 @@ vi.mock('@/lib/api/zod-middleware', () => ({
         mockBuildCallback.mockImplementation(callback);
         return async (request: Request) => {
           const result = await callback(request, {});
-          return new Response(JSON.stringify(result), {
-            status: 200,
-            headers: { 'Content-Type': 'application/json' },
-          });
+          return new Response(
+            JSON.stringify({
+              success: true,
+              data: result,
+              timestamp: new Date().toISOString(),
+            }),
+            {
+              status: 200,
+              headers: { 'Content-Type': 'application/json' },
+            }
+          );
         };
       },
     };
@@ -205,21 +212,26 @@ describe('Health Route Contract (/api/health)', () => {
     expect(response.status).toBe(200);
 
     const payload = (await response.json()) as {
-      status: string;
-      services: {
-        database: { status: string };
-        cache: { status: string };
-        ai: { status: string };
+      success: boolean;
+      data: {
+        status: string;
+        services: {
+          database: { status: string };
+          cache: { status: string };
+          ai: { status: string };
+        };
+        version: string;
+        timestamp: string;
       };
-      version: string;
       timestamp: string;
     };
 
-    expect(payload.status).toBe('healthy');
-    expect(payload.services.database.status).toBe('connected');
-    expect(payload.services.cache.status).toBe('connected');
-    expect(payload.services.ai.status).toBe('connected');
-    expect(payload.version).toBe('test');
+    expect(payload.success).toBe(true);
+    expect(payload.data.status).toBe('healthy');
+    expect(payload.data.services.database.status).toBe('connected');
+    expect(payload.data.services.cache.status).toBe('connected');
+    expect(payload.data.services.ai.status).toBe('connected');
+    expect(payload.data.version).toBe('test');
     expect(payload.timestamp).toBeDefined();
   });
 
@@ -235,14 +247,18 @@ describe('Health Route Contract (/api/health)', () => {
     expect(response.status).toBe(200);
 
     const payload = (await response.json()) as {
-      status: string;
-      services: {
-        database: { status: string };
+      success: boolean;
+      data: {
+        status: string;
+        services: {
+          database: { status: string };
+        };
       };
     };
 
-    expect(payload.status).toBe('unhealthy');
-    expect(payload.services.database.status).toBe('error');
+    expect(payload.success).toBe(true);
+    expect(payload.data.status).toBe('unhealthy');
+    expect(payload.data.services.database.status).toBe('error');
   });
 
   it('DB 세션 프로브가 타임아웃되면 unhealthy 상태를 반환한다', async () => {
@@ -265,14 +281,18 @@ describe('Health Route Contract (/api/health)', () => {
       expect(response.status).toBe(200);
 
       const payload = (await response.json()) as {
-        status: string;
-        services: {
-          database: { status: string };
+        success: boolean;
+        data: {
+          status: string;
+          services: {
+            database: { status: string };
+          };
         };
       };
 
-      expect(payload.status).toBe('unhealthy');
-      expect(payload.services.database.status).toBe('error');
+      expect(payload.success).toBe(true);
+      expect(payload.data.status).toBe('unhealthy');
+      expect(payload.data.services.database.status).toBe('error');
     } finally {
       vi.useRealTimers();
     }
@@ -312,11 +332,16 @@ describe('Health Route Contract (/api/health)', () => {
     expect(secondResponse.headers.get('X-Cache')).toBe('HIT');
 
     const payload = (await secondResponse.json()) as {
+      success: boolean;
+      data: {
+        status: string;
+      };
       cached: boolean;
       cacheAge: number;
-      status: string;
     };
 
+    expect(payload.success).toBe(true);
+    expect(payload.data.status).toBe('healthy');
     expect(payload.cached).toBe(true);
     expect(payload.cacheAge).toBeTypeOf('number');
   });

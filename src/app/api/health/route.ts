@@ -45,8 +45,16 @@ import debug from '@/utils/debug';
  * and the 60s TTL ensures staleness is bounded.
  */
 interface HealthCache {
-  data: HealthCheckResponse | null;
+  data: HealthRouteEnvelope | null;
   timestamp: number;
+}
+
+interface HealthRouteEnvelope {
+  success: true;
+  data: HealthCheckResponse;
+  timestamp: string;
+  cached?: boolean;
+  cacheAge?: number;
 }
 
 const HEALTH_CACHE_TTL = 60000; // 60초
@@ -65,7 +73,7 @@ function isCacheValid(): boolean {
 }
 
 /** 캐시 업데이트 */
-function updateCache(data: HealthCheckResponse): void {
+function updateCache(data: HealthRouteEnvelope): void {
   healthCache = {
     data,
     timestamp: Date.now(),
@@ -369,7 +377,7 @@ export async function GET(request: NextRequest) {
         'public, max-age=60, stale-while-revalidate=30';
     }
 
-    const body = (await response.json()) as HealthCheckResponse;
+    const body = (await response.json()) as HealthRouteEnvelope;
 
     // 캐시 업데이트
     updateCache(body);

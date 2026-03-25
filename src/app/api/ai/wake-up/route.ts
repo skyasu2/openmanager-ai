@@ -1,4 +1,5 @@
 import { type NextRequest, NextResponse } from 'next/server';
+import { getRequiredCloudRunConfig } from '@/lib/ai-proxy/cloud-run-config';
 import { logger } from '@/lib/logging';
 import { rateLimiters } from '@/lib/security/rate-limiter';
 
@@ -23,14 +24,16 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const CLOUD_RUN_URL = process.env.CLOUD_RUN_AI_URL;
+  const cloudRunConfig = getRequiredCloudRunConfig({
+    requireApiSecret: false,
+  });
 
-  if (!CLOUD_RUN_URL) {
+  if (!cloudRunConfig.ok) {
     logger.warn(
       {
         event: 'warmup_skipped',
         source: warmupSource,
-        reason: 'cloud_run_url_missing',
+        reason: cloudRunConfig.code,
       },
       '[AI Warmup] Skipped'
     );
@@ -48,7 +51,7 @@ export async function POST(request: NextRequest) {
 
     // Cloud Run cold start 대응: 실제로 응답을 기다려야 컨테이너 기동 보장
     // void fetch는 Vercel 함수 종료 후 kill될 수 있어 웜업 실패 원인이었음
-    const res = await fetch(`${CLOUD_RUN_URL}/warmup`, {
+    const res = await fetch(`${cloudRunConfig.url}/warmup`, {
       method: 'GET',
       signal: AbortSignal.timeout(15_000), // cold start 포함 15초
     });

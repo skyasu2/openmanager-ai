@@ -4,6 +4,7 @@ export const maxDuration = 10;
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
+import { getRequiredCloudRunConfig } from '@/lib/ai-proxy/cloud-run-config';
 import { withAuth } from '@/lib/auth/api-auth';
 import { aiLogger } from '@/lib/logger';
 import { rateLimiters, withRateLimit } from '@/lib/security/rate-limiter';
@@ -99,27 +100,21 @@ async function handlePOST(request: NextRequest) {
     let traceUrl: string | undefined;
     let traceUrlStatus: 'available' | 'unavailable' | undefined;
     let monitoringLookupUrl: string | undefined;
-    if (
-      body.traceId &&
-      process.env.CLOUD_RUN_AI_URL &&
-      process.env.CLOUD_RUN_API_SECRET
-    ) {
+    const cloudRunConfig = getRequiredCloudRunConfig();
+    if (body.traceId && cloudRunConfig.ok) {
       try {
-        const res = await fetch(
-          `${process.env.CLOUD_RUN_AI_URL}/api/ai/feedback`,
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'X-API-Key': process.env.CLOUD_RUN_API_SECRET,
-            },
-            body: JSON.stringify({
-              traceId: body.traceId,
-              score: body.type,
-            }),
-            signal: AbortSignal.timeout(FEEDBACK_PROXY_TIMEOUT_MS),
-          }
-        );
+        const res = await fetch(`${cloudRunConfig.url}/api/ai/feedback`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-API-Key': cloudRunConfig.apiSecret,
+          },
+          body: JSON.stringify({
+            traceId: body.traceId,
+            score: body.type,
+          }),
+          signal: AbortSignal.timeout(FEEDBACK_PROXY_TIMEOUT_MS),
+        });
         const payload = await res
           .json()
           .catch(() => null as Record<string, unknown> | null);

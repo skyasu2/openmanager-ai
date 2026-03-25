@@ -54,6 +54,7 @@ import { runWithTraceId } from '@/lib/tracing/async-context';
 import { isStatusQuery, shouldSkipCache } from './cache-utils';
 import { handleCloudRunJson, handleCloudRunStream } from './cloud-run-handler';
 import { handleSupervisorError } from './error-handler';
+import { normalizeSupervisorDeviceType } from './request-contracts';
 import {
   applySanitizedQueryToMessages,
   extractAndValidateQuery,
@@ -314,7 +315,9 @@ export const POST = withRateLimit(
             `📝 [Supervisor] Normalized ${sanitizedMessages.length} messages → ${messagesToSend.length} for Cloud Run`
           );
 
-          const deviceType = req.headers.get('X-Device-Type') || 'desktop';
+          const deviceType = normalizeSupervisorDeviceType(
+            req.headers.get('X-Device-Type')
+          );
 
           const handlerParams = {
             messagesToSend,
