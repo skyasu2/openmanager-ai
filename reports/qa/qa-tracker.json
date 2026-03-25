@@ -2,25 +2,25 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-03-25T09:42:58.940Z"
+    "updatedAt": "2026-03-25T11:06:51.584Z"
   },
   "sequence": {
-    "nextRunNumber": 185
+    "nextRunNumber": 186
   },
   "summary": {
-    "totalRuns": 183,
-    "totalChecks": 1325,
-    "totalPassed": 1265,
+    "totalRuns": 184,
+    "totalChecks": 1329,
+    "totalPassed": 1269,
     "totalFailed": 56,
     "completionRate": 100,
-    "completedItems": 249,
+    "completedItems": 251,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 8,
     "expertDomainsTracked": 6,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260325-0184",
-    "lastRecordedAt": "2026-03-25T09:42:58.940Z"
+    "lastRunId": "QA-20260325-0185",
+    "lastRecordedAt": "2026-03-25T11:06:51.584Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -5877,6 +5877,54 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-03-25T09:42:58.940Z"
+    },
+    "cloud-run-proxy-runtime-env-refresh": {
+      "id": "cloud-run-proxy-runtime-env-refresh",
+      "title": "Cloud Run proxy runtime env refresh",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260325-0185",
+      "firstSeenAt": "2026-03-25T11:06:51.584Z",
+      "lastSeenRunId": "QA-20260325-0185",
+      "lastSeenAt": "2026-03-25T11:06:51.584Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "proxy.ts now resolves Cloud Run/local Docker env on each call, and proxy.test.ts covers same-module env changes without reset",
+      "lastNote": "",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-03-25T11:06:51.584Z"
+    },
+    "readme-qa-evidence-sync-20260325": {
+      "id": "readme-qa-evidence-sync-20260325",
+      "title": "README QA evidence snapshot sync",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260325-0185",
+      "firstSeenAt": "2026-03-25T11:06:51.584Z",
+      "lastSeenRunId": "QA-20260325-0185",
+      "lastSeenAt": "2026-03-25T11:06:51.584Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "README latest snapshot and validation evidence sections now distinguish latest recorded QA (local) vs latest production QA",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-03-25T11:06:51.584Z"
     }
   },
   "runs": [
@@ -15081,6 +15129,53 @@
       "expertCount": 0,
       "expertNeedsImprovementCount": 0,
       "completedCount": 3,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260325-0185",
+      "recordedAt": "2026-03-25T11:06:51.584Z",
+      "recordedAtKst": "2026-03-25 20:06:51 KST",
+      "title": "Local validation - ai proxy runtime env refresh and README QA sync",
+      "owner": "codex",
+      "source": "local-validation",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260325-0185.json",
+      "environment": {
+        "target": "local-dev",
+        "url": "",
+        "frontend": "Local",
+        "backend": "Local",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "169da99009bc600bc7ebf0db374ed072ba35c6f0"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "coveragePacks": ["ai-core"],
+      "coveredSurfaces": [
+        "src/lib/ai-proxy/proxy.ts runtime env refresh",
+        "src/lib/ai-proxy/proxy.test.ts env drift regression coverage",
+        "README validation evidence snapshot sync"
+      ],
+      "skippedSurfaces": [
+        "vercel-production browser QA",
+        "real Cloud Run upstream integration",
+        "playwright end-to-end UI flows"
+      ],
+      "checks": {
+        "total": 4,
+        "passed": 4,
+        "failed": 0
+      },
+      "expertAssessments": [],
+      "usageChecks": [],
+      "artifacts": [],
+      "links": [],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 2,
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0

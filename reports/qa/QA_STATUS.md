@@ -1,28 +1,28 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-25 18:42:59 KST
+> Generated at: 2026-03-25 20:06:52 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 183 |
-| Total Checks | 1325 |
-| Passed | 1265 |
+| Total Runs | 184 |
+| Total Checks | 1329 |
+| Passed | 1269 |
 | Failed | 56 |
-| Completed Items | 249 |
+| Completed Items | 251 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 8 |
 | Expert Domains Tracked | 6 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Run | QA-20260325-0184 (2026-03-25T09:42:58.940Z) |
+| Last Run | QA-20260325-0185 (2026-03-25T11:06:51.584Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260325-0184 (2026-03-25T09:42:58.940Z)
+Latest run: QA-20260325-0185 (2026-03-25T11:06:51.584Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -38,9 +38,9 @@ Latest run: QA-20260325-0184 (2026-03-25T09:42:58.940Z)
 
 - Scope: targeted
 - Release-Facing: no
-- Deployment: SHA da1653ac
-- Coverage Packs: security-pack, ai-core, observability-pack
-- Covered Surfaces: /api/ai/supervisor/stream/v2 sessionId/deviceType/config guard, /api/ai/jobs initial trigger readiness, /api/ai/jobs/:id/retry initial trigger readiness, /api/ai/feedback Cloud Run kill-switch guard, /api/ai/wake-up Cloud Run readiness gate, /api/health envelope cache typing and contract test
+- Deployment: SHA 169da990
+- Coverage Packs: ai-core
+- Covered Surfaces: src/lib/ai-proxy/proxy.ts runtime env refresh, src/lib/ai-proxy/proxy.test.ts env drift regression coverage, README validation evidence snapshot sync
 - Skipped Surfaces: vercel-production browser QA, real Cloud Run upstream integration, playwright end-to-end UI flows
 
 ## Links (Latest Run)
@@ -144,6 +144,7 @@ Latest run: QA-20260325-0184 (2026-03-25T09:42:58.940Z)
 - blocked-prompt-raw-json-exposure: 보안 차단 시 raw JSON 노출 제거 (completed 2회, last QA-20260318-0125)
 - blocked-prompt-ux-fixed-v880: Prompt injection 차단 UX 정제 검증 (completed 1회, last QA-20260308-0058)
 - blocked-prompt-ux-v880-quality-recheck: 보안 차단 UX 재검증 (completed 1회, last QA-20260308-0059)
+- cloud-run-proxy-runtime-env-refresh: Cloud Run proxy runtime env refresh (completed 1회, last QA-20260325-0185)
 - cloud-run-readiness-guard: Cloud Run direct route readiness guard 공통화 (completed 1회, last QA-20260325-0184)
 - cloud-run-v892-manual-deploy: Cloud Run v8.9.2 manual deploy verification (completed 1회, last QA-20260317-0118)
 - csrf-duplicate-removal: CSRF getCSRFTokenFromCookie 중복 제거 (completed 1회, last QA-20260307-0053)
@@ -238,6 +239,7 @@ Latest run: QA-20260325-0184 (2026-03-25T09:42:58.940Z)
 - qa-final-report-historical-positioning: v8.7.1 최종 QA 리포트의 historical 성격 명시 (completed 1회, last QA-20260309-0067)
 - rag-engine-doc-link-repair: RAG, Vercel fair-use 문서 링크 경로 갱신 (completed 1회, last QA-20260228-0026)
 - rag-smoke-coverage: Redis+Supabase RAG 경로 스모크 강화 (completed 2회, last QA-20260302-0039)
+- readme-qa-evidence-sync-20260325: README QA evidence snapshot sync (completed 1회, last QA-20260325-0185)
 - release-dod-contract-test: Release DoD: API contract test 통과 (completed 1회, last QA-20260226-0008)
 - release-dod-cost-gate: Release DoD: Cloud Run Free Tier 비용 가드 검증 (completed 1회, last QA-20260226-0008)
 - release-dod-doc-gate: Release DoD: 문서 게이트 90일 갱신·메타데이터·아카이빙 정책 (completed 1회, last QA-20260228-0025)
@@ -341,6 +343,7 @@ Latest run: QA-20260325-0184 (2026-03-25T09:42:58.940Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260325-0185 | 2026-03-25T11:06:51.584Z | targeted | no | Local validation - ai proxy runtime env refresh and README QA sync | 4 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260325-0184 | 2026-03-25T09:42:58.940Z | targeted | no | Local validation - Cloud Run guard and session contract hardening | 5 | 3 | 0 | 0 | 0 | 0 |
 | QA-20260325-0183 | 2026-03-25T06:04:23.514Z | targeted | no | Local validation - health timeout and admin guard hardening | 4 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260324-0182 | 2026-03-24T13:11:00.000Z | targeted | no | Vercel Production QA - AI hook refactor smoke (useDeferredMessageMetadata + Codex follow-up) | 3 | 0 | 0 | 0 | 0 | 0 |
@@ -360,5 +363,4 @@ Latest run: QA-20260325-0184 (2026-03-25T09:42:58.940Z)
 | QA-20260323-0168 | 2026-03-23T04:52:42.651Z | targeted | no | Vercel Production QA - validation evidence public snapshot smoke | 5 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260323-0167 | 2026-03-23T02:31:45.018Z | targeted | no | Production QA - alert history modal AI prefill | 4 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260323-0166 | 2026-03-23T01:50:31.435Z | targeted | no | Production QA - active alerts modal AI prefill | 4 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260323-0165 | 2026-03-23T01:29:13.300Z | targeted | no | Production QA - server card alert badge AI prefill | 4 | 1 | 0 | 0 | 0 | 0 |
 

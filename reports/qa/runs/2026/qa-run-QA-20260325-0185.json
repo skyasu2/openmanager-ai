@@ -1,0 +1,77 @@
+{
+  "runId": "QA-20260325-0185",
+  "recordedAt": "2026-03-25T11:06:51.584Z",
+  "recordedAtKst": "2026-03-25 20:06:51 KST",
+  "runTitle": "Local validation - ai proxy runtime env refresh and README QA sync",
+  "owner": "codex",
+  "source": "local-validation",
+  "environment": {
+    "target": "local-dev",
+    "url": "",
+    "frontend": "Local",
+    "backend": "Local",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "169da99009bc600bc7ebf0db374ed072ba35c6f0"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "coveragePacks": ["ai-core"],
+  "coveredSurfaces": [
+    "src/lib/ai-proxy/proxy.ts runtime env refresh",
+    "src/lib/ai-proxy/proxy.test.ts env drift regression coverage",
+    "README validation evidence snapshot sync"
+  ],
+  "skippedSurfaces": [
+    "vercel-production browser QA",
+    "real Cloud Run upstream integration",
+    "playwright end-to-end UI flows"
+  ],
+  "checks": {
+    "total": 4,
+    "passed": 4,
+    "failed": 0
+  },
+  "expertAssessments": [],
+  "usageChecks": [],
+  "artifacts": [],
+  "completedImprovements": [
+    {
+      "id": "cloud-run-proxy-runtime-env-refresh",
+      "title": "Cloud Run proxy runtime env refresh",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "proxy.ts now resolves Cloud Run/local Docker env on each call, and proxy.test.ts covers same-module env changes without reset",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "readme-qa-evidence-sync-20260325",
+      "title": "README QA evidence snapshot sync",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "README latest snapshot and validation evidence sections now distinguish latest recorded QA (local) vs latest production QA",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Commands: npx vitest run src/lib/ai-proxy/proxy.test.ts src/lib/ai-proxy/cloud-run-config.test.ts --config config/testing/vitest.config.node.ts",
+    "Commands: npm run test:quick, npm run lint, npm run type-check",
+    "Official docs reviewed: Next.js environment variables, route handlers, after, Playwright testing guidance",
+    "This run validates runtime env drift resistance and documentation parity, not browser-level product behavior."
+  ],
+  "links": []
+}

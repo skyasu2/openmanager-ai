@@ -21,29 +21,44 @@ import {
   getMaxFunctionDurationMs,
   type ProxyEndpoint,
 } from '@/config/ai-proxy.config';
-// 로컬 Docker 기본 설정 (개발 환경에서만 사용)
 import { logger } from '@/lib/logging';
 
-const LOCAL_DOCKER_CONFIG = {
-  url: process.env.LOCAL_DOCKER_URL || 'http://localhost:8080',
-  apiSecret: process.env.LOCAL_DOCKER_SECRET || 'dev-only-secret',
-};
+function getTrimmedEnv(name: string): string {
+  return process.env[name]?.trim() ?? '';
+}
 
-// 설정 캐시 (서버 시작 시 한 번만 결정)
-let cachedConfig: ReturnType<typeof resolveConfig> | null = null;
+function getLocalDockerConfig() {
+  return {
+    url: getTrimmedEnv('LOCAL_DOCKER_URL') || 'http://localhost:8080',
+    apiSecret: getTrimmedEnv('LOCAL_DOCKER_SECRET') || 'dev-only-secret',
+  };
+}
+
+let lastLoggedConfigSignature: string | null = null;
+
+function logResolvedConfigOnce(signature: string, message: string) {
+  if (lastLoggedConfigSignature === signature) {
+    return;
+  }
+  lastLoggedConfigSignature = signature;
+  logger.info(message);
+}
 
 function resolveConfig() {
   const isDev = process.env.NODE_ENV === 'development';
   const isVercel = !!process.env.VERCEL;
-  const aiEngineMode = process.env.AI_ENGINE_MODE?.trim() || 'AUTO';
-  const useLocalDocker = process.env.USE_LOCAL_DOCKER === 'true';
+  const aiEngineMode = getTrimmedEnv('AI_ENGINE_MODE') || 'AUTO';
+  const useLocalDocker = getTrimmedEnv('USE_LOCAL_DOCKER') === 'true';
+  const cloudRunUrl = getTrimmedEnv('CLOUD_RUN_AI_URL');
+  const cloudRunEnabled = getTrimmedEnv('CLOUD_RUN_ENABLED') === 'true';
+  const cloudRunApiSecret = getTrimmedEnv('CLOUD_RUN_API_SECRET');
 
   // 1. Production (Vercel) → 항상 Cloud Run
   if (isVercel) {
     return {
-      url: process.env.CLOUD_RUN_AI_URL?.trim() || '',
-      enabled: process.env.CLOUD_RUN_ENABLED?.trim() === 'true',
-      apiSecret: process.env.CLOUD_RUN_API_SECRET?.trim() || '',
+      url: cloudRunUrl,
+      enabled: cloudRunEnabled,
+      apiSecret: cloudRunApiSecret,
       backend: 'cloud-run' as const,
     };
   }
@@ -52,24 +67,29 @@ function resolveConfig() {
   if (isDev) {
     // USE_LOCAL_DOCKER=true 또는 AI_ENGINE_MODE=AUTO (기본값)
     if (useLocalDocker || aiEngineMode === 'AUTO') {
-      logger.info(
-        '🐳 [Proxy] Development mode - Using local Docker (localhost:8080)'
+      const localDockerConfig = getLocalDockerConfig();
+      logResolvedConfigOnce(
+        `local-docker:${localDockerConfig.url}`,
+        `🐳 [Proxy] Development mode - Using local Docker (${localDockerConfig.url})`
       );
       return {
-        url: LOCAL_DOCKER_CONFIG.url,
+        url: localDockerConfig.url,
         enabled: true,
-        apiSecret: LOCAL_DOCKER_CONFIG.apiSecret,
+        apiSecret: localDockerConfig.apiSecret,
         backend: 'local-docker' as const,
       };
     }
 
     // AI_ENGINE_MODE=CLOUD → Cloud Run 강제 사용
     if (aiEngineMode === 'CLOUD') {
-      logger.info('☁️ [Proxy] Development mode - Forced Cloud Run');
+      logResolvedConfigOnce(
+        `cloud-run:${cloudRunUrl}:${cloudRunEnabled}`,
+        `☁️ [Proxy] Development mode - Forced Cloud Run (${cloudRunUrl || 'missing url'})`
+      );
       return {
-        url: process.env.CLOUD_RUN_AI_URL?.trim() || '',
-        enabled: process.env.CLOUD_RUN_ENABLED?.trim() === 'true',
-        apiSecret: process.env.CLOUD_RUN_API_SECRET?.trim() || '',
+        url: cloudRunUrl,
+        enabled: cloudRunEnabled,
+        apiSecret: cloudRunApiSecret,
         backend: 'cloud-run' as const,
       };
     }
@@ -77,25 +97,22 @@ function resolveConfig() {
 
   // 3. Fallback: 환경변수 기반
   return {
-    url: process.env.CLOUD_RUN_AI_URL?.trim() || '',
-    enabled: process.env.CLOUD_RUN_ENABLED?.trim() === 'true',
-    apiSecret: process.env.CLOUD_RUN_API_SECRET?.trim() || '',
+    url: cloudRunUrl,
+    enabled: cloudRunEnabled,
+    apiSecret: cloudRunApiSecret,
     backend: 'env' as const,
   };
 }
 
 function getConfig() {
-  if (!cachedConfig) {
-    cachedConfig = resolveConfig();
-  }
-  return cachedConfig;
+  return resolveConfig();
 }
 
 /**
- * 설정 캐시 초기화 (테스트용)
+ * 요청 시점 동적 env 해석을 유지하면서 테스트 로그 상태만 초기화한다.
  */
 export function resetConfigCache() {
-  cachedConfig = null;
+  lastLoggedConfigSignature = null;
 }
 
 // ============================================================================
