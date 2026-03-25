@@ -2,25 +2,25 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-03-25T06:04:23.514Z"
+    "updatedAt": "2026-03-25T09:42:58.940Z"
   },
   "sequence": {
-    "nextRunNumber": 184
+    "nextRunNumber": 185
   },
   "summary": {
-    "totalRuns": 182,
-    "totalChecks": 1320,
-    "totalPassed": 1260,
+    "totalRuns": 183,
+    "totalChecks": 1325,
+    "totalPassed": 1265,
     "totalFailed": 56,
     "completionRate": 100,
-    "completedItems": 246,
+    "completedItems": 249,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 8,
     "expertDomainsTracked": 6,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260325-0183",
-    "lastRecordedAt": "2026-03-25T06:04:23.514Z"
+    "lastRunId": "QA-20260325-0184",
+    "lastRecordedAt": "2026-03-25T09:42:58.940Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -5805,6 +5805,78 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-03-25T06:04:23.514Z"
+    },
+    "supervisor-stream-contract-alignment": {
+      "id": "supervisor-stream-contract-alignment",
+      "title": "Supervisor stream sessionId/deviceType 계약 정렬",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260325-0184",
+      "firstSeenAt": "2026-03-25T09:42:58.940Z",
+      "lastSeenRunId": "QA-20260325-0184",
+      "lastSeenAt": "2026-03-25T09:42:58.940Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "sessionId strict normalization, deviceType forwarding/normalization, stream guard regression tests",
+      "lastNote": "",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-03-25T09:42:58.940Z"
+    },
+    "cloud-run-readiness-guard": {
+      "id": "cloud-run-readiness-guard",
+      "title": "Cloud Run direct route readiness guard 공통화",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260325-0184",
+      "firstSeenAt": "2026-03-25T09:42:58.940Z",
+      "lastSeenRunId": "QA-20260325-0184",
+      "lastSeenAt": "2026-03-25T09:42:58.940Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "feedback/jobs/retry/wake-up routes switched to shared readiness helper",
+      "lastNote": "",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-03-25T09:42:58.940Z"
+    },
+    "health-route-envelope-test-alignment": {
+      "id": "health-route-envelope-test-alignment",
+      "title": "Health route envelope/cache typing 정렬",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260325-0184",
+      "firstSeenAt": "2026-03-25T09:42:58.940Z",
+      "lastSeenRunId": "QA-20260325-0184",
+      "lastSeenAt": "2026-03-25T09:42:58.940Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "health route cache envelope typing fix and test mock aligned to createApiRoute contract",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-03-25T09:42:58.940Z"
     }
   },
   "runs": [
@@ -14959,6 +15031,56 @@
       "expertCount": 0,
       "expertNeedsImprovementCount": 0,
       "completedCount": 2,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260325-0184",
+      "recordedAt": "2026-03-25T09:42:58.940Z",
+      "recordedAtKst": "2026-03-25 18:42:58 KST",
+      "title": "Local validation - Cloud Run guard and session contract hardening",
+      "owner": "codex",
+      "source": "local-validation",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260325-0184.json",
+      "environment": {
+        "target": "local-dev",
+        "url": "",
+        "frontend": "Local",
+        "backend": "Local",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "da1653acef50c13c5e9f0065e051e39005c34e51"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "coveragePacks": ["security-pack", "ai-core", "observability-pack"],
+      "coveredSurfaces": [
+        "/api/ai/supervisor/stream/v2 sessionId/deviceType/config guard",
+        "/api/ai/jobs initial trigger readiness",
+        "/api/ai/jobs/:id/retry initial trigger readiness",
+        "/api/ai/feedback Cloud Run kill-switch guard",
+        "/api/ai/wake-up Cloud Run readiness gate",
+        "/api/health envelope cache typing and contract test"
+      ],
+      "skippedSurfaces": [
+        "vercel-production browser QA",
+        "real Cloud Run upstream integration",
+        "playwright end-to-end UI flows"
+      ],
+      "checks": {
+        "total": 5,
+        "passed": 5,
+        "failed": 0
+      },
+      "expertAssessments": [],
+      "usageChecks": [],
+      "artifacts": [],
+      "links": [],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 3,
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0

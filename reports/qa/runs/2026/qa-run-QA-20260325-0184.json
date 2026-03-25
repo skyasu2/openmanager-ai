@@ -1,0 +1,92 @@
+{
+  "runId": "QA-20260325-0184",
+  "recordedAt": "2026-03-25T09:42:58.940Z",
+  "recordedAtKst": "2026-03-25 18:42:58 KST",
+  "runTitle": "Local validation - Cloud Run guard and session contract hardening",
+  "owner": "codex",
+  "source": "local-validation",
+  "environment": {
+    "target": "local-dev",
+    "url": "",
+    "frontend": "Local",
+    "backend": "Local",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "da1653acef50c13c5e9f0065e051e39005c34e51"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "coveragePacks": ["security-pack", "ai-core", "observability-pack"],
+  "coveredSurfaces": [
+    "/api/ai/supervisor/stream/v2 sessionId/deviceType/config guard",
+    "/api/ai/jobs initial trigger readiness",
+    "/api/ai/jobs/:id/retry initial trigger readiness",
+    "/api/ai/feedback Cloud Run kill-switch guard",
+    "/api/ai/wake-up Cloud Run readiness gate",
+    "/api/health envelope cache typing and contract test"
+  ],
+  "skippedSurfaces": [
+    "vercel-production browser QA",
+    "real Cloud Run upstream integration",
+    "playwright end-to-end UI flows"
+  ],
+  "checks": {
+    "total": 5,
+    "passed": 5,
+    "failed": 0
+  },
+  "expertAssessments": [],
+  "usageChecks": [],
+  "artifacts": [],
+  "completedImprovements": [
+    {
+      "id": "supervisor-stream-contract-alignment",
+      "title": "Supervisor stream sessionId/deviceType 계약 정렬",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "sessionId strict normalization, deviceType forwarding/normalization, stream guard regression tests",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "cloud-run-readiness-guard",
+      "title": "Cloud Run direct route readiness guard 공통화",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "feedback/jobs/retry/wake-up routes switched to shared readiness helper",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "health-route-envelope-test-alignment",
+      "title": "Health route envelope/cache typing 정렬",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "health route cache envelope typing fix and test mock aligned to createApiRoute contract",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Targeted node validation: npx vitest run tests/api/health-route.test.ts src/app/api/ai/feedback/route.test.ts src/app/api/ai/jobs/route.trigger.test.ts src/app/api/ai/jobs/[id]/retry/route.test.ts src/app/api/ai/supervisor/session-owner.test.ts src/app/api/ai/supervisor/stream/v2/route.test.ts src/lib/ai-proxy/cloud-run-config.test.ts --config config/testing/vitest.config.node.ts",
+    "Repository gates passed: npm run lint, npm run type-check, npm run test:quick",
+    "This run focuses on contract/config correctness and local regression coverage, not release-facing browser flows."
+  ],
+  "links": []
+}

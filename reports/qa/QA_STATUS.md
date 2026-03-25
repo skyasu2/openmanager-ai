@@ -1,28 +1,28 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-25 15:04:23 KST
+> Generated at: 2026-03-25 18:42:59 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 182 |
-| Total Checks | 1320 |
-| Passed | 1260 |
+| Total Runs | 183 |
+| Total Checks | 1325 |
+| Passed | 1265 |
 | Failed | 56 |
-| Completed Items | 246 |
+| Completed Items | 249 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 8 |
 | Expert Domains Tracked | 6 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Run | QA-20260325-0183 (2026-03-25T06:04:23.514Z) |
+| Last Run | QA-20260325-0184 (2026-03-25T09:42:58.940Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260325-0183 (2026-03-25T06:04:23.514Z)
+Latest run: QA-20260325-0184 (2026-03-25T09:42:58.940Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -38,10 +38,10 @@ Latest run: QA-20260325-0183 (2026-03-25T06:04:23.514Z)
 
 - Scope: targeted
 - Release-Facing: no
-- Deployment: SHA 4e675a38
-- Coverage Packs: security-pack, observability-pack
-- Covered Surfaces: /api/health Supabase session probe timeout handling, /api/database Supabase session probe timeout handling, /api/admin/log-level admin-only access guard, health check policy and OpenAPI contract sync
-- Skipped Surfaces: vercel-production AI sidebar and fullscreen assistant flows, cloud-run observability endpoints, playwright browser verification
+- Deployment: SHA da1653ac
+- Coverage Packs: security-pack, ai-core, observability-pack
+- Covered Surfaces: /api/ai/supervisor/stream/v2 sessionId/deviceType/config guard, /api/ai/jobs initial trigger readiness, /api/ai/jobs/:id/retry initial trigger readiness, /api/ai/feedback Cloud Run kill-switch guard, /api/ai/wake-up Cloud Run readiness gate, /api/health envelope cache typing and contract test
+- Skipped Surfaces: vercel-production browser QA, real Cloud Run upstream integration, playwright end-to-end UI flows
 
 ## Links (Latest Run)
 
@@ -144,6 +144,7 @@ Latest run: QA-20260325-0183 (2026-03-25T06:04:23.514Z)
 - blocked-prompt-raw-json-exposure: 보안 차단 시 raw JSON 노출 제거 (completed 2회, last QA-20260318-0125)
 - blocked-prompt-ux-fixed-v880: Prompt injection 차단 UX 정제 검증 (completed 1회, last QA-20260308-0058)
 - blocked-prompt-ux-v880-quality-recheck: 보안 차단 UX 재검증 (completed 1회, last QA-20260308-0059)
+- cloud-run-readiness-guard: Cloud Run direct route readiness guard 공통화 (completed 1회, last QA-20260325-0184)
 - cloud-run-v892-manual-deploy: Cloud Run v8.9.2 manual deploy verification (completed 1회, last QA-20260317-0118)
 - csrf-duplicate-removal: CSRF getCSRFTokenFromCookie 중복 제거 (completed 1회, last QA-20260307-0053)
 - dashboard-15-servers: 대시보드 15대 서버 모니터링 정상 (completed 2회, last QA-20260314-0097)
@@ -185,6 +186,7 @@ Latest run: QA-20260325-0183 (2026-03-25T06:04:23.514Z)
 - health-api: Health API 검증 (completed 1회, last QA-20260301-0035)
 - health-api-200-healthy: Health API 200 healthy (completed 3회, last QA-20260320-0140)
 - health-api-response-format: Health API 응답 포맷 검증 스크립트 수정 (completed 1회, last QA-20260310-0077)
+- health-route-envelope-test-alignment: Health route envelope/cache typing 정렬 (completed 1회, last QA-20260325-0184)
 - health-route-supabase-session-timeout: 헬스체크 Supabase 세션 프로브 타임아웃 강제 (completed 1회, last QA-20260325-0183)
 - home-semantic-nav: 홈 페이지 nav 랜드마크 보강 (completed 1회, last QA-20260226-0009)
 - landing-copy-alignment: 랜딩/로그인 정책 카피 정합성 (completed 4회, last QA-20260227-0016)
@@ -267,6 +269,7 @@ Latest run: QA-20260325-0183 (2026-03-25T06:04:23.514Z)
 - storybook-smoke-script-stable-port: Storybook smoke 테스트 스크립트 안정화 (completed 1회, last QA-20260315-0102)
 - streaming-analysis-basis-data-source-promotion: 스트리밍 AI 응답의 데이터 소스 라벨을 실시간 데이터 분석으로 승격 (completed 1회, last QA-20260324-0175)
 - streaming-parity-type-build-fix: Streaming parity deferred metadata type mismatch fix builds on production (completed 1회, last QA-20260324-0174)
+- supervisor-stream-contract-alignment: Supervisor stream sessionId/deviceType 계약 정렬 (completed 1회, last QA-20260325-0184)
 - system-boot-api-checks: 시스템 부트 API 존재성/헬스 체크 (completed 2회, last QA-20260302-0039)
 - system-boot-redirect: 시스템 시작 대시보드 리다이렉트 (completed 1회, last QA-20260301-0035)
 - system-boot-vercel-auth-expectation-alignment: Production system-boot Playwright auth 기대값 정렬 (completed 1회, last QA-20260320-0138)
@@ -338,6 +341,7 @@ Latest run: QA-20260325-0183 (2026-03-25T06:04:23.514Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260325-0184 | 2026-03-25T09:42:58.940Z | targeted | no | Local validation - Cloud Run guard and session contract hardening | 5 | 3 | 0 | 0 | 0 | 0 |
 | QA-20260325-0183 | 2026-03-25T06:04:23.514Z | targeted | no | Local validation - health timeout and admin guard hardening | 4 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260324-0182 | 2026-03-24T13:11:00.000Z | targeted | no | Vercel Production QA - AI hook refactor smoke (useDeferredMessageMetadata + Codex follow-up) | 3 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260324-0181 | 2026-03-24T11:45:07.871Z | targeted | no | Vercel Production QA - PR #200 post-merge AI smoke | 6 | 0 | 0 | 0 | 0 | 0 |
@@ -357,5 +361,4 @@ Latest run: QA-20260325-0183 (2026-03-25T06:04:23.514Z)
 | QA-20260323-0167 | 2026-03-23T02:31:45.018Z | targeted | no | Production QA - alert history modal AI prefill | 4 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260323-0166 | 2026-03-23T01:50:31.435Z | targeted | no | Production QA - active alerts modal AI prefill | 4 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260323-0165 | 2026-03-23T01:29:13.300Z | targeted | no | Production QA - server card alert badge AI prefill | 4 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260323-0164 | 2026-03-22T16:53:54.714Z | targeted | no | Production QA - AI sidebar parity contract rendering fixed | 6 | 1 | 0 | 0 | 0 | 0 |
 
