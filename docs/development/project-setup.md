@@ -83,7 +83,9 @@ npm install
 cp .env.example .env.local
 ```
 
-### 2. 필수 변수 설정
+### 2. 최소 변수 설정
+
+#### 2-1. 앱 부팅 최소 세트
 
 ```bash
 # .env.local
@@ -93,21 +95,34 @@ cp .env.example .env.local
 # ============================================
 NEXT_PUBLIC_SUPABASE_URL=https://xxx.supabase.co
 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_...
-NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJ... # 레거시 fallback
-SUPABASE_SERVICE_ROLE_KEY=eyJ...
+```
 
-# ============================================
-# Cloud Run AI Engine
-# ============================================
+이 세트만으로 기본 앱 부팅과 비AI 화면 확인이 가능합니다.
+
+#### 2-2. AI 연동 최소 세트 (Cloud Run 사용 시)
+
+```bash
 CLOUD_RUN_ENABLED=true
 CLOUD_RUN_AI_URL=https://ai-engine-xxx.run.app
 CLOUD_RUN_API_SECRET=your-api-secret
 ```
 
+#### 2-3. 로컬 Docker AI 엔진 (선택)
+
+개발 환경 기본값은 `AI_ENGINE_MODE=AUTO`이며, 필요하면 아래 값으로 로컬 Docker AI 엔진을 명시적으로 우선 사용합니다.
+
+```bash
+USE_LOCAL_DOCKER=true
+LOCAL_DOCKER_URL=http://localhost:8080
+LOCAL_DOCKER_SECRET=dev-only-secret
+```
+
 추가/선택 변수의 전체 맵은 [환경 변수 관리 가이드](./environment-variables.md)를 SSOT로 봅니다.
+- 레거시 fallback: `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- 서버 전용 로그인 감사 로그: `SUPABASE_SERVICE_ROLE_KEY`
 - 게스트 접근/로그인 PIN
 - Redis/Sentry
-- 개발 환경의 `AI_ENGINE_MODE`, `USE_LOCAL_DOCKER`
+- 개발 환경의 `AI_ENGINE_MODE`, `USE_LOCAL_DOCKER`, `LOCAL_DOCKER_*`
 - Cloud Run AI Engine 내부 `.env` 및 Secret Manager 매핑
 
 ### 3. API 키 발급

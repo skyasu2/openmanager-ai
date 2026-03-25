@@ -1,7 +1,7 @@
 ---
 name: qa-ops
 description: Final QA workflow for OpenManager with Vercel+Playwright MCP default, local-dev fallback for non-AI checks, and mandatory cumulative logging to reports/qa.
-version: v1.1.0
+version: v1.2.0
 user-invocable: true
 allowed-tools: Bash, Read, Grep, mcp__playwright__browser_navigate, mcp__playwright__browser_snapshot, mcp__playwright__browser_click, mcp__playwright__browser_type, mcp__playwright__browser_wait_for, mcp__playwright__browser_console_messages, mcp__playwright__browser_network_requests
 disable-model-invocation: true
@@ -37,6 +37,10 @@ disable-model-invocation: true
 - 공통: landing/login/dashboard/modal
 - AI 필수: AI assistant/chat/분석 응답 경로
 - 비AI: UI/카피/레이아웃/기본 인증 동선 중심
+- **Data Parity (AI 검증 시)**: 현재 QA target의 base URL에서 `GET /api/health?service=parity`를 호출해 `slot.globalSlotIndex`를 기록하고, AI 응답 tool call의 `dataSlot.slotIndex`와 ±1 이내인지 확인
+  - production: `https://openmanager-ai.vercel.app`
+  - preview: 현재 preview deployment URL
+  - local-dev: `http://localhost:<port>`
 - run 입력에는 `scope`, `releaseFacing`, `coveredSurfaces`, `skippedSurfaces`를 기록합니다.
 
 4. 결과 기록(필수).
@@ -74,4 +78,5 @@ End with one short operator note for the highest remaining risk or `none in test
 ## Changelog
 
 - 2026-02-26: v1.0.0 - 최종 QA 운영/누적 추적 스킬 신설
+- 2026-03-25: v1.2.0 - Data Parity Contract 검증 단계 추가 (±1 슬롯 기준)
 - 2026-03-14: v1.1.0 - `state-triage`, `env-sync` 선행 규칙 추가

@@ -329,8 +329,8 @@ scripts/hooks/pre-push.js
 scripts/hooks/post-commit.js
 ```
 
-- `scripts/hooks/pre-push.js`는 변경 파일을 기준으로 targeted node/DOM, related node/DOM, DOM infrastructure smoke를 동적으로 선택합니다.
-- `scripts/dev/vitest-main-wrapper.js`는 zero-test DOM related 실행에서만 알려진 Vite dep-scan 노이즈를 억제해 로컬 WSL 개발 로그를 줄입니다.
+- 운영 정책과 모드 선택 기준은 [Git Hooks 워크플로우 가이드](./git-hooks-workflow.md)를 따릅니다.
+- 구현 디테일과 wrapper 동작은 [scripts/README.md](/mnt/d/dev/openmanager-ai/scripts/README.md) 를 참조합니다.
 
 ## Docker
 

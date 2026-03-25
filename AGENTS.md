@@ -56,4 +56,4 @@
 - 공통 정책이 변경되는 경우 이 파일이 아닌 `docs/guides/ai/ai-standards.md`를 갱신해야 합니다.
 
 ---
-_Last reviewed: 2026-02-21_
+_Last reviewed: 2026-03-25_

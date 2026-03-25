@@ -28,6 +28,42 @@
 - **Vercel (Frontend)**: `src/config/index.ts` — Zod 스키마 기반 검증, 기본값 내장
 - **Cloud Run (AI Engine)**: `cloud-run/ai-engine/src/config/` — 실행 시 환경변수 파싱
 
+### 로컬 개발 시작점
+
+로컬 개발은 아래 두 단계로 나눠 시작하는 편이 가장 덜 헷갈립니다.
+
+#### 1. 앱 부팅 최소 세트
+
+```bash
+# .env.local
+NEXT_PUBLIC_SUPABASE_URL=https://xxx.supabase.co
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_...
+```
+
+이 세트만으로 기본 앱 부팅, 대시보드, 비AI 화면 확인이 가능합니다.
+
+#### 2. AI 연동 최소 세트 (Cloud Run 사용 시)
+
+```bash
+CLOUD_RUN_ENABLED=true
+CLOUD_RUN_AI_URL=https://ai-engine-xxx.run.app
+CLOUD_RUN_API_SECRET=your-api-secret
+```
+
+Cloud Run AI 프록시가 필요할 때만 추가합니다.
+
+#### 3. 로컬 Docker AI 엔진 (선택)
+
+개발 환경 기본값은 `AI_ENGINE_MODE=AUTO`이며, 필요하면 아래 값으로 로컬 Docker AI 엔진을 명시적으로 우선 사용합니다.
+
+```bash
+USE_LOCAL_DOCKER=true
+LOCAL_DOCKER_URL=http://localhost:8080
+LOCAL_DOCKER_SECRET=dev-only-secret
+```
+
+> 추가 인증/게스트/Redis/Sentry 변수는 아래 Part 1 표를 기준으로 확장합니다.
+
 ---
 
 ## Part 1: Vercel Frontend 환경변수
@@ -104,7 +140,7 @@ curl -X POST https://openmanager-ai.vercel.app/api/auth/guest-login \
 | `LOCAL_DOCKER_URL` | 로컬 Docker AI 엔진 URL | `http://localhost:8080` |
 | `LOCAL_DOCKER_SECRET` | 로컬 Docker AI 엔진 인증 키 | `dev-only-secret` |
 
-> 현재 Next.js 런타임은 `CLOUD_RUN_ENABLED=true`와 `CLOUD_RUN_AI_URL`, `CLOUD_RUN_API_SECRET`의 조합을 Cloud Run 연동 기준으로 사용합니다. 개발 환경에서는 `AI_ENGINE_MODE=AUTO` + `USE_LOCAL_DOCKER=true` 조합으로 로컬 Docker AI 엔진을 우선 사용할 수 있습니다.
+> 현재 Next.js 런타임은 `CLOUD_RUN_ENABLED=true`와 `CLOUD_RUN_AI_URL`, `CLOUD_RUN_API_SECRET`의 조합을 Cloud Run 연동 기준으로 사용합니다. 개발 환경 기본값은 `AI_ENGINE_MODE=AUTO`이며, 필요하면 `USE_LOCAL_DOCKER=true`와 `LOCAL_DOCKER_*` 값으로 로컬 Docker AI 엔진을 명시적으로 우선 사용합니다.
 
 ### 선택 환경변수 — 데이터/캐시
 
