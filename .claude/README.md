@@ -1,6 +1,6 @@
 # .claude 폴더 구조 가이드
 
-> **Claude Code 공식 표준 준수** (2026-02-17 업데이트)
+> **Claude Code 공식 표준 준수** (2026-03-25 업데이트)
 > 공식 문서: https://docs.anthropic.com/en/docs/claude-code/settings
 
 ## 폴더 구조
@@ -23,17 +23,20 @@
     └── .gitkeep
 ```
 
-## 커스텀 스킬 (7개)
+## 커스텀 스킬 (10개)
 
 | 스킬 | 버전 | 용도 |
 |------|------|------|
-| `git-workflow` | v1.0.0 | Git 커밋/푸시/PR 워크플로우 (commit, clean_gone) |
+| `git-workflow` | v1.0.0 | Git 커밋/푸시/PR 워크플로우 |
+| `clean_gone` | v1.1.0 | 원격에서 삭제된 로컬 `[gone]` 브랜치 정리 |
 | `cloud-run` | v1.0.0 | Cloud Run 배포 + GCP 비용 점검 |
 | `lint-smoke` | v1.5.0 | Lint + 테스트 스모크 체크 |
-| `doc-management` | v1.2.0 | 문서 현황 점검, 예산 관리 |
-| `qa-ops` | v1.1.0 | Vercel + Playwright MCP 최종 QA 및 `reports/qa` 누적 기록 |
+| `code-review` | v1.0.0 | 6관점 심각도 우선 코드 리뷰 |
+| `doc-management` | v1.3.0 | 문서 현황 점검, 예산 관리 |
+| `qa-ops` | v1.2.0 | Vercel + Playwright MCP 최종 QA 및 `reports/qa` 누적 기록 |
 | `state-triage` | v1.0.0 | 최근 QA/런타임 증거 기반 원인 분류 및 다음 액션 결정 |
 | `env-sync` | v1.0.0 | `.env.local` ↔ Vercel preview/production env drift 진단/동기화 |
+| `stitch-incremental` | v1.0.0 | Stitch 기반 기존 UI 증분 개선 |
 
 ## MCP 서버 (9개, 규칙 기준)
 

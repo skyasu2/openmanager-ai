@@ -14,11 +14,12 @@
 | `playwright` | E2E 테스트 | 중간 |
 | `github` | 저장소/PR 관리 | 중간 |
 
-## Skills (9개)
+## Skills (10개)
 
 | Skill | 설명 |
 |-------|------|
-| `git-workflow` | Git 커밋/푸시/PR 워크플로우 (commit, clean_gone) |
+| `git-workflow` | Git 커밋/푸시/PR 워크플로우 |
+| `clean_gone` | 원격에서 삭제된 로컬 [gone] 브랜치 정리 (worktree 포함) |
 | `cloud-run` | Cloud Run 배포 + GCP 비용 점검 |
 | `lint-smoke` | Lint + 테스트 스모크 체크 |
 | `code-review` | 6관점 심각도 우선 코드 리뷰 (go/conditional/no-go 판정) |

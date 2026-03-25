@@ -1,7 +1,7 @@
 ---
 name: doc-management
 description: 문서 현황 점검, 예산 초과 감지, 병합/아카이브 제안. Triggers on /doc-management or 문서 정리/관리 요청.
-version: v1.2.0
+version: v1.3.0
 user-invocable: true
 allowed-tools: Bash, Read, Grep, Glob, Edit, Write
 disable-model-invocation: true
@@ -24,9 +24,9 @@ disable-model-invocation: true
 # 권장: 통합 리포트 실행
 npm run docs:budget
 
-# 활성 문서 수 (한도: 55)
+# 활성 문서 수 (한도: 60)
 ACTIVE=$(find docs/ -name "*.md" -not -path "*/archived/*" | wc -l)
-echo "Active: $ACTIVE / 55"
+echo "Active: $ACTIVE / 60"
 
 # 디렉토리별 분포
 find docs/ -name "*.md" -not -path "*/archived/*" | \
@@ -35,9 +35,9 @@ find docs/ -name "*.md" -not -path "*/archived/*" | \
 
 ### 2. 예산 초과 감지
 
-디렉토리별 한도와 비교:
-- reference/architecture/*: 18 | development/*: 14 | guides/*: 7
-- vibe-coding/*: 8 | troubleshooting/*: 3 | root: 5
+디렉토리별 한도와 비교 (SSOT: `.claude/rules/documentation.md`):
+- reference/architecture/*: 25 | development/*: 20 | guides/*: 12
+- troubleshooting/*: 5 | root: 5
 
 초과 시 병합/아카이브 후보 제안.
 
@@ -61,8 +61,8 @@ find docs/ -name "*.md" -not -path "*/archived/*" -mtime +90
 
 | 항목 | 현재 | 한도 | 상태 |
 |------|------|------|------|
-| 전체 | XX | 55 | OK/OVER |
-| reference/architecture | XX | 20 | ... |
+| 전체 | XX | 60 | OK/OVER |
+| reference/architecture | XX | 25 | ... |
 | ...  | ... | ... | ... |
 
 ### 조치 필요
@@ -85,7 +85,7 @@ find docs/ -name "*.md" -not -path "*/archived/*" -mtime +90
 
 ## Success Criteria
 
-- 활성 문서 수가 55개 한도 이내
+- 활성 문서 수가 60개 한도 이내
 - 이번 작업에서 변경한 문서는 Owner / Status / Doc type / Last reviewed 메타데이터 100% 충족
 - 기존 레거시 문서는 누락 리포트 생성 후 점진 보강
 - 각 디렉토리 README.md에 모든 문서가 링크됨
@@ -99,6 +99,7 @@ find docs/ -name "*.md" -not -path "*/archived/*" -mtime +90
 
 ## Changelog
 
+- 2026-03-25: v1.3.0 - 문서 한도 55→60, 디렉토리별 예산 documentation.md SSOT 동기화
 - 2026-02-14: v1.2.0 - metadata 스키마를 Owner/Last reviewed 기준으로 확장, strict gate 기준 문구 동기화
 - 2026-02-14: v1.1.0 - 예산 범위 통일(reference/architecture), 메타데이터 단계적 적용 기준 추가
 - 2026-02-14: v1.0.0 - 초기 생성 (Diataxis + Doc Budget Policy 기반)

@@ -1,4 +1,4 @@
-# CLAUDE.md - OpenManager AI v8.1.0
+# CLAUDE.md - OpenManager AI v8.9.2
 
 **한국어 우선, 기술용어 영어 허용** | 공통 정책 SSOT: `docs/guides/ai/ai-standards.md` (충돌 시 최우선)
 
@@ -48,7 +48,7 @@ npm run qa:status           # 누적 QA 상태 요약
 
 ## 참조
 - **상태**: `docs/status.md` | **TODO**: `reports/planning/TODO.md`
-- **문서**: `docs/` (55개 활성) | **AI 설정**: `config/ai/registry-core.yaml`
+- **문서**: `docs/` (`npm run docs:budget`로 현재 수량 확인) | **AI 설정**: `config/ai/registry-core.yaml`
 - **Production**: `https://openmanager-ai.vercel.app`
 
-_Last Updated: 2026-02-20_
+_Last Updated: 2026-03-25_
