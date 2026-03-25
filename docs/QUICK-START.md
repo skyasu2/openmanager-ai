@@ -37,11 +37,10 @@ npm install
 cp .env.example .env.local
 ```
 
-**`.env.local` 필수 설정**:
+**`.env.local` 최소 설정**:
 
 ```bash
-# Supabase 연결 (필수)
-SUPABASE_URL=your_supabase_url
+# Supabase 연결
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=your_supabase_publishable_key
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key # 레거시 fallback
@@ -51,14 +50,11 @@ SUPABASE_SERVICE_ROLE_KEY=your_service_role_key # 로그인 감사 로그 저장
 CLOUD_RUN_ENABLED=true
 CLOUD_RUN_AI_URL=https://ai-engine-xxx.asia-northeast1.run.app
 CLOUD_RUN_API_SECRET=your_cloud_run_api_secret
-
-# Optional: 게스트 로그인 국가 차단 (기본값: CN)
-GUEST_LOGIN_BLOCKED_COUNTRIES=CN
-
-# Optional: Vercel 원격 테스트용 게스트 PIN 인증
-NEXT_PUBLIC_GUEST_FULL_ACCESS=false
-GUEST_LOGIN_PIN=1234
 ```
+
+더 자세한 변수 설명과 선택 설정은 아래 문서를 따릅니다.
+- 전체 변수 맵: [환경 변수 관리 가이드](./development/environment-variables.md)
+- 제로베이스 초기 설정: [프로젝트 설정](./development/project-setup.md)
 
 ### 3. 개발 서버 실행
 

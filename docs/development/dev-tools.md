@@ -310,6 +310,8 @@ query 상태를 `Record<string, string>` 대신 `Array<[string, string]>` 튜플
 
 ### Husky + Custom Hook Scripts
 
+운영 흐름과 예시 출력은 [Git Hooks 워크플로우 가이드](./git-hooks-workflow.md)를 SSOT로 봅니다. 이 섹션은 도구/엔트리포인트 요약만 다룹니다.
+
 ```bash
 # pre-commit: 시크릿 스캔 + Biome(staged)
 # post-commit: 커밋 완료 알림(비차단)

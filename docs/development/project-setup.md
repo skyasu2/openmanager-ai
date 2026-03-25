@@ -97,29 +97,18 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJ... # 레거시 fallback
 SUPABASE_SERVICE_ROLE_KEY=eyJ...
 
 # ============================================
-# AI Providers (최소 1개 필수)
-# ============================================
-CEREBRAS_API_KEY=csk-...
-MISTRAL_API_KEY=...
-GROQ_API_KEY=gsk_...
-
-# ============================================
 # Cloud Run AI Engine
 # ============================================
 CLOUD_RUN_ENABLED=true
 CLOUD_RUN_AI_URL=https://ai-engine-xxx.run.app
 CLOUD_RUN_API_SECRET=your-api-secret
-
-# ============================================
-# Optional
-# ============================================
-SENTRY_DSN=
-NEXT_PUBLIC_GA_ID=
-GUEST_LOGIN_BLOCKED_COUNTRIES=CN
-NEXT_PUBLIC_GUEST_FULL_ACCESS=false
-NEXT_PUBLIC_GUEST_MODE=restricted
-GUEST_LOGIN_PIN=1234
 ```
+
+추가/선택 변수의 전체 맵은 [환경 변수 관리 가이드](./environment-variables.md)를 SSOT로 봅니다.
+- 게스트 접근/로그인 PIN
+- Redis/Sentry
+- 개발 환경의 `AI_ENGINE_MODE`, `USE_LOCAL_DOCKER`
+- Cloud Run AI Engine 내부 `.env` 및 Secret Manager 매핑
 
 ### 3. API 키 발급
 

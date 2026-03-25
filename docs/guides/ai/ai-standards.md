@@ -9,7 +9,7 @@
 > Tags: ai,standards,tooling,policy
 >
 > **통합 문서**: ai-coding-standards.md + ai-usage-guidelines.md
-> **최종 갱신**: 2026-02-21 (v8.1.0)
+> **최종 갱신**: 2026-03-25 (v8.1.0)
 >
 > **Note**: Qwen 제거 (2026-01-07) - 평균 201초 응답, 13.3% 실패율로 2-AI 단순화
 
