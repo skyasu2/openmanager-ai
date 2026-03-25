@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 const fs = require('fs');
+const path = require('node:path');
 
 function normalizeFilePath(filePath) {
   return String(filePath || '').replace(/\\/g, '/');
@@ -17,15 +18,13 @@ function isStoryFile(filePath) {
 function isTypeCheckInfraFile(filePath) {
   const normalized = normalizeFilePath(filePath);
 
-  return [
-    'package.json',
-    'tsconfig.json',
-    'tsconfig.check.json',
-    'next-env.d.ts',
-    'scripts/dev/tsc-wrapper.js',
-    'scripts/dev/typecheck-changed.sh',
-    'scripts/dev/typecheck-scope.js',
-  ].includes(normalized);
+  return (
+    normalized === 'package.json' ||
+    normalized === 'next-env.d.ts' ||
+    path.matchesGlob(normalized, 'tsconfig*.json') ||
+    path.matchesGlob(normalized, 'scripts/dev/typecheck-*') ||
+    path.matchesGlob(normalized, 'scripts/dev/tsc-*')
+  );
 }
 
 function isTypeCheckRelevantFile(filePath) {

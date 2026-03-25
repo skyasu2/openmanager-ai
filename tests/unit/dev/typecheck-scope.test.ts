@@ -18,6 +18,9 @@ describe('typecheck-scope', () => {
     expect(isTypeCheckInfraFile('scripts/dev/typecheck-changed.sh')).toBe(true);
     expect(isTypeCheckInfraFile('tsconfig.json')).toBe(true);
     expect(isTypeCheckInfraFile('tsconfig.check.json')).toBe(true);
+    expect(isTypeCheckInfraFile('tsconfig.release.json')).toBe(true);
+    expect(isTypeCheckInfraFile('scripts/dev/typecheck-report.js')).toBe(true);
+    expect(isTypeCheckInfraFile('scripts/dev/tsc-runner.js')).toBe(true);
     expect(isTypeCheckInfraFile('package.json')).toBe(true);
   });
 
@@ -33,13 +36,15 @@ describe('typecheck-scope', () => {
     expect(
       filterTypeCheckRelevantFiles([
         'scripts/dev/tsc-wrapper.js',
-        'scripts/dev/typecheck-changed.sh',
+        'scripts/dev/typecheck-report.js',
+        'tsconfig.release.json',
         'src/hooks/example.test.ts',
         'docs/guide.md',
       ])
     ).toEqual([
       'scripts/dev/tsc-wrapper.js',
-      'scripts/dev/typecheck-changed.sh',
+      'scripts/dev/typecheck-report.js',
+      'tsconfig.release.json',
     ]);
   });
 });

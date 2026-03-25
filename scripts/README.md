@@ -93,7 +93,7 @@ bash scripts/dev/biome-wrapper.sh
 - `scripts/dev/tsc-wrapper.js`는 로컬 `typescript/bin/tsc`를 실행하며 `SIGINT`/`SIGTERM`/`SIGHUP`를 자식 프로세스로 전달한다.
 - `TSC_WRAPPER_TIMEOUT_MS`를 주면 full type-check에도 opt-in timeout을 적용할 수 있고, `TSC_WRAPPER_KILL_GRACE_MS`로 SIGTERM 이후 강제 종료 grace period를 조정할 수 있다.
 - local full type-check가 중단되면 wrapper가 종료 시그널/timeout과 경과 시간을 함께 출력해 orphan `tsc` 프로세스 진단을 돕는다.
-- `scripts/dev/typecheck-scope.js`는 `src/**/*.ts(x)`뿐 아니라 `tsconfig*.json`, `package.json`, `scripts/dev/tsc-wrapper.js`, `scripts/dev/typecheck-*.sh|js` 같은 type-check 인프라 변경도 root type-check relevant로 간주한다.
+- `scripts/dev/typecheck-scope.js`는 `src/**/*.ts(x)`뿐 아니라 `tsconfig*.json`, `package.json`, `scripts/dev/typecheck-*`, `scripts/dev/tsc-*` 패턴에 맞는 type-check 인프라 변경도 root type-check relevant로 간주한다.
 
 ### 문서 관리
 
