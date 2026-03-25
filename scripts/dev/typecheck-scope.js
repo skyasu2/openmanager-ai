@@ -14,9 +14,24 @@ function isStoryFile(filePath) {
   return /\.stories\.(ts|tsx)$/u.test(normalizeFilePath(filePath));
 }
 
+function isTypeCheckInfraFile(filePath) {
+  const normalized = normalizeFilePath(filePath);
+
+  return [
+    'package.json',
+    'tsconfig.json',
+    'tsconfig.check.json',
+    'next-env.d.ts',
+    'scripts/dev/tsc-wrapper.js',
+    'scripts/dev/typecheck-changed.sh',
+    'scripts/dev/typecheck-scope.js',
+  ].includes(normalized);
+}
+
 function isTypeCheckRelevantFile(filePath) {
   const normalized = normalizeFilePath(filePath);
 
+  if (isTypeCheckInfraFile(normalized)) return true;
   if (!/\.(ts|tsx)$/u.test(normalized)) return false;
   if (isVitestTestFile(normalized)) return false;
   if (isStoryFile(normalized)) return false;
@@ -27,7 +42,7 @@ function isTypeCheckRelevantFile(filePath) {
   if (normalized === 'src/services/ai/orchestrator/adapters/RAGAdapter.ts') return false;
   if (normalized === 'src/services/websocket/WebSocketManager.ts') return false;
 
-  return normalized === 'next-env.d.ts' || normalized.startsWith('src/');
+  return normalized.startsWith('src/');
 }
 
 function filterTypeCheckRelevantFiles(files) {
@@ -59,6 +74,7 @@ if (require.main === module) {
 
 module.exports = {
   filterTypeCheckRelevantFiles,
+  isTypeCheckInfraFile,
   isTypeCheckRelevantFile,
   normalizeFilePath,
 };

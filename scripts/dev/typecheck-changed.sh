@@ -24,7 +24,7 @@ if [ -z "$ALL_CHANGED" ]; then
 fi
 
 FILE_COUNT=$(echo "$ALL_CHANGED" | wc -l)
-echo "📝 $FILE_COUNT TypeScript file(s) modified. Running project type-check..."
+echo "📝 $FILE_COUNT type-check relevant file(s) modified. Running project type-check..."
 
 TYPECHECK_CHANGED_TIMEOUT_SECONDS="${TYPECHECK_CHANGED_TIMEOUT_SECONDS:-60}"
 TYPECHECK_CHANGED_SOFT_TIMEOUT="${TYPECHECK_CHANGED_SOFT_TIMEOUT:-false}"
