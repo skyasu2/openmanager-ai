@@ -331,6 +331,13 @@ describe('QA scripts', () => {
     expect(recordResult.status).toBe(0);
 
     const trackerPath = join(tempDir, 'reports', 'qa', 'qa-tracker.json');
+    const validationEvidencePath = join(
+      tempDir,
+      'public',
+      'data',
+      'qa',
+      'validation-evidence.json'
+    );
     const staleTracker = JSON.parse(readFileSync(trackerPath, 'utf8'));
     staleTracker.summary = {
       totalRuns: 0,
@@ -357,19 +364,27 @@ describe('QA scripts', () => {
       `${JSON.stringify(staleTracker, null, 2)}\n`,
       'utf8'
     );
+    writeWorkspaceFile(
+      tempDir,
+      'public/data/qa/validation-evidence.json',
+      '{"stale":true}\n'
+    );
 
     const syncResult = runNodeScript(PRINT_QA_STATUS_SCRIPT, ['--write'], {
       cwd: tempDir,
     });
 
     expect(syncResult.status).toBe(0);
-    expect(syncResult.stdout).toContain('- public evidence skipped:');
+    expect(syncResult.stdout).toContain(
+      '- public evidence skipped: QA validation evidence summary is unavailable (stale snapshot removed)'
+    );
     const repairedTracker = JSON.parse(readFileSync(trackerPath, 'utf8'));
     expect(repairedTracker.summary.totalRuns).toBe(1);
     expect(repairedTracker.summary.totalChecks).toBe(8);
     expect(repairedTracker.summary.lastRunId).toMatch(/^QA-\d{8}-\d+$/);
     expect(repairedTracker.sequence.nextRunNumber).toBeGreaterThan(1);
     expect(repairedTracker.meta.updatedAt).not.toBe('stale');
+    expect(existsSync(validationEvidencePath)).toBe(false);
   });
 
   it('prints malformed recent runs defensively in qa:status', () => {

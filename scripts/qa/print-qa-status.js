@@ -50,9 +50,16 @@ function run() {
         VALIDATION_EVIDENCE_PATH
       )}`;
     } catch (error) {
+      let staleSnapshotRemoved = false;
+      if (fs.existsSync(VALIDATION_EVIDENCE_PATH)) {
+        try {
+          fs.rmSync(VALIDATION_EVIDENCE_PATH, { force: true });
+          staleSnapshotRemoved = !fs.existsSync(VALIDATION_EVIDENCE_PATH);
+        } catch {}
+      }
       validationEvidenceSyncMessage = `- public evidence skipped: ${
         error instanceof Error ? error.message : String(error)
-      }`;
+      }${staleSnapshotRemoved ? ' (stale snapshot removed)' : ''}`;
     }
   }
   const summary = tracker.summary || {};
