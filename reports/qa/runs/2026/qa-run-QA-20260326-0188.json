@@ -1,0 +1,112 @@
+{
+  "runId": "QA-20260326-0188",
+  "recordedAt": "2026-03-25T18:04:04.763Z",
+  "recordedAtKst": "2026-03-26 03:04:04 KST",
+  "runTitle": "Vercel Playwright targeted recheck - latest promoted production deploy AI proof",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_BTchtkkRxK1j336RvH2aj9VKWaSm",
+    "deploymentUrl": "https://openmanager-13vemp0ur-skyasus-projects.vercel.app",
+    "commitSha": "72da39ca99dee2c3c40145c5b617b9dc83e04f08"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "coveragePacks": ["core-routes-smoke", "dashboard-core", "ai-core"],
+  "coveredSurfaces": [
+    "/ landing render on latest promoted deploy",
+    "/system-boot -> /dashboard redirect",
+    "/api/health 200 healthy",
+    "/api/version 200 version 8.9.2",
+    "AI sidebar open on dashboard",
+    "AI free-text prompt streaming response",
+    "X-AI-Latency-Ms header proof on /api/ai/supervisor/stream/v2",
+    "landing/dashboard/AI console errors 0"
+  ],
+  "skippedSurfaces": [
+    "server detail modal deep interactions",
+    "Reporter/Analyst advanced surfaces",
+    "fullscreen AI workspace",
+    "Cloud Run admin observability surfaces"
+  ],
+  "checks": {
+    "total": 8,
+    "passed": 8,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Latest promoted deployment returned a representative AI sidebar streaming response with timing header proof.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Latest promoted production deployment completed the minimal landing, health/version, boot redirect, and dashboard smoke without errors.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Playwright MCP captured landing, dashboard, AI response, and console error artifacts for the targeted deploy recheck.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "Latest deploy landing proof",
+      "path": "qa-20260326-latest-prod-recheck-landing.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Latest deploy dashboard proof",
+      "path": "qa-20260326-latest-prod-recheck-dashboard.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Latest deploy AI response proof",
+      "path": "qa-20260326-latest-prod-recheck-ai.png"
+    },
+    {
+      "type": "playwright-console",
+      "label": "Console errors during recheck",
+      "path": "qa-20260326-latest-prod-recheck-console-errors-final.log"
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "This run closes the conditional note from QA-20260326-0187 by rechecking the newer deployment after it reached READY and PROMOTED.",
+    "AI free-text prompt '현재 경고 상태인 서버 2대만 요약해줘' returned a streamed response summarizing db-mysql-dc1-primary and api-was-dc1-01.",
+    "Timing header proof confirmed X-AI-Latency-Ms=204 on /api/ai/supervisor/stream/v2; X-AI-Processing-Ms was absent on this sampled response."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Production alias",
+      "url": "https://openmanager-ai.vercel.app/"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Latest promoted deployment",
+      "url": "https://openmanager-13vemp0ur-skyasus-projects.vercel.app/"
+    }
+  ]
+}
