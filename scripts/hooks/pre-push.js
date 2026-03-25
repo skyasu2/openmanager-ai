@@ -162,6 +162,31 @@ function normalizeFilePath(filePath) {
   return String(filePath || '').replace(/\\/g, '/');
 }
 
+function createTypeCheckStatusFile() {
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'openmanager-typecheck-'));
+  return {
+    tempDir,
+    filePath: path.join(tempDir, 'status.txt'),
+  };
+}
+
+function readTypeCheckStatus(filePath) {
+  try {
+    return fs.readFileSync(filePath, 'utf8').trim() || null;
+  } catch {
+    return null;
+  }
+}
+
+function cleanupTypeCheckStatus(tempDir) {
+  if (!tempDir) return;
+  try {
+    fs.rmSync(tempDir, { recursive: true, force: true });
+  } catch {
+    // ignore temp cleanup failures in git hook path
+  }
+}
+
 function isVitestTestFile(filePath) {
   const normalized = normalizeFilePath(filePath);
   if (normalized.startsWith('tests/e2e/')) return false;
@@ -971,6 +996,10 @@ function runBuildValidation(changedFilesResult) {
           : '⚡ Root TypeScript 검증 (기본 모드)...'
       );
 
+      const changedTypeCheckStatus = useChangedTypeCheck
+        ? createTypeCheckStatusFile()
+        : null;
+
       const extraEnv = useChangedTypeCheck
         ? {
             ...process.env,
@@ -978,6 +1007,7 @@ function runBuildValidation(changedFilesResult) {
             TYPECHECK_CHANGED_SOFT_TIMEOUT: 'true',
             TYPECHECK_CHANGED_TIMEOUT_SECONDS:
               process.env.TYPECHECK_CHANGED_TIMEOUT_SECONDS || '60',
+            TYPECHECK_CHANGED_STATUS_FILE: changedTypeCheckStatus.filePath,
           }
         : null;
 
@@ -985,6 +1015,11 @@ function runBuildValidation(changedFilesResult) {
         useChangedTypeCheck ? ['run', 'type-check:changed'] : ['run', 'type-check'],
         extraEnv
       );
+      const changedStatus = changedTypeCheckStatus
+        ? readTypeCheckStatus(changedTypeCheckStatus.filePath)
+        : null;
+      cleanupTypeCheckStatus(changedTypeCheckStatus?.tempDir);
+
       if (!rootSuccess) {
         typeCheckStatus = 'failed';
         console.log('❌ Root TypeScript 에러 - push blocked');
@@ -996,7 +1031,13 @@ function runBuildValidation(changedFilesResult) {
         console.log('⚠️  Bypass: HUSKY=0 git push');
         process.exit(1);
       }
-      console.log('✅ Root TypeScript 검증 통과');
+
+      if (changedStatus === 'soft-timeout') {
+        typeCheckStatus = 'delegated-soft-timeout';
+        console.log('⚪ Root TypeScript 증분 검증 soft-timeout, CI/Vercel 전체 타입체크로 위임');
+      } else {
+        console.log('✅ Root TypeScript 검증 통과');
+      }
     }
 
     if (!skipCloudRunTypeCheck) {
@@ -1014,7 +1055,9 @@ function runBuildValidation(changedFilesResult) {
       console.log('✅ Cloud Run TypeScript 검증 통과');
     }
 
-    typeCheckStatus = 'passed';
+    if (typeCheckStatus !== 'delegated-soft-timeout') {
+      typeCheckStatus = 'passed';
+    }
     console.log('ℹ️  Full build는 GitHub CI + Vercel에서 실행됨');
   } else {
     typeCheckStatus = 'delegated';
@@ -1086,6 +1129,8 @@ function printSummary(duration) {
   }
   if (typeCheckStatus === 'passed') {
     console.log('  ✅ TypeScript check passed');
+  } else if (typeCheckStatus === 'delegated-soft-timeout') {
+    console.log('  ⚪ TypeScript delegated after soft-timeout (CI/Vercel)');
   } else if (typeCheckStatus === 'skipped-docs-only') {
     console.log('  ⚪ TypeScript skipped (docs/report-only push)');
   } else if (typeCheckStatus === 'skipped-no-relevant-ts') {

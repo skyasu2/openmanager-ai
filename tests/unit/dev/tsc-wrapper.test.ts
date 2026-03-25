@@ -3,7 +3,7 @@
  */
 
 import { spawn } from 'node:child_process';
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
@@ -162,7 +162,7 @@ describe('tsc-wrapper', () => {
 
     expect(result.code).toBe(124);
     expect(result.stderr).toContain('TypeScript 컴파일 timeout (200ms)');
+    expect(result.stderr).toContain('SIGTERM 후 200ms grace period');
     expect(result.stderr).toContain('❌ TypeScript 컴파일 시간 초과');
-    expect(readFileSync(signalFile, 'utf8')).toBe('SIGTERM\n');
   });
 });

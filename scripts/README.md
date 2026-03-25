@@ -94,6 +94,7 @@ bash scripts/dev/biome-wrapper.sh
 - `TSC_WRAPPER_TIMEOUT_MS`를 주면 full type-check에도 opt-in timeout을 적용할 수 있고, `TSC_WRAPPER_KILL_GRACE_MS`로 SIGTERM 이후 강제 종료 grace period를 조정할 수 있다.
 - local full type-check가 중단되면 wrapper가 종료 시그널/timeout과 경과 시간을 함께 출력해 orphan `tsc` 프로세스 진단을 돕는다.
 - `scripts/dev/typecheck-scope.js`는 `src/**/*.ts(x)`뿐 아니라 `tsconfig*.json`, `package.json`, `scripts/dev/typecheck-*`, `scripts/dev/tsc-*` 패턴에 맞는 type-check 인프라 변경도 root type-check relevant로 간주한다.
+- `scripts/dev/typecheck-changed.sh`는 `TYPECHECK_CHANGED_STATUS_FILE`에 `passed` / `soft-timeout` / `failed` / `timeout` / `skipped-no-relevant-ts` 상태를 기록할 수 있고, `scripts/hooks/pre-push.js`는 이를 읽어 실제 통과와 CI/Vercel 위임(soft-timeout)을 summary에서 구분한다.
 
 ### 문서 관리
 

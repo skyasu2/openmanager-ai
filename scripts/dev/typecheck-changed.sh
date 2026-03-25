@@ -8,6 +8,13 @@ set -euo pipefail
 echo "🔍 Checking TypeScript project status..."
 
 PRESET_FILES="${TYPECHECK_CHANGED_FILES:-${PRE_PUSH_CHANGED_FILES:-}}"
+TYPECHECK_CHANGED_STATUS_FILE="${TYPECHECK_CHANGED_STATUS_FILE:-}"
+
+write_status() {
+  if [ -n "$TYPECHECK_CHANGED_STATUS_FILE" ]; then
+    printf '%s\n' "$1" > "$TYPECHECK_CHANGED_STATUS_FILE"
+  fi
+}
 
 if [ -n "$PRESET_FILES" ]; then
   ALL_CHANGED=$(printf '%s\n' "$PRESET_FILES" | sort -u | node scripts/dev/typecheck-scope.js || true)
@@ -19,6 +26,7 @@ else
 fi
 
 if [ -z "$ALL_CHANGED" ]; then
+  write_status "skipped-no-relevant-ts"
   echo "✅ No TypeScript files changed. Skipping incremental check."
   exit 0
 fi
@@ -51,18 +59,22 @@ if command -v timeout >/dev/null 2>&1; then
   if [ "$TYPECHECK_EXIT_CODE" -eq 124 ]; then
     echo "⚠️ Type-check timed out after ${TYPECHECK_CHANGED_TIMEOUT_SECONDS}s."
     if [ "$TYPECHECK_CHANGED_SOFT_TIMEOUT" = "true" ]; then
+      write_status "soft-timeout"
       echo "ℹ️ Pre-push에서는 해당 검증을 soft-skip하고 CI/Vercel 전체 타입체크에 위임합니다."
       exit 0
     fi
+    write_status "timeout"
     exit 124
   fi
 
   if [ "$TYPECHECK_EXIT_CODE" -ne 0 ]; then
+    write_status "failed"
     exit "$TYPECHECK_EXIT_CODE"
   fi
 else
   "${TYPECHECK_CMD[@]}"
 fi
 
+write_status "passed"
 echo ""
 echo "✅ Type-check passed!"
