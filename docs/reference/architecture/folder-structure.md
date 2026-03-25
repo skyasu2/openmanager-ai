@@ -5,7 +5,7 @@
 > Last verified against code: 2026-03-03
 > Status: Active Canonical
 > Doc type: Reference
-> Last reviewed: 2026-03-03
+> Last reviewed: 2026-03-25
 > Canonical: docs/reference/architecture/folder-structure.md
 > Tags: architecture,folder-structure,reference
 
@@ -98,4 +98,4 @@ docs/
 ## Notes
 
 - 실제 코드 구조와 불일치 시, 코드 트리가 우선입니다.
-- 문서 정책 SSOT는 `AGENTS.md`입니다.
+- 공통 AI 정책 SSOT는 `docs/guides/ai/ai-standards.md`이며, `AGENTS.md`는 Codex 실행 규칙을 다룹니다.

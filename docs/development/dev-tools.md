@@ -4,7 +4,7 @@
 > Owner: dev-experience
 > Status: Active
 > Doc type: Reference
-> Last reviewed: 2026-03-15
+> Last reviewed: 2026-03-25
 > Canonical: docs/development/dev-tools.md
 > Tags: tooling,nodejs,biome
 
@@ -313,7 +313,7 @@ query 상태를 `Record<string, string>` 대신 `Array<[string, string]>` 튜플
 ```bash
 # pre-commit: 시크릿 스캔 + Biome(staged)
 # post-commit: 커밋 완료 알림(비차단)
-# pre-push: TypeScript + 빠른 테스트 (환경 검사는 STRICT_PUSH_ENV=true일 때만)
+# pre-push: 변경 범위 기반 targeted 테스트 + 조건부 TypeScript (환경 검사는 STRICT_PUSH_ENV=true일 때만)
 ```
 
 핵심 구현 파일:
@@ -326,6 +326,9 @@ scripts/env/precommit-check-secrets.cjs
 scripts/hooks/pre-push.js
 scripts/hooks/post-commit.js
 ```
+
+- `scripts/hooks/pre-push.js`는 변경 파일을 기준으로 targeted node/DOM, related node/DOM, DOM infrastructure smoke를 동적으로 선택합니다.
+- `scripts/dev/vitest-main-wrapper.js`는 zero-test DOM related 실행에서만 알려진 Vite dep-scan 노이즈를 억제해 로컬 WSL 개발 로그를 줄입니다.
 
 ## Docker
 

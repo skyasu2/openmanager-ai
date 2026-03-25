@@ -4,11 +4,11 @@
 > Owner: dev-experience
 > Status: Active
 > Doc type: Tutorial
-> Last reviewed: 2026-02-28
+> Last reviewed: 2026-03-25
 > Canonical: docs/QUICK-START.md
 > Tags: quickstart,onboarding,setup
 >
-> **v8.0.0** | Updated 2026-02-28
+> **v8.0.0** | Updated 2026-03-25
 
 **AI 기반 실시간 서버 모니터링 플랫폼** - 5분 만에 시작하기
 
@@ -48,6 +48,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key # 레거시 fallback
 SUPABASE_SERVICE_ROLE_KEY=your_service_role_key # 로그인 감사 로그 저장용(서버 전용)
 
 # AI 기능 (Cloud Run AI - GCP IAM 인증 사용)
+CLOUD_RUN_ENABLED=true
 CLOUD_RUN_AI_URL=https://ai-engine-xxx.asia-northeast1.run.app
 CLOUD_RUN_API_SECRET=your_cloud_run_api_secret
 

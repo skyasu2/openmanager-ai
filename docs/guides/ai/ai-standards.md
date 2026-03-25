@@ -4,7 +4,7 @@
 > Owner: documentation
 > Status: Active
 > Doc type: How-to
-> Last reviewed: 2026-02-21
+> Last reviewed: 2026-03-25
 > Canonical: docs/guides/ai/ai-standards.md
 > Tags: ai,standards,tooling,policy
 >
@@ -17,9 +17,9 @@
 
 ## Policy SSOT
 
-- 멀티 에이전트 공통 운영 정책의 SSOT는 루트 `AGENTS.md`입니다.
-- 이 문서는 도구 사용 가이드/운영 팁에 집중합니다.
-- 공통 정책과 충돌 시 `AGENTS.md`를 우선 적용합니다.
+- 멀티 에이전트 공통 운영 정책의 SSOT는 `docs/guides/ai/ai-standards.md`입니다.
+- `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`는 각 에이전트의 실행 규칙/환경 규칙만 다룹니다.
+- 공통 정책과 에이전트 전용 문서가 충돌하면 이 문서를 우선 적용합니다.
 
 ## Quick Reference
 

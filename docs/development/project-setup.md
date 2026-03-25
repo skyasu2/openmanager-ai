@@ -4,7 +4,7 @@
 > Owner: dev-experience
 > Status: Active Canonical
 > Doc type: How-to
-> Last reviewed: 2026-03-14
+> Last reviewed: 2026-03-25
 > Canonical: docs/development/project-setup.md
 > Tags: wsl,github-auth,project-setup
 
@@ -106,6 +106,7 @@ GROQ_API_KEY=gsk_...
 # ============================================
 # Cloud Run AI Engine
 # ============================================
+CLOUD_RUN_ENABLED=true
 CLOUD_RUN_AI_URL=https://ai-engine-xxx.run.app
 CLOUD_RUN_API_SECRET=your-api-secret
 

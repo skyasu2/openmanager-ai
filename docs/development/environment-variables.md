@@ -4,7 +4,7 @@
 > Owner: platform-devops
 > Status: Active
 > Doc type: How-to
-> Last reviewed: 2026-02-22
+> Last reviewed: 2026-03-25
 > Canonical: docs/development/environment-variables.md
 > Tags: env,secrets,configuration,setup
 
@@ -96,7 +96,15 @@ curl -X POST https://openmanager-ai.vercel.app/api/auth/guest-login \
 | `AI_ENABLE_CONTINUOUS_LEARNING` | 지속 학습 활성화 | `true` |
 | `AI_ENABLE_PATTERN_ANALYSIS` | 패턴 분석 활성화 | `true` |
 | `AI_ENABLE_PREDICTION` | 예측 활성화 | `true` |
-| `CLOUD_RUN_AI_ENABLED` | Cloud Run AI 연동 | `true` |
+| `CLOUD_RUN_ENABLED` | Cloud Run AI 프록시 활성화 (`true`일 때 URL/secret 요구) | `false` |
+| `CLOUD_RUN_AI_URL` | Frontend가 프록시할 Cloud Run AI 엔진 URL | — |
+| `CLOUD_RUN_API_SECRET` | Frontend → Cloud Run 인증 키 | — |
+| `AI_ENGINE_MODE` | 개발 환경에서 `AUTO`(기본)/`CLOUD` 선택 | `AUTO` |
+| `USE_LOCAL_DOCKER` | 개발 환경에서 로컬 Docker AI 엔진 우선 사용 | `false` |
+| `LOCAL_DOCKER_URL` | 로컬 Docker AI 엔진 URL | `http://localhost:8080` |
+| `LOCAL_DOCKER_SECRET` | 로컬 Docker AI 엔진 인증 키 | `dev-only-secret` |
+
+> 현재 Next.js 런타임은 `CLOUD_RUN_ENABLED=true`와 `CLOUD_RUN_AI_URL`, `CLOUD_RUN_API_SECRET`의 조합을 Cloud Run 연동 기준으로 사용합니다. 개발 환경에서는 `AI_ENGINE_MODE=AUTO` + `USE_LOCAL_DOCKER=true` 조합으로 로컬 Docker AI 엔진을 우선 사용할 수 있습니다.
 
 ### 선택 환경변수 — 데이터/캐시
 

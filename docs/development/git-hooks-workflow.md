@@ -4,7 +4,7 @@
 > Owner: dev-experience
 > Status: Active
 > Doc type: How-to
-> Last reviewed: 2026-02-16
+> Last reviewed: 2026-03-25
 > Canonical: docs/development/git-hooks-workflow.md
 > Tags: git,hooks,cicd,workflow
 >
@@ -114,7 +114,7 @@ const SKIP_FILES = [
 
 | 모드 | 환경변수 | 검증 항목 | 시간 |
 |------|---------|----------|------|
-| **Quick (기본)** | `QUICK_PUSH=true` | TypeScript + 빠른 테스트 | ~78초 |
+| **Quick (기본)** | `QUICK_PUSH=true` | 변경 범위 기반 targeted 테스트 + 조건부 TypeScript | ~20-100초 |
 | **Full** | `QUICK_PUSH=false` | TypeScript + Full Build | ~4분 |
 | **Strict Env (선택)** | `STRICT_PUSH_ENV=true` | Quick + env:check | +5~15초 |
 | **Skip All** | `HUSKY=0` | 없음 | 0초 |
@@ -122,7 +122,7 @@ const SKIP_FILES = [
 ### Quick Mode (기본값)
 
 ```bash
-# 기본 실행 (TypeScript만)
+# 기본 실행 (변경 범위 기반 targeted validation)
 git push
 
 # 출력 예시:
@@ -131,14 +131,15 @@ git push
    기본: TypeScript 검증만 (~20초)
    Full Build 필요 시: QUICK_PUSH=false git push
 
-🧪 Running quick tests...
-   ✓ 12 파일, 228 테스트 통과 (5.36s)
+🧪 Running targeted node + DOM infra smoke checks...
+   → Targeted node suite (1 file)
+   → DOM infrastructure smoke
 
 🏗️ Build validation...
-⚡ TypeScript 검증 (기본 모드)...
-  ✅ TypeScript Passed
+⚪ TypeScript skipped (no relevant TS files in push range)
+ℹ️  Full build/type-check는 GitHub CI + Vercel에서 계속 검증됨
 
-✅ Pre-push validation passed in 78s
+✅ Pre-push validation passed in 96s
 ```
 
 ### Full Build Mode
@@ -159,12 +160,15 @@ QUICK_PUSH=false git push
 │     └─ 필수 패키지 존재 여부                             │
 │     └─ WSL/Windows 바이너리 호환성                       │
 │                                                          │
-│  2. Quick Tests (npm run test:super-fast)                │
-│     └─ 12개 테스트 파일, 228개 테스트                    │
-│     └─ 순수 로직 검증 (DOM 없음)                         │
+│  2. 변경 범위 분류 기반 테스트                           │
+│     └─ targeted node / targeted DOM                      │
+│     └─ related node / related DOM                        │
+│     └─ DOM infrastructure smoke                          │
+│     └─ docs/report-only push는 테스트 생략 가능          │
 │                                                          │
-│  3. TypeScript 검증 (npm run type-check)                 │
-│     └─ 타입 체크 (strict mode)                           │
+│  3. TypeScript 검증                                      │
+│     └─ 관련 TS 파일이 있을 때만 실행                     │
+│     └─ soft-timeout 시 CI/Vercel로 위임 가능             │
 │                                                          │
 │  4. Cloud Build Guard (변경 파일 있을 때만)              │
 │     └─ cloudbuild.yaml / deploy.sh 변경 시만 검사        │
@@ -174,6 +178,8 @@ QUICK_PUSH=false git push
 │                                                          │
 └─────────────────────────────────────────────────────────┘
 ```
+
+> `scripts/dev/vitest-main-wrapper.js`는 zero-test DOM related 실행에서만 알려진 Vite dep-scan 노이즈를 단일 note로 축약합니다. 실제 테스트 실패/경고는 그대로 출력됩니다.
 
 ---
 
