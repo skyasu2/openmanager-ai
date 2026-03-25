@@ -1,15 +1,15 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-25 20:45:17 KST
+> Generated at: 2026-03-26 02:38:41 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 185 |
-| Total Checks | 1334 |
-| Passed | 1274 |
+| Total Runs | 186 |
+| Total Checks | 1346 |
+| Passed | 1286 |
 | Failed | 56 |
 | Completed Items | 252 |
 | Pending Items | 0 |
@@ -18,42 +18,47 @@
 | Expert Domains Tracked | 6 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Run | QA-20260325-0186 (2026-03-25T11:45:16.583Z) |
+| Last Run | QA-20260326-0187 (2026-03-25T17:38:40.806Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260325-0186 (2026-03-25T11:45:16.583Z)
+Latest run: QA-20260326-0187 (2026-03-25T17:38:40.806Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| - | - | - | - |
+| AI Quality Assurance Specialist | appropriate | no | - |
+| DevOps / SRE Engineer | appropriate | no | - |
+| Test Automation Architect | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| - | - | - | - | - |
+| vercel | cli | checked | normal | Current month reviewed after release-facing smoke; effectiveCost $18.6052, billedCost $0.0000, no unexpected billed usage. |
 
 ## Coverage (Latest Run)
 
-- Scope: targeted
-- Release-Facing: no
-- Deployment: SHA b50947d4
-- Coverage Packs: observability-pack
-- Covered Surfaces: scripts/dev/vitest-main-wrapper.js zero-test DOM related output filtering, src/test/config/vitest-main-wrapper.test.ts regression coverage, scripts/README.md local pre-push wrapper behavior note
-- Skipped Surfaces: vercel-production browser QA, Cloud Run runtime behavior, playwright end-to-end UI flows
+- Scope: broad
+- Release-Facing: yes
+- Deployment: dpl_84UPbhciR3EcDsJhPoxJztVKsdkc / SHA f316240e
+- Coverage Packs: core-routes-smoke, dashboard-core, ai-core
+- Covered Surfaces: / landing render, /main redirect to /, /api/health 200 healthy, /api/version 200 version 8.9.2, 404 not-found page render, /system-boot -> /dashboard redirect, /dashboard 15 server cards + resource overview, server detail modal 3-tab switch + ESC close, AI sidebar open, AI starter prompt streaming response, X-AI-Latency-Ms header proof on /api/ai/supervisor/stream/v2, landing/dashboard console errors 0
+- Skipped Surfaces: /dashboard/ai-assistant fullscreen workspace, Reporter/Analyst advanced surfaces, Cloud Run admin observability surfaces (/monitoring, /monitoring/traces), security-pack blocked prompt regression
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| - | - | - | - |
+| general | Vercel URL | [link](https://openmanager-ai.vercel.app/) | - |
+| vercel-deployment | Current promoted deployment | [link](https://openmanager-2a0duktp7-skyasus-projects.vercel.app/) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| - | - | - | - |
+| playwright-screenshot | Landing production proof | `qa-20260326-release-gate-landing.png` | - |
+| playwright-screenshot | Dashboard and AI sidebar proof | `qa-20260326-release-gate-dashboard-ai.png` | - |
+| playwright-console | Console errors | `qa-20260326-release-gate-console-errors.log` | - |
 
 ## Expert Domain Open Gaps
 
@@ -344,6 +349,7 @@ Latest run: QA-20260325-0186 (2026-03-25T11:45:16.583Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260326-0187 | 2026-03-25T17:38:40.806Z | broad | yes | Vercel Playwright release-facing smoke - core routes, dashboard, AI core | 12 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260325-0186 | 2026-03-25T11:45:16.583Z | targeted | no | Local validation - suppress zero-test DOM related dep-scan noise | 5 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260325-0185 | 2026-03-25T11:06:51.584Z | targeted | no | Local validation - ai proxy runtime env refresh and README QA sync | 4 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260325-0184 | 2026-03-25T09:42:58.940Z | targeted | no | Local validation - Cloud Run guard and session contract hardening | 5 | 3 | 0 | 0 | 0 | 0 |
@@ -363,5 +369,4 @@ Latest run: QA-20260325-0186 (2026-03-25T11:45:16.583Z)
 | QA-20260324-0170 | 2026-03-23T15:09:36.687Z | targeted | no | Vercel Production QA - validation stale banner smoke after client-side fix | 5 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260323-0169 | 2026-03-23T07:36:31.950Z | targeted | no | Resolved alert history promptOverride local contract verification | 1 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260323-0168 | 2026-03-23T04:52:42.651Z | targeted | no | Vercel Production QA - validation evidence public snapshot smoke | 5 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260323-0167 | 2026-03-23T02:31:45.018Z | targeted | no | Production QA - alert history modal AI prefill | 4 | 1 | 0 | 0 | 0 | 0 |
 

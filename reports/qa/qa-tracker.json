@@ -2,15 +2,15 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-03-25T11:45:16.583Z"
+    "updatedAt": "2026-03-25T17:38:40.806Z"
   },
   "sequence": {
-    "nextRunNumber": 187
+    "nextRunNumber": 188
   },
   "summary": {
-    "totalRuns": 185,
-    "totalChecks": 1334,
-    "totalPassed": 1274,
+    "totalRuns": 186,
+    "totalChecks": 1346,
+    "totalPassed": 1286,
     "totalFailed": 56,
     "completionRate": 100,
     "completedItems": 252,
@@ -19,8 +19,8 @@
     "wontFixItems": 8,
     "expertDomainsTracked": 6,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260325-0186",
-    "lastRecordedAt": "2026-03-25T11:45:16.583Z"
+    "lastRunId": "QA-20260326-0187",
+    "lastRecordedAt": "2026-03-25T17:38:40.806Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -15250,6 +15250,126 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260326-0187",
+      "recordedAt": "2026-03-25T17:38:40.806Z",
+      "recordedAtKst": "2026-03-26 02:38:40 KST",
+      "title": "Vercel Playwright release-facing smoke - core routes, dashboard, AI core",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260326-0187.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_84UPbhciR3EcDsJhPoxJztVKsdkc",
+        "deploymentUrl": "https://openmanager-2a0duktp7-skyasus-projects.vercel.app",
+        "commitSha": "f316240ec25a0291c0e0144a83769da2b0a809d7"
+      },
+      "scope": "broad",
+      "releaseFacing": true,
+      "coveragePacks": ["core-routes-smoke", "dashboard-core", "ai-core"],
+      "coveredSurfaces": [
+        "/ landing render",
+        "/main redirect to /",
+        "/api/health 200 healthy",
+        "/api/version 200 version 8.9.2",
+        "404 not-found page render",
+        "/system-boot -> /dashboard redirect",
+        "/dashboard 15 server cards + resource overview",
+        "server detail modal 3-tab switch + ESC close",
+        "AI sidebar open",
+        "AI starter prompt streaming response",
+        "X-AI-Latency-Ms header proof on /api/ai/supervisor/stream/v2",
+        "landing/dashboard console errors 0"
+      ],
+      "skippedSurfaces": [
+        "/dashboard/ai-assistant fullscreen workspace",
+        "Reporter/Analyst advanced surfaces",
+        "Cloud Run admin observability surfaces (/monitoring, /monitoring/traces)",
+        "security-pack blocked prompt regression"
+      ],
+      "checks": {
+        "total": 12,
+        "passed": 12,
+        "failed": 0
+      },
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Production AI sidebar path returned representative streaming responses and timing header proof.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Production alias health/version/core route smoke and system-boot to dashboard flow passed on the currently promoted deployment.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Playwright MCP artifacts and console evidence were captured for release-facing core packs.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-03-26T02:37:16+09:00",
+          "summary": "Current month reviewed after release-facing smoke; effectiveCost $18.6052, billedCost $0.0000, no unexpected billed usage.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "Landing production proof",
+          "path": "qa-20260326-release-gate-landing.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Dashboard and AI sidebar proof",
+          "path": "qa-20260326-release-gate-dashboard-ai.png"
+        },
+        {
+          "type": "playwright-console",
+          "label": "Console errors",
+          "path": "qa-20260326-release-gate-console-errors.log"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "Vercel URL",
+          "url": "https://openmanager-ai.vercel.app/"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Current promoted deployment",
+          "url": "https://openmanager-2a0duktp7-skyasus-projects.vercel.app/"
+        }
+      ],
+      "expertCount": 3,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -15258,16 +15378,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 98,
-      "appropriateCount": 94,
+      "seenCount": 99,
+      "appropriateCount": 95,
       "partialCount": 4,
       "inappropriateCount": 0,
       "improvementNeededCount": 12,
-      "lastRunId": "QA-20260322-0156",
-      "lastSeenAt": "2026-03-22T00:09:47.421Z",
+      "lastRunId": "QA-20260326-0187",
+      "lastSeenAt": "2026-03-25T17:38:40.806Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Production AI sidebar free-text query 이후 negative feedback click까지 수행했고 브라우저 캡처 기준 /api/ai/feedback 응답이 traceId, langfuseStatus=success, traceApiUrl, dashboardUrl, monitoringLookupUrl를 모두 반환했다.",
+      "lastRationale": "Production AI sidebar path returned representative streaming responses and timing header proof.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -15309,16 +15429,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 52,
-      "appropriateCount": 49,
+      "seenCount": 53,
+      "appropriateCount": 50,
       "partialCount": 3,
       "inappropriateCount": 0,
       "improvementNeededCount": 6,
-      "lastRunId": "QA-20260320-0142",
-      "lastSeenAt": "2026-03-20T12:57:48.587Z",
+      "lastRunId": "QA-20260326-0187",
+      "lastSeenAt": "2026-03-25T17:38:40.806Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Deployment d3dfa842b was READY/PROMOTED on production and the live Vercel app continued to serve Cloud Run streaming responses with expected X-AI headers.",
+      "lastRationale": "Production alias health/version/core route smoke and system-boot to dashboard flow passed on the currently promoted deployment.",
       "lastNextAction": ""
     },
     "test-automation": {
@@ -15326,16 +15446,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 89,
-      "appropriateCount": 82,
+      "seenCount": 90,
+      "appropriateCount": 83,
       "partialCount": 7,
       "inappropriateCount": 0,
       "improvementNeededCount": 9,
-      "lastRunId": "QA-20260321-0144",
-      "lastSeenAt": "2026-03-20T22:01:41.259Z",
+      "lastRunId": "QA-20260326-0187",
+      "lastSeenAt": "2026-03-25T17:38:40.806Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "게스트 로그인부터 fullscreen workspace까지 실제 production 경로를 자동화해 콘솔 에러 없이 재현했다.",
+      "lastRationale": "Playwright MCP artifacts and console evidence were captured for release-facing core packs.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {
