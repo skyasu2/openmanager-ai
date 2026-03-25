@@ -11,6 +11,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 const require = createRequire(import.meta.url);
 const {
   buildValidationEvidenceSnapshot,
+  cloneTrackerForRepair,
   findLatestProofRun,
   findLatestPublicEvidenceRun,
   formatEvidenceDate,
@@ -210,6 +211,77 @@ describe('build-validation-evidence', () => {
       iso: '2026-03-21T12:00:00.000Z',
       short: '2026-03-21',
     });
+  });
+
+  it('clones tracker repair input so snapshot building does not mutate caller state', () => {
+    const tracker = {
+      meta: {
+        createdAt: '2026-03-01T00:00:00.000Z',
+        updatedAt: 'stale-meta',
+      },
+      sequence: {
+        nextRunNumber: 999,
+      },
+      summary: {
+        totalRuns: 99,
+        totalChecks: 999,
+        completedItems: 88,
+        expertDomainsOpenGaps: 7,
+        wontFixItems: 6,
+        lastRecordedAt: '2026-03-01T00:00:00.000Z',
+      },
+      runs: [
+        {
+          runId: 'QA-20260320-0100',
+          title: 'GitHub Actions proof',
+          scope: 'targeted',
+          recordedAt: '2026-03-20T12:00:00.000Z',
+          checks: { total: 3, passed: 3, failed: 0 },
+          environment: {
+            target: 'github-actions',
+            commitSha: 'abc123',
+          },
+          links: [
+            {
+              type: 'github-actions-run',
+              label: 'CI run',
+              url: 'https://github.com/example/repo/actions/runs/100',
+            },
+          ],
+        },
+        {
+          runId: 'QA-20260321-0101',
+          title: 'Production smoke',
+          scope: 'targeted',
+          recordedAt: '2026-03-21T12:00:00.000Z',
+          checks: { total: 2, passed: 2, failed: 0 },
+          environment: {
+            target: 'vercel-production',
+            commitSha: 'def456',
+          },
+          links: [],
+        },
+      ],
+      items: {
+        completed: { status: 'completed' },
+      },
+      experts: {
+        sre: { lastImprovementNeeded: true },
+      },
+    };
+
+    const cloned = cloneTrackerForRepair(tracker);
+    expect(cloned).not.toBe(tracker);
+    expect(cloned.meta).not.toBe(tracker.meta);
+    expect(cloned.sequence).not.toBe(tracker.sequence);
+    expect(cloned.summary).not.toBe(tracker.summary);
+    expect(cloned.runs).not.toBe(tracker.runs);
+
+    buildValidationEvidenceSnapshot(tracker);
+
+    expect(tracker.meta.updatedAt).toBe('stale-meta');
+    expect(tracker.sequence.nextRunNumber).toBe(999);
+    expect(tracker.summary.totalRuns).toBe(99);
   });
 
   it('writes snapshot to an explicit output path from an explicit tracker path', () => {

@@ -51,6 +51,8 @@ reports/qa/
 - `npm run qa:status`
 - `npm run qa:status:sync` 또는 `npm run qa:status -- --write`
 - `reports/qa/QA_STATUS.md` 확인
+- `qa:status:sync`/`qa:status -- --write`는 `QA_STATUS.md`뿐 아니라 `public/data/qa/validation-evidence.json`도 현재 tracker 기준으로 함께 재생성한다.
+  - 단, proof/public evidence 계약이 아직 없으면 `qa:status`는 실패하지 않고 public evidence 갱신을 skip 로그로 남긴다.
 
 4. Vercel 실환경 QA/배포 뒤 사용량 확인
 - `npm run check:usage` 또는 `npm run check:usage:vercel`
@@ -126,6 +128,7 @@ reports/qa/
 - `QA_STATUS.md`는 `qa:record` 실행 시 자동 재생성됩니다.
 - `qa:status`는 기본적으로 `qa-tracker.json`만 읽는 read-only 요약 명령입니다.
 - 대시보드를 수동으로 다시 맞출 때만 `npm run qa:status:sync` 또는 `npm run qa:status -- --write`를 사용합니다.
+- validation evidence snapshot은 stale `summary`를 그대로 신뢰하지 않고, `runs/items/experts` 기반으로 파생 필드를 self-heal한 뒤 다시 생성합니다.
 
 ## Reporting Style
 

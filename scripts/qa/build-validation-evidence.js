@@ -71,8 +71,37 @@ function findLatestProofRun(runs) {
   return [...runs].reverse().find((run) => hasGitHubActionsLink(run));
 }
 
+function cloneTrackerForRepair(tracker) {
+  return {
+    ...(tracker || {}),
+    summary:
+      tracker?.summary && typeof tracker.summary === 'object'
+        ? { ...tracker.summary }
+        : tracker?.summary,
+    meta:
+      tracker?.meta && typeof tracker.meta === 'object'
+        ? { ...tracker.meta }
+        : tracker?.meta,
+    sequence:
+      tracker?.sequence && typeof tracker.sequence === 'object'
+        ? { ...tracker.sequence }
+        : tracker?.sequence,
+    runs: Array.isArray(tracker?.runs) ? [...tracker.runs] : tracker?.runs,
+    items:
+      tracker?.items && typeof tracker.items === 'object'
+        ? { ...tracker.items }
+        : tracker?.items,
+    experts:
+      tracker?.experts && typeof tracker.experts === 'object'
+        ? { ...tracker.experts }
+        : tracker?.experts,
+  };
+}
+
 function buildValidationEvidenceSnapshot(tracker) {
-  const normalizedTracker = repairTrackerDerivedFields({ ...(tracker || {}) });
+  const normalizedTracker = repairTrackerDerivedFields(
+    cloneTrackerForRepair(tracker)
+  );
   const summary = normalizedTracker.summary;
   const runs = normalizedTracker.runs;
   const latestPublicEvidenceRun = findLatestPublicEvidenceRun(runs);
@@ -144,6 +173,7 @@ module.exports = {
   OUTPUT_PATH,
   TRACKER_PATH,
   buildValidationEvidenceSnapshot,
+  cloneTrackerForRepair,
   findLatestProofRun,
   findLatestPublicEvidenceRun,
   formatEvidenceDate,

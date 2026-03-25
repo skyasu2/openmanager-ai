@@ -232,9 +232,22 @@ describe('QA scripts', () => {
     );
   });
 
-  it('only syncs QA_STATUS.md when qa:status runs with --write', () => {
+  it('syncs QA_STATUS.md and public validation evidence when qa:status runs with --write', () => {
     const tempDir = createTempWorkspace();
-    const inputPath = writeInputFile(tempDir, createValidPayload());
+    const inputPath = writeInputFile(
+      tempDir,
+      createValidPayload({
+        ciEvidence: {
+          provider: 'github-actions',
+          owner: 'skyasu2',
+          repo: 'openmanager-ai',
+          workflowName: 'CI/CD Core Gates',
+          runId: '23381598925',
+          branch: 'main',
+          commitSha: '03fa41be562ff2cacffe58c5c0b45ad476e7e184',
+        },
+      })
+    );
 
     const recordResult = runNodeScript(
       RECORD_QA_RUN_SCRIPT,
@@ -254,6 +267,13 @@ describe('QA scripts', () => {
     expect(recordResult.status).toBe(0);
 
     const statusPath = join(tempDir, 'reports', 'qa', 'QA_STATUS.md');
+    const validationEvidencePath = join(
+      tempDir,
+      'public',
+      'data',
+      'qa',
+      'validation-evidence.json'
+    );
     writeFileSync(statusPath, 'stale dashboard\n', 'utf8');
     const staleMtime = statSync(statusPath).mtimeMs;
 
@@ -267,6 +287,7 @@ describe('QA scripts', () => {
     );
     expect(readFileSync(statusPath, 'utf8')).toBe('stale dashboard\n');
     expect(statSync(statusPath).mtimeMs).toBe(staleMtime);
+    expect(existsSync(validationEvidencePath)).toBe(false);
 
     const syncResult = runNodeScript(PRINT_QA_STATUS_SCRIPT, ['--write'], {
       cwd: tempDir,
@@ -276,8 +297,15 @@ describe('QA scripts', () => {
     expect(syncResult.stdout).toContain(
       '- dashboard synced: reports/qa/QA_STATUS.md'
     );
+    expect(syncResult.stdout).toContain(
+      '- public evidence synced: public/data/qa/validation-evidence.json'
+    );
     expect(readFileSync(statusPath, 'utf8')).toContain(
       'Coverage Packs: core-routes-smoke, dashboard-core, ai-core'
+    );
+    expect(existsSync(validationEvidencePath)).toBe(true);
+    expect(readFileSync(validationEvidencePath, 'utf8')).toContain(
+      '"latestRunId": "QA-'
     );
   });
 
@@ -335,12 +363,71 @@ describe('QA scripts', () => {
     });
 
     expect(syncResult.status).toBe(0);
+    expect(syncResult.stdout).toContain('- public evidence skipped:');
     const repairedTracker = JSON.parse(readFileSync(trackerPath, 'utf8'));
     expect(repairedTracker.summary.totalRuns).toBe(1);
     expect(repairedTracker.summary.totalChecks).toBe(8);
     expect(repairedTracker.summary.lastRunId).toMatch(/^QA-\d{8}-\d+$/);
     expect(repairedTracker.sequence.nextRunNumber).toBeGreaterThan(1);
     expect(repairedTracker.meta.updatedAt).not.toBe('stale');
+  });
+
+  it('prints malformed recent runs defensively in qa:status', () => {
+    const tempDir = createTempWorkspace();
+    const trackerPath = join(tempDir, 'reports', 'qa', 'qa-tracker.json');
+
+    writeFileSync(
+      trackerPath,
+      `${JSON.stringify(
+        {
+          version: '1.0.0',
+          meta: {
+            createdAt: '2026-03-25T00:00:00.000Z',
+            updatedAt: '2026-03-25T00:00:00.000Z',
+          },
+          sequence: {
+            nextRunNumber: 2,
+          },
+          summary: {
+            totalRuns: 1,
+            totalChecks: 0,
+            totalPassed: 0,
+            totalFailed: 0,
+            completionRate: 0,
+            completedItems: 0,
+            pendingItems: 0,
+            deferredItems: 0,
+            wontFixItems: 0,
+            expertDomainsTracked: 0,
+            expertDomainsOpenGaps: 0,
+            lastRunId: 'QA-20260325-0182',
+            lastRecordedAt: '2026-03-25T00:00:00.000Z',
+          },
+          items: {},
+          experts: {},
+          runs: [
+            {
+              runId: 'QA-20260325-0182',
+              title: 'Malformed run',
+              scope: 'targeted',
+              recordedAt: '2026-03-25T00:00:00.000Z',
+            },
+          ],
+        },
+        null,
+        2
+      )}\n`,
+      'utf8'
+    );
+
+    const statusResult = runNodeScript(PRINT_QA_STATUS_SCRIPT, [], {
+      cwd: tempDir,
+    });
+
+    expect(statusResult.status).toBe(0);
+    expect(statusResult.stdout).toContain(
+      '- QA-20260325-0182: Malformed run (scope targeted, checks 0, completed 0, pending 0, wont-fix 0)'
+    );
   });
 
   it('records structured Playwright artifacts and prints artifact summary', () => {

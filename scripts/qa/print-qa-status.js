@@ -3,12 +3,17 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const { repairTrackerDerivedFields } = require('./qa-tracker-utils');
+const { writeValidationEvidenceSnapshot } = require('./build-validation-evidence');
 const {
   statusMarkdown,
 } = require('./record-qa-run.js');
 
 const TRACKER_PATH = path.resolve(process.cwd(), 'reports/qa/qa-tracker.json');
 const STATUS_PATH = path.resolve(process.cwd(), 'reports/qa/QA_STATUS.md');
+const VALIDATION_EVIDENCE_PATH = path.resolve(
+  process.cwd(),
+  'public/data/qa/validation-evidence.json'
+);
 
 function printUsage() {
   console.log('Usage: npm run qa:status [-- --write]');
@@ -30,10 +35,25 @@ function run() {
 
   const tracker = JSON.parse(fs.readFileSync(TRACKER_PATH, 'utf8'));
   const shouldWrite = args.has('--write') || args.has('--sync');
+  let validationEvidenceSyncMessage = '';
   repairTrackerDerivedFields(tracker);
   if (shouldWrite) {
     fs.writeFileSync(TRACKER_PATH, `${JSON.stringify(tracker, null, 2)}\n`, 'utf8');
     fs.writeFileSync(STATUS_PATH, statusMarkdown(tracker), 'utf8');
+    try {
+      writeValidationEvidenceSnapshot({
+        trackerPath: TRACKER_PATH,
+        outputPath: VALIDATION_EVIDENCE_PATH,
+      });
+      validationEvidenceSyncMessage = `- public evidence synced: ${path.relative(
+        process.cwd(),
+        VALIDATION_EVIDENCE_PATH
+      )}`;
+    } catch (error) {
+      validationEvidenceSyncMessage = `- public evidence skipped: ${
+        error instanceof Error ? error.message : String(error)
+      }`;
+    }
   }
   const summary = tracker.summary || {};
   const items = Object.values(tracker.items || {});
@@ -89,6 +109,7 @@ function run() {
   const statusFileRelativePath = path.relative(process.cwd(), STATUS_PATH);
   if (shouldWrite) {
     console.log(`- dashboard synced: ${statusFileRelativePath}`);
+    console.log(validationEvidenceSyncMessage);
   } else if (fs.existsSync(STATUS_PATH)) {
     console.log(`- dashboard file: ${statusFileRelativePath} (read-only)`);
   } else {
@@ -140,7 +161,7 @@ function run() {
     console.log('\nRecent Runs');
     for (const runRecord of recentRuns) {
       console.log(
-        `- ${runRecord.runId}: ${runRecord.title} (scope ${runRecord.scope || 'legacy'}, checks ${runRecord.checks.total}, completed ${runRecord.completedCount}, pending ${runRecord.pendingCount || 0}, wont-fix ${runRecord.wontFixCount || 0})`
+        `- ${runRecord.runId}: ${runRecord.title} (scope ${runRecord.scope || 'legacy'}, checks ${runRecord.checks?.total ?? 0}, completed ${runRecord.completedCount ?? 0}, pending ${runRecord.pendingCount ?? 0}, wont-fix ${runRecord.wontFixCount ?? 0})`
       );
     }
   }
