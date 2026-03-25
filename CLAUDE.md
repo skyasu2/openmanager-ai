@@ -44,7 +44,7 @@ npm run qa:status           # 누적 QA 상태 요약
 | 자체 규칙 설정 | `src/config/rules/system-rules.json` |
 
 ## Rules (자동 로드)
-`.claude/rules/` — `architecture.md` | `code-style.md` | `ai-tools.md` | `testing.md` | `deployment.md` | `env-sync.md`
+`.claude/rules/` — `architecture.md` | `code-style.md` | `ai-tools.md` | `testing.md` | `deployment.md` | `env-sync.md` | `documentation.md`
 
 ## 참조
 - **상태**: `docs/status.md` | **TODO**: `reports/planning/TODO.md`

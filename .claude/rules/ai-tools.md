@@ -14,7 +14,7 @@
 | `playwright` | E2E 테스트 | 중간 |
 | `github` | 저장소/PR 관리 | 중간 |
 
-## Skills (10개)
+## Skills
 
 | Skill | 설명 |
 |-------|------|

@@ -4,11 +4,11 @@
 > Owner: documentation
 > Status: Active
 > Doc type: Status
-> Last reviewed: 2026-03-04
+> Last reviewed: 2026-03-25
 > Canonical: docs/status.md
 > Tags: status,changelog,release
 
-**마지막 업데이트**: 2026-03-04
+**마지막 업데이트**: 2026-03-25
 
 ---
 
@@ -21,6 +21,47 @@
 ---
 
 ## 🔄 Recent Changes
+
+- **main** (2026-03-25)
+  - fix(validation): build-time evidence snapshot stale banner, public evidence freshness, and QA evidence summary sync 강화
+  - feat(parity): Dashboard/AI data slot parity metadata 노출 및 `globalSlotIndex` 0-143 스케일 정렬
+  - feat(dashboard): 상단 alert, active alerts, alert history에서 AI 사이드바 prefill 지원
+  - fix(ai): 스트리밍 parity/deferred metadata, orchestrator fallback, tool 결과 동기화 안정화
+  - fix(dev): WSL pre-push type-check hang 방지, changed-file 기반 quick gate 강화, Codex MCP health-check/report 운영 개선
+  - docs: AI/env 운영 가이드 정렬, setup/quickstart 중복 축소, env onboarding/parity 안내 명확화, Claude skill inventory/budget 동기화
+
+- **v8.9.2** (2026-03-17)
+  - feat(observability): Langfuse tracing을 multi-agent orchestrator와 feedback 흐름에 통합
+  - fix(observability): feedback trace link/status, negative feedback scoring, trace diagnostics 검색 안정화
+  - qa: v8.9.2 Cloud Run deploy 및 Vercel bootstrap 관찰 기록
+  - fix(auth): profile menu loading text flicker 제거
+  - fix(test): jsdom health check와 targeted pre-push routing 안정화
+
+- **v8.9.1** (2026-03-16)
+  - feat(dev): `local:smoke`, Next dev readiness probe, webpack first-request probe, turbopack trace 수집 도구 추가
+  - fix(dev): pre-push type-check timeout과 docs-only push 경량화, dead-code dev rewrites 제거
+  - qa(security): AI code gate prompt injection 패턴 5종 검증 PASS
+  - docs(plan): v8.9.1 release closure 및 잔여 backlog 동기화
+
+- **v8.9.0** (2026-03-15)
+  - feat(cache): AI 응답 semantic fallback cache 추가
+  - refactor(ai-engine): supervisor/orchestrator/reporter/admin route를 helper 단위로 분리
+  - fix(ai-engine): Docker/deploy preflight hang 및 기본값 복구, Redis timeout bucket 도입
+  - fix(redis): root app Upstash wait와 circuit breaker store timeout 상한 설정
+  - qa: post-deploy production validation 및 incident-report regression 검증 기록
+
+- **v8.8.0** (2026-03-07)
+  - feat(security): client-driven CSRF 보호 추가, deprecated auth wrapper 제거
+  - feat(ai-engine): complex query에 multi-agent orchestration 활성화
+  - fix(reporter): threshold SSOT 정렬, near-threshold warning/trend prediction/CLI 명령 보강
+  - fix(ui): AI sidebar tab state 및 race condition 안정화
+  - test: hooks/services/API route/unit test 대량 확장
+
+- **v8.7.9** (2026-03-06)
+  - fix(ai-engine): provider quota limits, context overflow guard, request pipeline error handling 강화
+  - fix(core/security): Redis circuit breaker 중복 초기화 제거, sanitize error response 정렬
+  - refactor: app version 중앙화 및 portfolio context card 추가
+  - fix(ui): portfolio intro/guest helper copy 정리
 
 - **v8.7.8** (2026-03-04)
   - fix(ai-engine): force `searchWeb` tool call for external info queries

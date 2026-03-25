@@ -330,7 +330,7 @@ scripts/hooks/post-commit.js
 ```
 
 - 운영 정책과 모드 선택 기준은 [Git Hooks 워크플로우 가이드](./git-hooks-workflow.md)를 따릅니다.
-- 구현 디테일과 wrapper 동작은 [scripts/README.md](/mnt/d/dev/openmanager-ai/scripts/README.md) 를 참조합니다.
+- 구현 디테일과 wrapper 동작은 [scripts/README.md](../../scripts/README.md) 를 참조합니다.
 
 ## Docker
 
