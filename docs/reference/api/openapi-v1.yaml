@@ -50,7 +50,7 @@ paths:
               schema:
                 oneOf:
                   - type: object
-                    required: [status, timestamp]
+                    required: [ping, timestamp]
                     properties:
                       ping:
                         type: string
@@ -73,20 +73,35 @@ paths:
                         type: string
                         format: date-time
                   - type: object
-                    required: [status, services, cache]
+                    required: [success, data, timestamp]
                     properties:
-                      status:
-                        type: string
-                        enum: [healthy, degraded, unhealthy]
-                      version:
-                        type: string
-                      services:
+                      success:
+                        type: boolean
+                        enum: [true]
+                      data:
                         type: object
-                        additionalProperties:
-                          type: object
-                      cache:
-                        type: object
-                        additionalProperties: true
+                        required: [status, services, version, timestamp]
+                        properties:
+                          status:
+                            type: string
+                            enum: [healthy, degraded, unhealthy]
+                          version:
+                            type: string
+                          timestamp:
+                            type: string
+                            format: date-time
+                          services:
+                            type: object
+                            additionalProperties:
+                              type: object
+                      timestamp:
+                        type: string
+                        format: date-time
+                      cached:
+                        type: boolean
+                      cacheAge:
+                        type: integer
+                        minimum: 0
         '503':
           description: Unhealthy
           headers:

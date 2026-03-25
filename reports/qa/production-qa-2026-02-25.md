@@ -1,7 +1,7 @@
 # Production QA Report — 2026-02-25
 
 > Owner: Claude Code
-> Status: Active Canonical
+> Status: Historical Reference
 > Doc type: Reference
 > Last reviewed: 2026-02-25
 

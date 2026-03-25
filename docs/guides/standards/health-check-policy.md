@@ -17,25 +17,25 @@
 
 ### ✅ 수동 테스트 전용
 
-#### 1. `/api/ping` - 간단한 연결 테스트
+#### 1. `/api/health?simple=true` - 간단한 연결 테스트
 ```typescript
-export const runtime = 'edge';
-
-용도: 수동 테스트 전용
-응답: { ping: "pong", timestamp: "..." }
-캐싱: 없음 (no-store)
-자동 호출: 금지
+export async function GET(request: NextRequest) {
+  // ?simple=true 일 때 { ping: "pong", timestamp } 반환
+}
 ```
 
 #### 2. `/api/health` - 상세 상태 확인
 ```typescript
-export const runtime = 'nodejs';
-
-용도: 수동 테스트 전용
-응답: Database, Cache, AI 서비스 상태
-캐싱: 없음 (force-dynamic)
-자동 호출: 금지
+// Next.js 16 Route Handler
+// runtime 기본값은 'nodejs'
+// GET Route Handler는 기본적으로 캐시되지 않음
+// 이 엔드포인트는 응답 헤더 + 모듈 캐시(60초 TTL)로만 비용을 제어함
 ```
+
+- 용도: 수동 테스트 전용
+- 응답: Database, Cache, AI 서비스 상태
+- 캐싱: 응답 레벨 `Cache-Control` + 모듈 메모리 캐시(60초 TTL)
+- 자동 호출: 금지
 
 ---
 
@@ -53,10 +53,11 @@ export const runtime = 'nodejs';
 
 ### 2. 캐싱 설정
 ```
-❌ Cache-Control: public, max-age=60
-❌ export const revalidate = 30
+❌ 외부 모니터링을 전제로 한 짧은 주기 호출
+❌ 비용 절감을 무시한 무제한 dynamic polling
 
-이유: 자동 호출 유도, 비용 발생
+허용: 수동 테스트 전용의 응답 캐시/짧은 TTL 최적화
+이유: 자동 호출을 금지하는 정책과, 수동 점검 시 비용/지연을 낮추는 구현은 별개
 ```
 
 ---
@@ -66,7 +67,7 @@ export const runtime = 'nodejs';
 ### 수동 테스트만 허용
 ```bash
 # 개발 중 간단한 연결 확인
-curl https://openmanager-ai.vercel.app/api/ping
+curl "https://openmanager-ai.vercel.app/api/health?simple=true"
 
 # 상세 상태 확인
 curl https://openmanager-ai.vercel.app/api/health
@@ -86,7 +87,7 @@ Vercel Dashboard > Analytics
 
 ### 현재 구성 (최적)
 ```
-/api/ping: 수동 테스트 ~3회/일
+/api/health?simple=true: 수동 테스트 ~3회/일
 /api/health: 수동 테스트 ~2회/일
 
 총 비용: ~$0 (무시 가능)
@@ -107,8 +108,9 @@ Vercel Dashboard > Analytics
 
 ### 개발자
 - [ ] `/api/health`는 수동 테스트만 사용
+- [ ] `/api/health?simple=true`는 `/api/ping` 대체 경로로만 사용
 - [ ] 자동 호출 스크립트 작성 금지
-- [ ] 외부 모니터링은 `/api/ping` 사용
+- [ ] 외부 모니터링 도입 대신 Vercel Dashboard/Usage 확인
 
 ### 운영
 - [ ] Vercel Dashboard에서 호출 패턴 주기적 확인

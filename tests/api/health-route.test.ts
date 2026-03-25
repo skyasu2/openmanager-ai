@@ -245,6 +245,39 @@ describe('Health Route Contract (/api/health)', () => {
     expect(payload.services.database.status).toBe('error');
   });
 
+  it('DB 세션 프로브가 타임아웃되면 unhealthy 상태를 반환한다', async () => {
+    vi.useFakeTimers();
+
+    try {
+      mockCreateClient.mockResolvedValue({
+        auth: {
+          getSession: vi.fn(() => new Promise(() => {})),
+        },
+      });
+
+      const { GET } = await importRoute();
+      const request = new NextRequest('http://localhost/api/health');
+      const responsePromise = GET(request);
+
+      await vi.advanceTimersByTimeAsync(3000);
+
+      const response = await responsePromise;
+      expect(response.status).toBe(200);
+
+      const payload = (await response.json()) as {
+        status: string;
+        services: {
+          database: { status: string };
+        };
+      };
+
+      expect(payload.status).toBe('unhealthy');
+      expect(payload.services.database.status).toBe('error');
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
   it('HEAD 요청 시 200과 빈 body를 반환한다', async () => {
     const { HEAD } = await importRoute();
     const request = new NextRequest('http://localhost/api/health', {

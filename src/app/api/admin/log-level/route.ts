@@ -9,7 +9,7 @@
 
 import { type NextRequest, NextResponse } from 'next/server';
 import { isCloudRunEnabled, proxyToCloudRun } from '@/lib/ai-proxy/proxy';
-import { withAuth } from '@/lib/auth/api-auth';
+import { withAdminAuth } from '@/lib/auth/api-auth';
 import type { LogLevel } from '@/lib/logging';
 import {
   getDefaultLogLevel,
@@ -54,7 +54,7 @@ async function getCloudRunLogLevel(): Promise<{
   }
 }
 
-export const GET = withAuth(async (_request: NextRequest) => {
+export const GET = withAdminAuth(async (_request: NextRequest) => {
   const cloudRun = await getCloudRunLogLevel();
 
   return NextResponse.json({
@@ -66,7 +66,7 @@ export const GET = withAuth(async (_request: NextRequest) => {
   });
 });
 
-export const PUT = withAuth(async (request: NextRequest) => {
+export const PUT = withAdminAuth(async (request: NextRequest) => {
   const body = (await request.json()) as {
     level?: string;
     target?: string;

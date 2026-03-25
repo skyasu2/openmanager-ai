@@ -1,6 +1,7 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import { getSupabaseServerUrl } from '@/lib/supabase/env';
 import { createClient } from '@/lib/supabase/server';
+import { probeSupabaseSession } from '@/lib/supabase/session-probe';
 import { getErrorMessage } from '@/types/type-utils';
 
 // MIGRATED: Removed export const runtime = "nodejs" (default)
@@ -20,49 +21,25 @@ async function getDatabaseHealth(): Promise<{
 
   try {
     const supabase = await createClient();
-    const controller = new AbortController();
-    const timeoutId = setTimeout(
-      () => controller.abort(),
-      CONNECTION_TIMEOUT_MS
-    );
+    const probeResult = await probeSupabaseSession(supabase, {
+      timeoutMs: CONNECTION_TIMEOUT_MS,
+      timeoutMessage: 'Database check timeout',
+    });
 
-    try {
-      const { error } = await supabase.auth.getSession();
-      clearTimeout(timeoutId);
-
-      if (
-        error &&
-        !error.message.includes('session') &&
-        !error.message.includes('expired') &&
-        !error.message.includes('not found')
-      ) {
-        return {
-          status: 'offline',
-          healthy: false,
-          latencyMs: Date.now() - start,
-          message: error.message,
-        };
-      }
-
-      return {
-        status: 'online',
-        healthy: true,
-        latencyMs: Date.now() - start,
-      };
-    } catch (error) {
-      clearTimeout(timeoutId);
-      const isAbortError =
-        error instanceof Error && error.name === 'AbortError';
-
+    if (!probeResult.reachable) {
       return {
         status: 'offline',
         healthy: false,
         latencyMs: Date.now() - start,
-        message: isAbortError
-          ? 'Database check timeout'
-          : getErrorMessage(error),
+        message: probeResult.errorMessage,
       };
     }
+
+    return {
+      status: 'online',
+      healthy: true,
+      latencyMs: Date.now() - start,
+    };
   } catch (error) {
     return {
       status: 'offline',

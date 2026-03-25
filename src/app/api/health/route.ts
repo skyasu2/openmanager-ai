@@ -27,6 +27,7 @@ import { createApiRoute } from '@/lib/api/zod-middleware';
 import { getCacheStats } from '@/lib/cache/unified-cache';
 import { getSiteUrl } from '@/lib/site-url';
 import { createClient } from '@/lib/supabase/server';
+import { probeSupabaseSession } from '@/lib/supabase/session-probe';
 import {
   type HealthCheckResponse,
   HealthCheckResponseSchema,
@@ -78,50 +79,22 @@ async function checkDatabaseStatus(): Promise<
   try {
     const startTime = Date.now();
     const supabase = await createClient();
-    const controller = new AbortController();
-    const timeoutId = setTimeout(
-      () => controller.abort(),
-      SERVICE_CHECK_TIMEOUT_MS
-    );
+    const probeResult = await probeSupabaseSession(supabase, {
+      timeoutMs: SERVICE_CHECK_TIMEOUT_MS,
+      timeoutMessage: 'Database check timeout',
+    });
+    const latency = Date.now() - startTime;
 
-    try {
-      // 🔧 수정: Auth 세션 체크로 DB 연결 확인 (테이블/RPC 의존성 제거)
-      // Supabase 클라이언트가 서버와 통신할 수 있는지 확인
-      const { error } = await supabase.auth.getSession();
-      clearTimeout(timeoutId);
-      const latency = Date.now() - startTime;
-
-      // 세션이 없어도 (로그인하지 않음) 연결 자체는 성공
-      // 네트워크/인증 에러만 실패로 처리
-      if (error) {
-        // 세션 없음은 정상 (익명 접근)
-        if (
-          error.message.includes('session') ||
-          error.message.includes('not found') ||
-          error.message.includes('expired')
-        ) {
-          debug.log(
-            `✅ Database connected (no session, latency: ${latency}ms)`
-          );
-          return 'connected';
-        }
-        debug.error('❌ Database auth check failed:', error.message);
-        return 'error';
-      }
-
-      debug.log(`✅ Database connected (latency: ${latency}ms)`);
-      return 'connected';
-    } catch (fetchError) {
-      clearTimeout(timeoutId);
-      // 타임아웃이나 네트워크 에러만 실패로 처리
-      if (fetchError instanceof Error && fetchError.name === 'AbortError') {
-        debug.error('❌ Database connection timeout');
-        return 'error';
-      }
-      // Fetch 실패 외의 에러는 연결 성공으로 간주 (환경 설정 문제 등)
-      debug.warn('⚠️ Database check warning:', fetchError);
-      return 'connected';
+    if (!probeResult.reachable) {
+      debug.error(
+        '❌ Database auth check failed:',
+        probeResult.errorMessage ?? 'Unknown error'
+      );
+      return 'error';
     }
+
+    debug.log(`✅ Database connected (latency: ${latency}ms)`);
+    return 'connected';
   } catch (error) {
     // createClient 실패 = 환경변수 누락 또는 설정 오류
     debug.error('❌ Database client creation error:', error);
