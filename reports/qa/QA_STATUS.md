@@ -1,28 +1,28 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-25 20:06:52 KST
+> Generated at: 2026-03-25 20:45:17 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 184 |
-| Total Checks | 1329 |
-| Passed | 1269 |
+| Total Runs | 185 |
+| Total Checks | 1334 |
+| Passed | 1274 |
 | Failed | 56 |
-| Completed Items | 251 |
+| Completed Items | 252 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 8 |
 | Expert Domains Tracked | 6 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Run | QA-20260325-0185 (2026-03-25T11:06:51.584Z) |
+| Last Run | QA-20260325-0186 (2026-03-25T11:45:16.583Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260325-0185 (2026-03-25T11:06:51.584Z)
+Latest run: QA-20260325-0186 (2026-03-25T11:45:16.583Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -38,10 +38,10 @@ Latest run: QA-20260325-0185 (2026-03-25T11:06:51.584Z)
 
 - Scope: targeted
 - Release-Facing: no
-- Deployment: SHA 169da990
-- Coverage Packs: ai-core
-- Covered Surfaces: src/lib/ai-proxy/proxy.ts runtime env refresh, src/lib/ai-proxy/proxy.test.ts env drift regression coverage, README validation evidence snapshot sync
-- Skipped Surfaces: vercel-production browser QA, real Cloud Run upstream integration, playwright end-to-end UI flows
+- Deployment: SHA b50947d4
+- Coverage Packs: observability-pack
+- Covered Surfaces: scripts/dev/vitest-main-wrapper.js zero-test DOM related output filtering, src/test/config/vitest-main-wrapper.test.ts regression coverage, scripts/README.md local pre-push wrapper behavior note
+- Skipped Surfaces: vercel-production browser QA, Cloud Run runtime behavior, playwright end-to-end UI flows
 
 ## Links (Latest Run)
 
@@ -160,6 +160,7 @@ Latest run: QA-20260325-0185 (2026-03-25T11:06:51.584Z)
 - dashboard-server-cards: 대시보드 서버 카드 및 메트릭 (completed 2회, last QA-20260302-0038)
 - dashboard-status-filter: 상태 필터 토글 (completed 1회, last QA-20260317-0114)
 - dashboard-topology-map: 토폴로지 맵 모달 (completed 1회, last QA-20260317-0114)
+- dom-related-depscan-noise-suppression: Suppress benign zero-test DOM related dep-scan noise (completed 1회, last QA-20260325-0186)
 - e2e-ai-chat-production-selector-alignment: AI Chat/Sidebar E2E selectors aligned with production DOM (completed 1회, last QA-20260310-0073)
 - e2e-testid-production-fix: E2E 테스트 data-testid 의존성 제거 (completed 1회, last QA-20260310-0076)
 - esc-모달-닫기: ESC 모달 닫기 (completed 1회, last QA-20260317-0114)
@@ -343,6 +344,7 @@ Latest run: QA-20260325-0185 (2026-03-25T11:06:51.584Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260325-0186 | 2026-03-25T11:45:16.583Z | targeted | no | Local validation - suppress zero-test DOM related dep-scan noise | 5 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260325-0185 | 2026-03-25T11:06:51.584Z | targeted | no | Local validation - ai proxy runtime env refresh and README QA sync | 4 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260325-0184 | 2026-03-25T09:42:58.940Z | targeted | no | Local validation - Cloud Run guard and session contract hardening | 5 | 3 | 0 | 0 | 0 | 0 |
 | QA-20260325-0183 | 2026-03-25T06:04:23.514Z | targeted | no | Local validation - health timeout and admin guard hardening | 4 | 2 | 0 | 0 | 0 | 0 |
@@ -362,5 +364,4 @@ Latest run: QA-20260325-0185 (2026-03-25T11:06:51.584Z)
 | QA-20260323-0169 | 2026-03-23T07:36:31.950Z | targeted | no | Resolved alert history promptOverride local contract verification | 1 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260323-0168 | 2026-03-23T04:52:42.651Z | targeted | no | Vercel Production QA - validation evidence public snapshot smoke | 5 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260323-0167 | 2026-03-23T02:31:45.018Z | targeted | no | Production QA - alert history modal AI prefill | 4 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260323-0166 | 2026-03-23T01:50:31.435Z | targeted | no | Production QA - active alerts modal AI prefill | 4 | 1 | 0 | 0 | 0 | 0 |
 

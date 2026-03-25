@@ -2,25 +2,25 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-03-25T11:06:51.584Z"
+    "updatedAt": "2026-03-25T11:45:16.583Z"
   },
   "sequence": {
-    "nextRunNumber": 186
+    "nextRunNumber": 187
   },
   "summary": {
-    "totalRuns": 184,
-    "totalChecks": 1329,
-    "totalPassed": 1269,
+    "totalRuns": 185,
+    "totalChecks": 1334,
+    "totalPassed": 1274,
     "totalFailed": 56,
     "completionRate": 100,
-    "completedItems": 251,
+    "completedItems": 252,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 8,
     "expertDomainsTracked": 6,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260325-0185",
-    "lastRecordedAt": "2026-03-25T11:06:51.584Z"
+    "lastRunId": "QA-20260325-0186",
+    "lastRecordedAt": "2026-03-25T11:45:16.583Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -5925,6 +5925,30 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-03-25T11:06:51.584Z"
+    },
+    "dom-related-depscan-noise-suppression": {
+      "id": "dom-related-depscan-noise-suppression",
+      "title": "Suppress benign zero-test DOM related dep-scan noise",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260325-0186",
+      "firstSeenAt": "2026-03-25T11:45:16.583Z",
+      "lastSeenRunId": "QA-20260325-0186",
+      "lastSeenAt": "2026-03-25T11:45:16.583Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "vitest-main-wrapper now buffers only DOM related passWithNoTests runs and replaces known benign dep-scan spam with a single note when exit code remains 0",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-03-25T11:45:16.583Z"
     }
   },
   "runs": [
@@ -15176,6 +15200,53 @@
       "expertCount": 0,
       "expertNeedsImprovementCount": 0,
       "completedCount": 2,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260325-0186",
+      "recordedAt": "2026-03-25T11:45:16.583Z",
+      "recordedAtKst": "2026-03-25 20:45:16 KST",
+      "title": "Local validation - suppress zero-test DOM related dep-scan noise",
+      "owner": "codex",
+      "source": "local-validation",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260325-0186.json",
+      "environment": {
+        "target": "local-dev",
+        "url": "",
+        "frontend": "Local",
+        "backend": "Local",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "b50947d4f1ecd3500d46bb4480b60b7cf74a2f6d"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "coveragePacks": ["observability-pack"],
+      "coveredSurfaces": [
+        "scripts/dev/vitest-main-wrapper.js zero-test DOM related output filtering",
+        "src/test/config/vitest-main-wrapper.test.ts regression coverage",
+        "scripts/README.md local pre-push wrapper behavior note"
+      ],
+      "skippedSurfaces": [
+        "vercel-production browser QA",
+        "Cloud Run runtime behavior",
+        "playwright end-to-end UI flows"
+      ],
+      "checks": {
+        "total": 5,
+        "passed": 5,
+        "failed": 0
+      },
+      "expertAssessments": [],
+      "usageChecks": [],
+      "artifacts": [],
+      "links": [],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0

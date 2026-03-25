@@ -20,6 +20,11 @@ const projectRoot = path.resolve(__dirname, '../..');
 const DEFAULT_JSDOM_HEALTHCHECK_TIMEOUT_MS = 5000;
 const SLOW_ENV_JSDOM_HEALTHCHECK_TIMEOUT_MS = 90000;
 const JSDOM_HEALTHCHECK_CACHE_TTL_MS = 7 * 24 * 60 * 60 * 1000;
+const NO_TEST_FILES_FOUND_MARKER = 'No test files found, exiting with code 0';
+const DEP_SCAN_FAILURE_MARKER =
+  '(!) Failed to run dependency scan. Skipping dependency pre-bundling.';
+const DEP_SCAN_OUTDATED_REQUEST_MARKER =
+  'The server is being restarted or closed. Request is outdated';
 const jsdomHealthCachePath = path.join(
   os.tmpdir(),
   'openmanager-vitest-jsdom-health.json'
@@ -250,6 +255,45 @@ function shouldCheckJsdom(argv) {
   return false;
 }
 
+function shouldBufferVitestOutput(argv) {
+  return (
+    argv.includes('related') &&
+    argv.includes('--passWithNoTests') &&
+    configLikelyNeedsDom(getConfigFile(argv))
+  );
+}
+
+function stripKnownDepScanNoise(text) {
+  if (!text) return '';
+  const markerIndex = text.indexOf(DEP_SCAN_FAILURE_MARKER);
+  if (markerIndex === -1) return text;
+  return text.slice(0, markerIndex).trimEnd();
+}
+
+function filterVitestOutput(exitCode, stdout, stderr) {
+  const combined = `${stdout}\n${stderr}`;
+  const shouldSuppress =
+    exitCode === 0 &&
+    combined.includes(NO_TEST_FILES_FOUND_MARKER) &&
+    combined.includes(DEP_SCAN_FAILURE_MARKER) &&
+    combined.includes(DEP_SCAN_OUTDATED_REQUEST_MARKER);
+
+  if (!shouldSuppress) {
+    return { stdout, stderr, suppressed: false };
+  }
+
+  const filteredStdout = stripKnownDepScanNoise(stdout);
+  const filteredStderr = stripKnownDepScanNoise(stderr);
+  const note =
+    '[vitest-main-wrapper] Suppressed benign Vite dep-scan noise after a zero-test DOM related run triggered by generated HTML artifacts.';
+
+  return {
+    stdout: filteredStdout,
+    stderr: filteredStderr ? `${filteredStderr}\n${note}\n` : `${note}\n`,
+    suppressed: true,
+  };
+}
+
 function printFailureAndExit(result) {
   const version = process.version;
   const stderr = result.stderr?.trim();
@@ -276,43 +320,92 @@ function printFailureAndExit(result) {
   process.exit(1);
 }
 
-if (args.includes('--healthcheck-only')) {
-  const result = runJsdomHealthCheck();
-  if (result.status === 0) {
-    const cachedLabel = result.cached ? 'cached' : 'fresh';
-    console.log(
-      `✅ jsdom import health check passed (${cachedLabel}, ${(result.durationMs / 1000).toFixed(1)}s)`
-    );
-    process.exit(0);
-  }
+function runVitest(argv) {
+  const vitestCli = resolveVitestCli();
+  const buffered = shouldBufferVitestOutput(argv);
+  const child = spawn(process.execPath, [vitestCli, ...argv], {
+    cwd: projectRoot,
+    stdio: buffered ? ['inherit', 'pipe', 'pipe'] : 'inherit',
+    shell: false,
+  });
 
-  printFailureAndExit(result);
-}
+  if (!buffered || !child.stdout || !child.stderr) {
+    child.on('close', (code, signal) => {
+      if (signal) {
+        process.kill(process.pid, signal);
+        return;
+      }
 
-if (shouldCheckJsdom(args)) {
-  const result = runJsdomHealthCheck();
-  if (result.status !== 0) {
-    printFailureAndExit(result);
-  }
-}
+      process.exit(code ?? 1);
+    });
 
-const vitestCli = resolveVitestCli();
-const child = spawn(process.execPath, [vitestCli, ...args], {
-  cwd: projectRoot,
-  stdio: 'inherit',
-  shell: false,
-});
-
-child.on('close', (code, signal) => {
-  if (signal) {
-    process.kill(process.pid, signal);
+    child.on('error', (error) => {
+      console.error('❌ Vitest 실행 오류:', error.message);
+      process.exit(1);
+    });
     return;
   }
 
-  process.exit(code ?? 1);
-});
+  let stdout = '';
+  let stderr = '';
 
-child.on('error', (error) => {
-  console.error('❌ Vitest 실행 오류:', error.message);
-  process.exit(1);
-});
+  child.stdout.on('data', (chunk) => {
+    stdout += chunk.toString();
+  });
+  child.stderr.on('data', (chunk) => {
+    stderr += chunk.toString();
+  });
+
+  child.on('close', (code, signal) => {
+    if (signal) {
+      process.kill(process.pid, signal);
+      return;
+    }
+
+    const { stdout: filteredStdout, stderr: filteredStderr } =
+      filterVitestOutput(code ?? 1, stdout, stderr);
+
+    if (filteredStdout) process.stdout.write(filteredStdout);
+    if (filteredStderr) process.stderr.write(filteredStderr);
+    process.exit(code ?? 1);
+  });
+
+  child.on('error', (error) => {
+    console.error('❌ Vitest 실행 오류:', error.message);
+    process.exit(1);
+  });
+}
+
+function main(argv) {
+  if (argv.includes('--healthcheck-only')) {
+    const result = runJsdomHealthCheck();
+    if (result.status === 0) {
+      const cachedLabel = result.cached ? 'cached' : 'fresh';
+      console.log(
+        `✅ jsdom import health check passed (${cachedLabel}, ${(result.durationMs / 1000).toFixed(1)}s)`
+      );
+      process.exit(0);
+    }
+
+    printFailureAndExit(result);
+  }
+
+  if (shouldCheckJsdom(argv)) {
+    const result = runJsdomHealthCheck();
+    if (result.status !== 0) {
+      printFailureAndExit(result);
+    }
+  }
+
+  runVitest(argv);
+}
+
+if (require.main === module) {
+  main(args);
+}
+
+module.exports = {
+  filterVitestOutput,
+  shouldBufferVitestOutput,
+  stripKnownDepScanNoise,
+};

@@ -14,7 +14,7 @@
 </div>
 
 > **Latest QA Snapshot (March 25, 2026)**
-> Latest recorded QA: [QA-20260325-0185](reports/qa/runs/2026/qa-run-QA-20260325-0185.json) and [QA Status Dashboard](reports/qa/QA_STATUS.md)
+> Latest recorded QA: [QA-20260325-0186](reports/qa/runs/2026/qa-run-QA-20260325-0186.json) and [QA Status Dashboard](reports/qa/QA_STATUS.md)
 > Latest production QA: [QA-20260324-0182](reports/qa/runs/2026/qa-run-QA-20260324-0182.json)
 > Latest CI-backed production evidence: [GitHub Actions run #23398040200](https://github.com/skyasu2/openmanager-ai/actions/runs/23398040200)
 
@@ -231,7 +231,7 @@ Job Queue SSE 폴링은 Redis 명령어 예산 보호를 위해 기본값을 아
 As of **March 25, 2026**, this project is not documented only with screenshots. It is backed by tracked QA runs and CI artifacts.
 
 - **QA SSOT**: [reports/qa/QA_STATUS.md](reports/qa/QA_STATUS.md)
-- **Latest recorded QA**: [QA-20260325-0185](reports/qa/runs/2026/qa-run-QA-20260325-0185.json) (`local-dev`, targeted contract validation)
+- **Latest recorded QA**: [QA-20260325-0186](reports/qa/runs/2026/qa-run-QA-20260325-0186.json) (`local-dev`, targeted developer-experience validation)
 - **Latest production QA**: [QA-20260324-0182](reports/qa/runs/2026/qa-run-QA-20260324-0182.json) (`vercel-production`, targeted AI smoke)
 - **Latest production feedback trace proof**: [QA-20260322-0159](reports/qa/runs/2026/qa-run-QA-20260322-0159.json)
 - **Latest CI-backed manual feedback trace proof**: [QA-20260322-0160](reports/qa/runs/2026/qa-run-QA-20260322-0160.json)

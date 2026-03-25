@@ -1,0 +1,65 @@
+{
+  "runId": "QA-20260325-0186",
+  "recordedAt": "2026-03-25T11:45:16.583Z",
+  "recordedAtKst": "2026-03-25 20:45:16 KST",
+  "runTitle": "Local validation - suppress zero-test DOM related dep-scan noise",
+  "owner": "codex",
+  "source": "local-validation",
+  "environment": {
+    "target": "local-dev",
+    "url": "",
+    "frontend": "Local",
+    "backend": "Local",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "b50947d4f1ecd3500d46bb4480b60b7cf74a2f6d"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "coveragePacks": ["observability-pack"],
+  "coveredSurfaces": [
+    "scripts/dev/vitest-main-wrapper.js zero-test DOM related output filtering",
+    "src/test/config/vitest-main-wrapper.test.ts regression coverage",
+    "scripts/README.md local pre-push wrapper behavior note"
+  ],
+  "skippedSurfaces": [
+    "vercel-production browser QA",
+    "Cloud Run runtime behavior",
+    "playwright end-to-end UI flows"
+  ],
+  "checks": {
+    "total": 5,
+    "passed": 5,
+    "failed": 0
+  },
+  "expertAssessments": [],
+  "usageChecks": [],
+  "artifacts": [],
+  "completedImprovements": [
+    {
+      "id": "dom-related-depscan-noise-suppression",
+      "title": "Suppress benign zero-test DOM related dep-scan noise",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "vitest-main-wrapper now buffers only DOM related passWithNoTests runs and replaces known benign dep-scan spam with a single note when exit code remains 0",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Commands: npm run test:related:dom -- src/lib/ai-proxy/proxy.ts",
+    "Commands: npx vitest run src/test/config/vitest-main-wrapper.test.ts --config config/testing/vitest.config.node.ts",
+    "Commands: npm run test:quick, npm run lint, npm run type-check",
+    "Official docs reviewed: Vitest deps config and Vite dep optimization entries behavior",
+    "This run validates local pre-push developer experience only; no deploy/runtime path was changed."
+  ],
+  "links": []
+}
