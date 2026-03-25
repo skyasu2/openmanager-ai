@@ -83,9 +83,16 @@ bash scripts/ai/agent-bridge.sh --to codex "프롬프트"
 bash scripts/dev/lint-changed.sh
 bash scripts/dev/typecheck-changed.sh
 
+# 전체 TypeScript 체크
+npm run type-check
+
 # Biome 포맷팅
 bash scripts/dev/biome-wrapper.sh
 ```
+
+- `scripts/dev/tsc-wrapper.js`는 로컬 `typescript/bin/tsc`를 실행하며 `SIGINT`/`SIGTERM`/`SIGHUP`를 자식 프로세스로 전달한다.
+- `TSC_WRAPPER_TIMEOUT_MS`를 주면 full type-check에도 opt-in timeout을 적용할 수 있고, `TSC_WRAPPER_KILL_GRACE_MS`로 SIGTERM 이후 강제 종료 grace period를 조정할 수 있다.
+- local full type-check가 중단되면 wrapper가 종료 시그널/timeout과 경과 시간을 함께 출력해 orphan `tsc` 프로세스 진단을 돕는다.
 
 ### 문서 관리
 

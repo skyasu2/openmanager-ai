@@ -23,6 +23,10 @@ npm run test:quick
 npm run build
 ```
 
+- `npm run type-check`가 로컬에서 중단되면 wrapper가 `SIGINT`/`SIGTERM` 또는 timeout과 경과 시간을 출력한다.
+- 반복 timeout이면 `scripts/dev/tsc-wrapper.js` 로그 기준으로 orphan `tsc`가 남는지 먼저 확인하고, 그다음 `scripts/dev/typecheck-changed.sh`로 변경 범위를 좁혀 재현한다.
+- 필요하면 `TSC_WRAPPER_TIMEOUT_MS=60000 npm run type-check`처럼 opt-in timeout으로 local full check를 제한할 수 있다.
+
 ## API Route Mismatch
 
 ### Symptoms
