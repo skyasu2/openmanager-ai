@@ -23,6 +23,7 @@ import { setupIncidentRagBackfill } from './server-incident-rag-backfill';
 import { setupTopologyRagBackfill } from './server-topology-rag-backfill';
 import { buildApiNotReadyResponse, shouldBlockApiRequest } from './server-readiness';
 import { registerAdminRoutes } from './server-admin-routes';
+import { preinitializeLlmProviders } from './server-llm-preinit';
 import { registerGracefulShutdownHandlers } from './server-shutdown';
 
 // Error handling
@@ -294,20 +295,7 @@ setupTopologyRagBackfill();
 // Pre-initialize LLM provider singletons to reduce first-query latency.
 // These are lightweight object creations (no network calls); the singleton
 // pattern means subsequent calls skip re-creation entirely.
-import('./services/ai-sdk/model-provider-core.js')
-  .then(({ getCerebrasModel, getGroqModel, getMistralModel }) => {
-    try {
-      getCerebrasModel();
-      getGroqModel();
-      getMistralModel();
-      logger.debug('LLM provider singletons pre-initialized');
-    } catch (e) {
-      logger.debug({ err: e }, 'LLM pre-init skipped (keys not yet available)');
-    }
-  })
-  .catch((err) => {
-    logger.warn({ err }, 'LLM pre-init module import failed');
-  });
+void preinitializeLlmProviders(logger);
 
 // ============================================================================
 // Graceful Shutdown
