@@ -2,15 +2,15 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-03-26T02:57:36.307Z"
+    "updatedAt": "2026-03-26T03:12:24.817Z"
   },
   "sequence": {
-    "nextRunNumber": 191
+    "nextRunNumber": 192
   },
   "summary": {
-    "totalRuns": 189,
-    "totalChecks": 1381,
-    "totalPassed": 1319,
+    "totalRuns": 190,
+    "totalChecks": 1390,
+    "totalPassed": 1328,
     "totalFailed": 56,
     "completionRate": 100,
     "completedItems": 256,
@@ -19,8 +19,8 @@
     "wontFixItems": 10,
     "expertDomainsTracked": 6,
     "expertDomainsOpenGaps": 1,
-    "lastRunId": "QA-20260326-0190",
-    "lastRecordedAt": "2026-03-26T02:57:36.307Z"
+    "lastRunId": "QA-20260326-0191",
+    "lastRecordedAt": "2026-03-26T03:12:24.817Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -15839,6 +15839,108 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 2
+    },
+    {
+      "runId": "QA-20260326-0191",
+      "recordedAt": "2026-03-26T03:12:24.817Z",
+      "recordedAtKst": "2026-03-26 12:12:24 KST",
+      "title": "Vercel Playwright targeted recheck - latest promoted QA data deploy",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260326-0191.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_3XREaPaETrZTWS8411GZRG2tD4Xm",
+        "deploymentUrl": "https://openmanager-8ifsegl59-skyasus-projects.vercel.app",
+        "commitSha": "c0491ce42f6518332ad13537bb31b30ed7fc8864"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "coveragePacks": ["core-routes-smoke", "dashboard-core", "ai-core"],
+      "coveredSurfaces": [
+        "/ landing render with v8.10.0 badge on latest promoted deployment",
+        "/api/health 200 healthy and version 8.10.0",
+        "/api/version 200 version 8.10.0 environment production",
+        "/system-boot -> /dashboard redirect on latest promoted deployment",
+        "dashboard render with 15 servers and 1 warning at slot 72/143",
+        "AI sidebar open on dashboard",
+        "AI warm-up/job queue accepted then manual retry succeeded",
+        "AI stream v2 response with X-AI-Latency-Ms=238 on latest promoted deployment",
+        "/validation page reflects public snapshot latestRunId QA-20260326-0190 and totals 189/1381/256/10"
+      ],
+      "skippedSurfaces": [
+        "Analyst/Reporter deep rerun (already covered in QA-20260326-0190 broad run on runtime-equivalent deployment)",
+        "fullscreen AI workspace",
+        "topology/history/log explorer modals",
+        "Cloud Run admin observability surfaces"
+      ],
+      "checks": {
+        "total": 9,
+        "passed": 9,
+        "failed": 0
+      },
+      "expertAssessments": [],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-03-26T12:04:43+09:00",
+          "summary": "Current billing period reviewed before targeted recheck; effective cost 18.6253 USD, billed cost 0.0000 USD, no unexpected billed usage spike.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "Latest QA data deploy landing proof",
+          "path": "qa-20260326-prod-c049-landing.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Latest QA data deploy dashboard proof",
+          "path": "qa-20260326-prod-c049-dashboard.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Latest QA data deploy AI proof",
+          "path": "qa-20260326-prod-c049-ai.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Latest QA data deploy validation page proof",
+          "path": "qa-20260326-prod-c049-validation.png"
+        },
+        {
+          "type": "playwright-console",
+          "label": "Latest QA data deploy console warnings",
+          "path": "qa-20260326-prod-c049-console.log"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "Production alias",
+          "url": "https://openmanager-ai.vercel.app/"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Latest promoted QA data deployment",
+          "url": "https://openmanager-8ifsegl59-skyasus-projects.vercel.app/"
+        }
+      ],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {

@@ -1,0 +1,104 @@
+{
+  "runId": "QA-20260326-0191",
+  "recordedAt": "2026-03-26T03:12:24.817Z",
+  "recordedAtKst": "2026-03-26 12:12:24 KST",
+  "runTitle": "Vercel Playwright targeted recheck - latest promoted QA data deploy",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_3XREaPaETrZTWS8411GZRG2tD4Xm",
+    "deploymentUrl": "https://openmanager-8ifsegl59-skyasus-projects.vercel.app",
+    "commitSha": "c0491ce42f6518332ad13537bb31b30ed7fc8864"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "coveragePacks": ["core-routes-smoke", "dashboard-core", "ai-core"],
+  "coveredSurfaces": [
+    "/ landing render with v8.10.0 badge on latest promoted deployment",
+    "/api/health 200 healthy and version 8.10.0",
+    "/api/version 200 version 8.10.0 environment production",
+    "/system-boot -> /dashboard redirect on latest promoted deployment",
+    "dashboard render with 15 servers and 1 warning at slot 72/143",
+    "AI sidebar open on dashboard",
+    "AI warm-up/job queue accepted then manual retry succeeded",
+    "AI stream v2 response with X-AI-Latency-Ms=238 on latest promoted deployment",
+    "/validation page reflects public snapshot latestRunId QA-20260326-0190 and totals 189/1381/256/10"
+  ],
+  "skippedSurfaces": [
+    "Analyst/Reporter deep rerun (already covered in QA-20260326-0190 broad run on runtime-equivalent deployment)",
+    "fullscreen AI workspace",
+    "topology/history/log explorer modals",
+    "Cloud Run admin observability surfaces"
+  ],
+  "checks": {
+    "total": 9,
+    "passed": 9,
+    "failed": 0
+  },
+  "expertAssessments": [],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-03-26T12:04:43+09:00",
+      "summary": "Current billing period reviewed before targeted recheck; effective cost 18.6253 USD, billed cost 0.0000 USD, no unexpected billed usage spike.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "Latest QA data deploy landing proof",
+      "path": "qa-20260326-prod-c049-landing.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Latest QA data deploy dashboard proof",
+      "path": "qa-20260326-prod-c049-dashboard.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Latest QA data deploy AI proof",
+      "path": "qa-20260326-prod-c049-ai.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Latest QA data deploy validation page proof",
+      "path": "qa-20260326-prod-c049-validation.png"
+    },
+    {
+      "type": "playwright-console",
+      "label": "Latest QA data deploy console warnings",
+      "path": "qa-20260326-prod-c049-console.log"
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Latest promoted production deployment c0491ce42 is a QA-record-only commit, so this run focused on validation surface freshness plus a targeted AI re-entry smoke instead of repeating the full 0190 broad pack.",
+    "AI path first showed wake-up/job queue behavior and a cold-start retry prompt, then succeeded via /api/ai/supervisor/stream/v2 with X-AI-Latency-Ms=238.",
+    "Validation page and public validation snapshot JSON both reflected latestRunId QA-20260326-0190 and aggregate totals 189 runs / 1381 checks / 256 completed / 10 wont-fix."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Production alias",
+      "url": "https://openmanager-ai.vercel.app/"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Latest promoted QA data deployment",
+      "url": "https://openmanager-8ifsegl59-skyasus-projects.vercel.app/"
+    }
+  ]
+}
