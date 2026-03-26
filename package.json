@@ -274,7 +274,7 @@
     "playwright": "^1.58.2",
     "postcss": "^8.5.8",
     "prettier-plugin-tailwindcss": "^0.7.2",
-    "rollup": "^4.53.5",
+    "rollup": "^4.60.0",
     "shadcn": "^4.1.0",
     "storybook": "^10.2.10",
     "tailwindcss": "^4.2.1",
