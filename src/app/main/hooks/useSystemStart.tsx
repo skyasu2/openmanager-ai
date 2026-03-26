@@ -15,7 +15,7 @@ import { useSystemStatus } from '@/hooks/useSystemStatus';
 import { logger } from '@/lib/logging';
 import { useUnifiedAdminStore } from '@/stores/useUnifiedAdminStore';
 import { triggerAIWarmup } from '@/utils/ai-warmup';
-import { debug } from '@/utils/debug';
+import debug from '@/utils/debug';
 import { debugWithEnv } from '@/utils/vercel-env-utils';
 
 const SYSTEM_START_COUNTDOWN_SECONDS = 5; // Cloud Run cold start 대기 (5-10초)

@@ -35,7 +35,7 @@ import { useAISidebarStore } from '@/stores/useAISidebarStore';
 import { useUnifiedAdminStore } from '@/stores/useUnifiedAdminStore';
 import type { Server } from '@/types/server';
 import { triggerAIWarmup } from '@/utils/ai-warmup';
-import { debug } from '@/utils/debug';
+import debug from '@/utils/debug';
 import { envLabel } from '@/utils/vercel-env-utils';
 import {
   AnimatedAISidebar,

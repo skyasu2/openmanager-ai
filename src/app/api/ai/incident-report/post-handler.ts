@@ -15,7 +15,7 @@ import {
 import { isCloudRunEnabled, proxyToCloudRun } from '@/lib/ai-proxy/proxy';
 import { supabaseAdmin } from '@/lib/supabase/admin';
 import { getErrorMessage } from '@/types/type-utils';
-import { debug } from '@/utils/debug';
+import debug from '@/utils/debug';
 import { executeGenerateRetry } from './retry-handler';
 import {
   getFallbackMessage,

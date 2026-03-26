@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import { withAuth } from '@/lib/auth/api-auth';
-import { debug } from '@/utils/debug';
+import debug from '@/utils/debug';
 
 // 프로세스 타입 정의
 interface ServerProcess {

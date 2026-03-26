@@ -7,7 +7,7 @@ import UnifiedProfileHeader from '@/components/shared/UnifiedProfileHeader';
 import { useUserPermissions } from '@/hooks/useUserPermissions';
 import { useAISidebarStore } from '@/stores/useAISidebarStore';
 import { useUnifiedAdminStore } from '@/stores/useUnifiedAdminStore';
-import { debug } from '@/utils/debug';
+import debug from '@/utils/debug';
 import { AIAssistantButton } from './AIAssistantButton';
 import { AILoginRequiredModal } from './AILoginRequiredModal';
 import { RealTimeDisplay } from './RealTimeDisplay';

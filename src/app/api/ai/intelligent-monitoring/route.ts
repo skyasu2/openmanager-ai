@@ -26,7 +26,7 @@ import {
 import { isCloudRunEnabled, proxyToCloudRun } from '@/lib/ai-proxy/proxy';
 import { withAuth } from '@/lib/auth/api-auth';
 import { getErrorMessage } from '@/types/type-utils';
-import { debug } from '@/utils/debug';
+import debug from '@/utils/debug';
 
 const IntelligentMonitoringRequestSchema = z
   .object({

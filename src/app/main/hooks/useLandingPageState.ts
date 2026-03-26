@@ -3,7 +3,7 @@ import { isGuestSystemStartEnabled } from '@/config/guestMode';
 import { isVercel } from '@/env-client';
 import { useInitialAuth } from '@/hooks/useInitialAuth';
 import { useUnifiedAdminStore } from '@/stores/useUnifiedAdminStore';
-import { debug } from '@/utils/debug';
+import debug from '@/utils/debug';
 import {
   authRetryDelay,
   debugWithEnv,

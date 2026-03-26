@@ -36,7 +36,7 @@ import {
 import { systemLogger } from '@/lib/logger';
 import { getSystemRunningFlag, setSystemRunningFlag } from '@/lib/redis';
 import { getErrorMessage } from '@/types/type-utils';
-import { debug } from '@/utils/debug';
+import debug from '@/utils/debug';
 
 const APP_VERSION =
   process.env.NEXT_PUBLIC_APP_VERSION ||

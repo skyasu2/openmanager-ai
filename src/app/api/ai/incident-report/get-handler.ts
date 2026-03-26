@@ -14,7 +14,7 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase/admin';
 import { getErrorMessage } from '@/types/type-utils';
-import { debug } from '@/utils/debug';
+import debug from '@/utils/debug';
 
 export async function getHandler(request: NextRequest) {
   try {

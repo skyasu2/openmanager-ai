@@ -13,7 +13,7 @@ import type {
   OTelResourceCatalog,
   OTelTimeSeries,
 } from '@/types/otel-metrics';
-import { debug } from '@/utils/debug';
+import debug from '@/utils/debug';
 
 // 메모리 캐시 (값 캐시 + in-flight Promise dedupe)
 let cachedResourceCatalog: OTelResourceCatalog | null = null;

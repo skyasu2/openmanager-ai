@@ -14,7 +14,7 @@ import {
   normalizeUtilizationPercent,
 } from '@/services/metrics/metric-normalization';
 import { getServerMonitoringService } from '@/services/monitoring';
-import { debug } from '@/utils/debug';
+import debug from '@/utils/debug';
 import { formatUptime } from '@/utils/serverUtils';
 
 /**

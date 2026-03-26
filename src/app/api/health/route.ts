@@ -34,7 +34,7 @@ import {
 } from '@/schemas/api.schema';
 import { getKSTDateTime } from '@/services/metrics/kst-time';
 import { getErrorMessage } from '@/types/type-utils';
-import { debug } from '@/utils/debug';
+import debug from '@/utils/debug';
 
 // MIGRATED: Removed export const runtime = "nodejs" (default)
 // MIGRATED: Removed export const dynamic = "force-dynamic" (now default) // 캐시는 응답 레벨에서 처리

@@ -21,7 +21,7 @@ interface DebugLogger {
  * 조건부 디버그 로거
  * 개발 환경에서만 로그 출력
  */
-export const debug: DebugLogger = {
+const debug: DebugLogger = {
   log: (...args: unknown[]) => {
     if (isDebugEnabled) logger.info(...args);
   },
@@ -51,3 +51,5 @@ export const debug: DebugLogger = {
     if (isDebugEnabled) console.timeEnd(label);
   },
 };
+
+export default debug;
