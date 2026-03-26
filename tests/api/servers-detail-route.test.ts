@@ -24,13 +24,13 @@ const {
   mockGetAllServerMetrics,
   mockGetProcessedServer,
   mockEnsureDataLoaded,
-  mockGetOTelTimeSeries,
+  mockGetTimeSeries,
 } = vi.hoisted(() => ({
   mockGetServerMetrics: vi.fn(),
   mockGetAllServerMetrics: vi.fn(),
   mockGetProcessedServer: vi.fn(),
   mockEnsureDataLoaded: vi.fn(),
-  mockGetOTelTimeSeries: vi.fn(),
+  mockGetTimeSeries: vi.fn(),
 }));
 
 vi.mock('@/lib/auth/api-auth', () => ({
@@ -52,7 +52,7 @@ vi.mock('@/services/monitoring', () => ({
 }));
 
 vi.mock('@/data/otel-data', () => ({
-  getOTelTimeSeries: mockGetOTelTimeSeries,
+  getTimeSeries: mockGetTimeSeries,
 }));
 
 vi.mock('@/utils/debug', () => ({
@@ -131,7 +131,7 @@ describe('/api/servers/[id]', () => {
     mockGetServerMetrics.mockReturnValue(BASE_METRIC);
     mockGetAllServerMetrics.mockReturnValue([]);
     mockGetProcessedServer.mockReturnValue(BASE_PROCESSED);
-    mockGetOTelTimeSeries.mockResolvedValue(TIMESERIES_DATA);
+    mockGetTimeSeries.mockResolvedValue(TIMESERIES_DATA);
   });
 
   describe('Enhanced format (default)', () => {
@@ -281,7 +281,7 @@ describe('/api/servers/[id]', () => {
     });
 
     it('should return empty history when timeseries data is null', async () => {
-      mockGetOTelTimeSeries.mockResolvedValue(null);
+      mockGetTimeSeries.mockResolvedValue(null);
 
       const res = await callGET(
         makeRequest('/api/servers/web-01?history=true'),
@@ -293,7 +293,7 @@ describe('/api/servers/[id]', () => {
     });
 
     it('should return empty history when server not in timeseries', async () => {
-      mockGetOTelTimeSeries.mockResolvedValue({
+      mockGetTimeSeries.mockResolvedValue({
         ...TIMESERIES_DATA,
         serverIds: ['other-server'],
       });

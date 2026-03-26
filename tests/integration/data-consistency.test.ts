@@ -17,7 +17,7 @@ vi.mock('@/lib/logging', () => ({
 }));
 
 vi.mock('@/data/otel-data', () => ({
-  getOTelResourceCatalog: () => null,
+  getResourceCatalog: () => null,
 }));
 
 vi.mock('@/config/rules/loader', () => ({

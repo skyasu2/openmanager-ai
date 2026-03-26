@@ -41,7 +41,7 @@ vi.mock('@/services/monitoring', () => ({
 }));
 
 vi.mock('@/data/otel-data', () => ({
-  getOTelTimeSeries: () => ({
+  getTimeSeries: () => ({
     timestamps: [1_706_000_000],
     serverIds: ['web-01'],
     metrics: {

@@ -7,13 +7,13 @@ const {
   mockGetServerMetrics,
   mockGetAllServerMetrics,
   mockGetProcessedServer,
-  mockGetOTelTimeSeries,
+  mockGetTimeSeries,
 } = vi.hoisted(() => ({
   mockEnsureDataLoaded: vi.fn(),
   mockGetServerMetrics: vi.fn(),
   mockGetAllServerMetrics: vi.fn(),
   mockGetProcessedServer: vi.fn(),
-  mockGetOTelTimeSeries: vi.fn(),
+  mockGetTimeSeries: vi.fn(),
 }));
 
 vi.mock('@/services/metrics/MetricsProvider', () => ({
@@ -31,7 +31,7 @@ vi.mock('@/services/monitoring', () => ({
 }));
 
 vi.mock('@/data/otel-data', () => ({
-  getOTelTimeSeries: mockGetOTelTimeSeries,
+  getTimeSeries: mockGetTimeSeries,
 }));
 
 vi.mock('@/utils/debug', () => ({
@@ -81,7 +81,7 @@ describe('Server History Route Contract (/api/servers/[id])', () => {
       },
     });
 
-    mockGetOTelTimeSeries.mockResolvedValue({
+    mockGetTimeSeries.mockResolvedValue({
       serverIds: ['server-1'],
       timestamps: [now - 3600, now - 1800, now - 600],
       metrics: {
