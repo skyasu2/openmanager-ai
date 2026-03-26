@@ -1,16 +1,16 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-26 12:34:06 KST
+> Generated at: 2026-03-27 00:12:25 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 191 |
-| Total Checks | 1406 |
-| Passed | 1344 |
-| Failed | 56 |
+| Total Runs | 192 |
+| Total Checks | 1418 |
+| Passed | 1355 |
+| Failed | 57 |
 | Completed Items | 256 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
@@ -18,11 +18,11 @@
 | Expert Domains Tracked | 6 |
 | Expert Open Gaps | 1 |
 | Completion Rate | 100% |
-| Last Run | QA-20260326-0192 (2026-03-26T03:34:06.036Z) |
+| Last Run | QA-20260327-0193 (2026-03-26T15:12:25.263Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260326-0192 (2026-03-26T03:34:06.036Z)
+Latest run: QA-20260327-0193 (2026-03-26T15:12:25.263Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -32,29 +32,35 @@ Latest run: QA-20260326-0192 (2026-03-26T03:34:06.036Z)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period reviewed during production verification; effective cost 18.6253 USD, billed 0.0000 USD, amount due 0.0000 USD. |
+| vercel | cli | checked | normal | Current billing period reviewed during production targeted QA; effective cost 19.4442 USD, billed 0.0000 USD, amount due 0.0000 USD. |
 
 ## Coverage (Latest Run)
 
 - Scope: targeted
 - Release-Facing: no
-- Deployment: dpl_2mkedaiAsZ9XMenaTXJndhKKrjLs / SHA 46d4e438
-- Coverage Packs: core-routes-smoke, dashboard-core, ai-core, observability-pack
-- Covered Surfaces: / landing render + v8.10.0, /system-boot -> /dashboard redirect, dashboard 15 servers / warning card / server card metrics, warning-card AI prefill -> sidebar prompt injection, AI sidebar response render on latest promoted production, GET /api/health + GET /api/version, GET /api/ai/supervisor/stream/v2 invalid sessionId -> 400, GET /api/ai/supervisor/stream/v2 invalid skip -> 400, POST /api/ai/wake-up -> 200 warmed_up, GET /api/ai/feedback -> 200 database-backed stats, POST /api/ai/feedback invalid payload -> 400 validation, POST /api/ai/jobs -> 201 queued/scheduled, GET /api/ai/jobs/:id -> 200 completed, GET /api/ai/jobs?sessionId=... -> 200 list result, POST /api/ai/supervisor/stream/v2 -> 200 SSE ui-message-stream with X-AI-Latency-Ms, local targeted vitest + type-check for ai-proxy/supervisor
-- Skipped Surfaces: Analyst deep drilldown rerun, Reporter deep report rerun, fullscreen AI workspace, Cloud Run admin observability (/monitoring, /monitoring/traces), blocked prompt/security regression pack
+- Deployment: dpl_HTYJnZ6n1Ls3DyMov4VVnHKghA7A / SHA a91b1bc3
+- Coverage Packs: core-routes-smoke, dashboard-core, ai-core, modal-detail-pack, observability-pack
+- Covered Surfaces: / landing render + v8.10.0 + bootstrap state convergence, landing feature card modal: Vibe Coding 상세 내용/개발 환경 변화/아키텍처 전환, /system-boot -> /dashboard redirect via 시스템 시작 countdown, dashboard render: 15 servers, system resources, top5 resource warnings, active alerts modal opens with 1 warning and AI prefill action, AI sidebar opens from alert prefill with populated query, AI job warm-up path visible: /api/ai/wake-up 200 and /api/ai/jobs 201 via network log, GET /api/health 200 healthy, GET /api/version 200 version 8.10.0, /validation route render reachable, browser console errors 0 on landing/dashboard
+- Skipped Surfaces: /login guest PIN flow, server detail modal 3-tab switch, topology modal, log explorer modal, fullscreen AI workspace, Analyst full analysis, Reporter report generation, Cloud Run admin observability (/monitoring, /monitoring/traces), blocked prompt / security regression pack, AI response final completion proof after cold start
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
 | general | Production alias | [link](https://openmanager-ai.vercel.app/) | - |
-| vercel-deployment | Latest promoted deployment 46d4e4386 | [link](https://openmanager-rhcekm5q4-skyasus-projects.vercel.app/) | - |
+| vercel-deployment | Latest promoted deployment a91b1bc32 | [link](https://openmanager-p45n77fw6-skyasus-projects.vercel.app/) | dpl_HTYJnZ6n1Ls3DyMov4VVnHKghA7A |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | Dashboard + AI sidebar latest production state | `qa-20260326-prod-0192-dashboard-ai.png` | - |
+| playwright-screenshot | Production landing | `qa-20260327-prod-0193-landing.png` | - |
+| playwright-screenshot | Vibe Coding modal | `qa-20260327-prod-0193-vibe-modal.png` | - |
+| playwright-screenshot | Dashboard overview | `qa-20260327-prod-0193-dashboard.png` | - |
+| playwright-screenshot | Active alert to AI prefill | `qa-20260327-prod-0193-alert-modal.png` | - |
+| playwright-screenshot | AI warm-up state | `qa-20260327-prod-0193-ai-warmup.png` | - |
+| playwright-console | Console warnings/errors | `qa-20260327-prod-0193-console.log` | - |
+| playwright-network | Network log | `qa-20260327-prod-0193-network-final.log` | - |
 
 ## Expert Domain Open Gaps
 
@@ -78,7 +84,7 @@ Latest run: QA-20260326-0192 (2026-03-26T03:34:06.036Z)
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 - [P2] ai-chat-detail-expand: AI Chat 상세 분석 펼치기 (seen 1회, last QA-20260301-0030)
   - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
-- [P2] ai-cold-start-latency: Cloud Run cold start 레이턴시 최적화 (seen 1회, last QA-20260326-0190)
+- [P2] ai-cold-start-latency: Cloud Run cold start 레이턴시 최적화 (seen 2회, last QA-20260327-0193)
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 - [P2] analyst-drilldown: Analyst 서버별 드릴다운 (seen 1회, last QA-20260301-0030)
   - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
@@ -354,6 +360,7 @@ Latest run: QA-20260326-0192 (2026-03-26T03:34:06.036Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260327-0193 | 2026-03-26T15:12:25.263Z | targeted | no | Vercel production targeted QA recheck after cloud-run pre-init logging fix | 12 | 0 | 0 | 0 | 1 | 0 |
 | QA-20260326-0192 | 2026-03-26T03:34:06.036Z | targeted | no | Vercel Playwright + direct API verification for current production state | 16 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260326-0191 | 2026-03-26T03:12:24.817Z | targeted | no | Vercel Playwright targeted recheck - latest promoted QA data deploy | 9 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260326-0190 | 2026-03-26T02:57:36.307Z | broad | yes | Vercel Playwright QA - UI/UX + AI Assistant + Server Monitoring (v8.10.0) | 15 | 4 | 0 | 0 | 2 | 1 |
@@ -373,5 +380,4 @@ Latest run: QA-20260326-0192 (2026-03-26T03:34:06.036Z)
 | QA-20260324-0176 | 2026-03-24T07:35:13.658Z | targeted | no | Vercel Production QA - parity gate still open after analysis detail patch | 6 | 0 | 1 | 0 | 0 | 0 |
 | QA-20260324-0175 | 2026-03-24T05:45:00.758Z | targeted | no | Vercel Production QA - deferred parity metadata preserved but detail contract still incomplete | 6 | 1 | 1 | 0 | 0 | 0 |
 | QA-20260324-0174 | 2026-03-24T05:13:06.470Z | targeted | no | Vercel Production QA - parity metadata after type-fix deploy | 5 | 1 | 1 | 0 | 0 | 0 |
-| QA-20260324-0173 | 2026-03-24T00:33:16.954Z | targeted | no | Vercel Production QA - frontend/AI parity gate smoke | 5 | 0 | 1 | 0 | 0 | 0 |
 

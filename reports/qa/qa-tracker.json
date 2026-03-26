@@ -2,16 +2,16 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-03-26T03:34:06.036Z"
+    "updatedAt": "2026-03-26T15:12:25.263Z"
   },
   "sequence": {
-    "nextRunNumber": 193
+    "nextRunNumber": 194
   },
   "summary": {
-    "totalRuns": 191,
-    "totalChecks": 1406,
-    "totalPassed": 1344,
-    "totalFailed": 56,
+    "totalRuns": 192,
+    "totalChecks": 1418,
+    "totalPassed": 1355,
+    "totalFailed": 57,
     "completionRate": 100,
     "completedItems": 256,
     "pendingItems": 0,
@@ -19,8 +19,8 @@
     "wontFixItems": 10,
     "expertDomainsTracked": 6,
     "expertDomainsOpenGaps": 1,
-    "lastRunId": "QA-20260326-0192",
-    "lastRecordedAt": "2026-03-26T03:34:06.036Z"
+    "lastRunId": "QA-20260327-0193",
+    "lastRecordedAt": "2026-03-26T15:12:25.263Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -6077,22 +6077,22 @@
       "status": "wont-fix",
       "firstSeenRunId": "QA-20260326-0190",
       "firstSeenAt": "2026-03-26T02:57:36.307Z",
-      "lastSeenRunId": "QA-20260326-0190",
-      "lastSeenAt": "2026-03-26T02:57:36.307Z",
-      "seenCount": 1,
+      "lastSeenRunId": "QA-20260327-0193",
+      "lastSeenAt": "2026-03-26T15:12:25.263Z",
+      "seenCount": 2,
       "completedCount": 0,
       "pendingCount": 0,
       "deferredCount": 0,
-      "wontFixCount": 1,
+      "wontFixCount": 2,
       "aliases": [],
       "owner": "",
       "lastEvidence": "",
-      "lastNote": "첫 AI 쿼리 cold start 40-50초 소요. /api/ai/wake-up 사전 호출에도 발생. 웜업 타이밍 또는 최소 인스턴스 설정 검토 필요",
+      "lastNote": "이번 targeted run에서도 AI 질의가 warm-up/job queue 경로로 들어가며 응답 완료 proof 없이 대기 배너가 관찰됨",
       "isBlocking": false,
       "isBlockingExplicit": true,
       "overengineeringScope": "",
       "lastPolicyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.",
-      "lastStatusChangeAt": "2026-03-26T02:57:36.307Z"
+      "lastStatusChangeAt": "2026-03-26T15:12:25.263Z"
     }
   },
   "runs": [
@@ -16036,6 +16036,135 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260327-0193",
+      "recordedAt": "2026-03-26T15:12:25.263Z",
+      "recordedAtKst": "2026-03-27 00:12:25 KST",
+      "title": "Vercel production targeted QA recheck after cloud-run pre-init logging fix",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260327-0193.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_HTYJnZ6n1Ls3DyMov4VVnHKghA7A",
+        "deploymentUrl": "https://openmanager-p45n77fw6-skyasus-projects.vercel.app",
+        "commitSha": "a91b1bc3206cbf8f163d4c658eedc51bfc59ccb6"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "coveragePacks": [
+        "core-routes-smoke",
+        "dashboard-core",
+        "ai-core",
+        "modal-detail-pack",
+        "observability-pack"
+      ],
+      "coveredSurfaces": [
+        "/ landing render + v8.10.0 + bootstrap state convergence",
+        "landing feature card modal: Vibe Coding 상세 내용/개발 환경 변화/아키텍처 전환",
+        "/system-boot -> /dashboard redirect via 시스템 시작 countdown",
+        "dashboard render: 15 servers, system resources, top5 resource warnings",
+        "active alerts modal opens with 1 warning and AI prefill action",
+        "AI sidebar opens from alert prefill with populated query",
+        "AI job warm-up path visible: /api/ai/wake-up 200 and /api/ai/jobs 201 via network log",
+        "GET /api/health 200 healthy",
+        "GET /api/version 200 version 8.10.0",
+        "/validation route render reachable",
+        "browser console errors 0 on landing/dashboard"
+      ],
+      "skippedSurfaces": [
+        "/login guest PIN flow",
+        "server detail modal 3-tab switch",
+        "topology modal",
+        "log explorer modal",
+        "fullscreen AI workspace",
+        "Analyst full analysis",
+        "Reporter report generation",
+        "Cloud Run admin observability (/monitoring, /monitoring/traces)",
+        "blocked prompt / security regression pack",
+        "AI response final completion proof after cold start"
+      ],
+      "checks": {
+        "total": 12,
+        "passed": 11,
+        "failed": 1
+      },
+      "expertAssessments": [],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-03-27T00:06:00+09:00",
+          "summary": "Current billing period reviewed during production targeted QA; effective cost 19.4442 USD, billed 0.0000 USD, amount due 0.0000 USD.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "Production landing",
+          "path": "qa-20260327-prod-0193-landing.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Vibe Coding modal",
+          "path": "qa-20260327-prod-0193-vibe-modal.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Dashboard overview",
+          "path": "qa-20260327-prod-0193-dashboard.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Active alert to AI prefill",
+          "path": "qa-20260327-prod-0193-alert-modal.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "AI warm-up state",
+          "path": "qa-20260327-prod-0193-ai-warmup.png"
+        },
+        {
+          "type": "playwright-console",
+          "label": "Console warnings/errors",
+          "path": "qa-20260327-prod-0193-console.log",
+          "note": "0 errors, preload warnings only"
+        },
+        {
+          "type": "playwright-network",
+          "label": "Network log",
+          "path": "qa-20260327-prod-0193-network-final.log",
+          "note": "Includes /api/ai/wake-up 200 and /api/ai/jobs 201"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "Production alias",
+          "url": "https://openmanager-ai.vercel.app/"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Latest promoted deployment a91b1bc32",
+          "url": "https://openmanager-p45n77fw6-skyasus-projects.vercel.app/",
+          "note": "dpl_HTYJnZ6n1Ls3DyMov4VVnHKghA7A"
+        }
+      ],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 1
     }
   ],
   "experts": {
