@@ -3,7 +3,7 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import debug from '@/utils/debug';
+import { debug } from '@/utils/debug';
 import {
   LOADING_MESSAGE_INTERVAL_MS,
   SUCCESS_MESSAGE_TIMEOUT_MS,

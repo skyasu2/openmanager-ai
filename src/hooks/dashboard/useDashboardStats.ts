@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import type { DashboardStats } from '@/components/dashboard/types/dashboard.types';
 import type { Server } from '@/types/server';
-import debug from '@/utils/debug';
+import { debug } from '@/utils/debug';
 
 /**
  * 서버 목록을 기반으로 대시보드 통계를 계산하는 훅

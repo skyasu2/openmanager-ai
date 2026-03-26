@@ -11,7 +11,7 @@ import type {
 import type { MonitoringAlert } from '@/schemas/api.monitoring-report.schema';
 import type { Alert } from '@/services/monitoring/AlertManager';
 import type { Server } from '@/types/server';
-import debug from '@/utils/debug';
+import { debug } from '@/utils/debug';
 import { safeErrorMessage } from '@/utils/utils-functions';
 import {
   type DashboardAlertContext,

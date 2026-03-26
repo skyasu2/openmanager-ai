@@ -8,7 +8,7 @@
 import Link from 'next/link';
 import { useEffect, useMemo } from 'react';
 import { logger } from '@/lib/logging';
-import debug from '@/utils/debug';
+import { debug } from '@/utils/debug';
 
 // 클라이언트 컴포넌트에서 안전하게 환경 감지
 const getClientEnvironment = () => {

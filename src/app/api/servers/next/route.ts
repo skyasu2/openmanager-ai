@@ -14,7 +14,7 @@ import {
 } from '@/schemas/api.schema';
 import { getServerMonitoringService } from '@/services/monitoring';
 import { getErrorMessage } from '@/types/type-utils';
-import debug from '@/utils/debug';
+import { debug } from '@/utils/debug';
 
 /**
  * 🚀 서버 페이지네이션 API v2.1

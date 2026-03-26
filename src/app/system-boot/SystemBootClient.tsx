@@ -18,7 +18,7 @@ import { useAISidebarStore } from '@/stores/useAISidebarStore';
 import { useUnifiedAdminStore } from '@/stores/useUnifiedAdminStore';
 import { PAGE_BACKGROUNDS } from '@/styles/design-constants';
 import { triggerAIWarmup } from '@/utils/ai-warmup';
-import debug from '@/utils/debug';
+import { debug } from '@/utils/debug';
 import { BootProgressBar } from './components/BootProgressBar';
 import { SmoothLoadingSpinner } from './components/SmoothLoadingSpinner';
 import { createTrackedTimeoutScheduler } from './timeout-scheduler';

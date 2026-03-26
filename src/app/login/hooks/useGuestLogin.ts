@@ -15,7 +15,7 @@ import {
 } from '@/lib/auth/guest-session-utils';
 import { LOGIN_POLICY_COPY } from '@/lib/auth/login-policy-copy';
 import { triggerAIWarmup } from '@/utils/ai-warmup';
-import debug from '@/utils/debug';
+import { debug } from '@/utils/debug';
 import { createCSRFHeaders } from '@/utils/security/csrf-client';
 import {
   DEFAULT_REDIRECT_PATH,

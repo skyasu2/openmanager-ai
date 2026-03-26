@@ -7,7 +7,7 @@
 
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
-import debug from '@/utils/debug';
+import { debug } from '@/utils/debug';
 
 export function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;

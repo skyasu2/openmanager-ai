@@ -9,7 +9,7 @@
 
 import type { CacheableAIResponse } from '@/lib/ai/cache/ai-response-cache';
 import { getErrorMessage } from '@/types/type-utils';
-import debug from '@/utils/debug';
+import { debug } from '@/utils/debug';
 import {
   DIRECT_RETRY_MIN_BUFFER_MS,
   getIncidentRetryTimeout,

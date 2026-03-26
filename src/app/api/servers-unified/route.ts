@@ -20,7 +20,7 @@ import { getServerMonitoringService } from '@/services/monitoring';
 import { queryOTelLogs } from '@/services/monitoring/otel-log-search';
 import type { EnhancedServerMetrics } from '@/types/server';
 import { getErrorMessage } from '@/types/type-utils';
-import debug from '@/utils/debug';
+import { debug } from '@/utils/debug';
 
 // 📝 통합 요청 스키마
 const serversUnifiedRequestSchema = z.object({

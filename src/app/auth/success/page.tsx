@@ -11,7 +11,7 @@ import { Loader2 } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useEffect } from 'react';
 import { getSupabase } from '@/lib/supabase/client';
-import debug from '@/utils/debug';
+import { debug } from '@/utils/debug';
 
 const DEFAULT_REDIRECT_PATH = '/main';
 

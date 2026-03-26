@@ -22,7 +22,7 @@ import {
   signInWithOAuthProvider,
 } from '@/lib/auth/supabase-auth-oauth';
 import { PAGE_BACKGROUNDS } from '@/styles/design-constants';
-import debug from '@/utils/debug';
+import { debug } from '@/utils/debug';
 import { renderAIGradientWithAnimation } from '@/utils/text-rendering';
 import { useGuestLogin, useLoadingMessages, useLoginUrlParams } from './hooks';
 import { LoginButtons } from './LoginButtons';
