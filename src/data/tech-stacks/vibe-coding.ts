@@ -238,6 +238,28 @@ export const VIBE_CODING_DATA: VibeCodeData = {
       },
     ],
 
+    stageMeta: {
+      stage1: {
+        title: '초기 단계',
+        description:
+          'ChatGPT로 개별 페이지 생성 → GitHub 수동 업로드 → Netlify 배포 → 데모용 목업 수준',
+        link: {
+          href: 'https://openmanager-vibe-v2.netlify.app/',
+          label: 'v2 버전 확인하기',
+        },
+      },
+      stage2: {
+        title: '중기 단계',
+        description:
+          'Cursor 도입 → GitHub 연동 → Vercel 배포 → Supabase CRUD 웹앱 완성',
+      },
+      stage3: {
+        title: '후기 단계',
+        description:
+          'Claude Code 전환 → WSL 최적화 → 멀티 AI CLI 협업 → GCP Functions 활용',
+      },
+    },
+
     // 3단계: 후기 - 분기점 (Pivot Point)
     stage3: [
       {

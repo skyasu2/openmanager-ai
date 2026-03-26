@@ -85,16 +85,16 @@ export default function FeatureCardModal({
     // 포커스 가능 요소 조회
     const focusableSelector =
       'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
-    const focusableElements = modal
-      ? modal.querySelectorAll<HTMLElement>(focusableSelector)
-      : [];
-    const firstFocusable = focusableElements[0];
-    const lastFocusable = focusableElements[focusableElements.length - 1];
+    const getFocusableElements = () =>
+      modal
+        ? modal.querySelectorAll<HTMLElement>(focusableSelector)
+        : ([] as unknown as NodeListOf<HTMLElement>);
 
     // 모달 열릴 때 첫 포커스 가능한 요소로 이동
-    firstFocusable?.focus();
+    getFocusableElements()[0]?.focus();
 
     // 🔧 단일 이벤트 리스너로 ESC + Tab 모두 처리 (성능 최적화)
+    // Tab 핸들러는 매 keydown마다 DOM을 재조회하여 showDiagram/isHistoryView 전환 후에도 stale 방지
     const handleKeyDown = (e: KeyboardEvent) => {
       // ESC: 모달 닫기
       if (e.key === 'Escape') {
@@ -104,8 +104,13 @@ export default function FeatureCardModal({
         return;
       }
 
-      // Tab: 포커스 트래핑
-      if (e.key === 'Tab' && firstFocusable && lastFocusable) {
+      // Tab: 포커스 트래핑 (현재 DOM 기준으로 재조회)
+      if (e.key === 'Tab') {
+        const els = getFocusableElements();
+        const firstFocusable = els[0];
+        const lastFocusable = els[els.length - 1];
+        if (!firstFocusable || !lastFocusable) return;
+
         if (e.shiftKey) {
           // Shift + Tab: 첫 요소에서 마지막으로 순환
           if (document.activeElement === firstFocusable) {
@@ -232,7 +237,10 @@ export default function FeatureCardModal({
                 </span>
               )}
             </h3>
-            <p className="mx-auto max-w-2xl text-sm text-gray-300">
+            <p
+              id="modal-description"
+              className="mx-auto max-w-2xl text-sm text-gray-300"
+            >
               {cardData.id === 'vibe-coding' && isHistoryView
                 ? '바이브 코딩 여정: 초기(ChatGPT 개별 페이지) → 중기(Cursor + Vercel + Supabase) → 후기(Claude Code + WSL)로 이어진 개발 환경의 변화를 시간 순서대로 보여줍니다.'
                 : parseMarkdownLinks(
@@ -369,6 +377,7 @@ export default function FeatureCardModal({
         role="dialog"
         aria-modal="true"
         aria-labelledby="modal-title"
+        aria-describedby="modal-description"
         tabIndex={-1}
       >
         {/* Hook 안정화: 조건부 렌더링 제거, CSS로 가시성 제어 */}
