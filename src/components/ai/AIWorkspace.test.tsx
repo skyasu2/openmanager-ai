@@ -112,6 +112,9 @@ vi.mock('@/components/ai/AIContentArea', () => ({
 
 vi.mock('@/components/ai/ThinkingProcessVisualizer', () => ({
   default: () => <div data-testid="thinking-visualizer">Thinking</div>,
+  ThinkingProcessVisualizer: () => (
+    <div data-testid="thinking-visualizer">Thinking</div>
+  ),
 }));
 
 vi.mock('@/components/shared/UnifiedProfileHeader', () => ({
