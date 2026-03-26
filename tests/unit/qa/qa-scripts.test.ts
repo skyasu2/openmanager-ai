@@ -514,6 +514,56 @@ describe('QA scripts', () => {
     expect(statusMarkdown).toContain('artifacts/dashboard.png');
   });
 
+  it('demotes non-blocking pending improvements to wont-fix', () => {
+    const tempDir = createTempWorkspace();
+    const inputPath = writeInputFile(
+      tempDir,
+      createValidPayload({
+        pendingImprovements: [
+          {
+            id: 'tracking-only-p2-gap',
+            title: 'Tracking-only P2 gap',
+            priority: 'P2',
+          },
+        ],
+      })
+    );
+
+    const recordResult = runNodeScript(
+      RECORD_QA_RUN_SCRIPT,
+      ['--input', inputPath],
+      {
+        cwd: tempDir,
+        env: {
+          VERCEL_DEPLOYMENT_ID: 'dpl_policy123',
+          VERCEL_GIT_COMMIT_SHA: 'abcdefabcdefabcdefabcdefabcdefabcdefabcd',
+          VERCEL_GIT_COMMIT_REF: 'main',
+          VERCEL_TARGET_ENV: 'production',
+          VERCEL_PROJECT_PRODUCTION_URL: 'openmanager-ai.vercel.app',
+        },
+      }
+    );
+
+    expect(recordResult.status).toBe(0);
+
+    const runFilePath = findGeneratedRunFile(tempDir);
+    const runRecord = JSON.parse(readFileSync(runFilePath, 'utf8'));
+    expect(runRecord.pendingImprovements).toHaveLength(0);
+    expect(runRecord.wontFixImprovements).toHaveLength(1);
+    expect(runRecord.wontFixImprovements[0]).toMatchObject({
+      id: 'tracking-only-p2-gap',
+      status: 'wont-fix',
+    });
+
+    const trackerPath = join(tempDir, 'reports', 'qa', 'qa-tracker.json');
+    const tracker = JSON.parse(readFileSync(trackerPath, 'utf8'));
+    expect(tracker.items['tracking-only-p2-gap']).toMatchObject({
+      status: 'wont-fix',
+      wontFixCount: 1,
+      pendingCount: 0,
+    });
+  });
+
   it('expands GitHub Actions CI evidence into structured links', () => {
     const tempDir = createTempWorkspace();
     const inputPath = writeInputFile(

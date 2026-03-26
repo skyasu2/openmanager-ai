@@ -1,15 +1,15 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-26 03:04:05 KST
+> Generated at: 2026-03-26 11:32:04 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 187 |
-| Total Checks | 1354 |
-| Passed | 1294 |
+| Total Runs | 188 |
+| Total Checks | 1366 |
+| Passed | 1306 |
 | Failed | 56 |
 | Completed Items | 252 |
 | Pending Items | 0 |
@@ -18,11 +18,11 @@
 | Expert Domains Tracked | 6 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Run | QA-20260326-0188 (2026-03-25T18:04:04.763Z) |
+| Last Run | QA-20260326-0189 (2026-03-26T02:32:04.091Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260326-0188 (2026-03-25T18:04:04.763Z)
+Latest run: QA-20260326-0189 (2026-03-26T02:32:04.091Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -34,32 +34,32 @@ Latest run: QA-20260326-0188 (2026-03-25T18:04:04.763Z)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| - | - | - | - | - |
+| vercel | cli | checked | normal | Current billing period reviewed after production 8.10.0 smoke; effective cost 18.6253 USD, billed cost 0.0000 USD, no unexpected billed usage spike. |
 
 ## Coverage (Latest Run)
 
-- Scope: targeted
-- Release-Facing: no
-- Deployment: dpl_BTchtkkRxK1j336RvH2aj9VKWaSm / SHA 72da39ca
-- Coverage Packs: core-routes-smoke, dashboard-core, ai-core
-- Covered Surfaces: / landing render on latest promoted deploy, /system-boot -> /dashboard redirect, /api/health 200 healthy, /api/version 200 version 8.9.2, AI sidebar open on dashboard, AI free-text prompt streaming response, X-AI-Latency-Ms header proof on /api/ai/supervisor/stream/v2, landing/dashboard/AI console errors 0
-- Skipped Surfaces: server detail modal deep interactions, Reporter/Analyst advanced surfaces, fullscreen AI workspace, Cloud Run admin observability surfaces
+- Scope: broad
+- Release-Facing: yes
+- Deployment: dpl_7a5gP3Lw4dHhkEm11VaF9T1QoAjk / SHA a05306de
+- Coverage Packs: core-routes-smoke, dashboard-core, ai-core, modal-detail-pack, observability-pack
+- Covered Surfaces: / landing render with v8.10.0 footer badge, /api/health 200 success true and version 8.10.0, /api/version 200 version 8.10.0 environment production, /system-boot -> /dashboard redirect, dashboard render with 15 servers, 14 online, 1 warning, server detail modal open and 3-tab switch, server detail modal ESC close, AI sidebar open on dashboard, AI free-text prompt streaming response on production, X-AI-Latency-Ms=265 header proof on /api/ai/supervisor/stream/v2, production dashboard console errors 0, production AI sidebar console errors 0
+- Skipped Surfaces: Reporter/Analyst advanced surfaces, fullscreen AI workspace, Cloud Run admin observability surfaces, security blocked-prompt regression pack
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
 | general | Production alias | [link](https://openmanager-ai.vercel.app/) | - |
-| vercel-deployment | Latest promoted deployment | [link](https://openmanager-13vemp0ur-skyasus-projects.vercel.app/) | - |
+| vercel-deployment | Production 8.10.0 deployment | [link](https://openmanager-egfjvesbq-skyasus-projects.vercel.app/) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | Latest deploy landing proof | `qa-20260326-latest-prod-recheck-landing.png` | - |
-| playwright-screenshot | Latest deploy dashboard proof | `qa-20260326-latest-prod-recheck-dashboard.png` | - |
-| playwright-screenshot | Latest deploy AI response proof | `qa-20260326-latest-prod-recheck-ai.png` | - |
-| playwright-console | Console errors during recheck | `qa-20260326-latest-prod-recheck-console-errors-final.log` | - |
+| playwright-screenshot | Release 8.10.0 landing proof | `qa-20260326-release-8100-landing.png` | - |
+| playwright-screenshot | Release 8.10.0 dashboard proof | `qa-20260326-release-8100-dashboard.png` | - |
+| playwright-screenshot | Release 8.10.0 AI response proof | `qa-20260326-release-8100-ai.png` | - |
+| playwright-console | Release 8.10.0 console warnings | `qa-20260326-release-8100-console.log` | - |
 
 ## Expert Domain Open Gaps
 
@@ -350,6 +350,7 @@ Latest run: QA-20260326-0188 (2026-03-25T18:04:04.763Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260326-0189 | 2026-03-26T02:32:04.091Z | broad | yes | Vercel Playwright broad release-facing smoke - production 8.10.0 | 12 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260326-0188 | 2026-03-25T18:04:04.763Z | targeted | no | Vercel Playwright targeted recheck - latest promoted production deploy AI proof | 8 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260326-0187 | 2026-03-25T17:38:40.806Z | broad | yes | Vercel Playwright release-facing smoke - core routes, dashboard, AI core | 12 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260325-0186 | 2026-03-25T11:45:16.583Z | targeted | no | Local validation - suppress zero-test DOM related dep-scan noise | 5 | 1 | 0 | 0 | 0 | 0 |
@@ -369,5 +370,4 @@ Latest run: QA-20260326-0188 (2026-03-25T18:04:04.763Z)
 | QA-20260324-0172 | 2026-03-23T17:00:59.400Z | targeted | no | Validation stale banner visible path local proof | 1 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260324-0171 | 2026-03-23T16:41:18.533Z | targeted | no | Vercel Production QA - validation evidence clarity smoke | 5 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260324-0170 | 2026-03-23T15:09:36.687Z | targeted | no | Vercel Production QA - validation stale banner smoke after client-side fix | 5 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260323-0169 | 2026-03-23T07:36:31.950Z | targeted | no | Resolved alert history promptOverride local contract verification | 1 | 0 | 0 | 0 | 0 | 0 |
 

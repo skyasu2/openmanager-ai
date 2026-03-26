@@ -1,0 +1,133 @@
+{
+  "runId": "QA-20260326-0189",
+  "recordedAt": "2026-03-26T02:32:04.091Z",
+  "recordedAtKst": "2026-03-26 11:32:04 KST",
+  "runTitle": "Vercel Playwright broad release-facing smoke - production 8.10.0",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_7a5gP3Lw4dHhkEm11VaF9T1QoAjk",
+    "deploymentUrl": "https://openmanager-egfjvesbq-skyasus-projects.vercel.app",
+    "commitSha": "a05306de555f5e69f34aa3bc9e02e630260e41f5"
+  },
+  "scope": "broad",
+  "releaseFacing": true,
+  "coveragePacks": [
+    "core-routes-smoke",
+    "dashboard-core",
+    "ai-core",
+    "modal-detail-pack",
+    "observability-pack"
+  ],
+  "coveredSurfaces": [
+    "/ landing render with v8.10.0 footer badge",
+    "/api/health 200 success true and version 8.10.0",
+    "/api/version 200 version 8.10.0 environment production",
+    "/system-boot -> /dashboard redirect",
+    "dashboard render with 15 servers, 14 online, 1 warning",
+    "server detail modal open and 3-tab switch",
+    "server detail modal ESC close",
+    "AI sidebar open on dashboard",
+    "AI free-text prompt streaming response on production",
+    "X-AI-Latency-Ms=265 header proof on /api/ai/supervisor/stream/v2",
+    "production dashboard console errors 0",
+    "production AI sidebar console errors 0"
+  ],
+  "skippedSurfaces": [
+    "Reporter/Analyst advanced surfaces",
+    "fullscreen AI workspace",
+    "Cloud Run admin observability surfaces",
+    "security blocked-prompt regression pack"
+  ],
+  "checks": {
+    "total": 12,
+    "passed": 12,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Latest promoted 8.10.0 deployment returned a representative AI sidebar streaming response with production timing header proof.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Promoted production deployment dpl_7a5gP3Lw4dHhkEm11VaF9T1QoAjk passed landing, health/version, boot redirect, dashboard, and modal smoke checks.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Playwright MCP captured landing, dashboard, AI response, and console artifacts for the latest release-facing production recheck.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-03-26T11:26:57+09:00",
+      "summary": "Current billing period reviewed after production 8.10.0 smoke; effective cost 18.6253 USD, billed cost 0.0000 USD, no unexpected billed usage spike.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "Release 8.10.0 landing proof",
+      "path": "qa-20260326-release-8100-landing.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Release 8.10.0 dashboard proof",
+      "path": "qa-20260326-release-8100-dashboard.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Release 8.10.0 AI response proof",
+      "path": "qa-20260326-release-8100-ai.png"
+    },
+    {
+      "type": "playwright-console",
+      "label": "Release 8.10.0 console warnings",
+      "path": "qa-20260326-release-8100-console.log"
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "This run closes the post-release evidence gap for chore(release): 8.10.0 by validating the latest promoted production deployment directly on Vercel.",
+    "AI free-text prompt '현재 경고 상태인 서버 2대만 요약해줘' streamed successfully; current synthetic dataset only exposed one warning server at this time slot.",
+    "Console warnings were limited to repeated font preload notices; no runtime errors were observed on landing, dashboard, or AI sidebar surfaces."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Production alias",
+      "url": "https://openmanager-ai.vercel.app/"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Production 8.10.0 deployment",
+      "url": "https://openmanager-egfjvesbq-skyasus-projects.vercel.app/"
+    }
+  ]
+}

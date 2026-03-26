@@ -183,9 +183,9 @@ function normalizePendingPolicy(item, sourceStatus) {
   }
 
   return {
-    status: 'pending',
+    status: 'wont-fix',
     policyNote:
-      '명시적인 reviewer 결정 전에는 pending 상태를 유지해 릴리즈 리스크를 숨기지 않습니다.',
+      '포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.',
   };
 }
 
