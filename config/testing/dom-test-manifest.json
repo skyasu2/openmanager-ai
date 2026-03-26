@@ -9,6 +9,7 @@
     "src/lib/auth/auth-state-manager.test.ts",
     "src/lib/auth/supabase-auth-oauth.test.ts",
     "src/services/system/SystemInactivityService.test.ts",
-    "src/stores/useAISidebarStore.test.ts"
+    "src/stores/useAISidebarStore.test.ts",
+    "src/utils/ai-warmup.test.ts"
   ]
 }
