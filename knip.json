@@ -1,0 +1,49 @@
+{
+  "$schema": "https://unpkg.com/knip@5/schema.json",
+  "entry": [
+    "src/app/**/page.{ts,tsx}",
+    "src/app/**/layout.{ts,tsx}",
+    "src/app/**/route.{ts,tsx}",
+    "src/app/**/loading.{ts,tsx}",
+    "src/app/**/error.{ts,tsx}",
+    "src/app/**/not-found.{ts,tsx}",
+    "src/**/*.stories.{ts,tsx}",
+    ".storybook/**/*.{ts,tsx,js}",
+    "src/scripts/seed-*.ts",
+    ".lintstagedrc.js",
+    "playwright.config.vercel.ts",
+    "playwright.config.vercel.manual.ts"
+  ],
+  "project": [
+    "src/**/*.{ts,tsx}",
+    ".storybook/**/*.{ts,tsx,js}",
+    ".lintstagedrc.js",
+    "playwright.config.vercel.ts",
+    "playwright.config.vercel.manual.ts",
+    "!src/**/*.test.{ts,tsx}",
+    "!src/**/*.spec.{ts,tsx}",
+    "!src/__mocks__/**",
+    "!src/test/**"
+  ],
+  "ignoreDependencies": [
+    "@types/*",
+    "tsx",
+    "cross-env",
+    "standard-version",
+    "conventional-changelog-cli",
+    "dotenv-cli",
+    "prettier-plugin-tailwindcss"
+  ],
+  "ignoreFiles": ["docs/guides/auth-complete.tsx"],
+  "ignoreExportsUsedInFile": true,
+  "ignore": [
+    "tests/**",
+    "cloud-run/**",
+    "scripts/**",
+    "config/**",
+    "public/**",
+    ".next/**",
+    "*.config.{js,ts,mjs,cjs}"
+  ],
+  "ignoreBinaries": ["biome", "playwright", "cross-env", "husky"]
+}

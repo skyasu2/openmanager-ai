@@ -34,6 +34,7 @@ import {
   logAIResponse,
   startAITimer,
 } from '@/lib/ai/observability';
+import { normalizeSupervisorDeviceType } from '@/lib/ai/supervisor/request-contracts';
 import {
   compressContext,
   shouldCompress,
@@ -54,7 +55,6 @@ import { runWithTraceId } from '@/lib/tracing/async-context';
 import { isStatusQuery, shouldSkipCache } from './cache-utils';
 import { handleCloudRunJson, handleCloudRunStream } from './cloud-run-handler';
 import { handleSupervisorError } from './error-handler';
-import { normalizeSupervisorDeviceType } from './request-contracts';
 import {
   applySanitizedQueryToMessages,
   extractAndValidateQuery,

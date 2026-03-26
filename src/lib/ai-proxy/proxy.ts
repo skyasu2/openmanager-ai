@@ -22,10 +22,7 @@ import {
   type ProxyEndpoint,
 } from '@/config/ai-proxy.config';
 import { logger } from '@/lib/logging';
-
-function getTrimmedEnv(name: string): string {
-  return process.env[name]?.trim() ?? '';
-}
+import { getTrimmedEnv } from './env';
 
 function getLocalDockerConfig() {
   return {
@@ -34,6 +31,10 @@ function getLocalDockerConfig() {
   };
 }
 
+// Best-effort, process-local log dedupe only.
+// Vercel may reuse a function instance and share global state/process within that
+// instance, but cold starts or parallel instances can reset/diverge this value.
+// Never rely on it for correctness or cross-request behavior.
 let lastLoggedConfigSignature: string | null = null;
 
 function logResolvedConfigOnce(signature: string, message: string) {
@@ -109,7 +110,7 @@ function getConfig() {
 }
 
 /**
- * 요청 시점 동적 env 해석을 유지하면서 테스트 로그 상태만 초기화한다.
+ * 요청 시점 동적 env 해석은 그대로 두고, process-local 로그 억제 상태만 초기화한다.
  */
 export function resetConfigCache() {
   lastLoggedConfigSignature = null;

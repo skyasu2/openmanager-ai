@@ -135,4 +135,24 @@ describe('ai-proxy runtime config', () => {
       })
     );
   });
+
+  it('dedupes config logs within one process and can reset between tests', async () => {
+    vi.stubEnv('NODE_ENV', 'development');
+    vi.stubEnv('VERCEL', '');
+    vi.stubEnv('AI_ENGINE_MODE', 'AUTO');
+    vi.stubEnv('USE_LOCAL_DOCKER', 'true');
+    vi.stubEnv('LOCAL_DOCKER_URL', 'http://localhost:8081');
+    vi.stubEnv('LOCAL_DOCKER_SECRET', 'docker-secret');
+
+    const { isCloudRunEnabled, resetConfigCache } = await loadProxy();
+
+    expect(isCloudRunEnabled()).toBe(true);
+    expect(isCloudRunEnabled()).toBe(true);
+    expect(mockLogger.info).toHaveBeenCalledTimes(1);
+
+    resetConfigCache();
+
+    expect(isCloudRunEnabled()).toBe(true);
+    expect(mockLogger.info).toHaveBeenCalledTimes(2);
+  });
 });

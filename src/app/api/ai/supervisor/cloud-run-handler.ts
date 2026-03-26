@@ -19,11 +19,11 @@ import {
 import { type AIEndpoint, setAICache } from '@/lib/ai/cache/ai-response-cache';
 import { executeWithCircuitBreakerAndFallback } from '@/lib/ai/circuit-breaker';
 import { createFallbackResponse } from '@/lib/ai/fallback/ai-fallback-handler';
+import type { SupervisorDeviceType } from '@/lib/ai/supervisor/request-contracts';
 import type { NormalizedMessage } from '@/lib/ai/utils/message-normalizer';
 import { proxyToCloudRun } from '@/lib/ai-proxy/proxy';
 import { logger } from '@/lib/logging';
 import { getTraceId } from '@/lib/tracing/async-context';
-import type { SupervisorDeviceType } from './request-contracts';
 import { cloudRunResponseSchema } from './schemas';
 
 interface CloudRunHandlerParams {

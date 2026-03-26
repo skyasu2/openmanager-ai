@@ -4,9 +4,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { repairTrackerDerivedFields } = require('./qa-tracker-utils');
 const { writeValidationEvidenceSnapshot } = require('./build-validation-evidence');
-const {
-  statusMarkdown,
-} = require('./record-qa-run.js');
+const { statusMarkdown } = require('./qa-status-markdown');
 
 const TRACKER_PATH = path.resolve(process.cwd(), 'reports/qa/qa-tracker.json');
 const STATUS_PATH = path.resolve(process.cwd(), 'reports/qa/QA_STATUS.md');

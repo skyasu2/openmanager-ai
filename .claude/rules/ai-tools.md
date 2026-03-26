@@ -1,6 +1,6 @@
 # AI Tools Usage Rules
 
-## MCP Servers (9개)
+## MCP Servers (10개)
 
 | MCP | 용도 | 우선순위 |
 |-----|------|:-------:|
@@ -13,6 +13,7 @@
 | `vercel` | 배포 상태 확인 | 중간 |
 | `playwright` | E2E 테스트 | 중간 |
 | `github` | 저장소/PR 관리 | 중간 |
+| `lighthouse` | Core Web Vitals + Performance/A11y/SEO 감사 (무료) | 중간 |
 
 ## Skills
 

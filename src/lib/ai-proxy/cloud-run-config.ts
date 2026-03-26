@@ -1,3 +1,5 @@
+import { getTrimmedEnv } from './env';
+
 export type RequiredCloudRunConfigFailureCode =
   | 'disabled'
   | 'missing_url'
@@ -17,10 +19,6 @@ export type RequiredCloudRunConfigResult =
 
 interface RequiredCloudRunConfigOptions {
   requireApiSecret?: boolean;
-}
-
-function getTrimmedEnv(name: string): string {
-  return process.env[name]?.trim() ?? '';
 }
 
 export function getRequiredCloudRunConfig(

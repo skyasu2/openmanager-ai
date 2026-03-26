@@ -1,7 +1,7 @@
 import { createHash, randomUUID } from 'crypto';
 import type { NextRequest } from 'next/server';
+import { normalizeSupervisorSessionId } from '@/lib/ai/supervisor/request-contracts';
 import { getAPIAuthContext } from '@/lib/auth/api-auth';
-import { normalizeSupervisorSessionId } from './request-contracts';
 import { resolveSessionId } from './request-utils';
 
 function hashValue(value: string): string {

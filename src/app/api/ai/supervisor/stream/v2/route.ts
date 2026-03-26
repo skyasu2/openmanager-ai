@@ -27,6 +27,11 @@ import {
 import { createFallbackResponse } from '@/lib/ai/fallback/ai-fallback-handler';
 import { buildAITimingHeaders, startAITimer } from '@/lib/ai/observability';
 import {
+  INVALID_SESSION_ID_MESSAGE,
+  normalizeSupervisorDeviceType,
+  normalizeSupervisorSessionId,
+} from '@/lib/ai/supervisor/request-contracts';
+import {
   type HybridMessage,
   normalizeMessagesForCloudRun,
 } from '@/lib/ai/utils/message-normalizer';
@@ -34,11 +39,6 @@ import { getRequiredCloudRunConfig } from '@/lib/ai-proxy/cloud-run-config';
 import { withAuth } from '@/lib/auth/api-auth';
 import { logger } from '@/lib/logging';
 import { rateLimiters, withRateLimit } from '@/lib/security/rate-limiter';
-import {
-  INVALID_SESSION_ID_MESSAGE,
-  normalizeSupervisorDeviceType,
-  normalizeSupervisorSessionId,
-} from '../../request-contracts';
 import {
   applySanitizedQueryToMessages,
   extractAndValidateQuery,

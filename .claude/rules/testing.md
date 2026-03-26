@@ -22,6 +22,12 @@ npm run test:vercel:e2e     # Vercel Production E2E
 npm run test:coverage       # 커버리지 리포트 생성
 ```
 
+### Dead Code 분석
+```bash
+npm run knip:ci             # 미사용 파일/exports/deps 감지 (non-blocking)
+npm run knip                # 전체 보고서 (blocking)
+```
+
 ## Testing Strategy
 
 | 레벨 | 도구 | 위치 |

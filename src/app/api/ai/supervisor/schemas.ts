@@ -9,7 +9,7 @@
  */
 
 import { z } from 'zod';
-import { SUPERVISOR_SESSION_ID_SCHEMA } from './request-contracts';
+import { SUPERVISOR_SESSION_ID_SCHEMA } from '@/lib/ai/supervisor/request-contracts';
 
 // ============================================================================
 // Part Schemas
