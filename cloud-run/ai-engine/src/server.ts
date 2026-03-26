@@ -291,6 +291,22 @@ registerRoutes().catch((err) => {
 setupIncidentRagBackfill();
 setupTopologyRagBackfill();
 
+// Pre-initialize LLM provider singletons to reduce first-query latency.
+// These are lightweight object creations (no network calls); the singleton
+// pattern means subsequent calls skip re-creation entirely.
+import('./services/ai-sdk/model-provider-core.js')
+  .then(({ getCerebrasModel, getGroqModel, getMistralModel }) => {
+    try {
+      getCerebrasModel();
+      getGroqModel();
+      getMistralModel();
+      logger.debug('LLM provider singletons pre-initialized');
+    } catch (e) {
+      logger.debug({ err: e }, 'LLM pre-init skipped (keys not yet available)');
+    }
+  })
+  .catch(() => {});
+
 // ============================================================================
 // Graceful Shutdown
 // ============================================================================
