@@ -1,0 +1,170 @@
+{
+  "runId": "QA-20260326-0190",
+  "recordedAt": "2026-03-26T02:57:36.307Z",
+  "recordedAtKst": "2026-03-26 11:57:36 KST",
+  "runTitle": "Vercel Playwright QA - UI/UX + AI Assistant + Server Monitoring (v8.10.0)",
+  "owner": "claude",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_59WgC3VP4NXr1vJJZiNVyNAkfp1S",
+    "deploymentUrl": "https://openmanager-ekstbvhkt-skyasus-projects.vercel.app",
+    "commitSha": "eeb550f0b56639ffedb0e0fe2ae137eecfb1590a"
+  },
+  "scope": "broad",
+  "releaseFacing": true,
+  "coveragePacks": ["core-routes-smoke", "dashboard-core", "ai-core"],
+  "coveredSurfaces": [
+    "/",
+    "/dashboard",
+    "게스트 로그인",
+    "시스템 시작 플로우",
+    "서버 카드 (상세 펼치기)",
+    "활성 알림 모달",
+    "AI 어시스턴트 Chat",
+    "AI 이상감지/예측 (Analyst Agent)",
+    "AI 자동장애 보고서 (Reporter Agent)",
+    "서버 모니터링 (15개 서버)"
+  ],
+  "skippedSurfaces": ["토폴로지 맵", "로그 검색", "이력", "설정 페이지"],
+  "checks": {
+    "total": 15,
+    "passed": 13,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Analyst Agent OTel 데이터 기반 예측, Reporter Agent 즉시 생성, AI Chat 구조화 응답 모두 정상 검증됨",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": true,
+      "rationale": "Cold start 40-50초 발생. wake-up 사전 호출에도 재발. 최소 인스턴스 설정 또는 웜업 타이밍 개선 필요",
+      "nextAction": "Cloud Run min-instances=1 설정 또는 wake-up 주기 단축 검토 (Free Tier 내)"
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-03-26T11:52:00+09:00",
+      "summary": "Vercel 사용량 정상. Total $18.63, Amount due $0.00. Build Minutes $1.05, 비정상 과금 없음.",
+      "evidence": "npm run check:usage:vercel",
+      "url": ""
+    }
+  ],
+  "artifacts": [],
+  "completedImprovements": [
+    {
+      "id": "ui-landing-pass",
+      "title": "랜딩 페이지 로드 정상, v8.10.0 확인",
+      "priority": "P0",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "콘솔 에러 0, 버전 표시 정상",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "ai-chat-pass",
+      "title": "AI Chat 응답 품질 정상 (OTel 데이터 기반 분석)",
+      "priority": "P0",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "cpu 84%, 메모리 78% 실제 메트릭 반영, 인과체인 분석, JVM 조치 제안",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "analyst-agent-pass",
+      "title": "Analyst Agent 전체 분석 정상",
+      "priority": "P0",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "13정상/2주의, 상승추세 3건 Critical 도달 예상 시간 포함 (4h28m/6h22m/22h55m)",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "reporter-agent-pass",
+      "title": "Reporter Agent 보고서 즉시 생성 정상",
+      "priority": "P0",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "WAS 서버 CPU 과부하 경고, 권장조치 우선순위, MD복사/다운로드",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [
+    {
+      "id": "ai-agent-type-metadata",
+      "title": "AI Chat 에이전트 타입 메타데이터 표시 개선",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "AI Chat 응답 하단의 에이전트 타입이 Analyst 라우팅 쿼리도 일반 대화 응답으로 표시됨. 기능은 정상이나 UX 투명성 개선 여지",
+      "owner": "",
+      "status": "wont-fix",
+      "policyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다."
+    },
+    {
+      "id": "ai-cold-start-latency",
+      "title": "Cloud Run cold start 레이턴시 최적화",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "첫 AI 쿼리 cold start 40-50초 소요. /api/ai/wake-up 사전 호출에도 발생. 웜업 타이밍 또는 최소 인스턴스 설정 검토 필요",
+      "owner": "",
+      "status": "wont-fix",
+      "policyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다."
+    }
+  ],
+  "notes": [
+    "v8.10.0 Vercel Production QA (2026-03-26)",
+    "전체 네트워크 요청 모두 200/201/202 성공",
+    "콘솔 에러 0개",
+    "OTel 데이터 로드 정상: /data/otel-data/hourly/hour-11.json 200",
+    "AI 엔진 헬스체크 정상: /api/health?service=ai 200",
+    "Cold start 감지 후 자동 재시도 UX 정상 동작",
+    "Analyst Agent: 실제 OTel 메트릭 반영 (api-was-dc1-01 CPU 84%, MEM 78%), 신뢰도 68-85%"
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Vercel Production URL",
+      "url": "https://openmanager-ai.vercel.app/"
+    }
+  ]
+}

@@ -1,69 +1,65 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-26 11:32:04 KST
+> Generated at: 2026-03-26 11:57:36 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 188 |
-| Total Checks | 1366 |
-| Passed | 1306 |
+| Total Runs | 189 |
+| Total Checks | 1381 |
+| Passed | 1319 |
 | Failed | 56 |
-| Completed Items | 252 |
+| Completed Items | 256 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
-| Wont-Fix Items | 8 |
+| Wont-Fix Items | 10 |
 | Expert Domains Tracked | 6 |
-| Expert Open Gaps | 0 |
+| Expert Open Gaps | 1 |
 | Completion Rate | 100% |
-| Last Run | QA-20260326-0189 (2026-03-26T02:32:04.091Z) |
+| Last Run | QA-20260326-0190 (2026-03-26T02:57:36.307Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260326-0189 (2026-03-26T02:32:04.091Z)
+Latest run: QA-20260326-0190 (2026-03-26T02:57:36.307Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
 | AI Quality Assurance Specialist | appropriate | no | - |
-| DevOps / SRE Engineer | appropriate | no | - |
-| Test Automation Architect | appropriate | no | - |
+| DevOps / SRE Engineer | appropriate | yes | Cloud Run min-instances=1 설정 또는 wake-up 주기 단축 검토 (Free Tier 내) |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period reviewed after production 8.10.0 smoke; effective cost 18.6253 USD, billed cost 0.0000 USD, no unexpected billed usage spike. |
+| vercel | cli | checked | normal | Vercel 사용량 정상. Total $18.63, Amount due $0.00. Build Minutes $1.05, 비정상 과금 없음. |
 
 ## Coverage (Latest Run)
 
 - Scope: broad
 - Release-Facing: yes
-- Deployment: dpl_7a5gP3Lw4dHhkEm11VaF9T1QoAjk / SHA a05306de
-- Coverage Packs: core-routes-smoke, dashboard-core, ai-core, modal-detail-pack, observability-pack
-- Covered Surfaces: / landing render with v8.10.0 footer badge, /api/health 200 success true and version 8.10.0, /api/version 200 version 8.10.0 environment production, /system-boot -> /dashboard redirect, dashboard render with 15 servers, 14 online, 1 warning, server detail modal open and 3-tab switch, server detail modal ESC close, AI sidebar open on dashboard, AI free-text prompt streaming response on production, X-AI-Latency-Ms=265 header proof on /api/ai/supervisor/stream/v2, production dashboard console errors 0, production AI sidebar console errors 0
-- Skipped Surfaces: Reporter/Analyst advanced surfaces, fullscreen AI workspace, Cloud Run admin observability surfaces, security blocked-prompt regression pack
+- Deployment: dpl_59WgC3VP4NXr1vJJZiNVyNAkfp1S / SHA eeb550f0
+- Coverage Packs: core-routes-smoke, dashboard-core, ai-core
+- Covered Surfaces: /, /dashboard, 게스트 로그인, 시스템 시작 플로우, 서버 카드 (상세 펼치기), 활성 알림 모달, AI 어시스턴트 Chat, AI 이상감지/예측 (Analyst Agent), AI 자동장애 보고서 (Reporter Agent), 서버 모니터링 (15개 서버)
+- Skipped Surfaces: 토폴로지 맵, 로그 검색, 이력, 설정 페이지
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | Production alias | [link](https://openmanager-ai.vercel.app/) | - |
-| vercel-deployment | Production 8.10.0 deployment | [link](https://openmanager-egfjvesbq-skyasus-projects.vercel.app/) | - |
+| general | Vercel Production URL | [link](https://openmanager-ai.vercel.app/) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | Release 8.10.0 landing proof | `qa-20260326-release-8100-landing.png` | - |
-| playwright-screenshot | Release 8.10.0 dashboard proof | `qa-20260326-release-8100-dashboard.png` | - |
-| playwright-screenshot | Release 8.10.0 AI response proof | `qa-20260326-release-8100-ai.png` | - |
-| playwright-console | Release 8.10.0 console warnings | `qa-20260326-release-8100-console.log` | - |
+| - | - | - | - |
 
 ## Expert Domain Open Gaps
 
-- None
+- sre-devops: DevOps / SRE Engineer (last QA-20260326-0190)
+  next: Cloud Run min-instances=1 설정 또는 wake-up 주기 단축 검토 (Free Tier 내)
 
 ## Pending Improvements
 
@@ -78,8 +74,12 @@ Latest run: QA-20260326-0189 (2026-03-26T02:32:04.091Z)
 - [P1] ai-server-timing-header-production: Server-Timing header visibility in production (seen 2회, last QA-20260310-0081)
   - note: 플랫폼 제약으로 인한 비차단 항목: Vercel production에서는 Server-Timing 대신 X-AI-Latency-Ms를 운영 SSOT로 사용
 - [P1] obs-fp-fn-weekly-report: 오탐/미탐 주간 리포트 자동 생성 (seen 3회, last QA-20260227-0013)
+- [P2] ai-agent-type-metadata: AI Chat 에이전트 타입 메타데이터 표시 개선 (seen 1회, last QA-20260326-0190)
+  - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 - [P2] ai-chat-detail-expand: AI Chat 상세 분석 펼치기 (seen 1회, last QA-20260301-0030)
   - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
+- [P2] ai-cold-start-latency: Cloud Run cold start 레이턴시 최적화 (seen 1회, last QA-20260326-0190)
+  - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 - [P2] analyst-drilldown: Analyst 서버별 드릴다운 (seen 1회, last QA-20260301-0030)
   - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
 - [P2] cloud-run-cold-start-latency: Cloud Run AI Chat 콜드스타트 대기시간 과도 (5회 재시도, ~5분) (seen 1회, last QA-20260310-0089)
@@ -101,6 +101,7 @@ Latest run: QA-20260326-0189 (2026-03-26T02:32:04.091Z)
 - ai-chat-cloud-run-500: AI Chat Cloud Run 자유입력 응답 - 최종 성공 확인 (completed 1회, last QA-20260310-0089)
 - ai-chat-empty-response: AI Chat 서버 상태 요약 질문에 빈 응답 반환 (completed 1회, last QA-20260315-0100)
 - ai-chat-latency-regression-recheck-20260310: AI Chat latency regression claim rechecked on production (completed 1회, last QA-20260310-0071)
+- ai-chat-pass: AI Chat 응답 품질 정상 (OTel 데이터 기반 분석) (completed 1회, last QA-20260326-0190)
 - ai-chat-performance-v880: AI Chat 응답 시간 및 요약 품질 검증 (completed 3회, last QA-20260310-0082)
 - ai-chat-quality-v880-quality-recheck: AI Chat 응답 품질 재검증 (completed 1회, last QA-20260308-0059)
 - ai-chat-quality-v880-recheck: AI Chat 응답 품질 및 완료 시간 재검증 (completed 1회, last QA-20260308-0058)
@@ -132,6 +133,7 @@ Latest run: QA-20260326-0189 (2026-03-26T02:32:04.091Z)
 - ai-사이드바-토글-ai-엔진-ready-프리셋-5개-ai-기능-3개: AI 사이드바 토글 (AI 엔진 Ready, 프리셋 5개, AI 기능 3개) (completed 3회, last QA-20260302-0042)
 - alert-history-modal: 알림 이력 모달 (completed 1회, last QA-20260317-0114)
 - alert-history-modal-ai-prefill: 알림 이력 모달에서 AI 사이드바 컨텍스트 자동 주입 (completed 1회, last QA-20260323-0167)
+- analyst-agent-pass: Analyst Agent 전체 분석 정상 (completed 1회, last QA-20260326-0190)
 - analyst-full-analysis: Analyst 전체 분석 (completed 1회, last QA-20260317-0114)
 - analyst-full-analysis-v879: Analyst 전체 분석 및 드릴다운 (completed 1회, last QA-20260306-0052)
 - analyst-full-analysis-v880: Analyst 전체 분석 및 드릴다운 검증 (completed 2회, last QA-20260309-0069)
@@ -251,6 +253,7 @@ Latest run: QA-20260326-0189 (2026-03-26T02:32:04.091Z)
 - release-dod-cost-gate: Release DoD: Cloud Run Free Tier 비용 가드 검증 (completed 1회, last QA-20260226-0008)
 - release-dod-doc-gate: Release DoD: 문서 게이트 90일 갱신·메타데이터·아카이빙 정책 (completed 1회, last QA-20260228-0025)
 - release-dod-test-gate: validate:all 0 에러 (completed 2회, last QA-20260302-0036)
+- reporter-agent-pass: Reporter Agent 보고서 즉시 생성 정상 (completed 1회, last QA-20260326-0190)
 - reporter-empty-cta-generate-v880: Reporter 빈 상태 CTA 생성 경로 검증 (completed 1회, last QA-20260308-0058)
 - reporter-empty-cta-generate-v880-quality-recheck: Reporter 빈 상태 CTA 생성 경로 재검증 (completed 1회, last QA-20260308-0059)
 - reporter-empty-cta-generate-v880-recheck-20260309: Reporter empty state CTA 생성 경로 재검증 (completed 4회, last QA-20260309-0068)
@@ -290,6 +293,7 @@ Latest run: QA-20260326-0189 (2026-03-26T02:32:04.091Z)
 - topology-map-render: 토폴로지 맵 완벽 렌더링 (completed 2회, last QA-20260314-0097)
 - typescript-무결성: TypeScript 무결성 (completed 1회, last QA-20260301-0032)
 - ui-esc-close: ESC 사이드바 닫기 (completed 1회, last QA-20260317-0114)
+- ui-landing-pass: 랜딩 페이지 로드 정상, v8.10.0 확인 (completed 1회, last QA-20260326-0190)
 - validation-evidence-summary-clarity: Validation evidence summary 카피와 정보 우선순위 정리 (completed 1회, last QA-20260324-0171)
 - validation-public-snapshot-artifact: Validation evidence public snapshot artifact 분리 (completed 1회, last QA-20260323-0168)
 - validation-stale-banner-client-side-fix: Validation stale banner client-side age check fix (completed 1회, last QA-20260324-0170)
@@ -350,6 +354,7 @@ Latest run: QA-20260326-0189 (2026-03-26T02:32:04.091Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260326-0190 | 2026-03-26T02:57:36.307Z | broad | yes | Vercel Playwright QA - UI/UX + AI Assistant + Server Monitoring (v8.10.0) | 15 | 4 | 0 | 0 | 2 | 1 |
 | QA-20260326-0189 | 2026-03-26T02:32:04.091Z | broad | yes | Vercel Playwright broad release-facing smoke - production 8.10.0 | 12 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260326-0188 | 2026-03-25T18:04:04.763Z | targeted | no | Vercel Playwright targeted recheck - latest promoted production deploy AI proof | 8 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260326-0187 | 2026-03-25T17:38:40.806Z | broad | yes | Vercel Playwright release-facing smoke - core routes, dashboard, AI core | 12 | 0 | 0 | 0 | 0 | 0 |
@@ -369,5 +374,4 @@ Latest run: QA-20260326-0189 (2026-03-26T02:32:04.091Z)
 | QA-20260324-0173 | 2026-03-24T00:33:16.954Z | targeted | no | Vercel Production QA - frontend/AI parity gate smoke | 5 | 0 | 1 | 0 | 0 | 0 |
 | QA-20260324-0172 | 2026-03-23T17:00:59.400Z | targeted | no | Validation stale banner visible path local proof | 1 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260324-0171 | 2026-03-23T16:41:18.533Z | targeted | no | Vercel Production QA - validation evidence clarity smoke | 5 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260324-0170 | 2026-03-23T15:09:36.687Z | targeted | no | Vercel Production QA - validation stale banner smoke after client-side fix | 5 | 1 | 0 | 0 | 0 | 0 |
 
