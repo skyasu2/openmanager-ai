@@ -13,7 +13,6 @@ export {
   type CacheStats,
   generateQueryHash,
   getAIResponseCache,
-  getCacheStats,
   invalidateSessionCache,
   setAIResponseCache,
 } from './ai-cache';
@@ -35,8 +34,6 @@ export {
 } from './client';
 // Rate Limiter
 export {
-  checkAISupervisorLimit,
-  checkDefaultLimit,
   checkRedisRateLimit,
   RATE_LIMIT_CONFIGS,
   type RateLimitConfig,

@@ -7,18 +7,10 @@
 
 // Re-export AlertSeverity from common
 export type { AlertSeverity } from '../common';
-// Re-export utilities from server-enums for convenience
-export {
-  getDefaultServerEnvironment,
-  getDefaultServerRole,
-  getDefaultServerStatus,
-} from '../server-enums';
 // Base types (ProcessInfo, ServerAlert)
 export type { ProcessInfo, ServerAlert } from './base';
 // Config types
 export type { ServerTypeDefinition } from './config';
-// Constants
-export { FAILURE_IMPACT_GRAPH, SERVER_TYPE_DEFINITIONS } from './constants';
 // Core server types
 export type {
   Server,
@@ -37,13 +29,9 @@ export type {
 } from './entities';
 // Type guards
 export {
-  isEnhancedServerMetrics,
-  isServer,
-  isValidAlertSeverity,
   isValidServerEnvironment,
   isValidServerRole,
   isValidServerStatus,
-  isValidServiceStatus,
 } from './guards';
 // Metrics types
 export type {

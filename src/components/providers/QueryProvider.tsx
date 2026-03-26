@@ -93,7 +93,7 @@ function QueryErrorBoundary({ children }: { children: ReactNode }) {
  * 애플리케이션 전체에 React Query 클라이언트를 제공하고,
  * 에러 바운더리로 안정성을 보장합니다.
  */
-export function QueryProvider({ children }: QueryProviderProps) {
+export default function QueryProvider({ children }: QueryProviderProps) {
   return (
     <QueryErrorBoundary>
       <QueryClientProvider client={queryClient}>

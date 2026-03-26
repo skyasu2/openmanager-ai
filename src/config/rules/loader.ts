@@ -442,5 +442,4 @@ export const shouldSendWebNotification = (
   previousStatus?: 'online' | 'warning' | 'critical' | 'offline'
 ) => rulesLoader.shouldSendWebNotification(currentStatus, previousStatus);
 export const getActiveAlertRules = () => rulesLoader.getActiveAlertRules();
-export const getAIInstructions = () => rulesLoader.getAIInstructions();
 export const getSummaryForAI = () => rulesLoader.getSummaryForAI();

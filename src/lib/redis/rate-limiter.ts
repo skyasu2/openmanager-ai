@@ -276,25 +276,3 @@ export const RATE_LIMIT_CONFIGS = {
     prefix: 'api:data-generator',
   } satisfies RateLimitConfig,
 } as const;
-
-// ==============================================
-// 🎯 편의 함수
-// ==============================================
-
-/**
- * AI Supervisor Rate Limit 체크 (자주 사용)
- */
-export async function checkAISupervisorLimit(
-  request: NextRequest
-): Promise<RateLimitResult | null> {
-  return checkRedisRateLimit(request, RATE_LIMIT_CONFIGS.aiSupervisor);
-}
-
-/**
- * 기본 Rate Limit 체크
- */
-export async function checkDefaultLimit(
-  request: NextRequest
-): Promise<RateLimitResult | null> {
-  return checkRedisRateLimit(request, RATE_LIMIT_CONFIGS.default);
-}

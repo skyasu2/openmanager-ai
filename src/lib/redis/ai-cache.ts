@@ -585,32 +585,3 @@ export interface CacheStats {
   enabled: boolean;
   aiResponseKeys: number;
 }
-
-/**
- * 캐시 통계 조회
- */
-export async function getCacheStats(): Promise<CacheStats> {
-  if (isRedisDisabled() || !isRedisEnabled()) {
-    return { enabled: false, aiResponseKeys: 0 };
-  }
-
-  const client = getRedisClient();
-  if (!client) {
-    return { enabled: false, aiResponseKeys: 0 };
-  }
-
-  try {
-    const aiKeys = await scanKeys(
-      client,
-      `${CACHE_CONFIG.PREFIX.AI_RESPONSE}:*`
-    );
-
-    return {
-      enabled: true,
-      aiResponseKeys: aiKeys.length,
-    };
-  } catch (error) {
-    logger.error('[Cache Stats] Error:', error);
-    return { enabled: false, aiResponseKeys: 0 };
-  }
-}

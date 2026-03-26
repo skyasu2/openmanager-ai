@@ -38,6 +38,5 @@ export {
   getStatus,
   getServerStatus,
   getActiveAlertRules,
-  getAIInstructions,
   getSummaryForAI,
 } from './loader';

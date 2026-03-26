@@ -102,19 +102,6 @@ export function isValidServerRole(role: string): role is ServerRole {
   return VALID_ROLES.has(role);
 }
 
-// 기본값 제공 함수들
-export function getDefaultServerStatus(): ServerStatus {
-  return 'unknown'; // 🔧 수정: 'offline' → 'unknown' (기본값 변경)
-}
-
-export function getDefaultServerEnvironment(): ServerEnvironment {
-  return 'development';
-}
-
-export function getDefaultServerRole(): ServerRole {
-  return 'web';
-}
-
 // Enum 배열 (옵션 리스트용)
 // ⚠️ Deprecated: Use SERVER_STATUS_VALUES instead for better type safety
 const _SERVER_STATUSES: ServerStatus[] = [...SERVER_STATUS_VALUES];
