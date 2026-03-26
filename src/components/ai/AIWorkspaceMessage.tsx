@@ -6,7 +6,7 @@ import type { EnhancedChatMessage } from '@/stores/useAISidebarStore';
 import type { AIThinkingStep } from '@/types/ai-sidebar/ai-sidebar-types';
 import { MarkdownRenderer } from './MarkdownRenderer';
 import { MessageActions } from './MessageActions';
-import ThinkingProcessVisualizer from './ThinkingProcessVisualizer';
+import { ThinkingProcessVisualizer } from './ThinkingProcessVisualizer';
 import { TypewriterMarkdown } from './TypewriterMarkdown';
 
 const MemoizedThinkingProcessVisualizer = memo(ThinkingProcessVisualizer);

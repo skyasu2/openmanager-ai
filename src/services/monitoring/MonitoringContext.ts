@@ -8,7 +8,7 @@
  * @updated 2026-02-15 - OTel-native SSOT 전환 (getHourlyData → getOTelHourlyData)
  */
 
-import { getOTelHourlyData, getOTelResourceCatalog } from '@/data/otel-data';
+import { getOTelHourlyData, getResourceCatalog } from '@/data/otel-data';
 import { executePromQL } from '@/lib/promql/promql-engine';
 import {
   getKSTMinuteOfDay,
@@ -125,7 +125,7 @@ export class MonitoringContext {
    */
   private async buildOTelResourceContext(): Promise<string> {
     try {
-      const catalog = await getOTelResourceCatalog();
+      const catalog = await getResourceCatalog();
       if (!catalog) return '';
       const resources = Object.values(catalog.resources);
       if (resources.length === 0) return '';

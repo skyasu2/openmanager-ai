@@ -12,8 +12,8 @@ import { getServicesForServer } from '@/config/server-services-map';
 import { OTEL_METRIC } from '@/constants/otel-metric-names';
 import {
   getOTelHourlyData,
-  getOTelResourceCatalog,
-  getOTelTimeSeries,
+  getResourceCatalog,
+  getTimeSeries,
 } from '@/data/otel-data';
 import { logger } from '@/lib/logging';
 import { getKSTMinuteOfDay } from '@/services/metrics/kst-time';
@@ -343,7 +343,7 @@ export async function otelTimeSeriesToHistory(
   serverId: string,
   rangeHours: number = 24
 ): Promise<MetricsHistory[]> {
-  const ts = await getOTelTimeSeries();
+  const ts = await getTimeSeries();
   if (!ts) return [];
   const serverIdx = ts.serverIds.indexOf(serverId);
   if (serverIdx === -1) return [];
@@ -421,7 +421,7 @@ export async function loadCurrentOTelServers(): Promise<{
     };
   }
 
-  const catalog = await getOTelResourceCatalog();
+  const catalog = await getResourceCatalog();
   const dataSource = {
     scopeName: hourlyData.scope.name,
     scopeVersion: hourlyData.scope.version,

@@ -1,48 +1,16 @@
-import * as fs from 'node:fs';
-import * as path from 'node:path';
+import { AxeBuilder } from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
 import { guestLogin, resetGuestState } from './helpers/guest';
 import { ensureVercelBypassCookie } from './helpers/security';
 import { TIMEOUTS } from './helpers/timeouts';
 
 /**
- * axe-core 를 Playwright 페이지에 주입하고 WCAG 2.1 AA 검증을 실행하는 헬퍼.
- * @axe-core/playwright 패키지 설치 없이 node_modules/axe-core 번들을 직접 주입.
+ * @axe-core/playwright 공식 API로 WCAG 2.1 AA 검증을 실행하는 헬퍼.
  */
-async function injectAxeAndRun(
-  page: import('@playwright/test').Page,
-  context?: string
-) {
-  const axePath = path.resolve(
-    __dirname,
-    '../../node_modules/axe-core/axe.min.js'
-  );
-  const axeSource = fs.readFileSync(axePath, 'utf-8');
-  await page.evaluate(axeSource);
-  return page.evaluate((ctx) => {
-    return (
-      window as unknown as {
-        axe: {
-          run: (
-            el?: unknown,
-            opts?: unknown
-          ) => Promise<{
-            violations: Array<{
-              id: string;
-              impact: string | null;
-              description: string;
-              nodes: Array<{ html: string }>;
-            }>;
-          }>;
-        };
-      }
-    ).axe.run(ctx ? (document.querySelector(ctx) ?? document) : document, {
-      runOnly: {
-        type: 'tag',
-        values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'],
-      },
-    });
-  }, context ?? null);
+async function runAxe(page: import('@playwright/test').Page) {
+  return new AxeBuilder({ page })
+    .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
+    .analyze();
 }
 
 test.describe('♿ 접근성 (Accessibility) 검증', () => {
@@ -266,7 +234,7 @@ test.describe('♿ axe-core WCAG 2.1 AA 자동 검증', () => {
     await page.goto('/', { waitUntil: 'domcontentloaded' });
     await page.waitForTimeout(2000);
 
-    const results = await injectAxeAndRun(page);
+    const results = await runAxe(page);
 
     const critical = results.violations.filter(
       (v) => v.impact === 'critical' || v.impact === 'serious'
@@ -299,7 +267,7 @@ test.describe('♿ axe-core WCAG 2.1 AA 자동 검증', () => {
       .first()
       .waitFor({ state: 'visible', timeout: TIMEOUTS.NETWORK_REQUEST });
 
-    const results = await injectAxeAndRun(page);
+    const results = await runAxe(page);
 
     const critical = results.violations.filter(
       (v) => v.impact === 'critical' || v.impact === 'serious'
@@ -334,7 +302,7 @@ test.describe('♿ axe-core WCAG 2.1 AA 자동 검증', () => {
       timeout: TIMEOUTS.DASHBOARD_LOAD,
     });
 
-    const results = await injectAxeAndRun(page);
+    const results = await runAxe(page);
 
     const critical = results.violations.filter(
       (v) => v.impact === 'critical' || v.impact === 'serious'

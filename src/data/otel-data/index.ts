@@ -149,7 +149,3 @@ export async function getOTelHourlyData(
 
   return inflightHourly[normalizedHour];
 }
-
-// Backward-compatible aliases (Note: Now async)
-export const getOTelResourceCatalog = getResourceCatalog;
-export const getOTelTimeSeries = getTimeSeries;

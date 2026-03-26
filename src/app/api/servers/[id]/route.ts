@@ -1,7 +1,7 @@
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 import { OTEL_METRIC } from '@/constants/otel-metric-names';
-import { getOTelTimeSeries } from '@/data/otel-data';
+import { getTimeSeries } from '@/data/otel-data';
 import { withAuth } from '@/lib/auth/api-auth';
 import type {
   EnhancedServerResponse,
@@ -295,7 +295,7 @@ async function generateServerHistoryFromTimeSeries(
   serverId: string,
   range: string
 ): Promise<ServerHistory> {
-  const ts = await getOTelTimeSeries();
+  const ts = await getTimeSeries();
 
   if (!ts) {
     const now = new Date().toISOString();

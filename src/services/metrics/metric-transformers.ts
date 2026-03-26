@@ -1,6 +1,6 @@
 import { getServerStatus as getRulesServerStatus } from '@/config/rules/loader';
 import { OTEL_METRIC } from '@/constants/otel-metric-names';
-import { getOTelResourceCatalog } from '@/data/otel-data';
+import { getResourceCatalog } from '@/data/otel-data';
 import { logger } from '@/lib/logging';
 import type {
   OTelHourlyFile,
@@ -177,7 +177,7 @@ export async function extractMetricsFromStandard(
           .stringValue;
 
       // Resource Catalog에서 전체 메타데이터 보강
-      const catalog = await getOTelResourceCatalog();
+      const catalog = await getResourceCatalog();
       const catalogEntry = catalog?.resources[serverId];
 
       serverMap.set(serverId, {
@@ -288,7 +288,7 @@ export async function extractMetricsFromOTelHourly(
   if (!slot) return [];
 
   // Resource Catalog 로드 (서버 메타데이터 보강)
-  const catalog = await getOTelResourceCatalog();
+  const catalog = await getResourceCatalog();
 
   // 2. 슬롯 내 메트릭 순회
   for (const metric of slot.metrics) {
