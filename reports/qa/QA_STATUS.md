@@ -1,15 +1,15 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-26 12:12:25 KST
+> Generated at: 2026-03-26 12:34:06 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 190 |
-| Total Checks | 1390 |
-| Passed | 1328 |
+| Total Runs | 191 |
+| Total Checks | 1406 |
+| Passed | 1344 |
 | Failed | 56 |
 | Completed Items | 256 |
 | Pending Items | 0 |
@@ -18,11 +18,11 @@
 | Expert Domains Tracked | 6 |
 | Expert Open Gaps | 1 |
 | Completion Rate | 100% |
-| Last Run | QA-20260326-0191 (2026-03-26T03:12:24.817Z) |
+| Last Run | QA-20260326-0192 (2026-03-26T03:34:06.036Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260326-0191 (2026-03-26T03:12:24.817Z)
+Latest run: QA-20260326-0192 (2026-03-26T03:34:06.036Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -32,33 +32,29 @@ Latest run: QA-20260326-0191 (2026-03-26T03:12:24.817Z)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period reviewed before targeted recheck; effective cost 18.6253 USD, billed cost 0.0000 USD, no unexpected billed usage spike. |
+| vercel | cli | checked | normal | Current billing period reviewed during production verification; effective cost 18.6253 USD, billed 0.0000 USD, amount due 0.0000 USD. |
 
 ## Coverage (Latest Run)
 
 - Scope: targeted
 - Release-Facing: no
-- Deployment: dpl_3XREaPaETrZTWS8411GZRG2tD4Xm / SHA c0491ce4
-- Coverage Packs: core-routes-smoke, dashboard-core, ai-core
-- Covered Surfaces: / landing render with v8.10.0 badge on latest promoted deployment, /api/health 200 healthy and version 8.10.0, /api/version 200 version 8.10.0 environment production, /system-boot -> /dashboard redirect on latest promoted deployment, dashboard render with 15 servers and 1 warning at slot 72/143, AI sidebar open on dashboard, AI warm-up/job queue accepted then manual retry succeeded, AI stream v2 response with X-AI-Latency-Ms=238 on latest promoted deployment, /validation page reflects public snapshot latestRunId QA-20260326-0190 and totals 189/1381/256/10
-- Skipped Surfaces: Analyst/Reporter deep rerun (already covered in QA-20260326-0190 broad run on runtime-equivalent deployment), fullscreen AI workspace, topology/history/log explorer modals, Cloud Run admin observability surfaces
+- Deployment: dpl_2mkedaiAsZ9XMenaTXJndhKKrjLs / SHA 46d4e438
+- Coverage Packs: core-routes-smoke, dashboard-core, ai-core, observability-pack
+- Covered Surfaces: / landing render + v8.10.0, /system-boot -> /dashboard redirect, dashboard 15 servers / warning card / server card metrics, warning-card AI prefill -> sidebar prompt injection, AI sidebar response render on latest promoted production, GET /api/health + GET /api/version, GET /api/ai/supervisor/stream/v2 invalid sessionId -> 400, GET /api/ai/supervisor/stream/v2 invalid skip -> 400, POST /api/ai/wake-up -> 200 warmed_up, GET /api/ai/feedback -> 200 database-backed stats, POST /api/ai/feedback invalid payload -> 400 validation, POST /api/ai/jobs -> 201 queued/scheduled, GET /api/ai/jobs/:id -> 200 completed, GET /api/ai/jobs?sessionId=... -> 200 list result, POST /api/ai/supervisor/stream/v2 -> 200 SSE ui-message-stream with X-AI-Latency-Ms, local targeted vitest + type-check for ai-proxy/supervisor
+- Skipped Surfaces: Analyst deep drilldown rerun, Reporter deep report rerun, fullscreen AI workspace, Cloud Run admin observability (/monitoring, /monitoring/traces), blocked prompt/security regression pack
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
 | general | Production alias | [link](https://openmanager-ai.vercel.app/) | - |
-| vercel-deployment | Latest promoted QA data deployment | [link](https://openmanager-8ifsegl59-skyasus-projects.vercel.app/) | - |
+| vercel-deployment | Latest promoted deployment 46d4e4386 | [link](https://openmanager-rhcekm5q4-skyasus-projects.vercel.app/) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | Latest QA data deploy landing proof | `qa-20260326-prod-c049-landing.png` | - |
-| playwright-screenshot | Latest QA data deploy dashboard proof | `qa-20260326-prod-c049-dashboard.png` | - |
-| playwright-screenshot | Latest QA data deploy AI proof | `qa-20260326-prod-c049-ai.png` | - |
-| playwright-screenshot | Latest QA data deploy validation page proof | `qa-20260326-prod-c049-validation.png` | - |
-| playwright-console | Latest QA data deploy console warnings | `qa-20260326-prod-c049-console.log` | - |
+| playwright-screenshot | Dashboard + AI sidebar latest production state | `qa-20260326-prod-0192-dashboard-ai.png` | - |
 
 ## Expert Domain Open Gaps
 
@@ -358,6 +354,7 @@ Latest run: QA-20260326-0191 (2026-03-26T03:12:24.817Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260326-0192 | 2026-03-26T03:34:06.036Z | targeted | no | Vercel Playwright + direct API verification for current production state | 16 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260326-0191 | 2026-03-26T03:12:24.817Z | targeted | no | Vercel Playwright targeted recheck - latest promoted QA data deploy | 9 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260326-0190 | 2026-03-26T02:57:36.307Z | broad | yes | Vercel Playwright QA - UI/UX + AI Assistant + Server Monitoring (v8.10.0) | 15 | 4 | 0 | 0 | 2 | 1 |
 | QA-20260326-0189 | 2026-03-26T02:32:04.091Z | broad | yes | Vercel Playwright broad release-facing smoke - production 8.10.0 | 12 | 0 | 0 | 0 | 0 | 0 |
@@ -377,5 +374,4 @@ Latest run: QA-20260326-0191 (2026-03-26T03:12:24.817Z)
 | QA-20260324-0175 | 2026-03-24T05:45:00.758Z | targeted | no | Vercel Production QA - deferred parity metadata preserved but detail contract still incomplete | 6 | 1 | 1 | 0 | 0 | 0 |
 | QA-20260324-0174 | 2026-03-24T05:13:06.470Z | targeted | no | Vercel Production QA - parity metadata after type-fix deploy | 5 | 1 | 1 | 0 | 0 | 0 |
 | QA-20260324-0173 | 2026-03-24T00:33:16.954Z | targeted | no | Vercel Production QA - frontend/AI parity gate smoke | 5 | 0 | 1 | 0 | 0 | 0 |
-| QA-20260324-0172 | 2026-03-23T17:00:59.400Z | targeted | no | Validation stale banner visible path local proof | 1 | 0 | 0 | 0 | 0 | 0 |
 

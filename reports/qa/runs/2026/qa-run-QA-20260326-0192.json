@@ -1,0 +1,98 @@
+{
+  "runId": "QA-20260326-0192",
+  "recordedAt": "2026-03-26T03:34:06.036Z",
+  "recordedAtKst": "2026-03-26 12:34:06 KST",
+  "runTitle": "Vercel Playwright + direct API verification for current production state",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_2mkedaiAsZ9XMenaTXJndhKKrjLs",
+    "deploymentUrl": "https://openmanager-rhcekm5q4-skyasus-projects.vercel.app",
+    "commitSha": "46d4e4386f2191b02b6349d8eec562f81be74d5a"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "coveragePacks": [
+    "core-routes-smoke",
+    "dashboard-core",
+    "ai-core",
+    "observability-pack"
+  ],
+  "coveredSurfaces": [
+    "/ landing render + v8.10.0",
+    "/system-boot -> /dashboard redirect",
+    "dashboard 15 servers / warning card / server card metrics",
+    "warning-card AI prefill -> sidebar prompt injection",
+    "AI sidebar response render on latest promoted production",
+    "GET /api/health + GET /api/version",
+    "GET /api/ai/supervisor/stream/v2 invalid sessionId -> 400",
+    "GET /api/ai/supervisor/stream/v2 invalid skip -> 400",
+    "POST /api/ai/wake-up -> 200 warmed_up",
+    "GET /api/ai/feedback -> 200 database-backed stats",
+    "POST /api/ai/feedback invalid payload -> 400 validation",
+    "POST /api/ai/jobs -> 201 queued/scheduled",
+    "GET /api/ai/jobs/:id -> 200 completed",
+    "GET /api/ai/jobs?sessionId=... -> 200 list result",
+    "POST /api/ai/supervisor/stream/v2 -> 200 SSE ui-message-stream with X-AI-Latency-Ms",
+    "local targeted vitest + type-check for ai-proxy/supervisor"
+  ],
+  "skippedSurfaces": [
+    "Analyst deep drilldown rerun",
+    "Reporter deep report rerun",
+    "fullscreen AI workspace",
+    "Cloud Run admin observability (/monitoring, /monitoring/traces)",
+    "blocked prompt/security regression pack"
+  ],
+  "checks": {
+    "total": 16,
+    "passed": 16,
+    "failed": 0
+  },
+  "expertAssessments": [],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-03-26T12:34:05+09:00",
+      "summary": "Current billing period reviewed during production verification; effective cost 18.6253 USD, billed 0.0000 USD, amount due 0.0000 USD.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "Dashboard + AI sidebar latest production state",
+      "path": "qa-20260326-prod-0192-dashboard-ai.png"
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Latest promoted deployment is 46d4e4386 and is QA-data-only relative to prior runtime changes, so this run focused on current-state verification plus hidden API checks instead of repeating full broad release QA.",
+    "Direct negative API probes intentionally produced 400 responses for validation/contract checks; those browser console resource errors are expected and are not production regressions.",
+    "Direct stream verification returned 200 text/event-stream with X-Stream-Protocol=ui-message-stream, X-Resumable=true, X-AI-Latency-Ms=203, X-AI-Source=cloud-run, X-Backend=cloud-run-stream-v2.",
+    "Local verification passed: 5 vitest files / 63 tests and npm run type-check success."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Production alias",
+      "url": "https://openmanager-ai.vercel.app/"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Latest promoted deployment 46d4e4386",
+      "url": "https://openmanager-rhcekm5q4-skyasus-projects.vercel.app/"
+    }
+  ]
+}
