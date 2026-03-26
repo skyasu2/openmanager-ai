@@ -495,5 +495,3 @@ export function useAIChatCore(
     estimatedWaitSeconds: hybridState.estimatedWaitSeconds,
   };
 }
-
-export default useAIChatCore;

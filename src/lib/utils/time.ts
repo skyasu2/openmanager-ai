@@ -291,5 +291,3 @@ export const KST = {
   toTime: (minute: number) => KoreanTimeUtil.minuteOfDayToTime(minute),
   currentTime: () => KoreanTimeUtil.getCurrentKSTTime(),
 };
-
-export default KoreanTimeUtil;

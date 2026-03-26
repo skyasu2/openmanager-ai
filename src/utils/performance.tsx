@@ -225,7 +225,7 @@ export function usePerformanceTracking(componentName: string) {
 /**
  * HOC: 성능 측정을 자동으로 적용하는 고차 컴포넌트
  */
-export function withPerformanceTracking<P extends object>(
+function _withPerformanceTracking<P extends object>(
   WrappedComponent: React.ComponentType<P>,
   componentName?: string
 ) {

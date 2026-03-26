@@ -126,7 +126,7 @@ export function calculateOptimalCollectionInterval(): number {
 /**
  * 🎯 기본 서버 설정 (DEFAULT_SERVER_COUNT 기준)
  */
-export const DEFAULT_SERVER_CONFIG =
+const DEFAULT_SERVER_CONFIG =
   calculateServerConfig(DEFAULT_SERVER_COUNT);
 
 /**
@@ -230,7 +230,7 @@ export function getAllServersInfo() {
 /**
  * 📊 서버 설정 정보 로깅
  */
-export function logServerConfig(
+function logServerConfig(
   config: ServerGenerationConfig = ACTIVE_SERVER_CONFIG
 ): void {
   logger.info('🎯 서버 데이터 생성 설정:');

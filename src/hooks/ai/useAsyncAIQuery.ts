@@ -455,5 +455,3 @@ export function useAsyncAIQuery(options: UseAsyncAIQueryOptions = {}) {
     progressMessage: state.progress?.message ?? '',
   };
 }
-
-export default useAsyncAIQuery;

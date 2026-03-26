@@ -187,7 +187,7 @@ interface AIErrorFallbackProps {
 /**
  * 간단한 에러 폴백 컴포넌트 (함수형)
  */
-export function AIErrorFallback({
+function _AIErrorFallback({
   error,
   resetError,
 }: AIErrorFallbackProps): ReactNode {
@@ -215,7 +215,7 @@ export function AIErrorFallback({
 /**
  * 컴포넌트를 Error Boundary로 래핑하는 HOC
  */
-export function withAIErrorBoundary<P extends object>(
+function _withAIErrorBoundary<P extends object>(
   WrappedComponent: React.ComponentType<P>,
   boundaryProps?: Omit<AIErrorBoundaryProps, 'children'>
 ): React.FC<P> {
@@ -229,5 +229,3 @@ export function withAIErrorBoundary<P extends object>(
 
   return WithErrorBoundary;
 }
-
-export default AIErrorBoundary;

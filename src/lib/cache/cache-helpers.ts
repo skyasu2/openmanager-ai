@@ -73,12 +73,12 @@ export function getCacheStats() {
 // AI 쿼리 캐시 유틸리티 (v3.2)
 // ============================================================================
 
-export async function getAIQueryCache<T>(query: string): Promise<T | null> {
+async function _getAIQueryCache<T>(query: string): Promise<T | null> {
   const cache = UnifiedCacheService.getInstance();
   return cache.getAIQueryCache<T>(query);
 }
 
-export async function setAIQueryCache<T>(
+async function _setAIQueryCache<T>(
   query: string,
   value: T,
   options?: { ttlSeconds?: number; metadata?: Record<string, unknown> }
@@ -87,7 +87,7 @@ export async function setAIQueryCache<T>(
   return cache.setAIQueryCache(query, value, options);
 }
 
-export async function getOrFetchAIQuery<T>(
+async function _getOrFetchAIQuery<T>(
   query: string,
   fetcher: () => Promise<T>,
   options?: { ttlSeconds?: number; force?: boolean }

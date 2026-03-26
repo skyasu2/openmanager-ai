@@ -54,7 +54,7 @@ export const AI_PROVIDERS: AIProviderConfig[] = [
 /**
  * Provider 이름으로 설정 찾기
  */
-export function getProviderConfig(name: string): AIProviderConfig | undefined {
+function getProviderConfig(name: string): AIProviderConfig | undefined {
   return AI_PROVIDERS.find(
     (p) => p.name.toLowerCase() === name.toLowerCase()
   );
@@ -63,7 +63,7 @@ export function getProviderConfig(name: string): AIProviderConfig | undefined {
 /**
  * 기본 Provider 상태 목록 생성 (UI용)
  */
-export function getDefaultProviderStatus() {
+function getDefaultProviderStatus() {
   return AI_PROVIDERS.map((p) => ({
     name: p.name,
     role: p.role,

@@ -67,7 +67,7 @@ export interface PermissionConfig {
 }
 
 // 기본 권한 설정
-export const DEFAULT_PERMISSION_CONFIG: PermissionConfig = {
+const _DEFAULT_PERMISSION_CONFIG: PermissionConfig = {
   systemControl: {
     requiredPermission: 'canControlSystem',
     fallbackBehavior: 'hide',

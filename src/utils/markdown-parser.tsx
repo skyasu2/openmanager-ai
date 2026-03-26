@@ -256,5 +256,3 @@ function renderFormattedText(text: string): React.ReactNode {
     );
   });
 }
-
-export default RenderMarkdownContent;

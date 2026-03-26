@@ -132,7 +132,7 @@ export const getStatusTheme = (status?: ServerStatus): StatusTheme => {
  * @param type - 메트릭 타입
  * @returns 상태 문자열 ('normal' | 'warning' | 'critical')
  */
-export const getMetricStatus = (
+const _getMetricStatus = (
   value: number,
   type: 'cpu' | 'memory' | 'disk' | 'network'
 ): 'normal' | 'warning' | 'critical' => {
@@ -149,7 +149,7 @@ export const getMetricStatus = (
  * @param data - 원본 데이터 배열
  * @returns 정규화된 데이터 배열
  */
-export const normalizeChartData = (data: number[]): number[] => {
+const _normalizeChartData = (data: number[]): number[] => {
   return data.map((value) => Math.max(0, Math.min(100, value)));
 };
 

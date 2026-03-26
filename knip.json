@@ -32,7 +32,14 @@
     "standard-version",
     "conventional-changelog-cli",
     "dotenv-cli",
-    "prettier-plugin-tailwindcss"
+    "prettier-plugin-tailwindcss",
+    "pino-pretty",
+    "sharp",
+    "@biomejs/biome",
+    "markdown-link-check",
+    "shadcn",
+    "tailwindcss",
+    "tailwindcss-animate"
   ],
   "ignoreFiles": ["docs/guides/auth-complete.tsx"],
   "ignoreExportsUsedInFile": true,
@@ -45,5 +52,18 @@
     ".next/**",
     "*.config.{js,ts,mjs,cjs}"
   ],
-  "ignoreBinaries": ["biome", "playwright", "cross-env", "husky"]
+  "ignoreBinaries": [
+    "biome",
+    "playwright",
+    "cross-env",
+    "husky",
+    "claude",
+    "vercel",
+    "tsx",
+    "sleep",
+    "lint-staged",
+    "ps",
+    "npm-run-all",
+    "tmux"
+  ]
 }

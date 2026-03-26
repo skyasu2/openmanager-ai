@@ -17,26 +17,26 @@ export const safeInt = () =>
 // ID 관련
 export const IdSchema = z.string().min(1);
 export const UuidSchema = z.string().uuid();
-export const SlugSchema = z.string().regex(/^[a-z0-9-]+$/);
+const _SlugSchema = z.string().regex(/^[a-z0-9-]+$/);
 
 // 타임스탬프
 export const TimestampSchema = z.string().datetime();
-export const DateSchema = z.string().date();
-export const TimeSchema = z.string().time();
+const _DateSchema = z.string().date();
+const _TimeSchema = z.string().time();
 
 // 숫자 범위
 export const PercentageSchema = z.number().min(0).max(100);
-export const PositiveNumberSchema = z.number().positive();
-export const NonNegativeNumberSchema = z.number().nonnegative();
+const _PositiveNumberSchema = z.number().positive();
+const _NonNegativeNumberSchema = z.number().nonnegative();
 // 🔧 Zod v4 ESM 호환: .int() 대신 safeInt() 사용
-export const PortSchema = safeInt().min(1).max(65535);
+const _PortSchema = safeInt().min(1).max(65535);
 
 // 문자열 패턴
-export const EmailSchema = z.string().email();
-export const UrlSchema = z.string().url();
+const _EmailSchema = z.string().email();
+const _UrlSchema = z.string().url();
 // Note: z.string().ip() removed in Zod v4, use z.string() with custom validation if needed
-export const IpAddressSchema = z.string();
-export const JsonSchema = z.string().transform((str, ctx) => {
+const _IpAddressSchema = z.string();
+const _JsonSchema = z.string().transform((str, ctx) => {
   try {
     return JSON.parse(str);
   } catch {
@@ -78,7 +78,7 @@ export const BaseResponseSchema = z.object({
   requestId: z.string().optional(),
 });
 
-export const SuccessResponseSchema = <T extends z.ZodTypeAny>(dataSchema: T) =>
+const _SuccessResponseSchema = <T extends z.ZodTypeAny>(dataSchema: T) =>
   BaseResponseSchema.extend({
     success: z.literal(true),
     data: dataSchema,
@@ -144,16 +144,16 @@ export const EnvironmentSchema = z.enum([
 // ===== 유틸리티 스키마 =====
 
 // 선택적 필드를 null로 변환
-export const NullableSchema = <T extends z.ZodTypeAny>(schema: T) =>
+const _NullableSchema = <T extends z.ZodTypeAny>(schema: T) =>
   z.union([schema, z.null()]);
 
 // 빈 문자열을 undefined로 변환
-export const EmptyStringToUndefined = z
+const _EmptyStringToUndefined = z
   .string()
   .transform((val) => (val === '' ? undefined : val));
 
 // 문자열을 숫자로 변환
-export const StringToNumber = z.string().transform((val, ctx) => {
+const _StringToNumber = z.string().transform((val, ctx) => {
   const parsed = parseFloat(val);
   if (Number.isNaN(parsed)) {
     ctx.addIssue({
@@ -166,7 +166,7 @@ export const StringToNumber = z.string().transform((val, ctx) => {
 });
 
 // 문자열을 불린으로 변환
-export const StringToBoolean = z
+const _StringToBoolean = z
   .string()
   .transform((val) => {
     const lower = val.toLowerCase();
@@ -191,7 +191,7 @@ export const StringToBoolean = z
   .pipe(z.boolean());
 
 // 안전한 JSON 파싱
-export const SafeJsonSchema = <T extends z.ZodTypeAny>(schema: T) =>
+const _SafeJsonSchema = <T extends z.ZodTypeAny>(schema: T) =>
   z
     .union([z.string(), z.record(z.string(), z.unknown())])
     .transform((val, ctx) => {

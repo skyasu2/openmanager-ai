@@ -46,7 +46,7 @@ export function validateData<T extends z.ZodTypeAny>(
 /**
  * 동기 검증 (성공 시 데이터 반환, 실패 시 throw)
  */
-export function validateOrThrow<T extends z.ZodTypeAny>(
+function _validateOrThrow<T extends z.ZodTypeAny>(
   schema: T,
   data: unknown
 ): z.infer<T> {
@@ -62,7 +62,7 @@ export function validateOrThrow<T extends z.ZodTypeAny>(
 /**
  * 비동기 검증
  */
-export async function validateAsync<T extends z.ZodTypeAny>(
+async function _validateAsync<T extends z.ZodTypeAny>(
   schema: T,
   data: unknown
 ): Promise<ValidationResult<z.infer<T>>> {
@@ -127,7 +127,7 @@ export function formatZodErrors(error: z.ZodError): FormattedZodError {
 /**
  * 첫 번째 에러 메시지만 반환
  */
-export function getFirstZodError(error: z.ZodError): string {
+function _getFirstZodError(error: z.ZodError): string {
   const firstIssue = error.issues[0];
   if (!firstIssue) return '검증 오류가 발생했습니다';
 
@@ -140,21 +140,21 @@ export function getFirstZodError(error: z.ZodError): string {
 /**
  * 스키마를 부분적으로 만들기 (모든 필드 optional)
  */
-export function makePartial<T extends z.ZodObject<z.ZodRawShape>>(schema: T) {
+function _makePartial<T extends z.ZodObject<z.ZodRawShape>>(schema: T) {
   return schema.partial();
 }
 
 /**
  * 스키마를 필수로 만들기 (모든 필드 required)
  */
-export function makeRequired<T extends z.ZodObject<z.ZodRawShape>>(schema: T) {
+function _makeRequired<T extends z.ZodObject<z.ZodRawShape>>(schema: T) {
   return schema.required();
 }
 
 /**
  * 특정 필드만 선택
  */
-export function pickFields<
+function _pickFields<
   T extends z.ZodObject<z.ZodRawShape>,
   K extends keyof z.infer<T>,
 >(schema: T, fields: K[]): z.ZodObject<z.ZodRawShape> {
@@ -172,7 +172,7 @@ export function pickFields<
 /**
  * 특정 필드 제외
  */
-export function omitFields<
+function _omitFields<
   T extends z.ZodObject<z.ZodRawShape>,
   K extends keyof z.infer<T>,
 >(schema: T, fields: K[]): z.ZodObject<z.ZodRawShape> {
@@ -189,7 +189,7 @@ export function omitFields<
 /**
  * 조건부 검증 (다른 필드 값에 따라)
  */
-export function conditionalValidation<T extends z.ZodObject<z.ZodRawShape>>(
+function _conditionalValidation<T extends z.ZodObject<z.ZodRawShape>>(
   schema: T,
   conditions: Array<{
     when: (data: z.infer<T>) => boolean;
@@ -221,7 +221,7 @@ export function conditionalValidation<T extends z.ZodObject<z.ZodRawShape>>(
 /**
  * 배열 중복 검사
  */
-export function uniqueArray<T extends z.ZodTypeAny>(
+function _uniqueArray<T extends z.ZodTypeAny>(
   itemSchema: T,
   uniqueBy?: (item: z.infer<T>) => unknown
 ) {
@@ -246,7 +246,7 @@ export function uniqueArray<T extends z.ZodTypeAny>(
 /**
  * 트림된 문자열 (앞뒤 공백 제거)
  */
-export function trimmedString(minLength = 0, maxLength?: number) {
+function _trimmedString(minLength = 0, maxLength?: number) {
   let schema = z.string().trim();
 
   if (minLength > 0) {
@@ -263,7 +263,7 @@ export function trimmedString(minLength = 0, maxLength?: number) {
 /**
  * 정규화된 이메일 (소문자 변환)
  */
-export function normalizedEmail() {
+function _normalizedEmail() {
   return z
     .string()
     .email('올바른 이메일 형식이 아닙니다')
@@ -275,7 +275,7 @@ export function normalizedEmail() {
 /**
  * 날짜 범위 검증
  */
-export function dateInRange(min?: Date, max?: Date) {
+function _dateInRange(min?: Date, max?: Date) {
   return z
     .string()
     .datetime()
@@ -302,7 +302,7 @@ export function dateInRange(min?: Date, max?: Date) {
 /**
  * 환경변수 스키마 생성
  */
-export function envSchema<T extends z.ZodRawShape>(shape: T) {
+function _envSchema<T extends z.ZodRawShape>(shape: T) {
   return z.object(shape).transform((env) => {
     // 환경변수 기본값 처리
     const processed: Record<string, unknown> = {};
@@ -328,7 +328,7 @@ export function envSchema<T extends z.ZodRawShape>(shape: T) {
 /**
  * API 응답 래퍼 생성
  */
-export function apiResponse<T extends z.ZodTypeAny>(dataSchema: T) {
+function _apiResponse<T extends z.ZodTypeAny>(dataSchema: T) {
   return z.discriminatedUnion('success', [
     z.object({
       success: z.literal(true),
@@ -349,7 +349,7 @@ export function apiResponse<T extends z.ZodTypeAny>(dataSchema: T) {
 /**
  * Zod 스키마로부터 타입 가드 생성
  */
-export function createTypeGuard<T extends z.ZodTypeAny>(schema: T) {
+function _createTypeGuard<T extends z.ZodTypeAny>(schema: T) {
   return (value: unknown): value is z.infer<T> => {
     return schema.safeParse(value).success;
   };
@@ -358,6 +358,6 @@ export function createTypeGuard<T extends z.ZodTypeAny>(schema: T) {
 /**
  * 여러 스키마 중 하나와 매칭되는지 확인
  */
-export function matchesAnySchema(value: unknown, ...schemas: z.ZodTypeAny[]) {
+function _matchesAnySchema(value: unknown, ...schemas: z.ZodTypeAny[]) {
   return schemas.some((schema) => schema.safeParse(value).success);
 }

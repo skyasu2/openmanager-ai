@@ -139,5 +139,3 @@ export function useTypewriter(
     restart,
   };
 }
-
-export default useTypewriter;

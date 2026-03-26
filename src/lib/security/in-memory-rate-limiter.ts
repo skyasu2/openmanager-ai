@@ -313,7 +313,7 @@ export class InMemoryRateLimiter {
  * - 일일 50회 (Cloud Run 무료 티어 보호)
  * - 글로벌 임계값 100회 (DDoS 방어)
  */
-export const aiAnalysisInMemoryLimiter = new InMemoryRateLimiter({
+const _aiAnalysisInMemoryLimiter = new InMemoryRateLimiter({
   maxRequests: 5,
   windowMs: 60 * 1000, // 1분
   dailyLimit: 50,
@@ -327,7 +327,7 @@ export const aiAnalysisInMemoryLimiter = new InMemoryRateLimiter({
  * - 분당 100회
  * - 글로벌 임계값 1000회
  */
-export const defaultInMemoryLimiter = new InMemoryRateLimiter({
+const _defaultInMemoryLimiter = new InMemoryRateLimiter({
   maxRequests: 100,
   windowMs: 60 * 1000, // 1분
   maxEntries: 5000,

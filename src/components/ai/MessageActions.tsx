@@ -155,5 +155,3 @@ export const MessageActions = memo(function MessageActions({
     </div>
   );
 });
-
-export default MessageActions;

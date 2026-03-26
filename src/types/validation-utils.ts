@@ -102,7 +102,7 @@ export function validateQueryParams<T extends z.ZodTypeAny>(
 /**
  * API 응답 검증 (개발 환경에서만)
  */
-export function validateResponse<T extends z.ZodTypeAny>(
+function _validateResponse<T extends z.ZodTypeAny>(
   data: unknown,
   schema: T
 ): NextResponse {
@@ -132,7 +132,7 @@ export function validateResponse<T extends z.ZodTypeAny>(
 /**
  * FormData 검증
  */
-export function validateFormData<T extends z.ZodTypeAny>(
+function _validateFormData<T extends z.ZodTypeAny>(
   formData: FormData,
   schema: T
 ):
@@ -166,7 +166,7 @@ export function validateFormData<T extends z.ZodTypeAny>(
 /**
  * 환경변수 검증 및 타입 안전성 보장
  */
-export function validateEnv<T extends z.ZodRawShape>(
+function _validateEnv<T extends z.ZodRawShape>(
   schema: z.ZodObject<T>
 ): z.infer<typeof schema> {
   const env = process.env;
@@ -192,7 +192,7 @@ export function validateEnv<T extends z.ZodRawShape>(
 /**
  * 안전한 JSON 파싱
  */
-export function safeJsonParse<T extends z.ZodTypeAny>(
+function _safeJsonParse<T extends z.ZodTypeAny>(
   jsonString: string,
   schema: T
 ): { success: true; data: z.infer<T> } | { success: false; error: string } {
@@ -216,7 +216,7 @@ export function safeJsonParse<T extends z.ZodTypeAny>(
 /**
  * 데이터 정제 (unknown 타입 제거)
  */
-export function sanitizeData<T extends z.ZodTypeAny>(
+function _sanitizeData<T extends z.ZodTypeAny>(
   data: unknown,
   schema: T
 ): z.infer<T> | null {
@@ -229,7 +229,7 @@ export function sanitizeData<T extends z.ZodTypeAny>(
 /**
  * 여러 항목 배치 검증
  */
-export function validateBatch<T extends z.ZodTypeAny>(
+function _validateBatch<T extends z.ZodTypeAny>(
   items: unknown[],
   schema: T
 ): {
@@ -269,7 +269,7 @@ export function validateBatch<T extends z.ZodTypeAny>(
 /**
  * 이메일 도메인 검증
  */
-export function validateEmailDomain(
+function _validateEmailDomain(
   email: string,
   allowedDomains: string[]
 ): boolean {
@@ -280,7 +280,7 @@ export function validateEmailDomain(
 /**
  * 파일 확장자 검증
  */
-export function validateFileExtension(
+function _validateFileExtension(
   filename: string,
   allowedExtensions: string[]
 ): boolean {
@@ -291,7 +291,7 @@ export function validateFileExtension(
 /**
  * IP 주소 범위 검증
  */
-export function validateIpRange(
+function _validateIpRange(
   ip: string,
   ranges: Array<{ start: string; end: string }>
 ): boolean {
@@ -319,7 +319,7 @@ export function validateIpRange(
 /**
  * SQL 인젝션 방지 검증
  */
-export function validateSqlSafe(value: string): boolean {
+function _validateSqlSafe(value: string): boolean {
   const sqlPatterns = [
     /(\b(SELECT|INSERT|UPDATE|DELETE|DROP|UNION|ALTER|CREATE)\b)/i,
     /(--|\/\*|\*\/|xp_|sp_)/i,
@@ -333,7 +333,7 @@ export function validateSqlSafe(value: string): boolean {
 /**
  * XSS 방지 검증
  */
-export function validateXssSafe(value: string): boolean {
+function _validateXssSafe(value: string): boolean {
   const xssPatterns = [
     /<script[^>]*>.*?<\/script>/gi,
     /<iframe[^>]*>.*?<\/iframe>/gi,
@@ -349,7 +349,7 @@ export function validateXssSafe(value: string): boolean {
 /**
  * 검증 결과를 HTTP 응답으로 변환
  */
-export function validationResultToResponse<T>(
+function _validationResultToResponse<T>(
   result:
     | { success: true; data: T }
     | { success: false; error: string; details?: Record<string, string[]> }
@@ -376,7 +376,7 @@ export function validationResultToResponse<T>(
 /**
  * 조건부 필수 필드 검증
  */
-export function requireIf<T>(
+function _requireIf<T>(
   value: T | undefined,
   condition: boolean,
   errorMessage = '이 필드는 필수입니다'

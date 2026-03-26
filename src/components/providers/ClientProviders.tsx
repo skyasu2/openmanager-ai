@@ -38,5 +38,3 @@ export function ClientProviders({ children }: ClientProvidersProps) {
     </AccessibilityProvider>
   );
 }
-
-export default ClientProviders;

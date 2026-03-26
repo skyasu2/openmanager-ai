@@ -30,7 +30,7 @@ import {
  * useEffect(() => setIsMounted(true), []);
  * renderTextWithAIGradient('AI 기반 모니터링', isMounted)
  */
-export function renderTextWithAIGradient(
+function _renderTextWithAIGradient(
   text: string,
   isMounted: boolean = false
 ): React.ReactNode {
@@ -120,7 +120,7 @@ export function renderAIGradientWithAnimation(
  * <AIIconGradientDefs id={gradientId} />
  * <Icon style={{ stroke: `url(#${gradientId})` }} />
  */
-export function AIIconGradientDefs({
+function _AIIconGradientDefs({
   id = AI_ICON_GRADIENT_ID,
 }: {
   id?: string;
@@ -155,7 +155,7 @@ export function AIIconGradientDefs({
  *   <Sparkles className="h-8 w-8" />
  * </GradientIconWrapper>
  */
-export function GradientIconWrapper({
+function _GradientIconWrapper({
   children,
   className = '',
   animate = true,
@@ -207,6 +207,6 @@ export function GradientIconWrapper({
  *
  * @returns Tailwind 클래스 문자열
  */
-export function getIconGradientClasses(): string {
+function _getIconGradientClasses(): string {
   return `${AI_ICON_GRADIENT_CLASSES} bg-clip-text text-transparent`;
 }

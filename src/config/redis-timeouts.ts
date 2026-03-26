@@ -67,7 +67,7 @@ export function getRedisTimeoutConfig(): RedisTimeoutConfig {
   return cachedConfig;
 }
 
-export function reloadRedisTimeoutConfig(): RedisTimeoutConfig {
+function reloadRedisTimeoutConfig(): RedisTimeoutConfig {
   cachedConfig = null;
   return getRedisTimeoutConfig();
 }

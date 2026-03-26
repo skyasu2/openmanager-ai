@@ -379,5 +379,3 @@ export function useTimeSeriesMetrics({
     refetch: fetchData,
   };
 }
-
-export default useTimeSeriesMetrics;

@@ -402,4 +402,4 @@ export class EdgeRuntimeService {
 }
 
 // 싱글톤 인스턴스 내보내기
-export const edgeRuntimeService = new EdgeRuntimeService();
+const _edgeRuntimeService = new EdgeRuntimeService();

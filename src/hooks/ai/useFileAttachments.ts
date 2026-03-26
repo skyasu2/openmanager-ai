@@ -381,5 +381,3 @@ export function useFileAttachments(
     remainingSlots,
   };
 }
-
-export default useFileAttachments;

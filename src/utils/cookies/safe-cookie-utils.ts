@@ -105,7 +105,7 @@ export function getCookieValue(
  * }
  * ```
  */
-export function hasCookie(request: NextRequest, name: string): boolean {
+function _hasCookie(request: NextRequest, name: string): boolean {
   const value = getCookieValue(request, name);
   return value !== undefined;
 }
@@ -124,7 +124,7 @@ export function hasCookie(request: NextRequest, name: string): boolean {
  * const locale = getCookieOrDefault(request, 'locale', 'ko');
  * ```
  */
-export function getCookieOrDefault(
+function _getCookieOrDefault(
   request: NextRequest,
   name: string,
   defaultValue: string
@@ -148,7 +148,7 @@ export function getCookieOrDefault(
  * ]);
  * ```
  */
-export function getMultipleCookies(
+function _getMultipleCookies(
   request: NextRequest,
   names: string[]
 ): Record<string, string | undefined> {

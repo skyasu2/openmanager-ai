@@ -59,7 +59,7 @@ export function getCorsHeaders(
  * 정적 CORS 헤더 (하위 호환용)
  * 새 코드에서는 getCorsHeaders()를 사용하세요
  */
-export const corsHeaders = getCorsHeaders();
+const _corsHeaders = getCorsHeaders();
 
 /**
  * OPTIONS 요청을 처리하는 헬퍼 함수

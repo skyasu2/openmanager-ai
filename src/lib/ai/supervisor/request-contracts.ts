@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 export const SUPERVISOR_SESSION_ID_REGEX = /^[A-Za-z0-9_-]{8,128}$/;
-export const SUPERVISOR_SESSION_ID_PATTERN = '^[A-Za-z0-9_-]{8,128}$' as const;
+const _SUPERVISOR_SESSION_ID_PATTERN = '^[A-Za-z0-9_-]{8,128}$' as const;
 export const INVALID_SESSION_ID_MESSAGE =
   'sessionId must be 8-128 chars using only letters, numbers, underscore, or hyphen';
 

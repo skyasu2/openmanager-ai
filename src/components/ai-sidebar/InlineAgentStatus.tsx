@@ -118,5 +118,3 @@ export const InlineAgentStatus: FC<InlineAgentStatusProps> = memo(
 );
 
 InlineAgentStatus.displayName = 'InlineAgentStatus';
-
-export default InlineAgentStatus;

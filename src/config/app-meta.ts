@@ -1,4 +1,4 @@
-export const APP_NAME = 'OpenManager AI';
+const APP_NAME = 'OpenManager AI';
 
 // Client-visible version should be consistent across pages. If the public env
 // is absent, prefer a neutral placeholder over stale hardcoded values.

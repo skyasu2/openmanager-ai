@@ -23,10 +23,10 @@ const isVercelHost = isBrowser
   : false;
 
 export const isDevelopment = nodeEnv === 'development';
-export const isProduction = nodeEnv === 'production';
-export const isTest = nodeEnv === 'test';
+const _isProduction = nodeEnv === 'production';
+const _isTest = nodeEnv === 'test';
 export const isVercel = hasVercelEnvFlag || isVercelHost;
-export const isVercelProduction =
+const _isVercelProduction =
   process.env.VERCEL_ENV === 'production' ||
   nextPublicVercelEnv === 'production';
 export const isDebugEnabled =

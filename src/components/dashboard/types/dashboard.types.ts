@@ -11,7 +11,6 @@
  * - src/components/dashboard/ServerDashboard.tsx (메인 컴포넌트)
  * - src/components/dashboard/hooks/useServerData.ts
  * - src/components/dashboard/hooks/useServerFilters.ts
- * - src/components/dashboard/hooks/useServerActions.ts
  * - src/hooks/useServerDashboard.ts (기존 훅 호환)
  *
  * 🔄 의존성: src/types/server.ts

@@ -258,5 +258,3 @@ export const CodeExecutionBlock = memo(function CodeExecutionBlock({
     </div>
   );
 });
-
-export default CodeExecutionBlock;

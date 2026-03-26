@@ -396,7 +396,7 @@ export const isMetadataValue = (value: unknown): value is MetadataValue => {
   );
 };
 
-export const isLogData = (value: unknown): value is LogData => {
+const _isLogData = (value: unknown): value is LogData => {
   if (!value || typeof value !== 'object') return false;
 
   return Object.values(value).every(
@@ -404,7 +404,7 @@ export const isLogData = (value: unknown): value is LogData => {
   );
 };
 
-export const isErrorContext = (value: unknown): value is ErrorContext => {
+const _isErrorContext = (value: unknown): value is ErrorContext => {
   if (!value || typeof value !== 'object') return false;
 
   return Object.values(value).every(

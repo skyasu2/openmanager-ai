@@ -332,5 +332,3 @@ function renderStepIndicators(progress: number): React.ReactNode {
     );
   });
 }
-
-export default JobProgressIndicator;

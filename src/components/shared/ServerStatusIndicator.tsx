@@ -95,5 +95,3 @@ export const ServerStatusIndicator: React.FC<ServerStatusIndicatorProps> = memo(
 );
 
 ServerStatusIndicator.displayName = 'ServerStatusIndicator';
-
-export default ServerStatusIndicator;

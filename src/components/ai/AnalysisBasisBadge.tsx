@@ -236,5 +236,3 @@ export const AnalysisBasisBadge: FC<AnalysisBasisBadgeProps> = ({
     </div>
   );
 };
-
-export default AnalysisBasisBadge;

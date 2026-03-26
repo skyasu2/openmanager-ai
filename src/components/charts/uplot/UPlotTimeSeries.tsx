@@ -234,5 +234,3 @@ export function UPlotTimeSeries({
     />
   );
 }
-
-export default UPlotTimeSeries;

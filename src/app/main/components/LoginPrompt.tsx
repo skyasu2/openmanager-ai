@@ -42,5 +42,3 @@ export function LoginPrompt({ isMounted, guestModeMessage }: LoginPromptProps) {
     </div>
   );
 }
-
-export default LoginPrompt;

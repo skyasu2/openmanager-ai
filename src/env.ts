@@ -149,11 +149,11 @@ function parseEnv(): Env {
 export const env = parseEnv();
 
 // 환경별 검증 헬퍼
-export const isProduction = env.NODE_ENV === 'production';
+const _isProduction = env.NODE_ENV === 'production';
 export const isDevelopment = env.NODE_ENV === 'development';
-export const isTest = env.NODE_ENV === 'test';
-export const isVercel = !!env.VERCEL;
-export const isVercelProduction = env.VERCEL_ENV === 'production';
+const _isTest = env.NODE_ENV === 'test';
+const _isVercel = !!env.VERCEL;
+const _isVercelProduction = env.VERCEL_ENV === 'production';
 
 // 특정 기능 활성화 검사
 export const features = {

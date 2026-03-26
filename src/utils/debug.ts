@@ -51,5 +51,3 @@ export const debug: DebugLogger = {
     if (isDebugEnabled) console.timeEnd(label);
   },
 };
-
-export default debug;

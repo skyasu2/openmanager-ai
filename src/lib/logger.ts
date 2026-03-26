@@ -259,35 +259,32 @@ class DevLogger {
 export const devLogger = DevLogger.getInstance();
 
 // 편의 함수들
-export const logTest = (name: string, description?: string) =>
+const _logTest = (name: string, description?: string) =>
   devLogger.testStart(name, description);
-export const logTestResult = (
-  name: string,
-  success: boolean,
-  duration?: number
-) => devLogger.testEnd(name, success, duration);
-export const logPerformance = (
+const _logTestResult = (name: string, success: boolean, duration?: number) =>
+  devLogger.testEnd(name, success, duration);
+const _logPerformance = (
   operation: string,
   duration: number,
   metadata?: unknown
 ) => devLogger.performance(operation, duration, metadata);
-export const logAI = (query: string, engine: string, confidence?: number) =>
+const _logAI = (query: string, engine: string, confidence?: number) =>
   devLogger.aiQuery(query, engine, confidence);
 
 // 에러 관련 편의 함수
-export const logError = (
+const _logError = (
   message: string,
   error: unknown,
   category: string = 'general'
 ) => devLogger.errorTrace(category, message, error);
 
-export const logErrorWithStack = (
+const _logErrorWithStack = (
   message: string,
   error: unknown,
   category: string = 'general'
 ) => devLogger.errorWithStack(category, message, error);
 
-export const logWarningWithDetails = (
+const _logWarningWithDetails = (
   message: string,
   details?: unknown,
   error?: unknown,
@@ -309,7 +306,7 @@ export const systemLogger = {
   ai: (message: string, data?: unknown) => devLogger.info('ai', message, data),
 };
 
-export const logger = {
+const _logger = {
   info: (message: string, data?: unknown) =>
     devLogger.info('general', message, data),
   warn: (message: string, data?: unknown) =>
@@ -320,7 +317,7 @@ export const logger = {
     devLogger.debug('general', message, data),
 };
 
-export const apiLogger = {
+const _apiLogger = {
   info: (message: string, data?: unknown) =>
     devLogger.info('api', message, data),
   warn: (message: string, data?: unknown) =>
@@ -343,4 +340,3 @@ export const aiLogger = {
 };
 
 // 기본 export
-export default devLogger;

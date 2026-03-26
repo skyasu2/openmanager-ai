@@ -108,5 +108,3 @@ export function QueryProvider({ children }: QueryProviderProps) {
     </QueryErrorBoundary>
   );
 }
-
-export default QueryProvider;

@@ -151,5 +151,3 @@ export const ClarificationDialog: FC<ClarificationDialogProps> = memo(
 );
 
 ClarificationDialog.displayName = 'ClarificationDialog';
-
-export default ClarificationDialog;

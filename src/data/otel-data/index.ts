@@ -80,7 +80,7 @@ async function loadJsonData<T>(fileName: string): Promise<T | null> {
 /**
  * 특정 시간대의 OTel 슬롯 배열 조회
  */
-export async function getHourlySlots(hour: number): Promise<OTelHourlySlot[]> {
+async function _getHourlySlots(hour: number): Promise<OTelHourlySlot[]> {
   const file = await getOTelHourlyData(hour);
   return file?.slots ?? [];
 }

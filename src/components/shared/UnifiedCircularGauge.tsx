@@ -265,11 +265,11 @@ export default function UnifiedCircularGauge({
 }
 
 // 편의를 위한 사전 정의된 변형들
-export const ServerCardGauge = (
+const _ServerCardGauge = (
   props: Omit<UnifiedCircularGaugeProps, 'variant'>
 ) => <UnifiedCircularGauge {...props} variant="card" />;
 
-export const ServerModalGauge = (
+const _ServerModalGauge = (
   props: Omit<UnifiedCircularGaugeProps, 'variant'>
 ) => <UnifiedCircularGauge {...props} variant="modal" />;
 

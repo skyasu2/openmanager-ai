@@ -30,7 +30,7 @@ export function safeArrayAccess<T>(array: T[], index: number): T | undefined {
 }
 
 // 객체 속성 안전 접근
-export function safeObjectAccess<T, K extends keyof T>(
+function _safeObjectAccess<T, K extends keyof T>(
   obj: T | null | undefined,
   key: K
 ): T[K] | undefined {
@@ -38,7 +38,7 @@ export function safeObjectAccess<T, K extends keyof T>(
 }
 
 // undefined가 아닌지 확인하는 타입 가드
-export function isDefined<T>(value: T | undefined): value is T {
+function _isDefined<T>(value: T | undefined): value is T {
   return value !== undefined;
 }
 
@@ -50,7 +50,7 @@ export function isNotNullOrUndefined<T>(
 }
 
 // 안전한 JSON 파싱
-export function safeJsonParse<T>(json: string, fallback: T): T {
+function _safeJsonParse<T>(json: string, fallback: T): T {
   try {
     return JSON.parse(json);
   } catch {
@@ -59,7 +59,7 @@ export function safeJsonParse<T>(json: string, fallback: T): T {
 }
 
 // 안전한 객체 키 접근
-export function safeObjectKeyAccess<T>(
+function _safeObjectKeyAccess<T>(
   obj: Record<string, T> | undefined,
   key: string
 ): T | undefined {
@@ -67,15 +67,12 @@ export function safeObjectKeyAccess<T>(
 }
 
 // 기본값과 함께 안전한 접근
-export function withDefault<T>(
-  value: T | undefined | null,
-  defaultValue: T
-): T {
+function _withDefault<T>(value: T | undefined | null, defaultValue: T): T {
   return isNotNullOrUndefined(value) ? value : defaultValue;
 }
 
 // 배열에서 안전한 find
-export function safeFindInArray<T>(
+function _safeFindInArray<T>(
   array: T[],
   predicate: (item: T) => boolean
 ): T | undefined {
@@ -83,28 +80,26 @@ export function safeFindInArray<T>(
 }
 
 // 타입 안전한 Object.keys
-export function getObjectKeys<T extends Record<string, unknown>>(
+function _getObjectKeys<T extends Record<string, unknown>>(
   obj: T
 ): Array<keyof T> {
   return Object.keys(obj) as Array<keyof T>;
 }
 
 // 타입 안전한 Object.entries
-export function getObjectEntries<T extends Record<string, unknown>>(
+function _getObjectEntries<T extends Record<string, unknown>>(
   obj: T
 ): Array<[keyof T, T[keyof T]]> {
   return Object.entries(obj) as Array<[keyof T, T[keyof T]]>;
 }
 
 // useEffect 안전 반환 (cleanup 함수 또는 undefined)
-export function safeUseEffectReturn(
-  cleanup?: () => void
-): (() => void) | undefined {
+function _safeUseEffectReturn(cleanup?: () => void): (() => void) | undefined {
   return cleanup;
 }
 
 // 배열 인덱스 안전 접근 (기본값 포함)
-export function getArrayElement<T>(
+function _getArrayElement<T>(
   array: T[],
   index: number,
   defaultValue?: T
@@ -114,7 +109,7 @@ export function getArrayElement<T>(
 }
 
 // 객체 속성 존재 확인
-export function hasProperty<T extends Record<string, unknown>>(
+function _hasProperty<T extends Record<string, unknown>>(
   obj: T | null | undefined,
   key: string
 ): boolean {
@@ -157,7 +152,7 @@ export function hasPropertyOfType<K extends PropertyKey>(
 }
 
 // 특정 타입의 속성을 가진 객체인지 확인
-export function hasStringProperty<K extends PropertyKey>(
+function _hasStringProperty<K extends PropertyKey>(
   obj: unknown,
   key: K
 ): obj is Record<K, string> & Record<string, unknown> {
@@ -171,7 +166,7 @@ export function hasNumberProperty<K extends PropertyKey>(
   return hasPropertyOfType(obj, key) && isNumber(obj[key]);
 }
 
-export function hasBooleanProperty<K extends PropertyKey>(
+function _hasBooleanProperty<K extends PropertyKey>(
   obj: unknown,
   key: K
 ): obj is Record<K, boolean> & Record<string, unknown> {
@@ -179,7 +174,7 @@ export function hasBooleanProperty<K extends PropertyKey>(
 }
 
 // API 응답 구조 검증을 위한 복합 타입 가드
-export function isApiResponse(value: unknown): value is {
+function _isApiResponse(value: unknown): value is {
   data: unknown;
   status?: string;
   error?: string;
@@ -188,7 +183,7 @@ export function isApiResponse(value: unknown): value is {
 }
 
 // 서버 메트릭 구조 검증
-export function isServerMetricsLike(value: unknown): value is {
+function _isServerMetricsLike(value: unknown): value is {
   cpu_usage: number;
   memory_usage: number;
   disk_usage: number;
@@ -202,7 +197,7 @@ export function isServerMetricsLike(value: unknown): value is {
 }
 
 // 배열의 모든 요소가 특정 타입인지 확인
-export function isArrayOf<T>(
+function _isArrayOf<T>(
   value: unknown,
   itemCheck: (item: unknown) => item is T
 ): value is T[] {
@@ -210,7 +205,7 @@ export function isArrayOf<T>(
 }
 
 // 안전한 JSON 파싱 (강화 버전)
-export function safeJsonParseWithValidation<T>(
+function _safeJsonParseWithValidation<T>(
   json: string,
   validator: (parsed: unknown) => parsed is T,
   fallback: T

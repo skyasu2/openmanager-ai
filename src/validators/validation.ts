@@ -42,7 +42,7 @@ export interface ValidationSchemas<
 /**
  * API 핸들러에 검증 기능을 추가하는 미들웨어
  */
-export function withValidation<
+function _withValidation<
   TBody = unknown,
   TQuery = unknown,
   TResponse = unknown,
@@ -181,7 +181,7 @@ function isApiError(error: unknown): error is ApiError {
 /**
  * 여러 미들웨어를 체인으로 연결
  */
-export function composeMiddleware(
+function _composeMiddleware(
   ...middlewares: Array<(req: NextRequest) => Promise<NextResponse | null>>
 ) {
   return async (request: NextRequest): Promise<NextResponse> => {
@@ -229,14 +229,14 @@ export const paginationQuerySchema = z.object({
 /**
  * ID 파라미터 스키마
  */
-export const idParamSchema = z.object({
+const _idParamSchema = z.object({
   id: z.string().min(1),
 });
 
 /**
  * 검색 쿼리 스키마
  */
-export const searchQuerySchema = z.object({
+const _searchQuerySchema = z.object({
   q: z.string().min(1),
   type: z.string().optional(),
   from: z.string().datetime().optional(),
@@ -248,7 +248,7 @@ export const searchQuerySchema = z.object({
 /**
  * 성공 응답 생성
  */
-export function successResponse<T>(
+function _successResponse<T>(
   data: T,
   metadata?: Record<string, unknown>
 ): NextResponse {
@@ -263,7 +263,7 @@ export function successResponse<T>(
 /**
  * 에러 응답 생성
  */
-export function errorResponse(
+function _errorResponse(
   message: string,
   statusCode = 500,
   details?: Record<string, unknown>
@@ -282,7 +282,7 @@ export function errorResponse(
 /**
  * 캐시 헤더 설정
  */
-export function withCacheHeaders(
+function _withCacheHeaders(
   response: NextResponse,
   maxAge = 60,
   sMaxAge = 300
@@ -297,7 +297,7 @@ export function withCacheHeaders(
 /**
  * CORS 헤더 설정
  */
-export function withCorsHeaders(
+function _withCorsHeaders(
   response: NextResponse,
   origin = '*',
   methods = ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']

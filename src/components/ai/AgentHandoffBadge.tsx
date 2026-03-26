@@ -169,5 +169,3 @@ export const AgentHandoffBadge = memo<AgentHandoffBadgeProps>(
 );
 
 AgentHandoffBadge.displayName = 'AgentHandoffBadge';
-
-export default AgentHandoffBadge;

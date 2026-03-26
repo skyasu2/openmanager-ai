@@ -13,8 +13,7 @@ src/components/dashboard/
 │   └── dashboard.types.ts       # 📋 타입 정의 (15개 인터페이스)
 ├── hooks/
 │   ├── useServerData.ts         # 🔄 서버 데이터 관리 (실시간 페칭)
-│   ├── useServerFilters.ts      # 🔍 필터링 로직 (검색, 상태, 위치)
-│   └── useServerActions.ts      # 🎮 서버 액션 관리 (재시작, 중지 등)
+│   └── useServerFilters.ts      # 🔍 필터링 로직 (검색, 상태, 위치)
 └── components/                  # 🧩 UI 컴포넌트 (향후 분리 예정)
 ```
 
@@ -26,7 +25,7 @@ src/components/dashboard/
 **사용처**:
 
 - `ServerDashboard.tsx` (메인 컴포넌트)
-- `useServerData.ts`, `useServerFilters.ts`, `useServerActions.ts` (모든 훅)
+- `useServerData.ts`, `useServerFilters.ts` (핵심 훅)
 - `src/hooks/useServerDashboard.ts` (기존 훅과 호환)
 
 **핵심 타입들**:
@@ -78,40 +77,18 @@ src/components/dashboard/
 - 뷰 모드 관리 (grid/list)
 ```
 
-### 🎮 **useServerActions.ts**
-
-**역할**: 서버 액션 관리 전용 훅  
-**사용처**:
-
-- `ServerDashboard.tsx` (서버 액션 버튼들)
-- 서버 상세 모달 컴포넌트들
-- 향후 서버 관리 관련 컴포넌트들
-
-**핵심 기능**:
-
-```typescript
-- 서버 액션 실행 (restart, stop, start, configure)
-- 모달 상태 관리 (상세보기, Enhanced 모달)
-- 대량 액션 실행
-- 액션별 권한 체크
-- 로딩 상태 관리
-```
-
 ## 🔗 **모듈 간 의존성 관계**
 
 ```mermaid
 graph TD
     A[ServerDashboard.tsx] --> B[useServerData.ts]
     A --> C[useServerFilters.ts]
-    A --> D[useServerActions.ts]
 
     B --> E[dashboard.types.ts]
     C --> E
-    D --> E
 
     F[useServerDashboard.ts] --> B
     F --> C
-    F --> D
 
 ```
 
@@ -128,7 +105,6 @@ const { servers, stats, loading } = useServerDashboard();
 // ✅ 새로운 분리된 훅 - 선택적 사용 가능
 const { servers } = useServerData();
 const { filterServers } = useServerFilters();
-const { executeServerAction } = useServerActions();
 ```
 
 ### 📊 **사용 통계 (2025.06.14 기준)**
@@ -136,7 +112,6 @@ const { executeServerAction } = useServerActions();
 - `dashboard.types.ts`: **5개 파일**에서 import
 - `useServerData.ts`: **3개 컴포넌트**에서 사용
 - `useServerFilters.ts`: **2개 컴포넌트**에서 사용
-- `useServerActions.ts`: **1개 컴포넌트**에서 사용 (확장 예정)
 
 ## 🚀 **향후 확장 계획**
 
@@ -145,7 +120,6 @@ const { executeServerAction } = useServerActions();
 - ✅ 타입 정의 분리
 - ✅ 데이터 관리 훅 분리
 - ✅ 필터링 훅 분리
-- ✅ 액션 관리 훅 분리
 
 ### 📅 **Phase 2 (진행 예정)**
 

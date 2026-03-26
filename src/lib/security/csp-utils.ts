@@ -155,7 +155,7 @@ export function getCSPReportDirective(reportUri?: string): string {
  * 무료 티어 최적화된 CSP 설정
  * 리소스 사용량을 최소화하면서 보안 유지
  */
-export const FREE_TIER_CSP_OPTIONS = {
+const _FREE_TIER_CSP_OPTIONS = {
   // 리포트 수집 비활성화 (대역폭 절약)
   disableReporting: true,
   // 최소한의 외부 도메인만 허용

@@ -113,14 +113,14 @@ export const ProfileMenuItem = memo(function ProfileMenuItem({
 /**
  * 메뉴 구분선 컴포넌트
  */
-export const MenuDivider = memo(function MenuDivider() {
+const _MenuDivider = memo(function MenuDivider() {
   return <div className="my-1 border-t border-gray-100" />;
 });
 
 /**
  * 메뉴 섹션 헤더 컴포넌트
  */
-export const MenuSectionHeader = memo(function MenuSectionHeader({
+const _MenuSectionHeader = memo(function MenuSectionHeader({
   title,
 }: {
   title: string;

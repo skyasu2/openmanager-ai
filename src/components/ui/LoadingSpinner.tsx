@@ -123,7 +123,7 @@ export const LoadingSpinner: FC<LoadingSpinnerProps> = ({
 };
 
 // 기본 로딩 스피너 (별칭)
-export const Spinner = LoadingSpinner;
+const _Spinner = LoadingSpinner;
 
 // 전체 화면 로딩 오버레이
 export const LoadingOverlay: FC<{
@@ -147,5 +147,3 @@ export const LoadingOverlay: FC<{
     </div>
   );
 };
-
-export default LoadingSpinner;

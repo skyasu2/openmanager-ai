@@ -226,5 +226,3 @@ export function compressContext(
 export function shouldCompress(messageCount: number, threshold = 4): boolean {
   return messageCount > threshold;
 }
-
-export default compressContext;

@@ -88,7 +88,7 @@ export function clampTimeout(endpoint: ProxyEndpoint, timeout: number): number {
   return Math.max(config.min, Math.min(config.max, timeout));
 }
 
-export function getCacheTTL(endpoint: CacheEndpoint): number {
+function getCacheTTL(endpoint: CacheEndpoint): number {
   return getAIProxyConfig().cacheTTL[endpoint];
 }
 
@@ -96,7 +96,7 @@ export function getComplexityThreshold(): number {
   return getAIProxyConfig().queryRouting.complexityThreshold;
 }
 
-export function getForceJobQueueKeywords(): string[] {
+function getForceJobQueueKeywords(): string[] {
   return getAIProxyConfig().queryRouting.forceJobQueueKeywords;
 }
 
@@ -119,7 +119,7 @@ export function calculateRetryDelay(attempt: number): number {
   return Math.max(100, Math.round(cappedDelay + jitter));
 }
 
-export function getRAGWeights(): RAGWeightsConfig {
+function getRAGWeights(): RAGWeightsConfig {
   return getAIProxyConfig().ragWeights;
 }
 
@@ -131,7 +131,7 @@ export function getComplexityCategoryWeights(): ComplexityCategoryWeights {
   return getAIProxyConfig().complexityWeights;
 }
 
-export function getComplexityCategoryWeight(
+function getComplexityCategoryWeight(
   category: keyof ComplexityCategoryWeights,
 ): number {
   return getAIProxyConfig().complexityWeights[category];

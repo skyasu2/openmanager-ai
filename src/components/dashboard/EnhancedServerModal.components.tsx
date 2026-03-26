@@ -135,7 +135,7 @@ interface MiniProgressBarProps {
   background?: string;
 }
 
-export const MiniProgressBar: FC<MiniProgressBarProps> = ({
+const _MiniProgressBar: FC<MiniProgressBarProps> = ({
   value,
   color = '#3b82f6',
   height = 8,
@@ -171,7 +171,7 @@ interface StatusBadgeProps {
   size?: 'sm' | 'md' | 'lg';
 }
 
-export const StatusBadge: FC<StatusBadgeProps> = ({
+const _StatusBadge: FC<StatusBadgeProps> = ({
   status,
   variant = 'info',
   size = 'sm',

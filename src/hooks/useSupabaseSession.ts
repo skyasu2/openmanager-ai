@@ -231,10 +231,7 @@ export async function signOut(options?: { callbackUrl?: string }) {
 /**
  * NextAuth의 signIn을 대체하는 Supabase 기반 함수
  */
-export async function signIn(
-  provider: string,
-  options?: { callbackUrl?: string }
-) {
+async function _signIn(provider: string, options?: { callbackUrl?: string }) {
   if (provider === 'github') {
     const baseUrl = window.location.origin;
     const finalRedirect = options?.callbackUrl || '/main';

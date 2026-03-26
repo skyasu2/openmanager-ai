@@ -9,16 +9,14 @@ import { BaseResponseSchema, ErrorResponseSchema } from './common.schema';
 
 // ===== API 응답 래퍼 =====
 
-export const ApiSuccessResponseSchema = <T extends z.ZodTypeAny>(
-  dataSchema: T
-) =>
+const _ApiSuccessResponseSchema = <T extends z.ZodTypeAny>(dataSchema: T) =>
   BaseResponseSchema.extend({
     success: z.literal(true),
     data: dataSchema,
     metadata: z.record(z.string(), z.string()).optional(),
   });
 
-export const ApiErrorResponseSchema = ErrorResponseSchema.extend({
+const _ApiErrorResponseSchema = ErrorResponseSchema.extend({
   statusCode: z.number().optional(),
   path: z.string().optional(),
   method: z.string().optional(),
@@ -26,7 +24,7 @@ export const ApiErrorResponseSchema = ErrorResponseSchema.extend({
 
 // ===== 배치 작업 =====
 
-export const BatchRequestSchema = <T extends z.ZodTypeAny>(itemSchema: T) =>
+const _BatchRequestSchema = <T extends z.ZodTypeAny>(itemSchema: T) =>
   z.object({
     items: z.array(itemSchema).min(1).max(100),
     options: z
@@ -38,7 +36,7 @@ export const BatchRequestSchema = <T extends z.ZodTypeAny>(itemSchema: T) =>
       .optional(),
   });
 
-export const BatchResponseSchema = <T extends z.ZodTypeAny>(itemSchema: T) =>
+const _BatchResponseSchema = <T extends z.ZodTypeAny>(itemSchema: T) =>
   z.object({
     success: z.array(itemSchema),
     failed: z.array(

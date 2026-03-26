@@ -213,7 +213,7 @@ export const generateDisplayInfo = (
 /**
  * 🎯 현재 활성 표시 설정
  */
-export const ACTIVE_DISPLAY_CONFIG = DEFAULT_SERVER_DISPLAY_CONFIG;
+const ACTIVE_DISPLAY_CONFIG = DEFAULT_SERVER_DISPLAY_CONFIG;
 
 /**
  * 💡 사용 예시:

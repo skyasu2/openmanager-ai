@@ -199,5 +199,3 @@ export const AIInsightBadge: React.FC<AIInsightBadgeProps> = ({
     </output>
   );
 };
-
-export default AIInsightBadge;

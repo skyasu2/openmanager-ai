@@ -212,5 +212,3 @@ export function useInitialAuth() {
     shouldRedirect: false, // 비로그인 상태에서도 메인 페이지 표시 (리다이렉트 비활성화)
   };
 }
-
-export default useInitialAuth;

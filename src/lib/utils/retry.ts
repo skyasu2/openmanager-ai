@@ -352,5 +352,3 @@ export const RETRY_CONSERVATIVE: RetryOptions = {
   maxDelayMs: 10000,
   jitterFactor: 0.05,
 };
-
-export default withRetry;

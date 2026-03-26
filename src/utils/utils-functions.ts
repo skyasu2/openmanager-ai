@@ -11,7 +11,7 @@ import {
 /**
  * 🛡️ 완전히 안전한 에러 처리 - 새로운 error-handler 모듈 사용
  */
-export function parseError(error: unknown): string {
+function _parseError(error: unknown): string {
   return coreErrorMessage(error, 'An unknown error occurred');
 }
 
@@ -22,7 +22,7 @@ export function safeErrorMessage(
   return coreErrorMessage(error, fallback);
 }
 
-export function safeConsoleError(prefix: string, error: unknown): void {
+function _safeConsoleError(prefix: string, error: unknown): void {
   coreErrorLog(prefix, error);
 }
 
@@ -45,7 +45,7 @@ export function formatBytes(bytes: number, decimals = 2): string {
 /**
  * 🔒 안전한 JSON 파싱
  */
-export function safeJsonParse<T = unknown>(jsonString: string, fallback: T): T {
+function _safeJsonParse<T = unknown>(jsonString: string, fallback: T): T {
   try {
     return JSON.parse(jsonString);
   } catch {
@@ -95,7 +95,7 @@ export function formatPercentage(
  * @param date - Date string or Date object
  * @returns Relative time string
  */
-export function formatRelativeTime(date: string | Date): string {
+function _formatRelativeTime(date: string | Date): string {
   const now = new Date();
   const past = new Date(date);
   const diffInSeconds = Math.floor((now.getTime() - past.getTime()) / 1000);
@@ -124,7 +124,7 @@ export function formatRelativeTime(date: string | Date): string {
  * @param ms - Duration in milliseconds
  * @returns Formatted duration (e.g., "2h 30m 15s")
  */
-export function formatDuration(ms: number): string {
+function _formatDuration(ms: number): string {
   const seconds = Math.floor(ms / 1000);
   const minutes = Math.floor(seconds / 60);
   const hours = Math.floor(minutes / 60);
@@ -145,7 +145,7 @@ export function formatDuration(ms: number): string {
  * @param wait - Wait time in milliseconds
  * @returns Debounced function
  */
-export function debounce<T extends (...args: unknown[]) => void>(
+function _debounce<T extends (...args: unknown[]) => void>(
   func: T,
   wait: number
 ): (...args: Parameters<T>) => void {
@@ -168,7 +168,7 @@ export function debounce<T extends (...args: unknown[]) => void>(
  * @param limit - Time limit in milliseconds
  * @returns Throttled function
  */
-export function throttle<T extends (...args: unknown[]) => void>(
+function _throttle<T extends (...args: unknown[]) => void>(
   func: T,
   limit: number
 ): (...args: Parameters<T>) => void {
@@ -199,7 +199,7 @@ export function sleep(ms: number): Promise<void> {
  * @param delay - Initial delay in milliseconds
  * @returns Result of function or throws error
  */
-export async function retry<T>(
+async function _retry<T>(
   fn: () => Promise<T>,
   retries = 3,
   delay = 1000
@@ -227,7 +227,7 @@ export async function retry<T>(
  * Check if code is running on server side
  * @returns Boolean indicating server environment
  */
-export function isServer(): boolean {
+function _isServer(): boolean {
   return typeof window === 'undefined' || process.env.NODE_ENV === 'test';
 }
 
@@ -235,7 +235,7 @@ export function isServer(): boolean {
  * Check if code is running in development mode
  * @returns Boolean indicating development mode
  */
-export function isDevelopment(): boolean {
+function _isDevelopment(): boolean {
   return process.env.NODE_ENV === 'development';
 }
 
@@ -245,7 +245,7 @@ export function isDevelopment(): boolean {
  * @param key - Key to group by
  * @returns Grouped object
  */
-export function groupBy<T>(array: T[], key: keyof T): Record<string, T[]> {
+function _groupBy<T>(array: T[], key: keyof T): Record<string, T[]> {
   return array.reduce(
     (result, item) => {
       const value = item[key];
@@ -275,7 +275,7 @@ export function groupBy<T>(array: T[], key: keyof T): Record<string, T[]> {
  * @param keys - Keys to pick
  * @returns New object with picked keys
  */
-export function pick<T extends object, K extends keyof T>(
+function _pick<T extends object, K extends keyof T>(
   obj: T,
   keys: K[]
 ): Pick<T, K> {
@@ -294,7 +294,7 @@ export function pick<T extends object, K extends keyof T>(
  * @param keys - Keys to omit
  * @returns New object without omitted keys
  */
-export function omit<T extends object, K extends keyof T>(
+function _omit<T extends object, K extends keyof T>(
   obj: T,
   keys: K[]
 ): Omit<T, K> {
@@ -312,7 +312,7 @@ export function omit<T extends object, K extends keyof T>(
  * @param max - Maximum value
  * @returns Clamped number
  */
-export function clamp(num: number, min: number, max: number): number {
+function _clamp(num: number, min: number, max: number): number {
   return Math.min(Math.max(num, min), max);
 }
 
@@ -321,7 +321,7 @@ export function clamp(num: number, min: number, max: number): number {
  * @param email - Email to validate
  * @returns Boolean indicating valid email
  */
-export function isValidEmail(email: string): boolean {
+function _isValidEmail(email: string): boolean {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return emailRegex.test(email);
 }
@@ -348,7 +348,7 @@ export function truncate(
  * @param total - Total value
  * @returns Percentage (0-100)
  */
-export function calculatePercentage(value: number, total: number): number {
+function _calculatePercentage(value: number, total: number): number {
   if (total === 0) return 0;
   return Math.round((value / total) * 100 * 100) / 100;
 }
@@ -360,7 +360,7 @@ export function calculatePercentage(value: number, total: number): number {
  * @param order - Sort order
  * @returns Sorted array
  */
-export function sortBy<T>(
+function _sortBy<T>(
   array: T[],
   key: keyof T,
   order: 'asc' | 'desc' = 'asc'
@@ -380,7 +380,7 @@ export function sortBy<T>(
  * @param num - Number to format
  * @returns Formatted number string
  */
-export function formatNumber(num: number): string {
+function _formatNumber(num: number): string {
   return num.toLocaleString();
 }
 

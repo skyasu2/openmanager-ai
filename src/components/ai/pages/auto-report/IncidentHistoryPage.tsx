@@ -131,5 +131,3 @@ export const IncidentHistoryPage = memo(function IncidentHistoryPage() {
     </div>
   );
 });
-
-export default IncidentHistoryPage;

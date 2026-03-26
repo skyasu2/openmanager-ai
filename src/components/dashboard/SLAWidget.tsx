@@ -336,5 +336,3 @@ export const SLAWidget = memo(function SLAWidget({
     </div>
   );
 });
-
-export default SLAWidget;

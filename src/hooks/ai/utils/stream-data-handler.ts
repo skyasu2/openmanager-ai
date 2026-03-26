@@ -83,7 +83,7 @@ function extractPendingToolResult(
   };
 }
 
-export function createSyntheticToolParts(
+function _createSyntheticToolParts(
   toolResults: PendingStreamToolResult[]
 ): SyntheticToolPart[] {
   return toolResults.map((entry, index) => ({

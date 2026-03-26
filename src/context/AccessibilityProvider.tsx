@@ -92,7 +92,7 @@ const AccessibilityContext = createContext<AccessibilityContextType | null>(
 );
 
 // 🚀 Vercel 최적화: SSR 안전 Hook
-export const useAccessibility = () => {
+const _useAccessibility = () => {
   const context = useContext(AccessibilityContext);
   if (!context) {
     throw new Error(
@@ -103,7 +103,7 @@ export const useAccessibility = () => {
 };
 
 // 🛡️ 베르셀 배포 안전: Optional Hook (에러 없이 사용 가능)
-export const useAccessibilityOptional = () => {
+const _useAccessibilityOptional = () => {
   const context = useContext(AccessibilityContext);
   return context;
 };
@@ -439,7 +439,7 @@ export const AccessibilityProvider: React.FC<AccessibilityProviderProps> = ({
 };
 
 // 🎨 CSS 유틸리티 (접근성 스타일)
-export const getAccessibilityClasses = (
+const _getAccessibilityClasses = (
   reducedMotion: boolean = false,
   highContrast: boolean = false,
   fontSize: AccessibilityState['fontSize'] = 'medium'
@@ -458,5 +458,3 @@ export const getAccessibilityClasses = (
       'sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-blue-600 focus:text-white focus:rounded',
   };
 };
-
-export default AccessibilityProvider;

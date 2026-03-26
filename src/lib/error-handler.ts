@@ -142,7 +142,7 @@ export function isAutoRecoverableError(error: unknown): boolean {
 /**
  * 🛡️ 전역 에러 핸들러 설정
  */
-export function setupGlobalErrorHandler(): void {
+function _setupGlobalErrorHandler(): void {
   if (typeof window === 'undefined') return;
 
   // 기존 핸들러 제거 (중복 방지)

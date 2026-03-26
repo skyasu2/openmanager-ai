@@ -25,7 +25,7 @@ const STREAM_PREFIX = 'ai:resumable:';
 const STREAM_TTL_SECONDS = 600; // 10 minutes
 const REDIS_TIMEOUT_MS = getRedisTimeoutMs('standard');
 
-interface StreamMetadata {
+export interface StreamMetadata {
   status: 'active' | 'completed' | 'error';
   totalChunks: number;
   startedAt: number;

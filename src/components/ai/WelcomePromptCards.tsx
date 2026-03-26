@@ -144,5 +144,3 @@ export const WelcomePromptCards = memo(function WelcomePromptCards({
 });
 
 WelcomePromptCards.displayName = 'WelcomePromptCards';
-
-export default WelcomePromptCards;

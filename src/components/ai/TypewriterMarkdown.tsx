@@ -67,5 +67,3 @@ export const TypewriterMarkdown = memo(function TypewriterMarkdown({
     </div>
   );
 });
-
-export default TypewriterMarkdown;

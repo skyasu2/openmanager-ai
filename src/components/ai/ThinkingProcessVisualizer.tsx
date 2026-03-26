@@ -297,5 +297,3 @@ export const ThinkingProcessVisualizer: FC<ThinkingProcessVisualizerProps> = ({
     </div>
   );
 };
-
-export default ThinkingProcessVisualizer;

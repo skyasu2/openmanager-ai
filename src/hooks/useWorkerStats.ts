@@ -432,5 +432,3 @@ export const calculateServerStatsFallback = (
     },
   };
 };
-
-export default useWorkerStats;

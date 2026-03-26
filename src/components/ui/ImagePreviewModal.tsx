@@ -133,5 +133,3 @@ export function ImagePreviewModal({
     </Dialog>
   );
 }
-
-export default ImagePreviewModal;

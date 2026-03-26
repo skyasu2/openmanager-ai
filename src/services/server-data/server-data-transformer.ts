@@ -25,9 +25,7 @@ import { formatBytes } from '@/utils/utils-functions';
 /**
  * PrometheusTargetData -> RawServerData 변환
  */
-export function targetToRawServerData(
-  target: PrometheusTargetData
-): RawServerData {
+function _targetToRawServerData(target: PrometheusTargetData): RawServerData {
   const serverId = target.instance.replace(/:9100$/, '');
   const cpu = target.metrics.node_cpu_utilization_ratio;
   const memory = target.metrics.node_memory_utilization_ratio;
@@ -180,7 +178,7 @@ export function deriveNetworkErrors(
 /**
  * RawServerData -> EnhancedServerMetrics 변환
  */
-export function convertToEnhancedMetrics(
+function _convertToEnhancedMetrics(
   serverData: RawServerData,
   currentHour: number
 ): EnhancedServerMetrics {

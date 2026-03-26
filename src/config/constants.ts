@@ -5,7 +5,7 @@
  */
 
 // 🌐 네트워크 설정
-export const NETWORK = {
+const NETWORK = {
   PORTS: {
     DEFAULT_HTTP: 80,
     DEFAULT_HTTPS: 443,
@@ -31,7 +31,7 @@ export const NETWORK = {
 } as const;
 
 // ⏰ 시간 관련 상수
-export const TIME = {
+const TIME = {
   MILLISECONDS: {
     SECOND: 1000,
     MINUTE: 60 * 1000,
@@ -66,7 +66,7 @@ export const TIME = {
 } as const;
 
 // 📊 데이터 제한
-export const LIMITS = {
+const LIMITS = {
   // 페이지네이션
   PAGINATION: {
     DEFAULT_PAGE_SIZE: 20,
@@ -117,7 +117,7 @@ export const BREAKPOINTS = {
 } as const;
 
 // 🎨 UI 상수
-export const UI = {
+const UI = {
   ANIMATION: {
     DURATION_FAST: 150, // 0.15초
     DURATION_NORMAL: 300, // 0.3초
@@ -179,7 +179,7 @@ export const SECURITY = {
 } as const;
 
 // 📈 모니터링 설정
-export const MONITORING = {
+const MONITORING = {
   INTERVALS: {
     HEALTH_CHECK_MS: 60000, // 30초 → 60초 (Vercel 최적화)
     METRICS_COLLECTION_MS: 120000, // 1분 → 2분 (Vercel 최적화)
@@ -202,7 +202,7 @@ export const MONITORING = {
 } as const;
 
 // 🌍 환경별 설정
-export const ENVIRONMENT = {
+const ENVIRONMENT = {
   DEVELOPMENT: {
     LOG_LEVEL: 'debug',
     ENABLE_MOCK_DATA: true,
@@ -267,4 +267,4 @@ export const MCP_SERVERS = {
 } as const;
 
 // MCP 서버 목록 타입 (타입 안전성)
-export type ActiveMcpServer = (typeof MCP_SERVERS.ACTIVE)[number];
+type ActiveMcpServer = (typeof MCP_SERVERS.ACTIVE)[number];

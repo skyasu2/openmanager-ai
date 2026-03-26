@@ -181,7 +181,7 @@ export const SERVER_STATUS_DARK_COLORS = {
 } as const;
 
 // ===== 다크 모드 카드 스타일 (공통) =====
-export const DARK_CARD_STYLES = {
+const _DARK_CARD_STYLES = {
   glass: 'bg-white/5 backdrop-blur-md border border-white/10 shadow-lg',
   glassHover: 'hover:bg-white/10 transition-all duration-300',
   textPrimary: 'text-white/95',
@@ -191,7 +191,7 @@ export const DARK_CARD_STYLES = {
 } as const;
 
 // ===== 공통 애니메이션 =====
-export const COMMON_ANIMATIONS = {
+const _COMMON_ANIMATIONS = {
   cardHover:
     'hover:-translate-y-1 hover:scale-[1.02] transition-all duration-300 ease-out',
   fadeIn: 'transition-opacity duration-300 ease-in-out',
@@ -218,7 +218,7 @@ export const TYPOGRAPHY = {
 } as const;
 
 // ===== 레이아웃 =====
-export const LAYOUT = {
+const _LAYOUT = {
   padding: {
     card: {
       mobile: 'p-4',
@@ -244,8 +244,7 @@ export const LAYOUT = {
 // ⚠️ Tailwind v4 호환: gradient 클래스와 animation 분리 필요
 export const AI_GRADIENT_CLASSES =
   'bg-linear-to-br from-blue-500 via-purple-500 to-pink-500';
-export const AI_GRADIENT_STYLE =
-  'linear-gradient(135deg, #3b82f6, #8b5cf6, #ec4899)';
+const _AI_GRADIENT_STYLE = 'linear-gradient(135deg, #3b82f6, #8b5cf6, #ec4899)';
 
 // 🎨 AI 그라데이션 인라인 스타일 (애니메이션 동작 보장)
 // Tailwind v4에서 gradient 클래스와 background-position 애니메이션이 충돌하므로 인라인 스타일 사용
@@ -295,11 +294,11 @@ export const getServerStatusTheme = (status: ServerStatus) => {
   return SERVER_STATUS_COLORS[status] || SERVER_STATUS_COLORS.unknown;
 };
 
-export const getDarkServerStatusTheme = (status: ServerStatus) => {
+const _getDarkServerStatusTheme = (status: ServerStatus) => {
   return SERVER_STATUS_DARK_COLORS[status] || SERVER_STATUS_DARK_COLORS.unknown;
 };
 
-export const getTypographyClass = (
+const _getTypographyClass = (
   scale: keyof typeof TYPOGRAPHY,
   size: keyof (typeof TYPOGRAPHY)['heading']
 ) => {
@@ -314,7 +313,7 @@ export const PAGE_BACKGROUNDS = {
 
 // ===== 버튼 스타일 시스템 (2025 업데이트) =====
 // 업계 표준 참고: GitHub 16px/600, Google 14px/500 → 균형잡힌 16px/600 적용
-export const BUTTON_STYLES = {
+const _BUTTON_STYLES = {
   // GitHub 버튼 - 녹색 배경 (업계 표준: 16px, font-weight 600, gap-2.5)
   github:
     'group relative flex w-full items-center justify-center gap-2.5 overflow-hidden rounded-xl bg-[#16a34a] px-5 py-4 text-[16px] font-semibold tracking-wide text-white shadow-[0_4px_14px_0_rgba(22,163,74,0.39)] transition-all duration-300 hover:bg-[#15803d] hover:shadow-[0_6px_20px_rgba(22,163,74,0.23)] hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] disabled:cursor-progress disabled:opacity-70 cursor-pointer',

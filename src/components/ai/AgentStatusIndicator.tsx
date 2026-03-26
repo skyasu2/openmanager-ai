@@ -166,5 +166,3 @@ export const AgentStatusIndicator = memo<AgentStatusIndicatorProps>(
 );
 
 AgentStatusIndicator.displayName = 'AgentStatusIndicator';
-
-export default AgentStatusIndicator;

@@ -57,7 +57,7 @@ function createNoOpGauge(): NoOpGauge {
   return { record: () => {} };
 }
 
-export const cpuGauge: NoOpGauge = createNoOpGauge();
-export const memoryGauge: NoOpGauge = createNoOpGauge();
-export const diskGauge: NoOpGauge = createNoOpGauge();
-export const networkGauge: NoOpGauge = createNoOpGauge();
+const _cpuGauge: NoOpGauge = createNoOpGauge();
+const _memoryGauge: NoOpGauge = createNoOpGauge();
+const _diskGauge: NoOpGauge = createNoOpGauge();
+const _networkGauge: NoOpGauge = createNoOpGauge();

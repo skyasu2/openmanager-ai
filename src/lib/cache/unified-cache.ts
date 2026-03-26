@@ -381,13 +381,10 @@ export {
   createCachedResponse,
   createCacheHeaders,
   createCacheHeadersFromPreset,
-  getAIQueryCache,
   getCachedData,
   getCachedDataWithFallback,
   getCacheStats,
-  getOrFetchAIQuery,
   invalidateCache,
   normalizeQueryForCache,
-  setAIQueryCache,
   setCachedData,
 } from './cache-helpers';

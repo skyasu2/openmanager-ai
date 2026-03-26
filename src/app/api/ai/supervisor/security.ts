@@ -234,7 +234,7 @@ export interface MaliciousOutputResult {
 /**
  * 악성 출력 필터링 (AI 응답에서 Injection 성공 징후 탐지)
  */
-export function filterMaliciousOutput(text: string): MaliciousOutputResult {
+function _filterMaliciousOutput(text: string): MaliciousOutputResult {
   const detectedPatterns: string[] = [];
   let filteredOutput = text;
 

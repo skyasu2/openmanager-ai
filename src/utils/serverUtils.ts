@@ -254,7 +254,7 @@ export function normalizeServerData(server: unknown): Server {
 /**
  * 메트릭 색상 결정
  */
-export function getMetricColor(
+function _getMetricColor(
   value: number,
   type: 'cpu' | 'memory' | 'disk' | 'network'
 ) {
@@ -313,7 +313,7 @@ export function getMetricColor(
 /**
  * 서버 건강도 계산
  */
-export function calculateServerHealth(server: Server): number {
+function _calculateServerHealth(server: Server): number {
   const cpu = serverTypeGuards.getCpu(server);
   const memory = serverTypeGuards.getMemory(server);
   const disk = serverTypeGuards.getDisk(server);

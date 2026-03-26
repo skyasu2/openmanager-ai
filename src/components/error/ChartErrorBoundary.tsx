@@ -91,5 +91,3 @@ export class ChartErrorBoundary extends Component<
     );
   }
 }
-
-export default ChartErrorBoundary;

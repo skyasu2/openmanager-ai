@@ -221,7 +221,7 @@ export interface ServerGroup {
 /**
  * 타입 가드: SimpleServerMetrics 체크
  */
-export function isSimpleMetrics(
+function _isSimpleMetrics(
   metrics: FlexibleServerMetrics
 ): metrics is SimpleServerMetrics {
   return (
@@ -235,7 +235,7 @@ export function isSimpleMetrics(
 /**
  * 타입 가드: DetailedServerMetrics 체크
  */
-export function isDetailedMetrics(
+function _isDetailedMetrics(
   metrics: FlexibleServerMetrics
 ): metrics is DetailedServerMetrics {
   return (
@@ -249,7 +249,7 @@ export function isDetailedMetrics(
 /**
  * 헬퍼: 간단한 메트릭을 상세 메트릭으로 변환
  */
-export function toDetailedMetrics(
+function _toDetailedMetrics(
   simple: SimpleServerMetrics
 ): DetailedServerMetrics {
   return {
@@ -280,7 +280,7 @@ export function toDetailedMetrics(
 /**
  * 헬퍼: 메트릭 정규화 (어떤 형태든 받아서 일관된 형태로 변환)
  */
-export function normalizeMetrics(
+function _normalizeMetrics(
   metrics: Partial<FlexibleServerMetrics>
 ): FlexibleServerMetrics {
   return {

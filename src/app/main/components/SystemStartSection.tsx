@@ -133,5 +133,3 @@ export function SystemStartSection({
     </div>
   );
 }
-
-export default SystemStartSection;

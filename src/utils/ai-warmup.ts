@@ -149,7 +149,7 @@ export async function triggerAIWarmup(source?: string): Promise<boolean> {
 /**
  * 웜업 상태 리셋 (테스트용)
  */
-export function resetWarmupState(): void {
+function _resetWarmupState(): void {
   try {
     if (typeof window !== 'undefined') {
       sessionStorage.removeItem(WARMUP_STORAGE_KEY);

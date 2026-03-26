@@ -292,5 +292,3 @@ export function useHealthCheck(options: UseHealthCheckOptions = {}) {
 // ============================================================================
 // Exports
 // ============================================================================
-
-export default useHealthCheck;

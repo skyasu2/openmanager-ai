@@ -157,17 +157,17 @@ export interface SafeEnvironmentAccess {
 }
 
 // 🛡️ 타입 가드 함수들
-export function isValidEnvironmentName(env: string): env is EnvironmentName {
+function _isValidEnvironmentName(env: string): env is EnvironmentName {
   return ['development', 'production', 'test'].includes(env);
 }
 
-export function isValidDeploymentPlatform(
+function _isValidDeploymentPlatform(
   platform: string
 ): platform is DeploymentPlatform {
   return ['local', 'vercel', 'other'].includes(platform);
 }
 
-export function isValidConfigurationStatus(
+function _isValidConfigurationStatus(
   status: string
 ): status is ConfigurationStatus {
   return ['configured', 'partial', 'missing', 'invalid'].includes(status);

@@ -69,5 +69,3 @@ export const WebSourceCards: FC<{ sources: WebSource[] }> = ({ sources }) => {
     </div>
   );
 };
-
-export default WebSourceCards;

@@ -227,25 +227,24 @@ export const ErrorMessage: FC<ErrorMessageProps> = ({
 };
 
 // 특정 에러 타입별 편의 컴포넌트들
-export const NetworkError: FC<Omit<ErrorMessageProps, 'type'>> = (props) => (
+const _NetworkError: FC<Omit<ErrorMessageProps, 'type'>> = (props) => (
   <ErrorMessage {...props} type="network" />
 );
 
-export const ServerError: FC<Omit<ErrorMessageProps, 'type'>> = (props) => (
+const _ServerError: FC<Omit<ErrorMessageProps, 'type'>> = (props) => (
   <ErrorMessage {...props} type="server" />
 );
 
-export const DataError: FC<Omit<ErrorMessageProps, 'type'>> = (props) => (
+const _DataError: FC<Omit<ErrorMessageProps, 'type'>> = (props) => (
   <ErrorMessage {...props} type="data" />
 );
 
-export const AIError: FC<Omit<ErrorMessageProps, 'type'>> = (props) => (
+const _AIError: FC<Omit<ErrorMessageProps, 'type'>> = (props) => (
   <ErrorMessage {...props} type="ai" />
 );
 
-export const AuthError: FC<Omit<ErrorMessageProps, 'type'>> = (props) => (
+const _AuthError: FC<Omit<ErrorMessageProps, 'type'>> = (props) => (
   <ErrorMessage {...props} type="auth" />
 );
 
 // 기본 내보내기
-export default ErrorMessage;

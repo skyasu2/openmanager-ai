@@ -13,7 +13,7 @@
 ```
 src/components/unified-profile/
 ├── types/
-│   └── ProfileTypes.ts           - 타입 정의 (통합됨)
+│   └── profile.types.ts          - 타입 정의
 ├── components/
 │   └── UnifiedSettingsPanel.tsx  - 설정 패널
 ├── UnifiedProfileButton.tsx      - 프로필 버튼 (드롭다운 내장)

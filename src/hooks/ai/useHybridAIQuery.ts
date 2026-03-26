@@ -440,5 +440,3 @@ export function useHybridAIQuery(
     dismissClarification,
   };
 }
-
-export default useHybridAIQuery;

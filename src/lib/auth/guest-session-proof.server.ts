@@ -142,6 +142,6 @@ export function verifyGuestSessionProof(
   }
 }
 
-export const guestSessionProof = {
+const _guestSessionProof = {
   maxAgeSeconds: DEFAULT_MAX_AGE_SECONDS,
 };

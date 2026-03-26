@@ -244,5 +244,3 @@ export const MarkdownRenderer = memo(function MarkdownRenderer({
     </div>
   );
 });
-
-export default MarkdownRenderer;

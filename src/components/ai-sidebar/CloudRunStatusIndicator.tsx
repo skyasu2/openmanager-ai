@@ -410,7 +410,7 @@ class CloudRunErrorBoundary extends Component<
 // Wrapped Export
 // =============================================================================
 
-function CloudRunStatusIndicatorWithBoundary(
+function _CloudRunStatusIndicatorWithBoundary(
   props: CloudRunStatusIndicatorProps
 ) {
   return (
@@ -419,5 +419,3 @@ function CloudRunStatusIndicatorWithBoundary(
     </CloudRunErrorBoundary>
   );
 }
-
-export default CloudRunStatusIndicatorWithBoundary;

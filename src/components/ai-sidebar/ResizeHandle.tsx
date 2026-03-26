@@ -85,5 +85,3 @@ export const ResizeHandle = memo(function ResizeHandle({
     </div>
   );
 });
-
-export default ResizeHandle;

@@ -117,15 +117,15 @@ export function getDefaultServerRole(): ServerRole {
 
 // Enum 배열 (옵션 리스트용)
 // ⚠️ Deprecated: Use SERVER_STATUS_VALUES instead for better type safety
-export const SERVER_STATUSES: ServerStatus[] = [...SERVER_STATUS_VALUES];
+const _SERVER_STATUSES: ServerStatus[] = [...SERVER_STATUS_VALUES];
 
-export const SERVER_ENVIRONMENTS: ServerEnvironment[] = [
+const _SERVER_ENVIRONMENTS: ServerEnvironment[] = [
   'production',
   'staging',
   'development',
   'testing',
 ];
-export const SERVER_ROLES: ServerRole[] = [
+const _SERVER_ROLES: ServerRole[] = [
   'web',
   'api',
   'database',

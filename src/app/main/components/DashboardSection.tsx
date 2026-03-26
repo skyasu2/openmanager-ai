@@ -79,5 +79,3 @@ export function DashboardSection({
     </div>
   );
 }
-
-export default DashboardSection;

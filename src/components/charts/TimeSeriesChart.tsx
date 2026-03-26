@@ -476,5 +476,3 @@ export const TimeSeriesChart = memo(function TimeSeriesChart(
 });
 
 TimeSeriesChart.displayName = 'TimeSeriesChart';
-
-export default TimeSeriesChart;

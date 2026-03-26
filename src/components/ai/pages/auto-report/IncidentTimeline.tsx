@@ -296,5 +296,3 @@ export const IncidentTimeline = memo(function IncidentTimeline({
     </div>
   );
 });
-
-export default IncidentTimeline;

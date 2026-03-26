@@ -185,5 +185,3 @@ export const MiniLineChart: React.FC<MiniLineChartProps> = ({
     </div>
   );
 };
-
-export default MiniLineChart;

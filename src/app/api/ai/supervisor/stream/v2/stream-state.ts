@@ -118,7 +118,7 @@ export async function clearActiveStreamId(
 /**
  * Check if a stream is still active
  */
-export async function isStreamActive(
+async function _isStreamActive(
   sessionId: string,
   ownerKey: string
 ): Promise<boolean> {
