@@ -305,7 +305,9 @@ import('./services/ai-sdk/model-provider-core.js')
       logger.debug({ err: e }, 'LLM pre-init skipped (keys not yet available)');
     }
   })
-  .catch(() => {});
+  .catch((err) => {
+    logger.warn({ err }, 'LLM pre-init module import failed');
+  });
 
 // ============================================================================
 // Graceful Shutdown
