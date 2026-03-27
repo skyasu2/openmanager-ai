@@ -996,37 +996,35 @@ function runBuildValidation(changedFilesResult) {
           : '⚡ Root TypeScript 검증 (기본 모드)...'
       );
 
-      const changedTypeCheckStatus = useChangedTypeCheck
-        ? createTypeCheckStatusFile()
-        : null;
+      // 변경 감지 성공/실패 모두 type-check:changed + soft-timeout 사용
+      // - 변경 감지 성공: 변경된 TS 파일 목록 전달 (증분 검증)
+      // - 변경 감지 실패: 파일 목록 없이 실행 → typecheck-changed.sh가 git diff로 자체 감지
+      // 두 경우 모두 60초 soft-timeout: 초과 시 CI/Vercel로 위임 (push 차단 안 함)
+      const changedTypeCheckStatus = createTypeCheckStatusFile();
 
-      const extraEnv = useChangedTypeCheck
-        ? {
-            ...process.env,
-            PRE_PUSH_CHANGED_FILES: rootTypeCheckRelevantFiles.join('\n'),
-            TYPECHECK_CHANGED_SOFT_TIMEOUT: 'true',
-            TYPECHECK_CHANGED_TIMEOUT_SECONDS:
-              process.env.TYPECHECK_CHANGED_TIMEOUT_SECONDS || '60',
-            TYPECHECK_CHANGED_STATUS_FILE: changedTypeCheckStatus.filePath,
-          }
-        : null;
+      const extraEnv = {
+        ...process.env,
+        ...(useChangedTypeCheck
+          ? { PRE_PUSH_CHANGED_FILES: rootTypeCheckRelevantFiles.join('\n') }
+          : {}),
+        TYPECHECK_CHANGED_SOFT_TIMEOUT: 'true',
+        TYPECHECK_CHANGED_TIMEOUT_SECONDS:
+          process.env.TYPECHECK_CHANGED_TIMEOUT_SECONDS || '60',
+        TYPECHECK_CHANGED_STATUS_FILE: changedTypeCheckStatus.filePath,
+      };
 
       const rootSuccess = runNpm(
-        useChangedTypeCheck ? ['run', 'type-check:changed'] : ['run', 'type-check'],
+        ['run', 'type-check:changed'],
         extraEnv
       );
-      const changedStatus = changedTypeCheckStatus
-        ? readTypeCheckStatus(changedTypeCheckStatus.filePath)
-        : null;
+      const changedStatus = readTypeCheckStatus(changedTypeCheckStatus.filePath);
       cleanupTypeCheckStatus(changedTypeCheckStatus?.tempDir);
 
       if (!rootSuccess) {
         typeCheckStatus = 'failed';
         console.log('❌ Root TypeScript 에러 - push blocked');
         console.log('');
-        console.log(
-          `💡 Fix: ${useChangedTypeCheck ? 'npm run type-check:changed' : 'npm run type-check'}`
-        );
+        console.log('💡 Fix: npm run type-check:changed');
         console.log('');
         console.log('⚠️  Bypass: HUSKY=0 git push');
         process.exit(1);
