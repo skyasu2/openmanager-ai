@@ -54,7 +54,7 @@
 - **정본 개발 저장소는 `gitlab` remote** 입니다. 전체 이력/테스트/문서/QA 자산을 유지하며, Vercel Frontend Git 배포 소스도 GitLab `main` 입니다.
 - **GitHub `origin`은 공개용 code-only snapshot** 으로 취급합니다. private canonical repo와 히스토리가 다를 수 있으므로 `origin/main`을 기준 브랜치처럼 다루지 않습니다.
 - Codex는 push/fetch/rebase 전에 항상 `git remote -v`를 확인하고, 기본 push 대상은 `gitlab` 으로 선택합니다.
-- `git push origin <branch>` 또는 GitHub force-push는 **공개 스냅샷 동기화가 명시적으로 요청된 경우에만** 수행합니다.
+- GitHub 공개 스냅샷 동기화는 `npm run sync:github` 으로만 수행합니다 (`scripts/sync/github-sync.sh`, 제외 목록: `.github-export-ignore`). `git push origin` 직접 실행 금지.
 - GitLab CI는 기본 비활성(`GITLAB_CI_POLICY=local-docker-only`)입니다. 외부 CI보다 `npm run ci:local:docker`, pre-push hook, Vercel 실환경 QA를 우선합니다.
 - `.gitlab-ci.yml` 부재는 현재 정책상 의도된 상태입니다. GitLab SaaS runner를 기본값으로 두지 않고, 로컬 전체 검증은 `npm run ci:local:docker` 또는 `npm run ci:local:docker:full`을 표준 경로로 사용합니다.
 

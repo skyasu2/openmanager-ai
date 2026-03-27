@@ -16,7 +16,7 @@
 ## Repository & Delivery Topology (2026-03-27)
 - **GitLab private (`gitlab`)**: canonical development repo, full history/tests/docs/QA assets 유지
 - **Vercel Frontend**: GitLab `main`을 배포 소스로 사용
-- **GitHub public (`origin`)**: code-only snapshot, 수동 공개 동기화 전용
+- **GitHub public (`origin`)**: code-only snapshot, `npm run sync:github` 으로 동기화 (`scripts/sync/github-sync.sh`, 제외 목록: `.github-export-ignore`)
 - **GitLab CI**: 기본 비활성 (`GITLAB_CI_POLICY=local-docker-only`)
 - **로컬 CI 표준 경로**: `.gitlab-ci.yml`을 기본으로 두지 않고 `npm run ci:local:docker` / `npm run ci:local:docker:full`을 사용
 - **기본 원칙**: `origin/main`을 canonical branch로 가정하지 말고, push/fetch 전 `git remote -v` 확인 후 기본 대상은 `gitlab`
@@ -30,6 +30,7 @@ npm run ci:local:docker:full # AI Engine preflight 포함 로컬 Docker 검증
 npm run test:quick          # 최소 테스트
 npm run type-check          # TypeScript 검사
 npm run qa:status           # 누적 QA 상태 요약
+npm run sync:github         # GitHub code-only 스냅샷 동기화 (코드 변경 후 선택)
 ```
 
 ## QA Operation Protocol (Final Gate)

@@ -64,6 +64,8 @@
     "build:ci": "npm run build:prod",
     "build:vercel": "npm run build:ci && npm run lint:ci && npm run test:quick",
     "deploy:safe": "npm run build:ci && npm run lint:ci && npm run test:quick && npx vercel --prod",
+    "sync:github": "bash scripts/sync/github-sync.sh",
+    "sync:github:dry-run": "bash scripts/sync/github-sync.sh --dry-run",
     "env:sync:production": "bash scripts/env/sync-vercel.sh production",
     "env:sync:preview": "bash scripts/env/sync-vercel.sh preview",
     "start": "next start",

@@ -20,10 +20,12 @@ git push gitlab --follow-tags  # canonical repo 반영
 |------|-----------|
 | Canonical repo | `gitlab` remote (private full repo) |
 | Frontend deploy source | GitLab `main` → Vercel Git Integration |
-| Public code repo | GitHub `origin` (code-only snapshot) |
+| Public code repo | GitHub `origin` (code-only snapshot) — `npm run sync:github` 으로 동기화 |
 | GitLab CI | 기본 비활성 (`GITLAB_CI_POLICY=local-docker-only`) |
 
 > GitHub public snapshot은 읽기/공개 용도이며 배포 권위가 아닙니다. 배포 관련 push는 기본적으로 `git push gitlab <branch>` 기준으로 판단합니다.
+>
+> **GitHub 동기화 워크플로우**: `git push gitlab main` (canonical) → `npm run sync:github` (선택, 코드만 필터링하여 origin push). 제외 목록: `.github-export-ignore`
 
 ### Frontend (Vercel)
 
