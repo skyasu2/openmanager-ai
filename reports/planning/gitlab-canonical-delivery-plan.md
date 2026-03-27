@@ -143,3 +143,42 @@ npm run sync:github        # GitHub 코드 스냅샷 동기화 (선택)
 
 ## 후속 과제 (Optional)
 - historical GitHub Actions 문서를 더 줄일지 여부 결정
+
+## 후속 의사결정 기준 (2026-03-27 추가)
+
+### 최근 추가 분석
+- 최근 커밋 흐름은 계속해서 테스트 안정화, 배포 토폴로지 단순화, 공개/비공개 저장소 분리에 집중되어 있다.
+- 현재 canonical push와 Vercel 자동 배포는 안정화되었고, 남은 선택지는 `GitLab native CI를 언제 도입할 것인가`에 가깝다.
+
+### 비교 평가
+
+| 선택지 | 비용/쿼터 | 장점 | 단점 | 현재 판단 |
+|---|---|---|---|---|
+| GitLab.com shared runner | Free quota 소모 | GitLab 상태 체크 즉시 사용 | 월 compute quota 소모, 외부 실행 면적 증가 | 보류 |
+| self-hosted runner + Docker executor | GitLab quota 0 | GitLab status check + 재현성 강화 | host 보안/운영 부담 | 조건부 후보 |
+| 현재 local Docker CI | GitLab quota 0 | 가장 단순, 외부 의존 최소화 | GitLab native status 없음 | 유지 |
+
+### 실행 순서
+
+1. 현행 유지: `pre-push hook` + `npm run ci:local:docker`
+2. broad/deploy-sensitive 변경 또는 release 전에는 `CI_DOCKER_INSTALL_MODE=npm-ci npm run ci:local:docker` 1회 추가
+3. 보안/네트워크 면적을 더 줄여야 할 때만 `CI_DOCKER_PULL_POLICY=never`
+4. GitLab MR required status check가 필요해질 때만 self-hosted runner 검토
+5. runner 도입 시 `.gitlab-ci.yml`은 최소 job만 유지하고 shared runner는 기본 비활성 유지
+
+### self-hosted runner 도입 트리거
+
+아래 항목이 2개 이상 겹치면 self-hosted runner 검토를 시작한다.
+
+- GitLab Merge Request에서 required status check가 필요하다
+- 여러 개발자가 동일한 검증 기준을 공유해야 한다
+- 로컬 수동 검증 반복이 release cadence를 방해한다
+- 개인 로컬 머신에서만 검증하는 구조가 리스크로 인식된다
+
+### 검토 시 기본 원칙
+
+- `Docker executor`
+- `non-privileged`
+- single-project / trusted private 전용
+- protected branch 중심
+- 최소 `.gitlab-ci.yml`

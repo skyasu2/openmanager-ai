@@ -28,10 +28,16 @@
 - 작업 이력 템플릿 경로 문서화 오류 수정
 - 관련 커밋/파일: `reports/planning/TODO.md`, `reports/planning/gitlab-canonical-delivery-plan.md`, `reports/planning/README.md`
 
+5. GitLab CI / Local Docker CI 선택 기준 정리
+- GitLab.com shared runner, self-hosted runner, 현재 local Docker CI를 비용/보안/운영 복잡도 기준으로 비교
+- 현재 프로젝트에서는 `local-docker-only` 유지가 최적이고, self-hosted runner는 MR status check 필요 시점까지 보류하기로 정리
+- 관련 커밋/파일: `docs/development/ci-cd.md`, `reports/planning/gitlab-canonical-delivery-plan.md`
+
 ## 결정/보류
 
 - 결정: private 개발/배포의 기준선은 GitLab, public code snapshot은 GitHub로 분리 유지
 - 결정: 외부 CI 의존은 최소화하고 broad/deploy-sensitive 변경은 로컬 Docker CI로 검증
+- 결정: GitLab native 상태 체크가 필요해지기 전까지 `.gitlab-ci.yml`과 shared runner는 도입하지 않음
 - 보류: historical GitHub Actions 문서를 추가로 축소할지 여부는 별도 판단
 
 ## 다음 작업 방향

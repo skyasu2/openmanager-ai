@@ -56,6 +56,43 @@ CI_DOCKER_PULL_POLICY=never npm run ci:local:docker
 - `npm-ci` 모드는 새 의존성 설치가 필요할 때만 사용합니다.
 - broad change, release 전, 배포 민감 변경에서는 pre-push hook만으로 끝내지 말고 `npm run ci:local:docker`를 추가로 실행합니다.
 
+### 선택지 비교
+
+| 선택지 | GitLab 비용 | 외부 의존 | 상태 체크 | 현재 프로젝트 적합도 |
+|---|---:|---|---|---|
+| GitLab.com shared runner | 월 compute quota 소모 | 높음 | 높음 | 낮음 |
+| self-hosted runner + Docker executor | GitLab quota 0 | 중간 | 높음 | 조건부 |
+| 현재 로컬 Docker CI | GitLab quota 0 | 낮음 | GitLab native status 없음 | 가장 적합 |
+
+판단 기준:
+- GitLab.com Free의 shared runner는 월 compute quota를 사용합니다. 현재 정책은 이 quota와 외부 실행 면적을 동시에 줄이는 쪽입니다.
+- self-hosted project/group runner는 GitLab compute quota 대상이 아니지만, runner host 보안과 운영 책임은 직접 집니다.
+- 현재 프로젝트는 single canonical repo, 개인 개발 중심, Vercel 자동 배포 구조이므로 로컬 Docker CI가 비용/단순성/재현성 균형이 가장 좋습니다.
+
+### 권장 실행 순서
+
+1. 기본 경로는 계속 `pre-push hook` + `npm run ci:local:docker`
+2. broad change, release 전, 배포 민감 변경에는 `CI_DOCKER_INSTALL_MODE=npm-ci npm run ci:local:docker`로 clean install 검증 1회 추가
+3. 외부 pull까지 차단해야 할 때만 `CI_DOCKER_PULL_POLICY=never` 사용
+4. GitLab Merge Request에 required status check가 반드시 필요해질 때만 self-hosted runner 검토
+5. self-hosted runner를 도입하더라도 `.gitlab-ci.yml`은 최소 job만 유지
+
+### self-hosted runner 도입 조건
+
+아래 조건이 2개 이상 겹치기 전까지는 self-hosted runner를 도입하지 않습니다.
+
+- GitLab MR에 required status check가 필요하다
+- 개인 로컬 머신 검증만으로는 신뢰도가 부족하다
+- 여러 개발자가 동일한 검증 기준을 공유해야 한다
+- release 전 수동 `ci:local:docker` 반복이 병목이 된다
+
+도입 시 최소 원칙:
+- `Docker executor`
+- `non-privileged`
+- single-project 또는 trusted private 프로젝트 전용
+- protected branch / protected tag 중심
+- 필요 job만 담은 최소 `.gitlab-ci.yml`
+
 ### GitLab-native 상태 체크가 나중에 꼭 필요해지면
 
 그때는 지금처럼 GitLab.com shared runner를 켜는 것이 아니라, 아래 최소 구성을 권장합니다.
@@ -74,6 +111,13 @@ CI_DOCKER_PULL_POLICY=never npm run ci:local:docker
 - **스케줄 워크플로우 기본값**: 비용/정책 변경 리스크를 줄이기 위해 비필수 `schedule` 잡은 기본적으로 꺼져 있습니다. 자동 실행이 꼭 필요할 때만 저장소 변수 `ENABLE_ACTIONS_SCHEDULES=true`로 명시적으로 활성화합니다.
 - **Vercel**: 프론트엔드 빌드/배포의 권위 있는 경로입니다. GitHub Actions에서 중복 빌드를 늘리지 않습니다.
 - **Cloud Run**: `deploy.sh` + Cloud Build free-tier 가드 기준으로 운영합니다.
+
+### 판단 근거 (Official Docs)
+
+- GitLab instance runner compute quota는 월 단위로 reset되며, quota 초과 시 shared runner job 처리가 중단됩니다.
+- project/group runner는 이 compute quota의 직접 대상이 아닙니다.
+- GitLab self-managed runner는 원격 코드 실행 서비스이므로 보안 격리와 host hardening이 필수입니다.
+- Docker executor는 non-privileged가 기본 권장이고, trusted single-project runner가 아니라면 `if-not-present` pull policy를 신중하게 사용해야 합니다.
 
 ---
 
