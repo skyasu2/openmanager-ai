@@ -28,6 +28,7 @@
 - [x] P1: v8.10.2 릴리즈 — commit-and-tag-version으로 마이그레이션 (standard-version deprecated 해소), CHANGELOG 업데이트, `git push gitlab --follow-tags` 완료
 - [x] P3: pre-push hook TypeScript fallback soft-timeout 적용 — 변경 감지 실패 시 full type-check 무제한 실행 경로를 `type-check:changed` + 60초 soft-timeout으로 통일 (`scripts/hooks/pre-push.js`, `754beff03`)
 - [x] P3: 로컬 CI / GitLab 배포 베스트 프랙티스 분석 완료 — 웹 검색 기반: 현행 구조(직접 실행 + GitHub Actions gate) 업계 권장 일치 확인. commit-and-tag-version 교체 실행. GitLab Push Mirror는 코드 필터링 정책 유지 목적으로 현행 `sync:github` 스크립트 방식 유지 결정
+- [x] P2: GitHub 저장소 정리 완료 — releases 9개·tags 67개 전부 삭제, orphan reset으로 히스토리 1커밋으로 교체 (`2f3815075`), issues/wiki/projects 비활성화, repo description 업데이트, `sync:github` 재실행으로 code-only snapshot 최신화 (`f546ea7b3`)
 
 ### Completed (2026-03-17)
 - [x] P2: WONT-FIX 실측 재평가 (`QA-20260317-0114`) — Playwright MCP로 38개 wont-fix 항목 중 30개 Production Vercel 동작 확인 → completed 전환. 잔여 wont-fix 8개(코드/인프라 레벨 6개 + AI 실응답 필요 2개)
