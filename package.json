@@ -272,7 +272,7 @@
     "knip": "^5.88.1",
     "markdown-link-check": "^3.14.2",
     "markdownlint-cli2": "^0.21.0",
-    "msw": "^2.12.10",
+    "msw": "^2.12.14",
     "playwright": "^1.58.2",
     "postcss": "^8.5.8",
     "prettier-plugin-tailwindcss": "^0.7.2",
