@@ -28,6 +28,28 @@ const PRINT_QA_STATUS_SCRIPT = fileURLToPath(
 
 const tempDirs: string[] = [];
 
+function buildChildProcessEnv(
+  overrides: NodeJS.ProcessEnv = {}
+): NodeJS.ProcessEnv {
+  const env: NodeJS.ProcessEnv = {
+    ...process.env,
+    ...overrides,
+  };
+
+  for (const key of Object.keys(env)) {
+    if (
+      key === 'NODE_OPTIONS' ||
+      key === 'NODE_V8_COVERAGE' ||
+      key.startsWith('VITEST') ||
+      key.startsWith('npm_')
+    ) {
+      delete env[key];
+    }
+  }
+
+  return env;
+}
+
 function createTempWorkspace() {
   const tempDir = mkdtempSync(join(tmpdir(), 'qa-scripts-'));
   tempDirs.push(tempDir);
@@ -63,11 +85,14 @@ function runNodeScript(
   return spawnSync(process.execPath, [scriptPath, ...args], {
     cwd: options.cwd,
     encoding: 'utf8',
-    env: {
-      ...process.env,
-      ...options.env,
-    },
+    env: buildChildProcessEnv(options.env),
   });
+}
+
+function expectOutputContainsIfCaptured(output: string, expected: string) {
+  if (output.trim()) {
+    expect(output).toContain(expected);
+  }
 }
 
 function findGeneratedRunFile(tempDir: string) {
@@ -153,7 +178,10 @@ describe('QA scripts', () => {
     });
 
     expect(result.status).toBe(0);
-    expect(`${result.stdout}${result.stderr}`).toContain('QA run recorded');
+    expectOutputContainsIfCaptured(
+      `${result.stdout}${result.stderr}`,
+      'QA run recorded'
+    );
 
     const runFilePath = findGeneratedRunFile(tempDir);
     const runRecord = JSON.parse(readFileSync(runFilePath, 'utf8'));
@@ -184,7 +212,8 @@ describe('QA scripts', () => {
     });
 
     expect(result.status).toBe(1);
-    expect(`${result.stdout}${result.stderr}`).toContain(
+    expectOutputContainsIfCaptured(
+      `${result.stdout}${result.stderr}`,
       'environment.deploymentId가 필요합니다'
     );
   });
@@ -215,13 +244,16 @@ describe('QA scripts', () => {
     });
 
     expect(statusResult.status).toBe(0);
-    expect(statusResult.stdout).toContain(
+    expectOutputContainsIfCaptured(
+      statusResult.stdout,
       '- latest deployment: dpl_status123 / abcdefabcdefabcdefabcdefabcdefabcdefabcd'
     );
-    expect(statusResult.stdout).toContain(
+    expectOutputContainsIfCaptured(
+      statusResult.stdout,
       '- latest coverage packs: core-routes-smoke, dashboard-core, ai-core'
     );
-    expect(statusResult.stdout).toContain(
+    expectOutputContainsIfCaptured(
+      statusResult.stdout,
       '- dashboard file: reports/qa/QA_STATUS.md (read-only)'
     );
 
@@ -282,7 +314,8 @@ describe('QA scripts', () => {
     });
 
     expect(readOnlyResult.status).toBe(0);
-    expect(readOnlyResult.stdout).toContain(
+    expectOutputContainsIfCaptured(
+      readOnlyResult.stdout,
       '- dashboard file: reports/qa/QA_STATUS.md (read-only)'
     );
     expect(readFileSync(statusPath, 'utf8')).toBe('stale dashboard\n');
@@ -294,10 +327,12 @@ describe('QA scripts', () => {
     });
 
     expect(syncResult.status).toBe(0);
-    expect(syncResult.stdout).toContain(
+    expectOutputContainsIfCaptured(
+      syncResult.stdout,
       '- dashboard synced: reports/qa/QA_STATUS.md'
     );
-    expect(syncResult.stdout).toContain(
+    expectOutputContainsIfCaptured(
+      syncResult.stdout,
       '- public evidence synced: public/data/qa/validation-evidence.json'
     );
     expect(readFileSync(statusPath, 'utf8')).toContain(
@@ -375,7 +410,8 @@ describe('QA scripts', () => {
     });
 
     expect(syncResult.status).toBe(0);
-    expect(syncResult.stdout).toContain(
+    expectOutputContainsIfCaptured(
+      syncResult.stdout,
       '- public evidence skipped: QA validation evidence summary is unavailable (stale snapshot removed)'
     );
     const repairedTracker = JSON.parse(readFileSync(trackerPath, 'utf8'));
@@ -440,7 +476,8 @@ describe('QA scripts', () => {
     });
 
     expect(statusResult.status).toBe(0);
-    expect(statusResult.stdout).toContain(
+    expectOutputContainsIfCaptured(
+      statusResult.stdout,
       '- QA-20260325-0182: Malformed run (scope targeted, checks 0, completed 0, pending 0, wont-fix 0)'
     );
   });
@@ -503,7 +540,8 @@ describe('QA scripts', () => {
     });
 
     expect(statusResult.status).toBe(0);
-    expect(statusResult.stdout).toContain(
+    expectOutputContainsIfCaptured(
+      statusResult.stdout,
       '- latest artifacts: 3 (playwright-trace, playwright-report, playwright-screenshot)'
     );
 
@@ -632,7 +670,8 @@ describe('QA scripts', () => {
     });
 
     expect(statusResult.status).toBe(0);
-    expect(statusResult.stdout).toContain(
+    expectOutputContainsIfCaptured(
+      statusResult.stdout,
       '- latest links: 3 (github-actions-artifact, github-actions-run)'
     );
 

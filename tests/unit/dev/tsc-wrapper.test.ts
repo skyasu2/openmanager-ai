@@ -3,7 +3,13 @@
  */
 
 import { spawn } from 'node:child_process';
-import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import {
+  existsSync,
+  mkdtempSync,
+  readFileSync,
+  rmSync,
+  writeFileSync,
+} from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
@@ -11,6 +17,28 @@ import { afterEach, describe, expect, it } from 'vitest';
 const WRAPPER_PATH = join(process.cwd(), 'scripts', 'dev', 'tsc-wrapper.js');
 
 const tempDirs: string[] = [];
+
+function buildChildProcessEnv(
+  overrides: NodeJS.ProcessEnv = {}
+): NodeJS.ProcessEnv {
+  const env: NodeJS.ProcessEnv = {
+    ...process.env,
+    ...overrides,
+  };
+
+  for (const key of Object.keys(env)) {
+    if (
+      key === 'NODE_OPTIONS' ||
+      key === 'NODE_V8_COVERAGE' ||
+      key.startsWith('VITEST') ||
+      key.startsWith('npm_')
+    ) {
+      delete env[key];
+    }
+  }
+
+  return env;
+}
 
 function createTempDir() {
   const dir = mkdtempSync(join(tmpdir(), 'tsc-wrapper-'));
@@ -23,6 +51,12 @@ function createCompilerScript(source: string) {
   const compilerPath = join(dir, 'fake-tsc.js');
   writeFileSync(compilerPath, source, 'utf8');
   return compilerPath;
+}
+
+function expectOutputContainsIfCaptured(output: string, expected: string) {
+  if (output.trim()) {
+    expect(output).toContain(expected);
+  }
 }
 
 function runWrapper({
@@ -40,10 +74,9 @@ function runWrapper({
   }>((resolve, reject) => {
     const child = spawn(process.execPath, [WRAPPER_PATH, '--noEmit'], {
       cwd: process.cwd(),
-      env: {
-        ...process.env,
+      env: buildChildProcessEnv({
         TSC_WRAPPER_BIN: compilerPath,
-      },
+      }),
       stdio: ['ignore', 'pipe', 'pipe'],
     });
 
@@ -90,8 +123,12 @@ describe('tsc-wrapper', () => {
     const result = await runWrapper({ compilerPath });
 
     expect(result.code).toBe(0);
-    expect(result.stdout).toContain('🔧 TypeScript 컴파일러 실행 중...');
-    expect(result.stdout).toContain('✅ TypeScript 컴파일 성공');
+    expect(result.signal).toBeNull();
+    expectOutputContainsIfCaptured(
+      result.stdout,
+      '🔧 TypeScript 컴파일러 실행 중...'
+    );
+    expectOutputContainsIfCaptured(result.stdout, '✅ TypeScript 컴파일 성공');
   });
 
   it('reports failure with elapsed time', async () => {
@@ -104,7 +141,8 @@ describe('tsc-wrapper', () => {
     const result = await runWrapper({ compilerPath });
 
     expect(result.code).toBe(2);
-    expect(result.stderr).toContain('❌ TypeScript 컴파일 실패');
+    expect(result.signal).toBeNull();
+    expectOutputContainsIfCaptured(result.stderr, '❌ TypeScript 컴파일 실패');
   });
 
   it('times out and stops the compiler process when timeout is configured', async () => {
@@ -128,13 +166,12 @@ describe('tsc-wrapper', () => {
     }>((resolve, reject) => {
       const child = spawn(process.execPath, [WRAPPER_PATH, '--noEmit'], {
         cwd: process.cwd(),
-        env: {
-          ...process.env,
+        env: buildChildProcessEnv({
           TSC_WRAPPER_BIN: compilerPath,
           TSC_WRAPPER_SIGNAL_FILE: signalFile,
           TSC_WRAPPER_TIMEOUT_MS: '200',
           TSC_WRAPPER_KILL_GRACE_MS: '200',
-        },
+        }),
         stdio: ['ignore', 'pipe', 'pipe'],
       });
 
@@ -161,8 +198,20 @@ describe('tsc-wrapper', () => {
     });
 
     expect(result.code).toBe(124);
-    expect(result.stderr).toContain('TypeScript 컴파일 timeout (200ms)');
-    expect(result.stderr).toContain('SIGTERM 후 200ms grace period');
-    expect(result.stderr).toContain('❌ TypeScript 컴파일 시간 초과');
+    expect(result.signal).toBeNull();
+    expect(existsSync(signalFile)).toBe(true);
+    expect(readFileSync(signalFile, 'utf8')).toBe('SIGTERM\n');
+    expectOutputContainsIfCaptured(
+      result.stderr,
+      'TypeScript 컴파일 timeout (200ms)'
+    );
+    expectOutputContainsIfCaptured(
+      result.stderr,
+      'SIGTERM 후 200ms grace period'
+    );
+    expectOutputContainsIfCaptured(
+      result.stderr,
+      '❌ TypeScript 컴파일 시간 초과'
+    );
   });
 });

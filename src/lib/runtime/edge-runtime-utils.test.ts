@@ -1,10 +1,21 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+const loggingMocks = vi.hoisted(() => ({
+  info: vi.fn(),
+  warn: vi.fn(),
+  error: vi.fn(),
+}));
+
 vi.mock('@/lib/logging', () => ({
-  logger: { info: vi.fn(), warn: vi.fn(), error: vi.fn() },
+  logger: loggingMocks,
 }));
 
 import { EdgeCache, EdgeLogger } from './edge-runtime-utils';
+
+async function importFreshRuntimeUtils() {
+  vi.resetModules();
+  return import('./edge-runtime-utils');
+}
 
 // ---------------------------------------------------------------------------
 // EdgeLogger
@@ -87,12 +98,7 @@ describe('EdgeLogger', () => {
   });
 
   it('getInstance() returns the same instance on repeated calls', async () => {
-    // Reset modules to get a fresh singleton
-    vi.resetModules();
-    vi.mock('@/lib/logging', () => ({
-      logger: { info: vi.fn(), warn: vi.fn(), error: vi.fn() },
-    }));
-    const { EdgeLogger: Fresh } = await import('./edge-runtime-utils');
+    const { EdgeLogger: Fresh } = await importFreshRuntimeUtils();
     const a = Fresh.getInstance();
     const b = Fresh.getInstance();
     expect(a).toBe(b);
@@ -202,11 +208,7 @@ describe('EdgeCache', () => {
 
   it('getInstance() returns the same instance on repeated calls', async () => {
     vi.useRealTimers();
-    vi.resetModules();
-    vi.mock('@/lib/logging', () => ({
-      logger: { info: vi.fn(), warn: vi.fn(), error: vi.fn() },
-    }));
-    const { EdgeCache: Fresh } = await import('./edge-runtime-utils');
+    const { EdgeCache: Fresh } = await importFreshRuntimeUtils();
     const a = Fresh.getInstance();
     const b = Fresh.getInstance();
     expect(a).toBe(b);
