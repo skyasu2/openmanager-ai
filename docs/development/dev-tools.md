@@ -355,7 +355,7 @@ cd cloud-run/ai-engine
 
 ## 버전 관리
 
-### standard-version
+### commit-and-tag-version
 
 ```bash
 npm run release:patch   # 8.0.0 → 8.0.1

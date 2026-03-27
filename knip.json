@@ -29,7 +29,6 @@
     "@types/*",
     "tsx",
     "cross-env",
-    "standard-version",
     "conventional-changelog-cli",
     "dotenv-cli",
     "prettier-plugin-tailwindcss",
