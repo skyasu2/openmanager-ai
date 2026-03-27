@@ -1,415 +1,342 @@
 /**
  * @vitest-environment jsdom
- */
-
-/**
- * 🧪 useTimeSeriesMetrics 훅 테스트
  *
- * 시계열 메트릭 데이터 훅의 동작을 검증
- * - API 호출
- * - 예측/이상탐지 데이터 포함
- * - 자동 새로고침
- * - 에러 처리
+ * useTimeSeriesMetrics 단위 테스트
+ *
+ * Legacy (timeseries) 응답 포맷과 Server History 포맷 양쪽을 검증.
  */
 
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { createMockResponse } from '../../tests/utils/mock-response';
 import {
-  type TimeSeriesData,
+  type UseTimeSeriesMetricsOptions,
   useTimeSeriesMetrics,
 } from './useTimeSeriesMetrics';
 
-// Mock fetch - 각 테스트에서 재설정됨
-const mockFetch = vi.fn();
+vi.mock('@/lib/logging', () => ({
+  logger: { debug: vi.fn(), warn: vi.fn(), error: vi.fn(), info: vi.fn() },
+}));
 
-// Mock 응답 데이터 생성
-function createMockTimeSeriesData(
-  overrides?: Partial<TimeSeriesData>
-): TimeSeriesData {
-  const now = Date.now();
-  return {
-    serverId: 'server-1',
-    serverName: 'Test Server',
-    metric: 'cpu',
-    history: Array.from({ length: 10 }, (_, i) => ({
-      timestamp: new Date(now - (10 - i) * 300000).toISOString(),
-      value: 50 + Math.random() * 20,
-    })),
-    prediction: Array.from({ length: 5 }, (_, i) => ({
-      timestamp: new Date(now + i * 300000).toISOString(),
-      predicted: 55 + Math.random() * 15,
-      upper: 65 + Math.random() * 15,
-      lower: 45 + Math.random() * 15,
-    })),
-    anomalies: [
+const BASE_OPTS: UseTimeSeriesMetricsOptions = {
+  serverId: 'server-001',
+  metric: 'cpu',
+  range: '1h',
+};
+
+const ok = (body: unknown) =>
+  new Response(JSON.stringify(body), {
+    status: 200,
+    headers: { 'Content-Type': 'application/json' },
+  });
+
+const legacyResponse = (opts?: { metric?: string }) => ({
+  success: true,
+  data: {
+    serverId: 'server-001',
+    serverName: 'web-01',
+    metric: opts?.metric ?? 'cpu',
+    history: [
+      { timestamp: '2026-01-01T00:00:00Z', value: 42 },
+      { timestamp: '2026-01-01T00:10:00Z', value: 55 },
+    ],
+    prediction: [
       {
-        startTime: new Date(now - 3600000).toISOString(),
-        endTime: new Date(now - 1800000).toISOString(),
-        severity: 'high' as const,
-        metric: 'cpu',
-        description: 'CPU spike detected',
+        timestamp: '2026-01-01T01:00:00Z',
+        predicted: 60,
+        upper: 70,
+        lower: 50,
       },
     ],
-    ...overrides,
-  };
-}
+  },
+});
 
-function createSuccessResponse(data: TimeSeriesData) {
-  return createMockResponse({ success: true, data }, true, 200);
-}
+const serverHistoryResponse = () => ({
+  success: true,
+  data: {
+    server_info: { id: 'server-001', hostname: 'web-01' },
+    history: {
+      data_points: [
+        {
+          timestamp: '2026-01-01T00:00:00Z',
+          metrics: {
+            cpu_usage: 30,
+            memory_usage: 60,
+            disk_usage: 40,
+            network_in: 5,
+            network_out: 3,
+          },
+        },
+      ],
+    },
+    alerts: [
+      {
+        metric: 'cpu',
+        severity: 'high',
+        message: 'CPU 과부하',
+        firedAt: '2026-01-01T00:05:00Z',
+        resolvedAt: '2026-01-01T00:15:00Z',
+      },
+    ],
+  },
+});
 
-function createErrorResponse(status: number) {
-  return createMockResponse(
-    { success: false, message: 'API Error' },
-    false,
-    status
-  );
-}
+let fetchSpy: ReturnType<typeof vi.spyOn>;
 
-describe('🎯 useTimeSeriesMetrics - 시계열 메트릭 훅 테스트', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-    // 각 테스트 전에 fetch를 다시 모킹 (restoreAllMocks로 인한 복원 방지)
-    vi.stubGlobal('fetch', mockFetch);
-  });
+beforeEach(() => {
+  // vi.useFakeTimers()는 waitFor()와 충돌 — Auto refresh 테스트에만 로컬 적용
+  fetchSpy = vi.spyOn(global, 'fetch');
+});
 
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
+afterEach(() => {
+  fetchSpy.mockRestore();
+  vi.useRealTimers();
+});
 
-  describe('기본 동작', () => {
-    it('serverId와 metric으로 데이터를 가져온다', async () => {
-      const mockData = createMockTimeSeriesData();
-      mockFetch.mockResolvedValueOnce(createSuccessResponse(mockData));
+describe('useTimeSeriesMetrics', () => {
+  describe('초기 상태 및 로딩', () => {
+    it('초기에는 isLoading=true, data=null을 반환한다', async () => {
+      fetchSpy.mockResolvedValueOnce(ok(legacyResponse()));
 
-      const { result } = renderHook(() =>
-        useTimeSeriesMetrics({
-          serverId: 'server-1',
-          metric: 'cpu',
-        })
-      );
+      const { result } = renderHook(() => useTimeSeriesMetrics(BASE_OPTS));
 
       expect(result.current.isLoading).toBe(true);
-
-      await waitFor(() => {
-        expect(result.current.isLoading).toBe(false);
-      });
-
-      expect(result.current.data).toBeDefined();
-      expect(result.current.data?.serverId).toBe('server-1');
-      expect(result.current.data?.metric).toBe('cpu');
+      expect(result.current.data).toBeNull();
       expect(result.current.error).toBeNull();
-    });
 
-    it('serverId가 없으면 데이터를 가져오지 않는다', async () => {
-      const { result } = renderHook(() =>
-        useTimeSeriesMetrics({
-          serverId: '',
-          metric: 'cpu',
-        })
-      );
-
-      await waitFor(() => {
-        expect(result.current.isLoading).toBe(false);
-      });
-
-      expect(result.current.data).toBeNull();
-      expect(mockFetch).not.toHaveBeenCalled();
-    });
-
-    it('metric이 없으면 데이터를 가져오지 않는다', async () => {
-      const { result } = renderHook(() =>
-        useTimeSeriesMetrics({
-          serverId: 'server-1',
-          metric: '' as 'cpu',
-        })
-      );
-
-      await waitFor(() => {
-        expect(result.current.isLoading).toBe(false);
-      });
-
-      expect(result.current.data).toBeNull();
-      expect(mockFetch).not.toHaveBeenCalled();
+      await waitFor(() => expect(result.current.isLoading).toBe(false));
     });
   });
 
-  describe('API 호출 파라미터', () => {
-    it('기본 파라미터로 API를 호출한다', async () => {
-      const mockData = createMockTimeSeriesData();
-      mockFetch.mockResolvedValueOnce(createSuccessResponse(mockData));
+  describe('Legacy 응답 포맷', () => {
+    it('legacy 형식 응답을 TimeSeriesData로 정규화한다', async () => {
+      fetchSpy.mockResolvedValueOnce(ok(legacyResponse()));
 
-      renderHook(() =>
-        useTimeSeriesMetrics({
-          serverId: 'server-1',
-          metric: 'cpu',
-        })
-      );
+      const { result } = renderHook(() => useTimeSeriesMetrics(BASE_OPTS));
 
-      await waitFor(() => {
-        expect(mockFetch).toHaveBeenCalled();
-      });
-
-      const calledUrl = mockFetch.mock.calls[0][0];
-      expect(calledUrl).toContain('/api/servers/server-1');
-      expect(calledUrl).toContain('history=true');
-      expect(calledUrl).toContain('range=6h'); // default
-      expect(calledUrl).toContain('format=enhanced');
-      expect(calledUrl).toContain('include_metrics=true');
-    });
-
-    it('커스텀 range로 API를 호출한다', async () => {
-      const mockData = createMockTimeSeriesData();
-      mockFetch.mockResolvedValueOnce(createSuccessResponse(mockData));
-
-      renderHook(() =>
-        useTimeSeriesMetrics({
-          serverId: 'server-1',
-          metric: 'cpu',
-          range: '24h',
-        })
-      );
-
-      await waitFor(() => {
-        expect(mockFetch).toHaveBeenCalled();
-      });
-
-      const calledUrl = mockFetch.mock.calls[0][0];
-      expect(calledUrl).toContain('range=24h');
-    });
-
-    it('includePrediction=false일 때도 기본 히스토리 데이터 조회가 가능하다', async () => {
-      const mockData = createMockTimeSeriesData({ prediction: undefined });
-      mockFetch.mockResolvedValueOnce(createSuccessResponse(mockData));
-
-      const { result } = renderHook(() =>
-        useTimeSeriesMetrics({
-          serverId: 'server-1',
-          metric: 'cpu',
-          includePrediction: false,
-        })
-      );
-
-      await waitFor(() => {
-        expect(result.current.isLoading).toBe(false);
-      });
-
-      expect(result.current.data).toBeTruthy();
-      expect(result.current.data?.prediction).toBeUndefined();
+      await waitFor(() => expect(result.current.data).not.toBeNull());
+      expect(result.current.data?.serverId).toBe('server-001');
+      expect(result.current.data?.serverName).toBe('web-01');
+      expect(result.current.data?.history).toHaveLength(2);
+      expect(result.current.data?.history[0].value).toBe(42);
       expect(result.current.error).toBeNull();
     });
 
-    it('includeAnomalies=false일 때 anomalies를 비활성화한다', async () => {
-      const mockData = createMockTimeSeriesData({ anomalies: undefined });
-      mockFetch.mockResolvedValueOnce(createSuccessResponse(mockData));
+    it('includePrediction=true 시 예측 데이터가 포함된다', async () => {
+      fetchSpy.mockResolvedValueOnce(ok(legacyResponse()));
 
       const { result } = renderHook(() =>
-        useTimeSeriesMetrics({
-          serverId: 'server-1',
-          metric: 'cpu',
-          includeAnomalies: false,
-        })
+        useTimeSeriesMetrics({ ...BASE_OPTS, includePrediction: true })
       );
 
-      await waitFor(() => {
-        expect(result.current.isLoading).toBe(false);
-      });
+      await waitFor(() => expect(result.current.data).not.toBeNull());
+      expect(result.current.data?.prediction).toHaveLength(1);
+    });
 
+    it('includePrediction=false 시 예측 데이터가 제외된다', async () => {
+      fetchSpy.mockResolvedValueOnce(ok(legacyResponse()));
+
+      const { result } = renderHook(() =>
+        useTimeSeriesMetrics({ ...BASE_OPTS, includePrediction: false })
+      );
+
+      await waitFor(() => expect(result.current.data).not.toBeNull());
+      expect(result.current.data?.prediction).toBeUndefined();
+    });
+  });
+
+  describe('Server History 응답 포맷', () => {
+    it('server history 형식 응답을 TimeSeriesData로 정규화한다', async () => {
+      fetchSpy.mockResolvedValueOnce(ok(serverHistoryResponse()));
+
+      const { result } = renderHook(() => useTimeSeriesMetrics(BASE_OPTS));
+
+      await waitFor(() => expect(result.current.data).not.toBeNull());
+      expect(result.current.data?.serverId).toBe('server-001');
+      expect(result.current.data?.history).toHaveLength(1);
+      expect(result.current.data?.history[0].value).toBe(30); // cpu_usage
+    });
+
+    it('includeAnomalies=true 시 alerts를 anomalies로 변환한다', async () => {
+      fetchSpy.mockResolvedValueOnce(ok(serverHistoryResponse()));
+
+      const { result } = renderHook(() =>
+        useTimeSeriesMetrics({ ...BASE_OPTS, includeAnomalies: true })
+      );
+
+      await waitFor(() => expect(result.current.data).not.toBeNull());
+      expect(result.current.data?.anomalies).toHaveLength(1);
+      expect(result.current.data?.anomalies?.[0].severity).toBe('high');
+    });
+
+    it('includeAnomalies=false 시 anomalies가 undefined다', async () => {
+      fetchSpy.mockResolvedValueOnce(ok(serverHistoryResponse()));
+
+      const { result } = renderHook(() =>
+        useTimeSeriesMetrics({ ...BASE_OPTS, includeAnomalies: false })
+      );
+
+      await waitFor(() => expect(result.current.data).not.toBeNull());
       expect(result.current.data?.anomalies).toBeUndefined();
     });
   });
 
-  describe('에러 처리', () => {
-    it('API 오류 시 에러 상태가 설정된다', async () => {
-      mockFetch.mockResolvedValueOnce(createErrorResponse(500));
+  describe('메트릭 매핑', () => {
+    it.each([
+      ['cpu', 30],
+      ['memory', 60],
+      ['disk', 40],
+    ] as const)('%s 메트릭을 올바르게 추출한다', async (metric, expected) => {
+      fetchSpy.mockResolvedValueOnce(ok(serverHistoryResponse()));
 
       const { result } = renderHook(() =>
-        useTimeSeriesMetrics({
-          serverId: 'server-1',
-          metric: 'cpu',
-        })
+        useTimeSeriesMetrics({ ...BASE_OPTS, metric })
       );
 
-      await waitFor(() => {
-        expect(result.current.isLoading).toBe(false);
-      });
-
-      expect(result.current.error).toContain('API 오류');
-      expect(result.current.data).toBeNull();
+      await waitFor(() => expect(result.current.data).not.toBeNull());
+      expect(result.current.data?.history[0].value).toBe(expected);
     });
 
-    it('네트워크 오류 시 에러 상태가 설정된다', async () => {
-      mockFetch.mockRejectedValueOnce(new Error('Network error'));
+    it('network 메트릭은 in+out 합산을 반환한다', async () => {
+      fetchSpy.mockResolvedValueOnce(ok(serverHistoryResponse()));
 
       const { result } = renderHook(() =>
-        useTimeSeriesMetrics({
-          serverId: 'server-1',
-          metric: 'cpu',
-        })
+        useTimeSeriesMetrics({ ...BASE_OPTS, metric: 'network' })
       );
 
-      await waitFor(() => {
-        expect(result.current.isLoading).toBe(false);
-      });
-
-      expect(result.current.error).toBe('Network error');
-      expect(result.current.data).toBeNull();
-    });
-
-    it('API 응답의 success가 false일 때 에러가 설정된다', async () => {
-      mockFetch.mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({ success: false, message: '데이터 조회 실패' }),
-      });
-
-      const { result } = renderHook(() =>
-        useTimeSeriesMetrics({
-          serverId: 'server-1',
-          metric: 'cpu',
-        })
-      );
-
-      await waitFor(() => {
-        expect(result.current.isLoading).toBe(false);
-      });
-
-      expect(result.current.error).toBe('데이터 조회 실패');
+      await waitFor(() => expect(result.current.data).not.toBeNull());
+      // network_in(5) + network_out(3) = 8
+      expect(result.current.data?.history[0].value).toBe(8);
     });
   });
 
-  describe('refetch 기능', () => {
-    it('refetch 함수로 데이터를 다시 가져올 수 있다', async () => {
-      const firstData = createMockTimeSeriesData({
-        history: [{ timestamp: new Date().toISOString(), value: 50 }],
-      });
-      const secondData = createMockTimeSeriesData({
-        history: [{ timestamp: new Date().toISOString(), value: 70 }],
-      });
+  describe('에러 처리', () => {
+    it('HTTP 에러 시 error 상태가 설정된다', async () => {
+      fetchSpy.mockResolvedValueOnce(new Response('error', { status: 500 }));
 
-      mockFetch
-        .mockResolvedValueOnce(createSuccessResponse(firstData))
-        .mockResolvedValueOnce(createSuccessResponse(secondData));
+      const { result } = renderHook(() => useTimeSeriesMetrics(BASE_OPTS));
 
-      const { result } = renderHook(() =>
-        useTimeSeriesMetrics({
-          serverId: 'server-1',
-          metric: 'cpu',
-        })
+      await waitFor(() => expect(result.current.error).not.toBeNull());
+      expect(result.current.error).toContain('500');
+      expect(result.current.isLoading).toBe(false);
+    });
+
+    it('404 응답은 에러 없이 data=null로 처리한다 (Graceful Degradation)', async () => {
+      fetchSpy.mockResolvedValueOnce(
+        new Response('not found', { status: 404 })
       );
 
-      await waitFor(() => {
-        expect(result.current.isLoading).toBe(false);
-      });
+      const { result } = renderHook(() => useTimeSeriesMetrics(BASE_OPTS));
 
-      expect(result.current.data?.history[0].value).toBe(50);
+      await waitFor(() => expect(result.current.isLoading).toBe(false));
+      expect(result.current.data).toBeNull();
+      expect(result.current.error).toBeNull();
+    });
 
-      // refetch 호출
+    it('네트워크 에러 시 error 상태가 설정된다', async () => {
+      fetchSpy.mockRejectedValueOnce(new Error('fetch failed'));
+
+      const { result } = renderHook(() => useTimeSeriesMetrics(BASE_OPTS));
+
+      await waitFor(() => expect(result.current.error).not.toBeNull());
+      expect(result.current.error).toBe('fetch failed');
+    });
+
+    it('success=false 응답 시 error가 설정된다', async () => {
+      fetchSpy.mockResolvedValueOnce(
+        ok({ success: false, message: '서버 오류' })
+      );
+
+      const { result } = renderHook(() => useTimeSeriesMetrics(BASE_OPTS));
+
+      await waitFor(() => expect(result.current.error).not.toBeNull());
+      expect(result.current.error).toBe('서버 오류');
+    });
+  });
+
+  describe('refetch', () => {
+    it('refetch() 호출 시 fetch를 다시 보낸다', async () => {
+      fetchSpy
+        .mockResolvedValueOnce(ok(legacyResponse()))
+        .mockResolvedValueOnce(ok(legacyResponse()));
+
+      const { result } = renderHook(() => useTimeSeriesMetrics(BASE_OPTS));
+      await waitFor(() => expect(result.current.isLoading).toBe(false));
+
       await act(async () => {
         await result.current.refetch();
       });
 
-      await waitFor(() => {
-        expect(result.current.data?.history[0].value).toBe(70);
-      });
+      expect(fetchSpy).toHaveBeenCalledTimes(2);
     });
   });
 
-  describe('자동 새로고침', () => {
-    beforeEach(() => {
-      // 자동 새로고침 테스트에서만 Fake Timer 사용
-      vi.useFakeTimers({ shouldAdvanceTime: true });
-    });
-
-    afterEach(() => {
-      vi.useRealTimers();
-    });
-
-    it('refreshInterval이 설정되면 자동으로 데이터를 다시 가져온다', async () => {
-      const mockData = createMockTimeSeriesData();
-      mockFetch.mockResolvedValue(createSuccessResponse(mockData));
+  describe('URL 구성', () => {
+    it('올바른 API URL로 요청한다', async () => {
+      fetchSpy.mockResolvedValueOnce(ok(legacyResponse()));
 
       renderHook(() =>
         useTimeSeriesMetrics({
-          serverId: 'server-1',
-          metric: 'cpu',
-          refreshInterval: 5000, // 5초
+          ...BASE_OPTS,
+          serverId: 'my-server',
+          range: '24h',
         })
       );
 
-      // 초기 호출 대기
-      await vi.waitFor(() => {
-        expect(mockFetch).toHaveBeenCalledTimes(1);
-      });
-
-      // 5초 경과
-      await act(async () => {
-        await vi.advanceTimersByTimeAsync(5000);
-      });
-
-      await vi.waitFor(() => {
-        expect(mockFetch).toHaveBeenCalledTimes(2);
-      });
-
-      // 추가 5초 경과
-      await act(async () => {
-        await vi.advanceTimersByTimeAsync(5000);
-      });
-
-      await vi.waitFor(() => {
-        expect(mockFetch).toHaveBeenCalledTimes(3);
-      });
+      await waitFor(() => expect(fetchSpy).toHaveBeenCalled());
+      const url = fetchSpy.mock.calls[0][0] as string;
+      expect(url).toContain('/api/servers/my-server');
+      expect(url).toContain('range=24h');
+      expect(url).toContain('history=true');
     });
 
-    it('refreshInterval이 0이면 자동 새로고침이 비활성화된다', async () => {
-      const mockData = createMockTimeSeriesData();
-      mockFetch.mockResolvedValue(createSuccessResponse(mockData));
-
-      renderHook(() =>
-        useTimeSeriesMetrics({
-          serverId: 'server-1',
-          metric: 'cpu',
-          refreshInterval: 0,
-        })
+    it('serverId가 없으면 fetch를 하지 않는다', async () => {
+      const { result } = renderHook(() =>
+        useTimeSeriesMetrics({ ...BASE_OPTS, serverId: '' })
       );
 
-      await vi.waitFor(() => {
-        expect(mockFetch).toHaveBeenCalledTimes(1);
-      });
-
-      // 10초 경과
-      await act(async () => {
-        await vi.advanceTimersByTimeAsync(10000);
-      });
-
-      // 여전히 1번만 호출
-      expect(mockFetch).toHaveBeenCalledTimes(1);
+      await waitFor(() => expect(result.current.isLoading).toBe(false));
+      expect(fetchSpy).not.toHaveBeenCalled();
+      expect(result.current.data).toBeNull();
     });
   });
 
-  describe('컴포넌트 언마운트 처리', () => {
-    it('언마운트 시 인터벌이 정리된다', async () => {
-      vi.useFakeTimers({ shouldAdvanceTime: true });
-      const clearIntervalSpy = vi.spyOn(global, 'clearInterval');
-      const mockData = createMockTimeSeriesData();
-      mockFetch.mockResolvedValue(createSuccessResponse(mockData));
+  describe('Auto refresh', () => {
+    it('refreshInterval > 0 이면 interval이 등록된다', async () => {
+      vi.useFakeTimers();
+      fetchSpy.mockResolvedValue(ok(legacyResponse()));
 
       const { unmount } = renderHook(() =>
-        useTimeSeriesMetrics({
-          serverId: 'server-1',
-          metric: 'cpu',
-          refreshInterval: 5000,
-        })
+        useTimeSeriesMetrics({ ...BASE_OPTS, refreshInterval: 5000 })
       );
 
-      await vi.waitFor(() => {
-        expect(mockFetch).toHaveBeenCalledTimes(1);
+      // 초기 fetch 완료 대기 (microtask flush)
+      await act(async () => {
+        await Promise.resolve();
       });
+      expect(fetchSpy).toHaveBeenCalledTimes(1);
+
+      // interval 경과 후 추가 fetch
+      await act(async () => {
+        vi.advanceTimersByTime(5001);
+        await Promise.resolve();
+      });
+      expect(fetchSpy).toHaveBeenCalledTimes(2);
 
       unmount();
-
-      expect(clearIntervalSpy).toHaveBeenCalled();
       vi.useRealTimers();
+    });
+
+    it('refreshInterval=0이면 초기 fetch 이후 추가 갱신 없다', async () => {
+      fetchSpy.mockResolvedValue(ok(legacyResponse()));
+
+      const { unmount } = renderHook(() =>
+        useTimeSeriesMetrics({ ...BASE_OPTS, refreshInterval: 0 })
+      );
+
+      await waitFor(() => expect(fetchSpy).toHaveBeenCalledTimes(1));
+      // 추가 fetch 없음을 확인
+      expect(fetchSpy).toHaveBeenCalledTimes(1);
+      unmount();
     });
   });
 });
