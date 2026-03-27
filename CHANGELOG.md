@@ -2,6 +2,38 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.10.2](https://github.com/skyasu2/openmanager-ai/compare/v8.10.0...v8.10.2) (2026-03-27)
+
+
+### Bug Fixes
+
+* **a11y:** modal focus trap stale fix + VibeHistorySection SSOT ([87718a2](https://github.com/skyasu2/openmanager-ai/commit/87718a23bd292d20c42e54e26d525b6db2db7222))
+* **cloud-run:** log provider pre-init import failures ([a91b1bc](https://github.com/skyasu2/openmanager-ai/commit/a91b1bc3206cbf8f163d4c658eedc51bfc59ccb6))
+* **hooks:** apply soft-timeout to TypeScript fallback path in pre-push ([754beff](https://github.com/skyasu2/openmanager-ai/commit/754beff033748b40a025fec09fde262140a62af0))
+* **qa:** align pending policy and record 8.10.0 smoke ([eeb550f](https://github.com/skyasu2/openmanager-ai/commit/eeb550f0b56639ffedb0e0fe2ae137eecfb1590a))
+* restore debug default export contract ([acddeef](https://github.com/skyasu2/openmanager-ai/commit/acddeef933b8d533a84b043310e7780afdb2123d))
+* restore debug named imports ([9062335](https://github.com/skyasu2/openmanager-ai/commit/90623351a422e7633b840a3ee181bd3e08efe491))
+* **test:** add named export to ThinkingProcessVisualizer mock ([9606663](https://github.com/skyasu2/openmanager-ai/commit/960666387df598185bd72f72a7341a3c94a0c9a5))
+* **test:** stabilize validate-all suites ([1d586d2](https://github.com/skyasu2/openmanager-ai/commit/1d586d24e0f853c7a059c0ae1308a37e410ba408))
+* **tests:** update mock names after otel-data alias rename ([76fa6b4](https://github.com/skyasu2/openmanager-ai/commit/76fa6b447a4c27682dbf6626f94744d003614a66))
+* **test:** ThinkingProcessVisualizer default → named import ([2c79be2](https://github.com/skyasu2/openmanager-ai/commit/2c79be246d67f0b7d5c79abf49aa8eb0700fc3d0))
+
+## [8.10.1](https://github.com/skyasu2/openmanager-ai/compare/v8.10.0...v8.10.1) (2026-03-27)
+
+
+### Bug Fixes
+
+* **a11y:** modal focus trap stale fix + VibeHistorySection SSOT ([87718a2](https://github.com/skyasu2/openmanager-ai/commit/87718a23bd292d20c42e54e26d525b6db2db7222))
+* **cloud-run:** log provider pre-init import failures ([a91b1bc](https://github.com/skyasu2/openmanager-ai/commit/a91b1bc3206cbf8f163d4c658eedc51bfc59ccb6))
+* **hooks:** apply soft-timeout to TypeScript fallback path in pre-push ([754beff](https://github.com/skyasu2/openmanager-ai/commit/754beff033748b40a025fec09fde262140a62af0))
+* **qa:** align pending policy and record 8.10.0 smoke ([eeb550f](https://github.com/skyasu2/openmanager-ai/commit/eeb550f0b56639ffedb0e0fe2ae137eecfb1590a))
+* restore debug default export contract ([acddeef](https://github.com/skyasu2/openmanager-ai/commit/acddeef933b8d533a84b043310e7780afdb2123d))
+* restore debug named imports ([9062335](https://github.com/skyasu2/openmanager-ai/commit/90623351a422e7633b840a3ee181bd3e08efe491))
+* **test:** add named export to ThinkingProcessVisualizer mock ([9606663](https://github.com/skyasu2/openmanager-ai/commit/960666387df598185bd72f72a7341a3c94a0c9a5))
+* **test:** stabilize validate-all suites ([1d586d2](https://github.com/skyasu2/openmanager-ai/commit/1d586d24e0f853c7a059c0ae1308a37e410ba408))
+* **tests:** update mock names after otel-data alias rename ([76fa6b4](https://github.com/skyasu2/openmanager-ai/commit/76fa6b447a4c27682dbf6626f94744d003614a66))
+* **test:** ThinkingProcessVisualizer default → named import ([2c79be2](https://github.com/skyasu2/openmanager-ai/commit/2c79be246d67f0b7d5c79abf49aa8eb0700fc3d0))
+
 ## [8.10.0](https://github.com/skyasu2/openmanager-ai/compare/v8.9.2...v8.10.0) (2026-03-26)
 
 
