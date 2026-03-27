@@ -58,9 +58,9 @@ The frontend handles the dashboard, interaction model, and streaming UI. The AI 
 
 This repository is centered on the product code path:
 
-- [`src`](/mnt/d/dev/openmanager-ai/src): frontend application code
-- [`cloud-run/ai-engine/src`](/mnt/d/dev/openmanager-ai/cloud-run/ai-engine/src): AI backend code
-- [`public/data/otel-data`](/mnt/d/dev/openmanager-ai/public/data/otel-data): monitoring dataset used by the app
+- `src/`: frontend application code
+- `cloud-run/ai-engine/src/`: AI backend code
+- `public/`: runtime assets used by the app
 
 ## Technical Highlights
 
@@ -110,15 +110,20 @@ npm run dev
 
 ## Public Repository Scope
 
-This public repository is intended to highlight the product implementation itself.
+This public repository is intentionally trimmed to highlight the product implementation itself.
 
-For that reason, the public-facing version is meant to focus on:
+The public-facing version focuses on:
 
 - application source code
 - runtime configuration needed to understand the system
 - deployment-facing code paths
 
-Private operational materials such as internal QA records, review workflows, and some development-only assets can be maintained outside the public presentation layer.
+The following are intentionally excluded from this mirror:
+
+- test suites and snapshots
+- internal QA evidence and review artifacts
+- CI and agent-operation workflow assets
+- development-only documentation not required to understand the product
 
 ## Why This Repo Exists
 
@@ -131,4 +136,4 @@ This project is meant to be read as a working full-stack system, not as a coding
 
 ## License
 
-This project is licensed under the `GPL-3.0`. See [LICENSE](/mnt/d/dev/openmanager-ai/LICENSE).
+This project is licensed under the `GPL-3.0`. See `LICENSE`.
