@@ -35,7 +35,7 @@ const BOOT_STAGES = [
     name: '서버 연결 확인',
     delay: 1200,
     icon: ServerIcon,
-    description: 'MCP 서버와 연결을 설정하고 있습니다...',
+    description: '핵심 서비스 연결을 설정하고 있습니다...',
   },
   {
     name: '데이터베이스 연결',

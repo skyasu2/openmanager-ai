@@ -180,7 +180,7 @@ export const PROCESS_CONFIGS: ProcessConfig[] = [
     startupDelay: 1000,
   },
 
-  // 4. AI 분석 엔진 (MCP 오케스트레이터)
+  // 4. AI 분석 엔진 (오케스트레이션 레이어)
   {
     id: 'ai-engine',
     name: 'AI 분석 엔진',

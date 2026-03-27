@@ -1,4 +1,3 @@
-import { MCP_SERVERS } from '@/config/constants';
 import type { VibeCodeData } from '../tech-stacks.types';
 
 export const VIBE_CODING_DATA: VibeCodeData = {
@@ -18,16 +17,17 @@ export const VIBE_CODING_DATA: VibeCodeData = {
       type: 'commercial',
     },
     {
-      name: 'MCP 서버',
+      name: 'Connected Services',
       category: 'ai',
       importance: 'high',
       description:
-        'Anthropic의 Model Context Protocol. AI가 외부 도구, 데이터 소스, API에 표준화된 방식으로 접근하는 오픈 프로토콜. 다양한 MCP 서버로 AI 기능 확장',
-      implementation: `→ ${MCP_SERVERS.TOTAL_ACTIVE}개 서버 연동: vercel(배포), supabase(DB), context7(문서), playwright(E2E), next-devtools(Next.js진단), github(저장소), sequential-thinking(추론), stitch(UI디자인), storybook(컴포넌트문서)`,
+        '개발 환경과 운영 환경을 잇는 연결 레이어. 배포, 데이터, 문서, 저장소, 디자인 같은 외부 시스템과 작업 흐름을 이어주는 통합 기반',
+      implementation:
+        '→ 배포, 데이터 접근, 참고 문서, 저장소 관리, 디자인 작업, 런타임 진단을 하나의 개발 루프 안에서 연결',
       status: 'active',
       icon: '🔌',
-      tags: ['MCP', 'Protocol', '확장기능'],
-      type: 'opensource',
+      tags: ['Integration', 'Workflow', '확장기능'],
+      type: 'custom',
     },
     {
       name: 'Claude Code',
@@ -36,11 +36,11 @@ export const VIBE_CODING_DATA: VibeCodeData = {
       description:
         'An agentic coding tool that lives in your terminal, understands your codebase (Anthropic)',
       implementation:
-        'Helps you code faster by executing routine tasks, explaining complex code, and handling git workflows - all through natural language commands. MCP 서버로 외부 시스템 직접 제어',
+        'Routine tasks, code edits, and repository workflows are handled from the terminal in a tight feedback loop with the project structure.',
       version: 'claude-opus-4-6',
       status: 'active',
       icon: '🤖',
-      tags: ['Anthropic', 'Agentic', 'MCP'],
+      tags: ['Anthropic', 'Agentic', 'Terminal'],
       type: 'commercial',
     },
     {
@@ -92,25 +92,25 @@ export const VIBE_CODING_DATA: VibeCodeData = {
       importance: 'high',
       description: '버전 관리부터 PR까지 모든 Git 작업 자동화',
       implementation:
-        'MCP GitHub 서버로 커밋, 푸시, PR 생성, 이슈 관리를 Claude Code에서 직접 자동화',
+        '커밋, 푸시, PR, 이슈 관리까지 저장소 중심 작업을 빠르게 이어가는 개발 흐름',
       status: 'active',
       icon: '📝',
       tags: ['Git자동화', 'CI/CD', 'GitHub통합'],
       type: 'custom',
     },
     {
-      name: 'Vitest 4.0',
+      name: 'Quality Checks',
       category: 'testing',
       importance: 'high',
       description:
-        'Vite 기반 차세대 테스트 프레임워크. Jest 호환 API, 네이티브 ESM, HMR 지원으로 초고속 테스트 실행. 워치 모드에서 변경 파일만 재실행',
+        '핵심 기능 변경 시 회귀를 줄이기 위한 자동 검증 흐름',
       implementation:
-        '→ 유닛/통합 테스트 전체 적용. Coverage 리포트 및 실시간 피드백',
-      version: '4.0.18',
+        '→ 로컬 개발 중 빠른 검증과 변경 영향 확인에 사용',
+      version: 'Current',
       status: 'active',
-      icon: '🧪',
-      tags: ['테스트', 'Vite', 'Jest호환'],
-      type: 'opensource',
+      icon: '🧭',
+      tags: ['품질관리', '회귀방지', '개발루프'],
+      type: 'custom',
     },
     {
       name: 'Biome 2.4',
@@ -127,32 +127,32 @@ export const VIBE_CODING_DATA: VibeCodeData = {
       type: 'opensource',
     },
     {
-      name: 'Storybook 10',
-      category: 'testing',
-      importance: 'high',
+      name: 'Component Sandbox',
+      category: 'tooling',
+      importance: 'medium',
       description:
-        'UI 컴포넌트를 앱 외부의 독립 환경에서 개발·테스트하는 프론트엔드 워크숍. 버튼 하나, 카드 하나를 다양한 상태(정상/경고/에러 등)로 시각 확인하며 살아있는 문서로 관리',
+        'UI 조합과 상태 변화를 앱 외부에서 빠르게 확인하는 작업 공간',
       implementation:
-        '→ 58개 스토리로 ~42% 컴포넌트 커버리지 달성. addon-mcp로 AI가 컴포넌트 문서를 직접 조회·스토리 생성 가능. @storybook/react-vite 기반',
-      version: '10.2.10',
+        '→ 컴포넌트 조합, 문서화, 시각 점검을 분리된 환경에서 정리',
+      version: 'Current',
       status: 'active',
-      icon: '📖',
-      tags: ['컴포넌트문서', 'Visual Testing', 'MCP'],
-      type: 'opensource',
+      icon: '🧩',
+      tags: ['UI', '컴포넌트', '시각점검'],
+      type: 'custom',
     },
     {
-      name: 'Playwright 1.58',
-      category: 'testing',
-      importance: 'high',
+      name: 'Browser Flow Checks',
+      category: 'tooling',
+      importance: 'medium',
       description:
-        'Microsoft의 E2E 테스트 프레임워크. Chromium/Firefox/WebKit 크로스 브라우저, 자동 대기, 트레이싱, 스크린샷 캡처 지원',
+        '주요 사용자 흐름을 실제 브라우저 기준으로 점검하는 검증 루프',
       implementation:
-        '→ 크리티컬 플로우 E2E 테스트. MCP 서버로 Claude Code에서 직접 제어',
-      version: '1.58.2',
+        '→ 로그인, 대시보드, 주요 상호작용을 브라우저 환경에서 확인',
+      version: 'Current',
       status: 'active',
-      icon: '🎭',
-      tags: ['E2E', 'Microsoft', '크로스브라우저'],
-      type: 'opensource',
+      icon: '🌐',
+      tags: ['브라우저', '플로우', '상호작용'],
+      type: 'custom',
     },
   ],
   history: {
