@@ -1,0 +1,69 @@
+# 🐧 EditorConfig: WSL-First 개발 환경 설정
+# OpenManager VIBE v5 - WSL 우선 개발 정책
+
+root = true
+
+# 모든 파일의 기본 설정 (WSL 기준)
+[*]
+charset = utf-8
+end_of_line = lf
+indent_style = space
+indent_size = 2
+insert_final_newline = true
+trim_trailing_whitespace = true
+max_line_length = 120
+
+# TypeScript/JavaScript 파일
+[*.{js,jsx,ts,tsx}]
+indent_size = 2
+
+# JSON 파일
+[*.json]
+indent_size = 2
+
+# YAML 파일
+[*.{yml,yaml}]
+indent_size = 2
+
+# HTML 파일
+[*.html]
+indent_size = 2
+
+# CSS/SCSS 파일
+[*.{css,scss}]
+indent_size = 2
+
+# Markdown 파일 (공백 제거 비활성화)
+[*.md]
+trim_trailing_whitespace = false
+insert_final_newline = true
+
+# Python 파일
+[*.py]
+indent_style = space
+indent_size = 4
+max_line_length = 88
+
+# SQL 파일
+[*.sql]
+indent_size = 2
+
+# Shell 스크립트 (WSL/Linux 기준)
+[*.{sh,bash}]
+indent_size = 2
+
+# Husky 훅 파일들
+[.husky/*]
+indent_size = 2
+
+# 설정 파일들
+[.{babelrc,eslintrc,prettierrc,stylelintrc}]
+indent_size = 2
+
+# Next.js 설정 파일
+[next.config.*]
+indent_size = 2
+
+# 테스트 파일
+[*.{test,spec}.{js,jsx,ts,tsx}]
+indent_size = 2

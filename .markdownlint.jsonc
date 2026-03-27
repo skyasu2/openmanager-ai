@@ -1,0 +1,70 @@
+{
+  // OpenManager VIBE Markdown Lint 설정
+  "default": true,
+
+  // 줄 길이 제한 비활성화 (문서 특성상)
+  "MD013": false,
+
+  // 첫 줄 제목 필수 비활성화
+  "MD041": false,
+
+  // 인라인 HTML 허용 (details, summary 등)
+  "MD033": {
+    "allowed_elements": [
+      "details",
+      "summary",
+      "br",
+      "img",
+      "a",
+      "kbd",
+      "sub",
+      "sup"
+    ]
+  },
+
+  // 중복 제목 허용 (다른 섹션에서)
+  "MD024": {
+    "siblings_only": true
+  },
+
+  // 코드 블록 스타일
+  "MD046": {
+    "style": "fenced"
+  },
+
+  // 링크 스타일
+  "MD034": false,
+
+  // 빈 링크 허용
+  "MD042": false,
+
+  // 테이블 스타일 비활성화 (다양한 형식 허용)
+  "MD055": false,
+  "MD056": false,
+  "MD058": false,
+  "MD060": false,
+
+  // 강조 대신 제목 사용 규칙 비활성화
+  "MD036": false,
+
+  // 코드 블록 언어 지정 비활성화
+  "MD040": false,
+
+  // 제목 주변 빈 줄 규칙 완화
+  "MD022": false,
+
+  // 펜스 코드 블록 주변 빈 줄 규칙 완화
+  "MD031": false,
+
+  // 리스트 주변 빈 줄 규칙 완화
+  "MD032": false,
+
+  // 한글 앵커 링크 프래그먼트 비활성화 (GitHub에서 정상 작동)
+  "MD051": false,
+
+  // 다중 H1 허용 (문서 병합 시)
+  "MD025": false,
+
+  // 블록쿼트 빈 줄 허용
+  "MD028": false
+}

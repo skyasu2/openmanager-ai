@@ -1,0 +1,38 @@
+# OpenManager AI - Robots.txt
+# API 엔드포인트 크롤링 차단으로 Edge request 절약
+
+User-agent: *
+
+# API 엔드포인트 모두 차단 (Edge request 절약)
+Disallow: /api/
+
+# 시스템 관리 페이지 차단
+Disallow: /dashboard/
+Disallow: /admin/
+Disallow: /system-boot/
+
+# 인증 관련 페이지 차단
+Disallow: /auth/
+Disallow: /login/
+
+# 개발/테스트 경로 차단
+Disallow: /_next/
+Disallow: /_vercel/
+Disallow: /dev/
+
+# 허용된 페이지 (메인 페이지만)
+Allow: /
+Allow: /main
+
+# 검색엔진별 크롤링 제한
+User-agent: Googlebot
+Crawl-delay: 300
+
+User-agent: Bingbot
+Crawl-delay: 300
+
+User-agent: *
+Crawl-delay: 600
+
+# 사이트맵 (Next.js 자동 생성)
+Sitemap: https://openmanager-ai.vercel.app/sitemap.xml

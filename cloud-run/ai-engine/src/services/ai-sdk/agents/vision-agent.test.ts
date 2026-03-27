@@ -1,0 +1,423 @@
+/**
+ * VisionAgent Tests
+ *
+ * Unit tests for the VisionAgent and its utility functions.
+ * Tests query detection, fallback handling, and Gemini-specific behavior.
+ *
+ * @version 1.0.0
+ * @created 2026-01-27
+ */
+
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+
+// Create mock model objects that simulate LanguageModel interface
+const createMockModel = (id: string) => ({
+  modelId: id,
+  provider: 'mock',
+  specificationVersion: 'v1',
+  defaultObjectGenerationMode: 'json',
+  doGenerate: vi.fn(),
+  doStream: vi.fn(),
+});
+
+// Mock config module before imports
+// Use real AGENT_CONFIGS as baseline to prevent test-only keyword drift.
+vi.mock('./config', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('./config')>();
+  const mockedConfigs = Object.fromEntries(
+    Object.entries(actual.AGENT_CONFIGS).map(([name, config]) => [
+      name,
+      {
+        ...config,
+        getModel: vi.fn(() => ({
+          model: createMockModel(`mock-${name}`),
+          provider: 'mock-provider',
+          modelId: `mock-${name}`,
+        })),
+      },
+    ])
+  ) as typeof actual.AGENT_CONFIGS;
+
+  return {
+    ...actual,
+    AGENT_CONFIGS: mockedConfigs,
+    getAgentConfig: vi.fn(
+      (name: string) =>
+        mockedConfigs[name as keyof typeof mockedConfigs] ?? null
+    ),
+    isAgentAvailable: vi.fn((name: string) => {
+      const config = mockedConfigs[name as keyof typeof mockedConfigs];
+      return !!config && config.getModel() !== null;
+    }),
+    getAvailableAgents: vi.fn(() =>
+      Object.keys(mockedConfigs).filter((name) => {
+        const config = mockedConfigs[name as keyof typeof mockedConfigs];
+        return !!config && config.getModel() !== null;
+      })
+    ),
+  };
+});
+
+// Mock text-sanitizer
+vi.mock('../../../../lib/text-sanitizer', () => ({
+  sanitizeChineseCharacters: vi.fn((text: string) => text),
+}));
+
+// Mock AI SDK with ToolLoopAgent
+vi.mock('ai', () => {
+  const mockGenerateText = vi.fn(async () => ({
+    text: 'Mock response',
+    usage: { inputTokens: 100, outputTokens: 50, totalTokens: 150 },
+    steps: [{ finishReason: 'stop', toolCalls: [], toolResults: [] }],
+  }));
+  const mockStreamText = vi.fn(() => ({
+    textStream: (async function* () {
+      yield 'Mock response';
+    })(),
+    steps: Promise.resolve([]),
+    usage: Promise.resolve({ inputTokens: 100, outputTokens: 50, totalTokens: 150 }),
+  }));
+
+  class MockToolLoopAgent {
+    settings: Record<string, unknown>;
+    constructor(settings: Record<string, unknown>) {
+      this.settings = settings;
+    }
+    async generate(options: Record<string, unknown>) {
+      const { timeout, onStepFinish, ...rest } = options as Record<string, unknown>;
+      const { onStepFinish: _sOSF, instructions, ...settingsRest } = this.settings;
+      return mockGenerateText({
+        ...settingsRest,
+        system: instructions,
+        ...rest,
+        timeout,
+        onStepFinish,
+      });
+    }
+    async stream(options: Record<string, unknown>) {
+      const { timeout, onStepFinish, ...rest } = options as Record<string, unknown>;
+      const { onStepFinish: _sOSF, instructions, ...settingsRest } = this.settings;
+      return mockStreamText({
+        ...settingsRest,
+        system: instructions,
+        ...rest,
+        timeout,
+        onStepFinish,
+      });
+    }
+  }
+
+  return {
+    generateText: mockGenerateText,
+    streamText: mockStreamText,
+    ToolLoopAgent: MockToolLoopAgent,
+    hasToolCall: vi.fn(() => () => false),
+    stepCountIs: vi.fn(() => () => false),
+    tool: vi.fn((config: unknown) => ({ ...(config as object), _type: 'tool' })),
+  };
+});
+
+// Mock tools
+vi.mock('../../../../tools-ai-sdk', () => ({
+  getServerMetrics: { execute: vi.fn() },
+  getServerMetricsAdvanced: { execute: vi.fn() },
+  filterServers: { execute: vi.fn() },
+  getServerByGroup: { execute: vi.fn() },
+  getServerByGroupAdvanced: { execute: vi.fn() },
+  detectAnomalies: { execute: vi.fn() },
+  predictTrends: { execute: vi.fn() },
+  analyzePattern: { execute: vi.fn() },
+  correlateMetrics: { execute: vi.fn() },
+  findRootCause: { execute: vi.fn() },
+  buildIncidentTimeline: { execute: vi.fn() },
+  searchKnowledgeBase: { execute: vi.fn() },
+  recommendCommands: { execute: vi.fn() },
+  searchWeb: { execute: vi.fn() },
+  finalAnswer: { execute: vi.fn() },
+  evaluateIncidentReport: { execute: vi.fn() },
+  validateReportStructure: { execute: vi.fn() },
+  scoreRootCauseConfidence: { execute: vi.fn() },
+  refineRootCauseAnalysis: { execute: vi.fn() },
+  enhanceSuggestedActions: { execute: vi.fn() },
+  extendServerCorrelation: { execute: vi.fn() },
+  analyzeScreenshot: { execute: vi.fn() },
+  analyzeLargeLog: { execute: vi.fn() },
+  searchWithGrounding: { execute: vi.fn() },
+  analyzeUrlContent: { execute: vi.fn() },
+}));
+
+import { AgentFactory } from './agent-factory';
+import {
+  createVisionAgent,
+  getVisionAgentConfig,
+  getVisionAgentOrFallback,
+  isVisionAgentAvailable,
+  isVisionQuery,
+} from './vision-agent';
+
+// ============================================================================
+// VisionAgent Tests
+// ============================================================================
+
+describe('VisionAgent', { timeout: 15000 }, () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  // ==========================================================================
+  // isVisionQuery() Tests
+  // ==========================================================================
+
+  describe('isVisionQuery()', () => {
+    it('should detect screenshot keywords', () => {
+
+      expect(isVisionQuery('스크린샷 분석해줘')).toBe(true);
+      expect(isVisionQuery('이 screenshot을 봐줘')).toBe(true);
+      expect(isVisionQuery('이미지 확인해줘')).toBe(true);
+      expect(isVisionQuery('사진을 분석해줘')).toBe(true);
+    });
+
+    it('should detect dashboard keywords', () => {
+
+      expect(isVisionQuery('CloudWatch 대시보드 차트 분석')).toBe(true);
+      expect(isVisionQuery('Grafana 화면 확인')).toBe(true);
+      expect(isVisionQuery('Datadog 메트릭 화면 보여줘')).toBe(true);
+    });
+
+    it('should not detect non-visual keywords as vision queries', () => {
+
+      expect(isVisionQuery('대용량 로그 분석해줘')).toBe(false);
+      expect(isVisionQuery('전체 로그 파일 확인')).toBe(false);
+      expect(isVisionQuery('최신 문서 검색해줘')).toBe(false);
+      expect(isVisionQuery('이 url 내용 분석해줘')).toBe(false);
+      expect(isVisionQuery('링크 확인해줘')).toBe(false);
+    });
+
+    it('should detect file attachment intent', () => {
+
+      expect(isVisionQuery('스크린샷을 분석해줘')).toBe(true);
+      expect(isVisionQuery('분석해줘 이 스크린샷')).toBe(true);
+      expect(isVisionQuery('이미지를 보여줘')).toBe(true);
+      expect(isVisionQuery('첨부된 파일 이미지 분석해줘')).toBe(true);
+    });
+
+    it('should return false for non-vision queries', () => {
+
+      expect(isVisionQuery('서버 상태 알려줘')).toBe(false);
+      expect(isVisionQuery('CPU 사용량 확인')).toBe(false);
+      expect(isVisionQuery('장애 보고서 만들어줘')).toBe(false);
+      expect(isVisionQuery('안녕하세요')).toBe(false);
+      expect(isVisionQuery('메모리 이상 탐지')).toBe(false);
+      expect(isVisionQuery('대시보드 서버 상태')).toBe(false);
+      expect(isVisionQuery('Grafana 상태')).toBe(false);
+      expect(isVisionQuery('CloudWatch 상태')).toBe(false);
+      expect(isVisionQuery('dashboard 확인')).toBe(false);
+    });
+
+    it('should be case insensitive', () => {
+
+      expect(isVisionQuery('SCREENSHOT 분석')).toBe(true);
+      expect(isVisionQuery('DASHBOARD 화면 확인')).toBe(true);
+      expect(isVisionQuery('GRAFANA 화면 확인')).toBe(true);
+      expect(isVisionQuery('GRAFANA 상태')).toBe(false);
+    });
+  });
+
+  // ==========================================================================
+  // isVisionAgentAvailable() Tests
+  // ==========================================================================
+
+  describe('isVisionAgentAvailable()', () => {
+    it('should return true when Gemini is available', () => {
+
+      expect(isVisionAgentAvailable()).toBe(true);
+    });
+
+    // Note: Test for Gemini unavailability requires dynamic mock changes.
+  });
+
+  // ==========================================================================
+  // getVisionAgentOrFallback() Tests
+  // ==========================================================================
+
+  describe('getVisionAgentOrFallback()', () => {
+    it('should return VisionAgent when available', () => {
+      vi.spyOn(AgentFactory, 'isAvailable').mockReturnValue(true);
+
+      const result = getVisionAgentOrFallback('스크린샷 분석해줘');
+
+      expect(result.agent).not.toBeNull();
+      expect(result.agent!.getName()).toBe('Vision Agent');
+      expect(result.isFallback).toBe(false);
+      expect(result.fallbackReason).toBeUndefined();
+    });
+
+    it('should fallback to Analyst Agent when vision is unavailable for a vision query', () => {
+      vi.spyOn(AgentFactory, 'isAvailable').mockReturnValue(false);
+
+      const result = getVisionAgentOrFallback('스크린샷 분석해줘');
+
+      expect(result.agent).not.toBeNull();
+      expect(result.agent!.getName()).toBe('Analyst Agent');
+      expect(result.isFallback).toBe(true);
+      expect(result.fallbackReason).toContain('Vision providers unavailable');
+    });
+
+    it('should return null agent when vision is unavailable for a non-vision query', () => {
+      vi.spyOn(AgentFactory, 'isAvailable').mockReturnValue(false);
+
+      const result = getVisionAgentOrFallback('서버 상태 알려줘');
+
+      expect(result.agent).toBeNull();
+      expect(result.isFallback).toBe(false);
+      expect(result.fallbackReason).toBeUndefined();
+    });
+  });
+
+  // ==========================================================================
+  // createVisionAgent() Tests
+  // ==========================================================================
+
+  describe('createVisionAgent()', () => {
+    it('should return agent with Vision Agent name when Gemini is configured', () => {
+
+      const agent = createVisionAgent();
+
+      expect(agent).not.toBeNull();
+      expect(agent!.getName()).toBe('Vision Agent');
+    });
+
+    // Note: Test for Gemini unavailability requires dynamic mock changes.
+  });
+
+  // ==========================================================================
+  // getVisionAgentConfig() Tests (Deprecated)
+  // ==========================================================================
+
+  describe('getVisionAgentConfig()', () => {
+    it('should return config when available', () => {
+
+      const config = getVisionAgentConfig();
+
+      expect(config).not.toBeNull();
+      expect(config?.name).toBe('Vision Agent');
+    });
+  });
+
+  // ==========================================================================
+  // VisionAgent Class Tests
+  // ==========================================================================
+
+  describe('Vision Agent via AgentFactory', () => {
+    it('should have correct name', () => {
+
+      const agent = AgentFactory.create('vision');
+
+      expect(agent).not.toBeNull();
+      expect(agent!.getName()).toBe('Vision Agent');
+    });
+
+    it('should return config from AGENT_CONFIGS', () => {
+
+      const agent = AgentFactory.create('vision');
+      const config = agent!.getConfig();
+
+      expect(config).not.toBeNull();
+      expect(config?.name).toBe('Vision Agent');
+    });
+
+    it('should check availability based on Gemini', () => {
+
+      expect(AgentFactory.isAvailable('vision')).toBe(true);
+    });
+  });
+
+  // ==========================================================================
+  // Vision Keywords Coverage Tests
+  // ==========================================================================
+
+  describe('Vision Keywords Coverage', () => {
+    it('should detect all screenshot-related keywords', () => {
+
+      const screenshotKeywords = [
+        '스크린샷 보여줘',
+        'screenshot 분석',
+        '이미지 확인',
+        'image 파일 분석',
+        '사진 분석',
+      ];
+
+      for (const query of screenshotKeywords) {
+        expect(isVisionQuery(query)).toBe(true);
+      }
+    });
+
+    it('should detect all dashboard-related keywords', () => {
+
+      const dashboardKeywords = [
+        'grafana 화면 확인',
+        'CloudWatch 메트릭 화면 확인',
+        'datadog 대시보드 화면 보여줘',
+      ];
+
+      for (const query of dashboardKeywords) {
+        expect(isVisionQuery(query)).toBe(true);
+      }
+    });
+
+    it('should ignore non-visual URL/document keywords', () => {
+
+      const nonVisualKeywords = [
+        'url 분석',
+        '링크 확인',
+        '최신 문서 찾아줘',
+        'documentation 분석해줘',
+        '공식 가이드 확인',
+        'official docs 찾아줘',
+      ];
+
+      for (const query of nonVisualKeywords) {
+        expect(isVisionQuery(query)).toBe(false);
+      }
+    });
+  });
+
+  // ==========================================================================
+  // Edge Cases Tests
+  // ==========================================================================
+
+  describe('Edge Cases', () => {
+    it('should handle empty query', () => {
+
+      expect(isVisionQuery('')).toBe(false);
+    });
+
+    it('should handle query with only whitespace', () => {
+
+      expect(isVisionQuery('   ')).toBe(false);
+    });
+
+    it('should handle very long queries', () => {
+
+      const longQuery = '서버 상태 확인해주세요. '.repeat(100) + '스크린샷 분석';
+
+      expect(isVisionQuery(longQuery)).toBe(true);
+    });
+
+    it('should handle special characters', () => {
+
+      expect(isVisionQuery('스크린샷!@#$%')).toBe(false);
+      expect(isVisionQuery('dashboard (grafana)')).toBe(false);
+    });
+
+    it('should handle mixed language queries', () => {
+
+      expect(isVisionQuery('스크린샷 screenshot 분석해줘')).toBe(true);
+      expect(isVisionQuery('Grafana 대시보드 화면 확인')).toBe(true);
+    });
+  });
+});

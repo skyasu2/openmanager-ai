@@ -1,0 +1,179 @@
+# yaml-language-server: $schema=https://promptfoo.dev/config-schema.json
+# OpenManager AI AI Engine - Promptfoo Configuration
+# v1.1.0 - 2026-02-24 (runtime prompt contracts sync)
+
+description: OpenManager AI AI Engine 프롬프트 평가
+
+# =============================================================================
+# Prompts (에이전트별)
+# =============================================================================
+prompts:
+  - id: nlq-agent
+    label: NLQ Agent (서버 조회)
+    raw: file://prompts/nlq.txt
+
+  - id: analyst-agent
+    label: Analyst Agent (패턴 분석)
+    raw: file://prompts/analyst.txt
+
+  - id: reporter-agent
+    label: Reporter Agent (인시던트)
+    raw: file://prompts/reporter.txt
+
+  - id: supervisor
+    label: Supervisor (라우팅)
+    raw: file://prompts/supervisor.txt
+
+# =============================================================================
+# Providers (LLM 모델)
+# NOTE:
+# - Runtime production chain: Cerebras -> Groq -> Mistral (Vision: Gemini -> OpenRouter)
+# - Promptfoo eval providers can differ from runtime for cost/stability.
+# =============================================================================
+providers:
+  - id: groq:llama-3.3-70b-versatile
+    label: Groq Llama 3.3 70B (Eval Primary)
+    config:
+      temperature: 0.7
+      max_tokens: 2048
+
+  - id: google:gemini-2.5-flash
+    label: Gemini 2.5 Flash (Eval Secondary)
+    config:
+      temperature: 0.7
+      maxOutputTokens: 2048
+
+# =============================================================================
+# Default Assertions (모든 테스트에 적용)
+# =============================================================================
+defaultTest:
+  assert:
+    # 한국어 응답 검증
+    - type: llm-rubric
+      value: "응답이 한국어로 작성되어야 함"
+
+    # 품질 기준
+    - type: llm-rubric
+      value: |
+        응답 품질 기준:
+        1. 서버 모니터링 관련 내용만 포함
+        2. 전문적이고 간결한 톤
+        3. 구체적인 정보 또는 조치 방안 포함
+
+    # 금지 패턴
+    - type: not-contains
+      value: "I don't know"
+    - type: not-contains
+      value: "I cannot"
+    - type: not-contains
+      value: "Sorry, I"
+
+# =============================================================================
+# Test Cases
+# =============================================================================
+tests:
+  # --- NLQ Agent Tests ---
+  - description: 전체 서버 상태 조회
+    vars:
+      query: "서버 전체 상태 확인해줘"
+    assert:
+      - type: contains-any
+        value: ["서버", "상태", "CPU", "Memory", "전체"]
+      - type: llm-rubric
+        value: "전체 서버 현황을 요약하여 제시"
+
+  - description: 특정 서버 조회
+    vars:
+      query: "WEB-01 서버 메트릭 보여줘"
+    assert:
+      - type: contains-any
+        value: ["WEB-01", "CPU", "Memory", "Disk"]
+      - type: llm-rubric
+        value: "특정 서버의 상세 메트릭 정보 제공"
+
+  # --- Analyst Agent Tests ---
+  - description: CPU 이상 분석
+    vars:
+      query: "CPU 사용률이 95%입니다. 분석해주세요"
+    assert:
+      - type: contains-any
+        value: ["CPU", "현황", "패턴", "조치"]
+      - type: llm-rubric
+        value: "높은 CPU 사용률에 대한 원인 분석과 조치 방안 제시"
+
+  - description: 메모리 누수 패턴
+    vars:
+      query: "메모리 누수가 의심됩니다"
+    assert:
+      - type: llm-rubric
+        value: "메모리 누수 진단 방법과 해결책 제시"
+
+  - description: 트렌드 예측
+    vars:
+      query: "향후 CPU 사용량 트렌드 예측해줘"
+    assert:
+      - type: contains-any
+        value: ["트렌드", "예측", "증가", "감소", "유지"]
+      - type: llm-rubric
+        value: "데이터 기반 트렌드 예측 제공"
+
+  # --- Reporter Agent Tests ---
+  - description: 인시던트 리포트
+    vars:
+      query: "서버 장애 발생, 리포트 작성해줘"
+    assert:
+      - type: contains-any
+        value: ["요약", "원인", "조치"]
+      - type: llm-rubric
+        value: "구조화된 인시던트 리포트 형식으로 작성"
+
+  - description: 명령어 추천
+    vars:
+      query: "서버 재시작 명령어 추천해줘"
+    assert:
+      - type: contains-any
+        value: ["명령어", "command", "`"]
+      - type: llm-rubric
+        value: "실행 가능한 CLI 명령어 추천"
+
+  # --- Supervisor Routing Tests ---
+  - description: 인사말 처리
+    vars:
+      query: "안녕하세요"
+    assert:
+      - type: llm-rubric
+        value: "간단한 인사 응답 (1-2문장 이내)"
+
+  - description: 라우팅 정확성
+    vars:
+      query: "서버 상태 보여줘"
+    assert:
+      - type: llm-rubric
+        value: "NLQ Agent로 라우팅하여 서버 상태 정보 제공"
+
+  # --- Edge Cases ---
+  - description: 모호한 쿼리 처리
+    vars:
+      query: "뭐가 문제야?"
+    assert:
+      - type: llm-rubric
+        value: "추가 정보를 요청하거나 일반적인 상태 점검 안내"
+
+  - description: 복합 요청 처리
+    vars:
+      query: "CPU 높고 메모리도 부족해, 원인 분석하고 해결책 알려줘"
+    assert:
+      - type: llm-rubric
+        value: "복합적인 문제에 대한 종합 분석 및 우선순위 기반 해결책 제시"
+
+# =============================================================================
+# Output Settings
+# =============================================================================
+outputPath: ./results/eval-results.json
+
+# =============================================================================
+# Sharing (선택사항)
+# =============================================================================
+# sharing:
+#   appUrl: https://your-promptfoo-instance.com
+#   apiBaseUrl: https://api.your-promptfoo.com

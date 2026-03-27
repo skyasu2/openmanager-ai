@@ -1,0 +1,19 @@
+#!/bin/sh
+
+# Pre-commit Hook: Security + Code Quality (Cross-platform)
+# Windows/macOS/Linux compatible via Git Bash
+# 목표: <1초 완료
+
+# 1. 🔐 Secret Detection (빠름 - staged 파일만)
+node scripts/env/precommit-check-secrets.cjs || {
+  exit 1
+}
+
+# 2. 🔍 Biome (Check & Format)
+echo "🔍 Running Biome (Check & Format)..."
+npm run hook:pre-commit || {
+  echo "❌ Biome check failed"
+  exit 1
+}
+
+exit 0

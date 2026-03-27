@@ -1,0 +1,99 @@
+{
+  "name": "OpenManager AI v8 - AI Native Server Monitoring",
+  "short_name": "OpenManager",
+  "description": "AI-Powered Server Management with Fluid Compute Optimization",
+  "version": "8.0.0",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#3b82f6",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "ko-KR",
+  "categories": [
+    "business",
+    "productivity",
+    "utilities"
+  ],
+  "screenshots": [
+    {
+      "src": "/screenshots/dashboard-wide.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Dashboard Overview"
+    },
+    {
+      "src": "/screenshots/mobile-dashboard.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Mobile Dashboard"
+    }
+  ],
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Dashboard",
+      "short_name": "Dashboard",
+      "description": "View real-time server metrics",
+      "url": "/dashboard",
+      "icons": [
+        {
+          "src": "/dashboard-icon.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "AI Assistant",
+      "short_name": "AI",
+      "description": "Chat with AI assistant",
+      "url": "/mcp-chat",
+      "icons": [
+        {
+          "src": "/ai-icon.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Server Monitor",
+      "short_name": "Servers",
+      "description": "Server monitoring dashboard",
+      "url": "/dashboard",
+      "icons": [
+        {
+          "src": "/dashboard-icon.png",
+          "sizes": "96x96"
+        }
+      ]
+    }
+  ],
+  "prefer_related_applications": false,
+  "edge_side_panel": {
+    "preferred_width": 400
+  },
+  "fluid_compute": {
+    "enabled": true,
+    "features": [
+      "cold_start_elimination",
+      "cost_optimization_85_percent",
+      "ai_inference_optimization",
+      "concurrent_processing"
+    ]
+  }
+}

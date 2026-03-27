@@ -1,0 +1,259 @@
+/**
+ * 🚀 Critical CSS - Above-the-fold 최적화
+ * LCP 개선을 위한 중요 스타일만 포함
+ */
+
+/* 폰트 프리로드 최적화 */
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap; /* FOIT 방지 */
+  src: url("/fonts/inter-var.woff2") format("woff2");
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+    U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193,
+    U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* 한글 폰트 서브셋 */
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("/fonts/inter-korean.woff2") format("woff2");
+  unicode-range:
+    U+1100-11FF, U+3130-318F, U+A960-A97F, U+AC00-D7AF, U+D7B0-D7FF;
+}
+
+/* CSS 변수 최적화 (런타임 계산 감소) */
+:root {
+  --primary-rgb: 6, 182, 212;
+  --primary-hsl: 188, 94%, 43%;
+  --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  --border-radius: 0.5rem;
+}
+
+/* 기본 스타일 최적화 */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  line-height: 1.5;
+  -webkit-text-size-adjust: 100%;
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+body {
+  color: rgb(55 65 81);
+  background-color: rgb(255 255 255);
+  /* 폰트 렌더링 최적화 */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeSpeed;
+  /* 레이아웃 안정성 */
+  overflow-x: hidden;
+}
+
+/* Above-the-fold 중요 컴포넌트들 */
+.header-container {
+  position: relative;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem;
+}
+
+.hero-section {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: var(--bg-gradient);
+  contain: layout style paint;
+}
+
+.hero-title {
+  font-size: 3rem;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 1rem;
+  /* 텍스트 렌더링 최적화 */
+  text-rendering: optimizeSpeed;
+  /* CLS 방지 */
+  line-height: 1.1;
+}
+
+@media (min-width: 768px) {
+  .hero-title {
+    font-size: 5rem;
+  }
+}
+
+.hero-subtitle {
+  font-size: 1.125rem;
+  line-height: 1.75;
+  color: rgb(255 255 255 / 0.8);
+  max-width: 48rem;
+  margin: 0 auto;
+  text-align: center;
+}
+
+@media (min-width: 768px) {
+  .hero-subtitle {
+    font-size: 1.25rem;
+  }
+}
+
+/* 중요 버튼 스타일 */
+.primary-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  height: 4rem;
+  width: 16rem;
+  border-radius: var(--border-radius);
+  font-weight: 600;
+  color: white;
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  border: 1px solid rgb(59 130 246 / 0.5);
+  box-shadow: var(--shadow-md);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  /* 터치 최적화 */
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.primary-button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+}
+
+.primary-button:active {
+  transform: scale(0.95);
+}
+
+/* 스켈레톤 로딩 최적화 */
+.skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  border-radius: var(--border-radius);
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* GPU 가속 최적화 클래스 */
+.gpu-accelerated {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+/* 중요하지 않은 콘텐츠 지연 로딩 */
+.lazy-content {
+  content-visibility: auto;
+  contain-intrinsic-size: 200px;
+}
+
+/* 웨이브 파티클 배경 (중요 - Above-the-fold) */
+.wave-particles {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+  background:
+    radial-gradient(
+      circle at 20% 80%,
+      rgb(120 119 198 / 0.3) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 80% 20%,
+      rgb(255 119 198 / 0.3) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 40% 40%,
+      rgb(120 219 255 / 0.3) 0%,
+      transparent 50%
+    );
+  transform: translateZ(0);
+}
+
+/* 레이아웃 이동 방지 */
+.layout-stable {
+  aspect-ratio: 16 / 9; /* 비율 유지 */
+  width: 100%;
+  height: auto;
+}
+
+/* 중요 애니메이션만 포함 (성능 최적화) */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 10px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* 접근성 - 모션 감소 선호 시 */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms;
+    animation-iteration-count: 1;
+    transition-duration: 0.01ms;
+    scroll-behavior: auto;
+  }
+
+  .wave-particles {
+    display: none;
+  }
+}
+
+/* 고대비 모드 지원 */
+@media (prefers-contrast: high) {
+  .primary-button {
+    border: 2px solid currentColor;
+  }
+}
+
+/* 다크모드 중요 스타일 */
+@media (prefers-color-scheme: dark) {
+  body {
+    color: rgb(229 231 235);
+    background-color: rgb(17 24 39);
+  }
+
+  .skeleton {
+    background: linear-gradient(90deg, #374151 25%, #4b5563 50%, #374151 75%);
+    background-size: 200% 100%;
+  }
+}

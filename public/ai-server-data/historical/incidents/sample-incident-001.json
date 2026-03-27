@@ -1,0 +1,106 @@
+{
+  "id": "incident-001",
+  "title": "API 서버 메모리 누수 감지",
+  "startTime": "2025-09-02T14:30:00.000Z",
+  "endTime": "2025-09-02T16:45:00.000Z",
+  "duration": "2h 15m",
+  "severity": "high",
+  "affectedServers": [
+    {
+      "id": "api-server-1",
+      "role": "primary",
+      "impact": "memory leak detected",
+      "metrics": {
+        "peakMemory": 95,
+        "normalMemory": 65,
+        "degradationStart": "2025-09-02T14:15:00.000Z"
+      }
+    },
+    {
+      "id": "db-master-1", 
+      "role": "cascaded",
+      "impact": "increased query load",
+      "metrics": {
+        "peakCpu": 88,
+        "normalCpu": 45,
+        "connectionSpike": 150
+      }
+    }
+  ],
+  "rootCause": {
+    "category": "application",
+    "description": "메모리 누수 패턴으로 인한 점진적 성능 저하",
+    "technicalDetails": "3시간에 걸쳐 메모리 0.5%씩 증가하는 패턴 관찰됨",
+    "triggeringEvent": "대용량 API 요청 처리 중 가비지 컬렉션 미실행"
+  },
+  "timeline": [
+    {
+      "time": "2025-09-02T14:15:00.000Z",
+      "event": "메모리 사용률 점진적 증가 시작",
+      "metric": "memory: 65% → 70%",
+      "automated": true
+    },
+    {
+      "time": "2025-09-02T14:30:00.000Z", 
+      "event": "임계점 도달 - 경고 알림 발생",
+      "metric": "memory: 85%",
+      "automated": true
+    },
+    {
+      "time": "2025-09-02T15:00:00.000Z",
+      "event": "DB 서버 연쇄 영향 시작",
+      "metric": "db cpu: 45% → 75%",
+      "automated": true
+    },
+    {
+      "time": "2025-09-02T16:00:00.000Z",
+      "event": "수동 재시작 실행",
+      "action": "graceful restart",
+      "automated": false
+    },
+    {
+      "time": "2025-09-02T16:45:00.000Z",
+      "event": "정상 상태 복구 확인",
+      "metric": "memory: 58%, cpu: 40%",
+      "automated": true
+    }
+  ],
+  "businessImpact": {
+    "usersSLA": "99.2% (target: 99.5%)",
+    "responseTimeImpact": "+45ms average",
+    "revenueImpact": "minimal",
+    "customerComplaints": 3
+  },
+  "resolution": {
+    "immediateActions": [
+      "API 서버 graceful restart",
+      "메모리 모니터링 강화",
+      "DB 연결 풀 최적화"
+    ],
+    "preventiveMeasures": [
+      "메모리 누수 자동 감지 알고리즘 개선",
+      "가비지 컬렉션 튜닝",
+      "예방적 재시작 스케줄링"
+    ],
+    "lessonsLearned": [
+      "점진적 메모리 증가 패턴은 3시간 전 감지 가능",
+      "DB 서버 연쇄 영향은 15분 지연 후 발생",
+      "예방적 재시작으로 비즈니스 영향 최소화 가능"
+    ]
+  },
+  "aiAnalysisTags": [
+    "memory-leak",
+    "cascading-failure", 
+    "gradual-degradation",
+    "predictable-pattern",
+    "successful-recovery"
+  ],
+  "similarIncidents": [
+    {
+      "id": "incident-045",
+      "similarity": 87,
+      "timeDiff": "2 weeks ago",
+      "keyDifference": "더 빠른 감지로 1시간 단축 해결"
+    }
+  ]
+}

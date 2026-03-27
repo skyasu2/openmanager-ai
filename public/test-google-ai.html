@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Supervisor API 테스트 - OpenManager AI</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            border-radius: 8px;
+            padding: 24px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .test-section {
+            margin-bottom: 24px;
+            padding: 16px;
+            border: 1px solid #e1e5e9;
+            border-radius: 6px;
+        }
+        textarea {
+            width: 100%;
+            min-height: 80px;
+            padding: 12px;
+            border: 1px solid #d0d7de;
+            border-radius: 6px;
+            font-family: inherit;
+            resize: vertical;
+        }
+        button {
+            background: #0969da;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 8px 4px 8px 0;
+        }
+        button:hover {
+            background: #0860ca;
+        }
+        button:disabled {
+            background: #8c959f;
+            cursor: not-allowed;
+        }
+        .result {
+            margin-top: 16px;
+            padding: 12px;
+            border-radius: 6px;
+            white-space: pre-wrap;
+            font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+            font-size: 14px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .result.success {
+            background: #dafbe1;
+            border: 1px solid #28a745;
+        }
+        .result.error {
+            background: #ffeaea;
+            border: 1px solid #dc3545;
+        }
+        .result.loading {
+            background: #e1f5fe;
+            border: 1px solid #0969da;
+        }
+        .preset-buttons {
+            margin: 12px 0;
+        }
+        .preset-buttons button {
+            font-size: 12px;
+            padding: 4px 8px;
+        }
+        .status {
+            text-align: center;
+            padding: 12px;
+            margin-bottom: 20px;
+            border-radius: 6px;
+            font-weight: 500;
+        }
+        .status.ready {
+            background: #dafbe1;
+            color: #1a7f37;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🤖 AI Supervisor API 테스트</h1>
+        <div class="status ready">✅ 베르셀 프로덕션 환경에서 테스트 중</div>
+
+        <div class="test-section">
+            <h3>💬 자연어 질의 테스트</h3>
+            <textarea id="promptInput" placeholder="자연어 질의를 입력하세요...">안녕하세요! 현재 서버 상태를 확인해주세요.</textarea>
+
+            <div class="preset-buttons">
+                <button onclick="setPreset('서버 상태')">서버 상태 확인</button>
+                <button onclick="setPreset('성능 분석')">성능 분석</button>
+                <button onclick="setPreset('문제 해결')">문제 해결</button>
+                <button onclick="setPreset('일반 질문')">일반 질문</button>
+            </div>
+
+            <button onclick="testSupervisorAI()" id="testBtn">🚀 AI Supervisor 테스트</button>
+            <button onclick="clearResult()">🗑️ 결과 지우기</button>
+
+            <div id="result" class="result" style="display: none;"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>📊 테스트 시나리오</h3>
+            <button onclick="runAllTests()">🔄 전체 시나리오 실행</button>
+            <div id="scenarioResults"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = window.location.origin;
+
+        const presets = {
+            '서버 상태': '현재 서버들의 상태를 확인해주세요. CPU, 메모리, 네트워크 사용률은 어떤가요?',
+            '성능 분석': '시스템 성능에 문제가 있나요? 응답시간이 느린 서버가 있는지 분석해주세요.',
+            '문제 해결': '최근에 발생한 장애나 경고가 있나요? 해결 방법을 제안해주세요.',
+            '일반 질문': 'OpenManager AI 시스템에 대해 설명해주세요.'
+        };
+
+        function setPreset(type) {
+            document.getElementById('promptInput').value = presets[type];
+        }
+
+        async function testSupervisorAI() {
+            const prompt = document.getElementById('promptInput').value.trim();
+            if (!prompt) {
+                alert('질의를 입력해주세요.');
+                return;
+            }
+
+            await sendRequest('/api/ai/supervisor', {
+                messages: [{ role: 'user', content: prompt }]
+            }, 'AI Supervisor');
+        }
+
+        async function sendRequest(endpoint, payload, mode) {
+            const resultDiv = document.getElementById('result');
+            const testBtn = document.getElementById('testBtn');
+
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'result loading';
+            resultDiv.textContent = `🔄 ${mode} 테스트 중...`;
+
+            testBtn.disabled = true;
+
+            try {
+                const startTime = Date.now();
+
+                const response = await fetch(API_BASE + endpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-AI-Assistant': 'true'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                const responseTime = Date.now() - startTime;
+                const data = await response.json();
+
+                if (response.ok) {
+                    resultDiv.className = 'result success';
+                    resultDiv.textContent = `✅ ${mode} 응답 성공 (${responseTime}ms)\n\n` +
+                        `📝 응답:\n${data.response || data.data || JSON.stringify(data, null, 2)}`;
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.textContent = `❌ ${mode} 오류 (${response.status})\n\n` +
+                        `${data.error || data.message || JSON.stringify(data, null, 2)}`;
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = `❌ ${mode} 네트워크 오류:\n${error.message}`;
+            } finally {
+                testBtn.disabled = false;
+            }
+        }
+
+        async function runAllTests() {
+            const scenarios = [
+                { query: '안녕하세요!', category: 'greeting', name: '인사 테스트' },
+                { query: '서버 상태를 확인해주세요', category: 'server_status', name: '서버 상태' },
+                { query: '성능이 저하된 서버가 있나요?', category: 'performance', name: '성능 분석' },
+                { query: '네트워크 연결 오류를 해결해주세요', category: 'troubleshooting', name: '문제 해결' }
+            ];
+
+            const resultsDiv = document.getElementById('scenarioResults');
+            resultsDiv.innerHTML = '<h4>🔄 시나리오 테스트 실행 중...</h4>';
+
+            for (const scenario of scenarios) {
+                resultsDiv.innerHTML += `<p>⏳ ${scenario.name} 테스트 중...</p>`;
+
+                try {
+                    const startTime = Date.now();
+                    const response = await fetch(API_BASE + '/api/ai/supervisor', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-AI-Assistant': 'true'
+                        },
+                        body: JSON.stringify({
+                            messages: [{ role: 'user', content: scenario.query }]
+                        })
+                    });
+
+                    const responseTime = Date.now() - startTime;
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        resultsDiv.innerHTML += `<p>✅ ${scenario.name}: 성공 (${responseTime}ms)</p>`;
+                    } else {
+                        resultsDiv.innerHTML += `<p>❌ ${scenario.name}: 실패 (${response.status})</p>`;
+                    }
+                } catch (error) {
+                    resultsDiv.innerHTML += `<p>❌ ${scenario.name}: 네트워크 오류</p>`;
+                }
+            }
+
+            resultsDiv.innerHTML += '<h4>✅ 전체 시나리오 테스트 완료</h4>';
+        }
+
+        function clearResult() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.style.display = 'none';
+            resultDiv.textContent = '';
+
+            const scenarioDiv = document.getElementById('scenarioResults');
+            scenarioDiv.innerHTML = '';
+        }
+
+        // 페이지 로드 시 API 상태 확인
+        window.onload = async function() {
+            try {
+                const response = await fetch(API_BASE + '/api/ai/google-ai/generate');
+                if (response.status === 200) {
+                    console.log('✅ Google AI API 엔드포인트 접근 가능');
+                }
+            } catch (error) {
+                console.error('❌ API 상태 확인 실패:', error);
+            }
+        };
+    </script>
+</body>
+</html>

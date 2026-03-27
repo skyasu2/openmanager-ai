@@ -1,0 +1,50 @@
+#!/bin/sh
+
+# Prepare-commit-msg Hook: AI Co-Author Trailer 자동 삽입
+#
+# 사용법:
+#   GIT_AI_AUTHOR=gemini git commit -m "feat: ..."
+#   GIT_AI_AUTHOR=claude git commit -m "fix: ..."
+#   GIT_AI_AUTHOR=codex  git commit -m "refactor: ..."
+#
+# 또는 git config로 영구 설정:
+#   git config --local ai.author gemini
+#   git config --local ai.author ""        # 해제
+#
+# merge/squash/amend 커밋에는 삽입하지 않음
+
+COMMIT_MSG_FILE="$1"
+COMMIT_SOURCE="$2"
+
+# merge, squash, 템플릿 커밋은 건너뜀
+case "$COMMIT_SOURCE" in
+  merge|squash) exit 0 ;;
+esac
+
+# AI 저자 결정: 환경변수 > git config
+AI_AUTHOR="${GIT_AI_AUTHOR:-$(git config --get ai.author 2>/dev/null || echo "")}"
+
+# 설정이 없으면 아무것도 하지 않음
+[ -z "$AI_AUTHOR" ] && exit 0
+
+# AI 저자별 trailer 매핑
+case "$AI_AUTHOR" in
+  gemini)
+    TRAILER="Co-Authored-By: Gemini <noreply@google.com>" ;;
+  claude)
+    TRAILER="Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>" ;;
+  codex)
+    TRAILER="Co-Authored-By: Codex <noreply@openai.com>" ;;
+  *)
+    TRAILER="Co-Authored-By: ${AI_AUTHOR}" ;;
+esac
+
+# 이미 동일 trailer가 있으면 중복 삽입 방지
+if grep -qF "$TRAILER" "$COMMIT_MSG_FILE" 2>/dev/null; then
+  exit 0
+fi
+
+# 커밋 메시지 끝에 빈 줄 + trailer 추가
+printf '\n%s\n' "$TRAILER" >> "$COMMIT_MSG_FILE"
+
+exit 0

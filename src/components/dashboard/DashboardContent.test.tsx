@@ -1,0 +1,293 @@
+/**
+ * @vitest-environment jsdom
+ */
+
+import { fireEvent, render, screen } from '@testing-library/react';
+import type { ComponentProps } from 'react';
+import { describe, expect, it, vi } from 'vitest';
+import type { Server } from '@/types/server';
+import { toDashboardAlertContext } from './alert-ai-context';
+import DashboardContent from './DashboardContent';
+
+vi.mock('next/dynamic', () => ({
+  default: () => () => <div data-testid="dynamic-component" />,
+}));
+
+vi.mock('@/hooks/dashboard/useDashboardStats', () => ({
+  useDashboardStats: vi.fn(() => ({
+    total: 15,
+    online: 15,
+    offline: 0,
+    warning: 0,
+    critical: 0,
+    unknown: 0,
+  })),
+}));
+
+vi.mock('@/hooks/dashboard/useMonitoringReport', () => ({
+  useMonitoringReport: vi.fn(() => ({
+    data: null,
+    error: null,
+    isError: false,
+  })),
+}));
+
+vi.mock('./DashboardSummary', () => ({
+  DashboardSummary: vi.fn(
+    ({
+      onOpenActiveAlerts,
+      onOpenAlertHistory,
+      onOpenLogExplorer,
+      onToggleTopology,
+    }: {
+      onOpenActiveAlerts?: () => void;
+      onOpenAlertHistory?: () => void;
+      onOpenLogExplorer?: () => void;
+      onToggleTopology?: () => void;
+    }) => (
+      <div data-testid="dashboard-summary">
+        <button
+          type="button"
+          aria-label="open active alerts"
+          onClick={onOpenActiveAlerts}
+        >
+          active alerts
+        </button>
+        <button
+          type="button"
+          aria-label="open alert history"
+          onClick={onOpenAlertHistory}
+        >
+          alert history
+        </button>
+        <button
+          type="button"
+          aria-label="open log explorer"
+          onClick={onOpenLogExplorer}
+        >
+          log explorer
+        </button>
+        <button
+          type="button"
+          aria-label="open topology"
+          onClick={onToggleTopology}
+        >
+          topology
+        </button>
+      </div>
+    )
+  ),
+}));
+
+vi.mock('./SystemOverviewSection', () => ({
+  SystemOverviewSection: vi.fn(() => <div data-testid="system-overview" />),
+}));
+
+vi.mock('./ServerDashboard', () => ({
+  default: vi.fn(({ onAskAI }: { onAskAI?: (server: Server) => void }) => (
+    <div data-testid="server-dashboard">
+      {onAskAI && (
+        <button
+          type="button"
+          aria-label="ask ai about server"
+          onClick={() =>
+            onAskAI({
+              id: 's1',
+              name: 'server-1',
+              status: 'warning',
+              cpu: 81,
+              memory: 64,
+              disk: 77,
+            } as Server)
+          }
+        >
+          ask ai
+        </button>
+      )}
+    </div>
+  )),
+}));
+
+vi.mock('./ActiveAlertsModal', () => ({
+  ActiveAlertsModal: vi.fn(({ open }: { open: boolean }) =>
+    open ? <div data-testid="active-alerts-modal" /> : null
+  ),
+}));
+
+vi.mock('./TopologyModal', () => ({
+  TopologyModal: vi.fn(({ open }: { open: boolean }) =>
+    open ? <div data-testid="topology-modal" /> : null
+  ),
+}));
+
+vi.mock('./alert-history/AlertHistoryModal', () => ({
+  AlertHistoryModal: vi.fn(({ open }: { open: boolean }) =>
+    open ? <div data-testid="alert-history-modal" /> : null
+  ),
+}));
+
+vi.mock('./log-explorer/LogExplorerModal', () => ({
+  LogExplorerModal: vi.fn(({ open }: { open: boolean }) =>
+    open ? <div data-testid="log-explorer-modal" /> : null
+  ),
+}));
+
+const createProps = (
+  overrides: Partial<ComponentProps<typeof DashboardContent>> = {}
+): ComponentProps<typeof DashboardContent> => ({
+  showSequentialGeneration: false,
+  servers: [],
+  allServers: [],
+  totalServers: 0,
+  currentPage: 1,
+  totalPages: 1,
+  pageSize: 6,
+  onPageChange: vi.fn(),
+  onPageSizeChange: vi.fn(),
+  status: { type: 'running' },
+  onStatsUpdate: vi.fn(),
+  onShowSequentialChange: vi.fn(),
+  statusFilter: null,
+  onStatusFilterChange: vi.fn(),
+  ...overrides,
+});
+
+describe('DashboardContent empty state', () => {
+  it('필터 결과 0건이어도 요약 카드와 필터 초기화 버튼을 유지한다', () => {
+    const onStatusFilterChange = vi.fn();
+    const allServers = [
+      { id: 's1', name: 'server-1', status: 'online' } as Server,
+    ];
+
+    render(
+      <DashboardContent
+        {...createProps({
+          servers: [],
+          allServers,
+          statusFilter: 'warning',
+          onStatusFilterChange,
+        })}
+      />
+    );
+
+    expect(screen.getByTestId('dashboard-summary')).toBeInTheDocument();
+    expect(
+      screen.getByText('필터 조건에 맞는 서버가 없습니다')
+    ).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: '상태 필터 초기화' }));
+    expect(onStatusFilterChange).toHaveBeenCalledWith(null);
+  });
+
+  it('실제 데이터가 없으면 등록된 서버 없음 메시지를 표시한다', () => {
+    render(<DashboardContent {...createProps()} />);
+
+    expect(screen.getByText('등록된 서버가 없습니다')).toBeInTheDocument();
+    expect(
+      screen.queryByRole('button', { name: '상태 필터 초기화' })
+    ).not.toBeInTheDocument();
+  });
+
+  it('요약 액션 콜백을 각 모달 open 상태로 연결한다', () => {
+    render(
+      <DashboardContent
+        {...createProps({
+          servers: [{ id: 's1', name: 'server-1', status: 'online' } as Server],
+          allServers: [
+            { id: 's1', name: 'server-1', status: 'online' } as Server,
+          ],
+          totalServers: 1,
+        })}
+      />
+    );
+
+    expect(screen.queryAllByTestId('dynamic-component')).toHaveLength(0);
+
+    fireEvent.click(screen.getByRole('button', { name: 'open active alerts' }));
+    expect(screen.queryAllByTestId('dynamic-component')).toHaveLength(1);
+
+    fireEvent.click(screen.getByRole('button', { name: 'open alert history' }));
+    expect(screen.queryAllByTestId('dynamic-component')).toHaveLength(2);
+
+    fireEvent.click(screen.getByRole('button', { name: 'open log explorer' }));
+    expect(screen.queryAllByTestId('dynamic-component')).toHaveLength(3);
+
+    fireEvent.click(screen.getByRole('button', { name: 'open topology' }));
+    expect(screen.queryAllByTestId('dynamic-component')).toHaveLength(4);
+  });
+
+  it('서버 카드 AI 요청을 최고 사용률 메트릭으로 변환해 브리지해야 한다', () => {
+    const onAskAIAboutAlert = vi.fn();
+
+    render(
+      <DashboardContent
+        {...createProps({
+          servers: [
+            { id: 's1', name: 'server-1', status: 'warning' } as Server,
+          ],
+          allServers: [
+            { id: 's1', name: 'server-1', status: 'warning' } as Server,
+          ],
+          totalServers: 1,
+          onAskAIAboutAlert,
+        })}
+      />
+    );
+
+    fireEvent.click(
+      screen.getByRole('button', { name: 'ask ai about server' })
+    );
+
+    expect(onAskAIAboutAlert).toHaveBeenCalledWith({
+      serverId: 's1',
+      serverName: 'server-1',
+      metricLabel: 'CPU',
+      metricValue: 81,
+    });
+  });
+
+  it('활성 알림을 DashboardAlertContext로 정규화해야 한다', () => {
+    expect(
+      toDashboardAlertContext({
+        serverId: 's1',
+        instance: 'server-1',
+        metric: 'memory',
+        value: 78.2,
+      })
+    ).toEqual({
+      serverId: 's1',
+      serverName: 'server-1',
+      metricLabel: 'MEM',
+      metricValue: 78,
+    });
+
+    expect(
+      toDashboardAlertContext({
+        serverId: 's2',
+        instance: 'server-2',
+        metric: 'network',
+        value: 82,
+      })
+    ).toBeNull();
+  });
+
+  it('resolved 알림 이력은 재발 방지 promptOverride로 정규화해야 한다', () => {
+    expect(
+      toDashboardAlertContext({
+        serverId: 's3',
+        instance: 'server-3',
+        metric: 'disk',
+        value: 91.4,
+        state: 'resolved',
+      })
+    ).toEqual(
+      expect.objectContaining({
+        serverId: 's3',
+        serverName: 'server-3',
+        metricLabel: 'DISK',
+        metricValue: 91,
+        promptOverride: expect.stringContaining('해소된 알림 이력'),
+      })
+    );
+  });
+});

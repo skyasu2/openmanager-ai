@@ -1,0 +1,62 @@
+[
+  {
+    "query": "CPU가 100%야 뭐가 문제야?",
+    "expected_response_type": "analysis",
+    "expected_lang": "ko",
+    "expected_tone": "professional"
+  },
+  {
+    "query": "서버가 느려요",
+    "expected_response_type": "diagnosis",
+    "expected_lang": "ko",
+    "expected_tone": "helpful"
+  },
+  {
+    "query": "디스크 꽉 찼어",
+    "expected_response_type": "solution",
+    "expected_lang": "ko",
+    "expected_tone": "professional"
+  },
+  {
+    "query": "왜 자꾸 에러나?",
+    "expected_response_type": "troubleshooting",
+    "expected_lang": "ko",
+    "expected_tone": "helpful"
+  },
+  {
+    "query": "메모리 부족 해결법",
+    "expected_response_type": "recommendation",
+    "expected_lang": "ko",
+    "expected_tone": "professional"
+  },
+  {
+    "query": "네트워크 지연 심함",
+    "expected_response_type": "diagnosis",
+    "expected_lang": "ko",
+    "expected_tone": "professional"
+  },
+  {
+    "query": "연결이 안 돼요",
+    "expected_response_type": "troubleshooting",
+    "expected_lang": "ko",
+    "expected_tone": "helpful"
+  },
+  {
+    "query": "부하가 급증했어",
+    "expected_response_type": "analysis",
+    "expected_lang": "ko",
+    "expected_tone": "professional"
+  },
+  {
+    "query": "로그에 에러 많아",
+    "expected_response_type": "log_analysis",
+    "expected_lang": "ko",
+    "expected_tone": "professional"
+  },
+  {
+    "query": "뭐가 잘못된 거야?",
+    "expected_response_type": "diagnosis",
+    "expected_lang": "ko",
+    "expected_tone": "helpful"
+  }
+]

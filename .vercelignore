@@ -1,0 +1,180 @@
+# HTML 파일 완전 차단 (최우선)
+*.html
+**/*.html
+public/*.html
+public/**/*.html
+out/*.html
+out/**/*.html
+
+# 특정 파일들 직접 차단
+index.html
+public/index.html
+out/index.html
+
+# 루트 api 폴더
+/api
+
+# Storybook 관련 파일들 (프로덕션 빌드 제외)
+**/*.stories.tsx
+**/*.stories.ts
+**/*.stories.js
+**/*.stories.jsx
+.storybook/
+storybook-static/
+*.storybook.*
+
+# 테스트 관련 파일들
+**/*.test.ts
+**/*.test.tsx
+**/*.spec.ts
+**/*.spec.tsx
+e2e/
+tests/
+test-results/
+playwright-report/
+coverage/
+
+# 환경 변수 및 로그
+.env.local
+.env*.local
+.env.production
+.env.development
+.env.test
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# 개발 도구
+.DS_Store
+.vscode/
+.idea/
+
+# 테스트 관련
+.nyc_output
+*.tgz
+*.tar.gz
+
+# 보안 관련 파일
+.github-auth.json
+*-auth.json
+*-token.json
+*-secret.json
+*-key.json
+*.secure*
+.secure-*
+
+# Next.js 빌드 파일
+.next/
+out/
+dist/
+
+# 캐시 파일
+node_modules/
+.cache/
+.parcel-cache/
+
+# 📦 통합 아카이브/백업 시스템 (배포 완전 제외)
+archive/
+docs/.backup/
+src/.backup/
+src/app/api/.backup/
+*/.backup/
+*.tar.gz
+archive/*.tar.gz
+
+# 백업 및 임시 파일
+*.backup
+*.backup.*
+*.bak
+*.tmp
+*.temp
+.temp/
+**/backup/
+**/backups/
+env-backup*
+config/env-backup*
+
+# 문서 및 스크립트 (배포에 불필요)
+docs/
+scripts/
+.github/
+# folder-structure.md moved to docs/core/architecture/
+
+# MCP 설정 스크립트만 예외 처리
+!scripts/conditional-mcp-setup.mjs
+README.md
+.env.example
+.env.template
+tsconfig.tsbuildinfo
+
+# Feature Creep 방지 - 데모/테스트 페이지 차단
+**/demo/
+**/sample/
+**/test-page/
+**/*-demo.*
+**/*-test.*
+**/*-sample.*
+
+# 개발 파일 (로컬 전용)
+**/*.dev.*
+**/*-dev.*
+
+# MCP 서버 (개발 전용, 배포 제외)
+mcp-servers/
+mcp-server/
+**/mcp-servers/
+packages/multi-ai-mcp/
+.claude/
+fetch-mcp/
+fetch-mcp-server/
+mcp.json
+.mcp.json
+*-mcp-config.json
+cursor-mcp-config.json
+cursor.mcp.json
+corrected-cursor-mcp.json
+mcp-memory/
+.ai-cache/
+MCP-*.md
+*-MCP-*.md
+.serena-mcp/
+.serena/
+
+# 로컬 개발 전용 폴더
+local-dev/
+.kiro/
+.cursor/
+
+# 🐳 Cloud Run 서비스 (별도 배포, Vercel 제외)
+# 루트 폴더만 제외 (src/lib/cloud-run/은 유지)
+/cloud-run/
+/gcp-functions/
+
+# 개발 도구 문서
+CLAUDE.md
+GEMINI.md
+CHANGELOG.md
+ENV-BACKUP-GUIDE.md
+SECURITY-SUMMARY.md
+scripts/test-gemini-mcp.js
+scripts/test-adaptive-gemini.js
+scripts/mcp-secure-loader.ts
+
+# 🚨 Node.js 전용 서비스 (브라우저 런타임 에러 방지) - 선별적 차단
+services/BitmapPortAllocator.ts
+services/bitmap-allocator-demo.ts
+
+# 🚨 PM2 프로세스 관리자 설정 (Vercel 비호환)
+ecosystem.config.js
+pm2.config.js
+**/*ecosystem*.js
+**/*pm2*.js
+
+# 🔧 WSL 포트 관리 유틸리티 (Node.js 전용)
+utils/dynamic-port.ts
+utils/dynamic-port.js
+
+# WSL Virtual Environments
+.venv-wsl/
+.venv/
