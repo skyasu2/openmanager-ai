@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-03-27 KST
+**Last Updated**: 2026-03-28 KST
 
 ## Active Tasks
 
@@ -25,9 +25,9 @@
 - [x] P1: GitLab canonical delivery 정렬 및 로컬 Docker CI 표준화 — `gitlab` canonical / `origin` public-only topology 확정, `remote.pushDefault=gitlab`, `main -> gitlab/main`, `scripts/ci/local-docker-ci.sh` + `CI_DOCKER_PULL_POLICY` 도입, 관련 규칙/문서 정렬, `git push gitlab main` 후 Vercel production deployment `dpl_HaXUuu6ewS38hYCVoFuwx5oKL6Ru` `READY` 확인
 
 ### Completed (2026-03-28)
-- [x] P3: pre-push hook TypeScript fallback soft-timeout 적용 — 변경 감지 실패 시 full type-check(무제한) 대신 `type-check:changed` + 60초 soft-timeout으로 통일. 모든 경로에서 60초 초과 시 CI 위임. `scripts/hooks/pre-push.js` 수정 (`754beff03`)
-- [x] P3: 로컬 CI 베스트 프랙티스 분석 — 웹 검색 기반으로 현행 구조 재검증. pre-push hook은 이미 smart scoping + soft-timeout 기반이며, 현재 direct 실행 + CI/Vercel gate 조합이 프로젝트 제약과 업계 권장에 부합함을 확인
-- [x] P3: GitLab/GitHub 문서 동기화 — `CLAUDE.md`, `AGENTS.md`, `GEMINI.md`, `.claude/rules/deployment.md`에 `npm run sync:github` 명령과 `.github-export-ignore` 기준 공개 제외 정책 반영
+- [x] P1: v8.10.2 릴리즈 — commit-and-tag-version으로 마이그레이션 (standard-version deprecated 해소), CHANGELOG 업데이트, `git push gitlab --follow-tags` 완료
+- [x] P3: pre-push hook TypeScript fallback soft-timeout 적용 — 변경 감지 실패 시 full type-check 무제한 실행 경로를 `type-check:changed` + 60초 soft-timeout으로 통일 (`scripts/hooks/pre-push.js`, `754beff03`)
+- [x] P3: 로컬 CI / GitLab 배포 베스트 프랙티스 분석 완료 — 웹 검색 기반: 현행 구조(직접 실행 + GitHub Actions gate) 업계 권장 일치 확인. commit-and-tag-version 교체 실행. GitLab Push Mirror는 코드 필터링 정책 유지 목적으로 현행 `sync:github` 스크립트 방식 유지 결정
 
 ### Completed (2026-03-17)
 - [x] P2: WONT-FIX 실측 재평가 (`QA-20260317-0114`) — Playwright MCP로 38개 wont-fix 항목 중 30개 Production Vercel 동작 확인 → completed 전환. 잔여 wont-fix 8개(코드/인프라 레벨 6개 + AI 실응답 필요 2개)
