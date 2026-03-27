@@ -1,0 +1,170 @@
+/**
+ * Query Control Functions Hook
+ *
+ * Extracted from useHybridAIQuery for maintainability.
+ * Provides stop, cancel, reset, and previewComplexity actions.
+ *
+ * @created 2026-02-10
+ */
+
+import type { UIMessage } from '@ai-sdk/react';
+import type { MutableRefObject } from 'react';
+import { useCallback, useRef } from 'react';
+import { generateTraceId } from '@/config/ai-proxy.config';
+import {
+  analyzeQueryComplexity,
+  type QueryComplexity,
+} from '@/lib/ai/utils/query-complexity';
+import type { HybridQueryState, QueryMode } from '../types/hybrid-query.types';
+import type { FileAttachment } from '../useFileAttachments';
+
+// ============================================================================
+// Types
+// ============================================================================
+
+type StateSetter = React.Dispatch<React.SetStateAction<HybridQueryState>>;
+
+interface AsyncQueryControlLike {
+  cancel: () => Promise<void>;
+  reset: () => void;
+}
+
+type SetMessagesLike = (
+  updater: UIMessage[] | ((prev: UIMessage[]) => UIMessage[])
+) => void;
+
+export interface QueryControlDeps {
+  currentMode: QueryMode;
+  asyncQuery: AsyncQueryControlLike;
+  stopChat: () => void;
+  onUserAbort?: () => void;
+  onReset?: () => void;
+  setMessages: SetMessagesLike;
+  setState: StateSetter;
+  refs: {
+    abortController: MutableRefObject<AbortController | null>;
+    retryTimeout: MutableRefObject<ReturnType<typeof setTimeout> | null>;
+    retryCount: MutableRefObject<number>;
+    traceId: MutableRefObject<string>;
+    pendingQuery: MutableRefObject<string | null>;
+    pendingAttachments: MutableRefObject<FileAttachment[] | null>;
+    currentQuery: MutableRefObject<string | null>;
+    redirecting?: MutableRefObject<boolean>;
+    errorHandled?: MutableRefObject<boolean>;
+  };
+}
+
+// ============================================================================
+// Hook
+// ============================================================================
+
+export function useQueryControls(deps: QueryControlDeps) {
+  const {
+    currentMode,
+    asyncQuery,
+    stopChat,
+    onUserAbort,
+    onReset,
+    setMessages,
+    setState,
+    refs,
+  } = deps;
+
+  // F14 Fix: currentMode를 ref에 저장하여 stop 호출 시 stale closure 방지
+  const currentModeRef = useRef(currentMode);
+  currentModeRef.current = currentMode;
+
+  const stop = useCallback(() => {
+    // AbortController cleanup on stop
+    refs.abortController.current?.abort();
+    refs.abortController.current = null;
+    if (refs.retryTimeout.current) {
+      clearTimeout(refs.retryTimeout.current);
+      refs.retryTimeout.current = null;
+    }
+    if (refs.redirecting) refs.redirecting.current = false;
+    if (refs.errorHandled) refs.errorHandled.current = false;
+
+    if (currentModeRef.current === 'job-queue') {
+      void asyncQuery.cancel().catch(() => {});
+    } else {
+      onUserAbort?.();
+      stopChat();
+    }
+    setState((prev) => ({
+      ...prev,
+      isLoading: false,
+      progress: null,
+      jobId: null,
+      clarification: null,
+    }));
+  }, [asyncQuery, stopChat, onUserAbort, setState, refs]);
+
+  const cancel = useCallback(async () => {
+    // Cleanup abort controller and pending retry (same as stop)
+    refs.abortController.current?.abort();
+    refs.abortController.current = null;
+    if (refs.retryTimeout.current) {
+      clearTimeout(refs.retryTimeout.current);
+      refs.retryTimeout.current = null;
+    }
+    if (refs.redirecting) refs.redirecting.current = false;
+    if (refs.errorHandled) refs.errorHandled.current = false;
+
+    if (currentModeRef.current === 'job-queue') {
+      await asyncQuery.cancel();
+    } else {
+      onUserAbort?.();
+      stopChat();
+    }
+    setState((prev) => ({
+      ...prev,
+      isLoading: false,
+      progress: null,
+      jobId: null,
+      clarification: null,
+    }));
+  }, [asyncQuery, stopChat, onUserAbort, setState, refs]);
+
+  const reset = useCallback(() => {
+    // AbortController cleanup on reset
+    refs.abortController.current?.abort();
+    refs.abortController.current = null;
+    if (refs.retryTimeout.current) {
+      clearTimeout(refs.retryTimeout.current);
+      refs.retryTimeout.current = null;
+    }
+
+    // Reset retry count, trace ID, and state refs
+    refs.retryCount.current = 0;
+    refs.traceId.current = generateTraceId();
+    if (refs.redirecting) refs.redirecting.current = false;
+    if (refs.errorHandled) refs.errorHandled.current = false;
+
+    asyncQuery.reset();
+    setMessages([]);
+    refs.pendingQuery.current = null;
+    refs.pendingAttachments.current = null;
+    refs.currentQuery.current = null;
+    onReset?.();
+    setState({
+      mode: 'streaming',
+      complexity: null,
+      progress: null,
+      jobId: null,
+      isLoading: false,
+      error: null,
+      clarification: null,
+      warning: null,
+      processingTime: 0,
+      warmingUp: false,
+      estimatedWaitSeconds: 0,
+    });
+  }, [asyncQuery, onReset, setMessages, setState, refs]);
+
+  const previewComplexity = useCallback((query: string): QueryComplexity => {
+    return analyzeQueryComplexity(query).level;
+  }, []);
+
+  return { stop, cancel, reset, previewComplexity };
+}

@@ -1,0 +1,377 @@
+/**
+ * Incident RAG Injector
+ *
+ * Automatically injects approved incident reports into knowledge_base
+ * for RAG search by Reporter Agent.
+ *
+ * Flow:
+ * 1. Fetch source incidents from approval_history (preferred) or incident_reports (fallback)
+ * 2. Skip already-synced entries (check source_ref)
+ * 3. Generate embeddings using Mistral mistral-embed (1024d)
+ * 4. Insert into knowledge_base with category='incident'
+ *
+ * Rate Limit: Batch of 10, called on-demand only
+ *
+ * @version 1.1.0 (Mistral embedding migration)
+ * @created 2025-12-30
+ * @updated 2025-12-31
+ */
+
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import { getSupabaseConfig } from './config-parser';
+import { embedText, toVectorString } from './embedding';
+import {
+  type ApprovedIncident,
+  type IncidentKnowledgeEntry,
+  type IncidentReportRow,
+  type SyncResult,
+  SYNC_LIMITS,
+  extractIncidentContent,
+  isMissingApprovalHistory,
+  mapIncidentReportToApprovedIncident,
+  validateSyncOptions,
+} from './incident-rag-injector-utils';
+import { logger } from './logger';
+
+// ============================================================================
+// Supabase Client
+// ============================================================================
+
+let supabaseClient: SupabaseClient | null = null;
+let initFailed = false;
+
+function getSupabaseClient(): SupabaseClient | null {
+  if (initFailed) return null;
+  if (supabaseClient) return supabaseClient;
+
+  const config = getSupabaseConfig();
+  if (!config) {
+    initFailed = true;
+    logger.warn('[IncidentRAG] Supabase config missing');
+    return null;
+  }
+
+  try {
+    supabaseClient = createClient(config.url, config.serviceRoleKey);
+    logger.info('[IncidentRAG] Supabase client initialized');
+    return supabaseClient;
+  } catch (e) {
+    initFailed = true;
+    logger.error('[IncidentRAG] Supabase init failed:', e);
+    return null;
+  }
+}
+
+// ============================================================================
+// Core Functions
+// ============================================================================
+
+/**
+ * Check if incident is already synced to knowledge_base
+ */
+async function isAlreadySynced(
+  supabase: SupabaseClient,
+  sessionId: string
+): Promise<boolean> {
+  // Prefer metadata.source_ref for dedup.
+  // Keep legacy tags-based fallback for backward compatibility.
+  const { data, error } = await supabase
+    .from('knowledge_base')
+    .select('id')
+    .eq('category', 'incident')
+    .eq('source', 'auto_generated')
+    .filter('metadata->>source_ref', 'eq', sessionId)
+    .limit(1);
+
+  if (error) {
+    logger.warn('[IncidentRAG] Dedup check failed, assuming already synced to prevent duplicates:', error);
+    return true;
+  }
+
+  if (Array.isArray(data) && data.length > 0) {
+    return true;
+  }
+
+  // Legacy fallback: old rows stored source ref in tags only.
+  const { data: legacyData, error: legacyError } = await supabase
+    .from('knowledge_base')
+    .select('id')
+    .eq('category', 'incident')
+    .eq('source', 'auto_generated')
+    .contains('tags', [sessionId])
+    .limit(1);
+
+  if (legacyError) {
+    logger.warn('[IncidentRAG] Legacy dedup check failed, assuming already synced to prevent duplicates:', legacyError);
+    return true;
+  }
+
+  return Array.isArray(legacyData) && legacyData.length > 0;
+}
+
+/**
+ * Insert incident into knowledge_base with embedding
+ */
+async function insertToKnowledgeBase(
+  supabase: SupabaseClient,
+  entry: IncidentKnowledgeEntry
+): Promise<boolean> {
+  try {
+    const metadata = {
+      source_ref: entry.sourceRef,
+      source_type: entry.sourceType,
+      injected_by: 'incident-rag-injector',
+      injected_at: new Date().toISOString(),
+    } as const;
+
+    const { error } = await supabase.from('knowledge_base').insert({
+      title: entry.title,
+      content: entry.content,
+      embedding: entry.embedding,
+      category: entry.category,
+      tags: entry.tags,
+      severity: entry.severity,
+      source: entry.source,
+      related_server_types: entry.serverTypes || [],
+      metadata,
+    });
+
+    if (error) {
+      logger.error('[IncidentRAG] Insert failed:', error);
+      return false;
+    }
+
+    return true;
+  } catch (e) {
+    logger.error('[IncidentRAG] Insert error:', e);
+    return false;
+  }
+}
+
+// ============================================================================
+// Public API
+// ============================================================================
+
+/**
+ * Sync approved incident reports to knowledge_base for RAG
+ *
+ * @param options - Sync options
+ * @param options.limit - Max number of incidents to sync (1-100, default: 10)
+ * @param options.daysBack - How many days back to look (1-365, default: 30)
+ * @returns Sync result with counts
+ */
+export async function syncIncidentsToRAG(
+  options: { limit?: number; daysBack?: number } = {}
+): Promise<SyncResult> {
+  // Validate and sanitize inputs
+  const validated = validateSyncOptions(options);
+  const { limit, daysBack, warnings } = validated;
+  const result: SyncResult = {
+    success: false,
+    synced: 0,
+    skipped: 0,
+    failed: 0,
+    errors: [...warnings], // Include validation warnings
+  };
+
+  // Log validation warnings
+  if (warnings.length > 0) {
+    logger.warn(`[IncidentRAG] Input validation warnings: ${warnings.join('; ')}`);
+  }
+
+  logger.info(
+    `[IncidentRAG] Starting sync (limit=${limit}, daysBack=${daysBack})`
+  );
+
+  const supabase = getSupabaseClient();
+  if (!supabase) {
+    result.errors.push('Supabase not available');
+    return result;
+  }
+
+  try {
+    // 1. Fetch source incidents:
+    //    priority) approval_history (HITL approved)
+    //    fallback) incident_reports (for deployments without approval_history)
+    const sinceDate = new Date();
+    sinceDate.setDate(sinceDate.getDate() - daysBack);
+
+    const { data: approvalIncidents, error: fetchError } = await supabase
+      .from('approval_history')
+      .select('id, session_id, description, payload, requested_at, decided_at')
+      .eq('action_type', 'incident_report')
+      .eq('status', 'approved')
+      .gte('decided_at', sinceDate.toISOString())
+      .order('decided_at', { ascending: false })
+      .limit(limit);
+
+    let incidents: ApprovedIncident[] = [];
+
+    if (fetchError) {
+      if (!isMissingApprovalHistory(fetchError)) {
+        result.errors.push(`Fetch error: ${fetchError.message}`);
+        return result;
+      }
+      logger.info('[IncidentRAG] approval_history missing, falling back to incident_reports');
+    } else if (approvalIncidents && approvalIncidents.length > 0) {
+      incidents = approvalIncidents as ApprovedIncident[];
+    }
+
+    if (incidents.length === 0) {
+      const { data: reportRows, error: reportError } = await supabase
+        .from('incident_reports')
+        .select(
+          'id, title, severity, pattern, affected_servers, root_cause_analysis, recommendations, timeline, status, created_at, updated_at'
+        )
+        .gte('updated_at', sinceDate.toISOString())
+        .order('updated_at', { ascending: false })
+        .limit(limit);
+
+      if (reportError) {
+        result.errors.push(`Fallback fetch error: ${reportError.message}`);
+        return result;
+      }
+
+      incidents = (reportRows || []).map((row) =>
+        mapIncidentReportToApprovedIncident(row as IncidentReportRow)
+      );
+    }
+
+    if (incidents.length === 0) {
+      logger.info('[IncidentRAG] No new incidents to sync');
+      result.success = true;
+      return result;
+    }
+
+    logger.info(`[IncidentRAG] Found ${incidents.length} source incidents`);
+
+    // 2. Process each incident
+    for (const incident of incidents) {
+      try {
+        // Check dedup
+        if (await isAlreadySynced(supabase, incident.session_id)) {
+          logger.info(`[IncidentRAG] Skipping already synced: ${incident.session_id}`);
+          result.skipped++;
+          continue;
+        }
+
+        // Extract content
+        const extracted = extractIncidentContent(incident);
+
+        if (!extracted.content || extracted.content.length < SYNC_LIMITS.MIN_CONTENT_LENGTH) {
+          logger.warn(`[IncidentRAG] Insufficient content for: ${incident.session_id}`);
+          result.skipped++;
+          continue;
+        }
+
+        // Generate embedding
+        const embeddingText = `${extracted.title}\n\n${extracted.content}`;
+        const embedding = await embedText(embeddingText);
+        const vectorString = toVectorString(embedding);
+
+        // Insert to knowledge_base
+        const entry: IncidentKnowledgeEntry = {
+          title: extracted.title,
+          content: extracted.content,
+          embedding: vectorString,
+          category: 'incident',
+          tags: [...extracted.tags, incident.session_id], // Include session_id for dedup
+          severity: extracted.severity,
+          source: 'auto_generated',
+          serverTypes: extracted.serverTypes,
+          sourceRef: incident.session_id,
+          sourceType:
+            String(incident.payload.source_table || '') === 'incident_reports'
+              ? 'incident_reports'
+              : 'approval_history',
+        };
+
+        const inserted = await insertToKnowledgeBase(supabase, entry);
+
+        if (inserted) {
+          logger.info(`[IncidentRAG] Synced: ${incident.session_id}`);
+          result.synced++;
+        } else {
+          result.failed++;
+        }
+      } catch (e) {
+        logger.error(`[IncidentRAG] Error processing ${incident.session_id}:`, e);
+        result.errors.push(`${incident.session_id}: ${String(e)}`);
+        result.failed++;
+      }
+    }
+
+    result.success = true;
+    logger.info(
+      `[IncidentRAG] Sync complete: ${result.synced} synced, ${result.skipped} skipped, ${result.failed} failed`
+    );
+
+    return result;
+  } catch (e) {
+    logger.error('[IncidentRAG] Sync failed:', e);
+    result.errors.push(String(e));
+    return result;
+  }
+}
+
+/**
+ * Get RAG injection stats
+ */
+export async function getRAGInjectionStats(): Promise<{
+  totalIncidents: number;
+  syncedIncidents: number;
+  pendingSync: number;
+} | null> {
+  const supabase = getSupabaseClient();
+  if (!supabase) return null;
+
+  try {
+    // Count source incidents (approval_history preferred, incident_reports fallback)
+    const sinceDate = new Date();
+    sinceDate.setDate(sinceDate.getDate() - 30);
+
+    const { count: approvalCount, error: approvalCountError } = await supabase
+      .from('approval_history')
+      .select('*', { count: 'exact', head: true })
+      .eq('action_type', 'incident_report')
+      .eq('status', 'approved')
+      .gte('decided_at', sinceDate.toISOString());
+
+    let totalCount = approvalCount || 0;
+
+    if (approvalCountError && isMissingApprovalHistory(approvalCountError)) {
+      const { count: reportCount, error: reportCountError } = await supabase
+        .from('incident_reports')
+        .select('*', { count: 'exact', head: true })
+        .gte('updated_at', sinceDate.toISOString());
+
+      if (reportCountError) {
+        logger.error('[IncidentRAG] incident_reports count failed:', reportCountError);
+        return null;
+      }
+
+      totalCount = reportCount || 0;
+    } else if (approvalCountError) {
+      logger.error('[IncidentRAG] approval_history count failed:', approvalCountError);
+      return null;
+    }
+
+    // Count synced incidents in knowledge_base
+    const { count: syncedCount } = await supabase
+      .from('knowledge_base')
+      .select('*', { count: 'exact', head: true })
+      .eq('category', 'incident')
+      .eq('source', 'auto_generated');
+
+    return {
+      totalIncidents: totalCount,
+      syncedIncidents: syncedCount || 0,
+      pendingSync: Math.max(0, totalCount - (syncedCount || 0)),
+    };
+  } catch (e) {
+    logger.error('[IncidentRAG] Stats error:', e);
+    return null;
+  }
+}
+
+export default { syncIncidentsToRAG, getRAGInjectionStats };

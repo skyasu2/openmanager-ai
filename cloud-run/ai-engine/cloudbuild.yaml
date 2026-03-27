@@ -1,0 +1,141 @@
+# ==============================================================================
+# Cloud Build Configuration (AI Engine)
+#
+# Features:
+# - Artifact Registry (gcr.io deprecated)
+# - BuildKit enabled for cache mounts
+# - Kaniko caching for faster rebuilds
+# - Parallel steps where possible
+# - cpu-boost enabled for faster cold start
+#
+# Usage:
+#   gcloud builds submit --config cloudbuild.yaml .
+#
+# Prerequisites:
+#   gcloud artifacts repositories create cloud-run \
+#     --repository-format=docker \
+#     --location=asia-northeast1 \
+#     --description="Cloud Run container images"
+#
+# v4.0 - 2026-02-02 (Cloud Run ₩0 Cost Optimization)
+#   - Added --cpu-throttling (CPU only billed during requests)
+#   - Added --no-session-affinity (reduce instance stickiness)
+# v3.0 - 2026-02-02 (Cloud Build Free Tier Optimization)
+#   - Removed machineType: E2_HIGHCPU_8 (not covered by free tier)
+#   - Default machine (e2-medium) = free 120 min/day
+# v2.0 - 2026-01-08 (Artifact Registry Migration)
+# v1.0 - 2026-01-06
+# ==============================================================================
+
+options:
+  # ⚠️ FREE TIER: Do NOT add machineType here!
+  #    Only default machine (e2-medium) is free (120 min/day).
+  #    E2_HIGHCPU_8, N1_HIGHCPU_8 등은 무료 대상 아님.
+  # Enable BuildKit for cache mounts in Dockerfile
+  env:
+    - 'DOCKER_BUILDKIT=1'
+  # Logging to Cloud Logging
+  logging: CLOUD_LOGGING_ONLY
+
+substitutions:
+  _SERVICE_NAME: 'ai-engine'
+  _REGION: 'asia-northeast1'
+  _REPOSITORY: 'cloud-run'
+  _IMAGE_TAG: 'latest'
+
+steps:
+  # Step 1: Build Docker image with BuildKit
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'build'
+    args:
+      - 'build'
+      - '--build-arg'
+      - 'BUILDKIT_INLINE_CACHE=1'
+      - '--build-arg'
+      - 'APP_VERSION=${TAG_NAME:-8.3.3}'
+      - '--build-arg'
+      - 'BUILD_DATE=${_BUILD_DATE}'
+      - '--build-arg'
+      - 'GIT_SHA=${SHORT_SHA}'
+      - '--cache-from'
+      - '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/${_SERVICE_NAME}:latest'
+      - '-t'
+      - '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/${_SERVICE_NAME}:${SHORT_SHA}'
+      - '-t'
+      - '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/${_SERVICE_NAME}:latest'
+      - '.'
+    env:
+      - 'DOCKER_BUILDKIT=1'
+
+  # Step 2: Push images (parallel)
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'push-sha'
+    args:
+      - 'push'
+      - '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/${_SERVICE_NAME}:${SHORT_SHA}'
+    waitFor:
+      - 'build'
+
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'push-latest'
+    args:
+      - 'push'
+      - '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/${_SERVICE_NAME}:latest'
+    waitFor:
+      - 'build'
+
+  # Step 3: Deploy to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: 'deploy'
+    entrypoint: 'gcloud'
+    args:
+      - 'run'
+      - 'deploy'
+      - '${_SERVICE_NAME}'
+      - '--image'
+      - '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/${_SERVICE_NAME}:${SHORT_SHA}'
+      - '--platform'
+      - 'managed'
+      - '--region'
+      - '${_REGION}'
+      - '--execution-environment'
+      - 'gen2'
+      - '--allow-unauthenticated'
+      - '--min-instances'
+      - '0'
+      - '--max-instances'
+      - '1'
+      - '--concurrency'
+      - '80'
+      - '--cpu'
+      - '1'
+      - '--memory'
+      - '512Mi'
+      - '--timeout'
+      - '300'
+      - '--cpu-boost'
+      - '--cpu-throttling'
+      - '--no-session-affinity'
+      - '--set-env-vars'
+      - 'NODE_ENV=production,BUILD_SHA=${SHORT_SHA},DEFAULT_ORIGIN=https://openmanager-ai.vercel.app,ALLOWED_ORIGINS=https://openmanager-ai.vercel.app'
+      - '--set-secrets'
+      - 'SUPABASE_CONFIG=supabase-config:latest,AI_PROVIDERS_CONFIG=ai-providers-config:latest,KV_CONFIG=kv-config:latest,CLOUD_RUN_API_SECRET=cloud-run-api-secret:latest,LANGFUSE_CONFIG=langfuse-config:latest'
+      - '--update-labels'
+      - 'version=${SHORT_SHA},framework=ai-sdk-v6,registry=artifact'
+    waitFor:
+      - 'push-sha'
+
+# Images to be pushed
+images:
+  - '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/${_SERVICE_NAME}:${SHORT_SHA}'
+  - '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/${_SERVICE_NAME}:latest'
+
+# Build timeout
+timeout: '900s'
+
+# Tags for the build
+tags:
+  - 'ai-engine'
+  - 'cloud-run'
+  - 'multi-agent'
+  - 'artifact-registry'

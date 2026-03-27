@@ -1,0 +1,60 @@
+{
+  "app": {
+    "name": "OpenManager AI",
+    "version": "8.0.0",
+    "environment": "production",
+    "debugMode": false,
+    "apiTimeout": 30000,
+    "retryAttempts": 3,
+    "enableAnalytics": true
+  },
+  "features": {
+    "aiAgent": {
+      "enabled": true,
+      "maxRetries": 5,
+      "lockoutTime": 600000,
+      "sessionTimeout": 1800000
+    },
+    "monitoring": {
+      "enabled": true,
+      "refreshInterval": 45000,
+      "maxDataPoints": 100,
+      "realTimeEnabled": true
+    },
+    "charts": {
+      "enabled": true,
+      "animationDuration": 750,
+      "responsiveBreakpoints": {
+        "mobile": 768,
+        "tablet": 1024,
+        "desktop": 1200
+      }
+    }
+  },
+  "ui": {
+    "theme": "dark",
+    "primaryColor": "#8b5cf6",
+    "secondaryColor": "#06b6d4",
+    "animations": {
+      "enabled": true,
+      "duration": 300,
+      "easing": "ease-in-out"
+    },
+    "toast": {
+      "position": "top-right",
+      "duration": 5000,
+      "maxVisible": 5
+    }
+  },
+  "api": {
+    "baseUrl": "/api",
+    "timeout": 30000,
+    "retries": 3,
+    "endpoints": {
+      "health": "/health",
+      "servers": "/servers",
+      "metrics": "/metrics",
+      "system": "/system"
+    }
+  }
+}

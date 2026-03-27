@@ -1,0 +1,1484 @@
+@import 'tailwindcss';
+
+/* GPU-Accelerated Animation Utilities (120fps target) */
+@import './animations-gpu.css' layer(utilities);
+
+@plugin 'tailwindcss-animate';
+
+@source '../**/*.{js,ts,jsx,tsx,mdx}';
+
+@custom-variant dark (&:is(.dark *));
+
+@utility container {
+  margin-inline: auto;
+  padding-inline: 2rem;
+  @media (width >= --theme(--breakpoint-sm)) {
+    max-width: none;
+  }
+  @media (width >= 1400px) {
+    max-width: 1400px;
+  }
+}
+
+@theme {
+  --breakpoint-*: initial;
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-2xl: 1536px;
+  --breakpoint-3xl: 1920px;
+
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+
+  --color-primary-50: #ecfeff;
+  --color-primary-500: #06b6d4;
+  --color-primary-600: #0891b2;
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+
+  --color-ai-purple: #8b5cf6;
+  --color-ai-pink: #ec4899;
+
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+
+  --backdrop-blur-xs: 2px;
+
+  --font-sans: Noto Sans KR, sans-serif;
+
+  --animate-accordion-down: accordion-down 0.2s ease-out;
+  --animate-accordion-up: accordion-up 0.2s ease-out;
+  --animate-gradient: gradient 15s ease infinite;
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-pulse-slow: pulse-slow 4s ease-in-out infinite;
+  --animate-wiggle: wiggle 0.8s ease-in-out infinite;
+  --animate-point-bounce: point-bounce 1s ease-in-out infinite;
+  --animate-shimmer: shimmer 2s ease-in-out infinite;
+  --animate-progress: progress 3s ease-in-out;
+  --animate-pulse-click: pulse-click 0.6s ease-out;
+  --animate-fade-in: fadeIn 0.3s ease-out;
+  --animate-gradient-x: gradient-x 3s ease infinite;
+  --animate-gradient-shift: gradient-shift 4s ease-in-out infinite;
+  --animate-pulse-glow: pulse-glow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+
+  @keyframes accordion-down {
+    from {
+      height: 0;
+    }
+    to {
+      height: var(--radix-accordion-content-height);
+    }
+  }
+  @keyframes accordion-up {
+    from {
+      height: var(--radix-accordion-content-height);
+    }
+    to {
+      height: 0;
+    }
+  }
+  @keyframes gradient {
+    0%,
+    100% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+  }
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+  @keyframes pulse-slow {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.5;
+    }
+  }
+  @keyframes wiggle {
+    0%,
+    100% {
+      transform: translateX(0);
+    }
+    25% {
+      transform: translateX(-4px);
+    }
+    75% {
+      transform: translateX(4px);
+    }
+  }
+  @keyframes point-bounce {
+    0%,
+    100% {
+      transform: translateY(0) scale(1);
+    }
+    50% {
+      transform: translateY(-2px) scale(1.1);
+    }
+  }
+  @keyframes shimmer {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(100%);
+    }
+  }
+  @keyframes progress {
+    0% {
+      width: 0%;
+    }
+    100% {
+      width: 100%;
+    }
+  }
+  @keyframes pulse-click {
+    0% {
+      opacity: 0;
+      transform: scale(0.8);
+    }
+    50% {
+      opacity: 0.5;
+    }
+    100% {
+      opacity: 0;
+      transform: scale(1.5);
+    }
+  }
+  @keyframes fadeIn {
+    0% {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  @keyframes gradient-x {
+    0%,
+    100% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+  }
+  @keyframes pulse-glow {
+    0%,
+    100% {
+      opacity: 0.7;
+      filter: drop-shadow(0 0 2px #fff);
+    }
+    50% {
+      opacity: 1;
+      filter: drop-shadow(0 0 5px #fff);
+    }
+  }
+  @keyframes gradient-shift {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+}
+
+/*
+  The default border color has changed to `currentcolor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentcolor);
+  }
+}
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 188 87% 42%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222.2 84% 4.9%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96%;
+    --accent-foreground: 222.2 84% 4.9%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 188 87% 42%;
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 188 87% 42%;
+    --primary-foreground: 222.2 84% 4.9%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 188 87% 42%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* AI Assistant Panel Styles */
+.ai-assistant-panel {
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", sans-serif;
+  box-shadow:
+    -8px 0 32px rgba(0, 0, 0, 0.12),
+    -4px 0 16px rgba(0, 0, 0, 0.08);
+  /* backdrop-filter: blur(10px); */
+  border-left: 1px solid rgba(229, 231, 235, 0.8);
+  position: fixed;
+  right: 0;
+  top: 0;
+  height: 100vh;
+  width: 400px;
+  z-index: 1000;
+  overflow-y: auto;
+}
+
+.panel-overlay {
+  /* backdrop-filter: blur(8px); */
+  background: rgba(0, 0, 0, 0.3);
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+}
+
+.panel-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.panel-navigation {
+  background: rgba(249, 250, 251, 0.95);
+  /* backdrop-filter: blur(8px); */
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.panel-body {
+  background: linear-gradient(to bottom, #f8fafc, #f1f5f9);
+}
+
+/* 손가락 포인터 애니메이션 - 성능 최적화 */
+.finger-pointer {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-top: 0.75rem;
+  font-size: 1.5rem;
+  pointer-events: none;
+  z-index: 60;
+  animation: fingerWiggle 2s ease-in-out infinite;
+  will-change: transform;
+}
+
+.finger-pointer-primary {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-top: 0.75rem;
+  font-size: 1.8rem;
+  pointer-events: none;
+  z-index: 60;
+  animation: fingerWigglePrimary 2s ease-in-out infinite;
+  will-change: transform;
+  color: #fcd34d; /* brighter yellow */
+  filter: drop-shadow(0 0 8px rgba(252, 211, 77, 0.6));
+  text-shadow: 0 0 10px rgba(252, 211, 77, 0.8);
+}
+
+.finger-pointer-dashboard {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-top: 0.5rem;
+  font-size: 1.25rem;
+  pointer-events: none;
+  z-index: 60;
+  animation: fingerWiggleDashboard 3s ease-in-out infinite;
+  will-change: transform;
+  color: #fbbf24; /* text-yellow-400 */
+}
+
+.finger-pointer-ai {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-top: 0.5rem;
+  font-size: 1.125rem;
+  pointer-events: none;
+  z-index: 45;
+  animation: fingerWiggleAI 3.5s ease-in-out infinite;
+  will-change: transform;
+  color: #fbbf24; /* text-yellow-400 */
+}
+
+/* 모달이나 사이드바가 열릴 때 손가락 애니메이션 숨김 */
+.finger-pointer-ai.hidden-by-modal {
+  z-index: 10;
+  opacity: 0.3;
+  transition: opacity 0.3s ease;
+}
+
+/* 성능 최적화된 애니메이션들 */
+@keyframes fingerWiggle {
+  0%,
+  100% {
+    transform: translateX(-50%) rotate(0deg);
+  }
+  25% {
+    transform: translateX(-50%) rotate(3deg);
+  }
+  75% {
+    transform: translateX(-50%) rotate(-3deg);
+  }
+}
+
+@keyframes fingerWigglePrimary {
+  0%,
+  100% {
+    transform: translateX(-50%) rotate(0deg) scale(1);
+  }
+  15% {
+    transform: translateX(-50%) rotate(8deg) scale(1.1);
+  }
+  30% {
+    transform: translateX(-50%) rotate(-6deg) scale(1.05);
+  }
+  45% {
+    transform: translateX(-50%) rotate(10deg) scale(1.15);
+  }
+  60% {
+    transform: translateX(-50%) rotate(-8deg) scale(1.08);
+  }
+  75% {
+    transform: translateX(-50%) rotate(6deg) scale(1.12);
+  }
+  90% {
+    transform: translateX(-50%) rotate(-4deg) scale(1.03);
+  }
+}
+
+@keyframes fingerWiggleDashboard {
+  0%,
+  100% {
+    transform: translateX(-50%) rotate(0deg);
+  }
+  20% {
+    transform: translateX(-50%) rotate(4deg);
+  }
+  40% {
+    transform: translateX(-50%) rotate(-2deg);
+  }
+  60% {
+    transform: translateX(-50%) rotate(3deg);
+  }
+  80% {
+    transform: translateX(-50%) rotate(-4deg);
+  }
+}
+
+@keyframes fingerWiggleAI {
+  0%,
+  100% {
+    transform: translateX(-50%) rotate(0deg);
+  }
+  25% {
+    transform: translateX(-50%) rotate(4deg);
+  }
+  75% {
+    transform: translateX(-50%) rotate(-4deg);
+  }
+}
+
+/* 모바일 최적화 손가락 포인터 */
+@media (max-width: 768px) {
+  .finger-pointer {
+    font-size: 1.25rem;
+    margin-top: 0.5rem;
+  }
+
+  .finger-pointer-primary {
+    font-size: 1.25rem;
+    margin-top: 0.5rem;
+  }
+
+  .finger-pointer-dashboard {
+    font-size: 1rem;
+    margin-top: 0.375rem;
+  }
+
+  .finger-pointer-ai {
+    font-size: 1rem;
+    margin-top: 0.375rem;
+  }
+}
+
+/* 태블릿 최적화 */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .finger-pointer {
+    font-size: 1.375rem;
+    margin-top: 0.625rem;
+  }
+
+  .finger-pointer-primary {
+    font-size: 1.375rem;
+    margin-top: 0.625rem;
+  }
+
+  .finger-pointer-dashboard {
+    font-size: 1.125rem;
+    margin-top: 0.5rem;
+  }
+}
+
+/* AI 그라데이션 버튼 스타일 */
+.ai-gradient-button {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+  background-size: 200% 200%;
+  animation: gradientShift 3s ease infinite;
+  position: relative;
+  overflow: hidden;
+}
+
+.ai-gradient-button::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  transition: left 0.5s;
+}
+
+.ai-gradient-button:hover::before {
+  left: 100%;
+}
+
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* 시스템 버튼 펄스 효과 */
+.system-button-pulse {
+  animation: systemPulse 2s ease-in-out infinite;
+}
+
+@keyframes systemPulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
+  }
+
+  50% {
+    box-shadow: 0 0 0 15px rgba(34, 197, 94, 0);
+  }
+}
+
+/* AI 텍스트 그라데이션 애니메이션 */
+.ai-text-gradient {
+  background: linear-gradient(135deg, #a855f7, #ec4899, #06b6d4);
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: textGradientFlow 3s ease infinite;
+}
+
+@keyframes textGradientFlow {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* 버튼 호버 애니메이션 강화 */
+.enhanced-button {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.enhanced-button::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition:
+    width 0.4s ease,
+    height 0.4s ease;
+}
+
+.enhanced-button:hover::before {
+  width: 300px;
+  height: 300px;
+}
+
+/* 상태 표시 점 애니메이션 */
+.status-dot {
+  position: relative;
+}
+
+.status-dot::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  animation: statusRipple 2s ease-out infinite;
+}
+
+.status-dot.active::after {
+  border: 2px solid #22c55e;
+}
+
+.status-dot.inactive::after {
+  border: 2px solid #ef4444;
+}
+
+.status-dot.warning::after {
+  border: 2px solid #f59e0b;
+}
+
+@keyframes statusRipple {
+  0% {
+    transform: scale(0.8);
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(2.5);
+    opacity: 0;
+  }
+}
+
+/* 로딩 스피너 개선 */
+.enhanced-spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top: 2px solid #ffffff;
+  border-radius: 50%;
+  animation: enhancedSpin 1s linear infinite;
+}
+
+@keyframes enhancedSpin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* 카드 호버 효과 강화 */
+.feature-card-enhanced {
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  position: relative;
+  overflow: hidden;
+}
+
+.feature-card-enhanced::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    45deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.1) 50%,
+    transparent 70%
+  );
+  transform: translateX(-100%);
+  transition: transform 0.6s ease;
+}
+
+.feature-card-enhanced:hover::before {
+  transform: translateX(100%);
+}
+
+/* 커스텀 스크롤바 개선 */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(229, 231, 235, 0.3);
+  border-radius: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: linear-gradient(to bottom, #9ca3af, #6b7280);
+  border-radius: 3px;
+  transition: background 0.2s ease;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(to bottom, #6b7280, #4b5563);
+}
+
+/* 애니메이션 개선 */
+.animate-fade-in {
+  animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 프리셋 질문 버튼 호버 효과 */
+.preset-question-btn {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.preset-question-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* 툴팁 스타일 개선 */
+.group:hover .tooltip {
+  opacity: 1;
+  transform: translateX(-50%) translateY(-8px);
+}
+
+.tooltip {
+  opacity: 0;
+  transform: translateX(-50%) translateY(-4px);
+  transition: all 0.2s ease-out;
+  pointer-events: none;
+  z-index: 9999;
+  max-width: 200px;
+  word-wrap: break-word;
+  white-space: normal;
+}
+
+/* AI 사이드바 메뉴 개선 */
+.ai-menu-tooltip {
+  /* 화면 경계 감지 및 자동 위치 조정 */
+  position: absolute;
+  left: calc(100% + 12px);
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 60;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+
+  /* 반응형 최대 너비 */
+  max-width: min(240px, calc(100vw - 100px));
+  min-width: 120px;
+}
+
+/* 상단 메뉴 아이템들의 툴팁은 상단 정렬 */
+.ai-menu-item:nth-child(-n + 3) .ai-menu-tooltip {
+  top: 0;
+  transform: translateY(0);
+}
+
+/* 하단 메뉴 아이템들의 툴팁은 하단 정렬 */
+.ai-menu-item:nth-last-child(-n + 3) .ai-menu-tooltip {
+  top: auto;
+  bottom: 0;
+  transform: translateY(0);
+}
+
+/* 호버 시 툴팁 표시 */
+.ai-menu-item:hover .ai-menu-tooltip {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* 화면 우측 경계 근처에서 왼쪽으로 표시 */
+@media (max-width: 1024px) {
+  .ai-menu-tooltip {
+    left: auto;
+    right: calc(100% + 12px);
+  }
+}
+
+/* 반응형 개선 */
+@media (max-width: 768px) {
+  .ai-assistant-panel {
+    box-shadow: none;
+    border-left: none;
+    width: 100vw;
+    left: 0;
+    right: 0;
+  }
+
+  .panel-body {
+    padding: 0.5rem;
+  }
+
+  /* 모바일에서 AI 메뉴 패널 하단 배치 */
+  .ai-menu-panel-mobile {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    padding: 8px 16px;
+    padding-bottom: max(8px, env(safe-area-inset-bottom));
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    z-index: 50;
+  }
+
+  /* 모바일 툴팁은 위쪽으로 */
+  .ai-menu-tooltip-mobile {
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    top: auto;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .ai-assistant-panel {
+    width: 350px;
+  }
+}
+
+@media (min-width: 1025px) {
+  .ai-assistant-panel {
+    width: 420px;
+  }
+}
+
+/* 애니메이션 향상 */
+.ai-assistant-panel {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* AI 메뉴 아이템 간격 및 애니메이션 개선 */
+.ai-menu-item {
+  position: relative;
+  margin: 2px 0;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.ai-menu-item:hover {
+  transform: translateX(-2px);
+}
+
+/* 선택된 메뉴 아이템 표시 개선 */
+.ai-menu-item-selected::before {
+  content: "";
+  position: absolute;
+  left: -12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 60%;
+  background: linear-gradient(to bottom, #8b5cf6, #06b6d4);
+  border-radius: 2px;
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+@keyframes pulse-glow {
+  0%,
+  100% {
+    opacity: 1;
+    box-shadow: 0 0 4px rgba(139, 92, 246, 0.5);
+  }
+  50% {
+    opacity: 0.7;
+    box-shadow: 0 0 8px rgba(139, 92, 246, 0.8);
+  }
+}
+
+/* 골드 그라데이션 애니메이션 강화 */
+.gold-gradient-animation {
+  background: linear-gradient(
+    135deg,
+    rgba(251, 191, 36, 0.4) 0%,
+    rgba(249, 115, 22, 0.4) 25%,
+    rgba(234, 179, 8, 0.4) 50%,
+    rgba(245, 158, 11, 0.4) 75%,
+    rgba(251, 191, 36, 0.4) 100%
+  );
+  background-size: 300% 300%;
+  animation: goldFlow 4s ease-in-out infinite;
+  border-radius: inherit;
+}
+
+@keyframes goldFlow {
+  0% {
+    background-position: 0% 50%;
+    opacity: 0.3;
+  }
+
+  25% {
+    background-position: 50% 0%;
+    opacity: 0.6;
+  }
+
+  50% {
+    background-position: 100% 50%;
+    opacity: 0.8;
+  }
+
+  75% {
+    background-position: 50% 100%;
+    opacity: 0.6;
+  }
+
+  100% {
+    background-position: 0% 50%;
+    opacity: 0.3;
+  }
+}
+
+/* 시스템 상태 그라데이션 */
+.system-active-gradient {
+  background: linear-gradient(
+    135deg,
+    rgba(34, 197, 94, 0.3) 0%,
+    rgba(16, 185, 129, 0.3) 50%,
+    rgba(5, 150, 105, 0.3) 100%
+  );
+  animation: systemPulse 3s ease-in-out infinite;
+}
+
+.system-inactive-gradient {
+  background: linear-gradient(
+    135deg,
+    rgba(239, 68, 68, 0.3) 0%,
+    rgba(220, 38, 38, 0.3) 50%,
+    rgba(185, 28, 28, 0.3) 100%
+  );
+  animation: inactivePulse 2s ease-in-out infinite;
+}
+
+@keyframes inactivePulse {
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.6;
+    transform: scale(1.02);
+  }
+}
+
+/* 버튼 상태별 그라데이션 */
+.button-gradient-green {
+  background: linear-gradient(135deg, #10b981, #059669);
+  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+  transition: all 0.3s ease;
+}
+
+.button-gradient-green:hover {
+  background: linear-gradient(135deg, #059669, #047857);
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+  transform: translateY(-1px);
+}
+
+.button-gradient-red {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+  transition: all 0.3s ease;
+}
+
+.button-gradient-red:hover {
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
+  box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+  transform: translateY(-1px);
+}
+
+.button-gradient-blue {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+  transition: all 0.3s ease;
+}
+
+.button-gradient-blue:hover {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+  transform: translateY(-1px);
+}
+
+/* AI 에이전트 활성 상태 그라데이션 */
+.ai-active-gradient {
+  background: linear-gradient(
+    135deg,
+    rgba(168, 85, 247, 0.4) 0%,
+    rgba(236, 72, 153, 0.4) 50%,
+    rgba(6, 182, 212, 0.4) 100%
+  );
+  background-size: 200% 200%;
+  animation: aiActiveFlow 3s ease infinite;
+}
+
+@keyframes aiActiveFlow {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* 향상된 로딩 애니메이션 */
+.loading-spinner-enhanced {
+  width: 24px;
+  height: 24px;
+  border: 3px solid rgba(255, 255, 255, 0.2);
+  border-top: 3px solid #ffffff;
+  border-radius: 50%;
+  animation: spinEnhanced 1s linear infinite;
+}
+
+@keyframes spinEnhanced {
+  0% {
+    transform: rotate(0deg) scale(1);
+    opacity: 1;
+  }
+
+  25% {
+    transform: rotate(90deg) scale(1.1);
+    opacity: 0.8;
+  }
+
+  50% {
+    transform: rotate(180deg) scale(1);
+    opacity: 1;
+  }
+
+  75% {
+    transform: rotate(270deg) scale(1.1);
+    opacity: 0.8;
+  }
+
+  100% {
+    transform: rotate(360deg) scale(1);
+    opacity: 1;
+  }
+}
+
+/* 다크톤 회색 배경 그라데이션 애니메이션 */
+.dark-gradient-background {
+  background: linear-gradient(
+    -45deg,
+    #0f172a,
+    #1e293b,
+    #0a0f1c,
+    #1a2332,
+    #0d1425
+  );
+  background-size: 400% 400%;
+  animation: darkGradientShift 15s ease infinite;
+}
+
+@keyframes darkGradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  25% {
+    background-position: 100% 50%;
+  }
+
+  50% {
+    background-position: 50% 0%;
+  }
+
+  75% {
+    background-position: 50% 100%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* 시스템 활성 시 다크 그라데이션 */
+.dark-gradient-active {
+  background: linear-gradient(
+    -45deg,
+    #0f172a,
+    #1e3a5f,
+    #0a0f1c,
+    #1a2f4a,
+    #0d1829
+  );
+  background-size: 400% 400%;
+  animation: darkActiveShift 12s ease infinite;
+}
+
+@keyframes darkActiveShift {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  33% {
+    background-position: 100% 50%;
+  }
+
+  66% {
+    background-position: 50% 100%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* AI 활성 시 다크 그라데이션 */
+.dark-gradient-ai {
+  background: linear-gradient(
+    -45deg,
+    #0f172a,
+    #2d1b4e,
+    #0a0f1c,
+    #3b2f6b,
+    #1a0b2e
+  );
+  background-size: 400% 400%;
+  animation: darkAIShift 10s ease infinite;
+}
+
+@keyframes darkAIShift {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* 웨이브 파티클 배경 효과 */
+.wave-particles {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.wave-particles::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background:
+    radial-gradient(
+      circle at 20% 80%,
+      rgba(59, 130, 246, 0.05) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 80% 20%,
+      rgba(168, 85, 247, 0.05) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 40% 40%,
+      rgba(6, 182, 212, 0.03) 0%,
+      transparent 50%
+    );
+  animation: waveFloat 20s ease-in-out infinite;
+}
+
+.wave-particles::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background:
+    radial-gradient(
+      circle at 60% 70%,
+      rgba(236, 72, 153, 0.03) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 30% 30%,
+      rgba(34, 197, 94, 0.02) 0%,
+      transparent 50%
+    );
+  animation: waveFloat2 25s ease-in-out infinite reverse;
+}
+
+@keyframes waveFloat {
+  0%,
+  100% {
+    transform: translateY(0px) rotate(0deg);
+    opacity: 1;
+  }
+
+  25% {
+    transform: translateY(-20px) rotate(1deg);
+    opacity: 0.8;
+  }
+
+  50% {
+    transform: translateY(-10px) rotate(-1deg);
+    opacity: 0.6;
+  }
+
+  75% {
+    transform: translateY(-30px) rotate(0.5deg);
+    opacity: 0.9;
+  }
+}
+
+@keyframes waveFloat2 {
+  0%,
+  100% {
+    transform: translateX(0px) scale(1);
+    opacity: 0.4;
+  }
+
+  33% {
+    transform: translateX(30px) scale(1.1);
+    opacity: 0.2;
+  }
+
+  66% {
+    transform: translateX(-20px) scale(0.9);
+    opacity: 0.6;
+  }
+}
+
+/* 진한 다크 그라데이션 배경 with 파티클 */
+.enhanced-dark-background {
+  position: relative;
+  background: linear-gradient(
+    -45deg,
+    #000000,
+    #111111,
+    #1a1a1a,
+    #0a0a0a,
+    #1f1f1f,
+    #080808,
+    #2a2a2a
+  );
+  background-size: 600% 600%;
+  animation: infiniteBlackGradient 20s ease infinite;
+}
+
+@keyframes infiniteBlackGradient {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  20% {
+    background-position: 100% 50%;
+  }
+
+  40% {
+    background-position: 50% 0%;
+  }
+
+  60% {
+    background-position: 50% 100%;
+  }
+
+  80% {
+    background-position: 0% 100%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.enhanced-dark-background::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background:
+    radial-gradient(
+      circle at 25% 25%,
+      rgba(80, 80, 80, 0.08) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 75% 75%,
+      rgba(120, 120, 120, 0.06) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 50% 50%,
+      rgba(40, 40, 40, 0.05) 0%,
+      transparent 70%
+    );
+  animation: slowParticleFloat 40s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+
+@keyframes slowParticleFloat {
+  0%,
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 0.4;
+  }
+
+  20% {
+    transform: scale(1.2) rotate(120deg);
+    opacity: 0.6;
+  }
+
+  40% {
+    transform: scale(0.8) rotate(240deg);
+    opacity: 0.8;
+  }
+
+  60% {
+    transform: scale(1.1) rotate(360deg);
+    opacity: 0.3;
+  }
+
+  80% {
+    transform: scale(0.9) rotate(480deg);
+    opacity: 0.7;
+  }
+}
+
+/* System Boot 페이지용 애니메이션 */
+.animate-reverse-spin {
+  animation: reverse-spin 1.5s linear infinite;
+}
+
+.animate-shimmer {
+  animation: shimmer 2s linear infinite;
+}
+
+@keyframes reverse-spin {
+  from {
+    transform: rotate(360deg);
+  }
+  to {
+    transform: rotate(0deg);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* 아이콘 애니메이션: src/app/globals.css로 통합됨 (GPU 최적화 버전 사용) */
+
+/* 추가 애니메이션들 */
+.animate-spin-slow {
+  animation: spin-slow 3s linear infinite;
+}
+
+.animate-progress-bar {
+  animation: progress-bar 2s ease-in-out infinite;
+}
+
+.animate-fade-in-delay {
+  animation: fade-in-delay 0.6s ease-out 0.3s both;
+}
+
+/* 모달 콘텐츠 fade-in-up 애니메이션 */
+.animate-fade-in-up {
+  animation: fade-in-up 0.3s ease-out forwards;
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes progress-bar {
+  0% {
+    transform: translateX(-100%);
+  }
+  50% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes fade-in-delay {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ♿ 접근성: 움직임 감소 설정 존중 */
+@media (prefers-reduced-motion: reduce) {
+  .animate-gradient-x,
+  .animate-pulse-glow,
+  .animate-spin,
+  .animate-pulse {
+    animation-duration: 12s; /* 느리게 */
+  }
+}
