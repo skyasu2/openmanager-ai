@@ -1,0 +1,171 @@
+name: Branch & PR Cleanup
+
+# 🧹 스케줄 기반 브랜치/PR 정리 자동화
+# - 매주 월요일 오전 9시 (KST) 실행
+# - 수동 실행 가능 (workflow_dispatch)
+# - 보안: 외부 입력(github.event.*) 사용하지 않음
+# - schedule 실행은 리포지토리 변수 ENABLE_ACTIONS_SCHEDULES=true 일 때만 허용
+
+on:
+  schedule:
+    # 매주 월요일 00:00 UTC (09:00 KST)
+    - cron: '0 0 * * 1'
+  workflow_dispatch: # 수동 실행 버튼
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  cleanup-stale-branches:
+    name: 🧹 Stale Branch Cleanup
+    runs-on: ubuntu-latest
+    if: github.event_name != 'schedule' || vars.ENABLE_ACTIONS_SCHEDULES == 'true'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Find Stale Branches
+        id: stale
+        run: |
+          echo "🔍 30일 이상 미사용 브랜치 검색..."
+
+          STALE_BRANCHES=""
+          PROTECTED_BRANCHES="main master develop"
+
+          for branch in $(git branch -r --format='%(refname:short)' | sed 's|origin/||'); do
+            # 보호된 브랜치 스킵
+            if echo "$PROTECTED_BRANCHES" | grep -qw "$branch"; then
+              continue
+            fi
+
+            # HEAD 스킵
+            if [ "$branch" = "HEAD" ]; then
+              continue
+            fi
+
+            # 마지막 커밋 날짜 확인
+            LAST_COMMIT=$(git log -1 --format=%ct "origin/$branch" 2>/dev/null || echo "0")
+            NOW=$(date +%s)
+            DAYS_OLD=$(( (NOW - LAST_COMMIT) / 86400 ))
+
+            if [ "$DAYS_OLD" -gt 30 ]; then
+              STALE_BRANCHES="$STALE_BRANCHES $branch($DAYS_OLD일)"
+            fi
+          done
+
+          if [ -z "$STALE_BRANCHES" ]; then
+            echo "✅ Stale 브랜치 없음"
+            echo "has_stale=false" >> $GITHUB_OUTPUT
+          else
+            echo "⚠️ Stale 브랜치 발견:$STALE_BRANCHES"
+            echo "has_stale=true" >> $GITHUB_OUTPUT
+            echo "stale_list=$STALE_BRANCHES" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Report Stale Branches
+        if: steps.stale.outputs.has_stale == 'true'
+        run: |
+          echo "📋 Stale 브랜치 리포트"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "${{ steps.stale.outputs.stale_list }}"
+          echo ""
+          echo "💡 수동 삭제 명령어:"
+          echo "git push origin --delete <branch-name>"
+
+  check-dependabot-prs:
+    name: 📦 Dependabot PR Status
+    runs-on: ubuntu-latest
+    if: github.event_name != 'schedule' || vars.ENABLE_ACTIONS_SCHEDULES == 'true'
+    steps:
+      - name: Check Open PRs
+        uses: actions/github-script@v7
+        with:
+          script: |
+            // 안전: context.repo만 사용 (외부 입력 없음)
+            const { data: prs } = await github.rest.pulls.list({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              per_page: 50
+            });
+
+            const dependabotPRs = prs.filter(pr =>
+              pr.user.login === 'dependabot[bot]'
+            );
+
+            console.log('📊 PR 현황');
+            console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+            console.log(`전체 Open PR: ${prs.length}개`);
+            console.log(`Dependabot PR: ${dependabotPRs.length}개`);
+
+            if (dependabotPRs.length > 0) {
+              console.log('\n📦 Dependabot PRs:');
+              dependabotPRs.forEach(pr => {
+                const age = Math.floor((Date.now() - new Date(pr.created_at)) / (1000 * 60 * 60 * 24));
+                // 안전: pr.number는 숫자, pr.title은 로그 출력만 (shell 명령 아님)
+                console.log(`  #${pr.number}: ${pr.title} (${age}일 전)`);
+              });
+
+              // 7일 이상 된 Dependabot PR 경고
+              const oldPRs = dependabotPRs.filter(pr => {
+                const age = Math.floor((Date.now() - new Date(pr.created_at)) / (1000 * 60 * 60 * 24));
+                return age > 7;
+              });
+
+              if (oldPRs.length > 0) {
+                console.log('\n⚠️ 7일 이상 미처리 Dependabot PR:');
+                oldPRs.forEach(pr => {
+                  console.log(`  → #${pr.number}: ${pr.title}`);
+                });
+                console.log('\n💡 처리 권장: merge/close/rebase 결정 필요');
+              }
+            } else {
+              console.log('✅ 미처리 Dependabot PR 없음');
+            }
+
+  merged-branch-cleanup:
+    name: 🗑️ Merged Branch Cleanup
+    runs-on: ubuntu-latest
+    if: github.event_name != 'schedule' || vars.ENABLE_ACTIONS_SCHEDULES == 'true'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Find Merged Branches
+        run: |
+          echo "🔍 이미 병합된 브랜치 검색..."
+
+          MERGED=$(git branch -r --merged origin/main | grep -v 'main\|HEAD' | sed 's|origin/||' || true)
+
+          if [ -z "$MERGED" ]; then
+            echo "✅ 병합 후 미삭제 브랜치 없음"
+          else
+            echo "⚠️ 병합 완료된 브랜치 (삭제 가능):"
+            echo "$MERGED"
+            echo ""
+            echo "💡 자동 삭제를 원하면 리포지토리 설정에서"
+            echo "   'Automatically delete head branches' 활성화 권장"
+          fi
+
+  summary:
+    name: 📊 Weekly Summary
+    runs-on: ubuntu-latest
+    needs: [cleanup-stale-branches, check-dependabot-prs, merged-branch-cleanup]
+    if: always() && (github.event_name != 'schedule' || vars.ENABLE_ACTIONS_SCHEDULES == 'true')
+    steps:
+      - name: Generate Summary
+        run: |
+          echo "# 🧹 주간 브랜치/PR 정리 리포트" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**실행 시간**: $(TZ='Asia/Seoul' date '+%Y-%m-%d %H:%M KST')" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## 체크 항목" >> $GITHUB_STEP_SUMMARY
+          echo "- Stale 브랜치: ${{ needs.cleanup-stale-branches.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Dependabot PR: ${{ needs.check-dependabot-prs.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Merged 브랜치: ${{ needs.merged-branch-cleanup.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "---" >> $GITHUB_STEP_SUMMARY
+          echo "💡 **수동 실행**: Actions → Branch & PR Cleanup → Run workflow" >> $GITHUB_STEP_SUMMARY

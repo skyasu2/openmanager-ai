@@ -1,0 +1,50 @@
+{
+  "projectType": "next-app",
+  "mainLanguages": ["typescript", "python"],
+  "developmentEnvironment": {
+    "primary": "wsl-claude-code",
+    "primaryUsage": "메인 개발 환경 (WSL 터미널 내)",
+    "description": "Claude Code가 주력 AI 개발 도구로 사용됨",
+    "subAgents": {
+      "gemini": "gemini-cli - 주력 보조 AI (2-AI 로테이션)",
+      "codex": "codex-cli - ChatGPT Plus 요금제 활용 (2-AI 로테이션)"
+    },
+    "windowsVSCode": {
+      "role": "auxiliary",
+      "primaryPurpose": [
+        "이미지 캡쳐 및 붙여넣기",
+        "시각적 콘텐츠 처리",
+        "WSL 터미널 호스팅",
+        "GitHub Copilot 보조 역할"
+      ],
+      "usage": "Claude Code 개발 중 필요시 보조 도구로 활용",
+      "copilotRole": "이미지 분석, 캡쳐 기반 작업, 보조 코드 제안"
+    }
+  },
+  "aiTools": {
+    "primary": "claude-code",
+    "location": "WSL 터미널",
+    "subAgents": ["gemini-cli", "codex-cli"],
+    "auxiliary": "github-copilot"
+  },
+  "priorityFiles": [
+    "docs/PROJECT-SUMMARY.md",
+    "README.md",
+    "package.json",
+    ".mcp.json"
+  ],
+  "ignorePaths": ["node_modules", ".next", "dist", "logs", "reports"],
+  "contextRules": {
+    "includePatterns": [
+      "src/**/*.{ts,tsx}",
+      "scripts/**/*.{sh,ps1}",
+      "docs/**/*.md"
+    ],
+    "excludePatterns": ["**/*.test.{ts,tsx}", "**/*.spec.{ts,tsx}", "**/test-*"]
+  },
+  "customCommands": {
+    "dev": "npm run dev",
+    "test": "npm run test:quick",
+    "build": "npm run build"
+  }
+}

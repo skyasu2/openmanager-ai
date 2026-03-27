@@ -1,0 +1,42 @@
+# 🐧 Git Attributes: WSL-First 개발 환경 설정
+# OpenManager VIBE v5 - 모든 텍스트 파일 LF 통일
+
+# 기본 텍스트 파일은 자동 감지 후 LF로 정규화
+* text=auto eol=lf
+
+# 소스 코드 파일 LF 고정
+*.js text eol=lf
+*.ts text eol=lf
+*.tsx text eol=lf
+*.jsx text eol=lf
+*.md text eol=lf
+
+# 설정 파일들 LF 고정
+*.json text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.xml text eol=lf
+
+# 스크립트 파일 LF 고정
+*.sh text eol=lf
+.husky/* text eol=lf
+
+# HTML/CSS 파일 LF 고정
+*.html text eol=lf
+*.css text eol=lf
+*.scss text eol=lf
+
+# 바이너리 파일은 제외
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.eot binary
+
+# local runtime config can contain secrets; avoid textual diffs if it is ever tracked
+.gemini/settings.json -diff

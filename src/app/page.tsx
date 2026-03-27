@@ -12,6 +12,7 @@
 'use client';
 
 import dynamic from 'next/dynamic';
+import Link from 'next/link';
 import {
   DashboardSection,
   GuestRestrictionModal,
@@ -23,6 +24,7 @@ import AuthLoadingUI from '@/components/shared/AuthLoadingUI';
 import { OpenManagerLogo } from '@/components/shared/OpenManagerLogo';
 import UnifiedProfileHeader from '@/components/shared/UnifiedProfileHeader';
 import { APP_VERSION } from '@/config/app-meta';
+import { QA_EVIDENCE_CTA_LINKS, QA_EVIDENCE_LABELS } from '@/data/qa-evidence';
 import { PAGE_BACKGROUNDS } from '@/styles/design-constants';
 import { renderAIGradientWithAnimation } from '@/utils/text-rendering';
 import { envLabel } from '@/utils/vercel-env-utils';
@@ -118,6 +120,29 @@ function Home() {
               받습니다
             </span>
           </p>
+          <div className="mt-4 flex flex-wrap items-center justify-center gap-2 text-xs sm:text-sm">
+            <span className="rounded-full border border-emerald-400/30 bg-emerald-500/10 px-3 py-1 text-emerald-200">
+              {QA_EVIDENCE_LABELS.badge}
+            </span>
+            <Link
+              href={QA_EVIDENCE_CTA_LINKS.statusHref}
+              className="rounded-full border border-white/15 bg-white/5 px-3 py-1 text-white/80 transition-colors hover:border-white/30 hover:bg-white/10 hover:text-white"
+            >
+              QA Status
+            </Link>
+            <Link
+              href={QA_EVIDENCE_CTA_LINKS.proofHref}
+              className="rounded-full border border-white/15 bg-white/5 px-3 py-1 text-white/80 transition-colors hover:border-white/30 hover:bg-white/10 hover:text-white"
+            >
+              Latest Proof Run
+            </Link>
+            <Link
+              href={QA_EVIDENCE_CTA_LINKS.overviewHref}
+              className="rounded-full border border-sky-400/20 bg-sky-500/10 px-3 py-1 text-sky-200 transition-colors hover:border-sky-300/40 hover:bg-sky-500/15"
+            >
+              {QA_EVIDENCE_LABELS.validationPage}
+            </Link>
+          </div>
         </div>
 
         {/* 시스템 시작/대시보드 섹션 */}

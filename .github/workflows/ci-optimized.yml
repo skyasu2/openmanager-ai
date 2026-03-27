@@ -1,0 +1,436 @@
+name: CI/CD Core Gates
+
+# PR/main 보호용 차단형 CI
+# - lint/type/test 실패 시 즉시 차단
+# - skip ci는 push 이벤트에서만 허용
+
+on:
+  push:
+    branches: [main, develop]
+    paths-ignore:
+      - 'docs/**'
+      - '**/*.md'
+      - '.github/workflows/docs-quality.yml'
+  pull_request:
+    branches: [main]
+    paths-ignore:
+      - 'docs/**'
+      - '**/*.md'
+      - '.github/workflows/docs-quality.yml'
+  workflow_dispatch:
+    inputs:
+      run_codex_live_probe:
+        description: 'Codex MCP live probe(stitch) 실행'
+        required: false
+        type: boolean
+        default: false
+      run_manual_feedback_trace_status:
+        description: 'Production feedback trace status manual QA 실행'
+        required: false
+        type: boolean
+        default: false
+      run_cloud_run_checks:
+        description: 'Cloud Run smoke/contract tests 실행'
+        required: false
+        type: boolean
+        default: false
+      run_ai_engine_unit:
+        description: 'AI Engine unit tests 실행'
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-core-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: '24'  # .nvmrc와 일치
+  SKIP_ENV_VALIDATION: true # 환경변수 없이도 빌드 가능
+  # Test environment variables
+  NEXT_PUBLIC_SUPABASE_URL: https://test.supabase.co
+  NEXT_PUBLIC_SUPABASE_ANON_KEY: test-anon-key
+  # Cloud Run AI uses GCP IAM auth, no API key needed for tests
+  NODE_ENV: test
+
+jobs:
+  detect-scope:
+    name: Detect Scope
+    runs-on: ubuntu-latest
+    outputs:
+      ai_engine_changed: ${{ steps.scope.outputs.ai_engine_changed }}
+      frontend_changed: ${{ steps.scope.outputs.frontend_changed }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - id: scope
+        shell: bash
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "ai_engine_changed=true" >> "$GITHUB_OUTPUT"
+            echo "frontend_changed=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            git fetch origin "${{ github.base_ref }}" --depth=1
+            DIFF_RANGE="origin/${{ github.base_ref }}...HEAD"
+          else
+            BEFORE="${{ github.event.before }}"
+            if [ -z "$BEFORE" ] || [ "$BEFORE" = "0000000000000000000000000000000000000000" ]; then
+              DIFF_RANGE="HEAD~1...HEAD"
+            else
+              DIFF_RANGE="$BEFORE...HEAD"
+            fi
+          fi
+
+          CHANGED_FILES="$(git diff --name-only "$DIFF_RANGE" || true)"
+          if echo "$CHANGED_FILES" | grep -Eq '^(cloud-run/ai-engine/|tests/api/cloud-run-contract.test.ts|scripts/test/cloud-deploy-essential-smoke.mjs|\.github/workflows/ci-optimized.yml)'; then
+            echo "ai_engine_changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ai_engine_changed=false" >> "$GITHUB_OUTPUT"
+          fi
+
+          if echo "$CHANGED_FILES" | grep -Eq '^(src/|public/|tests/e2e/|playwright\.config\.(ts|js)|next\.config\.(ts|js|mjs)|tailwind\.config\.(ts|js)|postcss\.config\.(js|mjs)|package\.json|package-lock\.json|\.github/workflows/ci-optimized\.yml)'; then
+            echo "frontend_changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "frontend_changed=false" >> "$GITHUB_OUTPUT"
+          fi
+
+  # 🔍 정적 분석 (병렬 실행 1)
+  code-quality:
+    name: Code Quality (Lint & Type)
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name != 'push' || !contains(github.event.head_commit.message, '[skip ci]') }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Biome Check
+        run: npm run check
+
+      - name: TypeScript Check
+        run: npm run type-check
+
+      - name: Dependency audit
+        run: npm audit --audit-level=high --production || true
+
+  # 🧪 유닛/계약 테스트 (병렬 실행 2)
+  unit-tests:
+    name: Unit & Contract Tests (Essential)
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name != 'push' || !contains(github.event.head_commit.message, '[skip ci]') }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Essential Unit Tests (Pure Functions)
+        run: npm run test:quick
+
+      - name: API/AI Contract Tests (No External Calls)
+        run: npm run test:contract
+
+  # 📎 Codex MCP 상태 리포트 (비차단 관찰용)
+  codex-mcp-health:
+    name: Codex MCP Health Report
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name != 'push' || !contains(github.event.head_commit.message, '[skip ci]') }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - name: Generate Codex MCP health report
+        shell: bash
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ inputs.run_codex_live_probe }}" = "true" ]; then
+            bash scripts/mcp/mcp-health-report-codex.sh \
+              --probe stitch \
+              --allow-missing-codex \
+              --summary-file "$GITHUB_STEP_SUMMARY"
+          else
+            bash scripts/mcp/mcp-health-report-codex.sh \
+              --no-live-probe \
+              --allow-missing-codex \
+              --summary-file "$GITHUB_STEP_SUMMARY"
+          fi
+      - name: Upload Codex MCP health artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: codex-mcp-health-${{ github.run_id }}
+          path: |
+            logs/mcp-health/codex-health-latest.json
+            logs/mcp-health/*-codex.log
+            logs/mcp-health/stitch-startup-*.log
+          if-no-files-found: error
+          retention-days: 3
+
+  # 🎭 E2E 핵심 플로우 (push/PR 차단형)
+  e2e-critical:
+    name: E2E Critical
+    runs-on: ubuntu-latest
+    needs: [detect-scope, code-quality, unit-tests]
+    if: >-
+      (github.event_name != 'push' || !contains(github.event.head_commit.message, '[skip ci]')) &&
+      (
+        github.event_name == 'workflow_dispatch' ||
+        needs.detect-scope.outputs.frontend_changed == 'true'
+      )
+    timeout-minutes: 20
+    env:
+      CI: true
+      PLAYWRIGHT_PORT: 3000
+      PLAYWRIGHT_BASE_URL: http://localhost:3000
+      VERCEL_AUTOMATION_BYPASS_SECRET: local-e2e-secret
+      TEST_SECRET_KEY: local-e2e-secret
+      NEXT_PUBLIC_GUEST_MODE: restricted
+      NEXT_PUBLIC_GUEST_FULL_ACCESS: false
+      GUEST_LOGIN_PIN: 4231
+      PLAYWRIGHT_GUEST_PIN: 4231
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
+      - name: Install dependencies
+        run: npm ci
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Run critical E2E suite
+        run: npm run test:e2e:critical
+      - name: Upload Playwright Report
+        if: ${{ failure() || github.event_name == 'workflow_dispatch' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-${{ github.run_id }}
+          path: playwright-report
+          if-no-files-found: ignore
+          retention-days: 3
+      - name: Upload Playwright Test Results
+        if: ${{ failure() || github.event_name == 'workflow_dispatch' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-results-${{ github.run_id }}
+          path: test-results
+          if-no-files-found: ignore
+          retention-days: 3
+
+  # 🎭 Production feedback trace status evidence (수동/비차단)
+  manual-feedback-trace-status:
+    name: Manual Feedback Trace Status
+    runs-on: ubuntu-latest
+    if: >-
+      github.event_name == 'workflow_dispatch' &&
+      (inputs.run_manual_feedback_trace_status == true || inputs.run_manual_feedback_trace_status == 'true')
+    timeout-minutes: 20
+    env:
+      CI: true
+      PLAYWRIGHT_BASE_URL: https://openmanager-ai.vercel.app
+      PLAYWRIGHT_CHANNEL: chromium
+      VERCEL_AUTOMATION_BYPASS_SECRET: local-e2e-secret
+      TEST_SECRET_KEY: local-e2e-secret
+      NEXT_PUBLIC_GUEST_MODE: restricted
+      NEXT_PUBLIC_GUEST_FULL_ACCESS: false
+      PLAYWRIGHT_GUEST_PIN: 4231
+      GUEST_LOGIN_PIN: 4231
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
+      - name: Install dependencies
+        run: npm ci
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Run production feedback trace status QA
+        run: npm run test:manual:feedback:trace-status
+      - name: Upload manual feedback trace report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: manual-feedback-trace-report-${{ github.run_id }}
+          path: playwright-report/manual-feedback-trace-status
+          if-no-files-found: ignore
+          retention-days: 3
+      - name: Upload manual feedback trace results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: manual-feedback-trace-results-${{ github.run_id }}
+          path: test-results/manual-feedback-trace-status
+          if-no-files-found: ignore
+          retention-days: 3
+
+  # 🔒 보안 검사 (main/pull_request 차단형)
+  security-scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'pull_request' || github.ref == 'refs/heads/main' }}
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Hardcoded Secrets Check
+        run: |
+          if [ -f "scripts/env/check-hardcoded-secrets.js" ]; then
+            node scripts/env/check-hardcoded-secrets.js || exit 1
+          else
+            echo "::warning::check-hardcoded-secrets.js not found"
+          fi
+
+  # ✅ 배포 준비 상태
+  deployment-ready:
+    name: Deployment Ready
+    runs-on: ubuntu-latest
+    needs: [detect-scope, code-quality, unit-tests, e2e-critical, security-scan, cloud-run-unit]
+    if: ${{ always() && (github.event_name != 'push' || !contains(github.event.head_commit.message, '[skip ci]')) }}
+    steps:
+      - name: Enforce Required Gates
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          DETECT_SCOPE_RESULT="${{ needs.detect-scope.result }}"
+          CODE_QUALITY_RESULT="${{ needs.code-quality.result }}"
+          UNIT_TEST_RESULT="${{ needs.unit-tests.result }}"
+          E2E_RESULT="${{ needs.e2e-critical.result }}"
+          SECURITY_RESULT="${{ needs.security-scan.result }}"
+          CLOUD_RUN_UNIT_RESULT="${{ needs.cloud-run-unit.result }}"
+          AI_ENGINE_CHANGED="${{ needs.detect-scope.outputs.ai_engine_changed }}"
+          FRONTEND_CHANGED="${{ needs.detect-scope.outputs.frontend_changed }}"
+
+          failures=0
+
+          require_success() {
+            local name="$1"
+            local result="$2"
+            if [ "$result" != "success" ]; then
+              echo "::error::$name must be success, got '$result'"
+              failures=1
+            fi
+          }
+
+          require_success "Detect Scope" "$DETECT_SCOPE_RESULT"
+          require_success "Code Quality (Lint & Type)" "$CODE_QUALITY_RESULT"
+          require_success "Unit Tests" "$UNIT_TEST_RESULT"
+          if [ "$FRONTEND_CHANGED" = "true" ]; then
+            require_success "E2E Critical" "$E2E_RESULT"
+          else
+            echo "ℹ️ frontend_changed=false -> e2e-critical optional (result='$E2E_RESULT')"
+          fi
+
+          if [ "$SECURITY_RESULT" != "success" ] && [ "$SECURITY_RESULT" != "skipped" ]; then
+            echo "::error::Security Scan must be success or skipped, got '$SECURITY_RESULT'"
+            failures=1
+          fi
+
+          if [ "$AI_ENGINE_CHANGED" = "true" ]; then
+            require_success "AI Engine Unit Tests (ai_engine_changed=true)" "$CLOUD_RUN_UNIT_RESULT"
+          else
+            echo "ℹ️ ai_engine_changed=false -> cloud-run-unit optional (result='$CLOUD_RUN_UNIT_RESULT')"
+          fi
+
+          if [ "$failures" -ne 0 ]; then
+            echo "❌ Required quality gates are not satisfied."
+            exit 1
+          fi
+
+          echo "✅ Required quality gates are satisfied."
+      - name: Summary
+        run: |
+          echo "📊 CI/CD 결과 요약"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "🔎 Scope 감지: ${{ needs.detect-scope.result }} (ai_engine_changed=${{ needs.detect-scope.outputs.ai_engine_changed }}, frontend_changed=${{ needs.detect-scope.outputs.frontend_changed }})"
+          echo "🔍 정적 분석: ${{ needs.code-quality.result }}"
+          echo "🧪 유닛 테스트: ${{ needs.unit-tests.result }}"
+          echo "🎭 E2E 핵심 플로우: ${{ needs.e2e-critical.result }}"
+          echo "🔒 보안 검증: ${{ needs.security-scan.result }}"
+          echo "☁️ AI Engine Unit: ${{ needs.cloud-run-unit.result }}"
+          echo "🚀 배포 게이트: 통과"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+  # ☁️ Cloud Run 스모크 테스트 (배포 후 자동 검증)
+  cloud-run-smoke:
+    name: Cloud Run Smoke
+    runs-on: ubuntu-latest
+    needs: [deployment-ready, detect-scope]
+    if: >-
+      needs.deployment-ready.result == 'success' &&
+      vars.CLOUD_RUN_AI_URL != '' &&
+      (
+        (github.event_name == 'workflow_dispatch' && (inputs.run_cloud_run_checks == true || inputs.run_cloud_run_checks == 'true')) ||
+        (github.ref == 'refs/heads/main' && needs.detect-scope.outputs.ai_engine_changed == 'true')
+      )
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
+      - run: npm ci
+      - name: Cloud Run Essential Smoke
+        run: npm run test:cloud:essential:strict
+        env:
+          CLOUD_RUN_AI_URL: ${{ vars.CLOUD_RUN_AI_URL }}
+          CLOUD_RUN_API_SECRET: ${{ secrets.CLOUD_RUN_API_SECRET }}
+        timeout-minutes: 5 # 콜드 스타트 고려하여 타임아웃 증가
+      - name: Cloud Run Contract Tests
+        run: npx vitest run --config config/testing/vitest.config.main.ts tests/api/cloud-run-contract.test.ts --reporter=verbose
+        env:
+          CLOUD_RUN_AI_URL: ${{ vars.CLOUD_RUN_AI_URL }}
+          CLOUD_RUN_API_SECRET: ${{ secrets.CLOUD_RUN_API_SECRET }}
+        timeout-minutes: 5
+
+  # 🧪 Cloud Run AI Engine Unit Tests (독립 실행)
+  cloud-run-unit:
+    name: AI Engine Unit Tests
+    runs-on: ubuntu-latest
+    # Cloud Run 유닛 테스트는 의존성 설치가 다르므로 별도 실행 (병렬)
+    needs: [detect-scope]
+    if: >-
+      (github.event_name != 'push' || !contains(github.event.head_commit.message, '[skip ci]')) &&
+      (
+        (github.event_name == 'workflow_dispatch' && (inputs.run_ai_engine_unit == true || inputs.run_ai_engine_unit == 'true')) ||
+        needs.detect-scope.outputs.ai_engine_changed == 'true'
+      )
+    defaults:
+      run:
+        working-directory: cloud-run/ai-engine
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: cloud-run/ai-engine/package-lock.json
+      - run: npm install --no-audit --no-fund
+      - name: Run AI Engine Unit Tests
+        run: npx vitest run src/lib/prompt-guard.test.ts src/lib/error-handler.test.ts src/lib/text-sanitizer.test.ts src/services/ai-sdk/supervisor-routing.test.ts src/lib/rag-doc-policy.test.ts src/lib/rag-merge-planner.test.ts src/lib/with-timeout.test.ts src/lib/embedding.test.ts src/services/ai-sdk/agents/orchestrator-web-search.test.ts --reporter=verbose

@@ -1,0 +1,57 @@
+name: 'OpenManager V5 CodeQL Configuration'
+
+
+# Verified 2025-12-12
+# CodeQL 보안 분석 설정
+paths-ignore:
+  - '**/*.test.js'
+  - '**/*.test.ts'
+  - '**/*.test.tsx'
+  - '**/*.spec.js'
+  - '**/*.spec.ts'
+  - '**/*.spec.tsx'
+  - '**/node_modules/**'
+  - '**/.next/**'
+  - '**/dist/**'
+  - '**/build/**'
+  - '**/coverage/**'
+  - '**/*.stories.*'
+  - '**/storybook-static/**'
+  - '**/test-results/**'
+  - '**/playwright-report/**'
+
+# 포함할 경로
+paths:
+  - 'src'
+  - 'pages'
+  - 'app'
+  - 'components'
+  - 'lib'
+  - 'utils'
+  - 'hooks'
+  - 'services'
+  - 'modules'
+
+# 쿼리 설정
+queries:
+  - name: security-extended
+    uses: security-extended
+  - name: security-and-quality
+    uses: security-and-quality
+
+# 사용자 정의 쿼리 (선택사항)
+query-filters:
+  - include:
+      kind:
+        - problem
+        - path-problem
+      severity:
+        - error
+        - warning
+  - exclude:
+      id:
+        - js/unused-local-variable # 사용하지 않는 로컬 변수 제외
+        - js/debugger-statement # 디버거 문장 제외 (개발 중)
+
+# 언어별 설정
+disable-default-path-filters: false

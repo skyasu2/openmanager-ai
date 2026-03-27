@@ -1,0 +1,89 @@
+name: Docs Quality
+
+on:
+  pull_request:
+    paths:
+      - 'docs/**'
+      - 'scripts/docs/**'
+      - '*.markdownlint-cli2.jsonc'
+      - 'package.json'
+      - 'CLAUDE.md'
+      - 'GEMINI.md'
+      - 'AGENTS.md'
+  push:
+    branches:
+      - main
+    paths:
+      - 'docs/**'
+      - 'scripts/docs/**'
+      - '*.markdownlint-cli2.jsonc'
+      - 'package.json'
+      - 'CLAUDE.md'
+      - 'GEMINI.md'
+      - 'AGENTS.md'
+  workflow_dispatch:
+    inputs:
+      run_external_links:
+        description: '외부 링크 전체 검사 실행'
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  docs-quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24.x'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Docs quality checks
+        run: npm run docs:check
+        env:
+          DOCS_STRICT_CHANGED: ${{ github.event_name == 'workflow_dispatch' && 'false' || 'true' }}
+          DOCS_DIFF_RANGE: ${{ github.event_name == 'workflow_dispatch' && '' || (github.event_name == 'pull_request' && format('origin/{0}...HEAD', github.base_ref) || format('{0}...{1}', github.event.before, github.sha)) }}
+
+      - name: Changed docs lint
+        if: github.event_name != 'workflow_dispatch'
+        run: npm run docs:lint:changed
+
+      - name: Agent config version check
+        if: github.event_name != 'workflow_dispatch'
+        run: |
+          PKG_VERSION=$(node -p "require('./package.json').version")
+          echo "Package version: ${PKG_VERSION}"
+          for file in CLAUDE.md GEMINI.md; do
+            if [ -f "${file}" ]; then
+              if ! grep -q "${PKG_VERSION}" "${file}"; then
+                echo "::warning file=${file}::Version mismatch - ${file} may not reference v${PKG_VERSION}"
+              fi
+            fi
+          done
+
+  external-links:
+    if: github.event_name == 'workflow_dispatch' && (inputs.run_external_links == true || inputs.run_external_links == 'true')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24.x'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check external links
+        continue-on-error: true
+        run: npm run docs:links:full

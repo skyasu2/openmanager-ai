@@ -1,0 +1,92 @@
+[
+  {
+    "query": "서버 전체 상태 확인해줘",
+    "expected_agent": "nlq_agent",
+    "expected_output_contains": ["서버", "상태"],
+    "language": "ko"
+  },
+  {
+    "query": "WEB-01 서버 CPU 사용량 알려줘",
+    "expected_agent": "nlq_agent",
+    "expected_output_contains": ["WEB-01", "CPU"],
+    "language": "ko"
+  },
+  {
+    "query": "전체 서버 현황 보여줘",
+    "expected_agent": "nlq_agent",
+    "expected_output_contains": ["전체", "서버"],
+    "language": "ko"
+  },
+  {
+    "query": "DB-01 메모리 사용률 확인",
+    "expected_agent": "nlq_agent",
+    "expected_output_contains": ["메모리"],
+    "language": "ko"
+  },
+  {
+    "query": "API 서버 로그 확인해줘",
+    "expected_agent": "nlq_agent",
+    "expected_output_contains": ["로그"],
+    "language": "ko"
+  },
+  {
+    "query": "디스크 사용량이 높은 서버 목록",
+    "expected_agent": "nlq_agent",
+    "expected_output_contains": ["디스크"],
+    "language": "ko"
+  },
+  {
+    "query": "CPU 95% 사용률, 분석 부탁",
+    "expected_agent": "analyst_agent",
+    "expected_output_contains": ["현황", "패턴"],
+    "language": "ko"
+  },
+  {
+    "query": "메모리 누수 패턴 분석해줘",
+    "expected_agent": "analyst_agent",
+    "expected_output_contains": ["패턴", "메모리"],
+    "language": "ko"
+  },
+  {
+    "query": "최근 1시간 CPU 트렌드 예측",
+    "expected_agent": "analyst_agent",
+    "expected_output_contains": ["트렌드", "예측"],
+    "language": "ko"
+  },
+  {
+    "query": "이상 탐지 결과 보여줘",
+    "expected_agent": "analyst_agent",
+    "expected_output_contains": ["이상"],
+    "language": "ko"
+  },
+  {
+    "query": "장애 리포트 작성해줘",
+    "expected_agent": "reporter_agent",
+    "expected_output_contains": ["요약", "원인"],
+    "language": "ko"
+  },
+  {
+    "query": "인시던트 대응 가이드",
+    "expected_agent": "reporter_agent",
+    "expected_output_contains": ["조치"],
+    "language": "ko"
+  },
+  {
+    "query": "서버 재시작 명령어 추천",
+    "expected_agent": "reporter_agent",
+    "expected_output_contains": ["명령어"],
+    "language": "ko"
+  },
+  {
+    "query": "OOM 에러 해결 방법",
+    "expected_agent": "reporter_agent",
+    "expected_output_contains": ["원인", "조치"],
+    "language": "ko"
+  },
+  {
+    "query": "안녕하세요",
+    "expected_agent": "supervisor",
+    "expected_output_not_contains": ["nlq_agent", "analyst_agent", "reporter_agent"],
+    "language": "ko"
+  }
+]

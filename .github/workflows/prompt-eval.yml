@@ -1,0 +1,58 @@
+# Prompt Evaluation Workflow
+# Runs Promptfoo tests on AI Engine prompt changes
+name: Prompt Evaluation
+
+on:
+  workflow_dispatch:
+    inputs:
+      run_redteam:
+        description: 'Run Red-team security tests'
+        required: false
+        default: 'false'
+        type: boolean
+
+jobs:
+  prompt-eval:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: cloud-run/ai-engine
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: cloud-run/ai-engine/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Promptfoo
+        run: npm install -g promptfoo
+
+      - name: Create results directory
+        run: mkdir -p promptfoo/results
+
+      - name: Run Prompt Evaluation
+        run: promptfoo eval -c promptfoo/promptfooconfig.yaml --output promptfoo/results/eval-results.json
+        env:
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+
+      - name: Run Red-team Tests (if enabled)
+        if: ${{ github.event.inputs.run_redteam == 'true' }}
+        run: promptfoo eval -c promptfoo/redteam/security-tests.yaml --output promptfoo/results/redteam-results.json
+        env:
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+
+      - name: Upload Results
+        uses: actions/upload-artifact@v4
+        with:
+          name: promptfoo-results
+          path: cloud-run/ai-engine/promptfoo/results/
+          retention-days: 30

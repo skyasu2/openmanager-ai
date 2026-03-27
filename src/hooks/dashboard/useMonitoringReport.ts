@@ -14,7 +14,7 @@ import {
 } from '@/schemas/api.monitoring-report.schema';
 
 // NOTE: MonitoringReportResponse 타입은 '@/schemas/api.monitoring-report.schema'에서 직접 import
-// 일부 변환 환경에서 type 재내보내기를 런타임 값으로 해석할 수 있어 직접 import 유지
+// Storybook vitest mock 변환기가 type 재내보내기를 런타임 값으로 취급하므로 제거
 
 function getMonitoringErrorMessageByStatus(status: number): string {
   if (status === 401)

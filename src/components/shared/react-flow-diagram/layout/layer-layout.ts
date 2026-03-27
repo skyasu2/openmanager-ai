@@ -66,7 +66,7 @@ export function getLayoutedElements(
     const nodesInLayer = layerNodes.get(layerIndex) || [];
     const count = nodesInLayer.length;
 
-    // Smart Grid: 대형 레이어는 4개씩, 그 외는 최대 5개씩 배치
+    // Smart Grid: 8개 이상(예: MCP)은 4개씩, 그 외는 최대 5개씩
     const nodesPerRow = count >= 8 ? 4 : 5;
     const rowCount = Math.ceil(count / nodesPerRow);
 

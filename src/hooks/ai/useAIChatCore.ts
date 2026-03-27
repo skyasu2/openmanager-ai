@@ -51,7 +51,7 @@ import { convertThinkingStepsToUI } from './utils/message-helpers';
 // Re-export for backwards compatibility
 export { convertThinkingStepsToUI };
 // NOTE: SessionState 타입은 './core/useChatSessionState'에서 직접 import하세요.
-// 일부 변환 환경에서 type 재내보내기를 런타임 값으로 해석할 수 있어 직접 import 유지
+// Storybook vitest mock 변환기가 type 재내보내기를 런타임 값으로 취급하므로 제거
 
 // ============================================================================
 // Types

@@ -1,0 +1,51 @@
+###############################################
+# OpenManager AI v8 WSL2 설정 (2026-02-13)   #
+###############################################
+# 경로: %USERPROFILE%\.wslconfig
+# 목적: 개발 환경 최적화 (MCP 9개, Claude Code + Codex 병행)
+# 적용: wsl --shutdown 후 재시작 시 반영
+
+[wsl2]
+# 메모리: 호스트 RAM의 50% 권장 (16GB 이하 시 8GB 최소)
+memory=16GB
+
+# CPU: 호스트 여유 확보 (Windows/IDE/브라우저용)
+processors=4
+
+# 스왑: 현재 런타임 기준 비활성화 (free -h: Swap 0B)
+swap=0
+
+# 네트워크: mirrored 모드 (localhost 포워딩 자동 포함)
+networkingMode=mirrored
+localhostForwarding=true
+
+[experimental]
+# 점진적 메모리 회수 (백그라운드 최적화)
+autoMemoryReclaim=gradual
+
+# 희소 VHD 활성화 (디스크 공간 절약)
+sparseVhd=true
+
+# LLM CLI 안정화: dnsTunneling/autoProxy OFF
+# MCP 서버 연결은 OFF 상태에서도 정상 동작 확인됨 (2026-02-13)
+dnsTunneling=false
+autoProxy=false
+
+###############################################
+# 적용 절차 (WSL 재시작 필요)
+###############################################
+# Windows PowerShell에서 실행:
+# 1) wsl --shutdown
+# 2) 새 WSL 터미널 열기
+# 3) 확인: free -h (메모리 16GB 확인)
+# 4) 확인: nproc (CPU 4코어 확인)
+
+###############################################
+# DNS 설정 (generateResolvConf=false 시)
+###############################################
+# /etc/wsl.conf:
+#   [network]
+#   generateResolvConf=false
+# /etc/resolv.conf:
+#   nameserver 8.8.8.8
+#   nameserver 1.1.1.1

@@ -1,0 +1,9 @@
+# Documentation
+/docs/ @skyasu2
+*.md @skyasu2
+
+# Agent configs
+CLAUDE.md @skyasu2
+AGENTS.md @skyasu2
+GEMINI.md @skyasu2
+CODEX.md @skyasu2

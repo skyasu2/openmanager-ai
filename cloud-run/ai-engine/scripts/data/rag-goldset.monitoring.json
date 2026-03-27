@@ -1,0 +1,86 @@
+[
+  {
+    "id": "G01",
+    "query": "CPU 사용률 급증 원인 분석",
+    "expectedCategories": ["incident", "troubleshooting"],
+    "requiredKeywords": ["cpu", "부하", "프로세스"],
+    "commandIntent": false
+  },
+  {
+    "id": "G02",
+    "query": "메모리 누수 의심 대응 방안",
+    "expectedCategories": ["troubleshooting", "incident"],
+    "requiredKeywords": ["메모리", "누수", "gc"],
+    "commandIntent": false
+  },
+  {
+    "id": "G03",
+    "query": "DB timeout 증가 원인과 확인 순서",
+    "expectedCategories": ["incident", "troubleshooting"],
+    "requiredKeywords": ["db", "timeout", "쿼리"],
+    "commandIntent": false
+  },
+  {
+    "id": "G04",
+    "query": "Redis 캐시 장애 시 점검 절차",
+    "expectedCategories": ["incident", "troubleshooting"],
+    "requiredKeywords": ["redis", "cache", "메모리"],
+    "commandIntent": false
+  },
+  {
+    "id": "G05",
+    "query": "네트워크 지연이 높을 때 1차 대응",
+    "expectedCategories": ["troubleshooting", "incident"],
+    "requiredKeywords": ["네트워크", "지연", "연결"],
+    "commandIntent": false
+  },
+  {
+    "id": "G06",
+    "query": "디스크 용량 90% 초과 시 복구 절차",
+    "expectedCategories": ["troubleshooting", "best_practice"],
+    "requiredKeywords": ["디스크", "용량", "정리"],
+    "commandIntent": false
+  },
+  {
+    "id": "G07",
+    "query": "연쇄 장애 패턴과 차단 전략",
+    "expectedCategories": ["incident", "best_practice"],
+    "requiredKeywords": ["연쇄", "장애", "복구"],
+    "commandIntent": false
+  },
+  {
+    "id": "G08",
+    "query": "Load Balancer 장애 시 확인 항목",
+    "expectedCategories": ["incident", "best_practice"],
+    "requiredKeywords": ["load", "balancer", "헬스체크"],
+    "commandIntent": false
+  },
+  {
+    "id": "G09",
+    "query": "docker logs 명령어와 사용법",
+    "expectedCategories": ["command"],
+    "requiredKeywords": ["docker", "logs", "컨테이너"],
+    "commandIntent": true
+  },
+  {
+    "id": "G10",
+    "query": "kubectl get pods 문제 진단 방법",
+    "expectedCategories": ["command"],
+    "requiredKeywords": ["kubectl", "pods", "k8s"],
+    "commandIntent": true
+  },
+  {
+    "id": "G11",
+    "query": "journalctl 로그 확인 방법",
+    "expectedCategories": ["command"],
+    "requiredKeywords": ["journalctl", "로그", "systemd"],
+    "commandIntent": true
+  },
+  {
+    "id": "G12",
+    "query": "df 명령으로 디스크 상태 확인하는 법",
+    "expectedCategories": ["command"],
+    "requiredKeywords": ["df", "디스크", "사용량"],
+    "commandIntent": true
+  }
+]

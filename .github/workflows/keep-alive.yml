@@ -1,0 +1,67 @@
+name: Keep Services Alive
+
+# Supabase 무료 티어: 1주일 미사용 시 자동 Pause
+# 주 2회 ping으로 비활성화 방지
+# schedule 실행은 리포지토리 변수 ENABLE_ACTIONS_SCHEDULES=true 일 때만 허용
+
+on:
+  schedule:
+    # 매주 수요일, 일요일 00:00 UTC (한국시간 09:00)
+    - cron: '0 0 * * 0,3'
+  workflow_dispatch: # 수동 실행 가능
+
+jobs:
+  keep-alive:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    if: github.event_name != 'schedule' || vars.ENABLE_ACTIONS_SCHEDULES == 'true'
+
+    steps:
+      - name: Ping Supabase Database
+        env:
+          SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+        run: |
+          # Debug: Check if secrets are set (show only length, not values)
+          echo "🔍 Debug: SUPABASE_URL length = ${#SUPABASE_URL}"
+          echo "🔍 Debug: SUPABASE_ANON_KEY length = ${#SUPABASE_ANON_KEY}"
+
+          if [ -z "$SUPABASE_URL" ] || [ -z "$SUPABASE_ANON_KEY" ]; then
+            echo "❌ Error: Secrets not configured!"
+            echo "Please set SUPABASE_URL and SUPABASE_ANON_KEY in GitHub Secrets"
+            exit 1
+          fi
+
+          response=$(curl -s -o /dev/null -w "%{http_code}" \
+            "${SUPABASE_URL}/rest/v1/" \
+            -H "apikey: ${SUPABASE_ANON_KEY}" \
+            -H "Authorization: Bearer ${SUPABASE_ANON_KEY}")
+
+          if [ "$response" = "200" ]; then
+            echo "✅ Supabase ping successful (HTTP $response)"
+          else
+            echo "⚠️ Supabase ping returned HTTP $response"
+            echo "🔍 URL prefix: ${SUPABASE_URL:0:30}..."
+            exit 1
+          fi
+
+      - name: Ping Vercel App Health
+        run: |
+          response=$(curl -s "https://openmanager-ai.vercel.app/api/health")
+          status=$(echo $response | jq -r '.data.status // .status // "unknown"')
+
+          if [ "$status" = "healthy" ]; then
+            echo "✅ Vercel app is healthy"
+            echo "Services status:"
+            echo $response | jq '.data.services'
+          else
+            echo "⚠️ Vercel app status: $status"
+          fi
+
+      - name: Summary
+        run: |
+          echo "🎯 Keep-alive completed at $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
+          echo ""
+          echo "Next scheduled runs:"
+          echo "- Sunday 00:00 UTC (한국시간 일요일 09:00)"
+          echo "- Wednesday 00:00 UTC (한국시간 수요일 09:00)"

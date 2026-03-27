@@ -1,0 +1,53 @@
+#!/bin/sh
+
+# 🚀 자동 수정 기능이 포함된 Pre-push Hook
+# 테스트 실패 시 자동으로 수정을 시도하고 최대 5번까지 재시도
+
+echo "🚀 Pre-push 자동 수정 시스템 시작..."
+
+# 환경 변수로 스킵 가능
+if [ "$HUSKY" = "0" ] || [ "$SKIP_AUTO_FIX" = "1" ]; then
+    echo "⏭️  자동 수정 시스템 스킵"
+    exit 0
+fi
+
+# 자동 수정 모드 확인
+if [ "$AUTO_FIX" = "false" ]; then
+    # 기존 방식 (수정 없이 검증만)
+    echo "📋 검증 모드 (자동 수정 비활성화)..."
+    npm run type-check
+    if [ $? -ne 0 ]; then
+        echo "❌ TypeScript 에러가 있습니다."
+        exit 1
+    fi
+    
+    npm run test:quick
+    if [ $? -ne 0 ]; then
+        echo "❌ 테스트 실패"
+        exit 1
+    fi
+    
+    echo "✅ 모든 검증 통과!"
+    exit 0
+fi
+
+# 자동 수정 스크립트 실행
+echo "🔧 자동 수정 모드 활성화..."
+
+# 커밋되지 않은 변경사항 확인
+if [ -n "$(git status --porcelain)" ]; then
+    echo "⚠️  커밋되지 않은 변경사항이 있습니다."
+    echo "   모든 변경사항을 커밋하거나 stash 해주세요."
+    exit 1
+fi
+
+# 자동 수정 실행 (Node.js 스크립트 직접 실행)
+node -r tsx/cjs scripts/auto-fix-and-commit.ts "fix: automated fixes for test failures"
+
+if [ $? -eq 0 ]; then
+    echo "✅ 자동 수정 및 푸시 완료!"
+    exit 0
+else
+    echo "❌ 자동 수정 실패. 보고서를 확인해주세요: auto-fix-report.md"
+    exit 1
+fi

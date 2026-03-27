@@ -89,7 +89,7 @@ async function runInitialization(): Promise<string[]> {
     logs.push('✅ 서버 데이터 생성기 초기화 완료');
     systemLogger.info('✅ 서버 데이터 생성기 초기화 완료');
 
-    logs.push('🔄 필수 서비스 웜업 시작 (백그라운드)');
+    logs.push('🔄 MCP 서버 웜업 시작 (백그라운드)');
     logs.push('✅ 기타 필수 서비스 초기화 완료');
 
     isInitialized = true;

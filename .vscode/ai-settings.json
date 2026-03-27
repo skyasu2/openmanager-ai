@@ -1,0 +1,61 @@
+{
+  "version": "0.2.0",
+  "ai": {
+    "contextFiles": [
+      "docs/PROJECT-SUMMARY.md",
+      "README.md",
+      "package.json",
+      ".vscode/ai-context.json",
+      "docs/development/project-structure.md"
+    ],
+    "guidelines": {
+      "codeStyle": {
+        "typescript": {
+          "strict": true,
+          "maxFileLines": 400,
+          "requireJSDoc": true,
+          "modularPattern": "8-module-separation"
+        },
+        "react": {
+          "functional": true,
+          "hooks": "preferred",
+          "maxComponentLines": 300
+        }
+      },
+      "architecture": {
+        "patterns": ["singleton", "circuit-breaker", "strategy", "observer"],
+        "layering": {
+          "services": "src/services/",
+          "components": "src/components/",
+          "types": "src/types/",
+          "utils": "src/utils/"
+        }
+      },
+      "performance": {
+        "caching": "required",
+        "lazyLoading": "preferred",
+        "memoryOptimization": true
+      },
+      "ai": {
+        "primaryEngine": "claude-code",
+        "fallbackEngines": ["copilot", "gemini", "codex"],
+        "mcpIntegration": true
+      }
+    },
+    "commands": {
+      "dev": "npm run dev",
+      "test": "npm run test:quick",
+      "build": "npm run build",
+      "analyze": "npm run analyze"
+    },
+    "excludePatterns": [
+      "node_modules/**",
+      ".next/**",
+      "dist/**",
+      "logs/**",
+      "reports/**",
+      "**/*.test.ts",
+      "**/*.spec.ts"
+    ]
+  }
+}

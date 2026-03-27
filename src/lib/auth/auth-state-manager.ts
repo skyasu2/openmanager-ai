@@ -323,5 +323,5 @@ export const clearAuthData = (authType?: 'github' | 'guest') =>
   authStateManager.clearAllAuthData(authType);
 export const invalidateAuthCache = () => authStateManager.invalidateCache();
 // NOTE: AuthState, AuthUser 타입은 './auth-state-manager-types'에서 직접 import하세요.
-// 일부 변환 환경에서 type 재내보내기를 런타임 값으로 잘못 해석할 수 있어
-// 직접 import 경로를 유지합니다.
+// `export type { AuthState, AuthUser }` 재내보내기는 Storybook vitest mock 변환기가
+// 타입을 런타임 값으로 취급하여 ReferenceError를 발생시키므로 제거되었습니다.

@@ -1,0 +1,65 @@
+version: 2
+updates:
+  - package-ecosystem: 'npm'
+    directory: '/'
+    schedule:
+      interval: 'daily' # 유지보수 모드: patch 부채 방지
+      time: '00:30'
+      timezone: 'Asia/Seoul'
+    open-pull-requests-limit: 5
+    labels:
+      - 'dependencies'
+      - 'automated'
+    assignees:
+      - 'skyasu2'
+    reviewers:
+      - 'skyasu2'
+    versioning-strategy: increase
+    allow:
+      - dependency-type: production
+      - dependency-type: development
+
+    # 🔀 관련 패키지 그룹화 (PR 수 감소)
+    groups:
+      # TypeScript core는 별도 리뷰 대상
+      typescript-core:
+        patterns:
+          - 'typescript'
+
+      # 타입 정의는 core/tooling과 분리해 patch 자동 반영 경로 확보
+      types:
+        patterns:
+          - '@types/*'
+
+      # Testing tools
+      testing:
+        patterns:
+          - 'vitest'
+          - '@vitest/*'
+          - '@testing-library/*'
+          - 'playwright'
+          - '@playwright/*'
+
+      # Linting & Formatting
+      linting:
+        patterns:
+          - '@biomejs/*'
+          - 'eslint*'
+          - 'prettier*'
+
+      # React runtime
+      react:
+        patterns:
+          - 'react'
+          - 'react-dom'
+
+      # React types
+      react-types:
+        patterns:
+          - '@types/react*'
+
+      # AI SDK
+      ai-sdk:
+        patterns:
+          - 'ai'
+          - '@ai-sdk/*'

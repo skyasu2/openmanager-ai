@@ -1,0 +1,62 @@
+{
+  "version": "1.0.0",
+  "generatedAt": "2026-03-26T15:12:25.919Z",
+  "source": {
+    "trackerPath": "reports/qa/qa-tracker.json",
+    "statusPath": "reports/qa/QA_STATUS.md",
+    "publicPath": "public/data/qa/validation-evidence.json",
+    "publicHref": "/data/qa/validation-evidence.json",
+    "latestRunId": "QA-20260327-0193"
+  },
+  "summary": {
+    "totalRuns": 192,
+    "totalChecks": 1418,
+    "completedItems": 256,
+    "expertDomainsOpenGaps": 1,
+    "wontFixItems": 10,
+    "lastRecordedAt": "2026-03-26T15:12:25.263Z"
+  },
+  "trackerUpdated": {
+    "iso": "2026-03-26T15:12:25.263Z",
+    "short": "2026-03-26",
+    "long": "March 26, 2026"
+  },
+  "publicEvidenceUpdated": {
+    "iso": "2026-03-26T15:12:25.263Z",
+    "short": "2026-03-26",
+    "long": "March 26, 2026"
+  },
+  "latestProofRecorded": {
+    "iso": "2026-03-22T07:26:30.735Z",
+    "short": "2026-03-22",
+    "long": "March 22, 2026"
+  },
+  "latestProofRun": {
+    "runId": "QA-20260322-0160",
+    "title": "CI Manual Feedback Trace Status QA (run #23398040200)",
+    "scope": "targeted",
+    "recordedAt": "2026-03-22T07:26:30.735Z",
+    "commitSha": "ba7b15d70",
+    "repoPath": "reports/qa/runs/2026/qa-run-QA-20260322-0160.json",
+    "ciRunLink": {
+      "type": "github-actions-run",
+      "label": "GitHub Actions: CI/CD Core Gates #23398040200",
+      "url": "https://github.com/skyasu2/openmanager-ai/actions/runs/23398040200",
+      "note": "branch=main, sha=ba7b15d70"
+    },
+    "ciArtifactLinks": [
+      {
+        "type": "github-actions-artifact",
+        "label": "Feedback Trace HTML Report",
+        "url": "https://github.com/skyasu2/openmanager-ai/actions/runs/23398040200",
+        "note": "artifact=manual-feedback-trace-report-23398040200; download/open from the workflow run page"
+      },
+      {
+        "type": "github-actions-artifact",
+        "label": "Feedback Trace Playwright Results (trace/screenshot/video)",
+        "url": "https://github.com/skyasu2/openmanager-ai/actions/runs/23398040200",
+        "note": "artifact=manual-feedback-trace-results-23398040200; download/open from the workflow run page"
+      }
+    ]
+  }
+}

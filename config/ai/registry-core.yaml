@@ -1,0 +1,166 @@
+# AI Registry Core - Minimal Configuration (SSOT)
+# 핵심 정보만 포함, 상세 내역은 별도 문서 참조
+# 목적: 토큰 사용량 최소화 (Cache Read 79% → 30% 목표)
+
+version: "3.2.0"  # registry-core 버전 (v3.2.0: quota 수치 공식 문서 교정, 스킬/MCP 최신화)
+last_updated: "2026-03-06"
+project: "OpenManager AI v8.7.9"
+
+# ============================================================================
+# 0. AI Architecture Overview (v6.0 - AI SDK Multi-Agent)
+# ============================================================================
+ai-architecture:
+  current: "Vercel AI SDK Multi-Agent"
+  api_endpoint: "/api/ai/supervisor"
+  # 실제 구현 기준 (model-provider.ts + agent-model-selectors.ts 참조, 2026-02-24)
+  providers:
+    text-primary: "Cerebras (gpt-oss-120b)"
+    text-fallback-1: "Groq (llama-3.3-70b-versatile)"
+    text-fallback-2: "Mistral (mistral-large-latest)"
+    vision-primary: "Gemini (gemini-2.5-flash)"
+    vision-fallback: "OpenRouter (OPENROUTER_VISION_MODEL_ID)"
+  # Note: 에이전트별 우선순위는 AGENT_CONFIGS의 selector 체인을 따른다.
+
+  deprecated:
+    - unified-ai-processor    # Python/Cloud Run - AI SDK로 대체됨 (2025-12-28)
+    - ml-analytics-engine     # Python ML - 완전 제거됨 (2025-12-14)
+    - langgraph-agents        # LangGraph → AI SDK 마이그레이션 완료 (2025-12-28)
+
+  production_mcp: "supabase"   # Cloud Run에서 사용하는 유일한 MCP
+
+# ============================================================================
+# 1. Current Active AI Tools (현재 활성화된 AI 도구만)
+# ============================================================================
+ai-tools:
+  claude-code:
+    current_version: "v2.1.51"
+    status: "✅ Active"
+    role: "Interactive development (NOT for auto code review)"
+
+  codex:
+    current_version: "v0.85.0"
+    wrapper_version: "v3.3.0"
+    status: "✅ Active"
+    role: "Code review - 2-AI rotation (codex→gemini)"
+
+  gemini-cli:
+    current_version: "v0.24.0"
+    wrapper_version: "v3.3.0"
+    status: "✅ Active"
+    role: "Code review - 2-AI rotation (codex→gemini)"
+
+  # qwen-cli: 제거됨 (2026-01-07) - 평균 201초, 실패율 13.3%
+
+  kiro-cli:
+    current_version: "v1.22.0"
+    status: "✅ Active (Manual Usage)"
+    role: "Terminal multi-agent orchestrator (chat/agent/doctor/settings)"
+
+  # jules: 제거됨 (2025-12-16) - 웹 인터페이스 전용으로 변경 (jules.google)
+
+# 상세 정보: config/ai/changelog.yaml 참조
+
+# ============================================================================
+# 2. Claude Code Built-in Subagents (기본 서브에이전트)
+# ============================================================================
+subagents:
+  # Claude Code 기본 제공 (5개)
+  builtin:
+    - general-purpose       # 범용 리서치, 코드 검색
+    - Explore               # 코드베이스 탐색
+    - Plan                  # 구현 계획 설계
+    - claude-code-guide     # Claude Code 문서 안내
+    - statusline-setup      # 상태라인 설정
+
+  # 커스텀 서브에이전트: 모두 삭제됨 (2025-12-21)
+  # 사유: 사용 빈도 0%, 스킬로 대체 가능, 유지보수 부담
+  # 삭제됨: code-review-specialist, architecture-specialist, debugger-specialist,
+  #         security-specialist, test-automation-specialist, performance-specialist,
+  #         ui-ux-specialist, documentation-manager
+
+# 대체 방안:
+#   - 코드 리뷰: ai-code-review 스킬 + 외부 CLI (codex, gemini)
+#   - 보안 감사: security-audit-workflow 스킬
+#   - 테스트: lint-smoke 스킬 + playwright MCP
+#   - 문서화: Claude Code 직접 수행
+
+# ============================================================================
+# 3. MCP Servers (개발 vs 프로덕션 구분)
+# ============================================================================
+mcp-servers:
+  # 개발 환경 (Claude Code에서 사용) - 10/10 연결
+  development:
+    - vercel              # @vercel/mcp, 배포 관리 (무제한)
+    - supabase            # @supabase/mcp-server-supabase, DB 관리 (무제한)
+    - context7            # @upstash/context7-mcp, 라이브러리 문서 (무제한)
+    - stitch              # @_davideast/stitch-mcp, Google Stitch AI UI 디자인 (350/월)
+    - playwright          # @playwright/mcp, E2E 테스트 자동화 (무제한)
+    - next-devtools       # next-devtools-mcp, Next.js 런타임 진단/오류 조회 (무제한)
+    - github              # @modelcontextprotocol/server-github, 저장소 관리 (무제한)
+    - sequential-thinking # @modelcontextprotocol/server-sequential-thinking, 복잡한 추론 (무제한)
+    - storybook           # @storybook/addon-mcp, 컴포넌트 문서/스토리 조회 (Storybook dev 필수)
+    - diagram-converter   # Mermaid 다이어그램 렌더링/내보내기 (무제한)
+
+  # 프로덕션 환경 (Cloud Run AI 엔진에서 사용)
+  production:
+    - supabase        # AI SDK 에이전트가 DB 조회에 사용 (유일한 프로덕션 MCP)
+
+  removed:  # 2026-02-14 업데이트
+    - filesystem      # Claude Code 내장 도구와 100% 중복
+    - memory          # Claude Code auto-memory로 대체
+    - time            # 사용 빈도 낮음, 대안 존재
+    - shadcn-ui       # Context7로 문서 조회 가능
+    - figma           # 미사용 (6회/월 Starter 제한)
+    - brave-search    # built-in WebSearch로 대체
+    - tavily          # built-in WebSearch로 대체
+    - serena          # Claude Code built-in 도구로 대체 (29개 deferred 도구 오버헤드)
+
+# 환경 구분:
+#   - Development: Claude Code 작업 시 10개 MCP 사용
+#   - Production: Cloud Run AI 엔진에서 Supabase MCP만 사용
+# 상세 정보: .mcp.json 참조
+
+# ============================================================================
+# 4. Claude Code Skills (Phase 1.6)
+# ============================================================================
+skills:
+  active:
+    - git-workflow    # Git 커밋/푸시/PR + clean_gone (v1.0.0)
+    - cloud-run       # Cloud Run 배포 + GCP 비용 점검 (v1.0.0)
+    - lint-smoke      # Lint + 테스트 스모크 체크 (v1.5.0)
+    - doc-management  # 문서 현황 점검, 예산 관리 (v1.2.0)
+    - qa-ops          # Vercel + Playwright MCP 최종 QA 및 누적 기록 (v1.1.0)
+    - state-triage    # 최근 QA/런타임 증거 기반 원인 분류 및 다음 단계 결정 (v1.0.0)
+    - env-sync        # preview/production env drift 진단 및 동기화 (v1.0.0)
+
+  builtin:
+    - review           # PR 기반 코드리뷰
+    - frontend-design  # UI 생성
+
+  status: "✅ 7 Active Skills + 2 Built-in"
+
+# 상세 정보: .claude/skills/*/*.md 참조
+
+# ============================================================================
+# 5. Quick Reference (빠른 참조만)
+# ============================================================================
+quick_commands:
+  mcp_health: "./scripts/mcp/mcp-health-check-codex.sh"
+  codex_review: 'codex exec "[review request]"'
+  token_usage: "npx ccusage@latest"
+
+maintenance_frequency:
+  mcp_health: "주 1회 (월요일)"
+  ai_tools_health: "필요 시 (Claude Code 직접 확인)"
+  docs_sync: "월 1회"
+
+# ============================================================================
+# 6. Documentation References (문서 참조)
+# ============================================================================
+docs:
+  main: "CLAUDE.md"
+  claude_code: "docs/development/ai/claude-code/README.md"
+  mcp_guide: "docs/development/mcp/advanced.md"
+  changelog: "config/ai/changelog.yaml"
+
+# End of AI Registry Core
