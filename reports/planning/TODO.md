@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-03-17 KST
+**Last Updated**: 2026-03-27 KST
 
 ## Active Tasks
 
@@ -18,7 +18,10 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| 백로그 항목 없음 | - | - |
+| Public GitHub snapshot sync 자동화(worktree/script) | P3 | 현재는 명시적 수동 절차로 충분. 필요 시 별도 자동화 |
+
+### Completed (2026-03-27)
+- [x] P1: GitLab canonical delivery 정렬 및 로컬 Docker CI 표준화 — `gitlab` canonical / `origin` public-only topology 확정, `remote.pushDefault=gitlab`, `main -> gitlab/main`, `scripts/ci/local-docker-ci.sh` + `CI_DOCKER_PULL_POLICY` 도입, 관련 규칙/문서 정렬, `git push gitlab main` 후 Vercel production deployment `dpl_HaXUuu6ewS38hYCVoFuwx5oKL6Ru` `READY` 확인
 
 ### Completed (2026-03-17)
 - [x] P2: WONT-FIX 실측 재평가 (`QA-20260317-0114`) — Playwright MCP로 38개 wont-fix 항목 중 30개 Production Vercel 동작 확인 → completed 전환. 잔여 wont-fix 8개(코드/인프라 레벨 6개 + AI 실응답 필요 2개)
