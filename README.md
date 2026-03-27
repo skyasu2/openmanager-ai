@@ -1,6 +1,6 @@
 # OpenManager AI
 
-AI-native server monitoring platform built with `Next.js 16`, `React 19`, `TypeScript`, and a separate `Cloud Run` AI engine.
+OpenManager AI is a personal side project built with `Next.js 16`, `React 19`, `TypeScript`, and a separate `Cloud Run` AI engine.
 
 OpenManager AI replaces passive dashboard reading with an operational workflow built around:
 
@@ -108,26 +108,28 @@ npm install
 npm run dev
 ```
 
-## Public Repository Scope
+## About This Repository
 
-This public repository is intentionally trimmed to highlight the product implementation itself.
+This public repository focuses on the application and runtime code needed to understand how the project is put together.
 
-The public-facing version focuses on:
+It includes:
 
 - application source code
 - runtime configuration needed to understand the system
 - deployment-facing code paths
 
-The following are intentionally excluded from this mirror:
+Some project assets are intentionally left out of this mirror:
 
 - test suites and snapshots
 - internal QA evidence and review artifacts
 - CI and agent-operation workflow assets
 - development-only documentation not required to understand the product
 
-## Why This Repo Exists
+## Project Note
 
-This project is meant to be read as a working full-stack system, not as a coding exercise. The most important thing to evaluate here is how the product is structured end to end:
+This started as an experiment around a simple question: what if server monitoring felt less like reading dashboards and more like having an operational conversation with the system?
+
+The project is still shaped like a real full-stack product, so the interesting parts are mostly in how the pieces connect end to end:
 
 - UI and interaction model
 - API boundaries
