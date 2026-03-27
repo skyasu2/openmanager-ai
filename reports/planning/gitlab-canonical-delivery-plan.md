@@ -1,6 +1,6 @@
 # GitLab Canonical Delivery Plan
 
-- 상태: Completed (core delivery topology alignment 완료, public-sync automation은 선택 후속 과제)
+- 상태: Completed (core delivery topology alignment + GitHub public snapshot sync automation 완료)
 - 작성일: 2026-03-27
 - 갱신일: 2026-03-27
 - 목표: `GitLab canonical + Vercel Git deploy + local Docker CI + separate GitHub public snapshot` 구조를 프로젝트의 실제 운영 기준으로 고정하고, 외부 CI 의존을 최소화한다.
@@ -100,7 +100,7 @@
 
 ### Phase 4. Public snapshot 분리 강화
 - [x] GitHub 공개 sync를 canonical push 루프와 분리된 절차로 고정
-- [ ] 필요 시 public-sync 스크립트/별도 worktree 절차 문서화
+- [x] public-sync 스크립트/제외 규칙 반영
 - [x] 공개 repo 반영은 명시적 요청이 있을 때만 수행
 
 ## 완료 기준
@@ -128,7 +128,18 @@
   - status `READY`
   - `gitSource.type=gitlab`
   - `gitlabProjectPath=skyasu2/openmanager-ai`
+- public GitHub snapshot sync 자동화 확인:
+  - script `scripts/sync/github-sync.sh`
+  - exclude list `.github-export-ignore`
+  - scripts `npm run sync:github`, `npm run sync:github:dry-run`
+  - `npm run sync:github` 실행 완료
+
+## 표준 워크플로우
+
+```bash
+git push gitlab main       # canonical push / Vercel 배포
+npm run sync:github        # GitHub 코드 스냅샷 동기화 (선택)
+```
 
 ## 후속 과제 (Optional)
-- public GitHub snapshot 갱신용 별도 script/worktree 절차 자동화
 - historical GitHub Actions 문서를 더 줄일지 여부 결정

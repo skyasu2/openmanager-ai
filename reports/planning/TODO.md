@@ -18,9 +18,10 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| Public GitHub snapshot sync 자동화(worktree/script) | P3 | 현재는 명시적 수동 절차로 충분. 필요 시 별도 자동화 |
+| 백로그 항목 없음 | - | - |
 
 ### Completed (2026-03-27)
+- [x] P3: Public GitHub snapshot sync 자동화 — `scripts/sync/github-sync.sh`, `.github-export-ignore`, `package.json`의 `sync:github` / `sync:github:dry-run` 추가. 코드 전용 스냅샷 기준으로 `origin/main` 동기화 완료
 - [x] P1: GitLab canonical delivery 정렬 및 로컬 Docker CI 표준화 — `gitlab` canonical / `origin` public-only topology 확정, `remote.pushDefault=gitlab`, `main -> gitlab/main`, `scripts/ci/local-docker-ci.sh` + `CI_DOCKER_PULL_POLICY` 도입, 관련 규칙/문서 정렬, `git push gitlab main` 후 Vercel production deployment `dpl_HaXUuu6ewS38hYCVoFuwx5oKL6Ru` `READY` 확인
 
 ### Completed (2026-03-17)

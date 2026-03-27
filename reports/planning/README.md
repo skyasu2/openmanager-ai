@@ -67,6 +67,6 @@ reports/planning/
 ## 작업 이력 기록
 
 - 전일 작업 회고/다음 방향 기록은 `reports/planning/archive/YYYY-MM-DD-work-history.md` 형식으로 작성합니다.
-- 템플릿은 `reports/planning/work-history-template.md`를 사용합니다.
+- 템플릿은 `reports/planning/archive/work-history-template.md`를 사용합니다.
 
 _Last Updated: 2026-02-14_

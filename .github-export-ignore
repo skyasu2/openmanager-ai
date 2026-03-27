@@ -1,0 +1,85 @@
+# GitHub 공개 스냅샷 제외 목록
+# GitLab에만 보관되는 파일/디렉토리
+# 형식: rsync --exclude 패턴과 동일
+
+# ── 내부 문서 ──────────────────────────────────────
+docs/
+reports/
+CLAUDE.md
+GEMINI.md
+AGENTS.md
+.github/
+.github-export-ignore
+
+# ── 테스트 ─────────────────────────────────────────
+tests/
+__mocks__/
+playwright.config*.ts
+vitest.config.ts
+playwright-report/
+test-results/
+storybook-static/
+.storybook/
+.lighthouseci/
+coverage/
+
+# ── 내부 스크립트 / 운영 도구 ──────────────────────
+scripts/
+
+# ── AI 도구 설정 ────────────────────────────────────
+.claude/
+.claude-project.json
+.claudeignore
+.codex/
+.gemini/
+.serena
+.serena-project.yml
+.mcp.json
+.mcp.json.README.md
+.jbge-root-file-policy
+
+# ── 환경변수 (example 파일만 허용) ─────────────────
+.env
+.env.local
+.env.development
+.env.test
+.env.e2e
+
+# ── 루트 임시 파일 / QA 아티팩트 ────────────────────
+qa-*.png
+tmp-*.md
+*.log
+artifacts/
+logs/
+tmp/
+storybook-*.png
+dashboard-*.png
+validation-*.png
+review-*.md
+phase8-*.md
+sloc_report.txt
+test_files.txt
+test_list.txt
+test-upload.md
+add_cron.sh.bak
+baseline-network.log
+build_error.log
+dev_error.log
+dev_server.log
+next_dev_log.txt
+tsc_error.log
+playwright-*.log
+debug-*.log
+*.pid
+*.bak
+.playwright-mcp
+active.markdownlint-cli2.jsonc
+historical.markdownlint-cli2.jsonc
+
+# ── CI / GitLab 전용 ────────────────────────────────
+.gitlab-ci.yml
+.gitlab/
+
+# ── 빌드 산출물 ─────────────────────────────────────
+.next/
+node_modules/
