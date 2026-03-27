@@ -9,16 +9,27 @@ npm run release:patch       # 버그 수정 (5.84.1 → 5.84.2)
 npm run release:minor       # 기능 추가 (5.84.1 → 5.85.0)
 npm run release:major       # 메이저 변경 (5.84.1 → 6.0.0)
 npm run release:dry-run     # 릴리스 미리보기
-git push --follow-tags      # 태그 푸시 → 배포 트리거
+git push gitlab --follow-tags  # canonical repo 반영
 ```
 
 ## Deployment Targets
+
+### Repository & Delivery Authority
+
+| 항목 | 현재 기준 |
+|------|-----------|
+| Canonical repo | `gitlab` remote (private full repo) |
+| Frontend deploy source | GitLab `main` → Vercel Git Integration |
+| Public code repo | GitHub `origin` (code-only snapshot) |
+| GitLab CI | 기본 비활성 (`GITLAB_CI_POLICY=local-docker-only`) |
+
+> GitHub public snapshot은 읽기/공개 용도이며 배포 권위가 아닙니다. 배포 관련 push는 기본적으로 `git push gitlab <branch>` 기준으로 판단합니다.
 
 ### Frontend (Vercel)
 
 | 항목 | 값 |
 |------|-----|
-| Trigger | `git push` 자동 배포 |
+| Trigger | `git push gitlab main` 자동 배포 |
 | Branch | `main` → Production |
 | URL | `openmanager-ai.vercel.app` |
 | Plan | Pro ($20/mo, 비용 최소화) |
@@ -80,7 +91,7 @@ AI가 인프라/배포 설정을 변경할 때 반드시 준수:
 
 - **기준**: 30커밋 또는 1주 중 빠른 시점에 릴리즈
 - **알림**: pre-push hook이 20커밋 초과 시 리마인더 출력
-- **자동화**: 매주 월요일 freshness check (GitHub Actions)
+- **자동화**: 외부 CI 스케줄보다 로컬 검증/수동 릴리즈를 우선
 - **긴급**: P0 수정은 CI 통과 즉시 릴리즈
 - **명령어**: `./scripts/release/publish.sh patch` (또는 `minor`/`major`)
 
@@ -118,6 +129,7 @@ gcloud run services update-traffic ai-engine \
 
 배포 전 확인사항:
 - [ ] `npm run validate:all` 통과
+- [ ] 필요 시 `npm run ci:local:docker` 통과
 - [ ] `npm run test:e2e:critical` 통과
 - [ ] CHANGELOG.md 업데이트
 - [ ] 환경변수 동기화 확인

@@ -4,7 +4,7 @@
 > Owner: dev-experience
 > Status: Active Canonical
 > Doc type: How-to
-> Last reviewed: 2026-02-15
+> Last reviewed: 2026-03-27
 > Canonical: docs/development/README.md
 > Tags: development,setup,index
 
@@ -21,7 +21,7 @@
 | [프로젝트 설정](./project-setup.md) | WSL/의존성/환경변수 부트스트랩 Canonical 가이드 |
 | [Docker 개발 환경](./docker.md) | Docker Desktop + WSL, AI Engine 로컬 테스트, 배포 |
 | [환경 변수 관리](./environment-variables.md) | 전체 환경변수 맵, Secret Manager, 주입 정책 |
-| [CI/CD 파이프라인](./ci-cd.md) | GitHub Actions/배포 흐름/운영 자동화 |
+| [CI/CD 파이프라인](./ci-cd.md) | GitLab canonical + Vercel 배포 흐름 + 외부 CI 최소화 |
 | [Git Hooks 워크플로우](./git-hooks-workflow.md) | Pre-commit/Pre-push 품질 게이트 |
 | [개발 도구](./dev-tools.md) | Node.js/npm/IDE/로컬 도구 설정 |
 
@@ -77,7 +77,7 @@ AI:           Vercel AI SDK 6, Multi-Agent
 
 ```bash
 # 1. WSL에서 레포지토리 클론
-git clone https://github.com/skyasu2/openmanager-ai.git
+git clone git@gitlab.com:skyasu2/openmanager-ai.git
 cd openmanager-ai
 
 # 2. 의존성 설치

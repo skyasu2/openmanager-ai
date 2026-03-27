@@ -4,7 +4,7 @@
 > Owner: dev-experience
 > Status: Active
 > Doc type: How-to
-> Last reviewed: 2026-02-14
+> Last reviewed: 2026-03-27
 > Canonical: docs/development/vibe-coding/workflows.md
 > Tags: vibe-coding,workflow,development
 
@@ -29,7 +29,7 @@
 
 ```bash
 # 최신 코드 받기
-git pull origin main
+git pull gitlab main
 
 # 브리지 스크립트 상태 점검
 bash scripts/ai/agent-bridge.sh --to codex --mode analysis --save-auto "어제 변경분 핵심 이슈만 요약"
@@ -72,15 +72,17 @@ You: "lint 에러 수정해줘"
 bash scripts/ai/agent-bridge.sh --to gemini --mode analysis --save-auto "이번 커밋의 리스크 점검"
 ```
 
-### 5. PR (필요시)
+### 5. Merge Request / 공개 동기화 (필요시)
 
 ```bash
-# 원스톱 PR
+# 원스톱 push + 리뷰 요청
 /commit-push-pr
 
-# 또는 수동
-git push origin feature/my-feature
-gh pr create
+# 또는 수동 (canonical GitLab 기준)
+git push gitlab feature/my-feature
+# GitLab UI에서 Merge Request 생성
+
+# 공개 GitHub snapshot 동기화는 명시적 요청 시에만 별도 수행
 ```
 
 ---
@@ -141,7 +143,7 @@ Day 2-3:
 Day 4:
   - 통합 테스트
   - 리팩토링
-  - PR 생성
+  - GitLab Merge Request 생성
 ```
 
 ---
@@ -235,13 +237,16 @@ bash scripts/ai/agent-bridge.sh --to gemini --mode analysis --save-auto "대안 
 ### Vercel (Frontend)
 
 ```bash
-# 자동 배포 (git push)
-git push origin main
+# broad/deploy-sensitive 변경이면 로컬 Docker CI 먼저
+npm run ci:local:docker
+
+# 자동 배포 (GitLab canonical)
+git push gitlab main
 # → Pre-push Hook: TypeScript 검증 + 빠른 테스트 (~78초)
 # → Vercel이 Full Build + 배포
 
 # 긴급 시 Hook 우회
-HUSKY=0 git push origin main
+HUSKY=0 git push gitlab main
 
 # 상태 확인
 mcp__vercel__list_deployments()
@@ -279,7 +284,7 @@ curl https://ai-engine-xxx.run.app/health
 
 4. 즉시 배포
    git commit -m "hotfix: increase API timeout to 30s"
-   git push origin main
+   git push gitlab main
 
 5. 모니터링
    - Vercel 로그 확인

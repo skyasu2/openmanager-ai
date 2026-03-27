@@ -4,11 +4,11 @@
 > Owner: dev-experience
 > Status: Active
 > Doc type: Tutorial
-> Last reviewed: 2026-03-25
+> Last reviewed: 2026-03-27
 > Canonical: docs/QUICK-START.md
 > Tags: quickstart,onboarding,setup
 >
-> **v8.0.0** | Updated 2026-03-25
+> **v8.0.0** | Updated 2026-03-27
 
 **AI 기반 실시간 서버 모니터링 플랫폼** - 5분 만에 시작하기
 
@@ -25,10 +25,12 @@
 ### 1. 프로젝트 복제 및 설치
 
 ```bash
-git clone https://github.com/your-username/openmanager-ai.git
+git clone git@gitlab.com:skyasu2/openmanager-ai.git
 cd openmanager-ai
 npm install
 ```
+
+> 공개용 code snapshot은 `https://github.com/skyasu2/openmanager-ai` 이지만, 실제 개발/배포 기준 저장소는 GitLab입니다.
 
 ### 2. 환경 변수 설정
 
@@ -89,6 +91,9 @@ npm run test:e2e:critical
 
 # 전체 검증
 npm run validate:all
+
+# 로컬 Docker CI (외부 CI 최소화)
+npm run ci:local:docker
 ```
 
 ## 📊 무료 티어 최적화

@@ -1,27 +1,76 @@
 # CI/CD 파이프라인 & 의존성 관리
 
-> GitHub Actions 기반 CI/CD 파이프라인과 Dependabot 자동 의존성 관리 가이드
+> GitLab canonical + Vercel 배포 흐름과 외부 CI 최소화 운영 가이드
 > Owner: platform-devops
 > Status: Active
 > Doc type: How-to
-> Last reviewed: 2026-03-18
+> Last reviewed: 2026-03-27
 > Canonical: docs/development/ci-cd.md
-> Tags: ci,cd,github-actions,dependabot,automation
+> Tags: ci,cd,gitlab,vercel,github-actions,automation
 
 ## 개요
 
-이 프로젝트는 **10개 GitHub Actions 워크플로우** + **Dependabot 자동 의존성 관리**로 CI/CD를 운영합니다.
+현재 운영 기준은 **GitLab canonical repo + Vercel 배포 + 로컬 Docker CI 우선** 입니다. 아래 GitHub Actions 내용은 과거/보조 레퍼런스로 유지되며, primary delivery path는 아닙니다.
 
 ```
-코드 변경 → CI/CD Core Gates (자동) → Vercel 자동 배포
-                                    → Cloud Run 수동 배포 (deploy.sh)
+코드 변경 → pre-push hook / `npm run ci:local:docker`
+        → `git push gitlab main`
+        → Vercel 자동 배포
+        → Cloud Run 수동 배포 (`deploy.sh`, 필요 시)
 
-의존성 업데이트 → Dependabot PR 생성 → Patch: 자동 머지 / Minor+: 수동 리뷰
+공개 코드 공유 → GitLab 기준 공개용 snapshot 생성 → GitHub 수동 동기화
 ```
+
+## 현재 저장소/배포 토폴로지 (2026-03-27)
+
+- **GitLab private (`gitlab`)**: canonical development repo
+- **Vercel Frontend**: GitLab `main`을 Git 배포 소스로 사용
+- **GitLab CI**: 기본 비활성 (`GITLAB_CI_POLICY=local-docker-only`)
+- **`.gitlab-ci.yml`**: 기본적으로 두지 않음. GitLab SaaS runner 자동 실행을 막고 로컬 Docker CI를 우선
+- **GitHub public (`origin`)**: code-only snapshot, 수동 동기화 전용
+- **Local CI**: `npm run ci:local:docker` 를 외부 CI 대체 기본 검증 경로로 사용
+
+## Local Docker CI (Primary)
+
+GitLab CI를 로컬 Docker로 대체하는 현재 표준 경로는 `scripts/ci/local-docker-ci.sh` 입니다.
+
+```bash
+# 기본: host node_modules 재사용 + container network 차단
+npm run ci:local:docker
+
+# AI Engine docker preflight까지 포함
+npm run ci:local:docker:full
+
+# 깨끗한 설치 기반으로 1회 검증이 필요할 때
+CI_DOCKER_INSTALL_MODE=npm-ci npm run ci:local:docker
+
+# 외부 pull까지 완전히 막고 캐시된 이미지로만 실행할 때
+CI_DOCKER_PULL_POLICY=never npm run ci:local:docker
+```
+
+운영 원칙:
+- `.gitlab-ci.yml`은 기본적으로 만들지 않습니다. GitLab SaaS runner 비용과 외부 실행 면적을 늘리지 않기 위해서입니다.
+- 기본 모드 `prefer-local`은 host `node_modules`를 재사용하고 container를 `--network none`으로 실행해 외부 접근을 최소화합니다.
+- 기본 pull policy는 `if-not-present` 입니다. 최초 base image pull 이후에는 로컬 이미지 캐시를 재사용합니다.
+- 외부 pull까지 막아야 할 때는 `CI_DOCKER_PULL_POLICY=never` 를 사용합니다.
+- `npm-ci` 모드는 새 의존성 설치가 필요할 때만 사용합니다.
+- broad change, release 전, 배포 민감 변경에서는 pre-push hook만으로 끝내지 말고 `npm run ci:local:docker`를 추가로 실행합니다.
+
+### GitLab-native 상태 체크가 나중에 꼭 필요해지면
+
+그때는 지금처럼 GitLab.com shared runner를 켜는 것이 아니라, 아래 최소 구성을 권장합니다.
+
+1. self-hosted GitLab Runner 1개를 로컬/전용 머신에 Docker executor로 등록
+2. `.gitlab-ci.yml`은 `lint`, `validate`, `deploy-ready` 정도의 최소 job만 유지
+3. image pull policy는 private runner 기준 `if-not-present` 또는 `never` 를 우선
+
+즉, **지금 단계에서 `.gitlab-ci.yml`을 만드는 것보다 로컬 Docker CI를 표준화하는 것이 우선** 입니다.
 
 ### 비용 정책
 
-- **GitHub Actions**: 공개 저장소 기준으로 현재는 포함 범위가 있더라도, 이 저장소는 그 전제를 신뢰하지 않고 **자동 실행량 자체를 최소화**합니다.
+- **GitLab CI**: 무료 400분/월 소진 방지를 위해 기본 비활성
+- **Local Docker CI**: 가능한 한 외부 SaaS CI 대신 우선 사용
+- **GitHub Actions**: 역사적/보조 워크플로우 레퍼런스이며 primary delivery path가 아님
 - **스케줄 워크플로우 기본값**: 비용/정책 변경 리스크를 줄이기 위해 비필수 `schedule` 잡은 기본적으로 꺼져 있습니다. 자동 실행이 꼭 필요할 때만 저장소 변수 `ENABLE_ACTIONS_SCHEDULES=true`로 명시적으로 활성화합니다.
 - **Vercel**: 프론트엔드 빌드/배포의 권위 있는 경로입니다. GitHub Actions에서 중복 빌드를 늘리지 않습니다.
 - **Cloud Run**: `deploy.sh` + Cloud Build free-tier 가드 기준으로 운영합니다.
@@ -203,7 +252,7 @@ cloud-run/ai-engine/src/agents/** 변경 → Promptfoo eval 실행
   - `git push --follow-tags`
 - 제약: `main` 브랜치에서만 실행 허용
 
-릴리즈 전 일상 배포는 기존과 동일하게 `main` push → Vercel 자동 배포로 처리합니다.
+릴리즈 전 일상 배포는 `git push gitlab main` → Vercel 자동 배포로 처리합니다.
 
 ---
 
@@ -279,7 +328,7 @@ Dependabot PR 생성
 ### Vercel (Frontend) — 자동 배포
 
 ```
-main 브랜치 push → Vercel Git Integration → 자동 빌드 + 배포
+`git push gitlab main` → Vercel Git Integration → 자동 빌드 + 배포
                                             ↓
                                    Preview (PR) / Production (main)
 ```

@@ -4,7 +4,7 @@
 > Owner: dev-experience
 > Status: Active Canonical
 > Doc type: How-to
-> Last reviewed: 2026-03-25
+> Last reviewed: 2026-03-27
 > Canonical: docs/development/project-setup.md
 > Tags: wsl,github-auth,project-setup
 
@@ -19,7 +19,18 @@
 
 제로베이스 부트스트랩 기준은 본 문서를 Canonical로 유지합니다.
 
+## 현재 저장소/배포 토폴로지 (2026-03-27)
+
+- **GitLab private (`gitlab`)**: canonical development repo
+- **Vercel Frontend**: GitLab `main`을 Git 배포 소스로 사용
+- **GitHub public (`origin`)**: code-only snapshot, 수동 공개 동기화 전용
+- **GitLab CI**: 기본 비활성 (`GITLAB_CI_POLICY=local-docker-only`)
+
+개발/배포 작업은 기본적으로 GitLab 기준으로 진행하고, GitHub는 공개 코드 스냅샷이 필요할 때만 별도로 다룹니다.
+
 ## GitHub 인증 방식 비교 (WSL)
+
+> GitHub 인증은 **공개 스냅샷 동기화 / GitHub MCP / GitHub API 작업용**입니다. canonical clone/push 대상은 GitLab입니다.
 
 | 방식 | 장점 | 단점 | 권장도 |
 |------|------|------|------|
@@ -56,11 +67,11 @@ gh auth login -h github.com -p ssh --insecure-storage
 ## 프로젝트 클론
 
 ```bash
-# 권장: SSH
-git clone git@github.com:skyasu2/openmanager-ai.git
+# 권장: canonical GitLab clone
+git clone git@gitlab.com:skyasu2/openmanager-ai.git
 
-# 기존 HTTPS clone을 SSH로 전환할 때
-# git remote set-url origin git@github.com:skyasu2/openmanager-ai.git
+# 공개 GitHub snapshot은 참고용
+# https://github.com/skyasu2/openmanager-ai
 
 cd openmanager-ai
 ```

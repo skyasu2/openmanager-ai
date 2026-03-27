@@ -4,7 +4,7 @@
 > Owner: platform-devops
 > Status: Active
 > Doc type: How-to
-> Last reviewed: 2026-03-25
+> Last reviewed: 2026-03-27
 > Canonical: docs/development/environment-variables.md
 > Tags: env,secrets,configuration,setup
 
@@ -19,7 +19,8 @@
 │ 로컬 개발     │ .env.local (Git 무시)                 │
 │ Vercel Prod  │ Vercel Dashboard → Settings → Env    │
 │ Cloud Run    │ GCP Secret Manager + deploy.sh       │
-│ CI (Actions) │ GitHub Secrets                        │
+│ Local CI     │ shell env + Docker daemon            │
+│ CI (legacy)  │ GitHub Secrets                        │
 └──────────────┴──────────────────────────────────────┘
 ```
 
@@ -61,6 +62,18 @@ USE_LOCAL_DOCKER=true
 LOCAL_DOCKER_URL=http://localhost:8080
 LOCAL_DOCKER_SECRET=dev-only-secret
 ```
+
+#### 4. 로컬 CI 정책 (선택)
+
+GitLab SaaS CI는 기본 비활성이므로, broad change나 배포 전 전체 검증은 로컬 Docker CI 기준으로 수행합니다.
+
+```bash
+# .env.local 또는 셸 환경
+GITLAB_CI_POLICY=local-docker-only
+CI_DOCKER_INSTALL_MODE=prefer-local
+```
+
+이 값들은 앱 런타임 설정이 아니라 개발 워크플로우/검증 정책용입니다.
 
 > 추가 인증/게스트/Redis/Sentry 변수는 아래 Part 1 표를 기준으로 확장합니다.
 
@@ -261,7 +274,7 @@ ALLOWED_ORIGINS=http://localhost:3000
 
 ---
 
-## Part 3: GitHub Actions 시크릿
+## Part 3: GitHub Actions 시크릿 (Historical / Reference)
 
 CI/CD 워크플로우에서 사용하는 GitHub Secrets:
 
@@ -310,11 +323,11 @@ SKIP_ENV_VALIDATION=true npm run build
 pre-push hook에서 `check-env.ts`를 실행하여 필수 변수를 검증합니다.
 
 ```bash
-# 기본: 환경변수 검사 비활성 (CI/Vercel에서 수행)
-git push origin main
+# 기본: 환경변수 검사 비활성 (로컬 pre-push + Vercel 배포 빌드에서 수행)
+git push gitlab main
 
 # 수동 활성화 (릴리스 전 검증)
-STRICT_PUSH_ENV=true git push origin main
+STRICT_PUSH_ENV=true git push gitlab main
 ```
 
 > `STRICT_PUSH_ENV`는 기본 `false`입니다. 로컬에서는 테스트/TypeScript 검증만 실행됩니다.

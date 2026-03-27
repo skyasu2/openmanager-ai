@@ -4,7 +4,7 @@
 > Owner: dev-experience
 > Status: Active
 > Doc type: How-to
-> Last reviewed: 2026-03-25
+> Last reviewed: 2026-03-27
 > Canonical: docs/development/git-hooks-workflow.md
 > Tags: git,hooks,cicd,workflow
 >
@@ -19,8 +19,8 @@
 │                     Git Workflow Pipeline                            │
 ├─────────────────────────────────────────────────────────────────────┤
 │                                                                      │
-│  [코드 작성] → [Pre-commit] → [Commit] → [Pre-push] → [Push] → [CI] │
-│                   <1초          즉시       ~78초       →   Vercel    │
+│ [코드 작성] → [Pre-commit] → [Commit] → [Pre-push] → [Push] → [Vercel] │
+│                  <1초          즉시       ~78초        + 로컬 Docker CI │
 │                                                                      │
 │  ┌──────────┐   ┌──────────┐   ┌──────────┐                         │
 │  │ 빠른 검증 │   │ 가벼운   │   │ 권위있는 │                         │
@@ -137,7 +137,7 @@ git push
 
 🏗️ Build validation...
 ⚪ TypeScript skipped (no relevant TS files in push range)
-ℹ️  Full build/type-check는 GitHub CI + Vercel에서 계속 검증됨
+ℹ️  Full build/type-check는 Vercel 배포 빌드와 필요 시 로컬 Docker CI에서 계속 검증됨
 
 ✅ Pre-push validation passed in 96s
 ```
@@ -168,7 +168,7 @@ QUICK_PUSH=false git push
 │                                                          │
 │  3. TypeScript 검증                                      │
 │     └─ 관련 TS 파일이 있을 때만 실행                     │
-│     └─ soft-timeout 시 CI/Vercel로 위임 가능             │
+│     └─ soft-timeout 시 Vercel/로컬 Docker CI로 위임 가능 │
 │                                                          │
 │  4. Cloud Build Guard (변경 파일 있을 때만)              │
 │     └─ cloudbuild.yaml / deploy.sh 변경 시만 검사        │
@@ -193,13 +193,13 @@ QUICK_PUSH=false git push
 | **Pre-push** | 기본 검증 | TypeScript, 빠른 테스트 |
 | **Vercel** | 권위있는 검증 | Full Build, E2E, 배포 |
 
-### GitHub Actions 정책
+### 외부 CI 최소화 정책
 
 ```yaml
 # .github/workflows/simple-deploy.yml
 on:
   # 🚫 비활성화: Vercel이 이미 Full Build 수행
-  # GitHub Actions 비용 절감 (Private repo 전환 대비)
+  # 외부 CI 비용/노이즈 최소화
   workflow_dispatch:
     inputs:
       reason:
@@ -208,7 +208,7 @@ on:
 
 **이유**:
 - Vercel이 이미 push 시 자동 빌드/배포 수행
-- GitHub Actions 중복 빌드 = 불필요한 비용
+- 외부 CI 중복 빌드 = 불필요한 비용
 - Private repo 전환 시 Actions 비용 발생 위험
 
 ---
@@ -302,7 +302,7 @@ SKIP_NODE_CHECK=true git push
 해결:
 1. npm run type-check로 에러 확인
 2. 수정 후 다시 push
-3. 긴급 시: HUSKY=0 git push (CI가 검증)
+3. 긴급 시: HUSKY=0 git push gitlab main 후 Vercel 배포와 `npm run ci:local:docker`로 후속 검증
 ```
 
 ---
@@ -313,7 +313,7 @@ SKIP_NODE_CHECK=true git push
 |------|------|------|
 | 2026-01-27 | QUICK_PUSH 기본값 true로 변경 | Push 407s → 78s (5.2x 개선) |
 | 2026-01-27 | Secret Detection pre-commit 추가 | 보안 강화, 94ms 추가 |
-| 2026-01-27 | GitHub Actions 자동 트리거 비활성화 | CI 비용 절감 |
+| 2026-01-27 | 외부 CI 자동 트리거 최소화 | CI 비용 절감 |
 
 ---
 
@@ -336,9 +336,10 @@ SKIP_NODE_CHECK=true git push
 |------|------|
 | `.husky/pre-commit` | Pre-commit Hook |
 | `scripts/hooks/pre-push.js` | Pre-push Hook |
+| `scripts/ci/local-docker-ci.sh` | 로컬 Docker 기반 전체 CI |
 | `scripts/env/precommit-check-secrets.cjs` | Secret Scanner |
 | `scripts/hooks/post-commit.js` | 커밋 완료 알림 출력 |
-| `.github/workflows/simple-deploy.yml` | GitHub Actions |
+| `.github/workflows/simple-deploy.yml` | Historical manual workflow |
 
 ---
 
@@ -350,4 +351,4 @@ SKIP_NODE_CHECK=true git push
 
 ---
 
-_Last Updated: 2026-02-16_
+_Last Updated: 2026-03-27_

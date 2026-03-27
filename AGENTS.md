@@ -1,6 +1,6 @@
 # AGENTS.md - OpenManager Codex 실행 규칙
 
-<!-- Version: 6.0.0 -->
+<!-- Version: 6.1.1 -->
 **이 문서는 OpenManager AI 프로젝트 내에서 Codex 에이전트 전용 실행 규칙만 정의합니다.**
 
 ## 1) 정책 참조 구조 (SSOT)
@@ -50,10 +50,18 @@
   - 기록: `npm run qa:record -- --input <json>`
   - 상태 확인: `npm run qa:status`
 
+### 2.6 저장소/배포 토폴로지 (Codex)
+- **정본 개발 저장소는 `gitlab` remote** 입니다. 전체 이력/테스트/문서/QA 자산을 유지하며, Vercel Frontend Git 배포 소스도 GitLab `main` 입니다.
+- **GitHub `origin`은 공개용 code-only snapshot** 으로 취급합니다. private canonical repo와 히스토리가 다를 수 있으므로 `origin/main`을 기준 브랜치처럼 다루지 않습니다.
+- Codex는 push/fetch/rebase 전에 항상 `git remote -v`를 확인하고, 기본 push 대상은 `gitlab` 으로 선택합니다.
+- `git push origin <branch>` 또는 GitHub force-push는 **공개 스냅샷 동기화가 명시적으로 요청된 경우에만** 수행합니다.
+- GitLab CI는 기본 비활성(`GITLAB_CI_POLICY=local-docker-only`)입니다. 외부 CI보다 `npm run ci:local:docker`, pre-push hook, Vercel 실환경 QA를 우선합니다.
+- `.gitlab-ci.yml` 부재는 현재 정책상 의도된 상태입니다. GitLab SaaS runner를 기본값으로 두지 않고, 로컬 전체 검증은 `npm run ci:local:docker` 또는 `npm run ci:local:docker:full`을 표준 경로로 사용합니다.
+
 ## 3) 공통 지식 및 유지보수 메모
 - **[필독] 프로젝트 3대 원칙 (Free Tier, 배포 환경 인지, OTel 데이터 SSOT)** 등 모든 AI 에이전트가 완벽히 숙지해야 할 핵심 규칙은 `docs/guides/ai/ai-standards.md` 파일에 정의되어 있습니다. 작업을 시작하기 전 해당 문서를 반드시 참조하세요.
 - 이 문서는 주로 "Codex 전용 실행 환경 및 MCP 설정" 등에 대한 규칙만 제한적으로 유지합니다.
 - 공통 정책이 변경되는 경우 이 파일이 아닌 `docs/guides/ai/ai-standards.md`를 갱신해야 합니다.
 
 ---
-_Last reviewed: 2026-03-25_
+_Last reviewed: 2026-03-27_

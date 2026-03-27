@@ -152,6 +152,8 @@
     "release:publish:major": "bash scripts/release/publish.sh major",
     "release:check": "node scripts/release/check-release-consistency.js",
     "ci": "npm run validate:all",
+    "ci:local:docker": "bash scripts/ci/local-docker-ci.sh",
+    "ci:local:docker:full": "CI_DOCKER_RUN_ENGINE_PREFLIGHT=true bash scripts/ci/local-docker-ci.sh",
     "bundle:analyze": "cross-env ANALYZE=true NODE_OPTIONS='--max-old-space-size=2048' next build --webpack",
     "git:pre-commit": "lint-staged",
     "git:pre-push": "npm run validate",

@@ -1,4 +1,4 @@
-# CLAUDE.md - OpenManager AI v8.9.2
+# CLAUDE.md - OpenManager AI v8.9.3
 
 **한국어 우선, 기술용어 영어 허용** | 공통 정책 SSOT: `docs/guides/ai/ai-standards.md` (충돌 시 최우선)
 
@@ -13,10 +13,20 @@
 - **Architecture**: Vercel (Frontend) + Cloud Run (AI Engine)
 - **Data SSOT**: `public/data/otel-data/` (데이터) + `src/data/otel-data/index.ts` (로더)
 
+## Repository & Delivery Topology (2026-03-27)
+- **GitLab private (`gitlab`)**: canonical development repo, full history/tests/docs/QA assets 유지
+- **Vercel Frontend**: GitLab `main`을 배포 소스로 사용
+- **GitHub public (`origin`)**: code-only snapshot, 수동 공개 동기화 전용
+- **GitLab CI**: 기본 비활성 (`GITLAB_CI_POLICY=local-docker-only`)
+- **로컬 CI 표준 경로**: `.gitlab-ci.yml`을 기본으로 두지 않고 `npm run ci:local:docker` / `npm run ci:local:docker:full`을 사용
+- **기본 원칙**: `origin/main`을 canonical branch로 가정하지 말고, push/fetch 전 `git remote -v` 확인 후 기본 대상은 `gitlab`
+
 ## Quick Commands
 ```bash
 npm run dev:network         # 개발 서버 (0.0.0.0:3000)
 npm run validate:all        # TypeScript + Lint + Test
+npm run ci:local:docker     # 외부 CI 최소화 로컬 Docker 검증
+npm run ci:local:docker:full # AI Engine preflight 포함 로컬 Docker 검증
 npm run test:quick          # 최소 테스트
 npm run type-check          # TypeScript 검사
 npm run qa:status           # 누적 QA 상태 요약
@@ -51,4 +61,4 @@ npm run qa:status           # 누적 QA 상태 요약
 - **문서**: `docs/` (`npm run docs:budget`로 현재 수량 확인) | **AI 설정**: `config/ai/registry-core.yaml`
 - **Production**: `https://openmanager-ai.vercel.app`
 
-_Last Updated: 2026-03-25_
+_Last Updated: 2026-03-27_

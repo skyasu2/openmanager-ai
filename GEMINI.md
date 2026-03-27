@@ -1,6 +1,6 @@
 # GEMINI.md - Gemini Identity & Configuration
 
-<!-- Version: 8.9.2 | Role: Principal Software Architect -->
+<!-- Version: 8.9.4 | Role: Principal Software Architect -->
 **This file defines the core identity and principles for the Gemini Agent within the OpenManager AI project.**
 
 # 🚨 CRITICAL INSTRUCTION
@@ -40,6 +40,14 @@
 ## 💻 Agent Dev Server Protocol
 > **개발 서버 포트 지정**: Gemini 또는 Antigravity 등 AI 에이전트가 로컬 개발 서버를 구동할 때는 기본 포트(3000)를 피하고 **3004 또는 3005 포트를 사용**해야 합니다. (동시 작업 시 Port 충돌 방지)
 
+## 🗂 Repository & Delivery Topology (2026-03-27)
+- **GitLab private (`gitlab`)**가 canonical development repo입니다. 전체 이력, 테스트, 문서, QA 자산, 내부 규칙은 GitLab 기준으로 유지합니다.
+- **Vercel Frontend**는 GitLab `main`을 Git 배포 소스로 사용합니다.
+- **GitHub public (`origin`)**는 code-only snapshot입니다. 공개용 읽기/수동 동기화 대상일 뿐, canonical repo나 기본 배포 소스가 아닙니다.
+- **GitLab CI는 기본 비활성** (`GITLAB_CI_POLICY=local-docker-only`)이며, 외부 CI보다 로컬 hook/로컬 Docker CI/수동 QA를 우선합니다.
+- **로컬 전체 검증 기본값**은 `.gitlab-ci.yml`이 아니라 `npm run ci:local:docker` / `npm run ci:local:docker:full` 입니다.
+- 따라서 Gemini는 push/fetch/rebase 전에 항상 `git remote -v`를 확인하고, 기본 push 대상은 `gitlab` 으로 선택해야 합니다.
+
 ## ✅ QA Operation Protocol (Final Gate)
 - QA 기준선 문서: `reports/qa/production-qa-2026-02-25.md`
 - QA 상태 SSOT: `reports/qa/qa-tracker.json` + `reports/qa/QA_STATUS.md`
@@ -48,6 +56,12 @@
 - 모든 QA 실행 후 결과를 누적 기록:
   - `npm run qa:record -- --input <json>`
   - `npm run qa:status`
+
+## 📦 CI/CD & Deployment Protocol
+- **Vercel 자동 배포 (Git Integration)**: 프로젝트는 GitLab 레포지토리를 통한 Webhook 방식으로 Vercel과 연동되어 있습니다.
+- 별도의 CI 스크립트(`.gitlab-ci.yml`)나 `vercel CLI`(`vercel deploy`)를 통한 수동 배포를 시도하지 마십시오.
+- 기본 배포 push는 `git push gitlab <branch>` 입니다.
+- GitHub 공개 snapshot 동기화는 canonical worktree의 기본 push 루프에 섞지 말고, 명시적 요청 시 별도 public-sync 흐름으로만 수행합니다.
 
 ## 🧰 Project Custom Skills
 
@@ -154,4 +168,4 @@ bash scripts/ai/agent-bridge.sh --to codex --save-auto "테스트 실행"
 
 ---
 
-_Gemini Agent Configuration for OpenManager AI v8.1.0_
+_Gemini Agent Configuration for OpenManager AI v8.9.4_
