@@ -159,16 +159,6 @@ npm run type-check
 
 ---
 
-## Repository Scope
-
-This public repository is a **code-only snapshot** of the full development repository maintained privately on GitLab.
-
-Intentionally excluded from this public snapshot:
-- Internal documentation (`docs/`)
-- QA evidence, test suites, and test reports (`tests/`, `reports/`)
-- Operational scripts and CI hooks (`scripts/`)
-- AI agent configurations and tooling configs (`.claude/`, `.gemini/`, `.codex/`)
-
 ---
 
 ## Engineering Notes
