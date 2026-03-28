@@ -102,19 +102,22 @@ apply_public_overrides() {
 
   if [[ -f "$WORK_DIR/package.json" ]]; then
     info "공개 package.json 스크립트 정리 중..."
-    WORK_DIR="$WORK_DIR" node <<'NODE'
+    # 허용 목록: 공개 저장소에 노출해도 안전한 스크립트만 선택
+    # (값은 원본 package.json에서 가져오므로 별도 유지 불필요)
+    PUBLIC_SCRIPT_ALLOWLIST='["dev","build","start","type-check","lint","format"]'
+    WORK_DIR="$WORK_DIR" PUBLIC_SCRIPT_ALLOWLIST="$PUBLIC_SCRIPT_ALLOWLIST" node <<'NODE'
 const fs = require('node:fs');
 const path = require('node:path');
 
 const pkgPath = path.join(process.env.WORK_DIR, 'package.json');
 const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+const allowed = new Set(JSON.parse(process.env.PUBLIC_SCRIPT_ALLOWLIST));
 
-pkg.scripts = {
-  dev: 'next dev -p 3000',
-  build: 'next build',
-  start: 'next start',
-  'type-check': 'tsc --noEmit',
-};
+const filtered = {};
+for (const [key, value] of Object.entries(pkg.scripts || {})) {
+  if (allowed.has(key)) filtered[key] = value;
+}
+pkg.scripts = filtered;
 
 fs.writeFileSync(pkgPath, `${JSON.stringify(pkg, null, 2)}\n`);
 NODE
