@@ -18,13 +18,17 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| 백로그 항목 없음 | - | - |
+| P3: VibeHistorySection stage4 추가 | Low | types/component/data/tests 전면 수정 필요. 현행 3단계 구조 동작 정상 |
+| P3: Knip unused export types 정리 | Low | 44 unused exported types (schemas 대부분) — non-blocking |
 
-### Completed (2026-03-27)
+### Completed (2026-03-28 #2)
 - [x] P3: Public GitHub snapshot sync 자동화 — `scripts/sync/github-sync.sh`, `.github-export-ignore`, `package.json`의 `sync:github` / `sync:github:dry-run` 추가. 코드 전용 스냅샷 기준으로 `origin/main` 동기화 완료
 - [x] P1: GitLab canonical delivery 정렬 및 로컬 Docker CI 표준화 — `gitlab` canonical / `origin` public-only topology 확정, `remote.pushDefault=gitlab`, `main -> gitlab/main`, `scripts/ci/local-docker-ci.sh` + `CI_DOCKER_PULL_POLICY` 도입, 관련 규칙/문서 정렬, `git push gitlab main` 후 Vercel production deployment `dpl_HaXUuu6ewS38hYCVoFuwx5oKL6Ru` `READY` 확인
 
-### Completed (2026-03-28)
+### Completed (2026-03-28 #2)
+- [x] P1: pre-push.js 1137→595줄 모듈 분리 — `pre-push-file-classifier.js` (경로 분류), `pre-push-test-classifier.js` (테스트 라우팅), `pre-push-guards.js` (guard 체크) 추출. 단위 테스트 55개 추가. `v8.10.3` 릴리즈, GitLab push + GitHub sync 완료
+
+### Completed (2026-03-28 #1)
 - [x] P1: v8.10.2 릴리즈 — commit-and-tag-version으로 마이그레이션 (standard-version deprecated 해소), CHANGELOG 업데이트, `git push gitlab --follow-tags` 완료
 - [x] P3: pre-push hook TypeScript fallback soft-timeout 적용 — 변경 감지 실패 시 full type-check 무제한 실행 경로를 `type-check:changed` + 60초 soft-timeout으로 통일 (`scripts/hooks/pre-push.js`, `754beff03`)
 - [x] P3: 로컬 CI / GitLab 배포 베스트 프랙티스 분석 완료 — 웹 검색 기반: 현행 구조(직접 실행 + GitHub Actions gate) 업계 권장 일치 확인. commit-and-tag-version 교체 실행. GitLab Push Mirror는 코드 필터링 정책 유지 목적으로 현행 `sync:github` 스크립트 방식 유지 결정
