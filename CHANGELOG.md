@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.10.5](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.10.4...v8.10.5) (2026-03-28)
+
+
+### Features
+
+* **ai:** add error boundary for AI assistant route segment ([d72a15d](https://gitlab.com/skyasu2/openmanager-ai/-/commit/d72a15da8040d9781ce07538edb7a0c4d887f7c4))
+* **auth:** add error boundary for login route segment ([7ceca5a](https://gitlab.com/skyasu2/openmanager-ai/-/commit/7ceca5a6ad30e49662f8d95d3209aee93441bb42))
+* **seo:** add robots noindex to auth and system-boot routes ([7bac8e0](https://gitlab.com/skyasu2/openmanager-ai/-/commit/7bac8e0fb01f2aaf43abc3c9dd3f61b7fa1d803b))
+* **seo:** add robots noindex to legacy /main redirect ([f10ba50](https://gitlab.com/skyasu2/openmanager-ai/-/commit/f10ba5025344746ba00e0a8d797e0081691dc940))
+
+
+### Bug Fixes
+
+* **cache:** remove stale barrel re-exports and update dependencies ([bba76c4](https://gitlab.com/skyasu2/openmanager-ai/-/commit/bba76c44378f7360e533f65ff45db671b77348a9))
+* **seo:** remove redundant title suffix to avoid template double-append ([6a775a2](https://gitlab.com/skyasu2/openmanager-ai/-/commit/6a775a2576dae478d3ee83d99317e62999a4bd4c))
+
 ## [8.10.4](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.10.3...v8.10.4) (2026-03-28)
 
 
