@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-03-29 KST (v8.10.6, Production QA 완료)
+**Last Updated**: 2026-03-29 KST (v8.10.8, VibeHistorySection stage4 완료)
 
 ## Active Tasks
 
@@ -18,9 +18,11 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| P3: VibeHistorySection stage4 추가 | Low | types/component/data/tests 전면 수정 필요. 현행 3단계 구조 동작 정상 |
 | P3: Knip unused export types 정리 (잔여) | Low | 잔여: src/schemas/api.*.schema.ts, src/types/common.ts 등 API contract/공용 타입 — 삭제 시 외부 파손 위험, non-blocking |
 | P3: 대형 파일(500+줄) 분리 계획 | Low | formatters.ts 661줄, route.ts 634줄 등 — 800줄 미만, 기능 정상, 차기 리팩토링 대상 |
+
+### Completed (2026-03-29 #11)
+- [x] P3: VibeHistorySection stage4 추가 — GitLab canonical/Multi-AI CLI/로컬 Docker CI/Cloud Run AI Engine 4단계 cyan 섹션. types/data/component/test 4파일 수정, 6 tests pass. v8.10.8 릴리즈
 
 ### Completed (2026-03-29 #10)
 - [x] P3: Knip unused export types 19개 제거 — FeatureCardProps, LokiPushPayload, ServerMetrics alias, HourlyJsonData, JobProgressUpdate, JobCompletionUpdate, AnalyzeComplexityFn, EstimateTimeFn, ISystemEventSubscriber, ErrorContext, ServerMetricsHistory, EnhancedServerMetrics (core), ServerGroup, CloudRunResponse, FilePartSchema, MessageSchema, RequestSchema, RequestSchemaLoose, UpstashResumableContext. 160/160 tests pass 유지
