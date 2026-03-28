@@ -94,7 +94,7 @@ export function parseHandoffMarker(
   const pattern = /🔄\s*\*\*([^*]+)\*\*\s*→\s*\*\*([^*]+)\*\*\s*(?::\s*(.+))?/;
   const match = text.match(pattern);
 
-  if (!match || !match[1] || !match[2]) return null;
+  if (!match?.[1] || !match?.[2]) return null;
 
   return {
     from: match[1].trim(),

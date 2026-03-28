@@ -73,7 +73,7 @@ export function useClarificationHandlers(deps: ClarificationDeps) {
     const query = pendingQueryRef.current;
     const attachments = pendingAttachmentsRef.current;
 
-    if (!query || !query.trim()) {
+    if (!query?.trim()) {
       if (process.env.NODE_ENV === 'development') {
         logger.warn('[HybridAI] skipClarification: No pending query to send');
       }
