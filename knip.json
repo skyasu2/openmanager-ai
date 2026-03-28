@@ -42,6 +42,14 @@
   ],
   "ignoreFiles": ["docs/guides/auth-complete.tsx"],
   "ignoreExportsUsedInFile": true,
+  "rules": {
+    "files": "error",
+    "exports": "warn",
+    "types": "warn",
+    "dependencies": "error",
+    "devDependencies": "warn",
+    "unlisted": "error"
+  },
   "ignore": [
     "tests/**",
     "cloud-run/**",
