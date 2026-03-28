@@ -293,18 +293,41 @@ function readPrePushUpdatesFromStdin() {
 }
 
 function resolveDefaultBaseRef() {
-  const remoteHead = runGit([
-    'symbolic-ref',
-    '--quiet',
-    'refs/remotes/origin/HEAD',
-  ]);
-  if (remoteHead) {
-    const normalized = remoteHead.replace(/^refs\/remotes\//, '');
-    if (normalized) return normalized;
+  const branchName = runGit(['rev-parse', '--abbrev-ref', 'HEAD']);
+  const preferredRemotes = [];
+
+  if (branchName && branchName !== 'HEAD') {
+    preferredRemotes.push(runGit(['config', '--get', `branch.${branchName}.remote`]));
   }
 
-  const candidates = ['origin/main', 'origin/master', 'main', 'master'];
-  for (const candidate of candidates) {
+  preferredRemotes.push(runGit(['config', '--get', 'remote.pushDefault']));
+  preferredRemotes.push('gitlab', 'origin');
+
+  const remoteCandidates = Array.from(
+    new Set(preferredRemotes.map((remote) => String(remote || '').trim()).filter(Boolean))
+  );
+
+  for (const remote of remoteCandidates) {
+    const remoteHead = runGit([
+      'symbolic-ref',
+      '--quiet',
+      `refs/remotes/${remote}/HEAD`,
+    ]);
+    if (remoteHead) {
+      const normalized = remoteHead.replace(/^refs\/remotes\//, '');
+      if (normalized) return normalized;
+    }
+  }
+
+  for (const remote of remoteCandidates) {
+    for (const branch of ['main', 'master']) {
+      const candidate = `${remote}/${branch}`;
+      const exists = runGit(['rev-parse', '--verify', candidate]);
+      if (exists) return candidate;
+    }
+  }
+
+  for (const candidate of ['main', 'master']) {
     const exists = runGit(['rev-parse', '--verify', candidate]);
     if (exists) return candidate;
   }
@@ -985,7 +1008,7 @@ function runBuildValidation(changedFilesResult) {
     if (skipRootTypeCheck && skipCloudRunTypeCheck) {
       typeCheckStatus = 'skipped-no-relevant-ts';
       console.log('⚪ TypeScript 검증 스킵 (push 범위에 관련 TS 파일 없음)');
-      console.log('ℹ️  Full build/type-check는 GitHub CI + Vercel에서 계속 검증됨');
+      console.log('ℹ️  Full build/type-check는 필요 시 local Docker CI와 Vercel에서 계속 검증됨');
       return;
     }
 
@@ -999,7 +1022,7 @@ function runBuildValidation(changedFilesResult) {
       // 변경 감지 성공/실패 모두 type-check:changed + soft-timeout 사용
       // - 변경 감지 성공: 변경된 TS 파일 목록 전달 (증분 검증)
       // - 변경 감지 실패: 파일 목록 없이 실행 → typecheck-changed.sh가 git diff로 자체 감지
-      // 두 경우 모두 60초 soft-timeout: 초과 시 CI/Vercel로 위임 (push 차단 안 함)
+      // 두 경우 모두 60초 soft-timeout: 초과 시 local Docker CI/Vercel 검증으로 위임 (push 차단 안 함)
       const changedTypeCheckStatus = createTypeCheckStatusFile();
 
       const extraEnv = {
@@ -1032,7 +1055,7 @@ function runBuildValidation(changedFilesResult) {
 
       if (changedStatus === 'soft-timeout') {
         typeCheckStatus = 'delegated-soft-timeout';
-        console.log('⚪ Root TypeScript 증분 검증 soft-timeout, CI/Vercel 전체 타입체크로 위임');
+        console.log('⚪ Root TypeScript 증분 검증 soft-timeout, local Docker CI/Vercel 전체 타입체크로 위임');
       } else {
         console.log('✅ Root TypeScript 검증 통과');
       }
@@ -1056,7 +1079,7 @@ function runBuildValidation(changedFilesResult) {
     if (typeCheckStatus !== 'delegated-soft-timeout') {
       typeCheckStatus = 'passed';
     }
-    console.log('ℹ️  Full build는 GitHub CI + Vercel에서 실행됨');
+    console.log('ℹ️  Full build는 필요 시 local Docker CI와 Vercel에서 실행됨');
   } else {
     typeCheckStatus = 'delegated';
     console.log('🐢 Full Build 검증 (QUICK_PUSH=false)...');
@@ -1128,7 +1151,7 @@ function printSummary(duration) {
   if (typeCheckStatus === 'passed') {
     console.log('  ✅ TypeScript check passed');
   } else if (typeCheckStatus === 'delegated-soft-timeout') {
-    console.log('  ⚪ TypeScript delegated after soft-timeout (CI/Vercel)');
+    console.log('  ⚪ TypeScript delegated after soft-timeout (local Docker CI/Vercel)');
   } else if (typeCheckStatus === 'skipped-docs-only') {
     console.log('  ⚪ TypeScript skipped (docs/report-only push)');
   } else if (typeCheckStatus === 'skipped-no-relevant-ts') {
@@ -1141,7 +1164,7 @@ function printSummary(duration) {
   if (!QUICK_PUSH && !isLimitedMode) {
     console.log('  ✅ Full build passed');
   } else {
-    console.log('  ⚪ Full build → GitHub CI + Vercel');
+    console.log('  ⚪ Full build → local Docker CI / Vercel');
   }
   if (STRICT_PUSH_ENV) {
     console.log('  ✅ Environment validated');

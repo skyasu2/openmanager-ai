@@ -68,7 +68,7 @@
     "sync:github:dry-run": "bash scripts/sync/github-sync.sh --dry-run",
     "renovate:run": "bash scripts/renovate/run-self-hosted.sh",
     "renovate:dry-run": "bash scripts/renovate/run-self-hosted.sh --dry-run",
-    "renovate:config:check": "node -e \"JSON.parse(require('node:fs').readFileSync('renovate.json','utf8')); console.log('renovate.json ok')\"",
+    "renovate:config:check": "bash scripts/renovate/check-config.sh",
     "env:sync:production": "bash scripts/env/sync-vercel.sh production",
     "env:sync:preview": "bash scripts/env/sync-vercel.sh preview",
     "start": "next start",

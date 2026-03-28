@@ -18,23 +18,23 @@
     {
       "matchDepTypes": ["dependencies", "devDependencies"],
       "groupName": "types",
-      "matchPackagePatterns": ["^@types/"]
+      "matchPackageNames": ["/^@types\\//"]
     },
     {
       "matchDepTypes": ["dependencies", "devDependencies"],
       "groupName": "testing",
-      "matchPackagePatterns": [
-        "^vitest$",
-        "^@vitest/",
-        "^@testing-library/",
-        "^playwright$",
-        "^@playwright/"
+      "matchPackageNames": [
+        "/^vitest$/",
+        "/^@vitest\\//",
+        "/^@testing-library\\//",
+        "/^playwright$/",
+        "/^@playwright\\//"
       ]
     },
     {
       "matchDepTypes": ["dependencies", "devDependencies"],
       "groupName": "linting",
-      "matchPackagePatterns": ["^@biomejs/", "^eslint", "^prettier"]
+      "matchPackageNames": ["/^@biomejs\\//", "/^eslint/", "/^prettier/"]
     },
     {
       "matchDepTypes": ["dependencies"],
@@ -44,12 +44,12 @@
     {
       "matchDepTypes": ["devDependencies"],
       "groupName": "react-types",
-      "matchPackagePatterns": ["^@types/react"]
+      "matchPackageNames": ["/^@types\\/react/"]
     },
     {
       "matchDepTypes": ["dependencies"],
       "groupName": "ai-sdk",
-      "matchPackagePatterns": ["^ai$", "^@ai-sdk/"]
+      "matchPackageNames": ["/^ai$/", "/^@ai-sdk\\//"]
     },
     {
       "matchUpdateTypes": ["patch"],

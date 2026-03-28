@@ -7,7 +7,8 @@ export const CLOUD_PLATFORM_TECH_STACK: TechItem[] = [
     importance: 'critical',
     description:
       '프론트엔드 배포에 최적화된 클라우드 플랫폼. 글로벌 Edge Network, 자동 HTTPS, Preview Deployments, 서버리스 Functions 제공',
-    implementation: '→ GitHub 연동 자동 빌드/배포. Next.js 16 최적화 호스팅',
+    implementation:
+      '→ GitLab canonical main push 시 자동 빌드/배포. Next.js 16 최적화 호스팅',
     status: 'active',
     icon: '▲',
     tags: ['배포', '클라우드 호스팅', '전역 CDN'],
@@ -53,15 +54,16 @@ export const CLOUD_PLATFORM_TECH_STACK: TechItem[] = [
     type: 'opensource',
   },
   {
-    name: 'GitHub Actions',
+    name: 'GitLab + Local Docker CI',
     category: 'deployment',
     importance: 'medium',
     description:
-      'GitHub 내장 CI/CD 플랫폼. YAML 기반 워크플로우 정의, 다양한 러너 환경, 마켓플레이스 액션으로 자동화 파이프라인 구축',
-    implementation: '→ Push 시 자동 테스트→빌드→배포 파이프라인 실행',
+      'GitLab canonical 저장소와 로컬 Docker 기반 검증 경로를 결합한 운영 워크플로우. 외부 SaaS CI 의존을 줄이고 배포 권위와 공개 저장소를 분리',
+    implementation:
+      '→ git push gitlab main 으로 Vercel 자동 배포, npm run ci:local:docker 로 사전 검증',
     status: 'active',
-    icon: '🔄',
-    tags: ['CI/CD', '자동화', '워크플로우'],
+    icon: '🦊',
+    tags: ['GitLab', 'Local CI', 'Vercel'],
     type: 'commercial',
   },
   {
