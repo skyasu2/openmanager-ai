@@ -21,6 +21,12 @@
 | P3: VibeHistorySection stage4 추가 | Low | types/component/data/tests 전면 수정 필요. 현행 3단계 구조 동작 정상 |
 | P3: Knip unused export types 정리 | Low | 잔여 unused export types는 schemas/common/public contract 위주 — non-blocking |
 
+### Completed (2026-03-28 #5)
+- [x] P1: `pre-push-changed-files.js` 단위 테스트 20개 추가 — 6-branch 로직(`override`/`prePushUpdates`/`upstream`/`merge-base`/`baseDiff`/`HEAD~1`) + skip 조건 + 중복 제거 커버
+- [x] P2: `checkNodeModules` → `createGuardResult` 패턴 전환 — guards 모듈 내 반환 타입 일관성 확보 (boolean→`{ ok, reason }`)
+- [x] P2: `runDocsArtifactValidation` process.exit 제거 — return-value 패턴 + `exitIfGuardFailed()` 위임. orchestrator 외부 모듈에서 process.exit 완전 제거
+- [x] P3: `dashboard.types.ts` unused types 8개 제거 — `ServerFilters`, `ServerCluster`, `ApplicationMetrics`, `ServerDashboardProps`, `ServerAction`, `RealtimeData` + 내부 전용 `ServerInstance`, `NetworkStatus` 삭제. `DashboardStats`/`DashboardTab`/`ViewMode` 유지
+
 ### Completed (2026-03-28 #4)
 - [x] P3: Knip safe unused type cleanup — 내부 UI/constant 범위의 unused exported types 7개 제거 (`FilterOption`, `TimeRange`, `AlertHistoryFilterState`, `LogExplorerFilterState`, `ProfileSecurityState`, profile `SystemStatus`, `OTelMetricName`). 잔여 backlog는 schema/common/public contract 중심으로 축소
 
