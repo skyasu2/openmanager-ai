@@ -8,6 +8,16 @@
 
 // MIGRATED: Removed export const dynamic = "force-dynamic" (now default)
 
+import type { Metadata } from 'next';
+
+// auth/* 경로는 OAuth 플로우 내부 페이지이므로 검색 엔진 색인에서 제외
+export const metadata: Metadata = {
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
+
 export default function AuthLayout({
   children,
 }: {

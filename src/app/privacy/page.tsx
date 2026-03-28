@@ -3,11 +3,12 @@
  * OpenManager AI 최소 개인정보 처리방침
  */
 
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { APP_VERSION } from '@/config/app-meta';
 
-export const metadata = {
-  title: '개인정보 처리방침 | OpenManager AI',
+export const metadata: Metadata = {
+  title: '개인정보 처리방침',
   description: 'OpenManager AI 개인정보 처리방침',
 };
 

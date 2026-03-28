@@ -11,7 +11,7 @@ import validationEvidenceJson from '../../../public/data/qa/validation-evidence.
 import { ValidationSnapshotStaleBanner } from './ValidationSnapshotStaleBanner';
 
 export const metadata: Metadata = {
-  title: 'Validation Evidence | OpenManager AI',
+  title: 'Validation Evidence',
   description:
     'Production QA status, latest proof run, and CI artifact evidence for OpenManager AI.',
 };
