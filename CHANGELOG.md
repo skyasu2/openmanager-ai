@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.10.6](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.10.5...v8.10.6) (2026-03-28)
+
+
+### Bug Fixes
+
+* **deps:** patch brace-expansion moderate CVE (GHSA-f886-m6hf-6m8v) ([51be82b](https://gitlab.com/skyasu2/openmanager-ai/-/commit/51be82b7c3a1984d37866efc3a8004bf8ea2f19b))
+* **lint:** apply useOptionalChain refactor (4 Biome warnings) ([64bb179](https://gitlab.com/skyasu2/openmanager-ai/-/commit/64bb179405bde3633389040e32ab95abb7165e30))
+* **security:** harden headers, fix error boundary Sentry tags, stabilize coverage suite ([db7344c](https://gitlab.com/skyasu2/openmanager-ai/-/commit/db7344cff3b77780dcb39769341927bfa35a30e0))
+
 ## [8.10.5](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.10.4...v8.10.5) (2026-03-28)
 
 
