@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-03-28 KST
+**Last Updated**: 2026-03-28 KST (v8.10.5+)
 
 ## Active Tasks
 
@@ -21,6 +21,13 @@
 | P3: VibeHistorySection stage4 추가 | Low | types/component/data/tests 전면 수정 필요. 현행 3단계 구조 동작 정상 |
 | P3: Knip unused export types 정리 | Low | 잔여 unused export types는 schemas/common/public contract 위주 — non-blocking |
 | P3: 대형 파일(500+줄) 분리 계획 | Low | formatters.ts 661줄, route.ts 634줄 등 — 800줄 미만, 기능 정상, 차기 리팩토링 대상 |
+
+### Completed (2026-03-28 #8)
+- [x] P2: `global-error.tsx` Sentry.captureException 추가 — 다른 에러 경계와 일관성 확보 (`boundary: 'global-error'`)
+- [x] P3: `error.tsx` boundary 태그 수정 — `'global-error'` → `'root'` (Sentry 에러 분류 정확도 개선)
+- [x] P2: 보안 헤더 3종 개선 — `Cross-Origin-Opener-Policy: same-origin-allow-popups` 추가, `Permissions-Policy` 구식 `interest-cohort=()` 제거, 잘못된 `X-Vercel-Cache`/`X-Edge-Runtime` 수동 설정 제거
+- [x] P2: `vitest.config.simple.ts` coverage suite 안정화 — playwright/dev/qa 테스트 exclude, ai-warmup jsdom 격리, esbuild target node14→node18. 12/12 pass (이전 6 failed)
+- [x] P2: Biome `useOptionalChain` 4건 수정 — `AgentHandoffBadge`, `useClarificationHandlers`, `useQueryExecution`, `promql-engine-core` (커밋 `64bb17940`)
 
 ### Completed (2026-03-28 #7)
 - [x] P1: `unified-cache.ts` + `redis/index.ts` 배럴 export 오류 수정 — 삭제된 7개 함수 re-export 정리 (TypeScript 빌드 회귀 해소)
