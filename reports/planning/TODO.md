@@ -20,6 +20,11 @@
 |------|----------|-------|
 | P3: VibeHistorySection stage4 추가 | Low | types/component/data/tests 전면 수정 필요. 현행 3단계 구조 동작 정상 |
 | P3: Knip unused export types 정리 | Low | 잔여 unused export types는 schemas/common/public contract 위주 — non-blocking |
+| P3: 대형 파일(500+줄) 분리 계획 | Low | formatters.ts 661줄, route.ts 634줄 등 — 800줄 미만, 기능 정상, 차기 리팩토링 대상 |
+
+### Completed (2026-03-28 #6)
+- [x] P2: `auth/error.tsx` 에러 경계 추가 — auth 세그먼트 전용 에러 UI (Sentry `boundary: 'auth'` 태깅 + "로그인으로" 복구 액션)
+- [x] P1: v8.10.4 릴리즈 — 19커밋 누적 후 릴리즈. GitLab push + GitHub sync 완료
 
 ### Completed (2026-03-28 #5)
 - [x] P1: `pre-push-changed-files.js` 단위 테스트 20개 추가 — 6-branch 로직(`override`/`prePushUpdates`/`upstream`/`merge-base`/`baseDiff`/`HEAD~1`) + skip 조건 + 중복 제거 커버
