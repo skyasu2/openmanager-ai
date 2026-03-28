@@ -12,8 +12,11 @@ const path = require('path');
 const fs = require('fs');
 
 const isWindows = os.platform() === 'win32';
-const isWSL = !isWindows && fs.existsSync('/proc/version') &&
+const isWSL =
+  !isWindows &&
+  fs.existsSync('/proc/version') &&
   fs.readFileSync('/proc/version', 'utf8').toLowerCase().includes('microsoft');
+
 const { filterTypeCheckRelevantFiles } = require('../dev/typecheck-scope');
 const { resolveDefaultBaseRefFromGit } = require('./pre-push-base-ref');
 const {
@@ -21,12 +24,26 @@ const {
   determineChangedFilesForPush,
   isKnownNoOpPush,
 } = require('./pre-push-changed-files');
+const {
+  CLOUD_RUN_ROOT,
+  loadDomTestManifest,
+  normalizeFilePath,
+  isCloudRunTypeCheckRelevantFile,
+} = require('./pre-push-file-classifier');
+const { classifyChangedTestRun } = require('./pre-push-test-classifier');
+const {
+  checkCloudBuildFreeTierGuard,
+  checkNodeModules,
+  checkRelease,
+  checkWSLPerformance,
+  checkEnvironment,
+} = require('./pre-push-guards');
+
 const npmCmd = isWindows ? 'npm.cmd' : 'npm';
 const npxCmd = isWindows ? 'npx.cmd' : 'npx';
 const gitCmd = isWindows ? 'git.exe' : 'git';
 const cwd = process.cwd();
 const isWindowsFS = cwd.startsWith('/mnt/');
-const CLOUD_RUN_ROOT = 'cloud-run/ai-engine';
 const cloudRunCwd = path.join(cwd, CLOUD_RUN_ROOT);
 
 // Environment flags
@@ -36,80 +53,25 @@ const cloudRunCwd = path.join(cwd, CLOUD_RUN_ROOT);
 // - STRICT_PUSH_ENV=true: env:check를 pre-push에서 강제
 // - FORCE_CLOUD_BUILD_GUARD=true: Cloud Build 가드를 항상 실행
 const SKIP_RELEASE_CHECK = process.env.SKIP_RELEASE_CHECK === 'true';
-const QUICK_PUSH = process.env.QUICK_PUSH !== 'false'; // 기본값: true (빠른 푸시)
+const QUICK_PUSH = process.env.QUICK_PUSH !== 'false'; // 기본값: true
 const SKIP_TESTS = process.env.SKIP_TESTS === 'true';
 const SKIP_BUILD = process.env.SKIP_BUILD === 'true';
 const SKIP_NODE_CHECK = process.env.SKIP_NODE_CHECK === 'true';
-const STRICT_PUSH_ENV = process.env.STRICT_PUSH_ENV === 'true'; // 기본값: false (env 검증은 CI/Vercel에서 수행, 로컬은 opt-in)
+const STRICT_PUSH_ENV = process.env.STRICT_PUSH_ENV === 'true';
 const FORCE_CLOUD_BUILD_GUARD = process.env.FORCE_CLOUD_BUILD_GUARD === 'true';
 const PRE_PUSH_CHANGED_FILES_OVERRIDE = process.env.PRE_PUSH_CHANGED_FILES || '';
 
 // Windows = limited validation mode (TypeScript + Lint only)
-// WSL with Linux node_modules = full validation mode
 const isLimitedMode = isWindows;
 
 let testStatus = 'pending';
 let typeCheckStatus = 'pending';
 let validationMode = 'standard';
 let selectedTestMode = 'quick';
-const DOM_INFRA_SMOKE_SENTINEL = 'src/test/setup.ts';
 
-const DOM_TEST_INFRA_PREFIXES = [
-  'config/testing/',
-];
+const DOM_TEST_MANIFEST = loadDomTestManifest(cwd);
 
-const DOM_TEST_INFRA_EXACT = new Set([
-  'package.json',
-  'scripts/dev/vitest-main-wrapper.js',
-  DOM_INFRA_SMOKE_SENTINEL,
-]);
-
-const HOOK_TEST_INFRA_EXACT = new Set([
-  'scripts/hooks/pre-push.js',
-]);
-
-const FRONTEND_SMOKE_PREFIXES = [
-  'src/components/ai/',
-  'src/components/ai-sidebar/',
-  'src/app/dashboard/ai-assistant/',
-];
-
-const FRONTEND_SMOKE_EXACT = new Set([
-  'src/app/dashboard/DashboardClient.tsx',
-  'src/app/dashboard/dashboard-client-helpers.tsx',
-  'src/components/dashboard/AIAssistantButton.tsx',
-  'src/components/dashboard/AIAssistantButton.test.tsx',
-]);
-
-function loadDomTestManifest() {
-  const manifestPath = path.join(cwd, 'config/testing/dom-test-manifest.json');
-
-  try {
-    const parsed = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
-    const pathPrefixes = Array.isArray(parsed.pathPrefixes)
-      ? parsed.pathPrefixes.map((entry) => normalizeFilePath(entry))
-      : [];
-    const exactFiles = Array.isArray(parsed.exactFiles)
-      ? parsed.exactFiles.map((entry) => normalizeFilePath(entry))
-      : [];
-
-    return {
-      pathPrefixes,
-      exactFiles: new Set(exactFiles),
-    };
-  } catch (error) {
-    console.warn(
-      '⚠️  Failed to load DOM test manifest, falling back to quick tests:',
-      error.message
-    );
-    return {
-      pathPrefixes: [],
-      exactFiles: new Set(),
-    };
-  }
-}
-
-const DOM_TEST_MANIFEST = loadDomTestManifest();
+// ─── Process runners ──────────────────────────────────────────────────────
 
 function runCommand(command, args, options = {}) {
   const result = spawnSync(command, args, {
@@ -123,38 +85,23 @@ function runCommand(command, args, options = {}) {
 }
 
 function runNpm(args, envOverrides = null, runCwd = cwd) {
-  return runCommand(npmCmd, args, {
-    cwd: runCwd,
-    env: envOverrides || process.env,
-  });
+  return runCommand(npmCmd, args, { cwd: runCwd, env: envOverrides || process.env });
 }
 
 function runNpx(args, runCwd = cwd, envOverrides = null) {
-  return runCommand(npxCmd, args, {
-    cwd: runCwd,
-    env: envOverrides || process.env,
-  });
+  return runCommand(npxCmd, args, { cwd: runCwd, env: envOverrides || process.env });
 }
 
 function runGit(args) {
   try {
-    const result = spawnSync(gitCmd, args, {
-      encoding: 'utf8',
-      stdio: 'pipe',
-      cwd,
-    });
+    const result = spawnSync(gitCmd, args, { encoding: 'utf8', stdio: 'pipe', cwd });
     return result.stdout ? result.stdout.trim() : '';
   } catch {
     return '';
   }
 }
 
-function stripHashComments(text) {
-  return text
-    .split('\n')
-    .filter((line) => !line.trim().startsWith('#'))
-    .join('\n');
-}
+// ─── Helpers ─────────────────────────────────────────────────────────────
 
 function parseChangedFiles(output) {
   if (!output) return [];
@@ -164,16 +111,9 @@ function parseChangedFiles(output) {
     .filter(Boolean);
 }
 
-function normalizeFilePath(filePath) {
-  return String(filePath || '').replace(/\\/g, '/');
-}
-
 function createTypeCheckStatusFile() {
   const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'openmanager-typecheck-'));
-  return {
-    tempDir,
-    filePath: path.join(tempDir, 'status.txt'),
-  };
+  return { tempDir, filePath: path.join(tempDir, 'status.txt') };
 }
 
 function readTypeCheckStatus(filePath) {
@@ -193,84 +133,6 @@ function cleanupTypeCheckStatus(tempDir) {
   }
 }
 
-function isVitestTestFile(filePath) {
-  const normalized = normalizeFilePath(filePath);
-  if (normalized.startsWith('tests/e2e/')) return false;
-  if (normalized.startsWith('tests/manual/')) return false;
-  return /\.(test|spec)\.(js|ts|tsx)$/u.test(normalized);
-}
-
-function isPlaywrightTestFile(filePath) {
-  const normalized = normalizeFilePath(filePath);
-  if (!normalized.startsWith('tests/e2e/')) return false;
-  return /\.(test|spec)\.(js|ts|tsx)$/u.test(normalized);
-}
-
-function isJavaScriptSourceFile(filePath) {
-  return /\.(js|jsx|ts|tsx)$/u.test(normalizeFilePath(filePath));
-}
-
-function isCloudRunFile(filePath) {
-  return normalizeFilePath(filePath).startsWith(`${CLOUD_RUN_ROOT}/`);
-}
-
-function isCloudRunVitestTestFile(filePath) {
-  const normalized = normalizeFilePath(filePath);
-  return isCloudRunFile(normalized) && isVitestTestFile(normalized);
-}
-
-function isCloudRunRelatedSourceFile(filePath) {
-  const normalized = normalizeFilePath(filePath);
-  if (!normalized.startsWith(`${CLOUD_RUN_ROOT}/src/`)) return false;
-  if (!isJavaScriptSourceFile(normalized)) return false;
-  return !isVitestTestFile(normalized);
-}
-
-function isCloudRunTypeCheckRelevantFile(filePath) {
-  const normalized = normalizeFilePath(filePath);
-  if (!normalized.startsWith(`${CLOUD_RUN_ROOT}/src/`)) return false;
-  if (!/\.(ts|tsx)$/u.test(normalized)) return false;
-  return !isVitestTestFile(normalized);
-}
-
-function toCloudRunRelativePath(filePath) {
-  return normalizeFilePath(filePath).replace(`${CLOUD_RUN_ROOT}/`, '');
-}
-
-function isDomTestFile(filePath) {
-  const normalized = normalizeFilePath(filePath);
-  if (!isVitestTestFile(normalized)) return false;
-  if (DOM_TEST_MANIFEST.exactFiles.has(normalized)) return true;
-  return DOM_TEST_MANIFEST.pathPrefixes.some((prefix) => normalized.startsWith(prefix));
-}
-
-function isRelatedSourceFile(filePath) {
-  const normalized = normalizeFilePath(filePath);
-  if (!normalized.startsWith('src/')) return false;
-  if (!isJavaScriptSourceFile(normalized)) return false;
-  return !isVitestTestFile(normalized);
-}
-
-function isDomTestInfraFile(filePath) {
-  const normalized = normalizeFilePath(filePath);
-  if (DOM_TEST_INFRA_EXACT.has(normalized)) return true;
-  return DOM_TEST_INFRA_PREFIXES.some((prefix) => normalized.startsWith(prefix));
-}
-
-function isHookTestInfraFile(filePath) {
-  return HOOK_TEST_INFRA_EXACT.has(normalizeFilePath(filePath));
-}
-
-function isFrontendSmokeFile(filePath) {
-  const normalized = normalizeFilePath(filePath);
-  if (FRONTEND_SMOKE_EXACT.has(normalized)) return true;
-  return FRONTEND_SMOKE_PREFIXES.some((prefix) => normalized.startsWith(prefix));
-}
-
-function isAIWorkspaceQuickFile(filePath) {
-  return isFrontendSmokeFile(filePath);
-}
-
 function isZeroOid(oid) {
   return /^0+$/.test(oid);
 }
@@ -284,7 +146,6 @@ function parsePrePushUpdateLine(line) {
 
 function readPrePushUpdatesFromStdin() {
   if (process.stdin.isTTY) return [];
-
   try {
     const rawInput = fs.readFileSync(0, 'utf8');
     if (!rawInput.trim()) return [];
@@ -349,202 +210,37 @@ function getChangedFilesForPush() {
   return result;
 }
 
-function checkCloudBuildFreeTierGuard(changedFilesResult) {
-  const changedFiles = changedFilesResult.files;
-  const watchedFiles = [
-    'cloud-run/ai-engine/cloudbuild.yaml',
-    'cloud-run/ai-engine/deploy.sh',
-  ];
-  const hasChangedFiles = changedFiles.length > 0;
-  const hasRelevantChanges = changedFiles.some((file) => watchedFiles.includes(file));
-
-  if (!hasRelevantChanges && !FORCE_CLOUD_BUILD_GUARD) {
-    if (hasChangedFiles || changedFilesResult.isKnown) {
-      console.log('⚪ Cloud Build guard skipped (ai-engine deploy files unchanged)');
-      return;
-    }
-    console.warn(
-      '⚠️  Cloud Build guard running in fail-closed mode (changed files unknown)'
-    );
-  }
-
-  const cloudbuildPath = path.join(cwd, 'cloud-run/ai-engine/cloudbuild.yaml');
-  const deployPath = path.join(cwd, 'cloud-run/ai-engine/deploy.sh');
-
-  if (!fs.existsSync(cloudbuildPath) || !fs.existsSync(deployPath)) {
-    return;
-  }
-
-  console.log('🛡️ Cloud Build free-tier guard check...');
-
-  const cloudbuildRaw = fs.readFileSync(cloudbuildPath, 'utf8');
-  const cloudbuildBody = stripHashComments(cloudbuildRaw);
-  const deployRaw = fs.readFileSync(deployPath, 'utf8');
-  const failures = [];
-
-  if (/\bmachineType\b/.test(cloudbuildBody)) {
-    failures.push('cloud-run/ai-engine/cloudbuild.yaml contains machineType in active config');
-  }
-
-  if (/\b(E2_HIGHCPU_8|N1_HIGHCPU_8|e2-highcpu-8|n1-highcpu-8)\b/.test(cloudbuildBody)) {
-    failures.push('cloud-run/ai-engine/cloudbuild.yaml contains highcpu machine type in active config');
-  }
-
-  if (!deployRaw.includes('assert_no_forbidden_args "${BUILD_CMD[@]}"')) {
-    failures.push('cloud-run/ai-engine/deploy.sh missing BUILD_CMD forbidden-arg guard');
-  }
-
-  if (!deployRaw.includes('assert_no_forbidden_args "${DEPLOY_CMD[@]}"')) {
-    failures.push('cloud-run/ai-engine/deploy.sh missing DEPLOY_CMD forbidden-arg guard');
-  }
-
-  if (!deployRaw.includes('enforce_free_tier_guards')) {
-    failures.push('cloud-run/ai-engine/deploy.sh missing free-tier guard enforcement');
-  }
-
-  if (failures.length > 0) {
-    console.log('❌ Free-tier guard check failed - push blocked');
-    for (const failure of failures) {
-      console.log(`   - ${failure}`);
-    }
-    console.log('');
-    console.log('💡 Fix: restore free-tier guardrails in cloudbuild/deploy scripts');
-    console.log('⚠️  Bypass: HUSKY=0 git push');
-    process.exit(1);
-  }
-}
-
-// node_modules health check
-function checkNodeModules() {
-  if (SKIP_NODE_CHECK) {
-    console.log('⚪ node_modules check skipped (SKIP_NODE_CHECK=true)');
-    return true;
-  }
-
-  const criticalPackages = [
-    'node_modules/typescript',
-    'node_modules/react',
-    'node_modules/@types/react',
-    'node_modules/@types/node',
-    'node_modules/next',
-  ];
-
-  const missing = criticalPackages.filter(pkg => !fs.existsSync(path.join(cwd, pkg)));
-
-  if (missing.length > 0) {
-    console.log('');
-    console.log('⚠️  node_modules appears to be corrupted or incomplete');
-    console.log('   Missing packages:', missing.map(p => p.replace('node_modules/', '')).join(', '));
-    console.log('');
-    console.log('💡 Fix options:');
-    console.log('   1. Run: rm -rf node_modules package-lock.json && npm install');
-    console.log('   2. Bypass: HUSKY=0 git push');
-    console.log('');
-    return false;
-  }
-
-  // Check for platform mismatch (WSL using Windows node_modules)
-  if (isWSL && isWindowsFS) {
-    const rollupPath = path.join(cwd, 'node_modules/@rollup');
-    if (fs.existsSync(rollupPath)) {
-      const rollupContents = fs.readdirSync(rollupPath);
-      const hasWin32 = rollupContents.some(f => f.includes('win32'));
-      const hasLinux = rollupContents.some(f => f.includes('linux'));
-
-      if (hasWin32 && !hasLinux) {
-        // In WSL with Windows node_modules, this is a problem
-        // But if running on Windows itself, this is expected
-        if (isWindows) {
-          // Windows with Windows binaries = OK
-          return true;
-        }
-        console.log('');
-        console.log('⚠️  node_modules was installed on Windows, not compatible with WSL');
-        console.log('');
-        console.log('💡 Options:');
-        console.log('   1. Push from Windows: Use PowerShell/CMD to run git push');
-        console.log('   2. Reinstall: rm -rf node_modules && npm install');
-        console.log('   3. Bypass: HUSKY=0 git push');
-        console.log('');
-        return false;
-      }
-    }
-  }
-
-  return true;
-}
-
-// Release check
-function checkRelease() {
-  if (SKIP_RELEASE_CHECK) return;
-
-  const lastTag = runGit(['describe', '--tags', '--abbrev=0']);
-  if (!lastTag) return;
-
-  const commitsSinceTag = runGit(['rev-list', `${lastTag}..HEAD`, '--count']);
-  const count = parseInt(commitsSinceTag, 10) || 0;
-
-  if (count > 20) {
-    console.log('');
-    console.log(`📦 Release Check: ${count} commits since ${lastTag}`);
-    console.log('   Consider running: npm run release:patch (or :minor)');
-    console.log('   Skip this check: SKIP_RELEASE_CHECK=true git push');
-    console.log('');
-  }
-}
-
-// WSL warning
-function checkWSLPerformance() {
-  if (isWSL && isWindowsFS) {
-    console.log('');
-    console.log('ℹ️  WSL + Windows filesystem detected');
-    console.log('   기본: TypeScript 검증만 (~20초)');
-    console.log('   Full Build 필요 시: QUICK_PUSH=false git push');
-    console.log('');
-  }
-}
+// ─── Docs-only path ──────────────────────────────────────────────────────
 
 function isLightweightArtifactFile(filePath) {
   const normalized = String(filePath || '').replace(/\\/g, '/');
   if (!normalized) return false;
-
-  if (normalized.endsWith('.md')) {
-    return true;
-  }
-
+  if (normalized.endsWith('.md')) return true;
   if (normalized.endsWith('.json')) {
     return normalized.startsWith('docs/') || normalized.startsWith('reports/');
   }
-
   return false;
 }
 
 function isDocsArtifactOnlyPush(changedFilesResult) {
-  if (!changedFilesResult.isKnown || changedFilesResult.files.length === 0) {
-    return false;
-  }
-
+  if (!changedFilesResult.isKnown || changedFilesResult.files.length === 0) return false;
   return changedFilesResult.files.every((filePath) => isLightweightArtifactFile(filePath));
 }
 
 function validateChangedJsonArtifacts(changedFiles) {
   const jsonFiles = changedFiles.filter((filePath) => filePath.endsWith('.json'));
-
   if (jsonFiles.length === 0) {
     console.log('⚪ JSON artifact validation skipped (no changed JSON files)');
     return;
   }
-
   for (const relativePath of jsonFiles) {
     const absolutePath = path.join(cwd, relativePath);
-
     if (!fs.existsSync(absolutePath)) {
       console.log(`❌ JSON artifact missing: ${relativePath}`);
       console.log('');
       console.log('💡 Fix: restore or remove the stale JSON path from the push range');
       process.exit(1);
     }
-
     try {
       JSON.parse(fs.readFileSync(absolutePath, 'utf8'));
     } catch (error) {
@@ -553,7 +249,6 @@ function validateChangedJsonArtifacts(changedFiles) {
       process.exit(1);
     }
   }
-
   console.log(`✅ JSON artifact validation passed (${jsonFiles.length} files)`);
 }
 
@@ -581,214 +276,11 @@ function runDocsArtifactValidation(changedFilesResult) {
   validateChangedJsonArtifacts(changedFilesResult.files);
 }
 
-function classifyChangedTestRun(changedFilesResult) {
-  if (!changedFilesResult?.isKnown || changedFilesResult.files.length === 0) {
-    return null;
-  }
+// ─── Tests ───────────────────────────────────────────────────────────────
 
-  const normalizedFiles = changedFilesResult.files.map(normalizeFilePath);
-  const frontendSmokeFiles = normalizedFiles.filter((filePath) =>
-    isFrontendSmokeFile(filePath)
-  );
-  const consumeFrontendSmokeFiles = frontendSmokeFiles.length > 0 && isWSL && isWindowsFS;
-  const frontendSmokeFileSet = new Set(
-    consumeFrontendSmokeFiles ? frontendSmokeFiles : []
-  );
-  const afterFrontendSmokeFiles = normalizedFiles.filter(
-    (filePath) => !frontendSmokeFileSet.has(filePath)
-  );
-  const aiWorkspaceQuickFiles = afterFrontendSmokeFiles.filter((filePath) =>
-    isAIWorkspaceQuickFile(filePath)
-  );
-  const aiWorkspaceQuickFileSet = new Set(aiWorkspaceQuickFiles);
-  const afterAiWorkspaceQuickFiles = afterFrontendSmokeFiles.filter(
-    (filePath) => !aiWorkspaceQuickFileSet.has(filePath)
-  );
-  const playwrightTestFiles = afterAiWorkspaceQuickFiles.filter((filePath) =>
-    isPlaywrightTestFile(filePath)
-  );
-  const playwrightTestFileSet = new Set(playwrightTestFiles);
-  const afterPlaywrightTestFiles = afterAiWorkspaceQuickFiles.filter(
-    (filePath) => !playwrightTestFileSet.has(filePath)
-  );
-  const cloudRunTestFiles = afterPlaywrightTestFiles.filter((filePath) =>
-    isCloudRunVitestTestFile(filePath)
-  );
-  const cloudRunTestFileSet = new Set(cloudRunTestFiles);
-  const afterCloudRunTestFiles = afterPlaywrightTestFiles.filter(
-    (filePath) => !cloudRunTestFileSet.has(filePath)
-  );
-  const cloudRunSourceFiles = afterCloudRunTestFiles.filter((filePath) =>
-    isCloudRunRelatedSourceFile(filePath)
-  );
-  const cloudRunSourceFileSet = new Set(cloudRunSourceFiles);
-  const remainingFiles = afterCloudRunTestFiles.filter(
-    (filePath) => !cloudRunSourceFileSet.has(filePath)
-  );
-  const testFiles = remainingFiles.filter((filePath) => isVitestTestFile(filePath));
-  const relatedSourceFiles = remainingFiles.filter((filePath) =>
-    isRelatedSourceFile(filePath)
-  );
-  const domInfraFiles = remainingFiles.filter((filePath) => isDomTestInfraFile(filePath));
-  const hookInfraFiles = remainingFiles.filter((filePath) => isHookTestInfraFile(filePath));
-  const steps = [];
-  const summaryParts = [];
-  const guidance = [];
-  const scopeFiles = [];
-
-  if (consumeFrontendSmokeFiles) {
-    // Mounted WSL workspaces pay a very large jsdom startup cost for AI assistant
-    // surface tests. Prefer the stable quick gate over targeted DOM smoke here.
-    steps.push({
-      label: `AI assistant quick smoke (${frontendSmokeFiles.length} file${frontendSmokeFiles.length > 1 ? 's' : ''})`,
-      args: ['run', 'test:quick'],
-    });
-    summaryParts.push('AI assistant quick smoke');
-    guidance.push('npm run test:quick');
-    scopeFiles.push(...frontendSmokeFiles);
-  }
-
-  if (aiWorkspaceQuickFiles.length > 0) {
-    steps.push({
-      label: `AI workspace quick smoke (${aiWorkspaceQuickFiles.length} file${aiWorkspaceQuickFiles.length > 1 ? 's' : ''})`,
-      args: ['run', 'test:quick'],
-    });
-    summaryParts.push('AI workspace quick smoke');
-    guidance.push('npm run test:quick');
-    scopeFiles.push(...aiWorkspaceQuickFiles);
-  }
-
-  if (playwrightTestFiles.length > 0) {
-    // E2E specs are Playwright-owned and are excluded from the Vitest node suite.
-    // Keep pre-push fast and avoid misrouting them into `npm run test:node`.
-    steps.push({
-      label: `Playwright spec quick smoke (${playwrightTestFiles.length} file${playwrightTestFiles.length > 1 ? 's' : ''})`,
-      args: ['run', 'test:quick'],
-    });
-    summaryParts.push('playwright spec quick smoke');
-    guidance.push('npm run test:quick');
-    scopeFiles.push(...playwrightTestFiles);
-  }
-
-  if (cloudRunTestFiles.length > 0) {
-    steps.push({
-      label: `Cloud Run targeted node suite (${cloudRunTestFiles.length} file${cloudRunTestFiles.length > 1 ? 's' : ''})`,
-      runner: 'npx',
-      cwd: cloudRunCwd,
-      args: ['vitest', 'run', ...cloudRunTestFiles.map(toCloudRunRelativePath)],
-    });
-    summaryParts.push('cloud-run targeted node');
-    guidance.push('cd cloud-run/ai-engine && npx vitest run <changed test files>');
-    scopeFiles.push(...cloudRunTestFiles);
-  }
-
-  if (cloudRunSourceFiles.length > 0) {
-    steps.push({
-      label: `Cloud Run related node suite (${cloudRunSourceFiles.length} source file${cloudRunSourceFiles.length > 1 ? 's' : ''})`,
-      runner: 'npx',
-      cwd: cloudRunCwd,
-      args: [
-        'vitest',
-        'related',
-        '--run',
-        '--passWithNoTests',
-        ...cloudRunSourceFiles.map(toCloudRunRelativePath),
-      ],
-    });
-    summaryParts.push('cloud-run related node');
-    guidance.push(
-      'cd cloud-run/ai-engine && npx vitest related --run --passWithNoTests <changed source files>'
-    );
-    scopeFiles.push(...cloudRunSourceFiles);
-  }
-
-  if (testFiles.length > 0) {
-    const domTestFiles = testFiles.filter((filePath) => isDomTestFile(filePath));
-    const nodeTestFiles = testFiles.filter((filePath) => !isDomTestFile(filePath));
-
-    if (domTestFiles.length === testFiles.length) {
-      steps.push({
-        label: `Targeted DOM suite (${domTestFiles.length} file${domTestFiles.length > 1 ? 's' : ''})`,
-        args: ['run', 'test:dom', '--', ...domTestFiles],
-      });
-      summaryParts.push('targeted DOM');
-      guidance.push('npm run test:dom -- <changed test files>');
-      scopeFiles.push(...domTestFiles);
-    } else if (nodeTestFiles.length === testFiles.length) {
-      steps.push({
-        label: `Targeted node suite (${nodeTestFiles.length} file${nodeTestFiles.length > 1 ? 's' : ''})`,
-        args: ['run', 'test:node', '--', ...nodeTestFiles],
-      });
-      summaryParts.push('targeted node');
-      guidance.push('npm run test:node -- <changed test files>');
-      scopeFiles.push(...nodeTestFiles);
-    } else {
-      steps.push({
-        label: 'Quick smoke for mixed DOM/node test changes',
-        args: ['run', 'test:super-fast'],
-      });
-      summaryParts.push('mixed test quick smoke');
-      guidance.push('npm run test:super-fast');
-      scopeFiles.push(...testFiles);
-    }
-  }
-
-  if (relatedSourceFiles.length > 0) {
-    steps.push({
-      label: `Related node suite (${relatedSourceFiles.length} source file${relatedSourceFiles.length > 1 ? 's' : ''})`,
-      args: ['run', 'test:related:node', '--', ...relatedSourceFiles],
-    });
-    steps.push({
-      label: `Related DOM suite (${relatedSourceFiles.length} source file${relatedSourceFiles.length > 1 ? 's' : ''})`,
-      args: ['run', 'test:related:dom', '--', ...relatedSourceFiles],
-    });
-    summaryParts.push('source-related node + DOM');
-    guidance.push('npm run test:related:node -- <changed source files>');
-    guidance.push('npm run test:related:dom -- <changed source files>');
-    scopeFiles.push(...relatedSourceFiles);
-  } else if (
-    domInfraFiles.length > 0 &&
-    !scopeFiles.includes(DOM_INFRA_SMOKE_SENTINEL)
-  ) {
-    steps.push({
-      label: 'DOM infrastructure smoke',
-      args: ['run', 'test:related:dom', '--', DOM_INFRA_SMOKE_SENTINEL],
-    });
-    summaryParts.push('DOM infra smoke');
-    guidance.push(`npm run test:related:dom -- ${DOM_INFRA_SMOKE_SENTINEL}`);
-    scopeFiles.push(...domInfraFiles);
-  }
-
-  if (
-    hookInfraFiles.length > 0 &&
-    steps.length === 0
-  ) {
-    steps.push({
-      label: 'Quick smoke for hook infrastructure changes',
-      args: ['run', 'test:quick'],
-    });
-    summaryParts.push('hook infra quick smoke');
-    guidance.push('npm run test:quick');
-    scopeFiles.push(...hookInfraFiles);
-  }
-
-  if (steps.length === 0) {
-    return null;
-  }
-
-  return {
-    mode: summaryParts.join(' + '),
-    files: Array.from(new Set(scopeFiles)),
-    steps,
-    guidance: Array.from(new Set(guidance)),
-  };
-}
-
-// Tests
 function runTests(changedFilesResult) {
   selectedTestMode = 'quick';
 
-  // Windows: skip tests (run full validation in WSL)
   if (isLimitedMode) {
     testStatus = 'skipped';
     console.log('⚪ Tests skipped (Windows Limited Mode)');
@@ -809,13 +301,14 @@ function runTests(changedFilesResult) {
     return;
   }
 
-  const targetedRun = classifyChangedTestRun(changedFilesResult);
-  let steps = [
-    {
-      label: 'Quick smoke',
-      args: ['run', 'test:super-fast'],
-    },
-  ];
+  const targetedRun = classifyChangedTestRun(
+    changedFilesResult,
+    DOM_TEST_MANIFEST,
+    isWSL,
+    isWindowsFS,
+    cloudRunCwd
+  );
+  let steps = [{ label: 'Quick smoke', args: ['run', 'test:super-fast'] }];
 
   if (targetedRun) {
     selectedTestMode = targetedRun.mode;
@@ -826,14 +319,11 @@ function runTests(changedFilesResult) {
   }
 
   const success = steps.every(({ args, label, runner, cwd: stepCwd }) => {
-    if (label) {
-      console.log(`   → ${label}`);
-    }
+    if (label) console.log(`   → ${label}`);
     const runCwd = stepCwd || cwd;
-    return runner === 'npx'
-      ? runNpx(args, runCwd)
-      : runNpm(args, null, runCwd);
+    return runner === 'npx' ? runNpx(args, runCwd) : runNpm(args, null, runCwd);
   });
+
   if (success) {
     testStatus = 'passed';
   } else {
@@ -855,7 +345,8 @@ function runTests(changedFilesResult) {
   }
 }
 
-// Build validation
+// ─── Build validation ────────────────────────────────────────────────────
+
 function runBuildValidation(changedFilesResult) {
   console.log('🏗️ Build validation...');
 
@@ -872,13 +363,10 @@ function runBuildValidation(changedFilesResult) {
     return;
   }
 
-  // Windows: TypeScript only (lint already done in pre-commit)
   if (isLimitedMode) {
     console.log('🔧 Windows Limited Mode: TypeScript only...');
     console.log('   → Lint already done in pre-commit');
     console.log('');
-
-    // Run TypeScript check
     console.log('📝 TypeScript checking...');
     const tsSuccess = runNpm(['run', 'type-check']);
     if (!tsSuccess) {
@@ -891,18 +379,17 @@ function runBuildValidation(changedFilesResult) {
       process.exit(1);
     }
     typeCheckStatus = 'passed';
-
-    // Lint는 pre-commit에서 이미 실행되므로 스킵
     console.log('⚪ Lint skipped (already run in pre-commit)');
-
     console.log('✅ Windows Limited Mode validation passed');
     return;
   }
 
   if (QUICK_PUSH) {
-    const rootTypeCheckRelevantFiles = filterTypeCheckRelevantFiles(changedFilesResult.files);
-    const cloudRunTypeCheckRelevantFiles = changedFilesResult.files.filter((filePath) =>
-      isCloudRunTypeCheckRelevantFile(filePath)
+    const rootTypeCheckRelevantFiles = filterTypeCheckRelevantFiles(
+      changedFilesResult.files
+    );
+    const cloudRunTypeCheckRelevantFiles = changedFilesResult.files.filter((f) =>
+      isCloudRunTypeCheckRelevantFile(f)
     );
     const skipRootTypeCheck =
       changedFilesResult.isKnown &&
@@ -918,7 +405,9 @@ function runBuildValidation(changedFilesResult) {
     if (skipRootTypeCheck && skipCloudRunTypeCheck) {
       typeCheckStatus = 'skipped-no-relevant-ts';
       console.log('⚪ TypeScript 검증 스킵 (push 범위에 관련 TS 파일 없음)');
-      console.log('ℹ️  Full build/type-check는 필요 시 local Docker CI와 Vercel에서 계속 검증됨');
+      console.log(
+        'ℹ️  Full build/type-check는 필요 시 local Docker CI와 Vercel에서 계속 검증됨'
+      );
       return;
     }
 
@@ -930,11 +419,7 @@ function runBuildValidation(changedFilesResult) {
       );
 
       // 변경 감지 성공/실패 모두 type-check:changed + soft-timeout 사용
-      // - 변경 감지 성공: 변경된 TS 파일 목록 전달 (증분 검증)
-      // - 변경 감지 실패: 파일 목록 없이 실행 → typecheck-changed.sh가 git diff로 자체 감지
-      // 두 경우 모두 60초 soft-timeout: 초과 시 local Docker CI/Vercel 검증으로 위임 (push 차단 안 함)
       const changedTypeCheckStatus = createTypeCheckStatusFile();
-
       const extraEnv = {
         ...process.env,
         ...(useChangedTypeCheck
@@ -946,10 +431,7 @@ function runBuildValidation(changedFilesResult) {
         TYPECHECK_CHANGED_STATUS_FILE: changedTypeCheckStatus.filePath,
       };
 
-      const rootSuccess = runNpm(
-        ['run', 'type-check:changed'],
-        extraEnv
-      );
+      const rootSuccess = runNpm(['run', 'type-check:changed'], extraEnv);
       const changedStatus = readTypeCheckStatus(changedTypeCheckStatus.filePath);
       cleanupTypeCheckStatus(changedTypeCheckStatus?.tempDir);
 
@@ -965,7 +447,9 @@ function runBuildValidation(changedFilesResult) {
 
       if (changedStatus === 'soft-timeout') {
         typeCheckStatus = 'delegated-soft-timeout';
-        console.log('⚪ Root TypeScript 증분 검증 soft-timeout, local Docker CI/Vercel 전체 타입체크로 위임');
+        console.log(
+          '⚪ Root TypeScript 증분 검증 soft-timeout, local Docker CI/Vercel 전체 타입체크로 위임'
+        );
       } else {
         console.log('✅ Root TypeScript 검증 통과');
       }
@@ -1006,32 +490,8 @@ function runBuildValidation(changedFilesResult) {
   }
 }
 
-// Environment check
-function checkEnvironment() {
-  // Skip env check if not available
-  const pkgPath = path.join(cwd, 'package.json');
-  try {
-    const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
-    if (!pkg.scripts || !pkg.scripts['env:check']) {
-      return; // Skip if script not defined
-    }
-  } catch {
-    return;
-  }
+// ─── Summary ─────────────────────────────────────────────────────────────
 
-  console.log('🔐 Environment variables check...');
-  const success = runNpm(['run', 'env:check']);
-  if (!success) {
-    console.log('❌ Environment variables check failed');
-    console.log('');
-    console.log('💡 Fix: Add missing env vars to .env.local');
-    console.log('');
-    console.log('⚠️  Bypass: HUSKY=0 git push');
-    process.exit(1);
-  }
-}
-
-// Summary
 function printSummary(duration) {
   console.log('');
   console.log(`✅ Pre-push validation passed in ${duration}s`);
@@ -1088,13 +548,13 @@ function printSummary(duration) {
   console.log('');
 }
 
-// Main
+// ─── Main ────────────────────────────────────────────────────────────────
+
 function main() {
   const startTime = Date.now();
 
   console.log('🔍 Pre-push validation starting...');
 
-  // Show mode at the start
   if (isLimitedMode) {
     console.log('');
     console.log('🔧 Windows Limited Mode detected');
@@ -1103,14 +563,12 @@ function main() {
     console.log('');
   }
 
-  // Early checks
-  checkRelease();
+  checkRelease(runGit, SKIP_RELEASE_CHECK);
   if (!isLimitedMode) {
-    checkWSLPerformance();
+    checkWSLPerformance(isWSL, isWindowsFS);
   }
 
-  // node_modules health check (fail early if corrupted)
-  if (!checkNodeModules()) {
+  if (!checkNodeModules(cwd, SKIP_NODE_CHECK, isWSL, isWindows, isWindowsFS)) {
     console.log('❌ node_modules check failed - push blocked');
     console.log('');
     console.log('💡 Quick bypass: HUSKY=0 git push');
@@ -1118,7 +576,7 @@ function main() {
   }
 
   const changedFilesResult = getChangedFilesForPush();
-  checkCloudBuildFreeTierGuard(changedFilesResult);
+  checkCloudBuildFreeTierGuard(changedFilesResult, cwd, FORCE_CLOUD_BUILD_GUARD);
 
   if (isDocsArtifactOnlyPush(changedFilesResult)) {
     runDocsArtifactValidation(changedFilesResult);
@@ -1126,7 +584,7 @@ function main() {
     runTests(changedFilesResult);
     runBuildValidation(changedFilesResult);
     if (STRICT_PUSH_ENV) {
-      checkEnvironment();
+      checkEnvironment(cwd, runNpm);
     }
   }
 
