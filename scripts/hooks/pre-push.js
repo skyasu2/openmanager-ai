@@ -16,6 +16,10 @@ const isWSL = !isWindows && fs.existsSync('/proc/version') &&
   fs.readFileSync('/proc/version', 'utf8').toLowerCase().includes('microsoft');
 const { filterTypeCheckRelevantFiles } = require('../dev/typecheck-scope');
 const { resolveDefaultBaseRefFromGit } = require('./pre-push-base-ref');
+const {
+  collectChangedFilesFromUpdates,
+  determineChangedFilesForPush,
+} = require('./pre-push-changed-files');
 const npmCmd = isWindows ? 'npm.cmd' : 'npm';
 const npxCmd = isWindows ? 'npx.cmd' : 'npx';
 const gitCmd = isWindows ? 'git.exe' : 'git';
@@ -307,112 +311,41 @@ function resolveCommitRef(refOrOid) {
 }
 
 function collectChangedFilesFromPrePushUpdates(updates) {
-  const changedFiles = new Set();
-
-  for (const update of updates) {
-    const { localRef, localOid, remoteOid } = update;
-
-    // delete push, tag push는 Cloud Build 가드 대상이 아님
-    if (
-      localRef === '(delete)' ||
-      isZeroOid(localOid) ||
-      localRef.startsWith('refs/tags/')
-    ) {
-      continue;
-    }
-
-    const localCommit = resolveCommitRef(localOid);
-    if (!localCommit) continue;
-
-    let baseCommit = '';
-    if (!isZeroOid(remoteOid)) {
-      baseCommit = resolveCommitRef(remoteOid);
-    } else {
-      // 신규 원격 ref 생성 시 기본 브랜치와 merge-base를 기준으로 계산
-      const defaultBaseRef = resolveDefaultBaseRef();
-      if (defaultBaseRef) {
-        baseCommit = runGit(['merge-base', localCommit, defaultBaseRef]);
-        if (!baseCommit) {
-          baseCommit = resolveCommitRef(defaultBaseRef);
-        }
-      }
-    }
-
-    let diffOutput = '';
-    if (baseCommit) {
-      diffOutput = runGit(['diff', '--name-only', `${baseCommit}..${localCommit}`]);
-    }
-    if (!diffOutput) {
-      diffOutput = runGit([
-        'diff-tree',
-        '--no-commit-id',
-        '--name-only',
-        '-r',
-        localCommit,
-      ]);
-    }
-
-    for (const file of parseChangedFiles(diffOutput)) {
-      changedFiles.add(file);
-    }
-  }
-
-  return Array.from(changedFiles);
+  return collectChangedFilesFromUpdates({
+    updates,
+    resolveCommitRef,
+    resolveDefaultBaseRef,
+    runGit,
+    parseChangedFiles,
+    isZeroOid,
+  });
 }
 
 function getChangedFilesForPush() {
-  if (PRE_PUSH_CHANGED_FILES_OVERRIDE.trim()) {
-    const files = PRE_PUSH_CHANGED_FILES_OVERRIDE
-      .split(/[,\n]/)
-      .map((file) => file.trim())
-      .filter(Boolean);
-    return { files, isKnown: files.length > 0 };
-  }
-
   const prePushUpdates = readPrePushUpdatesFromStdin();
-  if (prePushUpdates.length > 0) {
-    const filesFromUpdates = collectChangedFilesFromPrePushUpdates(prePushUpdates);
-    return { files: filesFromUpdates, isKnown: true };
-  }
-
   const upstream = runGit(['rev-parse', '--abbrev-ref', '--symbolic-full-name', '@{u}']);
-  if (upstream) {
-    const pushedFiles = runGit(['diff', '--name-only', `${upstream}..HEAD`]);
-    if (pushedFiles) {
-      return { files: parseChangedFiles(pushedFiles), isKnown: true };
-    }
-  }
-
-  // Upstream이 없을 때(첫 push 등) 원격 기본 브랜치와의 merge-base 기준으로 범위 계산
   const defaultBaseRef = resolveDefaultBaseRef();
-  if (defaultBaseRef) {
-    const mergeBase = runGit(['merge-base', 'HEAD', defaultBaseRef]);
-    if (mergeBase) {
-      const branchFiles = runGit(['diff', '--name-only', `${mergeBase}..HEAD`]);
-      if (branchFiles) {
-        return { files: parseChangedFiles(branchFiles), isKnown: true };
-      }
-    }
+  const prePushFiles =
+    prePushUpdates.length > 0
+      ? collectChangedFilesFromPrePushUpdates(prePushUpdates)
+      : [];
 
-    const baseDiffFiles = runGit(['diff', '--name-only', `${defaultBaseRef}..HEAD`]);
-    if (baseDiffFiles) {
-      return { files: parseChangedFiles(baseDiffFiles), isKnown: true };
-    }
+  const result = determineChangedFilesForPush({
+    overrideText: PRE_PUSH_CHANGED_FILES_OVERRIDE,
+    prePushUpdates: prePushFiles,
+    upstream,
+    defaultBaseRef,
+    runGit,
+    parseChangedFiles,
+  });
+
+  if (!result.isKnown) {
+    console.warn(
+      '⚠️  Could not determine changed files (git commands failed). Running guard in fail-closed mode.'
+    );
   }
 
-  // 마지막 fallback: 최근 커밋 기준 최소 범위 검사
-  const hasPreviousCommit = runGit(['rev-parse', '--verify', 'HEAD~1']);
-  if (hasPreviousCommit) {
-    const recentFiles = runGit(['diff', '--name-only', 'HEAD~1..HEAD']);
-    if (recentFiles) {
-      return { files: parseChangedFiles(recentFiles), isKnown: true };
-    }
-  }
-
-  console.warn(
-    '⚠️  Could not determine changed files (git commands failed). Running guard in fail-closed mode.'
-  );
-  return { files: [], isKnown: false };
+  return result;
 }
 
 function checkCloudBuildFreeTierGuard(changedFilesResult) {
