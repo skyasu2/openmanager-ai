@@ -1,14 +1,15 @@
 # GitLab Canonical Delivery Plan
 
-- 상태: Completed (core delivery topology alignment + GitHub public snapshot sync automation 완료)
+- 상태: Completed (core delivery topology alignment + GitHub public snapshot sync + public repo cleanup 완료)
 - 작성일: 2026-03-27
-- 갱신일: 2026-03-27
+- 갱신일: 2026-03-28
 - 목표: `GitLab canonical + Vercel Git deploy + local Docker CI + separate GitHub public snapshot` 구조를 프로젝트의 실제 운영 기준으로 고정하고, 외부 CI 의존을 최소화한다.
 
 ## 배경
 - 최근 변경은 기능 확장보다 테스트 안정화와 배포 신뢰성 확보에 집중되어 있다.
 - 현재 프로젝트는 `Vercel Frontend + Cloud Run AI Engine` 구조이며, 비용 제약상 GitLab SaaS CI를 기본 실행 경로로 두기 어렵다.
 - 공개 GitHub 저장소는 private canonical repo의 정확한 mirror가 아니라, 테스트/문서/운영 자산을 제외한 `code-only snapshot`이다.
+- GitHub public repo는 이후 orphan snapshot 기반의 최소 공개 이력, no releases/tags, issues/wiki/projects 비활성 상태로 정리되었다.
 - 따라서 `GitHub/GitLab 동시 push`를 기본 습관으로 유지하면 canonical 개발 흐름과 공개용 snapshot 흐름이 섞여 운영 리스크가 커진다.
 
 ## 최근 커밋 분석
@@ -103,6 +104,12 @@
 - [x] public-sync 스크립트/제외 규칙 반영
 - [x] 공개 repo 반영은 명시적 요청이 있을 때만 수행
 
+### Phase 5. Public GitHub cleanup
+- [x] GitHub public repo 이력을 최소 공개 snapshot 중심으로 재정렬
+- [x] GitHub releases/tags 제거
+- [x] GitHub issues/wiki/projects 비활성
+- [x] GitHub를 deploy/release authority가 아닌 public code surface로 고정
+
 ## 완료 기준
 - [x] local git remote topology가 문서와 일치
 - [x] local Docker CI가 실제로 통과
@@ -133,12 +140,24 @@
   - exclude list `.github-export-ignore`
   - scripts `npm run sync:github`, `npm run sync:github:dry-run`
   - `npm run sync:github` 실행 완료
+- public GitHub cleanup 확인:
+  - orphan snapshot 기반 최소 공개 이력 유지
+  - releases/tags 없음
+  - issues/wiki/projects 비활성
+  - description: `public code snapshot; full repo on GitLab`
 
 ## 표준 워크플로우
 
 ```bash
 git push gitlab main       # canonical push / Vercel 배포
 npm run sync:github        # GitHub 코드 스냅샷 동기화 (선택)
+```
+
+release/tag가 필요한 경우는 아래 canonical 경로를 사용합니다.
+
+```bash
+npm run release:patch
+git push gitlab --follow-tags
 ```
 
 ## 후속 과제 (Optional)

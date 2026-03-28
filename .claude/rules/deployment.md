@@ -25,7 +25,19 @@ git push gitlab --follow-tags  # canonical repo 반영
 
 > GitHub public snapshot은 읽기/공개 용도이며 배포 권위가 아닙니다. 배포 관련 push는 기본적으로 `git push gitlab <branch>` 기준으로 판단합니다.
 >
+> 현재 GitHub public repo는 최소 공개 이력만 유지하며, releases/tags가 없고 issues/wiki/projects도 비활성입니다. 즉 GitHub는 배포/릴리즈/협업 허브가 아니라 공개 코드 surface입니다.
+>
 > **GitHub 동기화 워크플로우**: `git push gitlab main` (canonical) → `npm run sync:github` (선택, 코드만 필터링하여 origin push). 제외 목록: `.github-export-ignore`
+
+### Standard Delivery Flow
+
+```bash
+git push gitlab main          # Frontend canonical push -> Vercel 자동 배포
+git push gitlab --follow-tags # release/tag를 canonical repo에 반영할 때만
+npm run sync:github           # public code snapshot 갱신이 필요할 때만
+```
+
+> Cloud Run AI Engine 배포는 위 흐름과 별개입니다. `cloud-run/ai-engine/deploy.sh`를 통해 수동 배포합니다.
 
 ### Frontend (Vercel)
 
@@ -52,7 +64,7 @@ git push gitlab --follow-tags  # canonical repo 반영
 
 | 항목 | 값 |
 |------|-----|
-| Trigger | Tag 생성 (`v5.xx.x`) 또는 수동 |
+| Trigger | 수동 실행 (`cloud-run/ai-engine/deploy.sh`) |
 | Region | `asia-northeast1` (Seoul) |
 | URL | `ai-engine-*.asia-northeast1.run.app` |
 | Script | `cloud-run/ai-engine/deploy.sh` |
@@ -63,6 +75,25 @@ git push gitlab --follow-tags  # canonical repo 반영
 cd cloud-run/ai-engine
 ./deploy.sh
 ```
+
+> 현재 Cloud Run AI Engine은 `git push gitlab main`만으로 자동 반영되지 않습니다. Frontend(Vercel)와 별도 수동 배포 대상입니다.
+
+### Supabase
+
+| 항목 | 값 |
+|------|-----|
+| Trigger | 자동 배포 없음 |
+| 대상 | DB schema / SQL functions / seed data |
+| Source | `supabase/migrations/`, `supabase/seeds/` |
+| Apply | `npx supabase db push` 또는 SQL 직접 실행 |
+| Edge Functions | 현재 레포 기준 별도 배포 대상 없음 |
+
+```bash
+# linked Supabase project에 migration 반영
+npx supabase db push
+```
+
+> 현재 Supabase는 Git push 기반 자동 반영 대상이 아닙니다. schema/data 변경이 있을 때만 명시적으로 적용합니다.
 
 #### Cloud Run / Cloud Build Free Tier 제한사항
 

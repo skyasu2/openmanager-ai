@@ -31,7 +31,8 @@ for (const file of mdFiles) {
 
 let lines = 0;
 for (const file of mdFiles) {
-  lines += fs.readFileSync(file, 'utf8').split('\n').length;
+  const content = fs.readFileSync(file, 'utf8');
+  lines += (content.match(/\n/g) || []).length;
 }
 
 const rows = [...byTopDir.entries()].sort((a, b) => b[1] - a[1]);

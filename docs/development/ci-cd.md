@@ -4,7 +4,7 @@
 > Owner: platform-devops
 > Status: Active
 > Doc type: How-to
-> Last reviewed: 2026-03-27
+> Last reviewed: 2026-03-28
 > Canonical: docs/development/ci-cd.md
 > Tags: ci,cd,gitlab,vercel,github-actions,automation
 
@@ -21,14 +21,58 @@
 공개 코드 공유 → GitLab 기준 공개용 snapshot 생성 → GitHub 수동 동기화
 ```
 
-## 현재 저장소/배포 토폴로지 (2026-03-27)
+## 현재 저장소/배포 토폴로지 (2026-03-28)
 
 - **GitLab private (`gitlab`)**: canonical development repo
 - **Vercel Frontend**: GitLab `main`을 Git 배포 소스로 사용
 - **GitLab CI**: 기본 비활성 (`GITLAB_CI_POLICY=local-docker-only`)
 - **`.gitlab-ci.yml`**: 기본적으로 두지 않음. GitLab SaaS runner 자동 실행을 막고 로컬 Docker CI를 우선
 - **GitHub public (`origin`)**: code-only snapshot, 수동 동기화 전용
+- **GitHub public history**: orphan snapshot 기반의 최소 공개 이력만 유지
+- **GitHub releases/tags**: 사용하지 않음
+- **GitHub issues/wiki/projects**: 비활성
 - **Local CI**: `npm run ci:local:docker` 를 외부 CI 대체 기본 검증 경로로 사용
+
+## GitLab vs GitHub 현재 역할 비교
+
+| 항목 | GitLab (`gitlab`) | GitHub (`origin`) |
+|---|---|---|
+| 저장소 성격 | private canonical repo | public code snapshot |
+| 이력 범위 | full history | 최소 공개 이력 |
+| 테스트/문서/QA 기록 | 유지 | 제외 |
+| release/tag 권위 | 있음 | 없음 |
+| 배포 권위 | 있음 | 없음 |
+| Vercel frontend 자동 배포 | `git push gitlab main` | 사용 안 함 |
+| 공개 코드 갱신 | source of truth | `npm run sync:github` 결과물 |
+| collaboration surface | private development/MR | 읽기 전용 성격, issues/wiki/projects 비활성 |
+
+## 앞으로의 배포/공개 경로
+
+일상적인 운영 경로는 세 갈래로 고정합니다.
+
+1. Frontend 배포
+- `git push gitlab main`
+- Vercel Git Integration이 GitLab `main`을 받아 자동 빌드/배포
+
+1. Release / tag
+- `npm run release:patch|minor|major`
+- `git push gitlab --follow-tags`
+- canonical release/tag는 GitLab 기준으로만 유지
+
+1. Public GitHub refresh
+- `npm run sync:github`
+- GitLab canonical 기준 code-only snapshot만 GitHub에 반영
+- GitHub는 deploy source가 아니므로 `git push origin`을 배포 절차로 사용하지 않음
+
+1. Cloud Run AI Engine
+- `cloud-run/ai-engine/deploy.sh`
+- Frontend와 별도 수동 배포 경로
+
+1. Supabase schema / data
+- `supabase/migrations/`, `supabase/seeds/` 기준 관리
+- Git push만으로 자동 반영되지 않음
+- 필요 시 `npx supabase db push` 또는 SQL 수동 실행
+- 현재 레포에는 별도 Supabase Edge Function 배포 경로가 없음
 
 ## Local Docker CI (Primary)
 
