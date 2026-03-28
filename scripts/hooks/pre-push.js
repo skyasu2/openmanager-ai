@@ -15,6 +15,7 @@ const isWindows = os.platform() === 'win32';
 const isWSL = !isWindows && fs.existsSync('/proc/version') &&
   fs.readFileSync('/proc/version', 'utf8').toLowerCase().includes('microsoft');
 const { filterTypeCheckRelevantFiles } = require('../dev/typecheck-scope');
+const { resolveDefaultBaseRefFromGit } = require('./pre-push-base-ref');
 const npmCmd = isWindows ? 'npm.cmd' : 'npm';
 const npxCmd = isWindows ? 'npx.cmd' : 'npx';
 const gitCmd = isWindows ? 'git.exe' : 'git';
@@ -294,45 +295,7 @@ function readPrePushUpdatesFromStdin() {
 
 function resolveDefaultBaseRef() {
   const branchName = runGit(['rev-parse', '--abbrev-ref', 'HEAD']);
-  const preferredRemotes = [];
-
-  if (branchName && branchName !== 'HEAD') {
-    preferredRemotes.push(runGit(['config', '--get', `branch.${branchName}.remote`]));
-  }
-
-  preferredRemotes.push(runGit(['config', '--get', 'remote.pushDefault']));
-  preferredRemotes.push('gitlab', 'origin');
-
-  const remoteCandidates = Array.from(
-    new Set(preferredRemotes.map((remote) => String(remote || '').trim()).filter(Boolean))
-  );
-
-  for (const remote of remoteCandidates) {
-    const remoteHead = runGit([
-      'symbolic-ref',
-      '--quiet',
-      `refs/remotes/${remote}/HEAD`,
-    ]);
-    if (remoteHead) {
-      const normalized = remoteHead.replace(/^refs\/remotes\//, '');
-      if (normalized) return normalized;
-    }
-  }
-
-  for (const remote of remoteCandidates) {
-    for (const branch of ['main', 'master']) {
-      const candidate = `${remote}/${branch}`;
-      const exists = runGit(['rev-parse', '--verify', candidate]);
-      if (exists) return candidate;
-    }
-  }
-
-  for (const candidate of ['main', 'master']) {
-    const exists = runGit(['rev-parse', '--verify', candidate]);
-    if (exists) return candidate;
-  }
-
-  return '';
+  return resolveDefaultBaseRefFromGit(runGit, branchName);
 }
 
 function resolveCommitRef(refOrOid) {

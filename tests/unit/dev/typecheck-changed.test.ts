@@ -95,7 +95,7 @@ describe('typecheck-changed', () => {
     expect(result.status).toBe(0);
     expect(readFileSync(statusFile, 'utf8').trim()).toBe('soft-timeout');
     expect(result.stdout).toContain(
-      'ℹ️ Pre-push에서는 해당 검증을 soft-skip하고 CI/Vercel 전체 타입체크에 위임합니다.'
+      'ℹ️ Pre-push에서는 해당 검증을 soft-skip하고 local Docker CI/Vercel 전체 타입체크에 위임합니다.'
     );
   });
 });
