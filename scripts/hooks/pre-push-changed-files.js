@@ -103,7 +103,12 @@ function determineChangedFilesForPush({
   return { files: [], isKnown: false };
 }
 
+function isKnownNoOpPush(result) {
+  return Boolean(result?.isKnown) && Array.isArray(result?.files) && result.files.length === 0;
+}
+
 module.exports = {
   collectChangedFilesFromUpdates,
   determineChangedFilesForPush,
+  isKnownNoOpPush,
 };

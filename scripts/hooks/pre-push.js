@@ -19,6 +19,7 @@ const { resolveDefaultBaseRefFromGit } = require('./pre-push-base-ref');
 const {
   collectChangedFilesFromUpdates,
   determineChangedFilesForPush,
+  isKnownNoOpPush,
 } = require('./pre-push-changed-files');
 const npmCmd = isWindows ? 'npm.cmd' : 'npm';
 const npxCmd = isWindows ? 'npx.cmd' : 'npx';
@@ -802,6 +803,12 @@ function runTests(changedFilesResult) {
     return;
   }
 
+  if (isKnownNoOpPush(changedFilesResult)) {
+    testStatus = 'skipped-no-op-push';
+    console.log('⚪ Tests skipped (known no-op push)');
+    return;
+  }
+
   const targetedRun = classifyChangedTestRun(changedFilesResult);
   let steps = [
     {
@@ -855,6 +862,13 @@ function runBuildValidation(changedFilesResult) {
   if (SKIP_BUILD) {
     typeCheckStatus = 'skipped';
     console.log('⚪ Build validation skipped (SKIP_BUILD=true)');
+    return;
+  }
+
+  if (isKnownNoOpPush(changedFilesResult)) {
+    typeCheckStatus = 'skipped-no-op-push';
+    console.log('⚪ TypeScript 검증 스킵 (known no-op push)');
+    console.log('ℹ️  Full build/type-check는 필요 시 local Docker CI와 Vercel에서 계속 검증됨');
     return;
   }
 
@@ -1041,6 +1055,8 @@ function printSummary(duration) {
     }
   } else if (testStatus === 'skipped-docs-only') {
     console.log('  ⚪ Tests skipped (docs/report-only push)');
+  } else if (testStatus === 'skipped-no-op-push') {
+    console.log('  ⚪ Tests skipped (known no-op push)');
   } else {
     console.log(`  ⚪ Tests ${testStatus}`);
   }
@@ -1052,6 +1068,8 @@ function printSummary(duration) {
     console.log('  ⚪ TypeScript skipped (docs/report-only push)');
   } else if (typeCheckStatus === 'skipped-no-relevant-ts') {
     console.log('  ⚪ TypeScript skipped (no relevant TS files in push range)');
+  } else if (typeCheckStatus === 'skipped-no-op-push') {
+    console.log('  ⚪ TypeScript skipped (known no-op push)');
   } else if (typeCheckStatus === 'skipped') {
     console.log('  ⚪ TypeScript skipped (SKIP_BUILD=true)');
   } else if (typeCheckStatus === 'delegated') {

@@ -10,6 +10,7 @@ const {
 const {
   collectChangedFilesFromUpdates,
   determineChangedFilesForPush,
+  isKnownNoOpPush,
 } = require('../../../scripts/hooks/pre-push-changed-files');
 
 describe('resolveDefaultBaseRefFromGit', () => {
@@ -155,5 +156,15 @@ describe('pre-push changed file helpers', () => {
       files: [],
       isKnown: true,
     });
+    expect(isKnownNoOpPush(result)).toBe(true);
+  });
+
+  it('does not treat unknown changed files as a no-op push', () => {
+    expect(
+      isKnownNoOpPush({
+        files: [],
+        isKnown: false,
+      })
+    ).toBe(false);
   });
 });
