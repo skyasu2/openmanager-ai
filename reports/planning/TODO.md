@@ -19,8 +19,11 @@
 | Task | Priority | Notes |
 |------|----------|-------|
 | P3: VibeHistorySection stage4 추가 | Low | types/component/data/tests 전면 수정 필요. 현행 3단계 구조 동작 정상 |
-| P3: Knip unused export types 정리 | Low | 잔여 unused export types는 schemas/common/public contract 위주 — non-blocking |
+| P3: Knip unused export types 정리 (잔여) | Low | 잔여: src/schemas/api.*.schema.ts, src/types/common.ts 등 API contract/공용 타입 — 삭제 시 외부 파손 위험, non-blocking |
 | P3: 대형 파일(500+줄) 분리 계획 | Low | formatters.ts 661줄, route.ts 634줄 등 — 800줄 미만, 기능 정상, 차기 리팩토링 대상 |
+
+### Completed (2026-03-29 #10)
+- [x] P3: Knip unused export types 19개 제거 — FeatureCardProps, LokiPushPayload, ServerMetrics alias, HourlyJsonData, JobProgressUpdate, JobCompletionUpdate, AnalyzeComplexityFn, EstimateTimeFn, ISystemEventSubscriber, ErrorContext, ServerMetricsHistory, EnhancedServerMetrics (core), ServerGroup, CloudRunResponse, FilePartSchema, MessageSchema, RequestSchema, RequestSchemaLoose, UpstashResumableContext. 160/160 tests pass 유지
 
 ### Completed (2026-03-29 #9)
 - [x] P2: v8.10.6 Production QA 완료 — Playwright MCP, 11/11 pass, 콘솔 에러 0, QA-20260329-0194 기록. Vercel 사용량 $21.09/월 정상
