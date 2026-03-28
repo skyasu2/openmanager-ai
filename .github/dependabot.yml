@@ -1,3 +1,6 @@
+# Historical reference only.
+# GitHub public snapshot no longer exposes .github workflows, and canonical dependency automation
+# now lives in renovate.json + self-hosted Renovate against GitLab.
 version: 2
 updates:
   - package-ecosystem: 'npm'

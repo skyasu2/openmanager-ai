@@ -1,0 +1,63 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended"],
+  "labels": ["dependencies", "automated"],
+  "assignees": ["skyasu2"],
+  "reviewers": ["skyasu2"],
+  "rangeStrategy": "bump",
+  "prHourlyLimit": 5,
+  "prConcurrentLimit": 5,
+  "dependencyDashboard": true,
+  "platformAutomerge": false,
+  "packageRules": [
+    {
+      "matchDepTypes": ["dependencies", "devDependencies"],
+      "groupName": "typescript-core",
+      "matchPackageNames": ["typescript"]
+    },
+    {
+      "matchDepTypes": ["dependencies", "devDependencies"],
+      "groupName": "types",
+      "matchPackagePatterns": ["^@types/"]
+    },
+    {
+      "matchDepTypes": ["dependencies", "devDependencies"],
+      "groupName": "testing",
+      "matchPackagePatterns": [
+        "^vitest$",
+        "^@vitest/",
+        "^@testing-library/",
+        "^playwright$",
+        "^@playwright/"
+      ]
+    },
+    {
+      "matchDepTypes": ["dependencies", "devDependencies"],
+      "groupName": "linting",
+      "matchPackagePatterns": ["^@biomejs/", "^eslint", "^prettier"]
+    },
+    {
+      "matchDepTypes": ["dependencies"],
+      "groupName": "react",
+      "matchPackageNames": ["react", "react-dom"]
+    },
+    {
+      "matchDepTypes": ["devDependencies"],
+      "groupName": "react-types",
+      "matchPackagePatterns": ["^@types/react"]
+    },
+    {
+      "matchDepTypes": ["dependencies"],
+      "groupName": "ai-sdk",
+      "matchPackagePatterns": ["^ai$", "^@ai-sdk/"]
+    },
+    {
+      "matchUpdateTypes": ["patch"],
+      "labels": ["dependencies", "automated", "patch-update"]
+    },
+    {
+      "matchUpdateTypes": ["minor", "major"],
+      "labels": ["dependencies", "automated", "needs-review"]
+    }
+  ]
+}
