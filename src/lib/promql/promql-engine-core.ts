@@ -185,7 +185,7 @@ export function matchLabels(
         break;
       case '=~': {
         const reMatch = getCachedRegex(m.value);
-        if (!reMatch || !reMatch.test(labelValue)) return false;
+        if (!reMatch?.test(labelValue)) return false;
         break;
       }
       case '!~': {

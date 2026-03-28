@@ -92,7 +92,7 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
   const executeQuery = useCallback(
     (query: string, attachments?: FileAttachment[], isRetry = false) => {
       // 빈 쿼리 방어
-      if (!query || !query.trim()) {
+      if (!query?.trim()) {
         if (process.env.NODE_ENV === 'development') {
           logger.warn('[HybridAI] executeQuery: Empty query, skipping');
         }

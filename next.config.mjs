@@ -215,8 +215,6 @@ const nextConfig = {
       return [];
     }
     // 이 함수는 production 전용 (개발 환경은 위의 early return으로 이미 제외)
-    const isVercel = process.env.VERCEL === '1';
-
     // 🎯 개발/프로덕션 환경별 CSP 정책
     const cspDirectives = {
       'default-src': ["'self'"],
@@ -320,13 +318,17 @@ const nextConfig = {
           // 🛡️ Permissions Policy (Feature Policy 후속)
           {
             key: 'Permissions-Policy',
-            value:
-              'camera=(), microphone=(), geolocation=(), interest-cohort=()',
+            value: 'camera=(), microphone=(), geolocation=()',
           },
           // 🔐 Strict-Transport-Security (HSTS)
           {
             key: 'Strict-Transport-Security',
             value: 'max-age=31536000; includeSubDomains',
+          },
+          // 🛡️ Cross-Origin-Opener-Policy (COOP) - window.opener 공격 차단
+          {
+            key: 'Cross-Origin-Opener-Policy',
+            value: 'same-origin-allow-popups',
           },
           // 🔐 CSP 헤더 (Vercel 환경 최적화)
           {
@@ -344,19 +346,6 @@ const nextConfig = {
             key: 'Vary',
             value: 'Accept-Encoding, User-Agent',
           },
-          // 🚀 Vercel 전용 최적화 헤더
-          ...(isVercel
-            ? [
-                {
-                  key: 'X-Vercel-Cache',
-                  value: 'HIT',
-                },
-                {
-                  key: 'X-Edge-Runtime',
-                  value: 'vercel',
-                },
-              ]
-            : []),
         ],
       },
       // 📊 API 경로별 특별 CSP 정책

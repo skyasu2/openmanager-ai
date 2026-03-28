@@ -5,6 +5,7 @@
  * 최상위 레벨 에러 처리 (500, unhandled errors)
  */
 
+import * as Sentry from '@sentry/nextjs';
 import Link from 'next/link';
 import { useEffect, useMemo } from 'react';
 import { logger } from '@/lib/logging';
@@ -34,6 +35,10 @@ export default function GlobalError({ error, reset }: GlobalErrorProps) {
 
   useEffect(() => {
     // 프로덕션 환경에서만 에러 리포팅
+    Sentry.captureException(error, {
+      tags: { boundary: 'global-error', digest: error.digest },
+    });
+
     if (clientEnv.isProduction) {
       const platform = clientEnv.isVercel ? 'vercel' : 'local';
 
