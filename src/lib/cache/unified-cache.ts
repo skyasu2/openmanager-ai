@@ -374,17 +374,10 @@ export class UnifiedCacheService {
 // 글로벌 인스턴스 export
 export const unifiedCache = UnifiedCacheService.getInstance();
 
-// 하위 호환성을 위한 wrapper 함수들 (구현은 cache-helpers.ts에 위치)
+// cache-helpers.ts 공개 API re-export
 export {
-  cacheOrFetch,
-  cacheWrapper,
-  createCachedResponse,
   createCacheHeaders,
   createCacheHeadersFromPreset,
-  getCachedData,
-  getCachedDataWithFallback,
   getCacheStats,
-  invalidateCache,
   normalizeQueryForCache,
-  setCachedData,
 } from './cache-helpers';

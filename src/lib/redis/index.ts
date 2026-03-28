@@ -35,7 +35,6 @@ export {
 // Rate Limiter
 export {
   checkRedisRateLimit,
-  RATE_LIMIT_CONFIGS,
   type RateLimitConfig,
   type RateLimitResult,
 } from './rate-limiter';
