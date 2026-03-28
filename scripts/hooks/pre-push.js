@@ -7,7 +7,6 @@
  */
 
 const { spawnSync } = require('child_process');
-const os = require('os');
 const path = require('path');
 const fs = require('fs');
 
@@ -24,6 +23,12 @@ const {
   determineChangedFilesForPush,
   isKnownNoOpPush,
 } = require('./pre-push-changed-files');
+const {
+  createTypeCheckStatusFile,
+  readTypeCheckStatus,
+  cleanupTypeCheckStatus,
+  analyzeBuildValidation,
+} = require('./pre-push-build-validation');
 const {
   CLOUD_RUN_ROOT,
   loadDomTestManifest,
@@ -109,28 +114,6 @@ function parseChangedFiles(output) {
     .split('\n')
     .map((line) => line.trim())
     .filter(Boolean);
-}
-
-function createTypeCheckStatusFile() {
-  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'openmanager-typecheck-'));
-  return { tempDir, filePath: path.join(tempDir, 'status.txt') };
-}
-
-function readTypeCheckStatus(filePath) {
-  try {
-    return fs.readFileSync(filePath, 'utf8').trim() || null;
-  } catch {
-    return null;
-  }
-}
-
-function cleanupTypeCheckStatus(tempDir) {
-  if (!tempDir) return;
-  try {
-    fs.rmSync(tempDir, { recursive: true, force: true });
-  } catch {
-    // ignore temp cleanup failures in git hook path
-  }
 }
 
 function isZeroOid(oid) {
@@ -356,20 +339,30 @@ function runTests(changedFilesResult) {
 function runBuildValidation(changedFilesResult) {
   console.log('🏗️ Build validation...');
 
-  if (SKIP_BUILD) {
+  const buildValidation = analyzeBuildValidation({
+    changedFilesResult,
+    skipBuild: SKIP_BUILD,
+    isLimitedMode,
+    quickPush: QUICK_PUSH,
+    isKnownNoOpPush,
+    filterTypeCheckRelevantFiles,
+    isCloudRunTypeCheckRelevantFile,
+  });
+
+  if (buildValidation.mode === 'skip-build') {
     typeCheckStatus = 'skipped';
     console.log('⚪ Build validation skipped (SKIP_BUILD=true)');
     return;
   }
 
-  if (isKnownNoOpPush(changedFilesResult)) {
+  if (buildValidation.mode === 'known-no-op') {
     typeCheckStatus = 'skipped-no-op-push';
     console.log('⚪ TypeScript 검증 스킵 (known no-op push)');
     console.log('ℹ️  Full build/type-check는 필요 시 local Docker CI와 Vercel에서 계속 검증됨');
     return;
   }
 
-  if (isLimitedMode) {
+  if (buildValidation.mode === 'windows-limited') {
     console.log('🔧 Windows Limited Mode: TypeScript only...');
     console.log('   → Lint already done in pre-commit');
     console.log('');
@@ -390,25 +383,8 @@ function runBuildValidation(changedFilesResult) {
     return;
   }
 
-  if (QUICK_PUSH) {
-    const rootTypeCheckRelevantFiles = filterTypeCheckRelevantFiles(
-      changedFilesResult.files
-    );
-    const cloudRunTypeCheckRelevantFiles = changedFilesResult.files.filter((f) =>
-      isCloudRunTypeCheckRelevantFile(f)
-    );
-    const skipRootTypeCheck =
-      changedFilesResult.isKnown &&
-      changedFilesResult.files.length > 0 &&
-      rootTypeCheckRelevantFiles.length === 0;
-    const skipCloudRunTypeCheck =
-      changedFilesResult.isKnown &&
-      changedFilesResult.files.length > 0 &&
-      cloudRunTypeCheckRelevantFiles.length === 0;
-    const useChangedTypeCheck =
-      changedFilesResult.isKnown && rootTypeCheckRelevantFiles.length > 0;
-
-    if (skipRootTypeCheck && skipCloudRunTypeCheck) {
+  if (buildValidation.mode === 'quick') {
+    if (buildValidation.shouldSkipAll) {
       typeCheckStatus = 'skipped-no-relevant-ts';
       console.log('⚪ TypeScript 검증 스킵 (push 범위에 관련 TS 파일 없음)');
       console.log(
@@ -417,9 +393,9 @@ function runBuildValidation(changedFilesResult) {
       return;
     }
 
-    if (!skipRootTypeCheck) {
+    if (!buildValidation.skipRootTypeCheck) {
       console.log(
-        useChangedTypeCheck
+        buildValidation.useChangedTypeCheck
           ? '⚡ Root TypeScript 증분 검증 (변경 범위)...'
           : '⚡ Root TypeScript 검증 (기본 모드)...'
       );
@@ -428,8 +404,11 @@ function runBuildValidation(changedFilesResult) {
       const changedTypeCheckStatus = createTypeCheckStatusFile();
       const extraEnv = {
         ...process.env,
-        ...(useChangedTypeCheck
-          ? { PRE_PUSH_CHANGED_FILES: rootTypeCheckRelevantFiles.join('\n') }
+        ...(buildValidation.useChangedTypeCheck
+          ? {
+              PRE_PUSH_CHANGED_FILES:
+                buildValidation.rootTypeCheckRelevantFiles.join('\n'),
+            }
           : {}),
         TYPECHECK_CHANGED_SOFT_TIMEOUT: 'true',
         TYPECHECK_CHANGED_TIMEOUT_SECONDS:
@@ -461,7 +440,7 @@ function runBuildValidation(changedFilesResult) {
       }
     }
 
-    if (!skipCloudRunTypeCheck) {
+    if (!buildValidation.skipCloudRunTypeCheck) {
       console.log('⚡ Cloud Run TypeScript 검증...');
       const cloudRunSuccess = runNpm(['run', 'type-check'], null, cloudRunCwd);
       if (!cloudRunSuccess) {
