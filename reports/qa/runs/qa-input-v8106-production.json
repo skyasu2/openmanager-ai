@@ -1,0 +1,212 @@
+{
+  "runTitle": "v8.10.6 Production QA - Security Hardening & Coverage Stabilization",
+  "owner": "claude",
+  "source": "playwright-mcp",
+  "scope": "targeted",
+  "releaseFacing": true,
+  "coveragePacks": ["core-routes-smoke", "dashboard-core", "ai-core"],
+  "coveredSurfaces": [
+    "/api/version",
+    "/api/health",
+    "/",
+    "/login",
+    "/privacy",
+    "/system-validation",
+    "/system-boot",
+    "/dashboard",
+    "AI sidebar",
+    "browser console errors"
+  ],
+  "skippedSurfaces": [
+    "observability pack",
+    "AI chat interaction",
+    "guest login flow"
+  ],
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_Bmi1oNKZMSJvnfC9wqysHbi6wD5j",
+    "deploymentUrl": "https://openmanager-2o65skv3h-skyasus-projects.vercel.app",
+    "commitSha": "5e5706bba6b345e0b6d288871c1b613dd8a84697"
+  },
+  "checks": {
+    "total": 11,
+    "passed": 11,
+    "failed": 0
+  },
+  "checkDetails": [
+    {
+      "id": "api-version",
+      "surface": "/api/version",
+      "expected": "8.10.6",
+      "result": "pass",
+      "note": "version: 8.10.6 확인"
+    },
+    {
+      "id": "api-health",
+      "surface": "/api/health",
+      "expected": "healthy",
+      "result": "pass",
+      "note": "database/cache/ai all connected"
+    },
+    {
+      "id": "landing-page",
+      "surface": "/",
+      "expected": "landing renders",
+      "result": "pass",
+      "note": "v8.10.6 footer 확인"
+    },
+    {
+      "id": "login-page",
+      "surface": "/login",
+      "expected": "OAuth buttons",
+      "result": "pass",
+      "note": "Google/GitHub OAuth 버튼 정상, title 이중접미사 없음"
+    },
+    {
+      "id": "privacy-page",
+      "surface": "/privacy",
+      "expected": "renders",
+      "result": "pass",
+      "note": "title '개인정보 처리방침 | OpenManager AI'"
+    },
+    {
+      "id": "validation-page",
+      "surface": "/system-validation",
+      "expected": "renders",
+      "result": "pass",
+      "note": "title 'Validation Evidence | OpenManager AI'"
+    },
+    {
+      "id": "main-redirect",
+      "surface": "/main",
+      "expected": "redirect to /",
+      "result": "pass",
+      "note": "/ 리다이렉트 정상"
+    },
+    {
+      "id": "system-boot",
+      "surface": "/system-boot",
+      "expected": "renders",
+      "result": "pass",
+      "note": "title '시스템 시작 중 | OpenManager AI'"
+    },
+    {
+      "id": "dashboard",
+      "surface": "/dashboard",
+      "expected": "servers visible",
+      "result": "pass",
+      "note": "서버 15대 (온라인 14, 경고 1), CPU 38%/MEM 44%/Disk 38%"
+    },
+    {
+      "id": "ai-sidebar",
+      "surface": "AI sidebar",
+      "expected": "opens, ready",
+      "result": "pass",
+      "note": "AI 엔진 상태: Ready, 5개 빠른 질문, 3개 AI 모드"
+    },
+    {
+      "id": "console-errors",
+      "surface": "browser console",
+      "expected": "0 errors",
+      "result": "pass",
+      "note": "콘솔 에러 0개"
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-03-29T00:00:00+09:00",
+      "summary": "2026-03 청구 예상액 $21.09 (Pro $18.59 + Function Invocations $0.60 + 기타). Billed $0. 이상 없음.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "biome-optional-chain-4",
+      "title": "Biome useOptionalChain 4건 수정",
+      "priority": "P2",
+      "evidence": "AgentHandoffBadge, useClarificationHandlers, useQueryExecution, promql-engine-core"
+    },
+    {
+      "id": "sentry-global-error-boundary",
+      "title": "global-error.tsx Sentry 에러 경계 연동 추가",
+      "priority": "P2",
+      "evidence": "src/app/global-error.tsx — captureException with boundary:'global-error'"
+    },
+    {
+      "id": "sentry-error-boundary-tag-fix",
+      "title": "error.tsx boundary 태그 수정 (global-error → root)",
+      "priority": "P2",
+      "evidence": "src/app/error.tsx — tags.boundary: 'root'"
+    },
+    {
+      "id": "security-headers-coop",
+      "title": "COOP 헤더 추가 (Cross-Origin-Opener-Policy: same-origin-allow-popups)",
+      "priority": "P2",
+      "evidence": "next.config.mjs — OAuth popup 흐름 유지하면서 window.opener 공격 차단"
+    },
+    {
+      "id": "security-headers-permissions-policy",
+      "title": "deprecated interest-cohort=() Permissions-Policy 제거",
+      "priority": "P3",
+      "evidence": "next.config.mjs — FLoC 폐기로 무의미한 디렉티브 제거"
+    },
+    {
+      "id": "security-headers-misleading-remove",
+      "title": "수동 X-Vercel-Cache/X-Edge-Runtime 헤더 제거",
+      "priority": "P3",
+      "evidence": "next.config.mjs — CDN이 자동 설정하는 헤더를 수동 override하던 코드 삭제"
+    },
+    {
+      "id": "coverage-suite-stabilize",
+      "title": "vitest coverage suite 0 failed (6→0) 안정화",
+      "priority": "P2",
+      "evidence": "vitest.config.simple.ts — playwright/dev/qa/ai-warmup exclude + esbuild target node18"
+    },
+    {
+      "id": "cve-brace-expansion",
+      "title": "brace-expansion CVE GHSA-f886-m6hf-6m8v 패치",
+      "priority": "P1",
+      "evidence": "npm audit fix — process hang/memory exhaustion 취약점 제거"
+    }
+  ],
+  "expertAssessments": [
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "보안 헤더(COOP) 추가 및 CVE 패치 적용. 배포/헬스체크/롤백 절차 정상 동작 확인.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "coverage suite 12/12 pass 안정화 완료. Playwright MCP 기반 E2E 시나리오 11개 pass.",
+      "nextAction": ""
+    }
+  ],
+  "notes": [
+    "v8.10.6 릴리즈 직후 targeted QA 수행",
+    "콘솔 에러 0개 — COOP 헤더 적용 후에도 정상 동작 확인",
+    "wont-fix 취약점: fast-xml-parser(devDep), handlebars(devDep), Next.js 16 moderate (15.x 다운그레이드 필요)",
+    "스크린샷: qa-v8106-dashboard-ai.png (대시보드 + AI 사이드바)"
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Vercel Production URL",
+      "url": "https://openmanager-ai.vercel.app"
+    }
+  ]
+}

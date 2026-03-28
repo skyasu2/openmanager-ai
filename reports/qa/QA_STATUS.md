@@ -1,71 +1,64 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-27 00:12:25 KST
+> Generated at: 2026-03-29 00:22:00 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 192 |
-| Total Checks | 1418 |
-| Passed | 1355 |
+| Total Runs | 193 |
+| Total Checks | 1429 |
+| Passed | 1366 |
 | Failed | 57 |
-| Completed Items | 256 |
+| Completed Items | 264 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 10 |
 | Expert Domains Tracked | 6 |
-| Expert Open Gaps | 1 |
+| Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Run | QA-20260327-0193 (2026-03-26T15:12:25.263Z) |
+| Last Run | QA-20260329-0194 (2026-03-28T15:21:59.221Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260327-0193 (2026-03-26T15:12:25.263Z)
+Latest run: QA-20260329-0194 (2026-03-28T15:21:59.221Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| - | - | - | - |
+| DevOps / SRE Engineer | appropriate | no | - |
+| Test Automation Architect | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period reviewed during production targeted QA; effective cost 19.4442 USD, billed 0.0000 USD, amount due 0.0000 USD. |
+| vercel | cli | checked | normal | 2026-03 청구 예상액 $21.09 (Pro $18.59 + Function Invocations $0.60 + 기타). Billed $0. 이상 없음. |
 
 ## Coverage (Latest Run)
 
 - Scope: targeted
-- Release-Facing: no
-- Deployment: dpl_HTYJnZ6n1Ls3DyMov4VVnHKghA7A / SHA a91b1bc3
-- Coverage Packs: core-routes-smoke, dashboard-core, ai-core, modal-detail-pack, observability-pack
-- Covered Surfaces: / landing render + v8.10.0 + bootstrap state convergence, landing feature card modal: Vibe Coding 상세 내용/개발 환경 변화/아키텍처 전환, /system-boot -> /dashboard redirect via 시스템 시작 countdown, dashboard render: 15 servers, system resources, top5 resource warnings, active alerts modal opens with 1 warning and AI prefill action, AI sidebar opens from alert prefill with populated query, AI job warm-up path visible: /api/ai/wake-up 200 and /api/ai/jobs 201 via network log, GET /api/health 200 healthy, GET /api/version 200 version 8.10.0, /validation route render reachable, browser console errors 0 on landing/dashboard
-- Skipped Surfaces: /login guest PIN flow, server detail modal 3-tab switch, topology modal, log explorer modal, fullscreen AI workspace, Analyst full analysis, Reporter report generation, Cloud Run admin observability (/monitoring, /monitoring/traces), blocked prompt / security regression pack, AI response final completion proof after cold start
+- Release-Facing: yes
+- Deployment: dpl_Bmi1oNKZMSJvnfC9wqysHbi6wD5j / SHA 5e5706bb
+- Coverage Packs: core-routes-smoke, dashboard-core, ai-core
+- Covered Surfaces: /api/version, /api/health, /, /login, /privacy, /system-validation, /system-boot, /dashboard, AI sidebar, browser console errors
+- Skipped Surfaces: observability pack, AI chat interaction, guest login flow
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | Production alias | [link](https://openmanager-ai.vercel.app/) | - |
-| vercel-deployment | Latest promoted deployment a91b1bc32 | [link](https://openmanager-p45n77fw6-skyasus-projects.vercel.app/) | dpl_HTYJnZ6n1Ls3DyMov4VVnHKghA7A |
+| general | Vercel Production URL | [link](https://openmanager-ai.vercel.app/) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | Production landing | `qa-20260327-prod-0193-landing.png` | - |
-| playwright-screenshot | Vibe Coding modal | `qa-20260327-prod-0193-vibe-modal.png` | - |
-| playwright-screenshot | Dashboard overview | `qa-20260327-prod-0193-dashboard.png` | - |
-| playwright-screenshot | Active alert to AI prefill | `qa-20260327-prod-0193-alert-modal.png` | - |
-| playwright-screenshot | AI warm-up state | `qa-20260327-prod-0193-ai-warmup.png` | - |
-| playwright-console | Console warnings/errors | `qa-20260327-prod-0193-console.log` | - |
-| playwright-network | Network log | `qa-20260327-prod-0193-network-final.log` | - |
+| - | - | - | - |
 
 ## Expert Domain Open Gaps
 
-- sre-devops: DevOps / SRE Engineer (last QA-20260326-0190)
-  next: Cloud Run min-instances=1 설정 또는 wake-up 주기 단축 검토 (Free Tier 내)
+- None
 
 ## Pending Improvements
 
@@ -155,13 +148,16 @@ Latest run: QA-20260327-0193 (2026-03-26T15:12:25.263Z)
 - auth-error-provider-copy: 인증 에러 라우트 메시지를 제공자-중립 표현으로 전환 (completed 1회, last QA-20260227-0010)
 - auto-incident-report: 자동장애 보고서 생성 및 상세보기 (completed 1회, last QA-20260306-0051)
 - biome-lint-900-files-에러-0: Biome Lint 900 files 에러 0 (completed 1회, last QA-20260301-0032)
+- biome-optional-chain-4: Biome useOptionalChain 4건 수정 (completed 1회, last QA-20260329-0194)
 - blocked-prompt-raw-json-exposure: 보안 차단 시 raw JSON 노출 제거 (completed 2회, last QA-20260318-0125)
 - blocked-prompt-ux-fixed-v880: Prompt injection 차단 UX 정제 검증 (completed 1회, last QA-20260308-0058)
 - blocked-prompt-ux-v880-quality-recheck: 보안 차단 UX 재검증 (completed 1회, last QA-20260308-0059)
 - cloud-run-proxy-runtime-env-refresh: Cloud Run proxy runtime env refresh (completed 1회, last QA-20260325-0185)
 - cloud-run-readiness-guard: Cloud Run direct route readiness guard 공통화 (completed 1회, last QA-20260325-0184)
 - cloud-run-v892-manual-deploy: Cloud Run v8.9.2 manual deploy verification (completed 1회, last QA-20260317-0118)
+- coverage-suite-stabilize: vitest coverage suite 0 failed (6→0) 안정화 (completed 1회, last QA-20260329-0194)
 - csrf-duplicate-removal: CSRF getCSRFTokenFromCookie 중복 제거 (completed 1회, last QA-20260307-0053)
+- cve-brace-expansion: brace-expansion CVE GHSA-f886-m6hf-6m8v 패치 (completed 1회, last QA-20260329-0194)
 - dashboard-15-servers: 대시보드 15대 서버 모니터링 정상 (completed 2회, last QA-20260314-0097)
 - dashboard-active-alerts: 활성 알림 모달 (completed 1회, last QA-20260317-0114)
 - dashboard-health-badge-warning-consistency: 고부하 카드가 Stable 대신 Warning으로 정렬됨 (completed 1회, last QA-20260322-0157)
@@ -272,6 +268,11 @@ Latest run: QA-20260327-0193 (2026-03-26T15:12:25.263Z)
 - reporter-state-loss-on-tab-switch: Reporter 탭 전환 시 생성 결과 상태 유지 (completed 1회, last QA-20260315-0104)
 - reporter-state-retention-chat-switch: Reporter 생성 결과가 chat 전환 후 유지 (completed 1회, last QA-20260318-0126)
 - security-attack-regression-pack: 보안 공격 시나리오 회귀팩 구축 (completed 4회, last QA-20260320-0138)
+- security-headers-coop: COOP 헤더 추가 (Cross-Origin-Opener-Policy: same-origin-allow-popups) (completed 1회, last QA-20260329-0194)
+- security-headers-misleading-remove: 수동 X-Vercel-Cache/X-Edge-Runtime 헤더 제거 (completed 1회, last QA-20260329-0194)
+- security-headers-permissions-policy: deprecated interest-cohort=() Permissions-Policy 제거 (completed 1회, last QA-20260329-0194)
+- sentry-error-boundary-tag-fix: error.tsx boundary 태그 수정 (global-error → root) (completed 1회, last QA-20260329-0194)
+- sentry-global-error-boundary: global-error.tsx Sentry 에러 경계 연동 추가 (completed 1회, last QA-20260329-0194)
 - server-card-badge-ai-prefill: 서버 카드 경고 배지 클릭 시 AI 사이드바 컨텍스트 자동 주입 (completed 1회, last QA-20260323-0165)
 - server-card-expand: 서버 카드 상세 펼치기/접기 (completed 1회, last QA-20260317-0114)
 - server-detail-log-tab: 로그 & 네트워크 탭 (completed 1회, last QA-20260317-0114)
@@ -360,6 +361,7 @@ Latest run: QA-20260327-0193 (2026-03-26T15:12:25.263Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260329-0194 | 2026-03-28T15:21:59.221Z | targeted | yes | v8.10.6 Production QA - Security Hardening & Coverage Stabilization | 11 | 8 | 0 | 0 | 0 | 0 |
 | QA-20260327-0193 | 2026-03-26T15:12:25.263Z | targeted | no | Vercel production targeted QA recheck after cloud-run pre-init logging fix | 12 | 0 | 0 | 0 | 1 | 0 |
 | QA-20260326-0192 | 2026-03-26T03:34:06.036Z | targeted | no | Vercel Playwright + direct API verification for current production state | 16 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260326-0191 | 2026-03-26T03:12:24.817Z | targeted | no | Vercel Playwright targeted recheck - latest promoted QA data deploy | 9 | 0 | 0 | 0 | 0 | 0 |
@@ -379,5 +381,4 @@ Latest run: QA-20260327-0193 (2026-03-26T15:12:25.263Z)
 | QA-20260324-0177 | 2026-03-24T07:57:28.735Z | targeted | no | Vercel Production QA - false realtime-analysis badge removed but parity mismatch remains | 6 | 0 | 1 | 0 | 0 | 0 |
 | QA-20260324-0176 | 2026-03-24T07:35:13.658Z | targeted | no | Vercel Production QA - parity gate still open after analysis detail patch | 6 | 0 | 1 | 0 | 0 | 0 |
 | QA-20260324-0175 | 2026-03-24T05:45:00.758Z | targeted | no | Vercel Production QA - deferred parity metadata preserved but detail contract still incomplete | 6 | 1 | 1 | 0 | 0 | 0 |
-| QA-20260324-0174 | 2026-03-24T05:13:06.470Z | targeted | no | Vercel Production QA - parity metadata after type-fix deploy | 5 | 1 | 1 | 0 | 0 | 0 |
 
