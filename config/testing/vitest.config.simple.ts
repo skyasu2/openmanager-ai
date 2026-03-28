@@ -23,6 +23,13 @@ export default defineConfig({
       'src/app/api/**/__tests__/**',
       'tests/integration/**',
       'tests/e2e/**',
+      // playwright config 동적 import 테스트: 20초+ 소요로 5초 timeout 초과 → node suite에서 별도 실행
+      'tests/unit/playwright/**',
+      // dev/qa 스크립트 단위 테스트: import.meta.url + createRequire 패턴 → node suite에서 별도 실행
+      'tests/unit/dev/**',
+      'tests/unit/qa/**',
+      // ai-warmup: sessionStorage 사용 → DOM suite(jsdom)에서 실행 (dom-test-manifest.json 등록)
+      'src/utils/ai-warmup.test.ts',
     ],
     coverage: {
       provider: 'v8',
@@ -56,6 +63,6 @@ export default defineConfig({
     alias: testAliases,
   },
   esbuild: {
-    target: 'node14',
+    target: 'node18',
   },
 });

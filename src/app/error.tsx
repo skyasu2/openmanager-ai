@@ -15,7 +15,7 @@ export default function Error({
   useEffect(() => {
     logger.error(error);
     Sentry.captureException(error, {
-      tags: { boundary: 'global-error', digest: error.digest },
+      tags: { boundary: 'root', digest: error.digest },
     });
   }, [error]);
 
