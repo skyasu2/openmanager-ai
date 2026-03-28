@@ -340,7 +340,3 @@ export function createUpstashResumableContext() {
     },
   };
 }
-
-export type UpstashResumableContext = ReturnType<
-  typeof createUpstashResumableContext
->;

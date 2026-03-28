@@ -179,11 +179,3 @@ export const cloudRunResponseSchema = z.object({
   response: z.string().optional(),
   error: z.string().optional(),
 });
-
-export type CloudRunResponse = z.infer<typeof cloudRunResponseSchema>;
-
-// Export types for external use
-export type FilePartSchema = z.infer<typeof filePartSchema>;
-export type MessageSchema = z.infer<typeof messageSchema>;
-export type RequestSchema = z.infer<typeof requestSchema>;
-export type RequestSchemaLoose = z.infer<typeof requestSchemaLoose>;
