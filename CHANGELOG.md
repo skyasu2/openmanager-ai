@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.10.3](https://github.com/skyasu2/openmanager-ai/compare/v8.10.2...v8.10.3) (2026-03-28)
+
+
+### Features
+
+* **landing:** move GitHub+Actions to vibe history, add GitLab to current ([5f29eb7](https://github.com/skyasu2/openmanager-ai/commit/5f29eb7414152e2abbacd57c7f800d7c737dbd40))
+
+
+### Bug Fixes
+
+* **ci:** align gitlab delivery flow and renovate validation ([9ab1985](https://github.com/skyasu2/openmanager-ai/commit/9ab1985299c9613e8e3f0820ac465b9c3aff48a7))
+* **hooks:** skip no-op pre-push validation ([c01e0c1](https://github.com/skyasu2/openmanager-ai/commit/c01e0c15297193d9b2a769864922b4700d0f9e10))
+* **hooks:** skip no-op push fallback overvalidation ([a5510c8](https://github.com/skyasu2/openmanager-ai/commit/a5510c80f8f3ec006d5a46b2d2b39a5ef424ee83))
+
 ## [8.10.2](https://github.com/skyasu2/openmanager-ai/compare/v8.10.0...v8.10.2) (2026-03-27)
 
 

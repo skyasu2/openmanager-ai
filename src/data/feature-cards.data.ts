@@ -64,7 +64,7 @@ export const FEATURE_CARDS_DATA: FeatureCard[] = [
         '☁️ GCP Cloud Run: Node.js AI SDK Multi-Agent Engine 컨테이너 배포, Scale to Zero — AI 처리 전담, Vercel 10초 제한 해소',
         '⚡ Upstash: Serverless Redis를 이용한 초고속 데이터 캐싱 및 Rate Limiting — LLM 응답 캐싱으로 비용 절감',
         '🐋 Docker: Cloud Run 로컬 개발 환경 에뮬레이션 — 로컬과 배포 환경 차이 제거',
-        '🔄 GitHub Actions: CI/CD 파이프라인, 자동 테스트 및 배포 — push→Vercel, tag→Cloud Run 분리 배포',
+        '🦊 GitLab + Local Docker CI: canonical 저장소와 로컬 사전 검증을 결합한 운영 흐름 — git push gitlab main → Vercel 자동 배포',
         '💰 비용 최적화: Vercel Pro($20/mo) 외 Supabase/Cloud Run/Upstash Free Tier 100% 활용 — 최소 비용 운영 달성',
       ],
       technologies: [
@@ -73,7 +73,7 @@ export const FEATURE_CARDS_DATA: FeatureCard[] = [
         'Google Cloud Run',
         'Upstash Redis',
         'Docker',
-        'GitHub Actions CI/CD',
+        'GitLab + Local Docker CI',
       ],
     },
     requiresAI: false,
