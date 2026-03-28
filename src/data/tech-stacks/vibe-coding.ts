@@ -258,6 +258,11 @@ export const VIBE_CODING_DATA: VibeCodeData = {
         description:
           'Claude Code 전환 → WSL 최적화 → 멀티 AI CLI 협업 → GCP Functions 활용',
       },
+      stage4: {
+        title: '현재 단계',
+        description:
+          'GitLab canonical 전환 → Multi-AI CLI 체계 → 로컬 Docker CI 표준화 → Cloud Run AI Engine 운영',
+      },
     },
 
     // 3단계: 후기 - 분기점 (Pivot Point)
@@ -296,6 +301,60 @@ export const VIBE_CODING_DATA: VibeCodeData = {
         status: 'history',
         icon: '🐙',
         tags: ['GitHub', 'Actions', 'Dependabot', 'CI/CD'],
+        type: 'commercial',
+      },
+    ],
+
+    // 4단계: 현재 - GitLab canonical + Multi-AI 운영 체계
+    stage4: [
+      {
+        name: 'GitLab (Canonical)',
+        category: 'custom',
+        importance: 'critical',
+        description: '4단계 핵심 - canonical 저장소를 GitLab으로 전환',
+        implementation:
+          'GitHub에서 GitLab으로 canonical 역할 이전. git push gitlab main → Vercel 자동 배포 체계 확립. GitHub는 공개 코드 스냅샷(npm run sync:github)으로 역할 분리. GitLab CI는 로컬 Docker CI로 대체',
+        status: 'active',
+        icon: '🦊',
+        tags: ['4단계', 'GitLab', 'canonical', 'Vercel연동'],
+        type: 'commercial',
+      },
+      {
+        name: 'Multi-AI CLI (Claude+Codex+Gemini)',
+        category: 'ai',
+        importance: 'critical',
+        description: '멀티 AI CLI 협업 체계 - Claude Max 20x 중심',
+        implementation:
+          'Claude Code(메인), Codex(구현/리팩토링), Gemini(리서치/분석) 3개 CLI가 역할 분담. Claude가 전체 개발 사이클을 주도하며, 사용자가 필요 시 Codex/Gemini를 직접 실행. 월 $420 AI 구독 예산으로 운영',
+        version: 'Claude Max 20x / gpt-5.3-codex / Gemini Pro',
+        status: 'active',
+        icon: '🤝',
+        tags: ['Multi-AI', 'Claude-Max', 'Codex', 'Gemini'],
+        type: 'commercial',
+      },
+      {
+        name: '로컬 Docker CI',
+        category: 'tooling',
+        importance: 'high',
+        description: '외부 CI 최소화 - 로컬 Docker 기반 검증 표준화',
+        implementation:
+          'GitLab CI 비활성화(400분/월 소진 방지). npm run ci:local:docker로 로컬에서 동일한 검증 수행. pre-push hook으로 TypeScript/lint 자동 검증. GitHub Actions은 public snapshot용으로만 유지',
+        status: 'active',
+        icon: '🐋',
+        tags: ['로컬CI', 'Docker', 'pre-push', 'GitLab-CI-Off'],
+        type: 'custom',
+      },
+      {
+        name: 'Cloud Run AI Engine',
+        category: 'ai',
+        importance: 'high',
+        description: 'Vercel 분리 AI 엔진 - Free Tier 운영',
+        implementation:
+          'Vercel(Frontend)과 Cloud Run(AI Engine)으로 하이브리드 아키텍처 운영. 5개 라우팅 에이전트(NLQ/Analyst/Reporter/Advisor/Vision) + GraphRAG + Supabase pgVector. Cloud Run Free Tier 엄수(1vCPU, 512Mi)',
+        version: 'v8.10+',
+        status: 'active',
+        icon: '☁️',
+        tags: ['Cloud-Run', 'AI-Engine', 'Free-Tier', 'Multi-Agent'],
         type: 'commercial',
       },
     ],
