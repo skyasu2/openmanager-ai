@@ -2,8 +2,8 @@
  * @vitest-environment node
  */
 
-import { describe, expect, it } from 'vitest';
 import * as path from 'path';
+import { describe, expect, it } from 'vitest';
 
 const {
   classifyChangedTestRun,
