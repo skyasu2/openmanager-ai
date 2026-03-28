@@ -7,7 +7,12 @@
  * @refactored 2024-12 - 메인 페이지를 루트(/)로 이동
  */
 
+import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
+
+export const metadata: Metadata = {
+  robots: { index: false, follow: false },
+};
 
 export default function MainPageRedirect() {
   redirect('/');
