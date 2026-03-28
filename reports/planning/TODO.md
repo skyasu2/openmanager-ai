@@ -19,7 +19,10 @@
 | Task | Priority | Notes |
 |------|----------|-------|
 | P3: VibeHistorySection stage4 추가 | Low | types/component/data/tests 전면 수정 필요. 현행 3단계 구조 동작 정상 |
-| P3: Knip unused export types 정리 | Low | 44 unused exported types (schemas 대부분) — non-blocking |
+| P3: Knip unused export types 정리 | Low | 잔여 unused export types는 schemas/common/public contract 위주 — non-blocking |
+
+### Completed (2026-03-28 #4)
+- [x] P3: Knip safe unused type cleanup — 내부 UI/constant 범위의 unused exported types 7개 제거 (`FilterOption`, `TimeRange`, `AlertHistoryFilterState`, `LogExplorerFilterState`, `ProfileSecurityState`, profile `SystemStatus`, `OTelMetricName`). 잔여 backlog는 schema/common/public contract 중심으로 축소
 
 ### Completed (2026-03-28 #2)
 - [x] P3: Public GitHub snapshot sync 자동화 — `scripts/sync/github-sync.sh`, `.github-export-ignore`, `package.json`의 `sync:github` / `sync:github:dry-run` 추가. 코드 전용 스냅샷 기준으로 `origin/main` 동기화 완료
