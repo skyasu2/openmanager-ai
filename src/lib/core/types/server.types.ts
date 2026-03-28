@@ -152,28 +152,6 @@ export interface DetailedServerMetrics
 /**
  * 서버 메트릭 히스토리
  */
-export interface ServerMetricsHistory {
-  serverId: string;
-  metrics: FlexibleServerMetrics[];
-  period: {
-    start: string;
-    end: string;
-  };
-  aggregation?: 'raw' | 'minute' | 'hour' | 'day';
-}
-
-/**
- * 트렌드가 포함된 확장 서버 메트릭
- */
-export interface EnhancedServerMetrics extends FlexibleServerMetrics {
-  trends?: {
-    cpu: 'increasing' | 'decreasing' | 'stable';
-    memory: 'increasing' | 'decreasing' | 'stable';
-    disk: 'increasing' | 'decreasing' | 'stable';
-    network: 'increasing' | 'decreasing' | 'stable';
-  };
-}
-
 /**
  * 서버 정보 통합 인터페이스
  */
@@ -199,23 +177,6 @@ export interface Server {
   config?: Record<string, unknown>;
   monitoringEnabled?: boolean;
   alertsEnabled?: boolean;
-}
-
-/**
- * 서버 그룹
- */
-export interface ServerGroup {
-  id: string;
-  name: string;
-  servers: Server[];
-  totalServers: number;
-  healthyServers: number;
-  metrics?: {
-    avgCpu: number;
-    avgMemory: number;
-    avgDisk: number;
-    avgNetwork: number;
-  };
 }
 
 /**

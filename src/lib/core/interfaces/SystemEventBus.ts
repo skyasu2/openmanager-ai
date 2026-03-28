@@ -131,9 +131,3 @@ export interface ISystemEventEmitter {
   getEventBus(): ISystemEventBus;
   setEventBus(eventBus: ISystemEventBus): void;
 }
-
-// 이벤트 구독자 인터페이스
-export interface ISystemEventSubscriber {
-  subscribeToEvents(eventBus: ISystemEventBus): void;
-  unsubscribeFromEvents(eventBus: ISystemEventBus): void;
-}

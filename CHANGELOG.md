@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.10.7](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.10.6...v8.10.7) (2026-03-28)
+
+
+### Code Refactoring
+
+* **types:** remove 10 unused exported types (Knip P3 cleanup) ([517254c](https://gitlab.com/skyasu2/openmanager-ai/-/commit/517254c234d2dd4c46cbf31c545f4ef018890cfa))
+* **types:** remove 8 more unused exported types (Knip cleanup cont.) ([4642856](https://gitlab.com/skyasu2/openmanager-ai/-/commit/464285625ccc65d3008a6d01f1b65d8fc581ecd2))
+
 ## [8.10.6](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.10.5...v8.10.6) (2026-03-28)
 
 

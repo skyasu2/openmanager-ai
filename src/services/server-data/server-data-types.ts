@@ -77,27 +77,6 @@ export interface EnhancedServerMetrics {
 /**
  * JSON 파일 데이터 구조 (sync 스크립트와 동기화)
  */
-export interface HourlyJsonData {
-  hour: number;
-  scrapeConfig: {
-    scrapeInterval: string;
-    evaluationInterval: string;
-    source: string;
-  };
-  dataPoints: Array<{
-    timestampMs: number;
-    targets: Record<string, PrometheusTargetData>;
-  }>;
-  metadata: {
-    version: string;
-    format: string;
-    totalDataPoints: number;
-    intervalMinutes: number;
-    serverCount: number;
-    affectedServers: number;
-  };
-}
-
 export interface PrometheusTargetData {
   job: string;
   instance: string;

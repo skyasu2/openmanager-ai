@@ -34,16 +34,6 @@ export interface FeatureCard {
 }
 
 /**
- * Feature Card 컴포넌트 Props
- */
-export interface FeatureCardProps {
-  card: FeatureCard;
-  index: number;
-  onCardClick: (cardId: string) => void;
-  isAIDisabled: boolean;
-}
-
-/**
  * 기술 스택 카테고리
  */
 export type TechCategory =
