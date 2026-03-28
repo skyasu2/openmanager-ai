@@ -25,6 +25,12 @@
 - [x] P3: Public GitHub snapshot sync 자동화 — `scripts/sync/github-sync.sh`, `.github-export-ignore`, `package.json`의 `sync:github` / `sync:github:dry-run` 추가. 코드 전용 스냅샷 기준으로 `origin/main` 동기화 완료
 - [x] P1: GitLab canonical delivery 정렬 및 로컬 Docker CI 표준화 — `gitlab` canonical / `origin` public-only topology 확정, `remote.pushDefault=gitlab`, `main -> gitlab/main`, `scripts/ci/local-docker-ci.sh` + `CI_DOCKER_PULL_POLICY` 도입, 관련 규칙/문서 정렬, `git push gitlab main` 후 Vercel production deployment `dpl_HaXUuu6ewS38hYCVoFuwx5oKL6Ru` `READY` 확인
 
+### Completed (2026-03-28 #3)
+- [x] P2: Knip unused exports 정리 — `cache-helpers.ts` 미사용 7개 함수 + AI 쿼리 헬퍼 3개 삭제(-131줄), `rate-limiter.ts` `RATE_LIMIT_CONFIGS` 삭제(-57줄). Knip `exports: warn` 기준 clean pass. GitLab push + GitHub sync 완료
+- [x] P2: `filter-public-scripts.js` 추출 + 단위 테스트 6개 — `github-sync.sh` 인라인 Node.js 스니펫을 독립 스크립트로 분리. dirty check 에러 메시지에 `git stash` 가이드 추가
+- [x] P2: `knip.json` severity rules 추가 — `files`/`dependencies`/`unlisted` → error, `exports`/`types`/`devDependencies` → warn 세분화. `ignoreExportsUsedInFile: true` 유지
+- [x] P2: `.versionrc.json` 개선 — URL GitLab으로 교체, CHANGELOG 타입 필터(chore/docs/style/ci hidden)
+
 ### Completed (2026-03-28 #2)
 - [x] P1: pre-push.js 1137→595줄 모듈 분리 — `pre-push-file-classifier.js` (경로 분류), `pre-push-test-classifier.js` (테스트 라우팅), `pre-push-guards.js` (guard 체크) 추출. 단위 테스트 55개 추가. `v8.10.3` 릴리즈, GitLab push + GitHub sync 완료
 
