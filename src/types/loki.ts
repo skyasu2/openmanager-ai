@@ -53,8 +53,3 @@ export type LokiStream = {
   stream: LokiStreamLabels;
   values: Array<[string, string]>; // [timestampNs, line]
 };
-
-/** Loki Push API request body */
-export type LokiPushPayload = {
-  streams: LokiStream[];
-};

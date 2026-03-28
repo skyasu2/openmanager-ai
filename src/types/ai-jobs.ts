@@ -149,29 +149,3 @@ export interface RedisJobProgress {
   message?: string;
   updatedAt: string;
 }
-
-/** Worker에서 진행률 업데이트 */
-export interface JobProgressUpdate {
-  jobId: string;
-  status: JobStatus;
-  progress: number;
-  currentStep?: string;
-}
-
-/** Worker 처리 완료 */
-export interface JobCompletionUpdate {
-  jobId: string;
-  status: 'completed' | 'failed';
-  result?: AIJobResult;
-  error?: string;
-}
-
-// ============================================
-// 유틸리티 함수 타입
-// ============================================
-
-/** 복잡도 분석 함수 시그니처 */
-export type AnalyzeComplexityFn = (query: string) => ComplexityAnalysis;
-
-/** 예상 시간 계산 함수 시그니처 */
-export type EstimateTimeFn = (complexity: QueryComplexity) => number;

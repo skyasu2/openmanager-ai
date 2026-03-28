@@ -11,11 +11,3 @@ export interface SafeError {
   details?: unknown;
   originalError?: unknown;
 }
-
-export interface ErrorContext {
-  component?: string;
-  action?: string;
-  userId?: string;
-  timestamp?: string;
-  metadata?: Record<string, unknown>;
-}

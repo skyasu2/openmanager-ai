@@ -46,9 +46,6 @@ export interface ApiServerMetrics {
   structuredLogs?: OTelLogRecord[];
 }
 
-/** Backward-compatible alias */
-export type ServerMetrics = ApiServerMetrics;
-
 /**
  * 전체 시스템 요약
  */

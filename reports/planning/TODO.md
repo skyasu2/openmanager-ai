@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-03-28 KST (v8.10.5+)
+**Last Updated**: 2026-03-29 KST (v8.10.6, Production QA 완료)
 
 ## Active Tasks
 
@@ -21,6 +21,11 @@
 | P3: VibeHistorySection stage4 추가 | Low | types/component/data/tests 전면 수정 필요. 현행 3단계 구조 동작 정상 |
 | P3: Knip unused export types 정리 | Low | 잔여 unused export types는 schemas/common/public contract 위주 — non-blocking |
 | P3: 대형 파일(500+줄) 분리 계획 | Low | formatters.ts 661줄, route.ts 634줄 등 — 800줄 미만, 기능 정상, 차기 리팩토링 대상 |
+
+### Completed (2026-03-29 #9)
+- [x] P2: v8.10.6 Production QA 완료 — Playwright MCP, 11/11 pass, 콘솔 에러 0, QA-20260329-0194 기록. Vercel 사용량 $21.09/월 정상
+- [x] P2: Production 보안 헤더 배포 확인 — COOP(`same-origin-allow-popups`), CSP, HSTS(`preload`), X-Frame-Options(`DENY`), Permissions-Policy 모두 production 응답에서 확인
+- [x] P1: brace-expansion CVE GHSA-f886-m6hf-6m8v 패치 — `npm audit fix`로 process hang/memory exhaustion 취약점 제거
 
 ### Completed (2026-03-28 #8)
 - [x] P2: `global-error.tsx` Sentry.captureException 추가 — 다른 에러 경계와 일관성 확보 (`boundary: 'global-error'`)
