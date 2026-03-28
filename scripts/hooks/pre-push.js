@@ -25,6 +25,10 @@ const {
   isKnownNoOpPush,
 } = require('./pre-push-changed-files');
 const {
+  isDocsArtifactOnlyPush,
+  validateChangedJsonArtifacts,
+} = require('./pre-push-docs-artifacts');
+const {
   createTypeCheckStatusFile,
   readTypeCheckStatus,
   cleanupTypeCheckStatus,
@@ -196,46 +200,6 @@ function getChangedFilesForPush() {
 
 // ─── Docs-only path ──────────────────────────────────────────────────────
 
-function isLightweightArtifactFile(filePath) {
-  const normalized = String(filePath || '').replace(/\\/g, '/');
-  if (!normalized) return false;
-  if (normalized.endsWith('.md')) return true;
-  if (normalized.endsWith('.json')) {
-    return normalized.startsWith('docs/') || normalized.startsWith('reports/');
-  }
-  return false;
-}
-
-function isDocsArtifactOnlyPush(changedFilesResult) {
-  if (!changedFilesResult.isKnown || changedFilesResult.files.length === 0) return false;
-  return changedFilesResult.files.every((filePath) => isLightweightArtifactFile(filePath));
-}
-
-function validateChangedJsonArtifacts(changedFiles) {
-  const jsonFiles = changedFiles.filter((filePath) => filePath.endsWith('.json'));
-  if (jsonFiles.length === 0) {
-    console.log('⚪ JSON artifact validation skipped (no changed JSON files)');
-    return;
-  }
-  for (const relativePath of jsonFiles) {
-    const absolutePath = path.join(cwd, relativePath);
-    if (!fs.existsSync(absolutePath)) {
-      console.log(`❌ JSON artifact missing: ${relativePath}`);
-      console.log('');
-      console.log('💡 Fix: restore or remove the stale JSON path from the push range');
-      process.exit(1);
-    }
-    try {
-      JSON.parse(fs.readFileSync(absolutePath, 'utf8'));
-    } catch (error) {
-      console.log(`❌ Invalid JSON artifact: ${relativePath}`);
-      console.log(`   ${error.message}`);
-      process.exit(1);
-    }
-  }
-  console.log(`✅ JSON artifact validation passed (${jsonFiles.length} files)`);
-}
-
 function runDocsArtifactValidation(changedFilesResult) {
   validationMode = 'docs-artifacts';
   testStatus = 'skipped-docs-only';
@@ -257,7 +221,30 @@ function runDocsArtifactValidation(changedFilesResult) {
     console.log('⚪ Markdown docs lint skipped (no changed markdown files)');
   }
 
-  validateChangedJsonArtifacts(changedFilesResult.files);
+  const jsonValidation = validateChangedJsonArtifacts(changedFilesResult.files, cwd);
+  if (!jsonValidation.ok) {
+    if (jsonValidation.reason === 'missing-json-artifact') {
+      console.log(`❌ JSON artifact missing: ${jsonValidation.file}`);
+      console.log('');
+      console.log('💡 Fix: restore or remove the stale JSON path from the push range');
+      process.exit(1);
+    }
+
+    if (jsonValidation.reason === 'invalid-json-artifact') {
+      console.log(`❌ Invalid JSON artifact: ${jsonValidation.file}`);
+      console.log(`   ${jsonValidation.message}`);
+      process.exit(1);
+    }
+  }
+
+  if (jsonValidation.skipped) {
+    console.log('⚪ JSON artifact validation skipped (no changed JSON files)');
+    return;
+  }
+
+  console.log(
+    `✅ JSON artifact validation passed (${jsonValidation.jsonFiles.length} files)`
+  );
 }
 
 function exitIfGuardFailed(result) {
