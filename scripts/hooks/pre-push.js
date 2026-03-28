@@ -40,7 +40,10 @@ const {
   normalizeFilePath,
   isCloudRunTypeCheckRelevantFile,
 } = require('./pre-push-file-classifier');
-const { classifyChangedTestRun } = require('./pre-push-test-classifier');
+const {
+  analyzeTestExecutionPlan,
+  executeTestExecutionPlan,
+} = require('./pre-push-test-runner');
 const {
   checkCloudBuildFreeTierGuard,
   checkNodeModules,
@@ -256,70 +259,64 @@ function exitIfGuardFailed(result) {
 // ─── Tests ───────────────────────────────────────────────────────────────
 
 function runTests(changedFilesResult) {
-  selectedTestMode = 'quick';
-
-  if (isLimitedMode) {
-    testStatus = 'skipped';
-    console.log('⚪ Tests skipped (Windows Limited Mode)');
-    console.log('   → Full validation runs in WSL environment');
-    return;
-  }
-
-  if (SKIP_TESTS) {
-    testStatus = 'skipped';
-    console.log('⚪ Tests skipped (SKIP_TESTS=true)');
-    console.log('⚠️  WARNING: Skipping tests may allow regressions');
-    return;
-  }
-
-  if (isKnownNoOpPush(changedFilesResult)) {
-    testStatus = 'skipped-no-op-push';
-    console.log('⚪ Tests skipped (known no-op push)');
-    return;
-  }
-
-  const targetedRun = classifyChangedTestRun(
+  const plan = analyzeTestExecutionPlan({
     changedFilesResult,
-    DOM_TEST_MANIFEST,
+    isLimitedMode,
+    skipTests: SKIP_TESTS,
+    isKnownNoOpPush,
+    domTestManifest: DOM_TEST_MANIFEST,
     isWSL,
     isWindowsFS,
-    cloudRunCwd
-  );
-  let steps = [{ label: 'Quick smoke', args: ['run', 'test:super-fast'] }];
+    cloudRunCwd,
+  });
 
-  if (targetedRun) {
-    selectedTestMode = targetedRun.mode;
-    steps = targetedRun.steps;
-    console.log(`🧪 Running ${targetedRun.mode} checks...`);
+  selectedTestMode = plan.selectedTestMode;
+
+  if (plan.kind === 'skip') {
+    testStatus = plan.testStatus;
+
+    if (plan.reason === 'windows-limited') {
+      console.log('⚪ Tests skipped (Windows Limited Mode)');
+      console.log('   → Full validation runs in WSL environment');
+      return;
+    }
+
+    if (plan.reason === 'skip-tests-env') {
+      console.log('⚪ Tests skipped (SKIP_TESTS=true)');
+      console.log('⚠️  WARNING: Skipping tests may allow regressions');
+      return;
+    }
+
+    if (plan.reason === 'known-no-op-push') {
+      console.log('⚪ Tests skipped (known no-op push)');
+      return;
+    }
+  }
+
+  if (plan.targetedRun) {
+    console.log(`🧪 Running ${plan.selectedTestMode} checks...`);
   } else {
     console.log('🧪 Running quick tests...');
   }
 
-  const success = steps.every(({ args, label, runner, cwd: stepCwd }) => {
-    if (label) console.log(`   → ${label}`);
-    const runCwd = stepCwd || cwd;
-    return runner === 'npx' ? runNpx(args, runCwd) : runNpm(args, null, runCwd);
-  });
+  const result = executeTestExecutionPlan(plan, { cwd, runNpm, runNpx });
 
-  if (success) {
-    testStatus = 'passed';
-  } else {
-    testStatus = 'failed';
-    console.log('❌ Tests failed - push blocked');
-    console.log('');
-    if (targetedRun?.guidance?.length) {
-      for (const guidance of targetedRun.guidance) {
-        console.log(`💡 Fix: ${guidance}`);
-      }
-    } else {
-      console.log('💡 Fix: npm run test:super-fast');
-    }
-    console.log('');
-    console.log('⚠️  Bypass options:');
-    console.log('   • SKIP_TESTS=true git push   (Skip tests only)');
-    console.log('   • HUSKY=0 git push           (Skip all hooks)');
-    process.exit(1);
+  if (result.ok) {
+    testStatus = result.testStatus;
+    return;
   }
+
+  testStatus = result.testStatus;
+  console.log('❌ Tests failed - push blocked');
+  console.log('');
+  for (const guidance of result.guidance) {
+    console.log(`💡 Fix: ${guidance}`);
+  }
+  console.log('');
+  console.log('⚠️  Bypass options:');
+  console.log('   • SKIP_TESTS=true git push   (Skip tests only)');
+  console.log('   • HUSKY=0 git push           (Skip all hooks)');
+  process.exit(1);
 }
 
 // ─── Build validation ────────────────────────────────────────────────────
