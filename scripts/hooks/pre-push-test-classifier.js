@@ -17,7 +17,6 @@ const {
   isDomTestInfraFile,
   isHookTestInfraFile,
   isFrontendSmokeFile,
-  isAIWorkspaceQuickFile,
   isDomTestFile,
   normalizeFilePath,
   toCloudRunRelativePath,
@@ -55,7 +54,7 @@ function classifyChangedTestRun(
   );
 
   // --- AI workspace quick -----------------------------------------------
-  const aiWorkspaceQuickFiles = afterFrontendSmokeFiles.filter(isAIWorkspaceQuickFile);
+  const aiWorkspaceQuickFiles = afterFrontendSmokeFiles.filter(isFrontendSmokeFile);
   const aiWorkspaceQuickFileSet = new Set(aiWorkspaceQuickFiles);
   const afterAiWorkspaceQuickFiles = afterFrontendSmokeFiles.filter(
     (f) => !aiWorkspaceQuickFileSet.has(f)

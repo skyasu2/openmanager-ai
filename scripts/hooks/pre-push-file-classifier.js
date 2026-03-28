@@ -135,10 +135,6 @@ function isFrontendSmokeFile(filePath) {
   return FRONTEND_SMOKE_PREFIXES.some((prefix) => normalized.startsWith(prefix));
 }
 
-function isAIWorkspaceQuickFile(filePath) {
-  return isFrontendSmokeFile(filePath);
-}
-
 function isDomTestFile(filePath, domTestManifest) {
   const normalized = normalizeFilePath(filePath);
   if (!isVitestTestFile(normalized)) return false;
@@ -168,6 +164,5 @@ module.exports = {
   isDomTestInfraFile,
   isHookTestInfraFile,
   isFrontendSmokeFile,
-  isAIWorkspaceQuickFile,
   isDomTestFile,
 };

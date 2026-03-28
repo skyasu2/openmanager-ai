@@ -21,7 +21,7 @@ describe('pre-push guards', () => {
     const existsSpy = vi.spyOn(fs, 'existsSync');
     const logSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
 
-    checkCloudBuildFreeTierGuard(
+    const result = checkCloudBuildFreeTierGuard(
       {
         files: ['src/app/page.tsx'],
         isKnown: true,
@@ -30,6 +30,7 @@ describe('pre-push guards', () => {
       false
     );
 
+    expect(result).toEqual({ ok: true, skipped: true });
     expect(logSpy).toHaveBeenCalledWith(
       '⚪ Cloud Build guard skipped (ai-engine deploy files unchanged)'
     );
@@ -53,22 +54,18 @@ describe('pre-push guards', () => {
 
     const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
     const logSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
-    const exitSpy = vi.spyOn(process, 'exit').mockImplementation(((
-      code?: number
-    ) => {
-      throw new Error(`process.exit:${code ?? 0}`);
-    }) as never);
+    const exitSpy = vi.spyOn(process, 'exit').mockImplementation(() => {
+      throw new Error('should not exit inside guard');
+    });
 
-    expect(() =>
-      checkCloudBuildFreeTierGuard(
-        {
-          files: [],
-          isKnown: false,
-        },
-        '/repo',
-        false
-      )
-    ).toThrow('process.exit:1');
+    const result = checkCloudBuildFreeTierGuard(
+      {
+        files: [],
+        isKnown: false,
+      },
+      '/repo',
+      false
+    );
 
     expect(warnSpy).toHaveBeenCalledWith(
       '⚠️  Cloud Build guard running in fail-closed mode (changed files unknown)'
@@ -76,7 +73,18 @@ describe('pre-push guards', () => {
     expect(logSpy).toHaveBeenCalledWith(
       '🛡️ Cloud Build free-tier guard check...'
     );
-    expect(exitSpy).toHaveBeenCalledWith(1);
+    expect(result).toEqual({
+      ok: false,
+      reason: 'cloud-build-free-tier-guard',
+      failures: [
+        'cloud-run/ai-engine/cloudbuild.yaml contains machineType in active config',
+        'cloud-run/ai-engine/cloudbuild.yaml contains highcpu machine type in active config',
+        'cloud-run/ai-engine/deploy.sh missing BUILD_CMD forbidden-arg guard',
+        'cloud-run/ai-engine/deploy.sh missing DEPLOY_CMD forbidden-arg guard',
+        'cloud-run/ai-engine/deploy.sh missing free-tier guard enforcement',
+      ],
+    });
+    expect(exitSpy).not.toHaveBeenCalled();
   });
 
   it('ignores commented machineType lines when deploy guard strings are present', () => {
@@ -99,27 +107,24 @@ describe('pre-push guards', () => {
       }
     );
 
-    const exitSpy = vi.spyOn(process, 'exit').mockImplementation(((
-      code?: number
-    ) => {
-      throw new Error(`process.exit:${code ?? 0}`);
-    }) as never);
+    const exitSpy = vi.spyOn(process, 'exit').mockImplementation(() => {
+      throw new Error('should not exit inside guard');
+    });
     const logSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
 
-    expect(() =>
-      checkCloudBuildFreeTierGuard(
-        {
-          files: ['cloud-run/ai-engine/deploy.sh'],
-          isKnown: true,
-        },
-        '/repo',
-        false
-      )
-    ).not.toThrow();
+    const result = checkCloudBuildFreeTierGuard(
+      {
+        files: ['cloud-run/ai-engine/deploy.sh'],
+        isKnown: true,
+      },
+      '/repo',
+      false
+    );
 
     expect(logSpy).toHaveBeenCalledWith(
       '🛡️ Cloud Build free-tier guard check...'
     );
+    expect(result).toEqual({ ok: true });
     expect(exitSpy).not.toHaveBeenCalled();
   });
 
@@ -148,15 +153,14 @@ describe('pre-push guards', () => {
       }
     );
     vi.spyOn(console, 'log').mockImplementation(() => {});
-    const exitSpy = vi.spyOn(process, 'exit').mockImplementation(((
-      code?: number
-    ) => {
-      throw new Error(`process.exit:${code ?? 0}`);
-    }) as never);
+    const exitSpy = vi.spyOn(process, 'exit').mockImplementation(() => {
+      throw new Error('should not exit inside guard');
+    });
 
-    expect(() => checkEnvironment('/repo', () => false)).toThrow(
-      'process.exit:1'
-    );
-    expect(exitSpy).toHaveBeenCalledWith(1);
+    expect(checkEnvironment('/repo', () => false)).toEqual({
+      ok: false,
+      reason: 'environment-check',
+    });
+    expect(exitSpy).not.toHaveBeenCalled();
   });
 });

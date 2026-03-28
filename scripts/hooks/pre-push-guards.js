@@ -1,7 +1,7 @@
 /**
  * Pre-push guard checks
  * Cloud Build free-tier guard, node_modules health, release reminder, env check.
- * Each function calls process.exit(1) on hard failure.
+ * Guard functions return structured status and leave exit handling to the caller.
  */
 
 'use strict';
@@ -16,6 +16,10 @@ function stripHashComments(text) {
     .split('\n')
     .filter((line) => !line.trim().startsWith('#'))
     .join('\n');
+}
+
+function createGuardResult(ok, extra = {}) {
+  return { ok, ...extra };
 }
 
 // ─── Cloud Build free-tier guard ─────────────────────────────────────────
@@ -37,7 +41,7 @@ function checkCloudBuildFreeTierGuard(changedFilesResult, cwd, FORCE_CLOUD_BUILD
   if (!hasRelevantChanges && !FORCE_CLOUD_BUILD_GUARD) {
     if (hasChangedFiles || changedFilesResult.isKnown) {
       console.log('⚪ Cloud Build guard skipped (ai-engine deploy files unchanged)');
-      return;
+      return createGuardResult(true, { skipped: true });
     }
     console.warn(
       '⚠️  Cloud Build guard running in fail-closed mode (changed files unknown)'
@@ -48,7 +52,7 @@ function checkCloudBuildFreeTierGuard(changedFilesResult, cwd, FORCE_CLOUD_BUILD
   const deployPath = path.join(cwd, 'cloud-run/ai-engine/deploy.sh');
 
   if (!fs.existsSync(cloudbuildPath) || !fs.existsSync(deployPath)) {
-    return;
+    return createGuardResult(true, { skipped: true });
   }
 
   console.log('🛡️ Cloud Build free-tier guard check...');
@@ -88,8 +92,13 @@ function checkCloudBuildFreeTierGuard(changedFilesResult, cwd, FORCE_CLOUD_BUILD
     console.log('');
     console.log('💡 Fix: restore free-tier guardrails in cloudbuild/deploy scripts');
     console.log('⚠️  Bypass: HUSKY=0 git push');
-    process.exit(1);
+    return createGuardResult(false, {
+      reason: 'cloud-build-free-tier-guard',
+      failures,
+    });
   }
+
+  return createGuardResult(true);
 }
 
 // ─── node_modules health check ───────────────────────────────────────────
@@ -206,9 +215,9 @@ function checkEnvironment(cwd, runNpm) {
   const pkgPath = path.join(cwd, 'package.json');
   try {
     const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
-    if (!pkg.scripts?.['env:check']) return;
+    if (!pkg.scripts?.['env:check']) return createGuardResult(true, { skipped: true });
   } catch {
-    return;
+    return createGuardResult(true, { skipped: true });
   }
 
   console.log('🔐 Environment variables check...');
@@ -219,8 +228,10 @@ function checkEnvironment(cwd, runNpm) {
     console.log('💡 Fix: Add missing env vars to .env.local');
     console.log('');
     console.log('⚠️  Bypass: HUSKY=0 git push');
-    process.exit(1);
+    return createGuardResult(false, { reason: 'environment-check' });
   }
+
+  return createGuardResult(true);
 }
 
 module.exports = {

@@ -276,6 +276,12 @@ function runDocsArtifactValidation(changedFilesResult) {
   validateChangedJsonArtifacts(changedFilesResult.files);
 }
 
+function exitIfGuardFailed(result) {
+  if (result?.ok === false) {
+    process.exit(1);
+  }
+}
+
 // ─── Tests ───────────────────────────────────────────────────────────────
 
 function runTests(changedFilesResult) {
@@ -576,7 +582,9 @@ function main() {
   }
 
   const changedFilesResult = getChangedFilesForPush();
-  checkCloudBuildFreeTierGuard(changedFilesResult, cwd, FORCE_CLOUD_BUILD_GUARD);
+  exitIfGuardFailed(
+    checkCloudBuildFreeTierGuard(changedFilesResult, cwd, FORCE_CLOUD_BUILD_GUARD)
+  );
 
   if (isDocsArtifactOnlyPush(changedFilesResult)) {
     runDocsArtifactValidation(changedFilesResult);
@@ -584,7 +592,7 @@ function main() {
     runTests(changedFilesResult);
     runBuildValidation(changedFilesResult);
     if (STRICT_PUSH_ENV) {
-      checkEnvironment(cwd, runNpm);
+      exitIfGuardFailed(checkEnvironment(cwd, runNpm));
     }
   }
 
