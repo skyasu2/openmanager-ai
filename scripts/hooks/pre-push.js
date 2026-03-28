@@ -218,7 +218,7 @@ function runDocsArtifactValidation(changedFilesResult) {
       console.log('❌ Markdown docs lint failed - push blocked');
       console.log('');
       console.log('💡 Fix: npm run docs:lint:changed');
-      process.exit(1);
+      return { ok: false, reason: 'markdown-lint-failed' };
     }
   } else {
     console.log('⚪ Markdown docs lint skipped (no changed markdown files)');
@@ -230,24 +230,30 @@ function runDocsArtifactValidation(changedFilesResult) {
       console.log(`❌ JSON artifact missing: ${jsonValidation.file}`);
       console.log('');
       console.log('💡 Fix: restore or remove the stale JSON path from the push range');
-      process.exit(1);
+      return { ok: false, reason: 'missing-json-artifact', file: jsonValidation.file };
     }
 
     if (jsonValidation.reason === 'invalid-json-artifact') {
       console.log(`❌ Invalid JSON artifact: ${jsonValidation.file}`);
       console.log(`   ${jsonValidation.message}`);
-      process.exit(1);
+      return {
+        ok: false,
+        reason: 'invalid-json-artifact',
+        file: jsonValidation.file,
+        message: jsonValidation.message,
+      };
     }
   }
 
   if (jsonValidation.skipped) {
     console.log('⚪ JSON artifact validation skipped (no changed JSON files)');
-    return;
+    return { ok: true };
   }
 
   console.log(
     `✅ JSON artifact validation passed (${jsonValidation.jsonFiles.length} files)`
   );
+  return { ok: true };
 }
 
 function exitIfGuardFailed(result) {
@@ -538,12 +544,9 @@ function main() {
     checkWSLPerformance(isWSL, isWindowsFS);
   }
 
-  if (!checkNodeModules(cwd, SKIP_NODE_CHECK, isWSL, isWindows, isWindowsFS)) {
-    console.log('❌ node_modules check failed - push blocked');
-    console.log('');
-    console.log('💡 Quick bypass: HUSKY=0 git push');
-    process.exit(1);
-  }
+  exitIfGuardFailed(
+    checkNodeModules(cwd, SKIP_NODE_CHECK, isWSL, isWindows, isWindowsFS)
+  );
 
   const changedFilesResult = getChangedFilesForPush();
   exitIfGuardFailed(
@@ -551,7 +554,7 @@ function main() {
   );
 
   if (isDocsArtifactOnlyPush(changedFilesResult)) {
-    runDocsArtifactValidation(changedFilesResult);
+    exitIfGuardFailed(runDocsArtifactValidation(changedFilesResult));
   } else {
     runTests(changedFilesResult);
     runBuildValidation(changedFilesResult);

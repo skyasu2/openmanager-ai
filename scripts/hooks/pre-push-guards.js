@@ -109,12 +109,12 @@ function checkCloudBuildFreeTierGuard(changedFilesResult, cwd, FORCE_CLOUD_BUILD
  * @param {boolean} isWSL
  * @param {boolean} isWindows
  * @param {boolean} isWindowsFS
- * @returns {boolean}
+ * @returns {{ ok: boolean, skipped?: boolean, reason?: string }}
  */
 function checkNodeModules(cwd, SKIP_NODE_CHECK, isWSL, isWindows, isWindowsFS) {
   if (SKIP_NODE_CHECK) {
     console.log('⚪ node_modules check skipped (SKIP_NODE_CHECK=true)');
-    return true;
+    return createGuardResult(true, { skipped: true });
   }
 
   const criticalPackages = [
@@ -141,7 +141,7 @@ function checkNodeModules(cwd, SKIP_NODE_CHECK, isWSL, isWindows, isWindowsFS) {
     console.log('   1. Run: rm -rf node_modules package-lock.json && npm install');
     console.log('   2. Bypass: HUSKY=0 git push');
     console.log('');
-    return false;
+    return createGuardResult(false, { reason: 'missing-node-modules', missing });
   }
 
   if (isWSL && isWindowsFS) {
@@ -152,7 +152,7 @@ function checkNodeModules(cwd, SKIP_NODE_CHECK, isWSL, isWindows, isWindowsFS) {
       const hasLinux = rollupContents.some((f) => f.includes('linux'));
 
       if (hasWin32 && !hasLinux) {
-        if (isWindows) return true;
+        if (isWindows) return createGuardResult(true);
         console.log('');
         console.log('⚠️  node_modules was installed on Windows, not compatible with WSL');
         console.log('');
@@ -161,12 +161,12 @@ function checkNodeModules(cwd, SKIP_NODE_CHECK, isWSL, isWindows, isWindowsFS) {
         console.log('   2. Reinstall: rm -rf node_modules && npm install');
         console.log('   3. Bypass: HUSKY=0 git push');
         console.log('');
-        return false;
+        return createGuardResult(false, { reason: 'windows-node-modules-in-wsl' });
       }
     }
   }
 
-  return true;
+  return createGuardResult(true);
 }
 
 // ─── Release reminder ────────────────────────────────────────────────────

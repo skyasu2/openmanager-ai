@@ -128,14 +128,16 @@ describe('pre-push guards', () => {
     expect(exitSpy).not.toHaveBeenCalled();
   });
 
-  it('returns false when critical node modules are missing', () => {
+  it('returns ok:false with reason when critical node modules are missing', () => {
     vi.spyOn(fs, 'existsSync').mockImplementation((target) => {
       const normalized = String(target).replace(/\\/g, '/');
       return normalized.endsWith('/node_modules/typescript');
     });
     vi.spyOn(console, 'log').mockImplementation(() => {});
 
-    expect(checkNodeModules('/repo', false, false, false, false)).toBe(false);
+    const result = checkNodeModules('/repo', false, false, false, false);
+    expect(result.ok).toBe(false);
+    expect(result.reason).toBe('missing-node-modules');
   });
 
   it('exits when env:check exists and npm validation fails', () => {
