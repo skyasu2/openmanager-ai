@@ -4,7 +4,7 @@
 > Owner: dev-experience
 > Status: Active Canonical
 > Doc type: How-to
-> Last reviewed: 2026-03-27
+> Last reviewed: 2026-03-28
 > Canonical: docs/development/README.md
 > Tags: development,setup,index
 
@@ -24,6 +24,7 @@
 | [CI/CD 파이프라인](./ci-cd.md) | GitLab canonical + Vercel 배포 흐름 + 외부 CI 최소화 |
 | [Git Hooks 워크플로우](./git-hooks-workflow.md) | Pre-commit/Pre-push 품질 게이트 |
 | [개발 도구](./dev-tools.md) | Node.js/npm/IDE/로컬 도구 설정 |
+| [프로젝트 스타터 자산](./project-starter-assets.md) | 새 프로젝트 시작 시 재사용 가능한 운영 자산 인덱스 |
 
 ### 2. Vibe Coding 영역
 

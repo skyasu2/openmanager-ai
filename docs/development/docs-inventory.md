@@ -11,16 +11,16 @@
 > Auto-generated: 2026-03-28
 > Source: `docs/`
 
-- Total files in docs: **73**
-- Total markdown docs: **58**
-- Total markdown lines: **14086**
+- Total files in docs: **74**
+- Total markdown docs: **59**
+- Total markdown lines: **14217**
 
 ## Markdown Distribution
 
 | Scope | Count |
 |---|---:|
 | reference | 24 |
-| development | 18 |
+| development | 19 |
 | guides | 7 |
 | archived | 3 |
 | troubleshooting | 2 |
