@@ -12,10 +12,12 @@ export interface VibeCodeData {
     stage1: TechItem[];
     stage2: TechItem[];
     stage3: TechItem[];
+    stage4: TechItem[];
     stageMeta: {
       stage1: StageMetadata;
       stage2: StageMetadata;
       stage3: StageMetadata;
+      stage4: StageMetadata;
     };
   };
 }

@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.10.8](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.10.7...v8.10.8) (2026-03-28)
+
+
+### Features
+
+* **ui:** add stage4 to VibeHistorySection (GitLab/Multi-AI/CI era) ([1479881](https://gitlab.com/skyasu2/openmanager-ai/-/commit/147988135e7199046eaf4d75dda72a63e97fb804))
+
 ## [8.10.7](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.10.6...v8.10.7) (2026-03-28)
 
 

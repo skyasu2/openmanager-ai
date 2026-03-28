@@ -6,7 +6,7 @@ export type VibeHistorySectionProps = {
   historyStages: VibeCodeData['history'];
 };
 
-type StageColor = 'emerald' | 'amber' | 'purple';
+type StageColor = 'emerald' | 'amber' | 'purple' | 'cyan';
 
 const COLOR_CLASSES: Record<
   StageColor,
@@ -33,17 +33,28 @@ const COLOR_CLASSES: Record<
     badge: 'bg-purple-500/20 text-purple-300',
     text: 'text-purple-200/80',
   },
+  cyan: {
+    border: 'border-cyan-500/30',
+    bg: 'bg-cyan-500/10',
+    heading: 'text-cyan-300',
+    badge: 'bg-cyan-500/20 text-cyan-300',
+    text: 'text-cyan-200/80',
+  },
 };
 
-const STAGE_COLORS: Record<'stage1' | 'stage2' | 'stage3', StageColor> = {
+const STAGE_COLORS: Record<
+  'stage1' | 'stage2' | 'stage3' | 'stage4',
+  StageColor
+> = {
   stage1: 'emerald',
   stage2: 'amber',
   stage3: 'purple',
+  stage4: 'cyan',
 };
 
 /**
  * 바이브 코딩 히스토리 섹션
- * 개발 환경 변화를 3단계로 시각화
+ * 개발 환경 변화를 4단계로 시각화
  */
 export function VibeHistorySection({ historyStages }: VibeHistorySectionProps) {
   if (!historyStages) return null;
@@ -52,6 +63,7 @@ export function VibeHistorySection({ historyStages }: VibeHistorySectionProps) {
     { key: 'stage1' as const, items: historyStages.stage1, num: 1 },
     { key: 'stage2' as const, items: historyStages.stage2, num: 2 },
     { key: 'stage3' as const, items: historyStages.stage3, num: 3 },
+    { key: 'stage4' as const, items: historyStages.stage4, num: 4 },
   ];
 
   return (
