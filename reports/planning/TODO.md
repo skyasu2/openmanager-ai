@@ -22,6 +22,14 @@
 | P3: Knip unused export types 정리 | Low | 잔여 unused export types는 schemas/common/public contract 위주 — non-blocking |
 | P3: 대형 파일(500+줄) 분리 계획 | Low | formatters.ts 661줄, route.ts 634줄 등 — 800줄 미만, 기능 정상, 차기 리팩토링 대상 |
 
+### Completed (2026-03-28 #7)
+- [x] P1: `unified-cache.ts` + `redis/index.ts` 배럴 export 오류 수정 — 삭제된 7개 함수 re-export 정리 (TypeScript 빌드 회귀 해소)
+- [x] P1: npm audit fix — rollup CVE-2025 high severity 해소 (path traversal, GHSA-mw96-cpmx-2vgc)
+- [x] P2: `ai-assistant/error.tsx` + `login/error.tsx` 에러 경계 추가 — 전용 Sentry 태깅 + 컨텍스트별 복구 UX
+- [x] P2: SEO robots noindex — auth/* 레이아웃, system-boot/page.tsx, main/page.tsx (유틸리티 페이지 색인 차단)
+- [x] P2: title template 이중 접미사 버그 수정 — `validation/page.tsx`, `privacy/page.tsx`
+- [x] P1: v8.10.5 릴리즈 — GitLab push + GitHub sync 완료
+
 ### Completed (2026-03-28 #6)
 - [x] P2: `auth/error.tsx` 에러 경계 추가 — auth 세그먼트 전용 에러 UI (Sentry `boundary: 'auth'` 태깅 + "로그인으로" 복구 액션)
 - [x] P1: v8.10.4 릴리즈 — 19커밋 누적 후 릴리즈. GitLab push + GitHub sync 완료
