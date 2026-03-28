@@ -72,30 +72,10 @@ export interface ProfileDropdownMenuProps {
 }
 
 /**
- * 프로필 보안 상태
- */
-export interface ProfileSecurityState {
-  failedAttempts: number;
-  isLocked: boolean;
-  lockEndTime: number | null;
-  remainingLockTime: number;
-  isProcessing: boolean;
-}
-
-/**
  * 프로필 메뉴 상태
  */
 export interface ProfileMenuState {
   showProfileMenu: boolean;
-}
-
-/**
- * 시스템 상태
- */
-export interface SystemStatus {
-  isRunning: boolean;
-  remainingTime?: number;
-  formattedTime?: string;
 }
 
 /**

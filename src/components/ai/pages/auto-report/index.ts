@@ -16,7 +16,6 @@ export {
 export { default as ReportCard } from './ReportCard';
 // Types
 export type {
-  FilterOption,
   IncidentReport,
   ServerMetric,
 } from './types';

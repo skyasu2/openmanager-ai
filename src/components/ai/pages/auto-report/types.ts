@@ -115,12 +115,3 @@ export interface ServerMetric {
   network: number;
   timestamp: string;
 }
-
-/**
- * 필터 옵션 타입
- */
-export interface FilterOption {
-  id: string;
-  label: string;
-  count: number;
-}

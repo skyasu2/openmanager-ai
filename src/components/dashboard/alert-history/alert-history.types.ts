@@ -1,15 +1,4 @@
-import type {
-  Alert,
-  AlertSeverity,
-  AlertState,
-} from '@/services/monitoring/AlertManager';
-
-export type AlertHistoryFilterState = {
-  severity: AlertSeverity | 'all';
-  state: AlertState | 'all';
-  serverId: string; // '' = all
-  timeRangeMs: number; // ms, 0 = all
-};
+import type { Alert } from '@/services/monitoring/AlertManager';
 
 export type AlertHistoryModalProps = {
   open: boolean;

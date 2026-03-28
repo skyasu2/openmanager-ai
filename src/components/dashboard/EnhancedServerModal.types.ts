@@ -24,7 +24,6 @@ export type ServiceStatus =
   | 'error'
   | 'unknown';
 export type TabId = 'overview' | 'metrics' | 'processes' | 'logs' | 'network';
-export type TimeRange = '5m' | '1h' | '6h' | '24h' | '7d';
 
 export interface ServerService {
   name: string;

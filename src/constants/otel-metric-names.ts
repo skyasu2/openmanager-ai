@@ -22,5 +22,3 @@ export const OTEL_METRIC = {
   UPTIME: 'system.uptime',
   HTTP_DURATION: 'http.server.request.duration',
 } as const;
-
-export type OTelMetricName = (typeof OTEL_METRIC)[keyof typeof OTEL_METRIC];
