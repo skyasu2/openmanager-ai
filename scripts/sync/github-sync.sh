@@ -54,7 +54,10 @@ fi
 
 if [[ -n "$(git status --porcelain)" && "$ALLOW_DIRTY" != "1" ]]; then
   error "워킹 트리가 dirty 상태입니다. HEAD 기준 스냅샷 혼선을 막기 위해 중단합니다"
-  error "먼저 커밋/정리 후 실행하거나, 확인된 예외만 SYNC_GITHUB_ALLOW_DIRTY=1 사용"
+  error "해결 방법:"
+  error "  1. 변경사항 커밋:  git add -A && git commit -m 'wip'"
+  error "  2. 임시 보관:      git stash && npm run sync:github && git stash pop"
+  error "  3. 강제 허용:      SYNC_GITHUB_ALLOW_DIRTY=1 npm run sync:github"
   exit 1
 fi
 
@@ -105,22 +108,9 @@ apply_public_overrides() {
     # 허용 목록: 공개 저장소에 노출해도 안전한 스크립트만 선택
     # (값은 원본 package.json에서 가져오므로 별도 유지 불필요)
     PUBLIC_SCRIPT_ALLOWLIST='["dev","build","start","type-check","lint","format"]'
-    WORK_DIR="$WORK_DIR" PUBLIC_SCRIPT_ALLOWLIST="$PUBLIC_SCRIPT_ALLOWLIST" node <<'NODE'
-const fs = require('node:fs');
-const path = require('node:path');
-
-const pkgPath = path.join(process.env.WORK_DIR, 'package.json');
-const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
-const allowed = new Set(JSON.parse(process.env.PUBLIC_SCRIPT_ALLOWLIST));
-
-const filtered = {};
-for (const [key, value] of Object.entries(pkg.scripts || {})) {
-  if (allowed.has(key)) filtered[key] = value;
-}
-pkg.scripts = filtered;
-
-fs.writeFileSync(pkgPath, `${JSON.stringify(pkg, null, 2)}\n`);
-NODE
+    node "$REPO_ROOT/scripts/sync/filter-public-scripts.js" \
+      "$WORK_DIR/package.json" \
+      "$PUBLIC_SCRIPT_ALLOWLIST"
   fi
 }
 
