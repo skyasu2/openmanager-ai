@@ -2,6 +2,36 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.10.4](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.10.3...v8.10.4) (2026-03-28)
+
+
+### Features
+
+* **auth:** add error boundary for auth route segment ([870a84e](https://gitlab.com/skyasu2/openmanager-ai/-/commit/870a84ece26fa96287deea839e05d8ca10d33e4c))
+
+
+### Bug Fixes
+
+* **hooks:** restore os import in pre-push ([fc14cb9](https://gitlab.com/skyasu2/openmanager-ai/-/commit/fc14cb92dda5fa8cec9d3590d68f3e4206ce4525))
+
+
+### Code Refactoring
+
+* **hooks:** close remaining code-review gaps ([711a69b](https://gitlab.com/skyasu2/openmanager-ai/-/commit/711a69b3d5849db79c737a61c02e8cb146a2158b))
+* **hooks:** decouple guard exits from pre-push ([d4f829b](https://gitlab.com/skyasu2/openmanager-ai/-/commit/d4f829ba0bd198250fbaeaa8010b4bb9c7e576ea))
+* **hooks:** extract docs artifact validation ([5a85977](https://gitlab.com/skyasu2/openmanager-ai/-/commit/5a859771033d8c9c5ec4253befa33fe6a46eb408))
+* **hooks:** extract pre-push build validation ([6a7c7ee](https://gitlab.com/skyasu2/openmanager-ai/-/commit/6a7c7eec33806c9656f91ad3c08257cf2431b40b))
+* **hooks:** extract pre-push test execution ([ffd5396](https://gitlab.com/skyasu2/openmanager-ai/-/commit/ffd5396e7c058d36ad5cffa7b4d6cdd162ebc9b3))
+* remove unused cache helper fns and RATE_LIMIT_CONFIGS ([a0a3fb2](https://gitlab.com/skyasu2/openmanager-ai/-/commit/a0a3fb23ac27d31afe629ffbd287e704e000dbde))
+* **sync:** extract filter-public-scripts.js + add dirty-check stash guide ([acf0c85](https://gitlab.com/skyasu2/openmanager-ai/-/commit/acf0c85ce94b103713e9624c181f3f9135901d00))
+* **sync:** replace hardcoded package.json scripts with allowlist filter ([2b539d0](https://gitlab.com/skyasu2/openmanager-ai/-/commit/2b539d0daeedf7c3211b63043ebe1d08b0362165))
+* **types:** remove safe knip dead exports ([27dccbe](https://gitlab.com/skyasu2/openmanager-ai/-/commit/27dccbee57abcd18cb943225a383e5c19540148d))
+
+
+### Tests
+
+* **hooks:** cover pre-push guards ([949f614](https://gitlab.com/skyasu2/openmanager-ai/-/commit/949f6146740ce5286fec9fe25f1a04af76fedd80))
+
 ## [8.10.3](https://github.com/skyasu2/openmanager-ai/compare/v8.10.2...v8.10.3) (2026-03-28)
 
 
