@@ -138,7 +138,9 @@ export const FEATURE_CARDS_DATA: FeatureCard[] = [
       technologies: [
         'Google Antigravity (IDE)',
         'WSL Terminal (Main)',
-        'Claude Code (Core)',
+        'Codex CLI (Core)',
+        'Claude Code (Review)',
+        'Gemini CLI (Research)',
         'Multi-CLI Agents',
         'VSCode (Visual Aux)',
         'Cursor/Windsurf (Legacy)',

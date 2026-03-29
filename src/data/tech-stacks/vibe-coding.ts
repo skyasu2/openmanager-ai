@@ -64,7 +64,7 @@ export const VIBE_CODING_DATA: VibeCodeData = {
       description:
         'A lightweight coding agent that runs in your terminal (OpenAI)',
       implementation:
-        'Generate, edit, and run code using natural language. ChatGPT Plus/Pro 플랜으로 사용. Claude 작성 코드의 Cross-Model 리뷰어',
+        'Generate, edit, and run code using natural language. ChatGPT Plus/Pro 플랜으로 사용. 현재 메인 개발 도구로 구현, 수정, 리팩토링의 기본 축을 담당하고 필요 시 Claude Code/Gemini가 교차 검토를 보완',
       version: 'v0.101.0',
       status: 'active',
       icon: '💎',
