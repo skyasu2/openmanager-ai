@@ -363,12 +363,9 @@ export const POST = withRateLimit(
         let cloudRunResponse: Response | null = null;
         let lastError: unknown = null;
 
-        for (let i = 0; i < attemptTimeouts.length; i++) {
+        for (const [i, timeoutMs] of attemptTimeouts.entries()) {
           const attempt = i + 1;
-          const timeoutMs = attemptTimeouts[i];
           const hasNextAttempt = i < attemptTimeouts.length - 1;
-          const controller = new AbortController();
-          const timeout = setTimeout(() => controller.abort(), timeoutMs);
 
           try {
             logger.info(
@@ -390,7 +387,7 @@ export const POST = withRateLimit(
                 enableWebSearch,
                 enableRAG,
               }),
-              signal: controller.signal,
+              signal: AbortSignal.timeout(timeoutMs),
             });
 
             if (response.ok) {
@@ -433,8 +430,10 @@ export const POST = withRateLimit(
             );
           } catch (error) {
             lastError = error;
+            // AbortError: 수동 abort | TimeoutError: AbortSignal.timeout() 만료
             const isAbortError =
-              error instanceof Error && error.name === 'AbortError';
+              error instanceof Error &&
+              (error.name === 'AbortError' || error.name === 'TimeoutError');
 
             if (isAbortError && hasNextAttempt) {
               logger.warn(
@@ -481,8 +480,6 @@ export const POST = withRateLimit(
                 source: 'fallback',
               }),
             });
-          } finally {
-            clearTimeout(timeout);
           }
         }
 

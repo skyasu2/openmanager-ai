@@ -1,4 +1,4 @@
-import { createHash, randomUUID } from 'node:crypto';
+import { createHash, randomUUID, timingSafeEqual } from 'node:crypto';
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
@@ -49,18 +49,9 @@ const guestPinFailStore = new Map<string, LocalPinFailureState>();
 const guestPinLockStore = new Map<string, number>();
 
 function secureEquals(left: string, right: string): boolean {
-  if (!left || !right) return false;
-
-  const maxLen = Math.max(left.length, right.length);
-  let mismatch = left.length ^ right.length;
-
-  for (let i = 0; i < maxLen; i += 1) {
-    const leftCode = left.charCodeAt(i) || 0;
-    const rightCode = right.charCodeAt(i) || 0;
-    mismatch |= leftCode ^ rightCode;
-  }
-
-  return mismatch === 0;
+  const a = Buffer.from(left);
+  const b = Buffer.from(right);
+  return a.length === b.length && timingSafeEqual(a, b);
 }
 
 function isValidGuestPin(value: string): boolean {
