@@ -4,11 +4,11 @@
 > Owner: documentation
 > Status: Active
 > Doc type: Status
-> Last reviewed: 2026-03-25
+> Last reviewed: 2026-03-29
 > Canonical: docs/status.md
 > Tags: status,changelog,release
 
-**마지막 업데이트**: 2026-03-25
+**마지막 업데이트**: 2026-03-29
 
 ---
 
@@ -21,6 +21,10 @@
 ---
 
 ## 🔄 Recent Changes
+
+- **main** (2026-03-29)
+  - docs(vibe): `Codex 메인 + Claude Code/Gemini 수동 교차 사용` 기준으로 AI 개발 방법론 문구 정렬
+  - docs(vibe): 인증/플랜 표기를 로그인 세션 및 실제 CLI 버전 기준으로 정리
 
 - **main** (2026-03-25)
   - fix(validation): build-time evidence snapshot stale banner, public evidence freshness, and QA evidence summary sync 강화
@@ -616,7 +620,7 @@
 
 **Zero to Production with Vibe Coding**
 
-이 프로젝트는 **Claude Code**를 메인 개발 도구로 사용하여 처음부터 끝까지 구축한 Full-Stack AI Platform입니다.
+이 프로젝트는 AI 협업 개발 방식으로 처음부터 끝까지 구축한 Full-Stack AI Platform이며, 현재 기준 메인 개발 도구는 **Codex CLI**, 보조 검토/분석 도구는 **Claude Code**와 **Gemini CLI**입니다.
 
 | 구현 영역 | 기술 스택 | 상태 |
 |----------|----------|------|
@@ -628,8 +632,8 @@
 | Monitoring | Server Metrics + Real-time Updates | ✅ 완료 |
 
 **개발 도구 체인**:
-- **Primary**: Claude Code (Interactive Development)
-- **Code Review**: Codex + Gemini 2-AI Rotation
+- **Primary**: Codex CLI (Main Development)
+- **Review / Analysis**: Claude Code + Gemini CLI (Manual Cross-Use)
 - **MCP**: 9개 서버 연동 (Context7, Stitch, Supabase-DB, Vercel, Playwright, GitHub, Sequential-Thinking, Next-DevTools, Storybook)
 
 **총 코드량**: ~199,000 Lines (Frontend 125K+ / Backend 38K+ / Config & Tests)
