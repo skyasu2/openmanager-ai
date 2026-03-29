@@ -65,7 +65,7 @@ export const VIBE_CODING_DATA: VibeCodeData = {
         'A lightweight coding agent that runs in your terminal (OpenAI)',
       implementation:
         'Generate, edit, and run code using natural language. ChatGPT Plus/Pro 플랜으로 사용. 현재 메인 개발 도구로 구현, 수정, 리팩토링의 기본 축을 담당하고 필요 시 Claude Code/Gemini가 교차 검토를 보완',
-      version: 'v0.101.0',
+      version: 'ChatGPT Pro + Codex CLI',
       status: 'active',
       icon: '💎',
       tags: ['OpenAI', 'Lightweight', 'ChatGPT'],
@@ -79,7 +79,7 @@ export const VIBE_CODING_DATA: VibeCodeData = {
         'An open-source AI agent that brings the power of Gemini directly into your terminal (Google)',
       implementation:
         'Lightweight access to Gemini - the most direct path from prompt to model. 1M 토큰 컨텍스트로 대규모 분석. Cross-Model 리뷰어',
-      version: 'v0.18.4',
+      version: 'Gemini Pro + Gemini CLI',
       status: 'active',
       icon: '✨',
       tags: ['Google', 'OpenSource', '1M-Context'],
@@ -326,7 +326,7 @@ export const VIBE_CODING_DATA: VibeCodeData = {
         description: 'Codex 중심의 수동 교차 사용형 Multi-CLI 운영',
         implementation:
           'Codex(메인 개발), Claude Code(병행 개발/리뷰), Gemini(리서치/분석)를 사용자가 그때그때 수동 전환하며 교차 사용. 자동 라우팅보다는 사람 판단으로 필요한 CLI를 선택해 구현과 검토를 나누는 운영 방식',
-        version: 'Claude Max 20x / gpt-5.3-codex / Gemini Pro',
+        version: 'Claude Pro / Codex Pro / Gemini Pro',
         status: 'active',
         icon: '🤝',
         tags: ['Multi-AI', 'Manual-Cross-Use', 'Codex', 'Gemini'],

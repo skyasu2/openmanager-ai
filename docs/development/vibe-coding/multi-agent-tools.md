@@ -201,7 +201,8 @@ git commit -m "update everything"
 증상: 요청 결과 로그가 남지 않음
 해결:
 1. `scripts/ai/agent-bridge.sh` 실행 로그 확인
-2. API 키 유효성 확인
+2. Claude/Codex/Gemini 로그인 세션 또는 OAuth 상태 확인
+3. CLI 자체 실행(`claude`, `codex`, `gemini`)이 독립적으로 동작하는지 확인
 ```
 
 ## 관련 문서
