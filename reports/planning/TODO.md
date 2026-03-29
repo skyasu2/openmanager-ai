@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-03-29 KST (v8.10.8, auto-report formatter 분리 완료)
+**Last Updated**: 2026-03-29 KST (v8.10.8, guest-login route 응답 분리 완료)
 
 ## Active Tasks
 
@@ -19,7 +19,10 @@
 | Task | Priority | Notes |
 |------|----------|-------|
 | P3: Knip unused export types 정리 (잔여) | Low | 잔여: src/schemas/api.*.schema.ts, src/types/common.ts 등 API contract/공용 타입 — 삭제 시 외부 파손 위험, non-blocking |
-| P3: 대형 파일(500+줄) 분리 계획 | Low | `route.ts` 600줄대 등 잔여 대형 파일만 대상 — `formatters.ts` 분리 완료, 800줄 미만·기능 정상 범위에서 저위험 후보만 차기 리팩토링 |
+| P3: 대형 파일(500+줄) 분리 계획 | Low | `src/app/api/ai/supervisor/stream/v2/route.ts` 634줄 등 잔여 대형 파일만 대상 — `formatters.ts`, `auth/guest-login/route.ts` 분리 완료, 800줄 미만·기능 정상 범위에서 저위험 후보만 차기 리팩토링 |
+
+### Completed (2026-03-29 #13)
+- [x] P3: `auth/guest-login/route.ts` 대형 파일 분리 — 응답/쿠키 조립을 `response-utils.ts`로 추출해 `route.ts` 521→435줄 축소, `response-utils.test.ts` 추가 후 route/utility 11 tests 및 `npm run check` 통과
 
 ### Completed (2026-03-29 #12)
 - [x] P3: auto-report formatter 대형 파일 분리 — `formatters.ts` 661→304줄 축소, section builder를 `formatters-sections.ts`로 추출, `formatters-sections.test.ts` 추가 후 type-check/check/test 통과 (`4c2e4fb29`)
