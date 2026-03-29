@@ -1,10 +1,10 @@
 # AI 도구 설치 가이드
 
-> Claude Code, Codex CLI, Gemini CLI 협업 개발 설치 가이드
+> Codex 메인 + Claude Code/Gemini 교차 사용 설치 가이드
 > Owner: dev-experience
 > Status: Active Supporting
 > Doc type: Tutorial
-> Last reviewed: 2026-02-25
+> Last reviewed: 2026-03-29
 > Canonical: docs/development/vibe-coding/setup.md
 > Tags: vibe-coding,setup,mcp
 
@@ -102,7 +102,7 @@ claude             # 대화형 모드 시작
 
 ---
 
-## 3. Codex CLI 설치 (개발/리뷰)
+## 3. Codex CLI 설치 (메인 개발)
 
 ### 설치
 
@@ -151,17 +151,15 @@ gemini
 
 **Note**: API 키가 아닌 **브라우저 로그인** 방식입니다.
 
-### 자동화/브리지 실행 권장 (WSL)
+### 브리지/보조 실행 (WSL)
 
 ```bash
-# 비대화형(스크립트/브리지) 호출은 API 키 권장
-export GEMINI_API_KEY=your_api_key
-
 # 예시: OpenManager 브리지 호출
 bash scripts/ai/agent-bridge.sh --to gemini "다른 설명 없이 HELLO_FROM_GEMINI 만 출력"
 ```
 
-OAuth만 사용하는 경우 비대화형 호출에서 인증 프롬프트를 처리할 수 없어 실패할 수 있습니다.
+현재 OpenManager 로컬 운영 기준은 **API 키 대신 브라우저 로그인(OAuth) 세션 사용**입니다.
+WSL에서 `gemini -p`가 불안정하면 API 키로 우회하지 말고, 로그인 상태를 확인한 뒤 대화형 실행 또는 수동 검증으로 전환합니다.
 
 ### 확인
 
