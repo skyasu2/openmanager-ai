@@ -50,11 +50,11 @@ export const VIBE_CODING_DATA: VibeCodeData = {
       description:
         'AI가 작성한 코드는 다른 AI 모델이 리뷰 - Single Point of Failure 방지',
       implementation:
-        'Claude가 작성한 코드를 Codex/Gemini가 검토. 동일 모델의 편향(bias)과 blind spot을 다른 모델이 보완. 커밋 시 자동 트리거',
+        '주로 Codex로 진행한 구현을 Claude Code/Gemini로 수동 교차 검토. 동일 모델의 편향(bias)과 blind spot을 다른 모델이 보완하지만, 커밋 시 자동 트리거는 사용하지 않음',
       version: 'v5.0',
       status: 'active',
       icon: '🔄',
-      tags: ['Cross-Model', 'Bias방지', '자동검증'],
+      tags: ['Cross-Model', 'Bias방지', '수동검증'],
       type: 'custom',
     },
     {
@@ -261,7 +261,7 @@ export const VIBE_CODING_DATA: VibeCodeData = {
       stage4: {
         title: '현재 단계',
         description:
-          'GitLab canonical 전환 → Multi-AI CLI 체계 → 로컬 Docker CI 표준화 → Cloud Run AI Engine 운영',
+          'GitLab canonical 전환 → Codex 중심 Multi-CLI 운영 → 로컬 Docker CI 표준화 → Cloud Run AI Engine 운영',
       },
     },
 
@@ -320,16 +320,16 @@ export const VIBE_CODING_DATA: VibeCodeData = {
         type: 'commercial',
       },
       {
-        name: 'Multi-AI CLI (Claude+Codex+Gemini)',
+        name: 'Multi-AI CLI (Manual Cross-Use)',
         category: 'ai',
         importance: 'critical',
-        description: '멀티 AI CLI 협업 체계 - Claude Max 20x 중심',
+        description: 'Codex 중심의 수동 교차 사용형 Multi-CLI 운영',
         implementation:
-          'Claude Code(메인), Codex(구현/리팩토링), Gemini(리서치/분석) 3개 CLI가 역할 분담. Claude가 전체 개발 사이클을 주도하며, 사용자가 필요 시 Codex/Gemini를 직접 실행. 월 $420 AI 구독 예산으로 운영',
+          'Codex(메인 개발), Claude Code(병행 개발/리뷰), Gemini(리서치/분석)를 사용자가 그때그때 수동 전환하며 교차 사용. 자동 라우팅보다는 사람 판단으로 필요한 CLI를 선택해 구현과 검토를 나누는 운영 방식',
         version: 'Claude Max 20x / gpt-5.3-codex / Gemini Pro',
         status: 'active',
         icon: '🤝',
-        tags: ['Multi-AI', 'Claude-Max', 'Codex', 'Gemini'],
+        tags: ['Multi-AI', 'Manual-Cross-Use', 'Codex', 'Gemini'],
         type: 'commercial',
       },
       {
@@ -338,7 +338,7 @@ export const VIBE_CODING_DATA: VibeCodeData = {
         importance: 'high',
         description: '외부 CI 최소화 - 로컬 Docker 기반 검증 표준화',
         implementation:
-          'GitLab CI 비활성화(400분/월 소진 방지). npm run ci:local:docker로 로컬에서 동일한 검증 수행. pre-push hook으로 TypeScript/lint 자동 검증. GitHub Actions은 public snapshot용으로만 유지',
+          'GitLab CI 비활성화(400분/월 소진 방지). npm run ci:local:docker로 로컬 Docker 검증을 수동 실행. pre-push hook은 Docker 없이 Node.js로 빠른 검증만 수행하고, GitHub Actions은 public snapshot용으로만 유지',
         status: 'active',
         icon: '🐋',
         tags: ['로컬CI', 'Docker', 'pre-push', 'GitLab-CI-Off'],

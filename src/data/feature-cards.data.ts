@@ -129,10 +129,10 @@ export const FEATURE_CARDS_DATA: FeatureCard[] = [
         '1️⃣ Stage 1 (Manual): GPT/Gemini 창에서 수동 코딩 → [Netlify 목업](https://openmanager-vibe-v2.netlify.app/) — 초기 프로토타이핑',
         '2️⃣ Stage 2 (Auto): Cursor의 등장, "IDE 자동 개발"의 시작 — GUI 기반 AI 코딩 도입',
         '3️⃣ Stage 3 (Pivot): IDE는 보조(시각 분석)로, 메인은 WSL + Claude Code로 이동 — 터미널 기반이 대규모 리팩토링에 유리',
-        '4️⃣ Stage 4 (Current): WSL 위의 Multi-CLI (Codex/Gemini) + Google Antigravity — 복수 AI 교차 검증 체계',
+        '4️⃣ Stage 4 (Current): WSL 위의 Codex 메인 + Claude Code/Gemini 수동 교차 사용 + Google Antigravity — Codex 중심 Multi-CLI 운영',
         '📺 IDE Role Shift: 개발의 주체에서 "터미널 뷰어" 및 "스크린샷 분석도구"로 축소 — AI가 코드 생성, 사람은 설계와 판단',
         '🐧 WSL Main Base: 모든 지능형 에이전트들이 활동하는 실제 본부 — 리눅스 환경에서 모든 CLI 도구 통합',
-        '🤖 Agentic Ecosystem: Claude Code(Main)을 중심으로 복수 에이전트 협업 — 단일 AI 편향 방지를 위한 멀티 에이전트',
+        '🤖 Agentic Ecosystem: Codex를 메인 개발 축으로 두고 Claude Code/Gemini를 필요 시 수동 호출 — 역할별 교차 검증과 편향 완화',
         '🚀 Google Antigravity: Agent-first IDE - AI가 계획·실행·검증하는 새 패러다임 (Google) — 최신 에이전트 기반 개발 환경',
       ],
       technologies: [
