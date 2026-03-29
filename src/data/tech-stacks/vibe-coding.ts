@@ -34,9 +34,9 @@ export const VIBE_CODING_DATA: VibeCodeData = {
       category: 'ai',
       importance: 'critical',
       description:
-        'An agentic coding tool that lives in your terminal, understands your codebase (Anthropic)',
+        'An agentic coding tool that lives in your terminal, understands your codebase (Anthropic) — 전체 개발의 99% 주도',
       implementation:
-        'Helps you code faster by executing routine tasks, explaining complex code, and handling git workflows - all through natural language commands. MCP 서버로 외부 시스템 직접 제어',
+        '기획·아키텍처 설계부터 구현·리팩토링·배포까지 전체 개발 사이클을 단독 주도. MCP 서버로 외부 시스템 직접 제어. v8.10.x 이후에도 핵심 설계·리뷰 역할 유지',
       version: 'claude-opus-4-6',
       status: 'active',
       icon: '🤖',
@@ -50,7 +50,7 @@ export const VIBE_CODING_DATA: VibeCodeData = {
       description:
         'AI가 작성한 코드는 다른 AI 모델이 리뷰 - Single Point of Failure 방지',
       implementation:
-        '주로 Codex로 진행한 구현을 Claude Code/Gemini로 수동 교차 검토. 동일 모델의 편향(bias)과 blind spot을 다른 모델이 보완하지만, 커밋 시 자동 트리거는 사용하지 않음',
+        '주로 Claude Code로 진행한 구현을 Codex/Gemini로 수동 교차 검토. 동일 모델의 편향(bias)과 blind spot을 다른 모델이 보완하지만, 커밋 시 자동 트리거는 사용하지 않음',
       version: 'v5.0',
       status: 'active',
       icon: '🔄',
@@ -64,7 +64,7 @@ export const VIBE_CODING_DATA: VibeCodeData = {
       description:
         'A lightweight coding agent that runs in your terminal (OpenAI)',
       implementation:
-        'Generate, edit, and run code using natural language. ChatGPT Plus/Pro 플랜으로 사용. 현재 메인 개발 도구로 구현, 수정, 리팩토링의 기본 축을 담당하고 필요 시 Claude Code/Gemini가 교차 검토를 보완',
+        'Generate, edit, and run code using natural language. ChatGPT Plus/Pro 플랜으로 사용. v8.10.x 마무리·QA 단계부터 비중이 높아졌으며, bounded refactor와 테스트 보완을 주로 담당. 주요 구현은 Claude Code가 99% 주도',
       version: 'v0.117.0',
       status: 'active',
       icon: '💎',
@@ -261,7 +261,7 @@ export const VIBE_CODING_DATA: VibeCodeData = {
       stage4: {
         title: '현재 단계',
         description:
-          'GitLab canonical 전환 → Codex 중심 Multi-CLI 운영 → 로컬 Docker CI 표준화 → Cloud Run AI Engine 운영',
+          'GitLab canonical 전환 → Claude Code 메인 + 마무리·QA 단계 Codex 비중 증가 → 로컬 Docker CI 표준화 → Cloud Run AI Engine 운영',
       },
     },
 
@@ -323,9 +323,9 @@ export const VIBE_CODING_DATA: VibeCodeData = {
         name: 'Multi-AI CLI (Manual Cross-Use)',
         category: 'ai',
         importance: 'critical',
-        description: 'Codex 중심의 수동 교차 사용형 Multi-CLI 운영',
+        description: 'Claude Code 메인 + 수동 교차 사용형 Multi-CLI 운영',
         implementation:
-          'Codex(메인 개발), Claude Code(병행 개발/리뷰), Gemini(리서치/분석)를 사용자가 그때그때 수동 전환하며 교차 사용. 자동 라우팅보다는 사람 판단으로 필요한 CLI를 선택해 구현과 검토를 나누는 운영 방식',
+          'Claude Code(전체 개발 99% 주도), Codex(마무리·QA 단계 보완), Gemini(리서치/분석)를 사용자가 수동 전환하며 교차 사용. 자동 라우팅보다는 사람 판단으로 필요한 CLI를 선택해 구현과 검토를 나누는 운영 방식',
         version: '2026-03 운영 기준선',
         status: 'active',
         icon: '🤝',

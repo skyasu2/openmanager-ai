@@ -28,7 +28,7 @@
 ├─────────────────────────────────────────────────────────┤
 │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐     │
 │  │ Claude Code │  │   Codex     │  │   Gemini    │     │
-│  │ (병행/리뷰)  │  │ (메인 개발)  │  │ (리서치/검증) │    │
+│  │ (메인/리뷰)  │  │ (QA/보완)   │  │ (리서치/검증) │    │
 │  └─────────────┘  └─────────────┘  └─────────────┘     │
 │                          ↓                              │
 │  ┌──────────────────────────────────────────────────┐  │
@@ -49,7 +49,7 @@
 |------|------|
 | [설치 가이드](./setup.md) | AI 도구 설치 및 로그인 설정 |
 | [Claude Code](./claude-code.md) | Claude CLI 전용 사용법 |
-| [AI 도구들](./multi-agent-tools.md) | 3-CLI 협업 개발 운영 가이드 |
+| [AI 도구들](./multi-agent-tools.md) | 수동 교차 사용형 3-CLI 운영 가이드 |
 | [MCP 서버](./mcp-servers.md) | 에이전트별 MCP 구성/운영/문제해결 |
 | [Skills](./skills.md) | Codex/Claude/Gemini 스킬 카탈로그와 호출 방식 |
 | [워크플로우](./workflows.md) | 실전 개발 워크플로우 |
@@ -63,24 +63,24 @@
 
 ## 빠른 시작
 
-### 1. 협업 CLI 실행
+### 1. CLI 실행
 
 ```bash
-# 프로젝트 디렉토리에서 (주 작업 에이전트 선택)
-claude
-codex
+# 주 개발 도구
+claude      # Claude Code (메인 — 전체 개발 사이클)
+codex       # Codex CLI (마무리/QA/bounded refactor)
 
 # 보조 검증
-gemini
+gemini      # Gemini CLI (리서치/분석)
 ```
 
 ### 2. 기본 워크플로우
 
 ```
 1. 요구사항 전달 (한글 OK)
-2. Codex를 메인 개발 도구로 사용
+2. Claude Code로 기본 구현
 3. 코드 작성/수정
-4. 필요 시 Claude Code/Gemini를 수동 호출해 검증 및 보완
+4. 필요 시 Codex/Gemini를 수동 호출해 검증 및 보완
 5. /commit으로 커밋
 ```
 
@@ -132,14 +132,13 @@ bash scripts/ai/agent-bridge.sh --to claude --mode doc --save-auto "변경사항
 - 병행 작업 환경(Claude Code/Gemini) 협업 정책 적용
 - 에이전트 전용 문서(`CLAUDE.md`, `GEMINI.md`)와 충돌 시 `AGENTS.md` 우선
 
-## 협업 개발 운영 (3-CLI)
+## 개발 운영 (3-CLI 수동 교차)
 
-기본 운영은 **Codex 메인 + Claude Code/Gemini 수동 교차 사용**입니다.
-자동 연동 체계보다는, 필요할 때 각 CLI를 직접 실행해 구현과 검토를 나눕니다.
-집계가 필요하면 Codex 결과를 기준으로 카운트할 수 있습니다.
+전체 개발의 99%는 **Claude Code**가 메인으로 주도했습니다.
+v8.10.x 마무리·QA 단계부터 Codex 비중이 늘었으며, 자동 연동보다는 수동으로 각 CLI를 선택해 사용합니다.
 
 ```
-요구사항 정리 → 구현(Codex) → 검증(Claude Code/Gemini 수동 호출) → 커밋
+요구사항 정리 → 구현(Claude Code / Codex) → 검증(Gemini 수동 호출) → 커밋
 ```
 
 ### 검증 처리

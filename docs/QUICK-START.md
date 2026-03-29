@@ -18,7 +18,7 @@
 - **npm** v10.9.2 이상
 - **Git**
 - **Windows 11 + WSL 2** (권장 개발 환경)
-- **Codex CLI** (현재 메인 AI 개발 도구)
+- **Claude Code** (메인 AI 개발 도구) + Codex CLI / Gemini CLI (보조)
 
 ## ⚡ 빠른 설정
 
@@ -133,7 +133,7 @@ npm run validate:all
 ## 📚 더 자세한 정보
 
 - **[개발 환경 상세 가이드](./development/README.md)** - AI 도구, MCP 서버, WSL 설정
-- **[AI 협업 워크플로우](./development/vibe-coding/workflows.md)** - Codex 메인 + Claude Code/Gemini 수동 교차 사용
+- **[AI 협업 워크플로우](./development/vibe-coding/workflows.md)** - Claude Code 메인 + Codex/Gemini 수동 교차 사용 가이드
 - **[전체 프로젝트 문서](./README.md)** - 아키텍처, API, 설계 문서
 - **[시스템 아키텍처](./reference/architecture/system/)** - 기술 스택 및 구조
 
@@ -145,4 +145,4 @@ npm run validate:all
 
 🤖 **AI 활용**: Cloud Run AI로 서버 분석 또는 Mock 모드로 체험
 
-🔧 **AI 개발**: WSL + Codex 메인 + Claude Code/Gemini 수동 교차 사용
+🔧 **AI 개발**: WSL + Claude Code 메인 + Codex/Gemini 수동 교차 사용

@@ -23,7 +23,7 @@
 ## 🔄 Recent Changes
 
 - **main** (2026-03-29)
-  - docs(vibe): `Codex 메인 + Claude Code/Gemini 수동 교차 사용` 기준으로 AI 개발 방법론 문구 정렬
+  - docs(vibe): `Claude Code 메인 + Codex/Gemini 수동 교차 사용` 기준으로 AI 개발 방법론 문구 정렬
   - docs(vibe): 인증/플랜 표기를 로그인 세션 및 실제 CLI 버전 기준으로 정리
 
 - **main** (2026-03-25)
@@ -357,10 +357,10 @@
   - Quota Tracker: Pre-emptive Fallback (80% 임계값 도달 시 사전 전환)
   - 3-way Fallback: Cerebras → Groq → Mistral
 
-**AI CLI Tools** (2026-02 기준)
-- **Claude Code**: Opus 4.6 (Interactive Development)
-- **Codex CLI**: `v0.104.0` / GPT-5.3 Codex (Code Review - 2-AI Rotation)
-- **Gemini CLI**: Gemini 3 Pro (Code Review - 2-AI Rotation)
+**AI CLI Tools** (2026-03 기준)
+- **Claude Code**: Opus 4.6 (Primary Development)
+- **Codex CLI**: `v0.117.0` (Finishing / QA Assist)
+- **Gemini CLI**: `v0.35.3` (Research / Analysis)
 
 **Quality Control**
 - **Test**: Vitest `v4.0.18`, Playwright `v1.58.2`
@@ -620,7 +620,7 @@
 
 **Zero to Production with Vibe Coding**
 
-이 프로젝트는 AI 협업 개발 방식으로 처음부터 끝까지 구축한 Full-Stack AI Platform이며, 현재 기준 메인 개발 도구는 **Codex CLI**, 보조 검토/분석 도구는 **Claude Code**와 **Gemini CLI**입니다.
+이 프로젝트는 **Claude Code**를 메인 개발 도구로 사용하여 처음부터 끝까지 구축한 Full-Stack AI Platform입니다. 마무리 및 QA 단계(v8.10.x)부터 Codex CLI 비중이 높아졌으며, Gemini CLI는 리서치·분석 보조로 활용됩니다.
 
 | 구현 영역 | 기술 스택 | 상태 |
 |----------|----------|------|
@@ -632,8 +632,9 @@
 | Monitoring | Server Metrics + Real-time Updates | ✅ 완료 |
 
 **개발 도구 체인**:
-- **Primary**: Codex CLI (Main Development)
-- **Review / Analysis**: Claude Code + Gemini CLI (Manual Cross-Use)
+- **Primary (v1.0 ~ v8.10)**: Claude Code (전체 개발 사이클 주도)
+- **Finishing / QA (v8.10.x~)**: Codex CLI 비중 증가
+- **Research / Analysis**: Gemini CLI (보조)
 - **MCP**: 9개 서버 연동 (Context7, Stitch, Supabase-DB, Vercel, Playwright, GitHub, Sequential-Thinking, Next-DevTools, Storybook)
 
 **총 코드량**: ~199,000 Lines (Frontend 125K+ / Backend 38K+ / Config & Tests)

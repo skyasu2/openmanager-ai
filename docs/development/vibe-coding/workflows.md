@@ -32,24 +32,24 @@
 git pull gitlab main
 
 # 브리지 스크립트 상태 점검
-bash scripts/ai/agent-bridge.sh --to codex --mode analysis --save-auto "어제 변경분 핵심 이슈만 요약"
+bash scripts/ai/agent-bridge.sh --to claude --mode analysis --save-auto "어제 변경분 핵심 이슈만 요약"
 ```
 
 ### 2. 기능 개발
 
 ```bash
-# Codex 실행
-codex
+# Claude Code 실행
+claude
 
 # 요구사항 전달 (구체적으로)
 You: "서버 상태 API에 캐싱 추가해줘.
      Redis 대신 인메모리 캐시 사용하고,
      TTL은 30초로 설정해줘"
 
-# Codex가 계획 수립 후 구현
-Codex: [계획 정리]
-       [코드 수정]
-       [테스트 제안]
+# Claude Code가 계획 수립 후 구현
+Claude: [계획 정리]
+        [코드 수정]
+        [테스트 제안]
 ```
 
 ### 3. 중간 검증
@@ -94,11 +94,11 @@ git push gitlab feature/my-feature
 ```
 You: "useServerStatus 훅에 에러 재시도 로직 추가해줘"
      ↓
-Codex: [코드 분석] → [구현] → [테스트 제안]
+Claude: [코드 분석] → [구현] → [테스트 제안]
      ↓
 You: /lint-smoke
      ↓
-You: 필요 시 Claude/Gemini로 보조 검증
+You: 필요 시 Codex/Gemini로 보조 검증
      ↓
 You: /commit
      ↓
@@ -110,21 +110,21 @@ Done ✅
 ```
 You: "대시보드에 실시간 메트릭 차트 추가해줘"
      ↓
-Codex: [계획 수립]
-      - 컴포넌트 구조
-      - 데이터 흐름
-      - API 연동
+Claude: [계획 수립]
+       - 컴포넌트 구조
+       - 데이터 흐름
+       - API 연동
      ↓
 You: "계획 승인, 진행해줘"
      ↓
-Codex: [단계별 구현]
-      Step 1: 차트 컴포넌트
-      Step 2: 훅 작성
-      Step 3: API 연동
+Claude: [단계별 구현]
+       Step 1: 차트 컴포넌트
+       Step 2: 훅 작성
+       Step 3: API 연동
      ↓
 You: /lint-smoke (각 단계마다)
      ↓
-You: 필요 시 Claude/Gemini로 설계/리스크 검토
+You: 필요 시 Codex/Gemini로 설계/리스크 검토
      ↓
 You: /commit (각 단계마다)
      ↓
@@ -159,13 +159,13 @@ Day 4:
    You: "콘솔에 404 에러가 나타나는데 확인해줘"
 
 2. 원인 분석
-   Codex: [코드/로그 탐색]
-          [관련 파일 검색]
-          "원인: API 응답 구조 불일치"
+   Claude: [코드/로그 탐색]
+           [관련 파일 검색]
+           "원인: API 응답 구조 불일치"
 
 3. 수정
-   Codex: [코드 수정]
-          [테스트 추가]
+   Claude: [코드 수정]
+           [테스트 추가]
 
 4. 검증
    You: /lint-smoke
@@ -184,24 +184,24 @@ Day 4:
    You: "MetricsProvider를 더 작은 모듈로 분리하고 싶어"
 
 2. 분석
-   Codex: [현재 구조 분석]
-          현재: 1개 파일, 500줄
-          제안: 3개 모듈로 분리
-          - MetricsCache
-          - MetricsFetcher
-          - MetricsAggregator
+   Claude: [현재 구조 분석]
+           현재: 1개 파일, 500줄
+           제안: 3개 모듈로 분리
+           - MetricsCache
+           - MetricsFetcher
+           - MetricsAggregator
 
 3. 승인
    You: "좋아, 진행해줘"
 
 4. 단계별 실행
-   Codex: Step 1: MetricsCache 분리
+   Claude: Step 1: MetricsCache 분리
    You: /commit
 
-   Codex: Step 2: MetricsFetcher 분리
+   Claude: Step 2: MetricsFetcher 분리
    You: /commit
 
-   Codex: Step 3: MetricsAggregator 분리
+   Claude: Step 3: MetricsAggregator 분리
    You: /commit
 
 5. 검증

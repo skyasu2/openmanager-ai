@@ -1,6 +1,6 @@
 # AI 도구 설치 가이드
 
-> Codex 메인 + Claude Code/Gemini 교차 사용 설치 가이드
+> Claude Code 메인 + Codex/Gemini 교차 사용 설치 가이드
 > Owner: dev-experience
 > Status: Active Supporting
 > Doc type: Tutorial
@@ -102,7 +102,7 @@ claude             # 대화형 모드 시작
 
 ---
 
-## 3. Codex CLI 설치 (메인 개발)
+## 3. Codex CLI 설치 (보완/QA)
 
 ### 설치
 
