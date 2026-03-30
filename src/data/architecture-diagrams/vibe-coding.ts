@@ -4,21 +4,8 @@ export const VIBE_CODING_ARCHITECTURE: ArchitectureDiagram = {
   id: 'vibe-coding',
   title: 'Development Environment',
   description:
-    'Google Antigravity IDE + WSL Terminal + Claude Code 중심의 Agentic Development 환경. AI가 만들고 AI가 검증.',
+    'Stage 4: GitLab canonical + Multi-AI CLI (Claude/Codex/Gemini) + 로컬 Docker CI + Cloud Run AI Engine. AI가 만들고 AI가 검증.',
   layers: [
-    {
-      title: 'IDE (Agent-First)',
-      color: 'from-yellow-500 to-amber-600',
-      nodes: [
-        {
-          id: 'antigravity',
-          label: 'Google Antigravity',
-          sublabel: 'Agent-first IDE (Google)',
-          type: 'highlight',
-          icon: '🪐', // Planet/Gravity
-        },
-      ],
-    },
     {
       title: 'WSL Terminal (Main)',
       color: 'from-purple-500 to-indigo-600',
@@ -26,14 +13,14 @@ export const VIBE_CODING_ARCHITECTURE: ArchitectureDiagram = {
         {
           id: 'claude-code',
           label: 'Claude Code',
-          sublabel: 'Main Agent (v2.1+)',
+          sublabel: 'Main Agent — 전체 99% 주도',
           type: 'highlight',
           icon: '🤖',
         },
         {
           id: 'codex',
           label: 'Codex CLI',
-          sublabel: '코드 구현 (수동 실행)',
+          sublabel: '구현/QA (수동 실행)',
           type: 'secondary',
           icon: '🔍',
         },
@@ -47,7 +34,34 @@ export const VIBE_CODING_ARCHITECTURE: ArchitectureDiagram = {
       ],
     },
     {
-      title: 'MCP Servers (9개)',
+      title: 'Version Control & Deploy',
+      color: 'from-orange-500 to-amber-600',
+      nodes: [
+        {
+          id: 'gitlab',
+          label: 'GitLab',
+          sublabel: 'Canonical 저장소 → Vercel 자동 배포',
+          type: 'highlight',
+          icon: '🦊',
+        },
+        {
+          id: 'github',
+          label: 'GitHub',
+          sublabel: '공개 코드 스냅샷 (sync:github)',
+          type: 'secondary',
+          icon: '🐙',
+        },
+        {
+          id: 'local-ci',
+          label: 'Local Docker CI',
+          sublabel: 'npm run ci:local:docker',
+          type: 'tertiary',
+          icon: '🐋',
+        },
+      ],
+    },
+    {
+      title: 'MCP Servers (10개)',
       color: 'from-cyan-500 to-teal-600',
       nodes: [
         {
@@ -97,7 +111,7 @@ export const VIBE_CODING_ARCHITECTURE: ArchitectureDiagram = {
           label: 'Sequential Thinking',
           sublabel: 'Complex Planning',
           type: 'tertiary',
-          icon: '🔗', // Chain of thought
+          icon: '🔗',
         },
         {
           id: 'stitch-mcp',
@@ -113,14 +127,23 @@ export const VIBE_CODING_ARCHITECTURE: ArchitectureDiagram = {
           type: 'tertiary',
           icon: '📖',
         },
+        {
+          id: 'lighthouse-mcp',
+          label: 'Lighthouse',
+          sublabel: 'Web Vitals / A11y / SEO',
+          type: 'tertiary',
+          icon: '🏠',
+        },
       ],
     },
   ],
   connections: [
-    { from: 'antigravity', to: 'claude-code', label: 'Terminal' },
-    { from: 'claude-code', to: 'codex', label: '2-AI Review' },
-    { from: 'claude-code', to: 'gemini', label: '2-AI Review' },
-    // MCP Servers (9개)
+    { from: 'claude-code', to: 'codex', label: 'Cross-Review' },
+    { from: 'claude-code', to: 'gemini', label: 'Cross-Review' },
+    { from: 'claude-code', to: 'gitlab', label: 'git push' },
+    { from: 'gitlab', to: 'github', label: 'sync:github' },
+    { from: 'claude-code', to: 'local-ci', label: 'CI Gate' },
+    // MCP Servers (10개)
     { from: 'claude-code', to: 'context7', label: 'MCP' },
     { from: 'claude-code', to: 'supabase-mcp', label: 'MCP' },
     { from: 'claude-code', to: 'vercel-mcp', label: 'MCP' },
@@ -130,5 +153,6 @@ export const VIBE_CODING_ARCHITECTURE: ArchitectureDiagram = {
     { from: 'claude-code', to: 'seq-think', label: 'MCP' },
     { from: 'claude-code', to: 'stitch-mcp', label: 'MCP' },
     { from: 'claude-code', to: 'storybook-mcp', label: 'MCP' },
+    { from: 'claude-code', to: 'lighthouse-mcp', label: 'MCP' },
   ],
 };

@@ -6,15 +6,14 @@ export const VIBE_CODING_DATA: VibeCodeData = {
     {
       name: 'Google Antigravity',
       category: 'ai',
-      importance: 'critical',
+      importance: 'low',
       description:
-        'Agent-first AI-powered IDE - AI 에이전트가 계획, 실행, 검증까지 자율 수행 (Google)',
+        'Agent-first AI-powered IDE - AI 에이전트가 계획, 실행, 검증까지 자율 수행 (Google, 예정)',
       implementation:
-        'Gemini 3와 함께 출시. VS Code 포크 기반으로 개발자는 아키텍트로, AI 에이전트가 실제 구현을 담당하는 새로운 패러다임. Multi-Agent 협업 지원',
-      version: 'v1.0.0 (Gemini 3 Pro)',
-      status: 'active',
+        'VS Code 포크 기반으로 개발자는 아키텍트로, AI 에이전트가 실제 구현을 담당하는 새로운 패러다임. 현재는 미사용(watch)',
+      status: 'planned',
       icon: '🌌',
-      tags: ['Google', 'Agent-First', 'Gemini3', 'IDE'],
+      tags: ['Google', 'Agent-First', 'Planned'],
       type: 'commercial',
     },
     {
@@ -23,7 +22,7 @@ export const VIBE_CODING_DATA: VibeCodeData = {
       importance: 'high',
       description:
         'Anthropic의 Model Context Protocol. AI가 외부 도구, 데이터 소스, API에 표준화된 방식으로 접근하는 오픈 프로토콜. 다양한 MCP 서버로 AI 기능 확장',
-      implementation: `→ ${MCP_SERVERS.TOTAL_ACTIVE}개 서버 연동: vercel(배포), supabase(DB), context7(문서), playwright(E2E), next-devtools(Next.js진단), github(저장소), sequential-thinking(추론), stitch(UI디자인), storybook(컴포넌트문서)`,
+      implementation: `→ ${MCP_SERVERS.TOTAL_ACTIVE}개 서버 연동: vercel(배포), supabase(DB), context7(문서), playwright(E2E), next-devtools(Next.js진단), github(저장소), sequential-thinking(추론), stitch(UI디자인), storybook(컴포넌트문서), lighthouse(성능/A11y/SEO)`,
       status: 'active',
       icon: '🔌',
       tags: ['MCP', 'Protocol', '확장기능'],
