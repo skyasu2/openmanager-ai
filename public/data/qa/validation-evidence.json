@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "generatedAt": "2026-03-30T13:40:43.977Z",
+  "generatedAt": "2026-03-30T14:04:24.565Z",
   "source": {
     "trackerPath": "reports/qa/qa-tracker.json",
     "statusPath": "reports/qa/QA_STATUS.md",
@@ -30,6 +30,16 @@
     "iso": "2026-03-22T07:26:30.735Z",
     "short": "2026-03-22",
     "long": "March 22, 2026"
+  },
+  "latestPublicRun": {
+    "runId": "QA-20260330-0200",
+    "title": "Vercel Playwright QA - Vibe Hybrid Delivery Copy Recheck",
+    "scope": "targeted",
+    "recordedAt": "2026-03-30T13:40:42.788Z",
+    "commitSha": "f3980357e2000126b0ba722866981917131ffc92",
+    "repoPath": "reports/qa/runs/2026/qa-run-QA-20260330-0200.json",
+    "ciRunLink": null,
+    "ciArtifactLinks": []
   },
   "latestProofRun": {
     "runId": "QA-20260322-0160",

@@ -111,6 +111,7 @@ function buildValidationEvidenceSnapshot(tracker) {
     throw new Error('QA validation evidence summary is unavailable');
   }
 
+  const latestPublicRunYear = latestPublicEvidenceRun.runId.slice(3, 7);
   const runYear = latestProofRun.runId.slice(3, 7);
   const githubRunLink =
     latestProofRun.links?.find((link) => link.type === 'github-actions-run') ??
@@ -140,6 +141,16 @@ function buildValidationEvidenceSnapshot(tracker) {
     trackerUpdated: formatEvidenceDate(summary.lastRecordedAt),
     publicEvidenceUpdated: formatEvidenceDate(latestPublicEvidenceRun.recordedAt),
     latestProofRecorded: formatEvidenceDate(latestProofRun.recordedAt),
+    latestPublicRun: {
+      runId: latestPublicEvidenceRun.runId,
+      title: latestPublicEvidenceRun.title ?? latestPublicEvidenceRun.runId,
+      scope: latestPublicEvidenceRun.scope ?? 'targeted',
+      recordedAt: latestPublicEvidenceRun.recordedAt ?? null,
+      commitSha: latestPublicEvidenceRun.environment?.commitSha ?? '',
+      repoPath: `reports/qa/runs/${latestPublicRunYear}/qa-run-${latestPublicEvidenceRun.runId}.json`,
+      ciRunLink: null,
+      ciArtifactLinks: [],
+    },
     latestProofRun: {
       runId: latestProofRun.runId,
       title: latestProofRun.title ?? latestProofRun.runId,
