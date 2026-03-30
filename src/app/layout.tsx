@@ -4,6 +4,7 @@ import type { ReactNode } from 'react';
 import { ClientProviders } from '@/components/providers/ClientProviders';
 import './globals.css';
 import { EmergencyBanner } from '@/components/emergency/EmergencyBanner';
+import { WebVitalsReporter } from '@/components/providers/WebVitalsReporter';
 import { SystemBootstrap } from '@/components/system/SystemBootstrap';
 import { Toaster } from '@/components/ui/toaster';
 import { getSiteUrl } from '@/lib/site-url';
@@ -146,6 +147,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           <Toaster />
           {children}
         </ClientProviders>
+        <WebVitalsReporter />
         {/* Vercel Analytics 비활성화 - 무료 티어 최적화 (6개 404 에러 제거) */}
         {/* <SpeedInsights key="speed-insights" /> */}
         {/* <Analytics key="analytics" /> */}

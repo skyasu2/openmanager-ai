@@ -11,7 +11,7 @@ export const QA_EVIDENCE_CTA_LINKS = {
 } as const;
 
 export const QA_EVIDENCE_LABELS = {
-  badge: 'Validated on Production',
+  badge: 'Production QA Snapshot',
   criteria: '실환경 검증 기준',
   validationPage: 'Validation Evidence',
 } as const;
