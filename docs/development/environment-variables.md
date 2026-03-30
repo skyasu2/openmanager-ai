@@ -65,11 +65,10 @@ LOCAL_DOCKER_SECRET=dev-only-secret
 
 #### 4. 로컬 CI 정책 (선택)
 
-GitLab SaaS CI는 기본 비활성이므로, broad change나 배포 전 전체 검증은 로컬 Docker CI 기준으로 수행합니다.
+GitLab CI는 활성 상태이지만, broad change나 release 직전의 전체 검증은 여전히 로컬 Docker CI로 한 번 더 확인합니다.
 
 ```bash
 # .env.local 또는 셸 환경
-GITLAB_CI_POLICY=local-docker-only
 CI_DOCKER_INSTALL_MODE=prefer-local
 ```
 
@@ -330,7 +329,7 @@ git push gitlab main
 STRICT_PUSH_ENV=true git push gitlab main
 ```
 
-> `STRICT_PUSH_ENV`는 기본 `false`입니다. 로컬에서는 테스트/TypeScript 검증만 실행됩니다.
+> `STRICT_PUSH_ENV`는 기본 `false`입니다. 로컬에서는 테스트/TypeScript 검증을 우선하고, push 이후 GitLab CI가 validate/deploy를 이어서 수행합니다.
 
 ---
 

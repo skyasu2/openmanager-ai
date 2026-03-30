@@ -4,7 +4,7 @@
 > Owner: dev-experience
 > Status: Active Canonical
 > Doc type: How-to
-> Last reviewed: 2026-03-27
+> Last reviewed: 2026-03-31
 > Canonical: docs/development/project-setup.md
 > Tags: wsl,github-auth,project-setup
 
@@ -19,12 +19,12 @@
 
 제로베이스 부트스트랩 기준은 본 문서를 Canonical로 유지합니다.
 
-## 현재 저장소/배포 토폴로지 (2026-03-27)
+## 현재 저장소/배포 토폴로지 (2026-03-31)
 
 - **GitLab private (`gitlab`)**: canonical development repo
-- **Vercel Frontend**: GitLab `main`을 Git 배포 소스로 사용
+- **Vercel Frontend**: GitLab CI `deploy` job이 `vercel --prod`로 production 배포
 - **GitHub public (`origin`)**: code-only snapshot, 수동 공개 동기화 전용
-- **GitLab CI**: 기본 비활성 (`GITLAB_CI_POLICY=local-docker-only`)
+- **GitLab CI**: 활성 (`validate -> deploy`, 코드 변경 push 시만 실행)
 
 개발/배포 작업은 기본적으로 GitLab 기준으로 진행하고, GitHub는 공개 코드 스냅샷이 필요할 때만 별도로 다룹니다.
 

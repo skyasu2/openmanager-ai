@@ -244,10 +244,11 @@ bash scripts/ai/agent-bridge.sh --to gemini --mode analysis --save-auto "대안 
 # broad/deploy-sensitive 변경이면 로컬 Docker CI 먼저
 npm run ci:local:docker
 
-# 자동 배포 (GitLab canonical)
+# canonical 배포
 git push gitlab main
 # → Pre-push Hook: TypeScript 검증 + 빠른 테스트 (~78초)
-# → Vercel이 Full Build + 배포
+# → GitLab CI validate
+# → GitLab CI deploy: vercel build + vercel deploy --prod
 
 # 긴급 시 Hook 우회
 HUSKY=0 git push gitlab main

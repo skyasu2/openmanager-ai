@@ -4,7 +4,7 @@ export const VIBE_CODING_ARCHITECTURE: ArchitectureDiagram = {
   id: 'vibe-coding',
   title: 'Vibe Coding Hybrid Delivery Flow',
   description:
-    'Local WSL + AI-first build loop → pre-commit + pre-push gate → optional local Docker CI → GitLab main → Vercel production auto deploy → optional public snapshot sync.',
+    'Local WSL + AI-first build loop → pre-commit + pre-push gate → optional local Docker CI → GitLab CI validate → GitLab CI deploy (vercel build/deploy) → optional public snapshot sync.',
   layers: [
     {
       title: 'Local Dev Loop',
@@ -54,7 +54,7 @@ export const VIBE_CODING_ARCHITECTURE: ArchitectureDiagram = {
       ],
     },
     {
-      title: 'Canonical Delivery',
+      title: 'GitLab CI Pipeline',
       color: 'from-orange-500 to-amber-600',
       nodes: [
         {
@@ -65,11 +65,11 @@ export const VIBE_CODING_ARCHITECTURE: ArchitectureDiagram = {
           icon: '🦊',
         },
         {
-          id: 'vercel',
-          label: 'Vercel Production',
-          sublabel: 'GitLab main 기반 자동 배포',
+          id: 'gitlab-validate',
+          label: 'Validate Job',
+          sublabel: 'type-check + lint + test:quick',
           type: 'primary',
-          icon: '▲',
+          icon: '✅',
         },
       ],
     },
@@ -78,11 +78,18 @@ export const VIBE_CODING_ARCHITECTURE: ArchitectureDiagram = {
       color: 'from-sky-500 to-indigo-600',
       nodes: [
         {
-          id: 'vercel-check',
-          label: 'Deploy Check',
-          sublabel: 'status + smoke when needed',
+          id: 'gitlab-deploy',
+          label: 'Deploy Job',
+          sublabel: 'vercel build + vercel deploy --prod',
           type: 'highlight',
-          icon: '🔎',
+          icon: '🚀',
+        },
+        {
+          id: 'vercel',
+          label: 'Vercel Production',
+          sublabel: 'CI deploy job 기준 production',
+          type: 'primary',
+          icon: '▲',
         },
         {
           id: 'github',
@@ -106,8 +113,9 @@ export const VIBE_CODING_ARCHITECTURE: ArchitectureDiagram = {
       type: 'dashed',
     },
     { from: 'local-ci', to: 'gitlab', label: 'full pass' },
-    { from: 'gitlab', to: 'vercel', label: 'auto deploy' },
-    { from: 'vercel', to: 'vercel-check', label: 'verify' },
+    { from: 'gitlab', to: 'gitlab-validate', label: 'pipeline' },
+    { from: 'gitlab-validate', to: 'gitlab-deploy', label: 'pass' },
+    { from: 'gitlab-deploy', to: 'vercel', label: 'deploy' },
     { from: 'gitlab', to: 'github', label: 'sync:github', type: 'dashed' },
   ],
 };

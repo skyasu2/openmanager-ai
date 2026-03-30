@@ -7,7 +7,7 @@ const DELIVERY_PRINCIPLES = [
   {
     title: '정본 배포 경로',
     description:
-      '정본 저장소는 GitLab main입니다. Vercel frontend 배포도 GitLab main을 기준으로 자동 반영됩니다.',
+      '정본 저장소는 GitLab main입니다. 코드 변경 push는 GitLab CI validate를 통과한 뒤 deploy job이 Vercel production 배포를 수행합니다.',
     icon: GitBranch,
     style: 'border-emerald-500/20 bg-emerald-500/10 text-emerald-200',
   },
@@ -21,7 +21,7 @@ const DELIVERY_PRINCIPLES = [
   {
     title: '선택형 무거운 검증',
     description:
-      'GitLab SaaS CI runner를 상시 운영하지 않고, 더 무거운 검증은 local Docker CI나 배포 후 QA에서 선택적으로 수행합니다.',
+      'broad change나 release 직전에는 local Docker CI와 배포 후 QA를 추가합니다. docs/reports 전용 push는 GitLab CI를 건너뜁니다.',
     icon: Ban,
     style: 'border-purple-500/20 bg-purple-500/10 text-purple-200',
   },
@@ -50,17 +50,24 @@ const PIPELINE_STEPS = [
   },
   {
     eyebrow: 'Canonical Push',
-    title: 'GitLab Main',
+    title: 'GitLab Main Push',
     command: 'git push gitlab main',
     detail:
-      '정본 저장소에 push하면 Vercel production 배포가 여기서 이어집니다.',
+      '정본 저장소에 코드 변경을 반영하면 GitLab CI validate -> deploy 파이프라인이 이어집니다.',
   },
   {
-    eyebrow: 'Deploy',
-    title: 'Vercel Production',
-    command: 'GitLab main -> auto deploy',
+    eyebrow: 'CI Stage 1',
+    title: 'GitLab Validate',
+    command: 'npm run type-check && npm run lint:ci && npm run test:quick',
     detail:
-      'frontend production source는 GitLab main이며, 최신 deploy 상태를 기준으로 확인합니다.',
+      '코드 변경 push에서만 실행되며, validate 실패 시 deploy stage는 차단됩니다.',
+  },
+  {
+    eyebrow: 'CI Stage 2',
+    title: 'GitLab Deploy',
+    command: 'vercel build --prod && vercel deploy --prebuilt --prod',
+    detail:
+      'Vercel Git Integration은 해제되어 있고, GitLab CI deploy job만 production 배포 권한을 가집니다.',
   },
   {
     eyebrow: 'Optional Sync',
@@ -74,15 +81,16 @@ const PIPELINE_STEPS = [
 const DECISION_RULES = [
   {
     label: 'small frontend fix',
-    value: 'pre-commit -> pre-push -> git push gitlab main',
+    value:
+      'pre-commit -> pre-push -> git push gitlab main -> GitLab CI validate/deploy',
   },
   {
     label: 'broad / release-facing change',
-    value: '위 기본 경로 + npm run ci:local:docker',
+    value: '위 기본 경로 + npm run ci:local:docker + production QA',
   },
   {
-    label: 'public repo refresh',
-    value: 'canonical 배포 후 필요할 때만 npm run sync:github',
+    label: 'docs / reports only push',
+    value: 'push는 허용되지만 .gitlab-ci.yml changes 규칙으로 CI는 스킵',
   },
 ] as const;
 
@@ -130,14 +138,15 @@ export function VibeCiCdSection({
             </span>
             <div>
               <h4 className="text-xl font-semibold text-white">
-                로컬 검증 게이트를 거친 뒤 GitLab main 기준으로 production
-                배포를 자동 반영합니다.
+                로컬 검증 게이트와 GitLab CI의 validate, deploy 파이프라인을
+                함께 운영합니다.
               </h4>
               <p className="mt-2 text-sm leading-relaxed text-white/75">
-                중앙 runner를 상시 두는 전형적인 CI/CD는 아니지만, pre-commit,
-                pre-push, local Docker CI로 변경을 검증하고 GitLab main 반영 후
-                Vercel이 production 배포를 자동 수행합니다. 공개 GitHub는 필요할
-                때만 동기화하는 snapshot 경로입니다.
+                pre-commit, pre-push, local Docker CI로 로컬 검증을 보강한 뒤
+                `git push gitlab main` 시 GitLab CI가 validate(type-check, lint,
+                test:quick)와 deploy(`vercel build`, `vercel deploy --prod`)를
+                순차 수행합니다. 공개 GitHub는 필요할 때만 동기화하는 snapshot
+                경로입니다.
               </p>
             </div>
           </div>
