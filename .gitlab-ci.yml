@@ -37,6 +37,7 @@ stages:
         - tsconfig.json
         - vercel.json
         - .env.example
+        - .gitlab-ci.yml
       when: on_success
     - when: never
 
