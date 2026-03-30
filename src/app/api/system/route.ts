@@ -118,7 +118,7 @@ async function syncSystemRunningFlag(
 // GET Handler
 // ============================================================================
 
-export const GET = withAuth(async (request: NextRequest) => {
+export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const view = searchParams.get('view') || 'status';
@@ -276,7 +276,7 @@ export const GET = withAuth(async (request: NextRequest) => {
       { status: 500 }
     );
   }
-});
+}
 
 // ============================================================================
 // POST Handler

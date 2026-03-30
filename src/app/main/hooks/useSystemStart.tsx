@@ -334,10 +334,10 @@ export function useSystemStart(options: UseSystemStartOptions) {
 
     if (!isAuthenticated) {
       return {
-        text: '🚀 로그인 후 시작',
+        text: '로그인 후 시작',
         icon: getIcon(Play, 'h-5 w-5'),
         className:
-          'bg-linear-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white border-blue-400/50',
+          'bg-linear-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white border-cyan-400/50',
         disabled: false,
       };
     }
@@ -358,7 +358,7 @@ export function useSystemStart(options: UseSystemStartOptions) {
 
     if (multiUserStatus?.isRunning || isSystemStarted) {
       return {
-        text: `📊 대시보드 이동 (사용자: ${multiUserStatus?.userCount || 0}명)`,
+        text: '대시보드 이동',
         icon: getIcon(BarChart3, 'h-5 w-5'),
         className:
           'bg-linear-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white border-green-400/50',
@@ -367,10 +367,10 @@ export function useSystemStart(options: UseSystemStartOptions) {
     }
 
     return {
-      text: '🚀 시스템 시작',
+      text: '시스템 시작',
       icon: getIcon(Play, 'h-5 w-5'),
       className:
-        'bg-linear-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white border-blue-400/50',
+        'bg-linear-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white border-emerald-400/50',
       disabled: false,
     };
   }, [
@@ -382,7 +382,6 @@ export function useSystemStart(options: UseSystemStartOptions) {
     isGitHubUser,
     statusLoading,
     multiUserStatus?.isRunning,
-    multiUserStatus?.userCount,
     isSystemStarted,
   ]);
 

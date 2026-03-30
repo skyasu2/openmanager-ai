@@ -67,7 +67,7 @@ export const AI_ASSISTANT_TECH_STACK: TechItem[] = [
     description:
       'Vercel이 개발한 AI 애플리케이션 프레임워크. streamText, generateObject, ToolLoopAgent 등 API로 스트리밍 응답, 도구 호출, 멀티 에이전트 오케스트레이션 지원',
     implementation:
-      'v6 네이티브 ToolLoopAgent + stopWhen 패턴으로 7-Agent 멀티 에이전트 시스템 구축. Orchestrator-Worker Handoff 패턴으로 질문 유형별 자동 라우팅 구현',
+      'v6 네이티브 ToolLoopAgent + stopWhen 패턴으로 5-Agent 멀티 에이전트 시스템 구축. Orchestrator-Worker Handoff 패턴으로 질문 유형별 자동 라우팅 구현',
     version: '6.0',
     status: 'active',
     icon: '▲',

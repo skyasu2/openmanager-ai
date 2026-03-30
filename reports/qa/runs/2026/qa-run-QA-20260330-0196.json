@@ -1,0 +1,76 @@
+{
+  "runId": "QA-20260330-0196",
+  "recordedAt": "2026-03-30T05:43:50.173Z",
+  "recordedAtKst": "2026-03-30 14:43:50 KST",
+  "runTitle": "Local verification - Vibe Coding modal QA/Finish view",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "local-dev",
+    "url": "http://localhost:3000",
+    "frontend": "Next.js dev server",
+    "backend": "local app routes",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "aed0bdb898a52beb9842fb84e845f7ad53b242a0"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "coveragePacks": ["modal-detail-pack"],
+  "coveredSurfaces": [
+    "/",
+    "Vibe Coding modal current tools view",
+    "Vibe Coding modal history view switch",
+    "Vibe Coding modal QA / Finish view",
+    "local runtime error check"
+  ],
+  "skippedSurfaces": [
+    "AI sidebar",
+    "dashboard routes",
+    "production deployment verification"
+  ],
+  "checks": {
+    "total": 5,
+    "passed": 5,
+    "failed": 0
+  },
+  "expertAssessments": [],
+  "usageChecks": [],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "Local Vibe QA Finish view",
+      "path": ".playwright-mcp/screenshots/local-vibe-qa-finish-20260330.png"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "landing-vibe-qa-finish-surface",
+      "title": "Vibe Coding 모달에 QA / Finish 뷰 추가",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "Vibe Coding 카드에서 아키텍처 토글을 제거하고 현재 도구/개발 환경 변화/QA Finish 3-way 뷰를 로컬 Playwright로 검증",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Local Next.js dev server on port 3000 rendered the new QA / Finish view without runtime errors.",
+    "Next DevTools get_errors returned no browser session errors after interaction."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Local dev URL",
+      "url": "http://localhost:3000/"
+    }
+  ]
+}

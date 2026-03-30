@@ -1,0 +1,144 @@
+{
+  "runId": "QA-20260330-0195",
+  "recordedAt": "2026-03-30T04:14:36.238Z",
+  "recordedAtKst": "2026-03-30 13:14:36 KST",
+  "runTitle": "Landing Page Playwright Analysis - 4 Cards, Modal Content, Architecture, History",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "aed0bdb898a52beb9842fb84e845f7ad53b242a0"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "coveragePacks": ["core-routes-smoke", "modal-detail-pack"],
+  "coveredSurfaces": [
+    "/",
+    "landing hero and CTA render",
+    "feature cards: AI Assistant / 클라우드 플랫폼 활용 / 기술 스택 / Vibe Coding",
+    "feature card modal detail view (4 cards)",
+    "feature card architecture view (4 cards)",
+    "Vibe Coding history view",
+    "browser console errors on landing"
+  ],
+  "skippedSurfaces": [
+    "/login",
+    "/dashboard",
+    "AI sidebar and chat flow",
+    "Cloud Run observability pack"
+  ],
+  "checks": {
+    "total": 11,
+    "passed": 8,
+    "failed": 3
+  },
+  "expertAssessments": [],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-03-30T13:15:00+09:00",
+      "summary": "2026-03 usage checked after targeted landing QA. Estimated total $21.78, billed $0.00, no abnormal spike observed.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "Landing page overview",
+      "path": ".playwright-mcp/screenshots/landing-page-overview-20260330.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "AI Assistant modal detail",
+      "path": ".playwright-mcp/screenshots/landing-ai-modal-detail-20260330.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "AI Assistant architecture",
+      "path": ".playwright-mcp/screenshots/landing-ai-modal-architecture-20260330.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Vibe Coding history",
+      "path": ".playwright-mcp/screenshots/landing-vibe-modal-history-20260330.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Vibe Coding architecture",
+      "path": ".playwright-mcp/screenshots/landing-vibe-modal-architecture-20260330.png"
+    },
+    {
+      "type": "playwright-console",
+      "label": "Landing console errors",
+      "path": "artifacts/landing-console-errors.txt"
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [
+    {
+      "id": "landing-console-api-system-unauthorized",
+      "title": "랜딩 비로그인 상태에서 /api/system 401 콘솔 에러 제거 또는 graceful handling",
+      "priority": "P1",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "Playwright production landing load에서 /api/system 401이 브라우저 console error로 노출됨. 기능 중단은 없지만 랜딩 품질 기준에는 불리함.",
+      "owner": "",
+      "status": "wont-fix",
+      "policyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다."
+    },
+    {
+      "id": "landing-vibe-content-deployment-drift",
+      "title": "Vibe Coding 프로덕션 카드 내용과 현재 소스 간 배포 드리프트 해소",
+      "priority": "P1",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "Production modal/history/architecture에 MCP 서버 9개, 구형 설명 문구가 남아 있으며 현재 소스 데이터와 불일치함.",
+      "owner": "",
+      "status": "wont-fix",
+      "policyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다."
+    },
+    {
+      "id": "landing-tech-stack-version-copy-drift",
+      "title": "기술 스택 모달 상세/아키텍처 간 버전 카피 정합성 정리",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "시각 구조 변경이 아니라 사용자에게 보이는 버전/도구명 카피 정합성만 우선 정리",
+      "evidence": "",
+      "note": "Production에서 기술 스택 상세는 Tailwind CSS 4.1, 아키텍처는 Tailwind CSS 4.2로 보임.",
+      "owner": "",
+      "status": "wont-fix",
+      "policyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다."
+    }
+  ],
+  "notes": [
+    "Production landing page version endpoint returned v8.10.8 / Next.js 16.1.6 / environment=production.",
+    "Four cards opened successfully and all modal close interactions worked.",
+    "Architecture toggle rendered on all four cards; Vibe Coding history toggle rendered successfully.",
+    "AI Assistant content density is strongest, but some copy mixes 5-Agent and 7-Agent terminology in a way that may confuse non-technical viewers.",
+    "Vibe Coding card is differentiated best, but its production copy is not fully aligned with current repository data."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Vercel Production URL",
+      "url": "https://openmanager-ai.vercel.app/"
+    }
+  ]
+}

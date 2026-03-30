@@ -10,15 +10,15 @@ import type { FeatureCard } from '@/types/feature-card.types';
 export const FEATURE_CARDS_DATA: FeatureCard[] = [
   {
     id: 'ai-assistant',
-    title: '🧠 AI Assistant',
+    title: '💬 AI 어시스턴트',
     description:
-      '현재 메트릭을 바탕으로 질문, 분석, 조치안을 바로 연결하는 운영형 AI 어시스턴트. 장애 분석, 스크린샷 이해, 대용량 로그 처리까지 지원합니다.',
+      '현재 메트릭을 바탕으로 질문, 분석, 조치안을 바로 연결하는 운영 어시스턴트. 장애 분석, 스크린샷 이해, 대용량 로그 처리까지 지원합니다.',
     icon: Bot,
     gradient: 'from-indigo-500 via-purple-500 to-pink-500',
     detailedContent: {
       overview: `운영자가 메트릭 그래프를 직접 해석하지 않아도, 질문 하나로 현재 상태, 원인 분석, 다음 조치안을 받을 수 있도록 설계한 AI 실행 계층입니다. 4개의 AI Provider(Cerebras, Groq, Mistral, Gemini)와 Vercel AI SDK 6.0 네이티브 ToolLoopAgent 기반 5-Agent + Evaluator-Optimizer 파이프라인을 사용하며, Vision Agent의 대시보드 스크린샷 분석, 1M 토큰 로그 분석, Google Search Grounding을 지원합니다. 경량 커스텀 TypeScript ML(통계 이상 탐지 + 추세 예측)과 Native GraphRAG + Tavily 하이브리드 검색을 함께 사용합니다.`,
       features: [
-        '🧠 Cerebras Inference: WSE-3 칩 기반 1M 토큰/일 초고속 추론 (gpt-oss-120b) — NLQ/Analyst/Supervisor 1순위, 최저 지연 우선',
+        '🧠 Cerebras Inference: WSE-3 칩 기반 24M 토큰/일 초고속 추론 (gpt-oss-120b) — NLQ/Analyst/Advisor 1순위, 최저 지연 우선',
         '⚡ Groq Cloud: LPU 기반 500 Tokens/s 초고속 추론 (llama-3.3-70b-versatile) — Reporter/Orchestrator 1순위 모델',
         '🛡️ Mistral AI: mistral-large-latest Frontier 모델 — Advisor 1순위, RAG 검색 품질 최적',
         '👁️ Gemini Flash: Vision Agent 전용, 스크린샷 분석, 1M 컨텍스트 — 대용량 로그/이미지 처리 유일 모델',
@@ -82,7 +82,7 @@ export const FEATURE_CARDS_DATA: FeatureCard[] = [
     id: 'tech-stack',
     title: '💻 기술 스택',
     description:
-      '실시간 모니터링 UI, 자연어 질의, AI 응답 스트리밍을 안정적으로 묶기 위해 선택한 최신 웹 스택과 데이터 계층입니다.',
+      '실시간 모니터링 UI, 자연어 질의, 응답 스트리밍을 안정적으로 묶기 위해 선택한 최신 웹 스택과 데이터 계층입니다.',
     icon: Sparkles,
     gradient: 'from-blue-500 to-purple-600',
     detailedContent: {
@@ -91,7 +91,7 @@ export const FEATURE_CARDS_DATA: FeatureCard[] = [
         '⚛️ React 19: Concurrent Rendering, Server Components 등 최신 기능 적용 — 대시보드 초기 로딩 최적화',
         '▲ Next.js 16: Server Actions, Partial Prerendering, Edge Runtime 지원 — API Routes로 SSOT 데이터 제공',
         '🔷 TypeScript 5.9: 최신 컴파일러 기능을 활용한 강력한 타입 안전성 확보 — strict 모드로 런타임 에러 사전 차단',
-        '🎨 Tailwind CSS 4.1: 최신 Oxides 엔진으로 빌드 성능 극대화 — 유틸리티 퍼스트로 디자인 시스템 일관성 확보',
+        '🎨 Tailwind CSS 4.2: 최신 Oxides 엔진으로 빌드 성능 극대화 — 유틸리티 퍼스트로 디자인 시스템 일관성 확보',
         '📊 Recharts + uPlot 이중 차트: Recharts(SVG, 예측/이상치 인터랙션) + uPlot(Canvas, Grafana급 고성능) — 용도별 최적 렌더링 분담',
         '🔥 OTel-native Data: CNCF 표준 시계열 SSOT — otel-data/ 24시간 메트릭+로그 직접 소비',
         '🔭 OpenTelemetry: CNCF Semantic Convention으로 메트릭 표준화 — Resource Catalog + Timeseries로 서버 메타데이터 관리',
@@ -104,7 +104,7 @@ export const FEATURE_CARDS_DATA: FeatureCard[] = [
         'Next.js 16',
         'React 19',
         'TypeScript 5.9',
-        'Tailwind CSS 4.1',
+        'Tailwind CSS 4.2',
         'Recharts 3.7.0 + uPlot 1.6',
         'OTel-native Data (SSOT)',
         'OpenTelemetry (Semantic Conv.)',
@@ -120,7 +120,7 @@ export const FEATURE_CARDS_DATA: FeatureCard[] = [
     id: 'vibe-coding',
     title: '🔥 Vibe Coding',
     description:
-      '아이디어 수준이 아니라 배포, QA, 운영 증거까지 이어지게 만든 AI 협업 개발 방식입니다. 이 프로젝트의 실제 제작 과정을 그대로 보여줍니다.',
+      '아이디어 수준이 아니라 배포, QA, 운영 증거까지 이어지게 만든 에이전트 협업 개발 방식입니다. 이 프로젝트의 실제 제작 과정을 그대로 보여줍니다.',
     icon: Zap,
     gradient: 'from-amber-600 via-orange-600 to-amber-700',
     detailedContent: {

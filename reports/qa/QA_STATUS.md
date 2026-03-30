@@ -1,60 +1,59 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-29 00:22:00 KST
+> Generated at: 2026-03-30 14:43:52 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 193 |
-| Total Checks | 1429 |
-| Passed | 1366 |
-| Failed | 57 |
-| Completed Items | 264 |
+| Total Runs | 195 |
+| Total Checks | 1445 |
+| Passed | 1379 |
+| Failed | 60 |
+| Completed Items | 265 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
-| Wont-Fix Items | 10 |
+| Wont-Fix Items | 13 |
 | Expert Domains Tracked | 6 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Run | QA-20260329-0194 (2026-03-28T15:21:59.221Z) |
+| Last Run | QA-20260330-0196 (2026-03-30T05:43:50.173Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260329-0194 (2026-03-28T15:21:59.221Z)
+Latest run: QA-20260330-0196 (2026-03-30T05:43:50.173Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| DevOps / SRE Engineer | appropriate | no | - |
-| Test Automation Architect | appropriate | no | - |
+| - | - | - | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | 2026-03 청구 예상액 $21.09 (Pro $18.59 + Function Invocations $0.60 + 기타). Billed $0. 이상 없음. |
+| - | - | - | - | - |
 
 ## Coverage (Latest Run)
 
 - Scope: targeted
-- Release-Facing: yes
-- Deployment: dpl_Bmi1oNKZMSJvnfC9wqysHbi6wD5j / SHA 5e5706bb
-- Coverage Packs: core-routes-smoke, dashboard-core, ai-core
-- Covered Surfaces: /api/version, /api/health, /, /login, /privacy, /system-validation, /system-boot, /dashboard, AI sidebar, browser console errors
-- Skipped Surfaces: observability pack, AI chat interaction, guest login flow
+- Release-Facing: no
+- Deployment: SHA aed0bdb8
+- Coverage Packs: modal-detail-pack
+- Covered Surfaces: /, Vibe Coding modal current tools view, Vibe Coding modal history view switch, Vibe Coding modal QA / Finish view, local runtime error check
+- Skipped Surfaces: AI sidebar, dashboard routes, production deployment verification
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | Vercel Production URL | [link](https://openmanager-ai.vercel.app/) | - |
+| general | Local dev URL | [link](http://localhost:3000/) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| - | - | - | - |
+| playwright-screenshot | Local Vibe QA Finish view | `.playwright-mcp/screenshots/local-vibe-qa-finish-20260330.png` | - |
 
 ## Expert Domain Open Gaps
 
@@ -72,6 +71,10 @@ Latest run: QA-20260329-0194 (2026-03-28T15:21:59.221Z)
 
 - [P1] ai-server-timing-header-production: Server-Timing header visibility in production (seen 2회, last QA-20260310-0081)
   - note: 플랫폼 제약으로 인한 비차단 항목: Vercel production에서는 Server-Timing 대신 X-AI-Latency-Ms를 운영 SSOT로 사용
+- [P1] landing-console-api-system-unauthorized: 랜딩 비로그인 상태에서 /api/system 401 콘솔 에러 제거 또는 graceful handling (seen 1회, last QA-20260330-0195)
+  - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
+- [P1] landing-vibe-content-deployment-drift: Vibe Coding 프로덕션 카드 내용과 현재 소스 간 배포 드리프트 해소 (seen 1회, last QA-20260330-0195)
+  - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 - [P1] obs-fp-fn-weekly-report: 오탐/미탐 주간 리포트 자동 생성 (seen 3회, last QA-20260227-0013)
 - [P2] ai-agent-type-metadata: AI Chat 에이전트 타입 메타데이터 표시 개선 (seen 1회, last QA-20260326-0190)
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
@@ -87,6 +90,8 @@ Latest run: QA-20260329-0194 (2026-03-28T15:21:59.221Z)
   - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
 - [P2] feature-dod-unit-tests: 단위 테스트 158개 통과 (seen 9회, last QA-20260307-0053)
   - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
+- [P2] landing-tech-stack-version-copy-drift: 기술 스택 모달 상세/아키텍처 간 버전 카피 정합성 정리 (seen 1회, last QA-20260330-0195)
+  - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 - [P2] streaming-ai-fallback-cold-start: Streaming AI fallback에서 Cloud Run 콜드스타트 시 프리셋 질문 실패 (seen 1회, last QA-20260310-0090)
   - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (요청자 표시(isBlocking=true)로 즉시 개선 필요)
 
@@ -206,6 +211,7 @@ Latest run: QA-20260329-0194 (2026-03-28T15:21:59.221Z)
 - landing-page-render: 랜딩 페이지 렌더링 (completed 3회, last QA-20260320-0140)
 - landing-profile-bootstrap-state: 랜딩 초기 프로필 상태 텍스트 일관성 개선 (completed 1회, last QA-20260317-0120)
 - landing-system-start: 시스템 시작 카운트다운 (completed 1회, last QA-20260317-0114)
+- landing-vibe-qa-finish-surface: Vibe Coding 모달에 QA / Finish 뷰 추가 (completed 1회, last QA-20260330-0196)
 - langfuse-feedback-trace-propagation: AI feedback traceId propagation to Langfuse (completed 1회, last QA-20260320-0142)
 - langfuse-monitoring-runtime-visibility: Langfuse runtime visibility on /monitoring (completed 1회, last QA-20260317-0116)
 - langfuse-monitoring-traces-search: Langfuse monitoring traces search and auxiliary filtering (completed 1회, last QA-20260317-0117)
@@ -361,6 +367,8 @@ Latest run: QA-20260329-0194 (2026-03-28T15:21:59.221Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260330-0196 | 2026-03-30T05:43:50.173Z | targeted | no | Local verification - Vibe Coding modal QA/Finish view | 5 | 1 | 0 | 0 | 0 | 0 |
+| QA-20260330-0195 | 2026-03-30T04:14:36.238Z | targeted | no | Landing Page Playwright Analysis - 4 Cards, Modal Content, Architecture, History | 11 | 0 | 0 | 0 | 3 | 0 |
 | QA-20260329-0194 | 2026-03-28T15:21:59.221Z | targeted | yes | v8.10.6 Production QA - Security Hardening & Coverage Stabilization | 11 | 8 | 0 | 0 | 0 | 0 |
 | QA-20260327-0193 | 2026-03-26T15:12:25.263Z | targeted | no | Vercel production targeted QA recheck after cloud-run pre-init logging fix | 12 | 0 | 0 | 0 | 1 | 0 |
 | QA-20260326-0192 | 2026-03-26T03:34:06.036Z | targeted | no | Vercel Playwright + direct API verification for current production state | 16 | 0 | 0 | 0 | 0 | 0 |
@@ -379,6 +387,4 @@ Latest run: QA-20260329-0194 (2026-03-28T15:21:59.221Z)
 | QA-20260324-0179 | 2026-03-24T10:48:15.267Z | targeted | no | Vercel Preview QA - PR #200 blocked by preview SSO | 2 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260324-0178 | 2026-03-24T09:06:55.843Z | targeted | no | Vercel Production QA - frontend/AI parity gate closed after snapshot label pin | 6 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260324-0177 | 2026-03-24T07:57:28.735Z | targeted | no | Vercel Production QA - false realtime-analysis badge removed but parity mismatch remains | 6 | 0 | 1 | 0 | 0 | 0 |
-| QA-20260324-0176 | 2026-03-24T07:35:13.658Z | targeted | no | Vercel Production QA - parity gate still open after analysis detail patch | 6 | 0 | 1 | 0 | 0 | 0 |
-| QA-20260324-0175 | 2026-03-24T05:45:00.758Z | targeted | no | Vercel Production QA - deferred parity metadata preserved but detail contract still incomplete | 6 | 1 | 1 | 0 | 0 | 0 |
 

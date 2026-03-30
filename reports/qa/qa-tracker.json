@@ -2,25 +2,25 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-03-28T15:21:59.221Z"
+    "updatedAt": "2026-03-30T05:43:50.173Z"
   },
   "sequence": {
-    "nextRunNumber": 195
+    "nextRunNumber": 197
   },
   "summary": {
-    "totalRuns": 193,
-    "totalChecks": 1429,
-    "totalPassed": 1366,
-    "totalFailed": 57,
+    "totalRuns": 195,
+    "totalChecks": 1445,
+    "totalPassed": 1379,
+    "totalFailed": 60,
     "completionRate": 100,
-    "completedItems": 264,
+    "completedItems": 265,
     "pendingItems": 0,
     "deferredItems": 0,
-    "wontFixItems": 10,
+    "wontFixItems": 13,
     "expertDomainsTracked": 6,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260329-0194",
-    "lastRecordedAt": "2026-03-28T15:21:59.221Z"
+    "lastRunId": "QA-20260330-0196",
+    "lastRecordedAt": "2026-03-30T05:43:50.173Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -6285,6 +6285,102 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-03-28T15:21:59.221Z"
+    },
+    "landing-console-api-system-unauthorized": {
+      "id": "landing-console-api-system-unauthorized",
+      "title": "랜딩 비로그인 상태에서 /api/system 401 콘솔 에러 제거 또는 graceful handling",
+      "priority": "P1",
+      "status": "wont-fix",
+      "firstSeenRunId": "QA-20260330-0195",
+      "firstSeenAt": "2026-03-30T04:14:36.238Z",
+      "lastSeenRunId": "QA-20260330-0195",
+      "lastSeenAt": "2026-03-30T04:14:36.238Z",
+      "seenCount": 1,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 1,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "",
+      "lastNote": "Playwright production landing load에서 /api/system 401이 브라우저 console error로 노출됨. 기능 중단은 없지만 랜딩 품질 기준에는 불리함.",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.",
+      "lastStatusChangeAt": "2026-03-30T04:14:36.238Z"
+    },
+    "landing-vibe-content-deployment-drift": {
+      "id": "landing-vibe-content-deployment-drift",
+      "title": "Vibe Coding 프로덕션 카드 내용과 현재 소스 간 배포 드리프트 해소",
+      "priority": "P1",
+      "status": "wont-fix",
+      "firstSeenRunId": "QA-20260330-0195",
+      "firstSeenAt": "2026-03-30T04:14:36.238Z",
+      "lastSeenRunId": "QA-20260330-0195",
+      "lastSeenAt": "2026-03-30T04:14:36.238Z",
+      "seenCount": 1,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 1,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "",
+      "lastNote": "Production modal/history/architecture에 MCP 서버 9개, 구형 설명 문구가 남아 있으며 현재 소스 데이터와 불일치함.",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.",
+      "lastStatusChangeAt": "2026-03-30T04:14:36.238Z"
+    },
+    "landing-tech-stack-version-copy-drift": {
+      "id": "landing-tech-stack-version-copy-drift",
+      "title": "기술 스택 모달 상세/아키텍처 간 버전 카피 정합성 정리",
+      "priority": "P2",
+      "status": "wont-fix",
+      "firstSeenRunId": "QA-20260330-0195",
+      "firstSeenAt": "2026-03-30T04:14:36.238Z",
+      "lastSeenRunId": "QA-20260330-0195",
+      "lastSeenAt": "2026-03-30T04:14:36.238Z",
+      "seenCount": 1,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 1,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "",
+      "lastNote": "Production에서 기술 스택 상세는 Tailwind CSS 4.1, 아키텍처는 Tailwind CSS 4.2로 보임.",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "시각 구조 변경이 아니라 사용자에게 보이는 버전/도구명 카피 정합성만 우선 정리",
+      "lastPolicyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.",
+      "lastStatusChangeAt": "2026-03-30T04:14:36.238Z"
+    },
+    "landing-vibe-qa-finish-surface": {
+      "id": "landing-vibe-qa-finish-surface",
+      "title": "Vibe Coding 모달에 QA / Finish 뷰 추가",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260330-0196",
+      "firstSeenAt": "2026-03-30T05:43:50.173Z",
+      "lastSeenRunId": "QA-20260330-0196",
+      "lastSeenAt": "2026-03-30T05:43:50.173Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "Vibe Coding 카드에서 아키텍처 토글을 제거하고 현재 도구/개발 환경 변화/QA Finish 3-way 뷰를 로컬 Playwright로 검증",
+      "lastNote": "",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-03-30T05:43:50.173Z"
     }
   },
   "runs": [
@@ -16442,6 +16538,167 @@
       "expertCount": 2,
       "expertNeedsImprovementCount": 0,
       "completedCount": 8,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260330-0195",
+      "recordedAt": "2026-03-30T04:14:36.238Z",
+      "recordedAtKst": "2026-03-30 13:14:36 KST",
+      "title": "Landing Page Playwright Analysis - 4 Cards, Modal Content, Architecture, History",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260330-0195.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "aed0bdb898a52beb9842fb84e845f7ad53b242a0"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "coveragePacks": ["core-routes-smoke", "modal-detail-pack"],
+      "coveredSurfaces": [
+        "/",
+        "landing hero and CTA render",
+        "feature cards: AI Assistant / 클라우드 플랫폼 활용 / 기술 스택 / Vibe Coding",
+        "feature card modal detail view (4 cards)",
+        "feature card architecture view (4 cards)",
+        "Vibe Coding history view",
+        "browser console errors on landing"
+      ],
+      "skippedSurfaces": [
+        "/login",
+        "/dashboard",
+        "AI sidebar and chat flow",
+        "Cloud Run observability pack"
+      ],
+      "checks": {
+        "total": 11,
+        "passed": 8,
+        "failed": 3
+      },
+      "expertAssessments": [],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-03-30T13:15:00+09:00",
+          "summary": "2026-03 usage checked after targeted landing QA. Estimated total $21.78, billed $0.00, no abnormal spike observed.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "Landing page overview",
+          "path": ".playwright-mcp/screenshots/landing-page-overview-20260330.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "AI Assistant modal detail",
+          "path": ".playwright-mcp/screenshots/landing-ai-modal-detail-20260330.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "AI Assistant architecture",
+          "path": ".playwright-mcp/screenshots/landing-ai-modal-architecture-20260330.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Vibe Coding history",
+          "path": ".playwright-mcp/screenshots/landing-vibe-modal-history-20260330.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Vibe Coding architecture",
+          "path": ".playwright-mcp/screenshots/landing-vibe-modal-architecture-20260330.png"
+        },
+        {
+          "type": "playwright-console",
+          "label": "Landing console errors",
+          "path": "artifacts/landing-console-errors.txt"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "Vercel Production URL",
+          "url": "https://openmanager-ai.vercel.app/"
+        }
+      ],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 3
+    },
+    {
+      "runId": "QA-20260330-0196",
+      "recordedAt": "2026-03-30T05:43:50.173Z",
+      "recordedAtKst": "2026-03-30 14:43:50 KST",
+      "title": "Local verification - Vibe Coding modal QA/Finish view",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260330-0196.json",
+      "environment": {
+        "target": "local-dev",
+        "url": "http://localhost:3000",
+        "frontend": "Next.js dev server",
+        "backend": "local app routes",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "aed0bdb898a52beb9842fb84e845f7ad53b242a0"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "coveragePacks": ["modal-detail-pack"],
+      "coveredSurfaces": [
+        "/",
+        "Vibe Coding modal current tools view",
+        "Vibe Coding modal history view switch",
+        "Vibe Coding modal QA / Finish view",
+        "local runtime error check"
+      ],
+      "skippedSurfaces": [
+        "AI sidebar",
+        "dashboard routes",
+        "production deployment verification"
+      ],
+      "checks": {
+        "total": 5,
+        "passed": 5,
+        "failed": 0
+      },
+      "expertAssessments": [],
+      "usageChecks": [],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "Local Vibe QA Finish view",
+          "path": ".playwright-mcp/screenshots/local-vibe-qa-finish-20260330.png"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "Local dev URL",
+          "url": "http://localhost:3000/"
+        }
+      ],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
