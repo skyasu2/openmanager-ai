@@ -44,6 +44,10 @@ tests/e2e/visual-regression.spec.ts-snapshots/
 # Temporary files
 *.log
 test-*.txt
+# Playwright/QA 실행 결과 임시 파일
+landing-production-*.txt
+landing-*.txt
+artifacts/
 .temp-*
 # Root-level build/deploy/test logs (moved to logs/)
 build_*.txt

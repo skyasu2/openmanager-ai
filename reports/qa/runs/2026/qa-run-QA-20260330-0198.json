@@ -1,0 +1,125 @@
+{
+  "runId": "QA-20260330-0198",
+  "recordedAt": "2026-03-30T08:38:51.603Z",
+  "recordedAtKst": "2026-03-30 17:38:51 KST",
+  "runTitle": "Vercel Production QA - post-docs smoke recheck",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_38iFjC3qf9zfBV2SkbofH9X2tY73",
+    "deploymentUrl": "https://openmanager-3l6ak98mh-skyasus-projects.vercel.app",
+    "commitSha": "b35c36d173f7e679e6c51f857ef4ee2e701cfb3d"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "coveragePacks": ["core-routes-smoke"],
+  "coveredSurfaces": [
+    "/",
+    "landing hero",
+    "system start preview",
+    "landing feature cards",
+    "production console error check"
+  ],
+  "skippedSurfaces": [
+    "AI sidebar",
+    "dashboard routes",
+    "modal/detail flows",
+    "observability pack"
+  ],
+  "checks": {
+    "total": 7,
+    "passed": 7,
+    "failed": 0
+  },
+  "expertAssessments": [],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-03-30T17:36:58+09:00",
+      "summary": "Current billing period reviewed after post-docs production smoke; no unexpected billed usage spike observed.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "Landing production post-docs smoke",
+      "path": "landing-production-post-docs-20260330.png"
+    },
+    {
+      "type": "playwright-console",
+      "label": "Landing production post-docs console",
+      "path": "landing-production-post-docs-console-20260330.txt"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "card-title-check.png",
+      "path": ".playwright-mcp/screenshots/card-title-check.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "compare-hero.png",
+      "path": ".playwright-mcp/screenshots/compare-hero.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "final-landing.png",
+      "path": ".playwright-mcp/screenshots/final-landing.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "landing-modal-ai-assistant.png",
+      "path": ".playwright-mcp/screenshots/landing-modal-ai-assistant.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "landing-ux-analysis-01.png",
+      "path": ".playwright-mcp/screenshots/landing-ux-analysis-01.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "landing-ux-analysis-full.png",
+      "path": ".playwright-mcp/screenshots/landing-ux-analysis-full.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "local-after-codex.png",
+      "path": ".playwright-mcp/screenshots/local-after-codex.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "local-vibe-qa-finish-20260330.png",
+      "path": ".playwright-mcp/screenshots/local-vibe-qa-finish-20260330.png"
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Production deployment b35c36d17 was READY and promoted before smoke execution.",
+    "Landing page still rendered the expected hero, question preview, and four feature cards after the docs/dev-config pushes.",
+    "Preview QA evidence links were not visible in the main landing surface, and browser console contained zero errors."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Deployment Inspector",
+      "url": "https://vercel.com/skyasus-projects/openmanager-ai/38iFjC3qf9zfBV2SkbofH9X2tY73"
+    },
+    {
+      "type": "general",
+      "label": "Production URL",
+      "url": "https://openmanager-ai.vercel.app/"
+    }
+  ]
+}

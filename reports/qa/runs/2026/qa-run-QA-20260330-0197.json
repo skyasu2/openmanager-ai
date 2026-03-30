@@ -1,0 +1,140 @@
+{
+  "runId": "QA-20260330-0197",
+  "recordedAt": "2026-03-30T07:49:23.785Z",
+  "recordedAtKst": "2026-03-30 16:49:23 KST",
+  "runTitle": "Vercel Production QA - Landing improvements verification",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_6RS9B6xFu2sRSsixpNgMvgt8y39i",
+    "deploymentUrl": "https://openmanager-njwaztngx-skyasus-projects.vercel.app",
+    "commitSha": "430bc4fe5ace259b9175eb53515578492efa7335"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "coveragePacks": ["core-routes-smoke"],
+  "coveredSurfaces": [
+    "/",
+    "landing hero copy",
+    "system start preview card",
+    "landing feature cards",
+    "landing console error check",
+    "production deployment recovery"
+  ],
+  "skippedSurfaces": [
+    "AI sidebar",
+    "dashboard routes",
+    "modal/detail flows",
+    "observability pack"
+  ],
+  "checks": {
+    "total": 9,
+    "passed": 9,
+    "failed": 0
+  },
+  "expertAssessments": [],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-03-30T16:48:43+09:00",
+      "summary": "Current billing period reviewed after production QA; no unexpected billed usage spike observed in build/functions categories.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "Landing production after fix",
+      "path": "landing-production-after-fix-20260330.png"
+    },
+    {
+      "type": "playwright-console",
+      "label": "Landing production console errors after fix",
+      "path": "landing-production-console-errors-after-fix-20260330.txt"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "card-title-check.png",
+      "path": ".playwright-mcp/screenshots/card-title-check.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "compare-hero.png",
+      "path": ".playwright-mcp/screenshots/compare-hero.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "final-landing.png",
+      "path": ".playwright-mcp/screenshots/final-landing.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "landing-modal-ai-assistant.png",
+      "path": ".playwright-mcp/screenshots/landing-modal-ai-assistant.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "landing-ux-analysis-01.png",
+      "path": ".playwright-mcp/screenshots/landing-ux-analysis-01.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "landing-ux-analysis-full.png",
+      "path": ".playwright-mcp/screenshots/landing-ux-analysis-full.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "local-after-codex.png",
+      "path": ".playwright-mcp/screenshots/local-after-codex.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "local-vibe-qa-finish-20260330.png",
+      "path": ".playwright-mcp/screenshots/local-vibe-qa-finish-20260330.png"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "landing-production-improvements-deployed",
+      "title": "랜딩 페이지 개선 사항 production 반영 및 검증 완료",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Production deployment 430bc4fe5 promoted and landing QA checklist passed on https://openmanager-ai.vercel.app",
+      "note": "Initial deployment f44571f08 failed because VibeFinishSection.tsx was untracked; follow-up commit tracked the missing file.",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Production deployment for commit f44571f08 failed with Module not found: ./VibeFinishSection. Follow-up commit 430bc4fe5 added the missing tracked file and restored deployment.",
+    "Landing page now shows the updated card title, preview question examples, and revised validation link labels.",
+    "Browser console contained zero errors after the production deployment was promoted."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Deployment Inspector",
+      "url": "https://vercel.com/skyasus-projects/openmanager-ai/6RS9B6xFu2sRSsixpNgMvgt8y39i"
+    },
+    {
+      "type": "general",
+      "label": "Production URL",
+      "url": "https://openmanager-ai.vercel.app/"
+    }
+  ]
+}

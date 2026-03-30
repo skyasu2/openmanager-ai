@@ -1,28 +1,28 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-30 14:43:52 KST
+> Generated at: 2026-03-30 17:38:53 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 195 |
-| Total Checks | 1445 |
-| Passed | 1379 |
+| Total Runs | 197 |
+| Total Checks | 1461 |
+| Passed | 1395 |
 | Failed | 60 |
-| Completed Items | 265 |
+| Completed Items | 266 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 13 |
 | Expert Domains Tracked | 6 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Run | QA-20260330-0196 (2026-03-30T05:43:50.173Z) |
+| Last Run | QA-20260330-0198 (2026-03-30T08:38:51.603Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260330-0196 (2026-03-30T05:43:50.173Z)
+Latest run: QA-20260330-0198 (2026-03-30T08:38:51.603Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -32,28 +32,38 @@ Latest run: QA-20260330-0196 (2026-03-30T05:43:50.173Z)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| - | - | - | - | - |
+| vercel | cli | checked | normal | Current billing period reviewed after post-docs production smoke; no unexpected billed usage spike observed. |
 
 ## Coverage (Latest Run)
 
 - Scope: targeted
 - Release-Facing: no
-- Deployment: SHA aed0bdb8
-- Coverage Packs: modal-detail-pack
-- Covered Surfaces: /, Vibe Coding modal current tools view, Vibe Coding modal history view switch, Vibe Coding modal QA / Finish view, local runtime error check
-- Skipped Surfaces: AI sidebar, dashboard routes, production deployment verification
+- Deployment: dpl_38iFjC3qf9zfBV2SkbofH9X2tY73 / SHA b35c36d1
+- Coverage Packs: core-routes-smoke
+- Covered Surfaces: /, landing hero, system start preview, landing feature cards, production console error check
+- Skipped Surfaces: AI sidebar, dashboard routes, modal/detail flows, observability pack
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | Local dev URL | [link](http://localhost:3000/) | - |
+| general | Deployment Inspector | [link](https://vercel.com/skyasus-projects/openmanager-ai/38iFjC3qf9zfBV2SkbofH9X2tY73) | - |
+| general | Production URL | [link](https://openmanager-ai.vercel.app/) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | Local Vibe QA Finish view | `.playwright-mcp/screenshots/local-vibe-qa-finish-20260330.png` | - |
+| playwright-screenshot | Landing production post-docs smoke | `landing-production-post-docs-20260330.png` | - |
+| playwright-console | Landing production post-docs console | `landing-production-post-docs-console-20260330.txt` | - |
+| playwright-screenshot | card-title-check.png | `.playwright-mcp/screenshots/card-title-check.png` | - |
+| playwright-screenshot | compare-hero.png | `.playwright-mcp/screenshots/compare-hero.png` | - |
+| playwright-screenshot | final-landing.png | `.playwright-mcp/screenshots/final-landing.png` | - |
+| playwright-screenshot | landing-modal-ai-assistant.png | `.playwright-mcp/screenshots/landing-modal-ai-assistant.png` | - |
+| playwright-screenshot | landing-ux-analysis-01.png | `.playwright-mcp/screenshots/landing-ux-analysis-01.png` | - |
+| playwright-screenshot | landing-ux-analysis-full.png | `.playwright-mcp/screenshots/landing-ux-analysis-full.png` | - |
+| playwright-screenshot | local-after-codex.png | `.playwright-mcp/screenshots/local-after-codex.png` | - |
+| playwright-screenshot | local-vibe-qa-finish-20260330.png | `.playwright-mcp/screenshots/local-vibe-qa-finish-20260330.png` | - |
 
 ## Expert Domain Open Gaps
 
@@ -209,6 +219,7 @@ Latest run: QA-20260330-0196 (2026-03-30T05:43:50.173Z)
 - landing-copy-alignment: 랜딩/로그인 정책 카피 정합성 (completed 4회, last QA-20260227-0016)
 - landing-feature-cards: 랜딩 피처카드 4개 모달 (completed 1회, last QA-20260317-0114)
 - landing-page-render: 랜딩 페이지 렌더링 (completed 3회, last QA-20260320-0140)
+- landing-production-improvements-deployed: 랜딩 페이지 개선 사항 production 반영 및 검증 완료 (completed 1회, last QA-20260330-0197)
 - landing-profile-bootstrap-state: 랜딩 초기 프로필 상태 텍스트 일관성 개선 (completed 1회, last QA-20260317-0120)
 - landing-system-start: 시스템 시작 카운트다운 (completed 1회, last QA-20260317-0114)
 - landing-vibe-qa-finish-surface: Vibe Coding 모달에 QA / Finish 뷰 추가 (completed 1회, last QA-20260330-0196)
@@ -367,6 +378,8 @@ Latest run: QA-20260330-0196 (2026-03-30T05:43:50.173Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260330-0198 | 2026-03-30T08:38:51.603Z | targeted | no | Vercel Production QA - post-docs smoke recheck | 7 | 0 | 0 | 0 | 0 | 0 |
+| QA-20260330-0197 | 2026-03-30T07:49:23.785Z | targeted | no | Vercel Production QA - Landing improvements verification | 9 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260330-0196 | 2026-03-30T05:43:50.173Z | targeted | no | Local verification - Vibe Coding modal QA/Finish view | 5 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260330-0195 | 2026-03-30T04:14:36.238Z | targeted | no | Landing Page Playwright Analysis - 4 Cards, Modal Content, Architecture, History | 11 | 0 | 0 | 0 | 3 | 0 |
 | QA-20260329-0194 | 2026-03-28T15:21:59.221Z | targeted | yes | v8.10.6 Production QA - Security Hardening & Coverage Stabilization | 11 | 8 | 0 | 0 | 0 | 0 |
@@ -385,6 +398,4 @@ Latest run: QA-20260330-0196 (2026-03-30T05:43:50.173Z)
 | QA-20260324-0181 | 2026-03-24T11:45:07.871Z | targeted | no | Vercel Production QA - PR #200 post-merge AI smoke | 6 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260324-0180 | 2026-03-24T11:22:06.967Z | targeted | no | Vercel Preview QA - PR #200 AI deferred metadata smoke | 5 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260324-0179 | 2026-03-24T10:48:15.267Z | targeted | no | Vercel Preview QA - PR #200 blocked by preview SSO | 2 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260324-0178 | 2026-03-24T09:06:55.843Z | targeted | no | Vercel Production QA - frontend/AI parity gate closed after snapshot label pin | 6 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260324-0177 | 2026-03-24T07:57:28.735Z | targeted | no | Vercel Production QA - false realtime-analysis badge removed but parity mismatch remains | 6 | 0 | 1 | 0 | 0 | 0 |
 
