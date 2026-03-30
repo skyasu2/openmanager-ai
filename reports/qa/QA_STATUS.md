@@ -1,28 +1,28 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-30 19:28:07 KST
+> Generated at: 2026-03-30 22:40:43 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 198 |
-| Total Checks | 1468 |
-| Passed | 1402 |
+| Total Runs | 199 |
+| Total Checks | 1476 |
+| Passed | 1410 |
 | Failed | 60 |
-| Completed Items | 266 |
+| Completed Items | 268 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 13 |
 | Expert Domains Tracked | 6 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Run | QA-20260330-0199 (2026-03-30T10:28:06.580Z) |
+| Last Run | QA-20260330-0200 (2026-03-30T13:40:42.788Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260330-0199 (2026-03-30T10:28:06.580Z)
+Latest run: QA-20260330-0200 (2026-03-30T13:40:42.788Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -32,34 +32,30 @@ Latest run: QA-20260330-0199 (2026-03-30T10:28:06.580Z)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period reviewed after the web vitals deploy recheck; no unexpected billed usage spike observed. |
+| vercel | cli | checked | normal | Current billing period reviewed after the hybrid delivery wording deploy; no unexpected billed usage spike observed. |
 
 ## Coverage (Latest Run)
 
 - Scope: targeted
 - Release-Facing: no
-- Deployment: dpl_EsqM9CL8xZ1ZPbBn5TJT8CAhXJ9L / SHA 3be036e8
-- Coverage Packs: core-routes-smoke
-- Covered Surfaces: /, landing hero and system start preview, landing feature cards, /validation, /api/web-vitals POST contract, production console error check
-- Skipped Surfaces: AI sidebar, dashboard routes, modal/detail flows, actual browser-emitted /api/web-vitals beacon trace correlation
+- Deployment: dpl_8HkCxX6Qdv51iCYKmDbUuXPZuix3 / SHA f3980357
+- Coverage Packs: core-routes-smoke, modal-detail-pack
+- Covered Surfaces: /, landing feature cards, Vibe Coding modal tabs, Vibe Coding CI/CD hybrid delivery copy, Vibe Coding delivery diagram title, production console error check
+- Skipped Surfaces: /login, /dashboard, /validation, AI sidebar, dashboard modal/detail pack outside Vibe Coding
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | Deployment Inspector | [link](https://vercel.com/skyasus-projects/openmanager-ai/EsqM9CL8xZ1ZPbBn5TJT8CAhXJ9L) | - |
 | general | Production URL | [link](https://openmanager-ai.vercel.app/) | - |
+| vercel-deployment | Deployment Inspector | [link](https://vercel.com/skyasus-projects/openmanager-ai/8HkCxX6Qdv51iCYKmDbUuXPZuix3) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | Landing production web vitals smoke | `landing-production-webvitals-20260330.png` | - |
-| playwright-screenshot | Validation production web vitals smoke | `validation-production-webvitals-20260330.png` | - |
-| playwright-console | Landing production web vitals console | `landing-webvitals-production-console-20260330.txt` | - |
-| playwright-network | Landing production web vitals network | `landing-webvitals-production-network-20260330.txt` | - |
-| playwright-screenshot | qa-prod-01-loading.png | `.playwright-mcp/screenshots/qa-prod-01-loading.png` | - |
-| playwright-screenshot | qa-prod-02-cards.png | `.playwright-mcp/screenshots/qa-prod-02-cards.png` | - |
+| playwright-screenshot | Vibe hybrid delivery production modal | `vibe-hybrid-delivery-production-20260330.png` | - |
+| playwright-console | Landing vibe hybrid delivery production console | `landing-vibe-hybrid-production-console-20260330.txt` | - |
 
 ## Expert Domain Open Gaps
 
@@ -323,6 +319,8 @@ Latest run: QA-20260330-0199 (2026-03-30T10:28:06.580Z)
 - vercel-prod-ai-guest-flow-v892: Vercel 프로덕션 게스트 부팅 + 대시보드 + AI 응답 + 피드백 경로 실측 (completed 1회, last QA-20260317-0119)
 - vercel-prod-ai-sidebar: 대시보드 AI 어시스턴트 사이드바 열기/닫기 정상 (completed 1회, last QA-20260317-0114)
 - vercel-prod-frontend-boot: Vercel 프로덕션 시스템 시작 부팅 플로우 정상 동작 (completed 1회, last QA-20260317-0114)
+- vibe-hybrid-delivery-wording: Vibe Coding 모달의 배포 설명을 하이브리드 전달 구조 기준으로 정정 (completed 1회, last QA-20260330-0200)
+- vibe-qa-modal-replaced-with-cicd: Vibe Coding 모달의 QA 탭을 CI/CD 구조 설명으로 교체 (completed 1회, last QA-20260330-0200)
 - vitals-log-suppression: Web Vitals 통합 테스트 로그 억제 옵션 추가 (completed 1회, last QA-20260228-0028)
 - 게스트-pin-로그인-후-시스템-시작-버튼-노출: 게스트 PIN 로그인 후 시스템 시작 버튼 노출 (completed 1회, last QA-20260227-0010)
 - 계약-테스트-20-tests-pass: 계약 테스트 20 tests PASS (completed 1회, last QA-20260301-0032)
@@ -374,6 +372,7 @@ Latest run: QA-20260330-0199 (2026-03-30T10:28:06.580Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260330-0200 | 2026-03-30T13:40:42.788Z | targeted | no | Vercel Playwright QA - Vibe Hybrid Delivery Copy Recheck | 8 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260330-0199 | 2026-03-30T10:28:06.580Z | targeted | no | Vercel Production QA - web vitals deploy recheck | 7 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260330-0198 | 2026-03-30T08:38:51.603Z | targeted | no | Vercel Production QA - post-docs smoke recheck | 7 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260330-0197 | 2026-03-30T07:49:23.785Z | targeted | no | Vercel Production QA - Landing improvements verification | 9 | 1 | 0 | 0 | 0 | 0 |
@@ -393,5 +392,4 @@ Latest run: QA-20260330-0199 (2026-03-30T10:28:06.580Z)
 | QA-20260325-0183 | 2026-03-25T06:04:23.514Z | targeted | no | Local validation - health timeout and admin guard hardening | 4 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260324-0182 | 2026-03-24T13:11:00.000Z | targeted | no | Vercel Production QA - AI hook refactor smoke (useDeferredMessageMetadata + Codex follow-up) | 3 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260324-0181 | 2026-03-24T11:45:07.871Z | targeted | no | Vercel Production QA - PR #200 post-merge AI smoke | 6 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260324-0180 | 2026-03-24T11:22:06.967Z | targeted | no | Vercel Preview QA - PR #200 AI deferred metadata smoke | 5 | 0 | 0 | 0 | 0 | 0 |
 

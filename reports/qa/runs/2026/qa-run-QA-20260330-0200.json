@@ -1,0 +1,113 @@
+{
+  "runId": "QA-20260330-0200",
+  "recordedAt": "2026-03-30T13:40:42.788Z",
+  "recordedAtKst": "2026-03-30 22:40:42 KST",
+  "runTitle": "Vercel Playwright QA - Vibe Hybrid Delivery Copy Recheck",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_8HkCxX6Qdv51iCYKmDbUuXPZuix3",
+    "deploymentUrl": "https://openmanager-k1cnny7g4-skyasus-projects.vercel.app",
+    "commitSha": "f3980357e2000126b0ba722866981917131ffc92"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "coveragePacks": ["core-routes-smoke", "modal-detail-pack"],
+  "coveredSurfaces": [
+    "/",
+    "landing feature cards",
+    "Vibe Coding modal tabs",
+    "Vibe Coding CI/CD hybrid delivery copy",
+    "Vibe Coding delivery diagram title",
+    "production console error check"
+  ],
+  "skippedSurfaces": [
+    "/login",
+    "/dashboard",
+    "/validation",
+    "AI sidebar",
+    "dashboard modal/detail pack outside Vibe Coding"
+  ],
+  "checks": {
+    "total": 8,
+    "passed": 8,
+    "failed": 0
+  },
+  "expertAssessments": [],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-03-30T22:40:00+09:00",
+      "summary": "Current billing period reviewed after the hybrid delivery wording deploy; no unexpected billed usage spike observed.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "Vibe hybrid delivery production modal",
+      "path": "vibe-hybrid-delivery-production-20260330.png"
+    },
+    {
+      "type": "playwright-console",
+      "label": "Landing vibe hybrid delivery production console",
+      "path": "landing-vibe-hybrid-production-console-20260330.txt"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "vibe-qa-modal-replaced-with-cicd",
+      "title": "Vibe Coding 모달의 QA 탭을 CI/CD 구조 설명으로 교체",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "Production modal tabs now show 현재 도구 / 개발 환경 변화 / CI/CD with no QA / Finish tab",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "vibe-hybrid-delivery-wording",
+      "title": "Vibe Coding 모달의 배포 설명을 하이브리드 전달 구조 기준으로 정정",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "Production modal copy now states local validation gates plus GitLab main based auto deploy",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Targeted production recheck after refactor(vibe): clarify hybrid delivery wording.",
+    "Confirmed old labels Canonical First / Local Gates First / Runner by Exception / QA / Finish are absent from the rendered modal."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Production URL",
+      "url": "https://openmanager-ai.vercel.app/"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Deployment Inspector",
+      "url": "https://vercel.com/skyasus-projects/openmanager-ai/8HkCxX6Qdv51iCYKmDbUuXPZuix3"
+    }
+  ]
+}
