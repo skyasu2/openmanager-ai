@@ -4,11 +4,11 @@
 > Owner: platform-architecture
 > Status: Active
 > Doc type: Reference
-> Last reviewed: 2026-02-20
+> Last reviewed: 2026-03-30
 > Canonical: docs/reference/architecture/infrastructure/free-tier-optimization.md
 > Tags: free-tier,cost,performance,web-vitals,optimization
 >
-> **프로젝트 버전**: v8.0.0 | **Updated**: 2026-02-20
+> **프로젝트 버전**: v8.10.8 | **Updated**: 2026-03-30
 
 ## 개요
 
@@ -33,7 +33,7 @@
 
 Vercel은 현재 **유일한 유료 예외**로 Pro를 사용합니다. 다만 이는 성능/운영 완충을 위한 선택일 뿐이며, Pro 기능을 상시 전제로 설계해서는 안 됩니다. 정말 필요할 때만 사용하고, 기본 사용량은 무료 티어 수준에 머물러야 합니다. Free로 전환해도 핵심 경로는 유지되고, 악화가 허용되는 것은 응답 지연/빌드 여유/운영 편의성 정도로 제한합니다. 실환경 테스트와 배포 후에는 Vercel Usage 대시보드를 확인해 추가 비용 발생 징후가 없는지 점검합니다. QA/테스트 중 문제가 생겨 Pro 기능이나 한도를 더 쓰고 싶어질 때도, 먼저 Usage와 비용 영향을 확인한 다음에만 예외 확대를 검토합니다.
 
-Reference (checked: 2026-02-20):
+Reference (baseline links, re-verify before policy changes):
 - https://vercel.com/pricing
 - https://vercel.com/docs/limits/overview
 - https://vercel.com/docs/limits/fair-use-guidelines
@@ -143,6 +143,19 @@ schedule:
 - 일일 10,000 커맨드
 - 256MB 데이터
 
+### Stream 저장/재개 비용 경고
+
+서버는 현재 모든 스트리밍 응답을 resumable-compatible wrapper로 감싸며, 세션 매핑/메타데이터/청크 저장을 위해 Redis를 사용합니다. 프론트엔드의 자동 resume 플래그는 현재 기본 비활성(`resume: false`)이지만, 서버 측 저장과 정리 비용은 계속 발생합니다.
+
+| 경로 | Redis 동작 |
+|------|-----------|
+| 스트림 시작 | session `SET` + meta `SET` + chunk마다 `RPUSH`/`EXPIRE` |
+| 재개 조회 | session `GET` + meta `GET` + `LRANGE` (반복 가능) |
+| 종료/정리 | session `DEL` + data/meta `DEL` |
+
+> **포트폴리오 제약**: 명령 수는 청크 수와 resume/cleanup 경로에 따라 달라집니다. 응답 청크 증가, 재시도 확대, 재개 polling 증가는 모두 Redis 사용량 증가로 직결됩니다.
+> 동시 사용자가 늘어나면 10K 커맨드/일 한도가 빠르게 병목이 될 수 있습니다.
+
 ### Pipeline 배칭
 
 Circuit Breaker 상태 저장 시 개별 호출 대신 Pipeline으로 묶어 커맨드 수를 절약:
@@ -193,15 +206,24 @@ await pipeline.exec();
 
 ## Part 5: LLM 프로바이더 비용 제어
 
-### 무료 티어 프로바이더 체인
+### ⚠️ 핵심 제약: AI 성능 강화 ≠ 스펙 업
 
-| 우선순위 | 프로바이더 | 무료 한도 | 제한 |
-|---------|-----------|---------|------|
-| 1 | Cerebras | 추론 무료 | Rate limit 있음 |
-| 2 | Groq | 월 14,400 요청 | 분당 30 요청 |
-| 3 | Mistral | 월 $5 크레딧 | 모델별 상이 |
-| Vision 1 | Google Gemini | 일 1,500 요청 | 분당 15 요청 |
-| Vision 2 | OpenRouter Free | 무제한 (무료 모델) | 느린 응답 |
+> **이 프로젝트의 포트폴리오 제약**:
+> AI 응답 품질 향상 = 에이전트 추가 호출 = API 요청 수 증가 = 무료 티어 소진 가속.
+> 성능 개선은 반드시 **캐싱 강화, 응답 재사용, 라우팅 최적화** 방향으로만 진행해야 합니다.
+> LLM 모델 업그레이드, 에이전트 추가 호출, 병렬 실행 확대는 모두 **무료 한도 영향 검토 후** 결정합니다.
+
+### 무료 티어 프로바이더 체인 (배포 환경)
+
+| 우선순위 | 프로바이더 | 무료 한도 | Agent 역할 | 위험도 |
+|---------|-----------|---------|-----------|--------|
+| 1 | **Cerebras** | 1M TPD, 3,000 tok/s | Supervisor·NLQ·Analyst·Orchestrator | ⚠️ 트래픽 많으면 소진 |
+| 2 | **Groq** | 100K TPD, 12K TPM | Reporter (Primary) | ⚠️ 분당 30 요청 상한 |
+| 3 | **Mistral** | Tier 0: 1 RPS, 40K~500K TPM | Advisor (Primary) | ✅ 여유 있음 |
+| Vision 1 | **Google Gemini Flash** | 1,000 RPD, 250K TPM | Vision Agent | ⚠️ 일 1,000회 |
+| Vision 2 | **OpenRouter Free** | 무료 모델 제공 | Vision Fallback | ✅ 응답 느림 |
+
+> **개발 환경 AI (Claude/Codex/Gemini CLI)는 별개 예산** — 개발자 구독 선납 비용이며 위 표와 무관합니다.
 
 ### Rate Limit 자동 대응
 

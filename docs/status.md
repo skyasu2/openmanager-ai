@@ -4,11 +4,11 @@
 > Owner: documentation
 > Status: Active
 > Doc type: Status
-> Last reviewed: 2026-03-29
+> Last reviewed: 2026-03-30
 > Canonical: docs/status.md
 > Tags: status,changelog,release
 
-**마지막 업데이트**: 2026-03-29
+**마지막 업데이트**: 2026-03-30
 
 ---
 
@@ -290,10 +290,10 @@
 - **v7.0.0** (2026-01-24) - BREAKING CHANGES
   - v1 stream endpoint 제거 → v2 UIMessageStream 전용
   - Resumable streams via Redis (새로고침 시에도 유지)
-  - AI SDK v6 native `resume: true` 기본 적용
+  - AI SDK v6 native resumable stream 인프라 도입
 
 - **v6.1.0** (2026-01-25)
-  - `TextStreamChatTransport` → `DefaultChatTransport` + `resume: true`
+  - `TextStreamChatTransport` → `DefaultChatTransport` + UIMessageStream 네이티브 전환
   - UIMessageStream 네이티브 프로토콜 적용
   - Resumable Stream v2 엔드포인트 (`/api/ai/supervisor/stream/v2`)
   - `finalAnswer` 도구 패턴 적용 (`hasToolCall` + `stepCountIs`)
@@ -323,7 +323,7 @@
 
 ## 📚 Documentation Status
 
-**총 활성 문서 수**: 54개 (예산 60, `docs/archived/` 제외)
+**총 활성 문서 수**: 56개 (예산 60, `docs/archived/` 제외)
 
 **DRY 구조**:
 - `.claude/rules/` → Claude Code 전용 간략 규칙
@@ -335,15 +335,15 @@
 - **Utility**: tailwind-merge `v3.5.0`
 
 **AI Ecosystem** (상세: [AI Engine Architecture](./reference/architecture/ai/ai-engine-architecture.md))
-- **SDK**: Vercel AI SDK `v6.0.97` (`@ai-sdk/*` 패키지 포함, Cloud Run: `^6.0.50`)
+- **SDK**: Vercel AI SDK `ai 6.0.138` / `@ai-sdk/react 3.0.140`
 - **Native Patterns** (v6.1.0):
   - `finalAnswer` 도구: `stopWhen: [hasToolCall('finalAnswer'), stepCountIs(5)]`
   - `UIMessageStream`: 네이티브 스트리밍 프로토콜
-  - `Resumable Stream v2`: Upstash Redis 기반 자동 재연결
+  - `Resumable Stream v2`: 서버 측 Redis wrapper + reconnect 경로 준비, auto-resume 기본 비활성
   - `prepareStep`: 에이전트 라우팅 순서 최적화
 - **Models**: Quad-provider 전략 (Rate limit 최적화, 2026-01-27)
-  - Cerebras `gpt-oss-120b`: Supervisor, NLQ, Orchestrator, Analyst, Verifier (1M TPD, 3000 tok/s)
-  - Groq `llama-3.3-70b-versatile`: Reporter (100K TPD, 12K TPM)
+  - Cerebras `gpt-oss-120b`: Supervisor, NLQ, Orchestrator, Analyst 중심 경로
+  - Groq `llama-3.3-70b-versatile`: Reporter 중심 경로
   - Mistral `mistral-large-latest`: Advisor (Tier 0: 1 RPS)
   - **Gemini 2.5 Flash**: Vision Agent (250 RPD, 10 RPM, 1M context)
   - **OpenRouter (Fallback)**: `nvidia/nemotron-nano-12b-v2-vl:free` (Gemini Vision 백업)
@@ -514,7 +514,7 @@
   - 해결: `TextStreamChatTransport`로 변경 (plain text 스트림 처리)
 - ~~**변경 파일**~~: _v6에서 제거됨_
   - ~~`src/app/api/ai/supervisor/stream/route.ts`~~ (508줄 삭제)
-- **v6 대체**: `DefaultChatTransport` + `resume: true` + UIMessageStream 네이티브 프로토콜
+- **v6 대체**: `DefaultChatTransport` + UIMessageStream 네이티브 프로토콜
 
 **기술 부채 검토 완료 (v5.81.0)**
 - **Next.js 보안 패치**: 16.0.7 → 16.0.10 (CVE 대응)
@@ -566,7 +566,7 @@
 ## 📝 문서 관리 현황
 
 **관리 원칙 (Diataxis + Doc Budget)**
-- 활성 문서: 54개 (예산 60, `docs/archived/` 제외)
+- 활성 문서: 56개 (예산 60, `docs/archived/` 제외)
 - 병합 우선: 70%+ 중복 시 병합, Historical 문서는 `docs/archived/`로 이동
 - **Key Docs**:
   - `README.md`: 프로젝트 개요
@@ -625,7 +625,7 @@
 | 구현 영역 | 기술 스택 | 상태 |
 |----------|----------|------|
 | Web UI | Next.js 16 + React 19 Dashboard | ✅ 완료 |
-| AI Assistant | useChat + DefaultChatTransport (resume: true) | ✅ 완료 |
+| AI Assistant | useChat + DefaultChatTransport (resume infra, auto-resume off) | ✅ 완료 |
 | Multi-Agent | 7-Agent Orchestration (Cloud Run) | ✅ 완료 |
 | Database | Supabase PostgreSQL + pgvector | ✅ 완료 |
 | Cache | Upstash Redis | ✅ 완료 |
