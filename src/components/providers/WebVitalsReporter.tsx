@@ -54,10 +54,11 @@ function roundMetricValue(name: SupportedMetricName, value: number): number {
 
 function createSessionId(): string {
   if (
-    typeof crypto !== 'undefined' &&
-    typeof crypto.randomUUID === 'function'
+    typeof window !== 'undefined' &&
+    typeof window.crypto !== 'undefined' &&
+    typeof window.crypto.randomUUID === 'function'
   ) {
-    return crypto.randomUUID();
+    return window.crypto.randomUUID();
   }
 
   return `wv-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
@@ -99,13 +100,19 @@ function sendWebVitalsPayload(payload: WebVitalsPayload): void {
 export function WebVitalsReporter() {
   const pathname = usePathname();
   const pathnameRef = useRef(pathname ?? '/');
-  const sessionIdRef = useRef(createSessionId());
+  const sessionIdRef = useRef('pending');
   const flushTimerRef = useRef<number | undefined>(undefined);
   const metricsRef = useRef<Record<string, WebVitalsMetricPayload>>({});
 
   useEffect(() => {
     pathnameRef.current = pathname ?? window.location.pathname;
   }, [pathname]);
+
+  useEffect(() => {
+    if (sessionIdRef.current === 'pending') {
+      sessionIdRef.current = createSessionId();
+    }
+  }, []);
 
   const flushMetrics = useCallback(() => {
     if (process.env.NODE_ENV !== 'production') return;
