@@ -56,8 +56,9 @@
 - **GitHub `origin`은 공개용 code-only snapshot** 으로 취급합니다. private canonical repo와 히스토리가 다를 수 있으므로 `origin/main`을 기준 브랜치처럼 다루지 않습니다.
 - Codex는 push/fetch/rebase 전에 항상 `git remote -v`를 확인하고, 기본 push 대상은 `gitlab` 으로 선택합니다.
 - GitHub 공개 스냅샷 동기화는 `npm run sync:github` 으로만 수행합니다 (`scripts/sync/github-sync.sh`, 제외 목록: `.github-export-ignore`). `git push origin` 직접 실행 금지.
-- GitLab CI는 기본 비활성(`GITLAB_CI_POLICY=local-docker-only`)입니다. 외부 CI보다 `npm run ci:local:docker`, pre-push hook, Vercel 실환경 QA를 우선합니다.
-- `.gitlab-ci.yml` 부재는 현재 정책상 의도된 상태입니다. GitLab SaaS runner를 기본값으로 두지 않고, 로컬 전체 검증은 `npm run ci:local:docker` 또는 `npm run ci:local:docker:full`을 표준 경로로 사용합니다.
+- GitLab CI는 **활성** 상태입니다. `.gitlab-ci.yml` validate → deploy 2-stage 파이프라인이 코드 변경 push 시 실행됩니다. docs/reports 전용 push는 CI 스킵(분 예산 보존).
+- **배포 권한은 GitLab CI `deploy` job이 보유**합니다. Vercel Git Integration은 해제됐으며 `vercel --prod` CLI로만 배포됩니다. validate 실패 시 배포가 차단됩니다.
+- 로컬 전체 검증 표준 경로는 `npm run ci:local:docker` (SSOT 유지, CI와 별개)입니다.
 
 ## 3) 공통 지식 및 유지보수 메모
 - **[필독] 프로젝트 3대 원칙 (Free Tier, 배포 환경 인지, OTel 데이터 SSOT)** 등 모든 AI 에이전트가 완벽히 숙지해야 할 핵심 규칙은 `docs/guides/ai/ai-standards.md` 파일에 정의되어 있습니다. 작업을 시작하기 전 해당 문서를 반드시 참조하세요.
@@ -65,4 +66,4 @@
 - 공통 정책이 변경되는 경우 이 파일이 아닌 `docs/guides/ai/ai-standards.md`를 갱신해야 합니다.
 
 ---
-_Last reviewed: 2026-03-27_
+_Last reviewed: 2026-03-31_

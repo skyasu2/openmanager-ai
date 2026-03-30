@@ -1,0 +1,77 @@
+# GitLab CI/CD Pipeline
+# 정책: main 브랜치 코드 변경 시만 실행 (docs/reports 전용 push 스킵)
+# 구조: validate → deploy (순차, validate 실패 시 deploy 차단)
+# 분 소진 예산: validate ~3분 + deploy ~4분 = ~7분/회 (월 400분 한도 내)
+
+image: node:24-bookworm
+
+stages:
+  - validate
+  - deploy
+
+# ─── 공통 캐시 ────────────────────────────────────────────────────────────────
+.node_cache: &node_cache
+  cache:
+    key:
+      files:
+        - package-lock.json
+    paths:
+      - node_modules/
+      - .npm/
+    policy: pull
+
+# ─── 변경 감지 규칙 ────────────────────────────────────────────────────────────
+# docs/reports/QA 아티팩트 전용 push는 CI 스킵 → 분 소진 방지
+.code_changes_only: &code_changes_only
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+      changes:
+        - src/**/*
+        - cloud-run/**/*
+        - public/**/*
+        - scripts/**/*
+        - config/**/*
+        - package.json
+        - package-lock.json
+        - next.config.mjs
+        - tsconfig.json
+        - vercel.json
+        - .env.example
+      when: on_success
+    - when: never
+
+# ─── validate job ──────────────────────────────────────────────────────────────
+validate:
+  stage: validate
+  <<: *node_cache
+  <<: *code_changes_only
+  before_script:
+    - npm ci --prefer-offline --no-audit
+  script:
+    - echo "▶ TypeScript 타입 검사..."
+    - npm run type-check
+    - echo "▶ Biome lint 검사..."
+    - npm run lint:ci
+    - echo "▶ 빠른 테스트 실행..."
+    - npm run test:quick
+    - echo "✅ validate 통과"
+  timeout: 15 minutes
+  interruptible: true
+
+# ─── deploy job ────────────────────────────────────────────────────────────────
+deploy:
+  stage: deploy
+  <<: *code_changes_only
+  before_script:
+    - npm install -g vercel@latest --no-audit --silent
+  script:
+    - echo "▶ Vercel production 배포..."
+    - vercel pull --yes --environment=production --token=$VERCEL_TOKEN
+    - vercel build --prod --token=$VERCEL_TOKEN
+    - vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN
+    - echo "✅ 배포 완료"
+  environment:
+    name: production
+    url: https://openmanager-ai.vercel.app
+  timeout: 10 minutes
+  # validate 성공 시에만 실행 (GitLab이 stage 순서로 자동 보장)
