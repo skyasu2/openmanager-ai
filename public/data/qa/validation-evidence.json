@@ -1,28 +1,28 @@
 {
   "version": "1.0.0",
-  "generatedAt": "2026-03-30T08:38:53.355Z",
+  "generatedAt": "2026-03-30T10:28:08.018Z",
   "source": {
     "trackerPath": "reports/qa/qa-tracker.json",
     "statusPath": "reports/qa/QA_STATUS.md",
     "publicPath": "public/data/qa/validation-evidence.json",
     "publicHref": "/data/qa/validation-evidence.json",
-    "latestRunId": "QA-20260330-0198"
+    "latestRunId": "QA-20260330-0199"
   },
   "summary": {
-    "totalRuns": 197,
-    "totalChecks": 1461,
+    "totalRuns": 198,
+    "totalChecks": 1468,
     "completedItems": 266,
     "expertDomainsOpenGaps": 0,
     "wontFixItems": 13,
-    "lastRecordedAt": "2026-03-30T08:38:51.603Z"
+    "lastRecordedAt": "2026-03-30T10:28:06.580Z"
   },
   "trackerUpdated": {
-    "iso": "2026-03-30T08:38:51.603Z",
+    "iso": "2026-03-30T10:28:06.580Z",
     "short": "2026-03-30",
     "long": "March 30, 2026"
   },
   "publicEvidenceUpdated": {
-    "iso": "2026-03-30T08:38:51.603Z",
+    "iso": "2026-03-30T10:28:06.580Z",
     "short": "2026-03-30",
     "long": "March 30, 2026"
   },

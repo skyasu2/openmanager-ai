@@ -2,15 +2,15 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-03-30T08:38:51.603Z"
+    "updatedAt": "2026-03-30T10:28:06.580Z"
   },
   "sequence": {
-    "nextRunNumber": 199
+    "nextRunNumber": 200
   },
   "summary": {
-    "totalRuns": 197,
-    "totalChecks": 1461,
-    "totalPassed": 1395,
+    "totalRuns": 198,
+    "totalChecks": 1468,
+    "totalPassed": 1402,
     "totalFailed": 60,
     "completionRate": 100,
     "completedItems": 266,
@@ -19,8 +19,8 @@
     "wontFixItems": 13,
     "expertDomainsTracked": 6,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260330-0198",
-    "lastRecordedAt": "2026-03-30T08:38:51.603Z"
+    "lastRunId": "QA-20260330-0199",
+    "lastRecordedAt": "2026-03-30T10:28:06.580Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -16960,6 +16960,110 @@
           "type": "general",
           "label": "Deployment Inspector",
           "url": "https://vercel.com/skyasus-projects/openmanager-ai/38iFjC3qf9zfBV2SkbofH9X2tY73"
+        },
+        {
+          "type": "general",
+          "label": "Production URL",
+          "url": "https://openmanager-ai.vercel.app/"
+        }
+      ],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260330-0199",
+      "recordedAt": "2026-03-30T10:28:06.580Z",
+      "recordedAtKst": "2026-03-30 19:28:06 KST",
+      "title": "Vercel Production QA - web vitals deploy recheck",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260330-0199.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_EsqM9CL8xZ1ZPbBn5TJT8CAhXJ9L",
+        "deploymentUrl": "https://openmanager-8cmmr46wi-skyasus-projects.vercel.app",
+        "commitSha": "3be036e820cfa78a59ddfc15f7086d0624a88d97"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "coveragePacks": ["core-routes-smoke"],
+      "coveredSurfaces": [
+        "/",
+        "landing hero and system start preview",
+        "landing feature cards",
+        "/validation",
+        "/api/web-vitals POST contract",
+        "production console error check"
+      ],
+      "skippedSurfaces": [
+        "AI sidebar",
+        "dashboard routes",
+        "modal/detail flows",
+        "actual browser-emitted /api/web-vitals beacon trace correlation"
+      ],
+      "checks": {
+        "total": 7,
+        "passed": 7,
+        "failed": 0
+      },
+      "expertAssessments": [],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-03-30T19:14:00+09:00",
+          "summary": "Current billing period reviewed after the web vitals deploy recheck; no unexpected billed usage spike observed.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "Landing production web vitals smoke",
+          "path": "landing-production-webvitals-20260330.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Validation production web vitals smoke",
+          "path": "validation-production-webvitals-20260330.png"
+        },
+        {
+          "type": "playwright-console",
+          "label": "Landing production web vitals console",
+          "path": "landing-webvitals-production-console-20260330.txt"
+        },
+        {
+          "type": "playwright-network",
+          "label": "Landing production web vitals network",
+          "path": "landing-webvitals-production-network-20260330.txt"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "qa-prod-01-loading.png",
+          "path": ".playwright-mcp/screenshots/qa-prod-01-loading.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "qa-prod-02-cards.png",
+          "path": ".playwright-mcp/screenshots/qa-prod-02-cards.png"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "Deployment Inspector",
+          "url": "https://vercel.com/skyasus-projects/openmanager-ai/EsqM9CL8xZ1ZPbBn5TJT8CAhXJ9L"
         },
         {
           "type": "general",

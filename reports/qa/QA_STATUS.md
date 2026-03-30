@@ -1,15 +1,15 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-30 17:38:53 KST
+> Generated at: 2026-03-30 19:28:07 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 197 |
-| Total Checks | 1461 |
-| Passed | 1395 |
+| Total Runs | 198 |
+| Total Checks | 1468 |
+| Passed | 1402 |
 | Failed | 60 |
 | Completed Items | 266 |
 | Pending Items | 0 |
@@ -18,11 +18,11 @@
 | Expert Domains Tracked | 6 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Run | QA-20260330-0198 (2026-03-30T08:38:51.603Z) |
+| Last Run | QA-20260330-0199 (2026-03-30T10:28:06.580Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260330-0198 (2026-03-30T08:38:51.603Z)
+Latest run: QA-20260330-0199 (2026-03-30T10:28:06.580Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -32,38 +32,34 @@ Latest run: QA-20260330-0198 (2026-03-30T08:38:51.603Z)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period reviewed after post-docs production smoke; no unexpected billed usage spike observed. |
+| vercel | cli | checked | normal | Current billing period reviewed after the web vitals deploy recheck; no unexpected billed usage spike observed. |
 
 ## Coverage (Latest Run)
 
 - Scope: targeted
 - Release-Facing: no
-- Deployment: dpl_38iFjC3qf9zfBV2SkbofH9X2tY73 / SHA b35c36d1
+- Deployment: dpl_EsqM9CL8xZ1ZPbBn5TJT8CAhXJ9L / SHA 3be036e8
 - Coverage Packs: core-routes-smoke
-- Covered Surfaces: /, landing hero, system start preview, landing feature cards, production console error check
-- Skipped Surfaces: AI sidebar, dashboard routes, modal/detail flows, observability pack
+- Covered Surfaces: /, landing hero and system start preview, landing feature cards, /validation, /api/web-vitals POST contract, production console error check
+- Skipped Surfaces: AI sidebar, dashboard routes, modal/detail flows, actual browser-emitted /api/web-vitals beacon trace correlation
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | Deployment Inspector | [link](https://vercel.com/skyasus-projects/openmanager-ai/38iFjC3qf9zfBV2SkbofH9X2tY73) | - |
+| general | Deployment Inspector | [link](https://vercel.com/skyasus-projects/openmanager-ai/EsqM9CL8xZ1ZPbBn5TJT8CAhXJ9L) | - |
 | general | Production URL | [link](https://openmanager-ai.vercel.app/) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | Landing production post-docs smoke | `landing-production-post-docs-20260330.png` | - |
-| playwright-console | Landing production post-docs console | `landing-production-post-docs-console-20260330.txt` | - |
-| playwright-screenshot | card-title-check.png | `.playwright-mcp/screenshots/card-title-check.png` | - |
-| playwright-screenshot | compare-hero.png | `.playwright-mcp/screenshots/compare-hero.png` | - |
-| playwright-screenshot | final-landing.png | `.playwright-mcp/screenshots/final-landing.png` | - |
-| playwright-screenshot | landing-modal-ai-assistant.png | `.playwright-mcp/screenshots/landing-modal-ai-assistant.png` | - |
-| playwright-screenshot | landing-ux-analysis-01.png | `.playwright-mcp/screenshots/landing-ux-analysis-01.png` | - |
-| playwright-screenshot | landing-ux-analysis-full.png | `.playwright-mcp/screenshots/landing-ux-analysis-full.png` | - |
-| playwright-screenshot | local-after-codex.png | `.playwright-mcp/screenshots/local-after-codex.png` | - |
-| playwright-screenshot | local-vibe-qa-finish-20260330.png | `.playwright-mcp/screenshots/local-vibe-qa-finish-20260330.png` | - |
+| playwright-screenshot | Landing production web vitals smoke | `landing-production-webvitals-20260330.png` | - |
+| playwright-screenshot | Validation production web vitals smoke | `validation-production-webvitals-20260330.png` | - |
+| playwright-console | Landing production web vitals console | `landing-webvitals-production-console-20260330.txt` | - |
+| playwright-network | Landing production web vitals network | `landing-webvitals-production-network-20260330.txt` | - |
+| playwright-screenshot | qa-prod-01-loading.png | `.playwright-mcp/screenshots/qa-prod-01-loading.png` | - |
+| playwright-screenshot | qa-prod-02-cards.png | `.playwright-mcp/screenshots/qa-prod-02-cards.png` | - |
 
 ## Expert Domain Open Gaps
 
@@ -378,6 +374,7 @@ Latest run: QA-20260330-0198 (2026-03-30T08:38:51.603Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260330-0199 | 2026-03-30T10:28:06.580Z | targeted | no | Vercel Production QA - web vitals deploy recheck | 7 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260330-0198 | 2026-03-30T08:38:51.603Z | targeted | no | Vercel Production QA - post-docs smoke recheck | 7 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260330-0197 | 2026-03-30T07:49:23.785Z | targeted | no | Vercel Production QA - Landing improvements verification | 9 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260330-0196 | 2026-03-30T05:43:50.173Z | targeted | no | Local verification - Vibe Coding modal QA/Finish view | 5 | 1 | 0 | 0 | 0 | 0 |
@@ -397,5 +394,4 @@ Latest run: QA-20260330-0198 (2026-03-30T08:38:51.603Z)
 | QA-20260324-0182 | 2026-03-24T13:11:00.000Z | targeted | no | Vercel Production QA - AI hook refactor smoke (useDeferredMessageMetadata + Codex follow-up) | 3 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260324-0181 | 2026-03-24T11:45:07.871Z | targeted | no | Vercel Production QA - PR #200 post-merge AI smoke | 6 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260324-0180 | 2026-03-24T11:22:06.967Z | targeted | no | Vercel Preview QA - PR #200 AI deferred metadata smoke | 5 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260324-0179 | 2026-03-24T10:48:15.267Z | targeted | no | Vercel Preview QA - PR #200 blocked by preview SSO | 2 | 0 | 0 | 0 | 0 | 0 |
 

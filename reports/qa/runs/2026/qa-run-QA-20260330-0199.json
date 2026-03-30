@@ -1,0 +1,108 @@
+{
+  "runId": "QA-20260330-0199",
+  "recordedAt": "2026-03-30T10:28:06.580Z",
+  "recordedAtKst": "2026-03-30 19:28:06 KST",
+  "runTitle": "Vercel Production QA - web vitals deploy recheck",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_EsqM9CL8xZ1ZPbBn5TJT8CAhXJ9L",
+    "deploymentUrl": "https://openmanager-8cmmr46wi-skyasus-projects.vercel.app",
+    "commitSha": "3be036e820cfa78a59ddfc15f7086d0624a88d97"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "coveragePacks": ["core-routes-smoke"],
+  "coveredSurfaces": [
+    "/",
+    "landing hero and system start preview",
+    "landing feature cards",
+    "/validation",
+    "/api/web-vitals POST contract",
+    "production console error check"
+  ],
+  "skippedSurfaces": [
+    "AI sidebar",
+    "dashboard routes",
+    "modal/detail flows",
+    "actual browser-emitted /api/web-vitals beacon trace correlation"
+  ],
+  "checks": {
+    "total": 7,
+    "passed": 7,
+    "failed": 0
+  },
+  "expertAssessments": [],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-03-30T19:14:00+09:00",
+      "summary": "Current billing period reviewed after the web vitals deploy recheck; no unexpected billed usage spike observed.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "Landing production web vitals smoke",
+      "path": "landing-production-webvitals-20260330.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Validation production web vitals smoke",
+      "path": "validation-production-webvitals-20260330.png"
+    },
+    {
+      "type": "playwright-console",
+      "label": "Landing production web vitals console",
+      "path": "landing-webvitals-production-console-20260330.txt"
+    },
+    {
+      "type": "playwright-network",
+      "label": "Landing production web vitals network",
+      "path": "landing-webvitals-production-network-20260330.txt"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "qa-prod-01-loading.png",
+      "path": ".playwright-mcp/screenshots/qa-prod-01-loading.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "qa-prod-02-cards.png",
+      "path": ".playwright-mcp/screenshots/qa-prod-02-cards.png"
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Production deployment 3be036e82 was READY and promoted before the smoke execution.",
+    "The previous production build blocker was the client render path calling crypto.randomUUID during prerender; deferring session id creation to client mount resolved the deployment.",
+    "Direct POST contract to /api/web-vitals returned 200 with success=true and analysis payload.",
+    "Playwright network capture did not show an automatic /api/web-vitals beacon during the smoke window, so client-side field beacon correlation remains explicitly unverified in this run.",
+    "Landing and validation surfaces rendered without browser console errors."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Deployment Inspector",
+      "url": "https://vercel.com/skyasus-projects/openmanager-ai/EsqM9CL8xZ1ZPbBn5TJT8CAhXJ9L"
+    },
+    {
+      "type": "general",
+      "label": "Production URL",
+      "url": "https://openmanager-ai.vercel.app/"
+    }
+  ]
+}
