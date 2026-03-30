@@ -247,6 +247,8 @@ reports/gcp-quota-report-*.md
 # AI 검토 보고서 및 분석 리포트
 reports/*
 !reports/README.md
+!reports/docs/
+!reports/docs/docs-inventory.md
 !reports/planning/
 !reports/history/
 !reports/ai-review/

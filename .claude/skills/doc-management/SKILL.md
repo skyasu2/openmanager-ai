@@ -36,7 +36,7 @@ find docs/ -name "*.md" -not -path "*/archived/*" | \
 ### 2. 예산 초과 감지
 
 디렉토리별 한도와 비교 (SSOT: `.claude/rules/documentation.md`):
-- reference/architecture/*: 25 | development/*: 20 | guides/*: 12
+- reference/architecture/*: 22 | development/*: 22 | guides/*: 10
 - troubleshooting/*: 5 | root: 5
 
 초과 시 병합/아카이브 후보 제안.
@@ -62,7 +62,7 @@ find docs/ -name "*.md" -not -path "*/archived/*" -mtime +90
 | 항목 | 현재 | 한도 | 상태 |
 |------|------|------|------|
 | 전체 | XX | 60 | OK/OVER |
-| reference/architecture | XX | 25 | ... |
+| reference/architecture | XX | 22 | ... |
 | ...  | ... | ... | ... |
 
 ### 조치 필요

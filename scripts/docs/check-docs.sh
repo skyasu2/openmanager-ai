@@ -123,7 +123,7 @@ echo -e "  📝 총 라인 수: ${GREEN}${TOTAL_LINES}${NC}줄"
 echo -e "  📏 400줄 초과 문서: ${YELLOW}${LARGE_DOCS}${NC}개"
 
 node scripts/docs/generate-inventory.js >/dev/null
-echo -e "  📦 인벤토리 갱신: ${GREEN}docs/development/docs-inventory.md${NC}"
+echo -e "  📦 인벤토리 갱신: ${GREEN}reports/docs/docs-inventory.md${NC}"
 
 echo -e "\n========================================"
 echo -e "${BLUE}📚 문서 검증 완료${NC}"

@@ -4,7 +4,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 
 const docsRoot = 'docs';
-const outputPath = 'docs/development/docs-inventory.md';
+const outputPath = 'reports/docs/docs-inventory.md';
 
 function walk(dir) {
   const out = [];
@@ -44,7 +44,7 @@ out += '> Owner: docs-platform\n';
 out += '> Status: Active\n';
 out += '> Doc type: Reference\n';
 out += `> Last reviewed: ${new Date().toISOString().slice(0, 10)}\n`;
-out += '> Canonical: docs/development/docs-inventory.md\n';
+out += '> Canonical: reports/docs/docs-inventory.md\n';
 out += '> Tags: docs,inventory,report\n';
 out += '>\n';
 out += `> Auto-generated: ${new Date().toISOString().slice(0, 10)}\n`;
@@ -61,5 +61,6 @@ out += '\n## Notes\n\n';
 out += '- `analysis/` and `reviews/` are treated as historical docs.\n';
 out += '- Canonical docs are managed in `docs/development/documentation-management.md`.\n';
 
+fs.mkdirSync(path.dirname(outputPath), { recursive: true });
 fs.writeFileSync(outputPath, out);
 console.log(`Generated ${outputPath}`);

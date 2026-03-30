@@ -3,7 +3,7 @@
 > Owner: docs-platform
 > Status: Active Canonical
 > Doc type: Explanation
-> Last reviewed: 2026-02-15
+> Last reviewed: 2026-03-30
 > Canonical: docs/development/documentation-management.md
 > Tags: docs-governance,diataxis,docs-as-code
 
@@ -17,12 +17,13 @@
 4. Claude skill: `.claude/skills/doc-management/SKILL.md`
 5. 자동 점검: `scripts/docs/check-docs.sh`, `scripts/docs/doc-budget-report.js`
 6. WSL 전용 점검 래퍼: `scripts/wsl/docs-management-check.sh`
+7. 자동 생성 인벤토리: `reports/docs/docs-inventory.md`
 
 ## 운영 규칙
 
 1. 우선순위: 병합 > 기존 문서 확장 > 신규 생성
 2. 활성 문서 예산: 총 60개(`docs/archived/` 제외)
-   - Scope 한도: `reference/architecture 25`, `development 20(= vibe-coding 포함)`, `guides 12`, `troubleshooting 5`, `root 5`
+   - Scope 한도: `reference/architecture 22`, `development 22(= vibe-coding 포함)`, `guides 10`, `troubleshooting 5`, `root 5`
 3. 메타데이터(변경 문서 Hard gate):
    - 필수: `Owner`, `Status`, `Doc type`, `Last reviewed`
    - 권장: `Canonical`, `Tags`

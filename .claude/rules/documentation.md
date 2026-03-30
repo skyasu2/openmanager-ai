@@ -9,9 +9,9 @@
 | 범위 | 한도 | 비고 |
 |------|:----:|------|
 | 전체 활성 문서 | 60개 | `docs/archived/` 제외 |
-| reference/architecture/* | 25개 | 아키텍처 문서 |
-| development/* | 20개 | vibe-coding/ 포함 |
-| guides/* | 12개 | 운영 지침 |
+| reference/architecture/* | 22개 | 아키텍처 문서 |
+| development/* | 22개 | vibe-coding/ 포함 |
+| guides/* | 10개 | 운영 지침 |
 | troubleshooting/* | 5개 | 문제 해결 |
 | root (docs/) | 5개 | README, QUICK-START 등 |
 

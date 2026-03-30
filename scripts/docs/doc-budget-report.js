@@ -13,9 +13,9 @@ const STALE_DAYS = 90;
 
 const BUDGET = {
   total: 60,
-  referenceArchitecture: 25,
-  development: 20,
-  guides: 12,
+  referenceArchitecture: 22,
+  development: 22,
+  guides: 10,
   troubleshooting: 5,
   root: 5,
 };
