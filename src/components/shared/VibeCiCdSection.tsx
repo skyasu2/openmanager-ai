@@ -5,23 +5,23 @@ import type { ArchitectureDiagram } from '@/data/architecture-diagrams.types';
 
 const DELIVERY_PRINCIPLES = [
   {
-    title: 'Canonical First',
+    title: '정본 배포 경로',
     description:
       '정본 저장소는 GitLab main입니다. Vercel frontend 배포도 GitLab main을 기준으로 자동 반영됩니다.',
     icon: GitBranch,
     style: 'border-emerald-500/20 bg-emerald-500/10 text-emerald-200',
   },
   {
-    title: 'Local Gates First',
+    title: '로컬 검증 게이트',
     description:
-      '작은 변경은 pre-commit + pre-push로 빠르게 걸러내고, broad change나 release 직전에는 local Docker CI를 추가로 사용합니다.',
+      '작은 변경은 pre-commit과 pre-push로 검증하고, broad change나 release 직전에는 local Docker CI를 추가로 사용합니다.',
     icon: ShieldCheck,
     style: 'border-sky-500/20 bg-sky-500/10 text-sky-200',
   },
   {
-    title: 'Runner by Exception',
+    title: '선택형 무거운 검증',
     description:
-      'GitLab SaaS CI runner를 기본으로 두지 않습니다. 현재 정책은 local-docker-only이며, GitHub는 공개용 code snapshot 경로로만 취급합니다.',
+      'GitLab SaaS CI runner를 상시 운영하지 않고, 더 무거운 검증은 local Docker CI나 배포 후 QA에서 선택적으로 수행합니다.',
     icon: Ban,
     style: 'border-purple-500/20 bg-purple-500/10 text-purple-200',
   },
@@ -130,13 +130,14 @@ export function VibeCiCdSection({
             </span>
             <div>
               <h4 className="text-xl font-semibold text-white">
-                이 프로젝트는 GitLab runner보다 로컬 gate와 GitLab canonical
-                delivery를 우선합니다.
+                로컬 검증 게이트를 거친 뒤 GitLab main 기준으로 production
+                배포를 자동 반영합니다.
               </h4>
               <p className="mt-2 text-sm leading-relaxed text-white/75">
-                실제 운영 방식은 pre-commit, pre-push, local Docker CI, GitLab
-                main, Vercel production auto deploy 순서입니다. 공개 GitHub는
-                배포 채널이 아니라 필요할 때만 동기화하는 snapshot 경로입니다.
+                중앙 runner를 상시 두는 전형적인 CI/CD는 아니지만, pre-commit,
+                pre-push, local Docker CI로 변경을 검증하고 GitLab main 반영 후
+                Vercel이 production 배포를 자동 수행합니다. 공개 GitHub는 필요할
+                때만 동기화하는 snapshot 경로입니다.
               </p>
             </div>
           </div>

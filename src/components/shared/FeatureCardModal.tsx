@@ -252,7 +252,7 @@ export default function FeatureCardModal({
                 ? vibeView === 'history'
                   ? '바이브 코딩 여정: 초기(ChatGPT 개별 페이지) → 중기(Cursor + Vercel + Supabase) → 후기(Claude Code + WSL)로 이어진 개발 환경의 변화를 시간 순서대로 보여줍니다.'
                   : vibeView === 'cicd'
-                    ? '현재 저장소가 실제로 사용하는 pre-commit, pre-push, local Docker CI, GitLab canonical delivery, Vercel production 배포 경로를 요약합니다.'
+                    ? '로컬 검증 게이트를 거친 뒤 GitLab main 기준으로 production 배포를 자동 반영하는 방식을 보여줍니다.'
                     : parseMarkdownLinks(
                         sanitizeModalText(detailedContent.overview)
                       )

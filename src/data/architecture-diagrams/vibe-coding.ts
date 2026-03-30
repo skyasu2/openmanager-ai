@@ -2,9 +2,9 @@ import type { ArchitectureDiagram } from '../architecture-diagrams.types';
 
 export const VIBE_CODING_ARCHITECTURE: ArchitectureDiagram = {
   id: 'vibe-coding',
-  title: 'Vibe Coding CI/CD Flow',
+  title: 'Vibe Coding Hybrid Delivery Flow',
   description:
-    'Local WSL + AI-first build loop → pre-commit + pre-push gate → optional local Docker CI → GitLab canonical → Vercel production auto deploy → optional public snapshot sync.',
+    'Local WSL + AI-first build loop → pre-commit + pre-push gate → optional local Docker CI → GitLab main → Vercel production auto deploy → optional public snapshot sync.',
   layers: [
     {
       title: 'Local Dev Loop',
