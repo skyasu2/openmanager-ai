@@ -136,6 +136,7 @@ export const FEATURE_CARDS_DATA: FeatureCard[] = [
         '🦊 GitLab + Dual Remote: canonical 저장소를 GitLab으로 전환, GitHub는 공개 코드 스냅샷 전용 — git push gitlab main → Vercel 자동 배포',
       ],
       technologies: [
+        'Google Antigravity (IDE)',
         'WSL Terminal (Main)',
         'Claude Code (Core)',
         'Codex CLI (QA/Finishing)',

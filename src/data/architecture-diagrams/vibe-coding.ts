@@ -7,6 +7,19 @@ export const VIBE_CODING_ARCHITECTURE: ArchitectureDiagram = {
     'Stage 4: GitLab canonical + Multi-AI CLI (Claude/Codex/Gemini) + 로컬 Docker CI + Cloud Run AI Engine. AI가 만들고 AI가 검증.',
   layers: [
     {
+      title: 'IDE (Agent-First)',
+      color: 'from-yellow-500 to-amber-600',
+      nodes: [
+        {
+          id: 'antigravity',
+          label: 'Google Antigravity',
+          sublabel: 'WSL 터미널 호스트 IDE',
+          type: 'highlight',
+          icon: '🌌',
+        },
+      ],
+    },
+    {
       title: 'WSL Terminal (Main)',
       color: 'from-purple-500 to-indigo-600',
       nodes: [
@@ -138,6 +151,7 @@ export const VIBE_CODING_ARCHITECTURE: ArchitectureDiagram = {
     },
   ],
   connections: [
+    { from: 'antigravity', to: 'claude-code', label: 'Terminal' },
     { from: 'claude-code', to: 'codex', label: 'Cross-Review' },
     { from: 'claude-code', to: 'gemini', label: 'Cross-Review' },
     { from: 'claude-code', to: 'gitlab', label: 'git push' },
