@@ -16,7 +16,7 @@ import {
 } from './FeatureCardModal.utils';
 import type { ReactFlowDiagramProps } from './ReactFlowDiagram';
 import { TechStackSection } from './TechStackSection';
-import { VibeFinishSection } from './VibeFinishSection';
+import { VibeCiCdSection } from './VibeCiCdSection';
 import { VibeHistorySection } from './VibeHistorySection';
 
 // React Flow는 클라이언트 사이드에서만 렌더링 (SSR 비활성화)
@@ -42,9 +42,9 @@ export default function FeatureCardModal({
 }: FeatureCardModalProps) {
   // 모달은 항상 다크 테마로 고정
   // 바이브 코딩 카드 전용 모드 상태
-  const [vibeView, setVibeView] = React.useState<'current' | 'history' | 'qa'>(
-    'current'
-  );
+  const [vibeView, setVibeView] = React.useState<
+    'current' | 'history' | 'cicd'
+  >('current');
   // 아키텍처 다이어그램 뷰 상태 (모든 카드에 적용)
   const [showDiagram, setShowDiagram] = React.useState(false);
   const selectedCardId = selectedCard?.id ?? null;
@@ -238,8 +238,8 @@ export default function FeatureCardModal({
                 <span className="ml-2 text-lg font-medium text-amber-400">
                   {vibeView === 'history'
                     ? '• 개발 환경 변화'
-                    : vibeView === 'qa'
-                      ? '• QA / Finish'
+                    : vibeView === 'cicd'
+                      ? '• CI/CD'
                       : '• 현재 도구'}
                 </span>
               )}
@@ -251,8 +251,8 @@ export default function FeatureCardModal({
               {cardData.id === 'vibe-coding'
                 ? vibeView === 'history'
                   ? '바이브 코딩 여정: 초기(ChatGPT 개별 페이지) → 중기(Cursor + Vercel + Supabase) → 후기(Claude Code + WSL)로 이어진 개발 환경의 변화를 시간 순서대로 보여줍니다.'
-                  : vibeView === 'qa'
-                    ? '빠른 MVP 제작에서 멈추지 않고, 실제 배포 이후 QA와 증거 추적까지 마무리한 흐름을 요약합니다.'
+                  : vibeView === 'cicd'
+                    ? '현재 저장소가 실제로 사용하는 pre-commit, pre-push, local Docker CI, GitLab canonical delivery, Vercel production 배포 경로를 요약합니다.'
                     : parseMarkdownLinks(
                         sanitizeModalText(detailedContent.overview)
                       )
@@ -335,8 +335,8 @@ export default function FeatureCardModal({
           vibeView === 'history' &&
           vibeHistoryStages ? (
             <VibeHistorySection historyStages={vibeHistoryStages} />
-          ) : cardData.id === 'vibe-coding' && vibeView === 'qa' ? (
-            <VibeFinishSection diagram={diagramData} />
+          ) : cardData.id === 'vibe-coding' && vibeView === 'cicd' ? (
+            <VibeCiCdSection diagram={diagramData} />
           ) : (
             <TechStackSection
               criticalTech={criticalTech}
@@ -452,7 +452,7 @@ export default function FeatureCardModal({
                   {[
                     { id: 'current', label: '현재 도구' },
                     { id: 'history', label: '개발 환경 변화' },
-                    { id: 'qa', label: 'QA / Finish' },
+                    { id: 'cicd', label: 'CI/CD' },
                   ].map((view) => {
                     const isActive = vibeView === view.id;
 
@@ -461,7 +461,7 @@ export default function FeatureCardModal({
                         key={view.id}
                         type="button"
                         onClick={() =>
-                          setVibeView(view.id as 'current' | 'history' | 'qa')
+                          setVibeView(view.id as 'current' | 'history' | 'cicd')
                         }
                         className={`rounded-lg px-3 py-1.5 text-sm font-medium transition-all duration-200 focus:outline-hidden focus:ring-2 focus:ring-amber-500/40 ${
                           isActive

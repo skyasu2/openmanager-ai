@@ -2,9 +2,9 @@ import type { ArchitectureDiagram } from '../architecture-diagrams.types';
 
 export const VIBE_CODING_ARCHITECTURE: ArchitectureDiagram = {
   id: 'vibe-coding',
-  title: 'Vibe Coding Delivery Flow',
+  title: 'Vibe Coding CI/CD Flow',
   description:
-    'Local WSL + AI-first build loop → pre-commit + Local Docker CI → GitLab canonical → Vercel production QA → public evidence export.',
+    'Local WSL + AI-first build loop → pre-commit + pre-push gate → optional local Docker CI → GitLab canonical → Vercel production auto deploy → optional public snapshot sync.',
   layers: [
     {
       title: 'Local Dev Loop',
@@ -27,7 +27,7 @@ export const VIBE_CODING_ARCHITECTURE: ArchitectureDiagram = {
       ],
     },
     {
-      title: 'Quality Gates',
+      title: 'Local Quality Gates',
       color: 'from-emerald-500 to-teal-600',
       nodes: [
         {
@@ -38,10 +38,17 @@ export const VIBE_CODING_ARCHITECTURE: ArchitectureDiagram = {
           icon: '🪝',
         },
         {
+          id: 'pre-push',
+          label: 'Pre-push Hook',
+          sublabel: 'related tests + changed TS scope',
+          type: 'highlight',
+          icon: '🛫',
+        },
+        {
           id: 'local-ci',
           label: 'Local Docker CI',
-          sublabel: 'type-check + test + smoke',
-          type: 'highlight',
+          sublabel: 'broad/release change only',
+          type: 'primary',
           icon: '🐋',
         },
       ],
@@ -67,22 +74,15 @@ export const VIBE_CODING_ARCHITECTURE: ArchitectureDiagram = {
       ],
     },
     {
-      title: 'Proof & Public Surface',
+      title: 'Deploy & Public Sync',
       color: 'from-sky-500 to-indigo-600',
       nodes: [
         {
-          id: 'validation',
-          label: 'Validation Evidence',
-          sublabel: 'Playwright proof + latest proof run',
+          id: 'vercel-check',
+          label: 'Deploy Check',
+          sublabel: 'status + smoke when needed',
           type: 'highlight',
-          icon: '🧪',
-        },
-        {
-          id: 'public-snapshot',
-          label: 'Public Snapshot JSON',
-          sublabel: 'machine-readable QA evidence',
-          type: 'primary',
-          icon: '📄',
+          icon: '🔎',
         },
         {
           id: 'github',
@@ -97,11 +97,17 @@ export const VIBE_CODING_ARCHITECTURE: ArchitectureDiagram = {
   connections: [
     { from: 'antigravity', to: 'claude-code', label: 'WSL' },
     { from: 'claude-code', to: 'pre-commit', label: 'commit' },
-    { from: 'pre-commit', to: 'local-ci', label: 'gate' },
-    { from: 'local-ci', to: 'gitlab', label: 'pass' },
+    { from: 'pre-commit', to: 'pre-push', label: 'local gate' },
+    { from: 'pre-push', to: 'gitlab', label: 'quick pass' },
+    {
+      from: 'pre-push',
+      to: 'local-ci',
+      label: 'broad/release',
+      type: 'dashed',
+    },
+    { from: 'local-ci', to: 'gitlab', label: 'full pass' },
     { from: 'gitlab', to: 'vercel', label: 'auto deploy' },
-    { from: 'vercel', to: 'validation', label: 'proof run' },
-    { from: 'validation', to: 'public-snapshot', label: 'publish' },
+    { from: 'vercel', to: 'vercel-check', label: 'verify' },
     { from: 'gitlab', to: 'github', label: 'sync:github', type: 'dashed' },
   ],
 };

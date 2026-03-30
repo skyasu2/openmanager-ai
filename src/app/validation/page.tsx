@@ -174,8 +174,8 @@ export default function ValidationEvidencePage() {
           <p className="mt-3 max-w-3xl text-sm leading-relaxed text-white/75 sm:text-base">
             이 페이지는 현재 배포에 포함된 public QA snapshot과 최신 proof run
             근거를 요약해서 보여주는 evidence summary입니다. 랜딩 메인 CTA가
-            아니라 Vibe Coding의 QA / Finish와 public validation 데이터를 사실
-            기준으로 연결하는 보조 검증 화면입니다.
+            아니라 배포 검증 근거를 분리해서 공개하는 보조 검증 화면이며, 모달형
+            소개 콘텐츠와는 독립적으로 유지됩니다.
           </p>
           <p className="mt-3 max-w-3xl text-sm leading-relaxed text-white/65">
             저장소의 더 최신 QA 기록은 다음 재배포 전까지 자동 반영되지
