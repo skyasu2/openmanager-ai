@@ -77,6 +77,10 @@ const nextConfig = {
     serverMinification: true,
     optimizeCss: false, // critters 의존성 문제로 비활성화
     // Next.js 15에서 runtime, swcMinify 제거됨 - 기본 제공
+    // WSL2 NTFS 환경에서 Turbopack dev 캐시 손상 방지
+    // 프로젝트가 /mnt/d/ (Windows NTFS)에 있어 SIGKILL 시 .next/dev/ manifest 손상
+    // 16.2.0 stable 출시 후 true로 되돌려 재테스트 예정
+    turbopackFileSystemCacheForDev: false,
   },
 
   // 🚀 이미지 최적화 설정 (무료 티어 친화적 + 성능 우선)

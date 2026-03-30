@@ -7,8 +7,6 @@
 'use client';
 
 import { MessageSquareQuote } from 'lucide-react';
-import Link from 'next/link';
-import { QA_EVIDENCE_CTA_LINKS, QA_EVIDENCE_LABELS } from '@/data/qa-evidence';
 import type { ButtonConfig, StatusInfo } from '../hooks/useSystemStart';
 
 const START_EXAMPLES = [
@@ -108,36 +106,6 @@ export function SystemStartSection({
                 <span className="text-cyan-300">Q.</span> {example}
               </div>
             ))}
-          </div>
-          <div className="mt-4 border-t border-white/10 pt-4 text-xs text-white/75">
-            <div className="flex flex-wrap items-center justify-center gap-2">
-              <span className="rounded-full border border-emerald-400/20 bg-emerald-400/10 px-3 py-1 text-emerald-200">
-                {QA_EVIDENCE_LABELS.badge}
-              </span>
-              <span className="text-white/55">
-                {QA_EVIDENCE_LABELS.criteria}
-              </span>
-            </div>
-            <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
-              <Link
-                href={QA_EVIDENCE_CTA_LINKS.statusHref}
-                className="rounded-full border border-cyan-400/25 bg-cyan-400/10 px-3 py-1 text-cyan-200 transition hover:bg-cyan-400/15"
-              >
-                검증 현황
-              </Link>
-              <Link
-                href={QA_EVIDENCE_CTA_LINKS.proofHref}
-                className="rounded-full border border-emerald-400/25 bg-emerald-400/10 px-3 py-1 text-emerald-200 transition hover:bg-emerald-400/15"
-              >
-                최신 실행 결과
-              </Link>
-              <Link
-                href={QA_EVIDENCE_CTA_LINKS.overviewHref}
-                className="rounded-full border border-purple-400/25 bg-purple-400/10 px-3 py-1 text-purple-200 transition hover:bg-purple-400/15"
-              >
-                검증 페이지
-              </Link>
-            </div>
           </div>
         </div>
       </div>
