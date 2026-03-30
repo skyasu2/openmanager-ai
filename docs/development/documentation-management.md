@@ -55,6 +55,8 @@
 4. `check-docs.sh`에 `DOCS_STRICT_CHANGED` 플래그 추가
 5. CI(`docs-quality.yml`)에서 schedule 제외 이벤트는 strict gate 활성화
 6. Codex/Claude 문서관리 skill 내용을 SSOT 기준으로 동기화
+7. `docs-inventory.md` → `reports/docs/` 이동: 자동 생성 스냅샷은 거버넌스 문서가 아닌 리포트로 분류 (`.gitignore` whitelist 포함)
+8. 예산 한도 재조정 (`reference/architecture 25→22`, `development 20→22`, `guides 12→10`): 과밀 영역 완화 + 과잉 여유 회수, 총 60개 유지
 
 ## 자동화 실행 규약
 
@@ -67,6 +69,9 @@ npm run docs:budget:strict
 
 # 상세 리포트 생성
 npm run docs:budget
+
+# 문서 인벤토리 갱신 (reports/docs/docs-inventory.md)
+node scripts/docs/generate-inventory.js
 ```
 
 CI에서는 `DOCS_STRICT_CHANGED=true`와 `DOCS_DIFF_RANGE`를 함께 전달해 PR/Push diff 기준으로 변경 문서를 판정한다.
