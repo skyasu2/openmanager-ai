@@ -280,28 +280,3 @@ export const DashboardOptimizedErrorResponseSchema = z.object({
     })
     .optional(),
 });
-
-export type DashboardOptimizedServer = z.infer<
-  typeof DashboardOptimizedServerSchema
->;
-export type DashboardOptimizedResponse = z.infer<
-  typeof DashboardOptimizedResponseSchema
->;
-export type DashboardOptimizedErrorResponse = z.infer<
-  typeof DashboardOptimizedErrorResponseSchema
->;
-
-// ===== 타입 내보내기 =====
-
-export type SystemOverview = z.infer<typeof SystemOverviewSchema>;
-export type DashboardOverviewData = z.infer<typeof DashboardOverviewDataSchema>;
-export type DashboardStats = z.infer<typeof DashboardStatsSchema>;
-export type DashboardData = z.infer<typeof DashboardDataSchema>;
-export type DashboardResponse = z.infer<typeof DashboardResponseSchema>;
-export type DashboardServer = z.infer<typeof DashboardServerSchema>;
-export type DashboardActionRequest = z.infer<
-  typeof DashboardActionRequestSchema
->;
-export type DashboardActionResponse = z.infer<
-  typeof DashboardActionResponseSchema
->;

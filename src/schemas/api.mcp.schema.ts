@@ -228,24 +228,3 @@ export const MCPSyncResultSchema = z.object({
     .optional(),
   message: z.string().optional(),
 });
-
-// ===== 타입 내보내기 =====
-
-export type MCPQueryRequest = z.infer<typeof MCPQueryRequestSchema>;
-export type MCPQueryResponse = z.infer<typeof MCPQueryResponseSchema>;
-export type MCPContextIntegrationRequest = z.infer<
-  typeof MCPContextIntegrationRequestSchema
->;
-export type MCPContextIntegrationResponse = z.infer<
-  typeof MCPContextIntegrationResponseSchema
->;
-export type MCPIntegrationStatusResponse = z.infer<
-  typeof MCPIntegrationStatusResponseSchema
->;
-export type MCPSyncRequest = z.infer<typeof MCPSyncRequestSchema>;
-export type MCPSyncResponse = z.infer<typeof MCPSyncResponseSchema>;
-export type MCPSyncStatusResponse = z.infer<typeof MCPSyncStatusResponseSchema>;
-export type MCPSyncResult = z.infer<typeof MCPSyncResultSchema>;
-export type MCPNLPContext = z.infer<typeof MCPNLPContextSchema>;
-export type MCPContext = z.infer<typeof MCPContextSchema>;
-export type LocalContextBundle = z.infer<typeof LocalContextBundleSchema>;

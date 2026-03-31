@@ -85,8 +85,3 @@ export const aiFeedbackResponseSchema = z
       });
     }
   });
-
-export type CloudRunFeedbackProxyPayload = z.infer<
-  typeof cloudRunFeedbackProxyPayloadSchema
->;
-export type AIFeedbackResponse = z.infer<typeof aiFeedbackResponseSchema>;

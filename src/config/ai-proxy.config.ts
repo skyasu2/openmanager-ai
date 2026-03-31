@@ -24,10 +24,8 @@ export type {
   ComplexityCategoryWeights,
   ObservabilityConfig,
   ProxyEndpoint,
-  QueryRoutingConfig,
   RAGWeightsConfig,
   StreamRetryConfig,
-  TimeoutConfig,
   VercelTier,
 } from './ai-proxy/config-schema';
 

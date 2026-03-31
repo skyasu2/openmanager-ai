@@ -10,7 +10,6 @@
 export {
   type CachedAIResponse,
   type CacheResult,
-  type CacheStats,
   generateQueryHash,
   getAIResponseCache,
   invalidateSessionCache,

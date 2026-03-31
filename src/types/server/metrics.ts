@@ -32,18 +32,6 @@ export interface MetricsHistory {
 }
 
 /**
- * 시계열 메트릭
- */
-export interface TimeSeriesMetrics {
-  timestamp: string;
-  cpu: number;
-  memory: number;
-  disk: number;
-  network: number;
-  processes?: ProcessInfo[];
-}
-
-/**
  * 확장된 서버 메트릭 (AI 교차검증 결과 반영)
  */
 export interface EnhancedServerMetrics {

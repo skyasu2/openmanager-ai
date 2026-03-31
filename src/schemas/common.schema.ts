@@ -209,18 +209,3 @@ const _SafeJsonSchema = <T extends z.ZodTypeAny>(schema: T) =>
       return val;
     })
     .pipe(schema);
-
-// ===== 타입 내보내기 =====
-export type Id = z.infer<typeof IdSchema>;
-export type Uuid = z.infer<typeof UuidSchema>;
-export type Timestamp = z.infer<typeof TimestampSchema>;
-export type Percentage = z.infer<typeof PercentageSchema>;
-export type PaginationRequest = z.infer<typeof PaginationRequestSchema>;
-export type PaginationResponse = z.infer<typeof PaginationResponseSchema>;
-export type BaseResponse = z.infer<typeof BaseResponseSchema>;
-export type Metadata = z.infer<typeof MetadataSchema>;
-export type Configuration = z.infer<typeof ConfigurationSchema>;
-export type Status = z.infer<typeof _StatusSchema>;
-export type HealthStatus = z.infer<typeof HealthStatusSchema>;
-export type Priority = z.infer<typeof PrioritySchema>;
-export type Environment = z.infer<typeof EnvironmentSchema>;

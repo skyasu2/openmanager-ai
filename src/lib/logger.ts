@@ -42,16 +42,6 @@ export enum LogLevel {
   NONE = 4,
 }
 
-export interface LogEntry {
-  timestamp: string;
-  level: LogLevel;
-  category: string;
-  message: string;
-  data?: unknown;
-  source?: string;
-  error?: SafeError; // 에러 관련 로깅을 위한 필드 추가
-}
-
 class DevLogger {
   private static instance: DevLogger;
   private logLevel: LogLevel;

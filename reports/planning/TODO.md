@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-03-29 KST (v8.10.8, supervisor stream timeout helper 분리 완료)
+**Last Updated**: 2026-03-31 KST (v8.10.8, backlog 재정비 — 대형 파일 항목 폐기, Knip 타입 정리 진행 중)
 
 ## Active Tasks
 
@@ -18,8 +18,10 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| P3: Knip unused export types 정리 (잔여) | Low | 잔여: src/schemas/api.*.schema.ts, src/types/common.ts 등 API contract/공용 타입 — 삭제 시 외부 파손 위험, non-blocking |
-| P3: 대형 파일(500+줄) 분리 계획 | Low | `src/app/api/system/route.ts` 476줄, `src/app/api/ai/jobs/[id]/stream/route.ts` 464줄 등 중형 route 중심 — `supervisor/stream/v2`, `formatters.ts`, `auth/guest-login/route.ts` 분리 완료, 기능 정상 범위에서 저위험 후보만 차기 리팩토링 |
+| P3: Knip unused export types 정리 (잔여) | Low | 잔여: src/schemas/server-schemas/, src/types/ai-sidebar/, src/types/intelligent-monitoring.types.ts, src/types/server/status.ts 등 소수 — 안전 삭제 후 check 통과 기준 |
+
+### Completed (2026-03-31 #15)
+- [x] P3: 백로그 재정비 — `대형 파일(500+줄) 분리 계획` 항목 폐기 확정. 대상 파일(system/route.ts 476줄, jobs stream 464줄)이 이미 기준 미만으로 실효 상실. schemas/api.*.schema.ts 미사용 type alias + src/types/ 미사용 exports 일괄 정리 진행.
 
 ### Completed (2026-03-29 #14)
 - [x] P3: `supervisor/stream/v2/route.ts` timeout helper 분리 — warmup/abort/retry timeout 계산과 헤더 파서를 `stream-timeouts.ts`로 추출해 `route.ts` 634→561줄 축소, `stream-timeouts.test.ts` 추가 후 route/helper 28 tests 및 `npm run check` 통과

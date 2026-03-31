@@ -52,21 +52,6 @@ export type ServerRole =
   | 'application'
   | 'fallback';
 
-// 서버 타입 (기존 호환성 유지)
-export type ServerType = ServerRole;
-
-// 메트릭 타입
-export type MetricType =
-  | 'cpu'
-  | 'memory'
-  | 'disk'
-  | 'network'
-  | 'connections'
-  | 'responseTime';
-
-// 알림 심각도
-export type AlertSeverity = 'info' | 'warning' | 'critical';
-
 // ⚡ 최적화된 타입 가드 (O(1) 복잡도)
 const VALID_STATUSES = new Set<string>(SERVER_STATUS_VALUES);
 

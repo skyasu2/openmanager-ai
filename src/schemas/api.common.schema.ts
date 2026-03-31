@@ -50,14 +50,3 @@ const _BatchResponseSchema = <T extends z.ZodTypeAny>(itemSchema: T) =>
     successCount: z.number(),
     failedCount: z.number(),
   });
-
-// ===== 타입 내보내기 =====
-
-export type BatchRequest<T> = {
-  items: T[];
-  options?: {
-    parallel?: boolean;
-    continueOnError?: boolean;
-    timeout?: number;
-  };
-};

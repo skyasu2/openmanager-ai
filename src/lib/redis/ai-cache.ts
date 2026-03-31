@@ -580,8 +580,3 @@ export async function invalidateSessionCache(
 // ==============================================
 // 🎯 캐시 통계
 // ==============================================
-
-export interface CacheStats {
-  enabled: boolean;
-  aiResponseKeys: number;
-}
