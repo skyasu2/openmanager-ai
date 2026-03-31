@@ -5,17 +5,34 @@ import {
   ArrowRight,
   Box,
   Cloud,
+  GitBranch,
   Globe,
   Home,
   MonitorCheck,
   Rocket,
   Send,
   ShieldCheck,
+  Zap,
 } from 'lucide-react';
 import type { ArchitectureDiagram } from '@/data/architecture-diagrams.types';
 import { cn } from '@/lib/utils';
 
 // ─── 파이프라인 카드 정의 ───────────────────────────────────────────────────────
+
+type RunnerBadge = {
+  icon: typeof Home;
+  label: string;
+  time: string;
+  timeBg: string;
+  timeText: string;
+};
+
+type SimpleBadge = {
+  icon: typeof Zap;
+  label: string;
+  bg: string;
+  text: string;
+};
 
 type PipelineCard = {
   id: string;
@@ -28,13 +45,8 @@ type PipelineCard = {
   iconBg: string;
   iconText: string;
   ring: string;
-  runner?: {
-    icon: typeof Home;
-    label: string;
-    time: string;
-    timeBg: string;
-    timeText: string;
-  };
+  runner?: RunnerBadge; // 실행 환경 배지 (아이콘 + 레이블 + 시간)
+  badge?: SimpleBadge; // 단순 보조 배지 (runner 없는 카드용)
 };
 
 const PIPELINE: PipelineCard[] = [
@@ -49,18 +61,30 @@ const PIPELINE: PipelineCard[] = [
     iconBg: 'bg-sky-500/20',
     iconText: 'text-sky-300',
     ring: 'ring-sky-500/40',
+    badge: {
+      icon: Zap,
+      label: 'Husky',
+      bg: 'bg-sky-500/15',
+      text: 'text-sky-300',
+    },
   },
   {
     id: 'push',
     icon: Send,
     stage: 'GitLab 푸시',
     detail: ['git push', 'gitlab main'],
-    accent: 'text-slate-300',
-    bg: 'bg-slate-500/8',
-    border: 'border-slate-500/20',
-    iconBg: 'bg-slate-500/20',
-    iconText: 'text-slate-300',
-    ring: 'ring-slate-500/30',
+    accent: 'text-violet-300',
+    bg: 'bg-violet-500/8',
+    border: 'border-violet-500/30',
+    iconBg: 'bg-violet-500/20',
+    iconText: 'text-violet-300',
+    ring: 'ring-violet-500/40',
+    badge: {
+      icon: GitBranch,
+      label: 'canonical',
+      bg: 'bg-violet-500/15',
+      text: 'text-violet-300',
+    },
   },
   {
     id: 'validate',
@@ -111,6 +135,12 @@ const PIPELINE: PipelineCard[] = [
     iconBg: 'bg-emerald-500/20',
     iconText: 'text-emerald-300',
     ring: 'ring-emerald-500/50',
+    badge: {
+      icon: Globe,
+      label: 'live',
+      bg: 'bg-emerald-500/15',
+      text: 'text-emerald-300',
+    },
   },
 ];
 
@@ -161,97 +191,132 @@ export function VibeCiCdSection({
           push 한 번 → 자동 검사 → 자동 배포 → 실서비스
         </p>
 
-        {/* 카드 행 */}
-        <div className="flex items-stretch gap-0 overflow-x-auto pb-1">
-          {PIPELINE.map((card, i) => {
-            const Icon = card.icon;
-            const RunnerIcon = card.runner?.icon;
-            return (
-              <div key={card.id} className="flex items-center">
-                {/* 파이프라인 카드 */}
-                <div
-                  className={cn(
-                    'flex min-w-[108px] flex-col items-center gap-2.5 rounded-2xl border p-3.5',
-                    card.bg,
-                    card.border
-                  )}
-                >
-                  {/* 아이콘 */}
+        {/* P5: 스크롤 힌트 — 오른쪽 fade-out gradient */}
+        <div className="relative">
+          {/* 카드 행 */}
+          <div className="flex items-start gap-0 overflow-x-auto pb-2">
+            {PIPELINE.map((card, i) => {
+              const Icon = card.icon;
+              const RunnerIcon = card.runner?.icon;
+              const BadgeIcon = card.badge?.icon;
+              return (
+                <div key={card.id} className="flex items-start">
+                  {/* P1: 모든 카드 동일 구조 — runner/badge 영역 항상 확보 */}
                   <div
                     className={cn(
-                      'flex h-11 w-11 items-center justify-center rounded-xl ring-2',
-                      card.iconBg,
-                      card.iconText,
-                      card.ring
+                      'flex min-w-[108px] flex-col items-center gap-2.5 rounded-2xl border p-3.5',
+                      card.bg,
+                      card.border
                     )}
                   >
-                    <Icon className="h-5 w-5" />
-                  </div>
-
-                  {/* 스테이지 이름 */}
-                  <p
-                    className={cn(
-                      'text-center text-[11px] font-black leading-tight',
-                      card.accent
-                    )}
-                  >
-                    {card.stage}
-                  </p>
-
-                  {/* 상세 */}
-                  <div className="flex flex-col items-center gap-0.5">
-                    {card.detail.map((d) => (
-                      <span
-                        key={d}
-                        className="text-center text-[9px] leading-tight text-white/35"
-                      >
-                        {d}
-                      </span>
-                    ))}
-                  </div>
-
-                  {/* 러너 배지 */}
-                  {card.runner && RunnerIcon && (
+                    {/* 아이콘 */}
                     <div
                       className={cn(
-                        'flex w-full items-center justify-center gap-1.5 rounded-lg px-2 py-1.5',
-                        card.runner.timeBg
+                        'flex h-11 w-11 items-center justify-center rounded-xl ring-2',
+                        card.iconBg,
+                        card.iconText,
+                        card.ring
                       )}
                     >
-                      <RunnerIcon
-                        className={cn('h-3 w-3 shrink-0', card.runner.timeText)}
-                      />
-                      <div className="min-w-0 text-center">
-                        <p
+                      <Icon className="h-5 w-5" />
+                    </div>
+
+                    {/* 스테이지 이름 */}
+                    <p
+                      className={cn(
+                        'text-center text-[11px] font-black leading-tight',
+                        card.accent
+                      )}
+                    >
+                      {card.stage}
+                    </p>
+
+                    {/* 상세 텍스트 */}
+                    <div className="flex flex-col items-center gap-0.5">
+                      {card.detail.map((d) => (
+                        <span
+                          key={d}
+                          className="text-center text-[9px] leading-tight text-white/35"
+                        >
+                          {d}
+                        </span>
+                      ))}
+                    </div>
+
+                    {/* P1: 하단 배지 영역 — runner 또는 badge 또는 invisible placeholder */}
+                    {card.runner && RunnerIcon ? (
+                      /* 실행 환경 배지 (코드 검사 · 자동 배포) */
+                      <div
+                        className={cn(
+                          'flex w-full items-center justify-center gap-1.5 rounded-lg px-2 py-1.5',
+                          card.runner.timeBg
+                        )}
+                      >
+                        <RunnerIcon
                           className={cn(
-                            'text-[9px] font-semibold leading-none',
+                            'h-3 w-3 shrink-0',
                             card.runner.timeText
                           )}
-                        >
-                          {card.runner.label}
-                        </p>
-                        <p
-                          className={cn(
-                            'mt-0.5 text-[11px] font-black tabular-nums leading-none',
-                            card.runner.timeText
-                          )}
-                        >
-                          {card.runner.time}
-                        </p>
+                        />
+                        <div className="min-w-0 text-center">
+                          <p
+                            className={cn(
+                              'text-[9px] font-semibold leading-none',
+                              card.runner.timeText
+                            )}
+                          >
+                            {card.runner.label}
+                          </p>
+                          <p
+                            className={cn(
+                              'mt-0.5 text-[11px] font-black tabular-nums leading-none',
+                              card.runner.timeText
+                            )}
+                          >
+                            {card.runner.time}
+                          </p>
+                        </div>
                       </div>
+                    ) : card.badge && BadgeIcon ? (
+                      /* P3: 단순 보조 배지 (로컬 훅 · GitLab 푸시 · 실서비스) */
+                      <div
+                        className={cn(
+                          'flex w-full items-center justify-center gap-1 rounded-lg px-2 py-1.5',
+                          card.badge.bg
+                        )}
+                      >
+                        <BadgeIcon
+                          className={cn('h-3 w-3 shrink-0', card.badge.text)}
+                        />
+                        <span
+                          className={cn(
+                            'text-[10px] font-bold leading-none',
+                            card.badge.text
+                          )}
+                        >
+                          {card.badge.label}
+                        </span>
+                      </div>
+                    ) : (
+                      /* invisible placeholder — 높이 확보용 */
+                      <div className="h-[30px] w-full" aria-hidden="true" />
+                    )}
+                  </div>
+
+                  {/* P2: 화살표 — items-start + mt 보정으로 아이콘 중앙 정렬
+                       card padding-top(14) + icon-height/2(22) - arrow-height/2(8) = 28px → mt-7 */}
+                  {i < PIPELINE.length - 1 && (
+                    <div className="mt-7 flex shrink-0 items-center px-1.5">
+                      <ArrowRight className="h-4 w-4 text-white/20" />
                     </div>
                   )}
                 </div>
+              );
+            })}
+          </div>
 
-                {/* 화살표 (마지막 카드 제외) */}
-                {i < PIPELINE.length - 1 && (
-                  <div className="flex shrink-0 items-center px-1.5">
-                    <ArrowRight className="h-4 w-4 text-white/15" />
-                  </div>
-                )}
-              </div>
-            );
-          })}
+          {/* P5: 오른쪽 gradient fade-out 스크롤 힌트 */}
+          <div className="pointer-events-none absolute top-0 right-0 h-full w-8 bg-gradient-to-l from-black/30 to-transparent" />
         </div>
       </section>
 
