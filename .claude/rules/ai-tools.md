@@ -37,11 +37,25 @@
 | CLI | 용도 | 비고 |
 |-----|------|------|
 | `claude` | 코드 생성/수정/리뷰 | 현재 세션 |
-| `codex` | 코드 구현/리팩토링/테스트 | gpt-5.3-codex, Pro 구독, **사용자가 수동 실행** |
+| `codex` | 코드 구현/리팩토링/테스트 | gpt-5.3-codex, Pro 구독, **Claude 브릿지 위임 또는 사용자 수동 실행** |
 | `gemini` | 리서치/분석/문서화 | Pro 구독, OAuth 인증, **사용자가 수동 실행** |
 
-> **Codex/Gemini 정책**: Claude가 서브에이전트로 위임하지 않음. 사용자가 각 CLI를 직접 실행.
-> 브릿지 스크립트(`scripts/ai/agent-bridge.sh`)는 사용자 수동 호출용으로 유지.
+> **Codex 위임 정책 (비용 최적화)**:
+> - Claude Code Pro = 한도 있음 → 아껴써야 함
+> - Codex CLI Pro = 거의 무제한 → 적극 위임
+>
+> **Claude가 판단해서 자동 위임** (`bash scripts/ai/agent-bridge.sh --to codex "..."`)
+>
+> | 작업 유형 | 담당 |
+> |-----------|------|
+> | 코드 구현, 리팩토링, 파일 수정 | **Codex** |
+> | 테스트 작성, CI 스크립트 수정 | **Codex** |
+> | 반복적/기계적 코드 변경 | **Codex** |
+> | 아키텍처 설계, 깊은 코드 리뷰 | **Claude** |
+> | 사용자 질문 답변, 맥락 분석 | **Claude** |
+> | 리서치, 문서 분석 | **Gemini** (사용자 직접) |
+>
+> Gemini는 여전히 사용자가 직접 실행. Codex는 Claude가 자율 위임 가능.
 
 ## Built-in Subagents (5개)
 
