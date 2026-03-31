@@ -12,6 +12,7 @@ import {
   ShieldCheck,
 } from 'lucide-react';
 import type { ArchitectureDiagram } from '@/data/architecture-diagrams.types';
+import { cn } from '@/lib/utils';
 
 // ─── 파이프라인 노드 ────────────────────────────────────────────────────────────
 
@@ -141,8 +142,8 @@ export function VibeCiCdSection({
   return (
     <div className="space-y-6">
       {/* ── 1. 파이프라인 플로우 다이어그램 ──────────────────────────────── */}
-      <section className="rounded-2xl border border-white/10 bg-white/3 px-5 py-6">
-        <p className="mb-5 text-center text-[10px] font-semibold uppercase tracking-[0.15em] text-white/25">
+      <section className="rounded-2xl border border-white/10 bg-white/5 px-5 py-6">
+        <p className="mb-5 text-center text-[10px] font-semibold uppercase tracking-widest text-white/25">
           push 한 번 → 자동 검사 → 자동 배포 → 실서비스
         </p>
 
@@ -161,12 +162,12 @@ export function VibeCiCdSection({
               >
                 {/* 아이콘 원 */}
                 <div
-                  className={[
+                  className={cn(
                     'flex h-14 w-14 items-center justify-center rounded-full ring-2',
                     node.circleBg,
                     node.circleText,
-                    node.ring,
-                  ].join(' ')}
+                    node.ring
+                  )}
                 >
                   <Icon className="h-6 w-6" />
                 </div>
@@ -183,12 +184,12 @@ export function VibeCiCdSection({
                 {/* 러너 배지 */}
                 {node.runner && RunnerIcon && (
                   <div
-                    className={[
+                    className={cn(
                       'mt-0.5 flex items-center gap-1 rounded-full border px-2 py-0.5 text-[9px] font-bold',
                       node.runner.bg,
                       node.runner.text,
-                      node.runner.border,
-                    ].join(' ')}
+                      node.runner.border
+                    )}
                   >
                     <RunnerIcon className="h-2.5 w-2.5 shrink-0" />
                     <span>{node.runner.name}</span>
@@ -203,7 +204,7 @@ export function VibeCiCdSection({
 
       {/* ── 2. Runner 분리 — 큰 비주얼 카드 2개 ─────────────────────────── */}
       <section>
-        <p className="mb-3 text-center text-[10px] font-semibold uppercase tracking-[0.15em] text-white/25">
+        <p className="mb-3 text-center text-[10px] font-semibold uppercase tracking-widest text-white/25">
           검사는 내 PC · 배포는 GitLab 서버 (분리 실행)
         </p>
         <div className="grid grid-cols-2 gap-4">
@@ -235,7 +236,7 @@ export function VibeCiCdSection({
           </div>
 
           {/* GitLab 서버 — shared */}
-          <div className="flex flex-col items-center gap-3 rounded-2xl border border-amber-500/30 bg-amber-500/8 p-5">
+          <div className="flex flex-col items-center gap-3 rounded-2xl border border-amber-500/30 bg-amber-500/10 p-5">
             {/* 큰 아이콘 */}
             <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-amber-500/20 text-amber-300 ring-2 ring-amber-500/30">
               <Cloud className="h-9 w-9" />
@@ -265,7 +266,7 @@ export function VibeCiCdSection({
         </div>
 
         {/* validate 실패 시 게이트 설명 */}
-        <div className="mt-3 flex items-center gap-2 rounded-xl border border-white/8 bg-white/3 px-4 py-2.5">
+        <div className="mt-3 flex items-center gap-2 rounded-xl border border-white/8 bg-white/5 px-4 py-2.5">
           <ShieldCheck className="h-4 w-4 shrink-0 text-rose-400/70" />
           <p className="text-[11px] text-white/40">
             코드 검사 실패 시 → 자동 배포 차단
@@ -275,8 +276,8 @@ export function VibeCiCdSection({
       </section>
 
       {/* ── 3. 상황별 흐름 — 이모지 시각화 ──────────────────────────────── */}
-      <section className="rounded-2xl border border-white/10 bg-white/3 p-5">
-        <p className="mb-4 text-center text-[10px] font-semibold uppercase tracking-[0.15em] text-white/25">
+      <section className="rounded-2xl border border-white/10 bg-white/5 p-5">
+        <p className="mb-4 text-center text-[10px] font-semibold uppercase tracking-widest text-white/25">
           상황별 실행 흐름
         </p>
         <div className="space-y-2.5">

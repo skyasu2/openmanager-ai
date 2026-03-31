@@ -27,7 +27,7 @@ child.on('exit', (code, signal) => {
     process.exit(SIGNAL_EXIT_CODES[signal] || 1);
   }
 
-  process.exit(code ?? 1);
+  process.exit(code !== null ? code : 1);
 });
 
 child.on('error', (error) => {
