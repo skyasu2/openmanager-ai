@@ -3,10 +3,11 @@
 # 구조: validate → deploy (순차, validate 실패 시 deploy 차단)
 # Runner 전략:
 #   validate: tags: [wsl2-docker] → self-hosted runner (분 소진 0)
-#             WSL2 runner 미가동 시 shared runner 자동 폴백 (tags 미일치 → pending 후 shared)
+#             WSL2 runner 미가동 시 job은 pending 상태로 남음
+#             shared runner 우회가 필요하면 validate tags를 수동으로 제거해야 함
 #   deploy:   tags 없음 → shared runner (~4분/회)
 # 분 소진 예산: validate 0분 + deploy ~4분 = ~4분/회 (self-hosted 가동 시)
-#             validate ~3분 + deploy ~4분 = ~7분/회 (shared 폴백 시)
+#             validate를 수동으로 shared runner로 전환하면 ~7분/회 수준까지 증가 가능
 
 image: node:24-bookworm
 
@@ -68,7 +69,7 @@ stages:
 validate:
   stage: validate
   tags:
-    - wsl2-docker  # self-hosted runner 우선 (분 소진 0). 미가동 시 pending 상태 유지.
+    - wsl2-docker  # self-hosted runner 전용 (분 소진 0). 미가동 시 pending 상태 유지.
   <<: *npm_cache
   <<: *code_changes_only
   before_script:
