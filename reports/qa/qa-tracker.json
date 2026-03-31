@@ -2,25 +2,25 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-03-30T13:40:42.788Z"
+    "updatedAt": "2026-03-31T12:08:54.272Z"
   },
   "sequence": {
-    "nextRunNumber": 201
+    "nextRunNumber": 203
   },
   "summary": {
-    "totalRuns": 199,
-    "totalChecks": 1476,
-    "totalPassed": 1410,
-    "totalFailed": 60,
+    "totalRuns": 201,
+    "totalChecks": 1487,
+    "totalPassed": 1419,
+    "totalFailed": 62,
     "completionRate": 100,
-    "completedItems": 268,
+    "completedItems": 269,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 13,
     "expertDomainsTracked": 6,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260330-0200",
-    "lastRecordedAt": "2026-03-30T13:40:42.788Z"
+    "lastRunId": "QA-20260331-0202",
+    "lastRecordedAt": "2026-03-31T12:08:54.272Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -6453,6 +6453,30 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-03-30T13:40:42.788Z"
+    },
+    "vibe-cicd-modal-local-dev-stale-view": {
+      "id": "vibe-cicd-modal-local-dev-stale-view",
+      "title": "로컬 dev Vibe Coding 모달 stale view 해소",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260331-0201",
+      "firstSeenAt": "2026-03-31T11:58:25.987Z",
+      "lastSeenRunId": "QA-20260331-0202",
+      "lastSeenAt": "2026-03-31T12:08:54.272Z",
+      "seenCount": 2,
+      "completedCount": 1,
+      "pendingCount": 1,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "rm -rf .next 후 dev:network 재기동 뒤 CI/CD 탭과 split-runner 카드가 정상 렌더됨",
+      "lastNote": "HEAD src/components/shared/FeatureCardModal.tsx 와 VibeCiCdSection.tsx 는 CI/CD 구조인데, localhost:3000 브라우저 렌더는 QA / Finish 탭과 validation evidence 카드를 계속 노출함. dev server stale build 또는 .next 캐시 불일치 가능성이 높음",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-03-31T12:08:54.272Z"
     }
   },
   "runs": [
@@ -17207,6 +17231,134 @@
       "expertCount": 0,
       "expertNeedsImprovementCount": 0,
       "completedCount": 2,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260331-0201",
+      "recordedAt": "2026-03-31T11:58:25.987Z",
+      "recordedAtKst": "2026-03-31 20:58:25 KST",
+      "title": "Local dev Playwright QA - Vibe Coding modal CI/CD regression check",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260331-0201.json",
+      "environment": {
+        "target": "local-dev",
+        "url": "http://localhost:3000",
+        "frontend": "Next.js dev server",
+        "backend": "local app routes",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "d0f6f729e"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "coveragePacks": ["modal-detail-pack"],
+      "coveredSurfaces": [
+        "/",
+        "Vibe Coding modal open",
+        "Vibe Coding modal tab structure",
+        "Vibe Coding modal QA / Finish regression capture",
+        "local browser console error check"
+      ],
+      "skippedSurfaces": [
+        "AI sidebar",
+        "dashboard routes",
+        "production deployment verification"
+      ],
+      "checks": {
+        "total": 5,
+        "passed": 3,
+        "failed": 2
+      },
+      "expertAssessments": [],
+      "usageChecks": [],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "Local dev Vibe Coding modal showing stale QA Finish tab",
+          "path": "artifacts/vibe-cicd-local-dev-failure-20260331.png"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "Local dev URL",
+          "url": "http://localhost:3000/"
+        }
+      ],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 1,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260331-0202",
+      "recordedAt": "2026-03-31T12:08:54.272Z",
+      "recordedAtKst": "2026-03-31 21:08:54 KST",
+      "title": "Local dev Playwright QA - Vibe Coding modal CI/CD recheck after clean restart",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260331-0202.json",
+      "environment": {
+        "target": "local-dev",
+        "url": "http://localhost:3000",
+        "frontend": "Next.js dev server",
+        "backend": "local app routes",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "d0f6f729e"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "coveragePacks": ["modal-detail-pack"],
+      "coveredSurfaces": [
+        "/",
+        "Vibe Coding modal open",
+        "Vibe Coding modal tab structure",
+        "Vibe Coding modal CI/CD tab content",
+        "split-runner wording and badges",
+        "local browser console error check"
+      ],
+      "skippedSurfaces": [
+        "AI sidebar",
+        "dashboard routes",
+        "production deployment verification"
+      ],
+      "checks": {
+        "total": 6,
+        "passed": 6,
+        "failed": 0
+      },
+      "expertAssessments": [],
+      "usageChecks": [],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "Local dev Vibe Coding modal CI/CD tab after clean restart",
+          "path": "artifacts/vibe-cicd-local-dev-pass-20260331.png"
+        },
+        {
+          "type": "playwright-console",
+          "label": "Local dev Vibe Coding console errors",
+          "path": "artifacts/vibe-cicd-local-dev-console-20260331.txt"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "Local dev URL",
+          "url": "http://localhost:3000/"
+        }
+      ],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0

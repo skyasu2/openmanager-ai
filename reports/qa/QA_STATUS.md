@@ -1,28 +1,28 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-30 22:40:43 KST
+> Generated at: 2026-03-31 21:08:55 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 199 |
-| Total Checks | 1476 |
-| Passed | 1410 |
-| Failed | 60 |
-| Completed Items | 268 |
+| Total Runs | 201 |
+| Total Checks | 1487 |
+| Passed | 1419 |
+| Failed | 62 |
+| Completed Items | 269 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 13 |
 | Expert Domains Tracked | 6 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Run | QA-20260330-0200 (2026-03-30T13:40:42.788Z) |
+| Last Run | QA-20260331-0202 (2026-03-31T12:08:54.272Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260330-0200 (2026-03-30T13:40:42.788Z)
+Latest run: QA-20260331-0202 (2026-03-31T12:08:54.272Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -32,30 +32,29 @@ Latest run: QA-20260330-0200 (2026-03-30T13:40:42.788Z)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period reviewed after the hybrid delivery wording deploy; no unexpected billed usage spike observed. |
+| - | - | - | - | - |
 
 ## Coverage (Latest Run)
 
 - Scope: targeted
 - Release-Facing: no
-- Deployment: dpl_8HkCxX6Qdv51iCYKmDbUuXPZuix3 / SHA f3980357
-- Coverage Packs: core-routes-smoke, modal-detail-pack
-- Covered Surfaces: /, landing feature cards, Vibe Coding modal tabs, Vibe Coding CI/CD hybrid delivery copy, Vibe Coding delivery diagram title, production console error check
-- Skipped Surfaces: /login, /dashboard, /validation, AI sidebar, dashboard modal/detail pack outside Vibe Coding
+- Deployment: SHA d0f6f729
+- Coverage Packs: modal-detail-pack
+- Covered Surfaces: /, Vibe Coding modal open, Vibe Coding modal tab structure, Vibe Coding modal CI/CD tab content, split-runner wording and badges, local browser console error check
+- Skipped Surfaces: AI sidebar, dashboard routes, production deployment verification
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | Production URL | [link](https://openmanager-ai.vercel.app/) | - |
-| vercel-deployment | Deployment Inspector | [link](https://vercel.com/skyasus-projects/openmanager-ai/8HkCxX6Qdv51iCYKmDbUuXPZuix3) | - |
+| general | Local dev URL | [link](http://localhost:3000/) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | Vibe hybrid delivery production modal | `vibe-hybrid-delivery-production-20260330.png` | - |
-| playwright-console | Landing vibe hybrid delivery production console | `landing-vibe-hybrid-production-console-20260330.txt` | - |
+| playwright-screenshot | Local dev Vibe Coding modal CI/CD tab after clean restart | `artifacts/vibe-cicd-local-dev-pass-20260331.png` | - |
+| playwright-console | Local dev Vibe Coding console errors | `artifacts/vibe-cicd-local-dev-console-20260331.txt` | - |
 
 ## Expert Domain Open Gaps
 
@@ -319,6 +318,7 @@ Latest run: QA-20260330-0200 (2026-03-30T13:40:42.788Z)
 - vercel-prod-ai-guest-flow-v892: Vercel 프로덕션 게스트 부팅 + 대시보드 + AI 응답 + 피드백 경로 실측 (completed 1회, last QA-20260317-0119)
 - vercel-prod-ai-sidebar: 대시보드 AI 어시스턴트 사이드바 열기/닫기 정상 (completed 1회, last QA-20260317-0114)
 - vercel-prod-frontend-boot: Vercel 프로덕션 시스템 시작 부팅 플로우 정상 동작 (completed 1회, last QA-20260317-0114)
+- vibe-cicd-modal-local-dev-stale-view: 로컬 dev Vibe Coding 모달 stale view 해소 (completed 1회, last QA-20260331-0202)
 - vibe-hybrid-delivery-wording: Vibe Coding 모달의 배포 설명을 하이브리드 전달 구조 기준으로 정정 (completed 1회, last QA-20260330-0200)
 - vibe-qa-modal-replaced-with-cicd: Vibe Coding 모달의 QA 탭을 CI/CD 구조 설명으로 교체 (completed 1회, last QA-20260330-0200)
 - vitals-log-suppression: Web Vitals 통합 테스트 로그 억제 옵션 추가 (completed 1회, last QA-20260228-0028)
@@ -372,6 +372,8 @@ Latest run: QA-20260330-0200 (2026-03-30T13:40:42.788Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260331-0202 | 2026-03-31T12:08:54.272Z | targeted | no | Local dev Playwright QA - Vibe Coding modal CI/CD recheck after clean restart | 6 | 1 | 0 | 0 | 0 | 0 |
+| QA-20260331-0201 | 2026-03-31T11:58:25.987Z | targeted | no | Local dev Playwright QA - Vibe Coding modal CI/CD regression check | 5 | 0 | 1 | 0 | 0 | 0 |
 | QA-20260330-0200 | 2026-03-30T13:40:42.788Z | targeted | no | Vercel Playwright QA - Vibe Hybrid Delivery Copy Recheck | 8 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260330-0199 | 2026-03-30T10:28:06.580Z | targeted | no | Vercel Production QA - web vitals deploy recheck | 7 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260330-0198 | 2026-03-30T08:38:51.603Z | targeted | no | Vercel Production QA - post-docs smoke recheck | 7 | 0 | 0 | 0 | 0 | 0 |
@@ -390,6 +392,4 @@ Latest run: QA-20260330-0200 (2026-03-30T13:40:42.788Z)
 | QA-20260325-0185 | 2026-03-25T11:06:51.584Z | targeted | no | Local validation - ai proxy runtime env refresh and README QA sync | 4 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260325-0184 | 2026-03-25T09:42:58.940Z | targeted | no | Local validation - Cloud Run guard and session contract hardening | 5 | 3 | 0 | 0 | 0 | 0 |
 | QA-20260325-0183 | 2026-03-25T06:04:23.514Z | targeted | no | Local validation - health timeout and admin guard hardening | 4 | 2 | 0 | 0 | 0 | 0 |
-| QA-20260324-0182 | 2026-03-24T13:11:00.000Z | targeted | no | Vercel Production QA - AI hook refactor smoke (useDeferredMessageMetadata + Codex follow-up) | 3 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260324-0181 | 2026-03-24T11:45:07.871Z | targeted | no | Vercel Production QA - PR #200 post-merge AI smoke | 6 | 0 | 0 | 0 | 0 | 0 |
 

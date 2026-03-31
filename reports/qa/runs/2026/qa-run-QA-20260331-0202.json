@@ -1,0 +1,83 @@
+{
+  "runId": "QA-20260331-0202",
+  "recordedAt": "2026-03-31T12:08:54.272Z",
+  "recordedAtKst": "2026-03-31 21:08:54 KST",
+  "runTitle": "Local dev Playwright QA - Vibe Coding modal CI/CD recheck after clean restart",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "local-dev",
+    "url": "http://localhost:3000",
+    "frontend": "Next.js dev server",
+    "backend": "local app routes",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "d0f6f729e"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "coveragePacks": ["modal-detail-pack"],
+  "coveredSurfaces": [
+    "/",
+    "Vibe Coding modal open",
+    "Vibe Coding modal tab structure",
+    "Vibe Coding modal CI/CD tab content",
+    "split-runner wording and badges",
+    "local browser console error check"
+  ],
+  "skippedSurfaces": [
+    "AI sidebar",
+    "dashboard routes",
+    "production deployment verification"
+  ],
+  "checks": {
+    "total": 6,
+    "passed": 6,
+    "failed": 0
+  },
+  "expertAssessments": [],
+  "usageChecks": [],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "Local dev Vibe Coding modal CI/CD tab after clean restart",
+      "path": "artifacts/vibe-cicd-local-dev-pass-20260331.png"
+    },
+    {
+      "type": "playwright-console",
+      "label": "Local dev Vibe Coding console errors",
+      "path": "artifacts/vibe-cicd-local-dev-console-20260331.txt"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "vibe-cicd-modal-local-dev-stale-view",
+      "title": "로컬 dev Vibe Coding 모달 stale view 해소",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "rm -rf .next 후 dev:network 재기동 뒤 CI/CD 탭과 split-runner 카드가 정상 렌더됨",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "이슈 원인은 코드가 아니라 stale dev server build/.next 캐시 불일치로 판단",
+    "재기동 후 Vibe Coding 모달 탭이 현재 도구/개발 환경 변화/CI/CD로 정상 노출",
+    "CI/CD 탭에서 validate self-hosted / deploy shared split-runner 흐름 확인"
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Local dev URL",
+      "url": "http://localhost:3000/"
+    }
+  ]
+}

@@ -1,0 +1,77 @@
+{
+  "runId": "QA-20260331-0201",
+  "recordedAt": "2026-03-31T11:58:25.987Z",
+  "recordedAtKst": "2026-03-31 20:58:25 KST",
+  "runTitle": "Local dev Playwright QA - Vibe Coding modal CI/CD regression check",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "local-dev",
+    "url": "http://localhost:3000",
+    "frontend": "Next.js dev server",
+    "backend": "local app routes",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "d0f6f729e"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "coveragePacks": ["modal-detail-pack"],
+  "coveredSurfaces": [
+    "/",
+    "Vibe Coding modal open",
+    "Vibe Coding modal tab structure",
+    "Vibe Coding modal QA / Finish regression capture",
+    "local browser console error check"
+  ],
+  "skippedSurfaces": [
+    "AI sidebar",
+    "dashboard routes",
+    "production deployment verification"
+  ],
+  "checks": {
+    "total": 5,
+    "passed": 3,
+    "failed": 2
+  },
+  "expertAssessments": [],
+  "usageChecks": [],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "Local dev Vibe Coding modal showing stale QA Finish tab",
+      "path": "artifacts/vibe-cicd-local-dev-failure-20260331.png"
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [
+    {
+      "id": "vibe-cicd-modal-local-dev-stale-view",
+      "title": "로컬 dev Vibe Coding 모달이 CI/CD 대신 QA / Finish 뷰를 렌더링",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "HEAD src/components/shared/FeatureCardModal.tsx 와 VibeCiCdSection.tsx 는 CI/CD 구조인데, localhost:3000 브라우저 렌더는 QA / Finish 탭과 validation evidence 카드를 계속 노출함. dev server stale build 또는 .next 캐시 불일치 가능성이 높음",
+      "owner": "",
+      "status": "pending",
+      "policyNote": ""
+    }
+  ],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Next.js MCP get_errors 기준 브라우저 런타임 에러는 0건",
+    "HEAD src 검색에는 QA / Finish 문자열이 없지만 Playwright 브라우저 렌더에는 노출됨",
+    "hard reload 이후에도 동일 증상 재현"
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Local dev URL",
+      "url": "http://localhost:3000/"
+    }
+  ]
+}
