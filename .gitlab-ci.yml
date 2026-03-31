@@ -65,7 +65,7 @@ validate:
   <<: *node_cache
   <<: *code_changes_only
   before_script:
-    - npm ci --prefer-offline --no-audit
+    - npm ci --prefer-offline --cache .npm --no-audit
   script:
     - echo "▶ TypeScript 타입 검사..."
     - npm run type-check
@@ -84,7 +84,7 @@ deploy:
   <<: *code_changes_only
   before_script:
     - npm install -g vercel@latest --no-audit --silent
-    - npm ci --prefer-offline --no-audit  # 캐시 히트 시 수초, 미스 시 전체 설치 (fallback)
+    - npm ci --prefer-offline --cache .npm --no-audit  # 캐시 히트 시 수초, 미스 시 전체 설치 (fallback)
   script:
     - echo "▶ Vercel production 배포..."
     - vercel pull --yes --environment=production --token=$VERCEL_TOKEN
