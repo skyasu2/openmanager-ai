@@ -43,7 +43,7 @@
 
 ## 🗂 Repository & Delivery Topology (2026-03-31)
 - **GitLab private (`gitlab`)**가 canonical development repo입니다. 전체 이력, 테스트, 문서, QA 자산, 내부 규칙은 GitLab 기준으로 유지합니다.
-- **Vercel Frontend**는 GitLab CI `deploy` job이 `vercel --prod`로 production 배포합니다. Vercel Git Integration은 해제된 상태입니다.
+- **Vercel Frontend**는 GitLab CI `deploy` job이 `vercel build --prod` 후 `vercel deploy --prebuilt --prod`로 production 배포합니다. Vercel Git Integration은 해제된 상태입니다.
 - **GitHub public (`origin`)**는 code-only snapshot입니다 (docs/, tests/, scripts/, reports/, .claude/ 등 제외). 동기화는 `npm run sync:github` (`scripts/sync/github-sync.sh`) 으로만 수행하며 canonical repo나 기본 배포 소스가 아닙니다.
 - **GitLab CI는 활성** 상태이며 `.gitlab-ci.yml` validate → deploy 파이프라인이 코드 변경 push 시 실행됩니다. docs/reports 전용 push는 CI를 스킵합니다.
 - **로컬 전체 검증 기본값**은 여전히 `npm run ci:local:docker` / `npm run ci:local:docker:full` 입니다. broad/release 변경에서 GitLab CI와 별도로 사용합니다.
@@ -60,7 +60,7 @@
 
 ## 📦 CI/CD & Deployment Protocol
 - **GitLab CI validate → deploy**: 기본 배포 경로는 `git push gitlab main` 후 GitLab CI가 validate와 deploy를 순차 수행하는 방식입니다.
-- **배포 권한은 CI `deploy` job에만 있음**: Vercel Git Integration은 해제되어 있으며 `vercel --prod`는 GitLab CI 안에서만 실행합니다.
+- **배포 권한은 CI `deploy` job에만 있음**: Vercel Git Integration은 해제되어 있으며 `vercel build --prod`와 `vercel deploy --prebuilt --prod`는 GitLab CI 안에서만 실행합니다.
 - broad/release 변경은 push 전 `npm run ci:local:docker`를 추가합니다.
 - GitHub 공개 snapshot 동기화는 기본 push 루프에 섞지 말고, 명시적 요청 시 `npm run sync:github` 으로만 수행합니다.
 
