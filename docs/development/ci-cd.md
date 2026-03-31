@@ -29,6 +29,7 @@
 - **Vercel Frontend**: GitLab CI `deploy` job이 `vercel build` + `vercel deploy --prebuilt --prod`로 production 배포
 - **GitLab CI**: 활성 (`validate -> deploy`, 코드 변경 push 시만 실행)
 - **`.gitlab-ci.yml`**: 최소 파이프라인으로 유지. docs/reports 전용 push는 `changes` 규칙으로 CI 스킵
+- **Production deploy serialization**: `deploy` job은 `resource_group: production`으로 직렬화되어 동시 배포를 막음
 - **GitHub public (`origin`)**: code-only snapshot, 수동 동기화 전용
 - **GitHub public history**: orphan snapshot 기반의 최소 공개 이력만 유지
 - **GitHub releases/tags**: 사용하지 않음
@@ -125,7 +126,8 @@ CI_DOCKER_PULL_POLICY=never npm run ci:local:docker
 3. canonical 반영은 `git push gitlab main`
 4. GitLab CI `validate`는 `wsl2-docker` self-hosted runner에서 실행
 5. GitLab CI `deploy`는 shared runner에서 `vercel build --prod` + `vercel deploy --prebuilt --prod` 수행
-6. 외부 pull까지 차단해야 할 때만 `CI_DOCKER_PULL_POLICY=never` 사용
+6. production `deploy`는 `resource_group: production`으로 직렬화되어 연속 push에서도 동시 실행되지 않음
+7. 외부 pull까지 차단해야 할 때만 `CI_DOCKER_PULL_POLICY=never` 사용
 
 ### 현재 운영 구성
 
