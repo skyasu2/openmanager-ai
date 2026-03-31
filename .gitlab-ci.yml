@@ -10,6 +10,13 @@
 
 image: node:24-bookworm
 
+# ─── 파이프라인 레벨 제어 ──────────────────────────────────────────────────────
+# job-level rules:changes 와 달리 파이프라인 자체 생성을 차단 → UI 노이즈 제거
+workflow:
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+    - when: never
+
 stages:
   - validate
   - deploy
