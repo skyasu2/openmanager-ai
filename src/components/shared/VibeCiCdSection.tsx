@@ -1,6 +1,12 @@
 'use client';
 
-import { Ban, FileCheck2, GitBranch, Rocket, ShieldCheck } from 'lucide-react';
+import {
+  FileCheck2,
+  Gauge,
+  GitBranch,
+  Rocket,
+  ShieldCheck,
+} from 'lucide-react';
 import type { ArchitectureDiagram } from '@/data/architecture-diagrams.types';
 
 const DELIVERY_PRINCIPLES = [
@@ -22,7 +28,7 @@ const DELIVERY_PRINCIPLES = [
     title: '선택형 무거운 검증',
     description:
       'broad change나 release 직전에는 local Docker CI와 배포 후 QA를 추가합니다. docs/reports 전용 push는 GitLab CI를 건너뜁니다.',
-    icon: Ban,
+    icon: Gauge,
     style: 'border-purple-500/20 bg-purple-500/10 text-purple-200',
   },
 ] as const;
@@ -138,15 +144,13 @@ export function VibeCiCdSection({
             </span>
             <div>
               <h4 className="text-xl font-semibold text-white">
-                로컬 검증 게이트와 GitLab CI의 validate, deploy 파이프라인을
-                함께 운영합니다.
+                로컬 검증 게이트와 GitLab CI 기반 하이브리드 CI/CD를 운영합니다.
               </h4>
               <p className="mt-2 text-sm leading-relaxed text-white/75">
-                pre-commit, pre-push, local Docker CI로 로컬 검증을 보강한 뒤
-                `git push gitlab main` 시 GitLab CI가 validate(type-check, lint,
-                test:quick)와 deploy(`vercel build`, `vercel deploy --prod`)를
-                순차 수행합니다. 공개 GitHub는 필요할 때만 동기화하는 snapshot
-                경로입니다.
+                pre-commit, pre-push, 필요 시 local Docker CI로 먼저 검증하고,
+                `git push gitlab main` 후 GitLab CI가 validate와 deploy를 수행해
+                Vercel production에 반영합니다. 공개 GitHub는 필요할 때만
+                동기화하는 snapshot 경로입니다.
               </p>
             </div>
           </div>

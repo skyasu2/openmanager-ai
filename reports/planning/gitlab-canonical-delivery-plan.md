@@ -68,12 +68,12 @@
   - `GitHub public sync as explicit secondary workflow`
 
 ## 프로젝트 제약사항 / 기본 규칙
-- Free tier 우선: GitLab SaaS CI minutes 소비 최소화
-- Frontend 배포 권위: `git push gitlab main` -> Vercel Git Integration
+- Free tier 우선: GitLab SaaS CI minutes 소비 최소화 (docs/reports push는 CI 스킵)
+- Frontend 배포 권위: GitLab CI `deploy` job → `vercel --prod` (Vercel Git Integration 해제됨)
 - 공개 GitHub는 deploy source가 아니라 code-only snapshot
 - QA final gate는 Vercel 실환경 기준
 - broad/deploy-sensitive 변경은 pre-push만으로 끝내지 않고 local Docker CI 추가
-- `.gitlab-ci.yml` 부재는 현재 정책상 의도된 상태
+- GitLab CI 활성 상태: `.gitlab-ci.yml` validate → deploy 2-stage 파이프라인 운영 중
 
 ## 실행 순서
 
@@ -167,37 +167,23 @@ git push gitlab --follow-tags
 
 ### 최근 추가 분석
 - 최근 커밋 흐름은 계속해서 테스트 안정화, 배포 토폴로지 단순화, 공개/비공개 저장소 분리에 집중되어 있다.
-- 현재 canonical push와 Vercel 자동 배포는 안정화되었고, 남은 선택지는 `GitLab native CI를 언제 도입할 것인가`에 가깝다.
+- GitLab CI(validate→deploy)가 2026-03-31 활성화되었고, 3회 파이프라인 성공 확인. Vercel Git Integration은 해제됨.
+- 현재 운영 기준: GitLab CI가 유일한 production 배포 경로.
 
-### 비교 평가
+### 현재 운영 구조 (2026-03-31 기준)
 
-| 선택지 | 비용/쿼터 | 장점 | 단점 | 현재 판단 |
-|---|---|---|---|---|
-| GitLab.com shared runner | Free quota 소모 | GitLab 상태 체크 즉시 사용 | 월 compute quota 소모, 외부 실행 면적 증가 | 보류 |
-| self-hosted runner + Docker executor | GitLab quota 0 | GitLab status check + 재현성 강화 | host 보안/운영 부담 | 조건부 후보 |
-| 현재 local Docker CI | GitLab quota 0 | 가장 단순, 외부 의존 최소화 | GitLab native status 없음 | 유지 |
+| 구성요소 | 상태 | 비고 |
+|---|---|---|
+| GitLab CI shared runner | **활성** | SaaS runner, 월 400분 예산 |
+| validate stage | type-check + lint:ci + test:quick | ~3분 |
+| deploy stage | vercel pull/build/deploy --prod | ~4분, validate 통과 시만 |
+| docs/reports push | CI 스킵 | changes 규칙으로 분 소진 방지 |
+| local Docker CI | 선택 사용 | broad/release-facing 변경 시 추가 |
+| Vercel Git Integration | **해제** | CLI 배포로 전환 완료 |
 
 ### 실행 순서
 
-1. 현행 유지: `pre-push hook` + `npm run ci:local:docker`
-2. broad/deploy-sensitive 변경 또는 release 전에는 `CI_DOCKER_INSTALL_MODE=npm-ci npm run ci:local:docker` 1회 추가
-3. 보안/네트워크 면적을 더 줄여야 할 때만 `CI_DOCKER_PULL_POLICY=never`
-4. GitLab MR required status check가 필요해질 때만 self-hosted runner 검토
-5. runner 도입 시 `.gitlab-ci.yml`은 최소 job만 유지하고 shared runner는 기본 비활성 유지
-
-### self-hosted runner 도입 트리거
-
-아래 항목이 2개 이상 겹치면 self-hosted runner 검토를 시작한다.
-
-- GitLab Merge Request에서 required status check가 필요하다
-- 여러 개발자가 동일한 검증 기준을 공유해야 한다
-- 로컬 수동 검증 반복이 release cadence를 방해한다
-- 개인 로컬 머신에서만 검증하는 구조가 리스크로 인식된다
-
-### 검토 시 기본 원칙
-
-- `Docker executor`
-- `non-privileged`
-- single-project / trusted private 전용
-- protected branch 중심
-- 최소 `.gitlab-ci.yml`
+1. `pre-push hook` (항상)
+2. `git push gitlab main` → GitLab CI validate → deploy 자동 실행
+3. broad/deploy-sensitive 변경 또는 release 전: `npm run ci:local:docker` 추가
+4. self-hosted runner는 필요 시 추후 검토 (현재 불필요)
