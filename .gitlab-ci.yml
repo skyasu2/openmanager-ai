@@ -15,6 +15,7 @@ stages:
   - deploy
 
 # ─── 공통 캐시 ────────────────────────────────────────────────────────────────
+# validate가 pull-push로 캐시를 작성하고, deploy는 pull로 재사용
 .node_cache: &node_cache
   cache:
     key:
@@ -23,7 +24,17 @@ stages:
     paths:
       - node_modules/
       - .npm/
-    policy: pull
+    policy: pull-push   # validate가 작성 → deploy가 재사용
+
+.node_cache_readonly: &node_cache_readonly
+  cache:
+    key:
+      files:
+        - package-lock.json
+    paths:
+      - node_modules/
+      - .npm/
+    policy: pull        # deploy: 읽기 전용 재사용
 
 # ─── 변경 감지 규칙 ────────────────────────────────────────────────────────────
 # docs/reports/QA 아티팩트 전용 push는 CI 스킵 → 분 소진 방지
@@ -69,9 +80,11 @@ validate:
 # ─── deploy job ────────────────────────────────────────────────────────────────
 deploy:
   stage: deploy
+  <<: *node_cache_readonly  # validate가 작성한 node_modules 재사용 → vercel build 속도 향상
   <<: *code_changes_only
   before_script:
     - npm install -g vercel@latest --no-audit --silent
+    - npm ci --prefer-offline --no-audit  # 캐시 히트 시 수초, 미스 시 전체 설치 (fallback)
   script:
     - echo "▶ Vercel production 배포..."
     - vercel pull --yes --environment=production --token=$VERCEL_TOKEN
