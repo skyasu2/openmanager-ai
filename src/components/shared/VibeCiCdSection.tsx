@@ -76,7 +76,7 @@ const FLOW_NODES: FlowNode[] = [
     id: 'deploy',
     icon: Rocket,
     label: '자동 배포',
-    sub: 'vercel build\n+ deploy',
+    sub: 'Prebuilt Flow\n(Deterministic)',
     circleBg: 'bg-amber-500/20',
     circleText: 'text-amber-300',
     ring: 'ring-amber-500/50',
@@ -243,22 +243,28 @@ export function VibeCiCdSection({
             </div>
             <div className="text-center">
               <p className="text-base font-black text-amber-200">GitLab 서버</p>
-              <p className="text-[10px] text-amber-400/50">shared runner</p>
+              <p className="text-[10px] text-amber-400/50">
+                shared runner (Serial)
+              </p>
             </div>
             {/* 시간 표시 */}
             <div className="w-full rounded-xl bg-black/25 py-3 text-center">
               <p className="text-4xl font-black tabular-nums text-amber-300">
                 ~4분
               </p>
-              <p className="mt-0.5 text-[10px] text-white/30">월 400분 한도</p>
+              <p className="mt-0.5 text-[10px] text-white/30">
+                월 400분 한도 (Managed)
+              </p>
             </div>
             {/* 담당 작업 */}
             <div className="flex w-full items-center gap-2 rounded-xl border border-amber-500/20 bg-amber-500/10 px-3 py-2.5">
               <Rocket className="h-5 w-5 shrink-0 text-amber-400" />
               <div>
-                <p className="text-xs font-bold text-amber-200">자동 배포</p>
+                <p className="text-xs font-bold text-amber-200">
+                  결정론적 배포
+                </p>
                 <p className="text-[9px] text-white/35">
-                  vercel build · deploy
+                  pull · build · deploy --prebuilt
                 </p>
               </div>
             </div>
@@ -269,8 +275,8 @@ export function VibeCiCdSection({
         <div className="mt-3 flex items-center gap-2 rounded-xl border border-white/8 bg-white/5 px-4 py-2.5">
           <ShieldCheck className="h-4 w-4 shrink-0 text-rose-400/70" />
           <p className="text-[11px] text-white/40">
-            코드 검사 실패 시 → 자동 배포 차단
-            <span className="ml-2 text-rose-400/60">(게이트 역할)</span>
+            검사 실패 시 배포 자동 차단 · 동시 배포 충돌 방지 (Serial)
+            <span className="ml-2 text-rose-400/60">(Stability Gate)</span>
           </p>
         </div>
       </section>
