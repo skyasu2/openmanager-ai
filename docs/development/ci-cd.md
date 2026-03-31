@@ -109,48 +109,40 @@ CI_DOCKER_PULL_POLICY=never npm run ci:local:docker
 
 | 선택지 | GitLab 비용 | 외부 의존 | 상태 체크 | 현재 프로젝트 적합도 |
 |---|---:|---|---|---|
-| 현재 GitLab CI validate→deploy | 월 compute quota 소모 | 중간 | 높음 | 현재 기본 경로 |
+| wsl2-docker self-hosted runner | GitLab quota 0 | 중간 | 높음 | 활성 (`validate` job) |
+| GitLab.com shared runner | 월 compute quota 소모 | 낮음 | 높음 | 활성 (`deploy` job) |
 | 현재 로컬 Docker CI | GitLab quota 0 | 낮음 | GitLab native status 없음 | broad/release 보강 |
-| self-hosted runner + Docker executor | GitLab quota 0 | 중간 | 높음 | 조건부 |
 
 판단 기준:
-- GitLab.com Free의 shared runner는 월 compute quota를 사용합니다. 현재 파이프라인은 validate + deploy 2-stage만 유지하고 docs/reports-only push를 스킵해 예산을 통제합니다.
-- self-hosted project/group runner는 GitLab compute quota 대상이 아니지만, runner host 보안과 운영 책임은 직접 집니다.
-- 현재 프로젝트는 single canonical repo, 개인 개발 중심 구조이므로 GitLab CI는 최소 게이트만 맡고, 넓은 검증은 로컬 Docker CI로 분리하는 편이 비용/단순성 균형이 좋습니다.
+- `validate` job은 `tags: [wsl2-docker]`가 붙은 self-hosted runner에서 실행되어 GitLab compute minutes를 소모하지 않습니다.
+- `deploy` job은 태그 없이 GitLab.com shared runner에서 실행되며, 현재 기준 약 4분 내외의 compute quota를 사용합니다.
+- 현재 프로젝트는 single canonical repo, 개인 개발 중심 구조이므로 validate는 self-hosted로 비용을 절감하고, deploy는 shared runner + Vercel CLI로 유지하는 split-runner 구성이 가장 단순합니다.
 
 ### 권장 실행 순서
 
 1. 기본 경로는 `pre-commit` + `pre-push`
 2. broad change, release 전, 배포 민감 변경에는 `npm run ci:local:docker`를 push 전에 추가
 3. canonical 반영은 `git push gitlab main`
-4. GitLab CI `validate` 통과 후 `deploy`가 production 반영
-5. 외부 pull까지 차단해야 할 때만 `CI_DOCKER_PULL_POLICY=never` 사용
+4. GitLab CI `validate`는 `wsl2-docker` self-hosted runner에서 실행
+5. GitLab CI `deploy`는 shared runner에서 `vercel build --prod` + `vercel deploy --prebuilt --prod` 수행
+6. 외부 pull까지 차단해야 할 때만 `CI_DOCKER_PULL_POLICY=never` 사용
 
-### self-hosted runner 도입 조건
+### 현재 운영 구성
 
-아래 조건이 2개 이상 겹치기 전까지는 self-hosted runner를 도입하지 않습니다.
+- `validate` runner: `wsl2-docker` self-hosted runner
+- 서비스: WSL2 Ubuntu 내 `gitlab-runner` systemd 서비스 자동 시작
+- executor: `Docker`
+- 기본 이미지: `node:24-bookworm`
+- 태그 정책: `tags: [wsl2-docker]`, `run_untagged = false`
+- pull policy: `if-not-present`
+- `deploy` runner: GitLab.com shared runner (태그 없음)
 
-- GitLab MR에 required status check가 필요하다
-- 개인 로컬 머신 검증만으로는 신뢰도가 부족하다
-- 여러 개발자가 동일한 검증 기준을 공유해야 한다
-- release 전 수동 `ci:local:docker` 반복이 병목이 된다
+운영 메모:
+- WSL2 runner가 꺼져 있으면 `validate` job은 pending 상태로 남습니다.
+- 이 경우 기본 대응은 WSL2 / `gitlab-runner` 서비스를 다시 올리는 것입니다.
+- 임시 우회가 정말 필요할 때만 `validate` job의 태그를 제거해 shared runner 경로로 전환합니다.
 
-도입 시 최소 원칙:
-- `Docker executor`
-- `non-privileged`
-- single-project 또는 trusted private 프로젝트 전용
-- protected branch / protected tag 중심
-- 필요 job만 담은 최소 `.gitlab-ci.yml`
-
-### GitLab-native 상태 체크가 나중에 꼭 필요해지면
-
-그때는 지금처럼 GitLab.com shared runner를 켜는 것이 아니라, 아래 최소 구성을 권장합니다.
-
-1. self-hosted GitLab Runner 1개를 로컬/전용 머신에 Docker executor로 등록
-2. `.gitlab-ci.yml`은 `lint`, `validate`, `deploy-ready` 정도의 최소 job만 유지
-3. image pull policy는 private runner 기준 `if-not-present` 또는 `never` 를 우선
-
-즉, **현재는 최소 `.gitlab-ci.yml`을 유지하고, 더 넓은 검증은 로컬 Docker CI로 분리하는 구성이 우선** 입니다.
+즉, **현재는 self-hosted validate + shared deploy + local Docker CI 보강 검증** 구성이 기본 운영값입니다.
 
 ### 비용 정책
 
