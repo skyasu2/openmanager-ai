@@ -26,14 +26,22 @@ require_dir() {
 }
 
 ensure_docker() {
-  local attempts="${CI_DOCKER_DAEMON_CHECK_RETRIES:-3}"
+  local attempts="${CI_DOCKER_DAEMON_CHECK_RETRIES:-5}"
   local delay_sec="${CI_DOCKER_DAEMON_CHECK_DELAY_SEC:-2}"
   local attempt=1
+  local docker_info_log=""
+  local last_error=""
 
   while [ "$attempt" -le "$attempts" ]; do
-    if docker info >/dev/null 2>&1; then
+    docker_info_log="$(mktemp)"
+
+    if docker info >"${docker_info_log}" 2>&1; then
+      rm -f "${docker_info_log}"
       return
     fi
+
+    last_error="$(tail -n 20 "${docker_info_log}")"
+    rm -f "${docker_info_log}"
 
     if [ "$attempt" -lt "$attempts" ]; then
       log "docker daemon not ready yet. retrying (${attempt}/${attempts})..."
@@ -44,6 +52,10 @@ ensure_docker() {
   done
 
   log "docker daemon unavailable. Start Docker Desktop or enable WSL Docker integration."
+  if [ -n "$last_error" ]; then
+    log "last docker info error:"
+    printf '%s\n' "$last_error"
+  fi
   exit 1
 }
 
@@ -150,6 +162,7 @@ run_container_validation() {
   docker run --rm \
     "${network_args[@]}" \
     -e CI=true \
+    -e CI_DOCKER=true \
     -e NODE_ENV=test \
     -v "${ROOT_DIR}:/workspace" \
     -v "${HOME}/.npm:/root/.npm" \

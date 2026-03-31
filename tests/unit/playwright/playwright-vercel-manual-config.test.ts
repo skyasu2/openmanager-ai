@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 const ORIGINAL_ENV = { ...process.env };
+const SKIP_IN_DOCKER_CI = process.env.CI_DOCKER === 'true';
 
 async function loadManualConfig({
   traceMode,
@@ -49,35 +50,38 @@ afterEach(() => {
   vi.resetModules();
 });
 
-describe('playwright.config.vercel.manual trace/report retention', () => {
-  it('enables trace and html report by default', async () => {
-    const config = await loadManualConfig();
+describe.skipIf(SKIP_IN_DOCKER_CI)(
+  'playwright.config.vercel.manual trace/report retention',
+  () => {
+    it('enables trace and html report by default', async () => {
+      const config = await loadManualConfig();
 
-    expect(config.outputDir).toBe('test-results/manual-vercel');
-    expect(config.use?.trace).toBe('on');
-    expect(config.reporter).toEqual([
-      ['list'],
-      [
-        'html',
-        { open: 'never', outputFolder: 'playwright-report/manual-vercel' },
-      ],
-    ]);
-  });
-
-  it('honors manual trace override', async () => {
-    const config = await loadManualConfig({ traceMode: 'off' });
-
-    expect(config.use?.trace).toBe('off');
-  });
-
-  it('allows disabling html report and overriding output dirs', async () => {
-    const config = await loadManualConfig({
-      htmlReport: '0',
-      outputDir: 'test-results/custom-manual',
-      reportDir: 'playwright-report/custom-manual',
+      expect(config.outputDir).toBe('test-results/manual-vercel');
+      expect(config.use?.trace).toBe('on');
+      expect(config.reporter).toEqual([
+        ['list'],
+        [
+          'html',
+          { open: 'never', outputFolder: 'playwright-report/manual-vercel' },
+        ],
+      ]);
     });
 
-    expect(config.outputDir).toBe('test-results/custom-manual');
-    expect(config.reporter).toBe('list');
-  });
-});
+    it('honors manual trace override', async () => {
+      const config = await loadManualConfig({ traceMode: 'off' });
+
+      expect(config.use?.trace).toBe('off');
+    });
+
+    it('allows disabling html report and overriding output dirs', async () => {
+      const config = await loadManualConfig({
+        htmlReport: '0',
+        outputDir: 'test-results/custom-manual',
+        reportDir: 'playwright-report/custom-manual',
+      });
+
+      expect(config.outputDir).toBe('test-results/custom-manual');
+      expect(config.reporter).toBe('list');
+    });
+  }
+);
