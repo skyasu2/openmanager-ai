@@ -22,7 +22,7 @@ const DELIVERY_PRINCIPLES = [
   {
     title: '정본 배포 경로',
     description:
-      'GitLab main이 canonical repo입니다. validate 통과 후 deploy job이 Vercel production을 배포합니다.',
+      'GitLab main이 canonical repo입니다. validate(self-hosted) 통과 후 deploy(shared)가 Vercel production을 배포합니다.',
     icon: GitBranch,
     style: 'border-emerald-500/20 bg-emerald-500/10 text-emerald-200',
   },
@@ -122,7 +122,7 @@ const PIPELINE_PHASES: Phase[] = [
         detail:
           '실패 시 deploy 차단. docs/reports push는 이 단계 자체가 스킵됨.',
         variant: 'required',
-        badge: 'wsl2-docker · 0분',
+        badge: 'wsl2-docker · self-hosted · 0분',
         badgeColor: 'text-cyan-300 bg-cyan-500/15 border-cyan-500/25',
       },
       {
@@ -309,18 +309,20 @@ export function VibeCiCdSection({
           </div>
           <div className="space-y-2">
             <span className="inline-flex rounded-full border border-orange-400/30 bg-orange-500/15 px-3 py-1 text-xs font-medium text-orange-100">
-              하이브리드 CI/CD
+              Split-runner Hybrid CI/CD
             </span>
             <h4 className="text-xl font-semibold text-white">
-              로컬 게이트 + GitLab CI validate/deploy + Vercel CLI 배포
+              로컬 게이트 뒤에 validate(self-hosted)와 deploy(shared)를 분리
+              실행합니다
             </h4>
             <p className="text-sm leading-relaxed text-white/70">
               pre-commit·pre-push로 로컬 검증 후{' '}
               <code className="rounded bg-white/10 px-1 text-xs">
                 git push gitlab main
               </code>
-              하면 GitLab CI가 validate(wsl2-docker · 0분) → deploy(shared ·
-              ~4분) 순으로 실행해 Vercel production에 반영합니다.
+              하면 GitLab CI가 validate(wsl2-docker self-hosted · 0분) →
+              deploy(shared · ~4분) 순으로 실행해 Vercel production에
+              반영합니다.
             </p>
           </div>
         </div>

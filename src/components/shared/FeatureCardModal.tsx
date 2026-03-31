@@ -252,7 +252,7 @@ export default function FeatureCardModal({
                 ? vibeView === 'history'
                   ? '바이브 코딩 여정: 초기(ChatGPT 개별 페이지) → 중기(Cursor + Vercel + Supabase) → 후기(Claude Code + WSL)로 이어진 개발 환경의 변화를 시간 순서대로 보여줍니다.'
                   : vibeView === 'cicd'
-                    ? '로컬 검증 게이트와 GitLab CI 기반 하이브리드 CI/CD로 production 배포를 관리하는 방식을 보여줍니다.'
+                    ? '로컬 검증 게이트 뒤에 GitLab CI가 validate(self-hosted)와 deploy(shared)를 분리 실행하는 split-runner 배포 흐름을 보여줍니다.'
                     : parseMarkdownLinks(
                         sanitizeModalText(detailedContent.overview)
                       )

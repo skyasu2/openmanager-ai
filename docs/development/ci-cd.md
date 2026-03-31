@@ -162,7 +162,11 @@ CI_DOCKER_PULL_POLICY=never npm run ci:local:docker
 
 ---
 
-## Part 1: CI/CD 워크플로우 (10개)
+## Historical Appendix: GitHub Actions 워크플로우 (Legacy)
+
+> 아래 섹션은 현재 운영 경로가 아닙니다.
+> 현재 primary delivery path는 `git push gitlab main` → GitLab CI `validate` (`wsl2-docker`) → GitLab CI `deploy` (shared runner) → Vercel production 입니다.
+> 이후 내용은 과거 GitHub Actions 구성과 보조 자동화 참고용으로만 유지합니다.
 
 ### 워크플로우 전체 맵
 
