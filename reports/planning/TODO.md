@@ -18,7 +18,7 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| P3: Knip unused export types 정리 (잔여) | Low | 잔여: src/schemas/server-schemas/, src/types/ai-sidebar/, src/types/intelligent-monitoring.types.ts, src/types/server/status.ts 등 소수 — 안전 삭제 후 check 통과 기준 |
+| P3: Knip unused export types 정리 (잔여) | Low | 잔여 warn: src/schemas/api.*.schema.ts Zod schema consts 8개 + src/types/ai-sidebar/ 7개 + common.ts 12개 + intelligent-monitoring.types.ts 4개 등. non-blocking, warn 기준 |
 
 ### Completed (2026-03-31 #15)
 - [x] P3: 백로그 재정비 — `대형 파일(500+줄) 분리 계획` 항목 폐기 확정. 대상 파일(system/route.ts 476줄, jobs stream 464줄)이 이미 기준 미만으로 실효 상실. schemas/api.*.schema.ts 미사용 type alias + src/types/ 미사용 exports 일괄 정리 진행.
