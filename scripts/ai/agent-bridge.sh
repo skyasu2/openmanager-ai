@@ -4,14 +4,14 @@ set -euo pipefail
 usage() {
   cat <<'EOF'
 Usage:
-  bash scripts/ai/agent-bridge.sh --to <claude|codex|gemini> [options] [prompt...]
+  bash scripts/ai/agent-bridge.sh --to <claude|codex> [options] [prompt...]
 
 Description:
-  One-shot bridge to call Claude Code, Codex CLI, or Gemini CLI from the same WSL shell.
+  One-shot bridge to call Claude Code or Codex CLI from the same WSL shell.
   Prevents recursive bridge loops by default.
 
 Options:
-  --to <target>           Required. claude | codex | gemini
+  --to <target>           Required. claude | codex
   --cwd <dir>             Optional working directory (default: current dir)
   --model <name>          Optional model override for target CLI
   --mode <type>           query | analysis | doc (default: query)
@@ -22,7 +22,6 @@ Options:
   --title <text>          Markdown title when saving (default: AI Bridge Result)
   --claude-fast           Run Claude from /tmp for faster startup (default)
   --claude-full           Run Claude from --cwd with full project context
-  --gemini-yolo           Pass --yolo to Gemini CLI (opt-in only)
   --no-self               Block self-target calls (e.g., codex -> codex)
   --from <agent>          Explicit source agent: claude | codex | gemini
   --context-file <path>   Prepend file contents to prompt as context
@@ -39,7 +38,6 @@ Prompt input:
 Examples:
   bash scripts/ai/agent-bridge.sh --to claude "현재 브랜치 요약해줘"
   echo "type error 원인 찾아줘" | bash scripts/ai/agent-bridge.sh --to codex
-  bash scripts/ai/agent-bridge.sh --to gemini --timeout 60 "분석해줘"
 EOF
 }
 
@@ -53,7 +51,6 @@ SAVE_AUTO=false
 REDACT=false
 DOC_TITLE="AI Bridge Result"
 CLAUDE_FAST=true
-GEMINI_YOLO=false
 NO_SELF=false
 FROM_AGENT=""
 CONTEXT_FILE=""
@@ -69,14 +66,6 @@ LOG_DIR="$PROJECT_ROOT/logs/ai-bridge"
 is_dir_readable() {
   local dir="$1"
   ls -ld "$dir" >/dev/null 2>&1
-}
-
-has_gemini_api_key() {
-  [ -n "${GEMINI_API_KEY:-}" ] || [ -n "${GOOGLE_API_KEY:-}" ] || [ -n "${GOOGLE_AI_API_KEY:-}" ]
-}
-
-has_gemini_oauth_cache() {
-  [ -s "${HOME}/.gemini/oauth_creds.json" ]
 }
 
 resolve_path() {
@@ -117,8 +106,7 @@ detect_agent_from_process_tree() {
     cmd="$(ps -o args= -p "$ppid" 2>/dev/null || true)"
     case "$cmd" in
       *claude*) echo "claude"; return 0 ;;
-      *codex*) echo "codex"; return 0 ;;
-      *gemini*) echo "gemini"; return 0 ;;
+      *codex*)  echo "codex";  return 0 ;;
     esac
     pid="$ppid"
   done
@@ -265,10 +253,6 @@ while [ $# -gt 0 ]; do
       CLAUDE_FAST=false
       shift
       ;;
-    --gemini-yolo)
-      GEMINI_YOLO=true
-      shift
-      ;;
     --no-self)
       NO_SELF=true
       shift
@@ -317,13 +301,13 @@ if [ -z "$TARGET" ]; then
   exit 2
 fi
 
-if [ "$TARGET" != "claude" ] && [ "$TARGET" != "codex" ] && [ "$TARGET" != "gemini" ]; then
-  echo "ERROR: invalid --to target: $TARGET" >&2
+if [ "$TARGET" != "claude" ] && [ "$TARGET" != "codex" ]; then
+  echo "ERROR: invalid --to target: $TARGET (allowed: claude|codex)" >&2
   exit 2
 fi
 
-if [ -n "$FROM_AGENT" ] && [ "$FROM_AGENT" != "claude" ] && [ "$FROM_AGENT" != "codex" ] && [ "$FROM_AGENT" != "gemini" ]; then
-  echo "ERROR: invalid --from: $FROM_AGENT (allowed: claude|codex|gemini)" >&2
+if [ -n "$FROM_AGENT" ] && [ "$FROM_AGENT" != "claude" ] && [ "$FROM_AGENT" != "codex" ]; then
+  echo "ERROR: invalid --from: $FROM_AGENT (allowed: claude|codex)" >&2
   exit 2
 fi
 
@@ -435,7 +419,6 @@ if [ "$DRY_RUN" = "true" ]; then
   echo "bridge_save_auto=$SAVE_AUTO"
   echo "bridge_redact=$REDACT"
   echo "bridge_claude_fast=$CLAUDE_FAST"
-  echo "bridge_gemini_yolo=$GEMINI_YOLO"
   echo "bridge_no_self=$NO_SELF"
   echo "bridge_from=${FROM_AGENT:-<auto>}"
   echo "bridge_context_file=${CONTEXT_FILE:-<none>}"
@@ -574,58 +557,6 @@ run_codex() {
   cat "$log_file"
 }
 
-run_gemini() {
-  if ! command -v gemini >/dev/null 2>&1; then
-    echo "ERROR: gemini command not found." >&2
-    return 127
-  fi
-
-  if ! is_dir_readable "$CWD"; then
-    echo "ERROR: gemini workspace is not readable: $CWD" >&2
-    echo "HINT: Recover /mnt/* mount first (ENODEV)." >&2
-    return 2
-  fi
-
-  if ! has_gemini_api_key && ! has_gemini_oauth_cache; then
-    echo "ERROR: Gemini authentication is not ready." >&2
-    echo "HINT: Set GEMINI_API_KEY/GOOGLE_API_KEY or run interactive login once:" >&2
-    echo "      gemini  (login via browser, then Ctrl+C)" >&2
-    return 78
-  fi
-
-  if [ -z "${NO_BROWSER:-}" ]; then
-    export NO_BROWSER=true
-  fi
-
-  local cmd=(gemini -p "$PROMPT" --output-format text)
-  if [ "$GEMINI_YOLO" = "true" ]; then
-    cmd=(gemini --yolo -p "$PROMPT" --output-format text)
-  fi
-  if [ -n "$MODEL" ]; then
-    cmd+=("--model" "$MODEL")
-  fi
-
-  local log_file
-  log_file="$(mktemp)"
-  trap 'rm -f "$log_file"' RETURN
-
-  if ! (
-    cd "$CWD"
-    run_with_timeout "${cmd[@]}" >"$log_file" 2>&1
-  ); then
-    cat "$log_file" >&2
-    if grep -Eqi "Interactive consent could not be obtained|authorization code|FatalAuthenticationError" "$log_file"; then
-      cat >&2 <<'EOF'
-ERROR: Gemini OAuth flow requires one-time interactive consent in your current WSL session.
-HINT: Run this once in the same shell:
-      NO_BROWSER=true gemini -p "auth check"
-EOF
-    fi
-    return 1
-  fi
-
-  cat "$log_file"
-}
 
 START_TIME="$(date +%s)"
 EXIT_CODE=0
@@ -636,7 +567,6 @@ set +e
 case "$TARGET" in
   claude)  run_claude >"$OUTPUT_FILE" || EXIT_CODE=$? ;;
   codex)   run_codex  >"$OUTPUT_FILE" || EXIT_CODE=$? ;;
-  gemini)  run_gemini >"$OUTPUT_FILE" || EXIT_CODE=$? ;;
 esac
 set -e
 
