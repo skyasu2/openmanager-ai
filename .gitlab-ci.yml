@@ -101,5 +101,6 @@ deploy:
   environment:
     name: production
     url: https://openmanager-ai.vercel.app
+  resource_group: production  # production deploy 동시 실행 방지
   timeout: 10 minutes
   # validate 성공 시에만 실행 (GitLab이 stage 순서로 자동 보장)
