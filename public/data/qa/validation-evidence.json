@@ -1,30 +1,30 @@
 {
   "version": "1.0.0",
-  "generatedAt": "2026-04-01T12:15:48.941Z",
+  "generatedAt": "2026-04-01T22:35:47.187Z",
   "source": {
     "trackerPath": "reports/qa/qa-tracker.json",
     "statusPath": "reports/qa/QA_STATUS.md",
     "publicPath": "public/data/qa/validation-evidence.json",
     "publicHref": "/data/qa/validation-evidence.json",
-    "latestRunId": "QA-20260330-0200"
+    "latestRunId": "QA-20260402-0205"
   },
   "summary": {
-    "totalRuns": 203,
-    "totalChecks": 1503,
+    "totalRuns": 204,
+    "totalChecks": 1509,
     "completedItems": 270,
     "expertDomainsOpenGaps": 0,
     "wontFixItems": 13,
-    "lastRecordedAt": "2026-04-01T12:15:47.977Z"
+    "lastRecordedAt": "2026-04-01T22:35:47.941Z"
   },
   "trackerUpdated": {
-    "iso": "2026-04-01T12:15:47.977Z",
+    "iso": "2026-04-01T22:35:47.941Z",
     "short": "2026-04-01",
     "long": "April 1, 2026"
   },
   "publicEvidenceUpdated": {
-    "iso": "2026-03-30T13:40:42.788Z",
-    "short": "2026-03-30",
-    "long": "March 30, 2026"
+    "iso": "2026-04-01T22:35:47.941Z",
+    "short": "2026-04-01",
+    "long": "April 1, 2026"
   },
   "latestProofRecorded": {
     "iso": "2026-03-22T07:26:30.735Z",
@@ -32,12 +32,12 @@
     "long": "March 22, 2026"
   },
   "latestPublicRun": {
-    "runId": "QA-20260330-0200",
-    "title": "Vercel Playwright QA - Vibe Hybrid Delivery Copy Recheck",
+    "runId": "QA-20260402-0205",
+    "title": "Vercel production targeted smoke - post deploy verification for cd763e634",
     "scope": "targeted",
-    "recordedAt": "2026-03-30T13:40:42.788Z",
-    "commitSha": "f3980357e2000126b0ba722866981917131ffc92",
-    "repoPath": "reports/qa/runs/2026/qa-run-QA-20260330-0200.json",
+    "recordedAt": "2026-04-01T22:35:47.941Z",
+    "commitSha": "cd763e634cbabb610eb1b59aac6b2ada73005fd7",
+    "repoPath": "reports/qa/runs/2026/qa-run-QA-20260402-0205.json",
     "ciRunLink": null,
     "ciArtifactLinks": []
   },

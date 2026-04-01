@@ -1,15 +1,15 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-04-01 21:15:48 KST
+> Generated at: 2026-04-02 07:35:47 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 203 |
-| Total Checks | 1503 |
-| Passed | 1435 |
+| Total Runs | 204 |
+| Total Checks | 1509 |
+| Passed | 1441 |
 | Failed | 62 |
 | Completed Items | 270 |
 | Pending Items | 0 |
@@ -18,11 +18,11 @@
 | Expert Domains Tracked | 6 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Run | QA-20260401-0204 (2026-04-01T12:15:47.977Z) |
+| Last Run | QA-20260402-0205 (2026-04-01T22:35:47.941Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260401-0204 (2026-04-01T12:15:47.977Z)
+Latest run: QA-20260402-0205 (2026-04-01T22:35:47.941Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -32,22 +32,23 @@ Latest run: QA-20260401-0204 (2026-04-01T12:15:47.977Z)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| - | - | - | - | - |
+| vercel | cli | failed | unknown | Local Vercel usage CLI could not fetch project usage (404 Costs not found); manual dashboard follow-up required. |
 
 ## Coverage (Latest Run)
 
 - Scope: targeted
 - Release-Facing: no
-- Deployment: SHA 323659bc
+- Deployment: dpl_HRmGRVPmk9YEZn7WPxs58PZndtKE / SHA cd763e63
 - Coverage Packs: core-routes-smoke
-- Covered Surfaces: /login header minimal layout, /login auth option surface, self-loop login CTA removed
-- Skipped Surfaces: OAuth completion flow, email delivery side effect, dashboard/authenticated routes
+- Covered Surfaces: / landing render on production, /main legacy redirect to /, /login minimal header and auth options, /api/health 200, /api/version 200, production console error 0
+- Skipped Surfaces: feature card modals, OAuth completion flow, guest PIN submission, dashboard/authenticated routes, AI sidebar and chat surfaces, Cloud Run admin observability surface
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | Local dev URL | [link](http://localhost:3000/login) | - |
+| general | Production URL | [link](https://openmanager-ai.vercel.app/) | - |
+| vercel-deployment | Production deployment dpl_HRmGRVPmk9YEZn7WPxs58PZndtKE | [link](https://openmanager-ep3iwwwmk-skyasus-projects.vercel.app/) | - |
 
 ## Artifacts (Latest Run)
 
@@ -372,6 +373,7 @@ Latest run: QA-20260401-0204 (2026-04-01T12:15:47.977Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260402-0205 | 2026-04-01T22:35:47.941Z | targeted | no | Vercel production targeted smoke - post deploy verification for cd763e634 | 6 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260401-0204 | 2026-04-01T12:15:47.977Z | targeted | no | Local dev Playwright QA - login header minimalization verification | 3 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260401-0203 | 2026-04-01T11:42:07.583Z | targeted | no | Production Playwright QA - landing route/button/modal surface survey | 13 | 0 | 0 | 0 | 1 | 0 |
 | QA-20260331-0202 | 2026-03-31T12:08:54.272Z | targeted | no | Local dev Playwright QA - Vibe Coding modal CI/CD recheck after clean restart | 6 | 1 | 0 | 0 | 0 | 0 |
@@ -391,5 +393,4 @@ Latest run: QA-20260401-0204 (2026-04-01T12:15:47.977Z)
 | QA-20260326-0188 | 2026-03-25T18:04:04.763Z | targeted | no | Vercel Playwright targeted recheck - latest promoted production deploy AI proof | 8 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260326-0187 | 2026-03-25T17:38:40.806Z | broad | yes | Vercel Playwright release-facing smoke - core routes, dashboard, AI core | 12 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260325-0186 | 2026-03-25T11:45:16.583Z | targeted | no | Local validation - suppress zero-test DOM related dep-scan noise | 5 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260325-0185 | 2026-03-25T11:06:51.584Z | targeted | no | Local validation - ai proxy runtime env refresh and README QA sync | 4 | 2 | 0 | 0 | 0 | 0 |
 

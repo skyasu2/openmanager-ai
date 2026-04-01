@@ -1,0 +1,78 @@
+{
+  "runId": "QA-20260402-0205",
+  "recordedAt": "2026-04-01T22:35:47.941Z",
+  "recordedAtKst": "2026-04-02 07:35:47 KST",
+  "runTitle": "Vercel production targeted smoke - post deploy verification for cd763e634",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_HRmGRVPmk9YEZn7WPxs58PZndtKE",
+    "deploymentUrl": "https://openmanager-ep3iwwwmk-skyasus-projects.vercel.app",
+    "commitSha": "cd763e634cbabb610eb1b59aac6b2ada73005fd7"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "coveragePacks": ["core-routes-smoke"],
+  "coveredSurfaces": [
+    "/ landing render on production",
+    "/main legacy redirect to /",
+    "/login minimal header and auth options",
+    "/api/health 200",
+    "/api/version 200",
+    "production console error 0"
+  ],
+  "skippedSurfaces": [
+    "feature card modals",
+    "OAuth completion flow",
+    "guest PIN submission",
+    "dashboard/authenticated routes",
+    "AI sidebar and chat surfaces",
+    "Cloud Run admin observability surface"
+  ],
+  "checks": {
+    "total": 6,
+    "passed": 6,
+    "failed": 0
+  },
+  "expertAssessments": [],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "failed",
+      "result": "unknown",
+      "checkedAt": "2026-04-01T22:35:03Z",
+      "summary": "Local Vercel usage CLI could not fetch project usage (404 Costs not found); manual dashboard follow-up required.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Latest production deployment dpl_HRmGRVPmk9YEZn7WPxs58PZndtKE for commit cd763e634 reached READY/PROMOTED before smoke execution.",
+    "Landing settled to the expected guest-facing surface after a short bootstrap phase.",
+    "A transient bootstrap loading copy was visible immediately after navigation before the landing settled.",
+    "No browser console errors were observed on the tested production routes."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Production URL",
+      "url": "https://openmanager-ai.vercel.app/"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Production deployment dpl_HRmGRVPmk9YEZn7WPxs58PZndtKE",
+      "url": "https://openmanager-ep3iwwwmk-skyasus-projects.vercel.app/"
+    }
+  ]
+}
