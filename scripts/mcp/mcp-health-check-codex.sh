@@ -563,13 +563,14 @@ load_expected_servers() {
 
   mapfile -t EXPECTED_SERVERS < <(
     awk '
-      /^\[mcp_servers\.[A-Za-z0-9._-]+\]$/ {
+      # Only top-level [mcp_servers.<server>] sections represent MCP servers.
+      # Nested sections such as .env or .tools.<name> are configuration details,
+      # not standalone servers.
+      /^\[mcp_servers\.[A-Za-z0-9_-]+\]$/ {
         line = $0
         sub(/^\[mcp_servers\./, "", line)
         sub(/\]$/, "", line)
-        if (line !~ /\.env$/) {
-          print line
-        }
+        print line
       }
     ' "$CONFIG_FILE"
   )
