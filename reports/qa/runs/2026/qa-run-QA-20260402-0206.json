@@ -1,0 +1,69 @@
+{
+  "runId": "QA-20260402-0206",
+  "recordedAt": "2026-04-01T22:52:39.393Z",
+  "recordedAtKst": "2026-04-02 07:52:39 KST",
+  "runTitle": "Local dev targeted QA - landing bootstrap auth copy hidden",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "local-dev",
+    "url": "http://127.0.0.1:3000",
+    "frontend": "Next.js dev server",
+    "backend": "local app routes",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "69ad2643141953e8d4f97049c70ec7b9fc1a0b71"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "coveragePacks": ["core-routes-smoke"],
+  "coveredSurfaces": [
+    "/ initial landing bootstrap frame",
+    "/ settled landing render",
+    "landing auth bootstrap copy hidden"
+  ],
+  "skippedSurfaces": [
+    "/login",
+    "guest restriction modal",
+    "dashboard/authenticated routes",
+    "AI sidebar and chat surfaces"
+  ],
+  "checks": {
+    "total": 3,
+    "passed": 3,
+    "failed": 0
+  },
+  "expertAssessments": [],
+  "usageChecks": [],
+  "artifacts": [],
+  "completedImprovements": [
+    {
+      "id": "landing-bootstrap-auth-copy-hidden",
+      "title": "랜딩 첫 진입 bootstrap 인증 카피 숨김",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "local Playwright screenshot on 127.0.0.1 showed the landing hero immediately without visible bootstrap auth copy",
+      "note": "AuthLoadingUI는 접근성용 sr-only 메시지만 유지하고 랜딩에서는 visible copy를 숨김",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Accessibility snapshot may still include the sr-only loading text, but the visible landing surface no longer shows bootstrap auth copy.",
+    "Local Playwright console errors were limited to dev HMR websocket noise on 127.0.0.1 and are not product regressions."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Local dev URL",
+      "url": "http://127.0.0.1:3000/"
+    }
+  ]
+}

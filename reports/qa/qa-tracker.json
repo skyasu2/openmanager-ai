@@ -2,25 +2,25 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-01T22:35:47.941Z"
+    "updatedAt": "2026-04-01T22:52:39.393Z"
   },
   "sequence": {
-    "nextRunNumber": 206
+    "nextRunNumber": 207
   },
   "summary": {
-    "totalRuns": 204,
-    "totalChecks": 1509,
-    "totalPassed": 1441,
+    "totalRuns": 205,
+    "totalChecks": 1512,
+    "totalPassed": 1444,
     "totalFailed": 62,
     "completionRate": 100,
-    "completedItems": 270,
+    "completedItems": 271,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 13,
     "expertDomainsTracked": 6,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260402-0205",
-    "lastRecordedAt": "2026-04-01T22:35:47.941Z"
+    "lastRunId": "QA-20260402-0206",
+    "lastRecordedAt": "2026-04-01T22:52:39.393Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -6501,6 +6501,30 @@
       "overengineeringScope": "경미한 UX 중복으로 기능 차단 없음",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-04-01T12:15:47.977Z"
+    },
+    "landing-bootstrap-auth-copy-hidden": {
+      "id": "landing-bootstrap-auth-copy-hidden",
+      "title": "랜딩 첫 진입 bootstrap 인증 카피 숨김",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260402-0206",
+      "firstSeenAt": "2026-04-01T22:52:39.393Z",
+      "lastSeenRunId": "QA-20260402-0206",
+      "lastSeenAt": "2026-04-01T22:52:39.393Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "local Playwright screenshot on 127.0.0.1 showed the landing hero immediately without visible bootstrap auth copy",
+      "lastNote": "AuthLoadingUI는 접근성용 sr-only 메시지만 유지하고 랜딩에서는 visible copy를 숨김",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-04-01T22:52:39.393Z"
     }
   },
   "runs": [
@@ -17574,6 +17598,60 @@
       "expertCount": 0,
       "expertNeedsImprovementCount": 0,
       "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260402-0206",
+      "recordedAt": "2026-04-01T22:52:39.393Z",
+      "recordedAtKst": "2026-04-02 07:52:39 KST",
+      "title": "Local dev targeted QA - landing bootstrap auth copy hidden",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260402-0206.json",
+      "environment": {
+        "target": "local-dev",
+        "url": "http://127.0.0.1:3000",
+        "frontend": "Next.js dev server",
+        "backend": "local app routes",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "69ad2643141953e8d4f97049c70ec7b9fc1a0b71"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "coveragePacks": ["core-routes-smoke"],
+      "coveredSurfaces": [
+        "/ initial landing bootstrap frame",
+        "/ settled landing render",
+        "landing auth bootstrap copy hidden"
+      ],
+      "skippedSurfaces": [
+        "/login",
+        "guest restriction modal",
+        "dashboard/authenticated routes",
+        "AI sidebar and chat surfaces"
+      ],
+      "checks": {
+        "total": 3,
+        "passed": 3,
+        "failed": 0
+      },
+      "expertAssessments": [],
+      "usageChecks": [],
+      "artifacts": [],
+      "links": [
+        {
+          "type": "general",
+          "label": "Local dev URL",
+          "url": "http://127.0.0.1:3000/"
+        }
+      ],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
