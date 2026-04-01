@@ -76,6 +76,7 @@ function Home() {
         envLabel={envLabel}
         authError={authError}
         onRetry={retryAuth}
+        showCopy={false}
       />
     );
   }
