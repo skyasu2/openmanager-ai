@@ -27,7 +27,6 @@ vi.mock('@/lib/logging', () => ({
 vi.mock('./circuit-breaker/state-store', () => ({
   ensureRedisStateStore: vi.fn().mockResolvedValue(undefined),
   isRedisStateStoreInitialized: vi.fn().mockReturnValue(false),
-  getDistributedStateStore: vi.fn(),
   setDistributedStateStore: vi.fn(),
   InMemoryStateStore: vi.fn(),
 }));

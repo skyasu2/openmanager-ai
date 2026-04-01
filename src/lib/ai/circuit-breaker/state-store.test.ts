@@ -89,25 +89,14 @@ describe('Module-level singleton functions', () => {
     return mod;
   }
 
-  it('getDistributedStateStore returns InMemoryStateStore by default', async () => {
-    const { getDistributedStateStore, InMemoryStateStore: InMemStore } =
-      await importModule();
-
-    const store = getDistributedStateStore();
-    expect(store).toBeInstanceOf(InMemStore);
-  });
-
   it('isRedisStateStoreInitialized returns false initially', async () => {
     const { isRedisStateStoreInitialized } = await importModule();
     expect(isRedisStateStoreInitialized()).toBe(false);
   });
 
-  it('setDistributedStateStore switches store and marks redis initialized', async () => {
-    const {
-      setDistributedStateStore,
-      getDistributedStateStore,
-      isRedisStateStoreInitialized,
-    } = await importModule();
+  it('setDistributedStateStore marks redis initialized', async () => {
+    const { setDistributedStateStore, isRedisStateStoreInitialized } =
+      await importModule();
 
     const customStore: IDistributedStateStore = {
       getState: vi.fn() as (
@@ -126,7 +115,6 @@ describe('Module-level singleton functions', () => {
 
     setDistributedStateStore(customStore);
 
-    expect(getDistributedStateStore()).toBe(customStore);
     expect(isRedisStateStoreInitialized()).toBe(true);
   });
 });

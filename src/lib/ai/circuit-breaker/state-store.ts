@@ -68,17 +68,15 @@ export class InMemoryStateStore implements IDistributedStateStore {
 // Singleton Management
 // ============================================================================
 
-let defaultStateStore: IDistributedStateStore = new InMemoryStateStore();
+// Retained for Redis-backed store injection even though the current breaker
+// implementation only tracks whether distributed state was initialized.
+let _defaultStateStore: IDistributedStateStore = new InMemoryStateStore();
 let redisInitialized = false;
 let redisInitPromise: Promise<boolean> | null = null;
 
 export function setDistributedStateStore(store: IDistributedStateStore): void {
-  defaultStateStore = store;
+  _defaultStateStore = store;
   redisInitialized = true;
-}
-
-export function getDistributedStateStore(): IDistributedStateStore {
-  return defaultStateStore;
 }
 
 export function isRedisStateStoreInitialized(): boolean {
