@@ -11,7 +11,7 @@ import type { CustomNodeData } from './types';
  * includeHiddenNodes: 숨겨진 노드도 포함
  */
 export const FIT_VIEW_OPTIONS = {
-  padding: 0.12,
+  padding: 0.06,
   includeHiddenNodes: true,
   minZoom: 0.05,
   maxZoom: 0.85,
@@ -21,9 +21,9 @@ export const FIT_VIEW_OPTIONS = {
  * 기본 뷰포트 설정 - fitView가 실패할 경우의 폴백
  */
 export const DEFAULT_VIEWPORT = {
-  x: 550,
-  y: 10,
-  zoom: 0.75,
+  x: 0,
+  y: 0,
+  zoom: 0.45,
 };
 
 /**

@@ -224,43 +224,59 @@ export default function FeatureCardModal({
         />
       ) : (
         <>
-          {/* 헤더 섹션 */}
-          <div className="mb-8 text-center">
-            <div
-              className={`mx-auto mb-4 h-16 w-16 rounded-2xl bg-linear-to-br ${gradient} flex items-center justify-center`}
-            >
-              <Icon className="h-8 w-8 text-white" />
-            </div>
-            <h3 className="mb-3 text-2xl font-bold">
-              {renderTextWithAIGradient(title)}
-              {/* 바이브 코딩 카드 전용 뷰 표시 */}
-              {cardData.id === 'vibe-coding' && (
-                <span className="ml-2 text-lg font-medium text-amber-400">
-                  {vibeView === 'history'
-                    ? '• 개발 환경 변화'
-                    : vibeView === 'cicd'
-                      ? '• CI/CD'
-                      : '• 현재 도구'}
+          {/* 헤더 섹션 — CI/CD 탭은 compact (아이콘·설명 축소) */}
+          {vibeView === 'cicd' ? (
+            <div className="mb-4 flex items-center justify-center gap-3">
+              <div
+                className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-linear-to-br ${gradient}`}
+              >
+                <Icon className="h-4 w-4 text-white" />
+              </div>
+              <h3 className="text-lg font-bold">
+                {renderTextWithAIGradient(title)}
+                <span className="ml-2 text-base font-medium text-amber-400">
+                  • CI/CD
                 </span>
-              )}
-            </h3>
-            <p
-              id="modal-description"
-              className="mx-auto max-w-2xl text-sm text-gray-300"
-            >
-              {cardData.id === 'vibe-coding'
-                ? vibeView === 'history'
-                  ? '바이브 코딩 여정: 초기(ChatGPT 개별 페이지) → 중기(Cursor + Vercel + Supabase) → 후기(Claude Code + WSL)로 이어진 개발 환경의 변화를 시간 순서대로 보여줍니다.'
-                  : vibeView === 'cicd'
-                    ? '로컬 검증 뒤에 GitLab CI가 검사와 배포를 나눠 실행하고, production 배포를 한 번에 하나씩만 진행하는 흐름을 보여줍니다.'
+              </h3>
+              <p id="modal-description" className="sr-only">
+                로컬 검증 뒤에 GitLab CI가 검사와 배포를 나눠 실행하고,
+                production 배포를 한 번에 하나씩만 진행하는 흐름을 보여줍니다.
+              </p>
+            </div>
+          ) : (
+            <div className="mb-8 text-center">
+              <div
+                className={`mx-auto mb-4 h-16 w-16 rounded-2xl bg-linear-to-br ${gradient} flex items-center justify-center`}
+              >
+                <Icon className="h-8 w-8 text-white" />
+              </div>
+              <h3 className="mb-3 text-2xl font-bold">
+                {renderTextWithAIGradient(title)}
+                {/* 바이브 코딩 카드 전용 뷰 표시 */}
+                {cardData.id === 'vibe-coding' && (
+                  <span className="ml-2 text-lg font-medium text-amber-400">
+                    {vibeView === 'history'
+                      ? '• 개발 환경 변화'
+                      : '• 현재 도구'}
+                  </span>
+                )}
+              </h3>
+              <p
+                id="modal-description"
+                className="mx-auto max-w-2xl text-sm text-gray-300"
+              >
+                {cardData.id === 'vibe-coding'
+                  ? vibeView === 'history'
+                    ? '바이브 코딩 여정: 초기(ChatGPT 개별 페이지) → 중기(Cursor + Vercel + Supabase) → 후기(Claude Code + WSL)로 이어진 개발 환경의 변화를 시간 순서대로 보여줍니다.'
                     : parseMarkdownLinks(
                         sanitizeModalText(detailedContent.overview)
                       )
-                : parseMarkdownLinks(
-                    sanitizeModalText(detailedContent.overview)
-                  )}
-            </p>
-          </div>
+                  : parseMarkdownLinks(
+                      sanitizeModalText(detailedContent.overview)
+                    )}
+              </p>
+            </div>
+          )}
 
           {/* AI Sub-Sections (Grid Layout) */}
           {cardData.subSections && (
@@ -383,7 +399,7 @@ export default function FeatureCardModal({
         className={`relative z-10 w-full transform overflow-hidden rounded-2xl border border-gray-600/50 bg-linear-to-br from-gray-900 via-gray-900 to-gray-800 shadow-2xl transition-all duration-300 motion-reduce:transition-none ${
           showDiagram
             ? 'max-h-[92dvh] max-w-[72vw] sm:max-w-[68vw] lg:max-w-4xl xl:max-w-5xl'
-            : 'max-h-[80dvh] max-w-[76vw] sm:max-w-lg md:max-w-xl lg:max-w-3xl'
+            : 'max-h-[80dvh] max-w-[92vw] sm:max-w-lg md:max-w-xl lg:max-w-3xl'
         } ${!cardData.id ? 'hidden' : ''}`}
         data-modal-content="portal-unified-v4-ai-cross-verified"
         style={{
@@ -402,7 +418,7 @@ export default function FeatureCardModal({
         ></div>
         <div className="relative z-10 flex h-full flex-col">
           <header
-            className={`flex shrink-0 items-center justify-between border-b border-gray-700/50 ${
+            className={`flex shrink-0 flex-col items-stretch gap-3 border-b border-gray-700/50 sm:flex-row sm:items-center sm:justify-between ${
               showDiagram ? 'px-4 py-2.5' : 'p-4'
             }`}
           >
@@ -431,7 +447,7 @@ export default function FeatureCardModal({
               </h2>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex w-full items-start justify-between gap-2 sm:w-auto sm:items-center sm:justify-normal">
               {/* 아키텍처 다이어그램 토글 버튼 (모든 카드) */}
               {diagramData && cardData.id !== 'vibe-coding' && (
                 <button
@@ -448,7 +464,7 @@ export default function FeatureCardModal({
 
               {/* 바이브 코딩 카드 전용 뷰 전환 */}
               {cardData.id === 'vibe-coding' && (
-                <div className="flex items-center gap-1 rounded-xl border border-white/10 bg-black/20 p-1">
+                <div className="flex flex-1 flex-wrap items-center justify-end gap-1 rounded-xl border border-white/10 bg-black/20 p-1 sm:flex-none sm:flex-nowrap">
                   {[
                     { id: 'current', label: '현재 도구' },
                     { id: 'history', label: '개발 환경 변화' },
@@ -463,7 +479,7 @@ export default function FeatureCardModal({
                         onClick={() =>
                           setVibeView(view.id as 'current' | 'history' | 'cicd')
                         }
-                        className={`rounded-lg px-3 py-1.5 text-sm font-medium transition-all duration-200 focus:outline-hidden focus:ring-2 focus:ring-amber-500/40 ${
+                        className={`rounded-lg px-2.5 py-1.5 text-xs font-medium transition-all duration-200 focus:outline-hidden focus:ring-2 focus:ring-amber-500/40 sm:px-3 sm:text-sm ${
                           isActive
                             ? 'bg-linear-to-r from-amber-600 to-orange-600 text-white shadow-lg shadow-amber-950/30'
                             : 'text-white/70 hover:bg-white/10 hover:text-white'

@@ -65,7 +65,7 @@ const PIPELINE_CARDS: PipelineCard[] = [
     ring: 'ring-violet-500/35',
     accent: 'text-violet-300',
     footer: {
-      label: 'canonical',
+      label: '정본 저장소',
       bg: 'bg-violet-500/10',
       text: 'text-violet-300',
       border: 'border-violet-500/20',
@@ -121,7 +121,7 @@ const PIPELINE_CARDS: PipelineCard[] = [
     ring: 'ring-emerald-500/40',
     accent: 'text-emerald-300',
     footer: {
-      label: 'live',
+      label: '실서비스',
       bg: 'bg-emerald-500/10',
       text: 'text-emerald-300',
       border: 'border-emerald-500/20',
@@ -168,22 +168,31 @@ export function VibeCiCdSection({
     <div className="space-y-6">
       <section className="rounded-2xl border border-white/10 bg-gradient-to-b from-white/10 to-transparent px-5 py-6">
         <p className="text-center text-[10px] font-bold tracking-widest text-white/25">
-          배포 흐름
+          내가 구성한 GitLab CI/CD
         </p>
         <p className="mt-3 text-center text-[11px] text-white/35">
-          push 한 번 뒤에 검사와 배포가 자동으로 이어지고, 최종 결과만
-          실서비스에 반영됩니다.
+          로컬 훅 뒤에 GitLab CI를 validate와 deploy로 나누고, 마지막에는 Vercel
+          prebuilt 배포로 production을 갱신하는 흐름입니다.
         </p>
 
-        <div className="relative mt-6">
-          <div className="flex items-start gap-0 overflow-x-auto pb-2">
+        <div className="mt-6">
+          <div className="grid grid-cols-2 gap-2.5 sm:flex sm:items-start sm:overflow-x-hidden">
             {PIPELINE_CARDS.map((card, index) => {
               const Icon = card.icon;
+              const isLast = index === PIPELINE_CARDS.length - 1;
               return (
-                <div key={card.id} className="flex items-start">
+                <div
+                  key={card.id}
+                  className={cn(
+                    'flex min-w-0 items-start',
+                    isLast
+                      ? 'col-span-2 justify-center sm:col-span-1 sm:flex-1 sm:justify-start'
+                      : 'sm:flex-1'
+                  )}
+                >
                   <div
                     className={cn(
-                      'flex min-w-[116px] flex-col items-center gap-2.5 rounded-2xl border px-3.5 py-4',
+                      'flex w-full max-w-[160px] flex-col items-center gap-2.5 rounded-2xl border px-3 py-4 sm:max-w-none sm:px-2',
                       card.bg,
                       card.border
                     )}
@@ -259,16 +268,14 @@ export function VibeCiCdSection({
                   </div>
 
                   {index < PIPELINE_CARDS.length - 1 && (
-                    <div className="mt-16 flex items-center px-1.5">
-                      <ArrowRight className="h-4 w-4 text-white/15" />
+                    <div className="mt-16 hidden shrink-0 items-center px-0.5 sm:flex">
+                      <ArrowRight className="h-3 w-3 text-white/15" />
                     </div>
                   )}
                 </div>
               );
             })}
           </div>
-
-          <div className="pointer-events-none absolute top-0 right-0 h-full w-8 bg-gradient-to-l from-black/30 to-transparent" />
         </div>
       </section>
 
@@ -279,7 +286,8 @@ export function VibeCiCdSection({
               <ShieldCheck className="h-3.5 w-3.5" />
             </div>
             <p className="text-[11px] font-medium text-white/40">
-              검사 실패 시 배포 자동 차단 · 배포는 한 번에 하나씩만 실행
+              validate와 deploy를 분리하고, production 배포는 한 번에 하나씩만
+              실행하도록 구성했습니다.
             </p>
           </div>
           <code className="self-start rounded-full border border-rose-500/20 bg-rose-500/10 px-2.5 py-1 text-[10px] font-bold text-rose-300/70 sm:self-auto">
@@ -288,18 +296,26 @@ export function VibeCiCdSection({
         </div>
 
         <div className="rounded-xl border border-amber-500/15 bg-amber-500/5 px-4 py-3">
-          <p className="text-[11px] font-bold text-amber-300/80">운영 주의</p>
+          <p className="text-[11px] font-bold text-amber-300/80">
+            왜 이렇게 나눴나
+          </p>
           <p className="mt-1 text-[11px] leading-relaxed text-white/40">
-            내 PC의 <code className="text-cyan-300/70">wsl2-docker</code> 러너가
-            꺼져 있으면 검사 단계는 shared runner로 자동 전환되지 않고 pending
-            상태로 대기합니다.
+            validate는 내 PC의{' '}
+            <code className="text-cyan-300/70">wsl2-docker</code> self-hosted
+            runner에서 실행해 GitLab minutes를 거의 쓰지 않게 했고, deploy는
+            shared runner에서 prebuilt 결과만 올려 배포 시간을 짧게
+            유지했습니다.
+          </p>
+          <p className="mt-2 text-[10px] leading-relaxed text-white/25">
+            제약: self-hosted runner가 꺼져 있으면 validate는 shared runner로
+            자동 전환되지 않고 pending 상태로 대기합니다.
           </p>
         </div>
       </section>
 
       <details className="rounded-2xl border border-white/5 bg-black/20 p-5">
         <summary className="cursor-pointer list-none text-center text-[11px] font-bold text-white/35 marker:content-none">
-          상황별 실행 흐름 보기
+          작업 규모별 흐름 보기
         </summary>
         <div className="mt-4 space-y-3">
           {SCENARIOS.map((scenario) => (
