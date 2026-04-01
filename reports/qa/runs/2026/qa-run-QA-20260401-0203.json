@@ -1,0 +1,80 @@
+{
+  "runId": "QA-20260401-0203",
+  "recordedAt": "2026-04-01T11:42:07.583Z",
+  "recordedAtKst": "2026-04-01 20:42:07 KST",
+  "runTitle": "Production Playwright QA - landing route/button/modal surface survey",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel production",
+    "backend": "Vercel app routes",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "323659bc11b7201f483ba13c7cc2ffa4f105e660"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "coveragePacks": ["core-routes-smoke", "modal-detail-pack"],
+  "coveredSurfaces": [
+    "/ landing render",
+    "/ landing header login CTA",
+    "/ landing system-start auth gate modal",
+    "/ landing feature card grid (4 cards)",
+    "AI assistant modal + architecture toggle",
+    "cloud platform modal + architecture toggle",
+    "tech stack modal + architecture toggle",
+    "vibe coding modal tabs (current/history/cicd)",
+    "/login auth options surface",
+    "/login guest PIN modal",
+    "/privacy render and back-link",
+    "/main legacy redirect to /",
+    "production browser console error check"
+  ],
+  "skippedSurfaces": [
+    "OAuth completion flow after external provider redirect",
+    "email magic-link delivery side effect",
+    "authenticated dashboard and AI sidebar surfaces"
+  ],
+  "checks": {
+    "total": 13,
+    "passed": 13,
+    "failed": 0
+  },
+  "expertAssessments": [],
+  "usageChecks": [],
+  "artifacts": [],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [
+    {
+      "id": "login-header-self-loop-cta",
+      "title": "로그인 페이지 헤더의 로그인 버튼이 동일 /login으로 자기 자신을 가리킴",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "경미한 UX 중복으로 기능 차단 없음",
+      "evidence": "production Playwright에서 /login 상단 로그인 버튼 클릭 후 URL 변화 없이 /login 유지",
+      "note": "비로그인 헤더 공통 컴포넌트 재사용의 결과로 보이며, 뒤로가기 또는 홈 CTA 대비 정보 가치가 낮음",
+      "owner": "",
+      "status": "wont-fix",
+      "policyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다."
+    }
+  ],
+  "notes": [
+    "랜딩 초기 진입 직후 기능 카드 그리드는 dynamic import 지연 뒤 노출되며 2초 대기 후 정상 확인",
+    "비로그인 랜딩의 시스템 시작 버튼은 직접 대시보드 진입이 아니라 로그인 유도 모달을 띄우는 현재 정책과 일치",
+    "Vibe Coding 모달의 현재 도구/개발 환경 변화/CI-CD 탭은 production에서 모두 정상 전환됨",
+    "테스트한 production 페이지들에서 브라우저 console error 0건"
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Production URL",
+      "url": "https://openmanager-ai.vercel.app/"
+    }
+  ]
+}

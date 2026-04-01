@@ -2,25 +2,25 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-03-31T12:08:54.272Z"
+    "updatedAt": "2026-04-01T12:15:47.977Z"
   },
   "sequence": {
-    "nextRunNumber": 203
+    "nextRunNumber": 205
   },
   "summary": {
-    "totalRuns": 201,
-    "totalChecks": 1487,
-    "totalPassed": 1419,
+    "totalRuns": 203,
+    "totalChecks": 1503,
+    "totalPassed": 1435,
     "totalFailed": 62,
     "completionRate": 100,
-    "completedItems": 269,
+    "completedItems": 270,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 13,
     "expertDomainsTracked": 6,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260331-0202",
-    "lastRecordedAt": "2026-03-31T12:08:54.272Z"
+    "lastRunId": "QA-20260401-0204",
+    "lastRecordedAt": "2026-04-01T12:15:47.977Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -6477,6 +6477,30 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-03-31T12:08:54.272Z"
+    },
+    "login-header-self-loop-cta": {
+      "id": "login-header-self-loop-cta",
+      "title": "로그인 페이지 헤더 self-loop CTA 제거",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260401-0203",
+      "firstSeenAt": "2026-04-01T11:42:07.583Z",
+      "lastSeenRunId": "QA-20260401-0204",
+      "lastSeenAt": "2026-04-01T12:15:47.977Z",
+      "seenCount": 2,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 1,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "local dev /login Playwright snapshot에서 헤더 우측 CTA가 제거되고 로고만 렌더됨",
+      "lastNote": "미니멀 로그인 헤더 패턴으로 정리",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "경미한 UX 중복으로 기능 차단 없음",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-04-01T12:15:47.977Z"
     }
   },
   "runs": [
@@ -17354,6 +17378,122 @@
           "type": "general",
           "label": "Local dev URL",
           "url": "http://localhost:3000/"
+        }
+      ],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260401-0203",
+      "recordedAt": "2026-04-01T11:42:07.583Z",
+      "recordedAtKst": "2026-04-01 20:42:07 KST",
+      "title": "Production Playwright QA - landing route/button/modal surface survey",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260401-0203.json",
+      "environment": {
+        "target": "vercel",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel production",
+        "backend": "Vercel app routes",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "323659bc11b7201f483ba13c7cc2ffa4f105e660"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "coveragePacks": ["core-routes-smoke", "modal-detail-pack"],
+      "coveredSurfaces": [
+        "/ landing render",
+        "/ landing header login CTA",
+        "/ landing system-start auth gate modal",
+        "/ landing feature card grid (4 cards)",
+        "AI assistant modal + architecture toggle",
+        "cloud platform modal + architecture toggle",
+        "tech stack modal + architecture toggle",
+        "vibe coding modal tabs (current/history/cicd)",
+        "/login auth options surface",
+        "/login guest PIN modal",
+        "/privacy render and back-link",
+        "/main legacy redirect to /",
+        "production browser console error check"
+      ],
+      "skippedSurfaces": [
+        "OAuth completion flow after external provider redirect",
+        "email magic-link delivery side effect",
+        "authenticated dashboard and AI sidebar surfaces"
+      ],
+      "checks": {
+        "total": 13,
+        "passed": 13,
+        "failed": 0
+      },
+      "expertAssessments": [],
+      "usageChecks": [],
+      "artifacts": [],
+      "links": [
+        {
+          "type": "general",
+          "label": "Production URL",
+          "url": "https://openmanager-ai.vercel.app/"
+        }
+      ],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 1
+    },
+    {
+      "runId": "QA-20260401-0204",
+      "recordedAt": "2026-04-01T12:15:47.977Z",
+      "recordedAtKst": "2026-04-01 21:15:47 KST",
+      "title": "Local dev Playwright QA - login header minimalization verification",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260401-0204.json",
+      "environment": {
+        "target": "local-dev",
+        "url": "http://localhost:3000",
+        "frontend": "Next.js dev server",
+        "backend": "local app routes",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "323659bc11b7201f483ba13c7cc2ffa4f105e660"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "coveragePacks": ["core-routes-smoke"],
+      "coveredSurfaces": [
+        "/login header minimal layout",
+        "/login auth option surface",
+        "self-loop login CTA removed"
+      ],
+      "skippedSurfaces": [
+        "OAuth completion flow",
+        "email delivery side effect",
+        "dashboard/authenticated routes"
+      ],
+      "checks": {
+        "total": 3,
+        "passed": 3,
+        "failed": 0
+      },
+      "expertAssessments": [],
+      "usageChecks": [],
+      "artifacts": [],
+      "links": [
+        {
+          "type": "general",
+          "label": "Local dev URL",
+          "url": "http://localhost:3000/login"
         }
       ],
       "expertCount": 0,

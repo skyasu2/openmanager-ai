@@ -1,0 +1,68 @@
+{
+  "runId": "QA-20260401-0204",
+  "recordedAt": "2026-04-01T12:15:47.977Z",
+  "recordedAtKst": "2026-04-01 21:15:47 KST",
+  "runTitle": "Local dev Playwright QA - login header minimalization verification",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "local-dev",
+    "url": "http://localhost:3000",
+    "frontend": "Next.js dev server",
+    "backend": "local app routes",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "323659bc11b7201f483ba13c7cc2ffa4f105e660"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "coveragePacks": ["core-routes-smoke"],
+  "coveredSurfaces": [
+    "/login header minimal layout",
+    "/login auth option surface",
+    "self-loop login CTA removed"
+  ],
+  "skippedSurfaces": [
+    "OAuth completion flow",
+    "email delivery side effect",
+    "dashboard/authenticated routes"
+  ],
+  "checks": {
+    "total": 3,
+    "passed": 3,
+    "failed": 0
+  },
+  "expertAssessments": [],
+  "usageChecks": [],
+  "artifacts": [],
+  "completedImprovements": [
+    {
+      "id": "login-header-self-loop-cta",
+      "title": "로그인 페이지 헤더 self-loop CTA 제거",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "local dev /login Playwright snapshot에서 헤더 우측 CTA가 제거되고 로고만 렌더됨",
+      "note": "미니멀 로그인 헤더 패턴으로 정리",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "헤더는 로고만 남고 우측 로그인 버튼이 제거됨",
+    "로그인 본문 CTA는 Google/GitHub/이메일/게스트 체험으로 유지"
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Local dev URL",
+      "url": "http://localhost:3000/login"
+    }
+  ]
+}

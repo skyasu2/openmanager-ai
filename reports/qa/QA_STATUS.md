@@ -1,28 +1,28 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-03-31 21:08:55 KST
+> Generated at: 2026-04-01 21:15:48 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 201 |
-| Total Checks | 1487 |
-| Passed | 1419 |
+| Total Runs | 203 |
+| Total Checks | 1503 |
+| Passed | 1435 |
 | Failed | 62 |
-| Completed Items | 269 |
+| Completed Items | 270 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 13 |
 | Expert Domains Tracked | 6 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Run | QA-20260331-0202 (2026-03-31T12:08:54.272Z) |
+| Last Run | QA-20260401-0204 (2026-04-01T12:15:47.977Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260331-0202 (2026-03-31T12:08:54.272Z)
+Latest run: QA-20260401-0204 (2026-04-01T12:15:47.977Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -38,23 +38,22 @@ Latest run: QA-20260331-0202 (2026-03-31T12:08:54.272Z)
 
 - Scope: targeted
 - Release-Facing: no
-- Deployment: SHA d0f6f729
-- Coverage Packs: modal-detail-pack
-- Covered Surfaces: /, Vibe Coding modal open, Vibe Coding modal tab structure, Vibe Coding modal CI/CD tab content, split-runner wording and badges, local browser console error check
-- Skipped Surfaces: AI sidebar, dashboard routes, production deployment verification
+- Deployment: SHA 323659bc
+- Coverage Packs: core-routes-smoke
+- Covered Surfaces: /login header minimal layout, /login auth option surface, self-loop login CTA removed
+- Skipped Surfaces: OAuth completion flow, email delivery side effect, dashboard/authenticated routes
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | Local dev URL | [link](http://localhost:3000/) | - |
+| general | Local dev URL | [link](http://localhost:3000/login) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | Local dev Vibe Coding modal CI/CD tab after clean restart | `artifacts/vibe-cicd-local-dev-pass-20260331.png` | - |
-| playwright-console | Local dev Vibe Coding console errors | `artifacts/vibe-cicd-local-dev-console-20260331.txt` | - |
+| - | - | - | - |
 
 ## Expert Domain Open Gaps
 
@@ -223,6 +222,7 @@ Latest run: QA-20260331-0202 (2026-03-31T12:08:54.272Z)
 - linux-label-normalization: 대시보드 카드 OS 표기를 Linux로 정규화 (completed 1회, last QA-20260322-0157)
 - log-explorer-modal: 로그 탐색기 모달 (completed 1회, last QA-20260317-0114)
 - login-copy-neutral: 로그인 정책 카피 중립성 개선 (completed 1회, last QA-20260227-0014)
+- login-header-self-loop-cta: 로그인 페이지 헤더 self-loop CTA 제거 (completed 1회, last QA-20260401-0204)
 - login-pin-form-structure: 게스트 PIN 입력 폼 구조 정리 (completed 1회, last QA-20260226-0001)
 - math-tool-implementation-validation: AI 계산 툴 라우팅/실행 검증 (completed 1회, last QA-20260228-0027)
 - metrics-drift-threshold-standard: 지표 드리프트 임계치 표준화 (completed 1회, last QA-20260302-0044)
@@ -372,6 +372,8 @@ Latest run: QA-20260331-0202 (2026-03-31T12:08:54.272Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260401-0204 | 2026-04-01T12:15:47.977Z | targeted | no | Local dev Playwright QA - login header minimalization verification | 3 | 1 | 0 | 0 | 0 | 0 |
+| QA-20260401-0203 | 2026-04-01T11:42:07.583Z | targeted | no | Production Playwright QA - landing route/button/modal surface survey | 13 | 0 | 0 | 0 | 1 | 0 |
 | QA-20260331-0202 | 2026-03-31T12:08:54.272Z | targeted | no | Local dev Playwright QA - Vibe Coding modal CI/CD recheck after clean restart | 6 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260331-0201 | 2026-03-31T11:58:25.987Z | targeted | no | Local dev Playwright QA - Vibe Coding modal CI/CD regression check | 5 | 0 | 1 | 0 | 0 | 0 |
 | QA-20260330-0200 | 2026-03-30T13:40:42.788Z | targeted | no | Vercel Playwright QA - Vibe Hybrid Delivery Copy Recheck | 8 | 2 | 0 | 0 | 0 | 0 |
@@ -390,6 +392,4 @@ Latest run: QA-20260331-0202 (2026-03-31T12:08:54.272Z)
 | QA-20260326-0187 | 2026-03-25T17:38:40.806Z | broad | yes | Vercel Playwright release-facing smoke - core routes, dashboard, AI core | 12 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260325-0186 | 2026-03-25T11:45:16.583Z | targeted | no | Local validation - suppress zero-test DOM related dep-scan noise | 5 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260325-0185 | 2026-03-25T11:06:51.584Z | targeted | no | Local validation - ai proxy runtime env refresh and README QA sync | 4 | 2 | 0 | 0 | 0 | 0 |
-| QA-20260325-0184 | 2026-03-25T09:42:58.940Z | targeted | no | Local validation - Cloud Run guard and session contract hardening | 5 | 3 | 0 | 0 | 0 | 0 |
-| QA-20260325-0183 | 2026-03-25T06:04:23.514Z | targeted | no | Local validation - health timeout and admin guard hardening | 4 | 2 | 0 | 0 | 0 | 0 |
 
