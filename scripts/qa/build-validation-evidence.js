@@ -62,7 +62,9 @@ function hasGitHubActionsLink(run) {
 
 function isPublicEvidenceCandidate(run) {
   const target = run?.environment?.target;
-  return target === 'vercel-production' || hasGitHubActionsLink(run);
+  // Public snapshot must always come from a deployed Vercel production run.
+  // GitHub Actions runs belong to latestProofRun, not latestPublicRun.
+  return target === 'vercel-production';
 }
 
 // Scopes that qualify a run to represent the public snapshot baseline.

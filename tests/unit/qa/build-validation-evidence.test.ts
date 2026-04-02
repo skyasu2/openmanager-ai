@@ -104,6 +104,13 @@ describe('build-validation-evidence', () => {
     ).toBe(true);
 
     expect(
+      isPublicEvidenceCandidate({
+        environment: { target: 'github-actions' },
+        links: [{ type: 'github-actions-run' }],
+      })
+    ).toBe(false);
+
+    expect(
       isReleaseFacingPublicSnapshot({
         environment: { target: 'vercel-production' },
         scope: 'targeted',
@@ -450,6 +457,38 @@ describe('build-validation-evidence', () => {
               commitSha: '123456',
             },
             links: [],
+          },
+        ],
+      })
+    ).toThrow('QA validation evidence summary is unavailable');
+
+    expect(() =>
+      buildValidationEvidenceSnapshot({
+        summary: {
+          totalRuns: 1,
+          totalChecks: 1,
+          completedItems: 1,
+          expertDomainsOpenGaps: 0,
+          wontFixItems: 0,
+          lastRecordedAt: '2026-03-25T00:00:00.000Z',
+        },
+        runs: [
+          {
+            runId: 'QA-20260325-0183',
+            recordedAt: '2026-03-25T00:00:00.000Z',
+            scope: 'release-gate',
+            releaseFacing: true,
+            environment: {
+              target: 'github-actions',
+              commitSha: '654321',
+            },
+            links: [
+              {
+                type: 'github-actions-run',
+                label: 'CI run',
+                url: 'https://github.com/example/repo/actions/runs/183',
+              },
+            ],
           },
         ],
       })
