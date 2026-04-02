@@ -63,7 +63,7 @@ export const VIBE_CODING_DATA: VibeCodeData = {
       description:
         'A lightweight coding agent that runs in your terminal (OpenAI)',
       implementation:
-        'Generate, edit, and run code using natural language. ChatGPT Plus/Pro 플랜으로 사용. v8.10.x 마무리·QA 단계부터 비중이 높아졌으며, bounded refactor와 테스트 보완을 주로 담당. 주요 구현은 Claude Code가 99% 주도',
+        'Generate, edit, and run code using natural language. ChatGPT Plus/Pro 플랜으로 사용. v8.10.x 마무리·배포 단계부터 비중이 높아졌으며, bounded refactor와 테스트 보완, 배포 전 정리를 주로 담당. 주요 구현은 Claude Code가 99% 주도',
       version: 'v0.117.0',
       status: 'active',
       icon: '💎',
@@ -260,7 +260,7 @@ export const VIBE_CODING_DATA: VibeCodeData = {
       stage4: {
         title: '현재 단계',
         description:
-          'GitLab canonical 전환 → Claude Code 메인 + 마무리·QA 단계 Codex 비중 증가 → 로컬 Docker CI 표준화 → Cloud Run AI Engine 운영',
+          'GitLab canonical 전환 → Claude Code 메인 + 구현·리팩토링 단계 Codex 비중 증가 → GitLab CI + 로컬 Docker CI 병행 → Cloud Run AI Engine 운영',
       },
     },
 
@@ -312,7 +312,7 @@ export const VIBE_CODING_DATA: VibeCodeData = {
         importance: 'critical',
         description: '4단계 핵심 - canonical 저장소를 GitLab으로 전환',
         implementation:
-          'GitHub에서 GitLab으로 canonical 역할 이전. git push gitlab main → Vercel 자동 배포 체계 확립. GitHub는 공개 코드 스냅샷(npm run sync:github)으로 역할 분리. GitLab CI는 로컬 Docker CI로 대체',
+          'GitHub에서 GitLab으로 canonical 역할 이전. git push gitlab main → GitLab CI validate/deploy/smoke → Vercel production 배포 체계 확립. GitHub는 공개 코드 스냅샷(npm run sync:github)으로 역할 분리하고, 로컬 Docker CI는 전체 검증 표준 경로로 병행 운영',
         status: 'active',
         icon: '🦊',
         tags: ['4단계', 'GitLab', 'canonical', 'Vercel연동'],
@@ -324,8 +324,8 @@ export const VIBE_CODING_DATA: VibeCodeData = {
         importance: 'critical',
         description: 'Claude Code 메인 + 수동 교차 사용형 Multi-CLI 운영',
         implementation:
-          'Claude Code(전체 개발 99% 주도), Codex(마무리·QA 단계 보완), Gemini(리서치/분석)를 사용자가 수동 전환하며 교차 사용. 자동 라우팅보다는 사람 판단으로 필요한 CLI를 선택해 구현과 검토를 나누는 운영 방식',
-        version: '2026-03 운영 기준선',
+          'Claude Code(전체 개발 99% 주도), Codex(구현·리팩토링 및 테스트 보완), Gemini(리서치/분석)를 사용자가 수동 전환하며 교차 사용. 자동 라우팅보다는 사람 판단으로 필요한 CLI를 선택해 구현과 검토를 나누는 운영 방식',
+        version: '2026-04 운영 기준선',
         status: 'active',
         icon: '🤝',
         tags: ['Multi-AI', 'Manual-Cross-Use', 'Codex', 'Gemini'],
@@ -335,12 +335,12 @@ export const VIBE_CODING_DATA: VibeCodeData = {
         name: '로컬 Docker CI',
         category: 'tooling',
         importance: 'high',
-        description: '외부 CI 최소화 - 로컬 Docker 기반 검증 표준화',
+        description: '로컬 전체 검증 표준 - Docker 기반 회귀 점검',
         implementation:
-          'GitLab CI 비활성화(400분/월 소진 방지). npm run ci:local:docker로 로컬 Docker 검증을 수동 실행. pre-push hook은 Docker 없이 Node.js로 빠른 검증만 수행하고, GitHub Actions은 public snapshot용으로만 유지',
+          'npm run ci:local:docker로 로컬 전체 검증을 수동 실행합니다. GitLab CI는 canonical validate/deploy/smoke를 담당하고, pre-push hook은 Docker 없이 Node.js로 빠른 변경 범위 검증만 수행합니다.',
         status: 'active',
         icon: '🐋',
-        tags: ['로컬CI', 'Docker', 'pre-push', 'GitLab-CI-Off'],
+        tags: ['로컬CI', 'Docker', 'pre-push', 'GitLab-CI-Active'],
         type: 'custom',
       },
       {
