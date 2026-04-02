@@ -1,5 +1,7 @@
 # GitLab CI/CD Pipeline
-# 정책: main 브랜치 코드 변경 시만 실행 (docs/reports 전용 push 스킵)
+# 정책:
+#   - validate: branch / MR / main 코드 변경 시 실행
+#   - deploy, smoke: main 코드 변경 시만 실행 (docs/reports 전용 push 스킵)
 # 구조: validate → deploy → smoke (순차, validate 실패 시 deploy 차단)
 # Runner 전략:
 #   validate: tags: [wsl2-docker] → self-hosted runner (분 소진 0)
@@ -14,9 +16,15 @@ image: node:24-bookworm
 
 # ─── 파이프라인 레벨 제어 ──────────────────────────────────────────────────────
 # job-level rules:changes 와 달리 파이프라인 자체 생성을 차단 → UI 노이즈 제거
+# duplicate pipeline 방지:
+#   - MR이 열려 있으면 branch push pipeline 대신 MR pipeline만 유지
 workflow:
   rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS && $CI_PIPELINE_SOURCE == "push"'
+      when: never
     - if: '$CI_COMMIT_BRANCH == "main"'
+    - if: '$CI_COMMIT_BRANCH'
     - when: never
 
 stages:
@@ -48,7 +56,56 @@ stages:
 
 # ─── 변경 감지 규칙 ────────────────────────────────────────────────────────────
 # docs/reports/QA 아티팩트 전용 push는 CI 스킵 → 분 소진 방지
-.code_changes_only: &code_changes_only
+.validate_code_changes: &validate_code_changes
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      changes:
+        - src/**/*
+        - cloud-run/**/*
+        - public/**/*
+        - scripts/**/*
+        - config/**/*
+        - package.json
+        - package-lock.json
+        - next.config.mjs
+        - tsconfig.json
+        - vercel.json
+        - .env.example
+        - .gitlab-ci.yml
+      when: on_success
+    - if: '$CI_COMMIT_BRANCH == "main"'
+      changes:
+        - src/**/*
+        - cloud-run/**/*
+        - public/**/*
+        - scripts/**/*
+        - config/**/*
+        - package.json
+        - package-lock.json
+        - next.config.mjs
+        - tsconfig.json
+        - vercel.json
+        - .env.example
+        - .gitlab-ci.yml
+      when: on_success
+    - if: '$CI_COMMIT_BRANCH'
+      changes:
+        - src/**/*
+        - cloud-run/**/*
+        - public/**/*
+        - scripts/**/*
+        - config/**/*
+        - package.json
+        - package-lock.json
+        - next.config.mjs
+        - tsconfig.json
+        - vercel.json
+        - .env.example
+        - .gitlab-ci.yml
+      when: on_success
+    - when: never
+
+.main_code_changes_only: &main_code_changes_only
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
       changes:
@@ -72,8 +129,7 @@ validate:
   stage: validate
   tags:
     - wsl2-docker  # self-hosted runner 전용 (분 소진 0). 미가동 시 pending 상태 유지.
-  <<: *npm_cache
-  <<: *code_changes_only
+  <<: [*npm_cache, *validate_code_changes]
   before_script:
     - npm ci --prefer-offline --cache .npm --no-audit
   script:
@@ -90,8 +146,7 @@ validate:
 # ─── deploy job ────────────────────────────────────────────────────────────────
 deploy:
   stage: deploy
-  <<: *npm_cache_readonly  # validate가 작성한 .npm/ 캐시 재사용 → npm ci 속도 향상
-  <<: *code_changes_only
+  <<: [*npm_cache_readonly, *main_code_changes_only]  # validate가 작성한 .npm/ 캐시 재사용 → npm ci 속도 향상
   before_script:
     - npm install -g vercel@50 --no-audit --silent  # 버전 고정: 50.x (breaking change 방지)
   script:
@@ -110,7 +165,7 @@ deploy:
 # ─── production smoke job ──────────────────────────────────────────────────────
 post_deploy_smoke:
   stage: smoke
-  <<: *code_changes_only
+  <<: *main_code_changes_only
   needs:
     - deploy
   script:
