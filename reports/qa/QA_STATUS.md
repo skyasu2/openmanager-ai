@@ -1,15 +1,15 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-04-02 23:32:46 KST
+> Generated at: 2026-04-02 23:54:38 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 215 |
-| Total Checks | 1601 |
-| Passed | 1533 |
+| Total Runs | 216 |
+| Total Checks | 1611 |
+| Passed | 1543 |
 | Failed | 62 |
 | Completed Items | 273 |
 | Pending Items | 0 |
@@ -18,30 +18,31 @@
 | Expert Domains Tracked | 6 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Run | QA-20260402-0216 (2026-04-02T14:32:42.507Z) |
+| Last Run | QA-20260402-0217 (2026-04-02T14:54:37.522Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260402-0216 (2026-04-02T14:32:42.507Z)
+Latest run: QA-20260402-0217 (2026-04-02T14:54:37.522Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| - | - | - | - |
+| AI Quality Assurance Specialist | appropriate | no | - |
+| DevOps / SRE Engineer | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period reviewed after targeted validation propagation QA; effective 0.6552 USD, billed 0.0000 USD, no unexpected billed spike. |
+| vercel | api | checked | normal | /api/health healthy (db:5ms, cache:5ms, ai:5ms, v8.10.8). 콘솔 에러 0건. |
 
 ## Coverage (Latest Run)
 
 - Scope: targeted
-- Release-Facing: no
-- Deployment: dpl_GRc3sBXFKh1nAZ3fajwF51sjUZt4 / SHA 86728daf
-- Coverage Packs: core-routes-smoke
-- Covered Surfaces: /validation, /api/health, /api/version
-- Skipped Surfaces: /, /login, /system-boot, /dashboard, AI sidebar, AI chat streaming, modal-detail-pack, observability-pack
+- Release-Facing: yes
+- Deployment: dpl_v8108_20260402_targeted / SHA 52b38df2
+- Coverage Packs: core-routes-smoke, modal-detail-pack
+- Covered Surfaces: / (auth loading copy 숨김 확인), 💬 AI 어시스턴트 모달 (아키텍처 토글 양방향), 🏗️ 클라우드 플랫폼 모달 (아키텍처 토글), 💻 기술 스택 모달 (헤더 렌더링), 🔥 Vibe Coding 모달 3탭 (현재도구/개발환경변화/CI/CD), /api/health
+- Skipped Surfaces: -
 
 ## Links (Latest Run)
 
@@ -375,6 +376,7 @@ Latest run: QA-20260402-0216 (2026-04-02T14:32:42.507Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260402-0217 | 2026-04-02T14:54:37.522Z | targeted | yes | Playwright MCP targeted QA - 최근 변경사항 코드리뷰 기반 검증 v8.10.8 | 10 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260402-0216 | 2026-04-02T14:32:42.507Z | targeted | no | Vercel Production Validation Snapshot Propagation QA after tracker sync | 7 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260402-0215 | 2026-04-02T14:18:45.787Z | targeted | no | Vercel Production Validation Snapshot Follow-up QA after public snapshot selection fix | 8 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260402-0214 | 2026-04-02T13:56:16.719Z | targeted | no | Vercel Production Validation Evidence Targeted QA | 8 | 0 | 0 | 0 | 0 | 0 |
@@ -394,5 +396,4 @@ Latest run: QA-20260402-0216 (2026-04-02T14:32:42.507Z)
 | QA-20260330-0200 | 2026-03-30T13:40:42.788Z | targeted | no | Vercel Playwright QA - Vibe Hybrid Delivery Copy Recheck | 8 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260330-0199 | 2026-03-30T10:28:06.580Z | targeted | no | Vercel Production QA - web vitals deploy recheck | 7 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260330-0198 | 2026-03-30T08:38:51.603Z | targeted | no | Vercel Production QA - post-docs smoke recheck | 7 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260330-0197 | 2026-03-30T07:49:23.785Z | targeted | no | Vercel Production QA - Landing improvements verification | 9 | 1 | 0 | 0 | 0 | 0 |
 

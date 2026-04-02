@@ -1,0 +1,115 @@
+{
+  "runTitle": "Playwright MCP targeted QA - 최근 변경사항 코드리뷰 기반 검증 v8.10.8",
+  "owner": "claude",
+  "source": "playwright-mcp",
+  "scope": "targeted",
+  "releaseFacing": true,
+  "coveragePacks": ["core-routes-smoke", "modal-detail-pack"],
+  "coveredSurfaces": [
+    "/ (auth loading copy 숨김 확인)",
+    "💬 AI 어시스턴트 모달 (아키텍처 토글 양방향)",
+    "🏗️ 클라우드 플랫폼 모달 (아키텍처 토글)",
+    "💻 기술 스택 모달 (헤더 렌더링)",
+    "🔥 Vibe Coding 모달 3탭 (현재도구/개발환경변화/CI/CD)",
+    "/api/health"
+  ],
+  "skippedSurfaces": [],
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "commitSha": "52b38df2e6ab1aa8e1ab4a4ce111099c631a66f7",
+    "deploymentId": "dpl_v8108_20260402_targeted"
+  },
+  "checks": {
+    "total": 10,
+    "passed": 10,
+    "failed": 0
+  },
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "api",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-04-02T14:53:41+09:00",
+      "summary": "/api/health healthy (db:5ms, cache:5ms, ai:5ms, v8.10.8). 콘솔 에러 0건.",
+      "evidence": "/api/health {status:healthy, version:8.10.8}"
+    }
+  ],
+  "artifacts": [],
+  "checkDetails": [
+    {
+      "id": "auth-loading-copy-hidden",
+      "label": "랜딩 auth 로딩 시 텍스트 없음 (showCopy=false) — 스피너만 표시",
+      "status": "pass",
+      "note": "AuthLoadingUI showCopy prop 추가, page.tsx에 showCopy={false} 전달 확인"
+    },
+    {
+      "id": "ai-modal-header-open",
+      "label": "AI 어시스턴트 모달 열기 — FeatureCardModalHeader 아키텍처 버튼 정상",
+      "status": "pass"
+    },
+    {
+      "id": "ai-modal-diagram-toggle-on",
+      "label": "AI 어시스턴트 아키텍처 토글 ON — Multi-Agent Architecture ReactFlow 렌더링",
+      "status": "pass"
+    },
+    {
+      "id": "ai-modal-diagram-toggle-off",
+      "label": "AI 어시스턴트 아키텍처 토글 OFF — 상세 내용 복귀",
+      "status": "pass"
+    },
+    {
+      "id": "cloud-modal-diagram-toggle",
+      "label": "클라우드 플랫폼 아키텍처 토글 — Hybrid Cloud Architecture 렌더링",
+      "status": "pass"
+    },
+    {
+      "id": "tech-stack-modal-header",
+      "label": "기술 스택 모달 헤더 — FeatureCardModalHeader 아키텍처 버튼 정상",
+      "status": "pass"
+    },
+    {
+      "id": "vibe-current-tab-copy",
+      "label": "Vibe Coding 현재도구 탭 — '배포·CI/CD 파이프라인', Codex '마무리·배포 단계' 수정 확인",
+      "status": "pass"
+    },
+    {
+      "id": "vibe-history-stage4",
+      "label": "Vibe Coding 개발환경변화 탭 — Stage4 '구현·리팩토링 단계 Codex', GitLab-CI-Active 태그 확인",
+      "status": "pass"
+    },
+    {
+      "id": "vibe-cicd-tab",
+      "label": "Vibe Coding CI/CD 탭 — 5단계 파이프라인 정상 (로컬훅→GitLab→검사→배포→실서비스)",
+      "status": "pass"
+    },
+    {
+      "id": "api-health",
+      "label": "/api/health → healthy (db:5ms, cache:5ms, ai:5ms, v8.10.8)",
+      "status": "pass"
+    }
+  ],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "최근 변경사항(AuthLoadingUI showCopy, FeatureCardModalHeader 추출, vibe-coding.ts 카피) 전체 프로덕션에서 정상 반영 확인. 4개 모달 헤더 컴포넌트 추출 후 회귀 없음.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "API healthy. 콘솔 에러 0건. 모달 열기/닫기/포커스 복귀 모두 정상. 아키텍처 다이어그램 ReactFlow 2개 모두 렌더링 성공.",
+      "nextAction": ""
+    }
+  ],
+  "notes": "최근 6개 변경사항 코드리뷰 후 targeted QA. fix(landing)/refactor(ui)/copy(landing)/copy(vibe) 4개 변경 모두 프로덕션 반영 확인. fix(ci) 변경은 GitLab 서버측 동작이므로 UI QA 범위 외. 10/10 pass. 콘솔 에러 0건."
+}
