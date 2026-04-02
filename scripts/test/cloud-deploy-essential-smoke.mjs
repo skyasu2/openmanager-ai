@@ -15,6 +15,9 @@
  * - POST /api/ai/supervisor (--with-supervisor-call)
  */
 
+import { getDefaultResultOrder, setDefaultResultOrder } from 'node:dns';
+import { pathToFileURL } from 'node:url';
+
 const DEFAULT_TIMEOUT_MS = 7000;
 
 /**
@@ -102,6 +105,51 @@ Examples:
 }
 
 /**
+ * Cloud Run public URLs can resolve unreliably under Node 24 + WSL defaults.
+ * Force IPv4-first resolution so smoke failures track service health, not local DNS order.
+ *
+ * @returns {string | null}
+ */
+function ensureStableDnsResolution() {
+  try {
+    const currentOrder =
+      typeof getDefaultResultOrder === 'function'
+        ? getDefaultResultOrder()
+        : null;
+
+    if (currentOrder !== 'ipv4first') {
+      setDefaultResultOrder('ipv4first');
+    }
+
+    return currentOrder;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * @param {unknown} error
+ * @returns {boolean}
+ */
+function isDnsResolutionFailure(error) {
+  if (!(error instanceof Error)) {
+    return false;
+  }
+
+  const cause =
+    error && typeof error === 'object' && 'cause' in error
+      ? error.cause
+      : null;
+
+  const code =
+    cause && typeof cause === 'object' && 'code' in cause
+      ? String(cause.code)
+      : '';
+
+  return code === 'EAI_AGAIN' || code === 'ENOTFOUND';
+}
+
+/**
  * @param {string} url
  * @returns {string}
  */
@@ -136,22 +184,35 @@ async function requestJson(baseUrl, path, options) {
     headers['X-API-Key'] = options.apiKey;
   }
 
-  const response = await fetch(`${baseUrl}${path}`, {
-    method,
-    headers,
-    body: options.body ? JSON.stringify(options.body) : undefined,
-    signal: AbortSignal.timeout(options.timeoutMs),
-  });
+  const requestUrl = `${baseUrl}${path}`;
 
-  const rawText = await response.text();
-  let json = null;
   try {
-    json = rawText ? JSON.parse(rawText) : null;
-  } catch {
-    json = null;
-  }
+    const response = await fetch(requestUrl, {
+      method,
+      headers,
+      body: options.body ? JSON.stringify(options.body) : undefined,
+      signal: AbortSignal.timeout(options.timeoutMs),
+    });
 
-  return { status: response.status, json, rawText };
+    const rawText = await response.text();
+    let json = null;
+    try {
+      json = rawText ? JSON.parse(rawText) : null;
+    } catch {
+      json = null;
+    }
+
+    return { status: response.status, json, rawText };
+  } catch (error) {
+    if (isDnsResolutionFailure(error)) {
+      throw new Error(
+        'fetch failed (DNS resolution). Retry with NODE_OPTIONS=--dns-result-order=ipv4first or use the npm test:cloud:essential scripts.',
+        { cause: error }
+      );
+    }
+
+    throw error;
+  }
 }
 
 /**
@@ -185,6 +246,8 @@ function assert(condition, message) {
 }
 
 async function main() {
+  ensureStableDnsResolution();
+
   const options = parseArgs(process.argv.slice(2));
 
   if (!options.url) {
@@ -317,7 +380,21 @@ async function main() {
   }
 }
 
-main().catch((error) => {
-  console.error('❌ Smoke test crashed:', error);
-  process.exit(1);
-});
+const entrypointHref = process.argv[1]
+  ? pathToFileURL(process.argv[1]).href
+  : null;
+
+if (entrypointHref && import.meta.url === entrypointHref) {
+  main().catch((error) => {
+    console.error('❌ Smoke test crashed:', error);
+    process.exit(1);
+  });
+}
+
+export {
+  ensureStableDnsResolution,
+  isDnsResolutionFailure,
+  main,
+  parseArgs,
+  requestJson,
+};
