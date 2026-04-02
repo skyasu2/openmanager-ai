@@ -1,15 +1,15 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-04-02 21:41:24 KST
+> Generated at: 2026-04-02 23:05:48 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 212 |
-| Total Checks | 1578 |
-| Passed | 1510 |
+| Total Runs | 213 |
+| Total Checks | 1586 |
+| Passed | 1518 |
 | Failed | 62 |
 | Completed Items | 273 |
 | Pending Items | 0 |
@@ -18,31 +18,30 @@
 | Expert Domains Tracked | 6 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Run | QA-20260402-0213 (2026-04-02T12:41:23.224Z) |
+| Last Run | QA-20260402-0214 (2026-04-02T13:56:16.719Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260402-0213 (2026-04-02T12:41:23.224Z)
+Latest run: QA-20260402-0214 (2026-04-02T13:56:16.719Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| AI Quality Assurance Specialist | appropriate | no | - |
-| DevOps / SRE Engineer | appropriate | no | - |
+| - | - | - | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | api | checked | normal | /api/health → healthy (db:7ms, cache:5ms, ai:5ms). /api/version → 8.10.8. 모든 API 정상. |
+| vercel | cli | checked | normal | Current billing period reviewed after targeted production QA; effective 0.6552 USD, billed 0.0000 USD, no unexpected billed spike. |
 
 ## Coverage (Latest Run)
 
-- Scope: broad
-- Release-Facing: yes
-- Deployment: dpl_v8108_20260402_2 / SHA 84c375ac
-- Coverage Packs: core-routes-smoke, dashboard-core, ai-core, modal-detail-pack
-- Covered Surfaces: /, /login, /dashboard, Vibe Coding modal (현재도구/CI/CD 탭), AI sidebar, AI chat (streaming), /api/health, /api/version
-- Skipped Surfaces: -
+- Scope: targeted
+- Release-Facing: no
+- Deployment: SHA 75c68199
+- Coverage Packs: core-routes-smoke
+- Covered Surfaces: /validation, validation evidence snapshot summary (2026-04-02 / 212 runs / 1578 checks / 273 completed), latest public snapshot run QA-20260402-0213, /, landing version badge v8.10.8, /api/health, /api/version
+- Skipped Surfaces: /login, /system-boot, /dashboard, AI sidebar, AI chat streaming, modal-detail-pack, observability-pack
 
 ## Links (Latest Run)
 
@@ -376,6 +375,7 @@ Latest run: QA-20260402-0213 (2026-04-02T12:41:23.224Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260402-0214 | 2026-04-02T13:56:16.719Z | targeted | no | Vercel Production Validation Evidence Targeted QA | 8 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260402-0213 | 2026-04-02T12:41:23.224Z | broad | yes | Playwright MCP Production QA - Frontend + AI Assistant v8.10.8 (2차) | 14 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260402-0212 | 2026-04-02T12:31:52.936Z | broad | yes | Playwright MCP Production QA - Frontend + AI Assistant v8.10.8 | 12 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260402-0211 | 2026-04-02T06:04:27.210Z | targeted | yes | Vercel Production Usage Evidence Follow-up | 2 | 1 | 0 | 0 | 0 | 0 |
@@ -395,5 +395,4 @@ Latest run: QA-20260402-0213 (2026-04-02T12:41:23.224Z)
 | QA-20260330-0197 | 2026-03-30T07:49:23.785Z | targeted | no | Vercel Production QA - Landing improvements verification | 9 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260330-0196 | 2026-03-30T05:43:50.173Z | targeted | no | Local verification - Vibe Coding modal QA/Finish view | 5 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260330-0195 | 2026-03-30T04:14:36.238Z | targeted | no | Landing Page Playwright Analysis - 4 Cards, Modal Content, Architecture, History | 11 | 0 | 0 | 0 | 3 | 0 |
-| QA-20260329-0194 | 2026-03-28T15:21:59.221Z | targeted | yes | v8.10.6 Production QA - Security Hardening & Coverage Stabilization | 11 | 8 | 0 | 0 | 0 | 0 |
 

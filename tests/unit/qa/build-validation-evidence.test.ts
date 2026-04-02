@@ -16,6 +16,8 @@ const {
   findLatestPublicEvidenceRun,
   formatEvidenceDate,
   hasGitHubActionsLink,
+  isPublicEvidenceCandidate,
+  isReleaseFacingPublicSnapshot,
   shouldWriteValidationEvidenceSnapshot,
   writeValidationEvidenceSnapshot,
 } = require('../../../scripts/qa/build-validation-evidence.js');
@@ -78,6 +80,14 @@ describe('build-validation-evidence', () => {
       {
         runId: 'QA-20260321-0101',
         environment: { target: 'vercel-production' },
+        releaseFacing: true,
+        links: [],
+      },
+      {
+        runId: 'QA-20260321-0102',
+        environment: { target: 'vercel-production' },
+        scope: 'targeted',
+        releaseFacing: false,
         links: [],
       },
     ];
@@ -86,10 +96,42 @@ describe('build-validation-evidence', () => {
     expect(findLatestProofRun(runs)?.runId).toBe('QA-20260320-0100');
   });
 
+  it('treats release-facing or broad production runs as public snapshot candidates', () => {
+    expect(
+      isPublicEvidenceCandidate({
+        environment: { target: 'vercel-production' },
+      })
+    ).toBe(true);
+
+    expect(
+      isReleaseFacingPublicSnapshot({
+        environment: { target: 'vercel-production' },
+        scope: 'targeted',
+        releaseFacing: false,
+      })
+    ).toBe(false);
+
+    expect(
+      isReleaseFacingPublicSnapshot({
+        environment: { target: 'vercel-production' },
+        scope: 'broad',
+        releaseFacing: false,
+      })
+    ).toBe(true);
+
+    expect(
+      isReleaseFacingPublicSnapshot({
+        environment: { target: 'vercel-production' },
+        scope: 'targeted',
+        releaseFacing: true,
+      })
+    ).toBe(true);
+  });
+
   it('keeps latest public evidence run separate from latest github proof run', () => {
     const snapshot = buildValidationEvidenceSnapshot({
       summary: {
-        totalRuns: 2,
+        totalRuns: 3,
         totalChecks: 10,
         completedItems: 3,
         expertDomainsOpenGaps: 0,
@@ -122,12 +164,25 @@ describe('build-validation-evidence', () => {
         {
           runId: 'QA-20260321-0101',
           title: 'Production smoke',
-          scope: 'targeted',
+          scope: 'broad',
           recordedAt: '2026-03-21T12:00:00.000Z',
           environment: {
             target: 'vercel-production',
             commitSha: 'def456',
           },
+          releaseFacing: true,
+          links: [],
+        },
+        {
+          runId: 'QA-20260321-0102',
+          title: 'Validation evidence targeted QA',
+          scope: 'targeted',
+          recordedAt: '2026-03-21T13:00:00.000Z',
+          environment: {
+            target: 'vercel-production',
+            commitSha: 'ghi789',
+          },
+          releaseFacing: false,
           links: [],
         },
       ],

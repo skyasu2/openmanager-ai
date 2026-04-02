@@ -60,11 +60,29 @@ function hasGitHubActionsLink(run) {
     : false;
 }
 
+function isPublicEvidenceCandidate(run) {
+  const target = run?.environment?.target;
+  return target === 'vercel-production' || hasGitHubActionsLink(run);
+}
+
+function isReleaseFacingPublicSnapshot(run) {
+  if (!isPublicEvidenceCandidate(run)) {
+    return false;
+  }
+
+  if (run?.releaseFacing === true) {
+    return true;
+  }
+
+  return run?.scope === 'broad' || run?.scope === 'release-gate';
+}
+
 function findLatestPublicEvidenceRun(runs) {
-  return [...runs].reverse().find((run) => {
-    const target = run?.environment?.target;
-    return target === 'vercel-production' || hasGitHubActionsLink(run);
-  });
+  const orderedRuns = [...runs].reverse();
+  return (
+    orderedRuns.find((run) => isReleaseFacingPublicSnapshot(run)) ??
+    orderedRuns.find((run) => isPublicEvidenceCandidate(run))
+  );
 }
 
 function findLatestProofRun(runs) {
@@ -189,6 +207,8 @@ module.exports = {
   findLatestPublicEvidenceRun,
   formatEvidenceDate,
   hasGitHubActionsLink,
+  isPublicEvidenceCandidate,
+  isReleaseFacingPublicSnapshot,
   shouldWriteValidationEvidenceSnapshot,
   writeValidationEvidenceSnapshot,
 };

@@ -1,0 +1,69 @@
+{
+  "runId": "QA-20260402-0214",
+  "recordedAt": "2026-04-02T13:56:16.719Z",
+  "recordedAtKst": "2026-04-02 22:56:16 KST",
+  "runTitle": "Vercel Production Validation Evidence Targeted QA",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "75c681999a03a18976cbf142f37ce5b4d70e9f9c"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "coveragePacks": ["core-routes-smoke"],
+  "coveredSurfaces": [
+    "/validation",
+    "validation evidence snapshot summary (2026-04-02 / 212 runs / 1578 checks / 273 completed)",
+    "latest public snapshot run QA-20260402-0213",
+    "/",
+    "landing version badge v8.10.8",
+    "/api/health",
+    "/api/version"
+  ],
+  "skippedSurfaces": [
+    "/login",
+    "/system-boot",
+    "/dashboard",
+    "AI sidebar",
+    "AI chat streaming",
+    "modal-detail-pack",
+    "observability-pack"
+  ],
+  "checks": {
+    "total": 8,
+    "passed": 8,
+    "failed": 0
+  },
+  "expertAssessments": [],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-04-02T22:54:14+09:00",
+      "summary": "Current billing period reviewed after targeted production QA; effective 0.6552 USD, billed 0.0000 USD, no unexpected billed spike.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Playwright production checks confirmed Validation Evidence page reflects QA-20260402-0213 snapshot data.",
+    "Browser console errors: 0.",
+    "/api/health returned healthy with db/cache/ai connected.",
+    "/api/version returned version 8.10.8 and Next.js 16.1.6."
+  ],
+  "links": []
+}
