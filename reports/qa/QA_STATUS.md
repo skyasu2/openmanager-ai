@@ -1,15 +1,15 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-04-03 08:18:40 KST
+> Generated at: 2026-04-03 08:56:11 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 217 |
-| Total Checks | 1618 |
-| Passed | 1550 |
+| Total Runs | 218 |
+| Total Checks | 1625 |
+| Passed | 1557 |
 | Failed | 62 |
 | Completed Items | 273 |
 | Pending Items | 0 |
@@ -18,11 +18,11 @@
 | Expert Domains Tracked | 6 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Run | QA-20260403-0218 (2026-04-02T23:18:38.480Z) |
+| Last Run | QA-20260403-0219 (2026-04-02T23:55:58.440Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260403-0218 (2026-04-02T23:18:38.480Z)
+Latest run: QA-20260403-0219 (2026-04-02T23:55:58.440Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -32,13 +32,13 @@ Latest run: QA-20260403-0218 (2026-04-02T23:18:38.480Z)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period reviewed after targeted production QA; effective 0.6552 USD, billed 0.0000 USD, no unexpected billed spike. |
+| vercel | cli | checked | normal | Current billing period reviewed after production propagation QA; effective 0.6552 USD, billed 0.0000 USD, no unexpected billed spike. |
 
 ## Coverage (Latest Run)
 
 - Scope: targeted
 - Release-Facing: no
-- Deployment: dpl_7ua5dbckazZqYvu9fH7HhSQMPVnb / SHA b4d07257
+- Deployment: dpl_6VDaC3uMd6upLPMaEduPaFDsjbKV / SHA cfde4b1f
 - Coverage Packs: core-routes-smoke
 - Covered Surfaces: /validation, /api/health, /api/version
 - Skipped Surfaces: /, /login, /system-boot, /dashboard, AI sidebar, AI chat streaming, modal-detail-pack, observability-pack
@@ -375,6 +375,7 @@ Latest run: QA-20260403-0218 (2026-04-02T23:18:38.480Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260403-0219 | 2026-04-02T23:55:58.440Z | targeted | no | Vercel Production QA after propagation of production snapshot guard verification | 7 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260403-0218 | 2026-04-02T23:18:38.480Z | targeted | no | Vercel Production QA after public snapshot production-only fix | 7 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260402-0217 | 2026-04-02T14:54:37.522Z | targeted | yes | Playwright MCP targeted QA - 최근 변경사항 코드리뷰 기반 검증 v8.10.8 | 10 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260402-0216 | 2026-04-02T14:32:42.507Z | targeted | no | Vercel Production Validation Snapshot Propagation QA after tracker sync | 7 | 0 | 0 | 0 | 0 | 0 |
@@ -394,5 +395,4 @@ Latest run: QA-20260403-0218 (2026-04-02T23:18:38.480Z)
 | QA-20260331-0202 | 2026-03-31T12:08:54.272Z | targeted | no | Local dev Playwright QA - Vibe Coding modal CI/CD recheck after clean restart | 6 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260331-0201 | 2026-03-31T11:58:25.987Z | targeted | no | Local dev Playwright QA - Vibe Coding modal CI/CD regression check | 5 | 0 | 1 | 0 | 0 | 0 |
 | QA-20260330-0200 | 2026-03-30T13:40:42.788Z | targeted | no | Vercel Playwright QA - Vibe Hybrid Delivery Copy Recheck | 8 | 2 | 0 | 0 | 0 | 0 |
-| QA-20260330-0199 | 2026-03-30T10:28:06.580Z | targeted | no | Vercel Production QA - web vitals deploy recheck | 7 | 0 | 0 | 0 | 0 | 0 |
 

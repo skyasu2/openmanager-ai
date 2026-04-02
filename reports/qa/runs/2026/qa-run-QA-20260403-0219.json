@@ -1,0 +1,65 @@
+{
+  "runId": "QA-20260403-0219",
+  "recordedAt": "2026-04-02T23:55:58.440Z",
+  "recordedAtKst": "2026-04-03 08:55:58 KST",
+  "runTitle": "Vercel Production QA after propagation of production snapshot guard verification",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_6VDaC3uMd6upLPMaEduPaFDsjbKV",
+    "deploymentUrl": "https://openmanager-9f6utaejv-skyasus-projects.vercel.app",
+    "commitSha": "cfde4b1f4"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "coveragePacks": ["core-routes-smoke"],
+  "coveredSurfaces": ["/validation", "/api/health", "/api/version"],
+  "skippedSurfaces": [
+    "/",
+    "/login",
+    "/system-boot",
+    "/dashboard",
+    "AI sidebar",
+    "AI chat streaming",
+    "modal-detail-pack",
+    "observability-pack"
+  ],
+  "checks": {
+    "total": 7,
+    "passed": 7,
+    "failed": 0
+  },
+  "expertAssessments": [],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-04-03T08:55:08+09:00",
+      "summary": "Current billing period reviewed after production propagation QA; effective 0.6552 USD, billed 0.0000 USD, no unexpected billed spike.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Production alias openmanager-ai.vercel.app resolved to deployment dpl_6VDaC3uMd6upLPMaEduPaFDsjbKV created at 2026-04-03 08:26:38 KST.",
+    "Validation Evidence page now shows tracker summary 217 total runs and 1618 total checks on deployed production.",
+    "Latest public snapshot run remains QA-20260402-0213 with scope broad.",
+    "Latest CI-backed proof run remains QA-20260322-0160 with scope targeted.",
+    "Browser console errors: 0.",
+    "/api/health returned healthy with db/cache/ai connected and version 8.10.8.",
+    "/api/version returned version 8.10.8 and Next.js 16.1.6."
+  ],
+  "links": []
+}
