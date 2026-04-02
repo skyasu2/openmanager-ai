@@ -42,6 +42,16 @@ const baseEvidence = {
     short: '2026-03-22',
     long: 'March 22, 2026',
   },
+  latestPublicRun: {
+    runId: 'QA-20260323-0169',
+    title: 'public snapshot run',
+    scope: 'targeted',
+    recordedAt: '2026-03-23T07:36:31.950Z',
+    commitSha: '1234abcd',
+    repoPath: 'reports/qa/runs/2026/qa-run-QA-20260323-0169.json',
+    ciRunLink: null,
+    ciArtifactLinks: [],
+  },
   latestProofRun: {
     runId: 'QA-20260322-0160',
     title: 'validation proof run',
@@ -66,6 +76,7 @@ type MockEvidenceOverrides = Partial<MockEvidence> & {
   trackerUpdated?: Partial<MockEvidence['trackerUpdated']>;
   publicEvidenceUpdated?: Partial<MockEvidence['publicEvidenceUpdated']>;
   latestProofRecorded?: Partial<MockEvidence['latestProofRecorded']>;
+  latestPublicRun?: Partial<MockEvidence['latestPublicRun']>;
   latestProofRun?: Partial<MockEvidence['latestProofRun']>;
 };
 
@@ -96,6 +107,10 @@ function buildEvidence(overrides: MockEvidenceOverrides = {}): MockEvidence {
     latestProofRecorded: {
       ...baseEvidence.latestProofRecorded,
       ...overrides.latestProofRecorded,
+    },
+    latestPublicRun: {
+      ...baseEvidence.latestPublicRun,
+      ...overrides.latestPublicRun,
     },
     latestProofRun: {
       ...baseEvidence.latestProofRun,
@@ -161,6 +176,8 @@ describe('ValidationEvidencePage', () => {
         /Public validation snapshot이 latest CI proof보다 1일 더 최신입니다\./
       )
     ).toBeInTheDocument();
+    expect(screen.getByText(/Latest public snapshot run/)).toBeInTheDocument();
+    expect(screen.getByText(/Latest CI-backed proof run/)).toBeInTheDocument();
   });
 
   it('public validation snapshot과 latest proof가 같은 기준이면 동일 시점으로 설명한다', async () => {

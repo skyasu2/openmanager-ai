@@ -6,10 +6,13 @@
 
 'use client';
 
-import { Bot } from 'lucide-react';
-import Link from 'next/link';
-import { QA_EVIDENCE_CTA_LINKS, QA_EVIDENCE_LABELS } from '@/data/qa-evidence';
+import { MessageSquareQuote } from 'lucide-react';
 import type { ButtonConfig, StatusInfo } from '../hooks/useSystemStart';
+
+const START_EXAMPLES = [
+  '지금 CPU 사용률이 가장 위험한 서버가 어디야?',
+  '지난 1시간 동안 장애 징후가 있었던 구간만 요약해줘',
+] as const;
 
 interface SystemStartSectionProps {
   isMounted: boolean;
@@ -85,48 +88,24 @@ export function SystemStartSection({
 
       {/* AI 어시스턴트 안내 */}
       <div className="flex justify-center text-sm">
-        <div className="max-w-md rounded-lg bg-gradient-to-br from-purple-600/10 to-blue-600/10 border border-white/10 p-3 sm:p-4">
-          <div className="mb-2 flex items-center justify-center gap-2">
-            {isMounted && <Bot className="h-4 w-4 text-purple-400" />}
-            <span className="font-semibold">AI 어시스턴트</span>
-          </div>
-          <p className="text-center text-white/90">
-            시스템 시작 후 현재 메트릭을 바탕으로 질문, 분석, 조치안을 바로
-            확인할 수 있습니다
-          </p>
-          <div className="mt-2 flex items-center justify-center gap-2">
-            <span className="rounded-full bg-purple-500/15 px-2 py-0.5 text-xs text-purple-300">
-              장애 분석
-            </span>
-            <span className="rounded-full bg-blue-500/15 px-2 py-0.5 text-xs text-blue-300">
-              성능 예측
-            </span>
-            <span className="rounded-full bg-emerald-500/15 px-2 py-0.5 text-xs text-emerald-300">
-              보고서 생성
+        <div className="max-w-xl rounded-[1.75rem] border border-white/10 bg-linear-to-br from-slate-900/80 via-slate-900/60 to-cyan-950/35 p-4 shadow-[0_24px_60px_rgba(8,15,30,0.4)] sm:p-5">
+          <div className="mb-3 flex items-center justify-center gap-2 text-cyan-100">
+            {isMounted && (
+              <MessageSquareQuote className="h-4 w-4 text-cyan-300" />
+            )}
+            <span className="font-semibold">
+              시작하면 이런 질문을 바로 할 수 있습니다
             </span>
           </div>
-          <div className="mt-3 border-t border-white/10 pt-3 text-xs text-white/75">
-            <p className="text-center">{QA_EVIDENCE_LABELS.criteria}</p>
-            <div className="mt-2 flex flex-wrap items-center justify-center gap-2">
-              <Link
-                href={QA_EVIDENCE_CTA_LINKS.statusHref}
-                className="rounded-full border border-cyan-400/25 bg-cyan-400/10 px-2.5 py-1 text-cyan-200 transition hover:bg-cyan-400/15"
+          <div className="grid gap-2 text-left sm:grid-cols-2">
+            {START_EXAMPLES.map((example) => (
+              <div
+                key={example}
+                className="rounded-2xl border border-white/10 bg-white/5 px-3 py-3 text-sm leading-relaxed text-white/88"
               >
-                QA 현황
-              </Link>
-              <Link
-                href={QA_EVIDENCE_CTA_LINKS.proofHref}
-                className="rounded-full border border-emerald-400/25 bg-emerald-400/10 px-2.5 py-1 text-emerald-200 transition hover:bg-emerald-400/15"
-              >
-                증거 run
-              </Link>
-              <Link
-                href={QA_EVIDENCE_CTA_LINKS.overviewHref}
-                className="rounded-full border border-purple-400/25 bg-purple-400/10 px-2.5 py-1 text-purple-200 transition hover:bg-purple-400/15"
-              >
-                검증 기준
-              </Link>
-            </div>
+                <span className="text-cyan-300">Q.</span> {example}
+              </div>
+            ))}
           </div>
         </div>
       </div>

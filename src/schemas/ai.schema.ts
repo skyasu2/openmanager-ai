@@ -284,16 +284,3 @@ export const ModelTrainingRequestSchema = z.object({
   }),
   evaluationMetrics: z.array(z.string()).optional(),
 });
-
-// ===== 타입 내보내기 =====
-export type AIEngineType = z.infer<typeof AIEngineTypeSchema>;
-export type AIModel = z.infer<typeof AIModelSchema>;
-export type AIEngineStatus = z.infer<typeof AIEngineStatusSchema>;
-export type AIQueryRequest = z.infer<typeof AIQueryRequestSchema>;
-export type AIQueryResponse = z.infer<typeof AIQueryResponseSchema>;
-export type AnomalyDetection = z.infer<typeof AnomalyDetectionSchema>;
-export type Prediction = z.infer<typeof PredictionSchema>;
-export type AIInsight = z.infer<typeof AIInsightSchema>;
-export type KoreanNLPRequest = z.infer<typeof KoreanNLPRequestSchema>;
-export type KoreanNLPResponse = z.infer<typeof KoreanNLPResponseSchema>;
-export type ModelTrainingRequest = z.infer<typeof ModelTrainingRequestSchema>;

@@ -25,8 +25,3 @@ export const AlertSchema = z.object({
   resolvedBy: z.string().optional(),
   metadata: z.record(z.string(), z.unknown()).optional(),
 });
-
-// ===== 타입 내보내기 =====
-
-export type AlertSeverity = z.infer<typeof AlertSeveritySchema>;
-export type Alert = z.infer<typeof AlertSchema>;

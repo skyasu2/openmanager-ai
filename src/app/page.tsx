@@ -12,7 +12,6 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import Link from 'next/link';
 import {
   DashboardSection,
   GuestRestrictionModal,
@@ -24,9 +23,10 @@ import AuthLoadingUI from '@/components/shared/AuthLoadingUI';
 import { OpenManagerLogo } from '@/components/shared/OpenManagerLogo';
 import UnifiedProfileHeader from '@/components/shared/UnifiedProfileHeader';
 import { APP_VERSION } from '@/config/app-meta';
-import { QA_EVIDENCE_CTA_LINKS, QA_EVIDENCE_LABELS } from '@/data/qa-evidence';
-import { PAGE_BACKGROUNDS } from '@/styles/design-constants';
-import { renderAIGradientWithAnimation } from '@/utils/text-rendering';
+import {
+  AI_TEXT_GRADIENT_ANIMATED_STYLE,
+  PAGE_BACKGROUNDS,
+} from '@/styles/design-constants';
 import { envLabel } from '@/utils/vercel-env-utils';
 
 // Phase 2: Lazy loading with skeleton (깜빡임 방지)
@@ -76,6 +76,7 @@ function Home() {
         envLabel={envLabel}
         authError={authError}
         onRetry={retryAuth}
+        showCopy={false}
       />
     );
   }
@@ -109,40 +110,18 @@ function Home() {
         <div className="mb-12 text-center">
           <h1 className="mb-4 text-2xl font-bold sm:text-3xl md:text-5xl">
             <span className="text-white">OpenManager</span>{' '}
-            <span>{renderAIGradientWithAnimation('AI')}</span>
+            <span style={AI_TEXT_GRADIENT_ANIMATED_STYLE}>AI</span>
           </h1>
           <p className="mx-auto max-w-3xl text-base leading-relaxed text-white/85 md:text-lg">
             <span className="block font-medium text-white/90">
-              운영 데이터를 질문, 분석, 조치안으로 바꾸는 서버 모니터링 AI
+              운영 데이터를 질문, 분석, 조치안으로 바로 연결하는 모니터링
+              워크플로
             </span>
             <span className="mt-2 block text-sm text-white/60">
-              그래프를 직접 읽는 대신 현재 메트릭을 바탕으로 바로 질문하고 답을
-              받습니다
+              그래프를 해석하는 대신 지금 무슨 일이 벌어지는지 바로 묻고 답을
+              받을 수 있습니다
             </span>
           </p>
-          <div className="mt-4 flex flex-wrap items-center justify-center gap-2 text-xs sm:text-sm">
-            <span className="rounded-full border border-emerald-400/30 bg-emerald-500/10 px-3 py-1 text-emerald-200">
-              {QA_EVIDENCE_LABELS.badge}
-            </span>
-            <Link
-              href={QA_EVIDENCE_CTA_LINKS.statusHref}
-              className="rounded-full border border-white/15 bg-white/5 px-3 py-1 text-white/80 transition-colors hover:border-white/30 hover:bg-white/10 hover:text-white"
-            >
-              QA Status
-            </Link>
-            <Link
-              href={QA_EVIDENCE_CTA_LINKS.proofHref}
-              className="rounded-full border border-white/15 bg-white/5 px-3 py-1 text-white/80 transition-colors hover:border-white/30 hover:bg-white/10 hover:text-white"
-            >
-              Latest Proof Run
-            </Link>
-            <Link
-              href={QA_EVIDENCE_CTA_LINKS.overviewHref}
-              className="rounded-full border border-sky-400/20 bg-sky-500/10 px-3 py-1 text-sky-200 transition-colors hover:border-sky-300/40 hover:bg-sky-500/15"
-            >
-              {QA_EVIDENCE_LABELS.validationPage}
-            </Link>
-          </div>
         </div>
 
         {/* 시스템 시작/대시보드 섹션 */}
@@ -168,9 +147,9 @@ function Home() {
         </div>
 
         {/* 기능 카드 그리드 */}
-        <div className="mb-12">
+        <section className="mb-12 rounded-[2rem] border border-white/10 bg-black/15 px-4 py-6 shadow-[0_24px_80px_rgba(15,23,42,0.28)] backdrop-blur-sm sm:px-6">
           <FeatureCardsGrid />
-        </div>
+        </section>
 
         {/* 푸터 */}
         <footer className="mt-8 border-t border-white/20 pt-6">

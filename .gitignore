@@ -44,6 +44,11 @@ tests/e2e/visual-regression.spec.ts-snapshots/
 # Temporary files
 *.log
 test-*.txt
+# Playwright/QA 실행 결과 임시 파일
+landing-production-*.txt
+landing-*.txt
+validation-production-*.txt
+artifacts/
 .temp-*
 # Root-level build/deploy/test logs (moved to logs/)
 build_*.txt
@@ -247,6 +252,8 @@ reports/gcp-quota-report-*.md
 # AI 검토 보고서 및 분석 리포트
 reports/*
 !reports/README.md
+!reports/docs/
+!reports/docs/docs-inventory.md
 !reports/planning/
 !reports/history/
 !reports/ai-review/

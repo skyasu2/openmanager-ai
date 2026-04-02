@@ -35,6 +35,13 @@ interface AuthLoadingUIProps {
    * 재시도 버튼 클릭 핸들러
    */
   onRetry?: () => void;
+
+  /**
+   * 로딩 카피를 표시할지 여부
+   * 랜딩 첫 페인트처럼 중립 skeleton만 필요한 경우 false
+   * @default true
+   */
+  showCopy?: boolean;
 }
 
 export default function AuthLoadingUI({
@@ -42,6 +49,7 @@ export default function AuthLoadingUI({
   envLabel = 'Local',
   authError,
   onRetry,
+  showCopy = true,
 }: AuthLoadingUIProps) {
   const visibleAuthError =
     process.env.NODE_ENV === 'development'
@@ -56,9 +64,14 @@ export default function AuthLoadingUI({
         <div>
           <Loader2 className="mx-auto mb-4 h-8 w-8 animate-spin text-white" />
         </div>
-        <p className="font-medium text-white/90" suppressHydrationWarning>
+        <span className="sr-only" suppressHydrationWarning>
           {loadingMessage} ({envLabel} 환경)
-        </p>
+        </span>
+        {showCopy && (
+          <p className="font-medium text-white/90" suppressHydrationWarning>
+            {loadingMessage} ({envLabel} 환경)
+          </p>
+        )}
         {visibleAuthError && onRetry && (
           <div className="mx-auto mt-4 max-w-md">
             <p className="mb-2 text-sm text-red-400">
@@ -73,9 +86,11 @@ export default function AuthLoadingUI({
             </button>
           </div>
         )}
-        <div className="mt-2 text-xs text-white/90" suppressHydrationWarning>
-          {envLabel} 서버에서 로딩 중...
-        </div>
+        {showCopy && (
+          <div className="mt-2 text-xs text-white/90" suppressHydrationWarning>
+            {envLabel} 서버에서 로딩 중...
+          </div>
+        )}
       </div>
     </FullScreenLayout>
   );

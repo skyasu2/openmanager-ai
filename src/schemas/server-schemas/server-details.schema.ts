@@ -186,17 +186,10 @@ export const _ServerErrorResponseSchema = z.object({
   timestamp: TimestampSchema,
 });
 
-// ===== 타입 내보내기 =====
+// ===== 타입 내보내기 (사용 중인 것만 유지) =====
 
-export type ServerService = z.infer<typeof ServerServiceSchema>;
-export type ServerSpecs = z.infer<typeof ServerSpecsSchema>;
-export type ServerDetailQuery = z.infer<typeof _ServerDetailQuerySchema>;
-export type ServerHistoryDataPoint = z.infer<
-  typeof ServerHistoryDataPointSchema
->;
 export type ServerHistory = z.infer<typeof ServerHistorySchema>;
 export type LegacyServerResponse = z.infer<typeof _LegacyServerResponseSchema>;
 export type EnhancedServerResponse = z.infer<
   typeof _EnhancedServerResponseSchema
 >;
-export type ServerErrorResponse = z.infer<typeof _ServerErrorResponseSchema>;

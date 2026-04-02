@@ -4,7 +4,6 @@
 
 import { type FormEvent, useState } from 'react';
 import { OpenManagerLogo } from '@/components/shared/OpenManagerLogo';
-import UnifiedProfileHeader from '@/components/shared/UnifiedProfileHeader';
 import {
   Dialog,
   DialogContent,
@@ -212,16 +211,13 @@ export default function LoginClient() {
     >
       <div className="wave-particles" />
 
-      <header className="relative z-50 flex items-center justify-between p-4 sm:p-6">
+      <header className="relative z-50 flex items-center p-4 sm:p-6">
         <OpenManagerLogo
           variant="dark"
           href="/"
           titleAs="p"
           showSubtitle={false}
         />
-        <div className="flex items-center gap-3">
-          <UnifiedProfileHeader />
-        </div>
       </header>
 
       <main className="relative z-10 flex flex-1 items-center justify-center px-4 pb-8 pt-2 sm:pt-4">

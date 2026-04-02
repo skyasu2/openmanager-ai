@@ -27,7 +27,6 @@ vi.mock('@/lib/logging', () => ({
 vi.mock('./circuit-breaker/state-store', () => ({
   ensureRedisStateStore: vi.fn().mockResolvedValue(undefined),
   isRedisStateStoreInitialized: vi.fn().mockReturnValue(false),
-  getDistributedStateStore: vi.fn(),
   setDistributedStateStore: vi.fn(),
   InMemoryStateStore: vi.fn(),
 }));
@@ -158,24 +157,30 @@ describe('AIServiceCircuitBreaker', () => {
 
   describe('HALF_OPEN → CLOSED 전환', () => {
     it('리셋 타임아웃 후 성공하면 CLOSED로 복귀한다', async () => {
+      vi.useFakeTimers();
+
       // Given: 짧은 리셋 타임아웃으로 breaker 생성
       const fastBreaker = new AIServiceCircuitBreaker('fast', 2, 100);
 
-      // Given: OPEN 상태
-      for (let i = 0; i < 2; i++) {
-        await expect(
-          fastBreaker.execute(() => Promise.reject(new Error('fail')))
-        ).rejects.toThrow();
+      try {
+        // Given: OPEN 상태
+        for (let i = 0; i < 2; i++) {
+          await expect(
+            fastBreaker.execute(() => Promise.reject(new Error('fail')))
+          ).rejects.toThrow();
+        }
+
+        // When: 리셋 타임아웃 이후 시점으로 이동한 뒤 성공 실행
+        vi.advanceTimersByTime(150);
+        const result = await fastBreaker.execute(() => Promise.resolve('ok'));
+
+        // Then: CLOSED 상태로 복귀
+        expect(result).toBe('ok');
+        expect(fastBreaker.getStatus().state).toBe('CLOSED');
+        expect(fastBreaker.getStatus().failures).toBe(0);
+      } finally {
+        vi.useRealTimers();
       }
-
-      // When: 리셋 타임아웃 대기 후 성공 실행
-      await new Promise((r) => setTimeout(r, 150));
-      const result = await fastBreaker.execute(() => Promise.resolve('ok'));
-
-      // Then: CLOSED 상태로 복귀
-      expect(result).toBe('ok');
-      expect(fastBreaker.getStatus().state).toBe('CLOSED');
-      expect(fastBreaker.getStatus().failures).toBe(0);
     });
   });
 

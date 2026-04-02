@@ -4,8 +4,21 @@ export const CLOUD_PLATFORM_ARCHITECTURE: ArchitectureDiagram = {
   id: 'cloud-platform',
   title: 'Hybrid Cloud Architecture',
   description:
-    '4개 클라우드 플랫폼 연동. Vercel(Frontend) + Cloud Run(AI) + Supabase(DB) + Upstash(Cache). 독립적 스케일링.',
+    'GitLab canonical → Vercel 자동 배포. Vercel(Frontend) + Cloud Run(AI) + Supabase(DB) + Upstash(Cache). 독립적 스케일링.',
   layers: [
+    {
+      title: 'Delivery Pipeline',
+      color: 'from-orange-500 to-amber-600',
+      nodes: [
+        {
+          id: 'gitlab',
+          label: 'GitLab',
+          sublabel: 'git push gitlab main → 자동 배포',
+          type: 'highlight',
+          icon: '🦊',
+        },
+      ],
+    },
     {
       title: 'Compute Layer',
       color: 'from-slate-600 to-slate-700',
@@ -22,7 +35,7 @@ export const CLOUD_PLATFORM_ARCHITECTURE: ArchitectureDiagram = {
           label: 'Cloud Run',
           sublabel: 'Node.js 24 + Hono + AI SDK',
           type: 'highlight',
-          icon: '🚀', // Rocket for Cloud Run
+          icon: '🚀',
         },
       ],
     },
@@ -75,6 +88,7 @@ export const CLOUD_PLATFORM_ARCHITECTURE: ArchitectureDiagram = {
     },
   ],
   connections: [
+    { from: 'gitlab', to: 'vercel', label: 'Auto Deploy' },
     { from: 'vercel', to: 'supabase', label: 'Query' },
     { from: 'vercel', to: 'cloudrun', label: 'AI Proxy' },
     { from: 'cloudrun', to: 'supabase', label: 'GraphRAG' },

@@ -26,7 +26,6 @@ export type {
 } from './circuit-breaker/state-store';
 export {
   ensureRedisStateStore,
-  getDistributedStateStore,
   InMemoryStateStore,
   isRedisStateStoreInitialized,
   setDistributedStateStore,

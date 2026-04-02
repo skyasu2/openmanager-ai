@@ -739,5 +739,44 @@ describe('Supervisor Stream V2 Route', () => {
       expect(response.headers.get('X-AI-Source')).toBe('cloud-run');
       expect(mockFetch).toHaveBeenCalledTimes(2);
     });
+
+    it('첫 질의(warmup 헤더)에서 TimeoutError면 1회 재시도 후 성공할 수 있어야 함', async () => {
+      mockFetch
+        .mockRejectedValueOnce(
+          new DOMException('The operation timed out', 'TimeoutError')
+        )
+        .mockResolvedValueOnce(
+          new Response(createSseStream(), {
+            status: 200,
+            headers: { 'Content-Type': 'text/event-stream' },
+          })
+        );
+
+      const request = new NextRequest(
+        'http://localhost/api/ai/supervisor/stream/v2',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Session-Id': 'session-timeout-retry',
+            'X-AI-First-Query': '1',
+            'X-AI-Warmup-Started-At': String(Date.now()),
+          },
+          body: JSON.stringify({
+            messages: [
+              { role: 'user', content: '첫 질의 타임아웃 재시도 확인' },
+            ],
+            sessionId: 'session-timeout-retry',
+          }),
+        }
+      );
+
+      const response = await POST(request);
+
+      expect(response.status).toBe(200);
+      expect(response.headers.get('X-Fallback-Response')).toBeNull();
+      expect(response.headers.get('X-AI-Source')).toBe('cloud-run');
+      expect(mockFetch).toHaveBeenCalledTimes(2);
+    });
   });
 });

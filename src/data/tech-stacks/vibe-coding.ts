@@ -6,15 +6,14 @@ export const VIBE_CODING_DATA: VibeCodeData = {
     {
       name: 'Google Antigravity',
       category: 'ai',
-      importance: 'critical',
+      importance: 'high',
       description:
         'Agent-first AI-powered IDE - AI 에이전트가 계획, 실행, 검증까지 자율 수행 (Google)',
       implementation:
-        'Gemini 3와 함께 출시. VS Code 포크 기반으로 개발자는 아키텍트로, AI 에이전트가 실제 구현을 담당하는 새로운 패러다임. Multi-Agent 협업 지원',
-      version: 'v1.0.0 (Gemini 3 Pro)',
+        'VS Code 포크 기반. 개발자는 아키텍트로, AI 에이전트가 실제 구현을 담당하는 새로운 패러다임. WSL 터미널 컨테이너 역할 — Claude/Codex/Gemini CLI가 여기서 실행',
       status: 'active',
       icon: '🌌',
-      tags: ['Google', 'Agent-First', 'Gemini3', 'IDE'],
+      tags: ['Google', 'Agent-First', 'IDE'],
       type: 'commercial',
     },
     {
@@ -23,7 +22,7 @@ export const VIBE_CODING_DATA: VibeCodeData = {
       importance: 'high',
       description:
         'Anthropic의 Model Context Protocol. AI가 외부 도구, 데이터 소스, API에 표준화된 방식으로 접근하는 오픈 프로토콜. 다양한 MCP 서버로 AI 기능 확장',
-      implementation: `→ ${MCP_SERVERS.TOTAL_ACTIVE}개 서버 연동: vercel(배포), supabase(DB), context7(문서), playwright(E2E), next-devtools(Next.js진단), github(저장소), sequential-thinking(추론), stitch(UI디자인), storybook(컴포넌트문서)`,
+      implementation: `→ ${MCP_SERVERS.TOTAL_ACTIVE}개 서버 연동: vercel(배포), supabase(DB), context7(문서), playwright(E2E), next-devtools(Next.js진단), github(저장소), sequential-thinking(추론), stitch(UI디자인), storybook(컴포넌트문서), lighthouse(성능/A11y/SEO)`,
       status: 'active',
       icon: '🔌',
       tags: ['MCP', 'Protocol', '확장기능'],
@@ -34,9 +33,9 @@ export const VIBE_CODING_DATA: VibeCodeData = {
       category: 'ai',
       importance: 'critical',
       description:
-        'An agentic coding tool that lives in your terminal, understands your codebase (Anthropic)',
+        'An agentic coding tool that lives in your terminal, understands your codebase (Anthropic) — 전체 개발의 99% 주도',
       implementation:
-        'Helps you code faster by executing routine tasks, explaining complex code, and handling git workflows - all through natural language commands. MCP 서버로 외부 시스템 직접 제어',
+        '기획·아키텍처 설계부터 구현·리팩토링·배포까지 전체 개발 사이클을 단독 주도. MCP 서버로 외부 시스템 직접 제어. v8.10.x 이후에도 핵심 설계·리뷰 역할 유지',
       version: 'claude-opus-4-6',
       status: 'active',
       icon: '🤖',
@@ -50,11 +49,11 @@ export const VIBE_CODING_DATA: VibeCodeData = {
       description:
         'AI가 작성한 코드는 다른 AI 모델이 리뷰 - Single Point of Failure 방지',
       implementation:
-        'Claude가 작성한 코드를 Codex/Gemini가 검토. 동일 모델의 편향(bias)과 blind spot을 다른 모델이 보완. 커밋 시 자동 트리거',
+        '주로 Claude Code로 진행한 구현을 Codex/Gemini로 수동 교차 검토. 동일 모델의 편향(bias)과 blind spot을 다른 모델이 보완하지만, 커밋 시 자동 트리거는 사용하지 않음',
       version: 'v5.0',
       status: 'active',
       icon: '🔄',
-      tags: ['Cross-Model', 'Bias방지', '자동검증'],
+      tags: ['Cross-Model', 'Bias방지', '수동검증'],
       type: 'custom',
     },
     {
@@ -64,8 +63,8 @@ export const VIBE_CODING_DATA: VibeCodeData = {
       description:
         'A lightweight coding agent that runs in your terminal (OpenAI)',
       implementation:
-        'Generate, edit, and run code using natural language. ChatGPT Plus/Pro 플랜으로 사용. Claude 작성 코드의 Cross-Model 리뷰어',
-      version: 'v0.101.0',
+        'Generate, edit, and run code using natural language. ChatGPT Plus/Pro 플랜으로 사용. v8.10.x 마무리·QA 단계부터 비중이 높아졌으며, bounded refactor와 테스트 보완을 주로 담당. 주요 구현은 Claude Code가 99% 주도',
+      version: 'v0.117.0',
       status: 'active',
       icon: '💎',
       tags: ['OpenAI', 'Lightweight', 'ChatGPT'],
@@ -79,7 +78,7 @@ export const VIBE_CODING_DATA: VibeCodeData = {
         'An open-source AI agent that brings the power of Gemini directly into your terminal (Google)',
       implementation:
         'Lightweight access to Gemini - the most direct path from prompt to model. 1M 토큰 컨텍스트로 대규모 분석. Cross-Model 리뷰어',
-      version: 'v0.18.4',
+      version: 'v0.35.3',
       status: 'active',
       icon: '✨',
       tags: ['Google', 'OpenSource', '1M-Context'],
@@ -261,7 +260,7 @@ export const VIBE_CODING_DATA: VibeCodeData = {
       stage4: {
         title: '현재 단계',
         description:
-          'GitLab canonical 전환 → Multi-AI CLI 체계 → 로컬 Docker CI 표준화 → Cloud Run AI Engine 운영',
+          'GitLab canonical 전환 → Claude Code 메인 + 마무리·QA 단계 Codex 비중 증가 → 로컬 Docker CI 표준화 → Cloud Run AI Engine 운영',
       },
     },
 
@@ -320,16 +319,16 @@ export const VIBE_CODING_DATA: VibeCodeData = {
         type: 'commercial',
       },
       {
-        name: 'Multi-AI CLI (Claude+Codex+Gemini)',
+        name: 'Multi-AI CLI (Manual Cross-Use)',
         category: 'ai',
         importance: 'critical',
-        description: '멀티 AI CLI 협업 체계 - Claude Max 20x 중심',
+        description: 'Claude Code 메인 + 수동 교차 사용형 Multi-CLI 운영',
         implementation:
-          'Claude Code(메인), Codex(구현/리팩토링), Gemini(리서치/분석) 3개 CLI가 역할 분담. Claude가 전체 개발 사이클을 주도하며, 사용자가 필요 시 Codex/Gemini를 직접 실행. 월 $420 AI 구독 예산으로 운영',
-        version: 'Claude Max 20x / gpt-5.3-codex / Gemini Pro',
+          'Claude Code(전체 개발 99% 주도), Codex(마무리·QA 단계 보완), Gemini(리서치/분석)를 사용자가 수동 전환하며 교차 사용. 자동 라우팅보다는 사람 판단으로 필요한 CLI를 선택해 구현과 검토를 나누는 운영 방식',
+        version: '2026-03 운영 기준선',
         status: 'active',
         icon: '🤝',
-        tags: ['Multi-AI', 'Claude-Max', 'Codex', 'Gemini'],
+        tags: ['Multi-AI', 'Manual-Cross-Use', 'Codex', 'Gemini'],
         type: 'commercial',
       },
       {
@@ -338,7 +337,7 @@ export const VIBE_CODING_DATA: VibeCodeData = {
         importance: 'high',
         description: '외부 CI 최소화 - 로컬 Docker 기반 검증 표준화',
         implementation:
-          'GitLab CI 비활성화(400분/월 소진 방지). npm run ci:local:docker로 로컬에서 동일한 검증 수행. pre-push hook으로 TypeScript/lint 자동 검증. GitHub Actions은 public snapshot용으로만 유지',
+          'GitLab CI 비활성화(400분/월 소진 방지). npm run ci:local:docker로 로컬 Docker 검증을 수동 실행. pre-push hook은 Docker 없이 Node.js로 빠른 검증만 수행하고, GitHub Actions은 public snapshot용으로만 유지',
         status: 'active',
         icon: '🐋',
         tags: ['로컬CI', 'Docker', 'pre-push', 'GitLab-CI-Off'],

@@ -152,32 +152,6 @@ export interface DetailedServerMetrics
 /**
  * 서버 메트릭 히스토리
  */
-/**
- * 서버 정보 통합 인터페이스
- */
-export interface Server {
-  id: string;
-  name: string;
-  type: 'web' | 'database' | 'api' | 'cache' | 'storage' | 'other';
-  status: ServerStatus;
-  metrics?: FlexibleServerMetrics;
-
-  // 연결 정보
-  host?: string;
-  port?: number;
-  protocol?: string;
-
-  // 메타데이터
-  region?: string;
-  environment?: string;
-  tags?: string[];
-  lastUpdated?: string;
-
-  // 설정
-  config?: Record<string, unknown>;
-  monitoringEnabled?: boolean;
-  alertsEnabled?: boolean;
-}
 
 /**
  * 타입 가드: SimpleServerMetrics 체크

@@ -1,35 +1,45 @@
 {
   "version": "1.0.0",
-  "generatedAt": "2026-03-28T15:22:00.263Z",
+  "generatedAt": "2026-04-02T06:04:28.239Z",
   "source": {
     "trackerPath": "reports/qa/qa-tracker.json",
     "statusPath": "reports/qa/QA_STATUS.md",
     "publicPath": "public/data/qa/validation-evidence.json",
     "publicHref": "/data/qa/validation-evidence.json",
-    "latestRunId": "QA-20260329-0194"
+    "latestRunId": "QA-20260402-0211"
   },
   "summary": {
-    "totalRuns": 193,
-    "totalChecks": 1429,
-    "completedItems": 264,
+    "totalRuns": 210,
+    "totalChecks": 1552,
+    "completedItems": 273,
     "expertDomainsOpenGaps": 0,
-    "wontFixItems": 10,
-    "lastRecordedAt": "2026-03-28T15:21:59.221Z"
+    "wontFixItems": 13,
+    "lastRecordedAt": "2026-04-02T06:04:27.210Z"
   },
   "trackerUpdated": {
-    "iso": "2026-03-28T15:21:59.221Z",
-    "short": "2026-03-28",
-    "long": "March 28, 2026"
+    "iso": "2026-04-02T06:04:27.210Z",
+    "short": "2026-04-02",
+    "long": "April 2, 2026"
   },
   "publicEvidenceUpdated": {
-    "iso": "2026-03-28T15:21:59.221Z",
-    "short": "2026-03-28",
-    "long": "March 28, 2026"
+    "iso": "2026-04-02T06:04:27.210Z",
+    "short": "2026-04-02",
+    "long": "April 2, 2026"
   },
   "latestProofRecorded": {
     "iso": "2026-03-22T07:26:30.735Z",
     "short": "2026-03-22",
     "long": "March 22, 2026"
+  },
+  "latestPublicRun": {
+    "runId": "QA-20260402-0211",
+    "title": "Vercel Production Usage Evidence Follow-up",
+    "scope": "targeted",
+    "recordedAt": "2026-04-02T06:04:27.210Z",
+    "commitSha": "774171c8456609e330c3dc8a17c38324b53d0bb0",
+    "repoPath": "reports/qa/runs/2026/qa-run-QA-20260402-0211.json",
+    "ciRunLink": null,
+    "ciArtifactLinks": []
   },
   "latestProofRun": {
     "runId": "QA-20260322-0160",

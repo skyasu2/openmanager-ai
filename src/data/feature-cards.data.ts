@@ -10,15 +10,15 @@ import type { FeatureCard } from '@/types/feature-card.types';
 export const FEATURE_CARDS_DATA: FeatureCard[] = [
   {
     id: 'ai-assistant',
-    title: '🧠 AI Assistant',
+    title: '💬 AI 어시스턴트',
     description:
-      '현재 메트릭을 바탕으로 질문, 분석, 조치안을 바로 연결하는 운영형 AI 어시스턴트. 장애 분석, 스크린샷 이해, 대용량 로그 처리까지 지원합니다.',
+      '현재 메트릭을 바탕으로 질문, 분석, 조치안을 바로 연결하는 운영 어시스턴트. 장애 분석, 스크린샷 이해, 대용량 로그 처리까지 지원합니다.',
     icon: Bot,
     gradient: 'from-indigo-500 via-purple-500 to-pink-500',
     detailedContent: {
       overview: `운영자가 메트릭 그래프를 직접 해석하지 않아도, 질문 하나로 현재 상태, 원인 분석, 다음 조치안을 받을 수 있도록 설계한 AI 실행 계층입니다. 4개의 AI Provider(Cerebras, Groq, Mistral, Gemini)와 Vercel AI SDK 6.0 네이티브 ToolLoopAgent 기반 5-Agent + Evaluator-Optimizer 파이프라인을 사용하며, Vision Agent의 대시보드 스크린샷 분석, 1M 토큰 로그 분석, Google Search Grounding을 지원합니다. 경량 커스텀 TypeScript ML(통계 이상 탐지 + 추세 예측)과 Native GraphRAG + Tavily 하이브리드 검색을 함께 사용합니다.`,
       features: [
-        '🧠 Cerebras Inference: WSE-3 칩 기반 1M 토큰/일 초고속 추론 (gpt-oss-120b) — NLQ/Analyst/Supervisor 1순위, 최저 지연 우선',
+        '🧠 Cerebras Inference: WSE-3 칩 기반 24M 토큰/일 초고속 추론 (gpt-oss-120b) — NLQ/Analyst/Advisor 1순위, 최저 지연 우선',
         '⚡ Groq Cloud: LPU 기반 500 Tokens/s 초고속 추론 (llama-3.3-70b-versatile) — Reporter/Orchestrator 1순위 모델',
         '🛡️ Mistral AI: mistral-large-latest Frontier 모델 — Advisor 1순위, RAG 검색 품질 최적',
         '👁️ Gemini Flash: Vision Agent 전용, 스크린샷 분석, 1M 컨텍스트 — 대용량 로그/이미지 처리 유일 모델',
@@ -82,7 +82,7 @@ export const FEATURE_CARDS_DATA: FeatureCard[] = [
     id: 'tech-stack',
     title: '💻 기술 스택',
     description:
-      '실시간 모니터링 UI, 자연어 질의, AI 응답 스트리밍을 안정적으로 묶기 위해 선택한 최신 웹 스택과 데이터 계층입니다.',
+      '실시간 모니터링 UI, 자연어 질의, 응답 스트리밍을 안정적으로 묶기 위해 선택한 최신 웹 스택과 데이터 계층입니다.',
     icon: Sparkles,
     gradient: 'from-blue-500 to-purple-600',
     detailedContent: {
@@ -91,7 +91,7 @@ export const FEATURE_CARDS_DATA: FeatureCard[] = [
         '⚛️ React 19: Concurrent Rendering, Server Components 등 최신 기능 적용 — 대시보드 초기 로딩 최적화',
         '▲ Next.js 16: Server Actions, Partial Prerendering, Edge Runtime 지원 — API Routes로 SSOT 데이터 제공',
         '🔷 TypeScript 5.9: 최신 컴파일러 기능을 활용한 강력한 타입 안전성 확보 — strict 모드로 런타임 에러 사전 차단',
-        '🎨 Tailwind CSS 4.1: 최신 Oxides 엔진으로 빌드 성능 극대화 — 유틸리티 퍼스트로 디자인 시스템 일관성 확보',
+        '🎨 Tailwind CSS 4.2: 최신 Oxides 엔진으로 빌드 성능 극대화 — 유틸리티 퍼스트로 디자인 시스템 일관성 확보',
         '📊 Recharts + uPlot 이중 차트: Recharts(SVG, 예측/이상치 인터랙션) + uPlot(Canvas, Grafana급 고성능) — 용도별 최적 렌더링 분담',
         '🔥 OTel-native Data: CNCF 표준 시계열 SSOT — otel-data/ 24시간 메트릭+로그 직접 소비',
         '🔭 OpenTelemetry: CNCF Semantic Convention으로 메트릭 표준화 — Resource Catalog + Timeseries로 서버 메타데이터 관리',
@@ -104,7 +104,7 @@ export const FEATURE_CARDS_DATA: FeatureCard[] = [
         'Next.js 16',
         'React 19',
         'TypeScript 5.9',
-        'Tailwind CSS 4.1',
+        'Tailwind CSS 4.2',
         'Recharts 3.7.0 + uPlot 1.6',
         'OTel-native Data (SSOT)',
         'OpenTelemetry (Semantic Conv.)',
@@ -120,26 +120,29 @@ export const FEATURE_CARDS_DATA: FeatureCard[] = [
     id: 'vibe-coding',
     title: '🔥 Vibe Coding',
     description:
-      '아이디어 수준이 아니라 배포, QA, 운영 증거까지 이어지게 만든 AI 협업 개발 방식입니다. 이 프로젝트의 실제 제작 과정을 그대로 보여줍니다.',
+      '아이디어 수준이 아니라 배포, QA, 운영 증거까지 이어지게 만든 에이전트 협업 개발 방식입니다. 이 프로젝트의 실제 제작 과정을 그대로 보여줍니다.',
     icon: Zap,
     gradient: 'from-amber-600 via-orange-600 to-amber-700',
     detailedContent: {
-      overview: `이 프로덕트가 탄생한 개발 방법론입니다. 단순 AI 챗봇 시연이 아니라, 서비스 아키텍처 전체를 AI(ChatGPT/Claude/Gemini)와 페어 프로그래밍하고 실제 배포, QA, 운영 증거까지 연결해 E2E로 구축했습니다.`,
+      overview: `이 프로덕트가 탄생한 개발 방법론입니다. 단순 AI 챗봇 시연이 아니라, 서비스 아키텍처 전체를 Claude Code(메인 개발)와 페어 프로그래밍하고 실제 배포, QA, 운영 증거까지 연결해 E2E로 구축했습니다. 전체 개발의 99%는 Claude Code가 주도했으며, v8.10.x 마무리·QA 단계부터 Codex 비중이 높아졌습니다.`,
       features: [
         '1️⃣ Stage 1 (Manual): GPT/Gemini 창에서 수동 코딩 → [Netlify 목업](https://openmanager-vibe-v2.netlify.app/) — 초기 프로토타이핑',
         '2️⃣ Stage 2 (Auto): Cursor의 등장, "IDE 자동 개발"의 시작 — GUI 기반 AI 코딩 도입',
-        '3️⃣ Stage 3 (Pivot): IDE는 보조(시각 분석)로, 메인은 WSL + Claude Code로 이동 — 터미널 기반이 대규모 리팩토링에 유리',
-        '4️⃣ Stage 4 (Current): WSL 위의 Multi-CLI (Codex/Gemini) + Google Antigravity — 복수 AI 교차 검증 체계',
+        '3️⃣ Stage 3 (Pivot): IDE는 보조(시각 분석)로, 메인은 WSL + Claude Code로 이동 — 전체 개발의 99% 담당',
+        '4️⃣ Stage 4 (Current): GitLab canonical 전환 + 로컬 Docker CI + Cloud Run AI Engine — 마무리·QA 단계에서 Codex 비중 증가',
         '📺 IDE Role Shift: 개발의 주체에서 "터미널 뷰어" 및 "스크린샷 분석도구"로 축소 — AI가 코드 생성, 사람은 설계와 판단',
         '🐧 WSL Main Base: 모든 지능형 에이전트들이 활동하는 실제 본부 — 리눅스 환경에서 모든 CLI 도구 통합',
-        '🤖 Agentic Ecosystem: Claude Code(Main)을 중심으로 복수 에이전트 협업 — 단일 AI 편향 방지를 위한 멀티 에이전트',
-        '🚀 Google Antigravity: Agent-first IDE - AI가 계획·실행·검증하는 새 패러다임 (Google) — 최신 에이전트 기반 개발 환경',
+        '🤖 Agentic Ecosystem: Claude Code 메인 + Codex/Gemini 수동 교차 사용 — 역할별 교차 검증과 편향 완화',
+        '🦊 GitLab + Dual Remote: canonical 저장소를 GitLab으로 전환, GitHub는 공개 코드 스냅샷 전용 — git push gitlab main → Vercel 자동 배포',
       ],
       technologies: [
         'Google Antigravity (IDE)',
         'WSL Terminal (Main)',
         'Claude Code (Core)',
-        'Multi-CLI Agents',
+        'Codex CLI (QA/Finishing)',
+        'Gemini CLI (Research)',
+        'GitLab + Dual Remote',
+        'Local Docker CI',
         'VSCode (Visual Aux)',
         'Cursor/Windsurf (Legacy)',
       ],

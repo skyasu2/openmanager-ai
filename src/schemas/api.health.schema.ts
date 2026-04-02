@@ -56,9 +56,6 @@ export const MemoryStatusResponseSchema = z.object({
   timestamp: TimestampSchema,
 });
 
-// ===== 타입 내보내기 =====
+// ===== 타입 내보내기 (사용 중인 것만 유지) =====
 
-export type HealthCheckService = z.infer<typeof HealthCheckServiceSchema>;
 export type HealthCheckResponse = z.infer<typeof HealthCheckResponseSchema>;
-export type MemorySummary = z.infer<typeof MemorySummarySchema>;
-export type MemoryStatusResponse = z.infer<typeof MemoryStatusResponseSchema>;

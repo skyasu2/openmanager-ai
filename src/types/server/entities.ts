@@ -64,17 +64,3 @@ export interface SystemInfo {
   environment?: ServerEnvironment;
   role?: ServerRole;
 }
-
-/**
- * 서버 메타데이터
- */
-export interface ServerMetadata {
-  id: string;
-  ip: string;
-  name: string;
-  location: string;
-  os: string;
-  type: string;
-  isActive: boolean;
-  processes: ProcessInfo[];
-}

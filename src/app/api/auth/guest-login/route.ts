@@ -1,4 +1,4 @@
-import { createHash, randomUUID } from 'node:crypto';
+import { createHash, randomUUID, timingSafeEqual } from 'node:crypto';
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
@@ -9,16 +9,18 @@ import {
   isGuestCountryBlocked,
 } from '@/lib/auth/guest-region-policy';
 import { createGuestSessionProof } from '@/lib/auth/guest-session-proof.server';
-import {
-  AUTH_SESSION_ID_KEY,
-  AUTH_TYPE_KEY,
-  GUEST_AUTH_PROOF_COOKIE_KEY,
-  LEGACY_GUEST_SESSION_COOKIE_KEY,
-} from '@/lib/auth/guest-session-utils';
 import { recordLoginEvent } from '@/lib/auth/login-audit';
 import { getRedisClient, runRedisWithTimeout } from '@/lib/redis/client';
 import { rateLimiters, withRateLimit } from '@/lib/security/rate-limiter';
 import { withCSRFProtection } from '@/utils/security/csrf';
+import {
+  createGuestPinInvalidResponse,
+  createGuestPinRateLimitedResponse,
+  createGuestPinRequiredResponse,
+  createGuestRegionBlockedResponse,
+  createGuestSessionIssueFailedResponse,
+  createGuestSuccessResponse,
+} from './response-utils';
 
 const GuestLoginRequestSchema = z.object({
   sessionId: z.string().min(1).max(255).optional(),
@@ -47,18 +49,9 @@ const guestPinFailStore = new Map<string, LocalPinFailureState>();
 const guestPinLockStore = new Map<string, number>();
 
 function secureEquals(left: string, right: string): boolean {
-  if (!left || !right) return false;
-
-  const maxLen = Math.max(left.length, right.length);
-  let mismatch = left.length ^ right.length;
-
-  for (let i = 0; i < maxLen; i += 1) {
-    const leftCode = left.charCodeAt(i) || 0;
-    const rightCode = right.charCodeAt(i) || 0;
-    mismatch |= leftCode ^ rightCode;
-  }
-
-  return mismatch === 0;
+  const a = Buffer.from(left);
+  const b = Buffer.from(right);
+  return a.length === b.length && timingSafeEqual(a, b);
 }
 
 function isValidGuestPin(value: string): boolean {
@@ -305,20 +298,7 @@ async function handlePOST(request: NextRequest): Promise<NextResponse> {
         },
       });
 
-      return NextResponse.json(
-        {
-          error: 'guest_pin_rate_limited',
-          message:
-            '게스트 PIN을 5회 연속 잘못 입력했습니다. 1분 후 다시 시도해주세요.',
-          retryAfterSeconds: lockRemainingSeconds,
-        },
-        {
-          status: 429,
-          headers: {
-            'Retry-After': String(lockRemainingSeconds),
-          },
-        }
-      );
+      return createGuestPinRateLimitedResponse(lockRemainingSeconds);
     }
 
     if (!isValidGuestPin(configuredPin)) {
@@ -336,13 +316,7 @@ async function handlePOST(request: NextRequest): Promise<NextResponse> {
         },
       });
 
-      return NextResponse.json(
-        {
-          error: 'guest_pin_required',
-          message: '게스트 PIN이 설정되지 않았습니다. 관리자에게 문의해주세요.',
-        },
-        { status: 403 }
-      );
+      return createGuestPinRequiredResponse();
     }
 
     const normalizedPin = guestPin?.trim() || '';
@@ -369,19 +343,8 @@ async function handlePOST(request: NextRequest): Promise<NextResponse> {
           },
         });
 
-        return NextResponse.json(
-          {
-            error: 'guest_pin_rate_limited',
-            message:
-              '게스트 PIN을 5회 연속 잘못 입력했습니다. 1분 후 다시 시도해주세요.',
-            retryAfterSeconds: failureState.retryAfterSeconds,
-          },
-          {
-            status: 429,
-            headers: {
-              'Retry-After': String(failureState.retryAfterSeconds),
-            },
-          }
+        return createGuestPinRateLimitedResponse(
+          failureState.retryAfterSeconds
         );
       }
 
@@ -401,14 +364,7 @@ async function handlePOST(request: NextRequest): Promise<NextResponse> {
         },
       });
 
-      return NextResponse.json(
-        {
-          error: 'guest_pin_invalid',
-          message: `게스트 PIN이 올바르지 않습니다. (${failureState.attemptsLeft}회 남음)`,
-          attemptsLeft: failureState.attemptsLeft,
-        },
-        { status: 403 }
-      );
+      return createGuestPinInvalidResponse(failureState.attemptsLeft);
     }
 
     await clearPinFailureState(pinAttemptIdentity);
@@ -416,6 +372,7 @@ async function handlePOST(request: NextRequest): Promise<NextResponse> {
 
   const countryCode = getRequestCountryCode(request.headers);
   const isBlocked = isGuestCountryBlocked(countryCode);
+  const responseCountryCode = countryCode ?? 'unknown';
 
   if (isBlocked) {
     await recordLoginEvent({
@@ -432,14 +389,7 @@ async function handlePOST(request: NextRequest): Promise<NextResponse> {
       },
     });
 
-    return NextResponse.json(
-      {
-        error: 'guest_region_blocked',
-        message: '현재 지역에서는 게스트 로그인이 제한됩니다.',
-        countryCode,
-      },
-      { status: 403 }
-    );
+    return createGuestRegionBlockedResponse(responseCountryCode);
   }
 
   await recordLoginEvent({
@@ -458,61 +408,17 @@ async function handlePOST(request: NextRequest): Promise<NextResponse> {
     maxAgeSeconds: GUEST_SESSION_COOKIE_MAX_AGE_SECONDS,
   });
   if (!guestSessionProof) {
-    return NextResponse.json(
-      {
-        error: 'guest_session_issue_failed',
-        message:
-          '게스트 세션 발급 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.',
-      },
-      { status: 500 }
-    );
+    return createGuestSessionIssueFailedResponse();
   }
 
   const secureCookie = process.env.NODE_ENV === 'production';
-  const response = NextResponse.json({
-    success: true,
-    countryCode,
+  return createGuestSuccessResponse({
+    countryCode: responseCountryCode,
+    guestSessionProof,
+    secureCookie,
     sessionId: issuedSessionId,
+    sessionMaxAgeSeconds: GUEST_SESSION_COOKIE_MAX_AGE_SECONDS,
   });
-
-  response.cookies.set({
-    name: AUTH_SESSION_ID_KEY,
-    value: issuedSessionId,
-    path: '/',
-    maxAge: GUEST_SESSION_COOKIE_MAX_AGE_SECONDS,
-    httpOnly: false,
-    sameSite: 'strict',
-    secure: secureCookie,
-  });
-  response.cookies.set({
-    name: GUEST_AUTH_PROOF_COOKIE_KEY,
-    value: guestSessionProof,
-    path: '/',
-    maxAge: GUEST_SESSION_COOKIE_MAX_AGE_SECONDS,
-    httpOnly: true,
-    sameSite: 'strict',
-    secure: secureCookie,
-  });
-  response.cookies.set({
-    name: LEGACY_GUEST_SESSION_COOKIE_KEY,
-    value: '',
-    path: '/',
-    maxAge: 0,
-    httpOnly: false,
-    sameSite: 'strict',
-    secure: secureCookie,
-  });
-  response.cookies.set({
-    name: AUTH_TYPE_KEY,
-    value: '',
-    path: '/',
-    maxAge: 0,
-    httpOnly: false,
-    sameSite: 'strict',
-    secure: secureCookie,
-  });
-
-  return response;
 }
 
 export const POST = withRateLimit(

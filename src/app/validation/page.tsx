@@ -79,8 +79,57 @@ type ValidationEvidenceSnapshot = {
   trackerUpdated: ValidationEvidenceDate;
   publicEvidenceUpdated: ValidationEvidenceDate;
   latestProofRecorded: ValidationEvidenceDate;
+  latestPublicRun: QATrackerRun;
   latestProofRun: QATrackerRun;
 };
+
+function RunReferenceCard({
+  eyebrow,
+  title,
+  run,
+  recordedAt,
+  accentClassName,
+  action,
+}: {
+  eyebrow: string;
+  title: string;
+  run: QATrackerRun;
+  recordedAt: ValidationEvidenceDate;
+  accentClassName: string;
+  action?: React.ReactNode;
+}) {
+  return (
+    <article className="rounded-2xl border border-white/10 bg-white/5 p-5">
+      <p className="text-xs uppercase tracking-wide text-white/50">{eyebrow}</p>
+      <h3 className="mt-2 text-lg font-semibold text-white">{title}</h3>
+      <p className={`mt-4 text-2xl font-semibold ${accentClassName}`}>
+        {run.runId}
+      </p>
+      <p className="mt-3 text-sm text-white/75">{run.title}</p>
+
+      <dl className="mt-5 grid gap-4 text-sm text-white/75 sm:grid-cols-2">
+        <div>
+          <dt className="text-white/45">Scope</dt>
+          <dd className="mt-1">{run.scope}</dd>
+        </div>
+        <div>
+          <dt className="text-white/45">Recorded at</dt>
+          <dd className="mt-1">{recordedAt.long}</dd>
+        </div>
+        <div>
+          <dt className="text-white/45">Commit</dt>
+          <dd className="mt-1 font-mono">{run.commitSha}</dd>
+        </div>
+      </dl>
+
+      {action}
+
+      <p className="mt-5 text-sm text-white/65">
+        Source of truth in repository: <code>{run.repoPath}</code>
+      </p>
+    </article>
+  );
+}
 
 function buildProofGapLabel(
   publicEvidenceUpdatedIso?: string | null,
@@ -166,15 +215,23 @@ export default function ValidationEvidencePage() {
             <EvidencePill className="border-purple-400/25 bg-purple-500/10 text-purple-200">
               Open gaps {evidence.summary.expertDomainsOpenGaps}
             </EvidencePill>
+            <EvidencePill className="border-white/15 bg-white/5 text-white/75">
+              Snapshot run {evidence.latestPublicRun.runId}
+            </EvidencePill>
+            <EvidencePill className="border-white/15 bg-white/5 text-white/75">
+              CI proof {evidence.latestProofRun.runId}
+            </EvidencePill>
           </div>
 
           <h1 className="mt-5 text-3xl font-bold text-white sm:text-4xl">
             Validation Evidence
           </h1>
           <p className="mt-3 max-w-3xl text-sm leading-relaxed text-white/75 sm:text-base">
-            이 페이지는 production validation CTA의 근거를 요약해서 보여주는
-            evidence summary입니다. 현재 배포에 포함된 public QA snapshot을 읽어
-            핵심 운영 수치와 최신 CI-backed proof run을 함께 노출합니다.
+            이 페이지는 두 기준을 함께 보여줍니다. 현재 배포에 포함된 최신
+            public QA snapshot run과, 별도로 유지되는 최신 CI-backed proof run
+            근거를 함께 요약하는 evidence summary입니다. 랜딩 메인 CTA가 아니라
+            배포 검증 근거를 분리해서 공개하는 보조 검증 화면이며, 모달형 소개
+            콘텐츠와는 독립적으로 유지됩니다.
           </p>
           <p className="mt-3 max-w-3xl text-sm leading-relaxed text-white/65">
             저장소의 더 최신 QA 기록은 다음 재배포 전까지 자동 반영되지
@@ -217,7 +274,7 @@ export default function ValidationEvidencePage() {
               href={`#${QA_EVIDENCE_ANCHORS.latestProofRun}`}
               className="rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm text-white/80 transition hover:border-white/30 hover:bg-white/10 hover:text-white"
             >
-              최신 proof run 보기
+              snapshot / CI proof 보기
             </Link>
           </div>
         </section>
@@ -284,74 +341,64 @@ export default function ValidationEvidencePage() {
           className="mt-8 rounded-3xl border border-white/10 bg-black/20 p-6 sm:p-8"
         >
           <h2 className="text-2xl font-semibold text-white">
-            Latest Proof Run
+            Snapshot / Proof Run
           </h2>
           <p className="mt-2 text-sm text-white/70">
-            가장 최근의 CI-backed feedback trace proof는 manual workflow run과
-            연결되어 있습니다. 이 값도 현재 배포에 포함된 public snapshot
-            artifact 기준으로 렌더링됩니다.
+            이 섹션은 현재 배포에 포함된 latest public snapshot run과 별도로
+            유지되는 latest CI-backed proof run을 나눠서 보여줍니다. 숫자 요약은
+            snapshot 기준이고, 아래 proof run은 CI artifact 근거를 직접
+            가리킵니다.
           </p>
 
-          <div className="mt-5 rounded-2xl border border-white/10 bg-white/5 p-5">
-            <p className="text-xs uppercase tracking-wide text-white/50">
-              Run ID
-            </p>
-            <p className="mt-2 text-2xl font-semibold text-white">
-              {evidence.latestProofRun.runId}
-            </p>
-            <p className="mt-3 text-sm text-white/75">
-              {evidence.latestProofRun.title}
-            </p>
+          <div className="mt-5 grid gap-5 xl:grid-cols-2">
+            <RunReferenceCard
+              eyebrow="Latest public snapshot run"
+              title="현재 배포에 포함된 snapshot 기준"
+              run={evidence.latestPublicRun}
+              recordedAt={evidence.publicEvidenceUpdated}
+              accentClassName="text-emerald-300"
+            />
 
-            <dl className="mt-5 grid gap-4 text-sm text-white/75 sm:grid-cols-2">
-              <div>
-                <dt className="text-white/45">Scope</dt>
-                <dd className="mt-1">{evidence.latestProofRun.scope}</dd>
-              </div>
-              <div>
-                <dt className="text-white/45">Recorded at</dt>
-                <dd className="mt-1">{evidence.latestProofRecorded.long}</dd>
-              </div>
-              <div>
-                <dt className="text-white/45">Commit</dt>
-                <dd className="mt-1 font-mono">
-                  {evidence.latestProofRun.commitSha}
-                </dd>
-              </div>
-            </dl>
+            <RunReferenceCard
+              eyebrow="Latest CI-backed proof run"
+              title="CI artifact 근거로 유지하는 proof 기준"
+              run={evidence.latestProofRun}
+              recordedAt={evidence.latestProofRecorded}
+              accentClassName="text-sky-300"
+              action={
+                <>
+                  {evidence.latestProofRun.ciRunLink?.url && (
+                    <div className="mt-5 flex flex-wrap gap-3">
+                      <a
+                        href={evidence.latestProofRun.ciRunLink.url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="rounded-full border border-sky-400/25 bg-sky-500/10 px-4 py-2 text-sm text-sky-200 transition hover:border-sky-300/40 hover:bg-sky-500/15"
+                      >
+                        {evidence.latestProofRun.ciRunLink.label ??
+                          'GitHub Actions evidence run'}
+                      </a>
+                    </div>
+                  )}
 
-            {evidence.latestProofRun.ciRunLink?.url && (
-              <div className="mt-5 flex flex-wrap gap-3">
-                <a
-                  href={evidence.latestProofRun.ciRunLink.url}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="rounded-full border border-sky-400/25 bg-sky-500/10 px-4 py-2 text-sm text-sky-200 transition hover:border-sky-300/40 hover:bg-sky-500/15"
-                >
-                  {evidence.latestProofRun.ciRunLink.label ??
-                    'GitHub Actions evidence run'}
-                </a>
-              </div>
-            )}
-
-            <ul className="mt-5 space-y-2 text-sm text-white/70">
-              {evidence.latestProofRun.ciArtifactLinks.map((artifact) => (
-                <li
-                  key={artifact.note ?? artifact.label ?? 'artifact'}
-                  className="rounded-xl bg-white/5 px-3 py-2"
-                >
-                  artifact:{' '}
-                  <code>
-                    {artifact.label ?? artifact.note ?? 'download from run'}
-                  </code>
-                </li>
-              ))}
-            </ul>
-
-            <p className="mt-5 text-sm text-white/65">
-              Source of truth in repository:{' '}
-              <code>{evidence.latestProofRun.repoPath}</code>
-            </p>
+                  <ul className="mt-5 space-y-2 text-sm text-white/70">
+                    {evidence.latestProofRun.ciArtifactLinks.map((artifact) => (
+                      <li
+                        key={artifact.note ?? artifact.label ?? 'artifact'}
+                        className="rounded-xl bg-white/5 px-3 py-2"
+                      >
+                        artifact:{' '}
+                        <code>
+                          {artifact.label ??
+                            artifact.note ??
+                            'download from run'}
+                        </code>
+                      </li>
+                    ))}
+                  </ul>
+                </>
+              }
+            />
           </div>
         </section>
       </main>

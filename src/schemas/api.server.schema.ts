@@ -182,25 +182,12 @@ export const PaginatedServerSchema = z.object({
     .optional(),
 });
 
-// ===== 타입 내보내기 =====
+// ===== 타입 내보내기 (사용 중인 것만 유지) =====
 
-export type NetworkMetrics = z.infer<typeof NetworkMetricsSchema>;
-export type ServerMetrics = z.infer<typeof ServerMetricsSchema>;
-export type ServerStatus = z.infer<typeof ServerStatusSchema>;
-export type ServerService = z.infer<typeof ServerServiceSchema>;
-export type ServerSpecs = z.infer<typeof ServerSpecsSchema>;
-export type ServerHistory = z.infer<typeof ServerHistorySchema>;
-export type ServerHistoryDataPoint = z.infer<
-  typeof ServerHistoryDataPointSchema
->;
 export type PaginatedServer = z.infer<typeof PaginatedServerSchema>;
-
-// 페이지네이션 관련 타입 (스키마 이름 불일치 해결)
-export type ServerPaginationQuery = z.infer<typeof ServerPaginationQuerySchema>;
 export type ServerPaginatedResponse = z.infer<
   typeof ServerPaginatedResponseSchema
 >;
-export type ServerBatchRequest = z.infer<typeof ServerBatchRequestSchema>;
 export type ServerBatchResponse = z.infer<typeof ServerBatchResponseSchema>;
 
 // ===== server-schemas 디렉토리의 스키마들 재수출 =====

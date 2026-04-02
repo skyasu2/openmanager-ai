@@ -109,15 +109,6 @@ export interface MonitoringEnvConfig {
   isConfigured: boolean;
 }
 
-// 📊 전체 환경변수 구성 타입
-export interface EnvironmentConfig {
-  supabase: SupabaseEnvConfig;
-  cloudRunAI: CloudRunAIEnvConfig;
-  deployment: DeploymentEnvConfig;
-  security: SecurityEnvConfig;
-  monitoring: MonitoringEnvConfig;
-}
-
 // 🎯 환경변수 검증 결과 타입
 export interface EnvironmentValidationResult {
   valid: boolean;
@@ -125,16 +116,6 @@ export interface EnvironmentValidationResult {
   errors?: string[];
   warnings?: string[];
   reason?: string;
-}
-
-// 🔧 Mock 환경변수 설정 타입
-export interface MockEnvironmentConfig {
-  ENABLE_MOCK_DATA?: boolean;
-  DISABLE_EXTERNAL_CALLS?: boolean;
-  DISABLE_HEALTH_CHECK?: boolean;
-  HEALTH_CHECK_CONTEXT?: boolean;
-  CLOUD_RUN_AI_ENABLED?: boolean;
-  MCP_SERVER_ENABLED?: boolean;
 }
 
 // 🌟 환경변수 유틸리티 타입들
@@ -145,16 +126,6 @@ export type ConfigurationStatus =
   | 'partial'
   | 'missing'
   | 'invalid';
-
-// 🎨 환경변수 접근 패턴 타입
-export interface SafeEnvironmentAccess {
-  get<T = string>(key: keyof NodeJS.ProcessEnv, defaultValue?: T): T;
-  getRequired<T = string>(key: keyof NodeJS.ProcessEnv): T;
-  getBoolean(key: keyof NodeJS.ProcessEnv, defaultValue?: boolean): boolean;
-  getNumber(key: keyof NodeJS.ProcessEnv, defaultValue?: number): number;
-  getArray(key: keyof NodeJS.ProcessEnv, separator?: string): string[];
-  validate(keys: (keyof NodeJS.ProcessEnv)[]): EnvironmentValidationResult;
-}
 
 // 🛡️ 타입 가드 함수들
 function _isValidEnvironmentName(env: string): env is EnvironmentName {

@@ -1,6 +1,6 @@
 'use client';
 
-import { Bot, X, Zap } from 'lucide-react';
+import { Bot, Zap } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import React, { useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
@@ -14,8 +14,10 @@ import {
   getSafeCardData,
   sanitizeModalText,
 } from './FeatureCardModal.utils';
+import { FeatureCardModalHeader } from './FeatureCardModalHeader';
 import type { ReactFlowDiagramProps } from './ReactFlowDiagram';
 import { TechStackSection } from './TechStackSection';
+import { VibeCiCdSection } from './VibeCiCdSection';
 import { VibeHistorySection } from './VibeHistorySection';
 
 // React Flow는 클라이언트 사이드에서만 렌더링 (SSR 비활성화)
@@ -40,8 +42,10 @@ export default function FeatureCardModal({
   isVisible,
 }: FeatureCardModalProps) {
   // 모달은 항상 다크 테마로 고정
-  // 바이브 코딩 카드 전용 히스토리 뷰 상태
-  const [isHistoryView, setIsHistoryView] = React.useState(false);
+  // 바이브 코딩 카드 전용 모드 상태
+  const [vibeView, setVibeView] = React.useState<
+    'current' | 'history' | 'cicd'
+  >('current');
   // 아키텍처 다이어그램 뷰 상태 (모든 카드에 적용)
   const [showDiagram, setShowDiagram] = React.useState(false);
   const selectedCardId = selectedCard?.id ?? null;
@@ -50,7 +54,7 @@ export default function FeatureCardModal({
   useEffect(() => {
     if (isVisible) {
       setShowDiagram(false);
-      setIsHistoryView(false);
+      setVibeView('current');
     }
   }, [isVisible]);
 
@@ -58,7 +62,7 @@ export default function FeatureCardModal({
   useEffect(() => {
     if (!isVisible || !selectedCardId) return;
     setShowDiagram(false);
-    setIsHistoryView(false);
+    setVibeView('current');
   }, [isVisible, selectedCardId]);
 
   // AI 상태 확인 (AI 제한 처리용)
@@ -94,7 +98,7 @@ export default function FeatureCardModal({
     getFocusableElements()[0]?.focus();
 
     // 🔧 단일 이벤트 리스너로 ESC + Tab 모두 처리 (성능 최적화)
-    // Tab 핸들러는 매 keydown마다 DOM을 재조회하여 showDiagram/isHistoryView 전환 후에도 stale 방지
+    // Tab 핸들러는 매 keydown마다 DOM을 재조회하여 showDiagram/vibeView 전환 후에도 stale 방지
     const handleKeyDown = (e: KeyboardEvent) => {
       // ESC: 모달 닫기
       if (e.key === 'Escape') {
@@ -152,8 +156,8 @@ export default function FeatureCardModal({
 
   // 🎯 Qwen 제안: 메모리 효율성 개선 - 단일 순회로 모든 중요도별 분류 처리
   const categorizedTechData = React.useMemo(() => {
-    return buildCategorizedTechData(cardData.id, isHistoryView);
-  }, [cardData.id, isHistoryView]);
+    return buildCategorizedTechData(cardData.id, vibeView === 'history');
+  }, [cardData.id, vibeView]);
 
   // 기술 스택 배열 추출 (항상 배열)
   const {
@@ -221,33 +225,59 @@ export default function FeatureCardModal({
         />
       ) : (
         <>
-          {/* 헤더 섹션 */}
-          <div className="mb-8 text-center">
-            <div
-              className={`mx-auto mb-4 h-16 w-16 rounded-2xl bg-linear-to-br ${gradient} flex items-center justify-center`}
-            >
-              <Icon className="h-8 w-8 text-white" />
-            </div>
-            <h3 className="mb-3 text-2xl font-bold">
-              {renderTextWithAIGradient(title)}
-              {/* 바이브 코딩 카드 전용 뷰 표시 */}
-              {cardData.id === 'vibe-coding' && (
-                <span className="ml-2 text-lg font-medium text-amber-400">
-                  {isHistoryView ? '• 개발 환경 변화' : '• 현재 도구'}
+          {/* 헤더 섹션 — CI/CD 탭은 compact (아이콘·설명 축소) */}
+          {vibeView === 'cicd' ? (
+            <div className="mb-4 flex items-center justify-center gap-3">
+              <div
+                className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-linear-to-br ${gradient}`}
+              >
+                <Icon className="h-4 w-4 text-white" />
+              </div>
+              <h3 className="text-lg font-bold">
+                {renderTextWithAIGradient(title)}
+                <span className="ml-2 text-base font-medium text-amber-400">
+                  • CI/CD
                 </span>
-              )}
-            </h3>
-            <p
-              id="modal-description"
-              className="mx-auto max-w-2xl text-sm text-gray-300"
-            >
-              {cardData.id === 'vibe-coding' && isHistoryView
-                ? '바이브 코딩 여정: 초기(ChatGPT 개별 페이지) → 중기(Cursor + Vercel + Supabase) → 후기(Claude Code + WSL)로 이어진 개발 환경의 변화를 시간 순서대로 보여줍니다.'
-                : parseMarkdownLinks(
-                    sanitizeModalText(detailedContent.overview)
-                  )}
-            </p>
-          </div>
+              </h3>
+              <p id="modal-description" className="sr-only">
+                로컬 검증 뒤에 GitLab CI가 검사와 배포를 나눠 실행하고,
+                production 배포를 한 번에 하나씩만 진행하는 흐름을 보여줍니다.
+              </p>
+            </div>
+          ) : (
+            <div className="mb-8 text-center">
+              <div
+                className={`mx-auto mb-4 h-16 w-16 rounded-2xl bg-linear-to-br ${gradient} flex items-center justify-center`}
+              >
+                <Icon className="h-8 w-8 text-white" />
+              </div>
+              <h3 className="mb-3 text-2xl font-bold">
+                {renderTextWithAIGradient(title)}
+                {/* 바이브 코딩 카드 전용 뷰 표시 */}
+                {cardData.id === 'vibe-coding' && (
+                  <span className="ml-2 text-lg font-medium text-amber-400">
+                    {vibeView === 'history'
+                      ? '• 개발 환경 변화'
+                      : '• 현재 도구'}
+                  </span>
+                )}
+              </h3>
+              <p
+                id="modal-description"
+                className="mx-auto max-w-2xl text-sm text-gray-300"
+              >
+                {cardData.id === 'vibe-coding'
+                  ? vibeView === 'history'
+                    ? '바이브 코딩 여정: 초기(ChatGPT 개별 페이지) → 중기(Cursor + Vercel + Supabase) → 후기(Claude Code + WSL)로 이어진 개발 환경의 변화를 시간 순서대로 보여줍니다.'
+                    : parseMarkdownLinks(
+                        sanitizeModalText(detailedContent.overview)
+                      )
+                  : parseMarkdownLinks(
+                      sanitizeModalText(detailedContent.overview)
+                    )}
+              </p>
+            </div>
+          )}
 
           {/* AI Sub-Sections (Grid Layout) */}
           {cardData.subSections && (
@@ -319,9 +349,11 @@ export default function FeatureCardModal({
 
           {/* 바이브 코딩 히스토리 섹션 또는 중요도별 기술 스택 섹션 */}
           {cardData.id === 'vibe-coding' &&
-          isHistoryView &&
+          vibeView === 'history' &&
           vibeHistoryStages ? (
             <VibeHistorySection historyStages={vibeHistoryStages} />
+          ) : cardData.id === 'vibe-coding' && vibeView === 'cicd' ? (
+            <VibeCiCdSection diagram={diagramData} />
           ) : (
             <TechStackSection
               criticalTech={criticalTech}
@@ -368,7 +400,7 @@ export default function FeatureCardModal({
         className={`relative z-10 w-full transform overflow-hidden rounded-2xl border border-gray-600/50 bg-linear-to-br from-gray-900 via-gray-900 to-gray-800 shadow-2xl transition-all duration-300 motion-reduce:transition-none ${
           showDiagram
             ? 'max-h-[92dvh] max-w-[72vw] sm:max-w-[68vw] lg:max-w-4xl xl:max-w-5xl'
-            : 'max-h-[80dvh] max-w-[76vw] sm:max-w-lg md:max-w-xl lg:max-w-3xl'
+            : 'max-h-[80dvh] max-w-[92vw] sm:max-w-lg md:max-w-xl lg:max-w-3xl'
         } ${!cardData.id ? 'hidden' : ''}`}
         data-modal-content="portal-unified-v4-ai-cross-verified"
         style={{
@@ -386,77 +418,18 @@ export default function FeatureCardModal({
           className={`absolute left-0 right-0 top-0 h-48 bg-linear-to-b ${gradient} opacity-20 blur-3xl`}
         ></div>
         <div className="relative z-10 flex h-full flex-col">
-          <header
-            className={`flex shrink-0 items-center justify-between border-b border-gray-700/50 ${
-              showDiagram ? 'px-4 py-2.5' : 'p-4'
-            }`}
-          >
-            <div
-              className={`flex items-center ${showDiagram ? 'gap-2.5' : 'gap-3'}`}
-            >
-              <div
-                className={`flex items-center justify-center rounded-lg bg-gray-800 ${
-                  showDiagram ? 'h-7 w-7' : 'h-8 w-8'
-                }`}
-              >
-                <Icon
-                  className={showDiagram ? 'h-4 w-4' : 'h-5 w-5'}
-                  style={{
-                    color: variant === 'home' ? 'white' : 'currentColor',
-                  }}
-                />
-              </div>
-              <h2
-                id="modal-title"
-                className={`font-semibold text-white ${
-                  showDiagram ? 'text-base' : 'text-lg'
-                }`}
-              >
-                {title}
-              </h2>
-            </div>
-
-            <div className="flex items-center gap-2">
-              {/* 아키텍처 다이어그램 토글 버튼 (모든 카드) */}
-              {diagramData && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setShowDiagram(!showDiagram);
-                    // 다이어그램 뷰로 전환 시 히스토리 뷰 해제
-                    if (!showDiagram) setIsHistoryView(false);
-                  }}
-                  className="rounded-lg bg-linear-to-r from-indigo-600 to-purple-600 px-3 py-1.5 text-sm font-medium text-white transition-all duration-200 hover:scale-105 hover:from-indigo-500 hover:to-purple-500 focus:outline-hidden focus:ring-2 focus:ring-indigo-500/50"
-                  aria-label={showDiagram ? '상세 내용 보기' : '아키텍처 보기'}
-                >
-                  {showDiagram ? '📄 상세 내용' : '📊 아키텍처'}
-                </button>
-              )}
-
-              {/* 바이브 코딩 카드 전용 히스토리 전환 버튼 */}
-              {cardData.id === 'vibe-coding' && !showDiagram && (
-                <button
-                  type="button"
-                  onClick={() => setIsHistoryView(!isHistoryView)}
-                  className="rounded-lg bg-linear-to-r from-amber-600 to-orange-600 px-3 py-1.5 text-sm font-medium text-white transition-all duration-200 hover:scale-105 hover:from-amber-500 hover:to-orange-500 focus:outline-hidden focus:ring-2 focus:ring-amber-500/50"
-                  aria-label={
-                    isHistoryView ? '현재 도구 보기' : '개발 환경 변화 보기'
-                  }
-                >
-                  {isHistoryView ? '🔄 현재 도구' : '📚 개발 환경 변화'}
-                </button>
-              )}
-
-              <button
-                type="button"
-                onClick={onClose}
-                className="rounded-full p-2 text-gray-400 transition-colors hover:bg-gray-700 hover:text-white"
-                aria-label="Close modal"
-              >
-                <X size={20} />
-              </button>
-            </div>
-          </header>
+          <FeatureCardModalHeader
+            title={title}
+            Icon={Icon}
+            showDiagram={showDiagram}
+            diagramData={diagramData}
+            cardId={cardData.id ?? undefined}
+            vibeView={vibeView}
+            variant={variant ?? 'home'}
+            onToggleDiagram={() => setShowDiagram(!showDiagram)}
+            onSetVibeView={setVibeView}
+            onClose={onClose}
+          />
           <div
             className="overflow-y-auto scroll-smooth"
             style={{

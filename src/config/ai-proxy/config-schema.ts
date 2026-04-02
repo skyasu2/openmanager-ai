@@ -95,11 +95,9 @@ export const AIProxyConfigSchema = z.object({
 });
 
 export type VercelTier = z.infer<typeof VercelTierSchema>;
-export type TimeoutConfig = z.infer<typeof TimeoutConfigSchema>;
 export type AIProxyConfig = z.infer<typeof AIProxyConfigSchema>;
 export type ProxyEndpoint = keyof AIProxyConfig['timeouts'];
 export type CacheEndpoint = keyof AIProxyConfig['cacheTTL'];
-export type QueryRoutingConfig = z.infer<typeof QueryRoutingConfigSchema>;
 export type StreamRetryConfig = z.infer<typeof StreamRetryConfigSchema>;
 export type RAGWeightsConfig = z.infer<typeof RAGWeightsConfigSchema>;
 export type ObservabilityConfig = z.infer<typeof ObservabilityConfigSchema>;
