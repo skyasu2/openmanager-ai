@@ -882,6 +882,21 @@ function run() {
   const usageChecks = usageChecksRaw.map((item, index) =>
     normalizeUsageCheck(item, index)
   );
+  // Warn when targeted scope is combined with releaseFacing=true.
+  // Such a run will pass validation gates but will NOT be promoted to the
+  // public snapshot baseline (build-validation-evidence.js enforces this).
+  if (
+    scope === 'targeted' &&
+    releaseFacing === true &&
+    payload.releaseFacing === true
+  ) {
+    console.warn(
+      '⚠️  [QA record] scope=targeted + releaseFacing=true: 이 런은 production validation gate를 통과하지만,\n' +
+        '   public snapshot 대표(validation-evidence.json latestRun)로는 승격되지 않습니다.\n' +
+        '   전체 표면 증거가 필요하면 scope=broad 런을 별도로 실행하세요.'
+    );
+  }
+
   const requiresUsageEvidence = requiresVercelUsageCheck(
     environment,
     scope,

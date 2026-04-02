@@ -65,16 +65,34 @@ function isPublicEvidenceCandidate(run) {
   return target === 'vercel-production' || hasGitHubActionsLink(run);
 }
 
+// Scopes that qualify a run to represent the public snapshot baseline.
+// 'targeted' and 'smoke' runs never replace a broad baseline even when
+// releaseFacing=true, because they cover only a subset of surfaces.
+const PUBLIC_SNAPSHOT_SCOPES = new Set(['broad', 'release-gate']);
+
+// Scopes that explicitly disqualify a run from the public snapshot baseline.
+const DISQUALIFIED_SCOPES = new Set(['targeted', 'smoke']);
+
 function isReleaseFacingPublicSnapshot(run) {
   if (!isPublicEvidenceCandidate(run)) {
     return false;
   }
 
-  if (run?.releaseFacing === true) {
+  const scope = run?.scope;
+
+  // targeted/smoke runs are never the public snapshot representative,
+  // regardless of releaseFacing flag.
+  if (DISQUALIFIED_SCOPES.has(scope)) {
+    return false;
+  }
+
+  // broad/release-gate always qualify.
+  if (PUBLIC_SNAPSHOT_SCOPES.has(scope)) {
     return true;
   }
 
-  return run?.scope === 'broad' || run?.scope === 'release-gate';
+  // Runs with no explicit scope (legacy) qualify only when releaseFacing=true.
+  return run?.releaseFacing === true;
 }
 
 function findLatestPublicEvidenceRun(runs) {

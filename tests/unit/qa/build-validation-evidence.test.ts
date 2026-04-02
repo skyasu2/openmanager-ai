@@ -119,13 +119,34 @@ describe('build-validation-evidence', () => {
       })
     ).toBe(true);
 
+    // targeted + releaseFacing=true must NOT be promoted to public snapshot baseline.
+    // targeted runs cover only a subset of surfaces and cannot represent a full
+    // release evidence baseline, regardless of the releaseFacing flag.
     expect(
       isReleaseFacingPublicSnapshot({
         environment: { target: 'vercel-production' },
         scope: 'targeted',
         releaseFacing: true,
       })
+    ).toBe(false);
+
+    // release-gate scope always qualifies as public snapshot baseline.
+    expect(
+      isReleaseFacingPublicSnapshot({
+        environment: { target: 'vercel-production' },
+        scope: 'release-gate',
+        releaseFacing: true,
+      })
     ).toBe(true);
+
+    // smoke scope never qualifies as public snapshot baseline.
+    expect(
+      isReleaseFacingPublicSnapshot({
+        environment: { target: 'vercel-production' },
+        scope: 'smoke',
+        releaseFacing: true,
+      })
+    ).toBe(false);
   });
 
   it('keeps latest public evidence run separate from latest github proof run', () => {
