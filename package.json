@@ -196,7 +196,8 @@
     "storybook:smoke": "bash scripts/storybook/smoke.sh",
     "local:smoke": "bash scripts/dev/local-api-smoke.sh",
     "local:smoke:rebuild": "bash scripts/dev/local-api-smoke.sh --rebuild",
-    "test:security:smoke": "node scripts/test/security-smoke.mjs"
+    "test:security:smoke": "node scripts/test/security-smoke.mjs",
+    "test:vercel:post-deploy:smoke": "node scripts/test/vercel-post-deploy-smoke.mjs"
   },
   "dependencies": {
     "@ai-sdk/mistral": "^3.0.27",
