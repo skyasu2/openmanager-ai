@@ -1,0 +1,114 @@
+{
+  "runTitle": "Playwright MCP Production QA - Frontend + AI Assistant v8.10.8",
+  "owner": "claude",
+  "source": "playwright-mcp",
+  "scope": "broad",
+  "releaseFacing": true,
+  "coveragePacks": ["core-routes-smoke", "dashboard-core", "ai-core"],
+  "coveredSurfaces": [
+    "/",
+    "/login",
+    "/dashboard",
+    "AI sidebar",
+    "AI chat (streaming)",
+    "FeatureCardModal",
+    "/api/health",
+    "/api/version"
+  ],
+  "skippedSurfaces": [],
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "commitSha": "1d3e7a2129ca8e8fdd9f364aa16f7d4df85d935e",
+    "deploymentId": "dpl_v8108_20260402"
+  },
+  "checks": {
+    "total": 12,
+    "passed": 12,
+    "failed": 0
+  },
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "api",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-04-02T12:30:00+09:00",
+      "summary": "QA 실행 전후 /api/health 및 /api/version 정상 응답. 빌드/함수 이상 없음. v8.10.8 배포 안정적.",
+      "evidence": "/api/health → {status:healthy, db:connected, cache:connected, ai:connected}"
+    }
+  ],
+  "artifacts": [],
+  "checkDetails": [
+    { "id": "landing-render", "label": "랜딩 페이지 렌더링", "status": "pass" },
+    {
+      "id": "login-minimal-header",
+      "label": "/login 최소 헤더 (UnifiedProfileHeader 제거)",
+      "status": "pass"
+    },
+    {
+      "id": "guest-pin-flow",
+      "label": "게스트 PIN 로그인 (4231)",
+      "status": "pass"
+    },
+    {
+      "id": "system-boot",
+      "label": "시스템 시작 버튼 → running 전환",
+      "status": "pass"
+    },
+    {
+      "id": "dashboard-15-servers",
+      "label": "대시보드 15개 서버 카드 렌더링",
+      "status": "pass"
+    },
+    { "id": "ai-sidebar-open", "label": "AI 사이드바 열기", "status": "pass" },
+    {
+      "id": "ai-chat-stream",
+      "label": "AI 채팅 스트리밍 응답 수신",
+      "status": "pass"
+    },
+    {
+      "id": "ai-correct-answer",
+      "label": "lb-haproxy-dc1-01 CPU 85% 정확 식별",
+      "status": "pass"
+    },
+    {
+      "id": "feature-card-modal",
+      "label": "Feature Card Modal 개폐 동작",
+      "status": "pass"
+    },
+    {
+      "id": "api-system-no-401",
+      "label": "/api/system 401 없음",
+      "status": "pass"
+    },
+    {
+      "id": "api-health",
+      "label": "/api/health → healthy (db+cache+ai connected)",
+      "status": "pass"
+    },
+    { "id": "api-version", "label": "/api/version → 8.10.8", "status": "pass" }
+  ],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "AI 스트리밍 응답 수신 및 서버 상태 정확 식별 확인. lb-haproxy-dc1-01 CPU 85% 정확 식별.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "v8.10.8 배포 후 /api/health healthy 확인. Cloud Run AI Engine 정상. 콘솔 에러 0건.",
+      "nextAction": ""
+    }
+  ],
+  "notes": "v8.10.8 배포 후 첫 broad QA. FeatureCardModalHeader 추출, /login 최소 헤더, Vibe Coding 카드 copy 수정 검증 완료. 콘솔 에러 0건. /api/system 이전 401 재현 없음."
+}

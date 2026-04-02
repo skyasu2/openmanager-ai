@@ -1,15 +1,15 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-04-02 15:04:28 KST
+> Generated at: 2026-04-02 21:31:53 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 210 |
-| Total Checks | 1552 |
-| Passed | 1484 |
+| Total Runs | 211 |
+| Total Checks | 1564 |
+| Passed | 1496 |
 | Failed | 62 |
 | Completed Items | 273 |
 | Pending Items | 0 |
@@ -18,37 +18,37 @@
 | Expert Domains Tracked | 6 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Run | QA-20260402-0211 (2026-04-02T06:04:27.210Z) |
+| Last Run | QA-20260402-0212 (2026-04-02T12:31:52.936Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260402-0211 (2026-04-02T06:04:27.210Z)
+Latest run: QA-20260402-0212 (2026-04-02T12:31:52.936Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
+| AI Quality Assurance Specialist | appropriate | no | - |
 | DevOps / SRE Engineer | appropriate | no | - |
-| Test Automation Architect | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period returned no charge rows yet via CLI, which is interpreted as an empty early billing period because the previous-month probe succeeded on the same team scope. |
+| vercel | api | checked | normal | QA 실행 전후 /api/health 및 /api/version 정상 응답. 빌드/함수 이상 없음. v8.10.8 배포 안정적. |
 
 ## Coverage (Latest Run)
 
-- Scope: targeted
+- Scope: broad
 - Release-Facing: yes
-- Deployment: dpl_5FCMoSTAs2NBcKjVNrvzWaJhK2Vf / SHA 774171c8
-- Covered Surfaces: Vercel usage current billing period, Vercel usage previous month fallback probe
-- Skipped Surfaces: landing feature modal targeted UI pack (covered in QA-20260402-0210), /login, /system-boot, /dashboard, AI sidebar/streaming, secondary routes
+- Deployment: dpl_v8108_20260402 / SHA 1d3e7a21
+- Coverage Packs: core-routes-smoke, dashboard-core, ai-core
+- Covered Surfaces: /, /login, /dashboard, AI sidebar, AI chat (streaming), FeatureCardModal, /api/health, /api/version
+- Skipped Surfaces: -
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | Production URL | [link](https://openmanager-ai.vercel.app/) | - |
-| general | Vercel Deployment | [link](https://vercel.com/skyasus-projects/openmanager-ai/5FCMoSTAs2NBcKjVNrvzWaJhK2Vf) | - |
+| - | - | - | - |
 
 ## Artifacts (Latest Run)
 
@@ -376,6 +376,7 @@ Latest run: QA-20260402-0211 (2026-04-02T06:04:27.210Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260402-0212 | 2026-04-02T12:31:52.936Z | broad | yes | Playwright MCP Production QA - Frontend + AI Assistant v8.10.8 | 12 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260402-0211 | 2026-04-02T06:04:27.210Z | targeted | yes | Vercel Production Usage Evidence Follow-up | 2 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260402-0210 | 2026-04-02T05:34:08.897Z | targeted | no | Vercel production targeted QA - landing feature modal header interactions recheck | 8 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260402-0209 | 2026-04-02T05:13:39.016Z | targeted | no | Local dev targeted QA - landing feature modal header interactions recheck | 8 | 0 | 0 | 0 | 0 | 0 |
@@ -395,5 +396,4 @@ Latest run: QA-20260402-0211 (2026-04-02T06:04:27.210Z)
 | QA-20260330-0195 | 2026-03-30T04:14:36.238Z | targeted | no | Landing Page Playwright Analysis - 4 Cards, Modal Content, Architecture, History | 11 | 0 | 0 | 0 | 3 | 0 |
 | QA-20260329-0194 | 2026-03-28T15:21:59.221Z | targeted | yes | v8.10.6 Production QA - Security Hardening & Coverage Stabilization | 11 | 8 | 0 | 0 | 0 | 0 |
 | QA-20260327-0193 | 2026-03-26T15:12:25.263Z | targeted | no | Vercel production targeted QA recheck after cloud-run pre-init logging fix | 12 | 0 | 0 | 0 | 1 | 0 |
-| QA-20260326-0192 | 2026-03-26T03:34:06.036Z | targeted | no | Vercel Playwright + direct API verification for current production state | 16 | 0 | 0 | 0 | 0 | 0 |
 

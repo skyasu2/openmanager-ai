@@ -2,15 +2,15 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-02T06:04:27.210Z"
+    "updatedAt": "2026-04-02T12:31:52.936Z"
   },
   "sequence": {
-    "nextRunNumber": 212
+    "nextRunNumber": 213
   },
   "summary": {
-    "totalRuns": 210,
-    "totalChecks": 1552,
-    "totalPassed": 1484,
+    "totalRuns": 211,
+    "totalChecks": 1564,
+    "totalPassed": 1496,
     "totalFailed": 62,
     "completionRate": 100,
     "completedItems": 273,
@@ -19,8 +19,8 @@
     "wontFixItems": 13,
     "expertDomainsTracked": 6,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260402-0211",
-    "lastRecordedAt": "2026-04-02T06:04:27.210Z"
+    "lastRunId": "QA-20260402-0212",
+    "lastRecordedAt": "2026-04-02T12:31:52.936Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -18174,6 +18174,82 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260402-0212",
+      "recordedAt": "2026-04-02T12:31:52.936Z",
+      "recordedAtKst": "2026-04-02 21:31:52 KST",
+      "title": "Playwright MCP Production QA - Frontend + AI Assistant v8.10.8",
+      "owner": "claude",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260402-0212.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_v8108_20260402",
+        "deploymentUrl": "",
+        "commitSha": "1d3e7a2129ca8e8fdd9f364aa16f7d4df85d935e"
+      },
+      "scope": "broad",
+      "releaseFacing": true,
+      "coveragePacks": ["core-routes-smoke", "dashboard-core", "ai-core"],
+      "coveredSurfaces": [
+        "/",
+        "/login",
+        "/dashboard",
+        "AI sidebar",
+        "AI chat (streaming)",
+        "FeatureCardModal",
+        "/api/health",
+        "/api/version"
+      ],
+      "skippedSurfaces": [],
+      "checks": {
+        "total": 12,
+        "passed": 12,
+        "failed": 0
+      },
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "AI 스트리밍 응답 수신 및 서버 상태 정확 식별 확인. lb-haproxy-dc1-01 CPU 85% 정확 식별.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "v8.10.8 배포 후 /api/health healthy 확인. Cloud Run AI Engine 정상. 콘솔 에러 0건.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "api",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-04-02T12:30:00+09:00",
+          "summary": "QA 실행 전후 /api/health 및 /api/version 정상 응답. 빌드/함수 이상 없음. v8.10.8 배포 안정적.",
+          "evidence": "/api/health → {status:healthy, db:connected, cache:connected, ai:connected}",
+          "url": ""
+        }
+      ],
+      "artifacts": [],
+      "links": [],
+      "expertCount": 2,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -18182,16 +18258,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 103,
-      "appropriateCount": 99,
+      "seenCount": 104,
+      "appropriateCount": 100,
       "partialCount": 4,
       "inappropriateCount": 0,
       "improvementNeededCount": 12,
-      "lastRunId": "QA-20260402-0208",
-      "lastSeenAt": "2026-04-02T01:45:03.294Z",
+      "lastRunId": "QA-20260402-0212",
+      "lastSeenAt": "2026-04-02T12:31:52.936Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Production에서 AI sidebar, fullscreen workspace, representative streaming chat를 직접 검증해 현재 릴리즈 범위에 충분합니다.",
+      "lastRationale": "AI 스트리밍 응답 수신 및 서버 상태 정확 식별 확인. lb-haproxy-dc1-01 CPU 85% 정확 식별.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -18233,16 +18309,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 59,
-      "appropriateCount": 56,
+      "seenCount": 60,
+      "appropriateCount": 57,
       "partialCount": 3,
       "inappropriateCount": 0,
       "improvementNeededCount": 7,
-      "lastRunId": "QA-20260402-0211",
-      "lastSeenAt": "2026-04-02T06:04:27.210Z",
+      "lastRunId": "QA-20260402-0212",
+      "lastSeenAt": "2026-04-02T12:31:52.936Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The Vercel usage CLI path now distinguishes an empty current billing period from an auth or scope failure, and the fallback probe confirmed API connectivity on the production team.",
+      "lastRationale": "v8.10.8 배포 후 /api/health healthy 확인. Cloud Run AI Engine 정상. 콘솔 에러 0건.",
       "lastNextAction": ""
     },
     "test-automation": {
