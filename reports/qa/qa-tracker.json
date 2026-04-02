@@ -2,15 +2,15 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-02T13:56:16.719Z"
+    "updatedAt": "2026-04-02T14:18:45.787Z"
   },
   "sequence": {
-    "nextRunNumber": 215
+    "nextRunNumber": 216
   },
   "summary": {
-    "totalRuns": 213,
-    "totalChecks": 1586,
-    "totalPassed": 1518,
+    "totalRuns": 214,
+    "totalChecks": 1594,
+    "totalPassed": 1526,
     "totalFailed": 62,
     "completionRate": 100,
     "completedItems": 273,
@@ -19,8 +19,8 @@
     "wontFixItems": 13,
     "expertDomainsTracked": 6,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260402-0214",
-    "lastRecordedAt": "2026-04-02T13:56:16.719Z"
+    "lastRunId": "QA-20260402-0215",
+    "lastRecordedAt": "2026-04-02T14:18:45.787Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -18385,6 +18385,64 @@
           "result": "normal",
           "checkedAt": "2026-04-02T22:54:14+09:00",
           "summary": "Current billing period reviewed after targeted production QA; effective 0.6552 USD, billed 0.0000 USD, no unexpected billed spike.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [],
+      "links": [],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260402-0215",
+      "recordedAt": "2026-04-02T14:18:45.787Z",
+      "recordedAtKst": "2026-04-02 23:18:45 KST",
+      "title": "Vercel Production Validation Snapshot Follow-up QA after public snapshot selection fix",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260402-0215.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_4GfirJXGaRNZg3jGUQWLMf4oqBNc",
+        "deploymentUrl": "https://openmanager-kdn2jijws-skyasus-projects.vercel.app",
+        "commitSha": "90d248e8d2250b9807439013ee7c5a67ebc8d023"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "coveragePacks": ["core-routes-smoke"],
+      "coveredSurfaces": ["/validation", "/", "/api/health", "/api/version"],
+      "skippedSurfaces": [
+        "/login",
+        "/system-boot",
+        "/dashboard",
+        "AI sidebar",
+        "AI chat streaming",
+        "modal-detail-pack",
+        "observability-pack"
+      ],
+      "checks": {
+        "total": 8,
+        "passed": 8,
+        "failed": 0
+      },
+      "expertAssessments": [],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-04-02T23:17:30+09:00",
+          "summary": "Current billing period reviewed after targeted production validation follow-up; effective 0.6552 USD, billed 0.0000 USD, no unexpected billed spike.",
           "evidence": "npm run check:usage:vercel",
           "url": "https://vercel.com/dashboard"
         }

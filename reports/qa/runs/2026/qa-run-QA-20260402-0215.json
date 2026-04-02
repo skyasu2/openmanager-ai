@@ -1,0 +1,64 @@
+{
+  "runId": "QA-20260402-0215",
+  "recordedAt": "2026-04-02T14:18:45.787Z",
+  "recordedAtKst": "2026-04-02 23:18:45 KST",
+  "runTitle": "Vercel Production Validation Snapshot Follow-up QA after public snapshot selection fix",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_4GfirJXGaRNZg3jGUQWLMf4oqBNc",
+    "deploymentUrl": "https://openmanager-kdn2jijws-skyasus-projects.vercel.app",
+    "commitSha": "90d248e8d2250b9807439013ee7c5a67ebc8d023"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "coveragePacks": ["core-routes-smoke"],
+  "coveredSurfaces": ["/validation", "/", "/api/health", "/api/version"],
+  "skippedSurfaces": [
+    "/login",
+    "/system-boot",
+    "/dashboard",
+    "AI sidebar",
+    "AI chat streaming",
+    "modal-detail-pack",
+    "observability-pack"
+  ],
+  "checks": {
+    "total": 8,
+    "passed": 8,
+    "failed": 0
+  },
+  "expertAssessments": [],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-04-02T23:17:30+09:00",
+      "summary": "Current billing period reviewed after targeted production validation follow-up; effective 0.6552 USD, billed 0.0000 USD, no unexpected billed spike.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Vercel production deployment dpl_4GfirJXGaRNZg3jGUQWLMf4oqBNc promoted commit 90d248e8d.",
+    "Validation Evidence page still exposes QA-20260402-0213 as latest public snapshot run after targeted follow-up.",
+    "Validation summary on deployed page showed 213 total runs and 1586 total checks at verification time.",
+    "Browser console errors: 0.",
+    "/api/health returned healthy with db/cache/ai connected and version 8.10.8.",
+    "/api/version returned version 8.10.8 and Next.js 16.1.6.",
+    "Landing page rendered v8.10.8 after auth bootstrap."
+  ],
+  "links": []
+}
