@@ -1,28 +1,28 @@
 {
   "version": "1.0.0",
-  "generatedAt": "2026-04-02T06:04:28.239Z",
+  "generatedAt": "2026-04-02T14:32:46.197Z",
   "source": {
     "trackerPath": "reports/qa/qa-tracker.json",
     "statusPath": "reports/qa/QA_STATUS.md",
     "publicPath": "public/data/qa/validation-evidence.json",
     "publicHref": "/data/qa/validation-evidence.json",
-    "latestRunId": "QA-20260402-0211"
+    "latestRunId": "QA-20260402-0213"
   },
   "summary": {
-    "totalRuns": 210,
-    "totalChecks": 1552,
+    "totalRuns": 215,
+    "totalChecks": 1601,
     "completedItems": 273,
     "expertDomainsOpenGaps": 0,
     "wontFixItems": 13,
-    "lastRecordedAt": "2026-04-02T06:04:27.210Z"
+    "lastRecordedAt": "2026-04-02T14:32:42.507Z"
   },
   "trackerUpdated": {
-    "iso": "2026-04-02T06:04:27.210Z",
+    "iso": "2026-04-02T14:32:42.507Z",
     "short": "2026-04-02",
     "long": "April 2, 2026"
   },
   "publicEvidenceUpdated": {
-    "iso": "2026-04-02T06:04:27.210Z",
+    "iso": "2026-04-02T12:41:23.224Z",
     "short": "2026-04-02",
     "long": "April 2, 2026"
   },
@@ -32,12 +32,12 @@
     "long": "March 22, 2026"
   },
   "latestPublicRun": {
-    "runId": "QA-20260402-0211",
-    "title": "Vercel Production Usage Evidence Follow-up",
-    "scope": "targeted",
-    "recordedAt": "2026-04-02T06:04:27.210Z",
-    "commitSha": "774171c8456609e330c3dc8a17c38324b53d0bb0",
-    "repoPath": "reports/qa/runs/2026/qa-run-QA-20260402-0211.json",
+    "runId": "QA-20260402-0213",
+    "title": "Playwright MCP Production QA - Frontend + AI Assistant v8.10.8 (2차)",
+    "scope": "broad",
+    "recordedAt": "2026-04-02T12:41:23.224Z",
+    "commitSha": "84c375ac517bd2aac6c56c4372883ad0f72b5a58",
+    "repoPath": "reports/qa/runs/2026/qa-run-QA-20260402-0213.json",
     "ciRunLink": null,
     "ciArtifactLinks": []
   },
