@@ -1,15 +1,15 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-04-02 23:18:48 KST
+> Generated at: 2026-04-02 23:32:46 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 214 |
-| Total Checks | 1594 |
-| Passed | 1526 |
+| Total Runs | 215 |
+| Total Checks | 1601 |
+| Passed | 1533 |
 | Failed | 62 |
 | Completed Items | 273 |
 | Pending Items | 0 |
@@ -18,11 +18,11 @@
 | Expert Domains Tracked | 6 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Run | QA-20260402-0215 (2026-04-02T14:18:45.787Z) |
+| Last Run | QA-20260402-0216 (2026-04-02T14:32:42.507Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260402-0215 (2026-04-02T14:18:45.787Z)
+Latest run: QA-20260402-0216 (2026-04-02T14:32:42.507Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -32,16 +32,16 @@ Latest run: QA-20260402-0215 (2026-04-02T14:18:45.787Z)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period reviewed after targeted production validation follow-up; effective 0.6552 USD, billed 0.0000 USD, no unexpected billed spike. |
+| vercel | cli | checked | normal | Current billing period reviewed after targeted validation propagation QA; effective 0.6552 USD, billed 0.0000 USD, no unexpected billed spike. |
 
 ## Coverage (Latest Run)
 
 - Scope: targeted
 - Release-Facing: no
-- Deployment: dpl_4GfirJXGaRNZg3jGUQWLMf4oqBNc / SHA 90d248e8
+- Deployment: dpl_GRc3sBXFKh1nAZ3fajwF51sjUZt4 / SHA 86728daf
 - Coverage Packs: core-routes-smoke
-- Covered Surfaces: /validation, /, /api/health, /api/version
-- Skipped Surfaces: /login, /system-boot, /dashboard, AI sidebar, AI chat streaming, modal-detail-pack, observability-pack
+- Covered Surfaces: /validation, /api/health, /api/version
+- Skipped Surfaces: /, /login, /system-boot, /dashboard, AI sidebar, AI chat streaming, modal-detail-pack, observability-pack
 
 ## Links (Latest Run)
 
@@ -375,6 +375,7 @@ Latest run: QA-20260402-0215 (2026-04-02T14:18:45.787Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260402-0216 | 2026-04-02T14:32:42.507Z | targeted | no | Vercel Production Validation Snapshot Propagation QA after tracker sync | 7 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260402-0215 | 2026-04-02T14:18:45.787Z | targeted | no | Vercel Production Validation Snapshot Follow-up QA after public snapshot selection fix | 8 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260402-0214 | 2026-04-02T13:56:16.719Z | targeted | no | Vercel Production Validation Evidence Targeted QA | 8 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260402-0213 | 2026-04-02T12:41:23.224Z | broad | yes | Playwright MCP Production QA - Frontend + AI Assistant v8.10.8 (2차) | 14 | 0 | 0 | 0 | 0 | 0 |
@@ -394,5 +395,4 @@ Latest run: QA-20260402-0215 (2026-04-02T14:18:45.787Z)
 | QA-20260330-0199 | 2026-03-30T10:28:06.580Z | targeted | no | Vercel Production QA - web vitals deploy recheck | 7 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260330-0198 | 2026-03-30T08:38:51.603Z | targeted | no | Vercel Production QA - post-docs smoke recheck | 7 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260330-0197 | 2026-03-30T07:49:23.785Z | targeted | no | Vercel Production QA - Landing improvements verification | 9 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260330-0196 | 2026-03-30T05:43:50.173Z | targeted | no | Local verification - Vibe Coding modal QA/Finish view | 5 | 1 | 0 | 0 | 0 | 0 |
 

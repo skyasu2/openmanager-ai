@@ -1,0 +1,64 @@
+{
+  "runId": "QA-20260402-0216",
+  "recordedAt": "2026-04-02T14:32:42.507Z",
+  "recordedAtKst": "2026-04-02 23:32:42 KST",
+  "runTitle": "Vercel Production Validation Snapshot Propagation QA after tracker sync",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_GRc3sBXFKh1nAZ3fajwF51sjUZt4",
+    "deploymentUrl": "https://openmanager-hlq87i6t3-skyasus-projects.vercel.app",
+    "commitSha": "86728dafb73e5262e884a415e0f3a80526ad763a"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "coveragePacks": ["core-routes-smoke"],
+  "coveredSurfaces": ["/validation", "/api/health", "/api/version"],
+  "skippedSurfaces": [
+    "/",
+    "/login",
+    "/system-boot",
+    "/dashboard",
+    "AI sidebar",
+    "AI chat streaming",
+    "modal-detail-pack",
+    "observability-pack"
+  ],
+  "checks": {
+    "total": 7,
+    "passed": 7,
+    "failed": 0
+  },
+  "expertAssessments": [],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-04-02T23:32:30+09:00",
+      "summary": "Current billing period reviewed after targeted validation propagation QA; effective 0.6552 USD, billed 0.0000 USD, no unexpected billed spike.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Vercel production deployment dpl_GRc3sBXFKh1nAZ3fajwF51sjUZt4 promoted commit 86728dafb.",
+    "Validation Evidence page now shows 214 total runs and 1594 total checks.",
+    "Latest public snapshot run remains QA-20260402-0213 with scope broad.",
+    "Browser console errors: 0.",
+    "/api/health returned healthy with db/cache/ai connected and version 8.10.8.",
+    "/api/version returned version 8.10.8 and Next.js 16.1.6."
+  ],
+  "links": []
+}
