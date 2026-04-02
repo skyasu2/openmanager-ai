@@ -120,16 +120,16 @@ export const FEATURE_CARDS_DATA: FeatureCard[] = [
     id: 'vibe-coding',
     title: '🔥 Vibe Coding',
     description:
-      '아이디어 수준이 아니라 배포, QA, 운영 증거까지 이어지게 만든 에이전트 협업 개발 방식입니다. 이 프로젝트의 실제 제작 과정을 그대로 보여줍니다.',
+      '아이디어에서 실제 배포·CI/CD까지 이어지게 만든 에이전트 협업 개발 방식입니다. 이 프로젝트의 실제 제작 과정을 그대로 보여줍니다.',
     icon: Zap,
     gradient: 'from-amber-600 via-orange-600 to-amber-700',
     detailedContent: {
-      overview: `이 프로덕트가 탄생한 개발 방법론입니다. 단순 AI 챗봇 시연이 아니라, 서비스 아키텍처 전체를 Claude Code(메인 개발)와 페어 프로그래밍하고 실제 배포, QA, 운영 증거까지 연결해 E2E로 구축했습니다. 전체 개발의 99%는 Claude Code가 주도했으며, v8.10.x 마무리·QA 단계부터 Codex 비중이 높아졌습니다.`,
+      overview: `이 프로덕트가 탄생한 개발 방법론입니다. 단순 AI 챗봇 시연이 아니라, 서비스 아키텍처 전체를 Claude Code(메인 개발)와 페어 프로그래밍하고 실제 배포·CI/CD 파이프라인까지 연결해 E2E로 구축했습니다. 전체 개발의 99%는 Claude Code가 주도했으며, v8.10.x 마무리·배포 단계부터 Codex 비중이 높아졌습니다.`,
       features: [
         '1️⃣ Stage 1 (Manual): GPT/Gemini 창에서 수동 코딩 → [Netlify 목업](https://openmanager-vibe-v2.netlify.app/) — 초기 프로토타이핑',
         '2️⃣ Stage 2 (Auto): Cursor의 등장, "IDE 자동 개발"의 시작 — GUI 기반 AI 코딩 도입',
         '3️⃣ Stage 3 (Pivot): IDE는 보조(시각 분석)로, 메인은 WSL + Claude Code로 이동 — 전체 개발의 99% 담당',
-        '4️⃣ Stage 4 (Current): GitLab canonical 전환 + 로컬 Docker CI + Cloud Run AI Engine — 마무리·QA 단계에서 Codex 비중 증가',
+        '4️⃣ Stage 4 (Current): GitLab canonical 전환 + 로컬 Docker CI + Cloud Run AI Engine — 마무리·배포 단계에서 Codex 비중 증가',
         '📺 IDE Role Shift: 개발의 주체에서 "터미널 뷰어" 및 "스크린샷 분석도구"로 축소 — AI가 코드 생성, 사람은 설계와 판단',
         '🐧 WSL Main Base: 모든 지능형 에이전트들이 활동하는 실제 본부 — 리눅스 환경에서 모든 CLI 도구 통합',
         '🤖 Agentic Ecosystem: Claude Code 메인 + Codex/Gemini 수동 교차 사용 — 역할별 교차 검증과 편향 완화',
@@ -139,7 +139,7 @@ export const FEATURE_CARDS_DATA: FeatureCard[] = [
         'Google Antigravity (IDE)',
         'WSL Terminal (Main)',
         'Claude Code (Core)',
-        'Codex CLI (QA/Finishing)',
+        'Codex CLI (구현/리팩토링)',
         'Gemini CLI (Research)',
         'GitLab + Dual Remote',
         'Local Docker CI',
