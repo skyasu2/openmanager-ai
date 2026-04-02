@@ -1,36 +1,38 @@
 # CI/CD 파이프라인 & 의존성 관리
 
-> GitLab canonical + GitLab CI branch/MR validate + main deploy→smoke + Vercel CLI 배포 운영 가이드
+> GitLab canonical + GitLab CI frontend/ai-engine validate + main frontend deploy→smoke + Vercel CLI 배포 운영 가이드
 > Owner: platform-devops
 > Status: Active
 > Doc type: How-to
-> Last reviewed: 2026-03-31
+> Last reviewed: 2026-04-02
 > Canonical: docs/development/ci-cd.md
 > Tags: ci,cd,gitlab,vercel,github-actions,automation
 
 ## 개요
 
-현재 운영 기준은 **GitLab canonical repo + GitLab CI branch/MR validate + main deploy→post-deploy smoke + 로컬 Docker CI 보강 검증** 입니다. 아래 GitHub Actions 내용은 과거/보조 레퍼런스로 유지되며, primary delivery path는 아닙니다.
+현재 운영 기준은 **GitLab canonical repo + GitLab CI branch/MR validate(frontend + ai-engine) + main frontend deploy→post-deploy smoke + 로컬 Docker CI 보강 검증** 입니다. 아래 GitHub Actions 내용은 과거/보조 레퍼런스로 유지되며, primary delivery path는 아닙니다.
 
 ```
 코드 변경 → pre-commit / pre-push / 필요 시 `npm run ci:local:docker`
         → feature branch push / Merge Request
-        → GitLab CI validate (`type-check` + `lint:ci` + `test:quick`)
+        → GitLab CI validate(frontend) (`type-check` + `lint:ci` + `test:quick` + `test:contract`)
+        → GitLab CI validate(ai-engine) (`cd cloud-run/ai-engine && npm run type-check && npm run test`, 변경 시만)
         → `git push gitlab main`
-        → GitLab CI validate (`type-check` + `lint:ci` + `test:quick`)
-        → GitLab CI deploy (`vercel build --prod` + `vercel deploy --prebuilt --prod`)
-        → GitLab CI post-deploy smoke (`/`, `/validation`, `/api/version`)
+        → GitLab CI validate(frontend) (`type-check` + `lint:ci` + `test:quick` + `test:contract`)
+        → GitLab CI validate(ai-engine) (`cd cloud-run/ai-engine && npm run type-check && npm run test`, 변경 시만)
+        → GitLab CI deploy (`vercel build --prod` + `vercel deploy --prebuilt --prod`, frontend 변경 시만)
+        → GitLab CI post-deploy smoke (`/`, `/validation`, `/api/version`, frontend 변경 시만)
         → Vercel production
         → Cloud Run 수동 배포 (`deploy.sh`, 필요 시)
 
 공개 코드 공유 → GitLab 기준 공개용 snapshot 생성 → GitHub 수동 동기화
 ```
 
-## 현재 저장소/배포 토폴로지 (2026-03-31)
+## 현재 저장소/배포 토폴로지 (2026-04-02)
 
 - **GitLab private (`gitlab`)**: canonical development repo
 - **Vercel Frontend**: GitLab CI `deploy` job이 `vercel build` + `vercel deploy --prebuilt --prod`로 production 배포
-- **GitLab CI**: 활성 (`branch/MR validate -> main deploy -> main smoke`)
+- **GitLab CI**: 활성 (`branch/MR validate(frontend + ai-engine) -> main frontend deploy -> main smoke`)
 - **`.gitlab-ci.yml`**: 최소 파이프라인으로 유지. docs/reports 전용 push는 `changes` 규칙으로 CI 스킵
 - **Production deploy serialization**: `deploy` job은 `resource_group: production`으로 직렬화되어 동시 배포를 막음
 - **GitHub public (`origin`)**: code-only snapshot, 수동 동기화 전용
@@ -58,11 +60,16 @@
 일상적인 운영 경로는 세 갈래로 고정합니다.
 
 1. Frontend 배포
-- feature branch / Merge Request 단계에서 GitLab CI `validate`
+- feature branch / Merge Request 단계에서 GitLab CI `validate` (`test:contract` 포함)
 - `git push gitlab main`
 - GitLab CI `validate`
 - GitLab CI `deploy` (`vercel build --prod` + `vercel deploy --prebuilt --prod`)
 - GitLab CI `post_deploy_smoke` (`/`, `/validation`, `/api/version`)
+
+1. AI Engine 검증
+- `cloud-run/ai-engine/**` 변경 시 GitLab CI `validate_ai_engine`
+- 수행 명령: `cd cloud-run/ai-engine && npm run type-check && npm run test`
+- AI Engine only 변경이면 Vercel deploy는 실행되지 않음
 
 1. Release / tag
 - `npm run release:patch|minor|major`
@@ -103,7 +110,7 @@ CI_DOCKER_PULL_POLICY=never npm run ci:local:docker
 ```
 
 운영 원칙:
-- `.gitlab-ci.yml`은 현재 branch/MR validate → main deploy → post-deploy smoke 최소 파이프라인으로 유지합니다. 더 무거운 검증까지 CI에 모두 넣지 않습니다.
+- `.gitlab-ci.yml`은 현재 branch/MR `validate(frontend + ai-engine)` → main frontend `deploy` → `post_deploy_smoke` 최소 파이프라인으로 유지합니다. E2E 같은 더 무거운 검증까지 canonical GitLab CI에 모두 넣지 않습니다.
 - branch에 열린 Merge Request가 있으면 push pipeline 대신 MR pipeline만 유지해 중복 실행을 줄입니다.
 - `post_deploy_smoke`는 `/api/health` 자동 호출 대신 `/`, `/validation`, `/api/version`만 확인합니다. 수동 전용 health-check 정책과 free-tier 비용 원칙을 함께 지키기 위한 선택입니다.
 - 기본 모드 `prefer-local`은 host `node_modules`를 재사용하고 container를 `--network none`으로 실행해 외부 접근을 최소화합니다.
@@ -117,13 +124,13 @@ CI_DOCKER_PULL_POLICY=never npm run ci:local:docker
 
 | 선택지 | GitLab 비용 | 외부 의존 | 상태 체크 | 현재 프로젝트 적합도 |
 |---|---:|---|---|---|
-| wsl2-docker self-hosted runner | GitLab quota 0 | 중간 | 높음 | 활성 (`branch/MR/main validate` job) |
+| wsl2-docker self-hosted runner | GitLab quota 0 | 중간 | 높음 | 활성 (`validate`, `validate_ai_engine`) |
 | GitLab.com shared runner | 월 compute quota 소모 | 낮음 | 높음 | 활성 (`deploy`, `post_deploy_smoke` job) |
 | 현재 로컬 Docker CI | GitLab quota 0 | 낮음 | GitLab native status 없음 | broad/release 보강 |
 
 판단 기준:
-- `validate` job은 `tags: [wsl2-docker]`가 붙은 self-hosted runner에서 실행되어 GitLab compute minutes를 소모하지 않습니다.
-- `deploy` job은 태그 없이 GitLab.com shared runner에서 실행되며, 현재 기준 약 4분 내외의 compute quota를 사용합니다.
+- `validate`, `validate_ai_engine` job은 `tags: [wsl2-docker]`가 붙은 self-hosted runner에서 실행되어 GitLab compute minutes를 소모하지 않습니다.
+- `deploy` job은 태그 없이 GitLab.com shared runner에서 실행되며, frontend 변경이 있을 때만 현재 기준 약 4분 내외의 compute quota를 사용합니다.
 - 현재 프로젝트는 single canonical repo, 개인 개발 중심 구조이므로 validate는 self-hosted로 비용을 절감하고, deploy는 shared runner + Vercel CLI로 유지하는 split-runner 구성이 가장 단순합니다.
 
 ### 권장 실행 순서
@@ -131,21 +138,23 @@ CI_DOCKER_PULL_POLICY=never npm run ci:local:docker
 1. 기본 경로는 `pre-commit` + `pre-push`
 2. broad change, release 전, 배포 민감 변경에는 `npm run ci:local:docker`를 push 전에 추가
 3. canonical 반영은 `git push gitlab main`
-4. GitLab CI `validate`는 branch / Merge Request / main 코드 변경에서 `wsl2-docker` self-hosted runner로 실행
-5. GitLab CI `deploy`는 shared runner에서 `vercel build --prod` + `vercel deploy --prebuilt --prod` 수행
-6. GitLab CI `post_deploy_smoke`는 shared runner에서 `/`, `/validation`, `/api/version` 저비용 smoke 확인
-7. production `deploy`는 `resource_group: production`으로 직렬화되어 연속 push에서도 동시 실행되지 않음
-8. 외부 pull까지 차단해야 할 때만 `CI_DOCKER_PULL_POLICY=never` 사용
+4. GitLab CI `validate`는 branch / Merge Request / main 프론트엔드/공용 코드 변경에서 `wsl2-docker` self-hosted runner로 실행
+5. GitLab CI `validate_ai_engine`는 branch / Merge Request / main `cloud-run/ai-engine/**` 변경에서 `wsl2-docker` self-hosted runner로 실행
+6. GitLab CI `deploy`는 main frontend 변경에서 shared runner가 `vercel build --prod` + `vercel deploy --prebuilt --prod` 수행
+7. GitLab CI `post_deploy_smoke`는 main frontend 변경에서 shared runner가 `/`, `/validation`, `/api/version` 저비용 smoke 확인
+8. production `deploy`는 `resource_group: production`으로 직렬화되어 연속 push에서도 동시 실행되지 않음
+9. 외부 pull까지 차단해야 할 때만 `CI_DOCKER_PULL_POLICY=never` 사용
 
 ### 현재 운영 구성
 
 - `validate` runner: `wsl2-docker` self-hosted runner
+- `validate_ai_engine` runner: `wsl2-docker` self-hosted runner
 - 서비스: WSL2 Ubuntu 내 `gitlab-runner` systemd 서비스 자동 시작
 - executor: `Docker`
 - 기본 이미지: `node:24-bookworm`
 - 태그 정책: `tags: [wsl2-docker]`, `run_untagged = false`
 - pull policy: `if-not-present`
-- `deploy` runner: GitLab.com shared runner (태그 없음)
+- `deploy` runner: GitLab.com shared runner (태그 없음, frontend 변경 시만)
 - `post_deploy_smoke` runner: GitLab.com shared runner (태그 없음)
 
 운영 메모:
@@ -154,11 +163,11 @@ CI_DOCKER_PULL_POLICY=never npm run ci:local:docker
 - 임시 우회가 정말 필요할 때만 `validate` job의 태그를 제거해 shared runner 경로로 전환합니다.
 - Merge Request가 열려 있는 branch는 duplicate pipeline 방지를 위해 branch push pipeline 대신 MR pipeline이 우선합니다.
 
-즉, **현재는 self-hosted validate + shared deploy + shared post-deploy smoke + local Docker CI 보강 검증** 구성이 기본 운영값입니다.
+즉, **현재는 self-hosted frontend validate + self-hosted ai-engine validate + shared frontend deploy + shared post-deploy smoke + local Docker CI 보강 검증** 구성이 기본 운영값입니다.
 
 ### 비용 정책
 
-- **GitLab CI**: 활성. 무료 400분/월 예산을 넘기지 않도록 validate→deploy 최소 파이프라인과 docs/reports skip 규칙을 유지
+- **GitLab CI**: 활성. 무료 400분/월 예산을 넘기지 않도록 frontend/ai-engine validate는 self-hosted, deploy/smoke는 frontend-only shared runner로 유지
 - **Local Docker CI**: broad/release 전 전체 검증을 보강할 때 우선 사용
 - **GitHub Actions**: 역사적/보조 워크플로우 레퍼런스이며 primary delivery path가 아님
 - **스케줄 워크플로우 기본값**: 비용/정책 변경 리스크를 줄이기 위해 비필수 `schedule` 잡은 기본적으로 꺼져 있습니다. 자동 실행이 꼭 필요할 때만 저장소 변수 `ENABLE_ACTIONS_SCHEDULES=true`로 명시적으로 활성화합니다.
@@ -177,7 +186,7 @@ CI_DOCKER_PULL_POLICY=never npm run ci:local:docker
 ## Historical Appendix: GitHub Actions 워크플로우 (Legacy)
 
 > 아래 섹션은 현재 운영 경로가 아닙니다.
-> 현재 primary delivery path는 `feature branch / MR validate` → `git push gitlab main` → GitLab CI `validate` (`wsl2-docker`) → GitLab CI `deploy` (shared runner) → GitLab CI `post_deploy_smoke` → Vercel production 입니다.
+> 현재 primary delivery path는 `feature branch / MR validate(frontend + ai-engine)` → `git push gitlab main` → GitLab CI `validate(frontend + ai-engine)` → GitLab CI `deploy` (shared runner, frontend-only) → GitLab CI `post_deploy_smoke` → Vercel production 입니다.
 > 이후 내용은 과거 GitHub Actions 구성과 보조 자동화 참고용으로만 유지합니다.
 
 ### 워크플로우 전체 맵

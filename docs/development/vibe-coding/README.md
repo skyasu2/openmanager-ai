@@ -4,7 +4,7 @@
 > Owner: dev-experience
 > Status: Active Canonical
 > Doc type: Overview
-> Last reviewed: 2026-03-29
+> Last reviewed: 2026-04-02
 > Canonical: docs/development/vibe-coding/README.md
 > Tags: vibe-coding,ai-workflow
 
@@ -28,7 +28,7 @@
 ├─────────────────────────────────────────────────────────┤
 │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐     │
 │  │ Claude Code │  │   Codex     │  │   Gemini    │     │
-│  │ (메인/리뷰)  │  │ (QA/보완)   │  │ (리서치/검증) │    │
+│  │ (메인/리뷰)  │  │ (구현/정리) │  │ (리서치/검증) │    │
 │  └─────────────┘  └─────────────┘  └─────────────┘     │
 │                          ↓                              │
 │  ┌──────────────────────────────────────────────────┐  │
@@ -68,7 +68,7 @@
 ```bash
 # 주 개발 도구
 claude      # Claude Code (메인 — 전체 개발 사이클)
-codex       # Codex CLI (마무리/QA/bounded refactor)
+codex       # Codex CLI (구현/리팩토링/bounded refactor)
 
 # 보조 검증
 gemini      # Gemini CLI (리서치/분석)
@@ -135,7 +135,7 @@ bash scripts/ai/agent-bridge.sh --to claude --mode doc --save-auto "변경사항
 ## 개발 운영 (3-CLI 수동 교차)
 
 전체 개발의 99%는 **Claude Code**가 메인으로 주도했습니다.
-v8.10.x 마무리·QA 단계부터 Codex 비중이 늘었으며, 자동 연동보다는 수동으로 각 CLI를 선택해 사용합니다.
+v8.10.x 마무리·배포 단계부터 Codex 비중이 늘었으며, 자동 연동보다는 수동으로 각 CLI를 선택해 사용합니다.
 
 ```
 요구사항 정리 → 구현(Claude Code / Codex) → 검증(Gemini 수동 호출) → 커밋

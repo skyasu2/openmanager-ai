@@ -4,7 +4,7 @@
 > Owner: documentation
 > Status: Active Canonical
 > Doc type: How-to
-> Last reviewed: 2026-03-02
+> Last reviewed: 2026-04-02
 > Canonical: docs/guides/testing/e2e-testing-guide.md
 > Tags: testing,e2e,playwright
 
@@ -96,8 +96,8 @@ npm run test:e2e:with-server
 
 ### 4) CI 실행 주기 권장안
 
-- Push 기본 게이트: `test:quick` + `type-check` + `lint` + `test:e2e:critical`
-- PR 병합 전: `test:e2e:critical` 유지
+- GitLab canonical gate: `test:quick` + `test:contract` + `type-check` + `lint`
+- PR/릴리즈 강화 게이트: `test:e2e:critical` 유지
 - 정기/수동: `test:e2e:all` 또는 `test:e2e:external` 선택 실행
 
 ---

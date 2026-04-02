@@ -3,7 +3,7 @@
 > Owner: project-lead
 > Status: Active Canonical
 > Doc type: Reference
-> Last reviewed: 2026-02-21
+> Last reviewed: 2026-04-02
 > Tags: dod,checklist,quality,release
 
 **성격**: Living Document — 프로젝트 진화에 따라 갱신.
@@ -43,7 +43,7 @@
 
 - [ ] `npm run validate:all` 통과 (TypeScript + Lint + Test)
 - [ ] `npm run test:gate` 통과 (quick + type-check + lint)
-- [ ] `npm run test:e2e:critical` 통과 (smoke, guest, login, a11y, dashboard)
+- [ ] `npm run test:e2e:critical` 통과 (현재 script 범위: `smoke` + `critical-auth`)
 - [ ] CHANGELOG.md 업데이트
 - [ ] 환경변수 동기화 확인 (로컬 ↔ Vercel ↔ Cloud Run)
 - [ ] Health check 정상 (`/api/health`, Cloud Run `/health`)
@@ -105,10 +105,10 @@ npm run test:contract       # API/AI 계약 테스트
 
 # Release 전
 npm run test:gate           # quick + type-check + lint
-npm run test:e2e:critical   # 로컬 E2E 핵심(smoke, login 포함)
+npm run test:e2e:critical   # 로컬 E2E 핵심(smoke + critical-auth)
 npm run validate:all        # 전체 검증
 ```
 
 ---
 
-_Last Updated: 2026-02-21_
+_Last Updated: 2026-04-02_

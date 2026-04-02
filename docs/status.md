@@ -4,11 +4,11 @@
 > Owner: documentation
 > Status: Active
 > Doc type: Status
-> Last reviewed: 2026-03-30
+> Last reviewed: 2026-04-02
 > Canonical: docs/status.md
 > Tags: status,changelog,release
 
-**마지막 업데이트**: 2026-03-30
+**마지막 업데이트**: 2026-04-02
 
 ---
 
@@ -620,7 +620,7 @@
 
 **Zero to Production with Vibe Coding**
 
-이 프로젝트는 **Claude Code**를 메인 개발 도구로 사용하여 처음부터 끝까지 구축한 Full-Stack AI Platform입니다. 마무리 및 QA 단계(v8.10.x)부터 Codex CLI 비중이 높아졌으며, Gemini CLI는 리서치·분석 보조로 활용됩니다.
+이 프로젝트는 **Claude Code**를 메인 개발 도구로 사용하여 처음부터 끝까지 구축한 Full-Stack AI Platform입니다. v8.10.x 마무리·배포 단계부터 Codex CLI 비중이 높아졌으며, Gemini CLI는 리서치·분석 보조로 활용됩니다.
 
 | 구현 영역 | 기술 스택 | 상태 |
 |----------|----------|------|
