@@ -1,28 +1,28 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-04-02 07:52:41 KST
+> Generated at: 2026-04-02 10:12:12 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 205 |
-| Total Checks | 1512 |
-| Passed | 1444 |
+| Total Runs | 206 |
+| Total Checks | 1516 |
+| Passed | 1448 |
 | Failed | 62 |
-| Completed Items | 271 |
+| Completed Items | 272 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 13 |
 | Expert Domains Tracked | 6 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Run | QA-20260402-0206 (2026-04-01T22:52:39.393Z) |
+| Last Run | QA-20260402-0207 (2026-04-02T01:12:12.154Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260402-0206 (2026-04-01T22:52:39.393Z)
+Latest run: QA-20260402-0207 (2026-04-02T01:12:12.154Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -38,22 +38,23 @@ Latest run: QA-20260402-0206 (2026-04-01T22:52:39.393Z)
 
 - Scope: targeted
 - Release-Facing: no
-- Deployment: SHA 69ad2643
+- Deployment: dpl_Ef513T2wzSDxUrkhJm92DK7jszPv / SHA ae1eed46
 - Coverage Packs: core-routes-smoke
-- Covered Surfaces: / initial landing bootstrap frame, / settled landing render, landing auth bootstrap copy hidden
-- Skipped Surfaces: /login, guest restriction modal, dashboard/authenticated routes, AI sidebar and chat surfaces
+- Covered Surfaces: / landing first paint on production, landing bootstrap auth copy hidden, guest landing CTA and feature cards visible, production console error 0
+- Skipped Surfaces: /login flow, feature card modal interactions, OAuth completion flow, dashboard/authenticated routes, AI sidebar and chat surfaces, Cloud Run admin observability surface
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | Local dev URL | [link](http://127.0.0.1:3000/) | - |
+| general | Production URL | [link](https://openmanager-ai.vercel.app/) | - |
+| vercel-deployment | Production deployment dpl_Ef513T2wzSDxUrkhJm92DK7jszPv | [link](https://openmanager-veg1psut7-skyasus-projects.vercel.app/) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| - | - | - | - |
+| playwright-screenshot | Production landing first paint | `prod-landing-first-paint-20260402.png` | - |
 
 ## Expert Domain Open Gaps
 
@@ -207,6 +208,7 @@ Latest run: QA-20260402-0206 (2026-04-01T22:52:39.393Z)
 - health-route-supabase-session-timeout: 헬스체크 Supabase 세션 프로브 타임아웃 강제 (completed 1회, last QA-20260325-0183)
 - home-semantic-nav: 홈 페이지 nav 랜드마크 보강 (completed 1회, last QA-20260226-0009)
 - landing-bootstrap-auth-copy-hidden: 랜딩 첫 진입 bootstrap 인증 카피 숨김 (completed 1회, last QA-20260402-0206)
+- landing-bootstrap-copy-hidden: 랜딩 첫 진입 시 bootstrap auth copy 비노출 처리 (completed 1회, last QA-20260402-0207)
 - landing-copy-alignment: 랜딩/로그인 정책 카피 정합성 (completed 4회, last QA-20260227-0016)
 - landing-feature-cards: 랜딩 피처카드 4개 모달 (completed 1회, last QA-20260317-0114)
 - landing-page-render: 랜딩 페이지 렌더링 (completed 3회, last QA-20260320-0140)
@@ -373,6 +375,7 @@ Latest run: QA-20260402-0206 (2026-04-01T22:52:39.393Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260402-0207 | 2026-04-02T01:12:12.154Z | targeted | no | Vercel production targeted smoke - landing bootstrap copy hidden after deploy | 4 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260402-0206 | 2026-04-01T22:52:39.393Z | targeted | no | Local dev targeted QA - landing bootstrap auth copy hidden | 3 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260402-0205 | 2026-04-01T22:35:47.941Z | targeted | no | Vercel production targeted smoke - post deploy verification for cd763e634 | 6 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260401-0204 | 2026-04-01T12:15:47.977Z | targeted | no | Local dev Playwright QA - login header minimalization verification | 3 | 1 | 0 | 0 | 0 | 0 |
@@ -392,5 +395,4 @@ Latest run: QA-20260402-0206 (2026-04-01T22:52:39.393Z)
 | QA-20260326-0190 | 2026-03-26T02:57:36.307Z | broad | yes | Vercel Playwright QA - UI/UX + AI Assistant + Server Monitoring (v8.10.0) | 15 | 4 | 0 | 0 | 2 | 1 |
 | QA-20260326-0189 | 2026-03-26T02:32:04.091Z | broad | yes | Vercel Playwright broad release-facing smoke - production 8.10.0 | 12 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260326-0188 | 2026-03-25T18:04:04.763Z | targeted | no | Vercel Playwright targeted recheck - latest promoted production deploy AI proof | 8 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260326-0187 | 2026-03-25T17:38:40.806Z | broad | yes | Vercel Playwright release-facing smoke - core routes, dashboard, AI core | 12 | 0 | 0 | 0 | 0 | 0 |
 

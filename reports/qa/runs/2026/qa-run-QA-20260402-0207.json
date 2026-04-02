@@ -1,0 +1,85 @@
+{
+  "runId": "QA-20260402-0207",
+  "recordedAt": "2026-04-02T01:12:12.154Z",
+  "recordedAtKst": "2026-04-02 10:12:12 KST",
+  "runTitle": "Vercel production targeted smoke - landing bootstrap copy hidden after deploy",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_Ef513T2wzSDxUrkhJm92DK7jszPv",
+    "deploymentUrl": "https://openmanager-veg1psut7-skyasus-projects.vercel.app",
+    "commitSha": "ae1eed462807db6814752c342c75b097e9cbe2df"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "coveragePacks": ["core-routes-smoke"],
+  "coveredSurfaces": [
+    "/ landing first paint on production",
+    "landing bootstrap auth copy hidden",
+    "guest landing CTA and feature cards visible",
+    "production console error 0"
+  ],
+  "skippedSurfaces": [
+    "/login flow",
+    "feature card modal interactions",
+    "OAuth completion flow",
+    "dashboard/authenticated routes",
+    "AI sidebar and chat surfaces",
+    "Cloud Run admin observability surface"
+  ],
+  "checks": {
+    "total": 4,
+    "passed": 4,
+    "failed": 0
+  },
+  "expertAssessments": [],
+  "usageChecks": [],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "Production landing first paint",
+      "path": "prod-landing-first-paint-20260402.png"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "landing-bootstrap-copy-hidden",
+      "title": "랜딩 첫 진입 시 bootstrap auth copy 비노출 처리",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "src/app/page.tsx and src/components/shared/AuthLoadingUI.tsx",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Latest production deployment dpl_Ef513T2wzSDxUrkhJm92DK7jszPv for commit ae1eed462 reached READY/PROMOTED before smoke execution.",
+    "Landing content rendered immediately on first paint with no visible bootstrap auth copy.",
+    "Guest landing CTA and feature card grid were visible in the initial viewport.",
+    "No browser console errors were observed during the targeted production smoke."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Production URL",
+      "url": "https://openmanager-ai.vercel.app/"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Production deployment dpl_Ef513T2wzSDxUrkhJm92DK7jszPv",
+      "url": "https://openmanager-veg1psut7-skyasus-projects.vercel.app/"
+    }
+  ]
+}

@@ -2,25 +2,25 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-01T22:52:39.393Z"
+    "updatedAt": "2026-04-02T01:12:12.154Z"
   },
   "sequence": {
-    "nextRunNumber": 207
+    "nextRunNumber": 208
   },
   "summary": {
-    "totalRuns": 205,
-    "totalChecks": 1512,
-    "totalPassed": 1444,
+    "totalRuns": 206,
+    "totalChecks": 1516,
+    "totalPassed": 1448,
     "totalFailed": 62,
     "completionRate": 100,
-    "completedItems": 271,
+    "completedItems": 272,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 13,
     "expertDomainsTracked": 6,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260402-0206",
-    "lastRecordedAt": "2026-04-01T22:52:39.393Z"
+    "lastRunId": "QA-20260402-0207",
+    "lastRecordedAt": "2026-04-02T01:12:12.154Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -6525,6 +6525,30 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-04-01T22:52:39.393Z"
+    },
+    "landing-bootstrap-copy-hidden": {
+      "id": "landing-bootstrap-copy-hidden",
+      "title": "랜딩 첫 진입 시 bootstrap auth copy 비노출 처리",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260402-0207",
+      "firstSeenAt": "2026-04-02T01:12:12.154Z",
+      "lastSeenRunId": "QA-20260402-0207",
+      "lastSeenAt": "2026-04-02T01:12:12.154Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "src/app/page.tsx and src/components/shared/AuthLoadingUI.tsx",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-04-02T01:12:12.154Z"
     }
   },
   "runs": [
@@ -17647,6 +17671,74 @@
           "type": "general",
           "label": "Local dev URL",
           "url": "http://127.0.0.1:3000/"
+        }
+      ],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260402-0207",
+      "recordedAt": "2026-04-02T01:12:12.154Z",
+      "recordedAtKst": "2026-04-02 10:12:12 KST",
+      "title": "Vercel production targeted smoke - landing bootstrap copy hidden after deploy",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260402-0207.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_Ef513T2wzSDxUrkhJm92DK7jszPv",
+        "deploymentUrl": "https://openmanager-veg1psut7-skyasus-projects.vercel.app",
+        "commitSha": "ae1eed462807db6814752c342c75b097e9cbe2df"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "coveragePacks": ["core-routes-smoke"],
+      "coveredSurfaces": [
+        "/ landing first paint on production",
+        "landing bootstrap auth copy hidden",
+        "guest landing CTA and feature cards visible",
+        "production console error 0"
+      ],
+      "skippedSurfaces": [
+        "/login flow",
+        "feature card modal interactions",
+        "OAuth completion flow",
+        "dashboard/authenticated routes",
+        "AI sidebar and chat surfaces",
+        "Cloud Run admin observability surface"
+      ],
+      "checks": {
+        "total": 4,
+        "passed": 4,
+        "failed": 0
+      },
+      "expertAssessments": [],
+      "usageChecks": [],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "Production landing first paint",
+          "path": "prod-landing-first-paint-20260402.png"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "Production URL",
+          "url": "https://openmanager-ai.vercel.app/"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Production deployment dpl_Ef513T2wzSDxUrkhJm92DK7jszPv",
+          "url": "https://openmanager-veg1psut7-skyasus-projects.vercel.app/"
         }
       ],
       "expertCount": 0,
