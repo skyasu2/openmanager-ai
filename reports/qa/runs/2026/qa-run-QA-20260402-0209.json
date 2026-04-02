@@ -1,0 +1,77 @@
+{
+  "runId": "QA-20260402-0209",
+  "recordedAt": "2026-04-02T05:13:39.016Z",
+  "recordedAtKst": "2026-04-02 14:13:39 KST",
+  "runTitle": "Local dev targeted QA - landing feature modal header interactions recheck",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "local-dev",
+    "url": "http://localhost:3000",
+    "frontend": "Next.js dev server",
+    "backend": "local dev mixed runtime",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "774171c8456609e330c3dc8a17c38324b53d0bb0"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "coveragePacks": ["modal-detail-pack"],
+  "coveredSurfaces": [
+    "/ landing render after auth bootstrap on local dev",
+    "landing tech-stack modal open",
+    "landing tech-stack modal architecture toggle to diagram and back",
+    "landing tech-stack modal ESC close",
+    "landing vibe-coding modal open",
+    "landing vibe-coding modal history tab switch",
+    "landing vibe-coding modal CI/CD tab switch",
+    "landing vibe-coding modal ESC close",
+    "Next.js runtime get_errors: no errors detected in browser sessions",
+    "browser console errors 0 on targeted landing modal flow"
+  ],
+  "skippedSurfaces": [
+    "/login",
+    "/system-boot",
+    "/dashboard",
+    "AI sidebar and streaming path",
+    "secondary routes (/privacy, /auth/error, /auth/success)",
+    "production/Vercel deployment and usage check"
+  ],
+  "checks": {
+    "total": 8,
+    "passed": 8,
+    "failed": 0
+  },
+  "expertAssessments": [],
+  "usageChecks": [],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "Local targeted vibe CI/CD modal",
+      "path": "local-targeted-feature-modal-vibe-cicd-20260402.png"
+    },
+    {
+      "type": "playwright-console",
+      "label": "Local targeted landing modal console errors",
+      "path": "local-targeted-feature-modal-console-errors-20260402.log"
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Targeted local dev QA for HEAD 774171c84 after FeatureCardModalHeader extraction and modal regression tests addition.",
+    "Playwright scripted scenario verified tech-stack diagram toggle and vibe-coding history/CI-CD tabs on localhost:3000.",
+    "Next.js runtime tool get_errors reported no errors in connected browser sessions.",
+    "Console error log reported 0 error-level messages for the targeted landing modal flow."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Local dev URL",
+      "url": "http://localhost:3000/"
+    }
+  ]
+}

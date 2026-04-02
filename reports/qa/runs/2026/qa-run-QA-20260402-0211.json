@@ -1,0 +1,104 @@
+{
+  "runId": "QA-20260402-0211",
+  "recordedAt": "2026-04-02T06:04:27.210Z",
+  "recordedAtKst": "2026-04-02 15:04:27 KST",
+  "runTitle": "Vercel Production Usage Evidence Follow-up",
+  "owner": "codex",
+  "source": "cli",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_5FCMoSTAs2NBcKjVNrvzWaJhK2Vf",
+    "deploymentUrl": "https://openmanager-56ekc9sba-skyasus-projects.vercel.app",
+    "commitSha": "774171c8456609e330c3dc8a17c38324b53d0bb0"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "coveragePacks": [],
+  "coveredSurfaces": [
+    "Vercel usage current billing period",
+    "Vercel usage previous month fallback probe"
+  ],
+  "skippedSurfaces": [
+    "landing feature modal targeted UI pack (covered in QA-20260402-0210)",
+    "/login",
+    "/system-boot",
+    "/dashboard",
+    "AI sidebar/streaming",
+    "secondary routes"
+  ],
+  "checks": {
+    "total": 2,
+    "passed": 2,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The Vercel usage CLI path now distinguishes an empty current billing period from an auth or scope failure, and the fallback probe confirmed API connectivity on the production team.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "A dedicated unit test now fixes the empty-billing-period interpretation path so future production QA runs do not regress to failed/unknown without cause.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-04-02T15:04:26+09:00",
+      "summary": "Current billing period returned no charge rows yet via CLI, which is interpreted as an empty early billing period because the previous-month probe succeeded on the same team scope.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [],
+  "completedImprovements": [
+    {
+      "id": "vercel-usage-cli-empty-billing-period-handling",
+      "title": "Vercel usage CLI empty billing period handling",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "scripts/check-vercel-usage.js now treats current-period 404 as an empty billing period when a previous-month probe succeeds.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Paired UI/modal production verification remains in QA-20260402-0210.",
+    "Inference: the current-period 404 was treated as empty usage because the same team scope returned valid charge data for 2026-03-01..2026-03-31.",
+    "Usage command: npm run check:usage:vercel"
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Production URL",
+      "url": "https://openmanager-ai.vercel.app/"
+    },
+    {
+      "type": "general",
+      "label": "Vercel Deployment",
+      "url": "https://vercel.com/skyasus-projects/openmanager-ai/5FCMoSTAs2NBcKjVNrvzWaJhK2Vf"
+    }
+  ]
+}
