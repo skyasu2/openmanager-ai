@@ -2,15 +2,15 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-02T14:54:37.522Z"
+    "updatedAt": "2026-04-02T23:18:38.480Z"
   },
   "sequence": {
-    "nextRunNumber": 218
+    "nextRunNumber": 219
   },
   "summary": {
-    "totalRuns": 216,
-    "totalChecks": 1611,
-    "totalPassed": 1543,
+    "totalRuns": 217,
+    "totalChecks": 1618,
+    "totalPassed": 1550,
     "totalFailed": 62,
     "completionRate": 100,
     "completedItems": 273,
@@ -19,8 +19,8 @@
     "wontFixItems": 13,
     "expertDomainsTracked": 6,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260402-0217",
-    "lastRecordedAt": "2026-04-02T14:54:37.522Z"
+    "lastRunId": "QA-20260403-0218",
+    "lastRecordedAt": "2026-04-02T23:18:38.480Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -18583,6 +18583,65 @@
       "artifacts": [],
       "links": [],
       "expertCount": 2,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260403-0218",
+      "recordedAt": "2026-04-02T23:18:38.480Z",
+      "recordedAtKst": "2026-04-03 08:18:38 KST",
+      "title": "Vercel Production QA after public snapshot production-only fix",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260403-0218.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_7ua5dbckazZqYvu9fH7HhSQMPVnb",
+        "deploymentUrl": "https://openmanager-ngj0bqbx7-skyasus-projects.vercel.app",
+        "commitSha": "b4d07257bb422f81985fd9e66e7c8ac9f2d99524"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "coveragePacks": ["core-routes-smoke"],
+      "coveredSurfaces": ["/validation", "/api/health", "/api/version"],
+      "skippedSurfaces": [
+        "/",
+        "/login",
+        "/system-boot",
+        "/dashboard",
+        "AI sidebar",
+        "AI chat streaming",
+        "modal-detail-pack",
+        "observability-pack"
+      ],
+      "checks": {
+        "total": 7,
+        "passed": 7,
+        "failed": 0
+      },
+      "expertAssessments": [],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-04-03T08:18:30+09:00",
+          "summary": "Current billing period reviewed after targeted production QA; effective 0.6552 USD, billed 0.0000 USD, no unexpected billed spike.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [],
+      "links": [],
+      "expertCount": 0,
       "expertNeedsImprovementCount": 0,
       "completedCount": 0,
       "pendingCount": 0,
