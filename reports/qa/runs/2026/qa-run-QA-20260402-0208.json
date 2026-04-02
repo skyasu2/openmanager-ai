@@ -1,0 +1,155 @@
+{
+  "runId": "QA-20260402-0208",
+  "recordedAt": "2026-04-02T01:45:03.294Z",
+  "recordedAtKst": "2026-04-02 10:45:03 KST",
+  "runTitle": "Vercel production broad release-facing QA - v8.10.8 core routes, dashboard, AI",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_Ef513T2wzSDxUrkhJm92DK7jszPv",
+    "deploymentUrl": "https://openmanager-veg1psut7-skyasus-projects.vercel.app",
+    "commitSha": "ae1eed462807db6814752c342c75b097e9cbe2df"
+  },
+  "scope": "broad",
+  "releaseFacing": true,
+  "coveragePacks": ["core-routes-smoke", "dashboard-core", "ai-core"],
+  "coveredSurfaces": [
+    "/ landing render with guest session",
+    "landing feature card modal open and ESC close",
+    "/main legacy redirect to /",
+    "/login auth options and guest PIN flow",
+    "guest PIN login to landing session",
+    "system start countdown and /system-boot to /dashboard redirect",
+    "/dashboard render with 15 server cards and resource overview",
+    "server detail modal open + 3-tab switch + ESC close",
+    "AI sidebar open/close",
+    "AI starter prompt and representative chat response",
+    "AI streaming endpoint /api/ai/supervisor/stream/v2 200",
+    "AI timing header X-AI-Latency-Ms=208 on production stream response",
+    "/dashboard/ai-assistant fullscreen workspace render",
+    "/privacy render and back-link",
+    "404 route render",
+    "/api/health healthy response",
+    "/api/version version response",
+    "production console error 0 on tested product routes"
+  ],
+  "skippedSurfaces": [
+    "OAuth completion flow",
+    "/auth/error",
+    "/auth/success",
+    "active alerts modal",
+    "topology modal",
+    "log explorer modal",
+    "Reporter agent flow",
+    "Analyst full analysis flow",
+    "feedback submission flow",
+    "Cloud Run admin /monitoring and /monitoring/traces",
+    "security regression pack"
+  ],
+  "checks": {
+    "total": 18,
+    "passed": 18,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Production에서 AI sidebar, fullscreen workspace, representative streaming chat를 직접 검증해 현재 릴리즈 범위에 충분합니다.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "partially-appropriate",
+      "improvementNeeded": false,
+      "rationale": "Vercel health/version과 X-AI-Latency-Ms는 확인했지만 Cloud Run admin observability pack은 이번 broad 범위에서 의도적으로 제외했습니다.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "ai-security-reliability",
+      "domainName": "AI Security & Reliability Architect",
+      "fit": "partially-appropriate",
+      "improvementNeeded": false,
+      "rationale": "인증·세션·스트리밍 경로는 정상이나 prompt/security regression pack은 이번 broad run 범위 밖입니다.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Production deployment 증거, health/version API, guest→dashboard boot flow까지 릴리즈 관점 핵심 경로가 정상입니다.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Playwright MCP로 landing, dashboard, AI core까지 실제 사용자 동선을 재현해 broad smoke를 수행했습니다.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "data-metrics-quality",
+      "domainName": "Data Quality & Metrics Analyst",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Dashboard raw metrics와 AI 요약이 같은 slot 기준으로 일관되게 나타나 현재 broad 릴리즈 범위에서 데이터 품질 이상은 보이지 않았습니다.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "failed",
+      "result": "unknown",
+      "checkedAt": "2026-04-02T01:42:42Z",
+      "summary": "Local Vercel usage CLI could not fetch project usage (404 Costs not found); manual dashboard follow-up required.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "Broad QA AI workspace",
+      "path": "broad-qa-ai-workspace-20260402.png"
+    },
+    {
+      "type": "playwright-console",
+      "label": "Broad QA console log",
+      "path": "broad-qa-console-20260402.log"
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Latest production deployment dpl_Ef513T2wzSDxUrkhJm92DK7jszPv for commit ae1eed462 reached READY/PROMOTED before broad QA execution.",
+    "Guest PIN 4231 flow still works and leads to system start countdown then dashboard session.",
+    "Representative AI chat used the streaming route /api/ai/supervisor/stream/v2 with content-type text/event-stream and X-AI-Latency-Ms header.",
+    "404 route rendered correctly; product routes inspected in this run showed no browser console errors."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Production URL",
+      "url": "https://openmanager-ai.vercel.app/"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Production deployment dpl_Ef513T2wzSDxUrkhJm92DK7jszPv",
+      "url": "https://openmanager-veg1psut7-skyasus-projects.vercel.app/"
+    }
+  ]
+}

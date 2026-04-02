@@ -1,28 +1,28 @@
 {
   "version": "1.0.0",
-  "generatedAt": "2026-04-02T01:12:12.969Z",
+  "generatedAt": "2026-04-02T01:45:05.095Z",
   "source": {
     "trackerPath": "reports/qa/qa-tracker.json",
     "statusPath": "reports/qa/QA_STATUS.md",
     "publicPath": "public/data/qa/validation-evidence.json",
     "publicHref": "/data/qa/validation-evidence.json",
-    "latestRunId": "QA-20260402-0207"
+    "latestRunId": "QA-20260402-0208"
   },
   "summary": {
-    "totalRuns": 206,
-    "totalChecks": 1516,
+    "totalRuns": 207,
+    "totalChecks": 1534,
     "completedItems": 272,
     "expertDomainsOpenGaps": 0,
     "wontFixItems": 13,
-    "lastRecordedAt": "2026-04-02T01:12:12.154Z"
+    "lastRecordedAt": "2026-04-02T01:45:03.294Z"
   },
   "trackerUpdated": {
-    "iso": "2026-04-02T01:12:12.154Z",
+    "iso": "2026-04-02T01:45:03.294Z",
     "short": "2026-04-02",
     "long": "April 2, 2026"
   },
   "publicEvidenceUpdated": {
-    "iso": "2026-04-02T01:12:12.154Z",
+    "iso": "2026-04-02T01:45:03.294Z",
     "short": "2026-04-02",
     "long": "April 2, 2026"
   },
@@ -32,12 +32,12 @@
     "long": "March 22, 2026"
   },
   "latestPublicRun": {
-    "runId": "QA-20260402-0207",
-    "title": "Vercel production targeted smoke - landing bootstrap copy hidden after deploy",
-    "scope": "targeted",
-    "recordedAt": "2026-04-02T01:12:12.154Z",
+    "runId": "QA-20260402-0208",
+    "title": "Vercel production broad release-facing QA - v8.10.8 core routes, dashboard, AI",
+    "scope": "broad",
+    "recordedAt": "2026-04-02T01:45:03.294Z",
     "commitSha": "ae1eed462807db6814752c342c75b097e9cbe2df",
-    "repoPath": "reports/qa/runs/2026/qa-run-QA-20260402-0207.json",
+    "repoPath": "reports/qa/runs/2026/qa-run-QA-20260402-0208.json",
     "ciRunLink": null,
     "ciArtifactLinks": []
   },
