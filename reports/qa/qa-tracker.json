@@ -2,15 +2,15 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-02T12:31:52.936Z"
+    "updatedAt": "2026-04-02T12:41:23.224Z"
   },
   "sequence": {
-    "nextRunNumber": 213
+    "nextRunNumber": 214
   },
   "summary": {
-    "totalRuns": 211,
-    "totalChecks": 1564,
-    "totalPassed": 1496,
+    "totalRuns": 212,
+    "totalChecks": 1578,
+    "totalPassed": 1510,
     "totalFailed": 62,
     "completionRate": 100,
     "completedItems": 273,
@@ -19,8 +19,8 @@
     "wontFixItems": 13,
     "expertDomainsTracked": 6,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260402-0212",
-    "lastRecordedAt": "2026-04-02T12:31:52.936Z"
+    "lastRunId": "QA-20260402-0213",
+    "lastRecordedAt": "2026-04-02T12:41:23.224Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -18250,6 +18250,87 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260402-0213",
+      "recordedAt": "2026-04-02T12:41:23.224Z",
+      "recordedAtKst": "2026-04-02 21:41:23 KST",
+      "title": "Playwright MCP Production QA - Frontend + AI Assistant v8.10.8 (2차)",
+      "owner": "claude",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260402-0213.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_v8108_20260402_2",
+        "deploymentUrl": "",
+        "commitSha": "84c375ac517bd2aac6c56c4372883ad0f72b5a58"
+      },
+      "scope": "broad",
+      "releaseFacing": true,
+      "coveragePacks": [
+        "core-routes-smoke",
+        "dashboard-core",
+        "ai-core",
+        "modal-detail-pack"
+      ],
+      "coveredSurfaces": [
+        "/",
+        "/login",
+        "/dashboard",
+        "Vibe Coding modal (현재도구/CI/CD 탭)",
+        "AI sidebar",
+        "AI chat (streaming)",
+        "/api/health",
+        "/api/version"
+      ],
+      "skippedSurfaces": [],
+      "checks": {
+        "total": 14,
+        "passed": 14,
+        "failed": 0
+      },
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "AI 스트리밍 응답 및 정확한 서버 식별 확인. lb-haproxy-dc1-01 CPU 85% 즉시 응답. 사전 캐시 가능성 있으나 응답 정확도 양호.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "/api/health db:7ms, cache:5ms, ai:5ms 전체 healthy. /api/system 401 재현 없음. sentry-tunnel 초기 ERR_ABORTED 4건은 네트워크 초기화 정상 패턴.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "api",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-04-02T12:40:15+09:00",
+          "summary": "/api/health → healthy (db:7ms, cache:5ms, ai:5ms). /api/version → 8.10.8. 모든 API 정상.",
+          "evidence": "/api/health {status:healthy, database:connected, cache:connected, ai:connected, uptime:947, version:8.10.8}",
+          "url": ""
+        }
+      ],
+      "artifacts": [],
+      "links": [],
+      "expertCount": 2,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -18258,16 +18339,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 104,
-      "appropriateCount": 100,
+      "seenCount": 105,
+      "appropriateCount": 101,
       "partialCount": 4,
       "inappropriateCount": 0,
       "improvementNeededCount": 12,
-      "lastRunId": "QA-20260402-0212",
-      "lastSeenAt": "2026-04-02T12:31:52.936Z",
+      "lastRunId": "QA-20260402-0213",
+      "lastSeenAt": "2026-04-02T12:41:23.224Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "AI 스트리밍 응답 수신 및 서버 상태 정확 식별 확인. lb-haproxy-dc1-01 CPU 85% 정확 식별.",
+      "lastRationale": "AI 스트리밍 응답 및 정확한 서버 식별 확인. lb-haproxy-dc1-01 CPU 85% 즉시 응답. 사전 캐시 가능성 있으나 응답 정확도 양호.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -18309,16 +18390,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 60,
-      "appropriateCount": 57,
+      "seenCount": 61,
+      "appropriateCount": 58,
       "partialCount": 3,
       "inappropriateCount": 0,
       "improvementNeededCount": 7,
-      "lastRunId": "QA-20260402-0212",
-      "lastSeenAt": "2026-04-02T12:31:52.936Z",
+      "lastRunId": "QA-20260402-0213",
+      "lastSeenAt": "2026-04-02T12:41:23.224Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "v8.10.8 배포 후 /api/health healthy 확인. Cloud Run AI Engine 정상. 콘솔 에러 0건.",
+      "lastRationale": "/api/health db:7ms, cache:5ms, ai:5ms 전체 healthy. /api/system 401 재현 없음. sentry-tunnel 초기 ERR_ABORTED 4건은 네트워크 초기화 정상 패턴.",
       "lastNextAction": ""
     },
     "test-automation": {

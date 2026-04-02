@@ -1,0 +1,79 @@
+{
+  "runId": "QA-20260402-0213",
+  "recordedAt": "2026-04-02T12:41:23.224Z",
+  "recordedAtKst": "2026-04-02 21:41:23 KST",
+  "runTitle": "Playwright MCP Production QA - Frontend + AI Assistant v8.10.8 (2차)",
+  "owner": "claude",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_v8108_20260402_2",
+    "deploymentUrl": "",
+    "commitSha": "84c375ac517bd2aac6c56c4372883ad0f72b5a58"
+  },
+  "scope": "broad",
+  "releaseFacing": true,
+  "coveragePacks": [
+    "core-routes-smoke",
+    "dashboard-core",
+    "ai-core",
+    "modal-detail-pack"
+  ],
+  "coveredSurfaces": [
+    "/",
+    "/login",
+    "/dashboard",
+    "Vibe Coding modal (현재도구/CI/CD 탭)",
+    "AI sidebar",
+    "AI chat (streaming)",
+    "/api/health",
+    "/api/version"
+  ],
+  "skippedSurfaces": [],
+  "checks": {
+    "total": 14,
+    "passed": 14,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "AI 스트리밍 응답 및 정확한 서버 식별 확인. lb-haproxy-dc1-01 CPU 85% 즉시 응답. 사전 캐시 가능성 있으나 응답 정확도 양호.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "/api/health db:7ms, cache:5ms, ai:5ms 전체 healthy. /api/system 401 재현 없음. sentry-tunnel 초기 ERR_ABORTED 4건은 네트워크 초기화 정상 패턴.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "api",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-04-02T12:40:15+09:00",
+      "summary": "/api/health → healthy (db:7ms, cache:5ms, ai:5ms). /api/version → 8.10.8. 모든 API 정상.",
+      "evidence": "/api/health {status:healthy, database:connected, cache:connected, ai:connected, uptime:947, version:8.10.8}",
+      "url": ""
+    }
+  ],
+  "artifacts": [],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [],
+  "links": []
+}

@@ -1,0 +1,141 @@
+{
+  "runTitle": "Playwright MCP Production QA - Frontend + AI Assistant v8.10.8 (2차)",
+  "owner": "claude",
+  "source": "playwright-mcp",
+  "scope": "broad",
+  "releaseFacing": true,
+  "coveragePacks": [
+    "core-routes-smoke",
+    "dashboard-core",
+    "ai-core",
+    "modal-detail-pack"
+  ],
+  "coveredSurfaces": [
+    "/",
+    "/login",
+    "/dashboard",
+    "Vibe Coding modal (현재도구/CI/CD 탭)",
+    "AI sidebar",
+    "AI chat (streaming)",
+    "/api/health",
+    "/api/version"
+  ],
+  "skippedSurfaces": [],
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "commitSha": "84c375ac517bd2aac6c56c4372883ad0f72b5a58",
+    "deploymentId": "dpl_v8108_20260402_2"
+  },
+  "checks": {
+    "total": 14,
+    "passed": 14,
+    "failed": 0
+  },
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "api",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-04-02T12:40:15+09:00",
+      "summary": "/api/health → healthy (db:7ms, cache:5ms, ai:5ms). /api/version → 8.10.8. 모든 API 정상.",
+      "evidence": "/api/health {status:healthy, database:connected, cache:connected, ai:connected, uptime:947, version:8.10.8}"
+    }
+  ],
+  "artifacts": [],
+  "checkDetails": [
+    {
+      "id": "landing-render",
+      "label": "랜딩 페이지 렌더링 + v8.10.8 표시",
+      "status": "pass"
+    },
+    {
+      "id": "vibe-coding-modal-open",
+      "label": "Vibe Coding 모달 열기 (3탭 확인)",
+      "status": "pass"
+    },
+    {
+      "id": "vibe-coding-copy-updated",
+      "label": "개요 '배포·CI/CD 파이프라인' 수정 텍스트 확인",
+      "status": "pass"
+    },
+    {
+      "id": "vibe-cicd-tab",
+      "label": "CI/CD 탭 내용 (로컬훅→GitLab→validate→deploy→Vercel 파이프라인)",
+      "status": "pass"
+    },
+    {
+      "id": "modal-close",
+      "label": "모달 닫기 + 포커스 복귀",
+      "status": "pass"
+    },
+    {
+      "id": "login-minimal-header",
+      "label": "/login 최소 헤더 (UnifiedProfileHeader 없음)",
+      "status": "pass"
+    },
+    {
+      "id": "guest-pin-flow",
+      "label": "게스트 PIN 로그인 (4231) → 랜딩 리다이렉트",
+      "status": "pass"
+    },
+    {
+      "id": "system-boot",
+      "label": "시스템 시작 버튼 → 4초 카운트다운 → 대시보드 이동",
+      "status": "pass"
+    },
+    {
+      "id": "dashboard-15-servers",
+      "label": "대시보드 15대 (온라인14, 위험1) + 리소스 경고 Top5",
+      "status": "pass"
+    },
+    {
+      "id": "ai-sidebar-open",
+      "label": "AI 사이드바 열기 (엔진 상태 Ready)",
+      "status": "pass"
+    },
+    {
+      "id": "ai-chat-stream",
+      "label": "AI 채팅 전송 → supervisor/stream/v2 200 응답",
+      "status": "pass"
+    },
+    {
+      "id": "ai-correct-answer",
+      "label": "lb-haproxy-dc1-01 CPU 85% 정확 식별",
+      "status": "pass"
+    },
+    {
+      "id": "api-health",
+      "label": "/api/health → healthy (db+cache+ai connected, v8.10.8)",
+      "status": "pass"
+    },
+    {
+      "id": "api-version",
+      "label": "/api/version → 8.10.8 + Next.js 16.1.6",
+      "status": "pass"
+    }
+  ],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "AI 스트리밍 응답 및 정확한 서버 식별 확인. lb-haproxy-dc1-01 CPU 85% 즉시 응답. 사전 캐시 가능성 있으나 응답 정확도 양호.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "/api/health db:7ms, cache:5ms, ai:5ms 전체 healthy. /api/system 401 재현 없음. sentry-tunnel 초기 ERR_ABORTED 4건은 네트워크 초기화 정상 패턴.",
+      "nextAction": ""
+    }
+  ],
+  "notes": "v8.10.8 2차 broad QA. Vibe Coding 모달 CI/CD 탭 상세 검증 포함. /login 최소 헤더, AI 채팅 스트리밍 모두 정상. 콘솔 에러 0건. /api/system 401 재현 없음. sentry-tunnel 초기 abort는 정상 동작."
+}

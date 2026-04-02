@@ -1,15 +1,15 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-04-02 21:31:53 KST
+> Generated at: 2026-04-02 21:41:24 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 211 |
-| Total Checks | 1564 |
-| Passed | 1496 |
+| Total Runs | 212 |
+| Total Checks | 1578 |
+| Passed | 1510 |
 | Failed | 62 |
 | Completed Items | 273 |
 | Pending Items | 0 |
@@ -18,11 +18,11 @@
 | Expert Domains Tracked | 6 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Run | QA-20260402-0212 (2026-04-02T12:31:52.936Z) |
+| Last Run | QA-20260402-0213 (2026-04-02T12:41:23.224Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260402-0212 (2026-04-02T12:31:52.936Z)
+Latest run: QA-20260402-0213 (2026-04-02T12:41:23.224Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -33,15 +33,15 @@ Latest run: QA-20260402-0212 (2026-04-02T12:31:52.936Z)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | api | checked | normal | QA 실행 전후 /api/health 및 /api/version 정상 응답. 빌드/함수 이상 없음. v8.10.8 배포 안정적. |
+| vercel | api | checked | normal | /api/health → healthy (db:7ms, cache:5ms, ai:5ms). /api/version → 8.10.8. 모든 API 정상. |
 
 ## Coverage (Latest Run)
 
 - Scope: broad
 - Release-Facing: yes
-- Deployment: dpl_v8108_20260402 / SHA 1d3e7a21
-- Coverage Packs: core-routes-smoke, dashboard-core, ai-core
-- Covered Surfaces: /, /login, /dashboard, AI sidebar, AI chat (streaming), FeatureCardModal, /api/health, /api/version
+- Deployment: dpl_v8108_20260402_2 / SHA 84c375ac
+- Coverage Packs: core-routes-smoke, dashboard-core, ai-core, modal-detail-pack
+- Covered Surfaces: /, /login, /dashboard, Vibe Coding modal (현재도구/CI/CD 탭), AI sidebar, AI chat (streaming), /api/health, /api/version
 - Skipped Surfaces: -
 
 ## Links (Latest Run)
@@ -376,6 +376,7 @@ Latest run: QA-20260402-0212 (2026-04-02T12:31:52.936Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260402-0213 | 2026-04-02T12:41:23.224Z | broad | yes | Playwright MCP Production QA - Frontend + AI Assistant v8.10.8 (2차) | 14 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260402-0212 | 2026-04-02T12:31:52.936Z | broad | yes | Playwright MCP Production QA - Frontend + AI Assistant v8.10.8 | 12 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260402-0211 | 2026-04-02T06:04:27.210Z | targeted | yes | Vercel Production Usage Evidence Follow-up | 2 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260402-0210 | 2026-04-02T05:34:08.897Z | targeted | no | Vercel production targeted QA - landing feature modal header interactions recheck | 8 | 0 | 0 | 0 | 0 | 0 |
@@ -395,5 +396,4 @@ Latest run: QA-20260402-0212 (2026-04-02T12:31:52.936Z)
 | QA-20260330-0196 | 2026-03-30T05:43:50.173Z | targeted | no | Local verification - Vibe Coding modal QA/Finish view | 5 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260330-0195 | 2026-03-30T04:14:36.238Z | targeted | no | Landing Page Playwright Analysis - 4 Cards, Modal Content, Architecture, History | 11 | 0 | 0 | 0 | 3 | 0 |
 | QA-20260329-0194 | 2026-03-28T15:21:59.221Z | targeted | yes | v8.10.6 Production QA - Security Hardening & Coverage Stabilization | 11 | 8 | 0 | 0 | 0 | 0 |
-| QA-20260327-0193 | 2026-03-26T15:12:25.263Z | targeted | no | Vercel production targeted QA recheck after cloud-run pre-init logging fix | 12 | 0 | 0 | 0 | 1 | 0 |
 
