@@ -29,6 +29,16 @@ Dual-Mode Supervisor 패턴으로 특화된 에이전트를 오케스트레이�
 
 ## 2. System Architecture
 
+### Multi-Agent Routing Diagram
+
+![Multi-Agent Routing](./multi-agent-routing.svg)
+
+### LLM Provider Fallback Chain
+
+![LLM Provider Fallback](./llm-provider-fallback.svg)
+
+### ASCII 상세 구조
+
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │  유저 브라우저                                                │

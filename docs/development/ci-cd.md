@@ -12,6 +12,17 @@
 
 현재 운영 기준은 **GitLab canonical repo + GitLab CI branch/MR validate(frontend + ai-engine) + main frontend/ai-engine deploy + frontend post-deploy smoke + 로컬 Docker CI 보강 검증** 입니다. 아래 GitHub Actions 내용은 과거/보조 레퍼런스로 유지되며, primary delivery path는 아닙니다.
 
+## 파이프라인 흐름
+
+![CI/CD Pipeline](../reference/architecture/system/cicd-pipeline.svg)
+
+| Stage | Runner | 트리거 조건 |
+|-------|--------|------------|
+| `validate` | self-hosted wsl2-docker (분 소진 0) | 코드 변경 push |
+| `deploy` | shared (~4분) | main + frontend 변경 |
+| `deploy_ai` | shared | main + ai-engine 변경 (신규 2026-04-03) |
+| `smoke` | shared | main + frontend 변경 |
+
 ```
 코드 변경 → pre-commit / pre-push / 필요 시 `npm run ci:local:docker`
         → feature branch push / Merge Request
