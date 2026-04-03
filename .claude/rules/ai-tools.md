@@ -19,16 +19,15 @@
 
 | Skill | 설명 |
 |-------|------|
-| `git-workflow` | Git 커밋/푸시/PR 워크플로우 |
-| `clean_gone` | 원격에서 삭제된 로컬 [gone] 브랜치 정리 (worktree 포함) |
+| `git-workflow` | GitLab canonical push + GitHub sync 워크플로우 (v2: GitLab 우선) |
+| `clean_gone` | 원격에서 삭제된 로컬 [gone] 브랜치 정리 (dry-run 후 삭제, worktree 포함) |
 | `cloud-run` | Cloud Run 배포 + GCP 비용 점검 |
-| `lint-smoke` | Lint + 테스트 스모크 체크 |
+| `lint-smoke` | Lint + 타입 + 테스트 스모크 체크 (node suite 포함) |
 | `code-review` | 6관점 심각도 우선 코드 리뷰 (go/conditional/no-go 판정) |
 | `doc-management` | 문서 현황 점검, 예산 관리 |
-| `qa-ops` | Vercel + Playwright MCP 기반 최종 QA 및 누적 기록 |
-| `state-triage` | 최신 QA/런타임 증거 기반 원인 분석과 다음 단계 결정 |
-| `env-sync` | preview/production 환경변수 drift 진단 및 동기화 |
-| `stitch-incremental` | Stitch AI 활용 컴포넌트 단위 UI 증분 개선 |
+| `qa-ops` | Vercel + Playwright MCP 기반 최종 QA 및 누적 기록 (scope 승격 규칙 포함) |
+| `state-triage` | QA/런타임/AI provider 상태 기반 원인 분석과 다음 단계 결정 |
+| `env-sync` | Vercel/Cloud Run 환경변수 drift 진단 및 동기화 (AI provider 키 포함) |
 
 > Built-in skills: `frontend-design` (UI 생성)
 

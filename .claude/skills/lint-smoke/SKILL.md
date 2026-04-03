@@ -1,7 +1,7 @@
 ---
 name: lint-smoke
 description: Run fast quality smoke checks for OpenManager before commit or deploy. Use when validating changed code quickly.
-version: v1.5.0
+version: v1.6.0
 user-invocable: true
 allowed-tools: Bash, Read, Grep
 disable-model-invocation: true
@@ -13,7 +13,7 @@ disable-model-invocation: true
 
 ## Trigger Keywords
 
-- "lint"
+- "/lint-smoke", "lint"
 - "smoke check"
 - "품질 체크"
 - "사전 검증"
@@ -22,22 +22,27 @@ disable-model-invocation: true
 
 1. 변경 범위 확인.
 - `git status --short`
+- `git diff --name-only HEAD~1` (최근 변경 파일 목록)
 - 코드 변경이 없고 문서만 변경이면 경량 체크만 수행
 
 2. 루트 스모크 체크 실행.
-- `npm run test:quick`
-- `npm run type-check`
-- `npm run lint`
+- `npm run test:quick` — Vitest 빠른 suite
+- `npm run type-check` — TypeScript strict
+- `npm run lint` — Biome
 
-3. `cloud-run/ai-engine` 변경 시 추가 체크.
+3. QA 스크립트 변경 시 node suite 추가 실행.
+- 대상: `scripts/qa/**`, `tests/unit/qa/**` 변경 시
+- `npm run test:node` — node 전용 suite (build-validation-evidence 등)
+
+4. `cloud-run/ai-engine` 변경 시 추가 체크.
 - `cd cloud-run/ai-engine && npm run type-check`
 - `cd cloud-run/ai-engine && npm run test`
 
-4. 결과 보고.
+5. 결과 보고.
 - 성공/실패 명령 분리
 - 실패 시 다음 조치 명령을 한 줄로 제시
 
-5. 리뷰 요청이 있으면 `code-review` 스킬로 연결.
+6. 리뷰 요청이 있으면 `code-review` 스킬로 연결.
 - 스모크 체크는 결함 분석이 아님
 - 리뷰 요청 시 `code-review` 스킬로 위임 (6관점 심각도 우선 분석)
 
@@ -45,11 +50,12 @@ disable-model-invocation: true
 
 ```text
 Lint Smoke Summary
-- test:quick: pass|fail
-- type-check: pass|fail
-- lint: pass|fail
-- ai-engine checks: skipped|pass|fail
-- ready to commit: yes|no
+- test:quick: pass | fail
+- type-check: pass | fail
+- lint: pass | fail
+- test:node: skipped | pass | fail (QA script 변경 시)
+- ai-engine checks: skipped | pass | fail
+- ready to commit: yes | no
 ```
 
 ## Related Skills
@@ -60,7 +66,6 @@ Lint Smoke Summary
 
 ## Changelog
 
-- 2026-02-16: v1.4.0 - v1.1.0에서 전면 재작성 (220행→56행), 공개용 톤 정리, 리뷰 스킬 연계 명시
-  - v1.2.x (2025-12): Vitest 4.0, Biome 전환 반영 (이력 통합)
-  - v1.1.0 (2025-11): 트리거 키워드 확장, 자동수정 로직 추가
-- 2026-02-26: v1.5.0 - 최종 QA는 `qa-ops` 스킬로 누적 추적(`reports/qa`) 수행 원칙 추가
+- 2026-02-16: v1.4.0 - v1.1.0에서 전면 재작성, 공개용 톤 정리, 리뷰 스킬 연계 명시
+- 2026-02-26: v1.5.0 - 최종 QA는 `qa-ops` 스킬로 누적 추적 원칙 추가
+- 2026-04-03: v1.6.0 - QA 스크립트 변경 시 `npm run test:node` 추가, 변경 파일 확인 단계 보강

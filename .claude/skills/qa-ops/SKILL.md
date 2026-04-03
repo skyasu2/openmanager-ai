@@ -1,9 +1,9 @@
 ---
 name: qa-ops
 description: Final QA workflow for OpenManager with Vercel+Playwright MCP default, local-dev fallback for non-AI checks, and mandatory cumulative logging to reports/qa.
-version: v1.2.0
+version: v1.3.0
 user-invocable: true
-allowed-tools: Bash, Read, Grep, mcp__playwright__browser_navigate, mcp__playwright__browser_snapshot, mcp__playwright__browser_click, mcp__playwright__browser_type, mcp__playwright__browser_wait_for, mcp__playwright__browser_console_messages, mcp__playwright__browser_network_requests
+allowed-tools: Bash, Read, Grep, mcp__playwright__browser_navigate, mcp__playwright__browser_snapshot, mcp__playwright__browser_click, mcp__playwright__browser_type, mcp__playwright__browser_wait_for, mcp__playwright__browser_console_messages, mcp__playwright__browser_network_requests, mcp__playwright__browser_take_screenshot, mcp__playwright__browser_fill_form
 disable-model-invocation: true
 ---
 
@@ -22,32 +22,41 @@ disable-model-invocation: true
 - "최종 QA", "품질검증", "릴리즈 QA"
 - "playwright mcp 검증"
 
+## Scope 선택 기준
+
+| scope | 언제 | 조건 |
+|-------|------|------|
+| `smoke` | 빠른 sanity check | core-routes만, 5분 이내 |
+| `targeted` | 특정 변경사항 검증 | coveredSurfaces 명시 필수 |
+| `broad` | 릴리즈 전 전체 검증 | **public snapshot baseline 자격** |
+| `release-gate` | 정식 릴리즈 게이트 | **public snapshot baseline 자격** |
+
+> `broad` 또는 `release-gate` run만 `validation-evidence.json` latestRun으로 승격됩니다.
+> `targeted + releaseFacing=true`는 게이트를 통과하지만 public snapshot을 교체하지 않습니다.
+
 ## Workflow
 
 1. 기준선 확인.
-- `reports/qa/production-qa-2026-02-25.md`
-- `reports/qa/qa-tracker.json`
-- `reports/qa/QA_STATUS.md`
+- `npm run qa:status` — 현재 누적 상태 요약
+- `cat reports/qa/QA_STATUS.md` — 상세 현황
+- `cat public/data/qa/validation-evidence.json | python3 -m json.tool` — public snapshot 확인
 
 2. 환경 선택.
-- 기본: **Vercel + Playwright MCP**
+- 기본: **Vercel Production + Playwright MCP** (`https://openmanager-ai.vercel.app`)
 - AI 기능 검증 불필요 시: 로컬 dev 서버 QA 허용
 
 3. 시나리오 실행.
 - 공통: landing/login/dashboard/modal
 - AI 필수: AI assistant/chat/분석 응답 경로
 - 비AI: UI/카피/레이아웃/기본 인증 동선 중심
-- **Data Parity (AI 검증 시)**: 현재 QA target의 base URL에서 `GET /api/health?service=parity`를 호출해 `slot.globalSlotIndex`를 기록하고, AI 응답 tool call의 `dataSlot.slotIndex`와 ±1 이내인지 확인
-  - production: `https://openmanager-ai.vercel.app`
-  - preview: 현재 preview deployment URL
-  - local-dev: `http://localhost:<port>`
+- **Data Parity (AI 검증 시)**: `GET /api/health?service=parity`로 `slot.globalSlotIndex` 기록, AI 응답 `dataSlot.slotIndex`와 ±1 이내인지 확인
 - run 입력에는 `scope`, `releaseFacing`, `coveredSurfaces`, `skippedSurfaces`를 기록합니다.
 
 4. 결과 기록(필수).
 - `cp reports/qa/templates/qa-run-input.example.json /tmp/qa-run-input.json`
-- `npm run qa:record -- --input /tmp/qa-run-input.json`
+- JSON 편집 후: `npm run qa:record -- --input /tmp/qa-run-input.json`
 - `npm run qa:status`
-- Vercel production의 `broad`/`release-gate` run 또는 `releaseFacing=true` run은 `expertAssessments`와 `usageChecks`를 포함합니다.
+- `broad`/`release-gate` run은 `expertAssessments`와 `usageChecks` 포함 필수
 
 5. 결과 보고.
 - 항상: target, run id, scope, checks, release decision
@@ -58,14 +67,14 @@ disable-model-invocation: true
 ```text
 QA Summary
 - result: go | conditional | no-go
-- target: vercel|local-dev
+- target: vercel-production | local-dev
 - run id: QA-YYYYMMDD-XXXX
-- scope: smoke|targeted|broad|release-gate
+- scope: smoke | targeted | broad | release-gate
 - checks: <total> (pass <n> / fail <n>)
 
 Optional when relevant:
 - covered surfaces: <list>
-- skipped surfaces: <list|none>
+- skipped surfaces: <list | none>
 - usage: <collection/result summary>
 - completed: <count>
 - pending: <count>
@@ -78,5 +87,6 @@ End with one short operator note for the highest remaining risk or `none in test
 ## Changelog
 
 - 2026-02-26: v1.0.0 - 최종 QA 운영/누적 추적 스킬 신설
-- 2026-03-25: v1.2.0 - Data Parity Contract 검증 단계 추가 (±1 슬롯 기준)
 - 2026-03-14: v1.1.0 - `state-triage`, `env-sync` 선행 규칙 추가
+- 2026-03-25: v1.2.0 - Data Parity Contract 검증 단계 추가 (±1 슬롯 기준)
+- 2026-04-03: v1.3.0 - 날짜 박힌 baseline 참조 제거, scope 승격 규칙 명시, Playwright 도구 추가
