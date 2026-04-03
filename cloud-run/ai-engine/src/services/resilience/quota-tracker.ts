@@ -319,7 +319,7 @@ export async function getQuotaStatus(
  * 사용 가능한 최적 Provider 선택 (Pre-emptive Fallback)
  */
 export async function selectAvailableProvider(
-  preferredOrder: LLMProviderName[] = ['cerebras', 'mistral', 'groq']
+  preferredOrder: LLMProviderName[] = ['groq', 'cerebras', 'mistral']
 ): Promise<{
   provider: LLMProviderName;
   status: QuotaStatus;

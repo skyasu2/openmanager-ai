@@ -344,7 +344,7 @@ export async function recordModelUsage(
   context: string = 'general'
 ): Promise<void> {
   // Track all providers for quota management
-  // Groq has lower limits (100K/day) so tracking is especially important for fallback scenarios
+  // Groq has lower request quota than Cerebras (1K RPD vs 14.4K RPD), so tracking is still important.
   await recordProviderUsage(provider as QuotaProviderName, tokensUsed);
 
   // Enhanced logging with context

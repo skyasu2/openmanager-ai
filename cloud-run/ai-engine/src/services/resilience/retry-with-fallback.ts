@@ -122,7 +122,7 @@ const PROVIDER_CHAIN: ProviderConfig[] = [
  * Get available providers based on current status
  */
 function getAvailableProviders(
-  preferredOrder: ProviderName[] = ['cerebras', 'groq', 'mistral'],
+  preferredOrder: ProviderName[] = ['groq', 'cerebras', 'mistral'],
   excludeProviders: ProviderName[] = []
 ): ProviderConfig[] {
   const status = checkProviderStatus();
@@ -245,7 +245,7 @@ function shouldRetry(error: unknown): boolean {
  */
 export async function generateTextWithRetry(
   options: GenerateTextOptions,
-  preferredOrder: ProviderName[] = ['cerebras', 'groq', 'mistral'],
+  preferredOrder: ProviderName[] = ['groq', 'cerebras', 'mistral'],
   config: Partial<RetryConfig> = {}
 ): Promise<RetryResult<Awaited<ReturnType<typeof generateText>>>> {
   const fullConfig = { ...DEFAULT_RETRY_CONFIG, ...config };
