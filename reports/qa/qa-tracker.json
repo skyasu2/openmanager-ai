@@ -2,15 +2,15 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-02T23:55:58.440Z"
+    "updatedAt": "2026-04-03T00:04:13.761Z"
   },
   "sequence": {
-    "nextRunNumber": 220
+    "nextRunNumber": 221
   },
   "summary": {
-    "totalRuns": 218,
-    "totalChecks": 1625,
-    "totalPassed": 1557,
+    "totalRuns": 219,
+    "totalChecks": 1632,
+    "totalPassed": 1564,
     "totalFailed": 62,
     "completionRate": 100,
     "completedItems": 273,
@@ -19,8 +19,8 @@
     "wontFixItems": 13,
     "expertDomainsTracked": 6,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260403-0219",
-    "lastRecordedAt": "2026-04-02T23:55:58.440Z"
+    "lastRunId": "QA-20260403-0220",
+    "lastRecordedAt": "2026-04-03T00:04:13.761Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -18698,6 +18698,54 @@
           "url": "https://vercel.com/dashboard"
         }
       ],
+      "artifacts": [],
+      "links": [],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260403-0220",
+      "recordedAt": "2026-04-03T00:04:13.761Z",
+      "recordedAtKst": "2026-04-03 09:04:13 KST",
+      "title": "Vercel Production QA after propagation of latest QA tracker summary",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260403-0220.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_7md7y6tdHrwxtwGvkzkmiSHKxmxD",
+        "deploymentUrl": "https://openmanager-kvlbjt6az-skyasus-projects.vercel.app",
+        "commitSha": "d02328575"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "coveragePacks": ["core-routes-smoke"],
+      "coveredSurfaces": ["/validation", "/api/health", "/api/version"],
+      "skippedSurfaces": [
+        "/",
+        "/login",
+        "/system-boot",
+        "/dashboard",
+        "AI sidebar",
+        "AI chat streaming",
+        "modal-detail-pack",
+        "observability-pack"
+      ],
+      "checks": {
+        "total": 7,
+        "passed": 7,
+        "failed": 0
+      },
+      "expertAssessments": [],
+      "usageChecks": [],
       "artifacts": [],
       "links": [],
       "expertCount": 0,

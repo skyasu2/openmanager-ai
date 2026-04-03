@@ -1,0 +1,54 @@
+{
+  "runId": "QA-20260403-0220",
+  "recordedAt": "2026-04-03T00:04:13.761Z",
+  "recordedAtKst": "2026-04-03 09:04:13 KST",
+  "runTitle": "Vercel Production QA after propagation of latest QA tracker summary",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_7md7y6tdHrwxtwGvkzkmiSHKxmxD",
+    "deploymentUrl": "https://openmanager-kvlbjt6az-skyasus-projects.vercel.app",
+    "commitSha": "d02328575"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "coveragePacks": ["core-routes-smoke"],
+  "coveredSurfaces": ["/validation", "/api/health", "/api/version"],
+  "skippedSurfaces": [
+    "/",
+    "/login",
+    "/system-boot",
+    "/dashboard",
+    "AI sidebar",
+    "AI chat streaming",
+    "modal-detail-pack",
+    "observability-pack"
+  ],
+  "checks": {
+    "total": 7,
+    "passed": 7,
+    "failed": 0
+  },
+  "expertAssessments": [],
+  "usageChecks": [],
+  "artifacts": [],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Production alias openmanager-ai.vercel.app resolved to deployment dpl_7md7y6tdHrwxtwGvkzkmiSHKxmxD.",
+    "Validation Evidence page now shows 218 total runs and 1625 total checks on deployed production.",
+    "Latest public snapshot run remains QA-20260402-0213 with scope broad.",
+    "Latest CI-backed proof run remains QA-20260322-0160 with scope targeted.",
+    "Browser console errors: 0.",
+    "/api/health returned healthy with db/cache/ai connected and version 8.10.8.",
+    "/api/version returned version 8.10.8 and Next.js 16.1.6."
+  ],
+  "links": []
+}
