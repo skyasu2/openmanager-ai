@@ -61,8 +61,8 @@
 - **GitHub `origin`은 공개용 code-only snapshot** 으로 취급합니다. private canonical repo와 히스토리가 다를 수 있으므로 `origin/main`을 기준 브랜치처럼 다루지 않습니다.
 - Codex는 push/fetch/rebase 전에 항상 `git remote -v`를 확인하고, 기본 push 대상은 `gitlab` 으로 선택합니다.
 - GitHub 공개 스냅샷 동기화는 `npm run sync:github` 으로만 수행합니다 (`scripts/sync/github-sync.sh`, 제외 목록: `.github-export-ignore`). `git push origin` 직접 실행 금지.
-- GitLab CI는 **활성** 상태입니다. `.gitlab-ci.yml` validate → deploy 2-stage 파이프라인이 코드 변경 push 시 실행됩니다. docs/reports 전용 push는 CI 스킵(분 예산 보존).
-- **배포 권한은 GitLab CI `deploy` job이 보유**합니다. Vercel Git Integration은 해제됐으며 `vercel build --prod` 후 `vercel deploy --prebuilt --prod` 경로로만 배포됩니다. validate 실패 시 배포가 차단됩니다.
+- GitLab CI는 **활성** 상태입니다. 현재 `.gitlab-ci.yml`은 `validate(frontend + ai-engine) → deploy(frontend) → deploy_ai_engine(cloud-run) → smoke(frontend)` 다단계 파이프라인으로 동작합니다. docs/reports 전용 push는 CI 스킵(분 예산 보존).
+- **배포 권한은 GitLab CI가 보유**합니다. Frontend는 `deploy` job에서 `vercel build --prod` 후 `vercel deploy --prebuilt --prod`, AI Engine은 `deploy_ai_engine` job에서 `cloud-run/ai-engine/deploy.sh`를 통해 Cloud Run production 배포를 수행합니다. validate 실패 시 각 배포가 차단됩니다.
 - 로컬 전체 검증 표준 경로는 `npm run ci:local:docker` (SSOT 유지, CI와 별개)입니다.
 
 ## 3) 공통 지식 및 유지보수 메모

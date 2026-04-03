@@ -145,7 +145,6 @@ stages:
     - if: '$CI_COMMIT_BRANCH == "main"'
       changes:
         - cloud-run/ai-engine/**/*
-        - .gitlab-ci.yml
       when: on_success
     - when: never
 
@@ -226,9 +225,9 @@ deploy_ai_engine:
   script:
     - echo "▶ AI Engine Cloud Run 배포..."
     - cd cloud-run/ai-engine
-    - # deploy.sh 내부의 free-tier guard를 신뢰하며 실행
-    - # LOCAL_DOCKER_PREFLIGHT=false 로 설정하여 CI 환경(Cloud Build)에서 빌드 유도
-    - LOCAL_DOCKER_PREFLIGHT=false bash deploy.sh
+    - # CI 환경은 google/cloud-sdk:slim 기반이라 local Docker preflight와 cleanup 의존성을 비활성화
+    - # Cloud Build / Cloud Run 배포만 수행하고, free-tier guard는 deploy.sh 내부에서 계속 검증
+    - LOCAL_DOCKER_PREFLIGHT=false CLEANUP_ENABLED=false bash deploy.sh
     - echo "✅ AI Engine 배포 완료"
   resource_group: ai-engine-production
   timeout: 15 minutes
