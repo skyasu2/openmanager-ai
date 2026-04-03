@@ -1,0 +1,4 @@
+interface:
+  display_name: "OpenManager Stitch Incremental"
+  short_description: "Incremental Stitch UI improvement flow"
+  default_prompt: "Use $openmanager-stitch-incremental to improve one existing OpenManager UI component incrementally."

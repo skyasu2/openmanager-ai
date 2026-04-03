@@ -1,0 +1,4 @@
+interface:
+  display_name: "OpenManager Cloud Run"
+  short_description: "Deploy, cost check, and CLI access for Cloud Run"
+  default_prompt: "Use $openmanager-cloud-run to deploy ai-engine, check GCP costs, or verify cloud CLI access."

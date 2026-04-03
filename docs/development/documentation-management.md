@@ -3,7 +3,7 @@
 > Owner: docs-platform
 > Status: Active Canonical
 > Doc type: Explanation
-> Last reviewed: 2026-03-30
+> Last reviewed: 2026-04-03
 > Canonical: docs/development/documentation-management.md
 > Tags: docs-governance,diataxis,docs-as-code
 
@@ -13,7 +13,7 @@
 
 1. 정책 원본: `.claude/rules/documentation.md`
 2. 에이전트 정책 요약: `AGENTS.md`
-3. Codex skill: `.codex/skills/openmanager-doc-management/SKILL.md`
+3. Codex skill: `.agents/skills/openmanager-doc-management/SKILL.md`
 4. Claude skill: `.claude/skills/doc-management/SKILL.md`
 5. 자동 점검: `scripts/docs/check-docs.sh`, `scripts/docs/doc-budget-report.js`
 6. WSL 전용 점검 래퍼: `scripts/wsl/docs-management-check.sh`
