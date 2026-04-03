@@ -14,7 +14,32 @@
 
 ## 파이프라인 흐름
 
-![CI/CD Pipeline](../reference/architecture/system/cicd-pipeline.svg)
+```mermaid
+flowchart LR
+    push([git push gitlab main])
+
+    subgraph validate["validate - self-hosted runner (분 소진 0)"]
+        vfe[validate_frontend]
+        vai[validate_ai_engine]
+    end
+
+    subgraph deploy_stage["deploy - shared runner"]
+        dep[deploy to Vercel prod]
+    end
+
+    subgraph deploy_ai_stage["deploy_ai - shared runner (ai-engine 변경 시만)"]
+        dai[deploy_ai_engine to Cloud Run]
+    end
+
+    subgraph smoke_stage["smoke"]
+        smk[post_deploy_smoke]
+    end
+
+    push --> vfe & vai
+    vfe & vai --> dep
+    dep --> dai & smk
+    dai --> smk
+```
 
 | Stage | Runner | 트리거 조건 |
 |-------|--------|------------|

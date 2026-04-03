@@ -29,13 +29,57 @@ Dual-Mode Supervisor 패턴으로 특화된 에이전트를 오케스트레이�
 
 ## 2. System Architecture
 
-### Multi-Agent Routing Diagram
+### Multi-Agent Routing
 
-![Multi-Agent Routing](./multi-agent-routing.svg)
+```mermaid
+flowchart TB
+    User([Browser]) --> Vercel
+    Vercel -->|POST + X-API-Key| Supervisor
+
+    subgraph CloudRun["Cloud Run AI Engine"]
+        Supervisor{"Supervisor\n15 regex patterns"}
+
+        subgraph Single["Single-Agent Mode (score ≤ 20)"]
+            NLQ[NLQ Agent]
+            Analyst[Analyst Agent]
+            Reporter[Reporter Agent]
+            Advisor[Advisor Agent]
+            Vision[Vision Agent]
+        end
+
+        subgraph Multi["Multi-Agent Mode (score ≥ 45)"]
+            Orch[Orchestrator]
+            Eval[Evaluator]
+            Opt[Optimizer]
+            Orch --> Eval --> Opt
+        end
+
+        Supervisor -->|simple| Single
+        Supervisor -->|complex| Orch
+        Orch -.->|routes to| NLQ & Analyst & Reporter & Advisor
+    end
+
+    Single & Multi --> Vercel
+```
 
 ### LLM Provider Fallback Chain
 
-![LLM Provider Fallback](./llm-provider-fallback.svg)
+```mermaid
+flowchart LR
+    subgraph Text["Text Agents Fallback"]
+        C["Cerebras\nqwen-3-235b (기본값)\ngpt-oss-120b 접근 불가"] -->|실패| G["Groq\nllama-3.3-70b-versatile"]
+        G -->|실패| M["Mistral\nmistral-large-latest"]
+    end
+
+    subgraph Vis["Vision Agent Fallback"]
+        GV["Gemini 2.5 Flash\n250 RPD 무료"] -->|실패| OR["OpenRouter\nnemotron-nano-12b-v2-vl:free\n⚠ content=null 주의"]
+    end
+
+    subgraph Sup["Support"]
+        ME["Mistral Embed (1024d)\nRAG 임베딩"]
+        TV["Tavily\n웹검색 1000크레딧/월"]
+    end
+```
 
 ### ASCII 상세 구조
 
