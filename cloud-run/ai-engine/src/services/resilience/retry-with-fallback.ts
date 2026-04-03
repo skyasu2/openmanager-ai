@@ -11,7 +11,7 @@
 import { generateText, type LanguageModel } from 'ai';
 import type { ProviderName } from '../ai-sdk/model-provider';
 import { logger } from '../../lib/logger';
-import { getCerebrasModelId } from '../../lib/config-parser';
+import { getCerebrasModelId, getGroqModelId } from '../../lib/config-parser';
 import {
   getCerebrasModel,
   getGroqModel,
@@ -109,7 +109,7 @@ const PROVIDER_CHAIN: ProviderConfig[] = [
   {
     name: 'groq',
     getModel: getGroqModel,
-    defaultModelId: () => 'llama-3.3-70b-versatile',
+    defaultModelId: () => getGroqModelId(),
   },
   {
     name: 'mistral',

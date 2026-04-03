@@ -47,6 +47,7 @@ describe('Provider Routes', () => {
       expect(json.available).toBeDefined();
       expect(json.info).toBeDefined();
       expect(json.info.cerebras.model).toBe('qwen-3-235b-a22b-instruct-2507');
+      expect(json.info.groq.model).toBe('meta-llama/llama-4-scout-17b-16e-instruct');
       expect(json.info.groq.role).toContain('Reporter');
     });
   });

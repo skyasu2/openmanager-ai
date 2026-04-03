@@ -44,8 +44,7 @@ export const ORCHESTRATOR_PROVIDER_ORDER: TextProvider[] = [
 
 export function getOrchestratorModel(): ModelResult | null {
   // Orchestrator uses generateObject (requires json_schema support).
-  // Groq llama-3.3-70b-versatile does NOT support json_schema,
-  // so prefer Cerebras/Mistral first.
+  // Keep Cerebras/Mistral first until the Groq path is validated for this route.
   return selectTextModel('Orchestrator', ORCHESTRATOR_PROVIDER_ORDER, {
     cbPrefix: 'orchestrator',
   });
@@ -74,15 +73,15 @@ export function getAgentConfig(name: string): AgentConfig | null {
 export function getAgentProviderOrder(agentName: string): ProviderName[] {
   switch (agentName) {
     case 'NLQ Agent':
-      return ['cerebras', 'groq', 'mistral'];
+      return ['groq', 'cerebras', 'mistral'];
     case 'Advisor Agent':
-      return ['mistral', 'cerebras', 'groq'];
+      return ['mistral', 'groq', 'cerebras'];
     case 'Analyst Agent':
-      return ['cerebras', 'groq', 'mistral'];
+      return ['groq', 'cerebras', 'mistral'];
     case 'Reporter Agent':
       return ['groq', 'cerebras', 'mistral'];
     default:
-      return ['cerebras', 'groq', 'mistral'];
+      return ['groq', 'cerebras', 'mistral'];
   }
 }
 

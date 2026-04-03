@@ -61,27 +61,27 @@ export const PROVIDER_QUOTAS: Record<ProviderName, ProviderQuota> = {
    * @see https://inference-docs.cerebras.ai/support/rate-limits
    * @updated 2026-04-03
    *
-   * - 1M TPD, 64K TPM, 30 RPM, 14.4K RPD
+   * - 1M TPD, 60K TPM, 30 RPM, 14.4K RPD
    * - Context: 8,192 tokens (Free Tier 제한)
    */
   cerebras: {
     dailyTokenLimit: 1_000_000,
     requestsPerMinute: 30,
-    tokensPerMinute: 64_000,
+    tokensPerMinute: 60_000,
     requestsPerDay: 14_400,
   },
   /**
-   * Groq Free Tier (llama-3.3-70b-versatile)
+   * Groq Free Tier (meta-llama/llama-4-scout-17b-16e-instruct)
    * @see https://console.groq.com/docs/rate-limits
-   * @updated 2026-03-06
+   * @updated 2026-04-03 - llama-3.3-70b(100K TPD/12K TPM) → llama-4-scout(500K TPD/30K TPM)
    *
-   * - 100K TPD, 12K TPM, 30 RPM, 1K RPD
-   * - Context: 128K tokens
+   * - 500K TPD, 30K TPM, 30 RPM, 1K RPD
+   * - Context: 512K tokens
    */
   groq: {
-    dailyTokenLimit: 100_000,
+    dailyTokenLimit: 500_000,
     requestsPerMinute: 30,
-    tokensPerMinute: 12_000,
+    tokensPerMinute: 30_000,
     requestsPerDay: 1_000,
   },
   mistral: {
@@ -91,20 +91,23 @@ export const PROVIDER_QUOTAS: Record<ProviderName, ProviderQuota> = {
     requestsPerDay: 500,
   },
   /**
-   * Gemini Flash-Lite (Vision Agent)
+   * Gemini 2.5 Flash (Vision Agent)
    * @see https://ai.google.dev/gemini-api/docs/models/gemini
-   * @updated 2026-03-06
+   * @updated 2026-04-03 - RPD 수정 250→500 (공식 문서 재확인)
    *
    * Free Tier Limits (gemini-2.5-flash):
-   * - 250 RPD, 10 RPM
+   * - 500 RPD, 10 RPM
    * - 250,000 TPM
    * - 1M context window
+   *
+   * Note: gemini-2.5-flash-lite는 RPD 1,000 / RPM 15으로 더 여유롭지만
+   * 현재 Vision Agent는 1M context window가 필요하여 flash 유지
    */
   gemini: {
     dailyTokenLimit: 250_000 * 60 * 24, // TPM * 60min * 24h (theoretical max)
     requestsPerMinute: 10,
     tokensPerMinute: 250_000,
-    requestsPerDay: 250,
+    requestsPerDay: 500,
   },
   /**
    * Tavily Web Search API

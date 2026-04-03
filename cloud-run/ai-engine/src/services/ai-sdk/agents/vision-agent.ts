@@ -11,7 +11,7 @@
  * - 1M token context
  *
  * Fallback: OpenRouter (nvidia/nemotron-nano-12b-v2-vl:free)
- * - Used when Gemini quota exceeded (250 RPD)
+ * - Used when Gemini quota exceeded (500 RPD)
  * - Basic vision capabilities maintained
  *
  * Graceful Degradation: When both unavailable, Vision features are disabled

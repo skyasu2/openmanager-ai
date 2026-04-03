@@ -9,7 +9,7 @@
 
 import { Hono } from 'hono';
 import type { Context } from 'hono';
-import { getCerebrasModelId } from '../lib/config-parser';
+import { getCerebrasModelId, getGroqModelId } from '../lib/config-parser';
 import {
   toggleProvider,
   getProviderToggleState,
@@ -31,8 +31,8 @@ providersRouter.get('/', (c: Context) => {
     toggle: toggleState,
     available: availableStatus,
     info: {
-      cerebras: { role: 'Primary (Supervisor/Orchestrator/NLQ/Analyst/RAG-LLM) + Advisor fallback', model: getCerebrasModelId() },
-      groq: { role: 'Primary (Reporter) + text fallback', model: 'llama-3.3-70b-versatile' },
+      cerebras: { role: 'Primary (Orchestrator) + text secondary fallback', model: getCerebrasModelId() },
+      groq: { role: 'Primary (Supervisor/Verifier/NLQ/Analyst/Reporter) + text fallback', model: getGroqModelId() },
       mistral: { role: 'Primary (Advisor) + RAG Embedding + Last-Resort Fallback', model: 'mistral-large-latest / mistral-embed' },
     },
   });

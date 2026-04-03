@@ -9,6 +9,7 @@ import {
   getCerebrasModelId,
   getGeminiApiKey,
   getGroqApiKey,
+  getGroqModelId,
   getMistralApiKey,
   getOpenRouterApiKey,
   getOpenRouterVisionFallbackModelIds,
@@ -147,7 +148,7 @@ export function getCerebrasModel(
 }
 
 export function getGroqModel(
-  modelId: string = 'llama-3.3-70b-versatile'
+  modelId: string = getGroqModelId()
 ): LanguageModel {
   const groq = getGroqProvider();
   return asLanguageModel(groq(modelId));

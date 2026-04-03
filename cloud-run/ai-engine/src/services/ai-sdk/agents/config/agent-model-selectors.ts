@@ -1,5 +1,5 @@
 import type { LanguageModel } from 'ai';
-import { getCerebrasModelId, getOpenRouterVisionModelId } from '../../../../lib/config-parser';
+import { getCerebrasModelId, getGroqModelId, getOpenRouterVisionModelId } from '../../../../lib/config-parser';
 import { logger } from '../../../../lib/logger';
 import { getCircuitBreaker } from '../../../resilience/circuit-breaker';
 import {
@@ -26,7 +26,8 @@ export type TextProvider = 'cerebras' | 'groq' | 'mistral';
 
 const TEXT_PROVIDER_MODELS: Record<TextProvider, { factory: (id: string) => LanguageModel; modelId: () => string }> = {
   cerebras: { factory: getCerebrasModel, modelId: () => getCerebrasModelId() },
-  groq:     { factory: getGroqModel,     modelId: () => 'llama-3.3-70b-versatile' },
+  // llama-4-scout: 500K TPD / 30K TPM / 512K ctx / tool calling ✅ (2026-04-03 llama-3.3-70b 교체)
+  groq:     { factory: getGroqModel,     modelId: () => getGroqModelId() },
   mistral:  { factory: getMistralModel,  modelId: () => 'mistral-large-latest' },
 };
 
@@ -100,24 +101,36 @@ export function selectTextModel(
 // Per-Agent Model Selectors (1-line delegation)
 // ============================================================================
 
-/** NLQ model: Cerebras → Groq → Mistral */
+/**
+ * NLQ model: Groq(llama-4-scout) → Cerebras(qwen-3, Preview) → Mistral
+ * Groq primary: Production stable, 500K TPD, tool calling ✅
+ * Cerebras secondary: Preview 상태이나 1,400 tok/s 속도 이점 유지
+ */
 export function getNlqModel(): ModelResult | null {
-  return selectTextModel('NLQ Agent', ['cerebras', 'groq', 'mistral']);
+  return selectTextModel('NLQ Agent', ['groq', 'cerebras', 'mistral']);
 }
 
-/** Analyst model: Cerebras → Groq → Mistral */
+/**
+ * Analyst model: Groq(llama-4-scout) → Cerebras(qwen-3, Preview) → Mistral
+ * 512K context로 장기 시계열 분석에 유리
+ */
 export function getAnalystModel(): ModelResult | null {
-  return selectTextModel('Analyst Agent', ['cerebras', 'groq', 'mistral']);
+  return selectTextModel('Analyst Agent', ['groq', 'cerebras', 'mistral']);
 }
 
-/** Reporter model: Groq → Cerebras → Mistral */
+/**
+ * Reporter model: Groq(llama-4-scout) → Cerebras(qwen-3, Preview) → Mistral
+ */
 export function getReporterModel(): ModelResult | null {
   return selectTextModel('Reporter Agent', ['groq', 'cerebras', 'mistral']);
 }
 
-/** Advisor model: Mistral → Cerebras → Groq */
+/**
+ * Advisor model: Mistral → Groq(llama-4-scout) → Cerebras(qwen-3, Preview)
+ * Mistral primary: 복잡한 추론/권고에 최적, Groq으로 부하 분산
+ */
 export function getAdvisorModel(): ModelResult | null {
-  return selectTextModel('Advisor Agent', ['mistral', 'cerebras', 'groq']);
+  return selectTextModel('Advisor Agent', ['mistral', 'groq', 'cerebras']);
 }
 
 // ============================================================================
