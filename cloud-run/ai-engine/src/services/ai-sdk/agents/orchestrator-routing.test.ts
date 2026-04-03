@@ -88,7 +88,11 @@ vi.mock('../../../lib/logger', () => ({
   },
 }));
 
-import { executeForcedRouting } from './orchestrator-routing';
+import {
+  ORCHESTRATOR_PROVIDER_ORDER,
+  executeForcedRouting,
+  getAgentProviderOrder,
+} from './orchestrator-routing';
 
 function createRetryResult(options: {
   text?: string;
@@ -211,5 +215,18 @@ describe('executeForcedRouting', () => {
     expect(result?.success).toBe(true);
     expect(result?.response).toContain('api-01');
     expect(mockGenerateTextWithRetry).toHaveBeenCalledTimes(2);
+  });
+});
+
+describe('provider order policy', () => {
+  it('uses Groq-first order for text agents and default routing', () => {
+    expect(getAgentProviderOrder('NLQ Agent')).toEqual(['groq', 'cerebras', 'mistral']);
+    expect(getAgentProviderOrder('Analyst Agent')).toEqual(['groq', 'cerebras', 'mistral']);
+    expect(getAgentProviderOrder('Reporter Agent')).toEqual(['groq', 'cerebras', 'mistral']);
+    expect(getAgentProviderOrder('Unknown Agent')).toEqual(['groq', 'cerebras', 'mistral']);
+  });
+
+  it('keeps Orchestrator structured-output provider order as documented', () => {
+    expect(ORCHESTRATOR_PROVIDER_ORDER).toEqual(['cerebras', 'mistral', 'groq']);
   });
 });
