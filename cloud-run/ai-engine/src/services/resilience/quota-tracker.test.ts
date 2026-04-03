@@ -295,6 +295,14 @@ describe('QuotaTracker — selectAvailableProvider', () => {
     vi.useRealTimers();
   });
 
+  it('기본 우선순위는 groq 우선으로 선택한다', async () => {
+    const result = await selectAvailableProvider();
+
+    expect(result).not.toBeNull();
+    expect(result!.provider).toBe('groq');
+    expect(result!.isPreemptiveFallback).toBe(false);
+  });
+
   it('모든 provider 가용 시 첫 번째 반환', async () => {
     const result = await selectAvailableProvider(['cerebras', 'mistral', 'groq']);
 
