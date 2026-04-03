@@ -232,12 +232,12 @@ As of **April 2, 2026 (v8.10.8)**, this project is backed by tracked QA runs, no
 - **QA SSOT**: [reports/qa/QA_STATUS.md](reports/qa/QA_STATUS.md)
 - **Latest broad production QA**: [QA-20260402-0208](reports/qa/runs/2026/qa-run-QA-20260402-0208.json) — `vercel-production`, 18/18 pass, covers landing → login → guest PIN → dashboard → AI chat → streaming
 - **Latest release-facing QA**: [QA-20260326-0190](reports/qa/runs/2026/qa-run-QA-20260326-0190.json) — v8.10.0 broad production, 15 checks
-- **CI pipeline**: GitLab CI validate → deploy, self-hosted WSL2 Docker runner for type/lint/test gate
+- **CI pipeline**: GitLab CI validate(frontend+ai-engine) on self-hosted WSL2 runner, frontend deploy on shared runner via `vercel build --prod` + `vercel deploy --prebuilt --prod`
 
 Portfolio evidence includes:
 
 - real Vercel production Playwright browser checks
-- tracked QA SSOT in-repo (207 runs, 1,500+ checks recorded)
+- tracked QA SSOT in-repo (200+ runs, 1,500+ checks recorded)
 - GitLab CI pipeline passing on every merge to main
 
 ## Known Limitations

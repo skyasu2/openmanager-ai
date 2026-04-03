@@ -84,10 +84,18 @@ function run() {
   console.log(
     `- expert domains tracked/open-gaps: ${experts.length}/${openExpertGaps.length}`
   );
-  console.log(`- last run: ${summary.lastRunId || '-'} @ ${summary.lastRecordedAt || '-'}`);
+  console.log(
+    `- last counted run: ${summary.lastRunId || '-'} @ ${summary.lastRecordedAt || '-'}`
+  );
+  console.log(
+    `- latest recorded run: ${summary.latestRecordedRunId || '-'} @ ${summary.latestRecordedAt || '-'}`
+  );
   if (latestRun) {
     console.log(
       `- latest scope/release-facing: ${latestRun.scope || 'legacy'}/${latestRun.releaseFacing ? 'yes' : 'no'}`
+    );
+    console.log(
+      `- latest counts toward summary: ${latestRun.countsTowardSummary === false ? 'no' : 'yes'}`
     );
     if (latestRun.environment?.deploymentId || latestRun.environment?.commitSha) {
       console.log(
@@ -166,7 +174,7 @@ function run() {
     console.log('\nRecent Runs');
     for (const runRecord of recentRuns) {
       console.log(
-        `- ${runRecord.runId}: ${runRecord.title} (scope ${runRecord.scope || 'legacy'}, checks ${runRecord.checks?.total ?? 0}, completed ${runRecord.completedCount ?? 0}, pending ${runRecord.pendingCount ?? 0}, wont-fix ${runRecord.wontFixCount ?? 0})`
+        `- ${runRecord.runId}: ${runRecord.title} (scope ${runRecord.scope || 'legacy'}, summary ${runRecord.countsTowardSummary === false ? 'no' : 'yes'}, checks ${runRecord.checks?.total ?? 0}, completed ${runRecord.completedCount ?? 0}, pending ${runRecord.pendingCount ?? 0}, wont-fix ${runRecord.wontFixCount ?? 0})`
       );
     }
   }

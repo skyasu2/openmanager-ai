@@ -425,6 +425,65 @@ describe('build-validation-evidence', () => {
     expect(writtenSnapshot.summary.totalChecks).toBe(8);
   });
 
+  it('ignores non-summary verification runs when deriving aggregate snapshot totals', () => {
+    const snapshot = buildValidationEvidenceSnapshot({
+      summary: {
+        totalRuns: 99,
+        totalChecks: 999,
+        completedItems: 0,
+        expertDomainsOpenGaps: 0,
+        wontFixItems: 0,
+        lastRecordedAt: '2026-03-25T00:00:00.000Z',
+      },
+      runs: [
+        {
+          runId: 'QA-20260325-0182',
+          title: 'Production baseline',
+          scope: 'broad',
+          recordedAt: '2026-03-25T00:00:00.000Z',
+          checks: { total: 8, passed: 8, failed: 0 },
+          environment: {
+            target: 'vercel-production',
+            commitSha: '123456',
+          },
+          links: [],
+        },
+        {
+          runId: 'QA-20260325-0183',
+          title: 'GitHub proof',
+          scope: 'targeted',
+          recordedAt: '2026-03-25T01:00:00.000Z',
+          checks: { total: 4, passed: 4, failed: 0 },
+          countsTowardSummary: false,
+          environment: {
+            target: 'github-actions',
+            commitSha: '654321',
+          },
+          links: [
+            {
+              type: 'github-actions-run',
+              label: 'CI run',
+              url: 'https://github.com/example/repo/actions/runs/183',
+            },
+          ],
+        },
+      ],
+      items: {},
+      experts: {},
+    });
+
+    expect(snapshot.summary).toEqual({
+      totalRuns: 1,
+      totalChecks: 8,
+      completedItems: 0,
+      expertDomainsOpenGaps: 0,
+      wontFixItems: 0,
+      lastRecordedAt: '2026-03-25T00:00:00.000Z',
+    });
+    expect(snapshot.latestProofRun.runId).toBe('QA-20260325-0183');
+    expect(snapshot.latestPublicRun.runId).toBe('QA-20260325-0182');
+  });
+
   it('only writes public validation evidence for the canonical tracker path', () => {
     const tempDir = createTempDir();
     const canonicalTrackerPath =

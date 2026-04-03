@@ -250,6 +250,10 @@ describe('QA scripts', () => {
     );
     expectOutputContainsIfCaptured(
       statusResult.stdout,
+      '- latest counts toward summary: yes'
+    );
+    expectOutputContainsIfCaptured(
+      statusResult.stdout,
       '- latest coverage packs: core-routes-smoke, dashboard-core, ai-core'
     );
     expectOutputContainsIfCaptured(
@@ -478,7 +482,63 @@ describe('QA scripts', () => {
     expect(statusResult.status).toBe(0);
     expectOutputContainsIfCaptured(
       statusResult.stdout,
-      '- QA-20260325-0182: Malformed run (scope targeted, checks 0, completed 0, pending 0, wont-fix 0)'
+      '- QA-20260325-0182: Malformed run (scope targeted, summary yes, checks 0, completed 0, pending 0, wont-fix 0)'
+    );
+  });
+
+  it('records non-summary verification runs without inflating aggregate totals', () => {
+    const tempDir = createTempWorkspace();
+    const inputPath = writeInputFile(
+      tempDir,
+      createValidPayload({
+        scope: 'targeted',
+        releaseFacing: false,
+        countsTowardSummary: false,
+        coveragePacks: ['core-routes-smoke'],
+        coveredSurfaces: ['/validation', '/api/health', '/api/version'],
+        skippedSurfaces: ['/'],
+        expertAssessments: [],
+        usageChecks: [],
+      })
+    );
+
+    const recordResult = runNodeScript(
+      RECORD_QA_RUN_SCRIPT,
+      ['--input', inputPath],
+      {
+        cwd: tempDir,
+      }
+    );
+
+    expect(recordResult.status).toBe(0);
+
+    const trackerPath = join(tempDir, 'reports', 'qa', 'qa-tracker.json');
+    const tracker = JSON.parse(readFileSync(trackerPath, 'utf8'));
+    expect(tracker.summary.totalRuns).toBe(0);
+    expect(tracker.summary.totalChecks).toBe(0);
+    expect(tracker.summary.lastRunId).toBeNull();
+    expect(tracker.summary.latestRecordedRunId).toMatch(/^QA-\d{8}-\d+$/);
+
+    const runFilePath = findGeneratedRunFile(tempDir);
+    const runRecord = JSON.parse(readFileSync(runFilePath, 'utf8'));
+    expect(runRecord.countsTowardSummary).toBe(false);
+
+    const statusResult = runNodeScript(PRINT_QA_STATUS_SCRIPT, [], {
+      cwd: tempDir,
+    });
+
+    expect(statusResult.status).toBe(0);
+    expectOutputContainsIfCaptured(
+      statusResult.stdout,
+      '- last counted run: - @ -'
+    );
+    expectOutputContainsIfCaptured(
+      statusResult.stdout,
+      '- latest recorded run: QA-'
+    );
+    expectOutputContainsIfCaptured(
+      statusResult.stdout,
+      '- latest counts toward summary: no'
     );
   });
 

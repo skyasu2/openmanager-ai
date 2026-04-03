@@ -60,5 +60,6 @@
     "/api/version returned version 8.10.8 and Next.js 16.1.6.",
     "Landing page rendered v8.10.8 after auth bootstrap."
   ],
-  "links": []
+  "links": [],
+  "countsTowardSummary": false
 }

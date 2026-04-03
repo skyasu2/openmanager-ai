@@ -1,15 +1,15 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-04-03 09:04:28 KST
+> Generated at: 2026-04-03 09:15:52 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 219 |
-| Total Checks | 1632 |
-| Passed | 1564 |
+| Total Runs | 213 |
+| Total Checks | 1588 |
+| Passed | 1520 |
 | Failed | 62 |
 | Completed Items | 273 |
 | Pending Items | 0 |
@@ -18,7 +18,8 @@
 | Expert Domains Tracked | 6 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Run | QA-20260403-0220 (2026-04-03T00:04:13.761Z) |
+| Last Counted Run | QA-20260402-0217 (2026-04-02T14:54:37.522Z) |
+| Latest Recorded Run | QA-20260403-0220 (2026-04-03T00:04:13.761Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
@@ -38,6 +39,7 @@ Latest run: QA-20260403-0220 (2026-04-03T00:04:13.761Z)
 
 - Scope: targeted
 - Release-Facing: no
+- Counts Toward Summary: no
 - Deployment: dpl_7md7y6tdHrwxtwGvkzkmiSHKxmxD / SHA d0232857
 - Coverage Packs: core-routes-smoke
 - Covered Surfaces: /validation, /api/health, /api/version
@@ -373,26 +375,26 @@ Latest run: QA-20260403-0220 (2026-04-03T00:04:13.761Z)
 
 ## Recent Runs
 
-| Run ID | Time (UTC) | Scope | Release-Facing | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
-|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
-| QA-20260403-0220 | 2026-04-03T00:04:13.761Z | targeted | no | Vercel Production QA after propagation of latest QA tracker summary | 7 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260403-0219 | 2026-04-02T23:55:58.440Z | targeted | no | Vercel Production QA after propagation of production snapshot guard verification | 7 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260403-0218 | 2026-04-02T23:18:38.480Z | targeted | no | Vercel Production QA after public snapshot production-only fix | 7 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260402-0217 | 2026-04-02T14:54:37.522Z | targeted | yes | Playwright MCP targeted QA - 최근 변경사항 코드리뷰 기반 검증 v8.10.8 | 10 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260402-0216 | 2026-04-02T14:32:42.507Z | targeted | no | Vercel Production Validation Snapshot Propagation QA after tracker sync | 7 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260402-0215 | 2026-04-02T14:18:45.787Z | targeted | no | Vercel Production Validation Snapshot Follow-up QA after public snapshot selection fix | 8 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260402-0214 | 2026-04-02T13:56:16.719Z | targeted | no | Vercel Production Validation Evidence Targeted QA | 8 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260402-0213 | 2026-04-02T12:41:23.224Z | broad | yes | Playwright MCP Production QA - Frontend + AI Assistant v8.10.8 (2차) | 14 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260402-0212 | 2026-04-02T12:31:52.936Z | broad | yes | Playwright MCP Production QA - Frontend + AI Assistant v8.10.8 | 12 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260402-0211 | 2026-04-02T06:04:27.210Z | targeted | yes | Vercel Production Usage Evidence Follow-up | 2 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260402-0210 | 2026-04-02T05:34:08.897Z | targeted | no | Vercel production targeted QA - landing feature modal header interactions recheck | 8 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260402-0209 | 2026-04-02T05:13:39.016Z | targeted | no | Local dev targeted QA - landing feature modal header interactions recheck | 8 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260402-0208 | 2026-04-02T01:45:03.294Z | broad | yes | Vercel production broad release-facing QA - v8.10.8 core routes, dashboard, AI | 18 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260402-0207 | 2026-04-02T01:12:12.154Z | targeted | no | Vercel production targeted smoke - landing bootstrap copy hidden after deploy | 4 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260402-0206 | 2026-04-01T22:52:39.393Z | targeted | no | Local dev targeted QA - landing bootstrap auth copy hidden | 3 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260402-0205 | 2026-04-01T22:35:47.941Z | targeted | no | Vercel production targeted smoke - post deploy verification for cd763e634 | 6 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260401-0204 | 2026-04-01T12:15:47.977Z | targeted | no | Local dev Playwright QA - login header minimalization verification | 3 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260401-0203 | 2026-04-01T11:42:07.583Z | targeted | no | Production Playwright QA - landing route/button/modal surface survey | 13 | 0 | 0 | 0 | 1 | 0 |
-| QA-20260331-0202 | 2026-03-31T12:08:54.272Z | targeted | no | Local dev Playwright QA - Vibe Coding modal CI/CD recheck after clean restart | 6 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260331-0201 | 2026-03-31T11:58:25.987Z | targeted | no | Local dev Playwright QA - Vibe Coding modal CI/CD regression check | 5 | 0 | 1 | 0 | 0 | 0 |
+| Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
+|---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260403-0220 | 2026-04-03T00:04:13.761Z | targeted | no | no | Vercel Production QA after propagation of latest QA tracker summary | 7 | 0 | 0 | 0 | 0 | 0 |
+| QA-20260403-0219 | 2026-04-02T23:55:58.440Z | targeted | no | no | Vercel Production QA after propagation of production snapshot guard verification | 7 | 0 | 0 | 0 | 0 | 0 |
+| QA-20260403-0218 | 2026-04-02T23:18:38.480Z | targeted | no | no | Vercel Production QA after public snapshot production-only fix | 7 | 0 | 0 | 0 | 0 | 0 |
+| QA-20260402-0217 | 2026-04-02T14:54:37.522Z | targeted | yes | yes | Playwright MCP targeted QA - 최근 변경사항 코드리뷰 기반 검증 v8.10.8 | 10 | 0 | 0 | 0 | 0 | 0 |
+| QA-20260402-0216 | 2026-04-02T14:32:42.507Z | targeted | no | no | Vercel Production Validation Snapshot Propagation QA after tracker sync | 7 | 0 | 0 | 0 | 0 | 0 |
+| QA-20260402-0215 | 2026-04-02T14:18:45.787Z | targeted | no | no | Vercel Production Validation Snapshot Follow-up QA after public snapshot selection fix | 8 | 0 | 0 | 0 | 0 | 0 |
+| QA-20260402-0214 | 2026-04-02T13:56:16.719Z | targeted | no | no | Vercel Production Validation Evidence Targeted QA | 8 | 0 | 0 | 0 | 0 | 0 |
+| QA-20260402-0213 | 2026-04-02T12:41:23.224Z | broad | yes | yes | Playwright MCP Production QA - Frontend + AI Assistant v8.10.8 (2차) | 14 | 0 | 0 | 0 | 0 | 0 |
+| QA-20260402-0212 | 2026-04-02T12:31:52.936Z | broad | yes | yes | Playwright MCP Production QA - Frontend + AI Assistant v8.10.8 | 12 | 0 | 0 | 0 | 0 | 0 |
+| QA-20260402-0211 | 2026-04-02T06:04:27.210Z | targeted | yes | yes | Vercel Production Usage Evidence Follow-up | 2 | 1 | 0 | 0 | 0 | 0 |
+| QA-20260402-0210 | 2026-04-02T05:34:08.897Z | targeted | no | yes | Vercel production targeted QA - landing feature modal header interactions recheck | 8 | 0 | 0 | 0 | 0 | 0 |
+| QA-20260402-0209 | 2026-04-02T05:13:39.016Z | targeted | no | yes | Local dev targeted QA - landing feature modal header interactions recheck | 8 | 0 | 0 | 0 | 0 | 0 |
+| QA-20260402-0208 | 2026-04-02T01:45:03.294Z | broad | yes | yes | Vercel production broad release-facing QA - v8.10.8 core routes, dashboard, AI | 18 | 0 | 0 | 0 | 0 | 0 |
+| QA-20260402-0207 | 2026-04-02T01:12:12.154Z | targeted | no | yes | Vercel production targeted smoke - landing bootstrap copy hidden after deploy | 4 | 1 | 0 | 0 | 0 | 0 |
+| QA-20260402-0206 | 2026-04-01T22:52:39.393Z | targeted | no | yes | Local dev targeted QA - landing bootstrap auth copy hidden | 3 | 1 | 0 | 0 | 0 | 0 |
+| QA-20260402-0205 | 2026-04-01T22:35:47.941Z | targeted | no | yes | Vercel production targeted smoke - post deploy verification for cd763e634 | 6 | 0 | 0 | 0 | 0 | 0 |
+| QA-20260401-0204 | 2026-04-01T12:15:47.977Z | targeted | no | yes | Local dev Playwright QA - login header minimalization verification | 3 | 1 | 0 | 0 | 0 | 0 |
+| QA-20260401-0203 | 2026-04-01T11:42:07.583Z | targeted | no | yes | Production Playwright QA - landing route/button/modal surface survey | 13 | 0 | 0 | 0 | 1 | 0 |
+| QA-20260331-0202 | 2026-03-31T12:08:54.272Z | targeted | no | yes | Local dev Playwright QA - Vibe Coding modal CI/CD recheck after clean restart | 6 | 1 | 0 | 0 | 0 | 0 |
+| QA-20260331-0201 | 2026-03-31T11:58:25.987Z | targeted | no | yes | Local dev Playwright QA - Vibe Coding modal CI/CD regression check | 5 | 0 | 1 | 0 | 0 | 0 |
 

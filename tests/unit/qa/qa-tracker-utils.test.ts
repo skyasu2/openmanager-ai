@@ -38,6 +38,8 @@ describe('qa-tracker-utils', () => {
       expertDomainsOpenGaps: 0,
       lastRunId: null,
       lastRecordedAt: null,
+      latestRecordedRunId: null,
+      latestRecordedAt: null,
     });
     expect(typeof repaired.meta.createdAt).toBe('string');
     expect(typeof repaired.meta.updatedAt).toBe('string');
@@ -85,6 +87,41 @@ describe('qa-tracker-utils', () => {
       expertDomainsOpenGaps: 1,
       lastRunId: 'QA-20260325-0183',
       lastRecordedAt: '2026-03-25T01:00:00.000Z',
+      latestRecordedRunId: 'QA-20260325-0183',
+      latestRecordedAt: '2026-03-25T01:00:00.000Z',
+    });
+  });
+
+  it('excludes meta verification runs from summary totals while preserving latest recorded run', () => {
+    const tracker = {
+      runs: [
+        {
+          runId: 'QA-20260325-0183',
+          recordedAt: '2026-03-25T01:00:00.000Z',
+          checks: { total: 4, passed: 4, failed: 0 },
+        },
+        {
+          runId: 'QA-20260325-0184',
+          recordedAt: '2026-03-25T02:00:00.000Z',
+          checks: { total: 7, passed: 7, failed: 0 },
+          countsTowardSummary: false,
+        },
+      ],
+      items: {},
+      experts: {},
+    };
+
+    recalculateSummary(tracker);
+
+    expect(tracker.summary).toMatchObject({
+      totalRuns: 1,
+      totalChecks: 4,
+      totalPassed: 4,
+      totalFailed: 0,
+      lastRunId: 'QA-20260325-0183',
+      lastRecordedAt: '2026-03-25T01:00:00.000Z',
+      latestRecordedRunId: 'QA-20260325-0184',
+      latestRecordedAt: '2026-03-25T02:00:00.000Z',
     });
   });
 });

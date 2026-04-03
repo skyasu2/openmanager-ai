@@ -50,5 +50,6 @@
     "/api/health returned healthy with db/cache/ai connected and version 8.10.8.",
     "/api/version returned version 8.10.8 and Next.js 16.1.6."
   ],
-  "links": []
+  "links": [],
+  "countsTowardSummary": false
 }

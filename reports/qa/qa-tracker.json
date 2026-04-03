@@ -8,9 +8,9 @@
     "nextRunNumber": 221
   },
   "summary": {
-    "totalRuns": 219,
-    "totalChecks": 1632,
-    "totalPassed": 1564,
+    "totalRuns": 213,
+    "totalChecks": 1588,
+    "totalPassed": 1520,
     "totalFailed": 62,
     "completionRate": 100,
     "completedItems": 273,
@@ -19,8 +19,10 @@
     "wontFixItems": 13,
     "expertDomainsTracked": 6,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260403-0220",
-    "lastRecordedAt": "2026-04-03T00:04:13.761Z"
+    "lastRunId": "QA-20260402-0217",
+    "lastRecordedAt": "2026-04-02T14:54:37.522Z",
+    "latestRecordedRunId": "QA-20260403-0220",
+    "latestRecordedAt": "2026-04-03T00:04:13.761Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -18396,7 +18398,8 @@
       "completedCount": 0,
       "pendingCount": 0,
       "deferredCount": 0,
-      "wontFixCount": 0
+      "wontFixCount": 0,
+      "countsTowardSummary": false
     },
     {
       "runId": "QA-20260402-0215",
@@ -18454,7 +18457,8 @@
       "completedCount": 0,
       "pendingCount": 0,
       "deferredCount": 0,
-      "wontFixCount": 0
+      "wontFixCount": 0,
+      "countsTowardSummary": false
     },
     {
       "runId": "QA-20260402-0216",
@@ -18513,7 +18517,8 @@
       "completedCount": 0,
       "pendingCount": 0,
       "deferredCount": 0,
-      "wontFixCount": 0
+      "wontFixCount": 0,
+      "countsTowardSummary": false
     },
     {
       "runId": "QA-20260402-0217",
@@ -18646,7 +18651,8 @@
       "completedCount": 0,
       "pendingCount": 0,
       "deferredCount": 0,
-      "wontFixCount": 0
+      "wontFixCount": 0,
+      "countsTowardSummary": false
     },
     {
       "runId": "QA-20260403-0219",
@@ -18705,7 +18711,8 @@
       "completedCount": 0,
       "pendingCount": 0,
       "deferredCount": 0,
-      "wontFixCount": 0
+      "wontFixCount": 0,
+      "countsTowardSummary": false
     },
     {
       "runId": "QA-20260403-0220",
@@ -18753,7 +18760,8 @@
       "completedCount": 0,
       "pendingCount": 0,
       "deferredCount": 0,
-      "wontFixCount": 0
+      "wontFixCount": 0,
+      "countsTowardSummary": false
     }
   ],
   "experts": {

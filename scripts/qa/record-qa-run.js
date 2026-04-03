@@ -732,6 +732,14 @@ function inferReleaseFacing(rawValue, environment, scope) {
   return scope === 'broad' || scope === 'release-gate';
 }
 
+function inferCountsTowardSummary(rawValue) {
+  if (rawValue === undefined) {
+    return true;
+  }
+
+  return toBoolean(rawValue, true);
+}
+
 function requiresVercelUsageCheck(environment, scope, releaseFacing) {
   if (!isVercelProductionEnvironment(environment)) {
     return false;
@@ -823,6 +831,7 @@ function run() {
   const environment = normalizeEnvironment(payload.environment);
   const scope = normalizeRunScope(payload.scope, environment);
   const releaseFacing = inferReleaseFacing(payload.releaseFacing, environment, scope);
+  const countsTowardSummary = inferCountsTowardSummary(payload.countsTowardSummary);
   const coveredSurfaces = normalizeStringList(payload.coveredSurfaces);
   const skippedSurfaces = normalizeStringList(payload.skippedSurfaces);
   const coveragePacks = normalizeCoveragePacks(payload.coveragePacks);
@@ -1016,6 +1025,7 @@ function run() {
     environment,
     scope,
     releaseFacing,
+    countsTowardSummary,
     coveragePacks,
     coveredSurfaces,
     skippedSurfaces,
@@ -1050,6 +1060,7 @@ function run() {
     environment,
     scope,
     releaseFacing,
+    countsTowardSummary,
     coveragePacks,
     coveredSurfaces,
     skippedSurfaces,

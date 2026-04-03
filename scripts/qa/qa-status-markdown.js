@@ -63,7 +63,10 @@ function statusMarkdown(tracker) {
   lines.push(`| Expert Open Gaps | ${tracker.summary.expertDomainsOpenGaps || 0} |`);
   lines.push(`| Completion Rate | ${tracker.summary.completionRate}% |`);
   lines.push(
-    `| Last Run | ${tracker.summary.lastRunId || '-'} (${tracker.summary.lastRecordedAt || '-'}) |`
+    `| Last Counted Run | ${tracker.summary.lastRunId || '-'} (${tracker.summary.lastRecordedAt || '-'}) |`
+  );
+  lines.push(
+    `| Latest Recorded Run | ${tracker.summary.latestRecordedRunId || '-'} (${tracker.summary.latestRecordedAt || '-'}) |`
   );
   lines.push('');
   lines.push('## Expert Domain Assessment (Latest Run)');
@@ -102,6 +105,7 @@ function statusMarkdown(tracker) {
   lines.push('');
   lines.push(`- Scope: ${latestRunScope}`);
   lines.push(`- Release-Facing: ${latestRunReleaseFacing ? 'yes' : 'no'}`);
+  lines.push(`- Counts Toward Summary: ${latestRun?.countsTowardSummary === false ? 'no' : 'yes'}`);
   if (latestRunEnvironment.deploymentId || latestRunEnvironment.commitSha) {
     const deploymentParts = [];
     if (latestRunEnvironment.deploymentId) {
@@ -224,14 +228,14 @@ function statusMarkdown(tracker) {
   lines.push('');
   lines.push('## Recent Runs');
   lines.push('');
-  lines.push('| Run ID | Time (UTC) | Scope | Release-Facing | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |');
-  lines.push('|---|---|---|---|---|---:|---:|---:|---:|---:|---:|');
+  lines.push('| Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |');
+  lines.push('|---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|');
   if (recentRuns.length === 0) {
-    lines.push('| - | - | - | - | - | 0 | 0 | 0 | 0 | 0 | 0 |');
+    lines.push('| - | - | - | - | - | - | 0 | 0 | 0 | 0 | 0 | 0 |');
   } else {
     for (const run of recentRuns) {
       lines.push(
-        `| ${run.runId} | ${run.recordedAt} | ${run.scope || 'legacy'} | ${run.releaseFacing ? 'yes' : 'no'} | ${run.title} | ${run.checks.total} | ${run.completedCount} | ${run.pendingCount || 0} | ${run.deferredCount || 0} | ${run.wontFixCount || 0} | ${run.expertNeedsImprovementCount || 0} |`
+        `| ${run.runId} | ${run.recordedAt} | ${run.scope || 'legacy'} | ${run.releaseFacing ? 'yes' : 'no'} | ${run.countsTowardSummary === false ? 'no' : 'yes'} | ${run.title} | ${run.checks.total} | ${run.completedCount} | ${run.pendingCount || 0} | ${run.deferredCount || 0} | ${run.wontFixCount || 0} | ${run.expertNeedsImprovementCount || 0} |`
       );
     }
   }

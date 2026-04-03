@@ -247,8 +247,9 @@ npm run ci:local:docker
 # canonical 배포
 git push gitlab main
 # → Pre-push Hook: TypeScript 검증 + 빠른 테스트 (~78초)
-# → GitLab CI validate
-# → GitLab CI deploy: vercel build + vercel deploy --prod
+# → GitLab CI validate(frontend)
+# → GitLab CI deploy(frontend): vercel build --prod + vercel deploy --prebuilt --prod
+# → GitLab CI post_deploy_smoke
 
 # 긴급 시 Hook 우회
 HUSKY=0 git push gitlab main

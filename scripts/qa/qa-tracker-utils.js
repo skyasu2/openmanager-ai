@@ -5,16 +5,18 @@ function recalculateSummary(tracker) {
   tracker.experts =
     tracker.experts && typeof tracker.experts === 'object' ? tracker.experts : {};
 
-  const totalRuns = tracker.runs.length;
-  const totalChecks = tracker.runs.reduce(
+  const countedRuns = tracker.runs.filter((run) => run?.countsTowardSummary !== false);
+
+  const totalRuns = countedRuns.length;
+  const totalChecks = countedRuns.reduce(
     (sum, run) => sum + (run.checks?.total || 0),
     0
   );
-  const totalPassed = tracker.runs.reduce(
+  const totalPassed = countedRuns.reduce(
     (sum, run) => sum + (run.checks?.passed || 0),
     0
   );
-  const totalFailed = tracker.runs.reduce(
+  const totalFailed = countedRuns.reduce(
     (sum, run) => sum + (run.checks?.failed || 0),
     0
   );
@@ -36,7 +38,8 @@ function recalculateSummary(tracker) {
     (expert) => expert.lastImprovementNeeded
   ).length;
 
-  const lastRun = tracker.runs[tracker.runs.length - 1] || null;
+  const lastCountedRun = countedRuns[countedRuns.length - 1] || null;
+  const latestRecordedRun = tracker.runs[tracker.runs.length - 1] || null;
   tracker.summary = {
     totalRuns,
     totalChecks,
@@ -49,8 +52,10 @@ function recalculateSummary(tracker) {
     wontFixItems,
     expertDomainsTracked,
     expertDomainsOpenGaps,
-    lastRunId: lastRun ? lastRun.runId : null,
-    lastRecordedAt: lastRun ? lastRun.recordedAt : null,
+    lastRunId: lastCountedRun ? lastCountedRun.runId : null,
+    lastRecordedAt: lastCountedRun ? lastCountedRun.recordedAt : null,
+    latestRecordedRunId: latestRecordedRun ? latestRecordedRun.runId : null,
+    latestRecordedAt: latestRecordedRun ? latestRecordedRun.recordedAt : null,
   };
 }
 
