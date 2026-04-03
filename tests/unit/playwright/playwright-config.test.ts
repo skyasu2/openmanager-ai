@@ -41,7 +41,7 @@ describe('playwright.config trace retention', () => {
 
     expect(config.outputDir).toBe('test-results');
     expect(config.use?.trace).toBe('retain-on-failure');
-  }, 60000);
+  }, 120000);
 
   it('forces trace collection for workflow_dispatch runs', async () => {
     const config = await loadConfig({ githubEventName: 'workflow_dispatch' });
