@@ -6,6 +6,7 @@ import { createOpenAI } from '@ai-sdk/openai';
 import type { LanguageModel } from 'ai';
 import {
   getCerebrasApiKey,
+  getCerebrasModelId,
   getGeminiApiKey,
   getGroqApiKey,
   getMistralApiKey,
@@ -139,7 +140,7 @@ function asLanguageModel(model: unknown): LanguageModel {
 }
 
 export function getCerebrasModel(
-  modelId: string = 'gpt-oss-120b'
+  modelId: string = getCerebrasModelId()
 ): LanguageModel {
   const cerebras = getCerebrasProvider();
   return asLanguageModel(cerebras(modelId));

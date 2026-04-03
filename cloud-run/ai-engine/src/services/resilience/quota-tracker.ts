@@ -57,9 +57,9 @@ export interface QuotaStatus {
 
 export const PROVIDER_QUOTAS: Record<ProviderName, ProviderQuota> = {
   /**
-   * Cerebras Free Tier (gpt-oss-120b)
+   * Cerebras Free Tier (current default: qwen-3-235b-a22b-instruct-2507)
    * @see https://inference-docs.cerebras.ai/support/rate-limits
-   * @updated 2026-03-06
+   * @updated 2026-04-03
    *
    * - 1M TPD, 64K TPM, 30 RPM, 14.4K RPD
    * - Context: 8,192 tokens (Free Tier 제한)

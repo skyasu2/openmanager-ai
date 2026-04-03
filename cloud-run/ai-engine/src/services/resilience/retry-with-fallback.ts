@@ -11,6 +11,7 @@
 import { generateText, type LanguageModel } from 'ai';
 import type { ProviderName } from '../ai-sdk/model-provider';
 import { logger } from '../../lib/logger';
+import { getCerebrasModelId } from '../../lib/config-parser';
 import {
   getCerebrasModel,
   getGroqModel,
@@ -96,24 +97,24 @@ const RETRY_ERROR_CODES = [
 interface ProviderConfig {
   name: ProviderName;
   getModel: (modelId?: string) => LanguageModel;
-  defaultModelId: string;
+  defaultModelId: () => string;
 }
 
 const PROVIDER_CHAIN: ProviderConfig[] = [
   {
     name: 'cerebras',
     getModel: getCerebrasModel,
-    defaultModelId: 'gpt-oss-120b',
+    defaultModelId: () => getCerebrasModelId(),
   },
   {
     name: 'groq',
     getModel: getGroqModel,
-    defaultModelId: 'llama-3.3-70b-versatile',
+    defaultModelId: () => 'llama-3.3-70b-versatile',
   },
   {
     name: 'mistral',
     getModel: getMistralModel,
-    defaultModelId: 'mistral-large-latest',
+    defaultModelId: () => 'mistral-large-latest',
   },
 ];
 
@@ -274,6 +275,7 @@ export async function generateTextWithRetry(
 
     const providerConfig = availableProviders[0];
     const { name: provider, getModel, defaultModelId } = providerConfig;
+    const modelId = defaultModelId();
 
     let retryCount = 0;
 
@@ -282,10 +284,10 @@ export async function generateTextWithRetry(
 
       try {
         logger.info(
-          `[RetryWithFallback] Trying ${provider}/${defaultModelId} (attempt ${retryCount + 1}/${fullConfig.maxRetries + 1})`
+          `[RetryWithFallback] Trying ${provider}/${modelId} (attempt ${retryCount + 1}/${fullConfig.maxRetries + 1})`
         );
 
-        const model = getModel(defaultModelId);
+        const model = getModel(modelId);
 
         // Create timeout promise (E-2 fix: clearTimeout on resolve)
         let timeoutId: ReturnType<typeof setTimeout>;
@@ -321,7 +323,7 @@ export async function generateTextWithRetry(
 
         attempts.push({
           provider,
-          modelId: defaultModelId,
+            modelId,
           attempt: retryCount + 1,
           durationMs,
         });
@@ -334,7 +336,7 @@ export async function generateTextWithRetry(
           success: true,
           result,
           provider,
-          modelId: defaultModelId,
+          modelId,
           attempts,
           totalDurationMs: Date.now() - startTime,
           usedFallback: excludedProviders.length > 0,
@@ -345,7 +347,7 @@ export async function generateTextWithRetry(
 
         attempts.push({
           provider,
-          modelId: defaultModelId,
+          modelId,
           attempt: retryCount + 1,
           error: errorMessage,
           durationMs,

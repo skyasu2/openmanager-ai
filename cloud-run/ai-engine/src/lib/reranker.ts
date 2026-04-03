@@ -16,6 +16,7 @@
 import { generateText, type LanguageModel } from 'ai';
 import { logger } from './logger';
 import { getGroqModel, getCerebrasModel } from '../services/ai-sdk/model-provider-core';
+import { getCerebrasModelId } from './config-parser';
 import { withTimeout } from './with-timeout';
 
 // ============================================================================
@@ -288,7 +289,7 @@ function getRerankModel(): LanguageModel | null {
     // Groq unavailable, fall back to Cerebras
   }
   try {
-    return getCerebrasModel('gpt-oss-120b');
+    return getCerebrasModel(getCerebrasModelId());
   } catch {
     return null;
   }

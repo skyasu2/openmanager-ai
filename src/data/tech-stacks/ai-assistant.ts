@@ -9,11 +9,11 @@ export const AI_ASSISTANT_TECH_STACK: TechItem[] = [
     description:
       '세계 최대 AI 칩 Wafer-Scale Engine(WSE-3) 기반 추론 서비스. 850,000개 코어가 단일 웨이퍼에 집적되어 GPU 클러스터의 통신 병목 없이 초고속 추론 제공',
     implementation:
-      '→ Orchestrator + NLQ Agent에서 사용. 24M 토큰/일 무료 티어로 서버 조회 및 의도 분류 담당',
-    version: 'Llama 3.3 70B',
+      '→ Supervisor + Orchestrator + NLQ + Analyst에서 사용. 현재 기본값은 qwen-3-235b-a22b-instruct-2507이며 CEREBRAS_MODEL_ID로 계정 접근 가능 모델에 맞춰 조정',
+    version: 'Qwen 3 235B A22B',
     status: 'active',
     icon: '🧠',
-    tags: ['WSE-3', '24M/day', '웨이퍼스케일'],
+    tags: ['WSE-3', 'Qwen 235B', '웨이퍼스케일'],
     type: 'commercial',
   },
   {

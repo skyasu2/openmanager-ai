@@ -46,6 +46,8 @@ describe('Provider Routes', () => {
       expect(json.toggle).toEqual({ cerebras: true, groq: true, mistral: true });
       expect(json.available).toBeDefined();
       expect(json.info).toBeDefined();
+      expect(json.info.cerebras.model).toBe('qwen-3-235b-a22b-instruct-2507');
+      expect(json.info.groq.role).toContain('Reporter');
     });
   });
 

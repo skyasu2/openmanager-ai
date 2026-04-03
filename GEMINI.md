@@ -67,22 +67,21 @@
 - broad/release 변경은 push 전 `npm run ci:local:docker`를 추가합니다.
 - GitHub 공개 snapshot 동기화는 기본 push 루프에 섞지 말고, 명시적 요청 시 `npm run sync:github` 으로만 수행합니다.
 
-## 🧰 Project Custom Skills
+## 🧰 Project Custom Skills (v2.0 Optimized)
 
-Gemini CLI의 프로젝트 반복 워크플로우는 공식 `Skills` 형식에 맞춰 개발자 로컬의 `<project>/.gemini/skills/**/*.md` 에 둡니다. 이 경로는 현재 git 추적 대상이 아니므로, 저장소에는 규칙만 남기고 실제 skill 파일은 각 로컬 환경에서 관리합니다.
+Gemini CLI의 프로젝트 반복 워크플로우는 공식 `Skills` 형식에 맞춰 `.gemini/skills/**/*.md` 에 둡니다.
 
-로컬 환경에 탑재된 스킬 셋은 다음과 같습니다:
-- `openmanager-state-triage` - 최근 QA/런타임/배포 상태 분석 후 다음 액션 결정
-- `openmanager-env-sync` - `.env.local` ↔ Vercel preview/production env drift 진단 및 동기화
-- `openmanager-qa-ops` - Vercel + Playwright MCP 최종 QA 및 `reports/qa` 누적 기록
-- `openmanager-cloud-run` - Cloud Run deploy, free-tier guard, GCP 비용 점검
-- `openmanager-code-review` - Agile 6-perspective 코드 리뷰 및 severity-first 회귀 위험 점검
-- `openmanager-doc-management` - 문서 예산(budget) 점검, 중복 감지 및 통합/보관 제안
-- `openmanager-git-workflow` - Conventional commit 기반의 안전한 git 워크플로우 및 PR 생성
-- `openmanager-lint-smoke` - 커밋/푸시 전 빠른 정적 분석(Lint/Type/Test) 스모크 검증
-- `openmanager-stitch-incremental` - 기존 상태 아키텍처를 유지하며 점진적으로 UI 개선 및 프로토타이핑
+최적화된 핵심 스킬 셋은 다음과 같습니다:
+- `openmanager-qa-state` (v2.0) - **[통합]** 원인 분석, 런타임 진단(MCP), QA 실행 및 결과 누적 기록을 한 번에 처리합니다.
+- `openmanager-git-workflow` (v2.0) - **[강화]** 사전 품질 검증(`lint-smoke` 포함) 후 GitLab(운영)과 GitHub(공개)의 역할을 구분하여 안전하게 커밋/푸시합니다.
+- `openmanager-doc-management` (v2.0) - **[슬림화]** 문서 예산(`npm run docs:budget`) 기반의 현황 점검 및 중복 제거를 제안합니다.
+- `openmanager-env-sync` - `.env.local` ↔ Vercel preview/production env drift 진단 및 동기화.
+- `openmanager-cloud-run` - Cloud Run deploy, free-tier guard, GCP 비용 점검.
+- `openmanager-code-review` - Agile 6-perspective 코드 리뷰 및 severity-first 회귀 위험 점검.
+- `openmanager-stitch-incremental` - 기존 상태 아키텍처를 유지하며 점진적으로 UI 개선 및 프로토타이핑.
 
-해당 스킬 문서들(`SKILL.md`)이 발견되면 에이전트는 상황에 따라 능동적으로 지침을 읽고 실행합니다.
+해당 스킬 문서들(`SKILL.md`)은 상황에 따라 능동적으로 참조되어 최상의 엔지니어링 품질을 보장합니다.
+
 
 ## 🛠 Technical Principles
 When writing or analyzing code, ALWAYS adhere to the following principles:

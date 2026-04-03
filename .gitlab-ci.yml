@@ -31,6 +31,7 @@ workflow:
 stages:
   - validate
   - deploy
+  - deploy_ai
   - smoke
 
 # ─── 공통 캐시 ────────────────────────────────────────────────────────────────
@@ -139,6 +140,15 @@ stages:
       when: on_success
     - when: never
 
+.main_ai_engine_changes_only: &main_ai_engine_changes_only
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+      changes:
+        - cloud-run/ai-engine/**/*
+        - .gitlab-ci.yml
+      when: on_success
+    - when: never
+
 .ai_engine_npm_cache: &ai_engine_npm_cache
   cache:
     key:
@@ -204,6 +214,25 @@ deploy:
   resource_group: production  # production deploy 동시 실행 방지
   timeout: 10 minutes
   # validate 성공 시에만 실행 (GitLab이 stage 순서로 자동 보장)
+
+deploy_ai_engine:
+  stage: deploy_ai
+  <<: *main_ai_engine_changes_only
+  image: google/cloud-sdk:slim
+  before_script:
+    - echo $GCP_SERVICE_KEY | base64 -d > gcp-key.json
+    - gcloud auth activate-service-account --key-file=gcp-key.json
+    - gcloud config set project $GCP_PROJECT_ID
+  script:
+    - echo "▶ AI Engine Cloud Run 배포..."
+    - cd cloud-run/ai-engine
+    - # deploy.sh 내부의 free-tier guard를 신뢰하며 실행
+    - # LOCAL_DOCKER_PREFLIGHT=false 로 설정하여 CI 환경(Cloud Build)에서 빌드 유도
+    - LOCAL_DOCKER_PREFLIGHT=false bash deploy.sh
+    - echo "✅ AI Engine 배포 완료"
+  resource_group: ai-engine-production
+  timeout: 15 minutes
+  # validate_ai_engine 성공 시에만 실행
 
 # ─── production smoke job ──────────────────────────────────────────────────────
 post_deploy_smoke:

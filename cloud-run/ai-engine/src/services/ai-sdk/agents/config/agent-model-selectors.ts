@@ -1,5 +1,5 @@
 import type { LanguageModel } from 'ai';
-import { getOpenRouterVisionModelId } from '../../../../lib/config-parser';
+import { getCerebrasModelId, getOpenRouterVisionModelId } from '../../../../lib/config-parser';
 import { logger } from '../../../../lib/logger';
 import { getCircuitBreaker } from '../../../resilience/circuit-breaker';
 import {
@@ -24,10 +24,10 @@ export interface ModelResult {
 
 export type TextProvider = 'cerebras' | 'groq' | 'mistral';
 
-const TEXT_PROVIDER_MODELS: Record<TextProvider, { factory: (id: string) => LanguageModel; modelId: string }> = {
-  cerebras: { factory: getCerebrasModel, modelId: 'gpt-oss-120b' },
-  groq:     { factory: getGroqModel,     modelId: 'llama-3.3-70b-versatile' },
-  mistral:  { factory: getMistralModel,  modelId: 'mistral-large-latest' },
+const TEXT_PROVIDER_MODELS: Record<TextProvider, { factory: (id: string) => LanguageModel; modelId: () => string }> = {
+  cerebras: { factory: getCerebrasModel, modelId: () => getCerebrasModelId() },
+  groq:     { factory: getGroqModel,     modelId: () => 'llama-3.3-70b-versatile' },
+  mistral:  { factory: getMistralModel,  modelId: () => 'mistral-large-latest' },
 };
 
 // ============================================================================
@@ -74,11 +74,12 @@ export function selectTextModel(
     if (!status[provider] || excluded.has(provider)) continue;
 
     const config = TEXT_PROVIDER_MODELS[provider];
+    const modelId = config.modelId();
     try {
       return {
-        model: config.factory(config.modelId),
+        model: config.factory(modelId),
         provider,
-        modelId: config.modelId,
+        modelId,
       };
     } catch {
       const nextIdx = providerOrder.indexOf(provider) + 1;

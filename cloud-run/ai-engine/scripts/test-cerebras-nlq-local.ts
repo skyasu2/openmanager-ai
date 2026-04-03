@@ -1,7 +1,6 @@
 import { createCerebras } from '@ai-sdk/cerebras';
 import { generateText } from 'ai';
 import * as path from 'path';
-import * as fs from 'fs';
 import * as dotenv from 'dotenv';
 
 async function main() {
@@ -15,7 +14,7 @@ async function main() {
   }
 
   const cerebras = createCerebras({ apiKey });
-  const modelId = 'gpt-oss-120b'; // Maintain the project standard
+  const modelId = process.env.CEREBRAS_MODEL_ID?.replace(/^"|"$/g, '') || 'qwen-3-235b-a22b-instruct-2507';
   
   console.log(`--- Final Validation of Cerebras Agent via ${modelId} ---`);
   console.log('Query: "SELECT * FROM server_metrics WHERE cpu_usage > 90;"');
@@ -39,14 +38,14 @@ async function main() {
     });
 
     const duration = Date.now() - startTime;
-    console.log('\n[gpt-oss-120b Response]');
+    console.log(`\n[${modelId} Response]`);
     console.log(result.text || '(Empty response - model may require more specific context)');
     console.log(`\n⚡ Latency: ${duration}ms`);
     
     if (result.text) {
-      console.log('✅ Cerebras gpt-oss-120b is working correctly for its specialized role!');
+      console.log(`✅ Cerebras ${modelId} is working correctly for its specialized role!`);
     } else {
-      console.log('⚠️  Cerebras API connected, but gpt-oss-120b returned no text. This can happen with highly specialized models on simple prompts.');
+      console.log(`⚠️  Cerebras API connected, but ${modelId} returned no text. This can happen with specialized models on simple prompts.`);
     }
   } catch (error) {
     console.error('\n❌ Test failed:', error);

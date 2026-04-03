@@ -11,7 +11,7 @@
 
 import { generateText, type LanguageModel } from 'ai';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
-import { getSupabaseConfig } from './config-parser';
+import { getCerebrasModelId, getSupabaseConfig } from './config-parser';
 import { getCerebrasModel } from '../services/ai-sdk/model-provider-core';
 import { logger } from './logger';
 import {
@@ -47,14 +47,14 @@ let supabaseClient: SupabaseClient | null = null;
 let llamaLlm: LanguageModel | null = null;
 
 /**
- * Initialize LlamaIndex with Cerebras AI (gpt-oss-120b)
+ * Initialize LlamaIndex with the configured Cerebras text model.
  */
 export async function initializeLlamaIndex(): Promise<boolean> {
   if (isInitialized) return true;
 
   try {
-    // Configure Cerebras LLM instance (120B MoE, 1M TPD)
-    llamaLlm = getCerebrasModel('gpt-oss-120b');
+    const cerebrasModelId = getCerebrasModelId();
+    llamaLlm = getCerebrasModel(cerebrasModelId);
 
     // Initialize Supabase client
     const supabaseConfig = getSupabaseConfig();
@@ -66,7 +66,7 @@ export async function initializeLlamaIndex(): Promise<boolean> {
     }
 
     isInitialized = true;
-    logger.info('[LlamaIndex] Initialized with Cerebras AI (gpt-oss-120b)');
+    logger.info(`[LlamaIndex] Initialized with Cerebras AI (${cerebrasModelId})`);
     return true;
   } catch (error) {
     logger.error('[LlamaIndex] Initialization failed:', error);

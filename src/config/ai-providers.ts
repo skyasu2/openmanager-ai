@@ -30,10 +30,10 @@ export const AI_PROVIDERS: AIProviderConfig[] = [
   {
     name: 'Cerebras',
     role: 'Supervisor/NLQ/Verifier',
-    model: 'gpt-oss-120b',
-    description: 'Primary reasoning, routing, and RAG-LLM tasks',
+    model: 'qwen-3-235b-a22b-instruct-2507',
+    description: 'Primary reasoning, routing, and RAG-LLM tasks (configurable via env)',
     color: 'bg-blue-500',
-    dailyTokenLimit: '24M tokens/day',
+    dailyTokenLimit: '1M tokens/day',
   },
   {
     name: 'Groq',

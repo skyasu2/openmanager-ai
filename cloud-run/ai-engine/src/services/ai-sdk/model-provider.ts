@@ -2,13 +2,13 @@
  * AI SDK Model Provider
  *
  * Vercel AI SDK 6 based model provider with quad-provider architecture:
- * - Primary: Cerebras (gpt-oss-120b, 120B MoE, 1M tokens/day, 3000 tok/s)
+ * - Primary: Cerebras (configurable model id; default qwen-3-235b-a22b-instruct-2507)
  * - Fallback: Groq (llama-3.3-70b-versatile, 70B, 100K tokens/day)
  * - Last Resort: Mistral (mistral-large-latest, Frontier, ~2 RPM free tier)
  * - Vision: Gemini Flash (1M context, Vision, Search Grounding)
  *
  * @version 4.0.0
- * @updated 2026-02-23 - Cerebras upgraded to gpt-oss-120b (120B MoE, tool calling)
+ * @updated 2026-04-03 - Cerebras model id made env-configurable; default moved to verified-access qwen
  */
 
 import type { LanguageModel } from 'ai';
@@ -16,6 +16,7 @@ import { logger } from '../../lib/logger';
 
 // Use centralized config getters (supports AI_PROVIDERS_CONFIG JSON format)
 import {
+  getCerebrasModelId,
   getOpenRouterVisionModelId,
 } from '../../lib/config-parser';
 import {
@@ -273,7 +274,7 @@ export async function getSupervisorModelWithQuota(
   const status = checkProviderStatus();
   const excluded = new Set(excludeProviders);
 
-  // Provider 우선순위 (Cerebras 120B MoE > Groq 70B > Mistral Frontier)
+  // Provider 우선순위 (Cerebras default model > Groq > Mistral)
   const preferredOrder: QuotaProviderName[] = ['cerebras', 'groq', 'mistral'];
   const availableOrder = preferredOrder.filter(
     (p) => status[p] && !excluded.has(p)
@@ -291,13 +292,15 @@ export async function getSupervisorModelWithQuota(
 
     // Provider별 모델 반환
     switch (provider) {
-      case 'cerebras':
+      case 'cerebras': {
+        const cerebrasModelId = getCerebrasModelId();
         return {
-          model: getCerebrasModel('gpt-oss-120b'),
+          model: getCerebrasModel(cerebrasModelId),
           provider: 'cerebras',
-          modelId: 'gpt-oss-120b',
+          modelId: cerebrasModelId,
           isPreemptiveFallback,
         };
+      }
       case 'groq':
         return {
           model: getGroqModel('llama-3.3-70b-versatile'),

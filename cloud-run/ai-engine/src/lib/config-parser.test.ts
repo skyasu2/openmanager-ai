@@ -12,6 +12,7 @@ import {
   getTavilyApiKeyBackup,
   getGroqApiKey,
   getCerebrasApiKey,
+  getCerebrasModelId,
   getOpenRouterVisionModelId,
   getOpenRouterVisionFallbackModelIds,
   isOpenRouterVisionToolCallingEnabled,
@@ -170,6 +171,20 @@ describe('Config Parser', () => {
       const result = getCerebrasApiKey();
 
       expect(result).toBe('cerebras-from-env');
+    });
+  });
+
+  describe('getCerebrasModelId', () => {
+    it('should use the verified default model when env is missing', () => {
+      delete process.env.CEREBRAS_MODEL_ID;
+
+      expect(getCerebrasModelId()).toBe('qwen-3-235b-a22b-instruct-2507');
+    });
+
+    it('should use CEREBRAS_MODEL_ID when configured', () => {
+      process.env.CEREBRAS_MODEL_ID = 'custom-cerebras-model';
+
+      expect(getCerebrasModelId()).toBe('custom-cerebras-model');
     });
   });
 

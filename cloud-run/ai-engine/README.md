@@ -125,9 +125,9 @@ if (isVisionQuery(query)) {
 
 | Agent | Primary | Fallback Chain | Free Tier |
 |-------|---------|---------------|-----------|
-| Supervisor | Cerebras `gpt-oss-120b` | → Groq → Mistral | 1M TPD, 3000 tok/s |
-| NLQ Agent | Cerebras `gpt-oss-120b` | → Groq → Mistral | 1M TPD, 3000 tok/s |
-| Verifier | Cerebras `gpt-oss-120b` | → Groq → Mistral | 1M TPD, 3000 tok/s |
+| Supervisor | Cerebras `qwen-3-235b-a22b-instruct-2507` (default) | → Groq → Mistral | 1M TPD, 60K TPM |
+| NLQ Agent | Cerebras `qwen-3-235b-a22b-instruct-2507` (default) | → Groq → Mistral | 1M TPD, 60K TPM |
+| Verifier | Cerebras `qwen-3-235b-a22b-instruct-2507` (default) | → Groq → Mistral | 1M TPD, 60K TPM |
 | Orchestrator | Groq `llama-3.3-70b-versatile` | → Cerebras → Mistral | 100K TPD, 12K TPM |
 | Analyst Agent | Groq `llama-3.3-70b-versatile` | → Cerebras → Mistral | 100K TPD, 12K TPM |
 | Reporter Agent | Groq `llama-3.3-70b-versatile` | → Cerebras → Mistral | 100K TPD, 12K TPM |

@@ -29,6 +29,7 @@ export const AIEngineTypeSchema = z.enum([
 export const AIModelSchema = z.enum([
   // Cloud Run multi-agent models
   'gpt-oss-120b',
+  'qwen-3-235b-a22b-instruct-2507',
   'llama-3.3-70b-versatile',
   'mistral-large-latest',
   'mistral-embed',

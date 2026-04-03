@@ -236,14 +236,14 @@ npm run data:precomputed:build # Cloud Run precomputed states 재생성
 
 | Agent | Provider (Primary) | Role | 라우팅 |
 |-------|-------------------|------|--------|
-| **Orchestrator** | Cerebras gpt-oss-120b | Intent 분류, Agent 핸드오프 | 진입점 |
-| **NLQ** | Cerebras | 서버 메트릭 조회 (단순+복합) | 외부 |
-| **Analyst** | Cerebras gpt-oss-120b | 이상 감지, 추세 예측 | 외부 |
-| **Reporter** | Groq | 장애 보고서, 타임라인 | 외부 |
-| **Advisor** | Mistral-large | 트러블슈팅, GraphRAG 검색 | 외부 |
+| **Orchestrator** | Cerebras (`CEREBRAS_MODEL_ID`, default `qwen-3-235b-a22b-instruct-2507`) | Intent 분류, Agent 핸드오프 | 진입점 |
+| **NLQ** | Cerebras (`CEREBRAS_MODEL_ID`) | 서버 메트릭 조회 (단순+복합) | 외부 |
+| **Analyst** | Cerebras (`CEREBRAS_MODEL_ID`) | 이상 감지, 추세 예측 | 외부 |
+| **Reporter** | Groq (`llama-3.3-70b-versatile`) | 장애 보고서, 타임라인 | 외부 |
+| **Advisor** | Mistral (`mistral-large-latest`) | 트러블슈팅, GraphRAG 검색 | 외부 |
 | **Vision** | Gemini 2.5-flash (fallback: OpenRouter vision 모델) | 스크린샷/로그 분석, 웹 검색 | 외부 |
-| **Evaluator** | Cerebras | 보고서 품질 평가 (내부) | 내부 |
-| **Optimizer** | Mistral | 보고서 품질 개선 (내부) | 내부 |
+| **Evaluator** | Deterministic quality gate | 보고서 품질 평가 (내부) | 내부 |
+| **Optimizer** | Deterministic rewrite stage | 보고서 품질 개선 (내부) | 내부 |
 
 **Dual-Mode Strategy**: 단순 질의 → Single-agent (저지연), 복합 질의 → Multi-agent (전문 처리).
 

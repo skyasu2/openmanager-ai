@@ -18,7 +18,7 @@ export const FEATURE_CARDS_DATA: FeatureCard[] = [
     detailedContent: {
       overview: `운영자가 메트릭 그래프를 직접 해석하지 않아도, 질문 하나로 현재 상태, 원인 분석, 다음 조치안을 받을 수 있도록 설계한 AI 실행 계층입니다. 4개의 AI Provider(Cerebras, Groq, Mistral, Gemini)와 Vercel AI SDK 6.0 네이티브 ToolLoopAgent 기반 5-Agent + Evaluator-Optimizer 파이프라인을 사용하며, Vision Agent의 대시보드 스크린샷 분석, 1M 토큰 로그 분석, Google Search Grounding을 지원합니다. 경량 커스텀 TypeScript ML(통계 이상 탐지 + 추세 예측)과 Native GraphRAG + Tavily 하이브리드 검색을 함께 사용합니다.`,
       features: [
-        '🧠 Cerebras Inference: WSE-3 칩 기반 24M 토큰/일 초고속 추론 (gpt-oss-120b) — NLQ/Analyst/Advisor 1순위, 최저 지연 우선',
+        '🧠 Cerebras Inference: 계정 접근 가능한 Cerebras 텍스트 모델을 사용 (기본: qwen-3-235b-a22b-instruct-2507) — NLQ/Verifier 1순위, RAG-LLM 추론 담당',
         '⚡ Groq Cloud: LPU 기반 500 Tokens/s 초고속 추론 (llama-3.3-70b-versatile) — Reporter/Orchestrator 1순위 모델',
         '🛡️ Mistral AI: mistral-large-latest Frontier 모델 — Advisor 1순위, RAG 검색 품질 최적',
         '👁️ Gemini Flash: Vision Agent 전용, 스크린샷 분석, 1M 컨텍스트 — 대용량 로그/이미지 처리 유일 모델',
@@ -32,7 +32,7 @@ export const FEATURE_CARDS_DATA: FeatureCard[] = [
         '☁️ GCP Cloud Run: Node.js 24 + Hono 서버리스 컨테이너 — Vercel 10초 제한 우회 (300초 허용)',
       ],
       technologies: [
-        'Cerebras Inference (gpt-oss-120b)',
+        'Cerebras Inference (qwen-3-235b-a22b-instruct-2507 기본)',
         'Groq Cloud (llama-3.3-70b)',
         'Mistral AI (mistral-large-latest)',
         'Gemini 2.5 Flash (Vision)',

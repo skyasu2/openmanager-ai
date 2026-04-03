@@ -14,7 +14,7 @@ ai-architecture:
   api_endpoint: "/api/ai/supervisor"
   # 실제 구현 기준 (model-provider.ts + agent-model-selectors.ts 참조, 2026-02-24)
   providers:
-    text-primary: "Cerebras (gpt-oss-120b)"
+    text-primary: "Cerebras (qwen-3-235b-a22b-instruct-2507)"
     text-fallback-1: "Groq (llama-3.3-70b-versatile)"
     text-fallback-2: "Mistral (mistral-large-latest)"
     vision-primary: "Gemini (gemini-2.5-flash)"

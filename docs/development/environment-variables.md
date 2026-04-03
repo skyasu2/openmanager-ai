@@ -237,8 +237,9 @@ Cloud Run은 **GCP Secret Manager**에 JSON 형태로 시크릿을 저장하고,
 ### 로컬 개발용 (`cloud-run/ai-engine/.env`)
 
 ```bash
-# AI Providers (OSS 전문가용 120B급 모델 사용 권장)
-CEREBRAS_API_KEY=csk-xxx  # NLQ/Analyst 주력 (gpt-oss-120b)
+# AI Providers
+CEREBRAS_API_KEY=csk-xxx  # Supervisor/NLQ/Analyst/Orchestrator 주력
+CEREBRAS_MODEL_ID=qwen-3-235b-a22b-instruct-2507  # 기본값. 계정 접근 가능 모델로 override 가능
 GROQ_API_KEY=gsk_xxx     # Reporter 주력 (llama-3.3-70b)
 MISTRAL_API_KEY=xxx      # Advisor 주력 (mistral-large-latest)
 GOOGLE_AI_API_KEY=xxx    # Vision 주력 (gemini-2.5-flash)

@@ -290,6 +290,18 @@ export function getCerebrasApiKey(): string | null {
   return process.env.CEREBRAS_API_KEY || null;
 }
 
+const DEFAULT_CEREBRAS_MODEL = 'qwen-3-235b-a22b-instruct-2507';
+
+/**
+ * Get default Cerebras text model id.
+ *
+ * Account entitlements can differ from public model listings, so the model id
+ * must stay configurable instead of being hardcoded across agent wiring.
+ */
+export function getCerebrasModelId(): string {
+  return process.env.CEREBRAS_MODEL_ID || DEFAULT_CEREBRAS_MODEL;
+}
+
 /**
  * Get Tavily API Key (Web Search)
  * Uses AI_PROVIDERS_CONFIG or falls back to individual env var
