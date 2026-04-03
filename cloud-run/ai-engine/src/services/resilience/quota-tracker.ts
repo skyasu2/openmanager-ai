@@ -91,23 +91,22 @@ export const PROVIDER_QUOTAS: Record<ProviderName, ProviderQuota> = {
     requestsPerDay: 500,
   },
   /**
-   * Gemini 2.5 Flash (Vision Agent)
+   * Gemini 2.5 Flash-Lite (Vision Agent, default as of 2026-04-04)
    * @see https://ai.google.dev/gemini-api/docs/models/gemini
-   * @updated 2026-04-03 - RPD 수정 250→500 (공식 문서 재확인)
+   * @updated 2026-04-04 - Flash → Flash-Lite 전환
+   *   이유: flash는 thinking 토큰을 기본 소비(~24+/req) → max_tokens 낮으면 content 공백
+   *         flash-lite는 thinking 없음, RPD 2배(1,000), RPM 1.5배(15)로 더 유리
    *
-   * Free Tier Limits (gemini-2.5-flash):
-   * - 500 RPD, 10 RPM
+   * Free Tier Limits (gemini-2.5-flash-lite):
+   * - 1,000 RPD, 15 RPM
    * - 250,000 TPM
-   * - 1M context window
-   *
-   * Note: gemini-2.5-flash-lite는 RPD 1,000 / RPM 15으로 더 여유롭지만
-   * 현재 Vision Agent는 1M context window가 필요하여 flash 유지
+   * Override: GEMINI_VISION_MODEL_ID=gemini-2.5-flash 로 flash 복귀 가능
    */
   gemini: {
-    dailyTokenLimit: 250_000 * 60 * 24, // TPM * 60min * 24h (theoretical max)
-    requestsPerMinute: 10,
+    dailyTokenLimit: 250_000 * 60 * 24,
+    requestsPerMinute: 15,
     tokensPerMinute: 250_000,
-    requestsPerDay: 500,
+    requestsPerDay: 1_000,
   },
   /**
    * Tavily Web Search API

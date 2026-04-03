@@ -138,7 +138,9 @@ export function getAdvisorModel(): ModelResult | null {
 // ============================================================================
 
 /**
- * Get Vision model: Gemini Flash → OpenRouter (Fallback)
+ * Get Vision model: Gemini 2.5 Flash-Lite → OpenRouter Gemma-3-27b (Fallback)
+ * Flash-Lite: thinking 없음, RPD 1,000, RPM 15 (Flash보다 2배 여유)
+ * OpenRouter fallbacks: gemma-3-27b → gemma-3-12b → gemma-3-4b (모두 ✅ 실테스트 통과)
  */
 export function getVisionModel(): ModelResult | null {
   const status = checkProviderStatus();

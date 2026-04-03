@@ -321,7 +321,7 @@ describe('Config Parser', () => {
   describe('OpenRouter Vision config', () => {
     it('should use default vision model when env is missing', () => {
       delete process.env.OPENROUTER_MODEL_VISION;
-      expect(getOpenRouterVisionModelId()).toBe('google/gemma-3-4b-it:free');
+      expect(getOpenRouterVisionModelId()).toBe('google/gemma-3-27b-it:free');
     });
 
     it('should use OPENROUTER_MODEL_VISION when configured', () => {
@@ -336,9 +336,10 @@ describe('Config Parser', () => {
 
     it('should return default fallback list when env is missing', () => {
       delete process.env.OPENROUTER_MODEL_VISION_FALLBACKS;
+      // 2026-04-04: nemotron(content=None 버그), mistral-small-3.1:free(404) 제거
       expect(getOpenRouterVisionFallbackModelIds()).toEqual([
-        'nvidia/nemotron-nano-12b-v2-vl:free',
-        'mistralai/mistral-small-3.1-24b-instruct:free',
+        'google/gemma-3-12b-it:free',
+        'google/gemma-3-4b-it:free',
       ]);
     });
 

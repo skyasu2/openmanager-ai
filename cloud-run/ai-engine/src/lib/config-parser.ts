@@ -121,10 +121,13 @@ let cachedAIProvidersConfig: AIProvidersConfig | null = null;
 let cachedKVConfig: KVConfig | null = null;
 let cachedLangfuseConfig: LangfuseConfig | null = null;
 
-const DEFAULT_OPENROUTER_VISION_MODEL = 'google/gemma-3-4b-it:free';
+// OpenRouter 무료 비전 모델 (2026-04-04 실제 테스트 기준)
+// 테스트 결과: gemma-3-27b ✅ / gemma-3-12b ✅ / gemma-3-4b ✅
+// 제거: nvidia/nemotron (content=None 버그), mistral-small-3.1:free (404 endpoint 삭제됨)
+const DEFAULT_OPENROUTER_VISION_MODEL = 'google/gemma-3-27b-it:free'; // 131K ctx, 27B
 const DEFAULT_OPENROUTER_VISION_FALLBACKS = [
-  'nvidia/nemotron-nano-12b-v2-vl:free',
-  'mistralai/mistral-small-3.1-24b-instruct:free',
+  'google/gemma-3-12b-it:free',   // 32K ctx, 12B
+  'google/gemma-3-4b-it:free',    // 32K ctx, 4B (최후 보루)
 ];
 
 /**
