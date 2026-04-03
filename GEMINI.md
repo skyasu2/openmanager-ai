@@ -69,7 +69,7 @@
 
 ## 🧰 Project Custom Skills (v2.0 Optimized)
 
-Gemini CLI의 프로젝트 반복 워크플로우는 공식 `Skills` 형식에 맞춰 `.gemini/skills/**/*.md` 에 둡니다.
+Gemini CLI의 프로젝트 반복 워크플로우는 공식 `Skills` 형식에 맞춰 `.agents/skills/**/*.md` 에 둡니다.
 
 최적화된 핵심 스킬 셋은 다음과 같습니다:
 - `openmanager-qa-state` (v2.0) - **[통합]** 원인 분석, 런타임 진단(MCP), QA 실행 및 결과 누적 기록을 한 번에 처리합니다.
