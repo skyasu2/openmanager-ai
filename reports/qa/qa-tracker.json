@@ -2,15 +2,15 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-03T00:04:13.761Z"
+    "updatedAt": "2026-04-03T11:53:21.760Z"
   },
   "sequence": {
-    "nextRunNumber": 221
+    "nextRunNumber": 222
   },
   "summary": {
-    "totalRuns": 213,
-    "totalChecks": 1588,
-    "totalPassed": 1520,
+    "totalRuns": 214,
+    "totalChecks": 1591,
+    "totalPassed": 1523,
     "totalFailed": 62,
     "completionRate": 100,
     "completedItems": 273,
@@ -19,10 +19,10 @@
     "wontFixItems": 13,
     "expertDomainsTracked": 6,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260402-0217",
-    "lastRecordedAt": "2026-04-02T14:54:37.522Z",
-    "latestRecordedRunId": "QA-20260403-0220",
-    "latestRecordedAt": "2026-04-03T00:04:13.761Z"
+    "lastRunId": "QA-20260403-0221",
+    "lastRecordedAt": "2026-04-03T11:53:21.760Z",
+    "latestRecordedRunId": "QA-20260403-0221",
+    "latestRecordedAt": "2026-04-03T11:53:21.760Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -18762,6 +18762,65 @@
       "deferredCount": 0,
       "wontFixCount": 0,
       "countsTowardSummary": false
+    },
+    {
+      "runId": "QA-20260403-0221",
+      "recordedAt": "2026-04-03T11:53:21.760Z",
+      "recordedAtKst": "2026-04-03 20:53:21 KST",
+      "title": "Post-push Vercel production smoke after Groq priority update",
+      "owner": "codex",
+      "source": "script-smoke",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260403-0221.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "84c77cf078952aabd32d379bc8f30f48b2c5a039"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": true,
+      "coveragePacks": ["core-routes-smoke"],
+      "coveredSurfaces": ["/", "/validation", "/api/version"],
+      "skippedSurfaces": [
+        "/login",
+        "/system-boot",
+        "/dashboard",
+        "AI sidebar",
+        "AI chat streaming",
+        "modal-detail-pack",
+        "observability-pack"
+      ],
+      "checks": {
+        "total": 3,
+        "passed": 3,
+        "failed": 0
+      },
+      "expertAssessments": [],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "",
+          "summary": "post-push smoke 이후 usage 확인: billed 0.0000 USD, unexpected spike 없음",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [],
+      "links": [],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {

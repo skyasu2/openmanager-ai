@@ -1,15 +1,15 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-04-03 09:15:52 KST
+> Generated at: 2026-04-03 20:53:22 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 213 |
-| Total Checks | 1588 |
-| Passed | 1520 |
+| Total Runs | 214 |
+| Total Checks | 1591 |
+| Passed | 1523 |
 | Failed | 62 |
 | Completed Items | 273 |
 | Pending Items | 0 |
@@ -18,12 +18,12 @@
 | Expert Domains Tracked | 6 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260402-0217 (2026-04-02T14:54:37.522Z) |
-| Latest Recorded Run | QA-20260403-0220 (2026-04-03T00:04:13.761Z) |
+| Last Counted Run | QA-20260403-0221 (2026-04-03T11:53:21.760Z) |
+| Latest Recorded Run | QA-20260403-0221 (2026-04-03T11:53:21.760Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260403-0220 (2026-04-03T00:04:13.761Z)
+Latest run: QA-20260403-0221 (2026-04-03T11:53:21.760Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -33,17 +33,17 @@ Latest run: QA-20260403-0220 (2026-04-03T00:04:13.761Z)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| - | - | - | - | - |
+| vercel | cli | checked | normal | post-push smoke 이후 usage 확인: billed 0.0000 USD, unexpected spike 없음 |
 
 ## Coverage (Latest Run)
 
 - Scope: targeted
 - Release-Facing: no
-- Counts Toward Summary: no
-- Deployment: dpl_7md7y6tdHrwxtwGvkzkmiSHKxmxD / SHA d0232857
+- Counts Toward Summary: yes
+- Deployment: SHA 84c77cf0
 - Coverage Packs: core-routes-smoke
-- Covered Surfaces: /validation, /api/health, /api/version
-- Skipped Surfaces: /, /login, /system-boot, /dashboard, AI sidebar, AI chat streaming, modal-detail-pack, observability-pack
+- Covered Surfaces: /, /validation, /api/version
+- Skipped Surfaces: /login, /system-boot, /dashboard, AI sidebar, AI chat streaming, modal-detail-pack, observability-pack
 
 ## Links (Latest Run)
 
@@ -377,6 +377,7 @@ Latest run: QA-20260403-0220 (2026-04-03T00:04:13.761Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260403-0221 | 2026-04-03T11:53:21.760Z | targeted | no | yes | Post-push Vercel production smoke after Groq priority update | 3 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260403-0220 | 2026-04-03T00:04:13.761Z | targeted | no | no | Vercel Production QA after propagation of latest QA tracker summary | 7 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260403-0219 | 2026-04-02T23:55:58.440Z | targeted | no | no | Vercel Production QA after propagation of production snapshot guard verification | 7 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260403-0218 | 2026-04-02T23:18:38.480Z | targeted | no | no | Vercel Production QA after public snapshot production-only fix | 7 | 0 | 0 | 0 | 0 | 0 |
@@ -396,5 +397,4 @@ Latest run: QA-20260403-0220 (2026-04-03T00:04:13.761Z)
 | QA-20260401-0204 | 2026-04-01T12:15:47.977Z | targeted | no | yes | Local dev Playwright QA - login header minimalization verification | 3 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260401-0203 | 2026-04-01T11:42:07.583Z | targeted | no | yes | Production Playwright QA - landing route/button/modal surface survey | 13 | 0 | 0 | 0 | 1 | 0 |
 | QA-20260331-0202 | 2026-03-31T12:08:54.272Z | targeted | no | yes | Local dev Playwright QA - Vibe Coding modal CI/CD recheck after clean restart | 6 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260331-0201 | 2026-03-31T11:58:25.987Z | targeted | no | yes | Local dev Playwright QA - Vibe Coding modal CI/CD regression check | 5 | 0 | 1 | 0 | 0 | 0 |
 
