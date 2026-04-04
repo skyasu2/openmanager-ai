@@ -4,11 +4,11 @@
 > Owner: documentation
 > Status: Active
 > Doc type: Reference
-> Last reviewed: 2026-02-24
+> Last reviewed: 2026-04-04
 > Canonical: docs/llms.md
 > Tags: llm,context,ai
 >
-> **v8.3.3** | Updated 2026-02-24
+> **v8.10.8** | Updated 2026-04-04
 >
 > AI 어시스턴트가 프로젝트를 이해하는 데 필요한 핵심 정보
 
@@ -16,7 +16,7 @@
 
 OpenManager AI is an AI-native server monitoring platform built with:
 - Frontend: Next.js 16, React 19, TypeScript 5.9
-- AI Engine: Vercel AI SDK 6, Multi-Agent System
+- AI Engine: Vercel AI SDK 6 family, multi-agent first system
 - Database: Supabase (PostgreSQL + pgVector)
 - Deployment: Vercel (Frontend) + Cloud Run (AI Engine)
 
@@ -30,11 +30,16 @@ OpenManager AI is an AI-native server monitoring platform built with:
 ```
 
 ### AI Engine Components
-- Supervisor: Dual-mode (Single/Multi Agent)
+- Supervisor: multi-agent first mode resolver (`single` gated, `auto` complexity-based)
 - Agents (실행): NLQ, Analyst, Reporter, Advisor, Vision, Evaluator, Optimizer
 - Orchestrator: 에이전트 라우팅 코디네이터 (별도 컴포넌트)
-- Providers: Cerebras(`CEREBRAS_MODEL_ID`, default `qwen-3-235b-a22b-instruct-2507`) → Groq(`llama-3.3-70b-versatile`) → Mistral(`mistral-large-latest`) (3-way fallback chain) + Gemini (Vision)
+- Providers:
+  - Tool-calling text path: Groq → Cerebras → Mistral
+  - Structured routing path: Cerebras → Mistral → Groq
+  - Advisor: Mistral → Groq → Cerebras
+  - Vision: Gemini Flash-Lite → OpenRouter
 - Tools: 30 specialized tools (Metrics 6, RCA 3, Analyst 4, Knowledge 3, Evaluation 6, Control 1, Vision 4, Math 3)
+- Observability: Langfuse mode audit (`requestedMode`, `resolvedMode`, `modeSelectionSource`) + `handoffCount`
 
 ## Key Files
 
@@ -66,7 +71,7 @@ npm run test           # Run tests
 ### Deployment
 ```bash
 npm run release:patch  # Version bump
-git push --follow-tags # Deploy to Vercel
+git push gitlab main   # Canonical deploy path via GitLab CI
 ```
 
 ### AI Engine
@@ -81,12 +86,23 @@ curl $SERVICE_URL/health  # Health check
 2. AI Engine timeout: 300s (Cloud Run free-tier deploy config)
 3. Vercel timeout:
    - Fluid Compute: Hobby 300s(default)/300s max, Pro 300s(default)/800s max
-4. Free tier optimization: Cerebras(3000 tok/s)/Groq/Mistral rotation
+4. Free tier optimization:
+   - low-complexity `auto` 요청은 single 유지 가능
+   - explicit `single`은 `ALLOW_DEGRADED_SINGLE=true`일 때만 허용
+   - Cerebras tool-calling은 `CEREBRAS_TOOL_CALLING_ENABLED`로 긴급 차단 가능
 
-Reference (checked: 2026-02-24):
+## Current Notes
+
+- Vision 기본 모델은 `gemini-2.5-flash-lite`
+- Orchestrator는 `generateObjectWithFallback`로 structured routing 수행
+- Agent 실행은 `streamText` / `generateTextWithRetry` 기반 tool loop
+- Cerebras tool-calling 이슈는 provider capability gate로 선제 우회
+
+Reference (checked: 2026-04-04):
 - https://vercel.com/docs/limits/overview
 
 ## Contact
 
-- Repository: github.com/skyasu2/openmanager-ai
-- Version: 8.3.3
+- Canonical repository: GitLab private remote (`gitlab`)
+- Public snapshot: github.com/skyasu2/openmanager-ai
+- Version: 8.10.8
