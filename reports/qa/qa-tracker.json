@@ -2,15 +2,15 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-04T15:59:50.897Z"
+    "updatedAt": "2026-04-04T17:01:53.490Z"
   },
   "sequence": {
-    "nextRunNumber": 233
+    "nextRunNumber": 234
   },
   "summary": {
-    "totalRuns": 225,
-    "totalChecks": 1720,
-    "totalPassed": 1650,
+    "totalRuns": 226,
+    "totalChecks": 1725,
+    "totalPassed": 1655,
     "totalFailed": 64,
     "completionRate": 100,
     "completedItems": 274,
@@ -19,10 +19,10 @@
     "wontFixItems": 14,
     "expertDomainsTracked": 6,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260405-0232",
-    "lastRecordedAt": "2026-04-04T15:59:50.897Z",
-    "latestRecordedRunId": "QA-20260405-0232",
-    "latestRecordedAt": "2026-04-04T15:59:50.897Z"
+    "lastRunId": "QA-20260405-0233",
+    "lastRecordedAt": "2026-04-04T17:01:53.490Z",
+    "latestRecordedRunId": "QA-20260405-0233",
+    "latestRecordedAt": "2026-04-04T17:01:53.490Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -20189,6 +20189,88 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260405-0233",
+      "recordedAt": "2026-04-04T17:01:53.490Z",
+      "recordedAtKst": "2026-04-05 02:01:53 KST",
+      "title": "QA-only commit pipeline skip validation candidate",
+      "owner": "codex",
+      "source": "vercel-mcp+cli",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260405-0233.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_DQqyMxBqMh3wVX6atBuctwBqDzV7",
+        "deploymentUrl": "https://openmanager-bp4gr8xv3-skyasus-projects.vercel.app",
+        "commitSha": "98797cbbd78ab590bc7d1acf48ff40fffd550571"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": true,
+      "coveragePacks": ["core-routes-smoke", "observability-pack"],
+      "coveredSurfaces": [
+        "pre-commit baseline deployment snapshot",
+        "post-deploy smoke GET /",
+        "post-deploy smoke GET /validation",
+        "post-deploy smoke GET /api/version",
+        "Vercel usage check billed 0.0000 USD"
+      ],
+      "skippedSurfaces": [
+        "dashboard-core interactions",
+        "ai-core streaming parity",
+        "modal-detail-pack",
+        "playwright UI traversal"
+      ],
+      "checks": {
+        "total": 5,
+        "passed": 5,
+        "failed": 0
+      },
+      "expertAssessments": [
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Baseline deployment is stable and smoke checks passed before the qa-only commit trigger test.",
+          "nextAction": "Push qa-only commit and verify no new production deployment is created."
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-04-05T02:01:12+09:00",
+          "summary": "Current billing period reviewed before qa-only commit; billed 0.0000 USD and no unexpected spike.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [],
+      "links": [
+        {
+          "type": "general",
+          "label": "Vercel production",
+          "url": "https://openmanager-ai.vercel.app/"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Baseline deployment inspector",
+          "url": "https://vercel.com/skyasus-projects/openmanager-ai/DQqyMxBqMh3wVX6atBuctwBqDzV7"
+        }
+      ],
+      "expertCount": 1,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -20248,17 +20330,17 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 66,
-      "appropriateCount": 63,
+      "seenCount": 67,
+      "appropriateCount": 64,
       "partialCount": 3,
       "inappropriateCount": 0,
       "improvementNeededCount": 7,
-      "lastRunId": "QA-20260405-0232",
-      "lastSeenAt": "2026-04-04T15:59:50.897Z",
+      "lastRunId": "QA-20260405-0233",
+      "lastSeenAt": "2026-04-04T17:01:53.490Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Latest deployment is READY/PROMOTED and smoke endpoints passed on first attempt.",
-      "lastNextAction": ""
+      "lastRationale": "Baseline deployment is stable and smoke checks passed before the qa-only commit trigger test.",
+      "lastNextAction": "Push qa-only commit and verify no new production deployment is created."
     },
     "test-automation": {
       "domainId": "test-automation",

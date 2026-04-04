@@ -1,0 +1,82 @@
+{
+  "runId": "QA-20260405-0233",
+  "recordedAt": "2026-04-04T17:01:53.490Z",
+  "recordedAtKst": "2026-04-05 02:01:53 KST",
+  "runTitle": "QA-only commit pipeline skip validation candidate",
+  "owner": "codex",
+  "source": "vercel-mcp+cli",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_DQqyMxBqMh3wVX6atBuctwBqDzV7",
+    "deploymentUrl": "https://openmanager-bp4gr8xv3-skyasus-projects.vercel.app",
+    "commitSha": "98797cbbd78ab590bc7d1acf48ff40fffd550571"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": true,
+  "coveragePacks": ["core-routes-smoke", "observability-pack"],
+  "coveredSurfaces": [
+    "pre-commit baseline deployment snapshot",
+    "post-deploy smoke GET /",
+    "post-deploy smoke GET /validation",
+    "post-deploy smoke GET /api/version",
+    "Vercel usage check billed 0.0000 USD"
+  ],
+  "skippedSurfaces": [
+    "dashboard-core interactions",
+    "ai-core streaming parity",
+    "modal-detail-pack",
+    "playwright UI traversal"
+  ],
+  "checks": {
+    "total": 5,
+    "passed": 5,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Baseline deployment is stable and smoke checks passed before the qa-only commit trigger test.",
+      "nextAction": "Push qa-only commit and verify no new production deployment is created."
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-04-05T02:01:12+09:00",
+      "summary": "Current billing period reviewed before qa-only commit; billed 0.0000 USD and no unexpected spike.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "This run is created to validate CI optimization that skips frontend deploy jobs for test(qa) commits."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Vercel production",
+      "url": "https://openmanager-ai.vercel.app/"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Baseline deployment inspector",
+      "url": "https://vercel.com/skyasus-projects/openmanager-ai/DQqyMxBqMh3wVX6atBuctwBqDzV7"
+    }
+  ]
+}
