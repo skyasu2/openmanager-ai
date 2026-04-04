@@ -45,6 +45,13 @@ import {
 const SUMMARY_QUERY_PATTERN =
   /(서버|인프라|시스템|server|system|monitoring).*(요약|현황|상태|간단히|핵심|summary|overview|tldr)|((모든|전체|all).*(서버|server))/i;
 
+export function isDeterministicSummaryQuery(
+  query: string,
+  agentName: string
+): boolean {
+  return agentName === 'NLQ Agent' && SUMMARY_QUERY_PATTERN.test(query);
+}
+
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null;
 }
@@ -282,12 +289,19 @@ function buildSummaryFromPayload(payload: MetricsToolPayload): string {
   const offlineCount = payload.servers.filter(
     (server) => server.status === 'offline'
   ).length;
-
-  const averageCpu = average(payload.servers.map((server) => toNumber(server.cpu)));
-  const averageMemory = average(
-    payload.servers.map((server) => toNumber(server.memory))
+  const activeServers = payload.servers.filter(
+    (server) => server.status !== 'offline'
   );
-  const averageDisk = average(payload.servers.map((server) => toNumber(server.disk)));
+
+  const averageCpu = average(
+    activeServers.map((server) => toNumber(server.cpu))
+  );
+  const averageMemory = average(
+    activeServers.map((server) => toNumber(server.memory))
+  );
+  const averageDisk = average(
+    activeServers.map((server) => toNumber(server.disk))
+  );
 
   const alertServers = deriveAlertServers(payload);
   const offlineServers = alertServers
@@ -434,7 +448,7 @@ export function buildDeterministicSummaryFallback(
   agentName: string,
   toolResults: CollectedToolResult[]
 ): string | null {
-  if (agentName !== 'NLQ Agent' || !SUMMARY_QUERY_PATTERN.test(query)) {
+  if (!isDeterministicSummaryQuery(query, agentName)) {
     return null;
   }
 
@@ -451,7 +465,7 @@ export function buildDeterministicSummaryFromCurrentState(
   query: string,
   agentName: string
 ): string | null {
-  if (agentName !== 'NLQ Agent' || !SUMMARY_QUERY_PATTERN.test(query)) {
+  if (!isDeterministicSummaryQuery(query, agentName)) {
     return null;
   }
 

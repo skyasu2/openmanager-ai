@@ -23,6 +23,7 @@ import { streamTextInChunks } from './orchestrator-decomposition';
 import {
   buildDeterministicSummaryFallback,
   buildDeterministicSummaryFromCurrentState,
+  isDeterministicSummaryQuery,
 } from './orchestrator-summary-fallback';
 
 function getSuggestedFollowUp(agentName: string, responseText: string): string | null {
@@ -53,6 +54,10 @@ export async function* executeAgentStream(
   files?: FileAttachment[],
   contextSummary?: string | null,
 ): AsyncGenerator<StreamEvent> {
+  const preferDeterministicSummary = isDeterministicSummaryQuery(
+    query,
+    agentName
+  );
   const agentConfig = getAgentConfig(agentName);
 
   if (!agentConfig) {
@@ -182,6 +187,7 @@ export async function* executeAgentStream(
       let warningEmitted = false;
       let hardTimeoutReached = false;
       let textEmitted = false;
+      let textDelivered = false;
       const toolsCalled: string[] = [];
       let fullResponseText = '';
       let fallbackReason: string | undefined;
@@ -240,7 +246,10 @@ export async function* executeAgentStream(
           if (sanitized.trim().length > 0) {
             textEmitted = true;
           }
-          yield { type: 'text_delta', data: sanitized };
+          if (!preferDeterministicSummary) {
+            textDelivered = true;
+            yield { type: 'text_delta', data: sanitized };
+          }
         }
       }
 
@@ -292,10 +301,11 @@ export async function* executeAgentStream(
         }
       }
 
-      if (!textEmitted && finalAnswerResult?.answer) {
+      if (!textEmitted && finalAnswerResult?.answer && !textDelivered) {
         const sanitized = sanitizeChineseCharacters(finalAnswerResult.answer);
         if (sanitized) {
           textEmitted = true;
+          textDelivered = true;
           fullResponseText += sanitized;
           yield { type: 'text_delta', data: sanitized };
         }
@@ -307,17 +317,30 @@ export async function* executeAgentStream(
         collectedToolResults
       );
 
-      if (!textEmitted && deterministicSummary) {
+      if (deterministicSummary && (!textDelivered || preferDeterministicSummary)) {
         textEmitted = true;
-        fullResponseText += deterministicSummary;
+        textDelivered = true;
+        fullResponseText = deterministicSummary;
         yield { type: 'text_delta', data: deterministicSummary };
         logger.info(
-          `[Stream ${agentName}] Deterministic summary fallback succeeded (${deterministicSummary.length} chars)`
+          `[Stream ${agentName}] Deterministic summary ${preferDeterministicSummary ? 'override' : 'fallback'} succeeded (${deterministicSummary.length} chars)`
         );
       }
 
+      if (preferDeterministicSummary && !textDelivered) {
+        const bufferedText = sanitizeChineseCharacters(
+          (finalAnswerResult?.answer ?? fullResponseText).trim()
+        );
+        if (bufferedText) {
+          textEmitted = true;
+          textDelivered = true;
+          fullResponseText = bufferedText;
+          yield { type: 'text_delta', data: bufferedText };
+        }
+      }
+
       // Summarization Fallback
-      if (!textEmitted && collectedToolResults.length > 0) {
+      if (!textDelivered && collectedToolResults.length > 0) {
         logger.warn(
           `[Stream ${agentName}] Empty response with ${collectedToolResults.length} tool results — attempting summarization fallback`
         );
@@ -354,7 +377,8 @@ export async function* executeAgentStream(
           const summaryText = sanitizeChineseCharacters(summaryResult.text?.trim() || '');
           if (summaryText) {
             textEmitted = true;
-            fullResponseText += summaryText;
+            textDelivered = true;
+            fullResponseText = summaryText;
             yield { type: 'text_delta', data: summaryText };
             logger.info(`[Stream ${agentName}] Summarization fallback succeeded (${summaryText.length} chars)`);
           }
@@ -366,14 +390,15 @@ export async function* executeAgentStream(
         }
       }
 
-      if (!textEmitted) {
+      if (!textDelivered) {
         const stateSummary = buildDeterministicSummaryFromCurrentState(
           query,
           agentName
         );
         if (stateSummary) {
           textEmitted = true;
-          fullResponseText += stateSummary;
+          textDelivered = true;
+          fullResponseText = stateSummary;
           yield { type: 'text_delta', data: stateSummary };
           logger.info(
             `[Stream ${agentName}] Current-state deterministic fallback succeeded (${stateSummary.length} chars)`

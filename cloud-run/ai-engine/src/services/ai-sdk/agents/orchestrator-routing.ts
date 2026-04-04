@@ -242,22 +242,19 @@ export async function executeForcedRouting(
     }
 
     let response = finalAnswerResult?.answer ?? result.text;
-    const hasMeaningfulResponse =
-      typeof response === 'string' && response.trim().length > 0;
+    const deterministicSummary = buildDeterministicSummaryFallback(
+      query,
+      suggestedAgentName,
+      collectedToolResults
+    );
 
-    if (!hasMeaningfulResponse) {
-      const deterministicSummary = buildDeterministicSummaryFallback(
-        query,
-        suggestedAgentName,
-        collectedToolResults
+    if (deterministicSummary) {
+      const overridingGeneratedText =
+        typeof response === 'string' && response.trim().length > 0;
+      response = deterministicSummary;
+      logger.info(
+        `[Forced Routing] Deterministic summary ${overridingGeneratedText ? 'override' : 'fallback'} succeeded (${response.length} chars)`
       );
-
-      if (deterministicSummary) {
-        response = deterministicSummary;
-        logger.info(
-          `[Forced Routing] Deterministic summary fallback succeeded (${response.length} chars)`
-        );
-      }
     }
 
     // Summarization Fallback: if model called tools but produced no text,
