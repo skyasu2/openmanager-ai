@@ -2,15 +2,15 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-04T15:47:24.010Z"
+    "updatedAt": "2026-04-04T15:59:50.897Z"
   },
   "sequence": {
-    "nextRunNumber": 232
+    "nextRunNumber": 233
   },
   "summary": {
-    "totalRuns": 224,
-    "totalChecks": 1712,
-    "totalPassed": 1642,
+    "totalRuns": 225,
+    "totalChecks": 1720,
+    "totalPassed": 1650,
     "totalFailed": 64,
     "completionRate": 100,
     "completedItems": 274,
@@ -19,10 +19,10 @@
     "wontFixItems": 14,
     "expertDomainsTracked": 6,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260405-0231",
-    "lastRecordedAt": "2026-04-04T15:47:24.010Z",
-    "latestRecordedRunId": "QA-20260405-0231",
-    "latestRecordedAt": "2026-04-04T15:47:24.010Z"
+    "lastRunId": "QA-20260405-0232",
+    "lastRecordedAt": "2026-04-04T15:59:50.897Z",
+    "latestRecordedRunId": "QA-20260405-0232",
+    "latestRecordedAt": "2026-04-04T15:59:50.897Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -20096,6 +20096,99 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260405-0232",
+      "recordedAt": "2026-04-04T15:59:50.897Z",
+      "recordedAtKst": "2026-04-05 00:59:50 KST",
+      "title": "Vercel production re-verification after latest deploy",
+      "owner": "codex",
+      "source": "vercel-mcp+cli",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260405-0232.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_HrjM2qkwGoVvv1y9jF1sdirjuUMB",
+        "deploymentUrl": "https://openmanager-5qpmj7iwd-skyasus-projects.vercel.app",
+        "commitSha": "b4bd537a744661def0412a022dce0eed232555d6"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": true,
+      "coveragePacks": ["core-routes-smoke", "observability-pack"],
+      "coveredSurfaces": [
+        "Vercel production deployment READY",
+        "deployment commit parity (b4bd537a7)",
+        "post-deploy smoke GET /",
+        "post-deploy smoke GET /validation",
+        "post-deploy smoke GET /api/version",
+        "/api/version response (8.10.8 production)",
+        "/api/health healthy response",
+        "Vercel usage check billed 0.0000 USD"
+      ],
+      "skippedSurfaces": [
+        "dashboard-core interactions",
+        "ai-core streaming parity",
+        "modal-detail-pack",
+        "playwright UI traversal"
+      ],
+      "checks": {
+        "total": 8,
+        "passed": 8,
+        "failed": 0
+      },
+      "expertAssessments": [
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Latest deployment is READY/PROMOTED and smoke endpoints passed on first attempt.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "observability-monitoring",
+          "domainName": "IT Monitoring & Observability SME",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Version/health responses and usage telemetry remain stable at current production head.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-04-05T00:56:37+09:00",
+          "summary": "Current billing period reviewed after latest production re-verification; billed 0.0000 USD and no unexpected spike.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [],
+      "links": [
+        {
+          "type": "general",
+          "label": "Vercel production",
+          "url": "https://openmanager-ai.vercel.app/"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Vercel deployment inspector",
+          "url": "https://vercel.com/skyasus-projects/openmanager-ai/HrjM2qkwGoVvv1y9jF1sdirjuUMB"
+        }
+      ],
+      "expertCount": 2,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -20121,16 +20214,16 @@
       "domainName": "IT Monitoring & Observability SME",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 75,
-      "appropriateCount": 50,
+      "seenCount": 76,
+      "appropriateCount": 51,
       "partialCount": 25,
       "inappropriateCount": 0,
       "improvementNeededCount": 26,
-      "lastRunId": "QA-20260405-0231",
-      "lastSeenAt": "2026-04-04T15:47:24.010Z",
+      "lastRunId": "QA-20260405-0232",
+      "lastSeenAt": "2026-04-04T15:59:50.897Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Version/health responses and usage telemetry remain stable after snapshot sync.",
+      "lastRationale": "Version/health responses and usage telemetry remain stable at current production head.",
       "lastNextAction": ""
     },
     "ai-security-reliability": {
@@ -20155,13 +20248,13 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 65,
-      "appropriateCount": 62,
+      "seenCount": 66,
+      "appropriateCount": 63,
       "partialCount": 3,
       "inappropriateCount": 0,
       "improvementNeededCount": 7,
-      "lastRunId": "QA-20260405-0231",
-      "lastSeenAt": "2026-04-04T15:47:24.010Z",
+      "lastRunId": "QA-20260405-0232",
+      "lastSeenAt": "2026-04-04T15:59:50.897Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
       "lastRationale": "Latest deployment is READY/PROMOTED and smoke endpoints passed on first attempt.",

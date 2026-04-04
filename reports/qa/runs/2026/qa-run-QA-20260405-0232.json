@@ -1,0 +1,94 @@
+{
+  "runId": "QA-20260405-0232",
+  "recordedAt": "2026-04-04T15:59:50.897Z",
+  "recordedAtKst": "2026-04-05 00:59:50 KST",
+  "runTitle": "Vercel production re-verification after latest deploy",
+  "owner": "codex",
+  "source": "vercel-mcp+cli",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_HrjM2qkwGoVvv1y9jF1sdirjuUMB",
+    "deploymentUrl": "https://openmanager-5qpmj7iwd-skyasus-projects.vercel.app",
+    "commitSha": "b4bd537a744661def0412a022dce0eed232555d6"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": true,
+  "coveragePacks": ["core-routes-smoke", "observability-pack"],
+  "coveredSurfaces": [
+    "Vercel production deployment READY",
+    "deployment commit parity (b4bd537a7)",
+    "post-deploy smoke GET /",
+    "post-deploy smoke GET /validation",
+    "post-deploy smoke GET /api/version",
+    "/api/version response (8.10.8 production)",
+    "/api/health healthy response",
+    "Vercel usage check billed 0.0000 USD"
+  ],
+  "skippedSurfaces": [
+    "dashboard-core interactions",
+    "ai-core streaming parity",
+    "modal-detail-pack",
+    "playwright UI traversal"
+  ],
+  "checks": {
+    "total": 8,
+    "passed": 8,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Latest deployment is READY/PROMOTED and smoke endpoints passed on first attempt.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Version/health responses and usage telemetry remain stable at current production head.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-04-05T00:56:37+09:00",
+      "summary": "Current billing period reviewed after latest production re-verification; billed 0.0000 USD and no unexpected spike.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "This run confirms production runtime stability at deployment dpl_HrjM2qkwGoVvv1y9jF1sdirjuUMB.",
+    "Functional broad/release-gate QA baseline remains QA-20260404-0229."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Vercel production",
+      "url": "https://openmanager-ai.vercel.app/"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Vercel deployment inspector",
+      "url": "https://vercel.com/skyasus-projects/openmanager-ai/HrjM2qkwGoVvv1y9jF1sdirjuUMB"
+    }
+  ]
+}
