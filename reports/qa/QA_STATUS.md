@@ -1,15 +1,15 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-04-04 23:30:37 KST
+> Generated at: 2026-04-05 00:12:34 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 222 |
-| Total Checks | 1697 |
-| Passed | 1627 |
+| Total Runs | 223 |
+| Total Checks | 1704 |
+| Passed | 1634 |
 | Failed | 64 |
 | Completed Items | 274 |
 | Pending Items | 0 |
@@ -18,53 +18,46 @@
 | Expert Domains Tracked | 6 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260404-0229 (2026-04-04T14:29:25.205Z) |
-| Latest Recorded Run | QA-20260404-0229 (2026-04-04T14:29:25.205Z) |
+| Last Counted Run | QA-20260405-0230 (2026-04-04T15:12:26.849Z) |
+| Latest Recorded Run | QA-20260405-0230 (2026-04-04T15:12:26.849Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260404-0229 (2026-04-04T14:29:25.205Z)
+Latest run: QA-20260405-0230 (2026-04-04T15:12:26.849Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| AI Quality Assurance Specialist | appropriate | no | - |
-| Test Automation Architect | appropriate | no | - |
+| DevOps / SRE Engineer | appropriate | no | - |
 | IT Monitoring & Observability SME | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Release-gate QA 이후 billed 0.0000 USD, effective 1.9605 USD, unexpected billed spike 없음 |
+| vercel | cli | checked | normal | Current billing period reviewed after deployment health check; billed 0.0000 USD and no unexpected spike. |
 
 ## Coverage (Latest Run)
 
-- Scope: release-gate
-- Release-Facing: yes
+- Scope: targeted
+- Release-Facing: no
 - Counts Toward Summary: yes
-- Deployment: dpl_BC2L2XzJ6JCXcQauXB3wviMfuPXZ / SHA 0b0f5c4e
-- Coverage Packs: core-routes-smoke, dashboard-core, ai-core
-- Covered Surfaces: / landing render, /login route render, guest PIN login (4231), /system-boot -> /dashboard, dashboard summary counters (15/14/1/0/0), dashboard average resources (CPU 37% / MEM 46% / Disk 37%), server detail modal open, server detail tabs switch (종합 상황 -> 성능 분석 -> 로그 & 네트워크), ESC close from server detail modal, AI sidebar open, AI starter prompt send, AI summary parity response (15/14/1/0/0, 37/46/37), POST /api/ai/supervisor/stream/v2 status 200, X-AI-Latency-Ms header (135), /api/health (healthy), /api/version (8.10.8), 404 route render (/this-route-should-404)
-- Skipped Surfaces: /dashboard/ai-assistant, Analyst workflow, Reporter workflow, active alerts modal, topology modal, log explorer modal, AI feedback flow, /auth/error, /auth/success, /privacy, Cloud Run /monitoring, Cloud Run /monitoring/traces
+- Deployment: dpl_7RVYuLgp44dE9AMHWLBegNxY1hSH / SHA 1ce348df
+- Coverage Packs: core-routes-smoke, observability-pack
+- Covered Surfaces: Vercel production deployment state READY, deployment commit parity (1ce348df5), post-deploy smoke GET /, post-deploy smoke GET /validation, post-deploy smoke GET /api/version, /api/health healthy response, Vercel usage check billed 0.0000 USD
+- Skipped Surfaces: dashboard-core interactions, ai-core streaming parity, modal-detail-pack, playwright UI traversal
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
 | general | Vercel production | [link](https://openmanager-ai.vercel.app/) | - |
-| vercel-deployment | Vercel deployment inspector | [link](https://vercel.com/skyasus-projects/openmanager-ai/BC2L2XzJ6JCXcQauXB3wviMfuPXZ) | - |
+| vercel-deployment | Vercel deployment inspector | [link](https://vercel.com/skyasus-projects/openmanager-ai/7RVYuLgp44dE9AMHWLBegNxY1hSH) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | Landing | `qa-20260404-broad-0229-landing.png` | - |
-| playwright-screenshot | Dashboard with AI parity | `qa-20260404-broad-0229-dashboard-ai.png` | - |
-| playwright-screenshot | 404 route | `qa-20260404-broad-0229-404.png` | - |
-| playwright-console | Landing console | `qa-20260404-broad-0229-landing-console.log` | - |
-| playwright-console | Dashboard console | `qa-20260404-broad-0229-dashboard-console.log` | - |
-| playwright-console | 404 console | `qa-20260404-broad-0229-404-console.log` | - |
-| playwright-network | Network log | `qa-20260404-broad-0229-network.log` | - |
+| - | - | - | - |
 
 ## Expert Domain Open Gaps
 
@@ -389,6 +382,7 @@ Latest run: QA-20260404-0229 (2026-04-04T14:29:25.205Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260405-0230 | 2026-04-04T15:12:26.849Z | targeted | no | yes | Vercel production deployment health check after gitlab sync | 7 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260404-0229 | 2026-04-04T14:29:25.205Z | release-gate | yes | yes | Vercel Production Broad Release-Gate QA - core routes + dashboard + AI stream parity | 17 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260404-0228 | 2026-04-04T14:20:17.892Z | targeted | no | yes | Vercel targeted QA - modal/detail pack and AI advanced surface | 18 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260404-0227 | 2026-04-04T14:09:08.887Z | targeted | no | yes | Vercel targeted QA - guest flow and dashboard/AI parity smoke (rerun) | 12 | 0 | 0 | 0 | 0 | 0 |
@@ -408,5 +402,4 @@ Latest run: QA-20260404-0229 (2026-04-04T14:29:25.205Z)
 | QA-20260402-0213 | 2026-04-02T12:41:23.224Z | broad | yes | yes | Playwright MCP Production QA - Frontend + AI Assistant v8.10.8 (2차) | 14 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260402-0212 | 2026-04-02T12:31:52.936Z | broad | yes | yes | Playwright MCP Production QA - Frontend + AI Assistant v8.10.8 | 12 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260402-0211 | 2026-04-02T06:04:27.210Z | targeted | yes | yes | Vercel Production Usage Evidence Follow-up | 2 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260402-0210 | 2026-04-02T05:34:08.897Z | targeted | no | yes | Vercel production targeted QA - landing feature modal header interactions recheck | 8 | 0 | 0 | 0 | 0 | 0 |
 

@@ -2,15 +2,15 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-04T14:29:25.205Z"
+    "updatedAt": "2026-04-04T15:12:26.849Z"
   },
   "sequence": {
-    "nextRunNumber": 230
+    "nextRunNumber": 231
   },
   "summary": {
-    "totalRuns": 222,
-    "totalChecks": 1697,
-    "totalPassed": 1627,
+    "totalRuns": 223,
+    "totalChecks": 1704,
+    "totalPassed": 1634,
     "totalFailed": 64,
     "completionRate": 100,
     "completedItems": 274,
@@ -19,10 +19,10 @@
     "wontFixItems": 14,
     "expertDomainsTracked": 6,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260404-0229",
-    "lastRecordedAt": "2026-04-04T14:29:25.205Z",
-    "latestRecordedRunId": "QA-20260404-0229",
-    "latestRecordedAt": "2026-04-04T14:29:25.205Z"
+    "lastRunId": "QA-20260405-0230",
+    "lastRecordedAt": "2026-04-04T15:12:26.849Z",
+    "latestRecordedRunId": "QA-20260405-0230",
+    "latestRecordedAt": "2026-04-04T15:12:26.849Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -19911,6 +19911,98 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260405-0230",
+      "recordedAt": "2026-04-04T15:12:26.849Z",
+      "recordedAtKst": "2026-04-05 00:12:26 KST",
+      "title": "Vercel production deployment health check after gitlab sync",
+      "owner": "codex",
+      "source": "vercel-mcp+cli",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260405-0230.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_7RVYuLgp44dE9AMHWLBegNxY1hSH",
+        "deploymentUrl": "https://openmanager-4gzckko41-skyasus-projects.vercel.app",
+        "commitSha": "1ce348df5d8cdddc83d3758e79938294add6beb0"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": true,
+      "coveragePacks": ["core-routes-smoke", "observability-pack"],
+      "coveredSurfaces": [
+        "Vercel production deployment state READY",
+        "deployment commit parity (1ce348df5)",
+        "post-deploy smoke GET /",
+        "post-deploy smoke GET /validation",
+        "post-deploy smoke GET /api/version",
+        "/api/health healthy response",
+        "Vercel usage check billed 0.0000 USD"
+      ],
+      "skippedSurfaces": [
+        "dashboard-core interactions",
+        "ai-core streaming parity",
+        "modal-detail-pack",
+        "playwright UI traversal"
+      ],
+      "checks": {
+        "total": 7,
+        "passed": 7,
+        "failed": 0
+      },
+      "expertAssessments": [
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Latest production deployment is READY and post-deploy smoke endpoints passed on first attempt.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "observability-monitoring",
+          "domainName": "IT Monitoring & Observability SME",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Health endpoint and usage telemetry both indicate stable runtime and cost profile.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-04-05T00:12:00+09:00",
+          "summary": "Current billing period reviewed after deployment health check; billed 0.0000 USD and no unexpected spike.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [],
+      "links": [
+        {
+          "type": "general",
+          "label": "Vercel production",
+          "url": "https://openmanager-ai.vercel.app/"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Vercel deployment inspector",
+          "url": "https://vercel.com/skyasus-projects/openmanager-ai/7RVYuLgp44dE9AMHWLBegNxY1hSH"
+        }
+      ],
+      "expertCount": 2,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -19936,16 +20028,16 @@
       "domainName": "IT Monitoring & Observability SME",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 73,
-      "appropriateCount": 48,
+      "seenCount": 74,
+      "appropriateCount": 49,
       "partialCount": 25,
       "inappropriateCount": 0,
       "improvementNeededCount": 26,
-      "lastRunId": "QA-20260404-0229",
-      "lastSeenAt": "2026-04-04T14:29:25.205Z",
+      "lastRunId": "QA-20260405-0230",
+      "lastSeenAt": "2026-04-04T15:12:26.849Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "health/version API와 X-AI-Latency-Ms를 함께 확인해 운영 경로 상태를 점검했습니다.",
+      "lastRationale": "Health endpoint and usage telemetry both indicate stable runtime and cost profile.",
       "lastNextAction": ""
     },
     "ai-security-reliability": {
@@ -19970,16 +20062,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 63,
-      "appropriateCount": 60,
+      "seenCount": 64,
+      "appropriateCount": 61,
       "partialCount": 3,
       "inappropriateCount": 0,
       "improvementNeededCount": 7,
-      "lastRunId": "QA-20260404-0225",
-      "lastSeenAt": "2026-04-04T13:21:41.671Z",
+      "lastRunId": "QA-20260405-0230",
+      "lastSeenAt": "2026-04-04T15:12:26.849Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "core route smoke, guest auth, boot redirect, API health/version, console error 0 확인으로 release-facing 운영 경로가 안정적입니다.",
+      "lastRationale": "Latest production deployment is READY and post-deploy smoke endpoints passed on first attempt.",
       "lastNextAction": ""
     },
     "test-automation": {
