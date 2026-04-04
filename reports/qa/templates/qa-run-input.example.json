@@ -247,6 +247,7 @@
     "게스트 로그인은 테스트 용도 유지",
     "GitHub/Google/Email 인증 흐름 정상",
     "feedback observability run이면 traceUrlStatus=available|unavailable와 traceUrl(optional) 해석을 notes에 함께 남긴다",
+    "mode audit를 확인한 run이면 requested-mode-auto / auto-resolved-single / auto-resolved-multi / single_disallowed_upgrade 요약을 notes에 함께 남긴다",
     "dashboard/AI parity run이면 최소 1개 서버 raw metric과 dashboard dataSlotInfo/dataSourceInfo, AI getServerMetrics dataSlot/dataSource를 같은 run에 함께 기록"
   ],
   "links": [
@@ -259,6 +260,11 @@
       "type": "langfuse-trace",
       "label": "Feedback trace API URL",
       "url": "https://us.cloud.langfuse.com/api/public/traces/1234567890abcdef1234567890abcdef"
+    },
+    {
+      "type": "general",
+      "label": "Langfuse mode audit dashboard",
+      "url": "https://us.cloud.langfuse.com/project"
     },
     {
       "type": "monitoring",

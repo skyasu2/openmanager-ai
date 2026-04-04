@@ -85,6 +85,7 @@ export function getSupervisorModel(excludeProviders: ProviderName[] = []): {
     throwOnEmpty: true,
     excludeProviders,
     cbPrefix: 'supervisor',
+    requiredCapabilities: { requireToolCalling: true },
   });
   // throwOnEmpty guarantees non-null
   return result as { model: LanguageModel; provider: ProviderName; modelId: string };
@@ -101,6 +102,7 @@ export function getVerifierModel(): {
 } {
   const result = selectTextModel('Verifier', ['groq', 'cerebras', 'mistral'], {
     throwOnEmpty: true,
+    requiredCapabilities: { requireToolCalling: true },
   });
   return result as { model: LanguageModel; provider: ProviderName; modelId: string };
 }

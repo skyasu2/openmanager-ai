@@ -191,6 +191,7 @@ export async function generateObjectWithFallback<T extends ZodTypeAny>(
           {
             excludeProviders: Array.from(attemptedProviders),
             cbPrefix: options.providerFallback.cbPrefix,
+            requiredCapabilities: { requireStructuredOutput: true },
           }
         );
 

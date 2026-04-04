@@ -8,6 +8,12 @@ import type { ToolName } from '../../tools-ai-sdk';
 import type { SupervisorMode } from './supervisor-types';
 import { isTavilyAvailable } from '../../lib/tavily-hybrid-rag';
 import { logger } from '../../lib/logger';
+import {
+  ADVISOR_QUERY_PATTERN,
+  COMPOSITE_QUERY_PATTERNS,
+  INFRA_CONTEXT_PATTERN,
+  REPORTER_QUERY_PATTERN,
+} from './query-routing-signals';
 
 // ============================================================================
 // System Prompt
@@ -179,15 +185,14 @@ export const RETRY_CONFIG = {
 
 export function selectExecutionMode(query: string): SupervisorMode {
   const q = query.toLowerCase();
-
-  const infraContext =
-    /서버|서벼|썹|인프라|시스템|시스탬|모니터링|cpu|씨피유|메모리|메머리|멤|디스크|트래픽|네트워크|server|servr|sever|memory|memroy|disk|traffic|network|latency|response|load/i;
-  const hasInfraContext = infraContext.test(q);
+  const hasInfraContext = INFRA_CONTEXT_PATTERN.test(q);
 
   const multiAgentPatterns = [
-    /보고서|리포트|report|인시던트|incident|장애.*보고|일일.*리포트/i,
+    REPORTER_QUERY_PATTERN,
+    /report|장애.*보고|일일.*리포트/i,
     /분석.*원인|원인.*분석|근본.*원인|rca|root.*cause/i,
-    /해결.*방법|과거.*사례|유사.*장애|어떻게.*해결|조치.*방법|대응.*방안/i,
+    ADVISOR_QUERY_PATTERN,
+    /유사.*장애|대응.*방안/i,
     /how.*to.*(fix|resolve|solve)|troubleshoot|trubleshoot/i,
     /용량.*계획|capacity|언제.*부족|얼마나.*남|증설.*필요/i,
     /(서버|서벼|썹|상태|현황|모니터링|인프라).*(요약|요먁|간단히|핵심|tl;?dr)/i,
@@ -213,13 +218,13 @@ export function selectExecutionMode(query: string): SupervisorMode {
   ];
 
   const compositeConnectors = [
-    /그리고|또한|동시에|함께|및|plus|and|then/i,
-    /비교|대비|차이|compared?|versus|vs\.?/i,
+    COMPOSITE_QUERY_PATTERNS[0],
+    COMPOSITE_QUERY_PATTERNS[1],
   ];
 
   const compositeIntentPatterns = [
     /상태.*원인|원인.*상태/i,
-    /원인.*해결|해결.*원인|분석.*조치|조치.*분석/i,
+    COMPOSITE_QUERY_PATTERNS[2],
     /요약.*보고서|보고서.*요약|분석.*보고서|보고서.*분석/i,
   ];
 

@@ -95,11 +95,12 @@ function finalizeMultiAgentResponse(
 ): MultiAgentResponse {
   const traceId = getTraceId(trace);
   const handoffCount = response.handoffs?.length ?? 0;
+  const responseWithTraceId = attachTraceIdToResponse(response, traceId);
   
   const tracedResponse = {
-    ...attachTraceIdToResponse(response, traceId),
+    ...responseWithTraceId,
     metadata: {
-      ...response.metadata,
+      ...responseWithTraceId.metadata,
       handoffCount,
     }
   };
@@ -221,6 +222,10 @@ export async function executeMultiAgent(
     sessionId: request.sessionId,
     mode: 'multi',
     query,
+    requestedMode: request.requestedMode,
+    resolvedMode: request.resolvedMode,
+    modeSelectionSource: request.modeSelectionSource,
+    autoSelectedByComplexity: request.autoSelectedByComplexity,
     upstreamTraceId: request.traceId,
   });
 
@@ -473,6 +478,10 @@ export async function* executeMultiAgentStream(
     sessionId: request.sessionId,
     mode: 'multi',
     query,
+    requestedMode: request.requestedMode,
+    resolvedMode: request.resolvedMode,
+    modeSelectionSource: request.modeSelectionSource,
+    autoSelectedByComplexity: request.autoSelectedByComplexity,
     upstreamTraceId: request.traceId,
   });
 

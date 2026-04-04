@@ -1,7 +1,17 @@
 import type { LanguageModel } from 'ai';
-import { getCerebrasModelId, getGroqModelId, getOpenRouterVisionModelId } from '../../../../lib/config-parser';
+import {
+  getCerebrasModelId,
+  getGroqModelId,
+  getOpenRouterVisionModelId,
+} from '../../../../lib/config-parser';
 import { logger } from '../../../../lib/logger';
 import { getCircuitBreaker } from '../../../resilience/circuit-breaker';
+import {
+  getProviderCapabilities,
+  getCapabilityMismatchReasons,
+  getTextProviderCapabilities,
+  type ModelCapabilityRequirements,
+} from '../../provider-capabilities';
 import {
   checkProviderStatus,
   getCerebrasModel,
@@ -28,25 +38,25 @@ export type TextProvider = 'cerebras' | 'groq' | 'mistral';
 const TEXT_PROVIDER_MODELS: Record<TextProvider, { 
   factory: (id: string) => LanguageModel; 
   modelId: () => string;
-  capabilities: ModelCapabilities;
+  capabilities: ModelCapabilities | (() => ModelCapabilities);
 }> = {
   // Qwen 3 (235B Preview) - 1M TPD, 1,400 tok/s, tool calling ✅ (Cerebras 상시 적용)
   cerebras: { 
     factory: getCerebrasModel, 
     modelId: () => getCerebrasModelId(),
-    capabilities: { supportsToolCalling: true, supportsStructuredOutput: true, supportsVision: false, supportsLongContext: true }
+    capabilities: () => getTextProviderCapabilities('cerebras')
   },
   // Llama 4 Scout (17B) - 500K TPD, 30K TPM, 512K ctx, tool calling ✅ (2026-04-03 교체)
   groq: { 
     factory: getGroqModel, 
     modelId: () => getGroqModelId(),
-    capabilities: { supportsToolCalling: true, supportsStructuredOutput: true, supportsVision: false, supportsLongContext: true }
+    capabilities: () => getTextProviderCapabilities('groq')
   },
   // Mistral Large - Frontier급 성능, free tier quota 낮음 (~2 RPM)
   mistral: { 
     factory: getMistralModel, 
     modelId: () => 'mistral-large-latest',
-    capabilities: { supportsToolCalling: true, supportsStructuredOutput: true, supportsVision: false, supportsLongContext: false }
+    capabilities: () => getTextProviderCapabilities('mistral')
   },
 };
 
@@ -61,6 +71,8 @@ interface SelectTextModelOptions {
   excludeProviders?: ProviderName[];
   /** CB key prefix override (default: agentLabel lowercase) */
   cbPrefix?: string;
+  /** Minimum capabilities required by the caller */
+  requiredCapabilities?: ModelCapabilityRequirements;
 }
 
 /**
@@ -74,7 +86,12 @@ export function selectTextModel(
   providerOrder: TextProvider[],
   options: SelectTextModelOptions = {},
 ): ModelResult | null {
-  const { throwOnEmpty = false, excludeProviders = [], cbPrefix } = options;
+  const {
+    throwOnEmpty = false,
+    excludeProviders = [],
+    cbPrefix,
+    requiredCapabilities = {},
+  } = options;
   const status = checkProviderStatus();
   const excluded = new Set<string>(excludeProviders);
   const prefix = cbPrefix ?? agentLabel.toLowerCase().replace(/\s+/g, '-');
@@ -95,12 +112,22 @@ export function selectTextModel(
 
     const config = TEXT_PROVIDER_MODELS[provider];
     const modelId = config.modelId();
+    const capabilities = typeof config.capabilities === 'function'
+      ? config.capabilities()
+      : config.capabilities;
+    const mismatchReasons = getCapabilityMismatchReasons(capabilities, requiredCapabilities);
+    if (mismatchReasons.length > 0) {
+      logger.info(
+        `[${agentLabel}] Skipping ${provider}/${modelId}: missing ${mismatchReasons.join(', ')}`
+      );
+      continue;
+    }
     try {
       return {
         model: config.factory(modelId),
         provider,
         modelId,
-        capabilities: config.capabilities,
+        capabilities,
       };
     } catch {
       const nextIdx = providerOrder.indexOf(provider) + 1;
@@ -110,10 +137,14 @@ export function selectTextModel(
   }
 
   if (throwOnEmpty) {
-    throw new Error(`No provider available for ${agentLabel} (all providers down).`);
+    throw new Error(
+      `No provider available for ${agentLabel} (providers unavailable or missing required capabilities).`
+    );
   }
 
-  logger.warn(`[${agentLabel}] No model available (all providers down)`);
+  logger.warn(
+    `[${agentLabel}] No model available (providers unavailable or missing required capabilities)`
+  );
   return null;
 }
 
@@ -125,28 +156,36 @@ export function selectTextModel(
  * NLQ model: Groq(llama-4-scout) → Cerebras(qwen-3, Preview) → Mistral
  */
 export function getNlqModel(): ModelResult | null {
-  return selectTextModel('NLQ Agent', ['groq', 'cerebras', 'mistral']);
+  return selectTextModel('NLQ Agent', ['groq', 'cerebras', 'mistral'], {
+    requiredCapabilities: { requireToolCalling: true },
+  });
 }
 
 /**
  * Analyst model: Groq(llama-4-scout) → Cerebras(qwen-3, Preview) → Mistral
  */
 export function getAnalystModel(): ModelResult | null {
-  return selectTextModel('Analyst Agent', ['groq', 'cerebras', 'mistral']);
+  return selectTextModel('Analyst Agent', ['groq', 'cerebras', 'mistral'], {
+    requiredCapabilities: { requireToolCalling: true },
+  });
 }
 
 /**
  * Reporter model: Groq(llama-4-scout) → Cerebras(qwen-3, Preview) → Mistral
  */
 export function getReporterModel(): ModelResult | null {
-  return selectTextModel('Reporter Agent', ['groq', 'cerebras', 'mistral']);
+  return selectTextModel('Reporter Agent', ['groq', 'cerebras', 'mistral'], {
+    requiredCapabilities: { requireToolCalling: true },
+  });
 }
 
 /**
  * Advisor model: Mistral → Groq(llama-4-scout) → Cerebras(qwen-3, Preview)
  */
 export function getAdvisorModel(): ModelResult | null {
-  return selectTextModel('Advisor Agent', ['mistral', 'groq', 'cerebras']);
+  return selectTextModel('Advisor Agent', ['mistral', 'groq', 'cerebras'], {
+    requiredCapabilities: { requireToolCalling: true },
+  });
 }
 
 // ============================================================================
@@ -166,12 +205,7 @@ export function getVisionModel(): ModelResult | null {
         model: getGeminiFlashLiteModel(geminiModelId),
         provider: 'gemini',
         modelId: geminiModelId,
-        capabilities: {
-          supportsToolCalling: true,
-          supportsStructuredOutput: true,
-          supportsVision: true,
-          supportsLongContext: true,
-        },
+        capabilities: getProviderCapabilities('gemini'),
       };
     } catch (error) {
       logger.warn('[Vision Agent] Gemini initialization failed, trying OpenRouter:', error);
@@ -186,12 +220,7 @@ export function getVisionModel(): ModelResult | null {
         model: getOpenRouterVisionModel(modelId),
         provider: 'openrouter',
         modelId,
-        capabilities: {
-          supportsToolCalling: true,
-          supportsStructuredOutput: true,
-          supportsVision: true,
-          supportsLongContext: true,
-        },
+        capabilities: getProviderCapabilities('openrouter'),
       };
     } catch (error) {
       logger.error('[Vision Agent] OpenRouter initialization failed:', error);
@@ -201,4 +230,3 @@ export function getVisionModel(): ModelResult | null {
   logger.warn('[Vision Agent] No vision provider available - Vision features disabled');
   return null;
 }
-

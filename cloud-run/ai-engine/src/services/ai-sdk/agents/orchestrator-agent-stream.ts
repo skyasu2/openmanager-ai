@@ -128,7 +128,9 @@ export async function* executeAgentStream(
       continue;
     }
 
-    const modelResult = selectTextModel(agentName, [attemptProvider]);
+    const modelResult = selectTextModel(agentName, [attemptProvider], {
+      requiredCapabilities: { requireToolCalling: true },
+    });
     if (!modelResult) {
       logger.debug(`[Stream ${agentName}] No model for ${attemptProvider}, trying next`);
       continue;

@@ -4,7 +4,7 @@
 > Owner: documentation
 > Status: Active
 > Doc type: How-to
-> Last reviewed: 2026-02-14
+> Last reviewed: 2026-04-04
 > Canonical: docs/guides/observability.md
 > Tags: observability,langfuse,sentry,monitoring
 
@@ -135,7 +135,7 @@ curl -H "X-API-Key: $CLOUD_RUN_API_SECRET" \
 2. 프로젝트 선택
 3. **Traces** 탭: 전체 실행 흐름 확인
 4. **Generations** 탭: LLM 호출 상세 (모델, 토큰, 비용)
-5. **Scores** 탭: 사용자 피드백 통계
+5. **Scores** 탭: 사용자 피드백 + supervisor mode audit 통계
 6. **Dashboard** 탭: 사용량 요약, 비용 추이
 
 ### 1.5 Free Tier 보호 시스템
@@ -164,6 +164,74 @@ curl -H "X-API-Key: $CLOUD_RUN_API_SECRET" \
 | **Score** | `user-feedback` | 사용자 좋아요(1)/싫어요(0) |
 | **Score** | `execution-success` | 실행 성공(1)/실패(0) |
 | **Score** | `timeout-occurred` | 타임아웃 여부 |
+| **Score** | `requested-mode-*` | 요청 모드 (`single` / `multi` / `auto`) |
+| **Score** | `resolved-mode-*` | 실제 실행 모드 (`single` / `multi`) |
+| **Score** | `mode-source-*` | 모드 결정 이유 (`explicit`, `auto_complexity`, `auto_default`, `single_disallowed_upgrade`) |
+| **Score** | `auto-resolved-*` | `auto` 요청이 실제로 어디로 수렴했는지 |
+| **Score** | `complexity-selected-*` | 복잡도 휴리스틱이 고른 실행 모드 |
+
+### 1.7 Supervisor Mode Audit 해석법
+
+`supervisor-execution` trace는 mode audit metadata와 함께 score도 남깁니다. 운영에서는 아래 score 조합을 먼저 봅니다.
+
+| Score | 의미 | 운영 해석 |
+|------|------|----------|
+| `requested-mode-auto` | 기본 요청이 `auto`로 들어옴 | 일반 사용자 트래픽 기준선 |
+| `resolved-mode-single` | 실제 단일 경로 실행 | free-tier 친화 요청 비율 |
+| `resolved-mode-multi` | 실제 멀티 경로 실행 | 고비용/고정밀 요청 비율 |
+| `mode-source-auto_complexity` | 복잡도 휴리스틱으로 결정 | 정상 auto 라우팅 |
+| `mode-source-single_disallowed_upgrade` | explicit `single` 요청이 정책상 `multi`로 승격됨 | 정책 충돌 또는 클라이언트 오용 신호 |
+| `auto-resolved-single` | `auto` 요청이 최종적으로 `single` 실행 | 저복잡도 질의 비율 |
+| `auto-resolved-multi` | `auto` 요청이 최종적으로 `multi` 실행 | 복합/전문 질의 비율 |
+| `complexity-selected-single` | 휴리스틱이 `single`을 선택 | cheap path 선택량 |
+| `complexity-selected-multi` | 휴리스틱이 `multi`를 선택 | specialist path 선택량 |
+
+권장 확인 순서:
+
+1. `requested-mode-auto` 대비 `auto-resolved-single` / `auto-resolved-multi` 비율을 본다.
+2. `resolved-mode-multi`가 급증했으면 같은 시간대의 `mode-source-*`와 `agent-handoff`를 같이 본다.
+3. `mode-source-single_disallowed_upgrade`가 반복되면 클라이언트가 explicit `single`을 계속 보내고 있는지 점검한다.
+4. `resolved-mode-multi`는 높은데 `agent-handoff`가 낮으면 pre-filter specialist path가 많이 타는 상태로 해석한다.
+
+이상 징후 예시:
+
+- `requested-mode-auto`는 안정적인데 `resolved-mode-multi`만 급증: 복잡도 휴리스틱 drift 또는 질의 성격 변화 가능성
+- `mode-source-single_disallowed_upgrade` 증가: 클라이언트 계약 위반 또는 legacy caller 존재 가능성
+- `complexity-selected-multi` 증가와 함께 `timeout-occurred` 증가: multi path 비용/지연 재점검 필요
+
+### 1.8 Langfuse Dashboard 추천 구성
+
+Langfuse 공식 문서 기준으로 metrics는 custom dashboard와 metrics API에서 공통으로 집계할 수 있고, 최근 v4 기준에서는 고카디널리티 차원(`traceId`, `sessionId`, 일부 `userId`) 그룹핑에 top-N 제한이 생겼습니다. OpenManager의 mode audit은 이 제약을 피하도록 score 이름 중심으로 보는 것이 가장 안정적입니다.
+
+권장 운영 규칙:
+
+1. trace 범위는 먼저 `name = supervisor-execution`으로 좁힌다.
+2. mode audit은 trace/session 단위 drill-down보다 score 집계부터 본다.
+3. 고카디널리티 차원(`traceId`, `sessionId`, `userId`) 그룹핑은 기본 대시보드에서 피하고, 꼭 필요하면 top-N으로 제한한다.
+4. 환경별 비교가 필요하면 score filter를 직접 건다. Langfuse v4에서는 score의 environment filter가 더 엄격하게 적용된다.
+
+추천 대시보드 위젯:
+
+| 위젯 이름 | 기준 score | 시간 범위 | 해석 |
+|----------|-------------|-----------|------|
+| **Mode Mix 24h** | `resolved-mode-single`, `resolved-mode-multi` | 최근 24시간 | 실제 실행 모드 비율 확인 |
+| **Auto Resolution 24h** | `requested-mode-auto`, `auto-resolved-single`, `auto-resolved-multi` | 최근 24시간 | auto 요청이 single/multi 어디로 수렴하는지 확인 |
+| **Policy Collision 7d** | `mode-source-single_disallowed_upgrade` | 최근 7일 | explicit `single` 호출이 정책과 충돌하는지 확인 |
+| **Complexity Drift 7d** | `complexity-selected-single`, `complexity-selected-multi` | 최근 7일 | 휴리스틱이 어느 방향으로 이동하는지 확인 |
+| **Multi Risk Overlay 24h** | `resolved-mode-multi`, `timeout-occurred` | 최근 24시간 | multi 증가와 지연/타임아웃 동반 여부 확인 |
+
+운영 순서:
+
+1. **Scores 탭**에서 `resolved-mode-multi`와 `mode-source-single_disallowed_upgrade`를 먼저 확인한다.
+2. 이상 징후가 있으면 **Traces 탭**에서 `name = supervisor-execution`으로 drill-down 한다.
+3. multi 증가 원인을 볼 때는 같은 시간대의 `agent-handoff`, generation latency, provider 분포를 같이 본다.
+4. 장기 추세는 **Custom Dashboard**에 위 5개 위젯만 올리고, 나머지는 ad-hoc 분석으로 남긴다.
+
+OpenManager 권장 baseline:
+
+- `resolved-mode-single`가 `auto` 요청의 다수를 유지해야 free-tier 친화적이다.
+- `mode-source-single_disallowed_upgrade`는 지속적으로 0 또는 근접한 값이어야 한다.
+- `resolved-mode-multi`가 상승할 때 `timeout-occurred`가 같이 오르면 휴리스틱 또는 provider fallback 재점검이 필요하다.
 
 ---
 
@@ -377,4 +445,4 @@ curl -H "x-api-key: $KEY" \
 - [배포 토폴로지](../reference/architecture/system/system-architecture-current.md#9-deployment-topology)
 - [트러블슈팅](../troubleshooting/common-issues.md)
 
-_Last Updated: 2026-02-13_
+_Last Updated: 2026-04-04_

@@ -14,6 +14,12 @@ import {
 import { isVisionQuery } from './vision-agent';
 import type { PreFilterResult } from './orchestrator-types';
 import { logger } from '../../../lib/logger';
+import {
+  ADVISOR_QUERY_PATTERN,
+  ANALYST_QUERY_PATTERN,
+  COMPOSITE_QUERY_PATTERNS,
+  REPORTER_QUERY_PATTERN,
+} from '../query-routing-signals';
 
 // ============================================================================
 // Context Store Integration - Parse and Save Agent Findings
@@ -255,15 +261,6 @@ const SERVER_KEYWORDS = [
   '부하', 'load', '사용량', 'usage',
   '응답시간', 'response', 'latency', '대역폭', 'bandwidth',
   '장비',
-];
-
-const ANALYST_QUERY_PATTERN = /이상|분석|예측|트렌드|패턴|원인|왜|상관관계|근본\s*원인|rca/i;
-const REPORTER_QUERY_PATTERN = /보고서|리포트|타임라인|인시던트|incident/i;
-const ADVISOR_QUERY_PATTERN = /해결|방법|명령어|가이드|어떻게|과거.*사례|사례.*찾|이력|유사|권장\s*조치/i;
-const COMPOSITE_QUERY_PATTERNS = [
-  /그리고|또한|동시에|함께|및|plus|and|then/i,
-  /비교|대비|차이/i,
-  /원인.*해결|해결.*원인|분석.*조치|조치.*분석/i,
 ];
 
 const ATTACHMENT_IMAGE_KEYWORDS = ['스크린샷', 'screenshot', '이미지', 'image', '사진', '차트', '그래프', '화면', '패널'];

@@ -502,6 +502,7 @@ docs/testing/pin-authentication-*.md
 # Runtime temp files
 .dev-server.pid
 dev-server.log
+cloud-run/ai-engine/tmp-env.yaml
 
 # Biome and linting reports (temporary analysis files)
 biome_report*.txt

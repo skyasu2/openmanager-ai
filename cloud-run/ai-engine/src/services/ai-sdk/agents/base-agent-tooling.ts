@@ -1,6 +1,6 @@
 import type { ToolSet } from 'ai';
-import { isOpenRouterVisionToolCallingEnabled } from '../../../lib/config-parser';
 import { logger } from '../../../lib/logger';
+import { getProviderCapabilities } from '../provider-capabilities';
 import type { AgentRunOptions } from './base-agent-types';
 import {
   GENERIC_EMPTY_RESPONSE_FALLBACK,
@@ -35,7 +35,7 @@ export function filterTools(
   if (
     agentName === VISION_AGENT_NAME &&
     provider === 'openrouter' &&
-    !isOpenRouterVisionToolCallingEnabled()
+    !getProviderCapabilities('openrouter').supportsToolCalling
   ) {
     const toolCount = Object.keys(filtered).length;
     if (toolCount > 0) {

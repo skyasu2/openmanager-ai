@@ -309,6 +309,14 @@ export function getCerebrasModelId(): string {
 }
 
 /**
+ * Cerebras tool-calling gate for emergency compatibility fallback.
+ * Default: true (enabled). Set CEREBRAS_TOOL_CALLING_ENABLED=false to force-disable.
+ */
+export function isCerebrasToolCallingEnabled(): boolean {
+  return process.env.CEREBRAS_TOOL_CALLING_ENABLED !== 'false';
+}
+
+/**
  * Get default Groq text model id.
  * Default: llama-4-scout-17b (500K TPD, 512K ctx, tool calling ✅)
  * @see https://console.groq.com/docs/rate-limits

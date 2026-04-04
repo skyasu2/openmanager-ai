@@ -33,6 +33,13 @@ reports/qa/
 - 같은 run에서 `/monitoring/traces?q=<traceId>` 검색 결과가 비어 있어도, sampling 특성상 non-blocking일 수 있으므로 `traceUrlStatus`/direct link 증거와 분리해 해석한다.
 - observability pack에서 `/monitoring` / `/monitoring/traces`를 확인할 때는 `https://openmanager-ai.vercel.app/...`가 아니라 `CLOUD_RUN_AI_URL`의 direct `run.app` host를 사용한다.
 - Cloud Run admin observability endpoint는 `X-API-Key: $CLOUD_RUN_API_SECRET` 인증이 필요하므로, Vercel surface QA와 같은 기준으로 404를 해석하면 안 된다.
+- mode audit를 확인한 run이면 `notes`에 최소 1줄 이상 요약을 남긴다.
+  - 권장 형식: `mode audit: requested-mode-auto dominant, auto-resolved-single 70%, auto-resolved-multi 30%, single_disallowed_upgrade 0`
+  - 비율을 바로 산출하기 어렵다면 `resolved-mode-multi spike 없음`, `single_disallowed_upgrade 0 확인`처럼 정성 요약만 남겨도 된다.
+- Langfuse score 기반 운영 증거는 새 스키마를 만들지 않고 기존 `links`에 남긴다.
+  - trace 상세 링크는 `langfuse-trace`
+  - dashboard/custom dashboard/filter URL은 `general`
+  - Cloud Run `/monitoring` 조회 URL은 `monitoring`
 - dashboard/AI parity QA에서는 최소 1개 서버를 잡아 `dashboard raw metric`과 `AI getServerMetrics`를 같은 run에 같이 기록한다.
 - parity run covered surface 권장 형식:
   - `dashboard raw metric (storage-nfs-dc1-01 DISK 82% Warning)`
@@ -44,10 +51,10 @@ reports/qa/
 - Vercel production의 `broad`/`release-gate` 또는 `releaseFacing: true` run이면 `environment.deploymentId`, `environment.commitSha`를 함께 기록한다.
 - `qa:record`는 누락 시 현재 Git의 `branch`/`HEAD SHA`를 자동 보강하고, `VERCEL_*` system env가 있으면 `deploymentId`/`deploymentUrl`/`url`도 함께 보강한다.
 
-2. QA 결과 기록
+1. QA 결과 기록
 - `npm run qa:record -- --input /tmp/qa-run-input.json`
 
-3. 요약 확인
+1. 요약 확인
 - `npm run qa:status`
 - `npm run qa:status:sync` 또는 `npm run qa:status -- --write`
 - `reports/qa/QA_STATUS.md` 확인
@@ -55,7 +62,7 @@ reports/qa/
   - 단, proof/public evidence 계약이 아직 없으면 `qa:status`는 실패하지 않고 public evidence 갱신을 skip 로그로 남긴다.
   - 이 경우 stale `public/data/qa/validation-evidence.json`이 남아 있으면 자동으로 제거해 tracker/public evidence drift를 방지한다.
 
-4. Vercel 실환경 QA/배포 뒤 사용량 확인
+1. Vercel 실환경 QA/배포 뒤 사용량 확인
 - `npm run check:usage` 또는 `npm run check:usage:vercel`
 - CLI 확인이 불가하면 Vercel Usage 대시보드를 수동 확인
 - 확인 결과는 QA 입력 JSON의 `usageChecks`에 기록
@@ -85,6 +92,7 @@ reports/qa/
   - feedback trace QA에서는 `traceUrlStatus`를 notes나 covered surface에 함께 남깁니다.
   - `traceUrlStatus=available`이면 `traceUrl`을 `langfuse-trace`로 우선 기록합니다.
   - `traceUrlStatus=unavailable`이면 `traceApiUrl`를 `langfuse-trace`, `monitoringLookupUrl`를 `monitoring`으로 기록하는 방식을 우선합니다.
+  - mode audit dashboard URL은 `general`로 기록하고, label에 `Langfuse mode audit`를 포함해 사람이 구분 가능하게 남깁니다.
 - `ciEvidence`는 GitHub Actions 기반 QA 증거를 표준화하는 필드입니다.
   - 현재 지원 provider: `github-actions`
   - 필수: `runId`
@@ -167,10 +175,10 @@ reports/qa/
   - `P1`: 릴리즈 보증 필수 항목 (예: 단위/통합, 보안 회귀, 모니터링 정량화)
   - `P2`: 보강/문서/운영 효율 항목
 - 진행 순서:
-  - 1) Release DoD 게이트(검증 명령) 기록
-  - 2) DoD 미충족 항목을 pending으로 정리
-  - 3) 개선 후 같은 `id`를 `completedImprovements`에 반영해 전환
-  - 4) `npm run qa:status`로 open 갭 추적
+  - 1. Release DoD 게이트(검증 명령) 기록
+  - 1. DoD 미충족 항목을 pending으로 정리
+  - 1. 개선 후 같은 `id`를 `completedImprovements`에 반영해 전환
+  - 1. `npm run qa:status`로 open 갭 추적
 
 ## Recommended Item ID Convention
 

@@ -3,7 +3,7 @@
  *
  * Dual-mode supervisor implementation:
  * 1. Single-agent mode: Simple generateText with multi-step tool calling
- * 2. Multi-agent mode: Orchestrated agent handoffs using AI SDK v6 native ToolLoopAgent
+ * 2. Multi-agent mode: Custom orchestrated agent handoffs built on AI SDK primitives
  *
  * Split into:
  * - supervisor-types.ts: Types, StreamEvent

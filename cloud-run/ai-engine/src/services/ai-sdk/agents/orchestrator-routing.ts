@@ -47,6 +47,7 @@ export function getOrchestratorModel(): ModelResult | null {
   // Keep Cerebras/Mistral first until the Groq path is validated for this route.
   return selectTextModel('Orchestrator', ORCHESTRATOR_PROVIDER_ORDER, {
     cbPrefix: 'orchestrator',
+    requiredCapabilities: { requireStructuredOutput: true },
   });
 }
 

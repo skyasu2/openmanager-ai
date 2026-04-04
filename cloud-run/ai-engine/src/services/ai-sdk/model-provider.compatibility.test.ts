@@ -80,6 +80,8 @@ vi.mock('../../lib/config-parser', () => ({
     'mistralai/mistral-small-3.1-24b-instruct:free',
     'google/gemma-3-4b-it:free',
   ]),
+  isCerebrasToolCallingEnabled: vi.fn(() => true),
+  isOpenRouterVisionToolCallingEnabled: vi.fn(() => true),
 }));
 
 import {

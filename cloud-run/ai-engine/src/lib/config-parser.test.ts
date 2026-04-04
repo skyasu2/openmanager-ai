@@ -13,9 +13,11 @@ import {
   getGroqApiKey,
   getCerebrasApiKey,
   getCerebrasModelId,
+  isCerebrasToolCallingEnabled,
   getOpenRouterVisionModelId,
   getOpenRouterVisionFallbackModelIds,
   isOpenRouterVisionToolCallingEnabled,
+  isSingleModeAllowed,
   getConfigStatus,
   clearConfigCache,
   getAIProvidersConfig,
@@ -186,6 +188,18 @@ describe('Config Parser', () => {
 
       expect(getCerebrasModelId()).toBe('custom-cerebras-model');
     });
+
+    it('should enable Cerebras tool-calling by default', () => {
+      delete process.env.CEREBRAS_TOOL_CALLING_ENABLED;
+
+      expect(isCerebrasToolCallingEnabled()).toBe(true);
+    });
+
+    it('should disable Cerebras tool-calling when explicitly false', () => {
+      process.env.CEREBRAS_TOOL_CALLING_ENABLED = 'false';
+
+      expect(isCerebrasToolCallingEnabled()).toBe(false);
+    });
   });
 
   // ============================================================================
@@ -351,6 +365,21 @@ describe('Config Parser', () => {
     it('should enable OpenRouter vision tool-calling when env is true', () => {
       process.env.OPENROUTER_VISION_TOOL_CALLING = 'true';
       expect(isOpenRouterVisionToolCallingEnabled()).toBe(true);
+    });
+  });
+
+  // ============================================================================
+  // 8. Single-agent degraded gate tests
+  // ============================================================================
+  describe('Single-agent degraded gate', () => {
+    it('should disable degraded single mode by default', () => {
+      delete process.env.ALLOW_DEGRADED_SINGLE;
+      expect(isSingleModeAllowed()).toBe(false);
+    });
+
+    it('should enable degraded single mode when env is true', () => {
+      process.env.ALLOW_DEGRADED_SINGLE = 'true';
+      expect(isSingleModeAllowed()).toBe(true);
     });
   });
 });

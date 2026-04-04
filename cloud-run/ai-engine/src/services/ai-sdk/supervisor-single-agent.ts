@@ -41,8 +41,18 @@ import {
   SupervisorHealth,
 } from './supervisor-types';
 import { logger } from '../../lib/logger';
-import { resolveSupervisorMode } from './supervisor-mode';
+import {
+  buildSupervisorModeMetadata,
+  resolveSupervisorModeDecision,
+  type ResolvedSupervisorModeDecision,
+} from './supervisor-mode';
 import { isSingleModeAllowed } from '../../lib/config-parser';
+import {
+  applyDegradedMetadata,
+  buildDegradedMetadata,
+  shouldFallbackFromMultiAgentError,
+  type SupervisorDegradedFallbackContext,
+} from './supervisor-multi-fallback';
 import {
   createSystemPrompt,
   RETRY_CONFIG,
@@ -63,15 +73,22 @@ export async function executeSupervisor(
   request: SupervisorRequest
 ): Promise<SupervisorResponse | SupervisorError> {
   const startTime = Date.now();
-  const mode = resolveSupervisorMode(request);
+  const modeDecision = resolveSupervisorModeDecision(request);
+  const mode = modeDecision.resolvedMode;
 
-  logger.info(`[Supervisor] Mode: ${mode}`);
+  logger.info({
+    sessionId: request.sessionId,
+    requestedMode: modeDecision.requestedMode,
+    resolvedMode: modeDecision.resolvedMode,
+    modeSelectionSource: modeDecision.modeSelectionSource,
+    autoSelectedByComplexity: modeDecision.autoSelectedByComplexity,
+  }, '[Supervisor] Mode resolved');
 
   if (mode === 'multi') {
-    return executeMultiAgentMode(request, startTime);
+    return executeMultiAgentMode(request, startTime, modeDecision);
   }
 
-  return executeSingleAgentMode(request, startTime);
+  return executeSingleAgentMode(request, startTime, undefined, modeDecision);
 }
 
 // ============================================================================
@@ -80,12 +97,14 @@ export async function executeSupervisor(
 
 async function executeMultiAgentMode(
   request: SupervisorRequest,
-  startTime: number
+  startTime: number,
+  modeDecision: ResolvedSupervisorModeDecision,
 ): Promise<SupervisorResponse | SupervisorError> {
   try {
     const multiAgentRequest: MultiAgentRequest = {
       messages: request.messages,
       sessionId: request.sessionId,
+      ...buildSupervisorModeMetadata(modeDecision),
       traceId: request.traceId,
       enableTracing: request.enableTracing,
       enableWebSearch: request.enableWebSearch,
@@ -97,7 +116,20 @@ async function executeMultiAgentMode(
     const result = await executeMultiAgent(multiAgentRequest);
 
     if (!result.success) {
-      return result as SupervisorError;
+      const multiAgentError = result as SupervisorError;
+      if (
+        isSingleModeAllowed() &&
+        shouldFallbackFromMultiAgentError(multiAgentError.code)
+      ) {
+        logger.info(
+          `[Supervisor] Falling back to single-agent mode (degraded) after multi-agent error: ${multiAgentError.code}`
+        );
+        return executeSingleAgentMode(request, startTime, {
+          degradedFromMode: 'multi',
+          degradedReason: 'multi_agent_model_unavailable',
+        }, modeDecision);
+      }
+      return multiAgentError;
     }
 
     const multiResult = result as MultiAgentResponse;
@@ -128,6 +160,7 @@ async function executeMultiAgentMode(
         qualityFlags: multiResult.metadata.qualityFlags,
         latencyTier: multiResult.metadata.latencyTier,
         mode: 'multi',
+        ...buildSupervisorModeMetadata(modeDecision),
         handoffs: multiResult.handoffs,
         finalAgent: multiResult.finalAgent,
       },
@@ -142,7 +175,10 @@ async function executeMultiAgentMode(
 
     if (isSingleModeAllowed()) {
       logger.info(`[Supervisor] Falling back to single-agent mode (degraded)`);
-      return executeSingleAgentMode(request, startTime);
+      return executeSingleAgentMode(request, startTime, {
+        degradedFromMode: 'multi',
+        degradedReason: 'multi_agent_runtime_error',
+      }, modeDecision);
     }
 
     logger.error(`[Supervisor] Single-agent fallback NOT allowed. Failing fast.`);
@@ -160,7 +196,9 @@ async function executeMultiAgentMode(
 
 async function executeSingleAgentMode(
   request: SupervisorRequest,
-  startTime: number
+  startTime: number,
+  degradedFallbackContext?: SupervisorDegradedFallbackContext,
+  modeDecision?: ResolvedSupervisorModeDecision,
 ): Promise<SupervisorResponse | SupervisorError> {
   let lastError: SupervisorError | null = null;
   const failedProviders: ProviderName[] = [];
@@ -173,7 +211,13 @@ async function executeSingleAgentMode(
       await new Promise((r) => setTimeout(r, RETRY_CONFIG.retryDelayMs * attempt));
     }
 
-    const result = await executeSupervisorAttempt(request, startTime, failedProviders);
+    const result = await executeSupervisorAttempt(
+      request,
+      startTime,
+      failedProviders,
+      degradedFallbackContext,
+      modeDecision
+    );
 
     if (result.success) {
       const successResult = result as SupervisorResponse;
@@ -191,7 +235,10 @@ async function executeSingleAgentMode(
       }
 
       successResult.metadata.mode = 'single';
-      return successResult;
+      if (modeDecision) {
+        Object.assign(successResult.metadata, buildSupervisorModeMetadata(modeDecision));
+      }
+      return applyDegradedMetadata(successResult, degradedFallbackContext);
     }
 
     lastError = result as SupervisorError;
@@ -214,7 +261,9 @@ async function executeSingleAgentMode(
 async function executeSupervisorAttempt(
   request: SupervisorRequest,
   startTime: number,
-  excludeProviders: ProviderName[] = []
+  excludeProviders: ProviderName[] = [],
+  degradedFallbackContext?: SupervisorDegradedFallbackContext,
+  modeDecision?: ResolvedSupervisorModeDecision,
 ): Promise<SupervisorResponse | (SupervisorError & { provider?: ProviderName })> {
   const lastUserMessage = request.messages.filter((m) => m.role === 'user').pop();
   const trace = createSupervisorTrace({
@@ -222,6 +271,7 @@ async function executeSupervisorAttempt(
     mode: 'single',
     query: lastUserMessage?.content || '',
     upstreamTraceId: request.traceId,
+    ...(modeDecision ? buildSupervisorModeMetadata(modeDecision) : {}),
   });
 
   let provider: ProviderName;
@@ -246,9 +296,12 @@ async function executeSupervisorAttempt(
     });
     finalizeTrace(trace, 'Provider unavailable - fallback response', false, {
       durationMs,
-      fallback: true,
-      reason: 'no_provider',
       excludedProviders: excludeProviders,
+      ...(modeDecision ? buildSupervisorModeMetadata(modeDecision) : {}),
+      ...buildDegradedMetadata(degradedFallbackContext, {
+        fallback: true,
+        fallbackReason: 'no_provider',
+      }),
     });
 
     return {
@@ -266,8 +319,11 @@ async function executeSupervisorAttempt(
         formatCompliance: quality.formatCompliance,
         qualityFlags: quality.qualityFlags,
         latencyTier: quality.latencyTier,
-        fallback: true,
-        fallbackReason: 'no_provider',
+        ...(modeDecision ? buildSupervisorModeMetadata(modeDecision) : {}),
+        ...buildDegradedMetadata(degradedFallbackContext, {
+          fallback: true,
+          fallbackReason: 'no_provider',
+        }),
       },
     };
   }
@@ -409,6 +465,8 @@ async function executeSupervisorAttempt(
         stepsExecuted: result.steps.length,
         durationMs,
         intent: intentCategory,
+        ...(modeDecision ? buildSupervisorModeMetadata(modeDecision) : {}),
+        ...buildDegradedMetadata(degradedFallbackContext, {}),
       });
 
       logger.info(
@@ -441,6 +499,8 @@ async function executeSupervisorAttempt(
           qualityFlags: quality.qualityFlags,
           latencyTier: quality.latencyTier,
           traceId: trace.id,
+          ...(modeDecision ? buildSupervisorModeMetadata(modeDecision) : {}),
+          ...buildDegradedMetadata(degradedFallbackContext, {}),
         },
       };
     });
@@ -450,7 +510,10 @@ async function executeSupervisorAttempt(
 
     logger.error(`❌ [Supervisor] Error after ${durationMs}ms:`, errorMessage);
 
-    finalizeTrace(trace, errorMessage, false, { durationMs });
+    finalizeTrace(trace, errorMessage, false, {
+      durationMs,
+      ...(modeDecision ? buildSupervisorModeMetadata(modeDecision) : {}),
+    });
 
     const publicError = error instanceof CircuitOpenError
       ? { code: 'CIRCUIT_OPEN', message: getPublicErrorMessage('CIRCUIT_OPEN') }
