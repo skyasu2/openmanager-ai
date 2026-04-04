@@ -1,76 +1,71 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-04-04 20:06:02 KST
+> Generated at: 2026-04-04 22:06:26 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 216 |
-| Total Checks | 1613 |
-| Passed | 1543 |
+| Total Runs | 217 |
+| Total Checks | 1622 |
+| Passed | 1552 |
 | Failed | 64 |
-| Completed Items | 273 |
-| Pending Items | 1 |
+| Completed Items | 274 |
+| Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 14 |
 | Expert Domains Tracked | 6 |
-| Expert Open Gaps | 2 |
-| Completion Rate | 99.64% |
-| Last Counted Run | QA-20260404-0223 (2026-04-04T11:06:01.219Z) |
-| Latest Recorded Run | QA-20260404-0223 (2026-04-04T11:06:01.219Z) |
+| Expert Open Gaps | 0 |
+| Completion Rate | 100% |
+| Last Counted Run | QA-20260404-0224 (2026-04-04T13:06:03.179Z) |
+| Latest Recorded Run | QA-20260404-0224 (2026-04-04T13:06:03.179Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260404-0223 (2026-04-04T11:06:01.219Z)
+Latest run: QA-20260404-0224 (2026-04-04T13:06:03.179Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| AI Quality Assurance Specialist | appropriate | yes | AI sidebar/streaming summary 경로가 MetricsProvider와 동일한 status/average 기준선을 사용하도록 응답 생성 경로를 추적합니다. |
-| IT Monitoring & Observability SME | appropriate | yes | stream/v2 최종 응답이 precomputed state summary와 어떤 경로에서 어긋나는지 trace/formatter 기준으로 재추적합니다. |
+| AI Quality Assurance Specialist | appropriate | no | - |
+| IT Monitoring & Observability SME | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Production targeted QA 이후 billed 0.0000 USD, effective 1.9605 USD, unexpected billed spike 없음 |
+| vercel | cli | checked | normal | Production parity QA 이후 billed 0.0000 USD, effective 1.9605 USD, unexpected billed spike 없음 |
 
 ## Coverage (Latest Run)
 
 - Scope: targeted
 - Release-Facing: no
 - Counts Toward Summary: yes
-- Deployment: SHA 6130ac9c
-- Coverage Packs: dashboard-core, ai-core, observability-pack
-- Covered Surfaces: /login, /system-boot, /dashboard, AI sidebar, AI chat streaming, /api/version, Cloud Run /health, Cloud Run /monitoring (unauth)
-- Skipped Surfaces: /, /dashboard/ai-assistant, active alerts modal, reporter workflow, analyst workflow, feedback flow, Cloud Run /monitoring/traces
+- Deployment: SHA a9d9ce01
+- Coverage Packs: dashboard-core, ai-core
+- Covered Surfaces: /login, /system-boot, /dashboard, AI sidebar, AI chat streaming, dashboard summary counters (15/14/1/0/0), dashboard system resources (CPU 35%, Memory 49%, Disk 32%), AI summary parity response (15/14/1/0/0, 35/49/32), AI summary warning focus (lb-haproxy-dc1-01 CPU 72%)
+- Skipped Surfaces: /, /dashboard/ai-assistant, active alerts modal, topology modal, server detail tabs, reporter workflow, analyst workflow, feedback flow, /api/health, /api/version, Cloud Run /monitoring, Cloud Run /monitoring/traces
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | Cloud Run health | [link](https://ai-engine-490817238363.asia-northeast1.run.app/health) | - |
-| general | GitLab pipeline #147 | [link](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2429616075) | - |
 | general | Vercel production | [link](https://openmanager-ai.vercel.app/) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | Dashboard and AI sidebar parity rerun | `qa-20260404-vercel-parity-regression-rerun.png` | - |
-| playwright-console | Playwright browser console log | `.playwright-mcp/screenshots/console-2026-04-04T20-04-parity-rerun.log` | - |
+| playwright-screenshot | Dashboard parity baseline after fix | `qa-20260404-vercel-parity-after-fix-dashboard.png` | - |
+| playwright-screenshot | AI summary parity response after fix | `qa-20260404-vercel-parity-after-fix-ai-summary.png` | - |
 
 ## Expert Domain Open Gaps
 
-- ai-quality-assurance: AI Quality Assurance Specialist (last QA-20260404-0223)
-  next: AI sidebar/streaming summary 경로가 MetricsProvider와 동일한 status/average 기준선을 사용하도록 응답 생성 경로를 추적합니다.
-- observability-monitoring: IT Monitoring & Observability SME (last QA-20260404-0223)
-  next: stream/v2 최종 응답이 precomputed state summary와 어떤 경로에서 어긋나는지 trace/formatter 기준으로 재추적합니다.
+- None
 
 ## Pending Improvements
 
-- [P1] ai-summary-dashboard-parity-regression: AI assistant summary must match dashboard and OTel-derived system counts (seen 2회, last QA-20260404-0223)
+- None
 
 ## Deferred Improvements
 
@@ -139,6 +134,7 @@ Latest run: QA-20260404-0223 (2026-04-04T11:06:01.219Z)
 - ai-sidebar-tools-menu: AI 도구 메뉴 (completed 1회, last QA-20260317-0114)
 - ai-stream-timing-x-headers-production: AI Chat streaming route exposes X-AI timing headers on production (completed 1회, last QA-20260310-0080)
 - ai-summary-chat-streaming-path: AI summary chat query uses streaming path on production (completed 2회, last QA-20260310-0080)
+- ai-summary-dashboard-parity-regression: AI assistant summary must match dashboard and OTel-derived system counts (completed 1회, last QA-20260404-0224)
 - ai-summary-delta-guidance: AI 요약이 평균 대비 변화량과 구체적 권고를 표시 (completed 1회, last QA-20260322-0157)
 - ai-summary-query-clarification-skip-production: Explicit all-server summary query skips clarification in production (completed 1회, last QA-20260310-0071)
 - ai-timing-header-ssot-policy: QA timing header SSOT standardized to X-AI-Latency-Ms (completed 1회, last QA-20260310-0081)
@@ -386,6 +382,7 @@ Latest run: QA-20260404-0223 (2026-04-04T11:06:01.219Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260404-0224 | 2026-04-04T13:06:03.179Z | targeted | no | yes | Vercel Playwright QA - dashboard/AI parity confirmation after deterministic summary fallback patch | 9 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260404-0223 | 2026-04-04T11:06:01.219Z | targeted | no | yes | Vercel Playwright QA - dashboard/AI parity rerun after ai-engine parity patch | 9 | 0 | 1 | 0 | 0 | 2 |
 | QA-20260404-0222 | 2026-04-04T09:17:33.588Z | broad | no | yes | Vercel Playwright QA - dashboard, AI assistant, and monitoring parity check | 13 | 0 | 1 | 0 | 1 | 2 |
 | QA-20260403-0221 | 2026-04-03T11:53:21.760Z | targeted | no | yes | Post-push Vercel production smoke after Groq priority update | 3 | 0 | 0 | 0 | 0 | 0 |
@@ -405,5 +402,4 @@ Latest run: QA-20260404-0223 (2026-04-04T11:06:01.219Z)
 | QA-20260402-0207 | 2026-04-02T01:12:12.154Z | targeted | no | yes | Vercel production targeted smoke - landing bootstrap copy hidden after deploy | 4 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260402-0206 | 2026-04-01T22:52:39.393Z | targeted | no | yes | Local dev targeted QA - landing bootstrap auth copy hidden | 3 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260402-0205 | 2026-04-01T22:35:47.941Z | targeted | no | yes | Vercel production targeted smoke - post deploy verification for cd763e634 | 6 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260401-0204 | 2026-04-01T12:15:47.977Z | targeted | no | yes | Local dev Playwright QA - login header minimalization verification | 3 | 1 | 0 | 0 | 0 | 0 |
 

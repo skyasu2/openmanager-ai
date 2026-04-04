@@ -1,0 +1,125 @@
+{
+  "runId": "QA-20260404-0224",
+  "recordedAt": "2026-04-04T13:06:03.179Z",
+  "recordedAtKst": "2026-04-04 22:06:03 KST",
+  "runTitle": "Vercel Playwright QA - dashboard/AI parity confirmation after deterministic summary fallback patch",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "a9d9ce0133f7"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": true,
+  "coveragePacks": ["dashboard-core", "ai-core"],
+  "coveredSurfaces": [
+    "/login",
+    "/system-boot",
+    "/dashboard",
+    "AI sidebar",
+    "AI chat streaming",
+    "dashboard summary counters (15/14/1/0/0)",
+    "dashboard system resources (CPU 35%, Memory 49%, Disk 32%)",
+    "AI summary parity response (15/14/1/0/0, 35/49/32)",
+    "AI summary warning focus (lb-haproxy-dc1-01 CPU 72%)"
+  ],
+  "skippedSurfaces": [
+    "/",
+    "/dashboard/ai-assistant",
+    "active alerts modal",
+    "topology modal",
+    "server detail tabs",
+    "reporter workflow",
+    "analyst workflow",
+    "feedback flow",
+    "/api/health",
+    "/api/version",
+    "Cloud Run /monitoring",
+    "Cloud Run /monitoring/traces"
+  ],
+  "checks": {
+    "total": 9,
+    "passed": 9,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "동일 질문에서 AI summary가 dashboard summary counts/resources와 일치함을 production Playwright로 재확인했습니다.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Synthetic OTel snapshot 기준 dashboard 지표와 사용자-facing AI 요약이 같은 슬롯 수치로 정합합니다.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-04-04T22:05:24+09:00",
+      "summary": "Production parity QA 이후 billed 0.0000 USD, effective 1.9605 USD, unexpected billed spike 없음",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "Dashboard parity baseline after fix",
+      "path": "qa-20260404-vercel-parity-after-fix-dashboard.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "AI summary parity response after fix",
+      "path": "qa-20260404-vercel-parity-after-fix-ai-summary.png"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "ai-summary-dashboard-parity-regression",
+      "title": "AI assistant summary must match dashboard and OTel-derived system counts",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "Production Playwright rerun: AI summary returned total 15 / normal 14 / warning 1 / critical 0 / offline 0 and resource averages 35/49/32, matching dashboard snapshot.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Guest login PIN 4231 -> system boot -> dashboard flow succeeded on production.",
+    "Dashboard snapshot label verified: Synthetic OTel snapshot · 22:00 KST (slot 132/143).",
+    "AI assistant starter prompt query was sent and produced parity-aligned summary in the same session.",
+    "analysis panel metadata showed data='일반 대화 응답', engine='Streaming AI'."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Vercel production",
+      "url": "https://openmanager-ai.vercel.app/"
+    }
+  ]
+}

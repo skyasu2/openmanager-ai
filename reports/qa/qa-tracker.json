@@ -2,27 +2,27 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-04T11:06:01.219Z"
+    "updatedAt": "2026-04-04T13:06:03.179Z"
   },
   "sequence": {
-    "nextRunNumber": 224
+    "nextRunNumber": 225
   },
   "summary": {
-    "totalRuns": 216,
-    "totalChecks": 1613,
-    "totalPassed": 1543,
+    "totalRuns": 217,
+    "totalChecks": 1622,
+    "totalPassed": 1552,
     "totalFailed": 64,
-    "completionRate": 99.64,
-    "completedItems": 273,
-    "pendingItems": 1,
+    "completionRate": 100,
+    "completedItems": 274,
+    "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 14,
     "expertDomainsTracked": 6,
-    "expertDomainsOpenGaps": 2,
-    "lastRunId": "QA-20260404-0223",
-    "lastRecordedAt": "2026-04-04T11:06:01.219Z",
-    "latestRecordedRunId": "QA-20260404-0223",
-    "latestRecordedAt": "2026-04-04T11:06:01.219Z"
+    "expertDomainsOpenGaps": 0,
+    "lastRunId": "QA-20260404-0224",
+    "lastRecordedAt": "2026-04-04T13:06:03.179Z",
+    "latestRecordedRunId": "QA-20260404-0224",
+    "latestRecordedAt": "2026-04-04T13:06:03.179Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -6580,25 +6580,25 @@
       "id": "ai-summary-dashboard-parity-regression",
       "title": "AI assistant summary must match dashboard and OTel-derived system counts",
       "priority": "P1",
-      "status": "pending",
+      "status": "completed",
       "firstSeenRunId": "QA-20260404-0222",
       "firstSeenAt": "2026-04-04T09:17:33.588Z",
-      "lastSeenRunId": "QA-20260404-0223",
-      "lastSeenAt": "2026-04-04T11:06:01.219Z",
-      "seenCount": 2,
-      "completedCount": 0,
+      "lastSeenRunId": "QA-20260404-0224",
+      "lastSeenAt": "2026-04-04T13:06:03.179Z",
+      "seenCount": 3,
+      "completedCount": 1,
       "pendingCount": 2,
       "deferredCount": 0,
       "wontFixCount": 0,
       "aliases": [],
       "owner": "",
-      "lastEvidence": "",
+      "lastEvidence": "Production Playwright rerun: AI summary returned total 15 / normal 14 / warning 1 / critical 0 / offline 0 and resource averages 35/49/32, matching dashboard snapshot.",
       "lastNote": "Commit 6130ac9c1 배포 후에도 dashboard는 online 14/offline 0, averages 35/47/32인데 AI sidebar는 online 13/offline 1, averages 32.5/44.1/31.6으로 응답했습니다.",
       "isBlocking": true,
-      "isBlockingExplicit": true,
+      "isBlockingExplicit": false,
       "overengineeringScope": "",
       "lastPolicyNote": "",
-      "lastStatusChangeAt": "2026-04-04T11:06:01.219Z"
+      "lastStatusChangeAt": "2026-04-04T13:06:03.179Z"
     },
     "ai-provider-copy-policy-drift": {
       "id": "ai-provider-copy-policy-drift",
@@ -19103,6 +19103,114 @@
       "pendingCount": 1,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260404-0224",
+      "recordedAt": "2026-04-04T13:06:03.179Z",
+      "recordedAtKst": "2026-04-04 22:06:03 KST",
+      "title": "Vercel Playwright QA - dashboard/AI parity confirmation after deterministic summary fallback patch",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260404-0224.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "a9d9ce0133f7"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": true,
+      "coveragePacks": ["dashboard-core", "ai-core"],
+      "coveredSurfaces": [
+        "/login",
+        "/system-boot",
+        "/dashboard",
+        "AI sidebar",
+        "AI chat streaming",
+        "dashboard summary counters (15/14/1/0/0)",
+        "dashboard system resources (CPU 35%, Memory 49%, Disk 32%)",
+        "AI summary parity response (15/14/1/0/0, 35/49/32)",
+        "AI summary warning focus (lb-haproxy-dc1-01 CPU 72%)"
+      ],
+      "skippedSurfaces": [
+        "/",
+        "/dashboard/ai-assistant",
+        "active alerts modal",
+        "topology modal",
+        "server detail tabs",
+        "reporter workflow",
+        "analyst workflow",
+        "feedback flow",
+        "/api/health",
+        "/api/version",
+        "Cloud Run /monitoring",
+        "Cloud Run /monitoring/traces"
+      ],
+      "checks": {
+        "total": 9,
+        "passed": 9,
+        "failed": 0
+      },
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "동일 질문에서 AI summary가 dashboard summary counts/resources와 일치함을 production Playwright로 재확인했습니다.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "observability-monitoring",
+          "domainName": "IT Monitoring & Observability SME",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Synthetic OTel snapshot 기준 dashboard 지표와 사용자-facing AI 요약이 같은 슬롯 수치로 정합합니다.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-04-04T22:05:24+09:00",
+          "summary": "Production parity QA 이후 billed 0.0000 USD, effective 1.9605 USD, unexpected billed spike 없음",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "Dashboard parity baseline after fix",
+          "path": "qa-20260404-vercel-parity-after-fix-dashboard.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "AI summary parity response after fix",
+          "path": "qa-20260404-vercel-parity-after-fix-ai-summary.png"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "Vercel production",
+          "url": "https://openmanager-ai.vercel.app/"
+        }
+      ],
+      "expertCount": 2,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -19111,34 +19219,34 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 108,
-      "appropriateCount": 104,
+      "seenCount": 109,
+      "appropriateCount": 105,
       "partialCount": 4,
       "inappropriateCount": 0,
       "improvementNeededCount": 14,
-      "lastRunId": "QA-20260404-0223",
-      "lastSeenAt": "2026-04-04T11:06:01.219Z",
+      "lastRunId": "QA-20260404-0224",
+      "lastSeenAt": "2026-04-04T13:06:03.179Z",
       "lastFit": "appropriate",
-      "lastImprovementNeeded": true,
-      "lastRationale": "배포 후 동일 질문에서 dashboard counts와 AI assistant summary가 다시 불일치했으므로 AI 품질 회귀가 직접 범위입니다.",
-      "lastNextAction": "AI sidebar/streaming summary 경로가 MetricsProvider와 동일한 status/average 기준선을 사용하도록 응답 생성 경로를 추적합니다."
+      "lastImprovementNeeded": false,
+      "lastRationale": "동일 질문에서 AI summary가 dashboard summary counts/resources와 일치함을 production Playwright로 재확인했습니다.",
+      "lastNextAction": ""
     },
     "observability-monitoring": {
       "domainId": "observability-monitoring",
       "domainName": "IT Monitoring & Observability SME",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 69,
-      "appropriateCount": 44,
+      "seenCount": 70,
+      "appropriateCount": 45,
       "partialCount": 25,
       "inappropriateCount": 0,
       "improvementNeededCount": 26,
-      "lastRunId": "QA-20260404-0223",
-      "lastSeenAt": "2026-04-04T11:06:01.219Z",
+      "lastRunId": "QA-20260404-0224",
+      "lastSeenAt": "2026-04-04T13:06:03.179Z",
       "lastFit": "appropriate",
-      "lastImprovementNeeded": true,
-      "lastRationale": "Cloud Run health는 정상이고 배포도 성공했지만 사용자-facing system summary가 운영 지표와 다르면 관측 결과를 신뢰할 수 없습니다.",
-      "lastNextAction": "stream/v2 최종 응답이 precomputed state summary와 어떤 경로에서 어긋나는지 trace/formatter 기준으로 재추적합니다."
+      "lastImprovementNeeded": false,
+      "lastRationale": "Synthetic OTel snapshot 기준 dashboard 지표와 사용자-facing AI 요약이 같은 슬롯 수치로 정합합니다.",
+      "lastNextAction": ""
     },
     "ai-security-reliability": {
       "domainId": "ai-security-reliability",
