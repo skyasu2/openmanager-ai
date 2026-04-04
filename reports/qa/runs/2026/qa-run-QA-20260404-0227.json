@@ -1,0 +1,125 @@
+{
+  "runId": "QA-20260404-0227",
+  "recordedAt": "2026-04-04T14:09:08.887Z",
+  "recordedAtKst": "2026-04-04 23:09:08 KST",
+  "runTitle": "Vercel targeted QA - guest flow and dashboard/AI parity smoke (rerun)",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_BC2L2XzJ6JCXcQauXB3wviMfuPXZ",
+    "deploymentUrl": "https://openmanager-j2affti0o-skyasus-projects.vercel.app",
+    "commitSha": "0b0f5c4eb8833bc8c79da3b6f7d780132a9963ed"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": true,
+  "coveragePacks": ["dashboard-core", "ai-core", "core-routes-smoke"],
+  "coveredSurfaces": [
+    "/login",
+    "guest PIN login (4231)",
+    "/system-boot -> /dashboard",
+    "dashboard summary counters (15/14/1/0/0)",
+    "dashboard resource averages (CPU 38% / MEM 46% / Disk 37%)",
+    "AI sidebar open",
+    "AI starter prompt send",
+    "AI summary parity response (15/14/1/0/0, 38/46/37)",
+    "/api/health (healthy)",
+    "/api/version (8.10.8)",
+    "POST /api/ai/supervisor/stream/v2 status 200",
+    "X-AI-Latency-Ms header (211)"
+  ],
+  "skippedSurfaces": [
+    "/",
+    "404 route",
+    "/dashboard/ai-assistant",
+    "active alerts modal",
+    "topology modal",
+    "server detail tabs",
+    "analyst workflow",
+    "reporter workflow",
+    "feedback flow",
+    "/auth/error",
+    "/auth/success",
+    "/privacy",
+    "Cloud Run /monitoring",
+    "Cloud Run /monitoring/traces"
+  ],
+  "checks": {
+    "total": 12,
+    "passed": 12,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "대시보드와 AI 요약 수치가 동일 세션/동일 슬롯 기준으로 일치했습니다.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "health/version 및 스트리밍 지연 헤더를 함께 확인해 운영 경로 상태를 재검증했습니다.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-04-04T23:08:03+09:00",
+      "summary": "Targeted QA rerun 이후 billed 0.0000 USD, effective 1.9605 USD, unexpected billed spike 없음",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "Dashboard and AI parity",
+      "path": "qa-20260404-targeted-qa-2306-ai-parity.png"
+    },
+    {
+      "type": "playwright-console",
+      "label": "Console errors",
+      "path": "qa-20260404-targeted-qa-2306-console.log"
+    },
+    {
+      "type": "playwright-network",
+      "label": "Network requests",
+      "path": "qa-20260404-targeted-qa-2306-network.log"
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Core guest flow(login->boot->dashboard) succeeded on production.",
+    "AI summary used localized wording (정상/온라인) and matched dashboard counts.",
+    "console error log file reports 0 errors."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Vercel production",
+      "url": "https://openmanager-ai.vercel.app/"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Vercel deployment inspector",
+      "url": "https://vercel.com/skyasus-projects/openmanager-ai/BC2L2XzJ6JCXcQauXB3wviMfuPXZ"
+    }
+  ]
+}

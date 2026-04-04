@@ -1,28 +1,28 @@
 {
   "version": "1.0.0",
-  "generatedAt": "2026-04-04T13:21:43.048Z",
+  "generatedAt": "2026-04-04T14:30:37.854Z",
   "source": {
     "trackerPath": "reports/qa/qa-tracker.json",
     "statusPath": "reports/qa/QA_STATUS.md",
     "publicPath": "public/data/qa/validation-evidence.json",
     "publicHref": "/data/qa/validation-evidence.json",
-    "latestRunId": "QA-20260404-0225"
+    "latestRunId": "QA-20260404-0229"
   },
   "summary": {
-    "totalRuns": 218,
-    "totalChecks": 1638,
+    "totalRuns": 222,
+    "totalChecks": 1697,
     "completedItems": 274,
     "expertDomainsOpenGaps": 0,
     "wontFixItems": 14,
-    "lastRecordedAt": "2026-04-04T13:21:41.671Z"
+    "lastRecordedAt": "2026-04-04T14:29:25.205Z"
   },
   "trackerUpdated": {
-    "iso": "2026-04-04T13:21:41.671Z",
+    "iso": "2026-04-04T14:29:25.205Z",
     "short": "2026-04-04",
     "long": "April 4, 2026"
   },
   "publicEvidenceUpdated": {
-    "iso": "2026-04-04T13:21:41.671Z",
+    "iso": "2026-04-04T14:29:25.205Z",
     "short": "2026-04-04",
     "long": "April 4, 2026"
   },
@@ -32,12 +32,12 @@
     "long": "March 22, 2026"
   },
   "latestPublicRun": {
-    "runId": "QA-20260404-0225",
-    "title": "Vercel Production Broad Release QA - core routes, dashboard modal tabs, and AI streaming parity",
-    "scope": "broad",
-    "recordedAt": "2026-04-04T13:21:41.671Z",
-    "commitSha": "fc725862173d9763c17b3486d895f3591dc7e9bc",
-    "repoPath": "reports/qa/runs/2026/qa-run-QA-20260404-0225.json",
+    "runId": "QA-20260404-0229",
+    "title": "Vercel Production Broad Release-Gate QA - core routes + dashboard + AI stream parity",
+    "scope": "release-gate",
+    "recordedAt": "2026-04-04T14:29:25.205Z",
+    "commitSha": "0b0f5c4eb8833bc8c79da3b6f7d780132a9963ed",
+    "repoPath": "reports/qa/runs/2026/qa-run-QA-20260404-0229.json",
     "ciRunLink": null,
     "ciArtifactLinks": []
   },

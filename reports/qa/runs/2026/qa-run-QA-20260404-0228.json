@@ -1,0 +1,158 @@
+{
+  "runId": "QA-20260404-0228",
+  "recordedAt": "2026-04-04T14:20:17.892Z",
+  "recordedAtKst": "2026-04-04 23:20:17 KST",
+  "runTitle": "Vercel targeted QA - modal/detail pack and AI advanced surface",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_BC2L2XzJ6JCXcQauXB3wviMfuPXZ",
+    "deploymentUrl": "https://openmanager-j2affti0o-skyasus-projects.vercel.app",
+    "commitSha": "0b0f5c4eb8833bc8c79da3b6f7d780132a9963ed"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": true,
+  "coveragePacks": [
+    "modal-detail-pack",
+    "ai-advanced-surface",
+    "core-routes-smoke",
+    "dashboard-core",
+    "ai-core"
+  ],
+  "coveredSurfaces": [
+    "/login",
+    "guest PIN login (4231)",
+    "/system-boot -> /dashboard",
+    "active alerts modal open + ESC close",
+    "topology modal open + close",
+    "server detail modal open",
+    "server detail tabs switch (종합 상황 -> 성능 분석 -> 로그 & 네트워크)",
+    "log explorer modal open + close",
+    "AI sidebar open",
+    "Analyst 전체 분석 실행 및 결과 렌더",
+    "Reporter 보고서 생성",
+    "Reporter 상세보기(감지 항목/권장조치/패턴)",
+    "/dashboard/ai-assistant full-screen workspace render",
+    "/privacy route render",
+    "/auth/error route render",
+    "/auth/success route render",
+    "/main -> / redirect 확인",
+    "404 route render (/this-route-should-404)"
+  ],
+  "skippedSurfaces": [
+    "AI feedback flow",
+    "Cloud Run /monitoring",
+    "Cloud Run /monitoring/traces",
+    "/api/health",
+    "/api/version"
+  ],
+  "checks": {
+    "total": 18,
+    "passed": 18,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "모달/상세/에이전트 플로우를 Playwright 실경로로 재현해 회귀 위험을 축소했습니다.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Analyst/Reporter 실행 및 결과 렌더, 전체화면 AI 워크스페이스 경로를 실측했습니다.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-04-04T23:19:16+09:00",
+      "summary": "Targeted advanced QA 이후 billed 0.0000 USD, effective 1.9605 USD, unexpected billed spike 없음",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "Active alerts modal",
+      "path": "qa-20260404-targeted-qa-0228-active-alerts-modal.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Topology modal",
+      "path": "qa-20260404-targeted-qa-0228-topology-modal.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Server detail tab switch",
+      "path": "qa-20260404-targeted-qa-0228-server-detail-tabs.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Log explorer modal",
+      "path": "qa-20260404-targeted-qa-0228-log-explorer-modal.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Analyst result",
+      "path": "qa-20260404-targeted-qa-0228-analyst-result.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Reporter detail",
+      "path": "qa-20260404-targeted-qa-0228-reporter-detail.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "AI assistant full-screen",
+      "path": "qa-20260404-targeted-qa-0228-ai-assistant-fullscreen.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "404 route",
+      "path": "qa-20260404-targeted-qa-0228-404-route.png"
+    },
+    {
+      "type": "playwright-console",
+      "label": "Console errors",
+      "path": "qa-20260404-targeted-qa-0228-console.log"
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "404 route에서 콘솔 error 1건은 페이지 자체 404 리소스 응답으로 관측되어 expected behavior로 분류.",
+    "AI assistant full-screen 진입 시 console warning 2건(resource hint) 관측, 기능 동작은 정상.",
+    "Reporter는 첫 클릭 반응 지연 후 '첫 보고서 생성하기' 경로로 정상 생성됨."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Vercel production",
+      "url": "https://openmanager-ai.vercel.app/"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Vercel deployment inspector",
+      "url": "https://vercel.com/skyasus-projects/openmanager-ai/BC2L2XzJ6JCXcQauXB3wviMfuPXZ"
+    }
+  ]
+}
