@@ -2,15 +2,17 @@
 # 정책:
 #   - validate(frontend): branch / MR / main 프론트엔드/공용 코드 변경 시 실행
 #   - validate(ai-engine): branch / MR / main AI Engine 변경 시 실행
-#   - deploy, smoke: main 프론트엔드 코드 변경 시만 실행 (docs/reports/cloud-run-only push 스킵)
-# 구조: validate(frontend + ai-engine) → deploy(frontend) → smoke(frontend)
+#   - deploy(frontend): main 프론트엔드 코드 변경 시 실행
+#   - deploy_ai(ai-engine): main AI Engine 변경 시 실행
+#   - smoke(frontend/ai-engine): 각 배포 경로 후 최소 smoke 수행
+# 구조: validate(frontend + ai-engine) → deploy(frontend) / deploy_ai(ai-engine) → smoke(frontend + ai-engine)
 # Runner 전략:
 #   validate: tags: [wsl2-docker] → self-hosted runner (분 소진 0)
 #             WSL2 runner 미가동 시 job은 pending 상태로 남음
 #             shared runner 우회가 필요하면 validate tags를 수동으로 제거해야 함
 #   deploy:   tags 없음 → shared runner (~4분/회)
 #   smoke:    tags 없음 → shared runner (~30초/회)
-# 분 소진 예산: validate 0분 + deploy ~4분 + smoke ~0.5분 = ~5분/회 (self-hosted 가동 시)
+# 분 소진 예산: validate 0분 + deploy(frontend) ~4분 + smoke(frontend/ai-engine) ~1분 = ~5~6분/회 (self-hosted 가동 시)
 #             validate를 수동으로 shared runner로 전환하면 ~8분/회 수준까지 증가 가능
 
 image: node:24-bookworm
@@ -148,6 +150,16 @@ stages:
       when: on_success
     - when: never
 
+.main_ai_engine_smoke_changes_only: &main_ai_engine_smoke_changes_only
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+      changes:
+        - cloud-run/ai-engine/**/*
+        - scripts/ci/ai-engine-post-deploy-smoke.sh
+        - .gitlab-ci.yml
+      when: on_success
+    - when: never
+
 .ai_engine_npm_cache: &ai_engine_npm_cache
   cache:
     key:
@@ -156,6 +168,23 @@ stages:
     paths:
       - cloud-run/ai-engine/.npm/
     policy: pull-push
+
+.gcp_ci_auth: &gcp_ci_auth
+  - |
+    if [ -z "${GCP_SERVICE_KEY:-}" ]; then
+      echo "❌ Missing required GitLab CI variable: GCP_SERVICE_KEY"
+      echo "   Add the base64-encoded service account JSON in GitLab → Settings → CI/CD → Variables."
+      exit 1
+    fi
+    if [ -z "${GCP_PROJECT_ID:-}" ]; then
+      echo "❌ Missing required GitLab CI variable: GCP_PROJECT_ID"
+      echo "   Set it to the target GCP project id before running deploy_ai_engine."
+      exit 1
+    fi
+  - printf '%s' "$GCP_SERVICE_KEY" | base64 -d > gcp-key.json
+  - test -s gcp-key.json || (echo "❌ Decoded gcp-key.json is empty. Verify GCP_SERVICE_KEY is valid base64 JSON." && exit 1)
+  - gcloud auth activate-service-account --key-file=gcp-key.json
+  - gcloud config set project "$GCP_PROJECT_ID"
 
 # ─── validate job ──────────────────────────────────────────────────────────────
 validate:
@@ -218,22 +247,7 @@ deploy_ai_engine:
   stage: deploy_ai
   <<: *main_ai_engine_changes_only
   image: google/cloud-sdk:slim
-  before_script:
-    - |
-      if [ -z "${GCP_SERVICE_KEY:-}" ]; then
-        echo "❌ Missing required GitLab CI variable: GCP_SERVICE_KEY"
-        echo "   Add the base64-encoded service account JSON in GitLab → Settings → CI/CD → Variables."
-        exit 1
-      fi
-      if [ -z "${GCP_PROJECT_ID:-}" ]; then
-        echo "❌ Missing required GitLab CI variable: GCP_PROJECT_ID"
-        echo "   Set it to the target GCP project id before running deploy_ai_engine."
-        exit 1
-      fi
-    - printf '%s' "$GCP_SERVICE_KEY" | base64 -d > gcp-key.json
-    - test -s gcp-key.json || (echo "❌ Decoded gcp-key.json is empty. Verify GCP_SERVICE_KEY is valid base64 JSON." && exit 1)
-    - gcloud auth activate-service-account --key-file=gcp-key.json
-    - gcloud config set project "$GCP_PROJECT_ID"
+  before_script: *gcp_ci_auth
   script:
     - echo "▶ AI Engine Cloud Run 배포..."
     - cd cloud-run/ai-engine
@@ -244,6 +258,23 @@ deploy_ai_engine:
   resource_group: ai-engine-production
   timeout: 15 minutes
   # validate_ai_engine 성공 시에만 실행
+
+post_deploy_ai_engine_smoke:
+  stage: smoke
+  <<: *main_ai_engine_smoke_changes_only
+  image: google/cloud-sdk:slim
+  needs:
+    - job: deploy_ai_engine
+      optional: true
+  before_script: *gcp_ci_auth
+  script:
+    - echo "▶ AI Engine post-deploy smoke..."
+    - bash scripts/ci/ai-engine-post-deploy-smoke.sh
+    - echo "✅ AI Engine post-deploy smoke 통과"
+  after_script:
+    - rm -f gcp-key.json
+  timeout: 5 minutes
+  interruptible: true
 
 # ─── production smoke job ──────────────────────────────────────────────────────
 post_deploy_smoke:
