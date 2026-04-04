@@ -4,7 +4,7 @@
 > Owner: platform-devops
 > Status: Active
 > Doc type: How-to
-> Last reviewed: 2026-04-03
+> Last reviewed: 2026-04-04
 > Canonical: docs/development/ci-cd.md
 > Tags: ci,cd,gitlab,vercel,github-actions,automation
 
@@ -185,6 +185,17 @@ CI_DOCKER_PULL_POLICY=never npm run ci:local:docker
 - `npm-ci` 모드는 새 의존성 설치가 필요할 때만 사용합니다.
 - broad change, release 전, 배포 민감 변경에서는 pre-push hook만으로 끝내지 말고 `npm run ci:local:docker`를 추가로 실행합니다.
 - docs/reports 전용 push는 `.gitlab-ci.yml`의 `changes` 규칙으로 CI가 스킵되므로, 별도 코드 검증이 필요 없을 때만 사용합니다.
+
+### `.gitlab-ci.yml` 작성 주의
+
+- `before_script`, `script`, `after_script` 안에서 `- # 설명` 형태를 쓰면 YAML 리스트의 `null` item이 만들어져 GitLab job semantic validation에서 거부됩니다.
+- 설명이 필요하면 리스트 바깥의 일반 YAML 주석을 쓰거나, 실제 shell 명령 문자열 안에서 `echo` 또는 shell comment로 표현합니다.
+- 로컬에서는 pre-push가 같은 패턴을 차단합니다.
+- 수동 확인이 필요하면 아래 명령으로 `.gitlab-ci.yml`만 빠르게 검사합니다.
+
+```bash
+npm run ci:gitlab:check
+```
 
 ### 선택지 비교
 
