@@ -5,11 +5,11 @@
  * - Primary: Groq (llama-4-scout-17b, 500K TPD, 512K ctx, tool calling ✅)
  * - Secondary: Cerebras (qwen-3-235b, Preview, 1M TPD, 1,400 tok/s, tool calling ✅)
  * - Last Resort: Mistral (mistral-large-latest, Frontier, ~2 RPM free tier)
- * - Vision: Gemini 2.5 Flash (1M context, 500 RPD, Vision)
+ * - Vision: Gemini 2.5 Flash-Lite (1M context, 1K RPD, no thinking tokens)
  *
- * @version 4.1.0
- * @updated 2026-04-03 - Groq primary 전환 (llama-4-scout), Cerebras Preview→secondary 강등
- *                       공식 문서 기반 quota 수치 정정 (Groq 5x, Gemini RPD 2x)
+ * @version 4.1.1
+ * @updated 2026-04-04 - Vision default를 Gemini 2.5 Flash-Lite로 고정
+ *                       Groq primary/Cerebras secondary 및 quota 주석 정합성 유지
  */
 
 import type { LanguageModel } from 'ai';
@@ -111,12 +111,12 @@ export function getVerifierModel(): {
 export { getAdvisorModel } from './agents/config/agent-model-selectors';
 
 /**
- * Get Vision Agent model (Gemini Flash with OpenRouter Fallback)
+ * Get Vision Agent model (Gemini Flash-Lite with OpenRouter fallback)
  *
  * @note Actual agent execution uses agent-configs.ts getVisionModel().
  *       This function is a low-level utility for direct model access.
  *
- * Primary: Gemini 2.5 Flash (1M context, 500 RPD Free Tier)
+ * Primary: Gemini 2.5 Flash-Lite (1M context, 1K RPD, no thinking tokens)
  * Fallback: OpenRouter (nvidia/nemotron-nano-12b-v2-vl:free)
  *
  * @returns Model info or null (graceful degradation)
