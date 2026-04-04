@@ -251,9 +251,8 @@ function otelSlotToRawServers(slot: OTelHourlySlot): Record<string, RawServerDat
           break;
         case 'system.status':
           // 1 = online, 0 = offline (Cloud Run 전용 메트릭)
-          if (dp.asDouble === 0) {
-            server.status = 'offline';
-          }
+          // 🎯 로직 개선: 단순히 이 값만으로 offline을 결정하지 않고, 
+          // 실제 CPU/Memory/Disk 메트릭 데이터 유무(precomputed-state-slot.ts)를 기준으로 판정함.
           break;
         case 'system.uptime':
           server.bootTimeSeconds = Math.floor(Date.now() / 1000 - dp.asDouble);

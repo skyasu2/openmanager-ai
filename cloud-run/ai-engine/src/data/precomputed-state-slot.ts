@@ -37,11 +37,14 @@ function determineStatus(
   server: RawServerData,
   thresholds: SystemRulesThresholds
 ): ServerStatus {
-  if (server.status === 'offline') {
+  const { cpu, memory, disk, network } = server;
+
+  // 🎯 대시보드(MetricsProvider)와 동일한 Offline 판정 기준 적용:
+  // CPU, Memory, Disk 메트릭이 모두 0이면 오프라인으로 간주.
+  // (system.status 메트릭이 0이더라도 실제 데이터가 흐르고 있다면 온라인임)
+  if (cpu === 0 && memory === 0 && disk === 0) {
     return 'offline';
   }
-
-  const { cpu, memory, disk, network } = server;
 
   if (
     cpu >= thresholds.cpu.critical ||
