@@ -219,14 +219,28 @@ deploy_ai_engine:
   <<: *main_ai_engine_changes_only
   image: google/cloud-sdk:slim
   before_script:
-    - echo $GCP_SERVICE_KEY | base64 -d > gcp-key.json
+    - |
+      if [ -z "${GCP_SERVICE_KEY:-}" ]; then
+        echo "❌ Missing required GitLab CI variable: GCP_SERVICE_KEY"
+        echo "   Add the base64-encoded service account JSON in GitLab → Settings → CI/CD → Variables."
+        exit 1
+      fi
+      if [ -z "${GCP_PROJECT_ID:-}" ]; then
+        echo "❌ Missing required GitLab CI variable: GCP_PROJECT_ID"
+        echo "   Set it to the target GCP project id before running deploy_ai_engine."
+        exit 1
+      fi
+    - printf '%s' "$GCP_SERVICE_KEY" | base64 -d > gcp-key.json
+    - test -s gcp-key.json || (echo "❌ Decoded gcp-key.json is empty. Verify GCP_SERVICE_KEY is valid base64 JSON." && exit 1)
     - gcloud auth activate-service-account --key-file=gcp-key.json
-    - gcloud config set project $GCP_PROJECT_ID
+    - gcloud config set project "$GCP_PROJECT_ID"
   script:
     - echo "▶ AI Engine Cloud Run 배포..."
     - cd cloud-run/ai-engine
     - LOCAL_DOCKER_PREFLIGHT=false CLEANUP_ENABLED=false bash deploy.sh
     - echo "✅ AI Engine 배포 완료"
+  after_script:
+    - rm -f gcp-key.json
   resource_group: ai-engine-production
   timeout: 15 minutes
   # validate_ai_engine 성공 시에만 실행
