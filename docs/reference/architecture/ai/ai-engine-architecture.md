@@ -539,7 +539,7 @@ cloud-run/ai-engine/src/
 | **AI SDK v6 구현 성숙도** | 높음 | Frontend는 `useChat`/`DefaultChatTransport`, 서버는 `createUIMessageStreamResponse`, `streamText`, `generateText`, `generateObjectWithFallback`를 조합함. SDK core abstraction을 우회하지 않으면서 커스텀 복원력 계층을 붙임 |
 | **업계 비교** | 실용적 수준 | AutoGen보다 구조적이고 LangGraph보다 가볍다. 서버 모니터링 도메인에 필요한 tool use와 fallback 제어를 현실적으로 구현 |
 
-### Model & Routing Notes (2026-03-30)
+### Model & Routing Notes (2026-04-04)
 
 | 항목 | 상세 분석 |
 |------|-----------|
@@ -562,7 +562,7 @@ cloud-run/ai-engine/src/
 | **Observability** | 충분 | Langfuse + Pino + Cloud Logging. 분산 트레이싱(Vercel↔CloudRun) 미구현 |
 | **확장성 한계** | Provider RPM이 첫 병목 | 기본적으로 LLM 쿼터/쿨타임 정책이 병목 가능, 추적 필요 |
 
-### Architecture Maturity Summary (v8.7.1 Analysis)
+### Architecture Maturity Summary (2026-04-04)
 
 | Dimension | Score | Evidence |
 |-----------|:-----:|----------|
@@ -575,17 +575,20 @@ cloud-run/ai-engine/src/
 | Session Continuity | B+→A- | localStorage sessionId 영속화 (30분 TTL) |
 | Job Recovery | B→B+ | 실패 Job 재시도 (max 2회) |
 
-### Agent Performance Benchmarks (Production QA)
+### Agent Performance Baseline (Current Routing)
 
-| Agent | Primary Model | Avg Latency | Tool Count | Quality Gate |
-|-------|--------------|:-----------:|:----------:|:------------:|
-| NLQ | Cerebras (`CEREBRAS_MODEL_ID`, default `qwen-3-235b-a22b-instruct-2507`) | ~3s | 7 | — |
-| Analyst | Cerebras/Groq | ~25s (15 servers) | 8 | — |
-| Reporter | Groq llama-3.3-70b | ~1s (pipeline) | 12 | score ≥ 0.75 |
-| Advisor | Mistral large | ~5s | 4 | — |
-| Vision | Gemini 2.5 Flash | ~8s | 5 | — |
-| Evaluator | 결정론적 (LLM 없음) | <100ms | 3 | — |
-| Optimizer | 결정론적 (LLM 없음) | <100ms | 3 | — |
+| Agent | Current Primary | Route Type | Tool Count | Quality Gate |
+|-------|-----------------|------------|:----------:|:------------:|
+| NLQ | Groq `llama-4-scout-17b-16e-instruct` | tool-calling text path | 7 | — |
+| Analyst | Groq `llama-4-scout-17b-16e-instruct` | tool-calling text path | 8 | — |
+| Reporter | Groq `llama-4-scout-17b-16e-instruct` | Reporter pipeline + tool path | 12 | score ≥ 0.75 |
+| Advisor | Mistral `mistral-large-latest` | tool-calling text path | 4 | — |
+| Vision | Gemini `gemini-2.5-flash-lite` | multimodal primary + OpenRouter fallback | 2 | — |
+| Orchestrator | Cerebras `qwen-3-235b-a22b-instruct-2507` | structured output routing | — | — |
+| Evaluator | 결정론적 (LLM 없음) | pipeline internal | 3 | — |
+| Optimizer | 결정론적 (LLM 없음) | pipeline internal | 3 | — |
+
+> Latency는 provider 정책, quota, attachment size, routing path에 따라 크게 변동하므로 이 문서에서는 절대 수치 대신 **현재 primary route**만 SSOT로 유지합니다.
 
 ### Pending Improvements (P2)
 
