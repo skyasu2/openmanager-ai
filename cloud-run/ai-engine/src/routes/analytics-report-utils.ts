@@ -16,7 +16,7 @@ interface ToolBasedData {
   }>;
   system_summary: {
     total_servers: number;
-    healthy_servers: number;
+    online_servers: number;
     warning_servers: number;
     critical_servers: number;
   };
@@ -55,7 +55,7 @@ export function extractToolBasedData(
         affectedServers?: string[];
         summary?: {
           totalServers?: number;
-          healthyCount?: number;
+          onlineCount?: number;
           warningCount?: number;
           criticalCount?: number;
         };
@@ -70,7 +70,7 @@ export function extractToolBasedData(
   const summary = allServerAnomaly?.summary || {};
   const systemSummary = {
     total_servers: summary.totalServers ?? allServerAnomaly?.totalServers ?? 0,
-    healthy_servers: summary.healthyCount ?? 0,
+    online_servers: summary.onlineCount ?? 0,
     warning_servers: summary.warningCount ?? 0,
     critical_servers: summary.criticalCount ?? 0,
   };

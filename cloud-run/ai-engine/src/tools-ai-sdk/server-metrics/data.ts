@@ -177,6 +177,7 @@ export function get24hTrendSummaries(): Array<{
 
   for (const slot of slots) {
     for (const server of slot.servers) {
+      if (server.status === 'offline') continue;
       if (!serverMetrics.has(server.id)) {
         serverMetrics.set(server.id, {
           type: server.type,

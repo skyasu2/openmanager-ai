@@ -351,7 +351,7 @@ describe('QuotaTracker — getQuotaSummary', () => {
     const summary = await getQuotaSummary();
 
     expect(summary.providers).toHaveLength(5);
-    expect(summary.healthyCount).toBe(5);
+    expect(summary.onlineCount).toBe(5);
     expect(summary.warningCount).toBe(0);
     expect(summary.criticalCount).toBe(0);
   });

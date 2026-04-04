@@ -91,23 +91,22 @@ export const detectAnomaliesAllServers = tool({
           const allAnomalies: ServerAnomalyItem[] = [];
           const predictedBreaches: ForecastBreachItem[] = [];
 
-          let healthyCount = 0;
+          let onlineCount = 0;
           let warningCount = 0;
           let criticalCount = 0;
+          let offlineCount = 0;
           const affectedServers: string[] = [];
           const fixedSlot = getCurrentSlotIndex();
 
           for (const server of allServers) {
             let serverHasAnomaly = false;
-            let serverIsCritical = false;
-            let serverIsWarning = false;
 
             for (const metric of targetMetrics) {
               const currentValue = server[metric as keyof typeof server] as number;
               const threshold = STATUS_THRESHOLDS[metric as keyof typeof STATUS_THRESHOLDS];
 
-              const isCritical = currentValue >= threshold.critical;
-              const isWarning = currentValue >= threshold.warning;
+              const isMetricCritical = currentValue >= threshold.critical;
+              const isMetricWarning = currentValue >= threshold.warning;
 
               const history = getHistoryForMetric(server.id, metric, currentValue, fixedSlot);
               const predictedValue1h = Math.round(projectOneHourValue(history.map((p) => p.value)) * 10) / 10;
@@ -124,39 +123,42 @@ export const detectAnomaliesAllServers = tool({
                 });
               }
 
-              if (isCritical || isWarning) {
+              if (isMetricCritical || isMetricWarning) {
                 serverHasAnomaly = true;
-                if (isCritical) serverIsCritical = true;
-                else if (isWarning) serverIsWarning = true;
 
                 allAnomalies.push({
                   server_id: server.id,
                   server_name: server.name,
                   metric: metric.charAt(0).toUpperCase() + metric.slice(1),
                   value: Math.round(currentValue * 10) / 10,
-                  severity: isCritical ? 'critical' : 'warning',
+                  severity: isMetricCritical ? 'critical' : 'warning',
                 });
               }
             }
 
             if (serverHasAnomaly) {
               affectedServers.push(server.id);
-              if (serverIsCritical) {
-                criticalCount++;
-              } else if (serverIsWarning) {
-                warningCount++;
-              }
+            }
+
+            // 🎯 Use pre-calculated srv.status for summary counts to ensure parity
+            if (server.status === 'critical') {
+              criticalCount++;
+            } else if (server.status === 'warning') {
+              warningCount++;
+            } else if (server.status === 'offline') {
+              offlineCount++;
             } else {
-              healthyCount++;
+              onlineCount++;
             }
           }
 
           const summary: SystemSummary = {
             totalServers: allServers.length,
-            healthyCount,
+            onlineCount,
             warningCount,
             criticalCount,
-          };
+            offlineCount,
+          } as any; // Cast until type is updated in analysis-results.ts
 
           const sortedPredictedBreaches = predictedBreaches
             .sort((a, b) => {

@@ -39,7 +39,7 @@ describe('buildSlot offline status parity', () => {
     );
 
     expect(slot.summary.offline).toBe(0);
-    expect(slot.summary.healthy).toBe(1);
+    expect(slot.summary.online).toBe(1);
     expect(slot.servers[0]?.status).toBe('online');
   });
 
@@ -62,7 +62,7 @@ describe('buildSlot offline status parity', () => {
     );
 
     expect(slot.summary.offline).toBe(1);
-    expect(slot.summary.healthy).toBe(0);
+    expect(slot.summary.online).toBe(0);
     expect(slot.servers[0]?.status).toBe('offline');
   });
 });

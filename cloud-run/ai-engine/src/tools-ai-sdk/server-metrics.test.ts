@@ -119,7 +119,7 @@ vi.mock('../data/precomputed-state', () => {
     servers,
     systemHealth: {
       overall: 'warning',
-      healthyCount: 6,
+      onlineCount: 6,
       warningCount: 2,
       criticalCount: 1,
     },

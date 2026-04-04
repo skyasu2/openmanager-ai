@@ -355,6 +355,7 @@ export async function selectAvailableProvider(
  */
 export async function getQuotaSummary(): Promise<{
   providers: QuotaStatus[];
+  onlineCount: number;
   healthyCount: number;
   warningCount: number;
   criticalCount: number;
@@ -368,7 +369,7 @@ export async function getQuotaSummary(): Promise<{
   ];
   const statuses = await Promise.all(providers.map(getQuotaStatus));
 
-  let healthyCount = 0;
+  let onlineCount = 0;
   let warningCount = 0;
   let criticalCount = 0;
 
@@ -378,13 +379,14 @@ export async function getQuotaSummary(): Promise<{
     } else if (status.shouldPreemptiveFallback) {
       warningCount++;
     } else {
-      healthyCount++;
+      onlineCount++;
     }
   }
 
   return {
     providers: statuses,
-    healthyCount,
+    onlineCount,
+    healthyCount: onlineCount,
     warningCount,
     criticalCount,
   };

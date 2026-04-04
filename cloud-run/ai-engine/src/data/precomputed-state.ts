@@ -72,7 +72,7 @@ function createFallbackSlot(slotIndex: number): PrecomputedSlot {
     minuteOfDay: safeIndex * 10,
     summary: {
       total: 0,
-      healthy: 0,
+      online: 0,
       warning: 0,
       critical: 0,
       offline: 0,
@@ -412,7 +412,7 @@ export function compareWithPast(minutesAgo: number): {
   current: { timestamp: string; summary: PrecomputedSlot['summary']; alerts: ServerAlert[] };
   past: { timestamp: string; summary: PrecomputedSlot['summary']; alerts: ServerAlert[] };
   changes: {
-    healthyDelta: number;
+    onlineDelta: number;
     warningDelta: number;
     criticalDelta: number;
     newAlerts: ServerAlert[];
@@ -440,7 +440,7 @@ export function compareWithPast(minutesAgo: number): {
       alerts: past.alerts,
     },
     changes: {
-      healthyDelta: current.summary.healthy - past.summary.healthy,
+      onlineDelta: current.summary.online - past.summary.online,
       warningDelta: current.summary.warning - past.summary.warning,
       criticalDelta: current.summary.critical - past.summary.critical,
       newAlerts,
