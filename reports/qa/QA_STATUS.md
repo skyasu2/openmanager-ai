@@ -1,69 +1,76 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-04-03 20:53:22 KST
+> Generated at: 2026-04-04 18:17:35 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 214 |
-| Total Checks | 1591 |
-| Passed | 1523 |
-| Failed | 62 |
+| Total Runs | 215 |
+| Total Checks | 1604 |
+| Passed | 1535 |
+| Failed | 63 |
 | Completed Items | 273 |
-| Pending Items | 0 |
+| Pending Items | 1 |
 | Deferred Items | 0 |
-| Wont-Fix Items | 13 |
+| Wont-Fix Items | 14 |
 | Expert Domains Tracked | 6 |
-| Expert Open Gaps | 0 |
-| Completion Rate | 100% |
-| Last Counted Run | QA-20260403-0221 (2026-04-03T11:53:21.760Z) |
-| Latest Recorded Run | QA-20260403-0221 (2026-04-03T11:53:21.760Z) |
+| Expert Open Gaps | 2 |
+| Completion Rate | 99.64% |
+| Last Counted Run | QA-20260404-0222 (2026-04-04T09:17:33.588Z) |
+| Latest Recorded Run | QA-20260404-0222 (2026-04-04T09:17:33.588Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260403-0221 (2026-04-03T11:53:21.760Z)
+Latest run: QA-20260404-0222 (2026-04-04T09:17:33.588Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| - | - | - | - |
+| AI Quality Assurance Specialist | appropriate | yes | AI summary 생성 경로가 dashboard/OTel-derived system summary와 같은 기준선을 사용하도록 parity regression 원인을 추적합니다. |
+| IT Monitoring & Observability SME | appropriate | yes | AI summary 응답과 MetricsProvider/system summary의 수치 차이를 재현 가능한 회귀 테스트로 고정합니다. |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | post-push smoke 이후 usage 확인: billed 0.0000 USD, unexpected spike 없음 |
+| vercel | cli | checked | normal | Production QA 이후 billed 0.0000 USD, effective 1.9599 USD, unexpected billed spike 없음 |
 
 ## Coverage (Latest Run)
 
-- Scope: targeted
+- Scope: broad
 - Release-Facing: no
 - Counts Toward Summary: yes
-- Deployment: SHA 84c77cf0
-- Coverage Packs: core-routes-smoke
-- Covered Surfaces: /, /validation, /api/version
-- Skipped Surfaces: /login, /system-boot, /dashboard, AI sidebar, AI chat streaming, modal-detail-pack, observability-pack
+- Deployment: dpl_Eh3o4WUwA374u7zqM4seojLawoKP / SHA 00e750bb
+- Coverage Packs: core-routes-smoke, dashboard-core, ai-core, modal-detail-pack, observability-pack
+- Covered Surfaces: /, /login, /dashboard, /dashboard/ai-assistant, AI sidebar, AI chat streaming, active alerts modal, /api/health, /api/version, Cloud Run /monitoring, Cloud Run /monitoring/traces
+- Skipped Surfaces: /auth/error, /auth/success, /privacy, topology modal, server detail tabs, reporter workflow, analyst workflow, feedback flow
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| - | - | - | - |
+| general | Cloud Run health | [link](https://ai-engine-490817238363.asia-northeast1.run.app/health) | - |
+| general | Vercel production | [link](https://openmanager-ai.vercel.app/) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| - | - | - | - |
+| playwright-screenshot | Dashboard with AI sidebar response | `qa-20260404-vercel-dashboard-ai-sidebar.png` | - |
+| playwright-screenshot | Active alerts modal | `qa-20260404-vercel-active-alerts-modal.png` | - |
+| playwright-console | Playwright browser console log | `.playwright-mcp/screenshots/console-2026-04-04T09-05-36-566Z.log` | - |
 
 ## Expert Domain Open Gaps
 
-- None
+- ai-quality-assurance: AI Quality Assurance Specialist (last QA-20260404-0222)
+  next: AI summary 생성 경로가 dashboard/OTel-derived system summary와 같은 기준선을 사용하도록 parity regression 원인을 추적합니다.
+- observability-monitoring: IT Monitoring & Observability SME (last QA-20260404-0222)
+  next: AI summary 응답과 MetricsProvider/system summary의 수치 차이를 재현 가능한 회귀 테스트로 고정합니다.
 
 ## Pending Improvements
 
-- None
+- [P1] ai-summary-dashboard-parity-regression: AI assistant summary must match dashboard and OTel-derived system counts (seen 1회, last QA-20260404-0222)
 
 ## Deferred Improvements
 
@@ -96,6 +103,8 @@ Latest run: QA-20260403-0221 (2026-04-03T11:53:21.760Z)
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 - [P2] streaming-ai-fallback-cold-start: Streaming AI fallback에서 Cloud Run 콜드스타트 시 프리셋 질문 실패 (seen 1회, last QA-20260310-0090)
   - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (요청자 표시(isBlocking=true)로 즉시 개선 필요)
+- [P3] ai-provider-copy-policy-drift: Frontend AI provider and architecture copy must reflect current routing policy (seen 1회, last QA-20260404-0222)
+  - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 
 ## Completed Improvements
 
@@ -377,6 +386,7 @@ Latest run: QA-20260403-0221 (2026-04-03T11:53:21.760Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260404-0222 | 2026-04-04T09:17:33.588Z | broad | no | yes | Vercel Playwright QA - dashboard, AI assistant, and monitoring parity check | 13 | 0 | 1 | 0 | 1 | 2 |
 | QA-20260403-0221 | 2026-04-03T11:53:21.760Z | targeted | no | yes | Post-push Vercel production smoke after Groq priority update | 3 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260403-0220 | 2026-04-03T00:04:13.761Z | targeted | no | no | Vercel Production QA after propagation of latest QA tracker summary | 7 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260403-0219 | 2026-04-02T23:55:58.440Z | targeted | no | no | Vercel Production QA after propagation of production snapshot guard verification | 7 | 0 | 0 | 0 | 0 | 0 |
@@ -396,5 +406,4 @@ Latest run: QA-20260403-0221 (2026-04-03T11:53:21.760Z)
 | QA-20260402-0205 | 2026-04-01T22:35:47.941Z | targeted | no | yes | Vercel production targeted smoke - post deploy verification for cd763e634 | 6 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260401-0204 | 2026-04-01T12:15:47.977Z | targeted | no | yes | Local dev Playwright QA - login header minimalization verification | 3 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260401-0203 | 2026-04-01T11:42:07.583Z | targeted | no | yes | Production Playwright QA - landing route/button/modal surface survey | 13 | 0 | 0 | 0 | 1 | 0 |
-| QA-20260331-0202 | 2026-03-31T12:08:54.272Z | targeted | no | yes | Local dev Playwright QA - Vibe Coding modal CI/CD recheck after clean restart | 6 | 1 | 0 | 0 | 0 | 0 |
 

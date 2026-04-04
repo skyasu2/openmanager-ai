@@ -1,0 +1,159 @@
+{
+  "runId": "QA-20260404-0222",
+  "recordedAt": "2026-04-04T09:17:33.588Z",
+  "recordedAtKst": "2026-04-04 18:17:33 KST",
+  "runTitle": "Vercel Playwright QA - dashboard, AI assistant, and monitoring parity check",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_Eh3o4WUwA374u7zqM4seojLawoKP",
+    "deploymentUrl": "https://openmanager-e1cgjqw0o-skyasus-projects.vercel.app",
+    "commitSha": "00e750bbfce07df4c7707814529fbce3eb845c38"
+  },
+  "scope": "broad",
+  "releaseFacing": false,
+  "countsTowardSummary": true,
+  "coveragePacks": [
+    "core-routes-smoke",
+    "dashboard-core",
+    "ai-core",
+    "modal-detail-pack",
+    "observability-pack"
+  ],
+  "coveredSurfaces": [
+    "/",
+    "/login",
+    "/dashboard",
+    "/dashboard/ai-assistant",
+    "AI sidebar",
+    "AI chat streaming",
+    "active alerts modal",
+    "/api/health",
+    "/api/version",
+    "Cloud Run /monitoring",
+    "Cloud Run /monitoring/traces"
+  ],
+  "skippedSurfaces": [
+    "/auth/error",
+    "/auth/success",
+    "/privacy",
+    "topology modal",
+    "server detail tabs",
+    "reporter workflow",
+    "analyst workflow",
+    "feedback flow"
+  ],
+  "checks": {
+    "total": 13,
+    "passed": 12,
+    "failed": 1
+  },
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": true,
+      "rationale": "대시보드 수치와 AI assistant 요약의 정합성을 검증하는 run이므로 AI 품질 평가가 직접 관련됩니다.",
+      "nextAction": "AI summary 생성 경로가 dashboard/OTel-derived system summary와 같은 기준선을 사용하도록 parity regression 원인을 추적합니다."
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "appropriate",
+      "improvementNeeded": true,
+      "rationale": "Cloud Run monitoring health와 trace retrieval은 정상이나, 사용자-facing 요약이 운영 지표와 다르면 관측 결과 신뢰성이 떨어집니다.",
+      "nextAction": "AI summary 응답과 MetricsProvider/system summary의 수치 차이를 재현 가능한 회귀 테스트로 고정합니다."
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-04-04T18:15:30+09:00",
+      "summary": "Production QA 이후 billed 0.0000 USD, effective 1.9599 USD, unexpected billed spike 없음",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "Dashboard with AI sidebar response",
+      "path": "qa-20260404-vercel-dashboard-ai-sidebar.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Active alerts modal",
+      "path": "qa-20260404-vercel-active-alerts-modal.png"
+    },
+    {
+      "type": "playwright-console",
+      "label": "Playwright browser console log",
+      "path": ".playwright-mcp/screenshots/console-2026-04-04T09-05-36-566Z.log"
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [
+    {
+      "id": "ai-summary-dashboard-parity-regression",
+      "title": "AI assistant summary must match dashboard and OTel-derived system counts",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "Browser chat returned offline 1 / online 13 while dashboard, server-data, and MetricsProvider all indicate offline 0 / online 14.",
+      "owner": "",
+      "status": "pending",
+      "policyNote": ""
+    }
+  ],
+  "deferredImprovements": [],
+  "wontFixImprovements": [
+    {
+      "id": "ai-provider-copy-policy-drift",
+      "title": "Frontend AI provider and architecture copy must reflect current routing policy",
+      "priority": "P3",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "Feature cards and tech stack copy still describe ToolLoopAgent-native flow and stale Cerebras/Groq role assignments.",
+      "owner": "",
+      "status": "wont-fix",
+      "policyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다."
+    }
+  ],
+  "notes": [
+    "Landing page, login page, dashboard, AI assistant workspace, and active alerts modal rendered successfully on Vercel production.",
+    "Guest-session browser request to /api/ai/supervisor/stream/v2 returned 200 and streamed a final answer.",
+    "Direct unauthenticated curl to /api/ai/supervisor/stream/v2 returned 401, which is expected without browser guest session state.",
+    "Dashboard counters and local code-path verification both reported total 15, online 14, warning 1, critical 0, offline 0.",
+    "AI assistant response claimed offline 1 and named api-was-dc1-01 as offline, creating a parity regression against dashboard and MetricsProvider outputs.",
+    "Cloud Run /monitoring returned status ok with circuits CLOSED and Langfuse operational.",
+    "Cloud Run /monitoring/traces?limit=5 timed out once; retry with limit=1 succeeded and returned a recent supervisor-execution trace.",
+    "Browser console had no errors; only low-severity preloaded font warnings were observed.",
+    "mode audit fields were not explicitly validated in this run.",
+    "dashboard/AI parity run: local getOTelDashboardData and MetricsProvider summary were checked against UI counts in the same run."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Cloud Run health",
+      "url": "https://ai-engine-490817238363.asia-northeast1.run.app/health"
+    },
+    {
+      "type": "general",
+      "label": "Vercel production",
+      "url": "https://openmanager-ai.vercel.app/"
+    }
+  ]
+}
