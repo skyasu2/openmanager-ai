@@ -50,7 +50,8 @@ export async function* executeAgentStream(
   webSearchEnabled = true,
   ragEnabled = true,
   images?: ImageAttachment[],
-  files?: FileAttachment[]
+  files?: FileAttachment[],
+  contextSummary?: string | null,
 ): AsyncGenerator<StreamEvent> {
   const agentConfig = getAgentConfig(agentName);
 
@@ -151,7 +152,10 @@ export async function* executeAgentStream(
     const abortController = new AbortController();
 
     try {
-      const userContent = buildMultimodalContent(query, images, files);
+      const promptWithContext = contextSummary
+        ? `${query}\n\n[세션 컨텍스트 요약]\n${contextSummary}`
+        : query;
+      const userContent = buildMultimodalContent(promptWithContext, images, files);
 
       const streamResult = streamText({
         model,

@@ -42,6 +42,14 @@ export const ORCHESTRATOR_PROVIDER_ORDER: TextProvider[] = [
   'groq',
 ];
 
+function buildContextAwarePrompt(query: string, contextSummary?: string | null): string {
+  if (!contextSummary) {
+    return query;
+  }
+
+  return `${query}\n\n[세션 컨텍스트 요약]\n${contextSummary}`;
+}
+
 export function getOrchestratorModel(): ModelResult | null {
   // Orchestrator uses generateObject (requires json_schema support).
   // Keep Cerebras/Mistral first until the Groq path is validated for this route.
@@ -110,7 +118,8 @@ export async function executeForcedRouting(
   webSearchEnabled = true,
   ragEnabled = true,
   images?: ImageAttachment[],
-  files?: FileAttachment[]
+  files?: FileAttachment[],
+  contextSummary?: string | null,
 ): Promise<MultiAgentResponse | null> {
   logger.info(`[Forced Routing] Looking up agent config: "${suggestedAgentName}"`);
 
@@ -139,6 +148,7 @@ export async function executeForcedRouting(
     images?.length || files?.length
       ? `\n\n[첨부 컨텍스트]\n- images: ${images?.length ?? 0}\n- files: ${files?.length ?? 0}`
       : '';
+  const executionPrompt = buildContextAwarePrompt(`${query}${attachmentHint}`, contextSummary);
 
   // Per-agent maxSteps: Analyst/Reporter need more steps for multi-tool workflows
   const agentMaxSteps = getAgentMaxSteps(suggestedAgentName);
@@ -148,7 +158,7 @@ export async function executeForcedRouting(
       {
         messages: [
           { role: 'system', content: agentConfig.instructions },
-          { role: 'user', content: `${query}${attachmentHint}` },
+          { role: 'user', content: executionPrompt },
         ],
         tools: filteredTools as Parameters<typeof generateText>[0]['tools'],
         stopWhen: [hasToolCall('finalAnswer'), stepCountIs(agentMaxSteps)],

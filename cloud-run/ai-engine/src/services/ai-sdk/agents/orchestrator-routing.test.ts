@@ -216,6 +216,29 @@ describe('executeForcedRouting', () => {
     expect(result?.response).toContain('api-01');
     expect(mockGenerateTextWithRetry).toHaveBeenCalledTimes(2);
   });
+
+  it('injects distilled context summary into forced-routing prompt', async () => {
+    mockGenerateTextWithRetry.mockResolvedValueOnce(
+      createRetryResult({
+        text: '요약 완료',
+      })
+    );
+
+    await executeForcedRouting(
+      'CPU 높은 서버 찾아줘',
+      'NLQ Agent',
+      Date.now(),
+      true,
+      true,
+      undefined,
+      undefined,
+      '이전 분석: api-01 CPU 급등, 원인 미확정',
+    );
+
+    const firstCall = mockGenerateTextWithRetry.mock.calls[0]?.[0];
+    expect(firstCall.messages[1].content).toContain('[세션 컨텍스트 요약]');
+    expect(firstCall.messages[1].content).toContain('api-01 CPU 급등');
+  });
 });
 
 describe('provider order policy', () => {
