@@ -155,6 +155,23 @@ export function getOTelDataSourceInfo(hour: number): OTelDataSourceInfo | null {
   };
 }
 
+/**
+ * Map a 10-minute precomputed slot to the best matching source slot index.
+ * - Current hourly OTel files use 6 slots per hour
+ * - If hourly files move to 60 slots per hour, sample 00/10/20/30/40/50
+ */
+export function resolveHourlySourceSlotIndex(
+  slotInHour: number,
+  sourceSlotCount: number
+): number {
+  if (sourceSlotCount <= 0) return 0;
+  const normalizedSlot = Math.max(0, Math.min(5, slotInHour));
+  return Math.min(
+    sourceSlotCount - 1,
+    Math.floor((normalizedSlot / 6) * sourceSlotCount)
+  );
+}
+
 /** Async cache for parallel hourly file loading */
 const _otelHourlyCache = new Map<number, OTelHourlyFile>();
 
@@ -282,7 +299,11 @@ export function buildPrecomputedStates(): PrecomputedSlot[] {
     otelCount++;
     for (let slotInHour = 0; slotInHour < 6; slotInHour++) {
       const slotIndex = hour * 6 + slotInHour;
-      const otelSlot = otelData.slots[Math.min(slotInHour, otelData.slots.length - 1)];
+      const sourceSlotIndex = resolveHourlySourceSlotIndex(
+        slotInHour,
+        otelData.slots.length
+      );
+      const otelSlot = otelData.slots[sourceSlotIndex];
       if (!otelSlot) continue;
 
       const rawServers = otelSlotToRawServers(otelSlot);
