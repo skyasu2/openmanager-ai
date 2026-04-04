@@ -122,7 +122,7 @@ describe('model-provider compatibility (SDK upgrades)', () => {
     const vision = getVisionAgentModel();
     expect(vision).not.toBeNull();
     expect(vision?.provider).toBe('gemini');
-    expect(vision?.modelId).toBe('gemini-2.5-flash');
+    expect(vision?.modelId).toBe('gemini-2.5-flash-lite');
   });
 
   it('falls back to OpenRouter when Gemini is disabled', () => {

@@ -94,7 +94,15 @@ function finalizeMultiAgentResponse(
   response: MultiAgentResponse
 ): MultiAgentResponse {
   const traceId = getTraceId(trace);
-  const tracedResponse = attachTraceIdToResponse(response, traceId);
+  const handoffCount = response.handoffs?.length ?? 0;
+  
+  const tracedResponse = {
+    ...attachTraceIdToResponse(response, traceId),
+    metadata: {
+      ...response.metadata,
+      handoffCount,
+    }
+  };
 
   finalizeTrace(trace, tracedResponse.response, true, {
     mode: 'multi',
@@ -102,6 +110,7 @@ function finalizeMultiAgentResponse(
     finalAgent: tracedResponse.finalAgent,
     toolsCalled: tracedResponse.toolsCalled,
     totalRounds: tracedResponse.metadata.totalRounds,
+    handoffCount,
     durationMs: tracedResponse.metadata.durationMs,
   });
 
@@ -424,6 +433,7 @@ export async function executeMultiAgent(
         provider,
         modelId,
         totalRounds: 1,
+        handoffCount: 0,
         durationMs,
         responseChars: quality.responseChars,
         formatCompliance: quality.formatCompliance,
@@ -665,7 +675,7 @@ export async function* executeMultiAgentStream(
           promptTokens: routingResult.usage?.inputTokens ?? 0,
           completionTokens: routingResult.usage?.outputTokens ?? 0,
         },
-        metadata: { provider, modelId, durationMs, ...(traceId ? { traceId } : {}) },
+        metadata: { provider, modelId, handoffCount: 0, durationMs, ...(traceId ? { traceId } : {}) },
       },
     };
   } catch (error) {

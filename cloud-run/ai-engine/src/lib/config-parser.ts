@@ -395,6 +395,15 @@ export function getOpenRouterVisionFallbackModelIds(): string[] {
 }
 
 /**
+ * Check if single-agent mode is allowed in production.
+ * Default: false (Multi-agent is the standard).
+ * Can be overridden via ALLOW_DEGRADED_SINGLE env var for emergency/degraded operations.
+ */
+export function isSingleModeAllowed(): boolean {
+  return process.env.ALLOW_DEGRADED_SINGLE === 'true';
+}
+
+/**
  * Free-tier OpenRouter vision models often fail on tool calling.
  * Default is disabled for reliability; enable only when validated.
  */

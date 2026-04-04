@@ -249,6 +249,7 @@ export async function executeParallelSubtasks(
       provider: 'multi-agent',
       modelId: 'orchestrator-worker',
       totalRounds: successfulResults.length,
+      handoffCount: handoffs.length,
       durationMs,
     },
   };

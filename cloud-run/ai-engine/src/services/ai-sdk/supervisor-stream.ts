@@ -8,6 +8,7 @@ import { extractRagSources, extractToolResultOutput, type RagSource } from '../.
 import { getPublicErrorMessage, getPublicErrorResponse } from '../../lib/error-handler';
 import { isTavilyAvailable } from '../../lib/tavily-hybrid-rag';
 import { logger } from '../../lib/logger';
+import { isSingleModeAllowed } from '../../lib/config-parser';
 import { allTools } from '../../tools-ai-sdk';
 import { createSupervisorTrace, finalizeTrace, logGeneration, logToolCall } from '../observability/langfuse';
 import { CircuitOpenError, getCircuitBreaker } from '../resilience/circuit-breaker';
@@ -37,17 +38,45 @@ export async function* executeSupervisorStream(
   logger.info(`[SupervisorStream] Mode: ${mode}`);
 
   if (mode === 'multi') {
-    yield* executeMultiAgentStream({
-      messages: request.messages,
-      sessionId: request.sessionId,
-      traceId: request.traceId,
-      enableTracing: request.enableTracing,
-      enableWebSearch: request.enableWebSearch,
-      enableRAG: request.enableRAG,
-      images: request.images,
-      files: request.files,
-    });
-    return;
+    try {
+      yield* executeMultiAgentStream({
+        messages: request.messages,
+        sessionId: request.sessionId,
+        traceId: request.traceId,
+        enableTracing: request.enableTracing,
+        enableWebSearch: request.enableWebSearch,
+        enableRAG: request.enableRAG,
+        images: request.images,
+        files: request.files,
+      });
+      return;
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      logger.error(`❌ [SupervisorStream] Multi-agent error: ${errorMessage}`);
+
+      if (isSingleModeAllowed()) {
+        logger.info('[SupervisorStream] Falling back to single-agent mode (degraded)');
+        yield { 
+          type: 'agent_status', 
+          data: { 
+            status: 'degraded', 
+            message: '오케스트레이터 오류로 단일 분석 모드로 전환합니다.' 
+          } 
+        };
+        yield* streamSingleAgent(request, startTime);
+        return;
+      }
+
+      logger.error('[SupervisorStream] Single-agent fallback NOT allowed. Failing fast.');
+      yield { 
+        type: 'error', 
+        data: { 
+          code: 'MULTI_AGENT_FAILED', 
+          error: errorMessage 
+        } 
+      };
+      return;
+    }
   }
 
   yield* streamSingleAgent(request, startTime);

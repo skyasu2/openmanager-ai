@@ -87,6 +87,8 @@ export interface MultiAgentResponse {
     provider: string;
     modelId: string;
     totalRounds: number;
+    /** 실제 발생한 핸드오프 횟수 (2026-04-04 추가) */
+    handoffCount: number;
     durationMs: number;
     traceId?: string;
     responseChars?: number;

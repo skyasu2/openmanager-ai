@@ -130,10 +130,11 @@ export function getVisionAgentModel(): {
   // 1. Try Gemini (Primary)
   if (status.gemini) {
     try {
+      const geminiModelId = process.env.GEMINI_VISION_MODEL_ID || 'gemini-2.5-flash-lite';
       return {
-        model: getGeminiFlashLiteModel('gemini-2.5-flash'),
+        model: getGeminiFlashLiteModel(geminiModelId),
         provider: 'gemini',
-        modelId: 'gemini-2.5-flash',
+        modelId: geminiModelId,
       };
     } catch (error) {
       logger.warn('⚠️ [Vision Agent] Gemini initialization failed, trying OpenRouter:', error);

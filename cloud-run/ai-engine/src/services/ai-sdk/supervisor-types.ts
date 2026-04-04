@@ -21,9 +21,9 @@ export interface SupervisorRequest {
   enableTracing?: boolean;
   /**
    * Execution mode:
-   * - 'single': Use single-agent with multi-step tool calling (default)
-   * - 'multi': Use multi-agent orchestration with handoffs
-   * - 'auto': Automatically select based on query complexity
+   * - 'multi': Use multi-agent orchestration with handoffs (Standard default)
+   * - 'single': Use single-agent (Restricted, for emergency/degraded ops)
+   * - 'auto': Automatically select based on query complexity (Prefers multi)
    */
   mode?: SupervisorMode;
   /**

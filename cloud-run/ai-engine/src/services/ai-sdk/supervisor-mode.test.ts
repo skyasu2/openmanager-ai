@@ -20,12 +20,12 @@ describe('resolveSupervisorMode', () => {
     ).toBe('multi');
   });
 
-  it('defaults to single when no user message exists', () => {
+  it('defaults to multi when no user message exists', () => {
     expect(
       resolveSupervisorMode({
         mode: 'auto',
         messages: [{ role: 'assistant', content: '안녕하세요' }],
       }),
-    ).toBe('single');
+    ).toBe('multi');
   });
 });

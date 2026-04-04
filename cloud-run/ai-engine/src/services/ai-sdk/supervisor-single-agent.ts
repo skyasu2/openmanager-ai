@@ -34,7 +34,7 @@ import { getCircuitBreaker, CircuitOpenError } from '../resilience/circuit-break
 import { extractToolResultOutput, extractRagSources, type RagSource } from '../../lib/ai-sdk-utils';
 import { getPublicErrorMessage, getPublicErrorResponse } from '../../lib/error-handler';
 
-import type {
+import {
   SupervisorRequest,
   SupervisorResponse,
   SupervisorError,
@@ -42,12 +42,14 @@ import type {
 } from './supervisor-types';
 import { logger } from '../../lib/logger';
 import { resolveSupervisorMode } from './supervisor-mode';
+import { isSingleModeAllowed } from '../../lib/config-parser';
 import {
   createSystemPrompt,
   RETRY_CONFIG,
   getIntentCategory,
   createPrepareStep,
 } from './supervisor-routing';
+
 import { evaluateAgentResponseQuality } from './agents/response-quality';
 import { shouldRetryForQuality } from './supervisor-quality-retry';
 
@@ -108,7 +110,7 @@ async function executeMultiAgentMode(
       );
     }
 
-    return {
+    const sanitizedResponse = {
       success: true,
       response: multiResult.response,
       toolsCalled: multiResult.toolsCalled,
@@ -130,14 +132,25 @@ async function executeMultiAgentMode(
         finalAgent: multiResult.finalAgent,
       },
     };
+
+    return sanitizedResponse as SupervisorResponse;
   } catch (error) {
     const durationMs = Date.now() - startTime;
     const errorMessage = error instanceof Error ? error.message : String(error);
 
     logger.error(`❌ [Supervisor] Multi-agent error after ${durationMs}ms:`, errorMessage);
 
-    logger.info(`[Supervisor] Falling back to single-agent mode`);
-    return executeSingleAgentMode(request, startTime);
+    if (isSingleModeAllowed()) {
+      logger.info(`[Supervisor] Falling back to single-agent mode (degraded)`);
+      return executeSingleAgentMode(request, startTime);
+    }
+
+    logger.error(`[Supervisor] Single-agent fallback NOT allowed. Failing fast.`);
+    return {
+      success: false,
+      error: errorMessage,
+      code: 'MULTI_AGENT_FAILED',
+    };
   }
 }
 

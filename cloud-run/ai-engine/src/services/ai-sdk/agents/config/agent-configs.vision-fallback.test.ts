@@ -100,7 +100,7 @@ describe('agent-configs vision fallback', () => {
 
     expect(model).not.toBeNull();
     expect(model?.provider).toBe('gemini');
-    expect(model?.modelId).toBe('gemini-2.5-flash');
+    expect(model?.modelId).toBe('gemini-2.5-flash-lite');
     expect(getOpenRouterVisionModel).not.toHaveBeenCalled();
   });
 
