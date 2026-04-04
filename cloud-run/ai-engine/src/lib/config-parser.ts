@@ -121,10 +121,13 @@ let cachedAIProvidersConfig: AIProvidersConfig | null = null;
 let cachedKVConfig: KVConfig | null = null;
 let cachedLangfuseConfig: LangfuseConfig | null = null;
 
-const DEFAULT_OPENROUTER_VISION_MODEL = 'google/gemma-3-4b-it:free';
+// OpenRouter 무료 비전 모델 (2026-04-04 실제 테스트 기준)
+// 테스트 결과: gemma-3-27b ✅ / gemma-3-12b ✅ / gemma-3-4b ✅
+// 제거: nvidia/nemotron (content=None 버그), mistral-small-3.1:free (404 endpoint 삭제됨)
+const DEFAULT_OPENROUTER_VISION_MODEL = 'google/gemma-3-27b-it:free'; // 131K ctx, 27B
 const DEFAULT_OPENROUTER_VISION_FALLBACKS = [
-  'nvidia/nemotron-nano-12b-v2-vl:free',
-  'mistralai/mistral-small-3.1-24b-instruct:free',
+  'google/gemma-3-12b-it:free',   // 32K ctx, 12B
+  'google/gemma-3-4b-it:free',    // 32K ctx, 4B (최후 보루)
 ];
 
 /**
@@ -280,14 +283,46 @@ export function getMistralConfig(): MistralConfig | null {
 }
 
 /**
- * Get Cerebras API Key (NLQ Agent - fast inference)
+ * Get Cerebras API Key (secondary provider - fast inference)
  * Uses AI_PROVIDERS_CONFIG or falls back to individual env var
- * @see https://cloud.cerebras.ai/
+ * @see https://inference-docs.cerebras.ai
+ * Note: qwen-3-235b-a22b-instruct-2507 is Preview status (not for production)
+ *       Context: 65K tokens (free tier) / 131K (paid)
  */
 export function getCerebrasApiKey(): string | null {
   const providersConfig = getAIProvidersConfig();
   if (providersConfig?.cerebras) return providersConfig.cerebras;
   return process.env.CEREBRAS_API_KEY || null;
+}
+
+const DEFAULT_CEREBRAS_MODEL = 'qwen-3-235b-a22b-instruct-2507';
+const DEFAULT_GROQ_MODEL = 'meta-llama/llama-4-scout-17b-16e-instruct';
+
+/**
+ * Get default Cerebras text model id.
+ *
+ * Account entitlements can differ from public model listings, so the model id
+ * must stay configurable instead of being hardcoded across agent wiring.
+ */
+export function getCerebrasModelId(): string {
+  return process.env.CEREBRAS_MODEL_ID || DEFAULT_CEREBRAS_MODEL;
+}
+
+/**
+ * Cerebras tool-calling gate for emergency compatibility fallback.
+ * Default: false (disabled). Set CEREBRAS_TOOL_CALLING_ENABLED=true to opt in.
+ */
+export function isCerebrasToolCallingEnabled(): boolean {
+  return process.env.CEREBRAS_TOOL_CALLING_ENABLED === 'true';
+}
+
+/**
+ * Get default Groq text model id.
+ * Default: llama-4-scout-17b (500K TPD, 512K ctx, tool calling ✅)
+ * @see https://console.groq.com/docs/rate-limits
+ */
+export function getGroqModelId(): string {
+  return process.env.GROQ_MODEL_ID || DEFAULT_GROQ_MODEL;
 }
 
 /**
@@ -315,8 +350,8 @@ export function getTavilyApiKeyBackup(): string | null {
  * Get Gemini API Key (Vision Agent - Gemini 2.5 Flash)
  * Uses AI_PROVIDERS_CONFIG or falls back to individual env var
  *
- * Free Tier Limits (2026-02):
- * - 250 RPD (requests per day)
+ * Free Tier Limits (2026-04):
+ * - 500 RPD (requests per day)
  * - 10 RPM (requests per minute)
  * - 250K TPM (tokens per minute)
  * - 1M context window
@@ -365,6 +400,15 @@ export function getOpenRouterVisionFallbackModelIds(): string[] {
   }
 
   return [...new Set(parsed)];
+}
+
+/**
+ * Check if single-agent mode is allowed in production.
+ * Default: false (Multi-agent is the standard).
+ * Can be overridden via ALLOW_DEGRADED_SINGLE env var for emergency/degraded operations.
+ */
+export function isSingleModeAllowed(): boolean {
+  return process.env.ALLOW_DEGRADED_SINGLE === 'true';
 }
 
 /**

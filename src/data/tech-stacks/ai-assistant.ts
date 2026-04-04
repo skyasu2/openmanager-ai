@@ -9,11 +9,11 @@ export const AI_ASSISTANT_TECH_STACK: TechItem[] = [
     description:
       '세계 최대 AI 칩 Wafer-Scale Engine(WSE-3) 기반 추론 서비스. 850,000개 코어가 단일 웨이퍼에 집적되어 GPU 클러스터의 통신 병목 없이 초고속 추론 제공',
     implementation:
-      '→ Orchestrator + NLQ Agent에서 사용. 24M 토큰/일 무료 티어로 서버 조회 및 의도 분류 담당',
-    version: 'Llama 3.3 70B',
+      '→ Orchestrator Planning + Verifier 1순위 모델. 복잡한 작업 분해 및 최종 응답 품질 검증 담당. qwen-3-235b-a22b-instruct-2507 고성능 모델 활용',
+    version: 'Qwen 3 235B A22B',
     status: 'active',
     icon: '🧠',
-    tags: ['WSE-3', '24M/day', '웨이퍼스케일'],
+    tags: ['WSE-3', 'Planning', '웨이퍼스케일'],
     type: 'commercial',
   },
   {
@@ -23,11 +23,11 @@ export const AI_ASSISTANT_TECH_STACK: TechItem[] = [
     description:
       'LPU(Language Processing Unit) 기반 초고속 추론 인프라. GPU 대비 일관된 응답 속도와 낮은 지연시간으로 500 Tokens/s 속도 제공',
     implementation:
-      '→ Analyst + Reporter Agent에서 사용. 이상 탐지, 트렌드 예측, 보고서 생성 담당',
-    version: 'Llama 3.3 70B Versatile',
+      '→ NLQ + Analyst + Tool-calling 1순위 모델. 고도의 도구 실행력으로 실시간 메트릭 조회 및 이상 분석 전담',
+    version: 'Llama 4 Scout (17B)',
     status: 'active',
     icon: '⚡',
-    tags: ['LPU', '500T/s', '초고속'],
+    tags: ['LPU', 'Tool-calling', '초고속'],
     type: 'commercial',
   },
   {
@@ -37,25 +37,25 @@ export const AI_ASSISTANT_TECH_STACK: TechItem[] = [
     description:
       '프랑스 AI 스타트업의 효율적인 오픈웨이트 LLM. 24B 파라미터의 Small Language Model로 대형 모델 대비 낮은 비용과 빠른 응답 속도 제공',
     implementation:
-      '→ Advisor Agent에서 사용. GraphRAG 기반 해결 방법 안내 및 응답 품질 검증 담당',
-    version: 'mistral-small-2506 (24B)',
+      '→ Advisor Agent 1순위. 복잡한 인프라 트러블슈팅 추론 및 GraphRAG 기반 지식 탐색 품질 최적화 담당',
+    version: 'mistral-large-latest',
     status: 'active',
     icon: '🛡️',
-    tags: ['SLM', '24B', '오픈웨이트'],
+    tags: ['Reasoning', 'Frontier', '오픈웨이트'],
     type: 'commercial',
   },
   {
-    name: 'Gemini 2.5 Flash',
+    name: 'Gemini 2.5 Flash-Lite',
     category: 'ai',
     importance: 'high',
     description:
-      'Google의 멀티모달 AI 모델. 1M 토큰 컨텍스트, 이미지/PDF/비디오 분석, Google Search Grounding으로 실시간 웹 검색 지원',
+      'Google의 고효율 멀티모달 AI 모델. 사고 토큰 소비 없는 안정적 추론과 1M 토큰 컨텍스트, 이미지 분석, 실시간 웹 검색 지원',
     implementation:
-      '→ Vision Agent 전용. 대시보드 스크린샷 분석, 대용량 로그 분석(1M 컨텍스트), URL 문서 분석 담당. Graceful Degradation으로 장애 시 기존 에이전트 정상 동작 보장',
-    version: 'gemini-2.5-flash',
+      '→ Vision Agent 전용. 대시보드 스크린샷 분석, 1M 컨텍스트 기반 대용량 로그 분석 담당. 할당량(RPD 1,000) 최적화로 안정적 운영 보장',
+    version: 'gemini-2.5-flash-lite',
     status: 'active',
     icon: '👁️',
-    tags: ['Vision', '1M-Context', 'Multimodal', 'Search-Grounding'],
+    tags: ['Vision', '1M-Context', 'Cost-Efficient'],
     type: 'commercial',
   },
 
@@ -65,13 +65,13 @@ export const AI_ASSISTANT_TECH_STACK: TechItem[] = [
     category: 'ai',
     importance: 'critical',
     description:
-      'Vercel이 개발한 AI 애플리케이션 프레임워크. streamText, generateObject, ToolLoopAgent 등 API로 스트리밍 응답, 도구 호출, 멀티 에이전트 오케스트레이션 지원',
+      'Vercel이 개발한 AI 애플리케이션 프레임워크. streamText, generateObject API를 통해 지능형 멀티 에이전트 워크플로우와 스트리밍 응답 제공',
     implementation:
-      'v6 네이티브 ToolLoopAgent + stopWhen 패턴으로 5-Agent 멀티 에이전트 시스템 구축. Orchestrator-Worker Handoff 패턴으로 질문 유형별 자동 라우팅 구현',
+      '고도화된 Multi-Agent Handoff 아키텍처 기반의 5-Agent 시스템 구축. Orchestrator Planning을 통한 질문 유형별 최적 에이전트 라우팅 구현',
     version: '6.0',
     status: 'active',
     icon: '▲',
-    tags: ['AI SDK', 'Streaming', 'Multi-Agent', 'ToolLoopAgent'],
+    tags: ['AI SDK', 'Streaming', 'Multi-Agent', 'Orchestration'],
     type: 'opensource',
   },
   // ========== Database & RAG ==========

@@ -12,9 +12,12 @@ import {
   getTavilyApiKeyBackup,
   getGroqApiKey,
   getCerebrasApiKey,
+  getCerebrasModelId,
+  isCerebrasToolCallingEnabled,
   getOpenRouterVisionModelId,
   getOpenRouterVisionFallbackModelIds,
   isOpenRouterVisionToolCallingEnabled,
+  isSingleModeAllowed,
   getConfigStatus,
   clearConfigCache,
   getAIProvidersConfig,
@@ -173,6 +176,32 @@ describe('Config Parser', () => {
     });
   });
 
+  describe('getCerebrasModelId', () => {
+    it('should use the verified default model when env is missing', () => {
+      delete process.env.CEREBRAS_MODEL_ID;
+
+      expect(getCerebrasModelId()).toBe('qwen-3-235b-a22b-instruct-2507');
+    });
+
+    it('should use CEREBRAS_MODEL_ID when configured', () => {
+      process.env.CEREBRAS_MODEL_ID = 'custom-cerebras-model';
+
+      expect(getCerebrasModelId()).toBe('custom-cerebras-model');
+    });
+
+    it('should disable Cerebras tool-calling by default', () => {
+      delete process.env.CEREBRAS_TOOL_CALLING_ENABLED;
+
+      expect(isCerebrasToolCallingEnabled()).toBe(false);
+    });
+
+    it('should enable Cerebras tool-calling when explicitly true', () => {
+      process.env.CEREBRAS_TOOL_CALLING_ENABLED = 'true';
+
+      expect(isCerebrasToolCallingEnabled()).toBe(true);
+    });
+  });
+
   // ============================================================================
   // 4. Config Status Tests
   // ============================================================================
@@ -306,7 +335,7 @@ describe('Config Parser', () => {
   describe('OpenRouter Vision config', () => {
     it('should use default vision model when env is missing', () => {
       delete process.env.OPENROUTER_MODEL_VISION;
-      expect(getOpenRouterVisionModelId()).toBe('google/gemma-3-4b-it:free');
+      expect(getOpenRouterVisionModelId()).toBe('google/gemma-3-27b-it:free');
     });
 
     it('should use OPENROUTER_MODEL_VISION when configured', () => {
@@ -321,9 +350,10 @@ describe('Config Parser', () => {
 
     it('should return default fallback list when env is missing', () => {
       delete process.env.OPENROUTER_MODEL_VISION_FALLBACKS;
+      // 2026-04-04: nemotron(content=None 버그), mistral-small-3.1:free(404) 제거
       expect(getOpenRouterVisionFallbackModelIds()).toEqual([
-        'nvidia/nemotron-nano-12b-v2-vl:free',
-        'mistralai/mistral-small-3.1-24b-instruct:free',
+        'google/gemma-3-12b-it:free',
+        'google/gemma-3-4b-it:free',
       ]);
     });
 
@@ -335,6 +365,21 @@ describe('Config Parser', () => {
     it('should enable OpenRouter vision tool-calling when env is true', () => {
       process.env.OPENROUTER_VISION_TOOL_CALLING = 'true';
       expect(isOpenRouterVisionToolCallingEnabled()).toBe(true);
+    });
+  });
+
+  // ============================================================================
+  // 8. Single-agent degraded gate tests
+  // ============================================================================
+  describe('Single-agent degraded gate', () => {
+    it('should disable degraded single mode by default', () => {
+      delete process.env.ALLOW_DEGRADED_SINGLE;
+      expect(isSingleModeAllowed()).toBe(false);
+    });
+
+    it('should enable degraded single mode when env is true', () => {
+      process.env.ALLOW_DEGRADED_SINGLE = 'true';
+      expect(isSingleModeAllowed()).toBe(true);
     });
   });
 });

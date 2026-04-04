@@ -1,0 +1,4 @@
+interface:
+  display_name: "OpenManager Env Sync"
+  short_description: "Diagnose and fix Vercel env drift"
+  default_prompt: "Use $openmanager-env-sync to verify or sync OpenManager runtime env variables across local, preview, and production."

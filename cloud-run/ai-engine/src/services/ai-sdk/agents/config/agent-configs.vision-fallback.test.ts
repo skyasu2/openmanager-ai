@@ -58,6 +58,8 @@ vi.mock('../../../../lib/logger', () => ({
 
 vi.mock('../../../../lib/config-parser', () => ({
   getOpenRouterVisionModelId: vi.fn(() => 'nvidia/nemotron-nano-12b-v2-vl:free'),
+  isOpenRouterVisionToolCallingEnabled: vi.fn(() => false),
+  isCerebrasToolCallingEnabled: vi.fn(() => true),
 }));
 
 vi.mock('../../model-provider', () => ({
@@ -100,7 +102,7 @@ describe('agent-configs vision fallback', () => {
 
     expect(model).not.toBeNull();
     expect(model?.provider).toBe('gemini');
-    expect(model?.modelId).toBe('gemini-2.5-flash');
+    expect(model?.modelId).toBe('gemini-2.5-flash-lite');
     expect(getOpenRouterVisionModel).not.toHaveBeenCalled();
   });
 

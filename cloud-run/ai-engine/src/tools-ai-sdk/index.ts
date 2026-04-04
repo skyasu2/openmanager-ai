@@ -43,15 +43,14 @@ export {
 // ============================================================================
 export type {
   SystemSummary,
+  AnalysisSummary,
   ServerAnomalyItem,
-  DetectAnomaliesAllServersResult,
-  DetectAnomaliesAllServersError,
-  DetectAnomaliesAllServersResponse,
-  AnomalyResultItem,
-  DetectAnomaliesResult,
-  DetectAnomaliesError,
-  DetectAnomaliesResponse,
+  AnomalyDetectionResult,
+  ForecastBreachItem,
+  RiskForecast,
+  ForecastResult,
 } from '../types/analysis-results';
+export type { AnomalyResultItem } from './analyst-tools-shared';
 
 // ============================================================================
 // Reporter Tools (RAG Search & Command Recommendations & Web Search)

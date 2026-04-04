@@ -10,6 +10,7 @@ import type { StreamEvent } from '../supervisor';
 
 import { routingSchema, getAgentFromRouting, type RoutingDecision } from './schemas';
 import {
+  getContextSummary,
   getOrCreateSessionContext,
   recordHandoffEvent,
 } from './context-store';
@@ -94,7 +95,16 @@ function finalizeMultiAgentResponse(
   response: MultiAgentResponse
 ): MultiAgentResponse {
   const traceId = getTraceId(trace);
-  const tracedResponse = attachTraceIdToResponse(response, traceId);
+  const handoffCount = response.handoffs?.length ?? 0;
+  const responseWithTraceId = attachTraceIdToResponse(response, traceId);
+  
+  const tracedResponse = {
+    ...responseWithTraceId,
+    metadata: {
+      ...responseWithTraceId.metadata,
+      handoffCount,
+    }
+  };
 
   finalizeTrace(trace, tracedResponse.response, true, {
     mode: 'multi',
@@ -102,6 +112,7 @@ function finalizeMultiAgentResponse(
     finalAgent: tracedResponse.finalAgent,
     toolsCalled: tracedResponse.toolsCalled,
     totalRounds: tracedResponse.metadata.totalRounds,
+    handoffCount,
     durationMs: tracedResponse.metadata.durationMs,
   });
 
@@ -212,6 +223,10 @@ export async function executeMultiAgent(
     sessionId: request.sessionId,
     mode: 'multi',
     query,
+    requestedMode: request.requestedMode,
+    resolvedMode: request.resolvedMode,
+    modeSelectionSource: request.modeSelectionSource,
+    autoSelectedByComplexity: request.autoSelectedByComplexity,
     upstreamTraceId: request.traceId,
   });
 
@@ -222,6 +237,7 @@ export async function executeMultiAgent(
 
   const sessionContext = await getOrCreateSessionContext(request.sessionId, query);
   logger.debug(`[Context] Session ${request.sessionId}: ${sessionContext.handoffs.length} previous handoffs`);
+  const contextSummary = await getContextSummary(request.sessionId);
 
   // Fast Path
   const preFilterResult = preFilterQuery(query, {
@@ -249,7 +265,16 @@ export async function executeMultiAgent(
       let lastResult: MultiAgentResponse | null = null;
 
       for (const subtask of decomposition.subtasks) {
-        lastResult = await executeForcedRouting(subtask.task, subtask.agent, startTime, webSearchEnabled, ragEnabled, request.images, request.files);
+        lastResult = await executeForcedRouting(
+          subtask.task,
+          subtask.agent,
+          startTime,
+          webSearchEnabled,
+          ragEnabled,
+          request.images,
+          request.files,
+          contextSummary,
+        );
         if (!lastResult) {
           logger.warn(`⚠️ [Orchestrator] Sequential subtask failed: ${subtask.agent}`);
           break;
@@ -289,7 +314,16 @@ export async function executeMultiAgent(
       logger.info(`[Vision] Using AgentFactory for Vision Agent`);
       forcedResult = await executeVisionOrFallback(query, startTime, webSearchEnabled, ragEnabled, request.images, request.files);
     } else {
-      forcedResult = await executeForcedRouting(query, suggestedAgentName, startTime, webSearchEnabled, ragEnabled, request.images, request.files);
+      forcedResult = await executeForcedRouting(
+        query,
+        suggestedAgentName,
+        startTime,
+        webSearchEnabled,
+        ragEnabled,
+        request.images,
+        request.files,
+        contextSummary,
+      );
     }
 
     if (forcedResult) {
@@ -318,7 +352,9 @@ export async function executeMultiAgent(
 
     logger.info(`[Orchestrator] LLM routing with ${provider}/${modelId} (suggested: ${preFilterResult.suggestedAgent || 'none'})`);
 
-    const routingPrompt = buildRoutingPrompt(query);
+    const routingPrompt = buildRoutingPrompt(
+      contextSummary ? `${query}\n\n[세션 컨텍스트 요약]\n${contextSummary}` : query
+    );
 
     let timeoutId: NodeJS.Timeout | null = null;
     let warnTimer: NodeJS.Timeout | null = null;
@@ -372,7 +408,16 @@ export async function executeMultiAgent(
       if (selectedAgent === 'Vision Agent') {
         agentResult = await executeVisionOrFallback(query, startTime, webSearchEnabled, ragEnabled, request.images, request.files);
       } else {
-        agentResult = await executeForcedRouting(query, selectedAgent, startTime, webSearchEnabled, ragEnabled, request.images, request.files);
+        agentResult = await executeForcedRouting(
+          query,
+          selectedAgent,
+          startTime,
+          webSearchEnabled,
+          ragEnabled,
+          request.images,
+          request.files,
+          contextSummary,
+        );
       }
 
       if (agentResult) {
@@ -393,7 +438,16 @@ export async function executeMultiAgent(
     if (suggestedAgent && preFilterResult.confidence >= ORCHESTRATOR_CONFIG.fallbackRoutingConfidence) {
       logger.debug(`[Orchestrator] LLM routing inconclusive, falling back to ${suggestedAgent}`);
 
-      const fallbackResult = await executeForcedRouting(query, suggestedAgent, startTime, webSearchEnabled, ragEnabled, request.images, request.files);
+      const fallbackResult = await executeForcedRouting(
+        query,
+        suggestedAgent,
+        startTime,
+        webSearchEnabled,
+        ragEnabled,
+        request.images,
+        request.files,
+        contextSummary,
+      );
 
       if (fallbackResult) {
         await saveAgentFindingsToContext(request.sessionId, suggestedAgent, fallbackResult.response);
@@ -424,6 +478,7 @@ export async function executeMultiAgent(
         provider,
         modelId,
         totalRounds: 1,
+        handoffCount: 0,
         durationMs,
         responseChars: quality.responseChars,
         formatCompliance: quality.formatCompliance,
@@ -463,6 +518,10 @@ export async function* executeMultiAgentStream(
     sessionId: request.sessionId,
     mode: 'multi',
     query,
+    requestedMode: request.requestedMode,
+    resolvedMode: request.resolvedMode,
+    modeSelectionSource: request.modeSelectionSource,
+    autoSelectedByComplexity: request.autoSelectedByComplexity,
     upstreamTraceId: request.traceId,
   });
 
@@ -473,6 +532,7 @@ export async function* executeMultiAgentStream(
 
   const sessionContext = await getOrCreateSessionContext(request.sessionId, query);
   logger.debug(`[Stream Context] Session ${request.sessionId}: ${sessionContext.handoffs.length} previous handoffs`);
+  const contextSummary = await getContextSummary(request.sessionId);
 
   // Fast Path
   const preFilterResult = preFilterQuery(query, {
@@ -518,14 +578,14 @@ export async function* executeMultiAgentStream(
         logger.warn('[Stream] Vision Agent model unavailable, falling back to Analyst Agent');
         yield { type: 'agent_status', data: { status: 'vision_fallback', message: 'Vision Agent 사용 불가, Analyst Agent로 전환 중...' } };
         yield* streamWithTrace(trace, startTime, executeAgentStream(
-          query, 'Analyst Agent', startTime, request.sessionId, webSearchEnabled, ragEnabled, request.images, request.files
+          query, 'Analyst Agent', startTime, request.sessionId, webSearchEnabled, ragEnabled, request.images, request.files, contextSummary
         ));
         return;
       }
     }
 
     yield* streamWithTrace(trace, startTime, executeAgentStream(
-      query, preFilterResult.suggestedAgent, startTime, request.sessionId, webSearchEnabled, ragEnabled, request.images, request.files
+      query, preFilterResult.suggestedAgent, startTime, request.sessionId, webSearchEnabled, ragEnabled, request.images, request.files, contextSummary
     ));
     return;
   }
@@ -548,7 +608,9 @@ export async function* executeMultiAgentStream(
 
     logger.info(`[Stream Orchestrator] Starting with ${provider}/${modelId}`);
 
-    const routingPrompt = buildRoutingPrompt(query);
+    const routingPrompt = buildRoutingPrompt(
+      contextSummary ? `${query}\n\n[세션 컨텍스트 요약]\n${contextSummary}` : query
+    );
 
     // Phase 2D: LLM routing timeout — wrap with Promise.race + clearTimeout
     const routingTimeout = TIMEOUT_CONFIG.orchestrator.routingDecision;
@@ -588,7 +650,17 @@ export async function* executeMultiAgentStream(
         yield* streamWithTrace(
           trace,
           startTime,
-          executeAgentStream(query, suggestedAgent, startTime, request.sessionId, webSearchEnabled, ragEnabled, request.images, request.files)
+          executeAgentStream(
+            query,
+            suggestedAgent,
+            startTime,
+            request.sessionId,
+            webSearchEnabled,
+            ragEnabled,
+            request.images,
+            request.files,
+            contextSummary,
+          )
         );
         return;
       }
@@ -615,7 +687,17 @@ export async function* executeMultiAgentStream(
           yield* streamWithTrace(
             trace,
             startTime,
-            executeAgentStream(query, 'Analyst Agent', startTime, request.sessionId, webSearchEnabled, ragEnabled, request.images, request.files)
+            executeAgentStream(
+              query,
+              'Analyst Agent',
+              startTime,
+              request.sessionId,
+              webSearchEnabled,
+              ragEnabled,
+              request.images,
+              request.files,
+              contextSummary,
+            )
           );
           return;
         }
@@ -624,7 +706,7 @@ export async function* executeMultiAgentStream(
       yield* streamWithTrace(
         trace,
         startTime,
-        executeAgentStream(query, selectedAgent, startTime, request.sessionId, webSearchEnabled, ragEnabled, request.images, request.files)
+        executeAgentStream(query, selectedAgent, startTime, request.sessionId, webSearchEnabled, ragEnabled, request.images, request.files, contextSummary)
       );
       return;
     }
@@ -639,7 +721,7 @@ export async function* executeMultiAgentStream(
       yield* streamWithTrace(
         trace,
         startTime,
-        executeAgentStream(query, suggestedAgent, startTime, request.sessionId, webSearchEnabled, ragEnabled, request.images, request.files)
+        executeAgentStream(query, suggestedAgent, startTime, request.sessionId, webSearchEnabled, ragEnabled, request.images, request.files, contextSummary)
       );
       return;
     }
@@ -665,7 +747,7 @@ export async function* executeMultiAgentStream(
           promptTokens: routingResult.usage?.inputTokens ?? 0,
           completionTokens: routingResult.usage?.outputTokens ?? 0,
         },
-        metadata: { provider, modelId, durationMs, ...(traceId ? { traceId } : {}) },
+        metadata: { provider, modelId, handoffCount: 0, durationMs, ...(traceId ? { traceId } : {}) },
       },
     };
   } catch (error) {

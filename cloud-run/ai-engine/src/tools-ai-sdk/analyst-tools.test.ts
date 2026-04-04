@@ -69,7 +69,7 @@ vi.mock('../data/precomputed-state', () => ({
     servers: mockServers,
     systemHealth: {
       overall: 'warning',
-      healthyCount: 3,
+      onlineCount: 3,
       warningCount: 1,
       criticalCount: 1,
     },
@@ -200,21 +200,21 @@ describe('detectAnomaliesAllServers', () => {
       }
     });
 
-    it('should count healthy/warning/critical servers correctly', async () => {
+    it('should count online/warning/critical servers correctly', async () => {
       const result = await detectAnomaliesAllServers.execute({ metricType: 'all' }, {} as never);
 
       expect(result.success).toBe(true);
       if (result.success) {
-        const { healthyCount, warningCount, criticalCount, totalServers } = result.summary;
+        const { onlineCount, warningCount, criticalCount, totalServers } = result.summary;
 
         // Total should equal sum of counts
-        expect(healthyCount + warningCount + criticalCount).toBe(totalServers);
+        expect(onlineCount + warningCount + criticalCount).toBe(totalServers);
 
         // Based on mock data:
-        // - 3 healthy: web-01, db-02, cache-01
+        // - 3 online: web-01, db-02, cache-01
         // - 1 warning: web-02
         // - 1 critical: db-01
-        expect(healthyCount).toBe(3);
+        expect(onlineCount).toBe(3);
         expect(warningCount).toBe(1);
         expect(criticalCount).toBe(1);
       }
@@ -355,7 +355,7 @@ describe('detectAnomaliesAllServers', () => {
       expect(result.success).toBe(true);
       if (result.success) {
         expect(result.summary).toHaveProperty('totalServers');
-        expect(result.summary).toHaveProperty('healthyCount');
+        expect(result.summary).toHaveProperty('onlineCount');
         expect(result.summary).toHaveProperty('warningCount');
         expect(result.summary).toHaveProperty('criticalCount');
       }

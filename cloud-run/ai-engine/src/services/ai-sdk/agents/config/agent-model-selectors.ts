@@ -1,7 +1,17 @@
 import type { LanguageModel } from 'ai';
-import { getOpenRouterVisionModelId } from '../../../../lib/config-parser';
+import {
+  getCerebrasModelId,
+  getGroqModelId,
+  getOpenRouterVisionModelId,
+} from '../../../../lib/config-parser';
 import { logger } from '../../../../lib/logger';
 import { getCircuitBreaker } from '../../../resilience/circuit-breaker';
+import {
+  getProviderCapabilities,
+  getCapabilityMismatchReasons,
+  getTextProviderCapabilities,
+  type ModelCapabilityRequirements,
+} from '../../provider-capabilities';
 import {
   checkProviderStatus,
   getCerebrasModel,
@@ -10,12 +20,13 @@ import {
   getMistralModel,
   getOpenRouterVisionModel,
 } from '../../model-provider';
-import type { ProviderName } from '../../model-provider.types';
+import type { ModelCapabilities, ProviderName } from '../../model-provider.types';
 
 export interface ModelResult {
   model: LanguageModel;
   provider: ProviderName;
   modelId: string;
+  capabilities: ModelCapabilities;
 }
 
 // ============================================================================
@@ -24,10 +35,29 @@ export interface ModelResult {
 
 export type TextProvider = 'cerebras' | 'groq' | 'mistral';
 
-const TEXT_PROVIDER_MODELS: Record<TextProvider, { factory: (id: string) => LanguageModel; modelId: string }> = {
-  cerebras: { factory: getCerebrasModel, modelId: 'gpt-oss-120b' },
-  groq:     { factory: getGroqModel,     modelId: 'llama-3.3-70b-versatile' },
-  mistral:  { factory: getMistralModel,  modelId: 'mistral-large-latest' },
+const TEXT_PROVIDER_MODELS: Record<TextProvider, { 
+  factory: (id: string) => LanguageModel; 
+  modelId: () => string;
+  capabilities: ModelCapabilities | (() => ModelCapabilities);
+}> = {
+  // Qwen 3 (235B Preview) - 1M TPD, 1,400 tok/s, tool calling ✅ (Cerebras 상시 적용)
+  cerebras: { 
+    factory: getCerebrasModel, 
+    modelId: () => getCerebrasModelId(),
+    capabilities: () => getTextProviderCapabilities('cerebras')
+  },
+  // Llama 4 Scout (17B) - 500K TPD, 30K TPM, 512K ctx, tool calling ✅ (2026-04-03 교체)
+  groq: { 
+    factory: getGroqModel, 
+    modelId: () => getGroqModelId(),
+    capabilities: () => getTextProviderCapabilities('groq')
+  },
+  // Mistral Large - Frontier급 성능, free tier quota 낮음 (~2 RPM)
+  mistral: { 
+    factory: getMistralModel, 
+    modelId: () => 'mistral-large-latest',
+    capabilities: () => getTextProviderCapabilities('mistral')
+  },
 };
 
 // ============================================================================
@@ -41,6 +71,8 @@ interface SelectTextModelOptions {
   excludeProviders?: ProviderName[];
   /** CB key prefix override (default: agentLabel lowercase) */
   cbPrefix?: string;
+  /** Minimum capabilities required by the caller */
+  requiredCapabilities?: ModelCapabilityRequirements;
 }
 
 /**
@@ -54,7 +86,12 @@ export function selectTextModel(
   providerOrder: TextProvider[],
   options: SelectTextModelOptions = {},
 ): ModelResult | null {
-  const { throwOnEmpty = false, excludeProviders = [], cbPrefix } = options;
+  const {
+    throwOnEmpty = false,
+    excludeProviders = [],
+    cbPrefix,
+    requiredCapabilities = {},
+  } = options;
   const status = checkProviderStatus();
   const excluded = new Set<string>(excludeProviders);
   const prefix = cbPrefix ?? agentLabel.toLowerCase().replace(/\s+/g, '-');
@@ -74,11 +111,23 @@ export function selectTextModel(
     if (!status[provider] || excluded.has(provider)) continue;
 
     const config = TEXT_PROVIDER_MODELS[provider];
+    const modelId = config.modelId();
+    const capabilities = typeof config.capabilities === 'function'
+      ? config.capabilities()
+      : config.capabilities;
+    const mismatchReasons = getCapabilityMismatchReasons(capabilities, requiredCapabilities);
+    if (mismatchReasons.length > 0) {
+      logger.info(
+        `[${agentLabel}] Skipping ${provider}/${modelId}: missing ${mismatchReasons.join(', ')}`
+      );
+      continue;
+    }
     try {
       return {
-        model: config.factory(config.modelId),
+        model: config.factory(modelId),
         provider,
-        modelId: config.modelId,
+        modelId,
+        capabilities,
       };
     } catch {
       const nextIdx = providerOrder.indexOf(provider) + 1;
@@ -88,10 +137,14 @@ export function selectTextModel(
   }
 
   if (throwOnEmpty) {
-    throw new Error(`No provider available for ${agentLabel} (all providers down).`);
+    throw new Error(
+      `No provider available for ${agentLabel} (providers unavailable or missing required capabilities).`
+    );
   }
 
-  logger.warn(`[${agentLabel}] No model available (all providers down)`);
+  logger.warn(
+    `[${agentLabel}] No model available (providers unavailable or missing required capabilities)`
+  );
   return null;
 }
 
@@ -99,24 +152,40 @@ export function selectTextModel(
 // Per-Agent Model Selectors (1-line delegation)
 // ============================================================================
 
-/** NLQ model: Cerebras → Groq → Mistral */
+/**
+ * NLQ model: Groq(llama-4-scout) → Cerebras(qwen-3, Preview) → Mistral
+ */
 export function getNlqModel(): ModelResult | null {
-  return selectTextModel('NLQ Agent', ['cerebras', 'groq', 'mistral']);
+  return selectTextModel('NLQ Agent', ['groq', 'cerebras', 'mistral'], {
+    requiredCapabilities: { requireToolCalling: true },
+  });
 }
 
-/** Analyst model: Cerebras → Groq → Mistral */
+/**
+ * Analyst model: Groq(llama-4-scout) → Cerebras(qwen-3, Preview) → Mistral
+ */
 export function getAnalystModel(): ModelResult | null {
-  return selectTextModel('Analyst Agent', ['cerebras', 'groq', 'mistral']);
+  return selectTextModel('Analyst Agent', ['groq', 'cerebras', 'mistral'], {
+    requiredCapabilities: { requireToolCalling: true },
+  });
 }
 
-/** Reporter model: Groq → Cerebras → Mistral */
+/**
+ * Reporter model: Groq(llama-4-scout) → Cerebras(qwen-3, Preview) → Mistral
+ */
 export function getReporterModel(): ModelResult | null {
-  return selectTextModel('Reporter Agent', ['groq', 'cerebras', 'mistral']);
+  return selectTextModel('Reporter Agent', ['groq', 'cerebras', 'mistral'], {
+    requiredCapabilities: { requireToolCalling: true },
+  });
 }
 
-/** Advisor model: Mistral → Cerebras → Groq */
+/**
+ * Advisor model: Mistral → Groq(llama-4-scout) → Cerebras(qwen-3, Preview)
+ */
 export function getAdvisorModel(): ModelResult | null {
-  return selectTextModel('Advisor Agent', ['mistral', 'cerebras', 'groq']);
+  return selectTextModel('Advisor Agent', ['mistral', 'groq', 'cerebras'], {
+    requiredCapabilities: { requireToolCalling: true },
+  });
 }
 
 // ============================================================================
@@ -124,17 +193,19 @@ export function getAdvisorModel(): ModelResult | null {
 // ============================================================================
 
 /**
- * Get Vision model: Gemini Flash → OpenRouter (Fallback)
+ * Get Vision model: Gemini 2.5 Flash-Lite → OpenRouter Gemma-3-27b (Fallback)
  */
 export function getVisionModel(): ModelResult | null {
   const status = checkProviderStatus();
 
   if (status.gemini) {
     try {
+      const geminiModelId = process.env.GEMINI_VISION_MODEL_ID || 'gemini-2.5-flash-lite';
       return {
-        model: getGeminiFlashLiteModel('gemini-2.5-flash'),
+        model: getGeminiFlashLiteModel(geminiModelId),
         provider: 'gemini',
-        modelId: 'gemini-2.5-flash',
+        modelId: geminiModelId,
+        capabilities: getProviderCapabilities('gemini'),
       };
     } catch (error) {
       logger.warn('[Vision Agent] Gemini initialization failed, trying OpenRouter:', error);
@@ -149,6 +220,7 @@ export function getVisionModel(): ModelResult | null {
         model: getOpenRouterVisionModel(modelId),
         provider: 'openrouter',
         modelId,
+        capabilities: getProviderCapabilities('openrouter'),
       };
     } catch (error) {
       logger.error('[Vision Agent] OpenRouter initialization failed:', error);

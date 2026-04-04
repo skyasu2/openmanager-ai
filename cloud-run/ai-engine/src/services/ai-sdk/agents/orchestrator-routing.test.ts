@@ -88,7 +88,11 @@ vi.mock('../../../lib/logger', () => ({
   },
 }));
 
-import { executeForcedRouting } from './orchestrator-routing';
+import {
+  ORCHESTRATOR_PROVIDER_ORDER,
+  executeForcedRouting,
+  getAgentProviderOrder,
+} from './orchestrator-routing';
 
 function createRetryResult(options: {
   text?: string;
@@ -174,6 +178,41 @@ describe('executeForcedRouting', () => {
     expect(mockGenerateTextWithRetry).toHaveBeenCalledTimes(1);
   });
 
+  it('overrides generated summary text with deterministic summary for parity-sensitive prompts', async () => {
+    mockGenerateTextWithRetry.mockResolvedValueOnce(
+      createRetryResult({
+        text: '잘못된 요약입니다.',
+        steps: [
+          {
+            toolCalls: [{ toolName: 'getServerMetrics' }],
+            toolResults: [
+              {
+                toolName: 'getServerMetrics',
+                result: {
+                  servers: [
+                    { id: 'web-01', status: 'online', cpu: 32, memory: 48, disk: 28 },
+                    { id: 'api-01', status: 'warning', cpu: 71, memory: 78, disk: 36 },
+                    { id: 'db-01', status: 'online', cpu: 40, memory: 56, disk: 42 },
+                  ],
+                },
+              },
+            ],
+          },
+        ],
+      })
+    );
+
+    const result = await executeForcedRouting(
+      '현재 모든 서버의 상태를 요약해줘',
+      'NLQ Agent',
+      Date.now()
+    );
+
+    expect(result?.response).toContain('📊 **서버 현황 요약**');
+    expect(result?.response).toContain('전체 3대');
+    expect(result?.response).not.toContain('잘못된 요약');
+  });
+
   it('uses summarization fallback for non-summary empty responses in forced routing', async () => {
     mockGenerateTextWithRetry
       .mockResolvedValueOnce(
@@ -211,5 +250,41 @@ describe('executeForcedRouting', () => {
     expect(result?.success).toBe(true);
     expect(result?.response).toContain('api-01');
     expect(mockGenerateTextWithRetry).toHaveBeenCalledTimes(2);
+  });
+
+  it('injects distilled context summary into forced-routing prompt', async () => {
+    mockGenerateTextWithRetry.mockResolvedValueOnce(
+      createRetryResult({
+        text: '요약 완료',
+      })
+    );
+
+    await executeForcedRouting(
+      'CPU 높은 서버 찾아줘',
+      'NLQ Agent',
+      Date.now(),
+      true,
+      true,
+      undefined,
+      undefined,
+      '이전 분석: api-01 CPU 급등, 원인 미확정',
+    );
+
+    const firstCall = mockGenerateTextWithRetry.mock.calls[0]?.[0];
+    expect(firstCall.messages[1].content).toContain('[세션 컨텍스트 요약]');
+    expect(firstCall.messages[1].content).toContain('api-01 CPU 급등');
+  });
+});
+
+describe('provider order policy', () => {
+  it('uses Groq-first order for text agents and default routing', () => {
+    expect(getAgentProviderOrder('NLQ Agent')).toEqual(['groq', 'cerebras', 'mistral']);
+    expect(getAgentProviderOrder('Analyst Agent')).toEqual(['groq', 'cerebras', 'mistral']);
+    expect(getAgentProviderOrder('Reporter Agent')).toEqual(['groq', 'cerebras', 'mistral']);
+    expect(getAgentProviderOrder('Unknown Agent')).toEqual(['groq', 'cerebras', 'mistral']);
+  });
+
+  it('keeps Orchestrator structured-output provider order as documented', () => {
+    expect(ORCHESTRATOR_PROVIDER_ORDER).toEqual(['cerebras', 'mistral', 'groq']);
   });
 });

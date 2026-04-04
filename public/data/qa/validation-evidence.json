@@ -1,30 +1,30 @@
 {
   "version": "1.0.0",
-  "generatedAt": "2026-04-02T14:32:46.197Z",
+  "generatedAt": "2026-04-04T11:06:02.845Z",
   "source": {
     "trackerPath": "reports/qa/qa-tracker.json",
     "statusPath": "reports/qa/QA_STATUS.md",
     "publicPath": "public/data/qa/validation-evidence.json",
     "publicHref": "/data/qa/validation-evidence.json",
-    "latestRunId": "QA-20260402-0213"
+    "latestRunId": "QA-20260404-0222"
   },
   "summary": {
-    "totalRuns": 215,
-    "totalChecks": 1601,
+    "totalRuns": 216,
+    "totalChecks": 1613,
     "completedItems": 273,
-    "expertDomainsOpenGaps": 0,
-    "wontFixItems": 13,
-    "lastRecordedAt": "2026-04-02T14:32:42.507Z"
+    "expertDomainsOpenGaps": 2,
+    "wontFixItems": 14,
+    "lastRecordedAt": "2026-04-04T11:06:01.219Z"
   },
   "trackerUpdated": {
-    "iso": "2026-04-02T14:32:42.507Z",
-    "short": "2026-04-02",
-    "long": "April 2, 2026"
+    "iso": "2026-04-04T11:06:01.219Z",
+    "short": "2026-04-04",
+    "long": "April 4, 2026"
   },
   "publicEvidenceUpdated": {
-    "iso": "2026-04-02T12:41:23.224Z",
-    "short": "2026-04-02",
-    "long": "April 2, 2026"
+    "iso": "2026-04-04T09:17:33.588Z",
+    "short": "2026-04-04",
+    "long": "April 4, 2026"
   },
   "latestProofRecorded": {
     "iso": "2026-03-22T07:26:30.735Z",
@@ -32,12 +32,12 @@
     "long": "March 22, 2026"
   },
   "latestPublicRun": {
-    "runId": "QA-20260402-0213",
-    "title": "Playwright MCP Production QA - Frontend + AI Assistant v8.10.8 (2차)",
+    "runId": "QA-20260404-0222",
+    "title": "Vercel Playwright QA - dashboard, AI assistant, and monitoring parity check",
     "scope": "broad",
-    "recordedAt": "2026-04-02T12:41:23.224Z",
-    "commitSha": "84c375ac517bd2aac6c56c4372883ad0f72b5a58",
-    "repoPath": "reports/qa/runs/2026/qa-run-QA-20260402-0213.json",
+    "recordedAt": "2026-04-04T09:17:33.588Z",
+    "commitSha": "00e750bbfce07df4c7707814529fbce3eb845c38",
+    "repoPath": "reports/qa/runs/2026/qa-run-QA-20260404-0222.json",
     "ciRunLink": null,
     "ciArtifactLinks": []
   },

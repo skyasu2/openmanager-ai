@@ -186,6 +186,41 @@ describe('executeAgentStream', () => {
     expect((doneEvent?.data as { success: boolean }).success).toBe(true);
   });
 
+  it('prefers deterministic summary over streamed model text for parity-sensitive prompts', async () => {
+    mockStreamText.mockReturnValue(
+      createStreamResult({
+        chunks: ['잘못된 요약'],
+        steps: [
+          {
+            toolCalls: [{ toolName: 'getServerMetrics' }],
+            toolResults: [
+              {
+                toolName: 'getServerMetrics',
+                result: {
+                  servers: [
+                    { id: 'web-01', status: 'online', cpu: 32, memory: 48, disk: 28 },
+                    { id: 'api-01', status: 'warning', cpu: 71, memory: 78, disk: 36 },
+                    { id: 'db-01', status: 'online', cpu: 40, memory: 56, disk: 42 },
+                  ],
+                },
+              },
+            ],
+          },
+        ],
+      })
+    );
+
+    const events = await collectEvents('현재 모든 서버의 상태를 요약해줘');
+    const textPayload = events
+      .filter((event) => event.type === 'text_delta')
+      .map((event) => String(event.data))
+      .join('');
+
+    expect(textPayload).toContain('📊 **서버 현황 요약**');
+    expect(textPayload).toContain('전체 3대');
+    expect(textPayload).not.toContain('잘못된 요약');
+  });
+
   it('retries the next provider when the first provider returns no output', async () => {
     mockStreamText.mockImplementation(
       ({ model }: { model: { provider: string } }) => {

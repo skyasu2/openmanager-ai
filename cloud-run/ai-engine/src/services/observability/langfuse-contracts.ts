@@ -52,6 +52,10 @@ export interface TraceMetadata {
   userId?: string;
   mode?: 'single' | 'multi' | 'auto';
   query: string;
+  requestedMode?: 'single' | 'multi' | 'auto';
+  resolvedMode?: 'single' | 'multi';
+  modeSelectionSource?: 'explicit' | 'auto_complexity' | 'auto_default' | 'single_disallowed_upgrade';
+  autoSelectedByComplexity?: 'single' | 'multi';
   /** Upstream trace ID from Vercel API (W3C traceparent). Links Cloud Run trace to client trace. */
   upstreamTraceId?: string;
 }

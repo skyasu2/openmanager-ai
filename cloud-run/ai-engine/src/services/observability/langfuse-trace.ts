@@ -17,6 +17,52 @@ import {
 const TRACE_ID_HEX_REGEX = /^[0-9a-f]{32}$/;
 const INVALID_TRACE_ID = '0'.repeat(32);
 
+function recordSupervisorModeScores(
+  trace: LangfuseTrace,
+  metadata: Pick<
+    TraceMetadata,
+    | 'requestedMode'
+    | 'resolvedMode'
+    | 'modeSelectionSource'
+    | 'autoSelectedByComplexity'
+  >
+): void {
+  if (metadata.requestedMode) {
+    trace.score({
+      name: `requested-mode-${metadata.requestedMode}`,
+      value: 1,
+    });
+  }
+
+  if (metadata.resolvedMode) {
+    trace.score({
+      name: `resolved-mode-${metadata.resolvedMode}`,
+      value: 1,
+    });
+  }
+
+  if (metadata.modeSelectionSource) {
+    trace.score({
+      name: `mode-source-${metadata.modeSelectionSource}`,
+      value: 1,
+    });
+  }
+
+  if (metadata.requestedMode === 'auto' && metadata.resolvedMode) {
+    trace.score({
+      name: `auto-resolved-${metadata.resolvedMode}`,
+      value: 1,
+    });
+  }
+
+  if (metadata.autoSelectedByComplexity) {
+    trace.score({
+      name: `complexity-selected-${metadata.autoSelectedByComplexity}`,
+      value: 1,
+    });
+  }
+}
+
 function generateLangfuseTraceId(): string {
   return randomBytes(16).toString('hex');
 }
@@ -53,6 +99,18 @@ export function createSupervisorTrace(metadata: TraceMetadata): LangfuseTrace {
     userId: metadata.userId,
     metadata: {
       mode: metadata.mode,
+      ...(metadata.requestedMode && {
+        requestedMode: metadata.requestedMode,
+      }),
+      ...(metadata.resolvedMode && {
+        resolvedMode: metadata.resolvedMode,
+      }),
+      ...(metadata.modeSelectionSource && {
+        modeSelectionSource: metadata.modeSelectionSource,
+      }),
+      ...(metadata.autoSelectedByComplexity && {
+        autoSelectedByComplexity: metadata.autoSelectedByComplexity,
+      }),
       queryLength: metadata.query.length,
       sampled: true,
       ...(metadata.upstreamTraceId && {
@@ -61,6 +119,8 @@ export function createSupervisorTrace(metadata: TraceMetadata): LangfuseTrace {
     },
     input: metadata.query,
   });
+
+  recordSupervisorModeScores(trace, metadata);
 
   const traceWithId = trace as LangfuseTrace & { id?: string };
   if (traceWithId.id) {

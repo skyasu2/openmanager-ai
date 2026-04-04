@@ -8,7 +8,7 @@
  *
  * Agents:
  * - NLQ Agent (Cerebras): Natural language query processing + summaries
- * - Analyst Agent (Groq): Anomaly detection, trend prediction
+ * - Analyst Agent (Cerebras text model): Anomaly detection, trend prediction
  * - Reporter Agent (Groq): Incident reports, timelines
  * - Advisor Agent (Mistral): Troubleshooting guides, RAG search
  * - Vision Agent (Gemini): Screenshot/image analysis

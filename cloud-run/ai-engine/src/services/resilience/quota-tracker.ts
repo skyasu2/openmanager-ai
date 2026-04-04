@@ -57,31 +57,31 @@ export interface QuotaStatus {
 
 export const PROVIDER_QUOTAS: Record<ProviderName, ProviderQuota> = {
   /**
-   * Cerebras Free Tier (gpt-oss-120b)
+   * Cerebras Free Tier (current default: qwen-3-235b-a22b-instruct-2507)
    * @see https://inference-docs.cerebras.ai/support/rate-limits
-   * @updated 2026-03-06
+   * @updated 2026-04-03
    *
-   * - 1M TPD, 64K TPM, 30 RPM, 14.4K RPD
+   * - 1M TPD, 60K TPM, 30 RPM, 14.4K RPD
    * - Context: 8,192 tokens (Free Tier 제한)
    */
   cerebras: {
     dailyTokenLimit: 1_000_000,
     requestsPerMinute: 30,
-    tokensPerMinute: 64_000,
+    tokensPerMinute: 60_000,
     requestsPerDay: 14_400,
   },
   /**
-   * Groq Free Tier (llama-3.3-70b-versatile)
+   * Groq Free Tier (meta-llama/llama-4-scout-17b-16e-instruct)
    * @see https://console.groq.com/docs/rate-limits
-   * @updated 2026-03-06
+   * @updated 2026-04-03 - llama-3.3-70b(100K TPD/12K TPM) → llama-4-scout(500K TPD/30K TPM)
    *
-   * - 100K TPD, 12K TPM, 30 RPM, 1K RPD
-   * - Context: 128K tokens
+   * - 500K TPD, 30K TPM, 30 RPM, 1K RPD
+   * - Context: 512K tokens
    */
   groq: {
-    dailyTokenLimit: 100_000,
+    dailyTokenLimit: 500_000,
     requestsPerMinute: 30,
-    tokensPerMinute: 12_000,
+    tokensPerMinute: 30_000,
     requestsPerDay: 1_000,
   },
   mistral: {
@@ -91,20 +91,22 @@ export const PROVIDER_QUOTAS: Record<ProviderName, ProviderQuota> = {
     requestsPerDay: 500,
   },
   /**
-   * Gemini Flash-Lite (Vision Agent)
+   * Gemini 2.5 Flash-Lite (Vision Agent, default as of 2026-04-04)
    * @see https://ai.google.dev/gemini-api/docs/models/gemini
-   * @updated 2026-03-06
+   * @updated 2026-04-04 - Flash → Flash-Lite 전환
+   *   이유: flash는 thinking 토큰을 기본 소비(~24+/req) → max_tokens 낮으면 content 공백
+   *         flash-lite는 thinking 없음, RPD 2배(1,000), RPM 1.5배(15)로 더 유리
    *
-   * Free Tier Limits (gemini-2.5-flash):
-   * - 250 RPD, 10 RPM
+   * Free Tier Limits (gemini-2.5-flash-lite):
+   * - 1,000 RPD, 15 RPM
    * - 250,000 TPM
-   * - 1M context window
+   * Override: GEMINI_VISION_MODEL_ID=gemini-2.5-flash 로 flash 복귀 가능
    */
   gemini: {
-    dailyTokenLimit: 250_000 * 60 * 24, // TPM * 60min * 24h (theoretical max)
-    requestsPerMinute: 10,
+    dailyTokenLimit: 250_000 * 60 * 24,
+    requestsPerMinute: 15,
     tokensPerMinute: 250_000,
-    requestsPerDay: 250,
+    requestsPerDay: 1_000,
   },
   /**
    * Tavily Web Search API
@@ -316,7 +318,7 @@ export async function getQuotaStatus(
  * 사용 가능한 최적 Provider 선택 (Pre-emptive Fallback)
  */
 export async function selectAvailableProvider(
-  preferredOrder: LLMProviderName[] = ['cerebras', 'mistral', 'groq']
+  preferredOrder: LLMProviderName[] = ['groq', 'cerebras', 'mistral']
 ): Promise<{
   provider: LLMProviderName;
   status: QuotaStatus;
@@ -353,6 +355,7 @@ export async function selectAvailableProvider(
  */
 export async function getQuotaSummary(): Promise<{
   providers: QuotaStatus[];
+  onlineCount: number;
   healthyCount: number;
   warningCount: number;
   criticalCount: number;
@@ -366,7 +369,7 @@ export async function getQuotaSummary(): Promise<{
   ];
   const statuses = await Promise.all(providers.map(getQuotaStatus));
 
-  let healthyCount = 0;
+  let onlineCount = 0;
   let warningCount = 0;
   let criticalCount = 0;
 
@@ -376,13 +379,14 @@ export async function getQuotaSummary(): Promise<{
     } else if (status.shouldPreemptiveFallback) {
       warningCount++;
     } else {
-      healthyCount++;
+      onlineCount++;
     }
   }
 
   return {
     providers: statuses,
-    healthyCount,
+    onlineCount,
+    healthyCount: onlineCount,
     warningCount,
     criticalCount,
   };

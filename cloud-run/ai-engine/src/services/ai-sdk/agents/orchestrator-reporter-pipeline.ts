@@ -144,6 +144,7 @@ export async function executeReporterWithPipeline(
         provider: 'pipeline',
         modelId: 'reporter-pipeline',
         totalRounds: pipelineResult.quality.iterations,
+        handoffCount: 1,
         durationMs,
         responseChars: quality.responseChars,
         formatCompliance: quality.formatCompliance,

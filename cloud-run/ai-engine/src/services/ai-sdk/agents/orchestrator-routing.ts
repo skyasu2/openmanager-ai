@@ -42,12 +42,20 @@ export const ORCHESTRATOR_PROVIDER_ORDER: TextProvider[] = [
   'groq',
 ];
 
+function buildContextAwarePrompt(query: string, contextSummary?: string | null): string {
+  if (!contextSummary) {
+    return query;
+  }
+
+  return `${query}\n\n[세션 컨텍스트 요약]\n${contextSummary}`;
+}
+
 export function getOrchestratorModel(): ModelResult | null {
   // Orchestrator uses generateObject (requires json_schema support).
-  // Groq llama-3.3-70b-versatile does NOT support json_schema,
-  // so prefer Cerebras/Mistral first.
+  // Keep Cerebras/Mistral first until the Groq path is validated for this route.
   return selectTextModel('Orchestrator', ORCHESTRATOR_PROVIDER_ORDER, {
     cbPrefix: 'orchestrator',
+    requiredCapabilities: { requireStructuredOutput: true },
   });
 }
 
@@ -74,15 +82,15 @@ export function getAgentConfig(name: string): AgentConfig | null {
 export function getAgentProviderOrder(agentName: string): ProviderName[] {
   switch (agentName) {
     case 'NLQ Agent':
-      return ['cerebras', 'groq', 'mistral'];
+      return ['groq', 'cerebras', 'mistral'];
     case 'Advisor Agent':
-      return ['mistral', 'cerebras', 'groq'];
+      return ['mistral', 'groq', 'cerebras'];
     case 'Analyst Agent':
-      return ['cerebras', 'groq', 'mistral'];
+      return ['groq', 'cerebras', 'mistral'];
     case 'Reporter Agent':
       return ['groq', 'cerebras', 'mistral'];
     default:
-      return ['cerebras', 'groq', 'mistral'];
+      return ['groq', 'cerebras', 'mistral'];
   }
 }
 
@@ -110,7 +118,8 @@ export async function executeForcedRouting(
   webSearchEnabled = true,
   ragEnabled = true,
   images?: ImageAttachment[],
-  files?: FileAttachment[]
+  files?: FileAttachment[],
+  contextSummary?: string | null,
 ): Promise<MultiAgentResponse | null> {
   logger.info(`[Forced Routing] Looking up agent config: "${suggestedAgentName}"`);
 
@@ -139,6 +148,7 @@ export async function executeForcedRouting(
     images?.length || files?.length
       ? `\n\n[첨부 컨텍스트]\n- images: ${images?.length ?? 0}\n- files: ${files?.length ?? 0}`
       : '';
+  const executionPrompt = buildContextAwarePrompt(`${query}${attachmentHint}`, contextSummary);
 
   // Per-agent maxSteps: Analyst/Reporter need more steps for multi-tool workflows
   const agentMaxSteps = getAgentMaxSteps(suggestedAgentName);
@@ -148,7 +158,7 @@ export async function executeForcedRouting(
       {
         messages: [
           { role: 'system', content: agentConfig.instructions },
-          { role: 'user', content: `${query}${attachmentHint}` },
+          { role: 'user', content: executionPrompt },
         ],
         tools: filteredTools as Parameters<typeof generateText>[0]['tools'],
         stopWhen: [hasToolCall('finalAnswer'), stepCountIs(agentMaxSteps)],
@@ -232,22 +242,19 @@ export async function executeForcedRouting(
     }
 
     let response = finalAnswerResult?.answer ?? result.text;
-    const hasMeaningfulResponse =
-      typeof response === 'string' && response.trim().length > 0;
+    const deterministicSummary = buildDeterministicSummaryFallback(
+      query,
+      suggestedAgentName,
+      collectedToolResults
+    );
 
-    if (!hasMeaningfulResponse) {
-      const deterministicSummary = buildDeterministicSummaryFallback(
-        query,
-        suggestedAgentName,
-        collectedToolResults
+    if (deterministicSummary) {
+      const overridingGeneratedText =
+        typeof response === 'string' && response.trim().length > 0;
+      response = deterministicSummary;
+      logger.info(
+        `[Forced Routing] Deterministic summary ${overridingGeneratedText ? 'override' : 'fallback'} succeeded (${response.length} chars)`
       );
-
-      if (deterministicSummary) {
-        response = deterministicSummary;
-        logger.info(
-          `[Forced Routing] Deterministic summary fallback succeeded (${response.length} chars)`
-        );
-      }
     }
 
     // Summarization Fallback: if model called tools but produced no text,
@@ -340,6 +347,7 @@ export async function executeForcedRouting(
         provider,
         modelId,
         totalRounds: attempts.length,
+        handoffCount: 1,
         durationMs,
         responseChars: quality.responseChars,
         formatCompliance: quality.formatCompliance,
@@ -417,6 +425,7 @@ export async function executeWithAgentFactory(
           provider: result.metadata.provider,
           modelId: result.metadata.modelId,
           totalRounds: result.metadata.steps,
+          handoffCount: 1,
           durationMs: Date.now() - startTime,
           responseChars: result.metadata.responseChars,
           formatCompliance: result.metadata.formatCompliance,
@@ -444,6 +453,7 @@ export async function executeWithAgentFactory(
         provider: result.metadata.provider,
         modelId: result.metadata.modelId,
         totalRounds: result.metadata.steps,
+        handoffCount: 1,
         durationMs,
         responseChars: result.metadata.responseChars,
         formatCompliance: result.metadata.formatCompliance,

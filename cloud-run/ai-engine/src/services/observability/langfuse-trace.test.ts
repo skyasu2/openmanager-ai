@@ -91,13 +91,59 @@ describe('langfuse-trace', () => {
       userId: 'user-2',
       mode: 'multi',
       query: 'server summary',
+      requestedMode: 'auto',
+      resolvedMode: 'multi',
+      modeSelectionSource: 'auto_complexity',
+      autoSelectedByComplexity: 'multi',
       upstreamTraceId: 'upstream-trace-1',
     });
 
     expect(mockLangfuse.trace).toHaveBeenCalledTimes(1);
-    const traceCall = mockLangfuse.trace.mock.calls[0]?.[0] as { id?: string };
+    const traceCall = mockLangfuse.trace.mock.calls[0]?.[0] as {
+      id?: string;
+      metadata?: Record<string, unknown>;
+    };
     expect(traceCall.id).toMatch(/^[0-9a-f]{32}$/);
+    expect(traceCall.metadata).toMatchObject({
+      mode: 'multi',
+      requestedMode: 'auto',
+      resolvedMode: 'multi',
+      modeSelectionSource: 'auto_complexity',
+      autoSelectedByComplexity: 'multi',
+      upstreamTraceId: 'upstream-trace-1',
+    });
+    expect(mockTrace.score).toHaveBeenCalledWith({
+      name: 'requested-mode-auto',
+      value: 1,
+    });
+    expect(mockTrace.score).toHaveBeenCalledWith({
+      name: 'resolved-mode-multi',
+      value: 1,
+    });
+    expect(mockTrace.score).toHaveBeenCalledWith({
+      name: 'mode-source-auto_complexity',
+      value: 1,
+    });
+    expect(mockTrace.score).toHaveBeenCalledWith({
+      name: 'auto-resolved-multi',
+      value: 1,
+    });
+    expect(mockTrace.score).toHaveBeenCalledWith({
+      name: 'complexity-selected-multi',
+      value: 1,
+    });
     expect(trace.id).toBe(traceCall.id);
+  });
+
+  it('does not emit mode scores when optional mode audit metadata is absent', () => {
+    createSupervisorTrace({
+      sessionId: 'session-3',
+      userId: 'user-3',
+      mode: 'single',
+      query: 'hello',
+    });
+
+    expect(mockTrace.score).not.toHaveBeenCalled();
   });
 
   it('normalizes UUID trace ids before scoring', () => {

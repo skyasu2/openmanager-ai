@@ -116,9 +116,8 @@ describe('QuotaTracker — Pre-emptive Fallback', () => {
   });
 
   it('80% 미만일 때 shouldPreemptiveFallback = false', async () => {
-    // cerebras: dailyTokenLimit=24M, tokensPerMinute=60K, requestsPerMinute=60
-    // 5M / 24M = 20.8% (daily), 5K / 60K = 8.3% (minuteToken), 1/60 = 1.7% (minuteReq)
-    // 모든 threshold(80%, 85%, 85%) 미달 → false
+    // gemini: RPD 500, TPM 250K, RPM 10
+    // 5K / (250K * 60 * 24) ≈ 0% (daily) → threshold(80%) 미달 → false
     await recordProviderUsage('gemini', 5_000);
 
     const status = await getQuotaStatus('gemini');
@@ -296,6 +295,14 @@ describe('QuotaTracker — selectAvailableProvider', () => {
     vi.useRealTimers();
   });
 
+  it('기본 우선순위는 groq 우선으로 선택한다', async () => {
+    const result = await selectAvailableProvider();
+
+    expect(result).not.toBeNull();
+    expect(result!.provider).toBe('groq');
+    expect(result!.isPreemptiveFallback).toBe(false);
+  });
+
   it('모든 provider 가용 시 첫 번째 반환', async () => {
     const result = await selectAvailableProvider(['cerebras', 'mistral', 'groq']);
 
@@ -344,7 +351,7 @@ describe('QuotaTracker — getQuotaSummary', () => {
     const summary = await getQuotaSummary();
 
     expect(summary.providers).toHaveLength(5);
-    expect(summary.healthyCount).toBe(5);
+    expect(summary.onlineCount).toBe(5);
     expect(summary.warningCount).toBe(0);
     expect(summary.criticalCount).toBe(0);
   });

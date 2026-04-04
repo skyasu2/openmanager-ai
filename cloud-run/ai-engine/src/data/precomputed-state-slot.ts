@@ -37,29 +37,67 @@ function determineStatus(
   server: RawServerData,
   thresholds: SystemRulesThresholds
 ): ServerStatus {
-  if (server.status === 'offline') {
+  const { cpu, memory, disk, network, responseTimeMs } = server;
+
+  // 🎯 대시보드(MetricsProvider)와 동일한 Offline 판정 기준 적용:
+  // CPU, Memory, Disk 메트릭이 모두 0이면 오프라인으로 간주.
+  if (cpu === 0 && memory === 0 && disk === 0) {
     return 'offline';
   }
 
-  const { cpu, memory, disk, network } = server;
+  // 각 지표별 상태 판정
+  const isCritical = (val: number, threshold: number) => val >= threshold;
+  const isWarning = (val: number, threshold: number) => val >= threshold;
 
-  if (
-    cpu >= thresholds.cpu.critical ||
-    memory >= thresholds.memory.critical ||
-    disk >= thresholds.disk.critical ||
-    network >= thresholds.network.critical
-  ) {
+  const statuses: Record<string, 'online' | 'warning' | 'critical'> = {
+    cpu: isCritical(cpu, thresholds.cpu.critical)
+      ? 'critical'
+      : isWarning(cpu, thresholds.cpu.warning)
+        ? 'warning'
+        : 'online',
+    memory: isCritical(memory, thresholds.memory.critical)
+      ? 'critical'
+      : isWarning(memory, thresholds.memory.warning)
+        ? 'warning'
+        : 'online',
+    disk: isCritical(disk, thresholds.disk.critical)
+      ? 'critical'
+      : isWarning(disk, thresholds.disk.warning)
+        ? 'warning'
+        : 'online',
+    network: isCritical(network, thresholds.network.critical)
+      ? 'critical'
+      : isWarning(network, thresholds.network.warning)
+        ? 'warning'
+        : 'online',
+  };
+
+  // 응답 시간 판정 (있을 경우)
+  if (responseTimeMs !== undefined) {
+    // 응답 시간 임계값은 system-rules.json 기준으로 warning 2000, critical 5000 (하드코딩 폴백 방지 위해 명시적 처리 권장)
+    statuses.responseTime =
+      responseTimeMs >= 5000
+        ? 'critical'
+        : responseTimeMs >= 2000
+          ? 'warning'
+          : 'online';
+  }
+
+  const values = Object.values(statuses);
+  const criticalCount = values.filter((v) => v === 'critical').length;
+  const warningCount = values.filter((v) => v === 'warning').length;
+
+  // 🎯 system-rules.json 우선순위 기반 판정
+  // P1: CPU >= critical AND Memory >= critical
+  if (statuses.cpu === 'critical' && statuses.memory === 'critical') {
     return 'critical';
   }
-
-  if (
-    cpu >= thresholds.cpu.warning ||
-    memory >= thresholds.memory.warning ||
-    disk >= thresholds.disk.warning ||
-    network >= thresholds.network.warning
-  ) {
-    return 'warning';
-  }
+  // P2: ANY metric >= critical
+  if (criticalCount > 0) return 'critical';
+  // P3: 2+ metrics >= warning
+  if (warningCount >= 2) return 'warning';
+  // P4: ANY metric >= warning
+  if (warningCount > 0) return 'warning';
 
   return 'online';
 }
@@ -187,7 +225,7 @@ export function buildSlot(
 
   const summary = {
     total: servers.length,
-    healthy: servers.filter((server) => server.status === 'online').length,
+    online: servers.filter((server) => server.status === 'online').length,
     warning: servers.filter((server) => server.status === 'warning').length,
     critical: servers.filter((server) => server.status === 'critical').length,
     offline: servers.filter((server) => server.status === 'offline').length,

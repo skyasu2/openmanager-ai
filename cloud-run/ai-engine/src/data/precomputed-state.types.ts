@@ -56,7 +56,7 @@ export interface PrecomputedSlot {
   // 요약 통계
   summary: {
     total: number;
-    healthy: number;
+    online: number;
     warning: number;
     critical: number;
     offline: number;

@@ -12,6 +12,7 @@
 
 import { generateText, type LanguageModel } from 'ai';
 import { logger } from './logger';
+import { getCerebrasModelId } from './config-parser';
 import { getCerebrasModel } from '../services/ai-sdk/model-provider-core';
 import { withTimeout } from './with-timeout';
 
@@ -118,7 +119,7 @@ export function shouldUseHyDE(
 export async function expandQueryWithHyDE(query: string): Promise<string> {
   let model: LanguageModel;
   try {
-    model = getCerebrasModel('gpt-oss-120b');
+    model = getCerebrasModel(getCerebrasModelId());
   } catch {
     logger.warn('[HyDE] Cerebras provider unavailable, returning original query');
     return query;

@@ -8,6 +8,7 @@ import { extractRagSources, extractToolResultOutput, type RagSource } from '../.
 import { getPublicErrorMessage, getPublicErrorResponse } from '../../lib/error-handler';
 import { isTavilyAvailable } from '../../lib/tavily-hybrid-rag';
 import { logger } from '../../lib/logger';
+import { isSingleModeAllowed } from '../../lib/config-parser';
 import { allTools } from '../../tools-ai-sdk';
 import { createSupervisorTrace, finalizeTrace, logGeneration, logToolCall } from '../observability/langfuse';
 import { CircuitOpenError, getCircuitBreaker } from '../resilience/circuit-breaker';
@@ -21,7 +22,17 @@ import {
   type ProviderName,
 } from './model-provider';
 import { createPrepareStep } from './supervisor-routing';
-import { resolveSupervisorMode } from './supervisor-mode';
+import {
+  buildDegradedMetadata,
+  hasMeaningfulMultiAgentOutput,
+  shouldFallbackFromMultiAgentError,
+  type SupervisorDegradedFallbackContext,
+} from './supervisor-multi-fallback';
+import {
+  buildSupervisorModeMetadata,
+  resolveSupervisorModeDecision,
+  type ResolvedSupervisorModeDecision,
+} from './supervisor-mode';
 import {
   buildSupervisorStreamMessages,
   getLastUserQueryText,
@@ -32,30 +43,122 @@ export async function* executeSupervisorStream(
   request: SupervisorRequest
 ): AsyncGenerator<StreamEvent> {
   const startTime = Date.now();
-  const mode = resolveSupervisorMode(request);
+  const modeDecision = resolveSupervisorModeDecision(request);
+  const mode = modeDecision.resolvedMode;
 
-  logger.info(`[SupervisorStream] Mode: ${mode}`);
+  logger.info({
+    sessionId: request.sessionId,
+    requestedMode: modeDecision.requestedMode,
+    resolvedMode: modeDecision.resolvedMode,
+    modeSelectionSource: modeDecision.modeSelectionSource,
+    autoSelectedByComplexity: modeDecision.autoSelectedByComplexity,
+  }, '[SupervisorStream] Mode resolved');
 
   if (mode === 'multi') {
-    yield* executeMultiAgentStream({
-      messages: request.messages,
-      sessionId: request.sessionId,
-      traceId: request.traceId,
-      enableTracing: request.enableTracing,
-      enableWebSearch: request.enableWebSearch,
-      enableRAG: request.enableRAG,
-      images: request.images,
-      files: request.files,
-    });
-    return;
+    try {
+      let emittedMeaningfulOutput = false;
+      for await (const event of executeMultiAgentStream({
+        messages: request.messages,
+        sessionId: request.sessionId,
+        ...buildSupervisorModeMetadata(modeDecision),
+        traceId: request.traceId,
+        enableTracing: request.enableTracing,
+        enableWebSearch: request.enableWebSearch,
+        enableRAG: request.enableRAG,
+        images: request.images,
+        files: request.files,
+      })) {
+        if (event.type === 'error') {
+          const errorData = event.data as { code?: string };
+          if (
+            !emittedMeaningfulOutput &&
+            isSingleModeAllowed() &&
+            shouldFallbackFromMultiAgentError(errorData.code)
+          ) {
+            logger.info(
+              `[SupervisorStream] Falling back to single-agent mode (degraded) after multi-agent error: ${errorData.code}`
+            );
+            yield {
+              type: 'agent_status',
+              data: {
+                status: 'degraded',
+                message: '오케스트레이터 오류로 단일 분석 모드로 전환합니다.',
+              },
+            };
+            yield* streamSingleAgent(request, startTime, {
+              degradedFromMode: 'multi',
+              degradedReason: 'multi_agent_model_unavailable',
+            }, modeDecision);
+            return;
+          }
+        }
+
+        if (hasMeaningfulMultiAgentOutput(event.type)) {
+          emittedMeaningfulOutput = true;
+        }
+
+        if (event.type === 'done') {
+          const doneData = event.data as Record<string, unknown>;
+          const existingMetadata =
+            typeof doneData.metadata === 'object' && doneData.metadata !== null
+              ? (doneData.metadata as Record<string, unknown>)
+              : {};
+          yield {
+            ...event,
+            data: {
+              ...doneData,
+              metadata: {
+                ...existingMetadata,
+                ...buildSupervisorModeMetadata(modeDecision),
+              },
+            },
+          };
+          continue;
+        }
+
+        yield event;
+      }
+      return;
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      logger.error(`❌ [SupervisorStream] Multi-agent error: ${errorMessage}`);
+
+      if (isSingleModeAllowed()) {
+        logger.info('[SupervisorStream] Falling back to single-agent mode (degraded)');
+        yield { 
+          type: 'agent_status', 
+          data: { 
+            status: 'degraded', 
+            message: '오케스트레이터 오류로 단일 분석 모드로 전환합니다.' 
+          } 
+        };
+        yield* streamSingleAgent(request, startTime, {
+          degradedFromMode: 'multi',
+          degradedReason: 'multi_agent_runtime_error',
+        }, modeDecision);
+        return;
+      }
+
+      logger.error('[SupervisorStream] Single-agent fallback NOT allowed. Failing fast.');
+      yield { 
+        type: 'error', 
+        data: { 
+          code: 'MULTI_AGENT_FAILED', 
+          error: errorMessage 
+        } 
+      };
+      return;
+    }
   }
 
-  yield* streamSingleAgent(request, startTime);
+  yield* streamSingleAgent(request, startTime, undefined, modeDecision);
 }
 
 async function* streamSingleAgent(
   request: SupervisorRequest,
-  startTime: number
+  startTime: number,
+  degradedFallbackContext?: SupervisorDegradedFallbackContext,
+  modeDecision?: ResolvedSupervisorModeDecision,
 ): AsyncGenerator<StreamEvent> {
   const hasImages = request.images && request.images.length > 0;
   const excludedProviders: ProviderName[] = [];
@@ -123,8 +226,11 @@ async function* streamSingleAgent(
             stepsExecuted: 0,
             durationMs: Date.now() - startTime,
             mode: 'single',
-            fallback: true,
-            fallbackReason: 'no_provider',
+            ...(modeDecision ? buildSupervisorModeMetadata(modeDecision) : {}),
+            ...buildDegradedMetadata(degradedFallbackContext, {
+              fallback: true,
+              fallbackReason: 'no_provider',
+            }),
           },
         },
       };
@@ -169,6 +275,7 @@ async function* streamSingleAgent(
         mode: 'single',
         query: queryText,
         upstreamTraceId: request.traceId,
+        ...(modeDecision ? buildSupervisorModeMetadata(modeDecision) : {}),
       });
 
       const toolsCalled: string[] = [];
@@ -227,6 +334,8 @@ async function* streamSingleAgent(
               stepsExecuted: finishSteps.length,
               durationMs,
               finishReason,
+              ...(modeDecision ? buildSupervisorModeMetadata(modeDecision) : {}),
+              ...buildDegradedMetadata(degradedFallbackContext, {}),
             });
           }
         },
@@ -322,12 +431,14 @@ async function* streamSingleAgent(
       if (fullText.trim().length === 0 && streamError !== null) {
         const failedError = streamError as Error;
         excludedProviders.push(provider);
-        finalizeTrace(trace, '', false, {
-          toolsCalled,
-          stepsExecuted: steps.length,
-          durationMs: Date.now() - startTime,
-          error: failedError.message,
-        });
+      finalizeTrace(trace, '', false, {
+        toolsCalled,
+        stepsExecuted: steps.length,
+        durationMs: Date.now() - startTime,
+        error: failedError.message,
+        ...(modeDecision ? buildSupervisorModeMetadata(modeDecision) : {}),
+        ...buildDegradedMetadata(degradedFallbackContext, {}),
+      });
 
         if (!hasImages && attempt < MAX_PROVIDER_ATTEMPTS - 1) {
           logger.warn(
@@ -417,6 +528,8 @@ async function* streamSingleAgent(
         stepsExecuted: steps.length,
         durationMs,
         ...(capturedError && { error: capturedError.message }),
+        ...(modeDecision ? buildSupervisorModeMetadata(modeDecision) : {}),
+        ...buildDegradedMetadata(degradedFallbackContext, {}),
       });
 
       logger.info(
@@ -445,6 +558,8 @@ async function* streamSingleAgent(
             durationMs,
             mode: 'single',
             traceId: trace.id,
+            ...(modeDecision ? buildSupervisorModeMetadata(modeDecision) : {}),
+            ...buildDegradedMetadata(degradedFallbackContext, {}),
             ...(attempt > 0 && { providerRetries: attempt }),
           },
           ...(ragSources.length > 0 && { ragSources }),

@@ -6,8 +6,10 @@ import { createOpenAI } from '@ai-sdk/openai';
 import type { LanguageModel } from 'ai';
 import {
   getCerebrasApiKey,
+  getCerebrasModelId,
   getGeminiApiKey,
   getGroqApiKey,
+  getGroqModelId,
   getMistralApiKey,
   getOpenRouterApiKey,
   getOpenRouterVisionFallbackModelIds,
@@ -139,14 +141,14 @@ function asLanguageModel(model: unknown): LanguageModel {
 }
 
 export function getCerebrasModel(
-  modelId: string = 'gpt-oss-120b'
+  modelId: string = getCerebrasModelId()
 ): LanguageModel {
   const cerebras = getCerebrasProvider();
   return asLanguageModel(cerebras(modelId));
 }
 
 export function getGroqModel(
-  modelId: string = 'llama-3.3-70b-versatile'
+  modelId: string = getGroqModelId()
 ): LanguageModel {
   const groq = getGroqProvider();
   return asLanguageModel(groq(modelId));
@@ -159,8 +161,10 @@ export function getMistralModel(
   return asLanguageModel(mistral(modelId));
 }
 
+// gemini-2.5-flash-lite: 사고 토큰 없음(thinking=0), RPD 1,000(flash 500의 2배), RPM 15
+// gemini-2.5-flash: 사고 토큰 소비(~24+/req) → max_tokens 낮으면 content 공백 위험
 export function getGeminiFlashLiteModel(
-  modelId: string = 'gemini-2.5-flash'
+  modelId: string = process.env.GEMINI_VISION_MODEL_ID || 'gemini-2.5-flash-lite'
 ): LanguageModel {
   const gemini = getGeminiProvider();
   return asLanguageModel(gemini(modelId));

@@ -100,11 +100,16 @@ if [ "${FREE_TIER_GUARD_ONLY:-false}" != "true" ]; then
   fi
 fi
 
+# Ensure script directory
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$SCRIPT_DIR"
+
 # Image Tagging (Timestamp + Short SHA)
 TIMESTAMP=$(date +%Y%m%d-%H%M%S)
-SHORT_SHA=$(git rev-parse --short HEAD 2>/dev/null || echo "manual")
+SHORT_SHA=$(git -C "$SCRIPT_DIR" rev-parse --short HEAD 2>/dev/null || echo "manual")
 BUILD_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-APP_VERSION=$(node -p "require('./package.json').version" 2>/dev/null || echo "0.0.0")
+APP_VERSION=$(sed -n 's/^[[:space:]]*"version":[[:space:]]*"\([^"]*\)".*/\1/p' "$SCRIPT_DIR/package.json" | head -n 1)
+APP_VERSION="${APP_VERSION:-0.0.0}"
 TAG="v-${TIMESTAMP}-${SHORT_SHA}"
 # Artifact Registry format: REGION-docker.pkg.dev/PROJECT/REPOSITORY/IMAGE:TAG
 IMAGE_URI="${REGION}-docker.pkg.dev/${PROJECT_ID}/${REPOSITORY}/${SERVICE_NAME}:${TAG}"
@@ -115,11 +120,8 @@ echo "   Project:    $PROJECT_ID"
 echo "   Region:     $REGION"
 echo "   Repository: $REPOSITORY (Artifact Registry)"
 echo "   Image:      $IMAGE_URI"
+echo "   App Version:${APP_VERSION}"
 echo "=============================================================================="
-
-# Ensure script directory
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-cd "$SCRIPT_DIR"
 
 fail_free_tier_guard() {
   echo "❌ [Free Tier Guard] $1"

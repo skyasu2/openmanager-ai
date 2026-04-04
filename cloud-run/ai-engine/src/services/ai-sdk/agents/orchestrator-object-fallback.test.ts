@@ -166,6 +166,7 @@ describe('generateObjectWithFallback', () => {
       {
         excludeProviders: ['cerebras'],
         cbPrefix: 'orchestrator',
+        requiredCapabilities: { requireStructuredOutput: true },
       }
     );
     expect(mockGenerateText).not.toHaveBeenCalled();

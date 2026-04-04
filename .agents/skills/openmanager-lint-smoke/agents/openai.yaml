@@ -1,0 +1,4 @@
+interface:
+  display_name: "OpenManager Lint Smoke"
+  short_description: "Fast lint/type/test smoke workflow"
+  default_prompt: "Use $openmanager-lint-smoke to run quick quality checks before commit."

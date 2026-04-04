@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   buildDeterministicSummaryFallback,
   buildDeterministicSummaryFromCurrentState,
+  isDeterministicSummaryQuery,
 } from './orchestrator-summary-fallback';
 
 describe('buildDeterministicSummaryFallback', () => {
@@ -98,6 +99,40 @@ describe('buildDeterministicSummaryFallback', () => {
     );
 
     expect(summary).toBeNull();
+  });
+
+  it('excludes offline servers from average metrics while preserving offline count', () => {
+    const summary = buildDeterministicSummaryFallback(
+      '현재 모든 서버의 상태를 요약해줘',
+      'NLQ Agent',
+      [
+        {
+          toolName: 'getServerMetrics',
+          result: {
+            servers: [
+              { id: 'web-01', status: 'online', cpu: 40, memory: 60, disk: 30 },
+              { id: 'api-01', status: 'warning', cpu: 60, memory: 40, disk: 50 },
+              { id: 'db-01', status: 'offline', cpu: 0, memory: 0, disk: 0 },
+            ],
+          },
+        },
+      ]
+    );
+
+    expect(summary).toContain('정상 1대, 경고 1대, 비상 0대, 오프라인 1대');
+    expect(summary).toContain('평균 CPU: 50%, 메모리: 50%, 디스크: 40%');
+  });
+
+  it('identifies NLQ summary prompts that must use deterministic output', () => {
+    expect(
+      isDeterministicSummaryQuery('현재 모든 서버의 상태를 요약해줘', 'NLQ Agent')
+    ).toBe(true);
+    expect(
+      isDeterministicSummaryQuery('CPU 높은 서버 찾아줘', 'NLQ Agent')
+    ).toBe(false);
+    expect(
+      isDeterministicSummaryQuery('현재 모든 서버의 상태를 요약해줘', 'Analyst Agent')
+    ).toBe(false);
   });
 
   it('builds deterministic summary from current state when tool results are absent', () => {

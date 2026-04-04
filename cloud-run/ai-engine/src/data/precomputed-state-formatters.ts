@@ -52,7 +52,7 @@ export function buildCompactContext(
     date: state.dateLabel,
     time: state.timeLabel,
     timestamp: state.fullTimestamp,
-    summary: `${state.summary.total}서버: ${state.summary.healthy} healthy, ${state.summary.warning} warning, ${state.summary.critical} critical${
+    summary: `${state.summary.total}서버: ${state.summary.online} online, ${state.summary.warning} warning, ${state.summary.critical} critical${
       state.summary.offline ? `, ${state.summary.offline} offline` : ''
     }`,
     critical,
@@ -111,6 +111,7 @@ export function buildTrendLLMContext(slots: PrecomputedSlot[]): string {
   >();
   for (const slot of slots) {
     for (const server of slot.servers) {
+      if (server.status === 'offline') continue;
       if (!serverTrends.has(server.id)) {
         serverTrends.set(server.id, {
           type: server.type,
@@ -156,7 +157,7 @@ export function buildLLMContext(
   const { summary, alerts, dateLabel, timeLabel } = state;
 
   let context = `## 현재 서버 상태 [${dateLabel} ${timeLabel} KST]\n`;
-  context += `총 ${summary.total}대: ✓${summary.healthy}정상 ⚠${summary.warning}경고 ✗${summary.critical}위험${
+  context += `총 ${summary.total}대: ✓${summary.online}정상 ⚠${summary.warning}경고 ✗${summary.critical}위험${
     summary.offline ? ` ⛔${summary.offline}오프라인` : ''
   }\n`;
   context += `임계값: CPU ${thresholds.cpu.warning}%/${thresholds.cpu.critical}%, Memory ${thresholds.memory.warning}%/${thresholds.memory.critical}%, Disk ${thresholds.disk.warning}%/${thresholds.disk.critical}%\n\n`;

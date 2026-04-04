@@ -14,6 +14,11 @@ export type { ImageAttachment, FileAttachment };
 // ============================================================================
 
 export type SupervisorMode = 'single' | 'multi' | 'auto';
+export type SupervisorModeSelectionSource =
+  | 'explicit'
+  | 'auto_complexity'
+  | 'auto_default'
+  | 'single_disallowed_upgrade';
 
 export interface SupervisorRequest {
   messages: Array<{ role: 'user' | 'assistant'; content: string }>;
@@ -21,8 +26,8 @@ export interface SupervisorRequest {
   enableTracing?: boolean;
   /**
    * Execution mode:
-   * - 'single': Use single-agent with multi-step tool calling (default)
-   * - 'multi': Use multi-agent orchestration with handoffs
+   * - 'multi': Use multi-agent orchestration with handoffs (Standard default)
+   * - 'single': Use single-agent (Restricted, for emergency/degraded ops)
    * - 'auto': Automatically select based on query complexity
    */
   mode?: SupervisorMode;
@@ -80,6 +85,10 @@ export interface SupervisorResponse {
     qualityFlags?: string[];
     latencyTier?: 'fast' | 'normal' | 'slow' | 'very_slow';
     mode?: SupervisorMode;
+    requestedMode?: SupervisorMode;
+    resolvedMode?: Exclude<SupervisorMode, 'auto'>;
+    modeSelectionSource?: SupervisorModeSelectionSource;
+    autoSelectedByComplexity?: Exclude<SupervisorMode, 'auto'>;
     traceId?: string;
     handoffs?: Array<{ from: string; to: string; reason?: string }>;
     finalAgent?: string;
@@ -87,6 +96,10 @@ export interface SupervisorResponse {
     fallback?: boolean;
     /** Fallback 사유 (e.g. 'no_provider', 'circuit_open') */
     fallbackReason?: string;
+    /** 상위 실행 모드에서 강등된 경우의 원래 모드 */
+    degradedFromMode?: 'multi';
+    /** 강등(Degraded)된 직접 원인 */
+    degradedReason?: string;
   };
 }
 

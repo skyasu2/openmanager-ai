@@ -2,13 +2,14 @@
  * AI SDK Model Provider
  *
  * Vercel AI SDK 6 based model provider with quad-provider architecture:
- * - Primary: Cerebras (gpt-oss-120b, 120B MoE, 1M tokens/day, 3000 tok/s)
- * - Fallback: Groq (llama-3.3-70b-versatile, 70B, 100K tokens/day)
+ * - Primary: Groq (llama-4-scout-17b, 500K TPD, 512K ctx, tool calling ✅)
+ * - Secondary: Cerebras (qwen-3-235b, Preview, 1M TPD, 1,400 tok/s, structured-output ✅ / tool loop opt-in)
  * - Last Resort: Mistral (mistral-large-latest, Frontier, ~2 RPM free tier)
- * - Vision: Gemini Flash (1M context, Vision, Search Grounding)
+ * - Vision: Gemini 2.5 Flash-Lite (1M context, 1K RPD, no thinking tokens)
  *
- * @version 4.0.0
- * @updated 2026-02-23 - Cerebras upgraded to gpt-oss-120b (120B MoE, tool calling)
+ * @version 4.1.1
+ * @updated 2026-04-04 - Cerebras tool-calling default를 opt-in으로 전환
+ *                       Vision default를 Gemini 2.5 Flash-Lite로 고정
  */
 
 import type { LanguageModel } from 'ai';
@@ -16,6 +17,8 @@ import { logger } from '../../lib/logger';
 
 // Use centralized config getters (supports AI_PROVIDERS_CONFIG JSON format)
 import {
+  getCerebrasModelId,
+  getGroqModelId,
   getOpenRouterVisionModelId,
 } from '../../lib/config-parser';
 import {
@@ -78,10 +81,11 @@ export function getSupervisorModel(excludeProviders: ProviderName[] = []): {
   provider: ProviderName;
   modelId: string;
 } {
-  const result = selectTextModel('Supervisor', ['cerebras', 'groq', 'mistral'], {
+  const result = selectTextModel('Supervisor', ['groq', 'cerebras', 'mistral'], {
     throwOnEmpty: true,
     excludeProviders,
     cbPrefix: 'supervisor',
+    requiredCapabilities: { requireToolCalling: true },
   });
   // throwOnEmpty guarantees non-null
   return result as { model: LanguageModel; provider: ProviderName; modelId: string };
@@ -89,15 +93,16 @@ export function getSupervisorModel(excludeProviders: ProviderName[] = []): {
 
 /**
  * Get verifier model with 3-way fallback + CB check
- * Cerebras → Groq → Mistral
+ * Groq(llama-4-scout) → Cerebras(qwen-3, Preview) → Mistral
  */
 export function getVerifierModel(): {
   model: LanguageModel;
   provider: ProviderName;
   modelId: string;
 } {
-  const result = selectTextModel('Verifier', ['cerebras', 'groq', 'mistral'], {
+  const result = selectTextModel('Verifier', ['groq', 'cerebras', 'mistral'], {
     throwOnEmpty: true,
+    requiredCapabilities: { requireToolCalling: true },
   });
   return result as { model: LanguageModel; provider: ProviderName; modelId: string };
 }
@@ -106,12 +111,12 @@ export function getVerifierModel(): {
 export { getAdvisorModel } from './agents/config/agent-model-selectors';
 
 /**
- * Get Vision Agent model (Gemini Flash with OpenRouter Fallback)
+ * Get Vision Agent model (Gemini Flash-Lite with OpenRouter fallback)
  *
  * @note Actual agent execution uses agent-configs.ts getVisionModel().
  *       This function is a low-level utility for direct model access.
  *
- * Primary: Gemini 2.5 Flash (1M context, 250 RPD Free Tier)
+ * Primary: Gemini 2.5 Flash-Lite (1M context, 1K RPD, no thinking tokens)
  * Fallback: OpenRouter (nvidia/nemotron-nano-12b-v2-vl:free)
  *
  * @returns Model info or null (graceful degradation)
@@ -127,10 +132,11 @@ export function getVisionAgentModel(): {
   // 1. Try Gemini (Primary)
   if (status.gemini) {
     try {
+      const geminiModelId = process.env.GEMINI_VISION_MODEL_ID || 'gemini-2.5-flash-lite';
       return {
-        model: getGeminiFlashLiteModel('gemini-2.5-flash'),
+        model: getGeminiFlashLiteModel(geminiModelId),
         provider: 'gemini',
-        modelId: 'gemini-2.5-flash',
+        modelId: geminiModelId,
       };
     } catch (error) {
       logger.warn('⚠️ [Vision Agent] Gemini initialization failed, trying OpenRouter:', error);
@@ -273,8 +279,8 @@ export async function getSupervisorModelWithQuota(
   const status = checkProviderStatus();
   const excluded = new Set(excludeProviders);
 
-  // Provider 우선순위 (Cerebras 120B MoE > Groq 70B > Mistral Frontier)
-  const preferredOrder: QuotaProviderName[] = ['cerebras', 'groq', 'mistral'];
+  // Provider 우선순위 (Groq llama-4-scout primary > Cerebras qwen-3 Preview > Mistral)
+  const preferredOrder: QuotaProviderName[] = ['groq', 'cerebras', 'mistral'];
   const availableOrder = preferredOrder.filter(
     (p) => status[p] && !excluded.has(p)
   );
@@ -291,20 +297,24 @@ export async function getSupervisorModelWithQuota(
 
     // Provider별 모델 반환
     switch (provider) {
-      case 'cerebras':
+      case 'cerebras': {
+        const cerebrasModelId = getCerebrasModelId();
         return {
-          model: getCerebrasModel('gpt-oss-120b'),
+          model: getCerebrasModel(cerebrasModelId),
           provider: 'cerebras',
-          modelId: 'gpt-oss-120b',
+          modelId: cerebrasModelId,
           isPreemptiveFallback,
         };
-      case 'groq':
+      }
+      case 'groq': {
+        const groqModelId = getGroqModelId();
         return {
-          model: getGroqModel('llama-3.3-70b-versatile'),
+          model: getGroqModel(groqModelId),
           provider: 'groq',
-          modelId: 'llama-3.3-70b-versatile',
+          modelId: groqModelId,
           isPreemptiveFallback,
         };
+      }
       case 'mistral':
         return {
           model: getMistralModel('mistral-large-latest'),
@@ -337,7 +347,7 @@ export async function recordModelUsage(
   context: string = 'general'
 ): Promise<void> {
   // Track all providers for quota management
-  // Groq has lower limits (100K/day) so tracking is especially important for fallback scenarios
+  // Groq has lower request quota than Cerebras (1K RPD vs 14.4K RPD), so tracking is still important.
   await recordProviderUsage(provider as QuotaProviderName, tokensUsed);
 
   // Enhanced logging with context

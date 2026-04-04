@@ -6,12 +6,13 @@
  * - Vercel에서 프록시를 통해 이 서비스 호출
  * - API 키는 Cloud Run에서만 관리
  *
- * Updated: 2026-02-23 - Migrated from Mistral to Cerebras (gpt-oss-120b)
+ * Updated: 2026-04-03 - Cerebras default model made configurable; verified default moved to qwen
  */
 
 import { generateText, streamText } from 'ai';
 import { createCerebras } from '@ai-sdk/cerebras';
 import { logger } from '../../lib/logger';
+import { getCerebrasModelId } from '../../lib/config-parser';
 
 interface GenerateOptions {
   model?: string;
@@ -34,8 +35,8 @@ interface GenerateResult {
 }
 
 class CloudRunGenerateService {
-  // Use Cerebras gpt-oss-120b for high throughput (3000 tok/s)
-  private readonly DEFAULT_MODEL = 'gpt-oss-120b';
+  // Use the verified-access Cerebras default model unless env overrides it.
+  private readonly DEFAULT_MODEL = getCerebrasModelId();
   private cerebras: ReturnType<typeof createCerebras> | null = null;
 
   // 통계

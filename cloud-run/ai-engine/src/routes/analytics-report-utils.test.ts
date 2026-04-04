@@ -42,7 +42,7 @@ describe('extractToolBasedData', () => {
       hasAnomalies: true,
       anomalyCount: 1,
       affectedServers: ['web-01'],
-      summary: { totalServers: 10, healthyCount: 9, warningCount: 0, criticalCount: 1 },
+      summary: { totalServers: 10, onlineCount: 9, warningCount: 0, criticalCount: 1 },
     };
 
     const result = extractToolBasedData(anomalyData, null, null);
@@ -62,7 +62,7 @@ describe('extractToolBasedData', () => {
       ],
       hasAnomalies: true,
       anomalyCount: 1,
-      summary: { totalServers: 5, healthyCount: 4, warningCount: 1, criticalCount: 0 },
+      summary: { totalServers: 5, onlineCount: 4, warningCount: 1, criticalCount: 0 },
     };
 
     const result = extractToolBasedData(anomalyData, null, null);

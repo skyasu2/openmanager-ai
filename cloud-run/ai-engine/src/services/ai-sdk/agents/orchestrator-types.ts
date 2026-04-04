@@ -5,6 +5,7 @@
  */
 
 import type { ImageAttachment, FileAttachment } from './base-agent';
+import type { SupervisorMode, SupervisorModeSelectionSource } from '../supervisor-types';
 import { TIMEOUT_CONFIG } from '../../../config/timeout-config';
 
 // ============================================================================
@@ -37,6 +38,10 @@ export const ORCHESTRATOR_CONFIG = {
 export interface MultiAgentRequest {
   messages: Array<{ role: 'user' | 'assistant'; content: string }>;
   sessionId: string;
+  requestedMode?: SupervisorMode;
+  resolvedMode?: Exclude<SupervisorMode, 'auto'>;
+  modeSelectionSource?: SupervisorModeSelectionSource;
+  autoSelectedByComplexity?: Exclude<SupervisorMode, 'auto'>;
   /** Upstream trace ID (W3C traceparent에서 추출). Langfuse 연동에 사용. */
   traceId?: string;
   enableTracing?: boolean;
@@ -87,6 +92,8 @@ export interface MultiAgentResponse {
     provider: string;
     modelId: string;
     totalRounds: number;
+    /** 실제 발생한 핸드오프 횟수 (2026-04-04 추가) */
+    handoffCount: number;
     durationMs: number;
     traceId?: string;
     responseChars?: number;

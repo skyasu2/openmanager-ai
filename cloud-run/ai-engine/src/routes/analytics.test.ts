@@ -35,7 +35,7 @@ vi.mock('../tools-ai-sdk', () => ({
         { server_id: 'web-01', server_name: 'web-server-01', metric: 'cpu', value: 95, severity: 'critical' },
       ],
       affectedServers: ['web-01'],
-      summary: { totalServers: 15, healthyCount: 12, warningCount: 2, criticalCount: 1 },
+      summary: { totalServers: 15, onlineCount: 12, warningCount: 2, criticalCount: 1 },
     })),
   },
   predictTrends: {

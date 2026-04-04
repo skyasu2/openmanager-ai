@@ -12,11 +12,20 @@ import { generateText, type LanguageModel } from 'ai';
 import type { ProviderName } from '../ai-sdk/model-provider';
 import { logger } from '../../lib/logger';
 import {
+  getCerebrasModelId,
+  getGroqModelId,
+} from '../../lib/config-parser';
+import {
   getCerebrasModel,
   getGroqModel,
   getMistralModel,
   checkProviderStatus,
 } from '../ai-sdk/model-provider';
+import {
+  getCapabilityMismatchReasons,
+  getTextProviderCapabilities,
+  type TextProviderName,
+} from '../ai-sdk/provider-capabilities';
 import { getCircuitBreaker } from './circuit-breaker';
 
 // ============================================================================
@@ -94,26 +103,26 @@ const RETRY_ERROR_CODES = [
 // ============================================================================
 
 interface ProviderConfig {
-  name: ProviderName;
+  name: TextProviderName;
   getModel: (modelId?: string) => LanguageModel;
-  defaultModelId: string;
+  defaultModelId: () => string;
 }
 
 const PROVIDER_CHAIN: ProviderConfig[] = [
   {
     name: 'cerebras',
     getModel: getCerebrasModel,
-    defaultModelId: 'gpt-oss-120b',
+    defaultModelId: () => getCerebrasModelId(),
   },
   {
     name: 'groq',
     getModel: getGroqModel,
-    defaultModelId: 'llama-3.3-70b-versatile',
+    defaultModelId: () => getGroqModelId(),
   },
   {
     name: 'mistral',
     getModel: getMistralModel,
-    defaultModelId: 'mistral-large-latest',
+    defaultModelId: () => 'mistral-large-latest',
   },
 ];
 
@@ -121,7 +130,7 @@ const PROVIDER_CHAIN: ProviderConfig[] = [
  * Get available providers based on current status
  */
 function getAvailableProviders(
-  preferredOrder: ProviderName[] = ['cerebras', 'groq', 'mistral'],
+  preferredOrder: ProviderName[] = ['groq', 'cerebras', 'mistral'],
   excludeProviders: ProviderName[] = []
 ): ProviderConfig[] {
   const status = checkProviderStatus();
@@ -244,7 +253,7 @@ function shouldRetry(error: unknown): boolean {
  */
 export async function generateTextWithRetry(
   options: GenerateTextOptions,
-  preferredOrder: ProviderName[] = ['cerebras', 'groq', 'mistral'],
+  preferredOrder: ProviderName[] = ['groq', 'cerebras', 'mistral'],
   config: Partial<RetryConfig> = {}
 ): Promise<RetryResult<Awaited<ReturnType<typeof generateText>>>> {
   const fullConfig = { ...DEFAULT_RETRY_CONFIG, ...config };
@@ -274,18 +283,42 @@ export async function generateTextWithRetry(
 
     const providerConfig = availableProviders[0];
     const { name: provider, getModel, defaultModelId } = providerConfig;
+    const modelId = defaultModelId();
 
     let retryCount = 0;
 
     while (retryCount <= fullConfig.maxRetries) {
       const attemptStart = Date.now();
 
+      const capabilityRequirements = options.tools
+        ? { requireToolCalling: true }
+        : {};
+      const capabilityMismatches = getCapabilityMismatchReasons(
+        getTextProviderCapabilities(provider),
+        capabilityRequirements
+      );
+
+      if (capabilityMismatches.length > 0) {
+        attempts.push({
+          provider,
+          modelId,
+          attempt: retryCount + 1,
+          error: `Missing required capabilities: ${capabilityMismatches.join(', ')}`,
+          durationMs: Date.now() - attemptStart,
+        });
+        logger.warn(
+          `[RetryWithFallback] Skipping ${provider}/${modelId}: missing ${capabilityMismatches.join(', ')}`
+        );
+        excludedProviders.push(provider);
+        break;
+      }
+
       try {
         logger.info(
-          `[RetryWithFallback] Trying ${provider}/${defaultModelId} (attempt ${retryCount + 1}/${fullConfig.maxRetries + 1})`
+          `[RetryWithFallback] Trying ${provider}/${modelId} (attempt ${retryCount + 1}/${fullConfig.maxRetries + 1})`
         );
 
-        const model = getModel(defaultModelId);
+        const model = getModel(modelId);
 
         // Create timeout promise (E-2 fix: clearTimeout on resolve)
         let timeoutId: ReturnType<typeof setTimeout>;
@@ -321,7 +354,7 @@ export async function generateTextWithRetry(
 
         attempts.push({
           provider,
-          modelId: defaultModelId,
+            modelId,
           attempt: retryCount + 1,
           durationMs,
         });
@@ -334,7 +367,7 @@ export async function generateTextWithRetry(
           success: true,
           result,
           provider,
-          modelId: defaultModelId,
+          modelId,
           attempts,
           totalDurationMs: Date.now() - startTime,
           usedFallback: excludedProviders.length > 0,
@@ -345,7 +378,7 @@ export async function generateTextWithRetry(
 
         attempts.push({
           provider,
-          modelId: defaultModelId,
+          modelId,
           attempt: retryCount + 1,
           error: errorMessage,
           durationMs,

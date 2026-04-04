@@ -318,30 +318,20 @@ export const detectAnomalies = tool({
 
           // Calculate system-wide summary (all servers)
           const allServers = state.servers;
-          let healthyCount = 0;
+          let onlineCount = 0;
           let warningCount = 0;
           let criticalCount = 0;
+          let offlineCount = 0;
 
           for (const srv of allServers) {
-            const srvCpu = srv.cpu as number;
-            const srvMemory = srv.memory as number;
-            const srvDisk = srv.disk as number;
-
-            const isCriticalSrv =
-              srvCpu >= STATUS_THRESHOLDS.cpu.critical ||
-              srvMemory >= STATUS_THRESHOLDS.memory.critical ||
-              srvDisk >= STATUS_THRESHOLDS.disk.critical;
-            const isWarningSrv =
-              srvCpu >= STATUS_THRESHOLDS.cpu.warning ||
-              srvMemory >= STATUS_THRESHOLDS.memory.warning ||
-              srvDisk >= STATUS_THRESHOLDS.disk.warning;
-
-            if (isCriticalSrv) {
+            if (srv.status === 'critical') {
               criticalCount++;
-            } else if (isWarningSrv) {
+            } else if (srv.status === 'warning') {
               warningCount++;
+            } else if (srv.status === 'offline') {
+              offlineCount++;
             } else {
-              healthyCount++;
+              onlineCount++;
             }
           }
 
@@ -367,9 +357,10 @@ export const detectAnomalies = tool({
               : `${analyzedServer.name}: 정상 (이상 없음)`,
             summary: {
               totalServers: allServers.length,
-              healthyCount,
+              onlineCount,
               warningCount,
               criticalCount,
+              offlineCount,
             },
             timestamp: new Date().toISOString(),
             _algorithm: 'Threshold + Statistical + Enhanced Metrics',

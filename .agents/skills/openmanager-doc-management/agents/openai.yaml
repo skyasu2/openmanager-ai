@@ -1,0 +1,4 @@
+interface:
+  display_name: "OpenManager Doc Management"
+  short_description: "Documentation budget enforcement and cleanup"
+  default_prompt: "Use $openmanager-doc-management to check doc budget before creating new documentation."

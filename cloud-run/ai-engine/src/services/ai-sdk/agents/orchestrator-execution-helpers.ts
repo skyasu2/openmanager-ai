@@ -74,6 +74,7 @@ export function buildFastPathResponse(
       provider: 'rule-based',
       modelId: 'prefilter',
       totalRounds: 1,
+      handoffCount: 0,
       durationMs,
       responseChars: quality.responseChars,
       formatCompliance: quality.formatCompliance,

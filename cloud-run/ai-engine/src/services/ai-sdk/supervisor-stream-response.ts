@@ -13,8 +13,11 @@ import {
   generateId,
 } from 'ai';
 
-import type { SupervisorRequest, SupervisorMode } from './supervisor-types';
-import { resolveSupervisorMode } from './supervisor-mode';
+import type { SupervisorRequest } from './supervisor-types';
+import {
+  buildSupervisorModeMetadata,
+  resolveSupervisorModeDecision,
+} from './supervisor-mode';
 import { executeSupervisorStream } from './supervisor-single-agent';
 import { getPublicErrorResponse, sanitizeErrorData } from '../../lib/error-handler';
 import { logger } from '../../lib/logger';
@@ -192,14 +195,17 @@ export function createSupervisorStreamResponse(
           },
         });
 
-        const mode: SupervisorMode = resolveSupervisorMode(request);
+        const modeDecision = resolveSupervisorModeDecision(request);
 
         writer.write({
           type: 'data-mode',
-          data: { mode },
+          data: {
+            mode: modeDecision.resolvedMode,
+            ...buildSupervisorModeMetadata(modeDecision),
+          },
         });
 
-        for await (const event of executeSupervisorStream({ ...request, mode })) {
+        for await (const event of executeSupervisorStream(request)) {
           switch (event.type) {
             case 'text_delta':
               if (!textPartStarted) {
