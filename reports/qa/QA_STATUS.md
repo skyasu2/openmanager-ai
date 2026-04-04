@@ -1,15 +1,15 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-04-04 22:06:26 KST
+> Generated at: 2026-04-04 22:21:42 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 217 |
-| Total Checks | 1622 |
-| Passed | 1552 |
+| Total Runs | 218 |
+| Total Checks | 1638 |
+| Passed | 1568 |
 | Failed | 64 |
 | Completed Items | 274 |
 | Pending Items | 0 |
@@ -18,46 +18,52 @@
 | Expert Domains Tracked | 6 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260404-0224 (2026-04-04T13:06:03.179Z) |
-| Latest Recorded Run | QA-20260404-0224 (2026-04-04T13:06:03.179Z) |
+| Last Counted Run | QA-20260404-0225 (2026-04-04T13:21:41.671Z) |
+| Latest Recorded Run | QA-20260404-0225 (2026-04-04T13:21:41.671Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260404-0224 (2026-04-04T13:06:03.179Z)
+Latest run: QA-20260404-0225 (2026-04-04T13:21:41.671Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
 | AI Quality Assurance Specialist | appropriate | no | - |
-| IT Monitoring & Observability SME | appropriate | no | - |
+| DevOps / SRE Engineer | appropriate | no | - |
+| Test Automation Architect | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Production parity QA 이후 billed 0.0000 USD, effective 1.9605 USD, unexpected billed spike 없음 |
+| vercel | cli | checked | normal | Broad release QA 이후 billed 0.0000 USD, effective 1.9605 USD, unexpected billed spike 없음 |
 
 ## Coverage (Latest Run)
 
-- Scope: targeted
-- Release-Facing: no
+- Scope: broad
+- Release-Facing: yes
 - Counts Toward Summary: yes
-- Deployment: SHA a9d9ce01
-- Coverage Packs: dashboard-core, ai-core
-- Covered Surfaces: /login, /system-boot, /dashboard, AI sidebar, AI chat streaming, dashboard summary counters (15/14/1/0/0), dashboard system resources (CPU 35%, Memory 49%, Disk 32%), AI summary parity response (15/14/1/0/0, 35/49/32), AI summary warning focus (lb-haproxy-dc1-01 CPU 72%)
-- Skipped Surfaces: /, /dashboard/ai-assistant, active alerts modal, topology modal, server detail tabs, reporter workflow, analyst workflow, feedback flow, /api/health, /api/version, Cloud Run /monitoring, Cloud Run /monitoring/traces
+- Deployment: dpl_RMZadPVLmjXrbdkkQTwRpFTx6nv4 / SHA fc725862
+- Coverage Packs: core-routes-smoke, dashboard-core, ai-core
+- Covered Surfaces: /, /login, 404 route (/qa-not-found-check-20260404), /api/health (200), /api/version (200), guest PIN login (4231), /system-boot -> /dashboard redirect, dashboard render (15 total / 14 online / 1 warning / 0 critical / 0 offline), server detail modal open, server detail tab switch (종합 상황 -> 성능 분석 -> 로그 & 네트워크), server detail modal ESC close, AI sidebar open/close path, AI starter prompt send + streaming response, AI summary parity (15/14/1/0/0, CPU 36%/MEM 48%/Disk 32%), POST /api/ai/supervisor/stream/v2 status 200, X-AI-Latency-Ms header proof on stream route
+- Skipped Surfaces: /dashboard/ai-assistant, active alerts modal, topology modal, log explorer modal, analyst workflow, reporter workflow, feedback flow, /auth/error, /auth/success, /privacy, Cloud Run /monitoring, Cloud Run /monitoring/traces, security blocked-prompt regression pack
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
 | general | Vercel production | [link](https://openmanager-ai.vercel.app/) | - |
+| vercel-deployment | Vercel deployment inspector | [link](https://vercel.com/skyasus-projects/openmanager-ai/RMZadPVLmjXrbdkkQTwRpFTx6nv4) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | Dashboard parity baseline after fix | `qa-20260404-vercel-parity-after-fix-dashboard.png` | - |
-| playwright-screenshot | AI summary parity response after fix | `qa-20260404-vercel-parity-after-fix-ai-summary.png` | - |
+| playwright-screenshot | Landing page | `qa-20260404-broad-release-landing.png` | - |
+| playwright-screenshot | Login page | `qa-20260404-broad-release-login.png` | - |
+| playwright-screenshot | 404 route check | `qa-20260404-broad-release-404.png` | - |
+| playwright-screenshot | Dashboard core | `qa-20260404-broad-release-dashboard.png` | - |
+| playwright-screenshot | AI sidebar parity response | `qa-20260404-broad-release-ai-summary.png` | - |
+| playwright-console | Browser console errors | `qa-20260404-broad-release-console-errors.log` | - |
 
 ## Expert Domain Open Gaps
 
@@ -382,6 +388,7 @@ Latest run: QA-20260404-0224 (2026-04-04T13:06:03.179Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260404-0225 | 2026-04-04T13:21:41.671Z | broad | yes | yes | Vercel Production Broad Release QA - core routes, dashboard modal tabs, and AI streaming parity | 16 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260404-0224 | 2026-04-04T13:06:03.179Z | targeted | no | yes | Vercel Playwright QA - dashboard/AI parity confirmation after deterministic summary fallback patch | 9 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260404-0223 | 2026-04-04T11:06:01.219Z | targeted | no | yes | Vercel Playwright QA - dashboard/AI parity rerun after ai-engine parity patch | 9 | 0 | 1 | 0 | 0 | 2 |
 | QA-20260404-0222 | 2026-04-04T09:17:33.588Z | broad | no | yes | Vercel Playwright QA - dashboard, AI assistant, and monitoring parity check | 13 | 0 | 1 | 0 | 1 | 2 |
@@ -401,5 +408,4 @@ Latest run: QA-20260404-0224 (2026-04-04T13:06:03.179Z)
 | QA-20260402-0208 | 2026-04-02T01:45:03.294Z | broad | yes | yes | Vercel production broad release-facing QA - v8.10.8 core routes, dashboard, AI | 18 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260402-0207 | 2026-04-02T01:12:12.154Z | targeted | no | yes | Vercel production targeted smoke - landing bootstrap copy hidden after deploy | 4 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260402-0206 | 2026-04-01T22:52:39.393Z | targeted | no | yes | Local dev targeted QA - landing bootstrap auth copy hidden | 3 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260402-0205 | 2026-04-01T22:35:47.941Z | targeted | no | yes | Vercel production targeted smoke - post deploy verification for cd763e634 | 6 | 0 | 0 | 0 | 0 | 0 |
 

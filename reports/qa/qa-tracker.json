@@ -2,15 +2,15 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-04T13:06:03.179Z"
+    "updatedAt": "2026-04-04T13:21:41.671Z"
   },
   "sequence": {
-    "nextRunNumber": 225
+    "nextRunNumber": 226
   },
   "summary": {
-    "totalRuns": 217,
-    "totalChecks": 1622,
-    "totalPassed": 1552,
+    "totalRuns": 218,
+    "totalChecks": 1638,
+    "totalPassed": 1568,
     "totalFailed": 64,
     "completionRate": 100,
     "completedItems": 274,
@@ -19,10 +19,10 @@
     "wontFixItems": 14,
     "expertDomainsTracked": 6,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260404-0224",
-    "lastRecordedAt": "2026-04-04T13:06:03.179Z",
-    "latestRecordedRunId": "QA-20260404-0224",
-    "latestRecordedAt": "2026-04-04T13:06:03.179Z"
+    "lastRunId": "QA-20260404-0225",
+    "lastRecordedAt": "2026-04-04T13:21:41.671Z",
+    "latestRecordedRunId": "QA-20260404-0225",
+    "latestRecordedAt": "2026-04-04T13:21:41.671Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -19211,6 +19211,155 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260404-0225",
+      "recordedAt": "2026-04-04T13:21:41.671Z",
+      "recordedAtKst": "2026-04-04 22:21:41 KST",
+      "title": "Vercel Production Broad Release QA - core routes, dashboard modal tabs, and AI streaming parity",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260404-0225.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_RMZadPVLmjXrbdkkQTwRpFTx6nv4",
+        "deploymentUrl": "https://openmanager-hmajzwc80-skyasus-projects.vercel.app",
+        "commitSha": "fc725862173d9763c17b3486d895f3591dc7e9bc"
+      },
+      "scope": "broad",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": ["core-routes-smoke", "dashboard-core", "ai-core"],
+      "coveredSurfaces": [
+        "/",
+        "/login",
+        "404 route (/qa-not-found-check-20260404)",
+        "/api/health (200)",
+        "/api/version (200)",
+        "guest PIN login (4231)",
+        "/system-boot -> /dashboard redirect",
+        "dashboard render (15 total / 14 online / 1 warning / 0 critical / 0 offline)",
+        "server detail modal open",
+        "server detail tab switch (종합 상황 -> 성능 분석 -> 로그 & 네트워크)",
+        "server detail modal ESC close",
+        "AI sidebar open/close path",
+        "AI starter prompt send + streaming response",
+        "AI summary parity (15/14/1/0/0, CPU 36%/MEM 48%/Disk 32%)",
+        "POST /api/ai/supervisor/stream/v2 status 200",
+        "X-AI-Latency-Ms header proof on stream route"
+      ],
+      "skippedSurfaces": [
+        "/dashboard/ai-assistant",
+        "active alerts modal",
+        "topology modal",
+        "log explorer modal",
+        "analyst workflow",
+        "reporter workflow",
+        "feedback flow",
+        "/auth/error",
+        "/auth/success",
+        "/privacy",
+        "Cloud Run /monitoring",
+        "Cloud Run /monitoring/traces",
+        "security blocked-prompt regression pack"
+      ],
+      "checks": {
+        "total": 16,
+        "passed": 16,
+        "failed": 0
+      },
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "대표 사용자 질의(서버 상태 요약)에서 streaming 응답과 dashboard 수치 정합성을 production에서 확인했습니다.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "core route smoke, guest auth, boot redirect, API health/version, console error 0 확인으로 release-facing 운영 경로가 안정적입니다.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "브라우저 기반 시나리오와 API header proof를 함께 수집해 회귀 검증 증거를 구조화했습니다.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-04-04T22:20:36+09:00",
+          "summary": "Broad release QA 이후 billed 0.0000 USD, effective 1.9605 USD, unexpected billed spike 없음",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "Landing page",
+          "path": "qa-20260404-broad-release-landing.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Login page",
+          "path": "qa-20260404-broad-release-login.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "404 route check",
+          "path": "qa-20260404-broad-release-404.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Dashboard core",
+          "path": "qa-20260404-broad-release-dashboard.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "AI sidebar parity response",
+          "path": "qa-20260404-broad-release-ai-summary.png"
+        },
+        {
+          "type": "playwright-console",
+          "label": "Browser console errors",
+          "path": "qa-20260404-broad-release-console-errors.log"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "Vercel production",
+          "url": "https://openmanager-ai.vercel.app/"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Vercel deployment inspector",
+          "url": "https://vercel.com/skyasus-projects/openmanager-ai/RMZadPVLmjXrbdkkQTwRpFTx6nv4"
+        }
+      ],
+      "expertCount": 3,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -19219,16 +19368,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 109,
-      "appropriateCount": 105,
+      "seenCount": 110,
+      "appropriateCount": 106,
       "partialCount": 4,
       "inappropriateCount": 0,
       "improvementNeededCount": 14,
-      "lastRunId": "QA-20260404-0224",
-      "lastSeenAt": "2026-04-04T13:06:03.179Z",
+      "lastRunId": "QA-20260404-0225",
+      "lastSeenAt": "2026-04-04T13:21:41.671Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "동일 질문에서 AI summary가 dashboard summary counts/resources와 일치함을 production Playwright로 재확인했습니다.",
+      "lastRationale": "대표 사용자 질의(서버 상태 요약)에서 streaming 응답과 dashboard 수치 정합성을 production에서 확인했습니다.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -19270,16 +19419,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 62,
-      "appropriateCount": 59,
+      "seenCount": 63,
+      "appropriateCount": 60,
       "partialCount": 3,
       "inappropriateCount": 0,
       "improvementNeededCount": 7,
-      "lastRunId": "QA-20260402-0217",
-      "lastSeenAt": "2026-04-02T14:54:37.522Z",
+      "lastRunId": "QA-20260404-0225",
+      "lastSeenAt": "2026-04-04T13:21:41.671Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "API healthy. 콘솔 에러 0건. 모달 열기/닫기/포커스 복귀 모두 정상. 아키텍처 다이어그램 ReactFlow 2개 모두 렌더링 성공.",
+      "lastRationale": "core route smoke, guest auth, boot redirect, API health/version, console error 0 확인으로 release-facing 운영 경로가 안정적입니다.",
       "lastNextAction": ""
     },
     "test-automation": {
@@ -19287,16 +19436,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 95,
-      "appropriateCount": 88,
+      "seenCount": 96,
+      "appropriateCount": 89,
       "partialCount": 7,
       "inappropriateCount": 0,
       "improvementNeededCount": 9,
-      "lastRunId": "QA-20260402-0211",
-      "lastSeenAt": "2026-04-02T06:04:27.210Z",
+      "lastRunId": "QA-20260404-0225",
+      "lastSeenAt": "2026-04-04T13:21:41.671Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "A dedicated unit test now fixes the empty-billing-period interpretation path so future production QA runs do not regress to failed/unknown without cause.",
+      "lastRationale": "브라우저 기반 시나리오와 API header proof를 함께 수집해 회귀 검증 증거를 구조화했습니다.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {

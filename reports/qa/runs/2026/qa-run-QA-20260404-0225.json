@@ -1,0 +1,153 @@
+{
+  "runId": "QA-20260404-0225",
+  "recordedAt": "2026-04-04T13:21:41.671Z",
+  "recordedAtKst": "2026-04-04 22:21:41 KST",
+  "runTitle": "Vercel Production Broad Release QA - core routes, dashboard modal tabs, and AI streaming parity",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_RMZadPVLmjXrbdkkQTwRpFTx6nv4",
+    "deploymentUrl": "https://openmanager-hmajzwc80-skyasus-projects.vercel.app",
+    "commitSha": "fc725862173d9763c17b3486d895f3591dc7e9bc"
+  },
+  "scope": "broad",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": ["core-routes-smoke", "dashboard-core", "ai-core"],
+  "coveredSurfaces": [
+    "/",
+    "/login",
+    "404 route (/qa-not-found-check-20260404)",
+    "/api/health (200)",
+    "/api/version (200)",
+    "guest PIN login (4231)",
+    "/system-boot -> /dashboard redirect",
+    "dashboard render (15 total / 14 online / 1 warning / 0 critical / 0 offline)",
+    "server detail modal open",
+    "server detail tab switch (종합 상황 -> 성능 분석 -> 로그 & 네트워크)",
+    "server detail modal ESC close",
+    "AI sidebar open/close path",
+    "AI starter prompt send + streaming response",
+    "AI summary parity (15/14/1/0/0, CPU 36%/MEM 48%/Disk 32%)",
+    "POST /api/ai/supervisor/stream/v2 status 200",
+    "X-AI-Latency-Ms header proof on stream route"
+  ],
+  "skippedSurfaces": [
+    "/dashboard/ai-assistant",
+    "active alerts modal",
+    "topology modal",
+    "log explorer modal",
+    "analyst workflow",
+    "reporter workflow",
+    "feedback flow",
+    "/auth/error",
+    "/auth/success",
+    "/privacy",
+    "Cloud Run /monitoring",
+    "Cloud Run /monitoring/traces",
+    "security blocked-prompt regression pack"
+  ],
+  "checks": {
+    "total": 16,
+    "passed": 16,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "대표 사용자 질의(서버 상태 요약)에서 streaming 응답과 dashboard 수치 정합성을 production에서 확인했습니다.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "core route smoke, guest auth, boot redirect, API health/version, console error 0 확인으로 release-facing 운영 경로가 안정적입니다.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "브라우저 기반 시나리오와 API header proof를 함께 수집해 회귀 검증 증거를 구조화했습니다.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-04-04T22:20:36+09:00",
+      "summary": "Broad release QA 이후 billed 0.0000 USD, effective 1.9605 USD, unexpected billed spike 없음",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "Landing page",
+      "path": "qa-20260404-broad-release-landing.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Login page",
+      "path": "qa-20260404-broad-release-login.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "404 route check",
+      "path": "qa-20260404-broad-release-404.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Dashboard core",
+      "path": "qa-20260404-broad-release-dashboard.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "AI sidebar parity response",
+      "path": "qa-20260404-broad-release-ai-summary.png"
+    },
+    {
+      "type": "playwright-console",
+      "label": "Browser console errors",
+      "path": "qa-20260404-broad-release-console-errors.log"
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "404 route validation returned expected NOT_FOUND_404 page and did not affect core route console cleanliness check.",
+    "Core route session (login -> dashboard -> AI) console error count was 0.",
+    "POST /api/ai/supervisor/stream/v2 via Playwright request API returned 200 with content-type text/event-stream and x-ai-latency-ms=237.",
+    "dashboard data slot label observed: Synthetic OTel snapshot · 22:10 KST (slot 133/143).",
+    "AI summary matched dashboard counts/resources in the same session (15/14/1/0/0 and 36/48/32)."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Vercel production",
+      "url": "https://openmanager-ai.vercel.app/"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Vercel deployment inspector",
+      "url": "https://vercel.com/skyasus-projects/openmanager-ai/RMZadPVLmjXrbdkkQTwRpFTx6nv4"
+    }
+  ]
+}
