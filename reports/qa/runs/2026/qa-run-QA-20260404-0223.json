@@ -1,0 +1,132 @@
+{
+  "runId": "QA-20260404-0223",
+  "recordedAt": "2026-04-04T11:06:01.219Z",
+  "recordedAtKst": "2026-04-04 20:06:01 KST",
+  "runTitle": "Vercel Playwright QA - dashboard/AI parity rerun after ai-engine parity patch",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "6130ac9c117f1ba6430d15fbb17288ec12c626b2"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": true,
+  "coveragePacks": ["dashboard-core", "ai-core", "observability-pack"],
+  "coveredSurfaces": [
+    "/login",
+    "/system-boot",
+    "/dashboard",
+    "AI sidebar",
+    "AI chat streaming",
+    "/api/version",
+    "Cloud Run /health",
+    "Cloud Run /monitoring (unauth)"
+  ],
+  "skippedSurfaces": [
+    "/",
+    "/dashboard/ai-assistant",
+    "active alerts modal",
+    "reporter workflow",
+    "analyst workflow",
+    "feedback flow",
+    "Cloud Run /monitoring/traces"
+  ],
+  "checks": {
+    "total": 9,
+    "passed": 8,
+    "failed": 1
+  },
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": true,
+      "rationale": "배포 후 동일 질문에서 dashboard counts와 AI assistant summary가 다시 불일치했으므로 AI 품질 회귀가 직접 범위입니다.",
+      "nextAction": "AI sidebar/streaming summary 경로가 MetricsProvider와 동일한 status/average 기준선을 사용하도록 응답 생성 경로를 추적합니다."
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "appropriate",
+      "improvementNeeded": true,
+      "rationale": "Cloud Run health는 정상이고 배포도 성공했지만 사용자-facing system summary가 운영 지표와 다르면 관측 결과를 신뢰할 수 없습니다.",
+      "nextAction": "stream/v2 최종 응답이 precomputed state summary와 어떤 경로에서 어긋나는지 trace/formatter 기준으로 재추적합니다."
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-04-04T20:02:00+09:00",
+      "summary": "Production targeted QA 이후 billed 0.0000 USD, effective 1.9605 USD, unexpected billed spike 없음",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "Dashboard and AI sidebar parity rerun",
+      "path": "qa-20260404-vercel-parity-regression-rerun.png"
+    },
+    {
+      "type": "playwright-console",
+      "label": "Playwright browser console log",
+      "path": ".playwright-mcp/screenshots/console-2026-04-04T20-04-parity-rerun.log"
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [
+    {
+      "id": "ai-summary-dashboard-parity-regression",
+      "title": "AI assistant summary must match dashboard and OTel-derived system counts",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "Commit 6130ac9c1 배포 후에도 dashboard는 online 14/offline 0, averages 35/47/32인데 AI sidebar는 online 13/offline 1, averages 32.5/44.1/31.6으로 응답했습니다.",
+      "owner": "",
+      "status": "pending",
+      "policyNote": ""
+    }
+  ],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "GitLab pipeline #147 (2429616075) finished success: validate_ai_engine, deploy_ai_engine, post_deploy_ai_engine_smoke all passed.",
+    "Vercel /api/version and Cloud Run /health both reported version 8.10.8 during this rerun.",
+    "Guest login with PIN 4231, system boot, and dashboard render all succeeded on production.",
+    "Dashboard counters showed total 15, online 14, warning 1, critical 0, offline 0 with system resource averages CPU 35%, memory 47%, disk 32%.",
+    "AI sidebar response to '현재 모든 서버의 상태를 요약해줘' still reported online 13, warning 1, critical 0, offline 1 and lower averages 32.5/44.1/31.6.",
+    "Cloud Run /monitoring and /monitoring/traces now require authentication; unauthenticated curl returned the expected auth error envelope.",
+    "This rerun confirms the issue is not a stale deployment problem but a remaining parity bug in the AI summary path."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Cloud Run health",
+      "url": "https://ai-engine-490817238363.asia-northeast1.run.app/health"
+    },
+    {
+      "type": "general",
+      "label": "GitLab pipeline #147",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2429616075"
+    },
+    {
+      "type": "general",
+      "label": "Vercel production",
+      "url": "https://openmanager-ai.vercel.app/"
+    }
+  ]
+}

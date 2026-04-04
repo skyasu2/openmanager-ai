@@ -2,16 +2,16 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-04T09:17:33.588Z"
+    "updatedAt": "2026-04-04T11:06:01.219Z"
   },
   "sequence": {
-    "nextRunNumber": 223
+    "nextRunNumber": 224
   },
   "summary": {
-    "totalRuns": 215,
-    "totalChecks": 1604,
-    "totalPassed": 1535,
-    "totalFailed": 63,
+    "totalRuns": 216,
+    "totalChecks": 1613,
+    "totalPassed": 1543,
+    "totalFailed": 64,
     "completionRate": 99.64,
     "completedItems": 273,
     "pendingItems": 1,
@@ -19,10 +19,10 @@
     "wontFixItems": 14,
     "expertDomainsTracked": 6,
     "expertDomainsOpenGaps": 2,
-    "lastRunId": "QA-20260404-0222",
-    "lastRecordedAt": "2026-04-04T09:17:33.588Z",
-    "latestRecordedRunId": "QA-20260404-0222",
-    "latestRecordedAt": "2026-04-04T09:17:33.588Z"
+    "lastRunId": "QA-20260404-0223",
+    "lastRecordedAt": "2026-04-04T11:06:01.219Z",
+    "latestRecordedRunId": "QA-20260404-0223",
+    "latestRecordedAt": "2026-04-04T11:06:01.219Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -6583,22 +6583,22 @@
       "status": "pending",
       "firstSeenRunId": "QA-20260404-0222",
       "firstSeenAt": "2026-04-04T09:17:33.588Z",
-      "lastSeenRunId": "QA-20260404-0222",
-      "lastSeenAt": "2026-04-04T09:17:33.588Z",
-      "seenCount": 1,
+      "lastSeenRunId": "QA-20260404-0223",
+      "lastSeenAt": "2026-04-04T11:06:01.219Z",
+      "seenCount": 2,
       "completedCount": 0,
-      "pendingCount": 1,
+      "pendingCount": 2,
       "deferredCount": 0,
       "wontFixCount": 0,
       "aliases": [],
       "owner": "",
       "lastEvidence": "",
-      "lastNote": "Browser chat returned offline 1 / online 13 while dashboard, server-data, and MetricsProvider all indicate offline 0 / online 14.",
+      "lastNote": "Commit 6130ac9c1 배포 후에도 dashboard는 online 14/offline 0, averages 35/47/32인데 AI sidebar는 online 13/offline 1, averages 32.5/44.1/31.6으로 응답했습니다.",
       "isBlocking": true,
       "isBlockingExplicit": true,
       "overengineeringScope": "",
       "lastPolicyNote": "",
-      "lastStatusChangeAt": "2026-04-04T09:17:33.588Z"
+      "lastStatusChangeAt": "2026-04-04T11:06:01.219Z"
     },
     "ai-provider-copy-policy-drift": {
       "id": "ai-provider-copy-policy-drift",
@@ -18991,6 +18991,118 @@
       "pendingCount": 1,
       "deferredCount": 0,
       "wontFixCount": 1
+    },
+    {
+      "runId": "QA-20260404-0223",
+      "recordedAt": "2026-04-04T11:06:01.219Z",
+      "recordedAtKst": "2026-04-04 20:06:01 KST",
+      "title": "Vercel Playwright QA - dashboard/AI parity rerun after ai-engine parity patch",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260404-0223.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "6130ac9c117f1ba6430d15fbb17288ec12c626b2"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": true,
+      "coveragePacks": ["dashboard-core", "ai-core", "observability-pack"],
+      "coveredSurfaces": [
+        "/login",
+        "/system-boot",
+        "/dashboard",
+        "AI sidebar",
+        "AI chat streaming",
+        "/api/version",
+        "Cloud Run /health",
+        "Cloud Run /monitoring (unauth)"
+      ],
+      "skippedSurfaces": [
+        "/",
+        "/dashboard/ai-assistant",
+        "active alerts modal",
+        "reporter workflow",
+        "analyst workflow",
+        "feedback flow",
+        "Cloud Run /monitoring/traces"
+      ],
+      "checks": {
+        "total": 9,
+        "passed": 8,
+        "failed": 1
+      },
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": true,
+          "rationale": "배포 후 동일 질문에서 dashboard counts와 AI assistant summary가 다시 불일치했으므로 AI 품질 회귀가 직접 범위입니다.",
+          "nextAction": "AI sidebar/streaming summary 경로가 MetricsProvider와 동일한 status/average 기준선을 사용하도록 응답 생성 경로를 추적합니다."
+        },
+        {
+          "domainId": "observability-monitoring",
+          "domainName": "IT Monitoring & Observability SME",
+          "fit": "appropriate",
+          "improvementNeeded": true,
+          "rationale": "Cloud Run health는 정상이고 배포도 성공했지만 사용자-facing system summary가 운영 지표와 다르면 관측 결과를 신뢰할 수 없습니다.",
+          "nextAction": "stream/v2 최종 응답이 precomputed state summary와 어떤 경로에서 어긋나는지 trace/formatter 기준으로 재추적합니다."
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-04-04T20:02:00+09:00",
+          "summary": "Production targeted QA 이후 billed 0.0000 USD, effective 1.9605 USD, unexpected billed spike 없음",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "Dashboard and AI sidebar parity rerun",
+          "path": "qa-20260404-vercel-parity-regression-rerun.png"
+        },
+        {
+          "type": "playwright-console",
+          "label": "Playwright browser console log",
+          "path": ".playwright-mcp/screenshots/console-2026-04-04T20-04-parity-rerun.log"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "Cloud Run health",
+          "url": "https://ai-engine-490817238363.asia-northeast1.run.app/health"
+        },
+        {
+          "type": "general",
+          "label": "GitLab pipeline #147",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2429616075"
+        },
+        {
+          "type": "general",
+          "label": "Vercel production",
+          "url": "https://openmanager-ai.vercel.app/"
+        }
+      ],
+      "expertCount": 2,
+      "expertNeedsImprovementCount": 2,
+      "completedCount": 0,
+      "pendingCount": 1,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -18999,34 +19111,34 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 107,
-      "appropriateCount": 103,
+      "seenCount": 108,
+      "appropriateCount": 104,
       "partialCount": 4,
       "inappropriateCount": 0,
-      "improvementNeededCount": 13,
-      "lastRunId": "QA-20260404-0222",
-      "lastSeenAt": "2026-04-04T09:17:33.588Z",
+      "improvementNeededCount": 14,
+      "lastRunId": "QA-20260404-0223",
+      "lastSeenAt": "2026-04-04T11:06:01.219Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": true,
-      "lastRationale": "대시보드 수치와 AI assistant 요약의 정합성을 검증하는 run이므로 AI 품질 평가가 직접 관련됩니다.",
-      "lastNextAction": "AI summary 생성 경로가 dashboard/OTel-derived system summary와 같은 기준선을 사용하도록 parity regression 원인을 추적합니다."
+      "lastRationale": "배포 후 동일 질문에서 dashboard counts와 AI assistant summary가 다시 불일치했으므로 AI 품질 회귀가 직접 범위입니다.",
+      "lastNextAction": "AI sidebar/streaming summary 경로가 MetricsProvider와 동일한 status/average 기준선을 사용하도록 응답 생성 경로를 추적합니다."
     },
     "observability-monitoring": {
       "domainId": "observability-monitoring",
       "domainName": "IT Monitoring & Observability SME",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 68,
-      "appropriateCount": 43,
+      "seenCount": 69,
+      "appropriateCount": 44,
       "partialCount": 25,
       "inappropriateCount": 0,
-      "improvementNeededCount": 25,
-      "lastRunId": "QA-20260404-0222",
-      "lastSeenAt": "2026-04-04T09:17:33.588Z",
+      "improvementNeededCount": 26,
+      "lastRunId": "QA-20260404-0223",
+      "lastSeenAt": "2026-04-04T11:06:01.219Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": true,
-      "lastRationale": "Cloud Run monitoring health와 trace retrieval은 정상이나, 사용자-facing 요약이 운영 지표와 다르면 관측 결과 신뢰성이 떨어집니다.",
-      "lastNextAction": "AI summary 응답과 MetricsProvider/system summary의 수치 차이를 재현 가능한 회귀 테스트로 고정합니다."
+      "lastRationale": "Cloud Run health는 정상이고 배포도 성공했지만 사용자-facing system summary가 운영 지표와 다르면 관측 결과를 신뢰할 수 없습니다.",
+      "lastNextAction": "stream/v2 최종 응답이 precomputed state summary와 어떤 경로에서 어긋나는지 trace/formatter 기준으로 재추적합니다."
     },
     "ai-security-reliability": {
       "domainId": "ai-security-reliability",
