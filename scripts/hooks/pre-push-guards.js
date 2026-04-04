@@ -22,6 +22,67 @@ function createGuardResult(ok, extra = {}) {
   return { ok, ...extra };
 }
 
+function countIndent(line) {
+  const match = line.match(/^(\s*)/);
+  return match ? match[1].length : 0;
+}
+
+function findGitLabCiSemanticIssues(content) {
+  const lines = content.split('\n');
+  const issues = [];
+  let activeScriptKey = null;
+  let activeScriptIndent = -1;
+
+  for (let index = 0; index < lines.length; index++) {
+    const line = lines[index];
+    const trimmed = line.trim();
+    const indent = countIndent(line);
+
+    if (!trimmed) {
+      continue;
+    }
+
+    if (activeScriptKey && indent <= activeScriptIndent && !trimmed.startsWith('-')) {
+      activeScriptKey = null;
+      activeScriptIndent = -1;
+    }
+
+    const scriptKeyMatch = line.match(/^(\s*)(before_script|script|after_script):\s*(.*)$/);
+    if (scriptKeyMatch) {
+      const [, leadingWhitespace, scriptKey, trailing] = scriptKeyMatch;
+      const hasInlineValue =
+        trailing.trim().length > 0 &&
+        !trailing.trim().startsWith('#') &&
+        trailing.trim() !== '|' &&
+        trailing.trim() !== '>';
+
+      if (hasInlineValue) {
+        activeScriptKey = null;
+        activeScriptIndent = -1;
+      } else {
+        activeScriptKey = scriptKey;
+        activeScriptIndent = leadingWhitespace.length;
+      }
+      continue;
+    }
+
+    if (!activeScriptKey) {
+      continue;
+    }
+
+    if (/^\s*-\s*(#.*)?$/.test(line)) {
+      issues.push({
+        line: index + 1,
+        scriptKey: activeScriptKey,
+        message: 'Null list item inside GitLab CI script block',
+        snippet: line,
+      });
+    }
+  }
+
+  return issues;
+}
+
 // ─── Cloud Build free-tier guard ─────────────────────────────────────────
 
 /**
@@ -99,6 +160,49 @@ function checkCloudBuildFreeTierGuard(changedFilesResult, cwd, FORCE_CLOUD_BUILD
   }
 
   return createGuardResult(true);
+}
+
+// ─── GitLab CI semantic guard ────────────────────────────────────────────
+
+function checkGitLabCiSemanticGuard(changedFilesResult, cwd) {
+  const changedFiles = changedFilesResult.files;
+  const hasChangedFiles = changedFiles.length > 0;
+  const shouldInspect =
+    !changedFilesResult.isKnown || changedFiles.includes('.gitlab-ci.yml');
+
+  if (!shouldInspect) {
+    if (hasChangedFiles) {
+      return createGuardResult(true, { skipped: true });
+    }
+    return createGuardResult(true);
+  }
+
+  const gitlabCiPath = path.join(cwd, '.gitlab-ci.yml');
+  if (!fs.existsSync(gitlabCiPath)) {
+    return createGuardResult(true, { skipped: true });
+  }
+
+  console.log('🧭 GitLab CI semantic guard...');
+  const content = fs.readFileSync(gitlabCiPath, 'utf8');
+  const issues = findGitLabCiSemanticIssues(content);
+
+  if (issues.length === 0) {
+    return createGuardResult(true);
+  }
+
+  console.log('❌ GitLab CI semantic guard failed - push blocked');
+  for (const issue of issues) {
+    console.log(
+      `   - line ${issue.line} (${issue.scriptKey}): ${issue.message} -> ${issue.snippet.trim()}`
+    );
+  }
+  console.log('');
+  console.log('💡 Fix: replace `- # comment` with a normal YAML comment or a shell comment inside a string command');
+  console.log('⚠️  Bypass: HUSKY=0 git push');
+  return createGuardResult(false, {
+    reason: 'gitlab-ci-semantic-guard',
+    issues,
+  });
 }
 
 // ─── node_modules health check ───────────────────────────────────────────
@@ -235,9 +339,11 @@ function checkEnvironment(cwd, runNpm) {
 }
 
 module.exports = {
+  checkGitLabCiSemanticGuard,
   checkCloudBuildFreeTierGuard,
   checkNodeModules,
   checkRelease,
   checkWSLPerformance,
   checkEnvironment,
+  findGitLabCiSemanticIssues,
 };

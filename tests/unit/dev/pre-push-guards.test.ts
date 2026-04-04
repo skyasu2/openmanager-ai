@@ -7,9 +7,11 @@ import path from 'node:path';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 const {
+  checkGitLabCiSemanticGuard,
   checkCloudBuildFreeTierGuard,
   checkNodeModules,
   checkEnvironment,
+  findGitLabCiSemanticIssues,
 } = require('../../../scripts/hooks/pre-push-guards');
 
 afterEach(() => {
@@ -17,6 +19,88 @@ afterEach(() => {
 });
 
 describe('pre-push guards', () => {
+  it('detects null list items created by dash-comment lines inside script blocks', () => {
+    const issues = findGitLabCiSemanticIssues(`
+deploy_ai_engine:
+  script:
+    - echo "start"
+    - # invalid null item
+    - LOCAL_DOCKER_PREFLIGHT=false bash deploy.sh
+`);
+
+    expect(issues).toEqual([
+      {
+        line: 5,
+        scriptKey: 'script',
+        message: 'Null list item inside GitLab CI script block',
+        snippet: '    - # invalid null item',
+      },
+    ]);
+  });
+
+  it('does not flag ordinary yaml comments outside script arrays', () => {
+    const issues = findGitLabCiSemanticIssues(`
+# top-level comment
+deploy_ai_engine:
+  script:
+    - echo "start"
+  # job comment
+`);
+
+    expect(issues).toEqual([]);
+  });
+
+  it('fails when .gitlab-ci.yml contains semantic null script entries', () => {
+    vi.spyOn(fs, 'existsSync').mockReturnValue(true);
+    vi.spyOn(fs, 'readFileSync').mockImplementation(
+      (filePath: fs.PathOrFileDescriptor) => {
+        const normalized = String(filePath).replace(/\\/g, '/');
+        if (normalized.endsWith('/.gitlab-ci.yml')) {
+          return [
+            'deploy_ai_engine:',
+            '  script:',
+            '    - echo "start"',
+            '    - # invalid null item',
+            '    - echo "done"',
+          ].join('\n');
+        }
+        throw new Error(`Unexpected readFileSync path: ${normalized}`);
+      }
+    );
+
+    vi.spyOn(console, 'log').mockImplementation(() => {});
+
+    const result = checkGitLabCiSemanticGuard(
+      {
+        files: ['.gitlab-ci.yml'],
+        isKnown: true,
+      },
+      '/repo'
+    );
+
+    expect(result.ok).toBe(false);
+    expect(result.reason).toBe('gitlab-ci-semantic-guard');
+    expect(result.issues).toHaveLength(1);
+    expect(result.issues[0]).toMatchObject({
+      line: 4,
+      scriptKey: 'script',
+    });
+  });
+
+  it('skips gitlab ci semantic guard when gitlab ci file did not change', () => {
+    const existsSpy = vi.spyOn(fs, 'existsSync');
+    const result = checkGitLabCiSemanticGuard(
+      {
+        files: ['src/app/page.tsx'],
+        isKnown: true,
+      },
+      '/repo'
+    );
+
+    expect(result).toEqual({ ok: true, skipped: true });
+    expect(existsSpy).not.toHaveBeenCalled();
+  });
+
   it('skips Cloud Build guard when changed files are known and unrelated', () => {
     const existsSpy = vi.spyOn(fs, 'existsSync');
     const logSpy = vi.spyOn(console, 'log').mockImplementation(() => {});

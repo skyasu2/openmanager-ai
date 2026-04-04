@@ -158,6 +158,7 @@
     "release:publish:major": "bash scripts/release/publish.sh major",
     "release:check": "node scripts/release/check-release-consistency.js",
     "ci": "npm run validate:all",
+    "ci:gitlab:check": "node scripts/ci/check-gitlab-ci-semantic.js",
     "ci:local:docker": "node scripts/ci/run-local-docker-ci.js",
     "ci:local:docker:full": "CI_DOCKER_RUN_ENGINE_PREFLIGHT=true node scripts/ci/run-local-docker-ci.js",
     "bundle:analyze": "cross-env ANALYZE=true NODE_OPTIONS='--max-old-space-size=2048' next build --webpack",

@@ -45,6 +45,7 @@ const {
   executeTestExecutionPlan,
 } = require('./pre-push-test-runner');
 const {
+  checkGitLabCiSemanticGuard,
   checkCloudBuildFreeTierGuard,
   checkNodeModules,
   checkRelease,
@@ -549,6 +550,7 @@ function main() {
   );
 
   const changedFilesResult = getChangedFilesForPush();
+  exitIfGuardFailed(checkGitLabCiSemanticGuard(changedFilesResult, cwd));
   exitIfGuardFailed(
     checkCloudBuildFreeTierGuard(changedFilesResult, cwd, FORCE_CLOUD_BUILD_GUARD)
   );
