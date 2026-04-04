@@ -1,28 +1,28 @@
 {
   "version": "1.0.0",
-  "generatedAt": "2026-04-04T13:06:26.510Z",
+  "generatedAt": "2026-04-04T13:21:43.048Z",
   "source": {
     "trackerPath": "reports/qa/qa-tracker.json",
     "statusPath": "reports/qa/QA_STATUS.md",
     "publicPath": "public/data/qa/validation-evidence.json",
     "publicHref": "/data/qa/validation-evidence.json",
-    "latestRunId": "QA-20260404-0222"
+    "latestRunId": "QA-20260404-0225"
   },
   "summary": {
-    "totalRuns": 217,
-    "totalChecks": 1622,
+    "totalRuns": 218,
+    "totalChecks": 1638,
     "completedItems": 274,
     "expertDomainsOpenGaps": 0,
     "wontFixItems": 14,
-    "lastRecordedAt": "2026-04-04T13:06:03.179Z"
+    "lastRecordedAt": "2026-04-04T13:21:41.671Z"
   },
   "trackerUpdated": {
-    "iso": "2026-04-04T13:06:03.179Z",
+    "iso": "2026-04-04T13:21:41.671Z",
     "short": "2026-04-04",
     "long": "April 4, 2026"
   },
   "publicEvidenceUpdated": {
-    "iso": "2026-04-04T09:17:33.588Z",
+    "iso": "2026-04-04T13:21:41.671Z",
     "short": "2026-04-04",
     "long": "April 4, 2026"
   },
@@ -32,12 +32,12 @@
     "long": "March 22, 2026"
   },
   "latestPublicRun": {
-    "runId": "QA-20260404-0222",
-    "title": "Vercel Playwright QA - dashboard, AI assistant, and monitoring parity check",
+    "runId": "QA-20260404-0225",
+    "title": "Vercel Production Broad Release QA - core routes, dashboard modal tabs, and AI streaming parity",
     "scope": "broad",
-    "recordedAt": "2026-04-04T09:17:33.588Z",
-    "commitSha": "00e750bbfce07df4c7707814529fbce3eb845c38",
-    "repoPath": "reports/qa/runs/2026/qa-run-QA-20260404-0222.json",
+    "recordedAt": "2026-04-04T13:21:41.671Z",
+    "commitSha": "fc725862173d9763c17b3486d895f3591dc7e9bc",
+    "repoPath": "reports/qa/runs/2026/qa-run-QA-20260404-0225.json",
     "ciRunLink": null,
     "ciArtifactLinks": []
   },
