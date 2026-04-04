@@ -612,13 +612,15 @@ Free Tier 가드레일 검증 → 로컬 Docker 프리플라이트(로컬 경로
 
 GitLab CI `deploy_ai_engine` 필수 변수:
 
-- `GCP_SERVICE_KEY`: GCP Service Account JSON을 base64로 인코딩한 값
+- `GCP_SERVICE_KEY`: 전용 GitLab 배포 서비스 계정 `gitlab-ai-engine-deployer@openmanager-free-tier.iam.gserviceaccount.com` 의 JSON key를 base64로 인코딩한 값
 - `GCP_PROJECT_ID`: 배포 대상 프로젝트 ID
 
 운영 메모:
 
 - `GCP_SERVICE_KEY`가 비어 있으면 job은 `before_script`에서 즉시 실패합니다.
 - `gcp-key.json`이 빈 파일로 decode되는 경우도 별도 검사로 차단합니다.
+- 현재 안정 배포 기준 권한은 프로젝트 `roles/editor`, `roles/secretmanager.secretAccessor`, 런타임 서비스 계정 `490817238363-compute@developer.gserviceaccount.com` 에 대한 `roles/iam.serviceAccountUser` 입니다.
+- 더 좁은 role set으로 줄이는 실험은 Cloud Build source bucket 접근에서 추가 제약이 확인돼 보류했습니다. 전용 서비스 계정으로 먼저 격리하고, 세부 권한 축소는 별도 배치로 다룹니다.
 - 수동 배포는 로컬 `gcloud` 인증이 이미 되어 있으면 `cd cloud-run/ai-engine && bash deploy.sh`로 계속 가능합니다.
 
 ---
