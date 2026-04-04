@@ -1,15 +1,15 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-04-05 00:12:34 KST
+> Generated at: 2026-04-05 00:47:29 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 223 |
-| Total Checks | 1704 |
-| Passed | 1634 |
+| Total Runs | 224 |
+| Total Checks | 1712 |
+| Passed | 1642 |
 | Failed | 64 |
 | Completed Items | 274 |
 | Pending Items | 0 |
@@ -18,12 +18,12 @@
 | Expert Domains Tracked | 6 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260405-0230 (2026-04-04T15:12:26.849Z) |
-| Latest Recorded Run | QA-20260405-0230 (2026-04-04T15:12:26.849Z) |
+| Last Counted Run | QA-20260405-0231 (2026-04-04T15:47:24.010Z) |
+| Latest Recorded Run | QA-20260405-0231 (2026-04-04T15:47:24.010Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260405-0230 (2026-04-04T15:12:26.849Z)
+Latest run: QA-20260405-0231 (2026-04-04T15:47:24.010Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -34,16 +34,16 @@ Latest run: QA-20260405-0230 (2026-04-04T15:12:26.849Z)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period reviewed after deployment health check; billed 0.0000 USD and no unexpected spike. |
+| vercel | cli | checked | normal | Current billing period reviewed after production re-verification; billed 0.0000 USD and no unexpected spike. |
 
 ## Coverage (Latest Run)
 
 - Scope: targeted
 - Release-Facing: no
 - Counts Toward Summary: yes
-- Deployment: dpl_7RVYuLgp44dE9AMHWLBegNxY1hSH / SHA 1ce348df
+- Deployment: dpl_Fer4NeUmueSdqxwbajJJqDkCdR9c / SHA 98d6c0be
 - Coverage Packs: core-routes-smoke, observability-pack
-- Covered Surfaces: Vercel production deployment state READY, deployment commit parity (1ce348df5), post-deploy smoke GET /, post-deploy smoke GET /validation, post-deploy smoke GET /api/version, /api/health healthy response, Vercel usage check billed 0.0000 USD
+- Covered Surfaces: Vercel production deployment READY, deployment commit parity (98d6c0be3), post-deploy smoke GET /, post-deploy smoke GET /validation, post-deploy smoke GET /api/version, /api/version response (8.10.8 production), /api/health healthy response, Vercel usage check billed 0.0000 USD
 - Skipped Surfaces: dashboard-core interactions, ai-core streaming parity, modal-detail-pack, playwright UI traversal
 
 ## Links (Latest Run)
@@ -51,7 +51,7 @@ Latest run: QA-20260405-0230 (2026-04-04T15:12:26.849Z)
 | Type | Label | URL | Note |
 |---|---|---|---|
 | general | Vercel production | [link](https://openmanager-ai.vercel.app/) | - |
-| vercel-deployment | Vercel deployment inspector | [link](https://vercel.com/skyasus-projects/openmanager-ai/7RVYuLgp44dE9AMHWLBegNxY1hSH) | - |
+| vercel-deployment | Vercel deployment inspector | [link](https://vercel.com/skyasus-projects/openmanager-ai/Fer4NeUmueSdqxwbajJJqDkCdR9c) | - |
 
 ## Artifacts (Latest Run)
 
@@ -382,6 +382,7 @@ Latest run: QA-20260405-0230 (2026-04-04T15:12:26.849Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260405-0231 | 2026-04-04T15:47:24.010Z | targeted | no | yes | Vercel production re-verification after snapshot sync | 8 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260405-0230 | 2026-04-04T15:12:26.849Z | targeted | no | yes | Vercel production deployment health check after gitlab sync | 7 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260404-0229 | 2026-04-04T14:29:25.205Z | release-gate | yes | yes | Vercel Production Broad Release-Gate QA - core routes + dashboard + AI stream parity | 17 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260404-0228 | 2026-04-04T14:20:17.892Z | targeted | no | yes | Vercel targeted QA - modal/detail pack and AI advanced surface | 18 | 0 | 0 | 0 | 0 | 0 |
@@ -401,5 +402,4 @@ Latest run: QA-20260405-0230 (2026-04-04T15:12:26.849Z)
 | QA-20260402-0214 | 2026-04-02T13:56:16.719Z | targeted | no | no | Vercel Production Validation Evidence Targeted QA | 8 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260402-0213 | 2026-04-02T12:41:23.224Z | broad | yes | yes | Playwright MCP Production QA - Frontend + AI Assistant v8.10.8 (2차) | 14 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260402-0212 | 2026-04-02T12:31:52.936Z | broad | yes | yes | Playwright MCP Production QA - Frontend + AI Assistant v8.10.8 | 12 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260402-0211 | 2026-04-02T06:04:27.210Z | targeted | yes | yes | Vercel Production Usage Evidence Follow-up | 2 | 1 | 0 | 0 | 0 | 0 |
 
