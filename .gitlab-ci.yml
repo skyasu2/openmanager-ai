@@ -225,8 +225,6 @@ deploy_ai_engine:
   script:
     - echo "▶ AI Engine Cloud Run 배포..."
     - cd cloud-run/ai-engine
-    - # CI 환경은 google/cloud-sdk:slim 기반이라 local Docker preflight와 cleanup 의존성을 비활성화
-    - # Cloud Build / Cloud Run 배포만 수행하고, free-tier guard는 deploy.sh 내부에서 계속 검증
     - LOCAL_DOCKER_PREFLIGHT=false CLEANUP_ENABLED=false bash deploy.sh
     - echo "✅ AI Engine 배포 완료"
   resource_group: ai-engine-production
