@@ -60,6 +60,18 @@ graph TD
     Deploy --> AIEngine
 ```
 
+### 상태 판정 규칙 (Priority-based)
+
+시스템은 `src/config/rules/system-rules.json`에 정의된 우선순위에 따라 서버 상태를 결정합니다:
+1. **P0 (`offline`)**: CPU, Memory, Disk 메트릭이 모두 0인 경우
+2. **P1 (`critical`)**: CPU와 Memory가 동시에 심각(critical) 수준인 경우
+3. **P2 (`critical`)**: 어떤 지표라도 심각 수준에 도달한 경우
+4. **P3 (`warning`)**: 2개 이상의 지표가 경고(warning) 수준인 경우
+5. **P4 (`warning`)**: 어떤 지표라도 경고 수준인 경우
+6. **P99 (`online`)**: 모든 지표가 경고 수준 미만인 경우
+
+> **평균 계산 규칙**: `offline` 서버는 시스템 평균(CPU/Memory/Disk/Network) 계산에서 제외합니다.
+
 #### ASCII Fallback
 
 ```
@@ -151,11 +163,11 @@ npm run data:verify
 
 | 시간 | 시나리오 | 영향 서버 | 상태 |
 |------|---------|----------|------|
-| **02시** | DB 자동 백업 - 디스크 I/O 과부하 | `db-mysql-dc1-primary`, `storage-nfs-dc1-01` | Warning |
-| **03시** | DB 슬로우 쿼리 누적 - 성능 저하 | `db-mysql-dc1-primary` | Critical |
-| **07시** | 네트워크 패킷 손실 - LB 과부하 | `lb-haproxy-dc1-01`, `api-was-dc1-01/02` | Critical |
-| **12시** | Redis 캐시 메모리 누수 - OOM 직전 | `cache-redis-dc1-01`, `cache-redis-dc1-02` | Critical |
-| **21시** | API 요청 폭증 - CPU 과부하 | `api-was-dc1-01/02`, `web-nginx-dc1-01/02` | Critical |
+| **02시** | DB 자동 백업 - 디스크 I/O 과부하 | `db-mysql-dc1-primary`, `storage-nfs-dc1-01` | warning |
+| **03시** | DB 슬로우 쿼리 누적 - 성능 저하 | `db-mysql-dc1-primary` | critical |
+| **07시** | 네트워크 패킷 손실 - LB 과부하 | `lb-haproxy-dc1-01`, `api-was-dc1-01/02` | critical |
+| **12시** | Redis 캐시 메모리 누수 - OOM 직전 | `cache-redis-dc1-01`, `cache-redis-dc1-02` | critical |
+| **21시** | API 요청 폭증 - CPU 과부하 | `api-was-dc1-01/02`, `web-nginx-dc1-01/02` | critical |
 
 ---
 

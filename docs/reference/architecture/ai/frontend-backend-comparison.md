@@ -103,7 +103,7 @@ graph LR
 
 | 기능 | Frontend | Backend | 평가 |
 |------|:--------:|:-------:|:----:|
-| 서버 메트릭 데이터 | hourly-data SSOT | precomputed-state (853줄) | 양쪽 완벽 |
+| 서버 메트릭 데이터 | hourly-data SSOT | precomputed-state (853줄) | 상태 정합성 완벽 (online/warning/critical/offline) |
 | 캐시 전략 | **Memory + Redis 다층 캐시** (Chat History만 localStorage) | Upstash Redis + TTL | 양쪽 완벽 |
 | 쿼리 정규화 | - | Cache Normalization | Backend 전담 |
 | 토큰 최적화 | - | 144슬롯 ~100토큰 압축 | Backend 전담 |

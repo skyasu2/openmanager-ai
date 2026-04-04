@@ -195,9 +195,24 @@ LB(2) → Web(3) → API(3) → DB(MySQL 3) + Cache(Redis 2) → Storage(2)
 
 > 매핑 정의: `src/services/metrics/metric-transformers.ts`
 
+### 3.1 상태 판정 및 우선순위 (Derived Status)
+
+OTel 메트릭 원본 데이터는 `MetricsProvider`(Vercel) 및 `precomputed-state`(Cloud Run)에서 다음 우선순위 규칙에 따라 4가지 상태(`online`, `warning`, `critical`, `offline`)로 변환됩니다.
+
+| 우선순위 | 규칙 (Condition) | 결과 상태 | 설명 |
+|:---:|---|:---:|---|
+| **P0** | CPU, Memory, Disk 메트릭이 모두 0 | **offline** | 데이터 수집 중단 또는 서버 종료 |
+| **P1** | CPU >= 90% AND Memory >= 90% | **critical** | 복합 자원 고부하 (가장 높은 우선순위) |
+| **P2** | ANY metric >= critical 임계값 | **critical** | 단일 지표 심각 수준 도달 |
+| **P3** | 2개 이상의 메트릭 >= warning 임계값 | **warning** | 복합 자원 주의 수준 |
+| **P4** | ANY metric >= warning 임계값 | **warning** | 단일 지표 주의 수준 |
+| **P99** | 모든 지표 < warning 임계값 | **online** | 정상 운영 상태 |
+
+> **데이터 정합성(Parity)**: 2026-04-04 업데이트를 통해 AI 엔진과 대시보드는 동일한 우선순위 로직과 오프라인 서버 제외 평균 계산 방식을 공유합니다.
+
 ---
 
-## 3.5 OTel Semantic Conventions 준수 현황
+## 3.2 OTel Semantic Conventions 준수 현황
 
 > 기준: [OTel Semantic Conventions v1.27+](https://opentelemetry.io/docs/specs/semconv/)
 
