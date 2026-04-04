@@ -4,7 +4,7 @@
 > Owner: platform-devops
 > Status: Active
 > Doc type: How-to
-> Last reviewed: 2026-03-27
+> Last reviewed: 2026-04-04
 > Canonical: docs/development/environment-variables.md
 > Tags: env,secrets,configuration,setup
 
@@ -238,11 +238,12 @@ Cloud Run은 **GCP Secret Manager**에 JSON 형태로 시크릿을 저장하고,
 
 ```bash
 # AI Providers
-CEREBRAS_API_KEY=csk-xxx  # Supervisor/NLQ/Analyst/Orchestrator 주력
+CEREBRAS_API_KEY=csk-xxx  # Orchestrator structured routing / opt-in text fallback
 CEREBRAS_MODEL_ID=qwen-3-235b-a22b-instruct-2507  # 기본값. 계정 접근 가능 모델로 override 가능
-GROQ_API_KEY=gsk_xxx     # Reporter 주력 (llama-3.3-70b)
-MISTRAL_API_KEY=xxx      # Advisor 주력 (mistral-large-latest)
-GOOGLE_AI_API_KEY=xxx    # Vision 주력 (gemini-2.5-flash)
+CEREBRAS_TOOL_CALLING_ENABLED=false  # 기본값 false. preview 모델 tool loop opt-in 시에만 true
+GROQ_API_KEY=gsk_xxx     # Supervisor/NLQ/Analyst/Reporter 주력
+MISTRAL_API_KEY=xxx      # Advisor 주력 + text fallback
+GOOGLE_AI_API_KEY=xxx    # Vision 주력 (gemini-2.5-flash-lite)
 OPENROUTER_API_KEY=sk-or-v1-xxx # Vision Fallback (gemma-3-4b-it:free)
 
 # 시크릿 설정 주의사항:

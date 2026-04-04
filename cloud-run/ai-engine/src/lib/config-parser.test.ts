@@ -189,16 +189,16 @@ describe('Config Parser', () => {
       expect(getCerebrasModelId()).toBe('custom-cerebras-model');
     });
 
-    it('should enable Cerebras tool-calling by default', () => {
+    it('should disable Cerebras tool-calling by default', () => {
       delete process.env.CEREBRAS_TOOL_CALLING_ENABLED;
 
-      expect(isCerebrasToolCallingEnabled()).toBe(true);
+      expect(isCerebrasToolCallingEnabled()).toBe(false);
     });
 
-    it('should disable Cerebras tool-calling when explicitly false', () => {
-      process.env.CEREBRAS_TOOL_CALLING_ENABLED = 'false';
+    it('should enable Cerebras tool-calling when explicitly true', () => {
+      process.env.CEREBRAS_TOOL_CALLING_ENABLED = 'true';
 
-      expect(isCerebrasToolCallingEnabled()).toBe(false);
+      expect(isCerebrasToolCallingEnabled()).toBe(true);
     });
   });
 

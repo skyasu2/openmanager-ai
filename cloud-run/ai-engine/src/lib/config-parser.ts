@@ -310,10 +310,10 @@ export function getCerebrasModelId(): string {
 
 /**
  * Cerebras tool-calling gate for emergency compatibility fallback.
- * Default: true (enabled). Set CEREBRAS_TOOL_CALLING_ENABLED=false to force-disable.
+ * Default: false (disabled). Set CEREBRAS_TOOL_CALLING_ENABLED=true to opt in.
  */
 export function isCerebrasToolCallingEnabled(): boolean {
-  return process.env.CEREBRAS_TOOL_CALLING_ENABLED !== 'false';
+  return process.env.CEREBRAS_TOOL_CALLING_ENABLED === 'true';
 }
 
 /**

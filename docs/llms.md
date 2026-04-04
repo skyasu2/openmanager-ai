@@ -34,9 +34,11 @@ OpenManager AI is an AI-native server monitoring platform built with:
 - Agents (실행): NLQ, Analyst, Reporter, Advisor, Vision, Evaluator, Optimizer
 - Orchestrator: 에이전트 라우팅 코디네이터 (별도 컴포넌트)
 - Providers:
-  - Tool-calling text path: Groq → Cerebras → Mistral
+  - Tool-calling text path (default): Groq → Mistral
+  - Tool-calling text path (opt-in): Groq → Cerebras → Mistral
   - Structured routing path: Cerebras → Mistral → Groq
-  - Advisor: Mistral → Groq → Cerebras
+  - Advisor (default): Mistral → Groq
+  - Advisor (opt-in): Mistral → Groq → Cerebras
   - Vision: Gemini Flash-Lite → OpenRouter
 - Tools: 30 specialized tools (Metrics 6, RCA 3, Analyst 4, Knowledge 3, Evaluation 6, Control 1, Vision 4, Math 3)
 - Observability: Langfuse mode audit (`requestedMode`, `resolvedMode`, `modeSelectionSource`) + `handoffCount`
@@ -89,14 +91,14 @@ curl $SERVICE_URL/health  # Health check
 4. Free tier optimization:
    - low-complexity `auto` 요청은 single 유지 가능
    - explicit `single`은 `ALLOW_DEGRADED_SINGLE=true`일 때만 허용
-   - Cerebras tool-calling은 `CEREBRAS_TOOL_CALLING_ENABLED`로 긴급 차단 가능
+   - Cerebras tool-calling은 기본 `false`, 필요할 때만 `CEREBRAS_TOOL_CALLING_ENABLED=true`로 opt-in
 
 ## Current Notes
 
 - Vision 기본 모델은 `gemini-2.5-flash-lite`
 - Orchestrator는 `generateObjectWithFallback`로 structured routing 수행
 - Agent 실행은 `streamText` / `generateTextWithRetry` 기반 tool loop
-- Cerebras tool-calling 이슈는 provider capability gate로 선제 우회
+- Cerebras는 structured-output primary, tool loop는 기본 비활성 + capability gate로 선제 skip
 
 Reference (checked: 2026-04-04):
 - https://vercel.com/docs/limits/overview

@@ -2,10 +2,10 @@
 
 > Vercel + Cloud Run 하이브리드 시스템 구조의 기준 문서
 > Owner: platform-architecture
-> Last verified against code: 2026-03-03
+> Last verified against code: 2026-04-04
 > Status: Active Canonical (hybrid-split.md 통합됨)
 > Doc type: Explanation
-> Last reviewed: 2026-03-03
+> Last reviewed: 2026-04-04
 > Canonical: docs/reference/architecture/system/system-architecture-current.md
 > Tags: system,architecture,hybrid,cloud-run,vercel
 
@@ -237,11 +237,11 @@ npm run data:precomputed:build # Cloud Run precomputed states 재생성
 | Agent | Provider (Primary) | Role | 라우팅 |
 |-------|-------------------|------|--------|
 | **Orchestrator** | Cerebras (`CEREBRAS_MODEL_ID`, default `qwen-3-235b-a22b-instruct-2507`) | Intent 분류, Agent 핸드오프 | 진입점 |
-| **NLQ** | Cerebras (`CEREBRAS_MODEL_ID`) | 서버 메트릭 조회 (단순+복합) | 외부 |
-| **Analyst** | Cerebras (`CEREBRAS_MODEL_ID`) | 이상 감지, 추세 예측 | 외부 |
-| **Reporter** | Groq (`llama-3.3-70b-versatile`) | 장애 보고서, 타임라인 | 외부 |
+| **NLQ** | Groq (`meta-llama/llama-4-scout-17b-16e-instruct`) | 서버 메트릭 조회 (단순+복합) | 외부 |
+| **Analyst** | Groq (`meta-llama/llama-4-scout-17b-16e-instruct`) | 이상 감지, 추세 예측 | 외부 |
+| **Reporter** | Groq (`meta-llama/llama-4-scout-17b-16e-instruct`) | 장애 보고서, 타임라인 | 외부 |
 | **Advisor** | Mistral (`mistral-large-latest`) | 트러블슈팅, GraphRAG 검색 | 외부 |
-| **Vision** | Gemini 2.5-flash (fallback: OpenRouter vision 모델) | 스크린샷/로그 분석, 웹 검색 | 외부 |
+| **Vision** | Gemini 2.5 Flash-Lite (fallback: OpenRouter vision 모델) | 스크린샷/로그 분석, 웹 검색 | 외부 |
 | **Evaluator** | Deterministic quality gate | 보고서 품질 평가 (내부) | 내부 |
 | **Optimizer** | Deterministic rewrite stage | 보고서 품질 개선 (내부) | 내부 |
 
@@ -281,14 +281,11 @@ CLOSED (정상) ──5회 실패──► OPEN (차단) ──30초──► HA
 ### LLM Provider Fallback Chain
 
 ```
-Cerebras (Primary, ~200ms)
-    ↓ 실패 또는 quota 80%
-Groq (Secondary)
-    ↓ 실패 또는 quota 80%
-Mistral (Tertiary)
-    ↓ Vision 전용: Gemini → OpenRouter
-    ↓ 모두 실패
-Static Fallback Response
+Structured routing: Cerebras → Mistral → Groq
+Tool loop (default): Groq → Mistral
+Tool loop (opt-in): Groq → Cerebras → Mistral
+Vision: Gemini Flash-Lite → OpenRouter
+모두 실패 → Static Fallback Response
 ```
 
 ### Quota Tracker

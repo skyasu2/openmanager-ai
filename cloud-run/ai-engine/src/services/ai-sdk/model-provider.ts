@@ -3,13 +3,13 @@
  *
  * Vercel AI SDK 6 based model provider with quad-provider architecture:
  * - Primary: Groq (llama-4-scout-17b, 500K TPD, 512K ctx, tool calling ✅)
- * - Secondary: Cerebras (qwen-3-235b, Preview, 1M TPD, 1,400 tok/s, tool calling ✅)
+ * - Secondary: Cerebras (qwen-3-235b, Preview, 1M TPD, 1,400 tok/s, structured-output ✅ / tool loop opt-in)
  * - Last Resort: Mistral (mistral-large-latest, Frontier, ~2 RPM free tier)
  * - Vision: Gemini 2.5 Flash-Lite (1M context, 1K RPD, no thinking tokens)
  *
  * @version 4.1.1
- * @updated 2026-04-04 - Vision default를 Gemini 2.5 Flash-Lite로 고정
- *                       Groq primary/Cerebras secondary 및 quota 주석 정합성 유지
+ * @updated 2026-04-04 - Cerebras tool-calling default를 opt-in으로 전환
+ *                       Vision default를 Gemini 2.5 Flash-Lite로 고정
  */
 
 import type { LanguageModel } from 'ai';

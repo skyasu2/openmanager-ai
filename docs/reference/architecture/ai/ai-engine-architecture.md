@@ -51,7 +51,7 @@ flowchart TB
         Multi["Multi path\nexecuteMultiAgent / executeMultiAgentStream"]
         Prefilter["preFilterQuery()\nfast path / forced routing / LLM routing"]
         Route["generateObjectWithFallback\nCerebras → Mistral → Groq\n(requireStructuredOutput)"]
-        Agent["Agent execution\nstreamText or generateTextWithRetry\n(requireToolCalling)"]
+        Agent["Agent execution\nGroq/Mistral default tool path\nstreamText or generateTextWithRetry\n(requireToolCalling)"]
         Context["save findings + getContextSummary()"]
         Stream["UIMessageStream\ntext-delta / handoff / data-mode / agent_status"]
         Trace["Langfuse + Pino\nmode audit / handoffCount / scores"]
@@ -82,7 +82,7 @@ flowchart LR
     Caps --> TC{"requireToolCalling"}
     Caps --> SO{"requireStructuredOutput"}
 
-    TC -->|yes| CerebrasTool["Cerebras supportsToolCalling\n= isCerebrasToolCallingEnabled()"]
+    TC -->|yes| CerebrasTool["Cerebras supportsToolCalling\n= false by default\n(env opt-in)"]
     CerebrasTool -->|false| Skip["Skip Cerebras before request"]
     Skip --> Groq["Groq"]
     Groq --> Mistral["Mistral"]
@@ -154,23 +154,23 @@ flowchart LR
 | Provider | Primary 에이전트 | 모델 | 운영 메모 |
 |----------|----------------|------|-----------|
 | **Groq** | Supervisor, NLQ, Analyst, Reporter, Verifier | `meta-llama/llama-4-scout-17b-16e-instruct` | 현재 tool-calling 중심 텍스트 경로의 primary |
-| **Cerebras** | Orchestrator structured routing, text secondary | `qwen-3-235b-a22b-instruct-2507` | Preview 모델. tool-calling은 env/capability gate에 따라 선제 차단 가능 |
+| **Cerebras** | Orchestrator structured routing, opt-in text fallback | `qwen-3-235b-a22b-instruct-2507` | Preview 모델. structured-output primary, tool loop는 기본 비활성 + env opt-in |
 | **Mistral** | Advisor + RAG Embedding | `mistral-large-latest` / `mistral-embed` | Advisor primary. structured output fallback에도 사용 |
 | **Gemini** | Vision primary | `gemini-2.5-flash-lite` | Flash 대비 thinking token 소모 없음. Vision 기본 경로 |
 | **OpenRouter** | Vision fallback | `google/gemma-3-27b-it:free` → `gemma-3-12b-it:free` → `gemma-3-4b-it:free` | Vision fallback 전용. free-tier 모델 특성상 tool-calling은 기본 비활성 |
 
 ### Fallback 체인
 
-모든 에이전트는 3-way fallback으로, 2개 provider 동시 장애 시에도 서비스 가능합니다.
+Structured routing은 3-way fallback을 유지하고, tool-loop 경로는 기본 2-way(`Groq → Mistral`)이며 필요할 때만 Cerebras를 opt-in으로 복귀시킵니다.
 
 | Agent | Primary | → 2nd | → 3rd (Last Resort) |
 |-------|---------|-------|---------------------|
-| Supervisor | Groq | Cerebras | Mistral |
-| NLQ | Groq | Cerebras | Mistral |
+| Supervisor | Groq | Mistral | Cerebras (opt-in tool loop) |
+| NLQ | Groq | Mistral | Cerebras (opt-in tool loop) |
 | Orchestrator (structured output) | Cerebras | Mistral | Groq |
-| Analyst | Groq | Cerebras | Mistral |
-| Reporter | Groq | Cerebras | Mistral |
-| **Advisor** | **Mistral** | **Groq** | **Cerebras** |
+| Analyst | Groq | Mistral | Cerebras (opt-in tool loop) |
+| Reporter | Groq | Mistral | Cerebras (opt-in tool loop) |
+| **Advisor** | **Mistral** | **Groq** | **Cerebras (opt-in tool loop)** |
 | Vision | Gemini | OpenRouter | — |
 | RAG Embedding | Mistral (`mistral-embed`) | local fallback (SHA256) | — |
 
@@ -178,7 +178,7 @@ flowchart LR
 
 2026-04-04 기준 대응은 "Cerebras를 완전히 제거"가 아니라, **tool-calling이 필요한 경로에서만 capability gate로 선제 차단**하는 방식입니다.
 
-1. `CEREBRAS_TOOL_CALLING_ENABLED` 환경 변수로 긴급 ON/OFF 가능
+1. `CEREBRAS_TOOL_CALLING_ENABLED` 환경 변수는 기본 `false`, 필요할 때만 `true`로 opt-in
 2. `provider-capabilities.ts`에서 provider별 capability를 중앙 선언
 3. `selectTextModel(... requiredCapabilities)`가 tool-calling/structured-output 요구사항을 먼저 검사
 4. `generateTextWithRetry()`도 tool 사용 시 capability mismatch면 Cerebras를 요청 전에 skip
@@ -231,7 +231,7 @@ for await (const event of streamAgent('analyst', '이상 탐지')) { ... }
   │
   ├─ ① 입력 검증 (Zod) → 보안 (API Key) → Rate Limit
   ├─ ② Supervisor: selectExecutionMode() [regex] → 'single'
-  ├─ ③ getSupervisorModel() → Cerebras (CB 확인)
+  ├─ ③ getSupervisorModel() → Groq (CB 확인, Cerebras tool loop 기본 비활성)
   ├─ ④ streamText() + prepareStep (intent='rca')
   │    ├─ Step 1: findRootCause() → 결과
   │    ├─ Step 2: correlateMetrics() → 상관 분석
@@ -467,7 +467,7 @@ cloud-run/ai-engine/src/
 
 - **Mode policy 정리**: explicit `single`은 `ALLOW_DEGRADED_SINGLE=true`일 때만 허용, `auto`는 복잡도 기반 유지
 - **Capability registry 도입**: `provider-capabilities.ts`로 tool-calling / structured-output / vision capability를 중앙 선언
-- **Cerebras tool-calling 우회**: `CEREBRAS_TOOL_CALLING_ENABLED` 플래그와 선제 skip으로 tool route 안정화
+- **Cerebras tool-calling 기본 비활성화**: `CEREBRAS_TOOL_CALLING_ENABLED=false`를 기본값으로 두고, 필요할 때만 opt-in
 - **Vision 정합성 수정**: `gemini-2.5-flash-lite` 기본화, OpenRouter free fallback 체인 정리
 - **Observability 확장**: `requestedMode`, `resolvedMode`, `modeSelectionSource`, `handoffCount`와 Langfuse score 기록
 - **Context distillation**: 세션 요약을 routing/forced routing/agent stream prompt에 주입
@@ -543,7 +543,7 @@ cloud-run/ai-engine/src/
 
 | 항목 | 상세 분석 |
 |------|-----------|
-| **모델 배분** | Groq는 tool-calling 중심 text path primary, Cerebras는 Orchestrator structured route primary, Mistral은 Advisor/Embedding, Gemini는 Vision primary, OpenRouter는 Vision fallback으로 역할이 분리됨 |
+| **모델 배분** | Groq는 tool-calling 중심 text path primary, Cerebras는 structured route primary + opt-in text fallback, Mistral은 Advisor/Embedding, Gemini는 Vision primary, OpenRouter는 Vision fallback으로 역할이 분리됨 |
 | **AI SDK 적용 방식** | 프론트엔드는 `useChat`/`DefaultChatTransport`, 서버는 `createUIMessageStreamResponse`, `streamText`, `generateText`, `generateObjectWithFallback`, 작업 에이전트는 BaseAgent 내부 tool loop를 사용함 |
 | **문서 검증 범위** | 2026-04-04 기준 코드로 직접 검증한 항목은 mode policy, capability gate, Vision Flash-Lite default, context distillation, Langfuse mode audit임. 외부 provider 무료 티어/성능 수치는 별도 재검증 필요 |
 
@@ -566,7 +566,7 @@ cloud-run/ai-engine/src/
 
 | Dimension | Score | Evidence |
 |-----------|:-----:|----------|
-| Resilience | A+ | CB + Fallback + 3-way 모델 폴백 (Cerebras→Groq→Mistral) |
+| Resilience | A+ | CB + capability gate + structured/tool route 분리 fallback |
 | Observability | A | Langfuse + Sentry + Pino + W3C Trace Context 전 구간 |
 | Security | A | 52-패턴 Injection 방어 + Zod + Rate Limit + 출력 필터링 |
 | Caching | A | Memory→Redis 2-tier, 엔드포인트별 TTL 차별화 |
