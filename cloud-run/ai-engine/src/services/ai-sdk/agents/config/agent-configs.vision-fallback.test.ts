@@ -58,6 +58,8 @@ vi.mock('../../../../lib/logger', () => ({
 
 vi.mock('../../../../lib/config-parser', () => ({
   getOpenRouterVisionModelId: vi.fn(() => 'nvidia/nemotron-nano-12b-v2-vl:free'),
+  isOpenRouterVisionToolCallingEnabled: vi.fn(() => false),
+  isCerebrasToolCallingEnabled: vi.fn(() => true),
 }));
 
 vi.mock('../../model-provider', () => ({
