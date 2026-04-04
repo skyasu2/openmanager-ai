@@ -213,6 +213,25 @@ describe('executeForcedRouting', () => {
     expect(result?.response).not.toContain('잘못된 요약');
   });
 
+  it('uses current-state deterministic summary when summary prompt has no tool results', async () => {
+    mockGenerateTextWithRetry.mockResolvedValueOnce(
+      createRetryResult({
+        text: '모델만으로 만든 요약',
+        steps: [],
+      })
+    );
+
+    const result = await executeForcedRouting(
+      '현재 모든 서버의 상태를 요약해줘',
+      'NLQ Agent',
+      Date.now()
+    );
+
+    expect(result?.response).toContain('📊 **서버 현황 요약**');
+    expect(result?.response).not.toContain('모델만으로 만든 요약');
+    expect(mockGenerateTextWithRetry).toHaveBeenCalledTimes(1);
+  });
+
   it('uses summarization fallback for non-summary empty responses in forced routing', async () => {
     mockGenerateTextWithRetry
       .mockResolvedValueOnce(
