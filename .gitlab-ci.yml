@@ -62,6 +62,9 @@ stages:
 # docs/reports/QA 아티팩트 전용 push는 CI 스킵 → 분 소진 방지
 .frontend_validate_changes: &frontend_validate_changes
   rules:
+    # QA 기록 커밋은 보고서/증거 동기화 목적이므로 프론트엔드 validate를 생략한다.
+    - if: '$CI_COMMIT_MESSAGE =~ /^test\(qa\):/'
+      when: never
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       changes:
         - src/**/*
@@ -127,6 +130,9 @@ stages:
 
 .main_frontend_changes_only: &main_frontend_changes_only
   rules:
+    # QA 기록 커밋은 프로덕션 배포 트리거에서 제외해 불필요한 build/deploy를 방지한다.
+    - if: '$CI_COMMIT_BRANCH == "main" && $CI_COMMIT_MESSAGE =~ /^test\(qa\):/'
+      when: never
     - if: '$CI_COMMIT_BRANCH == "main"'
       changes:
         - src/**/*
