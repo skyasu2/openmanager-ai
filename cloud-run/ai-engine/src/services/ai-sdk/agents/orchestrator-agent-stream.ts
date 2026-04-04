@@ -328,6 +328,22 @@ export async function* executeAgentStream(
       }
 
       if (preferDeterministicSummary && !textDelivered) {
+        const stateSummary = buildDeterministicSummaryFromCurrentState(
+          query,
+          agentName
+        );
+        if (stateSummary) {
+          textEmitted = true;
+          textDelivered = true;
+          fullResponseText = stateSummary;
+          yield { type: 'text_delta', data: stateSummary };
+          logger.info(
+            `[Stream ${agentName}] Current-state deterministic summary override succeeded (${stateSummary.length} chars)`
+          );
+        }
+      }
+
+      if (preferDeterministicSummary && !textDelivered) {
         const bufferedText = sanitizeChineseCharacters(
           (finalAnswerResult?.answer ?? fullResponseText).trim()
         );

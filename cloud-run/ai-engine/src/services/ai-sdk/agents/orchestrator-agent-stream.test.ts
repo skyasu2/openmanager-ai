@@ -221,6 +221,24 @@ describe('executeAgentStream', () => {
     expect(textPayload).not.toContain('잘못된 요약');
   });
 
+  it('uses current-state deterministic summary when summary prompt has no tool results', async () => {
+    mockStreamText.mockReturnValue(
+      createStreamResult({
+        chunks: ['모델이 도구 없이 만든 요약'],
+        steps: [],
+      })
+    );
+
+    const events = await collectEvents('현재 모든 서버의 상태를 요약해줘');
+    const textPayload = events
+      .filter((event) => event.type === 'text_delta')
+      .map((event) => String(event.data))
+      .join('');
+
+    expect(textPayload).toContain('📊 **서버 현황 요약**');
+    expect(textPayload).not.toContain('모델이 도구 없이 만든 요약');
+  });
+
   it('retries the next provider when the first provider returns no output', async () => {
     mockStreamText.mockImplementation(
       ({ model }: { model: { provider: string } }) => {

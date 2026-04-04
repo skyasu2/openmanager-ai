@@ -27,7 +27,11 @@ import { filterToolsByWebSearch, filterToolsByRAG } from './orchestrator-web-sea
 import { recordHandoff, getRecentHandoffs } from './orchestrator-handoff';
 import { executeReporterWithPipeline } from './orchestrator-reporter-pipeline';
 import { evaluateAgentResponseQuality } from './response-quality';
-import { buildDeterministicSummaryFallback } from './orchestrator-summary-fallback';
+import {
+  buildDeterministicSummaryFallback,
+  buildDeterministicSummaryFromCurrentState,
+  isDeterministicSummaryQuery,
+} from './orchestrator-summary-fallback';
 import { logger } from '../../../lib/logger';
 export { recordHandoff, getRecentHandoffs } from './orchestrator-handoff';
 export { executeReporterWithPipeline } from './orchestrator-reporter-pipeline';
@@ -255,6 +259,17 @@ export async function executeForcedRouting(
       logger.info(
         `[Forced Routing] Deterministic summary ${overridingGeneratedText ? 'override' : 'fallback'} succeeded (${response.length} chars)`
       );
+    } else if (isDeterministicSummaryQuery(query, suggestedAgentName)) {
+      const stateSummary = buildDeterministicSummaryFromCurrentState(
+        query,
+        suggestedAgentName
+      );
+      if (stateSummary) {
+        response = stateSummary;
+        logger.info(
+          `[Forced Routing] Deterministic current-state summary override succeeded (${response.length} chars)`
+        );
+      }
     }
 
     // Summarization Fallback: if model called tools but produced no text,
