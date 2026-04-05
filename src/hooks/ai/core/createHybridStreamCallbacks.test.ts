@@ -31,7 +31,7 @@ function createDeps() {
   let state = createStateRef();
 
   return {
-    persistTraceIdFallback: vi.fn(),
+    persistFinishedAssistantMessage: vi.fn(),
     onStreamFinish: vi.fn(),
     setState: vi.fn((updater) => {
       state = typeof updater === 'function' ? updater(state) : updater;
@@ -43,7 +43,7 @@ function createDeps() {
       maxRetries: 1,
       onStreamFinish: vi.fn(),
       onData: vi.fn(),
-      persistTraceIdFallback: vi.fn(),
+      persistFinishedAssistantMessage: vi.fn(),
       setState: vi.fn((updater) => {
         state = typeof updater === 'function' ? updater(state) : updater;
       }),
@@ -65,7 +65,7 @@ function createDeps() {
 }
 
 describe('createHybridStreamCallbacks.onFinish', () => {
-  it('assistant metadata에 traceId가 없으면 fallback traceId를 보강한다', () => {
+  it('assistant metadata에 traceId가 없으면 fallback traceId와 함께 최종 메시지를 보강한다', () => {
     const context = createDeps();
     const callbacks = createHybridStreamCallbacks(context.deps);
 
@@ -77,7 +77,7 @@ describe('createHybridStreamCallbacks.onFinish', () => {
 
     callbacks.onFinish({ message });
 
-    expect(context.deps.persistTraceIdFallback).toHaveBeenCalledWith(
+    expect(context.deps.persistFinishedAssistantMessage).toHaveBeenCalledWith(
       message,
       'feedfacefeedfacefeedfacefeedface'
     );
@@ -85,22 +85,25 @@ describe('createHybridStreamCallbacks.onFinish', () => {
     expect(context.getState().warmingUp).toBe(false);
   });
 
-  it('assistant metadata에 traceId가 이미 있으면 fallback을 다시 넣지 않는다', () => {
+  it('assistant metadata에 traceId가 이미 있어도 최종 메시지를 동기화한다', () => {
     const context = createDeps();
     const callbacks = createHybridStreamCallbacks(context.deps);
 
-    callbacks.onFinish({
-      message: {
-        id: 'assistant-2',
-        role: 'assistant',
-        parts: [{ type: 'text', text: '응답 완료' }],
-        metadata: {
-          traceId: 'existing-trace-id',
-        },
-      } as UIMessage,
-    });
+    const message = {
+      id: 'assistant-2',
+      role: 'assistant',
+      parts: [{ type: 'text', text: '응답 완료' }],
+      metadata: {
+        traceId: 'existing-trace-id',
+      },
+    } as UIMessage;
 
-    expect(context.deps.persistTraceIdFallback).not.toHaveBeenCalled();
+    callbacks.onFinish({ message });
+
+    expect(context.deps.persistFinishedAssistantMessage).toHaveBeenCalledWith(
+      message,
+      'feedfacefeedfacefeedfacefeedface'
+    );
     expect(context.getState().isLoading).toBe(false);
   });
 });

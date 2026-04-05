@@ -9,12 +9,15 @@
  * Note: useChat 훅은 @ai-sdk/react의 무거운 의존성으로 인해
  * 핵심 비즈니스 로직인 쿼리 복잡도 분석만 테스트합니다.
  */
+
+import type { UIMessage } from '@ai-sdk/react';
 import { describe, expect, it } from 'vitest';
 
 import {
   analyzeQueryComplexity,
   calculateDynamicTimeout,
 } from '@/lib/ai/utils/query-complexity';
+import { mergeFinishedAssistantIntoMessages } from './useHybridAIQuery';
 
 describe('useHybridAIQuery - 쿼리 복잡도 기반 모드 선택', () => {
   describe('쿼리 복잡도 분류', () => {
@@ -198,6 +201,95 @@ describe('HybridQueryState 타입 검증', () => {
     expect(initialState.mode).toBe('streaming');
     expect(initialState.isLoading).toBe(false);
     expect(initialState.error).toBeNull();
+  });
+});
+
+describe('mergeFinishedAssistantIntoMessages', () => {
+  it('onFinish assistant metadata와 parts를 기존 메시지에 병합한다', () => {
+    const previousMessages = [
+      {
+        id: 'user-1',
+        role: 'user',
+        parts: [{ type: 'text', text: '상태 알려줘' }],
+      },
+      {
+        id: 'assistant-1',
+        role: 'assistant',
+        parts: [{ type: 'text', text: '초안 응답' }],
+      },
+    ] as UIMessage[];
+
+    const finishedMessage = {
+      id: 'assistant-1',
+      role: 'assistant',
+      parts: [
+        { type: 'text', text: '최종 응답' },
+        {
+          type: 'tool-searchKnowledgeBase',
+          toolCallId: 'tool-1',
+          output: { sources: 2 },
+          state: 'output-available',
+        },
+      ],
+      metadata: {
+        traceId: 'trace-finished-123',
+        toolResultSummaries: [
+          {
+            toolName: 'searchKnowledgeBase',
+            label: 'RAG 지식베이스 검색',
+            status: 'completed',
+            summary: '2건의 문서를 참조했습니다.',
+          },
+        ],
+      },
+    } as unknown as UIMessage;
+
+    const mergedMessages = mergeFinishedAssistantIntoMessages(
+      previousMessages,
+      finishedMessage,
+      'fallback-trace'
+    );
+
+    const assistant = mergedMessages[1] as UIMessage;
+    expect(assistant.parts).toEqual(finishedMessage.parts);
+    expect(assistant.metadata).toMatchObject({
+      traceId: 'trace-finished-123',
+      toolResultSummaries: [
+        expect.objectContaining({
+          toolName: 'searchKnowledgeBase',
+        }),
+      ],
+    });
+  });
+
+  it('callback metadata에 traceId가 없으면 fallback traceId를 주입한다', () => {
+    const previousMessages = [
+      {
+        id: 'assistant-1',
+        role: 'assistant',
+        parts: [{ type: 'text', text: '응답' }],
+      },
+    ] as UIMessage[];
+
+    const finishedMessage = {
+      id: 'assistant-1',
+      role: 'assistant',
+      parts: [{ type: 'text', text: '응답' }],
+      metadata: {
+        handoffHistory: [{ from: 'supervisor', to: 'reporter' }],
+      },
+    } as unknown as UIMessage;
+
+    const mergedMessages = mergeFinishedAssistantIntoMessages(
+      previousMessages,
+      finishedMessage,
+      'fallback-trace-456'
+    );
+
+    expect((mergedMessages[0] as UIMessage).metadata).toMatchObject({
+      traceId: 'fallback-trace-456',
+      handoffHistory: [{ from: 'supervisor', to: 'reporter' }],
+    });
   });
 });
 
