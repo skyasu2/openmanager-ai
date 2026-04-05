@@ -1,0 +1,73 @@
+{
+  "runId": "QA-20260405-0241",
+  "recordedAt": "2026-04-05T11:14:20.847Z",
+  "recordedAtKst": "2026-04-05 20:14:20 KST",
+  "runTitle": "Vercel targeted QA - response process detail visibility after streaming fix",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_7jE6t8itS7ZtVKaas7Wu6JmKNs2e",
+    "deploymentUrl": "https://openmanager-k2hp2yhiy-skyasus-projects.vercel.app",
+    "commitSha": "0a6cc4bc79173191f05da6fe23f54be8f2821ec4"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": ["ai-core"],
+  "coveredSurfaces": [
+    "Vercel production deployment 0a6cc4bc7 promoted",
+    "dashboard AI sidebar opens on production",
+    "simple streaming prompt shows Trace ID inside analysis basis details",
+    "Cloud Run AI prompt shows handoff path inside analysis basis details"
+  ],
+  "skippedSurfaces": [
+    "broad release-gate pack",
+    "tool result summary presence across every prompt type",
+    "fullscreen AI workspace parity"
+  ],
+  "checks": {
+    "total": 4,
+    "passed": 4,
+    "failed": 0
+  },
+  "expertAssessments": [],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-04-05T20:14:30+09:00",
+      "summary": "Current billing period reviewed after production deploy; billed 0.0000 USD with no unexpected spike.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Streaming sidebar response now exposes Trace ID when analysis basis details are expanded.",
+    "A second production prompt completed on Cloud Run AI and exposed an agent handoff path inside the response-process section.",
+    "This validates the user-facing response-process detail panel on both streaming and Cloud Run-backed paths after commit 0a6cc4bc7."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Vercel URL",
+      "url": "https://openmanager-ai.vercel.app/"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Deployment dpl_7jE6t8itS7ZtVKaas7Wu6JmKNs2e",
+      "url": "https://vercel.com/skyasus-projects/openmanager-ai/7jE6t8itS7ZtVKaas7Wu6JmKNs2e"
+    }
+  ]
+}

@@ -1,0 +1,88 @@
+{
+  "runId": "QA-20260405-0242",
+  "recordedAt": "2026-04-05T11:15:27.092Z",
+  "recordedAtKst": "2026-04-05 20:15:27 KST",
+  "runTitle": "QA tracker closeout - response process detail production fixes",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_7jE6t8itS7ZtVKaas7Wu6JmKNs2e",
+    "deploymentUrl": "https://openmanager-k2hp2yhiy-skyasus-projects.vercel.app",
+    "commitSha": "0a6cc4bc79173191f05da6fe23f54be8f2821ec4"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": ["ai-core"],
+  "coveredSurfaces": [
+    "qa tracker improvement closeout after production verification"
+  ],
+  "skippedSurfaces": ["broad release-gate pack"],
+  "checks": {
+    "total": 1,
+    "passed": 1,
+    "failed": 0
+  },
+  "expertAssessments": [],
+  "usageChecks": [],
+  "artifacts": [],
+  "completedImprovements": [
+    {
+      "id": "ai-chat-response-process-details-production",
+      "title": "Production assistant responses should expose detailed response-process fields when analysis basis is expanded",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "QA-20260405-0241 verified Trace ID on streaming path and handoff path on Cloud Run-backed response.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "ai-chat-response-process-metadata-production",
+      "title": "Production AI responses should expose response-process metadata when analysis basis is shown",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "QA-20260405-0241 verified response-process metadata on both streaming and Cloud Run paths.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "ai-chat-cloud-run-rate-limit-production",
+      "title": "Complex Cloud Run AI verification path should complete without rate-limit failure in production",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "QA-20260405-0241 completed a Cloud Run AI prediction prompt successfully on production without rate-limit failure.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Closeout run only: converts previously pending production response-process issues to completed after QA-20260405-0241."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Vercel URL",
+      "url": "https://openmanager-ai.vercel.app/"
+    }
+  ]
+}

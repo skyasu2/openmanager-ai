@@ -1,7 +1,7 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-04-05 19:18:48 KST
+> Generated at: 2026-04-05 20:15:28 KST
 
 ## Summary
 
@@ -11,19 +11,19 @@
 | Total Checks | 1769 |
 | Passed | 1699 |
 | Failed | 64 |
-| Completed Items | 274 |
-| Pending Items | 3 |
+| Completed Items | 277 |
+| Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 14 |
 | Expert Domains Tracked | 8 |
 | Expert Open Gaps | 0 |
-| Completion Rate | 98.92% |
+| Completion Rate | 100% |
 | Last Counted Run | QA-20260405-0238 (2026-04-05T06:21:39.750Z) |
-| Latest Recorded Run | QA-20260405-0240 (2026-04-05T10:18:47.152Z) |
+| Latest Recorded Run | QA-20260405-0242 (2026-04-05T11:15:27.092Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260405-0240 (2026-04-05T10:18:47.152Z)
+Latest run: QA-20260405-0242 (2026-04-05T11:15:27.092Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -33,24 +33,23 @@ Latest run: QA-20260405-0240 (2026-04-05T10:18:47.152Z)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period reviewed after production deploy; billed 0.0000 USD with no unexpected spike. |
+| - | - | - | - | - |
 
 ## Coverage (Latest Run)
 
 - Scope: targeted
 - Release-Facing: no
 - Counts Toward Summary: no
-- Deployment: dpl_EggevnrYHhWKcW5ak4VeSeAHqMAw / SHA a52918f6
+- Deployment: dpl_7jE6t8itS7ZtVKaas7Wu6JmKNs2e / SHA 0a6cc4bc
 - Coverage Packs: ai-core
-- Covered Surfaces: Vercel production deployment a52918f6f promoted, dashboard AI sidebar opens on production, fresh streaming response renders analysis basis badge, complex prompt triggers Cloud Run AI job-queue path
-- Skipped Surfaces: broad release-gate pack, Cloud Run direct runtime logs, fullscreen AI workspace parity after new deploy
+- Covered Surfaces: qa tracker improvement closeout after production verification
+- Skipped Surfaces: broad release-gate pack
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
 | general | Vercel URL | [link](https://openmanager-ai.vercel.app/) | - |
-| vercel-deployment | Deployment dpl_EggevnrYHhWKcW5ak4VeSeAHqMAw | [link](https://vercel.com/skyasus-projects/openmanager-ai/EggevnrYHhWKcW5ak4VeSeAHqMAw) | - |
 
 ## Artifacts (Latest Run)
 
@@ -64,9 +63,7 @@ Latest run: QA-20260405-0240 (2026-04-05T10:18:47.152Z)
 
 ## Pending Improvements
 
-- [P1] ai-chat-cloud-run-rate-limit-production: Complex Cloud Run AI verification path should complete without rate-limit failure in production (seen 1회, last QA-20260405-0240)
-- [P1] ai-chat-response-process-details-production: Production assistant responses should expose detailed response-process fields when analysis basis is expanded (seen 1회, last QA-20260405-0240)
-- [P1] ai-chat-response-process-metadata-production: Production AI responses should expose response-process metadata when analysis basis is shown (seen 1회, last QA-20260405-0239)
+- None
 
 ## Deferred Improvements
 
@@ -110,6 +107,7 @@ Latest run: QA-20260405-0240 (2026-04-05T10:18:47.152Z)
 - ai-assistant-fullscreen-query-path: AI 전체 화면 핵심 서버 상태 요약 질의 검증 (completed 1회, last QA-20260318-0123)
 - ai-assistant-fullscreen-tools-parity: AI 전체 화면 도구 메뉴 parity 검증 (completed 1회, last QA-20260318-0123)
 - ai-chat-cloud-run-500: AI Chat Cloud Run 자유입력 응답 - 최종 성공 확인 (completed 1회, last QA-20260310-0089)
+- ai-chat-cloud-run-rate-limit-production: Complex Cloud Run AI verification path should complete without rate-limit failure in production (completed 1회, last QA-20260405-0242)
 - ai-chat-empty-response: AI Chat 서버 상태 요약 질문에 빈 응답 반환 (completed 1회, last QA-20260315-0100)
 - ai-chat-latency-regression-recheck-20260310: AI Chat latency regression claim rechecked on production (completed 1회, last QA-20260310-0071)
 - ai-chat-pass: AI Chat 응답 품질 정상 (OTel 데이터 기반 분석) (completed 1회, last QA-20260326-0190)
@@ -117,6 +115,8 @@ Latest run: QA-20260405-0240 (2026-04-05T10:18:47.152Z)
 - ai-chat-quality-v880-quality-recheck: AI Chat 응답 품질 재검증 (completed 1회, last QA-20260308-0059)
 - ai-chat-quality-v880-recheck: AI Chat 응답 품질 및 완료 시간 재검증 (completed 1회, last QA-20260308-0058)
 - ai-chat-response: AI Chat 응답 (completed 1회, last QA-20260301-0035)
+- ai-chat-response-process-details-production: Production assistant responses should expose detailed response-process fields when analysis basis is expanded (completed 1회, last QA-20260405-0242)
+- ai-chat-response-process-metadata-production: Production AI responses should expose response-process metadata when analysis basis is shown (completed 1회, last QA-20260405-0242)
 - ai-chat-response-quality: AI Chat 핵심요약+상세분석+구체적 권고 응답 (completed 1회, last QA-20260306-0051)
 - ai-chat-response-quality-v879: AI Chat 스트리밍 응답 및 권고 검증 (completed 1회, last QA-20260306-0052)
 - ai-chat-response-quality-v880-recheck-20260309: AI Chat 응답 품질 및 권고 재검증 (completed 4회, last QA-20260309-0068)
@@ -383,6 +383,8 @@ Latest run: QA-20260405-0240 (2026-04-05T10:18:47.152Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260405-0242 | 2026-04-05T11:15:27.092Z | targeted | no | no | QA tracker closeout - response process detail production fixes | 1 | 3 | 0 | 0 | 0 | 0 |
+| QA-20260405-0241 | 2026-04-05T11:14:20.847Z | targeted | no | no | Vercel targeted QA - response process detail visibility after streaming fix | 4 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260405-0240 | 2026-04-05T10:18:47.152Z | targeted | no | no | Vercel targeted QA - response process detail post-deploy verification | 5 | 0 | 2 | 0 | 0 | 0 |
 | QA-20260405-0239 | 2026-04-05T09:34:55.345Z | targeted | no | no | Vercel targeted QA - assistant response process detail visibility | 4 | 0 | 1 | 0 | 0 | 0 |
 | QA-20260405-0238 | 2026-04-05T06:21:39.750Z | release-gate | yes | yes | Broad Release-Gate QA - Final Golden State Baseline Alignment | 15 | 0 | 0 | 0 | 0 | 0 |
@@ -401,6 +403,4 @@ Latest run: QA-20260405-0240 (2026-04-05T10:18:47.152Z)
 | QA-20260404-0225 | 2026-04-04T13:21:41.671Z | broad | yes | yes | Vercel Production Broad Release QA - core routes, dashboard modal tabs, and AI streaming parity | 16 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260404-0224 | 2026-04-04T13:06:03.179Z | targeted | no | yes | Vercel Playwright QA - dashboard/AI parity confirmation after deterministic summary fallback patch | 9 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260404-0223 | 2026-04-04T11:06:01.219Z | targeted | no | yes | Vercel Playwright QA - dashboard/AI parity rerun after ai-engine parity patch | 9 | 0 | 1 | 0 | 0 | 2 |
-| QA-20260404-0222 | 2026-04-04T09:17:33.588Z | broad | no | yes | Vercel Playwright QA - dashboard, AI assistant, and monitoring parity check | 13 | 0 | 1 | 0 | 1 | 2 |
-| QA-20260403-0221 | 2026-04-03T11:53:21.760Z | targeted | no | yes | Post-push Vercel production smoke after Groq priority update | 3 | 0 | 0 | 0 | 0 | 0 |
 
