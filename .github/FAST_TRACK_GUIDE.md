@@ -4,7 +4,7 @@
 
 빠른 배포보다 중요한 것은 **불필요한 GitHub Actions 사용량을 늘리지 않는 것**입니다.
 
-- 표준 경로: 로컬 hook + scope-based GitHub Actions + Vercel 자동 배포
+- 표준 경로: 로컬 hook + GitLab CI validate/deploy + Vercel prebuilt 배포(GitLab CI 경유)
 - 비용 민감 작업: 수동 실행 우선
 - 비필수 schedule: 기본 off
 
@@ -20,12 +20,12 @@
 
 ```bash
 git commit -m "feat: change"
-git push origin <branch>
+git push gitlab <branch>
 ```
 
-- `ci-optimized.yml`가 scope 기반으로 필요한 job만 실행
-- 프런트엔드 변경이 있을 때만 `E2E Critical` 실행
-- AI Engine 변경이 있을 때만 Cloud Run unit/smoke 경로 실행
+- canonical 배포 반영은 `git push gitlab main`
+- GitHub 공개 snapshot 동기화는 명시적으로 `npm run sync:github` 실행
+- `origin`은 배포 경로가 아니며 기본 push 대상으로 사용하지 않음
 
 ### 2. 수동 고비용 검증
 
@@ -33,7 +33,7 @@ git push origin <branch>
 
 - `quality-gates.yml`
 - `prompt-eval.yml`
-- `release-manual.yml`
+- `release-manual.yml` (기본적으로 direct main push 비활성)
 - `keep-alive.yml`
 - `artifact-cleanup.yml`
 
@@ -75,6 +75,7 @@ git commit -m "docs: wording update [skip ci]"
 
 ## 운영 메모
 
-- Vercel이 프런트엔드 배포의 권위 있는 빌드 경로입니다.
-- GitHub Actions는 배포와 별개로 품질/보안 게이트를 담당합니다.
+- 프런트엔드 배포 권한은 GitLab CI `deploy` job에 있습니다.
+- Vercel Git Integration은 해제되어 있으며 GitLab CI가 `vercel build --prod` + `vercel deploy --prebuilt --prod`를 호출합니다.
+- GitHub Actions는 보조 워크플로로 유지되며 canonical 배포 경로가 아닙니다.
 - larger runner, 상시 스케줄, 무차별 E2E 상시 실행은 추가하지 않습니다.
