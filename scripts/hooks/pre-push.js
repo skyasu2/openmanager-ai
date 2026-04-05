@@ -45,6 +45,7 @@ const {
   executeTestExecutionPlan,
 } = require('./pre-push-test-runner');
 const {
+  checkCanonicalRemotePush,
   checkGitLabCiSemanticGuard,
   checkCloudBuildFreeTierGuard,
   checkNodeModules,
@@ -57,6 +58,8 @@ const npmCmd = isWindows ? 'npm.cmd' : 'npm';
 const npxCmd = isWindows ? 'npx.cmd' : 'npx';
 const gitCmd = isWindows ? 'git.exe' : 'git';
 const cwd = process.cwd();
+const prePushRemoteName = process.argv[2] || '';
+const prePushRemoteUrl = process.argv[3] || '';
 const isWindowsFS = cwd.startsWith('/mnt/');
 const cloudRunCwd = path.join(cwd, CLOUD_RUN_ROOT);
 
@@ -544,6 +547,8 @@ function main() {
   if (!isLimitedMode) {
     checkWSLPerformance(isWSL, isWindowsFS);
   }
+
+  exitIfGuardFailed(checkCanonicalRemotePush(prePushRemoteName, prePushRemoteUrl, runGit));
 
   exitIfGuardFailed(
     checkNodeModules(cwd, SKIP_NODE_CHECK, isWSL, isWindows, isWindowsFS)

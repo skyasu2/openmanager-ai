@@ -22,6 +22,10 @@ function createGuardResult(ok, extra = {}) {
   return { ok, ...extra };
 }
 
+function normalizeRemoteValue(value) {
+  return String(value || '').trim();
+}
+
 function countIndent(line) {
   const match = line.match(/^(\s*)/);
   return match ? match[1].length : 0;
@@ -81,6 +85,78 @@ function findGitLabCiSemanticIssues(content) {
   }
 
   return issues;
+}
+
+// ─── Canonical remote push guard ─────────────────────────────────────────
+
+function resolveCanonicalRemote(runGit) {
+  const pushDefault = normalizeRemoteValue(runGit(['config', '--get', 'remote.pushDefault']));
+  if (pushDefault) return pushDefault;
+
+  const branchName = normalizeRemoteValue(runGit(['rev-parse', '--abbrev-ref', 'HEAD']));
+  if (branchName && branchName !== 'HEAD') {
+    const branchRemote = normalizeRemoteValue(
+      runGit(['config', '--get', `branch.${branchName}.remote`])
+    );
+    if (branchRemote) return branchRemote;
+  }
+
+  return 'gitlab';
+}
+
+/**
+ * @param {string} remoteName
+ * @param {string} remoteUrl
+ * @param {Function} runGit - (args: string[]) => string
+ */
+function checkCanonicalRemotePush(remoteName, remoteUrl, runGit) {
+  const targetRemoteName = normalizeRemoteValue(remoteName);
+  const targetRemoteUrl = normalizeRemoteValue(remoteUrl);
+
+  if (!targetRemoteName && !targetRemoteUrl) {
+    return createGuardResult(true, { skipped: true });
+  }
+
+  if (process.env.ALLOW_NON_CANONICAL_PUSH === 'true') {
+    console.log(
+      '⚠️  Non-canonical remote push allowed (ALLOW_NON_CANONICAL_PUSH=true)'
+    );
+    return createGuardResult(true, { skipped: true });
+  }
+
+  const canonicalRemote = resolveCanonicalRemote(runGit);
+  const canonicalRemoteUrl = normalizeRemoteValue(
+    runGit(['remote', 'get-url', canonicalRemote])
+  );
+  const targetLabel = targetRemoteName || targetRemoteUrl;
+
+  const sameRemoteName =
+    targetRemoteName &&
+    canonicalRemote &&
+    targetRemoteName.toLowerCase() === canonicalRemote.toLowerCase();
+  const sameRemoteUrl =
+    targetRemoteUrl &&
+    canonicalRemoteUrl &&
+    targetRemoteUrl.toLowerCase() === canonicalRemoteUrl.toLowerCase();
+
+  if (sameRemoteName || sameRemoteUrl) {
+    return createGuardResult(true);
+  }
+
+  console.log('❌ Non-canonical remote push blocked by policy');
+  console.log(`   target remote: ${targetLabel}`);
+  console.log(
+    `   canonical remote: ${canonicalRemote}${canonicalRemoteUrl ? ` (${canonicalRemoteUrl})` : ''}`
+  );
+  console.log('');
+  console.log('💡 Use: git push gitlab <branch>');
+  console.log('💡 Public snapshot sync: npm run sync:github');
+  console.log('⚠️  Temporary bypass: ALLOW_NON_CANONICAL_PUSH=true git push <remote> <ref>');
+  return createGuardResult(false, {
+    reason: 'non-canonical-remote-push',
+    targetRemote: targetLabel,
+    canonicalRemote,
+  });
 }
 
 // ─── Cloud Build free-tier guard ─────────────────────────────────────────
@@ -339,6 +415,7 @@ function checkEnvironment(cwd, runNpm) {
 }
 
 module.exports = {
+  checkCanonicalRemotePush,
   checkGitLabCiSemanticGuard,
   checkCloudBuildFreeTierGuard,
   checkNodeModules,
