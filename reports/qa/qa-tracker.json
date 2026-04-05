@@ -2,10 +2,10 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-05T05:47:50.876Z"
+    "updatedAt": "2026-04-05T06:10:23.695Z"
   },
   "sequence": {
-    "nextRunNumber": 237
+    "nextRunNumber": 238
   },
   "summary": {
     "totalRuns": 228,
@@ -21,8 +21,8 @@
     "expertDomainsOpenGaps": 0,
     "lastRunId": "QA-20260405-0236",
     "lastRecordedAt": "2026-04-05T05:47:50.876Z",
-    "latestRecordedRunId": "QA-20260405-0236",
-    "latestRecordedAt": "2026-04-05T05:47:50.876Z"
+    "latestRecordedRunId": "QA-20260405-0237",
+    "latestRecordedAt": "2026-04-05T06:10:23.695Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -20572,6 +20572,94 @@
       ],
       "links": [],
       "expertCount": 3,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260405-0237",
+      "recordedAt": "2026-04-05T06:10:23.695Z",
+      "recordedAtKst": "2026-04-05 15:10:23 KST",
+      "title": "Vercel production targeted health recheck after gate warning clarification",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260405-0237.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_2MuHQZg4ePQmikAr8MYk5rkWj1ic",
+        "deploymentUrl": "https://openmanager-6g0msx1j1-skyasus-projects.vercel.app",
+        "commitSha": "7095e76834d0a20e9e35640e753dfa731a6a5e7f"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": false,
+      "coveragePacks": ["core-routes-smoke", "observability-pack"],
+      "coveredSurfaces": [
+        "latest Vercel production deployment metadata (READY/PROMOTED)",
+        "/ landing render (console error 0)",
+        "/validation render (console error 0)",
+        "/api/version 200 (8.10.8 / Next.js 16.1.6 / production)",
+        "/api/health healthy (db 3ms / cache 2ms / ai 2ms)",
+        "Vercel usage billed 0.0000 USD"
+      ],
+      "skippedSurfaces": [
+        "/main",
+        "/login",
+        "/system-boot",
+        "/dashboard",
+        "/dashboard/ai-assistant",
+        "AI streaming path",
+        "active alerts modal",
+        "topology modal",
+        "server detail tabs",
+        "Cloud Run /monitoring",
+        "Cloud Run /monitoring/traces"
+      ],
+      "checks": {
+        "total": 6,
+        "passed": 6,
+        "failed": 0
+      },
+      "expertAssessments": [],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-04-05T15:08:10+09:00",
+          "summary": "Current billing period reviewed during targeted production health recheck; effective 1.9605 USD, billed 0.0000 USD, no unexpected usage spike.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "Validation Evidence page",
+          "path": "qa-20260405-0237-validation.png",
+          "note": "Production validation page render after gate warning clarification"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "Validation page",
+          "url": "https://openmanager-ai.vercel.app/validation"
+        },
+        {
+          "type": "general",
+          "label": "Vercel production",
+          "url": "https://openmanager-ai.vercel.app/"
+        }
+      ],
+      "expertCount": 0,
       "expertNeedsImprovementCount": 0,
       "completedCount": 0,
       "pendingCount": 0,
