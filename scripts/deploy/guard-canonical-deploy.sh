@@ -21,8 +21,15 @@ if [[ "$branch" != "main" ]]; then
   exit 1
 fi
 
+if [[ -z "$upstream" ]]; then
+  echo "❌ Local deploy guard: upstream is not set for branch main."
+  echo "   Run once: git branch --set-upstream-to=gitlab/main main"
+  exit 1
+fi
+
 if [[ "$upstream" != "gitlab/main" ]]; then
-  echo "❌ Local deploy guard: upstream must be gitlab/main (current: ${upstream:-none})"
+  echo "❌ Local deploy guard: upstream must be gitlab/main (current: ${upstream})"
+  echo "   Fix: git branch --set-upstream-to=gitlab/main main"
   exit 1
 fi
 

@@ -29,6 +29,26 @@ check_equal() {
   fi
 }
 
+has_fixed_text() {
+  local text="$1"
+  local file="$2"
+  if command -v rg >/dev/null 2>&1; then
+    rg -q --fixed-strings "$text" "$file"
+    return $?
+  fi
+  grep -qF "$text" "$file"
+}
+
+count_pattern_matches() {
+  local pattern="$1"
+  local file="$2"
+  if command -v rg >/dev/null 2>&1; then
+    rg -o "$pattern" "$file" | wc -l | tr -d ' '
+    return 0
+  fi
+  grep -oE "$pattern" "$file" | wc -l | tr -d ' '
+}
+
 echo "== Canonical Routing Verify =="
 
 gitlab_url="$(git remote get-url gitlab 2>/dev/null || true)"
@@ -74,19 +94,19 @@ check_equal \
   "$(git config --local --get branch.main.vscode-merge-base 2>/dev/null || true)" \
   "gitlab/main"
 
-if rg -q 'npm run hook:pre-push -- "\$@"' .husky/pre-push; then
+if has_fixed_text 'npm run hook:pre-push -- "$@"' .husky/pre-push; then
   pass "husky pre-push forwards remote args"
 else
   fail "husky pre-push does not forward hook args"
 fi
 
-if rg -q "ALLOW_GITHUB_PUBLIC_RELEASE_PUSH == 'true'" .github/workflows/release-manual.yml; then
+if has_fixed_text "ALLOW_GITHUB_PUBLIC_RELEASE_PUSH == 'true'" .github/workflows/release-manual.yml; then
   pass "release-manual workflow is gated by ALLOW_GITHUB_PUBLIC_RELEASE_PUSH"
 else
   fail "release-manual workflow missing ALLOW_GITHUB_PUBLIC_RELEASE_PUSH gate"
 fi
 
-protected_count="$(rg -o '\$CI_COMMIT_REF_PROTECTED == "true"' .gitlab-ci.yml | wc -l | tr -d ' ')"
+protected_count="$(count_pattern_matches '\$CI_COMMIT_REF_PROTECTED == "true"' .gitlab-ci.yml)"
 if [[ "${protected_count:-0}" -ge 3 ]]; then
   pass ".gitlab-ci.yml has protected-main deploy gates ($protected_count)"
 else

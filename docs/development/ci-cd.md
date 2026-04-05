@@ -585,6 +585,8 @@ Dependabot PR 생성
 - Vercel Git Integration은 해제되어 있어 Git push만으로 Vercel이 별도 자동 빌드를 시작하지 않습니다.
 - `SKIP_ENV_VALIDATION=true`로 환경변수 없이도 빌드 성공 보장
 - 기본 Git push 대상은 canonical remote인 `gitlab` 입니다.
+- pre-push 정책상 canonical `main` direct push는 기본 차단입니다. 권장 경로는 feature branch → MR merge 입니다.
+- 긴급 예외(승인된 경우)에 한해 `ALLOW_MAIN_DIRECT_PUSH=true git push gitlab main`으로 1회 우회할 수 있습니다.
 
 ### GitLab main 보호 설정 점검
 
