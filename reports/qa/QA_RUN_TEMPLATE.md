@@ -9,12 +9,13 @@
 npm run qa:record -- --input <qa-run-input.json>
 # 예: npm run qa:record -- --input /tmp/qa-run.json
 npm run qa:status
-npm run qa:status:sync
+npm run qa:status -- --write --sync-public
+npm run qa:evidence:build
 ```
 
 `qa:record` 실행 후 기본 생성물: run JSON (`reports/qa/runs/YYYY/qa-run-QA-YYYYMMDD-NNNN.json`), tracker 갱신, `QA_STATUS.md` 갱신.
 기본값은 `reports/qa/*` 리포트만 갱신하며, public snapshot(`public/data/qa/validation-evidence.json`)은 자동 갱신하지 않습니다.
-`qa:status`는 read-only 요약 조회이고, `qa:status:sync`는 `QA_STATUS.md`와 public snapshot을 명시적으로 수동 재생성합니다.
+`qa:status`는 read-only 요약 조회이고, `npm run qa:status -- --write --sync-public` 또는 `npm run qa:evidence:build`는 public snapshot을 명시적으로 수동 재생성합니다.
 
 ## 환경 요구사항
 

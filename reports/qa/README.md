@@ -55,15 +55,16 @@ reports/qa/
 - `npm run qa:record -- --input /tmp/qa-run-input.json`
 - 기본값은 `reports/qa/*` 리포트만 갱신한다. public snapshot(`public/data/qa/validation-evidence.json`)은 자동 갱신하지 않는다.
 - public snapshot이 정말 필요할 때만:
-  - `npm run qa:status:sync`
+  - `npm run qa:status -- --write --sync-public`
   - 또는 `npm run qa:evidence:build`
 
 1. 요약 확인
 - `npm run qa:status`
-- `npm run qa:status:sync` 또는 `npm run qa:status -- --write`
+- `npm run qa:status -- --write`
+- public snapshot까지 같이 반영하려면 `npm run qa:status -- --write --sync-public`
 - `reports/qa/QA_STATUS.md` 확인
 - `qa:status -- --write`는 `QA_STATUS.md`와 trend artifacts만 재생성한다.
-- `qa:status:sync`는 `QA_STATUS.md`와 `public/data/qa/validation-evidence.json`을 명시적으로 함께 재생성한다.
+- `npm run qa:status -- --write --sync-public`는 `QA_STATUS.md`와 `public/data/qa/validation-evidence.json`을 명시적으로 함께 재생성한다.
   - 단, proof/public evidence 계약이 아직 없으면 `qa:status`는 실패하지 않고 public evidence 갱신을 skip 로그로 남긴다.
   - 이 경우 stale `public/data/qa/validation-evidence.json`이 남아 있으면 자동으로 제거해 tracker/public evidence drift를 방지한다.
 

@@ -1108,7 +1108,7 @@ function run() {
   );
   if (!args.syncPublic) {
     console.log(
-      '- public evidence: skipped by default (reports only). Run `npm run qa:status:sync` or add `--sync-public` to publish the snapshot.'
+      '- public evidence: skipped by default (reports only). Run `npm run qa:evidence:build` or `npm run qa:status -- --write --sync-public` to publish the snapshot.'
     );
   }
 }

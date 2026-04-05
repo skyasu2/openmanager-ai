@@ -131,7 +131,7 @@
     "qa:evidence:build": "node scripts/qa/build-validation-evidence.js",
     "qa:record": "node scripts/qa/record-qa-run.js",
     "qa:status": "node scripts/qa/print-qa-status.js",
-    "qa:status:sync": "node scripts/qa/print-qa-status.js --write --sync-public",
+    "qa:status:sync": "node scripts/qa/print-qa-status.js --write",
     "qa:trends": "node scripts/qa/print-qa-trends.js",
     "qa:trends:write": "node scripts/qa/print-qa-trends.js --write",
     "test:fast": "npm run test",

@@ -23,7 +23,9 @@ function printUsage() {
   console.log('Usage: npm run qa:status [-- --write]');
   console.log('  default: read-only summary from qa-tracker.json');
   console.log('  --write: regenerate reports/qa/QA_STATUS.md and trend artifacts before printing');
-  console.log('  --sync-public: also regenerate public/data/qa/validation-evidence.json');
+  console.log(
+    '  --sync-public: also regenerate public/data/qa/validation-evidence.json'
+  );
 }
 
 function run() {
@@ -72,7 +74,7 @@ function run() {
       }
     } else {
       validationEvidenceSyncMessage =
-        '- public evidence unchanged (use `--sync-public` or `npm run qa:status:sync` to publish)';
+        '- public evidence unchanged (use `--sync-public` with `npm run qa:status -- --write` or run `npm run qa:evidence:build` to publish)';
     }
     const { markdownPath, jsonPath } = writeQaTrendArtifacts({
       trackerPath: TRACKER_PATH,
