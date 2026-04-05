@@ -1,0 +1,77 @@
+{
+  "runId": "QA-20260406-0243",
+  "recordedAt": "2026-04-05T17:28:17.948Z",
+  "recordedAtKst": "2026-04-06 02:28:17 KST",
+  "runTitle": "Vercel targeted QA - latest production deploy smoke refresh after canonical routing chore",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_H2A52Y1DvRKLATu7o1A8fb1WbAXf",
+    "deploymentUrl": "https://openmanager-ejzwa4kdx-skyasus-projects.vercel.app",
+    "commitSha": "40bd70932977d2bbbca5b1ea258c27daca706111"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": ["core-routes-smoke", "dashboard-core"],
+  "coveredSurfaces": [
+    "latest production deployment 40bd7093 promoted on Vercel",
+    "/main redirects to /",
+    "landing render with version badge and system start CTA",
+    "browser console errors 0 on landing and dashboard",
+    "/api/health 200 with database/cache/ai connected",
+    "/api/version 200 with v8.10.8 and Next.js 16.1.6",
+    "/system-boot transitions to /dashboard",
+    "dashboard render with 15 total / 14 online / 1 warning and resource top5"
+  ],
+  "skippedSurfaces": [
+    "AI sidebar and streaming prompt validation",
+    "/login, /privacy, /auth/error, /auth/success",
+    "modal-detail pack",
+    "Cloud Run admin observability endpoints"
+  ],
+  "checks": {
+    "total": 8,
+    "passed": 8,
+    "failed": 0
+  },
+  "expertAssessments": [],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-04-06T02:27:13+09:00",
+      "summary": "Current billing period reviewed after production smoke refresh; effective 2.6265 USD, billed 0.0000 USD, no unexpected billed usage spike.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "This run closes the gap between the last QA-verified production deploy (0a6cc4bc / dpl_7jE6t8itS7ZtVKaas7Wu6JmKNs2e) and the current live production deploy (40bd7093 / dpl_H2A52Y1DvRKLATu7o1A8fb1WbAXf).",
+    "Scope was limited to route smoke and dashboard entry because the promoted commit is a canonical git workflow chore, not a user-facing product change."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Vercel URL",
+      "url": "https://openmanager-ai.vercel.app/"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Deployment dpl_H2A52Y1DvRKLATu7o1A8fb1WbAXf",
+      "url": "https://vercel.com/skyasus-projects/openmanager-ai/H2A52Y1DvRKLATu7o1A8fb1WbAXf"
+    }
+  ]
+}

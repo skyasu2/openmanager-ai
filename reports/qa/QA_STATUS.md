@@ -1,7 +1,7 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-04-05 20:15:28 KST
+> Generated at: 2026-04-06 02:28:21 KST
 
 ## Summary
 
@@ -19,11 +19,11 @@
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
 | Last Counted Run | QA-20260405-0238 (2026-04-05T06:21:39.750Z) |
-| Latest Recorded Run | QA-20260405-0242 (2026-04-05T11:15:27.092Z) |
+| Latest Recorded Run | QA-20260406-0243 (2026-04-05T17:28:17.948Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260405-0242 (2026-04-05T11:15:27.092Z)
+Latest run: QA-20260406-0243 (2026-04-05T17:28:17.948Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -33,23 +33,24 @@ Latest run: QA-20260405-0242 (2026-04-05T11:15:27.092Z)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| - | - | - | - | - |
+| vercel | cli | checked | normal | Current billing period reviewed after production smoke refresh; effective 2.6265 USD, billed 0.0000 USD, no unexpected billed usage spike. |
 
 ## Coverage (Latest Run)
 
 - Scope: targeted
 - Release-Facing: no
 - Counts Toward Summary: no
-- Deployment: dpl_7jE6t8itS7ZtVKaas7Wu6JmKNs2e / SHA 0a6cc4bc
-- Coverage Packs: ai-core
-- Covered Surfaces: qa tracker improvement closeout after production verification
-- Skipped Surfaces: broad release-gate pack
+- Deployment: dpl_H2A52Y1DvRKLATu7o1A8fb1WbAXf / SHA 40bd7093
+- Coverage Packs: core-routes-smoke, dashboard-core
+- Covered Surfaces: latest production deployment 40bd7093 promoted on Vercel, /main redirects to /, landing render with version badge and system start CTA, browser console errors 0 on landing and dashboard, /api/health 200 with database/cache/ai connected, /api/version 200 with v8.10.8 and Next.js 16.1.6, /system-boot transitions to /dashboard, dashboard render with 15 total / 14 online / 1 warning and resource top5
+- Skipped Surfaces: AI sidebar and streaming prompt validation, /login, /privacy, /auth/error, /auth/success, modal-detail pack, Cloud Run admin observability endpoints
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
 | general | Vercel URL | [link](https://openmanager-ai.vercel.app/) | - |
+| vercel-deployment | Deployment dpl_H2A52Y1DvRKLATu7o1A8fb1WbAXf | [link](https://vercel.com/skyasus-projects/openmanager-ai/H2A52Y1DvRKLATu7o1A8fb1WbAXf) | - |
 
 ## Artifacts (Latest Run)
 
@@ -383,6 +384,7 @@ Latest run: QA-20260405-0242 (2026-04-05T11:15:27.092Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260406-0243 | 2026-04-05T17:28:17.948Z | targeted | no | no | Vercel targeted QA - latest production deploy smoke refresh after canonical routing chore | 8 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260405-0242 | 2026-04-05T11:15:27.092Z | targeted | no | no | QA tracker closeout - response process detail production fixes | 1 | 3 | 0 | 0 | 0 | 0 |
 | QA-20260405-0241 | 2026-04-05T11:14:20.847Z | targeted | no | no | Vercel targeted QA - response process detail visibility after streaming fix | 4 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260405-0240 | 2026-04-05T10:18:47.152Z | targeted | no | no | Vercel targeted QA - response process detail post-deploy verification | 5 | 0 | 2 | 0 | 0 | 0 |
@@ -402,5 +404,4 @@ Latest run: QA-20260405-0242 (2026-04-05T11:15:27.092Z)
 | QA-20260404-0226 | 2026-04-04T14:03:16.371Z | targeted | no | yes | Vercel targeted QA - guest flow and dashboard/AI parity smoke | 12 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260404-0225 | 2026-04-04T13:21:41.671Z | broad | yes | yes | Vercel Production Broad Release QA - core routes, dashboard modal tabs, and AI streaming parity | 16 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260404-0224 | 2026-04-04T13:06:03.179Z | targeted | no | yes | Vercel Playwright QA - dashboard/AI parity confirmation after deterministic summary fallback patch | 9 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260404-0223 | 2026-04-04T11:06:01.219Z | targeted | no | yes | Vercel Playwright QA - dashboard/AI parity rerun after ai-engine parity patch | 9 | 0 | 1 | 0 | 0 | 2 |
 
