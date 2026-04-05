@@ -2,15 +2,15 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-05T05:28:30.284Z"
+    "updatedAt": "2026-04-05T05:47:50.876Z"
   },
   "sequence": {
-    "nextRunNumber": 236
+    "nextRunNumber": 237
   },
   "summary": {
-    "totalRuns": 227,
-    "totalChecks": 1742,
-    "totalPassed": 1672,
+    "totalRuns": 228,
+    "totalChecks": 1754,
+    "totalPassed": 1684,
     "totalFailed": 64,
     "completionRate": 100,
     "completedItems": 274,
@@ -19,10 +19,10 @@
     "wontFixItems": 14,
     "expertDomainsTracked": 6,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260405-0235",
-    "lastRecordedAt": "2026-04-05T05:28:30.284Z",
-    "latestRecordedRunId": "QA-20260405-0235",
-    "latestRecordedAt": "2026-04-05T05:28:30.284Z"
+    "lastRunId": "QA-20260405-0236",
+    "lastRecordedAt": "2026-04-05T05:47:50.876Z",
+    "latestRecordedRunId": "QA-20260405-0236",
+    "latestRecordedAt": "2026-04-05T05:47:50.876Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -20445,6 +20445,138 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260405-0236",
+      "recordedAt": "2026-04-05T05:47:50.876Z",
+      "recordedAtKst": "2026-04-05 14:47:50 KST",
+      "title": "Vercel production complementary release-gate QA for secondary routes and AI workspace",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260405-0236.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_2MuHQZg4ePQmikAr8MYk5rkWj1ic",
+        "deploymentUrl": "https://openmanager-6g0msx1j1-skyasus-projects.vercel.app",
+        "commitSha": "7095e76834d0a20e9e35640e753dfa731a6a5e7f"
+      },
+      "scope": "release-gate",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "core-routes-smoke",
+        "dashboard-core",
+        "ai-core",
+        "modal-detail-pack"
+      ],
+      "coveredSurfaces": [
+        "/main legacy redirect -> /",
+        "/privacy render (console error 0)",
+        "/auth/error render (console error 0)",
+        "/auth/success -> /login?error=no_user handoff",
+        "guest PIN login",
+        "system start countdown -> /dashboard redirect",
+        "dashboard summary counts (전체 15 / 온라인 14 / 경고 1 / 위험 0 / 오프라인 0)",
+        "active alerts modal",
+        "topology modal",
+        "fullscreen AI workspace route render",
+        "AI workspace starter prompt send + response",
+        "AI stream endpoint 200"
+      ],
+      "skippedSurfaces": [
+        "/validation",
+        "/api/version",
+        "/api/health",
+        "server detail modal 3-tab drilldown",
+        "reporter flow",
+        "analyst flow",
+        "Cloud Run admin /monitoring",
+        "Cloud Run admin /monitoring/traces"
+      ],
+      "checks": {
+        "total": 12,
+        "passed": 12,
+        "failed": 0
+      },
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Fullscreen AI workspace route, starter prompt send, and production response completion were verified in the same session as the secondary route checks.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The same promoted Vercel production deployment stayed healthy while secondary routes, guest handoff, dashboard modals, and AI route transitions were exercised.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "This complementary release-gate run extends reusable Playwright MCP evidence to routes and modals that were skipped in the prior release-gate run.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-04-05T14:42:11+09:00",
+          "summary": "Current billing period reviewed before complementary release-gate QA; effective 1.9605 USD, billed 0.0000 USD, no unexpected usage spike.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "Topology modal",
+          "path": ".playwright-mcp/screenshots/qa-20260405-0236-topology.png",
+          "note": "Topology modal open evidence"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "AI workspace",
+          "path": "qa-20260405-0236-ai-workspace.png",
+          "note": "Fullscreen AI workspace render evidence"
+        },
+        {
+          "type": "playwright-report",
+          "label": "AI workspace console log",
+          "path": ".playwright-mcp/screenshots/console-2026-04-05T05-38-03-002Z.log",
+          "note": "No console errors; only benign preload warnings on AI workspace route"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "qa-20260405-0235-404.png",
+          "path": ".playwright-mcp/screenshots/qa-20260405-0235-404.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "qa-20260405-0235-dashboard-ai.png",
+          "path": ".playwright-mcp/screenshots/qa-20260405-0235-dashboard-ai.png"
+        }
+      ],
+      "links": [],
+      "expertCount": 3,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -20453,16 +20585,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 115,
-      "appropriateCount": 111,
+      "seenCount": 116,
+      "appropriateCount": 112,
       "partialCount": 4,
       "inappropriateCount": 0,
       "improvementNeededCount": 14,
-      "lastRunId": "QA-20260405-0235",
-      "lastSeenAt": "2026-04-05T05:28:30.284Z",
+      "lastRunId": "QA-20260405-0236",
+      "lastSeenAt": "2026-04-05T05:47:50.876Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Dashboard slot data and AI streaming response were checked in the same production session and remained numerically aligned.",
+      "lastRationale": "Fullscreen AI workspace route, starter prompt send, and production response completion were verified in the same session as the secondary route checks.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -20504,16 +20636,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 68,
-      "appropriateCount": 65,
+      "seenCount": 69,
+      "appropriateCount": 66,
       "partialCount": 3,
       "inappropriateCount": 0,
       "improvementNeededCount": 7,
-      "lastRunId": "QA-20260405-0235",
-      "lastSeenAt": "2026-04-05T05:28:30.284Z",
+      "lastRunId": "QA-20260405-0236",
+      "lastSeenAt": "2026-04-05T05:47:50.876Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Production alias, deployment evidence, smoke endpoints, and Vercel usage were all validated without release-blocking drift.",
+      "lastRationale": "The same promoted Vercel production deployment stayed healthy while secondary routes, guest handoff, dashboard modals, and AI route transitions were exercised.",
       "lastNextAction": ""
     },
     "test-automation": {
@@ -20521,16 +20653,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 99,
-      "appropriateCount": 92,
+      "seenCount": 100,
+      "appropriateCount": 93,
       "partialCount": 7,
       "inappropriateCount": 0,
       "improvementNeededCount": 9,
-      "lastRunId": "QA-20260405-0235",
-      "lastSeenAt": "2026-04-05T05:28:30.284Z",
+      "lastRunId": "QA-20260405-0236",
+      "lastSeenAt": "2026-04-05T05:47:50.876Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Playwright MCP evidence covered release-gate core routes, dashboard modal behavior, and AI parity checks with reusable artifacts.",
+      "lastRationale": "This complementary release-gate run extends reusable Playwright MCP evidence to routes and modals that were skipped in the prior release-gate run.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {

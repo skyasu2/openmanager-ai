@@ -1,55 +1,55 @@
 {
   "version": "1.0.0",
-  "generatedAt": "2026-04-05T05:28:48.615Z",
-  "generatedAtKst": "2026-04-05 14:28:48 KST",
-  "trackerUpdatedAt": "2026-04-05T05:28:30.284Z",
+  "generatedAt": "2026-04-05T05:48:09.884Z",
+  "generatedAtKst": "2026-04-05 14:48:09 KST",
+  "trackerUpdatedAt": "2026-04-05T05:47:50.876Z",
   "totals": {
-    "recordedRuns": 234,
-    "countedRuns": 227,
-    "totalChecks": 1742,
-    "totalPassed": 1672,
+    "recordedRuns": 235,
+    "countedRuns": 228,
+    "totalChecks": 1754,
+    "totalPassed": 1684,
     "totalFailed": 64,
-    "overallPassRatePct": 95.98,
-    "latestRecordedRunId": "QA-20260405-0235",
-    "lastCountedRunId": "QA-20260405-0235"
+    "overallPassRatePct": 96.01,
+    "latestRecordedRunId": "QA-20260405-0236",
+    "lastCountedRunId": "QA-20260405-0236"
   },
   "windows": [
     {
       "label": "All Counted Runs",
-      "recordedRuns": 227,
-      "countedRuns": 227,
-      "totalChecks": 1742,
-      "totalPassed": 1672,
+      "recordedRuns": 228,
+      "countedRuns": 228,
+      "totalChecks": 1754,
+      "totalPassed": 1684,
       "totalFailed": 64,
-      "passRatePct": 95.98,
+      "passRatePct": 96.01,
       "failingRunCount": 40,
-      "failingRunRatePct": 17.62,
+      "failingRunRatePct": 17.54,
       "regressionRunCount": 45,
-      "regressionRunRatePct": 19.82,
+      "regressionRunRatePct": 19.74,
       "pendingRunCount": 34,
-      "releaseFacingRuns": 17
+      "releaseFacingRuns": 18
     },
     {
       "label": "Last 30 Counted Runs",
       "recordedRuns": 30,
       "countedRuns": 30,
-      "totalChecks": 281,
-      "totalPassed": 277,
+      "totalChecks": 286,
+      "totalPassed": 282,
       "totalFailed": 4,
-      "passRatePct": 98.58,
+      "passRatePct": 98.6,
       "failingRunCount": 3,
       "failingRunRatePct": 10,
       "regressionRunCount": 3,
       "regressionRunRatePct": 10,
       "pendingRunCount": 3,
-      "releaseFacingRuns": 8
+      "releaseFacingRuns": 9
     },
     {
       "label": "Last 10 Counted Runs",
       "recordedRuns": 10,
       "countedRuns": 10,
-      "totalChecks": 120,
-      "totalPassed": 120,
+      "totalChecks": 116,
+      "totalPassed": 116,
       "totalFailed": 0,
       "passRatePct": 100,
       "failingRunCount": 0,
@@ -63,27 +63,27 @@
   "gateWindows": [
     {
       "label": "All Gate Runs",
-      "recordedRuns": 12,
-      "countedRuns": 12,
-      "totalChecks": 168,
-      "totalPassed": 164,
+      "recordedRuns": 13,
+      "countedRuns": 13,
+      "totalChecks": 180,
+      "totalPassed": 176,
       "totalFailed": 2,
-      "passRatePct": 97.62,
+      "passRatePct": 97.78,
       "failingRunCount": 2,
-      "failingRunRatePct": 16.67,
+      "failingRunRatePct": 15.38,
       "regressionRunCount": 2,
-      "regressionRunRatePct": 16.67,
+      "regressionRunRatePct": 15.38,
       "pendingRunCount": 2,
-      "releaseFacingRuns": 11
+      "releaseFacingRuns": 12
     },
     {
       "label": "Last 5 Gate Runs",
       "recordedRuns": 5,
       "countedRuns": 5,
-      "totalChecks": 77,
-      "totalPassed": 76,
+      "totalChecks": 75,
+      "totalPassed": 74,
       "totalFailed": 1,
-      "passRatePct": 98.7,
+      "passRatePct": 98.67,
       "failingRunCount": 1,
       "failingRunRatePct": 20,
       "regressionRunCount": 1,
@@ -95,10 +95,10 @@
   "releaseGateWindows": [
     {
       "label": "All Release-Gate Runs",
-      "recordedRuns": 2,
-      "countedRuns": 2,
-      "totalChecks": 34,
-      "totalPassed": 34,
+      "recordedRuns": 3,
+      "countedRuns": 3,
+      "totalChecks": 46,
+      "totalPassed": 46,
       "totalFailed": 0,
       "passRatePct": 100,
       "failingRunCount": 0,
@@ -106,14 +106,14 @@
       "regressionRunCount": 0,
       "regressionRunRatePct": 0,
       "pendingRunCount": 0,
-      "releaseFacingRuns": 2
+      "releaseFacingRuns": 3
     },
     {
       "label": "Last 5 Release-Gate Runs",
-      "recordedRuns": 2,
-      "countedRuns": 2,
-      "totalChecks": 34,
-      "totalPassed": 34,
+      "recordedRuns": 3,
+      "countedRuns": 3,
+      "totalChecks": 46,
+      "totalPassed": 46,
       "totalFailed": 0,
       "passRatePct": 100,
       "failingRunCount": 0,
@@ -121,7 +121,7 @@
       "regressionRunCount": 0,
       "regressionRunRatePct": 0,
       "pendingRunCount": 0,
-      "releaseFacingRuns": 2
+      "releaseFacingRuns": 3
     }
   ],
   "scopeDistribution": [
@@ -142,8 +142,8 @@
     },
     {
       "scope": "release-gate",
-      "totalRuns": 2,
-      "countedRuns": 2
+      "totalRuns": 3,
+      "countedRuns": 3
     },
     {
       "scope": "smoke",
@@ -202,13 +202,13 @@
       "deploymentId": "dpl_2MuHQZg4ePQmikAr8MYk5rkWj1ic",
       "target": "vercel-production",
       "commitSha": "7095e76834d0a20e9e35640e753dfa731a6a5e7f",
-      "runCount": 1,
-      "totalChecks": 17,
+      "runCount": 2,
+      "totalChecks": 29,
       "totalFailed": 0,
       "regressionRuns": 0,
       "failingRuns": 0,
-      "latestRecordedAt": "2026-04-05T05:28:30.284Z",
-      "latestRunId": "QA-20260405-0235",
+      "latestRecordedAt": "2026-04-05T05:47:50.876Z",
+      "latestRunId": "QA-20260405-0236",
       "passRatePct": 100,
       "regressionRunRatePct": 0
     },
@@ -513,9 +513,9 @@
     },
     {
       "date": "2026-04-05",
-      "runCount": 5,
-      "totalChecks": 45,
-      "totalPassed": 45,
+      "runCount": 6,
+      "totalChecks": 57,
+      "totalPassed": 57,
       "totalFailed": 0,
       "failingRuns": 0,
       "regressionRuns": 0,
@@ -833,13 +833,6 @@
     ]
   },
   "warnings": [
-    {
-      "code": "release-gate-sample-too-small",
-      "severity": "warning",
-      "headline": "Release-gate history is too small",
-      "detail": "Only 2 counted release-gate run(s) are available.",
-      "recommendedAction": "Build at least 3 counted release-gate runs so the trend can distinguish one-off passes from stable release readiness."
-    },
     {
       "code": "gate-window-regression-open",
       "severity": "warning",

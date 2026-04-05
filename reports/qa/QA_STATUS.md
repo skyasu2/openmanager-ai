@@ -1,15 +1,15 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-04-05 14:28:48 KST
+> Generated at: 2026-04-05 14:48:09 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 227 |
-| Total Checks | 1742 |
-| Passed | 1672 |
+| Total Runs | 228 |
+| Total Checks | 1754 |
+| Passed | 1684 |
 | Failed | 64 |
 | Completed Items | 274 |
 | Pending Items | 0 |
@@ -18,12 +18,12 @@
 | Expert Domains Tracked | 6 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260405-0235 (2026-04-05T05:28:30.284Z) |
-| Latest Recorded Run | QA-20260405-0235 (2026-04-05T05:28:30.284Z) |
+| Last Counted Run | QA-20260405-0236 (2026-04-05T05:47:50.876Z) |
+| Latest Recorded Run | QA-20260405-0236 (2026-04-05T05:47:50.876Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260405-0235 (2026-04-05T05:28:30.284Z)
+Latest run: QA-20260405-0236 (2026-04-05T05:47:50.876Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -35,7 +35,7 @@ Latest run: QA-20260405-0235 (2026-04-05T05:28:30.284Z)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period reviewed after release-gate QA; effective 1.9605 USD, billed 0.0000 USD, no unexpected usage spike. |
+| vercel | cli | checked | normal | Current billing period reviewed before complementary release-gate QA; effective 1.9605 USD, billed 0.0000 USD, no unexpected usage spike. |
 
 ## Coverage (Latest Run)
 
@@ -43,9 +43,9 @@ Latest run: QA-20260405-0235 (2026-04-05T05:28:30.284Z)
 - Release-Facing: yes
 - Counts Toward Summary: yes
 - Deployment: dpl_2MuHQZg4ePQmikAr8MYk5rkWj1ic / SHA 7095e768
-- Coverage Packs: core-routes-smoke, dashboard-core, ai-core, observability-pack
-- Covered Surfaces: / landing render (console error 0), /login render (console error 0), /validation render, /api/version 200 (8.10.8 / production), /api/health healthy (db 6ms, cache 4ms, ai 4ms), 404 route intentional (NOT_FOUND_404), system start countdown -> /dashboard redirect, dashboard summary counts (전체 15 / 온라인 14 / 경고 1 / 위험 0 / 오프라인 0), dashboard resource overview (CPU 32 / Memory 48 / Disk 32), server detail modal open, server detail 3-tab switch (종합 상황 / 성능 분석 / 로그 & 네트워크), server detail modal ESC close, AI sidebar open / engine Ready, AI starter prompt send + streaming response, AI response parity (14 normal, 1 warning, avg CPU 32 / MEM 48 / DISK 32, cache-redis-dc1-01 MEM 83%), AI stream endpoint 200 + text/event-stream + X-AI-Latency-Ms=205
-- Skipped Surfaces: /main legacy redirect, /auth/error, /auth/success, /privacy, topology modal, active alerts modal, reporter flow, analyst flow, Cloud Run admin /monitoring, Cloud Run admin /monitoring/traces
+- Coverage Packs: core-routes-smoke, dashboard-core, ai-core, modal-detail-pack
+- Covered Surfaces: /main legacy redirect -> /, /privacy render (console error 0), /auth/error render (console error 0), /auth/success -> /login?error=no_user handoff, guest PIN login, system start countdown -> /dashboard redirect, dashboard summary counts (전체 15 / 온라인 14 / 경고 1 / 위험 0 / 오프라인 0), active alerts modal, topology modal, fullscreen AI workspace route render, AI workspace starter prompt send + response, AI stream endpoint 200
+- Skipped Surfaces: /validation, /api/version, /api/health, server detail modal 3-tab drilldown, reporter flow, analyst flow, Cloud Run admin /monitoring, Cloud Run admin /monitoring/traces
 
 ## Links (Latest Run)
 
@@ -57,9 +57,11 @@ Latest run: QA-20260405-0235 (2026-04-05T05:28:30.284Z)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | 404 evidence | `.playwright-mcp/screenshots/qa-20260405-0235-404.png` | - |
-| playwright-screenshot | Dashboard AI parity | `.playwright-mcp/screenshots/qa-20260405-0235-dashboard-ai.png` | - |
-| playwright-report | 404 console log | `.playwright-mcp/screenshots/console-2026-04-05T05-24-12-330Z.log` | - |
+| playwright-screenshot | Topology modal | `.playwright-mcp/screenshots/qa-20260405-0236-topology.png` | - |
+| playwright-screenshot | AI workspace | `qa-20260405-0236-ai-workspace.png` | - |
+| playwright-report | AI workspace console log | `.playwright-mcp/screenshots/console-2026-04-05T05-38-03-002Z.log` | - |
+| playwright-screenshot | qa-20260405-0235-404.png | `.playwright-mcp/screenshots/qa-20260405-0235-404.png` | - |
+| playwright-screenshot | qa-20260405-0235-dashboard-ai.png | `.playwright-mcp/screenshots/qa-20260405-0235-dashboard-ai.png` | - |
 
 ## Expert Domain Open Gaps
 
@@ -384,6 +386,7 @@ Latest run: QA-20260405-0235 (2026-04-05T05:28:30.284Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260405-0236 | 2026-04-05T05:47:50.876Z | release-gate | yes | yes | Vercel production complementary release-gate QA for secondary routes and AI workspace | 12 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260405-0235 | 2026-04-05T05:28:30.284Z | release-gate | yes | yes | Vercel production release-gate QA after trend warning rules | 17 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260405-0234 | 2026-04-05T03:57:20.217Z | broad | no | no | GitHub Sync & CI Optimization Golden State Verification | 0 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260405-0233 | 2026-04-04T17:01:53.490Z | targeted | no | yes | QA-only commit pipeline skip validation candidate | 5 | 0 | 0 | 0 | 0 | 0 |
@@ -403,5 +406,4 @@ Latest run: QA-20260405-0235 (2026-04-05T05:28:30.284Z)
 | QA-20260403-0219 | 2026-04-02T23:55:58.440Z | targeted | no | no | Vercel Production QA after propagation of production snapshot guard verification | 7 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260403-0218 | 2026-04-02T23:18:38.480Z | targeted | no | no | Vercel Production QA after public snapshot production-only fix | 7 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260402-0217 | 2026-04-02T14:54:37.522Z | targeted | yes | yes | Playwright MCP targeted QA - 최근 변경사항 코드리뷰 기반 검증 v8.10.8 | 10 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260402-0216 | 2026-04-02T14:32:42.507Z | targeted | no | no | Vercel Production Validation Snapshot Propagation QA after tracker sync | 7 | 0 | 0 | 0 | 0 | 0 |
 
