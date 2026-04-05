@@ -5,6 +5,24 @@ const path = require('node:path');
 
 const docsRoot = 'docs';
 const outputPath = 'reports/docs/docs-inventory.md';
+const DOC_TIME_ZONE = 'Asia/Seoul';
+
+function formatSeoulDate(date) {
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone: DOC_TIME_ZONE,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).formatToParts(date);
+
+  const parsed = {};
+  for (const part of parts) {
+    if (part.type === 'literal') continue;
+    parsed[part.type] = part.value;
+  }
+
+  return `${parsed.year}-${parsed.month}-${parsed.day}`;
+}
 
 function walk(dir) {
   const out = [];
@@ -38,16 +56,17 @@ for (const file of mdFiles) {
 const rows = [...byTopDir.entries()].sort((a, b) => b[1] - a[1]);
 
 let out = '';
+const generatedDate = formatSeoulDate(new Date());
 out += '# Documentation Inventory\n\n';
 out += '> 문서 현황(개수/분포/라인 수)을 요약한 인벤토리 리포트\n';
 out += '> Owner: docs-platform\n';
 out += '> Status: Active\n';
 out += '> Doc type: Reference\n';
-out += `> Last reviewed: ${new Date().toISOString().slice(0, 10)}\n`;
+out += `> Last reviewed: ${generatedDate}\n`;
 out += '> Canonical: reports/docs/docs-inventory.md\n';
 out += '> Tags: docs,inventory,report\n';
 out += '>\n';
-out += `> Auto-generated: ${new Date().toISOString().slice(0, 10)}\n`;
+out += `> Auto-generated: ${generatedDate}\n`;
 out += '> Source: `docs/`\n\n';
 out += `- Total files in docs: **${allFiles.length}**\n`;
 out += `- Total markdown docs: **${mdFiles.length}**\n`;

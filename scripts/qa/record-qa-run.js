@@ -64,6 +64,7 @@ const REQUIRED_VERCEL_BROAD_COVERAGE_PACKS = [
 function parseArgs(argv) {
   const args = {
     input: '',
+    syncPublic: false,
   };
 
   for (let index = 2; index < argv.length; index += 1) {
@@ -71,6 +72,10 @@ function parseArgs(argv) {
     if (current === '--input') {
       args.input = argv[index + 1] || '';
       index += 1;
+      continue;
+    }
+    if (current === '--sync-public') {
+      args.syncPublic = true;
       continue;
     }
   }
@@ -82,7 +87,7 @@ function usage() {
   console.log(
     [
       'Usage:',
-      '  node scripts/qa/record-qa-run.js --input <qa-run-input.json>',
+      '  node scripts/qa/record-qa-run.js --input <qa-run-input.json> [--sync-public]',
       '',
       'Example:',
       '  node scripts/qa/record-qa-run.js --input reports/qa/templates/qa-run-input.example.json',
@@ -1085,7 +1090,7 @@ function run() {
   writeJsonFile(TRACKER_PATH, tracker);
   fs.writeFileSync(STATUS_PATH, statusMarkdown(tracker), 'utf8');
   const generatedFiles = [runFilePath, TRACKER_PATH, STATUS_PATH];
-  if (shouldWriteValidationEvidenceSnapshot(TRACKER_PATH)) {
+  if (args.syncPublic && shouldWriteValidationEvidenceSnapshot(TRACKER_PATH)) {
     writeValidationEvidenceSnapshot({ trackerPath: TRACKER_PATH });
     generatedFiles.push(VALIDATION_EVIDENCE_OUTPUT_PATH);
   }
@@ -1101,6 +1106,11 @@ function run() {
   console.log(
     `- expert domains: tracked=${tracker.summary.expertDomainsTracked || 0}, open-gaps=${tracker.summary.expertDomainsOpenGaps || 0}`
   );
+  if (!args.syncPublic) {
+    console.log(
+      '- public evidence: skipped by default (reports only). Run `npm run qa:evidence:build` or `npm run qa:status -- --write --sync-public` to publish the snapshot.'
+    );
+  }
 }
 
 module.exports = {

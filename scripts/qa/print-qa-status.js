@@ -22,7 +22,10 @@ const VALIDATION_EVIDENCE_PATH = path.resolve(
 function printUsage() {
   console.log('Usage: npm run qa:status [-- --write]');
   console.log('  default: read-only summary from qa-tracker.json');
-  console.log('  --write: regenerate reports/qa/QA_STATUS.md before printing');
+  console.log('  --write: regenerate reports/qa/QA_STATUS.md and trend artifacts before printing');
+  console.log(
+    '  --sync-public: also regenerate public/data/qa/validation-evidence.json'
+  );
 }
 
 function run() {
@@ -39,6 +42,7 @@ function run() {
 
   const tracker = JSON.parse(fs.readFileSync(TRACKER_PATH, 'utf8'));
   const shouldWrite = args.has('--write') || args.has('--sync');
+  const shouldSyncPublic = args.has('--sync-public');
   let validationEvidenceSyncMessage = '';
   let qaTrendSyncMessage = '';
   repairTrackerDerivedFields(tracker);
@@ -46,26 +50,31 @@ function run() {
   if (shouldWrite) {
     fs.writeFileSync(TRACKER_PATH, `${JSON.stringify(tracker, null, 2)}\n`, 'utf8');
     fs.writeFileSync(STATUS_PATH, statusMarkdown(tracker), 'utf8');
-    try {
-      writeValidationEvidenceSnapshot({
-        trackerPath: TRACKER_PATH,
-        outputPath: VALIDATION_EVIDENCE_PATH,
-      });
-      validationEvidenceSyncMessage = `- public evidence synced: ${path.relative(
-        process.cwd(),
-        VALIDATION_EVIDENCE_PATH
-      )}`;
-    } catch (error) {
-      let staleSnapshotRemoved = false;
-      if (fs.existsSync(VALIDATION_EVIDENCE_PATH)) {
-        try {
-          fs.rmSync(VALIDATION_EVIDENCE_PATH, { force: true });
-          staleSnapshotRemoved = !fs.existsSync(VALIDATION_EVIDENCE_PATH);
-        } catch {}
+    if (shouldSyncPublic) {
+      try {
+        writeValidationEvidenceSnapshot({
+          trackerPath: TRACKER_PATH,
+          outputPath: VALIDATION_EVIDENCE_PATH,
+        });
+        validationEvidenceSyncMessage = `- public evidence synced: ${path.relative(
+          process.cwd(),
+          VALIDATION_EVIDENCE_PATH
+        )}`;
+      } catch (error) {
+        let staleSnapshotRemoved = false;
+        if (fs.existsSync(VALIDATION_EVIDENCE_PATH)) {
+          try {
+            fs.rmSync(VALIDATION_EVIDENCE_PATH, { force: true });
+            staleSnapshotRemoved = !fs.existsSync(VALIDATION_EVIDENCE_PATH);
+          } catch {}
+        }
+        validationEvidenceSyncMessage = `- public evidence skipped: ${
+          error instanceof Error ? error.message : String(error)
+        }${staleSnapshotRemoved ? ' (stale snapshot removed)' : ''}`;
       }
-      validationEvidenceSyncMessage = `- public evidence skipped: ${
-        error instanceof Error ? error.message : String(error)
-      }${staleSnapshotRemoved ? ' (stale snapshot removed)' : ''}`;
+    } else {
+      validationEvidenceSyncMessage =
+        '- public evidence unchanged (use `--sync-public` with `npm run qa:status -- --write` or run `npm run qa:evidence:build` to publish)';
     }
     const { markdownPath, jsonPath } = writeQaTrendArtifacts({
       trackerPath: TRACKER_PATH,

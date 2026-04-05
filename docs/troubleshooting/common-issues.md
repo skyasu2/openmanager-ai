@@ -2,10 +2,10 @@
 
 > 자주 발생하는 빌드/API 문제의 증상별 해결 가이드
 > Owner: documentation
-> Last verified against code: 2026-03-14
+> Last verified against code: 2026-04-06
 > Status: Active Canonical
 > Doc type: How-to
-> Last reviewed: 2026-03-14
+> Last reviewed: 2026-04-06
 > Canonical: docs/troubleshooting/common-issues.md
 > Tags: troubleshooting,issues,debugging
 
@@ -58,6 +58,58 @@ find src/app/api -name 'route.ts' -o -name 'route.tsx' | wc -l
 ```bash
 npm run docs:check
 ```
+
+## Git / IDE Remote Confusion
+
+### Symptoms
+- VS Code Git Graph or SCM UI가 계속 GitHub `origin` 기준처럼 보임
+- 현재 브랜치는 `gitlab/main`을 추적하는데도 IDE 링크가 GitHub로 열림
+- GitLab로 옮겼는데도 "아직 GitHub가 canonical 인가?"라는 혼선이 생김
+
+### Cause
+- 이 저장소는 `origin=GitHub public snapshot`, `gitlab=canonical private repo`를 함께 유지한다.
+- 일부 IDE/확장은 remote provider 해석에서 `origin`을 우선 보여준다.
+- 따라서 GitHub 링크가 보이는 것만으로 canonical upstream이나 배포 권한이 GitHub라는 뜻은 아니다.
+
+### Actions
+```bash
+# 1) 현재 canonical 추적 상태 확인
+git remote -v
+git branch -vv
+git config --get branch.main.remote
+git config --get remote.pushDefault
+
+# 2) 저장소 토폴로지 설명 확인
+bash scripts/git/show-topology.sh doctor
+
+# 3) 로컬 Git metadata에서 gitlab HEAD도 명시
+git remote set-head gitlab main
+```
+
+- 정상 기준:
+  - `main` upstream은 `gitlab/main`
+  - `remote.pushDefault`는 `gitlab`
+  - `origin`은 GitHub snapshot remote로 남아 있어도 정상
+- 주의:
+  - `origin`을 GitLab로 재지정하지 않는다.
+  - GitHub 공개 갱신은 `npm run sync:github`로만 수행한다.
+  - Frontend canonical 배포는 `git push gitlab main` 이후 GitLab CI가 담당한다.
+- Git Graph 표시가 거슬리면 로컬 IDE 설정에서 아래 값을 사용한다:
+
+```jsonc
+{
+  "git-graph.repository.onLoad.showCheckedOutBranch": true,
+  "git-graph.repository.onLoad.showSpecificBranches": [
+    "main",
+    "remotes/gitlab/main"
+  ],
+  "git-graph.repository.showRemoteHeads": false
+}
+```
+
+- 참고:
+  - `.vscode/settings.json`은 현재 git ignore 대상이라 위 설정은 기본적으로 로컬 전용이다.
+  - Git Graph 공식 설정 문서: https://docs.mhutchie.com/vscode-git-graph/general/extension-settings
 - 상대 경로 링크 사용
 - 존재하지 않는 문서는 제거하거나 canonical 문서로 대체
 
