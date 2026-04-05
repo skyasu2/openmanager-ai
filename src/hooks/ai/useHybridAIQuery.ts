@@ -319,10 +319,22 @@ export function useHybridAIQuery(
           content: result.response,
           parts: [{ type: 'text' as const, text: result.response }],
           metadata:
-            result.ragSources || result.traceId
+            result.ragSources ||
+            result.traceId ||
+            (result.handoffHistory && result.handoffHistory.length > 0) ||
+            (result.toolResultSummaries &&
+              result.toolResultSummaries.length > 0)
               ? {
                   ...(result.ragSources && { ragSources: result.ragSources }),
                   ...(result.traceId && { traceId: result.traceId }),
+                  ...(result.handoffHistory &&
+                    result.handoffHistory.length > 0 && {
+                      handoffHistory: result.handoffHistory,
+                    }),
+                  ...(result.toolResultSummaries &&
+                    result.toolResultSummaries.length > 0 && {
+                      toolResultSummaries: result.toolResultSummaries,
+                    }),
                 }
               : undefined,
         } as UIMessage;

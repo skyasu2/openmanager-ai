@@ -28,6 +28,17 @@ export interface JobResult {
     sourceType: string;
     category?: string;
   }>;
+  metadata?: {
+    traceId?: string;
+    handoffs?: Array<{ from: string; to: string; reason?: string }>;
+    toolResultSummaries?: Array<{
+      toolName: string;
+      label: string;
+      summary: string;
+      preview?: string;
+      status: 'completed' | 'failed';
+    }>;
+  };
   startedAt: string;
   completedAt?: string;
   processingTimeMs?: number;
@@ -95,6 +106,7 @@ export async function storeJobResult(
     toolsCalled?: string[];
     provider?: string;
     modelId?: string;
+    metadata?: JobResult['metadata'];
   }
 ): Promise<boolean> {
   // Read existing job data to preserve metadata
@@ -111,6 +123,7 @@ export async function storeJobResult(
     targetAgent: options?.targetAgent,
     toolResults: options?.toolResults,
     ragSources: options?.ragSources,
+    metadata: options?.metadata,
     startedAt,
     completedAt,
     processingTimeMs,

@@ -28,6 +28,13 @@ function createMessage(params: {
       details?: string | null;
       shouldCollapse?: boolean;
     };
+    toolResultSummaries?: Array<{
+      toolName: string;
+      label: string;
+      summary: string;
+      preview?: string;
+      status: 'completed' | 'failed';
+    }>;
   };
   parts?: unknown[];
 }): UIMessage {
@@ -376,6 +383,42 @@ describe('transformMessages', () => {
         from: 'supervisor',
         to: 'reporter',
         reason: '최종 요약 작성',
+      },
+    ]);
+  });
+
+  it('preserves metadata-provided tool result summaries for async job responses', () => {
+    const messages = transformMessages(
+      [
+        createMessage({ id: 'u1', role: 'user', text: '현재 상태를 분석해줘' }),
+        createMessage({
+          id: 'a1',
+          role: 'assistant',
+          text: '현재 이상 징후 1건이 확인됩니다.',
+          metadata: {
+            toolResultSummaries: [
+              {
+                toolName: 'detectAnomalies',
+                label: '이상 탐지',
+                summary: '1개 이상 징후를 감지했습니다.',
+                preview: '{"count":1}',
+                status: 'completed',
+              },
+            ],
+          },
+        }),
+      ],
+      { isLoading: false, currentMode: 'job-queue' }
+    );
+
+    const assistant = messages.find((m) => m.id === 'a1');
+    expect(assistant?.metadata?.toolResultSummaries).toEqual([
+      {
+        toolName: 'detectAnomalies',
+        label: '이상 탐지',
+        summary: '1개 이상 징후를 감지했습니다.',
+        preview: '{"count":1}',
+        status: 'completed',
       },
     ]);
   });

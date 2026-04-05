@@ -181,6 +181,11 @@ async function processJobSynchronously({
       ragSources: result.ragSources,
       provider: result.metadata.provider,
       modelId: result.metadata.modelId,
+      metadata: {
+        traceId: result.metadata.traceId,
+        handoffs: result.metadata.handoffs,
+        toolResultSummaries: result.metadata.toolResultSummaries,
+      },
       startedAt,
     });
 

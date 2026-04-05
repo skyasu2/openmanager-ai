@@ -38,6 +38,16 @@ vi.mock('../services/ai-sdk', () => ({
       modelId: 'gpt-oss-120b',
       stepsExecuted: 2,
       durationMs: 500,
+      traceId: 'trace-job-123',
+      handoffs: [{ from: 'supervisor', to: 'analyst', reason: 'trend analysis' }],
+      toolResultSummaries: [
+        {
+          toolName: 'detectAnomalies',
+          label: '이상 탐지',
+          summary: '1개 이상 징후를 감지했습니다.',
+          status: 'completed',
+        },
+      ],
       finalAgent: 'NLQ Agent',
     },
     usage: { promptTokens: 100, completionTokens: 50, totalTokens: 150 },
@@ -89,6 +99,24 @@ describe('Jobs Routes', () => {
           toolResults: [
             { toolName: 'getServerMetrics', dataSlot: { slotIndex: 57 } },
           ],
+          metadata: {
+            traceId: 'trace-job-123',
+            handoffs: [
+              {
+                from: 'supervisor',
+                to: 'analyst',
+                reason: 'trend analysis',
+              },
+            ],
+            toolResultSummaries: [
+              {
+                toolName: 'detectAnomalies',
+                label: '이상 탐지',
+                summary: '1개 이상 징후를 감지했습니다.',
+                status: 'completed',
+              },
+            ],
+          },
         })
       );
     });

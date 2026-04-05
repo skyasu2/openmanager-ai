@@ -31,6 +31,7 @@ type MessageMetadata = {
   ragSources?: RagSource[];
   assistantResponseView?: StructuredAssistantResponse;
   handoffHistory?: ResponseHandoff[];
+  toolResultSummaries?: ToolResultSummary[];
 };
 
 type DeferredToolResult = {
@@ -478,9 +479,13 @@ export function transformUIMessageToEnhanced(
 
   // Tool parts 추출 (null/undefined 방어 코드 추가)
   const toolParts = [...messageToolParts, ...deferredToolParts];
-  const toolResultSummaries = toolParts
+  const derivedToolResultSummaries = toolParts
     .map((toolPart) => buildToolResultSummary(toolPart))
     .filter((summary): summary is ToolResultSummary => summary !== null);
+  const toolResultSummaries =
+    metadata?.toolResultSummaries && metadata.toolResultSummaries.length > 0
+      ? metadata.toolResultSummaries
+      : derivedToolResultSummaries;
 
   // ThinkingSteps 생성
   const thinkingSteps = toolParts.map((toolPart) => {

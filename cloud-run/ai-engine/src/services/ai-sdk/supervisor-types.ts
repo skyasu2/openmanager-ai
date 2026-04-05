@@ -91,6 +91,13 @@ export interface SupervisorResponse {
     autoSelectedByComplexity?: Exclude<SupervisorMode, 'auto'>;
     traceId?: string;
     handoffs?: Array<{ from: string; to: string; reason?: string }>;
+    toolResultSummaries?: Array<{
+      toolName: string;
+      label: string;
+      summary: string;
+      preview?: string;
+      status: 'completed' | 'failed';
+    }>;
     finalAgent?: string;
     /** Provider 불가 시 fallback 응답 여부 */
     fallback?: boolean;

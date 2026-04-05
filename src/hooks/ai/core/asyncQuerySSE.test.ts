@@ -221,7 +221,18 @@ describe('connectAsyncQuerySSE', () => {
       toolResults: [],
       ragSources: [],
       processingTimeMs: 1200,
-      metadata: { traceId: 'trace-abc' },
+      metadata: {
+        traceId: 'trace-abc',
+        handoffs: [{ from: 'supervisor', to: 'analyst', reason: 'deep dive' }],
+        toolResultSummaries: [
+          {
+            toolName: 'detectAnomalies',
+            label: '이상 탐지',
+            summary: '1개 이상 징후를 감지했습니다.',
+            status: 'completed',
+          },
+        ],
+      },
     };
     es.emit('result', JSON.stringify(resultData));
 
@@ -233,6 +244,17 @@ describe('connectAsyncQuerySSE', () => {
       ragSources: [],
       processingTimeMs: 1200,
       traceId: 'trace-abc',
+      handoffHistory: [
+        { from: 'supervisor', to: 'analyst', reason: 'deep dive' },
+      ],
+      toolResultSummaries: [
+        {
+          toolName: 'detectAnomalies',
+          label: '이상 탐지',
+          summary: '1개 이상 징후를 감지했습니다.',
+          status: 'completed',
+        },
+      ],
     });
   });
 
