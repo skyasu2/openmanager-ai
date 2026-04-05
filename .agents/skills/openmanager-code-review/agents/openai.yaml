@@ -1,4 +1,0 @@
-interface:
-  display_name: "OpenManager Code Review"
-  short_description: "6-perspective severity-first review with evidence"
-  default_prompt: "Use $openmanager-code-review to run a 6-perspective severity-first review with file/line evidence and release decision."

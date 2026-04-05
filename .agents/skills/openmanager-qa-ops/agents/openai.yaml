@@ -1,4 +1,0 @@
-interface:
-  display_name: "OpenManager QA Ops"
-  short_description: "Run and record Vercel or local QA"
-  default_prompt: "Use $openmanager-qa-ops to run OpenManager QA on Vercel or local dev and record the result."

@@ -1,4 +1,0 @@
-interface:
-  display_name: "OpenManager State Triage"
-  short_description: "Analyze state, root cause, and next step"
-  default_prompt: "Use $openmanager-state-triage to analyze current QA/runtime state, find the root cause, check free-tier fit, and choose the next action."

@@ -1,7 +1,0 @@
-#!/bin/sh
-
-# Pre-push Hook: Validation (Cross-platform)
-# Windows/macOS/Linux compatible
-# Uses Node.js script for full cross-platform support
-
-npm run hook:pre-push

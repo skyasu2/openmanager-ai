@@ -32,6 +32,10 @@ OpenManager AI는 서버 모니터링의 패러다임을 **"차트 해석"에서
 
 **🔗 Live Demo**: [openmanager-ai.vercel.app](https://openmanager-ai.vercel.app)
 
+> **Public snapshot note**
+> 이 저장소는 Vercel에 노출되는 프론트엔드와 공개 자산만 공유합니다.
+> Cloud Run AI 엔진, 내부 QA 기록, CI 운영 자산, 테스트/도구 스크립트는 canonical GitLab 저장소에만 유지됩니다.
+
 ---
 
 ## Key Features

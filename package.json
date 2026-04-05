@@ -17,9 +17,9 @@
     "dev": "cross-env NODE_OPTIONS='--max-old-space-size=4096' next dev -p 3000",
     "build": "cross-env NODE_OPTIONS='--max-old-space-size=2048' next build",
     "start": "next start",
-    "lint": "bash scripts/dev/biome-wrapper.sh lint .",
-    "format": "bash scripts/dev/biome-wrapper.sh format --write .",
-    "type-check": "node scripts/dev/tsc-wrapper.js --noEmit"
+    "lint": "biome lint .",
+    "format": "biome format --write .",
+    "type-check": "tsc --noEmit"
   },
   "dependencies": {
     "@ai-sdk/mistral": "^3.0.28",

@@ -1,3 +1,0 @@
-# Vercel Deployment Trigger
-# This file forces a new deployment to apply environment variable changes
-# Last update: 2025-11-23 - Added ADMIN_PASSWORD environment variable
