@@ -380,6 +380,70 @@ function buildDeploymentRegressionCorrelation(runs, limit = 12) {
     }));
 }
 
+function buildTrendWarnings(snapshot) {
+  const warnings = [];
+  const allGateWindow = snapshot?.gateWindows?.[0] || null;
+  const recentGateWindow = snapshot?.gateWindows?.[1] || null;
+  const allReleaseGateWindow = snapshot?.releaseGateWindows?.[0] || null;
+  const recentReleaseGateWindow = snapshot?.releaseGateWindows?.[1] || null;
+
+  if (!allReleaseGateWindow || allReleaseGateWindow.countedRuns === 0) {
+    warnings.push({
+      code: 'release-gate-missing',
+      severity: 'critical',
+      headline: 'Release-gate counted runs are missing',
+      detail:
+        'No counted release-gate runs are recorded, so release readiness lacks a dedicated QA baseline.',
+      recommendedAction:
+        'Record at least one release-gate QA run before treating the next deployment as a release candidate.',
+    });
+  } else if (allReleaseGateWindow.countedRuns < 3) {
+    warnings.push({
+      code: 'release-gate-sample-too-small',
+      severity: 'warning',
+      headline: 'Release-gate history is too small',
+      detail: `Only ${allReleaseGateWindow.countedRuns} counted release-gate run(s) are available.`,
+      recommendedAction:
+        'Build at least 3 counted release-gate runs so the trend can distinguish one-off passes from stable release readiness.',
+    });
+  }
+
+  if (recentReleaseGateWindow && recentReleaseGateWindow.regressionRunCount > 0) {
+    warnings.push({
+      code: 'release-gate-regression-open',
+      severity: 'critical',
+      headline: 'Release-gate regressions are still open',
+      detail: `The recent release-gate window contains ${recentReleaseGateWindow.regressionRunCount} regression run(s).`,
+      recommendedAction:
+        'Resolve release-gate regressions and rerun release-gate QA before promoting the next release.',
+    });
+  }
+
+  if (recentGateWindow && recentGateWindow.regressionRunCount > 0) {
+    warnings.push({
+      code: 'gate-window-regression-open',
+      severity: 'warning',
+      headline: 'Recent gate runs still show regressions',
+      detail: `The last 5 gate runs include ${recentGateWindow.regressionRunCount} regression run(s).`,
+      recommendedAction:
+        'Inspect recent broad/release-gate failures before relying on gate-run pass rate as a release signal.',
+    });
+  }
+
+  if (allGateWindow && allGateWindow.passRatePct < 95) {
+    warnings.push({
+      code: 'gate-pass-rate-low',
+      severity: 'warning',
+      headline: 'Gate pass rate is below the expected floor',
+      detail: `All gate runs currently show a ${allGateWindow.passRatePct}% pass rate.`,
+      recommendedAction:
+        'Bring gate-run pass rate back to at least 95% before tightening release automation around this signal.',
+    });
+  }
+
+  return warnings;
+}
+
 function buildQaTrendSnapshot(tracker) {
   const normalizedTracker = repairTrackerDerivedFields(
     cloneTrackerForRepair(tracker)
@@ -389,7 +453,7 @@ function buildQaTrendSnapshot(tracker) {
   const latestRecordedRun = runs[runs.length - 1] || null;
   const latestCountedRun = countedRuns[countedRuns.length - 1] || null;
 
-  return {
+  const snapshot = {
     version: '1.0.0',
     generatedAt: new Date().toISOString(),
     generatedAtKst: nowInSeoulText(new Date()),
@@ -423,6 +487,10 @@ function buildQaTrendSnapshot(tracker) {
     recentRegressionRuns: buildRecentRegressionRuns(runs),
     recurringItems: buildRecurringItems(normalizedTracker.items),
   };
+
+  snapshot.warnings = buildTrendWarnings(snapshot);
+
+  return snapshot;
 }
 
 function qaTrendsMarkdown(snapshot) {
@@ -447,6 +515,18 @@ function qaTrendsMarkdown(snapshot) {
     `| Latest Recorded Run | ${snapshot.totals.latestRecordedRunId || '-'} |`
   );
   lines.push(`| Last Counted Run | ${snapshot.totals.lastCountedRunId || '-'} |`);
+  lines.push('');
+  lines.push('## Warnings');
+  lines.push('');
+  if (!snapshot.warnings || snapshot.warnings.length === 0) {
+    lines.push('- None');
+  } else {
+    for (const warning of snapshot.warnings) {
+      lines.push(
+        `- [${warning.severity}] ${warning.code}: ${warning.headline}. ${warning.detail} Next: ${warning.recommendedAction}`
+      );
+    }
+  }
   lines.push('');
   lines.push('## Rolling Windows');
   lines.push('');
@@ -615,6 +695,7 @@ module.exports = {
   buildDeploymentRegressionCorrelation,
   buildFilteredWindowSummaries,
   buildPriorityRecurrence,
+  buildTrendWarnings,
   buildScopeDistribution,
   buildWindowSummaries,
   cloneTrackerForRepair,

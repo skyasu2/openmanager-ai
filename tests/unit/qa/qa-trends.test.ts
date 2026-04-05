@@ -166,6 +166,14 @@ describe('qa-trends', () => {
       regressionRunRatePct: 0,
       latestRunId: 'QA-20260403-0203',
     });
+    expect(snapshot.warnings).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          code: 'release-gate-sample-too-small',
+          severity: 'warning',
+        }),
+      ])
+    );
 
     expect(snapshot.recentDailyTrend).toHaveLength(2);
     expect(snapshot.recentDailyTrend[0]).toMatchObject({
@@ -192,6 +200,39 @@ describe('qa-trends', () => {
     expect(markdown).toContain('## Release-Gate Only Windows');
     expect(markdown).toContain('## Priority Recurrence');
     expect(markdown).toContain('## Deployment Regression Correlation');
+    expect(markdown).toContain('## Warnings');
+    expect(markdown).toContain('release-gate-sample-too-small');
+  });
+
+  it('flags missing release-gate coverage and open gate regressions', () => {
+    const snapshot = buildQaTrendSnapshot({
+      summary: {},
+      items: {},
+      experts: {},
+      runs: [
+        {
+          runId: 'QA-20260405-0300',
+          recordedAt: '2026-04-05T02:00:00.000Z',
+          scope: 'broad',
+          checks: { total: 4, passed: 3, failed: 1 },
+          pendingCount: 1,
+          releaseFacing: true,
+        },
+      ],
+    });
+
+    expect(snapshot.warnings).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          code: 'release-gate-missing',
+          severity: 'critical',
+        }),
+        expect.objectContaining({
+          code: 'gate-window-regression-open',
+          severity: 'warning',
+        }),
+      ])
+    );
   });
 
   it('writes markdown and json artifacts for the current tracker snapshot', () => {

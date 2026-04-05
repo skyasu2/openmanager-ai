@@ -260,6 +260,11 @@ describe('QA scripts', () => {
       statusResult.stdout,
       '- dashboard file: reports/qa/QA_STATUS.md (read-only)'
     );
+    expectOutputContainsIfCaptured(statusResult.stdout, 'Trend Warnings');
+    expectOutputContainsIfCaptured(
+      statusResult.stdout,
+      '- [critical] release-gate-missing: Release-gate counted runs are missing'
+    );
 
     const statusPath = join(tempDir, 'reports', 'qa', 'QA_STATUS.md');
     expect(existsSync(statusPath)).toBe(true);

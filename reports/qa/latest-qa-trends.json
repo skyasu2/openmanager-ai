@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
-  "generatedAt": "2026-04-05T04:59:40.271Z",
-  "generatedAtKst": "2026-04-05 13:59:40 KST",
+  "generatedAt": "2026-04-05T05:10:08.160Z",
+  "generatedAtKst": "2026-04-05 14:10:08 KST",
   "trackerUpdatedAt": "2026-04-05T03:57:20.217Z",
   "totals": {
     "recordedRuns": 233,
@@ -831,5 +831,21 @@
         "lastResolvedRunId": null
       }
     ]
-  }
+  },
+  "warnings": [
+    {
+      "code": "release-gate-sample-too-small",
+      "severity": "warning",
+      "headline": "Release-gate history is too small",
+      "detail": "Only 1 counted release-gate run(s) are available.",
+      "recommendedAction": "Build at least 3 counted release-gate runs so the trend can distinguish one-off passes from stable release readiness."
+    },
+    {
+      "code": "gate-window-regression-open",
+      "severity": "warning",
+      "headline": "Recent gate runs still show regressions",
+      "detail": "The last 5 gate runs include 1 regression run(s).",
+      "recommendedAction": "Inspect recent broad/release-gate failures before relying on gate-run pass rate as a release signal."
+    }
+  ]
 }

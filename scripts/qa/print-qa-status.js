@@ -6,6 +6,7 @@ const { repairTrackerDerivedFields } = require('./qa-tracker-utils');
 const {
   TRENDS_JSON_PATH,
   TRENDS_MARKDOWN_PATH,
+  buildQaTrendSnapshot,
   writeQaTrendArtifacts,
 } = require('./qa-trends');
 const { writeValidationEvidenceSnapshot } = require('./build-validation-evidence');
@@ -41,6 +42,7 @@ function run() {
   let validationEvidenceSyncMessage = '';
   let qaTrendSyncMessage = '';
   repairTrackerDerivedFields(tracker);
+  const trendSnapshot = buildQaTrendSnapshot(tracker);
   if (shouldWrite) {
     fs.writeFileSync(TRACKER_PATH, `${JSON.stringify(tracker, null, 2)}\n`, 'utf8');
     fs.writeFileSync(STATUS_PATH, statusMarkdown(tracker), 'utf8');
@@ -150,6 +152,17 @@ function run() {
       console.log(`- trend file: ${trendsFileRelativePath} (read-only)`);
     } else {
       console.log(`- trend file missing: ${trendsFileRelativePath} (--write to sync)`);
+    }
+  }
+
+  if (Array.isArray(trendSnapshot.warnings) && trendSnapshot.warnings.length > 0) {
+    console.log('\nTrend Warnings');
+    for (const warning of trendSnapshot.warnings) {
+      console.log(
+        `- [${warning.severity}] ${warning.code}: ${warning.headline}`
+      );
+      console.log(`  detail: ${warning.detail}`);
+      console.log(`  next: ${warning.recommendedAction}`);
     }
   }
 

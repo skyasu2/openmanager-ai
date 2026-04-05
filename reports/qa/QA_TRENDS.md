@@ -1,7 +1,7 @@
 # QA Trends Dashboard
 
 > Auto-generated file. Source: `reports/qa/qa-tracker.json`.
-> Generated at: 2026-04-05 13:59:40 KST
+> Generated at: 2026-04-05 14:10:08 KST
 
 ## Summary
 
@@ -15,6 +15,11 @@
 | Overall Pass Rate | 95.94% |
 | Latest Recorded Run | QA-20260405-0234 |
 | Last Counted Run | QA-20260405-0233 |
+
+## Warnings
+
+- [warning] release-gate-sample-too-small: Release-gate history is too small. Only 1 counted release-gate run(s) are available. Next: Build at least 3 counted release-gate runs so the trend can distinguish one-off passes from stable release readiness.
+- [warning] gate-window-regression-open: Recent gate runs still show regressions. The last 5 gate runs include 1 regression run(s). Next: Inspect recent broad/release-gate failures before relying on gate-run pass rate as a release signal.
 
 ## Rolling Windows
 
