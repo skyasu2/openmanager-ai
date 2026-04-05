@@ -33,7 +33,7 @@
 2. **발견 즉시 개선**: 기존 코드/설정에서 Free Tier 초과 구성 발견 시 즉시 제거/수정
 3. **"최적화" ≠ 스펙 업그레이드**: 성능 개선은 캐시, 병렬화, 코드 개선으로 해결. 머신 스펙 올리기 금지
 4. **비용 영향 변경 시 `[COST]` 태그**: 인프라 비용에 영향을 주는 커밋에 명시
-5. **CI/테스트에서 LLM 호출 최소화**: 스모크 테스트는 health check만, LLM 호출 0회 기본
+5. **CI/테스트에서 실 LLM 호출 절대 금지**: 유료/외부 AI 호출, MCP 실환경 QA, Cloud Run/Vercel 외부 검증은 사용자의 명시적 요청 시에만 수행합니다. 단, `npm run test:contract` 같은 **MSW 기반 로컬 계약 테스트**는 실서비스 호출이 없으므로 CI 게이트에 포함할 수 있습니다.
 
 | 서비스 | 무료 한도 | 규칙 |
 |--------|----------|------|
@@ -55,8 +55,8 @@
 ## ✅ QA Operation Protocol (Final Gate)
 - QA 기준선 문서: `reports/qa/production-qa-2026-02-25.md`
 - QA 상태 SSOT: `reports/qa/qa-tracker.json` + `reports/qa/QA_STATUS.md`
-- 기본 QA 실행 환경: **Vercel + Playwright MCP**
-- AI 기능 검증이 필요 없는 항목(UI 카피/레이아웃/일반 인증 흐름)은 **로컬 dev server(3004/3005)** 에서 진행
+- **자동 CI (Automatic)**: 비용 절감을 위해 **실 LLM API 호출 절대 금지**. `type-check`, `lint`, `test:quick`, `test:contract` 같은 **deterministic local gate**만 수행합니다.
+- **AI 에이전트 QA (On-demand)**: 사용자의 명시적 요청 시 **Vercel + Playwright MCP**를 사용하여 **프론트엔드 및 AI 어시스턴트 기능 전체**를 실환경 수준으로 정밀 검증.
 - 모든 QA 실행 후 결과를 누적 기록:
   - `npm run qa:record -- --input <json>`
   - `npm run qa:status`

@@ -205,7 +205,7 @@ validate:
     - npm run lint:ci
     - echo "▶ 빠른 테스트 실행..."
     - npm run test:quick
-    - echo "▶ API/AI 계약 테스트 실행..."
+    - echo "▶ API/AI 로컬 계약 테스트 실행..."
     - npm run test:contract
     - echo "✅ validate 통과"
   timeout: 15 minutes
