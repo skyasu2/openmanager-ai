@@ -47,6 +47,17 @@ interface JobResult {
     sourceType: string;
     category?: string;
   }>;
+  metadata?: {
+    traceId?: string;
+    handoffs?: Array<{ from: string; to: string; reason?: string }>;
+    toolResultSummaries?: Array<{
+      toolName: string;
+      label: string;
+      summary: string;
+      preview?: string;
+      status: 'completed' | 'failed';
+    }>;
+  };
   startedAt: string;
   completedAt?: string;
   processingTimeMs?: number;
@@ -359,6 +370,7 @@ export async function GET(
                 targetAgent: result.targetAgent,
                 toolResults: result.toolResults,
                 ragSources: result.ragSources,
+                metadata: result.metadata,
                 processingTimeMs: result.processingTimeMs,
                 timestamp: result.completedAt,
               });

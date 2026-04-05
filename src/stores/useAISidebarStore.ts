@@ -54,6 +54,20 @@ export interface AnalysisBasis {
   }>;
 }
 
+export interface ToolResultSummary {
+  toolName: string;
+  label: string;
+  summary: string;
+  preview?: string;
+  status: 'completed' | 'failed';
+}
+
+export interface ResponseHandoff {
+  from: string;
+  to: string;
+  reason?: string;
+}
+
 export interface ChatMessage {
   id: string;
   content: string;
@@ -68,6 +82,16 @@ export interface ChatMessage {
     traceId?: string;
     /** 분석 근거 정보 */
     analysisBasis?: AnalysisBasis;
+    /** 접을 수 있는 응답 뷰 */
+    assistantResponseView?: {
+      summary: string;
+      details?: string | null;
+      shouldCollapse?: boolean;
+    };
+    /** 도구 실행 결과 요약 */
+    toolResultSummaries?: ToolResultSummary[];
+    /** 에이전트 handoff 이력 */
+    handoffHistory?: ResponseHandoff[];
   };
 }
 

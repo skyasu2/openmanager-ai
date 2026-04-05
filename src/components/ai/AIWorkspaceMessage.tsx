@@ -1,5 +1,6 @@
 import { Bot, Brain, ChevronDown, ChevronUp, User } from 'lucide-react';
 import { memo, useEffect, useMemo, useState } from 'react';
+import { AnalysisBasisBadge } from '@/components/ai/AnalysisBasisBadge';
 import { resolveAssistantResponseView } from '@/lib/ai/utils/assistant-response-view';
 import { formatTime } from '@/lib/format-date';
 import type { EnhancedChatMessage } from '@/stores/useAISidebarStore';
@@ -69,6 +70,10 @@ export const AIWorkspaceMessage = memo<{
     }
     return resolveAssistantResponseView(message.content, message.metadata);
   }, [message.content, message.metadata, message.isStreaming, message.role]);
+  const analysisBasisDetails =
+    assistantResponseView?.shouldCollapse && assistantResponseView.details
+      ? null
+      : (assistantResponseView?.details ?? null);
 
   if (message.role === 'thinking' && message.thinkingSteps) {
     return (
@@ -196,6 +201,20 @@ export const AIWorkspaceMessage = memo<{
               showRegenerate={isLastMessage && message.role === 'assistant'}
             />
           </div>
+
+          {message.role === 'assistant' &&
+            !message.isStreaming &&
+            message.metadata?.analysisBasis && (
+              <AnalysisBasisBadge
+                basis={message.metadata.analysisBasis}
+                details={analysisBasisDetails}
+                thinkingSteps={message.thinkingSteps}
+                traceId={message.metadata?.traceId}
+                handoffHistory={message.metadata?.handoffHistory}
+                toolResultSummaries={message.metadata?.toolResultSummaries}
+                className="mt-2"
+              />
+            )}
 
           {message.role === 'assistant' &&
             message.thinkingSteps &&

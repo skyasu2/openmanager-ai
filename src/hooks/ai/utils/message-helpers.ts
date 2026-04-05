@@ -13,6 +13,8 @@ import {
 import type {
   AnalysisBasis,
   EnhancedChatMessage,
+  ResponseHandoff,
+  ToolResultSummary,
 } from '@/stores/useAISidebarStore';
 import type { AIThinkingStep } from '@/types/ai-sidebar/ai-sidebar-types';
 
@@ -28,6 +30,8 @@ type MessageMetadata = {
   traceId?: string;
   ragSources?: RagSource[];
   assistantResponseView?: StructuredAssistantResponse;
+  handoffHistory?: ResponseHandoff[];
+  toolResultSummaries?: ToolResultSummary[];
 };
 
 type DeferredToolResult = {
@@ -88,6 +92,29 @@ const SERVER_ANALYSIS_TOOL_NAMES = new Set([
   'findRootCause',
   'buildIncidentTimeline',
 ]);
+
+const TOOL_LABELS: Record<string, string> = {
+  getServerMetrics: '서버 메트릭 조회',
+  getServerMetricsAdvanced: '서버 메트릭 상세 조회',
+  filterServers: '서버 필터링',
+  getServerByGroup: '서버 그룹 조회',
+  getServerLogs: '시스템 로그 조회',
+  findRootCause: '근본 원인 분석',
+  correlateMetrics: '메트릭 상관 분석',
+  buildIncidentTimeline: '인시던트 타임라인',
+  detectAnomalies: '이상 탐지',
+  detectAnomaliesAllServers: '전체 서버 이상 탐지',
+  predictTrends: '트렌드 예측',
+  analyzePattern: '패턴 분석',
+  searchKnowledgeBase: 'RAG 지식베이스 검색',
+  recommendCommands: 'CLI 명령어 추천',
+  searchWeb: '웹 검색',
+  finalAnswer: '최종 응답',
+};
+
+function getToolLabel(toolName: string): string {
+  return TOOL_LABELS[toolName] ?? toolName;
+}
 
 function getMessageMetadata(message: UIMessage): MessageMetadata | undefined {
   if (
@@ -168,6 +195,101 @@ function createDeferredToolParts(
     output: entry.result,
     state: 'output-available',
   }));
+}
+
+function truncatePreview(value: string, maxLength = 260): string {
+  if (value.length <= maxLength) return value;
+  return `${value.slice(0, maxLength - 1)}…`;
+}
+
+function formatUnknownPreview(value: unknown): string | undefined {
+  if (value == null) return undefined;
+  if (typeof value === 'string') return truncatePreview(value);
+  if (
+    typeof value === 'number' ||
+    typeof value === 'boolean' ||
+    typeof value === 'bigint'
+  ) {
+    return String(value);
+  }
+
+  try {
+    return truncatePreview(JSON.stringify(value, null, 2));
+  } catch {
+    return undefined;
+  }
+}
+
+function extractSummaryFromToolResult(
+  toolName: string,
+  output: unknown
+): string | null {
+  if (isRecord(output)) {
+    if (typeof output.message === 'string' && output.message.trim()) {
+      return output.message.trim();
+    }
+    if (typeof output.summary === 'string' && output.summary.trim()) {
+      return output.summary.trim();
+    }
+    if (typeof output.answer === 'string' && output.answer.trim()) {
+      return truncatePreview(output.answer.trim(), 140);
+    }
+    if (isDataSlot(output.dataSlot)) {
+      return `${output.dataSlot.timeLabel} 기준 데이터를 확인했습니다.`;
+    }
+    if (Array.isArray(output.results)) {
+      return `${output.results.length}개 결과를 반환했습니다.`;
+    }
+    if (Array.isArray(output.items)) {
+      return `${output.items.length}개 항목을 조회했습니다.`;
+    }
+    if (typeof output.count === 'number') {
+      return `${output.count}개 항목을 처리했습니다.`;
+    }
+    if (output.success === false) {
+      const reason =
+        typeof output.error === 'string'
+          ? output.error
+          : typeof output.reason === 'string'
+            ? output.reason
+            : '도구 실행이 실패했습니다.';
+      return reason;
+    }
+  }
+
+  if (Array.isArray(output)) {
+    return `${output.length}개 항목을 반환했습니다.`;
+  }
+  if (typeof output === 'string' && output.trim()) {
+    return truncatePreview(output.trim(), 140);
+  }
+
+  return `${getToolLabel(toolName)} 실행을 완료했습니다.`;
+}
+
+function buildToolResultSummary(
+  toolPart: ToolPartWithCallId
+): ToolResultSummary | null {
+  const toolName = toolPart.type.slice(5);
+  const output = extractToolOutput(toolPart);
+  const hasError = toolPart.state === 'output-error';
+
+  if (output === undefined && !hasError) return null;
+
+  const preview = formatUnknownPreview(output);
+  const summary = hasError
+    ? toolPart.errorText || `${getToolLabel(toolName)} 실행이 실패했습니다.`
+    : extractSummaryFromToolResult(toolName, output);
+
+  if (!summary) return null;
+
+  return {
+    toolName,
+    label: getToolLabel(toolName),
+    summary,
+    preview,
+    status: hasError ? 'failed' : 'completed',
+  };
 }
 
 function extractServerMetricsParityMetadata(
@@ -357,12 +479,20 @@ export function transformUIMessageToEnhanced(
 
   // Tool parts 추출 (null/undefined 방어 코드 추가)
   const toolParts = [...messageToolParts, ...deferredToolParts];
+  const derivedToolResultSummaries = toolParts
+    .map((toolPart) => buildToolResultSummary(toolPart))
+    .filter((summary): summary is ToolResultSummary => summary !== null);
+  const toolResultSummaries =
+    metadata?.toolResultSummaries && metadata.toolResultSummaries.length > 0
+      ? metadata.toolResultSummaries
+      : derivedToolResultSummaries;
 
   // ThinkingSteps 생성
   const thinkingSteps = toolParts.map((toolPart) => {
     const toolName = toolPart.type.slice(5);
     const state = (toolPart as { state?: string }).state;
     const output = (toolPart as { output?: unknown }).output;
+    const toolSummary = buildToolResultSummary(toolPart);
 
     const isCompleted = state === 'output-available' || output !== undefined;
     const hasError = state === 'output-error';
@@ -378,7 +508,8 @@ export function transformUIMessageToEnhanced(
       description: hasError
         ? `Error: ${(toolPart as { errorText?: string }).errorText || 'Unknown error'}`
         : isCompleted
-          ? `Completed: ${JSON.stringify(output)}`
+          ? (toolSummary?.summary ??
+            `${getToolLabel(toolName)} 실행을 완료했습니다.`)
           : `Executing ${toolName}...`,
       timestamp: new Date(),
     };
@@ -395,6 +526,7 @@ export function transformUIMessageToEnhanced(
     metadata?.assistantResponseView,
     parityMetadata
   );
+  const handoffHistory = metadata?.handoffHistory;
 
   // 분석 근거 생성 (assistant 메시지에만)
   let analysisBasis: AnalysisBasis | undefined;
@@ -448,12 +580,23 @@ export function transformUIMessageToEnhanced(
     isStreaming: isLoading && isLastMessage,
     thinkingSteps: thinkingSteps.length > 0 ? thinkingSteps : undefined,
     metadata:
-      analysisBasis || traceId || assistantResponseView
+      analysisBasis ||
+      traceId ||
+      assistantResponseView ||
+      handoffHistory ||
+      toolResultSummaries.length > 0
         ? {
             ...(analysisBasis && { analysisBasis }),
             ...(traceId && { traceId }),
             ...(assistantResponseView && {
               assistantResponseView,
+            }),
+            ...(handoffHistory &&
+              handoffHistory.length > 0 && {
+                handoffHistory,
+              }),
+            ...(toolResultSummaries.length > 0 && {
+              toolResultSummaries,
             }),
           }
         : undefined,

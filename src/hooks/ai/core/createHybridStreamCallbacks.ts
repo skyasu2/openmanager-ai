@@ -33,7 +33,10 @@ interface CreateHybridStreamCallbacksDeps {
   maxRetries: number;
   onStreamFinish?: () => void;
   onData?: (dataPart: StreamDataPart) => void;
-  persistTraceIdFallback?: (message: UIMessage, traceId: string) => void;
+  persistFinishedAssistantMessage?: (
+    message: UIMessage,
+    traceId: string
+  ) => void;
   setState: StateSetter;
   refs: {
     retryCount: MutableRefObject<number>;
@@ -70,7 +73,7 @@ export function createHybridStreamCallbacks(
     maxRetries,
     onStreamFinish,
     onData,
-    persistTraceIdFallback,
+    persistFinishedAssistantMessage,
     setState,
     refs,
     stopStreaming,
@@ -106,15 +109,7 @@ export function createHybridStreamCallbacks(
       }));
     } else {
       refs.retryCount.current = 0;
-      const messageTraceId =
-        typeof message.metadata === 'object' &&
-        message.metadata !== null &&
-        typeof (message.metadata as { traceId?: unknown }).traceId === 'string'
-          ? ((message.metadata as { traceId?: string }).traceId ?? undefined)
-          : undefined;
-      if (!messageTraceId) {
-        persistTraceIdFallback?.(message, traceIdRef.current);
-      }
+      persistFinishedAssistantMessage?.(message, traceIdRef.current);
       if (verboseLogging) {
         logger.info(
           `[HybridAI] Stream completed successfully (trace: ${traceIdRef.current})`

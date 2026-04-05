@@ -83,6 +83,85 @@ export {
   STREAM_ERROR_REGEX,
 };
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null;
+}
+
+export function mergeFinishedAssistantIntoMessages(
+  previousMessages: UIMessage[],
+  message: UIMessage,
+  fallbackTraceId: string
+): UIMessage[] {
+  if (message.role !== 'assistant') {
+    return previousMessages;
+  }
+
+  const finishedMetadata = isRecord(message.metadata) ? message.metadata : {};
+  const nextMetadata =
+    typeof finishedMetadata.traceId === 'string'
+      ? finishedMetadata
+      : { ...finishedMetadata, traceId: fallbackTraceId };
+  const nextParts =
+    Array.isArray(message.parts) && message.parts.length > 0
+      ? message.parts
+      : undefined;
+
+  const mergeAssistantMessage = (targetMessage: UIMessage): UIMessage => {
+    const currentMetadata = isRecord(targetMessage.metadata)
+      ? targetMessage.metadata
+      : {};
+    const mergedMetadata =
+      Object.keys(nextMetadata).length > 0
+        ? { ...currentMetadata, ...nextMetadata }
+        : targetMessage.metadata;
+
+    const mergedParts = nextParts ?? targetMessage.parts;
+    const metadataChanged =
+      mergedMetadata !== targetMessage.metadata &&
+      JSON.stringify(mergedMetadata) !== JSON.stringify(targetMessage.metadata);
+    const partsChanged =
+      mergedParts !== targetMessage.parts &&
+      JSON.stringify(mergedParts) !== JSON.stringify(targetMessage.parts);
+
+    if (!metadataChanged && !partsChanged) {
+      return targetMessage;
+    }
+
+    return {
+      ...targetMessage,
+      ...(metadataChanged && { metadata: mergedMetadata }),
+      ...(partsChanged && mergedParts && { parts: mergedParts }),
+    };
+  };
+
+  let matched = false;
+  const mergedById = previousMessages.map((prevMessage) => {
+    if (prevMessage.id !== message.id) {
+      return prevMessage;
+    }
+
+    matched = true;
+    return mergeAssistantMessage(prevMessage);
+  });
+
+  if (matched) {
+    return mergedById;
+  }
+
+  const fallbackAssistantIndex = mergedById
+    .map((prevMessage) => prevMessage.role)
+    .lastIndexOf('assistant');
+  if (fallbackAssistantIndex < 0) {
+    return previousMessages;
+  }
+
+  return mergedById.map((prevMessage, index) =>
+    index === fallbackAssistantIndex
+      ? mergeAssistantMessage(prevMessage)
+      : prevMessage
+  );
+}
+
 export function useHybridAIQuery(
   options: UseHybridAIQueryOptions = {}
 ): UseHybridAIQueryReturn {
@@ -163,7 +242,7 @@ export function useHybridAIQuery(
     [apiEndpoint, observabilityConfig.traceIdHeader]
   );
   const asyncQueryRef = useRef<ReturnType<typeof useAsyncAIQuery>>(null!);
-  const persistTraceIdFallbackRef = useRef(
+  const persistFinishedAssistantMessageRef = useRef(
     (_message: UIMessage, _traceId: string) => {}
   );
   const streamCallbacks = useMemo(
@@ -174,8 +253,8 @@ export function useHybridAIQuery(
         maxRetries: streamRetryConfig.maxRetries,
         onStreamFinish,
         onData,
-        persistTraceIdFallback: (message, traceId) =>
-          persistTraceIdFallbackRef.current(message, traceId),
+        persistFinishedAssistantMessage: (message, traceId) =>
+          persistFinishedAssistantMessageRef.current(message, traceId),
         setState,
         refs: {
           retryCount: retryCountRef,
@@ -222,76 +301,13 @@ export function useHybridAIQuery(
   useEffect(() => {
     messagesRef.current = messages;
   }, [messages]);
-  persistTraceIdFallbackRef.current = (message: UIMessage, traceId: string) => {
-    if (message.role !== 'assistant') {
-      return;
-    }
-
-    setMessages((prev: UIMessage[]) => {
-      let matchedMessage = false;
-      const nextMessages = prev.map((prevMessage: UIMessage) => {
-        if (prevMessage.id !== message.id) {
-          return prevMessage;
-        }
-
-        matchedMessage = true;
-        const prevMetadata =
-          typeof prevMessage.metadata === 'object' &&
-          prevMessage.metadata !== null
-            ? (prevMessage.metadata as Record<string, unknown>)
-            : {};
-
-        if (typeof prevMetadata.traceId === 'string') {
-          return prevMessage;
-        }
-
-        return {
-          ...prevMessage,
-          metadata: {
-            ...prevMetadata,
-            traceId,
-          },
-        };
-      });
-
-      if (matchedMessage) {
-        return nextMessages;
-      }
-
-      const lastAssistantIndex = nextMessages
-        .map((prevMessage: UIMessage) => prevMessage.role)
-        .lastIndexOf('assistant');
-      if (lastAssistantIndex < 0) {
-        return prev;
-      }
-
-      const fallbackMessage = nextMessages[lastAssistantIndex];
-      if (!fallbackMessage) {
-        return prev;
-      }
-
-      const fallbackMetadata =
-        typeof fallbackMessage.metadata === 'object' &&
-        fallbackMessage.metadata !== null
-          ? (fallbackMessage.metadata as Record<string, unknown>)
-          : {};
-
-      if (typeof fallbackMetadata.traceId === 'string') {
-        return nextMessages;
-      }
-
-      return nextMessages.map((prevMessage: UIMessage, index: number) =>
-        index === lastAssistantIndex
-          ? {
-              ...prevMessage,
-              metadata: {
-                ...fallbackMetadata,
-                traceId,
-              },
-            }
-          : prevMessage
-      );
-    });
+  persistFinishedAssistantMessageRef.current = (
+    message: UIMessage,
+    traceId: string
+  ) => {
+    setMessages((prev: UIMessage[]) =>
+      mergeFinishedAssistantIntoMessages(prev, message, traceId)
+    );
   };
 
   const asyncQuery = useAsyncAIQuery({
@@ -319,10 +335,22 @@ export function useHybridAIQuery(
           content: result.response,
           parts: [{ type: 'text' as const, text: result.response }],
           metadata:
-            result.ragSources || result.traceId
+            result.ragSources ||
+            result.traceId ||
+            (result.handoffHistory && result.handoffHistory.length > 0) ||
+            (result.toolResultSummaries &&
+              result.toolResultSummaries.length > 0)
               ? {
                   ...(result.ragSources && { ragSources: result.ragSources }),
                   ...(result.traceId && { traceId: result.traceId }),
+                  ...(result.handoffHistory &&
+                    result.handoffHistory.length > 0 && {
+                      handoffHistory: result.handoffHistory,
+                    }),
+                  ...(result.toolResultSummaries &&
+                    result.toolResultSummaries.length > 0 && {
+                      toolResultSummaries: result.toolResultSummaries,
+                    }),
                 }
               : undefined,
         } as UIMessage;

@@ -222,6 +222,10 @@ export const MessageComponent = memo<{
                 <AnalysisBasisBadge
                   basis={message.metadata.analysisBasis}
                   details={analysisBasisDetails}
+                  thinkingSteps={message.thinkingSteps}
+                  traceId={message.metadata?.traceId}
+                  handoffHistory={message.metadata?.handoffHistory}
+                  toolResultSummaries={message.metadata?.toolResultSummaries}
                 />
               </>
             )}

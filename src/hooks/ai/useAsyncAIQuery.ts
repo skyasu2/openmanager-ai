@@ -61,6 +61,18 @@ export interface AsyncQueryResult {
   error?: string;
   /** Langfuse trace ID for feedback scoring */
   traceId?: string;
+  handoffHistory?: Array<{
+    from: string;
+    to: string;
+    reason?: string;
+  }>;
+  toolResultSummaries?: Array<{
+    toolName: string;
+    label: string;
+    summary: string;
+    preview?: string;
+    status: 'completed' | 'failed';
+  }>;
   /** Job ID (Stale Closure 방지용) */
   jobId?: string;
 }

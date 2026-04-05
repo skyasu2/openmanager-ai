@@ -113,6 +113,14 @@ export function connectAsyncQuerySSE(
         ragSources: resultData.ragSources,
         processingTimeMs: resultData.processingTimeMs,
         traceId: resultData.metadata?.traceId,
+        handoffHistory: Array.isArray(resultData.metadata?.handoffs)
+          ? resultData.metadata.handoffs
+          : undefined,
+        toolResultSummaries: Array.isArray(
+          resultData.metadata?.toolResultSummaries
+        )
+          ? resultData.metadata.toolResultSummaries
+          : undefined,
       });
     } catch (error) {
       onError(`Failed to parse result: ${error}`);
