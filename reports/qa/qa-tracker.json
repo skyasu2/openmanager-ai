@@ -2,27 +2,27 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-05T06:10:23.695Z"
+    "updatedAt": "2026-04-05T06:21:39.750Z"
   },
   "sequence": {
-    "nextRunNumber": 238
+    "nextRunNumber": 239
   },
   "summary": {
-    "totalRuns": 228,
-    "totalChecks": 1754,
-    "totalPassed": 1684,
+    "totalRuns": 229,
+    "totalChecks": 1769,
+    "totalPassed": 1699,
     "totalFailed": 64,
     "completionRate": 100,
     "completedItems": 274,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 14,
-    "expertDomainsTracked": 6,
+    "expertDomainsTracked": 8,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260405-0236",
-    "lastRecordedAt": "2026-04-05T05:47:50.876Z",
-    "latestRecordedRunId": "QA-20260405-0237",
-    "latestRecordedAt": "2026-04-05T06:10:23.695Z"
+    "lastRunId": "QA-20260405-0238",
+    "lastRecordedAt": "2026-04-05T06:21:39.750Z",
+    "latestRecordedRunId": "QA-20260405-0238",
+    "latestRecordedAt": "2026-04-05T06:21:39.750Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -20665,6 +20665,87 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260405-0238",
+      "recordedAt": "2026-04-05T06:21:39.750Z",
+      "recordedAtKst": "2026-04-05 15:21:39 KST",
+      "title": "Broad Release-Gate QA - Final Golden State Baseline Alignment",
+      "owner": "Gemini-Architect",
+      "source": "cli-orchestration",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260405-0238.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_2MuHQZg4ePQmikAr8MYk5rkWj1ic",
+        "deploymentUrl": "",
+        "commitSha": "b15fd0735"
+      },
+      "scope": "release-gate",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "core-routes-smoke",
+        "observability-pack",
+        "dashboard-core",
+        "ai-core"
+      ],
+      "coveredSurfaces": [
+        "Vercel Production Healthy",
+        "GitHub Sync Reliability Verified",
+        "CI Optimization Active",
+        "Zero Stale Snapshot Gaps",
+        "Post-deploy Smoke GET / PASS",
+        "Post-deploy Smoke GET /validation PASS",
+        "Post-deploy Smoke GET /api/version PASS"
+      ],
+      "skippedSurfaces": [],
+      "checks": {
+        "total": 15,
+        "passed": 15,
+        "failed": 0
+      },
+      "expertAssessments": [
+        {
+          "domainId": "infra-reliability",
+          "domainName": "system-reliability",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "",
+          "nextAction": ""
+        },
+        {
+          "domainId": "ci-ops-optimization",
+          "domainName": "ci-cd-optimization",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "manual-dashboard",
+          "status": "checked",
+          "result": "unknown",
+          "checkedAt": "",
+          "summary": "",
+          "evidence": "",
+          "url": ""
+        }
+      ],
+      "artifacts": [],
+      "links": [],
+      "expertCount": 2,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -20768,6 +20849,40 @@
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
       "lastRationale": "Dashboard raw metrics와 AI 요약이 같은 slot 기준으로 일관되게 나타나 현재 broad 릴리즈 범위에서 데이터 품질 이상은 보이지 않았습니다.",
+      "lastNextAction": ""
+    },
+    "infra-reliability": {
+      "domainId": "infra-reliability",
+      "domainName": "system-reliability",
+      "firstSeenRunId": "QA-20260405-0238",
+      "firstSeenAt": "2026-04-05T06:21:39.750Z",
+      "seenCount": 1,
+      "appropriateCount": 1,
+      "partialCount": 0,
+      "inappropriateCount": 0,
+      "improvementNeededCount": 0,
+      "lastRunId": "QA-20260405-0238",
+      "lastSeenAt": "2026-04-05T06:21:39.750Z",
+      "lastFit": "appropriate",
+      "lastImprovementNeeded": false,
+      "lastRationale": "",
+      "lastNextAction": ""
+    },
+    "ci-ops-optimization": {
+      "domainId": "ci-ops-optimization",
+      "domainName": "ci-cd-optimization",
+      "firstSeenRunId": "QA-20260405-0238",
+      "firstSeenAt": "2026-04-05T06:21:39.750Z",
+      "seenCount": 1,
+      "appropriateCount": 1,
+      "partialCount": 0,
+      "inappropriateCount": 0,
+      "improvementNeededCount": 0,
+      "lastRunId": "QA-20260405-0238",
+      "lastSeenAt": "2026-04-05T06:21:39.750Z",
+      "lastFit": "appropriate",
+      "lastImprovementNeeded": false,
+      "lastRationale": "",
       "lastNextAction": ""
     }
   }

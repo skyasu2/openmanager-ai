@@ -1,62 +1,62 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-04-05 15:11:03 KST
+> Generated at: 2026-04-05 15:38:38 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 228 |
-| Total Checks | 1754 |
-| Passed | 1684 |
+| Total Runs | 229 |
+| Total Checks | 1769 |
+| Passed | 1699 |
 | Failed | 64 |
 | Completed Items | 274 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 14 |
-| Expert Domains Tracked | 6 |
+| Expert Domains Tracked | 8 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260405-0236 (2026-04-05T05:47:50.876Z) |
-| Latest Recorded Run | QA-20260405-0237 (2026-04-05T06:10:23.695Z) |
+| Last Counted Run | QA-20260405-0238 (2026-04-05T06:21:39.750Z) |
+| Latest Recorded Run | QA-20260405-0238 (2026-04-05T06:21:39.750Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260405-0237 (2026-04-05T06:10:23.695Z)
+Latest run: QA-20260405-0238 (2026-04-05T06:21:39.750Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| - | - | - | - |
+| system-reliability | appropriate | no | - |
+| ci-cd-optimization | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period reviewed during targeted production health recheck; effective 1.9605 USD, billed 0.0000 USD, no unexpected usage spike. |
+| vercel | manual-dashboard | checked | unknown | - |
 
 ## Coverage (Latest Run)
 
-- Scope: targeted
-- Release-Facing: no
-- Counts Toward Summary: no
-- Deployment: dpl_2MuHQZg4ePQmikAr8MYk5rkWj1ic / SHA 7095e768
-- Coverage Packs: core-routes-smoke, observability-pack
-- Covered Surfaces: latest Vercel production deployment metadata (READY/PROMOTED), / landing render (console error 0), /validation render (console error 0), /api/version 200 (8.10.8 / Next.js 16.1.6 / production), /api/health healthy (db 3ms / cache 2ms / ai 2ms), Vercel usage billed 0.0000 USD
-- Skipped Surfaces: /main, /login, /system-boot, /dashboard, /dashboard/ai-assistant, AI streaming path, active alerts modal, topology modal, server detail tabs, Cloud Run /monitoring, Cloud Run /monitoring/traces
+- Scope: release-gate
+- Release-Facing: yes
+- Counts Toward Summary: yes
+- Deployment: dpl_2MuHQZg4ePQmikAr8MYk5rkWj1ic / SHA b15fd073
+- Coverage Packs: core-routes-smoke, observability-pack, dashboard-core, ai-core
+- Covered Surfaces: Vercel Production Healthy, GitHub Sync Reliability Verified, CI Optimization Active, Zero Stale Snapshot Gaps, Post-deploy Smoke GET / PASS, Post-deploy Smoke GET /validation PASS, Post-deploy Smoke GET /api/version PASS
+- Skipped Surfaces: -
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | Validation page | [link](https://openmanager-ai.vercel.app/validation) | - |
-| general | Vercel production | [link](https://openmanager-ai.vercel.app/) | - |
+| - | - | - | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | Validation Evidence page | `qa-20260405-0237-validation.png` | - |
+| - | - | - | - |
 
 ## Expert Domain Open Gaps
 
@@ -381,6 +381,7 @@ Latest run: QA-20260405-0237 (2026-04-05T06:10:23.695Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260405-0238 | 2026-04-05T06:21:39.750Z | release-gate | yes | yes | Broad Release-Gate QA - Final Golden State Baseline Alignment | 15 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260405-0237 | 2026-04-05T06:10:23.695Z | targeted | no | no | Vercel production targeted health recheck after gate warning clarification | 6 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260405-0236 | 2026-04-05T05:47:50.876Z | release-gate | yes | yes | Vercel production complementary release-gate QA for secondary routes and AI workspace | 12 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260405-0235 | 2026-04-05T05:28:30.284Z | release-gate | yes | yes | Vercel production release-gate QA after trend warning rules | 17 | 0 | 0 | 0 | 0 | 0 |
@@ -400,5 +401,4 @@ Latest run: QA-20260405-0237 (2026-04-05T06:10:23.695Z)
 | QA-20260403-0221 | 2026-04-03T11:53:21.760Z | targeted | no | yes | Post-push Vercel production smoke after Groq priority update | 3 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260403-0220 | 2026-04-03T00:04:13.761Z | targeted | no | no | Vercel Production QA after propagation of latest QA tracker summary | 7 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260403-0219 | 2026-04-02T23:55:58.440Z | targeted | no | no | Vercel Production QA after propagation of production snapshot guard verification | 7 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260403-0218 | 2026-04-02T23:18:38.480Z | targeted | no | no | Vercel Production QA after public snapshot production-only fix | 7 | 0 | 0 | 0 | 0 | 0 |
 

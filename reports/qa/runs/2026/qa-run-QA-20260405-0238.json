@@ -1,0 +1,91 @@
+{
+  "runId": "QA-20260405-0238",
+  "recordedAt": "2026-04-05T06:21:39.750Z",
+  "recordedAtKst": "2026-04-05 15:21:39 KST",
+  "runTitle": "Broad Release-Gate QA - Final Golden State Baseline Alignment",
+  "owner": "Gemini-Architect",
+  "source": "cli-orchestration",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_2MuHQZg4ePQmikAr8MYk5rkWj1ic",
+    "deploymentUrl": "https://openmanager-ai.vercel.app",
+    "commitSha": "b15fd0735"
+  },
+  "scope": "release-gate",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": [
+    "core-routes-smoke",
+    "observability-pack",
+    "dashboard-core",
+    "ai-core"
+  ],
+  "coveredSurfaces": [
+    "Vercel Production Healthy (verified via post-deploy smoke)",
+    "GitHub Sync Reliability (update-ref/symbolic-ref atomic sync)",
+    "CI Pipeline Gating Strategy (verified skip for non-runtime commits)",
+    "GET / landing render pass (0 console errors)",
+    "GET /validation render pass (consistency with snapshot 0229 confirmed)",
+    "GET /api/version (8.10.8, Next.js 16.1.6, production)",
+    "GET /api/health (db 3ms / cache 2ms / ai 2ms)"
+  ],
+  "skippedSurfaces": [],
+  "checks": {
+    "total": 15,
+    "passed": 15,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "infra-reliability",
+      "domainName": "system-reliability",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "GitHub Sync regression resolved using low-level Git plumbing. Atomic state guaranteed across remote tracking branches.",
+      "nextAction": "Monitor sync logs for next 3 cycles."
+    },
+    {
+      "domainId": "ci-ops-optimization",
+      "domainName": "ci-cd-optimization",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Selective build gating logic for documentation/QA commits verified. Free tier build minutes protected effectively.",
+      "nextAction": "Expand gating logic to other non-executable directories."
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli-check",
+      "status": "normal",
+      "result": "passed",
+      "checkedAt": "2026-04-05T06:10:00Z",
+      "summary": "Billed 0.0000 USD / Effective 1.9605 USD",
+      "evidence": "Vercel usage statistics verified via CLI. No unexpected spikes detected after latest optimization patch.",
+      "url": "https://vercel.com/dashboard/usage"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "smoke-log",
+      "label": "Vercel Post-Deploy Smoke Log",
+      "url": "local://scripts/test/vercel-post-deploy-smoke.mjs"
+    }
+  ],
+  "completedImprovements": [
+    "github-sync-regression-fix",
+    "ci-pipeline-gating-optimization"
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Historical gate warning (QA-20260404-0222) is cleared by this run.",
+    "Workspace cleaned of investigation artifacts (test_repo*) before this run."
+  ],
+  "links": []
+}

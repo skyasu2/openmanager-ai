@@ -1,46 +1,46 @@
 # QA Trends Dashboard
 
 > Auto-generated file. Source: `reports/qa/qa-tracker.json`.
-> Generated at: 2026-04-05 15:11:03 KST
+> Generated at: 2026-04-05 15:38:40 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Recorded Runs | 236 |
-| Counted Runs | 228 |
-| Total Checks | 1754 |
-| Total Passed | 1684 |
+| Recorded Runs | 237 |
+| Counted Runs | 229 |
+| Total Checks | 1769 |
+| Total Passed | 1699 |
 | Total Failed | 64 |
-| Overall Pass Rate | 96.01% |
-| Latest Recorded Run | QA-20260405-0237 |
-| Last Counted Run | QA-20260405-0236 |
+| Overall Pass Rate | 96.04% |
+| Latest Recorded Run | QA-20260405-0238 |
+| Last Counted Run | QA-20260405-0238 |
 
 ## Warnings
 
-- [warning] gate-window-regression-open: Recent gate runs still show regressions. The last 5 gate runs include 1 regression run(s), but the current release-gate-only window is clean. This warning is currently driven by QA-20260404-0222 (broad, non-release-facing) lingering in the rolling gate window. Next: Treat this as historical gate context, not an active release-gate failure. Keep broad/release-gate QA green; the warning will clear once enough clean gate runs replace the older regression in the rolling window.
+- None
 
 ## Rolling Windows
 
 | Window | Counted Runs | Checks | Pass Rate | Failed Runs | Failing Run Rate | Regression Runs | Regression Run Rate |
 |---|---:|---:|---:|---:|---:|---:|---:|
-| All Counted Runs | 228 | 1754 | 96.01% | 40 | 17.54% | 45 | 19.74% |
-| Last 30 Counted Runs | 30 | 286 | 98.6% | 3 | 10% | 3 | 10% |
-| Last 10 Counted Runs | 10 | 116 | 100% | 0 | 0% | 0 | 0% |
+| All Counted Runs | 229 | 1769 | 96.04% | 40 | 17.47% | 45 | 19.65% |
+| Last 30 Counted Runs | 30 | 293 | 98.63% | 3 | 10% | 3 | 10% |
+| Last 10 Counted Runs | 10 | 119 | 100% | 0 | 0% | 0 | 0% |
 
 ## Gate Run Windows
 
 | Window | Counted Runs | Checks | Pass Rate | Regression Runs | Regression Run Rate |
 |---|---:|---:|---:|---:|---:|
-| All Gate Runs | 13 | 180 | 97.78% | 2 | 15.38% |
-| Last 5 Gate Runs | 5 | 75 | 98.67% | 1 | 20% |
+| All Gate Runs | 14 | 195 | 97.95% | 2 | 14.29% |
+| Last 5 Gate Runs | 5 | 77 | 100% | 0 | 0% |
 
 ## Release-Gate Only Windows
 
 | Window | Counted Runs | Checks | Pass Rate | Regression Runs | Regression Run Rate |
 |---|---:|---:|---:|---:|---:|
-| All Release-Gate Runs | 3 | 46 | 100% | 0 | 0% |
-| Last 5 Release-Gate Runs | 3 | 46 | 100% | 0 | 0% |
+| All Release-Gate Runs | 4 | 61 | 100% | 0 | 0% |
+| Last 5 Release-Gate Runs | 4 | 61 | 100% | 0 | 0% |
 
 ## Scope Distribution
 
@@ -49,7 +49,7 @@
 | legacy | 137 | 137 |
 | targeted | 83 | 76 |
 | broad | 11 | 10 |
-| release-gate | 3 | 3 |
+| release-gate | 4 | 4 |
 | smoke | 2 | 2 |
 
 ## Priority Recurrence
@@ -65,7 +65,7 @@
 
 | Deployment ID | Target | Runs | Checks | Pass Rate | Regression Runs | Regression Run Rate | Latest Run | Commit |
 |---|---|---:|---:|---:|---:|---:|---|---|
-| dpl_2MuHQZg4ePQmikAr8MYk5rkWj1ic | vercel-production | 2 | 29 | 100% | 0 | 0% | QA-20260405-0236 | 7095e768 |
+| dpl_2MuHQZg4ePQmikAr8MYk5rkWj1ic | vercel-production | 3 | 44 | 100% | 0 | 0% | QA-20260405-0238 | b15fd073 |
 | dpl_DQqyMxBqMh3wVX6atBuctwBqDzV7 | vercel-production | 1 | 5 | 100% | 0 | 0% | QA-20260405-0233 | 98797cbb |
 | dpl_HrjM2qkwGoVvv1y9jF1sdirjuUMB | vercel-production | 1 | 8 | 100% | 0 | 0% | QA-20260405-0232 | b4bd537a |
 | dpl_Fer4NeUmueSdqxwbajJJqDkCdR9c | vercel-production | 1 | 8 | 100% | 0 | 0% | QA-20260405-0231 | 98d6c0be |
@@ -95,7 +95,7 @@
 | 2026-04-02 | 10 | 85 | 100% | 0 | 0 | 0% |
 | 2026-04-03 | 1 | 3 | 100% | 0 | 0 | 0% |
 | 2026-04-04 | 8 | 106 | 98.11% | 2 | 2 | 25% |
-| 2026-04-05 | 6 | 57 | 100% | 0 | 0 | 0% |
+| 2026-04-05 | 7 | 72 | 100% | 0 | 0 | 0% |
 
 ## Recent Regression Runs
 

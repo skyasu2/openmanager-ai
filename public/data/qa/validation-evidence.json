@@ -1,28 +1,28 @@
 {
   "version": "1.0.0",
-  "generatedAt": "2026-04-05T06:11:03.386Z",
+  "generatedAt": "2026-04-05T06:38:41.203Z",
   "source": {
     "trackerPath": "reports/qa/qa-tracker.json",
     "statusPath": "reports/qa/QA_STATUS.md",
     "publicPath": "public/data/qa/validation-evidence.json",
     "publicHref": "/data/qa/validation-evidence.json",
-    "latestRunId": "QA-20260405-0236"
+    "latestRunId": "QA-20260405-0238"
   },
   "summary": {
-    "totalRuns": 228,
-    "totalChecks": 1754,
+    "totalRuns": 229,
+    "totalChecks": 1769,
     "completedItems": 274,
     "expertDomainsOpenGaps": 0,
     "wontFixItems": 14,
-    "lastRecordedAt": "2026-04-05T05:47:50.876Z"
+    "lastRecordedAt": "2026-04-05T06:21:39.750Z"
   },
   "trackerUpdated": {
-    "iso": "2026-04-05T05:47:50.876Z",
+    "iso": "2026-04-05T06:21:39.750Z",
     "short": "2026-04-05",
     "long": "April 5, 2026"
   },
   "publicEvidenceUpdated": {
-    "iso": "2026-04-05T05:47:50.876Z",
+    "iso": "2026-04-05T06:21:39.750Z",
     "short": "2026-04-05",
     "long": "April 5, 2026"
   },
@@ -32,12 +32,12 @@
     "long": "March 22, 2026"
   },
   "latestPublicRun": {
-    "runId": "QA-20260405-0236",
-    "title": "Vercel production complementary release-gate QA for secondary routes and AI workspace",
+    "runId": "QA-20260405-0238",
+    "title": "Broad Release-Gate QA - Final Golden State Baseline Alignment",
     "scope": "release-gate",
-    "recordedAt": "2026-04-05T05:47:50.876Z",
-    "commitSha": "7095e76834d0a20e9e35640e753dfa731a6a5e7f",
-    "repoPath": "reports/qa/runs/2026/qa-run-QA-20260405-0236.json",
+    "recordedAt": "2026-04-05T06:21:39.750Z",
+    "commitSha": "b15fd0735",
+    "repoPath": "reports/qa/runs/2026/qa-run-QA-20260405-0238.json",
     "ciRunLink": null,
     "ciArtifactLinks": []
   },
