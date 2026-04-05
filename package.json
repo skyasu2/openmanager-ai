@@ -68,6 +68,7 @@
     "sync:github": "bash scripts/sync/github-sync.sh",
     "sync:github:dry-run": "bash scripts/sync/github-sync.sh --dry-run",
     "git:topology": "bash scripts/git/show-topology.sh topology",
+    "git:doctor": "bash scripts/git/show-topology.sh doctor",
     "git:graph:canonical": "bash scripts/git/show-topology.sh canonical",
     "git:graph:public": "bash scripts/git/show-topology.sh public",
     "git:graph:all": "bash scripts/git/show-topology.sh all",
