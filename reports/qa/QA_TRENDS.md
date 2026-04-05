@@ -1,7 +1,7 @@
 # QA Trends Dashboard
 
 > Auto-generated file. Source: `reports/qa/qa-tracker.json`.
-> Generated at: 2026-04-05 13:18:31 KST
+> Generated at: 2026-04-05 13:59:40 KST
 
 ## Summary
 
@@ -24,6 +24,20 @@
 | Last 30 Counted Runs | 30 | 271 | 98.52% | 3 | 10% | 3 | 10% |
 | Last 10 Counted Runs | 10 | 112 | 100% | 0 | 0% | 0 | 0% |
 
+## Gate Run Windows
+
+| Window | Counted Runs | Checks | Pass Rate | Regression Runs | Regression Run Rate |
+|---|---:|---:|---:|---:|---:|
+| All Gate Runs | 11 | 151 | 97.35% | 2 | 18.18% |
+| Last 5 Gate Runs | 5 | 72 | 98.61% | 1 | 20% |
+
+## Release-Gate Only Windows
+
+| Window | Counted Runs | Checks | Pass Rate | Regression Runs | Regression Run Rate |
+|---|---:|---:|---:|---:|---:|
+| All Release-Gate Runs | 1 | 17 | 100% | 0 | 0% |
+| Last 5 Release-Gate Runs | 1 | 17 | 100% | 0 | 0% |
+
 ## Scope Distribution
 
 | Scope | Recorded Runs | Counted Runs |
@@ -33,6 +47,32 @@
 | broad | 11 | 10 |
 | smoke | 2 | 2 |
 | release-gate | 1 | 1 |
+
+## Priority Recurrence
+
+| Priority | Total Items | Recurring Items | Recurrence Rate | Open Items | Open Recurring | Open Recurrence Rate | Completed | Wont-Fix |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| P0 | 41 | 7 | 17.07% | 0 | 0 | 0% | 41 | 0 |
+| P1 | 123 | 57 | 46.34% | 0 | 0 | 0% | 119 | 4 |
+| P2 | 109 | 35 | 32.11% | 0 | 0 | 0% | 100 | 9 |
+| P3 | 15 | 11 | 73.33% | 0 | 0 | 0% | 14 | 1 |
+
+## Deployment Regression Correlation
+
+| Deployment ID | Target | Runs | Checks | Pass Rate | Regression Runs | Regression Run Rate | Latest Run | Commit |
+|---|---|---:|---:|---:|---:|---:|---|---|
+| dpl_DQqyMxBqMh3wVX6atBuctwBqDzV7 | vercel-production | 1 | 5 | 100% | 0 | 0% | QA-20260405-0233 | 98797cbb |
+| dpl_HrjM2qkwGoVvv1y9jF1sdirjuUMB | vercel-production | 1 | 8 | 100% | 0 | 0% | QA-20260405-0232 | b4bd537a |
+| dpl_Fer4NeUmueSdqxwbajJJqDkCdR9c | vercel-production | 1 | 8 | 100% | 0 | 0% | QA-20260405-0231 | 98d6c0be |
+| dpl_7RVYuLgp44dE9AMHWLBegNxY1hSH | vercel-production | 1 | 7 | 100% | 0 | 0% | QA-20260405-0230 | 1ce348df |
+| dpl_BC2L2XzJ6JCXcQauXB3wviMfuPXZ | vercel-production | 4 | 59 | 100% | 0 | 0% | QA-20260404-0229 | 0b0f5c4e |
+| dpl_RMZadPVLmjXrbdkkQTwRpFTx6nv4 | vercel-production | 1 | 16 | 100% | 0 | 0% | QA-20260404-0225 | fc725862 |
+| dpl_Eh3o4WUwA374u7zqM4seojLawoKP | vercel-production | 1 | 13 | 92.31% | 1 | 100% | QA-20260404-0222 | 00e750bb |
+| dpl_v8108_20260402_targeted | vercel-production | 1 | 10 | 100% | 0 | 0% | QA-20260402-0217 | 52b38df2 |
+| dpl_v8108_20260402_2 | vercel-production | 1 | 14 | 100% | 0 | 0% | QA-20260402-0213 | 84c375ac |
+| dpl_v8108_20260402 | vercel-production | 1 | 12 | 100% | 0 | 0% | QA-20260402-0212 | 1d3e7a21 |
+| dpl_5FCMoSTAs2NBcKjVNrvzWaJhK2Vf | vercel-production | 2 | 10 | 100% | 0 | 0% | QA-20260402-0211 | 774171c8 |
+| dpl_Ef513T2wzSDxUrkhJm92DK7jszPv | vercel-production | 2 | 22 | 100% | 0 | 0% | QA-20260402-0208 | ae1eed46 |
 
 ## Recent Daily Trend (KST)
 

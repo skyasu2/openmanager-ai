@@ -11,6 +11,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 const require = createRequire(import.meta.url);
 const {
   buildQaTrendSnapshot,
+  qaTrendsMarkdown,
   writeQaTrendArtifacts,
 } = require('../../../scripts/qa/qa-trends.js');
 
@@ -67,9 +68,21 @@ describe('qa-trends', () => {
           checks: { total: 6, passed: 6, failed: 0 },
           pendingCount: 0,
           releaseFacing: true,
+          environment: {
+            deploymentId: 'dpl_gate_1',
+            target: 'vercel-production',
+            commitSha: '1234567890abcdef1234567890abcdef12345678',
+          },
         },
       ],
       items: {
+        'critical-completed': {
+          title: 'Critical fix shipped',
+          status: 'completed',
+          priority: 'P0',
+          seenCount: 2,
+          lastSeenRunId: 'QA-20260403-0203',
+        },
         'recurring-open': {
           title: 'Recurring open gap',
           status: 'pending',
@@ -101,6 +114,18 @@ describe('qa-trends', () => {
       failingRunCount: 1,
       regressionRunCount: 1,
     });
+    expect(snapshot.gateWindows[0]).toMatchObject({
+      label: 'All Gate Runs',
+      countedRuns: 2,
+      totalChecks: 11,
+      regressionRunCount: 0,
+    });
+    expect(snapshot.releaseGateWindows[0]).toMatchObject({
+      label: 'All Release-Gate Runs',
+      countedRuns: 1,
+      totalChecks: 6,
+      releaseFacingRuns: 1,
+    });
 
     expect(snapshot.scopeDistribution).toEqual([
       { scope: 'broad', totalRuns: 1, countedRuns: 1 },
@@ -108,6 +133,39 @@ describe('qa-trends', () => {
       { scope: 'smoke', totalRuns: 1, countedRuns: 0 },
       { scope: 'targeted', totalRuns: 1, countedRuns: 1 },
     ]);
+    expect(snapshot.priorityRecurrence).toEqual([
+      {
+        priority: 'P0',
+        totalItems: 1,
+        recurringItems: 1,
+        openItems: 0,
+        openRecurringItems: 0,
+        completedItems: 1,
+        wontFixItems: 0,
+        recurrenceRatePct: 100,
+        openRecurrenceRatePct: 0,
+      },
+      {
+        priority: 'P1',
+        totalItems: 2,
+        recurringItems: 2,
+        openItems: 1,
+        openRecurringItems: 1,
+        completedItems: 1,
+        wontFixItems: 0,
+        recurrenceRatePct: 100,
+        openRecurrenceRatePct: 100,
+      },
+    ]);
+    expect(snapshot.deploymentCorrelation[0]).toMatchObject({
+      deploymentId: 'dpl_gate_1',
+      target: 'vercel-production',
+      runCount: 1,
+      totalChecks: 6,
+      passRatePct: 100,
+      regressionRunRatePct: 0,
+      latestRunId: 'QA-20260403-0203',
+    });
 
     expect(snapshot.recentDailyTrend).toHaveLength(2);
     expect(snapshot.recentDailyTrend[0]).toMatchObject({
@@ -128,6 +186,12 @@ describe('qa-trends', () => {
       id: 'recurring-completed',
       completedCount: 3,
     });
+
+    const markdown = qaTrendsMarkdown(snapshot);
+    expect(markdown).toContain('## Gate Run Windows');
+    expect(markdown).toContain('## Release-Gate Only Windows');
+    expect(markdown).toContain('## Priority Recurrence');
+    expect(markdown).toContain('## Deployment Regression Correlation');
   });
 
   it('writes markdown and json artifacts for the current tracker snapshot', () => {
@@ -176,9 +240,11 @@ describe('qa-trends', () => {
 
     expect(snapshot.totals.countedRuns).toBe(1);
     expect(readFileSync(markdownPath, 'utf8')).toContain('## Rolling Windows');
+    expect(readFileSync(markdownPath, 'utf8')).toContain('## Gate Run Windows');
     expect(readFileSync(markdownPath, 'utf8')).toContain('Overall Pass Rate');
     expect(readFileSync(jsonPath, 'utf8')).toContain(
       '"overallPassRatePct": 100'
     );
+    expect(readFileSync(jsonPath, 'utf8')).toContain('"gateWindows"');
   });
 });

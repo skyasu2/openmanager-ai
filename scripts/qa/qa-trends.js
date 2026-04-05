@@ -72,6 +72,19 @@ function getRunWontFixCount(run) {
   return safeNumber(run?.wontFixCount);
 }
 
+function getRunDeploymentId(run) {
+  return String(run?.environment?.deploymentId || '').trim();
+}
+
+function isGateRun(run) {
+  const scope = run?.scope || 'legacy';
+  return scope === 'broad' || scope === 'release-gate';
+}
+
+function isReleaseGateRun(run) {
+  return (run?.scope || 'legacy') === 'release-gate';
+}
+
 function hasActionableRegression(run) {
   return getRunChecks(run).failed > 0 || getRunPendingCount(run) > 0;
 }
@@ -135,6 +148,21 @@ function buildWindowSummaries(runs) {
     {
       label: 'Last 10 Counted Runs',
       ...summarizeRuns(countedRuns.slice(-10)),
+    },
+  ];
+}
+
+function buildFilteredWindowSummaries(runs, predicate, labels) {
+  const filteredRuns = runs.filter((run) => isCountedRun(run) && predicate(run));
+
+  return [
+    {
+      label: labels.all,
+      ...summarizeRuns(filteredRuns),
+    },
+    {
+      label: labels.recent,
+      ...summarizeRuns(filteredRuns.slice(-5)),
     },
   ];
 }
@@ -258,6 +286,100 @@ function buildRecurringItems(trackerItems, {
   };
 }
 
+function buildPriorityRecurrence(trackerItems) {
+  const buckets = new Map();
+
+  for (const item of Object.values(trackerItems || {})) {
+    const priority = item?.priority || 'P2';
+    const current =
+      buckets.get(priority) || {
+        priority,
+        totalItems: 0,
+        recurringItems: 0,
+        openItems: 0,
+        openRecurringItems: 0,
+        completedItems: 0,
+        wontFixItems: 0,
+      };
+
+    const seenCount = safeNumber(item?.seenCount);
+    const recurring = seenCount > 1;
+    const status = item?.status || 'pending';
+
+    current.totalItems += 1;
+    if (recurring) current.recurringItems += 1;
+    if (status === 'pending' || status === 'deferred') {
+      current.openItems += 1;
+      if (recurring) current.openRecurringItems += 1;
+    }
+    if (status === 'completed') current.completedItems += 1;
+    if (status === 'wont-fix') current.wontFixItems += 1;
+
+    buckets.set(priority, current);
+  }
+
+  return [...buckets.values()]
+    .sort((a, b) => a.priority.localeCompare(b.priority))
+    .map((bucket) => ({
+      ...bucket,
+      recurrenceRatePct: percentage(bucket.recurringItems, bucket.totalItems),
+      openRecurrenceRatePct: percentage(bucket.openRecurringItems, bucket.openItems),
+    }));
+}
+
+function buildDeploymentRegressionCorrelation(runs, limit = 12) {
+  const buckets = new Map();
+
+  for (const run of runs.filter((run) => isCountedRun(run) && getRunDeploymentId(run))) {
+    const deploymentId = getRunDeploymentId(run);
+    const current =
+      buckets.get(deploymentId) || {
+        deploymentId,
+        target: run?.environment?.target || '',
+        commitSha: run?.environment?.commitSha || '',
+        runCount: 0,
+        totalChecks: 0,
+        totalFailed: 0,
+        regressionRuns: 0,
+        failingRuns: 0,
+        latestRecordedAt: run?.recordedAt || null,
+        latestRunId: run?.runId || null,
+      };
+    const checks = getRunChecks(run);
+
+    current.runCount += 1;
+    current.totalChecks += checks.total;
+    current.totalFailed += checks.failed;
+    if (checks.failed > 0) current.failingRuns += 1;
+    if (hasActionableRegression(run)) current.regressionRuns += 1;
+    if ((run?.recordedAt || '') >= (current.latestRecordedAt || '')) {
+      current.latestRecordedAt = run?.recordedAt || current.latestRecordedAt;
+      current.latestRunId = run?.runId || current.latestRunId;
+      current.commitSha = run?.environment?.commitSha || current.commitSha;
+      current.target = run?.environment?.target || current.target;
+    }
+
+    buckets.set(deploymentId, current);
+  }
+
+  return [...buckets.values()]
+    .sort((a, b) => {
+      if (b.latestRecordedAt === a.latestRecordedAt) {
+        return a.deploymentId.localeCompare(b.deploymentId);
+      }
+      return String(b.latestRecordedAt || '').localeCompare(String(a.latestRecordedAt || ''));
+    })
+    .slice(0, limit)
+    .map((bucket) => ({
+      ...bucket,
+      passRatePct: percentage(
+        bucket.totalChecks - bucket.totalFailed,
+        bucket.totalChecks
+      ),
+      regressionRunRatePct: percentage(bucket.regressionRuns, bucket.runCount),
+    }));
+}
+
 function buildQaTrendSnapshot(tracker) {
   const normalizedTracker = repairTrackerDerivedFields(
     cloneTrackerForRepair(tracker)
@@ -286,7 +408,17 @@ function buildQaTrendSnapshot(tracker) {
       lastCountedRunId: latestCountedRun?.runId || null,
     },
     windows: buildWindowSummaries(runs),
+    gateWindows: buildFilteredWindowSummaries(runs, isGateRun, {
+      all: 'All Gate Runs',
+      recent: 'Last 5 Gate Runs',
+    }),
+    releaseGateWindows: buildFilteredWindowSummaries(runs, isReleaseGateRun, {
+      all: 'All Release-Gate Runs',
+      recent: 'Last 5 Release-Gate Runs',
+    }),
     scopeDistribution: buildScopeDistribution(runs),
+    priorityRecurrence: buildPriorityRecurrence(normalizedTracker.items),
+    deploymentCorrelation: buildDeploymentRegressionCorrelation(runs),
     recentDailyTrend: buildRecentDailyTrend(runs),
     recentRegressionRuns: buildRecentRegressionRuns(runs),
     recurringItems: buildRecurringItems(normalizedTracker.items),
@@ -326,6 +458,26 @@ function qaTrendsMarkdown(snapshot) {
     );
   }
   lines.push('');
+  lines.push('## Gate Run Windows');
+  lines.push('');
+  lines.push('| Window | Counted Runs | Checks | Pass Rate | Regression Runs | Regression Run Rate |');
+  lines.push('|---|---:|---:|---:|---:|---:|');
+  for (const window of snapshot.gateWindows) {
+    lines.push(
+      `| ${window.label} | ${window.countedRuns} | ${window.totalChecks} | ${window.passRatePct}% | ${window.regressionRunCount} | ${window.regressionRunRatePct}% |`
+    );
+  }
+  lines.push('');
+  lines.push('## Release-Gate Only Windows');
+  lines.push('');
+  lines.push('| Window | Counted Runs | Checks | Pass Rate | Regression Runs | Regression Run Rate |');
+  lines.push('|---|---:|---:|---:|---:|---:|');
+  for (const window of snapshot.releaseGateWindows) {
+    lines.push(
+      `| ${window.label} | ${window.countedRuns} | ${window.totalChecks} | ${window.passRatePct}% | ${window.regressionRunCount} | ${window.regressionRunRatePct}% |`
+    );
+  }
+  lines.push('');
   lines.push('## Scope Distribution');
   lines.push('');
   lines.push('| Scope | Recorded Runs | Counted Runs |');
@@ -334,6 +486,34 @@ function qaTrendsMarkdown(snapshot) {
     lines.push(
       `| ${scope.scope} | ${scope.totalRuns} | ${scope.countedRuns} |`
     );
+  }
+  lines.push('');
+  lines.push('## Priority Recurrence');
+  lines.push('');
+  lines.push('| Priority | Total Items | Recurring Items | Recurrence Rate | Open Items | Open Recurring | Open Recurrence Rate | Completed | Wont-Fix |');
+  lines.push('|---|---:|---:|---:|---:|---:|---:|---:|---:|');
+  if (snapshot.priorityRecurrence.length === 0) {
+    lines.push('| - | 0 | 0 | 0% | 0 | 0 | 0% | 0 | 0 |');
+  } else {
+    for (const bucket of snapshot.priorityRecurrence) {
+      lines.push(
+        `| ${bucket.priority} | ${bucket.totalItems} | ${bucket.recurringItems} | ${bucket.recurrenceRatePct}% | ${bucket.openItems} | ${bucket.openRecurringItems} | ${bucket.openRecurrenceRatePct}% | ${bucket.completedItems} | ${bucket.wontFixItems} |`
+      );
+    }
+  }
+  lines.push('');
+  lines.push('## Deployment Regression Correlation');
+  lines.push('');
+  lines.push('| Deployment ID | Target | Runs | Checks | Pass Rate | Regression Runs | Regression Run Rate | Latest Run | Commit |');
+  lines.push('|---|---|---:|---:|---:|---:|---:|---|---|');
+  if (snapshot.deploymentCorrelation.length === 0) {
+    lines.push('| - | - | 0 | 0 | 0% | 0 | 0% | - | - |');
+  } else {
+    for (const deployment of snapshot.deploymentCorrelation) {
+      lines.push(
+        `| ${deployment.deploymentId} | ${deployment.target || '-'} | ${deployment.runCount} | ${deployment.totalChecks} | ${deployment.passRatePct}% | ${deployment.regressionRuns} | ${deployment.regressionRunRatePct}% | ${deployment.latestRunId || '-'} | ${deployment.commitSha ? deployment.commitSha.slice(0, 8) : '-'} |`
+      );
+    }
   }
   lines.push('');
   lines.push('## Recent Daily Trend (KST)');
@@ -432,12 +612,18 @@ module.exports = {
   buildRecentDailyTrend,
   buildRecentRegressionRuns,
   buildRecurringItems,
+  buildDeploymentRegressionCorrelation,
+  buildFilteredWindowSummaries,
+  buildPriorityRecurrence,
   buildScopeDistribution,
   buildWindowSummaries,
   cloneTrackerForRepair,
   getRunChecks,
+  getRunDeploymentId,
   hasActionableRegression,
+  isGateRun,
   isCountedRun,
+  isReleaseGateRun,
   kstDateKey,
   percentage,
   qaTrendsMarkdown,
