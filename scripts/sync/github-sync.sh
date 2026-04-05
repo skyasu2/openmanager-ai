@@ -135,7 +135,9 @@ git remote add origin "$GITHUB_URL"
 # 기존 GitHub 히스토리를 부모로 연결 시도
 info "GitHub 기존 히스토리 연결 시도..."
 if git fetch --depth=1 origin main 2>/dev/null; then
-  git reset "$(git rev-parse FETCH_HEAD)" 2>/dev/null || true
+  git update-ref refs/heads/main FETCH_HEAD
+  git symbolic-ref HEAD refs/heads/main
+  git reset --mixed >/dev/null 2>&1
   info "기존 히스토리에 연결됨"
 else
   warn "GitHub 레포가 비어있거나 연결 불가 → 초기 커밋으로 시작"
