@@ -8,10 +8,14 @@ import {
   Cpu,
   Database,
   ExternalLink,
-  Wrench,
 } from 'lucide-react';
 import { type FC, useState } from 'react';
-import type { AnalysisBasis } from '@/stores/useAISidebarStore';
+import type {
+  AnalysisBasis,
+  ResponseHandoff,
+  ToolResultSummary,
+} from '@/stores/useAISidebarStore';
+import type { AIThinkingStep } from '@/types/ai-sidebar/ai-sidebar-types';
 import { RenderMarkdownContent } from '@/utils/markdown-parser';
 
 function extractDomain(url: string): string {
@@ -45,9 +49,20 @@ function getToolLabel(toolName: string): string {
   return TOOL_LABELS[toolName] ?? toolName;
 }
 
+const STEP_STATUS_LABELS: Record<string, string> = {
+  pending: '대기',
+  processing: '처리 중',
+  completed: '완료',
+  failed: '실패',
+};
+
 interface AnalysisBasisBadgeProps {
   basis: AnalysisBasis;
   details?: string | null;
+  thinkingSteps?: AIThinkingStep[];
+  traceId?: string;
+  handoffHistory?: ResponseHandoff[];
+  toolResultSummaries?: ToolResultSummary[];
   className?: string;
 }
 
@@ -63,6 +78,10 @@ interface AnalysisBasisBadgeProps {
 export const AnalysisBasisBadge: FC<AnalysisBasisBadgeProps> = ({
   basis,
   details,
+  thinkingSteps,
+  traceId,
+  handoffHistory,
+  toolResultSummaries,
   className = '',
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -76,6 +95,11 @@ export const AnalysisBasisBadge: FC<AnalysisBasisBadgeProps> = ({
 
   // finalAnswer 제외한 실질적 도구 호출
   const meaningfulTools = basis.toolsCalled?.filter((t) => t !== 'finalAnswer');
+  const hasProcessDetails =
+    Boolean(traceId) ||
+    Boolean(thinkingSteps && thinkingSteps.length > 0) ||
+    Boolean(handoffHistory && handoffHistory.length > 0) ||
+    Boolean(toolResultSummaries && toolResultSummaries.length > 0);
 
   return (
     <div
@@ -103,6 +127,146 @@ export const AnalysisBasisBadge: FC<AnalysisBasisBadgeProps> = ({
       {/* 상세 정보 (확장 시) */}
       {isExpanded && (
         <div className="px-3 pb-3 pt-1 space-y-2 border-t border-gray-200">
+          {hasProcessDetails && (
+            <div className="rounded-md border border-slate-200 bg-white p-3">
+              <div className="mb-2 flex items-center justify-between">
+                <span className="text-xs font-semibold text-slate-700">
+                  응답 과정
+                </span>
+                <div className="flex items-center gap-1.5 text-2xs text-slate-500">
+                  {thinkingSteps && thinkingSteps.length > 0 && (
+                    <span className="rounded bg-slate-100 px-1.5 py-0.5">
+                      {thinkingSteps.length}단계
+                    </span>
+                  )}
+                  {traceId && (
+                    <span className="rounded bg-slate-100 px-1.5 py-0.5">
+                      trace
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              {traceId && (
+                <div className="mb-3 rounded border border-slate-200 bg-slate-50 p-2">
+                  <p className="mb-1 text-2xs font-medium uppercase tracking-wide text-slate-500">
+                    Trace ID
+                  </p>
+                  <code className="block break-all font-mono text-[11px] text-slate-700">
+                    {traceId}
+                  </code>
+                </div>
+              )}
+
+              {handoffHistory && handoffHistory.length > 0 && (
+                <div className="space-y-2">
+                  <p className="text-2xs font-medium uppercase tracking-wide text-slate-500">
+                    에이전트 전달 경로
+                  </p>
+                  <div className="space-y-2">
+                    {handoffHistory.map((handoff, index) => (
+                      <div
+                        key={`${handoff.from}-${handoff.to}-${index}`}
+                        className="rounded border border-slate-200 bg-slate-50 p-2"
+                      >
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="text-xs font-medium text-slate-700">
+                            {handoff.from} → {handoff.to}
+                          </span>
+                          <span className="rounded bg-white px-1.5 py-0.5 text-2xs text-slate-500">
+                            handoff {index + 1}
+                          </span>
+                        </div>
+                        {handoff.reason && (
+                          <p className="mt-1 text-xs leading-relaxed text-slate-600">
+                            {handoff.reason}
+                          </p>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {toolResultSummaries && toolResultSummaries.length > 0 && (
+                <div className="space-y-2">
+                  <p className="text-2xs font-medium uppercase tracking-wide text-slate-500">
+                    도구 결과 요약
+                  </p>
+                  <div className="space-y-2">
+                    {toolResultSummaries.map((toolResult, index) => (
+                      <div
+                        key={`${toolResult.toolName}-${index}`}
+                        className="rounded border border-slate-200 bg-slate-50 p-2"
+                      >
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="text-xs font-medium text-slate-700">
+                            {toolResult.label}
+                          </span>
+                          <span className="rounded bg-white px-1.5 py-0.5 text-2xs text-slate-500">
+                            {toolResult.status === 'failed' ? '실패' : '완료'}
+                          </span>
+                        </div>
+                        <p className="mt-1 text-xs leading-relaxed text-slate-600">
+                          {toolResult.summary}
+                        </p>
+                        {toolResult.preview && (
+                          <details className="mt-2 rounded border border-slate-200 bg-white p-2">
+                            <summary className="cursor-pointer text-2xs font-medium text-slate-500">
+                              결과 미리보기
+                            </summary>
+                            <pre className="mt-2 overflow-x-auto whitespace-pre-wrap break-all font-mono text-[11px] leading-relaxed text-slate-700">
+                              {toolResult.preview}
+                            </pre>
+                          </details>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {thinkingSteps && thinkingSteps.length > 0 && (
+                <div className="space-y-2">
+                  <p className="text-2xs font-medium uppercase tracking-wide text-slate-500">
+                    단계별 처리 내역
+                  </p>
+                  <div className="space-y-2">
+                    {thinkingSteps.map((step, index) => (
+                      <div
+                        key={step.id || `${step.step || 'step'}-${index}`}
+                        className="rounded border border-slate-200 bg-slate-50 p-2"
+                      >
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="text-xs font-medium text-slate-700">
+                            {step.step || step.title || `단계 ${index + 1}`}
+                          </span>
+                          <div className="flex items-center gap-1.5 text-2xs text-slate-500">
+                            {step.status && (
+                              <span className="rounded bg-white px-1.5 py-0.5">
+                                {STEP_STATUS_LABELS[step.status] ?? step.status}
+                              </span>
+                            )}
+                            {typeof step.duration === 'number' && (
+                              <span className="rounded bg-white px-1.5 py-0.5">
+                                {step.duration}ms
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        {step.description && (
+                          <p className="mt-1 text-xs leading-relaxed text-slate-600">
+                            {step.description}
+                          </p>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
           {/* 데이터 소스 */}
           <div className="flex items-center gap-2">
             <Database className="h-3.5 w-3.5 text-gray-400" />
@@ -125,7 +289,7 @@ export const AnalysisBasisBadge: FC<AnalysisBasisBadgeProps> = ({
           {/* 호출된 도구 */}
           {meaningfulTools && meaningfulTools.length > 0 && (
             <div className="flex items-start gap-2">
-              <Wrench className="h-3.5 w-3.5 text-gray-400 mt-0.5 shrink-0" />
+              <Database className="mt-0.5 h-3.5 w-3.5 shrink-0 text-gray-400" />
               <span className="text-gray-500 shrink-0">도구:</span>
               <div className="flex flex-wrap gap-1">
                 {meaningfulTools.map((tool) => (

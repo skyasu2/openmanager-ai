@@ -139,6 +139,9 @@ describe('handleStreamDataPart', () => {
       handleStreamDataPart(part, callbacks);
 
       expect(callbacks.setCurrentHandoff).toHaveBeenCalledWith(handoff);
+      expect(callbacks.setPendingMessageMetadata).toHaveBeenCalledWith({
+        handoffHistory: [handoff],
+      });
     });
   });
 
@@ -315,6 +318,78 @@ describe('handleStreamDataPart', () => {
           assistantResponseView: expect.objectContaining({
             summary: '서버 상태 요약',
           }),
+        })
+      );
+    });
+
+    it('should persist accumulated handoff history into deferred assistant metadata', () => {
+      handleStreamDataPart(
+        {
+          type: 'data-handoff',
+          data: {
+            from: 'supervisor',
+            to: 'analyst',
+            reason: '실시간 메트릭 분석',
+          },
+        },
+        callbacks
+      );
+
+      handleStreamDataPart(
+        {
+          type: 'data-done',
+          data: {
+            responseSummary: '요약',
+          },
+        },
+        callbacks
+      );
+
+      expect(callbacks.setDeferredAssistantMetadata).toHaveBeenCalledWith(
+        'msg-2',
+        expect.objectContaining({
+          handoffHistory: [
+            {
+              from: 'supervisor',
+              to: 'analyst',
+              reason: '실시간 메트릭 분석',
+            },
+          ],
+        })
+      );
+    });
+
+    it('should persist handoff history even without structured view, traceId, or tool results', () => {
+      handleStreamDataPart(
+        {
+          type: 'data-handoff',
+          data: {
+            from: 'supervisor',
+            to: 'reporter',
+            reason: '최종 응답 작성',
+          },
+        },
+        callbacks
+      );
+
+      handleStreamDataPart(
+        {
+          type: 'data-done',
+          data: { ragSources: [] },
+        },
+        callbacks
+      );
+
+      expect(callbacks.setDeferredAssistantMetadata).toHaveBeenCalledWith(
+        'msg-2',
+        expect.objectContaining({
+          handoffHistory: [
+            {
+              from: 'supervisor',
+              to: 'reporter',
+              reason: '최종 응답 작성',
+            },
+          ],
         })
       );
     });

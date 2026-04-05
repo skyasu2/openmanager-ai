@@ -18,6 +18,11 @@ function createMessage(params: {
   metadata?: {
     traceId?: string;
     ragSources?: RagSource[];
+    handoffHistory?: Array<{
+      from: string;
+      to: string;
+      reason?: string;
+    }>;
     assistantResponseView?: {
       summary: string;
       details?: string | null;
@@ -268,6 +273,14 @@ describe('transformMessages', () => {
     expect(
       assistant?.thinkingSteps?.some((step) => step.step === 'getServerMetrics')
     ).toBe(true);
+    expect(assistant?.metadata?.toolResultSummaries).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          toolName: 'getServerMetrics',
+          status: 'completed',
+        }),
+      ])
+    );
     expect(assistant?.metadata?.assistantResponseView?.summary).toBe(
       '메모리 상태 요약'
     );
@@ -333,6 +346,38 @@ describe('transformMessages', () => {
     expect(assistant?.metadata?.assistantResponseView?.details).toContain(
       '"slotIndex": 88'
     );
+  });
+
+  it('preserves handoff history in assistant metadata', () => {
+    const messages = transformMessages(
+      [
+        createMessage({ id: 'u1', role: 'user', text: '현재 상태 요약해줘' }),
+        createMessage({
+          id: 'a1',
+          role: 'assistant',
+          text: '운영 요약입니다.',
+          metadata: {
+            handoffHistory: [
+              {
+                from: 'supervisor',
+                to: 'reporter',
+                reason: '최종 요약 작성',
+              },
+            ],
+          },
+        }),
+      ],
+      { isLoading: false, currentMode: 'streaming' }
+    );
+
+    const assistant = messages.find((m) => m.id === 'a1');
+    expect(assistant?.metadata?.handoffHistory).toEqual([
+      {
+        from: 'supervisor',
+        to: 'reporter',
+        reason: '최종 요약 작성',
+      },
+    ]);
   });
 
   it('does not promote finalAnswer-only tool output to server realtime analysis', () => {

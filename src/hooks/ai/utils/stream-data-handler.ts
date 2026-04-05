@@ -83,6 +83,18 @@ function extractPendingToolResult(
   };
 }
 
+function normalizeHandoffHistory(value: unknown): HandoffEventData[] {
+  if (!Array.isArray(value)) return [];
+
+  return value.filter(
+    (entry): entry is HandoffEventData =>
+      isRecord(entry) &&
+      typeof entry.from === 'string' &&
+      typeof entry.to === 'string' &&
+      (entry.reason === undefined || typeof entry.reason === 'string')
+  );
+}
+
 function _createSyntheticToolParts(
   toolResults: PendingStreamToolResult[]
 ): SyntheticToolPart[] {
@@ -114,6 +126,14 @@ export function handleStreamDataPart(
   } else if (partType === 'data-handoff' && dataPart.data) {
     const handoff = dataPart.data as HandoffEventData;
     callbacks.setCurrentHandoff(handoff);
+    const pendingMetadata = callbacks.getPendingMessageMetadata();
+    const handoffHistory = normalizeHandoffHistory(
+      pendingMetadata.handoffHistory
+    );
+    callbacks.setPendingMessageMetadata({
+      ...pendingMetadata,
+      handoffHistory: [...handoffHistory, handoff],
+    });
     if (process.env.NODE_ENV === 'development') {
       logger.info(`🔄 [Handoff] ${handoff.from} → ${handoff.to}`);
     }
@@ -131,6 +151,7 @@ export function handleStreamDataPart(
 
     const doneData = dataPart.data as ResponseSourceData | undefined;
     const pendingToolResults = callbacks.getPendingToolResults();
+    const pendingMessageMetadata = callbacks.getPendingMessageMetadata();
 
     if (doneData?.ragSources) {
       const parsedRagSources = normalizeRagSources(doneData.ragSources);
@@ -150,12 +171,17 @@ export function handleStreamDataPart(
       }),
     };
 
-    if (structuredView || traceId || pendingToolResults.length > 0) {
+    if (
+      structuredView ||
+      traceId ||
+      pendingToolResults.length > 0 ||
+      Object.keys(pendingMessageMetadata).length > 0
+    ) {
       const currentMessages = [...callbacks.getMessages()];
       const targetMessage = currentMessages.at(-1);
       if (!targetMessage || targetMessage.role !== 'assistant') {
         callbacks.setPendingMessageMetadata({
-          ...callbacks.getPendingMessageMetadata(),
+          ...pendingMessageMetadata,
           ...nextMessageMetadata,
         });
         return;
@@ -163,7 +189,6 @@ export function handleStreamDataPart(
       if (traceId) {
         callbacks.setMessageTraceId(targetMessage.id, traceId);
       }
-      const pendingMessageMetadata = callbacks.getPendingMessageMetadata();
       const mergedMetadata = {
         ...pendingMessageMetadata,
         ...nextMessageMetadata,

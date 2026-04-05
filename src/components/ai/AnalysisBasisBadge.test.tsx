@@ -3,12 +3,9 @@
  */
 
 import { fireEvent, render, screen } from '@testing-library/react';
-import React from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import type { AnalysisBasis } from '@/stores/useAISidebarStore';
 import { AnalysisBasisBadge } from './AnalysisBasisBadge';
-
-void React;
 
 vi.mock('@/utils/markdown-parser', () => ({
   RenderMarkdownContent: ({ content }: { content: string }) => (
@@ -21,7 +18,6 @@ describe('AnalysisBasisBadge', () => {
     dataSource: 'RAG 지식베이스 검색 (2건)',
     engine: 'Cloud Run AI',
     ragUsed: true,
-    confidence: 90,
     ragSources: [
       {
         title: 'Redis OOM incident',
@@ -77,5 +73,64 @@ describe('AnalysisBasisBadge', () => {
     expect(screen.getByText('추가 메타데이터')).toBeInTheDocument();
     expect(screen.getByText(/Parity Metadata Contract/)).toBeInTheDocument();
     expect(screen.getByText(/slotIndex/)).toBeInTheDocument();
+  });
+
+  it('renders detailed response process when expanded', () => {
+    render(
+      <AnalysisBasisBadge
+        basis={{
+          ...basis,
+          toolsCalled: ['searchKnowledgeBase', 'getServerMetrics'],
+        }}
+        traceId="trace-1234567890abcdef"
+        handoffHistory={[
+          {
+            from: 'supervisor',
+            to: 'reporter',
+            reason: '운영 요약 생성을 위해 reporter로 전달',
+          },
+        ]}
+        toolResultSummaries={[
+          {
+            toolName: 'searchKnowledgeBase',
+            label: 'RAG 지식베이스 검색',
+            summary: '2개 결과를 반환했습니다.',
+            preview: '{"results":[{"title":"Redis OOM incident"}]}',
+            status: 'completed',
+          },
+        ]}
+        thinkingSteps={[
+          {
+            id: 'step-1',
+            step: 'searchKnowledgeBase',
+            status: 'completed',
+            description: '과거 장애 문서를 조회했습니다.',
+            duration: 180,
+          },
+          {
+            id: 'step-2',
+            step: 'getServerMetrics',
+            status: 'completed',
+            description: '실시간 메트릭을 확인했습니다.',
+            duration: 90,
+          },
+        ]}
+      />
+    );
+
+    fireEvent.click(
+      screen.getByRole('button', { name: '분석 근거 상세 보기' })
+    );
+
+    expect(screen.getByText('응답 과정')).toBeInTheDocument();
+    expect(screen.getByText('Trace ID')).toBeInTheDocument();
+    expect(screen.getByText('trace-1234567890abcdef')).toBeInTheDocument();
+    expect(screen.getByText('에이전트 전달 경로')).toBeInTheDocument();
+    expect(screen.getByText('supervisor → reporter')).toBeInTheDocument();
+    expect(screen.getByText('도구 결과 요약')).toBeInTheDocument();
+    expect(screen.getByText('2개 결과를 반환했습니다.')).toBeInTheDocument();
+    expect(screen.getByText('단계별 처리 내역')).toBeInTheDocument();
+    expect(screen.getByText('searchKnowledgeBase')).toBeInTheDocument();
+    expect(screen.getByText('getServerMetrics')).toBeInTheDocument();
   });
 });
