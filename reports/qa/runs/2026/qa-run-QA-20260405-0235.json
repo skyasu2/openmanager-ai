@@ -1,0 +1,130 @@
+{
+  "runId": "QA-20260405-0235",
+  "recordedAt": "2026-04-05T05:28:30.284Z",
+  "recordedAtKst": "2026-04-05 14:28:30 KST",
+  "runTitle": "Vercel production release-gate QA after trend warning rules",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_2MuHQZg4ePQmikAr8MYk5rkWj1ic",
+    "deploymentUrl": "https://openmanager-6g0msx1j1-skyasus-projects.vercel.app",
+    "commitSha": "7095e76834d0a20e9e35640e753dfa731a6a5e7f"
+  },
+  "scope": "release-gate",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": [
+    "core-routes-smoke",
+    "dashboard-core",
+    "ai-core",
+    "observability-pack"
+  ],
+  "coveredSurfaces": [
+    "/ landing render (console error 0)",
+    "/login render (console error 0)",
+    "/validation render",
+    "/api/version 200 (8.10.8 / production)",
+    "/api/health healthy (db 6ms, cache 4ms, ai 4ms)",
+    "404 route intentional (NOT_FOUND_404)",
+    "system start countdown -> /dashboard redirect",
+    "dashboard summary counts (전체 15 / 온라인 14 / 경고 1 / 위험 0 / 오프라인 0)",
+    "dashboard resource overview (CPU 32 / Memory 48 / Disk 32)",
+    "server detail modal open",
+    "server detail 3-tab switch (종합 상황 / 성능 분석 / 로그 & 네트워크)",
+    "server detail modal ESC close",
+    "AI sidebar open / engine Ready",
+    "AI starter prompt send + streaming response",
+    "AI response parity (14 normal, 1 warning, avg CPU 32 / MEM 48 / DISK 32, cache-redis-dc1-01 MEM 83%)",
+    "AI stream endpoint 200 + text/event-stream + X-AI-Latency-Ms=205"
+  ],
+  "skippedSurfaces": [
+    "/main legacy redirect",
+    "/auth/error",
+    "/auth/success",
+    "/privacy",
+    "topology modal",
+    "active alerts modal",
+    "reporter flow",
+    "analyst flow",
+    "Cloud Run admin /monitoring",
+    "Cloud Run admin /monitoring/traces"
+  ],
+  "checks": {
+    "total": 17,
+    "passed": 17,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Dashboard slot data and AI streaming response were checked in the same production session and remained numerically aligned.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Production alias, deployment evidence, smoke endpoints, and Vercel usage were all validated without release-blocking drift.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Playwright MCP evidence covered release-gate core routes, dashboard modal behavior, and AI parity checks with reusable artifacts.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-04-05T14:27:00+09:00",
+      "summary": "Current billing period reviewed after release-gate QA; effective 1.9605 USD, billed 0.0000 USD, no unexpected usage spike.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "404 evidence",
+      "path": ".playwright-mcp/screenshots/qa-20260405-0235-404.png",
+      "note": "Intentional 404 route validation"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Dashboard AI parity",
+      "path": ".playwright-mcp/screenshots/qa-20260405-0235-dashboard-ai.png",
+      "note": "Dashboard summary and AI response parity evidence"
+    },
+    {
+      "type": "playwright-report",
+      "label": "404 console log",
+      "path": ".playwright-mcp/screenshots/console-2026-04-05T05-24-12-330Z.log",
+      "note": "Expected 404 resource error only on intentional not-found route"
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Vercel production release-gate run against deployment dpl_2MuHQZg4ePQmikAr8MYk5rkWj1ic (commit 7095e76834d0a20e9e35640e753dfa731a6a5e7f).",
+    "AI timing observability passed via X-AI-Latency-Ms=205 while Server-Timing and X-AI-Processing-Ms were absent, which matches the documented production SSOT.",
+    "404 console error was confined to the intentional /this-route-should-404 probe and is treated as expected evidence, not a product regression."
+  ],
+  "links": []
+}

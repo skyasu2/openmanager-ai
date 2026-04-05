@@ -2,15 +2,15 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-05T03:57:20.217Z"
+    "updatedAt": "2026-04-05T05:28:30.284Z"
   },
   "sequence": {
-    "nextRunNumber": 235
+    "nextRunNumber": 236
   },
   "summary": {
-    "totalRuns": 226,
-    "totalChecks": 1725,
-    "totalPassed": 1655,
+    "totalRuns": 227,
+    "totalChecks": 1742,
+    "totalPassed": 1672,
     "totalFailed": 64,
     "completionRate": 100,
     "completedItems": 274,
@@ -19,10 +19,10 @@
     "wontFixItems": 14,
     "expertDomainsTracked": 6,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260405-0233",
-    "lastRecordedAt": "2026-04-04T17:01:53.490Z",
-    "latestRecordedRunId": "QA-20260405-0234",
-    "latestRecordedAt": "2026-04-05T03:57:20.217Z"
+    "lastRunId": "QA-20260405-0235",
+    "lastRecordedAt": "2026-04-05T05:28:30.284Z",
+    "latestRecordedRunId": "QA-20260405-0235",
+    "latestRecordedAt": "2026-04-05T05:28:30.284Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -20317,6 +20317,134 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260405-0235",
+      "recordedAt": "2026-04-05T05:28:30.284Z",
+      "recordedAtKst": "2026-04-05 14:28:30 KST",
+      "title": "Vercel production release-gate QA after trend warning rules",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260405-0235.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_2MuHQZg4ePQmikAr8MYk5rkWj1ic",
+        "deploymentUrl": "https://openmanager-6g0msx1j1-skyasus-projects.vercel.app",
+        "commitSha": "7095e76834d0a20e9e35640e753dfa731a6a5e7f"
+      },
+      "scope": "release-gate",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "core-routes-smoke",
+        "dashboard-core",
+        "ai-core",
+        "observability-pack"
+      ],
+      "coveredSurfaces": [
+        "/ landing render (console error 0)",
+        "/login render (console error 0)",
+        "/validation render",
+        "/api/version 200 (8.10.8 / production)",
+        "/api/health healthy (db 6ms, cache 4ms, ai 4ms)",
+        "404 route intentional (NOT_FOUND_404)",
+        "system start countdown -> /dashboard redirect",
+        "dashboard summary counts (전체 15 / 온라인 14 / 경고 1 / 위험 0 / 오프라인 0)",
+        "dashboard resource overview (CPU 32 / Memory 48 / Disk 32)",
+        "server detail modal open",
+        "server detail 3-tab switch (종합 상황 / 성능 분석 / 로그 & 네트워크)",
+        "server detail modal ESC close",
+        "AI sidebar open / engine Ready",
+        "AI starter prompt send + streaming response",
+        "AI response parity (14 normal, 1 warning, avg CPU 32 / MEM 48 / DISK 32, cache-redis-dc1-01 MEM 83%)",
+        "AI stream endpoint 200 + text/event-stream + X-AI-Latency-Ms=205"
+      ],
+      "skippedSurfaces": [
+        "/main legacy redirect",
+        "/auth/error",
+        "/auth/success",
+        "/privacy",
+        "topology modal",
+        "active alerts modal",
+        "reporter flow",
+        "analyst flow",
+        "Cloud Run admin /monitoring",
+        "Cloud Run admin /monitoring/traces"
+      ],
+      "checks": {
+        "total": 17,
+        "passed": 17,
+        "failed": 0
+      },
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Dashboard slot data and AI streaming response were checked in the same production session and remained numerically aligned.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Production alias, deployment evidence, smoke endpoints, and Vercel usage were all validated without release-blocking drift.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Playwright MCP evidence covered release-gate core routes, dashboard modal behavior, and AI parity checks with reusable artifacts.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-04-05T14:27:00+09:00",
+          "summary": "Current billing period reviewed after release-gate QA; effective 1.9605 USD, billed 0.0000 USD, no unexpected usage spike.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "404 evidence",
+          "path": ".playwright-mcp/screenshots/qa-20260405-0235-404.png",
+          "note": "Intentional 404 route validation"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Dashboard AI parity",
+          "path": ".playwright-mcp/screenshots/qa-20260405-0235-dashboard-ai.png",
+          "note": "Dashboard summary and AI response parity evidence"
+        },
+        {
+          "type": "playwright-report",
+          "label": "404 console log",
+          "path": ".playwright-mcp/screenshots/console-2026-04-05T05-24-12-330Z.log",
+          "note": "Expected 404 resource error only on intentional not-found route"
+        }
+      ],
+      "links": [],
+      "expertCount": 3,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -20325,16 +20453,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 114,
-      "appropriateCount": 110,
+      "seenCount": 115,
+      "appropriateCount": 111,
       "partialCount": 4,
       "inappropriateCount": 0,
       "improvementNeededCount": 14,
-      "lastRunId": "QA-20260404-0229",
-      "lastSeenAt": "2026-04-04T14:29:25.205Z",
+      "lastRunId": "QA-20260405-0235",
+      "lastSeenAt": "2026-04-05T05:28:30.284Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "대시보드 수치와 AI 요약 수치/용어가 동일 슬롯 기준으로 일치하며 스트림 경로가 200으로 동작했습니다.",
+      "lastRationale": "Dashboard slot data and AI streaming response were checked in the same production session and remained numerically aligned.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -20376,33 +20504,33 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 67,
-      "appropriateCount": 64,
+      "seenCount": 68,
+      "appropriateCount": 65,
       "partialCount": 3,
       "inappropriateCount": 0,
       "improvementNeededCount": 7,
-      "lastRunId": "QA-20260405-0233",
-      "lastSeenAt": "2026-04-04T17:01:53.490Z",
+      "lastRunId": "QA-20260405-0235",
+      "lastSeenAt": "2026-04-05T05:28:30.284Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Baseline deployment is stable and smoke checks passed before the qa-only commit trigger test.",
-      "lastNextAction": "Push qa-only commit and verify no new production deployment is created."
+      "lastRationale": "Production alias, deployment evidence, smoke endpoints, and Vercel usage were all validated without release-blocking drift.",
+      "lastNextAction": ""
     },
     "test-automation": {
       "domainId": "test-automation",
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 98,
-      "appropriateCount": 91,
+      "seenCount": 99,
+      "appropriateCount": 92,
       "partialCount": 7,
       "inappropriateCount": 0,
       "improvementNeededCount": 9,
-      "lastRunId": "QA-20260404-0229",
-      "lastSeenAt": "2026-04-04T14:29:25.205Z",
+      "lastRunId": "QA-20260405-0235",
+      "lastSeenAt": "2026-04-05T05:28:30.284Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "core-routes, dashboard-core, ai-core를 Vercel production에서 실제 사용자 동선으로 재검증했습니다.",
+      "lastRationale": "Playwright MCP evidence covered release-gate core routes, dashboard modal behavior, and AI parity checks with reusable artifacts.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {
