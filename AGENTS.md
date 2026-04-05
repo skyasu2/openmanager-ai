@@ -1,6 +1,6 @@
 # AGENTS.md - OpenManager Codex 실행 규칙
 
-<!-- Version: 6.1.1 -->
+<!-- Version: 6.1.2 -->
 **이 문서는 OpenManager AI 프로젝트 내에서 Codex 에이전트 전용 실행 규칙만 정의합니다.**
 
 ## 1) 정책 참조 구조 (SSOT)
@@ -42,13 +42,15 @@
 - Root App(`src` 중심) 변경 시 기본 검증:
   - `npm run type-check`
   - `npm run lint`
-  - 필요 시 `npm run test:quick`
+  - `npm run test:quick`
+  - AI/API 계약 변경이 포함되면 `npm run test:contract`
 - AI Engine(`cloud-run/ai-engine`) 변경 시 별도 검증:
   - `cd cloud-run/ai-engine && npm run type-check`
   - `cd cloud-run/ai-engine && npm run test`
 
 ### 2.5 최종 QA 운영 규칙 (Codex)
 - 현재 프로젝트의 QA 기준선은 `reports/qa/production-qa-2026-02-25.md`와 `reports/qa/qa-tracker.json`을 함께 참조합니다.
+- 자동 CI와 로컬 기본 게이트에서는 **실 LLM/외부 서비스 호출을 금지**합니다. 대신 `test:quick`, `test:contract` 같은 deterministic local test를 우선 사용합니다.
 - 최종 QA(릴리즈 게이트)는 기본적으로 **Vercel 실환경 + Playwright MCP**에서 수행합니다.
 - AI 기능 검증이 불필요한 QA(예: 레이아웃/카피/일반 인증 동선)는 로컬 개발 서버 기반 QA로 전환할 수 있습니다.
 - 모든 QA 실행 결과는 누적 추적을 위해 반드시 기록합니다.
@@ -71,4 +73,4 @@
 - 공통 정책이 변경되는 경우 이 파일이 아닌 `docs/guides/ai/ai-standards.md`를 갱신해야 합니다.
 
 ---
-_Last reviewed: 2026-03-31_
+_Last reviewed: 2026-04-05_
