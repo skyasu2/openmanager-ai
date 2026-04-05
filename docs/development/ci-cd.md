@@ -596,6 +596,11 @@ npm run gitlab:protection:check
 
 - `GITLAB_TOKEN`(또는 `GL_TOKEN`)이 없으면 수동 체크리스트를 출력합니다.
 - 토큰이 있으면 GitLab API로 `main` 보호 브랜치 설정(`push/merge/force-push`)을 검증합니다.
+- 아래 명령으로 canonical 라우팅(원격/훅/CI gate/배포 가드) 일관성을 한 번에 점검할 수 있습니다.
+
+```bash
+npm run git:verify:canonical
+```
 
 배포 트리거 전 인증 체크(혼입 방지):
 ```bash
