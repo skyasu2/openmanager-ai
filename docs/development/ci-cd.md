@@ -586,6 +586,17 @@ Dependabot PR 생성
 - `SKIP_ENV_VALIDATION=true`로 환경변수 없이도 빌드 성공 보장
 - 기본 Git push 대상은 canonical remote인 `gitlab` 입니다.
 
+### GitLab main 보호 설정 점검
+
+로컬에서 아래 명령으로 GitLab `main` 보호 규칙 점검 가이드를 출력할 수 있습니다.
+
+```bash
+npm run gitlab:protection:check
+```
+
+- `GITLAB_TOKEN`(또는 `GL_TOKEN`)이 없으면 수동 체크리스트를 출력합니다.
+- 토큰이 있으면 GitLab API로 `main` 보호 브랜치 설정(`push/merge/force-push`)을 검증합니다.
+
 배포 트리거 전 인증 체크(혼입 방지):
 ```bash
 env -u GITHUB_PERSONAL_ACCESS_TOKEN gh auth status -h github.com
