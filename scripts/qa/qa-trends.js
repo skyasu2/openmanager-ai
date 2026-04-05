@@ -167,6 +167,24 @@ function buildFilteredWindowSummaries(runs, predicate, labels) {
   ];
 }
 
+function buildRecentRunWindow(runs, predicate, limit = 5) {
+  return runs
+    .filter((run) => isCountedRun(run) && predicate(run))
+    .slice(-limit)
+    .map((run) => {
+      const checks = getRunChecks(run);
+      return {
+        runId: run?.runId || '-',
+        scope: run?.scope || 'legacy',
+        releaseFacing: run?.releaseFacing === true,
+        title: run?.runTitle || run?.title || run?.runId || '-',
+        failedChecks: checks.failed,
+        pendingCount: getRunPendingCount(run),
+        deferredCount: getRunDeferredCount(run),
+      };
+    });
+}
+
 function buildScopeDistribution(runs) {
   const buckets = new Map();
   for (const run of runs) {
@@ -386,6 +404,9 @@ function buildTrendWarnings(snapshot) {
   const recentGateWindow = snapshot?.gateWindows?.[1] || null;
   const allReleaseGateWindow = snapshot?.releaseGateWindows?.[0] || null;
   const recentReleaseGateWindow = snapshot?.releaseGateWindows?.[1] || null;
+  const recentGateRegressionRuns = (snapshot?.recentGateRuns || []).filter(
+    (run) => run.failedChecks > 0 || run.pendingCount > 0
+  );
 
   if (!allReleaseGateWindow || allReleaseGateWindow.countedRuns === 0) {
     warnings.push({
@@ -420,13 +441,30 @@ function buildTrendWarnings(snapshot) {
   }
 
   if (recentGateWindow && recentGateWindow.regressionRunCount > 0) {
+    const releaseGateWindowClean =
+      recentReleaseGateWindow &&
+      recentReleaseGateWindow.countedRuns > 0 &&
+      recentReleaseGateWindow.regressionRunCount === 0;
+    const regressionRunSummary = recentGateRegressionRuns
+      .map((run) => {
+        const tags = [run.scope];
+        if (!run.releaseFacing) {
+          tags.push('non-release-facing');
+        }
+        return `${run.runId} (${tags.join(', ')})`;
+      })
+      .join(', ');
+
     warnings.push({
       code: 'gate-window-regression-open',
       severity: 'warning',
       headline: 'Recent gate runs still show regressions',
-      detail: `The last 5 gate runs include ${recentGateWindow.regressionRunCount} regression run(s).`,
-      recommendedAction:
-        'Inspect recent broad/release-gate failures before relying on gate-run pass rate as a release signal.',
+      detail: releaseGateWindowClean
+        ? `The last 5 gate runs include ${recentGateWindow.regressionRunCount} regression run(s), but the current release-gate-only window is clean. This warning is currently driven by ${regressionRunSummary || 'an earlier broad gate run'} lingering in the rolling gate window.`
+        : `The last 5 gate runs include ${recentGateWindow.regressionRunCount} regression run(s).`,
+      recommendedAction: releaseGateWindowClean
+        ? 'Treat this as historical gate context, not an active release-gate failure. Keep broad/release-gate QA green; the warning will clear once enough clean gate runs replace the older regression in the rolling window.'
+        : 'Inspect recent broad/release-gate failures before relying on gate-run pass rate as a release signal.',
     });
   }
 
@@ -476,10 +514,12 @@ function buildQaTrendSnapshot(tracker) {
       all: 'All Gate Runs',
       recent: 'Last 5 Gate Runs',
     }),
+    recentGateRuns: buildRecentRunWindow(runs, isGateRun),
     releaseGateWindows: buildFilteredWindowSummaries(runs, isReleaseGateRun, {
       all: 'All Release-Gate Runs',
       recent: 'Last 5 Release-Gate Runs',
     }),
+    recentReleaseGateRuns: buildRecentRunWindow(runs, isReleaseGateRun),
     scopeDistribution: buildScopeDistribution(runs),
     priorityRecurrence: buildPriorityRecurrence(normalizedTracker.items),
     deploymentCorrelation: buildDeploymentRegressionCorrelation(runs),

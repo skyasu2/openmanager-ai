@@ -235,6 +235,60 @@ describe('qa-trends', () => {
     );
   });
 
+  it('explains when gate regression warning is driven by an older broad run while release-gate stays clean', () => {
+    const snapshot = buildQaTrendSnapshot({
+      summary: {},
+      items: {},
+      experts: {},
+      runs: [
+        {
+          runId: 'QA-20260404-0222',
+          recordedAt: '2026-04-04T09:17:33.588Z',
+          scope: 'broad',
+          checks: { total: 13, passed: 12, failed: 1 },
+          pendingCount: 1,
+          releaseFacing: false,
+        },
+        {
+          runId: 'QA-20260404-0229',
+          recordedAt: '2026-04-04T14:29:25.205Z',
+          scope: 'release-gate',
+          checks: { total: 17, passed: 17, failed: 0 },
+          pendingCount: 0,
+          releaseFacing: true,
+        },
+        {
+          runId: 'QA-20260405-0235',
+          recordedAt: '2026-04-05T05:28:30.284Z',
+          scope: 'release-gate',
+          checks: { total: 17, passed: 17, failed: 0 },
+          pendingCount: 0,
+          releaseFacing: true,
+        },
+        {
+          runId: 'QA-20260405-0236',
+          recordedAt: '2026-04-05T05:47:50.876Z',
+          scope: 'release-gate',
+          checks: { total: 12, passed: 12, failed: 0 },
+          pendingCount: 0,
+          releaseFacing: true,
+        },
+      ],
+    });
+
+    expect(snapshot.warnings).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          code: 'gate-window-regression-open',
+          detail: expect.stringContaining(
+            'current release-gate-only window is clean'
+          ),
+          recommendedAction: expect.stringContaining('historical gate context'),
+        }),
+      ])
+    );
+  });
+
   it('writes markdown and json artifacts for the current tracker snapshot', () => {
     const tempDir = createTempDir();
     const trackerPath = join(tempDir, 'qa-tracker.json');

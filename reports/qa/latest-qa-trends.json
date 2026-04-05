@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
-  "generatedAt": "2026-04-05T05:48:09.884Z",
-  "generatedAtKst": "2026-04-05 14:48:09 KST",
+  "generatedAt": "2026-04-05T05:58:52.972Z",
+  "generatedAtKst": "2026-04-05 14:58:52 KST",
   "trackerUpdatedAt": "2026-04-05T05:47:50.876Z",
   "totals": {
     "recordedRuns": 235,
@@ -92,6 +92,53 @@
       "releaseFacingRuns": 4
     }
   ],
+  "recentGateRuns": [
+    {
+      "runId": "QA-20260404-0222",
+      "scope": "broad",
+      "releaseFacing": false,
+      "title": "Vercel Playwright QA - dashboard, AI assistant, and monitoring parity check",
+      "failedChecks": 1,
+      "pendingCount": 1,
+      "deferredCount": 0
+    },
+    {
+      "runId": "QA-20260404-0225",
+      "scope": "broad",
+      "releaseFacing": true,
+      "title": "Vercel Production Broad Release QA - core routes, dashboard modal tabs, and AI streaming parity",
+      "failedChecks": 0,
+      "pendingCount": 0,
+      "deferredCount": 0
+    },
+    {
+      "runId": "QA-20260404-0229",
+      "scope": "release-gate",
+      "releaseFacing": true,
+      "title": "Vercel Production Broad Release-Gate QA - core routes + dashboard + AI stream parity",
+      "failedChecks": 0,
+      "pendingCount": 0,
+      "deferredCount": 0
+    },
+    {
+      "runId": "QA-20260405-0235",
+      "scope": "release-gate",
+      "releaseFacing": true,
+      "title": "Vercel production release-gate QA after trend warning rules",
+      "failedChecks": 0,
+      "pendingCount": 0,
+      "deferredCount": 0
+    },
+    {
+      "runId": "QA-20260405-0236",
+      "scope": "release-gate",
+      "releaseFacing": true,
+      "title": "Vercel production complementary release-gate QA for secondary routes and AI workspace",
+      "failedChecks": 0,
+      "pendingCount": 0,
+      "deferredCount": 0
+    }
+  ],
   "releaseGateWindows": [
     {
       "label": "All Release-Gate Runs",
@@ -122,6 +169,35 @@
       "regressionRunRatePct": 0,
       "pendingRunCount": 0,
       "releaseFacingRuns": 3
+    }
+  ],
+  "recentReleaseGateRuns": [
+    {
+      "runId": "QA-20260404-0229",
+      "scope": "release-gate",
+      "releaseFacing": true,
+      "title": "Vercel Production Broad Release-Gate QA - core routes + dashboard + AI stream parity",
+      "failedChecks": 0,
+      "pendingCount": 0,
+      "deferredCount": 0
+    },
+    {
+      "runId": "QA-20260405-0235",
+      "scope": "release-gate",
+      "releaseFacing": true,
+      "title": "Vercel production release-gate QA after trend warning rules",
+      "failedChecks": 0,
+      "pendingCount": 0,
+      "deferredCount": 0
+    },
+    {
+      "runId": "QA-20260405-0236",
+      "scope": "release-gate",
+      "releaseFacing": true,
+      "title": "Vercel production complementary release-gate QA for secondary routes and AI workspace",
+      "failedChecks": 0,
+      "pendingCount": 0,
+      "deferredCount": 0
     }
   ],
   "scopeDistribution": [
@@ -837,8 +913,8 @@
       "code": "gate-window-regression-open",
       "severity": "warning",
       "headline": "Recent gate runs still show regressions",
-      "detail": "The last 5 gate runs include 1 regression run(s).",
-      "recommendedAction": "Inspect recent broad/release-gate failures before relying on gate-run pass rate as a release signal."
+      "detail": "The last 5 gate runs include 1 regression run(s), but the current release-gate-only window is clean. This warning is currently driven by QA-20260404-0222 (broad, non-release-facing) lingering in the rolling gate window.",
+      "recommendedAction": "Treat this as historical gate context, not an active release-gate failure. Keep broad/release-gate QA green; the warning will clear once enough clean gate runs replace the older regression in the rolling window."
     }
   ]
 }
