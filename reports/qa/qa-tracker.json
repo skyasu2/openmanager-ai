@@ -2,10 +2,10 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-04T17:01:53.490Z"
+    "updatedAt": "2026-04-05T03:57:20.217Z"
   },
   "sequence": {
-    "nextRunNumber": 234
+    "nextRunNumber": 235
   },
   "summary": {
     "totalRuns": 226,
@@ -21,8 +21,8 @@
     "expertDomainsOpenGaps": 0,
     "lastRunId": "QA-20260405-0233",
     "lastRecordedAt": "2026-04-04T17:01:53.490Z",
-    "latestRecordedRunId": "QA-20260405-0233",
-    "latestRecordedAt": "2026-04-04T17:01:53.490Z"
+    "latestRecordedRunId": "QA-20260405-0234",
+    "latestRecordedAt": "2026-04-05T03:57:20.217Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -20266,6 +20266,52 @@
         }
       ],
       "expertCount": 1,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260405-0234",
+      "recordedAt": "2026-04-05T03:57:20.217Z",
+      "recordedAtKst": "2026-04-05 12:57:20 KST",
+      "title": "GitHub Sync & CI Optimization Golden State Verification",
+      "owner": "Gemini-Architect",
+      "source": "cli-orchestration",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260405-0234.json",
+      "environment": {
+        "target": "local-dev",
+        "url": "http://localhost:3004",
+        "frontend": "Next.js 16",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "0806f046e"
+      },
+      "scope": "broad",
+      "releaseFacing": false,
+      "countsTowardSummary": false,
+      "coveragePacks": [],
+      "coveredSurfaces": [
+        "GitHub Sync Logic (update-ref/symbolic-ref)",
+        "CI Pipeline Gating Strategy",
+        "Workspace Cleanliness (untracted dirs removed)",
+        "GitLab/GitHub Parity Check",
+        "Sync-without-dirty-override Success"
+      ],
+      "skippedSurfaces": [],
+      "checks": {
+        "total": 0,
+        "passed": 0,
+        "failed": 0
+      },
+      "expertAssessments": [],
+      "usageChecks": [],
+      "artifacts": [],
+      "links": [],
+      "expertCount": 0,
       "expertNeedsImprovementCount": 0,
       "completedCount": 0,
       "pendingCount": 0,

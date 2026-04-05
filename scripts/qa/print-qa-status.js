@@ -3,6 +3,11 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const { repairTrackerDerivedFields } = require('./qa-tracker-utils');
+const {
+  TRENDS_JSON_PATH,
+  TRENDS_MARKDOWN_PATH,
+  writeQaTrendArtifacts,
+} = require('./qa-trends');
 const { writeValidationEvidenceSnapshot } = require('./build-validation-evidence');
 const { statusMarkdown } = require('./qa-status-markdown');
 
@@ -34,6 +39,7 @@ function run() {
   const tracker = JSON.parse(fs.readFileSync(TRACKER_PATH, 'utf8'));
   const shouldWrite = args.has('--write') || args.has('--sync');
   let validationEvidenceSyncMessage = '';
+  let qaTrendSyncMessage = '';
   repairTrackerDerivedFields(tracker);
   if (shouldWrite) {
     fs.writeFileSync(TRACKER_PATH, `${JSON.stringify(tracker, null, 2)}\n`, 'utf8');
@@ -59,6 +65,15 @@ function run() {
         error instanceof Error ? error.message : String(error)
       }${staleSnapshotRemoved ? ' (stale snapshot removed)' : ''}`;
     }
+    const { markdownPath, jsonPath } = writeQaTrendArtifacts({
+      trackerPath: TRACKER_PATH,
+      markdownPath: TRENDS_MARKDOWN_PATH,
+      jsonPath: TRENDS_JSON_PATH,
+    });
+    qaTrendSyncMessage = `- trend artifacts synced: ${path.relative(
+      process.cwd(),
+      markdownPath
+    )}, ${path.relative(process.cwd(), jsonPath)}`;
   }
   const summary = tracker.summary || {};
   const items = Object.values(tracker.items || {});
@@ -123,10 +138,19 @@ function run() {
   if (shouldWrite) {
     console.log(`- dashboard synced: ${statusFileRelativePath}`);
     console.log(validationEvidenceSyncMessage);
+    console.log(qaTrendSyncMessage);
   } else if (fs.existsSync(STATUS_PATH)) {
     console.log(`- dashboard file: ${statusFileRelativePath} (read-only)`);
   } else {
     console.log(`- dashboard file missing: ${statusFileRelativePath} (--write to sync)`);
+  }
+  const trendsFileRelativePath = path.relative(process.cwd(), TRENDS_MARKDOWN_PATH);
+  if (!shouldWrite) {
+    if (fs.existsSync(TRENDS_MARKDOWN_PATH)) {
+      console.log(`- trend file: ${trendsFileRelativePath} (read-only)`);
+    } else {
+      console.log(`- trend file missing: ${trendsFileRelativePath} (--write to sync)`);
+    }
   }
 
   if (latestUsageChecks.length > 0) {

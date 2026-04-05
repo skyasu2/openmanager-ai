@@ -732,9 +732,9 @@ function inferReleaseFacing(rawValue, environment, scope) {
   return scope === 'broad' || scope === 'release-gate';
 }
 
-function inferCountsTowardSummary(rawValue) {
+function inferCountsTowardSummary(rawValue, totalChecks) {
   if (rawValue === undefined) {
-    return true;
+    return totalChecks > 0;
   }
 
   return toBoolean(rawValue, true);
@@ -831,7 +831,6 @@ function run() {
   const environment = normalizeEnvironment(payload.environment);
   const scope = normalizeRunScope(payload.scope, environment);
   const releaseFacing = inferReleaseFacing(payload.releaseFacing, environment, scope);
-  const countsTowardSummary = inferCountsTowardSummary(payload.countsTowardSummary);
   const coveredSurfaces = normalizeStringList(payload.coveredSurfaces);
   const skippedSurfaces = normalizeStringList(payload.skippedSurfaces);
   const coveragePacks = normalizeCoveragePacks(payload.coveragePacks);
@@ -862,6 +861,15 @@ function run() {
   );
   if (passed + failed > total) {
     throw new Error('checks.passed + checks.failed 는 checks.total 보다 클 수 없습니다.');
+  }
+  const countsTowardSummary = inferCountsTowardSummary(
+    payload.countsTowardSummary,
+    total
+  );
+  if (total === 0 && countsTowardSummary) {
+    throw new Error(
+      'checks.total=0 런은 countsTowardSummary=true 로 기록할 수 없습니다. 상태 검증/운영 기록 런이면 countsTowardSummary=false 로 기록하세요.'
+    );
   }
 
   const completedRaw = Array.isArray(payload.completedImprovements)

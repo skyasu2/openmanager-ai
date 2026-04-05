@@ -1,0 +1,555 @@
+{
+  "version": "1.0.0",
+  "generatedAt": "2026-04-05T04:18:31.388Z",
+  "generatedAtKst": "2026-04-05 13:18:31 KST",
+  "trackerUpdatedAt": "2026-04-05T03:57:20.217Z",
+  "totals": {
+    "recordedRuns": 233,
+    "countedRuns": 226,
+    "totalChecks": 1725,
+    "totalPassed": 1655,
+    "totalFailed": 64,
+    "overallPassRatePct": 95.94,
+    "latestRecordedRunId": "QA-20260405-0234",
+    "lastCountedRunId": "QA-20260405-0233"
+  },
+  "windows": [
+    {
+      "label": "All Counted Runs",
+      "recordedRuns": 226,
+      "countedRuns": 226,
+      "totalChecks": 1725,
+      "totalPassed": 1655,
+      "totalFailed": 64,
+      "passRatePct": 95.94,
+      "failingRunCount": 40,
+      "failingRunRatePct": 17.7,
+      "regressionRunCount": 45,
+      "regressionRunRatePct": 19.91,
+      "pendingRunCount": 34,
+      "releaseFacingRuns": 16
+    },
+    {
+      "label": "Last 30 Counted Runs",
+      "recordedRuns": 30,
+      "countedRuns": 30,
+      "totalChecks": 271,
+      "totalPassed": 267,
+      "totalFailed": 4,
+      "passRatePct": 98.52,
+      "failingRunCount": 3,
+      "failingRunRatePct": 10,
+      "regressionRunCount": 3,
+      "regressionRunRatePct": 10,
+      "pendingRunCount": 3,
+      "releaseFacingRuns": 7
+    },
+    {
+      "label": "Last 10 Counted Runs",
+      "recordedRuns": 10,
+      "countedRuns": 10,
+      "totalChecks": 112,
+      "totalPassed": 112,
+      "totalFailed": 0,
+      "passRatePct": 100,
+      "failingRunCount": 0,
+      "failingRunRatePct": 0,
+      "regressionRunCount": 0,
+      "regressionRunRatePct": 0,
+      "pendingRunCount": 0,
+      "releaseFacingRuns": 2
+    }
+  ],
+  "scopeDistribution": [
+    {
+      "scope": "legacy",
+      "totalRuns": 137,
+      "countedRuns": 137
+    },
+    {
+      "scope": "targeted",
+      "totalRuns": 82,
+      "countedRuns": 76
+    },
+    {
+      "scope": "broad",
+      "totalRuns": 11,
+      "countedRuns": 10
+    },
+    {
+      "scope": "smoke",
+      "totalRuns": 2,
+      "countedRuns": 2
+    },
+    {
+      "scope": "release-gate",
+      "totalRuns": 1,
+      "countedRuns": 1
+    }
+  ],
+  "recentDailyTrend": [
+    {
+      "date": "2026-03-22",
+      "runCount": 10,
+      "totalChecks": 48,
+      "totalPassed": 47,
+      "totalFailed": 1,
+      "failingRuns": 1,
+      "regressionRuns": 1,
+      "passRatePct": 97.92,
+      "regressionRunRatePct": 10
+    },
+    {
+      "date": "2026-03-23",
+      "runCount": 8,
+      "totalChecks": 33,
+      "totalPassed": 32,
+      "totalFailed": 1,
+      "failingRuns": 1,
+      "regressionRuns": 1,
+      "passRatePct": 96.97,
+      "regressionRunRatePct": 12.5
+    },
+    {
+      "date": "2026-03-24",
+      "runCount": 13,
+      "totalChecks": 61,
+      "totalPassed": 54,
+      "totalFailed": 7,
+      "failingRuns": 6,
+      "regressionRuns": 6,
+      "passRatePct": 88.52,
+      "regressionRunRatePct": 46.15
+    },
+    {
+      "date": "2026-03-25",
+      "runCount": 4,
+      "totalChecks": 18,
+      "totalPassed": 18,
+      "totalFailed": 0,
+      "failingRuns": 0,
+      "regressionRuns": 0,
+      "passRatePct": 100,
+      "regressionRunRatePct": 0
+    },
+    {
+      "date": "2026-03-26",
+      "runCount": 6,
+      "totalChecks": 72,
+      "totalPassed": 70,
+      "totalFailed": 0,
+      "failingRuns": 0,
+      "regressionRuns": 0,
+      "passRatePct": 97.22,
+      "regressionRunRatePct": 0
+    },
+    {
+      "date": "2026-03-27",
+      "runCount": 1,
+      "totalChecks": 12,
+      "totalPassed": 11,
+      "totalFailed": 1,
+      "failingRuns": 1,
+      "regressionRuns": 1,
+      "passRatePct": 91.67,
+      "regressionRunRatePct": 100
+    },
+    {
+      "date": "2026-03-29",
+      "runCount": 1,
+      "totalChecks": 11,
+      "totalPassed": 11,
+      "totalFailed": 0,
+      "failingRuns": 0,
+      "regressionRuns": 0,
+      "passRatePct": 100,
+      "regressionRunRatePct": 0
+    },
+    {
+      "date": "2026-03-30",
+      "runCount": 6,
+      "totalChecks": 47,
+      "totalPassed": 44,
+      "totalFailed": 3,
+      "failingRuns": 1,
+      "regressionRuns": 1,
+      "passRatePct": 93.62,
+      "regressionRunRatePct": 16.67
+    },
+    {
+      "date": "2026-03-31",
+      "runCount": 2,
+      "totalChecks": 11,
+      "totalPassed": 9,
+      "totalFailed": 2,
+      "failingRuns": 1,
+      "regressionRuns": 1,
+      "passRatePct": 81.82,
+      "regressionRunRatePct": 50
+    },
+    {
+      "date": "2026-04-01",
+      "runCount": 2,
+      "totalChecks": 16,
+      "totalPassed": 16,
+      "totalFailed": 0,
+      "failingRuns": 0,
+      "regressionRuns": 0,
+      "passRatePct": 100,
+      "regressionRunRatePct": 0
+    },
+    {
+      "date": "2026-04-02",
+      "runCount": 10,
+      "totalChecks": 85,
+      "totalPassed": 85,
+      "totalFailed": 0,
+      "failingRuns": 0,
+      "regressionRuns": 0,
+      "passRatePct": 100,
+      "regressionRunRatePct": 0
+    },
+    {
+      "date": "2026-04-03",
+      "runCount": 1,
+      "totalChecks": 3,
+      "totalPassed": 3,
+      "totalFailed": 0,
+      "failingRuns": 0,
+      "regressionRuns": 0,
+      "passRatePct": 100,
+      "regressionRunRatePct": 0
+    },
+    {
+      "date": "2026-04-04",
+      "runCount": 8,
+      "totalChecks": 106,
+      "totalPassed": 104,
+      "totalFailed": 2,
+      "failingRuns": 2,
+      "regressionRuns": 2,
+      "passRatePct": 98.11,
+      "regressionRunRatePct": 25
+    },
+    {
+      "date": "2026-04-05",
+      "runCount": 4,
+      "totalChecks": 28,
+      "totalPassed": 28,
+      "totalFailed": 0,
+      "failingRuns": 0,
+      "regressionRuns": 0,
+      "passRatePct": 100,
+      "regressionRunRatePct": 0
+    }
+  ],
+  "recentRegressionRuns": [
+    {
+      "runId": "QA-20260404-0223",
+      "recordedAt": "2026-04-04T11:06:01.219Z",
+      "scope": "targeted",
+      "title": "Vercel Playwright QA - dashboard/AI parity rerun after ai-engine parity patch",
+      "failedChecks": 1,
+      "pendingCount": 1,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260404-0222",
+      "recordedAt": "2026-04-04T09:17:33.588Z",
+      "scope": "broad",
+      "title": "Vercel Playwright QA - dashboard, AI assistant, and monitoring parity check",
+      "failedChecks": 1,
+      "pendingCount": 1,
+      "deferredCount": 0,
+      "wontFixCount": 1
+    },
+    {
+      "runId": "QA-20260331-0201",
+      "recordedAt": "2026-03-31T11:58:25.987Z",
+      "scope": "targeted",
+      "title": "Local dev Playwright QA - Vibe Coding modal CI/CD regression check",
+      "failedChecks": 2,
+      "pendingCount": 1,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260330-0195",
+      "recordedAt": "2026-03-30T04:14:36.238Z",
+      "scope": "targeted",
+      "title": "Landing Page Playwright Analysis - 4 Cards, Modal Content, Architecture, History",
+      "failedChecks": 3,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 3
+    },
+    {
+      "runId": "QA-20260327-0193",
+      "recordedAt": "2026-03-26T15:12:25.263Z",
+      "scope": "targeted",
+      "title": "Vercel production targeted QA recheck after cloud-run pre-init logging fix",
+      "failedChecks": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 1
+    },
+    {
+      "runId": "QA-20260324-0179",
+      "recordedAt": "2026-03-24T10:48:15.267Z",
+      "scope": "targeted",
+      "title": "Vercel Preview QA - PR #200 blocked by preview SSO",
+      "failedChecks": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260324-0177",
+      "recordedAt": "2026-03-24T07:57:28.735Z",
+      "scope": "targeted",
+      "title": "Vercel Production QA - false realtime-analysis badge removed but parity mismatch remains",
+      "failedChecks": 1,
+      "pendingCount": 1,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260324-0176",
+      "recordedAt": "2026-03-24T07:35:13.658Z",
+      "scope": "targeted",
+      "title": "Vercel Production QA - parity gate still open after analysis detail patch",
+      "failedChecks": 2,
+      "pendingCount": 1,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260324-0175",
+      "recordedAt": "2026-03-24T05:45:00.758Z",
+      "scope": "targeted",
+      "title": "Vercel Production QA - deferred parity metadata preserved but detail contract still incomplete",
+      "failedChecks": 1,
+      "pendingCount": 1,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260324-0174",
+      "recordedAt": "2026-03-24T05:13:06.470Z",
+      "scope": "targeted",
+      "title": "Vercel Production QA - parity metadata after type-fix deploy",
+      "failedChecks": 1,
+      "pendingCount": 1,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    }
+  ],
+  "recurringItems": {
+    "open": [],
+    "wontFix": [
+      {
+        "id": "feature-dod-tsc-zero-error",
+        "title": "tsc --noEmit 0 에러",
+        "status": "wont-fix",
+        "priority": "P2",
+        "seenCount": 9,
+        "completedCount": 5,
+        "lastSeenRunId": "QA-20260307-0053",
+        "lastResolvedRunId": null
+      },
+      {
+        "id": "feature-dod-unit-tests",
+        "title": "단위 테스트 158개 통과",
+        "status": "wont-fix",
+        "priority": "P2",
+        "seenCount": 9,
+        "completedCount": 5,
+        "lastSeenRunId": "QA-20260307-0053",
+        "lastResolvedRunId": null
+      },
+      {
+        "id": "obs-fp-fn-weekly-report",
+        "title": "오탐/미탐 주간 리포트 자동 생성",
+        "status": "wont-fix",
+        "priority": "P1",
+        "seenCount": 3,
+        "completedCount": 0,
+        "lastSeenRunId": "QA-20260227-0013",
+        "lastResolvedRunId": null
+      },
+      {
+        "id": "ai-server-timing-header-production",
+        "title": "Server-Timing header visibility in production",
+        "status": "wont-fix",
+        "priority": "P1",
+        "seenCount": 2,
+        "completedCount": 0,
+        "lastSeenRunId": "QA-20260310-0081",
+        "lastResolvedRunId": null
+      },
+      {
+        "id": "ai-cold-start-latency",
+        "title": "Cloud Run cold start 레이턴시 최적화",
+        "status": "wont-fix",
+        "priority": "P2",
+        "seenCount": 2,
+        "completedCount": 0,
+        "lastSeenRunId": "QA-20260327-0193",
+        "lastResolvedRunId": null
+      },
+      {
+        "id": "landing-console-api-system-unauthorized",
+        "title": "랜딩 비로그인 상태에서 /api/system 401 콘솔 에러 제거 또는 graceful handling",
+        "status": "wont-fix",
+        "priority": "P1",
+        "seenCount": 1,
+        "completedCount": 0,
+        "lastSeenRunId": "QA-20260330-0195",
+        "lastResolvedRunId": null
+      },
+      {
+        "id": "landing-vibe-content-deployment-drift",
+        "title": "Vibe Coding 프로덕션 카드 내용과 현재 소스 간 배포 드리프트 해소",
+        "status": "wont-fix",
+        "priority": "P1",
+        "seenCount": 1,
+        "completedCount": 0,
+        "lastSeenRunId": "QA-20260330-0195",
+        "lastResolvedRunId": null
+      },
+      {
+        "id": "ai-agent-type-metadata",
+        "title": "AI Chat 에이전트 타입 메타데이터 표시 개선",
+        "status": "wont-fix",
+        "priority": "P2",
+        "seenCount": 1,
+        "completedCount": 0,
+        "lastSeenRunId": "QA-20260326-0190",
+        "lastResolvedRunId": null
+      },
+      {
+        "id": "ai-chat-detail-expand",
+        "title": "AI Chat 상세 분석 펼치기",
+        "status": "wont-fix",
+        "priority": "P2",
+        "seenCount": 1,
+        "completedCount": 0,
+        "lastSeenRunId": "QA-20260301-0030",
+        "lastResolvedRunId": null
+      },
+      {
+        "id": "analyst-drilldown",
+        "title": "Analyst 서버별 드릴다운",
+        "status": "wont-fix",
+        "priority": "P2",
+        "seenCount": 1,
+        "completedCount": 0,
+        "lastSeenRunId": "QA-20260301-0030",
+        "lastResolvedRunId": null
+      }
+    ],
+    "completed": [
+      {
+        "id": "feature-dod-system-start-guard",
+        "title": "비로그인 시스템 시작 가드 모달 동작",
+        "status": "completed",
+        "priority": "P1",
+        "seenCount": 7,
+        "completedCount": 7,
+        "lastSeenRunId": "QA-20260227-0018",
+        "lastResolvedRunId": null
+      },
+      {
+        "id": "feature-dod-lint-zero-error",
+        "title": "lint 0 에러",
+        "status": "completed",
+        "priority": "P2",
+        "seenCount": 7,
+        "completedCount": 5,
+        "lastSeenRunId": "QA-20260302-0044",
+        "lastResolvedRunId": null
+      },
+      {
+        "id": "dashboard-health-v880-recheck",
+        "title": "프로덕션 대시보드 및 Health API 재검증",
+        "status": "completed",
+        "priority": "P1",
+        "seenCount": 5,
+        "completedCount": 5,
+        "lastSeenRunId": "QA-20260309-0068",
+        "lastResolvedRunId": null
+      },
+      {
+        "id": "landing-copy-alignment",
+        "title": "랜딩/로그인 정책 카피 정합성",
+        "status": "completed",
+        "priority": "P1",
+        "seenCount": 8,
+        "completedCount": 4,
+        "lastSeenRunId": "QA-20260227-0016",
+        "lastResolvedRunId": null
+      },
+      {
+        "id": "security-attack-regression-pack",
+        "title": "보안 공격 시나리오 회귀팩 구축",
+        "status": "completed",
+        "priority": "P1",
+        "seenCount": 8,
+        "completedCount": 4,
+        "lastSeenRunId": "QA-20260320-0138",
+        "lastResolvedRunId": null
+      },
+      {
+        "id": "ai-chat-response-quality-v880-recheck-20260309",
+        "title": "AI Chat 응답 품질 및 권고 재검증",
+        "status": "completed",
+        "priority": "P1",
+        "seenCount": 4,
+        "completedCount": 4,
+        "lastSeenRunId": "QA-20260309-0068",
+        "lastResolvedRunId": null
+      },
+      {
+        "id": "analyst-full-analysis-v880-recheck-20260309",
+        "title": "Analyst 전체 분석 경로 재검증",
+        "status": "completed",
+        "priority": "P1",
+        "seenCount": 4,
+        "completedCount": 4,
+        "lastSeenRunId": "QA-20260309-0068",
+        "lastResolvedRunId": null
+      },
+      {
+        "id": "guest-pin-login-flow",
+        "title": "게스트 PIN 인증 후 시스템 시작 버튼 노출",
+        "status": "completed",
+        "priority": "P1",
+        "seenCount": 4,
+        "completedCount": 4,
+        "lastSeenRunId": "QA-20260227-0018",
+        "lastResolvedRunId": null
+      },
+      {
+        "id": "reporter-empty-cta-generate-v880-recheck-20260309",
+        "title": "Reporter empty state CTA 생성 경로 재검증",
+        "status": "completed",
+        "priority": "P1",
+        "seenCount": 4,
+        "completedCount": 4,
+        "lastSeenRunId": "QA-20260309-0068",
+        "lastResolvedRunId": null
+      },
+      {
+        "id": "ai-chat-performance-v880",
+        "title": "AI Chat 응답 시간 및 요약 품질 검증",
+        "status": "completed",
+        "priority": "P1",
+        "seenCount": 5,
+        "completedCount": 3,
+        "lastSeenRunId": "QA-20260310-0082",
+        "lastResolvedRunId": null
+      }
+    ]
+  }
+}

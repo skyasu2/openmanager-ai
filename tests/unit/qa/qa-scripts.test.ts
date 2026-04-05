@@ -303,6 +303,13 @@ describe('QA scripts', () => {
     expect(recordResult.status).toBe(0);
 
     const statusPath = join(tempDir, 'reports', 'qa', 'QA_STATUS.md');
+    const trendsPath = join(tempDir, 'reports', 'qa', 'QA_TRENDS.md');
+    const trendsJsonPath = join(
+      tempDir,
+      'reports',
+      'qa',
+      'latest-qa-trends.json'
+    );
     const validationEvidencePath = join(
       tempDir,
       'public',
@@ -322,9 +329,14 @@ describe('QA scripts', () => {
       readOnlyResult.stdout,
       '- dashboard file: reports/qa/QA_STATUS.md (read-only)'
     );
+    expectOutputContainsIfCaptured(
+      readOnlyResult.stdout,
+      '- trend file missing: reports/qa/QA_TRENDS.md (--write to sync)'
+    );
     expect(readFileSync(statusPath, 'utf8')).toBe('stale dashboard\n');
     expect(statSync(statusPath).mtimeMs).toBe(staleMtime);
     expect(existsSync(validationEvidencePath)).toBe(false);
+    expect(existsSync(trendsPath)).toBe(false);
 
     const syncResult = runNodeScript(PRINT_QA_STATUS_SCRIPT, ['--write'], {
       cwd: tempDir,
@@ -339,10 +351,18 @@ describe('QA scripts', () => {
       syncResult.stdout,
       '- public evidence synced: public/data/qa/validation-evidence.json'
     );
+    expectOutputContainsIfCaptured(
+      syncResult.stdout,
+      '- trend artifacts synced: reports/qa/QA_TRENDS.md, reports/qa/latest-qa-trends.json'
+    );
     expect(readFileSync(statusPath, 'utf8')).toContain(
       'Coverage Packs: core-routes-smoke, dashboard-core, ai-core'
     );
     expect(existsSync(validationEvidencePath)).toBe(true);
+    expect(existsSync(trendsPath)).toBe(true);
+    expect(existsSync(trendsJsonPath)).toBe(true);
+    expect(readFileSync(trendsPath, 'utf8')).toContain('## Rolling Windows');
+    expect(readFileSync(trendsJsonPath, 'utf8')).toContain('"totals"');
     expect(readFileSync(validationEvidencePath, 'utf8')).toContain(
       '"latestRunId": "QA-'
     );
@@ -539,6 +559,47 @@ describe('QA scripts', () => {
     expectOutputContainsIfCaptured(
       statusResult.stdout,
       '- latest counts toward summary: no'
+    );
+  });
+
+  it('rejects zero-check runs that try to count toward the aggregate summary', () => {
+    const tempDir = createTempWorkspace();
+    const inputPath = writeInputFile(
+      tempDir,
+      createValidPayload({
+        scope: 'targeted',
+        releaseFacing: false,
+        countsTowardSummary: true,
+        environment: {
+          target: 'local-dev',
+          frontend: 'Next.js 16',
+          backend: 'Cloud Run',
+        },
+        checks: {
+          total: 0,
+          passed: 0,
+          failed: 0,
+        },
+        coveragePacks: [],
+        coveredSurfaces: ['state verification only'],
+        skippedSurfaces: [],
+        expertAssessments: [],
+        usageChecks: [],
+      })
+    );
+
+    const recordResult = runNodeScript(
+      RECORD_QA_RUN_SCRIPT,
+      ['--input', inputPath],
+      {
+        cwd: tempDir,
+      }
+    );
+
+    expect(recordResult.status).toBe(1);
+    expectOutputContainsIfCaptured(
+      `${recordResult.stdout}${recordResult.stderr}`,
+      'checks.total=0 런은 countsTowardSummary=true 로 기록할 수 없습니다.'
     );
   });
 
