@@ -7,6 +7,7 @@ import {
   chmodSync,
   mkdirSync,
   mkdtempSync,
+  readFileSync,
   rmSync,
   writeFileSync,
 } from 'node:fs';
@@ -91,6 +92,9 @@ function createFakeGit(
     branch?: string;
     dirtyOutput?: string;
     remoteExists?: boolean;
+    commandLogPath?: string;
+    fetchSucceeds?: boolean;
+    diffCachedOutput?: string;
   }
 ) {
   const scriptPath = join(binDir, 'git');
@@ -104,6 +108,9 @@ const archiveSource = ${JSON.stringify(options.archiveSource)};
 const branch = ${JSON.stringify(options.branch ?? 'main')};
 const dirtyOutput = ${JSON.stringify(options.dirtyOutput ?? '')};
 const remoteExists = ${JSON.stringify(options.remoteExists ?? true)};
+const commandLogPath = ${JSON.stringify(options.commandLogPath ?? null)};
+const fetchSucceeds = ${JSON.stringify(options.fetchSucceeds ?? true)};
+const diffCachedOutput = ${JSON.stringify(options.diffCachedOutput ?? '')};
 
 let args = process.argv.slice(2);
 if (args[0] === '-C') {
@@ -111,6 +118,9 @@ if (args[0] === '-C') {
 }
 
 const key = args.join(' ');
+if (commandLogPath) {
+  require('node:fs').appendFileSync(commandLogPath, key + '\\n', 'utf8');
+}
 
 function out(value) {
   if (value) process.stdout.write(String(value));
@@ -144,6 +154,15 @@ if (key.startsWith('log -1 --pretty=format:')) {
 
 if (key === 'status --porcelain') {
   out(dirtyOutput);
+  process.exit(0);
+}
+
+if (key === 'fetch --depth=1 origin main') {
+  process.exit(fetchSucceeds ? 0 : 1);
+}
+
+if (key === 'diff --cached --name-only') {
+  out(diffCachedOutput);
   process.exit(0);
 }
 
@@ -236,5 +255,32 @@ describe('github-sync', () => {
     expect(`${result.stdout}${result.stderr}`).toContain(
       '워킹 트리가 dirty 상태입니다'
     );
+  });
+
+  it('links fetched GitHub history without resetting to an unresolved HEAD', () => {
+    const fixtureRepo = createFixtureRepo();
+    const binDir = createTempDir();
+    const commandLogPath = join(createTempDir(), 'git-commands.log');
+
+    createFakeGit(binDir, {
+      repoRoot: process.cwd(),
+      archiveSource: fixtureRepo,
+      commandLogPath,
+      fetchSucceeds: true,
+      diffCachedOutput: '',
+    });
+
+    const result = runGithubSync(binDir, {}, []);
+    const commandLog = readFileSync(commandLogPath, 'utf8');
+
+    expect(result.status).toBe(0);
+    expect(`${result.stdout}${result.stderr}`).toContain(
+      '변경 없음 — GitHub가 이미 최신 상태입니다.'
+    );
+    expect(commandLog).toContain('fetch --depth=1 origin main');
+    expect(commandLog).toContain('update-ref refs/heads/main FETCH_HEAD');
+    expect(commandLog).toContain('symbolic-ref HEAD refs/heads/main');
+    expect(commandLog).toContain('reset --mixed');
+    expect(commandLog).not.toContain('rev-parse FETCH_HEAD');
   });
 });
