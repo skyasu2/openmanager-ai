@@ -4,4 +4,4 @@
 # Windows/macOS/Linux compatible
 # Uses Node.js script for full cross-platform support
 
-npm run hook:pre-push
+npm run hook:pre-push -- "$@"
