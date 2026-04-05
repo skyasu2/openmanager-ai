@@ -2,15 +2,15 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-05T17:28:17.948Z"
+    "updatedAt": "2026-04-05T22:02:34.705Z"
   },
   "sequence": {
-    "nextRunNumber": 244
+    "nextRunNumber": 245
   },
   "summary": {
-    "totalRuns": 229,
-    "totalChecks": 1769,
-    "totalPassed": 1699,
+    "totalRuns": 230,
+    "totalChecks": 1778,
+    "totalPassed": 1708,
     "totalFailed": 64,
     "completionRate": 100,
     "completedItems": 277,
@@ -19,10 +19,10 @@
     "wontFixItems": 14,
     "expertDomainsTracked": 8,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260405-0238",
-    "lastRecordedAt": "2026-04-05T06:21:39.750Z",
-    "latestRecordedRunId": "QA-20260406-0243",
-    "latestRecordedAt": "2026-04-05T17:28:17.948Z"
+    "lastRunId": "QA-20260406-0244",
+    "lastRecordedAt": "2026-04-05T22:02:34.705Z",
+    "latestRecordedRunId": "QA-20260406-0244",
+    "latestRecordedAt": "2026-04-05T22:02:34.705Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -21137,6 +21137,99 @@
         }
       ],
       "artifacts": [],
+      "links": [
+        {
+          "type": "general",
+          "label": "Vercel URL",
+          "url": "https://openmanager-ai.vercel.app/"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Deployment dpl_H2A52Y1DvRKLATu7o1A8fb1WbAXf",
+          "url": "https://vercel.com/skyasus-projects/openmanager-ai/H2A52Y1DvRKLATu7o1A8fb1WbAXf"
+        }
+      ],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260406-0244",
+      "recordedAt": "2026-04-05T22:02:34.705Z",
+      "recordedAtKst": "2026-04-06 07:02:34 KST",
+      "title": "Vercel targeted QA - latest production AI sidebar smoke refresh after canonical routing chore",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260406-0244.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_H2A52Y1DvRKLATu7o1A8fb1WbAXf",
+        "deploymentUrl": "https://openmanager-ejzwa4kdx-skyasus-projects.vercel.app",
+        "commitSha": "40bd70932977d2bbbca5b1ea258c27daca706111"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": true,
+      "coveragePacks": ["ai-core"],
+      "coveredSurfaces": [
+        "latest production deployment 40bd7093 / dpl_H2A52Y1DvRKLATu7o1A8fb1WbAXf still live on Vercel",
+        "/dashboard AI assistant sidebar opens with engine Ready",
+        "new conversation starter prompts render in AI sidebar",
+        "starter prompt populates input and message send works",
+        "/api/ai/supervisor/stream/v2 POST returns 200",
+        "streaming AI response returns current server summary on latest production",
+        "analysis basis panel expands with Trace ID 631570a6d7d274d309a6db1f044621c0",
+        "analysis basis metadata shows data=일반 대화 응답 and engine=Streaming AI",
+        "browser console errors 0 during dashboard AI sidebar flow"
+      ],
+      "skippedSurfaces": [
+        "/dashboard/ai-assistant fullscreen workspace",
+        "Reporter and Analyst flows",
+        "feedback flow",
+        "timing header extraction and Cloud Run admin observability endpoints"
+      ],
+      "checks": {
+        "total": 9,
+        "passed": 9,
+        "failed": 0
+      },
+      "expertAssessments": [],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-04-06T07:02:11+09:00",
+          "summary": "Current billing period reviewed after latest production AI smoke refresh; effective 2.6265 USD, billed 0.0000 USD, no unexpected billed usage spike.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "qa-20260406-0244-ai-analysis-basis.png",
+          "path": ".playwright-mcp/screenshots/qa-20260406-0244-ai-analysis-basis.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "qa-20260406-0244-ai-send.png",
+          "path": ".playwright-mcp/screenshots/qa-20260406-0244-ai-send.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "qa-20260406-0244-ai-sidebar-open.png",
+          "path": ".playwright-mcp/screenshots/qa-20260406-0244-ai-sidebar-open.png"
+        }
+      ],
       "links": [
         {
           "type": "general",
