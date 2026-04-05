@@ -24,12 +24,16 @@ function makeTempPkg(scripts: Record<string, string>): string {
   return pkgPath;
 }
 
-function run(pkgPath: string, allowlist: string[]) {
-  return spawnSync(
-    process.execPath,
-    [SCRIPT, pkgPath, JSON.stringify(allowlist)],
-    { encoding: 'utf8' }
-  );
+function run(
+  pkgPath: string,
+  allowlist: string[],
+  overrides?: Record<string, string>
+) {
+  const args = [SCRIPT, pkgPath, JSON.stringify(allowlist)];
+  if (overrides) {
+    args.push(JSON.stringify(overrides));
+  }
+  return spawnSync(process.execPath, args, { encoding: 'utf8' });
 }
 
 afterEach(() => {
@@ -75,6 +79,31 @@ describe('filter-public-scripts', () => {
     // Values preserved from original
     expect(pkg.scripts.dev).toBe('next dev');
     expect(pkg.scripts.lint).toBe('biome check');
+  });
+
+  it('applies public-safe overrides when provided', () => {
+    const pkgPath = makeTempPkg({
+      dev: "cross-env NODE_OPTIONS='--max-old-space-size=4096' next dev -p 3000",
+      lint: 'bash scripts/dev/biome-wrapper.sh lint .',
+      format: 'bash scripts/dev/biome-wrapper.sh format --write .',
+      'type-check': 'node scripts/dev/tsc-wrapper.js --noEmit',
+    });
+
+    const result = run(pkgPath, ['dev', 'lint', 'format', 'type-check'], {
+      lint: 'biome lint .',
+      format: 'biome format --write .',
+      'type-check': 'tsc --noEmit',
+    });
+
+    expect(result.status).toBe(0);
+
+    const pkg = JSON.parse(readFileSync(pkgPath, 'utf8'));
+    expect(pkg.scripts.dev).toBe(
+      "cross-env NODE_OPTIONS='--max-old-space-size=4096' next dev -p 3000"
+    );
+    expect(pkg.scripts.lint).toBe('biome lint .');
+    expect(pkg.scripts.format).toBe('biome format --write .');
+    expect(pkg.scripts['type-check']).toBe('tsc --noEmit');
   });
 
   it('excludes internal/sensitive scripts', () => {

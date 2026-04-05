@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
 # =============================================================================
-# github-sync.sh — GitLab canonical → GitHub 코드 전용 스냅샷 동기화
+# github-sync.sh — GitLab canonical → GitHub 공개 프론트엔드 스냅샷 동기화
 #
 # 동작:
 #   1. 현재 HEAD(GitLab main)를 임시 디렉토리에 체크아웃
-#   2. 내부 전용 파일/디렉토리를 명시적으로 제거
-#   3. GitHub origin/main 에 스냅샷 커밋으로 push
+#   2. 공개 프론트엔드에 필요한 top-level 항목만 유지
+#   3. 내부 전용 파일/디렉토리를 안전 필터로 제거
+#   4. GitHub origin/main 에 스냅샷 커밋으로 push
 #
 # 사용법:
 #   npm run sync:github              # 일반 실행
@@ -26,6 +27,7 @@ for arg in "$@"; do [[ "$arg" == "--dry-run" ]] && DRY_RUN=true; done
 
 REPO_ROOT="$(git rev-parse --show-toplevel)"
 GITHUB_REMOTE="origin"
+INCLUDE_FILE="$REPO_ROOT/.github-export-include"
 IGNORE_FILE="$REPO_ROOT/.github-export-ignore"
 PUBLIC_README="$REPO_ROOT/scripts/sync/assets/README.public.md"
 ALLOW_DIRTY="${SYNC_GITHUB_ALLOW_DIRTY:-0}"
@@ -36,8 +38,13 @@ if ! git remote get-url "$GITHUB_REMOTE" &>/dev/null; then
   exit 1
 fi
 
+if [[ ! -f "$INCLUDE_FILE" ]]; then
+  error "포함 규칙 파일 없음: $INCLUDE_FILE"
+  exit 1
+fi
+
 if [[ ! -f "$IGNORE_FILE" ]]; then
-  error "제외 규칙 파일 없음: $IGNORE_FILE"
+  error "안전 제외 규칙 파일 없음: $IGNORE_FILE"
   exit 1
 fi
 
@@ -62,10 +69,11 @@ if [[ -n "$(git status --porcelain)" && "$ALLOW_DIRTY" != "1" ]]; then
 fi
 
 info "─────────────────────────────────────────────"
-info "GitLab → GitHub 코드 스냅샷 동기화"
+info "GitLab → GitHub 공개 프론트엔드 스냅샷 동기화"
 info "  소스 브랜치: $CURRENT_BRANCH ($COMMIT_SHA)"
 info "  대상 remote: $GITHUB_URL"
-info "  제외 규칙: $IGNORE_FILE"
+info "  포함 규칙: $INCLUDE_FILE"
+info "  안전 제외 규칙: $IGNORE_FILE"
 $DRY_RUN && warn "  [DRY-RUN 모드] — push 없이 미리보기만"
 info "─────────────────────────────────────────────"
 
@@ -75,6 +83,32 @@ trap 'rm -rf "$WORK_DIR"' EXIT
 info "임시 디렉토리: $WORK_DIR"
 info "현재 HEAD 내용 추출 중..."
 git -C "$REPO_ROOT" archive HEAD | tar -x -C "$WORK_DIR"
+
+apply_frontend_scope() {
+  local raw entry target rel
+  local -A allowed_entries=()
+
+  info "공개 프론트엔드 범위 적용 중..."
+  while IFS= read -r raw || [[ -n "$raw" ]]; do
+    entry="${raw%%#*}"
+    entry="${entry#"${entry%%[![:space:]]*}"}"
+    entry="${entry%"${entry##*[![:space:]]}"}"
+    entry="${entry%/}"
+    [[ -z "$entry" ]] && continue
+    allowed_entries["$entry"]=1
+  done < "$INCLUDE_FILE"
+
+  shopt -s dotglob nullglob
+  for target in "$WORK_DIR"/*; do
+    [[ -e "$target" ]] || continue
+    rel="${target#$WORK_DIR/}"
+    if [[ -n "${allowed_entries[$rel]:-}" ]]; then
+      continue
+    fi
+
+    $DRY_RUN && warn "  공개 제외: $rel" || rm -rf "$target"
+  done
+}
 
 apply_excludes() {
   local raw pattern target rel
@@ -95,8 +129,6 @@ apply_excludes() {
   done < "$IGNORE_FILE"
 }
 
-apply_excludes
-
 apply_public_overrides() {
   if [[ -f "$PUBLIC_README" ]]; then
     info "공개 README 적용 중..."
@@ -106,19 +138,26 @@ apply_public_overrides() {
   if [[ -f "$WORK_DIR/package.json" ]]; then
     info "공개 package.json 스크립트 정리 중..."
     # 허용 목록: 공개 저장소에 노출해도 안전한 스크립트만 선택
-    # (값은 원본 package.json에서 가져오므로 별도 유지 불필요)
     PUBLIC_SCRIPT_ALLOWLIST='["dev","build","start","type-check","lint","format"]'
+    PUBLIC_SCRIPT_OVERRIDES='{"type-check":"tsc --noEmit","lint":"biome lint .","format":"biome format --write ."}'
     node "$REPO_ROOT/scripts/sync/filter-public-scripts.js" \
       "$WORK_DIR/package.json" \
-      "$PUBLIC_SCRIPT_ALLOWLIST"
+      "$PUBLIC_SCRIPT_ALLOWLIST" \
+      "$PUBLIC_SCRIPT_OVERRIDES"
   fi
 }
+
+apply_frontend_scope
+
+if ! $DRY_RUN; then
+  apply_excludes
+fi
 
 apply_public_overrides
 
 if $DRY_RUN; then
   warn "─────────────────────────────────────────────"
-  warn "DRY-RUN 완료. 위 항목이 GitHub에서 제외됩니다."
+  warn "DRY-RUN 완료. 위 항목이 공개 프론트엔드 스냅샷에서 제외됩니다."
   warn "실제 동기화: npm run sync:github"
   exit 0
 fi
@@ -153,7 +192,7 @@ fi
 
 info "변경된 파일: $CHANGED 개"
 
-SYNC_MSG="sync: code-only snapshot from gitlab@${COMMIT_SHA}
+SYNC_MSG="sync: frontend public snapshot from gitlab@${COMMIT_SHA}
 
 ${COMMIT_MSG}
 

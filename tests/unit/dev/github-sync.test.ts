@@ -49,12 +49,24 @@ function buildChildProcessEnv(
 
 function createFixtureRepo() {
   const dir = createTempDir();
+  mkdirSync(join(dir, 'cloud-run', 'ai-engine'), { recursive: true });
   mkdirSync(join(dir, 'docs'), { recursive: true });
+  mkdirSync(join(dir, 'public', 'data'), { recursive: true });
   mkdirSync(join(dir, 'tests'), { recursive: true });
   mkdirSync(join(dir, 'scripts'), { recursive: true });
   mkdirSync(join(dir, 'src'), { recursive: true });
 
+  writeFileSync(
+    join(dir, 'cloud-run', 'ai-engine', 'index.ts'),
+    'export {};\n',
+    'utf8'
+  );
   writeFileSync(join(dir, 'docs', 'guide.md'), '# docs\n', 'utf8');
+  writeFileSync(
+    join(dir, 'public', 'data', 'sample.json'),
+    '{"ok":true}\n',
+    'utf8'
+  );
   writeFileSync(join(dir, 'tests', 'example.test.ts'), 'export {};\n', 'utf8');
   writeFileSync(
     join(dir, 'scripts', 'internal.sh'),
@@ -206,7 +218,7 @@ afterEach(() => {
 });
 
 describe('github-sync', () => {
-  it('shows excluded paths in dry-run mode', () => {
+  it('shows frontend-only removals in dry-run mode', () => {
     const fixtureRepo = createFixtureRepo();
     const binDir = createTempDir();
     createFakeGit(binDir, {
@@ -218,9 +230,10 @@ describe('github-sync', () => {
 
     expect(result.status).toBe(0);
     expect(result.stdout).toContain('DRY-RUN 완료');
-    expect(result.stdout).toContain('제거 예정: docs');
-    expect(result.stdout).toContain('제거 예정: tests');
-    expect(result.stdout).toContain('제거 예정: scripts');
+    expect(result.stdout).toContain('공개 제외: cloud-run');
+    expect(result.stdout).toContain('공개 제외: docs');
+    expect(result.stdout).toContain('공개 제외: tests');
+    expect(result.stdout).toContain('공개 제외: scripts');
   });
 
   it('fails on non-main branch without explicit override', () => {

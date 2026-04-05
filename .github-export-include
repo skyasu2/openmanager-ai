@@ -1,0 +1,23 @@
+# GitHub 공개 스냅샷 포함 목록
+# 목적: Vercel에 노출되는 프론트엔드/공개 자산만 공유
+
+.editorconfig
+.env.example
+.gitattributes
+.gitignore
+.nvmrc
+LICENSE
+README.md
+biome.json
+components.json
+instrumentation-client.ts
+instrumentation.ts
+next-env.d.ts
+next.config.mjs
+package-lock.json
+package.json
+postcss.config.mjs
+public/
+src/
+tsconfig.json
+vercel.json
