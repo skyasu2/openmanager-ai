@@ -1,7 +1,7 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-04-05 15:38:38 KST
+> Generated at: 2026-04-05 18:34:57 KST
 
 ## Summary
 
@@ -12,45 +12,45 @@
 | Passed | 1699 |
 | Failed | 64 |
 | Completed Items | 274 |
-| Pending Items | 0 |
+| Pending Items | 1 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 14 |
 | Expert Domains Tracked | 8 |
 | Expert Open Gaps | 0 |
-| Completion Rate | 100% |
+| Completion Rate | 99.64% |
 | Last Counted Run | QA-20260405-0238 (2026-04-05T06:21:39.750Z) |
-| Latest Recorded Run | QA-20260405-0238 (2026-04-05T06:21:39.750Z) |
+| Latest Recorded Run | QA-20260405-0239 (2026-04-05T09:34:55.345Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260405-0238 (2026-04-05T06:21:39.750Z)
+Latest run: QA-20260405-0239 (2026-04-05T09:34:55.345Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| system-reliability | appropriate | no | - |
-| ci-cd-optimization | appropriate | no | - |
+| - | - | - | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | manual-dashboard | checked | unknown | - |
+| vercel | cli | checked | normal | Current billing period reviewed after production deploy; billed 0.0000 USD with no unexpected spike. |
 
 ## Coverage (Latest Run)
 
-- Scope: release-gate
-- Release-Facing: yes
-- Counts Toward Summary: yes
-- Deployment: dpl_2MuHQZg4ePQmikAr8MYk5rkWj1ic / SHA b15fd073
-- Coverage Packs: core-routes-smoke, observability-pack, dashboard-core, ai-core
-- Covered Surfaces: Vercel Production Healthy, GitHub Sync Reliability Verified, CI Optimization Active, Zero Stale Snapshot Gaps, Post-deploy Smoke GET / PASS, Post-deploy Smoke GET /validation PASS, Post-deploy Smoke GET /api/version PASS
-- Skipped Surfaces: -
+- Scope: targeted
+- Release-Facing: no
+- Counts Toward Summary: no
+- Deployment: dpl_7dnNfhff4zsTg7xE99HjzJ2mWGWc / SHA c772507f
+- Coverage Packs: ai-core
+- Covered Surfaces: Vercel production deployment c772507f6 promoted, dashboard AI sidebar opens on production, AI query returns assistant response on production, analysis basis badge renders on production
+- Skipped Surfaces: full broad release-gate pack, Cloud Run direct observability endpoints, AI workspace fullscreen parity beyond badge visibility
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| - | - | - | - |
+| general | Vercel URL | [link](https://openmanager-ai.vercel.app/) | - |
+| vercel-deployment | Deployment dpl_7dnNfhff4zsTg7xE99HjzJ2mWGWc | [link](https://vercel.com/skyasus-projects/openmanager-ai/7dnNfhff4zsTg7xE99HjzJ2mWGWc) | - |
 
 ## Artifacts (Latest Run)
 
@@ -64,7 +64,7 @@ Latest run: QA-20260405-0238 (2026-04-05T06:21:39.750Z)
 
 ## Pending Improvements
 
-- None
+- [P1] ai-chat-response-process-metadata-production: Production AI responses should expose response-process metadata when analysis basis is shown (seen 1회, last QA-20260405-0239)
 
 ## Deferred Improvements
 
@@ -381,6 +381,7 @@ Latest run: QA-20260405-0238 (2026-04-05T06:21:39.750Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260405-0239 | 2026-04-05T09:34:55.345Z | targeted | no | no | Vercel targeted QA - assistant response process detail visibility | 4 | 0 | 1 | 0 | 0 | 0 |
 | QA-20260405-0238 | 2026-04-05T06:21:39.750Z | release-gate | yes | yes | Broad Release-Gate QA - Final Golden State Baseline Alignment | 15 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260405-0237 | 2026-04-05T06:10:23.695Z | targeted | no | no | Vercel production targeted health recheck after gate warning clarification | 6 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260405-0236 | 2026-04-05T05:47:50.876Z | release-gate | yes | yes | Vercel production complementary release-gate QA for secondary routes and AI workspace | 12 | 0 | 0 | 0 | 0 | 0 |
@@ -400,5 +401,4 @@ Latest run: QA-20260405-0238 (2026-04-05T06:21:39.750Z)
 | QA-20260404-0222 | 2026-04-04T09:17:33.588Z | broad | no | yes | Vercel Playwright QA - dashboard, AI assistant, and monitoring parity check | 13 | 0 | 1 | 0 | 1 | 2 |
 | QA-20260403-0221 | 2026-04-03T11:53:21.760Z | targeted | no | yes | Post-push Vercel production smoke after Groq priority update | 3 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260403-0220 | 2026-04-03T00:04:13.761Z | targeted | no | no | Vercel Production QA after propagation of latest QA tracker summary | 7 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260403-0219 | 2026-04-02T23:55:58.440Z | targeted | no | no | Vercel Production QA after propagation of production snapshot guard verification | 7 | 0 | 0 | 0 | 0 | 0 |
 

@@ -1,0 +1,88 @@
+{
+  "runId": "QA-20260405-0239",
+  "recordedAt": "2026-04-05T09:34:55.345Z",
+  "recordedAtKst": "2026-04-05 18:34:55 KST",
+  "runTitle": "Vercel targeted QA - assistant response process detail visibility",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_7dnNfhff4zsTg7xE99HjzJ2mWGWc",
+    "deploymentUrl": "https://openmanager-k0ldokxc3-skyasus-projects.vercel.app",
+    "commitSha": "c772507f6273661c48d3069d788d6e9e52b715f4"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": ["ai-core"],
+  "coveredSurfaces": [
+    "Vercel production deployment c772507f6 promoted",
+    "dashboard AI sidebar opens on production",
+    "AI query returns assistant response on production",
+    "analysis basis badge renders on production"
+  ],
+  "skippedSurfaces": [
+    "full broad release-gate pack",
+    "Cloud Run direct observability endpoints",
+    "AI workspace fullscreen parity beyond badge visibility"
+  ],
+  "checks": {
+    "total": 4,
+    "passed": 3,
+    "failed": 1
+  },
+  "expertAssessments": [],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-04-05T18:32:48+09:00",
+      "summary": "Current billing period reviewed after production deploy; billed 0.0000 USD with no unexpected spike.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [],
+  "completedImprovements": [],
+  "pendingImprovements": [
+    {
+      "id": "ai-chat-response-process-metadata-production",
+      "title": "Production AI responses should expose response-process metadata when analysis basis is shown",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "On deployment dpl_7dnNfhff4zsTg7xE99HjzJ2mWGWc, the badge expands but only shows data/engine; Trace ID, handoff history, and tool result summaries are absent in production responses.",
+      "owner": "",
+      "status": "pending",
+      "policyNote": ""
+    }
+  ],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Production deploy verified via Vercel deployment dpl_7dnNfhff4zsTg7xE99HjzJ2mWGWc for commit c772507f6273661c48d3069d788d6e9e52b715f4.",
+    "Dashboard AI sidebar path reproduced the issue more reliably than fullscreen AI workspace.",
+    "Two production queries were tested: overall server summary and cache-redis-dc1-01 memory trend analysis.",
+    "Both responses rendered the analysis basis badge, but expanded content only showed data source and engine without response-process metadata."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Vercel URL",
+      "url": "https://openmanager-ai.vercel.app/"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Deployment dpl_7dnNfhff4zsTg7xE99HjzJ2mWGWc",
+      "url": "https://vercel.com/skyasus-projects/openmanager-ai/7dnNfhff4zsTg7xE99HjzJ2mWGWc"
+    }
+  ]
+}

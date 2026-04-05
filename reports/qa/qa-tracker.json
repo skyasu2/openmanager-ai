@@ -2,27 +2,27 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-05T06:21:39.750Z"
+    "updatedAt": "2026-04-05T09:34:55.345Z"
   },
   "sequence": {
-    "nextRunNumber": 239
+    "nextRunNumber": 240
   },
   "summary": {
     "totalRuns": 229,
     "totalChecks": 1769,
     "totalPassed": 1699,
     "totalFailed": 64,
-    "completionRate": 100,
+    "completionRate": 99.64,
     "completedItems": 274,
-    "pendingItems": 0,
+    "pendingItems": 1,
     "deferredItems": 0,
     "wontFixItems": 14,
     "expertDomainsTracked": 8,
     "expertDomainsOpenGaps": 0,
     "lastRunId": "QA-20260405-0238",
     "lastRecordedAt": "2026-04-05T06:21:39.750Z",
-    "latestRecordedRunId": "QA-20260405-0238",
-    "latestRecordedAt": "2026-04-05T06:21:39.750Z"
+    "latestRecordedRunId": "QA-20260405-0239",
+    "latestRecordedAt": "2026-04-05T09:34:55.345Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -6623,6 +6623,30 @@
       "overengineeringScope": "",
       "lastPolicyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.",
       "lastStatusChangeAt": "2026-04-04T09:17:33.588Z"
+    },
+    "ai-chat-response-process-metadata-production": {
+      "id": "ai-chat-response-process-metadata-production",
+      "title": "Production AI responses should expose response-process metadata when analysis basis is shown",
+      "priority": "P1",
+      "status": "pending",
+      "firstSeenRunId": "QA-20260405-0239",
+      "firstSeenAt": "2026-04-05T09:34:55.345Z",
+      "lastSeenRunId": "QA-20260405-0239",
+      "lastSeenAt": "2026-04-05T09:34:55.345Z",
+      "seenCount": 1,
+      "completedCount": 0,
+      "pendingCount": 1,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "",
+      "lastNote": "On deployment dpl_7dnNfhff4zsTg7xE99HjzJ2mWGWc, the badge expands but only shows data/engine; Trace ID, handoff history, and tool result summaries are absent in production responses.",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-04-05T09:34:55.345Z"
     }
   },
   "runs": [
@@ -20744,6 +20768,77 @@
       "expertNeedsImprovementCount": 0,
       "completedCount": 0,
       "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260405-0239",
+      "recordedAt": "2026-04-05T09:34:55.345Z",
+      "recordedAtKst": "2026-04-05 18:34:55 KST",
+      "title": "Vercel targeted QA - assistant response process detail visibility",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260405-0239.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_7dnNfhff4zsTg7xE99HjzJ2mWGWc",
+        "deploymentUrl": "https://openmanager-k0ldokxc3-skyasus-projects.vercel.app",
+        "commitSha": "c772507f6273661c48d3069d788d6e9e52b715f4"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": false,
+      "coveragePacks": ["ai-core"],
+      "coveredSurfaces": [
+        "Vercel production deployment c772507f6 promoted",
+        "dashboard AI sidebar opens on production",
+        "AI query returns assistant response on production",
+        "analysis basis badge renders on production"
+      ],
+      "skippedSurfaces": [
+        "full broad release-gate pack",
+        "Cloud Run direct observability endpoints",
+        "AI workspace fullscreen parity beyond badge visibility"
+      ],
+      "checks": {
+        "total": 4,
+        "passed": 3,
+        "failed": 1
+      },
+      "expertAssessments": [],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-04-05T18:32:48+09:00",
+          "summary": "Current billing period reviewed after production deploy; billed 0.0000 USD with no unexpected spike.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [],
+      "links": [
+        {
+          "type": "general",
+          "label": "Vercel URL",
+          "url": "https://openmanager-ai.vercel.app/"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Deployment dpl_7dnNfhff4zsTg7xE99HjzJ2mWGWc",
+          "url": "https://vercel.com/skyasus-projects/openmanager-ai/7dnNfhff4zsTg7xE99HjzJ2mWGWc"
+        }
+      ],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 1,
       "deferredCount": 0,
       "wontFixCount": 0
     }
