@@ -14,6 +14,13 @@ AGENTS.md
 # ── 테스트 ─────────────────────────────────────────
 tests/
 __mocks__/
+src/**/__mocks__/
+src/**/*.test.ts
+src/**/*.test.tsx
+src/**/*.spec.ts
+src/**/*.spec.tsx
+src/**/*.stories.ts
+src/**/*.stories.tsx
 playwright.config*.ts
 vitest.config.ts
 playwright-report/
@@ -46,6 +53,7 @@ scripts/
 .env.e2e
 
 # ── 루트 임시 파일 / QA 아티팩트 ────────────────────
+public/DEPRECATED_TEST_FILES_REMOVED.md
 qa-*.png
 tmp-*.md
 *.log
