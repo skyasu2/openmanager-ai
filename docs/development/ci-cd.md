@@ -636,6 +636,7 @@ GitLab CI `deploy_ai_engine` 필수 변수:
 - `gcp-key.json`이 빈 파일로 decode되는 경우도 별도 검사로 차단합니다.
 - 현재 안정 배포 기준 권한은 프로젝트 `roles/editor`, `roles/secretmanager.secretAccessor`, 런타임 서비스 계정 `490817238363-compute@developer.gserviceaccount.com` 에 대한 `roles/iam.serviceAccountUser` 입니다.
 - 더 좁은 role set으로 줄이는 실험은 Cloud Build source bucket 접근에서 추가 제약이 확인돼 보류했습니다. 전용 서비스 계정으로 먼저 격리하고, 세부 권한 축소는 별도 배치로 다룹니다.
+- GitLab CI deploy 계열 job은 `CI_COMMIT_REF_PROTECTED=="true"`일 때만 실행됩니다. 즉 `main` 보호 브랜치 설정이 누락되면 deploy는 fail-closed로 차단됩니다.
 - `post_deploy_ai_engine_smoke`는 배포 후 `gcloud run services describe`로 현재 service URL을 조회한 뒤 `/health`, `/warmup`, `/monitoring`(unauth 401/403 기대)만 확인합니다. LLM 호출은 없습니다.
 - `post_deploy_ai_engine_smoke`는 `deploy_ai_engine`가 같은 파이프라인에 있을 때는 그 job 이후에 대기하고, smoke 스크립트나 `.gitlab-ci.yml`만 바뀐 경우에는 현재 production service를 직접 점검합니다.
 - 수동 배포는 로컬 `gcloud` 인증이 이미 되어 있으면 `cd cloud-run/ai-engine && bash deploy.sh`로 계속 가능합니다.

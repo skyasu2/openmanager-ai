@@ -144,14 +144,15 @@ stages:
     # QA 기록 커밋은 프로덕션 배포 트리거에서 제외해 불필요한 build/deploy를 방지한다.
     - if: '$CI_COMMIT_BRANCH == "main" && $CI_COMMIT_MESSAGE =~ /^test\(qa\):/'
       when: never
-    - if: '$CI_COMMIT_BRANCH == "main"'
+    # 보호되지 않은 main에서는 deploy를 차단해 canonical 보호 규칙 누락 시 fail-closed로 동작한다.
+    - if: '$CI_COMMIT_BRANCH == "main" && $CI_COMMIT_REF_PROTECTED == "true"'
       changes: *frontend_deploy_paths
       when: on_success
     - when: never
 
 .main_ai_engine_changes_only: &main_ai_engine_changes_only
   rules:
-    - if: '$CI_COMMIT_BRANCH == "main"'
+    - if: '$CI_COMMIT_BRANCH == "main" && $CI_COMMIT_REF_PROTECTED == "true"'
       changes:
         - cloud-run/ai-engine/**/*
       when: on_success
@@ -159,7 +160,7 @@ stages:
 
 .main_ai_engine_smoke_changes_only: &main_ai_engine_smoke_changes_only
   rules:
-    - if: '$CI_COMMIT_BRANCH == "main"'
+    - if: '$CI_COMMIT_BRANCH == "main" && $CI_COMMIT_REF_PROTECTED == "true"'
       changes: *ai_engine_smoke_paths
       when: on_success
     - when: never
