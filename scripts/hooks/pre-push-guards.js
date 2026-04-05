@@ -26,6 +26,10 @@ function normalizeRemoteValue(value) {
   return String(value || '').trim();
 }
 
+function isZeroOid(oid) {
+  return /^0+$/.test(String(oid || '').trim());
+}
+
 function countIndent(line) {
   const match = line.match(/^(\s*)/);
   return match ? match[1].length : 0;
@@ -155,6 +159,60 @@ function checkCanonicalRemotePush(remoteName, remoteUrl, runGit) {
   return createGuardResult(false, {
     reason: 'non-canonical-remote-push',
     targetRemote: targetLabel,
+    canonicalRemote,
+  });
+}
+
+// ─── Direct main push guard ──────────────────────────────────────────────
+
+/**
+ * @param {string} remoteName
+ * @param {Array<{ localRef: string, localOid: string, remoteRef: string, remoteOid: string }>} prePushUpdates
+ * @param {Function} runGit - (args: string[]) => string
+ */
+function checkDirectMainPush(remoteName, prePushUpdates, runGit) {
+  const enforce = process.env.ENFORCE_MAIN_BRANCH_PROTECTION !== 'false';
+  if (!enforce) {
+    return createGuardResult(true, { skipped: true });
+  }
+
+  if (process.env.ALLOW_MAIN_DIRECT_PUSH === 'true') {
+    console.log('⚠️  Direct main push allowed (ALLOW_MAIN_DIRECT_PUSH=true)');
+    return createGuardResult(true, { skipped: true });
+  }
+
+  const targetRemoteName = normalizeRemoteValue(remoteName);
+  const canonicalRemote = resolveCanonicalRemote(runGit);
+  if (!targetRemoteName || !canonicalRemote) {
+    return createGuardResult(true, { skipped: true });
+  }
+
+  if (targetRemoteName.toLowerCase() !== canonicalRemote.toLowerCase()) {
+    return createGuardResult(true, { skipped: true });
+  }
+
+  const updates = Array.isArray(prePushUpdates) ? prePushUpdates : [];
+  const isMainRefUpdate = updates.some(
+    (update) =>
+      update &&
+      update.remoteRef === 'refs/heads/main' &&
+      update.localRef === 'refs/heads/main' &&
+      !isZeroOid(update.localOid)
+  );
+
+  const currentBranch = normalizeRemoteValue(runGit(['rev-parse', '--abbrev-ref', 'HEAD']));
+  const shouldBlock = updates.length > 0 ? isMainRefUpdate : currentBranch === 'main';
+
+  if (!shouldBlock) {
+    return createGuardResult(true);
+  }
+
+  console.log('❌ Direct push to canonical main is blocked by policy');
+  console.log('   Use Merge Request flow for main branch changes.');
+  console.log('💡 Temporary bypass (approved emergency only):');
+  console.log('   ALLOW_MAIN_DIRECT_PUSH=true git push gitlab main');
+  return createGuardResult(false, {
+    reason: 'direct-main-push-blocked',
     canonicalRemote,
   });
 }
@@ -416,6 +474,7 @@ function checkEnvironment(cwd, runNpm) {
 
 module.exports = {
   checkCanonicalRemotePush,
+  checkDirectMainPush,
   checkGitLabCiSemanticGuard,
   checkCloudBuildFreeTierGuard,
   checkNodeModules,

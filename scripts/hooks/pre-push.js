@@ -46,6 +46,7 @@ const {
 } = require('./pre-push-test-runner');
 const {
   checkCanonicalRemotePush,
+  checkDirectMainPush,
   checkGitLabCiSemanticGuard,
   checkCloudBuildFreeTierGuard,
   checkNodeModules,
@@ -178,8 +179,7 @@ function collectChangedFilesFromPrePushUpdates(updates) {
   });
 }
 
-function getChangedFilesForPush() {
-  const prePushUpdates = readPrePushUpdatesFromStdin();
+function getChangedFilesForPush(prePushUpdates = []) {
   const upstream = runGit(['rev-parse', '--abbrev-ref', '--symbolic-full-name', '@{u}']);
   const defaultBaseRef = resolveDefaultBaseRef();
   const prePushFiles =
@@ -548,13 +548,15 @@ function main() {
     checkWSLPerformance(isWSL, isWindowsFS);
   }
 
+  const prePushUpdates = readPrePushUpdatesFromStdin();
   exitIfGuardFailed(checkCanonicalRemotePush(prePushRemoteName, prePushRemoteUrl, runGit));
+  exitIfGuardFailed(checkDirectMainPush(prePushRemoteName, prePushUpdates, runGit));
 
   exitIfGuardFailed(
     checkNodeModules(cwd, SKIP_NODE_CHECK, isWSL, isWindows, isWindowsFS)
   );
 
-  const changedFilesResult = getChangedFilesForPush();
+  const changedFilesResult = getChangedFilesForPush(prePushUpdates);
   exitIfGuardFailed(checkGitLabCiSemanticGuard(changedFilesResult, cwd));
   exitIfGuardFailed(
     checkCloudBuildFreeTierGuard(changedFilesResult, cwd, FORCE_CLOUD_BUILD_GUARD)
