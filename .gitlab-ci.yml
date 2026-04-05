@@ -17,6 +17,53 @@
 
 image: node:24-bookworm
 
+# ─── 변경 감지 경로 앵커 ──────────────────────────────────────────────────────
+.pipeline_relevant_changes: &pipeline_relevant_changes
+  - src/**/*
+  - public/**/*
+  - config/**/*
+  - package.json
+  - package-lock.json
+  - next.config.mjs
+  - tsconfig.json
+  - vercel.json
+  - .env.example
+  - cloud-run/ai-engine/**/*
+  - scripts/ci/ai-engine-post-deploy-smoke.sh
+  - .gitlab-ci.yml
+
+.frontend_validate_paths: &frontend_validate_paths
+  - src/**/*
+  - public/**/*
+  - config/**/*
+  - package.json
+  - package-lock.json
+  - next.config.mjs
+  - tsconfig.json
+  - vercel.json
+  - .env.example
+  - .gitlab-ci.yml
+
+.frontend_deploy_paths: &frontend_deploy_paths
+  - src/**/*
+  - public/**/*
+  - config/**/*
+  - package.json
+  - package-lock.json
+  - next.config.mjs
+  - tsconfig.json
+  - vercel.json
+  - .env.example
+
+.ai_engine_validate_paths: &ai_engine_validate_paths
+  - cloud-run/ai-engine/**/*
+  - .gitlab-ci.yml
+
+.ai_engine_smoke_paths: &ai_engine_smoke_paths
+  - cloud-run/ai-engine/**/*
+  - scripts/ci/ai-engine-post-deploy-smoke.sh
+  - .gitlab-ci.yml
+
 # ─── 파이프라인 레벨 제어 ──────────────────────────────────────────────────────
 # job-level rules:changes 와 달리 파이프라인 자체 생성을 차단 → UI 노이즈 제거
 # duplicate pipeline 방지:
@@ -24,10 +71,13 @@ image: node:24-bookworm
 workflow:
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      changes: *pipeline_relevant_changes
     - if: '$CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS && $CI_PIPELINE_SOURCE == "push"'
       when: never
     - if: '$CI_COMMIT_BRANCH == "main"'
+      changes: *pipeline_relevant_changes
     - if: '$CI_COMMIT_BRANCH'
+      changes: *pipeline_relevant_changes
     - when: never
 
 stages:
@@ -66,65 +116,26 @@ stages:
     - if: '$CI_COMMIT_MESSAGE =~ /^test\(qa\):/'
       when: never
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-      changes:
-        - src/**/*
-        - public/**/*
-        - scripts/**/*
-        - config/**/*
-        - package.json
-        - package-lock.json
-        - next.config.mjs
-        - tsconfig.json
-        - vercel.json
-        - .env.example
-        - .gitlab-ci.yml
+      changes: *frontend_validate_paths
       when: on_success
     - if: '$CI_COMMIT_BRANCH == "main"'
-      changes:
-        - src/**/*
-        - public/**/*
-        - scripts/**/*
-        - config/**/*
-        - package.json
-        - package-lock.json
-        - next.config.mjs
-        - tsconfig.json
-        - vercel.json
-        - .env.example
-        - .gitlab-ci.yml
+      changes: *frontend_validate_paths
       when: on_success
     - if: '$CI_COMMIT_BRANCH'
-      changes:
-        - src/**/*
-        - public/**/*
-        - scripts/**/*
-        - config/**/*
-        - package.json
-        - package-lock.json
-        - next.config.mjs
-        - tsconfig.json
-        - vercel.json
-        - .env.example
-        - .gitlab-ci.yml
+      changes: *frontend_validate_paths
       when: on_success
     - when: never
 
 .ai_engine_validate_changes: &ai_engine_validate_changes
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-      changes:
-        - cloud-run/ai-engine/**/*
-        - .gitlab-ci.yml
+      changes: *ai_engine_validate_paths
       when: on_success
     - if: '$CI_COMMIT_BRANCH == "main"'
-      changes:
-        - cloud-run/ai-engine/**/*
-        - .gitlab-ci.yml
+      changes: *ai_engine_validate_paths
       when: on_success
     - if: '$CI_COMMIT_BRANCH'
-      changes:
-        - cloud-run/ai-engine/**/*
-        - .gitlab-ci.yml
+      changes: *ai_engine_validate_paths
       when: on_success
     - when: never
 
@@ -134,17 +145,7 @@ stages:
     - if: '$CI_COMMIT_BRANCH == "main" && $CI_COMMIT_MESSAGE =~ /^test\(qa\):/'
       when: never
     - if: '$CI_COMMIT_BRANCH == "main"'
-      changes:
-        - src/**/*
-        - public/**/*
-        - scripts/**/*
-        - config/**/*
-        - package.json
-        - package-lock.json
-        - next.config.mjs
-        - tsconfig.json
-        - vercel.json
-        - .env.example
+      changes: *frontend_deploy_paths
       when: on_success
     - when: never
 
@@ -159,10 +160,7 @@ stages:
 .main_ai_engine_smoke_changes_only: &main_ai_engine_smoke_changes_only
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
-      changes:
-        - cloud-run/ai-engine/**/*
-        - scripts/ci/ai-engine-post-deploy-smoke.sh
-        - .gitlab-ci.yml
+      changes: *ai_engine_smoke_paths
       when: on_success
     - when: never
 
