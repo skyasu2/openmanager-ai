@@ -1,6 +1,8 @@
 name: Release Manual
 
 # schedule freshness check는 리포지토리 변수 ENABLE_ACTIONS_SCHEDULES=true 일 때만 허용
+# canonical release/deploy authority는 GitLab(main)이며,
+# GitHub workflow에서의 direct main push는 명시적 변수 허용 시에만 수행한다.
 
 on:
   schedule:
@@ -103,6 +105,17 @@ jobs:
 
           npm run "release:${RELEASE_TYPE}"
           RELEASE_CHECK_TAG=required RELEASE_CHECK_FRESHNESS=required RELEASE_CHECK_MAX_COMMITS=5 npm run release:check
+
+      - name: Enforce canonical release routing (GitLab-first)
+        if: ${{ inputs.dry_run == false }}
+        run: |
+          if [ "${{ vars.ALLOW_GITHUB_PUBLIC_RELEASE_PUSH }}" != "true" ]; then
+            echo "❌ Direct GitHub main push is disabled by policy."
+            echo "   Canonical release/deploy must run from gitlab/main."
+            echo "   Public snapshot sync should use: npm run sync:github"
+            echo "   (Set repository variable ALLOW_GITHUB_PUBLIC_RELEASE_PUSH=true only for approved exceptions.)"
+            exit 1
+          fi
 
       - name: Push release commit and tags
         if: ${{ inputs.dry_run == false }}
