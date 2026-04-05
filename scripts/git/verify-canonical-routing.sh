@@ -42,11 +42,15 @@ has_fixed_text() {
 count_pattern_matches() {
   local pattern="$1"
   local file="$2"
+  local matches
+
   if command -v rg >/dev/null 2>&1; then
-    rg -o "$pattern" "$file" | wc -l | tr -d ' '
-    return 0
+    matches="$(rg -o "$pattern" "$file" || true)"
+  else
+    matches="$(grep -oE "$pattern" "$file" || true)"
   fi
-  grep -oE "$pattern" "$file" | wc -l | tr -d ' '
+
+  printf '%s\n' "$matches" | sed '/^$/d' | wc -l | tr -d ' '
 }
 
 echo "== Canonical Routing Verify =="

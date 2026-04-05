@@ -68,17 +68,16 @@ function hasNoOnePushAccess(pushLevels) {
 function hasMaintainerOrStricterMergeAccess(mergeLevels) {
   if (!Array.isArray(mergeLevels) || mergeLevels.length === 0) return false;
   return mergeLevels.every((level) => {
-    const access = Number(level.access_level);
-    if (!Number.isNaN(access)) {
+    const rawAccess = level?.access_level;
+    const access = Number(rawAccess);
+    if (rawAccess !== undefined && rawAccess !== null && !Number.isNaN(access)) {
       return access >= 40 || access === 0;
     }
     const desc = String(level.access_level_description || '').toLowerCase();
     return (
       desc.includes('maintainer') ||
       desc.includes('owner') ||
-      desc.includes('no one') ||
-      desc.includes('group') ||
-      desc.includes('user')
+      desc.includes('no one')
     );
   });
 }
