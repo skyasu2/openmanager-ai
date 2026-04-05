@@ -2,27 +2,27 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-05T09:34:55.345Z"
+    "updatedAt": "2026-04-05T10:18:47.152Z"
   },
   "sequence": {
-    "nextRunNumber": 240
+    "nextRunNumber": 241
   },
   "summary": {
     "totalRuns": 229,
     "totalChecks": 1769,
     "totalPassed": 1699,
     "totalFailed": 64,
-    "completionRate": 99.64,
+    "completionRate": 98.92,
     "completedItems": 274,
-    "pendingItems": 1,
+    "pendingItems": 3,
     "deferredItems": 0,
     "wontFixItems": 14,
     "expertDomainsTracked": 8,
     "expertDomainsOpenGaps": 0,
     "lastRunId": "QA-20260405-0238",
     "lastRecordedAt": "2026-04-05T06:21:39.750Z",
-    "latestRecordedRunId": "QA-20260405-0239",
-    "latestRecordedAt": "2026-04-05T09:34:55.345Z"
+    "latestRecordedRunId": "QA-20260405-0240",
+    "latestRecordedAt": "2026-04-05T10:18:47.152Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -6647,6 +6647,54 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-04-05T09:34:55.345Z"
+    },
+    "ai-chat-response-process-details-production": {
+      "id": "ai-chat-response-process-details-production",
+      "title": "Production assistant responses should expose detailed response-process fields when analysis basis is expanded",
+      "priority": "P1",
+      "status": "pending",
+      "firstSeenRunId": "QA-20260405-0240",
+      "firstSeenAt": "2026-04-05T10:18:47.152Z",
+      "lastSeenRunId": "QA-20260405-0240",
+      "lastSeenAt": "2026-04-05T10:18:47.152Z",
+      "seenCount": 1,
+      "completedCount": 0,
+      "pendingCount": 1,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "",
+      "lastNote": "On deployment dpl_EggevnrYHhWKcW5ak4VeSeAHqMAw, a fresh sidebar response still expands to only data/engine without Response Process, Trace ID, handoff history, or tool result summaries.",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-04-05T10:18:47.152Z"
+    },
+    "ai-chat-cloud-run-rate-limit-production": {
+      "id": "ai-chat-cloud-run-rate-limit-production",
+      "title": "Complex Cloud Run AI verification path should complete without rate-limit failure in production",
+      "priority": "P1",
+      "status": "pending",
+      "firstSeenRunId": "QA-20260405-0240",
+      "firstSeenAt": "2026-04-05T10:18:47.152Z",
+      "lastSeenRunId": "QA-20260405-0240",
+      "lastSeenAt": "2026-04-05T10:18:47.152Z",
+      "seenCount": 1,
+      "completedCount": 0,
+      "pendingCount": 1,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "",
+      "lastNote": "A complex production prompt correctly entered Cloud Run AI job-queue flow, but both initial run and retry ended with 'Rate limit exceeded', blocking verification of the new detailed response-process metadata on the Cloud Run path.",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-04-05T10:18:47.152Z"
     }
   },
   "runs": [
@@ -20839,6 +20887,77 @@
       "expertNeedsImprovementCount": 0,
       "completedCount": 0,
       "pendingCount": 1,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260405-0240",
+      "recordedAt": "2026-04-05T10:18:47.152Z",
+      "recordedAtKst": "2026-04-05 19:18:47 KST",
+      "title": "Vercel targeted QA - response process detail post-deploy verification",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260405-0240.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_EggevnrYHhWKcW5ak4VeSeAHqMAw",
+        "deploymentUrl": "https://openmanager-57a70amg5-skyasus-projects.vercel.app",
+        "commitSha": "a52918f6f946e7ed6ea5fb647a4b058808a2873d"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": false,
+      "coveragePacks": ["ai-core"],
+      "coveredSurfaces": [
+        "Vercel production deployment a52918f6f promoted",
+        "dashboard AI sidebar opens on production",
+        "fresh streaming response renders analysis basis badge",
+        "complex prompt triggers Cloud Run AI job-queue path"
+      ],
+      "skippedSurfaces": [
+        "broad release-gate pack",
+        "Cloud Run direct runtime logs",
+        "fullscreen AI workspace parity after new deploy"
+      ],
+      "checks": {
+        "total": 5,
+        "passed": 3,
+        "failed": 2
+      },
+      "expertAssessments": [],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-04-05T19:18:01+09:00",
+          "summary": "Current billing period reviewed after production deploy; billed 0.0000 USD with no unexpected spike.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [],
+      "links": [
+        {
+          "type": "general",
+          "label": "Vercel URL",
+          "url": "https://openmanager-ai.vercel.app/"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Deployment dpl_EggevnrYHhWKcW5ak4VeSeAHqMAw",
+          "url": "https://vercel.com/skyasus-projects/openmanager-ai/EggevnrYHhWKcW5ak4VeSeAHqMAw"
+        }
+      ],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 2,
       "deferredCount": 0,
       "wontFixCount": 0
     }
