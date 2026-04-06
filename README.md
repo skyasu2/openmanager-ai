@@ -3,7 +3,7 @@
 > **AI-Native Server Monitoring Platform**
 > 자연어로 대화하며 서버를 모니터링하는 차세대 운영 플랫폼
 
-[![Version](https://img.shields.io/badge/version-8.10.2-blue.svg?style=for-the-badge)](https://openmanager-ai.vercel.app)
+[![Version](https://img.shields.io/badge/version-8.10.8-blue.svg?style=for-the-badge)](https://openmanager-ai.vercel.app)
 [![Live Demo](https://img.shields.io/badge/Live_Demo-Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://openmanager-ai.vercel.app)
 [![License](https://img.shields.io/badge/License-GPL_v3-blue.svg?style=for-the-badge)](LICENSE)
 
@@ -21,7 +21,7 @@
 
 OpenManager AI는 서버 모니터링의 패러다임을 **"차트 해석"에서 "질문과 답변"으로** 바꾸는 AI 기반 플랫폼입니다.
 
-운영자는 CPU/메모리 그래프를 직접 읽는 대신, 자연어로 질문합니다:
+이 공개 저장소는 **Vercel에 배포되는 Next.js 프론트엔드와 공개 데이터 스냅샷**만 공유합니다. 운영자는 CPU/메모리 그래프를 직접 읽는 대신, 자연어로 질문합니다:
 
 ```
 "서버 상태 어때?"           → 전체 헬스 요약
@@ -33,8 +33,8 @@ OpenManager AI는 서버 모니터링의 패러다임을 **"차트 해석"에서
 **🔗 Live Demo**: [openmanager-ai.vercel.app](https://openmanager-ai.vercel.app)
 
 > **Public snapshot note**
-> 이 저장소는 Vercel에 노출되는 프론트엔드와 공개 자산만 공유합니다.
-> Cloud Run AI 엔진, 내부 QA 기록, CI 운영 자산, 테스트/도구 스크립트는 canonical GitLab 저장소에만 유지됩니다.
+> 이 저장소는 브라우저에서 확인 가능한 UI 코드, 공개용 정적 데이터, 최소 실행 설정만 포함합니다.
+> Private Cloud Run AI runtime, 내부 QA 원본, CI 운영 자산, 내부 유지보수 스크립트는 canonical GitLab 저장소에만 유지됩니다.
 
 ---
 
@@ -42,11 +42,11 @@ OpenManager AI는 서버 모니터링의 패러다임을 **"차트 해석"에서
 
 | Feature | Description |
 |---------|-------------|
-| **AI Multi-Agent Chat** | 7개 실행 에이전트 + Supervisor 오케스트레이터 |
-| **Real-time Dashboard** | 15개 서버 × CPU/Memory/Disk/Network 메트릭 |
-| **Auto Incident Report** | 장애 감지 시 마크다운 보고서 자동 생성 |
-| **Resumable Streams** | 새로고침 후에도 AI 응답 스트림 재연결 (Redis 기반) |
-| **Hybrid Compute** | 빠른 UI는 Vercel Edge, AI 연산은 Cloud Run |
+| **AI Workspace UI** | 자연어 질의, 스트리밍 상태, agent handoff UI 제공 |
+| **Real-time Dashboard** | 서버 카드, 시계열 차트, 경보/상태 요약 |
+| **Validation Evidence** | 배포 검증 근거를 `/validation` 화면과 public JSON으로 공개 |
+| **Precomputed OTel Data** | 공개 데모와 fallback 경로에 쓰이는 모니터링 샘플 데이터 포함 |
+| **Production Shell** | Vercel production에서 동작하는 frontend shell과 API proxy 포함 |
 
 ---
 
@@ -60,12 +60,12 @@ User (Natural Language Query)
 │  Vercel / Next.js 16        │  ← UI, SSR, Edge API Routes
 │  React 19 + Tailwind CSS    │
 └──────────────┬──────────────┘
-               │ API / Streaming
+               │ API / Streaming Proxy
                ▼
 ┌─────────────────────────────┐
-│  Google Cloud Run           │  ← AI Engine (Node.js / Hono)
-│  AI Supervisor + 7 Agents   │
-│  Vercel AI SDK v6           │
+│  Private AI Runtime         │  ← not included in this public repo
+│  Cloud Run + agent backend  │
+│  model orchestration        │
 └──────┬────────────┬─────────┘
        │            │
        ▼            ▼
@@ -75,28 +75,10 @@ User (Natural Language Query)
 └──────────┘  └───────────────┘
 ```
 
-### AI Agent System
+이 저장소는 frontend shell과 공개 데이터만 제공하므로, AI backend 내부 구현과 모델 구성은 설명 대상에서 제외합니다. 공개 범위에서 중요한 점은 다음 두 가지입니다.
 
-```
-User Query → Supervisor (Intent Classification & Routing)
-               │
-    ┌──────────┼────────────────────┐
-    ▼          ▼                    ▼
-NLQ Agent  Analyst Agent       Reporter Agent
-(쿼리 변환) (이상 탐지)         (보고서 생성)
-
-Advisor Agent              Vision Agent
-(조치안 제안)               (로그/이미지 분석)
-```
-
-| Agent | Model | Role |
-|-------|-------|------|
-| Supervisor | Cerebras llama-3.3-70b | 의도 분류, 에이전트 라우팅 |
-| NLQ | Cerebras llama-3.3-70b | 자연어 → 메트릭 쿼리 변환 |
-| Analyst | Cerebras llama-3.3-70b | 이상 탐지, 원인 분석 |
-| Reporter | Groq llama-3.1-8b | 장애 보고서 생성 |
-| Advisor | Mistral mistral-small | 운영 가이드, 조치안 제안 |
-| Vision | Gemini 1.5-flash | 로그/이미지 분석 |
+- dashboard, validation, public data 경로는 이 저장소만으로 확인 가능
+- 실제 AI 응답 생성과 agent orchestration은 private runtime 의존
 
 ---
 
@@ -105,89 +87,62 @@ Advisor Agent              Vision Agent
 | Layer | Technology |
 |-------|-----------|
 | **Frontend** | Next.js 16.1, React 19.2, TypeScript 5.9 |
-| **Styling** | Tailwind CSS v3, shadcn/ui, Framer Motion |
+| **Styling** | Tailwind CSS, shadcn/ui, Radix UI |
 | **State** | Zustand, TanStack Query |
-| **AI SDK** | Vercel AI SDK v6 (streaming, multi-agent) |
-| **Backend** | Hono + Node.js 20 (Cloud Run) |
-| **Database** | Supabase PostgreSQL + pgvector (RAG) |
-| **Cache** | Upstash Redis (stream resume, rate limit) |
-| **Deployment** | Vercel Pro (Frontend) + Google Cloud Run Free (AI) |
-| **Monitoring Data** | Pre-computed OTel metrics — 15 servers × 24h |
+| **Frontend AI Integration** | Vercel AI SDK v6 client and streaming UI |
+| **Backend Dependencies** | Supabase, Upstash Redis, private AI runtime |
+| **Deployment** | Vercel production frontend + external private services |
+| **Monitoring Data** | Precomputed OTel metrics shipped under `public/data/otel-data/` |
 
 ---
 
-## Project Structure
+## What Is Included
 
-```
-src/
-├── app/                    # Next.js App Router (pages + API routes)
-│   └── api/ai/supervisor/  # AI Supervisor streaming endpoint
-├── components/             # React components (dashboard, ai-sidebar, ui/)
-├── hooks/                  # Custom hooks (AI, dashboard, metrics)
-├── services/               # Business logic (metrics, monitoring)
-├── lib/ai/                 # AI utilities (context, compression, routing)
-└── stores/                 # Zustand global state
+- `src/`: App Router pages, API proxy routes, dashboard and AI workspace UI
+- `public/data/otel-data/`: 공개 데모와 fallback 검증에 쓰이는 precomputed monitoring data
+- `public/data/qa/validation-evidence.json`: 공개 검증 요약 snapshot
+- `.env.example`: 로컬 실행용 환경변수 템플릿
+- `package.json`: public snapshot에서 안전한 최소 scripts만 유지
 
-cloud-run/ai-engine/
-├── src/agents/             # 7 execution agent definitions
-├── src/tools/              # Agent tools (metrics, search, report gen)
-└── src/data/               # Pre-computed server state for AI context
+## What Is Not Included
 
-public/data/otel-data/
-└── hourly/hour-XX.json     # 24h × 15 servers OTel monitoring data
-```
+- Private Cloud Run AI runtime source
+- Internal QA run records and CI operational assets
+- Internal maintenance scripts, test harnesses, and component-only notes
+- Secrets and production-only environment configuration
 
 ---
 
 ## Local Development
 
 ```bash
-# 1. Install dependencies
 npm install
-
-# 2. Set up environment variables
 cp .env.example .env.local
-# Required: NEXT_PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY
-# For AI: CLOUD_RUN_AI_URL, CLOUD_RUN_API_SECRET
-# For cache: UPSTASH_REDIS_REST_URL, UPSTASH_REDIS_REST_TOKEN
-
-# 3. Start development server
-npm run dev        # localhost:3000
-
-# 4. Type check + lint
+npm run dev
+npm run build
 npm run type-check
+npm run lint
 ```
 
-> **Note**: The dashboard and server monitoring work without AI keys, using pre-computed OTel data in `public/data/otel-data/`.
-> AI chat features require valid API keys for Cerebras, Groq, Mistral, and Gemini, plus a running Cloud Run AI Engine.
+기본 UI, 대시보드, validation 화면은 공개 데이터와 fallback 경로로 확인할 수 있습니다. AI chat과 production-equivalent backend 동작은 private runtime과 유효한 secrets가 있어야 합니다.
 
 ---
 
----
+## Validation Evidence
 
-## Engineering Notes
+- Validation page: [openmanager-ai.vercel.app/validation](https://openmanager-ai.vercel.app/validation)
+- Public QA snapshot JSON: [validation-evidence.json](https://openmanager-ai.vercel.app/data/qa/validation-evidence.json)
+- Live app: [openmanager-ai.vercel.app](https://openmanager-ai.vercel.app)
 
-### Development Approach
-
-Built end-to-end using **Claude Code** as the primary development tool, with Gemini CLI and OpenAI Codex as secondary review agents:
-
-- **Multi-LLM Review**: Claude Code (implementation) → Gemini (architecture review) → Codex (refactoring)
-- **MCP Integration**: 8 MCP servers connected (Context7, Playwright, Supabase, Vercel, Stitch, etc.)
-- **Local CI First**: Pre-push hooks run TypeScript + Lint + Tests locally before any push
-- **Free Tier Discipline**: All cloud infra within free tiers except Vercel Pro ($20/mo)
-
-### Scale
-
-- ~155,000 lines of code (`src/` + `cloud-run/` combined)
-- 2,600+ automated tests (unit + integration)
-- 15 servers × 24h × 10-minute interval pre-computed monitoring data
+이 저장소는 "스크린샷만 있는 데모"가 아니라, 공개 가능한 범위 안에서 실제 배포 검증 근거를 같이 보여주는 포트폴리오 snapshot입니다.
 
 ---
 
-## Known Limitations
+## Known Limits
 
-- **Cloud Run cold start**: First AI request after idle can be slow (~5-10s) on free-tier Cloud Run
-- **AI scope cuts**: Analyst per-server drilldown and AI chat detail expand are deferred to future iterations
+- 공개 저장소만으로 private AI backend 전체를 재현할 수는 없습니다
+- 일부 API route는 production에서 external runtime 의존성을 전제로 합니다
+- public snapshot은 canonical 개발 저장소가 아니라 읽기/분석용 배포 코드 snapshot입니다
 
 ---
 
@@ -200,5 +155,5 @@ GNU General Public License v3.0 — see [LICENSE](LICENSE) for details.
 <div align="center">
   <a href="https://openmanager-ai.vercel.app"><strong>🚀 Live Demo</strong></a>
   &nbsp;·&nbsp;
-  <sub>Built with Vibe Coding · v8.10.2</sub>
+  <sub>Public Snapshot · v8.10.8</sub>
 </div>
