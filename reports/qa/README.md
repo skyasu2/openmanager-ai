@@ -169,6 +169,22 @@ reports/qa/
   - `next priority`
 - smoke/targeted 재검증 결과는 broad release QA와 동일한 무게로 서술하지 않습니다.
 
+## Recommended Evidence Naming
+
+- release/counting run의 로컬 evidence는 `reports/qa/evidence/qa-YYYYMMDD-<surface-slug>.<ext>` 형식을 기본값으로 사용합니다.
+- `<surface-slug>`는 확인한 화면/엔드포인트/팩을 그대로 드러내는 `kebab-case`를 사용합니다.
+  - 권장: `dashboard-landing`, `login-guest-pin`, `system-boot-redirect`, `ai-sidebar-ready`, `api-version-response`, `reporter-summary`
+  - 비권장: `final`, `new`, `step1`, `test`, `capture`
+- 같은 run에서 여러 장을 남길 때는 surface를 더 구체화합니다.
+  - 예: `qa-20260406-dashboard-alert-top5.png`
+  - 예: `qa-20260406-ai-sidebar-cpu-summary.png`
+- 확장자는 artifact 타입과 맞춥니다.
+  - screenshot: `.png`
+  - trace bundle: `.zip`
+  - html report: `.html`
+  - console/network dump: `.txt` 또는 `.json`
+- 기존 파일을 덮어쓰지 말고, 같은 surface를 재검증할 때도 새 slug 파일로 분리합니다.
+
 ## AI Timing Header Rule
 
 - Vercel production에서 AI timing 검증 시 운영 SSOT는 `X-AI-Latency-Ms`와 `X-AI-Processing-Ms`입니다.
