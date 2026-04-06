@@ -77,6 +77,16 @@ git clone git@gitlab.com:skyasu2/openmanager-ai.git
 cd openmanager-ai
 ```
 
+## canonical Git 기본값 설정
+
+초기 클론 직후 아래 설정을 한 번 적용하면 `git push`, release preflight, IDE branch link가 canonical `gitlab` 기준으로 정렬됩니다.
+
+```bash
+git config --local remote.pushDefault gitlab
+git config --local checkout.defaultRemote gitlab
+git remote set-head gitlab main
+```
+
 ## 의존성 설치
 
 ```bash
