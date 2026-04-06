@@ -19,7 +19,7 @@ git pull --rebase gitlab <branch>
 
 ## PR creation failure
 
-- Canonical/private work: open the Merge Request manually in GitLab after the branch push succeeds.
+- Canonical/private work: only relevant when you intentionally chose branch/MR flow. Open the Merge Request manually in GitLab after the branch push succeeds.
 - GitHub auth/token health and `gh pr create` fallback only matter for explicit GitHub public-snapshot tasks.
 
 ## Merge conflict with unrelated agent changes

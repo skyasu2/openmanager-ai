@@ -34,7 +34,7 @@ function printManualChecklist(projectPath) {
   console.log('[Required baseline]');
   console.log('1. Settings > Repository > Protected branches');
   console.log('   - Branch: main');
-  console.log('   - Allowed to push: No one');
+  console.log('   - Allowed to push: Maintainers (or stricter)');
   console.log('   - Allowed to merge: Maintainers (or stricter)');
   console.log('   - Allow force push: disabled');
   console.log('2. Settings > Merge requests');
@@ -57,17 +57,9 @@ function toAccessDescription(level) {
   return `access:${String(level.access_level ?? 'unknown')}`;
 }
 
-function hasNoOnePushAccess(pushLevels) {
-  if (!Array.isArray(pushLevels) || pushLevels.length === 0) return false;
-  return pushLevels.some((level) => {
-    const desc = String(level.access_level_description || '').toLowerCase();
-    return desc.includes('no one') || Number(level.access_level) === 0;
-  });
-}
-
-function hasMaintainerOrStricterMergeAccess(mergeLevels) {
-  if (!Array.isArray(mergeLevels) || mergeLevels.length === 0) return false;
-  return mergeLevels.every((level) => {
+function hasMaintainerOrStricterAccess(levels) {
+  if (!Array.isArray(levels) || levels.length === 0) return false;
+  return levels.every((level) => {
     const rawAccess = level?.access_level;
     const access = Number(rawAccess);
     if (rawAccess !== undefined && rawAccess !== null && !Number.isNaN(access)) {
@@ -118,13 +110,13 @@ function printApiEvaluation(result) {
   const checks = [
     {
       id: 'GL-PROT-001',
-      ok: hasNoOnePushAccess(pushLevels),
-      pass: 'main push access is set to No one',
-      fail: 'main push access is not No one',
+      ok: hasMaintainerOrStricterAccess(pushLevels),
+      pass: 'main push access is Maintainers or stricter',
+      fail: 'main push access is wider than Maintainers',
     },
     {
       id: 'GL-PROT-002',
-      ok: hasMaintainerOrStricterMergeAccess(mergeLevels),
+      ok: hasMaintainerOrStricterAccess(mergeLevels),
       pass: 'main merge access is Maintainers or stricter',
       fail: 'main merge access is wider than Maintainers',
     },

@@ -7,6 +7,7 @@ import path from 'node:path';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 const {
+  checkDirectMainPush,
   checkGitLabCiSemanticGuard,
   checkCloudBuildFreeTierGuard,
   checkNodeModules,
@@ -16,6 +17,7 @@ const {
 
 afterEach(() => {
   vi.restoreAllMocks();
+  vi.unstubAllEnvs();
 });
 
 describe('pre-push guards', () => {
@@ -222,6 +224,60 @@ deploy_ai_engine:
     const result = checkNodeModules('/repo', false, false, false, false);
     expect(result.ok).toBe(false);
     expect(result.reason).toBe('missing-node-modules');
+  });
+
+  it('allows direct canonical main push by default for single-maintainer flow', () => {
+    const logSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
+
+    const result = checkDirectMainPush(
+      'gitlab',
+      [
+        {
+          localRef: 'refs/heads/main',
+          localOid: '1234567890abcdef',
+          remoteRef: 'refs/heads/main',
+          remoteOid: 'abcdef1234567890',
+        },
+      ],
+      (args: string[]) => {
+        if (args.join(' ') === 'config --get remote.pushDefault')
+          return 'gitlab';
+        if (args.join(' ') === 'rev-parse --abbrev-ref HEAD') return 'main';
+        return '';
+      }
+    );
+
+    expect(result).toEqual({ ok: true, skipped: true });
+    expect(logSpy).not.toHaveBeenCalled();
+  });
+
+  it('blocks direct canonical main push when strict mode is enabled locally', () => {
+    vi.stubEnv('BLOCK_MAIN_DIRECT_PUSH', 'true');
+    vi.spyOn(console, 'log').mockImplementation(() => {});
+
+    const result = checkDirectMainPush(
+      'gitlab',
+      [
+        {
+          localRef: 'refs/heads/main',
+          localOid: '1234567890abcdef',
+          remoteRef: 'refs/heads/main',
+          remoteOid: 'abcdef1234567890',
+        },
+      ],
+      (args: string[]) => {
+        if (args.join(' ') === 'config --get remote.pushDefault')
+          return 'gitlab';
+        if (args.join(' ') === 'rev-parse --abbrev-ref HEAD') return 'main';
+        return '';
+      }
+    );
+
+    expect(result).toEqual({
+      ok: false,
+      reason: 'direct-main-push-blocked',
+      canonicalRemote: 'gitlab',
+    });
   });
 
   it('exits when env:check exists and npm validation fails', () => {

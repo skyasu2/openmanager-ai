@@ -87,13 +87,14 @@ Never assume `github-public/main` or `origin/main` is the canonical branch. Alwa
 - For high-risk changes or explicit review requests, run `$openmanager-code-review` and include key findings/residual risks in PR body.
 
 4. Push safely.
-- Canonical/private work: `git push gitlab <branch>`
+- Single-maintainer default canonical flow: `git push gitlab main`
+- Canonical/private branch flow when the work is risky or the user wants review isolation: `git push gitlab <branch>`
 - If upstream missing on GitLab: `git push -u gitlab <branch>`
 - GitHub public remote push is only for explicit public snapshot sync via `npm run sync:github`.
 - Never force-push the public snapshot from the canonical private worktree.
 
 5. Create PR when requested.
-- Canonical/private work: push branch to `gitlab`, then open a GitLab Merge Request manually in the GitLab UI.
+- Canonical/private work: only use a GitLab Merge Request when the user explicitly wants PR flow or when risky changes benefit from branch isolation.
 - GitHub MCP (`create_pull_request`) is not part of the routine delivery path for this repo. Use it only when the task explicitly targets the public snapshot repository itself.
 - CLI fallback: `gh pr create` only when the task explicitly targets GitHub and MCP is unavailable.
 - Include concise title/body with changed scope and risks.

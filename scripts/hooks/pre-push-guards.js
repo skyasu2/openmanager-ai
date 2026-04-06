@@ -171,7 +171,9 @@ function checkCanonicalRemotePush(remoteName, remoteUrl, runGit) {
  * @param {Function} runGit - (args: string[]) => string
  */
 function checkDirectMainPush(remoteName, prePushUpdates, runGit) {
-  const enforce = process.env.ENFORCE_MAIN_BRANCH_PROTECTION !== 'false';
+  const enforce =
+    process.env.BLOCK_MAIN_DIRECT_PUSH === 'true' ||
+    process.env.ENFORCE_MAIN_BRANCH_PROTECTION === 'true';
   if (!enforce) {
     return createGuardResult(true, { skipped: true });
   }
@@ -207,10 +209,10 @@ function checkDirectMainPush(remoteName, prePushUpdates, runGit) {
     return createGuardResult(true);
   }
 
-  console.log('❌ Direct push to canonical main is blocked by policy');
-  console.log('   Use Merge Request flow for main branch changes.');
-  console.log('💡 Temporary bypass (approved emergency only):');
-  console.log('   ALLOW_MAIN_DIRECT_PUSH=true git push gitlab main');
+  console.log('❌ Direct push to canonical main is blocked by local strict mode');
+  console.log('   Use a feature branch + Merge Request for this push.');
+  console.log('💡 Default single-maintainer flow keeps direct main push enabled.');
+  console.log('💡 Temporary bypass: ALLOW_MAIN_DIRECT_PUSH=true git push gitlab main');
   return createGuardResult(false, {
     reason: 'direct-main-push-blocked',
     canonicalRemote,
